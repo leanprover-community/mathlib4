@@ -363,7 +363,7 @@ theorem geom_sum_Ico [DivisionRing α] {x : α} (hx : x ≠ 1) {m n : ℕ} (hmn 
 theorem geom_sum_Ico' [DivisionRing α] {x : α} (hx : x ≠ 1) {m n : ℕ} (hmn : m ≤ n) :
     (∑ i in Finset.Ico m n, x ^ i) = (x ^ m - x ^ n) / (1 - x) := by
   simp only [geom_sum_Ico hx hmn]
-  convert neg_div_neg_eq (x ^ m - x ^ n) (1 - x) <;> abel
+  convert neg_div_neg_eq (x ^ m - x ^ n) (1 - x) using 2 <;> abel
 #align geom_sum_Ico' geom_sum_Ico'
 
 theorem geom_sum_Ico_le_of_lt_one [LinearOrderedField α] {x : α} (hx : 0 ≤ x) (h'x : x < 1)

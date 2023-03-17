@@ -215,8 +215,9 @@ instance argument if it can't synthesize a relevant `ConcreteCategory` instance.
 (Technical note: The forgetful functor's universe variable is instantiated with a
 fresh level metavariable in this case.)
 
-Where by default `@[elementwise]` applies `simp` to both sides to get a lemma in simp normal form,
-`elementwise_of%` does not do this.
+One difference between `elementwise_of%` and `@[elementwise]` is that `@[elementwise]` by
+default applies `simp` to both sides of the generated lemma to get something that is in simp
+normal form. `elementwise_of%` does not do this.
 -/
 elab "elementwise_of% " t:term : term => do
   let e ← Term.elabTerm t none

@@ -630,11 +630,11 @@ theorem inv_strictAntiOn : StrictAntiOn (fun x : α => x⁻¹) (Set.Ioi 0) := fu
 #align inv_strict_anti_on inv_strictAntiOn
 
 theorem inv_pow_le_inv_pow_of_le (a1 : 1 ≤ a) {m n : ℕ} (mn : m ≤ n) : (a ^ n)⁻¹ ≤ (a ^ m)⁻¹ := by
-  convert one_div_pow_le_one_div_pow_of_le a1 mn <;> simp
+  convert one_div_pow_le_one_div_pow_of_le a1 mn using 1 <;> simp
 #align inv_pow_le_inv_pow_of_le inv_pow_le_inv_pow_of_le
 
 theorem inv_pow_lt_inv_pow_of_lt (a1 : 1 < a) {m n : ℕ} (mn : m < n) : (a ^ n)⁻¹ < (a ^ m)⁻¹ := by
-  convert one_div_pow_lt_one_div_pow_of_lt a1 mn <;> simp
+  convert one_div_pow_lt_one_div_pow_of_lt a1 mn using 1 <;> simp
 #align inv_pow_lt_inv_pow_of_lt inv_pow_lt_inv_pow_of_lt
 
 theorem inv_pow_anti (a1 : 1 ≤ a) : Antitone fun n : ℕ => (a ^ n)⁻¹ := fun _ _ =>
@@ -915,7 +915,7 @@ theorem sub_one_div_inv_le_two (a2 : 2 ≤ a) : (1 - 1 / a)⁻¹ ≤ 2 := by
   -- move `1 / a` to the left and `2⁻¹` to the right.
   rw [le_sub_iff_add_le, add_comm, ←le_sub_iff_add_le]
   -- take inverses on both sides and use the assumption `2 ≤ a`.
-  convert (one_div a).le.trans (inv_le_inv_of_le zero_lt_two a2)
+  convert (one_div a).le.trans (inv_le_inv_of_le zero_lt_two a2) using 1
   -- show `1 - 1 / 2 = 1 / 2`.
   rw [sub_eq_iff_eq_add, ←two_mul, mul_inv_cancel two_ne_zero]
 #align sub_one_div_inv_le_two sub_one_div_inv_le_two
