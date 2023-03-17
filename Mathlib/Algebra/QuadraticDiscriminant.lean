@@ -8,11 +8,11 @@ Authors: Zhouhang Zhou
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.CharP.Invertible
-import Mathbin.Order.Filter.AtTopBot
-import Mathbin.Tactic.Linarith.Default
-import Mathbin.Tactic.FieldSimp
-import Mathbin.Tactic.LinearCombination
+import Mathlib.Algebra.CharP.Invertible
+import Mathlib.Order.Filter.AtTopBot
+import Mathlib.Tactic.Linarith.Default
+import Mathlib.Tactic.FieldSimp
+import Mathlib.Tactic.LinearCombination
 
 /-!
 # Quadratic discriminants and roots of a quadratic
@@ -53,8 +53,7 @@ variable [CommRing R] [IsDomain R] {a b c : R}
 /-- A quadratic has roots if and only if its discriminant equals some square.
 -/
 theorem quadratic_eq_zero_iff_discrim_eq_sq (h2 : (2 : R) ≠ 0) (ha : a ≠ 0) (x : R) :
-    a * x * x + b * x + c = 0 ↔ discrim a b c = (2 * a * x + b) ^ 2 :=
-  by
+    a * x * x + b * x + c = 0 ↔ discrim a b c = (2 * a * x + b) ^ 2 := by
   dsimp [discrim] at *
   constructor
   · intro h
@@ -67,8 +66,7 @@ theorem quadratic_eq_zero_iff_discrim_eq_sq (h2 : (2 : R) ≠ 0) (ha : a ≠ 0) 
 
 /-- A quadratic has no root if its discriminant has no square root. -/
 theorem quadratic_ne_zero_of_discrim_ne_sq (h2 : (2 : R) ≠ 0) (ha : a ≠ 0)
-    (h : ∀ s : R, discrim a b c ≠ s * s) (x : R) : a * x * x + b * x + c ≠ 0 :=
-  by
+    (h : ∀ s : R, discrim a b c ≠ s * s) (x : R) : a * x * x + b * x + c ≠ 0 := by
   intro h'
   rw [quadratic_eq_zero_iff_discrim_eq_sq h2 ha, sq] at h'
   exact h _ h'
@@ -82,8 +80,7 @@ variable {K : Type _} [Field K] [Invertible (2 : K)] {a b c x : K}
 
 /-- Roots of a quadratic -/
 theorem quadratic_eq_zero_iff (ha : a ≠ 0) {s : K} (h : discrim a b c = s * s) (x : K) :
-    a * x * x + b * x + c = 0 ↔ x = (-b + s) / (2 * a) ∨ x = (-b - s) / (2 * a) :=
-  by
+    a * x * x + b * x + c = 0 ↔ x = (-b + s) / (2 * a) ∨ x = (-b - s) / (2 * a) := by
   have h2 : (2 : K) ≠ 0 := nonzero_of_invertible 2
   rw [quadratic_eq_zero_iff_discrim_eq_sq h2 ha, h, sq, mul_self_eq_mul_self_iff]
   have ne : 2 * a ≠ 0 := mul_ne_zero h2 ha
@@ -104,8 +101,7 @@ theorem exists_quadratic_eq_zero (ha : a ≠ 0) (h : ∃ s, discrim a b c = s * 
 
 /-- Root of a quadratic when its discriminant equals zero -/
 theorem quadratic_eq_zero_iff_of_discrim_eq_zero (ha : a ≠ 0) (h : discrim a b c = 0) (x : K) :
-    a * x * x + b * x + c = 0 ↔ x = -b / (2 * a) :=
-  by
+    a * x * x + b * x + c = 0 ↔ x = -b / (2 * a) := by
   have : discrim a b c = 0 * 0 := by rw [h, MulZeroClass.mul_zero]
   rw [quadratic_eq_zero_iff ha this, add_zero, sub_zero, or_self_iff]
 #align quadratic_eq_zero_iff_of_discrim_eq_zero quadratic_eq_zero_iff_of_discrim_eq_zero
@@ -117,8 +113,7 @@ section LinearOrderedField
 variable {K : Type _} [LinearOrderedField K] {a b c : K}
 
 /-- If a polynomial of degree 2 is always nonnegative, then its discriminant is nonpositive -/
-theorem discrim_le_zero (h : ∀ x : K, 0 ≤ a * x * x + b * x + c) : discrim a b c ≤ 0 :=
-  by
+theorem discrim_le_zero (h : ∀ x : K, 0 ≤ a * x * x + b * x + c) : discrim a b c ≤ 0 := by
   rw [discrim, sq]
   obtain ha | rfl | ha : a < 0 ∨ a = 0 ∨ 0 < a := lt_trichotomy a 0
   -- if a < 0
