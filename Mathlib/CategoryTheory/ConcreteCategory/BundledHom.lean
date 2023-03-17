@@ -86,7 +86,7 @@ instance concreteCategory : ConcreteCategory.{u} (Bundled c)
     { obj := fun X => X
       map := @fun X Y f => 𝒞.toFun X.str Y.str f
       map_id := fun X => 𝒞.id_toFun X.str
-      map_comp := by (intros; aesop_cat;erw [𝒞.comp_toFun]; rfl) }
+      map_comp := fun f g => by dsimp; erw [𝒞.comp_toFun];rfl }
   forget_faithful := { map_injective := by (intros; apply 𝒞.hom_ext) }
 #align category_theory.bundled_hom.concrete_category CategoryTheory.BundledHom.concreteCategory
 
