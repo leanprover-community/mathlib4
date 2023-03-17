@@ -312,20 +312,18 @@ attribute [to_additive existing] FreeMagma.repr
 instance {α : Type u} [Repr α] : Repr (FreeMagma α) := ⟨fun o _ => FreeMagma.repr o⟩
 
 /-- Length of an element of a free magma. -/
-@[simp]
 def FreeMagma.length {α : Type u} : FreeMagma α → ℕ
   | FreeMagma.of _x => 1
   | x * y => x.length + y.length
 #align free_magma.length FreeMagma.length
 
 /-- Length of an element of a free additive magma. -/
-@[simp]
 def FreeAddMagma.length {α : Type u} : FreeAddMagma α → ℕ
   | FreeAddMagma.of _x => 1
   | x + y => x.length + y.length
 #align free_add_magma.length FreeAddMagma.length
 
-attribute [to_additive existing] FreeMagma.length
+attribute [to_additive existing (attr := simp)] FreeMagma.length
 
 /-- Associativity relations for an additive magma. -/
 inductive AddMagma.AssocRel (α : Type u) [Add α] : α → α → Prop
