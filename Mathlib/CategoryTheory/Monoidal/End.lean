@@ -225,9 +225,8 @@ theorem ε_app_obj (n : M) (X : C) :
     F.ε.app ((F.obj n).obj X) = (F.map (ρ_ n).inv).app X ≫ (F.μIso n (𝟙_ M)).inv.app X := by
   refine' Eq.trans _ (Category.id_comp _)
   rw [← Category.assoc, ← IsIso.comp_inv_eq, ← IsIso.comp_inv_eq, Category.assoc]
-  convert right_unitality_app F n X
-  · simp
-  · simp
+  convert right_unitality_app F n X using 1
+  simp
 #align category_theory.ε_app_obj CategoryTheory.ε_app_obj
 
 @[simp]
