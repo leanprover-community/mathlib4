@@ -292,7 +292,8 @@ instance leftCancelMonoid [LeftCancelMonoid M] [LeftCancelMonoid N] : LeftCancel
 #align prod.add_left_cancel_monoid Prod.addLeftCancelMonoid
 
 @[to_additive]
-instance rightCancelMonoid [RightCancelMonoid M] [RightCancelMonoid N] : RightCancelMonoid (M × N) :=
+instance rightCancelMonoid [RightCancelMonoid M] [RightCancelMonoid N] :
+    RightCancelMonoid (M × N) :=
   { mul_one := by simp,
     one_mul := by simp }
 #align prod.right_cancel_monoid Prod.rightCancelMonoid
