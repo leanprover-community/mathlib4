@@ -15,7 +15,7 @@ import Mathlib.Data.Real.Sqrt
 
 The complex numbers are modelled as ℝ^2 in the obvious way and it is shown that they form a field
 of characteristic zero. The result that the complex numbers are algebraically closed, see
-`field_theory.algebraic_closure`.
+`FieldTheory.AlgebraicClosure`.
 -/
 
 
@@ -26,7 +26,7 @@ open Set Function
 /-! ### Definition and basic arithmmetic -/
 
 
-/-- Complex numbers consist of two `real`s: a real part `re` and an imaginary part `im`. -/
+/-- Complex numbers consist of two `Real`s: a real part `re` and an imaginary part `im`. -/
 structure Complex : Type where
   re : ℝ
   im : ℝ
@@ -842,11 +842,11 @@ theorem ofReal_natCast (n : ℕ) : ((n : ℝ) : ℂ) = n :=
 #align complex.of_real_nat_cast Complex.ofReal_natCast
 
 @[simp, norm_cast]
-theorem natCast_re (n : ℕ) : (n : ℂ).re = n := by rw [← ofReal_nat_cast, ofReal_re]
+theorem natCast_re (n : ℕ) : (n : ℂ).re = n := by rw [← ofReal_natCast, ofReal_re]
 #align complex.nat_cast_re Complex.natCast_re
 
 @[simp, norm_cast]
-theorem natCast_im (n : ℕ) : (n : ℂ).im = 0 := by rw [← ofReal_nat_cast, ofReal_im]
+theorem natCast_im (n : ℕ) : (n : ℂ).im = 0 := by rw [← ofReal_natCast, ofReal_im]
 #align complex.nat_cast_im Complex.natCast_im
 
 @[simp, norm_cast]
@@ -855,15 +855,15 @@ theorem ofReal_intCast (n : ℤ) : ((n : ℝ) : ℂ) = n :=
 #align complex.of_real_int_cast Complex.ofReal_intCast
 
 @[simp, norm_cast]
-theorem intCast_re (n : ℤ) : (n : ℂ).re = n := by rw [← ofReal_int_cast, ofReal_re]
+theorem intCast_re (n : ℤ) : (n : ℂ).re = n := by rw [← ofReal_intCast, ofReal_re]
 #align complex.int_cast_re Complex.intCast_re
 
 @[simp, norm_cast]
-theorem intCast_im (n : ℤ) : (n : ℂ).im = 0 := by rw [← ofReal_int_cast, ofReal_im]
+theorem intCast_im (n : ℤ) : (n : ℂ).im = 0 := by rw [← ofReal_intCast, ofReal_im]
 #align complex.int_cast_im Complex.intCast_im
 
 @[simp, norm_cast]
-theorem ofReal_ratCast (n : ℚ) : ((n : ℝ) : ℂ) = ((n : ℚ) : ℂ) :=
+theorem ofReal_ratCast (n : ℚ) : ((n : ℝ) : ℂ) = n :=
   map_ratCast ofReal n
 #align complex.of_real_rat_cast Complex.ofReal_ratCast
 
@@ -884,7 +884,7 @@ theorem ratCast_im (q : ℚ) : (q : ℂ).im = ((0 : ℚ) : ℂ) := by
 
 instance charZero_complex : CharZero ℂ :=
   charZero_of_inj_zero fun n h => by
-    rwa [← ofReal_nat_cast, ofReal_eq_zero, Nat.cast_eq_zero] at h
+    rwa [← ofReal_natCast, ofReal_eq_zero, Nat.cast_eq_zero] at h
 #align complex.char_zero_complex Complex.charZero_complex
 
 /-- A complex number `z` plus its conjugate `conj z` is `2` times its real part. -/
@@ -977,7 +977,7 @@ nonrec theorem abs_of_nonneg {r : ℝ} (h : 0 ≤ r) : Complex.abs r = r :=
 
 theorem abs_of_nat (n : ℕ) : Complex.abs n = n :=
   calc
-    Complex.abs n = Complex.abs (n : ℝ) := by rw [ofReal_nat_cast]
+    Complex.abs n = Complex.abs (n : ℝ) := by rw [ofReal_natCast]
     _ = _ := Complex.abs_of_nonneg (Nat.cast_nonneg n)
 
 #align complex.abs_of_nat Complex.abs_of_nat
@@ -1124,13 +1124,13 @@ theorem abs_im_div_abs_le_one (z : ℂ) : |z.im / Complex.abs z| ≤ 1 :=
 -- Porting note: removed `norm_cast` attribute because the RHS can't start with `↑`
 @[simp]
 theorem abs_cast_nat (n : ℕ) : Complex.abs (n : ℂ) = n := by
-  rw [← ofReal_nat_cast, abs_of_nonneg (Nat.cast_nonneg n)]
+  rw [← ofReal_natCast, abs_of_nonneg (Nat.cast_nonneg n)]
 #align complex.abs_cast_nat Complex.abs_cast_nat
 
 @[simp, norm_cast]
-theorem int_cast_abs (n : ℤ) : (|↑n|) = Complex.abs n := by
-  rw [← ofReal_int_cast, abs_ofReal]
-#align complex.int_cast_abs Complex.int_cast_abs
+theorem intCast_abs (n : ℤ) : (|↑n|) = Complex.abs n := by
+  rw [← ofReal_intCast, abs_ofReal]
+#align complex.int_cast_abs Complex.intCast_abs
 
 theorem normSq_eq_abs (x : ℂ) : normSq x = (Complex.abs x) ^ 2 := by
   simp [abs, sq, abs_def, Real.mul_self_sqrt (normSq_nonneg _)]
