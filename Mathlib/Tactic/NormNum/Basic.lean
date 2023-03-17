@@ -69,7 +69,6 @@ theorem isNat_intOfNat : {n n' : ℕ} → IsNat n n' → IsNat (Int.ofNat n) n'
 
 /-! # Casts -/
 
-@[to_additive_fixed_numeral 3 4]
 theorem isNat_cast {R} [AddMonoidWithOne R] (n m : ℕ) :
     IsNat n m → IsNat (n : R) m := by rintro ⟨⟨⟩⟩; exact ⟨rfl⟩
 
@@ -140,7 +139,6 @@ recognizes `q`, returning the cast of `q`. -/
 
 /-! # Arithmetic -/
 
-@[to_additive_fixed_numeral 5 6 7 10]
 theorem isNat_add {α} [AddMonoidWithOne α] : {a b : α} → {a' b' c : ℕ} →
     IsNat a a' → IsNat b b' → Nat.add a' b' = c → IsNat (a + b) c
   | _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨(Nat.cast_add _ _).symm⟩
