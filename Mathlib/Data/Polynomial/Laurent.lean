@@ -424,8 +424,8 @@ set_option linter.uppercaseLean3 false in
 section Support
 
 theorem support_C_mul_T (a : R) (n : ℤ) : Finsupp.support (C a * T n) ⊆ {n} := by
-  simp only [← single_eq_C_mul_T]
-  simp [support_single_subset]
+  rw [← single_eq_C_mul_T]
+  exact support_single_subset
 set_option linter.uppercaseLean3 false in
 #align laurent_polynomial.support_C_mul_T LaurentPolynomial.support_C_mul_T
 
