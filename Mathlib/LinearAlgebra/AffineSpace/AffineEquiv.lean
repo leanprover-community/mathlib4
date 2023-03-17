@@ -15,22 +15,22 @@ import Mathlib.Algebra.Invertible
 /-!
 # Affine equivalences
 
-In this file we define `affine_equiv k P₁ P₂` (notation: `P₁ ≃ᵃ[k] P₂`) to be the type of affine
+In this file we define `AffineEquiv k P₁ P₂` (notation: `P₁ ≃ᵃ[k] P₂`) to be the type of affine
 equivalences between `P₁` and `P₂`, i.e., equivalences such that both forward and inverse maps are
 affine maps.
 
 We define the following equivalences:
 
-* `affine_equiv.refl k P`: the identity map as an `affine_equiv`;
+* `AffineEquiv.refl k P`: the identity map as an `AffineEquiv`;
 
-* `e.symm`: the inverse map of an `affine_equiv` as an `affine_equiv`;
+* `e.symm`: the inverse map of an `AffineEquiv` as an `AffineEquiv`;
 
-* `e.trans e'`: composition of two `affine_equiv`s; note that the order follows `mathlib`'s
+* `e.trans e'`: composition of two `AffineEquiv`s; note that the order follows `mathlib`'s
   `category_theory` convention (apply `e`, then `e'`), not the convention used in function
   composition and compositions of bundled morphisms.
 
-We equip `affine_equiv k P P` with a `group` structure with multiplication corresponding to
-composition in `affine_equiv.group`.
+We equip `AffineEquiv k P P` with a `Group` structure with multiplication corresponding to
+composition in `AffineEquiv.group`.
 
 ## Tags
 
@@ -45,7 +45,7 @@ open Affine
 /-- An affine equivalence is an equivalence between affine spaces such that both forward
 and inverse maps are affine.
 
-We define it using an `equiv` for the map and a `linear_equiv` for the linear part in order
+We define it using an `Equiv` for the map and a `LinearEquiv` for the linear part in order
 to allow affine equivalences with good definitional equalities. -/
 @[nolint has_nonempty_instance]
 structure AffineEquiv (k P₁ P₂ : Type _) {V₁ V₂ : Type _} [Ring k] [AddCommGroup V₁] [Module k V₁]
@@ -65,7 +65,7 @@ namespace AffineEquiv
 
 include V₁ V₂
 
-/-- Reinterpret an `affine_equiv` as an `affine_map`. -/
+/-- Reinterpret an `AffineEquiv` as an `AffineMap`. -/
 def toAffineMap (e : P₁ ≃ᵃ[k] P₂) : P₁ →ᵃ[k] P₂ :=
   { e with }
 #align affine_equiv.to_affine_map AffineEquiv.toAffineMap
@@ -290,7 +290,7 @@ variable (k P₁)
 
 omit V₂
 
-/-- Identity map as an `affine_equiv`. -/
+/-- Identity map as an `AffineEquiv`. -/
 @[refl]
 def refl : P₁ ≃ᵃ[k] P₁ where
   toEquiv := Equiv.refl P₁
@@ -332,7 +332,7 @@ variable {k P₁}
 
 include V₂ V₃
 
-/-- Composition of two `affine_equiv`alences, applied left to right. -/
+/-- Composition of two `AffineEquiv`alences, applied left to right. -/
 @[trans]
 def trans (e : P₁ ≃ᵃ[k] P₂) (e' : P₂ ≃ᵃ[k] P₃) : P₁ ≃ᵃ[k] P₃
     where
@@ -427,7 +427,7 @@ theorem inv_def (e : P₁ ≃ᵃ[k] P₁) : e⁻¹ = e.symm :=
   rfl
 #align affine_equiv.inv_def AffineEquiv.inv_def
 
-/-- `affine_equiv.linear` on automorphisms is a `monoid_hom`. -/
+/-- `affine_equiv.linear` on automorphisms is a `MonoidHom`. -/
 @[simps]
 def linearHom : (P₁ ≃ᵃ[k] P₁) →* V₁ ≃ₗ[k] V₁
     where
@@ -436,9 +436,9 @@ def linearHom : (P₁ ≃ᵃ[k] P₁) →* V₁ ≃ₗ[k] V₁
   map_mul' _ _ := rfl
 #align affine_equiv.linear_hom AffineEquiv.linearHom
 
-/-- The group of `affine_equiv`s are equivalent to the group of units of `affine_map`.
+/-- The group of `AffineEquiv`s are equivalent to the group of units of `AffineMap`.
 
-This is the affine version of `linear_map.general_linear_group.general_linear_equiv`. -/
+This is the affine version of `LinearMap.GeneralLinearGroup.generalLinearEquiv`. -/
 @[simps]
 def equivUnitsAffineMap : (P₁ ≃ᵃ[k] P₁) ≃* (P₁ →ᵃ[k] P₁)ˣ
     where
@@ -491,7 +491,7 @@ variable (P₁)
 /-- The map `p ↦ v +ᵥ p` as an affine automorphism of an affine space.
 
 Note that there is no need for an `affine_map.const_vadd` as it is always an equivalence.
-This is roughly to `distrib_mul_action.to_linear_equiv` as `+ᵥ` is to `•`. -/
+This is roughly to `DistribMulAction.toLinearEquiv` as `+ᵥ` is to `•`. -/
 @[simps apply linear]
 def constVadd (v : V₁) : P₁ ≃ᵃ[k] P₁
     where
@@ -516,7 +516,7 @@ theorem constVadd_symm (v : V₁) : (constVadd k P₁ v).symm = constVadd k P₁
   ext fun _ => rfl
 #align affine_equiv.const_vadd_symm AffineEquiv.constVadd_symm
 
-/-- A more bundled version of `affine_equiv.const_vadd`. -/
+/-- A more bundled version of `AffineEquiv.constVadd`. -/
 @[simps]
 def constVaddHom : Multiplicative V₁ →* P₁ ≃ᵃ[k] P₁
     where
