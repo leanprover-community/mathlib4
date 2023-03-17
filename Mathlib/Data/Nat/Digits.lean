@@ -450,7 +450,7 @@ theorem pow_length_le_mul_ofDigits {b : ℕ} {l : List ℕ} (hl : l ≠ []) (hl2
   apply Nat.mul_le_mul_left
   refine' le_trans _ (Nat.le_add_left _ _)
   have : 0 < l.getLast hl := by rwa [pos_iff_ne_zero]
-  convert Nat.mul_le_mul_left ((b + 2) ^ (l.length - 1)) this
+  convert Nat.mul_le_mul_left ((b + 2) ^ (l.length - 1)) this using 1
   rw [Nat.mul_one]
 #align nat.pow_length_le_mul_of_digits Nat.pow_length_le_mul_ofDigits
 
@@ -502,7 +502,7 @@ theorem dvd_ofDigits_sub_ofDigits {α : Type _} [CommRing α] {a b k : α} (h : 
     exact dvd_mul_sub_mul h ih
 #align nat.dvd_of_digits_sub_of_digits Nat.dvd_ofDigits_sub_ofDigits
 
-theorem ofDigits_modeq' (b b' : ℕ) (k : ℕ) (h : b ≡ b' [MOD k]) (L : List ℕ) :
+theorem ofDigits_modEq' (b b' : ℕ) (k : ℕ) (h : b ≡ b' [MOD k]) (L : List ℕ) :
     ofDigits b L ≡ ofDigits b' L [MOD k] := by
   induction' L with d L ih
   · rfl
@@ -510,10 +510,10 @@ theorem ofDigits_modeq' (b b' : ℕ) (k : ℕ) (h : b ≡ b' [MOD k]) (L : List 
     dsimp [Nat.ModEq] at *
     conv_lhs => rw [Nat.add_mod, Nat.mul_mod, h, ih]
     conv_rhs => rw [Nat.add_mod, Nat.mul_mod]
-#align nat.of_digits_modeq' Nat.ofDigits_modeq'
+#align nat.of_digits_modeq' Nat.ofDigits_modEq'
 
 theorem ofDigits_modEq (b k : ℕ) (L : List ℕ) : ofDigits b L ≡ ofDigits (b % k) L [MOD k] :=
-  ofDigits_modeq' b (b % k) k (b.mod_modEq k).symm L
+  ofDigits_modEq' b (b % k) k (b.mod_modEq k).symm L
 #align nat.of_digits_modeq Nat.ofDigits_modEq
 
 theorem ofDigits_mod (b k : ℕ) (L : List ℕ) : ofDigits b L % k = ofDigits (b % k) L % k :=
@@ -544,7 +544,8 @@ theorem modEq_digits_sum (b b' : ℕ) (h : b' % b = 1) (n : ℕ) : n ≡ (digits
     congr
     · skip
     · rw [← ofDigits_digits b' n]
-  convert ofDigits_modEq b' b (digits b' n) <;> exact h.symm
+  convert ofDigits_modEq b' b (digits b' n)
+  exact h.symm
 #align nat.modeq_digits_sum Nat.modEq_digits_sum
 
 theorem modEq_three_digits_sum (n : ℕ) : n ≡ (digits 10 n).sum [MOD 3] :=
