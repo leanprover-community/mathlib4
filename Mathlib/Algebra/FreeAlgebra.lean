@@ -10,6 +10,7 @@ Authors: Scott Morrison, Adam Topaz
 -/
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.Algebra.MonoidAlgebra.Basic
+import Mathlib.Algebra.Free
 
 /-!
 # Free Algebras
@@ -370,11 +371,11 @@ theorem lift_comp_ι (g : FreeAlgebra R X →ₐ[R] A) : lift R ((g : FreeAlgebr
 #align free_algebra.lift_comp_ι FreeAlgebra.lift_comp_ι
 
 /-- See note [partially-applied ext lemmas]. -/
-@[ext]
+@[ext high]
 theorem hom_ext {f g : FreeAlgebra R X →ₐ[R] A}
     (w : (f : FreeAlgebra R X → A) ∘ ι R = (g : FreeAlgebra R X → A) ∘ ι R) : f = g := by
   rw [← lift_symm_apply, ← lift_symm_apply] at w
-  exact (lift R).symm.Injective w
+  exact (lift R).symm.injective w
 #align free_algebra.hom_ext FreeAlgebra.hom_ext
 
 /-- The free algebra on `X` is "just" the monoid algebra on the free monoid on `X`.
@@ -388,7 +389,7 @@ noncomputable def equivMonoidAlgebraFreeMonoid :
     ((MonoidAlgebra.lift R (FreeMonoid X) (FreeAlgebra R X)) (FreeMonoid.lift (ι R)))
     (by
       apply MonoidAlgebra.algHom_ext; intro x
-      apply FreeMonoid.recOn x
+      refine FreeMonoid.recOn x ?_ ?_
       · simp
         rfl
       · intro x y ih
@@ -400,7 +401,7 @@ noncomputable def equivMonoidAlgebraFreeMonoid :
 #align free_algebra.equiv_monoid_algebra_free_monoid FreeAlgebra.equivMonoidAlgebraFreeMonoid
 
 instance [Nontrivial R] : Nontrivial (FreeAlgebra R X) :=
-  equivMonoidAlgebraFreeMonoid.Surjective.Nontrivial
+  equivMonoidAlgebraFreeMonoid.surjective.nontrivial
 
 section
 
@@ -411,23 +412,23 @@ def algebraMapInv : FreeAlgebra R X →ₐ[R] R :=
 
 theorem algebraMap_leftInverse :
     Function.LeftInverse algebraMapInv (algebraMap R <| FreeAlgebra R X) := fun x ↦ by
-  simp [algebra_map_inv]
+  simp [algebraMapInv]
 #align free_algebra.algebra_map_left_inverse FreeAlgebra.algebraMap_leftInverse
 
 @[simp]
 theorem algebraMap_inj (x y : R) :
     algebraMap R (FreeAlgebra R X) x = algebraMap R (FreeAlgebra R X) y ↔ x = y :=
-  algebraMap_leftInverse.Injective.eq_iff
+  algebraMap_leftInverse.injective.eq_iff
 #align free_algebra.algebra_map_inj FreeAlgebra.algebraMap_inj
 
 @[simp]
 theorem algebraMap_eq_zero_iff (x : R) : algebraMap R (FreeAlgebra R X) x = 0 ↔ x = 0 :=
-  map_eq_zero_iff (algebraMap _ _) algebraMap_leftInverse.Injective
+  map_eq_zero_iff (algebraMap _ _) algebraMap_leftInverse.injective
 #align free_algebra.algebra_map_eq_zero_iff FreeAlgebra.algebraMap_eq_zero_iff
 
 @[simp]
 theorem algebraMap_eq_one_iff (x : R) : algebraMap R (FreeAlgebra R X) x = 1 ↔ x = 1 :=
-  map_eq_one_iff (algebraMap _ _) algebraMap_leftInverse.Injective
+  map_eq_one_iff (algebraMap _ _) algebraMap_leftInverse.injective
 #align free_algebra.algebra_map_eq_one_iff FreeAlgebra.algebraMap_eq_one_iff
 
 -- this proof is copied from the approach in `FreeAbelianGroup.of_injective`
@@ -489,15 +490,15 @@ theorem induction {C : FreeAlgebra R X → Prop}
   -- the arguments are enough to construct a subalgebra, and a mapping into it from X
   let s : Subalgebra R (FreeAlgebra R X) :=
     { carrier := C
-      mul_mem' := h_mul
-      add_mem' := h_add
+      mul_mem' := h_mul _ _
+      add_mem' := h_add _ _
       algebraMap_mem' := h_grade0 }
   let of : X → s := Subtype.coind (ι R) h_grade1
   -- the mapping through the subalgebra is the identity
   have of_id : AlgHom.id R (FreeAlgebra R X) = s.val.comp (lift R of) :=
     by
     ext
-    simp [of, Subtype.coind]
+    simp [Subtype.coind]
   -- finding a proof is finding an element of the subalgebra
   convert Subtype.prop (lift R of a)
   simp [AlgHom.ext_iff] at of_id
