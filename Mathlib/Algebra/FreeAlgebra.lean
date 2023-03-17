@@ -234,7 +234,7 @@ theorem quot_mk_eq_ι (m : X) : Quot.mk (FreeAlgebra.Rel R X) m = ι R m := by r
 variable {A : Type _} [Semiring A] [Algebra R A]
 
 /-- Internal definition used to define `lift` -/
--- Porting note: add noncomputable since liftFun is also noncomputable now
+-- Porting note: add noncomputable since liftFun is also noncomputable
 private noncomputable def liftAux (f : X → A) : FreeAlgebra R X →ₐ[R] A
     where
   toFun a :=
@@ -291,7 +291,7 @@ private noncomputable def liftAux (f : X → A) : FreeAlgebra R X →ₐ[R] A
 /-- Given a function `f : X → A` where `A` is an `R`-algebra, `lift R f` is the unique lift
 of `f` to a morphism of `R`-algebras `FreeAlgebra R X → A`.
 -/
--- Porting note: add noncomputable since LiftFun is also noncomputable now and changed
+-- Porting note: add noncomputable since liftFun is also noncomputable and changed
 -- irreducible_def to def since it does not work with noncomputable
 noncomputable def lift : (X → A) ≃ (FreeAlgebra R X →ₐ[R] A) :=
   { toFun := liftAux R
@@ -311,12 +311,16 @@ noncomputable def lift : (X → A) ≃ (FreeAlgebra R X →ₐ[R] A) :=
         change algebraMap _ _ x = F (algebraMap _ _ x)
         rw [AlgHom.commutes F _]
       case add a b ha hb =>
-        sorry
-        change liftAux R (F ∘ ι R) (Quot.mk _ _ + Quot.mk _ _) = F (Quot.mk _ _ + Quot.mk _ _)
+        -- Porting note: it is necessary to declare fa and fb explicitely otherwise Lean refuses
+        -- to consider Quot.mk (Rel R X) * as element of FreeAlgebra R X
+        let fa : FreeAlgebra R X := Quot.mk (Rel R X) a
+        let fb : FreeAlgebra R X := Quot.mk (Rel R X) b
+        change liftAux R (F ∘ ι R) (fa + fb) = F (fa + fb)
         rw [AlgHom.map_add, AlgHom.map_add, ha, hb]
       case mul a b ha hb =>
-        sorry
-        change liftAux R (F ∘ ι R) (Quot.mk _ _ * Quot.mk _ _) = F (Quot.mk _ _ * Quot.mk _ _)
+        let fa : FreeAlgebra R X := Quot.mk (Rel R X) a
+        let fb : FreeAlgebra R X := Quot.mk (Rel R X) b
+        change liftAux R (F ∘ ι R) (fa * fb) = F (fa * fb)
         rw [AlgHom.map_mul, AlgHom.map_mul, ha, hb] }
 #align free_algebra.lift FreeAlgebra.lift
 
@@ -406,7 +410,8 @@ instance [Nontrivial R] : Nontrivial (FreeAlgebra R X) :=
 section
 
 /-- The left-inverse of `algebraMap`. -/
-def algebraMapInv : FreeAlgebra R X →ₐ[R] R :=
+-- Porting note: add noncomputable since liftFun is also noncomputable
+noncomputable def algebraMapInv : FreeAlgebra R X →ₐ[R] R :=
   lift R (0 : X → R)
 #align free_algebra.algebra_map_inv FreeAlgebra.algebraMapInv
 
