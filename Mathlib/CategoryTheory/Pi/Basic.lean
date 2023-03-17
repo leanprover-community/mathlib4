@@ -29,8 +29,7 @@ variable {I : Type w₀} {J : Type w₁} (C : I → Type u₁) [∀ i, Category.
 
 /-- `pi C` gives the cartesian product of an indexed family of categories.
 -/
-instance pi : Category.{max w₀ v₁} (∀ i, C i)
-    where
+instance pi : Category.{max w₀ v₁} (∀ i, C i) where
   Hom X Y := ∀ i, X i ⟶ Y i
   id X i := 𝟙 (X i)
   comp f g i := f i ≫ g i
@@ -71,18 +70,17 @@ section
 
 variable {J : Type w₁}
 
-/- Porting note: add this because Lean cannot see directly through the `∘` for 
+/- Porting note: add this because Lean cannot see directly through the `∘` for
 `Function.comp` -/
 
-instance (f : J → I) : (j : J) → Category ((C ∘ f) j) := by 
+instance (f : J → I) : (j : J) → Category ((C ∘ f) j) := by
   dsimp
-  infer_instance 
+  infer_instance
 
 /-- Pull back an `I`-indexed family of objects to an `J`-indexed family, along a function `J → I`.
 -/
 @[simps]
-def comap (h : J → I) : (∀ i, C i) ⥤  (∀ j, C (h j))
-    where
+def comap (h : J → I) : (∀ i, C i) ⥤  (∀ j, C (h j)) where
   obj f i := f (h i)
   map α i := α (h i)
 #align category_theory.pi.comap CategoryTheory.Pi.comap
@@ -93,13 +91,12 @@ variable (I)
 pulling back a grading along the identity function,
 and the identity functor. -/
 @[simps]
-def comapId : comap C (id : I → I) ≅ 𝟭 (∀ i, C i)
-    where
+def comapId : comap C (id : I → I) ≅ 𝟭 (∀ i, C i) where
   hom := { app := fun X => 𝟙 X, naturality := by simp only [comap]; aesop_cat}
   inv := { app := fun X => 𝟙 X }
 #align category_theory.pi.comap_id CategoryTheory.Pi.comapId
 
-example (g : J → I) : (j : J) → Category (C (g j)) := by infer_instance 
+example (g : J → I) : (j : J) → Category (C (g j)) := by infer_instance
 
 variable {I}
 
@@ -110,21 +107,20 @@ pulling back along two successive functions, and
 pulling back along their composition
 -/
 @[simps!]
-def comapComp (f : K → J) (g : J → I) : comap C g ⋙ comap (C ∘ g) f ≅ comap C (g ∘ f)
-    where
-  hom := { 
-    app := fun X b => 𝟙 (X (g (f b))) 
-    naturality := fun X Y f' => by simp only [comap,Function.comp]; funext; simp
-    }
-  inv := { 
+def comapComp (f : K → J) (g : J → I) : comap C g ⋙ comap (C ∘ g) f ≅ comap C (g ∘ f) where
+  hom := {
     app := fun X b => 𝟙 (X (g (f b)))
     naturality := fun X Y f' => by simp only [comap,Function.comp]; funext; simp
     }
-  hom_inv_id := by 
-    simp only [comap] 
-    ext Y 
+  inv := {
+    app := fun X b => 𝟙 (X (g (f b)))
+    naturality := fun X Y f' => by simp only [comap,Function.comp]; funext; simp
+    }
+  hom_inv_id := by
+    simp only [comap]
+    ext Y
     simp [CategoryStruct.comp,CategoryStruct.id]
-  inv_hom_id := by 
+  inv_hom_id := by
     simp only [comap]
     ext X
     simp [CategoryStruct.comp,CategoryStruct.id]
@@ -143,51 +139,49 @@ section
 variable {J : Type w₀} {D : J → Type u₁} [∀ j, Category.{v₁} (D j)]
 
 /- Porting note: maybe mixing up universes -/
-set_option align.precheck false
-instance sumElimCategoryₓ : ∀ s : Sum I J, Category.{v₁} (Sum.elim C D s)
+instance sumElimCategory : ∀ s : Sum I J, Category.{v₁} (Sum.elim C D s)
   | Sum.inl i => by
     dsimp
     infer_instance
   | Sum.inr j => by
     dsimp
     infer_instance
-#align category_theory.pi.sum_elim_category CategoryTheory.Pi.sumElimCategoryₓ 
+#align category_theory.pi.sum_elim_category CategoryTheory.Pi.sumElimCategoryₓ
 
-/- Porting note: replaced `Sum.rec` with `match`'s per the error about 
-current state of code generation -/ 
+/- Porting note: replaced `Sum.rec` with `match`'s per the error about
+current state of code generation -/
 
 /-- The bifunctor combining an `I`-indexed family of objects with a `J`-indexed family of objects
 to obtain an `I ⊕ J`-indexed family of objects.
 -/
 @[simps]
-def sum : (∀ i, C i) ⥤ (∀ j, D j) ⥤ ∀ s : Sum I J, Sum.elim C D s
-    where
+def sum : (∀ i, C i) ⥤ (∀ j, D j) ⥤ ∀ s : Sum I J, Sum.elim C D s where
   obj X :=
-    { obj := fun Y s => 
-        match s with 
-        | .inl i => X i 
+    { obj := fun Y s =>
+        match s with
+        | .inl i => X i
         | .inr j => Y j
-      map := fun {Y} {Y'} f s => 
-        match s with 
-        | .inl i => 𝟙 (X i) 
+      map := fun {Y} {Y'} f s =>
+        match s with
+        | .inl i => 𝟙 (X i)
         | .inr j => f j
-      map_id := fun Y => by 
+      map_id := fun Y => by
           dsimp
           simp only [CategoryStruct.id]
-          funext s 
-          match s with 
-          | .inl i => simp 
-          | .inr j => simp 
+          funext s
+          match s with
+          | .inl i => simp
+          | .inr j => simp
       map_comp := fun {Y₁} {Y₂} {Y₃} f g => by funext s; cases s; repeat {simp} }
-  map {X} {X'} f := 
-    { app := fun Y s => 
-        match s with 
-        | .inl i => f i 
-        | .inr j => 𝟙 (Y j) 
+  map {X} {X'} f :=
+    { app := fun Y s =>
+        match s with
+        | .inl i => f i
+        | .inr j => 𝟙 (Y j)
       naturality := fun {Y} {Y'} g => by funext s; cases s; repeat {simp} }
-  map_id := fun X => by 
+  map_id := fun X => by
     ext Y; dsimp; simp only [CategoryStruct.id]; funext s; cases s; repeat {simp}
-  map_comp := fun f g => by 
+  map_comp := fun f g => by
     ext Y; dsimp; simp only [CategoryStruct.comp]; funext s; cases s; repeat {simp}
 #align category_theory.pi.sum CategoryTheory.Pi.sum
 
@@ -234,8 +228,7 @@ variable {D : I → Type u₁} [∀ i, Category.{v₁} (D i)] {A : Type u₁} [C
 /-- Assemble an `I`-indexed family of functors into a functor between the pi types.
 -/
 @[simps]
-def pi (F : ∀ i, C i ⥤ D i) : (∀ i, C i) ⥤ ∀ i, D i
-    where
+def pi (F : ∀ i, C i ⥤ D i) : (∀ i, C i) ⥤ ∀ i, D i where
   obj f i := (F i).obj (f i)
   map α i := (F i).map (α i)
 #align category_theory.functor.pi CategoryTheory.Functor.pi
@@ -243,8 +236,7 @@ def pi (F : ∀ i, C i ⥤ D i) : (∀ i, C i) ⥤ ∀ i, D i
 /-- Similar to `pi`, but all functors come from the same category `A`
 -/
 @[simps]
-def pi' (f : ∀ i, A ⥤ C i) : A ⥤ ∀ i, C i
-    where
+def pi' (f : ∀ i, A ⥤ C i) : A ⥤ ∀ i, C i where
   obj a i := (f i).obj a
   map h i := (f i).map h
 #align category_theory.functor.pi' CategoryTheory.Functor.pi'
@@ -264,15 +256,15 @@ end EqToHom
 -- how `Functor.pi` commutes with `Pi.eval` and `Pi.comap`.
 @[simp]
 theorem pi'_eval (f : ∀ i, A ⥤ C i) (i : I) : pi' f ⋙  Pi.eval C i = f i := by
-  apply Functor.ext 
-  intro _ _ _ 
-  · simp 
-  · intro _ 
-    rfl 
+  apply Functor.ext
+  intro _ _ _
+  · simp
+  · intro _
+    rfl
 #align category_theory.functor.pi'_eval CategoryTheory.Functor.pi'_eval
 
 /-- Two functors to a product category are equal iff they agree on every coordinate. -/
-theorem pi_ext (f f' : A ⥤ ∀ i, C i) (h : ∀ i, f ⋙  (Pi.eval C i) = f' ⋙  (Pi.eval C i)) 
+theorem pi_ext (f f' : A ⥤ ∀ i, C i) (h : ∀ i, f ⋙ (Pi.eval C i) = f' ⋙ (Pi.eval C i))
     : f = f' := by
   apply Functor.ext; rotate_left
   · intro X
@@ -281,7 +273,7 @@ theorem pi_ext (f f' : A ⥤ ∀ i, C i) (h : ∀ i, f ⋙  (Pi.eval C i) = f' �
     have := congr_obj h X
     simpa
   · intro X Y g
-    dsimp 
+    dsimp
     funext i
     specialize h i
     have := congr_hom h g
@@ -301,8 +293,8 @@ variable {F G : ∀ i, C i ⥤ D i}
 /-- Assemble an `I`-indexed family of natural transformations into a single natural transformation.
 -/
 @[simps!]
-def pi (α : ∀ i, F i ⟶ G i) : Functor.pi F ⟶ Functor.pi G where 
-  app f i := (α i).app (f i) 
+def pi (α : ∀ i, F i ⟶ G i) : Functor.pi F ⟶ Functor.pi G where
+  app f i := (α i).app (f i)
   naturality := fun X Y f => by simp [Functor.pi,CategoryStruct.comp]
 #align category_theory.nat_trans.pi CategoryTheory.NatTrans.pi
 

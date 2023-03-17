@@ -20,12 +20,11 @@ of length `n`.
 
 ## Main Statements
 
-The main statements pertain to lists generated using `of_fn`
+The main statements pertain to lists generated using `List.ofFn`
 
 - `List.length_ofFn`, which tells us the length of such a list
-- `List.nth_ofFn`, which tells us the nth element of such a list
-- `List.array_eq_ofFn`, which interprets the list form of an array as such a list.
-- `List.equiv_sigma_tuple`, which is an `Equiv` between lists and the functions that generate them
+- `List.get?_ofFn`, which tells us the nth element of such a list
+- `List.equivSigmaTuple`, which is an `Equiv` between lists and the functions that generate them
   via `List.ofFn`.
 -/
 
@@ -245,13 +244,13 @@ theorem ofFn_fin_repeat {m} (a : Fin m → α) (n : ℕ) :
 @[simp]
 theorem pairwise_ofFn {R : α → α → Prop} {n} {f : Fin n → α} :
     (ofFn f).Pairwise R ↔ ∀ ⦃i j⦄, i < j → R (f i) (f j) := by
-  simp only [pairwise_iff_nth_le, Fin.forall_iff, length_of_fn, nth_le_of_fn', Fin.mk_lt_mk]
-  exact ⟨fun h i hi j hj hij => h _ _ hj hij, fun h i j hj hij => h _ (hij.trans hj) _ hj hij⟩
+  simp only [pairwise_iff_get, (Fin.cast (length_ofFn f)).surjective.forall, get_ofFn,
+    OrderIso.lt_iff_lt]
+#align list.pairwise_of_fn List.pairwise_ofFn
 
 /-- Lists are equivalent to the sigma type of tuples of a given length. -/
 @[simps]
-def equivSigmaTuple : List α ≃ Σn, Fin n → α
-    where
+def equivSigmaTuple : List α ≃ Σn, Fin n → α where
   toFun l := ⟨l.length, l.get⟩
   invFun f := List.ofFn f.2
   left_inv := List.ofFn_get

@@ -452,7 +452,7 @@ theorem support_swap_mul_swap {x y z : α} (h : List.Nodup [x, y, z]) :
     List.mem_singleton, and_self_iff, List.nodup_nil] at h
   push_neg  at h
   apply le_antisymm
-  · convert support_mul_le (swap x y) (swap y z)
+  · convert support_mul_le (swap x y) (swap y z) using 1
     rw [support_swap h.left.left, support_swap h.right.left]
     simp only [sup_eq_union]
     simp only [mem_singleton, mem_insert, union_insert, insert_union, mem_union, true_or, or_true,
