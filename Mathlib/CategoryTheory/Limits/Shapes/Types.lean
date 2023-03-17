@@ -380,7 +380,7 @@ theorem coproductIso_ι_comp_hom {J : Type u} (F : J → Type u) (j : J) :
 #align category_theory.limits.types.coproduct_iso_ι_comp_hom CategoryTheory.Limits.Types.coproductIso_ι_comp_hom
 
 -- porting note: was @[elementwise (attr := simp)], but it produces a trivial lemma
-@[simp]
+-- removed simp attribute because it seems it never applies
 theorem coproductIso_mk_comp_inv {J : Type u} (F : J → Type u) (j : J) :
     (↾fun x : F j => (⟨j, x⟩ : Σj, F j)) ≫ (coproductIso F).inv = Sigma.ι F j :=
   rfl
