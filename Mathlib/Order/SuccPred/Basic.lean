@@ -1213,7 +1213,7 @@ theorem succ_unbot :
     ∀ (a : WithBot α) (ha : a ≠ ⊥),
       succ (a.unbot ha) = (succ a).unbot (by induction a using WithBot.recBotCoe <;> simp)
   | ⊥, ha => (ha rfl).elim
-  | (a : α), ha => rfl
+  | (a : α), _ => rfl
 #align with_bot.succ_unbot WithBot.succ_unbot
 
 end Succ
@@ -1334,7 +1334,7 @@ theorem pred_untop :
     ∀ (a : WithTop α) (ha : a ≠ ⊤),
       pred (a.untop ha) = (pred a).untop (by induction a using WithTop.recTopCoe <;> simp)
   | ⊤, ha => (ha rfl).elim
-  | (a : α), ha => rfl
+  | (a : α), _ => rfl
 #align with_top.pred_untop WithTop.pred_untop
 
 end Pred
