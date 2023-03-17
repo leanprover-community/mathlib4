@@ -1756,6 +1756,7 @@ theorem IsCycle.isConj (hσ : IsCycle σ) (hτ : IsCycle τ) (h : σ.support.car
   apply (congr rfl (congr rfl (congr rfl (hσ.zpowersEquivSupport_symm_apply (n + 1))))).trans _
   simp only [Ne.def, IsCycle.zpowersEquivSupport_apply, Subtype.coe_mk,
     zpowersEquivZpowers_apply]
+  dsimp
   rw [pow_succ, Perm.mul_apply]
 #align equiv.perm.is_cycle.is_conj Equiv.Perm.IsCycle.isConj
 
