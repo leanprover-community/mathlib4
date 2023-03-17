@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 
 ! This file was ported from Lean 3 source module algebra.char_zero.lemmas
-! leanprover-community/mathlib commit 9116dd6709f303dcf781632e15fdef382b0fc579
+! leanprover-community/mathlib commit acee671f47b8e7972a1eb6f4eed74b4b3abce829
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
