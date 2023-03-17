@@ -160,24 +160,6 @@ theorem binaryProductIso_hom_comp_fst (X Y : Type u) :
   limit.isoLimitCone_hom_π (binaryProductLimitCone X Y) ⟨WalkingPair.left⟩
 #align category_theory.limits.types.binary_product_iso_hom_comp_fst CategoryTheory.Limits.Types.binaryProductIso_hom_comp_fst
 
-/- porting note
-
-the simpNF linter complains about the following lemma produced by elementwise
-
-lemma binaryProductIso_hom_comp_fst_apply (X Y : Type u) (x : limit (pair X Y)) :
-  NatTrans.app (binaryProductLimitCone X Y).cone.π { as := left }
-      (Iso.hom (limit.isoLimitCone (binaryProductLimitCone X Y)) x) =
-    limit.π (pair X Y) { as := left } x := by
-    sorry
-
-it should simplify to the following, about which the linter would not complain:
-
-lemma binaryProductIso_hom_comp_fst_apply' (X Y : Type u) (x : limit (pair X Y)) :
-      (Iso.hom (limit.isoLimitCone (binaryProductLimitCone X Y)) x).fst =
-    limit.π (pair X Y) { as := left } x := by
-      sorry
--/
-
 @[elementwise (attr := simp)]
 theorem binaryProductIso_hom_comp_snd (X Y : Type u) :
     (binaryProductIso X Y).hom ≫ _root_.Prod.snd = Limits.prod.snd :=
@@ -356,9 +338,8 @@ noncomputable def productIso {J : Type u} (F : J → Type max u v) :
   haveI : HasProduct F := hasLimit.{u,v} _; limit.isoLimitCone (productLimitCone.{u, v} F)
 #align category_theory.limits.types.product_iso CategoryTheory.Limits.Types.productIso
 
--- porting note: should be @[elementwise (attr := simp)], but the lemma
--- `productIso_hom_comp_eval_apply` is just `True`
-@[elementwise]
+-- porting note: was `@[elementwise (attr := simp)]`, but it produces a trivial lemma.
+@[simp]
 theorem productIso_hom_comp_eval {J : Type u} (F : J → Type max u v) (j : J) :
      haveI : HasProduct F := hasLimit.{u,v} _;
     ((productIso.{u, v} F).hom ≫ fun f => f j) = Pi.π F j :=
@@ -398,9 +379,8 @@ theorem coproductIso_ι_comp_hom {J : Type u} (F : J → Type u) (j : J) :
   colimit.isoColimitCocone_ι_hom (coproductColimitCocone F) ⟨j⟩
 #align category_theory.limits.types.coproduct_iso_ι_comp_hom CategoryTheory.Limits.Types.coproductIso_ι_comp_hom
 
--- porting note: should be @[elementwise (attr := simp)], but the lemma
--- `coproductIso_mk_comp_inv_apply` is just `True`
-@[elementwise]
+-- porting note: was @[elementwise (attr := simp)], but it produces a trivial lemma
+@[simp]
 theorem coproductIso_mk_comp_inv {J : Type u} (F : J → Type u) (j : J) :
     (↾fun x : F j => (⟨j, x⟩ : Σj, F j)) ≫ (coproductIso F).inv = Sigma.ι F j :=
   rfl
@@ -465,15 +445,11 @@ noncomputable def equalizerIso : equalizer g h ≅ { x : Y // g x = h x } :=
   limit.isoLimitCone equalizerLimit
 #align category_theory.limits.types.equalizer_iso CategoryTheory.Limits.Types.equalizerIso
 
-@[elementwise]
+-- porting note: was @[elementwise], but it produces a trivial lemma
+@[simp]
 theorem equalizerIso_hom_comp_subtype : (equalizerIso g h).hom ≫ Subtype.val = equalizer.ι g h := by
   rfl
 #align category_theory.limits.types.equalizer_iso_hom_comp_subtype CategoryTheory.Limits.Types.equalizerIso_hom_comp_subtype
-
-attribute [simp] equalizerIso_hom_comp_subtype equalizerIso_hom_comp_subtype_apply
-
--- the following lemmas simplifies to True
-#check equalizerIso_hom_comp_subtype_apply
 
 @[elementwise (attr := simp)]
 theorem equalizerIso_inv_comp_ι : (equalizerIso g h).inv ≫ equalizer.ι g h = Subtype.val :=
@@ -549,16 +525,12 @@ theorem coequalizerIso_π_comp_hom :
   colimit.isoColimitCocone_ι_hom (coequalizerColimit f g) WalkingParallelPair.one
 #align category_theory.limits.types.coequalizer_iso_π_comp_hom CategoryTheory.Limits.Types.coequalizerIso_π_comp_hom
 
-@[elementwise]
+-- porting note: was @[elementwise], but it produces a trivial lemma
+@[simp]
 theorem coequalizerIso_quot_comp_inv :
     ↾Quot.mk (CoequalizerRel f g) ≫ (coequalizerIso f g).inv = coequalizer.π f g :=
   rfl
 #align category_theory.limits.types.coequalizer_iso_quot_comp_inv CategoryTheory.Limits.Types.coequalizerIso_quot_comp_inv
-
-attribute [simp] coequalizerIso_quot_comp_inv coequalizerIso_quot_comp_inv_apply
-
--- the following lemmas simplifies to True
-#check coequalizerIso_quot_comp_inv_apply
 
 end Cofork
 
