@@ -978,9 +978,13 @@ theorem repr_opow (o₁ o₂) [NF o₁] [NF o₂] : repr (o₁ ^ o₂) = repr o�
       rw [zero_opow this]
     · cases' e₂ : split' o₂ with b' k
       cases' NF_repr_split' e₂ with _ r₂
-      by_cases m = 0 <;> simp [opow_def, opow, e₁, h, r₁, e₂, r₂, -Nat.cast_succ]
-      rw [opow_add, opow_mul, opow_omega _ (nat_lt_omega _)]
-      simpa using nat_cast_lt.2 (Nat.succ_lt_succ <| pos_iff_ne_zero.2 h)
+      by_cases m = 0 <;> simp only [opow_def, opow_match', Pow.pow, opow,
+        e₁, h, r₁, e₂, r₂] <;>
+      simp only [repr, opow_zero, Nat.succPNat_coe, Nat.cast_succ, Nat.cast_zero, _root_.zero_add,
+      mul_one, add_zero, one_opow, npow_eq_pow] <;>
+      rw [opow_add, opow_mul, opow_omega]
+      . rw [add_one_eq_succ]
+      . simpa using nat_cast_lt.2 (Nat.succ_lt_succ <| pos_iff_ne_zero.2 h)
   · haveI := N₁.fst
     haveI := N₁.snd
     cases' N₁.of_dvd_omega (split_dvd e₁) with a00 ad
