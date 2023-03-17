@@ -101,7 +101,7 @@ def Polynomial.toLaurent [Semiring R] : R[X] →+* R[T;T⁻¹] :=
 /-- This is not a simp lemma, as it is usually preferable to use the lemmas about `C` and `X`
 instead. -/
 theorem Polynomial.toLaurent_apply [Semiring R] (p : R[X]) :
-    toLaurent p = p.toFinsupp.mapDomain coe := by
+    toLaurent p = p.toFinsupp.mapDomain Nat.cast := by
   rfl
 #align polynomial.to_laurent_apply Polynomial.toLaurent_apply
 
