@@ -896,7 +896,7 @@ partial def applyAttributes (stx : Syntax) (rawAttrs : Array Syntax) (thisAttr s
   -- Warn users if the multiplicative version has an attribute
   let appliedAttrs ← getAllSimpAttrs src
   if appliedAttrs.size > 0 then
-    Linter.logLint? linter.existingAttributeWarning stx <|
+    Linter.logLintIf linter.existingAttributeWarning stx <|
       m!"The source declaration {src} was given the simp-attribute(s) {appliedAttrs} before {
       ""}calling @[{thisAttr}]. The preferred method is to use {
       ""}`@[{thisAttr} (attr := {appliedAttrs})]` to apply the attribute to both {
