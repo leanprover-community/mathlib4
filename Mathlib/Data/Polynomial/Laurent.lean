@@ -276,7 +276,7 @@ protected theorem induction_on {M : R[T;T⁻¹] → Prop} (p : R[T;T⁻¹]) (h_C
     (h_C_mul_T_Z : ∀ (n : ℕ) (a : R), M (C a * T (-n)) → M (C a * T (-n - 1))) : M p := by
   have A : ∀ {n : ℤ} {a : R}, M (C a * T n) := by
     intro n a
-    apply n.induction_on
+    refine' Int.induction_on n _ _ _
     · simpa only [T_zero, mul_one] using h_C a
     · exact fun m => h_C_mul_T m a
     · exact fun m => h_C_mul_T_Z m a
@@ -288,11 +288,13 @@ protected theorem induction_on {M : R[T;T⁻¹] → Prop} (p : R[T;T⁻¹]) (h_C
       rw [Finset.sum_insert ns]
       exact h_add A ih
   convert B p.support
-  ext a
-  simp_rw [← single_eq_C_mul_T, Finset.sum_apply', single_apply, Finset.sum_ite_eq']
-  split_ifs with h h
+  refine' ext (fun (a : ℤ) => _)
+  simp_rw [← single_eq_C_mul_T]
+  rw [Finset.sum_apply']
+  simp_rw [Finsupp.single_apply, Finset.sum_ite_eq']
+  split_ifs with h
   · rfl
-  · exact finsupp.not_mem_support_iff.mp h
+  · exact Finsupp.not_mem_support_iff.mp h
 #align laurent_polynomial.induction_on LaurentPolynomial.induction_on
 
 /-- To prove something about Laurent polynomials, it suffices to show that
