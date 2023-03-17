@@ -197,7 +197,7 @@ set_option linter.uppercaseLean3 false in
 @[simp]
 theorem single_eq_C_mul_T (r : R) (n : ℤ) :
     (Finsupp.single n r : R[T;T⁻¹]) = (C r * T n : R[T;T⁻¹]) := by
-  convert single_mul_single.symm <;> simp
+  simp [C, T, single_mul_single]
 set_option linter.uppercaseLean3 false in
 #align laurent_polynomial.single_eq_C_mul_T LaurentPolynomial.single_eq_C_mul_T
 
