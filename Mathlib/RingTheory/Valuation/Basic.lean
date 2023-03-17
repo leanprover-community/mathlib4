@@ -132,15 +132,18 @@ instance : ValuationClass (Valuation R Γ₀) R Γ₀ where
   map_zero f := f.map_zero'
   map_add_le_max f := f.map_add_le_max'
 
--- porting note: is this still helpful?
+-- porting note: is this still helpful? Let's find out!!
 /- Helper instance for when there's too many metavariables to apply `FunLike.hasCoeToFun`
 directly. -/
 -- instance : CoeFun (Valuation R Γ₀) fun _ => R → Γ₀ :=
   -- FunLike.hasCoeToFun
 
-@[simp]
-theorem toFun_eq_coe (v : Valuation R Γ₀) : v.toFun = v := rfl
+theorem toFun_eq_coe (v : Valuation R Γ₀) : v.toFun = v := by rfl
 #align valuation.to_fun_eq_coe Valuation.toFun_eq_coe
+
+@[simp] --Porting note: requested by simpNF as toFun_eq_coe LHS simplifies
+theorem toMonoidWithZeroHom_coe_eq_coe (v : Valuation R Γ₀) : (v.toMonoidWithZeroHom : R → Γ₀) = v 
+    := by rfl
 
 @[ext]
 theorem ext {v₁ v₂ : Valuation R Γ₀} (h : ∀ r, v₁ r = v₂ r) : v₁ = v₂ :=
@@ -153,25 +156,31 @@ variable (v : Valuation R Γ₀) {x y z : R}
 theorem coe_coe : ⇑(v : R →*₀ Γ₀) = v := rfl
 #align valuation.coe_coe Valuation.coe_coe
 
-@[simp]
+-- @[simp] Porting note: simp can prove this
 theorem map_zero : v 0 = 0 :=
   v.map_zero'
 #align valuation.map_zero Valuation.map_zero
 
-@[simp]
+-- @[simp] Porting note: simp can prove this
 theorem map_one : v 1 = 1 :=
   v.map_one'
 #align valuation.map_one Valuation.map_one
 
-@[simp]
+-- @[simp] Porting note: simp can prove this
 theorem map_mul : ∀ x y, v (x * y) = v x * v y :=
   v.map_mul'
 #align valuation.map_mul Valuation.map_mul
 
-@[simp]
+-- Porting note: LHS side simplified so created map_add'
 theorem map_add : ∀ x y, v (x + y) ≤ max (v x) (v y) :=
   v.map_add_le_max'
 #align valuation.map_add Valuation.map_add
+
+@[simp]
+theorem map_add' : ∀ x y, v (x + y) ≤ v x ∨ v (x + y) ≤ v y := by
+  intro x y
+  rw [← le_max_iff, ← ge_iff_le]  
+  apply map_add
 
 theorem map_add_le {x y g} (hx : v x ≤ g) (hy : v y ≤ g) : v (x + y) ≤ g :=
   le_trans (v.map_add x y) <| max_le hx hy
@@ -204,7 +213,7 @@ theorem map_sum_lt' {ι : Type _} {s : Finset ι} {f : ι → R} {g : Γ₀} (hg
   v.map_sum_lt (ne_of_gt hg) hf
 #align valuation.map_sum_lt' Valuation.map_sum_lt'
 
-@[simp]
+-- @[simp] Porting note: simp can prove this
 theorem map_pow : ∀ (x) (n : ℕ), v (x ^ n) = v x ^ n :=
   v.toMonoidWithZeroHom.toMonoidHom.map_pow
 #align valuation.map_pow Valuation.map_pow
@@ -223,7 +232,7 @@ def toPreorder : Preorder R :=
 #align valuation.to_preorder Valuation.toPreorder
 
 /-- If `v` is a valuation on a division ring then `v(x) = 0` iff `x = 0`. -/
-@[simp]
+-- @[simp] Porting note: simp can prove this
 theorem zero_iff [Nontrivial Γ₀] (v : Valuation K Γ₀) {x : K} : v x = 0 ↔ x = 0 :=
   map_eq_zero v
 #align valuation.zero_iff Valuation.zero_iff
@@ -678,6 +687,7 @@ theorem map_one : v 1 = (0 : Γ₀) :=
 #align add_valuation.map_one AddValuation.map_one
 
 /- Porting note: helper wrapper to coerce `v` to the correct function type -/
+/-- A helper function for Lean to inferring types correctly -/
 def asFun : R → Γ₀ := v
 
 @[simp]
@@ -685,10 +695,16 @@ theorem map_mul : ∀ (x y : R), v.asFun (x * y) = v.asFun x + v.asFun y :=
   Valuation.map_mul v
 #align add_valuation.map_mul AddValuation.map_mul
 
-@[simp]
-theorem map_add : ∀ (x y : R), min (v.asFun x) (v y) ≤ v (x + y) := by 
-  apply Valuation.map_add v
+-- Porting note: LHS simplified so created map_add' and removed simp tag
+theorem map_add : ∀ (x y : R), min (v.asFun x) (v.asFun y) ≤ v.asFun (x + y) :=
+  Valuation.map_add v
 #align add_valuation.map_add AddValuation.map_add
+
+@[simp]
+theorem map_add' : ∀ (x y : R), v.asFun x ≤ v.asFun (x + y) ∨ v.asFun y ≤ v.asFun (x + y) := by
+  intro x y
+  rw [←@min_le_iff _ _ (v.asFun x) (v.asFun y) (v.asFun (x+y)),←ge_iff_le]
+  apply map_add
 
 theorem map_le_add {x y : R} {g : Γ₀} (hx : g ≤ v x) (hy : g ≤ v y) : g ≤ v (x + y) :=
   Valuation.map_add_le v hx hy
@@ -737,7 +753,7 @@ def toPreorder : Preorder R :=
 
 /-- If `v` is an additive valuation on a division ring then `v(x) = ⊤` iff `x = 0`. -/
 @[simp]
-theorem top_iff [Nontrivial Γ₀] (v : AddValuation K Γ₀) {x : K} : v x = (⊤ : Γ₀) ↔ x = 0 :=
+theorem top_iff [Nontrivial Γ₀] (v : AddValuation K Γ₀) {x : K} : v.asFun x = (⊤ : Γ₀) ↔ x = 0 :=
   v.zero_iff
 #align add_valuation.top_iff AddValuation.top_iff
 
@@ -900,9 +916,12 @@ end AddValuation
 section ValuationNotation
 
 -- mathport name: nat.multiplicative_zero
+/-- Notation for `WithZero (Multiplicative ℕ)` -/
 scoped[DiscreteValuation] notation "ℕₘ₀" => WithZero (Multiplicative ℕ)
 
 -- mathport name: int.multiplicative_zero
+/-- Notation for `WithZero (Multiplicative ℤ)` -/
 scoped[DiscreteValuation] notation "ℤₘ₀" => WithZero (Multiplicative ℤ)
 
 end ValuationNotation
+
