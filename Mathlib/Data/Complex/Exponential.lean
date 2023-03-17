@@ -589,7 +589,7 @@ theorem exp_conj : exp (conj x) = conj (exp x) := by
   dsimp [exp', Function.comp, isCauSeq_conj, cauSeqConj]
   rw [(starRingEnd _).map_sum]
   refine' sum_congr rfl fun n _ => _
-  rw [map_div₀, map_pow, ← ofReal_nat_cast, conj_ofReal]
+  rw [map_div₀, map_pow, ← ofReal_natCast, conj_ofReal]
 #align complex.exp_conj Complex.exp_conj
 
 @[simp]
@@ -1497,7 +1497,7 @@ theorem add_one_le_exp_of_nonneg {x : ℝ} (hx : 0 ≤ x) : x + 1 ≤ exp x :=
                 h₂, add_assoc, ← coe_reAddGroupHom, reAddGroupHom.map_sum,
                 coe_reAddGroupHom]
               refine' le_add_of_nonneg_of_le (sum_nonneg fun m _ => _) le_rfl
-              rw [← ofReal_pow, ← ofReal_nat_cast, ← ofReal_div, ofReal_re]
+              rw [← ofReal_pow, ← ofReal_natCast, ← ofReal_div, ofReal_re]
               exact div_nonneg (pow_nonneg hx _) (Nat.cast_nonneg _)⟩)
     _ = exp x := by rw [exp, Complex.exp, ← cauSeqRe, lim_re]
 
@@ -1757,7 +1757,7 @@ nonrec theorem exp_bound {x : ℝ} (hx : |x| ≤ 1) {n : ℕ} (hn : 0 < n) :
   convert exp_bound hxc hn using 2 <;>
   --Porting note: was `norm_cast`
   simp only [← abs_ofReal, ← ofReal_sub, ← ofReal_exp, ← ofReal_sum, ← ofReal_pow,
-    ← ofReal_div, ← ofReal_nat_cast]
+    ← ofReal_div, ← ofReal_natCast]
 #align real.exp_bound Real.exp_bound
 
 theorem exp_bound' {x : ℝ} (h1 : 0 ≤ x) (h2 : x ≤ 1) {n : ℕ} (hn : 0 < n) :
