@@ -73,13 +73,13 @@ theorem isNat_cast {R} [AddMonoidWithOne R] (n m : ℕ) :
     IsNat n m → IsNat (n : R) m := by rintro ⟨⟨⟩⟩; exact ⟨rfl⟩
 
 /-- The `norm_num` extension which identifies an expression `Nat.cast n`, returning `n`. -/
-@[norm_num Nat.cast _] def evalNatCast : NormNumExt where eval {u α} e := do
+@[norm_num Nat.cast _, NatCast.natCast _] def evalNatCast : NormNumExt where eval {u α} e := do
   let sα ← inferAddMonoidWithOne α
-  match e with
-  | ~q(Nat.cast $a) =>
-    let ⟨na, pa⟩ ← deriveNat a q(instAddMonoidWithOneNat)
-    let pa : Q(IsNat $a $na) := pa
-    return (.isNat sα na q(@isNat_cast $α _ $a $na $pa) : Result q(Nat.cast $a : $α))
+  let .app n (a : Q(ℕ)) ← whnfR e | failure
+  guard <|← withNewMCtxDepth <| isDefEq n q(Nat.cast (R := $α))
+  let ⟨na, pa⟩ ← deriveNat a q(instAddMonoidWithOneNat)
+  let pa : Q(IsNat $a $na) := pa
+  return (.isNat sα na q(@isNat_cast $α _ $a $na $pa) : Result q(Nat.cast (R := $α) $a))
 
 theorem isNat_int_cast {R} [Ring R] (n : ℤ) (m : ℕ) :
     IsNat n m → IsNat (n : R) m := by rintro ⟨⟨⟩⟩; exact ⟨by simp⟩
@@ -88,19 +88,19 @@ theorem isInt_cast {R} [Ring R] (n m : ℤ) :
     IsInt n m → IsInt (n : R) m := by rintro ⟨⟨⟩⟩; exact ⟨rfl⟩
 
 /-- The `norm_num` extension which identifies an expression `Int.cast n`, returning `n`. -/
-@[norm_num Int.cast _] def evalIntCast : NormNumExt where eval {u α} e := do
+@[norm_num Int.cast _, IntCast.intCast _] def evalIntCast : NormNumExt where eval {u α} e := do
   let rα ← inferRing α
-  match e with
-  | ~q(Int.cast $a) =>
-    match ← derive (α := q(ℤ)) a with
-    | .isNat _ na pa =>
-      let sα : Q(AddMonoidWithOne $α) := q(instAddMonoidWithOne)
-      let pa : Q(@IsNat _ instAddMonoidWithOne $a $na) := pa
-      return (.isNat sα na q(@isNat_int_cast $α _ $a $na $pa) : Result q(Int.cast $a : $α))
-    | .isNegNat _ na pa =>
-      let pa : Q(@IsInt _ instRingInt $a (.negOfNat $na)) := pa
-      return (.isNegNat rα na q(isInt_cast $a (.negOfNat $na) $pa) : Result q(Int.cast $a : $α))
-    | _ => failure
+  let .app i (a : Q(ℤ)) ← whnfR e | failure
+  guard <|← withNewMCtxDepth <| isDefEq i q(Int.cast (R := $α))
+  match ← derive (α := q(ℤ)) a with
+  | .isNat _ na pa =>
+    let sα : Q(AddMonoidWithOne $α) := q(instAddMonoidWithOne)
+    let pa : Q(@IsNat _ instAddMonoidWithOne $a $na) := pa
+    return (.isNat sα na q(@isNat_int_cast $α _ $a $na $pa) : Result q(Int.cast (R := $α) $a))
+  | .isNegNat _ na pa =>
+    let pa : Q(@IsInt _ instRingInt $a (.negOfNat $na)) := pa
+    return (.isNegNat rα na q(isInt_cast $a (.negOfNat $na) $pa) : Result q(Int.cast (R := $α) $a))
+  | _ => failure
 
 theorem isNat_ratCast [DivisionRing R] : {q : ℚ} → {n : ℕ} →
     IsNat q n → IsNat (q : R) n
@@ -116,26 +116,26 @@ theorem isRat_ratCast [DivisionRing R] [CharZero R] : {q : ℚ} → {n : ℤ} �
 
 /-- The `norm_num` extension which identifies an expression `RatCast.ratCast q` where `norm_num`
 recognizes `q`, returning the cast of `q`. -/
-@[norm_num RatCast.ratCast _] def evalRatCast : NormNumExt where eval {u α} e := do
+@[norm_num Rat.cast _, RatCast.ratCast _] def evalRatCast : NormNumExt where eval {u α} e := do
   let dα ← inferDivisionRing α
-  match e with
-  | ~q(RatCast.ratCast $a) =>
-    let r ← derive (α := q(ℚ)) a
-    match r with
-    | .isNat _ na pa =>
-      let sα : Q(AddMonoidWithOne $α) := q(instAddMonoidWithOne')
-      let pa : Q(@IsNat _ instAddMonoidWithOne' $a $na) := pa
-      return (.isNat sα na q(@isNat_ratCast $α _ $a $na $pa) : Result q(RatCast.ratCast $a : $α))
-    | .isNegNat _ na pa =>
-      let rα : Q(Ring $α) := q(instRing)
-      let pa : Q(@IsInt _ instRing $a (.negOfNat $na)) := pa
-      return (.isNegNat rα na q(@isInt_ratCast $α _ $a (.negOfNat $na) $pa) :
-          Result q(RatCast.ratCast $a : $α))
-    | .isRat _ qa na da pa =>
-      let i ← inferCharZeroOfDivisionRing dα
-      let pa : Q(@IsRat _ instRingRat $a $na $da) := pa
-      return (.isRat dα qa na da q(isRat_ratCast $pa) : Result q(RatCast.ratCast $a : $α))
-    | _ => failure
+  let .app r (a : Q(ℚ)) ← whnfR e | failure
+  guard <|← withNewMCtxDepth <| isDefEq r q(Rat.cast (K := $α))
+  let r ← derive (α := q(ℚ)) a
+  match r with
+  | .isNat _ na pa =>
+    let sα : Q(AddMonoidWithOne $α) := q(instAddMonoidWithOne')
+    let pa : Q(@IsNat _ instAddMonoidWithOne' $a $na) := pa
+    return (.isNat sα na q(@isNat_ratCast $α _ $a $na $pa) : Result q(Rat.cast (K := $α) $a))
+  | .isNegNat _ na pa =>
+    let rα : Q(Ring $α) := q(instRing)
+    let pa : Q(@IsInt _ instRing $a (.negOfNat $na)) := pa
+    return (.isNegNat rα na q(@isInt_ratCast $α _ $a (.negOfNat $na) $pa) :
+        Result q(RatCast.ratCast (K := $α) $a))
+  | .isRat _ qa na da pa =>
+    let i ← inferCharZeroOfDivisionRing dα
+    let pa : Q(@IsRat _ instRingRat $a $na $da) := pa
+    return (.isRat dα qa na da q(isRat_ratCast $pa) : Result q(Rat.cast (K := $α) $a))
+  | _ => failure
 
 /-! # Arithmetic -/
 
