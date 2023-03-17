@@ -95,8 +95,6 @@ def toAffineMap : V₁ →ᵃ[k] V₂ where
   map_vadd' p v := f.map_add v p
 #align linear_map.to_affine_map LinearMap.toAffineMap
 
-attribute [coe] AffineMap.toFun
-
 @[simp]
 theorem coe_toAffineMap : ⇑f.toAffineMap = f :=
   rfl
@@ -111,7 +109,8 @@ end LinearMap
 
 namespace AffineMap
 
-variable {k V1 P1 V2 P2 V3 P3 V4 P4 : Type _} [Ring k] [AddCommGroup V1] [Module k V1]
+variable {k : Type _} {V1 : Type _} {P1 : Type _} {V2 : Type _} {P2 : Type _} {V3 : Type _}
+  {P3 : Type _} {V4 : Type _} {P4 : Type _} [Ring k] [AddCommGroup V1] [Module k V1]
   [AffineSpace V1 P1] [AddCommGroup V2] [Module k V2] [AffineSpace V2 P2] [AddCommGroup V3]
   [Module k V3] [AffineSpace V3 P3] [AddCommGroup V4] [Module k V4] [AffineSpace V4 P4]
 
