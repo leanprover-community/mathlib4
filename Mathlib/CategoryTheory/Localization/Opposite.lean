@@ -14,7 +14,7 @@ import Mathlib.CategoryTheory.Localization.Predicate
 
 # Localization of the opposite category
 
-If a functor `L : C ⥤ D` is a localization functor for `W : morphism_property C`, it
+If a functor `L : C ⥤ D` is a localization functor for `W : MorphismProperty C`, it
 is shown in this file that `L.op : Cᵒᵖ ⥤ Dᵒᵖ` is also a localization functor.
 
 -/
@@ -39,18 +39,17 @@ def StrictUniversalPropertyFixedTarget.op {E : Type _} [Category E]
   inverts := h.inverts.op
   lift F hF := (h.lift F.rightOp hF.rightOp).leftOp
   fac F hF := by
-    convert congr_arg functor.left_op (h.fac F.right_op hF.right_op)
-    exact F.right_op_left_op_eq.symm
+    convert congr_arg Functor.leftOp (h.fac F.rightOp hF.rightOp)
   uniq F₁ F₂ eq :=
     by
-    suffices F₁.right_op = F₂.right_op by
-      rw [← F₁.right_op_left_op_eq, ← F₂.right_op_left_op_eq, this]
-    have eq' := congr_arg functor.right_op Eq
+    suffices F₁.rightOp = F₂.rightOp by
+      rw [← F₁.rightOp_leftOp_eq, ← F₂.rightOp_leftOp_eq, this]
+    have eq' := congr_arg Functor.rightOp eq
     exact h.uniq _ _ eq'
 #align category_theory.localization.strict_universal_property_fixed_target.op CategoryTheory.Localization.StrictUniversalPropertyFixedTarget.op
 
-instance isLocalization_op : W.q.op.IsLocalization W.op :=
-  Functor.IsLocalization.mk' W.q.op W.op (strictUniversalPropertyFixedTargetQ W _).op
+instance isLocalization_op : W.Q.op.IsLocalization W.op :=
+  Functor.IsLocalization.mk' W.Q.op W.op (strictUniversalPropertyFixedTargetQ W _).op
     (strictUniversalPropertyFixedTargetQ W _).op
 #align category_theory.localization.is_localization_op CategoryTheory.Localization.isLocalization_op
 
@@ -58,12 +57,11 @@ end Localization
 
 namespace Functor
 
-instance IsLocalization.op [h : L.IsLocalization W] : L.op.IsLocalization W.op :=
-  IsLocalization.of_equivalence_target W.q.op W.op L.op (Localization.equivalenceFromModel L W).op
+instance IsLocalization.op [L.IsLocalization W] : L.op.IsLocalization W.op :=
+  IsLocalization.of_equivalence_target W.Q.op W.op L.op (Localization.equivalenceFromModel L W).op
     (NatIso.op (Localization.qCompEquivalenceFromModelFunctorIso L W).symm)
 #align category_theory.functor.is_localization.op CategoryTheory.Functor.IsLocalization.op
 
 end Functor
 
 end CategoryTheory
-
