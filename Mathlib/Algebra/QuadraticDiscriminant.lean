@@ -10,7 +10,6 @@ Authors: Zhouhang Zhou
 -/
 import Mathlib.Algebra.CharP.Invertible
 import Mathlib.Order.Filter.AtTopBot
-import Mathlib.Tactic.Linarith.Default
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.LinearCombination
 
@@ -30,6 +29,8 @@ This file defines the discriminant of a quadratic and gives the solution to a qu
 - `quadratic_ne_zero_of_discrim_ne_sq`: if the discriminant has no square root,
   then the corresponding quadratic has no root.
 - `discrim_le_zero`: if a quadratic is always non-negative, then its discriminant is non-positive.
+- `discrim_le_zero_of_nonpos`, `discrim_lt_zero`, `discrim_lt_zero_of_neg`: versions of this
+  statement with other inequalities.
 
 ## Tags
 
@@ -48,42 +49,47 @@ def discrim [Ring R] (a b c : R) : R :=
   b ^ 2 - 4 * a * c
 #align discrim discrim
 
-variable [CommRing R] [IsDomain R] {a b c : R}
+@[simp] lemma discrim_neg [Ring R] (a b c : R) : discrim (-a) (-b) (-c) = discrim a b c := by
+  simp [discrim]
+#align discrim_neg discrim_neg
+
+variable [CommRing R] {a b c : R}
+
+lemma discrim_eq_sq_of_quadratic_eq_zero {x : R} (h : a * x * x + b * x + c = 0) :
+    discrim a b c = (2 * a * x + b) ^ 2 := by
+  rw [discrim]
+  linear_combination -4 * a * h
+#align discrim_eq_sq_of_quadratic_eq_zero discrim_eq_sq_of_quadratic_eq_zero
 
 /-- A quadratic has roots if and only if its discriminant equals some square.
 -/
-theorem quadratic_eq_zero_iff_discrim_eq_sq (h2 : (2 : R) ≠ 0) (ha : a ≠ 0) (x : R) :
+theorem quadratic_eq_zero_iff_discrim_eq_sq [NeZero (2 : R)] [NoZeroDivisors R]
+    (ha : a ≠ 0) (x : R) :
     a * x * x + b * x + c = 0 ↔ discrim a b c = (2 * a * x + b) ^ 2 := by
-  dsimp [discrim] at *
-  constructor
-  · intro h
-    linear_combination -4 * a * h
-  · intro h
-    have ha : 2 * 2 * a ≠ 0 := mul_ne_zero (mul_ne_zero h2 h2) ha
-    apply mul_left_cancel₀ ha
-    linear_combination -h
+  refine ⟨discrim_eq_sq_of_quadratic_eq_zero, fun h ↦ ?_⟩
+  rw [discrim] at h
+  have ha : 2 * 2 * a ≠ 0 := mul_ne_zero (mul_ne_zero (NeZero.ne _) (NeZero.ne _)) ha
+  apply mul_left_cancel₀ ha
+  linear_combination -h
 #align quadratic_eq_zero_iff_discrim_eq_sq quadratic_eq_zero_iff_discrim_eq_sq
 
 /-- A quadratic has no root if its discriminant has no square root. -/
-theorem quadratic_ne_zero_of_discrim_ne_sq (h2 : (2 : R) ≠ 0) (ha : a ≠ 0)
-    (h : ∀ s : R, discrim a b c ≠ s * s) (x : R) : a * x * x + b * x + c ≠ 0 := by
-  intro h'
-  rw [quadratic_eq_zero_iff_discrim_eq_sq h2 ha, sq] at h'
-  exact h _ h'
+theorem quadratic_ne_zero_of_discrim_ne_sq (h : ∀ s : R, discrim a b c ≠ s * s) (x : R) :
+    a * x * x + b * x + c ≠ 0 :=
+  mt discrim_eq_sq_of_quadratic_eq_zero <| by rw [sq]; apply h
 #align quadratic_ne_zero_of_discrim_ne_sq quadratic_ne_zero_of_discrim_ne_sq
 
 end Ring
 
 section Field
 
-variable {K : Type _} [Field K] [Invertible (2 : K)] {a b c x : K}
+variable {K : Type _} [Field K] [NeZero (2 : K)] {a b c x : K}
 
-/-- Roots of a quadratic -/
+/-- Roots of a quadratic equation. -/
 theorem quadratic_eq_zero_iff (ha : a ≠ 0) {s : K} (h : discrim a b c = s * s) (x : K) :
     a * x * x + b * x + c = 0 ↔ x = (-b + s) / (2 * a) ∨ x = (-b - s) / (2 * a) := by
-  have h2 : (2 : K) ≠ 0 := nonzero_of_invertible 2
-  rw [quadratic_eq_zero_iff_discrim_eq_sq h2 ha, h, sq, mul_self_eq_mul_self_iff]
-  have ne : 2 * a ≠ 0 := mul_ne_zero h2 ha
+  rw [quadratic_eq_zero_iff_discrim_eq_sq ha, h, sq, mul_self_eq_mul_self_iff]
+  have ne : 2 * a ≠ 0 := mul_ne_zero (NeZero.ne _) ha
   field_simp
   apply or_congr
   · constructor <;> intro h' <;> linear_combination -h'
@@ -117,34 +123,29 @@ theorem discrim_le_zero (h : ∀ x : K, 0 ≤ a * x * x + b * x + c) : discrim a
   rw [discrim, sq]
   obtain ha | rfl | ha : a < 0 ∨ a = 0 ∨ 0 < a := lt_trichotomy a 0
   -- if a < 0
-  · have : tendsto (fun x => (a * x + b) * x + c) at_top at_bot :=
-      tendsto_at_bot_add_const_right _ c
-        ((tendsto_at_bot_add_const_right _ b (tendsto_id.neg_const_mul_at_top ha)).atBot_mul_atTop
+  · have : Tendsto (fun x => (a * x + b) * x + c) atTop atBot :=
+      tendsto_atBot_add_const_right _ c
+        ((tendsto_atBot_add_const_right _ b (tendsto_id.neg_const_mul_atTop ha)).atBot_mul_atTop
           tendsto_id)
-    rcases(this.eventually (eventually_lt_at_bot 0)).exists with ⟨x, hx⟩
+    rcases(this.eventually (eventually_lt_atBot 0)).exists with ⟨x, hx⟩
     exact False.elim ((h x).not_lt <| by rwa [← add_mul])
   -- if a = 0
-  · rcases em (b = 0) with (rfl | hb)
+  · rcases eq_or_ne b 0 with (rfl | hb)
     · simp
     · have := h ((-c - 1) / b)
       rw [mul_div_cancel' _ hb] at this
       linarith
   -- if a > 0
-  · have :=
-      calc
-        4 * a * (a * (-(b / a) * (1 / 2)) * (-(b / a) * (1 / 2)) + b * (-(b / a) * (1 / 2)) + c) =
-            a * (b / a) * (a * (b / a)) - 2 * (a * (b / a)) * b + 4 * a * c :=
-          by ring
-        _ = -(b * b - 4 * a * c) :=
-          by
-          simp only [mul_div_cancel' b (ne_of_gt ha)]
-          ring
-        
-    have ha' : 0 ≤ 4 * a := by linarith
-    have h := mul_nonneg ha' (h (-(b / a) * (1 / 2)))
-    rw [this] at h
-    rwa [← neg_nonneg]
+  · have ha' : 0 ≤ 4 * a := mul_nonneg zero_le_four ha.le
+    have := h (-b / (2 * a))
+    convert neg_nonpos.2 (mul_nonneg ha' (h (-b / (2 * a)))) using 1
+    field_simp [ha.ne']
+    ring
 #align discrim_le_zero discrim_le_zero
+
+lemma discrim_le_zero_of_nonpos (h : ∀ x : K, a * x * x + b * x + c ≤ 0) : discrim a b c ≤ 0 :=
+  discrim_neg a b c ▸ discrim_le_zero <| by simpa only [neg_mul, ← neg_add, neg_nonneg]
+#align discrim_le_zero_of_nonpos discrim_le_zero_of_nonpos
 
 /-- If a polynomial of degree 2 is always positive, then its discriminant is negative,
 at least when the coefficient of the quadratic term is nonzero.
@@ -159,6 +160,12 @@ theorem discrim_lt_zero (ha : a ≠ 0) (h : ∀ x : K, 0 < a * x * x + b * x + c
     rw [quadratic_eq_zero_iff_of_discrim_eq_zero ha h' (-b / (2 * a))]
   linarith
 #align discrim_lt_zero discrim_lt_zero
+
+lemma discrim_lt_zero_of_neg (ha : a ≠ 0) (h : ∀ x : K, a * x * x + b * x + c < 0) :
+    discrim a b c < 0 :=
+  discrim_neg a b c ▸ discrim_lt_zero (neg_ne_zero.2 ha) <| by
+    simpa only [neg_mul, ← neg_add, neg_pos]
+#align discrim_lt_zero_of_neg discrim_lt_zero_of_neg
 
 end LinearOrderedField
 
