@@ -36,9 +36,8 @@ theorem down_ratCast [RatCast α] (q : ℚ) : down (q : ULift α) = q :=
   rfl
 #align ulift.down_rat_cast ULift.down_ratCast
 
-instance divisionSemiring [DivisionSemiring α] : DivisionSemiring (ULift α) :=
-  down_injective.divisionSemiring down rfl rfl (λ _ _ ↦ rfl) (λ _ _ ↦ rfl) (λ _ ↦ rfl)
-    (λ _ _ ↦ rfl) (λ _ _ ↦ rfl) (λ _ _ ↦ rfl) (λ _ _ ↦ rfl) (λ _ ↦ rfl)
+instance divisionSemiring [DivisionSemiring α] : DivisionSemiring (ULift α) := by
+  refine' down_injective.divisionSemiring down _ _ _ _ _ _ _ _ _ _ <;> intros <;> rfl
 #align ulift.division_semiring ULift.divisionSemiring
 
 instance semifield [Semifield α] : Semifield (ULift α) :=
