@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis
 
 ! This file was ported from Lean 3 source module algebra.group_power.lemmas
-! leanprover-community/mathlib commit 02c4026cbe3cd2122eb8ff196c80f24441037002
+! leanprover-community/mathlib commit e1bccd6e40ae78370f01659715d3c948716e3b7e
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/

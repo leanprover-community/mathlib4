@@ -243,8 +243,6 @@ protected def symm (e : R ≃+* S) : S ≃+* R :=
 #align ring_equiv.symm RingEquiv.symm
 
 /-- See Note [custom simps projection] -/
-def Simps.apply (e : R ≃+* S) : R → S := e
-/-- See Note [custom simps projection] -/
 def Simps.symm_apply (e : R ≃+* S) : S → R :=
   e.symm
 #align ring_equiv.simps.symm_apply RingEquiv.Simps.symm_apply
@@ -260,6 +258,11 @@ theorem invFun_eq_symm (f : R ≃+* S) : EquivLike.inv f = f.symm :=
 theorem symm_symm (e : R ≃+* S) : e.symm.symm = e :=
   ext fun _ => rfl
 #align ring_equiv.symm_symm RingEquiv.symm_symm
+
+--Porting note: new theorem
+@[simp]
+theorem symm_refl : (RingEquiv.refl R).symm = RingEquiv.refl R :=
+  rfl
 
 @[simp]
 theorem coe_toEquiv_symm (e : R ≃+* S) : (e.symm : S ≃ R) = (e : R ≃ S).symm :=
@@ -511,7 +514,7 @@ in higher generality -/
 
 
 @[simp]
-theorem coe_ringHom_refl : (RingEquiv.refl R : R →* R) = RingHom.id R :=
+theorem coe_ringHom_refl : (RingEquiv.refl R : R →+* R) = RingHom.id R :=
   rfl
 #align ring_equiv.coe_ring_hom_refl RingEquiv.coe_ringHom_refl
 

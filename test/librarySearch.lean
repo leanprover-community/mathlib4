@@ -1,4 +1,6 @@
-import Mathlib
+import Mathlib.Tactic.LibrarySearch
+import Mathlib.Util.AssertNoSorry
+import Mathlib.Algebra.Order.Ring.Canonical
 
 noncomputable section
 
@@ -30,8 +32,7 @@ example (n m k : ℕ) : n * (m - k) = n * m - n * k :=
 by library_search -- says: `exact Nat.mul_sub_left_distrib n m k`
 
 example (n m k : ℕ) : n * m - n * k = n * (m - k) :=
-Eq.symm <| -- TODO: shouldn't be required
-by library_search -- says: `exact eq.symm (Nat.mul_sub_left_distrib n m k)`
+by library_search -- says: `exact Eq.symm (mul_tsub n m k)`
 
 example {α : Type} (x y : α) : x = y ↔ y = x := by library_search -- says: `exact eq_comm`
 
@@ -48,7 +49,7 @@ example (a b : ℕ) (h : a ∣ b) (w : b > 0) : b ≥ a := by library_search -- 
 
 -- TODO: A lemma with head symbol `¬` can be used to prove `¬ p` or `⊥`
 example (a : ℕ) : ¬ (a < 0) := by library_search -- says `exact not_lt_bot`
--- TODO example (a : ℕ) (h : a < 0) : False := by library_search -- says `exact not_lt_bot h`
+example (a : ℕ) (h : a < 0) : False := by library_search -- says `exact Nat.not_succ_le_zero a h`
 
 -- An inductive type hides the constructor's arguments enough
 -- so that `library_search` doesn't accidentally close the goal.
@@ -63,30 +64,31 @@ theorem lemma_with_false_in_head (a b : ℕ) (_h1 : a < b) (h2 : P a) : False :=
 by apply Nat.not_lt_zero; cases h2; assumption
 
 example (a : ℕ) (h : P a) : 0 > a := by library_search -- says `exact lemma_with_gt_in_head a h`
--- TODO example (a : ℕ) (h : P a) : a < 0 := by library_search -- says `exact lemma_with_gt_in_head a h`
+example (a : ℕ) (h : P a) : a < 0 := by library_search -- says `exact lemma_with_gt_in_head a h`
 
--- TODO example (a b : ℕ) (h1 : a < b) (h2 : P a) : False := by library_search -- says `exact lemma_with_false_in_head a b h1 h2`
+example (a b : ℕ) (h1 : a < b) (h2 : P a) : False := by library_search -- says `exact lemma_with_false_in_head a b h1 h2`
 
 -- TODO example (a b : ℕ) (h1 : a < b) : ¬ (P a) := by library_search -- says `exact lemma_with_false_in_head a b h1`
 
 end synonym
 
+
+example : ∀ P : Prop, ¬(P ↔ ¬P) := by library_search
+
 -- We even find `iff` results:
 
-example : ∀ P : Prop, ¬(P ↔ ¬P) := by library_search -- says: `λ (a : Prop), (iff_not_self a).mp`
-
--- TODO example {a b c : ℕ} (h₁ : a ∣ c) (h₂ : a ∣ b + c) : a ∣ b := by library_search -- says `exact (nat.dvd_add_left h₁).mp h₂`
+example {a b c : ℕ} (h₁ : a ∣ c) (h₂ : a ∣ b + c) : a ∣ b := by library_search -- says `exact (Nat.dvd_add_iff_left h₁).mpr h₂`
 
 example {α : Sort u} (h : Empty) : α := by library_search
 example {α : Type _} (h : Empty) : α := by library_search
 
--- TODO example (f : A → C) (g : B → C) : (A ⊕ B) → C := by library_search
+example (f : A → C) (g : B → C) : (A ⊕ B) → C := by library_search
 
 opaque f : ℕ → ℕ
 axiom F (a b : ℕ) : f a ≤ f b ↔ a ≤ b
--- TODO example (a b : ℕ) (h : a ≤ b) : f a ≤ f b := by library_search
+example (a b : ℕ) (h : a ≤ b) : f a ≤ f b := by library_search
 
--- TODO theorem nonzero_gt_one (n : ℕ) : ¬ n = 0 → n ≥ 1 := by library_search   -- `exact nat.pos_of_ne_zero`
+theorem nonzero_gt_one (n : ℕ) : ¬ n = 0 → n ≥ 1 := by library_search   -- `exact nat.pos_of_ne_zero`
 
 example (L _M : List (List ℕ)) : List ℕ := by library_search using L
 

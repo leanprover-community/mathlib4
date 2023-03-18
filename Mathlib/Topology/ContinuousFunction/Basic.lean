@@ -84,8 +84,7 @@ namespace ContinuousMap
 variable {α β γ δ : Type _} [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
   [TopologicalSpace δ]
 
-instance : ContinuousMapClass C(α, β) α β
-    where
+instance : ContinuousMapClass C(α, β) α β where
   coe := ContinuousMap.toFun
   coe_injective' f g h := by cases f; cases g; congr
   map_continuous := ContinuousMap.continuous_toFun
@@ -102,6 +101,9 @@ theorem toFun_eq_coe {f : C(α, β)} : f.toFun = (f : α → β) :=
   rfl
 #align continuous_map.to_fun_eq_coe ContinuousMap.toFun_eq_coe
 
+/-- See note [custom simps projection]. -/
+def Simps.apply (f : C(α, β)) : α → β := f
+
 -- this must come after the coe_to_fun definition
 initialize_simps_projections ContinuousMap (toFun → apply)
 
@@ -117,8 +119,7 @@ theorem ext {f g : C(α, β)} (h : ∀ a, f a = g a) : f = g :=
 
 /-- Copy of a `ContinuousMap` with a new `toFun` equal to the old one. Useful to fix definitional
 equalities. -/
-protected def copy (f : C(α, β)) (f' : α → β) (h : f' = f) : C(α, β)
-    where
+protected def copy (f : C(α, β)) (f' : α → β) (h : f' = f) : C(α, β) where
   toFun := f'
   continuous_toFun := h.symm ▸ f.continuous_toFun
 #align continuous_map.copy ContinuousMap.copy
@@ -379,10 +380,9 @@ theorem liftCover_restrict {i : ι} : (liftCover S φ hφ hS).restrict (S i) = �
   simp only [coe_restrict, Function.comp_apply, liftCover_coe]
 #align continuous_map.lift_cover_restrict ContinuousMap.liftCover_restrict
 
-variable (A : Set (Set α)) (F : ∀ (s : Set α) (_ : s ∈ A), C(s, β))
-  (hF :
-    ∀ (s) (hs : s ∈ A) (t) (ht : t ∈ A) (x : α) (hxi : x ∈ s) (hxj : x ∈ t),
-      F s hs ⟨x, hxi⟩ = F t ht ⟨x, hxj⟩)
+variable (A : Set (Set α)) (F : ∀ s ∈ A, C(s, β))
+  (hF : ∀ (s) (hs : s ∈ A) (t) (ht : t ∈ A) (x : α) (hxi : x ∈ s) (hxj : x ∈ t),
+    F s hs ⟨x, hxi⟩ = F t ht ⟨x, hxj⟩)
   (hA : ∀ x : α, ∃ i ∈ A, i ∈ nhds x)
 
 /-- A family `F s` of continuous maps `C(s, β)`, where (1) the domains `s` are taken from a set `A`

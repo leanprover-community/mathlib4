@@ -19,14 +19,14 @@ import Mathlib.Logic.Equiv.Option
 In this file we define `derangements α`, the set of derangements on a type `α`.
 
 We also define some equivalences involving various subtypes of `Perm α` and `derangements α`:
-* `derangements_option_equiv_sigma_at_most_one_fixed_point`: An equivalence between
-  `derangements (Option α)` and the sigma-type `Σ a : α, {f : perm α // fixed_points f ⊆ a}`.
-* `derangements_recursion_equiv`: An equivalence between `derangements (Option α)` and the
+* `derangementsOptionEquivSigmaAtMostOneFixedPoint`: An equivalence between
+  `derangements (Option α)` and the sigma-type `Σ a : α, {f : Perm α // fixed_points f ⊆ a}`.
+* `derangementsRecursionEquiv`: An equivalence between `derangements (Option α)` and the
   sigma-type `Σ a : α, (derangements (({a}ᶜ : Set α) : Type _) ⊕ derangements α)` which is later
   used to inductively count the number of derangements.
 
 In order to prove the above, we also prove some results about the effect of `Equiv.removeNone`
-on derangements: `RemoveNone.fiberNone` and `RemoveNone.fiber_some`.
+on derangements: `RemoveNone.fiber_none` and `RemoveNone.fiber_some`.
 -/
 
 
@@ -82,7 +82,7 @@ universe u
 /-- The set of permutations that fix either `a` or nothing is equivalent to the sum of:
     - derangements on `α`
     - derangements on `α` minus `a`. -/
-def atMostOneFixedPointEquivSum_derangements {α: Type u} [DecidableEq α] (a : α) :
+def atMostOneFixedPointEquivSum_derangements [DecidableEq α] (a : α) :
     { f : Perm α // fixedPoints f ⊆ {a} } ≃ Sum (derangements ({a}ᶜ : Set α)) (derangements α) :=
   calc
     { f : Perm α // fixedPoints f ⊆ {a} } ≃
@@ -91,37 +91,30 @@ def atMostOneFixedPointEquivSum_derangements {α: Type u} [DecidableEq α] (a : 
       (Equiv.sumCompl _).symm
     _ ≃ Sum { f : Perm α // fixedPoints f ⊆ {a} ∧ a ∈ fixedPoints f }
           { f : Perm α // fixedPoints f ⊆ {a} ∧ a ∉ fixedPoints f } := by
-        {
-          refine' Equiv.sumCongr _ _
-          . convert subtypeSubtypeEquivSubtypeInter.{u}
-              (fun (x: Perm α) => fixedPoints x ⊆ {a})
-              (fun (x: Perm α) => a ∈ fixedPoints x)
-          . convert subtypeSubtypeEquivSubtypeInter.{u}
-              (fun (x: Perm α) => fixedPoints x ⊆ {a})
-              (fun (x: Perm α) => ¬a ∈ fixedPoints x)
-        }
+      -- porting note: `subtypeSubtypeEquivSubtypeInter` no longer works with placeholder `_`s.
+      refine' Equiv.sumCongr _ _
+      . exact subtypeSubtypeEquivSubtypeInter
+          (fun x : Perm α => fixedPoints x ⊆ {a})
+          (a ∈ fixedPoints ·)
+      . exact subtypeSubtypeEquivSubtypeInter
+          (fun x : Perm α => fixedPoints x ⊆ {a})
+          (¬a ∈ fixedPoints ·)
     _ ≃ Sum { f : Perm α // fixedPoints f = {a} } { f : Perm α // fixedPoints f = ∅ } := by
-      {
-        refine' Equiv.sumCongr (subtypeEquivRight fun f => _) (subtypeEquivRight fun f => _)
-        · rw [Set.eq_singleton_iff_unique_mem, and_comm]
-          rfl
-        · rw [Set.eq_empty_iff_forall_not_mem]
-          refine' ⟨fun h x hx => h.2 (h.1 hx ▸ hx), fun h => ⟨fun x hx => (h _ hx).elim, h _⟩⟩
-      }
+      refine' Equiv.sumCongr (subtypeEquivRight fun f => _) (subtypeEquivRight fun f => _)
+      · rw [Set.eq_singleton_iff_unique_mem, and_comm]
+        rfl
+      · rw [Set.eq_empty_iff_forall_not_mem]
+        refine' ⟨fun h x hx => h.2 (h.1 hx ▸ hx), fun h => ⟨fun x hx => (h _ hx).elim, h _⟩⟩
     _ ≃ Sum (derangements ({a}ᶜ : Set α)) (derangements α) := by
-      {
-        -- porting note: was `subtypeEquiv _` but requires explicit type & proof of
-        -- `Decidable (x ∈ {a})`
-        refine' Equiv.sumCongr
-          ((derangements.subtypeEquiv
-            (fun (x: α) => x ∈ ({a}ᶜ : Set α))).trans <| subtypeEquivRight fun x => _).symm
+      -- porting note: was `subtypeEquiv _` but now needs the placeholder to be provided explicitly
+      refine'
+        Equiv.sumCongr ((derangements.subtypeEquiv (· ∈ ({a}ᶜ : Set α))).trans <|
+            subtypeEquivRight fun x => _).symm
           (subtypeEquivRight fun f => mem_derangements_iff_fixedPoints_eq_empty.symm)
-        rw [eq_comm, Set.ext_iff]
-        simp_rw [Set.mem_compl_iff, Classical.not_not]
-      }
+      rw [eq_comm, Set.ext_iff]
+      simp_rw [Set.mem_compl_iff, Classical.not_not]
 
-#align derangements.at_most_one_fixed_point_equiv_sum_derangements
-       derangements.atMostOneFixedPointEquivSum_derangements
+#align derangements.at_most_one_fixed_point_equiv_sum_derangements derangements.atMostOneFixedPointEquivSum_derangements
 
 namespace Equiv
 
@@ -170,13 +163,13 @@ theorem RemoveNone.fiber_some (a : α) :
       simp only [Perm.decomposeOption_symm_apply, swap_apply_self, Perm.coe_mul]
       cases' x with x
       · simp
-      simp only [comp, optionCongr_apply, Option.map_some', swap_apply_self, ne_eq]
+      simp only [comp, optionCongr_apply, Option.map_some', swap_apply_self]
       by_cases x_vs_a : x = a
       · rw [x_vs_a, swap_apply_right]
         apply Option.some_ne_none
       have ne_1 : some x ≠ none := Option.some_ne_none _
       have ne_2 : some x ≠ some a := (Option.some_injective α).ne_iff.mpr x_vs_a
-      rw [swap_apply_of_ne_of_ne ne_1 ne_2, Option.some.injEq]
+      rw [swap_apply_of_ne_of_ne ne_1 ne_2, (Option.some_injective α).ne_iff]
       intro contra
       exact x_vs_a (h_opfp contra)
     · rw [apply_symm_apply]
@@ -203,13 +196,10 @@ def derangementsOptionEquivSigmaAtMostOneFixedPoint :
     _ ≃ Σa : α, ↥(Equiv.RemoveNone.fiber (some a)) :=
       sigmaOptionEquivOfSome _ fiber_none_is_false
     _ ≃ Σa : α, { f : Perm α | fixedPoints f ⊆ {a} } := by
-      {
-        simp_rw [Equiv.RemoveNone.fiber_some]
-        rfl
-      }
+      simp_rw [Equiv.RemoveNone.fiber_some]
+      rfl
 
-#align derangements.derangements_option_equiv_sigma_at_most_one_fixed_point
-       derangements.derangementsOptionEquivSigmaAtMostOneFixedPoint
+#align derangements.derangements_option_equiv_sigma_at_most_one_fixed_point derangements.derangementsOptionEquivSigmaAtMostOneFixedPoint
 
 /-- The set of derangements on `Option α` is equivalent to the union over all `a : α` of
     "derangements on `α` ⊕ derangements on `{a}ᶜ`". -/
