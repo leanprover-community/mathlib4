@@ -265,13 +265,17 @@ theorem degrees_esymm [Nontrivial R] (n : ℕ) (hpos : 0 < n) (hn : n ≤ Fintyp
       by
       funext
       simp [Finsupp.toMultiset_sum_single]
-    rw [degrees, support_esymm, sup_finset_image, this, ← comp_sup_eq_sup_comp]
-    · obtain ⟨k, rfl⟩ := Nat.exists_eq_succ_of_ne_zero hpos.ne'
-      simpa using powerset_len_sup _ _ (Nat.lt_of_succ_le hn)
-    · intros
-      simp only [union_val, sup_eq_union]
-      congr
-    · rfl
+    rw [degrees, support_esymm, sup_finset_image, this]
+    have : ((powersetLen n univ).sup (fun (x : Finset σ) => x)).val
+        = sup (powersetLen n univ) val := by
+      refine' comp_sup_eq_sup_comp _ _ _
+      · intros
+        simp only [union_val, sup_eq_union]
+        congr
+      · rfl
+    rw [← this]
+    obtain ⟨k, rfl⟩ := Nat.exists_eq_succ_of_ne_zero hpos.ne'
+    simpa using powerset_len_sup _ _ (Nat.lt_of_succ_le hn)
 #align mv_polynomial.degrees_esymm MvPolynomial.degrees_esymm
 
 end ElementarySymmetric
