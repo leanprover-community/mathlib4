@@ -751,7 +751,6 @@ def mapRingHom (f : R →+* S) : R[X] →+* S[X] where
   map_one' := Polynomial.map_one f
 #align polynomial.map_ring_hom Polynomial.mapRingHom
 
-
 @[simp]
 theorem coe_mapRingHom (f : R →+* S) : ⇑(mapRingHom f) = map f :=
   rfl
