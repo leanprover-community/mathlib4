@@ -530,7 +530,7 @@ set_option linter.uppercaseLean3 false in
 #align polynomial.multiplicity_X_sub_C_finite Polynomial.multiplicity_X_sub_C_finite
 
 /-- The largest power of `X - C a` which divides `p`.
-This is computable via the divisibility algorithm `polynomial.decidable_dvd_monic`. -/
+This is computable via the divisibility algorithm `Polynomial.decidableDvdMonic`. -/
 def rootMultiplicity (a : R) (p : R[X]) : ℕ :=
   if h0 : p = 0 then 0
   else
