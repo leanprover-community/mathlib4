@@ -845,7 +845,7 @@ instance NF_opow (o₁ o₂) [NF o₁] [NF o₂] : NF (o₁ ^ o₂) := by
     · by_cases o₂ = 0 <;> simp [(·^·),Pow.pow,pow, opow, *]
     · by_cases m = 0
       · simp only [(·^·),Pow.pow,pow, opow, *, zero_def]
-      · simp [(·^·),Pow.pow, pow, opow, *, -npow_eq_pow, -zero_def]
+      · simp only [(·^·),Pow.pow, pow, opow, mulNat_eq_mul, ofNat, *]
         infer_instance
   · simp [(·^·),Pow.pow,pow, opow, e₁, e₂, split_eq_scale_split' e₂]
     have := na.fst
