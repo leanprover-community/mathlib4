@@ -33,10 +33,10 @@ variable (v : Valuation R Γ₀)
 def integer : Subring R where
   carrier := { x | v x ≤ 1 }
   one_mem' := le_of_eq v.map_one
-  mul_mem' x y hx hy := trans_rel_right (· ≤ ·) (v.map_mul x y) (mul_le_one' hx hy)
-  zero_mem' := trans_rel_right (· ≤ ·) v.map_zero zero_le_one
-  add_mem' x y hx hy := le_trans (v.map_add x y) (max_le hx hy)
-  neg_mem' x hx := trans_rel_right (· ≤ ·) (v.map_neg x) hx
+  mul_mem' {x y} hx hy := by simp only [Set.mem_setOf_eq, _root_.map_mul, mul_le_one' hx hy]
+  zero_mem' := by simp only [Set.mem_setOf_eq, _root_.map_zero, zero_le']
+  add_mem' {x y} hx hy := le_trans (v.map_add x y) (max_le hx hy)
+  neg_mem' {x} hx :=by simp only [Set.mem_setOf_eq] at hx; simpa only [Set.mem_setOf_eq, map_neg]
 #align valuation.integer Valuation.integer
 
 end Ring
@@ -69,9 +69,8 @@ theorem integer.integers : v.Integers v.integer :=
 
 namespace Integers
 
-variable {v O} (hv : Integers v O)
+variable {v O} [CommRing O] [Algebra O R] (hv : Integers v O)
 
-include hv
 
 theorem one_of_isUnit {x : O} (hx : IsUnit x) : v (algebraMap O R x) = 1 :=
   let ⟨u, hu⟩ := hx
@@ -111,8 +110,6 @@ variable {F : Type u} {Γ₀ : Type v} [Field F] [LinearOrderedCommGroupWithZero
 
 variable {v : Valuation F Γ₀} {O : Type w} [CommRing O] [Algebra O F] (hv : Integers v O)
 
-include hv
-
 namespace Integers
 
 theorem dvd_of_le {x y : O} (h : v (algebraMap O F x) ≤ v (algebraMap O F y)) : y ∣ x :=
@@ -144,4 +141,3 @@ end Integers
 end Field
 
 end Valuation
-
