@@ -15,32 +15,32 @@ import Mathlib.Algebra.Algebra.Subalgebra.Basic
 /-!
 # Symmetric Polynomials and Elementary Symmetric Polynomials
 
-This file defines symmetric `mv_polynomial`s and elementary symmetric `mv_polynomial`s.
+This file defines symmetric `MvPolynomial`s and elementary symmetric `MvPolynomial`s.
 We also prove some basic facts about them.
 
 ## Main declarations
 
-* `mv_polynomial.is_symmetric`
+* `MvPolynomial.IsSymmetric`
 
-* `mv_polynomial.symmetric_subalgebra`
+* `MvPolynomial.symmetricSubalgebra`
 
-* `mv_polynomial.esymm`
+* `MvPolynomial.esymm`
 
 ## Notation
 
-+ `esymm σ R n`, is the `n`th elementary symmetric polynomial in `mv_polynomial σ R`.
++ `esymm σ R n`, is the `n`th elementary symmetric polynomial in `MvPolynomial σ R`.
 
 As in other polynomial files, we typically use the notation:
 
 + `σ τ : Type*` (indexing the variables)
 
-+ `R S : Type*` `[comm_semiring R]` `[comm_semiring S]` (the coefficients)
++ `R S : Type*` `[CommSemiring R]` `[CommSemiring S]` (the coefficients)
 
 + `r : R` elements of the coefficient ring
 
 + `i : σ`, with corresponding monomial `X i`, often denoted `X_i` by mathematicians
 
-+ `φ ψ : mv_polynomial σ R`
++ `φ ψ : MvPolynomial σ R`
 
 -/
 
@@ -74,7 +74,7 @@ variable {σ : Type _} {R : Type _}
 
 variable {τ : Type _} {S : Type _}
 
-/-- A `mv_polynomial φ` is symmetric if it is invariant under
+/-- A `MvPolynomial φ` is symmetric if it is invariant under
 permutations of its variables by the  `rename` operation -/
 def IsSymmetric [CommSemiring R] (φ : MvPolynomial σ R) : Prop :=
   ∀ e : Perm σ, rename e φ = φ
@@ -82,7 +82,7 @@ def IsSymmetric [CommSemiring R] (φ : MvPolynomial σ R) : Prop :=
 
 variable (σ R)
 
-/-- The subalgebra of symmetric `mv_polynomial`s. -/
+/-- The subalgebra of symmetric `MvPolynomial`s. -/
 def symmetricSubalgebra [CommSemiring R] : Subalgebra R (MvPolynomial σ R)
     where
   carrier := setOf IsSymmetric
@@ -162,13 +162,13 @@ open Finset
 
 variable (σ R) [CommSemiring R] [CommSemiring S] [Fintype σ] [Fintype τ]
 
-/-- The `n`th elementary symmetric `mv_polynomial σ R`. -/
+/-- The `n`th elementary symmetric `MvPolynomial σ R`. -/
 def esymm (n : ℕ) : MvPolynomial σ R :=
   ∑ t in powersetLen n univ, ∏ i in t, X i
 #align mv_polynomial.esymm MvPolynomial.esymm
 
-/-- The `n`th elementary symmetric `mv_polynomial σ R` is obtained by evaluating the
-`n`th elementary symmetric at the `multiset` of the monomials -/
+/-- The `n`th elementary symmetric `MvPolynomial σ R` is obtained by evaluating the
+`n`th elementary symmetric at the `Multiset` of the monomials -/
 theorem esymm_eq_multiset_esymm : esymm σ R = (Finset.univ.val.map X).esymm := by
   refine' funext fun n => (Multiset.Finset.esymm_map_val X _ n).symm
 #align mv_polynomial.esymm_eq_multiset_esymm MvPolynomial.esymm_eq_multiset_esymm
