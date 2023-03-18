@@ -5,8 +5,6 @@ namespace CategoryTheory
 
 open Localization Category
 
-section
-
 variable {C₁ C₂ D₁ D₂ : Type _} [Category C₁] [Category C₂] [Category D₁] [Category D₂]
   (W₁ : MorphismProperty C₁) (W₂ : MorphismProperty C₂)
 
@@ -39,8 +37,6 @@ noncomputable instance catCommSq : CatCommSq L₁ Φ.functor L₂ (Φ.localizedF
 
 noncomputable instance : Lifting L₁ W₁ (Φ.functor ⋙ L₂) (Φ.localizedFunctor L₁ L₂) :=
   ⟨Iso.symm (CatCommSq.iso _ _ _ _)⟩
-
-section
 
 variable {L₁ L₂} {D₁' D₂' : Type _} [Category D₁'] [Category D₂'] {L₁' : C₁ ⥤ D₁'} {L₂' : C₂ ⥤ D₂'}
   {G : D₁ ⥤ D₂} {G' : D₁' ⥤ D₂'} [L₁'.IsLocalization W₁] [L₂'.IsLocalization W₂]
@@ -97,36 +93,6 @@ noncomputable def localizedFunctor_isEquivalence [Φ.IsLocalizedEquivalence] :
     IsEquivalence ((Φ.localizedFunctor L₁ L₂)) :=
   Φ.isEquivalence (Φ.catCommSq L₁ L₂)
 
-end
-
 end LocalizorMorphism
-
-end
-
-namespace Localization
-
-variable {C₁ C₂ D₁ D₂ : Type _} [Category C₁] [Category C₂] [Category D₁] [Category D₂]
-  (L₁ : C₁ ⥤ D₁) (W₁ : MorphismProperty C₁) [L₁.IsLocalization W₁]
-  (L₂ : C₂ ⥤ D₂) (W₂ : MorphismProperty C₂) [L₂.IsLocalization W₂]
-  (G : C₁ ⥤ D₂) (G' : D₁ ⥤ D₂) [Lifting L₁ W₁ G G']
-  (F : C₂ ⥤ D₁) (F' : D₂ ⥤ D₁) [Lifting L₂ W₂ F F']
-  (α : G ⋙ F' ≅ L₁) (β : F ⋙ G' ≅ L₂)
-
-/-- basic constructor of an equivalence between localized categories -/
-noncomputable def equivalence : D₁ ≌ D₂ :=
-  Equivalence.mk G' F' (liftNatIso L₁ W₁ L₁ (G ⋙ F') (𝟭 D₁) (G' ⋙ F') α.symm)
-    (liftNatIso L₂ W₂ (F ⋙ G') L₂ (F' ⋙ G') (𝟭 D₂) β)
-
-@[simp]
-lemma equivalence_counit_app (X : C₂) :
-    (equivalence L₁ W₁ L₂ W₂ G G' F F' α β).counitIso.app (L₂.obj X) =
-      (Lifting.iso L₂ W₂ (F ⋙ G') (F' ⋙ G')).app X ≪≫ β.app X := by
-  ext
-  dsimp [equivalence, Equivalence.mk]
-  rw [liftNatTrans_app]
-  dsimp [Lifting.iso]
-  rw [comp_id]
-
-end Localization
 
 end CategoryTheory
