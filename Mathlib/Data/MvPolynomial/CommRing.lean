@@ -24,16 +24,16 @@ As in other polynomial files, we typically use the notation:
 
 + `σ : Type*` (indexing the variables)
 
-+ `R : Type*` `[comm_ring R]` (the coefficients)
++ `R : Type*` `[CommRing R]` (the coefficients)
 
 + `s : σ →₀ ℕ`, a function from `σ` to `ℕ` which is zero away from a finite set.
-This will give rise to a monomial in `mv_polynomial σ R` which mathematicians might call `X^s`
+This will give rise to a monomial in `MvPolynomial σ R` which mathematicians might call `X^s`
 
 + `a : R`
 
 + `i : σ`, with corresponding monomial `X i`, often denoted `X_i` by mathematicians
 
-+ `p : mv_polynomial σ R`
++ `p : MvPolynomial σ R`
 
 -/
 
@@ -65,15 +65,17 @@ instance : CommRing (MvPolynomial σ R) :=
 
 variable (σ a a')
 
-@[simp]
-theorem c_sub : (C (a - a') : MvPolynomial σ R) = C a - C a' :=
+-- @[simp] -- Porting note: simp can prove this
+theorem C_sub : (C (a - a') : MvPolynomial σ R) = C a - C a' :=
   RingHom.map_sub _ _ _
-#align mv_polynomial.C_sub MvPolynomial.c_sub
+set_option linter.uppercaseLean3 false in
+#align mv_polynomial.C_sub MvPolynomial.C_sub
 
-@[simp]
-theorem c_neg : (C (-a) : MvPolynomial σ R) = -C a :=
+-- @[simp] -- Porting note: simp can prove this
+theorem C_neg : (C (-a) : MvPolynomial σ R) = -C a :=
   RingHom.map_neg _ _
-#align mv_polynomial.C_neg MvPolynomial.c_neg
+set_option linter.uppercaseLean3 false in
+#align mv_polynomial.C_neg MvPolynomial.C_neg
 
 @[simp]
 theorem coeff_neg (m : σ →₀ ℕ) (p : MvPolynomial σ R) : coeff m (-p) = -coeff m p :=
@@ -99,7 +101,7 @@ variable {σ} (p)
 section Degrees
 
 theorem degrees_neg (p : MvPolynomial σ R) : (-p).degrees = p.degrees := by
-  rw [degrees, support_neg] <;> rfl
+  rw [degrees, support_neg]; rfl
 #align mv_polynomial.degrees_neg MvPolynomial.degrees_neg
 
 theorem degrees_sub (p q : MvPolynomial σ R) : (p - q).degrees ≤ p.degrees ⊔ q.degrees := by
@@ -110,8 +112,6 @@ end Degrees
 
 section Vars
 
-variable (p q)
-
 @[simp]
 theorem vars_neg : (-p).vars = p.vars := by simp [vars, degrees_neg]
 #align mv_polynomial.vars_neg MvPolynomial.vars_neg
@@ -119,8 +119,6 @@ theorem vars_neg : (-p).vars = p.vars := by simp [vars, degrees_neg]
 theorem vars_sub_subset : (p - q).vars ⊆ p.vars ∪ q.vars := by
   convert vars_add_subset p (-q) using 2 <;> simp [sub_eq_add_neg]
 #align mv_polynomial.vars_sub_subset MvPolynomial.vars_sub_subset
-
-variable {p q}
 
 @[simp]
 theorem vars_sub_of_disjoint (hpq : Disjoint p.vars q.vars) : (p - q).vars = p.vars ∪ q.vars := by
@@ -146,16 +144,17 @@ theorem eval₂_neg : (-p).eval₂ f g = -p.eval₂ f g :=
   (eval₂Hom f g).map_neg _
 #align mv_polynomial.eval₂_neg MvPolynomial.eval₂_neg
 
-theorem hom_c (f : MvPolynomial σ ℤ →+* S) (n : ℤ) : f (C n) = (n : S) :=
+theorem hom_C (f : MvPolynomial σ ℤ →+* S) (n : ℤ) : f (C n) = (n : S) :=
   eq_intCast (f.comp C) n
-#align mv_polynomial.hom_C MvPolynomial.hom_c
+set_option linter.uppercaseLean3 false in
+#align mv_polynomial.hom_C MvPolynomial.hom_C
 
 /-- A ring homomorphism f : Z[X_1, X_2, ...] → R
 is determined by the evaluations f(X_1), f(X_2), ... -/
 @[simp]
-theorem eval₂_hom_x {R : Type u} (c : ℤ →+* S) (f : MvPolynomial R ℤ →+* S) (x : MvPolynomial R ℤ) :
-    eval₂ c (f ∘ X) x = f x :=
-  MvPolynomial.induction_on x
+theorem eval₂_hom_X {R : Type u} (c : ℤ →+* S) (f : MvPolynomial R ℤ →+* S) (x : MvPolynomial R ℤ) :
+    eval₂ c (f ∘ X) x = f x := by
+  apply MvPolynomial.induction_on x
     (fun n => by
       rw [hom_C f, eval₂_C]
       exact eq_intCast c n)
@@ -165,16 +164,16 @@ theorem eval₂_hom_x {R : Type u} (c : ℤ →+* S) (f : MvPolynomial R ℤ →
     fun p n hp => by
     rw [eval₂_mul, eval₂_X, hp]
     exact (f.map_mul _ _).symm
-#align mv_polynomial.eval₂_hom_X MvPolynomial.eval₂_hom_x
+set_option linter.uppercaseLean3 false in
+#align mv_polynomial.eval₂_hom_X MvPolynomial.eval₂_hom_X
 
 /-- Ring homomorphisms out of integer polynomials on a type `σ` are the same as
 functions out of the type `σ`, -/
-def homEquiv : (MvPolynomial σ ℤ →+* S) ≃ (σ → S)
-    where
-  toFun f := ⇑f ∘ X
+def homEquiv : (MvPolynomial σ ℤ →+* S) ≃ (σ → S) where
+  toFun f := f ∘ X
   invFun f := eval₂Hom (Int.castRingHom S) f
-  left_inv f := RingHom.ext <| eval₂_hom_x _ _
-  right_inv f := funext fun x => by simp only [coe_eval₂_hom, Function.comp_apply, eval₂_X]
+  left_inv f := RingHom.ext <| eval₂_hom_X _ _
+  right_inv f := funext fun x => by simp only [coe_eval₂Hom, Function.comp_apply, eval₂_X]
 #align mv_polynomial.hom_equiv MvPolynomial.homEquiv
 
 end Eval₂
@@ -183,9 +182,9 @@ section DegreeOf
 
 theorem degreeOf_sub_lt {x : σ} {f g : MvPolynomial σ R} {k : ℕ} (h : 0 < k)
     (hf : ∀ m : σ →₀ ℕ, m ∈ f.support → k ≤ m x → coeff m f = coeff m g)
-    (hg : ∀ m : σ →₀ ℕ, m ∈ g.support → k ≤ m x → coeff m f = coeff m g) : degreeOf x (f - g) < k :=
-  by
-  rw [degree_of_lt_iff h]
+    (hg : ∀ m : σ →₀ ℕ, m ∈ g.support → k ≤ m x → coeff m f = coeff m g) :
+    degreeOf x (f - g) < k := by
+  rw [degreeOf_lt_iff h]
   intro m hm
   by_contra hc
   simp only [not_lt] at hc
@@ -202,7 +201,7 @@ section TotalDegree
 
 @[simp]
 theorem totalDegree_neg (a : MvPolynomial σ R) : (-a).totalDegree = a.totalDegree := by
-  simp only [total_degree, support_neg]
+  simp only [totalDegree, support_neg]
 #align mv_polynomial.total_degree_neg MvPolynomial.totalDegree_neg
 
 theorem totalDegree_sub (a b : MvPolynomial σ R) :
@@ -210,8 +209,8 @@ theorem totalDegree_sub (a b : MvPolynomial σ R) :
   calc
     (a - b).totalDegree = (a + -b).totalDegree := by rw [sub_eq_add_neg]
     _ ≤ max a.totalDegree (-b).totalDegree := (totalDegree_add a (-b))
-    _ = max a.totalDegree b.totalDegree := by rw [total_degree_neg]
-    
+    _ = max a.totalDegree b.totalDegree := by rw [totalDegree_neg]
+
 #align mv_polynomial.total_degree_sub MvPolynomial.totalDegree_sub
 
 end TotalDegree
@@ -219,4 +218,3 @@ end TotalDegree
 end CommRing
 
 end MvPolynomial
-
