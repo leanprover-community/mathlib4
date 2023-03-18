@@ -997,7 +997,8 @@ theorem repr_opow (o₁ o₂) [NF o₁] [NF o₂] : repr (o₁ ^ o₂) = repr o�
     cases' NF_repr_split' e₂ with _ r₂
     simp [opow_def, opow, e₁, r₁, split_eq_scale_split' e₂]
     cases' k with k <;> skip
-    · simp [opow, opow_match', r₂, opow_mul, repr_opow_aux₁ a00 al aa, add_assoc]
+    · simp [opow, opow_match', r₂, opow_mul, repr_opow_aux₁ a00 al aa,
+        add_assoc, split_eq_scale_split' e₂]
     · simp [opow, opow_match', r₂, opow_add, opow_mul, mul_assoc, add_assoc]
       rw [repr_opow_aux₁ a00 al aa, scale_opowAux]
       simp [opow_mul]
