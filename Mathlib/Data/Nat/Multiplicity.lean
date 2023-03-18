@@ -8,13 +8,13 @@ Authors: Chris Hughes
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.BigOperators.Intervals
-import Mathbin.Algebra.GeomSum
-import Mathbin.Data.Nat.Bitwise
-import Mathbin.Data.Nat.Log
-import Mathbin.Data.Nat.Parity
-import Mathbin.Data.Nat.Prime
-import Mathbin.RingTheory.Multiplicity
+import Mathlib.Algebra.BigOperators.Intervals
+import Mathlib.Algebra.GeomSum
+import Mathlib.Data.Nat.Bitwise
+import Mathlib.Data.Nat.Log
+import Mathlib.Data.Nat.Parity
+import Mathlib.Data.Nat.Prime
+import Mathlib.RingTheory.Multiplicity
 
 /-!
 # Natural number multiplicity
@@ -131,8 +131,7 @@ theorem multiplicity_factorial {p : ℕ} (hp : p.Prime) :
 /-- The multiplicity of `p` in `(p * (n + 1))!` is one more than the sum
   of the multiplicities of `p` in `(p * n)!` and `n + 1`. -/
 theorem multiplicity_factorial_mul_succ {n p : ℕ} (hp : p.Prime) :
-    multiplicity p (p * (n + 1))! = multiplicity p (p * n)! + multiplicity p (n + 1) + 1 :=
-  by
+    multiplicity p (p * (n + 1))! = multiplicity p (p * n)! + multiplicity p (n + 1) + 1 := by
   have hp' := hp.prime
   have h0 : 2 ≤ p := hp.two_le
   have h1 : 1 ≤ p * n + 1 := Nat.le_add_left _ _
@@ -160,8 +159,7 @@ theorem multiplicity_factorial_mul_succ {n p : ℕ} (hp : p.Prime) :
 
 /-- The multiplicity of `p` in `(p * n)!` is `n` more than that of `n!`. -/
 theorem multiplicity_factorial_mul {n p : ℕ} (hp : p.Prime) :
-    multiplicity p (p * n)! = multiplicity p n ! + n :=
-  by
+    multiplicity p (p * n)! = multiplicity p n ! + n := by
   induction' n with n ih
   · simp
   · simp only [succ_eq_add_one, multiplicity.mul, hp, hp.prime, ih, multiplicity_factorial_mul_succ,
@@ -178,8 +176,7 @@ theorem pow_dvd_factorial_iff {p : ℕ} {n r b : ℕ} (hp : p.Prime) (hbn : log 
 #align nat.prime.pow_dvd_factorial_iff Nat.Prime.pow_dvd_factorial_iff
 
 theorem multiplicity_factorial_le_div_pred {p : ℕ} (hp : p.Prime) (n : ℕ) :
-    multiplicity p n ! ≤ (n / (p - 1) : ℕ) :=
-  by
+    multiplicity p n ! ≤ (n / (p - 1) : ℕ) := by
   rw [hp.multiplicity_factorial (lt_succ_self _), PartENat.coe_le_coe]
   exact Nat.geom_sum_Ico_le hp.two_le _ _
 #align nat.prime.multiplicity_factorial_le_div_pred Nat.Prime.multiplicity_factorial_le_div_pred
@@ -264,8 +261,7 @@ theorem multiplicity_choose_prime_pow {p n k : ℕ} (hp : p.Prime) (hkn : k ≤ 
     multiplicity_choose_prime_pow_add_multiplicity hp hkn hk0
 #align nat.prime.multiplicity_choose_prime_pow Nat.Prime.multiplicity_choose_prime_pow
 
-theorem dvd_choose_pow (hp : Prime p) (hk : k ≠ 0) (hkp : k ≠ p ^ n) : p ∣ (p ^ n).choose k :=
-  by
+theorem dvd_choose_pow (hp : Prime p) (hk : k ≠ 0) (hkp : k ≠ p ^ n) : p ∣ (p ^ n).choose k := by
   obtain hkp | hkp := hkp.symm.lt_or_lt
   · simp [choose_eq_zero_of_lt hkp]
   refine' multiplicity_ne_zero.1 fun h => hkp.not_le <| Nat.le_of_dvd hk.bot_lt _
@@ -281,8 +277,7 @@ theorem dvd_choose_pow_iff (hp : Prime p) : p ∣ (p ^ n).choose k ↔ k ≠ 0 �
 
 end Prime
 
-theorem multiplicity_two_factorial_lt : ∀ {n : ℕ} (h : n ≠ 0), multiplicity 2 n ! < n :=
-  by
+theorem multiplicity_two_factorial_lt : ∀ {n : ℕ} (h : n ≠ 0), multiplicity 2 n ! < n := by
   have h2 := prime_two.prime
   refine' binary_rec _ _
   · contradiction
