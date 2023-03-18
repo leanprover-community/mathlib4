@@ -68,9 +68,8 @@ theorem quotKerEquivRange_symm_apply_image (x : M) (h : f x ∈ LinearMap.range 
 #align linear_map.quot_ker_equiv_range_symm_apply_image LinearMap.quotKerEquivRange_symm_apply_image
 
 /-
-Porting note: In these definitions and theorems, a match to `Submodule.instModuleSubtype
-  MemSubmoduleInstMembershipInstSetLikeSubmoduleInstAddCommMonoidSubtypeMemSubmoduleInstMembership
-  InstSetLikeSubmodule` which takes 0.1s happens a few hundreds times, so `maxHeartbeats` and
+Porting note: In these definitions and theorems, a match to `Submodule.module` which takes 0.1s
+  happens a few hundreds times, so `maxHeartbeats` and
   `synthInstance.maxHeartbeats` should be increased.
 TODO: We hope these problem will be resolved by
   https://github.com/leanprover/lean4/issues/2055.
