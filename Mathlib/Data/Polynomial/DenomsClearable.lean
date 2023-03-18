@@ -8,8 +8,8 @@ Authors: Damiano Testa
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Polynomial.EraseLead
-import Mathbin.Data.Polynomial.Eval
+import Mathlib.Data.Polynomial.EraseLead
+import Mathlib.Data.Polynomial.Eval
 
 /-!
 # Denominators of evaluation of polynomials at ratios
@@ -50,8 +50,7 @@ theorem denomsClearable_zero (N : ℕ) (a : R) (bu : bi * i b = 1) : DenomsClear
 
 /- ./././Mathport/Syntax/Translate/Tactic/Lean3.lean:132:4: warning: unsupported: rw with cfg: { occs := occurrences.pos[occurrences.pos] «expr[ ,]»([2]) } -/
 theorem denomsClearable_c_mul_x_pow {N : ℕ} (a : R) (bu : bi * i b = 1) {n : ℕ} (r : R)
-    (nN : n ≤ N) : DenomsClearable a b N (C r * X ^ n) i :=
-  by
+    (nN : n ≤ N) : DenomsClearable a b N (C r * X ^ n) i := by
   refine' ⟨r * a ^ n * b ^ (N - n), bi, bu, _⟩
   rw [C_mul_X_pow_eq_monomial, map_monomial, ← C_mul_X_pow_eq_monomial, eval_mul, eval_pow, eval_C]
   rw [RingHom.map_mul, RingHom.map_mul, RingHom.map_pow, RingHom.map_pow, eval_X, mul_comm]
@@ -95,8 +94,7 @@ The assumption on `K` could be weakened to `linear_ordered_comm_ring` assuming t
 image of the denominator is invertible in `K`. -/
 theorem one_le_pow_mul_abs_eval_div {K : Type _} [LinearOrderedField K] {f : ℤ[X]} {a b : ℤ}
     (b0 : 0 < b) (fab : eval ((a : K) / b) (f.map (algebraMap ℤ K)) ≠ 0) :
-    (1 : K) ≤ b ^ f.natDegree * |eval ((a : K) / b) (f.map (algebraMap ℤ K))| :=
-  by
+    (1 : K) ≤ b ^ f.natDegree * |eval ((a : K) / b) (f.map (algebraMap ℤ K))| := by
   obtain ⟨ev, bi, bu, hF⟩ :=
     @denomsClearable_natDegree _ _ _ _ b _ (algebraMap ℤ K) f a
       (by
