@@ -350,10 +350,10 @@ theorem cmp_compares : ∀ (a b : Onote) [NF a] [NF b], (cmp a b).Compares a b
 #align onote.cmp_compares Onote.cmp_compares
 
 theorem repr_inj {a b} [NF a] [NF b] : repr a = repr b ↔ a = b :=
-  ⟨match cmp a b, cmp_compares a b with
-    | Ordering.lt, (h : repr a < repr b), e => (ne_of_lt h e).elim
-    | Ordering.gt, (h : repr a > repr b), e => (ne_of_gt h e).elim
-    | Ordering.eq, h, e => h,
+  ⟨fun e => match cmp a b, cmp_compares a b with
+    | Ordering.lt, (h : repr a < repr b) => (ne_of_lt h e).elim
+    | Ordering.gt, (h : repr a > repr b)=> (ne_of_gt h e).elim
+    | Ordering.eq, h => h,
     congr_arg _⟩
 #align onote.repr_inj Onote.repr_inj
 
