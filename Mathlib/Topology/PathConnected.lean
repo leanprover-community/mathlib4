@@ -513,8 +513,8 @@ theorem trans_continuous_family {X ι : Type _} [TopologicalSpace X] [Topologica
     Continuous ↿fun t => (γ₁ t).trans (γ₂ t) := by
   have h₁' := Path.continuous_uncurry_extend_of_continuous_family γ₁ h₁
   have h₂' := Path.continuous_uncurry_extend_of_continuous_family γ₂ h₂
-  simp only [has_uncurry.uncurry, CoeFun.coe, coeFn, Path.trans, (· ∘ ·)]
-  refine' Continuous.if_le _ _ (continuous_subtype_coe.comp continuous_snd) continuous_const _
+  simp only [HasUncurry.uncurry, CoeFun.coe, Path.trans, (· ∘ ·)]
+  refine' Continuous.if_le _ _ (continuous_subtype_val.comp continuous_snd) continuous_const _
   · change
       Continuous ((fun p : ι × ℝ => (γ₁ p.1).extend p.2) ∘ Prod.map id (fun x => 2 * x : I → ℝ))
     exact h₁'.comp (continuous_id.prod_map <| continuous_const.mul continuous_subtype_val)
