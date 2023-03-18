@@ -1316,8 +1316,9 @@ def oadd (e : Nonote) (n : ℕ+) (a : Nonote) (h : below a e) : Nonote :=
 /-- This is a recursor-like theorem for `nonote` suggesting an
   inductive definition, which can't actually be defined this
   way due to conflicting dependencies. -/
+-- porting note: marked `noncomputable`, TODO use explicit match
 @[elab_as_elim]
-def recOn {C : Nonote → Sort _} (o : Nonote) (H0 : C 0)
+noncomputable def recOn {C : Nonote → Sort _} (o : Nonote) (H0 : C 0)
     (H1 : ∀ e n a h, C e → C a → C (oadd e n a h)) : C o := by
   cases' o with o h; induction' o with e n a IHe IHa
   · exact H0
