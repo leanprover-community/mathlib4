@@ -1237,7 +1237,7 @@ instance NF (o : Nonote) : NF o.1 :=
 
 /-- Construct a `nonote` from an ordinal notation
   (and infer normality) -/
-def mk (o : Onote) [h : NF o] : Nonote :=
+def mk (o : Onote) [h : Onote.NF o] : Nonote :=
   ⟨o, h⟩
 #align nonote.mk Nonote.mk
 
