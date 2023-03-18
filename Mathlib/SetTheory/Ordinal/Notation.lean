@@ -1069,12 +1069,11 @@ theorem fundamentalSequence_has_prop (o) : FundamentalSequenceProp o (fundamenta
       simp only [fundamentalSequence, FundamentalSequenceProp] <;>
     rw [e, FundamentalSequenceProp] at ihb
   · rcases e : a.fundamentalSequence with (⟨_ | a'⟩ | f) <;> cases' e' : m.natPred with m' <;>
-              simp only [fundamentalSequence, FundamentalSequenceProp] <;>
-            rw [e, FundamentalSequenceProp] at iha <;>
-          try
-            rw [show m = 1 by have := PNat.natPred_add_one m; rw [e'] at this; exact PNat.coe_inj.1 this.symm] <;>
-        try
-          rw [show m = m'.succ.succ_pnat by
+      simp only [fundamentalSequence, FundamentalSequenceProp] <;>
+      rw [e, FundamentalSequenceProp] at iha <;>
+      try rw [show m = 1 by
+            have := PNat.natPred_add_one m; rw [e'] at this; exact PNat.coe_inj.1 this.symm] <;>
+      try rw [show m = m'.succ.succ_pnat by
               rw [← e', ← PNat.coe_inj, Nat.succPNat_coe, ← Nat.add_one, PNat.natPred_add_one]] <;>
       simp only [repr, iha, ihb, opow_lt_opow_iff_right one_lt_omega, add_lt_add_iff_left, add_zero,
         coe_coe, eq_self_iff_true, lt_add_iff_pos_right, lt_def, mul_one, Nat.cast_zero,
