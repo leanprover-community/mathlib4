@@ -554,21 +554,18 @@ protected theorem mul' {p a b : α} (hp : Prime p) (h : (multiplicity p (a * b))
   have hdiva : p ^ get (multiplicity p a) ((finite_mul_iff hp).1 h).1 ∣ a := pow_multiplicity_dvd _
   have hdivb : p ^ get (multiplicity p b) ((finite_mul_iff hp).1 h).2 ∣ b := pow_multiplicity_dvd _
   have hpoweq :
-    p ^
-        (get (multiplicity p a) ((finite_mul_iff hp).1 h).1 +
+    p ^ (get (multiplicity p a) ((finite_mul_iff hp).1 h).1 +
           get (multiplicity p b) ((finite_mul_iff hp).1 h).2) =
       p ^ get (multiplicity p a) ((finite_mul_iff hp).1 h).1 *
         p ^ get (multiplicity p b) ((finite_mul_iff hp).1 h).2 :=
     by simp [pow_add]
   have hdiv :
-    p ^
-        (get (multiplicity p a) ((finite_mul_iff hp).1 h).1 +
+    p ^ (get (multiplicity p a) ((finite_mul_iff hp).1 h).1 +
           get (multiplicity p b) ((finite_mul_iff hp).1 h).2) ∣
       a * b :=
     by rw [hpoweq]; apply mul_dvd_mul <;> assumption
   have hsucc :
-    ¬p ^
-          (get (multiplicity p a) ((finite_mul_iff hp).1 h).1 +
+    ¬p ^ (get (multiplicity p a) ((finite_mul_iff hp).1 h).1 +
               get (multiplicity p b) ((finite_mul_iff hp).1 h).2 +
             1) ∣
         a * b :=
