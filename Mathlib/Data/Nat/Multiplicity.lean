@@ -62,17 +62,16 @@ theorem multiplicity_eq_card_pow_dvd {m n b : ℕ} (hm : m ≠ 1) (hn : 0 < n) (
     multiplicity m n = ↑(Ico 1 <| (multiplicity m n).get (finite_nat_iff.2 ⟨hm, hn⟩) + 1).card := by
       simp
     _ = ↑((Finset.Ico 1 b).filter fun i => m ^ i ∣ n).card :=
-      congr_arg coe <|
+      congr_arg _ <|
         congr_arg card <|
           Finset.ext fun i => by
             rw [mem_filter, mem_Ico, mem_Ico, lt_succ_iff, ← @PartENat.coe_le_coe i,
               PartENat.natCast_get, ← pow_dvd_iff_le_multiplicity, and_right_comm]
             refine' (and_iff_left_of_imp fun h => lt_of_le_of_lt _ hb).symm
-            cases m
-            · rw [zero_pow, zero_dvd_iff] at h
-              exacts[(hn.ne' h.2).elim, h.1]
-            exact
-              le_log_of_pow_le (one_lt_iff_ne_zero_and_ne_one.2 ⟨m.succ_ne_zero, hm⟩)
+            cases' m with m
+            · rw [zero_eq, zero_pow, zero_dvd_iff] at h
+              exacts [(hn.ne' h.2).elim, h.1]
+            exact le_log_of_pow_le (one_lt_iff_ne_zero_and_ne_one.2 ⟨m.succ_ne_zero, hm⟩)
                 (le_of_dvd hn h.2)
 #align nat.multiplicity_eq_card_pow_dvd Nat.multiplicity_eq_card_pow_dvd
 
@@ -106,7 +105,7 @@ The multiplicity of a prime in `n!` is the sum of the quotients `n / p ^ i`. Thi
 over the finset `Ico 1 b` where `b` is any bound greater than `log p n`. -/
 theorem multiplicity_factorial {p : ℕ} (hp : p.Prime) :
     ∀ {n b : ℕ}, log p n < b → multiplicity p n ! = (∑ i in Ico 1 b, n / p ^ i : ℕ)
-  | 0, b, hb => by simp [Ico, hp.multiplicity_one]
+  | 0, b, _ => by simp [Ico, hp.multiplicity_one]
   | n + 1, b, hb =>
     calc
       multiplicity p (n + 1)! = multiplicity p n ! + multiplicity p (n + 1) := by
@@ -119,7 +118,7 @@ theorem multiplicity_factorial {p : ℕ} (hp : p.Prime) :
         rw [sum_add_distrib, sum_boole]
         simp
       _ = (∑ i in Ico 1 b, (n + 1) / p ^ i : ℕ) :=
-        congr_arg coe <| Finset.sum_congr rfl fun _ _ => (succ_div _ _).symm
+        congr_arg _ <| Finset.sum_congr rfl fun _ _ => (succ_div _ _).symm
 #align nat.prime.multiplicity_factorial Nat.Prime.multiplicity_factorial
 
 /-- The multiplicity of `p` in `(p * (n + 1))!` is one more than the sum
@@ -266,7 +265,7 @@ theorem dvd_choose_pow_iff (hp : Prime p) : p ∣ (p ^ n).choose k ↔ k ≠ 0 �
 
 end Prime
 
-theorem multiplicity_two_factorial_lt : ∀ {n : ℕ} (h : n ≠ 0), multiplicity 2 n ! < n := by
+theorem multiplicity_two_factorial_lt : ∀ {n : ℕ} (_ : n ≠ 0), multiplicity 2 n ! < n := by
   have h2 := prime_two.prime
   refine' binaryRec _ _
   · exact fun h => False.elim <| h rfl
@@ -275,6 +274,9 @@ theorem multiplicity_two_factorial_lt : ∀ {n : ℕ} (h : n ≠ 0), multiplicit
     · subst hn
       simp at h
       simp [h, one_right h2.not_unit]
+      rw [Prime.multiplicity_one]
+      simp only [zero_lt_one]
+      decide
     have : multiplicity 2 (2 * n)! < (2 * n : ℕ) := by
       rw [prime_two.multiplicity_factorial_mul]
       refine' (PartENat.add_lt_add_right (ih hn) (PartENat.natCast_ne_top _)).trans_le _
