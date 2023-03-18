@@ -1292,9 +1292,9 @@ def cmp (a b : Nonote) : Ordering :=
 
 theorem cmp_compares : ∀ a b : Nonote, (cmp a b).Compares a b
   | ⟨a, ha⟩, ⟨b, hb⟩ => by
-    skip
-    dsimp [cmp]; have := Onote.cmp_compares a b
-    cases Onote.cmp a b <;> try exact this
+    dsimp [cmp]
+    have := Onote.cmp_compares a b
+    cases h: Onote.cmp a b <;> simp only [h] at this <;> try exact this
     exact Subtype.mk_eq_mk.2 this
 #align nonote.cmp_compares Nonote.cmp_compares
 
