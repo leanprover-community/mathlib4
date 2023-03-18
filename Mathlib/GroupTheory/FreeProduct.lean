@@ -912,19 +912,11 @@ theorem FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeGroup.li
   let f : ∀ i, H i →* G := fun i => FreeGroup.lift fun _ => a i
   let X' : ι → Set α := fun i => X i ∪ Y i
   apply lift_injective_of_ping_pong f _ X'
-  show _ ∨ ∃ i, 3 ≤ (#H i)
-  · inhabit ι
-    right
-    use Inhabited.default ι
-    simp only [H]
-    rw [free_group.free_group_unit_equiv_int.cardinal_eq, Cardinal.mk_denumerable]
-    apply le_of_lt
-    simp
   show ∀ i, (X' i).Nonempty
   · exact fun i => Set.Nonempty.inl (hXnonempty i)
   show Pairwise fun i j => Disjoint (X' i) (X' j)
   · intro i j hij
-    simp only [X']
+    simp only
     apply Disjoint.union_left <;> apply Disjoint.union_right
     · exact hXdisj hij
     · exact hXYdisj i j
@@ -933,7 +925,7 @@ theorem FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeGroup.li
   show Pairwise fun i j => ∀ h : H i, h ≠ 1 → f i h • X' j ⊆ X' i
   · rintro i j hij
     -- use free_group unit ≃ ℤ
-    refine' free_group.free_group_unit_equiv_int.forall_congr_left'.mpr _
+    refine' FreeGroup.freeGroupUnitEquivInt.forall_congr_left'.mpr _
     intro n hne1
     change FreeGroup.lift (fun _ => a i) (FreeGroup.of () ^ n) • X' j ⊆ X' i
     simp only [map_zpow, FreeGroup.lift.of]
@@ -941,9 +933,9 @@ theorem FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeGroup.li
     have hnne0 : n ≠ 0 := by
       rintro rfl
       apply hne1
-      simpa
+      simp; rfl
     clear hne1
-    simp only [X']
+    simp only
     -- Positive and negative powers separately
     cases' (lt_or_gt_of_ne hnne0).symm with hlt hgt
     · have h1n : 1 ≤ n := hlt
@@ -951,10 +943,13 @@ theorem FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeGroup.li
         a i ^ n • X' j ⊆ a i ^ n • Y iᶜ :=
           smul_set_mono ((hXYdisj j i).union_left <| hYdisj hij.symm).subset_compl_right
         _ ⊆ X i := by
-          refine' Int.le_induction _ _ _ h1n
-          · rw [zpow_one]
+          clear hnne0 hlt
+          refine Int.le_induction (P := fun n => a i ^ n • Y iᶜ ⊆ X i) ?_ ?_ n h1n
+          . dsimp
+            rw [zpow_one]
             exact hX i
-          · intro n hle hi
+          . dsimp
+            intro n hle hi
             calc
               a i ^ (n + 1) • Y iᶜ = (a i ^ n * a i) • Y iᶜ := by rw [zpow_add, zpow_one]
               _ = a i ^ n • a i • Y iᶜ := (MulAction.mul_smul _ _ _)
@@ -963,7 +958,6 @@ theorem FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeGroup.li
               _ ⊆ X i := hi
 
         _ ⊆ X' i := Set.subset_union_left _ _
-
     · have h1n : n ≤ -1 := by
         apply Int.le_of_lt_add_one
         simpa using hgt
@@ -971,10 +965,12 @@ theorem FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeGroup.li
         a i ^ n • X' j ⊆ a i ^ n • X iᶜ :=
           smul_set_mono ((hXdisj hij.symm).union_left (hXYdisj i j).symm).subset_compl_right
         _ ⊆ Y i := by
-          refine' Int.le_induction_down _ _ _ h1n
-          · rw [zpow_neg, zpow_one]
+          refine' Int.le_induction_down (P := fun n => a i ^ n • X iᶜ ⊆ Y i) _ _ _ h1n
+          · dsimp
+            rw [zpow_neg, zpow_one]
             exact hY i
-          · intro n hle hi
+          · dsimp
+            intro n _ hi
             calc
               a i ^ (n - 1) • X iᶜ = (a i ^ n * (a i)⁻¹) • X iᶜ := by rw [zpow_sub, zpow_one]
               _ = a i ^ n • (a i)⁻¹ • X iᶜ := (MulAction.mul_smul _ _ _)
@@ -983,7 +979,14 @@ theorem FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeGroup.li
               _ ⊆ Y i := hi
 
         _ ⊆ X' i := Set.subset_union_right _ _
-
+  show _ ∨ ∃ i, 3 ≤ (#H i)
+  · inhabit ι
+    right
+    use Inhabited.default
+    simp only
+    rw [FreeGroup.freeGroupUnitEquivInt.cardinal_eq, Cardinal.mk_denumerable]
+    apply le_of_lt
+    exact nat_lt_aleph0 3
 #align free_group.injective_lift_of_ping_pong FreeGroup.injective_lift_of_ping_pong
 
 end PingPongLemma
