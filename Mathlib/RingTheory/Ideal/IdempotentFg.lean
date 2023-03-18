@@ -32,7 +32,7 @@ theorem isIdempotentElem_iff_of_fg {R : Type _} [CommRing R] (I : Ideal R) (h : 
     refine' ⟨r, hr' r hr, antisymm _ ((Submodule.span_singleton_le_iff_mem _ _).mpr hr)⟩
     intro x hx
     rw [← hr' x hx]
-    exact ideal.mem_span_singleton'.mpr ⟨_, mul_comm _ _⟩
+    exact Ideal.mem_span_singleton'.mpr ⟨_, mul_comm _ _⟩
   · rintro ⟨e, he, rfl⟩
     simp [IsIdempotentElem, Ideal.span_singleton_mul_span_singleton, he.eq]
 #align ideal.is_idempotent_elem_iff_of_fg Ideal.isIdempotentElem_iff_of_fg
@@ -41,13 +41,12 @@ theorem isIdempotentElem_iff_eq_bot_or_top {R : Type _} [CommRing R] [IsDomain R
     (h : I.Fg) : IsIdempotentElem I ↔ I = ⊥ ∨ I = ⊤ := by
   constructor
   · intro H
-    obtain ⟨e, he, rfl⟩ := (I.is_idempotent_elem_iff_of_fg h).mp H
+    obtain ⟨e, he, rfl⟩ := (I.isIdempotentElem_iff_of_fg h).mp H
     simp only [Ideal.submodule_span_eq, Ideal.span_singleton_eq_bot]
-    apply or_of_or_of_imp_of_imp (is_idempotent_elem.iff_eq_zero_or_one.mp he) id
+    apply Or.imp id _ (IsIdempotentElem.iff_eq_zero_or_one.mp he)
     rintro rfl
     simp
   · rintro (rfl | rfl) <;> simp [IsIdempotentElem]
 #align ideal.is_idempotent_elem_iff_eq_bot_or_top Ideal.isIdempotentElem_iff_eq_bot_or_top
 
 end Ideal
-
