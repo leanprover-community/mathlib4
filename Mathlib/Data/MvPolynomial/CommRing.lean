@@ -8,7 +8,7 @@ Authors: Johannes Hölzl, Johan Commelin, Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.MvPolynomial.Variables
+import Mathlib.Data.MvPolynomial.Variables
 
 /-!
 # Multivariate polynomials over a ring
@@ -123,8 +123,7 @@ theorem vars_sub_subset : (p - q).vars ⊆ p.vars ∪ q.vars := by
 variable {p q}
 
 @[simp]
-theorem vars_sub_of_disjoint (hpq : Disjoint p.vars q.vars) : (p - q).vars = p.vars ∪ q.vars :=
-  by
+theorem vars_sub_of_disjoint (hpq : Disjoint p.vars q.vars) : (p - q).vars = p.vars ∪ q.vars := by
   rw [← vars_neg q] at hpq
   convert vars_add_of_disjoint hpq using 2 <;> simp [sub_eq_add_neg]
 #align mv_polynomial.vars_sub_of_disjoint MvPolynomial.vars_sub_of_disjoint
