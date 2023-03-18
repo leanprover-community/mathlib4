@@ -297,7 +297,7 @@ By prepending `head` to `tail`, one obtains a new word. We'll show that any word
 obtained in this way. -/
 @[ext]
 structure Pair (i : ι) where
-  headI : M i
+  head : M i
   tail : Word M
   fstIdx_ne : fstIdx tail ≠ some i
 #align free_product.word.pair FreeProduct.Word.Pair
@@ -313,9 +313,9 @@ variable [∀ i, DecidableEq (M i)]
 /-- Given a pair `(head, tail)`, we can form a word by prepending `head` to `tail`, except if `head`
 is `1 : M i` then we have to just return `Word` since we need the result to be reduced. -/
 def rcons {i} (p : Pair M i) : Word M :=
-  if h : p.headI = 1 then p.tail
+  if h : p.head = 1 then p.tail
   else
-    { toList := ⟨i, p.headI⟩::p.tail.toList
+    { toList := ⟨i, p.head⟩::p.tail.toList
       ne_one := by
         simp only [List.mem_cons]
         rintro l (rfl | hl)
@@ -338,8 +338,8 @@ theorem cons_eq_rcons {i} {m : M i} {ls h1 h2} :
 #align free_product.word.cons_eq_rcons FreeProduct.Word.cons_eq_rcons
 
 @[simp]
-theorem prod_rcons {i} (p : Pair M i) : prod (rcons p) = of p.headI * prod p.tail :=
-  if hm : p.headI = 1 then by rw [rcons, dif_pos hm, hm, MonoidHom.map_one, one_mul]
+theorem prod_rcons {i} (p : Pair M i) : prod (rcons p) = of p.head * prod p.tail :=
+  if hm : p.head = 1 then by rw [rcons, dif_pos hm, hm, MonoidHom.map_one, one_mul]
   else by rw [rcons, dif_neg hm, prod, List.map_cons, List.prod_cons, prod]
 #align free_product.word.prod_rcons FreeProduct.Word.prod_rcons
 
@@ -375,7 +375,7 @@ private def equivPairAux (i) : ∀ w : Word M, { p : Pair M i // rcons p = w }
   | w@⟨⟨j, m⟩::ls, h1, h2⟩ =>
     if ij : i = j then
       { val :=
-          { headI := ij.symm.rec m
+          { head := ij.symm.rec m
             tail := mkAux ls h1 h2
             fstIdx_ne := by cases ij; exact fstIdx_ne_iff.mpr h2.rel_head? }
         property := by cases ij; exact cons_eq_rcons.symm }
@@ -401,7 +401,7 @@ theorem equivPair_eq_of_fstIdx_ne {i} {w : Word M} (h : fstIdx w ≠ some i) :
 #align free_product.word.equiv_pair_eq_of_fst_idx_ne FreeProduct.Word.equivPair_eq_of_fstIdx_ne
 
 instance summandAction (i) : MulAction (M i) (Word M) where
-  smul m w := rcons { equivPair i w with headI := m * (equivPair i w).headI }
+  smul m w := rcons { equivPair i w with head := m * (equivPair i w).head }
   one_smul w := by
     simp_rw [one_mul]
     apply (equivPair i).symm_apply_eq.mpr
@@ -415,7 +415,7 @@ instance : MulAction (FreeProduct M) (Word M) :=
   MulAction.ofEndHom (lift fun _ => MulAction.toEndHom)
 
 theorem of_smul_def (i) (w : Word M) (m : M i) :
-    of m • w = rcons { equivPair i w with headI := m * (equivPair i w).headI } :=
+    of m • w = rcons { equivPair i w with head := m * (equivPair i w).head } :=
   rfl
 #align free_product.word.of_smul_def FreeProduct.Word.of_smul_def
 
@@ -990,3 +990,4 @@ theorem _root_.FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeG
 end PingPongLemma
 
 end FreeProduct
+#lint
