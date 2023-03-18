@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 
 ! This file was ported from Lean 3 source module order.game_add
-! leanprover-community/mathlib commit 99e8971dc62f1f7ecf693d75e75fbbabd55849de
+! leanprover-community/mathlib commit fee218fb033b2fd390c447f8be27754bc9093be9
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
