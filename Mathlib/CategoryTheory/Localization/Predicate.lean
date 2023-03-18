@@ -458,6 +458,33 @@ def compUniqFunctor : L₁ ⋙ (uniq L₁ L₂ W').functor ≅ L₂ := by
       isoWhiskerRight (compEquivalenceFromModelInverseIso L₁ W') _
     _ ≅ L₂ := qCompEquivalenceFromModelFunctorIso L₂ W'
 
+instance : Lifting L₁ W' L₂ (uniq L₁ L₂ W').functor := ⟨compUniqFunctor L₁ L₂ W'⟩
+
+def isoUniqFunctor (F : D₁ ⥤ D₂) (e : L₁ ⋙ F ≅ L₂) :
+    F ≅ (uniq L₁ L₂ W').functor := by
+  letI : Lifting L₁ W' L₂ F := ⟨e⟩
+  exact liftNatIso L₁ W' L₂ L₂ F (uniq L₁ L₂ W').functor (Iso.refl L₂)
+
 end Localization
+
+namespace Functor
+
+namespace IsEquivalence
+
+open Localization
+
+variable {D₁ D₂ : Type _} [Category D₁] [Category D₂] (L₁ : C ⥤ D₁) (L₂ : C ⥤ D₂)
+  (W : MorphismProperty C) [L₁.IsLocalization W] [L₂.IsLocalization W]
+  (F : D₁ ⥤ D₂) (e : L₁ ⋙ F ≅ L₂)
+
+def of_localization_comparison
+    {D₁ D₂ : Type _} [Category D₁] [Category D₂] (L₁ : C ⥤ D₁) (L₂ : C ⥤ D₂)
+    (W : MorphismProperty C) [L₁.IsLocalization W] [L₂.IsLocalization W]
+    (F : D₁ ⥤ D₂) (e : L₁ ⋙ F ≅ L₂) : IsEquivalence F :=
+  IsEquivalence.ofIso (isoUniqFunctor L₁ L₂ W F e).symm inferInstance
+
+end IsEquivalence
+
+end Functor
 
 end CategoryTheory

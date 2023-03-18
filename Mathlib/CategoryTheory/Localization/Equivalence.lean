@@ -40,7 +40,6 @@ end Localization
 
 namespace Functor
 
-
 namespace IsLocalization
 
 lemma of_equivalence_source (L₁ : C₁ ⥤ D) (W₁ : MorphismProperty C₁) (L₂ : C₂ ⥤ D) (W₂ : MorphismProperty C₂)
