@@ -289,13 +289,14 @@ theorem finite_nat_iff {a b : ℕ} : Finite a b ↔ a ≠ 1 ∧ 0 < b := by
   exact
     ⟨fun h =>
       or_iff_not_imp_right.2 fun hb =>
-        have ha : a ≠ 0 := fun ha => by simpa [ha] using h 1
-        by_contradiction fun ha1 : a ≠ 1 =>
+        have ha : a ≠ 0 := fun ha => hb <| zero_dvd_iff.mp <| by rw [ha] at h; exact h 1
+        Classical.by_contradiction fun ha1 : a ≠ 1 =>
           have ha_gt_one : 1 < a :=
-            lt_of_not_ge fun ha' => by
-              clear h
-              revert ha ha1
-              sorry
+            lt_of_not_ge fun _ => 
+              match a with 
+              | 0 => ha rfl 
+              | 1 => ha1 rfl 
+              | b+2 => by linarith
           not_lt_of_ge (le_of_dvd (Nat.pos_of_ne_zero hb) (h b)) (lt_pow_self ha_gt_one b),
       fun h => by cases h <;> simp [*]⟩
 #align multiplicity.finite_nat_iff multiplicity.finite_nat_iff
@@ -343,7 +344,8 @@ theorem eq_of_associated_left {a b c : α} (h : Associated a b) :
     (multiplicity_le_multiplicity_of_dvd_left h.symm.dvd)
 #align multiplicity.eq_of_associated_left multiplicity.eq_of_associated_left
 
-alias dvd_iff_multiplicity_pos ↔ _ _root_.has_dvd.dvd.multiplicity_pos
+-- Porting note: this was doing nothing in mathlib3 also
+-- alias dvd_iff_multiplicity_pos ↔ _ _root_.has_dvd.dvd.multiplicity_pos
 
 end CommMonoid
 
@@ -481,9 +483,10 @@ variable [CancelCommMonoidWithZero α]
 
 theorem finite_mul_aux {p : α} (hp : Prime p) :
     ∀ {n m : ℕ} {a b : α}, ¬p ^ (n + 1) ∣ a → ¬p ^ (m + 1) ∣ b → ¬p ^ (n + m + 1) ∣ a * b
-  | n, m => fun ha hb ⟨s, hs⟩ =>
+  | n, m => fun ha hb ⟨s, hs⟩ => by
+    rename_i a b x 
     have : p ∣ a * b := ⟨p ^ (n + m) * s, by simp [hs, pow_add, mul_comm, mul_assoc, mul_left_comm]⟩
-    (hp.2.2 a b this).elim
+    apply (hp.2.2 a b this).elim
       (fun ⟨x, hx⟩ =>
         have hn0 : 0 < n :=
           Nat.pos_of_ne_zero fun hn0 => by simp [hx, hn0] at ha
@@ -605,13 +608,16 @@ theorem Finset.prod {β : Type _} {p : α} (hp : Prime p) (s : Finset β) (f : �
       convert multiplicity.mul hp
 #align multiplicity.finset.prod multiplicity.Finset.prod
 
+-- Porting note: with protected could not use pow' k in the succ branch
 protected theorem pow' {p a : α} (hp : Prime p) (ha : Finite p a) :
-    ∀ {k : ℕ}, get (multiplicity p (a ^ k)) (finite_pow hp ha) = k * get (multiplicity p a) ha
-  | 0 => by simp [one_right hp.not_unit]
-  | k + 1 =>
-    by
-    have : multiplicity p (a ^ (k + 1)) = multiplicity p (a * a ^ k) := by rw [_root_.pow_succ]
-    rw [get_eq_get_of_eq _ _ this, multiplicity.mul' hp, pow', add_mul, one_mul, add_comm]
+    ∀ {k : ℕ}, get (multiplicity p (a ^ k)) (finite_pow hp ha) = k * get (multiplicity p a) ha := 
+  by 
+  intro k 
+  induction' k with k hk
+  · simp [one_right hp.not_unit]
+  · have : multiplicity p (a ^ (k + 1)) = multiplicity p (a * a ^ k) := by rw [_root_.pow_succ]
+    rw [succ_eq_add_one, get_eq_get_of_eq _ _ this, 
+      multiplicity.mul' hp, hk, add_mul, one_mul, add_comm]
 #align multiplicity.pow' multiplicity.pow'
 
 theorem pow {p a : α} (hp : Prime p) : ∀ {k : ℕ}, multiplicity p (a ^ k) = k • multiplicity p a
