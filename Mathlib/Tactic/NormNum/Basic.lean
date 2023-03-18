@@ -549,23 +549,24 @@ such that `norm_num` successfully recognises both `a` and `b`, and returns `a / 
   return (.isRat' (inst := dℚ) q n d q(isRat_mkRat $pa $pb $p) : Result q(mkRat $a $b))
 
 /- Note: the following lemmas take a separate `OfScientific α` argument to prevent a
-`(kernel) deep recursion detected` error. We always take `σα` to be the `OfScientific α` instance
-obtained from the `DivisionRing` structure even though this isn't enforced by the type. -/
+`(kernel) deep recursion detected` error arising from `.ofScientific` being unfolded preferentially
+to `RatCast.ratCast`. When we use these lemmas in `evalOfScientific`, we always take `σα` to be the
+`OfScientific α` instance obtained from the `DivisionRing` structure even though this isn't
+enforced by the type. -/
 
 theorem isRat_ofScientific_of_true [DivisionRing α] (σα : OfScientific α) :
     {m e : ℕ} → {n : ℤ} → {d : ℕ} →
     @OfScientific.ofScientific α σα = (fun m s e ↦ (Rat.ofScientific m s e : α)) →
     IsRat (mkRat m (10 ^ e) : α) n d → IsRat (@OfScientific.ofScientific α σα m true e) n d
-  | _, _, _, _, lh, ⟨_, eq⟩ => ⟨_, by
-    simp only [lh, if_true, Rat.ofScientific, Rat.normalize_eq_mkRat]
+  | _, _, _, _, σh, ⟨_, eq⟩ => ⟨_, by
+    simp only [σh, if_true, Rat.ofScientific, Rat.normalize_eq_mkRat]
     exact eq⟩
 
 theorem isNat_ofScientific_of_false [DivisionRing α] (σα : OfScientific α) : {m e nm ne n : ℕ} →
     @OfScientific.ofScientific α σα = (fun m s e ↦ (Rat.ofScientific m s e : α)) →
     IsNat m nm → IsNat e ne → n = Nat.mul nm ((10 : ℕ) ^ ne) →
     IsNat (@OfScientific.ofScientific α σα m false e : α) n
-  | _, _, _, _, _, lh, ⟨rfl⟩, ⟨rfl⟩, h =>
-    ⟨by simp [lh, Rat.ofScientific, h]; norm_cast⟩
+  | _, _, _, _, _, σh, ⟨rfl⟩, ⟨rfl⟩, h => ⟨by simp [σh, Rat.ofScientific, h]; norm_cast⟩
 
 /-- The `norm_num` extension which identifies expressions in scientific notation, normalizing them
 to rat casts if the scientific notation is inherited from the one for rationals. -/
@@ -596,9 +597,9 @@ to rat casts if the scientific notation is inherited from the one for rationals.
     have n : Q(ℕ) := mkRawNatLit n'
     have r : Q($n = Nat.mul $nm ((10 : ℕ) ^ $ne)) := (q(Eq.refl $n) : Expr)
     return ((.isNat _ n
-        (q(isNat_ofScientific_of_false (α := $α) (n := $n) $σα $lh $pm $pe $r) :
-            Q(IsNat (@OfScientific.ofScientific $α $σα $m false $exp) $n))) :
-          Result q(@OfScientific.ofScientific $α $σα $m false $exp))
+      (q(isNat_ofScientific_of_false $σα $lh $pm $pe $r) :
+          Q(IsNat (@OfScientific.ofScientific $α $σα $m false $exp) $n))) :
+        Result q(@OfScientific.ofScientific $α $σα $m false $exp))
 
 /-! # Logic -/
 
