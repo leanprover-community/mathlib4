@@ -849,7 +849,9 @@ instance NF_opow (o₁ o₂) [NF o₁] [NF o₂] : NF (o₁ ^ o₂) := by
         infer_instance
   · simp [(·^·),Pow.pow,pow, opow, e₁, e₂, split_eq_scale_split' e₂]
     have := na.fst
-    cases' k with k <;> simp [opow] <;> skip <;> infer_instance
+    cases' k with k <;> simp [opow] <;> skip <;> dsimp
+    . infer_instance
+    . cases k <;> cases m <;> infer_instance
 #align onote.NF_opow Onote.NF_opow
 
 theorem scale_opowAux (e a0 a : Onote) [NF e] [NF a0] [NF a] :
