@@ -64,8 +64,7 @@ theorem multiplicity_eq_card_pow_dvd {m n b : ℕ} (hm : m ≠ 1) (hn : 0 < n) (
     _ = ↑((Finset.Ico 1 b).filter fun i => m ^ i ∣ n).card :=
       congr_arg coe <|
         congr_arg card <|
-          Finset.ext fun i =>
-            by
+          Finset.ext fun i => by
             rw [mem_filter, mem_Ico, mem_Ico, lt_succ_iff, ← @PartENat.coe_le_coe i,
               PartENat.natCast_get, ← pow_dvd_iff_le_multiplicity, and_right_comm]
             refine' (and_iff_left_of_imp fun h => lt_of_le_of_lt _ hb).symm
@@ -75,7 +74,6 @@ theorem multiplicity_eq_card_pow_dvd {m n b : ℕ} (hm : m ≠ 1) (hn : 0 < n) (
             exact
               le_log_of_pow_le (one_lt_iff_ne_zero_and_ne_one.2 ⟨m.succ_ne_zero, hm⟩)
                 (le_of_dvd hn h.2)
-    
 #align nat.multiplicity_eq_card_pow_dvd Nat.multiplicity_eq_card_pow_dvd
 
 namespace Prime
@@ -113,19 +111,15 @@ theorem multiplicity_factorial {p : ℕ} (hp : p.Prime) :
     calc
       multiplicity p (n + 1)! = multiplicity p n ! + multiplicity p (n + 1) := by
         rw [factorial_succ, hp.multiplicity_mul, add_comm]
-      _ =
-          (∑ i in Ico 1 b, n / p ^ i : ℕ) +
-            ((Finset.Ico 1 b).filter fun i => p ^ i ∣ n + 1).card :=
-        by
+      _ = (∑ i in Ico 1 b, n / p ^ i : ℕ) +
+            ((Finset.Ico 1 b).filter fun i => p ^ i ∣ n + 1).card := by
         rw [multiplicity_factorial hp ((log_mono_right <| le_succ _).trans_lt hb), ←
           multiplicity_eq_card_pow_dvd hp.ne_one (succ_pos _) hb]
-      _ = (∑ i in Ico 1 b, n / p ^ i + if p ^ i ∣ n + 1 then 1 else 0 : ℕ) :=
-        by
+      _ = (∑ i in Ico 1 b, (n / p ^ i + if p ^ i ∣ n + 1 then 1 else 0) : ℕ) := by
         rw [sum_add_distrib, sum_boole]
         simp
       _ = (∑ i in Ico 1 b, (n + 1) / p ^ i : ℕ) :=
         congr_arg coe <| Finset.sum_congr rfl fun _ _ => (succ_div _ _).symm
-      
 #align nat.prime.multiplicity_factorial Nat.Prime.multiplicity_factorial
 
 /-- The multiplicity of `p` in `(p * (n + 1))!` is one more than the sum
@@ -139,13 +133,11 @@ theorem multiplicity_factorial_mul_succ {n p : ℕ} (hp : p.Prime) :
   linarith
   have h3 : p * n + 1 ≤ p * (n + 1) + 1
   linarith
-  have hm : multiplicity p (p * n)! ≠ ⊤ :=
-    by
+  have hm : multiplicity p (p * n)! ≠ ⊤ := by
     rw [Ne.def, eq_top_iff_not_finite, Classical.not_not, finite_nat_iff]
     exact ⟨hp.ne_one, factorial_pos _⟩
   revert hm
-  have h4 : ∀ m ∈ Ico (p * n + 1) (p * (n + 1)), multiplicity p m = 0 :=
-    by
+  have h4 : ∀ m ∈ Ico (p * n + 1) (p * (n + 1)), multiplicity p m = 0 := by
     intro m hm
     rw [multiplicity_eq_zero, ← not_dvd_iff_between_consec_multiples _ hp.pos]
     rw [mem_Ico] at hm
@@ -188,12 +180,11 @@ theorem multiplicity_choose_aux {p n b k : ℕ} (hp : p.Prime) (hkn : k ≤ n) :
   calc
     (∑ i in Finset.Ico 1 b, n / p ^ i) = ∑ i in Finset.Ico 1 b, (k + (n - k)) / p ^ i := by
       simp only [add_tsub_cancel_of_le hkn]
-    _ =
-        ∑ i in Finset.Ico 1 b,
-          k / p ^ i + (n - k) / p ^ i + if p ^ i ≤ k % p ^ i + (n - k) % p ^ i then 1 else 0 :=
+    _ = ∑ i in Finset.Ico 1 b,
+          (k / p ^ i + (n - k) / p ^ i + if p ^ i ≤ k % p ^ i + (n - k) % p ^ i then 1 else 0) :=
       by simp only [Nat.add_div (pow_pos hp.pos _)]
     _ = _ := by simp [sum_add_distrib, sum_boole]
-    
+
 #align nat.prime.multiplicity_choose_aux Nat.Prime.multiplicity_choose_aux
 
 /-- The multiplicity of `p` in `choose n k` is the number of carries when `k` and `n - k`
@@ -205,8 +196,7 @@ theorem multiplicity_choose {p n k b : ℕ} (hp : p.Prime) (hkn : k ≤ n) (hnb 
   have h₁ :
     multiplicity p (choose n k) + multiplicity p (k ! * (n - k)!) =
       ((Finset.Ico 1 b).filter fun i => p ^ i ≤ k % p ^ i + (n - k) % p ^ i).card +
-        multiplicity p (k ! * (n - k)!) :=
-    by
+        multiplicity p (k ! * (n - k)!) := by
     rw [← hp.multiplicity_mul, ← mul_assoc, choose_mul_factorial_mul_factorial hkn,
       hp.multiplicity_factorial hnb, hp.multiplicity_mul,
       hp.multiplicity_factorial ((log_mono_right hkn).trans_lt hnb),
@@ -240,8 +230,7 @@ theorem multiplicity_choose_prime_pow_add_multiplicity (hp : p.Prime) (hkn : k �
     (by
       have hdisj :
         Disjoint ((Ico 1 n.succ).filter fun i => p ^ i ≤ k % p ^ i + (p ^ n - k) % p ^ i)
-          ((Ico 1 n.succ).filter fun i => p ^ i ∣ k) :=
-        by
+          ((Ico 1 n.succ).filter fun i => p ^ i ∣ k) := by
         simp (config := { contextual := true }) [disjoint_right, *, dvd_iff_mod_eq_zero,
           Nat.mod_lt _ (pow_pos hp.pos _)]
       rw [multiplicity_choose hp hkn (lt_succ_self _),
@@ -280,14 +269,13 @@ end Prime
 theorem multiplicity_two_factorial_lt : ∀ {n : ℕ} (h : n ≠ 0), multiplicity 2 n ! < n := by
   have h2 := prime_two.prime
   refine' binaryRec _ _
-  · exact fun h => False.elim <| h rfl 
+  · exact fun h => False.elim <| h rfl
   · intro b n ih h
     by_cases hn : n = 0
     · subst hn
       simp at h
       simp [h, one_right h2.not_unit]
-    have : multiplicity 2 (2 * n)! < (2 * n : ℕ) :=
-      by
+    have : multiplicity 2 (2 * n)! < (2 * n : ℕ) := by
       rw [prime_two.multiplicity_factorial_mul]
       refine' (PartENat.add_lt_add_right (ih hn) (PartENat.natCast_ne_top _)).trans_le _
       rw [two_mul]
@@ -303,4 +291,3 @@ theorem multiplicity_two_factorial_lt : ∀ {n : ℕ} (h : n ≠ 0), multiplicit
 #align nat.multiplicity_two_factorial_lt Nat.multiplicity_two_factorial_lt
 
 end Nat
-
