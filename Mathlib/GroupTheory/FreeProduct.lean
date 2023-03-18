@@ -19,49 +19,49 @@ import Mathlib.Data.Set.Pointwise.SMul
 # The free product of groups or monoids
 
 Given an `ι`-indexed family `M` of monoids, we define their free product (categorical coproduct)
-`free_product M`. When `ι` and all `M i` have decidable equality, the free product bijects with the
+`FreeProduct M`. When `ι` and all `M i` have decidable equality, the free product bijects with the
 type `word M` of reduced words. This bijection is constructed by defining an action of
-`free_product M` on `word M`.
+`FreeProduct M` on `word M`.
 
-When `M i` are all groups, `free_product M` is also a group (and the coproduct in the category of
+When `M i` are all groups, `FreeProduct M` is also a group (and the coproduct in the category of
 groups).
 
 ## Main definitions
 
-- `free_product M`: the free product, defined as a quotient of a free monoid.
-- `free_product.of {i} : M i →* free_product M`.
-- `free_product.lift : (Π {i}, M i →* N) ≃ (free_product M →* N)`: the universal property.
-- `free_product.word M`: the type of reduced words.
-- `free_product.word.equiv M : free_product M ≃ word M`.
-- `free_product.neword M i j`: an inductive description of non-empty words with first letter from
+- `FreeProduct M`: the free product, defined as a quotient of a free monoid.
+- `FreeProduct.of {i} : M i →* FreeProduct M`.
+- `FreeProduct.lift : (Π {i}, M i →* N) ≃ (FreeProduct M →* N)`: the universal property.
+- `FreeProduct.Word M`: the type of reduced words.
+- `FreeProduct.Word.equiv M : FreeProduct M ≃ word M`.
+- `FreeProduct.NeWord M i j`: an inductive description of non-empty words with first letter from
   `M i` and last letter from `M j`, together with an API (`singleton`, `append`, `head`, `tail`,
-  `to_word`, `prod`, `inv`). Used in the proof of the Ping-Pong-lemma.
-- `free_product.lift_injective_of_ping_pong`: The Ping-Pong-lemma, proving injectivity of the
+  `to_word`, `Prod`, `inv`). Used in the proof of the Ping-Pong-lemma.
+- `FreeProduct.lift_injective_of_ping_pong`: The Ping-Pong-lemma, proving injectivity of the
   `lift`. See the documentation of that theorem for more information.
 
 ## Remarks
 
 There are many answers to the question "what is the free product of a family `M` of monoids?", and
 they are all equivalent but not obviously equivalent. We provide two answers. The first, almost
-tautological answer is given by `free_product M`, which is a quotient of the type of words in the
+tautological answer is given by `FreeProduct M`, which is a quotient of the type of words in the
 alphabet `Σ i, M i`. It's straightforward to define and easy to prove its universal property. But
 this answer is not completely satisfactory, because it's difficult to tell when two elements
-`x y : free_product M` are distinct since `free_product M` is defined as a quotient.
+`x y : FreeProduct M` are distinct since `FreeProduct M` is defined as a quotient.
 
 The second, maximally efficient answer is given by `word M`. An element of `word M` is a word in the
 alphabet `Σ i, M i`, where the letter `⟨i, 1⟩` doesn't occur and no adjacent letters share an index
 `i`. Since we only work with reduced words, there is no need for quotienting, and it is easy to tell
 when two elements are distinct. However it's not obvious that this is even a monoid!
 
-We prove that every element of `free_product M` can be represented by a unique reduced word, i.e.
-`free_product M` and `word M` are equivalent types. This means that `word M` can be given a monoid
-structure, and it lets us tell when two elements of `free_product M` are distinct.
+We prove that every element of `FreeProduct M` can be represented by a unique reduced word, i.e.
+`FreeProduct M` and `word M` are equivalent types. This means that `word M` can be given a monoid
+structure, and it lets us tell when two elements of `FreeProduct M` are distinct.
 
 There is also a completely tautological, maximally inefficient answer given by
-`algebra.category.Mon.colimits`. Whereas `free_product M` at least ensures that (any instance of)
+`algebra.category.Mon.colimits`. Whereas `FreeProduct M` at least ensures that (any instance of)
 associativity holds by reflexivity, in this answer associativity holds because of quotienting. Yet
 another answer, which is constructively more satisfying, could be obtained by showing that
-`free_product.rel` is confluent.
+`FreeProduct.Rel` is confluent.
 
 ## References
 
@@ -292,7 +292,7 @@ theorem fstIdx_ne_iff {w : Word M} {i} :
 variable (M)
 
 /-- Given an index `i : ι`, `pair M i` is the type of pairs `(head, tail)` where `head : M i` and
-`tail : word M`, subject to the constraint that first letter of `tail` can't be `⟨i, m⟩`.
+`tail : Word M`, subject to the constraint that first letter of `tail` can't be `⟨i, m⟩`.
 By prepending `head` to `tail`, one obtains a new word. We'll show that any word can be uniquely
 obtained in this way. -/
 @[ext]
@@ -311,7 +311,7 @@ variable [∀ i, DecidableEq (M i)]
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- Given a pair `(head, tail)`, we can form a word by prepending `head` to `tail`, except if `head`
-is `1 : M i` then we have to just return `word` since we need the result to be reduced. -/
+is `1 : M i` then we have to just return `Word` since we need the result to be reduced. -/
 def rcons {i} (p : Pair M i) : Word M :=
   if h : p.headI = 1 then p.tail
   else
@@ -491,7 +491,7 @@ namespace NeWord
 
 open Word
 
-/-- The list represented by a given `neword` -/
+/-- The list represented by a given `NeWord` -/
 @[simp]
 def toList : ∀ {i j} (_w : NeWord M i j), List (Σi, M i)
   | i, _, singleton x _ => [⟨i, x⟩]
@@ -505,14 +505,14 @@ theorem toList_ne_nil {i j} (w : NeWord M i j) : w.toList ≠ List.nil := by
     assumption
 #align free_product.neword.to_list_ne_nil FreeProduct.NeWord.toList_ne_nil
 
-/-- The first letter of a `neword` -/
+/-- The first letter of a `NeWord` -/
 @[simp]
 def head : ∀ {i j} (_w : NeWord M i j), M i
   | _, _, singleton x _ => x
   | _, _, append w₁ _ _ => w₁.head
 #align free_product.neword.head FreeProduct.NeWord.head
 
-/-- The last letter of a `neword` -/
+/-- The last letter of a `NeWord` -/
 @[simp]
 def last : ∀ {i j} (_w : NeWord M i j), M j
   | _, _, singleton x _hne1 => x
@@ -560,7 +560,7 @@ def toWord {i j} (w : NeWord M i j) : Word M
       assumption
 #align free_product.neword.to_word FreeProduct.NeWord.toWord
 
-/-- Every nonempty `word M` can be constructed as a `neword M i j` -/
+/-- Every nonempty `Word M` can be constructed as a `NeWord M i j` -/
 theorem of_word (w : Word M) (h : w ≠ empty) : ∃ (i j : _)(w' : NeWord M i j), w'.toWord = w := by
   suffices : ∃ (i j : _)(w' : NeWord M i j), w'.toWord.toList = w.toList
   · rcases this with ⟨i, j, w, h⟩
@@ -956,7 +956,6 @@ theorem _root_.FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeG
               _ ⊆ a i ^ n • X i := (smul_set_mono <| hX i)
               _ ⊆ a i ^ n • Y iᶜ := (smul_set_mono (hXYdisj i i).subset_compl_right)
               _ ⊆ X i := hi
-
         _ ⊆ X' i := Set.subset_union_left _ _
     · have h1n : n ≤ -1 := by
         apply Int.le_of_lt_add_one
@@ -977,7 +976,6 @@ theorem _root_.FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeG
               _ ⊆ a i ^ n • Y i := (smul_set_mono <| hY i)
               _ ⊆ a i ^ n • X iᶜ := (smul_set_mono (hXYdisj i i).symm.subset_compl_right)
               _ ⊆ Y i := hi
-
         _ ⊆ X' i := Set.subset_union_right _ _
   show _ ∨ ∃ i, 3 ≤ (#H i)
   · inhabit ι
