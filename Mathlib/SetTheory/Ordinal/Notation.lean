@@ -1255,7 +1255,7 @@ instance : ToString Nonote :=
   ⟨fun x => x.1.toString⟩
 
 instance : Repr Nonote :=
-  ⟨fun x => x.1.repr'⟩
+  ⟨fun x _ => x.1.repr'⟩
 
 instance : Preorder Nonote where
   le x y := repr x ≤ repr y
