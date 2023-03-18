@@ -59,12 +59,12 @@ def IsInvariantSubring.subtypeHom : U →+*[M] R' :=
 @[simp]
 theorem IsInvariantSubring.coe_subtypeHom :
     (IsInvariantSubring.subtypeHom M U : U → R') = Subtype.val := rfl
-#align is_invariant_subring.coe_subtype_hom IsInvariantSubring.coeSubtype_hom
+#align is_invariant_subring.coe_subtype_hom IsInvariantSubring.coe_subtypeHom
 
 -- Porting note: added `toRingHom`
 @[simp]
 theorem IsInvariantSubring.coe_subtypeHom' :
     ((IsInvariantSubring.subtypeHom M U).toRingHom : U →+* R') = U.subtype := rfl
-#align is_invariant_subring.coe_subtype_hom' IsInvariantSubring.coe_subtype_hom'
+#align is_invariant_subring.coe_subtype_hom' IsInvariantSubring.coe_subtypeHom'
 
 end
