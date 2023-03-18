@@ -16,9 +16,9 @@ import Mathlib.RingTheory.Multiplicity
 /-!
 # Division of univariate polynomials
 
-The main defs are `div_by_monic` and `mod_by_monic`.
-The compatibility between these is given by `mod_by_monic_add_div`.
-We also define `root_multiplicity`.
+The main defs are `divByMonic` and `modByMonic`.
+The compatibility between these is given by `modByMonic_add_div`.
+We also define `rootMultiplicity`.
 -/
 
 
@@ -190,8 +190,7 @@ theorem zero_divByMonic (p : R[X]) : 0 /ₘ p = 0 := by
 
 @[simp]
 theorem modByMonic_zero (p : R[X]) : p %ₘ 0 = p :=
-  if h : Monic (0 : R[X]) then
-    by
+  if h : Monic (0 : R[X]) then by
     haveI := monic_zero_iff_subsingleton.mp h
     simp
   else by unfold modByMonic divModByMonicAux; rw [dif_neg h]
@@ -282,7 +281,6 @@ theorem degree_add_divByMonic (hq : Monic q) (h : degree q ≤ degree p) :
     degree q + degree (p /ₘ q) = degree (q * (p /ₘ q)) := Eq.symm (degree_mul' hlc)
     _ = degree (p %ₘ q + q * (p /ₘ q)) := (degree_add_eq_right_of_degree_lt hmod).symm
     _ = _ := congr_arg _ (modByMonic_add_div _ hq)
-
 #align polynomial.degree_add_div_by_monic Polynomial.degree_add_divByMonic
 
 theorem degree_divByMonic_le (p q : R[X]) : degree (p /ₘ q) ≤ degree p :=
@@ -351,7 +349,6 @@ theorem div_modByMonic_unique {f g} (q r : R[X]) (hg : Monic g)
     calc
       degree (r - f %ₘ g) ≤ max (degree r) (degree (f %ₘ g)) := degree_sub_le _ _
       _ < degree g := max_lt_iff.2 ⟨h.2, degree_modByMonic_lt _ hg⟩
-
   have h₅ : q - f /ₘ g = 0 :=
     _root_.by_contradiction fun hqf =>
       not_le_of_gt h₄ <|
@@ -488,8 +485,8 @@ theorem sub_dvd_eval_sub (a b : R) (p : R[X]) : a - b ∣ p.eval a - p.eval b :=
   simp [dvd_iff_isRoot]
 #align polynomial.sub_dvd_eval_sub Polynomial.sub_dvd_eval_sub
 
-theorem mul_div_mod_by_monic_cancel_left (p : R[X]) {q : R[X]} (hmo : q.Monic) : q * p /ₘ q = p :=
-  by
+theorem mul_div_mod_by_monic_cancel_left (p : R[X]) {q : R[X]} (hmo : q.Monic) :
+    q * p /ₘ q = p := by
   nontriviality R
   refine' (div_modByMonic_unique _ 0 hmo ⟨by rw [zero_add], _⟩).1
   rw [degree_zero]
@@ -521,7 +518,7 @@ section multiplicity
 
 /-- An algorithm for deciding polynomial divisibility.
 The algorithm is "compute `p %ₘ q` and compare to `0`".
-See `polynomial.mod_by_monic` for the algorithm that computes `%ₘ`.
+See `polynomial.modByMonic` for the algorithm that computes `%ₘ`.
 -/
 def decidableDvdMonic (p : R[X]) (hq : Monic q) : Decidable (q ∣ p) :=
   decidable_of_iff (p %ₘ q = 0) (dvd_iff_modByMonic_eq_zero hq)
