@@ -31,7 +31,7 @@ set_option linter.uppercaseLean3 false in
 namespace Born
 
 instance : CoeSort Born (Type _) :=
-  Bundled.instCoeSortBundledType
+  Bundled.coeSort
 
 instance (X : Born) : Bornology X :=
   X.str
