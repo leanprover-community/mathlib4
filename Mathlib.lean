@@ -732,6 +732,7 @@ import Mathlib.Data.MvPolynomial.Comap
 import Mathlib.Data.MvPolynomial.Counit
 import Mathlib.Data.MvPolynomial.Invertible
 import Mathlib.Data.MvPolynomial.Rename
+import Mathlib.Data.MvPolynomial.Variables
 import Mathlib.Data.Nat.Basic
 import Mathlib.Data.Nat.Bits
 import Mathlib.Data.Nat.Bitwise
@@ -1271,6 +1272,7 @@ import Mathlib.RingTheory.Ideal.Prod
 import Mathlib.RingTheory.Ideal.Quotient
 import Mathlib.RingTheory.Localization.Basic
 import Mathlib.RingTheory.Localization.Integer
+import Mathlib.RingTheory.Multiplicity
 import Mathlib.RingTheory.MvPolynomial.Tower
 import Mathlib.RingTheory.Nilpotent
 import Mathlib.RingTheory.Noetherian
@@ -1288,6 +1290,7 @@ import Mathlib.RingTheory.Subring.Pointwise
 import Mathlib.RingTheory.Subsemiring.Basic
 import Mathlib.RingTheory.Subsemiring.Pointwise
 import Mathlib.RingTheory.Valuation.Basic
+import Mathlib.RingTheory.Valuation.Integers
 import Mathlib.SetTheory.Cardinal.Basic
 import Mathlib.SetTheory.Cardinal.Cofinality
 import Mathlib.SetTheory.Cardinal.Continuum
