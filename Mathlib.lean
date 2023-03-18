@@ -88,6 +88,7 @@ import Mathlib.Algebra.GroupPower.Lemmas
 import Mathlib.Algebra.GroupPower.Order
 import Mathlib.Algebra.GroupPower.Ring
 import Mathlib.Algebra.GroupRingAction.Basic
+import Mathlib.Algebra.GroupRingAction.Invariant
 import Mathlib.Algebra.GroupRingAction.Subobjects
 import Mathlib.Algebra.GroupWithZero.Basic
 import Mathlib.Algebra.GroupWithZero.Commute

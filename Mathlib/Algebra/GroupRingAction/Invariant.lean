@@ -8,8 +8,8 @@ Authors: Eric Wieser
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Hom.GroupAction
-import Mathbin.RingTheory.Subring.Pointwise
+import Mathlib.Algebra.Hom.GroupAction
+import Mathlib.RingTheory.Subring.Pointwise
 
 /-! # Subrings invariant under an action -/
 
