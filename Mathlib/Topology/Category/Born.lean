@@ -8,8 +8,8 @@ Authors: Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.ConcreteCategory.BundledHom
-import Mathbin.Topology.Bornology.Hom
+import Mathlib.CategoryTheory.ConcreteCategory.BundledHom
+import Mathlib.Topology.Bornology.Hom
 
 /-!
 # The category of bornologies
