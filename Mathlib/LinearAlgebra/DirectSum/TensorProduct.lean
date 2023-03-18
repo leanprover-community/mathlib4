@@ -8,8 +8,8 @@ Authors: Kenny Lau, Mario Carneiro, Eric Wieser
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.LinearAlgebra.TensorProduct
-import Mathbin.Algebra.DirectSum.Module
+import Mathlib.LinearAlgebra.TensorProduct
+import Mathlib.Algebra.DirectSum.Module
 
 /-!
 # Tensor products of direct sums
@@ -53,8 +53,7 @@ variable [∀ i₁, Module R (M₁ i₁)] [Module R M₁'] [∀ i₂, Module R (
 /-- The linear equivalence `(⨁ i₁, M₁ i₁) ⊗ (⨁ i₂, M₂ i₂) ≃ (⨁ i₁, ⨁ i₂, M₁ i₁ ⊗ M₂ i₂)`, i.e.
 "tensor product distributes over direct sum". -/
 protected def directSum :
-    ((⨁ i₁, M₁ i₁) ⊗[R] ⨁ i₂, M₂ i₂) ≃ₗ[R] ⨁ i : ι₁ × ι₂, M₁ i.1 ⊗[R] M₂ i.2 :=
-  by
+    ((⨁ i₁, M₁ i₁) ⊗[R] ⨁ i₂, M₂ i₂) ≃ₗ[R] ⨁ i : ι₁ × ι₂, M₁ i.1 ⊗[R] M₂ i.2 := by
   refine'
       LinearEquiv.ofLinear
         (lift <|
