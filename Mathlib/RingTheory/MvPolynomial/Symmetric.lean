@@ -8,9 +8,9 @@ Authors: Hanting Zhang, Johan Commelin
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.MvPolynomial.Rename
-import Mathbin.Data.MvPolynomial.CommRing
-import Mathbin.Algebra.Algebra.Subalgebra.Basic
+import Mathlib.Data.MvPolynomial.Rename
+import Mathlib.Data.MvPolynomial.CommRing
+import Mathlib.Algebra.Algebra.Subalgebra.Basic
 
 /-!
 # Symmetric Polynomials and Elementary Symmetric Polynomials
@@ -184,8 +184,7 @@ theorem esymm_eq_sum_subtype (n : ℕ) :
 
 /-- We can define `esymm σ R n` as a sum over explicit monomials -/
 theorem esymm_eq_sum_monomial (n : ℕ) :
-    esymm σ R n = ∑ t in powersetLen n univ, monomial (∑ i in t, Finsupp.single i 1) 1 :=
-  by
+    esymm σ R n = ∑ t in powersetLen n univ, monomial (∑ i in t, Finsupp.single i 1) 1 := by
   simp_rw [monomial_sum_one]
   rfl
 #align mv_polynomial.esymm_eq_sum_monomial MvPolynomial.esymm_eq_sum_monomial
@@ -209,8 +208,7 @@ theorem rename_esymm (n : ℕ) (e : σ ≃ τ) : rename e (esymm σ R n) = esymm
     
 #align mv_polynomial.rename_esymm MvPolynomial.rename_esymm
 
-theorem esymm_isSymmetric (n : ℕ) : IsSymmetric (esymm σ R n) :=
-  by
+theorem esymm_isSymmetric (n : ℕ) : IsSymmetric (esymm σ R n) := by
   intro
   rw [rename_esymm]
 #align mv_polynomial.esymm_is_symmetric MvPolynomial.esymm_isSymmetric
@@ -218,8 +216,7 @@ theorem esymm_isSymmetric (n : ℕ) : IsSymmetric (esymm σ R n) :=
 theorem support_esymm'' (n : ℕ) [DecidableEq σ] [Nontrivial R] :
     (esymm σ R n).support =
       (powersetLen n (univ : Finset σ)).bunionᵢ fun t =>
-        (Finsupp.single (∑ i : σ in t, Finsupp.single i 1) (1 : R)).support :=
-  by
+        (Finsupp.single (∑ i : σ in t, Finsupp.single i 1) (1 : R)).support := by
   rw [esymm_eq_sum_monomial]
   simp only [← single_eq_monomial]
   convert Finsupp.support_sum_eq_bunionᵢ (powerset_len n (univ : Finset σ)) _
@@ -236,8 +233,7 @@ theorem support_esymm'' (n : ℕ) [DecidableEq σ] [Nontrivial R] :
 
 theorem support_esymm' (n : ℕ) [DecidableEq σ] [Nontrivial R] :
     (esymm σ R n).support =
-      (powersetLen n (univ : Finset σ)).bunionᵢ fun t => {∑ i : σ in t, Finsupp.single i 1} :=
-  by
+      (powersetLen n (univ : Finset σ)).bunionᵢ fun t => {∑ i : σ in t, Finsupp.single i 1} := by
   rw [support_esymm'']
   congr
   funext
@@ -246,8 +242,7 @@ theorem support_esymm' (n : ℕ) [DecidableEq σ] [Nontrivial R] :
 
 theorem support_esymm (n : ℕ) [DecidableEq σ] [Nontrivial R] :
     (esymm σ R n).support =
-      (powersetLen n (univ : Finset σ)).image fun t => ∑ i : σ in t, Finsupp.single i 1 :=
-  by
+      (powersetLen n (univ : Finset σ)).image fun t => ∑ i : σ in t, Finsupp.single i 1 := by
   rw [support_esymm']
   exact bUnion_singleton
 #align mv_polynomial.support_esymm MvPolynomial.support_esymm
