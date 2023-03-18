@@ -90,8 +90,8 @@ open RingHom
 set_option synthInstance.etaExperiment true in
 /-- Evaluating a polynomial with integer coefficients at a rational number and clearing
 denominators, yields a number greater than or equal to one.  The target can be any
-`linear_ordered_field K`.
-The assumption on `K` could be weakened to `linear_ordered_comm_ring` assuming that the
+`LinearOrderedField K`.
+The assumption on `K` could be weakened to `LinearOrderedCommRing` assuming that the
 image of the denominator is invertible in `K`. -/
 theorem one_le_pow_mul_abs_eval_div {K : Type _} [LinearOrderedField K] {f : ℤ[X]} {a b : ℤ}
     (b0 : 0 < b) (fab : eval ((a : K) / b) (f.map (algebraMap ℤ K)) ≠ 0) :
