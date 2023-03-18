@@ -29,8 +29,7 @@ class IsInvariantSubring : Prop where
   smul_mem : ∀ (m : M) {x : R}, x ∈ S → m • x ∈ S
 #align is_invariant_subring IsInvariantSubring
 
-instance IsInvariantSubring.toMulSemiringAction [IsInvariantSubring M S] : MulSemiringAction M S
-    where
+instance IsInvariantSubring.toMulSemiringAction [IsInvariantSubring M S] : MulSemiringAction M S where
   smul m x := ⟨m • ↑x, IsInvariantSubring.smul_mem m x.2⟩
   one_smul s := Subtype.eq <| one_smul M (s : R)
   mul_smul m₁ m₂ s := Subtype.eq <| mul_smul m₁ m₂ (s : R)
@@ -57,13 +56,13 @@ def IsInvariantSubring.subtypeHom : U →+*[M] R' :=
 
 -- Porting note: changed `coe` to `Subtype.val`
 @[simp]
-theorem IsInvariantSubring.coeSubtype_hom :
+theorem IsInvariantSubring.coe_subtypeHom :
     (IsInvariantSubring.subtypeHom M U : U → R') = Subtype.val := rfl
 #align is_invariant_subring.coe_subtype_hom IsInvariantSubring.coeSubtype_hom
 
 -- Porting note: added `toRingHom`
 @[simp]
-theorem IsInvariantSubring.coe_subtype_hom' :
+theorem IsInvariantSubring.coe_subtypeHom' :
     ((IsInvariantSubring.subtypeHom M U).toRingHom : U →+* R') = U.subtype := rfl
 #align is_invariant_subring.coe_subtype_hom' IsInvariantSubring.coe_subtype_hom'
 
