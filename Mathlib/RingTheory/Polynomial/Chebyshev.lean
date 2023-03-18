@@ -279,7 +279,7 @@ theorem T_mul : ∀ m n, T R (m * n) = (T R m).comp (T R n)
   | m + 2 => by
     intro n
     have : 2 * T R n * T R ((m + 1) * n) = T R ((m + 2) * n) + T R (m * n) := by
-      convert mul_T R n (m * n) <;> ring_nf
+      convert mul_T R n (m * n) using 1 <;> ring_nf
     simp [this, T_mul m, ← T_mul (m + 1)]
 #align polynomial.chebyshev.T_mul Polynomial.Chebyshev.T_mul
 
