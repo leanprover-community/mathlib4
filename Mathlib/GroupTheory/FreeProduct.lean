@@ -621,7 +621,7 @@ theorem append_prod {i j k l} {w₁ : NeWord M i j} {hne : j ≠ k} {w₂ : NeWo
 
 /-- One can replace the first letter in a non-empty reduced word by an element of the same
 group -/
-def replaceHead : ∀ {i j : ι} (x : M i) (_hnotone : x ≠ 1) (w : NeWord M i j), NeWord M i j
+def replaceHead : ∀ {i j : ι} (x : M i) (_hnotone : x ≠ 1) (_w : NeWord M i j), NeWord M i j
   | _, _, x, h, singleton _ _ => singleton x h
   | _, _, x, h, append w₁ hne w₂ => append (replaceHead x h w₁) hne w₂
 #align free_product.neword.replace_head FreeProduct.NeWord.replaceHead
@@ -665,7 +665,7 @@ section Group
 variable {G : ι → Type _} [∀ i, Group (G i)]
 
 /-- The inverse of a non-empty reduced word -/
-def inv : ∀ {i j} (w : NeWord G i j), NeWord G j i
+def inv : ∀ {i j} (_w : NeWord G i j), NeWord G j i
   | _, _, singleton x h => singleton x⁻¹ (mt inv_eq_one.mp h)
   | _, _, append w₁ h w₂ => append w₂.inv h.symm w₁.inv
 #align free_product.neword.inv FreeProduct.NeWord.inv
@@ -908,7 +908,7 @@ theorem _root_.FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeG
   -- Step two: Invoke the ping-pong lemma for free products
   show Function.Injective (lift fun i : ι => FreeGroup.lift fun _ => a i)
   -- Prepare to instantiate lift_injective_of_ping_pong
-  let H : ι → Type _ := fun i => FreeGroup Unit
+  let H : ι → Type _ := fun _i => FreeGroup Unit
   let f : ∀ i, H i →* G := fun i => FreeGroup.lift fun _ => a i
   let X' : ι → Set α := fun i => X i ∪ Y i
   apply lift_injective_of_ping_pong f _ X'
@@ -949,7 +949,7 @@ theorem _root_.FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeG
             rw [zpow_one]
             exact hX i
           . dsimp
-            intro n hle hi
+            intro n _hle hi
             calc
               a i ^ (n + 1) • Y iᶜ = (a i ^ n * a i) • Y iᶜ := by rw [zpow_add, zpow_one]
               _ = a i ^ n • a i • Y iᶜ := (MulAction.mul_smul _ _ _)
