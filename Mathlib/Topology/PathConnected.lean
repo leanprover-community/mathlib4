@@ -500,8 +500,10 @@ theorem continuous_symm : Continuous (symm : Path x y → Path y x) :=
 @[continuity]
 theorem continuous_uncurry_extend_of_continuous_family {X ι : Type _} [TopologicalSpace X]
     [TopologicalSpace ι] {a b : ι → X} (γ : ∀ t : ι, Path (a t) (b t)) (h : Continuous ↿γ) :
-    Continuous ↿fun t => (γ t).extend :=
-  h.comp (continuous_id.prod_map continuous_projIcc)
+    Continuous ↿fun t => (γ t).extend := by
+  refine' h.comp (continuous_id.prod_map continuous_projIcc)
+  exact zero_le_one
+
 #align path.continuous_uncurry_extend_of_continuous_family Path.continuous_uncurry_extend_of_continuous_family
 
 @[continuity]
