@@ -1291,6 +1291,7 @@ import Mathlib.Tactic.Abel
 import Mathlib.Tactic.Alias
 import Mathlib.Tactic.ApplyFun
 import Mathlib.Tactic.ApplyWith
+import Mathlib.Tactic.Backtracking
 import Mathlib.Tactic.Basic
 import Mathlib.Tactic.ByContra
 import Mathlib.Tactic.Cache
@@ -1347,6 +1348,7 @@ import Mathlib.Tactic.Monotonicity
 import Mathlib.Tactic.Monotonicity.Attr
 import Mathlib.Tactic.Monotonicity.Basic
 import Mathlib.Tactic.Monotonicity.Lemmas
+import Mathlib.Tactic.Nondeterministic
 import Mathlib.Tactic.Nontriviality
 import Mathlib.Tactic.Nontriviality.Core
 import Mathlib.Tactic.NormCast
