@@ -57,13 +57,14 @@ variable {R : Type _} [CommSemiring R]
 
 /-- The `n`th elementary symmetric function evaluated at the elements of `s` -/
 def esymm (s : Multiset R) (n : ℕ) : R :=
-  ((s.powersetLen n).map Multiset.prod).Sum
+  ((s.powersetLen n).map Multiset.prod).sum
 #align multiset.esymm Multiset.esymm
 
 theorem Finset.esymm_map_val {σ} (f : σ → R) (s : Finset σ) (n : ℕ) :
-    (s.val.map f).esymm n = (s.powersetLen n).Sum fun t => t.Prod f := by
-  simpa only [esymm, powerset_len_map, ← Finset.map_val_val_powersetLen, map_map]
-#align finset.esymm_map_val Finset.esymm_map_val
+    (s.val.map f).esymm n = (s.powersetLen n).sum fun t => t.prod f := by
+  simp only [esymm, powersetLen_map, ← Finset.map_val_val_powersetLen, map_map]
+  rfl
+#align finset.esymm_map_val Multiset.Finset.esymm_map_val
 
 end Multiset
 
@@ -86,8 +87,8 @@ def symmetricSubalgebra [CommSemiring R] : Subalgebra R (MvPolynomial σ R)
     where
   carrier := setOf IsSymmetric
   algebraMap_mem' r e := rename_C e r
-  mul_mem' a b ha hb e := by rw [AlgHom.map_mul, ha, hb]
-  add_mem' a b ha hb e := by rw [AlgHom.map_add, ha, hb]
+  mul_mem' := @fun a b ha hb e => by rw [AlgHom.map_mul, ha, hb]
+  add_mem' := @fun a b ha hb e => by rw [AlgHom.map_add, ha, hb]
 #align mv_polynomial.symmetric_subalgebra MvPolynomial.symmetricSubalgebra
 
 variable {σ R}
@@ -205,7 +206,7 @@ theorem rename_esymm (n : ℕ) (e : σ ≃ τ) : rename e (esymm σ R n) = esymm
     _ = ∑ t in powersetLen n (univ.map e.toEmbedding), ∏ i in t, X i := by
       simp [Finset.powersetLen_map, -Finset.map_univ_equiv]
     _ = ∑ t in powersetLen n univ, ∏ i in t, X i := by rw [Finset.map_univ_equiv]
-    
+
 #align mv_polynomial.rename_esymm MvPolynomial.rename_esymm
 
 theorem esymm_isSymmetric (n : ℕ) : IsSymmetric (esymm σ R n) := by
@@ -267,4 +268,3 @@ theorem degrees_esymm [Nontrivial R] (n : ℕ) (hpos : 0 < n) (hn : n ≤ Fintyp
 end ElementarySymmetric
 
 end MvPolynomial
-
