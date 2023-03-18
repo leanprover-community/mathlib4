@@ -14,14 +14,14 @@ import Mathlib.Analysis.Normed.Group.Basic
 /-!
 # M-structure
 
-A projection P on a normed space X is said to be an L-projection (`is_Lprojection`) if, for all `x`
+A projection P on a normed space X is said to be an L-projection (`IsLprojection`) if, for all `x`
 in `X`,
 $\|x\| = \|P x\| + \|(1 - P) x\|$.
 
 A projection P on a normed space X is said to be an M-projection if, for all `x` in `X`,
 $\|x\| = max(\|P x\|,\|(1 - P) x\|)$.
 
-The L-projections on `X` form a Boolean algebra (`is_Lprojection.subtype.boolean_algebra`).
+The L-projections on `X` form a Boolean algebra (`IsLprojection.Subtype.BooleanAlgebra`).
 
 ## TODO (Motivational background)
 
@@ -45,7 +45,7 @@ two-sided ideals of `A`.
 ## Implementation notes
 
 The approach to showing that the L-projections form a Boolean algebra is inspired by
-`measure_theory.measurable_space`.
+`MeasureTheory.MeasurableSpace`.
 
 Instead of using `P : X →L[𝕜] X` to represent projections, we use an arbitrary ring `M` with a
 faithful action on `X`. `continuous_linear_map.apply_module` can be used to recover the `X →L[𝕜] X`
@@ -360,7 +360,8 @@ instance IsLprojection.Subtype.DistribLattice [FaithfulSMul M X] :
         distrib_lattice_lemma, (Q.prop.commute R.prop).eq, distrib_lattice_lemma]
     rw [le_def, e₁, coe_inf, e₂]
 
-instance [FaithfulSMul M X] : BooleanAlgebra { P : M // IsLprojection X P } :=
+instance IsLprojection.Subtype.BooleanAlgebra [FaithfulSMul M X] :
+  BooleanAlgebra { P : M // IsLprojection X P } :=
 --porting note: use explicitly specified instance names
   { IsLprojection.Subtype.HasCompl,
     IsLprojection.Subtype.SDiff,
