@@ -62,9 +62,7 @@ M-summand, M-projection, L-summand, L-projection, M-ideal, M-structure
 
 -/
 
-universe u
-
-variable (X : Type u) [NormedAddCommGroup X]
+variable (X : Type _) [NormedAddCommGroup X]
 
 variable {M : Type} [Ring M] [Module M X]
 
@@ -342,9 +340,9 @@ instance IsLprojection.Subtype.DistribLattice [FaithfulSMul M X] :
     rw [le_def, e₁, coe_inf, e₂]
 
 instance [FaithfulSMul M X] : BooleanAlgebra { P : M // IsLprojection X P } :=
-  { IsLprojection.Subtype.HasCompl.{u},
-    IsLprojection.Subtype.SDiff.{u},
-    IsLprojection.Subtype.BoundedOrder.{u} with
+  { IsLprojection.Subtype.HasCompl,
+    IsLprojection.Subtype.SDiff,
+    IsLprojection.Subtype.BoundedOrder with
     inf_compl_le_bot := fun P =>
       (Subtype.ext (by rw [coe_inf, coe_compl, coe_bot, ← coe_compl, mul_compl_self])).le
     top_le_sup_compl := fun P =>
