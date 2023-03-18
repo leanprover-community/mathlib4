@@ -108,6 +108,7 @@ variable [CommSemiring R] [CommSemiring S] {φ ψ : MvPolynomial σ R}
 @[simp]
 theorem c (r : R) : IsSymmetric (C r : MvPolynomial σ R) :=
   (symmetricSubalgebra σ R).algebraMap_mem r
+set_option linter.uppercaseLean3 false in
 #align mv_polynomial.is_symmetric.C MvPolynomial.IsSymmetric.c
 
 @[simp]
@@ -168,13 +169,13 @@ def esymm (n : ℕ) : MvPolynomial σ R :=
 
 /-- The `n`th elementary symmetric `mv_polynomial σ R` is obtained by evaluating the
 `n`th elementary symmetric at the `multiset` of the monomials -/
-theorem esymm_eq_multiset_esymm : esymm σ R = (Finset.univ.val.map X).esymm :=
-  funext fun n => (Finset.univ.esymm_map_val X n).symm
+theorem esymm_eq_multiset_esymm : esymm σ R = (Finset.univ.val.map X).esymm := by
+  refine' funext fun n => (Multiset.Finset.esymm_map_val X _ n).symm
 #align mv_polynomial.esymm_eq_multiset_esymm MvPolynomial.esymm_eq_multiset_esymm
 
 theorem aeval_esymm_eq_multiset_esymm [Algebra R S] (f : σ → S) (n : ℕ) :
     aeval f (esymm σ R n) = (Finset.univ.val.map f).esymm n := by
-  simp_rw [esymm, aeval_sum, aeval_prod, aeval_X, esymm_map_val]
+  simp_rw [esymm, aeval_sum, aeval_prod, aeval_X, Multiset.Finset.esymm_map_val]
 #align mv_polynomial.aeval_esymm_eq_multiset_esymm MvPolynomial.aeval_esymm_eq_multiset_esymm
 
 /-- We can define `esymm σ R n` by summing over a subtype instead of over `powerset_len`. -/
@@ -192,7 +193,7 @@ theorem esymm_eq_sum_monomial (n : ℕ) :
 
 @[simp]
 theorem esymm_zero : esymm σ R 0 = 1 := by
-  simp only [esymm, powerset_len_zero, sum_singleton, prod_empty]
+  simp only [esymm, powersetLen_zero, sum_singleton, prod_empty]
 #align mv_polynomial.esymm_zero MvPolynomial.esymm_zero
 
 theorem map_esymm (n : ℕ) (f : R →+* S) : map f (esymm σ R n) = esymm σ S n := by
@@ -220,14 +221,22 @@ theorem support_esymm'' (n : ℕ) [DecidableEq σ] [Nontrivial R] :
         (Finsupp.single (∑ i : σ in t, Finsupp.single i 1) (1 : R)).support := by
   rw [esymm_eq_sum_monomial]
   simp only [← single_eq_monomial]
-  convert Finsupp.support_sum_eq_bunionᵢ (powerset_len n (univ : Finset σ)) _
+  refine' Finsupp.support_sum_eq_bunionᵢ (powersetLen n (univ : Finset σ)) _
   intro s t hst
-  rw [Finset.disjoint_left]
-  simp only [Finsupp.support_single_ne_zero _ one_ne_zero, mem_singleton]
+  rw [Finset.disjoint_left, Finsupp.support_single_ne_zero _ one_ne_zero]
+  rw [Finsupp.support_single_ne_zero _ one_ne_zero]
+  simp only [one_ne_zero, mem_singleton, Finsupp.mem_support_iff]
   rintro a h rfl
   have := congr_arg Finsupp.support h
   rw [Finsupp.support_sum_eq_bunionᵢ, Finsupp.support_sum_eq_bunionᵢ] at this
-  · simp only [Finsupp.support_single_ne_zero _ one_ne_zero, bUnion_singleton_eq_self] at this
+  have hsingle : ∀ s : Finset σ, ∀ x : σ, x ∈ s → (Finsupp.single x 1).support = {x} := by
+    intros _ x _
+    rw [Finsupp.support_single_ne_zero x one_ne_zero]
+  have hs := bunionᵢ_congr (of_eq_true (eq_self s)) (hsingle s)
+  have ht := bunionᵢ_congr (of_eq_true (eq_self t)) (hsingle t)
+  rw [hs, ht] at this
+  simp only [Finsupp.support_single_ne_zero _ one_ne_zero] at this
+  · simp only [bunionᵢ_singleton_eq_self] at this
     exact absurd this hst.symm
   all_goals intro x y; simp [Finsupp.support_single_disjoint]
 #align mv_polynomial.support_esymm'' MvPolynomial.support_esymm''
@@ -245,7 +254,7 @@ theorem support_esymm (n : ℕ) [DecidableEq σ] [Nontrivial R] :
     (esymm σ R n).support =
       (powersetLen n (univ : Finset σ)).image fun t => ∑ i : σ in t, Finsupp.single i 1 := by
   rw [support_esymm']
-  exact bUnion_singleton
+  exact bunionᵢ_singleton
 #align mv_polynomial.support_esymm MvPolynomial.support_esymm
 
 theorem degrees_esymm [Nontrivial R] (n : ℕ) (hpos : 0 < n) (hn : n ≤ Fintype.card σ) :
