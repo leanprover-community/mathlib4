@@ -63,10 +63,10 @@ unification (i.e., the one that's used as an implicit argument to `⅟`).
 This can cause issues with `simp`. Therefore, some lemmas are duplicated, with the `@[simp]`
 versions using unification and the user-facing ones using typeclass search.
 
-Since unification can make backwards rewriting (e.g. `rw [← mylemma]`)
-slow, we still want the instance-argument versions; therefore the user-facing versions retain the
-instance arguments and the original lemma name, whereas the `@[simp]`/unification ones acquire a
-`'` at the end of their name.
+Since unification can make backwards rewriting (e.g. `rw [← mylemma]`) impractical, we still want
+the instance-argument versions; therefore the user-facing versions retain the instance arguments
+and the original lemma name, whereas the `@[simp]`/unification ones acquire a `'` at the end of
+their name.
 
 We modify this file according to the above pattern only as needed; therefore, most `@[simp]` lemmas
 here are not part of such a duplicate pair. This is not (yet) intended as a permanent solution.
