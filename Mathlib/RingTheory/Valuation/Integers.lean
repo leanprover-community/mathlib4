@@ -8,7 +8,7 @@ Authors: Kenny Lau
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.RingTheory.Valuation.Basic
+import Mathlib.RingTheory.Valuation.Basic
 
 /-!
 # Ring of integers under a given valuation
@@ -95,8 +95,7 @@ theorem isUnit_of_one {x : O} (hx : IsUnit (algebraMap O R x)) (hvx : v (algebra
     hv.1 <| hr1.trans hu⟩
 #align valuation.integers.is_unit_of_one Valuation.Integers.isUnit_of_one
 
-theorem le_of_dvd {x y : O} (h : x ∣ y) : v (algebraMap O R y) ≤ v (algebraMap O R x) :=
-  by
+theorem le_of_dvd {x y : O} (h : x ∣ y) : v (algebraMap O R y) ≤ v (algebraMap O R x) := by
   let ⟨z, hz⟩ := h
   rw [← mul_one (v (algebraMap O R x)), hz, RingHom.map_mul, v.map_mul]
   exact mul_le_mul_left' (hv.2 z) _
