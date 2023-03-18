@@ -109,8 +109,9 @@ noncomputable def quotientInfEquivSupQuotient (p p' : Submodule R M) :
 #align linear_map.quotient_inf_equiv_sup_quotient LinearMap.quotientInfEquivSupQuotient
 
 set_option synthInstance.maxHeartbeats 200000 in
--- @[simp] -- Porting note: `simp` affects `FunLike.coe`, so this theorem can't be a simp theorem
-           --               anymore even if it has high priority.
+-- @[simp]
+-- Porting note: `simp` affects the type arguments of `FunLike.coe`, so this theorem can't be
+--               a simp theorem anymore, even if it has high priority.
 theorem coe_quotientInfToSupQuotient (p p' : Submodule R M) :
     ⇑(quotientInfToSupQuotient p p') = quotientInfEquivSupQuotient p p' :=
   rfl
