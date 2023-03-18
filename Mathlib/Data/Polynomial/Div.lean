@@ -70,8 +70,7 @@ theorem multiplicity_finite_of_degree_pos_of_monic (hp : (0 : WithBot ℕ) < deg
   have zn0 : (0 : R) ≠ 1 :=
     haveI := Nontrivial.of_polynomial_ne hq
     zero_ne_one
-  ⟨natDegree q, fun ⟨r, hr⟩ =>
-    by
+  ⟨natDegree q, fun ⟨r, hr⟩ => by
     have hp0 : p ≠ 0 := fun hp0 => by simp [hp0] at hp
     have hr0 : r ≠ 0 := fun hr0 => by subst hr0; simp [hq] at hr
     have hpn1 : leadingCoeff p ^ (natDegree q + 1) = 1 := by simp [show _ = _ from hmp]
@@ -235,8 +234,7 @@ theorem modByMonic_eq_sub_mul_div :
     if h : degree q ≤ degree p ∧ p ≠ 0 then by
       have _wf := div_wf_lemma h hq
       have ih :=
-        modByMonic_eq_sub_mul_div (p - C (leadingCoeff p) * X ^ (natDegree p - natDegree q) * q)
-          hq
+        modByMonic_eq_sub_mul_div (p - C (leadingCoeff p) * X ^ (natDegree p - natDegree q) * q) hq
       unfold modByMonic divByMonic divModByMonicAux
       dsimp
       rw [dif_pos hq, if_pos h]
@@ -357,7 +355,6 @@ theorem div_modByMonic_unique {f g} (q r : R[X]) (hg : Monic g)
             erw [degree_eq_natDegree hg.ne_zero, degree_eq_natDegree hqf, WithBot.coe_le_coe]
             exact Nat.le_add_right _ _
           _ = degree (r - f %ₘ g) := by rw [h₂, degree_mul']; simpa [Monic.def.1 hg]
-
   exact ⟨Eq.symm <| eq_of_sub_eq_zero h₅, Eq.symm <| eq_of_sub_eq_zero <| by simpa [h₅] using h₁⟩
 #align polynomial.div_mod_by_monic_unique Polynomial.div_modByMonic_unique
 
@@ -374,8 +371,7 @@ theorem map_mod_divByMonic [CommRing S] (f : R →+* S) (hq : Monic q) :
           _ = _ :=
             Eq.symm <|
               degree_map_eq_of_leadingCoeff_ne_zero _
-                (by rw [Monic.def.1 hq, f.map_one]; exact one_ne_zero)
-          ⟩
+                (by rw [Monic.def.1 hq, f.map_one]; exact one_ne_zero)⟩
   exact ⟨this.1.symm, this.2.symm⟩
 #align polynomial.map_mod_div_by_monic Polynomial.map_mod_divByMonic
 
@@ -390,8 +386,7 @@ theorem map_modByMonic [CommRing S] (f : R →+* S) (hq : Monic q) :
 #align polynomial.map_mod_by_monic Polynomial.map_modByMonic
 
 theorem dvd_iff_modByMonic_eq_zero (hq : Monic q) : p %ₘ q = 0 ↔ q ∣ p :=
-  ⟨fun h => by rw [← modByMonic_add_div p hq, h, zero_add]; exact dvd_mul_right _ _, fun h =>
-    by
+  ⟨fun h => by rw [← modByMonic_add_div p hq, h, zero_add]; exact dvd_mul_right _ _, fun h => by
     nontriviality R
     obtain ⟨r, hr⟩ := exists_eq_mul_right_of_dvd h
     by_contra hpq0
