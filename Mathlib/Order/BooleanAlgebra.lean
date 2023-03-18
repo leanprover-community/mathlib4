@@ -223,9 +223,11 @@ theorem disjoint_sdiff_self_right : Disjoint x (y \ x) :=
 lemma le_sdiff : x ≤ y \ z ↔ x ≤ y ∧ Disjoint x z :=
 ⟨fun h ↦ ⟨h.trans sdiff_le, disjoint_sdiff_self_left.mono_left h⟩, fun h ↦
   by rw [←h.2.sdiff_eq_left]; exact sdiff_le_sdiff_right h.1⟩
+#align le_sdiff le_sdiff
 
 @[simp] lemma sdiff_eq_left : x \ y = x ↔ Disjoint x y :=
 ⟨fun h ↦ disjoint_sdiff_self_left.mono_left h.ge, Disjoint.sdiff_eq_left⟩
+#align sdiff_eq_left sdiff_eq_left
 
 /- TODO: we could make an alternative constructor for `GeneralizedBooleanAlgebra` using
 `Disjoint x (y \ x)` and `x ⊔ (y \ x) = y` as axioms. -/
@@ -798,7 +800,7 @@ section lift
 -- See note [reducible non-instances]
 /-- Pullback a `GeneralizedBooleanAlgebra` along an injection. -/
 @[reducible]
-protected def Function.Injective.generalizedBooleanAlgebra [HasSup α] [HasInf α] [Bot α] [SDiff α]
+protected def Function.Injective.generalizedBooleanAlgebra [Sup α] [Inf α] [Bot α] [SDiff α]
     [GeneralizedBooleanAlgebra β] (f : α → β) (hf : Injective f)
     (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b)
     (map_bot : f ⊥ = ⊥) (map_sdiff : ∀ a b, f (a \ b) = f a \ f b) :
@@ -812,7 +814,7 @@ protected def Function.Injective.generalizedBooleanAlgebra [HasSup α] [HasInf �
 -- See note [reducible non-instances]
 /-- Pullback a `BooleanAlgebra` along an injection. -/
 @[reducible]
-protected def Function.Injective.booleanAlgebra [HasSup α] [HasInf α] [Top α] [Bot α] [HasCompl α]
+protected def Function.Injective.booleanAlgebra [Sup α] [Inf α] [Top α] [Bot α] [HasCompl α]
     [SDiff α] [BooleanAlgebra β] (f : α → β) (hf : Injective f)
     (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b)
     (map_top : f ⊤ = ⊤) (map_bot : f ⊥ = ⊥) (map_compl : ∀ a, f (aᶜ) = f aᶜ)

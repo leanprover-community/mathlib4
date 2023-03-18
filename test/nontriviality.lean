@@ -85,3 +85,8 @@ example (α : ℕ → Type) (a b : α 0) (h : a = b) : a = b := by
   nontriviality α 0 using Nat.zero_lt_one
   rename_i inst; guard_hyp inst : Nontrivial (α 0)
   exact h
+
+class Foo (α : Type) : Prop
+instance : Foo α := {}
+
+example (α : Type) : Foo α := by nontriviality α; infer_instance

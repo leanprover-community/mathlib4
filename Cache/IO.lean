@@ -83,12 +83,12 @@ def validateCurl : IO Bool := do
     | maj :: min :: _ =>
       let (maj, min) := (maj.toNat!, min.toNat!)
       if maj > 7 then return true
-      if maj == 7 && min >= 69 then
+      if maj == 7 && min >= 70 then
         if min < 81 then
           IO.println s!"Warning: recommended `curl` version ≥7.81. Found {v}"
         return true
       else
-        IO.println s!"`curl` version is required to be ≥7.69. Found {v}. Exiting..."
+        IO.println s!"`curl` version is required to be ≥7.70. Found {v}. Exiting..."
         return false
     | _ => throw $ IO.userError "Invalidly formatted version of `curl`"
   | _ => throw $ IO.userError "Invalidly formatted response from `curl --version`"
@@ -135,7 +135,7 @@ def allExist (paths : Array FilePath) : IO Bool := do
   pure true
 
 /-- Compresses build files into the local cache and returns an array with the compressed files -/
-def mkCache (hashMap : HashMap) (overwrite : Bool) : IO $ Array String := do
+def packCache (hashMap : HashMap) (overwrite : Bool) : IO $ Array String := do
   mkDir CACHEDIR
   IO.println "Compressing cache"
   let mut acc := default
@@ -169,6 +169,7 @@ def unpackCache (hashMap : HashMap) : IO Unit := do
     IO.println s!"Decompressing {size} file(s)"
     let isMathlibRoot ← isMathlibRoot
     hashMap.forM fun path hash => do
+      let _ ← IO.asTask do
       match path.parent with
       | none | some path => do
         let packageDir ← getPackageDir path

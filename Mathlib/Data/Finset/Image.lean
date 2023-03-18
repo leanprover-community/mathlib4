@@ -163,7 +163,7 @@ theorem map_subset_map {s₁ s₂ : Finset α} : s₁.map f ⊆ s₂.map f ↔ s
 /-- Associate to an embedding `f` from `α` to `β` the order embedding that maps a finset to its
 image under `f`. -/
 def mapEmbedding (f : α ↪ β) : Finset α ↪o Finset β :=
-  OrderEmbedding.ofMapLeIff (map f) fun _ _ => map_subset_map
+  OrderEmbedding.ofMapLEIff (map f) fun _ _ => map_subset_map
 #align finset.map_embedding Finset.mapEmbedding
 
 @[simp]
@@ -660,7 +660,7 @@ theorem subtype_eq_empty {p : α → Prop} [DecidablePred p] {s : Finset α} :
     s.subtype p = ∅ ↔ ∀ x, p x → x ∉ s := by simp [ext_iff, Subtype.forall, Subtype.coe_mk]
 #align finset.subtype_eq_empty Finset.subtype_eq_empty
 
---@[mono] Porting note: `mono` is not ported yet.
+@[mono]
 theorem subtype_mono {p : α → Prop} [DecidablePred p] : Monotone (Finset.subtype p) :=
   fun _ _ h _ hx => mem_subtype.2 <| h <| mem_subtype.1 hx
 #align finset.subtype_mono Finset.subtype_mono
@@ -724,7 +724,7 @@ theorem mem_fin {n} {s : Finset ℕ} : ∀ a : Fin n, a ∈ s.fin n ↔ (a : ℕ
   | ⟨a, ha⟩ => by simp [Finset.fin, ha, and_comm]
 #align finset.mem_fin Finset.mem_fin
 
---@[mono] Porting note: `mono` is not ported yet.
+@[mono]
 theorem fin_mono {n} : Monotone (Finset.fin n) := fun s t h x => by simpa using @h x
 #align finset.fin_mono Finset.fin_mono
 
@@ -763,7 +763,7 @@ theorem Multiset.toFinset_map [DecidableEq α] [DecidableEq β] (f : α → β) 
 
 namespace Equiv
 
-/-- Given an equivalence `α` to `β`, produce an equivalence between `finset α` and `finset β`. -/
+/-- Given an equivalence `α` to `β`, produce an equivalence between `Finset α` and `Finset β`. -/
 protected def finsetCongr (e : α ≃ β) : Finset α ≃ Finset β where
   toFun s := s.map e.toEmbedding
   invFun s := s.map e.symm.toEmbedding

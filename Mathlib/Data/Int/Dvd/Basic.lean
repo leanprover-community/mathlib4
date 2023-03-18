@@ -5,7 +5,7 @@ Authors: Jeremy Avigad
 Ported by: Scott Morrison
 
 ! This file was ported from Lean 3 source module data.int.dvd.basic
-! leanprover-community/mathlib commit fc2ed6f838ce7c9b7c7171e58d78eaf7b438fb0e
+! leanprover-community/mathlib commit e1bccd6e40ae78370f01659715d3c948716e3b7e
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/

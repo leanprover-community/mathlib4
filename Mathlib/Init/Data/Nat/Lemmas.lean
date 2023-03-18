@@ -287,7 +287,13 @@ not_lt.1 fun l ↦ Nat.find_min H l h
 
 end find
 
--- TODO cont_to_bool_mod_two
+theorem cond_decide_mod_two (x : ℕ) [d : Decidable (x % 2 = 1)] :
+    cond (@decide (x % 2 = 1) d) 1 0 = x % 2 :=
+  by
+  by_cases h : x % 2 = 1
+  · simp! [*]
+  · cases mod_two_eq_zero_or_one x <;> simp! [*, Nat.zero_ne_one]
+#align nat.cond_to_bool_mod_two Nat.cond_decide_mod_two
 
 lemma to_digits_core_lens_eq_aux (b f : Nat) :
   ∀ (n : Nat) (l1 l2 : List Char), l1.length = l2.length →
@@ -366,3 +372,5 @@ lemma repr_length (n e : Nat) : 0 < e → n < 10 ^ e → (Nat.repr n).length <= 
       exact to_digits_core_length 10 (by decide) (Nat.succ n + 1) (Nat.succ n) e he e0
 
 end Nat
+
+#align nat.succ_le_succ_iff Nat.succ_le_succ_iff

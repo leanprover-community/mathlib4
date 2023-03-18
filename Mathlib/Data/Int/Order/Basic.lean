@@ -153,6 +153,7 @@ where
     refine _root_.cast (by rw [add_sub_assoc]; rfl) (Hp _ (Int.le_of_lt ?_) (neg n))
     conv => rhs; apply (add_zero b).symm
     rw [Int.add_lt_add_iff_left]; apply negSucc_lt_zero
+#align int.induction_on' Int.inductionOn'
 
 /-- See `Int.inductionOn'` for an induction in both directions. -/
 protected theorem le_induction {P : ℤ → Prop} {m : ℤ} (h0 : P m)
@@ -280,8 +281,8 @@ attribute [local simp] Int.zero_emod
 @[simp]
 theorem neg_emod_two (i : ℤ) : -i % 2 = i % 2 := by
   apply Int.emod_eq_emod_iff_emod_sub_eq_zero.mpr
-  convert Int.mul_emod_right 2 (-i)
-  simp only [two_mul, sub_eq_add_neg]
+  convert Int.mul_emod_right 2 (-i) using 2
+  rw [two_mul, sub_eq_add_neg]
 #align int.neg_mod_two Int.neg_emod_two
 
 /-! ### properties of `/` and `%` -/

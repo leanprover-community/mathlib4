@@ -38,6 +38,7 @@ variable {A : Type _} {M : Type _} {G : Type _}
 def MulAut (M : Type _) [Mul M] :=
   M ≃* M
 #align mul_aut MulAut
+#align add_aut AddAut
 
 attribute [reducible] AddAut
 

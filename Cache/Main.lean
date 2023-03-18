@@ -13,8 +13,8 @@ Commands:
   # No priviledge required
   get  [ARGS]  Download linked files missing on the local cache and decompress
   get! [ARGS]  Download all linked files and decompress
-  mk           Compress non-compressed build files into the local cache
-  mk!          Compress build files into the local cache (no skipping)
+  pack         Compress non-compressed build files into the local cache
+  pack!        Compress build files into the local cache (no skipping)
   unpack       Decompress linked already downloaded files
   clean        Delete non-linked files
   clean!       Delete everything on the local cache
@@ -49,9 +49,12 @@ match. -/
 def toPaths (args : List String) : List FilePath :=
   args.map (FilePath.mk · |>.normalize)
 
+def curlArgs : List String :=
+  ["get", "get!", "put", "put!", "commit", "commit!"]
+
 open Cache IO Hashing Requests in
 def main (args : List String) : IO Unit := do
-  if !(← validateCurl) then return
+  if curlArgs.contains (args.headD "") && !(← validateCurl) then return
   let hashMemo ← getHashMemo
   let hashMap := hashMemo.hashMap
   match args with
@@ -59,14 +62,14 @@ def main (args : List String) : IO Unit := do
   | ["get!"] => getFiles hashMap true
   | "get"  :: args => getFiles (← hashMemo.filterByFilePaths (toPaths args)) false
   | "get!" :: args => getFiles (← hashMemo.filterByFilePaths (toPaths args)) true
-  | ["mk"] => discard $ mkCache hashMap false
-  | ["mk!"] => discard $ mkCache hashMap true
+  | ["pack"] => discard $ packCache hashMap false
+  | ["pack!"] => discard $ packCache hashMap true
   | ["unpack"] => unpackCache hashMap
   | ["clean"] =>
     cleanCache $ hashMap.fold (fun acc _ hash => acc.insert $ CACHEDIR / hash.asTarGz) .empty
   | ["clean!"] => cleanCache
-  | ["put"] => putFiles (← mkCache hashMap false) false (← getToken)
-  | ["put!"] => putFiles (← mkCache hashMap false) true (← getToken)
+  | ["put"] => putFiles (← packCache hashMap false) false (← getToken)
+  | ["put!"] => putFiles (← packCache hashMap false) true (← getToken)
   | ["commit"] =>
     if !(← isGitStatusClean) then IO.println "Please commit your changes first" return else
     commit hashMap false (← getToken)

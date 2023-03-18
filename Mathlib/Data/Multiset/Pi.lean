@@ -61,9 +61,7 @@ theorem Pi.cons_swap {a a' : α} {b : δ a} {b' : δ a'} {m : Multiset α} {f : 
   all_goals simp [*, Pi.cons_same, Pi.cons_ne]
 #align multiset.pi.cons_swap Multiset.Pi.cons_swap
 
---Porting note: Added noncomputable
 /-- `pi m t` constructs the Cartesian product over `t` indexed by `m`. -/
-noncomputable
 def pi (m : Multiset α) (t : ∀ a, Multiset (δ a)) : Multiset (∀ a ∈ m, δ a) :=
   m.recOn {Pi.empty δ}
     (fun a m (p : Multiset (∀ a ∈ m, δ a)) => (t a).bind fun b => p.map <| Pi.cons m a b)
@@ -135,7 +133,7 @@ protected theorem Nodup.pi {s : Multiset α} {t : ∀ a, Multiset (δ a)} :
 theorem pi.cons_ext {m : Multiset α} {a : α} (f : ∀ a' ∈ a ::ₘ m, δ a') :
     (Pi.cons m a (f _ (mem_cons_self _ _)) fun a' ha' => f a' (mem_cons_of_mem ha')) = f := by
   ext (a' h')
-  by_cases a' = a
+  by_cases h : a' = a
   · subst h
     rw [Pi.cons_same]
   · rw [Pi.cons_ne _ h]
@@ -154,7 +152,7 @@ theorem mem_pi (m : Multiset α) (t : ∀ a, Multiset (δ a)) :
   simp_rw [pi_cons, mem_bind, mem_map, ih]
   constructor
   · rintro ⟨b, hb, f', hf', rfl⟩ a' ha'
-    by_cases a' = a
+    by_cases h : a' = a
     · subst h
       rwa [Pi.cons_same]
     · rw [Pi.cons_ne _ h]

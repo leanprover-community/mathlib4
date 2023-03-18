@@ -26,17 +26,22 @@ namespace Qq
 
 /-- Typesafe conversion of `n : ℕ` to `Q($α)`. -/
 def ofNatQ (α : Q(Type $u)) (_ : Q(Semiring $α)) (n : ℕ) : Q($α) :=
-  have : Q(OfNat $α $n) := match n with
-  | 0 => (q(inferInstance) : Q(OfNat $α (nat_lit 0)))
-  | 1 => (q(inferInstance) : Q(OfNat $α (nat_lit 1)))
-  | _+2 => q(inferInstance)
-  q(OfNat.ofNat $n)
+  match n with
+  | 0 => q(0 : $α)
+  | 1 => q(1 : $α)
+  | k+2 =>
+    have lit : Q(ℕ) := mkRawNatLit n
+    let k : Q(ℕ) := mkRawNatLit k
+    let _x : Q(Nat.AtLeastTwo $lit) :=
+      (q(instAtLeastTwoHAddNatInstHAddInstAddNatOfNat (n := $k)) : Expr)
+    q(OfNat.ofNat $lit)
 
 /-- Analogue of `inferTypeQ`, but that gets universe levels right for our application. -/
 -- See https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Using.20.60QQ.60.20when.20you.20only.20have.20an.20.60Expr.60/near/303349037
 def inferTypeQ' (e : Expr) : MetaM ((u : Level) × (α : Q(Type $u)) × Q($α)) := do
   let α ← inferType e
-  let .sort (.succ u) ← whnf (← inferType α) | throwError "not a type{indentExpr α}"
+  let .sort (.succ u) ← instantiateMVars (← whnf (← inferType α))
+    | throwError "not a type{indentExpr α}"
   pure ⟨u, α, e⟩
 
 end Qq
@@ -213,12 +218,12 @@ def proveFalseByLinarith (cfg : LinarithConfig) : MVarId → List Expr → MetaM
     trace[linarith] m!"linarith has found a contradiction: {certificate.toList}"
     let enum_inputs := inputs.enum
     -- construct a list pairing nonzero coeffs with the proof of their corresponding comparison
-    let zip := enum_inputs.filterMap (fun ⟨n, e⟩ => (certificate.find? n).map (e, ·))
-    let mls ← zip.mapM (fun ⟨e, n⟩ => do mulExpr n (← leftOfIneqProof e))
+    let zip := enum_inputs.filterMap fun ⟨n, e⟩ => (certificate.find? n).map (e, ·)
+    let mls ← zip.mapM fun ⟨e, n⟩ => do mulExpr n (← leftOfIneqProof e)
     -- `sm` is the sum of input terms, scaled to cancel out all variables.
     let sm ← addExprs mls
     -- let sm ← instantiateMVars sm
-    trace[linarith] m!"The expression\n  {sm}\nshould be both 0 and negative"
+    trace[linarith] "The expression\n  {sm}\nshould be both 0 and negative"
     -- we prove that `sm = 0`, typically with `ring`.
     let sm_eq_zero ← proveEqZeroUsing cfg.discharger sm
     -- we also prove that `sm < 0`

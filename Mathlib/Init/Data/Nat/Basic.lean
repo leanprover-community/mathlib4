@@ -8,6 +8,25 @@ import Mathlib.Init.Data.Nat.Notation
 
 namespace Nat
 
+
+section recursor_workarounds
+
+/-- A computable version of `Nat.rec`. Workaround until Lean has native support for this. -/
+def recC.{u} {motive : ℕ → Sort u} (zero : motive zero)
+  (succ : (n : ℕ) → motive n → motive (succ n)) :
+  (t : ℕ) → motive t
+| 0 => zero
+| (n + 1) => succ n (recC zero succ n)
+
+@[csimp]
+theorem rec_eq_recC : @Nat.rec = @Nat.recC := by
+  funext motive zero succ n
+  induction n with
+  | zero => rfl
+  | succ n ih => rw [Nat.recC, ←ih]
+
+end recursor_workarounds
+
 set_option linter.deprecated false
 
 protected theorem bit0_succ_eq (n : ℕ) : bit0 (succ n) = succ (succ (bit0 n)) :=
@@ -40,3 +59,4 @@ protected theorem bit1_ne_zero (n : ℕ) : bit1 n ≠ 0 :=
 #align nat.bit1_ne_zero Nat.bit1_ne_zero
 
 end Nat
+

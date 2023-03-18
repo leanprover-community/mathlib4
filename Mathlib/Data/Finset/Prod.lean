@@ -115,21 +115,21 @@ theorem map_swap_product (s : Finset α) (t : Finset β) :
 #align finset.map_swap_product Finset.map_swap_product
 
 @[simp]
-theorem image_swap_product [DecidableEq α] [DecidableEq β] (s : Finset α) (t : Finset β) :
+theorem image_swap_product [DecidableEq (α × β)] (s : Finset α) (t : Finset β) :
     (t ×ᶠ s).image Prod.swap = s ×ᶠ t :=
   coe_injective <| by
     push_cast
     exact Set.image_swap_prod _ _
 #align finset.image_swap_product Finset.image_swap_product
 
-theorem product_eq_bunionᵢ [DecidableEq α] [DecidableEq β] (s : Finset α) (t : Finset β) :
+theorem product_eq_bunionᵢ [DecidableEq (α × β)] (s : Finset α) (t : Finset β) :
     s ×ᶠ t = s.bunionᵢ fun a => t.image fun b => (a, b) :=
   ext fun ⟨x, y⟩ => by
     simp only [mem_product, mem_bunionᵢ, mem_image, exists_prop, Prod.mk.inj_iff, and_left_comm,
       exists_and_left, exists_eq_right, exists_eq_left]
 #align finset.product_eq_bUnion Finset.product_eq_bunionᵢ
 
-theorem product_eq_bunionᵢ_right [DecidableEq α] [DecidableEq β] (s : Finset α) (t : Finset β) :
+theorem product_eq_bunionᵢ_right [DecidableEq (α × β)] (s : Finset α) (t : Finset β) :
     s ×ᶠ t = t.bunionᵢ fun b => s.image fun a => (a, b) :=
   ext fun ⟨x, y⟩ => by
     simp only [mem_product, mem_bunionᵢ, mem_image, exists_prop, Prod.mk.inj_iff, and_left_comm,
@@ -352,12 +352,12 @@ theorem offDiag_card : (offDiag s).card = s.card * s.card - s.card :=
      conv_rhs => rw [← filter_card_add_filter_neg_card_eq_card (fun a => a.1 = a.2)]
 #align finset.off_diag_card Finset.offDiag_card
 
---@[mono] Porting note: mono not implemented yet
+@[mono]
 theorem diag_mono : Monotone (diag : Finset α → Finset (α × α)) := fun _ _ h _ hx =>
   mem_diag.2 <| And.imp_left (@h _) <| mem_diag.1 hx
 #align finset.diag_mono Finset.diag_mono
 
---@[mono] Porting note: mono not implemented yet
+@[mono]
 theorem offDiag_mono : Monotone (offDiag : Finset α → Finset (α × α)) := fun _ _ h _ hx =>
   mem_offDiag.2 <| And.imp (@h _) (And.imp_left <| @h _) <| mem_offDiag.1 hx
 #align finset.off_diag_mono Finset.offDiag_mono

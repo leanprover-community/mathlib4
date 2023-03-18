@@ -70,7 +70,7 @@ structure.
 `OrderAddMonoidHom` is also used for ordered group homomorphisms.
 
 When possible, instead of parametrizing results over `(f : α →+o β)`,
-you should parametrize over `(F : Type*) [OrderAddMonoidHomClass F α β] (f : F)`.
+you should parametrize over `(F : Type _) [OrderAddMonoidHomClass F α β] (f : F)`.
 
 When you extend this structure, make sure to extend `OrderAddMonoidHomClass`. -/
 structure OrderAddMonoidHom (α β : Type _) [Preorder α] [Preorder β] [AddZeroClass α]
@@ -105,7 +105,7 @@ section Monoid
 `OrderMonoidHom` is also used for ordered group homomorphisms.
 
 When possible, instead of parametrizing results over `(f : α →*o β)`,
-you should parametrize over `(F : Type*) [OrderMonoidHomClass F α β] (f : F)`.
+you should parametrize over `(F : Type _) [OrderMonoidHomClass F α β] (f : F)`.
 
 When you extend this structure, make sure to extend `OrderMonoidHomClass`. -/
 @[to_additive]
@@ -169,7 +169,7 @@ the `MonoidWithZero` structure.
 `OrderMonoidWithZeroHom` is also used for group homomorphisms.
 
 When possible, instead of parametrizing results over `(f : α →+ β)`,
-you should parametrize over `(F : Type*) [OrderMonoidWithZeroHomClass F α β] (f : F)`.
+you should parametrize over `(F : Type _) [OrderMonoidWithZeroHomClass F α β] (f : F)`.
 
 When you extend this structure, make sure to extend `OrderMonoidWithZeroHomClass`. -/
 structure OrderMonoidWithZeroHom (α β : Type _) [Preorder α] [Preorder β] [MulZeroOneClass α]
@@ -353,13 +353,13 @@ theorem coe_orderHom (f : α →*o β) : ((f : α →o β) : α → β) = f :=
 
 @[to_additive]
 theorem toMonoidHom_injective : Injective (toMonoidHom : _ → α →* β) := fun f g h =>
-  ext <| by convert FunLike.ext_iff.1 h
+  ext <| by convert FunLike.ext_iff.1 h using 0
 #align order_monoid_hom.to_monoid_hom_injective OrderMonoidHom.toMonoidHom_injective
 #align order_add_monoid_hom.to_add_monoid_hom_injective OrderAddMonoidHom.toAddMonoidHom_injective
 
 @[to_additive]
 theorem toOrderHom_injective : Injective (toOrderHom : _ → α →o β) := fun f g h =>
-  ext <| by convert FunLike.ext_iff.1 h
+  ext <| by convert FunLike.ext_iff.1 h using 0
 #align order_monoid_hom.to_order_hom_injective OrderMonoidHom.toOrderHom_injective
 #align order_add_monoid_hom.to_order_hom_injective OrderAddMonoidHom.toOrderHom_injective
 
@@ -422,6 +422,7 @@ theorem coe_comp (f : β →*o γ) (g : α →*o β) : (f.comp g : α → γ) = 
 theorem comp_apply (f : β →*o γ) (g : α →*o β) (a : α) : (f.comp g) a = f (g a) :=
   rfl
 #align order_add_monoid_hom.comp_apply OrderAddMonoidHom.comp_apply
+#align order_monoid_hom.comp_apply OrderMonoidHom.comp_apply
 
 @[to_additive]
 theorem coe_comp_monoidHom (f : β →*o γ) (g : α →*o β) :
@@ -633,11 +634,11 @@ theorem coe_orderMonoidHom (f : α →*₀o β) : ⇑(f : α →*o β) = f :=
 #align order_monoid_with_zero_hom.coe_order_monoid_hom OrderMonoidWithZeroHom.coe_orderMonoidHom
 
 theorem toOrderMonoidHom_injective : Injective (toOrderMonoidHom : _ → α →*o β) := fun f g h =>
-  ext <| by convert FunLike.ext_iff.1 h
+  ext <| by convert FunLike.ext_iff.1 h using 0
 #align order_monoid_with_zero_hom.to_order_monoid_hom_injective OrderMonoidWithZeroHom.toOrderMonoidHom_injective
 
 theorem toMonoidWithZeroHom_injective : Injective (toMonoidWithZeroHom : _ → α →*₀ β) :=
-  fun f g h => ext <| by convert FunLike.ext_iff.1 h
+  fun f g h => ext <| by convert FunLike.ext_iff.1 h using 0
 #align order_monoid_with_zero_hom.to_monoid_with_zero_hom_injective OrderMonoidWithZeroHom.toMonoidWithZeroHom_injective
 
 /-- Copy of an `OrderMonoidWithZeroHom` with a new `toFun` equal to the old one. Useful to fix
