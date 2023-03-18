@@ -485,7 +485,7 @@ theorem repr_add : ∀ (o₁ o₂) [NF o₁] [NF o₂], repr (o₁ + o₂) = rep
     have nf := Onote.add_NF a o
     conv at nf => simp [(· + ·)]
     conv in _ + o => simp [(· + ·), add]
-    cases' h: add a o with e' n' a' <;> simp [Add.add, add, h'.symm, h, add_assoc] at nf h₁⊢
+    cases' h: add a o with e' n' a' <;> simp only [Add.add, add, h'.symm, h, add_assoc, repr] at nf h₁⊢
     have := h₁.fst; haveI := nf.fst; have ee := cmp_compares e e'
     cases he: cmp e e' <;> simp [add, he] at ee⊢
     · rw [← add_assoc, @add_absorp _ (repr e') (ω ^ repr e' * (n' : ℕ))]
@@ -502,11 +502,11 @@ theorem sub_NFBelow : ∀ {o₁ o₂ b}, NFBelow o₁ b → NF o₂ → NFBelow 
   | oadd e n a, 0, b, h₁, h₂ => h₁
   | oadd e₁ n₁ a₁, oadd e₂ n₂ a₂, b, h₁, h₂ => by
     have h' := sub_NFBelow h₁.snd h₂.snd
-    simp [Sub.sub, sub] at h'⊢
+    simp only [Sub.sub, sub] at h'⊢
     have := @cmp_compares _ _ h₁.fst h₂.fst
     cases h: cmp e₁ e₂ <;> simp [(·- ·), Sub.sub, sub, h]
     · apply NFBelow.zero
-    · simp [h] at this
+    · simp only [h, Ordering.compares_eq] at this
       subst e₂
       cases mn : (n₁ : ℕ) - n₂ <;> simp [sub]
       · by_cases en : n₁ = n₂ <;> simp [en]
@@ -531,24 +531,25 @@ theorem repr_sub : ∀ (o₁ o₂) [NF o₁] [NF o₂], repr (o₁ - o₂) = rep
     --conv at nf in a₁ - a₂ => simp [Sub.sub]
     --conv in _ - oadd _ _ _ => simp [Sub.sub, sub]
     have ee := @cmp_compares _ _ h₁.fst h₂.fst
-    cases h: cmp e₁ e₂ <;> simp [h] at ee
+    cases h: cmp e₁ e₂ <;> simp only [h, Ordering.compares_gt, gt_iff_lt] at ee
     · rw [Ordinal.sub_eq_zero_iff_le.2]
-      . simp [(· - ·), Sub.sub, sub, h]
+      . simp only [(· - ·), Sub.sub, sub, h, repr]
       exact le_of_lt (oadd_lt_oadd_1 h₁ ee)
     · subst e₂
       conv =>
         lhs
-        simp [(· - ·), Sub.sub, sub, h]
+        simp [(· - ·), Sub.sub, sub, h, repr]
       cases mn : (n₁ : ℕ) - n₂ <;> dsimp
       · by_cases en : n₁ = n₂
-        · simpa [en]
-        · simp [en, -repr]
+        · simp only [en, ite_true]
+          rwa [add_sub_add_cancel]
+        · simp only [en, ite_false]
           exact
             (Ordinal.sub_eq_zero_iff_le.2 <|
                 le_of_lt <|
                   oadd_lt_oadd_2 h₁ <|
                     lt_of_le_of_ne (tsub_eq_zero_iff_le.1 mn) (mt PNat.eq en)).symm
-      · simp [Nat.succPNat, -Nat.cast_succ]
+      · simp only [Nat.succPNat]
         rw [(tsub_eq_iff_eq_add_of_le <| le_of_lt <| Nat.lt_of_sub_eq_succ mn).1 mn, add_comm,
           Nat.cast_add, mul_add, add_assoc, add_sub_add_cancel]
         refine'
@@ -788,7 +789,7 @@ instance NF_scale (x) [NF x] (o) [NF o] : NF (scale x o) := by
 
 @[simp]
 theorem repr_scale (x) [NF x] (o) [NF o] : repr (scale x o) = ω ^ repr x * repr o := by
-  simp [scale_eq_mul]
+  simp [scale_eq_mul, mul_one (ω ^ repr x)]
 #align onote.repr_scale Onote.repr_scale
 
 theorem NF_repr_split {o o' m} [NF o] (h : split o = (o', m)) : NF o' ∧ repr o = repr o' + m := by
