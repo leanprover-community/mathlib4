@@ -152,7 +152,7 @@ set_option linter.uppercaseLean3 false in
 /-- A ring homomorphism f : Z[X_1, X_2, ...] → R
 is determined by the evaluations f(X_1), f(X_2), ... -/
 @[simp]
-theorem eval₂_hom_X {R : Type u} (c : ℤ →+* S) (f : MvPolynomial R ℤ →+* S) (x : MvPolynomial R ℤ) :
+theorem eval₂Hom_X {R : Type u} (c : ℤ →+* S) (f : MvPolynomial R ℤ →+* S) (x : MvPolynomial R ℤ) :
     eval₂ c (f ∘ X) x = f x := by
   apply MvPolynomial.induction_on x
     (fun n => by
@@ -165,14 +165,14 @@ theorem eval₂_hom_X {R : Type u} (c : ℤ →+* S) (f : MvPolynomial R ℤ →
     rw [eval₂_mul, eval₂_X, hp]
     exact (f.map_mul _ _).symm
 set_option linter.uppercaseLean3 false in
-#align mv_polynomial.eval₂_hom_X MvPolynomial.eval₂_hom_X
+#align mv_polynomial.eval₂_hom_X MvPolynomial.eval₂Hom_X
 
 /-- Ring homomorphisms out of integer polynomials on a type `σ` are the same as
 functions out of the type `σ`, -/
 def homEquiv : (MvPolynomial σ ℤ →+* S) ≃ (σ → S) where
   toFun f := f ∘ X
   invFun f := eval₂Hom (Int.castRingHom S) f
-  left_inv f := RingHom.ext <| eval₂_hom_X _ _
+  left_inv f := RingHom.ext <| eval₂Hom_X _ _
   right_inv f := funext fun x => by simp only [coe_eval₂Hom, Function.comp_apply, eval₂_X]
 #align mv_polynomial.hom_equiv MvPolynomial.homEquiv
 
