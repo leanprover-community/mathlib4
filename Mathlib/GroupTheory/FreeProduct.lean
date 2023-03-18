@@ -8,12 +8,12 @@ Authors: David Wärn, Joachim Breitner
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.FreeMonoid.Basic
-import Mathbin.GroupTheory.Congruence
-import Mathbin.GroupTheory.IsFreeGroup
-import Mathbin.Data.List.Chain
-import Mathbin.SetTheory.Cardinal.Ordinal
-import Mathbin.Data.Set.Pointwise.Smul
+import Mathlib.Algebra.FreeMonoid.Basic
+import Mathlib.GroupTheory.Congruence
+import Mathlib.GroupTheory.IsFreeGroup
+import Mathlib.Data.List.Chain
+import Mathlib.SetTheory.Cardinal.Ordinal
+import Mathlib.Data.Set.Pointwise.SMul
 
 /-!
 # The free product of groups or monoids
@@ -159,8 +159,7 @@ theorem lift_of {N} [Monoid N] (fi : ∀ i, M i →* N) {i} (m : M i) : lift fi 
 
 @[elab_as_elim]
 theorem induction_on {C : FreeProduct M → Prop} (m : FreeProduct M) (h_one : C 1)
-    (h_of : ∀ (i) (m : M i), C (of m)) (h_mul : ∀ x y, C x → C y → C (x * y)) : C m :=
-  by
+    (h_of : ∀ (i) (m : M i), C (of m)) (h_mul : ∀ x y, C x → C y → C (x * y)) : C m := by
   let S : Submonoid (FreeProduct M) := Submonoid.mk (setOf C) h_mul h_one
   convert Subtype.prop (lift (fun i => of.cod_restrict S (h_of i)) m)
   change MonoidHom.id _ m = S.subtype.comp _ m
@@ -179,8 +178,7 @@ theorem of_injective (i : ι) : Function.Injective ⇑(of : M i →* _) := by
 #align free_product.of_injective FreeProduct.of_injective
 
 theorem lift_mrange_le {N} [Monoid N] (f : ∀ i, M i →* N) {s : Submonoid N}
-    (h : ∀ i, (f i).mrange ≤ s) : (lift f).mrange ≤ s :=
-  by
+    (h : ∀ i, (f i).mrange ≤ s) : (lift f).mrange ≤ s := by
   rintro _ ⟨x, rfl⟩
   induction' x using FreeProduct.induction_on with i x x y hx hy
   · exact s.one_mem
@@ -228,8 +226,7 @@ instance : Group (FreeProduct G) :=
           hy] }
 
 theorem lift_range_le {N} [Group N] (f : ∀ i, G i →* N) {s : Subgroup N}
-    (h : ∀ i, (f i).range ≤ s) : (lift f).range ≤ s :=
-  by
+    (h : ∀ i, (f i).range ≤ s) : (lift f).range ≤ s := by
   rintro _ ⟨x, rfl⟩
   induction' x using FreeProduct.induction_on with i x x y hx hy
   · exact s.one_mem
@@ -239,8 +236,7 @@ theorem lift_range_le {N} [Group N] (f : ∀ i, G i →* N) {s : Subgroup N}
     exact s.mul_mem hx hy
 #align free_product.lift_range_le FreeProduct.lift_range_le
 
-theorem range_eq_supᵢ {N} [Group N] (f : ∀ i, G i →* N) : (lift f).range = ⨆ i, (f i).range :=
-  by
+theorem range_eq_supᵢ {N} [Group N] (f : ∀ i, G i →* N) : (lift f).range = ⨆ i, (f i).range := by
   apply le_antisymm (lift_range_le _ f fun i => le_supᵢ _ i)
   apply supᵢ_le _
   rintro i _ ⟨x, rfl⟩
@@ -327,8 +323,7 @@ private def mk_aux {l} (ls : List (Σi, M i)) (h1 : ∀ l' ∈ l::ls, Sigma.snd 
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem cons_eq_rcons {i} {m : M i} {ls h1 h2} :
-    Word.mk (⟨i, m⟩::ls) h1 h2 = rcons ⟨m, mkAux ls h1 h2, fstIdx_ne_iff.mpr h2.rel_head?⟩ :=
-  by
+    Word.mk (⟨i, m⟩::ls) h1 h2 = rcons ⟨m, mkAux ls h1 h2, fstIdx_ne_iff.mpr h2.rel_head?⟩ := by
   rw [rcons, dif_neg]
   rfl
   exact h1 ⟨i, m⟩ (ls.mem_cons_self _)
@@ -340,8 +335,7 @@ theorem prod_rcons {i} (p : Pair M i) : prod (rcons p) = of p.headI * prod p.tai
   else by rw [rcons, dif_neg hm, Prod, List.map_cons, List.prod_cons, Prod]
 #align free_product.word.prod_rcons FreeProduct.Word.prod_rcons
 
-theorem rcons_inj {i} : Function.Injective (rcons : Pair M i → Word M) :=
-  by
+theorem rcons_inj {i} : Function.Injective (rcons : Pair M i → Word M) := by
   rintro ⟨m, w, h⟩ ⟨m', w', h'⟩ he
   by_cases hm : m = 1 <;> by_cases hm' : m' = 1
   · simp only [rcons, dif_pos hm, dif_pos hm'] at he
@@ -424,8 +418,7 @@ theorem cons_eq_smul {i} {m : M i} {ls h1 h2} :
 #align free_product.word.cons_eq_smul FreeProduct.Word.cons_eq_smul
 
 theorem smul_induction {C : Word M → Prop} (h_empty : C empty)
-    (h_smul : ∀ (i) (m : M i) (w), C w → C (of m • w)) (w : Word M) : C w :=
-  by
+    (h_smul : ∀ (i) (m : M i) (w), C w → C (of m • w)) (w : Word M) : C w := by
   cases' w with ls h1 h2
   induction' ls with l ls ih
   · exact h_empty
@@ -435,8 +428,7 @@ theorem smul_induction {C : Word M → Prop} (h_empty : C empty)
 #align free_product.word.smul_induction FreeProduct.Word.smul_induction
 
 @[simp]
-theorem prod_smul (m) : ∀ w : Word M, prod (m • w) = m * prod w :=
-  by
+theorem prod_smul (m) : ∀ w : Word M, prod (m • w) = m * prod w := by
   apply m.induction_on
   · intro
     rw [one_smul, one_mul]
@@ -493,8 +485,7 @@ def toList : ∀ {i j} (w : Neword M i j), List (Σi, M i)
   | _, _, append w₁ hne w₂ => w₁.toList ++ w₂.toList
 #align free_product.neword.to_list FreeProduct.Neword.toList
 
-theorem toList_ne_nil {i j} (w : Neword M i j) : w.toList ≠ List.nil :=
-  by
+theorem toList_ne_nil {i j} (w : Neword M i j) : w.toList ≠ List.nil := by
   induction w
   · rintro ⟨rfl⟩
   · apply List.append_ne_nil_of_ne_nil_left
@@ -516,8 +507,7 @@ def last : ∀ {i j} (w : Neword M i j), M j
 #align free_product.neword.last FreeProduct.Neword.last
 
 @[simp]
-theorem toList_head? {i j} (w : Neword M i j) : w.toList.head? = Option.some ⟨i, w.headI⟩ :=
-  by
+theorem toList_head? {i j} (w : Neword M i j) : w.toList.head? = Option.some ⟨i, w.headI⟩ := by
   rw [← Option.mem_def]
   induction w
   · rw [Option.mem_def]
@@ -564,8 +554,7 @@ def toWord {i j} (w : Neword M i j) : Word M
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- Every nonempty `word M` can be constructed as a `neword M i j` -/
-theorem of_word (w : Word M) (h : w ≠ Empty) : ∃ (i j : _)(w' : Neword M i j), w'.toWord = w :=
-  by
+theorem of_word (w : Word M) (h : w ≠ Empty) : ∃ (i j : _)(w' : Neword M i j), w'.toWord = w := by
   rsuffices ⟨i, j, w, h⟩ : ∃ (i j : _)(w' : neword M i j), w'.to_word.to_list = w.to_list
   · refine' ⟨i, j, w, _⟩
     ext
@@ -645,8 +634,7 @@ def mulHead {i j : ι} (w : Neword M i j) (x : M i) (hnotone : x * w.headI ≠ 1
 
 @[simp]
 theorem mulHead_head {i j : ι} (w : Neword M i j) (x : M i) (hnotone : x * w.headI ≠ 1) :
-    (mulHead w x hnotone).headI = x * w.headI :=
-  by
+    (mulHead w x hnotone).headI = x * w.headI := by
   induction w
   rfl
   exact w_ih_w₁ _ _
@@ -654,8 +642,7 @@ theorem mulHead_head {i j : ι} (w : Neword M i j) (x : M i) (hnotone : x * w.he
 
 @[simp]
 theorem mulHead_prod {i j : ι} (w : Neword M i j) (x : M i) (hnotone : x * w.headI ≠ 1) :
-    (mulHead w x hnotone).Prod = of x * w.Prod :=
-  by
+    (mulHead w x hnotone).Prod = of x * w.Prod := by
   unfold mul_head
   induction w
   · simp [mul_head, replace_head]
@@ -750,15 +737,13 @@ theorem lift_word_prod_nontrivial_of_other_i {i j k} (w : Neword H i j) (hhead :
 
 include hnontriv
 
-theorem lift_word_prod_nontrivial_of_head_eq_last {i} (w : Neword H i i) : lift f w.Prod ≠ 1 :=
-  by
+theorem lift_word_prod_nontrivial_of_head_eq_last {i} (w : Neword H i i) : lift f w.Prod ≠ 1 := by
   obtain ⟨k, hk⟩ := exists_ne i
   exact lift_word_prod_nontrivial_of_other_i f X hXnonempty hXdisj hpp w hk hk
 #align free_product.lift_word_prod_nontrivial_of_head_eq_last FreeProduct.lift_word_prod_nontrivial_of_head_eq_last
 
 theorem lift_word_prod_nontrivial_of_head_card {i j} (w : Neword H i j) (hcard : 3 ≤ (#H i))
-    (hheadtail : i ≠ j) : lift f w.Prod ≠ 1 :=
-  by
+    (hheadtail : i ≠ j) : lift f w.Prod ≠ 1 := by
   obtain ⟨h, hn1, hnh⟩ := Cardinal.three_le hcard 1 w.head⁻¹
   have hnot1 : h * w.head ≠ 1 := by
     rw [← div_inv_eq_mul]
@@ -808,8 +793,7 @@ theorem lift_word_prod_nontrivial_of_not_empty {i j} (w : Neword H i j) : lift f
         simp [w', heq1]
 #align free_product.lift_word_prod_nontrivial_of_not_empty FreeProduct.lift_word_prod_nontrivial_of_not_empty
 
-theorem empty_of_word_prod_eq_one {w : Word H} (h : lift f w.Prod = 1) : w = Word.empty :=
-  by
+theorem empty_of_word_prod_eq_one {w : Word H} (h : lift f w.Prod = 1) : w = Word.empty := by
   by_contra hnotempty
   obtain ⟨i, j, w, rfl⟩ := neword.of_word w hnotempty
   exact lift_word_prod_nontrivial_of_not_empty f hcard X hXnonempty hXdisj hpp w h
@@ -866,8 +850,7 @@ instance {ι : Type _} (G : ι → Type _) [∀ i, Group (G i)] [hG : ∀ i, IsF
 /-- A free group is a free product of copies of the free_group over one generator. -/
 @[simps]
 def freeGroupEquivFreeProduct {ι : Type u_1} :
-    FreeGroup ι ≃* FreeProduct fun _ : ι => FreeGroup Unit :=
-  by
+    FreeGroup ι ≃* FreeProduct fun _ : ι => FreeGroup Unit := by
   refine' MonoidHom.toMulEquiv _ _ _ _
   exact FreeGroup.lift fun i => @FreeProduct.of ι _ _ i (FreeGroup.of Unit.unit)
   exact FreeProduct.lift fun i => FreeGroup.lift fun pstar => FreeGroup.of i
@@ -915,8 +898,7 @@ Often the Ping-Pong-Lemma is stated with regard to group elements that generate 
 we generalize to arbitrary group homomorphisms from the free group to `G`  and do not require the
 group to be generated by the elements.
 -/
-theorem FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeGroup.lift a) :=
-  by
+theorem FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeGroup.lift a) := by
   -- Step one: express the free group lift via the free product lift
   have :
     FreeGroup.lift a =
