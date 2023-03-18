@@ -25,30 +25,30 @@ open CategoryTheory
 /-- The category of bornologies. -/
 def Born :=
   Bundled Bornology
+set_option linter.uppercaseLean3 false in
 #align Born Born
 
 namespace Born
 
 instance : CoeSort Born (Type _) :=
-  Bundled.hasCoeToSort
+  Bundled.instCoeSortBundledType
 
 instance (X : Born) : Bornology X :=
   X.str
 
-/-- Construct a bundled `Born` from a `bornology`. -/
+/-- Construct a bundled `Born` from a `Bornology`. -/
 def of (α : Type _) [Bornology α] : Born :=
   Bundled.of α
+set_option linter.uppercaseLean3 false in
 #align Born.of Born.of
 
 instance : Inhabited Born :=
   ⟨of PUnit⟩
 
-instance : BundledHom @LocallyBoundedMap
-    where
-  toFun _ _ _ _ := coeFn
+instance : BundledHom @LocallyBoundedMap where
   id := @LocallyBoundedMap.id
   comp := @LocallyBoundedMap.comp
-  hom_ext X Y _ _ := FunLike.coe_injective
+  hom_ext _ _ := FunLike.coe_injective
 
 instance : LargeCategory.{u} Born :=
   BundledHom.category LocallyBoundedMap
@@ -57,4 +57,3 @@ instance : ConcreteCategory Born :=
   BundledHom.concreteCategory LocallyBoundedMap
 
 end Born
-
