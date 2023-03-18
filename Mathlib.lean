@@ -88,6 +88,7 @@ import Mathlib.Algebra.GroupPower.Lemmas
 import Mathlib.Algebra.GroupPower.Order
 import Mathlib.Algebra.GroupPower.Ring
 import Mathlib.Algebra.GroupRingAction.Basic
+import Mathlib.Algebra.GroupRingAction.Invariant
 import Mathlib.Algebra.GroupRingAction.Subobjects
 import Mathlib.Algebra.GroupWithZero.Basic
 import Mathlib.Algebra.GroupWithZero.Commute
@@ -218,6 +219,7 @@ import Mathlib.Algebra.Parity
 import Mathlib.Algebra.Periodic
 import Mathlib.Algebra.Polynomial.BigOperators
 import Mathlib.Algebra.Polynomial.GroupRingAction
+import Mathlib.Algebra.QuadraticDiscriminant
 import Mathlib.Algebra.Quandle
 import Mathlib.Algebra.Quotient
 import Mathlib.Algebra.Regular.Basic
@@ -544,6 +546,7 @@ import Mathlib.Data.Dfinsupp.Lex
 import Mathlib.Data.Dfinsupp.Multiset
 import Mathlib.Data.Dfinsupp.NeLocus
 import Mathlib.Data.Dfinsupp.Order
+import Mathlib.Data.Dfinsupp.WellFounded
 import Mathlib.Data.ENat.Basic
 import Mathlib.Data.ENat.Lattice
 import Mathlib.Data.Equiv.Functor
@@ -729,9 +732,11 @@ import Mathlib.Data.Multiset.Sort
 import Mathlib.Data.Multiset.Sum
 import Mathlib.Data.MvPolynomial.Basic
 import Mathlib.Data.MvPolynomial.Comap
+import Mathlib.Data.MvPolynomial.CommRing
 import Mathlib.Data.MvPolynomial.Counit
 import Mathlib.Data.MvPolynomial.Invertible
 import Mathlib.Data.MvPolynomial.Rename
+import Mathlib.Data.MvPolynomial.Supported
 import Mathlib.Data.MvPolynomial.Variables
 import Mathlib.Data.Nat.Basic
 import Mathlib.Data.Nat.Bits
@@ -944,6 +949,7 @@ import Mathlib.Data.Vector.Zip
 import Mathlib.Data.W.Basic
 import Mathlib.Data.W.Cardinal
 import Mathlib.Data.W.Constructions
+import Mathlib.Data.ZMod.Basic
 import Mathlib.Data.ZMod.Defs
 import Mathlib.Deprecated.Group
 import Mathlib.Deprecated.Ring
@@ -1473,6 +1479,7 @@ import Mathlib.Topology.Basic
 import Mathlib.Topology.Bornology.Basic
 import Mathlib.Topology.Bornology.Constructions
 import Mathlib.Topology.Bornology.Hom
+import Mathlib.Topology.Category.Born
 import Mathlib.Topology.CompactOpen
 import Mathlib.Topology.Connected
 import Mathlib.Topology.Constructions

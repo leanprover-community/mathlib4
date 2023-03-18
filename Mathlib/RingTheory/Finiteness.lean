@@ -230,6 +230,7 @@ theorem fg_of_fg_map_injective (f : M →ₗ[R] P) (hf : Function.Injective f) {
 Perhaps it should get its own name -/
 alias LinearMap.instSemilinearMapClassLinearMap ← instSLMC
 
+-- Porting note: With etaExperiment, we don't need the @s in the following statement.
 theorem fg_of_fg_map {R M P : Type _} [Ring R] [AddCommGroup M] [Module R M] [AddCommGroup P]
     [Module R P] (f : M →ₗ[R] P) 
     (hf : @LinearMap.ker R R M P _ _ _ _ _ _ (RingHom.id _) _ instSLMC f = ⊥) {N : Submodule R M}
@@ -277,6 +278,7 @@ finitely generated then so is M. -/
 theorem fg_of_fg_map_of_fg_inf_ker {R M P : Type _} [Ring R] [AddCommGroup M] [Module R M]
     [AddCommGroup P] [Module R P] (f : M →ₗ[R] P) {s : Submodule R M} 
     -- Porting note: Lean having trouble both unifying for SLMC and then synthesizing once unified
+    -- With etaExperiment, we don't need the @s in the following statement.
     (hs1 : (@map R R M P _ _ _ _ _ _ (RingHom.id _) _ _ instSLMC f s).Fg)
     (hs2 : (s ⊓ @LinearMap.ker R R M P _ _ _ _ _ _ (RingHom.id _) _ instSLMC f).Fg) : s.Fg := by
   haveI := Classical.decEq R
@@ -284,13 +286,16 @@ theorem fg_of_fg_map_of_fg_inf_ker {R M P : Type _} [Ring R] [AddCommGroup M] [M
   haveI := Classical.decEq P
   cases' hs1 with t1 ht1
   cases' hs2 with t2 ht2
+  -- Porting note: With etaExperiment, we don't need the asFun in the following statement.
   have : ∀ y ∈ t1, ∃ x ∈ s, asFun f x = y := by
     intro y hy
+    -- Porting note: With etaExperiment, we don't need the @ in the following statement.
     have : y ∈ @map R R M P _ _ _ _ _ _ (RingHom.id _) _ _ instSLMC f s := by
       rw [← ht1]
       exact subset_span hy
     rcases mem_map.1 this with ⟨x, hx1, hx2⟩
     exact ⟨x, hx1, hx2⟩
+  -- Porting note: With etaExperiment, we don't need the asFun in the following statement.
   have : ∃ g : P → M, ∀ y ∈ t1, g y ∈ s ∧ asFun f (g y) = y :=
     by
     choose g hg1 hg2 using this
@@ -314,6 +319,7 @@ theorem fg_of_fg_map_of_fg_inf_ker {R M P : Type _} [Ring R] [AddCommGroup M] [M
       rw [ht2] at this
       exact this.1
   intro x hx
+  -- Porting note: With etaExperiment, we don't need the asFun and @ in the following statement.
   have : asFun f x ∈ @map R R M P _ _ _ _ _ _ (RingHom.id _) _ _ instSLMC f s := by
     rw [mem_map]
     exact ⟨x, hx, rfl⟩
@@ -369,6 +375,7 @@ the first morphism is surjective. -/
 theorem fg_ker_comp {R M N P : Type _} [Ring R] [AddCommGroup M] [Module R M] [AddCommGroup N]
     [Module R N] [AddCommGroup P] [Module R P] (f : M →ₗ[R] N) (g : N →ₗ[R] P) 
     -- Porting note: more help both unifying and finding instSLMC
+    -- With etaExperiment, we don't need the @s in the following statement.
     (hf1 : (@LinearMap.ker R R M N _ _ _ _ _ _ (RingHom.id _) _ instSLMC f).Fg)
     (hf2 : (@LinearMap.ker R R N P _ _ _ _ _ _ (RingHom.id _) _ instSLMC g).Fg) 
     (hsur : Function.Surjective <| asFun f) : 
@@ -377,6 +384,7 @@ theorem fg_ker_comp {R M N P : Type _} [Ring R] [AddCommGroup M] [Module R M] [A
   rw [LinearMap.ker_comp]
   apply fg_of_fg_map_of_fg_inf_ker f
   · rwa [Submodule.map_comap_eq, LinearMap.range_eq_top.2 hsur, top_inf_eq]
+  -- Porting note With etaExperiment, we don't need the @s in the following `show`.
   · rwa [inf_of_le_right (show (@LinearMap.ker R R M N _ _ _ _ _ _ (RingHom.id _) _ instSLMC f) ≤
       @comap R R M N _ _ _ _ _ _ (RingHom.id _) _ instSLMC f
       (@LinearMap.ker R R N P _ _ _ _ _ _ (RingHom.id _) _ instSLMC g) from comap_mono bot_le)]
