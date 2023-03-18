@@ -43,13 +43,9 @@ namespace Functor
 
 namespace IsLocalization
 
-section
-
-variable (L₁ : C₁ ⥤ D) (W₁ : MorphismProperty C₁) (L₂ : C₂ ⥤ D) (W₂ : MorphismProperty C₂)
+lemma of_equivalence_source (L₁ : C₁ ⥤ D) (W₁ : MorphismProperty C₁) (L₂ : C₂ ⥤ D) (W₂ : MorphismProperty C₂)
   (E : C₁ ≌ C₂) (hW₁ : W₁ ⊆ W₂.inverseImage' E.functor) (hW₂ : W₂.IsInvertedBy L₂)
-  [L₁.IsLocalization W₁] (iso : E.functor ⋙ L₂ ≅ L₁)
-
-lemma of_equivalence_source : L₂.IsLocalization W₂ := by
+  [L₁.IsLocalization W₁] (iso : E.functor ⋙ L₂ ≅ L₁) : L₂.IsLocalization W₂ := by
   have h : W₁.IsInvertedBy (E.functor ⋙ W₂.Q) := fun _ _ f hf => by
     obtain ⟨_ ,_, e₁, e₂, f', hf', ⟨fac⟩⟩ := hW₁ f hf
     haveI := Localization.inverts W₂.Q W₂ _ hf'
@@ -68,23 +64,13 @@ lemma of_equivalence_source : L₂.IsLocalization W₂ := by
           (Functor.associator _ _ _).symm ≪≫ isoWhiskerRight E.counitIso _ ≪≫ leftUnitor _ )
         (Functor.associator _ _ _ ≪≫ isoWhiskerLeft _ (Lifting.iso W₂.Q W₂ _ _)  ≪≫ iso) ⟩ }
 
-end
-
-section
-
-variable (L₁ : C₁ ⥤ D₁) (W₁ : MorphismProperty C₁) [L₁.IsLocalization W₁]
+lemma of_equivalences (L₁ : C₁ ⥤ D₁) (W₁ : MorphismProperty C₁) [L₁.IsLocalization W₁]
   (L₂ : C₂ ⥤ D₂) (W₂ : MorphismProperty C₂)
-  (E : C₁ ≌ C₂) (E' : D₁ ≌ D₂) (h : CatCommSq L₁ E.functor L₂ E'.functor)
-  (hW₁ : W₁ ⊆ W₂.inverseImage' E.functor) (hW₂ : W₂.IsInvertedBy L₂)
-
-#check of_equivalence_target
-
-lemma of_equivalences : L₂.IsLocalization W₂ := by
-  haveI : (L₁ ⋙ E'.functor).IsLocalization W₁ :=
-    of_equivalence_target L₁ W₁ (L₁ ⋙ E'.functor) E' sorry
-  sorry
-
-end
+  (E : C₁ ≌ C₂) (E' : D₁ ≌ D₂) [CatCommSq L₁ E.functor L₂ E'.functor]
+  (hW₁ : W₁ ⊆ W₂.inverseImage' E.functor) (hW₂ : W₂.IsInvertedBy L₂): L₂.IsLocalization W₂ := by
+  haveI : (E.functor ⋙ L₂).IsLocalization W₁ :=
+    of_equivalence_target L₁ W₁ _ E' ((CatCommSq.iso _ _ _ _).symm)
+  exact of_equivalence_source (E.functor ⋙ L₂) W₁ L₂ W₂ E hW₁ hW₂ (Iso.refl _)
 
 end IsLocalization
 
