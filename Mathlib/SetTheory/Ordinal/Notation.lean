@@ -1282,7 +1282,7 @@ instance : WellFoundedRelation Nonote :=
 
 /-- Convert a natural number to an ordinal notation -/
 def ofNat (n : ℕ) : Nonote :=
-  ⟨ofNat n, ⟨⟨_, NFBelow_ofNat _⟩⟩⟩
+  ⟨Onote.ofNat n, ⟨⟨_, NFBelow_ofNat _⟩⟩⟩
 #align nonote.of_nat Nonote.ofNat
 
 /-- Compare ordinal notations -/
