@@ -979,8 +979,7 @@ theorem repr_opow (o₁ o₂) [NF o₁] [NF o₂] : repr (o₁ ^ o₂) = repr o�
     · cases' e₂ : split' o₂ with b' k
       cases' NF_repr_split' e₂ with _ r₂
       by_cases m = 0 <;> simp only [opow_def, opow_match', Pow.pow, opow,
-        e₁, h, r₁, e₂, r₂] <;>
-      simp only [repr, opow_zero, Nat.succPNat_coe, Nat.cast_succ, Nat.cast_zero, _root_.zero_add,
+        e₁, h, r₁, e₂, r₂, repr, opow_zero, Nat.succPNat_coe, Nat.cast_succ, Nat.cast_zero, _root_.zero_add,
       mul_one, add_zero, one_opow, npow_eq_pow] <;>
       rw [opow_add, opow_mul, opow_omega]
       . rw [add_one_eq_succ]
@@ -989,13 +988,14 @@ theorem repr_opow (o₁ o₂) [NF o₁] [NF o₂] : repr (o₁ ^ o₂) = repr o�
     haveI := N₁.snd
     cases' N₁.of_dvd_omega (split_dvd e₁) with a00 ad
     have al := split_add_lt e₁
-    have aa : repr (a' + ofNat m) = repr a' + m := by simp
+    have aa : repr (a' + ofNat m) = repr a' + m := by
+      simp only [eq_self_iff_true, Onote.repr_ofNat, Onote.repr_add]
     cases' e₂ : split' o₂ with b' k
     cases' NF_repr_split' e₂ with _ r₂
     simp [opow_def, opow, e₁, r₁, split_eq_scale_split' e₂]
     cases' k with k <;> skip
-    · simp [opow, r₂, opow_mul, repr_opow_aux₁ a00 al aa, add_assoc]
-    · simp [opow, r₂, opow_add, opow_mul, mul_assoc, add_assoc]
+    · simp [opow, opow_match', r₂, opow_mul, repr_opow_aux₁ a00 al aa, add_assoc]
+    · simp [opow, opow_match', r₂, opow_add, opow_mul, mul_assoc, add_assoc]
       rw [repr_opow_aux₁ a00 al aa, scale_opowAux]
       simp [opow_mul]
       rw [← mul_add, ← add_assoc ((ω : Ordinal.{0}) ^ repr a0 * (n : ℕ))]
