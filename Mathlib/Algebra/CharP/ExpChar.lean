@@ -14,8 +14,10 @@ import Mathlib.Data.Nat.Prime
 /-!
 # Exponential characteristic
 
-This file defines the exponential characteristic and establishes a few basic results relating
-it to the (ordinary characteristic).
+This file defines the exponential characteristic, which is defined to be 1 for a ring with
+characteristic 0 and the same as the ordinary characteristic, if the ordinary characteristic is
+prime. This concept is useful to simplify some theorem statements.
+This file establishes a few basic results relating it to the (ordinary characteristic).
 The definition is stated for a semiring, but the actual results are for nontrivial rings
 (as far as exponential characteristic one is concerned), respectively a ring without zero-divisors
 (for prime characteristic).
@@ -42,8 +44,9 @@ variable [Semiring R]
 /-- The definition of the exponential characteristic of a semiring. -/
 class inductive ExpChar (R : Type u) [Semiring R] : ℕ → Prop
   | zero [CharZero R] : ExpChar R 1
-  | Prime {q : ℕ} (hprime : q.Prime) [hchar : CharP R q] : ExpChar R q
+  | prime {q : ℕ} (hprime : q.Prime) [hchar : CharP R q] : ExpChar R q
 #align exp_char ExpChar
+#align exp_char.prime ExpChar.prime
 
 /-- The exponential characteristic is one if the characteristic is zero. -/
 theorem expChar_one_of_char_zero (q : ℕ) [hp : CharP R 0] [hq : ExpChar R q] : q = 1 := by
@@ -55,12 +58,8 @@ theorem expChar_one_of_char_zero (q : ℕ) [hp : CharP R 0] [hq : ExpChar R q] :
 /-- The characteristic equals the exponential characteristic iff the former is prime. -/
 theorem char_eq_expChar_iff (p q : ℕ) [hp : CharP R p] [hq : ExpChar R q] : p = q ↔ p.Prime := by
   cases' hq with q hq_one hq_prime hq_hchar
-  · apply iff_of_false
-    · rintro rfl
-      exact one_ne_zero (hp.eq R (CharP.ofCharZero R))
-    · intro pprime
-      rw [(CharP.eq R hp inferInstance : p = 0)] at pprime
-      exact Nat.not_prime_zero pprime
+  · rw [(CharP.eq R hp inferInstance : p = 0)]
+    decide
   · exact ⟨fun hpq => hpq.symm ▸ hq_prime, fun _ => CharP.eq R hp hq_hchar⟩
 #align char_eq_exp_char_iff char_eq_expChar_iff
 
@@ -104,19 +103,10 @@ theorem char_prime_of_ne_zero {p : ℕ} [hp : CharP R p] (p_ne_zero : p ≠ 0) :
 #align char_prime_of_ne_zero char_prime_of_ne_zero
 
 /-- The exponential characteristic is a prime number or one. -/
-theorem expChar_is_prime_or_one (q : ℕ) [hq : ExpChar R q] : Nat.Prime q ∨ q = 1 :=
-  or_iff_not_imp_right.mpr fun h => by
-    cases' CharP.exists R with p hp
-    have p_ne_zero : p ≠ 0 := by
-      intro p_zero
-      have : CharP R 0 := by rwa [← p_zero]
-      have : q = 1 := expChar_one_of_char_zero R q
-      contradiction
-    haveI : CharP R p := hp -- porting note: added because using `cases` instead of `casesI` above
-    have p_eq_q : p = q := (char_eq_expChar_iff R p q).mpr (char_prime_of_ne_zero R p_ne_zero)
-    cases' CharP.char_is_prime_or_zero R p with pprime
-    · rwa [p_eq_q] at pprime
-    · contradiction
+theorem expChar_is_prime_or_one (q : ℕ) [hq : ExpChar R q] : Nat.Prime q ∨ q = 1 := by
+  cases hq
+  case zero => exact .inr rfl
+  case prime hp _ => exact .inl hp
 #align exp_char_is_prime_or_one expChar_is_prime_or_one
 
 end NoZeroDivisors
