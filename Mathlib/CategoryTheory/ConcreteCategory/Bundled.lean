@@ -49,7 +49,7 @@ def of {c : Type u → Type v} (α : Type u) [str : c α] : Bundled c :=
   ⟨α, str⟩
 #align category_theory.bundled.of CategoryTheory.Bundled.of
 
-instance : CoeSort (Bundled c) (Type u) :=
+instance coeSort : CoeSort (Bundled c) (Type u) :=
   ⟨Bundled.α⟩
 
 theorem coe_mk (α) (str) : (@Bundled.mk c α str : Type u) = α :=
