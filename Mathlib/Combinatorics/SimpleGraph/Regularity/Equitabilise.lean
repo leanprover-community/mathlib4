@@ -79,7 +79,7 @@ theorem equitabilise_aux (hs : a * m + b * (m + 1) = s.card) :
     least one part `u` of `P` has size `m + 1` (in which case we take `t` to be an arbitrary subset
     of `u` of size `n`). The rest of each branch is just tedious calculations to satisfy the
     induction hypothesis. -/
-  by_cases ∀ u ∈ P.parts, card u < m + 1
+  by_cases h : ∀ u ∈ P.parts, card u < m + 1
   · obtain ⟨t, hts, htn⟩ := exists_smaller_set s n (hn₂.trans_eq hs)
     have ht : t.Nonempty := by rwa [← card_pos, htn]
     have hcard : ite (0 < a) (a - 1) a * m + ite (0 < a) b (b - 1) * (m + 1) = (s \ t).card := by

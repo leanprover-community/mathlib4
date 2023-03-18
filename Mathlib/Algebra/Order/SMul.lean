@@ -270,7 +270,7 @@ def OrderIso.smulLeft (hc : 0 < c) : M ≃o M where
   right_inv := smul_inv_smul₀ hc.ne'
   map_rel_iff' := smul_le_smul_iff_of_pos hc
 #align order_iso.smul_left OrderIso.smulLeft
-#align order_iso.smul_left_symm_apply OrderIso.smulLeft_symmApply
+#align order_iso.smul_left_symm_apply OrderIso.smulLeft_symm_apply
 #align order_iso.smul_left_apply OrderIso.smulLeft_apply
 
 variable {M}

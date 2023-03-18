@@ -581,7 +581,7 @@ theorem bot_mul (S : AddSubmonoid R) : ⊥ * S = ⊥ :=
     rw [AddSubmonoid.mem_bot] at hm ⊢; rw [hm, zero_mul]
 #align add_submonoid.bot_mul AddSubmonoid.bot_mul
 
--- porting note: todo: restore @[mono]
+@[mono]
 theorem mul_le_mul {M N P Q : AddSubmonoid R} (hmp : M ≤ P) (hnq : N ≤ Q) : M * N ≤ P * Q :=
   mul_le.2 fun _m hm _n hn => mul_mem_mul (hmp hm) (hnq hn)
 #align add_submonoid.mul_le_mul AddSubmonoid.mul_le_mul

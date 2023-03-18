@@ -345,22 +345,6 @@ theorem prod_ofFn {n : ℕ} {f : Fin n → α} : (ofFn f).prod = ∏ i, f i := b
 end CommMonoid
 
 -- Porting note: Statement had deprecated `L.nthLe i i.is_lt` instead of `L.get i`.
-theorem alternatingSum_eq_finset_sum {G : Type _} [AddCommGroup G] :
-    ∀ (L : List G), alternatingSum L = ∑ i : Fin L.length, (-1 : ℤ) ^ (i : ℕ) • L.get i
-  | [] => by
-    rw [alternatingSum, Finset.sum_eq_zero]
-    rintro ⟨i, ⟨⟩⟩
-  | g::[] => by simp
-  | g::h::L =>
-    calc g + -h + L.alternatingSum
-      = g + -h + ∑ i : Fin L.length, (-1 : ℤ) ^ (i : ℕ) • L.get i :=
-        congr_arg _ (alternatingSum_eq_finset_sum _)
-    _ = ∑ i : Fin (L.length + 2), (-1 : ℤ) ^ (i : ℕ) • List.get (g::h::L) i := by
-        { rw [Fin.sum_univ_succ, Fin.sum_univ_succ, add_assoc]
-          simp [Nat.succ_eq_add_one, pow_add]}
-#align list.alternating_sum_eq_finset_sum List.alternatingSum_eq_finset_sum
-
--- Porting note: Statement had deprecated `L.nthLe i i.is_lt` instead of `L.get i`.
 @[to_additive]
 theorem alternatingProd_eq_finset_prod {G : Type _} [CommGroup G] :
     ∀ (L : List G), alternatingProd L = ∏ i : Fin L.length, L.get i ^ (-1 : ℤ) ^ (i : ℕ)
@@ -378,5 +362,6 @@ theorem alternatingProd_eq_finset_prod {G : Type _} [CommGroup G] :
         { rw [Fin.prod_univ_succ, Fin.prod_univ_succ, mul_assoc]
           simp [Nat.succ_eq_add_one, pow_add]}
 #align list.alternating_prod_eq_finset_prod List.alternatingProd_eq_finset_prod
+#align list.alternating_sum_eq_finset_sum List.alternatingSum_eq_finset_sum
 
 end List

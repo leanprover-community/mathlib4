@@ -50,8 +50,9 @@ theorem zero_opow {a : Ordinal} (a0 : a ≠ 0) : (0^a) = 0 := by
 
 @[simp]
 theorem opow_zero (a : Ordinal) : (a^0) = 1 := by
-  by_cases a = 0 <;> [simp only [opow_def, if_pos h, sub_zero],
-    simp only [opow_def, if_neg h, limitRecOn_zero]]
+  by_cases h : a = 0
+  · simp only [opow_def, if_pos h, sub_zero]
+  · simp only [opow_def, if_neg h, limitRecOn_zero]
 #align ordinal.opow_zero Ordinal.opow_zero
 
 @[simp]
@@ -353,7 +354,7 @@ theorem log_eq_zero {b o : Ordinal} (hbo : o < b) : log b o = 0 := by
   · rwa [← Ordinal.le_zero, ← lt_succ_iff, succ_zero, ← lt_opow_iff_log_lt hb ho, opow_one]
 #align ordinal.log_eq_zero Ordinal.log_eq_zero
 
--- @[mono] -- Porting note: Unknown attribute.
+@[mono]
 theorem log_mono_right (b) {x y : Ordinal} (xy : x ≤ y) : log b x ≤ log b y :=
   if hx : x = 0 then by simp only [hx, log_zero_right, Ordinal.zero_le]
   else
@@ -405,6 +406,7 @@ theorem opow_mul_add_lt_opow_mul_succ {b u w : Ordinal} (v : Ordinal) (hw : w < 
 theorem opow_mul_add_lt_opow_succ {b u v w : Ordinal} (hvb : v < b) (hw : w < (b^u)) :
     (b^u) * v + w < (b^succ u) := by
   convert (opow_mul_add_lt_opow_mul_succ v hw).trans_le (mul_le_mul_left' (succ_le_of_lt hvb) _)
+    using 1
   exact opow_succ b u
 #align ordinal.opow_mul_add_lt_opow_succ Ordinal.opow_mul_add_lt_opow_succ
 
@@ -422,6 +424,7 @@ theorem log_opow_mul_add {b u v w : Ordinal} (hb : 1 < b) (hv : v ≠ 0) (hvb : 
 
 theorem log_opow {b : Ordinal} (hb : 1 < b) (x : Ordinal) : log b (b^x) = x := by
   convert log_opow_mul_add hb zero_ne_one.symm hb (opow_pos x (zero_lt_one.trans hb))
+    using 1
   rw [add_zero, mul_one]
 #align ordinal.log_opow Ordinal.log_opow
 

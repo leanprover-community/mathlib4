@@ -474,9 +474,9 @@ protected def symm (e : α ≃+*o β) : β ≃+*o α :=
 #align order_ring_iso.symm OrderRingIso.symm
 
 /-- See Note [custom simps projection] -/
-def Simps.symmApply (e : α ≃+*o β) : β → α :=
+def Simps.symm_apply (e : α ≃+*o β) : β → α :=
   e.symm
-#align order_ring_iso.simps.symm_apply OrderRingIso.Simps.symmApply
+#align order_ring_iso.simps.symm_apply OrderRingIso.Simps.symm_apply
 
 @[simp]
 theorem symm_symm (e : α ≃+*o β) : e.symm.symm = e :=
@@ -549,7 +549,7 @@ theorem coe_toOrderRingHom_refl : (OrderRingIso.refl α : α →+*o α) = OrderR
 #align order_ring_iso.coe_to_order_ring_hom_refl OrderRingIso.coe_toOrderRingHom_refl
 
 theorem toOrderRingHom_injective : Injective (toOrderRingHom : α ≃+*o β → α →+*o β) :=
-  fun f g h => FunLike.coe_injective <| by convert FunLike.ext'_iff.1 h
+  fun f g h => FunLike.coe_injective <| by convert FunLike.ext'_iff.1 h using 0
 #align order_ring_iso.to_order_ring_hom_injective OrderRingIso.toOrderRingHom_injective
 
 end NonAssocSemiring

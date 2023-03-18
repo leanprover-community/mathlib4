@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Floris van Doorn
 
 ! This file was ported from Lean 3 source module order.initial_seg
-! leanprover-community/mathlib commit 7c3269ca3fa4c0c19e4d127cd7151edbdbf99ed4
+! leanprover-community/mathlib commit 8da9e30545433fdd8fe55a0d3da208e5d9263f03
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -52,7 +52,7 @@ embedding whose range is an initial segment. That is, whenever `b < f a` in `β`
 range of `f`. -/
 structure InitialSeg {α β : Type _} (r : α → α → Prop) (s : β → β → Prop) extends r ↪r s where
   /-- The order embedding is an initial segment -/
-  init : ∀ a b, s b (toRelEmbedding a) → ∃ a', toRelEmbedding a' = b
+  init' : ∀ a b, s b (toRelEmbedding a) → ∃ a', toRelEmbedding a' = b
 #align initial_seg InitialSeg
 
 -- Porting notes: Deleted `scoped[InitialSeg]`
@@ -83,9 +83,9 @@ theorem coe_coe_fn (f : r ≼i s) : ((f : r ↪r s) : α → β) = f :=
   rfl
 #align initial_seg.coe_coe_fn InitialSeg.coe_coe_fn
 
-theorem init' (f : r ≼i s) {a : α} {b : β} : s b (f a) → ∃ a', f a' = b :=
-  f.init _ _
-#align initial_seg.init' InitialSeg.init'
+theorem init (f : r ≼i s) {a : α} {b : β} : s b (f a) → ∃ a', f a' = b :=
+  f.init' _ _
+#align initial_seg.init InitialSeg.init
 
 theorem map_rel_iff (f : r ≼i s) : s (f a) (f b) ↔ r a b :=
   f.map_rel_iff'
@@ -93,7 +93,7 @@ theorem map_rel_iff (f : r ≼i s) : s (f a) (f b) ↔ r a b :=
 
 theorem init_iff (f : r ≼i s) {a : α} {b : β} : s b (f a) ↔ ∃ a', f a' = b ∧ r a' a :=
   ⟨fun h => by
-    rcases f.init' h with ⟨a', rfl⟩
+    rcases f.init h with ⟨a', rfl⟩
     exact ⟨a', rfl, f.map_rel_iff.1 h⟩,
     fun ⟨a', e, h⟩ => e ▸ f.map_rel_iff.2 h⟩
 #align initial_seg.init_iff InitialSeg.init_iff
@@ -184,13 +184,13 @@ theorem eq_or_principal [IsWellOrder β s] (f : r ≼i s) :
               rw [← e];
                 exact
                   (trichotomous _ _).resolve_right
-                    (not_or_of_not (hn a) fun hl => not_exists.2 hn (f.init' hl))⟩⟩
+                    (not_or_of_not (hn a) fun hl => not_exists.2 hn (f.init hl))⟩⟩
 #align initial_seg.eq_or_principal InitialSeg.eq_or_principal
 
 /-- Restrict the codomain of an initial segment -/
 def codRestrict (p : Set β) (f : r ≼i s) (H : ∀ a, f a ∈ p) : r ≼i Subrel s p :=
   ⟨RelEmbedding.codRestrict p f H, fun a ⟨b, m⟩ h =>
-    let ⟨a', e⟩ := f.init' h
+    let ⟨a', e⟩ := f.init h
     ⟨a', by subst e; rfl⟩⟩
 #align initial_seg.cod_restrict InitialSeg.codRestrict
 
