@@ -441,4 +441,23 @@ end IsLocalization
 
 end Functor
 
+namespace Localization
+
+variable {D₁ D₂ : Type _} [Category D₁] [Category D₂] (L₁ : C ⥤ D₁) (L₂ : C ⥤ D₂)
+  (W' : MorphismProperty C) [L₁.IsLocalization W'] [L₂.IsLocalization W']
+
+def uniq : D₁ ≌ D₂ := by
+  exact (equivalenceFromModel L₁ W').symm.trans (equivalenceFromModel L₂ W')
+
+def compUniqFunctor : L₁ ⋙ (uniq L₁ L₂ W').functor ≅ L₂ := by
+  calc
+    L₁ ⋙ (uniq L₁ L₂ W').functor ≅ (L₁ ⋙
+      (equivalenceFromModel L₁ W').inverse) ⋙ (equivalenceFromModel L₂ W').functor :=
+        (Functor.associator _ _ _).symm
+    _ ≅ W'.Q ⋙ (equivalenceFromModel L₂ W').functor :=
+      isoWhiskerRight (compEquivalenceFromModelInverseIso L₁ W') _
+    _ ≅ L₂ := qCompEquivalenceFromModelFunctorIso L₂ W'
+
+end Localization
+
 end CategoryTheory
