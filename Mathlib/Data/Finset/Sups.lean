@@ -8,8 +8,8 @@ Authors: Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Finset.NAry
-import Mathbin.Data.Set.Sups
+import Mathlib.Data.Finset.NAry
+import Mathlib.Data.Set.Sups
 
 /-!
 # Set family operations
@@ -437,8 +437,7 @@ theorem mem_disjSups : c ∈ s ○ t ↔ ∃ a ∈ s, ∃ b ∈ t, Disjoint a b 
   simp [disj_sups, and_assoc']
 #align finset.mem_disj_sups Finset.mem_disjSups
 
-theorem disjSups_subset_sups : s ○ t ⊆ s ⊻ t :=
-  by
+theorem disjSups_subset_sups : s ○ t ⊆ s ⊻ t := by
   simp_rw [subset_iff, mem_sups, mem_disj_sups]
   exact fun c ⟨a, b, ha, hb, h, hc⟩ => ⟨a, b, ha, hb, hc⟩
 #align finset.disj_sups_subset_sups Finset.disjSups_subset_sups
@@ -464,8 +463,7 @@ theorem disjSups_subset_right (hs : s₁ ⊆ s₂) : s₁ ○ t ⊆ s₂ ○ t :
 #align finset.disj_sups_subset_right Finset.disjSups_subset_right
 
 theorem forall_disjSups_iff {p : α → Prop} :
-    (∀ c ∈ s ○ t, p c) ↔ ∀ a ∈ s, ∀ b ∈ t, Disjoint a b → p (a ⊔ b) :=
-  by
+    (∀ c ∈ s ○ t, p c) ↔ ∀ a ∈ s, ∀ b ∈ t, Disjoint a b → p (a ⊔ b) := by
   simp_rw [mem_disj_sups]
   refine' ⟨fun h a ha b hb hab => h _ ⟨_, ha, _, hb, hab, rfl⟩, _⟩
   rintro h _ ⟨a, ha, b, hb, hab, rfl⟩
@@ -477,14 +475,12 @@ theorem disjSups_subset_iff : s ○ t ⊆ u ↔ ∀ a ∈ s, ∀ b ∈ t, Disjoi
   forall_disjSups_iff
 #align finset.disj_sups_subset_iff Finset.disjSups_subset_iff
 
-theorem Nonempty.of_disjSups_left : (s ○ t).Nonempty → s.Nonempty :=
-  by
+theorem Nonempty.of_disjSups_left : (s ○ t).Nonempty → s.Nonempty := by
   simp_rw [Finset.Nonempty, mem_disj_sups]
   exact fun ⟨_, a, ha, _⟩ => ⟨a, ha⟩
 #align finset.nonempty.of_disj_sups_left Finset.Nonempty.of_disjSups_left
 
-theorem Nonempty.of_disjSups_right : (s ○ t).Nonempty → t.Nonempty :=
-  by
+theorem Nonempty.of_disjSups_right : (s ○ t).Nonempty → t.Nonempty := by
   simp_rw [Finset.Nonempty, mem_disj_sups]
   exact fun ⟨_, _, _, b, hb, _⟩ => ⟨b, hb⟩
 #align finset.nonempty.of_disj_sups_right Finset.Nonempty.of_disjSups_right
@@ -533,8 +529,7 @@ section DistribLattice
 
 variable [DistribLattice α] [OrderBot α] [@DecidableRel α Disjoint] (s t u v : Finset α)
 
-theorem disjSups_assoc : ∀ s t u : Finset α, s ○ t ○ u = s ○ (t ○ u) :=
-  by
+theorem disjSups_assoc : ∀ s t u : Finset α, s ○ t ○ u = s ○ (t ○ u) := by
   refine' associative_of_commutative_of_le disj_sups_comm _
   simp only [le_eq_subset, disj_sups_subset_iff, mem_disj_sups]
   rintro s t u _ ⟨a, ha, b, hb, hab, rfl⟩ c hc habc
