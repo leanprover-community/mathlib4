@@ -14,7 +14,6 @@ import Mathlib.Data.ZMod.Basic
 import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.RingTheory.Fintype
 import Mathlib.Tactic.IntervalCases
-import Mathlib.Tactic.RingExp
 
 /-!
 # The Lucas-Lehmer test for Mersenne primes.
@@ -53,7 +52,7 @@ theorem mersenne_pos {p : ℕ} (h : 0 < p) : 0 < mersenne p := by
   dsimp [mersenne]
   calc
     0 < 2 ^ 1 - 1 := by norm_num
-    _ ≤ 2 ^ p - 1 := Nat.pred_le_pred (Nat.pow_le_pow_of_le_right (Nat.succ_pos 1) h)
+    _ ≤ 2 ^ p - 1 := Nat.sub_le_sub_right (Nat.pow_le_pow_of_le_right (Nat.succ_pos 1) h) 1
     
 #align mersenne_pos mersenne_pos
 
@@ -78,7 +77,6 @@ They are each useful at different points in the proof,
 so we take a moment setting up the lemmas relating them.
 -/
 
-
 /-- The recurrence `s (i+1) = (s i)^2 - 2` in `ℤ`. -/
 def s : ℕ → ℤ
   | 0 => 4
@@ -88,48 +86,47 @@ def s : ℕ → ℤ
 /-- The recurrence `s (i+1) = (s i)^2 - 2` in `zmod (2^p - 1)`. -/
 def sZmod (p : ℕ) : ℕ → ZMod (2 ^ p - 1)
   | 0 => 4
-  | i + 1 => s_zmod i ^ 2 - 2
+  | i + 1 => sZmod p i ^ 2 - 2
 #align lucas_lehmer.s_zmod LucasLehmer.sZmod
 
 /-- The recurrence `s (i+1) = ((s i)^2 - 2) % (2^p - 1)` in `ℤ`. -/
 def sMod (p : ℕ) : ℕ → ℤ
   | 0 => 4 % (2 ^ p - 1)
-  | i + 1 => (s_mod i ^ 2 - 2) % (2 ^ p - 1)
+  | i + 1 => (sMod p i ^ 2 - 2) % (2 ^ p - 1)
 #align lucas_lehmer.s_mod LucasLehmer.sMod
 
-theorem mersenne_int_ne_zero (p : ℕ) (w : 0 < p) : (2 ^ p - 1 : ℤ) ≠ 0 := by
-  apply ne_of_gt; simp only [gt_iff_lt, sub_pos]
-  exact_mod_cast Nat.one_lt_two_pow p w
+theorem mersenne_int_pos {p : ℕ} (hp : 0 < p) : (0 : ℤ) < 2 ^ p - 1 :=
+  sub_pos.2 <| by exact_mod_cast Nat.one_lt_two_pow p hp
+
+theorem mersenne_int_ne_zero (p : ℕ) (w : 0 < p) : (2 ^ p - 1 : ℤ) ≠ 0 :=
+  (mersenne_int_pos w).ne'
 #align lucas_lehmer.mersenne_int_ne_zero LucasLehmer.mersenne_int_ne_zero
 
 theorem sMod_nonneg (p : ℕ) (w : 0 < p) (i : ℕ) : 0 ≤ sMod p i := by
-  cases i <;> dsimp [s_mod]
+  cases i <;> dsimp [sMod]
   · exact sup_eq_right.mp rfl
   · apply Int.emod_nonneg
     exact mersenne_int_ne_zero p w
 #align lucas_lehmer.s_mod_nonneg LucasLehmer.sMod_nonneg
 
-theorem sMod_mod (p i : ℕ) : sMod p i % (2 ^ p - 1) = sMod p i := by cases i <;> simp [s_mod]
+theorem sMod_mod (p i : ℕ) : sMod p i % (2 ^ p - 1) = sMod p i := by cases i <;> simp [sMod]
 #align lucas_lehmer.s_mod_mod LucasLehmer.sMod_mod
 
 theorem sMod_lt (p : ℕ) (w : 0 < p) (i : ℕ) : sMod p i < 2 ^ p - 1 := by
-  rw [← s_mod_mod]
-  convert Int.emod_lt _ _
-  · refine' (abs_of_nonneg _).symm
-    simp only [sub_nonneg, ge_iff_le]
-    exact_mod_cast Nat.one_le_two_pow p
-  · exact mersenne_int_ne_zero p w
+  rw [← sMod_mod]
+  refine (Int.emod_lt _ (mersenne_int_ne_zero p w)).trans_eq ?_
+  exact abs_of_nonneg (mersenne_int_pos w).le
 #align lucas_lehmer.s_mod_lt LucasLehmer.sMod_lt
 
 theorem sZmod_eq_s (p' : ℕ) (i : ℕ) : sZmod (p' + 2) i = (s i : ZMod (2 ^ (p' + 2) - 1)) := by
   induction' i with i ih
-  · dsimp [s, s_zmod]
+  · dsimp [s, sZmod]
     norm_num
-  · push_cast [s, s_zmod, ih]
+  · push_cast [s, sZmod, ih]; rfl
 #align lucas_lehmer.s_zmod_eq_s LucasLehmer.sZmod_eq_s
 
 -- These next two don't make good `norm_cast` lemmas.
-theorem Int.coe_nat_pow_pred (b p : ℕ) (w : 0 < b) : ((b ^ p - 1 : ℕ) : ℤ) = (b ^ p - 1 : ℤ) := by
+theorem Int.coe_nat_pow_pred (b p : ℕ) (w : 0 < b) : ((b ^ p - 1 : ℕ) : ℤ) = (b : ℤ) ^ p - 1 := by
   have : 1 ≤ b ^ p := Nat.one_le_pow p b w
   norm_cast
 #align lucas_lehmer.int.coe_nat_pow_pred LucasLehmer.Int.coe_nat_pow_pred
