@@ -955,6 +955,7 @@ import Mathlib.Data.W.Cardinal
 import Mathlib.Data.W.Constructions
 import Mathlib.Data.ZMod.Basic
 import Mathlib.Data.ZMod.Defs
+import Mathlib.Data.ZMod.Parity
 import Mathlib.Deprecated.Group
 import Mathlib.Deprecated.Ring
 import Mathlib.Deprecated.Subfield
