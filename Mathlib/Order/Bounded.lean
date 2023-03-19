@@ -335,7 +335,6 @@ theorem bounded_le_inter_lt [LinearOrder α] (a : α) :
 theorem unbounded_le_inter_lt [LinearOrder α] (a : α) :
     Unbounded (· ≤ ·) (s ∩ { b | a < b }) ↔ Unbounded (· ≤ ·) s := by
   convert @unbounded_le_inter_not_le _ s _ a
-  ext
   exact lt_iff_not_le
 #align set.unbounded_le_inter_lt Set.unbounded_le_inter_lt
 
@@ -369,14 +368,12 @@ theorem unbounded_lt_inter_not_lt [SemilatticeSup α] (a : α) :
 theorem bounded_lt_inter_le [LinearOrder α] (a : α) :
     Bounded (· < ·) (s ∩ { b | a ≤ b }) ↔ Bounded (· < ·) s := by
   convert @bounded_lt_inter_not_lt _ s _ a
-  ext
   exact not_lt.symm
 #align set.bounded_lt_inter_le Set.bounded_lt_inter_le
 
 theorem unbounded_lt_inter_le [LinearOrder α] (a : α) :
     Unbounded (· < ·) (s ∩ { b | a ≤ b }) ↔ Unbounded (· < ·) s := by
   convert @unbounded_lt_inter_not_lt _ s _ a
-  ext
   exact not_lt.symm
 #align set.unbounded_lt_inter_le Set.unbounded_lt_inter_le
 

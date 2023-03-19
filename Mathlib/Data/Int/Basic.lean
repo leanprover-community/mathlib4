@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 
 ! This file was ported from Lean 3 source module data.int.basic
-! leanprover-community/mathlib commit e1bccd6e40ae78370f01659715d3c948716e3b7e
+! leanprover-community/mathlib commit 2196ab363eb097c008d4497125e0dde23fb36db2
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -80,12 +80,9 @@ lemma natAbs_cast (n : ℕ) : natAbs ↑n = n := rfl
 @[norm_cast]
 protected lemma coe_nat_sub {n m : ℕ} : n ≤ m → (↑(m - n) : ℤ) = ↑m - ↑n := ofNat_sub
 
--- TODO restore @[to_additive coe_nat_zsmul]
-@[simp, norm_cast]
-theorem _root_.zpow_coe_nat [DivInvMonoid G] (a : G) (n : ℕ) : a ^ (Nat.cast n : ℤ) = a ^ n := zpow_ofNat ..
-@[simp]
-theorem _root_.coe_nat_zsmul [SubNegMonoid G] (a : G) (n : ℕ) : (n : ℤ) • a = n • a := ofNat_zsmul ..
-attribute [to_additive coe_nat_zsmul] zpow_coe_nat
+@[to_additive (attr := simp, norm_cast) coe_nat_zsmul]
+theorem _root_.zpow_coe_nat [DivInvMonoid G] (a : G) (n : ℕ) : a ^ (Nat.cast n : ℤ) = a ^ n :=
+zpow_ofNat ..
 #align coe_nat_zsmul coe_nat_zsmul
 
 /-! ### Extra instances to short-circuit type class resolution
@@ -156,7 +153,7 @@ theorem succ_neg_succ (a : ℤ) : succ (-succ a) = -a := by rw [neg_succ, succ_p
 #align int.succ_neg_succ Int.succ_neg_succ
 
 theorem neg_pred (a : ℤ) : -pred a = succ (-a) := by
-  rw [eq_neg_of_eq_neg (neg_succ (-a)).symm, neg_neg]
+  rw [neg_eq_iff_eq_neg.mp (neg_succ (-a)), neg_neg]
 #align int.neg_pred Int.neg_pred
 
 theorem pred_neg_pred (a : ℤ) : pred (-pred a) = -a := by rw [neg_pred, pred_succ]

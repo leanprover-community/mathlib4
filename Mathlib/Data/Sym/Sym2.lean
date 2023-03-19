@@ -10,6 +10,7 @@ Authors: Kyle Miller
 -/
 import Mathlib.Data.Finset.Prod
 import Mathlib.Data.Sym.Basic
+import Mathlib.Data.Sym.Sym2.Init
 import Mathlib.Data.SetLike.Basic
 
 /-!
@@ -48,6 +49,7 @@ symmetric square, unordered pairs, symmetric powers
 -/
 
 
+-- porting note: using `aesop` in place of `tidy` to simplify proofs
 -- porting note: remove import `Tactic.Linarith.Default`
 -- porting note: adding the above porting note here to avoid module docs linter error
 
@@ -56,9 +58,6 @@ open Finset Function Sym
 universe u
 
 variable {α β γ : Type _}
-
--- porting note: using `aesop` in place of `tidy` to simplify proofs
-declare_aesop_rule_sets [Sym2]
 
 namespace Sym2
 
@@ -92,7 +91,7 @@ instance Rel.setoid (α : Type u) : Setoid (α × α) :=
 
 @[simp]
 theorem rel_iff {x y z w : α} : (x, y) ≈ (z, w) ↔ x = z ∧ y = w ∨ x = w ∧ y = z :=
-  by aesop (rule_sets [Sym2]) (add norm unfold [HasEquiv.Equiv, Setoid.r])
+  show Rel _ _ _ ↔ _ by aesop (rule_sets [Sym2])
 #align sym2.rel_iff Sym2.rel_iff
 
 end Sym2
@@ -747,8 +746,8 @@ theorem other_invol' [DecidableEq α] {a : α} {z : Sym2 α} (ha : a ∈ z) (hb 
 theorem other_invol {a : α} {z : Sym2 α} (ha : a ∈ z) (hb : Mem.other ha ∈ z) : Mem.other hb = a :=
   by classical
     rw [other_eq_other'] at hb⊢
-    convert other_invol' ha hb
-    rw [other_eq_other']
+    convert other_invol' ha hb using 2
+    apply other_eq_other'
 #align sym2.other_invol Sym2.other_invol
 
 -- porting note: updating `×ˢ` to the new notation `×ᶠ`

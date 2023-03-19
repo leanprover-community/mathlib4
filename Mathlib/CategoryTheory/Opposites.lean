@@ -30,7 +30,7 @@ set_option autoImplicit false
 
 universe v₁ v₂ u₁ u₂
 
--- morphism levels before object levels. See note [category_theory universes].
+-- morphism levels before object levels. See note [CategoryTheory universes].
 open Opposite
 
 variable {C : Type u₁}
@@ -161,13 +161,13 @@ instance isIso_unop {X Y : Cᵒᵖ} (f : X ⟶ Y) [IsIso f] : IsIso f.unop :=
 
 @[simp]
 theorem op_inv {X Y : C} (f : X ⟶ Y) [IsIso f] : (inv f).op = inv f.op := by
-  aesop_cat
+  aesop_cat_nonterminal
   rw [← op_comp, IsIso.inv_hom_id, op_id]
 #align category_theory.op_inv CategoryTheory.op_inv
 
 @[simp]
 theorem unop_inv {X Y : Cᵒᵖ} (f : X ⟶ Y) [IsIso f] : (inv f).unop = inv f.unop := by
-  aesop_cat
+  aesop_cat_nonterminal
   rw [← unop_comp, IsIso.inv_hom_id, unop_id]
 #align category_theory.unop_inv CategoryTheory.unop_inv
 
@@ -543,7 +543,7 @@ def op (e : C ≌ D) : Cᵒᵖ ≌ Dᵒᵖ where
   inverse := e.inverse.op
   unitIso := (NatIso.op e.unitIso).symm
   counitIso := (NatIso.op e.counitIso).symm
-  functor_unit_iso_comp X := by
+  functor_unitIso_comp X := by
     apply Quiver.Hom.unop_inj
     dsimp
     simp
@@ -557,7 +557,7 @@ def unop (e : Cᵒᵖ ≌ Dᵒᵖ) : C ≌ D where
   inverse := e.inverse.unop
   unitIso := (NatIso.unop e.unitIso).symm
   counitIso := (NatIso.unop e.counitIso).symm
-  functor_unit_iso_comp X := by
+  functor_unitIso_comp X := by
     apply Quiver.Hom.op_inj
     dsimp
     simp

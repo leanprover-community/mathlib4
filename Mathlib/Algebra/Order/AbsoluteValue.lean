@@ -47,8 +47,6 @@ namespace AbsoluteValue
 -- Porting note: Removing nolints.
 -- attribute [nolint doc_blame] AbsoluteValue.toMulHom
 
--- initialize_simps_projections AbsoluteValue (to_mul_hom_to_fun → apply)
-
 section OrderedSemiring
 
 section Semiring
@@ -85,6 +83,12 @@ theorem coe_mk (f : R →ₙ* S) {h₁ h₂ h₃} : (AbsoluteValue.mk f h₁ h�
 theorem ext ⦃f g : AbsoluteValue R S⦄ : (∀ x, f x = g x) → f = g :=
   FunLike.ext _ _
 #align absolute_value.ext AbsoluteValue.ext
+
+/-- See Note [custom simps projection]. -/
+def Simps.apply (f : AbsoluteValue R S) : R → S := f
+#align absolute_value.simps.apply AbsoluteValue.Simps.apply
+
+initialize_simps_projections AbsoluteValue (toFun → apply)
 
 -- Porting note:
 -- These helper instances are unhelpful in Lean 4, so omitting:
@@ -249,7 +253,7 @@ section LinearOrderedRing
 variable {R S : Type _} [Semiring R] [LinearOrderedRing S] (abv : AbsoluteValue R S)
 
 /-- `AbsoluteValue.abs` is `abs` as a bundled `AbsoluteValue`. -/
---@[simps] -- Porting note: Removed simps lemma
+@[simps]
 protected def abs : AbsoluteValue S S where
   toFun := abs
   nonneg' := abs_nonneg
@@ -257,6 +261,8 @@ protected def abs : AbsoluteValue S S where
   add_le' := abs_add
   map_mul' := abs_mul
 #align absolute_value.abs AbsoluteValue.abs
+#align absolute_value.abs_apply AbsoluteValue.abs_apply
+#align absolute_value.abs_to_mul_hom_apply AbsoluteValue.abs_apply
 
 instance : Inhabited (AbsoluteValue S S) :=
   ⟨AbsoluteValue.abs⟩
@@ -323,7 +329,7 @@ instance _root_.AbsoluteValue.isAbsoluteValue (abv : AbsoluteValue R S) :
 #align absolute_value.is_absolute_value AbsoluteValue.isAbsoluteValue
 
 /-- Convert an unbundled `IsAbsoluteValue` to a bundled `AbsoluteValue`. -/
---@[simps] -- Porting note: Removed simps lemma
+@[simps]
 def toAbsoluteValue : AbsoluteValue R S where
   toFun := abv
   add_le' := abv_add'
@@ -331,6 +337,8 @@ def toAbsoluteValue : AbsoluteValue R S where
   nonneg' := abv_nonneg'
   map_mul' := abv_mul'
 #align is_absolute_value.to_absolute_value IsAbsoluteValue.toAbsoluteValue
+#align is_absolute_value.to_absolute_value_apply IsAbsoluteValue.toAbsoluteValue_apply
+#align is_absolute_value.to_absolute_value_to_mul_hom_apply IsAbsoluteValue.toAbsoluteValue_apply
 
 theorem abv_zero : abv 0 = 0 :=
   map_zero (toAbsoluteValue abv)

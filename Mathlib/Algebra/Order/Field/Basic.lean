@@ -3,7 +3,7 @@ Copyright (c) 2014 Robert Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Lewis, Leonardo de Moura, Mario Carneiro, Floris van Doorn
 ! This file was ported from Lean 3 source module algebra.order.field.basic
-! leanprover-community/mathlib commit f835503164c75764d4165d9e630bf27694d73ec6
+! leanprover-community/mathlib commit 5a82b0671532663333e205f422124a98bdfe673f
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -31,7 +31,7 @@ variable [LinearOrderedSemifield α] {a b c d e : α} {m n : ℤ}
 def OrderIso.mulLeft₀ (a : α) (ha : 0 < a) : α ≃o α :=
   { Equiv.mulLeft₀ a ha.ne' with map_rel_iff' := @fun _ _ => mul_le_mul_left ha }
 #align order_iso.mul_left₀ OrderIso.mulLeft₀
-#align order_iso.mul_left₀_symm_apply OrderIso.mulLeft₀_symmApply
+#align order_iso.mul_left₀_symm_apply OrderIso.mulLeft₀_symm_apply
 #align order_iso.mul_left₀_apply OrderIso.mulLeft₀_apply
 
 /-- `Equiv.mulRight₀` as an order_iso. -/
@@ -39,7 +39,7 @@ def OrderIso.mulLeft₀ (a : α) (ha : 0 < a) : α ≃o α :=
 def OrderIso.mulRight₀ (a : α) (ha : 0 < a) : α ≃o α :=
   { Equiv.mulRight₀ a ha.ne' with map_rel_iff' := @fun _ _ => mul_le_mul_right ha }
 #align order_iso.mul_right₀ OrderIso.mulRight₀
-#align order_iso.mul_right₀_symm_apply OrderIso.mulRight₀_symmApply
+#align order_iso.mul_right₀_symm_apply OrderIso.mulRight₀_symm_apply
 #align order_iso.mul_right₀_apply OrderIso.mulRight₀_apply
 
 /-!
@@ -234,6 +234,13 @@ theorem div_le_of_nonneg_of_le_mul (hb : 0 ≤ b) (hc : 0 ≤ c) (h : a ≤ c * 
   rwa [div_le_iff hb']
 #align div_le_of_nonneg_of_le_mul div_le_of_nonneg_of_le_mul
 
+/-- One direction of `div_le_iff` where `c` is allowed to be `0` (but `b` must be nonnegative) -/
+lemma mul_le_of_nonneg_of_le_div (hb : 0 ≤ b) (hc : 0 ≤ c) (h : a ≤ b / c) : a * c ≤ b := by
+  obtain rfl | hc := hc.eq_or_lt
+  . simpa using hb
+  . rwa [le_div_iff hc] at h
+#align mul_le_of_nonneg_of_le_div mul_le_of_nonneg_of_le_div
+
 theorem div_le_one_of_le (h : a ≤ b) (hb : 0 ≤ b) : a / b ≤ 1 :=
   div_le_of_nonneg_of_le_mul hb zero_le_one <| by rwa [one_mul]
 #align div_le_one_of_le div_le_one_of_le
@@ -334,7 +341,7 @@ theorem one_le_inv_iff : 1 ≤ a⁻¹ ↔ 0 < a ∧ a ≤ 1 :=
 -/
 
 
---@[mono] -- Porting note: restore mono attribute
+@[mono]
 theorem div_le_div_of_le (hc : 0 ≤ c) (h : a ≤ b) : a / c ≤ b / c := by
   rw [div_eq_mul_one_div a c, div_eq_mul_one_div b c]
   exact mul_le_mul_of_nonneg_right h (one_div_nonneg.2 hc)
@@ -379,7 +386,7 @@ theorem div_le_div_iff (b0 : 0 < b) (d0 : 0 < d) : a / b ≤ c / d ↔ a * d ≤
   rw [le_div_iff d0, div_mul_eq_mul_div, div_le_iff b0]
 #align div_le_div_iff div_le_div_iff
 
--- @[mono] -- Porting note: restore mono attribute
+@[mono]
 theorem div_le_div (hc : 0 ≤ c) (hac : a ≤ c) (hd : 0 < d) (hbd : d ≤ b) : a / b ≤ c / d := by
   rw [div_le_div_iff (hd.trans_le hbd) hd]
   exact mul_le_mul hac hbd hd.le hc
@@ -623,11 +630,11 @@ theorem inv_strictAntiOn : StrictAntiOn (fun x : α => x⁻¹) (Set.Ioi 0) := fu
 #align inv_strict_anti_on inv_strictAntiOn
 
 theorem inv_pow_le_inv_pow_of_le (a1 : 1 ≤ a) {m n : ℕ} (mn : m ≤ n) : (a ^ n)⁻¹ ≤ (a ^ m)⁻¹ := by
-  convert one_div_pow_le_one_div_pow_of_le a1 mn <;> simp
+  convert one_div_pow_le_one_div_pow_of_le a1 mn using 1 <;> simp
 #align inv_pow_le_inv_pow_of_le inv_pow_le_inv_pow_of_le
 
 theorem inv_pow_lt_inv_pow_of_lt (a1 : 1 < a) {m n : ℕ} (mn : m < n) : (a ^ n)⁻¹ < (a ^ m)⁻¹ := by
-  convert one_div_pow_lt_one_div_pow_of_lt a1 mn <;> simp
+  convert one_div_pow_lt_one_div_pow_of_lt a1 mn using 1 <;> simp
 #align inv_pow_lt_inv_pow_of_lt inv_pow_lt_inv_pow_of_lt
 
 theorem inv_pow_anti (a1 : 1 ≤ a) : Antitone fun n : ℕ => (a ^ n)⁻¹ := fun _ _ =>
@@ -908,7 +915,7 @@ theorem sub_one_div_inv_le_two (a2 : 2 ≤ a) : (1 - 1 / a)⁻¹ ≤ 2 := by
   -- move `1 / a` to the left and `2⁻¹` to the right.
   rw [le_sub_iff_add_le, add_comm, ←le_sub_iff_add_le]
   -- take inverses on both sides and use the assumption `2 ≤ a`.
-  convert (one_div a).le.trans (inv_le_inv_of_le zero_lt_two a2)
+  convert (one_div a).le.trans (inv_le_inv_of_le zero_lt_two a2) using 1
   -- show `1 - 1 / 2 = 1 / 2`.
   rw [sub_eq_iff_eq_add, ←two_mul, mul_inv_cancel two_ne_zero]
 #align sub_one_div_inv_le_two sub_one_div_inv_le_two
