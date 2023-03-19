@@ -329,7 +329,23 @@ nonrec def prodMk {f₀ f₁ : C(X, Y)} {g₀ g₁ : C(X, Z)} (F : Homotopy f₀
 `f₁.prodMap g₁` that sends `(t, x, z)` to `(F (t, x), G (t, z))`. -/
 def prodMap {f₀ f₁ : C(X, Y)} {g₀ g₁ : C(Z, Z')} (F : Homotopy f₀ f₁) (G : Homotopy g₀ g₁) :
     Homotopy (f₀.prodMap g₀) (f₁.prodMap g₁) :=
-  .prodMk (.hcomp (.refl ⟨Prod.fst, continuous_fst⟩) F) (.hcomp (.refl ⟨Prod.snd, continuous_snd⟩) G)
+  .prodMk (.hcomp (.refl .fst) F) (.hcomp (.refl .snd) G)
+
+/-- Given a family of homotopies `F i` between `f₀ i : C(X, Y i)` and `f₁ i : C(X, Y i)`, returns a
+homotopy between `ContinuousMap.pi f₀` and `ContinuousMap.pi f₁`. -/
+protected def pi {Y : ι → Type _} [∀ i, TopologicalSpace (Y i)] {f₀ f₁ : ∀ i, C(X, Y i)}
+    (F : ∀ i, Homotopy (f₀ i) (f₁ i)) :
+    Homotopy (.pi f₀) (.pi f₁) where
+  toContinuousMap := .pi fun i ↦ F i
+  map_zero_left x := funext fun i ↦ (F i).map_zero_left x
+  map_one_left x := funext fun i ↦ (F i).map_one_left x
+
+/-- Given a family of homotopies `F i` between `f₀ i : C(X i, Y i)` and `f₁ i : C(X i, Y i)`,
+returns a homotopy between `ContinuousMap.piMap f₀` and `ContinuousMap.piMap f₁`. -/
+protected def piMap {X Y : ι → Type _} [∀ i, TopologicalSpace (X i)] [∀ i, TopologicalSpace (Y i)]
+    {f₀ f₁ : ∀ i, C(X i, Y i)} (F : ∀ i, Homotopy (f₀ i) (f₁ i)) :
+    Homotopy (.piMap f₀) (.piMap f₁) :=
+  .pi fun i ↦ .hcomp (.refl <| .eval i) (F i)
 
 end Homotopy
 
@@ -373,6 +389,20 @@ nonrec theorem prodMk {f₀ f₁ : C(X, Y)} {g₀ g₁ : C(X, Z)} :
 nonrec theorem prodMap {f₀ f₁ : C(X, Y)} {g₀ g₁ : C(Z, Z')} :
     Homotopic f₀ f₁ → Homotopic g₀ g₁ → Homotopic (f₀.prodMap g₀) (f₁.prodMap g₁)
   | ⟨F⟩, ⟨G⟩ => ⟨F.prodMap G⟩
+
+/-- If each `f₀ i : C(X, Y i)` is homotopic to `f₁ i : C(X, Y i)`, then `ContinuousMap.pi f₀` is
+homotopic to `ContinuousMap.pi f₁`. -/
+protected theorem pi {Y : ι → Type _} [∀ i, TopologicalSpace (Y i)] {f₀ f₁ : ∀ i, C(X, Y i)}
+    (F : ∀ i, Homotopic (f₀ i) (f₁ i)) :
+    Homotopic (.pi f₀) (.pi f₁) :=
+  ⟨.pi fun i ↦ (F i).some⟩
+
+/-- If each `f₀ i : C(X, Y i)` is homotopic to `f₁ i : C(X, Y i)`, then `ContinuousMap.pi f₀` is
+homotopic to `ContinuousMap.pi f₁`. -/
+protected theorem piMap {X Y : ι → Type _} [∀ i, TopologicalSpace (X i)]
+    [∀ i, TopologicalSpace (Y i)] {f₀ f₁ : ∀ i, C(X i, Y i)} (F : ∀ i, Homotopic (f₀ i) (f₁ i)) :
+    Homotopic (.piMap f₀) (.piMap f₁) :=
+  .pi fun i ↦ .hcomp (.refl <| .eval i) (F i)
 
 end Homotopic
 
