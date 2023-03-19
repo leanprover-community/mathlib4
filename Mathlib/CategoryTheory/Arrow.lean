@@ -359,4 +359,22 @@ def Arrow.isoOfNatIso {C D : Type _} [Category C] [Category D] {F G : C ⥤ D} (
   Arrow.isoMk (e.app f.left) (e.app f.right) (by simp)
 #align category_theory.arrow.iso_of_nat_iso CategoryTheory.Arrow.isoOfNatIso
 
+lemma isIso_iff_of_arrow_iso {C : Type _} [Category C] {f g : Arrow C} (e : f ≅ g) :
+  IsIso f.hom ↔ IsIso g.hom := by
+  constructor
+  . intro
+    haveI : IsIso (e.hom.left ≫ g.hom) := by
+      erw [e.hom.w]
+      infer_instance
+    apply IsIso.of_isIso_comp_left e.hom.left
+  . intro
+    haveI : IsIso (e.inv.left ≫ f.hom) := by
+      erw [e.inv.w]
+      infer_instance
+    apply IsIso.of_isIso_comp_left e.inv.left
+
+lemma isIso_iff_of_arrow_mk_iso {C : Type _} [Category C] {X₁ X₂ Y₁ Y₂ : C}
+  {f : X₁ ⟶ X₂} {g : Y₁ ⟶ Y₂} (e : Arrow.mk f ≅ Arrow.mk g) :
+  IsIso f ↔ IsIso g := isIso_iff_of_arrow_iso e
+
 end CategoryTheory

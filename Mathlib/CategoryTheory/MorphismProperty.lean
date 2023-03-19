@@ -754,6 +754,30 @@ theorem bijective_respectsIso : (MorphismProperty.bijective C).RespectsIso :=
 
 end Bijective
 
+class ContainsIdentities (W : MorphismProperty C) : Prop :=
+  mem' : ∀ (X : C), W (𝟙 X)
+
+lemma ContainsIdentities.mem (W : MorphismProperty C) [W.ContainsIdentities] (X : C) :
+  W (𝟙 X) := ContainsIdentities.mem' X
+
+universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
+
+variable {C₁ : Type u₁} {C₂ : Type u₂} [Category.{v₁} C₁] [Category.{v₂} C₂]
+
+def prod (W₁ : MorphismProperty C₁) (W₂ : MorphismProperty C₂) : MorphismProperty (C₁ × C₂) :=
+  fun _ _ f => W₁ f.1 ∧ W₂ f.2
+
+instance Prod.containsIdentities (W₁ : MorphismProperty C₁) (W₂ : MorphismProperty C₂)
+    [W₁.ContainsIdentities] [W₂.ContainsIdentities] : (prod W₁ W₂).ContainsIdentities :=
+  ⟨fun _ => ⟨ContainsIdentities.mem _ _, ContainsIdentities.mem _ _⟩⟩
+
+lemma IsInvertedBy.prod {W₁ : MorphismProperty C₁} {W₂ : MorphismProperty C₂}
+  {E₁ : Type u₃} [Category.{v₃} E₁] {E₂ : Type u₄} [Category.{v₄} E₂] {F₁ : C₁ ⥤ E₁} {F₂ : C₂ ⥤ E₂}
+  (h₁ : W₁.IsInvertedBy F₁) (h₂ : W₂.IsInvertedBy F₂) :
+    (W₁.prod W₂).IsInvertedBy (F₁.prod F₂) := fun _ _ f hf => by
+  rw [isIso_prod_iff]
+  exact ⟨h₁ _ hf.1, h₂ _ hf.2⟩
+
 end MorphismProperty
 
 end CategoryTheory
