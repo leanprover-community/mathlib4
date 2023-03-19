@@ -5,7 +5,7 @@ Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo, Yury Kudryashov, Fréd
   Heather Macbeth
 
 ! This file was ported from Lean 3 source module topology.algebra.module.basic
-! leanprover-community/mathlib commit 9a59dcb7a2d06bf55da57b9030169219980660cd
+! leanprover-community/mathlib commit f430769b562e0cedef59ee1ed968d67e0e0c86ba
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
