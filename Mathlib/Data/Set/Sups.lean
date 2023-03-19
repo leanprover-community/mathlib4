@@ -49,9 +49,9 @@ class HasInfs (α : Type _) where
 
 -- mathport name: «expr ⊻ »
 infixl:74
-  " ⊻ " =>-- This notation is meant to have higher precedence than `⊔` and `⊓`, but still within the realm of
-  -- other binary operations
-  HasSups.sups
+  " ⊻ " => HasSups.sups
+  -- This notation is meant to have higher precedence than `⊔` and `⊓`, but still within the
+  -- realm of other binary notation
 
 -- mathport name: «expr ⊼ »
 infixl:75 " ⊼ " => HasInfs.infs
@@ -68,6 +68,9 @@ protected def hasSups : HasSups (Set α) :=
 #align set.has_sups Set.hasSups
 
 scoped[SetFamily] attribute [instance] Set.hasSups
+-- porting note: opening SetFamily, because otherwise the Set.hasSups does not seem to be an
+-- instance
+open SetFamily
 
 variable {s s₁ s₂ t t₁ t₂ u} {a b c : α}
 
@@ -170,7 +173,7 @@ theorem sups_inter_subset_right : s ⊻ (t₁ ∩ t₂) ⊆ s ⊻ t₁ ∩ s ⊻
   image2_inter_subset_right
 #align set.sups_inter_subset_right Set.sups_inter_subset_right
 
-variable (s t u v)
+variable (s t u)
 
 theorem unionᵢ_image_sup_left : (⋃ a ∈ s, (· ⊔ ·) a '' t) = s ⊻ t :=
   unionᵢ_image_left _
@@ -218,6 +221,9 @@ protected def hasInfs : HasInfs (Set α) :=
 #align set.has_infs Set.hasInfs
 
 scoped[SetFamily] attribute [instance] Set.hasInfs
+-- porting note: opening SetFamily, because otherwise the Set.hasSups does not seem to be an
+-- instance
+open SetFamily
 
 variable {s s₁ s₂ t t₁ t₂ u} {a b c : α}
 
@@ -320,7 +326,7 @@ theorem infs_inter_subset_right : s ⊼ (t₁ ∩ t₂) ⊆ s ⊼ t₁ ∩ s ⊼
   image2_inter_subset_right
 #align set.infs_inter_subset_right Set.infs_inter_subset_right
 
-variable (s t u v)
+variable (s t u)
 
 theorem unionᵢ_image_inf_left : (⋃ a ∈ s, (· ⊓ ·) a '' t) = s ⊼ t :=
   unionᵢ_image_left _
@@ -411,4 +417,3 @@ theorem lowerClosure_infs [SemilatticeInf α] (s t : Set α) :
   · rintro ⟨⟨b, hb, hab⟩, c, hc, hac⟩
     exact ⟨_, ⟨b, hb, c, hc, rfl⟩, le_inf hab hac⟩
 #align lower_closure_infs lowerClosure_infs
-
