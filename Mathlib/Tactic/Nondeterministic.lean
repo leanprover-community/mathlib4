@@ -30,9 +30,13 @@ if they preclude finding solutions to later goals).
 recursively on a collection of goals, backtracking as necessary.
 For each subgoal, it evaluates `recurse : MVarId → MetaM Bool` to decide whether
 to continue solving that goal, or to "suspend" the goal, returning it to the caller. -/
+-- The implementation never actually touches an `MVarId`;
+-- we've made the possibly pointless generalisation from `MVarId` to `α`
+-- just to emphasise this.
 def Lean.MVarId.nondeterministicMany
-    (tac : MVarId → MetaM (List (MetaM (List MVarId)))) (recurse : MVarId → MetaM Bool)
-    (maxSteps : Nat) (goals : List MVarId) : MetaM (List MVarId) := do
+    [Monad m] [MonadExcept ε m] [Alternative m] [MonadBacktrack s m]
+    (tac : α → m (List (m (List α)))) (recurse : α → m Bool)
+    (maxSteps : Nat) (goals : List α) : m (List α) := do
 match maxSteps, goals with
 | 0, _ => failure
 | _, [] => pure []
@@ -58,6 +62,7 @@ recursively on a goal, backtracking as necessary.
 For each subgoal, it evaluates `recurse` to decide whether to continue solving that goal,
 or to "suspend" the goal, returning it to the caller. -/
 def Lean.MVarId.nondeterministic
-    (tac : MVarId → MetaM (List (MetaM (List MVarId))))
-    (recurse : MVarId → MetaM Bool) (maxSteps : Nat) (g : MVarId) : MetaM (List MVarId) :=
+    [Monad m] [MonadExcept ε m] [Alternative m] [MonadBacktrack s m]
+    (tac : α → m (List (m (List α))))
+    (recurse : α → m Bool) (maxSteps : Nat) (g : α) : m (List α) :=
 nondeterministicMany tac recurse maxSteps [g]
