@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 
 ! This file was ported from Lean 3 source module data.finset.n_ary
-! leanprover-community/mathlib commit 995b47e555f1b6297c7cf16855f1023e355219fb
+! leanprover-community/mathlib commit 20715f4ac6819ef2453d9e5106ecd086a5dc2a5e
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
