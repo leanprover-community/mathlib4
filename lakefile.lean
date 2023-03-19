@@ -7,7 +7,7 @@ package mathlib
 @[default_target]
 lean_lib Mathlib where
   moreLeanArgs := #[
---    "-DwarningAsError=true",
+    "-DwarningAsError=true",
     "-Dpp.unicode.fun=true" -- pretty-prints `fun a ↦ b`
   ]
 
