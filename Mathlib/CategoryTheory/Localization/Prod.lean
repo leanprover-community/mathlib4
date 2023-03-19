@@ -1,11 +1,11 @@
 import Mathlib.CategoryTheory.Localization.Equivalence
 
+universe v₁ v₂ v₃ v₄ v₅ u₁ u₂ u₃ u₄ u₅
+
 namespace CategoryTheory
 
 namespace Functor
 -- to be moved to CategoryTheory.Functor.Currying
-
-universe v₁ v₂ v₃ v₄ v₅ u₁ u₂ u₃ u₄ u₅
 
 variable {C₁ : Type u₁} {C₂ : Type u₂} {D : Type u₃}
   [Category.{v₁} C₁] [Category.{v₂} C₂] [Category.{v₃} D]
@@ -61,15 +61,50 @@ lemma uncurry_obj_curry_obj_flip_flip' {C₁' : Type u₄} {C₂' : Type u₅}
 
 end Functor
 
-namespace Localization
+section
+-- to be moved to CategoryTheory.Products.Basic
 
-variable {C₁ C₂ D₁ D₂ : Type _} [Category C₁] [Category C₂] [Category D₁] [Category D₂]
+variable {C₁ : Type u₁} {C₂ : Type u₂} {D₁ : Type u₃} {D₂ : Type u₄}
+  [Category.{v₁} C₁] [Category.{v₂} C₂] [Category.{v₃} D₁] [Category.{v₄} D₂]
+
+/-- The cartesian product of two natural isomorphisms. -/
+@[simps]
+def NatIso.prod {F F' : C₁ ⥤ D₁} {G G' : C₂ ⥤ D₂} (e₁ : F ≅ F') (e₂ : G ≅ G') :
+    F.prod G ≅ F'.prod G' :=
+{ hom := NatTrans.prod e₁.hom e₂.hom
+  inv := NatTrans.prod e₁.inv e₂.inv }
+
+namespace Equivalence
+
+/-- The cartesian product of two equivalences of categories. -/
+@[simps]
+def prod (E₁ : C₁ ≌ D₁) (E₂ : C₂ ≌ D₂) : C₁ × C₂ ≌ D₁ × D₂ where
+  functor := E₁.functor.prod E₂.functor
+  inverse := E₁.inverse.prod E₂.inverse
+  unitIso := NatIso.prod E₁.unitIso E₂.unitIso
+  counitIso := NatIso.prod E₁.counitIso E₂.counitIso
+  functor_unitIso_comp := by
+    intro ⟨x₁, x₂⟩
+    apply Prod.ext
+    . dsimp
+      simp
+    . dsimp
+      simp
+
+end Equivalence
+
+end
+
+variable {C₁ : Type u₁} {C₂ : Type u₂} {D₁ : Type u₃} {D₂ : Type u₄}
+  [Category.{v₁} C₁] [Category.{v₂} C₂] [Category.{v₃} D₁] [Category.{v₄} D₂]
   (L₁ : C₁ ⥤ D₁) {W₁ : MorphismProperty C₁} [W₁.ContainsIdentities]
   (L₂ : C₂ ⥤ D₂) {W₂ : MorphismProperty C₂} [W₂.ContainsIdentities]
 
+namespace Localization
+
 namespace StrictUniversalPropertyFixedTarget
 
-variable {E : Type _} [Category E]
+variable {E : Type u₅} [Category.{v₅} E]
   (F : C₁ × C₂ ⥤ E) (hF : (W₁.prod W₂).IsInvertedBy F)
 
 /-- auxiliary definition for `prod_lift` -/
@@ -130,6 +165,8 @@ noncomputable def prod :
 
 end StrictUniversalPropertyFixedTarget
 
+variable (W₁ W₂)
+
 @[nolint checkUnivs]
 lemma Construction.prodIsLocalization :
     (W₁.Q.prod W₂.Q).IsLocalization (W₁.prod W₂) :=
@@ -138,5 +175,24 @@ lemma Construction.prodIsLocalization :
     (StrictUniversalPropertyFixedTarget.prod W₁ W₂)
 
 end Localization
+
+open Localization
+
+namespace Functor
+
+namespace IsLocalization
+
+variable (W₁ W₂)
+
+instance prod [L₁.IsLocalization W₁] [L₂.IsLocalization W₂] :
+    (L₁.prod L₂).IsLocalization (W₁.prod W₂) := by
+  haveI := Construction.prodIsLocalization W₁ W₂
+  exact of_equivalence_target (W₁.Q.prod W₂.Q) (W₁.prod W₂) (L₁.prod L₂)
+    ((uniq W₁.Q L₁ W₁).prod (uniq W₂.Q L₂ W₂))
+    (NatIso.prod (compUniqFunctor W₁.Q L₁ W₁) (compUniqFunctor W₂.Q L₂ W₂))
+
+end IsLocalization
+
+end Functor
 
 end CategoryTheory
