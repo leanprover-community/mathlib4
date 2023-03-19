@@ -180,40 +180,40 @@ def treesOfNumNodesEq : ℕ → Finset (Tree Unit)
 #align tree.trees_of_num_nodes_eq Tree.treesOfNumNodesEq
 
 @[simp]
-theorem treesOfNodesEq_zero : treesOfNumNodesEq 0 = {nil} := by rw [treesOfNumNodesEq]
-#align tree.trees_of_nodes_eq_zero Tree.treesOfNodesEq_zero
+theorem treesOfNumNodesEq_zero : treesOfNumNodesEq 0 = {nil} := by rw [treesOfNumNodesEq]
+#align tree.trees_of_nodes_eq_zero Tree.treesOfNumNodesEq_zero
 
-theorem treesOfNodesEq_succ (n : ℕ) :
+theorem treesOfNumNodesEq_succ (n : ℕ) :
     treesOfNumNodesEq (n + 1) =
       (Nat.antidiagonal n).bunionᵢ fun ij =>
         pairwiseNode (treesOfNumNodesEq ij.1) (treesOfNumNodesEq ij.2) := by
   rw [treesOfNumNodesEq]
   ext
   simp
-#align tree.trees_of_nodes_eq_succ Tree.treesOfNodesEq_succ
+#align tree.trees_of_nodes_eq_succ Tree.treesOfNumNodesEq_succ
 
 @[simp]
-theorem mem_treesOfNodesEq {x : Tree Unit} {n : ℕ} : x ∈ treesOfNumNodesEq n ↔ x.numNodes = n :=
+theorem mem_treesOfNumNodesEq {x : Tree Unit} {n : ℕ} : x ∈ treesOfNumNodesEq n ↔ x.numNodes = n :=
   by
   induction x using Tree.unitRecOn generalizing n <;> cases n <;>
-    simp [treesOfNodesEq_succ, Nat.succ_eq_add_one, *]
+    simp [treesOfNumNodesEq_succ, Nat.succ_eq_add_one, *]
   exact (Nat.succ_ne_zero _).symm
-#align tree.mem_trees_of_nodes_eq Tree.mem_treesOfNodesEq
+#align tree.mem_trees_of_nodes_eq Tree.mem_treesOfNumNodesEq
 
-theorem mem_trees_of_nodes_eq_numNodes (x : Tree Unit) : x ∈ treesOfNumNodesEq x.numNodes :=
-  mem_treesOfNodesEq.mpr rfl
-#align tree.mem_trees_of_nodes_eq_num_nodes Tree.mem_trees_of_nodes_eq_numNodes
+theorem mem_treesOfNumNodesEq_numNodes (x : Tree Unit) : x ∈ treesOfNumNodesEq x.numNodes :=
+  mem_treesOfNumNodesEq.mpr rfl
+#align tree.mem_trees_of_nodes_eq_num_nodes Tree.mem_treesOfNumNodesEq_numNodes
 
 @[simp, norm_cast]
-theorem coe_treesOfNodesEq (n : ℕ) :
+theorem coe_treesOfNumNodesEq (n : ℕ) :
     ↑(treesOfNumNodesEq n) = { x : Tree Unit | x.numNodes = n } :=
   Set.ext (by simp)
-#align tree.coe_trees_of_nodes_eq Tree.coe_treesOfNodesEq
+#align tree.coe_trees_of_nodes_eq Tree.coe_treesOfNumNodesEq
 
-theorem treesOfNodesEq_card_eq_catalan (n : ℕ) : (treesOfNumNodesEq n).card = catalan n := by
+theorem treesOfNumNodesEq_card_eq_catalan (n : ℕ) : (treesOfNumNodesEq n).card = catalan n := by
   induction' n using Nat.case_strong_induction_on with n ih
   · simp
-  rw [treesOfNodesEq_succ, card_bunionᵢ, catalan_succ']
+  rw [treesOfNumNodesEq_succ, card_bunionᵢ, catalan_succ']
   · apply sum_congr rfl
     rintro ⟨i, j⟩ H
     rw [card_map, card_product, ih _ (fst_le H), ih _ (snd_le H)]
@@ -228,6 +228,6 @@ theorem treesOfNodesEq_card_eq_catalan (n : ℕ) : (treesOfNumNodesEq n).card = 
       trans (numNodes l, numNodes r)
       · simp at h1; simp [h1]
       · simp at h2; simp [h2]
-#align tree.trees_of_nodes_eq_card_eq_catalan Tree.treesOfNodesEq_card_eq_catalan
+#align tree.trees_of_nodes_eq_card_eq_catalan Tree.treesOfNumNodesEq_card_eq_catalan
 
 end Tree
