@@ -8,9 +8,9 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.MonoidAlgebra.Basic
-import Mathbin.Algebra.CharP.Invertible
-import Mathbin.LinearAlgebra.Basis
+import Mathlib.Algebra.MonoidAlgebra.Basic
+import Mathlib.Algebra.CharP.Invertible
+import Mathlib.LinearAlgebra.Basis
 
 /-!
 # Maschke's theorem
@@ -93,8 +93,7 @@ section
 
 include h
 
-theorem conjugate_i (g : G) (v : V) : (conjugate π g) (i v) = v :=
-  by
+theorem conjugate_i (g : G) (v : V) : (conjugate π g) (i v) = v := by
   dsimp [conjugate]
   simp only [← i.map_smul, h, ← mul_smul, single_mul_single, mul_one, mul_left_inv]
   change (1 : MonoidAlgebra k G) • v = v
@@ -146,8 +145,7 @@ def equivariantProjection : W →ₗ[MonoidAlgebra k G] V :=
 
 include h
 
-theorem equivariantProjection_condition (v : V) : (π.equivariantProjection G) (i v) = v :=
-  by
+theorem equivariantProjection_condition (v : V) : (π.equivariantProjection G) (i v) = v := by
   rw [equivariant_projection, smul_apply, sum_of_conjugates_equivariant,
     equivariant_of_linear_of_comm_apply, sum_of_conjugates]
   rw [LinearMap.sum_apply]
@@ -187,8 +185,7 @@ variable {W : Type u} [AddCommGroup W] [Module k W] [Module (MonoidAlgebra k G) 
 variable [IsScalarTower k (MonoidAlgebra k G) W]
 
 theorem exists_left_inverse_of_injective (f : V →ₗ[MonoidAlgebra k G] W) (hf : f.ker = ⊥) :
-    ∃ g : W →ₗ[MonoidAlgebra k G] V, g.comp f = LinearMap.id :=
-  by
+    ∃ g : W →ₗ[MonoidAlgebra k G] V, g.comp f = LinearMap.id := by
   obtain ⟨φ, hφ⟩ :=
     (f.restrict_scalars k).exists_leftInverse_of_injective
       (by simp only [hf, Submodule.restrictScalars_bot, LinearMap.ker_restrictScalars])
