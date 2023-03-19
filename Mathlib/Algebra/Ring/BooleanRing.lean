@@ -71,7 +71,7 @@ theorem add_self : a + a = 0 := by
       a + a = (a + a) * (a + a) := by rw [mul_self]
       _ = a * a + a * a + (a * a + a * a) := by rw [add_mul, mul_add]
       _ = a + a + (a + a) := by rw [mul_self]
-      
+
   rwa [self_eq_add_left] at this
 #align add_self add_self
 
@@ -81,14 +81,14 @@ theorem neg_eq : -a = a :=
     -a = -a + 0 := by rw [add_zero]
     _ = -a + -a + a := by rw [← neg_add_self, add_assoc]
     _ = a := by rw [add_self, zero_add]
-    
+
 #align neg_eq neg_eq
 
 theorem add_eq_zero' : a + b = 0 ↔ a = b :=
   calc
     a + b = 0 ↔ a = -b := add_eq_zero_iff_eq_neg
     _ ↔ a = b := by rw [neg_eq]
-    
+
 #align add_eq_zero' add_eq_zero'
 
 @[simp]
@@ -99,7 +99,7 @@ theorem mul_add_mul : a * b + b * a = 0 := by
       _ = a * a + a * b + (b * a + b * b) := by rw [add_mul, mul_add, mul_add]
       _ = a + a * b + (b * a + b) := by simp only [mul_self]
       _ = a + b + (a * b + b * a) := by abel
-      
+
   rwa [self_eq_add_right] at this
 #align mul_add_mul mul_add_mul
 
@@ -180,18 +180,18 @@ variable [BooleanRing α] [BooleanRing β] [BooleanRing γ]
 namespace BooleanRing
 
 /-- The join operation in a Boolean ring is `x + y + x * y`. -/
-def hasSup : Sup α :=
+def Sup : Sup α :=
   ⟨fun x y => x + y + x * y⟩
-#align boolean_ring.has_sup BooleanRing.hasSup
+#align boolean_ring.has_sup BooleanRing.Sup
 
 /-- The meet operation in a Boolean ring is `x * y`. -/
-def hasInf : Inf α :=
+def Inf : Inf α :=
   ⟨(· * ·)⟩
-#align boolean_ring.has_inf BooleanRing.hasInf
+#align boolean_ring.has_inf BooleanRing.Inf
 
 -- Porting note: TODO: add priority 100. lower instance priority
-scoped [BooleanAlgebraOfBooleanRing] attribute [instance] BooleanRing.hasSup
-scoped [BooleanAlgebraOfBooleanRing] attribute [instance] BooleanRing.hasInf
+scoped [BooleanAlgebraOfBooleanRing] attribute [instance] BooleanRing.Sup
+scoped [BooleanAlgebraOfBooleanRing] attribute [instance] BooleanRing.Inf
 open BooleanAlgebraOfBooleanRing
 
 theorem sup_comm (a b : α) : a ⊔ b = b ⊔ a := by
@@ -231,7 +231,7 @@ theorem le_sup_inf_aux (a b c : α) : (a + b + a * b) * (a + c + a * c) = a + b 
           (a * b * c + a * a * b * c) :=
       by ring
     _ = a + b * c + a * (b * c) := by simp only [mul_self, add_self, add_zero]
-    
+
 #align boolean_ring.le_sup_inf_aux BooleanRing.le_sup_inf_aux
 
 theorem le_sup_inf (a b c : α) : (a ⊔ b) ⊓ (a ⊔ c) ⊔ (a ⊔ b ⊓ c) = a ⊔ b ⊓ c := by
@@ -315,7 +315,7 @@ private theorem of_boolalg_symm_diff_aux (a b : α) : (a + b + a * b) * (1 + a *
     (a + b + a * b) * (1 + a * b) = a + b + (a * b + a * b * (a * b)) + (a * (b * b) + a * a * b) :=
       by ring
     _ = a + b := by simp only [mul_self, add_self, add_zero]
-    
+
 @[simp]
 theorem ofBoolalg_symmDiff (a b : AsBoolalg α) : ofBoolalg (a ∆ b) = ofBoolalg a + ofBoolalg b := by
   rw [symmDiff_eq_sup_sdiff_inf]
@@ -581,7 +581,7 @@ end AlgebraToRing
 
 /-- Order isomorphism between `α` considered as a Boolean ring considered as a Boolean algebra and
 `α`. -/
-@[simps]
+@[simps!]
 def OrderIso.asBoolalgAsBoolring (α : Type _) [BooleanAlgebra α] : AsBoolalg (AsBoolring α) ≃o α :=
   ⟨ofBoolalg.trans ofBoolring,
    ofBoolring_le_ofBoolring_iff.trans ofBoolalg_mul_ofBoolalg_eq_left_iff⟩
@@ -589,7 +589,7 @@ def OrderIso.asBoolalgAsBoolring (α : Type _) [BooleanAlgebra α] : AsBoolalg (
 
 /-- Ring isomorphism between `α` considered as a Boolean algebra considered as a Boolean ring and
 `α`. -/
-@[simps]
+@[simps!]
 def RingEquiv.asBoolringAsBoolalg (α : Type _) [BooleanRing α] : AsBoolring (AsBoolalg α) ≃+* α :=
   { ofBoolring.trans ofBoolalg with
     map_mul' := fun _a _b => rfl
