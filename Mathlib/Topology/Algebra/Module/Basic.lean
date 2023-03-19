@@ -17,7 +17,6 @@ import Mathlib.Topology.UniformSpace.UniformEmbedding
 import Mathlib.Algebra.Algebra.Basic
 import Mathlib.LinearAlgebra.Projection
 import Mathlib.LinearAlgebra.Pi
-import Mathlib.RingTheory.SimpleModule
 
 /-!
 # Theory of topological modules and continuous linear maps.
@@ -183,9 +182,9 @@ end Submodule
 
 section closure
 
-variable {R R' : Type u} {M M' : Type v} [Semiring R] [TopologicalSpace R] [Ring R']
-  [TopologicalSpace R'] [TopologicalSpace M] [AddCommMonoid M] [TopologicalSpace M']
-  [AddCommGroup M'] [Module R M] [ContinuousSMul R M] [Module R' M'] [ContinuousSMul R' M']
+variable {R : Type u} {M : Type v} [Semiring R] [TopologicalSpace R]
+  [TopologicalSpace M] [AddCommMonoid M]
+  [AddCommGroup M'] [Module R M] [ContinuousSMul R M]
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
@@ -205,7 +204,7 @@ theorem Submodule.closure_smul_self_subset (s : Submodule R M) :
       refine' ⟨_, fun hx => ⟨⟨1, x⟩, ⟨Set.mem_univ _, hx⟩, one_smul R _⟩⟩
       rintro ⟨⟨c, y⟩, ⟨hc, hy⟩, rfl⟩
       simp [s.smul_mem c hy]
-    
+
 #align submodule.closure_smul_self_subset Submodule.closure_smul_self_subset
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
@@ -274,15 +273,6 @@ theorem Submodule.isClosed_or_dense_of_isCoatom (s : Submodule R M) (hs : IsCoat
   (hs.le_iff.mp s.le_topologicalClosure).symm.imp (isClosed_of_closure_subset ∘ Eq.le)
     Submodule.dense_iff_topologicalClosure_eq_top.mpr
 #align submodule.is_closed_or_dense_of_is_coatom Submodule.isClosed_or_dense_of_isCoatom
-
-theorem LinearMap.isClosed_or_dense_ker [ContinuousAdd M'] [IsSimpleModule R' R']
-    (l : M' →ₗ[R'] R') : IsClosed (l.ker : Set M') ∨ Dense (l.ker : Set M') := by
-  rcases l.surjective_or_eq_zero with (hl | rfl)
-  · refine' l.ker.is_closed_or_dense_of_is_coatom (LinearMap.isCoatom_ker_of_surjective hl)
-  · rw [LinearMap.ker_zero]
-    left
-    exact isClosed_univ
-#align linear_map.is_closed_or_dense_ker LinearMap.isClosed_or_dense_ker
 
 end closure
 
@@ -2749,4 +2739,3 @@ instance t3_quotient_of_isClosed [TopologicalAddGroup M] [IsClosed (S : Set M)] 
 end Submodule
 
 end Quotient
-
