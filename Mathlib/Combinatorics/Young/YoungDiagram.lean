@@ -356,7 +356,7 @@ theorem mk_mem_col_iff {μ : YoungDiagram} {i j : ℕ} : (i, j) ∈ μ.col j ↔
 #align young_diagram.mk_mem_col_iff YoungDiagram.mk_mem_col_iff
 
 protected theorem exists_not_mem_col (μ : YoungDiagram) (j : ℕ) : ∃ i, (i, j) ∉ μ.cells := by
-  convert μ.transpose.exists_not_mem_row j
+  convert μ.transpose.exists_not_mem_row j using 1
   simp
 #align young_diagram.exists_not_mem_col YoungDiagram.exists_not_mem_col
 
@@ -394,7 +394,7 @@ theorem colLen_eq_card (μ : YoungDiagram) {j : ℕ} : μ.colLen j = (μ.col j).
 
 @[mono]
 theorem colLen_anti (μ : YoungDiagram) (j1 j2 : ℕ) (hj : j1 ≤ j2) : μ.colLen j2 ≤ μ.colLen j1 := by
-  convert μ.transpose.rowLen_anti j1 j2 hj <;> simp
+  convert μ.transpose.rowLen_anti j1 j2 hj using 1 <;> simp
 #align young_diagram.col_len_anti YoungDiagram.colLen_anti
 
 end Columns

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Floris van Doorn, Violeta Hernández Palacios
 
 ! This file was ported from Lean 3 source module set_theory.ordinal.arithmetic
-! leanprover-community/mathlib commit f1e061e3caef3022f0daa99d670ecf2c30e0b5c6
+! leanprover-community/mathlib commit 8da9e30545433fdd8fe55a0d3da208e5d9263f03
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -109,7 +109,7 @@ instance add_contravariantClass_le : ContravariantClass Ordinal.{u} Ordinal.{u} 
                   simpa only [Sum.lex_inr_inr, fr, InitialSeg.coe_coe_fn, Embedding.coeFn_mk] using
                     @RelEmbedding.map_rel_iff _ _ _ _ f.toRelEmbedding (Sum.inr a) (Sum.inr b)⟩,
               fun a b H => by
-                rcases f.init' (by rw [fr] <;> exact Sum.lex_inr_inr.2 H) with ⟨a' | a', h⟩
+                rcases f.init (by rw [fr] <;> exact Sum.lex_inr_inr.2 H) with ⟨a' | a', h⟩
                 · rw [fl] at h
                   cases h
                 · rw [fr] at h
@@ -1563,9 +1563,9 @@ theorem sup_eq_lsub {ι : Type u} (f : ι → Ordinal.{max u v}) :
 
 theorem lsub_le_iff {ι : Type u} {f : ι → Ordinal.{max u v}} {a} :
     lsub.{_, v} f ≤ a ↔ ∀ i, f i < a := by
-  convert sup_le_iff.{_, v} (f := succ ∘ f) (a := a)
-  -- Porting note: `eq_iff_iff` & `(· ∘ ·)` are required.
-  simp only [eq_iff_iff, (· ∘ ·), succ_le_iff]
+  convert sup_le_iff.{_, v} (f := succ ∘ f) (a := a) using 2
+  -- Porting note: `comp_apply` is required.
+  simp only [comp_apply, succ_le_iff]
 #align ordinal.lsub_le_iff Ordinal.lsub_le_iff
 
 theorem lsub_le {ι} {f : ι → Ordinal} {a} : (∀ i, f i < a) → lsub f ≤ a :=
@@ -1780,8 +1780,8 @@ theorem blsub_congr {o₁ o₂ : Ordinal.{u}} (f : ∀ a < o₁, Ordinal.{max u 
 
 theorem blsub_le_iff {o : Ordinal.{u}} {f : ∀ a < o, Ordinal.{max u v}} {a} :
     blsub.{_, v} o f ≤ a ↔ ∀ i h, f i h < a := by
-  convert bsup_le_iff.{_, v} (f := fun a ha => succ (f a ha)) (a := a)
-  simp [succ_le_iff]
+  convert bsup_le_iff.{_, v} (f := fun a ha => succ (f a ha)) (a := a) using 2
+  simp_rw [succ_le_iff]
 #align ordinal.blsub_le_iff Ordinal.blsub_le_iff
 
 theorem blsub_le {o : Ordinal} {f : ∀ b < o, Ordinal} {a} : (∀ i h, f i h < a) → blsub o f ≤ a :=
@@ -2059,7 +2059,8 @@ theorem le_bmex_of_forall {o : Ordinal} (f : ∀ a < o, Ordinal) {a : Ordinal}
 
 theorem ne_bmex {o : Ordinal.{u}} (f : ∀ a < o, Ordinal.{max u v}) {i} (hi) :
     f i hi ≠ bmex.{_, v} o f := by
-  convert ne_mex.{_, v} (familyOfBFamily o f) (enum (· < ·) i (by rwa [type_lt]))
+  convert (config := {transparency := .default})
+    ne_mex.{_, v} (familyOfBFamily o f) (enum (· < ·) i (by rwa [type_lt])) using 2
   -- Porting note: `familyOfBFamily_enum` → `typein_enum`
   rw [typein_enum]
 #align ordinal.ne_bmex Ordinal.ne_bmex
