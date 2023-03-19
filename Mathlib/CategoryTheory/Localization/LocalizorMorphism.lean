@@ -1,5 +1,6 @@
 import Mathlib.CategoryTheory.Localization.Predicate
 import Mathlib.CategoryTheory.CatCommSq
+import Mathlib.CategoryTheory.Localization.Equivalence
 
 namespace CategoryTheory
 
@@ -89,9 +90,26 @@ variable (L₁ L₂)
 
 /-- If a `LocalizorMorphism` is a localized equivalence, then the induced functor on
 the localized categories is an equivalence -/
-noncomputable def localizedFunctor_isEquivalence [Φ.IsLocalizedEquivalence] :
-    IsEquivalence ((Φ.localizedFunctor L₁ L₂)) :=
+noncomputable instance localizedFunctor_isEquivalence [Φ.IsLocalizedEquivalence] :
+    IsEquivalence (Φ.localizedFunctor L₁ L₂) :=
   Φ.isEquivalence (Φ.catCommSq L₁ L₂)
+
+lemma IsLocalizedEquivalence.of_isLocalization_of_isLocalization
+  [(Φ.functor ⋙ L₂).IsLocalization W₁]:
+    IsLocalizedEquivalence Φ := by
+  have h : CatCommSq (Φ.functor ⋙ L₂) Φ.functor L₂ (𝟭 D₂) :=
+    CatCommSq.mk (Functor.rightUnitor _).symm
+  exact IsLocalizedEquivalence.mk' Φ h
+
+lemma IsLocalizedEquivalence.of_equivalence [IsEquivalence Φ.functor]
+  (h : W₂ ⊆ W₁.map Φ.functor) : IsLocalizedEquivalence Φ := by
+  haveI : Functor.IsLocalization (Φ.functor ⋙ MorphismProperty.Q W₂) W₁ := by
+    refine' Functor.IsLocalization.of_equivalence_source W₂.Q W₂ (Φ.functor ⋙ W₂.Q) W₁
+      (Functor.asEquivalence Φ.functor).symm _ (Φ.inverts W₂.Q)
+      ((Functor.associator _ _ _).symm ≪≫ isoWhiskerRight ((Equivalence.unitIso _).symm) _ ≪≫ Functor.leftUnitor _)
+    erw [MorphismProperty.inverseImage_functorInv W₁ Φ.functor]
+    exact h
+  exact IsLocalizedEquivalence.of_isLocalization_of_isLocalization Φ W₂.Q
 
 end LocalizorMorphism
 

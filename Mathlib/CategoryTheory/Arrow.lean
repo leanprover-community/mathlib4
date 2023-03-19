@@ -41,7 +41,10 @@ def Arrow :=
 #align category_theory.arrow CategoryTheory.Arrow
 
 /- Porting note: could not derive `Category` above so this instance works in its place-/
-instance : Category (Arrow T) := commaCategory
+instance : Category (Arrow T) := by
+  dsimp only [Arrow]
+  infer_instance
+  --  commaCategory
 
 -- Satisfying the inhabited linter
 instance Arrow.inhabited [Inhabited T] : Inhabited (Arrow T)
@@ -52,6 +55,10 @@ end
 
 namespace Arrow
 
+@[ext]
+lemma hom_ext {X Y : Arrow T} (f g : X ⟶ Y) (h₁ : f.left = g.left) (h₂ : f.right = g.right) : f = g :=
+  CommaMorphism.ext _ _ h₁ h₂
+
 @[simp]
 theorem id_left (f : Arrow T) : CommaMorphism.left (𝟙 f) = 𝟙 f.left :=
   rfl
@@ -61,6 +68,16 @@ theorem id_left (f : Arrow T) : CommaMorphism.left (𝟙 f) = 𝟙 f.left :=
 theorem id_right (f : Arrow T) : CommaMorphism.right (𝟙 f) = 𝟙 f.right :=
   rfl
 #align category_theory.arrow.id_right CategoryTheory.Arrow.id_right
+
+@[simp]
+theorem comp_left {X Y Z : Arrow T} (f : X ⟶ Y) (g : Y ⟶ Z) :
+    (f ≫ g).left = f.left ≫ g.left :=
+  rfl
+
+@[simp]
+theorem comp_right {X Y Z : Arrow T} (f : X ⟶ Y) (g : Y ⟶ Z) :
+    (f ≫ g).right = f.right ≫ g.right :=
+  rfl
 
 /-- An object in the arrow category is simply a morphism in `T`. -/
 @[simps]
@@ -163,9 +180,8 @@ theorem hom.congr_right {f g : Arrow T} {φ₁ φ₂ : f ⟶ g} (h : φ₁ = φ�
 #align category_theory.arrow.hom.congr_right CategoryTheory.Arrow.hom.congr_right
 
 theorem iso_w {f g : Arrow T} (e : f ≅ g) : g.hom = e.inv.left ≫ f.hom ≫ e.hom.right := by
-  have eq := Arrow.hom.congr_right e.inv_hom_id
-  dsimp at eq
-  erw [Arrow.w_assoc, ←Comma.comp_right, eq, Category.comp_id]
+  simp only [Functor.id_obj, w_mk_right_assoc, ← Arrow.comp_right, e.inv_hom_id, id_right,
+    Category.comp_id]
 #align category_theory.arrow.iso_w CategoryTheory.Arrow.iso_w
 
 theorem iso_w' {W X Y Z : T} {f : W ⟶ X} {g : Y ⟶ Z} (e : Arrow.mk f ≅ Arrow.mk g) :
@@ -180,17 +196,13 @@ variable {f g : Arrow T} (sq : f ⟶ g)
 instance isIso_left [IsIso sq] : IsIso sq.left where
   out := by
     apply Exists.intro (inv sq).left
-    simp only [← Comma.comp_left, IsIso.hom_inv_id, IsIso.inv_hom_id, Arrow.id_left,
-      eq_self_iff_true, and_self_iff]
-    simp
+    simp only [← comp_left, IsIso.hom_inv_id, IsIso.inv_hom_id, id_left]
 #align category_theory.arrow.is_iso_left CategoryTheory.Arrow.isIso_left
 
 instance isIso_right [IsIso sq] : IsIso sq.right where
   out := by
     apply Exists.intro (inv sq).right
-    simp only [← Comma.comp_right, IsIso.hom_inv_id, IsIso.inv_hom_id, Arrow.id_right,
-      eq_self_iff_true, and_self_iff]
-    simp
+    simp only [← comp_right, IsIso.hom_inv_id, IsIso.inv_hom_id, id_right]
 #align category_theory.arrow.is_iso_right CategoryTheory.Arrow.isIso_right
 
 @[simp]
@@ -315,12 +327,28 @@ def mapArrow (F : C ⥤ D) : Arrow C ⥤ Arrow D where
         simp only [id_map] at w
         dsimp
         simp only [← F.map_comp, w] }
-  map_id := by aesop_cat
-  map_comp := fun f g => by
-    apply CommaMorphism.ext
-    · dsimp; rw [Comma.comp_left,F.map_comp]; rw [Comma.comp_left]
-    · dsimp; rw [Comma.comp_right,F.map_comp]; rw [Comma.comp_right]
 #align category_theory.functor.map_arrow CategoryTheory.Functor.mapArrow
+
+variable (C D)
+
+@[simps]
+def mapArrowFunctor : (C ⥤ D) ⥤ (Arrow C ⥤ Arrow D) where
+  obj F := F.mapArrow
+  map τ :=
+    { app := fun f =>
+        { left := τ.app _
+          right := τ.app _ } }
+
+variable {C D}
+
+def mapArrowEquivalence (e : C ≌ D) : Arrow C ≌ Arrow D where
+  functor := e.functor.mapArrow
+  inverse := e.inverse.mapArrow
+  unitIso := Functor.mapIso (mapArrowFunctor C C) e.unitIso
+  counitIso := Functor.mapIso (mapArrowFunctor D D) e.counitIso
+
+instance mapArrow_isEquivalence (F : C ⥤ D) [IsEquivalence F] :
+  IsEquivalence F.mapArrow := IsEquivalence.ofEquivalence (mapArrowEquivalence (asEquivalence F))
 
 end Functor
 
