@@ -71,5 +71,5 @@ example (x y : Nat) (h : x = y) : True := by
 
 example : let x := 22; let y : Nat := x; let z : Fin (y + 1) := 0; z.1 < y + 1 := by
   intro x y z -- `z` was erroneously marked as unused
-  change Nat at y -- `0`
+  change _ at y
   exact z.2

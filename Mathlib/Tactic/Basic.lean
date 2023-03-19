@@ -6,7 +6,6 @@ Authors: Mario Carneiro
 import Lean
 import Std
 import Mathlib.Tactic.Cases
-import Mathlib.Util.Intro
 
 namespace Mathlib.Tactic
 open Lean Parser.Tactic Elab Command Elab.Tactic Meta
@@ -62,7 +61,7 @@ elab_rules : tactic
         let (_, mvars) ← elabTermWithHoles
                           (← `(term | show $newType from $(← Term.exprToSyntax mvar))) hTy `change
         liftMetaTactic fun mvarId ↦ do
-          return (← mvarId.changeLocalDecl' h (← inferType mvar)) :: mvars)
+          return (← mvarId.replaceLocalDeclDefEq h (← inferType mvar)) :: mvars)
       (atTarget := evalTactic <| ← `(tactic| show $newType))
       (failed := fun _ ↦ throwError "change tactic failed")
 
@@ -159,21 +158,29 @@ elab (name := clearAuxDecl) "clear_aux_decl" : tactic => withMainContext do
 is still type correct. Throws an error if it is a local hypothesis without a value. -/
 def _root_.Lean.MVarId.clearValue (mvarId : MVarId) (fvarId : FVarId) : MetaM MVarId := do
   mvarId.checkNotAssigned `clear_value
-  let tag ← mvarId.getTag
-  let (_, mvarId', _) ← mvarId.withReverted #[fvarId] fun _ mvarId' => mvarId'.withContext do
+  -- First check that it is safe to clear the value
+  withoutModifyingState do
+    let (_, mvarId') ← mvarId.revert #[fvarId]
     let tgt ← mvarId'.getType
     unless tgt.isLet do
       mvarId.withContext <|
         throwTacticEx `clear_value mvarId m!"{Expr.fvar fvarId} is not a local definition"
     let tgt' := Expr.forallE tgt.letName! tgt.letType! tgt.letBody! .default
-    unless ← isTypeCorrect tgt' do
+    unless ← mvarId'.withContext (isTypeCorrect tgt') do
       mvarId.withContext <|
         throwTacticEx `clear_value mvarId
           m!"cannot clear {Expr.fvar fvarId}, the resulting context is not type correct"
-    let mvarId'' ← mkFreshExprSyntheticOpaqueMVar tgt' tag
-    mvarId'.assign <| mkApp mvarId'' tgt.letValue!
-    return (mvarId''.mvarId!, ())
-  return mvarId'
+  -- Clearing it is safe, so clear it.
+  mvarId.withContext do
+    let mvarDecl ← mvarId.getDecl
+    let lctxNew := (← getLCtx).modifyLocalDecl fvarId fun decl =>
+      match decl with
+      | .ldecl index id userName type _ _ k => .cdecl index id userName type .default k
+      | _ => panic!"clearValue internal error: not an ldecl"
+    let mvarNew ← mkFreshExprMVarAt lctxNew (← getLocalInstances)
+                    mvarDecl.type mvarDecl.kind mvarDecl.userName
+    mvarId.assign mvarNew
+    return mvarNew.mvarId!
 
 /-- `clear_value n₁ n₂ ...` clears the bodies of the local definitions `n₁, n₂ ...`, changing them
 into regular hypotheses. A hypothesis `n : α := t` is changed to `n : α`.
