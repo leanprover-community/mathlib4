@@ -15,24 +15,24 @@ import Mathlib.Algebra.TrivSqZeroExt
 
 The dual numbers over `R` are of the form `a + bε`, where `a` and `b` are typically elements of a
 commutative ring `R`, and `ε` is a symbol satisfying `ε^2 = 0`. They are a special case of
-`triv_sq_zero_ext R M` with `M = R`.
+`TrivSqZeroExt R M` with `M = R`.
 
 ## Notation
 
-In the `dual_number` locale:
+In the `DualNumber` locale:
 
-* `R[ε]` is a shorthand for `dual_number R`
-* `ε` is a shorthand for `dual_number.eps`
+* `R[ε]` is a shorthand for `DualNumber R`
+* `ε` is a shorthand for `DualNumber.eps`
 
 ## Main definitions
 
-* `dual_number`
-* `dual_number.eps`
-* `dual_number.lift`
+* `DualNumber`
+* `DualNumber.eps`
+* `DualNumber.lift`
 
 ## Implementation notes
 
-Rather than duplicating the API of `triv_sq_zero_ext`, this file reuses the functions there.
+Rather than duplicating the API of `TrivSqZeroExt`, this file reuses the functions there.
 
 ## References
 
@@ -74,10 +74,10 @@ theorem snd_eps [Zero R] [One R] : snd ε = (1 : R) :=
   snd_inr _ _
 #align dual_number.snd_eps DualNumber.snd_eps
 
-/-- A version of `triv_sq_zero_ext.snd_mul` with `*` instead of `•`. -/
+/-- A version of `TrivSqZeroExt.snd_mul` with `*` instead of `•`. -/
 @[simp]
 theorem snd_mul [Semiring R] (x y : R[ε]) : snd (x * y) = fst x * snd y + snd x * fst y :=
-  snd_mul _ _
+  TrivSqZeroExt.snd_mul _ _
 #align dual_number.snd_mul DualNumber.snd_mul
 
 @[simp]
@@ -103,29 +103,27 @@ variable {A : Type _} [CommSemiring R] [Semiring A] [Algebra R A]
 of `A` which squares to `0`.
 
 This isomorphism is named to match the very similar `complex.lift`. -/
-@[simps (config := { attrs := [] })]
+@[simps!]
 def lift : { e : A // e * e = 0 } ≃ (R[ε] →ₐ[R] A) :=
   Equiv.trans
     (show { e : A // e * e = 0 } ≃ { f : R →ₗ[R] A // ∀ x y, f x * f y = 0 } from
-      (LinearMap.ringLmapEquivSelf R ℕ A).symm.toEquiv.subtypeEquiv fun a =>
-        by
+      (LinearMap.ringLmapEquivSelf R ℕ A).symm.toEquiv.subtypeEquiv fun a => by
         dsimp
         simp_rw [smul_mul_smul]
         refine' ⟨fun h x y => h.symm ▸ smul_zero _, fun h => by simpa using h 1 1⟩)
     TrivSqZeroExt.lift
 #align dual_number.lift DualNumber.lift
 
--- When applied to `ε`, `dual_number.lift` produces the element of `A` that squares to 0.
-@[simp]
-theorem lift_apply_eps (e : { e : A // e * e = 0 }) : lift e (ε : R[ε]) = e :=
-  (TrivSqZeroExt.liftAux_apply_inr _ _ _).trans <| one_smul _ _
+-- When applied to `ε`, `DualNumber.lift` produces the element of `A` that squares to 0.
+-- @[simp] -- Porting note: simp can prove this
+theorem lift_apply_eps (e : { e : A // e * e = 0 }) : @lift R _ _ _ _ e (ε : R[ε]) = e := by
+  simp only [lift_apply_apply, fst_eps, map_zero, snd_eps, one_smul, zero_add]
 #align dual_number.lift_apply_eps DualNumber.lift_apply_eps
 
--- Lifting `dual_number.eps` itself gives the identity.
+-- Lifting `DualNumber.eps` itself gives the identity.
 @[simp]
 theorem lift_eps : lift ⟨ε, eps_mul_eps⟩ = AlgHom.id R R[ε] :=
   algHom_ext <| lift_apply_eps _
 #align dual_number.lift_eps DualNumber.lift_eps
 
 end DualNumber
-
