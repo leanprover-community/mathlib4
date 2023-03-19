@@ -1588,7 +1588,6 @@ import Mathlib.Util.AssertNoSorry
 import Mathlib.Util.AtomM
 import Mathlib.Util.Export
 import Mathlib.Util.IncludeStr
-import Mathlib.Util.Intro
 import Mathlib.Util.MemoFix
 import Mathlib.Util.Syntax
 import Mathlib.Util.SynthesizeUsing
