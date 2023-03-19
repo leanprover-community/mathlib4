@@ -8,8 +8,8 @@ Authors: Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Set.NAry
-import Mathbin.Order.UpperLower.Basic
+import Mathlib.Data.Set.NAry
+import Mathlib.Order.UpperLower.Basic
 
 /-!
 # Set family operations
@@ -388,8 +388,7 @@ open SetFamily
 
 @[simp]
 theorem upperClosure_sups [SemilatticeSup α] (s t : Set α) :
-    upperClosure (s ⊻ t) = upperClosure s ⊔ upperClosure t :=
-  by
+    upperClosure (s ⊻ t) = upperClosure s ⊔ upperClosure t := by
   ext a
   simp only [SetLike.mem_coe, mem_upperClosure, Set.mem_sups, exists_and_left, exists_prop,
     UpperSet.coe_sup, Set.mem_inter_iff]
@@ -402,8 +401,7 @@ theorem upperClosure_sups [SemilatticeSup α] (s t : Set α) :
 
 @[simp]
 theorem lowerClosure_infs [SemilatticeInf α] (s t : Set α) :
-    lowerClosure (s ⊼ t) = lowerClosure s ⊓ lowerClosure t :=
-  by
+    lowerClosure (s ⊼ t) = lowerClosure s ⊓ lowerClosure t := by
   ext a
   simp only [SetLike.mem_coe, mem_lowerClosure, Set.mem_infs, exists_and_left, exists_prop,
     LowerSet.coe_sup, Set.mem_inter_iff]
