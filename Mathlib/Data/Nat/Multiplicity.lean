@@ -272,8 +272,8 @@ theorem multiplicity_two_factorial_lt : ∀ {n : ℕ} (_ : n ≠ 0), multiplicit
   · intro b n ih h
     by_cases hn : n = 0
     · subst hn
-      simp at h
-      simp [h, one_right h2.not_unit]
+      simp only [ne_eq, bit_eq_zero, true_and, Bool.not_eq_false] at h
+      simp only [h, bit_true, bit1_zero, factorial, mul_one, Nat.isUnit_iff, cast_one]
       rw [Prime.multiplicity_one]
       simp only [zero_lt_one]
       decide
