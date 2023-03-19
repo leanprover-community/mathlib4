@@ -914,7 +914,7 @@ theorem IsCycleOn.exists_pow_eq {s : Finset α} (hf : f.IsCycleOn s) (ha : a ∈
     obtain ⟨n, rfl⟩ := hf.2 ha hb
     obtain ⟨k, hk⟩ := (Int.mod_modEq n s.card).symm.dvd
     refine' ⟨n.natMod s.card, Int.natMod_lt (Nonempty.card_pos ⟨a, ha⟩).ne', _⟩
-    rw [← zpow_ofNat, Int.natMod, ← Int.mod_def',
+    rw [← zpow_ofNat, Int.natMod,
       Int.toNat_of_nonneg (Int.emod_nonneg _ <| Nat.cast_ne_zero.2
         (Nonempty.card_pos ⟨a, ha⟩).ne'),  sub_eq_iff_eq_add'.1 hk, zpow_add, zpow_mul]
     simp only [zpow_coe_nat, coe_mul, comp_apply, EmbeddingLike.apply_eq_iff_eq]
