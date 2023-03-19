@@ -25,19 +25,19 @@ coefficients.
 
 ## Multiplicity calculations
 
-* `nat.multiplicity_factorial`: Legendre's Theorem. The multiplicity of `p` in `n!` is
+* `Nat.multiplicity_factorial`: Legendre's Theorem. The multiplicity of `p` in `n!` is
   `n/p + ... + n/p^b` for any `b` such that `n/p^(b + 1) = 0`.
-* `nat.multiplicity_factorial_mul`: The multiplicity of `p` in `(p * n)!` is `n` more than that of
+* `Nat.multiplicity_factorial_mul`: The multiplicity of `p` in `(p * n)!` is `n` more than that of
   `n!`.
-* `nat.multiplicity_choose`: The multiplicity of `p` in `n.choose k` is the number of carries when
+* `Nat.multiplicity_choose`: The multiplicity of `p` in `n.choose k` is the number of carries when
   `k` and`n - k` are added in base `p`.
 
 ## Other declarations
 
-* `nat.multiplicity_eq_card_pow_dvd`: The multiplicity of `m` in `n` is the number of positive
+* `Nat.multiplicity_eq_card_pow_dvd`: The multiplicity of `m` in `n` is the number of positive
   natural numbers `i` such that `m ^ i` divides `n`.
-* `nat.multiplicity_two_factorial_lt`: The multiplicity of `2` in `n!` is strictly less than `n`.
-* `nat.prime.multiplicity_something`: Specialization of `multiplicity.something` to a prime in the
+* `Nat.multiplicity_two_factorial_lt`: The multiplicity of `2` in `n!` is strictly less than `n`.
+* `Nat.prime.multiplicity_something`: Specialization of `multiplicity.something` to a prime in the
   naturals. Avoids having to provide `p ≠ 1` and other trivialities, along with translating between
   `prime` and `nat.prime`.
 
