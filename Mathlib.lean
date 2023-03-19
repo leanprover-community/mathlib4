@@ -1488,6 +1488,7 @@ import Mathlib.Topology.Bornology.Basic
 import Mathlib.Topology.Bornology.Constructions
 import Mathlib.Topology.Bornology.Hom
 import Mathlib.Topology.Category.Born
+import Mathlib.Topology.Category.Top.Basic
 import Mathlib.Topology.CompactOpen
 import Mathlib.Topology.Connected
 import Mathlib.Topology.Constructions

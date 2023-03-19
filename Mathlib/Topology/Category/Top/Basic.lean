@@ -8,9 +8,9 @@ Authors: Patrick Massot, Scott Morrison, Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.ConcreteCategory.BundledHom
-import Mathbin.CategoryTheory.Elementwise
-import Mathbin.Topology.ContinuousFunction.Basic
+import Mathlib.CategoryTheory.ConcreteCategory.BundledHom
+import Mathlib.CategoryTheory.Elementwise
+import Mathlib.Topology.ContinuousFunction.Basic
 
 /-!
 # Category instance for topological spaces
@@ -115,15 +115,13 @@ def homeoOfIso {X Y : TopCat.{u}} (f : X ≅ Y) : X ≃ₜ Y
 #align Top.homeo_of_iso TopCat.homeoOfIso
 
 @[simp]
-theorem of_isoOfHomeo {X Y : TopCat.{u}} (f : X ≃ₜ Y) : homeoOfIso (isoOfHomeo f) = f :=
-  by
+theorem of_isoOfHomeo {X Y : TopCat.{u}} (f : X ≃ₜ Y) : homeoOfIso (isoOfHomeo f) = f := by
   ext
   rfl
 #align Top.of_iso_of_homeo TopCat.of_isoOfHomeo
 
 @[simp]
-theorem of_homeoOfIso {X Y : TopCat.{u}} (f : X ≅ Y) : isoOfHomeo (homeoOfIso f) = f :=
-  by
+theorem of_homeoOfIso {X Y : TopCat.{u}} (f : X ≅ Y) : isoOfHomeo (homeoOfIso f) = f := by
   ext
   rfl
 #align Top.of_homeo_of_iso TopCat.of_homeoOfIso
@@ -136,8 +134,7 @@ theorem openEmbedding_iff_comp_isIso {X Y Z : TopCat} (f : X ⟶ Y) (g : Y ⟶ Z
 
 @[simp]
 theorem openEmbedding_iff_isIso_comp {X Y Z : TopCat} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso f] :
-    OpenEmbedding (f ≫ g) ↔ OpenEmbedding g :=
-  by
+    OpenEmbedding (f ≫ g) ↔ OpenEmbedding g := by
   constructor
   · intro h
     convert h.comp (TopCat.homeoOfIso (as_iso f).symm).OpenEmbedding
