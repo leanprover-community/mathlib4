@@ -55,7 +55,7 @@ section DegreeSum
 
 variable [Fintype V] [DecidableRel G.Adj]
 
--- Porting note: Changed to `Fintype (Sym2 V)`. This is what we do in Combinatorics.SimpleGraph.Basic
+-- Porting note: Changed to `Fintype (Sym2 V)` to match Combinatorics.SimpleGraph.Basic
 variable [Fintype (Sym2 V)]
 
 theorem dart_fst_fiber [DecidableEq V] (v : V) :
