@@ -16,10 +16,13 @@ Lazy lists with "lazyness" controlled by an arbitrary monad.
 
 The inductive construction is unsafe (indeed, we can build infinite objects).
 This isn't so bad, as the typical use is with the tactic monad, in any case.
+Typical usage will be to do computations in `ListM`, and then eventually extract
+the first result (with `head` or `firstM`), first several results (using `take`),
+or all results (using `force`). At this point you can use the `unsafe` term elaborator
+from `Std.Util.TermUnsafe` to return to the "safe" world.
 
-As we're in meta anyway, we don't bother with proofs about these constructions.
+As we're unsafe anyway, we don't bother with proofs about these constructions.
 -/
-
 
 universe u v
 
@@ -33,17 +36,17 @@ namespace ListM
 
 variable {α β : Type u} {m : Type u → Type u}
 
-/-- Construct an `ListM` recursively. -/
+/-- Construct a `ListM` recursively. -/
 unsafe def fix [Alternative m] (f : α → m α) : α → ListM m α
   | x => cons <| (fun a => (some x, fix f a)) <$> f x <|> pure (some x, nil)
 #align tactic.mllist.fix ListM.fix
 
 variable [Monad m]
 
-/-- Repeatedly apply a function `f : α → m (α × list β)` to an initial `a : α`,
+/-- Repeatedly apply a function `f : α → m (α × List β)` to an initial `a : α`,
 accumulating the elements of the resulting `list β` as a single monadic lazy list.
 
-(This variant allows starting with a specified `list β` of elements, as well. )-/
+(This variant allows starting with a specified `List β` of elements, as well. )-/
 unsafe def fixl_with [Alternative m] (f : α → m (α × List β)) : α → List β → ListM m β
   | s, b :: rest => cons <| pure (some b, fixl_with f s rest)
   | s, [] =>
@@ -56,13 +59,13 @@ unsafe def fixl_with [Alternative m] (f : α → m (α × List β)) : α → Lis
         pure (none, nil)
 #align tactic.mllist.fixl_with ListM.fixl_with
 
-/-- Repeatedly apply a function `f : α → m (α × list β)` to an initial `a : α`,
-accumulating the elements of the resulting `list β` as a single monadic lazy list. -/
+/-- Repeatedly apply a function `f : α → m (α × : List β)` to an initial `a : α`,
+accumulating the elements of the resulting `List β` as a single monadic lazy list. -/
 unsafe def fixl [Alternative m] (f : α → m (α × List β)) (s : α) : ListM m β :=
   fixl_with f s []
 #align tactic.mllist.fixl ListM.fixl
 
-/-- Deconstruct an `ListM`, returning inside the monad an optional pair `α × ListM m α`
+/-- Deconstruct a `ListM`, returning inside the monad an optional pair `α × ListM m α`
 representing the head and tail of the list. -/
 unsafe def uncons {α : Type u} : ListM m α → m (Option (α × ListM m α))
   | nil => pure none
@@ -73,24 +76,24 @@ unsafe def uncons {α : Type u} : ListM m α → m (Option (α × ListM m α))
     return (x, xs)
 #align tactic.mllist.uncons ListM.uncons
 
-/-- Compute, inside the monad, whether an `ListM` is empty. -/
+/-- Compute, inside the monad, whether a `ListM` is empty. -/
 unsafe def empty {α : Type u} (xs : ListM m α) : m (ULift Bool) :=
   (ULift.up ∘ Option.isSome) <$> uncons xs
 #align tactic.mllist.empty ListM.empty
 
-/-- Convert a `list` to an `ListM`. -/
+/-- Convert a `List` to a `ListM`. -/
 unsafe def ofList {α : Type u} : List α → ListM m α
   | [] => nil
   | h :: t => cons (pure (h, ofList t))
 #align tactic.mllist.of_list ListM.ofList
 
-/-- Convert a `list` of values inside the monad into an `ListM`. -/
+/-- Convert a `List` of values inside the monad into a `ListM`. -/
 unsafe def ofListM {α : Type u} : List (m α) → ListM m α
   | [] => nil
   | h :: t => cons ((fun x => (x, ofListM t)) <$> some <$> h)
 #align tactic.mllist.m_of_list ListM.ofListM
 
-/-- Extract a list inside the monad from an `ListM`. -/
+/-- Extract a list inside the monad from a `ListM`. -/
 unsafe def force {α} : ListM m α → m (List α)
   | nil => pure []
   | cons l => do
@@ -111,7 +114,7 @@ unsafe def take {α} : ListM m α → Nat → m (List α)
     (· :: ·) x <$> take xs n
 #align tactic.mllist.take ListM.take
 
-/-- Apply a function to every element of an `ListM`. -/
+/-- Apply a function to every element of a `ListM`. -/
 unsafe def map {α β : Type u} (f : α → β) : ListM m α → ListM m β
   | nil => nil
   | cons l =>
@@ -120,7 +123,7 @@ unsafe def map {α β : Type u} (f : α → β) : ListM m α → ListM m β
       pure (f <$> x, map f xs)
 #align tactic.mllist.map ListM.map
 
-/-- Apply a function which returns values in the monad to every element of an `ListM`. -/
+/-- Apply a function which returns values in the monad to every element of a `ListM`. -/
 unsafe def mapM {α β : Type u} (f : α → m β) : ListM m α → ListM m β
   | nil => nil
   | cons l =>
