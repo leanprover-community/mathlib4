@@ -338,10 +338,12 @@ theorem unionᵢ_image_inf_right : (⋃ b ∈ t, (· ⊓ b) '' s) = s ⊼ t :=
   unionᵢ_image_right _
 #align set.Union_image_inf_right Set.unionᵢ_image_inf_right
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[simp]
-theorem image_inf_prod (s t : Set α) : (s ×ˢ t).image (uncurry (· ⊓ ·)) = s ⊼ t :=
-  image_uncurry_prod _ _ _
+theorem image_inf_prod (s t : Set α) : Set.image2 (fun x x_1 => x ⊓ x_1) s t = s ⊼ t := by
+  have : (s ×ˢ t).image (uncurry (· ⊓ ·)) = Set.image2 (fun x x_1 => x ⊓ x_1) s t := by
+    simp only [@ge_iff_le, @Set.image_uncurry_prod]
+  rw [← this]
+  exact image_uncurry_prod _ _ _
 #align set.image_inf_prod Set.image_inf_prod
 
 theorem infs_assoc : s ⊼ t ⊼ u = s ⊼ (t ⊼ u) :=
@@ -419,3 +421,4 @@ theorem lowerClosure_infs [SemilatticeInf α] (s t : Set α) :
   · rintro ⟨⟨b, hb, hab⟩, c, hc, hac⟩
     exact ⟨_, ⟨b, hb, c, hc, rfl⟩, le_inf hab hac⟩
 #align lower_closure_infs lowerClosure_infs
+#lint
