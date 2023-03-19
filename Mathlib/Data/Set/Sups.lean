@@ -183,10 +183,12 @@ theorem unionᵢ_image_sup_right : (⋃ b ∈ t, (· ⊔ b) '' s) = s ⊻ t :=
   unionᵢ_image_right _
 #align set.Union_image_sup_right Set.unionᵢ_image_sup_right
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[simp]
-theorem image_sup_prod (s t : Set α) : (s ×ˢ t).image (uncurry (· ⊔ ·)) = s ⊻ t :=
-  image_uncurry_prod _ _ _
+theorem image_sup_prod (s t : Set α) : Set.image2 (fun x x_1 => x ⊔ x_1) s t = s ⊻ t := by
+  have : (s ×ˢ t).image (uncurry (· ⊔ ·)) = Set.image2 (fun x x_1 => x ⊔ x_1) s t := by
+    simp only [ge_iff_le, image_uncurry_prod]
+  rw [← this]
+  exact image_uncurry_prod _ _ _
 #align set.image_sup_prod Set.image_sup_prod
 
 theorem sups_assoc : s ⊻ t ⊻ u = s ⊻ (t ⊻ u) :=
