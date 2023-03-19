@@ -49,9 +49,9 @@ def applyTactics (cfg : ApplyConfig := {}) (transparency : TransparencyMode := .
 Configuration structure to control the behaviour of `solve_by_elim`:
 * transparency mode for calls to `apply`
 * whether to use `symm` on hypotheses and `exfalso` on the goal as needed,
-* see also `Backtracking.Config` for hooks allowing flow control.
+* see also `BacktrackConfig` for hooks allowing flow control.
 -/
-structure Config extends BacktrackingConfig, ApplyConfig where
+structure Config extends BacktrackConfig, ApplyConfig where
   /-- Transparency mode for calls to `apply`. -/
   transparency : TransparencyMode := .default
   /-- Also use symmetric versions (via `@[symm]`) of local hypotheses. -/
@@ -60,7 +60,7 @@ structure Config extends BacktrackingConfig, ApplyConfig where
   This is only used when operating on a single goal. -/
   exfalso : Bool := true
 
-instance : Coe Config BacktrackingConfig := ⟨Config.toBacktrackingConfig⟩
+instance : Coe Config BacktrackConfig := ⟨Config.toBacktrackConfig⟩
 
 /-- The default `maxDepth` for `apply_rules` is higher. -/
 structure ApplyRulesConfig extends Config where
@@ -77,7 +77,7 @@ Allow elaboration of `ApplyRulesConfig` arguments to tactics.
 declare_config_elab elabApplyRulesConfig ApplyRulesConfig
 
 /-!
-These functions could be lifted up to `Backtracking.Config`,
+These functions could be lifted up to `BacktrackConfig`,
 but we'd still need to keep copies here.
 -/
 namespace Config
@@ -183,7 +183,7 @@ def solveByElim (cfg : Config) (lemmas : List (TermElabM Expr)) (ctx : TermElabM
     pure goals
 
   let alternatives := applyLemmas cfg lemmas ctx
-  let run := backtracking cfg `Meta.Tactic.solveByElim alternatives
+  let run := backtrack cfg `Meta.Tactic.solveByElim alternatives
   -- Implementation note: as with `cfg.symm`, this is different from the mathlib3 approach,
   -- for (not as bad) performance reasons.
   match cfg.exfalso, goals with
@@ -369,7 +369,7 @@ Optional arguments passed via a configuration argument as `solve_by_elim (config
   but it is often useful to change to `.reducible`,
   so semireducible definitions will not be unfolded when trying to apply a lemma.
 
-See also the doc-comment for `Mathlib.Tactic.BacktrackingConfig` for the options
+See also the doc-comment for `Mathlib.Tactic.BacktrackConfig` for the options
 `proc`, `suspend`, and `discharge` which allow further customization of `solve_by_elim`.
 Both `apply_assumption` and `apply_rules` are implemented via these hooks.
 -/
