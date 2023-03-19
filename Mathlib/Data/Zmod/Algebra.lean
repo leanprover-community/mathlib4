@@ -8,8 +8,8 @@ Authors: Johan Commelin
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Zmod.Basic
-import Mathbin.Algebra.Algebra.Basic
+import Mathlib.Data.ZMod.Basic
+import Mathlib.Algebra.Algebra.Basic
 
 /-!
 # The `zmod n`-algebra structure on rings whose characteristic divides `n`
