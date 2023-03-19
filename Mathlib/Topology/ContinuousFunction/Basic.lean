@@ -84,8 +84,7 @@ namespace ContinuousMap
 variable {α β γ δ : Type _} [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
   [TopologicalSpace δ]
 
-instance : ContinuousMapClass C(α, β) α β
-    where
+instance : ContinuousMapClass C(α, β) α β where
   coe := ContinuousMap.toFun
   coe_injective' f g h := by cases f; cases g; congr
   map_continuous := ContinuousMap.continuous_toFun
@@ -102,6 +101,9 @@ theorem toFun_eq_coe {f : C(α, β)} : f.toFun = (f : α → β) :=
   rfl
 #align continuous_map.to_fun_eq_coe ContinuousMap.toFun_eq_coe
 
+/-- See note [custom simps projection]. -/
+def Simps.apply (f : C(α, β)) : α → β := f
+
 -- this must come after the coe_to_fun definition
 initialize_simps_projections ContinuousMap (toFun → apply)
 
@@ -117,8 +119,7 @@ theorem ext {f g : C(α, β)} (h : ∀ a, f a = g a) : f = g :=
 
 /-- Copy of a `ContinuousMap` with a new `toFun` equal to the old one. Useful to fix definitional
 equalities. -/
-protected def copy (f : C(α, β)) (f' : α → β) (h : f' = f) : C(α, β)
-    where
+protected def copy (f : C(α, β)) (f' : α → β) (h : f' = f) : C(α, β) where
   toFun := f'
   continuous_toFun := h.symm ▸ f.continuous_toFun
 #align continuous_map.copy ContinuousMap.copy
@@ -363,8 +364,7 @@ noncomputable def liftCover : C(α, β) := by
   refine' ⟨Set.liftCover S (fun i => φ i) hφ H, continuous_subtype_nhds_cover hS _⟩
   intro i
   convert (φ i).continuous
-  ext x
-  exact Set.liftCover_coe x
+  apply Set.liftCover_coe
 #align continuous_map.lift_cover ContinuousMap.liftCover
 
 variable {S φ hφ hS}
@@ -380,10 +380,9 @@ theorem liftCover_restrict {i : ι} : (liftCover S φ hφ hS).restrict (S i) = �
   simp only [coe_restrict, Function.comp_apply, liftCover_coe]
 #align continuous_map.lift_cover_restrict ContinuousMap.liftCover_restrict
 
-variable (A : Set (Set α)) (F : ∀ (s : Set α) (_ : s ∈ A), C(s, β))
-  (hF :
-    ∀ (s) (hs : s ∈ A) (t) (ht : t ∈ A) (x : α) (hxi : x ∈ s) (hxj : x ∈ t),
-      F s hs ⟨x, hxi⟩ = F t ht ⟨x, hxj⟩)
+variable (A : Set (Set α)) (F : ∀ s ∈ A, C(s, β))
+  (hF : ∀ (s) (hs : s ∈ A) (t) (ht : t ∈ A) (x : α) (hxi : x ∈ s) (hxj : x ∈ t),
+    F s hs ⟨x, hxi⟩ = F t ht ⟨x, hxj⟩)
   (hA : ∀ x : α, ∃ i ∈ A, i ∈ nhds x)
 
 /-- A family `F s` of continuous maps `C(s, β)`, where (1) the domains `s` are taken from a set `A`
@@ -453,14 +452,14 @@ theorem coe_trans : (f.trans g : C(α, γ)) = (g : C(β, γ)).comp f :=
 
 /-- Left inverse to a continuous map from a homeomorphism, mirroring `Equiv.symm_comp_self`. -/
 @[simp]
-theorem symm_comp_to_continuousMap : (f.symm : C(β, α)).comp (f : C(α, β)) = ContinuousMap.id α :=
+theorem symm_comp_toContinuousMap : (f.symm : C(β, α)).comp (f : C(α, β)) = ContinuousMap.id α :=
   by rw [← coe_trans, self_trans_symm, coe_refl]
-#align homeomorph.symm_comp_to_continuous_map Homeomorph.symm_comp_to_continuousMap
+#align homeomorph.symm_comp_to_continuous_map Homeomorph.symm_comp_toContinuousMap
 
 /-- Right inverse to a continuous map from a homeomorphism, mirroring `Equiv.self_comp_symm`. -/
 @[simp]
-theorem to_continuousMap_comp_symm : (f : C(α, β)).comp (f.symm : C(β, α)) = ContinuousMap.id β :=
+theorem toContinuousMap_comp_symm : (f : C(α, β)).comp (f.symm : C(β, α)) = ContinuousMap.id β :=
   by rw [← coe_trans, symm_trans_self, coe_refl]
-#align homeomorph.to_continuous_map_comp_symm Homeomorph.to_continuousMap_comp_symm
+#align homeomorph.to_continuous_map_comp_symm Homeomorph.toContinuousMap_comp_symm
 
 end Homeomorph

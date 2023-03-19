@@ -105,7 +105,7 @@ theorem mapsTo_omega_limit' {α' β' : Type _} [TopologicalSpace β'] {f : Filte
   calc
     gb (ϕ t x) = ϕ' t (ga x) := ht.2 hx
     _ ∈ image2 ϕ' u s' := mem_image2_of_mem ht.1 (hs hx)
-    
+
 #align maps_to_omega_limit' mapsTo_omega_limit'
 
 theorem mapsTo_omegaLimit {α' β' : Type _} [TopologicalSpace β'] {f : Filter τ} {ϕ : τ → α → β}
@@ -260,7 +260,6 @@ theorem eventually_closure_subset_of_isCompact_absorbing_of_isOpen_of_omegaLimit
     apply Subset.trans hg₃
     simp only [unionᵢ_subset_iff, compl_subset_compl]
     intros u hu
-    apply closure_mono -- Porting note: not yet tagged with mono.
     mono
     refine' interᵢ_subset_of_subset u (interᵢ_subset_of_subset hu _)
     all_goals exact Subset.rfl
@@ -326,7 +325,7 @@ theorem nonempty_omegaLimit_of_isCompact_absorbing [NeBot f] {c : Set β} (hc₁
     calc
       _ ⊆ closure (image2 ϕ v s) := closure_mono (image2_subset (inter_subset_right _ _) Subset.rfl)
       _ ⊆ c := hv₂
-      
+
   · exact fun _ ↦ isClosed_closure
 #align nonempty_omega_limit_of_is_compact_absorbing nonempty_omegaLimit_of_isCompact_absorbing
 
@@ -382,7 +381,7 @@ theorem omegaLimit_image_eq (hf : ∀ t, Tendsto (· + t) f f) (t : τ) : ω f �
     calc
       ω f ϕ s = ω f ϕ (ϕ (-t) '' (ϕ t '' s)) := by simp [image_image, ← map_add]
       _ ⊆ ω f ϕ (ϕ t '' s) := omegaLimit_image_subset _ _ _ _ (hf _)
-      
+
 #align flow.omega_limit_image_eq Flow.omegaLimit_image_eq
 
 theorem omegaLimit_omegaLimit (hf : ∀ t, Tendsto ((· + ·) t) f f) : ω f ϕ (ω f ϕ s) ⊆ ω f ϕ s := by

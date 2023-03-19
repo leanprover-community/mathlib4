@@ -258,9 +258,9 @@ def eqLocus (f g : E →ₗ.[R] F) : Submodule R E where
         by erw [f.map_smul c ⟨x, hfx⟩, g.map_smul c ⟨x, hgx⟩, hx]⟩
 #align linear_pmap.eq_locus LinearPMap.eqLocus
 
-instance hasInf : HasInf (E →ₗ.[R] F) :=
+instance inf : Inf (E →ₗ.[R] F) :=
   ⟨fun f g => ⟨f.eqLocus g, f.toFun.comp <| ofLe fun _x hx => hx.fst⟩⟩
-#align linear_pmap.has_inf LinearPMap.hasInf
+#align linear_pmap.has_inf LinearPMap.inf
 
 instance bot : Bot (E →ₗ.[R] F) :=
   ⟨⟨⊥, 0⟩⟩
@@ -908,7 +908,7 @@ theorem toLinearPMap_graph_eq (g : Submodule R (E × F))
   constructor <;> intro hx
   · rw [LinearPMap.mem_graph_iff] at hx
     rcases hx with ⟨y, hx1, hx2⟩
-    convert g.mem_graph_toLinearPMap hg y
+    convert g.mem_graph_toLinearPMap hg y using 1
     exact Prod.ext hx1.symm hx2.symm
   rw [LinearPMap.mem_graph_iff]
   cases' x with x_fst x_snd

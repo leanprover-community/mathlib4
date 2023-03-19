@@ -88,6 +88,8 @@ structure PrelaxFunctor (B : Type u₁) [Quiver.{v₁ + 1} B] [∀ a b : B, Quiv
   map₂ {a b : B} {f g : a ⟶ b} : (f ⟶ g) → (map f ⟶ map g)
 #align category_theory.prelax_functor CategoryTheory.PrelaxFunctor
 
+initialize_simps_projections PrelaxFunctor (+toPrefunctor, -obj, -map)
+
 attribute [nolint docBlame] CategoryTheory.PrelaxFunctor.map₂
 
 /-- The prefunctor between the underlying quivers. -/
@@ -211,6 +213,8 @@ structure OplaxFunctor (B : Type u₁) [Bicategory.{w₁, v₁} B] (C : Type u�
 #align category_theory.oplax_functor.map₂_left_unitor' CategoryTheory.OplaxFunctor.map₂_leftUnitor
 #align category_theory.oplax_functor.map₂_right_unitor CategoryTheory.OplaxFunctor.map₂_rightUnitor
 #align category_theory.oplax_functor.map₂_right_unitor' CategoryTheory.OplaxFunctor.map₂_rightUnitor
+
+initialize_simps_projections OplaxFunctor (+toPrelaxFunctor, -obj, -map, -map₂)
 
 namespace OplaxFunctor
 
@@ -401,6 +405,8 @@ structure Pseudofunctor (B : Type u₁) [Bicategory.{w₁, v₁} B] (C : Type u�
       map₂ (ρ_ f).hom = (mapComp f (𝟙 b)).hom ≫ map f ◁ (mapId b).hom ≫ (ρ_ (map f)).hom := by
     aesop_cat
 #align category_theory.pseudofunctor CategoryTheory.Pseudofunctor
+
+initialize_simps_projections Pseudofunctor (+toPrelaxFunctor, -obj, -map, -map₂)
 
 namespace Pseudofunctor
 

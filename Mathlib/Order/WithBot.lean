@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 
 ! This file was ported from Lean 3 source module order.with_bot
-! leanprover-community/mathlib commit afdb4fa3b32d41106a4a09b371ce549ad7958abd
+! leanprover-community/mathlib commit 0111834459f5d7400215223ea95ae38a1265a907
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -52,6 +52,9 @@ instance bot : Bot (WithBot α) :=
 
 instance inhabited : Inhabited (WithBot α) :=
   ⟨⊥⟩
+
+instance nontrivial [Nonempty α] : Nontrivial (WithBot α) :=
+  Option.nontrivial
 
 open Function
 
@@ -359,6 +362,10 @@ theorem strictMono_iff [Preorder α] [Preorder β] {f : WithBot α → β} :
         WithBot.forall.2 ⟨fun h => (not_lt_bot h).elim, fun _ hle => h.1 (coe_lt_coe.1 hle)⟩⟩⟩
 #align with_bot.strict_mono_iff WithBot.strictMono_iff
 
+theorem strictAnti_iff [Preorder α] [Preorder β] {f : WithBot α → β} :
+    StrictAnti f ↔ StrictAnti (λ a => f a : α → β) ∧ ∀ x : α, f x < f ⊥ :=
+  strictMono_iff (β := βᵒᵈ)
+
 @[simp]
 theorem strictMono_map_iff [Preorder α] [Preorder β] {f : α → β} :
     StrictMono (WithBot.map f) ↔ StrictMono f :=
@@ -573,6 +580,9 @@ instance top : Top (WithTop α) :=
 
 instance inhabited : Inhabited (WithTop α) :=
   ⟨⊤⟩
+
+instance nontrivial [Nonempty α] : Nontrivial (WithTop α) :=
+  Option.nontrivial
 
 protected theorem «forall» {p : WithTop α → Prop} : (∀ x, p x) ↔ p ⊤ ∧ ∀ x : α, p x :=
   Option.forall
@@ -1130,6 +1140,10 @@ theorem strictMono_iff [Preorder α] [Preorder β] {f : WithTop α → β} :
         WithTop.forall.2 ⟨fun _ => h.2 x, fun _ hle => h.1 (coe_lt_coe.1 hle)⟩⟩⟩
 #align with_top.strict_mono_iff WithTop.strictMono_iff
 
+theorem strictAnti_iff [Preorder α] [Preorder β] {f : WithTop α → β} :
+    StrictAnti f ↔ StrictAnti (λ a => f a : α → β) ∧ ∀ x : α, f ⊤ < f x :=
+  strictMono_iff (β := βᵒᵈ)
+
 @[simp]
 theorem strictMono_map_iff [Preorder α] [Preorder β] {f : α → β} :
     StrictMono (WithTop.map f) ↔ StrictMono f :=
@@ -1251,7 +1265,7 @@ theorem wellFounded_gt [Preorder α] (h : @WellFounded α (· > ·)) :
   ⟨fun a => by
     -- ideally, use rel_hom_class.acc, but that is defined later
     have : Acc (· < ·) (WithTop.toDual a) := WellFounded.apply (WithBot.wellFounded_lt
-      (by convert h)) _
+      (by convert h using 1)) _
     revert this
     generalize ha : WithBot.toDual a = b
     intro ac
@@ -1266,7 +1280,7 @@ theorem _root_.WithBot.wellFounded_gt [Preorder α] (h : @WellFounded α (· > �
   ⟨fun a => by
     -- ideally, use rel_hom_class.acc, but that is defined later
     have : Acc (· < ·) (WithBot.toDual a) :=
-      WellFounded.apply (WithTop.wellFounded_lt (by convert h)) _
+      WellFounded.apply (WithTop.wellFounded_lt (by convert h using 1)) _
     revert this
     generalize ha : WithBot.toDual a = b
     intro ac

@@ -873,7 +873,7 @@ variable [CompleteLattice α] [CompleteLattice β] [CompleteLattice γ]
 
 /-- Reinterpret a complete lattice homomorphism as a complete lattice homomorphism between the dual
 lattices. -/
-@[simps]
+@[simps!]
 protected def dual : CompleteLatticeHom α β ≃ CompleteLatticeHom αᵒᵈ βᵒᵈ
     where
   toFun f := ⟨SupₛHom.dual f.toSupₛHom, fun s ↦ f.map_infₛ' s⟩

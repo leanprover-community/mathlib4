@@ -60,6 +60,13 @@ theorem subset_interior_iff_mem_nhdsSet : s ⊆ interior t ↔ t ∈ 𝓝ˢ s :=
   simp_rw [mem_nhdsSet_iff_forall, subset_interior_iff_nhds]
 #align subset_interior_iff_mem_nhds_set subset_interior_iff_mem_nhdsSet
 
+theorem disjoint_principal_nhdsSet : Disjoint (𝓟 s) (𝓝ˢ t) ↔ Disjoint (closure s) t := by
+  rw [disjoint_principal_left, ← subset_interior_iff_mem_nhdsSet, interior_compl,
+    subset_compl_iff_disjoint_left]
+
+theorem disjoint_nhdsSet_principal : Disjoint (𝓝ˢ s) (𝓟 t) ↔ Disjoint s (closure t) := by
+  rw [disjoint_comm, disjoint_principal_nhdsSet, disjoint_comm]
+
 theorem mem_nhdsSet_iff_exists : s ∈ 𝓝ˢ t ↔ ∃ U : Set α, IsOpen U ∧ t ⊆ U ∧ U ⊆ s := by
   rw [← subset_interior_iff_mem_nhdsSet, subset_interior_iff]
 #align mem_nhds_set_iff_exists mem_nhdsSet_iff_exists
@@ -111,7 +118,7 @@ theorem mem_nhdsSet_empty : s ∈ 𝓝ˢ (∅ : Set α) := by simp
 theorem nhdsSet_univ : 𝓝ˢ (univ : Set α) = ⊤ := by rw [isOpen_univ.nhdsSet_eq, principal_univ]
 #align nhds_set_univ nhdsSet_univ
 
--- porting note: todo: restore @[mono]
+@[mono]
 theorem nhdsSet_mono (h : s ⊆ t) : 𝓝ˢ s ≤ 𝓝ˢ t :=
   supₛ_le_supₛ <| image_subset _ h
 #align nhds_set_mono nhdsSet_mono
