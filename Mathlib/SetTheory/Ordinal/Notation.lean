@@ -786,7 +786,7 @@ instance NF_scale (x) [NF x] (o) [NF o] : NF (scale x o) := by
 
 @[simp]
 theorem repr_scale (x) [NF x] (o) [NF o] : repr (scale x o) = ω ^ repr x * repr o := by
-  simp [scale_eq_mul, mul_one (ω ^ repr x)]
+  simp only [scale_eq_mul, repr_mul, repr, PNat.one_coe, Nat.cast_one, mul_one, add_zero]
 #align onote.repr_scale Onote.repr_scale
 
 theorem NF_repr_split {o o' m} [NF o] (h : split o = (o', m)) : NF o' ∧ repr o = repr o' + m := by
