@@ -11,8 +11,6 @@ Authors: Mario Carneiro
 import Mathlib.SetTheory.Ordinal.Principal
 import Mathlib.Tactic.LibrarySearch -- porting note: TODO REMOVE
 
--- porting note: Many names intentionally containg "NF" as upper case in the mathlib3 name. -/
-set_option linter.uppercaseLean3 false
 /-!
 # Ordinal notation
 
@@ -27,6 +25,9 @@ The type `nonote` is the type of ordinals below `ε₀` in Cantor normal form.
 Various operations (addition, subtraction, multiplication, power function)
 are defined on `onote` and `nonote`.
 -/
+
+-- porting note: Many names intentionally containg "NF" as upper case in the mathlib3 name. -/
+set_option linter.uppercaseLean3 false
 
 
 open Ordinal Order
@@ -91,7 +92,8 @@ def toString : Onote → String
 /-- Print an ordinal notation -/
 def repr' : Onote → String
   | zero => "0"
-  | oadd e n a => "(oadd " ++ (repr' e) ++ " " ++ ToString.toString (n : ℕ) ++ " " ++ (repr' a) ++ ")"
+  | oadd e n a => "(oadd " ++ (repr' e) ++ " " ++ ToString.toString (n : ℕ) ++ " " ++ (repr' a)
+      ++ ")"
 #align onote.repr' Onote.repr
 
 instance : ToString Onote :=
@@ -268,7 +270,8 @@ theorem NFBelow.mono {o b₁ b₂} (bb : b₁ ≤ b₂) (h : NFBelow o b₁) : N
   exacts[h₁, h₂, lt_of_lt_of_le h₃ bb]
 #align onote.NF_below.mono Onote.NFBelow.mono
 
-theorem NF.below_of_lt {e n a b} (H : repr e < b) : NF (Onote.oadd e n a) → NFBelow (Onote.oadd e n a) b
+theorem NF.below_of_lt {e n a b} (H : repr e < b) :
+    NF (Onote.oadd e n a) → NFBelow (Onote.oadd e n a) b
   | ⟨⟨b', h⟩⟩ => by (cases' h with _ _ _ _ eb _ h₁ h₂ h₃; exact NFBelow.oadd' h₁ h₂ H)
 #align onote.NF.below_of_lt Onote.NF.below_of_lt
 
@@ -485,7 +488,8 @@ theorem repr_add : ∀ (o₁ o₂) [NF o₁] [NF o₂], repr (o₁ + o₂) = rep
     have nf := Onote.add_NF a o
     conv at nf => simp [(· + ·)]
     conv in _ + o => simp [(· + ·), add]
-    cases' h: add a o with e' n' a' <;> simp only [Add.add, add, h'.symm, h, add_assoc, repr] at nf h₁⊢
+    cases' h: add a o with e' n' a' <;> simp only [Add.add, add, h'.symm, h,
+      add_assoc, repr] at nf h₁⊢
     have := h₁.fst; haveI := nf.fst; have ee := cmp_compares e e'
     cases he: cmp e e' <;> simp [add, he] at ee⊢
     · rw [← add_assoc, @add_absorp _ (repr e') (ω ^ repr e' * (n' : ℕ))]
@@ -493,7 +497,8 @@ theorem repr_add : ∀ (o₁ o₂) [NF o₁] [NF o₂], repr (o₁ + o₂) = rep
         unfold repr at this
         cases he': e' <;> simp [he'] at this ⊢ <;>
         exact lt_of_le_of_lt (le_add_right _ _) this
-      · simpa using (Ordinal.mul_le_mul_iff_left <| opow_pos (repr e') omega_pos).2 (nat_cast_le.2 n'.pos)
+      · simpa using (Ordinal.mul_le_mul_iff_left <| opow_pos (repr e') omega_pos).2
+          (nat_cast_le.2 n'.pos)
     · rw [ee, ← add_assoc, ← mul_add, ← Nat.cast_add]
 #align onote.repr_add Onote.repr_add
 
@@ -978,9 +983,9 @@ theorem repr_opow (o₁ o₂) [NF o₁] [NF o₂] : repr (o₁ ^ o₂) = repr o�
       rw [zero_opow this]
     · cases' e₂ : split' o₂ with b' k
       cases' NF_repr_split' e₂ with _ r₂
-      by_cases m = 0 <;> simp only [opow_def, opow_match', Pow.pow, opow,
-        e₁, h, r₁, e₂, r₂, repr, opow_zero, Nat.succPNat_coe, Nat.cast_succ, Nat.cast_zero, _root_.zero_add,
-      mul_one, add_zero, one_opow, npow_eq_pow] <;>
+      by_cases m = 0 <;> simp only [opow_def, opow_match', Pow.pow, opow, e₁, h, r₁, e₂, r₂, repr,
+          opow_zero, Nat.succPNat_coe, Nat.cast_succ, Nat.cast_zero, _root_.zero_add, mul_one,
+          add_zero, one_opow, npow_eq_pow] <;>
       rw [opow_add, opow_mul, opow_omega]
       . rw [add_one_eq_succ]
       . simpa using nat_cast_lt.2 (Nat.succ_lt_succ <| pos_iff_ne_zero.2 h)
@@ -1042,7 +1047,8 @@ private theorem exists_lt_mul_omega' {o : Ordinal} ⦃a⦄ (h : a < o * ω) : �
 local infixr:0 "^" => @pow Ordinal Ordinal Ordinal.hasPow
 
 private theorem exists_lt_omega_opow' {α} {o b : Ordinal} (hb : 1 < b) (ho : o.IsLimit)
-    {f : α → Ordinal} (H : ∀ ⦃a⦄, a < o → ∃ i, a < f i) ⦃a⦄ (h : a < (b^o)) : ∃ i, a < (b^f i) := by
+    {f : α → Ordinal} (H : ∀ ⦃a⦄, a < o → ∃ i, a < f i) ⦃a⦄ (h : a < (b^o)) :
+        ∃ i, a < (b^f i) := by
   obtain ⟨d, hd, h'⟩ := (lt_opow_of_limit (zero_lt_one.trans hb).ne' ho).1 h
   exact (H hd).imp fun i hi => h'.trans <| (opow_lt_opow_iff_right hb).2 hi
 
