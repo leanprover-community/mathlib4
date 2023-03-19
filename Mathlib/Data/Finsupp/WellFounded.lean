@@ -8,8 +8,8 @@ Authors: Junyan Xu
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Dfinsupp.WellFounded
-import Mathbin.Data.Finsupp.Lex
+import Mathlib.Data.Dfinsupp.WellFounded
+import Mathlib.Data.Finsupp.Lex
 
 /-!
 # Well-foundedness of the lexicographic and product orders on `finsupp`
