@@ -610,7 +610,7 @@ theorem mul_lt_of_lt {a b c : Cardinal} (hc : ℵ₀ ≤ c) (h1 : a < c) (h2 : b
 #align cardinal.mul_lt_of_lt Cardinal.mul_lt_of_lt
 
 theorem mul_le_max_of_aleph0_le_left {a b : Cardinal} (h : ℵ₀ ≤ a) : a * b ≤ max a b := by
-  convert mul_le_mul' (le_max_left a b) (le_max_right a b)
+  convert mul_le_mul' (le_max_left a b) (le_max_right a b) using 1
   rw [mul_eq_self]
   refine' h.trans (le_max_left a b)
 #align cardinal.mul_le_max_of_aleph_0_le_left Cardinal.mul_le_max_of_aleph0_le_left
@@ -724,7 +724,7 @@ theorem mul_eq_left_iff {a b : Cardinal} : a * b = a ↔ max ℵ₀ b ≤ a ∧ 
 theorem add_eq_self {c : Cardinal} (h : ℵ₀ ≤ c) : c + c = c :=
   le_antisymm
     (by
-      convert mul_le_mul_right' ((nat_lt_aleph0 2).le.trans h) c
+      convert mul_le_mul_right' ((nat_lt_aleph0 2).le.trans h) c using 1
       <;> simp [two_mul, mul_eq_self h])
     (self_le_add_left c c)
 #align cardinal.add_eq_self Cardinal.add_eq_self
