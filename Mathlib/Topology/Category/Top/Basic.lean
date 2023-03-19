@@ -28,6 +28,9 @@ open TopologicalSpace
 
 universe u
 
+-- porting note: Top is causing the linter to fail
+set_option linter.uppercaseLean3 false
+
 /-- The category of topological spaces and continuous maps. -/
 def TopCat : Type (u + 1) :=
   Bundled TopologicalSpace
@@ -35,14 +38,16 @@ def TopCat : Type (u + 1) :=
 
 namespace TopCat
 
+-- porting note: had to add in the last two proofs
 instance bundledHom : BundledHom @ContinuousMap :=
-  ⟨@ContinuousMap.toFun, @ContinuousMap.id, @ContinuousMap.comp, @ContinuousMap.coe_injective⟩
+  ⟨@ContinuousMap.toFun, @ContinuousMap.id, @ContinuousMap.comp, @ContinuousMap.coe_injective,
+    fun _ => rfl, fun _ _ _ _ _ => rfl⟩
 #align Top.bundled_hom TopCat.bundledHom
 
 deriving instance LargeCategory, ConcreteCategory for TopCat
 
 instance : CoeSort TopCat (Type _) :=
-  Bundled.hasCoeToSort
+  Bundled.coeSort
 
 instance topologicalSpaceUnbundled (x : TopCat) : TopologicalSpace x :=
   x.str
@@ -143,4 +148,3 @@ theorem openEmbedding_iff_isIso_comp {X Y Z : TopCat} (f : X ⟶ Y) (g : Y ⟶ Z
 #align Top.open_embedding_iff_is_iso_comp TopCat.openEmbedding_iff_isIso_comp
 
 end TopCat
-
