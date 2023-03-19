@@ -172,7 +172,7 @@ theorem StrictMono.pow_right' (hf : StrictMono f) : ∀ {n : ℕ}, n ≠ 0 → S
 #align strict_mono.nsmul_left StrictMono.nsmul_left
 
 /-- See also `pow_strictMono_right` -/
-@[nolint to_additive_doc, to_additive nsmul_strictMono_left]
+@[to_additive nsmul_strictMono_left]  -- Porting note: nolint to_additive_doc
 theorem pow_strictMono_right' {n : ℕ} (hn : n ≠ 0) : StrictMono fun a : M => a ^ n :=
   strictMono_id.pow_right' hn
 #align pow_strict_mono_right' pow_strictMono_right'
