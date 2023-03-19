@@ -191,7 +191,7 @@ theorem multiplicity_choose_aux {p n b k : ℕ} (hp : p.Prime) (hkn : k ≤ n) :
   is any bound greater than `log p n`. -/
 theorem multiplicity_choose {p n k b : ℕ} (hp : p.Prime) (hkn : k ≤ n) (hnb : log p n < b) :
     multiplicity p (choose n k) =
-      ((Ico 1 b).filter fun i => p ^ i ≤ k % p ^ i + (n - k) % p ^ i).card :=
+      ((Ico 1 b).filter fun i => p ^ i ≤ k % p ^ i + (n - k) % p ^ i).card := by
   have h₁ :
     multiplicity p (choose n k) + multiplicity p (k ! * (n - k)!) =
       ((Finset.Ico 1 b).filter fun i => p ^ i ≤ k % p ^ i + (n - k) % p ^ i).card +
@@ -202,11 +202,10 @@ theorem multiplicity_choose {p n k b : ℕ} (hp : p.Prime) (hkn : k ≤ n) (hnb 
       hp.multiplicity_factorial (lt_of_le_of_lt (log_mono_right tsub_le_self) hnb),
       multiplicity_choose_aux hp hkn]
     simp [add_comm]
-  (PartENat.add_right_cancel_iff
-        (PartENat.ne_top_iff_dom.2 <|
-          finite_nat_iff.2
-            ⟨ne_of_gt hp.one_lt, mul_pos (factorial_pos k) (factorial_pos (n - k))⟩)).1
-    h₁
+  refine (PartENat.add_right_cancel_iff ?_).1 h₁
+  apply PartENat.ne_top_iff_dom.2
+  apply finite_nat_iff.2
+            ⟨ne_of_gt hp.one_lt, mul_pos (factorial_pos k) (factorial_pos (n - k))⟩
 #align nat.prime.multiplicity_choose Nat.Prime.multiplicity_choose
 
 /-- A lower bound on the multiplicity of `p` in `choose n k`. -/
@@ -237,9 +236,10 @@ theorem multiplicity_choose_prime_pow_add_multiplicity (hp : p.Prime) (hkn : k �
           (lt_succ_of_le (log_mono_right hkn)),
         ← Nat.cast_add, PartENat.coe_le_coe, log_pow hp.one_lt, ← card_disjoint_union hdisj,
         filter_union_right]
-      have filter_le_Ico := (Ico 1 n.succ).card_filter_le _
+      have filter_le_Ico := (Ico 1 n.succ).card_filter_le 
+        fun x => p ^ x ≤ k % p ^ x + (p ^ n - k) % p ^ x ∨ p ^ x ∣ k
       rwa [card_Ico 1 n.succ] at filter_le_Ico)
-    (by rw [← hp.multiplicity_pow_self] <;> exact multiplicity_le_multiplicity_choose_add hp _ _)
+    (by rw [← hp.multiplicity_pow_self]; exact multiplicity_le_multiplicity_choose_add hp _ _)
 #align nat.prime.multiplicity_choose_prime_pow_add_multiplicity Nat.Prime.multiplicity_choose_prime_pow_add_multiplicity
 
 theorem multiplicity_choose_prime_pow {p n k : ℕ} (hp : p.Prime) (hkn : k ≤ p ^ n) (hk0 : k ≠ 0) :
