@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard
 
 ! This file was ported from Lean 3 source module data.real.ereal
-! leanprover-community/mathlib commit afdb4fa3b32d41106a4a09b371ce549ad7958abd
+! leanprover-community/mathlib commit 2196ab363eb097c008d4497125e0dde23fb36db2
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
