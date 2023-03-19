@@ -953,6 +953,7 @@ import Mathlib.Data.Vector.Zip
 import Mathlib.Data.W.Basic
 import Mathlib.Data.W.Cardinal
 import Mathlib.Data.W.Constructions
+import Mathlib.Data.ZMod.Algebra
 import Mathlib.Data.ZMod.Basic
 import Mathlib.Data.ZMod.Defs
 import Mathlib.Data.ZMod.Parity
