@@ -113,10 +113,11 @@ instance [Module S M] : Module R (RestrictScalars R S M) :=
 
 /-- This instance is only relevant when `RestrictScalars.moduleOrig` is available as an instance.
 -/
-instance [Module S M] : IsScalarTower R S (RestrictScalars R S M) :=
+instance RestrictScalars.isScalarTower [Module S M] : IsScalarTower R S (RestrictScalars R S M) :=
   ⟨fun r S M ↦ by
     rw [Algebra.smul_def, mul_smul]
     rfl⟩
+#align restrict_scalars.is_scalar_tower RestrictScalars.isScalarTower
 
 end
 
