@@ -4,9 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 
 ! This file was ported from Lean 3 source module data.finset.sym
-! leanprover-community/mathlib commit 98e83c3d541c77cdb7da20d79611a780ff8e7d90
+! leanprover-community/mathlib commit 02ba8949f486ebecf93fe7460f1ed0564b5e442c
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
+
+[`data.finset.sym`@`98e83c3d541c77cdb7da20d79611a780ff8e7d90`..`02ba8949f486ebecf93fe7460f1ed0564b5e442c`](https://leanprover-community.github.io/mathlib-port-status/file/data/finset/sym?range=98e83c3d541c77cdb7da20d79611a780ff8e7d90..02ba8949f486ebecf93fe7460f1ed0564b5e442c)
 -/
 import Mathlib.Data.Finset.Lattice
 import Mathlib.Data.Fintype.Prod
@@ -204,14 +206,6 @@ theorem sym_nonempty : (s.sym n).Nonempty ↔ n = 0 ∨ s.Nonempty := by
 -- Porting note: using simp_rw does not work here, it does nothing...
   rwa [sym_eq_empty, not_and_or, not_ne_iff]
 #align finset.sym_nonempty Finset.sym_nonempty
-
--- Porting note: this is defined twice in the mathlib3 file, maybe this one is supposed to be
--- instead: alias sym_nonempty ↔ _ Nonempty.sym
--- alias sym2_nonempty ↔ _ Nonempty.sym2
--- #align finset.nonempty.sym2 Finset.Nonempty.sym2
-
--- Porting note: attribute does not exist
--- attribute [protected] nonempty.sym2
 
 @[simp]
 theorem sym_univ [Fintype α] (n : ℕ) : (univ : Finset α).sym n = univ :=
