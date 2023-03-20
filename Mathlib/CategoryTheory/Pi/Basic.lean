@@ -367,13 +367,7 @@ section pi_option
 variable (C' : Option J → Type u₁) [∀ i, Category.{v₁} (C' i)]
   (D' : Option J → Type u₂) [∀ i, Category.{v₂} (D' i)]
 
-def pi_option_equivalence_functor :
-    (∀ i, C' i) ⥤ (C' none × (∀ (j : J), C' (some j))) :=
-{ obj := fun X => ⟨X none, fun j => X (some j)⟩
-  map := fun f => ⟨f none, fun j => f (some j)⟩
-  map_id := fun X => by dsimp ; ext <;> rfl
-  map_comp := fun f g => by dsimp ; ext <;> rfl }
-
+@[simps]
 def pi_option_equivalence :
     (∀ i, C' i) ≌ C' none × (∀ (j : J), C' (some j)) :=
 { functor := Functor.prod' (Pi.eval C' none)
@@ -386,6 +380,7 @@ def pi_option_equivalence :
     apply NatIso.pi'
     rintro (_|i) <;> apply Iso.refl
   counitIso := by exact Iso.refl _ }
+
 end pi_option
 
 end CategoryTheory
