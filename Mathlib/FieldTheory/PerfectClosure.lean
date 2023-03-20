@@ -40,7 +40,7 @@ def frobeniusEquiv [PerfectRing R p] : R ≃+* R :=
     right_inv := PerfectRing.frobenius_pthRoot' }
 #align frobenius_equiv frobeniusEquiv
 
-/-- `p`-th root of an element in a `perfect_ring` as a `ring_hom`. -/
+/-- `p`-th root of an element in a `PerfectRing` as a `RingHom`. -/
 def pthRoot [PerfectRing R p] : R →+* R :=
   (frobeniusEquiv R p).symm
 #align pth_root pthRoot
@@ -132,7 +132,7 @@ section
 
 variable (K : Type u) [CommRing K] (p : ℕ) [Fact p.Prime] [CharP K p]
 
-/-- `perfect_closure K p` is the quotient by this relation. -/
+/-- `PerfectClosure K p` is the quotient by this relation. -/
 @[mk_iff]
 inductive PerfectClosure.R : ℕ × K → ℕ × K → Prop
   | intro : ∀ n x, PerfectClosure.R (n, x) (n + 1, frobenius K p x)
@@ -153,7 +153,7 @@ section Ring
 
 variable [CommRing K] (p : ℕ) [Fact p.Prime] [CharP K p]
 
-/-- Constructor for `perfect_closure`. -/
+/-- Constructor for `PerfectClosure`. -/
 def mk (x : ℕ × K) : PerfectClosure K p :=
   Quot.mk (R K p) x
 #align perfect_closure.mk PerfectClosure.mk
@@ -165,7 +165,7 @@ theorem quot_mk_eq_mk (x : ℕ × K) : (Quot.mk (R K p) x : PerfectClosure K p) 
 
 variable {K p}
 
-/-- Lift a function `ℕ × K → L` to a function on `perfect_closure K p`. -/
+/-- Lift a function `ℕ × K → L` to a function on `PerfectClosure K p`. -/
 -- Porting note: removed `@[elab_as_elim]` for "unexpected eliminator resulting type L"
 def liftOn {L : Type _} (x : PerfectClosure K p) (f : ℕ × K → L)
     (hf : ∀ x y, R K p x y → f x = f y) : L :=
@@ -463,7 +463,7 @@ theorem frobenius_mk (x : ℕ × K) :
     simp only [pow_succ, (frobenius _ _).iterate_map_mul]
 #align perfect_closure.frobenius_mk PerfectClosure.frobenius_mk
 
-/-- Embedding of `K` into `perfect_closure K p` -/
+/-- Embedding of `K` into `PerfectClosure K p` -/
 def of : K →+* PerfectClosure K p where
   toFun x := mk _ _ (0, x)
   map_one' := rfl
@@ -546,7 +546,7 @@ theorem eq_pthRoot (x : ℕ × K) : mk K p x = (pthRoot (PerfectClosure K p) p^[
 #align perfect_closure.eq_pth_root PerfectClosure.eq_pthRoot
 
 /-- Given a field `K` of characteristic `p` and a perfect ring `L` of the same characteristic,
-any homomorphism `K →+* L` can be lifted to `perfect_closure K p`. -/
+any homomorphism `K →+* L` can be lifted to `PerfectClosure K p`. -/
 def lift (L : Type v) [CommSemiring L] [CharP L p] [PerfectRing L p] :
     (K →+* L) ≃ (PerfectClosure K p →+* L) where
   toFun f :=
