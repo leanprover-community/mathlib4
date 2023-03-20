@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 
 ! This file was ported from Lean 3 source module data.fintype.fin
-! leanprover-community/mathlib commit f93c11933efbc3c2f0299e47b8ff83e9b539cbf6
+! leanprover-community/mathlib commit 759575657f189ccb424b990164c8b1fa9f55cdfe
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
