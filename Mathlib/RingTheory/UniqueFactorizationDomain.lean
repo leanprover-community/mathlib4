@@ -217,27 +217,27 @@ theorem induction_on_prime {P : α → Prop} (a : α) (h₁ : P 0) (h₂ : ∀ x
 end UniqueFactorizationMonoid
 
 theorem prime_factors_unique [CancelCommMonoidWithZero α] :
-    ∀ ( f g : Multiset α ),
+    ∀ {f g : Multiset α},
       (∀ x ∈ f, Prime x) → (∀ x ∈ g, Prime x) → f.prod ~ᵤ g.prod → Multiset.Rel Associated f g :=
-  haveI := Classical.decEq α
-  fun f =>
+  fun {f} {g} =>
   Multiset.induction_on f
-    (fun g _ hg h =>
+    (fun _ hg h =>
       Multiset.rel_zero_left.2 <|
         Multiset.eq_zero_of_forall_not_mem fun x hx =>
           have : IsUnit g.prod := by simpa [associated_one_iff_isUnit] using h.symm
           (hg x hx).not_unit <|
             isUnit_iff_dvd_one.2 <| (Multiset.dvd_prod hx).trans (isUnit_iff_dvd_one.1 this))
-    fun {p} f ih g hf hg hfg =>
+    fun {p} f ih hf hg hfg =>
     by
     let ⟨b, hbg, hb⟩ :=
       (exists_associated_mem_of_dvd_prod (hf p (by simp)) fun q hq => hg _ hq) <|
         hfg.dvd_iff_dvd_right.1 (show p ∣ (p ::ₘ f).prod by simp)
+    haveI := Classical.decEq α
     rw [← Multiset.cons_erase hbg]
     exact
       Multiset.Rel.cons hb
-        (ih _ (fun q hq => hf _ (by simp [hq]))
-          (fun q (hq : q ∈ g.erase b) => hg q (Multiset.mem_of_mem_erase hq))
+        (ih (fun q hq => hf _ (by simp [hq])) hg
+          -- (fun {q} (hq : q ∈ g.erase b) => hg q (Multiset.mem_of_mem_erase hq))
           (Associated.of_mul_left
             (by rwa [← Multiset.prod_cons, ← Multiset.prod_cons, Multiset.cons_erase hbg]) hb
             (hf p (by simp)).ne_zero))
