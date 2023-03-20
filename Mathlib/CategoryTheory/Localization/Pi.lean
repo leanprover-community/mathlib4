@@ -10,21 +10,20 @@ def Pi.equivalence_of_eq {I : Type u₂} (C : I → Type u₁)
   subst h
   rfl
 
+@[simp]
 def Pi.eval_comp_equivalence_of_eq_functor {I : Type u₂} (C : I → Type u₁)
   [∀ i, Category.{v₁} (C i)] {i j : I} (h : i = j) :
   Pi.eval C i ⋙ (Pi.equivalence_of_eq _ h).functor ≅
-    Pi.eval C j := by
-  subst h
-  rfl
+    Pi.eval C j := eqToIso (by subst h; rfl)
 
+@[simp]
 def Pi.equivalence_of_eq_functor_iso {I : Type u₂} {I' : Type u₃}
   (C : I → Type u₁) [∀ i, Category.{v₁} (C i)] {i' j' : I'}
   (f : I' → I) (h : i' = j') :
     (Pi.equivalence_of_eq C (show f i' = f j' by rw [h])).functor ≅
-      (Pi.equivalence_of_eq (fun i' => C (f i')) h).functor := by
-  subst h
-  rfl
+      (Pi.equivalence_of_eq (fun i' => C (f i')) h).functor := eqToIso (by subst h; rfl)
 
+@[simp]
 def Functor.pi'_eval_iso {I : Type u₂} {C : I → Type u₁}
   [∀ i, Category.{v₁} (C i)] {A : Type u₄} [Category.{v₄} A]
   (f : ∀ i, A ⥤ C i) (i : I) : pi' f ⋙  Pi.eval C i ≅ f i :=
@@ -46,8 +45,11 @@ noncomputable def pi_equivalence_of_equiv {I : Type u₂} {I' : Type u₃} (C : 
     isoWhiskerRight (Functor.pi'_eval_iso _ _) _ ≪≫
     Pi.eval_comp_equivalence_of_eq_functor C (e.apply_symm_apply i) ≪≫
     (Functor.leftUnitor _).symm)
-  functor_unitIso_comp := fun X => by
-    sorry }
+  functor_unitIso_comp := by
+    intro
+    ext
+    dsimp
+    simp [eqToHom_map] }
 
 variable (J : Type) {C : J → Type u₁} {D : J → Type u₂}
   [∀ j, Category.{v₁} (C j)] [∀ j, Category.{v₂} (D j)]
@@ -78,7 +80,8 @@ lemma pi [Finite J] :
     letI : ∀ i, Category (C₂ i) := by apply hC₂
     let E := pi_equivalence_of_equiv C₂ e
     let E' := pi_equivalence_of_equiv D₂ e
-    haveI : CatCommSq (Functor.pi L₁) E.functor (Functor.pi L₂) E'.functor := sorry
+    haveI : CatCommSq (Functor.pi L₁) E.functor (Functor.pi L₂) E'.functor :=
+      CatCommSq.hInv' _ _ _ _ ⟨Iso.refl _⟩
     refine' IsLocalization.of_equivalences (Functor.pi L₁)
       (MorphismProperty.pi W₁) (Functor.pi L₂) (MorphismProperty.pi W₂) E E' _
       (MorphismProperty.IsInvertedBy.pi _ _ (fun j => Localization.inverts _ _))
@@ -101,9 +104,8 @@ lemma pi [Finite J] :
     let W₁ := (W none).prod (MorphismProperty.pi W')
     let W₂ := MorphismProperty.pi W
     haveI : CatCommSq L₁ (pi_option_equivalence C).symm.functor L₂
-      (pi_option_equivalence D).symm.functor := ⟨by
-        apply NatIso.pi'
-        rintro (_|i) <;> apply Iso.refl⟩
+      (pi_option_equivalence D).symm.functor :=
+        ⟨NatIso.pi' (by rintro (_|i) <;> apply Iso.refl)⟩
     refine' IsLocalization.of_equivalences L₁ W₁ L₂ W₂
       (pi_option_equivalence C).symm (pi_option_equivalence D).symm _ _
     . intro ⟨X₁, X₂⟩ ⟨Y₁, Y₂⟩ f ⟨hf₁, hf₂⟩

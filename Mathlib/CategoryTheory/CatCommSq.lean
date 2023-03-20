@@ -1,4 +1,4 @@
-import Mathlib.CategoryTheory.Whiskering
+import Mathlib.CategoryTheory.Equivalence
 
 namespace CategoryTheory
 
@@ -47,6 +47,18 @@ lemma hComp_iso'_inv_app (X : C₁) :
   aesop
 
 end hcomp
+
+def hInv (L : C₁ ⥤ C₃) (T : C₁ ≌ C₂) (R : C₂ ⥤ C₄) (B : C₃ ≌ C₄)
+  (_ : CatCommSq L T.functor R B.functor) : CatCommSq R T.inverse L B.inverse := ⟨
+  isoWhiskerLeft _ (L.rightUnitor.symm ≪≫ isoWhiskerLeft L B.unitIso ≪≫
+      (Functor.associator _ _ _).symm ≪≫
+      isoWhiskerRight (iso L T.functor R B.functor).symm B.inverse ≪≫
+      Functor.associator _ _ _  ) ≪≫
+    (Functor.associator _ _ _).symm ≪≫ isoWhiskerRight T.counitIso _ ≪≫ Functor.leftUnitor _⟩
+
+def hInv' (L : C₁ ⥤ C₃) (T : C₁ ≌ C₂) (R : C₂ ⥤ C₄) (B : C₃ ≌ C₄)
+  (h : CatCommSq R T.inverse L B.inverse) : CatCommSq L T.functor R B.functor :=
+  hInv R T.symm L B.symm h
 
 end CatCommSq
 
