@@ -222,9 +222,8 @@ instance : SemilinearMapClass (M →ₛₗ[σ] M₃) σ M M₃
 #noalign LinearMap.has_coe_to_fun
 
 -- Porting note: adding this instance prevents a timeout in `ext_ring_op`
--- Porting note: timeout no longer seems to be an issue
--- instance {σ : R →+* S} : FunLike (M →ₛₗ[σ] M₃) M (λ _ ↦ M₃) :=
---   { AddHomClass.toFunLike with }
+instance {σ : R →+* S} : FunLike (M →ₛₗ[σ] M₃) M (λ _ ↦ M₃) :=
+  { AddHomClass.toFunLike with }
 
 /-- The `DistribMulActionHom` underlying a `LinearMap`. -/
 def toDistribMulActionHom (f : M →ₗ[R] M₂) : DistribMulActionHom R M M₂ :=
