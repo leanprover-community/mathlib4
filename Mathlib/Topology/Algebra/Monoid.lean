@@ -871,24 +871,30 @@ namespace ContinuousMap
 
 variable [Mul X] [ContinuousMul X]
 
-/-- The continuous map `λ y, y * x` -/
-@[to_additive "The continuous map `λ y, y + x"]
-protected def mulRight (x : X) : C(X, X) := mk _ (continuous_mul_right x)
+/-- The continuous map `fun y => y * x` -/
+@[to_additive "The continuous map `fun y => y + x"]
+protected def mulRight (x : X) : C(X, X) :=
+  mk _ (continuous_mul_right x)
 #align continuous_map.mul_right ContinuousMap.mulRight
 #align continuous_map.add_right ContinuousMap.addRight
 
 @[to_additive, simp]
-lemma coe_mulRight (x : X) : ⇑(ContinuousMap.mulRight x) = λ y => y * x := rfl
+theorem coe_mulRight (x : X) : ⇑(ContinuousMap.mulRight x) = fun y => y * x :=
+  rfl
 #align continuous_map.coe_mul_right ContinuousMap.coe_mulRight
+#align continuous_map.coe_add_right ContinuousMap.coe_addRight
 
-/-- The continuous map `λ y, x * y` -/
-@[to_additive "The continuous map `λ y, x + y"]
-protected def mulLeft (x : X) : C(X, X) := mk _ (continuous_mul_left x)
+/-- The continuous map `fun y => x * y` -/
+@[to_additive "The continuous map `fun y => x + y"]
+protected def mulLeft (x : X) : C(X, X) :=
+  mk _ (continuous_mul_left x)
 #align continuous_map.mul_left ContinuousMap.mulLeft
 #align continuous_map.add_left ContinuousMap.addLeft
 
 @[to_additive, simp]
-lemma coe_mulLeft (x : X) : ⇑(ContinuousMap.mulLeft x) = λ y => x * y := rfl
+theorem coe_mulLeft (x : X) : ⇑(ContinuousMap.mulLeft x) = fun y => x * y :=
+  rfl
 #align continuous_map.coe_mul_left ContinuousMap.coe_mulLeft
+#align continuous_map.coe_add_left ContinuousMap.coe_addLeft
 
 end ContinuousMap
