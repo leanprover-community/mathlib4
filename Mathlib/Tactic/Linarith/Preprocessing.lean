@@ -52,17 +52,17 @@ partial def filterComparisons : Preprocessor where
   name := "filter terms that are not proofs of comparisons"
   transform h := do
     let tp ← whnfR (← instantiateMVars (← inferType h))
-    if (← isProp tp) && aux tp then pure [h]
+    if (← isProp tp) && (← aux tp) then pure [h]
     else pure []
 where
   /-- Implementation of the `filterComparisons` preprocessor. -/
-  aux (e : Expr) : Bool :=
-    match e.getAppFnArgs with
-    | (``Eq, _) | (``LE.le, _) | (``LT.lt, _) | (``GE.ge, _) | (``GT.gt, _) => true
-    | (``Not, #[e]) => match e.getAppFnArgs with
-      | (``LE.le, _) | (``LT.lt, _) | (``GE.ge, _) | (``GT.gt, _) => true
-      | _ => false
-    | _ => false
+  aux (e : Expr) : MetaM Bool := do
+  match e.getAppFnArgs with
+  | (``Eq, _) | (``LE.le, _) | (``LT.lt, _) => pure true
+  | (``Not, #[e]) => match (← whnfR e).getAppFnArgs with
+    | (``LE.le, _) | (``LT.lt, _) => pure true
+    | _ => pure false
+  | _ => pure false
 
 section removeNegations
 
@@ -265,7 +265,13 @@ and turns it into a proof of a comparison `_ R 0`, where `R ∈ {=, ≤, <}`.
  -/
 def compWithZero : Preprocessor where
   name := "make comparisons with zero"
-  transform e := try pure [← rearrangeComparison e] catch _ => pure []
+  transform e := try
+    pure [← rearrangeComparison e]
+  catch e =>
+    if (← e.toMessageData.toString).startsWith "failed to synthesize" then
+      pure []
+    else
+      throw e
 
 end compWithZero
 
