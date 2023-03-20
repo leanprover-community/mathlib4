@@ -495,8 +495,8 @@ theorem order_ineq (p' : ℕ) (h : lucasLehmerResidue (p' + 2) = 0) :
     2 ^ (p' + 2) < (q (p' + 2) : ℕ) ^ 2 :=
   calc
     2 ^ (p' + 2) = orderOf (ωUnit (p' + 2)) := (order_ω p' h).symm
-    _ ≤ Fintype.card (X _)ˣ := orderOf_le_card_univ
-    _ < (q (p' + 2) : ℕ) ^ 2 := units_card (Nat.lt_of_succ_lt (two_lt_q _))
+    _ ≤ Fintype.card (X (q (p' + 2)))ˣ := orderOf_le_card_univ
+    _ < (q (p' + 2) : ℕ) ^ 2 := card_units_lt (Nat.lt_of_succ_lt (two_lt_q _))
 #align lucas_lehmer.order_ineq LucasLehmer.order_ineq
 
 end LucasLehmer
@@ -530,8 +530,9 @@ open Tactic
 
 theorem sMod_succ {p a i b c} (h1 : (2 ^ p - 1 : ℤ) = a) (h2 : sMod p i = b)
     (h3 : (b * b - 2) % a = c) : sMod p (i + 1) = c := by
-  dsimp [s_mod, mersenne]
-  rw [h1, h2, sq, h3]
+  substs a b c
+  rw [← sq]
+  rfl
 #align lucas_lehmer.s_mod_succ LucasLehmer.sMod_succ
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:330:4: warning: unsupported (TODO): `[tacs] -/
@@ -594,17 +595,13 @@ and the fact that `% 2^p` and `/ 2^p` can be very efficient on the binary repres
 Someone should do this, too!
 -/
 
-
-theorem modEq_mersenne (n k : ℕ) : k ≡ k / 2 ^ n + k % 2 ^ n [MOD 2 ^ n - 1] := by
+theorem modEq_mersenne (n k : ℕ) : k ≡ k / 2 ^ n + k % 2 ^ n [MOD 2 ^ n - 1] :=
   -- See https://leanprover.zulipchat.com/#narrow/stream/113489-new-members/topic/help.20finding.20a.20lemma/near/177698446
-  conv in k => rw [← Nat.div_add_mod k (2 ^ n)]
-  refine' Nat.ModEq.add_right _ _
-  conv =>
-    congr
-    skip
-    skip
-    rw [← one_mul (k / 2 ^ n)]
-  exact (Nat.modEq_sub <| Nat.succ_le_of_lt <| pow_pos zero_lt_two _).mul_right _
+  calc
+    k = 2 ^ n * (k / 2 ^ n) + k % 2 ^ n := (Nat.div_add_mod k (2 ^ n)).symm
+    _ ≡ 1 * (k / 2 ^ n) + k % 2 ^ n [MOD 2 ^ n - 1] :=
+      ((Nat.modEq_sub <| Nat.succ_le_of_lt <| pow_pos zero_lt_two _).mul_right _).add_right _
+    _ = k / 2 ^ n + k % 2 ^ n := by rw [one_mul]
 #align modeq_mersenne modEq_mersenne
 
 -- It's hard to know what the limiting factor for large Mersenne primes would be.
