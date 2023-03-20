@@ -132,6 +132,7 @@ set_option quotPrecheck false in
 /-- `A ⟶[C] B` denotes the internal hom from `A` to `B` -/
 notation A " ⟶[" C "] " B:10 => (@ihom C _ _ A _).obj B
 
+@[reassoc (attr := simp)]
 theorem ev_coev : (𝟙 A ⊗ (coev A).app B) ≫ (ev A).app (A ⊗ B) = 𝟙 (A ⊗ B) :=
   Adjunction.left_triangle_components (ihom.adjunction A)
 #align category_theory.ihom.ev_coev CategoryTheory.ihom.ev_coev
