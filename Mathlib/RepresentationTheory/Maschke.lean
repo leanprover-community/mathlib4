@@ -17,18 +17,18 @@ import Mathlib.LinearAlgebra.Basis
 
 We prove **Maschke's theorem** for finite groups,
 in the formulation that every submodule of a `k[G]` module has a complement,
-when `k` is a field with `invertible (fintype.card G : k)`.
+when `k` is a field with `Invertible (Fintype.card G : k)`.
 
 We do the core computation in greater generality.
-For any `[comm_ring k]` in which  `[invertible (fintype.card G : k)]`,
+For any `[CommRing k]` in which  `[Invertible (Fintype.card G : k)]`,
 and a `k[G]`-linear map `i : V → W` which admits a `k`-linear retraction `π`,
 we produce a `k[G]`-linear retraction by
 taking the average over `G` of the conjugates of `π`.
 
 ## Implementation Notes
-* These results assume `invertible (fintype.card G : k)` which is equivalent to the more
-familiar `¬(ring_char k ∣ fintype.card G)`. It is possible to convert between them using
-`invertible_of_ring_char_not_dvd` and `not_ring_char_dvd_of_invertible`.
+* These results assume `Invertible (Fintype.card G : k)` which is equivalent to the more
+familiar `¬(ringChar k ∣ Fintype.card G)`. It is possible to convert between them using
+`invertibleOfRingCharNotDvd` and `not_ringChar_dvd_of_invertible`.
 
 
 ## Future work
@@ -37,13 +37,11 @@ of a finite group is semisimple (i.e. a direct sum of irreducibles).
 -/
 
 
-universe u
+universe u v w
 
 noncomputable section
 
 open Module MonoidAlgebra BigOperators
-
-set_option synthInstance.etaExperiment true
 
 /-!
 We now do the key calculation in Maschke's theorem.
@@ -60,12 +58,14 @@ $$ \frac{1}{|G|} \sum_{g \in G} g⁻¹ • π(g • -). $$
 
 namespace LinearMap
 
--- At first we work with any `[comm_ring k]`, and add the assumption that
--- `[invertible (fintype.card G : k)]` when it is required.
+set_option synthInstance.etaExperiment true
+
+-- At first we work with any `[CommRing k]`, and add the assumption that
+-- `[Invertible (Fintype.card G : k)]` when it is required.
 variable {k : Type u} [CommRing k] {G : Type u} [Group G]
-variable {V : Type u} [AddCommGroup V] [Module k V] [Module (MonoidAlgebra k G) V]
+variable {V : Type v} [AddCommGroup V] [Module k V] [Module (MonoidAlgebra k G) V]
 variable [IsScalarTower k (MonoidAlgebra k G) V]
-variable {W : Type u} [AddCommGroup W] [Module k W] [Module (MonoidAlgebra k G) W]
+variable {W : Type w} [AddCommGroup W] [Module k W] [Module (MonoidAlgebra k G) W]
 variable [IsScalarTower k (MonoidAlgebra k G) W]
 
 variable (π : W →ₗ[k] V)
@@ -146,7 +146,7 @@ end
 
 namespace MonoidAlgebra
 
--- Now we work over a `[field k]`.
+-- Now we work over a `[Field k]`.
 variable {k : Type u} [Field k] {G : Type u} [Fintype G] [Invertible (Fintype.card G : k)]
 variable [Group G]
 variable {V : Type u} [AddCommGroup V] [Module k V] [Module (MonoidAlgebra k G) V]
@@ -165,13 +165,15 @@ theorem exists_leftInverse_of_injective (f : V →ₗ[MonoidAlgebra k G] W)
 
 namespace Submodule
 
+--set_option synthInstance.etaExperiment true in
 theorem exists_isCompl (p : Submodule (MonoidAlgebra k G) V) :
     ∃ q : Submodule (MonoidAlgebra k G) V, IsCompl p q := by
+  have : IsScalarTower k (MonoidAlgebra k G) p := p.isScalarTower'
   rcases MonoidAlgebra.exists_leftInverse_of_injective p.subtype p.ker_subtype with ⟨f, hf⟩
   exact ⟨LinearMap.ker f, LinearMap.isCompl_of_proj <| FunLike.congr_fun hf⟩
 #align monoid_algebra.submodule.exists_is_compl MonoidAlgebra.Submodule.exists_isCompl
 
-/-- This also implies an instance `is_semisimple_module (monoid_algebra k G) V`. -/
+/-- This also implies an instance `IsSemisimpleModule (MonoidAlgebra k G) V`. -/
 instance complementedLattice : ComplementedLattice (Submodule (MonoidAlgebra k G) V) :=
   ⟨exists_isCompl⟩
 #align monoid_algebra.submodule.complemented_lattice MonoidAlgebra.Submodule.complementedLattice
