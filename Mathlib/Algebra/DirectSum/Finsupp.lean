@@ -8,8 +8,8 @@ Authors: Johannes Hölzl
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.DirectSum.Module
-import Mathbin.Data.Finsupp.ToDfinsupp
+import Mathlib.Algebra.DirectSum.Module
+import Mathlib.Data.Finsupp.ToDfinsupp
 
 /-!
 # Results on direct sums and finitely supported functions.
