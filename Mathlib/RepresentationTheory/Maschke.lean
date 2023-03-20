@@ -166,9 +166,9 @@ theorem exists_leftInverse_of_injective (f : V →ₗ[MonoidAlgebra k G] W)
 namespace Submodule
 
 theorem exists_isCompl (p : Submodule (MonoidAlgebra k G) V) :
-    ∃ q : Submodule (MonoidAlgebra k G) V, IsCompl p q :=
-  let ⟨f, hf⟩ := MonoidAlgebra.exists_leftInverse_of_injective p.subtype p.ker_subtype
-  ⟨LinearMap.ker f, LinearMap.isCompl_of_proj <| FunLike.congr_fun hf⟩
+    ∃ q : Submodule (MonoidAlgebra k G) V, IsCompl p q := by
+  rcases MonoidAlgebra.exists_leftInverse_of_injective p.subtype p.ker_subtype with ⟨f, hf⟩
+  exact ⟨LinearMap.ker f, LinearMap.isCompl_of_proj <| FunLike.congr_fun hf⟩
 #align monoid_algebra.submodule.exists_is_compl MonoidAlgebra.Submodule.exists_isCompl
 
 /-- This also implies an instance `is_semisimple_module (monoid_algebra k G) V`. -/
