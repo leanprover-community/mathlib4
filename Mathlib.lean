@@ -307,6 +307,7 @@ import Mathlib.CategoryTheory.Category.Preorder
 import Mathlib.CategoryTheory.Category.QuivCat
 import Mathlib.CategoryTheory.Category.RelCat
 import Mathlib.CategoryTheory.Category.ULift
+import Mathlib.CategoryTheory.Closed.Monoidal
 import Mathlib.CategoryTheory.CommSq
 import Mathlib.CategoryTheory.Comma
 import Mathlib.CategoryTheory.ConcreteCategory.Basic

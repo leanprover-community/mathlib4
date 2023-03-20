@@ -8,10 +8,10 @@ Authors: Scott Morrison, Bhavik Mehta
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Monoidal.Functor
-import Mathbin.CategoryTheory.Adjunction.Limits
-import Mathbin.CategoryTheory.Adjunction.Mates
-import Mathbin.CategoryTheory.Functor.InvIsos
+import Mathlib.CategoryTheory.Monoidal.Functor
+import Mathlib.CategoryTheory.Adjunction.Limits
+import Mathlib.CategoryTheory.Adjunction.Mates
+import Mathlib.CategoryTheory.Functor.InvIsos
 
 /-!
 # Closed monoidal categories
@@ -259,8 +259,7 @@ theorem uncurry_id_eq_ev : uncurry (𝟙 (A ⟶[C] X)) = (ihom.ev A).app X := by
 #align category_theory.monoidal_closed.uncurry_id_eq_ev CategoryTheory.MonoidalClosed.uncurry_id_eq_ev
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-theorem curry_id_eq_coev : curry (𝟙 _) = (ihom.coev A).app X :=
-  by
+theorem curry_id_eq_coev : curry (𝟙 _) = (ihom.coev A).app X := by
   rw [curry_eq, (ihom A).map_id (A ⊗ _)]
   apply comp_id
 #align category_theory.monoidal_closed.curry_id_eq_coev CategoryTheory.MonoidalClosed.curry_id_eq_coev
@@ -298,8 +297,7 @@ theorem coev_app_comp_pre_app (f : B ⟶ A) :
 #align category_theory.monoidal_closed.coev_app_comp_pre_app CategoryTheory.MonoidalClosed.coev_app_comp_pre_app
 
 @[simp]
-theorem pre_id (A : C) [Closed A] : pre (𝟙 A) = 𝟙 _ :=
-  by
+theorem pre_id (A : C) [Closed A] : pre (𝟙 A) = 𝟙 _ := by
   simp only [pre, Functor.map_id]
   dsimp
   simp
