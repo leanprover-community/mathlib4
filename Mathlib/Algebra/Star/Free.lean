@@ -8,8 +8,8 @@ Authors: Eric Weiser
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Star.Basic
-import Mathbin.Algebra.FreeAlgebra
+import Mathlib.Algebra.Star.Basic
+import Mathlib.Algebra.FreeAlgebra
 
 /-!
 # A *-algebra structure on the free algebra.
