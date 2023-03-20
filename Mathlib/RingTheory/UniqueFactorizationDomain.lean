@@ -218,18 +218,17 @@ end UniqueFactorizationMonoid
 
 theorem prime_factors_unique [CancelCommMonoidWithZero α] :
     ∀ {f g : Multiset α},
-      (∀ x ∈ f, Prime x) → (∀ x ∈ g, Prime x) → f.prod ~ᵤ g.prod → Multiset.Rel Associated f g :=
-  haveI := Classical.decEq α
-  fun f =>
-  Multiset.induction_on f
-    (fun g _ hg h =>
-      Multiset.rel_zero_left.2 <|
-        Multiset.eq_zero_of_forall_not_mem fun x hx =>
-          have : IsUnit g.prod := by simpa [associated_one_iff_isUnit] using h.symm
-          (hg x hx).not_unit <|
-            isUnit_iff_dvd_one.2 <| (Multiset.dvd_prod hx).trans (isUnit_iff_dvd_one.1 this))
-    fun p f ih g hf hg hfg =>
-    by
+      (∀ x ∈ f, Prime x) → (∀ x ∈ g, Prime x) → f.prod ~ᵤ g.prod → Multiset.Rel Associated f g := by
+  classical
+  intro f
+  induction' f using Multiset.induction_on with p f ih
+  · intros g _ hg h
+    exact Multiset.rel_zero_left.2 <|
+      Multiset.eq_zero_of_forall_not_mem fun x hx =>
+        have : IsUnit g.prod := by simpa [associated_one_iff_isUnit] using h.symm
+        (hg x hx).not_unit <|
+          isUnit_iff_dvd_one.2 <| (Multiset.dvd_prod hx).trans (isUnit_iff_dvd_one.1 this)
+  · intros g hf hg hfg
     let ⟨b, hbg, hb⟩ :=
       (exists_associated_mem_of_dvd_prod (hf p (by simp)) fun q hq => hg _ hq) <|
         hfg.dvd_iff_dvd_right.1 (show p ∣ (p ::ₘ f).prod by simp)
@@ -240,7 +239,7 @@ theorem prime_factors_unique [CancelCommMonoidWithZero α] :
           (fun q (hq : q ∈ g.erase b) => hg q (Multiset.mem_of_mem_erase hq))
           (Associated.of_mul_left
             (by rwa [← Multiset.prod_cons, ← Multiset.prod_cons, Multiset.cons_erase hbg]) hb
-            (hf p (by simp)).NeZero))
+            (hf p (by simp)).ne_zero))
 #align prime_factors_unique prime_factors_unique
 
 namespace UniqueFactorizationMonoid
@@ -313,7 +312,7 @@ theorem WfDvdMonoid.of_exists_prime_factors : WfDvdMonoid α :=
           (Multiset.card_add _ _).symm
         _ = Multiset.card (Classical.choose (pf b h)) :=
           Multiset.card_eq_card_of_rel (prime_factors_unique _ (Classical.choose_spec (pf _ h)).1 _)
-        
+
       · convert(Classical.choose_spec (pf c cne0)).2.symm
         rw [Con, Multiset.prod_zero]
       · intro x hadd
@@ -409,7 +408,7 @@ theorem irreducible_iff_prime_of_exists_unique_irreducible_factors [CancelCommMo
               rw [hx, Multiset.prod_cons]; exact hfx.2.mul_left _
             _ ~ᵤ fa.prod * fb.prod := (hfa.2.symm.mul_mul hfb.2.symm)
             _ = _ := by rw [Multiset.prod_add]
-            
+
         exact
           let ⟨q, hqf, hq⟩ := Multiset.exists_mem_of_rel_of_mem h (Multiset.mem_cons_self p _)
           (Multiset.mem_add.1 hqf).elim
@@ -1143,7 +1142,7 @@ theorem multiplicative_of_coprime (f : α → β) (a b : α) (h0 : f 0 = 0)
       _ = 0 := by simp only [h1 isUnit_one, hf1, MulZeroClass.mul_zero]
       _ = f a * f (b * 1) := by simp only [h1 isUnit_one, hf1, MulZeroClass.mul_zero]
       _ = f a * f b := by rw [mul_one]
-      
+
   have h1' : f 1 = 1 := (mul_left_inj' hf1).mp (by rw [← h1 isUnit_one, one_mul, one_mul])
   haveI : Nontrivial α := ⟨⟨_, _, ha0⟩⟩
   letI : NormalizationMonoid α := UniqueFactorizationMonoid.normalizationMonoid
@@ -2098,4 +2097,3 @@ theorem associated_of_factorization_eq (a b : α) (ha : a ≠ 0) (hb : b ≠ 0)
 #align associated_of_factorization_eq associated_of_factorization_eq
 
 end Finsupp
-
