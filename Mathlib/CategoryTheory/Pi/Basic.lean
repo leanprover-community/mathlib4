@@ -10,6 +10,7 @@ Authors: Simon Hudon, Scott Morrison
 -/
 import Mathlib.CategoryTheory.NatIso
 import Mathlib.CategoryTheory.EqToHom
+import Mathlib.CategoryTheory.Products.Basic
 import Mathlib.Data.Sum.Basic
 
 /-!
@@ -45,6 +46,13 @@ abbrev pi' {I : Type v₁} (C : I → Type u₁) [∀ i, Category.{v₁} (C i)] 
 attribute [instance] pi'
 
 namespace Pi
+
+variable {C}
+
+@[ext]
+lemma hom_ext {X Y : ∀ i, C i} (f g : X ⟶ Y) (h : ∀ i, f i = g i) : f = g := funext h
+
+variable (C)
 
 @[simp]
 theorem id_apply (X : ∀ i, C i) (i) : (𝟙 X : ∀ i, X i ⟶ X i) i = 𝟙 (X i) :=
@@ -179,10 +187,6 @@ def sum : (∀ i, C i) ⥤ (∀ j, D j) ⥤ ∀ s : Sum I J, Sum.elim C D s wher
         | .inl i => f i
         | .inr j => 𝟙 (Y j)
       naturality := fun {Y} {Y'} g => by funext s; cases s; repeat {simp} }
-  map_id := fun X => by
-    ext Y; dsimp; simp only [CategoryStruct.id]; funext s; cases s; repeat {simp}
-  map_comp := fun f g => by
-    ext Y; dsimp; simp only [CategoryStruct.comp]; funext s; cases s; repeat {simp}
 #align category_theory.pi.sum CategoryTheory.Pi.sum
 
 end
@@ -223,7 +227,7 @@ namespace Functor
 
 variable {C}
 
-variable {D : I → Type u₁} [∀ i, Category.{v₁} (D i)] {A : Type u₁} [Category.{u₁} A]
+variable {D : I → Type u₂} [∀ i, Category.{v₂} (D i)] {A : Type u₂} [Category.{v₂} A]
 
 /-- Assemble an `I`-indexed family of functors into a functor between the pi types.
 -/
@@ -286,7 +290,7 @@ namespace NatTrans
 
 variable {C}
 
-variable {D : I → Type u₁} [∀ i, Category.{v₁} (D i)]
+variable {D : I → Type u₂} [∀ i, Category.{v₂} (D i)]
 
 variable {F G : ∀ i, C i ⥤ D i}
 
@@ -298,6 +302,90 @@ def pi (α : ∀ i, F i ⟶ G i) : Functor.pi F ⟶ Functor.pi G where
   naturality := fun X Y f => by simp [Functor.pi,CategoryStruct.comp]
 #align category_theory.nat_trans.pi CategoryTheory.NatTrans.pi
 
+@[simps]
+def pi' {E : Type _} [Category E] {F G : E ⥤ ∀ i, C i}
+  (τ : ∀ i, F ⋙ Pi.eval C i ⟶ G ⋙ Pi.eval C i) : F ⟶ G :=
+{ app := fun X i => (τ i).app X
+  naturality := fun _ _ f => by
+    ext i
+    exact (τ i).naturality f }
+
 end NatTrans
+
+variable {C}
+
+lemma isIso_pi_iff {X Y : ∀ i, C i} (f : X ⟶ Y) :
+    IsIso f ↔ ∀ i, IsIso (f i) := by
+  constructor
+  . intro _ i
+    exact IsIso.of_iso (Pi.isoApp (asIso f) i)
+  . intro
+    exact ⟨fun i => inv (f i), by aesop_cat, by aesop_cat⟩
+
+namespace NatIso
+
+variable {D : I → Type u₂} [∀ i, Category.{v₂} (D i)]
+variable {F G : ∀ i, C i ⥤ D i}
+
+/-- Assemble an `I`-indexed family of natural isomorphisms into a single natural isomorphism.
+-/
+@[simps]
+def pi (e : ∀ i, F i ≅ G i) : Functor.pi F ≅ Functor.pi G :=
+{ hom := NatTrans.pi (fun i => (e i).hom)
+  inv := NatTrans.pi (fun i => (e i).inv) }
+
+@[simps]
+def pi' {E : Type _} [Category E] {F G : E ⥤ ∀ i, C i}
+  (e : ∀ i, F ⋙ Pi.eval C i ≅ G ⋙ Pi.eval C i) : F ≅ G :=
+{ hom := NatTrans.pi' (fun i => (e i).hom)
+  inv := NatTrans.pi' (fun i => (e i).inv) }
+
+end NatIso
+
+namespace Equivalence
+
+variable {D : I → Type u₂} [∀ i, Category.{v₂} (D i)]
+
+/-- Assemble an `I`-indexed family of equivalences of categories isomorphisms
+into a single equivalence. -/
+@[simps]
+def pi (E : ∀ i, C i ≌ D i) :
+  (∀ i, C i) ≌ (∀ i, D i) :=
+{ functor := Functor.pi (fun i => (E i).functor)
+  inverse := Functor.pi (fun i => (E i).inverse)
+  unitIso := NatIso.pi (fun i => (E i).unitIso)
+  counitIso := NatIso.pi (fun i => (E i).counitIso) }
+
+instance (F : ∀ i, C i ⥤ D i) [∀ i, IsEquivalence (F i)] :
+    IsEquivalence (Functor.pi F) :=
+  IsEquivalence.ofEquivalence (pi (fun i => (F i).asEquivalence))
+
+end Equivalence
+
+section pi_option
+
+variable (C' : Option J → Type u₁) [∀ i, Category.{v₁} (C' i)]
+  (D' : Option J → Type u₂) [∀ i, Category.{v₂} (D' i)]
+
+def pi_option_equivalence_functor :
+    (∀ i, C' i) ⥤ (C' none × (∀ (j : J), C' (some j))) :=
+{ obj := fun X => ⟨X none, fun j => X (some j)⟩
+  map := fun f => ⟨f none, fun j => f (some j)⟩
+  map_id := fun X => by dsimp ; ext <;> rfl
+  map_comp := fun f g => by dsimp ; ext <;> rfl }
+
+def pi_option_equivalence :
+    (∀ i, C' i) ≌ C' none × (∀ (j : J), C' (some j)) :=
+{ functor := Functor.prod' (Pi.eval C' none)
+    (Functor.pi' (fun i => (Pi.eval _ (some i))))
+  inverse := Functor.pi' (by
+    rintro (_|i)
+    . exact Prod.fst _ _
+    . exact Prod.snd _ _ ⋙ (Pi.eval _ i))
+  unitIso := by
+    apply NatIso.pi'
+    rintro (_|i) <;> apply Iso.refl
+  counitIso := by exact Iso.refl _ }
+end pi_option
 
 end CategoryTheory

@@ -762,6 +762,8 @@ lemma ContainsIdentities.mem (W : MorphismProperty C) [W.ContainsIdentities] (X 
 
 universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 
+section
+
 variable {C₁ : Type u₁} {C₂ : Type u₂} [Category.{v₁} C₁] [Category.{v₂} C₂]
 
 def prod (W₁ : MorphismProperty C₁) (W₂ : MorphismProperty C₂) : MorphismProperty (C₁ × C₂) :=
@@ -777,6 +779,28 @@ lemma IsInvertedBy.prod {W₁ : MorphismProperty C₁} {W₂ : MorphismProperty 
     (W₁.prod W₂).IsInvertedBy (F₁.prod F₂) := fun _ _ f hf => by
   rw [isIso_prod_iff]
   exact ⟨h₁ _ hf.1, h₂ _ hf.2⟩
+
+end
+
+section
+
+variable {J : Type u₃} {C : J → Type u₁} {D : J → Type u₂}
+  [∀ j, Category.{v₁} (C j)] [∀ j, Category.{v₂} (D j)]
+  (W : ∀ j, MorphismProperty (C j))
+
+def pi : MorphismProperty (∀ j, C j) := fun _ _ f => ∀ j, (W j) (f j)
+
+lemma IsInvertedBy.pi (F : ∀ j, C j ⥤ D j) (hF : ∀ j, (W j).IsInvertedBy (F j)) :
+    (MorphismProperty.pi W).IsInvertedBy (Functor.pi F) :=
+  fun _ _ f hf => by
+    rw [isIso_pi_iff]
+    intro j
+    exact hF j _ (hf j)
+
+instance ContainsIdentity.pi [∀ j, (W j).ContainsIdentities] : (pi W).ContainsIdentities :=
+  ⟨fun _ _ => ContainsIdentities.mem _ _⟩
+
+end
 
 end MorphismProperty
 

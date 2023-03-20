@@ -437,6 +437,12 @@ theorem of_equivalence_target {E : Type _} [Category E] (L' : C ⥤ E) (eq : D �
       nonempty_isEquivalence := Nonempty.intro (IsEquivalence.ofIso e' inferInstance) }
 #align category_theory.functor.is_localization.of_equivalence_target CategoryTheory.Functor.IsLocalization.of_equivalence_target
 
+lemma of_equivalence (L : C ⥤ D) (W : MorphismProperty C)
+  (hW : W ⊆ MorphismProperty.isomorphisms C) [IsEquivalence L] :
+    L.IsLocalization W := by
+  haveI : (𝟭 C).IsLocalization W := for_id W hW
+  exact of_equivalence_target (𝟭 C) W L L.asEquivalence L.leftUnitor
+
 end IsLocalization
 
 end Functor

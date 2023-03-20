@@ -49,8 +49,6 @@ def yoneda : C ⥤ Cᵒᵖ ⥤ Type v₁
   map f :=
     { app := fun Y g => g ≫ f
       naturality := fun Y Y' g => by funext Z; aesop_cat }
-  map_id := by aesop_cat
-  map_comp := fun f g => by ext Y; dsimp; funext f; simp
 #align category_theory.yoneda CategoryTheory.yoneda
 
 /-- The co-Yoneda embedding, as a functor from `Cᵒᵖ` into co-presheaves on `C`.
