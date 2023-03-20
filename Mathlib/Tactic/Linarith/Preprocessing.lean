@@ -51,7 +51,7 @@ Removes any expressions that are not proofs of inequalities, equalities, or nega
 partial def filterComparisons : Preprocessor where
   name := "filter terms that are not proofs of comparisons"
   transform h := do
-    let tp ← instantiateMVars (← inferType h)
+    let tp ← whnfR (← instantiateMVars (← inferType h))
     if (← isProp tp) && aux tp then pure [h]
     else pure []
 where
@@ -75,8 +75,6 @@ def flipNegatedComparison (prf : Expr) (e : Expr) : MetaM Expr :=
   match e.getAppFnArgs with
   | (``LE.le, #[_, _, _, _]) => mkAppM ``lt_of_not_ge #[prf]
   | (``LT.lt, #[_, _, _, _]) => mkAppM ``le_of_not_gt #[prf]
-  | (``GT.gt, #[_, _, _, _]) => mkAppM ``le_of_not_gt #[prf]
-  | (``GE.ge, #[_, _, _, _]) => mkAppM ``lt_of_not_ge #[prf]
   | _ => throwError "Not a comparison (flipNegatedComparison): {e}"
 
 /--
@@ -86,11 +84,11 @@ For example, a proof of `¬ a < b` will become a proof of `a ≥ b`.
 def removeNegations : Preprocessor where
   name := "replace negations of comparisons"
   transform h := do
-    let t : Q(Prop) ← inferType h
+    let t : Q(Prop) ← whnfR (← inferType h)
     match t with
     | ~q(¬ $p) =>
       trace[linarith] "removing negation in {h}"
-      return [← flipNegatedComparison h p]
+      return [← flipNegatedComparison h (← whnfR p)]
     | _        => return [h]
 
 end removeNegations
@@ -151,11 +149,11 @@ def natToInt : GlobalBranchingPreprocessor where
   name := "move nats to ints"
   transform g l := do
     let l ← l.mapM $ fun h => do
-      let t ← instantiateMVars (← inferType h)
+      let t ← whnfR (← instantiateMVars (← inferType h))
       if isNatProp t then
         let (some (h', t'), _) ← Term.TermElabM.run' (run_for g (zifyProof none h t))
           | throwError "zifyProof failed on {h}"
-        if filterComparisons.aux t' then
+        if ← filterComparisons.aux t' then
           pure h'
         else
           -- `zifyProof` turned our comparison into something that wasn't a comparison

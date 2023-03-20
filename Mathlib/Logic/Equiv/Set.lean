@@ -227,7 +227,7 @@ protected def union' {α} {s t : Set α} (p : α → Prop) [DecidablePred p] (hs
     match o with
     | Sum.inl x => ⟨x, Or.inl x.2⟩
     | Sum.inr x => ⟨x, Or.inr x.2⟩
-  left_inv := fun ⟨x, h'⟩ => by by_cases p x <;> simp [h]
+  left_inv := fun ⟨x, h'⟩ => by by_cases h : p x <;> simp [h]
   right_inv o := by
     rcases o with (⟨x, h⟩ | ⟨x, h⟩) <;> [simp [hs _ h], simp [ht _ h]]
 #align equiv.set.union' Equiv.Set.union'
@@ -268,10 +268,10 @@ protected def singleton {α} (a : α) : ({a} : Set α) ≃ PUnit.{u} :=
     rfl, fun ⟨⟩ => rfl⟩
 #align equiv.set.singleton Equiv.Set.singleton
 
---Porting note: Removed attribute @[simps apply symm_apply]
 /-- Equal sets are equivalent.
 
 TODO: this is the same as `Equiv.setCongr`! -/
+@[simps! apply symm_apply]
 protected def ofEq {α : Type u} {s t : Set α} (h : s = t) : s ≃ t :=
   Equiv.setCongr h
 #align equiv.set.of_eq Equiv.Set.ofEq
