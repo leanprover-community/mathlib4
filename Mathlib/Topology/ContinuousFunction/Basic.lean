@@ -331,15 +331,20 @@ def restrict (f : C(α, β)) : C(s, β) where
   toFun := f ∘ ((↑) : s → α)
 #align continuous_map.restrict ContinuousMap.restrict
 
-@[simp] theorem coe_restrict (f : C(α, β)) : ⇑(f.restrict s) = f ∘ ((↑) : s → α) := rfl
+@[simp]
+theorem coe_restrict (f : C(α, β)) : ⇑(f.restrict s) = f ∘ ((↑) : s → α) :=
+  rfl
 #align continuous_map.coe_restrict ContinuousMap.coe_restrict
 
-@[simp] lemma restrict_apply (f : C(α, β)) (s : Set α) (x : s) : f.restrict s x = f x := rfl
+@[simp]
+theorem restrict_apply (f : C(α, β)) (s : Set α) (x : s) : f.restrict s x = f x :=
+  rfl
 #align continuous_map.restrict_apply ContinuousMap.restrict_apply
 
-@[simp] lemma restrict_apply_mk (f : C(α, β)) (s : Set α) (x : α) (hx : x ∈ s) :
-  f.restrict s ⟨x, hx⟩ = f x :=
-rfl
+@[simp]
+theorem restrict_apply_mk (f : C(α, β)) (s : Set α) (x : α) (hx : x ∈ s) :
+    f.restrict s ⟨x, hx⟩ = f x :=
+  rfl
 #align continuous_map.restrict_apply_mk ContinuousMap.restrict_apply_mk
 
 /-- The restriction of a continuous map to the preimage of a set. -/
