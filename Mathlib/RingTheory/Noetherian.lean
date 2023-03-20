@@ -150,7 +150,8 @@ theorem isNoetherian_of_injective [IsNoetherian R P] (f : M →ₗ[R] P) (hf : F
 
 theorem fg_of_injective [IsNoetherian R P] {N : Submodule R M} (f : M →ₗ[R] P)
     (hf : Function.Injective f) : N.Fg :=
-  @IsNoetherian.noetherian _ _ _ _ _ (isNoetherian_of_injective f hf) N
+  haveI := isNoetherian_of_injective f hf
+  IsNoetherian.noetherian N
 #align fg_of_injective fg_of_injective
 
 end
@@ -190,25 +191,17 @@ variable [Module R M] [Module R P]
 
 open IsNoetherian
 
--- Porting note: more typeclass search juggling
-theorem isNoetherian_of_ker_bot [IsNoetherian R P] (f : M →ₗ[R] P) 
-    (hf : @LinearMap.ker R R M P _ _ _ _ _ _ (RingHom.id _) 
-      (M →ₗ[R] P) LinearMap.instSemilinearMapClassLinearMap f = ⊥) : IsNoetherian R M :=
-  haveI : RingHomInvPair (RingHom.id R) (RingHom.id R) := 
-    RingHomInvPair.of_ringEquiv <| RingEquiv.refl R
-  let g : M →ₛₗ[@RingHom.id R Semiring.toNonAssocSemiring] P := f
-  have hg : @LinearMap.ker R R M P _ _ _ _ _ _ (RingHom.id _) 
-      (M →ₗ[R] P) LinearMap.instSemilinearMapClassLinearMap g = ⊥ := hf
-  -- Porting note: changing to f and hf below fails
-  isNoetherian_of_linearEquiv 
-    (@LinearEquiv.ofInjective R R M P _ _ _ _ _ _ (RingHom.id _) (RingHom.id _) g _ _ <| 
-      LinearMap.ker_eq_bot.mp hg).symm
+set_option synthInstance.etaExperiment true in
+theorem isNoetherian_of_ker_bot [IsNoetherian R P] (f : M →ₗ[R] P) (hf : LinearMap.ker f = ⊥) :
+    IsNoetherian R M :=
+  isNoetherian_of_linearEquiv (LinearEquiv.ofInjective f <| LinearMap.ker_eq_bot.mp hf).symm
 #align is_noetherian_of_ker_bot isNoetherian_of_ker_bot
 
-theorem fg_of_ker_bot [IsNoetherian R P] {N : Submodule R M} (f : M →ₗ[R] P) 
-    (hf : @LinearMap.ker R R M P _ _ _ _ _ _ (RingHom.id _) 
-      (M →ₗ[R] P) LinearMap.instSemilinearMapClassLinearMap f = ⊥) : N.Fg :=
-  @IsNoetherian.noetherian _ _ _ _ _ (isNoetherian_of_ker_bot f hf) N
+set_option synthInstance.etaExperiment true in
+theorem fg_of_ker_bot [IsNoetherian R P] {N : Submodule R M} (f : M →ₗ[R] P)
+    (hf : LinearMap.ker f = ⊥) : N.Fg :=
+  haveI := isNoetherian_of_ker_bot f hf
+  IsNoetherian.noetherian N
 #align fg_of_ker_bot fg_of_ker_bot
 
 instance isNoetherian_prod [IsNoetherian R M] [IsNoetherian R P] : IsNoetherian R (M × P) :=
@@ -226,22 +219,22 @@ instance isNoetherian_pi {R : Type u} {ι : Type u'} {M : ι → Type v}
   cases nonempty_fintype ι
   haveI := Classical.decEq ι
   suffices on_finset : ∀ s : Finset ι, IsNoetherian R (∀ i : s, M i)
-  · let coe_e := Equiv.subtypeUnivEquiv <| @Finset.mem_univ ι _ 
+  · let coe_e := Equiv.subtypeUnivEquiv <| @Finset.mem_univ ι _
     letI : IsNoetherian R (∀ i : Finset.univ, M (coe_e i)) := on_finset Finset.univ
     exact isNoetherian_of_linearEquiv (LinearEquiv.piCongrLeft R M coe_e)
   intro s
   induction' s using Finset.induction with a s has ih
-  · exact ⟨fun s => by 
+  · exact ⟨fun s => by
       have : s = ⊥ := by simp only [eq_iff_true_of_subsingleton]
       rw [this]
       apply Submodule.fg_bot⟩
   refine
-    @isNoetherian_of_linearEquiv R (M a × ((i : s) → M i)) _ _ _ _ _ _ ?_ <| 
+    @isNoetherian_of_linearEquiv R (M a × ((i : s) → M i)) _ _ _ _ _ _ ?_ <|
       @isNoetherian_prod R (M a) _ _ _ _ _ _ _ ih
   -- Porting note: is there anything better than this chain of fconstructor
   fconstructor
   · fconstructor
-    · fconstructor 
+    · fconstructor
       · exact fun f i =>
           Or.by_cases (Finset.mem_insert.1 i.2)
           (fun h : i.1 = a => show M i.1 from Eq.recOn h.symm f.1)
@@ -310,7 +303,7 @@ universe w
 
 variable {R M P : Type _} {N : Type w} [Semiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N]
   [Module R N] [AddCommMonoid P] [Module R P]
- 
+
 theorem isNoetherian_iff_wellFounded :
     IsNoetherian R M ↔ WellFounded ((· > ·) : Submodule R M → Submodule R M → Prop) := by
   have := (CompleteLattice.wellFounded_characterisations <| Submodule R M).out 0 3
@@ -355,7 +348,7 @@ variable (R M)
 
 theorem wellFounded_submodule_gt (R M) [Semiring R] [AddCommMonoid M] [Module R M] :
     ∀ [IsNoetherian R M], WellFounded ((· > ·) : Submodule R M → Submodule R M → Prop) := by
-  intro h 
+  intro h
   apply isNoetherian_iff_wellFounded.mp h
 #align well_founded_submodule_gt wellFounded_submodule_gt
 
@@ -400,7 +393,7 @@ theorem finite_of_linearIndependent [Nontrivial R] [IsNoetherian R M] {s : Set M
     rintro n x ⟨y, _, rfl⟩
     exact (f y).2
   let coe' : s → M := (↑)
-  have : ∀ a b : ℕ, a ≤ b ↔ 
+  have : ∀ a b : ℕ, a ≤ b ↔
     span R (coe' ∘ f '' { m | m ≤ a }) ≤ span R ((↑) ∘ f '' { m | m ≤ b }) := by
     intro a b
     rw [span_le_span_iff hs (this a) (this b),
@@ -415,24 +408,24 @@ theorem finite_of_linearIndependent [Nontrivial R] [IsNoetherian R M] {s : Set M
 
 /-- If the first and final modules in a short exact sequence are Noetherian,
   then the middle module is also Noetherian. -/
-/- Porting note: etaExperiment helps with SemilinearMapClass instance and coercion 
+/- Porting note: etaExperiment helps with SemilinearMapClass instance and coercion
 but introduces timeout -/
 theorem isNoetherian_of_range_eq_ker [IsNoetherian R M] [IsNoetherian R P] (f : M →ₗ[R] N)
     -- Porting note: cannot find ↑f or ↑g
-    (g : N →ₗ[R] P) (hf : Function.Injective f.toFun) (hg : Function.Surjective g.toFun) 
+    (g : N →ₗ[R] P) (hf : Function.Injective f.toFun) (hg : Function.Surjective g.toFun)
     -- Porting note: cannot find SemilinearMapClassLinearMap here and below
     (h : @LinearMap.range R R M N _ _ _ _ _ _ (RingHom.id _)
-      (M →ₗ[R] N) LinearMap.instSemilinearMapClassLinearMap _ f = 
-      @LinearMap.ker R R N P _ _ _ _ _ _ (RingHom.id _) 
+      (M →ₗ[R] N) LinearMap.instSemilinearMapClassLinearMap _ f =
+      @LinearMap.ker R R N P _ _ _ _ _ _ (RingHom.id _)
         (N →ₗ[R] P) LinearMap.instSemilinearMapClassLinearMap g) :
     IsNoetherian R N :=
-  isNoetherian_iff_wellFounded.2 <| by 
-    refine 
+  isNoetherian_iff_wellFounded.2 <| by
+    refine
       wellFounded_gt_exact_sequence (wellFounded_submodule_gt R M) (wellFounded_submodule_gt R P)
         ?_ ?_ ?_ ?_ ?_ ?_ ?_ ?_ ?_
     · exact @LinearMap.range R R M N _ _ _ _ _ _ (RingHom.id _)
         (M →ₗ[R] N) LinearMap.instSemilinearMapClassLinearMap _ f
-    · exact @Submodule.map R R M N _ _ _ _ _ _ (RingHom.id R) RingHomSurjective.ids 
+    · exact @Submodule.map R R M N _ _ _ _ _ _ (RingHom.id R) RingHomSurjective.ids
         -- Porting note: cannot find RingHomSurjective.ids
         (M →ₗ[R] N) LinearMap.instSemilinearMapClassLinearMap f
     · exact @Submodule.comap R R M N _ _ _ _ _ _ (RingHom.id R)
@@ -451,7 +444,7 @@ theorem isNoetherian_of_range_eq_ker [IsNoetherian R M] [IsNoetherian R P] (f : 
         (N →ₗ[R] P) LinearMap.instSemilinearMapClassLinearMap g a, h]
 #align is_noetherian_of_range_eq_ker isNoetherian_of_range_eq_ker
 
-/- Porting note: this seems to causing a diamond with Ring.toSemiring when going to 
+/- Porting note: this seems to causing a diamond with Ring.toSemiring when going to
 NonAssocSemiring -/
 attribute [-instance] Ring.toNonAssocRing
 
@@ -459,7 +452,7 @@ attribute [-instance] Ring.toNonAssocRing
 with disjoint kernel and range.
 -/
 theorem IsNoetherian.exists_endomorphism_iterate_ker_inf_range_eq_bot [I : IsNoetherian R M]
-    (f : M →ₗ[R] M) : 
+    (f : M →ₗ[R] M) :
     haveI : Monoid (M →ₗ[R] M) := Module.End.monoid
     ∃ n : ℕ, n ≠ 0 ∧ LinearMap.ker (f ^ n) ⊓ LinearMap.range (f ^ n) = ⊥ := by
   obtain ⟨n, w⟩ :=
@@ -592,10 +585,10 @@ theorem isNoetherian_of_fg_of_noetherian {R M} [Ring R] [AddCommGroup M] [Module
   letI : IsNoetherian R R := I
   have : ∀ x ∈ s, x ∈ N := fun x hx => hs ▸ Submodule.subset_span hx
   refine
-    @isNoetherian_of_surjective 
+    @isNoetherian_of_surjective
       R ((↑s : Set M) → R) N _ _ _ (Pi.module _ _ _) _ ?_ ?_ isNoetherian_pi
   · fapply LinearMap.mk
-    · fapply AddHom.mk 
+    · fapply AddHom.mk
       · exact fun f => ⟨∑ i in s.attach, f i • i.1, N.sum_mem fun c _ => N.smul_mem _ <| this _ c.2⟩
       · intro f g
         apply Subtype.eq
@@ -638,8 +631,8 @@ theorem isNoetherianRing_of_surjective (R) [Ring R] (S) [Ring S] (f : R →+* S)
     (hf : Function.Surjective f) [H : IsNoetherianRing R] : IsNoetherianRing S := by
   rw [isNoetherianRing_iff, isNoetherian_iff_wellFounded] at H⊢
   -- Porting note: apply fixes some issues but still need to feed instance explicitly
-  apply OrderEmbedding.wellFounded 
-    (@Ideal.orderEmbeddingOfSurjective R S (R →+* S) _ _ 
+  apply OrderEmbedding.wellFounded
+    (@Ideal.orderEmbeddingOfSurjective R S (R →+* S) _ _
       RingHom.instRingHomClassRingHom f ?_).dual H
   -- Porting note: inlining hf fails to unify
   · apply hf
@@ -660,4 +653,3 @@ theorem IsNoetherianRing.isNilpotent_nilradical (R : Type _) [CommRing R] [IsNoe
   obtain ⟨n, hn⟩ := Ideal.exists_radical_pow_le_of_fg (⊥ : Ideal R) (IsNoetherian.noetherian _)
   exact ⟨n, eq_bot_iff.mpr hn⟩
 #align is_noetherian_ring.is_nilpotent_nilradical IsNoetherianRing.isNilpotent_nilradical
-
