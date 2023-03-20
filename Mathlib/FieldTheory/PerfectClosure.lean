@@ -166,7 +166,7 @@ theorem quot_mk_eq_mk (x : ℕ × K) : (Quot.mk (R K p) x : PerfectClosure K p) 
 variable {K p}
 
 /-- Lift a function `ℕ × K → L` to a function on `perfect_closure K p`. -/
-@[elab_as_elim]
+-- Porting note: removed `@[elab_as_elim]` for "unexpected eliminator resulting type L"
 def liftOn {L : Type _} (x : PerfectClosure K p) (f : ℕ × K → L)
     (hf : ∀ x y, R K p x y → f x = f y) : L :=
   Quot.liftOn x f hf
@@ -335,10 +335,7 @@ theorem R.sound (m n : ℕ) (x y : K) (H : (frobenius K p^[m]) x = y) :
 
 instance PerfectClosure.addCommGroup : AddCommGroup (PerfectClosure K p) :=
   { (inferInstance : Add (PerfectClosure K p)),
-    (inferInstance :
-      Neg
-        (PerfectClosure K
-          p)) with
+    (inferInstance : Neg (PerfectClosure K p)) with
     add_assoc := fun e f g =>
       Quot.inductionOn e fun ⟨m, x⟩ =>
         Quot.inductionOn f fun ⟨n, y⟩ =>
@@ -366,8 +363,15 @@ instance PerfectClosure.addCommGroup : AddCommGroup (PerfectClosure K p) :=
 instance PerfectClosure.commRing : CommRing (PerfectClosure K p) :=
   { PerfectClosure.addCommGroup K p, AddMonoidWithOne.unary,
     (inferInstance : CommMonoid (PerfectClosure K p)) with
-    zero_mul := sorry,
-    mul_zero := sorry,
+    -- Porting note: added `zero_mul`, `mul_zero`
+    zero_mul := fun a => by
+      refine Quot.inductionOn a fun ⟨m, x⟩ => ?_
+      rw [zero_def, quot_mk_eq_mk, mk_mul_mk]
+      simp only [zero_add, iterate_zero, id_eq, RingHom.iterate_map_zero, zero_mul, mk_zero]
+    mul_zero := fun a => by
+      refine Quot.inductionOn a fun ⟨m, x⟩ => ?_
+      rw [zero_def, quot_mk_eq_mk, mk_mul_mk]
+      simp only [zero_add, iterate_zero, id_eq, RingHom.iterate_map_zero, mul_zero, mk_zero]
     left_distrib := fun e f g =>
       Quot.inductionOn e fun ⟨m, x⟩ =>
         Quot.inductionOn f fun ⟨n, y⟩ =>
@@ -463,9 +467,9 @@ theorem frobenius_mk (x : ℕ × K) :
 def of : K →+* PerfectClosure K p where
   toFun x := mk _ _ (0, x)
   map_one' := rfl
-  map_mul' x y := rfl
+  map_mul' _ _ := rfl
   map_zero' := rfl
-  map_add' x y := rfl
+  map_add' _ _ := rfl
 #align perfect_closure.of PerfectClosure.of
 
 theorem of_apply (x : K) : of K p x = mk _ _ (0, x) :=
@@ -499,9 +503,9 @@ instance : Inv (PerfectClosure K p) :=
 theorem mk_inv (x : ℕ × K) : (mk K p x)⁻¹ = mk K p (x.1, x.2⁻¹) :=
   rfl
 
-instance : Field (PerfectClosure K p) :=
-  { (inferInstance : Inv (PerfectClosure K p)),
-    (inferInstance : CommRing (PerfectClosure K p)) with
+-- Porting note: added to avoid "unknown free variable" error
+instance : DivisionRing (PerfectClosure K p) :=
+  { (inferInstance : Inv (PerfectClosure K p)) with
     exists_pair_ne := ⟨0, 1, fun H => zero_ne_one ((eq_iff _ _ _ _).1 H)⟩
     mul_inv_cancel := fun e =>
       induction_on e fun ⟨m, x⟩ H => by
@@ -510,12 +514,15 @@ instance : Field (PerfectClosure K p) :=
         rw [mk_inv, mk_mul_mk]
         refine (eq_iff K p _ _).2 ?_
         simp only [(frobenius _ _).iterate_map_one, (frobenius K p).iterate_map_zero,
-            iterate_zero_apply, ← (frobenius _ p).iterate_map_mul] at this⊢ <;>
+            iterate_zero_apply, ← (frobenius _ p).iterate_map_mul] at this⊢
         rw [mul_inv_cancel this, (frobenius _ _).iterate_map_one]
     inv_zero := congr_arg (Quot.mk (R K p)) (by rw [inv_zero]) }
 
-instance : PerfectRing (PerfectClosure K p) p
-    where
+instance : Field (PerfectClosure K p) :=
+  { (inferInstance : DivisionRing (PerfectClosure K p)),
+    (inferInstance : CommRing (PerfectClosure K p)) with }
+
+instance : PerfectRing (PerfectClosure K p) p where
   pthRoot' e :=
     liftOn e (fun x => mk K p (x.1 + 1, x.2)) fun x y H =>
       match x, y, H with
