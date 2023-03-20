@@ -10,10 +10,10 @@ with open(sys.argv[1], "r", encoding="utf-8", newline="\n") as f, \
         lns.append(ln)
         if len(lns) <= 1:
             continue
-        if lns[1] == "  by" and len(lns[0]) < 98 and not lns[0].lstrip().startswith("--"):
+        if lns[1].lstrip() == "by" and len(lns[0]) < 98 and not lns[0].lstrip().startswith("--"):
             lns.pop()
             lns[0] += " by"
-        elif lns[1] == "  where" and len(lns[0]) < 95 and not lns[0].lstrip().startswith("--"):
+        elif lns[1].lstrip() == "where" and len(lns[0]) < 95 and not lns[0].lstrip().startswith("--"):
             lns.pop()
             lns[0] += " where"
         else:
