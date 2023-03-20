@@ -8,8 +8,8 @@ Authors: Eric Wieser, Jujian Zhang
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.DirectSum.Module
-import Mathbin.Algebra.Module.Submodule.Basic
+import Mathlib.Algebra.DirectSum.Module
+import Mathlib.Algebra.Module.Submodule.Basic
 
 /-!
 # Decompositions of additive monoids, groups, and modules into direct sums
@@ -85,8 +85,7 @@ def decompose : M ≃ ⨁ i, ℳ i where
 
 protected theorem Decomposition.inductionOn {p : M → Prop} (h_zero : p 0)
     (h_homogeneous : ∀ {i} (m : ℳ i), p (m : M)) (h_add : ∀ m m' : M, p m → p m' → p (m + m')) :
-    ∀ m, p m :=
-  by
+    ∀ m, p m := by
   let ℳ' : ι → AddSubmonoid M := fun i =>
     (⟨ℳ i, fun _ _ => AddMemClass.add_mem, ZeroMemClass.zero_mem _⟩ : AddSubmonoid M)
   haveI t : DirectSum.Decomposition ℳ' :=
@@ -169,8 +168,7 @@ theorem decompose_symm_sum {ι'} (s : Finset ι') (f : ι' → ⨁ i, ℳ i) :
 #align direct_sum.decompose_symm_sum DirectSum.decompose_symm_sum
 
 theorem sum_support_decompose [∀ (i) (x : ℳ i), Decidable (x ≠ 0)] (r : M) :
-    (∑ i in (decompose ℳ r).support, (decompose ℳ r i : M)) = r :=
-  by
+    (∑ i in (decompose ℳ r).support, (decompose ℳ r i : M)) = r := by
   conv_rhs =>
     rw [← (decompose ℳ).symm_apply_apply r, ← sum_support_of (fun i => ℳ i) (decompose ℳ r)]
   rw [decompose_symm_sum]
