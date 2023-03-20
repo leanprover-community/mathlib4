@@ -1,14 +1,53 @@
 import Mathlib.CategoryTheory.Localization.Prod
 
-universe v₁ v₂ u₁ u₂ u₃
+universe v₁ v₂ v₃ u₁ u₂ u₃ u₄
 
 namespace CategoryTheory
 
+def Pi.equivalence_of_eq {I : Type u₂} (C : I → Type u₁)
+  [∀ i, Category.{v₁} (C i)] {i j : I} (h : i = j) :
+    C i ≌ C j := by
+  subst h
+  rfl
+
+def Pi.eval_comp_equivalence_of_eq_functor {I : Type u₂} (C : I → Type u₁)
+  [∀ i, Category.{v₁} (C i)] {i j : I} (h : i = j) :
+  Pi.eval C i ⋙ (Pi.equivalence_of_eq _ h).functor ≅
+    Pi.eval C j := by
+  subst h
+  rfl
+
+def Pi.equivalence_of_eq_functor_iso {I : Type u₂} {I' : Type u₃}
+  (C : I → Type u₁) [∀ i, Category.{v₁} (C i)] {i' j' : I'}
+  (f : I' → I) (h : i' = j') :
+    (Pi.equivalence_of_eq C (show f i' = f j' by rw [h])).functor ≅
+      (Pi.equivalence_of_eq (fun i' => C (f i')) h).functor := by
+  subst h
+  rfl
+
+def Functor.pi'_eval_iso {I : Type u₂} {C : I → Type u₁}
+  [∀ i, Category.{v₁} (C i)] {A : Type u₄} [Category.{v₄} A]
+  (f : ∀ i, A ⥤ C i) (i : I) : pi' f ⋙  Pi.eval C i ≅ f i :=
+  eqToIso (Functor.pi'_eval _ _)
+
 -- should be moved to Pi.Basic
-def pi_equivalence_of_equiv {I : Type u₂} {I' : Type u₃} (C : I → Type u₁)
+noncomputable def pi_equivalence_of_equiv {I : Type u₂} {I' : Type u₃} (C : I → Type u₁)
   [∀ i, Category.{v₁} (C i)] (e : I' ≃ I) :
-  (∀ j, C (e j)) ≌ (∀ i, C i) := by
-  sorry
+  (∀ j, C (e j)) ≌ (∀ i, C i) :=
+{ functor := Functor.pi' (fun i => Pi.eval _ (e.symm i) ⋙
+    (Pi.equivalence_of_eq C (by simp)).functor)
+  inverse := Functor.pi' (fun i' => Pi.eval _ (e i'))
+  unitIso := NatIso.pi' (fun i' => Functor.leftUnitor _ ≪≫
+    (Pi.eval_comp_equivalence_of_eq_functor (fun j => C (e j)) (e.symm_apply_apply i')).symm ≪≫
+      isoWhiskerLeft _ ((Pi.equivalence_of_eq_functor_iso C e (e.symm_apply_apply i')).symm) ≪≫
+      (Functor.pi'_eval_iso _ _).symm ≪≫ isoWhiskerLeft _ (Functor.pi'_eval_iso _ _).symm ≪≫
+      (Functor.associator _ _ _).symm)
+  counitIso := NatIso.pi' (fun i => (Functor.associator _ _ _).symm ≪≫
+    isoWhiskerRight (Functor.pi'_eval_iso _ _) _ ≪≫
+    Pi.eval_comp_equivalence_of_eq_functor C (e.apply_symm_apply i) ≪≫
+    (Functor.leftUnitor _).symm)
+  functor_unitIso_comp := fun X => by
+    sorry }
 
 variable (J : Type) {C : J → Type u₁} {D : J → Type u₂}
   [∀ j, Category.{v₁} (C j)] [∀ j, Category.{v₂} (D j)]
