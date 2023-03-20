@@ -421,4 +421,3 @@ theorem lowerClosure_infs [SemilatticeInf α] (s t : Set α) :
   · rintro ⟨⟨b, hb, hab⟩, c, hc, hac⟩
     exact ⟨_, ⟨b, hb, c, hc, rfl⟩, le_inf hab hac⟩
 #align lower_closure_infs lowerClosure_infs
-#lint
