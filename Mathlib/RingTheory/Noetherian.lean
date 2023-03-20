@@ -17,7 +17,6 @@ import Mathlib.Order.CompactlyGenerated
 import Mathlib.Order.OrderIsoNat
 import Mathlib.RingTheory.Finiteness
 import Mathlib.RingTheory.Nilpotent
-import Mathlib.Tactic.Constructor -- Porting note: for fconstructor
 
 /-!
 # Noetherian rings and modules
@@ -209,14 +208,13 @@ instance isNoetherian_prod [IsNoetherian R M] [IsNoetherian R P] : IsNoetherian 
       Submodule.map_comap_eq_self this ▸ (noetherian _).map _⟩
 #align is_noetherian_prod isNoetherian_prod
 
--- Porting note: complains about R and ι together
 instance isNoetherian_pi {R ι : Type _} {M : ι → Type _}
     [Ring R] [∀ i, AddCommGroup (M i)] [∀ i, Module R (M i)] [Finite ι]
     [∀ i, IsNoetherian R (M i)] : IsNoetherian R (∀ i, M i) := by
   cases nonempty_fintype ι
   haveI := Classical.decEq ι
   suffices on_finset : ∀ s : Finset ι, IsNoetherian R (∀ i : s, M i)
-  · let coe_e := Equiv.subtypeUnivEquiv <| @Finset.mem_univ ι _
+  · let coe_e := Equiv.subtypeUnivEquiv Finset.mem_univ
     letI : IsNoetherian R (∀ i : Finset.univ, M (coe_e i)) := on_finset Finset.univ
     exact isNoetherian_of_linearEquiv (LinearEquiv.piCongrLeft R M coe_e)
   intro s
