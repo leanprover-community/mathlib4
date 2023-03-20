@@ -6,6 +6,7 @@ Ported by: Scott Morrison
 -/
 import Mathlib.Tactic.Linarith.Datatypes
 import Mathlib.Tactic.Zify
+import Mathlib.Lean.Exception
 import Std.Data.RBMap.Basic
 import Mathlib.Data.HashMap
 
@@ -268,7 +269,7 @@ def compWithZero : Preprocessor where
   transform e := try
     pure [← rearrangeComparison e]
   catch e =>
-    if (← e.toMessageData.toString).startsWith "failed to synthesize" then
+    if ← e.isFailedToSynthesize then
       pure []
     else
       throw e
