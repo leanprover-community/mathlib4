@@ -214,7 +214,7 @@ instance isNoetherian_pi {R ι : Type _} {M : ι → Type _}
   cases nonempty_fintype ι
   haveI := Classical.decEq ι
   suffices on_finset : ∀ s : Finset ι, IsNoetherian R (∀ i : s, M i)
-  · let coe_e := Equiv.subtypeUnivEquiv Finset.mem_univ
+  · let coe_e := Equiv.subtypeUnivEquiv <| @Finset.mem_univ ι _
     letI : IsNoetherian R (∀ i : Finset.univ, M (coe_e i)) := on_finset Finset.univ
     exact isNoetherian_of_linearEquiv (LinearEquiv.piCongrLeft R M coe_e)
   intro s
