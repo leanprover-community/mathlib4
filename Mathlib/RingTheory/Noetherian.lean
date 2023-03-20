@@ -228,42 +228,43 @@ instance isNoetherian_pi {R ι : Type _} {M : ι → Type _}
   refine
     @isNoetherian_of_linearEquiv R (M a × ((i : s) → M i)) _ _ _ _ _ _ ?_ <|
       @isNoetherian_prod R (M a) _ _ _ _ _ _ _ ih
-  -- Porting note: is there anything better than this chain of fconstructor
-  fconstructor
-  · fconstructor
-    · fconstructor
-      · exact fun f i =>
-          Or.by_cases (Finset.mem_insert.1 i.2)
-          (fun h : i.1 = a => show M i.1 from Eq.recOn h.symm f.1)
-          fun h : i.1 ∈ s => show M i.1 from f.2 ⟨i.1, h⟩
-      · intro f g
-        ext i
-        unfold Or.by_cases
-        cases' i with i hi
-        rcases Finset.mem_insert.1 hi with (rfl | h)
-        · change _ = _ + _
-          simp only [dif_pos]
-          rfl
-        · change _ = _ + _
-          have : ¬i = a := by
-            rintro rfl
-            exact has h
-          simp only [dif_neg this, dif_pos h]
-          rfl
-    · intro c f
-      ext i
-      unfold Or.by_cases
-      cases' i with i hi
-      rcases Finset.mem_insert.1 hi with (rfl | h)
-      · dsimp
-        simp only [dif_pos]
-      · dsimp
-        have : ¬i = a := by
-          rintro rfl
-          exact has h
-        simp only [dif_neg this, dif_pos h]
-  · exact fun f =>
-      (f ⟨a, Finset.mem_insert_self _ _⟩, fun i => f ⟨i.1, Finset.mem_insert_of_mem i.2⟩)
+  refine
+  { toFun := fun f i =>
+      (Finset.mem_insert.1 i.2).by_cases
+        (fun h : i.1 = a => show M i.1 from Eq.recOn h.symm f.1)
+        (fun h : i.1 ∈ s => show M i.1 from f.2 ⟨i.1, h⟩),
+    invFun := fun f =>
+      (f ⟨a, Finset.mem_insert_self _ _⟩, fun i => f ⟨i.1, Finset.mem_insert_of_mem i.2⟩),
+    map_add' := ?_,
+    map_smul' := ?_
+    left_inv := ?_,
+    right_inv := ?_ }
+  · intro f g
+    ext i
+    unfold Or.by_cases
+    cases' i with i hi
+    rcases Finset.mem_insert.1 hi with (rfl | h)
+    · change _ = _ + _
+      simp only [dif_pos]
+      rfl
+    · change _ = _ + _
+      have : ¬i = a := by
+        rintro rfl
+        exact has h
+      simp only [dif_neg this, dif_pos h]
+      rfl
+  · intro c f
+    ext i
+    unfold Or.by_cases
+    cases' i with i hi
+    rcases Finset.mem_insert.1 hi with (rfl | h)
+    · dsimp
+      simp only [dif_pos]
+    · dsimp
+      have : ¬i = a := by
+        rintro rfl
+        exact has h
+      simp only [dif_neg this, dif_pos h]
   · intro f
     apply Prod.ext
     · simp only [Or.by_cases, dif_pos]
