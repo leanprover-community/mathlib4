@@ -180,10 +180,7 @@ end Module
 
 section
 
--- Porting note: adding explicit universes
-universe u v w u'
-
-variable {R : Type u} {M : Type v} {P : Type w}
+variable {R : Type _} {M : Type _} {P : Type _}
 
 variable [Ring R] [AddCommGroup M] [AddCommGroup P]
 
@@ -213,7 +210,7 @@ instance isNoetherian_prod [IsNoetherian R M] [IsNoetherian R P] : IsNoetherian 
 #align is_noetherian_prod isNoetherian_prod
 
 -- Porting note: complains about R and ι together
-instance isNoetherian_pi {R : Type u} {ι : Type u'} {M : ι → Type v}
+instance isNoetherian_pi {R ι : Type _} {M : ι → Type _}
     [Ring R] [∀ i, AddCommGroup (M i)] [∀ i, Module R (M i)] [Finite ι]
     [∀ i, IsNoetherian R (M i)] : IsNoetherian R (∀ i, M i) := by
   cases nonempty_fintype ι
@@ -347,9 +344,8 @@ theorem isNoetherian_iff_fg_wellFounded :
 variable (R M)
 
 theorem wellFounded_submodule_gt (R M) [Semiring R] [AddCommMonoid M] [Module R M] :
-    ∀ [IsNoetherian R M], WellFounded ((· > ·) : Submodule R M → Submodule R M → Prop) := by
-  intro h
-  apply isNoetherian_iff_wellFounded.mp h
+    ∀ [IsNoetherian R M], WellFounded ((· > ·) : Submodule R M → Submodule R M → Prop) :=
+  isNoetherian_iff_wellFounded.mp ‹_›
 #align well_founded_submodule_gt wellFounded_submodule_gt
 
 variable {R M}
@@ -406,45 +402,21 @@ theorem finite_of_linearIndependent [Nontrivial R] [IsNoetherian R M] {s : Set M
       by dsimp [GT.gt]; simp only [lt_iff_le_not_le, (this _ _).symm]; tauto⟩
 #align finite_of_linear_independent finite_of_linearIndependent
 
+set_option synthInstance.etaExperiment true in
 /-- If the first and final modules in a short exact sequence are Noetherian,
   then the middle module is also Noetherian. -/
-/- Porting note: etaExperiment helps with SemilinearMapClass instance and coercion
-but introduces timeout -/
 theorem isNoetherian_of_range_eq_ker [IsNoetherian R M] [IsNoetherian R P] (f : M →ₗ[R] N)
-    -- Porting note: cannot find ↑f or ↑g
-    (g : N →ₗ[R] P) (hf : Function.Injective f.toFun) (hg : Function.Surjective g.toFun)
-    -- Porting note: cannot find SemilinearMapClassLinearMap here and below
-    (h : @LinearMap.range R R M N _ _ _ _ _ _ (RingHom.id _)
-      (M →ₗ[R] N) LinearMap.instSemilinearMapClassLinearMap _ f =
-      @LinearMap.ker R R N P _ _ _ _ _ _ (RingHom.id _)
-        (N →ₗ[R] P) LinearMap.instSemilinearMapClassLinearMap g) :
+    (g : N →ₗ[R] P) (hf : Function.Injective f) (hg : Function.Surjective g)
+    (h : LinearMap.range f = LinearMap.ker g) :
     IsNoetherian R N :=
-  isNoetherian_iff_wellFounded.2 <| by
-    refine
-      wellFounded_gt_exact_sequence (wellFounded_submodule_gt R M) (wellFounded_submodule_gt R P)
-        ?_ ?_ ?_ ?_ ?_ ?_ ?_ ?_ ?_
-    · exact @LinearMap.range R R M N _ _ _ _ _ _ (RingHom.id _)
-        (M →ₗ[R] N) LinearMap.instSemilinearMapClassLinearMap _ f
-    · exact @Submodule.map R R M N _ _ _ _ _ _ (RingHom.id R) RingHomSurjective.ids
-        -- Porting note: cannot find RingHomSurjective.ids
-        (M →ₗ[R] N) LinearMap.instSemilinearMapClassLinearMap f
-    · exact @Submodule.comap R R M N _ _ _ _ _ _ (RingHom.id R)
-        (M →ₗ[R] N) LinearMap.instSemilinearMapClassLinearMap f
-    · exact @Submodule.comap R R N P _ _ _ _ _ _ (RingHom.id R)
-        (N →ₗ[R] P) LinearMap.instSemilinearMapClassLinearMap g
-    · exact @Submodule.map R R N P _ _ _ _ _ _ (RingHom.id R) RingHomSurjective.ids
-        (N →ₗ[R] P) LinearMap.instSemilinearMapClassLinearMap g
-    · exact @Submodule.gciMapComap R R M N _ _ _ _ _ _ (RingHom.id _)
-        (M →ₗ[R] N) LinearMap.instSemilinearMapClassLinearMap _ f hf
-    · exact @Submodule.giMapComap R R N P _ _ _ _ _ _ (RingHom.id _)
-        (N →ₗ[R] P) LinearMap.instSemilinearMapClassLinearMap g hg _
-    · intro; rw [@Submodule.map_comap_eq R R M N _ _ _ _ _ _ (RingHom.id _)
-        (M →ₗ[R] N) LinearMap.instSemilinearMapClassLinearMap, inf_comm]
-    · intro a; rw [@Submodule.comap_map_eq R R N P _ _ _ _ _ _ (RingHom.id _) RingHomSurjective.ids
-        (N →ₗ[R] P) LinearMap.instSemilinearMapClassLinearMap g a, h]
+  isNoetherian_iff_wellFounded.2 <|
+    wellFounded_gt_exact_sequence (wellFounded_submodule_gt R M) (wellFounded_submodule_gt R P)
+      (LinearMap.range f) (Submodule.map f) (Submodule.comap f) (Submodule.comap g)
+      (Submodule.map g) (Submodule.gciMapComap hf) (Submodule.giMapComap hg)
+      (by simp [Submodule.map_comap_eq, inf_comm]) (by simp [Submodule.comap_map_eq, h])
 #align is_noetherian_of_range_eq_ker isNoetherian_of_range_eq_ker
 
-/- Porting note: this seems to causing a diamond with Ring.toSemiring when going to
+/- Porting note (lean4#2074): this seems to cause a diamond with Ring.toSemiring when going to
 NonAssocSemiring -/
 attribute [-instance] Ring.toNonAssocRing
 
@@ -453,7 +425,6 @@ with disjoint kernel and range.
 -/
 theorem IsNoetherian.exists_endomorphism_iterate_ker_inf_range_eq_bot [I : IsNoetherian R M]
     (f : M →ₗ[R] M) :
-    haveI : Monoid (M →ₗ[R] M) := Module.End.monoid
     ∃ n : ℕ, n ≠ 0 ∧ LinearMap.ker (f ^ n) ⊓ LinearMap.range (f ^ n) = ⊥ := by
   obtain ⟨n, w⟩ :=
     monotone_stabilizes_iff_noetherian.mpr I
@@ -473,7 +444,7 @@ theorem IsNoetherian.exists_endomorphism_iterate_ker_inf_range_eq_bot [I : IsNoe
 
 /-- Any surjective endomorphism of a Noetherian module is injective. -/
 theorem IsNoetherian.injective_of_surjective_endomorphism [IsNoetherian R M] (f : M →ₗ[R] M)
-    (s : Surjective f.toFun) : Injective f.toFun := by
+    (s : Surjective f) : Injective f := by
   obtain ⟨n, ne, w⟩ := IsNoetherian.exists_endomorphism_iterate_ker_inf_range_eq_bot f
   rw [LinearMap.range_eq_top.mpr (LinearMap.iterate_surjective s n), inf_top_eq,
     LinearMap.ker_eq_bot] at w
@@ -482,7 +453,7 @@ theorem IsNoetherian.injective_of_surjective_endomorphism [IsNoetherian R M] (f 
 
 /-- Any surjective endomorphism of a Noetherian module is bijective. -/
 theorem IsNoetherian.bijective_of_surjective_endomorphism [IsNoetherian R M] (f : M →ₗ[R] M)
-    (s : Surjective f.toFun) : Bijective f.toFun :=
+    (s : Surjective f) : Bijective f :=
   ⟨IsNoetherian.injective_of_surjective_endomorphism f s, s⟩
 #align is_noetherian.bijective_of_surjective_endomorphism IsNoetherian.bijective_of_surjective_endomorphism
 
@@ -626,16 +597,11 @@ theorem isNoetherian_span_of_finite (R) {M} [Ring R] [AddCommGroup M] [Module R 
   isNoetherian_of_fg_of_noetherian _ (Submodule.fg_def.mpr ⟨A, hA, rfl⟩)
 #align is_noetherian_span_of_finite isNoetherian_span_of_finite
 
--- Porting note: etaExperiment makes the original proof go through
+set_option synthInstance.etaExperiment true in
 theorem isNoetherianRing_of_surjective (R) [Ring R] (S) [Ring S] (f : R →+* S)
     (hf : Function.Surjective f) [H : IsNoetherianRing R] : IsNoetherianRing S := by
   rw [isNoetherianRing_iff, isNoetherian_iff_wellFounded] at H⊢
-  -- Porting note: apply fixes some issues but still need to feed instance explicitly
-  apply OrderEmbedding.wellFounded
-    (@Ideal.orderEmbeddingOfSurjective R S (R →+* S) _ _
-      RingHom.instRingHomClassRingHom f ?_).dual H
-  -- Porting note: inlining hf fails to unify
-  · apply hf
+  exact OrderEmbedding.wellFounded (Ideal.orderEmbeddingOfSurjective f hf).dual H
 #align is_noetherian_ring_of_surjective isNoetherianRing_of_surjective
 
 instance isNoetherianRing_range {R} [Ring R] {S} [Ring S] (f : R →+* S) [IsNoetherianRing R] :
