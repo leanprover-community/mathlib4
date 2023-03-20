@@ -25,6 +25,11 @@ namespace Fin
 
 variable {α β : Type _} {n : ℕ}
 
+theorem map_valEmbedding_univ : (Finset.univ : Finset (Fin n)).map Fin.valEmbedding = Iio n := by
+  ext
+  simp [orderIsoSubtype.symm.surjective.exists, OrderIso.symm]
+#align fin.map_subtype_embedding_univ Fin.map_valEmbedding_univ
+
 @[simp]
 theorem Ioi_zero_eq_map : Ioi (0 : Fin n.succ) = univ.map (Fin.succEmbedding _).toEmbedding := by
   ext i
@@ -40,6 +45,13 @@ theorem Ioi_zero_eq_map : Ioi (0 : Fin n.succ) = univ.map (Fin.succEmbedding _).
 #align fin.Ioi_zero_eq_map Fin.Ioi_zero_eq_map
 
 @[simp]
+theorem Iio_last_eq_map : Iio (Fin.last n) = Finset.univ.map Fin.castSucc.toEmbedding := by
+  apply Finset.map_injective Fin.valEmbedding
+  rw [Finset.map_map, Fin.map_valEmbedding_Iio, Fin.val_last]
+  exact map_valEmbedding_univ.symm
+#align fin.Iio_last_eq_map Fin.Iio_last_eq_map
+
+@[simp]
 theorem Ioi_succ (i : Fin n) : Ioi i.succ = (Ioi i).map (Fin.succEmbedding _).toEmbedding := by
   ext i
   simp only [mem_filter, mem_Ioi, mem_map, mem_univ, true_and_iff, Function.Embedding.coeFn_mk,
@@ -52,6 +64,13 @@ theorem Ioi_succ (i : Fin n) : Ioi i.succ = (Ioi i).map (Fin.succEmbedding _).to
   · rintro ⟨i, hi, rfl⟩
     simpa
 #align fin.Ioi_succ Fin.Ioi_succ
+
+@[simp]
+theorem Iio_castSucc (i : Fin n) : Iio (castSucc i) = (Iio i).map Fin.castSucc.toEmbedding := by
+  apply Finset.map_injective Fin.valEmbedding
+  rw [Finset.map_map, Fin.map_valEmbedding_Iio]
+  exact (Fin.map_valEmbedding_Iio i).symm
+#align fin.Iio_cast_succ Fin.Iio_castSucc
 
 theorem card_filter_univ_succ' (p : Fin (n + 1) → Prop) [DecidablePred p] :
     (univ.filter p).card = ite (p 0) 1 0 + (univ.filter (p ∘ Fin.succ)).card := by
