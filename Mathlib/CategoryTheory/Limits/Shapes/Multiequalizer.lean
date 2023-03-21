@@ -398,10 +398,7 @@ theorem hom_comp_ι (K₁ K₂ : Multifork I) (f : K₁ ⟶ K₂) (j : I.L) : f.
 #align category_theory.limits.multifork.hom_comp_ι
   CategoryTheory.Limits.Multifork.hom_comp_ι
 
-/-
-Porting note: Added simp lemma.
--/
-@[simp]
+-- @[simp] -- Porting note: simp can prove this
 lemma hom_w {K₁ K₂ : Multifork I} (f : K₁ ⟶ K₂) (b : I.L) : f.Hom ≫ K₂.ι b = K₁.ι b :=
   f.w _
 
@@ -482,7 +479,7 @@ theorem toPiFork_π_app_zero : K.toPiFork.ι = Pi.lift K.ι :=
 #align category_theory.limits.multifork.to_pi_fork_π_app_zero
   CategoryTheory.Limits.Multifork.toPiFork_π_app_zero
 
-@[simp]
+@[simp, nolint simpNF] -- Porting note: dsimp cannot prove this
 theorem toPiFork_π_app_one : K.toPiFork.π.app WalkingParallelPair.one = Pi.lift K.ι ≫ I.fstPiMap :=
   rfl
 #align category_theory.limits.multifork.to_pi_fork_π_app_one
@@ -515,7 +512,7 @@ theorem ofPiFork_π_app_left (c : Fork I.fstPiMap I.sndPiMap) (a) :
 #align category_theory.limits.multifork.of_pi_fork_π_app_left
   CategoryTheory.Limits.Multifork.ofPiFork_π_app_left
 
-@[simp]
+@[simp, nolint simpNF] -- Porting note: dsimp cannot prove this
 theorem ofPiFork_π_app_right (c : Fork I.fstPiMap I.sndPiMap) (a) :
     (ofPiFork I c).π.app (WalkingMulticospan.right a) = c.ι ≫ I.fstPiMap ≫ Pi.π _ _ :=
   rfl
@@ -892,7 +889,7 @@ abbrev lift (W : C) (k : ∀ a, W ⟶ I.left a)
   limit.lift _ (Multifork.ofι I _ k h)
 #align category_theory.limits.multiequalizer.lift CategoryTheory.Limits.Multiequalizer.lift
 
-@[reassoc (attr := simp)]
+@[reassoc] -- Porting note: simp can prove this, removed attribute
 theorem lift_ι (W : C) (k : ∀ a, W ⟶ I.left a)
     (h : ∀ b, k (I.fstTo b) ≫ I.fst b = k (I.sndTo b) ≫ I.snd b) (a) :
     Multiequalizer.lift I _ k h ≫ Multiequalizer.ι I a = k _ :=
@@ -977,7 +974,7 @@ abbrev desc (W : C) (k : ∀ b, I.right b ⟶ W)
   colimit.desc _ (Multicofork.ofπ I _ k h)
 #align category_theory.limits.multicoequalizer.desc CategoryTheory.Limits.Multicoequalizer.desc
 
-@[reassoc (attr := simp)]
+@[reassoc] -- Porting note: simp can prove this, removed attribute
 theorem π_desc (W : C) (k : ∀ b, I.right b ⟶ W)
     (h : ∀ a, I.fst a ≫ k (I.fstFrom a) = I.snd a ≫ k (I.sndFrom a)) (b) :
     Multicoequalizer.π I b ≫ Multicoequalizer.desc I _ k h = k _ :=
