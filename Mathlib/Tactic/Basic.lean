@@ -31,6 +31,38 @@ syntax (name := lemma)
     stx.setKind ``Parser.Command.theorem
   pure <| stx.setKind ``Parser.Command.declaration
 
+/-- Function to help do the revert/intro pattern, running some code inside a context
+where certain variables have been reverted before re-introing them.
+It will push `FVarId` alias information into info trees for you according to a simple protocol.
+
+- `fvarIds` is an array of `fvarIds` to revert. These are passed to
+  `Lean.MVarId.revert` with `preserveOrder := true`, hence the function
+  raises an error if they cannot be reverted in the provided order.
+- `k` is given the goal with all the variables reverted and
+  the array of reverted `FVarId`s, with the requested `FVarId`s at the beginning.
+  It must return a tuple of a value, an array describing which `FVarIds` to link,
+  and a mutated `MVarId`.
+
+The `a : Array (Option FVarId)` array returned by `k` is interpreted in the following way.
+The function will intro `a.size` variables, and then for each non-`none` entry we
+create an FVar alias between it and the corresponding `intro`ed variable.
+For example, having `k` return `fvars.map .some` causes all reverted variables to be
+`intro`ed and linked.
+
+Returns the value returned by `k` along with the resulting goal.
+ -/
+def _root_.Lean.MVarId.withReverted (mvarId : MVarId) (fvarIds : Array FVarId)
+    (k : MVarId → Array FVarId → MetaM (α × Array (Option FVarId) × MVarId))
+    (clearAuxDeclsInsteadOfRevert := false) : MetaM (α × MVarId) := do
+  let (xs, mvarId) ← mvarId.revert fvarIds true clearAuxDeclsInsteadOfRevert
+  let (r, xs', mvarId) ← k mvarId xs
+  let (ys, mvarId) ← mvarId.introNP xs'.size
+  mvarId.withContext do
+    for x? in xs', y in ys do
+      if let some x := x? then
+        pushInfoLeaf (.ofFVarAliasInfo { id := y, baseId := x, userName := ← y.getUserName })
+  return (r, mvarId)
+
 /--
 Replace the type of the free variable `fvarId` with `typeNew`.
 
@@ -44,24 +76,19 @@ information into the infotree.
 def _root_.Lean.MVarId.changeLocalDecl' (mvarId : MVarId) (fvarId : FVarId) (typeNew : Expr)
     (checkDefEq := true) : MetaM MVarId := do
   mvarId.checkNotAssigned `changeLocalDecl
-  let (xs, mvarId) ← mvarId.revert #[fvarId] true
-  mvarId.withContext do
+  let (_, mvarId) ← mvarId.withReverted #[fvarId] fun mvarId fvars => mvarId.withContext do
     let check (typeOld : Expr) : MetaM Unit := do
       if checkDefEq then
         unless ← isDefEq typeNew typeOld do
           throwTacticEx `changeLocalDecl mvarId
             m!"given type{indentExpr typeNew}\nis not definitionally equal to{indentExpr typeOld}"
-    let finalize (targetNew : Expr) : MetaM MVarId := do
-      let mvarId ← mvarId.replaceTargetDefEq targetNew
-      let (ys, mvarId) ← mvarId.introNP xs.size
-      mvarId.withContext do
-        for x in xs, y in ys do
-          pushInfoLeaf (.ofFVarAliasInfo { id := y, baseId := x, userName := ← y.getUserName })
-      pure mvarId
+    let finalize (targetNew : Expr) := do
+      return ((), fvars.map .some, ← mvarId.replaceTargetDefEq targetNew)
     match ← mvarId.getType with
     | .forallE n d b bi => do check d; finalize (.forallE n typeNew b bi)
     | .letE n t v b ndep  => do check t; finalize (.letE n typeNew v b ndep)
     | _ => throwTacticEx `changeLocalDecl mvarId "unexpected auxiliary target"
+  return mvarId
 
 /-- `change` can be used to replace the main goal or its local
 variables with definitionally equal ones.
@@ -191,8 +218,7 @@ is still type correct. Throws an error if it is a local hypothesis without a val
 def _root_.Lean.MVarId.clearValue (mvarId : MVarId) (fvarId : FVarId) : MetaM MVarId := do
   mvarId.checkNotAssigned `clear_value
   let tag ← mvarId.getTag
-  let (xs, mvarId') ← mvarId.revert #[fvarId] true
-  mvarId'.withContext do
+  let (_, mvarId) ← mvarId.withReverted #[fvarId] fun mvarId' fvars => mvarId'.withContext do
     let tgt ← mvarId'.getType
     unless tgt.isLet do
       mvarId.withContext <|
@@ -203,12 +229,9 @@ def _root_.Lean.MVarId.clearValue (mvarId : MVarId) (fvarId : FVarId) : MetaM MV
         throwTacticEx `clear_value mvarId
           m!"cannot clear {Expr.fvar fvarId}, the resulting context is not type correct"
     let mvarId'' ← mkFreshExprSyntheticOpaqueMVar tgt' tag
-    mvarId'.assign <| mkApp mvarId'' tgt.letValue!
-    let (ys, mvarId) ← mvarId''.mvarId!.introNP xs.size
-    mvarId.withContext do
-      for x in xs, y in ys do
-        pushInfoLeaf (.ofFVarAliasInfo { id := y, baseId := x, userName := ← y.getUserName })
-    return mvarId
+    mvarId'.assign <| .app mvarId'' tgt.letValue!
+    return ((), fvars.map .some, mvarId''.mvarId!)
+  return mvarId
 
 /-- `clear_value n₁ n₂ ...` clears the bodies of the local definitions `n₁, n₂ ...`, changing them
 into regular hypotheses. A hypothesis `n : α := t` is changed to `n : α`.
