@@ -9,6 +9,7 @@ Authors: Mario Carneiro, Keeley Hoek, Simon Hudon, Scott Morrison
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Option.Defs
+import Mathlib.Control.Traversable.Basic
 
 /-! # Monadic lazy lists.
 
@@ -315,9 +316,9 @@ unsafe def bind {α β : Type u} : ListM m α → (α → ListM m β) → ListM 
 #align tactic.mllist.bind_ ListM.bind
 
 /-- Convert any value in the monad to the singleton monadic lazy list. -/
-unsafe def monad_lift {α} (x : m α) : ListM m α :=
+unsafe def monadLift {α} (x : m α) : ListM m α :=
 cons <| (flip Prod.mk nil ∘ some) <$> x
-#align tactic.mllist.monad_lift ListM.monad_lift
+#align tactic.mllist.monad_lift ListM.monadLift
 
 /-- Lift the monad of a lazy list. -/
 unsafe def liftM [Monad n] [MonadLift m n] (L : ListM m α) : ListM n α :=
@@ -357,3 +358,15 @@ unsafe def firstM [Alternative m] {α β} (L : ListM m α) (f : α → m β) : m
 /-- Return the first value on which a predicate returns true. -/
 unsafe def first [Alternative m] {α} (L : ListM m α) (p : α → Prop) [DecidablePred p] : m α :=
   (L.filter p).head
+
+unsafe instance : Monad (ListM m) where
+  pure := fun a => .ofList [a]
+  seq := fun fs as => fs.zip (as ()) |>.map fun ⟨f, a⟩ => f a
+  bind := bind
+
+unsafe instance : Alternative (ListM m) where
+  failure := nil
+  orElse := fun L M => L.append (M ())
+
+unsafe instance : MonadLift m (ListM m) where
+  monadLift := monadLift
