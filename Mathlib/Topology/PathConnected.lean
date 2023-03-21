@@ -382,10 +382,12 @@ theorem trans_range {X : Type _} [TopologicalSpace X] {a b c : X} (γ₁ : Path 
     by_cases h : t ≤ 1 / 2
     · left
       refine' ⟨⟨2 * t, ⟨by positivity, (le_div_iff' <| by norm_num).mp h⟩⟩, _⟩
+      -- porting note: was `use 2 * t, ⟨by linarith, by linarith⟩`
       rw [← γ₁.extend_extends]
       rwa [coe_mk, Function.comp_apply, if_pos h] at hxt
     · right
       refine' ⟨⟨2 * t - 1, ⟨_, by norm_num; exact ht1⟩⟩, _⟩
+      -- porting note: was `use 2 * t - 1, ⟨by linarith, by linarith⟩`
       · rw [not_le, div_lt_iff (zero_lt_two : (0 : ℝ) < 2)] at h
         norm_num
         exact mul_comm t 2 ▸ h.le
@@ -394,23 +396,27 @@ theorem trans_range {X : Type _} [TopologicalSpace X] {a b c : X} (γ₁ : Path 
   · rintro x (⟨⟨t, ht0, ht1⟩, hxt⟩ | ⟨⟨t, ht0, ht1⟩, hxt⟩)
     · refine' ⟨⟨t / 2, ⟨by positivity,
         (div_le_iff <| by norm_num).mpr <| ht1.trans (by norm_num)⟩⟩, _⟩
+      -- porting note: was `use ⟨t / 2, ⟨by linarith, by linarith⟩⟩`
       have : t / 2 ≤ 1 / 2 := (div_le_div_right (zero_lt_two : (0 : ℝ) < 2)).mpr ht1
       rw [coe_mk, Function.comp_apply, if_pos this, Subtype.coe_mk]
       ring_nf
       rwa [γ₁.extend_extends]
     · by_cases h : t = 0
       · refine' ⟨⟨1 / 2, ⟨by positivity, by norm_num⟩⟩, _⟩
+        -- porting note: was `use ⟨1 / 2, ⟨by linarith, by linarith⟩⟩`
         rw [coe_mk, Function.comp_apply, if_pos le_rfl, Subtype.coe_mk,
           mul_one_div_cancel (two_ne_zero' ℝ)]
         rw [γ₁.extend_one]
         rwa [← γ₂.extend_extends, h, γ₂.extend_zero] at hxt
       · refine' ⟨⟨(t + 1) / 2, ⟨by positivity, _⟩⟩, _⟩
+        -- porting note: was `use ⟨(t + 1) / 2, ⟨by linarith, by linarith⟩⟩`
         · exact (div_le_iff <| by norm_num).mpr <| (add_le_add_right ht1 1).trans (by norm_num)
         replace h : t ≠ 0 := h
         have ht0 := lt_of_le_of_ne ht0 h.symm
         have : ¬(t + 1) / 2 ≤ 1 / 2 := by
           rw [not_le]
           exact (div_lt_div_right (zero_lt_two : (0 : ℝ) < 2)).mpr (by norm_num; exact ht0)
+          -- porting note: was `linarith`
         rw [coe_mk, Function.comp_apply, Subtype.coe_mk, if_neg this]
         ring_nf
         rwa [γ₂.extend_extends]
@@ -759,10 +765,7 @@ theorem range_reparam (γ : Path x y) {f : I → I} (hfcont : Continuous f) (hf�
     have h₁ : Continuous (Set.IccExtend (zero_le_one' ℝ) f) := by continuity
     have := intermediate_value_Icc (zero_le_one' ℝ) h₁.continuousOn
     · rw [IccExtend_left, IccExtend_right] at this
-      -- porting note: because we don't have `change ... at` yet, use `revert` and `intro`
-      revert this
-      change Icc (f 0) (f 1) ⊆ _ → _
-      intro this
+      change Icc (f 0) (f 1) ⊆ _ at this
       rw [hf₀, hf₁] at this
       rcases this t.2 with ⟨w, hw₁, hw₂⟩
       rw [IccExtend_of_mem _ _ hw₁] at hw₂
