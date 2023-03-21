@@ -85,16 +85,17 @@ protected theorem Decomposition.inductionOn {p : M → Prop} (h_zero : p 0)
     (h_homogeneous : ∀ {i} (m : ℳ i), p (m : M)) (h_add : ∀ m m' : M, p m → p m' → p (m + m')) :
     ∀ m, p m := by
   let ℳ' : ι → AddSubmonoid M := fun i ↦
-    {carrier := ℳ i, add_mem' := fun x y ↦ AddMemClass.add_mem x y,
-      zero_mem' := ZeroMemClass.zero_mem _}
+    (⟨⟨ℳ i, fun x y ↦ AddMemClass.add_mem x y⟩, (ZeroMemClass.zero_mem _)⟩ : AddSubmonoid M)
   haveI t : DirectSum.Decomposition ℳ' :=
     { decompose' := DirectSum.decompose ℳ
       left_inv := fun _ ↦ (decompose ℳ).left_inv _
       right_inv := fun _ ↦ (decompose ℳ).right_inv _ }
   have mem : ∀ m, m ∈ supᵢ ℳ' := fun m ↦
     (DirectSum.IsInternal.addSubmonoid_supᵢ_eq_top ℳ' (Decomposition.isInternal ℳ')).symm ▸ trivial
-  exact fun m ↦
-    AddSubmonoid.supᵢ_induction ℳ' (mem m) (fun i m h ↦ h_homogeneous ⟨m, h⟩) h_zero h_add
+  exact fun m ↦ @AddSubmonoid.supᵢ_induction _ _ _ ℳ' _ _ (mem m)
+    (fun i m h ↦ h_homogeneous ⟨m, h⟩) h_zero h_add
+--  exact fun m ↦
+--    AddSubmonoid.supᵢ_induction ℳ' (mem m) (fun i m h ↦ h_homogeneous ⟨m, h⟩) h_zero h_add
 #align direct_sum.decomposition.induction_on DirectSum.Decomposition.inductionOn
 
 @[simp]
@@ -109,7 +110,7 @@ theorem decompose_symm_of {i : ι} (x : ℳ i) : (decompose ℳ).symm (DirectSum
 
 @[simp]
 theorem decompose_coe {i : ι} (x : ℳ i) : decompose ℳ (x : M) = DirectSum.of _ i x := by
-  rw [← decompose_symm_of, Equiv.apply_symm_apply]
+  rw [← decompose_symm_of _, Equiv.apply_symm_apply]
 #align direct_sum.decompose_coe DirectSum.decompose_coe
 
 theorem decompose_of_mem {x : M} {i : ι} (hx : x ∈ ℳ i) :
