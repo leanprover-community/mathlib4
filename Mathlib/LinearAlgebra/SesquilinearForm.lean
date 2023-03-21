@@ -371,11 +371,17 @@ end Submodule
 
 namespace LinearMap
 
+/- porting note: disabling `Ring.toNonAssocRing` solves some of the problems, but not the one with
+`Submodule.orthogonalBilin`. That one can be avoided by making Lean find the instance through
+unification, but then the proof still has problems, so we opt for `etaExperiment` in a few
+declarations below. -/
+
 section Orthogonal
 
 variable [Field K] [AddCommGroup V] [Module K V] [Field K₁] [AddCommGroup V₁] [Module K₁ V₁]
   {J : K →+* K} {J₁ : K₁ →+* K} {J₁' : K₁ →+* K}
 
+set_option synthInstance.etaExperiment true in
 -- ↓ This lemma only applies in fields as we require `a * b = 0 → a = 0 ∨ b = 0`
 theorem span_singleton_inf_orthogonal_eq_bot (B : V₁ →ₛₗ[J₁] V₁ →ₛₗ[J₁'] K) (x : V₁)
     (hx : ¬B.IsOrtho x x) : (K₁ ∙ x) ⊓ Submodule.orthogonalBilin (K₁ ∙ x) B = ⊥ := by
@@ -392,6 +398,7 @@ theorem span_singleton_inf_orthogonal_eq_bot (B : V₁ →ₛₗ[J₁] V₁ →�
       (fun hfalse ↦ False.elim $ hx hfalse)
 #align linear_map.span_singleton_inf_orthogonal_eq_bot LinearMap.span_singleton_inf_orthogonal_eq_bot
 
+set_option synthInstance.etaExperiment true in
 -- ↓ This lemma only applies in fields since we use the `mul_eq_zero`
 theorem orthogonal_span_singleton_eq_to_lin_ker {B : V →ₗ[K] V →ₛₗ[J] K} (x : V) :
     Submodule.orthogonalBilin (K ∙ x) B = LinearMap.ker (B x) := by
@@ -404,9 +411,12 @@ theorem orthogonal_span_singleton_eq_to_lin_ker {B : V →ₗ[K] V →ₛₗ[J] 
     exact Or.intro_right _ h
 #align linear_map.orthogonal_span_singleton_eq_to_lin_ker LinearMap.orthogonal_span_singleton_eq_to_lin_ker
 
+-- porting note: workaround for lean4#2074, `etaExperiment` works here
+attribute [-instance] Ring.toNonAssocRing
+
 -- todo: Generalize this to sesquilinear maps
 theorem span_singleton_sup_orthogonal_eq_top {B : V →ₗ[K] V →ₗ[K] K} {x : V} (hx : ¬B.IsOrtho x x) :
-    (K ∙ x) ⊔ Submodule.orthogonalBilin (K ∙ x) B = ⊤ := by
+    (K ∙ x) ⊔ @Submodule.orthogonalBilin _ _ _ _ _ _ (_) _ _ (K ∙ x) B = ⊤ := by
   rw [orthogonal_span_singleton_eq_to_lin_ker]
   exact (B x).span_singleton_sup_ker_eq_top hx
 #align linear_map.span_singleton_sup_orthogonal_eq_top LinearMap.span_singleton_sup_orthogonal_eq_top
@@ -415,7 +425,7 @@ theorem span_singleton_sup_orthogonal_eq_top {B : V →ₗ[K] V →ₗ[K] K} {x 
 /-- Given a bilinear form `B` and some `x` such that `B x x ≠ 0`, the span of the singleton of `x`
   is complement to its orthogonal complement. -/
 theorem isCompl_span_singleton_orthogonal {B : V →ₗ[K] V →ₗ[K] K} {x : V} (hx : ¬B.IsOrtho x x) :
-    IsCompl (K ∙ x) (Submodule.orthogonalBilin (K ∙ x) B) :=
+    IsCompl (K ∙ x) (@Submodule.orthogonalBilin _ _ _ _ _ _ (_) _ _  (K ∙ x) B) :=
   { Disjoint := disjoint_iff.2 <| span_singleton_inf_orthogonal_eq_bot B x hx
     Codisjoint := codisjoint_iff.2 <| span_singleton_sup_orthogonal_eq_top hx }
 #align linear_map.is_compl_span_singleton_orthogonal LinearMap.isCompl_span_singleton_orthogonal
