@@ -383,4 +383,59 @@ def pi_option_equivalence :
 
 end pi_option
 
+/-- for a family of categories `C i` indexed by `I`, an equality `i = j` in `I` induces
+an equivalence `C i ≌ C j`. -/
+def Pi.equivalence_of_eq {I : Type u₂} (C : I → Type u₁)
+  [∀ i, Category.{v₁} (C i)] {i j : I} (h : i = j) :
+    C i ≌ C j := by
+  subst h
+  rfl
+
+/-- when `i = j`, projections `Pi.eval C i` and `Pi.eval C j` are related by the equivalence
+`Pi.equivalence_of_eq C h : C i ≌ C j`. -/
+@[simp]
+def Pi.eval_comp_equivalence_of_eq_functor {I : Type u₂} (C : I → Type u₁)
+  [∀ i, Category.{v₁} (C i)] {i j : I} (h : i = j) :
+  Pi.eval C i ⋙ (Pi.equivalence_of_eq C h).functor ≅
+    Pi.eval C j := eqToIso (by subst h; rfl)
+
+/-- the equivalences given by `Pi.equivalence_of_eq` are compatible with reindexing -/
+@[simp]
+def Pi.equivalence_of_eq_functor_iso {I : Type u₂} {I' : Type u₃}
+  (C : I → Type u₁) [∀ i, Category.{v₁} (C i)] {i' j' : I'}
+  (f : I' → I) (h : i' = j') :
+    (Pi.equivalence_of_eq C (show f i' = f j' by rw [h])).functor ≅
+      (Pi.equivalence_of_eq (fun i' => C (f i')) h).functor := eqToIso (by subst h; rfl)
+
+/-- the projections of `Functor.pi' F` are isomorphic to the functors of the family `F` -/
+@[simp]
+def Functor.pi'_eval_iso {I : Type u₂} {C : I → Type u₁}
+  [∀ i, Category.{v₁} (C i)] {A : Type u₄} [Category.{v₄} A]
+  (F : ∀ i, A ⥤ C i) (i : I) : pi' F ⋙ Pi.eval C i ≅ F i :=
+  eqToIso (Functor.pi'_eval _ _)
+
+-- should be moved to Pi.Basic
+/-- Reindexing a family of categories give two equivalent `Pi` categories -/
+@[simps]
+noncomputable def pi_equivalence_of_equiv {I : Type u₂} {I' : Type u₃} (C : I → Type u₁)
+  [∀ i, Category.{v₁} (C i)] (e : I' ≃ I) :
+  (∀ j, C (e j)) ≌ (∀ i, C i) :=
+{ functor := Functor.pi' (fun i => Pi.eval _ (e.symm i) ⋙
+    (Pi.equivalence_of_eq C (by simp)).functor)
+  inverse := Functor.pi' (fun i' => Pi.eval _ (e i'))
+  unitIso := NatIso.pi' (fun i' => Functor.leftUnitor _ ≪≫
+    (Pi.eval_comp_equivalence_of_eq_functor (fun j => C (e j)) (e.symm_apply_apply i')).symm ≪≫
+      isoWhiskerLeft _ ((Pi.equivalence_of_eq_functor_iso C e (e.symm_apply_apply i')).symm) ≪≫
+      (Functor.pi'_eval_iso _ _).symm ≪≫ isoWhiskerLeft _ (Functor.pi'_eval_iso _ _).symm ≪≫
+      (Functor.associator _ _ _).symm)
+  counitIso := NatIso.pi' (fun i => (Functor.associator _ _ _).symm ≪≫
+    isoWhiskerRight (Functor.pi'_eval_iso _ _) _ ≪≫
+    Pi.eval_comp_equivalence_of_eq_functor C (e.apply_symm_apply i) ≪≫
+    (Functor.leftUnitor _).symm)
+  functor_unitIso_comp := by
+    intro
+    ext
+    dsimp
+    simp [eqToHom_map] }
+
 end CategoryTheory

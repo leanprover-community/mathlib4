@@ -1,57 +1,10 @@
 import Mathlib.CategoryTheory.Localization.Prod
 
-universe v₁ v₂ v₃ u₁ u₂ u₃ u₄
+universe v₁ v₂ v₃ u₀ u₁ u₂ u₃ u₄
 
 namespace CategoryTheory
 
-def Pi.equivalence_of_eq {I : Type u₂} (C : I → Type u₁)
-  [∀ i, Category.{v₁} (C i)] {i j : I} (h : i = j) :
-    C i ≌ C j := by
-  subst h
-  rfl
-
-@[simp]
-def Pi.eval_comp_equivalence_of_eq_functor {I : Type u₂} (C : I → Type u₁)
-  [∀ i, Category.{v₁} (C i)] {i j : I} (h : i = j) :
-  Pi.eval C i ⋙ (Pi.equivalence_of_eq _ h).functor ≅
-    Pi.eval C j := eqToIso (by subst h; rfl)
-
-@[simp]
-def Pi.equivalence_of_eq_functor_iso {I : Type u₂} {I' : Type u₃}
-  (C : I → Type u₁) [∀ i, Category.{v₁} (C i)] {i' j' : I'}
-  (f : I' → I) (h : i' = j') :
-    (Pi.equivalence_of_eq C (show f i' = f j' by rw [h])).functor ≅
-      (Pi.equivalence_of_eq (fun i' => C (f i')) h).functor := eqToIso (by subst h; rfl)
-
-@[simp]
-def Functor.pi'_eval_iso {I : Type u₂} {C : I → Type u₁}
-  [∀ i, Category.{v₁} (C i)] {A : Type u₄} [Category.{v₄} A]
-  (f : ∀ i, A ⥤ C i) (i : I) : pi' f ⋙  Pi.eval C i ≅ f i :=
-  eqToIso (Functor.pi'_eval _ _)
-
--- should be moved to Pi.Basic
-noncomputable def pi_equivalence_of_equiv {I : Type u₂} {I' : Type u₃} (C : I → Type u₁)
-  [∀ i, Category.{v₁} (C i)] (e : I' ≃ I) :
-  (∀ j, C (e j)) ≌ (∀ i, C i) :=
-{ functor := Functor.pi' (fun i => Pi.eval _ (e.symm i) ⋙
-    (Pi.equivalence_of_eq C (by simp)).functor)
-  inverse := Functor.pi' (fun i' => Pi.eval _ (e i'))
-  unitIso := NatIso.pi' (fun i' => Functor.leftUnitor _ ≪≫
-    (Pi.eval_comp_equivalence_of_eq_functor (fun j => C (e j)) (e.symm_apply_apply i')).symm ≪≫
-      isoWhiskerLeft _ ((Pi.equivalence_of_eq_functor_iso C e (e.symm_apply_apply i')).symm) ≪≫
-      (Functor.pi'_eval_iso _ _).symm ≪≫ isoWhiskerLeft _ (Functor.pi'_eval_iso _ _).symm ≪≫
-      (Functor.associator _ _ _).symm)
-  counitIso := NatIso.pi' (fun i => (Functor.associator _ _ _).symm ≪≫
-    isoWhiskerRight (Functor.pi'_eval_iso _ _) _ ≪≫
-    Pi.eval_comp_equivalence_of_eq_functor C (e.apply_symm_apply i) ≪≫
-    (Functor.leftUnitor _).symm)
-  functor_unitIso_comp := by
-    intro
-    ext
-    dsimp
-    simp [eqToHom_map] }
-
-variable (J : Type) {C : J → Type u₁} {D : J → Type u₂}
+variable (J : Type u₀) {C : J → Type u₁} {D : J → Type u₂}
   [∀ j, Category.{v₁} (C j)] [∀ j, Category.{v₂} (D j)]
   (L : ∀ j, C j ⥤ D j) (W : ∀ j, MorphismProperty (C j))
   [∀ j, (W j).ContainsIdentities]
@@ -63,7 +16,7 @@ namespace IsLocalization
 
 lemma pi [Finite J] :
     (Functor.pi L).IsLocalization (MorphismProperty.pi W) := by
-  let P : Type → Prop := fun J => ∀ {C : J → Type u₁} {D : J → Type u₂}
+  let P : Type u₀ → Prop := fun J => ∀ {C : J → Type u₁} {D : J → Type u₂}
     [∀ j, Category.{v₁} (C j)] [∀ j, Category.{v₂} (D j)]
     (L : ∀ j, C j ⥤ D j) (W : ∀ j, MorphismProperty (C j))
     [∀ j, (W j).ContainsIdentities] [∀ j, (L j).IsLocalization (W j)],
@@ -85,7 +38,16 @@ lemma pi [Finite J] :
     refine' IsLocalization.of_equivalences (Functor.pi L₁)
       (MorphismProperty.pi W₁) (Functor.pi L₂) (MorphismProperty.pi W₂) E E' _
       (MorphismProperty.IsInvertedBy.pi _ _ (fun j => Localization.inverts _ _))
-    sorry
+    intro _ _ f hf
+    refine' ⟨_, _, E.functor.map f, _, ⟨Iso.refl _⟩⟩
+    intro i
+    have hf' := hf (e.symm i)
+    dsimp
+    have H : ∀ {j j' : J₂} (h : j = j') {X Y : C₂ j} (g : X ⟶ Y) (_ : W₂ j g),
+        W₂ j' ((Pi.equivalence_of_eq C₂ h).functor.map g) := by
+      rintro j _ rfl _ _ g hg
+      exact hg
+    exact H (e.apply_symm_apply i) _ hf'
   . intro C D _ _ L W _ _
     haveI : ∀ j, IsEquivalence (L j) := by rintro ⟨⟩
     refine' of_equivalence _ _ (fun _ _ _ _ => _)
