@@ -84,11 +84,13 @@ if for all `i ≠ j`, `B (v i) (v j) = 0`. For orthogonality between two element
 `bilin_form.is_ortho` -/
 def IsOrthoᵢ (B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₁'] R) (v : n → M₁) : Prop :=
   Pairwise (B.IsOrtho on v)
+set_option linter.uppercaseLean3 false in
 #align linear_map.is_Ortho LinearMap.IsOrthoᵢ
 
 theorem isOrthoᵢ_def {B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₁'] R} {v : n → M₁} :
     B.IsOrthoᵢ v ↔ ∀ i j : n, i ≠ j → B (v i) (v j) = 0 :=
   Iff.rfl
+set_option linter.uppercaseLean3 false in
 #align linear_map.is_Ortho_def LinearMap.isOrthoᵢ_def
 
 theorem isOrthoᵢ_flip (B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₁'] R) {v : n → M₁} :
@@ -102,6 +104,7 @@ theorem isOrthoᵢ_flip (B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₁'] R) {v : 
   simp_rw [flip_apply] at h
   rw [isOrthoᵢ_def] at h -- porting note: added this line (TODO verify this is expected)
   exact h j i (Ne.symm hij)
+set_option linter.uppercaseLean3 false in
 #align linear_map.is_Ortho_flip LinearMap.isOrthoᵢ_flip
 
 end CommRing
@@ -164,6 +167,7 @@ theorem linearIndependent_of_isOrthoᵢ {B : V₁ →ₛₗ[I₁] V₁ →ₛₗ
     simp_rw [B.map_sum₂, map_smulₛₗ₂, smul_eq_mul, hsum] at this
     apply (map_eq_zero I₁).mp
     exact eq_zero_of_ne_zero_of_mul_right_eq_zero (hv₂ i) this
+set_option linter.uppercaseLean3 false in
 #align linear_map.linear_independent_of_is_Ortho LinearMap.linearIndependent_of_isOrthoᵢ
 
 end Field
@@ -364,7 +368,7 @@ theorem orthogonalBilin_le (h : N ≤ L) : L.orthogonalBilin B ≤ N.orthogonalB
 #align submodule.orthogonal_bilin_le Submodule.orthogonalBilin_le
 
 theorem le_orthogonalBilin_orthogonalBilin (b : B.IsRefl) :
-    N ≤ (N.orthogonalBilin B).orthogonalBilin B := fun n hn m hm ↦ b _ _ (hm n hn)
+    N ≤ (N.orthogonalBilin B).orthogonalBilin B := fun n hn _m hm ↦ b _ _ (hm n hn)
 #align submodule.le_orthogonal_bilin_orthogonal_bilin Submodule.le_orthogonalBilin_orthogonalBilin
 
 end Submodule
@@ -475,7 +479,7 @@ theorem isAdjointPair_iff_comp_eq_compl₂ : IsAdjointPair B B' f g ↔ B'.comp 
 theorem isAdjointPairZero : IsAdjointPair B B' 0 0 := fun _ _ ↦ by simp only [zero_apply, map_zero]
 #align linear_map.is_adjoint_pair_zero LinearMap.isAdjointPairZero
 
-theorem isAdjointPairId : IsAdjointPair B B 1 1 := fun x y ↦ rfl
+theorem isAdjointPairId : IsAdjointPair B B 1 1 := fun _ _ ↦ rfl
 #align linear_map.is_adjoint_pair_id LinearMap.isAdjointPairId
 
 theorem IsAdjointPair.add (h : IsAdjointPair B B' f g) (h' : IsAdjointPair B B' f' g') :
@@ -573,8 +577,8 @@ def isPairSelfAdjointSubmodule : Submodule R (Module.End R M)
     where
   carrier := { f | IsPairSelfAdjoint B F f }
   zero_mem' := isAdjointPairZero
-  add_mem' := @fun f g hf hg => hf.add hg
-  smul_mem' := @fun c f h => h.smul c
+  add_mem' := fun hf hg => hf.add hg
+  smul_mem' := @fun c _ h => h.smul c
 #align linear_map.is_pair_self_adjoint_submodule LinearMap.isPairSelfAdjointSubmodule
 
 /-- An endomorphism of a module is skew-adjoint with respect to a bilinear form if its negation
@@ -666,7 +670,7 @@ variable (M₁ M₂ I₁ I₂)
 /-- In a non-trivial module, zero is not non-degenerate. -/
 theorem not_separatingLeft_zero [Nontrivial M₁] : ¬(0 : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] R).SeparatingLeft :=
   let ⟨m, hm⟩ := exists_ne (0 : M₁)
-  fun h ↦ hm (h m fun n ↦ rfl)
+  fun h ↦ hm (h m fun _n ↦ rfl)
 #align linear_map.not_separating_left_zero LinearMap.not_separatingLeft_zero
 
 variable {M₁ M₂ I₁ I₂}
@@ -820,6 +824,7 @@ theorem IsOrthoᵢ.not_isOrtho_basis_self_of_separatingLeft [Nontrivial R]
   obtain rfl | hij := eq_or_ne i j
   · exact ho
   · exact h hij
+set_option linter.uppercaseLean3 false in
 #align linear_map.is_Ortho.not_is_ortho_basis_self_of_separating_left LinearMap.IsOrthoᵢ.not_isOrtho_basis_self_of_separatingLeft
 
 /-- An orthogonal basis with respect to a right-separating bilinear form has no self-orthogonal
@@ -830,6 +835,7 @@ theorem IsOrthoᵢ.not_isOrtho_basis_self_of_separatingRight [Nontrivial R]
   rw [isOrthoᵢ_flip] at h
   rw [isOrtho_flip]
   exact h.not_isOrtho_basis_self_of_separatingLeft (flip_separatingLeft.mpr hB) i
+set_option linter.uppercaseLean3 false in
 #align linear_map.is_Ortho.not_is_ortho_basis_self_of_separating_right LinearMap.IsOrthoᵢ.not_isOrtho_basis_self_of_separatingRight
 
 /-- Given an orthogonal basis with respect to a bilinear form, the bilinear form is left-separating
@@ -847,12 +853,13 @@ theorem IsOrthoᵢ.separatingLeftOfNotIsOrthoBasisSelf [NoZeroDivisors R] {B : M
     smul_eq_mul] at hB
   rw [Finset.sum_eq_single i] at hB
   · exact eq_zero_of_ne_zero_of_mul_right_eq_zero (h i) hB
-  · intro j hj hij
+  · intro j _hj hij
     replace hij : B (v j) (v i) = 0 := hO hij
     rw [hij, RingHom.id_apply, mul_zero]
   · intro hi
     replace hi : vi i = 0 := Finsupp.not_mem_support_iff.mp hi
     rw [hi, RingHom.id_apply, zero_mul]
+set_option linter.uppercaseLean3 false in
 #align linear_map.is_Ortho.separating_left_of_not_is_ortho_basis_self LinearMap.IsOrthoᵢ.separatingLeftOfNotIsOrthoBasisSelf
 
 /-- Given an orthogonal basis with respect to a bilinear form, the bilinear form is right-separating
@@ -865,6 +872,7 @@ theorem IsOrthoᵢ.separatingRightIffNotIsOrthoBasisSelf [NoZeroDivisors R] {B :
   refine' IsOrthoᵢ.separatingLeftOfNotIsOrthoBasisSelf v hO fun i ↦ _
   rw [isOrtho_flip]
   exact h i
+set_option linter.uppercaseLean3 false in
 #align linear_map.is_Ortho.separating_right_iff_not_is_ortho_basis_self LinearMap.IsOrthoᵢ.separatingRightIffNotIsOrthoBasisSelf
 
 /-- Given an orthogonal basis with respect to a bilinear form, the bilinear form is nondegenerate
@@ -873,6 +881,7 @@ theorem IsOrthoᵢ.nondegenerateOfNotIsOrthoBasisSelf [NoZeroDivisors R] {B : M 
     (v : Basis n R M) (hO : B.IsOrthoᵢ v) (h : ∀ i, ¬B.IsOrtho (v i) (v i)) : B.Nondegenerate :=
   ⟨IsOrthoᵢ.separatingLeftOfNotIsOrthoBasisSelf v hO h,
     IsOrthoᵢ.separatingRightIffNotIsOrthoBasisSelf v hO h⟩
+set_option linter.uppercaseLean3 false in
 #align linear_map.is_Ortho.nondegenerate_of_not_is_ortho_basis_self LinearMap.IsOrthoᵢ.nondegenerateOfNotIsOrthoBasisSelf
 
 end CommRing
