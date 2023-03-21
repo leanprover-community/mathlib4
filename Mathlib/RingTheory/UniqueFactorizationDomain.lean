@@ -1398,7 +1398,6 @@ noncomputable def factors' (a : α) : Multiset { a : Associates α // Irreducibl
 theorem map_subtype_coe_factors' {a : α} :
     (factors' a).map (↑) = (factors a).map Associates.mk := by
   simp [factors', Multiset.map_pmap, Multiset.pmap_eq_map]
-
 #align associates.map_subtype_coe_factors' Associates.map_subtype_coe_factors'
 
 theorem factors'_cong {a b : α} (h : a ~ᵤ b) : factors' a = factors' b := by
@@ -1523,7 +1522,7 @@ theorem factors_mul (a b : Associates α) : (a * b).factors = a.factors + b.fact
 #align associates.factors_mul Associates.factors_mul
 
 theorem factors_mono : ∀ {a b : Associates α}, a ≤ b → a.factors ≤ b.factors
-  | s, t, ⟨d, rfl⟩ => by rw [factors_mul] <;> exact le_add_of_nonneg_right bot_le
+  | s, t, ⟨d, eq⟩ => by rw [eq, factors_mul]; exact le_add_of_nonneg_right bot_le
 #align associates.factors_mono Associates.factors_mono
 
 theorem factors_le {a b : Associates α} : a.factors ≤ b.factors ↔ a ≤ b :=
