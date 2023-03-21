@@ -96,7 +96,7 @@ instance : ContinuousMapClass (Path x y) I X where
 -- porting note: not necessary in light of the instance above
 /-
 instance : CoeFun (Path x y) fun _ => I → X :=
-  ⟨FunLike.coe⟩
+  ⟨fun p => p.toFun⟩
 -/
 
 @[ext]
@@ -199,8 +199,11 @@ theorem symm_range {a b : X} (γ : Path a b) : range γ.symm = range γ := by
 
 open ContinuousMap
 
+/- porting note: because of the new `FunLike` instance, we already have a coercion to `C(I, X)`
+so we avoid adding another.
 --instance : Coe (Path x y) C(I, X) :=
   --⟨fun γ => γ.1⟩
+-/
 
 /-- The following instance defines the topology on the path space to be induced from the
 compact-open topology on the space `C(I,X)` of continuous maps from `I` to `X`.
