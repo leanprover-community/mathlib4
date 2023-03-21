@@ -16,12 +16,12 @@ import Mathlib.RingTheory.PrincipalIdealDomain
 
 We say that a ring `R` satisfies the invariant basis number property if there is a well-defined
 notion of the rank of a finitely generated free (left) `R`-module. Since a finitely generated free
-module with a basis consisting of `n` elements is linearly equivalent to `fin n → R`, it is
-sufficient that `(fin n → R) ≃ₗ[R] (fin m → R)` implies `n = m`.
+module with a basis consisting of `n` elements is linearly equivalent to `Fin n → R`, it is
+sufficient that `(Fin n → R) ≃ₗ[R] (Fin m → R)` implies `n = m`.
 
 It is also useful to consider two stronger conditions, namely the rank condition,
-that a surjective linear map `(fin n → R) →ₗ[R] (fin m → R)` implies `m ≤ n` and
-the strong rank condition, that an injective linear map `(fin n → R) →ₗ[R] (fin m → R)`
+that a surjective linear map `(Fin n → R) →ₗ[R] (Fin m → R)` implies `m ≤ n` and
+the strong rank condition, that an injective linear map `(Fin n → R) →ₗ[R] (Fin m → R)`
 implies `n ≤ m`.
 
 The strong rank condition implies the rank condition, and the rank condition implies
@@ -29,9 +29,9 @@ the invariant basis number property.
 
 ## Main definitions
 
-`strong_rank_condition R` is a type class stating that `R` satisfies the strong rank condition.
-`rank_condition R` is a type class stating that `R` satisfies the rank condition.
-`invariant_basis_number R` is a type class stating that `R` has the invariant basis number property.
+`StrongRankCondition R` is a type class stating that `R` satisfies the strong rank condition.
+`RankCondition R` is a type class stating that `R` satisfies the rank condition.
+`InvariantBasisNumber R` is a type class stating that `R` has the invariant basis number property.
 
 ## Main results
 
@@ -40,19 +40,19 @@ We show that every nontrivial left-noetherian ring satisfies the strong rank con
 and then use this to show every nontrivial commutative ring has the invariant basis number property.
 
 More generally, every commutative ring satisfies the strong rank condition. This is proved in
-`linear_algebra/free_module/strong_rank_condition`. We keep
-`invariant_basis_number_of_nontrivial_of_comm_ring` here since it imports fewer files.
+`LinearAlgebra/FreeModule/StrongRankCondition`. We keep
+`invariantBasisNumber_of_nontrivial_of_commRing` here since it imports fewer files.
 
 ## Future work
 
-So far, there is no API at all for the `invariant_basis_number` class. There are several natural
+So far, there is no API at all for the `InvariantBasisNumber` class. There are several natural
 ways to formulate that a module `M` is finitely generated and free, for example
-`M ≃ₗ[R] (fin n → R)`, `M ≃ₗ[R] (ι → R)`, where `ι` is a fintype, or providing a basis indexed by
+`M ≃ₗ[R] (Fin n → R)`, `M ≃ₗ[R] (ι → R)`, where `ι` is a fintype, or providing a basis indexed by
 a finite type. There should be lemmas applying the invariant basis number property to each
 situation.
 
 The finite version of the invariant basis number property implies the infinite analogue, i.e., that
-`(ι →₀ R) ≃ₗ[R] (ι' →₀ R)` implies that `cardinal.mk ι = cardinal.mk ι'`. This fact (and its
+`(ι →₀ R) ≃ₗ[R] (ι' →₀ R)` implies that `Cardinal.mk ι = Cardinal.mk ι'`. This fact (and its
 variants) should be formalized.
 
 ## References
@@ -79,10 +79,11 @@ section
 
 variable (R : Type u) [Semiring R]
 
-/-- We say that `R` satisfies the strong rank condition if `(fin n → R) →ₗ[R] (fin m → R)` injective
+/-- We say that `R` satisfies the strong rank condition if `(Fin n → R) →ₗ[R] (Fin m → R)` injective
     implies `n ≤ m`. -/
 @[mk_iff]
 class StrongRankCondition : Prop where
+  /-- Any injective linear map from `Rⁿ` to `Rᵐ` guarantees `n ≤ m`. -/
   le_of_fin_injective : ∀ {n m : ℕ} (f : (Fin n → R) →ₗ[R] Fin m → R), Injective f → n ≤ m
 #align strong_rank_condition StrongRankCondition
 
@@ -92,7 +93,7 @@ theorem le_of_fin_injective [StrongRankCondition R] {n m : ℕ} (f : (Fin n → 
 #align le_of_fin_injective le_of_fin_injective
 
 /-- A ring satisfies the strong rank condition if and only if, for all `n : ℕ`, any linear map
-`(fin (n + 1) → R) →ₗ[R] (fin n → R)` is not injective. -/
+`(Fin (n + 1) → R) →ₗ[R] (Fin n → R)` is not injective. -/
 theorem strongRankCondition_iff_succ :
     StrongRankCondition R ↔
       ∀ (n : ℕ) (f : (Fin (n + 1) → R) →ₗ[R] Fin n → R), ¬Function.Injective f := by
@@ -123,9 +124,10 @@ theorem card_le_of_injective' [StrongRankCondition R] {α β : Type _} [Fintype 
       ((P.injective.comp i).comp Q.injective)
 #align card_le_of_injective' card_le_of_injective'
 
-/-- We say that `R` satisfies the rank condition if `(fin n → R) →ₗ[R] (fin m → R)` surjective
+/-- We say that `R` satisfies the rank condition if `(Fin n → R) →ₗ[R] (Fin m → R)` surjective
     implies `m ≤ n`. -/
 class RankCondition : Prop where
+  /-- Any surjective linear map from `Rⁿ` to `Rᵐ` guarantees `m ≤ n`. -/
   le_of_fin_surjective : ∀ {n m : ℕ} (f : (Fin n → R) →ₗ[R] Fin m → R), Surjective f → m ≤ n
 #align rank_condition RankCondition
 
@@ -152,8 +154,8 @@ theorem card_le_of_surjective' [RankCondition R] {α β : Type _} [Fintype α] [
       ((P.surjective.comp i).comp Q.surjective)
 #align card_le_of_surjective' card_le_of_surjective'
 
-/-- By the universal property for free modules, any surjective map `(fin n → R) →ₗ[R] (fin m → R)`
-has an injective splitting `(fin m → R) →ₗ[R] (fin n → R)`
+/-- By the universal property for free modules, any surjective map `(Fin n → R) →ₗ[R] (Fin m → R)`
+has an injective splitting `(Fin m → R) →ₗ[R] (Fin n → R)`
 from which the strong rank condition gives the necessary inequality for the rank condition.
 -/
 instance (priority := 100) rankCondition_of_strongRankCondition [StrongRankCondition R] :
@@ -162,10 +164,11 @@ instance (priority := 100) rankCondition_of_strongRankCondition [StrongRankCondi
     le_of_fin_injective R _ (f.splittingOfFunOnFintypeSurjective_injective s)
 #align rank_condition_of_strong_rank_condition rankCondition_of_strongRankCondition
 
-/-- We say that `R` has the invariant basis number property if `(fin n → R) ≃ₗ[R] (fin m → R)`
+/-- We say that `R` has the invariant basis number property if `(Fin n → R) ≃ₗ[R] (Fin m → R)`
     implies `n = m`. This gives rise to a well-defined notion of rank of a finitely generated free
     module. -/
 class InvariantBasisNumber : Prop where
+  /-- Any linear equiv between `Rⁿ` and `Rᵐ` guarantees `m = n`. -/
   eq_of_fin_equiv : ∀ {n m : ℕ}, ((Fin n → R) ≃ₗ[R] Fin m → R) → n = m
 #align invariant_basis_number InvariantBasisNumber
 
@@ -185,12 +188,14 @@ theorem eq_of_fin_equiv {n m : ℕ} : ((Fin n → R) ≃ₗ[R] Fin m → R) → 
   InvariantBasisNumber.eq_of_fin_equiv
 #align eq_of_fin_equiv eq_of_fin_equiv
 
-theorem card_eq_of_lequiv {α β : Type _} [Fintype α] [Fintype β] (f : (α → R) ≃ₗ[R] β → R) :
+theorem card_eq_of_linearEquiv {α β : Type _} [Fintype α] [Fintype β] (f : (α → R) ≃ₗ[R] β → R) :
     Fintype.card α = Fintype.card β :=
   eq_of_fin_equiv R
     ((LinearEquiv.funCongrLeft R R (Fintype.equivFin α)).trans f ≪≫ₗ
       (LinearEquiv.funCongrLeft R R (Fintype.equivFin β)).symm)
-#align card_eq_of_lequiv card_eq_of_lequiv
+#align card_eq_of_lequiv card_eq_of_linearEquiv
+-- porting note: this was not well-named because `lequiv` could mean other things
+-- (e.g., `localEquiv`)
 
 theorem nontrivial_of_invariantBasisNumber : Nontrivial R := by
   by_contra h
@@ -217,11 +222,11 @@ variable (R : Type u) [Ring R] [Nontrivial R] [IsNoetherianRing R]
 -- and we use this below to show any commutative ring has invariant basis number.
 /-- Any nontrivial noetherian ring satisfies the strong rank condition.
 
-An injective map `((fin n ⊕ fin (1 + m)) → R) →ₗ[R] (fin n → R)` for some left-noetherian `R`
-would force `fin (1 + m) → R ≃ₗ punit` (via `is_noetherian.equiv_punit_of_prod_injective`),
+An injective map `((Fin n ⊕ Fin (1 + m)) → R) →ₗ[R] (Fin n → R)` for some left-noetherian `R`
+would force `Fin (1 + m) → R ≃ₗ PUnit` (via `IsNoetherian.equivPunitOfProdInjective`),
 which is not the case!
 -/
-instance (priority := 100) noetherian_ring_strongRankCondition : StrongRankCondition R := by
+instance (priority := 100) IsNoetherianRing.strongRankCondition : StrongRankCondition R := by
   constructor
   intro m n f i
   by_contra h
@@ -240,7 +245,7 @@ instance (priority := 100) noetherian_ring_strongRankCondition : StrongRankCondi
   have : IsNoetherian R R := ‹IsNoetherianRing R›
   apply (IsNoetherian.equivPunitOfProdInjective f' i').injective
   ext
-#align noetherian_ring_strong_rank_condition noetherian_ring_strongRankCondition
+#align noetherian_ring_strong_rank_condition IsNoetherianRing.strongRankCondition
 
 end
 
@@ -253,7 +258,7 @@ end
   We construct the isomorphism in two steps:
   1. We construct the ring `R^n/I^n`, show that it is an `R/I`-module and show that there is an
      isomorphism of `R/I`-modules `R^n/I^n ≃ (R/I)^n`. This isomorphism is called
-    `ideal.pi_quot_equiv` and is located in the file `ring_theory/ideals.lean`.
+    `Ideal.piQuotEquiv` and is located in the file `ring_theory/ideals.lean`.
   2. We construct an isomorphism of `R/I`-modules `R^n/I^n ≃ R^m/I^m` using the isomorphism
      `R^n ≃ R^m`.
 -/
@@ -263,6 +268,7 @@ section
 
 variable {R : Type u} [CommRing R] (I : Ideal R) {ι : Type v} [Fintype ι] {ι' : Type w}
 
+-- porting note: using this to get around lena4#2074. `etaExperiment` works here though.
 attribute [-instance] Ring.toNonAssocRing
 
 /-- An `R`-linear map `R^n → R^m` induces a function `R^n/I^n → R^m/I^m`. -/
@@ -309,8 +315,8 @@ attribute [local instance] Ideal.Quotient.field
 /-- Nontrivial commutative rings have the invariant basis number property.
 
 In fact, any nontrivial commutative ring satisfies the strong rank condition, see
-`comm_ring_strong_rank_condition`. We prove this instance separately to avoid dependency on
-`linear_algebra.charpoly.basic`. -/
+`commRing_strongRankCondition`. We prove this instance separately to avoid dependency on
+`LinearAlgebra.Charpoly.Basic`. -/
 instance (priority := 100) invariantBasisNumber_of_nontrivial_of_commRing {R : Type u} [CommRing R]
     [Nontrivial R] : InvariantBasisNumber R :=
   ⟨fun e =>
