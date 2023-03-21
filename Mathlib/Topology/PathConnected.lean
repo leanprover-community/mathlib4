@@ -704,13 +704,13 @@ theorem truncate_self {X : Type _} [TopologicalSpace X] {a b : X} (γ : Path a b
 @[simp]
 theorem truncate_zero_zero {X : Type _} [TopologicalSpace X] {a b : X} (γ : Path a b) :
     γ.truncate 0 0 = (Path.refl a).cast (by rw [min_self, γ.extend_zero]) γ.extend_zero := by
-  convert γ.truncate_self 0 <;> exact γ.extend_zero.symm
+  convert γ.truncate_self 0
 #align path.truncate_zero_zero Path.truncate_zero_zero
 
 @[simp]
 theorem truncate_one_one {X : Type _} [TopologicalSpace X] {a b : X} (γ : Path a b) :
     γ.truncate 1 1 = (Path.refl b).cast (by rw [min_self, γ.extend_one]) γ.extend_one := by
-  convert γ.truncate_self 1 <;> exact γ.extend_one.symm
+  convert γ.truncate_self 1
 #align path.truncate_one_one Path.truncate_one_one
 
 @[simp]
@@ -1049,10 +1049,10 @@ theorem IsPathConnected.exists_path_through_family {X : Type _} [TopologicalSpac
           rw [le_zero_iff.mp hi]
           exact ⟨0, rfl⟩
         · rw [range_subset_iff]
-          rintro x
+          rintro _x
           exact hp' 0 le_rfl
     · rcases hn fun i hi => hp' i <| Nat.le_succ_of_le hi with ⟨γ₀, hγ₀⟩
-      rcases h.joined_in (p' n) (hp' n n.le_succ) (p' <| n + 1) (hp' (n + 1) <| le_rfl) with
+      rcases h.joinedIn (p' n) (hp' n n.le_succ) (p' <| n + 1) (hp' (n + 1) <| le_rfl) with
         ⟨γ₁, hγ₁⟩
       let γ : Path (p' 0) (p' <| n + 1) := γ₀.trans γ₁
       use γ
@@ -1064,7 +1064,7 @@ theorem IsPathConnected.exists_path_through_family {X : Type _} [TopologicalSpac
           left
           exact hγ₀.1 i hi'
         · rw [not_le, ← Nat.succ_le_iff] at hi'
-          have : i = n.succ := by linarith
+          have : i = n.succ := le_antisymm hi hi'
           rw [this]
           use 1
           exact γ.target
@@ -1074,20 +1074,17 @@ theorem IsPathConnected.exists_path_through_family {X : Type _} [TopologicalSpac
         exact hγ₁
   have hpp' : ∀ k < n + 1, p k = p' k := by
     intro k hk
-    simp only [p', hk, dif_pos]
+    simp only [hk, dif_pos]
     congr
     ext
     rw [Fin.val_cast_of_lt hk]
-    norm_cast
   use γ.cast (hpp' 0 n.zero_lt_succ) (hpp' n n.lt_succ_self)
   simp only [γ.cast_coe]
   refine' And.intro hγ.2 _
   rintro ⟨i, hi⟩
   suffices p ⟨i, hi⟩ = p' i by convert hγ.1 i (Nat.le_of_lt_succ hi)
   rw [← hpp' i hi]
-  suffices i = i % n.succ by
-    congr
-    assumption
+  suffices i = i % n.succ by congr
   rw [Nat.mod_eq_of_lt hi]
 #align is_path_connected.exists_path_through_family IsPathConnected.exists_path_through_family
 
