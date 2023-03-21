@@ -66,8 +66,6 @@ namespace PythagoreanTriple
 
 variable {x y z : ℤ} (h : PythagoreanTriple x y z)
 
--- include h
-
 theorem eq : x * x + y * y = z * z :=
   h
 #align pythagorean_triple.eq PythagoreanTriple.eq
@@ -86,8 +84,6 @@ theorem mul (k : ℤ) : PythagoreanTriple (k * x) (k * y) (k * z) :=
 
 #align pythagorean_triple.mul PythagoreanTriple.mul
 
--- omit h
-
 /-- `(k*x, k*y, k*z)` is a Pythagorean triple if and only if
 `(x, y, z)` is also a triple. -/
 theorem mul_iff (k : ℤ) (hk : k ≠ 0) :
@@ -98,8 +94,6 @@ theorem mul_iff (k : ℤ) (hk : k ≠ 0) :
   rw [← mul_left_inj' (mul_ne_zero hk hk)]
   convert h using 1 <;> ring
 #align pythagorean_triple.mul_iff PythagoreanTriple.mul_iff
-
--- include h
 
 /-- A Pythagorean triple `x, y, z` is “classified” if there exist integers `k, m, n` such that
 either
@@ -444,11 +438,9 @@ namespace PythagoreanTriple
 
 variable {x y z : ℤ} (h : PythagoreanTriple x y z)
 
--- include h
-
 theorem isPrimitiveClassified_aux (hc : x.gcd y = 1) (hzpos : 0 < z) {m n : ℤ}
-    (hm2n2 : 0 < m ^ 2 + n ^ 2) (hv2 : (x : ℚ) / z = 2 * m * n / (m ^ 2 + n ^ 2))
-    (hw2 : (y : ℚ) / z = (m ^ 2 - n ^ 2) / (m ^ 2 + n ^ 2))
+    (hm2n2 : 0 < m ^ 2 + n ^ 2) (hv2 : (x : ℚ) / z = 2 * m * n / ((m : ℚ) ^ 2 + (n : ℚ) ^ 2))
+    (hw2 : (y : ℚ) / z = ((m : ℚ) ^ 2 - (n : ℚ) ^ 2) / ((m : ℚ) ^ 2 + (n : ℚ) ^ 2))
     (H : Int.gcd (m ^ 2 - n ^ 2) (m ^ 2 + n ^ 2) = 1) (co : Int.gcd m n = 1)
     (pp : m % 2 = 0 ∧ n % 2 = 1 ∨ m % 2 = 1 ∧ n % 2 = 0) : h.IsPrimitiveClassified := by
   have hz : z ≠ 0
@@ -465,7 +457,6 @@ theorem isPrimitiveClassified_aux (hc : x.gcd y = 1) (hzpos : 0 < z) {m n : ℤ}
   norm_cast
 #align pythagorean_triple.is_primitive_classified_aux PythagoreanTriple.isPrimitiveClassified_aux
 
-/- ./././Mathport/Syntax/Translate/Tactic/Lean3.lean:132:4: warning: unsupported: rw with cfg: { occs := occurrences.pos[occurrences.pos] «expr[ ,]»([2, 3]) } -/
 theorem isPrimitiveClassified_of_coprime_of_odd_of_pos (hc : Int.gcd x y = 1) (hyo : y % 2 = 1)
     (hzpos : 0 < z) : h.IsPrimitiveClassified := by
   by_cases h0 : x = 0
@@ -503,18 +494,21 @@ theorem isPrimitiveClassified_of_coprime_of_odd_of_pos (hc : Int.gcd x y = 1) (h
   have hm2n2 : 0 < m ^ 2 + n ^ 2 := by
     apply lt_add_of_pos_of_le _ (sq_nonneg n)
     exact lt_of_le_of_ne (sq_nonneg m) (Ne.symm (pow_ne_zero 2 hm0))
-  have hw2 : w = (m ^ 2 - n ^ 2) / (m ^ 2 + n ^ 2) := by
-    rw [ht4.2, hq2]
-    field_simp [hm2n2, Rat.den_nz q, -Rat.num_div_den]
   have hm2n20 : (m : ℚ) ^ 2 + (n : ℚ) ^ 2 ≠ 0 := by
     norm_cast
     simpa only [Int.coe_nat_pow] using ne_of_gt hm2n2
+  have hw2 : w = ((m : ℚ) ^ 2 - (n : ℚ) ^ 2) / ((m : ℚ) ^ 2 + (n : ℚ) ^ 2) := by
+    rw [ht4.2, hq2]
+    -- TODO field_simp [hm2n2, Rat.den_nz q, -Rat.num_div_den]
+  have helper {j k : ℚ} (h₁ : k ≠ 0) (h₂ : j ^ 2 + k ^ 2 ≠ 0) :
+      2 * (j / k) / (1 + (j / k) ^ 2) = 2 * j * k / (j ^ 2 + k ^ 2) :=
+    have h₃ : k * (k ^ 2 + j ^ 2) ≠ 0 := mul_ne_zero h₁ (by rwa [add_comm] at h₂)
+    by field_simp; ring
   have hv2 : v = 2 * m * n / ((m : ℚ) ^ 2 + (n : ℚ) ^ 2) := by
     calc
       v = 2 * q / (1 + q ^ 2) := by apply ht4.1
       _ = 2 * (n / m) / (1 + (↑n / ↑m) ^ 2) := by rw [hq2]
-      _ = (m * 2 * (n / m)) / (m * (1 + (↑n / ↑m) ^ 2)) := by rw [← mul_div_mul_left m hm0]
-    -- TODO
+      _ = _ := by exact helper (Rat.cast_ne_zero.mpr hm0) hm2n20
   have hnmcp : Int.gcd n m = 1 := q.reduced
   have hmncp : Int.gcd m n = 1 := by
     rw [Int.gcd_comm]
@@ -592,8 +586,6 @@ theorem classified : h.IsClassified := by
   apply Int.gcd_div_gcd_div_gcd (Nat.pos_of_ne_zero h0)
 #align pythagorean_triple.classified PythagoreanTriple.classified
 
--- omit h
-
 theorem coprime_classification :
     PythagoreanTriple x y z ∧ Int.gcd x y = 1 ↔
       ∃ m n,
@@ -618,14 +610,8 @@ theorem coprime_classification :
   · delta PythagoreanTriple
     rintro ⟨m, n, ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩, rfl | rfl, co, pp⟩ <;>
       first
-        |·
-          constructor
-          · ring
-          exact coprime_sq_sub_mul co pp|·
-          constructor
-          · ring
-          rw [Int.gcd_comm]
-          exact coprime_sq_sub_mul co pp
+      | constructor; ring; exact coprime_sq_sub_mul co pp
+      | constructor; ring; rw [Int.gcd_comm]; exact coprime_sq_sub_mul co pp
 #align pythagorean_triple.coprime_classification PythagoreanTriple.coprime_classification
 
 /-- by assuming `x` is odd and `z` is positive we get a slightly more precise classification of
