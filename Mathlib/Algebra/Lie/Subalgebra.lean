@@ -150,7 +150,8 @@ theorem lie_mem {x y : L} (hx : x ∈ L') (hy : y ∈ L') : (⁅x, y⁆ : L) ∈
   L'.lie_mem' hx hy
 #align lie_subalgebra.lie_mem LieSubalgebra.lie_mem
 
-@[simp]
+-- porting note: TODO look into below `simp` (suppressed for now)
+-- @[simp]
 theorem mem_carrier {x : L} : x ∈ L'.carrier ↔ x ∈ (L' : Set L) :=
   Iff.rfl
 #align lie_subalgebra.mem_carrier LieSubalgebra.mem_carrier
@@ -411,7 +412,8 @@ theorem mem_map (x : L₂) : x ∈ K.map f ↔ ∃ y : L, y ∈ K ∧ f y = x :=
 #align lie_subalgebra.mem_map LieSubalgebra.mem_map
 
 -- TODO Rename and state for homs instead of equivs.
-@[simp]
+-- porting note: TODO look into below `simp` (suppressed for now)
+-- @[simp]
 theorem mem_map_submodule (e : L ≃ₗ⁅R⁆ L₂) (x : L₂) :
     x ∈ K.map (e : L →ₗ⁅R⁆ L₂) ↔ x ∈ (K : Submodule R L).map (e : L →ₗ[R] L₂) :=
   Iff.rfl
@@ -786,9 +788,7 @@ attribute [-instance] Ring.toNonAssocRing
 /-- An injective Lie algebra morphism is an equivalence onto its range. -/
 noncomputable def ofInjective (f : L₁ →ₗ⁅R⁆ L₂) (h : Function.Injective f) : L₁ ≃ₗ⁅R⁆ f.range :=
   { LinearEquiv.ofInjective (f : L₁ →ₗ[R] L₂) <| by rwa [LieHom.coe_toLinearMap] with
-    map_lie' := @fun x y => by
-      apply SetCoe.ext
-      simpa }
+    map_lie' := @fun x y ↦ SetCoe.ext $ f.map_lie x y }
 #align lie_equiv.of_injective LieEquiv.ofInjective
 
 @[simp]
@@ -801,15 +801,11 @@ variable (L₁' L₁'' : LieSubalgebra R L₁) (L₂' : LieSubalgebra R L₂)
 
 /-- Lie subalgebras that are equal as sets are equivalent as Lie algebras. -/
 def ofEq (h : (L₁' : Set L₁) = L₁'') : L₁' ≃ₗ⁅R⁆ L₁'' :=
-  {
-    LinearEquiv.ofEq (↑L₁') (↑L₁'')
-      (by
-        ext x
-        change x ∈ (L₁' : Set L₁) ↔ x ∈ (L₁'' : Set L₁)
-        rw [h]) with
-    map_lie' := fun x y => by
-      apply SetCoe.ext
-      simp }
+  { LinearEquiv.ofEq (L₁' : Submodule R L₁) (L₁'' : Submodule R L₁) (by
+      ext x
+      change x ∈ (L₁' : Set L₁) ↔ x ∈ (L₁'' : Set L₁)
+      rw [h]) with
+    map_lie' := @fun x y ↦ rfl }
 #align lie_equiv.of_eq LieEquiv.ofEq
 
 @[simp]
@@ -824,7 +820,7 @@ variable (e : L₁ ≃ₗ⁅R⁆ L₂)
 image. -/
 def lieSubalgebraMap : L₁'' ≃ₗ⁅R⁆ (L₁''.map e : LieSubalgebra R L₂) :=
   { LinearEquiv.submoduleMap (e : L₁ ≃ₗ[R] L₂) ↑L₁'' with
-    map_lie' := fun x y => by
+    map_lie' := @fun x y => by
       apply SetCoe.ext
       exact LieHom.map_lie (↑e : L₁ →ₗ⁅R⁆ L₂) ↑x ↑y }
 #align lie_equiv.lie_subalgebra_map LieEquiv.lieSubalgebraMap
@@ -837,12 +833,10 @@ theorem lieSubalgebraMap_apply (x : L₁'') : ↑(e.lieSubalgebraMap _ x) = e x 
 /-- An equivalence of Lie algebras restricts to an equivalence from any Lie subalgebra onto its
 image. -/
 def ofSubalgebras (h : L₁'.map ↑e = L₂') : L₁' ≃ₗ⁅R⁆ L₂' :=
-  {
-    LinearEquiv.ofSubmodules (e : L₁ ≃ₗ[R] L₂) (↑L₁') (↑L₂')
-      (by
-        rw [← h]
-        rfl) with
-    map_lie' := fun x y => by
+  { LinearEquiv.ofSubmodules (e : L₁ ≃ₗ[R] L₂) (↑L₁') (↑L₂') (by
+      rw [← h]
+      rfl) with
+    map_lie' := @fun x y => by
       apply SetCoe.ext
       exact LieHom.map_lie (↑e : L₁ →ₗ⁅R⁆ L₂) ↑x ↑y }
 #align lie_equiv.of_subalgebras LieEquiv.ofSubalgebras
