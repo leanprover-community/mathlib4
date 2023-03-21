@@ -1306,6 +1306,7 @@ import Mathlib.RingTheory.Subring.Basic
 import Mathlib.RingTheory.Subring.Pointwise
 import Mathlib.RingTheory.Subsemiring.Basic
 import Mathlib.RingTheory.Subsemiring.Pointwise
+import Mathlib.RingTheory.UniqueFactorizationDomain
 import Mathlib.RingTheory.Valuation.Basic
 import Mathlib.RingTheory.Valuation.Integers
 import Mathlib.SetTheory.Cardinal.Basic
