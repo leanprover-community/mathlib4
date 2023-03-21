@@ -10,7 +10,7 @@ Authors: Robert Y. Lewis
 -/
 import Mathlib.NumberTheory.Divisors
 import Mathlib.RingTheory.Int.Basic
-import Mathlib.Tactic.RingExp
+--import Mathlib.Tactic.RingExp
 
 /-!
 # p-adic Valuation
@@ -74,14 +74,15 @@ protected theorem zero : padicValNat p 0 = 0 := by simp [padicValNat]
 protected theorem one : padicValNat p 1 = 0 := by
   unfold padicValNat
   split_ifs
-  simp
+  · simp
+  · rfl
 #align padic_val_nat.one padicValNat.one
 
 /-- If `p ≠ 0` and `p ≠ 1`, then `padic_val_rat p p` is `1`. -/
 @[simp]
 theorem self (hp : 1 < p) : padicValNat p p = 1 := by
-  have neq_one : ¬p = 1 ↔ True := iff_of_true (ne_of_lt hp).symm trivial
-  have eq_zero_false : p = 0 ↔ False := iff_false_intro (ne_of_lt (trans zero_lt_one hp)).symm
+  have neq_one : ¬p = 1 ↔ True := iff_of_true hp.ne' trivial
+  have eq_zero_false : p = 0 ↔ False := iff_false_intro (zero_lt_one.trans hp).ne'
   simp [padicValNat, neq_one, eq_zero_false]
 #align padic_val_nat.self padicValNat.self
 
@@ -115,9 +116,8 @@ theorem of_ne_one_ne_zero {z : ℤ} (hp : p ≠ 1) (hz : z ≠ 0) :
         (by
           apply multiplicity.finite_int_iff.2
           simp [hp, hz]) := by
-  rw [padicValInt, padicValNat, dif_pos (And.intro hp (Int.natAbs_pos_of_ne_zero hz))]
+  rw [padicValInt, padicValNat, dif_pos (And.intro hp (Int.natAbs_pos.mpr hz))]
   simp only [multiplicity.Int.natAbs p z]
-  rfl
 #align padic_val_int.of_ne_one_ne_zero padicValInt.of_ne_one_ne_zero
 
 /-- `padic_val_int p 0` is `0` for any `p`. -/
@@ -193,7 +193,6 @@ theorem multiplicity_sub_multiplicity {q : ℚ} (hp : p ≠ 1) (hq : q ≠ 0) :
             rw [← finite_iff_dom, finite_nat_iff]
             exact ⟨hp, q.pos⟩) := by
   rw [padicValRat, padicValInt.of_ne_one_ne_zero hp, padicValNat, dif_pos]
-  · rfl
   · exact ⟨hp, q.pos⟩
   · exact Rat.num_ne_zero_of_ne_zero hq
 #align padic_val_rat.multiplicity_sub_multiplicity padicValRat.multiplicity_sub_multiplicity
@@ -234,7 +233,8 @@ theorem padicValNat_def' {n : ℕ} (hp : p ≠ 1) (hn : 0 < n) :
 
 @[simp]
 theorem padicValNat_self [Fact p.Prime] : padicValNat p p = 1 := by
-  simp [padicValNat_def (Fact.out p.prime).Pos]
+  rw [padicValNat_def (@Fact.out p.Prime).pos]
+  simp
 #align padic_val_nat_self padicValNat_self
 
 theorem one_le_padicValNat_of_dvd {n : ℕ} [hp : Fact p.Prime] (hn : 0 < n) (div : p ∣ n) :
@@ -257,11 +257,9 @@ open multiplicity
 
 variable {p : ℕ} [hp : Fact p.Prime]
 
-include hp
-
 /-- The multiplicity of `p : ℕ` in `a : ℤ` is finite exactly when `a ≠ 0`. -/
 theorem finite_int_prime_iff {a : ℤ} : Finite (p : ℤ) a ↔ a ≠ 0 := by
-  simp [finite_int_iff, Ne.symm (ne_of_lt hp.1.one_lt)]
+  simp [finite_int_iff, hp.1.ne_one]
 #align padic_val_rat.finite_int_prime_iff padicValRat.finite_int_prime_iff
 
 /-- A rewrite lemma for `padic_val_rat p q` when `q` is expressed in terms of `rat.mk`. -/
@@ -269,14 +267,21 @@ protected theorem defn (p : ℕ) [hp : Fact p.Prime] {q : ℚ} {n d : ℤ} (hqz 
     (qdf : q = n /. d) :
     padicValRat p q =
       (multiplicity (p : ℤ) n).get
-          (finite_int_iff.2 ⟨Ne.symm <| ne_of_lt hp.1.one_lt, fun hn => by simp_all⟩) -
+          (finite_int_iff.2 ⟨hp.1.ne_one, fun hn => by simp_all⟩) -
         (multiplicity (p : ℤ) d).get
-          (finite_int_iff.2 ⟨Ne.symm <| ne_of_lt hp.1.one_lt, fun hd => by simp_all⟩) := by
+          (finite_int_iff.2 ⟨hp.1.ne_one, fun hd => by simp_all⟩) := by
   have hd : d ≠ 0 := Rat.mk_denom_ne_zero_of_ne_zero hqz qdf
   let ⟨c, hc1, hc2⟩ := Rat.num_den_mk hd qdf
-  rw [padicValRat.multiplicity_sub_multiplicity] <;>
-    simp [hc1, hc2, multiplicity.mul' (Nat.prime_iff_prime_int.1 hp.1),
-      Ne.symm (ne_of_lt hp.1.one_lt), hqz, pos_iff_ne_zero, int.coe_nat_multiplicity p q.denom]
+  rw [padicValRat.multiplicity_sub_multiplicity hp.1.ne_one hqz]
+  simp only [Nat.isUnit_iff, hc1, hc2]
+  rw [multiplicity.mul' (Nat.prime_iff_prime_int.1 hp.1),
+    multiplicity.mul' (Nat.prime_iff_prime_int.1 hp.1)]
+  rw [Nat.cast_add, Nat.cast_add]
+  simp_rw [Int.coe_nat_multiplicity p q.den]
+  ring
+  -- Porting note: was
+  -- simp only [hc1, hc2, multiplicity.mul' (Nat.prime_iff_prime_int.1 hp.1),
+  --   hp.1.ne_one, hqz, pos_iff_ne_zero, Int.coe_nat_multiplicity p q.den
 #align padic_val_rat.defn padicValRat.defn
 
 /-- A rewrite lemma for `padic_val_rat p (q * r)` with conditions `q ≠ 0`, `r ≠ 0`. -/
@@ -365,7 +370,7 @@ theorem le_padicValRat_add_of_le {q r : ℚ} (hqr : q + r ≠ 0)
                     (Nat.prime_iff_prime_int.1 hp.1)] <;>
                 exact add_le_add_left h _)
         _ ≤ _ := min_le_multiplicity_add
-        
+
       all_goals exact hp
 #align padic_val_rat.le_padic_val_rat_add_of_le padicValRat.le_padicValRat_add_of_le
 
@@ -547,4 +552,3 @@ theorem padicValInt_mul_eq_succ (a : ℤ) (ha : a ≠ 0) :
 #align padic_val_int_mul_eq_succ padicValInt_mul_eq_succ
 
 end padicValInt
-
