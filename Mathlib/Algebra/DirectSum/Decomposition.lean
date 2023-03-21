@@ -16,20 +16,20 @@ import Mathlib.Algebra.Module.Submodule.Basic
 
 ## Main definitions
 
-* `direct_sum.decomposition ℳ`: A typeclass to provide a constructive decomposition from
+* `DirectSum.Decomposition ℳ`: A typeclass to provide a constructive decomposition from
   an additive monoid `M` into a family of additive submonoids `ℳ`
-* `direct_sum.decompose ℳ`: The canonical equivalence provided by the above typeclass
+* `DirectSum.decompose ℳ`: The canonical equivalence provided by the above typeclass
 
 
 ## Main statements
 
-* `direct_sum.decomposition.is_internal`: The link to `direct_sum.is_internal`.
+* `DirectSum.Decomposition.isInternal`: The link to `DirectSum.IsInternal`.
 
 ## Implementation details
 
 As we want to talk about different types of decomposition (additive monoids, modules, rings, ...),
-we choose to avoid heavily bundling `direct_sum.decompose`, instead making copies for the
-`add_equiv`, `linear_equiv`, etc. This means we have to repeat statements that follow from these
+we choose to avoid heavily bundling `DirectSum.decompose`, instead making copies for the
+`AddEquiv`, `LinearEquiv`, etc. This means we have to repeat statements that follow from these
 bundled homs, but means we don't have to repeat statements for different types of decomposition.
 -/
 
@@ -50,7 +50,7 @@ variable [SetLike σ M] [AddSubmonoidClass σ M] (ℳ : ι → σ)
 submonoids `ℳ i` of that `M`, such that the "recomposition" is canonical. This definition also
 works for additive groups and modules.
 
-This is a version of `direct_sum.is_internal` which comes with a constructive inverse to the
+This is a version of `DirectSum.IsInternal` which comes with a constructive inverse to the
 canonical "recomposition" rather than just a proof that the "recomposition" is bijective. -/
 class Decomposition where
   decompose' : M → ⨁ i, ℳ i
@@ -58,11 +58,9 @@ class Decomposition where
   right_inv : Function.RightInverse (DirectSum.coeAddMonoidHom ℳ) decompose'
 #align direct_sum.decomposition DirectSum.Decomposition
 
-include M
-
-/-- `direct_sum.decomposition` instances, while carrying data, are always equal. -/
+/-- `DirectSum.Decomposition` instances, while carrying data, are always equal. -/
 instance : Subsingleton (Decomposition ℳ) :=
-  ⟨fun x y => by
+  ⟨fun x y ↦ by
     cases' x with x xl xr
     cases' y with y yl yr
     congr
@@ -71,7 +69,7 @@ instance : Subsingleton (Decomposition ℳ) :=
 variable [Decomposition ℳ]
 
 protected theorem Decomposition.isInternal : DirectSum.IsInternal ℳ :=
-  ⟨Decomposition.right_inv.Injective, Decomposition.left_inv.Surjective⟩
+  ⟨Decomposition.right_inv.injective, Decomposition.left_inv.surjective⟩
 #align direct_sum.decomposition.is_internal DirectSum.Decomposition.isInternal
 
 /-- If `M` is graded by `ι` with degree `i` component `ℳ i`, then it is isomorphic as
@@ -86,16 +84,17 @@ def decompose : M ≃ ⨁ i, ℳ i where
 protected theorem Decomposition.inductionOn {p : M → Prop} (h_zero : p 0)
     (h_homogeneous : ∀ {i} (m : ℳ i), p (m : M)) (h_add : ∀ m m' : M, p m → p m' → p (m + m')) :
     ∀ m, p m := by
-  let ℳ' : ι → AddSubmonoid M := fun i =>
-    (⟨ℳ i, fun _ _ => AddMemClass.add_mem, ZeroMemClass.zero_mem _⟩ : AddSubmonoid M)
+  let ℳ' : ι → AddSubmonoid M := fun i ↦
+    {carrier := ℳ i, add_mem' := fun x y ↦ AddMemClass.add_mem x y,
+      zero_mem' := ZeroMemClass.zero_mem _}
   haveI t : DirectSum.Decomposition ℳ' :=
     { decompose' := DirectSum.decompose ℳ
-      left_inv := fun _ => (decompose ℳ).left_inv _
-      right_inv := fun _ => (decompose ℳ).right_inv _ }
-  have mem : ∀ m, m ∈ supᵢ ℳ' := fun m =>
-    (DirectSum.IsInternal.addSubmonoid_supᵢ_eq_top ℳ' (decomposition.is_internal ℳ')).symm ▸ trivial
-  exact fun m =>
-    AddSubmonoid.supᵢ_induction ℳ' (mem m) (fun i m h => h_homogeneous ⟨m, h⟩) h_zero h_add
+      left_inv := fun _ ↦ (decompose ℳ).left_inv _
+      right_inv := fun _ ↦ (decompose ℳ).right_inv _ }
+  have mem : ∀ m, m ∈ supᵢ ℳ' := fun m ↦
+    (DirectSum.IsInternal.addSubmonoid_supᵢ_eq_top ℳ' (Decomposition.isInternal ℳ')).symm ▸ trivial
+  exact fun m ↦
+    AddSubmonoid.supᵢ_induction ℳ' (mem m) (fun i m h ↦ h_homogeneous ⟨m, h⟩) h_zero h_add
 #align direct_sum.decomposition.induction_on DirectSum.Decomposition.inductionOn
 
 @[simp]
@@ -114,7 +113,7 @@ theorem decompose_coe {i : ι} (x : ℳ i) : decompose ℳ (x : M) = DirectSum.o
 #align direct_sum.decompose_coe DirectSum.decompose_coe
 
 theorem decompose_of_mem {x : M} {i : ι} (hx : x ∈ ℳ i) :
-    decompose ℳ x = DirectSum.of (fun i => ℳ i) i ⟨x, hx⟩ :=
+    decompose ℳ x = DirectSum.of (fun i ↦ ℳ i) i ⟨x, hx⟩ :=
   decompose_coe _ ⟨x, hx⟩
 #align direct_sum.decompose_of_mem DirectSum.decompose_of_mem
 
@@ -129,7 +128,7 @@ theorem decompose_of_mem_ne {x : M} {i j : ι} (hx : x ∈ ℳ i) (hij : i ≠ j
 
 /-- If `M` is graded by `ι` with degree `i` component `ℳ i`, then it is isomorphic as
 an additive monoid to a direct sum of components. -/
-@[simps (config := { fullyApplied := false })]
+@[simps! (config := { fullyApplied := false })]
 def decomposeAddEquiv : M ≃+ ⨁ i, ℳ i :=
   AddEquiv.symm { (decompose ℳ).symm with map_add' := map_add (DirectSum.coeAddMonoidHom ℳ) }
 #align direct_sum.decompose_add_equiv DirectSum.decomposeAddEquiv
@@ -170,7 +169,7 @@ theorem decompose_symm_sum {ι'} (s : Finset ι') (f : ι' → ⨁ i, ℳ i) :
 theorem sum_support_decompose [∀ (i) (x : ℳ i), Decidable (x ≠ 0)] (r : M) :
     (∑ i in (decompose ℳ r).support, (decompose ℳ r i : M)) = r := by
   conv_rhs =>
-    rw [← (decompose ℳ).symm_apply_apply r, ← sum_support_of (fun i => ℳ i) (decompose ℳ r)]
+    rw [← (decompose ℳ).symm_apply_apply r, ← sum_support_of (fun i ↦ ℳ i) (decompose ℳ r)]
   rw [decompose_symm_sum]
   simp_rw [decompose_symm_of]
 #align direct_sum.sum_support_decompose DirectSum.sum_support_decompose
@@ -180,7 +179,7 @@ end AddCommMonoid
 /-- The `-` in the statements below doesn't resolve without this line.
 
 This seems to a be a problem of synthesized vs inferred typeclasses disagreeing. If we replace
-the statement of `decompose_neg` with `@eq (⨁ i, ℳ i) (decompose ℳ (-x)) (-decompose ℳ x)`
+the statement of `decompose_neg` with `@Eq (⨁ i, ℳ i) (decompose ℳ (-x)) (-decompose ℳ x)`
 instead of `decompose ℳ (-x) = -decompose ℳ x`, which forces the typeclasses needed by `⨁ i, ℳ i` to
 be found by unification rather than synthesis, then everything works fine without this instance. -/
 instance addCommGroupSetLike [AddCommGroup M] [SetLike σ M] [AddSubgroupClass σ M] (ℳ : ι → σ) :
@@ -194,8 +193,6 @@ variable [DecidableEq ι] [AddCommGroup M]
 variable [SetLike σ M] [AddSubgroupClass σ M] (ℳ : ι → σ)
 
 variable [Decomposition ℳ]
-
-include M
 
 @[simp]
 theorem decompose_neg (x : M) : decompose ℳ (-x) = -decompose ℳ x :=
@@ -228,8 +225,6 @@ variable (ℳ : ι → Submodule R M)
 
 variable [Decomposition ℳ]
 
-include M
-
 /-- If `M` is graded by `ι` with degree `i` component `ℳ i`, then it is isomorphic as
 a module to a direct sum of components. -/
 @[simps (config := { fullyApplied := false })]
@@ -246,4 +241,3 @@ theorem decompose_smul (r : R) (x : M) : decompose ℳ (r • x) = r • decompo
 end Module
 
 end DirectSum
-
