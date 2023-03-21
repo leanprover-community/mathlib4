@@ -96,13 +96,13 @@ theorem le_of_fin_injective [StrongRankCondition R] {n m : ℕ} (f : (Fin n → 
 theorem strongRankCondition_iff_succ :
     StrongRankCondition R ↔
       ∀ (n : ℕ) (f : (Fin (n + 1) → R) →ₗ[R] Fin n → R), ¬Function.Injective f := by
-  refine' ⟨fun h n => fun f hf => _, fun h => ⟨fun n m f hf => _⟩⟩
+  refine' ⟨fun h n => fun f hf => _, fun h => ⟨@fun n m f hf => _⟩⟩
   · letI : StrongRankCondition R := h
     exact Nat.not_succ_le_self n (le_of_fin_injective R f hf)
   · by_contra H
     exact
       h m (f.comp (Function.ExtendByZero.linearMap R (Fin.castLe (not_le.1 H))))
-        (hf.comp (Function.extend_injective (RelEmbedding.injective _) 0))
+        (hf.comp (Function.extend_injective (RelEmbedding.injective _) _))
 #align strong_rank_condition_iff_succ strongRankCondition_iff_succ
 
 theorem card_le_of_injective [StrongRankCondition R] {α β : Type _} [Fintype α] [Fintype β]
@@ -110,8 +110,8 @@ theorem card_le_of_injective [StrongRankCondition R] {α β : Type _} [Fintype �
   let P := LinearEquiv.funCongrLeft R R (Fintype.equivFin α)
   let Q := LinearEquiv.funCongrLeft R R (Fintype.equivFin β)
   exact
-    le_of_fin_injective R ((Q.symm.to_linear_map.comp f).comp P.to_linear_map)
-      (((LinearEquiv.symm Q).Injective.comp i).comp (LinearEquiv.injective P))
+    le_of_fin_injective R ((Q.symm.toLinearMap.comp f).comp P.toLinearMap)
+      (((LinearEquiv.symm Q).injective.comp i).comp (LinearEquiv.injective P))
 #align card_le_of_injective card_le_of_injective
 
 theorem card_le_of_injective' [StrongRankCondition R] {α β : Type _} [Fintype α] [Fintype β]
@@ -119,7 +119,7 @@ theorem card_le_of_injective' [StrongRankCondition R] {α β : Type _} [Fintype 
   let P := Finsupp.linearEquivFunOnFinite R R β
   let Q := (Finsupp.linearEquivFunOnFinite R R α).symm
   exact
-    card_le_of_injective R ((P.to_linear_map.comp f).comp Q.to_linear_map)
+    card_le_of_injective R ((P.toLinearMap.comp f).comp Q.toLinearMap)
       ((P.injective.comp i).comp Q.injective)
 #align card_le_of_injective' card_le_of_injective'
 
@@ -139,8 +139,8 @@ theorem card_le_of_surjective [RankCondition R] {α β : Type _} [Fintype α] [F
   let P := LinearEquiv.funCongrLeft R R (Fintype.equivFin α)
   let Q := LinearEquiv.funCongrLeft R R (Fintype.equivFin β)
   exact
-    le_of_fin_surjective R ((Q.symm.to_linear_map.comp f).comp P.to_linear_map)
-      (((LinearEquiv.symm Q).Surjective.comp i).comp (LinearEquiv.surjective P))
+    le_of_fin_surjective R ((Q.symm.toLinearMap.comp f).comp P.toLinearMap)
+      (((LinearEquiv.symm Q).surjective.comp i).comp (LinearEquiv.surjective P))
 #align card_le_of_surjective card_le_of_surjective
 
 theorem card_le_of_surjective' [RankCondition R] {α β : Type _} [Fintype α] [Fintype β]
@@ -148,7 +148,7 @@ theorem card_le_of_surjective' [RankCondition R] {α β : Type _} [Fintype α] [
   let P := Finsupp.linearEquivFunOnFinite R R β
   let Q := (Finsupp.linearEquivFunOnFinite R R α).symm
   exact
-    card_le_of_surjective R ((P.to_linear_map.comp f).comp Q.to_linear_map)
+    card_le_of_surjective R ((P.toLinearMap.comp f).comp Q.toLinearMap)
       ((P.surjective.comp i).comp Q.surjective)
 #align card_le_of_surjective' card_le_of_surjective'
 
@@ -157,8 +157,8 @@ has an injective splitting `(fin m → R) →ₗ[R] (fin n → R)`
 from which the strong rank condition gives the necessary inequality for the rank condition.
 -/
 instance (priority := 100) rankCondition_of_strongRankCondition [StrongRankCondition R] :
-    RankCondition R
-    where le_of_fin_surjective n m f s :=
+    RankCondition R where
+  le_of_fin_surjective f s :=
     le_of_fin_injective R _ (f.splittingOfFunOnFintypeSurjective_injective s)
 #align rank_condition_of_strong_rank_condition rankCondition_of_strongRankCondition
 
@@ -170,10 +170,9 @@ class InvariantBasisNumber : Prop where
 #align invariant_basis_number InvariantBasisNumber
 
 instance (priority := 100) invariantBasisNumber_of_rankCondition [RankCondition R] :
-    InvariantBasisNumber R
-    where eq_of_fin_equiv n m e :=
-    le_antisymm (le_of_fin_surjective R e.symm.toLinearMap e.symm.Surjective)
-      (le_of_fin_surjective R e.toLinearMap e.Surjective)
+    InvariantBasisNumber R where
+  eq_of_fin_equiv e := le_antisymm (le_of_fin_surjective R e.symm.toLinearMap e.symm.surjective)
+    (le_of_fin_surjective R e.toLinearMap e.surjective)
 #align invariant_basis_number_of_rank_condition invariantBasisNumber_of_rankCondition
 
 end
@@ -197,12 +196,15 @@ theorem nontrivial_of_invariantBasisNumber : Nontrivial R := by
   by_contra h
   refine' zero_ne_one (eq_of_fin_equiv R _)
   haveI := not_nontrivial_iff_subsingleton.1 h
-  haveI : Subsingleton (Fin 1 → R) := ⟨fun a b => funext fun x => Subsingleton.elim _ _⟩
-  refine' { .. } <;>
-    first
-      |·
-        intros
-        exact 0|tidy
+  haveI : Subsingleton (Fin 1 → R) :=
+    Subsingleton.intro <| fun a b => funext fun x => Subsingleton.elim _ _
+  exact
+    { toFun := 0
+      invFun := 0
+      map_add' := by aesop
+      map_smul' := by aesop
+      left_inv := fun _ => by simp
+      right_inv := fun _ => by simp }
 #align nontrivial_of_invariant_basis_number nontrivial_of_invariantBasisNumber
 
 end
@@ -220,20 +222,23 @@ would force `fin (1 + m) → R ≃ₗ punit` (via `is_noetherian.equiv_punit_of_
 which is not the case!
 -/
 instance (priority := 100) noetherian_ring_strongRankCondition : StrongRankCondition R := by
-  fconstructor
+  constructor
   intro m n f i
   by_contra h
   rw [not_le, ← Nat.add_one_le_iff, le_iff_exists_add] at h
   obtain ⟨m, rfl⟩ := h
   let e : Fin (n + 1 + m) ≃ Sum (Fin n) (Fin (1 + m)) :=
-    (finCongr (add_assoc _ _ _)).trans fin_sum_fin_equiv.symm
+    (finCongr (add_assoc _ _ _)).trans finSumFinEquiv.symm
   let f' :=
     f.comp
       ((LinearEquiv.sumArrowLequivProdArrow _ _ R R).symm.trans
           (LinearEquiv.funCongrLeft R R e)).toLinearMap
-  have i' : injective f' := i.comp (LinearEquiv.injective _)
+  have i' : Injective f' := i.comp (LinearEquiv.injective _)
   apply @zero_ne_one (Fin (1 + m) → R) _ _
-  apply (IsNoetherian.equivPunitOfProdInjective f' i').Injective
+  -- porting note: this next line is needed because of lean4#2074 and it works with `etaExperiment`
+  -- in particular, Lean can't infer `IsNoetherian R R` from `IsNoetherianRing R`
+  have : IsNoetherian R R := ‹IsNoetherianRing R›
+  apply (IsNoetherian.equivPunitOfProdInjective f' i').injective
   ext
 #align noetherian_ring_strong_rank_condition noetherian_ring_strongRankCondition
 
@@ -258,16 +263,19 @@ section
 
 variable {R : Type u} [CommRing R] (I : Ideal R) {ι : Type v} [Fintype ι] {ι' : Type w}
 
+attribute [-instance] Ring.toNonAssocRing
+
 /-- An `R`-linear map `R^n → R^m` induces a function `R^n/I^n → R^m/I^m`. -/
 private def induced_map (I : Ideal R) (e : (ι → R) →ₗ[R] ι' → R) :
     (ι → R) ⧸ I.pi ι → (ι' → R) ⧸ I.pi ι' := fun x =>
-  Quotient.liftOn' x (fun y => Ideal.Quotient.mk _ (e y))
+  Quotient.liftOn' x (fun y => Ideal.Quotient.mk (I.pi ι') (e y))
     (by
       refine' fun a b hab => Ideal.Quotient.eq.2 fun h => _
       rw [Submodule.quotientRel_r_def] at hab
       rw [← LinearMap.map_sub]
       exact Ideal.map_pi _ _ hab e h)
-#align induced_map induced_map
+#noalign induced_map
+-- porting note: `#noalign` since this is marked `private`
 
 /-- An isomorphism of `R`-modules `R^n ≃ R^m` induces an isomorphism of `R/I`-modules
     `R^n/I^n ≃ R^m/I^m`. -/
@@ -278,11 +286,19 @@ private def induced_equiv [Fintype ι'] (I : Ideal R) (e : (ι → R) ≃ₗ[R] 
       invFun := induced_map I e.symm.. }
   all_goals
     first |rintro ⟨a⟩ ⟨b⟩|rintro ⟨a⟩
-    convert_to Ideal.Quotient.mk _ _ = Ideal.Quotient.mk _ _
+  -- porting note: the next 4 lines were necessary because Lean couldn't correctly infer `(I.pi ι)`
+  -- and `(I.pi ι')` on its own.
+  pick_goal 3
+  convert_to Ideal.Quotient.mk (I.pi ι) _ = Ideal.Quotient.mk (I.pi ι) _
+  congr
+  simp only [LinearEquiv.coe_coe, LinearEquiv.symm_apply_apply]
+  all_goals
+    convert_to Ideal.Quotient.mk (I.pi ι') _ = Ideal.Quotient.mk (I.pi ι') _
     congr
     simp only [map_add, LinearEquiv.coe_coe, LinearEquiv.map_smulₛₗ, RingHom.id_apply,
-      LinearEquiv.symm_apply_apply, LinearEquiv.apply_symm_apply]
-#align induced_equiv induced_equiv
+      LinearEquiv.apply_symm_apply]
+#noalign induced_equiv
+-- porting note: `#noalign` since this is marked `private`
 
 end
 
@@ -297,11 +313,10 @@ In fact, any nontrivial commutative ring satisfies the strong rank condition, se
 `linear_algebra.charpoly.basic`. -/
 instance (priority := 100) invariantBasisNumber_of_nontrivial_of_commRing {R : Type u} [CommRing R]
     [Nontrivial R] : InvariantBasisNumber R :=
-  ⟨fun n m e =>
-    let ⟨I, hI⟩ := Ideal.exists_maximal R
+  ⟨fun e =>
+    let ⟨I, _hI⟩ := Ideal.exists_maximal R
     eq_of_fin_equiv (R ⧸ I)
       ((Ideal.piQuotEquiv _ _).symm ≪≫ₗ (induced_equiv _ e ≪≫ₗ Ideal.piQuotEquiv _ _))⟩
 #align invariant_basis_number_of_nontrivial_of_comm_ring invariantBasisNumber_of_nontrivial_of_commRing
 
 end
-
