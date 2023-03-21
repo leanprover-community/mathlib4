@@ -16,7 +16,7 @@ import Mathlib.RingTheory.Ideal.Quotient
 -/
 
 
--- Porting note: Without this line, timeouts occur.
+-- Porting note: Without this line, timeouts occur (lean4#2074)
 attribute [-instance] Ring.toNonAssocRing
 -- Porting note: we need η for TC
 set_option synthInstance.etaExperiment true
@@ -101,8 +101,9 @@ variable {R : Type u} {S : Type v} {F : Type w} [CommRing R] [CommRing S]
 theorem map_quotient_self (I : Ideal R) : map (Quotient.mk I) I = ⊥ :=
   eq_bot_iff.2 <|
     Ideal.map_le_iff_le_comap.2 fun _ hx =>
--- porting note: Lean 4 issue #2074: Lean can't infer `Module (R ⧸ I) (R ⧸ I)` on its own.
-      (@Submodule.mem_bot (R ⧸ I) _ _ _ Semiring.toModule _).2 <| Ideal.Quotient.eq_zero_iff_mem.2 hx
+    -- porting note: Lean can't infer `Module (R ⧸ I) (R ⧸ I)` on its own
+      (@Submodule.mem_bot (R ⧸ I) _ _ _ Semiring.toModule _).2 <|
+          Ideal.Quotient.eq_zero_iff_mem.2 hx
 #align ideal.map_quotient_self Ideal.map_quotient_self
 
 @[simp]
@@ -325,8 +326,8 @@ theorem quotientKerAlgEquivOfRightInverse.apply {f : A →ₐ[R₁] B} {g : B �
 
 @[simp]
 theorem QuotientKerAlgEquivOfRightInverseSymm.apply {f : A →ₐ[R₁] B} {g : B → A}
-    (hf : Function.RightInverse g f) (x : B) :
-    (quotientKerAlgEquivOfRightInverse hf).symm x = Quotient.mkₐ R₁ (RingHom.ker f.toRingHom) (g x) :=
+    (hf : Function.RightInverse g f) (x : B) : (quotientKerAlgEquivOfRightInverse hf).symm x =
+    Quotient.mkₐ R₁ (RingHom.ker f.toRingHom) (g x) :=
   rfl
 #align ideal.quotient_ker_alg_equiv_of_right_inverse_symm.apply Ideal.QuotientKerAlgEquivOfRightInverseSymm.apply
 
@@ -519,7 +520,8 @@ def quotLeftToQuotSup : R ⧸ I →+* R ⧸ I ⊔ J :=
 #align double_quot.quot_left_to_quot_sup DoubleQuot.quotLeftToQuotSup
 
 /-- The kernel of `quotLeftToQuotSup` -/
-theorem ker_quotLeftToQuotSup : RingHom.ker (quotLeftToQuotSup I J) = J.map (Ideal.Quotient.mk I) := by
+theorem ker_quotLeftToQuotSup : RingHom.ker (quotLeftToQuotSup I J) =
+    J.map (Ideal.Quotient.mk I) := by
   simp only [mk_ker, sup_idem, sup_comm, quotLeftToQuotSup, Quotient.factor, ker_quotient_lift,
     map_eq_iff_sup_ker_eq_of_surjective (Ideal.Quotient.mk I) Quotient.mk_surjective, ← sup_assoc]
 #align double_quot.ker_quot_left_to_quot_sup DoubleQuot.ker_quotLeftToQuotSup
@@ -573,7 +575,8 @@ theorem quotQuotEquivQuotSup_symm_quotQuotMk (x : R) :
 #align double_quot.quot_quot_equiv_quot_sup_symm_quot_quot_mk DoubleQuot.quotQuotEquivQuotSup_symm_quotQuotMk
 
 /-- The obvious isomorphism `(R/I)/J' → (R/J)/I' `   -/
-def quotQuotEquivComm : (R ⧸ I) ⧸ J.map (Ideal.Quotient.mk I) ≃+* (R ⧸ J) ⧸ I.map (Ideal.Quotient.mk J) :=
+def quotQuotEquivComm : (R ⧸ I) ⧸ J.map (Ideal.Quotient.mk I) ≃+*
+    (R ⧸ J) ⧸ I.map (Ideal.Quotient.mk J) :=
   ((quotQuotEquivQuotSup I J).trans (quotEquivOfEq sup_comm)).trans (quotQuotEquivQuotSup J I).symm
 #align double_quot.quot_quot_equiv_comm DoubleQuot.quotQuotEquivComm
 
