@@ -110,6 +110,8 @@ attribute [local instance] Pre.hasCoeGenerator Pre.hasCoeSemiring Pre.hasMul Pre
 /-- Given a function from `X` to an `R`-algebra `A`, `lift_fun` provides a lift of `f` to a function
 from `Pre R X` to `A`. This is mainly used in the construction of `FreeAlgebra.lift`.
 -/
+-- Porting note: recOn was replaced by an inductive definition to preserve computability,
+-- see https://github.com/leanprover/lean4/issues/2049
 def liftFun {A : Type _} [Semiring A] [Algebra R A] (f : X → A) :
     Pre R X → A
   | .of t => f t
