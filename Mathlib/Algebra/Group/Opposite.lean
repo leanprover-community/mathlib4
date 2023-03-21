@@ -185,12 +185,6 @@ theorem op_natCast [NatCast α] (n : ℕ) : op (n : α) = n :=
 #align mul_opposite.op_nat_cast MulOpposite.op_natCast
 #align add_opposite.op_nat_cast AddOpposite.op_nat_cast
 
-/- warning: mul_opposite.op_int_cast -> MulOpposite.op_intCast is a dubious translation:
-lean 3 declaration is
-  forall {α : Type.{u1}} [_inst_1 : IntCast.{u1} α] (n : Int), Eq.{succ u1} (MulOpposite.{u1} α) (MulOpposite.op.{u1} α ((fun (a : Type) (b : Type.{u1}) [self : HasLiftT.{1, succ u1} a b] => self.0) Int α (HasLiftT.mk.{1, succ u1} Int α (CoeTCₓ.coe.{1, succ u1} Int α (Int.castCoe.{u1} α _inst_1))) n)) ((fun (a : Type) (b : Type.{u1}) [self : HasLiftT.{1, succ u1} a b] => self.0) Int (MulOpposite.{u1} α) (HasLiftT.mk.{1, succ u1} Int (MulOpposite.{u1} α) (CoeTCₓ.coe.{1, succ u1} Int (MulOpposite.{u1} α) (Int.castCoe.{u1} (MulOpposite.{u1} α) (MulOpposite.hasIntCast.{u1} α _inst_1)))) n)
-but is expected to have type
-  forall {α : Type.{u1}} [_inst_1 : AddGroupWithOne.{u1} α] (n : Int), Eq.{succ u1} (MulOpposite.{u1} α) (MulOpposite.op.{u1} α (Int.cast.{u1} α (AddGroupWithOne.toIntCast.{u1} α _inst_1) n)) (Int.cast.{u1} (MulOpposite.{u1} α) (AddGroupWithOne.toIntCast.{u1} (MulOpposite.{u1} α) (MulOpposite.instAddGroupWithOneMulOpposite.{u1} α _inst_1)) n)
-Case conversion may be inaccurate. Consider using '#align mul_opposite.op_int_cast MulOpposite.op_intCastₓ'. -/
 @[simp, norm_cast, to_additive]
 theorem op_intCast [IntCast α] (n : ℤ) : op (n : α) = n :=
   rfl
