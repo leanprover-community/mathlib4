@@ -368,8 +368,7 @@ example (l : AList β) : True := by induction l using AList.insertRec <;> trivia
 @[simp]
 theorem insertRec_empty {C : AList β → Sort _} (H0 : C ∅)
     (IH : ∀ (a : α) (b : β a) (l : AList β), a ∉ l → C l → C (l.insert a b)) :
-    @insertRec α β _ C H0 IH ∅ = H0 :=
-  by
+    @insertRec α β _ C H0 IH ∅ = H0 := by
   change @insertRec α β _ C H0 IH ⟨[], _⟩ = H0
   rw [insertRec]
 #align alist.insert_rec_empty AList.insertRec_empty
@@ -377,8 +376,7 @@ theorem insertRec_empty {C : AList β → Sort _} (H0 : C ∅)
 theorem insertRec_insert {C : AList β → Sort _} (H0 : C ∅)
     (IH : ∀ (a : α) (b : β a) (l : AList β), a ∉ l → C l → C (l.insert a b)) {c : Sigma β}
     {l : AList β} (h : c.1 ∉ l) :
-    @insertRec α β _ C H0 IH (l.insert c.1 c.2) = IH c.1 c.2 l h (@insertRec α β _ C H0 IH l) :=
-  by
+    @insertRec α β _ C H0 IH (l.insert c.1 c.2) = IH c.1 c.2 l h (@insertRec α β _ C H0 IH l) := by
   cases' l with l hl
   suffices
     HEq (@insertRec α β _ C H0 IH ⟨c :: l, nodupKeys_cons.2 ⟨h, hl⟩⟩)
