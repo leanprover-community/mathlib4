@@ -41,7 +41,7 @@ open Function Set
 
 open Affine
 
--- Porting note: Lean4#2074
+-- Porting note: this is needed because of lean4#2074
 attribute [-instance] Ring.toNonAssocRing
 
 /-- An affine equivalence is an equivalence between affine spaces such that both forward
@@ -87,7 +87,7 @@ theorem toAffineMap_injective : Injective (toAffineMap : (P₁ ≃ᵃ[k] P₂) �
   simp only [(toAffineMap_mk), (AffineMap.mk.injEq), Equiv.coe_inj,
     LinearEquiv.toLinearMap_inj] at H
   congr
-  exacts[H.1, H.2]
+  exacts [H.1, H.2]
 #align affine_equiv.to_affine_map_injective AffineEquiv.toAffineMap_injective
 
 @[simp]
@@ -100,7 +100,7 @@ instance equivLike : EquivLike (P₁ ≃ᵃ[k] P₂) P₁ P₂ where
   inv f := f.invFun
   left_inv f := f.left_inv
   right_inv f := f.right_inv
-  coe_injective' _f _g h _ := toAffineMap_injective (FunLike.coe_injective h)
+  coe_injective' _ _ h _ := toAffineMap_injective (FunLike.coe_injective h)
 #align affine_equiv.equiv_like AffineEquiv.equivLike
 
 instance : CoeFun (P₁ ≃ᵃ[k] P₂) fun _ => P₁ → P₂ :=
@@ -243,8 +243,7 @@ protected theorem injective (e : P₁ ≃ᵃ[k] P₂) : Injective e :=
 /-- Bijective affine maps are affine isomorphisms. -/
 @[simps! linear apply]
 noncomputable def ofBijective {φ : P₁ →ᵃ[k] P₂} (hφ : Function.Bijective φ) : P₁ ≃ᵃ[k] P₂ :=
-  { Equiv.ofBijective _
-      hφ with
+  { Equiv.ofBijective _ hφ with
     linear := LinearEquiv.ofBijective φ.linear (φ.linear_bijective_iff.mpr hφ)
     map_vadd' := φ.map_vadd }
 #align affine_equiv.of_bijective AffineEquiv.ofBijective
@@ -332,8 +331,7 @@ variable {k P₁}
 
 /-- Composition of two `AffineEquiv`alences, applied left to right. -/
 @[trans]
-def trans (e : P₁ ≃ᵃ[k] P₂) (e' : P₂ ≃ᵃ[k] P₃) : P₁ ≃ᵃ[k] P₃
-    where
+def trans (e : P₁ ≃ᵃ[k] P₂) (e' : P₂ ≃ᵃ[k] P₃) : P₁ ≃ᵃ[k] P₃ where
   toEquiv := e.toEquiv.trans e'.toEquiv
   linear := e.linear.trans e'.linear
   map_vadd' p v := by
@@ -422,8 +420,7 @@ theorem inv_def (e : P₁ ≃ᵃ[k] P₁) : e⁻¹ = e.symm :=
 
 /-- `AffineEquiv.linear` on automorphisms is a `MonoidHom`. -/
 @[simps]
-def linearHom : (P₁ ≃ᵃ[k] P₁) →* V₁ ≃ₗ[k] V₁
-    where
+def linearHom : (P₁ ≃ᵃ[k] P₁) →* V₁ ≃ₗ[k] V₁ where
   toFun := linear
   map_one' := rfl
   map_mul' _ _ := rfl
@@ -487,8 +484,7 @@ variable (P₁)
 Note that there is no need for an `AffineMap.constVAdd` as it is always an equivalence.
 This is roughly to `DistribMulAction.toLinearEquiv` as `+ᵥ` is to `•`. -/
 @[simps! apply linear]
-def constVAdd (v : V₁) : P₁ ≃ᵃ[k] P₁
-    where
+def constVAdd (v : V₁) : P₁ ≃ᵃ[k] P₁ where
   toEquiv := Equiv.constVAdd P₁ v
   linear := LinearEquiv.refl _ _
   map_vadd' _ _ := vadd_comm _ _ _
@@ -512,8 +508,7 @@ theorem constVAdd_symm (v : V₁) : (constVAdd k P₁ v).symm = constVAdd k P₁
 
 /-- A more bundled version of `AffineEquiv.constVAdd`. -/
 @[simps]
-def constVAddHom : Multiplicative V₁ →* P₁ ≃ᵃ[k] P₁
-    where
+def constVAddHom : Multiplicative V₁ →* P₁ ≃ᵃ[k] P₁ where
   toFun v := constVAdd k P₁ (Multiplicative.toAdd v)
   map_one' := constVAdd_zero _ _
   map_mul' := constVAdd_add _ P₁
@@ -622,8 +617,7 @@ end AffineEquiv
 namespace LinearEquiv
 
 /-- Interpret a linear equivalence between modules as an affine equivalence. -/
-def toAffineEquiv (e : V₁ ≃ₗ[k] V₂) : V₁ ≃ᵃ[k] V₂
-    where
+def toAffineEquiv (e : V₁ ≃ₗ[k] V₂) : V₁ ≃ᵃ[k] V₂ where
   toEquiv := e.toEquiv
   linear := e
   map_vadd' p v := e.map_add v p
