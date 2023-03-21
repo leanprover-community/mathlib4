@@ -159,7 +159,7 @@ theorem even_odd_of_coprime (hc : Int.gcd x y = 1) :
     rw [show z * z = 4 * (x0 * x0 + x0 + y0 * y0 + y0) + 2 by
         rw [← h.eq]
         ring]
-    field_simp [Int.add_emod]
+    field_simp [Int.add_emod] -- Porting note: norm_num is not enough to close this
 #align pythagorean_triple.even_odd_of_coprime PythagoreanTriple.even_odd_of_coprime
 
 theorem gcd_dvd : (Int.gcd x y : ℤ) ∣ z := by
@@ -289,7 +289,7 @@ def circleEquivGen (hk : ∀ x : K, 1 + x ^ 2 ≠ 0) :
       simpa only [eq_neg_iff_add_eq_zero, one_pow] using hk 1⟩
   invFun p := (p : K × K).1 / ((p : K × K).2 + 1)
   left_inv x := by
-    have h2 : (1 + 1 : K) = 2 := by norm_num
+    have h2 : (1 + 1 : K) = 2 := by norm_num -- Porting note: rfl is not enough to close this
     have h3 : (2 : K) ≠ 0 := by
       convert hk 1
       rw [one_pow 2, h2]
@@ -303,7 +303,7 @@ def circleEquivGen (hk : ∀ x : K, 1 + x ^ 2 ≠ 0) :
     have h4 : (2 : K) ≠ 0 := by
       convert hk 1
       rw [one_pow 2]
-      ring
+      ring -- Porting note: rfl is not enough to close this
     simp only [Prod.mk.inj_iff, Subtype.mk_eq_mk]
     constructor
     · field_simp [h3]
@@ -342,6 +342,7 @@ private theorem coprime_sq_sub_sq_add_of_even_odd {m n : ℤ} (h : Int.gcd m n =
   have hmc : p = 2 ∨ p ∣ Int.natAbs m := prime_two_or_dvd_of_dvd_two_mul_pow_self_two hp h2m
   have hnc : p = 2 ∨ p ∣ Int.natAbs n := prime_two_or_dvd_of_dvd_two_mul_pow_self_two hp h2n
   by_cases h2 : p = 2
+  -- Porting note: norm_num is not enough to close h3
   · have h3 : (m ^ 2 + n ^ 2) % 2 = 1 := by field_simp [sq, Int.add_emod, Int.mul_emod, hm, hn]
     have h4 : (m ^ 2 + n ^ 2) % 2 = 0 := by
       apply Int.emod_eq_zero_of_dvd
@@ -374,6 +375,7 @@ private theorem coprime_sq_sub_mul_of_even_odd {m n : ℤ} (h : Int.gcd m n = 1)
       revert hp1
       rw [hp2']
       apply mt Int.emod_eq_zero_of_dvd
+      -- Porting note: norm_num is not enough to close this
       field_simp [sq, Int.sub_emod, Int.mul_emod, hm, hn]
     apply mt (Int.dvd_gcd (Int.coe_nat_dvd_left.mpr hpm)) hnp
     apply (or_self_iff _).mp
