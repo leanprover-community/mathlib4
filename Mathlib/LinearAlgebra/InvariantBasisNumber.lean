@@ -8,8 +8,8 @@ Authors: Markus Himmel, Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.RingTheory.Ideal.Quotient
-import Mathbin.RingTheory.PrincipalIdealDomain
+import Mathlib.RingTheory.Ideal.Quotient
+import Mathlib.RingTheory.PrincipalIdealDomain
 
 /-!
 # Invariant basis number property
@@ -95,8 +95,7 @@ theorem le_of_fin_injective [StrongRankCondition R] {n m : ℕ} (f : (Fin n → 
 `(fin (n + 1) → R) →ₗ[R] (fin n → R)` is not injective. -/
 theorem strongRankCondition_iff_succ :
     StrongRankCondition R ↔
-      ∀ (n : ℕ) (f : (Fin (n + 1) → R) →ₗ[R] Fin n → R), ¬Function.Injective f :=
-  by
+      ∀ (n : ℕ) (f : (Fin (n + 1) → R) →ₗ[R] Fin n → R), ¬Function.Injective f := by
   refine' ⟨fun h n => fun f hf => _, fun h => ⟨fun n m f hf => _⟩⟩
   · letI : StrongRankCondition R := h
     exact Nat.not_succ_le_self n (le_of_fin_injective R f hf)
@@ -107,8 +106,7 @@ theorem strongRankCondition_iff_succ :
 #align strong_rank_condition_iff_succ strongRankCondition_iff_succ
 
 theorem card_le_of_injective [StrongRankCondition R] {α β : Type _} [Fintype α] [Fintype β]
-    (f : (α → R) →ₗ[R] β → R) (i : Injective f) : Fintype.card α ≤ Fintype.card β :=
-  by
+    (f : (α → R) →ₗ[R] β → R) (i : Injective f) : Fintype.card α ≤ Fintype.card β := by
   let P := LinearEquiv.funCongrLeft R R (Fintype.equivFin α)
   let Q := LinearEquiv.funCongrLeft R R (Fintype.equivFin β)
   exact
@@ -117,8 +115,7 @@ theorem card_le_of_injective [StrongRankCondition R] {α β : Type _} [Fintype �
 #align card_le_of_injective card_le_of_injective
 
 theorem card_le_of_injective' [StrongRankCondition R] {α β : Type _} [Fintype α] [Fintype β]
-    (f : (α →₀ R) →ₗ[R] β →₀ R) (i : Injective f) : Fintype.card α ≤ Fintype.card β :=
-  by
+    (f : (α →₀ R) →ₗ[R] β →₀ R) (i : Injective f) : Fintype.card α ≤ Fintype.card β := by
   let P := Finsupp.linearEquivFunOnFinite R R β
   let Q := (Finsupp.linearEquivFunOnFinite R R α).symm
   exact
@@ -138,8 +135,7 @@ theorem le_of_fin_surjective [RankCondition R] {n m : ℕ} (f : (Fin n → R) �
 #align le_of_fin_surjective le_of_fin_surjective
 
 theorem card_le_of_surjective [RankCondition R] {α β : Type _} [Fintype α] [Fintype β]
-    (f : (α → R) →ₗ[R] β → R) (i : Surjective f) : Fintype.card β ≤ Fintype.card α :=
-  by
+    (f : (α → R) →ₗ[R] β → R) (i : Surjective f) : Fintype.card β ≤ Fintype.card α := by
   let P := LinearEquiv.funCongrLeft R R (Fintype.equivFin α)
   let Q := LinearEquiv.funCongrLeft R R (Fintype.equivFin β)
   exact
@@ -148,8 +144,7 @@ theorem card_le_of_surjective [RankCondition R] {α β : Type _} [Fintype α] [F
 #align card_le_of_surjective card_le_of_surjective
 
 theorem card_le_of_surjective' [RankCondition R] {α β : Type _} [Fintype α] [Fintype β]
-    (f : (α →₀ R) →ₗ[R] β →₀ R) (i : Surjective f) : Fintype.card β ≤ Fintype.card α :=
-  by
+    (f : (α →₀ R) →ₗ[R] β →₀ R) (i : Surjective f) : Fintype.card β ≤ Fintype.card α := by
   let P := Finsupp.linearEquivFunOnFinite R R β
   let Q := (Finsupp.linearEquivFunOnFinite R R α).symm
   exact
@@ -198,8 +193,7 @@ theorem card_eq_of_lequiv {α β : Type _} [Fintype α] [Fintype β] (f : (α �
       (LinearEquiv.funCongrLeft R R (Fintype.equivFin β)).symm)
 #align card_eq_of_lequiv card_eq_of_lequiv
 
-theorem nontrivial_of_invariantBasisNumber : Nontrivial R :=
-  by
+theorem nontrivial_of_invariantBasisNumber : Nontrivial R := by
   by_contra h
   refine' zero_ne_one (eq_of_fin_equiv R _)
   haveI := not_nontrivial_iff_subsingleton.1 h
@@ -225,8 +219,7 @@ An injective map `((fin n ⊕ fin (1 + m)) → R) →ₗ[R] (fin n → R)` for s
 would force `fin (1 + m) → R ≃ₗ punit` (via `is_noetherian.equiv_punit_of_prod_injective`),
 which is not the case!
 -/
-instance (priority := 100) noetherian_ring_strongRankCondition : StrongRankCondition R :=
-  by
+instance (priority := 100) noetherian_ring_strongRankCondition : StrongRankCondition R := by
   fconstructor
   intro m n f i
   by_contra h
@@ -279,8 +272,7 @@ private def induced_map (I : Ideal R) (e : (ι → R) →ₗ[R] ι' → R) :
 /-- An isomorphism of `R`-modules `R^n ≃ R^m` induces an isomorphism of `R/I`-modules
     `R^n/I^n ≃ R^m/I^m`. -/
 private def induced_equiv [Fintype ι'] (I : Ideal R) (e : (ι → R) ≃ₗ[R] ι' → R) :
-    ((ι → R) ⧸ I.pi ι) ≃ₗ[R ⧸ I] (ι' → R) ⧸ I.pi ι' :=
-  by
+    ((ι → R) ⧸ I.pi ι) ≃ₗ[R ⧸ I] (ι' → R) ⧸ I.pi ι' := by
   refine'
     { toFun := induced_map I e
       invFun := induced_map I e.symm.. }
