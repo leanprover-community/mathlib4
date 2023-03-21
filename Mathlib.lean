@@ -961,6 +961,7 @@ import Mathlib.Data.ZMod.Algebra
 import Mathlib.Data.ZMod.Basic
 import Mathlib.Data.ZMod.Defs
 import Mathlib.Data.ZMod.Parity
+import Mathlib.Data.Zmod.Coprime
 import Mathlib.Deprecated.Group
 import Mathlib.Deprecated.Ring
 import Mathlib.Deprecated.Subfield

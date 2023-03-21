@@ -8,8 +8,8 @@ Authors: Michael Stoll
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Zmod.Basic
-import Mathbin.RingTheory.Int.Basic
+import Mathlib.Data.ZMod.Basic
+import Mathlib.RingTheory.Int.Basic
 
 /-!
 # Coprimality and vanishing
