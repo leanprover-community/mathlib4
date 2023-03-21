@@ -701,7 +701,8 @@ theorem normalizedFactors_pow {x : α} (n : ℕ) :
 
 theorem _root_.Irreducible.normalizedFactors_pow {p : α} (hp : Irreducible p) (k : ℕ) :
     normalizedFactors (p ^ k) = Multiset.replicate k (normalize p) := by
-  rw [UniqueFactorizationMonoid.normalizedFactors_pow, normalizedFactors_irreducible hp, Multiset.nsmul_singleton]
+  rw [UniqueFactorizationMonoid.normalizedFactors_pow, normalizedFactors_irreducible hp,
+    Multiset.nsmul_singleton]
 #align irreducible.normalized_factors_pow Irreducible.normalizedFactors_pow
 
 theorem normalizedFactors_prod_eq (s : Multiset α) (hs : ∀ a ∈ s, Irreducible a) :
@@ -711,13 +712,12 @@ theorem normalizedFactors_prod_eq (s : Multiset α) (hs : ∀ a ∈ s, Irreducib
   · have ia := hs a (Multiset.mem_cons_self a _)
     have ib := fun b h => hs b (Multiset.mem_cons_of_mem h)
     obtain rfl | ⟨b, hb⟩ := s.empty_or_exists_mem
-    ·
-      rw [Multiset.cons_zero, Multiset.prod_singleton, Multiset.map_singleton,
+    · rw [Multiset.cons_zero, Multiset.prod_singleton, Multiset.map_singleton,
         normalizedFactors_irreducible ia]
     haveI := nontrivial_of_ne b 0 (ib b hb).ne_zero
     rw [Multiset.prod_cons, Multiset.map_cons, normalizedFactors_mul ia.ne_zero,
       normalizedFactors_irreducible ia, ih]
-    exacts[rfl, ib, Multiset.prod_ne_zero fun h => (ib 0 h).ne_zero rfl]
+    exacts [rfl, ib, Multiset.prod_ne_zero fun h => (ib 0 h).ne_zero rfl]
 #align unique_factorization_monoid.normalized_factors_prod_eq UniqueFactorizationMonoid.normalizedFactors_prod_eq
 
 theorem dvd_iff_normalizedFactors_le_normalizedFactors {x y : α} (hx : x ≠ 0) (hy : y ≠ 0) :
