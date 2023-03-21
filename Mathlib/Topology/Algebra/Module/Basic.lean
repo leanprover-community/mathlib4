@@ -1497,8 +1497,12 @@ theorem coe_projKerOfRightInverse_apply [TopologicalAddGroup M] (f₁ : M →SL[
 @[simp]
 theorem projKerOfRightInverse_apply_idem [TopologicalAddGroup M] (f₁ : M →SL[σ₁₂] M₂)
     (f₂ : M₂ →SL[σ₂₁] M) (h : Function.RightInverse f₂ f₁) (x : LinearMap.ker f₁) :
-    f₁.projKerOfRightInverse f₂ h x = x :=
-  Subtype.ext_iff_val.2 <| by simp
+    f₁.projKerOfRightInverse f₂ h x = x := by
+  -- porting note: should be `ext1; simp` but TC search fails
+  ext1
+  refine sub_eq_self.2 ?_
+  calc f₂ (f₁ x) = f₂ 0 := by rw [x.2.out]
+    _ = 0 := f₂.map_zero
 #align continuous_linear_map.proj_ker_of_right_inverse_apply_idem ContinuousLinearMap.projKerOfRightInverse_apply_idem
 
 @[simp]
