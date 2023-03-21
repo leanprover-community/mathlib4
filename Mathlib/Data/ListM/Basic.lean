@@ -178,7 +178,7 @@ unsafe def mapM {α β : Type u} (f : α → m β) : ListM m α → ListM m β
 #align tactic.mllist.mmap ListM.mapM
 
 /-- Filter a `ListM`. -/
-unsafe def filter {α : Type u} (p : α → Prop) [DecidablePred p] : ListM m α → ListM m α
+unsafe def filter {α : Type u} (p : α → Bool) : ListM m α → ListM m α
 | nil => nil
 | cons l =>
   cons do
