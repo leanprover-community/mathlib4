@@ -721,13 +721,13 @@ theorem truncate_self {X : Type _} [TopologicalSpace X] {a b : X} (γ : Path a b
   split_ifs with h₁ h₂ <;> congr
 #align path.truncate_self Path.truncate_self
 
-@[simp]
+@[simp 1001] -- porting note: increase `simp` priority so left-hand side doesn't simplify
 theorem truncate_zero_zero {X : Type _} [TopologicalSpace X] {a b : X} (γ : Path a b) :
     γ.truncate 0 0 = (Path.refl a).cast (by rw [min_self, γ.extend_zero]) γ.extend_zero := by
   convert γ.truncate_self 0
 #align path.truncate_zero_zero Path.truncate_zero_zero
 
-@[simp]
+@[simp 1001] -- porting note: increase `simp` priority so left-hand side doesn't simplify
 theorem truncate_one_one {X : Type _} [TopologicalSpace X] {a b : X} (γ : Path a b) :
     γ.truncate 1 1 = (Path.refl b).cast (by rw [min_self, γ.extend_one]) γ.extend_one := by
   convert γ.truncate_self 1
@@ -1121,7 +1121,9 @@ theorem IsPathConnected.exists_path_through_family' {X : Type _} [TopologicalSpa
 /-- A topological space is path-connected if it is non-empty and every two points can be
 joined by a continuous path. -/
 class PathConnectedSpace (X : Type _) [TopologicalSpace X] : Prop where
+  /-- A path-connected space must be nonempty. -/
   Nonempty : Nonempty X
+  /-- Any two points in a path-connected space must be joined by a continuous path. -/
   Joined : ∀ x y : X, Joined x y
 #align path_connected_space PathConnectedSpace
 
@@ -1224,6 +1226,7 @@ end PathConnectedSpace
 /-- A topological space is locally path connected, at every point, path connected
 neighborhoods form a neighborhood basis. -/
 class LocPathConnectedSpace (X : Type _) [TopologicalSpace X] : Prop where
+  /-- Each neighborhood filter has a basis of path-connected neighborhoods. -/
   path_connected_basis : ∀ x : X, (𝓝 x).HasBasis (fun s : Set X => s ∈ 𝓝 x ∧ IsPathConnected s) id
 #align loc_path_connected_space LocPathConnectedSpace
 
