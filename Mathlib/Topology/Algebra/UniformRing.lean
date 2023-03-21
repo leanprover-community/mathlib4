@@ -16,11 +16,11 @@ import Mathlib.Topology.Algebra.Ring.Ideal
 # Completion of topological rings:
 
 This files endows the completion of a topological ring with a ring structure.
-More precisely the instance `uniform_space.completion.ring` builds a ring structure
+More precisely the instance `UniformSpace.Completion.ring` builds a ring structure
 on the completion of a ring endowed with a compatible uniform structure in the sense of
-`uniform_add_group`. There is also a commutative version when the original ring is commutative.
+`UniformAddGroup`. There is also a commutative version when the original ring is commutative.
 Moreover, if a topological ring is an algebra over a commutative semiring, then so is its
-`uniform_space.completion`.
+`UniformSpace.Completion`.
 
 The last part of the file builds a ring structure on the biggest separated quotient of a ring.
 
@@ -29,12 +29,12 @@ The last part of the file builds a ring structure on the biggest separated quoti
 Beyond the instances explained above (that don't have to be explicitly invoked),
 the main constructions deal with continuous ring morphisms.
 
-* `uniform_space.completion.extension_hom`: extends a continuous ring morphism from `R`
-  to a complete separated group `S` to `completion R`.
-* `uniform_space.completion.map_ring_hom` : promotes a continuous ring morphism
-  from `R` to `S` into a continuous ring morphism from `completion R` to `completion S`.
+* `UniformSpace.Completion.extensionHom`: extends a continuous ring morphism from `R`
+  to a complete separated group `S` to `Completion R`.
+* `UniformSpace.Completion.mapRingHom` : promotes a continuous ring morphism
+  from `R` to `S` into a continuous ring morphism from `Completion R` to `Completion S`.
 
-TODO: Generalise the results here from the concrete `completion` to any `abstract_completion`.
+TODO: Generalise the results here from the concrete `Completion` to any `AbstractCompletion`.
 -/
 
 
@@ -52,10 +52,10 @@ open DenseInducing UniformSpace Function
 section one_and_mul
 variable (α : Type _) [Ring α] [UniformSpace α]
 
-instance : One (Completion α) :=
+instance one : One (Completion α) :=
   ⟨(1 : α)⟩
 
-instance : Mul (Completion α) :=
+instance mul : Mul (Completion α) :=
   ⟨curry <| (denseInducing_coe.prod denseInducing_coe).extend ((↑) ∘ uncurry (· * ·))⟩
 
 @[norm_cast]
@@ -177,10 +177,10 @@ def extensionHom [CompleteSpace β] [SeparatedSpace β] : Completion α →+* β
         simp_rw [← coe_mul, extension_coe hf, extension_coe hf, extension_coe hf, f.map_mul] }
 #align uniform_space.completion.extension_hom UniformSpace.Completion.extensionHom
 
-instance top_ring_compl : TopologicalRing (Completion α) where
+instance topologicalRing : TopologicalRing (Completion α) where
   continuous_add := continuous_add
   continuous_mul := continuous_mul
-#align uniform_space.completion.top_ring_compl UniformSpace.Completion.top_ring_compl
+#align uniform_space.completion.top_ring_compl UniformSpace.Completion.topologicalRing
 
 /-- The completion map as a ring morphism. -/
 def mapRingHom (hf : Continuous f) : Completion α →+* Completion β :=
@@ -201,7 +201,7 @@ theorem map_smul_eq_mul_coe (r : R) :
   · simp_rw [map_coe (uniformContinuous_const_smul r) a, Algebra.smul_def, coe_mul]
 #align uniform_space.completion.map_smul_eq_mul_coe UniformSpace.Completion.map_smul_eq_mul_coe
 
-instance : Algebra R (Completion A) :=
+instance algebra : Algebra R (Completion A) :=
   { (UniformSpace.Completion.coeRingHom : A →+* Completion A).comp (algebraMap R A) with
     commutes' := fun r x =>
       Completion.induction_on x (isClosed_eq (continuous_mul_left _) (continuous_mul_right _))
@@ -220,7 +220,7 @@ section CommRing
 
 variable (R : Type _) [CommRing R] [UniformSpace R] [UniformAddGroup R] [TopologicalRing R]
 
-instance : CommRing (Completion R) :=
+instance commRing : CommRing (Completion R) :=
   { Completion.ring with
     mul_comm := fun a b =>
       Completion.induction_on₂ a b
