@@ -8,10 +8,10 @@ Authors: Mario Carneiro, Chris Hughes
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.GcdMonoid.Basic
-import Mathbin.Algebra.EuclideanDomain.Basic
-import Mathbin.RingTheory.Ideal.Basic
-import Mathbin.RingTheory.PrincipalIdealDomain
+import Mathlib.Algebra.GCDMonoid.Basic
+import Mathlib.Algebra.EuclideanDomain.Basic
+import Mathlib.RingTheory.Ideal.Basic
+import Mathlib.RingTheory.PrincipalIdealDomain
 
 /-!
 # Lemmas about Euclidean domains
@@ -45,8 +45,7 @@ theorem gcd_ne_zero_of_right (p q : R) (hp : q ≠ 0) : GCDMonoid.gcd p q ≠ 0 
 #align gcd_ne_zero_of_right gcd_ne_zero_of_right
 
 /- ./././Mathport/Syntax/Translate/Tactic/Lean3.lean:132:4: warning: unsupported: rw with cfg: { occs := occurrences.pos[occurrences.pos] «expr[ ,]»([1]) } -/
-theorem left_div_gcd_ne_zero {p q : R} (hp : p ≠ 0) : p / GCDMonoid.gcd p q ≠ 0 :=
-  by
+theorem left_div_gcd_ne_zero {p q : R} (hp : p ≠ 0) : p / GCDMonoid.gcd p q ≠ 0 := by
   obtain ⟨r, hr⟩ := GCDMonoid.gcd_dvd_left p q
   obtain ⟨pq0, r0⟩ : GCDMonoid.gcd p q ≠ 0 ∧ r ≠ 0 := mul_ne_zero_iff.mp (hr ▸ hp)
   rw [hr, mul_comm, mul_div_cancel _ pq0]
@@ -54,8 +53,7 @@ theorem left_div_gcd_ne_zero {p q : R} (hp : p ≠ 0) : p / GCDMonoid.gcd p q �
 #align left_div_gcd_ne_zero left_div_gcd_ne_zero
 
 /- ./././Mathport/Syntax/Translate/Tactic/Lean3.lean:132:4: warning: unsupported: rw with cfg: { occs := occurrences.pos[occurrences.pos] «expr[ ,]»([1]) } -/
-theorem right_div_gcd_ne_zero {p q : R} (hq : q ≠ 0) : q / GCDMonoid.gcd p q ≠ 0 :=
-  by
+theorem right_div_gcd_ne_zero {p q : R} (hq : q ≠ 0) : q / GCDMonoid.gcd p q ≠ 0 := by
   obtain ⟨r, hr⟩ := GCDMonoid.gcd_dvd_right p q
   obtain ⟨pq0, r0⟩ : GCDMonoid.gcd p q ≠ 0 ∧ r ≠ 0 := mul_ne_zero_iff.mp (hr ▸ hq)
   rw [hr, mul_comm, mul_div_cancel _ pq0]
