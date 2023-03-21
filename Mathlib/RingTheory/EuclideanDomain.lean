@@ -48,7 +48,8 @@ theorem gcd_ne_zero_of_right (p q : R) (hp : q ≠ 0) : GCDMonoid.gcd p q ≠ 0 
 theorem left_div_gcd_ne_zero {p q : R} (hp : p ≠ 0) : p / GCDMonoid.gcd p q ≠ 0 := by
   obtain ⟨r, hr⟩ := GCDMonoid.gcd_dvd_left p q
   obtain ⟨pq0, r0⟩ : GCDMonoid.gcd p q ≠ 0 ∧ r ≠ 0 := mul_ne_zero_iff.mp (hr ▸ hp)
-  rw [hr, mul_comm, mul_div_cancel _ pq0]
+  nth_rw 1 [hr]
+  rw [mul_comm, EuclideanDomain.mul_div_cancel _ pq0]
   exact r0
 #align left_div_gcd_ne_zero left_div_gcd_ne_zero
 
@@ -56,7 +57,8 @@ theorem left_div_gcd_ne_zero {p q : R} (hp : p ≠ 0) : p / GCDMonoid.gcd p q �
 theorem right_div_gcd_ne_zero {p q : R} (hq : q ≠ 0) : q / GCDMonoid.gcd p q ≠ 0 := by
   obtain ⟨r, hr⟩ := GCDMonoid.gcd_dvd_right p q
   obtain ⟨pq0, r0⟩ : GCDMonoid.gcd p q ≠ 0 ∧ r ≠ 0 := mul_ne_zero_iff.mp (hr ▸ hq)
-  rw [hr, mul_comm, mul_div_cancel _ pq0]
+  nth_rw 1 [hr]
+  rw [mul_comm, EuclideanDomain.mul_div_cancel _ pq0]
   exact r0
 #align right_div_gcd_ne_zero right_div_gcd_ne_zero
 
@@ -71,7 +73,7 @@ def gcdMonoid (R) [EuclideanDomain R] : GCDMonoid R
   lcm := lcm
   gcd_dvd_left := gcd_dvd_left
   gcd_dvd_right := gcd_dvd_right
-  dvd_gcd a b c := dvd_gcd
+  dvd_gcd := dvd_gcd
   gcd_mul_lcm a b := by rw [EuclideanDomain.gcd_mul_lcm]
   lcm_zero_left := lcm_zero_left
   lcm_zero_right := lcm_zero_right
@@ -82,26 +84,26 @@ variable {α : Type _} [EuclideanDomain α] [DecidableEq α]
 theorem span_gcd {α} [EuclideanDomain α] (x y : α) :
     span ({gcd x y} : Set α) = span ({x, y} : Set α) :=
   letI := EuclideanDomain.gcdMonoid α
-  span_gcd x y
+  _root_.span_gcd x y
 #align euclidean_domain.span_gcd EuclideanDomain.span_gcd
 
 theorem gcd_isUnit_iff {α} [EuclideanDomain α] {x y : α} : IsUnit (gcd x y) ↔ IsCoprime x y :=
   letI := EuclideanDomain.gcdMonoid α
-  gcd_isUnit_iff x y
+  _root_.gcd_isUnit_iff x y 
 #align euclidean_domain.gcd_is_unit_iff EuclideanDomain.gcd_isUnit_iff
 
 -- this should be proved for UFDs surely?
 theorem isCoprime_of_dvd {α} [EuclideanDomain α] {x y : α} (nonzero : ¬(x = 0 ∧ y = 0))
     (H : ∀ z ∈ nonunits α, z ≠ 0 → z ∣ x → ¬z ∣ y) : IsCoprime x y :=
   letI := EuclideanDomain.gcdMonoid α
-  isCoprime_of_dvd x y nonzero H
+  _root_.isCoprime_of_dvd x y nonzero H
 #align euclidean_domain.is_coprime_of_dvd EuclideanDomain.isCoprime_of_dvd
 
 -- this should be proved for UFDs surely?
 theorem dvd_or_coprime {α} [EuclideanDomain α] (x y : α) (h : Irreducible x) :
     x ∣ y ∨ IsCoprime x y :=
   letI := EuclideanDomain.gcdMonoid α
-  dvd_or_coprime x y h
+  _root_.dvd_or_coprime x y h
 #align euclidean_domain.dvd_or_coprime EuclideanDomain.dvd_or_coprime
 
 end EuclideanDomain
