@@ -254,7 +254,7 @@ theorem natAbs_euclideanDomain_gcd (a b : ℤ) :
 #align int.nat_abs_euclidean_domain_gcd Int.natAbs_euclideanDomain_gcd
 
 end Int
-#check Associates.out
+
 /-- Maps an associate class of integers consisting of `-n, n` to `n : ℕ` -/
 def associatesIntEquivNat : Associates ℤ ≃ ℕ := by
   refine' ⟨fun z => z.out.natAbs, fun n => Associates.mk n, _, _⟩
