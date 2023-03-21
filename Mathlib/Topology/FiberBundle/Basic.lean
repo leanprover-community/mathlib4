@@ -702,7 +702,8 @@ instance fiberBundle : FiberBundle F Z.Fiber where
     simp only [(· ∘ ·), totalSpaceMk, localTrivAt_apply_mk, Trivialization.coe_coe,
       ← (embedding_prod_mk b).nhds_eq_comap]
     convert_to 𝓝 x = 𝓝 x ⊓ 𝓟 univ
-    · exact eq_univ_of_forall (mem_source_at _ _)
+    · congr
+      exact eq_univ_of_forall (mem_source_at Z _)
     · rw [principal_univ, inf_top_eq]
   trivializationAtlas' := Set.range Z.localTriv
   trivializationAt' := Z.localTrivAt
