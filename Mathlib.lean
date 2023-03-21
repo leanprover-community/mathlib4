@@ -1361,7 +1361,6 @@ import Mathlib.Tactic.Convert
 import Mathlib.Tactic.Core
 import Mathlib.Tactic.Elementwise
 import Mathlib.Tactic.Existsi
-import Mathlib.Tactic.Expect
 import Mathlib.Tactic.FailIfNoProgress
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.FinCases
