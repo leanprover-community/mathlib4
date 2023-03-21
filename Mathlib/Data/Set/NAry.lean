@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 
 ! This file was ported from Lean 3 source module data.set.n_ary
-! leanprover-community/mathlib commit 995b47e555f1b6297c7cf16855f1023e355219fb
+! leanprover-community/mathlib commit 20715f4ac6819ef2453d9e5106ecd086a5dc2a5e
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -29,10 +29,9 @@ and `Set.image2` already fulfills this task.
 open Function
 
 namespace Set
-
-variable {α α' β β' γ γ' δ δ' ε ε' : Type _} {f f' : α → β → γ} {g g' : α → β → γ → δ}
-
-variable {s s' : Set α} {t t' : Set β} {u u' : Set γ} {a a' : α} {b b' : β} {c c' : γ} {d d' : δ}
+variable {α α' β β' γ γ' δ δ' ε ε' ζ ζ' ν : Type _} {f f' : α → β → γ} {g g' : α → β → γ → δ}
+variable {s s' : Set α} {t t' : Set β} {u u' : Set γ} {v : Set δ} {a a' : α} {b b' : β} {c c' : γ}
+  {d d' : δ}
 
 /-- The image of a binary function `f : α → β → γ` as a function `Set α → Set β → Set γ`.
 Mathematically this should be thought of as the image of the corresponding function `α × β → γ`.-/
@@ -318,6 +317,17 @@ theorem image2_right_comm {f : δ → γ → ε} {g : α → β → δ} {f' : α
   rw [image2_swap g, image2_swap g']
   exact image2_assoc fun _ _ _ => h_right_comm _ _ _
 #align set.image2_right_comm Set.image2_right_comm
+
+theorem image2_image2_image2_comm {f : ε → ζ → ν} {g : α → β → ε} {h : γ → δ → ζ} {f' : ε' → ζ' → ν}
+    {g' : α → γ → ε'} {h' : β → δ → ζ'}
+    (h_comm : ∀ a b c d, f (g a b) (h c d) = f' (g' a c) (h' b d)) :
+    image2 f (image2 g s t) (image2 h u v) = image2 f' (image2 g' s u) (image2 h' t v) := by
+  ext; constructor
+  · rintro ⟨_, _, ⟨a, b, ha, hb, rfl⟩, ⟨c, d, hc, hd, rfl⟩, rfl⟩
+    exact ⟨_, _, ⟨a, c, ha, hc, rfl⟩, ⟨b, d, hb, hd, rfl⟩, (h_comm _ _ _ _).symm⟩
+  · rintro ⟨_, _, ⟨a, c, ha, hc, rfl⟩, ⟨b, d, hb, hd, rfl⟩, rfl⟩
+    exact ⟨_, _, ⟨a, b, ha, hb, rfl⟩, ⟨c, d, hc, hd, rfl⟩, h_comm _ _ _ _⟩
+#align set.image2_image2_image2_comm Set.image2_image2_image2_comm
 
 theorem image_image2_distrib {g : γ → δ} {f' : α' → β' → δ} {g₁ : α → α'} {g₂ : β → β'}
     (h_distrib : ∀ a b, g (f a b) = f' (g₁ a) (g₂ b)) :
