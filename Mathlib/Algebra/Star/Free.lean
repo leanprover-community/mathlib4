@@ -77,10 +77,7 @@ theorem star_algebraMap (r : R) : star (algebraMap R (FreeAlgebra R X) r) = alge
 
 /-- `star` as an `AlgEquiv` -/
 noncomputable def starHom : FreeAlgebra R X ≃ₐ[R] (FreeAlgebra R X)ᵐᵒᵖ :=
-  { starRingEquiv with commutes' := fun r => by {
-    rename_i inst src
-    simp_all only [Equiv.toFun_as_coe_apply, MulOpposite.algebraMap_apply]
-    apply Eq.refl } }
+  { starRingEquiv with commutes' := fun r => by rfl }
 #align free_algebra.star_hom FreeAlgebra.starHom
 
 end FreeAlgebra
