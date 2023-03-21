@@ -2166,7 +2166,7 @@ theorem map_isPrime_of_surjective {f : F} (hf : Function.Surjective f) {I : Idea
     rw [← sub_eq_zero, ← map_sub] at hc'
     have : a * b ∈ I :=
       by
-      convert I.sub_mem hc (hk (hc' : c - a * b ∈ RingHom.ker f))
+      convert I.sub_mem hc (hk (hc' : c - a * b ∈ RingHom.ker f)) using 1
       abel
     exact
       (H.mem_or_mem this).imp (fun h => ha ▸ mem_map_of_mem f h) fun h => hb ▸ mem_map_of_mem f h

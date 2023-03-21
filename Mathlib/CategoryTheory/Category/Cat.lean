@@ -44,6 +44,7 @@ namespace Cat
 instance : Inhabited Cat :=
   ⟨⟨Type u, CategoryTheory.types⟩⟩
 
+--Porting note: maybe this coercion should be defined to be `objects.obj`?
 instance : CoeSort Cat (Type u) :=
   ⟨Bundled.α⟩
 
@@ -116,6 +117,9 @@ def objects : Cat.{v, u} ⥤ Type u where
 set_option linter.uppercaseLean3 false in
 #align category_theory.Cat.objects CategoryTheory.Cat.objects
 
+-- porting note: this instance was needed for CategoryTheory.Category.Cat.Limit
+instance (X : Cat.{v, u}) : Category (objects.obj X) := (inferInstance : Category X)
+
 section
 
 attribute [local simp] eqToHom_map
@@ -141,22 +145,22 @@ This ought to be modelled as a 2-functor!
 @[simps]
 def typeToCat : Type u ⥤ Cat where
   obj X := Cat.of (Discrete X)
-  map := fun {X} {Y} f => by 
-    dsimp 
+  map := fun {X} {Y} f => by
+    dsimp
     exact Discrete.functor (Discrete.mk ∘ f)
-  map_id X := by 
+  map_id X := by
     apply Functor.ext
     · intro X Y f
       cases f
       simp only [id_eq, eqToHom_refl, Cat.id_map, Category.comp_id, Category.id_comp]
       apply ULift.ext
       aesop_cat
-    · aesop_cat 
+    · aesop_cat
   map_comp f g := by apply Functor.ext; aesop_cat
 set_option linter.uppercaseLean3 false in
 #align category_theory.Type_to_Cat CategoryTheory.typeToCat
 
-instance : Faithful typeToCat.{u} where 
+instance : Faithful typeToCat.{u} where
   map_injective {_X} {_Y} _f _g h :=
     funext fun x => congr_arg Discrete.as (Functor.congr_obj h ⟨x⟩)
 
@@ -168,11 +172,10 @@ instance : Full typeToCat.{u}
     apply Functor.ext
     · intro x y f
       dsimp
-      apply ULift.ext 
+      apply ULift.ext
       aesop_cat
     · rintro ⟨x⟩
       apply Discrete.ext
       rfl
 
 end CategoryTheory
-

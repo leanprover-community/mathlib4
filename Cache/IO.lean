@@ -169,6 +169,7 @@ def unpackCache (hashMap : HashMap) : IO Unit := do
     IO.println s!"Decompressing {size} file(s)"
     let isMathlibRoot ← isMathlibRoot
     hashMap.forM fun path hash => do
+      let _ ← IO.asTask do
       match path.parent with
       | none | some path => do
         let packageDir ← getPackageDir path
