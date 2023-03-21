@@ -62,10 +62,11 @@ def hasseDeriv (k : ℕ) : R[X] →ₗ[R] R[X] :=
   lsum fun i => monomial (i - k) ∘ₗ DistribMulAction.toLinearMap R R (i.choose k)
 #align polynomial.hasse_deriv Polynomial.hasseDeriv
 
-theorem hasseDeriv_apply : hasseDeriv k f = f.sum fun i r => monomial (i - k) (↑(i.choose k) * r) :=
-  by dsimp [hasseDeriv]
-     congr; ext; congr
-     apply nsmul_eq_mul
+theorem hasseDeriv_apply :
+    hasseDeriv k f = f.sum fun i r => monomial (i - k) (↑(i.choose k) * r) := by
+  dsimp [hasseDeriv]
+  congr; ext; congr
+  apply nsmul_eq_mul
 #align polynomial.hasse_deriv_apply Polynomial.hasseDeriv_apply
 
 theorem hasseDeriv_coeff (n : ℕ) : (hasseDeriv k f).coeff n = (n + k).choose k * f.coeff (n + k) :=
@@ -219,11 +220,10 @@ theorem natDegree_hasseDeriv [NoZeroSMulDivisors ℕ R] (p : R[X]) (n : ℕ) :
   · simpa [hasseDeriv_eq_zero_of_lt_natDegree, hn] using (tsub_eq_zero_of_le hn.le).symm
   · refine' map_natDegree_eq_sub _ _
     · exact fun h => hasseDeriv_eq_zero_of_lt_natDegree _ _
-    ·
-      classical
+    · classical
         simp only [ite_eq_right_iff, Ne.def, natDegree_monomial, hasseDeriv_monomial]
         intro k c c0 hh
-        -- this is where we use the `smul_eq_zero` from `no_zero_smul_divisors`
+        -- this is where we use the `smul_eq_zero` from `NoZeroSMulDivisors`
         rw [← nsmul_eq_mul, smul_eq_zero, Nat.choose_eq_zero_iff] at hh
         exact (tsub_eq_zero_of_le (Or.resolve_right hh c0).le).symm
 #align polynomial.nat_degree_hasse_deriv Polynomial.natDegree_hasseDeriv

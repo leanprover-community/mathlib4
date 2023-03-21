@@ -118,8 +118,6 @@ def normalOfIsPullbackSndOfNormal {P Q R S : C} {f : P ⟶ Q} {g : P ⟶ R} {h :
     letI gr := regularOfIsPullbackSndOfRegular comm t
     have q := (HasZeroMorphisms.comp_zero k hn.Z).symm
     convert gr.isLimit
-    dsimp only [KernelFork.ofι, Fork.ofι]
-    congr; apply proof_irrel_heq
 #align category_theory.normal_of_is_pullback_snd_of_normal CategoryTheory.normalOfIsPullbackSndOfNormal
 
 /-- The first leg of a pullback cone is a normal monomorphism if the left component is too.
@@ -234,8 +232,6 @@ def normalOfIsPushoutSndOfNormal {P Q R S : C} {f : P ⟶ Q} {g : P ⟶ R} {h : 
     letI hn := regularOfIsPushoutSndOfRegular comm t
     have q := (@zero_comp _ _ _ gn.W _ _ f).symm
     convert hn.isColimit
-    dsimp only [CokernelCofork.ofπ, Cofork.ofπ]
-    congr; apply proof_irrel_heq
 #align category_theory.normal_of_is_pushout_snd_of_normal CategoryTheory.normalOfIsPushoutSndOfNormal
 
 /-- The first leg of a pushout cocone is a normal epimorphism if the left component is too.

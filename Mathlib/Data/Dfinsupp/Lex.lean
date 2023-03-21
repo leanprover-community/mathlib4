@@ -31,25 +31,24 @@ variable [∀ i, Zero (α i)]
 and `α i` is ordered by `s i`.
 The type synonym `Lex (Π₀ i, α i)` has an order given by `Dfinsupp.Lex (· < ·) (· < ·)`.
 -/
--- Porting note: Changed type of `s` from `∀ i, ...` to `∀ {i}, ...`
-protected def Lex (r : ι → ι → Prop) (s : ∀ {i}, α i → α i → Prop) (x y : Π₀ i, α i) : Prop :=
-  Pi.Lex r s x y
+protected def Lex (r : ι → ι → Prop) (s : ∀ i, α i → α i → Prop) (x y : Π₀ i, α i) : Prop :=
+  Pi.Lex r (s _) x y
 #align dfinsupp.lex Dfinsupp.Lex
 
 -- Porting note: Added `_root_` to match more closely with Lean 3. Also updated `s`'s type.
-theorem _root_.Pi.lex_eq_dfinsupp_lex {r : ι → ι → Prop} {s : ∀ {i}, α i → α i → Prop}
-    (a b : Π₀ i, α i) : Pi.Lex r s (a : ∀ i, α i) b = Dfinsupp.Lex r s a b :=
+theorem _root_.Pi.lex_eq_dfinsupp_lex {r : ι → ι → Prop} {s : ∀ i, α i → α i → Prop}
+    (a b : Π₀ i, α i) : Pi.Lex r (s _) (a : ∀ i, α i) b = Dfinsupp.Lex r s a b :=
   rfl
 #align pi.lex_eq_dfinsupp_lex Pi.lex_eq_dfinsupp_lex
 
 -- Porting note: Updated `s`'s type.
-theorem lex_def {r : ι → ι → Prop} {s : ∀ {i}, α i → α i → Prop} {a b : Π₀ i, α i} :
-    Dfinsupp.Lex r s a b ↔ ∃ j, (∀ d, r d j → a d = b d) ∧ s (a j) (b j) :=
+theorem lex_def {r : ι → ι → Prop} {s : ∀ i, α i → α i → Prop} {a b : Π₀ i, α i} :
+    Dfinsupp.Lex r s a b ↔ ∃ j, (∀ d, r d j → a d = b d) ∧ s j (a j) (b j) :=
   Iff.rfl
 #align dfinsupp.lex_def Dfinsupp.lex_def
 
 instance [LT ι] [∀ i, LT (α i)] : LT (Lex (Π₀ i, α i)) :=
-  ⟨fun f g ↦ Dfinsupp.Lex (· < ·) (· < ·) (ofLex f) (ofLex g)⟩
+  ⟨fun f g ↦ Dfinsupp.Lex (· < ·) (fun _ ↦ (· < ·)) (ofLex f) (ofLex g)⟩
 
 theorem lex_lt_of_lt_of_preorder [∀ i, Preorder (α i)] (r) [IsStrictOrder ι r] {x y : Π₀ i, α i}
     (hlt : x < y) : ∃ i, (∀ j, r j i → x j ≤ y j ∧ y j ≤ x j) ∧ x i < y i := by
