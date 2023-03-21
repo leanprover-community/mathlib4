@@ -20,17 +20,17 @@ principal ideal domain (PID) is an integral domain which is a principal ideal ri
 # Main definitions
 
 Note that for principal ideal domains, one should use
-`[is_domain R] [is_principal_ideal_ring R]`. There is no explicit definition of a PID.
+`[IsDomain R] [IsPrincipalIdealRing R]`. There is no explicit definition of a PID.
 Theorems about PID's are in the `principal_ideal_ring` namespace.
 
-- `is_principal_ideal_ring`: a predicate on rings, saying that every left ideal is principal.
+- `IsPrincipalIdealRing`: a predicate on rings, saying that every left ideal is principal.
 - `generator`: a generator of a principal ideal (or more generally submodule)
 - `to_unique_factorization_monoid`: a PID is a unique factorization domain
 
 # Main results
 
 - `to_maximal_ideal`: a non-zero prime ideal in a PID is maximal.
-- `euclidean_domain.to_principal_ideal_domain` : a Euclidean domain is a PID.
+- `EuclideanDomain.to_principal_ideal_domain` : a Euclidean domain is a PID.
 
 -/
 
@@ -311,7 +311,7 @@ theorem mem_submonoid_of_factors_subset_of_units_subset (s : Submonoid R) {a : R
   exact mul_mem (multiset_prod_mem _ hfac) (hunit _)
 #align principal_ideal_ring.mem_submonoid_of_factors_subset_of_units_subset PrincipalIdealRing.mem_submonoid_of_factors_subset_of_units_subset
 
-/-- If a `ring_hom` maps all units and all factors of an element `a` into a submonoid `s`, then it
+/-- If a `RingHom` maps all units and all factors of an element `a` into a submonoid `s`, then it
 also maps `a` into that submonoid. -/
 theorem ringHom_mem_submonoid_of_factors_subset_of_units_subset {R S : Type _} [CommRing R]
     [IsDomain R] [IsPrincipalIdealRing R] [Semiring S] (f : R →+* S) (s : Submonoid S) (a : R)
@@ -486,7 +486,7 @@ open Set Ideal
 
 variable (R) [CommRing R]
 
-/-- `non_principals R` is the set of all ideals of `R` that are not principal ideals. -/
+/-- `nonPrincipals R` is the set of all ideals of `R` that are not principal ideals. -/
 def nonPrincipals :=
   { I : Ideal R | ¬I.IsPrincipal }
 #align non_principals nonPrincipals
@@ -520,10 +520,10 @@ theorem nonPrincipals_zorn (c : Set (Ideal R)) (hs : c ⊆ nonPrincipals R)
 /-- If all prime ideals in a commutative ring are principal, so are all other ideals. -/
 theorem IsPrincipalIdealRing.of_prime (H : ∀ P : Ideal R, P.IsPrime → P.IsPrincipal) :
     IsPrincipalIdealRing R := by
-  -- Suppose the set of `non_principals` is not empty.
+  -- Suppose the set of `nonPrincipals` is not empty.
   rw [← nonPrincipals_eq_empty_iff, Set.eq_empty_iff_forall_not_mem]
   intro J hJ
-  -- We will show a maximal element `I ∈ non_principals R` (which exists by Zorn) is prime.
+  -- We will show a maximal element `I ∈ nonPrincipals R` (which exists by Zorn) is prime.
   obtain ⟨I, Ibad, -, Imax⟩ := zorn_nonempty_partialOrder₀ (nonPrincipals R) nonPrincipals_zorn _ hJ
   have Imax' : ∀ {J}, I < J → J.IsPrincipal :=
     by
