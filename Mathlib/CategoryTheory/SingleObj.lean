@@ -8,10 +8,10 @@ Authors: Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Endomorphism
-import Mathbin.CategoryTheory.Category.Cat
-import Mathbin.Algebra.Category.Mon.Basic
-import Mathbin.Combinatorics.Quiver.SingleObj
+import Mathlib.CategoryTheory.Endomorphism
+import Mathlib.CategoryTheory.Category.Cat
+import Mathlib.Algebra.Category.Mon.Basic
+import Mathlib.Combinatorics.Quiver.SingleObj
 
 /-!
 # Single-object category
@@ -90,8 +90,7 @@ instance groupoid [Group α] : Groupoid (SingleObj α)
   comp_inv' _ _ := mul_left_inv
 #align category_theory.single_obj.groupoid CategoryTheory.SingleObj.groupoid
 
-theorem inv_as_inv [Group α] {x y : SingleObj α} (f : x ⟶ y) : inv f = f⁻¹ :=
-  by
+theorem inv_as_inv [Group α] {x y : SingleObj α} (f : x ⟶ y) : inv f = f⁻¹ := by
   ext
   rw [comp_as_mul, inv_mul_self, id_as_one]
 #align category_theory.single_obj.inv_as_inv CategoryTheory.SingleObj.inv_as_inv
