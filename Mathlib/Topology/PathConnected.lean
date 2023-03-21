@@ -86,7 +86,7 @@ structure Path (x y : X) extends C(I, X) where
 
 -- porting note: added this instance so that we can use `FunLike.coe` for `CoeFun`
 -- this also fixed very strange `simp` timeout issues
-instance : ContinuousMapClass (Path x y) I X where
+instance Path.continuousMapClass : ContinuousMapClass (Path x y) I X where
   coe := fun γ ↦ ⇑γ.toContinuousMap
   coe_injective' := fun γ₁ γ₂ h => by
     simp only [FunLike.coe_fn_eq] at h
@@ -142,6 +142,11 @@ initialize_simps_projections Path (toFun → simps.apply, -toContinuousMap)
 theorem coe_toContinuousMap : ⇑γ.toContinuousMap = γ :=
   rfl
 #align path.coe_to_continuous_map Path.coe_toContinuousMap
+
+-- porting note: this is needed because of the `Path.continuousMapClass` instance
+@[simp]
+theorem coe_coe : ⇑(γ : C(I, X)) = γ :=
+  rfl
 
 /-- Any function `φ : Π (a : α), path (x a) (y a)` can be seen as a function `α × I → X`. -/
 instance hasUncurryPath {X α : Type _} [TopologicalSpace X] {x y : α → X} :
@@ -208,7 +213,7 @@ so we avoid adding another.
 /-- The following instance defines the topology on the path space to be induced from the
 compact-open topology on the space `C(I,X)` of continuous maps from `I` to `X`.
 -/
-instance : TopologicalSpace (Path x y) :=
+instance topologicalSpace : TopologicalSpace (Path x y) :=
   TopologicalSpace.induced ((↑) : _ → C(I, X)) ContinuousMap.compactOpen
 
 theorem continuous_eval : Continuous fun p : Path x y × I => p.1 p.2 :=
@@ -566,17 +571,19 @@ protected def prod (γ₁ : Path a₁ a₂) (γ₂ : Path b₁ b₂) : Path (a�
 #align path.prod Path.prod
 
 @[simp]
-theorem prod_coeFn (γ₁ : Path a₁ a₂) (γ₂ : Path b₁ b₂) :
+theorem prod_coe (γ₁ : Path a₁ a₂) (γ₂ : Path b₁ b₂) :
     ⇑(γ₁.prod γ₂) = fun t => (γ₁ t, γ₂ t) :=
   rfl
-#align path.prod_coe_fn Path.prod_coeFn
+#align path.prod_coe_fn Path.prod_coe
 
 /-- Path composition commutes with products -/
 theorem trans_prod_eq_prod_trans (γ₁ : Path a₁ a₂) (δ₁ : Path a₂ a₃) (γ₂ : Path b₁ b₂)
     (δ₂ : Path b₂ b₃) : (γ₁.prod γ₂).trans (δ₁.prod δ₂) = (γ₁.trans δ₁).prod (γ₂.trans δ₂) := by
-  ext t <;> unfold Path.trans <;> simp only [Path.coe_mk, Path.prod_coeFn, Function.comp_apply] <;>
-      split_ifs <;>
-    rfl
+  ext t <;>
+  unfold Path.trans <;>
+  simp only [Path.coe_mk, Path.prod_coe, Function.comp_apply] <;>
+  split_ifs <;>
+  rfl
 #align path.trans_prod_eq_prod_trans Path.trans_prod_eq_prod_trans
 
 end Prod
@@ -595,16 +602,16 @@ protected def pi (γ : ∀ i, Path (as i) (bs i)) : Path as bs
 #align path.pi Path.pi
 
 @[simp]
-theorem pi_coeFn (γ : ∀ i, Path (as i) (bs i)) : ⇑(Path.pi γ) = fun t i => γ i t :=
+theorem pi_coe (γ : ∀ i, Path (as i) (bs i)) : ⇑(Path.pi γ) = fun t i => γ i t :=
   rfl
-#align path.pi_coe_fn Path.pi_coeFn
+#align path.pi_coe_fn Path.pi_coe
 
 /-- Path composition commutes with products -/
 theorem trans_pi_eq_pi_trans (γ₀ : ∀ i, Path (as i) (bs i)) (γ₁ : ∀ i, Path (bs i) (cs i)) :
     (Path.pi γ₀).trans (Path.pi γ₁) = Path.pi fun i => (γ₀ i).trans (γ₁ i) := by
   ext (t i)
   unfold Path.trans
-  simp only [Path.coe_mk, Function.comp_apply, pi_coeFn]
+  simp only [Path.coe_mk, Function.comp_apply, pi_coe]
   split_ifs <;> rfl
 #align path.trans_pi_eq_pi_trans Path.trans_pi_eq_pi_trans
 
@@ -686,7 +693,11 @@ theorem truncate_continuous_family {X : Type _} [TopologicalSpace X] {a b : X} (
       (continuous_fst.comp continuous_snd))
 #align path.truncate_continuous_family Path.truncate_continuous_family
 
-/- TODO : When `continuity` gets quicker, change the proof back to :
+/-
+  porting note: I'm not sure this would work with the new continuity because it doesn't leave side
+  goals.
+
+  TODO : When `continuity` gets quicker, change the proof back to :
     `begin`
       `simp only [has_coe_to_fun.coe, coe_fn, path.truncate],`
       `continuity,`
@@ -745,10 +756,11 @@ def reparam (γ : Path x y) (f : I → I) (hfcont : Continuous f) (hf₀ : f 0 =
 #align path.reparam Path.reparam
 
 @[simp]
-theorem coe_to_fun (γ : Path x y) {f : I → I} (hfcont : Continuous f) (hf₀ : f 0 = 0)
+theorem coe_reparam (γ : Path x y) {f : I → I} (hfcont : Continuous f) (hf₀ : f 0 = 0)
     (hf₁ : f 1 = 1) : ⇑(γ.reparam f hfcont hf₀ hf₁) = γ ∘ f :=
   rfl
-#align path.coe_to_fun Path.coe_to_fun
+#align path.coe_to_fun Path.coe_reparam
+-- porting note: this seems like it was poorly named (was: `coe_to_fun`)
 
 @[simp]
 theorem reparam_id (γ : Path x y) : γ.reparam id continuous_id rfl rfl = γ := by
@@ -823,7 +835,7 @@ def ZerothHomotopy :=
   Quotient (pathSetoid X)
 #align zeroth_homotopy ZerothHomotopy
 
-instance : Inhabited (ZerothHomotopy ℝ) :=
+instance ZerothHomotopy.inhabited : Inhabited (ZerothHomotopy ℝ) :=
   ⟨@Quotient.mk' ℝ (pathSetoid ℝ) 0⟩
 
 variable {X}
@@ -871,10 +883,10 @@ theorem JoinedIn.joined_subtype (h : JoinedIn F x y) :
       target' := by simp }⟩
 #align joined_in.joined_subtype JoinedIn.joined_subtype
 
-theorem JoinedIn.of_line {f : ℝ → X} (hf : ContinuousOn f I) (h₀ : f 0 = x) (h₁ : f 1 = y)
+theorem JoinedIn.ofLine {f : ℝ → X} (hf : ContinuousOn f I) (h₀ : f 0 = x) (h₁ : f 1 = y)
     (hF : f '' I ⊆ F) : JoinedIn F x y :=
   ⟨Path.ofLine hf h₀ h₁, fun t => hF <| Path.ofLine_mem hf h₀ h₁ t⟩
-#align joined_in.of_line JoinedIn.of_line
+#align joined_in.of_line JoinedIn.ofLine
 
 theorem JoinedIn.joined (h : JoinedIn F x y) : Joined x y :=
   ⟨h.somePath⟩
@@ -1218,7 +1230,7 @@ class LocPathConnectedSpace (X : Type _) [TopologicalSpace X] : Prop where
 
 export LocPathConnectedSpace (path_connected_basis)
 
-theorem loc_path_connected_of_bases {p : ι → Prop} {s : X → ι → Set X}
+theorem locPathConnected_of_bases {p : ι → Prop} {s : X → ι → Set X}
     (h : ∀ x, (𝓝 x).HasBasis p (s x)) (h' : ∀ x i, p i → IsPathConnected (s x i)) :
     LocPathConnectedSpace X := by
   constructor
@@ -1229,7 +1241,7 @@ theorem loc_path_connected_of_bases {p : ι → Prop} {s : X → ι → Set X}
   · rintro U ⟨U_in, _hU⟩
     rcases(h x).mem_iff.mp U_in with ⟨i, pi, hi⟩
     tauto
-#align loc_path_connected_of_bases loc_path_connected_of_bases
+#align loc_path_connected_of_bases locPathConnected_of_bases
 
 theorem pathConnectedSpace_iff_connectedSpace [LocPathConnectedSpace X] :
     PathConnectedSpace X ↔ ConnectedSpace X := by
@@ -1253,19 +1265,19 @@ theorem pathConnectedSpace_iff_connectedSpace [LocPathConnectedSpace X] :
       exact (hU.joinedIn z hz y <| mem_of_mem_nhds U_in).joined.mem_pathComponent hz'
 #align path_connected_space_iff_connected_space pathConnectedSpace_iff_connectedSpace
 
-theorem path_connected_subset_basis [LocPathConnectedSpace X] {U : Set X} (h : IsOpen U)
+theorem pathConnected_subset_basis [LocPathConnectedSpace X] {U : Set X} (h : IsOpen U)
     (hx : x ∈ U) : (𝓝 x).HasBasis (fun s : Set X => s ∈ 𝓝 x ∧ IsPathConnected s ∧ s ⊆ U) id :=
   (path_connected_basis x).hasBasis_self_subset (IsOpen.mem_nhds h hx)
-#align path_connected_subset_basis path_connected_subset_basis
+#align path_connected_subset_basis pathConnected_subset_basis
 
-theorem loc_path_connected_of_isOpen [LocPathConnectedSpace X] {U : Set X} (h : IsOpen U) :
+theorem locPathConnected_of_isOpen [LocPathConnectedSpace X] {U : Set X} (h : IsOpen U) :
     LocPathConnectedSpace U :=
   ⟨by
     rintro ⟨x, x_in⟩
     rw [nhds_subtype_eq_comap]
     constructor
     intro V
-    rw [(HasBasis.comap ((↑) : U → X) (path_connected_subset_basis h x_in)).mem_iff]
+    rw [(HasBasis.comap ((↑) : U → X) (pathConnected_subset_basis h x_in)).mem_iff]
     constructor
     · rintro ⟨W, ⟨W_in, hW, hWU⟩, hWV⟩
       exact ⟨Subtype.val ⁻¹' W, ⟨⟨preimage_mem_comap W_in, hW.preimage_coe hWU⟩, hWV⟩⟩
@@ -1278,11 +1290,11 @@ theorem loc_path_connected_of_isOpen [LocPathConnectedSpace X] {U : Set X} (h : 
       rintro x ⟨y, ⟨y_in, hy⟩⟩
       rw [← Subtype.coe_injective hy]
       tauto⟩
-#align loc_path_connected_of_is_open loc_path_connected_of_isOpen
+#align loc_path_connected_of_is_open locPathConnected_of_isOpen
 
 theorem IsOpen.isConnected_iff_isPathConnected [LocPathConnectedSpace X] {U : Set X}
     (U_op : IsOpen U) : IsPathConnected U ↔ IsConnected U := by
   rw [isConnected_iff_connectedSpace, isPathConnected_iff_pathConnectedSpace]
-  haveI := loc_path_connected_of_isOpen U_op
+  haveI := locPathConnected_of_isOpen U_op
   exact pathConnectedSpace_iff_connectedSpace
 #align is_open.is_connected_iff_is_path_connected IsOpen.isConnected_iff_isPathConnected
