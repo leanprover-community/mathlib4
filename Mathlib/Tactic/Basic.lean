@@ -192,12 +192,12 @@ def _root_.Lean.MVarId.clearValue (mvarId : MVarId) (fvarId : FVarId) : MetaM MV
   mvarId.checkNotAssigned `clear_value
   let tag ← mvarId.getTag
   let (xs, mvarId') ← mvarId.revert #[fvarId] true
-  let tgt ← mvarId'.getType
-  unless tgt.isLet do
-    mvarId.withContext <|
-      throwTacticEx `clear_value mvarId m!"{Expr.fvar fvarId} is not a local definition"
-  let tgt' := Expr.forallE tgt.letName! tgt.letType! tgt.letBody! .default
   mvarId'.withContext do
+    let tgt ← mvarId'.getType
+    unless tgt.isLet do
+      mvarId.withContext <|
+        throwTacticEx `clear_value mvarId m!"{Expr.fvar fvarId} is not a local definition"
+    let tgt' := Expr.forallE tgt.letName! tgt.letType! tgt.letBody! .default
     unless ← isTypeCorrect tgt' do
       mvarId.withContext <|
         throwTacticEx `clear_value mvarId
