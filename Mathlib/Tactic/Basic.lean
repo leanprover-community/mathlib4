@@ -31,6 +31,19 @@ syntax (name := lemma)
     stx.setKind ``Parser.Command.theorem
   pure <| stx.setKind ``Parser.Command.declaration
 
+/-- Given two arrays of `FVarId`s, one from an old local context and the other from a new local
+context, pushes `FVarAliasInfo`s into the info tree for corresponding pairs of `FVarId`s.
+Recall that variables linked this way should be considered to be semantically identical.
+
+The effect of this is, for example, the unused variable linter will see that variables
+from the first array are used if corresponding variables in the second array are used. -/
+def pushFVarAliasInfo [Monad m] [MonadInfoTree m]
+    (oldFVars newFVars : Array FVarId) (newLCtx : LocalContext) : m Unit := do
+  for old in oldFVars, new in newFVars do
+    if old != new then
+      let decl := newLCtx.get! new
+      pushInfoLeaf (.ofFVarAliasInfo { id := new, baseId := old, userName := decl.userName })
+
 /-- Function to help do the revert/intro pattern, running some code inside a context
 where certain variables have been reverted before re-introing them.
 It will push `FVarId` alias information into info trees for you according to a simple protocol.
