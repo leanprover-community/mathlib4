@@ -99,7 +99,7 @@ theorem mul_iff (k : ℤ) (hk : k ≠ 0) :
 either
  * `x = k * (m ^ 2 - n ^ 2)` and `y = k * (2 * m * n)`, or
  * `x = k * (2 * m * n)` and `y = k * (m ^ 2 - n ^ 2)`. -/
--- @[nolint unused_arguments]
+@[nolint unusedArguments]
 def IsClassified (_ : PythagoreanTriple x y z) :=
   ∃ k m n : ℤ,
     (x = k * (m ^ 2 - n ^ 2) ∧ y = k * (2 * m * n) ∨
@@ -112,7 +112,7 @@ def IsClassified (_ : PythagoreanTriple x y z) :=
  * `x = m ^ 2 - n ^ 2` and `y = 2 * m * n`, or
  * `x = 2 * m * n` and `y = m ^ 2 - n ^ 2`.
 -/
--- @[nolint unused_arguments]
+@[nolint unusedArguments]
 def IsPrimitiveClassified (_ : PythagoreanTriple x y z) :=
   ∃ m n : ℤ,
     (x = m ^ 2 - n ^ 2 ∧ y = 2 * m * n ∨ x = 2 * m * n ∧ y = m ^ 2 - n ^ 2) ∧
@@ -499,18 +499,23 @@ theorem isPrimitiveClassified_of_coprime_of_odd_of_pos (hc : Int.gcd x y = 1) (h
   have hm2n20 : (m : ℚ) ^ 2 + (n : ℚ) ^ 2 ≠ 0 := by
     norm_cast
     simpa only [Int.coe_nat_pow] using ne_of_gt hm2n2
+  have hx1 {j k : ℚ} (h₁ : k ≠ 0) (h₂ : k ^ 2 + j ^ 2 ≠ 0) :
+      (1 - (j / k) ^ 2) / (1 + (j / k) ^ 2) = (k ^ 2 - j ^ 2) / (k ^ 2 + j ^ 2) :=
+    by field_simp
   have hw2 : w = ((m : ℚ) ^ 2 - (n : ℚ) ^ 2) / ((m : ℚ) ^ 2 + (n : ℚ) ^ 2) := by
-    rw [ht4.2, hq2]
-    -- TODO field_simp [hm2n2, Rat.den_nz q, -Rat.num_div_den]
-  have helper {j k : ℚ} (h₁ : k ≠ 0) (h₂ : j ^ 2 + k ^ 2 ≠ 0) :
-      2 * (j / k) / (1 + (j / k) ^ 2) = 2 * j * k / (j ^ 2 + k ^ 2) :=
-    have h₃ : k * (k ^ 2 + j ^ 2) ≠ 0 := mul_ne_zero h₁ (by rwa [add_comm] at h₂)
+    calc
+      w = (1 - q ^ 2) / (1 + q ^ 2) := by apply ht4.2
+      _ = (1 - (↑n / ↑m) ^ 2) / (1 + (↑n / ↑m) ^ 2) := by rw [hq2]
+      _ = _ := by exact hx1 (Int.cast_ne_zero.mpr hm0) hm2n20
+  have hx2 {j k : ℚ} (h₁ : k ≠ 0) (h₂ : k ^ 2 + j ^ 2 ≠ 0) :
+      2 * (j / k) / (1 + (j / k) ^ 2) = 2 * k * j / (k ^ 2 + j ^ 2) :=
+    have h₃ : k * (k ^ 2 + j ^ 2) ≠ 0 := mul_ne_zero h₁ h₂
     by field_simp; ring
   have hv2 : v = 2 * m * n / ((m : ℚ) ^ 2 + (n : ℚ) ^ 2) := by
     calc
       v = 2 * q / (1 + q ^ 2) := by apply ht4.1
       _ = 2 * (n / m) / (1 + (↑n / ↑m) ^ 2) := by rw [hq2]
-      _ = _ := by exact helper (Rat.cast_ne_zero.mpr hm0) hm2n20
+      _ = _ := by exact hx2 (Int.cast_ne_zero.mpr hm0) hm2n20
   have hnmcp : Int.gcd n m = 1 := q.reduced
   have hmncp : Int.gcd m n = 1 := by
     rw [Int.gcd_comm]
