@@ -1279,6 +1279,7 @@ import Mathlib.RingTheory.Coprime.Ideal
 import Mathlib.RingTheory.Coprime.Lemmas
 import Mathlib.RingTheory.Finiteness
 import Mathlib.RingTheory.Fintype
+import Mathlib.RingTheory.Flat
 import Mathlib.RingTheory.FreeRing
 import Mathlib.RingTheory.Ideal.Basic
 import Mathlib.RingTheory.Ideal.IdempotentFg

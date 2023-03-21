@@ -8,7 +8,7 @@ Authors: Johan Commelin
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.RingTheory.Noetherian
+import Mathlib.RingTheory.Noetherian
 
 /-!
 # Flat modules
