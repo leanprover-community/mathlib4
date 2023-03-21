@@ -15,7 +15,7 @@ import Mathlib.RingTheory.UniqueFactorizationDomain
 An element of a monoid is squarefree when it is not divisible by any squares
 except the squares of units.
 
-Results about squarefree natural numbers are proved in `data/Nat/Squarefree`.
+Results about squarefree natural numbers are proved in `Data.Nat.Squarefree`.
 
 ## Main Definitions
  - `Squarefree r` indicates that `r` is only divisible by `x * x` if `x` is a unit.
@@ -23,7 +23,7 @@ Results about squarefree natural numbers are proved in `data/Nat/Squarefree`.
 ## Main Results
  - `multiplicity.squarefree_iff_multiplicity_le_one`: `x` is `Squarefree` iff for every `y`, either
   `multiplicity y x ≤ 1` or `IsUnit y`.
- - `unique_factorization_monoid.squarefree_iff_nodup_factors`: A nonzero element `x` of a unique
+ - `UniqueFactorizationMonoid.squarefree_iff_nodup_factors`: A nonzero element `x` of a unique
  factorization monoid is squarefree iff `factors x` has no duplicate factors.
 
 ## Tags
@@ -202,7 +202,7 @@ theorem Squarefree.isRadical {x : R} (hx : Squarefree x) : IsRadical x :=
     And.right <|
       (dvd_gcd_iff x x y).1
         (by
-          by_cases gcd x y = 0;
+          by_cases gcd x y = 0
           · rw [h]
             apply dvd_zero
           replace hy := ((dvd_gcd_iff x x _).2 ⟨dvd_rfl, hy⟩).trans gcd_pow_right_dvd_pow_gcd
@@ -234,7 +234,6 @@ variable [CancelCommMonoidWithZero R] [UniqueFactorizationMonoid R]
 theorem squarefree_iff_nodup_normalizedFactors [NormalizationMonoid R] [DecidableEq R] {x : R}
     (x0 : x ≠ 0) : Squarefree x ↔ Multiset.Nodup (normalizedFactors x) := by
   have drel : DecidableRel (Dvd.dvd : R → R → Prop) := by classical infer_instance
-  haveI := drel
   rw [multiplicity.squarefree_iff_multiplicity_le_one, Multiset.nodup_iff_count_le_one]
   haveI := nontrivial_of_ne x 0 x0
   constructor <;> intro h a
