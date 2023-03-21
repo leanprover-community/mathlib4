@@ -15,14 +15,14 @@ import Mathlib.RingTheory.UniqueFactorizationDomain
 An element of a monoid is squarefree when it is not divisible by any squares
 except the squares of units.
 
-Results about squarefree natural numbers are proved in `data/nat/squarefree`.
+Results about squarefree natural numbers are proved in `data/Nat/Squarefree`.
 
 ## Main Definitions
- - `squarefree r` indicates that `r` is only divisible by `x * x` if `x` is a unit.
+ - `Squarefree r` indicates that `r` is only divisible by `x * x` if `x` is a unit.
 
 ## Main Results
- - `multiplicity.squarefree_iff_multiplicity_le_one`: `x` is `squarefree` iff for every `y`, either
-  `multiplicity y x ≤ 1` or `is_unit y`.
+ - `multiplicity.squarefree_iff_multiplicity_le_one`: `x` is `Squarefree` iff for every `y`, either
+  `multiplicity y x ≤ 1` or `IsUnit y`.
  - `unique_factorization_monoid.squarefree_iff_nodup_factors`: A nonzero element `x` of a unique
  factorization monoid is squarefree iff `factors x` has no duplicate factors.
 
