@@ -8,8 +8,8 @@ Authors: Chris Hughes, Morenikeji Neri
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.EuclideanDomain.Instances
-import Mathbin.RingTheory.UniqueFactorizationDomain
+import Mathlib.Algebra.EuclideanDomain.Instances
+import Mathlib.RingTheory.UniqueFactorizationDomain
 
 /-!
 # Principal ideal rings and principal ideal domains
@@ -104,8 +104,7 @@ theorem Ideal.span_singleton_generator (I : Ideal R) [I.IsPrincipal] :
 #align ideal.span_singleton_generator Ideal.span_singleton_generator
 
 @[simp]
-theorem generator_mem (S : Submodule R M) [S.IsPrincipal] : generator S ∈ S :=
-  by
+theorem generator_mem (S : Submodule R M) [S.IsPrincipal] : generator S ∈ S := by
   conv_rhs => rw [← span_singleton_generator S]
   exact subset_span (mem_singleton _)
 #align submodule.is_principal.generator_mem Submodule.IsPrincipal.generator_mem
@@ -138,8 +137,7 @@ theorem prime_generator_of_isPrime (S : Ideal R) [Submodule.IsPrincipal S] [is_p
 
 -- Note that the converse may not hold if `ϕ` is not injective.
 theorem generator_map_dvd_of_mem {N : Submodule R M} (ϕ : M →ₗ[R] R) [(N.map ϕ).IsPrincipal] {x : M}
-    (hx : x ∈ N) : generator (N.map ϕ) ∣ ϕ x :=
-  by
+    (hx : x ∈ N) : generator (N.map ϕ) ∣ ϕ x := by
   rw [← mem_iff_generator_dvd, Submodule.mem_map]
   exact ⟨x, hx, rfl⟩
 #align submodule.is_principal.generator_map_dvd_of_mem Submodule.IsPrincipal.generator_map_dvd_of_mem
@@ -147,8 +145,7 @@ theorem generator_map_dvd_of_mem {N : Submodule R M} (ϕ : M →ₗ[R] R) [(N.ma
 -- Note that the converse may not hold if `ϕ` is not injective.
 theorem generator_submoduleImage_dvd_of_mem {N O : Submodule R M} (hNO : N ≤ O) (ϕ : O →ₗ[R] R)
     [(ϕ.submoduleImage N).IsPrincipal] {x : M} (hx : x ∈ N) :
-    generator (ϕ.submoduleImage N) ∣ ϕ ⟨x, hNO hx⟩ :=
-  by
+    generator (ϕ.submoduleImage N) ∣ ϕ ⟨x, hNO hx⟩ := by
   rw [← mem_iff_generator_dvd, LinearMap.mem_submoduleImage_of_le hNO]
   exact ⟨x, hx, rfl⟩
 #align submodule.is_principal.generator_submodule_image_dvd_of_mem Submodule.IsPrincipal.generator_submoduleImage_dvd_of_mem
@@ -287,8 +284,7 @@ noncomputable def factors (a : R) : Multiset R :=
 #align principal_ideal_ring.factors PrincipalIdealRing.factors
 
 theorem factors_spec (a : R) (h : a ≠ 0) :
-    (∀ b ∈ factors a, Irreducible b) ∧ Associated (factors a).Prod a :=
-  by
+    (∀ b ∈ factors a, Irreducible b) ∧ Associated (factors a).Prod a := by
   unfold factors; rw [dif_neg h]
   exact Classical.choose_spec (WfDvdMonoid.exists_factors a h)
 #align principal_ideal_ring.factors_spec PrincipalIdealRing.factors_spec
@@ -299,8 +295,7 @@ theorem ne_zero_of_mem_factors {R : Type v} [CommRing R] [IsDomain R] [IsPrincip
 #align principal_ideal_ring.ne_zero_of_mem_factors PrincipalIdealRing.ne_zero_of_mem_factors
 
 theorem mem_submonoid_of_factors_subset_of_units_subset (s : Submonoid R) {a : R} (ha : a ≠ 0)
-    (hfac : ∀ b ∈ factors a, b ∈ s) (hunit : ∀ c : Rˣ, (c : R) ∈ s) : a ∈ s :=
-  by
+    (hfac : ∀ b ∈ factors a, b ∈ s) (hunit : ∀ c : Rˣ, (c : R) ∈ s) : a ∈ s := by
   rcases(factors_spec a ha).2 with ⟨c, hc⟩
   rw [← hc]
   exact mul_mem (multiset_prod_mem _ hfac) (hunit _)
@@ -361,8 +356,7 @@ open Ideal
 
 variable [CommRing R] [IsDomain R] [IsPrincipalIdealRing R] [GCDMonoid R]
 
-theorem span_gcd (x y : R) : span ({gcd x y} : Set R) = span ({x, y} : Set R) :=
-  by
+theorem span_gcd (x y : R) : span ({gcd x y} : Set R) = span ({x, y} : Set R) := by
   obtain ⟨d, hd⟩ := IsPrincipalIdealRing.principal (span ({x, y} : Set R))
   rw [submodule_span_eq] at hd
   rw [hd]
@@ -399,8 +393,7 @@ theorem gcd_isUnit_iff (x y : R) : IsUnit (gcd x y) ↔ IsCoprime x y := by
 
 -- this should be proved for UFDs surely?
 theorem isCoprime_of_dvd (x y : R) (nonzero : ¬(x = 0 ∧ y = 0))
-    (H : ∀ z ∈ nonunits R, z ≠ 0 → z ∣ x → ¬z ∣ y) : IsCoprime x y :=
-  by
+    (H : ∀ z ∈ nonunits R, z ≠ 0 → z ∣ x → ¬z ∣ y) : IsCoprime x y := by
   rw [← gcd_isUnit_iff]
   by_contra h
   refine' H _ h _ (gcd_dvd_left _ _) (gcd_dvd_right _ _)
@@ -408,8 +401,7 @@ theorem isCoprime_of_dvd (x y : R) (nonzero : ¬(x = 0 ∧ y = 0))
 #align is_coprime_of_dvd isCoprime_of_dvd
 
 -- this should be proved for UFDs surely?
-theorem dvd_or_coprime (x y : R) (h : Irreducible x) : x ∣ y ∨ IsCoprime x y :=
-  by
+theorem dvd_or_coprime (x y : R) (h : Irreducible x) : x ∣ y ∨ IsCoprime x y := by
   refine' or_iff_not_imp_left.2 fun h' => _
   apply isCoprime_of_dvd
   · rintro ⟨rfl, rfl⟩
@@ -420,8 +412,7 @@ theorem dvd_or_coprime (x y : R) (h : Irreducible x) : x ∣ y ∨ IsCoprime x y
 #align dvd_or_coprime dvd_or_coprime
 
 theorem isCoprime_of_irreducible_dvd {x y : R} (nonzero : ¬(x = 0 ∧ y = 0))
-    (H : ∀ z : R, Irreducible z → z ∣ x → ¬z ∣ y) : IsCoprime x y :=
-  by
+    (H : ∀ z : R, Irreducible z → z ∣ x → ¬z ∣ y) : IsCoprime x y := by
   apply isCoprime_of_dvd x y nonzero
   intro z znu znz zx zy
   obtain ⟨i, h1, h2⟩ := WfDvdMonoid.exists_irreducible_factor znu znz
@@ -502,8 +493,7 @@ theorem nonPrincipals_eq_empty_iff : nonPrincipals R = ∅ ↔ IsPrincipalIdealR
 -/
 theorem nonPrincipals_zorn (c : Set (Ideal R)) (hs : c ⊆ nonPrincipals R)
     (hchain : IsChain (· ≤ ·) c) {K : Ideal R} (hKmem : K ∈ c) :
-    ∃ I ∈ nonPrincipals R, ∀ J ∈ c, J ≤ I :=
-  by
+    ∃ I ∈ nonPrincipals R, ∀ J ∈ c, J ≤ I := by
   refine' ⟨Sup c, _, fun J hJ => le_supₛ hJ⟩
   rintro ⟨x, hx⟩
   have hxmem : x ∈ Sup c := hx.symm ▸ Submodule.mem_span_singleton_self x
@@ -516,8 +506,7 @@ theorem nonPrincipals_zorn (c : Set (Ideal R)) (hs : c ⊆ nonPrincipals R)
 
 /-- If all prime ideals in a commutative ring are principal, so are all other ideals. -/
 theorem IsPrincipalIdealRing.of_prime (H : ∀ P : Ideal R, P.IsPrime → P.IsPrincipal) :
-    IsPrincipalIdealRing R :=
-  by
+    IsPrincipalIdealRing R := by
   -- Suppose the set of `non_principals` is not empty.
   rw [← nonPrincipals_eq_empty_iff, Set.eq_empty_iff_forall_not_mem]
   intro J hJ

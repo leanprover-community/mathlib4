@@ -1301,6 +1301,7 @@ import Mathlib.RingTheory.Polynomial.Pochhammer
 import Mathlib.RingTheory.Polynomial.ScaleRoots
 import Mathlib.RingTheory.Polynomial.Tower
 import Mathlib.RingTheory.Prime
+import Mathlib.RingTheory.PrincipalIdealDomain
 import Mathlib.RingTheory.RingInvo
 import Mathlib.RingTheory.Subring.Basic
 import Mathlib.RingTheory.Subring.Pointwise
