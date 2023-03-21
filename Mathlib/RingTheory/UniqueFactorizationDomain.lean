@@ -19,10 +19,10 @@ import Mathlib.RingTheory.Multiplicity
 # Unique factorization
 
 ## Main Definitions
-* `WfDvdMonoid` holds for `monoid`s for which a strict divisibility relation is
+* `WfDvdMonoid` holds for `Monoid`s for which a strict divisibility relation is
   well-founded.
 * `UniqueFactorizationMonoid` holds for `WfDvdMonoid`s where
-  `irreducible` is equivalent to `prime`
+  `Irreducible` is equivalent to `Prime`
 
 ## To do
 * set up the complete lattice structure on `FactorSet`.
@@ -870,7 +870,7 @@ theorem no_factors_of_no_prime_factors {a b : R} (ha : a ≠ 0)
 #align unique_factorization_monoid.no_factors_of_no_prime_factors UniqueFactorizationMonoid.no_factors_of_no_prime_factors
 
 /-- Euclid's lemma: if `a ∣ b * c` and `a` and `c` have no common prime factors, `a ∣ b`.
-Compare `is_coprime.dvd_of_dvd_mul_left`. -/
+Compare `IsCoprime.dvd_of_dvd_mul_left`. -/
 theorem dvd_of_dvd_mul_left_of_no_prime_factors {a b c : R} (ha : a ≠ 0) :
     (∀ {d}, d ∣ a → d ∣ c → ¬Prime d) → a ∣ b * c → a ∣ b := by
   refine' induction_on_prime c _ _ _
@@ -890,7 +890,7 @@ theorem dvd_of_dvd_mul_left_of_no_prime_factors {a b c : R} (ha : a ≠ 0) :
 #align unique_factorization_monoid.dvd_of_dvd_mul_left_of_no_prime_factors UniqueFactorizationMonoid.dvd_of_dvd_mul_left_of_no_prime_factors
 
 /-- Euclid's lemma: if `a ∣ b * c` and `a` and `b` have no common prime factors, `a ∣ c`.
-Compare `is_coprime.dvd_of_dvd_mul_right`. -/
+Compare `IsCoprime.dvd_of_dvd_mul_right`. -/
 theorem dvd_of_dvd_mul_right_of_no_prime_factors {a b c : R} (ha : a ≠ 0)
     (no_factors : ∀ {d}, d ∣ a → d ∣ b → ¬Prime d) : a ∣ b * c → a ∣ c := by
   simpa [mul_comm b c] using dvd_of_dvd_mul_left_of_no_prime_factors ha @no_factors
@@ -1389,7 +1389,7 @@ theorem prod_le_prod_iff_le [Nontrivial α] {p q : Multiset (Associates α)}
 variable [dec : DecidableEq α] [dec' : DecidableEq (Associates α)]
 
 /-- This returns the multiset of irreducible factors as a `FactorSet`,
-  a multiset of irreducible associates `with_top`. -/
+  a multiset of irreducible associates `WithTop`. -/
 noncomputable def factors' (a : α) : Multiset { a : Associates α // Irreducible a } :=
   (factors a).pmap (fun a ha => ⟨Associates.mk a, (irreducible_mk _).2 ha⟩) irreducible_of_factor
 #align associates.factors' Associates.factors'
