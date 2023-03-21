@@ -261,14 +261,17 @@ instance : LieModule R L' M
   smul_lie t x m := by simp only [coe_bracket_of_module, smul_lie, Submodule.coe_smul_of_tower]
   lie_smul t x m := by simp only [coe_bracket_of_module, lie_smul]
 
+-- Porting note: TODO Erase this line. Needed because we don't have η for classes. (lean4#2074)
+attribute [-instance] Ring.toNonAssocRing
+
 /-- An `L`-equivariant map of Lie modules `M → N` is `L'`-equivariant for any Lie subalgebra
 `L' ⊆ L`. -/
-def LieModuleHom.restrictLie (f : M →ₗ⁅R,L⁆ N) (L' : LieSubalgebra R L) : M →ₗ⁅R,L'⁆ N :=
-  { (f : M →ₗ[R] N) with map_lie' := fun x m => f.map_lie (↑x) m }
+def _root_.LieModuleHom.restrictLie (f : M →ₗ⁅R,L⁆ N) (L' : LieSubalgebra R L) : M →ₗ⁅R,L'⁆ N :=
+  { (f : M →ₗ[R] N) with map_lie' := fun {x} m => f.map_lie (↑x) m }
 #align lie_module_hom.restrict_lie LieModuleHom.restrictLie
 
 @[simp]
-theorem LieModuleHom.coe_restrictLie (f : M →ₗ⁅R,L⁆ N) : ⇑(f.restrictLie L') = f :=
+theorem _root_.LieModuleHom.coe_restrictLie (f : M →ₗ⁅R,L⁆ N) : ⇑(f.restrictLie L') = f :=
   rfl
 #align lie_module_hom.coe_restrict_lie LieModuleHom.coe_restrictLie
 
@@ -276,56 +279,48 @@ end LieModule
 
 /-- The embedding of a Lie subalgebra into the ambient space as a morphism of Lie algebras. -/
 def incl : L' →ₗ⁅R⁆ L :=
-  { (L' : Submodule R L).Subtype with
-    map_lie' := fun x y =>
-      by
-      simp only [LinearMap.toFun_eq_coe, Submodule.subtype_apply]
-      rfl }
+  { (L' : Submodule R L).subtype with
+    map_lie' := rfl }
 #align lie_subalgebra.incl LieSubalgebra.incl
 
 @[simp]
-theorem coe_incl : ⇑L'.incl = coe :=
+theorem coe_incl : ⇑L'.incl = ((↑) : L' → L) :=
   rfl
 #align lie_subalgebra.coe_incl LieSubalgebra.coe_incl
 
 /-- The embedding of a Lie subalgebra into the ambient space as a morphism of Lie modules. -/
 def incl' : L' →ₗ⁅R,L'⁆ L :=
-  { (L' : Submodule R L).Subtype with
-    map_lie' := fun x y => by
-      simp only [coe_bracket_of_module, LinearMap.toFun_eq_coe, Submodule.subtype_apply,
-        coe_bracket] }
+  { (L' : Submodule R L).subtype with
+    map_lie' := rfl }
 #align lie_subalgebra.incl' LieSubalgebra.incl'
 
 @[simp]
-theorem coe_incl' : ⇑L'.incl' = coe :=
+theorem coe_incl' : ⇑L'.incl' = ((↑) : L' → L) :=
   rfl
 #align lie_subalgebra.coe_incl' LieSubalgebra.coe_incl'
 
 end LieSubalgebra
 
-variable {R L} {L₂ : Type w} [LieRing L₂] [LieAlgebra R L₂]
-
+variable {R L}
+variable {L₂ : Type w} [LieRing L₂] [LieAlgebra R L₂]
 variable (f : L →ₗ⁅R⁆ L₂)
 
 namespace LieHom
 
+-- Porting note: TODO Erase this line. Needed because we don't have η for classes. (lean4#2074)
+attribute [-instance] Ring.toNonAssocRing
+
 /-- The range of a morphism of Lie algebras is a Lie subalgebra. -/
 def range : LieSubalgebra R L₂ :=
-  { (f : L →ₗ[R] L₂).range with
-    lie_mem' := fun x y =>
-      show x ∈ f.toLinearMap.range → y ∈ f.toLinearMap.range → ⁅x, y⁆ ∈ f.toLinearMap.range
-        by
-        repeat' rw [LinearMap.mem_range]
-        rintro ⟨x', hx⟩ ⟨y', hy⟩
-        refine' ⟨⁅x', y'⁆, _⟩
-        rw [← hx, ← hy]
-        change f ⁅x', y'⁆ = ⁅f x', f y'⁆
-        rw [map_lie] }
+  { LinearMap.range (f : L →ₗ[R] L₂) with
+      lie_mem' := by
+        rintro - - ⟨x, rfl⟩ ⟨y, rfl⟩
+        exact ⟨⁅x, y⁆, f.map_lie x y⟩ }
 #align lie_hom.range LieHom.range
 
 @[simp]
 theorem range_coe : (f.range : Set L₂) = Set.range f :=
-  LinearMap.range_coe ↑f
+  LinearMap.range_coe (f : L →ₗ[R] L₂)
 #align lie_hom.range_coe LieHom.range_coe
 
 @[simp]
@@ -334,34 +329,34 @@ theorem mem_range (x : L₂) : x ∈ f.range ↔ ∃ y : L, f y = x :=
 #align lie_hom.mem_range LieHom.mem_range
 
 theorem mem_range_self (x : L) : f x ∈ f.range :=
-  LinearMap.mem_range_self f x
+  LinearMap.mem_range_self (f : L →ₗ[R] L₂) x
 #align lie_hom.mem_range_self LieHom.mem_range_self
 
 /-- We can restrict a morphism to a (surjective) map to its range. -/
 def rangeRestrict : L →ₗ⁅R⁆ f.range :=
-  { (f : L →ₗ[R] L₂).range_restrict with
-    map_lie' := fun x y => by
+  { (f : L →ₗ[R] L₂).rangeRestrict with
+    map_lie' := fun {x y} => by
       apply Subtype.ext
       exact f.map_lie x y }
 #align lie_hom.range_restrict LieHom.rangeRestrict
 
 @[simp]
-theorem rangeRestrict_apply (x : L) : f.range_restrict x = ⟨f x, f.mem_range_self x⟩ :=
+theorem rangeRestrict_apply (x : L) : f.rangeRestrict x = ⟨f x, f.mem_range_self x⟩ :=
   rfl
 #align lie_hom.range_restrict_apply LieHom.rangeRestrict_apply
 
-theorem surjective_rangeRestrict : Function.Surjective f.range_restrict := by
+theorem surjective_rangeRestrict : Function.Surjective f.rangeRestrict := by
   rintro ⟨y, hy⟩
   erw [mem_range] at hy; obtain ⟨x, rfl⟩ := hy
   use x
-  simp only [Subtype.mk_eq_mk, range_restrict_apply]
+  simp only [Subtype.mk_eq_mk, rangeRestrict_apply]
 #align lie_hom.surjective_range_restrict LieHom.surjective_rangeRestrict
 
 /-- A Lie algebra is equivalent to its range under an injective Lie algebra morphism. -/
 noncomputable def equivRangeOfInjective (h : Function.Injective f) : L ≃ₗ⁅R⁆ f.range :=
-  LieEquiv.ofBijective f.range_restrict
+  LieEquiv.ofBijective f.rangeRestrict
     ⟨fun x y hxy => by
-      simp only [Subtype.mk_eq_mk, range_restrict_apply] at hxy
+      simp only [Subtype.mk_eq_mk, rangeRestrict_apply] at hxy
       exact h hxy, f.surjective_rangeRestrict⟩
 #align lie_hom.equiv_range_of_injective LieHom.equivRangeOfInjective
 
@@ -379,8 +374,7 @@ theorem Submodule.exists_lieSubalgebra_coe_eq_iff (p : Submodule R L) :
   · rintro ⟨K, rfl⟩ _ _
     exact K.lie_mem'
   · intro h
-    use { p with lie_mem' := h }
-    exact LieSubalgebra.coe_to_submodule_mk p _
+    use { p with lie_mem' := h _ _ }
 #align submodule.exists_lie_subalgebra_coe_eq_iff Submodule.exists_lieSubalgebra_coe_eq_iff
 
 namespace LieSubalgebra
@@ -393,11 +387,14 @@ theorem incl_range : K.incl.range = K := by
   exact (K : Submodule R L).range_subtype
 #align lie_subalgebra.incl_range LieSubalgebra.incl_range
 
+-- Porting note: TODO Erase this line. Needed because we don't have η for classes. (lean4#2074)
+attribute [-instance] Ring.toNonAssocRing
+
 /-- The image of a Lie subalgebra under a Lie algebra morphism is a Lie subalgebra of the
 codomain. -/
 def map : LieSubalgebra R L₂ :=
   { (K : Submodule R L).map (f : L →ₗ[R] L₂) with
-    lie_mem' := fun x y hx hy => by
+    lie_mem' := fun {x y} hx hy ↦ by
       erw [Submodule.mem_map] at hx
       rcases hx with ⟨x', hx', hx⟩
       rw [← hx]
@@ -424,8 +421,7 @@ theorem mem_map_submodule (e : L ≃ₗ⁅R⁆ L₂) (x : L₂) :
 domain. -/
 def comap : LieSubalgebra R L :=
   { (K₂ : Submodule R L₂).comap (f : L →ₗ[R] L₂) with
-    lie_mem' := fun x y hx hy =>
-      by
+    lie_mem' := fun {x y} hx hy ↦ by
       suffices ⁅f x, f y⁆ ∈ K₂ by simp [this]
       exact K₂.lie_mem hx hy }
 #align lie_subalgebra.comap LieSubalgebra.comap
@@ -437,14 +433,15 @@ open Set
 instance : PartialOrder (LieSubalgebra R L) :=
   {-- Overriding `le` like this gives a better defeq.
       PartialOrder.lift
-      (coe : LieSubalgebra R L → Set L) coe_injective with
+      ((↑) : LieSubalgebra R L → Set L) coe_injective with
     le := fun N N' => ∀ ⦃x⦄, x ∈ N → x ∈ N' }
 
 theorem le_def : K ≤ K' ↔ (K : Set L) ⊆ K' :=
   Iff.rfl
 #align lie_subalgebra.le_def LieSubalgebra.le_def
 
-@[simp, norm_cast]
+-- porting note dropped `norm_cast` TODO investigate
+@[simp]
 theorem coe_submodule_le_coe_submodule : (K : Submodule R L) ≤ K' ↔ K ≤ K' :=
   Iff.rfl
 #align lie_subalgebra.coe_submodule_le_coe_submodule LieSubalgebra.coe_submodule_le_coe_submodule
@@ -468,7 +465,7 @@ theorem mem_bot (x : L) : x ∈ (⊥ : LieSubalgebra R L) ↔ x = 0 :=
 #align lie_subalgebra.mem_bot LieSubalgebra.mem_bot
 
 instance : Top (LieSubalgebra R L) :=
-  ⟨{ (⊤ : Submodule R L) with lie_mem' := fun x y hx hy => mem_univ ⁅x, y⁆ }⟩
+  ⟨{ (⊤ : Submodule R L) with lie_mem' := fun {x y} _hx _hy => mem_univ ⁅x, y⁆ }⟩
 
 @[simp]
 theorem top_coe : ((⊤ : LieSubalgebra R L) : Set L) = univ :=
@@ -485,7 +482,7 @@ theorem mem_top (x : L) : x ∈ (⊤ : LieSubalgebra R L) :=
   mem_univ x
 #align lie_subalgebra.mem_top LieSubalgebra.mem_top
 
-theorem LieHom.range_eq_map : f.range = map f ⊤ := by
+theorem _root_.LieHom.range_eq_map : f.range = map f ⊤ := by
   ext
   simp
 #align lie_hom.range_eq_map LieHom.range_eq_map
@@ -493,7 +490,7 @@ theorem LieHom.range_eq_map : f.range = map f ⊤ := by
 instance : Inf (LieSubalgebra R L) :=
   ⟨fun K K' =>
     { (K ⊓ K' : Submodule R L) with
-      lie_mem' := fun x y hx hy => mem_inter (K.lie_mem hx.1 hy.1) (K'.lie_mem hx.2 hy.2) }⟩
+      lie_mem' := fun {_x _y} hx hy => mem_inter (K.lie_mem hx.1 hy.1) (K'.lie_mem hx.2 hy.2) }⟩
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:366:4: unsupported set replacement {((s : submodule R L)) | s «expr ∈ » S} -/
 instance : InfSet (LieSubalgebra R L) :=
