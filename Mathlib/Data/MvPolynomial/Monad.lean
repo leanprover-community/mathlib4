@@ -13,38 +13,38 @@ import Mathlib.Data.MvPolynomial.Variables
 
 /-!
 
-# Monad operations on `mv_polynomial`
+# Monad operations on `MvPolynomial`
 
-This file defines two monadic operations on `mv_polynomial`. Given `p : mv_polynomial σ R`,
+This file defines two monadic operations on `MvPolynomial`. Given `p : MvPolynomial σ R`,
 
-* `mv_polynomial.bind₁` and `mv_polynomial.join₁` operate on the variable type `σ`.
-* `mv_polynomial.bind₂` and `mv_polynomial.join₂` operate on the coefficient type `R`.
+* `MvPolynomial.bind₁` and `MvPolynomial.join₁` operate on the variable type `σ`.
+* `MvPolynomial.bind₂` and `MvPolynomial.join₂` operate on the coefficient type `R`.
 
-- `mv_polynomial.bind₁ f φ` with `f : σ → mv_polynomial τ R` and `φ : mv_polynomial σ R`,
-  is the polynomial `φ(f 1, ..., f i, ...) : mv_polynomial τ R`.
-- `mv_polynomial.join₁ φ` with `φ : mv_polynomial (mv_polynomial σ R) R` collapses `φ` to
-  a `mv_polynomial σ R`, by evaluating `φ` under the map `X f ↦ f` for `f : mv_polynomial σ R`.
+- `MvPolynomial.bind₁ f φ` with `f : σ → MvPolynomial τ R` and `φ : MvPolynomial σ R`,
+  is the polynomial `φ(f 1, ..., f i, ...) : MvPolynomial τ R`.
+- `MvPolynomial.join₁ φ` with `φ : MvPolynomial (MvPolynomial σ R) R` collapses `φ` to
+  a `MvPolynomial σ R`, by evaluating `φ` under the map `X f ↦ f` for `f : MvPolynomial σ R`.
   In other words, if you have a polynomial `φ` in a set of variables indexed by a polynomial ring,
   you evaluate the polynomial in these indexing polynomials.
-- `mv_polynomial.bind₂ f φ` with `f : R →+* mv_polynomial σ S` and `φ : mv_polynomial σ R`
-  is the `mv_polynomial σ S` obtained from `φ` by mapping the coefficients of `φ` through `f`
-  and considering the resulting polynomial as polynomial expression in `mv_polynomial σ R`.
-- `mv_polynomial.join₂ φ` with `φ : mv_polynomial σ (mv_polynomial σ R)` collapses `φ` to
-  a `mv_polynomial σ R`, by considering `φ` as polynomial expression in `mv_polynomial σ R`.
+- `MvPolynomial.bind₂ f φ` with `f : R →+* MvPolynomial σ S` and `φ : MvPolynomial σ R`
+  is the `MvPolynomial σ S` obtained from `φ` by mapping the coefficients of `φ` through `f`
+  and considering the resulting polynomial as polynomial expression in `MvPolynomial σ R`.
+- `MvPolynomial.join₂ φ` with `φ : MvPolynomial σ (MvPolynomial σ R)` collapses `φ` to
+  a `MvPolynomial σ R`, by considering `φ` as polynomial expression in `MvPolynomial σ R`.
 
-These operations themselves have algebraic structure: `mv_polynomial.bind₁`
-and `mv_polynomial.join₁` are algebra homs and
-`mv_polynomial.bind₂` and `mv_polynomial.join₂` are ring homs.
+These operations themselves have algebraic structure: `MvPolynomial.bind₁`
+and `MvPolynomial.join₁` are algebra homs and
+`MvPolynomial.bind₂` and `MvPolynomial.join₂` are ring homs.
 
-They interact in convenient ways with `mv_polynomial.rename`, `mv_polynomial.map`,
-`mv_polynomial.vars`, and other polynomial operations.
-Indeed, `mv_polynomial.rename` is the "map" operation for the (`bind₁`, `join₁`) pair,
-whereas `mv_polynomial.map` is the "map" operation for the other pair.
+They interact in convenient ways with `MvPolynomial.rename`, `MvPolynomial.map`,
+`MvPolynomial.vars`, and other polynomial operations.
+Indeed, `MvPolynomial.rename` is the "map" operation for the (`bind₁`, `join₁`) pair,
+whereas `MvPolynomial.map` is the "map" operation for the other pair.
 
 ## Implementation notes
 
-We add an `is_lawful_monad` instance for the (`bind₁`, `join₁`) pair.
-The second pair cannot be instantiated as a `monad`,
+We add an `LawfulMonad` instance for the (`bind₁`, `join₁`) pair.
+The second pair cannot be instantiated as a `Monad`,
 since it is not a monad in `Type` but in `CommRing` (or rather `CommSemiRing`).
 
 -/
@@ -63,8 +63,8 @@ variable {σ : Type _} {τ : Type _}
 variable {R S T : Type _} [CommSemiring R] [CommSemiring S] [CommSemiring T]
 
 /--
-`bind₁` is the "left hand side" bind operation on `mv_polynomial`, operating on the variable type.
-Given a polynomial `p : mv_polynomial σ R` and a map `f : σ → mv_polynomial τ R` taking variables
+`bind₁` is the "left hand side" bind operation on `MvPolynomial`, operating on the variable type.
+Given a polynomial `p : MvPolynomial σ R` and a map `f : σ → MvPolynomial τ R` taking variables
 in `p` to polynomials in the variable type `τ`, `bind₁ f p` replaces each variable in `p` with
 its value under `f`, producing a new polynomial in `τ`. The coefficient type remains the same.
 This operation is an algebra hom.
@@ -73,10 +73,10 @@ def bind₁ (f : σ → MvPolynomial τ R) : MvPolynomial σ R →ₐ[R] MvPolyn
   aeval f
 #align mv_polynomial.bind₁ MvPolynomial.bind₁
 
-/-- `bind₂` is the "right hand side" bind operation on `mv_polynomial`,
+/-- `bind₂` is the "right hand side" bind operation on `MvPolynomial`,
 operating on the coefficient type.
-Given a polynomial `p : mv_polynomial σ R` and
-a map `f : R → mv_polynomial σ S` taking coefficients in `p` to polynomials over a new ring `S`,
+Given a polynomial `p : MvPolynomial σ R` and
+a map `f : R → MvPolynomial σ S` taking coefficients in `p` to polynomials over a new ring `S`,
 `bind₂ f p` replaces each coefficient in `p` with its value under `f`,
 producing a new polynomial over `S`.
 The variable type remains the same. This operation is a ring hom.
@@ -86,7 +86,7 @@ def bind₂ (f : R →+* MvPolynomial σ S) : MvPolynomial σ R →+* MvPolynomi
 #align mv_polynomial.bind₂ MvPolynomial.bind₂
 
 /--
-`join₁` is the monadic join operation corresponding to `mv_polynomial.bind₁`. Given a polynomial `p`
+`join₁` is the monadic join operation corresponding to `MvPolynomial.bind₁`. Given a polynomial `p`
 with coefficients in `R` whose variables are polynomials in `σ` with coefficients in `R`,
 `join₁ p` collapses `p` to a polynomial with variables in `σ` and coefficients in `R`.
 This operation is an algebra hom.
@@ -96,7 +96,7 @@ def join₁ : MvPolynomial (MvPolynomial σ R) R →ₐ[R] MvPolynomial σ R :=
 #align mv_polynomial.join₁ MvPolynomial.join₁
 
 /--
-`join₂` is the monadic join operation corresponding to `mv_polynomial.bind₂`. Given a polynomial `p`
+`join₂` is the monadic join operation corresponding to `MvPolynomial.bind₂`. Given a polynomial `p`
 with variables in `σ` whose coefficients are polynomials in `σ` with coefficients in `R`,
 `join₂ p` collapses `p` to a polynomial with variables in `σ` and coefficients in `R`.
 This operation is a ring hom.
@@ -111,9 +111,10 @@ theorem aeval_eq_bind₁ (f : σ → MvPolynomial τ R) : aeval f = bind₁ f :=
 #align mv_polynomial.aeval_eq_bind₁ MvPolynomial.aeval_eq_bind₁
 
 @[simp]
-theorem eval₂Hom_c_eq_bind₁ (f : σ → MvPolynomial τ R) : eval₂Hom C f = bind₁ f :=
+theorem eval₂Hom_C_eq_bind₁ (f : σ → MvPolynomial τ R) : eval₂Hom C f = bind₁ f :=
   rfl
-#align mv_polynomial.eval₂_hom_C_eq_bind₁ MvPolynomial.eval₂Hom_c_eq_bind₁
+set_option linter.uppercaseLean3 false in
+#align mv_polynomial.eval₂_hom_C_eq_bind₁ MvPolynomial.eval₂Hom_C_eq_bind₁
 
 @[simp]
 theorem eval₂Hom_eq_bind₂ (f : R →+* MvPolynomial σ S) : eval₂Hom f X = bind₂ f :=
@@ -129,15 +130,17 @@ theorem aeval_id_eq_join₁ : aeval id = @join₁ σ R _ :=
   rfl
 #align mv_polynomial.aeval_id_eq_join₁ MvPolynomial.aeval_id_eq_join₁
 
-theorem eval₂Hom_c_id_eq_join₁ (φ : MvPolynomial (MvPolynomial σ R) R) :
+theorem eval₂Hom_C_id_eq_join₁ (φ : MvPolynomial (MvPolynomial σ R) R) :
     eval₂Hom C id φ = join₁ φ :=
   rfl
-#align mv_polynomial.eval₂_hom_C_id_eq_join₁ MvPolynomial.eval₂Hom_c_id_eq_join₁
+set_option linter.uppercaseLean3 false in
+#align mv_polynomial.eval₂_hom_C_id_eq_join₁ MvPolynomial.eval₂Hom_C_id_eq_join₁
 
 @[simp]
-theorem eval₂Hom_id_x_eq_join₂ : eval₂Hom (RingHom.id _) X = @join₂ σ R _ :=
+theorem eval₂Hom_id_X_eq_join₂ : eval₂Hom (RingHom.id _) X = @join₂ σ R _ :=
   rfl
-#align mv_polynomial.eval₂_hom_id_X_eq_join₂ MvPolynomial.eval₂Hom_id_x_eq_join₂
+set_option linter.uppercaseLean3 false in
+#align mv_polynomial.eval₂_hom_id_X_eq_join₂ MvPolynomial.eval₂Hom_id_X_eq_join₂
 
 end
 
@@ -145,48 +148,55 @@ end
 -- because we first need to show how these new definitions interact
 -- and the proofs fall back on unfolding the definitions and call simp afterwards
 attribute [-simp]
-  aeval_eq_bind₁ eval₂_hom_C_eq_bind₁ eval₂_hom_eq_bind₂ aeval_id_eq_join₁ eval₂_hom_id_X_eq_join₂
+  aeval_eq_bind₁ eval₂Hom_C_eq_bind₁ eval₂Hom_eq_bind₂ aeval_id_eq_join₁ eval₂Hom_id_X_eq_join₂
 
 @[simp]
-theorem bind₁_x_right (f : σ → MvPolynomial τ R) (i : σ) : bind₁ f (X i) = f i :=
+theorem bind₁_X_right (f : σ → MvPolynomial τ R) (i : σ) : bind₁ f (X i) = f i :=
   aeval_X f i
-#align mv_polynomial.bind₁_X_right MvPolynomial.bind₁_x_right
+set_option linter.uppercaseLean3 false in
+#align mv_polynomial.bind₁_X_right MvPolynomial.bind₁_X_right
 
 @[simp]
-theorem bind₂_x_right (f : R →+* MvPolynomial σ S) (i : σ) : bind₂ f (X i) = X i :=
+theorem bind₂_X_right (f : R →+* MvPolynomial σ S) (i : σ) : bind₂ f (X i) = X i :=
   eval₂Hom_X' f X i
-#align mv_polynomial.bind₂_X_right MvPolynomial.bind₂_x_right
+set_option linter.uppercaseLean3 false in
+#align mv_polynomial.bind₂_X_right MvPolynomial.bind₂_X_right
 
 @[simp]
-theorem bind₁_x_left : bind₁ (X : σ → MvPolynomial σ R) = AlgHom.id R _ := by
+theorem bind₁_X_left : bind₁ (X : σ → MvPolynomial σ R) = AlgHom.id R _ := by
   ext1 i
   simp
-#align mv_polynomial.bind₁_X_left MvPolynomial.bind₁_x_left
+set_option linter.uppercaseLean3 false in
+#align mv_polynomial.bind₁_X_left MvPolynomial.bind₁_X_left
 
 variable (f : σ → MvPolynomial τ R)
 
 @[simp]
-theorem bind₁_c_right (f : σ → MvPolynomial τ R) (x) : bind₁ f (C x) = C x := by
-  simp [bind₁, algebra_map_eq]
-#align mv_polynomial.bind₁_C_right MvPolynomial.bind₁_c_right
+theorem bind₁_C_right (f : σ → MvPolynomial τ R) (x) : bind₁ f (C x) = C x := by
+  simp [bind₁, algebraMap_eq]
+set_option linter.uppercaseLean3 false in
+#align mv_polynomial.bind₁_C_right MvPolynomial.bind₁_C_right
 
 @[simp]
-theorem bind₂_c_right (f : R →+* MvPolynomial σ S) (r : R) : bind₂ f (C r) = f r :=
+theorem bind₂_C_right (f : R →+* MvPolynomial σ S) (r : R) : bind₂ f (C r) = f r :=
   eval₂Hom_C f X r
-#align mv_polynomial.bind₂_C_right MvPolynomial.bind₂_c_right
+set_option linter.uppercaseLean3 false in
+#align mv_polynomial.bind₂_C_right MvPolynomial.bind₂_C_right
 
 @[simp]
-theorem bind₂_c_left : bind₂ (C : R →+* MvPolynomial σ R) = RingHom.id _ := by ext : 2 <;> simp
-#align mv_polynomial.bind₂_C_left MvPolynomial.bind₂_c_left
+theorem bind₂_C_left : bind₂ (C : R →+* MvPolynomial σ R) = RingHom.id _ := by ext : 2 <;> simp
+set_option linter.uppercaseLean3 false in
+#align mv_polynomial.bind₂_C_left MvPolynomial.bind₂_C_left
 
 @[simp]
-theorem bind₂_comp_c (f : R →+* MvPolynomial σ S) : (bind₂ f).comp C = f :=
-  RingHom.ext <| bind₂_c_right _
-#align mv_polynomial.bind₂_comp_C MvPolynomial.bind₂_comp_c
+theorem bind₂_comp_C (f : R →+* MvPolynomial σ S) : (bind₂ f).comp C = f :=
+  RingHom.ext <| bind₂_C_right _
+set_option linter.uppercaseLean3 false in
+#align mv_polynomial.bind₂_comp_C MvPolynomial.bind₂_comp_C
 
 @[simp]
 theorem join₂_map (f : R →+* MvPolynomial σ S) (φ : MvPolynomial σ R) :
-    join₂ (map f φ) = bind₂ f φ := by simp only [join₂, bind₂, eval₂_hom_map_hom, RingHom.id_comp]
+    join₂ (map f φ) = bind₂ f φ := by simp only [join₂, bind₂, eval₂Hom_map_hom, RingHom.id_comp]
 #align mv_polynomial.join₂_map MvPolynomial.join₂_map
 
 @[simp]
@@ -247,7 +257,7 @@ theorem rename_bind₁ {υ : Type _} (f : σ → MvPolynomial τ R) (g : τ → 
 
 theorem map_bind₂ (f : R →+* MvPolynomial σ S) (g : S →+* T) (φ : MvPolynomial σ R) :
     map g (bind₂ f φ) = bind₂ ((map g).comp f) φ := by
-  simp only [bind₂, eval₂_comp_right, coe_eval₂_hom, eval₂_map]
+  simp only [bind₂, eval₂_comp_right, coe_eval₂Hom, eval₂_map]
   congr 1 with : 1
   simp only [Function.comp_apply, map_X]
 #align mv_polynomial.map_bind₂ MvPolynomial.map_bind₂
@@ -268,32 +278,34 @@ theorem bind₂_map (f : S →+* MvPolynomial σ T) (g : R →+* S) (φ : MvPoly
 #align mv_polynomial.bind₂_map MvPolynomial.bind₂_map
 
 @[simp]
-theorem map_comp_c (f : R →+* S) : (map f).comp (C : R →+* MvPolynomial σ R) = C.comp f := by
+theorem map_comp_C (f : R →+* S) : (map f).comp (C : R →+* MvPolynomial σ R) = C.comp f := by
   ext1
   apply map_C
-#align mv_polynomial.map_comp_C MvPolynomial.map_comp_c
+set_option linter.uppercaseLean3 false in
+#align mv_polynomial.map_comp_C MvPolynomial.map_comp_C
 
 -- mixing the two monad structures
 theorem hom_bind₁ (f : MvPolynomial τ R →+* S) (g : σ → MvPolynomial τ R) (φ : MvPolynomial σ R) :
     f (bind₁ g φ) = eval₂Hom (f.comp C) (fun i => f (g i)) φ := by
-  rw [bind₁, map_aeval, algebra_map_eq]
+  rw [bind₁, map_aeval, algebraMap_eq]
 #align mv_polynomial.hom_bind₁ MvPolynomial.hom_bind₁
 
 theorem map_bind₁ (f : R →+* S) (g : σ → MvPolynomial τ R) (φ : MvPolynomial σ R) :
     map f (bind₁ g φ) = bind₁ (fun i : σ => (map f) (g i)) (map f φ) := by
-  rw [hom_bind₁, map_comp_C, ← eval₂_hom_map_hom]
+  rw [hom_bind₁, map_comp_C, ← eval₂Hom_map_hom]
   rfl
 #align mv_polynomial.map_bind₁ MvPolynomial.map_bind₁
 
 @[simp]
-theorem eval₂Hom_comp_c (f : R →+* S) (g : σ → S) : (eval₂Hom f g).comp C = f := by
+theorem eval₂Hom_comp_C (f : R →+* S) (g : σ → S) : (eval₂Hom f g).comp C = f := by
   ext1 r
   exact eval₂_C f g r
-#align mv_polynomial.eval₂_hom_comp_C MvPolynomial.eval₂Hom_comp_c
+set_option linter.uppercaseLean3 false in
+#align mv_polynomial.eval₂_hom_comp_C MvPolynomial.eval₂Hom_comp_C
 
 theorem eval₂Hom_bind₁ (f : R →+* S) (g : τ → S) (h : σ → MvPolynomial τ R) (φ : MvPolynomial σ R) :
     eval₂Hom f g (bind₁ h φ) = eval₂Hom f (fun i => eval₂Hom f g (h i)) φ := by
-  rw [hom_bind₁, eval₂_hom_comp_C]
+  rw [hom_bind₁, eval₂Hom_comp_C]
 #align mv_polynomial.eval₂_hom_bind₁ MvPolynomial.eval₂Hom_bind₁
 
 theorem aeval_bind₁ [Algebra R S] (f : τ → S) (g : σ → MvPolynomial τ R) (φ : MvPolynomial σ R) :
@@ -321,9 +333,10 @@ theorem aeval_bind₂ [Algebra S T] (f : σ → T) (g : R →+* MvPolynomial σ 
   eval₂Hom_bind₂ _ _ _ _
 #align mv_polynomial.aeval_bind₂ MvPolynomial.aeval_bind₂
 
-theorem eval₂Hom_c_left (f : σ → MvPolynomial τ R) : eval₂Hom C f = bind₁ f :=
+theorem eval₂Hom_C_left (f : σ → MvPolynomial τ R) : eval₂Hom C f = bind₁ f :=
   rfl
-#align mv_polynomial.eval₂_hom_C_left MvPolynomial.eval₂Hom_c_left
+set_option linter.uppercaseLean3 false in
+#align mv_polynomial.eval₂_hom_C_left MvPolynomial.eval₂Hom_C_left
 
 theorem bind₁_monomial (f : σ → MvPolynomial τ R) (d : σ →₀ ℕ) (r : R) :
     bind₁ f (monomial d r) = C r * ∏ i in d.support, f i ^ d i := by
@@ -333,8 +346,8 @@ theorem bind₁_monomial (f : σ → MvPolynomial τ R) (d : σ →₀ ℕ) (r :
 
 theorem bind₂_monomial (f : R →+* MvPolynomial σ S) (d : σ →₀ ℕ) (r : R) :
     bind₂ f (monomial d r) = f r * monomial d 1 := by
-  simp only [monomial_eq, RingHom.map_mul, bind₂_C_right, Finsupp.prod, RingHom.map_prod,
-    RingHom.map_pow, bind₂_X_right, C_1, one_mul]
+  simp only [monomial_eq, RingHom.map_mul, bind₂_C_right, Finsupp.prod, map_prod,
+    map_pow, bind₂_X_right, C_1, one_mul]
 #align mv_polynomial.bind₂_monomial MvPolynomial.bind₂_monomial
 
 @[simp]
@@ -395,14 +408,21 @@ instance monad : Monad fun σ => MvPolynomial σ R
 
 instance lawfulFunctor : LawfulFunctor fun σ => MvPolynomial σ R
     where
-  id_map := by intros <;> simp [(· <$> ·)]
-  comp_map := by intros <;> simp [(· <$> ·)]
+  map_const := by intros; rfl
+  -- porting note: I guess `map_const` no longer has a default implementation?
+  id_map := by intros; simp [(· <$> ·)]
+  comp_map := by intros; simp [(· <$> ·)]
 #align mv_polynomial.is_lawful_functor MvPolynomial.lawfulFunctor
 
 instance lawfulMonad : LawfulMonad fun σ => MvPolynomial σ R
     where
-  pure_bind := by intros <;> simp [pure, bind]
-  bind_assoc := by intros <;> simp [bind, ← bind₁_comp_bind₁]
+  pure_bind := by intros; simp [pure, bind]
+  bind_assoc := by intros; simp [bind, ← bind₁_comp_bind₁]
+  seqLeft_eq := by sorry
+  seqRight_eq := by sorry
+  pure_seq := by intros; simp [(· <$> ·), pure, Seq.seq]
+  bind_pure_comp := by aesop
+  bind_map := by aesop
 #align mv_polynomial.is_lawful_monad MvPolynomial.lawfulMonad
 
 /-
