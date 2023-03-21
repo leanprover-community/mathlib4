@@ -21,10 +21,10 @@ their proofs or cases of ℕ and ℤ being examples of structures in abstract al
 
 ## Main statements
 
-* `nat.factors_eq`: the multiset of elements of `nat.factors` is equal to the factors
-   given by the `unique_factorization_monoid` instance
-* ℤ is a `normalization_monoid`
-* ℤ is a `gcd_monoid`
+* `Nat.factors_eq`: the multiset of elements of `Nat.factors` is equal to the factors
+   given by the `UniqueFactorizationMonoid` instance
+* ℤ is a `NormalizationMonoid`
+* ℤ is a `GCDMonoid`
 
 ## Tags
 
