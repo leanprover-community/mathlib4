@@ -1109,6 +1109,7 @@ import Mathlib.LinearAlgebra.BilinearMap
 import Mathlib.LinearAlgebra.Dfinsupp
 import Mathlib.LinearAlgebra.Finsupp
 import Mathlib.LinearAlgebra.GeneralLinearGroup
+import Mathlib.LinearAlgebra.InvariantBasisNumber
 import Mathlib.LinearAlgebra.LinearIndependent
 import Mathlib.LinearAlgebra.LinearPMap
 import Mathlib.LinearAlgebra.Pi
