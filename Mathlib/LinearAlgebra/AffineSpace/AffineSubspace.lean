@@ -253,8 +253,11 @@ def directionOfNonempty {s : AffineSubspace k P} (h : (s : Set P).Nonempty) : Su
 /-- `direction_of_nonempty` gives the same submodule as
 `direction`. -/
 theorem directionOfNonempty_eq_direction {s : AffineSubspace k P} (h : (s : Set P).Nonempty) :
-    directionOfNonempty h = s.direction :=
-  le_antisymm (vsub_set_subset_vectorSpan k s) (Submodule.span_le.2 Set.Subset.rfl)
+    directionOfNonempty h = s.direction := by
+  refine le_antisymm ?_ (Submodule.span_le.2 Set.Subset.rfl)
+  rw [← SetLike.coe_subset_coe, directionOfNonempty, direction, Submodule.coe_set_mk,
+    AddSubmonoid.coe_set_mk]
+  exact (vsub_set_subset_vectorSpan k _)
 #align affine_subspace.direction_of_nonempty_eq_direction AffineSubspace.directionOfNonempty_eq_direction
 
 /-- The set of vectors in the direction of a nonempty affine subspace
@@ -283,6 +286,7 @@ theorem vadd_mem_of_mem_direction {s : AffineSubspace k P} {v : V} (hv : v ∈ s
   rw [hv]
   convert s.smul_vsub_vadd_mem 1 hp1 hp2 hp
   rw [one_smul]
+  exact s.mem_coe k P _
 #align affine_subspace.vadd_mem_of_mem_direction AffineSubspace.vadd_mem_of_mem_direction
 
 /-- Subtracting two points in the subspace produces a vector in the
@@ -590,7 +594,8 @@ theorem direction_affineSpan (s : Set P) : (affineSpan k s).direction = vectorSp
   apply le_antisymm
   · refine' Submodule.span_le.2 _
     rintro v ⟨p1, p3, ⟨p2, hp2, v1, hv1, hp1⟩, ⟨p4, hp4, v2, hv2, hp3⟩, rfl⟩
-    rw [hp1, hp3, vsub_vadd_eq_vsub_sub, vadd_vsub_assoc, SetLike.mem_coe]
+    simp only [SetLike.mem_coe]
+    rw [hp1, hp3, vsub_vadd_eq_vsub_sub, vadd_vsub_assoc]
     exact
       (vectorSpan k s).sub_mem ((vectorSpan k s).add_mem hv1 (vsub_mem_vectorSpan k hp2 hp4)) hv2
   · exact vectorSpan_mono k (subset_spanPoints k s)
