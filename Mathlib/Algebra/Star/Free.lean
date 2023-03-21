@@ -17,8 +17,8 @@ import Mathlib.Algebra.FreeAlgebra
 Reversing words gives a *-structure on the free monoid or on the free algebra on a type.
 
 ## Implementation note
-We have this in a separate file, rather than in `algebra.free_monoid` and `algebra.free_algebra`,
-to avoid importing `algebra.star.basic` into the entire hierarchy.
+We have this in a separate file, rather than in `Algebra.FreeMonoid` and `Algebra.FreeAlgebra`,
+to avoid importing `Algebra.Star.Basic` into the entire hierarchy.
 -/
 
 
@@ -26,9 +26,8 @@ namespace FreeMonoid
 
 variable {α : Type _}
 
-instance : StarSemigroup (FreeMonoid α)
-    where
-  unit := List.reverse
+instance : StarSemigroup (FreeMonoid α) where
+  star := List.reverse
   star_involutive := List.reverse_reverse
   star_mul := List.reverse_append
 
@@ -50,9 +49,8 @@ namespace FreeAlgebra
 variable {R : Type _} [CommSemiring R] {X : Type _}
 
 /-- The star ring formed by reversing the elements of products -/
-instance : StarRing (FreeAlgebra R X)
-    where
-  unit := MulOpposite.unop ∘ lift R (MulOpposite.op ∘ ι R)
+noncomputable instance : StarRing (FreeAlgebra R X) where
+  star := MulOpposite.unop ∘ lift R (MulOpposite.op ∘ ι R)
   star_involutive x := by
     unfold Star.star
     simp only [Function.comp_apply]
@@ -60,7 +58,7 @@ instance : StarRing (FreeAlgebra R X)
     · intros
       simp only [AlgHom.commutes, MulOpposite.algebraMap_apply, MulOpposite.unop_op]
     · intros
-      simp only [lift_ι_apply, MulOpposite.unop_op]
+      simp only [lift_ι_apply, Function.comp_apply, MulOpposite.unop_op]
     · intros
       simp only [*, map_mul, MulOpposite.unop_mul]
     · intros
@@ -77,10 +75,12 @@ theorem star_algebraMap (r : R) : star (algebraMap R (FreeAlgebra R X) r) = alge
   simp [star, Star.star]
 #align free_algebra.star_algebra_map FreeAlgebra.star_algebraMap
 
-/-- `star` as an `alg_equiv` -/
-def starHom : FreeAlgebra R X ≃ₐ[R] (FreeAlgebra R X)ᵐᵒᵖ :=
-  { starRingEquiv with commutes' := fun r => by simp [star_algebra_map] }
+/-- `star` as an `AlgEquiv` -/
+noncomputable def starHom : FreeAlgebra R X ≃ₐ[R] (FreeAlgebra R X)ᵐᵒᵖ :=
+  { starRingEquiv with commutes' := fun r => by {
+    rename_i inst src
+    simp_all only [Equiv.toFun_as_coe_apply, MulOpposite.algebraMap_apply]
+    apply Eq.refl } }
 #align free_algebra.star_hom FreeAlgebra.starHom
 
 end FreeAlgebra
-
