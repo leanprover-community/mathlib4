@@ -44,7 +44,6 @@ theorem gcd_ne_zero_of_right (p q : R) (hp : q ≠ 0) : GCDMonoid.gcd p q ≠ 0 
   hp <| eq_zero_of_zero_dvd (h ▸ gcd_dvd_right p q)
 #align gcd_ne_zero_of_right gcd_ne_zero_of_right
 
-/- ./././Mathport/Syntax/Translate/Tactic/Lean3.lean:132:4: warning: unsupported: rw with cfg: { occs := occurrences.pos[occurrences.pos] «expr[ ,]»([1]) } -/
 theorem left_div_gcd_ne_zero {p q : R} (hp : p ≠ 0) : p / GCDMonoid.gcd p q ≠ 0 := by
   obtain ⟨r, hr⟩ := GCDMonoid.gcd_dvd_left p q
   obtain ⟨pq0, r0⟩ : GCDMonoid.gcd p q ≠ 0 ∧ r ≠ 0 := mul_ne_zero_iff.mp (hr ▸ hp)
@@ -53,7 +52,6 @@ theorem left_div_gcd_ne_zero {p q : R} (hp : p ≠ 0) : p / GCDMonoid.gcd p q �
   exact r0
 #align left_div_gcd_ne_zero left_div_gcd_ne_zero
 
-/- ./././Mathport/Syntax/Translate/Tactic/Lean3.lean:132:4: warning: unsupported: rw with cfg: { occs := occurrences.pos[occurrences.pos] «expr[ ,]»([1]) } -/
 theorem right_div_gcd_ne_zero {p q : R} (hq : q ≠ 0) : q / GCDMonoid.gcd p q ≠ 0 := by
   obtain ⟨r, hr⟩ := GCDMonoid.gcd_dvd_right p q
   obtain ⟨pq0, r0⟩ : GCDMonoid.gcd p q ≠ 0 ∧ r ≠ 0 := mul_ne_zero_iff.mp (hr ▸ hq)
@@ -66,9 +64,8 @@ end GCDMonoid
 
 namespace EuclideanDomain
 
-/-- Create a `gcd_monoid` whose `gcd_monoid.gcd` matches `euclidean_domain.gcd`. -/
-def gcdMonoid (R) [EuclideanDomain R] : GCDMonoid R
-    where
+/-- Create a `GCDMonoid` whose `gcd_monoid.gcd` matches `EuclideanDomain.gcd`. -/
+def gcdMonoid (R) [EuclideanDomain R] : GCDMonoid R where
   gcd := gcd
   lcm := lcm
   gcd_dvd_left := gcd_dvd_left
