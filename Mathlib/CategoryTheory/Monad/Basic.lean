@@ -313,7 +313,6 @@ instance : Faithful (monadToFunctor C) where
   (comonadToFunctor _).mapIso (Iso.mk (MonadHom.mk f.hom) (MonadHom.mk f.inv))
   which does not even compile
 -/
-@[simp]
 theorem monadToFunctor_mapIso_monad_iso_mk {M N : Monad C} (f : (M : C ⥤ C) ≅ N) (f_η f_μ) :
     (monadToFunctor _).mapIso (MonadIso.mk f f_η f_μ) = f := by
   ext
