@@ -309,7 +309,11 @@ def monadToFunctor : Monad C ⥤ C ⥤ C where
 
 instance : Faithful (monadToFunctor C) where
 
--- porting note: removed @[simp] as the linter complains
+/-- Porting note: removed @[simp] as the linter complains of the LHS being reducible to
+  (comonadToFunctor _).mapIso (Iso.mk (MonadHom.mk f.hom) (MonadHom.mk f.inv))
+  which does not even compile
+-/
+@[simp]
 theorem monadToFunctor_mapIso_monad_iso_mk {M N : Monad C} (f : (M : C ⥤ C) ≅ N) (f_η f_μ) :
     (monadToFunctor _).mapIso (MonadIso.mk f f_η f_μ) = f := by
   ext
@@ -329,7 +333,10 @@ def comonadToFunctor : Comonad C ⥤ C ⥤ C where
 
 instance : Faithful (comonadToFunctor C) where
 
--- porting note: removed @[simp] as the linter complains
+/-- Porting note: removed @[simp] as the linter complains of the LHS being reducible to
+  (comonadToFunctor _).mapIso (Iso.mk (ComonadHom.mk f.hom) (ComonadHom.mk f.inv))
+  which does not even compile
+-/
 theorem comonadToFunctor_mapIso_comonad_iso_mk {M N : Comonad C} (f : (M : C ⥤ C) ≅ N) (f_ε f_δ) :
     (comonadToFunctor _).mapIso (ComonadIso.mk f f_ε f_δ) = f := by
   ext
