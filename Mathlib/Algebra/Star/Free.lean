@@ -37,7 +37,7 @@ theorem star_of (x : α) : star (of x) = of x :=
 #align free_monoid.star_of FreeMonoid.star_of
 
 /-- Note that `star_one` is already a global simp lemma, but this one works with dsimp too -/
-@[simp]
+@[simp, nolint simpNF] -- Porting note: dsimp cannot prove this
 theorem star_one : star (1 : FreeMonoid α) = 1 :=
   rfl
 #align free_monoid.star_one FreeMonoid.star_one
