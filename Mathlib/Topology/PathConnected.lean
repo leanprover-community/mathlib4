@@ -20,46 +20,46 @@ import Mathlib.Topology.UnitInterval
 
 In the file the unit interval `[0, 1]` in `ℝ` is denoted by `I`, and `X` is a topological space.
 
-* `path (x y : X)` is the type of paths from `x` to `y`, i.e., continuous maps from `I` to `X`
+* `Path (x y : X)` is the type of paths from `x` to `y`, i.e., continuous maps from `I` to `X`
   mapping `0` to `x` and `1` to `y`.
-* `path.map` is the image of a path under a continuous map.
-* `joined (x y : X)` means there is a path between `x` and `y`.
-* `joined.some_path (h : joined x y)` selects some path between two points `x` and `y`.
-* `path_component (x : X)` is the set of points joined to `x`.
-* `path_connected_space X` is a predicate class asserting that `X` is non-empty and every two
+* `Path.map` is the image of a path under a continuous map.
+* `Joined (x y : X)` means there is a path between `x` and `y`.
+* `Joined.somePath (h : Joined x y)` selects some path between two points `x` and `y`.
+* `pathComponent (x : X)` is the set of points joined to `x`.
+* `PathConnectedSpace X` is a predicate class asserting that `X` is non-empty and every two
   points of `X` are joined.
 
-Then there are corresponding relative notions for `F : set X`.
+Then there are corresponding relative notions for `F : Set X`.
 
-* `joined_in F (x y : X)` means there is a path `γ` joining `x` to `y` with values in `F`.
-* `joined_in.some_path (h : joined_in F x y)` selects a path from `x` to `y` inside `F`.
-* `path_component_in F (x : X)` is the set of points joined to `x` in `F`.
-* `is_path_connected F` asserts that `F` is non-empty and every two
+* `JoinedIn F (x y : X)` means there is a path `γ` joining `x` to `y` with values in `F`.
+* `JoinedIn.somePath (h : JoinedIn F x y)` selects a path from `x` to `y` inside `F`.
+* `pathComponentIn F (x : X)` is the set of points joined to `x` in `F`.
+* `IsPathConnected F` asserts that `F` is non-empty and every two
   points of `F` are joined in `F`.
-* `loc_path_connected_space X` is a predicate class asserting that `X` is locally path-connected:
+* `LocPathConnectedSpace X` is a predicate class asserting that `X` is locally path-connected:
   each point has a basis of path-connected neighborhoods (we do *not* ask these to be open).
 
 ## Main theorems
 
-* `joined` and `joined_in F` are transitive relations.
+* `Joined` and `JoinedIn F` are transitive relations.
 
-One can link the absolute and relative version in two directions, using `(univ : set X)` or the
+One can link the absolute and relative version in two directions, using `(univ : Set X)` or the
 subtype `↥F`.
 
-* `path_connected_space_iff_univ : path_connected_space X ↔ is_path_connected (univ : set X)`
-* `is_path_connected_iff_path_connected_space : is_path_connected F ↔ path_connected_space ↥F`
+* `pathConnectedSpace_iff_univ : PathConnectedSpace X ↔ IsPathConnected (univ : Set X)`
+* `isPathConnected_iff_pathConnectedSpace : IsPathConnected F ↔ PathConnectedSpace ↥F`
 
 For locally path connected spaces, we have
-* `path_connected_space_iff_connected_space : path_connected_space X ↔ connected_space X`
-* `is_connected_iff_is_path_connected (U_op : is_open U) : is_path_connected U ↔ is_connected U`
+* `pathConnectedSpace_iff_connectedSpace : PathConnectedSpace X ↔ ConnectedSpace X`
+* `IsOpen.isConnected_iff_isPathConnected (U_op : IsOpen U) : IsPathConnected U ↔ IsConnected U`
 
 ## Implementation notes
 
 By default, all paths have `I` as their source and `X` as their target, but there is an
-operation `set.Icc_extend` that will extend any continuous map `γ : I → X` into a continuous map
+operation `Set.IccExtend` that will extend any continuous map `γ : I → X` into a continuous map
 `Icc_extend zero_le_one γ : ℝ → X` that is constant before `0` and after `1`.
 
-This is used to define `path.extend` that turns `γ : path x y` into a continuous map
+This is used to define `Path.extend` that turns `γ : Path x y` into a continuous map
 `γ.extend : ℝ → X` whose restriction to `I` is the original `γ`, and is equal to `x`
 on `(-∞, 0]` and to `y` on `[1, +∞)`.
 -/
@@ -108,10 +108,11 @@ protected theorem Path.ext : ∀ {γ₁ γ₂ : Path x y}, (γ₁ : I → X) = �
 namespace Path
 
 @[simp]
-theorem coe_mk (f : I → X) (h₁) (h₂ : f 0 = x) (h₃ : f 1 = y) :
+theorem coe_mk_mk (f : I → X) (h₁) (h₂ : f 0 = x) (h₃ : f 1 = y) :
     ⇑(mk ⟨f, h₁⟩ h₂ h₃ : Path x y) = f :=
   rfl
-#align path.coe_mk Path.coe_mk
+#align path.coe_mk Path.coe_mk_mk
+-- porting note: the name `Path.coe_mk` better refes to a new lemma below
 
 variable (γ : Path x y)
 
@@ -145,10 +146,10 @@ theorem coe_toContinuousMap : ⇑γ.toContinuousMap = γ :=
 
 -- porting note: this is needed because of the `Path.continuousMapClass` instance
 @[simp]
-theorem coe_coe : ⇑(γ : C(I, X)) = γ :=
+theorem coe_mk : ⇑(γ : C(I, X)) = γ :=
   rfl
 
-/-- Any function `φ : Π (a : α), path (x a) (y a)` can be seen as a function `α × I → X`. -/
+/-- Any function `φ : Π (a : α), Path (x a) (y a)` can be seen as a function `α × I → X`. -/
 instance hasUncurryPath {X α : Type _} [TopologicalSpace X] {x y : α → X} :
     HasUncurry (∀ a : α, Path (x a) (y a)) (α × I) X :=
   ⟨fun φ p => φ p.1 p.2⟩
@@ -244,7 +245,7 @@ theorem _root_.Continuous.path_extend {γ : Y → Path x y} {f : Y → ℝ} (hγ
   Continuous.IccExtend hγ hf
 #align continuous.path_extend Continuous.path_extend
 
-/-- A useful special case of `continuous.path_extend`. -/
+/-- A useful special case of `Continuous.path_extend`. -/
 @[continuity]
 theorem continuous_extend : Continuous γ.extend :=
   γ.continuous.Icc_extend'
@@ -389,7 +390,7 @@ theorem trans_range {X : Type _} [TopologicalSpace X] {a b c : X} (γ₁ : Path 
       refine' ⟨⟨2 * t, ⟨by positivity, (le_div_iff' <| by norm_num).mp h⟩⟩, _⟩
       -- porting note: was `use 2 * t, ⟨by linarith, by linarith⟩`
       rw [← γ₁.extend_extends]
-      rwa [coe_mk, Function.comp_apply, if_pos h] at hxt
+      rwa [coe_mk_mk, Function.comp_apply, if_pos h] at hxt
     · right
       refine' ⟨⟨2 * t - 1, ⟨_, by norm_num; exact ht1⟩⟩, _⟩
       -- porting note: was `use 2 * t - 1, ⟨by linarith, by linarith⟩`
@@ -397,19 +398,19 @@ theorem trans_range {X : Type _} [TopologicalSpace X] {a b c : X} (γ₁ : Path 
         norm_num
         exact mul_comm t 2 ▸ h.le
       rw [← γ₂.extend_extends]
-      rwa [coe_mk, Function.comp_apply, if_neg h] at hxt
+      rwa [coe_mk_mk, Function.comp_apply, if_neg h] at hxt
   · rintro x (⟨⟨t, ht0, ht1⟩, hxt⟩ | ⟨⟨t, ht0, ht1⟩, hxt⟩)
     · refine' ⟨⟨t / 2, ⟨by positivity,
         (div_le_iff <| by norm_num).mpr <| ht1.trans (by norm_num)⟩⟩, _⟩
       -- porting note: was `use ⟨t / 2, ⟨by linarith, by linarith⟩⟩`
       have : t / 2 ≤ 1 / 2 := (div_le_div_right (zero_lt_two : (0 : ℝ) < 2)).mpr ht1
-      rw [coe_mk, Function.comp_apply, if_pos this, Subtype.coe_mk]
+      rw [coe_mk_mk, Function.comp_apply, if_pos this, Subtype.coe_mk]
       ring_nf
       rwa [γ₁.extend_extends]
     · by_cases h : t = 0
       · refine' ⟨⟨1 / 2, ⟨by positivity, by norm_num⟩⟩, _⟩
         -- porting note: was `use ⟨1 / 2, ⟨by linarith, by linarith⟩⟩`
-        rw [coe_mk, Function.comp_apply, if_pos le_rfl, Subtype.coe_mk,
+        rw [coe_mk_mk, Function.comp_apply, if_pos le_rfl, Subtype.coe_mk,
           mul_one_div_cancel (two_ne_zero' ℝ)]
         rw [γ₁.extend_one]
         rwa [← γ₂.extend_extends, h, γ₂.extend_zero] at hxt
@@ -422,7 +423,7 @@ theorem trans_range {X : Type _} [TopologicalSpace X] {a b c : X} (γ₁ : Path 
           rw [not_le]
           exact (div_lt_div_right (zero_lt_two : (0 : ℝ) < 2)).mpr (by norm_num; exact ht0)
           -- porting note: was `linarith`
-        rw [coe_mk, Function.comp_apply, Subtype.coe_mk, if_neg this]
+        rw [coe_mk_mk, Function.comp_apply, Subtype.coe_mk, if_neg this]
         ring_nf
         rwa [γ₂.extend_extends]
 #align path.trans_range Path.trans_range
@@ -581,7 +582,7 @@ theorem trans_prod_eq_prod_trans (γ₁ : Path a₁ a₂) (δ₁ : Path a₂ a�
     (δ₂ : Path b₂ b₃) : (γ₁.prod γ₂).trans (δ₁.prod δ₂) = (γ₁.trans δ₁).prod (γ₂.trans δ₂) := by
   ext t <;>
   unfold Path.trans <;>
-  simp only [Path.coe_mk, Path.prod_coe, Function.comp_apply] <;>
+  simp only [Path.coe_mk_mk, Path.prod_coe, Function.comp_apply] <;>
   split_ifs <;>
   rfl
 #align path.trans_prod_eq_prod_trans Path.trans_prod_eq_prod_trans
@@ -611,7 +612,7 @@ theorem trans_pi_eq_pi_trans (γ₀ : ∀ i, Path (as i) (bs i)) (γ₁ : ∀ i,
     (Path.pi γ₀).trans (Path.pi γ₁) = Path.pi fun i => (γ₀ i).trans (γ₁ i) := by
   ext (t i)
   unfold Path.trans
-  simp only [Path.coe_mk, Function.comp_apply, pi_coe]
+  simp only [Path.coe_mk_mk, Function.comp_apply, pi_coe]
   split_ifs <;> rfl
 #align path.trans_pi_eq_pi_trans Path.trans_pi_eq_pi_trans
 
@@ -668,7 +669,7 @@ def truncate {X : Type _} [TopologicalSpace X] {a b : X} (γ : Path a b) (t₀ t
     · rfl
 #align path.truncate Path.truncate
 
-/-- `γ.truncate_of_le t₀ t₁ h`, where `h : t₀ ≤ t₁` is `γ.truncate t₀ t₁`
+/-- `γ.truncateOfLe t₀ t₁ h`, where `h : t₀ ≤ t₁` is `γ.truncate t₀ t₁`
   casted as a path from `γ.extend t₀` to `γ.extend t₁`. -/
 def truncateOfLe {X : Type _} [TopologicalSpace X] {a b : X} (γ : Path a b) {t₀ t₁ : ℝ}
     (h : t₀ ≤ t₁) : Path (γ.extend t₀) (γ.extend t₁) :=
@@ -699,9 +700,9 @@ theorem truncate_continuous_family {X : Type _} [TopologicalSpace X] {a b : X} (
 
   TODO : When `continuity` gets quicker, change the proof back to :
     `begin`
-      `simp only [has_coe_to_fun.coe, coe_fn, path.truncate],`
+      `simp only [CoeFun.coe, coe_fn, Path.truncate],`
       `continuity,`
-      `exact continuous_subtype_coe`
+      `exact continuous_subtype_val`
     `end` -/
 @[continuity]
 theorem truncate_const_continuous_family {X : Type _} [TopologicalSpace X] {a b : X} (γ : Path a b)
@@ -738,7 +739,7 @@ theorem truncate_zero_one {X : Type _} [TopologicalSpace X] {a b : X} (γ : Path
   ext x
   rw [cast_coe]
   have : ↑x ∈ (Icc 0 1 : Set ℝ) := x.2
-  rw [truncate, coe_mk, max_eq_left this.1, min_eq_left this.2, extend_extends']
+  rw [truncate, coe_mk_mk, max_eq_left this.1, min_eq_left this.2, extend_extends']
 #align path.truncate_zero_one Path.truncate_zero_one
 
 /-! #### Reparametrising a path -/
@@ -997,14 +998,12 @@ theorem isPathConnected_iff_eq : IsPathConnected F ↔ ∃ x ∈ F, pathComponen
     rwa [← h] at y_in
 #align is_path_connected_iff_eq isPathConnected_iff_eq
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:635:2: warning: expanding binder collection (x y «expr ∈ » F) -/
 theorem IsPathConnected.joinedIn (h : IsPathConnected F) :
     ∀ (x) (_ : x ∈ F) (y) (_ : y ∈ F), JoinedIn F x y := fun _x x_in _y y_in =>
   let ⟨_b, _b_in, hb⟩ := h
   (hb x_in).symm.trans (hb y_in)
 #align is_path_connected.joined_in IsPathConnected.joinedIn
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:635:2: warning: expanding binder collection (x y «expr ∈ » F) -/
 theorem isPathConnected_iff :
     IsPathConnected F ↔ F.Nonempty ∧ ∀ (x) (_ : x ∈ F) (y) (_ : y ∈ F), JoinedIn F x y :=
   ⟨fun h =>
