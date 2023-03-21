@@ -197,17 +197,18 @@ def _root_.Lean.MVarId.clearValue (mvarId : MVarId) (fvarId : FVarId) : MetaM MV
     mvarId.withContext <|
       throwTacticEx `clear_value mvarId m!"{Expr.fvar fvarId} is not a local definition"
   let tgt' := Expr.forallE tgt.letName! tgt.letType! tgt.letBody! .default
-  unless ← mvarId'.withContext <| isTypeCorrect tgt' do
-    mvarId.withContext <|
-      throwTacticEx `clear_value mvarId
-        m!"cannot clear {Expr.fvar fvarId}, the resulting context is not type correct"
-  let mvarId'' ← mvarId'.withContext <| mkFreshExprSyntheticOpaqueMVar tgt' tag
-  mvarId'.assign <| mkApp mvarId'' tgt.letValue!
-  let (ys, mvarId) ← mvarId''.mvarId!.introNP xs.size
-  mvarId.withContext do
-    for x in xs, y in ys do
-      pushInfoLeaf (.ofFVarAliasInfo { id := y, baseId := x, userName := ← y.getUserName })
-  return mvarId
+  mvarId'.withContext do
+    unless ← isTypeCorrect tgt' do
+      mvarId.withContext <|
+        throwTacticEx `clear_value mvarId
+          m!"cannot clear {Expr.fvar fvarId}, the resulting context is not type correct"
+    let mvarId'' ← mkFreshExprSyntheticOpaqueMVar tgt' tag
+    mvarId'.assign <| mkApp mvarId'' tgt.letValue!
+    let (ys, mvarId) ← mvarId''.mvarId!.introNP xs.size
+    mvarId.withContext do
+      for x in xs, y in ys do
+        pushInfoLeaf (.ofFVarAliasInfo { id := y, baseId := x, userName := ← y.getUserName })
+    return mvarId
 
 /-- `clear_value n₁ n₂ ...` clears the bodies of the local definitions `n₁, n₂ ...`, changing them
 into regular hypotheses. A hypothesis `n : α := t` is changed to `n : α`.
