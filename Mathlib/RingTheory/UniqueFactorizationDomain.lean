@@ -1395,8 +1395,10 @@ noncomputable def factors' (a : α) : Multiset { a : Associates α // Irreducibl
 #align associates.factors' Associates.factors'
 
 @[simp]
-theorem map_subtype_coe_factors' {a : α} : (factors' a).map coe = (factors a).map Associates.mk :=
-  by simp [factors', Multiset.map_pmap, Multiset.pmap_eq_map]
+theorem map_subtype_coe_factors' {a : α} :
+    (factors' a).map (↑) = (factors a).map Associates.mk := by
+  simp [factors', Multiset.map_pmap, Multiset.pmap_eq_map]
+
 #align associates.map_subtype_coe_factors' Associates.map_subtype_coe_factors'
 
 theorem factors'_cong {a b : α} (h : a ~ᵤ b) : factors' a = factors' b := by
