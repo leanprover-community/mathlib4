@@ -43,18 +43,15 @@ variable (R : Type u) (L : Type v) [CommRing R] [LieRing L] [LieAlgebra R L]
 /-- A Lie subalgebra of a Lie algebra is submodule that is closed under the Lie bracket.
 This is a sufficient condition for the subset itself to form a Lie algebra. -/
 structure LieSubalgebra extends Submodule R L where
+  /-- An Lie subalgebra is closed under Lie bracket. -/
   lie_mem' : ∀ {x y}, x ∈ carrier → y ∈ carrier → ⁅x, y⁆ ∈ carrier
 #align lie_subalgebra LieSubalgebra
 
-attribute [nolint doc_blame] LieSubalgebra.toSubmodule
-
 /-- The zero algebra is a subalgebra of any Lie algebra. -/
 instance : Zero (LieSubalgebra R L) :=
-  ⟨{ (0 : Submodule R L) with
-      lie_mem' := fun x y hx hy =>
-        by
-        rw [(Submodule.mem_bot R).1 hx, zero_lie]
-        exact Submodule.zero_mem (0 : Submodule R L) }⟩
+  ⟨⟨0, fun {x y} hx _hy ↦ by
+    rw [(Submodule.mem_bot R).1 hx, zero_lie]
+    exact Submodule.zero_mem 0⟩⟩
 
 instance : Inhabited (LieSubalgebra R L) :=
   ⟨0⟩
@@ -66,17 +63,18 @@ namespace LieSubalgebra
 
 instance : SetLike (LieSubalgebra R L) L
     where
-  coe L' := L'
+  coe L' := L'.carrier
   coe_injective' L' L'' h := by
     rcases L' with ⟨⟨⟩⟩
     rcases L'' with ⟨⟨⟩⟩
     congr
+    exact SetLike.coe_injective' h
 
 instance : AddSubgroupClass (LieSubalgebra R L) L
     where
-  add_mem L' _ _ := L'.add_mem'
+  add_mem := Submodule.add_mem _
   zero_mem L' := L'.zero_mem'
-  neg_mem L' x hx := show -x ∈ (L' : Submodule R L) from neg_mem hx
+  neg_mem {L'} x hx := show -x ∈ (L' : Submodule R L) from neg_mem hx
 
 /-- A Lie subalgebra forms a new Lie ring. -/
 instance (L' : LieSubalgebra R L) : LieRing L'
@@ -110,25 +108,26 @@ instance [SMul R₁ R] [Module R₁ L] [IsScalarTower R₁ R L] (L' : LieSubalge
 instance [SMul R₁ R] [SMul R₁ᵐᵒᵖ R] [Module R₁ L] [Module R₁ᵐᵒᵖ L] [IsScalarTower R₁ R L]
     [IsScalarTower R₁ᵐᵒᵖ R L] [IsCentralScalar R₁ L] (L' : LieSubalgebra R L) :
     IsCentralScalar R₁ L' :=
-  L'.toSubmodule.IsCentralScalar
+  L'.toSubmodule.isCentralScalar
 
 instance [SMul R₁ R] [Module R₁ L] [IsScalarTower R₁ R L] (L' : LieSubalgebra R L) :
     IsScalarTower R₁ R L' :=
-  L'.toSubmodule.IsScalarTower
+  L'.toSubmodule.isScalarTower
 
 instance (L' : LieSubalgebra R L) [IsNoetherian R L] : IsNoetherian R L' :=
-  isNoetherian_submodule' ↑L'
+  isNoetherian_submodule' _
 
 end
 
 /-- A Lie subalgebra forms a new Lie algebra. -/
 instance (L' : LieSubalgebra R L) : LieAlgebra R L'
     where lie_smul := by
-    intros
-    apply SetCoe.ext
-    apply lie_smul
+    { intros
+      apply SetCoe.ext
+      apply lie_smul }
 
-variable {R L} (L' : LieSubalgebra R L)
+variable {R L}
+variable (L' : LieSubalgebra R L)
 
 @[simp]
 protected theorem zero_mem : (0 : L) ∈ L' :=
@@ -158,7 +157,7 @@ theorem mem_carrier {x : L} : x ∈ L'.carrier ↔ x ∈ (L' : Set L) :=
 
 @[simp]
 theorem mem_mk_iff (S : Set L) (h₁ h₂ h₃ h₄) {x : L} :
-    x ∈ (⟨⟨S, h₁, h₂, h₃⟩, h₄⟩ : LieSubalgebra R L) ↔ x ∈ S :=
+    x ∈ (⟨⟨⟨⟨S, h₁⟩, h₂⟩, h₃⟩, h₄⟩ : LieSubalgebra R L) ↔ x ∈ S :=
   Iff.rfl
 #align lie_subalgebra.mem_mk_iff LieSubalgebra.mem_mk_iff
 
@@ -195,7 +194,7 @@ theorem ext_iff' (L₁' L₂' : LieSubalgebra R L) : L₁' = L₂' ↔ ∀ x, x 
 
 @[simp]
 theorem mk_coe (S : Set L) (h₁ h₂ h₃ h₄) :
-    ((⟨⟨S, h₁, h₂, h₃⟩, h₄⟩ : LieSubalgebra R L) : Set L) = S :=
+    ((⟨⟨⟨⟨S, h₁⟩, h₂⟩, h₃⟩, h₄⟩ : LieSubalgebra R L) : Set L) = S :=
   rfl
 #align lie_subalgebra.mk_coe LieSubalgebra.mk_coe
 
@@ -206,7 +205,7 @@ theorem coe_to_submodule_mk (p : Submodule R L) (h) :
   rfl
 #align lie_subalgebra.coe_to_submodule_mk LieSubalgebra.coe_to_submodule_mk
 
-theorem coe_injective : Function.Injective (coe : LieSubalgebra R L → Set L) :=
+theorem coe_injective : Function.Injective ((↑) : LieSubalgebra R L → Set L) :=
   SetLike.coe_injective
 #align lie_subalgebra.coe_injective LieSubalgebra.coe_injective
 
@@ -215,7 +214,7 @@ theorem coe_set_eq (L₁' L₂' : LieSubalgebra R L) : (L₁' : Set L) = L₂' �
   SetLike.coe_set_eq
 #align lie_subalgebra.coe_set_eq LieSubalgebra.coe_set_eq
 
-theorem to_submodule_injective : Function.Injective (coe : LieSubalgebra R L → Submodule R L) :=
+theorem to_submodule_injective : Function.Injective ((↑) : LieSubalgebra R L → Submodule R L) :=
   fun L₁' L₂' h => by
   rw [SetLike.ext'_iff] at h
   rw [← coe_set_eq]
@@ -228,7 +227,8 @@ theorem coe_to_submodule_eq_iff (L₁' L₂' : LieSubalgebra R L) :
   to_submodule_injective.eq_iff
 #align lie_subalgebra.coe_to_submodule_eq_iff LieSubalgebra.coe_to_submodule_eq_iff
 
-@[norm_cast]
+-- porting note: TODO Come back to this
+-- @[norm_cast]
 theorem coe_to_submodule : ((L' : Submodule R L) : Set L) = L' :=
   rfl
 #align lie_subalgebra.coe_to_submodule LieSubalgebra.coe_to_submodule
@@ -243,9 +243,9 @@ variable {N : Type w₁} [AddCommGroup N] [LieRingModule L N] [Module R N] [LieM
 `M` of `L`, we may regard `M` as a Lie ring module of `L'` by restriction. -/
 instance : LieRingModule L' M where
   bracket x m := ⁅(x : L), m⁆
-  add_lie x y m := add_lie x y m
-  lie_add x y m := lie_add x y m
-  leibniz_lie x y m := leibniz_lie x y m
+  add_lie x y m := add_lie (x : L) y m
+  lie_add x y m := lie_add (x : L) y m
+  leibniz_lie x y m := leibniz_lie (x : L) y m
 
 @[simp]
 theorem coe_bracket_of_module (x : L') (m : M) : ⁅x, m⁆ = ⁅(x : L), m⁆ :=
@@ -867,4 +867,3 @@ theorem ofSubalgebras_symm_apply (h : L₁'.map ↑e = L₂') (x : L₂') :
 #align lie_equiv.of_subalgebras_symm_apply LieEquiv.ofSubalgebras_symm_apply
 
 end LieEquiv
-
