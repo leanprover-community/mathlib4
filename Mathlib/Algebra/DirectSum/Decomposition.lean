@@ -181,8 +181,9 @@ end AddCommMonoid
 
 This seems to a be a problem of synthesized vs inferred typeclasses disagreeing. If we replace
 the statement of `decompose_neg` with `@Eq (⨁ i, ℳ i) (decompose ℳ (-x)) (-decompose ℳ x)`
-instead of `decompose ℳ (-x) = -decompose ℳ x`, which forces the typeclasses needed by `⨁ i, ℳ i` to
-be found by unification rather than synthesis, then everything works fine without this instance. -/
+instead of `decompose ℳ (-x) = -decompose ℳ x`, which forces the typeclasses needed by `⨁ i, ℳ i`
+to be found by unification rather than synthesis, then everything works fine without this
+instance. -/
 instance addCommGroupSetLike [AddCommGroup M] [SetLike σ M] [AddSubgroupClass σ M] (ℳ : ι → σ) :
     AddCommGroup (⨁ i, ℳ i) := by infer_instance
 #align direct_sum.add_comm_group_set_like DirectSum.addCommGroupSetLike
