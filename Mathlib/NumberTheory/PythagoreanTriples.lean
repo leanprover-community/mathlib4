@@ -594,6 +594,7 @@ theorem coprime_classification :
         (x = m ^ 2 - n ^ 2 ∧ y = 2 * m * n ∨ x = 2 * m * n ∧ y = m ^ 2 - n ^ 2) ∧
           (z = m ^ 2 + n ^ 2 ∨ z = -(m ^ 2 + n ^ 2)) ∧
             Int.gcd m n = 1 ∧ (m % 2 = 0 ∧ n % 2 = 1 ∨ m % 2 = 1 ∧ n % 2 = 0) := by
+  clear h -- porting note: don't want this variable, but can't use `include` / `omit`
   constructor
   · intro h
     obtain ⟨m, n, H⟩ := h.left.isPrimitiveClassified_of_coprime h.right
