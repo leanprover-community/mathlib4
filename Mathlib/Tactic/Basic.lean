@@ -31,6 +31,38 @@ syntax (name := lemma)
     stx.setKind ``Parser.Command.theorem
   pure <| stx.setKind ``Parser.Command.declaration
 
+/--
+Replace the type of the free variable `fvarId` with `typeNew`.
+
+If `checkDefEq = true` then throws an error if `typeNew` is not definitionally
+equal to the type of `fvarId`. Otherwise this function assumes `typeNew` and the type
+of `fvarId` are definitionally equal.
+
+This function is the same as `Lean.MVarId.changeLocalDecl` but makes sure to push substitution
+information into the infotree.
+-/
+def _root_.Lean.MVarId.changeLocalDecl' (mvarId : MVarId) (fvarId : FVarId) (typeNew : Expr)
+    (checkDefEq := true) : MetaM MVarId := do
+  mvarId.checkNotAssigned `changeLocalDecl
+  let (xs, mvarId) ← mvarId.revert #[fvarId] true
+  mvarId.withContext do
+    let check (typeOld : Expr) : MetaM Unit := do
+      if checkDefEq then
+        unless ← isDefEq typeNew typeOld do
+          throwTacticEx `changeLocalDecl mvarId
+            m!"given type{indentExpr typeNew}\nis not definitionally equal to{indentExpr typeOld}"
+    let finalize (targetNew : Expr) : MetaM MVarId := do
+      let mvarId ← mvarId.replaceTargetDefEq targetNew
+      let (ys, mvarId) ← mvarId.introNP xs.size
+      mvarId.withContext do
+        for x in xs, y in ys do
+          pushInfoLeaf (.ofFVarAliasInfo { id := y, baseId := x, userName := ← y.getUserName })
+      pure mvarId
+    match ← mvarId.getType with
+    | .forallE n d b bi => do check d; finalize (.forallE n typeNew b bi)
+    | .letE n t v b ndep  => do check t; finalize (.letE n typeNew v b ndep)
+    | _ => throwTacticEx `changeLocalDecl mvarId "unexpected auxiliary target"
+
 /-- `change` can be used to replace the main goal or its local
 variables with definitionally equal ones.
 
@@ -61,7 +93,7 @@ elab_rules : tactic
         let (_, mvars) ← elabTermWithHoles
                           (← `(term | show $newType from $(← Term.exprToSyntax mvar))) hTy `change
         liftMetaTactic fun mvarId ↦ do
-          return (← mvarId.replaceLocalDeclDefEq h (← inferType mvar)) :: mvars)
+          return (← mvarId.changeLocalDecl' h (← inferType mvar)) :: mvars)
       (atTarget := evalTactic <| ← `(tactic| show $newType))
       (failed := fun _ ↦ throwError "change tactic failed")
 
@@ -158,29 +190,24 @@ elab (name := clearAuxDecl) "clear_aux_decl" : tactic => withMainContext do
 is still type correct. Throws an error if it is a local hypothesis without a value. -/
 def _root_.Lean.MVarId.clearValue (mvarId : MVarId) (fvarId : FVarId) : MetaM MVarId := do
   mvarId.checkNotAssigned `clear_value
-  -- First check that it is safe to clear the value
-  withoutModifyingState do
-    let (_, mvarId') ← mvarId.revert #[fvarId]
-    let tgt ← mvarId'.getType
-    unless tgt.isLet do
-      mvarId.withContext <|
-        throwTacticEx `clear_value mvarId m!"{Expr.fvar fvarId} is not a local definition"
-    let tgt' := Expr.forallE tgt.letName! tgt.letType! tgt.letBody! .default
-    unless ← mvarId'.withContext (isTypeCorrect tgt') do
-      mvarId.withContext <|
-        throwTacticEx `clear_value mvarId
-          m!"cannot clear {Expr.fvar fvarId}, the resulting context is not type correct"
-  -- Clearing it is safe, so clear it.
+  let tag ← mvarId.getTag
+  let (xs, mvarId') ← mvarId.revert #[fvarId] true
+  let tgt ← mvarId'.getType
+  unless tgt.isLet do
+    mvarId.withContext <|
+      throwTacticEx `clear_value mvarId m!"{Expr.fvar fvarId} is not a local definition"
+  let tgt' := Expr.forallE tgt.letName! tgt.letType! tgt.letBody! .default
+  unless ← mvarId'.withContext <| isTypeCorrect tgt' do
+    mvarId.withContext <|
+      throwTacticEx `clear_value mvarId
+        m!"cannot clear {Expr.fvar fvarId}, the resulting context is not type correct"
+  let mvarId'' ← mvarId'.withContext <| mkFreshExprSyntheticOpaqueMVar tgt' tag
+  mvarId'.assign <| mkApp mvarId'' tgt.letValue!
+  let (ys, mvarId) ← mvarId''.mvarId!.introNP xs.size
   mvarId.withContext do
-    let mvarDecl ← mvarId.getDecl
-    let lctxNew := (← getLCtx).modifyLocalDecl fvarId fun decl =>
-      match decl with
-      | .ldecl index id userName type _ _ k => .cdecl index id userName type .default k
-      | _ => panic!"clearValue internal error: not an ldecl"
-    let mvarNew ← mkFreshExprMVarAt lctxNew (← getLocalInstances)
-                    mvarDecl.type mvarDecl.kind mvarDecl.userName
-    mvarId.assign mvarNew
-    return mvarNew.mvarId!
+    for x in xs, y in ys do
+      pushInfoLeaf (.ofFVarAliasInfo { id := y, baseId := x, userName := ← y.getUserName })
+  return mvarId
 
 /-- `clear_value n₁ n₂ ...` clears the bodies of the local definitions `n₁, n₂ ...`, changing them
 into regular hypotheses. A hypothesis `n : α := t` is changed to `n : α`.
