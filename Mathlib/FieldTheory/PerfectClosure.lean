@@ -67,7 +67,7 @@ theorem frobenius_pthRoot (x : R) : frobenius R p (pthRoot R p x) = x :=
   (frobeniusEquiv R p).apply_symm_apply x
 #align frobenius_pth_root frobenius_pthRoot
 
--- Porting note: @[simp] can prove this
+@[simp]
 theorem pthRoot_pow_p (x : R) : pthRoot R p x ^ p = x :=
   frobenius_pthRoot x
 #align pth_root_pow_p pthRoot_pow_p
@@ -77,7 +77,7 @@ theorem pthRoot_frobenius (x : R) : pthRoot R p (frobenius R p x) = x :=
   (frobeniusEquiv R p).symm_apply_apply x
 #align pth_root_frobenius pthRoot_frobenius
 
-@[simp]
+-- Porting note: @[simp] can prove this
 theorem pthRoot_pow_p' (x : R) : pthRoot R p (x ^ p) = x :=
   pthRoot_frobenius x
 #align pth_root_pow_p' pthRoot_pow_p'
