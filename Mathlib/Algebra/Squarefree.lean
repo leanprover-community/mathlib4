@@ -8,7 +8,7 @@ Authors: Aaron Anderson
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.RingTheory.UniqueFactorizationDomain
+import Mathlib.RingTheory.UniqueFactorizationDomain
 
 /-!
 # Squarefree elements of monoids
@@ -51,8 +51,7 @@ theorem squarefree_one [CommMonoid R] : Squarefree (1 : R) :=
 #align squarefree_one squarefree_one
 
 @[simp]
-theorem not_squarefree_zero [MonoidWithZero R] [Nontrivial R] : ¬Squarefree (0 : R) :=
-  by
+theorem not_squarefree_zero [MonoidWithZero R] [Nontrivial R] : ¬Squarefree (0 : R) := by
   erw [not_forall]
   exact ⟨0, by simp⟩
 #align not_squarefree_zero not_squarefree_zero
@@ -64,8 +63,7 @@ theorem Squarefree.ne_zero [MonoidWithZero R] [Nontrivial R] {m : R} (hm : Squar
 #align squarefree.ne_zero Squarefree.ne_zero
 
 @[simp]
-theorem Irreducible.squarefree [CommMonoid R] {x : R} (h : Irreducible x) : Squarefree x :=
-  by
+theorem Irreducible.squarefree [CommMonoid R] {x : R} (h : Irreducible x) : Squarefree x := by
   rintro y ⟨z, hz⟩
   rw [mul_assoc] at hz
   rcases h.is_unit_or_is_unit hz with (hu | hu)
@@ -111,8 +109,7 @@ section CommMonoid
 variable [CommMonoid R] [DecidableRel (Dvd.Dvd : R → R → Prop)]
 
 theorem squarefree_iff_multiplicity_le_one (r : R) :
-    Squarefree r ↔ ∀ x : R, multiplicity x r ≤ 1 ∨ IsUnit x :=
-  by
+    Squarefree r ↔ ∀ x : R, multiplicity x r ≤ 1 ∨ IsUnit x := by
   refine' forall_congr' fun a => _
   rw [← sq, pow_dvd_iff_le_multiplicity, or_iff_not_imp_left, not_le, imp_congr _ Iff.rfl]
   simpa using PartENat.add_one_le_iff_lt (PartENat.natCast_ne_top 1)
@@ -152,8 +149,7 @@ section Irreducible
 variable [CommMonoidWithZero R] [WfDvdMonoid R]
 
 theorem irreducible_sq_not_dvd_iff_eq_zero_and_no_irreducibles_or_squarefree (r : R) :
-    (∀ x : R, Irreducible x → ¬x * x ∣ r) ↔ (r = 0 ∧ ∀ x : R, ¬Irreducible x) ∨ Squarefree r :=
-  by
+    (∀ x : R, Irreducible x → ¬x * x ∣ r) ↔ (r = 0 ∧ ∀ x : R, ¬Irreducible x) ∨ Squarefree r := by
   symm
   constructor
   · rintro (⟨rfl, h⟩ | h)
@@ -180,8 +176,7 @@ theorem squarefree_iff_irreducible_sq_not_dvd_of_ne_zero {r : R} (hr : r ≠ 0) 
 #align squarefree_iff_irreducible_sq_not_dvd_of_ne_zero squarefree_iff_irreducible_sq_not_dvd_of_ne_zero
 
 theorem squarefree_iff_irreducible_sq_not_dvd_of_exists_irreducible {r : R}
-    (hr : ∃ x : R, Irreducible x) : Squarefree r ↔ ∀ x : R, Irreducible x → ¬x * x ∣ r :=
-  by
+    (hr : ∃ x : R, Irreducible x) : Squarefree r ↔ ∀ x : R, Irreducible x → ¬x * x ∣ r := by
   rw [irreducible_sq_not_dvd_iff_eq_zero_and_no_irreducibles_or_squarefree, ← not_exists]
   simp only [hr, not_true, false_or_iff, and_false_iff]
 #align squarefree_iff_irreducible_sq_not_dvd_of_exists_irreducible squarefree_iff_irreducible_sq_not_dvd_of_exists_irreducible
@@ -192,8 +187,7 @@ section IsRadical
 
 variable [CancelCommMonoidWithZero R]
 
-theorem IsRadical.squarefree {x : R} (h0 : x ≠ 0) (h : IsRadical x) : Squarefree x :=
-  by
+theorem IsRadical.squarefree {x : R} (h0 : x ≠ 0) (h : IsRadical x) : Squarefree x := by
   rintro z ⟨w, rfl⟩
   specialize h 2 (z * w) ⟨w, by simp_rw [pow_two, mul_left_comm, ← mul_assoc]⟩
   rwa [← one_mul (z * w), mul_assoc, mul_dvd_mul_iff_right, ← isUnit_iff_dvd_one] at h
@@ -237,8 +231,7 @@ namespace UniqueFactorizationMonoid
 variable [CancelCommMonoidWithZero R] [UniqueFactorizationMonoid R]
 
 theorem squarefree_iff_nodup_normalizedFactors [NormalizationMonoid R] [DecidableEq R] {x : R}
-    (x0 : x ≠ 0) : Squarefree x ↔ Multiset.Nodup (normalizedFactors x) :=
-  by
+    (x0 : x ≠ 0) : Squarefree x ↔ Multiset.Nodup (normalizedFactors x) := by
   have drel : DecidableRel (Dvd.Dvd : R → R → Prop) := by classical infer_instance
   haveI := drel
   rw [multiplicity.squarefree_iff_multiplicity_le_one, Multiset.nodup_iff_count_le_one]
