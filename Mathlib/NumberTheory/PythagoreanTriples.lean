@@ -11,7 +11,6 @@ Authors: Paul van Wamelen
 import Mathlib.Algebra.Field.Basic
 import Mathlib.RingTheory.Int.Basic
 import Mathlib.Tactic.Ring
-import Mathlib.Tactic.RingExp
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Data.Int.NatPrime
 import Mathlib.Data.ZMod.Basic
@@ -37,7 +36,7 @@ theorem sq_ne_two_fin_zMod_four (z : ZMod 4) : z * z ≠ 2 := by
 #align sq_ne_two_fin_zmod_four sq_ne_two_fin_zMod_four
 
 theorem Int.sq_ne_two_mod_four (z : ℤ) : z * z % 4 ≠ 2 := by
-  suffices ¬z * z % (4 : ℕ) = 2 % (4 : ℕ) by norm_num at this
+  suffices ¬z * z % (4 : ℕ) = 2 % (4 : ℕ) by exact this
   rw [← ZMod.int_cast_eq_int_cast_iff']
   simpa using sq_ne_two_fin_zMod_four _
 #align int.sq_ne_two_mod_four Int.sq_ne_two_mod_four
@@ -67,7 +66,7 @@ namespace PythagoreanTriple
 
 variable {x y z : ℤ} (h : PythagoreanTriple x y z)
 
-include h
+-- include h
 
 theorem eq : x * x + y * y = z * z :=
   h
@@ -84,10 +83,10 @@ theorem mul (k : ℤ) : PythagoreanTriple (k * x) (k * y) (k * z) :=
     k * x * (k * x) + k * y * (k * y) = k ^ 2 * (x * x + y * y) := by ring
     _ = k ^ 2 * (z * z) := by rw [h.eq]
     _ = k * z * (k * z) := by ring
-    
+
 #align pythagorean_triple.mul PythagoreanTriple.mul
 
-omit h
+-- omit h
 
 /-- `(k*x, k*y, k*z)` is a Pythagorean triple if and only if
 `(x, y, z)` is also a triple. -/
@@ -100,14 +99,14 @@ theorem mul_iff (k : ℤ) (hk : k ≠ 0) :
   convert h using 1 <;> ring
 #align pythagorean_triple.mul_iff PythagoreanTriple.mul_iff
 
-include h
+-- include h
 
 /-- A Pythagorean triple `x, y, z` is “classified” if there exist integers `k, m, n` such that
 either
  * `x = k * (m ^ 2 - n ^ 2)` and `y = k * (2 * m * n)`, or
  * `x = k * (2 * m * n)` and `y = k * (m ^ 2 - n ^ 2)`. -/
-@[nolint unused_arguments]
-def IsClassified :=
+-- @[nolint unused_arguments]
+def IsClassified (_ : PythagoreanTriple x y z) :=
   ∃ k m n : ℤ,
     (x = k * (m ^ 2 - n ^ 2) ∧ y = k * (2 * m * n) ∨
         x = k * (2 * m * n) ∧ y = k * (m ^ 2 - n ^ 2)) ∧
@@ -119,8 +118,8 @@ def IsClassified :=
  * `x = m ^ 2 - n ^ 2` and `y = 2 * m * n`, or
  * `x = 2 * m * n` and `y = m ^ 2 - n ^ 2`.
 -/
-@[nolint unused_arguments]
-def IsPrimitiveClassified :=
+-- @[nolint unused_arguments]
+def IsPrimitiveClassified (_ : PythagoreanTriple x y z) :=
   ∃ m n : ℤ,
     (x = m ^ 2 - n ^ 2 ∧ y = 2 * m * n ∨ x = 2 * m * n ∧ y = m ^ 2 - n ^ 2) ∧
       Int.gcd m n = 1 ∧ (m % 2 = 0 ∧ n % 2 = 1 ∨ m % 2 = 1 ∧ n % 2 = 0)
@@ -157,48 +156,46 @@ theorem even_odd_of_coprime (hc : Int.gcd x y = 1) :
   -- x odd, y even
   · -- x odd, y odd
     exfalso
-    obtain ⟨x0, y0, rfl, rfl⟩ : ∃ x0 y0, x = x0 * 2 + 1 ∧ y = y0 * 2 + 1 :=
-      by
+    obtain ⟨x0, y0, rfl, rfl⟩ : ∃ x0 y0, x = x0 * 2 + 1 ∧ y = y0 * 2 + 1 := by
       cases' exists_eq_mul_left_of_dvd (Int.dvd_sub_of_emod_eq hx) with x0 hx2
       cases' exists_eq_mul_left_of_dvd (Int.dvd_sub_of_emod_eq hy) with y0 hy2
       rw [sub_eq_iff_eq_add] at hx2 hy2
       exact ⟨x0, y0, hx2, hy2⟩
     apply Int.sq_ne_two_mod_four z
-    rw [show z * z = 4 * (x0 * x0 + x0 + y0 * y0 + y0) + 2
-        by
+    rw [show z * z = 4 * (x0 * x0 + x0 + y0 * y0 + y0) + 2 by
         rw [← h.eq]
         ring]
-    norm_num [Int.add_emod]
+    field_simp [Int.add_emod]
 #align pythagorean_triple.even_odd_of_coprime PythagoreanTriple.even_odd_of_coprime
 
 theorem gcd_dvd : (Int.gcd x y : ℤ) ∣ z := by
   by_cases h0 : Int.gcd x y = 0
   · have hx : x = 0 := by
-      apply int.nat_abs_eq_zero.mp
+      apply Int.natAbs_eq_zero.mp
       apply Nat.eq_zero_of_gcd_eq_zero_left h0
     have hy : y = 0 := by
-      apply int.nat_abs_eq_zero.mp
+      apply Int.natAbs_eq_zero.mp
       apply Nat.eq_zero_of_gcd_eq_zero_right h0
     have hz : z = 0 := by
       simpa only [PythagoreanTriple, hx, hy, add_zero, zero_eq_mul, MulZeroClass.mul_zero,
         or_self_iff] using h
     simp only [hz, dvd_zero]
-  obtain ⟨k, x0, y0, k0, h2, rfl, rfl⟩ :
+  obtain ⟨k, x0, y0, _, h2, rfl, rfl⟩ :
     ∃ (k : ℕ)(x0 y0 : _), 0 < k ∧ Int.gcd x0 y0 = 1 ∧ x = x0 * k ∧ y = y0 * k :=
     Int.exists_gcd_one' (Nat.pos_of_ne_zero h0)
   rw [Int.gcd_mul_right, h2, Int.natAbs_ofNat, one_mul]
   rw [← Int.pow_dvd_pow_iff zero_lt_two, sq z, ← h.eq]
-  rw [(by ring : x0 * k * (x0 * k) + y0 * k * (y0 * k) = k ^ 2 * (x0 * x0 + y0 * y0))]
+  rw [(by ring : x0 * k * (x0 * k) + y0 * k * (y0 * k) = (k : ℤ) ^ 2 * (x0 * x0 + y0 * y0))]
   exact dvd_mul_right _ _
 #align pythagorean_triple.gcd_dvd PythagoreanTriple.gcd_dvd
 
 theorem normalize : PythagoreanTriple (x / Int.gcd x y) (y / Int.gcd x y) (z / Int.gcd x y) := by
   by_cases h0 : Int.gcd x y = 0
   · have hx : x = 0 := by
-      apply int.nat_abs_eq_zero.mp
+      apply Int.natAbs_eq_zero.mp
       apply Nat.eq_zero_of_gcd_eq_zero_left h0
     have hy : y = 0 := by
-      apply int.nat_abs_eq_zero.mp
+      apply Int.natAbs_eq_zero.mp
       apply Nat.eq_zero_of_gcd_eq_zero_right h0
     have hz : z = 0 := by
       simpa only [PythagoreanTriple, hx, hy, add_zero, zero_eq_mul, MulZeroClass.mul_zero,
@@ -220,15 +217,15 @@ theorem normalize : PythagoreanTriple (x / Int.gcd x y) (y / Int.gcd x y) (z / I
 theorem isClassified_of_isPrimitiveClassified (hp : h.IsPrimitiveClassified) : h.IsClassified := by
   obtain ⟨m, n, H⟩ := hp
   use 1, m, n
-  rcases H with ⟨t, co, pp⟩
+  rcases H with ⟨t, co, _⟩
   rw [one_mul, one_mul]
   exact ⟨t, co⟩
 #align pythagorean_triple.is_classified_of_is_primitive_classified PythagoreanTriple.isClassified_of_isPrimitiveClassified
 
 theorem isClassified_of_normalize_isPrimitiveClassified (hc : h.normalize.IsPrimitiveClassified) :
     h.IsClassified := by
-  convert h.normalize.mul_is_classified (Int.gcd x y)
-        (is_classified_of_is_primitive_classified h.normalize hc) <;>
+  convert h.normalize.mul_isClassified (Int.gcd x y)
+        (isClassified_of_isPrimitiveClassified h.normalize hc) <;>
     rw [Int.mul_ediv_cancel']
   · exact Int.gcd_dvd_left x y
   · exact Int.gcd_dvd_right x y
@@ -264,7 +261,7 @@ theorem isPrimitiveClassified_of_coprime_of_zero_left (hc : Int.gcd x y = 1) (hx
 
 theorem coprime_of_coprime (hc : Int.gcd x y = 1) : Int.gcd y z = 1 := by
   by_contra H
-  obtain ⟨p, hp, hpy, hpz⟩ := nat.prime.not_coprime_iff_dvd.mp H
+  obtain ⟨p, hp, hpy, hpz⟩ := Nat.Prime.not_coprime_iff_dvd.mp H
   apply hp.not_dvd_one
   rw [← hc]
   apply Nat.dvd_gcd (Int.Prime.dvd_natAbs_of_coe_dvd_sq hp _ _) hpy
@@ -280,7 +277,7 @@ section circleEquivGen
 /-!
 ### A parametrization of the unit circle
 
-For the classification of pythogorean triples, we will use a parametrization of the unit circle.
+For the classification of Pythagorean triples, we will use a parametrization of the unit circle.
 -/
 
 
@@ -289,35 +286,30 @@ variable {K : Type _} [Field K]
 /-- A parameterization of the unit circle that is useful for classifying Pythagorean triples.
  (To be applied in the case where `K = ℚ`.) -/
 def circleEquivGen (hk : ∀ x : K, 1 + x ^ 2 ≠ 0) :
-    K ≃ { p : K × K // p.1 ^ 2 + p.2 ^ 2 = 1 ∧ p.2 ≠ -1 }
-    where
+    K ≃ { p : K × K // p.1 ^ 2 + p.2 ^ 2 = 1 ∧ p.2 ≠ -1 } where
   toFun x :=
-    ⟨⟨2 * x / (1 + x ^ 2), (1 - x ^ 2) / (1 + x ^ 2)⟩,
-      by
+    ⟨⟨2 * x / (1 + x ^ 2), (1 - x ^ 2) / (1 + x ^ 2)⟩, by
       field_simp [hk x, div_pow]
-      ring,
-      by
+      ring, by
       simp only [Ne.def, div_eq_iff (hk x), neg_mul, one_mul, neg_add, sub_eq_add_neg, add_left_inj]
       simpa only [eq_neg_iff_add_eq_zero, one_pow] using hk 1⟩
   invFun p := (p : K × K).1 / ((p : K × K).2 + 1)
   left_inv x := by
-    have h2 : (1 + 1 : K) = 2 := rfl
+    have h2 : (1 + 1 : K) = 2 := by norm_num
     have h3 : (2 : K) ≠ 0 := by
       convert hk 1
       rw [one_pow 2, h2]
     field_simp [hk x, h2, add_assoc, add_comm, add_sub_cancel'_right, mul_comm]
-  right_inv := fun ⟨⟨x, y⟩, hxy, hy⟩ =>
-    by
+  right_inv := fun ⟨⟨x, y⟩, hxy, hy⟩ => by
     change x ^ 2 + y ^ 2 = 1 at hxy
     have h2 : y + 1 ≠ 0 := mt eq_neg_of_add_eq_zero_left hy
-    have h3 : (y + 1) ^ 2 + x ^ 2 = 2 * (y + 1) :=
-      by
+    have h3 : (y + 1) ^ 2 + x ^ 2 = 2 * (y + 1) := by
       rw [(add_neg_eq_iff_eq_add.mpr hxy.symm).symm]
       ring
     have h4 : (2 : K) ≠ 0 := by
       convert hk 1
       rw [one_pow 2]
-      rfl
+      ring
     simp only [Prod.mk.inj_iff, Subtype.mk_eq_mk]
     constructor
     · field_simp [h3]
@@ -345,20 +337,19 @@ end circleEquivGen
 private theorem coprime_sq_sub_sq_add_of_even_odd {m n : ℤ} (h : Int.gcd m n = 1) (hm : m % 2 = 0)
     (hn : n % 2 = 1) : Int.gcd (m ^ 2 - n ^ 2) (m ^ 2 + n ^ 2) = 1 := by
   by_contra H
-  obtain ⟨p, hp, hp1, hp2⟩ := nat.prime.not_coprime_iff_dvd.mp H
+  obtain ⟨p, hp, hp1, hp2⟩ := Nat.Prime.not_coprime_iff_dvd.mp H
   rw [← Int.coe_nat_dvd_left] at hp1 hp2
   have h2m : (p : ℤ) ∣ 2 * m ^ 2 := by
-    convert dvd_add hp2 hp1
+    convert dvd_add hp2 hp1 using 1
     ring
   have h2n : (p : ℤ) ∣ 2 * n ^ 2 := by
-    convert dvd_sub hp2 hp1
+    convert dvd_sub hp2 hp1 using 1
     ring
   have hmc : p = 2 ∨ p ∣ Int.natAbs m := prime_two_or_dvd_of_dvd_two_mul_pow_self_two hp h2m
   have hnc : p = 2 ∨ p ∣ Int.natAbs n := prime_two_or_dvd_of_dvd_two_mul_pow_self_two hp h2n
   by_cases h2 : p = 2
-  · have h3 : (m ^ 2 + n ^ 2) % 2 = 1 := by norm_num [sq, Int.add_emod, Int.mul_emod, hm, hn]
-    have h4 : (m ^ 2 + n ^ 2) % 2 = 0 :=
-      by
+  · have h3 : (m ^ 2 + n ^ 2) % 2 = 1 := by field_simp [sq, Int.add_emod, Int.mul_emod, hm, hn]
+    have h4 : (m ^ 2 + n ^ 2) % 2 = 0 := by
       apply Int.emod_eq_zero_of_dvd
       rwa [h2] at hp2
     rw [h4] at h3
@@ -366,24 +357,22 @@ private theorem coprime_sq_sub_sq_add_of_even_odd {m n : ℤ} (h : Int.gcd m n =
   · apply hp.not_dvd_one
     rw [← h]
     exact Nat.dvd_gcd (Or.resolve_left hmc h2) (Or.resolve_left hnc h2)
-#align coprime_sq_sub_sq_add_of_even_odd coprime_sq_sub_sq_add_of_even_odd
 
 private theorem coprime_sq_sub_sq_add_of_odd_even {m n : ℤ} (h : Int.gcd m n = 1) (hm : m % 2 = 1)
     (hn : n % 2 = 0) : Int.gcd (m ^ 2 - n ^ 2) (m ^ 2 + n ^ 2) = 1 := by
   rw [Int.gcd, ← Int.natAbs_neg (m ^ 2 - n ^ 2)]
   rw [(by ring : -(m ^ 2 - n ^ 2) = n ^ 2 - m ^ 2), add_comm]
   apply coprime_sq_sub_sq_add_of_even_odd _ hn hm; rwa [Int.gcd_comm]
-#align coprime_sq_sub_sq_add_of_odd_even coprime_sq_sub_sq_add_of_odd_even
 
 private theorem coprime_sq_sub_mul_of_even_odd {m n : ℤ} (h : Int.gcd m n = 1) (hm : m % 2 = 0)
     (hn : n % 2 = 1) : Int.gcd (m ^ 2 - n ^ 2) (2 * m * n) = 1 := by
   by_contra H
-  obtain ⟨p, hp, hp1, hp2⟩ := nat.prime.not_coprime_iff_dvd.mp H
+  obtain ⟨p, hp, hp1, hp2⟩ := Nat.Prime.not_coprime_iff_dvd.mp H
   rw [← Int.coe_nat_dvd_left] at hp1 hp2
   have hnp : ¬(p : ℤ) ∣ Int.gcd m n := by
     rw [h]
     norm_cast
-    exact mt nat.dvd_one.mp (Nat.Prime.ne_one hp)
+    exact mt Nat.dvd_one.mp (Nat.Prime.ne_one hp)
   cases' Int.Prime.dvd_mul hp hp2 with hp2m hpn
   · rw [Int.natAbs_mul] at hp2m
     cases' (Nat.Prime.dvd_mul hp).mp hp2m with hp2 hpm
@@ -391,28 +380,26 @@ private theorem coprime_sq_sub_mul_of_even_odd {m n : ℤ} (h : Int.gcd m n = 1)
       revert hp1
       rw [hp2']
       apply mt Int.emod_eq_zero_of_dvd
-      norm_num [sq, Int.sub_emod, Int.mul_emod, hm, hn]
-    apply mt (Int.dvd_gcd (int.coe_nat_dvd_left.mpr hpm)) hnp
+      field_simp [sq, Int.sub_emod, Int.mul_emod, hm, hn]
+    apply mt (Int.dvd_gcd (Int.coe_nat_dvd_left.mpr hpm)) hnp
     apply (or_self_iff _).mp
     apply Int.Prime.dvd_mul' hp
     rw [(by ring : n * n = -(m ^ 2 - n ^ 2) + m * m)]
     apply dvd_add (dvd_neg_of_dvd hp1)
-    exact dvd_mul_of_dvd_left (int.coe_nat_dvd_left.mpr hpm) m
+    exact dvd_mul_of_dvd_left (Int.coe_nat_dvd_left.mpr hpm) m
   rw [Int.gcd_comm] at hnp
-  apply mt (Int.dvd_gcd (int.coe_nat_dvd_left.mpr hpn)) hnp
+  apply mt (Int.dvd_gcd (Int.coe_nat_dvd_left.mpr hpn)) hnp
   apply (or_self_iff _).mp
   apply Int.Prime.dvd_mul' hp
   rw [(by ring : m * m = m ^ 2 - n ^ 2 + n * n)]
   apply dvd_add hp1
-  exact (int.coe_nat_dvd_left.mpr hpn).mul_right n
-#align coprime_sq_sub_mul_of_even_odd coprime_sq_sub_mul_of_even_odd
+  exact (Int.coe_nat_dvd_left.mpr hpn).mul_right n
 
 private theorem coprime_sq_sub_mul_of_odd_even {m n : ℤ} (h : Int.gcd m n = 1) (hm : m % 2 = 1)
     (hn : n % 2 = 0) : Int.gcd (m ^ 2 - n ^ 2) (2 * m * n) = 1 := by
   rw [Int.gcd, ← Int.natAbs_neg (m ^ 2 - n ^ 2)]
   rw [(by ring : 2 * m * n = 2 * n * m), (by ring : -(m ^ 2 - n ^ 2) = n ^ 2 - m ^ 2)]
   apply coprime_sq_sub_mul_of_even_odd _ hn hm; rwa [Int.gcd_comm]
-#align coprime_sq_sub_mul_of_odd_even coprime_sq_sub_mul_of_odd_even
 
 private theorem coprime_sq_sub_mul {m n : ℤ} (h : Int.gcd m n = 1)
     (hmn : m % 2 = 0 ∧ n % 2 = 1 ∨ m % 2 = 1 ∧ n % 2 = 0) :
@@ -420,7 +407,6 @@ private theorem coprime_sq_sub_mul {m n : ℤ} (h : Int.gcd m n = 1)
   cases' hmn with h1 h2
   · exact coprime_sq_sub_mul_of_even_odd h h1.left h1.right
   · exact coprime_sq_sub_mul_of_odd_even h h2.left h2.right
-#align coprime_sq_sub_mul coprime_sq_sub_mul
 
 private theorem coprime_sq_sub_sq_sum_of_odd_odd {m n : ℤ} (h : Int.gcd m n = 1) (hm : m % 2 = 1)
     (hn : n % 2 = 1) :
@@ -435,15 +421,14 @@ private theorem coprime_sq_sub_sq_sum_of_odd_odd {m n : ℤ} (h : Int.gcd m n = 
   have h1 : (m0 * 2 + 1) ^ 2 + (n0 * 2 + 1) ^ 2 = 2 * (2 * (m0 ^ 2 + n0 ^ 2 + m0 + n0) + 1) := by
     ring
   have h2 : (m0 * 2 + 1) ^ 2 - (n0 * 2 + 1) ^ 2 = 2 * (2 * (m0 ^ 2 - n0 ^ 2 + m0 - n0)) := by ring
-  have h3 : ((m0 * 2 + 1) ^ 2 - (n0 * 2 + 1) ^ 2) / 2 % 2 = 0 :=
-    by
+  have h3 : ((m0 * 2 + 1) ^ 2 - (n0 * 2 + 1) ^ 2) / 2 % 2 = 0 := by
     rw [h2, Int.mul_ediv_cancel_left, Int.mul_emod_right]
     exact by decide
   refine' ⟨⟨_, h1⟩, ⟨_, h2⟩, h3, _⟩
   have h20 : (2 : ℤ) ≠ 0 := by decide
   rw [h1, h2, Int.mul_ediv_cancel_left _ h20, Int.mul_ediv_cancel_left _ h20]
   by_contra h4
-  obtain ⟨p, hp, hp1, hp2⟩ := nat.prime.not_coprime_iff_dvd.mp h4
+  obtain ⟨p, hp, hp1, hp2⟩ := Nat.Prime.not_coprime_iff_dvd.mp h4
   apply hp.not_dvd_one
   rw [← h]
   rw [← Int.coe_nat_dvd_left] at hp1 hp2
@@ -454,13 +439,12 @@ private theorem coprime_sq_sub_sq_sum_of_odd_odd {m n : ℤ} (h : Int.gcd m n = 
   · apply Int.Prime.dvd_natAbs_of_coe_dvd_sq hp
     convert dvd_sub hp2 hp1
     ring
-#align coprime_sq_sub_sq_sum_of_odd_odd coprime_sq_sub_sq_sum_of_odd_odd
 
 namespace PythagoreanTriple
 
 variable {x y z : ℤ} (h : PythagoreanTriple x y z)
 
-include h
+-- include h
 
 theorem isPrimitiveClassified_aux (hc : x.gcd y = 1) (hzpos : 0 < z) {m n : ℤ}
     (hm2n2 : 0 < m ^ 2 + n ^ 2) (hv2 : (x : ℚ) / z = 2 * m * n / (m ^ 2 + n ^ 2))
@@ -469,8 +453,7 @@ theorem isPrimitiveClassified_aux (hc : x.gcd y = 1) (hzpos : 0 < z) {m n : ℤ}
     (pp : m % 2 = 0 ∧ n % 2 = 1 ∨ m % 2 = 1 ∧ n % 2 = 0) : h.IsPrimitiveClassified := by
   have hz : z ≠ 0
   apply ne_of_gt hzpos
-  have h2 : y = m ^ 2 - n ^ 2 ∧ z = m ^ 2 + n ^ 2 :=
-    by
+  have h2 : y = m ^ 2 - n ^ 2 ∧ z = m ^ 2 + n ^ 2 := by
     apply Rat.div_int_inj hzpos hm2n2 (h.coprime_of_coprime hc) H
     rw [hw2]
     norm_cast
@@ -486,7 +469,7 @@ theorem isPrimitiveClassified_aux (hc : x.gcd y = 1) (hzpos : 0 < z) {m n : ℤ}
 theorem isPrimitiveClassified_of_coprime_of_odd_of_pos (hc : Int.gcd x y = 1) (hyo : y % 2 = 1)
     (hzpos : 0 < z) : h.IsPrimitiveClassified := by
   by_cases h0 : x = 0
-  · exact h.is_primitive_classified_of_coprime_of_zero_left hc h0
+  · exact h.isPrimitiveClassified_of_coprime_of_zero_left hc h0
   let v := (x : ℚ) / z
   let w := (y : ℚ) / z
   have hz : z ≠ 0
@@ -494,7 +477,6 @@ theorem isPrimitiveClassified_of_coprime_of_odd_of_pos (hc : Int.gcd x y = 1) (h
   have hq : v ^ 2 + w ^ 2 = 1 := by
     field_simp [hz, sq]
     norm_cast
-    exact h
   have hvz : v ≠ 0 := by
     field_simp [hz]
     exact h0
@@ -508,39 +490,32 @@ theorem isPrimitiveClassified_of_coprime_of_odd_of_pos (hc : Int.gcd x y = 1) (h
     exact lt_add_of_pos_of_le zero_lt_one (sq_nonneg q)
   have hp : (⟨v, w⟩ : ℚ × ℚ) ∈ { p : ℚ × ℚ | p.1 ^ 2 + p.2 ^ 2 = 1 ∧ p.2 ≠ -1 } := ⟨hq, hw1⟩
   let q := (circleEquivGen hQ).symm ⟨⟨v, w⟩, hp⟩
-  have ht4 : v = 2 * q / (1 + q ^ 2) ∧ w = (1 - q ^ 2) / (1 + q ^ 2) :=
-    by
+  have ht4 : v = 2 * q / (1 + q ^ 2) ∧ w = (1 - q ^ 2) / (1 + q ^ 2) := by
     apply Prod.mk.inj
     have := ((circleEquivGen hQ).apply_symm_apply ⟨⟨v, w⟩, hp⟩).symm
     exact congr_arg Subtype.val this
-  let m := (q.denom : ℤ)
+  let m := (q.den : ℤ)
   let n := q.num
   have hm0 : m ≠ 0 := by
     norm_cast
     apply Rat.den_nz q
   have hq2 : q = n / m := (Rat.num_div_den q).symm
-  have hm2n2 : 0 < m ^ 2 + n ^ 2 :=
-    by
+  have hm2n2 : 0 < m ^ 2 + n ^ 2 := by
     apply lt_add_of_pos_of_le _ (sq_nonneg n)
     exact lt_of_le_of_ne (sq_nonneg m) (Ne.symm (pow_ne_zero 2 hm0))
-  have hw2 : w = (m ^ 2 - n ^ 2) / (m ^ 2 + n ^ 2) :=
-    by
+  have hw2 : w = (m ^ 2 - n ^ 2) / (m ^ 2 + n ^ 2) := by
     rw [ht4.2, hq2]
     field_simp [hm2n2, Rat.den_nz q, -Rat.num_div_den]
-  have hm2n20 : (m : ℚ) ^ 2 + (n : ℚ) ^ 2 ≠ 0 :=
-    by
+  have hm2n20 : (m : ℚ) ^ 2 + (n : ℚ) ^ 2 ≠ 0 := by
     norm_cast
     simpa only [Int.coe_nat_pow] using ne_of_gt hm2n2
-  have hv2 : v = 2 * m * n / (m ^ 2 + n ^ 2) :=
-    by
-    apply Eq.symm
-    apply (div_eq_iff hm2n20).mpr
-    rw [ht4.1]
-    field_simp [hQ q]
-    rw [hq2]
-    field_simp [Rat.den_nz q, -Rat.num_div_den]
-    ring
-  have hnmcp : Int.gcd n m = 1 := q.cop
+  have hv2 : v = 2 * m * n / ((m : ℚ) ^ 2 + (n : ℚ) ^ 2) := by
+    calc
+      v = 2 * q / (1 + q ^ 2) := by apply ht4.1
+      _ = 2 * (n / m) / (1 + (↑n / ↑m) ^ 2) := by rw [hq2]
+      _ = (m * 2 * (n / m)) / (m * (1 + (↑n / ↑m) ^ 2)) := by rw [← mul_div_mul_left m hm0]
+    -- TODO
+  have hnmcp : Int.gcd n m = 1 := q.reduced
   have hmncp : Int.gcd m n = 1 := by
     rw [Int.gcd_comm]
     exact hnmcp
@@ -554,12 +529,12 @@ theorem isPrimitiveClassified_of_coprime_of_odd_of_pos (hc : Int.gcd x y = 1) (h
     revert h1
     norm_num
   · -- m even, n odd
-    apply h.is_primitive_classified_aux hc hzpos hm2n2 hv2 hw2 _ hmncp
+    apply h.isPrimitiveClassified_aux hc hzpos hm2n2 hv2 hw2 _ hmncp
     · apply Or.intro_left
       exact And.intro hm2 hn2
     · apply coprime_sq_sub_sq_add_of_even_odd hmncp hm2 hn2
   · -- m odd, n even
-    apply h.is_primitive_classified_aux hc hzpos hm2n2 hv2 hw2 _ hmncp
+    apply h.isPrimitiveClassified_aux hc hzpos hm2n2 hv2 hw2 _ hmncp
     · apply Or.intro_right
       exact And.intro hm2 hn2
     apply coprime_sq_sub_sq_add_of_odd_even hmncp hm2 hn2
@@ -570,8 +545,7 @@ theorem isPrimitiveClassified_of_coprime_of_odd_of_pos (hc : Int.gcd x y = 1) (h
         2 ∣ m ^ 2 - n ^ 2 ∧
           (m ^ 2 - n ^ 2) / 2 % 2 = 0 ∧ Int.gcd ((m ^ 2 - n ^ 2) / 2) ((m ^ 2 + n ^ 2) / 2) = 1 :=
       coprime_sq_sub_sq_sum_of_odd_odd hmncp hm2 hn2
-    have h2 : y = (m ^ 2 - n ^ 2) / 2 ∧ z = (m ^ 2 + n ^ 2) / 2 :=
-      by
+    have h2 : y = (m ^ 2 - n ^ 2) / 2 ∧ z = (m ^ 2 + n ^ 2) / 2 := by
       apply Rat.div_int_inj hzpos _ (h.coprime_of_coprime hc) h1.2.2.2
       · show w = _
         rw [← Rat.divInt_eq_div, ← Rat.divInt_mul_right (by norm_num : (2 : ℤ) ≠ 0)]
@@ -588,17 +562,17 @@ theorem isPrimitiveClassified_of_coprime_of_odd_of_pos (hc : Int.gcd x y = 1) (h
 theorem isPrimitiveClassified_of_coprime_of_pos (hc : Int.gcd x y = 1) (hzpos : 0 < z) :
     h.IsPrimitiveClassified := by
   cases' h.even_odd_of_coprime hc with h1 h2
-  · exact h.is_primitive_classified_of_coprime_of_odd_of_pos hc h1.right hzpos
+  · exact h.isPrimitiveClassified_of_coprime_of_odd_of_pos hc h1.right hzpos
   rw [Int.gcd_comm] at hc
-  obtain ⟨m, n, H⟩ := h.symm.is_primitive_classified_of_coprime_of_odd_of_pos hc h2.left hzpos
+  obtain ⟨m, n, H⟩ := h.symm.isPrimitiveClassified_of_coprime_of_odd_of_pos hc h2.left hzpos
   use m, n; tauto
 #align pythagorean_triple.is_primitive_classified_of_coprime_of_pos PythagoreanTriple.isPrimitiveClassified_of_coprime_of_pos
 
 theorem isPrimitiveClassified_of_coprime (hc : Int.gcd x y = 1) : h.IsPrimitiveClassified := by
   by_cases hz : 0 < z
-  · exact h.is_primitive_classified_of_coprime_of_pos hc hz
+  · exact h.isPrimitiveClassified_of_coprime_of_pos hc hz
   have h' : PythagoreanTriple x y (-z) := by simpa [PythagoreanTriple, neg_mul_neg] using h.eq
-  apply h'.is_primitive_classified_of_coprime_of_pos hc
+  apply h'.isPrimitiveClassified_of_coprime_of_pos hc
   apply lt_of_le_of_ne _ (h'.ne_zero_of_coprime hc).symm
   exact le_neg.mp (not_lt.mp hz)
 #align pythagorean_triple.is_primitive_classified_of_coprime PythagoreanTriple.isPrimitiveClassified_of_coprime
@@ -606,19 +580,19 @@ theorem isPrimitiveClassified_of_coprime (hc : Int.gcd x y = 1) : h.IsPrimitiveC
 theorem classified : h.IsClassified := by
   by_cases h0 : Int.gcd x y = 0
   · have hx : x = 0 := by
-      apply int.nat_abs_eq_zero.mp
+      apply Int.natAbs_eq_zero.mp
       apply Nat.eq_zero_of_gcd_eq_zero_left h0
     have hy : y = 0 := by
-      apply int.nat_abs_eq_zero.mp
+      apply Int.natAbs_eq_zero.mp
       apply Nat.eq_zero_of_gcd_eq_zero_right h0
     use 0, 1, 0
-    norm_num [hx, hy]
-  apply h.is_classified_of_normalize_is_primitive_classified
-  apply h.normalize.is_primitive_classified_of_coprime
+    field_simp [hx, hy]
+  apply h.isClassified_of_normalize_isPrimitiveClassified
+  apply h.normalize.isPrimitiveClassified_of_coprime
   apply Int.gcd_div_gcd_div_gcd (Nat.pos_of_ne_zero h0)
 #align pythagorean_triple.classified PythagoreanTriple.classified
 
-omit h
+-- omit h
 
 theorem coprime_classification :
     PythagoreanTriple x y z ∧ Int.gcd x y = 1 ↔
@@ -628,18 +602,16 @@ theorem coprime_classification :
             Int.gcd m n = 1 ∧ (m % 2 = 0 ∧ n % 2 = 1 ∨ m % 2 = 1 ∧ n % 2 = 0) := by
   constructor
   · intro h
-    obtain ⟨m, n, H⟩ := h.left.is_primitive_classified_of_coprime h.right
+    obtain ⟨m, n, H⟩ := h.left.isPrimitiveClassified_of_coprime h.right
     use m, n
     rcases H with ⟨⟨rfl, rfl⟩ | ⟨rfl, rfl⟩, co, pp⟩
     · refine' ⟨Or.inl ⟨rfl, rfl⟩, _, co, pp⟩
-      have : z ^ 2 = (m ^ 2 + n ^ 2) ^ 2 :=
-        by
+      have : z ^ 2 = (m ^ 2 + n ^ 2) ^ 2 := by
         rw [sq, ← h.left.eq]
         ring
       simpa using eq_or_eq_neg_of_sq_eq_sq _ _ this
     · refine' ⟨Or.inr ⟨rfl, rfl⟩, _, co, pp⟩
-      have : z ^ 2 = (m ^ 2 + n ^ 2) ^ 2 :=
-        by
+      have : z ^ 2 = (m ^ 2 + n ^ 2) ^ 2 := by
         rw [sq, ← h.left.eq]
         ring
       simpa using eq_or_eq_neg_of_sq_eq_sq _ _ this
@@ -657,7 +629,7 @@ theorem coprime_classification :
 #align pythagorean_triple.coprime_classification PythagoreanTriple.coprime_classification
 
 /-- by assuming `x` is odd and `z` is positive we get a slightly more precise classification of
-the pythagorean triple `x ^ 2 + y ^ 2 = z ^ 2`-/
+the Pythagorean triple `x ^ 2 + y ^ 2 = z ^ 2`-/
 theorem coprime_classification' {x y z : ℤ} (h : PythagoreanTriple x y z)
     (h_coprime : Int.gcd x y = 1) (h_parity : x % 2 = 1) (h_pos : 0 < z) :
     ∃ m n,
@@ -666,7 +638,7 @@ theorem coprime_classification' {x y z : ℤ} (h : PythagoreanTriple x y z)
           z = m ^ 2 + n ^ 2 ∧
             Int.gcd m n = 1 ∧ (m % 2 = 0 ∧ n % 2 = 1 ∨ m % 2 = 1 ∧ n % 2 = 0) ∧ 0 ≤ m := by
   obtain ⟨m, n, ht1, ht2, ht3, ht4⟩ :=
-    pythagorean_triple.coprime_classification.mp (And.intro h h_coprime)
+    PythagoreanTriple.coprime_classification.mp (And.intro h h_coprime)
   cases' le_or_lt 0 m with hm hm
   · use m, n
     cases' ht1 with h_odd h_even
@@ -722,14 +694,12 @@ theorem classification :
     use k, m, n
     rcases H with (⟨rfl, rfl⟩ | ⟨rfl, rfl⟩)
     · refine' ⟨Or.inl ⟨rfl, rfl⟩, _⟩
-      have : z ^ 2 = (k * (m ^ 2 + n ^ 2)) ^ 2 :=
-        by
+      have : z ^ 2 = (k * (m ^ 2 + n ^ 2)) ^ 2 := by
         rw [sq, ← h.eq]
         ring
       simpa using eq_or_eq_neg_of_sq_eq_sq _ _ this
     · refine' ⟨Or.inr ⟨rfl, rfl⟩, _⟩
-      have : z ^ 2 = (k * (m ^ 2 + n ^ 2)) ^ 2 :=
-        by
+      have : z ^ 2 = (k * (m ^ 2 + n ^ 2)) ^ 2 := by
         rw [sq, ← h.eq]
         ring
       simpa using eq_or_eq_neg_of_sq_eq_sq _ _ this
@@ -737,4 +707,3 @@ theorem classification :
 #align pythagorean_triple.classification PythagoreanTriple.classification
 
 end PythagoreanTriple
-
