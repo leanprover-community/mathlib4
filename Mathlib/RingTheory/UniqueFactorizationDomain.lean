@@ -1262,11 +1262,9 @@ theorem prod_mono : ∀ {a b : FactorSet α}, a ≤ b → a.prod ≤ b.prod
 theorem FactorSet.prod_eq_zero_iff [Nontrivial α] (p : FactorSet α) : p.prod = 0 ↔ p = ⊤ := by
   induction p using WithTop.recTopCoe
   · simp only [iff_self_iff, eq_self_iff_true, Associates.prod_top]
-  . dsimp
-    simp only [prod_coe, WithTop.coe_ne_top, iff_false_iff, prod_eq_zero_iff, Multiset.mem_map]
-  -- rintro ⟨⟨a, ha⟩, _, eq⟩
-  -- rw [Subtype.coe_mk] at eq
-  -- exact ha.ne_zero Eq
+  . rw [prod_coe, Multiset.prod_eq_zero_iff, Multiset.mem_map, eq_false WithTop.coe_ne_top,
+      iff_false_iff, not_exists]
+    exact fun a => not_and_of_not_right _ a.prop.ne_zero
 #align associates.factor_set.prod_eq_zero_iff Associates.FactorSet.prod_eq_zero_iff
 
 /-- `bcount p s` is the multiplicity of `p` in the FactorSet `s` (with bundled `p`)-/
