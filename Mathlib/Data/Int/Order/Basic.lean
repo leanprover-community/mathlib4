@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 
 ! This file was ported from Lean 3 source module data.int.order.basic
-! leanprover-community/mathlib commit b86832321b586c6ac23ef8cdef6a7a27e42b13bd
+! leanprover-community/mathlib commit bd835ef554f37ef9b804f0903089211f89cb370b
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -272,6 +272,8 @@ theorem add_emod_eq_add_mod_right {m n k : ℤ} (i : ℤ) (H : m % n = k % n) :
 
 #align int.sub_mod Int.sub_emod
 
+-- porting note: this should be a doc comment, but the lemma isn't here any more!
+/- See also `Int.divModEquiv` for a similar statement as an `Equiv`. -/
 #align int.div_mod_unique Int.ediv_emod_unique
 
 attribute [local simp] Int.zero_emod
@@ -281,8 +283,8 @@ attribute [local simp] Int.zero_emod
 @[simp]
 theorem neg_emod_two (i : ℤ) : -i % 2 = i % 2 := by
   apply Int.emod_eq_emod_iff_emod_sub_eq_zero.mpr
-  convert Int.mul_emod_right 2 (-i)
-  simp only [two_mul, sub_eq_add_neg]
+  convert Int.mul_emod_right 2 (-i) using 2
+  rw [two_mul, sub_eq_add_neg]
 #align int.neg_mod_two Int.neg_emod_two
 
 /-! ### properties of `/` and `%` -/

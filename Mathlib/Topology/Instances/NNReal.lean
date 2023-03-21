@@ -37,7 +37,7 @@ Various mathematically trivial lemmas are proved about the compatibility
 of limits and sums in `ℝ≥0` and `ℝ`. For example
 
 * `tendsto_coe {f : Filter α} {m : α → ℝ≥0} {x : ℝ≥0} :
-  Filter.Tendsto (λa, (m a : ℝ)) f (𝓝 (x : ℝ)) ↔ Filter.Tendsto m f (𝓝 x)`
+  Filter.Tendsto (fun a, (m a : ℝ)) f (𝓝 (x : ℝ)) ↔ Filter.Tendsto m f (𝓝 x)`
 
 says that the limit of a filter along a map to `ℝ≥0` is the same in `ℝ` and `ℝ≥0`, and
 
@@ -72,7 +72,7 @@ instance : SecondCountableTopology ℝ≥0 :=
   inferInstanceAs (SecondCountableTopology { x : ℝ | 0 ≤ x })
 
 instance : OrderTopology ℝ≥0 :=
-  @orderTopology_of_ordConnected _ _ _ _ (Ici 0) _
+  orderTopology_of_ordConnected (t := Ici 0)
 
 section coe
 
@@ -220,16 +220,15 @@ nonrec theorem hasSum_nat_add_iff {f : ℕ → ℝ≥0} (k : ℕ) {a : ℝ≥0} 
   rw [← hasSum_coe, hasSum_nat_add_iff (f := fun n => toReal (f n)) k]; norm_cast
 #align nnreal.has_sum_nat_add_iff NNReal.hasSum_nat_add_iff
 
-nonrec theorem sum_add_tsum_nat_add {f : ℕ → ℝ≥0} (k : ℕ) (hf : Summable f) :
-    (∑' i, f i) = (∑ i in range k, f i) + ∑' i, f (i + k) := by
-  rw [← NNReal.coe_eq, coe_tsum, NNReal.coe_add, coe_sum, coe_tsum,
-    sum_add_tsum_nat_add k (NNReal.summable_coe.2 hf)]
+theorem sum_add_tsum_nat_add {f : ℕ → ℝ≥0} (k : ℕ) (hf : Summable f) :
+    (∑' i, f i) = (∑ i in range k, f i) + ∑' i, f (i + k) :=
+  (sum_add_tsum_nat_add' <| (summable_nat_add_iff k).2 hf).symm
 #align nnreal.sum_add_tsum_nat_add NNReal.sum_add_tsum_nat_add
 
-theorem infᵢ_real_pos_eq_infᵢ_nNReal_pos [CompleteLattice α] {f : ℝ → α} :
+theorem infᵢ_real_pos_eq_infᵢ_nnreal_pos [CompleteLattice α] {f : ℝ → α} :
     (⨅ (n : ℝ) (_h : 0 < n), f n) = ⨅ (n : ℝ≥0) (_h : 0 < n), f n :=
   le_antisymm (infᵢ_mono' fun r => ⟨r, le_rfl⟩) (infᵢ₂_mono' fun r hr => ⟨⟨r, hr.le⟩, hr, le_rfl⟩)
-#align nnreal.infi_real_pos_eq_infi_nnreal_pos NNReal.infᵢ_real_pos_eq_infᵢ_nNReal_pos
+#align nnreal.infi_real_pos_eq_infi_nnreal_pos NNReal.infᵢ_real_pos_eq_infᵢ_nnreal_pos
 
 end coe
 
