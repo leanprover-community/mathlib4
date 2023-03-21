@@ -10,7 +10,6 @@ Authors: Robert Y. Lewis
 -/
 import Mathlib.NumberTheory.Divisors
 import Mathlib.RingTheory.Int.Basic
---import Mathlib.Tactic.RingExp
 
 /-!
 # p-adic Valuation
@@ -288,19 +287,22 @@ protected theorem defn (p : ℕ) [hp : Fact p.Prime] {q : ℚ} {n d : ℤ} (hqz 
 protected theorem mul {q r : ℚ} (hq : q ≠ 0) (hr : r ≠ 0) :
     padicValRat p (q * r) = padicValRat p q + padicValRat p r := by
   have : q * r = q.num * r.num /. (q.den * r.den) := by rw_mod_cast [Rat.mul_num_den]
-  have hq' : q.num /. q.den ≠ 0 := by rw [Rat.num_den] <;> exact hq
-  have hr' : r.num /. r.den ≠ 0 := by rw [Rat.num_den] <;> exact hr
+  have hq' : q.num /. q.den ≠ 0 := by rwa [Rat.num_den]
+  have hr' : r.num /. r.den ≠ 0 := by rwa [Rat.num_den]
   have hp' : Prime (p : ℤ) := Nat.prime_iff_prime_int.1 hp.1
   rw [padicValRat.defn p (mul_ne_zero hq hr) this]
   conv_rhs =>
     rw [← @Rat.num_den q, padicValRat.defn p hq', ← @Rat.num_den r, padicValRat.defn p hr']
-  rw [multiplicity.mul' hp', multiplicity.mul' hp'] <;>
-    simp [add_comm, add_left_comm, sub_eq_add_neg]
+  rw [multiplicity.mul' hp', multiplicity.mul' hp', Nat.cast_add, Nat.cast_add]
+  ring
+  -- Porting note: was
+  -- simp [add_comm, add_left_comm, sub_eq_add_neg]
 #align padic_val_rat.mul padicValRat.mul
 
 /-- A rewrite lemma for `padic_val_rat p (q^k)` with condition `q ≠ 0`. -/
 protected theorem pow {q : ℚ} (hq : q ≠ 0) {k : ℕ} : padicValRat p (q ^ k) = k * padicValRat p q :=
-  by induction k <;> simp [*, padicValRat.mul hq (pow_ne_zero _ hq), pow_succ, add_mul, add_comm]
+  by induction k <;>
+    simp [*, padicValRat.mul hq (pow_ne_zero _ hq), _root_.pow_succ, add_mul, add_comm]
 #align padic_val_rat.pow padicValRat.pow
 
 /-- A rewrite lemma for `padic_val_rat p (q⁻¹)` with condition `q ≠ 0`. -/
@@ -309,14 +311,12 @@ protected theorem inv (q : ℚ) : padicValRat p q⁻¹ = -padicValRat p q := by
   · simp [hq]
   · rw [eq_neg_iff_add_eq_zero, ← padicValRat.mul (inv_ne_zero hq) hq, inv_mul_cancel hq,
       padicValRat.one]
-    exact hp
 #align padic_val_rat.inv padicValRat.inv
 
 /-- A rewrite lemma for `padic_val_rat p (q / r)` with conditions `q ≠ 0`, `r ≠ 0`. -/
 protected theorem div {q r : ℚ} (hq : q ≠ 0) (hr : r ≠ 0) :
     padicValRat p (q / r) = padicValRat p q - padicValRat p r := by
   rw [div_eq_mul_inv, padicValRat.mul hq (inv_ne_zero hr), padicValRat.inv r, sub_eq_add_neg]
-  all_goals exact hp
 #align padic_val_rat.div padicValRat.div
 
 /-- A condition for `padic_val_rat p (n₁ / d₁) ≤ padic_val_rat p (n₂ / d₂)`, in terms of
@@ -324,14 +324,14 @@ divisibility by `p^n`. -/
 theorem padicValRat_le_padicValRat_iff {n₁ n₂ d₁ d₂ : ℤ} (hn₁ : n₁ ≠ 0) (hn₂ : n₂ ≠ 0)
     (hd₁ : d₁ ≠ 0) (hd₂ : d₂ ≠ 0) :
     padicValRat p (n₁ /. d₁) ≤ padicValRat p (n₂ /. d₂) ↔
-      ∀ n : ℕ, ↑p ^ n ∣ n₁ * d₂ → ↑p ^ n ∣ n₂ * d₁ := by
+      ∀ n : ℕ, (p : ℤ) ^ n ∣ n₁ * d₂ → (p : ℤ) ^ n ∣ n₂ * d₁ := by
   have hf1 : Finite (p : ℤ) (n₁ * d₂) := finite_int_prime_iff.2 (mul_ne_zero hn₁ hd₂)
   have hf2 : Finite (p : ℤ) (n₂ * d₁) := finite_int_prime_iff.2 (mul_ne_zero hn₂ hd₁)
   conv =>
     lhs
     rw [padicValRat.defn p (Rat.divInt_ne_zero_of_ne_zero hn₁ hd₁) rfl,
       padicValRat.defn p (Rat.divInt_ne_zero_of_ne_zero hn₂ hd₂) rfl, sub_le_iff_le_add', ←
-      add_sub_assoc, le_sub_iff_add_le]
+      add_sub_assoc, _root_.le_sub_iff_add_le]
     norm_cast
     rw [← multiplicity.mul' (Nat.prime_iff_prime_int.1 hp.1) hf1, add_comm, ←
       multiplicity.mul' (Nat.prime_iff_prime_int.1 hp.1) hf2, PartENat.get_le_get,
@@ -353,33 +353,31 @@ theorem le_padicValRat_add_of_le {q r : ℚ} (hqr : q + r ≠ 0)
       have hqreq : q + r = (q.num * r.den + q.den * r.num) /. (q.den * r.den) := Rat.add_num_den _ _
       have hqrd : q.num * r.den + q.den * r.num ≠ 0 := Rat.mk_num_ne_zero_of_ne_zero hqr hqreq
       conv_lhs => rw [← @Rat.num_den q]
-      rw [hqreq, padic_val_rat_le_padic_val_rat_iff hqn hqrd hqd (mul_ne_zero hqd hrd), ←
+      rw [hqreq, padicValRat_le_padicValRat_iff hqn hqrd hqd (mul_ne_zero hqd hrd), ←
         multiplicity_le_multiplicity_iff, mul_left_comm,
         multiplicity.mul (Nat.prime_iff_prime_int.1 hp.1), add_mul]
-      rw [← @Rat.num_den q, ← @Rat.num_den r, padic_val_rat_le_padic_val_rat_iff hqn hrn hqd hrd, ←
+      rw [← @Rat.num_den q, ← @Rat.num_den r, padicValRat_le_padicValRat_iff hqn hrn hqd hrd, ←
         multiplicity_le_multiplicity_iff] at h
       calc
         _ ≤
-            min (multiplicity (↑p) (q.num * ↑r.denom * ↑q.denom))
-              (multiplicity (↑p) (↑q.denom * r.num * ↑q.denom)) :=
+            min (multiplicity (↑p) (q.num * r.den * q.den))
+              (multiplicity (↑p) (↑q.den * r.num * ↑q.den)) :=
           le_min
             (by rw [@multiplicity.mul _ _ _ _ (_ * _) _ (Nat.prime_iff_prime_int.1 hp.1), add_comm])
             (by
               rw [mul_assoc,
-                  @multiplicity.mul _ _ _ _ (q.denom : ℤ) (_ * _)
-                    (Nat.prime_iff_prime_int.1 hp.1)] <;>
-                exact add_le_add_left h _)
+                  @multiplicity.mul _ _ _ _ (q.den : ℤ) (_ * _)
+                    (Nat.prime_iff_prime_int.1 hp.1)]
+              exact add_le_add_left h _)
         _ ≤ _ := min_le_multiplicity_add
-
-      all_goals exact hp
 #align padic_val_rat.le_padic_val_rat_add_of_le padicValRat.le_padicValRat_add_of_le
 
 /-- The minimum of the valuations of `q` and `r` is at most the valuation of `q + r`. -/
 theorem min_le_padicValRat_add {q r : ℚ} (hqr : q + r ≠ 0) :
     min (padicValRat p q) (padicValRat p r) ≤ padicValRat p (q + r) :=
   (le_total (padicValRat p q) (padicValRat p r)).elim
-    (fun h => by rw [min_eq_left h] <;> exact le_padic_val_rat_add_of_le hqr h) fun h => by
-    rw [min_eq_right h, add_comm] <;> exact le_padic_val_rat_add_of_le (by rwa [add_comm]) h
+  (fun h => by rw [min_eq_left h]; exact le_padicValRat_add_of_le hqr h)
+  (fun h => by rw [min_eq_right h, add_comm]; exact le_padicValRat_add_of_le (by rwa [add_comm]) h)
 #align padic_val_rat.min_le_padic_val_rat_add padicValRat.min_le_padicValRat_add
 
 open BigOperators
@@ -394,7 +392,7 @@ theorem sum_pos_of_pos {n : ℕ} {F : ℕ → ℚ} (hF : ∀ i, i < n → 0 < pa
     by_cases h : (∑ x : ℕ in Finset.range d, F x) = 0
     · rw [h, zero_add]
       exact hF d (lt_add_one _)
-    · refine' lt_of_lt_of_le _ (min_le_padic_val_rat_add hn0)
+    · refine' lt_of_lt_of_le _ (min_le_padicValRat_add hn0)
       · refine' lt_min (hd (fun i hi => _) h) (hF d (lt_add_one _))
         exact hF _ (lt_trans hi (lt_add_one _))
 #align padic_val_rat.sum_pos_of_pos padicValRat.sum_pos_of_pos
@@ -404,8 +402,6 @@ end padicValRat
 namespace padicValNat
 
 variable {p a b : ℕ} [hp : Fact p.Prime]
-
-include hp
 
 /-- A rewrite lemma for `padic_val_nat p (a * b)` with conditions `a ≠ 0`, `b ≠ 0`. -/
 protected theorem mul : a ≠ 0 → b ≠ 0 → padicValNat p (a * b) = padicValNat p a + padicValNat p b :=
@@ -419,36 +415,31 @@ protected theorem div_of_dvd (h : b ∣ a) :
   obtain ⟨k, rfl⟩ := h
   obtain ⟨hb, hk⟩ := mul_ne_zero_iff.mp ha
   rw [mul_comm, k.mul_div_cancel hb.bot_lt, padicValNat.mul hk hb, Nat.add_sub_cancel]
-  exact hp
 #align padic_val_nat.div_of_dvd padicValNat.div_of_dvd
 
 /-- Dividing out by a prime factor reduces the `padic_val_nat` by `1`. -/
 protected theorem div (dvd : p ∣ b) : padicValNat p (b / p) = padicValNat p b - 1 := by
-  convert padicValNat.div_of_dvd dvd
-  rw [padicValNat_self]
-  exact hp
+  rw [padicValNat.div_of_dvd dvd, padicValNat_self]
 #align padic_val_nat.div padicValNat.div
 
 /-- A version of `padic_val_rat.pow` for `padic_val_nat`. -/
 protected theorem pow (n : ℕ) (ha : a ≠ 0) : padicValNat p (a ^ n) = n * padicValNat p a := by
-  simpa only [← @Nat.cast_inj ℤ, push_cast] using padicValRat.pow (cast_ne_zero.mpr ha)
+  simpa only [← @Nat.cast_inj ℤ, push_cast] using padicValRat.pow (Nat.cast_ne_zero.mpr ha)
 #align padic_val_nat.pow padicValNat.pow
 
 @[simp]
 protected theorem prime_pow (n : ℕ) : padicValNat p (p ^ n) = n := by
-  rwa [padicValNat.pow _ (Fact.out p.prime).NeZero, padicValNat_self, mul_one]
+  rw [padicValNat.pow _ (@Fact.out p.Prime).ne_zero, padicValNat_self, mul_one]
 #align padic_val_nat.prime_pow padicValNat.prime_pow
 
 protected theorem div_pow (dvd : p ^ a ∣ b) : padicValNat p (b / p ^ a) = padicValNat p b - a := by
   rw [padicValNat.div_of_dvd dvd, padicValNat.prime_pow]
-  exact hp
 #align padic_val_nat.div_pow padicValNat.div_pow
 
 protected theorem div' {m : ℕ} (cpm : coprime p m) {b : ℕ} (dvd : m ∣ b) :
     padicValNat p (b / m) = padicValNat p b := by
   rw [padicValNat.div_of_dvd dvd, eq_zero_of_not_dvd (hp.out.coprime_iff_not_dvd.mp cpm),
-      Nat.sub_zero] <;>
-    assumption
+    Nat.sub_zero]
 #align padic_val_nat.div' padicValNat.div'
 
 end padicValNat
@@ -478,13 +469,13 @@ theorem padicValNat_dvd_iff (n : ℕ) [hp : Fact p.Prime] (a : ℕ) :
     p ^ n ∣ a ↔ a = 0 ∨ n ≤ padicValNat p a := by
   rcases eq_or_ne a 0 with (rfl | ha)
   · exact iff_of_true (dvd_zero _) (Or.inl rfl)
-  · simp only [ha, false_or_iff, padicValNat_dvd_iff_le ha]
+  · rw [padicValNat_dvd_iff_le ha, or_iff_right ha]
 #align padic_val_nat_dvd_iff padicValNat_dvd_iff
 
 theorem pow_succ_padicValNat_not_dvd {n : ℕ} [hp : Fact p.Prime] (hn : n ≠ 0) :
     ¬p ^ (padicValNat p n + 1) ∣ n := by
   rw [padicValNat_dvd_iff_le hn, not_le]
-  exacts[Nat.lt_succ_self _, hp]
+  exact Nat.lt_succ_self _
 #align pow_succ_padic_val_nat_not_dvd pow_succ_padicValNat_not_dvd
 
 theorem padicValNat_primes {q : ℕ} [hp : Fact p.Prime] [hq : Fact q.Prime] (neq : p ≠ q) :
@@ -496,7 +487,7 @@ theorem padicValNat_primes {q : ℕ} [hp : Fact p.Prime] [hq : Fact q.Prime] (ne
 open BigOperators
 
 theorem range_pow_padicValNat_subset_divisors {n : ℕ} (hn : n ≠ 0) :
-    (Finset.range (padicValNat p n + 1)).image (pow p) ⊆ n.divisors := by
+    (Finset.range (padicValNat p n + 1)).image (p ^ ·) ⊆ n.divisors := by
   intro t ht
   simp only [exists_prop, Finset.mem_image, Finset.mem_range] at ht
   obtain ⟨k, hk, rfl⟩ := ht
@@ -505,7 +496,7 @@ theorem range_pow_padicValNat_subset_divisors {n : ℕ} (hn : n ≠ 0) :
 #align range_pow_padic_val_nat_subset_divisors range_pow_padicValNat_subset_divisors
 
 theorem range_pow_padicValNat_subset_divisors' {n : ℕ} [hp : Fact p.Prime] :
-    ((Finset.range (padicValNat p n)).image fun t => p ^ (t + 1)) ⊆ n.divisors.eraseₓ 1 := by
+    ((Finset.range (padicValNat p n)).image fun t => p ^ (t + 1)) ⊆ n.divisors.erase 1 := by
   rcases eq_or_ne n 0 with (rfl | hn)
   · simp
   intro t ht
@@ -521,8 +512,6 @@ end padicValNat
 section padicValInt
 
 variable {p : ℕ} [hp : Fact p.Prime]
-
-include hp
 
 theorem padicValInt_dvd_iff (n : ℕ) (a : ℤ) : (p : ℤ) ^ n ∣ a ↔ a = 0 ∨ n ≤ padicValInt p a := by
   rw [padicValInt, ← Int.natAbs_eq_zero, ← padicValNat_dvd_iff, ← Int.coe_nat_dvd_left,
@@ -546,9 +535,8 @@ theorem padicValInt.mul {a b : ℤ} (ha : a ≠ 0) (hb : b ≠ 0) :
 
 theorem padicValInt_mul_eq_succ (a : ℤ) (ha : a ≠ 0) :
     padicValInt p (a * p) = padicValInt p a + 1 := by
-  rw [padicValInt.mul ha (int.coe_nat_ne_zero.mpr hp.out.ne_zero)]
+  rw [padicValInt.mul ha (Int.coe_nat_ne_zero.mpr hp.out.ne_zero)]
   simp only [eq_self_iff_true, padicValInt.of_nat, padicValNat_self]
-  exact hp
 #align padic_val_int_mul_eq_succ padicValInt_mul_eq_succ
 
 end padicValInt
