@@ -1351,7 +1351,8 @@ theorem unique' {p q : Multiset (Associates α)} :
   refine' Multiset.map_mk_eq_map_mk_of_rel (UniqueFactorizationMonoid.factors_unique _ _ _)
   · exact fun a ha => (irreducible_mk _).1 <| hs _ <| Multiset.mem_map_of_mem _ ha
   · exact fun a ha => (irreducible_mk _).1 <| ht _ <| Multiset.mem_map_of_mem _ ha
-  simpa [quot_mk_eq_mk, prod_mk, mk_eq_mk_iff_associated] using eq
+  have eq' : (Quot.mk Setoid.r : α → Associates α) = Associates.mk := funext quot_mk_eq_mk
+  rwa [eq', prod_mk, prod_mk, mk_eq_mk_iff_associated] at eq
 #align associates.unique' Associates.unique'
 
 theorem FactorSet.unique [Nontrivial α] {p q : FactorSet α} (h : p.prod = q.prod) : p = q := by
