@@ -24,7 +24,7 @@ This result is not yet formalised.
 
 ## Main declaration
 
-* `module.flat`: the predicate asserting that an `R`-module `M` is flat.
+* `Module.Flat`: the predicate asserting that an `R`-module `M` is flat.
 
 ## TODO
 
@@ -43,7 +43,7 @@ This result is not yet formalised.
   instead of relying on the construction `A ⊗ B`.
   Indeed, such a predicate should allow us to treat both
   `A[X]` and `A ⊗ R[X]` as the base change of `R[X]` to `A`.
-  (Similar examples exist with `fin n → R`, `R × R`, `ℤ[i] ⊗ ℝ`, etc...)
+  (Similar examples exist with `Fin n → R`, `R × R`, `ℤ[i] ⊗ ℝ`, etc...)
 * Generalize flatness to noncommutative rings.
 
 -/
@@ -62,24 +62,23 @@ open TensorProduct
 /-- An `R`-module `M` is flat if for all finitely generated ideals `I` of `R`,
 the canonical map `I ⊗ M →ₗ M` is injective. -/
 class Flat (R : Type u) (M : Type v) [CommRing R] [AddCommGroup M] [Module R M] : Prop where
-  out : ∀ ⦃I : Ideal R⦄ (hI : I.Fg), Injective (TensorProduct.lift ((lsmul R M).comp I.Subtype))
+  out : ∀ ⦃I : Ideal R⦄ (_ : I.Fg), Injective (TensorProduct.lift ((lsmul R M).comp I.subtype))
 #align module.flat Module.Flat
 
 namespace Flat
 
-open TensorProduct LinearMap _Root_.Submodule
+open TensorProduct LinearMap Submodule
 
 instance self (R : Type u) [CommRing R] : Flat R R :=
   ⟨by
-    intro I hI
+    intro I _
     rw [← Equiv.injective_comp (TensorProduct.rid R I).symm.toEquiv]
     convert Subtype.coe_injective using 1
     ext x
     simp only [Function.comp_apply, LinearEquiv.coe_toEquiv, rid_symm_apply, comp_apply, mul_one,
-      lift.tmul, subtype_apply, Algebra.id.smul_eq_mul, lsmul_apply]⟩
+      lift.tmul, Submodule.subtype_apply, Algebra.id.smul_eq_mul, lsmul_apply]⟩
 #align module.flat.self Module.Flat.self
 
 end Flat
 
 end Module
-
