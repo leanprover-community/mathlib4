@@ -19,32 +19,32 @@ namespace MulOpposite
 
 variable (α : Type _)
 
-instance [DivisionSemiring α] : DivisionSemiring αᵐᵒᵖ :=
+instance divisionSemiring [DivisionSemiring α] : DivisionSemiring αᵐᵒᵖ :=
   { instGroupWithZeroMulOpposite α, instSemiringMulOpposite α with }
 
-instance [DivisionRing α] : DivisionRing αᵐᵒᵖ :=
+instance divisionRing [DivisionRing α] : DivisionRing αᵐᵒᵖ :=
   { instGroupWithZeroMulOpposite α, instRingMulOpposite α with }
 
-instance [Semifield α] : Semifield αᵐᵒᵖ :=
-  { instDivisionSemiringMulOpposite α, MulOpposite.instCommSemiringMulOpposite α with }
+instance semifield [Semifield α] : Semifield αᵐᵒᵖ :=
+  { MulOpposite.divisionSemiring α, MulOpposite.commSemiring α with }
 
-instance [Field α] : Field αᵐᵒᵖ :=
-  { instDivisionRingMulOpposite α, instCommRingMulOpposite α with }
+instance field [Field α] : Field αᵐᵒᵖ :=
+  { MulOpposite.divisionRing α, MulOpposite.commRing α with }
 
 end MulOpposite
 
 namespace AddOpposite
 
-instance [DivisionSemiring α] : DivisionSemiring αᵃᵒᵖ :=
-  { instGroupWithZeroAddOpposite α, instSemiringAddOpposite α with }
+instance divisionSemiring [DivisionSemiring α] : DivisionSemiring αᵃᵒᵖ :=
+  { AddOpposite.groupWithZero α, AddOpposite.semiring α with }
 
-instance [DivisionRing α] : DivisionRing αᵃᵒᵖ :=
-  { instGroupWithZeroAddOpposite α, instRingAddOpposite α with }
+instance divisionRing [DivisionRing α] : DivisionRing αᵃᵒᵖ :=
+  { AddOpposite.groupWithZero α, AddOpposite.ring α with }
 
-instance [Semifield α] : Semifield αᵃᵒᵖ :=
-  { instDivisionSemiringAddOpposite, instCommSemiringAddOpposite α with }
+instance semifield [Semifield α] : Semifield αᵃᵒᵖ :=
+  { AddOpposite.divisionSemiring, AddOpposite.commSemiring α with }
 
-instance [Field α] : Field αᵃᵒᵖ :=
-  { instDivisionRingAddOpposite, instCommRingAddOpposite α with }
+instance field [Field α] : Field αᵃᵒᵖ :=
+  { AddOpposite.divisionRing, AddOpposite.commRing α with }
 
 end AddOpposite
