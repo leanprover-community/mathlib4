@@ -8,9 +8,9 @@ Authors: Jon Eugster, Eric Wieser
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.CharP.Basic
-import Mathbin.RingTheory.Localization.FractionRing
-import Mathbin.Algebra.FreeAlgebra
+import Mathlib.Algebra.CharP.Basic
+import Mathlib.RingTheory.Localization.FractionRing
+import Mathlib.Algebra.FreeAlgebra
 
 /-!
 # Characteristics of algebras
@@ -108,8 +108,7 @@ theorem Algebra.charP_iff (p : ℕ) : CharP K p ↔ CharP L p :=
   (algebraMap K L).charP_iff_charP p
 #align algebra.char_p_iff Algebra.charP_iff
 
-theorem Algebra.ringChar_eq : ringChar K = ringChar L :=
-  by
+theorem Algebra.ringChar_eq : ringChar K = ringChar L := by
   rw [ringChar.eq_iff, Algebra.charP_iff K L]
   apply ringChar.charP
 #align algebra.ring_char_eq Algebra.ringChar_eq
