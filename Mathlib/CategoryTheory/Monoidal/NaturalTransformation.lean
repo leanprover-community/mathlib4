@@ -59,22 +59,14 @@ structure MonoidalNatTrans (F G : LaxMonoidalFunctor C D) extends
 attribute [reassoc (attr := simp)] MonoidalNatTrans.tensor
 attribute [reassoc (attr := simp)] MonoidalNatTrans.unit
 
-#align category_theory.monoidal_nat_trans.unit
-  CategoryTheory.MonoidalNatTrans.unit
-
-#align category_theory.monoidal_nat_trans.unit_assoc
-  CategoryTheory.MonoidalNatTrans.unit_assoc
-
-#align category_theory.monoidal_nat_trans.tensor
-  CategoryTheory.MonoidalNatTrans.tensor
-
-#align category_theory.monoidal_nat_trans.tensor_assoc
-  CategoryTheory.MonoidalNatTrans.tensor_assoc
+#align category_theory.monoidal_nat_trans.unit CategoryTheory.MonoidalNatTrans.unit
+#align category_theory.monoidal_nat_trans.unit_assoc CategoryTheory.MonoidalNatTrans.unit_assoc
+#align category_theory.monoidal_nat_trans.tensor CategoryTheory.MonoidalNatTrans.tensor
+#align category_theory.monoidal_nat_trans.tensor_assoc CategoryTheory.MonoidalNatTrans.tensor_assoc
 
 namespace MonoidalNatTrans
 
-/-- The identity monoidal natural transformation.
--/
+/-- The identity monoidal natural transformation. -/
 @[simps!]
 def id (F : LaxMonoidalFunctor C D) : MonoidalNatTrans F F :=
   { 𝟙 F.toFunctor with }
@@ -83,8 +75,7 @@ def id (F : LaxMonoidalFunctor C D) : MonoidalNatTrans F F :=
 instance (F : LaxMonoidalFunctor C D) : Inhabited (MonoidalNatTrans F F) :=
   ⟨id F⟩
 
-/-- Vertical composition of monoidal natural transformations.
--/
+/-- Vertical composition of monoidal natural transformations. -/
 @[simps!]
 def vcomp {F G H : LaxMonoidalFunctor C D} (α : MonoidalNatTrans F G) (β : MonoidalNatTrans G H) :
     MonoidalNatTrans F H :=
@@ -96,34 +87,27 @@ instance categoryLaxMonoidalFunctor : Category (LaxMonoidalFunctor C D)
   Hom := MonoidalNatTrans
   id := id
   comp α β := vcomp α β
-#align category_theory.monoidal_nat_trans.category_lax_monoidal_functor
-  CategoryTheory.MonoidalNatTrans.categoryLaxMonoidalFunctor
+#align category_theory.monoidal_nat_trans.category_lax_monoidal_functor CategoryTheory.MonoidalNatTrans.categoryLaxMonoidalFunctor
 
 @[simp]
 theorem comp_toNatTrans_lax {F G H : LaxMonoidalFunctor C D} {α : F ⟶ G} {β : G ⟶ H} :
     (α ≫ β).toNatTrans = @CategoryStruct.comp (C ⥤ D) _ _ _ _ α.toNatTrans β.toNatTrans :=
   rfl
-#align category_theory.monoidal_nat_trans.comp_to_nat_trans_lax
-  CategoryTheory.MonoidalNatTrans.comp_toNatTrans_lax
+#align category_theory.monoidal_nat_trans.comp_to_nat_trans_lax CategoryTheory.MonoidalNatTrans.comp_toNatTrans_lax
 
 instance categoryMonoidalFunctor : Category (MonoidalFunctor C D) :=
   InducedCategory.category MonoidalFunctor.toLaxMonoidalFunctor
-#align category_theory.monoidal_nat_trans.category_monoidal_functor
-  CategoryTheory.MonoidalNatTrans.categoryMonoidalFunctor
+#align category_theory.monoidal_nat_trans.category_monoidal_functor CategoryTheory.MonoidalNatTrans.categoryMonoidalFunctor
 
 @[simp]
 theorem comp_toNatTrans {F G H : MonoidalFunctor C D} {α : F ⟶ G} {β : G ⟶ H} :
     (α ≫ β).toNatTrans = @CategoryStruct.comp (C ⥤ D) _ _ _ _ α.toNatTrans β.toNatTrans :=
   rfl
-#align category_theory.monoidal_nat_trans.comp_to_nat_trans
-  CategoryTheory.MonoidalNatTrans.comp_toNatTrans
+#align category_theory.monoidal_nat_trans.comp_to_nat_trans CategoryTheory.MonoidalNatTrans.comp_toNatTrans
 
 variable {E : Type u₃} [Category.{v₃} E] [MonoidalCategory.{v₃} E]
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/-- Horizontal composition of monoidal natural transformations.
--/
+/-- Horizontal composition of monoidal natural transformations. -/
 @[simps]
 def hcomp {F G : LaxMonoidalFunctor C D} {H K : LaxMonoidalFunctor D E} (α : MonoidalNatTrans F G)
     (β : MonoidalNatTrans H K) : MonoidalNatTrans (F ⊗⋙ H) (G ⊗⋙ K) :=
@@ -156,11 +140,8 @@ namespace MonoidalNatIso
 
 variable {F G : LaxMonoidalFunctor C D}
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- Construct a monoidal natural isomorphism from object level isomorphisms,
-and the monoidal naturality in the forward direction.
--/
+and the monoidal naturality in the forward direction. -/
 def ofComponents (app : ∀ X : C, F.obj X ≅ G.obj X)
     (naturality' : ∀ {X Y : C} (f : X ⟶ Y), F.map f ≫ (app Y).hom = (app X).hom ≫ G.map f)
     (unit' : F.ε ≫ (app (𝟙_ C)).hom = G.ε)
@@ -192,21 +173,18 @@ def ofComponents (app : ∀ X : C, F.obj X ≅ G.obj X)
 theorem ofComponents.hom_app (app : ∀ X : C, F.obj X ≅ G.obj X) (naturality) (unit) (tensor) (X) :
     (ofComponents app naturality unit tensor).hom.app X = (app X).hom :=
   rfl
-#align category_theory.monoidal_nat_iso.of_components.hom_app
-  CategoryTheory.MonoidalNatIso.ofComponents.hom_app
+#align category_theory.monoidal_nat_iso.of_components.hom_app CategoryTheory.MonoidalNatIso.ofComponents.hom_app
 
 @[simp]
 theorem ofComponents.inv_app (app : ∀ X : C, F.obj X ≅ G.obj X) (naturality) (unit) (tensor) (X) :
     (ofComponents app naturality unit tensor).inv.app X = (app X).inv := by simp [ofComponents]
-#align category_theory.monoidal_nat_iso.of_components.inv_app
-  CategoryTheory.MonoidalNatIso.ofComponents.inv_app
+#align category_theory.monoidal_nat_iso.of_components.inv_app CategoryTheory.MonoidalNatIso.ofComponents.inv_app
 
 instance isIso_of_isIso_app (α : F ⟶ G) [∀ X : C, IsIso (α.app X)] : IsIso α :=
   ⟨(IsIso.of_iso
         (ofComponents (fun X => asIso (α.app X)) (fun f => α.toNatTrans.naturality f) α.unit
           α.tensor)).1⟩
-#align category_theory.monoidal_nat_iso.is_iso_of_is_iso_app
-  CategoryTheory.MonoidalNatIso.isIso_of_isIso_app
+#align category_theory.monoidal_nat_iso.is_iso_of_is_iso_app CategoryTheory.MonoidalNatIso.isIso_of_isIso_app
 
 end MonoidalNatIso
 
@@ -238,8 +216,7 @@ def monoidalUnit (F : MonoidalFunctor C D) [IsEquivalence F.toFunctor] :
 #align category_theory.monoidal_unit CategoryTheory.monoidalUnit
 
 instance (F : MonoidalFunctor C D) [IsEquivalence F.toFunctor] : IsIso (monoidalUnit F) :=
-  haveI : ∀ X : C, IsIso ((monoidalUnit F).toNatTrans.app X) :=
-    by
+  haveI : ∀ X : C, IsIso ((monoidalUnit F).toNatTrans.app X) := by
     intros
     dsimp
     infer_instance
