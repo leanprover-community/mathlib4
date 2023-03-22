@@ -204,7 +204,7 @@ instance addGroupWithOne : AddGroupWithOne (ℤ√d) :=
     intCast := ofInt
     one := 1 }
 
-instance : CommRing (ℤ√d) := by
+instance commRing : CommRing (ℤ√d) := by
   refine
   { Zsqrtd.addGroupWithOne with
     add := (· + ·)
@@ -912,60 +912,60 @@ theorem nonneg_antisymm : ∀ {a : ℤ√d}, Nonneg a → Nonneg (-a) → a = 0
   | ⟨(x + 1 : Nat), 0⟩, xy, yx => absurd yx (not_sqLe_succ _ _ _ (by decide))
   | ⟨0, -[y+1]⟩, xy, yx => absurd xy (not_sqLe_succ _ _ _ d_pos)
   | ⟨0, (y + 1 : Nat)⟩, _, yx => absurd yx (not_sqLe_succ _ _ _ d_pos)
-  | ⟨(x + 1 : Nat), -[y+1]⟩, (xy : SqLe _ _ _ _), (yx : SqLe _ _ _ _) =>
-    by
+  | ⟨(x + 1 : Nat), -[y+1]⟩, (xy : SqLe _ _ _ _), (yx : SqLe _ _ _ _) => by
     let t := le_antisymm yx xy
-    rw [one_mul] at t <;> exact absurd t (not_divides_sq _ _)
-  | ⟨-[x+1], (y + 1 : Nat)⟩, (xy : SqLe _ _ _ _), (yx : SqLe _ _ _ _) =>
-    by
+    rw [one_mul] at t
+    exact absurd t (not_divides_sq _ _)
+  | ⟨-[x+1], (y + 1 : Nat)⟩, (xy : SqLe _ _ _ _), (yx : SqLe _ _ _ _) => by
     let t := le_antisymm xy yx
-    rw [one_mul] at t <;> exact absurd t (not_divides_sq _ _)
+    rw [one_mul] at t
+    exact absurd t (not_divides_sq _ _)
 #align zsqrtd.nonneg_antisymm Zsqrtd.nonneg_antisymm
 
 theorem le_antisymm {a b : ℤ√d} (ab : a ≤ b) (ba : b ≤ a) : a = b :=
-  eq_of_sub_eq_zero <| nonneg_antisymm ba (by rw [neg_sub] <;> exact ab)
+  eq_of_sub_eq_zero <| nonneg_antisymm ba (by rwa [neg_sub])
 #align zsqrtd.le_antisymm Zsqrtd.le_antisymm
 
-instance : LinearOrder (ℤ√d) :=
+instance linearOrder : LinearOrder (ℤ√d) :=
   { Zsqrtd.preorder with
-    le_antisymm := @Zsqrtd.le_antisymm
+    le_antisymm := fun _ _ => Zsqrtd.le_antisymm
     le_total := Zsqrtd.le_total
-    decidableLE := Zsqrtd.decidableLE }
+    decidable_le := Zsqrtd.decidableLE }
 
 protected theorem eq_zero_or_eq_zero_of_mul_eq_zero : ∀ {a b : ℤ√d}, a * b = 0 → a = 0 ∨ b = 0
   | ⟨x, y⟩, ⟨z, w⟩, h => by
-    injection h with h1 h2 <;>
-      exact
-        have h1 : x * z = -(d * y * w) := eq_neg_of_add_eq_zero_left h1
-        have h2 : x * w = -(y * z) := eq_neg_of_add_eq_zero_left h2
-        have fin : x * x = d * y * y → (⟨x, y⟩ : ℤ√d) = 0 := fun e =>
-          match x, y, divides_sq_eq_zero_z e with
-          | _, _, ⟨rfl, rfl⟩ => rfl
-        if z0 : z = 0 then
-          if w0 : w = 0 then
-            Or.inr
-              (match z, w, z0, w0 with
-              | _, _, rfl, rfl => rfl)
-          else
-            Or.inl <|
-              Fin <|
-                mul_right_cancel₀ w0 <|
-                  calc
-                    x * x * w = -y * (x * z) := by simp [h2, mul_assoc, mul_left_comm]
-                    _ = d * y * y * w := by simp [h1, mul_assoc, mul_left_comm]
-
+    injection h with h1 h2
+    exact
+      have h1 : x * z = -(d * y * w) := eq_neg_of_add_eq_zero_left h1
+      have h2 : x * w = -(y * z) := eq_neg_of_add_eq_zero_left h2
+      have fin : x * x = d * y * y → (⟨x, y⟩ : ℤ√d) = 0 := fun e =>
+        match x, y, divides_sq_eq_zero_z e with
+        | _, _, ⟨rfl, rfl⟩ => rfl
+      if z0 : z = 0 then
+        if w0 : w = 0 then
+          Or.inr
+            (match z, w, z0, w0 with
+            | _, _, rfl, rfl => rfl)
         else
           Or.inl <|
-            Fin <|
-              mul_right_cancel₀ z0 <|
+            fin <|
+              mul_right_cancel₀ w0 <|
                 calc
-                  x * x * z = d * -y * (x * w) := by simp [h1, mul_assoc, mul_left_comm]
-                  _ = d * y * y * z := by simp [h2, mul_assoc, mul_left_comm]
+                  x * x * w = -y * (x * z) := by simp [h2, mul_assoc, mul_left_comm]
+                  _ = d * y * y * w := by simp [h1, mul_assoc, mul_left_comm]
+
+      else
+        Or.inl <|
+          fin <|
+            mul_right_cancel₀ z0 <|
+              calc
+                x * x * z = d * -y * (x * w) := by simp [h1, mul_assoc, mul_left_comm]
+                _ = d * y * y * z := by simp [h2, mul_assoc, mul_left_comm]
 
 #align zsqrtd.eq_zero_or_eq_zero_of_mul_eq_zero Zsqrtd.eq_zero_or_eq_zero_of_mul_eq_zero
 
-instance : NoZeroDivisors (ℤ√d)
-    where eq_zero_or_eq_zero_of_mul_eq_zero := @Zsqrtd.eq_zero_or_eq_zero_of_mul_eq_zero
+instance : NoZeroDivisors (ℤ√d) where
+  eq_zero_or_eq_zero_of_mul_eq_zero := Zsqrtd.eq_zero_or_eq_zero_of_mul_eq_zero
 
 instance : IsDomain (ℤ√d) :=
   NoZeroDivisors.to_isDomain _
@@ -973,7 +973,7 @@ instance : IsDomain (ℤ√d) :=
 protected theorem mul_pos (a b : ℤ√d) (a0 : 0 < a) (b0 : 0 < b) : 0 < a * b := fun ab =>
   Or.elim
     (eq_zero_or_eq_zero_of_mul_eq_zero
-      (le_antisymm ab (mul_nonneg _ _ (le_of_lt a0) (le_of_lt b0))))
+      (le_antisymm ab (Zsqrtd.mul_nonneg _ _ (le_of_lt a0) (le_of_lt b0))))
     (fun e => ne_of_gt a0 e) fun e => ne_of_gt b0 e
 #align zsqrtd.mul_pos Zsqrtd.mul_pos
 
@@ -992,11 +992,11 @@ end
 
 theorem norm_eq_zero {d : ℤ} (h_nonsquare : ∀ n : ℤ, d ≠ n * n) (a : ℤ√d) : norm a = 0 ↔ a = 0 := by
   refine' ⟨fun ha => ext.mpr _, fun h => by rw [h, norm_zero]⟩
-  delta norm at ha
+  dsimp only [norm] at ha
   rw [sub_eq_zero] at ha
   by_cases h : 0 ≤ d
   · obtain ⟨d', rfl⟩ := Int.eq_ofNat_of_zero_le h
-    haveI : nonsquare d' := ⟨fun n h => h_nonsquare n <| by exact_mod_cast h⟩
+    haveI : Nonsquare d' := ⟨fun n h => h_nonsquare n <| by exact_mod_cast h⟩
     exact divides_sq_eq_zero_z ha
   · push_neg  at h
     suffices a.re * a.re = 0 by
@@ -1053,9 +1053,8 @@ theorem lift_injective [CharZero R] {d : ℤ} (r : { r : R // r * r = ↑d })
     (hd : ∀ n : ℤ, d ≠ n * n) : Function.Injective (lift r) :=
   (injective_iff_map_eq_zero (lift r)).mpr fun a ha =>
     by
-    have h_inj : Function.Injective (coe : ℤ → R) := Int.cast_injective
-    suffices lift r a.norm = 0
-      by
+    have h_inj : Function.Injective ((↑) : ℤ → R) := Int.cast_injective
+    suffices lift r a.norm = 0 by
       simp only [coe_int_re, add_zero, lift_apply_apply, coe_int_im, Int.cast_zero,
         MulZeroClass.zero_mul] at this
       rwa [← Int.cast_zero, h_inj.eq_iff, norm_eq_zero hd] at this
@@ -1070,8 +1069,8 @@ theorem norm_eq_one_iff_mem_unitary {d : ℤ} {a : ℤ√d} : a.norm = 1 ↔ a �
 #align zsqrtd.norm_eq_one_iff_mem_unitary Zsqrtd.norm_eq_one_iff_mem_unitary
 
 /-- The kernel of the norm map on `ℤ√d` equals the submonoid of unitary elements. -/
-theorem mker_norm_eq_unitary {d : ℤ} : (@normMonoidHom d).mker = unitary (ℤ√d) :=
-  Submonoid.ext fun x => norm_eq_one_iff_mem_unitary
+theorem mker_norm_eq_unitary {d : ℤ} : MonoidHom.mker (@normMonoidHom d) = unitary (ℤ√d) :=
+  Submonoid.ext fun _ => norm_eq_one_iff_mem_unitary
 #align zsqrtd.mker_norm_eq_unitary Zsqrtd.mker_norm_eq_unitary
 
 end Zsqrtd
