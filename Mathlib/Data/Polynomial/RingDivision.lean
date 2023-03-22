@@ -480,15 +480,15 @@ set_option linter.uppercaseLean3 false in
 #align polynomial.root_multiplicity_X_sub_C_pow Polynomial.rootMultiplicity_X_sub_C_pow
 
 theorem exists_multiset_roots :
-    ∀ {p : R[X]} (hp : p ≠ 0),
+    ∀ {p : R[X]} (_ : p ≠ 0),
       ∃ s : Multiset R, (Multiset.card s : WithBot ℕ) ≤ degree p ∧ ∀ a, s.count a = rootMultiplicity a p
-  | p => fun (hp : p ≠ 0) =>
+  | p, hp =>
     haveI := Classical.propDecidable (∃ x, IsRoot p x)
     if h : ∃ x, IsRoot p x then
       let ⟨x, hx⟩ := h
       have hpd : 0 < degree p := degree_pos_of_root hp hx
       have hd0 : p /ₘ (X - C x) ≠ 0 := fun h => by
-        rw [← mul_divByMonic_eq_iff_isRoot.2 hx, h, MulZeroClass.mul_zero] at hp <;> exact hp rfl
+        rw [← mul_divByMonic_eq_iff_isRoot.2 hx, h, MulZeroClass.mul_zero] at hp; exact hp rfl
       have wf : degree (p /ₘ (X - C x)) < degree p :=
         degree_divByMonic_lt _ (monic_X_sub_C x) hp ((degree_X_sub_C x).symm ▸ by decide)
       let ⟨t, htd, htr⟩ := @exists_multiset_roots (p /ₘ (X - C x)) hd0
@@ -505,7 +505,7 @@ theorem exists_multiset_roots :
             congr
             exact_mod_cast Multiset.card_cons _ _
           _ ≤ degree p := by
-            rw [← degree_add_divByMonic (monic_X_sub_C x) hdeg, degree_X_sub_C, add_comm] <;>
+            rw [← degree_add_divByMonic (monic_X_sub_C x) hdeg, degree_X_sub_C, add_comm];
               exact add_le_add (le_refl (1 : WithBot ℕ)) htd
           ,
         by
@@ -522,7 +522,12 @@ theorem exists_multiset_roots :
         by
         intro a
         rw [count_zero, rootMultiplicity_eq_zero (not_exists.mp h a)]⟩
-termination_by exists_multiset_roots _ p  => degree p
+termination_by _ p _ => natDegree p
+decreasing_by { 
+  simp_wf 
+  apply WithBot.coe_lt_coe.mp
+  simp only [degree_eq_natDegree hp, degree_eq_natDegree hd0, ←WithBot.some_eq_nat_cast] at wf;
+  assumption}
 #align polynomial.exists_multiset_roots Polynomial.exists_multiset_roots
 
 /-- `roots p` noncomputably gives a multiset containing all the roots of `p`,
