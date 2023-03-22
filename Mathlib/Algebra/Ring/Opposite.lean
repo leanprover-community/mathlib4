@@ -150,10 +150,10 @@ instance nonUnitalRing [NonUnitalRing α] : NonUnitalRing αᵃᵒᵖ :=
   { AddOpposite.addCommGroup α, AddOpposite.semigroupWithZero α, AddOpposite.distrib α with }
 
 instance nonAssocRing [NonAssocRing α] : NonAssocRing αᵃᵒᵖ :=
-  { AddOpposite.addCommGroupWithOne α, AddOpposite.mulZeroOneClass α, AddOpposite.distrib α with }
+  { AddOpposite.addCommGroup α, AddOpposite.mulZeroOneClass α, AddOpposite.distrib α with }
 
 instance ring [Ring α] : Ring αᵃᵒᵖ :=
-  { AddOpposite.addCommGroupWithOne α, AddOpposite.monoid α, AddOpposite.semiring α with }
+  { AddOpposite.addCommGroup α, AddOpposite.monoid α, AddOpposite.semiring α with }
 
 instance nonUnitalCommRing [NonUnitalCommRing α] : NonUnitalCommRing αᵃᵒᵖ :=
   { AddOpposite.nonUnitalRing α, AddOpposite.nonUnitalCommSemiring α with }

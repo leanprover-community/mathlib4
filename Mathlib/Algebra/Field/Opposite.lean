@@ -20,10 +20,10 @@ namespace MulOpposite
 variable (α : Type _)
 
 instance divisionSemiring [DivisionSemiring α] : DivisionSemiring αᵐᵒᵖ :=
-  { instGroupWithZeroMulOpposite α, instSemiringMulOpposite α with }
+  { MulOpposite.groupWithZero α, MulOpposite.semiring α with }
 
 instance divisionRing [DivisionRing α] : DivisionRing αᵐᵒᵖ :=
-  { instGroupWithZeroMulOpposite α, instRingMulOpposite α with }
+  { MulOpposite.groupWithZero α, MulOpposite.ring α with }
 
 instance semifield [Semifield α] : Semifield αᵐᵒᵖ :=
   { MulOpposite.divisionSemiring α, MulOpposite.commSemiring α with }
