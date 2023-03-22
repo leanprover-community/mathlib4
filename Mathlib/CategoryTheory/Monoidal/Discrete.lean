@@ -30,38 +30,43 @@ variable (M : Type u) [Monoid M]
 
 namespace CategoryTheory
 
-@[to_additive Discrete.addMonoidal, simps tensor_obj_as tensor_unit_as]
+@[to_additive (attr := simps tensorObj_as) Discrete.addMonoidal]
 instance Discrete.monoidal : MonoidalCategory (Discrete M)
     where
-  tensorUnit := Discrete.mk 1
+  tensorUnit' := Discrete.mk 1
   tensorObj X Y := Discrete.mk (X.as * Y.as)
-  tensorHom W X Y Z f g := eqToHom (by rw [eq_of_hom f, eq_of_hom g])
+  tensorHom f g := eqToHom (by dsimp; rw [eq_of_hom f, eq_of_hom g])
   leftUnitor X := Discrete.eqToIso (one_mul X.as)
   rightUnitor X := Discrete.eqToIso (mul_one X.as)
   associator X Y Z := Discrete.eqToIso (mul_assoc _ _ _)
 #align category_theory.discrete.monoidal CategoryTheory.Discrete.monoidal
-#align discrete.add_monoidal Discrete.addMonoidal
+#align category_theory.discrete.add_monoidal CategoryTheory.Discrete.addMonoidal
+
+@[to_additive (attr := simp) Discrete.addMonoidal_tensorUnit_as]
+lemma Discrete.monoidal_tensorUnit_as :
+  (𝟙_ (Discrete M)).as = 1 := rfl
 
 variable {M} {N : Type u} [Monoid N]
 
 /-- A multiplicative morphism between monoids gives a monoidal functor between the corresponding
 discrete monoidal categories.
 -/
-@[to_additive Discrete.addMonoidalFunctor
-      "An additive morphism between add_monoids gives a\n  monoidal functor between the corresponding discrete monoidal categories.",
-  simps]
+@[to_additive (attr := simps) Discrete.addMonoidalFunctor]
 def Discrete.monoidalFunctor (F : M →* N) : MonoidalFunctor (Discrete M) (Discrete N)
     where
   obj X := Discrete.mk (F X.as)
-  map X Y f := Discrete.eqToHom (F.congr_arg (eq_of_hom f))
+  map f := Discrete.eqToHom (F.congr_arg (eq_of_hom f))
   ε := Discrete.eqToHom F.map_one.symm
   μ X Y := Discrete.eqToHom (F.map_mul X.as Y.as).symm
 #align category_theory.discrete.monoidal_functor CategoryTheory.Discrete.monoidalFunctor
-#align discrete.add_monoidal_functor Discrete.addMonoidalFunctor
+#align category_theory.discrete.add_monoidal_functor CategoryTheory.Discrete.addMonoidalFunctor
+
+/-- An additive morphism between add_monoids gives a
+monoidal functor between the corresponding discrete monoidal categories. -/
+add_decl_doc Discrete.addMonoidalFunctor
 
 variable {K : Type u} [Monoid K]
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- The monoidal natural isomorphism corresponding to composing two multiplicative morphisms.
 -/
 @[to_additive Discrete.addMonoidalFunctorComp
@@ -69,10 +74,9 @@ variable {K : Type u} [Monoid K]
 def Discrete.monoidalFunctorComp (F : M →* N) (G : N →* K) :
     Discrete.monoidalFunctor F ⊗⋙ Discrete.monoidalFunctor G ≅ Discrete.monoidalFunctor (G.comp F)
     where
-  Hom := { app := fun X => 𝟙 _ }
+  hom := { app := fun X => 𝟙 _ }
   inv := { app := fun X => 𝟙 _ }
 #align category_theory.discrete.monoidal_functor_comp CategoryTheory.Discrete.monoidalFunctorComp
-#align discrete.add_monoidal_functor_comp Discrete.addMonoidalFunctorComp
+#align category_theory.discrete.add_monoidal_functor_comp CategoryTheory.Discrete.addMonoidalFunctorComp
 
 end CategoryTheory
-
