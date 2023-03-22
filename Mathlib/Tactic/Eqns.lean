@@ -31,7 +31,7 @@ open Lean
 
 syntax (name := eqns) "eqns" ident* : attr
 
-initialize notationClassAttr : NameMapExtension (Array Name) ←
+initialize eqnsAttribute : NameMapExtension (Array Name) ←
   registerNameMapAttribute {
     name  := `eqns
     descr := "Overrides the equation lemmas for a declation to the provided list"
