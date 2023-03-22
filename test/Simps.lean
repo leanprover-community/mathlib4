@@ -12,20 +12,21 @@ import Mathlib.Data.Prod.Basic
 open Lean Meta Elab Term Command Simps
 
 structure Foo1 : Type where
-  one : Nat
+  Projone : Nat
   two : Bool
   three : Nat → Bool
   four : 1 = 1
   five : 2 = 1
 
-initialize_simps_projections Foo1 (one → toNat, two → toBool, three → coe, as_prefix coe, -toBool)
+initialize_simps_projections Foo1 (Projone → toNat, two → toBool, three → coe, as_prefix coe,
+  -toBool)
 
 run_cmd liftTermElabM <| do
   let env ← getEnv
   let state := ((Simps.structureExt.getState env).find? `Foo1).get!
   guard <| state.1 == []
   guard <| state.2.map (·.1) == #[`toNat, `toBool, `coe, `four, `five]
-  liftMetaM <| guard (← isDefEq (state.2[0]!.2) (← elabTerm (← `(Foo1.one)) none))
+  liftMetaM <| guard (← isDefEq (state.2[0]!.2) (← elabTerm (← `(Foo1.Projone)) none))
   liftMetaM <| guard (← isDefEq (state.2[1]!.2) (← elabTerm (← `(Foo1.two)) none))
   guard <| state.2.map (·.3) == (Array.range 5).map ([·])
   guard <| state.2.map (·.4) == #[true, false, true, false, false]
@@ -509,9 +510,8 @@ class Semigroup (G : Type u) extends Mul G where
 { mul := λ x y => (x.1 * y.1, x.2 * y.2)
   mul_assoc := λ _ _ _ => Prod.ext (Semigroup.mul_assoc ..) (Semigroup.mul_assoc ..) }
 
--- todo: heterogenous notation_class
--- example {α β} [Semigroup α] [Semigroup β] (x y : α × β) : x * y = (x.1 * y.1, x.2 * y.2) := by simp
--- example {α β} [Semigroup α] [Semigroup β] (x y : α × β) : (x * y).1 = x.1 * y.1 := by simp
+example {α β} [Semigroup α] [Semigroup β] (x y : α × β) : x * y = (x.1 * y.1, x.2 * y.2) := by simp
+example {α β} [Semigroup α] [Semigroup β] (x y : α × β) : (x * y).1 = x.1 * y.1 := by simp
 
 structure BSemigroup :=
   (G : Type _)
@@ -904,9 +904,8 @@ run_cmd liftTermElabM <| do
   guard <| hasSimpAttribute env `instMulProd_mul
   guard <| hasSimpAttribute env `instAddProd_add
 
--- todo: heterogenous notation_class
--- example {M N} [Mul M] [Mul N] (p q : M × N) : p * q = ⟨p.1 * q.1, p.2 * q.2⟩ := by simp
--- example {M N} [Add M] [Add N] (p q : M × N) : p + q = ⟨p.1 + q.1, p.2 + q.2⟩ := by simp
+example {M N} [Mul M] [Mul N] (p q : M × N) : p * q = ⟨p.1 * q.1, p.2 * q.2⟩ := by simp
+example {M N} [Add M] [Add N] (p q : M × N) : p + q = ⟨p.1 + q.1, p.2 + q.2⟩ := by simp
 
 /- The names of the generated simp lemmas for the additive version are not great if the definition
   had a custom additive name -/
@@ -922,9 +921,8 @@ run_cmd liftTermElabM <| do
   guard <| hasSimpAttribute env `my_instance_one
   guard <| hasSimpAttribute env `my_add_instance_zero
 
--- todo: heterogenous notation_class
--- example {M N} [One M] [One N] : (1 : M × N) = ⟨1, 1⟩ := by simp
--- example {M N} [Zero M] [Zero N] : (0 : M × N) = ⟨0, 0⟩ := by simp
+example {M N} [One M] [One N] : (1 : M × N) = ⟨1, 1⟩ := by simp
+example {M N} [Zero M] [Zero N] : (0 : M × N) = ⟨0, 0⟩ := by simp
 
 section
 /-! Test `dsimp, simp` with the option `simpRhs` -/
@@ -938,42 +936,21 @@ structure MyType :=
 ⟨{ _x : Fin (Nat.add 3 0) // 1 + 1 = 2 }⟩
 
 -- todo: this fails in Lean 4, not sure what is going on
--- example (h : false) (x y : { x : Fin (Nat.add 3 0) // 1 + 1 = 2 }) : myTypeDef.A = Unit := by
---   simp only [myTypeDef_A]
---   guard_target = { _x : Fin 3 // true } = Unit
---   /- note: calling only one of `simp` or `dsimp` does not produce the current target
---   as the following tests show. -/
---   -- successIfFail { guard_hyp x : { x : Fin 3 // true } }
---   dsimp at x
---   -- successIfFail { guard_hyp x : { x : Fin 3 // true } }
---   simp at y
---   -- successIfFail { guard_hyp y : { x : Fin 3 // true } }
---   simp at x
---   dsimp at y
---   guard_hyp x : { x : Fin 3 // true }
---   guard_hyp y : { x : Fin 3 // true }
---   contradiction
-
--- this test might not apply to Lean 4
--- /- Test that `to_additive` copies the `@[_rfl_lemma]` attribute correctly -/
--- @[to_additive (attr := simps)]
--- def monoid_hom.my_comp {M N P : Type _} [mul_one_class M] [mul_one_class N] [mul_one_class P]
---   (hnp : N →* P) (hmn : M →* N) : M →* P :=
--- { toFun := hnp ∘ hmn, map_one' := by simp, map_mul' := by simp }
-
--- -- `simps` adds the `_rfl_lemma` attribute to `monoid_hom.my_comp_apply`
--- example {M N P : Type _} [mul_one_class M] [mul_one_class N] [mul_one_class P]
---   (hnp : N →* P) (hmn : M →* N) (m : M) : hnp.my_comp hmn m = hnp (hmn m) := by
---   dsimp
---   guard_target = hnp (hmn m) = hnp (hmn m)
---   rfl
-
--- -- `to_additive` adds the `_rfl_lemma` attribute to `AddMonoidHom.my_comp_apply`
--- example {M N P : Type _} [add_zero_class M] [add_zero_class N] [add_zero_class P]
---   (hnp : N →+ P) (hmn : M →+ N) (m : M) : hnp.my_comp hmn m = hnp (hmn m) := by
---   dsimp
---   guard_target = hnp (hmn m) = hnp (hmn m)
---   rfl
+example (h : false) (x y : { x : Fin (Nat.add 3 0) // 1 + 1 = 2 }) : myTypeDef.A = Unit := by
+  simp only [myTypeDef_A]
+  guard_target = { _x : Fin 3 // True } = Unit
+  /- note: calling only one of `simp` or `dsimp` does not produce the current target
+  as the following tests show. -/
+  -- successIfFail { guard_hyp x : { x : Fin 3 // true } }
+  dsimp at x
+  -- successIfFail { guard_hyp x : { x : Fin 3 // true } }
+  simp at y
+  -- successIfFail { guard_hyp y : { x : Fin 3 // true } }
+  simp at x
+  dsimp at y
+  guard_hyp x : { _x : Fin 3 // True }
+  guard_hyp y : { _x : Fin 3 // True }
+  contradiction
 
 -- test that `to_additive` works with a custom name
 @[to_additive (attr := simps) some_test2]
@@ -1135,28 +1112,28 @@ infixr:25 " →+ " => AddMonoidHom
 instance (M N : Type _) [AddMonoid M] [AddMonoid N] : CoeFun (M →+ N) (λ _ => M → N) := ⟨(·.toFun)⟩
 
 class AddHomPlus [Add ι] [∀ i, AddCommMonoid (A i)] :=
-(mul {i} : A i →+ A i)
+(myMul {i} : A i →+ A i)
 
 def AddHomPlus.Simps.apply [Add ι] [∀ i, AddCommMonoid (A i)] [AddHomPlus A] {i : ι} (x : A i) :
   A i :=
-AddHomPlus.mul x
+AddHomPlus.myMul x
 
-initialize_simps_projections AddHomPlus (mul_toFun → apply, -mul)
+initialize_simps_projections AddHomPlus (myMul_toFun → apply, -myMul)
 
 class AddHomPlus2 [Add ι] :=
-(mul {i j} : A i ≃ (A j ≃ A (i + j)))
+(myMul {i j} : A i ≃ (A j ≃ A (i + j)))
 
 def AddHomPlus2.Simps.mul [Add ι] [AddHomPlus2 A] {i j : ι}
   (x : A i) (y : A j) : A (i + j) :=
-AddHomPlus2.mul x y
+AddHomPlus2.myMul x y
 
-initialize_simps_projections AddHomPlus2 (mul → mul', mul_toFun_toFun → mul, -mul')
+initialize_simps_projections AddHomPlus2 (-myMul, myMul_toFun_toFun → mul)
 
 attribute [ext] Equiv'
 
 @[simps]
 def thing (h : Bool ≃ (Bool ≃ Bool)) : AddHomPlus2 (λ _ : ℕ => Bool) :=
-{ mul :=
+{ myMul :=
   { toFun := λ b =>
     { toFun := h b
       invFun := (h b).symm
@@ -1167,7 +1144,7 @@ def thing (h : Bool ≃ (Bool ≃ Bool)) : AddHomPlus2 (λ _ : ℕ => Bool) :=
     right_inv := h.right_inv } } -- definitional eta
 
 example (h : Bool ≃ (Bool ≃ Bool)) (i j : ℕ) (b1 b2 : Bool) {x} (h2 : h b1 b2 = x) :
-  @AddHomPlus2.mul _ _ _ (thing h) i j b1 b2 = x := by
+  @AddHomPlus2.myMul _ _ _ (thing h) i j b1 b2 = x := by
   simp only [thing_mul]
   rw [h2]
 
@@ -1186,3 +1163,25 @@ noncomputable def fooSum {I J : Type _} (C : I → Type _) {D : J → Type _} :
 { obj := λ f => { obj := λ g s => Sum.rec f g s }}
 
 end
+
+/-! Test that we deal with classes whose names are prefixes of other classes -/
+
+class MyDiv (α : Type _) extends Div α
+class MyDivInv (α : Type _) extends MyDiv α
+class MyGroup (α : Type _) extends MyDivInv α
+initialize_simps_projections MyGroup
+
+/-! Test that the automatic projection module doesn't throw an error if we have a projection name
+unrelated to one of the classes. -/
+
+class MyGOne {ι} [Zero ι] (A : ι → Type _)  where
+  /-- The term `one` of grade 0 -/
+  one : A 0
+
+initialize_simps_projections MyGOne
+
+class Artificial (n : Nat)  where
+  /-- The term `one` of grade 0 -/
+  one : Nat
+
+initialize_simps_projections Artificial
