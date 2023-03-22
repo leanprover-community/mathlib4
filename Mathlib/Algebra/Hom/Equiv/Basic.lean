@@ -272,7 +272,7 @@ theorem invFun_eq_symm {f : M ≃* N} : f.invFun = f.symm := rfl
 #align add_equiv.neg_fun_eq_symm AddEquiv.invFun_eq_symm
 
 @[to_additive (attr := simp)]
-theorem coe_toEquiv_symm (f : M ≃* N) : (f.toEquiv.symm : N → M) = f.symm := rfl
+theorem coe_toEquiv_symm (f : M ≃* N) : ((f : M ≃ N).symm : N → M) = f.symm := rfl
 
 @[to_additive (attr := simp)]
 theorem equivLike_inv_eq_symm (f : M ≃* N) : EquivLike.inv f = f.symm := rfl
@@ -292,7 +292,7 @@ initialize_simps_projections AddEquiv (toFun → apply, invFun → symm_apply)
 initialize_simps_projections MulEquiv (toFun → apply, invFun → symm_apply)
 
 @[to_additive (attr := simp)]
-theorem toEquiv_symm (f : M ≃* N) : f.symm.toEquiv = f.toEquiv.symm := rfl
+theorem toEquiv_symm (f : M ≃* N) : (f.symm : N ≃ M) = (f : M ≃ N).symm := rfl
 #align mul_equiv.to_equiv_symm MulEquiv.toEquiv_symm
 #align add_equiv.to_equiv_symm AddEquiv.toEquiv_symm
 
