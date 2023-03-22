@@ -76,9 +76,9 @@ instance addSubmonoidClass : AddSubmonoidClass (Submodule R M) M where
   add_mem := AddSubsemigroup.add_mem' _
 #align submodule.add_submonoid_class Submodule.addSubmonoidClass
 
-instance subModuleClass : SubmoduleClass (Submodule R M) R M where
+instance submoduleClass : SubmoduleClass (Submodule R M) R M where
   smul_mem {s} c _ h := SubMulAction.smul_mem' s.toSubMulAction c h
-#align submodule.submodule_class Submodule.subModuleClass
+#align submodule.submodule_class Submodule.submoduleClass
 
 @[simp]
 theorem mem_toAddSubmonoid (p : Submodule R M) (x : M) : x ∈ p.toAddSubmonoid ↔ x ∈ p :=

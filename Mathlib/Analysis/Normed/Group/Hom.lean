@@ -632,7 +632,7 @@ theorem sum_apply {ι : Type _} (s : Finset ι) (f : ι → NormedAddGroupHom V�
 /-! ### Module structure on normed group homs -/
 
 
-instance distribMulActoin {R : Type _} [MonoidWithZero R] [DistribMulAction R V₂]
+instance distribMulAction {R : Type _} [MonoidWithZero R] [DistribMulAction R V₂]
     [PseudoMetricSpace R] [BoundedSMul R V₂] : DistribMulAction R (NormedAddGroupHom V₁ V₂) :=
   Function.Injective.distribMulAction coeAddHom coe_injective coe_smul
 
