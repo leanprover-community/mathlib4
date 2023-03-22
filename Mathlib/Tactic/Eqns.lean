@@ -41,4 +41,4 @@ initialize eqnsAttribute : NameMapExtension (Array Name) ←
     | _, _ => Lean.Elab.throwUnsupportedSyntax }
 
 initialize Lean.Meta.registerGetEqnsFn (fun name => do
-  pure (notationClassAttr.find? (← getEnv) name))
+  pure (eqnsAttribute.find? (← getEnv) name))
