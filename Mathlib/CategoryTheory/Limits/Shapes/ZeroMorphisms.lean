@@ -508,7 +508,7 @@ open ZeroObject
 `X` and `Y` are isomorphic to the zero object.
 -/
 def isIsoZeroEquivIsoZero (X Y : C) : IsIso (0 : X ⟶ Y) ≃ (X ≅ 0) × (Y ≅ 0) := by
-  -- This is lame, because `prod` can't cope with `Prop`, so we can't use `equiv.prod_congr`.
+  -- This is lame, because `prod` can't cope with `Prop`, so we can't use `Equiv.prodCongr`.
   refine' (isIsoZeroEquiv X Y).trans _
   symm
   fconstructor
@@ -590,8 +590,7 @@ def monoFactorisationZero (X Y : C) : MonoFactorisation (0 : X ⟶ Y)  where
 
 /-- The factorisation through the zero object is an image factorisation.
 -/
-def imageFactorisationZero (X Y : C) : ImageFactorisation (0 : X ⟶ Y)
-    where
+def imageFactorisationZero (X Y : C) : ImageFactorisation (0 : X ⟶ Y) where
   F := monoFactorisationZero X Y
   isImage := { lift := fun F' => 0 }
 #align category_theory.limits.image_factorisation_zero CategoryTheory.Limits.imageFactorisationZero
