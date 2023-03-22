@@ -48,7 +48,7 @@ def findArgType : Type := Name → Name → Array Expr → MetaM (Array (Option 
 /-- Find arguments for a notation class -/
 def defaultfindArgs : findArgType := λ _ className args =>  do
   let some classExpr := (← getEnv).find? className | throwError "no such class {className}"
-  let arity := classExpr.type.getNumForallBinders
+  let arity := classExpr.type.forallArity
   if arity == args.size then
     return args.map some
   else if args.size == 1 then
@@ -67,7 +67,7 @@ def copySecond : findArgType := λ _ _ args => return (args.push <| args[1]?.get
 def nsmulArgs: findArgType := λ _ _ args =>
   return #[Expr.const `Nat [], args[0]?.getD default] ++ args |>.map some
 
-/-- Find arguments by prepending `ℤ ` and duplicating the first argument. Used for `zsmul`. -/
+/-- Find arguments by prepending `ℤ` and duplicating the first argument. Used for `zsmul`. -/
 def zsmulArgs : findArgType := λ _ _ args =>
   return #[Expr.const `Int [], args[0]?.getD default] ++ args |>.map some
 
@@ -82,7 +82,7 @@ def findOneArgs : findArgType := λ _ _ args =>
 /-- Find arguments of a coercion class (`FunLike` or `SetLike`) -/
 def findCoercionArgs : findArgType := λ str className args =>  do
   let some classExpr := (← getEnv).find? className | throwError "no such class {className}"
-  let arity := classExpr.type.getNumForallBinders
+  let arity := classExpr.type.forallArity
   let eStr := mkAppN (← mkConstWithLevelParams str) args
   let classArgs := mkArray (arity - 1) none
   return #[some eStr] ++ classArgs

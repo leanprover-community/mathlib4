@@ -645,7 +645,7 @@ an applicable name. (e.g. `Iso.inv`)
 Implementation note: getting rid of TermElabM is tricky, since `Expr.mkAppOptM` doesn't allow to
 keep metavariables around, which are necessary for `OutParam`. -/
 def findAutomaticProjectionsAux (str : Name) (proj : ParsedProjectionData) (args : Array Expr) :
-  TermElabM <| Option (Expr × Name)  := do
+  TermElabM <| Option (Expr × Name) := do
   if let some ⟨className, isNotation, findArgs⟩ :=
     notationClassAttr.find? (← getEnv) proj.strName then
     let findArgs ← unsafe evalConst findArgType findArgs
@@ -669,7 +669,7 @@ def findAutomaticProjectionsAux (str : Name) (proj : ParsedProjectionData) (args
         return none
     return ← withLocalDeclD `self eStr fun instStr ↦ do
       trace[simps.debug] "found projection {proj.strName}. Trying to synthesize {eInstType}."
-      let eInst ← try synthInstance eInstType <| some 10
+      let eInst ← try synthInstance eInstType
       catch ex =>
         trace[simps.debug] "Didn't find instance:\n{ex.toMessageData}"
         return none

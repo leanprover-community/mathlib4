@@ -179,11 +179,6 @@ def bvarIdx? : Expr → Option Nat
 def getAppFnArgs (e : Expr) : Name × Array Expr :=
   withApp e λ e a => (e.constName, a)
 
-/-- Get the arity of a type, i.e. the number of forall binders -/
-def getNumForallBinders : Expr → Nat
-  | .forallE _ _ b _ => b.getNumForallBinders + 1
-  | _ => 0
-
 /-- Turn an expression that is a natural number literal into a natural number. -/
 def natLit! : Expr → Nat
   | lit (Literal.natVal v) => v
