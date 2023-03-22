@@ -21,5 +21,6 @@ In this file we provide various simp lemmas in its elementwise form via `Tactic.
 
 open CategoryTheory CategoryTheory.Limits
 
-attribute [elementwise] Cone.w limit.lift_π limit.w Cocone.w colimit.ι_desc colimit.w
-  kernel.lift_ι cokernel.π_desc kernel.condition cokernel.condition
+set_option linter.existingAttributeWarning false in
+attribute [elementwise (attr := simp)] Cone.w limit.lift_π limit.w Cocone.w
+  colimit.ι_desc colimit.w kernel.lift_ι cokernel.π_desc kernel.condition cokernel.condition
