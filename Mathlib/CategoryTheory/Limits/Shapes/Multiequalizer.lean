@@ -398,7 +398,7 @@ theorem app_right_eq_ι_comp_snd (b) :
 
 @[reassoc (attr := simp)]
 theorem hom_comp_ι (K₁ K₂ : Multifork I) (f : K₁ ⟶ K₂) (j : I.L) : f.Hom ≫ K₂.ι j = K₁.ι j :=
-  f.w (WalkingMulticospan.left j)
+  f.w _
 #align category_theory.limits.multifork.hom_comp_ι
   CategoryTheory.Limits.Multifork.hom_comp_ι
 
@@ -614,7 +614,7 @@ theorem snd_app_right (a) : K.ι.app (WalkingMultispan.left a) = I.snd a ≫ K.�
 Porting note: Added simp lemma.
 -/
 @[simp]
-lemma π_comp_hom {K₁ K₂ : Multicofork I} (f : K₁ ⟶ K₂) (b : I.R) : K₁.π b ≫ f.Hom = K₂.π b :=
+lemma π_comp_hom (K₁ K₂ : Multicofork I) (f : K₁ ⟶ K₂) (b : I.R) : K₁.π b ≫ f.Hom = K₂.π b :=
   f.w _
 
 /-- Construct a multicofork using a collection `π` of morphisms. -/
