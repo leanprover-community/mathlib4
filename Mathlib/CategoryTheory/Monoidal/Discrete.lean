@@ -8,9 +8,9 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Hom.Group
-import Mathbin.CategoryTheory.DiscreteCategory
-import Mathbin.CategoryTheory.Monoidal.NaturalTransformation
+import Mathlib.Algebra.Hom.Group
+import Mathlib.CategoryTheory.DiscreteCategory
+import Mathlib.CategoryTheory.Monoidal.NaturalTransformation
 
 /-!
 # Monoids as discrete monoidal categories
