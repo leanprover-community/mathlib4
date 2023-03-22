@@ -8,10 +8,10 @@ Authors: Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Associated
-import Mathbin.RingTheory.Int.Basic
-import Mathbin.Tactic.Ring
-import Mathbin.Algebra.Star.Unitary
+import Mathlib.Algebra.Associated
+import Mathlib.RingTheory.Int.Basic
+import Mathlib.Tactic.Ring
+import Mathlib.Algebra.Star.Unitary
 
 /-! # ℤ[√d]
 
@@ -334,8 +334,7 @@ protected theorem coe_int_inj {m n : ℤ} (h : (↑m : ℤ√d) = ↑n) : m = n 
   simpa using congr_arg re h
 #align zsqrtd.coe_int_inj Zsqrtd.coe_int_inj
 
-theorem coe_int_dvd_iff (z : ℤ) (a : ℤ√d) : ↑z ∣ a ↔ z ∣ a.re ∧ z ∣ a.im :=
-  by
+theorem coe_int_dvd_iff (z : ℤ) (a : ℤ√d) : ↑z ∣ a ↔ z ∣ a.re ∧ z ∣ a.im := by
   constructor
   · rintro ⟨x, rfl⟩
     simp only [add_zero, coe_int_re, MulZeroClass.zero_mul, mul_im, dvd_mul_right, and_self_iff,
@@ -347,8 +346,7 @@ theorem coe_int_dvd_iff (z : ℤ) (a : ℤ√d) : ↑z ∣ a ↔ z ∣ a.re ∧ 
 #align zsqrtd.coe_int_dvd_iff Zsqrtd.coe_int_dvd_iff
 
 @[simp, norm_cast]
-theorem coe_int_dvd_coe_int (a b : ℤ) : (a : ℤ√d) ∣ b ↔ a ∣ b :=
-  by
+theorem coe_int_dvd_coe_int (a b : ℤ) : (a : ℤ√d) ∣ b ↔ a ∣ b := by
   rw [coe_int_dvd_iff]
   constructor
   · rintro ⟨hre, -⟩
@@ -393,8 +391,7 @@ theorem coprime_of_dvd_coprime {a b : ℤ√d} (hcoprime : IsCoprime a.re a.im) 
 #align zsqrtd.coprime_of_dvd_coprime Zsqrtd.coprime_of_dvd_coprime
 
 theorem exists_coprime_of_gcd_pos {a : ℤ√d} (hgcd : 0 < Int.gcd a.re a.im) :
-    ∃ b : ℤ√d, a = ((Int.gcd a.re a.im : ℤ) : ℤ√d) * b ∧ IsCoprime b.re b.im :=
-  by
+    ∃ b : ℤ√d, a = ((Int.gcd a.re a.im : ℤ) : ℤ√d) * b ∧ IsCoprime b.re b.im := by
   obtain ⟨re, im, H1, Hre, Him⟩ := Int.exists_gcd_one hgcd
   rw [mul_comm] at Hre Him
   refine' ⟨⟨re, im⟩, _, _⟩
@@ -449,8 +446,7 @@ theorem sqLe_mul {d x y z w : ℕ} :
     (SqLe x 1 y d → SqLe z 1 w d → SqLe (x * w + y * z) d (x * z + d * y * w) 1) ∧
       (SqLe x 1 y d → SqLe w d z 1 → SqLe (x * z + d * y * w) 1 (x * w + y * z) d) ∧
         (SqLe y d x 1 → SqLe z 1 w d → SqLe (x * z + d * y * w) 1 (x * w + y * z) d) ∧
-          (SqLe y d x 1 → SqLe w d z 1 → SqLe (x * w + y * z) d (x * z + d * y * w) 1) :=
-  by
+          (SqLe y d x 1 → SqLe w d z 1 → SqLe (x * w + y * z) d (x * z + d * y * w) 1) := by
   refine' ⟨_, _, _, _⟩ <;>
     · intro xy zw
       have :=
@@ -524,8 +520,7 @@ theorem norm_nat_cast (n : ℕ) : norm n = n * n :=
 #align zsqrtd.norm_nat_cast Zsqrtd.norm_nat_cast
 
 @[simp]
-theorem norm_mul (n m : ℤ√d) : norm (n * m) = norm n * norm m :=
-  by
+theorem norm_mul (n m : ℤ√d) : norm (n * m) = norm n * norm m := by
   simp only [norm, mul_im, mul_re]
   ring
 #align zsqrtd.norm_mul Zsqrtd.norm_mul
@@ -587,8 +582,7 @@ theorem norm_eq_one_iff' {d : ℤ} (hd : d ≤ 0) (z : ℤ√d) : z.norm = 1 ↔
   rw [← norm_eq_one_iff, ← Int.coe_nat_inj', Int.natAbs_of_nonneg (norm_nonneg hd z), Int.ofNat_one]
 #align zsqrtd.norm_eq_one_iff' Zsqrtd.norm_eq_one_iff'
 
-theorem norm_eq_zero_iff {d : ℤ} (hd : d < 0) (z : ℤ√d) : z.norm = 0 ↔ z = 0 :=
-  by
+theorem norm_eq_zero_iff {d : ℤ} (hd : d < 0) (z : ℤ√d) : z.norm = 0 ↔ z = 0 := by
   constructor
   · intro h
     rw [ext, zero_re, zero_im]
@@ -669,8 +663,7 @@ theorem nonneg_add_lem {x y z w : ℕ} (xy : nonneg ⟨x, -y⟩) (zw : nonneg �
     rw [neg_add_eq_sub] <;> rwa [Int.subNatNat_eq_coe, Int.subNatNat_eq_coe] at this
 #align zsqrtd.nonneg_add_lem Zsqrtd.nonneg_add_lem
 
-theorem Nonneg.add {a b : ℤ√d} (ha : nonneg a) (hb : nonneg b) : nonneg (a + b) :=
-  by
+theorem Nonneg.add {a b : ℤ√d} (ha : nonneg a) (hb : nonneg b) : nonneg (a + b) := by
   rcases nonneg_cases ha with ⟨x, y, rfl | rfl | rfl⟩ <;>
     rcases nonneg_cases hb with ⟨z, w, rfl | rfl | rfl⟩
   · trivial
@@ -717,8 +710,7 @@ protected theorem nonneg_total : ∀ a : ℤ√d, nonneg a ∨ nonneg (-a)
   | ⟨-[x+1], (y + 1 : ℕ)⟩ => Nat.le_total
 #align zsqrtd.nonneg_total Zsqrtd.nonneg_total
 
-protected theorem le_total (a b : ℤ√d) : a ≤ b ∨ b ≤ a :=
-  by
+protected theorem le_total (a b : ℤ√d) : a ≤ b ∨ b ≤ a := by
   have t := (b - a).nonneg_total
   rwa [neg_sub] at t
 #align zsqrtd.le_total Zsqrtd.le_total
@@ -730,8 +722,7 @@ instance : Preorder (ℤ√d) where
   lt := (· < ·)
   lt_iff_le_not_le a b := (and_iff_right_of_imp (Zsqrtd.le_total _ _).resolve_left).symm
 
-theorem le_arch (a : ℤ√d) : ∃ n : ℕ, a ≤ n :=
-  by
+theorem le_arch (a : ℤ√d) : ∃ n : ℕ, a ≤ n := by
   let ⟨x, y, (h : a ≤ ⟨x, y⟩)⟩ :=
     show ∃ x y : ℕ, nonneg (⟨x, y⟩ + -a) from
       match -a with
@@ -784,8 +775,7 @@ theorem nonneg_muld {a : ℤ√d} (ha : nonneg a) : nonneg (sqrtd * a) := by
         simpa [sq_le, mul_comm, mul_left_comm] using Nat.mul_le_mul_left d (nonnegg_neg_pos.1 ha)
 #align zsqrtd.nonneg_muld Zsqrtd.nonneg_muld
 
-theorem nonneg_mul_lem {x y : ℕ} {a : ℤ√d} (ha : nonneg a) : nonneg (⟨x, y⟩ * a) :=
-  by
+theorem nonneg_mul_lem {x y : ℕ} {a : ℤ√d} (ha : nonneg a) : nonneg (⟨x, y⟩ * a) := by
   have : (⟨x, y⟩ * a : ℤ√d) = x * a + sqrtd * (y * a) := by
     rw [decompose, right_distrib, mul_assoc] <;> rfl
   rw [this] <;> exact (nonneg_smul ha).add (nonneg_muld <| nonneg_smul ha)
@@ -970,8 +960,7 @@ instance : OrderedRing (ℤ√d) := by infer_instance
 
 end
 
-theorem norm_eq_zero {d : ℤ} (h_nonsquare : ∀ n : ℤ, d ≠ n * n) (a : ℤ√d) : norm a = 0 ↔ a = 0 :=
-  by
+theorem norm_eq_zero {d : ℤ} (h_nonsquare : ∀ n : ℤ, d ≠ n * n) (a : ℤ√d) : norm a = 0 ↔ a = 0 := by
   refine' ⟨fun ha => ext.mpr _, fun h => by rw [h, norm_zero]⟩
   delta norm at ha
   rw [sub_eq_zero] at ha
@@ -992,8 +981,7 @@ theorem norm_eq_zero {d : ℤ} (h_nonsquare : ∀ n : ℤ, d ≠ n * n) (a : ℤ
 variable {R : Type}
 
 @[ext]
-theorem hom_ext [Ring R] {d : ℤ} (f g : ℤ√d →+* R) (h : f sqrtd = g sqrtd) : f = g :=
-  by
+theorem hom_ext [Ring R] {d : ℤ} (f g : ℤ√d →+* R) (h : f sqrtd = g sqrtd) : f = g := by
   ext ⟨x_re, x_im⟩
   simp [decompose, h]
 #align zsqrtd.hom_ext Zsqrtd.hom_ext
@@ -1046,8 +1034,7 @@ theorem lift_injective [CharZero R] {d : ℤ} (r : { r : R // r * r = ↑d })
 
 /-- An element of `ℤ√d` has norm equal to `1` if and only if it is contained in the submonoid
 of unitary elements. -/
-theorem norm_eq_one_iff_mem_unitary {d : ℤ} {a : ℤ√d} : a.norm = 1 ↔ a ∈ unitary (ℤ√d) :=
-  by
+theorem norm_eq_one_iff_mem_unitary {d : ℤ} {a : ℤ√d} : a.norm = 1 ↔ a ∈ unitary (ℤ√d) := by
   rw [unitary.mem_iff_self_mul_star, ← norm_eq_mul_conj]
   norm_cast
 #align zsqrtd.norm_eq_one_iff_mem_unitary Zsqrtd.norm_eq_one_iff_mem_unitary
