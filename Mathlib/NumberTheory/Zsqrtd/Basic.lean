@@ -694,45 +694,46 @@ theorem Nonneg.add {a b : ℤ√d} (ha : Nonneg a) (hb : Nonneg b) : Nonneg (a +
   rcases nonneg_cases ha with ⟨x, y, rfl | rfl | rfl⟩ <;>
     rcases nonneg_cases hb with ⟨z, w, rfl | rfl | rfl⟩
   · trivial
-  · refine' nonnegg_cases_right fun i h => sq_le_of_le _ _ (nonnegg_pos_neg.1 hb)
+  · refine' nonnegg_cases_right fun i h => sqLe_of_le _ _ (nonnegg_pos_neg.1 hb)
     · exact Int.ofNat_le.1 (le_of_neg_le_neg (@Int.le.intro _ _ y (by simp [add_comm, *])))
     · apply Nat.le_add_left
-  · refine' nonnegg_cases_left fun i h => sq_le_of_le _ _ (nonnegg_neg_pos.1 hb)
+  · refine' nonnegg_cases_left fun i h => sqLe_of_le _ _ (nonnegg_neg_pos.1 hb)
     · exact Int.ofNat_le.1 (le_of_neg_le_neg (@Int.le.intro _ _ x (by simp [add_comm, *])))
     · apply Nat.le_add_left
-  · refine' nonnegg_cases_right fun i h => sq_le_of_le _ _ (nonnegg_pos_neg.1 ha)
+  · refine' nonnegg_cases_right fun i h => sqLe_of_le _ _ (nonnegg_pos_neg.1 ha)
     · exact Int.ofNat_le.1 (le_of_neg_le_neg (@Int.le.intro _ _ w (by simp [*])))
     · apply Nat.le_add_right
   · simpa [add_comm] using
-      nonnegg_pos_neg.2 (sq_le_add (nonnegg_pos_neg.1 ha) (nonnegg_pos_neg.1 hb))
+      nonnegg_pos_neg.2 (sqLe_add (nonnegg_pos_neg.1 ha) (nonnegg_pos_neg.1 hb))
   · exact nonneg_add_lem ha hb
-  · refine' nonnegg_cases_left fun i h => sq_le_of_le _ _ (nonnegg_neg_pos.1 ha)
+  · refine' nonnegg_cases_left fun i h => sqLe_of_le _ _ (nonnegg_neg_pos.1 ha)
     · exact Int.ofNat_le.1 (le_of_neg_le_neg (Int.le.intro h))
     · apply Nat.le_add_right
   · dsimp
     rw [add_comm, add_comm ↑y]
     exact nonneg_add_lem hb ha
   · simpa [add_comm] using
-      nonnegg_neg_pos.2 (sq_le_add (nonnegg_neg_pos.1 ha) (nonnegg_neg_pos.1 hb))
+      nonnegg_neg_pos.2 (sqLe_add (nonnegg_neg_pos.1 ha) (nonnegg_neg_pos.1 hb))
 #align zsqrtd.nonneg.add Zsqrtd.Nonneg.add
 
-theorem nonneg_iff_zero_le {a : ℤ√d} : nonneg a ↔ 0 ≤ a :=
-  show _ ↔ nonneg _ by simp
+theorem nonneg_iff_zero_le {a : ℤ√d} : Nonneg a ↔ 0 ≤ a :=
+  show _ ↔ Nonneg _ by simp
 #align zsqrtd.nonneg_iff_zero_le Zsqrtd.nonneg_iff_zero_le
 
 theorem le_of_le_le {x y z w : ℤ} (xz : x ≤ z) (yw : y ≤ w) : (⟨x, y⟩ : ℤ√d) ≤ ⟨z, w⟩ :=
-  show nonneg ⟨z - x, w - y⟩ from
+  show Nonneg ⟨z - x, w - y⟩ from
     match z - x, w - y, Int.le.dest_sub xz, Int.le.dest_sub yw with
     | _, _, ⟨a, rfl⟩, ⟨b, rfl⟩ => trivial
 #align zsqrtd.le_of_le_le Zsqrtd.le_of_le_le
 
-protected theorem nonneg_total : ∀ a : ℤ√d, nonneg a ∨ nonneg (-a)
+open Int in
+protected theorem nonneg_total : ∀ a : ℤ√d, Nonneg a ∨ Nonneg (-a)
   | ⟨(x : ℕ), (y : ℕ)⟩ => Or.inl trivial
   | ⟨-[x+1], -[y+1]⟩ => Or.inr trivial
   | ⟨0, -[y+1]⟩ => Or.inr trivial
   | ⟨-[x+1], 0⟩ => Or.inr trivial
-  | ⟨(x + 1 : ℕ), -[y+1]⟩ => Nat.le_total
-  | ⟨-[x+1], (y + 1 : ℕ)⟩ => Nat.le_total
+  | ⟨(x + 1 : ℕ), -[y+1]⟩ => Nat.le_total _ _
+  | ⟨-[x+1], (y + 1 : ℕ)⟩ => Nat.le_total _ _
 #align zsqrtd.nonneg_total Zsqrtd.nonneg_total
 
 protected theorem le_total (a b : ℤ√d) : a ≤ b ∨ b ≤ a := by
@@ -740,23 +741,24 @@ protected theorem le_total (a b : ℤ√d) : a ≤ b ∨ b ≤ a := by
   rwa [neg_sub] at t
 #align zsqrtd.le_total Zsqrtd.le_total
 
-instance : Preorder (ℤ√d) where
+instance preorder : Preorder (ℤ√d) where
   le := (· ≤ ·)
-  le_refl a := show nonneg (a - a) by simp only [sub_self]
+  le_refl a := show Nonneg (a - a) by simp only [sub_self]
   le_trans a b c hab hbc := by simpa [sub_add_sub_cancel'] using hab.add hbc
   lt := (· < ·)
   lt_iff_le_not_le a b := (and_iff_right_of_imp (Zsqrtd.le_total _ _).resolve_left).symm
 
+open Int in
 theorem le_arch (a : ℤ√d) : ∃ n : ℕ, a ≤ n := by
   let ⟨x, y, (h : a ≤ ⟨x, y⟩)⟩ :=
-    show ∃ x y : ℕ, nonneg (⟨x, y⟩ + -a) from
+    show ∃ x y : ℕ, Nonneg (⟨x, y⟩ + -a) from
       match -a with
       | ⟨Int.ofNat x, Int.ofNat y⟩ => ⟨0, 0, trivial⟩
       | ⟨Int.ofNat x, -[y+1]⟩ => ⟨0, y + 1, by simp [Int.negSucc_coe, add_assoc]⟩
       | ⟨-[x+1], Int.ofNat y⟩ => ⟨x + 1, 0, by simp [Int.negSucc_coe, add_assoc]⟩
       | ⟨-[x+1], -[y+1]⟩ => ⟨x + 1, y + 1, by simp [Int.negSucc_coe, add_assoc]⟩
   refine' ⟨x + d * y, h.trans _⟩
-  change nonneg ⟨↑x + d * y - ↑x, 0 - ↑y⟩
+  change Nonneg ⟨↑x + d * y - ↑x, 0 - ↑y⟩
   cases' y with y
   · simp
   have h : ∀ y, SqLe y d (d * y) 1 := fun y => by
@@ -766,7 +768,7 @@ theorem le_arch (a : ℤ√d) : ∃ n : ℕ, a ≤ n := by
 #align zsqrtd.le_arch Zsqrtd.le_arch
 
 protected theorem add_le_add_left (a b : ℤ√d) (ab : a ≤ b) (c : ℤ√d) : c + a ≤ c + b :=
-  show nonneg _ by rw [add_sub_add_left_eq_sub] <;> exact ab
+  show Nonneg _ by rw [add_sub_add_left_eq_sub]; exact ab
 #align zsqrtd.add_le_add_left Zsqrtd.add_le_add_left
 
 protected theorem le_of_add_le_add_left (a b c : ℤ√d) (h : c + a ≤ c + b) : a ≤ b := by
@@ -777,92 +779,94 @@ protected theorem add_lt_add_left (a b : ℤ√d) (h : a < b) (c) : c + a < c + 
   h (Zsqrtd.le_of_add_le_add_left _ _ _ h')
 #align zsqrtd.add_lt_add_left Zsqrtd.add_lt_add_left
 
-theorem nonneg_smul {a : ℤ√d} {n : ℕ} (ha : nonneg a) : nonneg (n * a) := by
-  simp (config := { singlePass := true }) only [← Int.cast_ofNat] <;>
-    exact
-      match a, nonneg_cases ha, ha with
-      | _, ⟨x, y, Or.inl rfl⟩, ha => by rw [smul_val] <;> trivial
-      | _, ⟨x, y, Or.inr <| Or.inl rfl⟩, ha => by
-        rw [smul_val] <;> simpa using nonnegg_pos_neg.2 (sq_le_smul n <| nonnegg_pos_neg.1 ha)
-      | _, ⟨x, y, Or.inr <| Or.inr rfl⟩, ha => by
-        rw [smul_val] <;> simpa using nonnegg_neg_pos.2 (sq_le_smul n <| nonnegg_neg_pos.1 ha)
+theorem nonneg_smul {a : ℤ√d} {n : ℕ} (ha : Nonneg a) : Nonneg ((n : ℤ√d) * a) := by
+  simp (config := { singlePass := true }) only [← Int.cast_ofNat]
+  exact
+    match a, nonneg_cases ha, ha with
+    | _, ⟨x, y, Or.inl rfl⟩, ha => by rw [smul_val]; trivial
+    | _, ⟨x, y, Or.inr <| Or.inl rfl⟩, ha => by
+      rw [smul_val]; simpa using nonnegg_pos_neg.2 (sqLe_smul n <| nonnegg_pos_neg.1 ha)
+    | _, ⟨x, y, Or.inr <| Or.inr rfl⟩, ha => by
+      rw [smul_val]; simpa using nonnegg_neg_pos.2 (sqLe_smul n <| nonnegg_neg_pos.1 ha)
 #align zsqrtd.nonneg_smul Zsqrtd.nonneg_smul
 
-theorem nonneg_muld {a : ℤ√d} (ha : nonneg a) : nonneg (sqrtd * a) := by
+theorem nonneg_muld {a : ℤ√d} (ha : Nonneg a) : Nonneg (sqrtd * a) := by
   refine'
     match a, nonneg_cases ha, ha with
     | _, ⟨x, y, Or.inl rfl⟩, ha => trivial
     | _, ⟨x, y, Or.inr <| Or.inl rfl⟩, ha => by
-      simp <;> apply nonnegg_neg_pos.2 <;>
+      simp; apply nonnegg_neg_pos.2;
         simpa [SqLe, mul_comm, mul_left_comm] using Nat.mul_le_mul_left d (nonnegg_pos_neg.1 ha)
     | _, ⟨x, y, Or.inr <| Or.inr rfl⟩, ha => by
-      simp <;> apply nonnegg_pos_neg.2 <;>
+      simp; apply nonnegg_pos_neg.2;
         simpa [SqLe, mul_comm, mul_left_comm] using Nat.mul_le_mul_left d (nonnegg_neg_pos.1 ha)
 #align zsqrtd.nonneg_muld Zsqrtd.nonneg_muld
 
-theorem nonneg_mul_lem {x y : ℕ} {a : ℤ√d} (ha : nonneg a) : nonneg (⟨x, y⟩ * a) := by
-  have : (⟨x, y⟩ * a : ℤ√d) = x * a + sqrtd * (y * a) := by
-    rw [decompose, right_distrib, mul_assoc] <;> rfl
-  rw [this] <;> exact (nonneg_smul ha).add (nonneg_muld <| nonneg_smul ha)
+theorem nonneg_mul_lem {x y : ℕ} {a : ℤ√d} (ha : Nonneg a) : Nonneg (⟨x, y⟩ * a) := by
+  have : (⟨x, y⟩ * a : ℤ√d) = (x : ℤ√d) * a + sqrtd * ((y : ℤ√d) * a) := by
+    rw [decompose, right_distrib, mul_assoc]; rfl
+  rw [this]
+  exact (nonneg_smul ha).add (nonneg_muld <| nonneg_smul ha)
 #align zsqrtd.nonneg_mul_lem Zsqrtd.nonneg_mul_lem
 
-theorem nonneg_mul {a b : ℤ√d} (ha : nonneg a) (hb : nonneg b) : nonneg (a * b) :=
+theorem nonneg_mul {a b : ℤ√d} (ha : Nonneg a) (hb : Nonneg b) : Nonneg (a * b) :=
   match a, b, nonneg_cases ha, nonneg_cases hb, ha, hb with
   | _, _, ⟨x, y, Or.inl rfl⟩, ⟨z, w, Or.inl rfl⟩, ha, hb => trivial
   | _, _, ⟨x, y, Or.inl rfl⟩, ⟨z, w, Or.inr <| Or.inr rfl⟩, ha, hb => nonneg_mul_lem hb
   | _, _, ⟨x, y, Or.inl rfl⟩, ⟨z, w, Or.inr <| Or.inl rfl⟩, ha, hb => nonneg_mul_lem hb
   | _, _, ⟨x, y, Or.inr <| Or.inr rfl⟩, ⟨z, w, Or.inl rfl⟩, ha, hb => by
-    rw [mul_comm] <;> exact nonneg_mul_lem ha
+    rw [mul_comm]; exact nonneg_mul_lem ha
   | _, _, ⟨x, y, Or.inr <| Or.inl rfl⟩, ⟨z, w, Or.inl rfl⟩, ha, hb => by
-    rw [mul_comm] <;> exact nonneg_mul_lem ha
+    rw [mul_comm]; exact nonneg_mul_lem ha
   | _, _, ⟨x, y, Or.inr <| Or.inr rfl⟩, ⟨z, w, Or.inr <| Or.inr rfl⟩, ha, hb => by
     rw [calc
           (⟨-x, y⟩ * ⟨-z, w⟩ : ℤ√d) = ⟨_, _⟩ := rfl
           _ = ⟨x * z + d * y * w, -(x * w + y * z)⟩ := by simp [add_comm]
-          ] <;>
-      exact nonnegg_pos_neg.2 (sq_le_mul.left (nonnegg_neg_pos.1 ha) (nonnegg_neg_pos.1 hb))
+          ]
+    exact nonnegg_pos_neg.2 (sqLe_mul.left (nonnegg_neg_pos.1 ha) (nonnegg_neg_pos.1 hb))
   | _, _, ⟨x, y, Or.inr <| Or.inr rfl⟩, ⟨z, w, Or.inr <| Or.inl rfl⟩, ha, hb => by
     rw [calc
           (⟨-x, y⟩ * ⟨z, -w⟩ : ℤ√d) = ⟨_, _⟩ := rfl
           _ = ⟨-(x * z + d * y * w), x * w + y * z⟩ := by simp [add_comm]
-          ] <;>
-      exact nonnegg_neg_pos.2 (sq_le_mul.right.left (nonnegg_neg_pos.1 ha) (nonnegg_pos_neg.1 hb))
+          ]
+    exact nonnegg_neg_pos.2 (sqLe_mul.right.left (nonnegg_neg_pos.1 ha) (nonnegg_pos_neg.1 hb))
   | _, _, ⟨x, y, Or.inr <| Or.inl rfl⟩, ⟨z, w, Or.inr <| Or.inr rfl⟩, ha, hb => by
     rw [calc
           (⟨x, -y⟩ * ⟨-z, w⟩ : ℤ√d) = ⟨_, _⟩ := rfl
           _ = ⟨-(x * z + d * y * w), x * w + y * z⟩ := by simp [add_comm]
-          ] <;>
-      exact
-        nonnegg_neg_pos.2 (sq_le_mul.right.right.left (nonnegg_pos_neg.1 ha) (nonnegg_neg_pos.1 hb))
+          ]
+    exact
+        nonnegg_neg_pos.2 (sqLe_mul.right.right.left (nonnegg_pos_neg.1 ha) (nonnegg_neg_pos.1 hb))
   | _, _, ⟨x, y, Or.inr <| Or.inl rfl⟩, ⟨z, w, Or.inr <| Or.inl rfl⟩, ha, hb => by
     rw [calc
           (⟨x, -y⟩ * ⟨z, -w⟩ : ℤ√d) = ⟨_, _⟩ := rfl
           _ = ⟨x * z + d * y * w, -(x * w + y * z)⟩ := by simp [add_comm]
-          ] <;>
-      exact
+          ]
+    exact
         nonnegg_pos_neg.2
-          (sq_le_mul.right.right.right (nonnegg_pos_neg.1 ha) (nonnegg_pos_neg.1 hb))
+          (sqLe_mul.right.right.right (nonnegg_pos_neg.1 ha) (nonnegg_pos_neg.1 hb))
 #align zsqrtd.nonneg_mul Zsqrtd.nonneg_mul
 
 protected theorem mul_nonneg (a b : ℤ√d) : 0 ≤ a → 0 ≤ b → 0 ≤ a * b := by
-  repeat' rw [← nonneg_iff_zero_le] <;> exact nonneg_mul
+  simp_rw [← nonneg_iff_zero_le]
+  exact nonneg_mul
 #align zsqrtd.mul_nonneg Zsqrtd.mul_nonneg
 
 theorem not_sqLe_succ (c d y) (h : 0 < c) : ¬SqLe (y + 1) c 0 d :=
   not_le_of_gt <| mul_pos (mul_pos h <| Nat.succ_pos _) <| Nat.succ_pos _
 #align zsqrtd.not_sq_le_succ Zsqrtd.not_sqLe_succ
 
-/- ./././Mathport/Syntax/Translate/Command.lean:388:30: infer kinds are unsupported in Lean 4: #[`ns] [] -/
+-- Porting note: renamed field and added theorem to make `x` explicit
 /-- A nonsquare is a natural number that is not equal to the square of an
   integer. This is implemented as a typeclass because it's a necessary condition
   for much of the Pell equation theory. -/
 class Nonsquare (x : ℕ) : Prop where
-  ns : ∀ n : ℕ, x ≠ n * n
+  ns' : ∀ n : ℕ, x ≠ n * n
 #align zsqrtd.nonsquare Zsqrtd.Nonsquare
 
-parameter [dnsq : Nonsquare d]
+theorem Nonsquare.ns (x : ℕ) [Nonsquare x] : ∀ n : ℕ, x ≠ n * n := ns'
 
-include dnsq
+variable [dnsq : Nonsquare d]
 
 theorem d_pos : 0 < d :=
   lt_of_le_of_ne (Nat.zero_le _) <| Ne.symm <| Nonsquare.ns d 0
@@ -882,24 +886,25 @@ theorem divides_sq_eq_zero {x y} (h : x * x = d * y * y) : x = 0 ∧ y = 0 :=
         let co1 := co.mul_right co
         co1.mul co1
       exact
-        nonsquare.ns d m
+        Nonsquare.ns d m
           (Nat.dvd_antisymm (by rw [this] <;> apply dvd_mul_right) <|
             co2.dvd_of_dvd_mul_right <| by simp [this])
 #align zsqrtd.divides_sq_eq_zero Zsqrtd.divides_sq_eq_zero
 
 theorem divides_sq_eq_zero_z {x y : ℤ} (h : x * x = d * y * y) : x = 0 ∧ y = 0 := by
-  rw [mul_assoc, ← Int.natAbs_mul_self, ← Int.natAbs_mul_self, ← Int.ofNat_mul, ← mul_assoc] at
-      h <;>
-    exact
-      let ⟨h1, h2⟩ := divides_sq_eq_zero (Int.ofNat.inj h)
-      ⟨Int.eq_zero_of_natAbs_eq_zero h1, Int.eq_zero_of_natAbs_eq_zero h2⟩
+  rw [mul_assoc, ← Int.natAbs_mul_self, ← Int.natAbs_mul_self, ← Int.ofNat_mul, ← mul_assoc] at h
+  exact
+    let ⟨h1, h2⟩ := divides_sq_eq_zero (Int.ofNat.inj h)
+    ⟨Int.natAbs_eq_zero.mp h1, Int.natAbs_eq_zero.mp h2⟩
 #align zsqrtd.divides_sq_eq_zero_z Zsqrtd.divides_sq_eq_zero_z
 
 theorem not_divides_sq (x y) : (x + 1) * (x + 1) ≠ d * (y + 1) * (y + 1) := fun e => by
-  have t := (divides_sq_eq_zero e).left <;> contradiction
+  have t := (divides_sq_eq_zero e).left
+  contradiction
 #align zsqrtd.not_divides_sq Zsqrtd.not_divides_sq
 
-theorem nonneg_antisymm : ∀ {a : ℤ√d}, nonneg a → nonneg (-a) → a = 0
+open Int in
+theorem nonneg_antisymm : ∀ {a : ℤ√d}, Nonneg a → Nonneg (-a) → a = 0
   | ⟨0, 0⟩, xy, yx => rfl
   | ⟨-[x+1], -[y+1]⟩, xy, yx => False.elim xy
   | ⟨(x + 1 : Nat), (y + 1 : Nat)⟩, xy, yx => False.elim yx
