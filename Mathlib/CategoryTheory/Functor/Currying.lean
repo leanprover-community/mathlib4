@@ -125,4 +125,60 @@ def whiskeringRight₂ : (C ⥤ D ⥤ E) ⥤ (B ⥤ C) ⥤ (B ⥤ D) ⥤ B ⥤ E
     whiskeringRight _ _ _ ⋙ (whiskeringLeft _ _ _).obj (prodFunctorToFunctorProd _ _ _) ⋙ curry
 #align category_theory.whiskering_right₂ CategoryTheory.whiskeringRight₂
 
+namespace Functor
+
+variable {C₁ : Type u₁} {C₂ : Type u₂} {D : Type u₃}
+  [Category.{v₁} C₁] [Category.{v₂} C₂] [Category.{v₃} D]
+
+lemma uncurry_obj_curry_obj (F : C₁ × C₂ ⥤ D) : uncurry.obj (curry.obj F) = F := by
+  refine' Functor.ext _ _
+  . simp
+  . intro ⟨x₁, x₂⟩ ⟨y₁, y₂⟩ ⟨f₁, f₂⟩
+    dsimp
+    rw [← F.map_comp, Category.id_comp, Category.comp_id]
+    aesop_cat
+
+lemma curry_obj_injective {F₁ F₂ : C₁ × C₂ ⥤ D} (h : curry.obj F₁ = curry.obj F₂) : F₁ = F₂ := by
+  rw [← uncurry_obj_curry_obj F₁, ← uncurry_obj_curry_obj F₂, h]
+
+lemma curry_obj_uncurry_obj (F : C₁ ⥤ C₂ ⥤ D) : curry.obj (uncurry.obj F) = F := by
+  refine' Functor.ext _ _
+  . intro X₁
+    exact Functor.ext (by simp) (by simp)
+  . intros X₁ X₂ f
+    aesop_cat
+
+lemma uncurry_obj_injective {F₁ F₂ : C₁ ⥤ C₂ ⥤ D}
+  (h : uncurry.obj F₁ = uncurry.obj F₂) : F₁ = F₂ := by
+  rw [← curry_obj_uncurry_obj F₁, ← curry_obj_uncurry_obj F₂, h]
+
+lemma flip_flip (F : C₁ ⥤ C₂ ⥤ D) : F.flip.flip = F := rfl
+
+lemma flip_injective {F₁ F₂ : C₁ ⥤ C₂ ⥤ D} (h : F₁.flip = F₂.flip) : F₁ = F₂ := by
+  rw [← flip_flip F₁, ← flip_flip F₂, h]
+
+lemma uncurry_obj_curry_obj_flip_flip {C₁' : Type u₄} {C₂' : Type u₅}
+  [Category.{v₄} C₁'] [Category.{v₅} C₂']
+  (F₁ : C₁ ⥤ C₁') (F₂ : C₂ ⥤ C₂') (G : C₁' × C₂' ⥤ D) :
+    uncurry.obj (F₂ ⋙ (F₁ ⋙ curry.obj G).flip).flip = (F₁.prod F₂) ⋙ G := by
+  refine' Functor.ext _ _
+  . simp
+  . intro ⟨x₁, x₂⟩ ⟨y₁, y₂⟩ ⟨f₁, f₂⟩
+    dsimp
+    simp only [Category.id_comp, Category.comp_id, ← G.map_comp]
+    aesop_cat
+
+lemma uncurry_obj_curry_obj_flip_flip' {C₁' : Type u₄} {C₂' : Type u₅}
+  [Category.{v₄} C₁'] [Category.{v₅} C₂']
+  (F₁ : C₁ ⥤ C₁') (F₂ : C₂ ⥤ C₂') (G : C₁' × C₂' ⥤ D) :
+    uncurry.obj (F₁ ⋙ (F₂ ⋙ (curry.obj G).flip).flip) = (F₁.prod F₂) ⋙ G := by
+  refine' Functor.ext _ _
+  . simp
+  . intro ⟨x₁, x₂⟩ ⟨y₁, y₂⟩ ⟨f₁, f₂⟩
+    dsimp
+    simp only [Category.id_comp, Category.comp_id, ← G.map_comp]
+    aesop_cat
+
+end Functor
+
 end CategoryTheory
