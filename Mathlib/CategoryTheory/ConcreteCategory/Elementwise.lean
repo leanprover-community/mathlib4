@@ -12,7 +12,6 @@ import Mathlib.Tactic.Elementwise
 import Mathlib.CategoryTheory.Limits.HasLimits
 import Mathlib.CategoryTheory.Limits.Shapes.Kernels
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
---import Mathlib.Tactic.FreshNames
 
 /-!
 In this file we provide various simp lemmas in its elementwise form via `Tactic.Elementwise`.
