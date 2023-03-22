@@ -8,8 +8,8 @@ Authors: Thomas Browning
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.IsLocallyHomeomorph
-import Mathbin.Topology.FiberBundle.Basic
+import Mathlib.Topology.IsLocallyHomeomorph
+import Mathlib.Topology.FiberBundle.Basic
 
 /-!
 # Covering Maps
@@ -106,8 +106,7 @@ protected theorem continuousOn (hf : IsCoveringMapOn f s) : ContinuousOn f (f �
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 protected theorem isLocallyHomeomorphOn (hf : IsCoveringMapOn f s) :
-    IsLocallyHomeomorphOn f (f ⁻¹' s) :=
-  by
+    IsLocallyHomeomorphOn f (f ⁻¹' s) := by
   refine' IsLocallyHomeomorphOn.mk f (f ⁻¹' s) fun x hx => _
   let e := (hf (f x) hx).toTrivialization
   have h := (hf (f x) hx).mem_toTrivialization_baseSet
