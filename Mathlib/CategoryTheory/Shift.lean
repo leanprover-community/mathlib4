@@ -8,9 +8,9 @@ Authors: Scott Morrison, Johan Commelin, Andrew Yang
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Limits.Preserves.Shapes.Zero
-import Mathbin.CategoryTheory.Monoidal.End
-import Mathbin.CategoryTheory.Monoidal.Discrete
+import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
+import Mathlib.CategoryTheory.Monoidal.End
+import Mathlib.CategoryTheory.Monoidal.Discrete
 
 /-!
 # Shift
@@ -57,8 +57,7 @@ variable [AddMonoid A] (F : MonoidalFunctor (Discrete A) (C ⥤ C))
 theorem eqToHom_μ_app {i j i' j' : A} (h₁ : i = i') (h₂ : j = j') (X : C) :
     eqToHom (by rw [h₁, h₂] : (F.obj ⟨i⟩ ⊗ F.obj ⟨j⟩).obj X = (F.obj ⟨i'⟩ ⊗ F.obj ⟨j'⟩).obj X) ≫
         (F.μ ⟨i'⟩ ⟨j'⟩).app X =
-      (F.μ ⟨i⟩ ⟨j⟩).app X ≫ eqToHom (by rw [h₁, h₂]) :=
-  by
+      (F.μ ⟨i⟩ ⟨j⟩).app X ≫ eqToHom (by rw [h₁, h₂]) := by
   cases h₁
   cases h₂
   rw [eq_to_hom_refl, eq_to_hom_refl, category.id_comp, category.comp_id]
@@ -67,8 +66,7 @@ theorem eqToHom_μ_app {i j i' j' : A} (h₁ : i = i') (h₂ : j = j') (X : C) :
 @[simp, reassoc.1]
 theorem μ_inv_app_eqToHom {i j i' j' : A} (h₁ : i = i') (h₂ : j = j') (X : C) :
     inv ((F.μ ⟨i⟩ ⟨j⟩).app X) ≫ eqToHom (by rw [h₁, h₂]) =
-      eqToHom (by rw [h₁, h₂]) ≫ inv ((F.μ ⟨i'⟩ ⟨j'⟩).app X) :=
-  by
+      eqToHom (by rw [h₁, h₂]) ≫ inv ((F.μ ⟨i'⟩ ⟨j'⟩).app X) := by
   cases h₁
   cases h₂
   rw [eq_to_hom_refl, eq_to_hom_refl, category.id_comp, category.comp_id]
@@ -221,16 +219,14 @@ abbrev shiftAdd (i j : A) : X⟦i + j⟧ ≅ X⟦i⟧⟦j⟧ :=
 
 @[reassoc.1]
 theorem shiftAdd_hom_comp_eq_to_hom₁ (i i' j : A) (h : i = i') :
-    (shiftAdd X i j).Hom ≫ eqToHom (by rw [h]) = eqToHom (by rw [h]) ≫ (shiftAdd X i' j).Hom :=
-  by
+    (shiftAdd X i j).Hom ≫ eqToHom (by rw [h]) = eqToHom (by rw [h]) ≫ (shiftAdd X i' j).Hom := by
   cases h
   rw [eq_to_hom_refl, eq_to_hom_refl, category.id_comp, category.comp_id]
 #align category_theory.shift_add_hom_comp_eq_to_hom₁ CategoryTheory.shiftAdd_hom_comp_eq_to_hom₁
 
 @[reassoc.1]
 theorem shiftAdd_hom_comp_eq_to_hom₂ (i j j' : A) (h : j = j') :
-    (shiftAdd X i j).Hom ≫ eqToHom (by rw [h]) = eqToHom (by rw [h]) ≫ (shiftAdd X i j').Hom :=
-  by
+    (shiftAdd X i j).Hom ≫ eqToHom (by rw [h]) = eqToHom (by rw [h]) ≫ (shiftAdd X i j').Hom := by
   cases h
   rw [eq_to_hom_refl, eq_to_hom_refl, category.id_comp, category.comp_id]
 #align category_theory.shift_add_hom_comp_eq_to_hom₂ CategoryTheory.shiftAdd_hom_comp_eq_to_hom₂
@@ -238,8 +234,7 @@ theorem shiftAdd_hom_comp_eq_to_hom₂ (i j j' : A) (h : j = j') :
 @[reassoc.1]
 theorem shiftAdd_hom_comp_eq_to_hom₁₂ (i j i' j' : A) (h₁ : i = i') (h₂ : j = j') :
     (shiftAdd X i j).Hom ≫ eqToHom (by rw [h₁, h₂]) =
-      eqToHom (by rw [h₁, h₂]) ≫ (shiftAdd X i' j').Hom :=
-  by
+      eqToHom (by rw [h₁, h₂]) ≫ (shiftAdd X i' j').Hom := by
   cases h₁
   cases h₂
   rw [eq_to_hom_refl, eq_to_hom_refl, category.id_comp, category.comp_id]
@@ -265,8 +260,7 @@ theorem eqToHom_comp_shiftAdd_inv₁₂ (i j i' j' : A) (h₁ : i = i') (h₂ : 
 #align category_theory.eq_to_hom_comp_shift_add_inv₁₂ CategoryTheory.eqToHom_comp_shiftAdd_inv₁₂
 
 theorem shift_shift' (i j : A) :
-    f⟦i⟧'⟦j⟧' = (shiftAdd X i j).inv ≫ f⟦i + j⟧' ≫ (shiftAdd Y i j).Hom :=
-  by
+    f⟦i⟧'⟦j⟧' = (shiftAdd X i j).inv ≫ f⟦i + j⟧' ≫ (shiftAdd Y i j).Hom := by
   symm
   apply nat_iso.naturality_1
 #align category_theory.shift_shift' CategoryTheory.shift_shift'
@@ -278,8 +272,7 @@ abbrev shiftZero : X⟦0⟧ ≅ X :=
   (shiftFunctorZero C A).app _
 #align category_theory.shift_zero CategoryTheory.shiftZero
 
-theorem shift_zero' : f⟦(0 : A)⟧' = (shiftZero A X).Hom ≫ f ≫ (shiftZero A Y).inv :=
-  by
+theorem shift_zero' : f⟦(0 : A)⟧' = (shiftZero A X).Hom ≫ f ≫ (shiftZero A Y).inv := by
   symm
   apply nat_iso.naturality_2
 #align category_theory.shift_zero' CategoryTheory.shift_zero'
@@ -293,8 +286,7 @@ variable (C) {A} [AddGroup A] [HasShift C A]
 variable (X Y : C) (f : X ⟶ Y)
 
 /-- Shifting by `i` is an equivalence. -/
-instance (i : A) : IsEquivalence (shiftFunctor C i) :=
-  by
+instance (i : A) : IsEquivalence (shiftFunctor C i) := by
   change is_equivalence (add_neg_equiv (shift_monoidal_functor C A) i).Functor
   infer_instance
 
@@ -351,15 +343,13 @@ abbrev shiftNegShift (i : A) : X⟦-i⟧⟦i⟧ ≅ X :=
 variable {X Y}
 
 theorem shift_shift_neg' (i : A) :
-    f⟦i⟧'⟦-i⟧' = (shiftShiftNeg X i).Hom ≫ f ≫ (shiftShiftNeg Y i).inv :=
-  by
+    f⟦i⟧'⟦-i⟧' = (shiftShiftNeg X i).Hom ≫ f ≫ (shiftShiftNeg Y i).inv := by
   symm
   apply nat_iso.naturality_2
 #align category_theory.shift_shift_neg' CategoryTheory.shift_shift_neg'
 
 theorem shift_neg_shift' (i : A) :
-    f⟦-i⟧'⟦i⟧' = (shiftNegShift X i).Hom ≫ f ≫ (shiftNegShift Y i).inv :=
-  by
+    f⟦-i⟧'⟦i⟧' = (shiftNegShift X i).Hom ≫ f ≫ (shiftNegShift Y i).inv := by
   symm
   apply nat_iso.naturality_2
 #align category_theory.shift_neg_shift' CategoryTheory.shift_neg_shift'
@@ -374,8 +364,7 @@ section
 attribute [local reducible] Discrete.addMonoidal
 
 theorem shiftShiftNeg_hom_shift (n : A) (X : C) :
-    (shiftShiftNeg X n).Hom⟦n⟧' = (shiftNegShift (X⟦n⟧) n).Hom :=
-  by
+    (shiftShiftNeg X n).Hom⟦n⟧' = (shiftNegShift (X⟦n⟧) n).Hom := by
   -- This is just `simp, simp [eq_to_hom_map]`.
   simp only [iso.app_hom, unit_of_tensor_iso_unit_hom_app, eq_to_iso.hom, functor.map_comp,
     obj_μ_app, eq_to_iso.inv, obj_ε_inv_app, μ_naturalityₗ_assoc, category.assoc,
@@ -386,8 +375,7 @@ theorem shiftShiftNeg_hom_shift (n : A) (X : C) :
 end
 
 theorem shiftShiftNeg_inv_shift (n : A) (X : C) :
-    (shiftShiftNeg X n).inv⟦n⟧' = (shiftNegShift (X⟦n⟧) n).inv :=
-  by
+    (shiftShiftNeg X n).inv⟦n⟧' = (shiftNegShift (X⟦n⟧) n).inv := by
   ext
   rw [← shift_shift_neg_hom_shift, ← functor.map_comp, iso.hom_inv_id, Functor.map_id]
 #align category_theory.shift_shift_neg_inv_shift CategoryTheory.shiftShiftNeg_inv_shift
@@ -446,8 +434,7 @@ variable {X Y}
 
 /-- When shifts are indexed by an additive commutative monoid, then shifts commute. -/
 theorem shift_comm' (i j : A) :
-    f⟦i⟧'⟦j⟧' = (shiftComm _ _ _).Hom ≫ f⟦j⟧'⟦i⟧' ≫ (shiftComm _ _ _).Hom :=
-  by
+    f⟦i⟧'⟦j⟧' = (shiftComm _ _ _).Hom ≫ f⟦j⟧'⟦i⟧' ≫ (shiftComm _ _ _).Hom := by
   -- This is just `simp, simp [eq_to_hom_map]`.
   simp only [shift_comm, iso.trans_hom, iso.symm_hom, iso.app_inv, iso.symm_inv,
     monoidal_functor.μ_iso_hom, iso.app_hom, functor.map_iso_hom, eq_to_iso.hom, μ_naturality_assoc,
