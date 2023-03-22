@@ -268,8 +268,9 @@ instance commRing [CommRing α] [UniformSpace α] [UniformAddGroup α] [Topologi
 
 instance topologicalRing [CommRing α] [UniformSpace α] [UniformAddGroup α] [TopologicalRing α] :
     TopologicalRing (Quotient (separationSetoid α)) := by
-  convert topologicalRing_quotient (⊥ : Ideal α).closure <;> try apply ring_sep_rel
-  simp [UniformSpace.commRing]
+  convert topologicalRing_quotient (⊥ : Ideal α).closure
+  <;> (try congr; apply ring_sep_rel)
+  simp [commRing]
 #align uniform_space.topological_ring UniformSpace.topologicalRing
 
 end UniformSpace
