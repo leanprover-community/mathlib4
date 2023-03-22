@@ -1516,6 +1516,7 @@ import Mathlib.Topology.ContinuousFunction.CocompactMap
 import Mathlib.Topology.ContinuousFunction.Ordered
 import Mathlib.Topology.ContinuousFunction.T0Sierpinski
 import Mathlib.Topology.ContinuousOn
+import Mathlib.Topology.Covering
 import Mathlib.Topology.DenseEmbedding
 import Mathlib.Topology.DiscreteQuotient
 import Mathlib.Topology.ExtendFrom
