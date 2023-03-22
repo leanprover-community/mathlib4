@@ -8,8 +8,8 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Preadditive.Basic
-import Mathbin.CategoryTheory.SingleObj
+import Mathlib.CategoryTheory.Preadditive.Basic
+import Mathlib.CategoryTheory.SingleObj
 
 /-!
 # `single_obj α` is preadditive when `α` is a ring.
