@@ -25,9 +25,9 @@ based on equivalences between the underlying types.
 
 As in other polynomial files, we typically use the notation:
 
-+ `σ : Type*` (indexing the variables)
++ `σ : Type _` (indexing the variables)
 
-+ `R : Type*` `[comm_semiring R]` (the coefficients)
++ `R : Type _` `[comm_semiring R]` (the coefficients)
 
 + `s : σ →₀ ℕ`, a function from `σ` to `ℕ` which is zero away from a finite set.
 This will give rise to a monomial in `mv_polynomial σ R` which mathematicians might call `X^s`
@@ -390,12 +390,11 @@ theorem finSuccEquiv_coeff_coeff (m : Fin n →₀ ℕ) (f : MvPolynomial (Fin (
   swap
   · simp only [(finSuccEquiv R n).map_add, Polynomial.coeff_add, coeff_add, hp, hq]
   simp only [finSuccEquiv_apply, coe_eval₂Hom, eval₂_monomial, RingHom.coe_comp, prod_pow,
-    /-Polynomial.coeff_C_mul, -//-coeff_C_mul,-/ coeff_monomial, Fin.prod_univ_succ, Fin.cases_zero,
-    Fin.cases_succ, ← map_prod, ← RingHom.map_pow]  -- Porting TODO: issue is that the two commented out lemmas aren't used
+    Polynomial.coeff_C_mul, coeff_C_mul, coeff_monomial, Fin.prod_univ_succ, Fin.cases_zero,
+    Fin.cases_succ, ← map_prod, ← RingHom.map_pow, Function.comp_apply]
   rw [← mul_boole, mul_comm (Polynomial.X ^ j 0), Polynomial.coeff_C_mul_X_pow]; congr 1
   obtain rfl | hjmi := eq_or_ne j (m.cons i)
-  ·
-    simpa only [cons_zero, cons_succ, if_pos rfl, monomial_eq, C_1, one_mul, prod_pow] using
+  · simpa only [cons_zero, cons_succ, if_pos rfl, monomial_eq, C_1, one_mul, prod_pow] using
       coeff_monomial m m (1 : R)
   · simp only [hjmi, if_false]
     obtain hij | rfl := ne_or_eq i (j 0)
@@ -416,7 +415,7 @@ theorem eval_eq_eval_mv_eval' (s : Fin n → R) (y : R) (f : MvPolynomial (Fin (
   let φ : (MvPolynomial (Fin n) R)[X] →ₐ[R] R[X] :=
     { Polynomial.mapRingHom (eval s) with
       commutes' := fun r => by
-        convert Polynomial.map_C _
+        convert Polynomial.map_C (eval s)
         exact (eval_C _).symm }
   show
     aeval (Fin.cons y s : Fin (n + 1) → R) f =
@@ -425,10 +424,12 @@ theorem eval_eq_eval_mv_eval' (s : Fin n → R) (y : R) (f : MvPolynomial (Fin (
   apply MvPolynomial.algHom_ext
   rw [Fin.forall_fin_succ]
   simp only [aeval_X, Fin.cons_zero, AlgEquiv.toAlgHom_eq_coe, AlgHom.coe_comp,
-    Polynomial.coe_aeval_eq_eval, Polynomial.map_C, AlgHom.coe_mks, RingHom.toFun_eq_coe,
-    Polynomial.coe_mapRingHom, AlgEquiv.coe_algHom, comp_apply, finSuccEquiv_apply, eval₂Hom_X',
-    Fin.cases_zero, Polynomial.map_X, Polynomial.eval_X, eq_self_iff_true, Fin.cons_succ,
-    Fin.cases_succ, eval_X, Polynomial.eval_C, imp_true_iff, and_self_iff]
+    Polynomial.coe_aeval_eq_eval, Polynomial.map_C, AlgHom.coe_mk, RingHom.toFun_eq_coe,
+    Polynomial.coe_mapRingHom, comp_apply, finSuccEquiv_apply, eval₂Hom_X',
+    Fin.cases_zero, Polynomial.map_X, Polynomial.eval_X, Fin.cons_succ,
+    Fin.cases_succ, eval_X, Polynomial.eval_C,
+    RingHom.coe_mk, MonoidHom.coe_coe, AlgHom.coe_coe, implies_true, and_self,
+    RingHom.toMonoidHom_eq_coe]
 #align mv_polynomial.eval_eq_eval_mv_eval' MvPolynomial.eval_eq_eval_mv_eval'
 
 theorem coeff_eval_eq_eval_coeff (s' : Fin n → R) (f : Polynomial (MvPolynomial (Fin n) R))
@@ -509,6 +510,7 @@ theorem natDegree_finSuccEquiv (f : MvPolynomial (Fin (n + 1)) R) :
   by_cases c : f = 0
   · rw [c, (finSuccEquiv R n).map_zero, Polynomial.natDegree_zero, degreeOf_zero]
   · rw [Polynomial.natDegree, degree_finSuccEquiv (by simpa only [Ne.def] )]
+    erw [WithBot.unbot'_coe]
     simp
 #align mv_polynomial.nat_degree_fin_succ_equiv MvPolynomial.natDegree_finSuccEquiv
 
@@ -517,8 +519,9 @@ theorem degreeOf_coeff_finSuccEquiv (p : MvPolynomial (Fin (n + 1)) R) (j : Fin 
   rw [degreeOf_eq_sup, degreeOf_eq_sup, Finset.sup_le_iff]
   intro m hm
   rw [← Finsupp.cons_succ j i m]
-  convert Finset.le_sup (support_coeff_finSuccEquiv.1 hm)
-  rfl
+  exact Finset.le_sup
+    (f := fun (g : Fin (Nat.succ n) →₀ ℕ) => g (Fin.succ j))
+    (support_coeff_finSuccEquiv.1 hm)
 #align mv_polynomial.degree_of_coeff_fin_succ_equiv MvPolynomial.degreeOf_coeff_finSuccEquiv
 
 end
