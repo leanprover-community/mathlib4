@@ -286,18 +286,13 @@ theorem mul_compl_self {P : { P : M // IsLprojection X P }} : (↑P : M) * ↑(P
 
 theorem distrib_lattice_lemma [FaithfulSMul M X] {P Q R : { P : M // IsLprojection X P }} :
     ((↑P : M) + ↑(Pᶜ) * R) * (↑P + ↑Q * ↑R * ↑(Pᶜ)) = ↑P + ↑Q * ↑R * ↑(Pᶜ) := by
-  --porting note: The mathlib3 proof doesn't seem to work in mathlib4
-  rw [add_mul, mul_add, mul_add]
-  rw [(mul_assoc _ (R : M) (↑Q * ↑R * ↑(Pᶜ))), ← mul_assoc (R : M) (↑Q * ↑R) _]
-  rw [ ← coe_inf Q, (Pᶜ.prop.commute R.prop).eq, ((Q ⊓ R).prop.commute (Pᶜ).prop).eq,
-    (R.prop.commute (Q ⊓ R).prop).eq, coe_inf Q]
-  rw [mul_assoc (Q : M)]
-  rw [←mul_assoc]
-  -- P * P + P * (S * (Q * R)) + (R * S * P + S * (Q * R * R * S))
-  rw [mul_assoc (R : M)]
-  rw [(Pᶜ.prop.commute P.prop).eq, mul_compl_self, MulZeroClass.zero_mul,
-    MulZeroClass.mul_zero, zero_add, add_zero, ← mul_assoc, P.prop.proj.eq, R.prop.proj.eq, ←
-    coe_inf Q, mul_assoc, ((Q ⊓ R).prop.commute (Pᶜ).prop).eq, ← mul_assoc, Pᶜ.prop.proj.eq]
+  rw [add_mul, mul_add, mul_add, (mul_assoc _ (R : M) (↑Q * ↑R * ↑(Pᶜ))),
+    ← mul_assoc (R : M) (↑Q * ↑R) _, ← coe_inf Q, (Pᶜ.prop.commute R.prop).eq,
+    ((Q ⊓ R).prop.commute (Pᶜ).prop).eq, (R.prop.commute (Q ⊓ R).prop).eq, coe_inf Q,
+    mul_assoc (Q : M), ←mul_assoc, mul_assoc (R : M), (Pᶜ.prop.commute P.prop).eq, mul_compl_self,
+    MulZeroClass.zero_mul, MulZeroClass.mul_zero, zero_add, add_zero, ← mul_assoc, P.prop.proj.eq,
+    R.prop.proj.eq, ←coe_inf Q, mul_assoc, ((Q ⊓ R).prop.commute (Pᶜ).prop).eq, ← mul_assoc,
+    Pᶜ.prop.proj.eq]
 #align is_Lprojection.distrib_lattice_lemma IsLprojection.distrib_lattice_lemma
 
 --porting note: In mathlib3 we were able to directly show that `{ P : M // IsLprojection X P }` was
@@ -333,13 +328,10 @@ instance IsLprojection.Subtype.DistribLattice [FaithfulSMul M X] :
     by
     have e₁ : ↑((P ⊔ Q) ⊓ (P ⊔ R)) = ↑P + ↑Q * (R : M) * ↑(Pᶜ) := by
       rw [coe_inf, coe_sup, coe_sup, ← add_sub, ← add_sub, ← compl_mul, ← compl_mul, add_mul,
-        mul_add, ((Pᶜ).prop.commute Q.prop).eq, mul_add, ← mul_assoc]
-      rw [mul_assoc (Q: M)]
-      rw [((Pᶜ).prop.commute P.prop).eq, mul_compl_self, MulZeroClass.zero_mul,
-        MulZeroClass.mul_zero, zero_add, add_zero, ← mul_assoc]
-      rw [mul_assoc (Q : M)]
-      rw [P.prop.proj.eq, (Pᶜ).prop.proj.eq, mul_assoc,
-        ((Pᶜ).prop.commute R.prop).eq, ← mul_assoc]
+        mul_add, ((Pᶜ).prop.commute Q.prop).eq, mul_add, ← mul_assoc, mul_assoc (Q: M),
+        ((Pᶜ).prop.commute P.prop).eq, mul_compl_self, MulZeroClass.zero_mul, MulZeroClass.mul_zero,
+        zero_add, add_zero, ← mul_assoc, mul_assoc (Q : M), P.prop.proj.eq, (Pᶜ).prop.proj.eq,
+        mul_assoc, ((Pᶜ).prop.commute R.prop).eq, ← mul_assoc]
     have e₂ : ↑((P ⊔ Q) ⊓ (P ⊔ R)) * ↑(P ⊔ Q ⊓ R) = (P : M) + ↑Q * ↑R * ↑(Pᶜ) := by
       rw [coe_inf, coe_sup, coe_sup, coe_sup, ← add_sub, ← add_sub, ← add_sub, ← compl_mul, ←
         compl_mul, ← compl_mul, ((Pᶜ).prop.commute (Q ⊓ R).prop).eq, coe_inf, mul_assoc,
