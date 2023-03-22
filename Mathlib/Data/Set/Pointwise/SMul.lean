@@ -537,7 +537,7 @@ instance noZeroSMulDivisors_set [Zero α] [Zero β] [SMul α β] [NoZeroSMulDivi
     exact (eq_zero_or_eq_zero_of_smul_eq_zero <| h.subset <| smul_mem_smul_set ht).elim ha hb⟩
 #align set.no_zero_smul_divisors_set Set.noZeroSMulDivisors_set
 
-instance [Zero α] [Mul α] [NoZeroDivisors α] : NoZeroDivisors (Set α) :=
+instance' [Zero α] [Mul α] [NoZeroDivisors α] : NoZeroDivisors (Set α) :=
   ⟨fun h ↦ eq_zero_or_eq_zero_of_smul_eq_zero h⟩
 
 end SMul

@@ -502,17 +502,18 @@ end Monoid
 
 section Distrib
 
-instance covariant_mul [LE R] [Add R] [CovariantClass R R (· + ·) (· ≤ ·)] :
+instance' covariant_mul [LE R] [Add R] [CovariantClass R R (· + ·) (· ≤ ·)] :
     CovariantClass (Tropical R) (Tropical R) (· * ·) (· ≤ ·) :=
   ⟨fun _ y z h => add_le_add_left (show untrop y ≤ untrop z from h) _⟩
 #align tropical.covariant_mul Tropical.covariant_mul
 
-instance covariant_swap_mul [LE R] [Add R] [CovariantClass R R (Function.swap (· + ·)) (· ≤ ·)] :
+instance' covariant_swap_mul [LE R] [Add R] [CovariantClass R R (Function.swap (· + ·)) (· ≤ ·)] :
     CovariantClass (Tropical R) (Tropical R) (Function.swap (· * ·)) (· ≤ ·) :=
   ⟨fun _ y z h => add_le_add_right (show untrop y ≤ untrop z from h) _⟩
 #align tropical.covariant_swap_mul Tropical.covariant_swap_mul
 
-instance covariant_add [LinearOrder R] : CovariantClass (Tropical R) (Tropical R) (· + ·) (· ≤ ·) :=
+instance' covariant_add [LinearOrder R] :
+    CovariantClass (Tropical R) (Tropical R) (· + ·) (· ≤ ·) :=
   ⟨fun x y z h => by
     cases' le_total x y with hx hy
     · rw [add_eq_left hx, add_eq_left (hx.trans h)]
@@ -522,12 +523,12 @@ instance covariant_add [LinearOrder R] : CovariantClass (Tropical R) (Tropical R
       · rwa [add_eq_right hx]⟩
 #align tropical.covariant_add Tropical.covariant_add
 
-instance covariant_mul_lt [LT R] [Add R] [CovariantClass R R (· + ·) (· < ·)] :
+instance' covariant_mul_lt [LT R] [Add R] [CovariantClass R R (· + ·) (· < ·)] :
     CovariantClass (Tropical R) (Tropical R) (· * ·) (· < ·) :=
   ⟨fun _ _ _ h => add_lt_add_left (untrop_lt_iff.2 h) _⟩
 #align tropical.covariant_mul_lt Tropical.covariant_mul_lt
 
-instance covariant_swap_mul_lt [Preorder R] [Add R]
+instance' covariant_swap_mul_lt [Preorder R] [Add R]
     [CovariantClass R R (Function.swap (· + ·)) (· < ·)] :
     CovariantClass (Tropical R) (Tropical R) (Function.swap (· * ·)) (· < ·) :=
   ⟨fun _ y z h => add_lt_add_right (show untrop y < untrop z from h) _⟩
@@ -580,7 +581,7 @@ theorem mul_eq_zero_iff {R : Type _} [LinearOrderedAddCommMonoid R] {a b : Tropi
     a * b = 0 ↔ a = 0 ∨ b = 0 := by simp [← untrop_inj_iff, WithTop.add_eq_top]
 #align tropical.mul_eq_zero_iff Tropical.mul_eq_zero_iff
 
-instance {R : Type _} [LinearOrderedAddCommMonoid R] : NoZeroDivisors (Tropical (WithTop R)) :=
+instance' {R : Type _} [LinearOrderedAddCommMonoid R] : NoZeroDivisors (Tropical (WithTop R)) :=
   ⟨mul_eq_zero_iff.mp⟩
 
 end Semiring

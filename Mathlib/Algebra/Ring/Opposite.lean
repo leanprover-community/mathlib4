@@ -11,6 +11,7 @@ Authors: Kenny Lau
 import Mathlib.Algebra.GroupWithZero.Basic
 import Mathlib.Algebra.Group.Opposite
 import Mathlib.Algebra.Hom.Ring
+import Mathlib.Util.Commutes
 
 /-!
 # Ring structures on the multiplicative opposite
@@ -88,12 +89,12 @@ instance [NonUnitalCommRing α] : NonUnitalCommRing αᵐᵒᵖ :=
 instance [CommRing α] : CommRing αᵐᵒᵖ :=
   { MulOpposite.instRingMulOpposite α, MulOpposite.instCommSemiringMulOpposite α with }
 
-instance [Zero α] [Mul α] [NoZeroDivisors α] : NoZeroDivisors αᵐᵒᵖ where
+instance' [Zero α] [Mul α] [NoZeroDivisors α] : NoZeroDivisors αᵐᵒᵖ where
 eq_zero_or_eq_zero_of_mul_eq_zero (H : op (_ * _) = op (0 : α)) :=
     Or.casesOn (eq_zero_or_eq_zero_of_mul_eq_zero <| op_injective H)
       (fun hy => Or.inr <| unop_injective <| hy) fun hx => Or.inl <| unop_injective <| hx
 
-instance [Ring α] [IsDomain α] : IsDomain αᵐᵒᵖ :=
+instance' [Ring α] [IsDomain α] : IsDomain αᵐᵒᵖ :=
   NoZeroDivisors.to_isDomain _
 
 instance [GroupWithZero α] : GroupWithZero αᵐᵒᵖ :=
@@ -172,12 +173,12 @@ instance [NonUnitalCommRing α] : NonUnitalCommRing αᵃᵒᵖ :=
 instance [CommRing α] : CommRing αᵃᵒᵖ :=
   { AddOpposite.instRingAddOpposite α, AddOpposite.instCommSemiringAddOpposite α with }
 
-instance [Zero α] [Mul α] [NoZeroDivisors α] : NoZeroDivisors αᵃᵒᵖ where
+instance' [Zero α] [Mul α] [NoZeroDivisors α] : NoZeroDivisors αᵃᵒᵖ where
 eq_zero_or_eq_zero_of_mul_eq_zero (H : op (_ * _) = op (0 : α)) :=
   Or.imp (fun hx => unop_injective hx) (fun hy => unop_injective hy)
   (@eq_zero_or_eq_zero_of_mul_eq_zero α _ _ _ _ _ <| op_injective H)
 
-instance [Ring α] [IsDomain α] : IsDomain αᵃᵒᵖ :=
+instance' [Ring α] [IsDomain α] : IsDomain αᵃᵒᵖ :=
   NoZeroDivisors.to_isDomain _
 
 instance [GroupWithZero α] : GroupWithZero αᵃᵒᵖ :=

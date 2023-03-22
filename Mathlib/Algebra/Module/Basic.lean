@@ -739,14 +739,14 @@ variable [GroupWithZero R] [AddMonoid M] [DistribMulAction R M]
 
 -- see note [lower instance priority]
 /-- This instance applies to `DivisionSemiring`s, in particular `NNReal` and `NNRat`. -/
-instance (priority := 100) GroupWithZero.toNoZeroSMulDivisors : NoZeroSMulDivisors R M :=
+instance' (priority := 100) GroupWithZero.toNoZeroSMulDivisors : NoZeroSMulDivisors R M :=
   ⟨fun {_ _} h => or_iff_not_imp_left.2 fun hc => (smul_eq_zero_iff_eq' hc).1 h⟩
 #align group_with_zero.to_no_zero_smul_divisors GroupWithZero.toNoZeroSMulDivisors
 
 end GroupWithZero
 
 -- see note [lower instance priority]
-instance (priority := 100) RatModule.noZeroSMulDivisors [AddCommGroup M] [Module ℚ M] :
+instance' (priority := 100) RatModule.noZeroSMulDivisors [AddCommGroup M] [Module ℚ M] :
     NoZeroSMulDivisors ℤ M :=
   ⟨fun {k} {x : M} h => by
     simpa only [zsmul_eq_smul_cast ℚ k x, smul_eq_zero, Rat.zero_iff_num_zero] using h⟩

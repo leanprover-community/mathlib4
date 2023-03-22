@@ -1611,6 +1611,7 @@ import Mathlib.Topology.UnitInterval
 import Mathlib.Util.AddRelatedDecl
 import Mathlib.Util.AssertNoSorry
 import Mathlib.Util.AtomM
+import Mathlib.Util.Commutes
 import Mathlib.Util.Export
 import Mathlib.Util.IncludeStr
 import Mathlib.Util.MemoFix

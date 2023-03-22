@@ -110,7 +110,7 @@ instance noZeroSMulDivisors (α) {_ : Semiring α} {_ : ∀ i, AddCommMonoid <| 
 
 /-- A special case of `Pi.noZeroSMulDivisors` for non-dependent types. Lean struggles to
 synthesize this instance by itself elsewhere in the library. -/
-instance _root_.Function.noZeroSMulDivisors {ι α β : Type _} {_ : Semiring α} {_ : AddCommMonoid β}
+instance' _root_.Function.noZeroSMulDivisors {ι α β : Type _} {_ : Semiring α} {_ : AddCommMonoid β}
     [Module α β] [NoZeroSMulDivisors α β] : NoZeroSMulDivisors α (ι → β) :=
   Pi.noZeroSMulDivisors _
 #align function.no_zero_smul_divisors Function.noZeroSMulDivisors

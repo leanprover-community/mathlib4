@@ -20,7 +20,7 @@ import Mathlib.Algebra.Order.Ring.Defs
 variable {α : Type _}
 
 -- see Note [lower instance priority]
-instance (priority := 100) StrictOrderedSemiring.to_charZero [StrictOrderedSemiring α] :
+instance' (priority := 100) StrictOrderedSemiring.to_charZero [StrictOrderedSemiring α] :
     CharZero α :=
   ⟨StrictMono.injective <|
       strictMono_nat_of_lt_succ fun n => by

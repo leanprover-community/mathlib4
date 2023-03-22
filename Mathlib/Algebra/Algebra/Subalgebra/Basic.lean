@@ -530,12 +530,12 @@ theorem coe_comap (S : Subalgebra R B) (f : A →ₐ[R] B) : (S.comap f : Set A)
   rfl
 #align subalgebra.coe_comap Subalgebra.coe_comap
 
-instance noZeroDivisors {R A : Type _} [CommSemiring R] [Semiring A] [NoZeroDivisors A]
+instance' noZeroDivisors {R A : Type _} [CommSemiring R] [Semiring A] [NoZeroDivisors A]
     [Algebra R A] (S : Subalgebra R A) : NoZeroDivisors S :=
   inferInstanceAs (NoZeroDivisors S.toSubsemiring)
 #align subalgebra.no_zero_divisors Subalgebra.noZeroDivisors
 
-instance isDomain {R A : Type _} [CommRing R] [Ring A] [IsDomain A] [Algebra R A]
+instance' isDomain {R A : Type _} [CommRing R] [Ring A] [IsDomain A] [Algebra R A]
     (S : Subalgebra R A) : IsDomain S :=
   inferInstanceAs (IsDomain S.toSubring)
 #align subalgebra.is_domain Subalgebra.isDomain
@@ -1325,7 +1325,7 @@ theorem range_algebraMap {R A : Type _} [CommRing R] [CommRing A] [Algebra R A]
     Subring.range_subtype]
 #align subalgebra.range_algebra_map Subalgebra.range_algebraMap
 
-instance noZeroSMulDivisors_top [NoZeroDivisors A] (S : Subalgebra R A) : NoZeroSMulDivisors S A :=
+instance' noZeroSMulDivisors_top [NoZeroDivisors A] (S : Subalgebra R A) : NoZeroSMulDivisors S A :=
   ⟨fun {c} x h =>
     have : (c : A) = 0 ∨ x = 0 := eq_zero_or_eq_zero_of_mul_eq_zero h
     this.imp_left (@Subtype.ext_iff _ _ c 0).mpr⟩

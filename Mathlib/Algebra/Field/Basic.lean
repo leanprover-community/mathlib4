@@ -12,6 +12,7 @@ import Mathlib.Algebra.Field.Defs
 import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 import Mathlib.Algebra.Hom.Ring
 import Mathlib.Algebra.Ring.InjSurj
+import Mathlib.Util.Commutes
 
 /-!
 # Lemmas about division (semi)rings and (semi)fields
@@ -170,7 +171,7 @@ theorem one_div_mul_sub_mul_one_div_eq_one_div_add_one_div (ha : a ≠ 0) (hb : 
 #align one_div_mul_sub_mul_one_div_eq_one_div_add_one_div one_div_mul_sub_mul_one_div_eq_one_div_add_one_div
 
 -- see Note [lower instance priority]
-instance (priority := 100) DivisionRing.isDomain : IsDomain K :=
+instance' (priority := 100) DivisionRing.isDomain : IsDomain K :=
   NoZeroDivisors.to_isDomain _
 #align division_ring.is_domain DivisionRing.isDomain
 
@@ -224,7 +225,7 @@ theorem div_sub' (a b c : K) (hc : c ≠ 0) : a / c - b = (a - c * b) / c := by
 #align div_sub' div_sub'
 
 -- see Note [lower instance priority]
-instance (priority := 100) Field.isDomain : IsDomain K :=
+instance' (priority := 100) Field.isDomain : IsDomain K :=
   { DivisionRing.isDomain with }
 #align field.is_domain Field.isDomain
 

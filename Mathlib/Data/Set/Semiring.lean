@@ -164,18 +164,18 @@ theorem _root_.Set.up_mul (s t : Set α) : up (s * t) = up s * up t :=
   rfl
 #align set.up_mul Set.up_mul
 
-instance : NoZeroDivisors (SetSemiring α) :=
+instance' : NoZeroDivisors (SetSemiring α) :=
   ⟨fun {a b} ab =>
     a.eq_empty_or_nonempty.imp_right fun ha =>
       b.eq_empty_or_nonempty.resolve_right fun hb =>
         Nonempty.ne_empty ⟨_, mul_mem_mul ha.some_mem hb.some_mem⟩ ab⟩
 
-instance covariantClass_mul_left :
+instance' covariantClass_mul_left :
     CovariantClass (SetSemiring α) (SetSemiring α) (· * ·) (· ≤ ·) :=
   ⟨fun _ _ _ => mul_subset_mul_left⟩
 #align set_semiring.covariant_class_mul_left SetSemiring.covariantClass_mul_left
 
-instance covariantClass_mul_right :
+instance' covariantClass_mul_right :
     CovariantClass (SetSemiring α) (SetSemiring α) (swap (· * ·)) (· ≤ ·) :=
   ⟨fun _ _ _ => mul_subset_mul_right⟩
 #align set_semiring.covariant_class_mul_right SetSemiring.covariantClass_mul_right

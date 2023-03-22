@@ -11,6 +11,7 @@ Authors: Damiano Testa
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Order.Basic
 import Mathlib.Order.Monotone.Basic
+import Mathlib.Util.Commutes
 
 /-!
 
@@ -166,7 +167,7 @@ theorem Group.covariant_iff_contravariant [Group N] :
 #align add_group.covariant_iff_contravariant AddGroup.covariant_iff_contravariant
 
 @[to_additive]
-instance (priority := 100) Group.covconv [Group N] [CovariantClass N N (· * ·) r] :
+instance' (priority := 100) Group.covconv [Group N] [CovariantClass N N (· * ·) r] :
     ContravariantClass N N (· * ·) r :=
   ⟨Group.covariant_iff_contravariant.mp CovariantClass.elim⟩
 
@@ -183,7 +184,7 @@ theorem Group.covariant_swap_iff_contravariant_swap [Group N] :
 
 
 @[to_additive]
-instance (priority := 100) Group.covconv_swap [Group N] [CovariantClass N N (swap (· * ·)) r] :
+instance' (priority := 100) Group.covconv_swap [Group N] [CovariantClass N N (swap (· * ·)) r] :
     ContravariantClass N N (swap (· * ·)) r :=
   ⟨Group.covariant_swap_iff_contravariant_swap.mp CovariantClass.elim⟩
 
@@ -328,37 +329,37 @@ theorem contravariant_flip_mul_iff [CommSemigroup N] :
 #align contravariant_flip_add_iff contravariant_flip_add_iff
 
 @[to_additive]
-instance contravariant_mul_lt_of_covariant_mul_le [Mul N] [LinearOrder N]
+instance' contravariant_mul_lt_of_covariant_mul_le [Mul N] [LinearOrder N]
     [CovariantClass N N (· * ·) (· ≤ ·)] : ContravariantClass N N (· * ·) (· < ·) where
   elim := (covariant_le_iff_contravariant_lt N N (· * ·)).mp CovariantClass.elim
 
 @[to_additive]
-instance covariant_mul_lt_of_contravariant_mul_le [Mul N] [LinearOrder N]
+instance' covariant_mul_lt_of_contravariant_mul_le [Mul N] [LinearOrder N]
     [ContravariantClass N N (· * ·) (· ≤ ·)] : CovariantClass N N (· * ·) (· < ·) where
   elim := (covariant_lt_iff_contravariant_le N N (· * ·)).mpr ContravariantClass.elim
 
 @[to_additive]
-instance covariant_swap_mul_le_of_covariant_mul_le [CommSemigroup N] [LE N]
+instance' covariant_swap_mul_le_of_covariant_mul_le [CommSemigroup N] [LE N]
     [CovariantClass N N (· * ·) (· ≤ ·)] : CovariantClass N N (swap (· * ·)) (· ≤ ·) where
   elim := (covariant_flip_mul_iff N (· ≤ ·)).mpr CovariantClass.elim
 
 @[to_additive]
-instance contravariant_swap_mul_le_of_contravariant_mul_le [CommSemigroup N] [LE N]
+instance' contravariant_swap_mul_le_of_contravariant_mul_le [CommSemigroup N] [LE N]
     [ContravariantClass N N (· * ·) (· ≤ ·)] : ContravariantClass N N (swap (· * ·)) (· ≤ ·) where
   elim := (contravariant_flip_mul_iff N (· ≤ ·)).mpr ContravariantClass.elim
 
 @[to_additive]
-instance contravariant_swap_mul_lt_of_contravariant_mul_lt [CommSemigroup N] [LT N]
+instance' contravariant_swap_mul_lt_of_contravariant_mul_lt [CommSemigroup N] [LT N]
     [ContravariantClass N N (· * ·) (· < ·)] : ContravariantClass N N (swap (· * ·)) (· < ·) where
   elim := (contravariant_flip_mul_iff N (· < ·)).mpr ContravariantClass.elim
 
 @[to_additive]
-instance covariant_swap_mul_lt_of_covariant_mul_lt [CommSemigroup N] [LT N]
+instance' covariant_swap_mul_lt_of_covariant_mul_lt [CommSemigroup N] [LT N]
     [CovariantClass N N (· * ·) (· < ·)] : CovariantClass N N (swap (· * ·)) (· < ·) where
   elim := (covariant_flip_mul_iff N (· < ·)).mpr CovariantClass.elim
 
 @[to_additive]
-instance LeftCancelSemigroup.covariant_mul_lt_of_covariant_mul_le [LeftCancelSemigroup N]
+instance' LeftCancelSemigroup.covariant_mul_lt_of_covariant_mul_le [LeftCancelSemigroup N]
     [PartialOrder N] [CovariantClass N N (· * ·) (· ≤ ·)] :
     CovariantClass N N (· * ·) (· < ·) where
   elim a b c bc := by
@@ -366,7 +367,7 @@ instance LeftCancelSemigroup.covariant_mul_lt_of_covariant_mul_le [LeftCancelSem
     exact lt_iff_le_and_ne.mpr ⟨CovariantClass.elim a bc, (mul_ne_mul_right a).mpr cb⟩
 
 @[to_additive]
-instance RightCancelSemigroup.covariant_swap_mul_lt_of_covariant_swap_mul_le
+instance' RightCancelSemigroup.covariant_swap_mul_lt_of_covariant_swap_mul_le
     [RightCancelSemigroup N] [PartialOrder N] [CovariantClass N N (swap (· * ·)) (· ≤ ·)] :
     CovariantClass N N (swap (· * ·)) (· < ·) where
   elim a b c bc := by
@@ -374,7 +375,7 @@ instance RightCancelSemigroup.covariant_swap_mul_lt_of_covariant_swap_mul_le
     exact lt_iff_le_and_ne.mpr ⟨CovariantClass.elim a bc, (mul_ne_mul_left a).mpr cb⟩
 
 @[to_additive]
-instance LeftCancelSemigroup.contravariant_mul_le_of_contravariant_mul_lt [LeftCancelSemigroup N]
+instance' LeftCancelSemigroup.contravariant_mul_le_of_contravariant_mul_lt [LeftCancelSemigroup N]
     [PartialOrder N] [ContravariantClass N N (· * ·) (· < ·)] :
     ContravariantClass N N (· * ·) (· ≤ ·) where
   elim a b c bc := by
@@ -383,7 +384,7 @@ instance LeftCancelSemigroup.contravariant_mul_le_of_contravariant_mul_lt [LeftC
     · exact (ContravariantClass.elim _ h).le
 
 @[to_additive]
-instance RightCancelSemigroup.contravariant_swap_mul_le_of_contravariant_swap_mul_lt
+instance' RightCancelSemigroup.contravariant_swap_mul_le_of_contravariant_swap_mul_lt
     [RightCancelSemigroup N] [PartialOrder N] [ContravariantClass N N (swap (· * ·)) (· < ·)] :
     ContravariantClass N N (swap (· * ·)) (· ≤ ·) where
   elim a b c bc := by

@@ -13,6 +13,7 @@ import Mathlib.Algebra.Group.Units
 import Mathlib.Tactic.Nontriviality
 import Mathlib.Tactic.Convert
 import Mathlib.Tactic.Contrapose
+import Mathlib.Util.Commutes
 
 /-!
 # Lemmas about units in a `MonoidWithZero` or a `GroupWithZero`.
@@ -268,7 +269,7 @@ alias isUnit_iff_ne_zero ↔ _ Ne.isUnit
 -- attribute [protected] Ne.is_unit
 
 -- see Note [lower instance priority]
-instance (priority := 10) GroupWithZero.noZeroDivisors : NoZeroDivisors G₀ :=
+instance' (priority := 10) GroupWithZero.noZeroDivisors : NoZeroDivisors G₀ :=
   { (‹_› : GroupWithZero G₀) with
     eq_zero_or_eq_zero_of_mul_eq_zero := @fun a b h => by
       contrapose! h
