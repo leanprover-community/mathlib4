@@ -428,122 +428,134 @@ end AddCommGroupCat
 
 /-- Build an isomorphism in the category `GroupCat` from a `MulEquiv` between `Group`s. -/
 @[to_additive (attr := simps)]
-def MulEquiv.toGroupIso {X Y : GroupCat} (e : X ≃* Y) : X ≅ Y where
+def MulEquiv.toGroupCatIso {X Y : GroupCat} (e : X ≃* Y) : X ≅ Y where
   hom := GroupCat.Hom.mk e.toMonoidHom
   inv := GroupCat.Hom.mk e.symm.toMonoidHom
 set_option linter.uppercaseLean3 false in
-#align mul_equiv.to_Group_iso MulEquiv.toGroupIso
+#align mul_equiv.to_Group_iso MulEquiv.toGroupCatIso
 set_option linter.uppercaseLean3 false in
-#align add_equiv.to_AddGroup_iso AddEquiv.toAddGroupIso
+#align add_equiv.to_AddGroup_iso AddEquiv.toAddGroupCatIso
 
 /-- Build an isomorphism in the category `AddGroup` from an `AddEquiv` between `AddGroup`s. -/
-add_decl_doc AddEquiv.toAddGroupIso
+add_decl_doc AddEquiv.toAddGroupCatIso
 
 /-- Build an isomorphism in the category `CommGroupCat` from a `MulEquiv`
 between `CommGroup`s. -/
 @[to_additive (attr := simps)]
-def MulEquiv.toCommGroupIso {X Y : CommGroupCat} (e : X ≃* Y) : X ≅ Y
+def MulEquiv.toCommGroupCatIso {X Y : CommGroupCat} (e : X ≃* Y) : X ≅ Y
     where
   hom := CommGroupCat.Hom.mk e.toMonoidHom
   inv := CommGroupCat.Hom.mk e.symm.toMonoidHom
 set_option linter.uppercaseLean3 false in
-#align mul_equiv.to_CommGroup_iso MulEquiv.toCommGroupIso
+#align mul_equiv.to_CommGroup_iso MulEquiv.toCommGroupCatIso
 set_option linter.uppercaseLean3 false in
-#align add_equiv.to_AddCommGroup_iso AddEquiv.toAddCommGroupIso
+#align add_equiv.to_AddCommGroup_iso AddEquiv.toAddCommGroupCatIso
 
 /-- Build an isomorphism in the category `AddCommGroupCat` from a `AddEquiv`
 between `AddCommGroup`s. -/
-add_decl_doc AddEquiv.toAddCommGroupIso
+add_decl_doc AddEquiv.toAddCommGroupCatIso
 
 namespace CategoryTheory.Iso
 
-/-- Build a `mul_equiv` from an isomorphism in the category `Group`. -/
-@[to_additive AddGroup_iso_to_add_equiv
-      "Build an `add_equiv` from an isomorphism in the category\n`AddGroup`.",
-  simps]
+/-- Build a `MulEquiv` from an isomorphism in the category `GroupCat`. -/
+@[to_additive (attr := simp)]
 def groupIsoToMulEquiv {X Y : GroupCat} (i : X ≅ Y) : X ≃* Y :=
-  i.Hom.toMulEquiv i.inv i.hom_inv_id i.inv_hom_id
+  MonoidHom.toMulEquiv i.hom i.inv i.hom_inv_id i.inv_hom_id
 set_option linter.uppercaseLean3 false in
 #align category_theory.iso.Group_iso_to_mul_equiv CategoryTheory.Iso.groupIsoToMulEquiv
 set_option linter.uppercaseLean3 false in
 #align category_theory.iso.AddGroup_iso_to_add_equiv CategoryTheory.Iso.addGroupIsoToAddEquiv
 
-/-- Build a `mul_equiv` from an isomorphism in the category `CommGroup`. -/
-@[to_additive AddCommGroup_iso_to_add_equiv
-      "Build an `add_equiv` from an isomorphism\nin the category `AddCommGroup`.",
-  simps]
+/-- Build an `addEquiv` from an isomorphism in the category `AddGroup` -/
+add_decl_doc addGroupIsoToAddEquiv
+
+/-- Build a `MulEquiv` from an isomorphism in the category `CommGroup`. -/
+@[to_additive (attr := simps!)]
 def commGroupIsoToMulEquiv {X Y : CommGroupCat} (i : X ≅ Y) : X ≃* Y :=
-  i.Hom.toMulEquiv i.inv i.hom_inv_id i.inv_hom_id
+  MonoidHom.toMulEquiv i.hom i.inv i.hom_inv_id i.inv_hom_id
 set_option linter.uppercaseLean3 false in
 #align category_theory.iso.CommGroup_iso_to_mul_equiv CategoryTheory.Iso.commGroupIsoToMulEquiv
 set_option linter.uppercaseLean3 false in
 #align category_theory.iso.AddCommGroup_iso_to_add_equiv CategoryTheory.Iso.addCommGroupIsoToAddEquiv
 
+/-- Build an `AddEquiv` from an isomorphism\nin the category `AddCommGroup`. -/
+add_decl_doc addCommGroupIsoToAddEquiv
+
 end CategoryTheory.Iso
 
-/-- multiplicative equivalences between `group`s are the same as (isomorphic to) isomorphisms
-in `Group` -/
-@[to_additive addEquivIsoAddGroupIso
-      "additive equivalences between `add_group`s are the same\nas (isomorphic to) isomorphisms in `AddGroup`"]
-def mulEquivIsoGroupIso {X Y : GroupCat.{u}} : X ≃* Y ≅ X ≅ Y
-    where
-  Hom e := e.toGroupIso
+/-- multiplicative equivalences between `Group`s are the same as (isomorphic to) isomorphisms
+in `GroupCat` -/
+@[to_additive]
+def mulEquivIsoGroupIso {X Y : GroupCat.{u}} : X ≃* Y ≅ X ≅ Y where
+  hom e := e.toGroupCatIso
   inv i := i.groupIsoToMulEquiv
 set_option linter.uppercaseLean3 false in
 #align mul_equiv_iso_Group_iso mulEquivIsoGroupIso
 set_option linter.uppercaseLean3 false in
 #align add_equiv_iso_AddGroup_iso addEquivIsoAddGroupIso
 
+/-- "additive equivalences between `add_group`s are the same
+as (isomorphic to) isomorphisms in `AddGroup` -/
+add_decl_doc addEquivIsoAddGroupIso
+
 /-- multiplicative equivalences between `comm_group`s are the same as (isomorphic to) isomorphisms
 in `CommGroup` -/
-@[to_additive addEquivIsoAddCommGroupIso
-      "additive equivalences between `add_comm_group`s are\nthe same as (isomorphic to) isomorphisms in `AddCommGroup`"]
+@[to_additive]
 def mulEquivIsoCommGroupIso {X Y : CommGroupCat.{u}} : X ≃* Y ≅ X ≅ Y
     where
-  Hom e := e.toCommGroupIso
+  hom e := e.toCommGroupCatIso
   inv i := i.commGroupIsoToMulEquiv
 set_option linter.uppercaseLean3 false in
 #align mul_equiv_iso_CommGroup_iso mulEquivIsoCommGroupIso
 set_option linter.uppercaseLean3 false in
 #align add_equiv_iso_AddCommGroup_iso addEquivIsoAddCommGroupIso
 
+/-- additive equivalences between `AddCommGroup`s are
+the same as (isomorphic to) isomorphisms in `AddCommGroup` -/
+add_decl_doc addEquivIsoAddCommGroupIso
+
 namespace CategoryTheory.Aut
 
 /-- The (bundled) group of automorphisms of a type is isomorphic to the (bundled) group
 of permutations. -/
-def isoPerm {α : Type u} : GroupCat.of (Aut α) ≅ GroupCat.of (Equiv.Perm α)
-    where
-  Hom := ⟨fun g => g.toEquiv, by tidy, by tidy⟩
-  inv := ⟨fun g => g.toIso, by tidy, by tidy⟩
+def isoPerm {α : Type u} : GroupCat.of (Aut α) ≅ GroupCat.of (Equiv.Perm α) where
+  hom := GroupCat.Hom.mk
+    { toFun := fun g => g.toEquiv
+      map_one' := by aesop
+      map_mul' := by aesop }
+  inv := GroupCat.Hom.mk
+    { toFun := fun g => g.toIso
+      map_one' := by aesop
+      map_mul' := by aesop }
+set_option linter.uppercaseLean3 false in
 #align category_theory.Aut.iso_perm CategoryTheory.Aut.isoPerm
 
 /-- The (unbundled) group of automorphisms of a type is `mul_equiv` to the (unbundled) group
 of permutations. -/
 def mulEquivPerm {α : Type u} : Aut α ≃* Equiv.Perm α :=
   isoPerm.groupIsoToMulEquiv
+set_option linter.uppercaseLean3 false in
 #align category_theory.Aut.mul_equiv_perm CategoryTheory.Aut.mulEquivPerm
 
 end CategoryTheory.Aut
 
 @[to_additive]
-instance GroupCat.forget_reflects_isos : ReflectsIsomorphisms (forget GroupCat.{u})
-    where reflects X Y f _ := by
-    skip
-    let i := as_iso ((forget GroupCat).map f)
-    let e : X ≃* Y := { f, i.to_equiv with }
-    exact ⟨(is_iso.of_iso e.to_Group_iso).1⟩
+instance GroupCat.forget_reflects_isos : ReflectsIsomorphisms (forget GroupCat.{u}) where
+  reflects {X Y} f _ := by
+    let i := asIso ((forget GroupCat).map f)
+    let e : X ≃* Y := MulEquiv.mk i.toEquiv (by apply GroupCat.Hom.map_mul)
+    exact IsIso.of_iso e.toGroupCatIso
 set_option linter.uppercaseLean3 false in
 #align Group.forget_reflects_isos GroupCat.forget_reflects_isos
 set_option linter.uppercaseLean3 false in
 #align AddGroup.forget_reflects_isos AddGroupCat.forget_reflects_isos
 
 @[to_additive]
-instance CommGroupCat.forget_reflects_isos : ReflectsIsomorphisms (forget CommGroupCat.{u})
-    where reflects X Y f _ := by
-    skip
-    let i := as_iso ((forget CommGroupCat).map f)
-    let e : X ≃* Y := { f, i.to_equiv with }
-    exact ⟨(is_iso.of_iso e.to_CommGroup_iso).1⟩
+instance CommGroupCat.forget_reflects_isos : ReflectsIsomorphisms (forget CommGroupCat.{u}) where
+  reflects {X Y} f _ := by
+    let i := asIso ((forget CommGroupCat).map f)
+    let e : X ≃* Y := MulEquiv.mk i.toEquiv (by apply CommGroupCat.Hom.map_mul)
+    exact IsIso.of_iso e.toCommGroupCatIso
 set_option linter.uppercaseLean3 false in
 #align CommGroup.forget_reflects_isos CommGroupCat.forget_reflects_isos
 set_option linter.uppercaseLean3 false in
