@@ -62,18 +62,6 @@ M-summand, M-projection, L-summand, L-projection, M-ideal, M-structure
 
 -/
 
---porting note: The following two lemmas weren't required in mathlib3
---  rewrite pattern matching seems to work differently / less well in mathlib4
-section mathlib4_oddness
-
-variable (α : Type _)
-
-lemma mathlib4_oddness1 [Semigroup α] {P Q R : α} :
-  P * R  * (Q * R * P) = P * (R * (Q * R) * (P)) := by
-  rw [mul_assoc P R (Q * R * P), ← mul_assoc R (Q * R) P]
-
-end mathlib4_oddness
-
 variable (X : Type _) [NormedAddCommGroup X]
 
 variable {M : Type} [Ring M] [Module M X]
@@ -295,6 +283,10 @@ theorem compl_mul {P : { P : M // IsLprojection X P }} {Q : M} : ↑(Pᶜ) * Q =
 theorem mul_compl_self {P : { P : M // IsLprojection X P }} : (↑P : M) * ↑(Pᶜ) = 0 := by
   rw [coe_compl, mul_sub, mul_one, P.prop.proj.eq, sub_self]
 #align is_Lprojection.mul_compl_self IsLprojection.mul_compl_self
+
+lemma mathlib4_oddness1 {P Q R : { P : M // IsLprojection X P }} :
+  ↑(Pᶜ) * (R : M) * (↑Q * ↑R * ↑(Pᶜ)) = ↑(Pᶜ) * (R * (↑Q * ↑R) * ↑(Pᶜ)) := by
+  rw [(mul_assoc _ (R : M) _), ← mul_assoc (R : M) (↑Q * ↑R) _]
 
 theorem distrib_lattice_lemma [FaithfulSMul M X] {P Q R : { P : M // IsLprojection X P }} :
     ((↑P : M) + ↑(Pᶜ) * R) * (↑P + ↑Q * ↑R * ↑(Pᶜ)) = ↑P + ↑Q * ↑R * ↑(Pᶜ) := by
