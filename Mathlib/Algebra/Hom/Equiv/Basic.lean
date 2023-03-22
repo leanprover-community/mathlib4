@@ -195,9 +195,12 @@ instance [Mul M] [Mul N] : MulEquivClass (M ≃* N) M N where
 
 variable [Mul M] [Mul N] [Mul P] [Mul Q]
 
--- Porting note: `to_equiv_eq_coe` no longer needed in Lean4
-#noalign mul_equiv.to_equiv_eq_coe
-#noalign add_equiv.to_equiv_eq_coe
+@[to_additive (attr := simp)]
+theorem toEquiv_eq_coe (f : M ≃* N) : f.toEquiv = f :=
+  rfl
+#align mul_equiv.to_equiv_eq_coe MulEquiv.toEquiv_eq_coe
+#align add_equiv.to_equiv_eq_coe AddEquiv.toEquiv_eq_coe
+
 -- Porting note: `to_fun_eq_coe` no longer needed in Lean4
 #noalign mul_equiv.to_fun_eq_coe
 #noalign add_equiv.to_fun_eq_coe

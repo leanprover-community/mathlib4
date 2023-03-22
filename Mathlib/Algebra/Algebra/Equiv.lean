@@ -175,9 +175,12 @@ theorem mk_coe (e : A₁ ≃ₐ[R] A₂) (e' h₁ h₂ h₃ h₄ h₅) :
 #align alg_equiv.mk_coe AlgEquiv.mk_coe
 
 -- Porting note: `toFun_eq_coe` no longer needed in Lean4
-#noalign algebra_equiv.to_fun_eq_coe
--- Porting note: `toEquiv_eq_coe` no longer needed in Lean4
-#noalign algebra_equiv.to_equiv_eq_coe
+#noalign alg_equiv.to_fun_eq_coe
+
+@[simp]
+theorem toEquiv_eq_coe : e.toEquiv = e :=
+  rfl
+#align alg_equiv.to_equiv_eq_coe AlgEquiv.toEquiv_eq_coe
 
 @[simp]
 theorem toRingEquiv_eq_coe : e.toRingEquiv = e :=
