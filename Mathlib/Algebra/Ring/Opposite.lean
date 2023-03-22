@@ -130,8 +130,8 @@ instance nonUnitalSemiring [NonUnitalSemiring α] : NonUnitalSemiring αᵃᵒ�
   { AddOpposite.semigroupWithZero α, AddOpposite.nonUnitalNonAssocSemiring α with }
 
 instance nonAssocSemiring [NonAssocSemiring α] : NonAssocSemiring αᵃᵒᵖ :=
-  { AddOpposite.instMulZeroOneClassAddOpposite α,
-    AddOpposite.instNonUnitalNonAssocSemiringAddOpposite α with }
+  { AddOpposite.mulZeroOneClass α,
+    AddOpposite.nonUnitalNonAssocSemiring α with }
 
 instance semiring [Semiring α] : Semiring αᵃᵒᵖ :=
   { AddOpposite.nonUnitalSemiring α, AddOpposite.nonAssocSemiring α,

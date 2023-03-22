@@ -49,7 +49,7 @@ instance addMonoid [AddMonoid α] : AddMonoid αᵐᵒᵖ :=
   unop_injective.addMonoid _ (by exact rfl) (fun _ _ => rfl) fun _ _ => rfl
 
 instance addMonoidWithOne [AddMonoidWithOne α] : AddMonoidWithOne αᵐᵒᵖ :=
-  { instAddMonoidMulOpposite α, instOneMulOpposite α with
+  { MulOpposite.addMonoid α, MulOpposite.one α with
     natCast := fun n => op n,
     natCast_zero := show op ((0 : ℕ) : α) = 0 by simp,
     natCast_succ := show ∀ n, op ((n + 1 : ℕ) : α) = op ((n : ℕ) : α) + 1 by simp }
@@ -66,7 +66,7 @@ instance addGroup [AddGroup α] : AddGroup αᵐᵒᵖ :=
   (fun _ _ => rfl) fun _ _ => rfl
 
 instance addGroupWithOne [AddGroupWithOne α] : AddGroupWithOne αᵐᵒᵖ :=
-  { instAddMonoidWithOneMulOpposite α, instAddGroupMulOpposite α with
+  { MulOpposite.addMonoidWithOne α, MulOpposite.addGroup α with
     intCast := fun n => op n,
     intCast_ofNat := fun n => show op ((n : ℤ) : α) = op (n : α) by rw [Int.cast_ofNat],
     intCast_negSucc := fun n =>
