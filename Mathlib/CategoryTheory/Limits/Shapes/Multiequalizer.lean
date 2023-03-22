@@ -613,7 +613,7 @@ theorem snd_app_right (a) : K.ι.app (WalkingMultispan.left a) = I.snd a ≫ K.�
 /-
 Porting note: Added simp lemma.
 -/
-@[simp]
+@[reassoc (attr := simp)]
 lemma π_comp_hom (K₁ K₂ : Multicofork I) (f : K₁ ⟶ K₂) (b : I.R) : K₁.π b ≫ f.Hom = K₂.π b :=
   f.w _
 
