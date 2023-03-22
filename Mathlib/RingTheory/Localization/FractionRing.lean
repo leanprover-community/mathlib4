@@ -305,6 +305,8 @@ instance [Nontrivial R] : Nontrivial (FractionRing R) :=
   ⟨⟨(algebraMap R _) 0, (algebraMap _ _) 1, fun H =>
       zero_ne_one (IsLocalization.injective _ le_rfl H)⟩⟩
 
+/-- Porting note: if the fields of this instance are explicitly defined as they were
+in mathlib3, the last instance in this file suffers a TC timeout -/
 noncomputable instance : Field (FractionRing A) := IsFractionRing.toField A
 
 @[simp]
@@ -334,7 +336,7 @@ noncomputable def algEquiv (K : Type _) [Field K] [Algebra A K] [IsFractionRing 
 
 instance [Algebra R A] [NoZeroSMulDivisors R A] : NoZeroSMulDivisors R (FractionRing A) :=
   by
-  apply NoZeroSMulDivisors.of_algebraMap_injective 
+  apply NoZeroSMulDivisors.of_algebraMap_injective
   rw [IsScalarTower.algebraMap_eq R A]
   apply Function.Injective.comp (NoZeroSMulDivisors.algebraMap_injective A (FractionRing A))
     (NoZeroSMulDivisors.algebraMap_injective R A)
