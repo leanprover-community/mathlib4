@@ -284,15 +284,11 @@ theorem mul_compl_self {P : { P : M // IsLprojection X P }} : (↑P : M) * ↑(P
   rw [coe_compl, mul_sub, mul_one, P.prop.proj.eq, sub_self]
 #align is_Lprojection.mul_compl_self IsLprojection.mul_compl_self
 
-lemma mathlib4_oddness1 {P Q R : { P : M // IsLprojection X P }} :
-  ↑(Pᶜ) * (R : M) * (↑Q * ↑R * ↑(Pᶜ)) = ↑(Pᶜ) * (R * (↑Q * ↑R) * ↑(Pᶜ)) := by
-  rw [(mul_assoc _ (R : M) _), ← mul_assoc (R : M) (↑Q * ↑R) _]
-
 theorem distrib_lattice_lemma [FaithfulSMul M X] {P Q R : { P : M // IsLprojection X P }} :
     ((↑P : M) + ↑(Pᶜ) * R) * (↑P + ↑Q * ↑R * ↑(Pᶜ)) = ↑P + ↑Q * ↑R * ↑(Pᶜ) := by
   --porting note: The mathlib3 proof doesn't seem to work in mathlib4
   rw [add_mul, mul_add, mul_add]
-  rw [mathlib4_oddness1]
+  rw [(mul_assoc _ (R : M) (↑Q * ↑R * ↑(Pᶜ))), ← mul_assoc (R : M) (↑Q * ↑R) _]
   rw [ ← coe_inf Q, (Pᶜ.prop.commute R.prop).eq, ((Q ⊓ R).prop.commute (Pᶜ).prop).eq,
     (R.prop.commute (Q ⊓ R).prop).eq, coe_inf Q]
   rw [mul_assoc (Q : M)]
