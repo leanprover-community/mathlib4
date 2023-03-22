@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Mathlib.CategoryTheory.Category.Basic
+import Mathlib.Util.AddRelatedDecl
 import Mathlib.Lean.Meta.Simp
 
 /-!
@@ -23,6 +24,7 @@ There is also a term elaborator `reassoc_of% t` for use within proofs.
 -/
 
 open Lean Meta Elab Tactic
+open Mathlib.Tactic
 
 namespace CategoryTheory
 
@@ -53,34 +55,10 @@ initialize registerBuiltinAttribute {
   applicationTime := .afterCompilation
   add := fun src ref kind => match ref with
   | `(attr| reassoc $[(attr := $stx?,*)]?) => MetaM.run' do
-    let tgt := match src with
-      | Name.str n s => Name.mkStr n $ s ++ "_assoc"
-      | x => x
     if (kind != AttributeKind.global) then
       throwError "`reassoc` can only be used as a global attribute"
-    addDeclarationRanges tgt {
-      range := ← getDeclarationRange (← getRef)
-      selectionRange := ← getDeclarationRange ref }
-    let info ← getConstInfo src
-    -- We use `info.type` to give an expected type hint for `info.value!`
-    -- before passing to `reassoc`,
-    -- so that `reassoc` simplifies the declared type,
-    -- rather than reading the proof and inferring a type from that.
-    let newValue ← reassocExpr (← mkExpectedTypeHint info.value! info.type)
-    let newType ← inferType newValue
-    match info with
-    | ConstantInfo.thmInfo info =>
-      addAndCompile <| .thmDecl { info with type := newType, name := tgt, value := newValue }
-    | ConstantInfo.defnInfo info =>
-      -- It looks a bit weird that we use `.thmDecl` here too,
-      -- but apparently structure fields are created using `def`
-      -- even with they are propositional. If `reassoc` worked, it was a `Prop` anyway.
-      addAndCompile <| .thmDecl { info with type := newType, name := tgt, value := newValue }
-    | _ => throwError "Constant {src} is not a theorem or definition."
-    if isProtected (← getEnv) src then
-      setEnv $ addProtected (← getEnv) tgt
-    let stx := match stx? with | some stx => stx | none => #[]
-    _ ← Term.TermElabM.run' <| ToAdditive.applyAttributes ref stx `reassoc src tgt
+    addRelatedDecl src "_assoc" ref `reassoc stx? fun type value levels => do
+      pure (← reassocExpr (← mkExpectedTypeHint value type), levels)
   | _ => throwUnsupportedSyntax }
 
 open Term in
