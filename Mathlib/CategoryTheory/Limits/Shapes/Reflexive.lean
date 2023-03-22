@@ -166,12 +166,12 @@ theorem hasEqualizer_of_common_retraction [HasCoreflexiveEqualizers C] {A B : C}
 
 /-- If `C` has coequalizers, then it has reflexive coequalizers. -/
 instance (priority := 100) hasReflexiveCoequalizers_of_hasCoequalizers [HasCoequalizers C] :
-    HasReflexiveCoequalizers C where has_coeq A B f g i := by infer_instance
+    HasReflexiveCoequalizers C where has_coeq A B f g _ := by infer_instance
 #align category_theory.limits.has_reflexive_coequalizers_of_has_coequalizers CategoryTheory.Limits.hasReflexiveCoequalizers_of_hasCoequalizers
 
 /-- If `C` has equalizers, then it has coreflexive equalizers. -/
 instance (priority := 100) hasCoreflexiveEqualizers_of_hasEqualizers [HasEqualizers C] :
-    HasCoreflexiveEqualizers C where has_eq A B f g i := by infer_instance
+    HasCoreflexiveEqualizers C where has_eq A B f g _ := by infer_instance
 #align category_theory.limits.has_coreflexive_equalizers_of_has_equalizers CategoryTheory.Limits.hasCoreflexiveEqualizers_of_hasEqualizers
 
 end Limits
