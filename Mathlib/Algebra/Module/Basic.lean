@@ -509,10 +509,10 @@ instance subsingleton_rat_module (E : Type _) [AddCommGroup E] : Subsingleton (M
   ⟨fun P Q => (Module.ext' P Q) fun r x => @map_rat_smul _ _ _ _ P Q _ _ (AddMonoidHom.id E) r x⟩
 #align subsingleton_rat_module subsingleton_rat_module
 
-/-- If `E` is a vector space over two division rings `R` and `S`, then scalar multiplications
+/-- If `E` is a vector space over two division semirings `R` and `S`, then scalar multiplications
 agree on inverses of natural numbers in `R` and `S`. -/
 theorem inv_nat_cast_smul_eq {E : Type _} (R S : Type _) [AddCommMonoid E] [DivisionSemiring R]
-    [DivisionRing S] [Module R E] [Module S E] (n : ℕ) (x : E) : (n⁻¹ : R) • x = (n⁻¹ : S) • x :=
+    [DivisionSemiring S] [Module R E] [Module S E] (n : ℕ) (x : E) : (n⁻¹ : R) • x = (n⁻¹ : S) • x :=
   map_inv_nat_cast_smul (AddMonoidHom.id E) R S n x
 #align inv_nat_cast_smul_eq inv_nat_cast_smul_eq
 
@@ -523,7 +523,7 @@ theorem inv_int_cast_smul_eq {E : Type _} (R S : Type _) [AddCommGroup E] [Divis
   map_inv_int_cast_smul (AddMonoidHom.id E) R S n x
 #align inv_int_cast_smul_eq inv_int_cast_smul_eq
 
-/-- If `E` is a vector space over a division rings `R` and has a monoid action by `α`, then that
+/-- If `E` is a vector space over a division semiring `R` and has a monoid action by `α`, then that
 action commutes by scalar multiplication of inverses of natural numbers in `R`. -/
 theorem inv_nat_cast_smul_comm {α E : Type _} (R : Type _) [AddCommMonoid E] [DivisionSemiring R]
     [Monoid α] [Module R E] [DistribMulAction α E] (n : ℕ) (s : α) (x : E) :
@@ -531,7 +531,7 @@ theorem inv_nat_cast_smul_comm {α E : Type _} (R : Type _) [AddCommMonoid E] [D
   (map_inv_nat_cast_smul (DistribMulAction.toAddMonoidHom E s) R R n x).symm
 #align inv_nat_cast_smul_comm inv_nat_cast_smul_comm
 
-/-- If `E` is a vector space over a division rings `R` and has a monoid action by `α`, then that
+/-- If `E` is a vector space over a division ring `R` and has a monoid action by `α`, then that
 action commutes by scalar multiplication of inverses of integers in `R` -/
 theorem inv_int_cast_smul_comm {α E : Type _} (R : Type _) [AddCommGroup E] [DivisionRing R]
     [Monoid α] [Module R E] [DistribMulAction α E] (n : ℤ) (s : α) (x : E) :
