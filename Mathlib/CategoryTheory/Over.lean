@@ -303,7 +303,7 @@ variable {D : Type u₂} [Category.{v₂} D]
 def post (F : T ⥤ D) : Over X ⥤ Over (F.obj X)
     where
   obj Y := mk <| F.map Y.hom
-  map f := Over.homMk (F.map f.left) (by aesop_cat; erw [← F.map_comp, w])
+  map f := Over.homMk (F.map f.left) (by aesop_cat_nonterminal; erw [← F.map_comp, w])
 #align category_theory.over.post CategoryTheory.Over.post
 
 end
@@ -509,7 +509,7 @@ variable {D : Type u₂} [Category.{v₂} D]
 @[simps]
 def post {X : T} (F : T ⥤ D) : Under X ⥤ Under (F.obj X) where
   obj Y := mk <| F.map Y.hom
-  map f := Under.homMk (F.map f.right) (by aesop_cat; erw [← F.map_comp, w])
+  map f := Under.homMk (F.map f.right) (by aesop_cat_nonterminal; erw [← F.map_comp, w])
 #align category_theory.under.post CategoryTheory.Under.post
 
 end

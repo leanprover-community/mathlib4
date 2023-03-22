@@ -14,6 +14,7 @@ if [ ! $1 ] ; then
 fi
 
 # arguments
+root_path="$(pwd)"
 mathlib4_path="$1"
 
 case $mathlib4_path in
@@ -67,8 +68,7 @@ echo "Applying automated fixes"
     sed -i 's/Mathbin\./Mathlib\./g' "$mathlib4_path"
     sed -i '/^import/{s/[.]Gcd/.GCD/g; s/[.]Modeq/.ModEq/g; s/[.]Nary/.NAry/g; s/[.]Peq/.PEq/g; s/[.]Pfun/.PFun/g; s/[.]Pnat/.PNat/g; s/[.]Smul/.SMul/g; s/[.]Zmod/.ZMod/g; s/[.]Nnreal/.NNReal/g; s/[.]Ennreal/ENNReal/g}' "$mathlib4_path"
 
-    # awk script taken from https://github.com/leanprover-community/mathlib4/pull/1523
-    awk '{do {{if (match($0, "^  by$") && length(p) < 98 && (!(match(p, "^[ \t]*--.*$")))) {p=p " by";} else {if (NR!=1) {print p}; p=$0}}} while (getline == 1) if (getline==0) print p}' "$mathlib4_path" > "$mathlib4_path.tmp"
+    python3 "$root_path/scripts/fix-line-breaks.py" "$mathlib4_path" "$mathlib4_path.tmp"
     mv "$mathlib4_path.tmp" "$mathlib4_path"
 
     (echo "import $mathlib4_mod" ; cat Mathlib.lean) | LC_ALL=C sort | uniq > Mathlib.lean.tmp

@@ -492,8 +492,8 @@ theorem coneOfHom_homOfCone (s : Cone F) : coneOfHom h (homOfCone h s) = s := by
   dsimp [coneOfHom, homOfCone]
   match s with
   | .mk s_pt s_π =>
-    congr ; dsimp
-    convert congrFun (congrFun (congrArg NatTrans.app h.inv_hom_id) (op s_pt)) s_π
+    congr; dsimp
+    convert congrFun (congrFun (congrArg NatTrans.app h.inv_hom_id) (op s_pt)) s_π using 1
 #align category_theory.limits.is_limit.of_nat_iso.cone_of_hom_of_cone CategoryTheory.Limits.IsLimit.OfNatIso.coneOfHom_homOfCone
 
 @[simp]
@@ -610,7 +610,8 @@ def descCoconeMorphism {t : Cocone F} (h : IsColimit t) (s : Cocone F) : t ⟶ s
 #align category_theory.limits.is_colimit.desc_cocone_morphism CategoryTheory.Limits.IsColimit.descCoconeMorphism
 
 theorem uniq_cocone_morphism {s t : Cocone F} (h : IsColimit t) {f f' : t ⟶ s} : f = f' :=
-  have : ∀ {g : t ⟶ s}, g = h.descCoconeMorphism s := by intro g; aesop_cat; exact h.uniq _ _ g.w
+  have : ∀ {g : t ⟶ s}, g = h.descCoconeMorphism s := by
+    intro g; aesop_cat_nonterminal; exact h.uniq _ _ g.w
   this.trans this.symm
 #align category_theory.limits.is_colimit.uniq_cocone_morphism CategoryTheory.Limits.IsColimit.uniq_cocone_morphism
 
@@ -1010,7 +1011,7 @@ theorem coconeOfHom_homOfCocone (s : Cocone F) : coconeOfHom h (homOfCocone h s)
   dsimp [coconeOfHom, homOfCocone];
   have ⟨s_pt,s_ι⟩ := s
   congr ; dsimp
-  convert congrFun (congrFun (congrArg NatTrans.app h.inv_hom_id) s_pt) s_ι
+  convert congrFun (congrFun (congrArg NatTrans.app h.inv_hom_id) s_pt) s_ι using 1
 #align category_theory.limits.is_colimit.of_nat_iso.cocone_of_hom_of_cocone CategoryTheory.Limits.IsColimit.OfNatIso.coconeOfHom_homOfCocone
 
 @[simp]
