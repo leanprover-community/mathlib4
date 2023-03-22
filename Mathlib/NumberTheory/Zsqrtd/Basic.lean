@@ -708,17 +708,28 @@ theorem Nonneg.add {a b : ℤ√d} (ha : Nonneg a) (hb : Nonneg b) : Nonneg (a +
     · dsimp only at h
       exact Int.ofNat_le.1 (le_of_neg_le_neg (@Int.le.intro _ _ w (by simp [*])))
     · apply Nat.le_add_right
-  · simpa [add_comm] using
+  · have : Nonneg ⟨_, _⟩ :=
       nonnegg_pos_neg.2 (sqLe_add (nonnegg_pos_neg.1 ha) (nonnegg_pos_neg.1 hb))
+    rw [Nat.cast_add, Nat.cast_add, neg_add] at this
+    rwa [add_def]
+    -- Porting note: was
+    -- simpa [add_comm] using
+    --   nonnegg_pos_neg.2 (sqLe_add (nonnegg_pos_neg.1 ha) (nonnegg_pos_neg.1 hb))
   · exact nonneg_add_lem ha hb
   · refine' nonnegg_cases_left fun i h => sqLe_of_le _ _ (nonnegg_neg_pos.1 ha)
-    · exact Int.ofNat_le.1 (le_of_neg_le_neg (Int.le.intro h))
+    · dsimp only at h
+      exact Int.ofNat_le.1 (le_of_neg_le_neg (Int.le.intro h))
     · apply Nat.le_add_right
   · dsimp
-    rw [add_comm, add_comm ↑y]
+    rw [add_comm, add_comm (y : ℤ)]
     exact nonneg_add_lem hb ha
-  · simpa [add_comm] using
+  · have : Nonneg ⟨_, _⟩ :=
       nonnegg_neg_pos.2 (sqLe_add (nonnegg_neg_pos.1 ha) (nonnegg_neg_pos.1 hb))
+    rw [Nat.cast_add, Nat.cast_add, neg_add] at this
+    rwa [add_def]
+    -- Porting note: was
+    -- simpa [add_comm] using
+    --   nonnegg_neg_pos.2 (sqLe_add (nonnegg_neg_pos.1 ha) (nonnegg_neg_pos.1 hb))
 #align zsqrtd.nonneg.add Zsqrtd.Nonneg.add
 
 theorem nonneg_iff_zero_le {a : ℤ√d} : Nonneg a ↔ 0 ≤ a :=
