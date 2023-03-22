@@ -75,7 +75,7 @@ namespace MonoidalNatTrans
 
 /-- The identity monoidal natural transformation.
 -/
-@[simps]
+@[simps!]
 def id (F : LaxMonoidalFunctor C D) : MonoidalNatTrans F F :=
   { 𝟙 F.toFunctor with }
 #align category_theory.monoidal_nat_trans.id CategoryTheory.MonoidalNatTrans.id
@@ -85,7 +85,7 @@ instance (F : LaxMonoidalFunctor C D) : Inhabited (MonoidalNatTrans F F) :=
 
 /-- Vertical composition of monoidal natural transformations.
 -/
-@[simps]
+@[simps!]
 def vcomp {F G H : LaxMonoidalFunctor C D} (α : MonoidalNatTrans F G) (β : MonoidalNatTrans G H) :
     MonoidalNatTrans F H :=
   { NatTrans.vcomp α.toNatTrans β.toNatTrans with }
@@ -212,9 +212,8 @@ end MonoidalNatIso
 
 noncomputable section
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- The unit of a monoidal equivalence can be upgraded to a monoidal natural transformation. -/
-@[simps]
+@[simp] -- Porting note: changed to simp
 def monoidalUnit (F : MonoidalFunctor C D) [IsEquivalence F.toFunctor] :
     LaxMonoidalFunctor.id C ⟶ F.toLaxMonoidalFunctor ⊗⋙ (monoidalInverse F).toLaxMonoidalFunctor :=
   let e := F.toFunctor.asEquivalence
@@ -246,9 +245,8 @@ instance (F : MonoidalFunctor C D) [IsEquivalence F.toFunctor] : IsIso (monoidal
     infer_instance
   MonoidalNatIso.isIso_of_isIso_app _
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- The counit of a monoidal equivalence can be upgraded to a monoidal natural transformation. -/
-@[simps]
+@[simp] -- Porting note: changed to simp
 def monoidalCounit (F : MonoidalFunctor C D) [IsEquivalence F.toFunctor] :
     (monoidalInverse F).toLaxMonoidalFunctor ⊗⋙ F.toLaxMonoidalFunctor ⟶ LaxMonoidalFunctor.id D :=
   let e := F.toFunctor.asEquivalence
