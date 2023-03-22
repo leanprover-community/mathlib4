@@ -35,7 +35,6 @@ structure Zsqrtd (d : ℤ) where
   deriving DecidableEq
 #align zsqrtd Zsqrtd
 
--- mathport name: «exprℤ√ »
 prefix:100 "ℤ√" => Zsqrtd
 
 namespace Zsqrtd
@@ -827,12 +826,12 @@ theorem nonneg_mul_lem {x y : ℕ} {a : ℤ√d} (ha : Nonneg a) : Nonneg (⟨x,
 
 theorem nonneg_mul {a b : ℤ√d} (ha : Nonneg a) (hb : Nonneg b) : Nonneg (a * b) :=
   match a, b, nonneg_cases ha, nonneg_cases hb, ha, hb with
-  | _, _, ⟨x, y, Or.inl rfl⟩, ⟨z, w, Or.inl rfl⟩, ha, hb => trivial
-  | _, _, ⟨x, y, Or.inl rfl⟩, ⟨z, w, Or.inr <| Or.inr rfl⟩, ha, hb => nonneg_mul_lem hb
-  | _, _, ⟨x, y, Or.inl rfl⟩, ⟨z, w, Or.inr <| Or.inl rfl⟩, ha, hb => nonneg_mul_lem hb
-  | _, _, ⟨x, y, Or.inr <| Or.inr rfl⟩, ⟨z, w, Or.inl rfl⟩, ha, hb => by
+  | _, _, ⟨_, _, Or.inl rfl⟩, ⟨_, _, Or.inl rfl⟩, _, _ => trivial
+  | _, _, ⟨x, y, Or.inl rfl⟩, ⟨z, w, Or.inr <| Or.inr rfl⟩, _, hb => nonneg_mul_lem hb
+  | _, _, ⟨x, y, Or.inl rfl⟩, ⟨z, w, Or.inr <| Or.inl rfl⟩, _, hb => nonneg_mul_lem hb
+  | _, _, ⟨x, y, Or.inr <| Or.inr rfl⟩, ⟨z, w, Or.inl rfl⟩, ha, _ => by
     rw [mul_comm]; exact nonneg_mul_lem ha
-  | _, _, ⟨x, y, Or.inr <| Or.inl rfl⟩, ⟨z, w, Or.inl rfl⟩, ha, hb => by
+  | _, _, ⟨x, y, Or.inr <| Or.inl rfl⟩, ⟨z, w, Or.inl rfl⟩, ha, _ => by
     rw [mul_comm]; exact nonneg_mul_lem ha
   | _, _, ⟨x, y, Or.inr <| Or.inr rfl⟩, ⟨z, w, Or.inr <| Or.inr rfl⟩, ha, hb => by
     rw [calc
@@ -909,7 +908,7 @@ theorem divides_sq_eq_zero {x y} (h : x * x = d * y * y) : x = 0 ∧ y = 0 :=
         co1.mul co1
       exact
         Nonsquare.ns d m
-          (Nat.dvd_antisymm (by rw [this] <;> apply dvd_mul_right) <|
+          (Nat.dvd_antisymm (by rw [this]; apply dvd_mul_right) <|
             co2.dvd_of_dvd_mul_right <| by simp [this])
 #align zsqrtd.divides_sq_eq_zero Zsqrtd.divides_sq_eq_zero
 
@@ -927,12 +926,12 @@ theorem not_divides_sq (x y) : (x + 1) * (x + 1) ≠ d * (y + 1) * (y + 1) := fu
 
 open Int in
 theorem nonneg_antisymm : ∀ {a : ℤ√d}, Nonneg a → Nonneg (-a) → a = 0
-  | ⟨0, 0⟩, xy, yx => rfl
-  | ⟨-[x+1], -[y+1]⟩, xy, yx => False.elim xy
-  | ⟨(x + 1 : Nat), (y + 1 : Nat)⟩, xy, yx => False.elim yx
-  | ⟨-[x+1], 0⟩, xy, yx => absurd xy (not_sqLe_succ _ _ _ (by decide))
-  | ⟨(x + 1 : Nat), 0⟩, xy, yx => absurd yx (not_sqLe_succ _ _ _ (by decide))
-  | ⟨0, -[y+1]⟩, xy, yx => absurd xy (not_sqLe_succ _ _ _ d_pos)
+  | ⟨0, 0⟩, _, _ => rfl
+  | ⟨-[x+1], -[y+1]⟩, xy, _ => False.elim xy
+  | ⟨(x + 1 : Nat), (y + 1 : Nat)⟩, _, yx => False.elim yx
+  | ⟨-[x+1], 0⟩, xy, _ => absurd xy (not_sqLe_succ _ _ _ (by decide))
+  | ⟨(x + 1 : Nat), 0⟩, _, yx => absurd yx (not_sqLe_succ _ _ _ (by decide))
+  | ⟨0, -[y+1]⟩, xy, _ => absurd xy (not_sqLe_succ _ _ _ d_pos)
   | ⟨0, (y + 1 : Nat)⟩, _, yx => absurd yx (not_sqLe_succ _ _ _ d_pos)
   | ⟨(x + 1 : Nat), -[y+1]⟩, (xy : SqLe _ _ _ _), (yx : SqLe _ _ _ _) => by
     let t := le_antisymm yx xy
@@ -1004,7 +1003,7 @@ instance : LinearOrderedCommRing (ℤ√d) :=
     Zsqrtd.nontrivial with
     add_le_add_left := Zsqrtd.add_le_add_left
     mul_pos := Zsqrtd.mul_pos
-    zero_le_one := by decide }
+    zero_le_one := by trivial }
 
 instance : LinearOrderedRing (ℤ√d) := by infer_instance
 
