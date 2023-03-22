@@ -115,7 +115,7 @@ theorem pimage_subset {t : Finset β} : s.pimage f ⊆ t ↔ ∀ x ∈ s, ∀ y 
   simp [subset_iff, @forall_swap _ β]
 #align finset.pimage_subset Finset.pimage_subset
 
--- @[mono] Porting note: mono not implemented yet
+@[mono]
 theorem pimage_mono (h : s ⊆ t) : s.pimage f ⊆ t.pimage f :=
   pimage_subset.2 fun x hx _ hy => mem_pimage.2 ⟨x, h hx, hy⟩
 #align finset.pimage_mono Finset.pimage_mono

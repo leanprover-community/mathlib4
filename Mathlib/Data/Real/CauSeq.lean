@@ -728,7 +728,7 @@ instance : LE (CauSeq α abs) :=
 
 theorem lt_of_lt_of_eq {f g h : CauSeq α abs} (fg : f < g) (gh : g ≈ h) : f < h :=
   show Pos (h - f) by
-    convert pos_add_limZero fg (neg_limZero gh)
+    convert pos_add_limZero fg (neg_limZero gh) using 1
     simp
 
 #align cau_seq.lt_of_lt_of_eq CauSeq.lt_of_lt_of_eq
@@ -740,7 +740,7 @@ theorem lt_of_eq_of_lt {f g h : CauSeq α abs} (fg : f ≈ g) (gh : g < h) : f <
 
 theorem lt_trans {f g h : CauSeq α abs} (fg : f < g) (gh : g < h) : f < h :=
   show Pos (h - f) by
-    convert add_pos fg gh
+    convert add_pos fg gh using 1
     simp
 #align cau_seq.lt_trans CauSeq.lt_trans
 
@@ -824,14 +824,14 @@ theorem rat_inf_continuous_lemma {ε : α} {a₁ a₂ b₁ b₂ : α} :
   (abs_min_sub_min_le_max _ _ _ _).trans_lt (max_lt h₁ h₂)
 #align rat_inf_continuous_lemma CauSeq.rat_inf_continuous_lemma
 
-instance : HasSup (CauSeq α abs) :=
+instance : Sup (CauSeq α abs) :=
   ⟨fun f g =>
     ⟨f ⊔ g, fun _ ε0 =>
       (exists_forall_ge_and (f.cauchy₃ ε0) (g.cauchy₃ ε0)).imp fun _ H _ ij =>
         let ⟨H₁, H₂⟩ := H _ le_rfl
         rat_sup_continuous_lemma (H₁ _ ij) (H₂ _ ij)⟩⟩
 
-instance : HasInf (CauSeq α abs) :=
+instance : Inf (CauSeq α abs) :=
   ⟨fun f g =>
     ⟨f ⊓ g, fun _ ε0 =>
       (exists_forall_ge_and (f.cauchy₃ ε0) (g.cauchy₃ ε0)).imp fun _ H _ ij =>

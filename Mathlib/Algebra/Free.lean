@@ -101,7 +101,7 @@ def FreeAddMagma.liftAux {α : Type u} {β : Type v} [Add β] (f : α → β) : 
   | x + y => liftAux f x + liftAux f y
 #align free_add_magma.lift_aux FreeAddMagma.liftAux
 
-attribute [to_additive] FreeMagma.liftAux
+attribute [to_additive existing] FreeMagma.liftAux
 
 namespace FreeMagma
 
@@ -224,7 +224,7 @@ protected def FreeAddMagma.traverse {m : Type u → Type u} [Applicative m] {α 
   | x + y => (· + ·) <$> x.traverse F <*> y.traverse F
 #align free_add_magma.traverse FreeAddMagma.traverse
 
-attribute [to_additive] FreeMagma.traverse
+attribute [to_additive existing] FreeMagma.traverse
 
 namespace FreeMagma
 
@@ -306,7 +306,7 @@ protected def FreeAddMagma.repr {α : Type u} [Repr α] : FreeAddMagma α → Le
   | x + y => "( " ++ x.repr ++ " + " ++ y.repr ++ " )"
 #align free_add_magma.repr FreeAddMagma.repr
 
-attribute [to_additive] FreeMagma.repr
+attribute [to_additive existing] FreeMagma.repr
 
 @[to_additive]
 instance {α : Type u} [Repr α] : Repr (FreeMagma α) := ⟨fun o _ => FreeMagma.repr o⟩
@@ -325,7 +325,7 @@ def FreeAddMagma.length {α : Type u} : FreeAddMagma α → ℕ
   | x + y => x.length + y.length
 #align free_add_magma.length FreeAddMagma.length
 
-attribute [to_additive] FreeMagma.length
+attribute [to_additive existing] FreeMagma.length
 
 /-- Associativity relations for an additive magma. -/
 inductive AddMagma.AssocRel (α : Type u) [Add α] : α → α → Prop
@@ -445,7 +445,6 @@ end AssocQuotient
 end Magma
 
 /-- Free additive semigroup over a given alphabet. -/
-@[ext]
 structure FreeAddSemigroup (α : Type u) where
 /-- The head of the element -/
   head : α
@@ -454,7 +453,7 @@ structure FreeAddSemigroup (α : Type u) where
 #align free_add_semigroup FreeAddSemigroup
 
 /-- Free semigroup over a given alphabet. -/
-@[ext, to_additive]
+@[to_additive (attr := ext)]
 structure FreeSemigroup (α : Type u) where
 /-- The head of the element -/
   head : α
@@ -589,7 +588,7 @@ instance : Monad FreeSemigroup where
   bind x f := lift f x
 
 /-- Recursor that uses `pure` instead of `of`. -/
-@[elab_as_elim, to_additive "Recursor that uses `pure` instead of `of`."]
+@[to_additive (attr := elab_as_elim) "Recursor that uses `pure` instead of `of`."]
 -- Porting note: added noncomputable
 noncomputable def recOnPure {C : FreeSemigroup α → Sort l} (x) (ih1 : ∀ x, C (pure x))
     (ih2 : ∀ x y, C (pure x) → C y → C (pure x * y)) : C x :=

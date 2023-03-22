@@ -25,7 +25,7 @@ It contains theorems relating these to each other, as well as to `LinearMap.ker`
   - `LinearMap.single`
 - pi types in the domain:
   - `LinearMap.proj`
-- `LinearMap.diag`
+  - `LinearMap.diag`
 
 -/
 
@@ -140,7 +140,7 @@ variable (R φ)
 
 /-- The linear equivalence between linear functions on a finite product of modules and
 families of functions on these modules. See note [bundled maps over different rings]. -/
-@[simps symmApply]
+@[simps symm_apply]
 def lsum (S) [AddCommMonoid M] [Module R M] [Fintype ι] [DecidableEq ι] [Semiring S] [Module S M]
     [SMulCommClass R S M] : ((i : ι) → φ i →ₗ[R] M) ≃ₗ[S] ((i : ι) → φ i) →ₗ[R] M where
   toFun f := ∑ i : ι, (f i).comp (proj i)
@@ -155,7 +155,7 @@ def lsum (S) [AddCommMonoid M] [Module R M] [Fintype ι] [DecidableEq ι] [Semir
     suffices f (∑ j, Pi.single j (x j)) = f x by simpa [apply_single]
     rw [Finset.univ_sum_single]
 #align linear_map.lsum LinearMap.lsum
-#align linear_map.lsum_symm_apply LinearMap.lsum_symmApply
+#align linear_map.lsum_symm_apply LinearMap.lsum_symm_apply
 
 @[simp]
 theorem lsum_apply (S) [AddCommMonoid M] [Module R M] [Fintype ι] [DecidableEq ι] [Semiring S]
@@ -246,7 +246,7 @@ def diag (i j : ι) : φ i →ₗ[R] φ j :=
 
 theorem update_apply (f : (i : ι) → M₂ →ₗ[R] φ i) (c : M₂) (i j : ι) (b : M₂ →ₗ[R] φ i) :
     (update f i b j) c = update (fun i => f i c) i (b c) j := by
-  by_cases j = i
+  by_cases h : j = i
   · rw [h, update_same, update_same]
   · rw [update_noteq h, update_noteq h]
 #align linear_map.update_apply LinearMap.update_apply
@@ -427,9 +427,9 @@ theorem piRing_apply (f : (ι → R) →ₗ[R] M) (i : ι) : piRing R M ι S f i
 #align linear_equiv.pi_ring_apply LinearEquiv.piRing_apply
 
 @[simp]
-theorem piRing_symmApply (f : ι → M) (g : ι → R) : (piRing R M ι S).symm f g = ∑ i, g i • f i := by
+theorem piRing_symm_apply (f : ι → M) (g : ι → R) : (piRing R M ι S).symm f g = ∑ i, g i • f i := by
   simp [piRing, LinearMap.lsum_apply]
-#align linear_equiv.pi_ring_symm_apply LinearEquiv.piRing_symmApply
+#align linear_equiv.pi_ring_symm_apply LinearEquiv.piRing_symm_apply
 
 -- TODO additive version?
 /-- `Equiv.sumArrowEquivProdArrow` as a linear equivalence.
@@ -473,14 +473,14 @@ theorem sumArrowLequivProdArrow_symm_apply_inr {α β} (f : α → M) (g : β �
 /-- If `ι` has a unique element, then `ι → M` is linearly equivalent to `M`. -/
 @[simps (config :=
       { simpRhs := true
-        fullyApplied := false }) symmApply]
+        fullyApplied := false }) symm_apply]
 def funUnique (ι R M : Type _) [Unique ι] [Semiring R] [AddCommMonoid M] [Module R M] :
     (ι → M) ≃ₗ[R] M :=
   { Equiv.funUnique ι M with
     map_add' := fun _ _ => rfl
     map_smul' := fun _ _ => rfl }
 #align linear_equiv.fun_unique LinearEquiv.funUnique
-#align linear_equiv.fun_unique_symm_apply LinearEquiv.funUnique_symmApply
+#align linear_equiv.fun_unique_symm_apply LinearEquiv.funUnique_symm_apply
 
 @[simp]
 theorem funUnique_apply (ι R M : Type _) [Unique ι] [Semiring R] [AddCommMonoid M] [Module R M] :
@@ -492,7 +492,7 @@ variable (R M)
 /-- Linear equivalence between dependent functions `(i : fin 2) → M i` and `M 0 × M 1`. -/
 @[simps (config :=
       { simpRhs := true
-        fullyApplied := false }) symmApply]
+        fullyApplied := false }) symm_apply]
 def piFinTwo (M : Fin 2 → Type v)
     [(i : Fin 2) → AddCommMonoid (M i)] [(i : Fin 2) → Module R (M i)] :
     ((i : Fin 2) → M i) ≃ₗ[R] M 0 × M 1 :=
@@ -500,7 +500,7 @@ def piFinTwo (M : Fin 2 → Type v)
     map_add' := fun _ _ => rfl
     map_smul' := fun _ _ => rfl }
 #align linear_equiv.pi_fin_two LinearEquiv.piFinTwo
-#align linear_equiv.pi_fin_two_symm_apply LinearEquiv.piFinTwo_symmApply
+#align linear_equiv.pi_fin_two_symm_apply LinearEquiv.piFinTwo_symm_apply
 
 @[simp]
 theorem piFinTwo_apply (M : Fin 2 → Type v)
@@ -509,9 +509,7 @@ theorem piFinTwo_apply (M : Fin 2 → Type v)
 #align linear_equiv.pi_fin_two_apply LinearEquiv.piFinTwo_apply
 
 /-- Linear equivalence between vectors in `M² = fin 2 → M` and `M × M`. -/
-@[simps (config :=
-      { simpRhs := true
-        fullyApplied := false })]
+@[simps! (config := .asFn)]
 def finTwoArrow : (Fin 2 → M) ≃ₗ[R] M × M :=
   { finTwoArrowEquiv M, piFinTwo R fun _ => M with }
 #align linear_equiv.fin_two_arrow LinearEquiv.finTwoArrow
