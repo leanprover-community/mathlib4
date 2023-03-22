@@ -544,7 +544,7 @@ theorem norm_mul (n m : ℤ√d) : norm (n * m) = norm n * norm m := by
   ring
 #align zsqrtd.norm_mul Zsqrtd.norm_mul
 
-/-- `norm` as a `monoid_hom`. -/
+/-- `norm` as a `MonoidHom`. -/
 def normMonoidHom : ℤ√d →* ℤ where
   toFun := norm
   map_mul' := norm_mul
@@ -1039,7 +1039,7 @@ theorem hom_ext [Ring R] {d : ℤ} (f g : ℤ√d →+* R) (h : f sqrtd = g sqrt
 
 variable [CommRing R]
 
-/-- The unique `ring_hom` from `ℤ√d` to a ring `R`, constructed by replacing `√d` with the provided
+/-- The unique `RingHom` from `ℤ√d` to a ring `R`, constructed by replacing `√d` with the provided
 root. Conversely, this associates to every mapping `ℤ√d →+* R` a value of `√d` in `R`. -/
 @[simps]
 def lift {d : ℤ} : { r : R // r * r = ↑d } ≃ (ℤ√d →+* R)
