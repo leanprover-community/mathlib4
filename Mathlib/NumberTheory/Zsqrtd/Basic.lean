@@ -273,7 +273,7 @@ instance : StarRing (ℤ√d) where
   star_add a b := ext.mpr ⟨rfl, neg_add _ _⟩
 
 -- Porting note: proof was `by decide`
-instance : Nontrivial (ℤ√d) :=
+instance nontrivial : Nontrivial (ℤ√d) :=
   ⟨⟨0, 1, ext.not.mpr <| by simp⟩⟩
 
 @[simp]
@@ -1043,7 +1043,8 @@ def lift {d : ℤ} : { r : R // r * r = ↑d } ≃ (ℤ√d →+* R)
     ext
     simp
   right_inv f := by
-    ext
+    -- Porting note: was `ext`
+    refine hom_ext _ _ ?_
     simp
 #align zsqrtd.lift Zsqrtd.lift
 
