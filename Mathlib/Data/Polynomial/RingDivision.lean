@@ -134,12 +134,12 @@ instance : NoZeroDivisors R[X] where
 
 /- Porting note: I could not find this and Lean didn't do it automatically. Perhaps it belongs
 elsewhere. -/
-theorem withBot_some_eq_nat_cast (n : ℕ) : WithBot.some n = (n : WithBot ℕ) := rfl
+theorem WithBot.some_eq_nat_cast (n : ℕ) : WithBot.some n = (n : WithBot ℕ) := rfl
 
 theorem natDegree_mul (hp : p ≠ 0) (hq : q ≠ 0) : (p*q).natDegree = p.natDegree + q.natDegree :=
   by
-  rw [← WithBot.coe_eq_coe, withBot_some_eq_nat_cast, ←degree_eq_natDegree (mul_ne_zero hp hq), 
-    WithBot.coe_add, withBot_some_eq_nat_cast, ←degree_eq_natDegree hp, withBot_some_eq_nat_cast, 
+  rw [← WithBot.coe_eq_coe, WithBot.some_eq_nat_cast, ←degree_eq_natDegree (mul_ne_zero hp hq), 
+    WithBot.coe_add, WithBot.some_eq_nat_cast, ←degree_eq_natDegree hp, WithBot.some_eq_nat_cast, 
     ← degree_eq_natDegree hq, degree_mul]
 #align polynomial.nat_degree_mul Polynomial.natDegree_mul
 
@@ -364,13 +364,13 @@ section CommRing
 
 variable [CommRing R]
 
+/- Porting note: due to a diamond, introduced 
+`Polynomial.rootMultipulicity_eq_nat_find_of_nonzero` -/
 /-- The multiplicity of `a` as root of a nonzero polynomial `p` is at least `n` iff
   `(X - a) ^ n` divides `p`. -/
 theorem le_rootMultiplicity_iff {p : R[X]} (p0 : p ≠ 0) {a : R} {n : ℕ} :
     n ≤ rootMultiplicity a p ↔ (X - C a) ^ n ∣ p := by
-  dsimp [rootMultiplicity]
-  rw [dif_neg p0] 
-  rw [Nat.le_find_iff]
+  rw [rootMultiplicity_eq_nat_find_of_nonzero p0, Nat.le_find_iff]
   simp_rw [Classical.not_not]
   refine ⟨fun h => ?_, fun h m hm => (pow_dvd_pow _ hm).trans h⟩
   cases' n with n;
@@ -482,7 +482,7 @@ set_option linter.uppercaseLean3 false in
 theorem exists_multiset_roots :
     ∀ {p : R[X]} (hp : p ≠ 0),
       ∃ s : Multiset R, (Multiset.card s : WithBot ℕ) ≤ degree p ∧ ∀ a, s.count a = rootMultiplicity a p
-  | p => fun hp =>
+  | p => fun (hp : p ≠ 0) =>
     haveI := Classical.propDecidable (∃ x, IsRoot p x)
     if h : ∃ x, IsRoot p x then
       let ⟨x, hx⟩ := h
@@ -501,18 +501,21 @@ theorem exists_multiset_roots :
         mt (divByMonic_eq_zero_iff (monic_X_sub_C x)).1 <| not_lt.2 hdeg
       ⟨x ::ₘ t,
         calc
-          (card (x ::ₘ t) : WithBot ℕ) = Multiset.card t + 1 := by apply Multiset.card_cons _ _
+          (card (x ::ₘ t) : WithBot ℕ) = Multiset.card t + 1 := by 
+            congr
+            exact_mod_cast Multiset.card_cons _ _
           _ ≤ degree p := by
             rw [← degree_add_divByMonic (monic_X_sub_C x) hdeg, degree_X_sub_C, add_comm] <;>
               exact add_le_add (le_refl (1 : WithBot ℕ)) htd
           ,
         by
+        change ∀ (a : R), count a (x ::ₘ t) = rootMultiplicity a p
         intro a
         conv_rhs => rw [← mul_divByMonic_eq_iff_isRoot.mpr hx]
         rw [rootMultiplicity_mul (mul_ne_zero (X_sub_C_ne_zero x) hdiv0),
           rootMultiplicity_X_sub_C, ← htr a]
         split_ifs with ha
-        · rw [ha, count_cons_self, Nat.succ_eq_add_one, add_comm]
+        · rw [ha, count_cons_self, add_comm]
         · rw [count_cons_of_ne ha, zero_add]⟩
     else
       ⟨0, (degree_eq_natDegree hp).symm ▸ WithBot.coe_le_coe.2 (Nat.zero_le _),
@@ -720,23 +723,20 @@ set_option linter.uppercaseLean3 false in
 theorem roots_monomial (ha : a ≠ 0) (n : ℕ) : (monomial n a).roots = n • ({0} : Multiset R) := by
   rw [← C_mul_X_pow_eq_monomial, roots_C_mul_X_pow ha]
 #align polynomial.roots_monomial Polynomial.roots_monomial
-#synth CommMonoidWithZero R[X]
-#synth NoZeroDivisors R[X]
+
 theorem roots_prod_X_sub_C (s : Finset R) : (s.prod fun a => X - C a).roots = s.val := by
-  haveI : CommMonoidWithZero R[X] := CancelCommMonoidWithZero.toCommMonoidWithZero
   apply (roots_prod (fun a => X - C a) s ?_).trans
-  · simp_rw [roots_X_sub_C, Multiset.bind_singleton, Multiset.map_id']; sorry
-  · rw [@prod_ne_zero_iff _ _ s (fun a => X - C a) _ _ _]
-    -- (fun a _ => X_sub_C_ne_zero a)
-  -- (roots_prod (fun a => X - C a) s (prod_ne_zero_iff.mpr fun a _ => X_sub_C_ne_zero a)).trans
-  --   (by simp_rw [roots_X_sub_C, Multiset.bind_singleton, Multiset.map_id'])
+  · simp_rw [roots_X_sub_C]
+    rw [Multiset.bind_singleton, Multiset.map_id']
+  · refine prod_ne_zero_iff.mpr (fun a _ => X_sub_C_ne_zero a)
 set_option linter.uppercaseLean3 false in
 #align polynomial.roots_prod_X_sub_C Polynomial.roots_prod_X_sub_C
 
 @[simp]
 theorem roots_multiset_prod_X_sub_C (s : Multiset R) : (s.map fun a => X - C a).prod.roots = s := by
   rw [roots_multiset_prod, Multiset.bind_map]
-  · simp_rw [roots_X_sub_C, Multiset.bind_singleton, Multiset.map_id']
+  · simp_rw [roots_X_sub_C]
+    rw [Multiset.bind_singleton, Multiset.map_id']
   · rw [Multiset.mem_map]
     rintro ⟨a, -, h⟩
     exact X_sub_C_ne_zero a h
@@ -792,8 +792,10 @@ theorem card_nthRoots (n : ℕ) (a : R) : Multiset.card (nthRoots n a) ≤ n :=
             rw [hn, pow_zero, ← C_1, ← RingHom.map_sub]
             exact degree_C_le))
   else by
-    rw [← WithBot.coe_le_coe, ← degree_X_pow_sub_C (Nat.pos_of_ne_zero hn) a] <;>
-      exact card_roots (X_pow_sub_C_ne_zero (Nat.pos_of_ne_zero hn) a)
+    rw [← WithBot.coe_le_coe] 
+    simp only [WithBot.some_eq_nat_cast] 
+    rw [← degree_X_pow_sub_C (Nat.pos_of_ne_zero hn) a]
+    exact card_roots (X_pow_sub_C_ne_zero (Nat.pos_of_ne_zero hn) a)
 #align polynomial.card_nth_roots Polynomial.card_nthRoots
 
 @[simp]
@@ -1028,7 +1030,7 @@ theorem eq_leadingCoeff_mul_of_monic_of_dvd_of_natDegree_le {R} [CommRing R] {p 
     exact rzero
   rw [mul_comm, @eq_C_of_natDegree_eq_zero _ _ r] at hr
   · convert hr
-    convert leadingCoeff_C _ using 1
+    convert leadingCoeff_C (coeff r 0) using 1
     rw [hr, leadingCoeff_mul_monic hp]
   · exact (add_right_inj _).1 (le_antisymm hdeg <| Nat.le.intro rfl)
 #align polynomial.eq_leading_coeff_mul_of_monic_of_dvd_of_nat_degree_le Polynomial.eq_leadingCoeff_mul_of_monic_of_dvd_of_natDegree_le
@@ -1041,11 +1043,11 @@ theorem eq_of_monic_of_dvd_of_natDegree_le {R} [CommRing R] {p q : R[X]} (hp : p
 
 theorem isCoprime_X_sub_C_of_isUnit_sub {R} [CommRing R] {a b : R} (h : IsUnit (a - b)) :
     IsCoprime (X - C a) (X - C b) :=
-  ⟨-C h.unit⁻¹.val, C h.unit⁻¹.val,
-    by
+  ⟨-C h.unit⁻¹.val, C h.unit⁻¹.val, by
     rw [neg_mul_comm, ← left_distrib, neg_add_eq_sub, sub_sub_sub_cancel_left, ← C_sub, ← C_mul]
-    convert C_1
-    exact h.coe_inv_mul⟩
+    rw [←C_1]
+    congr
+    exact h.val_inv_mul⟩
 set_option linter.uppercaseLean3 false in
 #align polynomial.is_coprime_X_sub_C_of_is_unit_sub Polynomial.isCoprime_X_sub_C_of_isUnit_sub
 
@@ -1078,7 +1080,7 @@ set_option linter.uppercaseLean3 false in
 #align polynomial.prod_multiset_X_sub_C_dvd Polynomial.prod_multiset_X_sub_C_dvd
 
 /-- A Galois connection. -/
-theorem Multiset.prod_X_sub_C_dvd_iff_le_roots {p : R[X]} (hp : p ≠ 0) (s : Multiset R) :
+theorem _root_.Multiset.prod_X_sub_C_dvd_iff_le_roots {p : R[X]} (hp : p ≠ 0) (s : Multiset R) :
     (s.map fun a => X - C a).prod ∣ p ↔ s ≤ p.roots :=
   ⟨fun h =>
     Multiset.le_iff_count.2 fun r =>
@@ -1156,8 +1158,8 @@ theorem count_map_roots [IsDomain A] {p : A[X]} {f : A →+* B} (hmap : map f p 
   rw [le_rootMultiplicity_iff hmap, ← Multiset.prod_replicate, ←
     Multiset.map_replicate fun a => X - C a]
   rw [← Multiset.filter_eq]
-  refine' (Multiset.prod_dvd_prod_of_le <| Multiset.map_le_map <| Multiset.filter_le _ _).trans _
-  convert Polynomial.map_dvd _ p.prod_multiset_X_sub_C_dvd
+  refine (Multiset.prod_dvd_prod_of_le <| Multiset.map_le_map <| Multiset.filter_le (Eq b) _).trans ?_
+  convert Polynomial.map_dvd f p.prod_multiset_X_sub_C_dvd
   simp only [Polynomial.map_multiset_prod, Multiset.map_map]
   congr ; ext1
   simp only [Function.comp_apply, Polynomial.map_sub, map_X, map_C]
@@ -1224,9 +1226,11 @@ theorem isUnit_of_isUnit_leadingCoeff_of_isUnit_map {f : R[X]} (hf : IsUnit f.le
   · rw [eq_C_of_degree_eq_zero dz]
     refine' IsUnit.map C _
     convert hf
+    change coeff f 0 = coeff f (natDegree f)
     rw [(degree_eq_iff_natDegree_eq _).1 dz]
+    rfl
     rintro rfl
-    simpa using H
+    simp at H
   · intro h
     have u : IsUnit (φ f.leadingCoeff) := IsUnit.map φ hf
     rw [h] at u
