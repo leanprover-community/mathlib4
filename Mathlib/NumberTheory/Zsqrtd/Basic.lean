@@ -222,9 +222,9 @@ instance commRing : CommRing (ℤ√d) := by
     mul_one := ?_
     mul_comm := ?_ } <;>
   intros <;>
-  (try rfl) <;>
-  simp [ext, add_mul, mul_add, add_comm, add_left_comm, mul_comm, mul_left_comm] <;>
-  sorry
+  refine ext.mpr ⟨?_, ?_⟩ <;>
+  simp <;>
+  ring
 
 instance : AddMonoid (ℤ√d) := by infer_instance
 
@@ -759,24 +759,24 @@ protected theorem le_total (a b : ℤ√d) : a ≤ b ∨ b ≤ a := by
 
 instance preorder : Preorder (ℤ√d) where
   le := (· ≤ ·)
-  le_refl a := show Nonneg (a - a) by simp only [sub_self]
+  le_refl a := show Nonneg (a - a) by simp only [sub_self]; trivial
   le_trans a b c hab hbc := by simpa [sub_add_sub_cancel'] using hab.add hbc
   lt := (· < ·)
   lt_iff_le_not_le a b := (and_iff_right_of_imp (Zsqrtd.le_total _ _).resolve_left).symm
 
 open Int in
 theorem le_arch (a : ℤ√d) : ∃ n : ℕ, a ≤ n := by
-  let ⟨x, y, (h : a ≤ ⟨x, y⟩)⟩ :=
-    show ∃ x y : ℕ, Nonneg (⟨x, y⟩ + -a) from
-      match -a with
-      | ⟨Int.ofNat x, Int.ofNat y⟩ => ⟨0, 0, trivial⟩
-      | ⟨Int.ofNat x, -[y+1]⟩ => ⟨0, y + 1, by simp [add_def, Int.negSucc_coe, add_assoc]⟩
-      | ⟨-[x+1], Int.ofNat y⟩ => ⟨x + 1, 0, by simp [Int.negSucc_coe, add_assoc]⟩
-      | ⟨-[x+1], -[y+1]⟩ => ⟨x + 1, y + 1, by simp [Int.negSucc_coe, add_assoc]⟩
+  obtain ⟨x, y, (h : a ≤ ⟨x, y⟩)⟩ : ∃ x y : ℕ, Nonneg (⟨x, y⟩ + -a) :=
+    match -a with
+    | ⟨Int.ofNat x, Int.ofNat y⟩ => ⟨0, 0, by trivial⟩
+    | ⟨Int.ofNat x, -[y+1]⟩ => ⟨0, y + 1, by simp [add_def, Int.negSucc_coe, add_assoc]; trivial⟩
+    | ⟨-[x+1], Int.ofNat y⟩ => ⟨x + 1, 0, by simp [Int.negSucc_coe, add_assoc]; trivial⟩
+    | ⟨-[x+1], -[y+1]⟩ => ⟨x + 1, y + 1, by simp [Int.negSucc_coe, add_assoc]; trivial⟩
   refine' ⟨x + d * y, h.trans _⟩
   change Nonneg ⟨↑x + d * y - ↑x, 0 - ↑y⟩
   cases' y with y
   · simp
+    trivial
   have h : ∀ y, SqLe y d (d * y) 1 := fun y => by
     simpa [SqLe, mul_comm, mul_left_comm] using Nat.mul_le_mul_right (y * y) (Nat.le_mul_self d)
   rw [show (x : ℤ) + d * Nat.succ y - x = d * Nat.succ y by simp]
@@ -799,7 +799,7 @@ theorem nonneg_smul {a : ℤ√d} {n : ℕ} (ha : Nonneg a) : Nonneg ((n : ℤ�
   simp (config := { singlePass := true }) only [← Int.cast_ofNat]
   exact
     match a, nonneg_cases ha, ha with
-    | _, ⟨x, y, Or.inl rfl⟩, ha => by rw [smul_val]; trivial
+    | _, ⟨x, y, Or.inl rfl⟩, _ => by rw [smul_val]; trivial
     | _, ⟨x, y, Or.inr <| Or.inl rfl⟩, ha => by
       rw [smul_val]; simpa using nonnegg_pos_neg.2 (sqLe_smul n <| nonnegg_pos_neg.1 ha)
     | _, ⟨x, y, Or.inr <| Or.inr rfl⟩, ha => by
@@ -809,7 +809,7 @@ theorem nonneg_smul {a : ℤ√d} {n : ℕ} (ha : Nonneg a) : Nonneg ((n : ℤ�
 theorem nonneg_muld {a : ℤ√d} (ha : Nonneg a) : Nonneg (sqrtd * a) := by
   refine'
     match a, nonneg_cases ha, ha with
-    | _, ⟨x, y, Or.inl rfl⟩, ha => trivial
+    | _, ⟨_, _, Or.inl rfl⟩, _ => trivial
     | _, ⟨x, y, Or.inr <| Or.inl rfl⟩, ha => by
       simp; apply nonnegg_neg_pos.2;
         simpa [SqLe, mul_comm, mul_left_comm] using Nat.mul_le_mul_left d (nonnegg_pos_neg.1 ha)
