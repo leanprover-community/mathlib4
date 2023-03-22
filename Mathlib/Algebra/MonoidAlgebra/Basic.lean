@@ -1817,7 +1817,8 @@ protected noncomputable def opRingEquiv [AddCommMonoid G] :
   { MulOpposite.opAddEquiv.symm.trans
       (Finsupp.mapRange.addEquiv (MulOpposite.opAddEquiv : k ≃+ kᵐᵒᵖ)) with
     map_mul' := by
-      rw [Equiv.toFun_as_coe, AddEquiv.coe_toEquiv, ← AddEquiv.coe_toAddMonoidHom]
+      rw [Equiv.toFun_as_coe, AddEquiv.toEquiv_eq_coe, AddEquiv.coe_toEquiv,
+        ← AddEquiv.coe_toAddMonoidHom]
       refine Iff.mpr (AddMonoidHom.map_mul_iff (R := (AddMonoidAlgebra k G)ᵐᵒᵖ)
         (S := AddMonoidAlgebra kᵐᵒᵖ G) _) ?_
       -- Porting note: Was `ext`.
