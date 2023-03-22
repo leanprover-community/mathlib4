@@ -132,10 +132,15 @@ instance : NoZeroDivisors R[X] where
     refine' eq_zero_or_eq_zero_of_mul_eq_zero _
     rw [← leadingCoeff_zero, ← leadingCoeff_mul, h]
 
-theorem natDegree_mul (hp : p ≠ 0) (hq : q ≠ 0) : natDegree (p * q) = natDegree p + natDegree q :=
+/- Porting note: I could not find this and Lean didn't do it automatically. Perhaps it belongs
+elsewhere. -/
+theorem withBot_some_eq_nat_cast (n : ℕ) : WithBot.some n = (n : WithBot ℕ) := rfl
+
+theorem natDegree_mul (hp : p ≠ 0) (hq : q ≠ 0) : (p*q).natDegree = p.natDegree + q.natDegree :=
   by
-  rw [← WithBot.coe_eq_coe, ← degree_eq_natDegree (mul_ne_zero hp hq), WithBot.coe_add, ←
-    degree_eq_natDegree hp, ← degree_eq_natDegree hq, degree_mul]
+  rw [← WithBot.coe_eq_coe, withBot_some_eq_nat_cast, ←degree_eq_natDegree (mul_ne_zero hp hq), 
+    WithBot.coe_add, withBot_some_eq_nat_cast, ←degree_eq_natDegree hp, withBot_some_eq_nat_cast, 
+    ← degree_eq_natDegree hq, degree_mul]
 #align polynomial.nat_degree_mul Polynomial.natDegree_mul
 
 theorem trailingDegree_mul : (p * q).trailingDegree = p.trailingDegree + q.trailingDegree := by
@@ -326,10 +331,12 @@ theorem Monic.not_irreducible_iff_exists_add_mul_eq_coeff (hm : p.Monic) (hnd : 
     simpa only [nextCoeff, hnd, add_right_cancel hda, hdb] using ha.nextCoeff_mul hb
   · rintro ⟨c₁, c₂, hmul, hadd⟩
     refine
-      ⟨X + C c₁, X + C c₂, monic_X_add_C _, monic_X_add_C _, ?_, Or.inl <| natDegree_X_add_C _⟩
-    rw [p.as_sum_range_C_mul_X_pow, hnd, Finset.sum_range_succ, Finset.sum_range_succ,
-      Finset.sum_range_one, ← hnd, hm.coeff_natDegree, hnd, hmul, hadd, C_mul, C_add, C_1]
-    ring
+      ⟨X + C c₁, X + C c₂, monic_X_add_C _, monic_X_add_C _, ?_, ?_ ⟩
+    · rw [p.as_sum_range_C_mul_X_pow, hnd, Finset.sum_range_succ, Finset.sum_range_succ,
+        Finset.sum_range_one, ← hnd, hm.coeff_natDegree, hnd, hmul, hadd, C_mul, C_add, C_1]
+      ring
+    · rw [mem_Ioc, natDegree_X_add_C _]
+      simp
   · rintro rfl
     simp [natDegree_one] at hnd
 #align polynomial.monic.not_irreducible_iff_exists_add_mul_eq_coeff Polynomial.Monic.not_irreducible_iff_exists_add_mul_eq_coeff
@@ -361,9 +368,12 @@ variable [CommRing R]
   `(X - a) ^ n` divides `p`. -/
 theorem le_rootMultiplicity_iff {p : R[X]} (p0 : p ≠ 0) {a : R} {n : ℕ} :
     n ≤ rootMultiplicity a p ↔ (X - C a) ^ n ∣ p := by
-  simp_rw [rootMultiplicity, dif_neg p0, Nat.le_find_iff, Classical.not_not]
+  dsimp [rootMultiplicity]
+  rw [dif_neg p0] 
+  rw [Nat.le_find_iff]
+  simp_rw [Classical.not_not]
   refine ⟨fun h => ?_, fun h m hm => (pow_dvd_pow _ hm).trans h⟩
-  cases n;
+  cases' n with n;
   · rw [pow_zero]
     apply one_dvd; 
   · exact h n n.lt_succ_self
@@ -710,10 +720,16 @@ set_option linter.uppercaseLean3 false in
 theorem roots_monomial (ha : a ≠ 0) (n : ℕ) : (monomial n a).roots = n • ({0} : Multiset R) := by
   rw [← C_mul_X_pow_eq_monomial, roots_C_mul_X_pow ha]
 #align polynomial.roots_monomial Polynomial.roots_monomial
-
-theorem roots_prod_X_sub_C (s : Finset R) : (s.prod fun a => X - C a).roots = s.val :=
-  (roots_prod (fun a => X - C a) s (prod_ne_zero_iff.mpr fun a _ => X_sub_C_ne_zero a)).trans
-    (by simp_rw [roots_X_sub_C, Multiset.bind_singleton, Multiset.map_id'])
+#synth CommMonoidWithZero R[X]
+#synth NoZeroDivisors R[X]
+theorem roots_prod_X_sub_C (s : Finset R) : (s.prod fun a => X - C a).roots = s.val := by
+  haveI : CommMonoidWithZero R[X] := CancelCommMonoidWithZero.toCommMonoidWithZero
+  apply (roots_prod (fun a => X - C a) s ?_).trans
+  · simp_rw [roots_X_sub_C, Multiset.bind_singleton, Multiset.map_id']; sorry
+  · rw [@prod_ne_zero_iff _ _ s (fun a => X - C a) _ _ _]
+    -- (fun a _ => X_sub_C_ne_zero a)
+  -- (roots_prod (fun a => X - C a) s (prod_ne_zero_iff.mpr fun a _ => X_sub_C_ne_zero a)).trans
+  --   (by simp_rw [roots_X_sub_C, Multiset.bind_singleton, Multiset.map_id'])
 set_option linter.uppercaseLean3 false in
 #align polynomial.roots_prod_X_sub_C Polynomial.roots_prod_X_sub_C
 
@@ -1151,8 +1167,7 @@ theorem count_map_roots_of_injective [IsDomain A] (p : A[X]) {f : A →+* B}
     (hf : Function.Injective f) (b : B) : (p.roots.map f).count b ≤ rootMultiplicity b (p.map f) :=
   by
   by_cases hp0 : p = 0
-  ·
-    simp only [hp0, roots_zero, Multiset.map_zero, Multiset.count_zero, Polynomial.map_zero,
+  · simp only [hp0, roots_zero, Multiset.map_zero, Multiset.count_zero, Polynomial.map_zero,
       rootMultiplicity_zero]
   · exact count_map_roots ((Polynomial.map_ne_zero_iff hf).mpr hp0) b
 #align polynomial.count_map_roots_of_injective Polynomial.count_map_roots_of_injective
@@ -1166,7 +1181,8 @@ theorem map_roots_le [IsDomain A] [IsDomain B] {p : A[X]} {f : A →+* B} (h : p
 
 theorem map_roots_le_of_injective [IsDomain A] [IsDomain B] (p : A[X]) {f : A →+* B}
     (hf : Function.Injective f) : p.roots.map f ≤ (p.map f).roots := by
-  by_cases hp0 : p = 0; · simp only [hp0, roots_zero, Multiset.map_zero, Polynomial.map_zero]
+  by_cases hp0 : p = 0
+  · simp only [hp0, roots_zero, Multiset.map_zero, Polynomial.map_zero]; rfl
   exact map_roots_le ((Polynomial.map_ne_zero_iff hf).mpr hp0)
 #align polynomial.map_roots_le_of_injective Polynomial.map_roots_le_of_injective
 
@@ -1178,10 +1194,16 @@ theorem card_roots_le_map [IsDomain A] [IsDomain B] {p : A[X]} {f : A →+* B} (
 
 theorem card_roots_le_map_of_injective [IsDomain A] [IsDomain B] {p : A[X]} {f : A →+* B}
     (hf : Function.Injective f) : Multiset.card p.roots ≤ Multiset.card (p.map f).roots := by
-  by_cases hp0 : p = 0; · simp only [hp0, roots_zero, Polynomial.map_zero, Multiset.card_zero]
+  by_cases hp0 : p = 0
+  · simp only [hp0, roots_zero, Polynomial.map_zero, Multiset.card_zero]; rfl
   exact card_roots_le_map ((Polynomial.map_ne_zero_iff hf).mpr hp0)
 #align polynomial.card_roots_le_map_of_injective Polynomial.card_roots_le_map_of_injective
 
+/- Porting note: resolving a diamond from Ring to NonAssocSemiRing in RingHom TC search 
+This also works
+`attribute [-instance] Ring.toNonAssocRing`
+-/
+set_option synthInstance.etaExperiment true in
 theorem roots_map_of_injective_of_card_eq_natDegree [IsDomain A] [IsDomain B] {p : A[X]}
     {f : A →+* B} (hf : Function.Injective f) (hroots : Multiset.card p.roots = p.natDegree) :
     p.roots.map f = (p.map f).roots := by
