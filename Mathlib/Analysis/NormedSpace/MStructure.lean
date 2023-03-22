@@ -62,6 +62,21 @@ M-summand, M-projection, L-summand, L-projection, M-ideal, M-structure
 
 -/
 
+--porting note: The following two lemmas weren't required in mathlib3
+--  rewrite pattern matching seems to work differently / less well in mathlib4
+section mathlib4_oddness
+
+variable (α : Type _) [Semigroup α]
+
+lemma mathlib4_oddness1 {P Q R : α} :
+  P * R  * (Q * R * P) = P * (R * (Q * R) * (P)) := by
+  rw [mul_assoc P R (Q * R * P), ← mul_assoc R (Q * R) P]
+
+lemma mathlib4_oddness2 {P Q R : α} :
+  Q * R * R * P = Q * (R * R) * P := by
+  rw [mul_assoc Q]
+
+end mathlib4_oddness
 
 variable (X : Type _) [NormedAddCommGroup X]
 
@@ -285,16 +300,8 @@ theorem mul_compl_self {P : { P : M // IsLprojection X P }} : (↑P : M) * ↑(P
   rw [coe_compl, mul_sub, mul_one, P.prop.proj.eq, sub_self]
 #align is_Lprojection.mul_compl_self IsLprojection.mul_compl_self
 
---porting note: The following three lemmas weren't required in mathlib3
+--porting note: The following lemma weren't required in mathlib3
 --  rewrite pattern matching seems to work differently / less well in mathlib4
-lemma mathlib4_oddness1 {P Q R : { P : M // IsLprojection X P }} :
-  ↑(Pᶜ) * (R : M) * (↑Q * ↑R * ↑(Pᶜ)) = ↑(Pᶜ) * (R * (↑Q * ↑R) * ↑(Pᶜ)) := by
-  rw [mul_assoc, mul_assoc, mul_assoc, mul_assoc]
-
-lemma mathlib4_oddness2 {P Q R : { P : M // IsLprojection X P }} :
-  ↑Q * (R : M) * ↑R * ↑P = ↑Q * (↑R * ↑R) * ↑P := by
-  rw [mul_assoc, mul_assoc, mul_assoc, mul_assoc]
-
 lemma mathlib4_oddness3 {P R : { P : M // IsLprojection X P }} :
   ↑R * (↑(Pᶜ) : M) * ↑P = R * (↑(Pᶜ) * P) := by
   rw [mul_assoc]
