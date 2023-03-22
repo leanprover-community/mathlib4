@@ -493,10 +493,15 @@ theorem support_finSuccEquiv_nonempty {f : MvPolynomial (Fin (n + 1)) R} (h : f 
 
 theorem degree_finSuccEquiv {f : MvPolynomial (Fin (n + 1)) R} (h : f ≠ 0) :
     (finSuccEquiv R n f).degree = degreeOf 0 f := by
+  -- TODO: these should be lemmas
+  have h₀ : ∀ {α β : Type _} (f : α → β), (fun x => x) ∘ f = f := fun f => rfl
+  have h₁ : ∀ {α β : Type _} (f : α → β), f ∘ (fun x => x) = f := fun f => rfl
+  have h₂ : WithBot.some = Nat.cast := rfl
+
   have h' : ((finSuccEquiv R n f).support.sup fun x => x) = degreeOf 0 f := by
-    rw [degreeOf_eq_sup, finSuccEquiv_support f, Finset.sup_image]
-  rw [Polynomial.degree, ← h', Finset.coe_sup_of_nonempty (support_finSuccEquiv_nonempty h),
-    Finset.max_eq_sup_coe]
+    rw [degreeOf_eq_sup, finSuccEquiv_support f, Finset.sup_image, h₀]
+  rw [Polynomial.degree, ← h', ← h₂, Finset.coe_sup_of_nonempty (support_finSuccEquiv_nonempty h),
+    Finset.max_eq_sup_coe, h₁]
 #align mv_polynomial.degree_fin_succ_equiv MvPolynomial.degree_finSuccEquiv
 
 theorem natDegree_finSuccEquiv (f : MvPolynomial (Fin (n + 1)) R) :
