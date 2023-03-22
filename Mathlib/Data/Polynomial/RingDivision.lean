@@ -22,13 +22,13 @@ This file starts looking like the ring theory of $ R[X] $
 
 ## Main definitions
 
-* `polynomial.roots p`: The multiset containing all the roots of `p`, including their
+* `Polynomial.roots p`: The multiset containing all the roots of `p`, including their
   multiplicities.
-* `polynomial.root_set p E`: The set of distinct roots of `p` in an algebra `E`.
+* `Polynomial.rootSet p E`: The set of distinct roots of `p` in an algebra `E`.
 
 ## Main statements
 
-* `polynomial.C_leadingCoeff_mul_prod_multiset_X_sub_C`: If a polynomial has as many roots as its
+* `Polynomial.C_leadingCoeff_mul_prod_multiset_X_sub_C`: If a polynomial has as many roots as its
   degree, it can be written as the product of its leading coefficient with `∏ (X - a)` where `a`
   ranges through its roots.
 
@@ -113,7 +113,8 @@ section
 variable [Ring S]
 
 theorem aeval_modByMonic_eq_self_of_root [Algebra R S] {p q : R[X]} (hq : q.Monic) {x : S}
-    (hx : aeval x q = 0) : aeval x (p %ₘ q) = aeval x p := by--`eval₂_modByMonic_eq_self_of_root` doesn't work here as it needs commutativity
+    (hx : aeval x q = 0) : aeval x (p %ₘ q) = aeval x p := by
+    --`eval₂_modByMonic_eq_self_of_root` doesn't work here as it needs commutativity
   rw [modByMonic_eq_sub_mul_div p hq, _root_.map_sub, _root_.map_mul, hx, MulZeroClass.zero_mul,
     sub_zero]
 #align polynomial.aeval_mod_by_monic_eq_self_of_root Polynomial.aeval_modByMonic_eq_self_of_root
@@ -203,7 +204,7 @@ theorem not_dvd_of_natDegree_lt {p q : R[X]} (h0 : q ≠ 0) (hl : q.natDegree < 
   exact h0 (eq_zero_of_dvd_of_natDegree_lt hcontra hl)
 #align polynomial.not_dvd_of_nat_degree_lt Polynomial.not_dvd_of_natDegree_lt
 
-/-- This lemma is useful for working with the `int_degree` of a rational function. -/
+/-- This lemma is useful for working with the `intDegree` of a rational function. -/
 theorem natDegree_sub_eq_of_prod_eq {p₁ p₂ q₁ q₂ : R[X]} (hp₁ : p₁ ≠ 0) (hq₁ : q₁ ≠ 0)
     (hp₂ : p₂ ≠ 0) (hq₂ : q₂ ≠ 0) (h_eq : p₁ * q₂ = p₂ * q₁) :
     (p₁.natDegree : ℤ) - q₁.natDegree = (p₂.natDegree : ℤ) - q₂.natDegree := by
@@ -480,8 +481,8 @@ set_option linter.uppercaseLean3 false in
 #align polynomial.root_multiplicity_X_sub_C_pow Polynomial.rootMultiplicity_X_sub_C_pow
 
 theorem exists_multiset_roots :
-    ∀ {p : R[X]} (_ : p ≠ 0),
-      ∃ s : Multiset R, (Multiset.card s : WithBot ℕ) ≤ degree p ∧ ∀ a, s.count a = rootMultiplicity a p
+    ∀ {p : R[X]} (_ : p ≠ 0), ∃ s : Multiset R, 
+      (Multiset.card s : WithBot ℕ) ≤ degree p ∧ ∀ a, s.count a = rootMultiplicity a p
   | p, hp =>
     haveI := Classical.propDecidable (∃ x, IsRoot p x)
     if h : ∃ x, IsRoot p x then
@@ -715,11 +716,13 @@ theorem roots_pow (p : R[X]) (n : ℕ) : (p ^ n).roots = n • p.roots := by
         add_smul, one_smul]
 #align polynomial.roots_pow Polynomial.roots_pow
 
-theorem roots_X_pow (n : ℕ) : (X ^ n : R[X]).roots = n • ({0} : Multiset R) := by rw [roots_pow, roots_X]
+theorem roots_X_pow (n : ℕ) : (X ^ n : R[X]).roots = n • ({0} : Multiset R) := by 
+  rw [roots_pow, roots_X]
 set_option linter.uppercaseLean3 false in
 #align polynomial.roots_X_pow Polynomial.roots_X_pow
 
-theorem roots_C_mul_X_pow (ha : a ≠ 0) (n : ℕ) : Polynomial.roots (C a * X ^ n) = n • ({0} : Multiset R) := by
+theorem roots_C_mul_X_pow (ha : a ≠ 0) (n : ℕ) :
+    Polynomial.roots (C a * X ^ n) = n • ({0} : Multiset R) := by
   rw [roots_C_mul _ ha, roots_X_pow]
 set_option linter.uppercaseLean3 false in
 #align polynomial.roots_C_mul_X_pow Polynomial.roots_C_mul_X_pow
@@ -770,7 +773,7 @@ set_option linter.uppercaseLean3 false in
 
 section NthRoots
 
-/-- `nth_roots n a` noncomputably returns the solutions to `x ^ n = a`-/
+/-- `nthRoots n a` noncomputably returns the solutions to `x ^ n = a`-/
 def nthRoots (n : ℕ) (a : R) : Multiset R :=
   roots ((X : R[X]) ^ n - C a)
 #align polynomial.nth_roots Polynomial.nthRoots
@@ -809,7 +812,7 @@ theorem nthRoots_two_eq_zero_iff {r : R} : nthRoots 2 r = 0 ↔ ¬IsSquare r := 
     ← not_exists, eq_comm]
 #align polynomial.nth_roots_two_eq_zero_iff Polynomial.nthRoots_two_eq_zero_iff
 
-/-- The multiset `nth_roots ↑n (1 : R)` as a finset. -/
+/-- The multiset `nthRoots ↑n (1 : R)` as a Finset. -/
 def nthRootsFinset (n : ℕ) (R : Type _) [CommRing R] [IsDomain R] : Finset R :=
   Multiset.toFinset (nthRoots n (1 : R))
 #align polynomial.nth_roots_finset Polynomial.nthRootsFinset
@@ -1163,7 +1166,8 @@ theorem count_map_roots [IsDomain A] {p : A[X]} {f : A →+* B} (hmap : map f p 
   rw [le_rootMultiplicity_iff hmap, ← Multiset.prod_replicate, ←
     Multiset.map_replicate fun a => X - C a]
   rw [← Multiset.filter_eq]
-  refine (Multiset.prod_dvd_prod_of_le <| Multiset.map_le_map <| Multiset.filter_le (Eq b) _).trans ?_
+  refine 
+    (Multiset.prod_dvd_prod_of_le <| Multiset.map_le_map <| Multiset.filter_le (Eq b) _).trans ?_
   convert Polynomial.map_dvd f p.prod_multiset_X_sub_C_dvd
   simp only [Polynomial.map_multiset_prod, Multiset.map_map]
   congr ; ext1
@@ -1260,8 +1264,8 @@ theorem Monic.irreducible_of_irreducible_map (f : R[X]) (h_mon : Monic f)
   dsimp [Monic] at h_mon
   have q := (leadingCoeff_mul a b).symm
   rw [← h, h_mon] at q
-  refine'
-        (h_irr.isUnit_or_isUnit <| (congr_arg (Polynomial.map φ) h).trans (Polynomial.map_mul φ)).imp _ _ <;>
+  refine' (h_irr.isUnit_or_isUnit <| 
+    (congr_arg (Polynomial.map φ) h).trans (Polynomial.map_mul φ)).imp _ _ <;>
       apply isUnit_of_isUnit_leadingCoeff_of_isUnit_map <;>
     apply isUnit_of_mul_eq_one
   · exact q;
