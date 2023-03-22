@@ -8,8 +8,8 @@ Authors: Johan Commelin
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Category.Mon.Basic
-import Mathbin.CategoryTheory.Endomorphism
+import Mathlib.Algebra.Category.Mon.Basic
+import Mathlib.CategoryTheory.Endomorphism
 
 /-!
 # Category instances for group, add_group, comm_group, and add_comm_group.
@@ -104,8 +104,7 @@ theorem one_apply (G H : GroupCat) (g : G) : (1 : G ⟶ H) g = 1 :=
 #align AddGroup.zero_apply AddGroupCat.zero_apply
 
 @[ext, to_additive]
-theorem ext (G H : GroupCat) (f₁ f₂ : G ⟶ H) (w : ∀ x, f₁ x = f₂ x) : f₁ = f₂ :=
-  by
+theorem ext (G H : GroupCat) (f₁ f₂ : G ⟶ H) (w : ∀ x, f₁ x = f₂ x) : f₁ = f₂ := by
   ext1
   apply w
 #align Group.ext GroupCat.ext
@@ -207,8 +206,7 @@ theorem one_apply (G H : CommGroupCat) (g : G) : (1 : G ⟶ H) g = 1 :=
 #align AddCommGroup.zero_apply AddCommGroupCat.zero_apply
 
 @[ext, to_additive]
-theorem ext (G H : CommGroupCat) (f₁ f₂ : G ⟶ H) (w : ∀ x, f₁ x = f₂ x) : f₁ = f₂ :=
-  by
+theorem ext (G H : CommGroupCat) (f₁ f₂ : G ⟶ H) (w : ∀ x, f₁ x = f₂ x) : f₁ = f₂ := by
   ext1
   apply w
 #align CommGroup.ext CommGroupCat.ext
@@ -270,8 +268,7 @@ theorem int_hom_ext {G : AddCommGroupCat.{0}} (f g : AddCommGroupCat.of ℤ ⟶ 
 -- TODO: this argument should be generalised to the situation where
 -- the forgetful functor is representable.
 theorem injective_of_mono {G H : AddCommGroupCat.{0}} (f : G ⟶ H) [Mono f] : Function.Injective f :=
-  fun g₁ g₂ h =>
-  by
+  fun g₁ g₂ h => by
   have t0 : as_hom g₁ ≫ f = as_hom g₂ ≫ f := by
     ext
     simpa [as_hom_apply] using h
