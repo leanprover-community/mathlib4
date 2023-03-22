@@ -66,14 +66,24 @@ M-summand, M-projection, L-summand, L-projection, M-ideal, M-structure
 --  rewrite pattern matching seems to work differently / less well in mathlib4
 section mathlib4_oddness
 
-variable (α : Type _) [Semigroup α]
+variable (α : Type _)
 
-lemma mathlib4_oddness1 {P Q R : α} :
+lemma mathlib4_oddness1 [Semigroup α] {P Q R : α} :
   P * R  * (Q * R * P) = P * (R * (Q * R) * (P)) := by
   rw [mul_assoc P R (Q * R * P), ← mul_assoc R (Q * R) P]
 
-lemma mathlib4_oddness2 {P Q R : α} :
+lemma mathlib4_oddness2 [Semigroup α] {P Q R : α} :
   Q * R * R * P = Q * (R * R) * P := by
+  rw [mul_assoc Q]
+
+lemma mathlib4_oddness3a [Ring α] {P Q R S : α} :
+  P * P + P * S * (Q * R) + (R * S * P + S * (Q * (R * R) * S)) =
+  P * P + P * S * (Q * R) + (R * (S * P) + S * (Q * (R * R) * S)) := by
+  rw [mul_assoc R]
+
+lemma mathlib4_oddness3b [Ring α] {P Q R S : α} :
+  P * P + P * S * R + (Q * S * P + Q * S * (S * R)) =
+  P * P + P * S * R + (Q * (S * P) + Q * S * (S * R)) := by
   rw [mul_assoc Q]
 
 end mathlib4_oddness
@@ -300,12 +310,6 @@ theorem mul_compl_self {P : { P : M // IsLprojection X P }} : (↑P : M) * ↑(P
   rw [coe_compl, mul_sub, mul_one, P.prop.proj.eq, sub_self]
 #align is_Lprojection.mul_compl_self IsLprojection.mul_compl_self
 
---porting note: The following lemma weren't required in mathlib3
---  rewrite pattern matching seems to work differently / less well in mathlib4
-lemma mathlib4_oddness3 {P R : { P : M // IsLprojection X P }} :
-  ↑R * (↑(Pᶜ) : M) * ↑P = R * (↑(Pᶜ) * P) := by
-  rw [mul_assoc]
-
 theorem distrib_lattice_lemma [FaithfulSMul M X] {P Q R : { P : M // IsLprojection X P }} :
     ((↑P : M) + ↑(Pᶜ) * R) * (↑P + ↑Q * ↑R * ↑(Pᶜ)) = ↑P + ↑Q * ↑R * ↑(Pᶜ) := by
   --porting note: The mathlib3 proof doesn't seem to work in mathlib4
@@ -315,7 +319,8 @@ theorem distrib_lattice_lemma [FaithfulSMul M X] {P Q R : { P : M // IsLprojecti
     (R.prop.commute (Q ⊓ R).prop).eq, coe_inf Q]
   rw [mathlib4_oddness2]
   rw [←mul_assoc]
-  rw [mathlib4_oddness3]
+  -- P * P + P * (S * (Q * R)) + (R * S * P + S * (Q * R * R * S))
+  rw [mathlib4_oddness3a]
   rw [(Pᶜ.prop.commute P.prop).eq, mul_compl_self, MulZeroClass.zero_mul,
     MulZeroClass.mul_zero, zero_add, add_zero, ← mul_assoc, P.prop.proj.eq, R.prop.proj.eq, ←
     coe_inf Q, mul_assoc, ((Q ⊓ R).prop.commute (Pᶜ).prop).eq, ← mul_assoc, Pᶜ.prop.proj.eq]
@@ -355,7 +360,7 @@ instance IsLprojection.Subtype.DistribLattice [FaithfulSMul M X] :
     have e₁ : ↑((P ⊔ Q) ⊓ (P ⊔ R)) = ↑P + ↑Q * (R : M) * ↑(Pᶜ) := by
       rw [coe_inf, coe_sup, coe_sup, ← add_sub, ← add_sub, ← compl_mul, ← compl_mul, add_mul,
         mul_add, ((Pᶜ).prop.commute Q.prop).eq, mul_add, ← mul_assoc]
-      rw [mathlib4_oddness3]
+      rw [mathlib4_oddness3b]
       rw [((Pᶜ).prop.commute P.prop).eq, mul_compl_self, MulZeroClass.zero_mul,
         MulZeroClass.mul_zero, zero_add, add_zero, ← mul_assoc]
       rw [mathlib4_oddness2]
