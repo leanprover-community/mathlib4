@@ -3,8 +3,8 @@ import sys
 from collections import deque
 
 lns = deque([], 2)
-with (open(sys.argv[1], "r", encoding="utf-8", newline="\n") as f,
-      open(sys.argv[2], "w", encoding="utf-8", newline="\n") as g):
+with open(sys.argv[1], "r", encoding="utf-8", newline="\n") as f, \
+      open(sys.argv[2], "w", encoding="utf-8", newline="\n") as g:
     for ln_raw in f:
         ln = ln_raw.strip("\n")
         lns.append(ln)
