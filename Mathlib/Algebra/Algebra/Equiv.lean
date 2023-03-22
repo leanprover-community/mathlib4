@@ -192,9 +192,9 @@ theorem coe_ringEquiv : ((e : A₁ ≃+* A₂) : A₁ → A₂) = e :=
   rfl
 #align alg_equiv.coe_ring_equiv AlgEquiv.coe_ringEquiv
 
-theorem coe_ring_equiv' : (e.toRingEquiv : A₁ → A₂) = e :=
+theorem coe_ringEquiv' : (e.toRingEquiv : A₁ → A₂) = e :=
   rfl
-#align alg_equiv.coe_ring_equiv' AlgEquiv.coe_ring_equiv'
+#align alg_equiv.coe_ring_equiv' AlgEquiv.coe_ringEquiv'
 
 theorem coe_ringEquiv_injective : Function.Injective ((↑) : (A₁ ≃ₐ[R] A₂) → A₁ ≃+* A₂) :=
   fun _ _ h => ext <| RingEquiv.congr_fun h
