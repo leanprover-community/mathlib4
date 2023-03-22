@@ -1107,7 +1107,7 @@ noncomputable def normalizedGCDMonoidOfGCD [NormalizationMonoid α] [DecidableEq
           · apply (a0 _).elim
             rw [← zero_dvd_iff, ← ha]
             exact gcd_dvd_left _ _
-          · convert @normalize_zero α _ _
+          · rw [hl, zero_mul]
         have h1 : gcd a b ≠ 0 := by
           have hab : a * b ≠ 0 := mul_ne_zero a0 hb
           contrapose! hab

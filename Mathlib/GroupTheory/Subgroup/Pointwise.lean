@@ -365,9 +365,9 @@ theorem smul_inf (a : α) (S T : Subgroup G) : a • (S ⊓ T) = a • S ⊓ a �
 
 /-- Applying a `MulDistribMulAction` results in an isomorphic subgroup -/
 @[simps!]
-def equivSmul (a : α) (H : Subgroup G) : H ≃* (a • H : Subgroup G) :=
+def equivSMul (a : α) (H : Subgroup G) : H ≃* (a • H : Subgroup G) :=
   (MulDistribMulAction.toMulEquiv G a).subgroupMap H
-#align subgroup.equiv_smul Subgroup.equivSmul
+#align subgroup.equiv_smul Subgroup.equivSMul
 
 theorem subgroup_mul_singleton {H : Subgroup G} {h : G} (hh : h ∈ H) : (H : Set G) * {h} = H :=
   suffices { x : G | x ∈ H } = ↑H by simpa [preimage, mul_mem_cancel_right (inv_mem hh)]

@@ -1465,10 +1465,11 @@ noncomputable instance WithTop.WithBot.completeLattice {α : Type _}
         split_ifs with h₁ h₂
         · rw [h] at h₁
           cases h₁
-        · convert @bot_le (WithTop (WithBot α)) _ _ a
-          convert @WithBot.supₛ_empty α _
-          rw [h]
-          rfl
+        · convert @bot_le _ _ _ a
+          -- porting note: previous proof relied on convert unfolding
+          -- the definition of ⊥
+          apply congr_arg
+          simp only [h, preimage_empty, WithBot.supₛ_empty]
         · exfalso
           apply h₂
           use ⊥
