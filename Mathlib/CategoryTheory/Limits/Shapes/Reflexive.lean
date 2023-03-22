@@ -25,7 +25,7 @@ reflexive.
 
 # TODO
 * If `C` has binary coproducts and reflexive coequalizers, then it has all coequalizers.
-* If `T` is a monad on cocomplete category `C`, then `algebra T` is cocomplete iff it has reflexive
+* If `T` is a monad on cocomplete category `C`, then `Algebra T` is cocomplete iff it has reflexive
   coequalizers.
 * If `C` is locally cartesian closed and has reflexive coequalizers, then it has images: in fact
   regular epi (and hence strong epi) images.
