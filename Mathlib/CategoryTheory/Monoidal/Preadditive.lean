@@ -8,8 +8,8 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Preadditive.AdditiveFunctor
-import Mathbin.CategoryTheory.Monoidal.Functor
+import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+import Mathlib.CategoryTheory.Monoidal.Functor
 
 /-!
 # Preadditive monoidal categories
@@ -109,8 +109,7 @@ open BigOperators
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem tensor_sum {P Q R S : C} {J : Type _} (s : Finset J) (f : P ⟶ Q) (g : J → (R ⟶ S)) :
-    (f ⊗ ∑ j in s, g j) = ∑ j in s, f ⊗ g j :=
-  by
+    (f ⊗ ∑ j in s, g j) = ∑ j in s, f ⊗ g j := by
   rw [← tensor_id_comp_id_tensor]
   let tQ := (((tensoring_left C).obj Q).mapAddHom : (R ⟶ S) →+ _)
   change _ ≫ tQ _ = _
@@ -122,8 +121,7 @@ theorem tensor_sum {P Q R S : C} {J : Type _} (s : Finset J) (f : P ⟶ Q) (g : 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem sum_tensor {P Q R S : C} {J : Type _} (s : Finset J) (f : P ⟶ Q) (g : J → (R ⟶ S)) :
-    (∑ j in s, g j) ⊗ f = ∑ j in s, g j ⊗ f :=
-  by
+    (∑ j in s, g j) ⊗ f = ∑ j in s, g j ⊗ f := by
   rw [← tensor_id_comp_id_tensor]
   let tQ := (((tensoring_right C).obj P).mapAddHom : (R ⟶ S) →+ _)
   change tQ _ ≫ _ = _
@@ -173,8 +171,7 @@ def leftDistributor {J : Type} [Fintype J] (X : C) (f : J → C) : X ⊗ ⨁ f �
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[simp]
 theorem leftDistributor_hom {J : Type} [Fintype J] (X : C) (f : J → C) :
-    (leftDistributor X f).Hom = ∑ j : J, (𝟙 X ⊗ biproduct.π f j) ≫ biproduct.ι _ j :=
-  by
+    (leftDistributor X f).Hom = ∑ j : J, (𝟙 X ⊗ biproduct.π f j) ≫ biproduct.ι _ j := by
   ext; dsimp [tensor_left, left_distributor]
   simp [preadditive.sum_comp, biproduct.ι_π, comp_dite]
 #align category_theory.left_distributor_hom CategoryTheory.leftDistributor_hom
@@ -182,8 +179,7 @@ theorem leftDistributor_hom {J : Type} [Fintype J] (X : C) (f : J → C) :
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[simp]
 theorem leftDistributor_inv {J : Type} [Fintype J] (X : C) (f : J → C) :
-    (leftDistributor X f).inv = ∑ j : J, biproduct.π _ j ≫ (𝟙 X ⊗ biproduct.ι f j) :=
-  by
+    (leftDistributor X f).inv = ∑ j : J, biproduct.π _ j ≫ (𝟙 X ⊗ biproduct.ι f j) := by
   ext; dsimp [tensor_left, left_distributor]
   simp [preadditive.comp_sum, biproduct.ι_π_assoc, dite_comp]
 #align category_theory.left_distributor_inv CategoryTheory.leftDistributor_inv
@@ -192,8 +188,7 @@ theorem leftDistributor_inv {J : Type} [Fintype J] (X : C) (f : J → C) :
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem leftDistributor_assoc {J : Type} [Fintype J] (X Y : C) (f : J → C) :
     (asIso (𝟙 X) ⊗ leftDistributor Y f) ≪≫ leftDistributor X _ =
-      (α_ X Y (⨁ f)).symm ≪≫ leftDistributor (X ⊗ Y) f ≪≫ biproduct.mapIso fun j => α_ X Y _ :=
-  by
+      (α_ X Y (⨁ f)).symm ≪≫ leftDistributor (X ⊗ Y) f ≪≫ biproduct.mapIso fun j => α_ X Y _ := by
   ext
   simp only [category.comp_id, category.assoc, eq_to_hom_refl, iso.trans_hom, iso.symm_hom,
     as_iso_hom, comp_zero, comp_dite, preadditive.sum_comp, preadditive.comp_sum, tensor_sum,
@@ -216,8 +211,7 @@ def rightDistributor {J : Type} [Fintype J] (X : C) (f : J → C) : (⨁ f) ⊗ 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[simp]
 theorem rightDistributor_hom {J : Type} [Fintype J] (X : C) (f : J → C) :
-    (rightDistributor X f).Hom = ∑ j : J, (biproduct.π f j ⊗ 𝟙 X) ≫ biproduct.ι _ j :=
-  by
+    (rightDistributor X f).Hom = ∑ j : J, (biproduct.π f j ⊗ 𝟙 X) ≫ biproduct.ι _ j := by
   ext; dsimp [tensor_right, right_distributor]
   simp [preadditive.sum_comp, biproduct.ι_π, comp_dite]
 #align category_theory.right_distributor_hom CategoryTheory.rightDistributor_hom
@@ -225,8 +219,7 @@ theorem rightDistributor_hom {J : Type} [Fintype J] (X : C) (f : J → C) :
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[simp]
 theorem rightDistributor_inv {J : Type} [Fintype J] (X : C) (f : J → C) :
-    (rightDistributor X f).inv = ∑ j : J, biproduct.π _ j ≫ (biproduct.ι f j ⊗ 𝟙 X) :=
-  by
+    (rightDistributor X f).inv = ∑ j : J, biproduct.π _ j ≫ (biproduct.ι f j ⊗ 𝟙 X) := by
   ext; dsimp [tensor_right, right_distributor]
   simp [preadditive.comp_sum, biproduct.ι_π_assoc, dite_comp]
 #align category_theory.right_distributor_inv CategoryTheory.rightDistributor_inv
@@ -235,8 +228,7 @@ theorem rightDistributor_inv {J : Type} [Fintype J] (X : C) (f : J → C) :
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem rightDistributor_assoc {J : Type} [Fintype J] (X Y : C) (f : J → C) :
     (rightDistributor X f ⊗ asIso (𝟙 Y)) ≪≫ rightDistributor Y _ =
-      α_ (⨁ f) X Y ≪≫ rightDistributor (X ⊗ Y) f ≪≫ biproduct.mapIso fun j => (α_ _ X Y).symm :=
-  by
+      α_ (⨁ f) X Y ≪≫ rightDistributor (X ⊗ Y) f ≪≫ biproduct.mapIso fun j => (α_ _ X Y).symm := by
   ext
   simp only [category.comp_id, category.assoc, eq_to_hom_refl, iso.symm_hom, iso.trans_hom,
     as_iso_hom, comp_zero, comp_dite, preadditive.sum_comp, preadditive.comp_sum, sum_tensor,
@@ -256,8 +248,7 @@ theorem leftDistributor_rightDistributor_assoc {J : Type _} [Fintype J] (X Y : C
     (leftDistributor X f ⊗ asIso (𝟙 Y)) ≪≫ rightDistributor Y _ =
       α_ X (⨁ f) Y ≪≫
         (asIso (𝟙 X) ⊗ rightDistributor Y _) ≪≫
-          leftDistributor X _ ≪≫ biproduct.mapIso fun j => (α_ _ _ _).symm :=
-  by
+          leftDistributor X _ ≪≫ biproduct.mapIso fun j => (α_ _ _ _).symm := by
   ext
   simp only [category.comp_id, category.assoc, eq_to_hom_refl, iso.symm_hom, iso.trans_hom,
     as_iso_hom, comp_zero, comp_dite, preadditive.sum_comp, preadditive.comp_sum, sum_tensor,
