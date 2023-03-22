@@ -126,6 +126,7 @@ import Mathlib.Algebra.Invertible
 import Mathlib.Algebra.IsPrimePow
 import Mathlib.Algebra.Lie.Basic
 import Mathlib.Algebra.Lie.NonUnitalNonAssocAlgebra
+import Mathlib.Algebra.Lie.Subalgebra
 import Mathlib.Algebra.Module.Algebra
 import Mathlib.Algebra.Module.Basic
 import Mathlib.Algebra.Module.BigOperators
@@ -402,6 +403,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 import Mathlib.CategoryTheory.Limits.Shapes.FunctorCategory
 import Mathlib.CategoryTheory.Limits.Shapes.Images
+import Mathlib.CategoryTheory.Limits.Shapes.KernelPair
 import Mathlib.CategoryTheory.Limits.Shapes.Kernels
 import Mathlib.CategoryTheory.Limits.Shapes.NormalMono.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.NormalMono.Equalizers
@@ -426,6 +428,7 @@ import Mathlib.CategoryTheory.Monoidal.Category
 import Mathlib.CategoryTheory.Monoidal.End
 import Mathlib.CategoryTheory.Monoidal.Functor
 import Mathlib.CategoryTheory.Monoidal.Functorial
+import Mathlib.CategoryTheory.Monoidal.Preadditive
 import Mathlib.CategoryTheory.NatIso
 import Mathlib.CategoryTheory.NatTrans
 import Mathlib.CategoryTheory.Opposites
@@ -440,6 +443,7 @@ import Mathlib.CategoryTheory.Preadditive.Biproducts
 import Mathlib.CategoryTheory.Preadditive.FunctorCategory
 import Mathlib.CategoryTheory.Preadditive.LeftExact
 import Mathlib.CategoryTheory.Preadditive.OfBiproducts
+import Mathlib.CategoryTheory.Preadditive.SingleObj
 import Mathlib.CategoryTheory.Products.Associator
 import Mathlib.CategoryTheory.Products.Basic
 import Mathlib.CategoryTheory.Products.Bifunctor
@@ -1119,6 +1123,7 @@ import Mathlib.LinearAlgebra.Projection
 import Mathlib.LinearAlgebra.Quotient
 import Mathlib.LinearAlgebra.Ray
 import Mathlib.LinearAlgebra.SModEq
+import Mathlib.LinearAlgebra.SesquilinearForm
 import Mathlib.LinearAlgebra.Span
 import Mathlib.LinearAlgebra.TensorProduct
 import Mathlib.Logic.Basic
@@ -1298,6 +1303,7 @@ import Mathlib.RingTheory.Ideal.Prod
 import Mathlib.RingTheory.Ideal.Quotient
 import Mathlib.RingTheory.Int.Basic
 import Mathlib.RingTheory.Localization.Basic
+import Mathlib.RingTheory.Localization.FractionRing
 import Mathlib.RingTheory.Localization.Integer
 import Mathlib.RingTheory.Multiplicity
 import Mathlib.RingTheory.MvPolynomial.Symmetric
@@ -1514,6 +1520,7 @@ import Mathlib.Topology.ContinuousFunction.CocompactMap
 import Mathlib.Topology.ContinuousFunction.Ordered
 import Mathlib.Topology.ContinuousFunction.T0Sierpinski
 import Mathlib.Topology.ContinuousOn
+import Mathlib.Topology.Covering
 import Mathlib.Topology.DenseEmbedding
 import Mathlib.Topology.DiscreteQuotient
 import Mathlib.Topology.ExtendFrom
