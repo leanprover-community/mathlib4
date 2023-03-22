@@ -249,6 +249,7 @@ import Mathlib.Algebra.Ring.Semiconj
 import Mathlib.Algebra.Ring.ULift
 import Mathlib.Algebra.Ring.Units
 import Mathlib.Algebra.SMulWithZero
+import Mathlib.Algebra.Squarefree
 import Mathlib.Algebra.Star.Basic
 import Mathlib.Algebra.Star.BigOperators
 import Mathlib.Algebra.Star.Module
@@ -444,6 +445,7 @@ import Mathlib.CategoryTheory.Products.Basic
 import Mathlib.CategoryTheory.Products.Bifunctor
 import Mathlib.CategoryTheory.Quotient
 import Mathlib.CategoryTheory.Sigma.Basic
+import Mathlib.CategoryTheory.SingleObj
 import Mathlib.CategoryTheory.Sites.Sieves
 import Mathlib.CategoryTheory.Skeletal
 import Mathlib.CategoryTheory.StructuredArrow
@@ -960,6 +962,7 @@ import Mathlib.Data.W.Cardinal
 import Mathlib.Data.W.Constructions
 import Mathlib.Data.ZMod.Algebra
 import Mathlib.Data.ZMod.Basic
+import Mathlib.Data.ZMod.Coprime
 import Mathlib.Data.ZMod.Defs
 import Mathlib.Data.ZMod.Parity
 import Mathlib.Deprecated.Group
@@ -1107,6 +1110,7 @@ import Mathlib.LinearAlgebra.BilinearMap
 import Mathlib.LinearAlgebra.Dfinsupp
 import Mathlib.LinearAlgebra.Finsupp
 import Mathlib.LinearAlgebra.GeneralLinearGroup
+import Mathlib.LinearAlgebra.InvariantBasisNumber
 import Mathlib.LinearAlgebra.LinearIndependent
 import Mathlib.LinearAlgebra.LinearPMap
 import Mathlib.LinearAlgebra.Pi
@@ -1162,6 +1166,7 @@ import Mathlib.NumberTheory.ClassNumber.AdmissibleAbs
 import Mathlib.NumberTheory.ClassNumber.AdmissibleAbsoluteValue
 import Mathlib.NumberTheory.Divisors
 import Mathlib.NumberTheory.FrobeniusNumber
+import Mathlib.NumberTheory.Padics.PadicVal
 import Mathlib.NumberTheory.Primorial
 import Mathlib.Order.Antichain
 import Mathlib.Order.Antisymmetrization
@@ -1493,6 +1498,7 @@ import Mathlib.Topology.Algebra.Semigroup
 import Mathlib.Topology.Algebra.Star
 import Mathlib.Topology.Algebra.UniformGroup
 import Mathlib.Topology.Algebra.UniformMulAction
+import Mathlib.Topology.Algebra.UniformRing
 import Mathlib.Topology.Algebra.WithZeroTopology
 import Mathlib.Topology.Bases
 import Mathlib.Topology.Basic
@@ -1511,6 +1517,7 @@ import Mathlib.Topology.ContinuousOn
 import Mathlib.Topology.DenseEmbedding
 import Mathlib.Topology.DiscreteQuotient
 import Mathlib.Topology.ExtendFrom
+import Mathlib.Topology.FiberBundle.Basic
 import Mathlib.Topology.FiberBundle.IsHomeomorphicTrivialBundle
 import Mathlib.Topology.FiberBundle.Trivialization
 import Mathlib.Topology.Filter
