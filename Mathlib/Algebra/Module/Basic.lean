@@ -512,7 +512,8 @@ instance subsingleton_rat_module (E : Type _) [AddCommGroup E] : Subsingleton (M
 /-- If `E` is a vector space over two division semirings `R` and `S`, then scalar multiplications
 agree on inverses of natural numbers in `R` and `S`. -/
 theorem inv_nat_cast_smul_eq {E : Type _} (R S : Type _) [AddCommMonoid E] [DivisionSemiring R]
-    [DivisionSemiring S] [Module R E] [Module S E] (n : ℕ) (x : E) : (n⁻¹ : R) • x = (n⁻¹ : S) • x :=
+    [DivisionSemiring S] [Module R E] [Module S E] (n : ℕ) (x : E) :
+    (n⁻¹ : R) • x = (n⁻¹ : S) • x :=
   map_inv_nat_cast_smul (AddMonoidHom.id E) R S n x
 #align inv_nat_cast_smul_eq inv_nat_cast_smul_eq
 
