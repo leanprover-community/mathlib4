@@ -94,7 +94,7 @@ def getCodeBlock (response : String) : M IO CodeBlock := do
 
 def askForAssistance (prompt : String) : M IO Unit := do
   recordMessage ⟨.user, prompt⟩
-  let response ← sendMessages <| (← getLog)
+  let response ← sendMessages <| (← getLog).reverse
   let some response ← pure response.content | throw <| IO.userError "Response did not contain content"
   recordMessage ⟨.assistant, response⟩
   recordSolution (← getCodeBlock response)

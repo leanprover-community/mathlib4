@@ -47,20 +47,33 @@ structure Response where
   choices : List Choice
 deriving ToJson, FromJson
 
+structure ErrorMessage where
+  message : String
+  type : String
+  param : Option Nat := none
+  code : Option Nat := none
+deriving ToJson, FromJson
+
+structure Error where
+  error : ErrorMessage
+deriving ToJson, FromJson
+
 /--
 Extract the content of ChatGPT's reply.
 This assumes that there is only one `choice`, discarding others.
-
-It also discards all usage information,
-so in large scale use it may be better to use `parseResponse` instead.
 -/
 def Response.content (r : Response) : Option String :=
 r.choices.head?.map (·.message.content)
 
 /-- Parse a raw JSON string to a `Response` term. -/
--- FIXME handle error responses
 def parseResponse (response : String) : Except String Response :=
-Json.parse response |>.bind fromJson?
+match Json.parse response with
+| .ok r => match fromJson? r with
+  | .ok r => .ok r
+  | .error e₁ => match (fromJson? r : Except String Error) with
+    | .ok { error := e₂ } => .error (e₂.type ++ ": " ++ e₂.message)
+    | .error e₂ => .error (e₁ ++ "\n" ++ e₂)
+| .error e => .error e
 
 -- Err, this must exist already!
 def _root_.List.everySecond : List α → List α

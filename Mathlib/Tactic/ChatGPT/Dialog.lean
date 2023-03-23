@@ -19,13 +19,13 @@ def feedback : M IO String := do
       | (ctx, g, pos, _) :: _ => do
           -- TODO mention the later sorries?
           let pp ← ctx.ppGoals [g]
-          pure s!"In the proof you just gave me:\n{last}there's still a sorry at line {pos.line}, where the goal is:\n{pp.fence}Write one more step of the tactic proof, replacing the tactic `sorry`, that will make further progress on these goals. It's important that you don't just repeat the same code block!"
+          pure s!"In the proof you just gave me:\n{last}there's still a sorry at line {pos.line}, where the goal is:\n{pp.fence}Write one more step of the tactic proof, replacing the tactic `sorry`, that will make further progress on these goals."
     | _ =>
         let goal := String.intercalate "\n" (unsolvedGoals.map List.tail).join |>.trim
-        pure s!"The proof you just gave me:\n{last}still has unsolved goals:\n{goal.fence}Add another step of the proof, after what you've already written, that will make further progress on these goals. It's important that you don't just repeat the same code block!"
+        pure s!"The proof you just gave me:\n{last}still has unsolved goals:\n{goal.fence}Add another step of the proof, after what you've already written, that will make further progress on these goals."
   | _ =>
     pure <| s!"In the proof you just gave me:\n{last}there are some errors:\n" ++
-      -- TODO decide which errors matter or deserve emphasise (or helpful advice!)
+      -- TODO decide which other errors matter or deserve emphasise (or helpful advice!)
       -- TODO mention the lines numbers in prose, possibly extracting the relevant span and quoting it
       String.intercalate "\n" otherErrors.join ++
       "\nPlease fix these, but don't add any extra steps to the proof."
@@ -52,6 +52,7 @@ Please make sure to include a complete declaration containing your suggestion, f
 It's helpful to include some informal explanation of your reasoning before or after the code block.
 
 Let's start with the following proof:\n" ++ (← latestCodeBlock).markdownBody
+  -- TODO if there's no proof at all yet, just a sorry, we shouldn't separately restate the goal that appears in the sorry!
   match ← sorries with
   | [] => pure prompt
   | (ctx, g, _, _) :: _ => do
@@ -73,6 +74,6 @@ def dialog (n : Nat) : M MetaM String := do
 elab tk:"gpt" : tactic => do
   let (newDecl, result) ← discussDeclContaining tk
     (fun decl => decl.replace "gpt" "sorry") -- haha this will make some fun errors
-    (dialog 2)
+    (dialog 3)
   logInfoAt tk result
   logInfoAt tk newDecl

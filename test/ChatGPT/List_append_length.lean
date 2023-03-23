@@ -5,5 +5,5 @@ import Mathlib.Tactic.Ring
 
 open List
 
-example (L M : List α) : (L ++ M ++ L).length = (M ++ L ++ L).length := by
+example (α : Type) (L M : List α) : (L ++ M ++ L).length = (M ++ L ++ L).length := by
   gpt
