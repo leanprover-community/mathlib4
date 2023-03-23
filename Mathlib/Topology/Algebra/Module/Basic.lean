@@ -1621,8 +1621,26 @@ instance module : Module S₃ (M →SL[σ₁₃] M₃) where
   add_smul _ _ _ := ext fun _ => add_smul _ _ _
 #align continuous_linear_map.module ContinuousLinearMap.module
 
-instance [Module S₃ᵐᵒᵖ M₃] [IsCentralScalar S₃ M₃] : IsCentralScalar S₃ (M →SL[σ₁₃] M₃) where
-  op_smul_eq_smul _ _ := ext fun _ => op_smul_eq_smul _ _
+-- Porting note: Instances should be specified, or timeouts.
+instance isCentralScalar [Module S₃ᵐᵒᵖ M₃] [IsCentralScalar S₃ M₃] :
+  @IsCentralScalar S₃ (M →SL[σ₁₃] M₃)
+    (@SMulZeroClass.toSMul _ _ _ (@SMulWithZero.toSMulZeroClass _ _ _ _
+      (@MulActionWithZero.toSMulWithZero _ _ _ _ (@Module.toMulActionWithZero _ _ _ _
+        ContinuousLinearMap.module))))
+    (@SMulZeroClass.toSMul _ _ _ (@SMulWithZero.toSMulZeroClass _ _ _ _
+      (@MulActionWithZero.toSMulWithZero _ _ _ _ (@Module.toMulActionWithZero _ _ _ _
+        (@ContinuousLinearMap.module _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+          (@SMulCommClass.op_right _ _ _ _ _ _ _ _) _ _ _))))) :=
+  @IsCentralScalar.mk S₃ (M →SL[σ₁₃] M₃)
+    (@SMulZeroClass.toSMul _ _ _ (@SMulWithZero.toSMulZeroClass _ _ _ _
+      (@MulActionWithZero.toSMulWithZero _ _ _ _ (@Module.toMulActionWithZero _ _ _ _
+        ContinuousLinearMap.module))))
+    (@SMulZeroClass.toSMul _ _ _ (@SMulWithZero.toSMulZeroClass _ _ _ _
+      (@MulActionWithZero.toSMulWithZero _ _ _ _ (@Module.toMulActionWithZero _ _ _ _
+        (@ContinuousLinearMap.module _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+          (@SMulCommClass.op_right _ _ _ _ _ _ _ _) _ _ _)))))
+    fun _ _ => ext fun _ => op_smul_eq_smul _ _
+#align continuous_linear_map.is_central_scalar ContinuousLinearMap.isCentralScalar
 
 variable (S) [ContinuousAdd N₃]
 
