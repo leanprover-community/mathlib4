@@ -281,7 +281,7 @@ theorem equivLike_inv_eq_symm (f : M ≃* N) : EquivLike.inv f = f.symm := rfl
 -- in the whole file.
 
 /-- See Note [custom simps projection] -/
-@[to_additive "See Note custom simps projection"]
+@[to_additive "See Note [custom simps projection]"] -- this comment fixes the syntax highlighting "
 def Simps.symm_apply (e : M ≃* N) : N → M :=
   e.symm
 #align mul_equiv.simps.symm_apply MulEquiv.Simps.symm_apply

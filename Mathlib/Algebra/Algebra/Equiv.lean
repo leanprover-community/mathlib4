@@ -129,6 +129,11 @@ instance : EquivLike (A₁ ≃ₐ[R] A₂) A₁ A₂ where
 def Simps.apply (e : A₁ ≃ₐ[R] A₂) : A₁ → A₂ :=
   e
 
+-- Porting note: the default simps projection was `e.toEquiv`, it should be `EquivLike.toEquiv`
+/-- See Note [custom simps projection] -/
+def Simps.toEquiv (e : A₁ ≃ₐ[R] A₂) : A₁ ≃ A₂ :=
+  e
+
 -- Porting note: `protected` used to be an attribute below
 @[simp]
 protected theorem coe_coe {F : Type _} [AlgEquivClass F R A₁ A₂] (f : F) :
@@ -334,7 +339,7 @@ theorem coe_coe_symm_apply_coe_apply {F : Type _} [AlgEquivClass F R A₁ A₂] 
 
 -- Porting note: `simp` normal form of `invFun_eq_symm`
 @[simp]
-theorem symm_toEquiv_eq_symm {e : A₁ ≃ₐ[R] A₂} : e.toEquiv.symm = e.symm :=
+theorem symm_toEquiv_eq_symm {e : A₁ ≃ₐ[R] A₂} : (e : A₁ ≃ A₂).symm = e.symm :=
   rfl
 
 theorem invFun_eq_symm {e : A₁ ≃ₐ[R] A₂} : e.invFun = e.symm :=
