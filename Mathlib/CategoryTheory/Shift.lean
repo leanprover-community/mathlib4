@@ -692,8 +692,7 @@ def hasShiftOfFullyFaithful :
         simp only [Functor.map_id, Category.id_comp, Category.assoc, Iso.hom_inv_id_app_assoc]
         rw [dcongr_arg (fun a => (i a).inv.app X) (zero_add n)]
         simp only [eqToHom_app, Functor.comp_obj, eqToHom_trans_assoc,
-          eqToHom_refl, Category.id_comp,
-  Iso.hom_inv_id_app_assoc, eqToHom_map])
+          eqToHom_refl, Category.id_comp, Iso.hom_inv_id_app_assoc, eqToHom_map])
       right_unitality := fun n X => F.map_injective (by
         have := dcongr_arg (fun a => (i a).inv.app X) (add_zero n)
         simp only [Functor.id_obj, Functor.map_comp, map_hasShiftOfFullyFaithful_ε_hom_app,
