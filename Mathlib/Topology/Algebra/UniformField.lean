@@ -31,7 +31,7 @@ the separation assumption is needed. Indeed the kernel of the completion map is 
 zero which is an ideal. Hence it's either zero (and the field is separated) or the full field,
 which implies one is sent to zero and the completion ring is trivial.
 
-The main definition is `completable_top_field` which packages the assumptions as a Prop-valued
+The main definition is `CompletableTopField` which packages the assumptions as a Prop-valued
 type class and the main results are the instances `uniform_space.completion.field` and
 `uniform_space.completion.topological_division_ring`.
 -/
