@@ -276,7 +276,7 @@ theorem cauchy_product {a b : ℕ → β} (ha : IsCauSeq abs fun m => ∑ n in r
       (∑ i in range K, a i * ∑ k in range (K - i), b k) =
         (∑ i in range K, a i * ((∑ k in range (K - i), b k) - ∑ k in range K, b k)) +
           ∑ i in range K, a i * ∑ k in range K, b k :=
-      by rw [← sum_add_distrib]; simp [(mul_add _ _ _).symm]
+      by rw [← sum_add_distrib]; simp [← mul_add]
     have two_mul_two : (4 : α) = 2 * 2 := by norm_num
     have hQ0 : Q ≠ 0 := fun h => by simp [h, lt_irrefl] at hQε0
     have h2Q0 : 2 * Q ≠ 0 := mul_ne_zero two_ne_zero hQ0

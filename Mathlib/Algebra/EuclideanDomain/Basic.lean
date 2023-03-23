@@ -240,7 +240,7 @@ instance (priority := 70) (R : Type _) [e : EuclideanDomain R] : NoZeroDivisors 
       or_iff_not_and_not.2 fun h0 => h0.1 <| by rw [← mul_div_cancel a h0.2, h, zero_div] }
 
 -- see Note [lower instance priority]
-instance (priority := 70) (R : Type _) [e : EuclideanDomain R] : IsDomain R :=
+instance' (priority := 70) (R : Type _) [e : EuclideanDomain R] : IsDomain R :=
   { e, NoZeroDivisors.to_isDomain R with }
 
 end GCD

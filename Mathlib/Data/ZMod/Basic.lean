@@ -1111,11 +1111,7 @@ instance : Field (ZMod p) :=
     inv_zero := inv_zero p }
 
 /-- `ZMod p` is an integral domain when `p` is prime. -/
-instance (p : ℕ) [hp : Fact p.Prime] : IsDomain (ZMod p) := by
-  -- We need `cases p` here in order to resolve which `CommRing` instance is being used.
-  cases p
-  · exact (Nat.not_prime_zero hp.out).elim
-  exact @Field.isDomain (ZMod _) (inferInstanceAs (Field (ZMod _)))
+example (p : ℕ) [Fact p.Prime] : IsDomain (ZMod p) := inferInstance
 
 end ZMod
 

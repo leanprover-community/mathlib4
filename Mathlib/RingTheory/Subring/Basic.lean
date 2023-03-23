@@ -115,7 +115,8 @@ instance (priority := 75) toCommRing {R} [CommRing R] [SetLike S R] [SubringClas
 
 -- Prefer subclasses of `Ring` over subclasses of `SubringClass`.
 /-- A subring of a domain is a domain. -/
-instance (priority := 75) {R} [Ring R] [IsDomain R] [SetLike S R] [SubringClass S R] : IsDomain s :=
+instance' (priority := 75) {R} [Ring R] [IsDomain R] [SetLike S R] [SubringClass S R] :
+    IsDomain s :=
   have := SubsemiringClass.noZeroDivisors (s := s) -- porting note: todo: fails without `have`
   NoZeroDivisors.to_isDomain _
 
@@ -463,11 +464,11 @@ instance {R} [Ring R] [Nontrivial R] (s : Subring R) : Nontrivial s :=
   s.toSubsemiring.nontrivial
 
 /-- A subring of a ring with no zero divisors has no zero divisors. -/
-instance {R} [Ring R] [NoZeroDivisors R] (s : Subring R) : NoZeroDivisors s :=
+instance' {R} [Ring R] [NoZeroDivisors R] (s : Subring R) : NoZeroDivisors s :=
   s.toSubsemiring.noZeroDivisors
 
 /-- A subring of a domain is a domain. -/
-instance {R} [Ring R] [IsDomain R] (s : Subring R) : IsDomain s :=
+instance' {R} [Ring R] [IsDomain R] (s : Subring R) : IsDomain s :=
   NoZeroDivisors.to_isDomain _
 
 /-- A subring of an `OrderedRing` is an `OrderedRing`. -/

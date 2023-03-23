@@ -76,7 +76,7 @@ theorem mul_lt_top [LT α] {a b : WithTop α} (ha : a ≠ ⊤) (hb : b ≠ ⊤) 
   mul_lt_top' (WithTop.lt_top_iff_ne_top.2 ha) (WithTop.lt_top_iff_ne_top.2 hb)
 #align with_top.mul_lt_top WithTop.mul_lt_top
 
-instance noZeroDivisors [NoZeroDivisors α] : NoZeroDivisors (WithTop α) := by
+instance' noZeroDivisors [NoZeroDivisors α] : NoZeroDivisors (WithTop α) := by
   refine ⟨fun h₁ => Decidable.by_contradiction <| fun h₂ => ?_⟩
   rw [mul_def, if_neg h₂] at h₁
   rcases Option.mem_map₂_iff.1 h₁ with ⟨a, b, (rfl : _ = _), (rfl : _ = _), hab⟩
@@ -284,7 +284,7 @@ end MulZeroClass
 instance [MulZeroOneClass α] [Nontrivial α] : MulZeroOneClass (WithBot α) :=
   WithTop.instMulZeroOneClassWithTop
 
-instance [MulZeroClass α] [NoZeroDivisors α] : NoZeroDivisors (WithBot α) :=
+instance' [MulZeroClass α] [NoZeroDivisors α] : NoZeroDivisors (WithBot α) :=
   WithTop.noZeroDivisors
 
 instance [SemigroupWithZero α] [NoZeroDivisors α] : SemigroupWithZero (WithBot α) :=
@@ -301,7 +301,7 @@ instance commSemiring [CanonicallyOrderedCommSemiring α] [Nontrivial α] :
     CommSemiring (WithBot α) :=
   WithTop.commSemiring
 
-instance [MulZeroClass α] [Preorder α] [PosMulMono α] : PosMulMono (WithBot α) :=
+instance' [MulZeroClass α] [Preorder α] [PosMulMono α] : PosMulMono (WithBot α) :=
   ⟨by
     intro ⟨x, x0⟩ a b h
     simp only [Subtype.coe_mk]
@@ -318,7 +318,7 @@ instance [MulZeroClass α] [Preorder α] [PosMulMono α] : PosMulMono (WithBot �
     norm_cast at x0
     exact mul_le_mul_of_nonneg_left h x0 ⟩
 
-instance [MulZeroClass α] [Preorder α] [MulPosMono α] : MulPosMono (WithBot α) :=
+instance' [MulZeroClass α] [Preorder α] [MulPosMono α] : MulPosMono (WithBot α) :=
   ⟨by
     intro ⟨x, x0⟩ a b h
     simp only [Subtype.coe_mk]
@@ -335,7 +335,7 @@ instance [MulZeroClass α] [Preorder α] [MulPosMono α] : MulPosMono (WithBot �
     norm_cast at x0
     exact mul_le_mul_of_nonneg_right h x0 ⟩
 
-instance [MulZeroClass α] [Preorder α] [PosMulStrictMono α] : PosMulStrictMono (WithBot α) :=
+instance' [MulZeroClass α] [Preorder α] [PosMulStrictMono α] : PosMulStrictMono (WithBot α) :=
   ⟨by
     intro ⟨x, x0⟩ a b h
     simp only [Subtype.coe_mk]
@@ -348,7 +348,7 @@ instance [MulZeroClass α] [Preorder α] [PosMulStrictMono α] : PosMulStrictMon
     norm_cast at x0
     exact mul_lt_mul_of_pos_left h x0 ⟩
 
-instance [MulZeroClass α] [Preorder α] [MulPosStrictMono α] : MulPosStrictMono (WithBot α) :=
+instance' [MulZeroClass α] [Preorder α] [MulPosStrictMono α] : MulPosStrictMono (WithBot α) :=
   ⟨by
     intro ⟨x, x0⟩ a b h
     simp only [Subtype.coe_mk]
@@ -361,7 +361,7 @@ instance [MulZeroClass α] [Preorder α] [MulPosStrictMono α] : MulPosStrictMon
     norm_cast at x0
     exact mul_lt_mul_of_pos_right h x0 ⟩
 
-instance [MulZeroClass α] [Preorder α] [PosMulReflectLT α] : PosMulReflectLT (WithBot α) :=
+instance' [MulZeroClass α] [Preorder α] [PosMulReflectLT α] : PosMulReflectLT (WithBot α) :=
   ⟨by
     intro ⟨x, x0⟩ a b h
     simp only [Subtype.coe_mk] at h
@@ -379,7 +379,7 @@ instance [MulZeroClass α] [Preorder α] [PosMulReflectLT α] : PosMulReflectLT 
     norm_cast at x0
     exact lt_of_mul_lt_mul_left h x0 ⟩
 
-instance [MulZeroClass α] [Preorder α] [MulPosReflectLT α] : MulPosReflectLT (WithBot α) :=
+instance' [MulZeroClass α] [Preorder α] [MulPosReflectLT α] : MulPosReflectLT (WithBot α) :=
   ⟨by
     intro ⟨x, x0⟩ a b h
     simp only [Subtype.coe_mk] at h
@@ -397,7 +397,7 @@ instance [MulZeroClass α] [Preorder α] [MulPosReflectLT α] : MulPosReflectLT 
     norm_cast at x0
     exact lt_of_mul_lt_mul_right h x0 ⟩
 
-instance [MulZeroClass α] [Preorder α] [PosMulMonoRev α] : PosMulMonoRev (WithBot α) :=
+instance' [MulZeroClass α] [Preorder α] [PosMulMonoRev α] : PosMulMonoRev (WithBot α) :=
   ⟨by
     intro ⟨x, x0⟩ a b h
     simp only [Subtype.coe_mk] at h
@@ -411,7 +411,7 @@ instance [MulZeroClass α] [Preorder α] [PosMulMonoRev α] : PosMulMonoRev (Wit
     norm_cast at x0
     exact le_of_mul_le_mul_left h x0 ⟩
 
-instance [MulZeroClass α] [Preorder α] [MulPosMonoRev α] : MulPosMonoRev (WithBot α) :=
+instance' [MulZeroClass α] [Preorder α] [MulPosMonoRev α] : MulPosMonoRev (WithBot α) :=
   ⟨by
     intro ⟨x, x0⟩ a b h
     simp only [Subtype.coe_mk] at h

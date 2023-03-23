@@ -10,6 +10,7 @@ Authors: Yury Kudryashov, Yaël Dillies
 -/
 import Mathlib.Algebra.Ring.Defs
 import Mathlib.Algebra.Group.OrderSynonym
+import Mathlib.Util.Commutes
 
 /-!
 # Ring structure on the order type synonyms
@@ -25,9 +26,9 @@ variable {α : Type _}
 
 instance [h : Distrib α] : Distrib αᵒᵈ := h
 
-instance [Mul α] [Add α] [h : LeftDistribClass α] : LeftDistribClass αᵒᵈ := h
+instance' [Mul α] [Add α] [h : LeftDistribClass α] : LeftDistribClass αᵒᵈ := h
 
-instance [Mul α] [Add α] [h : RightDistribClass α] : RightDistribClass αᵒᵈ := h
+instance' [Mul α] [Add α] [h : RightDistribClass α] : RightDistribClass αᵒᵈ := h
 
 instance [h : NonUnitalNonAssocSemiring α] : NonUnitalNonAssocSemiring αᵒᵈ := h
 
@@ -55,7 +56,7 @@ instance [h : NonUnitalCommRing α] : NonUnitalCommRing αᵒᵈ := h
 
 instance [h : CommRing α] : CommRing αᵒᵈ := h
 
-instance [Ring α] [h : IsDomain α] : IsDomain αᵒᵈ := h
+instance' [Ring α] [h : IsDomain α] : IsDomain αᵒᵈ := h
 
 /-! ### Lexicographical order -/
 
@@ -92,4 +93,4 @@ instance [h : NonUnitalCommRing α] : NonUnitalCommRing (Lex α) := h
 
 instance [h : CommRing α] : CommRing (Lex α) := h
 
-instance [Ring α] [h : IsDomain α] : IsDomain (Lex α) := h
+instance' [Ring α] [h : IsDomain α] : IsDomain (Lex α) := h
