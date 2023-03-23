@@ -65,7 +65,9 @@ namespace FirstOrder
   type of relations of every natural-number arity. -/
 @[nolint checkUnivs]
 structure Language where
+  /-- For every arity, a `Type _` of functions of that arity -/
   Functions : ℕ → Type u
+  /-- For every arity, a `Type _` of relations of that arity -/
   Relations : ℕ → Type v
 #align first_order.language FirstOrder.Language
 
@@ -163,11 +165,13 @@ def card : Cardinal :=
 
 /-- A language is relational when it has no function symbols. -/
 class IsRelational : Prop where
+  /-- There are no function symbols in the language. -/
   empty_functions : ∀ n, IsEmpty (L.Functions n)
 #align first_order.language.is_relational FirstOrder.Language.IsRelational
 
 /-- A language is algebraic when it has no relation symbols. -/
 class IsAlgebraic : Prop where
+  /-- There are no relation symbols in the language. -/
   empty_relations : ∀ n, IsEmpty (L.Relations n)
 #align first_order.language.is_algebraic FirstOrder.Language.IsAlgebraic
 
@@ -318,7 +322,9 @@ variable (L) (M : Type w)
   `n` to `Prop`. -/
 @[ext]
 class Structure where
+  /-- Interpretation of the function symbols -/
   funMap : ∀ {n}, L.Functions n → (Fin n → M) → M
+  /-- Interpretation of the relation symbols -/
   rel_map : ∀ {n}, L.Relations n → (Fin n → M) → Prop
 set_option linter.uppercaseLean3 false in
 #align first_order.language.Structure FirstOrder.Language.Structure
@@ -341,14 +347,17 @@ def inhabited.trivialStructure {α : Type _} [Inhabited α] : L.Structure α :=
   interpretations of functions and maps tuples in one structure where a given relation is true to
   tuples in the second structure where that relation is still true. -/
 structure Hom where
+  /-- The underlying function of a homomorphism of structures -/
   toFun : M → N
+  /-- The homomorphism commutes with the interpretations of the function symbols -/
   map_fun' : ∀ {n} (f : L.Functions n) (x), toFun (funMap f x) = funMap f (toFun ∘ x) := by
     intros; trivial
+  /-- The homomorphism sends related elements to related elements -/
   map_rel' : ∀ {n} (r : L.Relations n) (x), rel_map r x → rel_map r (toFun ∘ x) := by
     intros; trivial
 #align first_order.language.hom FirstOrder.Language.Hom
 
--- mathport name: language.hom
+@[inherit_doc]
 scoped[FirstOrder] notation:25 A " →[" L "] " B => FirstOrder.Language.Hom L A B
 
 /-- An embedding of first-order structures is an embedding that commutes with the
@@ -360,7 +369,7 @@ structure Embedding extends M ↪ N where
     intros; trivial
 #align first_order.language.embedding FirstOrder.Language.Embedding
 
--- mathport name: language.embedding
+@[inherit_doc]
 scoped[FirstOrder] notation:25 A " ↪[" L "] " B => FirstOrder.Language.Embedding L A B
 
 /-- An equivalence of first-order structures is an equivalence that commutes with the
@@ -372,7 +381,7 @@ structure Equiv extends M ≃ N where
     intros; trivial
 #align first_order.language.equiv FirstOrder.Language.Equiv
 
--- mathport name: language.equiv
+@[inherit_doc]
 scoped[FirstOrder] notation:25 A " ≃[" L "] " B => FirstOrder.Language.Equiv L A B
 
 -- Porting note: was [L.Structure P] and [L.Structure Q]
@@ -484,8 +493,9 @@ class StrongHomClass (L : outParam Language) (F : Type _) (M N : outParam <| Typ
   map_rel : ∀ (φ : F) {n} (r : L.Relations n) (x), rel_map r (φ ∘ x) ↔ rel_map r x
 #align first_order.language.strong_hom_class FirstOrder.Language.StrongHomClass
 
-instance (priority := 100) StrongHomClass.homClass {F M N} [L.Structure M] [L.Structure N]
-    [FunLike F M fun _ => N] [StrongHomClass L F M N] : HomClass L F M N where
+--Porting note: using implicit brackets for `Structure` arguments
+instance (priority := 100) StrongHomClass.homClass {F M N} {_ : L.Structure M}
+    {_ : L.Structure N} [FunLike F M fun _ => N] [StrongHomClass L F M N] : HomClass L F M N where
   map_fun := StrongHomClass.map_fun
   map_rel φ _ R x := (StrongHomClass.map_rel φ R x).2
 #align first_order.language.strong_hom_class.hom_class FirstOrder.Language.StrongHomClass.homClass
@@ -503,6 +513,14 @@ theorem HomClass.map_constants {F M N} [L.Structure M] [L.Structure N] [FunLike 
     [HomClass L F M N] (φ : F) (c : L.Constants) : φ c = c :=
   (HomClass.map_fun φ c default).trans (congr rfl (funext default))
 #align first_order.language.hom_class.map_constants FirstOrder.Language.HomClass.map_constants
+
+attribute [inherit_doc FirstOrder.Language.Hom.map_fun'] FirstOrder.Language.Embedding.map_fun'
+  FirstOrder.Language.HomClass.map_fun FirstOrder.Language.StrongHomClass.map_fun
+  FirstOrder.Language.Equiv.map_fun'
+
+attribute [inherit_doc FirstOrder.Language.Hom.map_rel'] FirstOrder.Language.Embedding.map_rel'
+  FirstOrder.Language.HomClass.map_rel FirstOrder.Language.StrongHomClass.map_rel
+  FirstOrder.Language.Equiv.map_rel'
 
 namespace Hom
 
