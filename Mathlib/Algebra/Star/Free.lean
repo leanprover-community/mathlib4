@@ -49,7 +49,7 @@ namespace FreeAlgebra
 variable {R : Type _} [CommSemiring R] {X : Type _}
 
 /-- The star ring formed by reversing the elements of products -/
-noncomputable instance : StarRing (FreeAlgebra R X) where
+instance : StarRing (FreeAlgebra R X) where
   star := MulOpposite.unop ∘ lift R (MulOpposite.op ∘ ι R)
   star_involutive x := by
     unfold Star.star
