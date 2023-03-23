@@ -388,8 +388,13 @@ scoped[FirstOrder] notation:25 A " ≃[" L "] " B => FirstOrder.Language.Equiv L
 -- The former reported an error.
 variable {L M N} {P : Type _} [Structure L P] {Q : Type _} [Structure L Q]
 
+--Porting note: new definition
+/-- Interpretation of a constant symbol -/
+@[coe]
+def constantMap (c : L.Constants) : M := funMap c default
+
 instance : CoeTC L.Constants M :=
-  ⟨fun c => funMap c default⟩
+  ⟨constantMap⟩
 
 theorem funMap_eq_coe_constants {c : L.Constants} {x : Fin 0 → M} : funMap c x = c := by
   congr
