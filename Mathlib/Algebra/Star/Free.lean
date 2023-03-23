@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Eric Weiser. All rights reserved.
+Copyright (c) 2020 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Eric Weiser
+Authors: Eric Wieser
 
 ! This file was ported from Lean 3 source module algebra.star.free
 ! leanprover-community/mathlib commit 07c3cf2d851866ff7198219ed3fedf42e901f25c
