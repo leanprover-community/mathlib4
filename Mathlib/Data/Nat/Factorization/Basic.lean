@@ -57,7 +57,7 @@ def factorization (n : ℕ) : ℕ →₀ ℕ
   toFun p := if p.Prime then padicValNat p n else 0
   mem_support_toFun := by
     rcases eq_or_ne n 0 with (rfl | hn0); · simp
-    simp only [mem_factors hn0, mem_to_finset, Ne.def, ite_eq_right_iff, not_forall, exists_prop,
+    simp only [mem_factors hn0, mem_toFinset, Ne.def, ite_eq_right_iff, not_forall, exists_prop,
       and_congr_right_iff]
     rintro p hp
     haveI := fact_iff.mpr hp
@@ -73,7 +73,7 @@ of `p` in the factorization of `n`: we declare the former to be the simp-normal 
 @[simp]
 theorem factors_count_eq {n p : ℕ} : n.factors.count p = n.factorization p := by
   rcases n.eq_zero_or_pos with (rfl | hn0); · simp [factorization]
-  by_cases pp : p.prime; swap
+  by_cases pp : p.Prime; swap
   · rw [count_eq_zero_of_not_mem (mt prime_of_mem_factors pp)]
     simp [factorization, pp]
   simp only [factorization, coe_mk, pp, if_true]
@@ -921,4 +921,3 @@ theorem Ioc_filter_dvd_card_eq_div (n p : ℕ) : ((Ioc 0 n).filterₓ fun x => p
 #align nat.Ioc_filter_dvd_card_eq_div Nat.Ioc_filter_dvd_card_eq_div
 
 end Nat
-
