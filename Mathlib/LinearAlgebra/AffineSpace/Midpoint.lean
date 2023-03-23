@@ -182,8 +182,7 @@ theorem right_eq_midpoint_iff {x y : P} : y = midpoint R x y ↔ x = y := by
 theorem midpoint_eq_midpoint_iff_vsub_eq_vsub {x x' y y' : P} :
     midpoint R x y = midpoint R x' y' ↔ x -ᵥ x' = y' -ᵥ y := by
   rw [← @vsub_eq_zero_iff_eq V, midpoint_vsub_midpoint, midpoint_eq_iff, pointReflection_apply,
-    vsub_eq_sub, zero_sub, vadd_eq_add, add_zero, neg_eq_iff_neg_eq, neg_vsub_eq_vsub_rev]
-  exact eq_comm
+    vsub_eq_sub, zero_sub, vadd_eq_add, add_zero, neg_eq_iff_eq_neg, neg_vsub_eq_vsub_rev]
 #align midpoint_eq_midpoint_iff_vsub_eq_vsub midpoint_eq_midpoint_iff_vsub_eq_vsub
 
 theorem midpoint_eq_iff' {x y z : P} : midpoint R x y = z ↔ Equiv.pointReflection z x = y :=
