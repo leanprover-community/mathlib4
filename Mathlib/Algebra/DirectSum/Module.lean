@@ -352,14 +352,14 @@ theorem IsInternal.collectedBasis_coe (h : IsInternal A) {α : ι → Type _}
     (v : ∀ i, Basis (α i) R (A i)) : ⇑(h.collectedBasis v) = fun a : Σi, α i ↦ ↑(v a.1 a.2) := by
   funext a
   -- Porting note: was
-  -- simp only [IsInternal.collectedBasis, toModule, coeLinearMap, Basis.coe_of_repr,
+  -- simp only [IsInternal.collectedBasis, toModule, coeLinearMap, Basis.coe_ofRepr,
   --   Basis.repr_symm_apply, Dfinsupp.lsum_apply_apply, Dfinsupp.mapRange.linearEquiv_apply,
   --   Dfinsupp.mapRange.linearEquiv_symm, Dfinsupp.mapRange_single, Finsupp.total_single,
   --   LinearEquiv.ofBijective_apply, LinearEquiv.symm_symm, LinearEquiv.symm_trans_apply, one_smul,
   --   sigmaFinsuppAddEquivDfinsupp_apply, sigmaFinsuppEquivDfinsupp_single,
   --   sigmaFinsuppLequivDfinsupp_apply]
   -- convert Dfinsupp.sumAddHom_single (fun i ↦ (A i).subtype.toAddMonoidHom) a.1 (v a.1 a.2)
-  simp only [IsInternal.collectedBasis, coeLinearMap, Basis.coe_of_repr, LinearEquiv.trans_symm,
+  simp only [IsInternal.collectedBasis, coeLinearMap, Basis.coe_ofRepr, LinearEquiv.trans_symm,
     LinearEquiv.symm_symm, LinearEquiv.trans_apply, sigmaFinsuppLequivDfinsupp_apply,
     sigmaFinsuppEquivDfinsupp_single, LinearEquiv.ofBijective_apply,
     sigmaFinsuppAddEquivDfinsupp_apply]
