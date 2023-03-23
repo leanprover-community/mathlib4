@@ -255,7 +255,7 @@ end
 theorem restrictDom_comp_subtype (s : Set α) :
     (restrictDom M R s).comp (Submodule.subtype _) = LinearMap.id := by
   ext (l a)
-  by_cases a ∈ s <;> simp [h]
+  by_cases h : a ∈ s <;> simp [h]
   exact ((mem_supported' R l.1).1 l.2 a h).symm
 #align finsupp.restrict_dom_comp_subtype Finsupp.restrictDom_comp_subtype
 
@@ -292,7 +292,7 @@ theorem supported_unionᵢ {δ : Type _} (s : δ → Set α) :
   refine Finsupp.induction l ?_ ?_
   · exact zero_mem _
   · refine' fun x a l _ _ => add_mem _
-    by_cases ∃ i, x ∈ s i <;> simp [h]
+    by_cases h : ∃ i, x ∈ s i <;> simp [h]
     · cases' h with i hi
       exact le_supᵢ (fun i => supported M R (s i)) i (single_mem_supported R _ hi)
 #align finsupp.supported_Union Finsupp.supported_unionᵢ
@@ -653,7 +653,7 @@ theorem span_image_eq_map_total (s : Set α) :
     have : ∀ i, z i • v i ∈ span R (v '' s) := by
       intro c
       haveI := Classical.decPred fun x => x ∈ s
-      by_cases c ∈ s
+      by_cases h : c ∈ s
       · exact smul_mem _ _ (subset_span (Set.mem_image_of_mem _ h))
       · simp [(Finsupp.mem_supported' R _).1 hz _ h]
     -- Porting note: `rw` is required to infer metavariables in `sum_mem`.
