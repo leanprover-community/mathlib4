@@ -23,7 +23,7 @@ structure State : Type where
   preamble : String
   preambleAnalysis : Option Analysis := none
   log : List Message := []
-  solutions : List (String × Option Analysis) := []
+  solutions : List (CodeBlock × Option Analysis) := []
 
 variable {m : Type → Type} [Monad m]
 abbrev M := StateT State
@@ -38,13 +38,16 @@ def analyzeSolution (preamble : String) (_preambleEnv : Option Environment) (sol
   let (env, errors, trees) ← runFrontend (preamble ++ "\n\n" ++ sol) {} "" default
   pure <| Analysis.subtractLineNumbers ⟨env, errors, trees.bind InfoTree.sorries⟩ (preamble.count '\n' + 2)
 
-def recordSolution (sol : String) : M IO Unit := do
+def recordSolution (sol : CodeBlock) : M IO Unit := do
   let σ ← get
-  let a ← analyzeSolution σ.preamble (σ.preambleAnalysis.map (·.env)) sol
+  let a ← analyzeSolution σ.preamble (σ.preambleAnalysis.map (·.env)) sol.body
   set { σ with solutions := (sol, a) :: σ.solutions }
 
-def latestSolution : M m String := do
+def latestCodeBlock : M m CodeBlock := do
   pure <| (← get).solutions.head!.1
+
+def latestSolution : M m String := do
+  pure (← latestCodeBlock).body
 
 def errors : M m (List Lean.Message) := do
   pure <| (← get).solutions.head!.2.toList.bind Analysis.errors
@@ -56,14 +59,14 @@ def done [Alternative m] : M m Unit := do
   guard (← errors).isEmpty
   guard (← sorries).isEmpty
 
-def lastResponse [Monad m] : M m String := do
+def lastResponse : M m String := do
   pure <| (← get).log.find? (·.role == .assistant) |>.map (·.content) |>.getD ""
 
-def lastCodeBlock [Monad m] : M m CodeBlock := do
-  pure <| codeBlocks (← lastResponse) |>.head!
-
-def recordMessage [Monad m] (msg : ChatGPT.Message) : M m Unit :=
+def recordMessage (msg : Message) : M m Unit :=
   modify fun σ : State => { σ with log := msg :: σ.log }
+
+def getLog : M m (List Message) := do
+  pure (← get).log
 
 def getCodeBlock (response : String) : M IO CodeBlock := do
   match codeBlocks response with
@@ -77,23 +80,32 @@ def getCodeBlock (response : String) : M IO CodeBlock := do
   | [block] => pure block
   | _ => throw <| IO.userError s!"Expected a single code block in ChatGPT's response:\n{response}"
 
-def askForAssistance
-    (prompt : String) : M IO Unit := do
-  let σ ← get
+def askForAssistance (prompt : String) : M IO Unit := do
   recordMessage ⟨.user, prompt⟩
-  let response ← ChatGPT.sendMessages <| ⟨.user, prompt⟩ :: σ.log
+  let response ← sendMessages <| (← getLog)
   let some response ← pure response.content | throw <| IO.userError "Response did not contain content"
   recordMessage ⟨.assistant, response⟩
-  recordSolution (← getCodeBlock response).body
+  recordSolution (← getCodeBlock response)
 
-def discussDeclContaining {m : Type → Type} [Monad m] [MonadLiftT IO m] [MonadLiftT CoreM m]
-    (stx : Syntax) (preEdit : String → String) (driver : M m α) : m (String × α) := do
+variable [MonadLog m] [AddMessageContext m] [MonadOptions m]
+
+def runAndLog (stx : Syntax) (driver : M m α) : M m (String × α) := do
+  let a ← driver
+  logInfoAt stx "Message log follows:"
+  for msg in (← get).log do
+    logInfoAt stx (s!"{msg.role}:\n" ++ msg.content)
+  pure (← latestSolution, a)
+
+variable [MonadLiftT IO m] [MonadLiftT CoreM m]
+
+def discussDeclContaining (stx : Syntax) (preEdit : String → String) (driver : M m α) :
+    m (String × α) := do
   let (preamble, decl) ← getSourceUpTo stx
   let preambleAnalysis := none
   let editedDecl := preEdit decl
   let analysis ← liftM <| analyzeSolution preamble (preambleAnalysis.map (·.env)) editedDecl
-  StateT.run' (do let a ← driver; pure (← latestSolution, a))
-    ⟨preamble, preambleAnalysis, [], [(editedDecl, analysis)]⟩
+  StateT.run' (runAndLog stx driver)
+    ⟨preamble, preambleAnalysis, [], [({ text := editedDecl }, analysis)]⟩
 
 -- Weird, why isn't this available in core?
 instance [MonadLift m n] : MonadLift (StateT α m) (StateT α n) where

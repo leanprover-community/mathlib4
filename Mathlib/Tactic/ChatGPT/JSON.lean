@@ -12,6 +12,9 @@ inductive Role
 | system | assistant | user
 deriving ToJson, FromJson, BEq
 
+instance : ToString Role where
+  toString r := match r with | .system => "system" | .assistant => "assistant" | .user => "user"
+
 structure Message where
   role : Role
   content : String
@@ -77,22 +80,19 @@ s.splitOn "\n" |>.partition p |>.map (String.intercalate "\n") (String.intercala
 def _root_.String.fence (s : String) := s!"```\n{s}\n```\n"
 def _root_.Std.Format.fence (f : Format) := s!"{f}".trim.fence
 
-structure CodeBlock where
-  text : String
-deriving Inhabited, Repr
-
-namespace CodeBlock
-
 -- TODO: we could actually check the imports and opens from the environment,
 -- and verify that they contain what GPT wants!
 
-def imports (c : CodeBlock) : String := c.text.partitionLines (·.startsWith "import") |>.1 |>.trim
-def opens (c : CodeBlock) : String :=
-c.text.partitionLines (·.startsWith "import") |>.2 |>.trim
-  |>.partitionLines (·.startsWith "open") |>.1 |>.trim
-def body (c : CodeBlock) : String :=
-c.text.partitionLines (·.startsWith "import") |>.2 |>.trim
+structure CodeBlock where
+  text : String
+  imports := text.partitionLines (·.startsWith "import") |>.1 |>.trim
+  opens := text.partitionLines (·.startsWith "import") |>.2 |>.trim
+    |>.partitionLines (·.startsWith "open") |>.1 |>.trim
+  body := text.partitionLines (·.startsWith "import") |>.2 |>.trim
   |>.partitionLines (·.startsWith "open") |>.2 |>.trim
+deriving Inhabited, Repr
+
+namespace CodeBlock
 
 def markdownBody (c : CodeBlock) :=
 c.body.fence
@@ -101,6 +101,6 @@ end CodeBlock
 
 /-- Process some markdown text, extracting the contents of any code blocks. -/
 def codeBlocks (text : String) : List CodeBlock :=
-(text.splitOn "```").everySecond.map fun c => ⟨c.trim.stripPrefix "lean" |>.trim⟩
+(text.splitOn "```").everySecond.map fun c => { text := c.trim.stripPrefix "lean" |>.trim }
 
 end Mathlib.Tactic.ChatGPT

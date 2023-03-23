@@ -1,4 +1,5 @@
 import Mathlib.Tactic.ChatGPT.v2
+import Mathlib.Algebra.Ring.Basic
 
 open List
 
@@ -9,13 +10,14 @@ open List
 -- example (L M : List α) : (L ++ M).length = (M ++ L).length := by
 --   gpt2
 
-example (L M : List α) : (L ++ M ++ L).length = (M ++ L ++ L).length := by
-  gpt2
+-- example (L M : List α) : (L ++ M ++ L).length = (M ++ L ++ L).length := by
+--   gpt2
 
 -- # Now we try out `gpt3`.
 
--- example (L M : List α) : (L ++ M ++ L).length = (M ++ L ++ L).length := by
---   gpt3
+example (L M : List α) : (L ++ M ++ L).length = (M ++ L ++ L).length := by
+  rw [List.length_append, List.length_append, List.length_append, List.length_append]
+  exact add_left_comm (length L) (length M) (length L)
 
 -- This produces feedback on the first response, like so:
 

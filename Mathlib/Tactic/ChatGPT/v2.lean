@@ -5,7 +5,7 @@ open Lean
 namespace Mathlib.Tactic.ChatGPT
 
 def feedback : M IO String := do
-  let last := (← lastCodeBlock).markdownBody
+  let last := (← latestCodeBlock).markdownBody
 
   let errors ← (← errors).mapM fun m => do pure <| (← m.toString).splitOn "\n"
   -- We now look at the errors, and given different responses depending on what we see.
@@ -19,49 +19,38 @@ def feedback : M IO String := do
       | (ctx, g, pos, _) :: _ => do
           -- TODO mention the later sorries?
           let pp ← ctx.ppGoals [g]
-          pure s!"In the proof you just gave me:\n{last}there's still a sorry at line {pos.line}, where the goal is:\n{pp.fence}Can you write one more step of the tactic proof there?"
+          pure s!"In the proof you just gave me:\n{last}there's still a sorry at line {pos.line}, where the goal is:\n{pp.fence}Write one more step of the tactic proof, replacing the work `sorry`, that will make further progress on these goals. It's important that you don't just repeat the same code block!"
     | _ =>
         let goal := String.intercalate "\n" (unsolvedGoals.map List.tail).join |>.trim
-        pure s!"The proof you just gave me:\n{last}looks good, but there are still unsolved goals:\n{goal.fence}"
+        pure s!"The proof you just gave me:\n{last}still has unsolved goals:\n{goal.fence}Add another step of the proof, after what you've already written, that will make further progress on these goals. It's important that you don't just repeat the same code block!"
   | _ =>
     pure <| s!"In the proof you just gave me:\n{last}there are some errors:\n" ++
       -- TODO decide which errors matter or deserve emphasise (or helpful advice!)
       -- TODO mention the lines numbers in prose, possibly extracting the relevant span and quoting it
       String.intercalate "\n" otherErrors.join ++
-      "\nPlease fix these, but don't add any more steps to the proof."
+      "\nPlease fix these, but don't add any extra steps to the proof."
 
-def initialPrompt (d : String) :=
-s!
+def initialPrompt : M IO String := do
+  let prompt :=
 "I'm a mathematician who is expert in the Lean 4 interactive theorem prover,
 and I'd like to you help me fix or complete a proof.
 
-I want to remind you that we're using Lean 4, not the older Lean 3,
-and there have been some syntax changes. In particular:
-* Tactics on separate lines should not be separated by commas.
-* In the `rw` tactic you must enclose the lemmas in square brackets, even if there is just one.
-* Ihe `induction` and `cases` tactic now use a structured format, like pattern matching
-  (you can alternatively use `induction' with x y ih`, like in Lean 3).
-* Capitalization rules have changed, e.g. we write `List` instead of `list`.
-* Indenting is significant.
-
 I'm going to show you a declaration in Lean 4, with an incomplete or erroneous proof.
-I'd like you to work step by step, and only try to make one incremental change to the proof.
+I'd like you to work step by step, and in each successive response you'll write one more step of the proof.
 (That is, fixing an error, improving the last step, or adding one more step if there is a `sorry`.)
-I'm going to be automatically compiling your solution in Lean 4
-to detect errors and identify further remaining goals,
-so you'll have a chance to extend the proof further.
 
-I'd like you to concentrate on just making one change, and trying to be correct and accurate.
-Please make sure to include the entire declaration, with your changes, formatted in a code block.
-Make sure you don't change the type signature of the declaration itself,
-so you're still proving the same thing.
+Please make sure to include a complete declaration containing your suggestion, formatted in a code block.
+It's helpful to include some informal explanation of your reasoning before or after the code block.
 
-Let's start with the following proof:
-{d.fence}"
+Let's start with the following proof:\n" ++ (← latestCodeBlock).markdownBody
+  match ← sorries with
+  | [] => pure prompt
+  | (ctx, g, _, _) :: _ => do
+      let pp ← ctx.ppGoals [g]
+      pure <| prompt ++ s!"\nThe remaining goal is {pp.fence}"
 
 def justOnce : M MetaM String := do
-  let prompt := initialPrompt (← latestSolution)
-  askForAssistance prompt
+  askForAssistance (← initialPrompt)
   try
     done
     pure "success!"
@@ -75,25 +64,23 @@ elab tk:"gpt2" : tactic => do
   logInfoAt tk msg
   logInfoAt tk newDecl
 
-def twice : M MetaM (List String) := do
-  let prompt := initialPrompt (← latestSolution)
-  askForAssistance prompt
+def twice : M MetaM String := do
+  askForAssistance (← initialPrompt)
   try
     done
-    pure ["success!"]
+    pure "success!"
   catch _ =>
     let prompt2 ← feedback
     askForAssistance prompt2
     try
       done
-      pure ["success on the second iteration!", prompt2]
+      pure "success on the second iteration!"
     catch _ =>
-      pure ["failed", prompt2, ← feedback]
+      pure ("failed!\n" ++ (← feedback))
 
 elab tk:"gpt3" : tactic => do
-  let (newDecl, msgs) ← discussDeclContaining tk
+  let (newDecl, result) ← discussDeclContaining tk
     (fun decl => decl.replace "gpt3" "sorry") -- haha this will make some fun errors
     twice
-  for msg in msgs do
-    logInfoAt tk msg
+  logInfoAt tk result
   logInfoAt tk newDecl
