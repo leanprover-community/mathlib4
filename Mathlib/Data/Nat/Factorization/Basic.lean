@@ -297,16 +297,18 @@ theorem Prime.eq_of_factorization_pos {p q : ℕ} (hp : Prime p) (h : p.factoriz
 /-- Any finsupp `f : ℕ →₀ ℕ` whose support is in the primes is equal to the factorization of
 the product `∏ (a : ℕ) in f.support, a ^ f a`. -/
 theorem prod_pow_factorization_eq_self {f : ℕ →₀ ℕ} (hf : ∀ p : ℕ, p ∈ f.support → Prime p) :
-    (f.Prod pow).factorization = f := by
+    (f.prod Pow.pow).factorization = f := by
   have h : ∀ x : ℕ, x ∈ f.support → x ^ f x ≠ 0 := fun p hp =>
     pow_ne_zero _ (Prime.ne_zero (hf p hp))
   simp only [Finsupp.prod, factorization_prod h]
-  nth_rw_rhs 1 [(sum_single f).symm]
-  exact sum_congr rfl fun p hp => prime.factorization_pow (hf p hp)
+  conv =>
+    rhs
+    rw [(sum_single f).symm]
+  exact sum_congr rfl fun p hp => Prime.factorization_pow (hf p hp)
 #align nat.prod_pow_factorization_eq_self Nat.prod_pow_factorization_eq_self
 
 theorem eq_factorization_iff {n : ℕ} {f : ℕ →₀ ℕ} (hn : n ≠ 0) (hf : ∀ p ∈ f.support, Prime p) :
-    f = n.factorization ↔ f.prod pow = n :=
+    f = n.factorization ↔ f.prod Pow.pow = n :=
   ⟨fun h => by rw [h, factorization_prod_pow_eq_self hn], fun h => by
     rw [← h, prod_pow_factorization_eq_self hf]⟩
 #align nat.eq_factorization_iff Nat.eq_factorization_iff
