@@ -17,39 +17,38 @@ This file defines affine subspaces (over modules) and the affine span of a set o
 
 ## Main definitions
 
-* `affine_subspace k P` is the type of affine subspaces.  Unlike
+* `AffineSubspace k P` is the type of affine subspaces.  Unlike
   affine spaces, affine subspaces are allowed to be empty, and lemmas
-  that do not apply to empty affine subspaces have `nonempty`
-  hypotheses.  There is a `complete_lattice` structure on affine
+  that do not apply to empty affine subspaces have `Nonempty`
+  hypotheses.  There is a `CompleteLattice` structure on affine
   subspaces.
-* `affine_subspace.direction` gives the `submodule` spanned by the
-  pairwise differences of points in an `affine_subspace`.  There are
+* `AffineSubspace.direction` gives the `Submodule` spanned by the
+  pairwise differences of points in an `AffineSubspace`.  There are
   various lemmas relating to the set of vectors in the `direction`,
   and relating the lattice structure on affine subspaces to that on
   their directions.
-* `affine_subspace.parallel`, notation `∥`, gives the property of two affine subspaces being
+* `AffineSubspace.parallel`, notation `∥`, gives the property of two affine subspaces being
   parallel (one being a translate of the other).
-* `affine_span` gives the affine subspace spanned by a set of points,
-  with `vector_span` giving its direction.  `affine_span` is defined
-  in terms of `span_points`, which gives an explicit description of
-  the points contained in the affine span; `span_points` itself should
+* `affineSpan` gives the affine subspace spanned by a set of points,
+  with `vectorSpan` giving its direction.  `affineSpan` is defined
+  in terms of `spanPoints`, which gives an explicit description of
+  the points contained in the affine span; `spanPoints` itself should
   generally only be used when that description is required, with
-  `affine_span` being the main definition for other purposes.  Two
+  `affineSpan` being the main definition for other purposes.  Two
   other descriptions of the affine span are proved equivalent: it is
   the `Inf` of affine subspaces containing the points, and (if
-  `[nontrivial k]`) it contains exactly those points that are affine
+  `[Nontrivial k]`) it contains exactly those points that are affine
   combinations of points in the given set.
 
 ## Implementation notes
 
-`out_param` is used in the definiton of `add_torsor V P` to make `V` an implicit argument (deduced
-from `P`) in most cases; `include V` is needed in many cases for `V`, and type classes using it, to
-be added as implicit arguments to individual lemmas.  As for modules, `k` is an explicit argument
-rather than implied by `P` or `V`.
+`out_param` is used in the definiton of `AddTorsor V P` to make `V` an implicit argument (deduced
+from `P`) in most cases. As for modules, `k` is an explicit argument rather than implied by `P` or
+`V`.
 
 This file only provides purely algebraic definitions and results.
 Those depending on analysis or topology are defined elsewhere; see
-`analysis.normed_space.add_torsor` and `topology.algebra.affine`.
+`Analysis.NormedSpace.AddTorsor` and `Topology.Algebra.Affine`.
 
 ## References
 
@@ -57,6 +56,7 @@ Those depending on analysis or topology are defined elsewhere; see
 * https://en.wikipedia.org/wiki/Principal_homogeneous_space
 -/
 
+#exit
 
 noncomputable section
 
@@ -414,7 +414,8 @@ theorem ext_of_direction_eq {s1 s2 : AffineSubspace k P} (hd : s1.direction = s2
 def toAddTorsor (s : AffineSubspace k P) [Nonempty s] : AddTorsor s.direction s where
   vadd a b := ⟨(a : V) +ᵥ (b : P), vadd_mem_of_mem_direction a.2 b.2⟩
   zero_vadd := fun a => by
-    sorry
+    ext
+    exact zero_vadd _ _
   add_vadd a b c := by
     ext
     apply add_vadd
@@ -578,7 +579,7 @@ def affineSpan (s : Set P) : AffineSubspace k P
         (vsub_mem_vectorSpan_of_mem_spanPoints_of_mem_spanPoints k hp1 hp2))
 #align affine_span affineSpan
 
-/-- The affine span, converted to a set, is `span_points`. -/
+/-- The affine span, converted to a set, is `spanPoints`. -/
 @[simp]
 theorem coe_affineSpan (s : Set P) : (affineSpan k s : Set P) = spanPoints k s :=
   rfl
@@ -589,7 +590,7 @@ theorem subset_affineSpan (s : Set P) : s ⊆ affineSpan k s :=
   subset_spanPoints k s
 #align subset_affine_span subset_affineSpan
 
-/-- The direction of the affine span is the `vector_span`. -/
+/-- The direction of the affine span is the `vectorSpan`. -/
 theorem direction_affineSpan (s : Set P) : (affineSpan k s).direction = vectorSpan k s := by
   apply le_antisymm
   · refine' Submodule.span_le.2 _
