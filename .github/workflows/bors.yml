@@ -98,6 +98,8 @@ jobs:
       - name: upload cache
         if: always()
         run: |
+          # do not upload cache for temporary tests against Lean forks
+          grep 'leanprover/lean4' lean-toolchain -q || exit
           lake exe cache commit || true
           lake exe cache put || true
         env:
