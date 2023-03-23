@@ -8,8 +8,8 @@ Authors: Luke Kershaw
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Preadditive.AdditiveFunctor
-import Mathbin.CategoryTheory.Triangulated.Basic
+import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+import Mathlib.CategoryTheory.Triangulated.Basic
 
 /-!
 # Rotate
@@ -365,13 +365,11 @@ def triangleRotation : Equivalence (Triangle C) (Triangle C)
 
 variable {C}
 
-instance : IsEquivalence (rotate C) :=
-  by
+instance : IsEquivalence (rotate C) := by
   change is_equivalence (triangle_rotation C).Functor
   infer_instance
 
-instance : IsEquivalence (invRotate C) :=
-  by
+instance : IsEquivalence (invRotate C) := by
   change is_equivalence (triangle_rotation C).inverse
   infer_instance
 
