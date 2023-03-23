@@ -313,10 +313,6 @@ theorem ofInt_eq_coe (n : ℤ) : (ofInt n : ℤ√d) = n := by simp [ext, ofInt_
 #align zsqrtd.of_int_eq_coe Zsqrtd.ofInt_eq_coe
 
 @[simp]
-theorem ofInt_ofNat (n : ℕ) [n.AtLeastTwo] : (ofInt (OfNat.ofNat n) : ℤ√d) = OfNat.ofNat n :=
-  ofInt_eq_coe n
-
-@[simp]
 theorem smul_val (n x y : ℤ) : (n : ℤ√d) * ⟨x, y⟩ = ⟨n * x, n * y⟩ := by simp [ext]
 #align zsqrtd.smul_val Zsqrtd.smul_val
 
