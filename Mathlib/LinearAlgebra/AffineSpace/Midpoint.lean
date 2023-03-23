@@ -18,7 +18,7 @@ import Mathlib.LinearAlgebra.AffineSpace.AffineEquiv
 
 * `midpoint R x y`: midpoint of the segment `[x, y]`. We define it for `x` and `y`
   in a module over a ring `R` with invertible `2`.
-* `AddMonoidHom.of_MapMidpoint`: construct an `AddMonoidHom` given a map `f` such that
+* `AddMonoidHom.ofMapMidpoint`: construct an `AddMonoidHom` given a map `f` such that
   `f` sends zero to zero and midpoints to midpoints.
 
 ## Main theorems
