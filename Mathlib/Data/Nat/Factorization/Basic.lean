@@ -233,7 +233,7 @@ theorem factorization_mul_support {a b : ℕ} (ha : a ≠ 0) (hb : b ≠ 0) :
 /-- If a product over `n.factorization` doesn't use the multiplicities of the prime factors
 then it's equal to the corresponding product over `n.factors.to_finset` -/
 theorem prod_factorization_eq_prod_factors {n : ℕ} {β : Type _} [CommMonoid β] (f : ℕ → β) :
-    (n.factorization.prod fun p k => f p) = ∏ p in n.factors.toFinset, f p := by
+    (n.factorization.prod fun p _ => f p) = ∏ p in n.factors.toFinset, f p := by
   apply prod_congr support_factorization
   simp
 #align nat.prod_factorization_eq_prod_factors Nat.prod_factorization_eq_prod_factors
@@ -318,11 +318,11 @@ theorem eq_factorization_iff {n : ℕ} {f : ℕ →₀ ℕ} (hn : n ≠ 0) (hf :
 /-- The equiv between `ℕ+` and `ℕ →₀ ℕ` with support in the primes. -/
 def factorizationEquiv : ℕ+ ≃ { f : ℕ →₀ ℕ | ∀ p ∈ f.support, Prime p }
     where
-  toFun := fun ⟨n, hn⟩ => ⟨n.factorization, fun _ => prime_of_mem_factorization⟩
+  toFun := fun ⟨n, _⟩ => ⟨n.factorization, fun _ => prime_of_mem_factorization⟩
   invFun := fun ⟨f, hf⟩ =>
     ⟨f.prod _, prod_pow_pos_of_zero_not_mem_support fun H => not_prime_zero (hf 0 H)⟩
-  left_inv := fun ⟨x, hx⟩ => Subtype.ext <| factorization_prod_pow_eq_self hx.ne.symm
-  right_inv := fun ⟨f, hf⟩ => Subtype.ext <| prod_pow_factorization_eq_self hf
+  left_inv := fun ⟨_, hx⟩ => Subtype.ext <| factorization_prod_pow_eq_self hx.ne.symm
+  right_inv := fun ⟨_, hf⟩ => Subtype.ext <| prod_pow_factorization_eq_self hf
 #align nat.factorization_equiv Nat.factorizationEquiv
 
 theorem factorizationEquiv_apply (n : ℕ+) : (factorizationEquiv n).1 = n.1.factorization := by
@@ -702,7 +702,7 @@ theorem Icc_factorization_eq_pow_dvd (n : ℕ) {p : ℕ} (pp : Prime p) :
   ext x
   simp only [mem_Icc, Finset.mem_filter, mem_Ico, and_assoc, and_congr_right_iff,
     pp.pow_dvd_iff_le_factorization hn, iff_and_self]
-  exact fun H1 H2 => lt_of_le_of_lt H2 (factorization_lt p hn)
+  exact fun _ H => lt_of_le_of_lt H (factorization_lt p hn)
 #align nat.Icc_factorization_eq_pow_dvd Nat.Icc_factorization_eq_pow_dvd
 
 theorem factorization_eq_card_pow_dvd (n : ℕ) {p : ℕ} (pp : p.Prime) :
