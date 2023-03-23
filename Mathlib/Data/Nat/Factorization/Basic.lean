@@ -297,7 +297,7 @@ theorem Prime.eq_of_factorization_pos {p q : ℕ} (hp : Prime p) (h : p.factoriz
 /-- Any finsupp `f : ℕ →₀ ℕ` whose support is in the primes is equal to the factorization of
 the product `∏ (a : ℕ) in f.support, a ^ f a`. -/
 theorem prod_pow_factorization_eq_self {f : ℕ →₀ ℕ} (hf : ∀ p : ℕ, p ∈ f.support → Prime p) :
-    (f.prod Pow.pow).factorization = f := by
+    (f.prod Nat.pow).factorization = f := by
   have h : ∀ x : ℕ, x ∈ f.support → x ^ f x ≠ 0 := fun p hp =>
     pow_ne_zero _ (Prime.ne_zero (hf p hp))
   simp only [Finsupp.prod, factorization_prod h]
@@ -308,7 +308,7 @@ theorem prod_pow_factorization_eq_self {f : ℕ →₀ ℕ} (hf : ∀ p : ℕ, p
 #align nat.prod_pow_factorization_eq_self Nat.prod_pow_factorization_eq_self
 
 theorem eq_factorization_iff {n : ℕ} {f : ℕ →₀ ℕ} (hn : n ≠ 0) (hf : ∀ p ∈ f.support, Prime p) :
-    f = n.factorization ↔ f.prod Pow.pow = n :=
+    f = n.factorization ↔ f.prod Nat.pow = n :=
   ⟨fun h => by rw [h, factorization_prod_pow_eq_self hn], fun h => by
     rw [← h, prod_pow_factorization_eq_self hf]⟩
 #align nat.eq_factorization_iff Nat.eq_factorization_iff
@@ -438,7 +438,7 @@ theorem factorization_le_iff_dvd {d n : ℕ} (hd : d ≠ 0) (hn : n ≠ 0) :
   constructor
   · intro hdn
     set K := n.factorization - d.factorization with hK
-    use K.prod Pow.pow
+    use K.prod Nat.pow
     rw [← factorization_prod_pow_eq_self hn, ← factorization_prod_pow_eq_self hd,
         ←Finsupp.prod_add_index' pow_zero pow_add, hK, add_tsub_cancel_of_le hdn]
   · rintro ⟨c, rfl⟩
@@ -638,7 +638,7 @@ theorem prod_prime_factors_dvd (n : ℕ) : (∏ p : ℕ in n.factors.toFinset, p
 theorem factorization_gcd {a b : ℕ} (ha_pos : a ≠ 0) (hb_pos : b ≠ 0) :
     (gcd a b).factorization = a.factorization ⊓ b.factorization := by
   let dfac := a.factorization ⊓ b.factorization
-  let d := dfac.prod Pow.pow
+  let d := dfac.prod Nat.pow
   have dfac_prime : ∀ p : ℕ, p ∈ dfac.support → Prime p :=
     by
     intro p hp
