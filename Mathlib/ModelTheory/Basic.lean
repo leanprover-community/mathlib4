@@ -70,7 +70,7 @@ structure Language where
 #align first_order.language FirstOrder.Language
 
 /-- Used to define `FirstOrder.Language₂`. -/
-@[simp]
+--@[simp]
 def Sequence₂ (a₀ a₁ a₂ : Type u) : ℕ → Type u
   | 0 => a₀
   | 1 => a₁
@@ -107,7 +107,7 @@ theorem lift_mk {i : ℕ} :
 @[simp]
 theorem sum_card : (Cardinal.sum fun i => #Sequence₂ a₀ a₁ a₂ i) = (#a₀) + (#a₁) + (#a₂) := by
   rw [sum_nat_eq_add_sum_succ, sum_nat_eq_add_sum_succ, sum_nat_eq_add_sum_succ]
-  simp [add_assoc]
+  simp [add_assoc, Sequence₂]
 #align first_order.sequence₂.sum_card FirstOrder.Sequence₂.sum_card
 
 end Sequence₂
@@ -278,18 +278,18 @@ instance Countable.countable_functions [h : Countable L.Symbols] : Countable (Σ
 #align
   first_order.language.countable.countable_functions
   FirstOrder.Language.Countable.countable_functions
-
+--set_option pp.universes true
 @[simp]
 theorem card_functions_sum (i : ℕ) :
     (#(L.sum L').Functions i)
-      = (Cardinal.lift.{u} (#L.Functions i) + Cardinal.lift.{u} (#L'.Functions i) : Cardinal) := by
+      = (Cardinal.lift.{u'} (#L.Functions i) + Cardinal.lift.{u} (#L'.Functions i) : Cardinal) := by
   simp [Language.sum]
 #align first_order.language.card_functions_sum FirstOrder.Language.card_functions_sum
 
 @[simp]
 theorem card_relations_sum (i : ℕ) :
     (#(L.sum L').Relations i) =
-      Cardinal.lift.{v} (#L.Relations i) + Cardinal.lift.{v} (#L'.Relations i) := by
+      Cardinal.lift.{v'} (#L.Relations i) + Cardinal.lift.{v} (#L'.Relations i) := by
   simp [Language.sum]
 #align first_order.language.card_relations_sum FirstOrder.Language.card_relations_sum
 
@@ -298,8 +298,7 @@ theorem card_sum :
     (L.sum L').card = Cardinal.lift.{max u' v'} L.card + Cardinal.lift.{max u v} L'.card := by
   simp only [card_eq_card_functions_add_card_relations, card_functions_sum, card_relations_sum,
     sum_add_distrib', lift_add, lift_sum, lift_lift]
-  simp_rw [add_assoc, ← add_assoc (Cardinal.sum fun i => Cardinal.lift (#L'.Functions i)),
-    add_comm (Cardinal.sum fun i => (#L'.Functions i).lift)]
+  simp only [add_assoc, add_comm (Cardinal.sum fun i => (#L'.Functions i).lift)]
 #align first_order.language.card_sum FirstOrder.Language.card_sum
 
 @[simp]
@@ -308,6 +307,7 @@ theorem card_mk₂ (c f₁ f₂ : Type u) (r₁ r₂ : Type v) :
       Cardinal.lift.{v} (#c) + Cardinal.lift.{v} (#f₁) + Cardinal.lift.{v} (#f₂) +
           Cardinal.lift.{u} (#r₁) + Cardinal.lift.{u} (#r₂) := by
   simp [card_eq_card_functions_add_card_relations, add_assoc]
+
 #align first_order.language.card_mk₂ FirstOrder.Language.card_mk₂
 
 variable (L) (M : Type w)
@@ -1000,14 +1000,30 @@ def _root_.Function.emptyHom (f : M → N) : M →[Language.empty] N where toFun
 #align function.empty_hom Function.emptyHom
 
 /-- Makes a `Language.empty.embedding` out of any function. -/
-@[simps]
+--@[simps] Porting note: commented out and lemmas added manually
 def _root_.Embedding.empty (f : M ↪ N) : M ↪[Language.empty] N where toEmbedding := f
 #align embedding.empty Embedding.empty
 
+@[simp]
+theorem toFun_embedding_empty (f : M ↪ N) : (Embedding.empty f : M → N) = f :=
+  rfl
+
+@[simp]
+theorem toEmbedding_embedding_empty (f : M ↪ N) : (Embedding.empty f).toEmbedding = f :=
+  rfl
+
 /-- Makes a `Language.empty.equiv` out of any function. -/
-@[simps]
+--@[simps] Porting note: commented out and lemmas added manually
 def _root_.Equiv.empty (f : M ≃ N) : M ≃[Language.empty] N where toEquiv := f
 #align equiv.empty Equiv.empty
+
+@[simp]
+theorem toFun_equiv_empty (f : M ≃ N) : (Equiv.empty f : M → N) = f :=
+  rfl
+
+@[simp]
+theorem toEquiv_equiv_empty (f : M ≃ N) : (Equiv.empty f).toEquiv = f :=
+  rfl
 
 end Empty
 
@@ -1031,12 +1047,31 @@ set_option linter.uppercaseLean3 false in
 #align equiv.induced_Structure Equiv.inducedStructure
 
 /-- A bijection as a first-order isomorphism with the induced structure on the codomain. -/
-@[simps!]
-def inducedStructureEquiv (e : M ≃ N) : @Language.Equiv L M N _ (inducedStructure e) :=
+--@[simps!] Porting note: commented out and lemmas added manually
+def inducedStructureEquiv (e : M ≃ N) : @Language.Equiv L M N _ (inducedStructure e) := by
+  letI : L.Structure N := inducedStructure e
+  exact
   { e with
-    map_fun' := fun n f x => by simp [← Function.comp.assoc e.symm e x]
-    map_rel' := fun n r x => by simp [← Function.comp.assoc e.symm e x] }
+    map_fun' := @fun n f x => by simp [← Function.comp.assoc e.symm e x]
+    map_rel' := @fun n r x => by simp [← Function.comp.assoc e.symm e x] }
 set_option linter.uppercaseLean3 false in
 #align equiv.induced_Structure_equiv Equiv.inducedStructureEquiv
+
+@[simp]
+theorem toEquiv_inducedStructureEquiv (e : M ≃ N) :
+    @Language.Equiv.toEquiv L M N _ (inducedStructure e) (inducedStructureEquiv e) = e :=
+  rfl
+
+@[simp]
+theorem toFun_inducedStructureEquiv (e : M ≃ N) :
+    FunLike.coe (@inducedStructureEquiv L M N _ e) = e :=
+  rfl
+
+@[simp]
+theorem toFun_inducedStructureEquiv_Symm (e : M ≃ N) :
+  (by
+    letI : L.Structure N := inducedStructure e
+    exact FunLike.coe (@inducedStructureEquiv L M N _ e).symm) = (e.symm : N → M) :=
+  rfl
 
 end Equiv
