@@ -136,8 +136,11 @@ instance : RingEquivClass (R ≃+* S) R S where
 #noalign ring_equiv.to_equiv_eq_coe
 -- Porting note: `toFun_eq_coe` no longer needed in Lean4
 #noalign ring_equiv.to_fun_eq_coe
--- Porting note: `coe_toEquiv` no longer needed in Lean4
-#noalign ring_equiv.coe_to_equiv
+
+@[simp]
+theorem coe_toEquiv (f : R ≃+* S) : ⇑(f : R ≃ S) = f :=
+  rfl
+#align ring_equiv.coe_to_equiv RingEquiv.coe_toEquiv
 
 /-- A ring isomorphism preserves multiplication. -/
 protected theorem map_mul (e : R ≃+* S) (x y : R) : e (x * y) = e x * e y :=
@@ -156,8 +159,11 @@ theorem ext {f g : R ≃+* S} (h : ∀ x, f x = g x) : f = g :=
   FunLike.ext f g h
 #align ring_equiv.ext RingEquiv.ext
 
--- Porting note: `coe_mk` no longer needed in Lean4
-#noalign ring_equiv.coe_mk
+@[simp]
+theorem coe_mk (e h₃ h₄) : ⇑(⟨e, h₃, h₄⟩ : R ≃+* S) = e :=
+  rfl
+#align ring_equiv.coe_mk RingEquiv.coe_mkₓ
+
 -- Porting note: `toEquiv_mk` no longer needed in Lean4
 #noalign ring_equiv.to_equiv_mk
 
