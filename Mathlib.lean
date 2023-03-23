@@ -1176,6 +1176,7 @@ import Mathlib.NumberTheory.Divisors
 import Mathlib.NumberTheory.FrobeniusNumber
 import Mathlib.NumberTheory.Padics.PadicVal
 import Mathlib.NumberTheory.Primorial
+import Mathlib.NumberTheory.PythagoreanTriples
 import Mathlib.NumberTheory.Zsqrtd.Basic
 import Mathlib.Order.Antichain
 import Mathlib.Order.Antisymmetrization
