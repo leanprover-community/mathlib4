@@ -290,17 +290,23 @@ theorem nthLe_rotate_one (l : List α) (k : ℕ) (hk : k < (l.rotate 1).length) 
   nthLe_rotate l 1 k hk
 #align list.nth_le_rotate_one List.nthLe_rotate_one
 
+theorem get_eq_get_rotate (l : List α) (n : ℕ) (k : Fin l.length) :
+    l.get k = (l.rotate n).get ⟨(l.length - n % l.length + k) % l.length,
+      (Nat.mod_lt _ (k.1.zero_le.trans_lt k.2)).trans_eq (length_rotate _ _).symm⟩ := by
+  rw [get_rotate]
+  refine congr_arg l.get (Fin.eq_of_val_eq ?_)
+  simp only [mod_add_mod]
+  rw [← add_mod_mod, add_right_comm, tsub_add_cancel_of_le, add_mod_left, mod_eq_of_lt]
+  exacts [k.2, (mod_lt _ (k.1.zero_le.trans_lt k.2)).le]
+
 set_option linter.deprecated false in
 /-- A variant of `List.nthLe_rotate` useful for rewrites from right to left. -/
+@[deprecated get_eq_get_rotate]
 theorem nthLe_rotate' (l : List α) (n k : ℕ) (hk : k < l.length) :
     (l.rotate n).nthLe ((l.length - n % l.length + k) % l.length)
         ((Nat.mod_lt _ (k.zero_le.trans_lt hk)).trans_le (length_rotate _ _).ge) =
-      l.nthLe k hk := by
-  rw [nthLe_rotate]
-  congr
-  rw [mod_add_mod, ← add_mod_mod, add_right_comm, tsub_add_cancel_of_le, add_mod_left,
-    mod_eq_of_lt hk]
-  exact (mod_lt _ <| k.zero_le.trans_lt hk).le
+      l.nthLe k hk :=
+  (get_eq_get_rotate l n ⟨k, hk⟩).symm
 #align list.nth_le_rotate' List.nthLe_rotate'
 
 theorem rotate_eq_self_iff_eq_replicate [hα : Nonempty α] :
