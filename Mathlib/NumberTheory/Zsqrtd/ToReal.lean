@@ -14,17 +14,17 @@ import Mathlib.NumberTheory.Zsqrtd.Basic
 /-!
 # Image of `zsqrtd` in `ℝ`
 
-This file defines `zsqrtd.to_real` and related lemmas.
-It is in a separate file to avoid pulling in all of `data.real` into `data.zsqrtd`.
+This file defines `Zsqrtd.toReal` and related lemmas.
+It is in a separate file to avoid pulling in all of `Data.Real` into `Data.Zsqrtd`.
 -/
 
 
 namespace Zsqrtd
 
-/-- The image of `zsqrtd` in `ℝ`, using `real.sqrt` which takes the positive root of `d`.
+/-- The image of `Zsqrtd` in `ℝ`, using `Real.sqrt` which takes the positive root of `d`.
 
-If the negative root is desired, use `to_real h a.conj`. -/
-@[simps]
+If the negative root is desired, use `toReal h a.conj`. -/
+@[simps!]
 noncomputable def toReal {d : ℤ} (h : 0 ≤ d) : ℤ√d →+* ℝ :=
   lift ⟨Real.sqrt d, Real.mul_self_sqrt (Int.cast_nonneg.mpr h)⟩
 #align zsqrtd.to_real Zsqrtd.toReal
@@ -35,4 +35,3 @@ theorem toReal_injective {d : ℤ} (h0d : 0 ≤ d) (hd : ∀ n : ℤ, d ≠ n * 
 #align zsqrtd.to_real_injective Zsqrtd.toReal_injective
 
 end Zsqrtd
-
