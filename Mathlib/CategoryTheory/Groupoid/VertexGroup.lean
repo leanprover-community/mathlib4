@@ -22,10 +22,10 @@ This file defines the vertex group (*aka* isotropy group) of a groupoid at a ver
 
 ## Implementation notes
 
-* The instance is defined "manually", instead of relying on `category_theory.Aut.group` or
+* The instance is defined "manually", instead of relying on `CategoryTheory.Aut.group` or
   using `CategoryTheory.inv`.
-* The multiplication order therefore matches the categorical one : `x * y = x ≫ y`.
-* The inverse is directly defined in terms of the groupoidal inverse : `x ⁻¹ = groupoid.inv x`.
+* The multiplication order therefore matches the categorical one: `x * y = x ≫ y`.
+* The inverse is directly defined in terms of the groupoidal inverse: `x ⁻¹ = Groupoid.inv x`.
 
 ## Tags
 
@@ -54,6 +54,10 @@ instance vertexGroup (c : C) : Group (c ⟶ c)
   mul_left_inv := inv_comp
 #align category_theory.groupoid.vertex_group CategoryTheory.Groupoid.vertexGroup
 
+-- Porting note: simpNF says the LHS of these internal identifiers simplify
+attribute [-simp, nolint simpNF] vertexGroup_npow
+attribute [-simp, nolint simpNF] vertexGroup_zpow
+
 /-- The inverse in the group is equal to the inverse given by `CategoryTheory.inv`. -/
 theorem vertexGroup.inv_eq_inv (c : C) (γ : c ⟶ c) : γ⁻¹ = CategoryTheory.inv γ :=
   Groupoid.inv_eq_inv γ
@@ -74,7 +78,7 @@ def vertexGroupIsomOfMap {c d : C} (f : c ⟶ d) : (c ⟶ c) ≃* (d ⟶ d)
     simp_rw [Category.assoc, inv_comp, ← Category.assoc, inv_comp, Category.id_comp,
       Category.comp_id]
   map_mul' γ₁ γ₂ := by
-    simp only [vertexGroup.mul, inv_eq_inv, Category.assoc, IsIso.hom_inv_id_assoc]
+    simp only [vertexGroup_mul, inv_eq_inv, Category.assoc, IsIso.hom_inv_id_assoc]
 #align category_theory.groupoid.vertex_group_isom_of_map CategoryTheory.Groupoid.vertexGroupIsomOfMap
 
 /-- A path in the groupoid defines an isomorphism between its endpoints.
