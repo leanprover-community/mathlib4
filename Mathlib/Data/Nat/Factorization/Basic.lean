@@ -72,7 +72,8 @@ theorem factorization_def (n : ℕ) {p : ℕ} (pp : p.Prime) : n.factorization p
 of `p` in the factorization of `n`: we declare the former to be the simp-normal form. -/
 @[simp]
 theorem factors_count_eq {n p : ℕ} : n.factors.count p = n.factorization p := by
-  rcases n.eq_zero_or_pos with (rfl | hn0); · simp [factorization]
+  rcases n.eq_zero_or_pos with (rfl | hn0)
+  · simp [factorization, count]
   by_cases pp : p.Prime; swap
   · rw [count_eq_zero_of_not_mem (mt prime_of_mem_factors pp)]
     simp [factorization, pp]
@@ -83,9 +84,9 @@ theorem factors_count_eq {n p : ℕ} : n.factors.count p = n.factorization p := 
 #align nat.factors_count_eq Nat.factors_count_eq
 
 theorem factorization_eq_factors_multiset (n : ℕ) :
-    n.factorization = (n.factors : Multiset ℕ).toFinsupp := by
+    n.factorization = Multiset.toFinsupp (n.factors : Multiset ℕ) := by
   ext p
-  simp
+  simp -- porting note: TODO: why doesn't `factors_count_eq` take here?
 #align nat.factorization_eq_factors_multiset Nat.factorization_eq_factors_multiset
 
 theorem multiplicity_eq_factorization {n p : ℕ} (pp : p.Prime) (hn : n ≠ 0) :
@@ -97,9 +98,9 @@ theorem multiplicity_eq_factorization {n p : ℕ} (pp : p.Prime) (hn : n ≠ 0) 
 
 
 @[simp]
-theorem factorization_prod_pow_eq_self {n : ℕ} (hn : n ≠ 0) : n.factorization.Prod pow = n := by
+theorem factorization_prod_pow_eq_self {n : ℕ} (hn : n ≠ 0) : n.factorization.prod pow = n := by
   rw [factorization_eq_factors_multiset n]
-  simp only [← prod_to_multiset, factorization, Multiset.coe_prod, Multiset.toFinsupp_toMultiset]
+  simp only [← prod_toMultiset, factorization, Multiset.coe_prod, Multiset.toFinsupp_toMultiset]
   exact prod_factors hn
 #align nat.factorization_prod_pow_eq_self Nat.factorization_prod_pow_eq_self
 
@@ -114,11 +115,11 @@ theorem factorization_inj : Set.InjOn factorization { x : ℕ | x ≠ 0 } := fun
 #align nat.factorization_inj Nat.factorization_inj
 
 @[simp]
-theorem factorization_zero : factorization 0 = 0 := by simpa [factorization]
+theorem factorization_zero : factorization 0 = 0 := by simp [factorization]
 #align nat.factorization_zero Nat.factorization_zero
 
 @[simp]
-theorem factorization_one : factorization 1 = 0 := by simpa [factorization]
+theorem factorization_one : factorization 1 = 0 := by simp [factorization]
 #align nat.factorization_one Nat.factorization_one
 
 /-- The support of `n.factorization` is exactly `n.factors.to_finset` -/
@@ -148,7 +149,7 @@ theorem le_of_mem_factorization {n p : ℕ} (h : p ∈ n.factorization.support) 
 
 theorem factorization_eq_zero_iff (n p : ℕ) : n.factorization p = 0 ↔ ¬p.Prime ∨ ¬p ∣ n ∨ n = 0 :=
   by
-  rw [← not_mem_support_iff, support_factorization, mem_to_finset]
+  rw [← not_mem_support_iff, support_factorization, mem_toFinset]
   rcases eq_or_ne n 0 with (rfl | hn)
   · simp
   · simp [hn, Nat.mem_factors, not_and_or]
@@ -230,7 +231,7 @@ theorem factorization_mul_support {a b : ℕ} (ha : a ≠ 0) (hb : b ≠ 0) :
 /-- If a product over `n.factorization` doesn't use the multiplicities of the prime factors
 then it's equal to the corresponding product over `n.factors.to_finset` -/
 theorem prod_factorization_eq_prod_factors {n : ℕ} {β : Type _} [CommMonoid β] (f : ℕ → β) :
-    (n.factorization.Prod fun p k => f p) = ∏ p in n.factors.toFinset, f p := by
+    (n.factorization.prod fun p k => f p) = ∏ p in n.factors.toFinset, f p := by
   apply prod_congr support_factorization
   simp
 #align nat.prod_factorization_eq_prod_factors Nat.prod_factorization_eq_prod_factors
@@ -239,10 +240,10 @@ theorem prod_factorization_eq_prod_factors {n : ℕ} {β : Type _} [CommMonoid �
 the power of `p` in `S.prod g` equals the sum over `x ∈ S` of the powers of `p` in `g x`.
 Generalises `factorization_mul`, which is the special case where `S.card = 2` and `g = id`. -/
 theorem factorization_prod {α : Type _} {S : Finset α} {g : α → ℕ} (hS : ∀ x ∈ S, g x ≠ 0) :
-    (S.Prod g).factorization = S.Sum fun x => (g x).factorization := by
+    (S.prod g).factorization = S.sum fun x => (g x).factorization := by
   classical
     ext p
-    apply Finset.induction_on' S
+    refine' Finset.induction_on' S ?_ ?_
     · simp
     · intro x T hxS hTS hxT IH
       have hT : T.prod g ≠ 0 := prod_ne_zero_iff.mpr fun x hx => hS x (hTS hx)
@@ -305,7 +306,7 @@ theorem prod_pow_factorization_eq_self {f : ℕ →₀ ℕ} (hf : ∀ p : ℕ, p
 #align nat.prod_pow_factorization_eq_self Nat.prod_pow_factorization_eq_self
 
 theorem eq_factorization_iff {n : ℕ} {f : ℕ →₀ ℕ} (hn : n ≠ 0) (hf : ∀ p ∈ f.support, Prime p) :
-    f = n.factorization ↔ f.Prod pow = n :=
+    f = n.factorization ↔ f.prod pow = n :=
   ⟨fun h => by rw [h, factorization_prod_pow_eq_self hn], fun h => by
     rw [← h, prod_pow_factorization_eq_self hf]⟩
 #align nat.eq_factorization_iff Nat.eq_factorization_iff
@@ -315,8 +316,8 @@ def factorizationEquiv : ℕ+ ≃ { f : ℕ →₀ ℕ | ∀ p ∈ f.support, Pr
     where
   toFun := fun ⟨n, hn⟩ => ⟨n.factorization, fun _ => prime_of_mem_factorization⟩
   invFun := fun ⟨f, hf⟩ =>
-    ⟨f.Prod pow, prod_pow_pos_of_zero_not_mem_support fun H => not_prime_zero (hf 0 H)⟩
-  left_inv := fun ⟨x, hx⟩ => Subtype.ext <| factorization_prod_pow_eq_self hx.Ne.symm
+    ⟨f.prod _, prod_pow_pos_of_zero_not_mem_support fun H => not_prime_zero (hf 0 H)⟩
+  left_inv := fun ⟨x, hx⟩ => Subtype.ext <| factorization_prod_pow_eq_self hx.ne.symm
   right_inv := fun ⟨f, hf⟩ => Subtype.ext <| prod_pow_factorization_eq_self hf
 #align nat.factorization_equiv Nat.factorizationEquiv
 
@@ -326,7 +327,7 @@ theorem factorizationEquiv_apply (n : ℕ+) : (factorizationEquiv n).1 = n.1.fac
 #align nat.factorization_equiv_apply Nat.factorizationEquiv_apply
 
 theorem factorizationEquiv_inv_apply {f : ℕ →₀ ℕ} (hf : ∀ p ∈ f.support, Prime p) :
-    (factorizationEquiv.symm ⟨f, hf⟩).1 = f.Prod pow :=
+    (factorizationEquiv.symm ⟨f, hf⟩).1 = f.prod pow :=
   rfl
 #align nat.factorization_equiv_inv_apply Nat.factorizationEquiv_inv_apply
 
@@ -356,7 +357,7 @@ theorem ord_compl_of_not_prime (n p : ℕ) (hp : ¬p.Prime) : ord_compl[p] n = n
 #align nat.ord_compl_of_not_prime Nat.ord_compl_of_not_prime
 
 theorem ord_proj_dvd (n p : ℕ) : ord_proj[p] n ∣ n := by
-  by_cases hp : p.prime; swap; · simp [hp]
+  by_cases hp : p.Prime; swap; · simp [hp]
   rw [← factors_count_eq]
   apply dvd_of_factors_subperm (pow_ne_zero _ hp.ne_zero)
   rw [hp.factors_pow, List.subperm_ext_iff]
@@ -369,7 +370,7 @@ theorem ord_compl_dvd (n p : ℕ) : ord_compl[p] n ∣ n :=
 #align nat.ord_compl_dvd Nat.ord_compl_dvd
 
 theorem ord_proj_pos (n p : ℕ) : 0 < ord_proj[p] n := by
-  by_cases pp : p.prime
+  by_cases pp : p.Prime
   · simp [pow_pos pp.pos]
   · simp [pp]
 #align nat.ord_proj_pos Nat.ord_proj_pos
@@ -379,7 +380,7 @@ theorem ord_proj_le {n : ℕ} (p : ℕ) (hn : n ≠ 0) : ord_proj[p] n ≤ n :=
 #align nat.ord_proj_le Nat.ord_proj_le
 
 theorem ord_compl_pos {n : ℕ} (p : ℕ) (hn : n ≠ 0) : 0 < ord_compl[p] n := by
-  cases' em' p.prime with pp pp
+  cases' em' p.Prime with pp pp
   · simpa [Nat.factorization_eq_zero_of_non_prime n pp] using hn.bot_lt
   exact Nat.div_pos (ord_proj_le p hn) (ord_proj_pos n p)
 #align nat.ord_compl_pos Nat.ord_compl_pos
@@ -414,7 +415,7 @@ theorem dvd_of_mem_factorization {n p : ℕ} (h : p ∈ n.factorization.support)
 
 /-- A crude upper bound on `n.factorization p` -/
 theorem factorization_lt {n : ℕ} (p : ℕ) (hn : n ≠ 0) : n.factorization p < n := by
-  by_cases pp : p.prime; swap;
+  by_cases pp : p.Prime; swap;
   · simp [factorization_eq_zero_of_non_prime n pp]
     exact hn.bot_lt
   rw [← pow_lt_iff_lt_right pp.two_le]
@@ -425,7 +426,7 @@ theorem factorization_lt {n : ℕ} (p : ℕ) (hn : n ≠ 0) : n.factorization p 
 /-- An upper bound on `n.factorization p` -/
 theorem factorization_le_of_le_pow {n p b : ℕ} (hb : n ≤ p ^ b) : n.factorization p ≤ b := by
   rcases eq_or_ne n 0 with (rfl | hn); · simp
-  by_cases pp : p.prime
+  by_cases pp : p.Prime
   · exact (pow_le_iff_le_right pp.two_le).1 (le_trans (ord_proj_le p hn) hb)
   · simp [factorization_eq_zero_of_non_prime n pp]
 #align nat.factorization_le_of_le_pow Nat.factorization_le_of_le_pow
@@ -435,9 +436,9 @@ theorem factorization_le_iff_dvd {d n : ℕ} (hd : d ≠ 0) (hn : n ≠ 0) :
   constructor
   · intro hdn
     set K := n.factorization - d.factorization with hK
-    use K.prod pow
-    rw [← factorization_prod_pow_eq_self hn, ← factorization_prod_pow_eq_self hd, ←
-      Finsupp.prod_add_index' pow_zero pow_add, hK, add_tsub_cancel_of_le hdn]
+    use K.prod Pow.pow
+    rw [← factorization_prod_pow_eq_self hn, ← factorization_prod_pow_eq_self hd,
+        ←Finsupp.prod_add_index' pow_zero pow_add, hK, add_tsub_cancel_of_le hdn]
   · rintro ⟨c, rfl⟩
     rw [factorization_mul hd (right_ne_zero_of_mul hn)]
     simp
@@ -522,7 +523,7 @@ theorem coprime_ord_compl {n p : ℕ} (hp : Prime p) (hn : n ≠ 0) : coprime p 
 theorem factorization_ord_compl (n p : ℕ) :
     (ord_compl[p] n).factorization = n.factorization.eraseₓ p := by
   rcases eq_or_ne n 0 with (rfl | hn); · simp
-  by_cases pp : p.prime; swap; · simp [pp]
+  by_cases pp : p.Prime; swap; · simp [pp]
   ext q
   rcases eq_or_ne q p with (rfl | hqp)
   · simp only [Finsupp.erase_same, factorization_eq_zero_iff, not_dvd_ord_compl pp hn]
@@ -570,7 +571,7 @@ theorem dvd_iff_div_factorization_eq_tsub {d n : ℕ} (hd : d ≠ 0) (hdn : d �
 
 theorem ord_proj_dvd_ord_proj_of_dvd {a b : ℕ} (hb0 : b ≠ 0) (hab : a ∣ b) (p : ℕ) :
     ord_proj[p] a ∣ ord_proj[p] b := by
-  rcases em' p.prime with (pp | pp); · simp [pp]
+  rcases em' p.Prime with (pp | pp); · simp [pp]
   rcases eq_or_ne a 0 with (rfl | ha0); · simp
   rw [pow_dvd_pow_iff_le_right pp.one_lt]
   exact (factorization_le_iff_dvd ha0 hb0).2 hab p
@@ -587,7 +588,7 @@ theorem ord_proj_dvd_ord_proj_iff_dvd {a b : ℕ} (ha0 : a ≠ 0) (hb0 : b ≠ 0
 
 theorem ord_compl_dvd_ord_compl_of_dvd {a b : ℕ} (hab : a ∣ b) (p : ℕ) :
     ord_compl[p] a ∣ ord_compl[p] b := by
-  rcases em' p.prime with (pp | pp); · simp [pp, hab]
+  rcases em' p.Prime with (pp | pp); · simp [pp, hab]
   rcases eq_or_ne b 0 with (rfl | hb0); · simp
   rcases eq_or_ne a 0 with (rfl | ha0); · cases hb0 (zero_dvd_iff.1 hab)
   have ha := (Nat.div_pos (ord_proj_le p ha0) (ord_proj_pos a p)).ne'
@@ -635,27 +636,31 @@ theorem prod_prime_factors_dvd (n : ℕ) : (∏ p : ℕ in n.factors.toFinset, p
 theorem factorization_gcd {a b : ℕ} (ha_pos : a ≠ 0) (hb_pos : b ≠ 0) :
     (gcd a b).factorization = a.factorization ⊓ b.factorization := by
   let dfac := a.factorization ⊓ b.factorization
-  let d := dfac.prod pow
+  let d := dfac.prod Pow.pow
   have dfac_prime : ∀ p : ℕ, p ∈ dfac.support → Prime p :=
     by
     intro p hp
     have : p ∈ a.factors ∧ p ∈ b.factors := by simpa using hp
     exact prime_of_mem_factors this.1
   have h1 : d.factorization = dfac := prod_pow_factorization_eq_self dfac_prime
-  have hd_pos : d ≠ 0 := (factorization_equiv.inv_fun ⟨dfac, dfac_prime⟩).2.Ne.symm
-  suffices d = gcd a b by rwa [← this]
-  apply gcd_greatest
-  · rw [← factorization_le_iff_dvd hd_pos ha_pos, h1]
-    exact inf_le_left
-  · rw [← factorization_le_iff_dvd hd_pos hb_pos, h1]
-    exact inf_le_right
-  · intro e hea heb
-    rcases Decidable.eq_or_ne e 0 with (rfl | he_pos)
-    · simp only [zero_dvd_iff] at hea
-      contradiction
-    have hea' := (factorization_le_iff_dvd he_pos ha_pos).mpr hea
-    have heb' := (factorization_le_iff_dvd he_pos hb_pos).mpr heb
-    simp [← factorization_le_iff_dvd he_pos hd_pos, h1, hea', heb']
+
+  -- porting note: used to require all the below....
+  -- delete when we are sure nothing's wrong...
+
+  -- have hd_pos : d ≠ 0 := (factorization_equiv.inv_fun ⟨dfac, dfac_prime⟩).2.Ne.symm
+  -- suffices d = gcd a b by rwa [← this]
+  -- apply gcd_greatest
+  -- · rw [← factorization_le_iff_dvd hd_pos ha_pos, h1]
+  --   exact inf_le_left
+  -- · rw [← factorization_le_iff_dvd hd_pos hb_pos, h1]
+  --   exact inf_le_right
+  -- · intro e hea heb
+  --   rcases Decidable.eq_or_ne e 0 with (rfl | he_pos)
+  --   · simp only [zero_dvd_iff] at hea
+  --     contradiction
+  --   have hea' := (factorization_le_iff_dvd he_pos ha_pos).mpr hea
+  --   have heb' := (factorization_le_iff_dvd he_pos hb_pos).mpr heb
+  --   simp [← factorization_le_iff_dvd he_pos hd_pos, h1, hea', heb']
 #align nat.factorization_gcd Nat.factorization_gcd
 
 theorem factorization_lcm {a b : ℕ} (ha : a ≠ 0) (hb : b ≠ 0) :
@@ -668,13 +673,13 @@ theorem factorization_lcm {a b : ℕ} (ha : a ≠ 0) (hb : b ≠ 0) :
 
 @[to_additive sum_factors_gcd_add_sum_factors_mul]
 theorem prod_factors_gcd_mul_prod_factors_mul {β : Type _} [CommMonoid β] (m n : ℕ) (f : ℕ → β) :
-    (m.gcd n).factors.toFinset.Prod f * (m * n).factors.toFinset.Prod f =
-      m.factors.toFinset.Prod f * n.factors.toFinset.Prod f := by
+    (m.gcd n).factors.toFinset.prod f * (m * n).factors.toFinset.prod f =
+      m.factors.toFinset.prod f * n.factors.toFinset.prod f := by
   rcases eq_or_ne n 0 with (rfl | hm0); · simp
   rcases eq_or_ne m 0 with (rfl | hn0); · simp
-  rw [← @Finset.prod_union_inter _ _ m.factors.to_finset n.factors.to_finset, mul_comm]
+  rw [← @Finset.prod_union_inter _ _ m.factors.toFinset n.factors.toFinset, mul_comm]
   congr
-  · apply factors_mul_to_finset <;> assumption
+  · apply factors_mul_toFinset <;> assumption
   · simp only [← support_factorization, factorization_gcd hn0 hm0, Finsupp.support_inf]
 #align nat.prod_factors_gcd_mul_prod_factors_mul Nat.prod_factors_gcd_mul_prod_factors_mul
 #align nat.sum_factors_gcd_add_sum_factors_mul Nat.sum_factors_gcd_add_sum_factors_mul
@@ -688,21 +693,21 @@ theorem setOf_pow_dvd_eq_Icc_factorization {n p : ℕ} (pp : p.Prime) (hn : n �
 /-- The set of positive powers of prime `p` that divide `n` is exactly the set of
 positive natural numbers up to `n.factorization p`. -/
 theorem Icc_factorization_eq_pow_dvd (n : ℕ) {p : ℕ} (pp : Prime p) :
-    Icc 1 (n.factorization p) = (Ico 1 n).filterₓ fun i : ℕ => p ^ i ∣ n := by
+    Icc 1 (n.factorization p) = (Ico 1 n).filter fun i : ℕ => p ^ i ∣ n := by
   rcases eq_or_ne n 0 with (rfl | hn); · simp
   ext x
-  simp only [mem_Icc, Finset.mem_filter, mem_Ico, and_assoc', and_congr_right_iff,
+  simp only [mem_Icc, Finset.mem_filter, mem_Ico, and_assoc, and_congr_right_iff,
     pp.pow_dvd_iff_le_factorization hn, iff_and_self]
   exact fun H1 H2 => lt_of_le_of_lt H2 (factorization_lt p hn)
 #align nat.Icc_factorization_eq_pow_dvd Nat.Icc_factorization_eq_pow_dvd
 
 theorem factorization_eq_card_pow_dvd (n : ℕ) {p : ℕ} (pp : p.Prime) :
-    n.factorization p = ((Ico 1 n).filterₓ fun i => p ^ i ∣ n).card := by
+    n.factorization p = ((Ico 1 n).filter fun i => p ^ i ∣ n).card := by
   simp [← Icc_factorization_eq_pow_dvd n pp]
 #align nat.factorization_eq_card_pow_dvd Nat.factorization_eq_card_pow_dvd
 
 theorem Ico_filter_pow_dvd_eq {n p b : ℕ} (pp : p.Prime) (hn : n ≠ 0) (hb : n ≤ p ^ b) :
-    ((Ico 1 n).filterₓ fun i => p ^ i ∣ n) = (Icc 1 b).filterₓ fun i => p ^ i ∣ n := by
+    ((Ico 1 n).filter fun i => p ^ i ∣ n) = (Icc 1 b).filter fun i => p ^ i ∣ n := by
   ext x
   simp only [Finset.mem_filter, mem_Ico, mem_Icc, and_congr_left_iff, and_congr_right_iff]
   rintro h1 -
@@ -746,7 +751,7 @@ theorem factorization_eq_of_coprime_right {p a b : ℕ} (hab : coprime a b) (hpb
 theorem factorization_disjoint_of_coprime {a b : ℕ} (hab : coprime a b) :
     Disjoint a.factorization.support b.factorization.support := by
   simpa only [support_factorization] using
-    disjoint_to_finset_iff_disjoint.mpr (coprime_factors_disjoint hab)
+    disjoint_toFinset_iff_disjoint.mpr (coprime_factors_disjoint hab)
 #align nat.factorization_disjoint_of_coprime Nat.factorization_disjoint_of_coprime
 
 /-- For coprime `a` and `b` the prime factorization `a * b` is the union of those of `a` and `b` -/
@@ -832,10 +837,10 @@ def recOnMul {P : ℕ → Sort _} (h0 : P 0) (h1 : P 1) (hp : ∀ p, Prime p →
 we can evaluate `f n` by evaluating `f` at `p ^ k` over the factorization of `n` -/
 theorem multiplicative_factorization {β : Type _} [CommMonoid β] (f : ℕ → β)
     (h_mult : ∀ x y : ℕ, coprime x y → f (x * y) = f x * f y) (hf : f 1 = 1) :
-    ∀ {n : ℕ}, n ≠ 0 → f n = n.factorization.Prod fun p k => f (p ^ k) := by
+    ∀ {n : ℕ}, n ≠ 0 → f n = n.factorization.prod fun p k => f (p ^ k) := by
   apply Nat.recOnPosPrimePosCoprime
   · intro p k hp hk hpk
-    simp [prime.factorization_pow hp, Finsupp.prod_single_index _, hf]
+    simp [Prime.factorization_pow hp, Finsupp.prod_single_index _, hf]
   · simp
   · rintro -
     rw [factorization_one, hf]
@@ -850,7 +855,7 @@ theorem multiplicative_factorization {β : Type _} [CommMonoid β] (f : ℕ → 
 we can evaluate `f n` by evaluating `f` at `p ^ k` over the factorization of `n` -/
 theorem multiplicative_factorization' {β : Type _} [CommMonoid β] (f : ℕ → β)
     (h_mult : ∀ x y : ℕ, coprime x y → f (x * y) = f x * f y) (hf0 : f 0 = 1) (hf1 : f 1 = 1) :
-    ∀ {n : ℕ}, f n = n.factorization.Prod fun p k => f (p ^ k) := by
+    ∀ {n : ℕ}, f n = n.factorization.prod fun p k => f (p ^ k) := by
   apply Nat.recOnPosPrimePosCoprime
   · intro p k hp hk
     simp only [hp.factorization_pow]
@@ -872,7 +877,7 @@ theorem eq_iff_prime_padicValNat_eq (a b : ℕ) (ha : a ≠ 0) (hb : b ≠ 0) :
     simp
   · intro h
     refine' eq_of_factorization_eq ha hb fun p => _
-    by_cases pp : p.prime
+    by_cases pp : p.Prime
     · simp [factorization_def, pp, h p pp]
     · simp [factorization_eq_zero_of_non_prime, pp]
 #align nat.eq_iff_prime_padic_val_nat_eq Nat.eq_iff_prime_padicValNat_eq
@@ -900,14 +905,14 @@ theorem prod_pow_prime_padicValNat (n : Nat) (hn : n ≠ 0) (m : Nat) (pr : n < 
 
 -- TODO: Port lemmas from `data/nat/multiplicity` to here, re-written in terms of `factorization`
 /-- Exactly `n / p` naturals in `[1, n]` are multiples of `p`. -/
-theorem card_multiples (n p : ℕ) : card ((Finset.range n).filterₓ fun e => p ∣ e + 1) = n / p := by
+theorem card_multiples (n p : ℕ) : card ((Finset.range n).filter fun e => p ∣ e + 1) = n / p := by
   induction' n with n hn; · simp
   simp [Nat.succ_div, add_ite, add_zero, Finset.range_succ, filter_insert, apply_ite card,
     card_insert_of_not_mem, hn]
 #align nat.card_multiples Nat.card_multiples
 
 /-- Exactly `n / p` naturals in `(0, n]` are multiples of `p`. -/
-theorem Ioc_filter_dvd_card_eq_div (n p : ℕ) : ((Ioc 0 n).filterₓ fun x => p ∣ x).card = n / p := by
+theorem Ioc_filter_dvd_card_eq_div (n p : ℕ) : ((Ioc 0 n).filter fun x => p ∣ x).card = n / p := by
   induction' n with n IH
   · simp
   -- TODO: Golf away `h1` after Yaël PRs a lemma asserting this
