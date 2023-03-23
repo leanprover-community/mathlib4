@@ -32,8 +32,8 @@ zero which is an ideal. Hence it's either zero (and the field is separated) or t
 which implies one is sent to zero and the completion ring is trivial.
 
 The main definition is `CompletableTopField` which packages the assumptions as a Prop-valued
-type class and the main results are the instances `uniform_space.completion.field` and
-`uniform_space.completion.topological_division_ring`.
+type class and the main results are the instances `UniformSpace.Completion.Field` and
+`UniformSpace.Completion.TopologicalDivisionRing`.
 -/
 
 
