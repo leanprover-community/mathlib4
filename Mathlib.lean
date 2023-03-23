@@ -1179,6 +1179,7 @@ import Mathlib.NumberTheory.Padics.PadicVal
 import Mathlib.NumberTheory.Primorial
 import Mathlib.NumberTheory.PythagoreanTriples
 import Mathlib.NumberTheory.Zsqrtd.Basic
+import Mathlib.NumberTheory.Zsqrtd.ToReal
 import Mathlib.Order.Antichain
 import Mathlib.Order.Antisymmetrization
 import Mathlib.Order.Atoms

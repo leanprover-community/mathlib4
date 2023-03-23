@@ -8,8 +8,8 @@ Authors: Eric Wieser
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Real.Sqrt
-import Mathbin.NumberTheory.Zsqrtd.Basic
+import Mathlib.Data.Real.Sqrt
+import Mathlib.NumberTheory.Zsqrtd.Basic
 
 /-!
 # Image of `zsqrtd` in `ℝ`
