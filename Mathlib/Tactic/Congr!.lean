@@ -877,7 +877,8 @@ congr! n
 congr! with x y z
 congr! n with x y z
 ```
-Here, `n` is a natural number and `x`, `y`, `z` are `rintro` patterns.
+Here, `n` is a natural number and `x`, `y`, `z` are `rintro` patterns (like `h`, `rfl`, `⟨x, y⟩`,
+`_`, `-`, `(h | h)`, etc.).
 
 The `congr!` tactic is similar to `congr` but is more insistent in trying to equate left-hand sides
 to right-hand sides of goals. Here is a list of things it can try:
@@ -894,7 +895,7 @@ to right-hand sides of goals. Here is a list of things it can try:
   If there is a subexpression that can be rewritten by `simp`, then `congr!` should be able
   to generate an equality for it.
 
-- It can do congruencese of pi types using lemmas like `implies_congr` and `pi_congr`.
+- It can do congruences of pi types using lemmas like `implies_congr` and `pi_congr`.
 
 - Before applying congruences, it will run the `intros` tactic automatically.
   The introduced variables can be given names using a `with` clause.
