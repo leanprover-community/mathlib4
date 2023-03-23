@@ -188,7 +188,7 @@ instance : SetLike (AffineSubspace k P) P where
 
 /-- A point is in an affine subspace coerced to a set if and only if it is in that affine
 subspace. -/
-@[simp]
+-- Porting note: removed `simp`, proof is `simp only [SetLike.mem_coe]`
 theorem mem_coe (p : P) (s : AffineSubspace k P) : p ∈ (s : Set P) ↔ p ∈ s :=
   Iff.rfl
 #align affine_subspace.mem_coe AffineSubspace.mem_coe
@@ -360,7 +360,7 @@ theorem ext {p q : AffineSubspace k P} (h : ∀ x, x ∈ p ↔ x ∈ q) : p = q 
   SetLike.ext h
 #align affine_subspace.ext AffineSubspace.ext
 
-@[simp]
+-- Porting note: removed `simp`, proof is `simp only [SetLike.ext'_iff]`
 theorem ext_iff (s₁ s₂ : AffineSubspace k P) : (s₁ : Set P) = s₂ ↔ s₁ = s₂ :=
   SetLike.ext'_iff.symm
 #align affine_subspace.ext_iff AffineSubspace.ext_iff
