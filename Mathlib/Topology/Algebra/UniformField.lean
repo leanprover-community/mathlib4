@@ -8,9 +8,9 @@ Authors: Patrick Massot
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.Algebra.UniformRing
-import Mathbin.Topology.Algebra.Field
-import Mathbin.FieldTheory.Subfield
+import Mathlib.Topology.Algebra.UniformRing
+import Mathlib.Topology.Algebra.Field
+import Mathlib.FieldTheory.Subfield
 
 /-!
 # Completion of topological fields
@@ -110,8 +110,7 @@ theorem hatInv_extends {x : K} (h : x ≠ 0) : hatInv (x : hat K) = coe (x⁻¹ 
 variable [CompletableTopField K]
 
 @[norm_cast]
-theorem coe_inv (x : K) : (x : hat K)⁻¹ = ((x⁻¹ : K) : hat K) :=
-  by
+theorem coe_inv (x : K) : (x : hat K)⁻¹ = ((x⁻¹ : K) : hat K) := by
   by_cases h : x = 0
   · rw [h, inv_zero]
     dsimp [Inv.inv]
@@ -125,8 +124,7 @@ theorem coe_inv (x : K) : (x : hat K)⁻¹ = ((x⁻¹ : K) : hat K) :=
 
 variable [UniformAddGroup K]
 
-theorem mul_hatInv_cancel {x : hat K} (x_ne : x ≠ 0) : x * hatInv x = 1 :=
-  by
+theorem mul_hatInv_cancel {x : hat K} (x_ne : x ≠ 0) : x * hatInv x = 1 := by
   haveI : T1Space (hat K) := T2Space.t1Space
   let f := fun x : hat K => x * hat_inv x
   let c := (coe : K → hat K)
