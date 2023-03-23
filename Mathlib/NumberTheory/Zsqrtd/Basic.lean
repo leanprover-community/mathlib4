@@ -279,9 +279,17 @@ theorem coe_nat_re (n : ℕ) : (n : ℤ√d).re = n :=
 #align zsqrtd.coe_nat_re Zsqrtd.coe_nat_re
 
 @[simp]
+theorem ofNat_re (n : ℕ) [n.AtLeastTwo] : (OfNat.ofNat n : ℤ√d).re = n :=
+  rfl
+
+@[simp]
 theorem coe_nat_im (n : ℕ) : (n : ℤ√d).im = 0 :=
   rfl
 #align zsqrtd.coe_nat_im Zsqrtd.coe_nat_im
+
+@[simp]
+theorem ofNat_im (n : ℕ) [n.AtLeastTwo] : (OfNat.ofNat n : ℤ√d).im = 0 :=
+  rfl
 
 theorem coe_nat_val (n : ℕ) : (n : ℤ√d) = ⟨n, 0⟩ :=
   rfl
@@ -303,6 +311,10 @@ instance : CharZero (ℤ√d) where cast_injective m n := by simp [ext]
 @[simp]
 theorem ofInt_eq_coe (n : ℤ) : (ofInt n : ℤ√d) = n := by simp [ext, ofInt_re, ofInt_im]
 #align zsqrtd.of_int_eq_coe Zsqrtd.ofInt_eq_coe
+
+@[simp]
+theorem ofInt_ofNat (n : ℕ) [n.AtLeastTwo] : (ofInt (OfNat.ofNat n) : ℤ√d) = OfNat.ofNat n :=
+  ofInt_eq_coe n
 
 @[simp]
 theorem smul_val (n x y : ℤ) : (n : ℤ√d) * ⟨x, y⟩ = ⟨n * x, n * y⟩ := by simp [ext]
