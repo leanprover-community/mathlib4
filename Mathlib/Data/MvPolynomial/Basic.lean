@@ -455,7 +455,7 @@ theorem ringHom_ext {A : Type _} [Semiring A] {f g : MvPolynomial σ R →+* A}
 #align mv_polynomial.ring_hom_ext MvPolynomial.ringHom_ext
 
 /-- See note [partially-applied ext lemmas]. -/
-@[ext 1001]
+@[ext 1100]
 theorem ringHom_ext' {A : Type _} [Semiring A] {f g : MvPolynomial σ R →+* A}
     (hC : f.comp C = g.comp C) (hX : ∀ i, f (X i) = g (X i)) : f = g :=
   ringHom_ext (RingHom.ext_iff.1 hC) hX
@@ -471,7 +471,7 @@ theorem is_id (f : MvPolynomial σ R →+* MvPolynomial σ R) (hC : f.comp C = C
   hom_eq_hom f (RingHom.id _) hC hX p
 #align mv_polynomial.is_id MvPolynomial.is_id
 
-@[ext 1001]
+@[ext 1100]
 theorem algHom_ext' {A B : Type _} [CommSemiring A] [CommSemiring B] [Algebra R A] [Algebra R B]
     {f g : MvPolynomial σ A →ₐ[R] B}
     (h₁ :
@@ -481,7 +481,7 @@ theorem algHom_ext' {A B : Type _} [CommSemiring A] [CommSemiring B] [Algebra R 
   AlgHom.coe_ringHom_injective (MvPolynomial.ringHom_ext' (congr_arg AlgHom.toRingHom h₁) h₂)
 #align mv_polynomial.alg_hom_ext' MvPolynomial.algHom_ext'
 
-@[ext 1002]
+@[ext 1200]
 theorem algHom_ext {A : Type _} [Semiring A] [Algebra R A] {f g : MvPolynomial σ R →ₐ[R] A}
     (hf : ∀ i : σ, f (X i) = g (X i)) : f = g :=
   AddMonoidAlgebra.algHom_ext' (mulHom_ext' fun X : σ => MonoidHom.ext_mnat (hf X))
