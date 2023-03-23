@@ -11,6 +11,7 @@ Authors: Scott Morrison, Johan Commelin, Andrew Yang
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
 import Mathlib.CategoryTheory.Monoidal.End
 import Mathlib.CategoryTheory.Monoidal.Discrete
+import Mathlib.Tactic.LibrarySearch
 
 /-!
 # Shift
@@ -171,19 +172,29 @@ def shiftMonoidalFunctor : MonoidalFunctor (Discrete A) (C ⥤ C) :=
 variable {A}
 
 /-- The shift autoequivalence, moving objects and morphisms 'up'. -/
-abbrev shiftFunctor (i : A) : C ⥤ C :=
+def shiftFunctor (i : A) : C ⥤ C :=
   (shiftMonoidalFunctor C A).obj ⟨i⟩
 #align category_theory.shift_functor CategoryTheory.shiftFunctor
 
 /-- Shifting by `i + j` is the same as shifting by `i` and then shifting by `j`. -/
-abbrev shiftFunctorAdd (i j : A) : shiftFunctor C (i + j) ≅ shiftFunctor C i ⋙ shiftFunctor C j :=
+def shiftFunctorAdd (i j : A) : shiftFunctor C (i + j) ≅ shiftFunctor C i ⋙ shiftFunctor C j :=
   ((shiftMonoidalFunctor C A).μIso ⟨i⟩ ⟨j⟩).symm
 #align category_theory.shift_functor_add CategoryTheory.shiftFunctorAdd
+
+/-- When `k = i + j`, shifting by `k` is the same as shifting by `i` and then shifting by `j`. -/
+def shiftFunctorAdd' (i j k : A) (h : i + j = k) :
+  shiftFunctor C k ≅ shiftFunctor C i ⋙ shiftFunctor C j :=
+  eqToIso (by rw [h]) ≪≫ shiftFunctorAdd C i j
+
+lemma shiftFunctorAdd'_eq_shiftFunctorAdd (i j : A) :
+  shiftFunctorAdd' C i j (i+j) rfl = shiftFunctorAdd C i j := by
+  ext1
+  apply Category.id_comp
 
 variable (A)
 
 /-- Shifting by zero is the identity functor. -/
-abbrev shiftFunctorZero : shiftFunctor C (0 : A) ≅ 𝟭 C :=
+def shiftFunctorZero : shiftFunctor C (0 : A) ≅ 𝟭 C :=
   (shiftMonoidalFunctor C A).εIso.symm
 #align category_theory.shift_functor_zero CategoryTheory.shiftFunctorZero
 
@@ -195,6 +206,84 @@ X "⟦" n "⟧" => (shiftFunctor _ n).obj X
 set_option quotPrecheck false in
 /-- shifting a morphism `f` by `n` is obtained by the notation `f⟦n⟧'` -/
 notation f "⟦" n "⟧'" => (shiftFunctor _ n).map f
+
+variable {A}
+
+lemma shiftFunctorAdd'_zero_add (a : A) :
+  shiftFunctorAdd' C 0 a a (zero_add a) = (Functor.leftUnitor _).symm ≪≫
+    isoWhiskerRight (shiftFunctorZero C A).symm (shiftFunctor C a) := by
+  ext X
+  dsimp [shiftFunctorAdd', shiftFunctorZero, shiftFunctor]
+  simp only [eqToHom_app, obj_ε_app, Discrete.addMonoidal_leftUnitor, eqToIso.inv,
+    eqToHom_map, Category.id_comp]
+  rfl
+
+lemma shiftFunctorAdd'_add_zero (a : A) :
+  shiftFunctorAdd' C a 0 a (add_zero a) = (Functor.rightUnitor _).symm ≪≫
+    isoWhiskerLeft (shiftFunctor C a) (shiftFunctorZero C A).symm := by
+  ext
+  dsimp [shiftFunctorAdd', shiftFunctorZero, shiftFunctor]
+  simp only [eqToHom_app, ε_app_obj, Discrete.addMonoidal_rightUnitor, eqToIso.inv,
+    eqToHom_map, Category.id_comp]
+  rfl
+
+lemma shiftFunctorAdd'_assoc (a₁ a₂ a₃ a₁₂ a₂₃ a₁₂₃ : A)
+    (h₁₂ : a₁ + a₂ = a₁₂) (h₂₃ : a₂ + a₃ = a₂₃) (h₁₂₃ : a₁ + a₂ + a₃ = a₁₂₃) :
+    shiftFunctorAdd' C a₁₂ a₃ a₁₂₃ (by rw [← h₁₂, h₁₂₃]) ≪≫
+      isoWhiskerRight (shiftFunctorAdd' C a₁ a₂ a₁₂ h₁₂) _ ≪≫ Functor.associator _ _ _  =
+    shiftFunctorAdd' C a₁ a₂₃ a₁₂₃ (by rw [← h₂₃, ← add_assoc, h₁₂₃]) ≪≫
+      isoWhiskerLeft _ (shiftFunctorAdd' C a₂ a₃ a₂₃ h₂₃) := by
+  subst h₁₂ h₂₃ h₁₂₃
+  ext X
+  dsimp
+  simp only [shiftFunctorAdd'_eq_shiftFunctorAdd, Category.comp_id]
+  dsimp [shiftFunctorAdd']
+  simp only [eqToHom_app]
+  dsimp [shiftFunctorAdd, shiftFunctor]
+  simp only [obj_μ_inv_app, Discrete.addMonoidal_associator, eqToIso.hom, eqToHom_map,
+    eqToHom_app]
+  erw [Iso.inv_hom_id_app_assoc, Category.assoc]
+  rfl
+
+variable {C}
+
+lemma shiftFunctorAdd'_zero_add_hom (a : A) (X : C) :
+  (shiftFunctorAdd' C 0 a a (zero_add a)).hom.app X =
+    ((shiftFunctorZero C A).inv.app X)⟦a⟧' := by
+  simpa using NatTrans.congr_app (congr_arg Iso.hom (shiftFunctorAdd'_zero_add C a)) X
+
+lemma shiftFunctorAdd'_zero_add_inv (a : A) (X : C) :
+  (shiftFunctorAdd' C 0 a a (zero_add a)).inv.app X =
+    ((shiftFunctorZero C A).hom.app X)⟦a⟧' := by
+  simpa using NatTrans.congr_app (congr_arg Iso.inv (shiftFunctorAdd'_zero_add C a)) X
+
+lemma shiftFunctorAdd'_add_zero_hom (a : A) (X : C):
+  (shiftFunctorAdd' C a 0 a (add_zero a)).hom.app X =
+    (shiftFunctorZero C A).inv.app (X⟦a⟧) := by
+  simpa using NatTrans.congr_app (congr_arg Iso.hom (shiftFunctorAdd'_add_zero C a)) X
+
+lemma shiftFunctorAdd'_add_zero_inv (a : A) (X : C):
+  (shiftFunctorAdd' C a 0 a (add_zero a)).inv.app X =
+    (shiftFunctorZero C A).hom.app (X⟦a⟧) := by
+  simpa using NatTrans.congr_app (congr_arg Iso.inv (shiftFunctorAdd'_add_zero C a)) X
+
+lemma shiftFunctorAdd'_assoc_hom (a₁ a₂ a₃ a₁₂ a₂₃ a₁₂₃ : A)
+    (h₁₂ : a₁ + a₂ = a₁₂) (h₂₃ : a₂ + a₃ = a₂₃) (h₁₂₃ : a₁ + a₂ + a₃ = a₁₂₃) (X : C) :
+    (shiftFunctorAdd' C a₁₂ a₃ a₁₂₃ (by rw [← h₁₂, h₁₂₃])).hom.app X ≫
+      ((shiftFunctorAdd' C a₁ a₂ a₁₂ h₁₂).hom.app X)⟦a₃⟧' =
+    (shiftFunctorAdd' C a₁ a₂₃ a₁₂₃ (by rw [← h₂₃, ← add_assoc, h₁₂₃])).hom.app X ≫
+      (shiftFunctorAdd' C a₂ a₃ a₂₃ h₂₃).hom.app (X⟦a₁⟧) := by
+  simpa using NatTrans.congr_app (congr_arg Iso.hom
+    (shiftFunctorAdd'_assoc C _ _ _ _ _ _ h₁₂ h₂₃ h₁₂₃)) X
+
+lemma shiftFunctorAdd'_assoc_inv (a₁ a₂ a₃ a₁₂ a₂₃ a₁₂₃ : A)
+    (h₁₂ : a₁ + a₂ = a₁₂) (h₂₃ : a₂ + a₃ = a₂₃) (h₁₂₃ : a₁ + a₂ + a₃ = a₁₂₃) (X : C) :
+    ((shiftFunctorAdd' C a₁ a₂ a₁₂ h₁₂).inv.app X)⟦a₃⟧' ≫
+      (shiftFunctorAdd' C a₁₂ a₃ a₁₂₃ (by rw [← h₁₂, h₁₂₃])).inv.app X =
+    (shiftFunctorAdd' C a₂ a₃ a₂₃ h₂₃).inv.app (X⟦a₁⟧) ≫
+      (shiftFunctorAdd' C a₁ a₂₃ a₁₂₃ (by rw [← h₂₃, ← add_assoc, h₁₂₃])).inv.app X := by
+  simpa using NatTrans.congr_app (congr_arg Iso.inv
+    (shiftFunctorAdd'_assoc C _ _ _ _ _ _ h₁₂ h₂₃ h₁₂₃)) X
 
 end Defs
 
@@ -272,6 +361,13 @@ theorem shift_zero' : f⟦(0 : A)⟧' = (shiftZero A X).hom ≫ f ≫ (shiftZero
   apply NatIso.naturality_2
 #align category_theory.shift_zero' CategoryTheory.shift_zero'
 
+variable (C) {A}
+
+/-- When `i + j = 0`, shifting by `i` and by `j` gives the identity functor -/
+def shiftFunctorCompIsoId (i j : A) (h : i + j = 0) :
+    shiftFunctor C i ⋙ shiftFunctor C j ≅ 𝟭 C :=
+  (shiftFunctorAdd' C i j 0 h).symm ≪≫ shiftFunctorZero C A
+
 end AddMonoid
 
 section AddGroup
@@ -279,11 +375,28 @@ section AddGroup
 variable (C)
 variable [AddGroup A] [HasShift C A]
 
+/-- Shifting by `n` and shifting by `-n` forms an equivalence. -/
+@[simps]
+def shiftEquiv (n : A) : C ≌ C where
+  functor := shiftFunctor C n
+  inverse := shiftFunctor C (-n)
+  unitIso := (shiftFunctorCompIsoId C n (-n) (add_neg_self n)).symm
+  counitIso := shiftFunctorCompIsoId C (-n) n (neg_add_self n)
+  functor_unitIso_comp X := by
+    convert (addNegEquiv (shiftMonoidalFunctor C A) n).functor_unitIso_comp X
+    all_goals
+      ext X
+      dsimp [shiftFunctorCompIsoId, addNegEquiv, unitOfTensorIsoUnit,
+        shiftFunctorAdd']
+      simp only [Category.assoc, eqToHom_map]
+      rfl
+#align category_theory.shift_equiv CategoryTheory.shiftEquiv
+
 variable (X Y : C) (f : X ⟶ Y)
 
 /-- Shifting by `i` is an equivalence. -/
 instance (i : A) : IsEquivalence (shiftFunctor C i) := by
-  change IsEquivalence (addNegEquiv (shiftMonoidalFunctor C A) i).functor
+  change IsEquivalence (shiftEquiv C i).functor
   infer_instance
 
 @[simp]
@@ -293,12 +406,12 @@ theorem shiftFunctor_inv (i : A) : (shiftFunctor C i).inv = shiftFunctor C (-i) 
 
 /-- Shifting by `i` and then shifting by `-i` is the identity. -/
 abbrev shiftFunctorCompShiftFunctorNeg (i : A) : shiftFunctor C i ⋙ shiftFunctor C (-i) ≅ 𝟭 C :=
-  unitOfTensorIsoUnit (shiftMonoidalFunctor C A) ⟨i⟩ ⟨(-i : A)⟩ (Discrete.eqToIso (add_neg_self i))
+  shiftFunctorCompIsoId C i (-i) (add_neg_self i)
 #align category_theory.shift_functor_comp_shift_functor_neg CategoryTheory.shiftFunctorCompShiftFunctorNeg
 
 /-- Shifting by `-i` and then shifting by `i` is the identity. -/
 abbrev shiftFunctorNegCompShiftFunctor (i : A) : shiftFunctor C (-i) ⋙ shiftFunctor C i ≅ 𝟭 C :=
-  unitOfTensorIsoUnit (shiftMonoidalFunctor C A) ⟨(-i : A)⟩ ⟨i⟩ (Discrete.eqToIso (neg_add_self i))
+  shiftFunctorCompIsoId C (-i) i (neg_add_self i)
 #align category_theory.shift_functor_neg_comp_shift_functor CategoryTheory.shiftFunctorNegCompShiftFunctor
 
 section
@@ -337,37 +450,57 @@ abbrev shiftNegShift (i : A) : X⟦-i⟧⟦i⟧ ≅ X :=
 variable {X Y}
 
 theorem shift_shift_neg' (i : A) :
-    f⟦i⟧'⟦-i⟧' = (shiftShiftNeg X i).hom ≫ f ≫ (shiftShiftNeg Y i).inv :=
+    f⟦i⟧'⟦-i⟧' = (shiftFunctorCompShiftFunctorNeg C i).hom.app X ≫
+      f ≫ (shiftFunctorCompShiftFunctorNeg C i).inv.app Y :=
   (NatIso.naturality_2 (shiftFunctorCompShiftFunctorNeg C i) f).symm
 #align category_theory.shift_shift_neg' CategoryTheory.shift_shift_neg'
 
 theorem shift_neg_shift' (i : A) :
-    f⟦-i⟧'⟦i⟧' = (shiftNegShift X i).hom ≫ f ≫ (shiftNegShift Y i).inv :=
+    f⟦-i⟧'⟦i⟧' = (shiftFunctorNegCompShiftFunctor C i).hom.app X ≫ f ≫
+      (shiftFunctorNegCompShiftFunctor C i).inv.app Y :=
   (NatIso.naturality_2 (shiftFunctorNegCompShiftFunctor C i) f).symm
 #align category_theory.shift_neg_shift' CategoryTheory.shift_neg_shift'
 
+--theorem shift_shift_neg' (i : A) :
+--    f⟦i⟧'⟦-i⟧' = (shiftShiftNeg X i).hom ≫ f ≫ (shiftShiftNeg Y i).inv :=
+--  (NatIso.naturality_2 (shiftFunctorCompShiftFunctorNeg C i) f).symm
+--#align category_theory.shift_shift_neg' CategoryTheory.shift_shift_neg'
+--
+--theorem shift_neg_shift' (i : A) :
+--    f⟦-i⟧'⟦i⟧' = (shiftNegShift X i).hom ≫ f ≫ (shiftNegShift Y i).inv :=
+--  (NatIso.naturality_2 (shiftFunctorNegCompShiftFunctor C i) f).symm
+--#align category_theory.shift_neg_shift' CategoryTheory.shift_neg_shift'
+
 theorem shift_equiv_triangle (n : A) (X : C) :
     (shiftShiftNeg X n).inv⟦n⟧' ≫ (shiftNegShift (X⟦n⟧) n).hom = 𝟙 (X⟦n⟧) :=
-  (addNegEquiv (shiftMonoidalFunctor C A) n).functor_unitIso_comp X
+  (shiftEquiv C n).functor_unitIso_comp X
 #align category_theory.shift_equiv_triangle CategoryTheory.shift_equiv_triangle
 
 section
 
-attribute [local simp] Discrete.addMonoidal_leftUnitor
-  Discrete.addMonoidal_rightUnitor Discrete.addMonoidal_associator
+theorem shift_shiftFunctorCompIsoId_hom (n m : A) (h : n + m = 0) (X : C) :
+  ((shiftFunctorCompIsoId C n m h).hom.app X)⟦n⟧' =
+    ((shiftFunctorCompIsoId C m n
+      (by rw [← neg_eq_of_add_eq_zero_left h, add_right_neg])).hom.app (X⟦n⟧)) := by
+  dsimp [shiftFunctorCompIsoId]
+  simpa only [Functor.map_comp, ← shiftFunctorAdd'_zero_add_inv n X,
+    ← shiftFunctorAdd'_add_zero_inv n X]
+    using shiftFunctorAdd'_assoc_inv n m n 0 0 n h
+      (by rw [← neg_eq_of_add_eq_zero_left h, add_right_neg]) (by rw [h, zero_add]) X
+
+theorem shift_shiftFunctorCompIsoId_inv (n m : A) (h : n + m = 0) (X : C) :
+  ((shiftFunctorCompIsoId C n m h).inv.app X)⟦n⟧' =
+    ((shiftFunctorCompIsoId C m n
+      (by rw [← neg_eq_of_add_eq_zero_left h, add_right_neg])).inv.app (X⟦n⟧)) := by
+  rw [← cancel_mono (((shiftFunctorCompIsoId C n m h).hom.app X)⟦n⟧'),
+    ← Functor.map_comp, Iso.inv_hom_id_app, Functor.map_id,
+    shift_shiftFunctorCompIsoId_hom, Iso.inv_hom_id_app]
+  rfl
 
 theorem shiftShiftNeg_hom_shift (n : A) (X : C) :
-    (shiftShiftNeg X n).hom⟦n⟧' = (shiftNegShift (X⟦n⟧) n).hom := by
-  simp only [Iso.app_hom, unitOfTensorIsoUnit_hom_app, eqToIso.hom, Functor.map_comp, obj_μ_app,
-    Discrete.addMonoidal_associator, eqToIso.inv, obj_ε_inv_app, Discrete.addMonoidal_leftUnitor,
-    μ_naturalityₗ_assoc, Category.assoc, μ_inv_hom_app_assoc, ε_inv_app_obj,
-    Discrete.addMonoidal_rightUnitor, μ_naturalityᵣ_assoc]
-  simp only [shiftMonoidalFunctor, HasShift.shift_obj_obj, eqToHom_map, eqToHom_app]
-  erw [eqToHom_map, eqToHom_map, eqToHom_app, eqToHom_app]
-  simp
+    (shiftShiftNeg X n).hom⟦n⟧' = (shiftNegShift (X⟦n⟧) n).hom :=
+  shift_shiftFunctorCompIsoId_hom n (-n) (add_neg_self n) X
 #align category_theory.shift_shift_neg_hom_shift CategoryTheory.shiftShiftNeg_hom_shift
-
-end
 
 theorem shiftShiftNeg_inv_shift (n : A) (X : C) :
     (shiftShiftNeg X n).inv⟦n⟧' = (shiftNegShift (X⟦n⟧) n).inv := by
@@ -375,23 +508,23 @@ theorem shiftShiftNeg_inv_shift (n : A) (X : C) :
   rw [← shiftShiftNeg_hom_shift, ← Functor.map_comp, Iso.hom_inv_id, Functor.map_id]
 #align category_theory.shift_shift_neg_inv_shift CategoryTheory.shiftShiftNeg_inv_shift
 
+theorem shiftFunctorCompShiftFunctorNeg_inv_app_shift (n : A) (X : C) :
+    ((shiftFunctorCompShiftFunctorNeg C n).inv.app X)⟦n⟧' =
+      (shiftFunctorNegCompShiftFunctor C n).inv.app (X⟦n⟧) :=
+  shiftShiftNeg_inv_shift n X
+
+theorem shiftFunctorCompShiftFunctorNeg_hom_app_shift (n : A) (X : C) :
+    ((shiftFunctorCompShiftFunctorNeg C n).hom.app X)⟦n⟧' =
+      (shiftFunctorNegCompShiftFunctor C n).hom.app (X⟦n⟧) :=
+  shiftShiftNeg_hom_shift n X
+
 @[simp]
 theorem shiftShiftNeg_shift_eq (n : A) (X : C) :
     (shiftFunctor C n).mapIso (shiftShiftNeg X n) = shiftNegShift (X⟦n⟧) n :=
   CategoryTheory.Iso.ext <| shiftShiftNeg_hom_shift _ _
 #align category_theory.shift_shift_neg_shift_eq CategoryTheory.shiftShiftNeg_shift_eq
 
-variable (C)
-
-/-- Shifting by `n` and shifting by `-n` forms an equivalence. -/
-@[simps]
-def shiftEquiv (n : A) : C ≌ C :=
-  { addNegEquiv (shiftMonoidalFunctor C A) n with
-    functor := shiftFunctor C n
-    inverse := shiftFunctor C (-n) }
-#align category_theory.shift_equiv CategoryTheory.shiftEquiv
-
-variable {C}
+end
 
 open CategoryTheory.Limits
 
@@ -407,21 +540,41 @@ section AddCommMonoid
 
 variable [AddCommMonoid A] [HasShift C A]
 
+variable (C)
+
+/-- When shifts are indexed by an additive commutative monoid, then shifts commute. -/
+def shiftFunctorComm (i j : A) :
+    shiftFunctor C i ⋙ shiftFunctor C j ≅
+      shiftFunctor C j ⋙ shiftFunctor C i :=
+  (shiftFunctorAdd C i j).symm ≪≫ shiftFunctorAdd' C j i (i + j) (add_comm j i)
+
+lemma shiftFunctorComm_eq (i j k : A) (h : i + j = k):
+    shiftFunctorComm C i j = (shiftFunctorAdd' C i j k h).symm ≪≫
+      shiftFunctorAdd' C j i k (by rw [add_comm j i, h]) := by
+  subst h
+  rw [shiftFunctorAdd'_eq_shiftFunctorAdd]
+  rfl
+
+lemma shiftFunctorComm_symm (i j : A) :
+  (shiftFunctorComm C i j).symm = shiftFunctorComm C j i := by
+  ext1
+  dsimp
+  rw [shiftFunctorComm_eq C i j (i+j) rfl, shiftFunctorComm_eq C j i (i+j) (add_comm j i)]
+  rfl
+
+variable {C}
+
 variable (X Y : C) (f : X ⟶ Y)
 
 /-- When shifts are indexed by an additive commutative monoid, then shifts commute. -/
-def shiftComm (i j : A) : X⟦i⟧⟦j⟧ ≅ X⟦j⟧⟦i⟧ :=
-  (shiftAdd X i j).symm ≪≫
-    ((shiftMonoidalFunctor C A).toFunctor.mapIso
-            (Discrete.eqToIso <| add_comm i j : (⟨i + j⟩ : Discrete A) ≅ ⟨j + i⟩)).app X ≪≫
-      shiftAdd X j i
+abbrev shiftComm (i j : A) : X⟦i⟧⟦j⟧ ≅ X⟦j⟧⟦i⟧ :=
+  (shiftFunctorComm C i j).app X
 #align category_theory.shift_comm CategoryTheory.shiftComm
 
 @[simp]
 theorem shiftComm_symm (i j : A) : (shiftComm X i j).symm = shiftComm X j i := by
   ext
-  dsimp [shiftComm]
-  simp
+  exact NatTrans.congr_app (congr_arg Iso.hom (shiftFunctorComm_symm C i j)) X
 #align category_theory.shift_comm_symm CategoryTheory.shiftComm_symm
 
 variable {X Y}
@@ -429,13 +582,9 @@ variable {X Y}
 /-- When shifts are indexed by an additive commutative monoid, then shifts commute. -/
 theorem shift_comm' (i j : A) :
     f⟦i⟧'⟦j⟧' = (shiftComm _ _ _).hom ≫ f⟦j⟧'⟦i⟧' ≫ (shiftComm _ _ _).hom := by
-  simp only [shiftComm, Iso.trans_hom, Iso.symm_hom, Iso.app_inv, Iso.symm_inv,
-    MonoidalFunctor.μIso_hom, Iso.app_hom, Functor.mapIso_hom, eqToIso.hom, μ_naturality_assoc,
-    NatTrans.naturality_assoc, NatTrans.naturality,
-    Functor.comp_obj, Functor.comp_map, Category.assoc, μ_inv_hom_app_assoc]
-  simp only [eqToHom_map, eqToHom_app, eqToHom_trans_assoc, eqToHom_refl, Category.id_comp]
+  erw [← shiftComm_symm Y i j, ← ((shiftFunctorComm C i j).hom.naturality_assoc f)]
   dsimp
-  erw [(shiftFunctorAdd C i j).inv_hom_id_app_assoc X]
+  simp only [Iso.hom_inv_id_app, Functor.comp_obj, Category.comp_id]
 #align category_theory.shift_comm' CategoryTheory.shift_comm'
 
 @[reassoc]
@@ -518,43 +667,42 @@ def hasShiftOfFullyFaithful :
       ε := hasShiftOfFullyFaithful_ε F s i
       μ := hasShiftOfFullyFaithful_μ F s i
       associativity := fun m₁ m₂ m₃ X => F.map_injective (by
-        simp only [Functor.comp_obj, Functor.map_comp, map_hasShiftOfFullyFaithful_μ_hom_app,
-          Iso.symm_inv, MonoidalFunctor.μIso_hom, Category.assoc, Iso.inv_hom_id_app_assoc]
-        erw [(i m₃).hom.naturality_assoc, ← (shiftFunctor D m₃).map_comp_assoc]
-        simp only [map_hasShiftOfFullyFaithful_μ_hom_app, Functor.comp_obj, Iso.symm_inv,
-          MonoidalFunctor.μIso_hom, Category.assoc, Iso.inv_hom_id_app, Category.comp_id,
-          Functor.map_comp, obj_μ_app, Discrete.addMonoidal_associator,
-          eqToIso.inv, μ_naturality_assoc, NatIso.cancel_natIso_hom_left]
-        erw [Iso.inv_hom_id_app_assoc, dcongr_arg (fun a => (i a).inv.app X) (add_assoc m₁ m₂ m₃)]
-        simp only [eqToHom_map, eqToHom_app, Functor.comp_obj, Category.assoc,
-          eqToHom_trans, eqToHom_refl, Category.comp_id, eqToHom_trans_assoc, Category.id_comp]
-        rfl)
-      left_unitality := fun n X => F.map_injective (by
-        have := dcongr_arg (fun a => (i a).inv.app X) (zero_add n)
-        dsimp
-        simp only [Functor.map_comp, map_hasShiftOfFullyFaithful_μ_hom_app, Functor.comp_obj,
-          Iso.symm_inv, MonoidalFunctor.μIso_hom, eqToHom_map, this]
-        erw [(i n).hom.naturality_assoc]
-        dsimp
-        simp only [map_hasShiftOfFullyFaithful_ε_hom_app, Functor.map_comp, Iso.symm_inv,
-          MonoidalFunctor.εIso_hom, obj_ε_app, Discrete.addMonoidal_leftUnitor, eqToIso.inv,
-          Category.assoc]
-        erw [← Functor.map_comp_assoc, Iso.inv_hom_id_app, Functor.map_id, Category.id_comp,
+        have h := shiftFunctorAdd'_assoc_inv m₁ m₂ m₃ _ _ _ rfl rfl rfl (F.obj X)
+        simp only [shiftFunctorAdd'_eq_shiftFunctorAdd] at h
+        simp only [F.map_comp, map_hasShiftOfFullyFaithful_μ_hom_app, Category.assoc,
           Iso.inv_hom_id_app_assoc]
-        simp only [eqToHom_map, eqToHom_app, eqToHom_trans_assoc, eqToHom_refl, Category.id_comp,
-          Iso.hom_inv_id_app_assoc])
+        erw [(i m₃).hom.naturality_assoc]
+        dsimp
+        simp only [map_hasShiftOfFullyFaithful_μ_hom_app, ← Functor.map_comp_assoc,
+          Category.assoc, Iso.inv_hom_id_app, Category.comp_id]
+        simp only [Functor.map_comp, Category.assoc]
+        erw [Functor.map_id, Category.id_comp, ← NatTrans.naturality_assoc,
+          dcongr_arg (fun a => (i a).inv.app X) (add_assoc m₁ m₂ m₃)]
+        slice_lhs 4 5 => rw [h]
+        dsimp [shiftFunctorAdd']
+        simp only [Category.assoc, eqToHom_map, eqToHom_app, eqToHom_trans, eqToHom_refl,
+          Category.comp_id, eqToHom_trans_assoc, Category.id_comp])
+      left_unitality := fun n X => F.map_injective (by
+        erw [Functor.map_comp, map_hasShiftOfFullyFaithful_μ_hom_app, (i n).hom.naturality_assoc]
+        dsimp
+        simp only [map_hasShiftOfFullyFaithful_ε_hom_app, Functor.map_comp]
+        rw [← shiftFunctorAdd'_zero_add_hom n (F.obj X)]
+        simp only [Category.assoc, ← (shiftFunctor D n).map_comp_assoc, Iso.inv_hom_id_app]
+        dsimp [shiftFunctorAdd']
+        simp only [Functor.map_id, Category.id_comp, Category.assoc, Iso.hom_inv_id_app_assoc]
+        rw [dcongr_arg (fun a => (i a).inv.app X) (zero_add n)]
+        simp only [eqToHom_app, Functor.comp_obj, eqToHom_trans_assoc,
+          eqToHom_refl, Category.id_comp,
+  Iso.hom_inv_id_app_assoc, eqToHom_map])
       right_unitality := fun n X => F.map_injective (by
         have := dcongr_arg (fun a => (i a).inv.app X) (add_zero n)
-        dsimp
-        simp only [Functor.map_comp, map_hasShiftOfFullyFaithful_ε_hom_app, Functor.id_obj,
-          Functor.comp_obj, Iso.symm_inv, MonoidalFunctor.εIso_hom,
-          map_hasShiftOfFullyFaithful_μ_hom_app, MonoidalFunctor.μIso_hom,
-          Category.assoc, Iso.inv_hom_id_app_assoc, eqToHom_map,
-          ← NatTrans.naturality_assoc, Functor.id_map, ε_app_obj,
-          Discrete.addMonoidal_rightUnitor, eqToIso.inv, this]
-        erw [Iso.inv_hom_id_app_assoc]
-        simp only [eqToHom_app, Functor.comp_obj, eqToHom_trans_assoc, eqToHom_refl,
-          Category.id_comp, Iso.hom_inv_id_app_assoc]) }
+        simp only [Functor.id_obj, Functor.map_comp, map_hasShiftOfFullyFaithful_ε_hom_app,
+          Functor.comp_obj, map_hasShiftOfFullyFaithful_μ_hom_app, Category.assoc,
+          Iso.inv_hom_id_app_assoc, this, ← NatTrans.naturality_assoc,
+          ← shiftFunctorAdd'_add_zero_hom n]
+        dsimp [shiftFunctorAdd']
+        simp only [Category.assoc, Iso.hom_inv_id_app_assoc, eqToHom_app, eqToHom_trans_assoc,
+          eqToHom_refl, Category.id_comp, eqToHom_map]) }
 #align category_theory.has_shift_of_fully_faithful CategoryTheory.hasShiftOfFullyFaithful
 
 end
