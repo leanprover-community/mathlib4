@@ -8,10 +8,10 @@ Authors: Anne Baanen, Paul Lezeau
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.IsPrimePow
-import Mathbin.Algebra.Squarefree
-import Mathbin.Order.Hom.Bounded
-import Mathbin.Algebra.GcdMonoid.Basic
+import Mathlib.Algebra.IsPrimePow
+import Mathlib.Algebra.Squarefree
+import Mathlib.Order.Hom.Bounded
+import Mathlib.Algebra.GCDMonoid.Basic
 
 /-!
 
@@ -70,8 +70,7 @@ namespace DivisorChain
 
 theorem exists_chain_of_prime_pow {p : Associates M} {n : ℕ} (hn : n ≠ 0) (hp : Prime p) :
     ∃ c : Fin (n + 1) → Associates M,
-      c 1 = p ∧ StrictMono c ∧ ∀ {r : Associates M}, r ≤ p ^ n ↔ ∃ i, r = c i :=
-  by
+      c 1 = p ∧ StrictMono c ∧ ∀ {r : Associates M}, r ≤ p ^ n ↔ ∃ i, r = c i := by
   refine' ⟨fun i => p ^ (i : ℕ), _, fun n m h => _, fun y => ⟨fun h => _, _⟩⟩
   · rw [Fin.val_one', Nat.mod_eq_of_lt, pow_one]
     exact Nat.lt_succ_of_le (nat.one_le_iff_ne_zero.mpr hn)
@@ -96,8 +95,7 @@ theorem element_of_chain_not_isUnit_of_index_ne_zero {n : ℕ} {i : Fin (n + 1)}
 #align divisor_chain.element_of_chain_not_is_unit_of_index_ne_zero DivisorChain.element_of_chain_not_isUnit_of_index_ne_zero
 
 theorem first_of_chain_isUnit {q : Associates M} {n : ℕ} {c : Fin (n + 1) → Associates M}
-    (h₁ : StrictMono c) (h₂ : ∀ {r}, r ≤ q ↔ ∃ i, r = c i) : IsUnit (c 0) :=
-  by
+    (h₁ : StrictMono c) (h₂ : ∀ {r}, r ≤ q ↔ ∃ i, r = c i) : IsUnit (c 0) := by
   obtain ⟨i, hr⟩ := h₂.mp Associates.one_le
   rw [Associates.isUnit_iff_eq_one, ← Associates.le_one_iff, hr]
   exact h₁.monotone (Fin.zero_le i)
@@ -235,8 +233,7 @@ variable {N : Type _} [CancelCommMonoidWithZero N]
 
 theorem factor_orderIso_map_one_eq_bot {m : Associates M} {n : Associates N}
     (d : { l : Associates M // l ≤ m } ≃o { l : Associates N // l ≤ n }) :
-    (d ⟨1, one_dvd m⟩ : Associates N) = 1 :=
-  by
+    (d ⟨1, one_dvd m⟩ : Associates N) = 1 := by
   letI : OrderBot { l : Associates M // l ≤ m } := Subtype.orderBot bot_le
   letI : OrderBot { l : Associates N // l ≤ n } := Subtype.orderBot bot_le
   simp [← Associates.bot_eq_one]
@@ -295,8 +292,7 @@ theorem pow_image_of_prime_by_factor_orderIso_dvd [DecidableEq (Associates M)] {
 
 theorem map_prime_of_factor_orderIso [DecidableEq (Associates M)] {m p : Associates M}
     {n : Associates N} (hn : n ≠ 0) (hp : p ∈ normalizedFactors m) (d : Set.Iic m ≃o Set.Iic n) :
-    Prime (d ⟨p, dvd_of_mem_normalizedFactors hp⟩ : Associates N) :=
-  by
+    Prime (d ⟨p, dvd_of_mem_normalizedFactors hp⟩ : Associates N) := by
   rw [← irreducible_iff_prime]
   refine' (Associates.isAtom_iff <| ne_zero_of_dvd_ne_zero hn (d ⟨p, _⟩).Prop).mp ⟨_, fun b hb => _⟩
   · rw [Ne.def, ← Associates.isUnit_iff_eq_bot, Associates.isUnit_iff_eq_one,
@@ -325,8 +321,7 @@ theorem map_prime_of_factor_orderIso [DecidableEq (Associates M)] {m p : Associa
 theorem mem_normalizedFactors_factor_orderIso_of_mem_normalizedFactors [DecidableEq (Associates M)]
     [DecidableEq (Associates N)] {m p : Associates M} {n : Associates N} (hn : n ≠ 0)
     (hp : p ∈ normalizedFactors m) (d : Set.Iic m ≃o Set.Iic n) :
-    ↑(d ⟨p, dvd_of_mem_normalizedFactors hp⟩) ∈ normalizedFactors n :=
-  by
+    ↑(d ⟨p, dvd_of_mem_normalizedFactors hp⟩) ∈ normalizedFactors n := by
   obtain ⟨q, hq, hq'⟩ :=
     exists_mem_normalized_factors_of_dvd hn (map_prime_of_factor_orderIso hn hp d).Irreducible
       (d ⟨p, dvd_of_mem_normalized_factors hp⟩).Prop
@@ -339,8 +334,7 @@ variable [DecidableRel ((· ∣ ·) : M → M → Prop)] [DecidableRel ((· ∣ 
 theorem multiplicity_prime_le_multiplicity_image_by_factor_orderIso [DecidableEq (Associates M)]
     {m p : Associates M} {n : Associates N} (hp : p ∈ normalizedFactors m)
     (d : Set.Iic m ≃o Set.Iic n) :
-    multiplicity p m ≤ multiplicity (↑(d ⟨p, dvd_of_mem_normalizedFactors hp⟩)) n :=
-  by
+    multiplicity p m ≤ multiplicity (↑(d ⟨p, dvd_of_mem_normalizedFactors hp⟩)) n := by
   by_cases hn : n = 0
   · simp [hn]
   by_cases hm : m = 0
@@ -355,8 +349,7 @@ theorem multiplicity_prime_le_multiplicity_image_by_factor_orderIso [DecidableEq
 theorem multiplicity_prime_eq_multiplicity_image_by_factor_orderIso [DecidableEq (Associates M)]
     {m p : Associates M} {n : Associates N} (hn : n ≠ 0) (hp : p ∈ normalizedFactors m)
     (d : Set.Iic m ≃o Set.Iic n) :
-    multiplicity p m = multiplicity (↑(d ⟨p, dvd_of_mem_normalizedFactors hp⟩)) n :=
-  by
+    multiplicity p m = multiplicity (↑(d ⟨p, dvd_of_mem_normalizedFactors hp⟩)) n := by
   refine' le_antisymm (multiplicity_prime_le_multiplicity_image_by_factor_orderIso hp d) _
   suffices
     multiplicity (↑(d ⟨p, dvd_of_mem_normalized_factors hp⟩)) n ≤
@@ -415,8 +408,7 @@ theorem mem_normalizedFactors_factor_dvd_iso_of_mem_normalizedFactors [Decidable
     {n : N} (hm : m ≠ 0) (hn : n ≠ 0) (hp : p ∈ normalizedFactors m)
     {d : { l : M // l ∣ m } ≃ { l : N // l ∣ n }}
     (hd : ∀ l l', (d l : N) ∣ d l' ↔ (l : M) ∣ (l' : M)) :
-    ↑(d ⟨p, dvd_of_mem_normalizedFactors hp⟩) ∈ normalizedFactors n :=
-  by
+    ↑(d ⟨p, dvd_of_mem_normalizedFactors hp⟩) ∈ normalizedFactors n := by
   suffices
     Prime
       ↑(d
@@ -457,8 +449,7 @@ variable [DecidableRel ((· ∣ ·) : M → M → Prop)] [DecidableRel ((· ∣ 
 theorem multiplicity_factor_dvd_iso_eq_multiplicity_of_mem_normalized_factor {m p : M} {n : N}
     (hm : m ≠ 0) (hn : n ≠ 0) (hp : p ∈ normalizedFactors m)
     {d : { l : M // l ∣ m } ≃ { l : N // l ∣ n }} (hd : ∀ l l', (d l : N) ∣ d l' ↔ (l : M) ∣ l') :
-    multiplicity (d ⟨p, dvd_of_mem_normalizedFactors hp⟩ : N) n = multiplicity p m :=
-  by
+    multiplicity (d ⟨p, dvd_of_mem_normalizedFactors hp⟩ : N) n = multiplicity p m := by
   apply Eq.symm
   suffices
     multiplicity (Associates.mk p) (Associates.mk m) =
