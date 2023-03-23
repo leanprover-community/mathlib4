@@ -33,7 +33,7 @@ namespace IsFractionRing
 
 open IsLocalization
 
-section NumDenom
+section NumDen
 
 variable (A : Type _) [CommRing A] [IsDomain A] [UniqueFactorizationMonoid A]
 
@@ -109,7 +109,7 @@ theorem isUnit_den_of_num_eq_zero {x : K} (h : num A x = 0) : IsUnit (den A x : 
   num_den_reduced A x (h.symm ▸ dvd_zero _) dvd_rfl
 #align is_fraction_ring.is_unit_denom_of_num_eq_zero IsFractionRing.isUnit_den_of_num_eq_zero
 
-end NumDenom
+end NumDen
 
 variable (S)
 
