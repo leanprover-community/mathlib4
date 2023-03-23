@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 
 ! This file was ported from Lean 3 source module data.finset.n_ary
-! leanprover-community/mathlib commit 995b47e555f1b6297c7cf16855f1023e355219fb
+! leanprover-community/mathlib commit 20715f4ac6819ef2453d9e5106ecd086a5dc2a5e
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -30,8 +30,8 @@ open Function Set
 
 namespace Finset
 
-variable {α α' β β' γ γ' δ δ' ε ε' : Type _} [DecidableEq α'] [DecidableEq β'] [DecidableEq γ]
-  [DecidableEq γ'] [DecidableEq δ] [DecidableEq δ'] [DecidableEq ε] [DecidableEq ε']
+variable {α α' β β' γ γ' δ δ' ε ε' ζ ζ' ν : Type _} [DecidableEq α'] [DecidableEq β']
+  [DecidableEq γ] [DecidableEq γ'] [DecidableEq δ] [DecidableEq δ'] [DecidableEq ε] [DecidableEq ε']
   {f f' : α → β → γ} {g g' : α → β → γ → δ} {s s' : Finset α} {t t' : Finset β} {u u' : Finset γ}
   {a a' : α} {b b' : β} {c : γ}
 
@@ -91,12 +91,12 @@ theorem image₂_subset_right (hs : s ⊆ s') : image₂ f s t ⊆ image₂ f s'
   image₂_subset hs Subset.rfl
 #align finset.image₂_subset_right Finset.image₂_subset_right
 
-theorem image_subset_image₂_left (hb : b ∈ t) : (fun a => f a b) '' s ⊆ image₂ f s t :=
-  ball_image_of_ball fun _ ha => mem_image₂_of_mem ha hb
+theorem image_subset_image₂_left (hb : b ∈ t) : s.image (fun a => f a b) ⊆ image₂ f s t :=
+  image_subset_iff.2 fun _ ha => mem_image₂_of_mem ha hb
 #align finset.image_subset_image₂_left Finset.image_subset_image₂_left
 
-theorem image_subset_image₂_right (ha : a ∈ s) : f a '' t ⊆ image₂ f s t :=
-  ball_image_of_ball fun _ => mem_image₂_of_mem ha
+theorem image_subset_image₂_right (ha : a ∈ s) : t.image (f a) ⊆ image₂ f s t :=
+  image_subset_iff.2 fun _ => mem_image₂_of_mem ha
 #align finset.image_subset_image₂_right Finset.image_subset_image₂_right
 
 theorem forall_image₂_iff {p : γ → Prop} :
@@ -374,6 +374,16 @@ theorem image₂_right_comm {γ : Type _} {u : Finset γ} {f : δ → γ → ε}
     push_cast
     exact image2_right_comm h_right_comm
 #align finset.image₂_right_comm Finset.image₂_right_comm
+
+theorem image₂_image₂_image₂_comm {γ δ : Type _} {u : Finset γ} {v : Finset δ} [DecidableEq ζ]
+    [DecidableEq ζ'] [DecidableEq ν] {f : ε → ζ → ν} {g : α → β → ε} {h : γ → δ → ζ}
+    {f' : ε' → ζ' → ν} {g' : α → γ → ε'} {h' : β → δ → ζ'}
+    (h_comm : ∀ a b c d, f (g a b) (h c d) = f' (g' a c) (h' b d)) :
+    image₂ f (image₂ g s t) (image₂ h u v) = image₂ f' (image₂ g' s u) (image₂ h' t v) :=
+  coe_injective <| by
+    push_cast
+    exact image2_image2_image2_comm h_comm
+#align finset.image₂_image₂_image₂_comm Finset.image₂_image₂_image₂_comm
 
 theorem image_image₂_distrib {g : γ → δ} {f' : α' → β' → δ} {g₁ : α → α'} {g₂ : β → β'}
     (h_distrib : ∀ a b, g (f a b) = f' (g₁ a) (g₂ b)) :
