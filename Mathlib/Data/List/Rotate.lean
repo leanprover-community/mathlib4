@@ -273,7 +273,6 @@ theorem head?_rotate {l : List α} {n : ℕ} (h : n < l.length) : head? (l.rotat
   rw [← get?_zero, get?_rotate (n.zero_le.trans_lt h), zero_add, Nat.mod_eq_of_lt h]
 #align list.head'_rotate List.head?_rotate
 
--- porting note: moved down from its original location below `get_rotate` for golfing purposes
 -- porting note: moved down from its original location below `get_rotate` so that the
 -- non-deprecated lemma does not use the deprecated version
 set_option linter.deprecated false in
@@ -292,6 +291,7 @@ theorem nthLe_rotate_one (l : List α) (k : ℕ) (hk : k < (l.rotate 1).length) 
 #align list.nth_le_rotate_one List.nthLe_rotate_one
 
 /-- A variant of `List.nthLe_rotate` useful for rewrites from right to left. -/
+set_option linter.deprecated false in
 theorem nthLe_rotate' (l : List α) (n k : ℕ) (hk : k < l.length) :
     (l.rotate n).nthLe ((l.length - n % l.length + k) % l.length)
         ((Nat.mod_lt _ (k.zero_le.trans_lt hk)).trans_le (length_rotate _ _).ge) =
