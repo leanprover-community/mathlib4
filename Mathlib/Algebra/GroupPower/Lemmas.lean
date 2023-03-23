@@ -733,7 +733,7 @@ end LinearOrderedRing
 
 namespace Int
 
-lemma natAbs_sq (x : ℤ) : ↑(x.natAbs ^ 2) = x ^ 2 := by rw [sq, Int.natAbs_mul_self, sq]
+lemma natAbs_sq (x : ℤ) : (x.natAbs : ℤ) ^ 2 = x ^ 2 := by rw [sq, Int.natAbs_mul_self', sq]
 #align int.nat_abs_sq Int.natAbs_sq
 
 alias natAbs_sq ← natAbs_pow_two
