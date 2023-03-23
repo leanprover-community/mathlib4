@@ -726,14 +726,14 @@ theorem mem_comap {m : M} : m ∈ comap f N' ↔ f m ∈ N' :=
 #align lie_submodule.mem_comap LieSubmodule.mem_comap
 
 theorem comap_incl_eq_top : N₂.comap N.incl = ⊤ ↔ N ≤ N₂ := by
-  simpa only [← LieSubmodule.coe_toSubmodule_eq_iff, LieSubmodule.coeSubmodule_comap,
-    LieSubmodule.incl_coe, LieSubmodule.top_coeSubmodule, Submodule.comap_subtype_eq_top]
+  rw [← LieSubmodule.coe_toSubmodule_eq_iff, LieSubmodule.coeSubmodule_comap, LieSubmodule.incl_coe,
+    LieSubmodule.top_coeSubmodule, Submodule.comap_subtype_eq_top, coeSubmodule_le_coeSubmodule]
 #align lie_submodule.comap_incl_eq_top LieSubmodule.comap_incl_eq_top
 
 theorem comap_incl_eq_bot : N₂.comap N.incl = ⊥ ↔ N ⊓ N₂ = ⊥ := by
-  simpa only [_root_.eq_bot_iff, ← LieSubmodule.coe_toSubmodule_eq_iff,
-    LieSubmodule.coeSubmodule_comap, LieSubmodule.incl_coe, LieSubmodule.bot_coeSubmodule, ←
-    Submodule.disjoint_iff_comap_eq_bot, disjoint_iff]
+  simp only [← LieSubmodule.coe_toSubmodule_eq_iff, LieSubmodule.coeSubmodule_comap,
+    LieSubmodule.incl_coe, LieSubmodule.bot_coeSubmodule, ← Submodule.disjoint_iff_comap_eq_bot,
+    disjoint_iff, inf_coe_toSubmodule]
 #align lie_submodule.comap_incl_eq_bot LieSubmodule.comap_incl_eq_bot
 
 end LieSubmodule
@@ -823,6 +823,7 @@ theorem map_mono : Monotone (map f) := fun I₁ I₂ h ↦ by
 @[mono]
 theorem comap_mono : Monotone (comap f) := fun J₁ J₂ h ↦ by
   rw [← SetLike.coe_subset_coe] at h⊢
+  dsimp only [SetLike.coe]
   exact Set.preimage_mono h
 #align lie_ideal.comap_mono LieIdeal.comap_mono
 
