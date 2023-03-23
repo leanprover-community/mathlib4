@@ -452,7 +452,7 @@ theorem sup_coe_toSubmodule :
     refine' ⟨⁅x, y⁆, N.lie_mem hy, ⁅x, z⁆, N'.lie_mem hz, (lie_add _ _ _).symm⟩
   refine' le_antisymm (sInf_le ⟨{ (N ⊔ N' : Submodule R M) with lie_mem := @aux }, _⟩) _
   · simp only [exists_prop, and_true_iff, mem_setOf_eq, eq_self_iff_true, coe_toSubmodule_mk, ←
-      coeSubmodule_le_coeSubmodule, and_self_iff, le_sup_left, le_sup_right]
+      coeSubmodule_le_coeSubmodule, and_self_iff, le_sup_left, le_sup_right, Submodule.eta]
   · simp
 #align lie_submodule.sup_coe_to_submodule LieSubmodule.sup_coe_toSubmodule
 
