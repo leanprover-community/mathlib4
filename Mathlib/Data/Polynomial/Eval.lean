@@ -556,6 +556,11 @@ theorem C_comp : (C a).comp p = C a :=
 theorem nat_cast_comp {n : ℕ} : (n : R[X]).comp p = n := by rw [← C_eq_nat_cast, C_comp]
 #align polynomial.nat_cast_comp Polynomial.nat_cast_comp
 
+--Porting note: new theorem
+@[simp]
+theorem ofNat_comp (n : ℕ) [n.AtLeastTwo] : (OfNat.ofNat n : R[X]).comp p = n :=
+  nat_cast_comp
+
 @[simp]
 theorem comp_zero : p.comp (0 : R[X]) = C (p.eval 0) := by rw [← C_0, comp_C]
 #align polynomial.comp_zero Polynomial.comp_zero
@@ -756,6 +761,11 @@ theorem coe_mapRingHom (f : R →+* S) : ⇑(mapRingHom f) = map f :=
 protected theorem map_nat_cast (n : ℕ) : (n : R[X]).map f = n :=
   map_natCast (mapRingHom f) n
 #align polynomial.map_nat_cast Polynomial.map_nat_cast
+
+--Porting note: new theorem
+@[simp]
+protected theorem map_ofNat (n : ℕ) [n.AtLeastTwo] : (OfNat.ofNat n : R[X]).map f = OfNat.ofNat n :=
+  show (n : R[X]).map f = n by rw [Polynomial.map_nat_cast]
 
 set_option linter.deprecated false in
 @[simp]

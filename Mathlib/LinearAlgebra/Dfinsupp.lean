@@ -295,7 +295,7 @@ section Basis
 Note that while this is stated for `Dfinsupp` not `direct_sum`, the types are defeq. -/
 noncomputable def basis {η : ι → Type _} (b : ∀ i, Basis (η i) R (M i)) :
     Basis (Σi, η i) R (Π₀ i, M i) :=
-  Basis.of_repr
+  .ofRepr
     ((mapRange.linearEquiv fun i => (b i).repr).trans (sigmaFinsuppLequivDfinsupp R).symm)
 #align dfinsupp.basis Dfinsupp.basis
 

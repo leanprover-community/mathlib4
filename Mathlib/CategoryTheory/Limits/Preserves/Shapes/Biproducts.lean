@@ -161,7 +161,7 @@ def preservesBiproductsShrink (F : C ⥤ D) [PreservesZeroMorphisms F]
 #align category_theory.limits.preserves_biproducts_shrink CategoryTheory.Limits.preservesBiproductsShrink
 
 instance (priority := 100) preservesFiniteBiproductsOfPreservesBiproducts (F : C ⥤ D)
-    [PreservesZeroMorphisms F] [PreservesBiproducts.{w₁} F] : PreservesFiniteBiproducts F where 
+    [PreservesZeroMorphisms F] [PreservesBiproducts.{w₁} F] : PreservesFiniteBiproducts F where
   preserves {J} _ := by letI := preservesBiproductsShrink.{0} F; infer_instance
 #align category_theory.limits.preserves_finite_biproducts_of_preserves_biproducts CategoryTheory.Limits.preservesFiniteBiproductsOfPreservesBiproducts
 
@@ -171,7 +171,7 @@ class PreservesBinaryBiproduct (X Y : C) (F : C ⥤ D) [PreservesZeroMorphisms F
   preserves : ∀ {b : BinaryBicone X Y}, b.IsBilimit → (F.mapBinaryBicone b).IsBilimit
 #align category_theory.limits.preserves_binary_biproduct CategoryTheory.Limits.PreservesBinaryBiproduct
 
-attribute [inherit_doc PreservesBinaryBiproduct] PreservesBinaryBiproduct.preserves 
+attribute [inherit_doc PreservesBinaryBiproduct] PreservesBinaryBiproduct.preserves
 
 /-- A functor `F` preserves binary biproducts of `X` and `Y` if `F` maps every bilimit bicone over
     `X` and `Y` to a bilimit bicone over `F.obj X` and `F.obj Y`. -/
@@ -187,7 +187,7 @@ class PreservesBinaryBiproducts (F : C ⥤ D) [PreservesZeroMorphisms F] where
   preserves : ∀ {X Y : C}, PreservesBinaryBiproduct X Y F := by infer_instance
 #align category_theory.limits.preserves_binary_biproducts CategoryTheory.Limits.PreservesBinaryBiproducts
 
-attribute [inherit_doc PreservesBinaryBiproducts] PreservesBinaryBiproducts.preserves 
+attribute [inherit_doc PreservesBinaryBiproducts] PreservesBinaryBiproducts.preserves
 
 /-- A functor that preserves biproducts of a pair preserves binary biproducts. -/
 def preservesBinaryBiproductOfPreservesBiproduct (F : C ⥤ D) [PreservesZeroMorphisms F] (X Y : C)
@@ -209,7 +209,7 @@ def preservesBinaryBiproductOfPreservesBiproduct (F : C ⥤ D) [PreservesZeroMor
 
 /-- A functor that preserves biproducts of a pair preserves binary biproducts. -/
 def preservesBinaryBiproductsOfPreservesBiproducts (F : C ⥤ D) [PreservesZeroMorphisms F]
-    [PreservesBiproductsOfShape WalkingPair F] : PreservesBinaryBiproducts F where 
+    [PreservesBiproductsOfShape WalkingPair F] : PreservesBinaryBiproducts F where
   preserves {X} Y := preservesBinaryBiproductOfPreservesBiproduct F X Y
 #align category_theory.limits.preserves_binary_biproducts_of_preserves_biproducts CategoryTheory.Limits.preservesBinaryBiproductsOfPreservesBiproducts
 
@@ -267,7 +267,7 @@ theorem biproductComparison'_comp_biproductComparison :
 
 /-- `biproduct_comparison F f` is a split epimorphism. -/
 @[simps]
-def splitEpiBiproductComparison : SplitEpi (biproductComparison F f) where 
+def splitEpiBiproductComparison : SplitEpi (biproductComparison F f) where
   section_ := biproductComparison' F f
   id := by aesop
 #align category_theory.functor.split_epi_biproduct_comparison CategoryTheory.Functor.splitEpiBiproductComparison
@@ -277,7 +277,7 @@ instance : IsSplitEpi (biproductComparison F f) :=
 
 /-- `biproduct_comparison' F f` is a split monomorphism. -/
 @[simps]
-def splitMonoBiproductComparison' : SplitMono (biproductComparison' F f) where 
+def splitMonoBiproductComparison' : SplitMono (biproductComparison' F f) where
   retraction := biproductComparison F f
   id := by aesop
 #align category_theory.functor.split_mono_biproduct_comparison' CategoryTheory.Functor.splitMonoBiproductComparison'
@@ -303,12 +303,12 @@ def mapBiproduct : F.obj (⨁ f) ≅ ⨁ F.obj ∘ f :=
 #align category_theory.functor.map_biproduct CategoryTheory.Functor.mapBiproduct
 
 theorem mapBiproduct_hom :
-    haveI : HasBiproduct fun j => F.obj (f j) := hasBiproduct_of_preserves F f 
+    haveI : HasBiproduct fun j => F.obj (f j) := hasBiproduct_of_preserves F f
     (mapBiproduct F f).hom = biproduct.lift fun j => F.map (biproduct.π f j) := rfl
 #align category_theory.functor.map_biproduct_hom CategoryTheory.Functor.mapBiproduct_hom
 
 theorem mapBiproduct_inv :
-    haveI : HasBiproduct fun j => F.obj (f j) := hasBiproduct_of_preserves F f 
+    haveI : HasBiproduct fun j => F.obj (f j) := hasBiproduct_of_preserves F f
     (mapBiproduct F f).inv = biproduct.desc fun j => F.map (biproduct.ι f j) := rfl
 #align category_theory.functor.map_biproduct_inv CategoryTheory.Functor.mapBiproduct_inv
 
@@ -366,7 +366,7 @@ theorem biprodComparison'_comp_biprodComparison :
 @[simps]
 def splitEpiBiprodComparison : SplitEpi (biprodComparison F X Y) where
   section_ := biprodComparison' F X Y
-  id := by aesop 
+  id := by aesop
 #align category_theory.functor.split_epi_biprod_comparison CategoryTheory.Functor.splitEpiBiprodComparison
 
 instance : IsSplitEpi (biprodComparison F X Y) :=
@@ -421,10 +421,10 @@ theorem biproduct.map_lift_mapBiprod (g : ∀ j, W ⟶ f j) :
     -- Porting note: twice we need haveI to tell Lean about hasBiproduct_of_preserves F f
     haveI : HasBiproduct fun j => F.obj (f j) := hasBiproduct_of_preserves F f
     F.map (biproduct.lift g) ≫ (F.mapBiproduct f).hom = biproduct.lift fun j => F.map (g j) := by
-  apply biproduct.hom_ext; intro j' 
+  apply biproduct.hom_ext; intro j'
   dsimp [Function.comp]
   haveI : HasBiproduct fun j => F.obj (f j) := hasBiproduct_of_preserves F f
-  simp only [mapBiproduct_hom, Category.assoc, biproduct.lift_π, ← F.map_comp] 
+  simp only [mapBiproduct_hom, Category.assoc, biproduct.lift_π, ← F.map_comp]
 #align category_theory.limits.biproduct.map_lift_map_biprod CategoryTheory.Limits.biproduct.map_lift_mapBiprod
 
 theorem biproduct.mapBiproduct_inv_map_desc (g : ∀ j, f j ⟶ W) :
@@ -475,4 +475,3 @@ end Limits
 end HasZeroMorphisms
 
 end CategoryTheory
-
