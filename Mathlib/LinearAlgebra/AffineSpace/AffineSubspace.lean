@@ -17,28 +17,21 @@ This file defines affine subspaces (over modules) and the affine span of a set o
 
 ## Main definitions
 
-* `AffineSubspace k P` is the type of affine subspaces.  Unlike
-  affine spaces, affine subspaces are allowed to be empty, and lemmas
-  that do not apply to empty affine subspaces have `Nonempty`
-  hypotheses.  There is a `CompleteLattice` structure on affine
-  subspaces.
-* `AffineSubspace.direction` gives the `Submodule` spanned by the
-  pairwise differences of points in an `AffineSubspace`.  There are
-  various lemmas relating to the set of vectors in the `direction`,
-  and relating the lattice structure on affine subspaces to that on
-  their directions.
+* `AffineSubspace k P` is the type of affine subspaces. Unlike affine spaces, affine subspaces are
+  allowed to be empty, and lemmas that do not apply to empty affine subspaces have `Nonempty`
+  hypotheses. There is a `CompleteLattice` structure on affine subspaces.
+* `AffineSubspace.direction` gives the `Submodule` spanned by the pairwise differences of points
+  in an `AffineSubspace`. There are various lemmas relating to the set of vectors in the
+  `direction`, and relating the lattice structure on affine subspaces to that on their directions.
 * `AffineSubspace.parallel`, notation `∥`, gives the property of two affine subspaces being
   parallel (one being a translate of the other).
-* `affineSpan` gives the affine subspace spanned by a set of points,
-  with `vectorSpan` giving its direction.  `affineSpan` is defined
-  in terms of `spanPoints`, which gives an explicit description of
-  the points contained in the affine span; `spanPoints` itself should
-  generally only be used when that description is required, with
-  `affineSpan` being the main definition for other purposes.  Two
-  other descriptions of the affine span are proved equivalent: it is
-  the `Inf` of affine subspaces containing the points, and (if
-  `[Nontrivial k]`) it contains exactly those points that are affine
-  combinations of points in the given set.
+* `affineSpan` gives the affine subspace spanned by a set of points, with `vectorSpan` giving its
+  direction. The `affineSpan` is defined in terms of `spanPoints`, which gives an explicit
+  description of the points contained in the affine span; `spanPoints` itself should generally only
+  be used when that description is required, with `affineSpan` being the main definition for other
+  purposes. Two other descriptions of the affine span are proved equivalent: it is the `infₛ` of
+  affine subspaces containing the points, and (if `[Nontrivial k]`) it contains exactly those points
+  that are affine combinations of points in the given set.
 
 ## Implementation notes
 
@@ -46,17 +39,14 @@ This file defines affine subspaces (over modules) and the affine span of a set o
 from `P`) in most cases. As for modules, `k` is an explicit argument rather than implied by `P` or
 `V`.
 
-This file only provides purely algebraic definitions and results.
-Those depending on analysis or topology are defined elsewhere; see
-`Analysis.NormedSpace.AddTorsor` and `Topology.Algebra.Affine`.
+This file only provides purely algebraic definitions and results. Those depending on analysis or
+topology are defined elsewhere; see `Analysis.NormedSpace.AddTorsor` and `Topology.Algebra.Affine`.
 
 ## References
 
 * https://en.wikipedia.org/wiki/Affine_space
 * https://en.wikipedia.org/wiki/Principal_homogeneous_space
 -/
-
-#exit
 
 noncomputable section
 
@@ -70,25 +60,24 @@ variable (k : Type _) {V : Type _} {P : Type _} [Ring k] [AddCommGroup V] [Modul
 
 variable [AffineSpace V P]
 
-/-- The submodule spanning the differences of a (possibly empty) set
-of points. -/
+/-- The submodule spanning the differences of a (possibly empty) set of points. -/
 def vectorSpan (s : Set P) : Submodule k V :=
   Submodule.span k (s -ᵥ s)
 #align vector_span vectorSpan
 
-/-- The definition of `vector_span`, for rewriting. -/
+/-- The definition of `vectorSpan`, for rewriting. -/
 theorem vectorSpan_def (s : Set P) : vectorSpan k s = Submodule.span k (s -ᵥ s) :=
   rfl
 #align vector_span_def vectorSpan_def
 
-/-- `vector_span` is monotone. -/
+/-- `vectorSpan` is monotone. -/
 theorem vectorSpan_mono {s₁ s₂ : Set P} (h : s₁ ⊆ s₂) : vectorSpan k s₁ ≤ vectorSpan k s₂ :=
   Submodule.span_mono (vsub_self_mono h)
 #align vector_span_mono vectorSpan_mono
 
 variable (P)
 
-/-- The `vector_span` of the empty set is `⊥`. -/
+/-- The `vectorSpan` of the empty set is `⊥`. -/
 @[simp]
 theorem vectorSpan_empty : vectorSpan k (∅ : Set P) = (⊥ : Submodule k V) := by
   rw [vectorSpan_def, vsub_empty, Submodule.span_empty]
@@ -96,24 +85,24 @@ theorem vectorSpan_empty : vectorSpan k (∅ : Set P) = (⊥ : Submodule k V) :=
 
 variable {P}
 
-/-- The `vector_span` of a single point is `⊥`. -/
+/-- The `vectorSpan` of a single point is `⊥`. -/
 @[simp]
 theorem vectorSpan_singleton (p : P) : vectorSpan k ({p} : Set P) = ⊥ := by simp [vectorSpan_def]
 #align vector_span_singleton vectorSpan_singleton
 
-/-- The `s -ᵥ s` lies within the `vector_span k s`. -/
+/-- The `s -ᵥ s` lies within the `vectorSpan k s`. -/
 theorem vsub_set_subset_vectorSpan (s : Set P) : s -ᵥ s ⊆ ↑(vectorSpan k s) :=
   Submodule.subset_span
 #align vsub_set_subset_vector_span vsub_set_subset_vectorSpan
 
-/-- Each pairwise difference is in the `vector_span`. -/
+/-- Each pairwise difference is in the `vectorSpan`. -/
 theorem vsub_mem_vectorSpan {s : Set P} {p1 p2 : P} (hp1 : p1 ∈ s) (hp2 : p2 ∈ s) :
     p1 -ᵥ p2 ∈ vectorSpan k s :=
   vsub_set_subset_vectorSpan k s (vsub_mem_vsub hp1 hp2)
 #align vsub_mem_vector_span vsub_mem_vectorSpan
 
-/-- The points in the affine span of a (possibly empty) set of
-points. Use `affine_span` instead to get an `affine_subspace k P`. -/
+/-- The points in the affine span of a (possibly empty) set of points. Use `affineSpan` instead to
+get an `AffineSubspace k P`. -/
 def spanPoints (s : Set P) : Set P :=
   { p | ∃ p1 ∈ s, ∃ v ∈ vectorSpan k s, p = v +ᵥ p1 }
 #align span_points spanPoints
@@ -123,12 +112,11 @@ theorem mem_spanPoints (p : P) (s : Set P) : p ∈ s → p ∈ spanPoints k s
   | hp => ⟨p, hp, 0, Submodule.zero_mem _, (zero_vadd V p).symm⟩
 #align mem_span_points mem_spanPoints
 
-/-- A set is contained in its `span_points`. -/
+/-- A set is contained in its `spanPoints`. -/
 theorem subset_spanPoints (s : Set P) : s ⊆ spanPoints k s := fun p => mem_spanPoints k p s
 #align subset_span_points subset_spanPoints
 
-/-- The `span_points` of a set is nonempty if and only if that set
-is. -/
+/-- The `spanPoints` of a set is nonempty if and only if that set is. -/
 @[simp]
 theorem spanPoints_nonempty (s : Set P) : (spanPoints k s).Nonempty ↔ s.Nonempty := by
   constructor
@@ -139,8 +127,8 @@ theorem spanPoints_nonempty (s : Set P) : (spanPoints k s).Nonempty ↔ s.Nonemp
   · exact fun h => h.mono (subset_spanPoints _ _)
 #align span_points_nonempty spanPoints_nonempty
 
-/-- Adding a point in the affine span and a vector in the spanning
-submodule produces a point in the affine span. -/
+/-- Adding a point in the affine span and a vector in the spanning submodule produces a point in the
+affine span. -/
 theorem vadd_mem_spanPoints_of_mem_spanPoints_of_mem_vectorSpan {s : Set P} {p : P} {v : V}
     (hp : p ∈ spanPoints k s) (hv : v ∈ vectorSpan k s) : v +ᵥ p ∈ spanPoints k s := by
   rcases hp with ⟨p2, ⟨hp2, ⟨v2, ⟨hv2, hv2p⟩⟩⟩⟩
@@ -148,8 +136,7 @@ theorem vadd_mem_spanPoints_of_mem_spanPoints_of_mem_vectorSpan {s : Set P} {p :
   exact ⟨p2, hp2, v + v2, (vectorSpan k s).add_mem hv hv2, rfl⟩
 #align vadd_mem_span_points_of_mem_span_points_of_mem_vector_span vadd_mem_spanPoints_of_mem_spanPoints_of_mem_vectorSpan
 
-/-- Subtracting two points in the affine span produces a vector in the
-spanning submodule. -/
+/-- Subtracting two points in the affine span produces a vector in the spanning submodule. -/
 theorem vsub_mem_vectorSpan_of_mem_spanPoints_of_mem_spanPoints {s : Set P} {p1 p2 : P}
     (hp1 : p1 ∈ spanPoints k s) (hp2 : p2 ∈ spanPoints k s) : p1 -ᵥ p2 ∈ vectorSpan k s := by
   rcases hp1 with ⟨p1a, ⟨hp1a, ⟨v1, ⟨hv1, hv1p⟩⟩⟩⟩
@@ -167,9 +154,8 @@ theorem vsub_mem_vectorSpan_of_mem_spanPoints_of_mem_spanPoints {s : Set P} {p1 
 
 end
 
-/-- An `affine_subspace k P` is a subset of an `affine_space V P`
-that, if not empty, has an affine space structure induced by a
-corresponding subspace of the `module k V`. -/
+/-- An `AffineSubspace k P` is a subset of an `AffineSpace V P` that, if not empty, has an affine
+space structure induced by a corresponding subspace of the `Module k V`. -/
 structure AffineSubspace (k : Type _) {V : Type _} (P : Type _) [Ring k] [AddCommGroup V]
   [Module k V] [AffineSpace V P] where
   carrier : Set P
@@ -182,7 +168,7 @@ namespace Submodule
 
 variable {k V : Type _} [Ring k] [AddCommGroup V] [Module k V]
 
-/-- Reinterpret `p : submodule k V` as an `affine_subspace k V`. -/
+/-- Reinterpret `p : Submodule k V` as an `AffineSubspace k V`. -/
 def toAffineSubspace (p : Submodule k V) : AffineSubspace k V
     where
   carrier := p
@@ -200,8 +186,8 @@ instance : SetLike (AffineSubspace k P) P where
   coe := carrier
   coe_injective' p q _ := by cases p; cases q; congr
 
-/-- A point is in an affine subspace coerced to a set if and only if
-it is in that affine subspace. -/
+/-- A point is in an affine subspace coerced to a set if and only if it is in that affine
+subspace. -/
 @[simp]
 theorem mem_coe (p : P) (s : AffineSubspace k P) : p ∈ (s : Set P) ↔ p ∈ s :=
   Iff.rfl
@@ -218,16 +204,14 @@ def direction (s : AffineSubspace k P) : Submodule k V :=
   vectorSpan k (s : Set P)
 #align affine_subspace.direction AffineSubspace.direction
 
-/-- The direction equals the `vector_span`. -/
+/-- The direction equals the `vectorSpan`. -/
 theorem direction_eq_vectorSpan (s : AffineSubspace k P) : s.direction = vectorSpan k (s : Set P) :=
   rfl
 #align affine_subspace.direction_eq_vector_span AffineSubspace.direction_eq_vectorSpan
 
-/-- Alternative definition of the direction when the affine subspace
-is nonempty.  This is defined so that the order on submodules (as used
-in the definition of `submodule.span`) can be used in the proof of
-`coe_direction_eq_vsub_set`, and is not intended to be used beyond
-that proof. -/
+/-- Alternative definition of the direction when the affine subspace is nonempty. This is defined so
+that the order on submodules (as used in the definition of `Submodule.span`) can be used in the
+proof of `coe_direction_eq_vsub_set`, and is not intended to be used beyond that proof. -/
 def directionOfNonempty {s : AffineSubspace k P} (h : (s : Set P).Nonempty) : Submodule k V
     where
   carrier := (s : Set P) -ᵥ s
@@ -250,8 +234,7 @@ def directionOfNonempty {s : AffineSubspace k P} (h : (s : Set P).Nonempty) : Su
     exact s.smul_vsub_vadd_mem c hp1 hp2 hp2
 #align affine_subspace.direction_of_nonempty AffineSubspace.directionOfNonempty
 
-/-- `direction_of_nonempty` gives the same submodule as
-`direction`. -/
+/-- `direction_of_nonempty` gives the same submodule as `direction`. -/
 theorem directionOfNonempty_eq_direction {s : AffineSubspace k P} (h : (s : Set P).Nonempty) :
     directionOfNonempty h = s.direction := by
   refine le_antisymm ?_ (Submodule.span_le.2 Set.Subset.rfl)
@@ -260,15 +243,14 @@ theorem directionOfNonempty_eq_direction {s : AffineSubspace k P} (h : (s : Set 
   exact (vsub_set_subset_vectorSpan k _)
 #align affine_subspace.direction_of_nonempty_eq_direction AffineSubspace.directionOfNonempty_eq_direction
 
-/-- The set of vectors in the direction of a nonempty affine subspace
-is given by `vsub_set`. -/
+/-- The set of vectors in the direction of a nonempty affine subspace is given by `vsub_set`. -/
 theorem coe_direction_eq_vsub_set {s : AffineSubspace k P} (h : (s : Set P).Nonempty) :
     (s.direction : Set V) = (s : Set P) -ᵥ s :=
   directionOfNonempty_eq_direction h ▸ rfl
 #align affine_subspace.coe_direction_eq_vsub_set AffineSubspace.coe_direction_eq_vsub_set
 
-/-- A vector is in the direction of a nonempty affine subspace if and
-only if it is the subtraction of two vectors in the subspace. -/
+/-- A vector is in the direction of a nonempty affine subspace if and only if it is the subtraction
+of two vectors in the subspace. -/
 theorem mem_direction_iff_eq_vsub {s : AffineSubspace k P} (h : (s : Set P).Nonempty) (v : V) :
     v ∈ s.direction ↔ ∃ p1 ∈ s, ∃ p2 ∈ s, v = p1 -ᵥ p2 := by
   rw [← SetLike.mem_coe, coe_direction_eq_vsub_set h]
@@ -277,8 +259,8 @@ theorem mem_direction_iff_eq_vsub {s : AffineSubspace k P} (h : (s : Set P).None
       ⟨p1, p2, hp1, hp2, hv.symm⟩⟩
 #align affine_subspace.mem_direction_iff_eq_vsub AffineSubspace.mem_direction_iff_eq_vsub
 
-/-- Adding a vector in the direction to a point in the subspace
-produces a point in the subspace. -/
+/-- Adding a vector in the direction to a point in the subspace produces a point in the
+subspace. -/
 theorem vadd_mem_of_mem_direction {s : AffineSubspace k P} {v : V} (hv : v ∈ s.direction) {p : P}
     (hp : p ∈ s) : v +ᵥ p ∈ s := by
   rw [mem_direction_iff_eq_vsub ⟨p, hp⟩] at hv
@@ -289,15 +271,14 @@ theorem vadd_mem_of_mem_direction {s : AffineSubspace k P} {v : V} (hv : v ∈ s
   exact s.mem_coe k P _
 #align affine_subspace.vadd_mem_of_mem_direction AffineSubspace.vadd_mem_of_mem_direction
 
-/-- Subtracting two points in the subspace produces a vector in the
-direction. -/
+/-- Subtracting two points in the subspace produces a vector in the direction. -/
 theorem vsub_mem_direction {s : AffineSubspace k P} {p1 p2 : P} (hp1 : p1 ∈ s) (hp2 : p2 ∈ s) :
     p1 -ᵥ p2 ∈ s.direction :=
   vsub_mem_vectorSpan k hp1 hp2
 #align affine_subspace.vsub_mem_direction AffineSubspace.vsub_mem_direction
 
-/-- Adding a vector to a point in a subspace produces a point in the
-subspace if and only if the vector is in the direction. -/
+/-- Adding a vector to a point in a subspace produces a point in the subspace if and only if the
+vector is in the direction. -/
 theorem vadd_mem_iff_mem_direction {s : AffineSubspace k P} (v : V) {p : P} (hp : p ∈ s) :
     v +ᵥ p ∈ s ↔ v ∈ s.direction :=
   ⟨fun h => by simpa using vsub_mem_direction h hp, fun h => vadd_mem_of_mem_direction h hp⟩
@@ -312,9 +293,8 @@ theorem vadd_mem_iff_mem_of_mem_direction {s : AffineSubspace k P} {v : V} (hv :
   simp
 #align affine_subspace.vadd_mem_iff_mem_of_mem_direction AffineSubspace.vadd_mem_iff_mem_of_mem_direction
 
-/-- Given a point in an affine subspace, the set of vectors in its
-direction equals the set of vectors subtracting that point on the
-right. -/
+/-- Given a point in an affine subspace, the set of vectors in its direction equals the set of
+vectors subtracting that point on the right. -/
 theorem coe_direction_eq_vsub_set_right {s : AffineSubspace k P} {p : P} (hp : p ∈ s) :
     (s.direction : Set V) = (· -ᵥ p) '' s := by
   rw [coe_direction_eq_vsub_set ⟨p, hp⟩]
@@ -325,9 +305,8 @@ theorem coe_direction_eq_vsub_set_right {s : AffineSubspace k P} {p : P} (hp : p
     exact ⟨p2, p, hp2, hp, rfl⟩
 #align affine_subspace.coe_direction_eq_vsub_set_right AffineSubspace.coe_direction_eq_vsub_set_right
 
-/-- Given a point in an affine subspace, the set of vectors in its
-direction equals the set of vectors subtracting that point on the
-left. -/
+/-- Given a point in an affine subspace, the set of vectors in its direction equals the set of
+vectors subtracting that point on the left. -/
 theorem coe_direction_eq_vsub_set_left {s : AffineSubspace k P} {p : P} (hp : p ∈ s) :
     (s.direction : Set V) = (· -ᵥ ·) p '' s := by
   ext v
@@ -339,34 +318,32 @@ theorem coe_direction_eq_vsub_set_left {s : AffineSubspace k P} {p : P} (hp : p 
     rw [← neg_vsub_eq_vsub_rev, neg_inj]
 #align affine_subspace.coe_direction_eq_vsub_set_left AffineSubspace.coe_direction_eq_vsub_set_left
 
-/-- Given a point in an affine subspace, a vector is in its direction
-if and only if it results from subtracting that point on the right. -/
+/-- Given a point in an affine subspace, a vector is in its direction if and only if it results from
+subtracting that point on the right. -/
 theorem mem_direction_iff_eq_vsub_right {s : AffineSubspace k P} {p : P} (hp : p ∈ s) (v : V) :
     v ∈ s.direction ↔ ∃ p2 ∈ s, v = p2 -ᵥ p := by
   rw [← SetLike.mem_coe, coe_direction_eq_vsub_set_right hp]
   exact ⟨fun ⟨p2, hp2, hv⟩ => ⟨p2, hp2, hv.symm⟩, fun ⟨p2, hp2, hv⟩ => ⟨p2, hp2, hv.symm⟩⟩
 #align affine_subspace.mem_direction_iff_eq_vsub_right AffineSubspace.mem_direction_iff_eq_vsub_right
 
-/-- Given a point in an affine subspace, a vector is in its direction
-if and only if it results from subtracting that point on the left. -/
+/-- Given a point in an affine subspace, a vector is in its direction if and only if it results from
+subtracting that point on the left. -/
 theorem mem_direction_iff_eq_vsub_left {s : AffineSubspace k P} {p : P} (hp : p ∈ s) (v : V) :
     v ∈ s.direction ↔ ∃ p2 ∈ s, v = p -ᵥ p2 := by
   rw [← SetLike.mem_coe, coe_direction_eq_vsub_set_left hp]
   exact ⟨fun ⟨p2, hp2, hv⟩ => ⟨p2, hp2, hv.symm⟩, fun ⟨p2, hp2, hv⟩ => ⟨p2, hp2, hv.symm⟩⟩
 #align affine_subspace.mem_direction_iff_eq_vsub_left AffineSubspace.mem_direction_iff_eq_vsub_left
 
-/-- Given a point in an affine subspace, a result of subtracting that
-point on the right is in the direction if and only if the other point
-is in the subspace. -/
+/-- Given a point in an affine subspace, a result of subtracting that point on the right is in the
+direction if and only if the other point is in the subspace. -/
 theorem vsub_right_mem_direction_iff_mem {s : AffineSubspace k P} {p : P} (hp : p ∈ s) (p2 : P) :
     p2 -ᵥ p ∈ s.direction ↔ p2 ∈ s := by
   rw [mem_direction_iff_eq_vsub_right hp]
   simp
 #align affine_subspace.vsub_right_mem_direction_iff_mem AffineSubspace.vsub_right_mem_direction_iff_mem
 
-/-- Given a point in an affine subspace, a result of subtracting that
-point on the left is in the direction if and only if the other point
-is in the subspace. -/
+/-- Given a point in an affine subspace, a result of subtracting that point on the left is in the
+direction if and only if the other point is in the subspace. -/
 theorem vsub_left_mem_direction_iff_mem {s : AffineSubspace k P} {p : P} (hp : p ∈ s) (p2 : P) :
     p -ᵥ p2 ∈ s.direction ↔ p2 ∈ s := by
   rw [mem_direction_iff_eq_vsub_left hp]
@@ -388,8 +365,7 @@ theorem ext_iff (s₁ s₂ : AffineSubspace k P) : (s₁ : Set P) = s₂ ↔ s�
   SetLike.ext'_iff.symm
 #align affine_subspace.ext_iff AffineSubspace.ext_iff
 
-/-- Two affine subspaces with the same direction and nonempty
-intersection are equal. -/
+/-- Two affine subspaces with the same direction and nonempty intersection are equal. -/
 theorem ext_of_direction_eq {s1 s2 : AffineSubspace k P} (hd : s1.direction = s2.direction)
     (hn : ((s1 : Set P) ∩ s2).Nonempty) : s1 = s2 := by
   ext p
@@ -409,7 +385,7 @@ theorem ext_of_direction_eq {s1 s2 : AffineSubspace k P} (hd : s1.direction = s2
 #align affine_subspace.ext_of_direction_eq AffineSubspace.ext_of_direction_eq
 
 -- See note [reducible non instances]
-/-- This is not an instance because it loops with `add_torsor.nonempty`. -/
+/-- This is not an instance because it loops with `AddTorsor.nonempty`. -/
 @[reducible]
 def toAddTorsor (s : AffineSubspace k P) [Nonempty s] : AddTorsor s.direction s where
   vadd a b := ⟨(a : V) +ᵥ (b : P), vadd_mem_of_mem_direction a.2 b.2⟩
@@ -468,8 +444,8 @@ theorem injective_subtype (s : AffineSubspace k P) [Nonempty s] : Function.Injec
   Subtype.coe_injective
 #align affine_subspace.injective_subtype AffineSubspace.injective_subtype
 
-/-- Two affine subspaces with nonempty intersection are equal if and
-only if their directions are equal. -/
+/-- Two affine subspaces with nonempty intersection are equal if and only if their directions are
+equal. -/
 theorem eq_iff_direction_eq_of_mem {s₁ s₂ : AffineSubspace k P} {p : P} (h₁ : p ∈ s₁)
     (h₂ : p ∈ s₂) : s₁ = s₂ ↔ s₁.direction = s₂.direction :=
   ⟨fun h => h ▸ rfl, fun h => ext_of_direction_eq h ⟨p, h₁, h₂⟩⟩
@@ -488,27 +464,24 @@ def mk' (p : P) (direction : Submodule k V) : AffineSubspace k P
     simp [hp1, hp2, hp3, vadd_vadd]
 #align affine_subspace.mk' AffineSubspace.mk'
 
-/-- An affine subspace constructed from a point and a direction contains
-that point. -/
+/-- An affine subspace constructed from a point and a direction contains that point. -/
 theorem self_mem_mk' (p : P) (direction : Submodule k V) : p ∈ mk' p direction :=
   ⟨0, ⟨direction.zero_mem, (zero_vadd _ _).symm⟩⟩
 #align affine_subspace.self_mem_mk' AffineSubspace.self_mem_mk'
 
-/-- An affine subspace constructed from a point and a direction contains
-the result of adding a vector in that direction to that point. -/
+/-- An affine subspace constructed from a point and a direction contains the result of adding a
+vector in that direction to that point. -/
 theorem vadd_mem_mk' {v : V} (p : P) {direction : Submodule k V} (hv : v ∈ direction) :
     v +ᵥ p ∈ mk' p direction :=
   ⟨v, hv, rfl⟩
 #align affine_subspace.vadd_mem_mk' AffineSubspace.vadd_mem_mk'
 
-/-- An affine subspace constructed from a point and a direction is
-nonempty. -/
+/-- An affine subspace constructed from a point and a direction is nonempty. -/
 theorem mk'_nonempty (p : P) (direction : Submodule k V) : (mk' p direction : Set P).Nonempty :=
   ⟨p, self_mem_mk' p direction⟩
 #align affine_subspace.mk'_nonempty AffineSubspace.mk'_nonempty
 
-/-- The direction of an affine subspace constructed from a point and a
-direction. -/
+/-- The direction of an affine subspace constructed from a point and a direction. -/
 @[simp]
 theorem direction_mk' (p : P) (direction : Submodule k V) :
     (mk' p direction).direction = direction := by
@@ -532,15 +505,14 @@ theorem mem_mk'_iff_vsub_mem {p₁ p₂ : P} {direction : Submodule k V} :
     exact vadd_mem_mk' p₁ h
 #align affine_subspace.mem_mk'_iff_vsub_mem AffineSubspace.mem_mk'_iff_vsub_mem
 
-/-- Constructing an affine subspace from a point in a subspace and
-that subspace's direction yields the original subspace. -/
+/-- Constructing an affine subspace from a point in a subspace and that subspace's direction
+yields the original subspace. -/
 @[simp]
 theorem mk'_eq {s : AffineSubspace k P} {p : P} (hp : p ∈ s) : mk' p s.direction = s :=
   ext_of_direction_eq (direction_mk' p s.direction) ⟨p, Set.mem_inter (self_mem_mk' _ _) hp⟩
 #align affine_subspace.mk'_eq AffineSubspace.mk'_eq
 
-/-- If an affine subspace contains a set of points, it contains the
-`span_points` of that set. -/
+/-- If an affine subspace contains a set of points, it contains the `spanPoints` of that set. -/
 theorem spanPoints_subset_coe_of_subset_coe {s : Set P} {s1 : AffineSubspace k P} (h : s ⊆ s1) :
     spanPoints k s ⊆ s1 := by
   rintro p ⟨p1, hp1, v, hv, hp⟩
@@ -567,9 +539,8 @@ section affineSpan
 variable (k : Type _) {V : Type _} {P : Type _} [Ring k] [AddCommGroup V] [Module k V]
   [AffineSpace V P]
 
-/-- The affine span of a set of points is the smallest affine subspace
-containing those points. (Actually defined here in terms of spans in
-modules.) -/
+/-- The affine span of a set of points is the smallest affine subspace containing those points.
+(Actually defined here in terms of spans in modules.) -/
 def affineSpan (s : Set P) : AffineSubspace k P
     where
   carrier := spanPoints k s
@@ -656,45 +627,41 @@ instance : CompleteLattice (AffineSubspace k P) :=
 instance : Inhabited (AffineSubspace k P) :=
   ⟨⊤⟩
 
-/-- The `≤` order on subspaces is the same as that on the corresponding
-sets. -/
+/-- The `≤` order on subspaces is the same as that on the corresponding sets. -/
 theorem le_def (s1 s2 : AffineSubspace k P) : s1 ≤ s2 ↔ (s1 : Set P) ⊆ s2 :=
   Iff.rfl
 #align affine_subspace.le_def AffineSubspace.le_def
 
-/-- One subspace is less than or equal to another if and only if all
-its points are in the second subspace. -/
+/-- One subspace is less than or equal to another if and only if all its points are in the second
+subspace. -/
 theorem le_def' (s1 s2 : AffineSubspace k P) : s1 ≤ s2 ↔ ∀ p ∈ s1, p ∈ s2 :=
   Iff.rfl
 #align affine_subspace.le_def' AffineSubspace.le_def'
 
-/-- The `<` order on subspaces is the same as that on the corresponding
-sets. -/
+/-- The `<` order on subspaces is the same as that on the corresponding sets. -/
 theorem lt_def (s1 s2 : AffineSubspace k P) : s1 < s2 ↔ (s1 : Set P) ⊂ s2 :=
   Iff.rfl
 #align affine_subspace.lt_def AffineSubspace.lt_def
 
-/-- One subspace is not less than or equal to another if and only if
-it has a point not in the second subspace. -/
+/-- One subspace is not less than or equal to another if and only if it has a point not in the
+second subspace. -/
 theorem not_le_iff_exists (s1 s2 : AffineSubspace k P) : ¬s1 ≤ s2 ↔ ∃ p ∈ s1, p ∉ s2 :=
   Set.not_subset
 #align affine_subspace.not_le_iff_exists AffineSubspace.not_le_iff_exists
 
-/-- If a subspace is less than another, there is a point only in the
-second. -/
+/-- If a subspace is less than another, there is a point only in the second. -/
 theorem exists_of_lt {s1 s2 : AffineSubspace k P} (h : s1 < s2) : ∃ p ∈ s2, p ∉ s1 :=
   Set.exists_of_ssubset h
 #align affine_subspace.exists_of_lt AffineSubspace.exists_of_lt
 
-/-- A subspace is less than another if and only if it is less than or
-equal to the second subspace and there is a point only in the
-second. -/
+/-- A subspace is less than another if and only if it is less than or equal to the second subspace
+and there is a point only in the second. -/
 theorem lt_iff_le_and_exists (s1 s2 : AffineSubspace k P) : s1 < s2 ↔ s1 ≤ s2 ∧ ∃ p ∈ s2, p ∉ s1 :=
   by rw [lt_iff_le_not_le, not_le_iff_exists]
 #align affine_subspace.lt_iff_le_and_exists AffineSubspace.lt_iff_le_and_exists
 
-/-- If an affine subspace is nonempty and contained in another with
-the same direction, they are equal. -/
+/-- If an affine subspace is nonempty and contained in another with the same direction, they are
+equal. -/
 theorem eq_of_direction_eq_of_nonempty_of_le {s₁ s₂ : AffineSubspace k P}
     (hd : s₁.direction = s₂.direction) (hn : (s₁ : Set P).Nonempty) (hle : s₁ ≤ s₂) : s₁ = s₂ :=
   let ⟨p, hp⟩ := hn
@@ -703,8 +670,7 @@ theorem eq_of_direction_eq_of_nonempty_of_le {s₁ s₂ : AffineSubspace k P}
 
 variable (k V)
 
-/-- The affine span is the `Inf` of subspaces containing the given
-points. -/
+/-- The affine span is the `infₛ` of subspaces containing the given points. -/
 theorem affineSpan_eq_infₛ (s : Set P) :
     affineSpan k s = infₛ { s' : AffineSubspace k P | s ⊆ s' } :=
   le_antisymm (spanPoints_subset_coe_of_subset_coe <| Set.subset_interᵢ₂ fun _ => id)
@@ -713,8 +679,7 @@ theorem affineSpan_eq_infₛ (s : Set P) :
 
 variable (P)
 
-/-- The Galois insertion formed by `affine_span` and coercion back to
-a set. -/
+/-- The Galois insertion formed by `affineSpan` and coercion back to a set. -/
 protected def gi : GaloisInsertion (affineSpan k) ((↑) : AffineSubspace k P → Set P)
     where
   choice s _ := affineSpan k s
@@ -745,8 +710,7 @@ theorem _root_.affineSpan_le {s : Set P} {Q : AffineSubspace k P} :
 
 variable (k V) {p₁ p₂ : P}
 
-/-- The affine span of a single point, coerced to a set, contains just
-that point. -/
+/-- The affine span of a single point, coerced to a set, contains just that point. -/
 @[simp 1001] -- porting note: this needs to take priority over `coe_affineSpan`
 theorem coe_affineSpan_singleton (p : P) : (affineSpan k ({p} : Set P) : Set P) = {p} := by
   ext x
@@ -755,8 +719,7 @@ theorem coe_affineSpan_singleton (p : P) : (affineSpan k ({p} : Set P) : Set P) 
   simp
 #align affine_subspace.coe_affine_span_singleton AffineSubspace.coe_affineSpan_singleton
 
-/-- A point is in the affine span of a single point if and only if
-they are equal. -/
+/-- A point is in the affine span of a single point if and only if they are equal. -/
 @[simp]
 theorem mem_affineSpan_singleton : p₁ ∈ affineSpan k ({p₂} : Set P) ↔ p₁ = p₂ := by
   simp [← mem_coe]
@@ -773,8 +736,7 @@ theorem span_union (s t : Set P) : affineSpan k (s ∪ t) = affineSpan k s ⊔ a
   (AffineSubspace.gi k V P).gc.l_sup
 #align affine_subspace.span_union AffineSubspace.span_union
 
-/-- The span of a union of an indexed family of sets is the sup of
-their spans. -/
+/-- The span of a union of an indexed family of sets is the sup of their spans. -/
 theorem span_unionᵢ {ι : Type _} (s : ι → Set P) :
     affineSpan k (⋃ i, s i) = ⨆ i, affineSpan k (s i) :=
   (AffineSubspace.gi k V P).gc.l_supᵢ
@@ -915,8 +877,7 @@ theorem eq_univ_of_subsingleton_span_eq_top {s : Set P} (h₁ : s.Subsingleton)
   exact subsingleton_of_subsingleton_span_eq_top h₁ h₂
 #align affine_subspace.eq_univ_of_subsingleton_span_eq_top AffineSubspace.eq_univ_of_subsingleton_span_eq_top
 
-/-- A nonempty affine subspace is `⊤` if and only if its direction is
-`⊤`. -/
+/-- A nonempty affine subspace is `⊤` if and only if its direction is `⊤`. -/
 @[simp]
 theorem direction_eq_top_iff_of_nonempty {s : AffineSubspace k P} (h : (s : Set P).Nonempty) :
     s.direction = ⊤ ↔ s = ⊤ := by
@@ -929,21 +890,20 @@ theorem direction_eq_top_iff_of_nonempty {s : AffineSubspace k P} (h : (s : Set 
     simp
 #align affine_subspace.direction_eq_top_iff_of_nonempty AffineSubspace.direction_eq_top_iff_of_nonempty
 
-/-- The inf of two affine subspaces, coerced to a set, is the
-intersection of the two sets of points. -/
+/-- The inf of two affine subspaces, coerced to a set, is the intersection of the two sets of
+points. -/
 @[simp]
 theorem inf_coe (s1 s2 : AffineSubspace k P) : (s1 ⊓ s2 : Set P) = (s1 : Set P) ∩ s2 :=
   rfl
 #align affine_subspace.inf_coe AffineSubspace.inf_coe
 
-/-- A point is in the inf of two affine subspaces if and only if it is
-in both of them. -/
+/-- A point is in the inf of two affine subspaces if and only if it is in both of them. -/
 theorem mem_inf_iff (p : P) (s1 s2 : AffineSubspace k P) : p ∈ s1 ⊓ s2 ↔ p ∈ s1 ∧ p ∈ s2 :=
   Iff.rfl
 #align affine_subspace.mem_inf_iff AffineSubspace.mem_inf_iff
 
-/-- The direction of the inf of two affine subspaces is less than or
-equal to the inf of their directions. -/
+/-- The direction of the inf of two affine subspaces is less than or equal to the inf of their
+directions. -/
 theorem direction_inf (s1 s2 : AffineSubspace k P) :
     (s1 ⊓ s2).direction ≤ s1.direction ⊓ s2.direction := by
   simp only [direction_eq_vectorSpan, vectorSpan_def]
@@ -952,8 +912,8 @@ theorem direction_inf (s1 s2 : AffineSubspace k P) :
       (infₛ_le_infₛ fun p hp => trans (vsub_self_mono (inter_subset_right _ _)) hp)
 #align affine_subspace.direction_inf AffineSubspace.direction_inf
 
-/-- If two affine subspaces have a point in common, the direction of
-their inf equals the inf of their directions. -/
+/-- If two affine subspaces have a point in common, the direction of their inf equals the inf of
+their directions. -/
 theorem direction_inf_of_mem {s₁ s₂ : AffineSubspace k P} {p : P} (h₁ : p ∈ s₁) (h₂ : p ∈ s₂) :
     (s₁ ⊓ s₂).direction = s₁.direction ⊓ s₂.direction := by
   ext v
@@ -961,22 +921,21 @@ theorem direction_inf_of_mem {s₁ s₂ : AffineSubspace k P} {p : P} (h₁ : p 
     vadd_mem_iff_mem_direction v ((mem_inf_iff p s₁ s₂).2 ⟨h₁, h₂⟩), mem_inf_iff]
 #align affine_subspace.direction_inf_of_mem AffineSubspace.direction_inf_of_mem
 
-/-- If two affine subspaces have a point in their inf, the direction
-of their inf equals the inf of their directions. -/
+/-- If two affine subspaces have a point in their inf, the direction of their inf equals the inf of
+their directions. -/
 theorem direction_inf_of_mem_inf {s₁ s₂ : AffineSubspace k P} {p : P} (h : p ∈ s₁ ⊓ s₂) :
     (s₁ ⊓ s₂).direction = s₁.direction ⊓ s₂.direction :=
   direction_inf_of_mem ((mem_inf_iff p s₁ s₂).1 h).1 ((mem_inf_iff p s₁ s₂).1 h).2
 #align affine_subspace.direction_inf_of_mem_inf AffineSubspace.direction_inf_of_mem_inf
 
-/-- If one affine subspace is less than or equal to another, the same
-applies to their directions. -/
+/-- If one affine subspace is less than or equal to another, the same applies to their
+directions. -/
 theorem direction_le {s1 s2 : AffineSubspace k P} (h : s1 ≤ s2) : s1.direction ≤ s2.direction := by
   simp only [direction_eq_vectorSpan, vectorSpan_def]
   exact vectorSpan_mono k h
 #align affine_subspace.direction_le AffineSubspace.direction_le
 
-/-- If one nonempty affine subspace is less than another, the same
-applies to their directions -/
+/-- If one nonempty affine subspace is less than another, the same applies to their directions -/
 theorem direction_lt_of_nonempty {s1 s2 : AffineSubspace k P} (h : s1 < s2)
     (hn : (s1 : Set P).Nonempty) : s1.direction < s2.direction := by
   cases' hn with p hp
@@ -989,8 +948,8 @@ theorem direction_lt_of_nonempty {s1 s2 : AffineSubspace k P} (h : s1 < s2)
   exact hp2s1 hm
 #align affine_subspace.direction_lt_of_nonempty AffineSubspace.direction_lt_of_nonempty
 
-/-- The sup of the directions of two affine subspaces is less than or
-equal to the direction of their sup. -/
+/-- The sup of the directions of two affine subspaces is less than or equal to the direction of
+their sup. -/
 theorem sup_direction_le (s1 s2 : AffineSubspace k P) :
     s1.direction ⊔ s2.direction ≤ (s1 ⊔ s2).direction := by
   simp only [direction_eq_vectorSpan, vectorSpan_def]
@@ -1000,8 +959,8 @@ theorem sup_direction_le (s1 s2 : AffineSubspace k P) :
       (infₛ_le_infₛ fun p hp => Set.Subset.trans (vsub_self_mono (le_sup_right : s2 ≤ s1 ⊔ s2)) hp)
 #align affine_subspace.sup_direction_le AffineSubspace.sup_direction_le
 
-/-- The sup of the directions of two nonempty affine subspaces with
-empty intersection is less than the direction of their sup. -/
+/-- The sup of the directions of two nonempty affine subspaces with empty intersection is less than
+the direction of their sup. -/
 theorem sup_direction_lt_of_nonempty_of_inter_empty {s1 s2 : AffineSubspace k P}
     (h1 : (s1 : Set P).Nonempty) (h2 : (s2 : Set P).Nonempty) (he : (s1 ∩ s2 : Set P) = ∅) :
     s1.direction ⊔ s2.direction < (s1 ⊔ s2).direction := by
@@ -1022,8 +981,8 @@ theorem sup_direction_lt_of_nonempty_of_inter_empty {s1 s2 : AffineSubspace k P}
   exact vadd_mem_of_mem_direction (Submodule.neg_mem _ hv2) hp2
 #align affine_subspace.sup_direction_lt_of_nonempty_of_inter_empty AffineSubspace.sup_direction_lt_of_nonempty_of_inter_empty
 
-/-- If the directions of two nonempty affine subspaces span the whole
-module, they have nonempty intersection. -/
+/-- If the directions of two nonempty affine subspaces span the whole module, they have nonempty
+intersection. -/
 theorem inter_nonempty_of_nonempty_of_sup_direction_eq_top {s1 s2 : AffineSubspace k P}
     (h1 : (s1 : Set P).Nonempty) (h2 : (s2 : Set P).Nonempty)
     (hd : s1.direction ⊔ s2.direction = ⊤) : ((s1 : Set P) ∩ s2).Nonempty := by
@@ -1034,8 +993,8 @@ theorem inter_nonempty_of_nonempty_of_sup_direction_eq_top {s1 s2 : AffineSubspa
   exact not_top_lt hlt
 #align affine_subspace.inter_nonempty_of_nonempty_of_sup_direction_eq_top AffineSubspace.inter_nonempty_of_nonempty_of_sup_direction_eq_top
 
-/-- If the directions of two nonempty affine subspaces are complements
-of each other, they intersect in exactly one point. -/
+/-- If the directions of two nonempty affine subspaces are complements of each other, they intersect
+in exactly one point. -/
 theorem inter_eq_singleton_of_nonempty_of_isCompl {s1 s2 : AffineSubspace k P}
     (h1 : (s1 : Set P).Nonempty) (h2 : (s2 : Set P).Nonempty)
     (hd : IsCompl s1.direction s2.direction) : ∃ p, (s1 : Set P) ∩ s2 = {p} := by
@@ -1051,8 +1010,7 @@ theorem inter_eq_singleton_of_nonempty_of_isCompl {s1 s2 : AffineSubspace k P}
   · exact fun h => h.symm ▸ hp
 #align affine_subspace.inter_eq_singleton_of_nonempty_of_is_compl AffineSubspace.inter_eq_singleton_of_nonempty_of_isCompl
 
-/-- Coercing a subspace to a set then taking the affine span produces
-the original subspace. -/
+/-- Coercing a subspace to a set then taking the affine span produces the original subspace. -/
 @[simp]
 theorem affineSpan_coe (s : AffineSubspace k P) : affineSpan k (s : Set P) = s := by
   refine' le_antisymm _ (subset_spanPoints _ _)
@@ -1071,8 +1029,7 @@ variable {ι : Type _}
 
 open AffineSubspace Set
 
-/-- The `vector_span` is the span of the pairwise subtractions with a
-given point on the left. -/
+/-- The `vectorSpan` is the span of the pairwise subtractions with a given point on the left. -/
 theorem vectorSpan_eq_span_vsub_set_left {s : Set P} {p : P} (hp : p ∈ s) :
     vectorSpan k s = Submodule.span k ((· -ᵥ ·) p '' s) := by
   rw [vectorSpan_def]
@@ -1086,8 +1043,7 @@ theorem vectorSpan_eq_span_vsub_set_left {s : Set P} {p : P} (hp : p ∈ s) :
     exact ⟨p, p2, hp, hp2, hv⟩
 #align vector_span_eq_span_vsub_set_left vectorSpan_eq_span_vsub_set_left
 
-/-- The `vector_span` is the span of the pairwise subtractions with a
-given point on the right. -/
+/-- The `vectorSpan` is the span of the pairwise subtractions with a given point on the right. -/
 theorem vectorSpan_eq_span_vsub_set_right {s : Set P} {p : P} (hp : p ∈ s) :
     vectorSpan k s = Submodule.span k ((· -ᵥ p) '' s) := by
   rw [vectorSpan_def]
@@ -1101,9 +1057,8 @@ theorem vectorSpan_eq_span_vsub_set_right {s : Set P} {p : P} (hp : p ∈ s) :
     exact ⟨p2, p, hp2, hp, hv⟩
 #align vector_span_eq_span_vsub_set_right vectorSpan_eq_span_vsub_set_right
 
-/-- The `vector_span` is the span of the pairwise subtractions with a
-given point on the left, excluding the subtraction of that point from
-itself. -/
+/-- The `vectorSpan` is the span of the pairwise subtractions with a given point on the left,
+excluding the subtraction of that point from itself. -/
 theorem vectorSpan_eq_span_vsub_set_left_ne {s : Set P} {p : P} (hp : p ∈ s) :
     vectorSpan k s = Submodule.span k ((· -ᵥ ·) p '' (s \ {p})) := by
   conv_lhs =>
@@ -1112,9 +1067,8 @@ theorem vectorSpan_eq_span_vsub_set_left_ne {s : Set P} {p : P} (hp : p ∈ s) :
   simp [Submodule.span_insert_eq_span]
 #align vector_span_eq_span_vsub_set_left_ne vectorSpan_eq_span_vsub_set_left_ne
 
-/-- The `vector_span` is the span of the pairwise subtractions with a
-given point on the right, excluding the subtraction of that point from
-itself. -/
+/-- The `vectorSpan` is the span of the pairwise subtractions with a given point on the right,
+excluding the subtraction of that point from itself. -/
 theorem vectorSpan_eq_span_vsub_set_right_ne {s : Set P} {p : P} (hp : p ∈ s) :
     vectorSpan k s = Submodule.span k ((· -ᵥ p) '' (s \ {p})) := by
   conv_lhs =>
@@ -1123,18 +1077,16 @@ theorem vectorSpan_eq_span_vsub_set_right_ne {s : Set P} {p : P} (hp : p ∈ s) 
   simp [Submodule.span_insert_eq_span]
 #align vector_span_eq_span_vsub_set_right_ne vectorSpan_eq_span_vsub_set_right_ne
 
-/-- The `vector_span` is the span of the pairwise subtractions with a
-given point on the right, excluding the subtraction of that point from
-itself. -/
+/-- The `vectorSpan` is the span of the pairwise subtractions with a given point on the right,
+excluding the subtraction of that point from itself. -/
 theorem vectorSpan_eq_span_vsub_finset_right_ne [DecidableEq P] [DecidableEq V] {s : Finset P}
     {p : P} (hp : p ∈ s) :
     vectorSpan k (s : Set P) = Submodule.span k ((s.erase p).image (· -ᵥ p)) := by
   simp [vectorSpan_eq_span_vsub_set_right_ne _ (Finset.mem_coe.mpr hp)]
 #align vector_span_eq_span_vsub_finset_right_ne vectorSpan_eq_span_vsub_finset_right_ne
 
-/-- The `vector_span` of the image of a function is the span of the
-pairwise subtractions with a given point on the left, excluding the
-subtraction of that point from itself. -/
+/-- The `vectorSpan` of the image of a function is the span of the pairwise subtractions with a
+given point on the left, excluding the subtraction of that point from itself. -/
 theorem vectorSpan_image_eq_span_vsub_set_left_ne (p : ι → P) {s : Set ι} {i : ι} (hi : i ∈ s) :
     vectorSpan k (p '' s) = Submodule.span k ((· -ᵥ ·) (p i) '' (p '' (s \ {i}))) := by
   conv_lhs =>
@@ -1143,9 +1095,8 @@ theorem vectorSpan_image_eq_span_vsub_set_left_ne (p : ι → P) {s : Set ι} {i
   simp [Submodule.span_insert_eq_span]
 #align vector_span_image_eq_span_vsub_set_left_ne vectorSpan_image_eq_span_vsub_set_left_ne
 
-/-- The `vector_span` of the image of a function is the span of the
-pairwise subtractions with a given point on the right, excluding the
-subtraction of that point from itself. -/
+/-- The `vectorSpan` of the image of a function is the span of the pairwise subtractions with a
+given point on the right, excluding the subtraction of that point from itself. -/
 theorem vectorSpan_image_eq_span_vsub_set_right_ne (p : ι → P) {s : Set ι} {i : ι} (hi : i ∈ s) :
     vectorSpan k (p '' s) = Submodule.span k ((· -ᵥ p i) '' (p '' (s \ {i}))) := by
   conv_lhs =>
@@ -1154,25 +1105,24 @@ theorem vectorSpan_image_eq_span_vsub_set_right_ne (p : ι → P) {s : Set ι} {
   simp [Submodule.span_insert_eq_span]
 #align vector_span_image_eq_span_vsub_set_right_ne vectorSpan_image_eq_span_vsub_set_right_ne
 
-/-- The `vector_span` of an indexed family is the span of the pairwise
-subtractions with a given point on the left. -/
+/-- The `vectorSpan` of an indexed family is the span of the pairwise subtractions with a given
+point on the left. -/
 theorem vectorSpan_range_eq_span_range_vsub_left (p : ι → P) (i0 : ι) :
     vectorSpan k (Set.range p) = Submodule.span k (Set.range fun i : ι => p i0 -ᵥ p i) := by
   rw [vectorSpan_eq_span_vsub_set_left k (Set.mem_range_self i0), ← Set.range_comp]
   congr
 #align vector_span_range_eq_span_range_vsub_left vectorSpan_range_eq_span_range_vsub_left
 
-/-- The `vector_span` of an indexed family is the span of the pairwise
-subtractions with a given point on the right. -/
+/-- The `vectorSpan` of an indexed family is the span of the pairwise subtractions with a given
+point on the right. -/
 theorem vectorSpan_range_eq_span_range_vsub_right (p : ι → P) (i0 : ι) :
     vectorSpan k (Set.range p) = Submodule.span k (Set.range fun i : ι => p i -ᵥ p i0) := by
   rw [vectorSpan_eq_span_vsub_set_right k (Set.mem_range_self i0), ← Set.range_comp]
   congr
 #align vector_span_range_eq_span_range_vsub_right vectorSpan_range_eq_span_range_vsub_right
 
-/-- The `vector_span` of an indexed family is the span of the pairwise
-subtractions with a given point on the left, excluding the subtraction
-of that point from itself. -/
+/-- The `vectorSpan` of an indexed family is the span of the pairwise subtractions with a given
+point on the left, excluding the subtraction of that point from itself. -/
 theorem vectorSpan_range_eq_span_range_vsub_left_ne (p : ι → P) (i₀ : ι) :
     vectorSpan k (Set.range p) =
       Submodule.span k (Set.range fun i : { x // x ≠ i₀ } => p i₀ -ᵥ p i) := by
@@ -1186,9 +1136,8 @@ theorem vectorSpan_range_eq_span_range_vsub_left_ne (p : ι → P) (i₀ : ι) :
   · exact fun ⟨i₁, hi₁, hv⟩ => ⟨p i₁, ⟨i₁, ⟨Set.mem_univ _, hi₁⟩, rfl⟩, hv⟩
 #align vector_span_range_eq_span_range_vsub_left_ne vectorSpan_range_eq_span_range_vsub_left_ne
 
-/-- The `vector_span` of an indexed family is the span of the pairwise
-subtractions with a given point on the right, excluding the subtraction
-of that point from itself. -/
+/-- The `vectorSpan` of an indexed family is the span of the pairwise subtractions with a given
+point on the right, excluding the subtraction of that point from itself. -/
 theorem vectorSpan_range_eq_span_range_vsub_right_ne (p : ι → P) (i₀ : ι) :
     vectorSpan k (Set.range p) =
       Submodule.span k (Set.range fun i : { x // x ≠ i₀ } => p i -ᵥ p i₀) := by
@@ -1236,15 +1185,14 @@ end
 variable {k}
 
 /-- An induction principle for span membership. If `p` holds for all elements of `s` and is
-preserved under certain affine combinations, then `p` holds for all elements of the span of `s`.
--/
+preserved under certain affine combinations, then `p` holds for all elements of the span of `s`. -/
 theorem affineSpan_induction {x : P} {s : Set P} {p : P → Prop} (h : x ∈ affineSpan k s)
     (Hs : ∀ x : P, x ∈ s → p x)
     (Hc : ∀ (c : k) (u v w : P), p u → p v → p w → p (c • (u -ᵥ v) +ᵥ w)) : p x :=
   (@affineSpan_le _ _ _ _ _ _ _ _ ⟨p, Hc⟩).mpr Hs h
 #align affine_span_induction affineSpan_induction
 
-/-- A dependent version of `affine_span_induction`. -/
+/-- A dependent version of `affineSpan_induction`. -/
 theorem affineSpan_induction' {s : Set P} {p : ∀ x, x ∈ affineSpan k s → Prop}
     (Hs : ∀ (y) (hys : y ∈ s), p y (subset_affineSpan k _ hys))
     (Hc :
@@ -1282,8 +1230,8 @@ theorem affineSpan_coe_preimage_eq_top (A : Set P) [Nonempty A] :
 
 end WithLocalInstance
 
-/-- Suppose a set of vectors spans `V`.  Then a point `p`, together
-with those vectors added to `p`, spans `P`. -/
+/-- Suppose a set of vectors spans `V`.  Then a point `p`, together with those vectors added to `p`,
+spans `P`. -/
 theorem affineSpan_singleton_union_vadd_eq_top_of_span_eq_top {s : Set V} (p : P)
     (h : Submodule.span k (Set.range ((↑) : s → V)) = ⊤) :
     affineSpan k ({p} ∪ (fun v => v +ᵥ p) '' s) = ⊤ := by
@@ -1300,49 +1248,49 @@ theorem affineSpan_singleton_union_vadd_eq_top_of_span_eq_top {s : Set V} (p : P
 
 variable (k)
 
-/-- The `vector_span` of two points is the span of their difference. -/
+/-- The `vectorSpan` of two points is the span of their difference. -/
 theorem vectorSpan_pair (p₁ p₂ : P) : vectorSpan k ({p₁, p₂} : Set P) = k ∙ p₁ -ᵥ p₂ := by
   simp_rw [vectorSpan_eq_span_vsub_set_left k (mem_insert p₁ _), image_pair, vsub_self,
     Submodule.span_insert_zero]
 #align vector_span_pair vectorSpan_pair
 
-/-- The `vector_span` of two points is the span of their difference (reversed). -/
+/-- The `vectorSpan` of two points is the span of their difference (reversed). -/
 theorem vectorSpan_pair_rev (p₁ p₂ : P) : vectorSpan k ({p₁, p₂} : Set P) = k ∙ p₂ -ᵥ p₁ := by
   rw [pair_comm, vectorSpan_pair]
 #align vector_span_pair_rev vectorSpan_pair_rev
 
-/-- The difference between two points lies in their `vector_span`. -/
+/-- The difference between two points lies in their `vectorSpan`. -/
 theorem vsub_mem_vectorSpan_pair (p₁ p₂ : P) : p₁ -ᵥ p₂ ∈ vectorSpan k ({p₁, p₂} : Set P) :=
   vsub_mem_vectorSpan _ (Set.mem_insert _ _) (Set.mem_insert_of_mem _ (Set.mem_singleton _))
 #align vsub_mem_vector_span_pair vsub_mem_vectorSpan_pair
 
-/-- The difference between two points (reversed) lies in their `vector_span`. -/
+/-- The difference between two points (reversed) lies in their `vectorSpan`. -/
 theorem vsub_rev_mem_vectorSpan_pair (p₁ p₂ : P) : p₂ -ᵥ p₁ ∈ vectorSpan k ({p₁, p₂} : Set P) :=
   vsub_mem_vectorSpan _ (Set.mem_insert_of_mem _ (Set.mem_singleton _)) (Set.mem_insert _ _)
 #align vsub_rev_mem_vector_span_pair vsub_rev_mem_vectorSpan_pair
 
 variable {k}
 
-/-- A multiple of the difference between two points lies in their `vector_span`. -/
+/-- A multiple of the difference between two points lies in their `vectorSpan`. -/
 theorem smul_vsub_mem_vectorSpan_pair (r : k) (p₁ p₂ : P) :
     r • (p₁ -ᵥ p₂) ∈ vectorSpan k ({p₁, p₂} : Set P) :=
   Submodule.smul_mem _ _ (vsub_mem_vectorSpan_pair k p₁ p₂)
 #align smul_vsub_mem_vector_span_pair smul_vsub_mem_vectorSpan_pair
 
-/-- A multiple of the difference between two points (reversed) lies in their `vector_span`. -/
+/-- A multiple of the difference between two points (reversed) lies in their `vectorSpan`. -/
 theorem smul_vsub_rev_mem_vectorSpan_pair (r : k) (p₁ p₂ : P) :
     r • (p₂ -ᵥ p₁) ∈ vectorSpan k ({p₁, p₂} : Set P) :=
   Submodule.smul_mem _ _ (vsub_rev_mem_vectorSpan_pair k p₁ p₂)
 #align smul_vsub_rev_mem_vector_span_pair smul_vsub_rev_mem_vectorSpan_pair
 
-/-- A vector lies in the `vector_span` of two points if and only if it is a multiple of their
+/-- A vector lies in the `vectorSpan` of two points if and only if it is a multiple of their
 difference. -/
 theorem mem_vectorSpan_pair {p₁ p₂ : P} {v : V} :
     v ∈ vectorSpan k ({p₁, p₂} : Set P) ↔ ∃ r : k, r • (p₁ -ᵥ p₂) = v := by
   rw [vectorSpan_pair, Submodule.mem_span_singleton]
 #align mem_vector_span_pair mem_vectorSpan_pair
 
-/-- A vector lies in the `vector_span` of two points if and only if it is a multiple of their
+/-- A vector lies in the `vectorSpan` of two points if and only if it is a multiple of their
 difference (reversed). -/
 theorem mem_vectorSpan_pair_rev {p₁ p₂ : P} {v : V} :
     v ∈ vectorSpan k ({p₁, p₂} : Set P) ↔ ∃ r : k, r • (p₂ -ᵥ p₁) = v := by
@@ -1351,7 +1299,6 @@ theorem mem_vectorSpan_pair_rev {p₁ p₂ : P} {v : V} :
 
 variable (k)
 
--- mathport name: «exprline[ , , ]»
 notation "line[" k ", " p₁ ", " p₂ "]" =>
   affineSpan k (insert p₁ (@singleton _ _ Set.instSingletonSet p₂))
 
@@ -1367,13 +1314,13 @@ theorem right_mem_affineSpan_pair (p₁ p₂ : P) : p₂ ∈ line[k, p₁, p₂]
 
 variable {k}
 
-/-- A combination of two points expressed with `line_map` lies in their affine span. -/
+/-- A combination of two points expressed with `lineMap` lies in their affine span. -/
 theorem AffineMap.lineMap_mem_affineSpan_pair (r : k) (p₁ p₂ : P) :
     AffineMap.lineMap p₁ p₂ r ∈ line[k, p₁, p₂] :=
   AffineMap.lineMap_mem _ (left_mem_affineSpan_pair _ _ _) (right_mem_affineSpan_pair _ _ _)
 #align affine_map.line_map_mem_affine_span_pair AffineMap.lineMap_mem_affineSpan_pair
 
-/-- A combination of two points expressed with `line_map` (with the two points reversed) lies in
+/-- A combination of two points expressed with `lineMap` (with the two points reversed) lies in
 their affine span. -/
 theorem AffineMap.lineMap_rev_mem_affineSpan_pair (r : k) (p₁ p₂ : P) :
     AffineMap.lineMap p₂ p₁ r ∈ line[k, p₁, p₂] :=
@@ -1433,22 +1380,21 @@ theorem affineSpan_pair_le_of_right_mem {p₁ p₂ p₃ : P} (h : p₁ ∈ line[
 
 variable (k)
 
-/-- `affine_span` is monotone. -/
+/-- `affineSpan` is monotone. -/
 @[mono]
 theorem affineSpan_mono {s₁ s₂ : Set P} (h : s₁ ⊆ s₂) : affineSpan k s₁ ≤ affineSpan k s₂ :=
   spanPoints_subset_coe_of_subset_coe (Set.Subset.trans h (subset_affineSpan k _))
 #align affine_span_mono affineSpan_mono
 
-/-- Taking the affine span of a set, adding a point and taking the
-span again produces the same results as adding the point to the set
-and taking the span. -/
+/-- Taking the affine span of a set, adding a point and taking the span again produces the same
+results as adding the point to the set and taking the span. -/
 theorem affineSpan_insert_affineSpan (p : P) (ps : Set P) :
     affineSpan k (insert p (affineSpan k ps : Set P)) = affineSpan k (insert p ps) := by
   rw [Set.insert_eq, Set.insert_eq, span_union, span_union, affineSpan_coe]
 #align affine_span_insert_affine_span affineSpan_insert_affineSpan
 
-/-- If a point is in the affine span of a set, adding it to that set
-does not change the affine span. -/
+/-- If a point is in the affine span of a set, adding it to that set does not change the affine
+span. -/
 theorem affineSpan_insert_eq_affineSpan {p : P} {ps : Set P} (h : p ∈ affineSpan k ps) :
     affineSpan k (insert p ps) = affineSpan k ps := by
   rw [← mem_coe] at h
@@ -1457,8 +1403,8 @@ theorem affineSpan_insert_eq_affineSpan {p : P} {ps : Set P} (h : p ∈ affineSp
 
 variable {k}
 
-/-- If a point is in the affine span of a set, adding it to that set
-does not change the vector span. -/
+/-- If a point is in the affine span of a set, adding it to that set does not change the vector
+span. -/
 theorem vectorSpan_insert_eq_vectorSpan {p : P} {ps : Set P} (h : p ∈ affineSpan k ps) :
     vectorSpan k (insert p ps) = vectorSpan k ps := by
   simp_rw [← direction_affineSpan, affineSpan_insert_eq_affineSpan _ h]
@@ -1471,9 +1417,8 @@ namespace AffineSubspace
 variable {k : Type _} {V : Type _} {P : Type _} [Ring k] [AddCommGroup V] [Module k V]
   [AffineSpace V P]
 
-/-- The direction of the sup of two nonempty affine subspaces is the
-sup of the two directions and of any one difference between points in
-the two subspaces. -/
+/-- The direction of the sup of two nonempty affine subspaces is the sup of the two directions and
+of any one difference between points in the two subspaces. -/
 theorem direction_sup {s1 s2 : AffineSubspace k P} {p1 p2 : P} (hp1 : p1 ∈ s1) (hp2 : p2 ∈ s2) :
     (s1 ⊔ s2).direction = s1.direction ⊔ s2.direction ⊔ k ∙ p2 -ᵥ p1 := by
   refine' le_antisymm _ _
@@ -1503,10 +1448,9 @@ theorem direction_sup {s1 s2 : AffineSubspace k P} {p1 p2 : P} (hp1 : p1 ∈ s1)
           hp
 #align affine_subspace.direction_sup AffineSubspace.direction_sup
 
-/-- The direction of the span of the result of adding a point to a
-nonempty affine subspace is the sup of the direction of that subspace
-and of any one difference between that point and a point in the
-subspace. -/
+/-- The direction of the span of the result of adding a point to a nonempty affine subspace is the
+sup of the direction of that subspace and of any one difference between that point and a point in
+the subspace. -/
 theorem direction_affineSpan_insert {s : AffineSubspace k P} {p1 p2 : P} (hp1 : p1 ∈ s) :
     (affineSpan k (insert p2 (s : Set P))).direction = Submodule.span k {p2 -ᵥ p1} ⊔ s.direction :=
   by
@@ -1516,9 +1460,8 @@ theorem direction_affineSpan_insert {s : AffineSubspace k P} {p1 p2 : P} (hp1 : 
   simp
 #align affine_subspace.direction_affine_span_insert AffineSubspace.direction_affineSpan_insert
 
-/-- Given a point `p1` in an affine subspace `s`, and a point `p2`, a
-point `p` is in the span of `s` with `p2` added if and only if it is a
-multiple of `p2 -ᵥ p1` added to a point in `s`. -/
+/-- Given a point `p1` in an affine subspace `s`, and a point `p2`, a point `p` is in the span of
+`s` with `p2` added if and only if it is a multiple of `p2 -ᵥ p1` added to a point in `s`. -/
 theorem mem_affineSpan_insert_iff {s : AffineSubspace k P} {p1 : P} (hp1 : p1 ∈ s) (p2 p : P) :
     p ∈ affineSpan k (insert p2 (s : Set P)) ↔
       ∃ (r : k)(p0 : P)(_hp0 : p0 ∈ s), p = r • (p2 -ᵥ p1 : V) +ᵥ p0 := by
@@ -1784,7 +1727,6 @@ def Parallel (s₁ s₂ : AffineSubspace k P) : Prop :=
   ∃ v : V, s₂ = s₁.map (constVAdd k P v)
 #align affine_subspace.parallel AffineSubspace.Parallel
 
--- mathport name: affine_subspace.parallel
 scoped[Affine] infixl:50 " ∥ " => AffineSubspace.Parallel
 
 @[symm]
