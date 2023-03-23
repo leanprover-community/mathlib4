@@ -42,9 +42,8 @@ universe u v
 variable {C : Type u} [Groupoid C]
 
 /-- The vertex group at `c`. -/
-@[simps]
-instance vertexGroup (c : C) : Group (c ⟶ c)
-    where
+@[simps mul one inv]
+instance vertexGroup (c : C) : Group (c ⟶ c) where
   mul := fun x y : c ⟶ c => x ≫ y
   mul_assoc := Category.assoc
   one := 𝟙 c
@@ -53,10 +52,6 @@ instance vertexGroup (c : C) : Group (c ⟶ c)
   inv := Groupoid.inv
   mul_left_inv := inv_comp
 #align category_theory.groupoid.vertex_group CategoryTheory.Groupoid.vertexGroup
-
--- Porting note: simpNF says the LHS of these internal identifiers simplify
-attribute [-simp, nolint simpNF] vertexGroup_npow
-attribute [-simp, nolint simpNF] vertexGroup_zpow
 
 /-- The inverse in the group is equal to the inverse given by `CategoryTheory.inv`. -/
 theorem vertexGroup.inv_eq_inv (c : C) (γ : c ⟶ c) : γ⁻¹ = CategoryTheory.inv γ :=
