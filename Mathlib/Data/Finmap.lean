@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sean Leather, Mario Carneiro
 
 ! This file was ported from Lean 3 source module data.finmap
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
+! leanprover-community/mathlib commit c3fc15b26b3ff8958ec3e5711177a9ae3d5c45b7
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -345,13 +345,15 @@ def foldl {δ : Type w} (f : δ → ∀ a, β a → δ)
 
 /-- `any f s` returns `true` iff there exists a value `v` in `s` such that `f v = true`. -/
 def any (f : ∀ x, β x → Bool) (s : Finmap β) : Bool :=
-  s.foldl (fun x y z => x ∨ f y z) (fun _ _ _ _ => by simp [or_right_comm]) false
+  s.foldl (fun x y z => x || f y z)
+    (fun _ _ _ _ => by simp_rw [Bool.or_assoc, Bool.or_comm, imp_true_iff]) false
 #align finmap.any Finmap.any
 
 -- TODO: should this really return `false` if `s` is empty?
 /-- `all f s` returns `true` iff `f v = true` for all values `v` in `s`. -/
 def all (f : ∀ x, β x → Bool) (s : Finmap β) : Bool :=
-  s.foldl (fun x y z => x ∧ f y z) (fun _ _ _ _ => by simp [and_right_comm]) false
+  s.foldl (fun x y z => x && f y z)
+    (fun _ _ _ _ => by simp_rw [Bool.and_assoc, Bool.and_comm, imp_true_iff]) true
 #align finmap.all Finmap.all
 
 /-! ### erase -/

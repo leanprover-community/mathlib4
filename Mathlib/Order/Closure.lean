@@ -72,11 +72,6 @@ namespace ClosureOperator
 instance [Preorder α] : CoeFun (ClosureOperator α) fun _ => α → α :=
   ⟨fun c => c.toFun⟩
 
-/-- See Note [custom simps projection] -/
-def Simps.apply [Preorder α] (f : ClosureOperator α) : α → α :=
-  f
-#align closure_operator.simps.apply ClosureOperator.Simps.apply
-
 initialize_simps_projections ClosureOperator (toFun → apply)
 
 section PartialOrder
@@ -333,11 +328,6 @@ section Preorder
 variable [Preorder α] [Preorder β] {u : β → α} (l : LowerAdjoint u)
 
 instance : CoeFun (LowerAdjoint u) fun _ => α → β where coe := toFun
-
-/-- See Note [custom simps projection] -/
-def Simps.apply : α → β :=
-  l
-#align lower_adjoint.simps.apply LowerAdjoint.Simps.apply
 
 theorem gc : GaloisConnection l u :=
   l.gc'

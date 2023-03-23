@@ -63,6 +63,10 @@ class HSMul (α : Type u) (β : Type v) (γ : outParam (Type w)) where
   The meaning of this notation is type-dependent. -/
   hSMul : α → β → γ
 
+attribute [notation_class  smul Simps.copySecond] HSMul
+attribute [notation_class nsmul Simps.nsmulArgs]  HSMul
+attribute [notation_class zsmul Simps.zsmulArgs]  HSMul
+
 /-- Type class for the `+ᵥ` notation. -/
 class VAdd (G : Type _) (P : Type _) where
   vadd : G → P → P
@@ -100,7 +104,7 @@ universe u
 variable {G : Type _}
 
 /-- Class of types that have an inversion operation. -/
-@[to_additive]
+@[to_additive, notation_class]
 class Inv (α : Type u) where
   /-- Invert an element of α. -/
   inv : α → α
@@ -809,6 +813,14 @@ As a consequence, a few natural structures do not fit in this framework. For exa
 respects everything except for the fact that `(0 * ∞)⁻¹ = 0⁻¹ = ∞` while `∞⁻¹ * 0⁻¹ = 0 * ∞ = 0`.
 -/
 
+/-- In a class equipped with instances of both `Monoid` and `Inv`, this definition records what the
+default definition for `Div` would be: `a * b⁻¹`.  This is later provided as the default value for
+the `Div` instance in `DivInvMonoid`.
+
+We keep it as a separate definition rather than inlining it in `DivInvMonoid` so that the `Div`
+field of individual `DivInvMonoid`s constructed using that default value will not be unfolded at
+`.instance` transparency. -/
+def DivInvMonoid.div' {G : Type u} [Monoid G] [Inv G] (a b : G) : G := a * b⁻¹
 
 /-- A `DivInvMonoid` is a `Monoid` with operations `/` and `⁻¹` satisfying
 `div_eq_mul_inv : ∀ a b, a / b = a * b⁻¹`.
@@ -829,7 +841,7 @@ in diamonds. See the definition of `Monoid` and Note [forgetful inheritance] for
 explanations on this.
 -/
 class DivInvMonoid (G : Type u) extends Monoid G, Inv G, Div G where
-  div a b := a * b⁻¹
+  div := DivInvMonoid.div'
   /-- `a / b := a * b⁻¹` -/
   div_eq_mul_inv : ∀ a b : G, a / b = a * b⁻¹ := by intros; rfl
   /-- The power operation: `a ^ n = a * ··· * a`; `a ^ (-n) = a⁻¹ * ··· a⁻¹` (`n` times) -/
@@ -842,6 +854,17 @@ class DivInvMonoid (G : Type u) extends Monoid G, Inv G, Div G where
   /-- `a ^ -(n + 1) = (a ^ (n + 1))⁻¹` -/
   zpow_neg' (n : ℕ) (a : G) : zpow (Int.negSucc n) a = (zpow n.succ a)⁻¹ := by intros; rfl
 #align div_inv_monoid DivInvMonoid
+
+/-- In a class equipped with instances of both `AddMonoid` and `Neg`, this definition records what
+the default definition for `Sub` would be: `a + -b`.  This is later provided as the default value
+for the `Sub` instance in `SubNegMonoid`.
+
+We keep it as a separate definition rather than inlining it in `SubNegMonoid` so that the `Sub`
+field of individual `SubNegMonoid`s constructed using that default value will not be unfolded at
+`.instance` transparency. -/
+def SubNegMonoid.sub' {G : Type u} [AddMonoid G] [Neg G] (a b : G) : G := a + -b
+
+attribute [to_additive existing SubNegMonoid.sub'] DivInvMonoid.div'
 
 /-- A `SubNegMonoid` is an `AddMonoid` with unary `-` and binary `-` operations
 satisfying `sub_eq_add_neg : ∀ a b, a - b = a + -b`.
@@ -861,7 +884,7 @@ in diamonds. See the definition of `AddMonoid` and Note [forgetful inheritance] 
 explanations on this.
 -/
 class SubNegMonoid (G : Type u) extends AddMonoid G, Neg G, Sub G where
-  sub a b := a + -b
+  sub := SubNegMonoid.sub'
   sub_eq_add_neg : ∀ a b : G, a - b = a + -b := by intros; rfl
   zsmul : ℤ → G → G := zsmulRec
   zsmul_zero' : ∀ a : G, zsmul 0 a = 0 := by intros; rfl
@@ -1156,3 +1179,42 @@ instance (priority := 100) CommGroup.toDivisionCommMonoid : DivisionCommMonoid G
   { ‹CommGroup G›, Group.toDivisionMonoid with }
 
 end CommGroup
+
+/-! We initialize all projections for `@[simps]` here, so that we don't have to do it in later
+files.
+
+Note: the lemmas generated for the `npow`/`zpow` projections will *not* apply to `x ^ y`, since the
+argument order of these projections doesn't match the argument order of `^`.
+The `nsmul`/`zsmul` lemmas will be correct. -/
+initialize_simps_projections Semigroup
+initialize_simps_projections AddSemigroup
+initialize_simps_projections CommSemigroup
+initialize_simps_projections AddCommSemigroup
+initialize_simps_projections LeftCancelSemigroup
+initialize_simps_projections AddLeftCancelSemigroup
+initialize_simps_projections RightCancelSemigroup
+initialize_simps_projections AddRightCancelSemigroup
+initialize_simps_projections Monoid
+initialize_simps_projections AddMonoid
+initialize_simps_projections CommMonoid
+initialize_simps_projections AddCommMonoid
+initialize_simps_projections LeftCancelMonoid
+initialize_simps_projections AddLeftCancelMonoid
+initialize_simps_projections RightCancelMonoid
+initialize_simps_projections AddRightCancelMonoid
+initialize_simps_projections CancelMonoid
+initialize_simps_projections AddCancelMonoid
+initialize_simps_projections CancelCommMonoid
+initialize_simps_projections AddCancelCommMonoid
+initialize_simps_projections DivInvMonoid
+initialize_simps_projections SubNegMonoid
+initialize_simps_projections DivInvOneMonoid
+initialize_simps_projections SubNegZeroMonoid
+initialize_simps_projections DivisionMonoid
+initialize_simps_projections SubtractionMonoid
+initialize_simps_projections DivisionCommMonoid
+initialize_simps_projections SubtractionCommMonoid
+initialize_simps_projections Group
+initialize_simps_projections AddGroup
+initialize_simps_projections CommGroup
+initialize_simps_projections AddCommGroup

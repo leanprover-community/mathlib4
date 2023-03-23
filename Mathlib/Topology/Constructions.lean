@@ -830,6 +830,9 @@ theorem embedding_graph {f : α → β} (hf : Continuous f) : Embedding fun x =>
   embedding_of_embedding_compose (continuous_id.prod_mk hf) continuous_fst embedding_id
 #align embedding_graph embedding_graph
 
+theorem embedding_prod_mk (x : α) : Embedding (Prod.mk x : β → α × β) :=
+  embedding_of_embedding_compose (Continuous.Prod.mk x) continuous_snd embedding_id
+
 end Prod
 
 section Sum
@@ -1253,6 +1256,15 @@ theorem continuous_update [DecidableEq ι] (i : ι) :
     Continuous fun f : (∀ j, π j) × π i => update f.1 i f.2 :=
   continuous_fst.update i continuous_snd
 #align continuous_update continuous_update
+
+/-- `Pi.mulSingle i x` is continuous in `x`. -/
+-- porting note: todo: restore @[continuity]
+@[to_additive "`Pi.single i x` is continuous in `x`."]
+theorem continuous_mulSingle [∀ i, One (π i)] [DecidableEq ι] (i : ι) :
+    Continuous fun x => (Pi.mulSingle i x : ∀ i, π i) :=
+  continuous_const.update _ continuous_id
+#align continuous_mul_single continuous_mulSingle
+#align continuous_single continuous_single
 
 theorem Filter.Tendsto.fin_insertNth {n} {π : Fin (n + 1) → Type _} [∀ i, TopologicalSpace (π i)]
     (i : Fin (n + 1)) {f : β → π i} {l : Filter β} {x : π i} (hf : Tendsto f l (𝓝 x))

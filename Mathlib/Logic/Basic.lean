@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 
 ! This file was ported from Lean 3 source module logic.basic
-! leanprover-community/mathlib commit 13cd3e89b30352d5b1b7349f5537ea18ba878e40
+! leanprover-community/mathlib commit d2d8742b0c21426362a9dacebc6005db895ca963
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -487,8 +487,11 @@ end Propositional
 
 /-! ### Declarations about equality -/
 
-alias ne_of_mem_of_not_mem ← Membership.Mem.ne_of_not_mem
-alias ne_of_mem_of_not_mem' ← Membership.Mem.ne_of_not_mem'
+alias ne_of_mem_of_not_mem ← Membership.mem.ne_of_not_mem
+alias ne_of_mem_of_not_mem' ← Membership.mem.ne_of_not_mem'
+
+#align has_mem.mem.ne_of_not_mem Membership.mem.ne_of_not_mem
+#align has_mem.mem.ne_of_not_mem' Membership.mem.ne_of_not_mem'
 
 section Equality
 
