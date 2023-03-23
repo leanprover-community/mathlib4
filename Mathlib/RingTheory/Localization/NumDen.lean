@@ -66,10 +66,15 @@ theorem num_den_reduced (x : K) {d} : d ∣ num A x → d ∣ den A x → IsUnit
   (Classical.choose_spec (Classical.choose_spec (exists_reduced_fraction A x))).1
 #align is_fraction_ring.num_denom_reduced IsFractionRing.num_den_reduced
 
-@[simp]
+-- @[simp] -- Porting note: LHS reduces to give the simp lemma below
 theorem mk'_num_den (x : K) : mk' K (num A x) (den A x) = x :=
   (Classical.choose_spec (Classical.choose_spec (exists_reduced_fraction A x))).2
 #align is_fraction_ring.mk'_num_denom IsFractionRing.mk'_num_den
+
+@[simp]
+theorem mk'_num_den' (x : K) : algebraMap A K (num A x) / algebraMap A K (den A x) = x := by
+  rw [← mk'_eq_div]
+  apply mk'_num_den
 
 variable {A}
 
@@ -87,7 +92,7 @@ theorem num_mul_den_eq_num_iff_eq' {x y : K} :
 
 theorem num_mul_den_eq_num_mul_den_iff_eq {x y : K} :
     num A y * den A x = num A x * den A y ↔ x = y :=
-  ⟨fun h ↦ by rw [← mk'_num_den A x, ← mk'_num_den A y]; exact mk'_eq_of_eq' h, fun h ↦ by rw [h]⟩
+  ⟨fun h ↦ by simpa only [mk'_num_den] using mk'_eq_of_eq' (S := K) h, fun h ↦ by rw [h]⟩
 #align is_fraction_ring.num_mul_denom_eq_num_mul_denom_iff_eq IsFractionRing.num_mul_den_eq_num_mul_den_iff_eq
 
 theorem eq_zero_of_num_eq_zero {x : K} (h : num A x = 0) : x = 0 :=
