@@ -101,8 +101,12 @@ namespace FreeProduct
 letters can come from the same summand. -/
 @[ext]
 structure Word where
+  /-- A `Word` is a `List (Σ i, M i)`, such that `1` is not in the list, and no
+  two adjacent letters are from the same summand -/
   toList : List (Σi, M i)
+  /-- A reduced word does not contain `1` -/
   ne_one : ∀ l ∈ toList, Sigma.snd l ≠ 1
+  /-- Adjacent letters are not from the same summand. -/
   chain_ne : toList.Chain' fun l l' => Sigma.fst l ≠ Sigma.fst l'
 #align free_product.word FreeProduct.Word
 
@@ -291,14 +295,17 @@ theorem fstIdx_ne_iff {w : Word M} {i} :
 
 variable (M)
 
-/-- Given an index `i : ι`, `pair M i` is the type of pairs `(head, tail)` where `head : M i` and
+/-- Given an index `i : ι`, `Pair M i` is the type of pairs `(head, tail)` where `head : M i` and
 `tail : Word M`, subject to the constraint that first letter of `tail` can't be `⟨i, m⟩`.
 By prepending `head` to `tail`, one obtains a new word. We'll show that any word can be uniquely
 obtained in this way. -/
 @[ext]
 structure Pair (i : ι) where
+  /-- An element of `M i`, the first letter of the word. -/
   head : M i
+  /-- The remaining letters of the word, excluding the first letter -/
   tail : Word M
+  /-- The index first letter of tail of a `Pair M i` is not equal to `i` -/
   fstIdx_ne : fstIdx tail ≠ some i
 #align free_product.word.pair FreeProduct.Word.Pair
 
@@ -990,4 +997,3 @@ theorem _root_.FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeG
 end PingPongLemma
 
 end FreeProduct
-#lint
