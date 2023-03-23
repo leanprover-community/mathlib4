@@ -290,8 +290,8 @@ theorem nthLe_rotate_one (l : List α) (k : ℕ) (hk : k < (l.rotate 1).length) 
   nthLe_rotate l 1 k hk
 #align list.nth_le_rotate_one List.nthLe_rotate_one
 
-/-- A variant of `List.nthLe_rotate` useful for rewrites from right to left. -/
 set_option linter.deprecated false in
+/-- A variant of `List.nthLe_rotate` useful for rewrites from right to left. -/
 theorem nthLe_rotate' (l : List α) (n k : ℕ) (hk : k < l.length) :
     (l.rotate n).nthLe ((l.length - n % l.length + k) % l.length)
         ((Nat.mod_lt _ (k.zero_le.trans_lt hk)).trans_le (length_rotate _ _).ge) =
