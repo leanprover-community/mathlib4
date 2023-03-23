@@ -184,12 +184,12 @@ theorem element_of_chain_eq_pow_second_of_chain {q r : Associates M} {n : ℕ} (
     · simp only [← Nat.succ_le_iff, Nat.succ_eq_add_one, ← this]
       apply card_subset_divisors_le_length_of_chain (@h₂) H'
     simp only [Finset.mem_image]
-    rintro r ⟨a, ha, rfl⟩
+    rintro r ⟨a, _ha, rfl⟩
     refine' dvd_trans _ hr
     use c 1 ^ (i - (a : ℕ))
     rw [pow_mul_pow_sub (c 1)]
     · exact H
-    · exact nat.succ_le_succ_iff.mp a.2
+    · exact Nat.succ_le_succ_iff.mp a.2
 #align divisor_chain.element_of_chain_eq_pow_second_of_chain DivisorChain.element_of_chain_eq_pow_second_of_chain
 
 theorem eq_pow_second_of_chain_of_has_chain {q : Associates M} {n : ℕ} (hn : n ≠ 0)
@@ -203,16 +203,16 @@ theorem eq_pow_second_of_chain_of_has_chain {q : Associates M} {n : ℕ} (hn : n
       n + 1 = (Finset.univ : Finset (Fin (n + 1))).card := (Finset.card_fin _).symm
       _ = (Finset.univ.image c).card := (Finset.card_image_iff.mpr (h₁.injective.injOn _)).symm
       _ ≤ (Finset.univ.image fun m : Fin (i + 1) => c 1 ^ (m : ℕ)).card :=
-        (Finset.card_le_of_subset _)
+        (Finset.card_le_of_subset ?_)
       _ ≤ (Finset.univ : Finset (Fin (i + 1))).card := Finset.card_image_le
       _ = i + 1 := Finset.card_fin _
-
     intro r hr
     obtain ⟨j, -, rfl⟩ := Finset.mem_image.1 hr
     have := h₂.2 ⟨j, rfl⟩
     rw [hi'] at this
-    obtain ⟨u, hu, hu'⟩ := (dvd_prime_pow (show Prime (c 1) from _) i).1 this
-    refine' finset.mem_image.mpr ⟨u, Finset.mem_univ _, _⟩
+    have h := (dvd_prime_pow (show Prime (c 1) from ?_) i).1 this
+    rcases h with ⟨u, hu, hu'⟩
+    refine' Finset.mem_image.mpr ⟨u, Finset.mem_univ _, _⟩
     · rw [associated_iff_eq] at hu'
       rw [Fin.val_cast_of_lt (Nat.lt_succ_of_le hu), hu']
     · rw [← irreducible_iff_prime]
@@ -241,14 +241,13 @@ theorem factor_orderIso_map_one_eq_bot {m : Associates M} {n : Associates N}
 
 theorem coe_factor_orderIso_map_eq_one_iff {m u : Associates M} {n : Associates N} (hu' : u ≤ m)
     (d : Set.Iic m ≃o Set.Iic n) : (d ⟨u, hu'⟩ : Associates N) = 1 ↔ u = 1 :=
-  ⟨fun hu =>
-    by
-    rw [show u = ↑(d.symm ⟨↑(d ⟨u, hu'⟩), (d ⟨u, hu'⟩).prop⟩) by
+  ⟨fun hu => by
+    rw [show u = (d.symm ⟨d ⟨u, hu'⟩, (d ⟨u, hu'⟩).prop⟩) by
         simp only [Subtype.coe_eta, OrderIso.symm_apply_apply, Subtype.coe_mk]]
-    convert factor_orderIso_map_one_eq_bot d.symm, fun hu =>
-    by
+    conv_rhs => rw [← factor_orderIso_map_one_eq_bot d.symm]
+    congr, fun hu => by
     simp_rw [hu]
-    convert factor_orderIso_map_one_eq_bot d⟩
+    conv_rhs =>  rw [← factor_orderIso_map_one_eq_bot d]⟩
 #align coe_factor_order_iso_map_eq_one_iff coe_factor_orderIso_map_eq_one_iff
 
 section
