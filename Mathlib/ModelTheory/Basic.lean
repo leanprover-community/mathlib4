@@ -37,7 +37,7 @@ structures.
 
 ## TODO
 
-Use `[countable L.symbols]` instead of `[L.countable]`.
+Use `[Countable L.symbols]` instead of `[L.countable]`.
 
 ## References
 For the Flypitch project:
