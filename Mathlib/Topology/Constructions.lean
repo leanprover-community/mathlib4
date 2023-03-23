@@ -830,6 +830,9 @@ theorem embedding_graph {f : α → β} (hf : Continuous f) : Embedding fun x =>
   embedding_of_embedding_compose (continuous_id.prod_mk hf) continuous_fst embedding_id
 #align embedding_graph embedding_graph
 
+theorem embedding_prod_mk (x : α) : Embedding (Prod.mk x : β → α × β) :=
+  embedding_of_embedding_compose (Continuous.Prod.mk x) continuous_snd embedding_id
+
 end Prod
 
 section Sum
