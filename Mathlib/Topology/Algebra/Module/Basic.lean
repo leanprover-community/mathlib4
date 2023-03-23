@@ -21,7 +21,7 @@ import Mathlib.LinearAlgebra.Pi
 /-!
 # Theory of topological modules and continuous linear maps.
 
-We use the class `has_continuous_smul` for topological (semi) modules and topological vector spaces.
+We use the class `ContinuousSMul` for topological (semi) modules and topological vector spaces.
 
 In this file we define continuous (semi-)linear maps, as semilinear maps between topological
 modules which are continuous. The set of continuous semilinear maps between the topological
@@ -84,7 +84,7 @@ normed field, see `normed_field.punctured_nhds_ne_bot`). Let `M` be a nontrivial
 such that `c • x = 0` implies `c = 0 ∨ x = 0`. Then `M` has no isolated points. We formulate this
 using `ne_bot (𝓝[≠] x)`.
 
-This lemma is not an instance because Lean would need to find `[has_continuous_smul ?m_1 M]` with
+This lemma is not an instance because Lean would need to find `[ContinuousSMul ?m_1 M]` with
 unknown `?m_1`. We register this as an instance for `R = ℝ` in `real.punctured_nhds_module_ne_bot`.
 One can also use `haveI := module.punctured_nhds_ne_bot R M` in a proof.
 -/
@@ -410,8 +410,8 @@ instance continuousSemilinearMapClass :
 
 -- see Note [function coercion]
 /-- Coerce continuous linear maps to functions. -/
-instance toFun' : CoeFun (M₁ →SL[σ₁₂] M₂) fun _ => M₁ → M₂ := ⟨FunLike.coe⟩
-#align continuous_linear_map.to_fun ContinuousLinearMap.toFun'
+--instance toFun' : CoeFun (M₁ →SL[σ₁₂] M₂) fun _ => M₁ → M₂ := ⟨FunLike.coe⟩
+#align continuous_linear_map.to_fun ContinuousLinearMap.toFun
 
 -- porting note: was `simp`, now `simp only` proves it
 theorem coe_mk (f : M₁ →ₛₗ[σ₁₂] M₂) (h) : (mk f h : M₁ →ₛₗ[σ₁₂] M₂) = f :=
@@ -777,7 +777,6 @@ def comp (g : M₂ →SL[σ₂₃] M₃) (f : M₁ →SL[σ₁₂] M₂) : M₁ 
   ⟨(g : M₂ →ₛₗ[σ₂₃] M₃).comp (f : M₁ →ₛₗ[σ₁₂] M₂), g.2.comp f.2⟩
 #align continuous_linear_map.comp ContinuousLinearMap.comp
 
--- mathport name: «expr ∘L »
 infixr:80 " ∘L " =>
   @ContinuousLinearMap.comp _ _ _ _ _ _ (RingHom.id _) (RingHom.id _) (RingHom.id _) _ _ _ _ _ _ _ _
     _ _ _ _ RingHomCompTriple.ids
@@ -1763,7 +1762,8 @@ theorem restrictScalars_neg (f : M →L[A] M₂) : (-f).restrictScalars R = -f.r
 
 end
 
-variable {S : Type _} [Ring S] [Module S M₂] [ContinuousConstSMul S M₂] [SMulCommClass A S M₂]
+variable {S : Type _}
+variable [Ring S] [Module S M₂] [ContinuousConstSMul S M₂] [SMulCommClass A S M₂]
   [SMulCommClass R S M₂]
 
 @[simp]
@@ -1772,7 +1772,8 @@ theorem restrictScalars_smul (c : S) (f : M →L[A] M₂) :
   rfl
 #align continuous_linear_map.restrict_scalars_smul ContinuousLinearMap.restrictScalars_smul
 
-variable (A M M₂ R S) [TopologicalAddGroup M₂]
+variable (A M M₂ R S)
+variable [TopologicalAddGroup M₂]
 
 /-- `continuous_linear_map.restrict_scalars` as a `linear_map`. See also
 `continuous_linear_map.restrict_scalarsL`. -/
@@ -1808,8 +1809,6 @@ variable {R₁ : Type _} {R₂ : Type _} {R₃ : Type _} [Semiring R₁] [Semiri
   [AddCommMonoid M₃] {M₄ : Type _} [TopologicalSpace M₄] [AddCommMonoid M₄] [Module R₁ M₁]
   [Module R₁ M'₁] [Module R₂ M₂] [Module R₃ M₃]
 
-include σ₂₁
-
 /-- A continuous linear equivalence induces a continuous linear map. -/
 def toContinuousLinearMap (e : M₁ ≃SL[σ₁₂] M₂) : M₁ →SL[σ₁₂] M₂ :=
   { e.toLinearEquiv.toLinearMap with cont := e.continuous_toFun }
@@ -1821,7 +1820,7 @@ instance : Coe (M₁ ≃SL[σ₁₂] M₂) (M₁ →SL[σ₁₂] M₂) :=
 
 instance : ContinuousSemilinearEquivClass (M₁ ≃SL[σ₁₂] M₂) σ₁₂ M₁ M₂
     where
-  coe f := f
+  coe f := f.toFun
   inv f := f.invFun
   coe_injective' f g h₁ h₂ := by
     cases' f with f' _
@@ -1838,8 +1837,8 @@ instance : ContinuousSemilinearEquivClass (M₁ ≃SL[σ₁₂] M₂) σ₁₂ M
 
 -- see Note [function coercion]
 /-- Coerce continuous linear equivs to maps. -/
-instance : CoeFun (M₁ ≃SL[σ₁₂] M₂) fun _ => M₁ → M₂ :=
-  ⟨fun f => f⟩
+--instance : CoeFun (M₁ ≃SL[σ₁₂] M₂) fun _ => M₁ → M₂ :=
+  --⟨fun f => f⟩
 
 @[simp]
 theorem coe_def_rev (e : M₁ ≃SL[σ₁₂] M₂) : e.toContinuousLinearMap = e :=
@@ -1922,14 +1921,10 @@ theorem map_smulₛₗ (e : M₁ ≃SL[σ₁₂] M₂) (c : R₁) (x : M₁) : e
   (e : M₁ →SL[σ₁₂] M₂).map_smulₛₗ c x
 #align continuous_linear_equiv.map_smulₛₗ ContinuousLinearEquiv.map_smulₛₗ
 
-omit σ₂₁
-
 @[simp]
 theorem map_smul [Module R₁ M₂] (e : M₁ ≃L[R₁] M₂) (c : R₁) (x : M₁) : e (c • x) = c • e x :=
   (e : M₁ →L[R₁] M₂).map_smul c x
 #align continuous_linear_equiv.map_smul ContinuousLinearEquiv.map_smul
-
-include σ₂₁
 
 @[simp]
 theorem map_eq_zero_iff (e : M₁ ≃SL[σ₁₂] M₂) {x : M₁} : e x = 0 ↔ x = 0 :=
@@ -1966,8 +1961,6 @@ theorem comp_continuous_iff {α : Type _} [TopologicalSpace α] (e : M₁ ≃SL[
     Continuous (e ∘ f) ↔ Continuous f :=
   e.toHomeomorph.comp_continuous_iff
 #align continuous_linear_equiv.comp_continuous_iff ContinuousLinearEquiv.comp_continuous_iff
-
-omit σ₂₁
 
 /-- An extensionality lemma for `R ≃L[R] M`. -/
 theorem ext₁ [TopologicalSpace R₁] {f g : R₁ ≃L[R₁] M₁} (h : f 1 = g 1) : f = g :=
@@ -2006,8 +1999,6 @@ protected def symm (e : M₁ ≃SL[σ₁₂] M₂) : M₂ ≃SL[σ₂₁] M₁ :
     continuous_invFun := e.continuous_toFun }
 #align continuous_linear_equiv.symm ContinuousLinearEquiv.symm
 
-include σ₂₁
-
 @[simp]
 theorem symm_toLinearEquiv (e : M₁ ≃SL[σ₁₂] M₂) : e.symm.toLinearEquiv = e.toLinearEquiv.symm := by
   ext
@@ -2037,10 +2028,6 @@ theorem symm_map_nhds_eq (e : M₁ ≃SL[σ₁₂] M₂) (x : M₁) : map e.symm
   e.toHomeomorph.symm_map_nhds_eq x
 #align continuous_linear_equiv.symm_map_nhds_eq ContinuousLinearEquiv.symm_map_nhds_eq
 
-omit σ₂₁
-
-include σ₂₁ σ₃₂ σ₃₁
-
 /-- The composition of two continuous linear equivalences as a continuous linear equivalence. -/
 @[trans]
 protected def trans (e₁ : M₁ ≃SL[σ₁₂] M₂) (e₂ : M₂ ≃SL[σ₂₃] M₃) : M₁ ≃SL[σ₁₃] M₃ :=
@@ -2051,16 +2038,12 @@ protected def trans (e₁ : M₁ ≃SL[σ₁₂] M₂) (e₂ : M₂ ≃SL[σ₂�
     continuous_invFun := e₁.continuous_invFun.comp e₂.continuous_invFun }
 #align continuous_linear_equiv.trans ContinuousLinearEquiv.trans
 
-include σ₁₃
-
 @[simp]
 theorem trans_toLinearEquiv (e₁ : M₁ ≃SL[σ₁₂] M₂) (e₂ : M₂ ≃SL[σ₂₃] M₃) :
     (e₁.trans e₂).toLinearEquiv = e₁.toLinearEquiv.trans e₂.toLinearEquiv := by
   ext
   rfl
 #align continuous_linear_equiv.trans_to_linear_equiv ContinuousLinearEquiv.trans_toLinearEquiv
-
-omit σ₁₃ σ₂₁ σ₃₂ σ₃₁
 
 /-- Product of two continuous linear equivalences. The map comes from `equiv.prod_congr`. -/
 def prod [Module R₁ M₂] [Module R₁ M₃] [Module R₁ M₄] (e : M₁ ≃L[R₁] M₂) (e' : M₃ ≃L[R₁] M₄) :
@@ -2090,8 +2073,6 @@ theorem prod_symm [Module R₁ M₂] [Module R₁ M₃] [Module R₁ M₄] (e : 
   rfl
 #align continuous_linear_equiv.prod_symm ContinuousLinearEquiv.prod_symm
 
-include σ₂₁
-
 protected theorem bijective (e : M₁ ≃SL[σ₁₂] M₂) : Function.Bijective e :=
   e.toLinearEquiv.toEquiv.Bijective
 #align continuous_linear_equiv.bijective ContinuousLinearEquiv.bijective
@@ -2104,15 +2085,11 @@ protected theorem surjective (e : M₁ ≃SL[σ₁₂] M₂) : Function.Surjecti
   e.toLinearEquiv.toEquiv.Surjective
 #align continuous_linear_equiv.surjective ContinuousLinearEquiv.surjective
 
-include σ₃₂ σ₃₁ σ₁₃
-
 @[simp]
 theorem trans_apply (e₁ : M₁ ≃SL[σ₁₂] M₂) (e₂ : M₂ ≃SL[σ₂₃] M₃) (c : M₁) :
     (e₁.trans e₂) c = e₂ (e₁ c) :=
   rfl
 #align continuous_linear_equiv.trans_apply ContinuousLinearEquiv.trans_apply
-
-omit σ₃₂ σ₃₁ σ₁₃
 
 @[simp]
 theorem apply_symm_apply (e : M₁ ≃SL[σ₁₂] M₂) (c : M₂) : e (e.symm c) = c :=
@@ -2124,15 +2101,11 @@ theorem symm_apply_apply (e : M₁ ≃SL[σ₁₂] M₂) (b : M₁) : e.symm (e 
   e.1.left_inv b
 #align continuous_linear_equiv.symm_apply_apply ContinuousLinearEquiv.symm_apply_apply
 
-include σ₁₂ σ₂₃ σ₁₃ σ₃₁
-
 @[simp]
 theorem symm_trans_apply (e₁ : M₂ ≃SL[σ₂₁] M₁) (e₂ : M₃ ≃SL[σ₃₂] M₂) (c : M₁) :
     (e₂.trans e₁).symm c = e₂.symm (e₁.symm c) :=
   rfl
 #align continuous_linear_equiv.symm_trans_apply ContinuousLinearEquiv.symm_trans_apply
-
-omit σ₁₂ σ₂₃ σ₁₃ σ₃₁
 
 @[simp]
 theorem symm_image_image (e : M₁ ≃SL[σ₁₂] M₂) (s : Set M₁) : e.symm '' (e '' s) = s :=
@@ -2144,15 +2117,11 @@ theorem image_symm_image (e : M₁ ≃SL[σ₁₂] M₂) (s : Set M₂) : e '' (
   e.symm.symm_image_image s
 #align continuous_linear_equiv.image_symm_image ContinuousLinearEquiv.image_symm_image
 
-include σ₃₂ σ₃₁
-
 @[simp, norm_cast]
 theorem comp_coe (f : M₁ ≃SL[σ₁₂] M₂) (f' : M₂ ≃SL[σ₂₃] M₃) :
     (f' : M₂ →SL[σ₂₃] M₃).comp (f : M₁ →SL[σ₁₂] M₂) = (f.trans f' : M₁ →SL[σ₁₃] M₃) :=
   rfl
 #align continuous_linear_equiv.comp_coe ContinuousLinearEquiv.comp_coe
-
-omit σ₃₂ σ₃₁ σ₂₁
 
 @[simp]
 theorem coe_comp_coe_symm (e : M₁ ≃SL[σ₁₂] M₂) :
@@ -2165,8 +2134,6 @@ theorem coe_symm_comp_coe (e : M₁ ≃SL[σ₁₂] M₂) :
     (e.symm : M₂ →SL[σ₂₁] M₁).comp (e : M₁ →SL[σ₁₂] M₂) = ContinuousLinearMap.id R₁ M₁ :=
   ContinuousLinearMap.ext e.symm_apply_apply
 #align continuous_linear_equiv.coe_symm_comp_coe ContinuousLinearEquiv.coe_symm_comp_coe
-
-include σ₂₁
 
 @[simp]
 theorem symm_comp_self (e : M₁ ≃SL[σ₁₂] M₂) : (e.symm : M₂ → M₁) ∘ (e : M₁ → M₂) = id := by
@@ -2186,14 +2153,10 @@ theorem symm_symm (e : M₁ ≃SL[σ₁₂] M₂) : e.symm.symm = e := by
   rfl
 #align continuous_linear_equiv.symm_symm ContinuousLinearEquiv.symm_symm
 
-omit σ₂₁
-
 @[simp]
 theorem refl_symm : (ContinuousLinearEquiv.refl R₁ M₁).symm = ContinuousLinearEquiv.refl R₁ M₁ :=
   rfl
 #align continuous_linear_equiv.refl_symm ContinuousLinearEquiv.refl_symm
-
-include σ₂₁
 
 theorem symm_symm_apply (e : M₁ ≃SL[σ₁₂] M₂) (x : M₁) : e.symm.symm x = e x :=
   rfl
@@ -2245,8 +2208,6 @@ protected theorem LinearEquiv.uniformEmbedding {E₁ E₂ : Type _} [UniformSpac
       E₁ ≃SL[σ₁₂] E₂)
 #align linear_equiv.uniform_embedding LinearEquiv.uniformEmbedding
 
-omit σ₂₁
-
 /-- Create a `continuous_linear_equiv` from two `continuous_linear_map`s that are
 inverse of each other. -/
 def equivOfInverse (f₁ : M₁ →SL[σ₁₂] M₂) (f₂ : M₂ →SL[σ₂₁] M₁) (h₁ : Function.LeftInverse f₂ f₁)
@@ -2260,8 +2221,6 @@ def equivOfInverse (f₁ : M₁ →SL[σ₁₂] M₂) (f₂ : M₂ →SL[σ₂�
     right_inv := h₂ }
 #align continuous_linear_equiv.equiv_of_inverse ContinuousLinearEquiv.equivOfInverse
 
-include σ₂₁
-
 @[simp]
 theorem equivOfInverse_apply (f₁ : M₁ →SL[σ₁₂] M₂) (f₂ h₁ h₂ x) :
     equivOfInverse f₁ f₂ h₁ h₂ x = f₁ x :=
@@ -2273,8 +2232,6 @@ theorem symm_equivOfInverse (f₁ : M₁ →SL[σ₁₂] M₂) (f₂ h₁ h₂) 
     (equivOfInverse f₁ f₂ h₁ h₂).symm = equivOfInverse f₂ f₁ h₂ h₁ :=
   rfl
 #align continuous_linear_equiv.symm_equiv_of_inverse ContinuousLinearEquiv.symm_equivOfInverse
-
-omit σ₂₁
 
 variable (M₁)
 
@@ -2310,8 +2267,6 @@ def ulift : ULift M₁ ≃L[R₁] M₁ :=
     continuous_toFun := continuous_uLift_down
     continuous_invFun := continuous_uLift_up }
 #align continuous_linear_equiv.ulift ContinuousLinearEquiv.ulift
-
-include σ₂₁ σ₃₄ σ₂₃ σ₂₄ σ₁₃
 
 /-- A pair of continuous (semi)linear equivalences generates an equivalence between the spaces of
 continuous linear maps. See also `continuous_linear_equiv.arrow_congr`. -/
@@ -2376,8 +2331,6 @@ variable {R : Type _} [Ring R] {R₂ : Type _} [Ring R₂] {M : Type _} [Topolog
 
 variable {σ₁₂ : R →+* R₂} {σ₂₁ : R₂ →+* R} [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂]
 
-include σ₂₁
-
 @[simp]
 theorem map_sub (e : M ≃SL[σ₁₂] M₂) (x y : M) : e (x - y) = e x - e y :=
   (e : M →SL[σ₁₂] M₂).map_sub x y
@@ -2387,8 +2340,6 @@ theorem map_sub (e : M ≃SL[σ₁₂] M₂) (x y : M) : e (x - y) = e x - e y :
 theorem map_neg (e : M ≃SL[σ₁₂] M₂) (x : M) : e (-x) = -e x :=
   (e : M →SL[σ₁₂] M₂).map_neg x
 #align continuous_linear_equiv.map_neg ContinuousLinearEquiv.map_neg
-
-omit σ₂₁
 
 section
 
