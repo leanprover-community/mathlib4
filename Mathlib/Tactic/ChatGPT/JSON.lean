@@ -18,7 +18,7 @@ structure Message where
 deriving ToJson, FromJson
 
 structure Request where
-  model : String := "gpt-3.5-turbo"
+  model : String := "gpt-4"
   messages : List Message
   temperature : Float := 0.7
 deriving ToJson, FromJson
@@ -65,9 +65,42 @@ def _root_.List.everySecond : List α → List α
 | _ :: [] => []
 | _ :: b :: t => b :: t.everySecond
 
+def _root_.String.stripPrefix (s p : String) :=
+if s.startsWith p then
+  s.drop p.length
+else
+  s
+
+def _root_.String.partitionLines (p : String → Bool) (s : String) : String × String :=
+s.splitOn "\n" |>.partition p |>.map (String.intercalate "\n") (String.intercalate "\n")
+
+def _root_.String.fence (s : String) := s!"```\n{s}\n```\n"
+def _root_.Std.Format.fence (f : Format) := s!"{f}".trim.fence
+
+structure CodeBlock where
+  text : String
+deriving Inhabited, Repr
+
+namespace CodeBlock
+
+-- TODO: we could actually check the imports and opens from the environment,
+-- and verify that they contain what GPT wants!
+
+def imports (c : CodeBlock) : String := c.text.partitionLines (·.startsWith "import") |>.1 |>.trim
+def opens (c : CodeBlock) : String :=
+c.text.partitionLines (·.startsWith "import") |>.2 |>.trim
+  |>.partitionLines (·.startsWith "open") |>.1 |>.trim
+def body (c : CodeBlock) : String :=
+c.text.partitionLines (·.startsWith "import") |>.2 |>.trim
+  |>.partitionLines (·.startsWith "open") |>.2 |>.trim
+
+def markdownBody (c : CodeBlock) :=
+c.body.fence
+
+end CodeBlock
+
 /-- Process some markdown text, extracting the contents of any code blocks. -/
--- FIXME Sometimes ChatGPT uses ```lean to begin a code block. Better strip that off.
-def codeBlocks (text : String) : List String :=
-(text.splitOn "```").everySecond.map String.trim
+def codeBlocks (text : String) : List CodeBlock :=
+(text.splitOn "```").everySecond.map fun c => ⟨c.trim.stripPrefix "lean" |>.trim⟩
 
 end Mathlib.Tactic.ChatGPT

@@ -8,7 +8,7 @@ namespace Mathlib.Tactic.ChatGPT
 def sendMessages (messages : List Message) : IO Response := do
   let jsonResponse : String ← curl <| toString <| toJson <| ({ messages := messages } : Request)
   match parseResponse jsonResponse with
-  | .error e => throw <| IO.userError e
+  | .error e => throw <| IO.userError <| e ++ "\n" ++ jsonResponse
   | .ok r => pure r
 
 def send (request : String) : IO String := do

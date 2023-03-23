@@ -9,13 +9,13 @@ open List
 -- example (L M : List α) : (L ++ M).length = (M ++ L).length := by
 --   gpt2
 
--- example (L M : List α) : (L ++ M ++ L).length = (M ++ L ++ L).length := by
---   gpt2
+example (L M : List α) : (L ++ M ++ L).length = (M ++ L ++ L).length := by
+  gpt2
 
 -- # Now we try out `gpt3`.
 
-example (L M : List α) : (L ++ M ++ L).length = (M ++ L ++ L).length := by
-  gpt3
+-- example (L M : List α) : (L ++ M ++ L).length = (M ++ L ++ L).length := by
+--   gpt3
 
 -- This produces feedback on the first response, like so:
 

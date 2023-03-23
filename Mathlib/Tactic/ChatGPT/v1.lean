@@ -12,7 +12,7 @@ def ex1 (code : String) : List Message :=
 -- This is commented out, because it is a live request to ChatGPT.
 -- But it works, suggesting things like `def f : Nat := 3`.
 -- #eval show MetaM _ from do
---   pure <| (← sendMessages <| ex1 "def f : Nat := by sorry").content |>.map codeBlocks
+--   pure <| (← sendMessages <| ex1 "def f : Nat := by sorry").content.get! |> codeBlocks |>.map CodeBlock.body
 
 -- I thought we could do this, but it apparently makes instance loops.
 -- instance [Functor m] : MonadLift (ChatGPTM m) m where
@@ -24,7 +24,9 @@ elab tk:"gpt" : tactic => do
   let r ← sendMessages <| ex1 decl'
   let some response ← pure r.content | throwError "Couldn't understand the response from ChatGPT"
   let [block] ← pure <| codeBlocks response | throwError "I was hoping there'd be a single code block in the response:\n{response}"
-  logInfoAt tk block
+  logInfoAt tk response
+  logInfoAt tk block.text
+  logInfoAt tk block.body
 
 -- example (L M : List α) : (L ++ M).length = (M ++ L).length := by
 --   gpt
