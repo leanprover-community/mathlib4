@@ -240,7 +240,6 @@ theorem zipWith_rotate_one {β : Type _} (f : α → α → β) (x y : α) (l : 
   simp
 #align list.zip_with_rotate_one List.zipWith_rotate_one
 
--- porting note: new lemma
 theorem get?_rotate {l : List α} {n m : ℕ} (hml : m < l.length) :
     (l.rotate n).get? m = l.get? ((m + n) % l.length) := by
   rw [rotate_eq_drop_append_take_mod]
@@ -274,6 +273,7 @@ theorem head?_rotate {l : List α} {n : ℕ} (h : n < l.length) : head? (l.rotat
   rw [← get?_zero, get?_rotate (n.zero_le.trans_lt h), zero_add, Nat.mod_eq_of_lt h]
 #align list.head'_rotate List.head?_rotate
 
+-- porting note: moved down from its original location below `get_rotate` for golfing purposes
 set_option linter.deprecated false in
 theorem nthLe_rotate (l : List α) (n k : ℕ) (hk : k < (l.rotate n).length) :
     (l.rotate n).nthLe k hk =
