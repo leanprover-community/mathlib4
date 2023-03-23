@@ -55,9 +55,11 @@ def errors : M m (List Lean.Message) := do
 def sorries : M m (List (ContextInfo × MVarId × Position × Position)) := do
   pure <| (← get).solutions.head!.2.toList.bind Analysis.sorries
 
+def isDone : M m Bool := do
+  pure <| (← errors).isEmpty && (← sorries).isEmpty
+
 def done [Alternative m] : M m Unit := do
-  guard (← errors).isEmpty
-  guard (← sorries).isEmpty
+  guard (← isDone)
 
 def lastResponse : M m String := do
   pure <| (← get).log.find? (·.role == .assistant) |>.map (·.content) |>.getD ""
@@ -78,7 +80,17 @@ def getCodeBlock (response : String) : M IO CodeBlock := do
     else
       throw <| IO.userError s!"No code blocks found in ChatGPT's response:\n{response}"
   | [block] => pure block
-  | _ => throw <| IO.userError s!"Expected a single code block in ChatGPT's response:\n{response}"
+  | blocks =>
+    -- There are multiple code blocks.
+    -- This may because ChatGPT is trying to describe the goal to us.
+    let sol ← latestSolution
+    -- If there's a unique code block with prefix agreeing with the last solution, take that.
+    match blocks.filter (fun b => sol.take 25 = b.body.take 25) with
+    | [block] => pure block
+    -- Otherwise, if there are multiple blocks with langauge `lean`, just take the last one.
+    | _ => match blocks.reverse.filter (fun b => b.language = some "lean") with
+      | [] => throw <| IO.userError s!"Expected a single code block in ChatGPT's response:\n{response}"
+      | block :: _ => pure block
 
 def askForAssistance (prompt : String) : M IO Unit := do
   recordMessage ⟨.user, prompt⟩
@@ -89,14 +101,23 @@ def askForAssistance (prompt : String) : M IO Unit := do
 
 variable [MonadLog m] [AddMessageContext m] [MonadOptions m]
 
+variable [MonadLiftT IO m] [MonadLiftT CoreM m]
+
+def versionNumber := 0
+
 def runAndLog (stx : Syntax) (driver : M m α) : M m (String × α) := do
   let a ← driver
+
+  let logFile := ((← getFileName).stripPrefix ".lean") ++ s!".v{versionNumber}.gpt.log"
+  let success := if (← isDone) then "Success" else "Failure"
+  let log := (← get).log
+  let logContents := success ++ s!": {log.length} messages\n=====\n" ++ (String.intercalate "\n=====\n" <| (← get).log.map fun msg => s!"{msg.role}:\n" ++ msg.content)
+  IO.FS.writeFile logFile logContents
+
   logInfoAt stx "Message log follows:"
   for msg in (← get).log do
     logInfoAt stx (s!"{msg.role}:\n" ++ msg.content)
   pure (← latestSolution, a)
-
-variable [MonadLiftT IO m] [MonadLiftT CoreM m]
 
 def discussDeclContaining (stx : Syntax) (preEdit : String → String) (driver : M m α) :
     m (String × α) := do

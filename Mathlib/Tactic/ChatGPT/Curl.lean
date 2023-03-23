@@ -13,7 +13,7 @@ def runCmd (cmd : String) (args : Array String) (throwFailure := true) : IO Stri
 --   -d "@messages.json"%
 
 -- FIXME, customise where the JSON gets written? Or just pass it via stdin?
-def jsonFile := "chatgpt.json"
+def jsonFile (payload : String ):= s!"chatgpt.{hash payload}.json"
 
 open System (FilePath)
 
@@ -23,6 +23,7 @@ def defaultAPIKeyLocation : IO FilePath := do pure <| (← IO.getEnv "HOME").get
 def curl (payload : String) : IO String := do
   -- FIXME give a useful error message if the key isn't found.
   let key ← IO.FS.readFile (← defaultAPIKeyLocation)
+  let jsonFile := jsonFile payload
   IO.FS.writeFile jsonFile payload
   let out ← runCmd "curl"
       #["https://api.openai.com/v1/chat/completions", "-H", "Content-Type: application/json",
@@ -30,3 +31,6 @@ def curl (payload : String) : IO String := do
         "-d", s!"@{jsonFile}"] false
   IO.FS.removeFile jsonFile
   pure out
+
+def ISO8601Date : IO String := do
+  pure (← runCmd "date" #["+%Y-%m-%dT%H:%M:%S%z"]).trim

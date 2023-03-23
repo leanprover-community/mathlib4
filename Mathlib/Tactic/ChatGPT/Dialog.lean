@@ -19,7 +19,7 @@ def feedback : M IO String := do
       | (ctx, g, pos, _) :: _ => do
           -- TODO mention the later sorries?
           let pp ← ctx.ppGoals [g]
-          pure s!"In the proof you just gave me:\n{last}there's still a sorry at line {pos.line}, where the goal is:\n{pp.fence}Write one more step of the tactic proof, replacing the work `sorry`, that will make further progress on these goals. It's important that you don't just repeat the same code block!"
+          pure s!"In the proof you just gave me:\n{last}there's still a sorry at line {pos.line}, where the goal is:\n{pp.fence}Write one more step of the tactic proof, replacing the tactic `sorry`, that will make further progress on these goals. It's important that you don't just repeat the same code block!"
     | _ =>
         let goal := String.intercalate "\n" (unsolvedGoals.map List.tail).join |>.trim
         pure s!"The proof you just gave me:\n{last}still has unsolved goals:\n{goal.fence}Add another step of the proof, after what you've already written, that will make further progress on these goals. It's important that you don't just repeat the same code block!"
@@ -35,6 +35,15 @@ def initialPrompt : M IO String := do
 "I'm a mathematician who is expert in the Lean 4 interactive theorem prover,
 and I'd like to you help me fix or complete a proof.
 
+I want to remind you that we're using Lean 4, not the older Lean 3,
+and there have been some syntax changes. In particular:
+* Tactics on separate lines should not be separated by commas.
+* In the `rw` tactic you must enclose the lemmas in square brackets, even if there is just one.
+* Ihe `induction` and `cases` tactic now use a structured format, like pattern matching
+  (you can alternatively use `induction' with x y ih`, like in Lean 3).
+* Capitalization rules have changed, e.g. we write `List` instead of `list`.
+* Indenting is significant.
+
 I'm going to show you a declaration in Lean 4, with an incomplete or erroneous proof.
 I'd like you to work step by step, and in each successive response you'll write one more step of the proof.
 (That is, fixing an error, improving the last step, or adding one more step if there is a `sorry`.)
@@ -47,40 +56,23 @@ Let's start with the following proof:\n" ++ (← latestCodeBlock).markdownBody
   | [] => pure prompt
   | (ctx, g, _, _) :: _ => do
       let pp ← ctx.ppGoals [g]
-      pure <| prompt ++ s!"\nThe remaining goal is {pp.fence}"
+      pure <| prompt ++ s!"\nThe remaining goal is \n{pp.fence}"
 
-def justOnce : M MetaM String := do
+def dialog (n : Nat) : M MetaM String := do
   askForAssistance (← initialPrompt)
+  for i in List.range (n-1) do try
+    done
+    return s!"Success after {i+1} requests"
+  catch _ =>
+    askForAssistance (← feedback)
   try
     done
-    pure "success!"
-  catch _ =>
-    feedback
+    return s!"Success after {n} requests"
+  catch _ => return s!"Failed after {n} requests"
 
-elab tk:"gpt2" : tactic => do
-  let (newDecl, msg) ← discussDeclContaining tk
-    (fun decl => decl.replace "gpt2" "sorry") -- haha this will make some fun errors
-    justOnce
-  logInfoAt tk msg
-  logInfoAt tk newDecl
-
-def twice : M MetaM String := do
-  askForAssistance (← initialPrompt)
-  try
-    done
-    pure "success!"
-  catch _ =>
-    let prompt2 ← feedback
-    askForAssistance prompt2
-    try
-      done
-      pure "success on the second iteration!"
-    catch _ =>
-      pure ("failed!\n" ++ (← feedback))
-
-elab tk:"gpt3" : tactic => do
+elab tk:"gpt" : tactic => do
   let (newDecl, result) ← discussDeclContaining tk
-    (fun decl => decl.replace "gpt3" "sorry") -- haha this will make some fun errors
-    twice
+    (fun decl => decl.replace "gpt" "sorry") -- haha this will make some fun errors
+    (dialog 2)
   logInfoAt tk result
   logInfoAt tk newDecl

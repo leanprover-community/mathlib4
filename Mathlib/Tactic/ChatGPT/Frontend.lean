@@ -1,6 +1,5 @@
 import Mathlib.Tactic.ChatGPT.Lean
 import Mathlib.Data.Option.Defs
-import Mathlib.Util.Whatsnew
 
 open Lean Elab Meta
 
@@ -41,3 +40,6 @@ def getSourceUpTo (s : Syntax) : CoreM (String × String) := do
   let after := blanks.dropWhile (· ≤ line) |>.minimum? |>.getD lines.length
   pure (String.intercalate "\n" <| lines.take before,
     String.intercalate "\n" <| lines.take after |>.drop before)
+
+def getFileName : CoreM String := do
+  pure (← readThe Core.Context).fileName
