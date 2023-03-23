@@ -17,7 +17,7 @@ import Mathlib.RingTheory.UniqueFactorizationDomain
 
 ## Implementation notes
 
-See `src/ring_theory/localization/basic.lean` for a design overview.
+See `Mathlib/RingTheory/Localization/Basic.lean` for a design overview.
 
 ## Tags
 localization, ring localization, commutative ring localization, characteristic predicate,
@@ -44,9 +44,9 @@ theorem exists_reduced_fraction (x : K) :
   obtain ⟨⟨b, b_nonzero⟩, a, hab⟩ := exists_integer_multiple (nonZeroDivisors A) x
   obtain ⟨a', b', c', no_factor, rfl, rfl⟩ :=
     UniqueFactorizationMonoid.exists_reduced_factors' a b
-      (mem_non_zero_divisors_iff_ne_zero.mp b_nonzero)
-  obtain ⟨c'_nonzero, b'_nonzero⟩ := mul_mem_non_zero_divisors.mp b_nonzero
-  refine' ⟨a', ⟨b', b'_nonzero⟩, @no_factor, _⟩
+      (mem_nonZeroDivisors_iff_ne_zero.mp b_nonzero)
+  obtain ⟨_, b'_nonzero⟩ := mul_mem_nonZeroDivisors.mp b_nonzero
+  refine' ⟨a', ⟨b', b'_nonzero⟩, no_factor, _⟩
   refine' mul_left_cancel₀ (IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors b_nonzero) _
   simp only [Subtype.coe_mk, RingHom.map_mul, Algebra.smul_def] at *
   erw [← hab, mul_assoc, mk'_spec' _ a' ⟨b', b'_nonzero⟩]
@@ -57,61 +57,60 @@ noncomputable def num (x : K) : A :=
   Classical.choose (exists_reduced_fraction A x)
 #align is_fraction_ring.num IsFractionRing.num
 
-/-- `f.num x` is the denominator of `x : f.codomain` as a reduced fraction. -/
-noncomputable def denom (x : K) : nonZeroDivisors A :=
+/-- `f.den x` is the denominator of `x : f.codomain` as a reduced fraction. -/
+noncomputable def den (x : K) : nonZeroDivisors A :=
   Classical.choose (Classical.choose_spec (exists_reduced_fraction A x))
-#align is_fraction_ring.denom IsFractionRing.denom
+#align is_fraction_ring.denom IsFractionRing.den
 
-theorem num_denom_reduced (x : K) {d} : d ∣ num A x → d ∣ denom A x → IsUnit d :=
+theorem num_den_reduced (x : K) {d} : d ∣ num A x → d ∣ den A x → IsUnit d :=
   (Classical.choose_spec (Classical.choose_spec (exists_reduced_fraction A x))).1
-#align is_fraction_ring.num_denom_reduced IsFractionRing.num_denom_reduced
+#align is_fraction_ring.num_denom_reduced IsFractionRing.num_den_reduced
 
 @[simp]
-theorem mk'_num_denom (x : K) : mk' K (num A x) (denom A x) = x :=
+theorem mk'_num_den (x : K) : mk' K (num A x) (den A x) = x :=
   (Classical.choose_spec (Classical.choose_spec (exists_reduced_fraction A x))).2
-#align is_fraction_ring.mk'_num_denom IsFractionRing.mk'_num_denom
+#align is_fraction_ring.mk'_num_denom IsFractionRing.mk'_num_den
 
 variable {A}
 
-theorem num_mul_denom_eq_num_iff_eq {x y : K} :
-    x * algebraMap A K (denom A y) = algebraMap A K (num A y) ↔ x = y :=
-  ⟨fun h => by simpa only [mk'_num_denom] using eq_mk'_iff_mul_eq.mpr h, fun h =>
-    eq_mk'_iff_mul_eq.mp (by rw [h, mk'_num_denom])⟩
-#align is_fraction_ring.num_mul_denom_eq_num_iff_eq IsFractionRing.num_mul_denom_eq_num_iff_eq
+theorem num_mul_den_eq_num_iff_eq {x y : K} :
+    x * algebraMap A K (den A y) = algebraMap A K (num A y) ↔ x = y :=
+  ⟨fun h => by simpa only [mk'_num_den] using eq_mk'_iff_mul_eq.mpr h, fun h ↦
+    eq_mk'_iff_mul_eq.mp (by rw [h, mk'_num_den])⟩
+#align is_fraction_ring.num_mul_denom_eq_num_iff_eq IsFractionRing.num_mul_den_eq_num_iff_eq
 
-theorem num_mul_denom_eq_num_iff_eq' {x y : K} :
-    y * algebraMap A K (denom A x) = algebraMap A K (num A x) ↔ x = y :=
-  ⟨fun h => by simpa only [eq_comm, mk'_num_denom] using eq_mk'_iff_mul_eq.mpr h, fun h =>
-    eq_mk'_iff_mul_eq.mp (by rw [h, mk'_num_denom])⟩
-#align is_fraction_ring.num_mul_denom_eq_num_iff_eq' IsFractionRing.num_mul_denom_eq_num_iff_eq'
+theorem num_mul_den_eq_num_iff_eq' {x y : K} :
+    y * algebraMap A K (den A x) = algebraMap A K (num A x) ↔ x = y :=
+  ⟨fun h ↦ by simpa only [eq_comm, mk'_num_den] using eq_mk'_iff_mul_eq.mpr h, fun h ↦
+    eq_mk'_iff_mul_eq.mp (by rw [h, mk'_num_den])⟩
+#align is_fraction_ring.num_mul_denom_eq_num_iff_eq' IsFractionRing.num_mul_den_eq_num_iff_eq'
 
-theorem num_mul_denom_eq_num_mul_denom_iff_eq {x y : K} :
-    num A y * denom A x = num A x * denom A y ↔ x = y :=
-  ⟨fun h => by simpa only [mk'_num_denom] using mk'_eq_of_eq' h, fun h => by rw [h]⟩
-#align is_fraction_ring.num_mul_denom_eq_num_mul_denom_iff_eq IsFractionRing.num_mul_denom_eq_num_mul_denom_iff_eq
+theorem num_mul_den_eq_num_mul_den_iff_eq {x y : K} :
+    num A y * den A x = num A x * den A y ↔ x = y :=
+  ⟨fun h ↦ by rw [← mk'_num_den A x, ← mk'_num_den A y]; exact mk'_eq_of_eq' h, fun h ↦ by rw [h]⟩
+#align is_fraction_ring.num_mul_denom_eq_num_mul_denom_iff_eq IsFractionRing.num_mul_den_eq_num_mul_den_iff_eq
 
 theorem eq_zero_of_num_eq_zero {x : K} (h : num A x = 0) : x = 0 :=
-  num_mul_denom_eq_num_iff_eq'.mp (by rw [MulZeroClass.zero_mul, h, RingHom.map_zero])
+  num_mul_den_eq_num_iff_eq'.mp (by rw [MulZeroClass.zero_mul, h, RingHom.map_zero])
 #align is_fraction_ring.eq_zero_of_num_eq_zero IsFractionRing.eq_zero_of_num_eq_zero
 
-theorem isInteger_of_isUnit_denom {x : K} (h : IsUnit (denom A x : A)) : IsInteger A x := by
+theorem isInteger_of_isUnit_den {x : K} (h : IsUnit (den A x : A)) : IsInteger A x := by
   cases' h with d hd
-  have d_ne_zero : algebraMap A K (denom A x) ≠ 0 :=
-    IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors (denom A x).2
-  use ↑d⁻¹ * Num A x
-  refine' trans _ (mk'_num_denom A x)
+  have d_ne_zero : algebraMap A K (den A x) ≠ 0 :=
+    IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors (den A x).2
+  use ↑d⁻¹ * num A x
+  refine' _root_.trans _ (mk'_num_den A x)
   rw [map_mul, map_units_inv, hd]
   apply mul_left_cancel₀ d_ne_zero
   rw [← mul_assoc, mul_inv_cancel d_ne_zero, one_mul, mk'_spec']
-#align is_fraction_ring.is_integer_of_is_unit_denom IsFractionRing.isInteger_of_isUnit_denom
+#align is_fraction_ring.is_integer_of_is_unit_denom IsFractionRing.isInteger_of_isUnit_den
 
-theorem isUnit_denom_of_num_eq_zero {x : K} (h : num A x = 0) : IsUnit (denom A x : A) :=
-  num_denom_reduced A x (h.symm ▸ dvd_zero _) dvd_rfl
-#align is_fraction_ring.is_unit_denom_of_num_eq_zero IsFractionRing.isUnit_denom_of_num_eq_zero
+theorem isUnit_den_of_num_eq_zero {x : K} (h : num A x = 0) : IsUnit (den A x : A) :=
+  num_den_reduced A x (h.symm ▸ dvd_zero _) dvd_rfl
+#align is_fraction_ring.is_unit_denom_of_num_eq_zero IsFractionRing.isUnit_den_of_num_eq_zero
 
 end NumDenom
 
 variable (S)
 
 end IsFractionRing
-
