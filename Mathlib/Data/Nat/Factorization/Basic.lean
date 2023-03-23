@@ -345,6 +345,7 @@ For example, `ord_proj[2] n` is the even part of `n` and `ord_compl[2] n` is the
 
 
 -- mathport name: «exprord_proj[ ] »
+-- porting note: Lean 4 thinks we need `HPow` without this
 set_option quotPrecheck false in
 notation "ord_proj[" p "] " n:arg => p ^ Nat.factorization n p
 
