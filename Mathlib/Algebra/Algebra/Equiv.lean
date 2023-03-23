@@ -129,6 +129,11 @@ instance : EquivLike (A₁ ≃ₐ[R] A₂) A₁ A₂ where
 def Simps.apply (e : A₁ ≃ₐ[R] A₂) : A₁ → A₂ :=
   e
 
+-- Porting note: the default simps projection was `e.toEquiv`, it should be `EquivLike.toEquiv`
+/-- See Note [custom simps projection] -/
+def Simps.toEquiv (e : A₁ ≃ₐ[R] A₂) : A₁ ≃ A₂ :=
+  e
+
 -- Porting note: `protected` used to be an attribute below
 @[simp]
 protected theorem coe_coe {F : Type _} [AlgEquivClass F R A₁ A₂] (f : F) :
@@ -175,9 +180,12 @@ theorem mk_coe (e : A₁ ≃ₐ[R] A₂) (e' h₁ h₂ h₃ h₄ h₅) :
 #align alg_equiv.mk_coe AlgEquiv.mk_coe
 
 -- Porting note: `toFun_eq_coe` no longer needed in Lean4
-#noalign algebra_equiv.to_fun_eq_coe
--- Porting note: `toEquiv_eq_coe` no longer needed in Lean4
-#noalign algebra_equiv.to_equiv_eq_coe
+#noalign alg_equiv.to_fun_eq_coe
+
+@[simp]
+theorem toEquiv_eq_coe : e.toEquiv = e :=
+  rfl
+#align alg_equiv.to_equiv_eq_coe AlgEquiv.toEquiv_eq_coe
 
 @[simp]
 theorem toRingEquiv_eq_coe : e.toRingEquiv = e :=
@@ -189,9 +197,9 @@ theorem coe_ringEquiv : ((e : A₁ ≃+* A₂) : A₁ → A₂) = e :=
   rfl
 #align alg_equiv.coe_ring_equiv AlgEquiv.coe_ringEquiv
 
-theorem coe_ring_equiv' : (e.toRingEquiv : A₁ → A₂) = e :=
+theorem coe_ringEquiv' : (e.toRingEquiv : A₁ → A₂) = e :=
   rfl
-#align alg_equiv.coe_ring_equiv' AlgEquiv.coe_ring_equiv'
+#align alg_equiv.coe_ring_equiv' AlgEquiv.coe_ringEquiv'
 
 theorem coe_ringEquiv_injective : Function.Injective ((↑) : (A₁ ≃ₐ[R] A₂) → A₁ ≃+* A₂) :=
   fun _ _ h => ext <| RingEquiv.congr_fun h
@@ -331,7 +339,7 @@ theorem coe_coe_symm_apply_coe_apply {F : Type _} [AlgEquivClass F R A₁ A₂] 
 
 -- Porting note: `simp` normal form of `invFun_eq_symm`
 @[simp]
-theorem symm_toEquiv_eq_symm {e : A₁ ≃ₐ[R] A₂} : e.toEquiv.symm = e.symm :=
+theorem symm_toEquiv_eq_symm {e : A₁ ≃ₐ[R] A₂} : (e : A₁ ≃ A₂).symm = e.symm :=
   rfl
 
 theorem invFun_eq_symm {e : A₁ ≃ₐ[R] A₂} : e.invFun = e.symm :=

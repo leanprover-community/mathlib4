@@ -242,7 +242,7 @@ def opAddEquiv [Add α] : α ≃+ αᵐᵒᵖ :=
 #align mul_opposite.op_add_equiv_symm_apply MulOpposite.opAddEquiv_symm_apply
 
 @[simp]
-theorem opAddEquiv_toEquiv [Add α] : (opAddEquiv : α ≃+ αᵐᵒᵖ).toEquiv = opEquiv := rfl
+theorem opAddEquiv_toEquiv [Add α] : ((opAddEquiv : α ≃+ αᵐᵒᵖ) : α ≃ αᵐᵒᵖ) = opEquiv := rfl
 
 #align mul_opposite.op_add_equiv_to_equiv MulOpposite.opAddEquiv_toEquiv
 
@@ -310,7 +310,7 @@ def opMulEquiv [Mul α] : α ≃* αᵃᵒᵖ :=
 #align add_opposite.op_mul_equiv_symm_apply AddOpposite.opMulEquiv_symm_apply
 
 @[simp]
-theorem opMulEquiv_toEquiv [Mul α] : (opMulEquiv : α ≃* αᵃᵒᵖ).toEquiv = opEquiv :=
+theorem opMulEquiv_toEquiv [Mul α] : ((opMulEquiv : α ≃* αᵃᵒᵖ) : α ≃ αᵃᵒᵖ) = opEquiv :=
   rfl
 #align add_opposite.op_mul_equiv_to_equiv AddOpposite.opMulEquiv_toEquiv
 
