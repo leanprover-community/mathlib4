@@ -224,7 +224,7 @@ theorem coe_sdiff [FaithfulSMul M X] (P Q : { P : M // IsLprojection X P }) :
 #align is_Lprojection.coe_sdiff IsLprojection.coe_sdiff
 
 instance IsLprojection.Subtype.PartialOrder [FaithfulSMul M X] :
-  PartialOrder { P : M // IsLprojection X P } where
+    PartialOrder { P : M // IsLprojection X P } where
   le P Q := (↑P : M) = ↑(P ⊓ Q)
   le_refl P := by simpa only [coe_inf, ← sq] using P.prop.proj.eq.symm
   le_trans P Q R h₁ h₂ := by
@@ -238,8 +238,7 @@ theorem le_def [FaithfulSMul M X] (P Q : { P : M // IsLprojection X P }) :
 #align is_Lprojection.le_def IsLprojection.le_def
 
 instance IsLprojection.Subtype.Zero : Zero { P : M // IsLprojection X P } :=
-  ⟨⟨0,
-      ⟨by rw [IsIdempotentElem, MulZeroClass.zero_mul], fun x => by
+  ⟨⟨0, ⟨by rw [IsIdempotentElem, MulZeroClass.zero_mul], fun x => by
         simp only [zero_smul, norm_zero, sub_zero, one_smul, zero_add]⟩⟩⟩
 
 @[simp]
@@ -256,7 +255,7 @@ theorem coe_one : ↑(1 : { P : M // IsLprojection X P }) = (1 : M) :=
 #align is_Lprojection.coe_one IsLprojection.coe_one
 
 instance IsLprojection.Subtype.BoundedOrder [FaithfulSMul M X] :
-  BoundedOrder { P : M // IsLprojection X P } where
+    BoundedOrder { P : M // IsLprojection X P } where
   top := 1
   le_top P := (mul_one (P : M)).symm
   bot := 0
@@ -323,7 +322,7 @@ instance [FaithfulSMul M X] : Lattice { P : M // IsLprojection X P } where
     rw [← h₁, ← h₂]
 
 instance IsLprojection.Subtype.DistribLattice [FaithfulSMul M X] :
-  DistribLattice { P : M // IsLprojection X P } where
+    DistribLattice { P : M // IsLprojection X P } where
   le_sup_inf := fun P Q R =>
     by
     have e₁ : ↑((P ⊔ Q) ⊓ (P ⊔ R)) = ↑P + ↑Q * (R : M) * ↑(Pᶜ) := by
@@ -339,7 +338,7 @@ instance IsLprojection.Subtype.DistribLattice [FaithfulSMul M X] :
     rw [le_def, e₁, coe_inf, e₂]
 
 instance IsLprojection.Subtype.BooleanAlgebra [FaithfulSMul M X] :
-  BooleanAlgebra { P : M // IsLprojection X P } :=
+    BooleanAlgebra { P : M // IsLprojection X P } :=
 --porting note: use explicitly specified instance names
   { IsLprojection.Subtype.HasCompl,
     IsLprojection.Subtype.SDiff,
