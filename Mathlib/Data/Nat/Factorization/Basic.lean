@@ -345,6 +345,7 @@ For example, `ord_proj[2] n` is the even part of `n` and `ord_compl[2] n` is the
 
 
 -- mathport name: «exprord_proj[ ] »
+set_option quotPrecheck false in
 notation "ord_proj[" p "] " n:arg => p ^ Nat.factorization n p
 
 -- mathport name: «exprord_compl[ ] »
@@ -542,7 +543,6 @@ theorem dvd_ord_compl_of_dvd_not_dvd {p d n : ℕ} (hdn : d ∣ n) (hpd : ¬p �
   rcases eq_or_ne n 0 with (rfl | hn0); · simp
   rcases eq_or_ne d 0 with (rfl | hd0);
   · simp at hpd
-    cases hpd
   rw [← factorization_le_iff_dvd hd0 (ord_compl_pos p hn0).ne', factorization_ord_compl]
   intro q
   rcases eq_or_ne q p with (rfl | hqp)
@@ -569,8 +569,8 @@ theorem dvd_iff_div_factorization_eq_tsub {d n : ℕ} (hd : d ≠ 0) (hdn : d �
   rw [dvd_iff_le_div_mul n d]
   by_contra h2
   cases' exists_factorization_lt_of_lt (mul_ne_zero h1 hd) (not_le.mp h2) with p hp
-  rwa [factorization_mul h1 hd, add_apply, ← lt_tsub_iff_right, h, tsub_apply, lt_self_iff_false] at
-    hp
+  rwa [factorization_mul h1 hd, add_apply, ← lt_tsub_iff_right, h, tsub_apply,
+   lt_self_iff_false] at hp
 #align nat.dvd_iff_div_factorization_eq_tsub Nat.dvd_iff_div_factorization_eq_tsub
 
 theorem ord_proj_dvd_ord_proj_of_dvd {a b : ℕ} (hb0 : b ≠ 0) (hab : a ∣ b) (p : ℕ) :
