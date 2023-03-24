@@ -107,7 +107,6 @@ def ConcreteCategory.hasCoeToFun {X Y : C} : CoeFun (X ⟶ Y) fun _ => X → Y :
 attribute [local instance] ConcreteCategory.hasCoeToFun
 
 /-- In any concrete category, we can test equality of morphisms by pointwise evaluations.-/
-@[ext]
 theorem ConcreteCategory.hom_ext {X Y : C} (f g : X ⟶ Y) (w : ∀ x : X, f x = g x) : f = g := by
   apply @Faithful.map_injective C _ (Type w) _ (forget C) _ X Y
   dsimp [forget]
