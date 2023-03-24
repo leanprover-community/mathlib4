@@ -12,7 +12,6 @@ import Mathlib.Algebra.IsPrimePow
 import Mathlib.Algebra.Squarefree
 import Mathlib.Order.Hom.Bounded
 import Mathlib.Algebra.GCDMonoid.Basic
-
 /-!
 
 # Chains of divisors
@@ -230,7 +229,6 @@ end DivisorChain
 
 variable {N : Type _} [CancelCommMonoidWithZero N]
 
-set_option synthInstance.etaExperiment true in
 theorem factor_orderIso_map_one_eq_bot {m : Associates M} {n : Associates N}
     (d : { l : Associates M // l ≤ m } ≃o { l : Associates N // l ≤ n }) :
     (d ⟨1, one_dvd m⟩ : Associates N) = 1 := by
@@ -275,8 +273,7 @@ theorem pow_image_of_prime_by_factor_orderIso_dvd
   · rw [c₂_def, c₂_def, Subtype.coe_lt_coe, d.lt_iff_lt, Subtype.mk_lt_mk, hc₁'.lt_iff_lt]
     exact h
   · have : r ≤ n := hr.trans (d ⟨c₁ 1 ^ s, _⟩).2
-    suffices d.symm ⟨r, this⟩ ≤ ⟨c₁ 1 ^ s, hs'⟩
-      by
+    suffices d.symm ⟨r, this⟩ ≤ ⟨c₁ 1 ^ s, hs'⟩ by
       obtain ⟨i, hi⟩ := hc₁''.1 this
       use i
       simp only [c₂_def, ← hi, d.apply_symm_apply, Subtype.coe_eta, Subtype.coe_mk]
@@ -291,7 +288,7 @@ theorem pow_image_of_prime_by_factor_orderIso_dvd
 
 theorem map_prime_of_factor_orderIso [DecidableEq (Associates M)] {m p : Associates M}
     {n : Associates N} (hn : n ≠ 0) (hp : p ∈ normalizedFactors m) (d : Set.Iic m ≃o Set.Iic n) :
-    Prime (d ⟨p, dvd_of_mem_normalizedFactors hp⟩ : Associates N) := by
+    Prime ↑(d ⟨p, dvd_of_mem_normalizedFactors hp⟩) := by
   rw [← irreducible_iff_prime]
   refine' (Associates.isAtom_iff <| ne_zero_of_dvd_ne_zero hn (d ⟨p, _⟩).prop).mp ⟨_, fun b hb => _⟩
   · rw [Ne.def, ← Associates.isUnit_iff_eq_bot, Associates.isUnit_iff_eq_one,
@@ -319,7 +316,7 @@ theorem map_prime_of_factor_orderIso [DecidableEq (Associates M)] {m p : Associa
 theorem mem_normalizedFactors_factor_orderIso_of_mem_normalizedFactors [DecidableEq (Associates M)]
     [DecidableEq (Associates N)] {m p : Associates M} {n : Associates N} (hn : n ≠ 0)
     (hp : p ∈ normalizedFactors m) (d : Set.Iic m ≃o Set.Iic n) :
-    ↑(d ⟨p, dvd_of_mem_normalizedFactors hp⟩) ∈ normalizedFactors n := by
+    (d ⟨p, dvd_of_mem_normalizedFactors hp⟩) ∈ normalizedFactors n := by
   obtain ⟨q, hq, hq'⟩ :=
     exists_mem_normalizedFactors_of_dvd hn (map_prime_of_factor_orderIso hn hp d).irreducible
       (d ⟨p, dvd_of_mem_normalizedFactors hp⟩).prop
