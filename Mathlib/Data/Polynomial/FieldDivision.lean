@@ -524,15 +524,24 @@ theorem degree_pos_of_irreducible (hp : Irreducible p) : 0 < p.degree :=
 
 /- Porting note: factored out a have statement from isCoprime_of_is_root_of_eval_derivative_ne_zero 
 because the original proof was timing out -/
-theorem monic_dvd_derivative_of_monic_dvd_modByMonic {K : Type _} [Field K] (f : K[X]) {a : K}
-    (hf : (X - C a) ∣ f /ₘ (X - C a)) : X - C a ∣ derivative f := by
+theorem modByMonic_derivative_formula {K : Type _} [Field K] (f : K[X]) (a : K) :
+    f /ₘ (X - C a) + (X - C a) * derivative (f /ₘ (X - C a)) 
+    = derivative f - derivative (C (eval a f)) := by
   have key : (X - C a) * (f /ₘ (X - C a)) = f - f %ₘ (X - C a) := by
     rw [eq_sub_iff_add_eq, ← eq_sub_iff_add_eq', modByMonic_eq_sub_mul_div]
     exact monic_X_sub_C a
   replace key := congr_arg derivative key
   rw [modByMonic_X_sub_C_eq_C_eval] at key
   rw [derivative_mul,derivative_sub,derivative_X,derivative_sub] at key
-  rw [derivative_C,sub_zero,derivative_C,sub_zero,one_mul] at key
+  rw [derivative_C,sub_zero,one_mul] at key 
+  assumption
+
+/- Porting note: factored out another have statement from isCoprime_of_is_root_of_eval_derivative_ne_zero 
+because the original proof was timing out -/
+theorem monic_dvd_derivative_of_monic_dvd_modByMonic {K : Type _} [Field K] (f : K[X]) {a : K}
+    (hf : (X - C a) ∣ f /ₘ (X - C a)) : X - C a ∣ derivative f := by
+  have key := modByMonic_derivative_formula f a
+  rw [derivative_C,sub_zero] at key
   have ⟨u,hu⟩ := hf
   rw [←key,hu,←mul_add (X - C a) u _]
   use (u + derivative ((X - C a) * u))
