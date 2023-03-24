@@ -333,7 +333,7 @@ variable (n : ℕ)
 polynomials over multivariable polynomials in `fin n`.
 -/
 def finSuccEquiv : MvPolynomial (Fin (n + 1)) R ≃ₐ[R] Polynomial (MvPolynomial (Fin n) R) :=
-  (renameEquiv R (finSuccEquiv' n)).trans (optionEquivLeft R (Fin n))
+  (renameEquiv R (_root_.finSuccEquiv n)).trans (optionEquivLeft R (Fin n))
 #align mv_polynomial.fin_succ_equiv MvPolynomial.finSuccEquiv
 
 theorem finSuccEquiv_eq :
@@ -345,8 +345,6 @@ theorem finSuccEquiv_eq :
       coe_eval₂Hom, comp_apply, renameEquiv_apply, eval₂_C, RingHom.coe_comp, rename_C]
     rfl
   · refine' Fin.cases _ _ i <;> simp [finSuccEquiv]
-    · sorry
-    · sorry
 #align mv_polynomial.fin_succ_equiv_eq MvPolynomial.finSuccEquiv_eq
 
 @[simp]
