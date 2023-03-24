@@ -52,15 +52,21 @@ instance : CompleteLattice (MorphismProperty C) := by
 instance : Inhabited (MorphismProperty C) :=
   ⟨⊤⟩
 
+<<<<<<< HEAD
 lemma MorphismProperty.top_eq : (⊤ : MorphismProperty C) = fun _ _ _ => True := rfl
 
+=======
+>>>>>>> master
 variable {C}
 
 namespace MorphismProperty
 
+<<<<<<< HEAD
 lemma top_apply {X Y : C} (f : X ⟶ Y) : (⊤ : MorphismProperty C) f := by
   simp only [top_eq]
 
+=======
+>>>>>>> master
 instance : HasSubset (MorphismProperty C) :=
   ⟨fun P₁ P₂ => ∀ ⦃X Y : C⦄ (f : X ⟶ Y) (_ : P₁ f), P₂ f⟩
 
@@ -483,6 +489,7 @@ def FunctorsInverting (W : MorphismProperty C) (D : Type _) [Category D] :=
   FullSubcategory fun F : C ⥤ D => W.IsInvertedBy F
 #align category_theory.morphism_property.functors_inverting CategoryTheory.MorphismProperty.FunctorsInverting
 
+<<<<<<< HEAD
 @[ext]
 lemma FunctorsInverting.ext {W : MorphismProperty C} {F₁ F₂ : FunctorsInverting W D}
   (h : F₁.obj = F₂.obj) : F₁ = F₂ := by
@@ -491,6 +498,8 @@ lemma FunctorsInverting.ext {W : MorphismProperty C} {F₁ F₂ : FunctorsInvert
   subst h
   rfl
 
+=======
+>>>>>>> master
 instance (W : MorphismProperty C) (D : Type _) [Category D] : Category (FunctorsInverting W D) :=
   FullSubcategory.category _
 
