@@ -144,7 +144,7 @@ See note [reducible non-instances]. -/
 @[reducible]
 noncomputable def toField : Field K :=
   { IsFractionRing.isDomain A,
-    show CommRing K by infer_instance with
+    show CommRing K by skip with
     inv := IsFractionRing.inv A
     mul_inv_cancel := IsFractionRing.mul_inv_cancel A
     inv_zero := by

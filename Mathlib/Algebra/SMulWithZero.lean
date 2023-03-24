@@ -49,7 +49,8 @@ variable (R M)
 /-- `SMulWithZero` is a class consisting of a Type `R` with `0 ∈ R` and a scalar multiplication
 of `R` on a Type `M` with `0`, such that the equality `r • m = 0` holds if at least one among `r`
 or `m` equals `0`. -/
-class SMulWithZero [outParam <| Zero R] [outParam <| Zero M] extends SMulZeroClass R M where
+class SMulWithZero (R : semiOutParam (Type u)) (M : Type v)
+    [outParam <| Zero R] [outParam <| Zero M] extends SMulZeroClass R M where
   /-- Scalar multiplication by the scalar `0` is `0`. -/
   zero_smul : ∀ m : M, (0 : R) • m = 0
 #align smul_with_zero SMulWithZero
@@ -139,8 +140,8 @@ section MonoidWithZero
 /-- An action of a monoid with zero `R` on a Type `M`, also with `0`, extends `MulAction` and
 is compatible with `0` (both in `R` and in `M`), with `1 ∈ R`, and with associativity of
 multiplication on the monoid `M`. -/
-class MulActionWithZero (R M) [outParam <| MonoidWithZero R] [outParam <| Zero M]
-    extends MulAction R M where
+class MulActionWithZero (R : semiOutParam (Type u)) (M : Type v)
+    [outParam <| MonoidWithZero R] [outParam <| Zero M] extends MulAction R M where
   -- these fields are copied from `SMulWithZero`, as `extends` behaves poorly
   /-- Scalar multiplication by any element send `0` to `0`. -/
   smul_zero : ∀ r : R, r • (0 : M) = 0

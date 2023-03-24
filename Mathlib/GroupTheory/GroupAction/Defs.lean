@@ -99,7 +99,8 @@ theorem smul_eq_mul (α : Type _) [Mul α] {a a' : α} : a • a' = a * a' :=
 #align vadd_eq_add vadd_eq_add
 
 /-- Type class for additive monoid actions. -/
-class AddAction (G : Type _) (P : Type _) [outParam <| AddMonoid G] extends VAdd G P where
+class AddAction (G : semiOutParam (Type _)) (P : Type _) [outParam <| AddMonoid G]
+    extends VAdd G P where
   /-- Zero is a neutral element for `+ᵥ` -/
   protected zero_vadd : ∀ p : P, (0 : G) +ᵥ p = p
   /-- Associativity of `+` and `+ᵥ` -/
@@ -108,7 +109,8 @@ class AddAction (G : Type _) (P : Type _) [outParam <| AddMonoid G] extends VAdd
 
 /-- Typeclass for multiplicative actions by monoids. This generalizes group actions. -/
 @[to_additive (attr := ext)]
-class MulAction (α : Type _) (β : Type _) [outParam <| Monoid α] extends SMul α β where
+class MulAction (α : semiOutParam (Type _)) (β : Type _) [outParam <| Monoid α]
+    extends SMul α β where
   /-- One is the neutral element for `•` -/
   protected one_smul : ∀ b : β, (1 : α) • b = b
   /-- Associativity of `•` and `*` -/
@@ -687,7 +689,8 @@ def smulOneHom {M N} [Monoid M] [Monoid N] [MulAction M N] [IsScalarTower M N N]
 end CompatibleScalar
 
 /-- Typeclass for scalar multiplication that preserves `0` on the right. -/
-class SMulZeroClass (M A : Type _) [outParam <| Zero A] extends SMul M A where
+class SMulZeroClass (M : semiOutParam (Type u)) (A : Type v) [outParam <| Zero A]
+    extends SMul M A where
   /-- Multiplying `0` by a scalar gives `0` -/
   smul_zero : ∀ a : M, a • (0 : A) = 0
 #align smul_zero_class SMulZeroClass
@@ -764,7 +767,8 @@ end smul_zero
 This is exactly `DistribMulAction` without the `MulAction` part.
 -/
 @[ext]
-class DistribSMul (M A : Type _) [outParam <| AddZeroClass A] extends SMulZeroClass M A where
+class DistribSMul (M : semiOutParam (Type u)) (A : Type v) [outParam <| AddZeroClass A]
+    extends SMulZeroClass M A where
   /-- Scalar multiplication distributes across addition -/
   smul_add : ∀ (a : M) (x y : A), a • (x + y) = a • x + a • y
 #align distrib_smul DistribSMul
@@ -839,8 +843,8 @@ end DistribSMul
 
 /-- Typeclass for multiplicative actions on additive structures. This generalizes group modules. -/
 @[ext]
-class DistribMulAction (M A : Type _) [outParam <| Monoid M] [outParam <| AddMonoid A]
-    extends MulAction M A where
+class DistribMulAction (M : semiOutParam (Type u)) (A : Type v)
+    [outParam <| Monoid M] [outParam <| AddMonoid A] extends MulAction M A where
   /-- Multiplying `0` by a scalar gives `0` -/
   smul_zero : ∀ a : M, a • (0 : A) = 0
   /-- Scalar multiplication distributes across addition -/
@@ -963,7 +967,7 @@ end
 /-- Typeclass for multiplicative actions on multiplicative structures. This generalizes
 conjugation actions. -/
 @[ext]
-class MulDistribMulAction (M : Type _) (A : Type _)
+class MulDistribMulAction (M : semiOutParam (Type _)) (A : Type _)
     [outParam <| Monoid M] [outParam <| Monoid A] extends
   MulAction M A where
   /-- Distributivity of `•` across `*` -/

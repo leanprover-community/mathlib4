@@ -37,8 +37,8 @@ universe u v
 /-- Typeclass for multiplicative actions by monoids on semirings.
 
 This combines `DistribMulAction` with `MulDistribMulAction`. -/
-class MulSemiringAction (M : Type u) (R : Type v) [Monoid M] [Semiring R] extends
-  DistribMulAction M R where
+class MulSemiringAction (M : semiOutParam (Type u)) (R : Type v)
+    [outParam (Monoid M)] [outParam (Semiring R)] extends DistribMulAction M R where
   /-- Multipliying `1` by a scalar gives `1` -/
   smul_one : ∀ g : M, (g • (1 : R) : R) = 1
   /-- Scalara multiplication distributes across multiplication -/
