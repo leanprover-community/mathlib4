@@ -427,12 +427,11 @@ protected theorem continuous (f : M₁ →SL[σ₁₂] M₂) : Continuous f :=
   f.2
 #align continuous_linear_map.continuous ContinuousLinearMap.continuous
 
--- porting note: TODO: restore before merging
--- protected theorem uniformContinuous {E₁ E₂ : Type _} [UniformSpace E₁] [UniformSpace E₂]
---     [AddCommGroup E₁] [AddCommGroup E₂] [Module R₁ E₁] [Module R₂ E₂] [UniformAddGroup E₁]
---     [UniformAddGroup E₂] (f : E₁ →SL[σ₁₂] E₂) : UniformContinuous f :=
---   uniformContinuous_addMonoidHom_of_continuous f.Continuous
--- #align continuous_linear_map.uniform_continuous ContinuousLinearMap.uniformContinuous
+protected theorem uniformContinuous {E₁ E₂ : Type _} [UniformSpace E₁] [UniformSpace E₂]
+    [AddCommGroup E₁] [AddCommGroup E₂] [Module R₁ E₁] [Module R₂ E₂] [UniformAddGroup E₁]
+    [UniformAddGroup E₂] (f : E₁ →SL[σ₁₂] E₂) : UniformContinuous f :=
+  uniformContinuous_addMonoidHom_of_continuous f.continuous
+#align continuous_linear_map.uniform_continuous ContinuousLinearMap.uniformContinuous
 
 @[simp, norm_cast]
 theorem coe_inj {f g : M₁ →SL[σ₁₂] M₂} : (f : M₁ →ₛₗ[σ₁₂] M₂) = g ↔ f = g :=
@@ -2179,14 +2178,14 @@ protected theorem preimage_symm_preimage (e : M₁ ≃SL[σ₁₂] M₂) (s : Se
 protected theorem uniformEmbedding {E₁ E₂ : Type _} [UniformSpace E₁] [UniformSpace E₂]
     [AddCommGroup E₁] [AddCommGroup E₂] [Module R₁ E₁] [Module R₂ E₂] [UniformAddGroup E₁]
     [UniformAddGroup E₂] (e : E₁ ≃SL[σ₁₂] E₂) : UniformEmbedding e :=
-  e.toLinearEquiv.toEquiv.uniformEmbedding e.toContinuousLinearMap.UniformContinuous
-    e.symm.toContinuousLinearMap.UniformContinuous
+  e.toLinearEquiv.toEquiv.uniformEmbedding e.toContinuousLinearMap.uniformContinuous
+    e.symm.toContinuousLinearMap.uniformContinuous
 #align continuous_linear_equiv.uniform_embedding ContinuousLinearEquiv.uniformEmbedding
 
-protected theorem LinearEquiv.uniformEmbedding {E₁ E₂ : Type _} [UniformSpace E₁] [UniformSpace E₂]
-    [AddCommGroup E₁] [AddCommGroup E₂] [Module R₁ E₁] [Module R₂ E₂] [UniformAddGroup E₁]
-    [UniformAddGroup E₂] (e : E₁ ≃ₛₗ[σ₁₂] E₂) (h₁ : Continuous e) (h₂ : Continuous e.symm) :
-    UniformEmbedding e :=
+protected theorem _root_.LinearEquiv.uniformEmbedding {E₁ E₂ : Type _} [UniformSpace E₁]
+    [UniformSpace E₂] [AddCommGroup E₁] [AddCommGroup E₂] [Module R₁ E₁] [Module R₂ E₂]
+    [UniformAddGroup E₁] [UniformAddGroup E₂] (e : E₁ ≃ₛₗ[σ₁₂] E₂)
+    (h₁ : Continuous e) (h₂ : Continuous e.symm) : UniformEmbedding e :=
   ContinuousLinearEquiv.uniformEmbedding
     ({ e with
         continuous_toFun := h₁
@@ -2200,9 +2199,9 @@ def equivOfInverse (f₁ : M₁ →SL[σ₁₂] M₂) (f₂ : M₂ →SL[σ₂�
     (h₂ : Function.RightInverse f₂ f₁) : M₁ ≃SL[σ₁₂] M₂ :=
   { f₁ with
     toFun := f₁
-    continuous_toFun := f₁.Continuous
+    continuous_toFun := f₁.continuous
     invFun := f₂
-    continuous_invFun := f₂.Continuous
+    continuous_invFun := f₂.continuous
     left_inv := h₁
     right_inv := h₂ }
 #align continuous_linear_equiv.equiv_of_inverse ContinuousLinearEquiv.equivOfInverse
@@ -2222,8 +2221,7 @@ theorem symm_equivOfInverse (f₁ : M₁ →SL[σ₁₂] M₂) (f₂ h₁ h₂) 
 variable (M₁)
 
 /-- The continuous linear equivalences from `M` to itself form a group under composition. -/
-instance automorphismGroup : Group (M₁ ≃L[R₁] M₁)
-    where
+instance automorphismGroup : Group (M₁ ≃L[R₁] M₁) where
   mul f g := g.trans f
   one := ContinuousLinearEquiv.refl R₁ M₁
   inv f := f.symm
@@ -2237,7 +2235,7 @@ instance automorphismGroup : Group (M₁ ≃L[R₁] M₁)
     ext
     rfl
   mul_left_inv f := by
-    ext
+    ext x
     exact f.left_inv x
 #align continuous_linear_equiv.automorphism_group ContinuousLinearEquiv.automorphismGroup
 
@@ -2248,8 +2246,8 @@ variable {M₁} {R₄ : Type _} [Semiring R₄] [Module R₄ M₄] {σ₃₄ : R
 /-- The continuous linear equivalence between `ulift M₁` and `M₁`. -/
 def ulift : ULift M₁ ≃L[R₁] M₁ :=
   { Equiv.ulift with
-    map_add' := fun x y => rfl
-    map_smul' := fun c x => rfl
+    map_add' := fun _x _y => rfl
+    map_smul' := fun _c _x => rfl
     continuous_toFun := continuous_uLift_down
     continuous_invFun := continuous_uLift_up }
 #align continuous_linear_equiv.ulift ContinuousLinearEquiv.ulift
@@ -2258,8 +2256,7 @@ def ulift : ULift M₁ ≃L[R₁] M₁ :=
 continuous linear maps. See also `continuous_linear_equiv.arrow_congr`. -/
 @[simps]
 def arrowCongrEquiv (e₁₂ : M₁ ≃SL[σ₁₂] M₂) (e₄₃ : M₄ ≃SL[σ₄₃] M₃) :
-    (M₁ →SL[σ₁₄] M₄) ≃ (M₂ →SL[σ₂₃] M₃)
-    where
+    (M₁ →SL[σ₁₄] M₄) ≃ (M₂ →SL[σ₂₃] M₃) where
   toFun f := (e₄₃ : M₄ →SL[σ₄₃] M₃).comp (f.comp (e₁₂.symm : M₂ →SL[σ₂₁] M₁))
   invFun f := (e₄₃.symm : M₃ →SL[σ₃₄] M₄).comp (f.comp (e₁₂ : M₁ →SL[σ₁₂] M₂))
   left_inv f :=
@@ -2289,11 +2286,11 @@ def skewProd (e : M ≃L[R] M₂) (e' : M₃ ≃L[R] M₄) (f : M →L[R] M₄) 
       ↑f with
     continuous_toFun :=
       (e.continuous_toFun.comp continuous_fst).prod_mk
-        ((e'.continuous_toFun.comp continuous_snd).add <| f.Continuous.comp continuous_fst)
+        ((e'.continuous_toFun.comp continuous_snd).add <| f.continuous.comp continuous_fst)
     continuous_invFun :=
       (e.continuous_invFun.comp continuous_fst).prod_mk
         (e'.continuous_invFun.comp <|
-          continuous_snd.sub <| f.Continuous.comp <| e.continuous_invFun.comp continuous_fst) }
+          continuous_snd.sub <| f.continuous.comp <| e.continuous_invFun.comp continuous_fst) }
 #align continuous_linear_equiv.skew_prod ContinuousLinearEquiv.skewProd
 
 @[simp]
@@ -2337,8 +2334,7 @@ variable [TopologicalAddGroup M]
 
 /-- An invertible continuous linear map `f` determines a continuous equivalence from `M` to itself.
 -/
-def ofUnit (f : (M →L[R] M)ˣ) : M ≃L[R] M
-    where
+def ofUnit (f : (M →L[R] M)ˣ) : M ≃L[R] M where
   toLinearEquiv :=
     { toFun := f.val
       map_add' := by simp
@@ -2352,8 +2348,8 @@ def ofUnit (f : (M →L[R] M)ˣ) : M ≃L[R] M
         show (f.val * f.inv) x = x by
           rw [f.val_inv]
           simp }
-  continuous_toFun := f.val.Continuous
-  continuous_invFun := f.inv.Continuous
+  continuous_toFun := f.val.continuous
+  continuous_invFun := f.inv.continuous
 #align continuous_linear_equiv.of_unit ContinuousLinearEquiv.ofUnit
 
 /-- A continuous equivalence from `M` to itself determines an invertible continuous linear map. -/
@@ -2372,8 +2368,7 @@ variable (R M)
 
 /-- The units of the algebra of continuous `R`-linear endomorphisms of `M` is multiplicatively
 equivalent to the type of continuous linear equivalences between `M` and itself. -/
-def unitsEquiv : (M →L[R] M)ˣ ≃* M ≃L[R] M
-    where
+def unitsEquiv : (M →L[R] M)ˣ ≃* M ≃L[R] M where
   toFun := ofUnit
   invFun := toUnit
   left_inv f := by
@@ -2388,7 +2383,7 @@ def unitsEquiv : (M →L[R] M)ˣ ≃* M ≃L[R] M
 #align continuous_linear_equiv.units_equiv ContinuousLinearEquiv.unitsEquiv
 
 @[simp]
-theorem unitsEquiv_apply (f : (M →L[R] M)ˣ) (x : M) : unitsEquiv R M f x = f x :=
+theorem unitsEquiv_apply (f : (M →L[R] M)ˣ) (x : M) : unitsEquiv R M f x = (f : M →L[R] M) x :=
   rfl
 #align continuous_linear_equiv.units_equiv_apply ContinuousLinearEquiv.unitsEquiv_apply
 
@@ -2396,11 +2391,11 @@ end
 
 section
 
-variable (R) [TopologicalSpace R] [ContinuousMul R]
+variable (R) [TopologicalSpace R]
+variable [ContinuousMul R]
 
 /-- Continuous linear equivalences `R ≃L[R] R` are enumerated by `Rˣ`. -/
-def unitsEquivAut : Rˣ ≃ R ≃L[R] R
-    where
+def unitsEquivAut : Rˣ ≃ R ≃L[R] R where
   toFun u :=
     equivOfInverse (ContinuousLinearMap.smulRight (1 : R →L[R] R) ↑u)
       (ContinuousLinearMap.smulRight (1 : R →L[R] R) ↑u⁻¹) (fun x => by simp) fun x => by simp
@@ -2432,17 +2427,19 @@ end
 
 variable [Module R M₂] [TopologicalAddGroup M]
 
-open _Root_.ContinuousLinearMap (id fst snd)
-
-open _Root_.LinearMap (mem_ker)
-
 /-- A pair of continuous linear maps such that `f₁ ∘ f₂ = id` generates a continuous
 linear equivalence `e` between `M` and `M₂ × f₁.ker` such that `(e x).2 = x` for `x ∈ f₁.ker`,
 `(e x).1 = f₁ x`, and `(e (f₂ y)).2 = 0`. The map is given by `e x = (f₁ x, x - f₂ (f₁ x))`. -/
 def equivOfRightInverse (f₁ : M →L[R] M₂) (f₂ : M₂ →L[R] M) (h : Function.RightInverse f₂ f₁) :
     M ≃L[R] M₂ × ker f₁ :=
-  equivOfInverse (f₁.Prod (f₁.projKerOfRightInverse f₂ h)) (f₂.coprod (ker f₁).subtypeL)
-    (fun x => by simp) fun ⟨x, y⟩ => by simp [h x]
+  equivOfInverse (f₁.prod (f₁.projKerOfRightInverse f₂ h)) (f₂.coprod (ker f₁).subtypeL)
+    (fun x => by simp) fun ⟨x, y⟩ => by
+      -- Porting note: `simp` timeouts.
+      rw [ContinuousLinearMap.coprod_apply,
+        Submodule.subtypeL_apply, _root_.map_add, ContinuousLinearMap.prod_apply, h x,
+        ContinuousLinearMap.projKerOfRightInverse_comp_inv,
+        ContinuousLinearMap.prod_apply, LinearMap.map_coe_ker,
+        ContinuousLinearMap.projKerOfRightInverse_apply_idem, Prod.mk_add_mk, add_zero, zero_add]
 #align continuous_linear_equiv.equiv_of_right_inverse ContinuousLinearEquiv.equivOfRightInverse
 
 @[simp]
@@ -2492,14 +2489,14 @@ theorem coe_funUnique_symm : ⇑(funUnique ι R M).symm = Function.const ι :=
 variable (R M)
 
 /-- Continuous linear equivalence between dependent functions `Π i : fin 2, M i` and `M 0 × M 1`. -/
-@[simps (config := { fullyApplied := false })]
+@[simps! (config := { fullyApplied := false })]
 def piFinTwo (M : Fin 2 → Type _) [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)]
     [∀ i, TopologicalSpace (M i)] : (∀ i, M i) ≃L[R] M 0 × M 1 :=
   { Homeomorph.piFinTwo M with toLinearEquiv := LinearEquiv.piFinTwo R M }
 #align continuous_linear_equiv.pi_fin_two ContinuousLinearEquiv.piFinTwo
 
 /-- Continuous linear equivalence between vectors in `M² = fin 2 → M` and `M × M`. -/
-@[simps (config := { fullyApplied := false })]
+@[simps! (config := { fullyApplied := false })]
 def finTwoArrow : (Fin 2 → M) ≃L[R] M × M :=
   { piFinTwo R fun _ => M with toLinearEquiv := LinearEquiv.finTwoArrow R M }
 #align continuous_linear_equiv.fin_two_arrow ContinuousLinearEquiv.finTwoArrow
@@ -2566,11 +2563,11 @@ theorem ring_inverse_equiv (e : M ≃L[R] M) : Ring.inverse ↑e = inverse (e : 
 /-- The function `continuous_linear_equiv.inverse` can be written in terms of `ring.inverse` for the
 ring of self-maps of the domain. -/
 theorem to_ring_inverse (e : M ≃L[R] M₂) (f : M →L[R] M₂) :
-    inverse f = Ring.inverse ((e.symm : M₂ →L[R] M).comp f) ∘L ↑e.symm := by
-  by_cases h₁ : ∃ e' : M ≃L[R] M₂, ↑e' = f
+    inverse f = Ring.inverse ((e.symm : M₂ →L[R] M).comp f) ∘L e.symm := by
+  by_cases h₁ : ∃ e' : M ≃L[R] M₂, e' = f
   · obtain ⟨e', he'⟩ := h₁
     rw [← he']
-    change _ = Ring.inverse ↑(e'.trans e.symm) ∘L ↑e.symm
+    change _ = Ring.inverse (e'.trans e.symm : M →L[R] M) ∘L (e.symm : M₂ →L[R] M)
     ext
     simp
   · suffices ¬IsUnit ((e.symm : M₂ →L[R] M).comp f) by simp [this, h₁]
@@ -2579,7 +2576,7 @@ theorem to_ring_inverse (e : M ≃L[R] M₂) (f : M →L[R] M₂) :
     use (ContinuousLinearEquiv.unitsEquiv _ _ F).trans e
     ext
     dsimp
-    rw [coeFn_coe_base' F, hF]
+    rw [hF]
     simp
 #align continuous_linear_map.to_ring_inverse ContinuousLinearMap.to_ring_inverse
 
@@ -2605,15 +2602,16 @@ def ClosedComplemented (p : Submodule R M) : Prop :=
 #align submodule.closed_complemented Submodule.ClosedComplemented
 
 theorem ClosedComplemented.has_closed_complement {p : Submodule R M} [T1Space p]
-    (h : ClosedComplemented p) : ∃ (q : Submodule R M)(hq : IsClosed (q : Set M)), IsCompl p q :=
-  Exists.elim h fun f hf => ⟨ker f, f.isClosed_ker, LinearMap.isCompl_of_proj hf⟩
+    (h : ClosedComplemented p) :
+    ∃ (q : Submodule R M) (_ : IsClosed (q : Set M)), IsCompl p q :=
+  Exists.elim h fun f hf => ⟨ker f, isClosed_ker f, LinearMap.isCompl_of_proj hf⟩
 #align submodule.closed_complemented.has_closed_complement Submodule.ClosedComplemented.has_closed_complement
 
 protected theorem ClosedComplemented.isClosed [TopologicalAddGroup M] [T1Space M]
     {p : Submodule R M} (h : ClosedComplemented p) : IsClosed (p : Set M) := by
   rcases h with ⟨f, hf⟩
   have : ker (id R M - p.subtypeL.comp f) = p := LinearMap.ker_id_sub_eq_of_proj hf
-  exact this ▸ is_closed_ker _
+  exact this ▸ isClosed_ker _
 #align submodule.closed_complemented.is_closed Submodule.ClosedComplemented.isClosed
 
 @[simp]
