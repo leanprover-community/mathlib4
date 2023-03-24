@@ -536,8 +536,8 @@ theorem modByMonic_derivative_formula {K : Type _} [Field K] (f : K[X]) (a : K) 
   rw [derivative_C,sub_zero,one_mul] at key 
   assumption
 
-/- Porting note: factored out another have statement from isCoprime_of_is_root_of_eval_derivative_ne_zero 
-because the original proof was timing out -/
+/- Porting note: factored out another have statement from 
+isCoprime_of_is_root_of_eval_derivative_ne_zero because the original proof was timing out -/
 theorem monic_dvd_derivative_of_monic_dvd_modByMonic {K : Type _} [Field K] (f : K[X]) {a : K}
     (hf : (X - C a) ∣ f /ₘ (X - C a)) : X - C a ∣ derivative f := by
   have key := modByMonic_derivative_formula f a
