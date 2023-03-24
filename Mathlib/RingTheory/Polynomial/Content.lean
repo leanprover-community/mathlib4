@@ -8,10 +8,10 @@ Authors: Aaron Anderson
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.GcdMonoid.Finset
-import Mathbin.Data.Polynomial.FieldDivision
-import Mathbin.Data.Polynomial.EraseLead
-import Mathbin.Data.Polynomial.CancelLeads
+import Mathlib.Algebra.GCDMonoid.Finset
+import Mathlib.Data.Polynomial.FieldDivision
+import Mathlib.Data.Polynomial.EraseLead
+import Mathlib.Data.Polynomial.CancelLeads
 
 /-!
 # GCD structures on polynomials
@@ -55,14 +55,12 @@ theorem isPrimitive_one : IsPrimitive (1 : R[X]) := fun r h =>
   isUnit_C.mp (isUnit_of_dvd_one (C r) h)
 #align polynomial.is_primitive_one Polynomial.isPrimitive_one
 
-theorem Monic.isPrimitive {p : R[X]} (hp : p.Monic) : p.IsPrimitive :=
-  by
+theorem Monic.isPrimitive {p : R[X]} (hp : p.Monic) : p.IsPrimitive := by
   rintro r ⟨q, h⟩
   exact isUnit_of_mul_eq_one r (q.coeff p.nat_degree) (by rwa [← coeff_C_mul, ← h])
 #align polynomial.monic.is_primitive Polynomial.Monic.isPrimitive
 
-theorem IsPrimitive.ne_zero [Nontrivial R] {p : R[X]} (hp : p.IsPrimitive) : p ≠ 0 :=
-  by
+theorem IsPrimitive.ne_zero [Nontrivial R] {p : R[X]} (hp : p.IsPrimitive) : p ≠ 0 := by
   rintro rfl
   exact (hp 0 (dvd_zero (C 0))).NeZero rfl
 #align polynomial.is_primitive.ne_zero Polynomial.IsPrimitive.ne_zero
@@ -84,8 +82,7 @@ def content (p : R[X]) : R :=
   p.support.gcd p.coeff
 #align polynomial.content Polynomial.content
 
-theorem content_dvd_coeff {p : R[X]} (n : ℕ) : p.content ∣ p.coeff n :=
-  by
+theorem content_dvd_coeff {p : R[X]} (n : ℕ) : p.content ∣ p.coeff n := by
   by_cases h : n ∈ p.support
   · apply Finset.gcd_dvd h
   rw [mem_support_iff, Classical.not_not] at h
@@ -94,8 +91,7 @@ theorem content_dvd_coeff {p : R[X]} (n : ℕ) : p.content ∣ p.coeff n :=
 #align polynomial.content_dvd_coeff Polynomial.content_dvd_coeff
 
 @[simp]
-theorem content_c {r : R} : (C r).content = normalize r :=
-  by
+theorem content_c {r : R} : (C r).content = normalize r := by
   rw [content]
   by_cases h0 : r = 0
   · simp [h0]
@@ -111,8 +107,7 @@ theorem content_zero : content (0 : R[X]) = 0 := by rw [← C_0, content_C, norm
 theorem content_one : content (1 : R[X]) = 1 := by rw [← C_1, content_C, normalize_one]
 #align polynomial.content_one Polynomial.content_one
 
-theorem content_x_mul {p : R[X]} : content (X * p) = content p :=
-  by
+theorem content_x_mul {p : R[X]} : content (X * p) = content p := by
   rw [content, content, Finset.gcd_def, Finset.gcd_def]
   refine' congr rfl _
   have h : (X * p).support = p.support.map ⟨Nat.succ, Nat.succ_injective⟩ :=
@@ -138,8 +133,7 @@ theorem content_x_mul {p : R[X]} : content (X * p) = content p :=
 #align polynomial.content_X_mul Polynomial.content_x_mul
 
 @[simp]
-theorem content_x_pow {k : ℕ} : content ((X : R[X]) ^ k) = 1 :=
-  by
+theorem content_x_pow {k : ℕ} : content ((X : R[X]) ^ k) = 1 := by
   induction' k with k hi
   · simp
   rw [pow_succ, content_X_mul, hi]
@@ -149,8 +143,7 @@ theorem content_x_pow {k : ℕ} : content ((X : R[X]) ^ k) = 1 :=
 theorem content_x : content (X : R[X]) = 1 := by rw [← mul_one X, content_X_mul, content_one]
 #align polynomial.content_X Polynomial.content_x
 
-theorem content_c_mul (r : R) (p : R[X]) : (C r * p).content = normalize r * p.content :=
-  by
+theorem content_c_mul (r : R) (p : R[X]) : (C r * p).content = normalize r * p.content := by
   by_cases h0 : r = 0; · simp [h0]
   rw [content]; rw [content]; rw [← Finset.gcd_mul_left]
   refine' congr (congr rfl _) _ <;> ext <;> simp [h0, mem_support_iff]
@@ -161,8 +154,7 @@ theorem content_monomial {r : R} {k : ℕ} : content (monomial k r) = normalize 
   rw [← C_mul_X_pow_eq_monomial, content_C_mul, content_X_pow, mul_one]
 #align polynomial.content_monomial Polynomial.content_monomial
 
-theorem content_eq_zero_iff {p : R[X]} : content p = 0 ↔ p = 0 :=
-  by
+theorem content_eq_zero_iff {p : R[X]} : content p = 0 ↔ p = 0 := by
   rw [content, Finset.gcd_eq_zero_iff]
   constructor <;> intro h
   · ext n
@@ -181,8 +173,7 @@ theorem normalize_content {p : R[X]} : normalize p.content = p.content :=
 #align polynomial.normalize_content Polynomial.normalize_content
 
 theorem content_eq_gcd_range_of_lt (p : R[X]) (n : ℕ) (h : p.natDegree < n) :
-    p.content = (Finset.range n).gcd p.coeff :=
-  by
+    p.content = (Finset.range n).gcd p.coeff := by
   apply dvd_antisymm_of_normalize_eq normalize_content Finset.normalize_gcd
   · rw [Finset.dvd_gcd_iff]
     intro i hi
@@ -201,8 +192,7 @@ theorem content_eq_gcd_range_succ (p : R[X]) :
 #align polynomial.content_eq_gcd_range_succ Polynomial.content_eq_gcd_range_succ
 
 theorem content_eq_gcd_leadingCoeff_content_eraseLead (p : R[X]) :
-    p.content = GCDMonoid.gcd p.leadingCoeff (eraseLead p).content :=
-  by
+    p.content = GCDMonoid.gcd p.leadingCoeff (eraseLead p).content := by
   by_cases h : p = 0
   · simp [h]
   rw [← leading_coeff_eq_zero, leading_coeff, ← Ne.def, ← mem_support_iff] at h
@@ -213,8 +203,7 @@ theorem content_eq_gcd_leadingCoeff_content_eraseLead (p : R[X]) :
   rw [erase_lead_coeff, if_neg hi.1]
 #align polynomial.content_eq_gcd_leading_coeff_content_erase_lead Polynomial.content_eq_gcd_leadingCoeff_content_eraseLead
 
-theorem dvd_content_iff_c_dvd {p : R[X]} {r : R} : r ∣ p.content ↔ C r ∣ p :=
-  by
+theorem dvd_content_iff_c_dvd {p : R[X]} {r : R} : r ∣ p.content ↔ C r ∣ p := by
   rw [C_dvd_iff_dvd_coeff]
   constructor
   · intro h i
@@ -229,8 +218,7 @@ theorem c_content_dvd (p : R[X]) : C p.content ∣ p :=
   dvd_content_iff_c_dvd.1 dvd_rfl
 #align polynomial.C_content_dvd Polynomial.c_content_dvd
 
-theorem isPrimitive_iff_content_eq_one {p : R[X]} : p.IsPrimitive ↔ p.content = 1 :=
-  by
+theorem isPrimitive_iff_content_eq_one {p : R[X]} : p.IsPrimitive ↔ p.content = 1 := by
   rw [← normalize_content, normalize_eq_one, is_primitive]
   simp_rw [← dvd_content_iff_C_dvd]
   exact ⟨fun h => h p.content (dvd_refl p.content), fun h r hdvd => isUnit_of_dvd_unit hdvd h⟩
@@ -252,8 +240,7 @@ def primPart (p : R[X]) : R[X] :=
   if p = 0 then 1 else Classical.choose (c_content_dvd p)
 #align polynomial.prim_part Polynomial.primPart
 
-theorem eq_c_content_mul_primPart (p : R[X]) : p = C p.content * p.primPart :=
-  by
+theorem eq_c_content_mul_primPart (p : R[X]) : p = C p.content * p.primPart := by
   by_cases h : p = 0; · simp [h]
   rw [prim_part, if_neg h, ← Classical.choose_spec (C_content_dvd p)]
 #align polynomial.eq_C_content_mul_prim_part Polynomial.eq_c_content_mul_primPart
@@ -263,8 +250,7 @@ theorem primPart_zero : primPart (0 : R[X]) = 1 :=
   if_pos rfl
 #align polynomial.prim_part_zero Polynomial.primPart_zero
 
-theorem isPrimitive_primPart (p : R[X]) : p.primPart.IsPrimitive :=
-  by
+theorem isPrimitive_primPart (p : R[X]) : p.primPart.IsPrimitive := by
   by_cases h : p = 0; · simp [h]
   rw [← content_eq_zero_iff] at h
   rw [is_primitive_iff_content_eq_one]
@@ -280,8 +266,7 @@ theorem primPart_ne_zero (p : R[X]) : p.primPart ≠ 0 :=
   p.isPrimitive_primPart.NeZero
 #align polynomial.prim_part_ne_zero Polynomial.primPart_ne_zero
 
-theorem natDegree_primPart (p : R[X]) : p.primPart.natDegree = p.natDegree :=
-  by
+theorem natDegree_primPart (p : R[X]) : p.primPart.natDegree = p.natDegree := by
   by_cases h : C p.content = 0
   · rw [C_eq_zero, content_eq_zero_iff] at h
     simp [h]
@@ -294,8 +279,7 @@ theorem IsPrimitive.primPart_eq {p : R[X]} (hp : p.IsPrimitive) : p.primPart = p
   rw [← one_mul p.prim_part, ← C_1, ← hp.content_eq_one, ← p.eq_C_content_mul_prim_part]
 #align polynomial.is_primitive.prim_part_eq Polynomial.IsPrimitive.primPart_eq
 
-theorem isUnit_primPart_c (r : R) : IsUnit (C r).primPart :=
-  by
+theorem isUnit_primPart_c (r : R) : IsUnit (C r).primPart := by
   by_cases h0 : r = 0
   · simp [h0]
   unfold IsUnit
@@ -316,8 +300,7 @@ theorem primPart_dvd (p : R[X]) : p.primPart ∣ p :=
 
 theorem aeval_primPart_eq_zero {S : Type _} [Ring S] [IsDomain S] [Algebra R S]
     [NoZeroSMulDivisors R S] {p : R[X]} {s : S} (hpzero : p ≠ 0) (hp : aeval s p = 0) :
-    aeval s p.primPart = 0 :=
-  by
+    aeval s p.primPart = 0 := by
   rw [eq_C_content_mul_prim_part p, map_mul, aeval_C] at hp
   have hcont : p.content ≠ 0 := fun h => hpzero (content_eq_zero_iff.1 h)
   replace hcont := Function.Injective.ne (NoZeroSMulDivisors.algebraMap_injective R S) hcont
@@ -327,8 +310,7 @@ theorem aeval_primPart_eq_zero {S : Type _} [Ring S] [IsDomain S] [Algebra R S]
 
 theorem eval₂_primPart_eq_zero {S : Type _} [CommRing S] [IsDomain S] {f : R →+* S}
     (hinj : Function.Injective f) {p : R[X]} {s : S} (hpzero : p ≠ 0) (hp : eval₂ f s p = 0) :
-    eval₂ f s p.primPart = 0 :=
-  by
+    eval₂ f s p.primPart = 0 := by
   rw [eq_C_content_mul_prim_part p, eval₂_mul, eval₂_C] at hp
   have hcont : p.content ≠ 0 := fun h => hpzero (content_eq_zero_iff.1 h)
   replace hcont := Function.Injective.ne hinj hcont
@@ -339,8 +321,7 @@ theorem eval₂_primPart_eq_zero {S : Type _} [CommRing S] [IsDomain S] {f : R �
 end PrimPart
 
 theorem gcd_content_eq_of_dvd_sub {a : R} {p q : R[X]} (h : C a ∣ p - q) :
-    GCDMonoid.gcd a p.content = GCDMonoid.gcd a q.content :=
-  by
+    GCDMonoid.gcd a p.content = GCDMonoid.gcd a q.content := by
   rw [content_eq_gcd_range_of_lt p (max p.nat_degree q.nat_degree).succ
       (lt_of_le_of_lt (le_max_left _ _) (Nat.lt_succ_self _))]
   rw [content_eq_gcd_range_of_lt q (max p.nat_degree q.nat_degree).succ
@@ -354,8 +335,7 @@ theorem gcd_content_eq_of_dvd_sub {a : R} {p q : R[X]} (h : C a ∣ p - q) :
 
 theorem content_mul_aux {p q : R[X]} :
     GCDMonoid.gcd (p * q).eraseLead.content p.leadingCoeff =
-      GCDMonoid.gcd (p.eraseLead * q).content p.leadingCoeff :=
-  by
+      GCDMonoid.gcd (p.eraseLead * q).content p.leadingCoeff := by
   rw [gcd_comm (content _) _, gcd_comm (content _) _]
   apply gcd_content_eq_of_dvd_sub
   rw [← self_sub_C_mul_X_pow, ← self_sub_C_mul_X_pow, sub_mul, sub_sub, add_comm, sub_add,
@@ -426,8 +406,7 @@ theorem primPart_mul {p q : R[X]} (h0 : p * q ≠ 0) : (p * q).primPart = p.prim
 #align polynomial.prim_part_mul Polynomial.primPart_mul
 
 theorem IsPrimitive.dvd_primPart_iff_dvd {p q : R[X]} (hp : p.IsPrimitive) (hq : q ≠ 0) :
-    p ∣ q.primPart ↔ p ∣ q :=
-  by
+    p ∣ q.primPart ↔ p ∣ q := by
   refine' ⟨fun h => h.trans (Dvd.intro_left _ q.eq_C_content_mul_prim_part.symm), fun h => _⟩
   rcases h with ⟨r, rfl⟩
   apply Dvd.intro _
@@ -477,8 +456,7 @@ theorem exists_primitive_lcm_of_isPrimitive {p q : R[X]} (hp : p.IsPrimitive) (h
 #align polynomial.exists_primitive_lcm_of_is_primitive Polynomial.exists_primitive_lcm_of_isPrimitive
 
 theorem dvd_iff_content_dvd_content_and_primPart_dvd_primPart {p q : R[X]} (hq : q ≠ 0) :
-    p ∣ q ↔ p.content ∣ q.content ∧ p.primPart ∣ q.primPart :=
-  by
+    p ∣ q ↔ p.content ∣ q.content ∧ p.primPart ∣ q.primPart := by
   constructor <;> intro h
   · rcases h with ⟨r, rfl⟩
     rw [content_mul, p.is_primitive_prim_part.dvd_prim_part_iff_dvd hq]
@@ -506,14 +484,12 @@ instance (priority := 100) normalizedGcdMonoid : NormalizedGCDMonoid R[X] :=
     tauto
 #align polynomial.normalized_gcd_monoid Polynomial.normalizedGcdMonoid
 
-theorem degree_gcd_le_left {p : R[X]} (hp : p ≠ 0) (q) : (gcd p q).degree ≤ p.degree :=
-  by
+theorem degree_gcd_le_left {p : R[X]} (hp : p ≠ 0) (q) : (gcd p q).degree ≤ p.degree := by
   have := nat_degree_le_iff_degree_le.mp (nat_degree_le_of_dvd (gcd_dvd_left p q) hp)
   rwa [degree_eq_nat_degree hp]
 #align polynomial.degree_gcd_le_left Polynomial.degree_gcd_le_left
 
-theorem degree_gcd_le_right (p) {q : R[X]} (hq : q ≠ 0) : (gcd p q).degree ≤ q.degree :=
-  by
+theorem degree_gcd_le_right (p) {q : R[X]} (hq : q ≠ 0) : (gcd p q).degree ≤ q.degree := by
   rw [gcd_comm]
   exact degree_gcd_le_left hq p
 #align polynomial.degree_gcd_le_right Polynomial.degree_gcd_le_right
