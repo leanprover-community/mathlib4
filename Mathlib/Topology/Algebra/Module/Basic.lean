@@ -353,6 +353,7 @@ def linearMapOfMemClosureRangeCoe (f : M₁ → M₂)
     map_smul' := (isClosed_setOf_map_smul M₁ M₂ σ).closure_subset_iff.2
       (Set.range_subset_iff.2 LinearMap.map_smulₛₗ) hf }
 #align linear_map_of_mem_closure_range_coe linearMapOfMemClosureRangeCoe
+#align linear_map_of_mem_closure_range_coe_apply linearMapOfMemClosureRangeCoe_apply
 
 /-- Construct a bundled linear map from a pointwise limit of linear maps -/
 @[simps! (config := .asFn)]
@@ -361,6 +362,7 @@ def linearMapOfTendsto (f : M₁ → M₂) (g : α → M₁ →ₛₗ[σ] M₂) 
   linearMapOfMemClosureRangeCoe f <|
     mem_closure_of_tendsto h <| eventually_of_forall fun _ => Set.mem_range_self _
 #align linear_map_of_tendsto linearMapOfTendsto
+#align linear_map_of_tendsto_apply linearMapOfTendsto_apply
 
 variable (M₁ M₂ σ)
 
@@ -879,6 +881,7 @@ def toLinearMapRingHom [ContinuousAdd M₁] : (M₁ →L[R₁] M₁) →+* M₁ 
   map_add' _ _ := rfl
   map_mul' _ _ := rfl
 #align continuous_linear_map.to_linear_map_ring_hom ContinuousLinearMap.toLinearMapRingHom
+#align continuous_linear_map.to_linear_map_ring_hom_apply ContinuousLinearMap.toLinearMapRingHom_apply
 
 section ApplyAction
 
@@ -1582,6 +1585,7 @@ def prodEquiv : (M →L[R] N₂) × (M →L[R] N₃) ≃ (M →L[R] N₂ × N₃
   left_inv f := by ext <;> rfl
   right_inv f := by ext <;> rfl
 #align continuous_linear_map.prod_equiv ContinuousLinearMap.prodEquiv
+#align continuous_linear_map.prod_equiv_apply ContinuousLinearMap.prodEquiv_apply
 
 theorem prod_ext_iff {f g : M × N₂ →L[R] N₃} :
     f = g ↔ f.comp (inl _ _ _) = g.comp (inl _ _ _) ∧ f.comp (inr _ _ _) = g.comp (inr _ _ _) := by
@@ -1632,6 +1636,7 @@ def prodₗ : ((M →L[R] N₂) × (M →L[R] N₃)) ≃ₗ[S] M →L[R] N₂ ×
     map_add' := fun _f _g => rfl
     map_smul' := fun _c _f => rfl }
 #align continuous_linear_map.prodₗ ContinuousLinearMap.prodₗ
+#align continuous_linear_map.prodₗ_apply ContinuousLinearMap.prodₗ_apply
 
 /-- The coercion from `M →L[R] M₂` to `M →ₗ[R] M₂`, as a linear map. -/
 @[simps]
@@ -1640,6 +1645,7 @@ def coeLM : (M →L[R] N₃) →ₗ[S] M →ₗ[R] N₃ where
   map_add' f g := coe_add f g
   map_smul' c f := coe_smul c f
 #align continuous_linear_map.coe_lm ContinuousLinearMap.coeLM
+#align continuous_linear_map.coe_lm_apply ContinuousLinearMap.coeLM_apply
 
 variable {S} (σ₁₃)
 
@@ -1650,6 +1656,7 @@ def coeLMₛₗ : (M →SL[σ₁₃] M₃) →ₗ[S₃] M →ₛₗ[σ₁₃] M�
   map_add' f g := coe_add f g
   map_smul' c f := coe_smul c f
 #align continuous_linear_map.coe_lmₛₗ ContinuousLinearMap.coeLMₛₗ
+#align continuous_linear_map.coe_lmₛₗ_apply ContinuousLinearMap.coeLMₛₗ_apply
 
 variable {σ₁₃}
 
@@ -2267,6 +2274,8 @@ def arrowCongrEquiv (e₁₂ : M₁ ≃SL[σ₁₂] M₂) (e₄₃ : M₄ ≃SL[
     ContinuousLinearMap.ext fun x => by
       simp only [ContinuousLinearMap.comp_apply, apply_symm_apply, coe_coe]
 #align continuous_linear_equiv.arrow_congr_equiv ContinuousLinearEquiv.arrowCongrEquiv
+#align continuous_linear_equiv.arrow_congr_equiv_apply ContinuousLinearEquiv.arrowCongrEquiv_apply
+#align continuous_linear_equiv.arrow_congr_equiv_symm_apply ContinuousLinearEquiv.arrowCongrEquiv_symm_apply
 
 end AddCommMonoid
 
