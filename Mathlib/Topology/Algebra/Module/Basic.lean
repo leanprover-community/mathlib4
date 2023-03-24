@@ -1415,28 +1415,32 @@ theorem coe_sub' (f g : M →SL[σ₁₂] M₂) : ⇑(f - g) = f - g :=
 
 end
 
-@[simp]
+-- Porting note: `nolint simpNF` is required because we don't have η for classes. (lean4#2074)
+@[simp, nolint simpNF]
 theorem comp_neg [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [TopologicalAddGroup M₂] [TopologicalAddGroup M₃]
     (g : M₂ →SL[σ₂₃] M₃) (f : M →SL[σ₁₂] M₂) : g.comp (-f) = -g.comp f := by
   ext x
   simp
 #align continuous_linear_map.comp_neg ContinuousLinearMap.comp_neg
 
-@[simp]
+-- Porting note: `nolint simpNF` is required because we don't have η for classes. (lean4#2074)
+@[simp, nolint simpNF]
 theorem neg_comp [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [TopologicalAddGroup M₃] (g : M₂ →SL[σ₂₃] M₃)
     (f : M →SL[σ₁₂] M₂) : (-g).comp f = -g.comp f := by
   ext
   simp
 #align continuous_linear_map.neg_comp ContinuousLinearMap.neg_comp
 
-@[simp]
+-- Porting note: `nolint simpNF` is required because we don't have η for classes. (lean4#2074)
+@[simp, nolint simpNF]
 theorem comp_sub [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [TopologicalAddGroup M₂] [TopologicalAddGroup M₃]
     (g : M₂ →SL[σ₂₃] M₃) (f₁ f₂ : M →SL[σ₁₂] M₂) : g.comp (f₁ - f₂) = g.comp f₁ - g.comp f₂ := by
   ext
   simp
 #align continuous_linear_map.comp_sub ContinuousLinearMap.comp_sub
 
-@[simp]
+-- Porting note: `nolint simpNF` is required because we don't have η for classes. (lean4#2074)
+@[simp, nolint simpNF]
 theorem sub_comp [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [TopologicalAddGroup M₃] (g₁ g₂ : M₂ →SL[σ₂₃] M₃)
     (f : M →SL[σ₁₂] M₂) : (g₁ - g₂).comp f = g₁.comp f - g₂.comp f := by
   ext
@@ -1477,7 +1481,8 @@ theorem coe_projKerOfRightInverse_apply [TopologicalAddGroup M] (f₁ : M →SL[
   rfl
 #align continuous_linear_map.coe_proj_ker_of_right_inverse_apply ContinuousLinearMap.coe_projKerOfRightInverse_apply
 
-@[simp]
+-- Porting note: `nolint simpNF` is required because we don't have η for classes. (lean4#2074)
+@[simp, nolint simpNF]
 theorem projKerOfRightInverse_apply_idem [TopologicalAddGroup M] (f₁ : M →SL[σ₁₂] M₂)
     (f₂ : M₂ →SL[σ₂₁] M) (h : Function.RightInverse f₂ f₁) (x : LinearMap.ker f₁) :
     f₁.projKerOfRightInverse f₂ h x = x := by
