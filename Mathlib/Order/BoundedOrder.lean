@@ -78,7 +78,7 @@ attribute [match_pattern] Bot.bot Top.top
 
 /-- An order is an `OrderTop` if it has a greatest element.
 We state this using a data mixin, holding the value of `⊤` and the greatest element constraint. -/
-class OrderTop (α : Type u) [LE α] extends Top α where
+class OrderTop (α : Type u) [outParam <| LE α] extends Top α where
   /-- `⊤` is the greatest element -/
   le_top : ∀ a : α, a ≤ ⊤
 #align order_top OrderTop
@@ -246,7 +246,7 @@ theorem OrderTop.ext {α} [PartialOrder α] {A B : OrderTop α} : A = B := by
 
 /-- An order is an `OrderBot` if it has a least element.
 We state this using a data mixin, holding the value of `⊥` and the least element constraint. -/
-class OrderBot (α : Type u) [LE α] extends Bot α where
+class OrderBot (α : Type u) [outParam <| LE α] extends Bot α where
   /-- `⊥` is the least element -/
   bot_le : ∀ a : α, ⊥ ≤ a
 #align order_bot OrderBot
@@ -533,7 +533,7 @@ end SemilatticeInfBot
 
 /-- A bounded order describes an order `(≤)` with a top and bottom element,
   denoted `⊤` and `⊥` respectively. -/
-class BoundedOrder (α : Type u) [LE α] extends OrderTop α, OrderBot α
+class BoundedOrder (α : Type u) [outParam <| LE α] extends OrderTop α, OrderBot α
 #align bounded_order BoundedOrder
 
 instance OrderDual.boundedOrder (α : Type u) [LE α] [BoundedOrder α] : BoundedOrder αᵒᵈ where

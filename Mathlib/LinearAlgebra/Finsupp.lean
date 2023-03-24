@@ -1198,6 +1198,8 @@ variable {α : Type _}
 
 open Finsupp Function
 
+set_option trace.Meta.synthInstance true
+
 -- See also `LinearMap.splittingOfFunOnFintypeSurjective`
 /-- A surjective linear map to finitely supported functions has a splitting. -/
 def splittingOfFinsuppSurjective (f : M →ₗ[R] α →₀ R) (s : Surjective f) : (α →₀ R) →ₗ[R] M :=

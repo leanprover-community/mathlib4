@@ -43,14 +43,16 @@ variable {G : Type u''} {S : Type u'} {R : Type u} {M : Type v} {ι : Type w}
 
 Note that only `R` is marked as `outParam` since `M` is already supplied by the `SetLike` class.
 -/
-class SubmoduleClass (S : Type _) (R : outParam <| Type _) (M : Type _) [AddZeroClass M] [SMul R M]
-  [SetLike S M] [AddSubmonoidClass S M] extends SMulMemClass S R M
+class SubmoduleClass (S : Type _) (R : outParam <| Type _) (M : Type _)
+  [outParam <| AddZeroClass M] [SMul R M]
+  [outParam <| SetLike S M] [AddSubmonoidClass S M] extends SMulMemClass S R M
 #align submodule_class SubmoduleClass
 
 /-- A submodule of a module is one which is closed under vector operations.
   This is a sufficient condition for the subset of vectors in the submodule
   to themselves form a module. -/
-structure Submodule (R : Type u) (M : Type v) [Semiring R] [AddCommMonoid M] [Module R M] extends
+structure Submodule (R : Type u) (M : Type v)
+    [outParam <| Semiring R] [outParam <| AddCommMonoid M] [Module R M] extends
   AddSubmonoid M, SubMulAction R M : Type v
 #align submodule Submodule
 

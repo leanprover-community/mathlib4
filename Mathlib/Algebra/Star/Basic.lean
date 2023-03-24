@@ -67,7 +67,7 @@ export Star (star)
 add_decl_doc star
 
 /-- `StarMemClass S G` states `S` is a type of subsets `s ⊆ G` closed under star. -/
-class StarMemClass (S R : Type _) [Star R] [SetLike S R] where
+class StarMemClass (S R : Type _) [outParam <| Star R] [outParam <| SetLike S R] where
   /-- Closure under star. -/
   star_mem : ∀ {s : S} {r : R}, r ∈ s → star r ∈ s
 #align star_mem_class StarMemClass
@@ -120,7 +120,7 @@ theorem star_eq_iff_star_eq [InvolutiveStar R] {r s : R} : star r = s ↔ star s
 
 /-- Typeclass for a trivial star operation. This is mostly meant for `ℝ`.
 -/
-class TrivialStar (R : Type u) [Star R] : Prop where
+class TrivialStar (R : Type u) [outParam <| Star R] : Prop where
   /-- Condition that star is trivial-/
   star_trivial : ∀ r : R, star r = r
 #align has_trivial_star TrivialStar
@@ -132,7 +132,7 @@ attribute [simp] star_trivial
 /-- A `*`-semigroup is a semigroup `R` with an involutive operation `star`
 such that `star (r * s) = star s * star r`.
 -/
-class StarSemigroup (R : Type u) [Semigroup R] extends InvolutiveStar R where
+class StarSemigroup (R : Type u) [outParam <| Semigroup R] extends InvolutiveStar R where
   /-- `star` skew-distributes over multiplication. -/
   star_mul : ∀ r s : R, star (r * s) = star s * star r
 #align star_semigroup StarSemigroup
@@ -225,7 +225,7 @@ end
 
 /-- A `*`-additive monoid `R` is an additive monoid with an involutive `star` operation which
 preserves addition.  -/
-class StarAddMonoid (R : Type u) [AddMonoid R] extends InvolutiveStar R where
+class StarAddMonoid (R : Type u) [outParam <| AddMonoid R] extends InvolutiveStar R where
   /-- `star` commutes with addition -/
   star_add : ∀ r s : R, star (r + s) = star r + star s
 #align star_add_monoid StarAddMonoid
@@ -286,7 +286,7 @@ theorem star_zsmul [AddGroup R] [StarAddMonoid R] (x : R) (n : ℤ) : star (n �
 /-- A `*`-ring `R` is a (semi)ring with an involutive `star` operation which is additive
 which makes `R` with its multiplicative structure into a `*`-semigroup
 (i.e. `star (r * s) = star s * star r`).  -/
-class StarRing (R : Type u) [NonUnitalSemiring R] extends StarSemigroup R where
+class StarRing (R : Type u) [outParam <| NonUnitalSemiring R] extends StarSemigroup R where
   /-- `star` commutes with addition -/
   star_add : ∀ r s : R, star (r + s) = star r + star s
 #align star_ring StarRing
@@ -445,7 +445,8 @@ def starRingOfComm {R : Type _} [CommSemiring R] : StarRing R :=
 /-- An ordered `*`-ring is a ring which is both an `OrderedAddCommGroup` and a `*`-ring,
 and `0 ≤ r ↔ ∃ s, r = star s * s`.
 -/
-class StarOrderedRing (R : Type u) [NonUnitalSemiring R] [PartialOrder R] extends StarRing R where
+class StarOrderedRing (R : Type u) [outParam <| NonUnitalSemiring R] [outParam <| PartialOrder R]
+    extends StarRing R where
   /-- addition commutes with `≤` -/
   add_le_add_left : ∀ a b : R, a ≤ b → ∀ c : R, c + a ≤ c + b
   /--characterization of non-negativity  -/

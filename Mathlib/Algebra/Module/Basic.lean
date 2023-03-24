@@ -56,7 +56,7 @@ variable {α R k S M M₂ M₃ ι : Type _}
   (where `r : R` and `x : M`) with some natural associativity and
   distributivity axioms similar to those on a ring. -/
 @[ext]
-class Module (R : Type u) (M : Type v) [Semiring R] [AddCommMonoid M] extends
+class Module (R : Type u) (M : Type v) [outParam <| Semiring R] [outParam <| AddCommMonoid M] extends
   DistribMulAction R M where
   /-- Scalar multiplication distributes over addition from the right. -/
   protected add_smul : ∀ (r s : R) (x : M), (r + s) • x = r • x + s • x

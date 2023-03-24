@@ -65,7 +65,6 @@ set_option synthInstance.checkSynthOrder false in
 
 This instance generates the type-class problem `BundledHom ?m` (which is why this is marked as
 `[nolint]`). Currently that is not a problem, as there are almost no instances of `BundledHom`. -/
-@[nolint dangerousInstance]
 instance category : Category (Bundled c) := by
   refine' { Hom := fun X Y => @hom X Y X.str Y.str
             id := fun X => @BundledHom.id c hom 𝒞 X X.str

@@ -43,7 +43,7 @@ instance discreteHomFintype {α : Type _} (X Y : Discrete α) : Fintype (X ⟶ Y
 #align category_theory.discrete_hom_fintype CategoryTheory.discreteHomFintype
 
 /-- A category with a `Fintype` of objects, and a `Fintype` for each morphism space. -/
-class FinCategory (J : Type v) [SmallCategory J] where
+class FinCategory (J : Type v) [outParam <| SmallCategory J] where
   fintypeObj : Fintype J := by infer_instance
   fintypeHom : ∀ j j' : J, Fintype (j ⟶ j') := by infer_instance
 #align category_theory.fin_category CategoryTheory.FinCategory

@@ -1425,7 +1425,7 @@ theorem Pred.rec {P : α → Prop} {m : α} (h0 : P m) (h1 : ∀ n, n ≤ m → 
 
 theorem Pred.rec_iff {p : α → Prop} (hsucc : ∀ a, p a ↔ p (pred a)) {a b : α} (h : a ≤ b) :
     p a ↔ p b :=
-  (@Succ.rec_iff αᵒᵈ _ _ _ _ hsucc _ _ h).symm
+  (Succ.rec_iff (α := αᵒᵈ) (by exact hsucc) (by exact h)).symm
 #align pred.rec_iff Pred.rec_iff
 
 end PredOrder
