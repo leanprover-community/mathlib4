@@ -25,11 +25,11 @@ See `Algebra.RingQuot` for quotients of non-commutative rings.
 
 ## Main definitions
 
- - `ideal.quotient`: the quotient of a commutative ring `R` by an ideal `I : ideal R`
+ - `Ideal.Quotient`: the quotient of a commutative ring `R` by an ideal `I : Ideal R`
 
 ## Main results
 
- - `ideal.quotient_inf_ring_equiv_pi_quotient`: the **Chinese Remainder Theorem**
+ - `Ideal.quotientInfRingEquivPiQuotient`: the **Chinese Remainder Theorem**
 -/
 
 
@@ -46,14 +46,14 @@ variable {S : Type v}
 -- Porting note: we need η for TC
 set_option synthInstance.etaExperiment true
 
--- Note that at present `ideal` means a left-ideal,
+-- Note that at present `Ideal` means a left-ideal,
 -- so this quotient is only useful in a commutative ring.
 -- We should develop quotients by two-sided ideals as well.
 /-- The quotient `R/I` of a ring `R` by an ideal `I`.
 
 The ideal quotient of `I` is defined to equal the quotient of `I` as an `R`-submodule of `R`.
 This definition is marked `reducible` so that typeclass instances can be shared between
-`ideal.quotient I` and `submodule.quotient I`.
+`Ideal.Quotient I` and `Submodule.Quotient I`.
 -/
 @[reducible]
 instance : HasQuotient R (Ideal R) :=
@@ -67,7 +67,7 @@ instance hasOne (I : Ideal R) : One (R ⧸ I) :=
   ⟨Submodule.Quotient.mk 1⟩
 #align ideal.quotient.has_one Ideal.Quotient.hasOne
 
-/-- On `ideal`s, `submodule.quotient_rel` is a ring congruence. -/
+/-- On `Ideal`s, `Submodule.quotientRel` is a ring congruence. -/
 protected def ringCon (I : Ideal R) : RingCon R :=
   { QuotientAddGroup.con I.toAddSubgroup with
     mul' := fun {a₁ b₁ a₂ b₂} h₁ h₂ =>
@@ -94,8 +94,8 @@ def mk (I : Ideal R) : R →+* R ⧸ I where
   map_add' _ _ := rfl
 #align ideal.quotient.mk Ideal.Quotient.mk
 
-/- Two `ring_homs`s from the quotient by an ideal are equal if their
-compositions with `ideal.quotient.mk'` are equal.
+/-- Two `RingHom`s from the quotient by an ideal are equal if their
+compositions with `Ideal.Quotient.mk'` are equal.
 
 See note [partially-applied ext lemmas]. -/
 @[ext]
@@ -262,7 +262,7 @@ theorem lift_surjective_of_surjective (I : Ideal R) {f : R →+* S} (H : ∀ a :
 
 /-- The ring homomorphism from the quotient by a smaller ideal to the quotient by a larger ideal.
 
-This is the `ideal.quotient` version of `quot.factor` -/
+This is the `Ideal.Quotient` version of `Quot.Factor` -/
 def factor (S T : Ideal R) (H : S ≤ T) : R ⧸ S →+* R ⧸ T :=
   Ideal.Quotient.lift S (mk T) fun _ hx => eq_zero_iff_mem.2 (H hx)
 #align ideal.quotient.factor Ideal.Quotient.factor
@@ -282,7 +282,7 @@ end Quotient
 
 /-- Quotienting by equal ideals gives equivalent rings.
 
-See also `submodule.quot_equiv_of_eq`.
+See also `Submodule.quotEquivOfEq`.
 -/
 def quotEquivOfEq {R : Type _} [CommRing R] {I J : Ideal R} (h : I = J) : R ⧸ I ≃+* R ⧸ J :=
   { Submodule.quotEquivOfEq I J h with
