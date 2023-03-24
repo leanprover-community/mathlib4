@@ -29,6 +29,7 @@ import Mathlib.Algebra.BigOperators.Pi
 import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Algebra.BigOperators.RingEquiv
 import Mathlib.Algebra.Bounds
+import Mathlib.Algebra.Category.GroupCat.Basic
 import Mathlib.Algebra.Category.MonCat.Basic
 import Mathlib.Algebra.CharP.Algebra
 import Mathlib.Algebra.CharP.Basic
@@ -280,6 +281,7 @@ import Mathlib.Analysis.Normed.Group.Seminorm
 import Mathlib.Analysis.Normed.Order.Lattice
 import Mathlib.Analysis.NormedSpace.IndicatorFunction
 import Mathlib.Analysis.NormedSpace.Int
+import Mathlib.Analysis.NormedSpace.MStructure
 import Mathlib.Analysis.Subadditive
 import Mathlib.CategoryTheory.Abelian.Images
 import Mathlib.CategoryTheory.Abelian.NonPreadditive
@@ -345,6 +347,7 @@ import Mathlib.CategoryTheory.Functor.InvIsos
 import Mathlib.CategoryTheory.Functor.ReflectsIso
 import Mathlib.CategoryTheory.Groupoid
 import Mathlib.CategoryTheory.Groupoid.Basic
+import Mathlib.CategoryTheory.Groupoid.VertexGroup
 import Mathlib.CategoryTheory.IsConnected
 import Mathlib.CategoryTheory.Iso
 import Mathlib.CategoryTheory.IsomorphismClasses
@@ -405,6 +408,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.FunctorCategory
 import Mathlib.CategoryTheory.Limits.Shapes.Images
 import Mathlib.CategoryTheory.Limits.Shapes.KernelPair
 import Mathlib.CategoryTheory.Limits.Shapes.Kernels
+import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
 import Mathlib.CategoryTheory.Limits.Shapes.NormalMono.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.NormalMono.Equalizers
 import Mathlib.CategoryTheory.Limits.Shapes.Products
@@ -451,6 +455,7 @@ import Mathlib.CategoryTheory.Products.Bifunctor
 import Mathlib.CategoryTheory.Quotient
 import Mathlib.CategoryTheory.Sigma.Basic
 import Mathlib.CategoryTheory.SingleObj
+import Mathlib.CategoryTheory.Sites.Grothendieck
 import Mathlib.CategoryTheory.Sites.Sieves
 import Mathlib.CategoryTheory.Skeletal
 import Mathlib.CategoryTheory.StructuredArrow
@@ -466,6 +471,7 @@ import Mathlib.Combinatorics.Additive.RuzsaCovering
 import Mathlib.Combinatorics.Catalan
 import Mathlib.Combinatorics.Colex
 import Mathlib.Combinatorics.Composition
+import Mathlib.Combinatorics.Derangements.Basic
 import Mathlib.Combinatorics.DoubleCounting
 import Mathlib.Combinatorics.HalesJewett
 import Mathlib.Combinatorics.Hall.Finite
@@ -1002,6 +1008,7 @@ import Mathlib.GroupTheory.EckmannHilton
 import Mathlib.GroupTheory.Finiteness
 import Mathlib.GroupTheory.FreeAbelianGroup
 import Mathlib.GroupTheory.FreeGroup
+import Mathlib.GroupTheory.FreeProduct
 import Mathlib.GroupTheory.GroupAction.Basic
 import Mathlib.GroupTheory.GroupAction.BigOperators
 import Mathlib.GroupTheory.GroupAction.ConjAct
@@ -1110,6 +1117,7 @@ import Mathlib.Lean.LocalContext
 import Mathlib.Lean.Message
 import Mathlib.Lean.Meta
 import Mathlib.Lean.Meta.Simp
+import Mathlib.LinearAlgebra.AffineSpace.AffineEquiv
 import Mathlib.LinearAlgebra.AffineSpace.AffineMap
 import Mathlib.LinearAlgebra.AffineSpace.Basic
 import Mathlib.LinearAlgebra.AffineSpace.Slope
@@ -1176,11 +1184,14 @@ import Mathlib.NumberTheory.Basic
 import Mathlib.NumberTheory.ClassNumber.AdmissibleAbs
 import Mathlib.NumberTheory.ClassNumber.AdmissibleAbsoluteValue
 import Mathlib.NumberTheory.Divisors
+import Mathlib.NumberTheory.Fermat4
 import Mathlib.NumberTheory.FrobeniusNumber
+import Mathlib.NumberTheory.Padics.PadicNorm
 import Mathlib.NumberTheory.Padics.PadicVal
 import Mathlib.NumberTheory.Primorial
 import Mathlib.NumberTheory.PythagoreanTriples
 import Mathlib.NumberTheory.Zsqrtd.Basic
+import Mathlib.NumberTheory.Zsqrtd.ToReal
 import Mathlib.Order.Antichain
 import Mathlib.Order.Antisymmetrization
 import Mathlib.Order.Atoms
@@ -1585,6 +1596,7 @@ import Mathlib.Topology.Order.LowerTopology
 import Mathlib.Topology.Order.Priestley
 import Mathlib.Topology.Paracompact
 import Mathlib.Topology.Partial
+import Mathlib.Topology.PathConnected
 import Mathlib.Topology.Perfect
 import Mathlib.Topology.QuasiSeparated
 import Mathlib.Topology.Semicontinuous
