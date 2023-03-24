@@ -4,7 +4,7 @@
  [{"git":
    {"url": "https://github.com/gebner/quote4",
     "subDir?": null,
-    "rev": "7ae096b232087096ff0243a2b70d32720d2621ae",
+    "rev": "de5e57f0753011c5d61def197d6fcacf34d4bdfb",
     "name": "Qq",
     "inputRev?": "master"}},
   {"git":
@@ -16,6 +16,6 @@
   {"git":
    {"url": "https://github.com/leanprover/std4",
     "subDir?": null,
-    "rev": "d4107bc2bd28bc70e8327578c16acb904d2bcfd0",
+    "rev": "a63a023a081ef3471a7903ce8d5f0884375223a8",
     "name": "std",
     "inputRev?": "main"}}]}
