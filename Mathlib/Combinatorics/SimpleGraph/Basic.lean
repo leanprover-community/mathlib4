@@ -272,7 +272,7 @@ theorem inf_adj (x y : SimpleGraph V) (v w : V) : (x ⊓ y).Adj v w ↔ x.Adj v 
 /-- We define `Gᶜ` to be the `SimpleGraph V` such that no two adjacent vertices in `G`
 are adjacent in the complement, and every nonadjacent pair of vertices is adjacent
 (still ensuring that vertices are not adjacent to themselves). -/
-instance : HasCompl (SimpleGraph V) :=
+instance hasCompl : HasCompl (SimpleGraph V) :=
   ⟨fun G =>
     { Adj := fun v w => v ≠ w ∧ ¬G.Adj v w
       symm := fun v w ⟨hne, _⟩ => ⟨hne.symm, by rwa [adj_comm]⟩
@@ -284,7 +284,7 @@ theorem compl_adj (G : SimpleGraph V) (v w : V) : Gᶜ.Adj v w ↔ v ≠ w ∧ �
 #align simple_graph.compl_adj SimpleGraph.compl_adj
 
 /-- The difference of two graphs `x \ y` has the edges of `x` with the edges of `y` removed. -/
-instance : SDiff (SimpleGraph V) :=
+instance sdiff : SDiff (SimpleGraph V) :=
   ⟨fun x y =>
     { Adj := x.Adj \ y.Adj
       symm := fun v w h => by change x.Adj w v ∧ ¬y.Adj w v; rwa [x.adj_comm, y.adj_comm] }⟩
@@ -294,19 +294,19 @@ theorem sdiff_adj (x y : SimpleGraph V) (v w : V) : (x \ y).Adj v w ↔ x.Adj v 
   Iff.rfl
 #align simple_graph.sdiff_adj SimpleGraph.sdiff_adj
 
-instance : SupSet (SimpleGraph V) :=
+instance supSet : SupSet (SimpleGraph V) :=
   ⟨fun s =>
     { Adj := fun a b => ∃ G ∈ s, Adj G a b
-      symm := fun a b => Exists₂.imp fun _ _ => Adj.symm
+      symm := fun a b => Exists.imp $ fun _ => And.imp_right Adj.symm
       loopless := by
-        rintro a ⟨G, hG, ha⟩
+        rintro a ⟨G, _, ha⟩
         exact ha.ne rfl }⟩
 
-instance : InfSet (SimpleGraph V) :=
+instance infSet : InfSet (SimpleGraph V) :=
   ⟨fun s =>
     { Adj := fun a b => (∀ ⦃G⦄, G ∈ s → Adj G a b) ∧ a ≠ b
       symm := fun _ _ => And.imp (forall₂_imp fun _ _ => Adj.symm) Ne.symm
-      loopless := fun a h => h.2 rfl }⟩
+      loopless := fun _ h => h.2 rfl }⟩
 
 @[simp]
 theorem supₛ_adj {s : Set (SimpleGraph V)} {a b : V} : (supₛ s).Adj a b ↔ ∃ G ∈ s, Adj G a b :=
@@ -332,22 +332,22 @@ theorem infₛ_adj_of_nonempty {s : Set (SimpleGraph V)} (hs : s.Nonempty) :
   infₛ_adj.trans <|
     and_iff_left_of_imp <| by
       obtain ⟨G, hG⟩ := hs
-      exact fun h => (h _ hG).Ne
+      exact fun h => (h _ hG).ne
 #align simple_graph.Inf_adj_of_nonempty SimpleGraph.infₛ_adj_of_nonempty
 
 theorem infᵢ_adj_of_nonempty [Nonempty ι] {f : ι → SimpleGraph V} :
     (⨅ i, f i).Adj a b ↔ ∀ i, (f i).Adj a b := by
-  simp [infᵢ, Inf_adj_of_nonempty (Set.range_nonempty _)]
+  simp [infᵢ, infₛ_adj_of_nonempty (Set.range_nonempty _)]
 #align simple_graph.infi_adj_of_nonempty SimpleGraph.infᵢ_adj_of_nonempty
 
 /-- For graphs `G`, `H`, `G ≤ H` iff `∀ a b, G.adj a b → H.adj a b`. -/
-instance : DistribLattice (SimpleGraph V) :=
+instance distribLattice : DistribLattice (SimpleGraph V) :=
   {
     show DistribLattice (SimpleGraph V) from
-      adj_injective.DistribLattice _ (fun _ _ => rfl) fun _ _ => rfl with
+      adj_injective.distribLattice _ (fun _ _ => rfl) fun _ _ => rfl with
     le := fun G H => ∀ ⦃a b⦄, G.Adj a b → H.Adj a b }
 
-instance : CompleteBooleanAlgebra (SimpleGraph V) :=
+instance completeBooleanAlgebra : CompleteBooleanAlgebra (SimpleGraph V) :=
   { SimpleGraph.distribLattice with
     le := (· ≤ ·)
     sup := (· ⊔ ·)
