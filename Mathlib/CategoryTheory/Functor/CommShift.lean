@@ -143,10 +143,12 @@ end Functor
 
 namespace NatTrans
 
-variable {C D : Type _} [Category C] [Category D]
+variable {C D E : Type _} [Category C] [Category D] [Category E]
   {F₁ F₂ F₃ : C ⥤ D} (τ : F₁ ⟶ F₂) (τ' : F₂ ⟶ F₃) (e : F₁ ≅ F₂)
-  (A : Type _) [AddMonoid A] [HasShift C A] [HasShift D A]
+    (G G' : D ⥤ E) (τ'' : G ⟶ G')
+  (A : Type _) [AddMonoid A] [HasShift C A] [HasShift D A] [HasShift E A]
   [F₁.HasCommShift A] [F₂.HasCommShift A] [F₃.HasCommShift A]
+    [G.HasCommShift A] [G'.HasCommShift A]
 
 class CommShift : Prop :=
   comm' : ∀ (a : A), (F₁.commShiftIso a).hom ≫ whiskerRight τ _ =
@@ -207,11 +209,77 @@ instance comp [NatTrans.CommShift τ A] [NatTrans.CommShift τ' A] :
   ext X
   simp [comm_app_assoc, comm_app]⟩
 
+variable {F₁}
 
--- TODO : whisker_left, whisker_right, of_map_faithful
+instance whiskerRight [NatTrans.CommShift τ A] :
+    NatTrans.CommShift (whiskerRight τ G) A := ⟨fun a => by
+  ext X
+  simp only [Functor.comp_obj, whiskerRight_twice, comp_app,
+    whiskerRight_app, Functor.comp_map, whiskerLeft_app,
+    Functor.commShiftIso_comp_hom_app, Category.assoc]
+  erw [← NatTrans.naturality]
+  dsimp
+  simp only [← G.map_comp_assoc, comm_app]⟩
+
+variable {G G'} (F₁)
+
+instance whiskerLeft [NatTrans.CommShift τ'' A] :
+    NatTrans.CommShift (whiskerLeft F₁ τ'') A := ⟨fun a => by
+  ext X
+  simp only [Functor.comp_obj, comp_app, whiskerRight_app, whiskerLeft_app, whiskerLeft_twice,
+    Functor.commShiftIso_comp_hom_app, Category.assoc, ← NatTrans.naturality_assoc, comm_app]⟩
 
 end CommShift
 
 end NatTrans
+
+namespace Functor
+
+section hasShiftOfFullyFaithful
+
+variable {C D : Type _} [Category C] [Category D] [AddMonoid A] [HasShift D A]
+  (F : C ⥤ D) [Full F] [Faithful F]
+  (s : A → C ⥤ C) (i : ∀ i, s i ⋙ F ≅ F ⋙ shiftFunctor D i)
+
+namespace CommShift
+
+def of_hasShiftOfFullyFaithful :
+    letI := hasShiftOfFullyFaithful F s i; F.CommShift A := by
+  letI := hasShiftOfFullyFaithful F s i
+  exact
+  { iso := i
+    zero := by
+      ext X
+      simp only [comp_obj, iso_zero_hom_app, shiftFunctorZero_of_hasShiftMk, Iso.symm_hom,
+        map_hasShiftOfFullyFaithful_ε_inv_app, id_obj, Category.assoc,
+        Iso.hom_inv_id_app, Category.comp_id]
+    add := fun a b => by
+      ext X
+      simp only [comp_obj, iso_add_hom_app, shiftFunctorAdd_of_hasShiftMk, Iso.symm_hom,
+        map_hasShiftOfFullyFaithful_μ_inv_app, Category.assoc, shiftFunctor_of_hasShiftMk,
+        Iso.inv_hom_id_app_assoc, ← (shiftFunctor D b).map_comp_assoc, Iso.inv_hom_id_app,
+        Functor.map_id, Category.id_comp, Iso.hom_inv_id_app, Category.comp_id] }
+
+end CommShift
+
+namespace HasCommShift
+
+def of_hasShiftOfFullyFaithful :
+    letI := hasShiftOfFullyFaithful F s i;
+    F.HasCommShift A := by
+  letI := hasShiftOfFullyFaithful F s i
+  exact ⟨CommShift.of_hasShiftOfFullyFaithful F s i⟩
+
+end HasCommShift
+
+lemma shiftFunctorIso_of_hasShiftOfFullyFaithful (a : A) :
+    letI := hasShiftOfFullyFaithful F s i;
+    letI := HasCommShift.of_hasShiftOfFullyFaithful F s i;
+    F.commShiftIso a = i a := by
+  rfl
+
+end hasShiftOfFullyFaithful
+
+end Functor
 
 end CategoryTheory

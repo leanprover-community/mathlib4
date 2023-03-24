@@ -204,6 +204,31 @@ def shiftFunctorZero : shiftFunctor C (0 : A) ≅ 𝟭 C :=
   (shiftMonoidalFunctor C A).εIso.symm
 #align category_theory.shift_functor_zero CategoryTheory.shiftFunctorZero
 
+variable {C A}
+
+lemma shiftFunctor_of_hasShiftMk (h : ShiftMkCore C A) (a : A) :
+    letI := hasShiftMk C A h;
+    shiftFunctor C a = h.F a := by
+  rfl
+
+lemma shiftFunctorZero_of_hasShiftMk (h : ShiftMkCore C A) :
+    letI := hasShiftMk C A h;
+    shiftFunctorZero C A = h.ε.symm  := by
+  letI := hasShiftMk C A h
+  change (shiftFunctorZero C A).symm.symm = h.ε.symm
+  congr 1
+  ext
+  rfl
+
+lemma shiftFunctorAdd_of_hasShiftMk (h : ShiftMkCore C A) (a b : A) :
+    letI := hasShiftMk C A h;
+    shiftFunctorAdd C a b = (h.μ a b).symm  := by
+  letI := hasShiftMk C A h
+  change (shiftFunctorAdd C a b).symm.symm = (h.μ a b).symm
+  congr 1
+  ext
+  rfl
+
 set_option quotPrecheck false in
 /-- shifting an object `X` by `n` is obtained by the notation `X⟦n⟧` -/
 notation -- Any better notational suggestions?
@@ -213,7 +238,7 @@ set_option quotPrecheck false in
 /-- shifting a morphism `f` by `n` is obtained by the notation `f⟦n⟧'` -/
 notation f "⟦" n "⟧'" => (shiftFunctor _ n).map f
 
-variable {A}
+variable (C)
 
 lemma shiftFunctorAdd'_zero_add (a : A) :
   shiftFunctorAdd' C 0 a a (zero_add a) = (Functor.leftUnitor _).symm ≪≫
