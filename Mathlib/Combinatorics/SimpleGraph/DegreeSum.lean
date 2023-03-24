@@ -94,12 +94,8 @@ theorem dart_edge_fiber_card (e : Sym2 V) (h : e ∈ G.edgeSet) :
     (univ.filter fun d : G.Dart => d.edge = e).card = 2 := by
   refine' Sym2.ind (fun v w h => _) e h
   let d : G.Dart := ⟨(v, w), h⟩
-  -- Porting note: convert congr_arg card d.edge_fiber doesn't work?
-  -- convert congr_arg card d.edge_fiber
-  -- rw [card_insert_of_not_mem, card_singleton]
-  have x := congr_arg card d.edge_fiber
-  rw [card_insert_of_not_mem, card_singleton] at x
-  convert x
+  convert congr_arg card d.edge_fiber
+  rw [card_insert_of_not_mem, card_singleton]
   rw [mem_singleton]
   exact d.symm_ne.symm
 #align simple_graph.dart_edge_fiber_card SimpleGraph.dart_edge_fiber_card
@@ -132,10 +128,8 @@ theorem even_card_odd_degree_vertices [Fintype V] [DecidableRel G.Adj] :
     rw [@sum_congr _ _ _ _ (fun v => (G.degree v : ZMod 2)) (fun _v => (1 : ZMod 2)) _ rfl] at h
     · simp only [filter_congr, mul_one, nsmul_eq_mul, sum_const, Ne.def] at h
       rw [← ZMod.eq_zero_iff_even]
-      -- Porting note: old code is `convert h` but doesn't work?
-      rw [← h]; congr
-      ext v
-      rw [← ZMod.ne_zero_iff_odd]
+      convert h
+      exact ZMod.ne_zero_iff_odd.symm
     · intro v
       simp only [true_and_iff, mem_filter, mem_univ, Ne.def]
       rw [ZMod.eq_zero_iff_even, ZMod.eq_one_iff_odd, Nat.odd_iff_not_even, imp_self]
