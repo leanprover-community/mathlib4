@@ -8,9 +8,9 @@ Authors: Luke Kershaw
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Preadditive.AdditiveFunctor
-import Mathbin.CategoryTheory.Shift
-import Mathbin.CategoryTheory.Triangulated.Rotate
+import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+import Mathlib.CategoryTheory.Shift
+import Mathlib.CategoryTheory.Triangulated.Rotate
 
 /-!
 # Pretriangulated Categories
@@ -122,8 +122,7 @@ theorem inv_rot_of_dist_triangle (T) (_ : T ∈ (dist_triang C)) : T.invRotate �
 the composition `f ≫ g = 0`.
 See <https://stacks.math.columbia.edu/tag/0146>
 -/
-theorem comp_dist_triangle_mor_zero₁₂ (T) (_ : T ∈ (dist_triang C)) : T.mor₁ ≫ T.mor₂ = 0 :=
-  by
+theorem comp_dist_triangle_mor_zero₁₂ (T) (_ : T ∈ (dist_triang C)) : T.mor₁ ≫ T.mor₂ = 0 := by
   obtain ⟨c, hc⟩ :=
     complete_distinguished_triangle_morphism _ _ (contractible_distinguished T.obj₁) H (𝟙 T.obj₁)
       T.mor₁ rfl
@@ -153,8 +152,7 @@ the composition `h ≫ f⟦1⟧ = 0`.
 See <https://stacks.math.columbia.edu/tag/0146>
 -/
 theorem comp_dist_triangle_mor_zero₃₁ (T) (_ : T ∈ (dist_triang C)) :
-    T.mor₃ ≫ (shiftEquiv C 1).Functor.map T.mor₁ = 0 :=
-  by
+    T.mor₃ ≫ (shiftEquiv C 1).Functor.map T.mor₁ = 0 := by
   have H₂ := rot_of_dist_triangle C T.rotate (rot_of_dist_triangle C T H)
   simpa using comp_dist_triangle_mor_zero₁₂ C T.rotate.rotate H₂
 #align category_theory.pretriangulated.comp_dist_triangle_mor_zero₃₁ CategoryTheory.Pretriangulated.comp_dist_triangle_mor_zero₃₁
