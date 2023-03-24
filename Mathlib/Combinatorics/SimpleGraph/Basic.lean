@@ -337,7 +337,7 @@ theorem infₛ_adj_of_nonempty {s : Set (SimpleGraph V)} (hs : s.Nonempty) :
 
 theorem infᵢ_adj_of_nonempty [Nonempty ι] {f : ι → SimpleGraph V} :
     (⨅ i, f i).Adj a b ↔ ∀ i, (f i).Adj a b := by
-  simp [infᵢ, infₛ_adj_of_nonempty (Set.range_nonempty _)]
+  rw [infᵢ, infₛ_adj_of_nonempty (Set.range_nonempty _), Set.forall_range_iff]
 #align simple_graph.infi_adj_of_nonempty SimpleGraph.infᵢ_adj_of_nonempty
 
 /-- For graphs `G`, `H`, `G ≤ H` iff `∀ a b, G.adj a b → H.adj a b`. -/
@@ -363,13 +363,29 @@ instance completeBooleanAlgebra : CompleteBooleanAlgebra (SimpleGraph V) :=
       refine' ⟨fun h => ⟨h.1, ⟨_, h.2⟩⟩, fun h => ⟨h.1, h.2.2⟩⟩
       rintro rfl
       exact x.irrefl h.1
-    inf_compl_le_bot := fun a v w h => False.elim <| h.2.2 h.1
-    top_le_sup_compl := fun a v w ne => by
-      by_cases h : a.Adj v w
-      · exact Or.inl h
-      · exact Or.inr ⟨ne, h⟩
-    inf_le_left := fun x y v w h => h.1
-    inf_le_right := fun x y v w h => h.2 }
+    inf_compl_le_bot := fun G v w h => False.elim <| h.2.2 h.1
+    top_le_sup_compl := fun G v w hvw => by
+      by_cases G.Adj v w
+      exact Or.inl h
+      exact Or.inr ⟨hvw, h⟩
+    supₛ := supₛ
+    le_supₛ := fun s G hG a b hab => ⟨G, hG, hab⟩
+    supₛ_le := fun s G hG a b => by
+      rintro ⟨H, hH, hab⟩
+      exact hG _ hH hab
+    infₛ := infₛ
+    infₛ_le := fun s G hG a b hab => hab.1 hG
+    le_infₛ := fun s G hG a b hab => ⟨fun H hH => hG _ hH hab, hab.ne⟩
+    inf_supₛ_le_supᵢ_inf := fun G s a b hab => by
+      simpa only [exists_prop, supₛ_adj, and_imp, forall_exists_index, infₛ_adj, supᵢ_adj, inf_adj,
+         ←exists_and_right, ←exists_and_left, and_assoc, and_self_right] using hab
+    infᵢ_sup_le_sup_infₛ := fun G s a b hab =>
+      by
+      simp only [sup_adj, infₛ_adj, infᵢ_adj] at hab ⊢
+      have : (∀ G' ∈ s, Adj G a b ∨ Adj G' a b) ∧ a ≠ b :=
+        (and_congr_left fun h => forall_congr' fun H => _).1 hab
+      simpa [forall_or_left, or_and_right, and_iff_left_of_imp Adj.ne] using this
+      exact and_iff_left h }
 
 @[simp]
 theorem top_adj (v w : V) : (⊤ : SimpleGraph V).Adj v w ↔ v ≠ w :=
@@ -1098,7 +1114,7 @@ def deleteEdges (s : Set (Sym2 V)) : SimpleGraph V
     where
   Adj := G.Adj \ Sym2.ToRel s
   symm a b := by simp [adj_comm, Sym2.eq_swap]
-  loopless a := by simp [sdiff] -- porting note: used to be handled by `obviously`
+  loopless a := by simp [SDiff.sdiff] -- porting note: used to be handled by `obviously`
 #align simple_graph.delete_edges SimpleGraph.deleteEdges
 
 @[simp]
