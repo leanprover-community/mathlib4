@@ -1416,7 +1416,7 @@ theorem coe_sub' (f g : M →SL[σ₁₂] M₂) : ⇑(f - g) = f - g :=
 end
 
 -- Porting note: `nolint simpNF` is required because we don't have η for classes. (lean4#2074)
-@[simp, nolint simpNF]
+@[simp]
 theorem comp_neg [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [TopologicalAddGroup M₂] [TopologicalAddGroup M₃]
     (g : M₂ →SL[σ₂₃] M₃) (f : M →SL[σ₁₂] M₂) : g.comp (-f) = -g.comp f := by
   ext x
@@ -1424,7 +1424,7 @@ theorem comp_neg [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [TopologicalAddG
 #align continuous_linear_map.comp_neg ContinuousLinearMap.comp_neg
 
 -- Porting note: `nolint simpNF` is required because we don't have η for classes. (lean4#2074)
-@[simp, nolint simpNF]
+@[simp]
 theorem neg_comp [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [TopologicalAddGroup M₃] (g : M₂ →SL[σ₂₃] M₃)
     (f : M →SL[σ₁₂] M₂) : (-g).comp f = -g.comp f := by
   ext
@@ -1432,7 +1432,7 @@ theorem neg_comp [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [TopologicalAddG
 #align continuous_linear_map.neg_comp ContinuousLinearMap.neg_comp
 
 -- Porting note: `nolint simpNF` is required because we don't have η for classes. (lean4#2074)
-@[simp, nolint simpNF]
+@[simp]
 theorem comp_sub [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [TopologicalAddGroup M₂] [TopologicalAddGroup M₃]
     (g : M₂ →SL[σ₂₃] M₃) (f₁ f₂ : M →SL[σ₁₂] M₂) : g.comp (f₁ - f₂) = g.comp f₁ - g.comp f₂ := by
   ext
@@ -1440,7 +1440,7 @@ theorem comp_sub [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [TopologicalAddG
 #align continuous_linear_map.comp_sub ContinuousLinearMap.comp_sub
 
 -- Porting note: `nolint simpNF` is required because we don't have η for classes. (lean4#2074)
-@[simp, nolint simpNF]
+@[simp]
 theorem sub_comp [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [TopologicalAddGroup M₃] (g₁ g₂ : M₂ →SL[σ₂₃] M₃)
     (f : M →SL[σ₁₂] M₂) : (g₁ - g₂).comp f = g₁.comp f - g₂.comp f := by
   ext
@@ -2692,3 +2692,4 @@ instance t3_quotient_of_isClosed [TopologicalAddGroup M] [IsClosed (S : Set M)] 
 end Submodule
 
 end Quotient
+#lint
