@@ -589,7 +589,8 @@ theorem ord_proj_dvd_ord_proj_iff_dvd {a b : ℕ} (ha0 : a ≠ 0) (hb0 : b ≠ 0
   refine' ⟨fun h => _, fun hab p => ord_proj_dvd_ord_proj_of_dvd hb0 hab p⟩
   rw [← factorization_le_iff_dvd ha0 hb0]
   intro q
-  rcases le_or_lt q 1 with (hq_le | hq1); · interval_cases <;> simp
+  rcases le_or_lt q 1 with (hq_le | hq1)
+  · interval_cases q <;> simp
   exact (pow_dvd_pow_iff_le_right hq1).1 (h q)
 #align nat.ord_proj_dvd_ord_proj_iff_dvd Nat.ord_proj_dvd_ord_proj_iff_dvd
 
