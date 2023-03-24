@@ -48,7 +48,8 @@ variable {α V P W Q : Type _} [SeminormedAddCommGroup V] [PseudoMetricSpace P] 
   [NormedAddCommGroup W] [MetricSpace Q] [NormedAddTorsor W Q]
 
 instance (priority := 100) NormedAddTorsor.to_isometricVAdd : IsometricVAdd V P :=
-  ⟨fun c => Isometry.of_dist_eq fun x y => by simp [NormedAddTorsor.dist_eq_norm']⟩
+  ⟨fun c => Isometry.of_dist_eq fun x y => by
+    rw [NormedAddTorsor.dist_eq_norm', NormedAddTorsor.dist_eq_norm', vadd_vsub_vadd_cancel_left]⟩
 #align normed_add_torsor.to_has_isometric_vadd NormedAddTorsor.to_isometricVAdd
 
 /-- A `seminormed_add_comm_group` is a `normed_add_torsor` over itself. -/
@@ -58,14 +59,11 @@ instance (priority := 100) SeminormedAddCommGroup.toNormedAddTorsor : NormedAddT
 
 -- Because of the add_torsor.nonempty instance.
 /-- A nonempty affine subspace of a `normed_add_torsor` is itself a `normed_add_torsor`. -/
-@[nolint fails_quickly]
 instance AffineSubspace.toNormedAddTorsor {R : Type _} [Ring R] [Module R V]
     (s : AffineSubspace R P) [Nonempty s] : NormedAddTorsor s.direction s :=
   { AffineSubspace.toAddTorsor s with
     dist_eq_norm' := fun x y => NormedAddTorsor.dist_eq_norm' ↑x ↑y }
 #align affine_subspace.to_normed_add_torsor AffineSubspace.toNormedAddTorsor
-
-include V
 
 section
 
@@ -97,7 +95,8 @@ theorem dist_vadd_cancel_right (v₁ v₂ : V) (x : P) : dist (v₁ +ᵥ x) (v�
 #align dist_vadd_cancel_right dist_vadd_cancel_right
 
 @[simp]
-theorem dist_vadd_left (v : V) (x : P) : dist (v +ᵥ x) x = ‖v‖ := by simp [dist_eq_norm_vsub V _ x]
+theorem dist_vadd_left (v : V) (x : P) : dist (v +ᵥ x) x = ‖v‖ := by
+  rw [dist_eq_norm_vsub V _ x, vadd_vsub]
 #align dist_vadd_left dist_vadd_left
 
 @[simp]
@@ -106,7 +105,7 @@ theorem dist_vadd_right (v : V) (x : P) : dist x (v +ᵥ x) = ‖v‖ := by rw [
 
 /-- Isometry between the tangent space `V` of a (semi)normed add torsor `P` and `P` given by
 addition/subtraction of `x : P`. -/
-@[simps]
+@[simps!]
 def IsometryEquiv.vaddConst (x : P) : V ≃ᵢ P
     where
   toEquiv := Equiv.vaddConst x
@@ -120,11 +119,11 @@ theorem dist_vsub_cancel_left (x y z : P) : dist (x -ᵥ y) (x -ᵥ z) = dist y 
 
 /-- Isometry between the tangent space `V` of a (semi)normed add torsor `P` and `P` given by
 subtraction from `x : P`. -/
-@[simps]
+@[simps!]
 def IsometryEquiv.constVsub (x : P) : P ≃ᵢ V
     where
   toEquiv := Equiv.constVSub x
-  isometry_toFun := Isometry.of_dist_eq fun y z => dist_vsub_cancel_left _ _ _
+  isometry_toFun := Isometry.of_dist_eq fun _ _ => dist_vsub_cancel_left _ _ _
 #align isometry_equiv.const_vsub IsometryEquiv.constVsub
 
 @[simp]
@@ -145,27 +144,29 @@ theorem dist_vsub_vsub_le (p₁ p₂ p₃ p₄ : P) :
 
 theorem nndist_vadd_vadd_le (v v' : V) (p p' : P) :
     nndist (v +ᵥ p) (v' +ᵥ p') ≤ nndist v v' + nndist p p' := by
-  simp only [← NNReal.coe_le_coe, NNReal.coe_add, ← dist_nndist, dist_vadd_vadd_le]
+  simp only [← NNReal.coe_le_coe, NNReal.coe_add, ← dist_nndist]
+  exact dist_vadd_vadd_le v v' p p'
 #align nndist_vadd_vadd_le nndist_vadd_vadd_le
 
 theorem nndist_vsub_vsub_le (p₁ p₂ p₃ p₄ : P) :
     nndist (p₁ -ᵥ p₂) (p₃ -ᵥ p₄) ≤ nndist p₁ p₃ + nndist p₂ p₄ := by
-  simp only [← NNReal.coe_le_coe, NNReal.coe_add, ← dist_nndist, dist_vsub_vsub_le]
+  simp only [← NNReal.coe_le_coe, NNReal.coe_add, ← dist_nndist]
+  exact dist_vsub_vsub_le p₁ p₂ p₃ p₄
 #align nndist_vsub_vsub_le nndist_vsub_vsub_le
 
 theorem edist_vadd_vadd_le (v v' : V) (p p' : P) :
     edist (v +ᵥ p) (v' +ᵥ p') ≤ edist v v' + edist p p' := by
   simp only [edist_nndist]
-  apply_mod_cast nndist_vadd_vadd_le
+  norm_cast
+  exact dist_vadd_vadd_le v v' p p'
 #align edist_vadd_vadd_le edist_vadd_vadd_le
 
 theorem edist_vsub_vsub_le (p₁ p₂ p₃ p₄ : P) :
     edist (p₁ -ᵥ p₂) (p₃ -ᵥ p₄) ≤ edist p₁ p₃ + edist p₂ p₄ := by
   simp only [edist_nndist]
-  apply_mod_cast nndist_vsub_vsub_le
+  norm_cast
+  exact dist_vsub_vsub_le p₁ p₂ p₃ p₄
 #align edist_vsub_vsub_le edist_vsub_vsub_le
-
-omit V
 
 /-- The pseudodistance defines a pseudometric space structure on the torsor. This
 is not an instance because it depends on `V` to define a `metric_space
@@ -200,8 +201,6 @@ def metricSpaceOfNormedAddCommGroupOfAddTorsor (V P : Type _) [NormedAddCommGrou
     apply norm_add_le
 #align metric_space_of_normed_add_comm_group_of_add_torsor metricSpaceOfNormedAddCommGroupOfAddTorsor
 
-include V
-
 theorem LipschitzWith.vadd [PseudoEMetricSpace α] {f : α → V} {g : α → P} {Kf Kg : ℝ≥0}
     (hf : LipschitzWith Kf f) (hg : LipschitzWith Kg g) : LipschitzWith (Kf + Kg) (f +ᵥ g) :=
   fun x y =>
@@ -210,7 +209,7 @@ theorem LipschitzWith.vadd [PseudoEMetricSpace α] {f : α → V} {g : α → P}
       edist_vadd_vadd_le _ _ _ _
     _ ≤ Kf * edist x y + Kg * edist x y := (add_le_add (hf x y) (hg x y))
     _ = (Kf + Kg) * edist x y := (add_mul _ _ _).symm
-    
+
 #align lipschitz_with.vadd LipschitzWith.vadd
 
 theorem LipschitzWith.vsub [PseudoEMetricSpace α] {f g : α → P} {Kf Kg : ℝ≥0}
@@ -221,28 +220,28 @@ theorem LipschitzWith.vsub [PseudoEMetricSpace α] {f g : α → P} {Kf Kg : ℝ
       edist_vsub_vsub_le _ _ _ _
     _ ≤ Kf * edist x y + Kg * edist x y := (add_le_add (hf x y) (hg x y))
     _ = (Kf + Kg) * edist x y := (add_mul _ _ _).symm
-    
+
 #align lipschitz_with.vsub LipschitzWith.vsub
 
 theorem uniformContinuous_vadd : UniformContinuous fun x : V × P => x.1 +ᵥ x.2 :=
-  (LipschitzWith.prod_fst.vadd LipschitzWith.prod_snd).UniformContinuous
+  (LipschitzWith.prod_fst.vadd LipschitzWith.prod_snd).uniformContinuous
 #align uniform_continuous_vadd uniformContinuous_vadd
 
 theorem uniformContinuous_vsub : UniformContinuous fun x : P × P => x.1 -ᵥ x.2 :=
-  (LipschitzWith.prod_fst.vsub LipschitzWith.prod_snd).UniformContinuous
+  (LipschitzWith.prod_fst.vsub LipschitzWith.prod_snd).uniformContinuous
 #align uniform_continuous_vsub uniformContinuous_vsub
 
 instance (priority := 100) NormedAddTorsor.to_continuousVAdd : ContinuousVAdd V P
-    where continuous_vadd := uniformContinuous_vadd.Continuous
+    where continuous_vadd := uniformContinuous_vadd.continuous
 #align normed_add_torsor.to_has_continuous_vadd NormedAddTorsor.to_continuousVAdd
 
 theorem continuous_vsub : Continuous fun x : P × P => x.1 -ᵥ x.2 :=
-  uniformContinuous_vsub.Continuous
+  uniformContinuous_vsub.continuous
 #align continuous_vsub continuous_vsub
 
 theorem Filter.Tendsto.vsub {l : Filter α} {f g : α → P} {x y : P} (hf : Tendsto f l (𝓝 x))
     (hg : Tendsto g l (𝓝 y)) : Tendsto (f -ᵥ g) l (𝓝 (x -ᵥ y)) :=
-  (continuous_vsub.Tendsto (x, y)).comp (hf.prod_mk_nhds hg)
+  (continuous_vsub.tendsto (x, y)).comp (hf.prod_mk_nhds hg)
 #align filter.tendsto.vsub Filter.Tendsto.vsub
 
 section
@@ -283,4 +282,3 @@ theorem Filter.Tendsto.midpoint [Invertible (2 : R)] {l : Filter α} {f₁ f₂ 
 #align filter.tendsto.midpoint Filter.Tendsto.midpoint
 
 end
-
