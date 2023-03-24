@@ -8,8 +8,8 @@ Authors: Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.CharP.Invertible
-import Mathbin.LinearAlgebra.AffineSpace.Midpoint
+import Mathlib.Algebra.CharP.Invertible
+import Mathlib.LinearAlgebra.AffineSpace.Midpoint
 
 /-!
 # Midpoint of a segment for characteristic zero
