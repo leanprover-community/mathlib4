@@ -173,7 +173,7 @@ theorem content_eq_zero_iff {p : R[X]} : content p = 0 ↔ p = 0 := by
     simp [h]
 #align polynomial.content_eq_zero_iff Polynomial.content_eq_zero_iff
 
--- Porting note: this reduced with simp so created aux decl and put simp on it
+-- Porting note: this reduced with simp so created `normUnit_content` and put simp on it
 theorem normalize_content {p : R[X]} : normalize p.content = p.content :=
   Finset.normalize_gcd
 #align polynomial.normalize_content Polynomial.normalize_content
