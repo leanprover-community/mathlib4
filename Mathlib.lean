@@ -320,6 +320,7 @@ import Mathlib.CategoryTheory.Comma
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
 import Mathlib.CategoryTheory.ConcreteCategory.Bundled
 import Mathlib.CategoryTheory.ConcreteCategory.BundledHom
+import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 import Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso
 import Mathlib.CategoryTheory.Conj
 import Mathlib.CategoryTheory.ConnectedComponents
@@ -357,6 +358,7 @@ import Mathlib.CategoryTheory.LiftingProperties.Basic
 import Mathlib.CategoryTheory.Limits.Bicones
 import Mathlib.CategoryTheory.Limits.ColimitLimit
 import Mathlib.CategoryTheory.Limits.Comma
+import Mathlib.CategoryTheory.Limits.ConcreteCategory
 import Mathlib.CategoryTheory.Limits.ConeCategory
 import Mathlib.CategoryTheory.Limits.Cones
 import Mathlib.CategoryTheory.Limits.Connected
@@ -400,6 +402,7 @@ import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
 import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
 import Mathlib.CategoryTheory.Limits.Shapes.CommSq
+import Mathlib.CategoryTheory.Limits.Shapes.Diagonal
 import Mathlib.CategoryTheory.Limits.Shapes.DisjointCoproduct
 import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
 import Mathlib.CategoryTheory.Limits.Shapes.Equivalence
@@ -1120,7 +1123,9 @@ import Mathlib.Lean.Meta
 import Mathlib.Lean.Meta.Simp
 import Mathlib.LinearAlgebra.AffineSpace.AffineEquiv
 import Mathlib.LinearAlgebra.AffineSpace.AffineMap
+import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace
 import Mathlib.LinearAlgebra.AffineSpace.Basic
+import Mathlib.LinearAlgebra.AffineSpace.Midpoint
 import Mathlib.LinearAlgebra.AffineSpace.Slope
 import Mathlib.LinearAlgebra.Basic
 import Mathlib.LinearAlgebra.Basis
