@@ -63,7 +63,8 @@ instance divisionSemiring [DivisionSemiring α] : DivisionSemiring αᵃᵒᵖ :
   { AddOpposite.groupWithZero α, AddOpposite.semiring α with }
 
 instance divisionRing [DivisionRing α] : DivisionRing αᵃᵒᵖ :=
-  { AddOpposite.groupWithZero α, AddOpposite.ring α, AddOpposite.ratCast α with
+  { -- porting note: added `ratCast` override
+    AddOpposite.groupWithZero α, AddOpposite.ring α, AddOpposite.ratCast α with
     ratCast_mk := fun a b hb h => unop_injective $ by
       rw [unop_ratCast, Rat.cast_def, unop_mul, unop_inv, unop_natCast, unop_intCast,
         div_eq_mul_inv] }
