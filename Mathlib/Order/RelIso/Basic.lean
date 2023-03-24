@@ -643,16 +643,18 @@ theorem toEquiv_injective : Injective (toEquiv : r ≃r s → α ≃ β)
 instance : CoeOut (r ≃r s) (r ↪r s) :=
   ⟨toRelEmbedding⟩
 
---Porting note: removed
--- see Note [function coercion]
--- instance : CoeFun (r ≃r s) fun _ => α → β :=
---   ⟨fun f => f⟩bui
+
 
 -- TODO: define and instantiate a `RelIsoClass` when `EquivLike` is defined
 instance : RelHomClass (r ≃r s) r s where
   coe := fun x => x
   coe_injective' := Equiv.coe_fn_injective.comp toEquiv_injective
   map_rel f _ _ := Iff.mpr (map_rel_iff' f)
+
+--Porting note: helper instance
+-- see Note [function coercion]
+instance : CoeFun (r ≃r s) fun _ => α → β :=
+  ⟨FunLike.coe⟩
 
 @[simp]
 theorem coe_toRelEmbedding (f : r ≃r s) : (f.toRelEmbedding : α → β) = f :=
