@@ -223,7 +223,7 @@ instance (F : MonoidalFunctor C D) [IsEquivalence F.toFunctor] : IsIso (monoidal
   MonoidalNatIso.isIso_of_isIso_app _
 
 /-- The counit of a monoidal equivalence can be upgraded to a monoidal natural transformation. -/
-@[simps!] -- error here...
+@[simps! toNatTrans] -- Porting note: have to manually specify the toNatTrans projection
 def monoidalCounit (F : MonoidalFunctor C D) [IsEquivalence F.toFunctor] :
     (monoidalInverse F).toLaxMonoidalFunctor ⊗⋙ F.toLaxMonoidalFunctor ⟶ LaxMonoidalFunctor.id D :=
   { toNatTrans := F.toFunctor.asEquivalence.counit
