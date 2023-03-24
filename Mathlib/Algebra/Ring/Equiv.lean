@@ -132,8 +132,11 @@ instance : RingEquivClass (R ≃+* S) R S where
   left_inv f := f.left_inv
   right_inv f := f.right_inv
 
--- Porting note: `toEquiv_eq_coe` no longer needed in Lean4
-#noalign ring_equiv.to_equiv_eq_coe
+@[simp]
+theorem toEquiv_eq_coe (f : R ≃+* S) : f.toEquiv = f :=
+  rfl
+#align ring_equiv.to_equiv_eq_coe RingEquiv.toEquiv_eq_coe
+
 -- Porting note: `toFun_eq_coe` no longer needed in Lean4
 #noalign ring_equiv.to_fun_eq_coe
 
