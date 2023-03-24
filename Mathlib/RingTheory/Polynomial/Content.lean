@@ -173,15 +173,18 @@ theorem content_eq_zero_iff {p : R[X]} : content p = 0 ↔ p = 0 := by
     simp [h]
 #align polynomial.content_eq_zero_iff Polynomial.content_eq_zero_iff
 
--- Porting note: this reduced with simp so created aux decl and put simp on it
+-- Porting note: this reduced with simp so created `normUnit_content` and put simp on it
 theorem normalize_content {p : R[X]} : normalize p.content = p.content :=
   Finset.normalize_gcd
 #align polynomial.normalize_content Polynomial.normalize_content
 
 @[simp]
-theorem normalize_content_aux {p : R[X]} : content p * (normUnit (content p))  = p.content := by 
-  rw [←normalize_apply]
-  exact normalize_content
+theorem normUnit_content {p : R[X]} : normUnit (content p) = 1 := by
+  by_cases hp0 : p.content = 0
+  . simp [hp0]
+  . ext
+    apply mul_left_cancel₀ hp0
+    erw [← normalize_apply, normalize_content, mul_one]
 
 theorem content_eq_gcd_range_of_lt (p : R[X]) (n : ℕ) (h : p.natDegree < n) :
     p.content = (Finset.range n).gcd p.coeff := by
@@ -367,7 +370,7 @@ theorem content_mul {p q : R[X]} : (p * q).content = p.content * q.content := by
     induction' n with n ih
     · intro p q hpq
       dsimp at hpq
-      rw [Nat.cast_withBot, WithBot.coe_zero, 
+      rw [Nat.cast_withBot, WithBot.coe_zero,
         Nat.WithBot.lt_zero_iff, degree_eq_bot, mul_eq_zero] at hpq
       rcases hpq with (rfl | rfl) <;> simp
     intro p q hpq
@@ -375,14 +378,14 @@ theorem content_mul {p q : R[X]} : (p * q).content = p.content * q.content := by
     · simp [p0]
     by_cases q0 : q = 0
     · simp [q0]
-    rw [degree_eq_natDegree (mul_ne_zero p0 q0), Nat.cast_withBot, 
+    rw [degree_eq_natDegree (mul_ne_zero p0 q0), Nat.cast_withBot,
       Nat.cast_withBot, WithBot.coe_lt_coe, Nat.lt_succ_iff_lt_or_eq, ←
-      WithBot.coe_lt_coe, ←Nat.cast_withBot, ← degree_eq_natDegree (mul_ne_zero p0 q0), 
+      WithBot.coe_lt_coe, ←Nat.cast_withBot, ← degree_eq_natDegree (mul_ne_zero p0 q0),
       natDegree_mul p0 q0] at hpq
     rcases hpq with (hlt | heq)
     · apply ih _ _ hlt
-    rw [← p.natDegree_primPart, ← q.natDegree_primPart, ← WithBot.coe_eq_coe, 
-      WithBot.coe_add, ← Nat.cast_withBot, ←degree_eq_natDegree p.primPart_ne_zero, 
+    rw [← p.natDegree_primPart, ← q.natDegree_primPart, ← WithBot.coe_eq_coe,
+      WithBot.coe_add, ← Nat.cast_withBot, ←degree_eq_natDegree p.primPart_ne_zero,
       ← Nat.cast_withBot, ← degree_eq_natDegree q.primPart_ne_zero] at heq
     rw [p.eq_C_content_mul_primPart, q.eq_C_content_mul_primPart]
     suffices h : (q.primPart * p.primPart).content = 1
@@ -464,7 +467,7 @@ theorem exists_primitive_lcm_of_isPrimitive {p q : R[X]} (hp : p.IsPrimitive) (h
         fun rcs => rs _⟩
     rw [← rprim.dvd_primPart_iff_dvd s0]
     rw [cancelLeads, tsub_eq_zero_iff_le.mpr hs, pow_zero, mul_one] at rcs
-    have h := 
+    have h :=
       dvd_add rcs (Dvd.intro_left (C (leadingCoeff s) * X ^ (natDegree s - natDegree r)) rfl)
     have hC0 := rprim.ne_zero
     rw [Ne.def, ← leadingCoeff_eq_zero, ← C_eq_zero] at hC0
@@ -516,4 +519,3 @@ theorem degree_gcd_le_right (p) {q : R[X]} (hq : q ≠ 0) : (gcd p q).degree ≤
 end NormalizedGCDMonoid
 
 end Polynomial
-

@@ -54,6 +54,9 @@ instance Sym.hasCoe (α : Type _) (n : ℕ) : CoeOut (Sym α n) (Multiset α) :=
   ⟨Sym.toMultiset⟩
 #align sym.has_coe Sym.hasCoe
 
+-- Porting note: instance needed for Data.Finset.Sym
+instance [DecidableEq α]: DecidableEq (Sym α n) := Subtype.instDecidableEqSubtype
+
 /-- This is the `List.Perm` setoid lifted to `Vector`.
 
 See note [reducible non-instances].
