@@ -267,6 +267,8 @@ theorem injective (f : r ↪r s) : Injective f :=
   f.inj'
 #align rel_embedding.injective RelEmbedding.injective
 
+--Porting note: marked simp until `RelEmbedding` is `EmbeddingLike`
+@[simp]
 theorem inj (f : r ↪r s) {a b} : f a = f b ↔ a = b :=
   f.injective.eq_iff
 #align rel_embedding.inj RelEmbedding.inj
@@ -610,7 +612,7 @@ set_option synthInstance.etaExperiment true
 def prodLexMap (f : r ↪r s) (g : t ↪r u) : Prod.Lex r t ↪r Prod.Lex s u where
   toFun := Prod.map f g
   inj' := f.injective.Prod_map g.injective
-  map_rel_iff' := by simp [Prod.lex_def, f.map_rel_iff, g.map_rel_iff, f.inj]
+  map_rel_iff' := by simp [Prod.lex_def, f.map_rel_iff, g.map_rel_iff]
 #align rel_embedding.prod_lex_map RelEmbedding.prodLexMap
 #align rel_embedding.prod_lex_map_apply RelEmbedding.prodLexMap_apply
 
@@ -644,13 +646,25 @@ instance : CoeOut (r ≃r s) (r ↪r s) :=
 --Porting note: removed
 -- see Note [function coercion]
 -- instance : CoeFun (r ≃r s) fun _ => α → β :=
---   ⟨fun f => f⟩
+--   ⟨fun f => f⟩bui
 
 -- TODO: define and instantiate a `RelIsoClass` when `EquivLike` is defined
 instance : RelHomClass (r ≃r s) r s where
   coe := fun x => x
   coe_injective' := Equiv.coe_fn_injective.comp toEquiv_injective
   map_rel f _ _ := Iff.mpr (map_rel_iff' f)
+
+@[simp]
+theorem coe_toRelEmbedding (f : r ≃r s) : (f.toRelEmbedding : α → β) = f :=
+  rfl
+
+@[simp]
+theorem coe_toEmbedding (f : r ≃r s) : (f.toEmbedding : α → β) = f :=
+  rfl
+
+@[simp]
+theorem coe_toEquiv (f : r ≃r s) : (f.toEquiv : α → β) = f :=
+  rfl
 
 theorem map_rel_iff (f : r ≃r s) {a b} : s (f a) (f b) ↔ r a b :=
   f.map_rel_iff'

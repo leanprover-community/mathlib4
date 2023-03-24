@@ -566,7 +566,7 @@ theorem init_update_castSucc : init (update q (castSucc i) y) = update (init q) 
   by_cases h : j = i
   · rw [h]
     simp [init]
-  · simp [init, h]
+  · simp [init, h, castSucc.inj]
 #align fin.init_update_cast_succ Fin.init_update_castSucc
 
 /-- `tail` and `init` commute. We state this lemma in a non-dependent setting, as otherwise it
@@ -672,11 +672,12 @@ theorem insertNth_apply_succAbove (i : Fin (n + 1)) (x : α i) (p : ∀ j, α (i
   split_ifs with hlt
   · generalize_proofs H₁ H₂; revert H₂
     generalize hk : castLT ((succAbove i).toEmbedding j) H₁ = k
-    rw [castLT_succAbove hlt] at hk; cases hk
+    generalize hk : castLT ((succAbove i).toEmbedding j) H₁ = k
+    erw [castLT_succAbove hlt] at hk; cases hk
     intro; rfl
   · generalize_proofs H₁ H₂; revert H₂
     generalize hk : pred ((succAbove i).toEmbedding j) H₁ = k
-    rw [pred_succAbove (le_of_not_lt hlt)] at hk; cases hk
+    erw [pred_succAbove (le_of_not_lt hlt)] at hk; cases hk
     intro; rfl
 #align fin.insert_nth_apply_succ_above Fin.insertNth_apply_succAbove
 
