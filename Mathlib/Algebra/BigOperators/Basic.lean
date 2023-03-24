@@ -886,8 +886,7 @@ theorem prod_subtype {p : α → Prop} {F : Fintype (Subtype p)} (s : Finset α)
   have : (· ∈ s) = p := Set.ext h
   subst p
   rw [← prod_coe_sort]
-  congr
-  apply Subsingleton.elim
+  congr!
 #align finset.prod_subtype Finset.prod_subtype
 #align finset.sum_subtype Finset.sum_subtype
 
