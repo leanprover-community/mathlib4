@@ -18,7 +18,7 @@ This file defines restrictions of affine maps.
 ## Main definitions
 
 * The domain and codomain of an affine map can be restricted using
-  `affine_map.restrict`.
+  `AffineMap.restrict`.
 
 ## Main theorems
 
@@ -32,24 +32,21 @@ This file defines restrictions of affine maps.
 variable {k V₁ P₁ V₂ P₂ : Type _} [Ring k] [AddCommGroup V₁] [AddCommGroup V₂] [Module k V₁]
   [Module k V₂] [AddTorsor V₁ P₁] [AddTorsor V₂ P₂]
 
-include V₁ V₂
-
--- not an instance because it loops with `nonempty`
+-- not an instance because it loops with `Nonempty`
 theorem AffineSubspace.nonempty_map {E : AffineSubspace k P₁} [Ene : Nonempty E] {φ : P₁ →ᵃ[k] P₂} :
     Nonempty (E.map φ) := by
   obtain ⟨x, hx⟩ := id Ene
-  refine' ⟨⟨φ x, affine_subspace.mem_map.mpr ⟨x, hx, rfl⟩⟩⟩
+  refine' ⟨⟨φ x, AffineSubspace.mem_map.mpr ⟨x, hx, rfl⟩⟩⟩
 #align affine_subspace.nonempty_map AffineSubspace.nonempty_map
 
-attribute [local instance, local nolint fails_quickly] AffineSubspace.nonempty_map
-
-attribute [local instance, local nolint fails_quickly] AffineSubspace.toAddTorsor
+-- Porting note: removed "local nolint fails_quickly" attribute
+attribute [local instance] AffineSubspace.nonempty_map AffineSubspace.toAddTorsor
 
 /-- Restrict domain and codomain of an affine map to the given subspaces. -/
 def AffineMap.restrict (φ : P₁ →ᵃ[k] P₂) {E : AffineSubspace k P₁} {F : AffineSubspace k P₂}
     [Nonempty E] [Nonempty F] (hEF : E.map φ ≤ F) : E →ᵃ[k] F := by
   refine' ⟨_, _, _⟩
-  · exact fun x => ⟨φ x, hEF <| affine_subspace.mem_map.mpr ⟨x, x.property, rfl⟩⟩
+  · exact fun x => ⟨φ x, hEF <| AffineSubspace.mem_map.mpr ⟨x, x.property, rfl⟩⟩
   · refine' φ.linear.restrict (_ : E.direction ≤ F.direction.comap φ.linear)
     rw [← Submodule.map_le_iff_le_comap, ← AffineSubspace.map_direction]
     exact AffineSubspace.direction_le hEF
@@ -97,4 +94,3 @@ theorem AffineMap.restrict.bijective {E : AffineSubspace k P₁} [Nonempty E] {�
     (hφ : Function.Injective φ) : Function.Bijective (φ.restrict (le_refl (E.map φ))) :=
   ⟨AffineMap.restrict.injective hφ _, AffineMap.restrict.surjective _ rfl⟩
 #align affine_map.restrict.bijective AffineMap.restrict.bijective
-
