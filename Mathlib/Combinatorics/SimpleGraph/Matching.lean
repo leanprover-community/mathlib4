@@ -8,8 +8,8 @@ Authors: Alena Gusakov, Arthur Paulino, Kyle Miller
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Combinatorics.SimpleGraph.DegreeSum
-import Mathbin.Combinatorics.SimpleGraph.Subgraph
+import Mathlib.Combinatorics.SimpleGraph.DegreeSum
+import Mathlib.Combinatorics.SimpleGraph.Subgraph
 
 /-!
 # Matchings
@@ -66,8 +66,7 @@ noncomputable def IsMatching.toEdge {M : Subgraph G} (h : M.IsMatching) (v : M.v
 #align simple_graph.subgraph.is_matching.to_edge SimpleGraph.Subgraph.IsMatching.toEdge
 
 theorem IsMatching.toEdge_eq_of_adj {M : Subgraph G} (h : M.IsMatching) {v w : V} (hv : v ∈ M.verts)
-    (hvw : M.Adj v w) : h.toEdge ⟨v, hv⟩ = ⟨⟦(v, w)⟧, hvw⟩ :=
-  by
+    (hvw : M.Adj v w) : h.toEdge ⟨v, hv⟩ = ⟨⟦(v, w)⟧, hvw⟩ := by
   simp only [is_matching.to_edge, Subtype.mk_eq_mk]
   congr
   exact ((h (M.edge_vert hvw)).choose_spec.2 w hvw).symm
@@ -93,8 +92,7 @@ def IsPerfectMatching : Prop :=
   M.IsMatching ∧ M.IsSpanning
 #align simple_graph.subgraph.is_perfect_matching SimpleGraph.Subgraph.IsPerfectMatching
 
-theorem IsMatching.support_eq_verts {M : Subgraph G} (h : M.IsMatching) : M.support = M.verts :=
-  by
+theorem IsMatching.support_eq_verts {M : Subgraph G} (h : M.IsMatching) : M.support = M.verts := by
   refine' M.support_subset_verts.antisymm fun v hv => _
   obtain ⟨w, hvw, -⟩ := h hv
   exact ⟨_, hvw⟩
@@ -113,8 +111,7 @@ theorem IsMatching.even_card {M : Subgraph G} [Fintype M.verts] (h : M.IsMatchin
     simp [h, Finset.card_univ]
 #align simple_graph.subgraph.is_matching.even_card SimpleGraph.Subgraph.IsMatching.even_card
 
-theorem isPerfectMatching_iff : M.IsPerfectMatching ↔ ∀ v, ∃! w, M.Adj v w :=
-  by
+theorem isPerfectMatching_iff : M.IsPerfectMatching ↔ ∀ v, ∃! w, M.Adj v w := by
   refine' ⟨_, fun hm => ⟨fun v hv => hm v, fun v => _⟩⟩
   · rintro ⟨hm, hs⟩ v
     exact hm (hs v)
