@@ -92,6 +92,7 @@ protected theorem Decomposition.inductionOn {p : M → Prop} (h_zero : p 0)
       right_inv := fun _ ↦ (decompose ℳ).right_inv _ }
   have mem : ∀ m, m ∈ supᵢ ℳ' := fun _m ↦
     (DirectSum.IsInternal.addSubmonoid_supᵢ_eq_top ℳ' (Decomposition.isInternal ℳ')).symm ▸ trivial
+  -- Porting note: needs to use @ even though no implicit argument is provided
   exact fun m ↦ @AddSubmonoid.supᵢ_induction _ _ _ ℳ' _ _ (mem m)
     (fun i m h ↦ h_homogeneous ⟨m, h⟩) h_zero h_add
 --  exact fun m ↦
@@ -129,7 +130,7 @@ theorem decompose_of_mem_ne {x : M} {i j : ι} (hx : x ∈ ℳ i) (hij : i ≠ j
 
 /-- If `M` is graded by `ι` with degree `i` component `ℳ i`, then it is isomorphic as
 an additive monoid to a direct sum of components. -/
-@[simps! (config := { fullyApplied := false })]
+@[simps (config := { fullyApplied := false })]
 def decomposeAddEquiv : M ≃+ ⨁ i, ℳ i :=
   AddEquiv.symm { (decompose ℳ).symm with map_add' := map_add (DirectSum.coeAddMonoidHom ℳ) }
 #align direct_sum.decompose_add_equiv DirectSum.decomposeAddEquiv
