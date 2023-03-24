@@ -67,8 +67,9 @@ def StrictOrderedRing.mkOfPositiveCone (C : PositiveCone α) : StrictOrderedRing
       simp,
     mul_pos := fun x y xp yp => by
       change C.pos (x * y - 0)
-      convert C.mul_pos x y (by convert xp; simp) (by convert yp; simp)
-      simp }
+      -- porting note: used to be convert, but it relied on unfolding definitions
+      rw [sub_zero]
+      exact C.mul_pos x y (by rwa [← sub_zero x]) (by rwa [← sub_zero y]) }
 #align strict_ordered_ring.mk_of_positive_cone StrictOrderedRing.mkOfPositiveCone
 
 /-- Construct a `LinearOrderedRing` by

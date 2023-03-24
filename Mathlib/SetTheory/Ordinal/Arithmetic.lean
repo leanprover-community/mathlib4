@@ -1457,8 +1457,8 @@ theorem bsup_eq_sup {ι : Type u} (f : ι → Ordinal.{max u v}) :
 theorem bsup_congr {o₁ o₂ : Ordinal.{u}} (f : ∀ a < o₁, Ordinal.{max u v}) (ho : o₁ = o₂) :
     bsup.{_, v} o₁ f = bsup.{_, v} o₂ fun a h => f a (h.trans_eq ho.symm) := by
   subst ho
-  -- Porting note: `congr` is required.
-  congr
+  -- Porting note: `rfl` is required.
+  rfl
 #align ordinal.bsup_congr Ordinal.bsup_congr
 
 theorem bsup_le_iff {o f a} : bsup.{u, v} o f ≤ a ↔ ∀ i h, f i h ≤ a :=
@@ -1563,9 +1563,9 @@ theorem sup_eq_lsub {ι : Type u} (f : ι → Ordinal.{max u v}) :
 
 theorem lsub_le_iff {ι : Type u} {f : ι → Ordinal.{max u v}} {a} :
     lsub.{_, v} f ≤ a ↔ ∀ i, f i < a := by
-  convert sup_le_iff.{_, v} (f := succ ∘ f) (a := a)
-  -- Porting note: `eq_iff_iff` & `(· ∘ ·)` are required.
-  simp only [eq_iff_iff, (· ∘ ·), succ_le_iff]
+  convert sup_le_iff.{_, v} (f := succ ∘ f) (a := a) using 2
+  -- Porting note: `comp_apply` is required.
+  simp only [comp_apply, succ_le_iff]
 #align ordinal.lsub_le_iff Ordinal.lsub_le_iff
 
 theorem lsub_le {ι} {f : ι → Ordinal} {a} : (∀ i, f i < a) → lsub f ≤ a :=
@@ -1774,14 +1774,14 @@ theorem blsub_eq_lsub {ι : Type u} (f : ι → Ordinal.{max u v}) :
 theorem blsub_congr {o₁ o₂ : Ordinal.{u}} (f : ∀ a < o₁, Ordinal.{max u v}) (ho : o₁ = o₂) :
     blsub.{_, v} o₁ f = blsub.{_, v} o₂ fun a h => f a (h.trans_eq ho.symm) := by
   subst ho
-  -- Porting note: `congr` is required.
-  congr
+  -- Porting note: `rfl` is required.
+  rfl
 #align ordinal.blsub_congr Ordinal.blsub_congr
 
 theorem blsub_le_iff {o : Ordinal.{u}} {f : ∀ a < o, Ordinal.{max u v}} {a} :
     blsub.{_, v} o f ≤ a ↔ ∀ i h, f i h < a := by
-  convert bsup_le_iff.{_, v} (f := fun a ha => succ (f a ha)) (a := a)
-  simp [succ_le_iff]
+  convert bsup_le_iff.{_, v} (f := fun a ha => succ (f a ha)) (a := a) using 2
+  simp_rw [succ_le_iff]
 #align ordinal.blsub_le_iff Ordinal.blsub_le_iff
 
 theorem blsub_le {o : Ordinal} {f : ∀ b < o, Ordinal} {a} : (∀ i h, f i h < a) → blsub o f ≤ a :=
@@ -2032,9 +2032,8 @@ theorem mex_lt_ord_succ_mk {ι : Type u} (f : ι → Ordinal.{u}) :
       fun a => Classical.choose_spec (H a)
     apply_fun f  at h'
     rwa [Hf, Hf, typein_inj] at h'
-  -- Porting note: `convert` & `rw` → `have` & `rwa`
-  have hg' := Cardinal.mk_le_of_injective hg
-  rwa [Cardinal.mk_ord_out (succ (#ι))] at hg'
+  convert Cardinal.mk_le_of_injective hg
+  rw [Cardinal.mk_ord_out (succ (#ι))]
 #align ordinal.mex_lt_ord_succ_mk Ordinal.mex_lt_ord_succ_mk
 
 /-- The minimum excluded ordinal of a family of ordinals indexed by the set of ordinals less than
@@ -2059,7 +2058,8 @@ theorem le_bmex_of_forall {o : Ordinal} (f : ∀ a < o, Ordinal) {a : Ordinal}
 
 theorem ne_bmex {o : Ordinal.{u}} (f : ∀ a < o, Ordinal.{max u v}) {i} (hi) :
     f i hi ≠ bmex.{_, v} o f := by
-  convert ne_mex.{_, v} (familyOfBFamily o f) (enum (· < ·) i (by rwa [type_lt]))
+  convert (config := {transparency := .default})
+    ne_mex.{_, v} (familyOfBFamily o f) (enum (· < ·) i (by rwa [type_lt])) using 2
   -- Porting note: `familyOfBFamily_enum` → `typein_enum`
   rw [typein_enum]
 #align ordinal.ne_bmex Ordinal.ne_bmex

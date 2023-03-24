@@ -70,8 +70,8 @@ If `G` preserves equalizers and `C` has them, then the fork constructed of the m
 a fork is a limit.
 -/
 def isLimitOfHasEqualizerOfPreservesLimit [PreservesLimit (parallelPair f g) G] :
-    IsLimit (Fork.ofι 
-      (G.map (equalizer.ι f g)) (by simp only [← G.map_comp]; rw [equalizer.condition]) : 
+    IsLimit (Fork.ofι
+      (G.map (equalizer.ι f g)) (by simp only [← G.map_comp]; rw [equalizer.condition]) :
       Fork (G.map f) (G.map g)) :=
   isLimitForkMapOfIsLimit G _ (equalizerIsEqualizer f g)
 #align category_theory.limits.is_limit_of_has_equalizer_of_preserves_limit CategoryTheory.Limits.isLimitOfHasEqualizerOfPreservesLimit
@@ -154,7 +154,7 @@ If `G` preserves coequalizers and `C` has them, then the cofork constructed of t
 of a cofork is a colimit.
 -/
 def isColimitOfHasCoequalizerOfPreservesColimit [PreservesColimit (parallelPair f g) G] :
-    IsColimit (Cofork.ofπ (G.map (coequalizer.π f g)) (by 
+    IsColimit (Cofork.ofπ (G.map (coequalizer.π f g)) (by
       simp only [← G.map_comp]; rw [coequalizer.condition]) : Cofork (G.map f) (G.map g)) :=
   isColimitCoforkMapOfIsColimit G _ (coequalizerIsCoequalizer f g)
 #align category_theory.limits.is_colimit_of_has_coequalizer_of_preserves_colimit CategoryTheory.Limits.isColimitOfHasCoequalizerOfPreservesColimit
@@ -168,7 +168,7 @@ def ofIsoComparison [i : IsIso (coequalizerComparison f g G)] :
     PreservesColimit (parallelPair f g) G := by
   apply preservesColimitOfPreservesColimitCocone (coequalizerIsCoequalizer f g)
   apply (isColimitMapCoconeCoforkEquiv _ _).symm _
-  refine 
+  refine
     @IsColimit.ofPointIso _ _ _ _ _ _ _ (colimit.isColimit (parallelPair (G.map f) (G.map g))) ?_
   apply i
 #align category_theory.limits.of_iso_comparison CategoryTheory.Limits.ofIsoComparison
@@ -197,9 +197,9 @@ instance : IsIso (coequalizerComparison f g G) := by
 instance map_π_epi : Epi (G.map (coequalizer.π f g)) :=
   ⟨fun {W} h k => by
     rw [← ι_comp_coequalizerComparison]
-    haveI : Epi (coequalizer.π (G.map f) (G.map g) ≫ coequalizerComparison f g G) := by 
+    haveI : Epi (coequalizer.π (G.map f) (G.map g) ≫ coequalizerComparison f g G) := by
       apply epi_comp
-    apply (cancel_epi _).1⟩ 
+    apply (cancel_epi _).1⟩
 #align category_theory.limits.map_π_epi CategoryTheory.Limits.map_π_epi
 
 @[reassoc]
@@ -254,4 +254,3 @@ instance (priority := 1) preservesSplitCoequalizers (f g : X ⟶ Y) [HasSplitCoe
 end Coequalizers
 
 end CategoryTheory.Limits
-
