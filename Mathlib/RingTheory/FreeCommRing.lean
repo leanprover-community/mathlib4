@@ -8,10 +8,10 @@ Authors: Kenny Lau, Johan Commelin
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.MvPolynomial.Equiv
-import Mathbin.Data.MvPolynomial.CommRing
-import Mathbin.Logic.Equiv.Functor
-import Mathbin.RingTheory.FreeRing
+import Mathlib.Data.MvPolynomial.Equiv
+import Mathlib.Data.MvPolynomial.CommRing
+import Mathlib.Logic.Equiv.Functor
+import Mathlib.RingTheory.FreeRing
 
 /-!
 # Free commutative rings
@@ -223,8 +223,7 @@ end Restriction
 
 theorem isSupported_of {p} {s : Set α} : IsSupported (of p) s ↔ p ∈ s :=
   suffices IsSupported (of p) s → p ∈ s from ⟨this, fun hps => Subring.subset_closure ⟨p, hps, rfl⟩⟩
-  fun hps : IsSupported (of p) s =>
-  by
+  fun hps : IsSupported (of p) s => by
   haveI := Classical.decPred s
   have :
     ∀ x,
@@ -259,8 +258,7 @@ theorem isSupported_of {p} {s : Set α} : IsSupported (of p) s ↔ p ∈ s :=
 #align free_comm_ring.is_supported_of FreeCommRing.isSupported_of
 
 theorem map_subtype_val_restriction {x} (s : Set α) [DecidablePred (· ∈ s)]
-    (hxs : IsSupported x s) : map (Subtype.val : s → α) (restriction s x) = x :=
-  by
+    (hxs : IsSupported x s) : map (Subtype.val : s → α) (restriction s x) = x := by
   refine' Subring.InClosure.recOn hxs _ _ _ _
   · rw [RingHom.map_one]
     rfl
@@ -351,8 +349,7 @@ protected theorem coe_mul (x y : FreeRing α) : ↑(x * y) = (x : FreeCommRing �
 
 variable (α)
 
-protected theorem coe_surjective : Surjective (coe : FreeRing α → FreeCommRing α) := fun x =>
-  by
+protected theorem coe_surjective : Surjective (coe : FreeRing α → FreeCommRing α) := fun x => by
   apply FreeCommRing.induction_on x
   · use -1
     rfl
