@@ -40,6 +40,9 @@ theorem star_def [∀ i, Star (f i)] (x : ∀ i, f i) : star x = fun i => star (
   rfl
 #align pi.star_def Pi.star_def
 
+instance [∀ i, Star (f i)] [∀ i, TrivialStar (f i)] : TrivialStar (∀ i, f i)
+    where star_trivial _ := funext fun _ => star_trivial _
+
 instance [∀ i, InvolutiveStar (f i)] : InvolutiveStar (∀ i, f i)
     where star_involutive _ := funext fun _ => star_star _
 
