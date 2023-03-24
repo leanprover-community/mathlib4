@@ -118,7 +118,6 @@ theorem inv_rot_of_dist_triangle (T : Triangle C) (H : T ∈ distTriang C) :
     (isomorphic_distinguished T H T.invRotate.rotate (invRotCompRot.app T))
 #align category_theory.pretriangulated.inv_rot_of_dist_triangle CategoryTheory.Pretriangulated.inv_rot_of_dist_triangle
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:635:2: warning: expanding binder collection (T «expr ∈ » «exprdist_triang »(C)) -/
 /-- Given any distinguished triangle
 ```
       f       g       h
@@ -134,7 +133,6 @@ theorem comp_dist_triangle_mor_zero₁₂ (T) (H : T ∈ (distTriang C)) : T.mor
   simpa only [contractibleTriangle_mor₂, zero_comp] using hc.left.symm
 #align category_theory.pretriangulated.comp_dist_triangle_mor_zero₁₂ CategoryTheory.Pretriangulated.comp_dist_triangle_mor_zero₁₂
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:635:2: warning: expanding binder collection (T «expr ∈ » «exprdist_triang »(C)) -/
 /-- Given any distinguished triangle
 ```
       f       g       h
@@ -148,7 +146,6 @@ theorem comp_dist_triangle_mor_zero₂₃ (T : Triangle C) (H : T ∈ distTriang
   comp_dist_triangle_mor_zero₁₂ C T.rotate (rot_of_dist_triangle C T H)
 #align category_theory.pretriangulated.comp_dist_triangle_mor_zero₂₃ CategoryTheory.Pretriangulated.comp_dist_triangle_mor_zero₂₃
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:635:2: warning: expanding binder collection (T «expr ∈ » «exprdist_triang »(C)) -/
 /-- Given any distinguished triangle
 ```
       f       g       h
