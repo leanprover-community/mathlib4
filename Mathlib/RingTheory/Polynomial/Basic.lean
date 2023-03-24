@@ -60,7 +60,7 @@ def degreeLe (n : WithBot ℕ) : Submodule R R[X] :=
 
 /-- The `R`-submodule of `R[X]` consisting of polynomials of degree < `n`. -/
 def degreeLt (n : ℕ) : Submodule R R[X] :=
-  ⨅ k : ℕ, ⨅ _h : k ≥ n, LinearMap.ker (lcoeff R k)
+  ⨅ k : ℕ, ⨅ (_h : k ≥ n), LinearMap.ker (lcoeff R k)
 #align polynomial.degree_lt Polynomial.degreeLt
 
 variable {R}
@@ -97,10 +97,16 @@ set_option linter.uppercaseLean3 false in
 #align polynomial.degree_le_eq_span_X_pow Polynomial.degreeLe_eq_span_X_pow
 
 theorem mem_degreeLt {n : ℕ} {f : R[X]} : f ∈ degreeLt R n ↔ degree f < n := by
-  simp_rw [degreeLt, Submodule.mem_infᵢ, LinearMap.mem_ker, degree, Finset.max_eq_sup_coe,
-    Finset.sup_lt_iff (WithBot.bot_lt_coe n), mem_support_iff, WithBot.coe_lt_coe, lt_iff_not_le,
-    Ne, not_imp_not]
-  rfl
+  rw [degreeLt, Submodule.mem_infᵢ] 
+  conv_lhs => intro i; rw [Submodule.mem_infᵢ]
+  rw [degree, Finset.max_eq_sup_coe] 
+  rw [Finset.sup_lt_iff ?_]
+  rotate_left 
+  apply WithBot.bot_lt_coe 
+  conv_rhs => 
+    simp only [mem_support_iff]
+    intro b; rw [Nat.cast_withBot, WithBot.coe_lt_coe, lt_iff_not_le]
+    change ¬ coeff f b = 0 → ¬ n ≤ b; rw [not_imp_not]
 #align polynomial.mem_degree_lt Polynomial.mem_degreeLt
 
 @[mono]
@@ -138,11 +144,12 @@ def degreeLtEquiv (R) [Semiring R] (n : ℕ) : degreeLt R n ≃ₗ[R] Fin n → 
           (lt_of_le_of_lt (degree_monomial_le i (f i)) (WithBot.coe_lt_coe.mpr i.is_lt))⟩
   map_add' p q := by
     ext
-    rw [Submodule.coe_add, coeff_add]
-    rfl
+    dsimp
+    rw [coeff_add]
   map_smul' x p := by
     ext
-    rw [Submodule.coe_smul, coeff_smul]
+    dsimp
+    rw [coeff_smul]
     rfl
   left_inv := by
     rintro ⟨p, hp⟩; ext1
@@ -150,7 +157,8 @@ def degreeLtEquiv (R) [Semiring R] (n : ℕ) : degreeLt R n ≃ₗ[R] Fin n → 
     by_cases hp0 : p = 0
     · subst hp0
       simp only [coeff_zero, LinearMap.map_zero, Finset.sum_const_zero]
-    rw [mem_degreeLt, degree_eq_natDegree hp0, WithBot.coe_lt_coe] at hp
+    rw [mem_degreeLt, degree_eq_natDegree hp0, 
+      Nat.cast_withBot, Nat.cast_withBot, WithBot.coe_lt_coe] at hp
     conv_rhs => rw [p.as_sum_range' n hp, ← Fin.sum_univ_eq_sum_range]
   right_inv := by
     intro f; ext i
@@ -189,8 +197,9 @@ theorem mem_frange_iff {p : R[X]} {c : R} : c ∈ p.frange ↔ ∃ n ∈ p.suppo
 #align polynomial.mem_frange_iff Polynomial.mem_frange_iff
 
 theorem frange_one : frange (1 : R[X]) ⊆ {1} := by
-  simp [frange, Finset.image_subset_iff]
-  simp only [← C_1, coeff_C]
+  simp only [frange]
+  rw [Finset.image_subset_iff] 
+  simp only [mem_support_iff, ne_eq, mem_singleton, ← C_1, coeff_C]
   intro n hn
   simp only [exists_prop, ite_eq_right_iff, not_forall] at hn
   simp [hn]
@@ -208,15 +217,13 @@ theorem geom_sum_X_comp_X_add_one_eq_sum (n : ℕ) :
   trans (n.choose (i + 1) : R); swap
   · simp only [finset_sum_coeff, ← C_eq_nat_cast, coeff_C_mul_X_pow]
     rw [Finset.sum_eq_single i, if_pos rfl]
-    ·
-      simp (config := { contextual := true }) only [@eq_comm _ i, if_false, eq_self_iff_true,
+    · simp (config := { contextual := true }) only [@eq_comm _ i, if_false, eq_self_iff_true,
         imp_true_iff]
-    ·
-      simp (config := { contextual := true }) only [Nat.lt_add_one_iff, Nat.choose_eq_zero_of_lt,
+    · simp (config := { contextual := true }) only [Nat.lt_add_one_iff, Nat.choose_eq_zero_of_lt,
         Nat.cast_zero, Finset.mem_range, not_lt, eq_self_iff_true, if_true, imp_true_iff]
   induction' n with n ih generalizing i
-  · simp only [geom_sum_zero, zero_comp, coeff_zero, Nat.choose_zero_succ, Nat.cast_zero]
-  simp only [geom_sum_succ', ih, add_comp, X_pow_comp, coeff_add, Nat.choose_succ_succ,
+  · dsimp; simp only [zero_comp, coeff_zero, Nat.cast_zero]
+  · dsimp; simp only [geom_sum_succ', ih, add_comp, X_pow_comp, coeff_add, Nat.choose_succ_succ,
     Nat.cast_add, coeff_X_add_one_pow]
 set_option linter.uppercaseLean3 false in
 #align polynomial.geom_sum_X_comp_X_add_one_eq_sum Polynomial.geom_sum_X_comp_X_add_one_eq_sum
@@ -224,17 +231,18 @@ set_option linter.uppercaseLean3 false in
 theorem Monic.geom_sum {P : R[X]} (hP : P.Monic) (hdeg : 0 < P.natDegree) {n : ℕ} (hn : n ≠ 0) :
     (∑ i in range n, P ^ i).Monic := by
   nontriviality R
-  cases n; · exact (hn rfl).elim
-  rw [geom_sum_succ']
-  refine' (hP.pow _).add_of_left _
-  refine' lt_of_le_of_lt (degree_sum_le _ _) _
-  rw [Finset.sup_lt_iff]
-  · simp only [Finset.mem_range, degree_eq_natDegree (hP.pow _).ne_zero, WithBot.coe_lt_coe,
-      hP.natDegree_pow]
-    intro k
-    exact nsmul_lt_nsmul hdeg
-  · rw [bot_lt_iff_ne_bot, Ne.def, degree_eq_bot]
-    exact (hP.pow _).ne_zero
+  cases' n with n; 
+  · exact (hn rfl).elim
+  · rw [geom_sum_succ']
+    refine' (hP.pow _).add_of_left _
+    refine' lt_of_le_of_lt (degree_sum_le _ _) _
+    rw [Finset.sup_lt_iff]
+    · simp only [Finset.mem_range, degree_eq_natDegree (hP.pow _).ne_zero] 
+      simp only [Nat.cast_withBot, WithBot.coe_lt_coe, hP.natDegree_pow]
+      intro k
+      exact nsmul_lt_nsmul hdeg
+    · rw [bot_lt_iff_ne_bot, Ne.def, degree_eq_bot]
+      exact (hP.pow _).ne_zero
 #align polynomial.monic.geom_sum Polynomial.Monic.geom_sum
 
 theorem Monic.geom_sum' {P : R[X]} (hP : P.Monic) (hdeg : 0 < P.degree) {n : ℕ} (hn : n ≠ 0) :
@@ -245,7 +253,7 @@ theorem Monic.geom_sum' {P : R[X]} (hP : P.Monic) (hdeg : 0 < P.degree) {n : ℕ
 theorem monic_geom_sum_X {n : ℕ} (hn : n ≠ 0) : (∑ i in range n, (X : R[X]) ^ i).Monic := by
   nontriviality R
   apply monic_X.geom_sum _ hn
-  simpa only [natDegree_X] using zero_lt_one
+  simp only [natDegree_X, zero_lt_one]
 set_option linter.uppercaseLean3 false in
 #align polynomial.monic_geom_sum_X Polynomial.monic_geom_sum_X
 
@@ -332,7 +340,7 @@ variable [Semiring S] {f : R →+* S} {x : S}
 theorem eval₂_restriction {p : R[X]} :
     eval₂ f x p =
       eval₂ (f.comp (Subring.subtype (Subring.closure (p.frange : Set R)))) x p.restriction := by
-  simp only [eval₂_eq_sum, Sum, support_restriction, ← @coeff_restriction _ _ p]
+  simp only [eval₂_eq_sum, sum, support_restriction, ← @coeff_restriction _ _ p]
   rfl
 #align polynomial.eval₂_restriction Polynomial.eval₂_restriction
 
@@ -534,7 +542,7 @@ theorem mem_map_C_iff {I : Ideal R} {f : R[X]} :
     f ∈ (Ideal.map (C : R →+* R[X]) I : Ideal R[X]) ↔ ∀ n : ℕ, f.coeff n ∈ I := by
   constructor
   · intro hf
-    apply Submodule.span_induction hf
+    apply @Submodule.span_induction _ _ _ _ _ f _ _ hf
     · intro f hf n
       cases' (Set.mem_image _ _ _).mp hf with x hx
       rw [← hx.right, coeff_C]
@@ -545,18 +553,19 @@ theorem mem_map_C_iff {I : Ideal R} {f : R[X]} :
     · exact fun f g hf hg n => by simp [I.add_mem (hf n) (hg n)]
     · refine' fun f g hg n => _
       rw [smul_eq_mul, coeff_mul]
-      exact I.sum_mem fun c hc => I.mul_mem_left (f.coeff c.fst) (hg c.snd)
+      exact I.sum_mem fun c _ => I.mul_mem_left (f.coeff c.fst) (hg c.snd)
   · intro hf
     rw [← sum_monomial_eq f]
-    refine' (I.map C : Ideal R[X]).sum_mem fun n hn => _
+    refine' (I.map C : Ideal R[X]).sum_mem fun n _ => _
     simp [← C_mul_X_pow_eq_monomial]
     rw [mul_comm]
     exact (I.map C : Ideal R[X]).mul_mem_left _ (mem_map_of_mem _ (hf n))
 set_option linter.uppercaseLean3 false in
 #align ideal.mem_map_C_iff Ideal.mem_map_C_iff
 
+
 -- Porting note: failed to synthesize semilinearmapclass on modByMonic
--- set_option synthInstance.etaExperiment true in failed
+-- set_option synthInstance.etaExperiment true in
 theorem Polynomial.ker_mapRingHom (f : R →+* S) :
     LinearMap.ker (Polynomial.mapRingHom f) = f.ker.map (C : R →+* R[X]) := by
   ext
@@ -695,7 +704,7 @@ theorem isPrime_map_C_iff_isPrime (P : Ideal R) :
     simp only [mem_comap, mem_map_C_iff]
     constructor
     · rintro h (- | n)
-      · simpa only [coeff_C_zero] using h
+      · rwa [coeff_C_zero]
       · simp only [coeff_C_ne_zero (Nat.succ_ne_zero _), Submodule.zero_mem]
     · intro h
       simpa only [coeff_C_zero] using h 0
@@ -729,9 +738,8 @@ theorem isPrime_map_C_iff_isPrime (P : Ideal R) :
           · rw [← not_le]
             intro hnj
             exact (add_lt_add_of_lt_of_le hmi hnj).ne hij.2.symm
-          ·
-            simpa only [eq_self_iff_true, not_true, false_or_iff, add_right_inj,
-              not_and_self_iff] using hij
+          · simp only [eq_self_iff_true, not_true, false_or_iff, add_right_inj,
+              not_and_self_iff] at hij
         · rw [mul_comm]
           apply P.mul_mem_left
           exact Classical.not_not.1 (Nat.find_min hf hi)
@@ -768,8 +776,7 @@ variable (σ) {r : R}
 namespace Polynomial
 
 theorem prime_C_iff : Prime (C r) ↔ Prime r :=
-  ⟨comap_prime C (evalRingHom (0 : R)) fun r => eval_C, fun hr =>
-    by
+  ⟨comap_prime C (evalRingHom (0 : R)) fun r => eval_C, fun hr => by
     have := hr.1
     rw [← Ideal.span_singleton_prime] at hr⊢
     · convert Ideal.isPrime_map_C_of_isPrime hr using 1
@@ -1176,7 +1183,7 @@ theorem mem_map_C_iff {I : Ideal R} {f : MvPolynomial σ R} :
       ∀ m : σ →₀ ℕ, f.coeff m ∈ I := by
   constructor
   · intro hf
-    apply Submodule.span_induction hf
+    apply @Submodule.span_induction _ _ _ _ _ f _ _ hf
     · intro f hf n
       cases' (Set.mem_image _ _ _).mp hf with x hx
       rw [← hx.right, coeff_C]
