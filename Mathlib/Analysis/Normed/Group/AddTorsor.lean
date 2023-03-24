@@ -8,9 +8,9 @@ Authors: Joseph Myers, Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Normed.Group.Basic
-import Mathbin.LinearAlgebra.AffineSpace.AffineSubspace
-import Mathbin.LinearAlgebra.AffineSpace.Midpoint
+import Mathlib.Analysis.Normed.Group.Basic
+import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace
+import Mathlib.LinearAlgebra.AffineSpace.Midpoint
 
 /-!
 # Torsors of additive normed group actions.
@@ -138,8 +138,7 @@ theorem dist_vadd_vadd_le (v v' : V) (p p' : P) :
 #align dist_vadd_vadd_le dist_vadd_vadd_le
 
 theorem dist_vsub_vsub_le (p₁ p₂ p₃ p₄ : P) :
-    dist (p₁ -ᵥ p₂) (p₃ -ᵥ p₄) ≤ dist p₁ p₃ + dist p₂ p₄ :=
-  by
+    dist (p₁ -ᵥ p₂) (p₃ -ᵥ p₄) ≤ dist p₁ p₃ + dist p₂ p₄ := by
   rw [dist_eq_norm, vsub_sub_vsub_comm, dist_eq_norm_vsub V, dist_eq_norm_vsub V]
   exact norm_sub_le _ _
 #align dist_vsub_vsub_le dist_vsub_vsub_le
@@ -155,15 +154,13 @@ theorem nndist_vsub_vsub_le (p₁ p₂ p₃ p₄ : P) :
 #align nndist_vsub_vsub_le nndist_vsub_vsub_le
 
 theorem edist_vadd_vadd_le (v v' : V) (p p' : P) :
-    edist (v +ᵥ p) (v' +ᵥ p') ≤ edist v v' + edist p p' :=
-  by
+    edist (v +ᵥ p) (v' +ᵥ p') ≤ edist v v' + edist p p' := by
   simp only [edist_nndist]
   apply_mod_cast nndist_vadd_vadd_le
 #align edist_vadd_vadd_le edist_vadd_vadd_le
 
 theorem edist_vsub_vsub_le (p₁ p₂ p₃ p₄ : P) :
-    edist (p₁ -ᵥ p₂) (p₃ -ᵥ p₄) ≤ edist p₁ p₃ + edist p₂ p₄ :=
-  by
+    edist (p₁ -ᵥ p₂) (p₃ -ᵥ p₄) ≤ edist p₁ p₃ + edist p₂ p₄ := by
   simp only [edist_nndist]
   apply_mod_cast nndist_vsub_vsub_le
 #align edist_vsub_vsub_le edist_vsub_vsub_le
