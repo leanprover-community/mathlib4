@@ -489,12 +489,12 @@ protected theorem map_add (f : M₁ →SL[σ₁₂] M₂) (x y : M₁) : f (x + 
   map_add f x y
 #align continuous_linear_map.map_add ContinuousLinearMap.map_add
 
-@[simp]
+-- @[simp] -- Porting note: simp can prove this
 protected theorem map_smulₛₗ (f : M₁ →SL[σ₁₂] M₂) (c : R₁) (x : M₁) : f (c • x) = σ₁₂ c • f x :=
   (toLinearMap _).map_smulₛₗ _ _
 #align continuous_linear_map.map_smulₛₗ ContinuousLinearMap.map_smulₛₗ
 
-@[simp]
+-- @[simp] -- Porting note: simp can prove this
 protected theorem map_smul [Module R₁ M₂] (f : M₁ →L[R₁] M₂) (c : R₁) (x : M₁) :
     f (c • x) = c • f x := by simp only [RingHom.id_apply, ContinuousLinearMap.map_smulₛₗ]
 #align continuous_linear_map.map_smul ContinuousLinearMap.map_smul
@@ -1824,14 +1824,12 @@ instance continuousSemilinearEquivClass :
 #align continuous_linear_equiv.continuous_semilinear_equiv_class ContinuousLinearEquiv.continuousSemilinearEquivClass
 
 -- see Note [function coercion]
-/-- Coerce continuous linear equivs to maps. -/
+-- /-- Coerce continuous linear equivs to maps. -/
 -- instance : CoeFun (M₁ ≃SL[σ₁₂] M₂) fun _ => M₁ → M₂ :=
 -- ⟨fun f => f⟩
 
-@[simp]
-theorem coe_def_rev (e : M₁ ≃SL[σ₁₂] M₂) : e.toContinuousLinearMap = e :=
-  rfl
-#align continuous_linear_equiv.coe_def_rev ContinuousLinearEquiv.coe_def_rev
+-- Porting note: Syntactic tautology.
+#noalign continuous_linear_equiv.coe_def_rev
 
 theorem coe_apply (e : M₁ ≃SL[σ₁₂] M₂) (b : M₁) : (e : M₁ →SL[σ₁₂] M₂) b = e b :=
   rfl
@@ -1895,27 +1893,27 @@ theorem map_nhds_eq (e : M₁ ≃SL[σ₁₂] M₂) (x : M₁) : map e (𝓝 x) 
 #align continuous_linear_equiv.map_nhds_eq ContinuousLinearEquiv.map_nhds_eq
 
 -- Make some straightforward lemmas available to `simp`.
-@[simp]
+-- @[simp] -- Porting note: simp can prove this
 theorem map_zero (e : M₁ ≃SL[σ₁₂] M₂) : e (0 : M₁) = 0 :=
   (e : M₁ →SL[σ₁₂] M₂).map_zero
 #align continuous_linear_equiv.map_zero ContinuousLinearEquiv.map_zero
 
-@[simp]
+-- @[simp] -- Porting note: simp can prove this
 theorem map_add (e : M₁ ≃SL[σ₁₂] M₂) (x y : M₁) : e (x + y) = e x + e y :=
   (e : M₁ →SL[σ₁₂] M₂).map_add x y
 #align continuous_linear_equiv.map_add ContinuousLinearEquiv.map_add
 
-@[simp]
+-- @[simp] -- Porting note: simp can prove this
 theorem map_smulₛₗ (e : M₁ ≃SL[σ₁₂] M₂) (c : R₁) (x : M₁) : e (c • x) = σ₁₂ c • e x :=
   (e : M₁ →SL[σ₁₂] M₂).map_smulₛₗ c x
 #align continuous_linear_equiv.map_smulₛₗ ContinuousLinearEquiv.map_smulₛₗ
 
-@[simp]
+-- @[simp] -- Porting note: simp can prove this
 theorem map_smul [Module R₁ M₂] (e : M₁ ≃L[R₁] M₂) (c : R₁) (x : M₁) : e (c • x) = c • e x :=
   (e : M₁ →L[R₁] M₂).map_smul c x
 #align continuous_linear_equiv.map_smul ContinuousLinearEquiv.map_smul
 
-@[simp]
+-- @[simp] -- Porting note: simp can prove this
 theorem map_eq_zero_iff (e : M₁ ≃SL[σ₁₂] M₂) {x : M₁} : e x = 0 ↔ x = 0 :=
   e.toLinearEquiv.map_eq_zero_iff
 #align continuous_linear_equiv.map_eq_zero_iff ContinuousLinearEquiv.map_eq_zero_iff
@@ -2108,13 +2106,15 @@ theorem comp_coe (f : M₁ ≃SL[σ₁₂] M₂) (f' : M₂ ≃SL[σ₂₃] M₃
   rfl
 #align continuous_linear_equiv.comp_coe ContinuousLinearEquiv.comp_coe
 
-@[simp]
+-- Porting note: The priority should be higher than `comp_coe`.
+@[simp high]
 theorem coe_comp_coe_symm (e : M₁ ≃SL[σ₁₂] M₂) :
     (e : M₁ →SL[σ₁₂] M₂).comp (e.symm : M₂ →SL[σ₂₁] M₁) = ContinuousLinearMap.id R₂ M₂ :=
   ContinuousLinearMap.ext e.apply_symm_apply
 #align continuous_linear_equiv.coe_comp_coe_symm ContinuousLinearEquiv.coe_comp_coe_symm
 
-@[simp]
+-- Porting note: The priority should be higher than `comp_coe`.
+@[simp high]
 theorem coe_symm_comp_coe (e : M₁ ≃SL[σ₁₂] M₂) :
     (e.symm : M₂ →SL[σ₂₁] M₁).comp (e : M₁ →SL[σ₁₂] M₂) = ContinuousLinearMap.id R₁ M₁ :=
   ContinuousLinearMap.ext e.symm_apply_apply
@@ -2314,12 +2314,12 @@ variable {R : Type _} [Ring R] {R₂ : Type _} [Ring R₂] {M : Type _} [Topolog
 
 variable {σ₁₂ : R →+* R₂} {σ₂₁ : R₂ →+* R} [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂]
 
-@[simp]
+-- @[simp] -- Porting note: simp can prove this
 theorem map_sub (e : M ≃SL[σ₁₂] M₂) (x y : M) : e (x - y) = e x - e y :=
   (e : M →SL[σ₁₂] M₂).map_sub x y
 #align continuous_linear_equiv.map_sub ContinuousLinearEquiv.map_sub
 
-@[simp]
+-- @[simp] -- Porting note: simp can prove this
 theorem map_neg (e : M ≃SL[σ₁₂] M₂) (x : M) : e (-x) = -e x :=
   (e : M →SL[σ₁₂] M₂).map_neg x
 #align continuous_linear_equiv.map_neg ContinuousLinearEquiv.map_neg
@@ -2489,17 +2489,21 @@ theorem coe_funUnique_symm : ⇑(funUnique ι R M).symm = Function.const ι :=
 variable (R M)
 
 /-- Continuous linear equivalence between dependent functions `Π i : fin 2, M i` and `M 0 × M 1`. -/
-@[simps! (config := { fullyApplied := false })]
+@[simps! (config := { fullyApplied := false }) apply symm_apply]
 def piFinTwo (M : Fin 2 → Type _) [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)]
     [∀ i, TopologicalSpace (M i)] : (∀ i, M i) ≃L[R] M 0 × M 1 :=
   { Homeomorph.piFinTwo M with toLinearEquiv := LinearEquiv.piFinTwo R M }
 #align continuous_linear_equiv.pi_fin_two ContinuousLinearEquiv.piFinTwo
+#align continuous_linear_equiv.pi_fin_two_apply ContinuousLinearEquiv.piFinTwo_apply
+#align continuous_linear_equiv.pi_fin_two_symm_apply ContinuousLinearEquiv.piFinTwo_symm_apply
 
 /-- Continuous linear equivalence between vectors in `M² = fin 2 → M` and `M × M`. -/
-@[simps! (config := { fullyApplied := false })]
+@[simps! (config := { fullyApplied := false }) apply symm_apply]
 def finTwoArrow : (Fin 2 → M) ≃L[R] M × M :=
   { piFinTwo R fun _ => M with toLinearEquiv := LinearEquiv.finTwoArrow R M }
 #align continuous_linear_equiv.fin_two_arrow ContinuousLinearEquiv.finTwoArrow
+#align continuous_linear_equiv.fin_two_arrow_apply ContinuousLinearEquiv.finTwoArrow_apply
+#align continuous_linear_equiv.fin_two_arrow_symm_apply ContinuousLinearEquiv.finTwoArrow_symm_apply
 
 end
 
@@ -2640,8 +2644,8 @@ namespace Submodule
 variable {R M : Type _} [Ring R] [AddCommGroup M] [Module R M] [TopologicalSpace M]
   (S : Submodule R M)
 
--- Porting note: This is required.
-local instance : TopologicalSpace (M ⧸ S) :=
+-- Porting note: This is required in Lean4.
+instance _root_.QuotientModule.Quotient.topologicalSpace : TopologicalSpace (M ⧸ S) :=
   inferInstanceAs (TopologicalSpace (Quotient S.quotientRel))
 
 theorem isOpenMap_mkQ [TopologicalAddGroup M] : IsOpenMap S.mkQ :=
@@ -2663,7 +2667,8 @@ instance continuousSMul_quotient [TopologicalSpace R] [TopologicalAddGroup M] [C
   exact continuous_quot_mk.comp continuous_smul
 #align submodule.has_continuous_smul_quotient Submodule.continuousSMul_quotient
 
-instance t3_quotient_of_isClosed [TopologicalAddGroup M] [IsClosed (S : Set M)] : T3Space (M ⧸ S) :=
+instance t3_quotient_of_isClosed [TopologicalAddGroup M] [IsClosed (S : Set M)] :
+    T3Space (M ⧸ S) :=
   letI : IsClosed (S.toAddSubgroup : Set M) := ‹_›
   S.toAddSubgroup.t3_quotient_of_isClosed
 #align submodule.t3_quotient_of_is_closed Submodule.t3_quotient_of_isClosed
@@ -2671,3 +2676,4 @@ instance t3_quotient_of_isClosed [TopologicalAddGroup M] [IsClosed (S : Set M)] 
 end Submodule
 
 end Quotient
+#lint
