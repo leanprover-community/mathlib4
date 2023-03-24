@@ -258,6 +258,7 @@ initialize_simps_projections RelEmbedding (toFun → apply)
 @[simp]
 theorem coe_toEmbedding : ((f : r ↪r s).toEmbedding : α → β)  = f :=
   rfl
+#align rel_embedding.coe_fn_to_embedding RelEmbedding.coe_toEmbedding
 
 @[simp]
 theorem coe_toRelHom : ((f : r ↪r s).toRelHom : α → β) = f :=
@@ -277,8 +278,9 @@ theorem map_rel_iff (f : r ↪r s) {a b} : s (f a) (f b) ↔ r a b :=
   f.map_rel_iff'
 #align rel_embedding.map_rel_iff RelEmbedding.map_rel_iff
 
-#noalign coe_fn_mk
-#noalign coe_fn_to_embedding
+theorem coe_mk : ⇑(⟨f, h⟩ : r ↪r s) = f :=
+  rfl
+#align rel_embedding.coe_fn_mk RelEmbedding.coe_mk
 
 /-- The map `coe_fn : (r ↪r s) → (α → β)` is injective. -/
 theorem coe_fn_injective : Injective fun f : r ↪r s => (f : α → β) :=
