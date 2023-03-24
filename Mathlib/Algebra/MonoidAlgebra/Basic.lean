@@ -564,14 +564,14 @@ theorem mul_single_one_apply [MulOneClass G] (f : MonoidAlgebra k G) (r : k) (x 
 #align monoid_algebra.mul_single_one_apply MonoidAlgebra.mul_single_one_apply
 
 theorem mul_single_apply_of_not_exists_mul [Mul G] (r : k) {g g' : G} (x : MonoidAlgebra k G)
-    (h : ¬∃ d, g' = d * g) : (x * Finsupp.single g r : MonoidAlgebra k G) g' = 0 := by
+    (h : ¬∃ d, g' = d * g) : (x * (single g r) : MonoidAlgebra k G) g' = 0 := by
   classical
     rw [mul_apply, Finsupp.sum_comm, Finsupp.sum_single_index]
     swap
-    · simp_rw [Finsupp.sum, MulZeroClass.mul_zero, if_t_t, Finset.sum_const_zero]
+    · simp_rw [Finsupp.sum, MulZeroClass.mul_zero, ite_self, Finset.sum_const_zero]
     · apply Finset.sum_eq_zero
       simp_rw [ite_eq_right_iff]
-      rintro g'' hg'' rfl
+      rintro g'' _ rfl
       exfalso
       exact h ⟨_, rfl⟩
 #align monoid_algebra.mul_single_apply_of_not_exists_mul
@@ -592,14 +592,14 @@ theorem single_mul_apply_aux [Mul G] (f : MonoidAlgebra k G) {r : k} {x y z : G}
 #align monoid_algebra.single_mul_apply_aux MonoidAlgebra.single_mul_apply_aux
 
 theorem single_mul_apply_of_not_exists_mul [Mul G] (r : k) {g g' : G} (x : MonoidAlgebra k G)
-    (h : ¬∃ d, g' = g * d) : (Finsupp.single g r * x : MonoidAlgebra k G) g' = 0 := by
+    (h : ¬∃ d, g' = g * d) : (single g r * x : MonoidAlgebra k G) g' = 0 := by
   classical
     rw [mul_apply, Finsupp.sum_single_index]
     swap
-    · simp_rw [Finsupp.sum, MulZeroClass.zero_mul, if_t_t, Finset.sum_const_zero]
+    · simp_rw [Finsupp.sum, MulZeroClass.zero_mul, ite_self, Finset.sum_const_zero]
     · apply Finset.sum_eq_zero
       simp_rw [ite_eq_right_iff]
-      rintro g'' hg'' rfl
+      rintro g'' _ rfl
       exfalso
       exact h ⟨_, rfl⟩
 #align monoid_algebra.single_mul_apply_of_not_exists_mul
@@ -1640,7 +1640,7 @@ theorem mul_single_zero_apply [AddZeroClass G] (f : AddMonoidAlgebra k G) (r : k
 #align add_monoid_algebra.mul_single_zero_apply AddMonoidAlgebra.mul_single_zero_apply
 
 theorem mul_single_apply_of_not_exists_add [Add G] (r : k) {g g' : G} (x : AddMonoidAlgebra k G)
-    (h : ¬∃ d, g' = d + g) : (x * Finsupp.single g r : AddMonoidAlgebra k G) g' = 0 :=
+    (h : ¬∃ d, g' = d + g) : (x * single g r : AddMonoidAlgebra k G) g' = 0 :=
   @MonoidAlgebra.mul_single_apply_of_not_exists_mul k (Multiplicative G) _ _ _ _ _ _ h
 #align add_monoid_algebra.mul_single_apply_of_not_exists_add
   AddMonoidAlgebra.mul_single_apply_of_not_exists_add
@@ -1656,7 +1656,7 @@ theorem single_zero_mul_apply [AddZeroClass G] (f : AddMonoidAlgebra k G) (r : k
 #align add_monoid_algebra.single_zero_mul_apply AddMonoidAlgebra.single_zero_mul_apply
 
 theorem single_mul_apply_of_not_exists_add [Add G] (r : k) {g g' : G} (x : AddMonoidAlgebra k G)
-    (h : ¬∃ d, g' = g + d) : (Finsupp.single g r * x : AddMonoidAlgebra k G) g' = 0 :=
+    (h : ¬∃ d, g' = g + d) : (single g r * x : AddMonoidAlgebra k G) g' = 0 :=
   @MonoidAlgebra.single_mul_apply_of_not_exists_mul k (Multiplicative G) _ _ _ _ _ _ h
 #align add_monoid_algebra.single_mul_apply_of_not_exists_add
   AddMonoidAlgebra.single_mul_apply_of_not_exists_add
