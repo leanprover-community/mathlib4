@@ -612,13 +612,13 @@ theorem ord_compl_dvd_ord_compl_iff_dvd (a b : ℕ) :
     (∀ p : ℕ, ord_compl[p] a ∣ ord_compl[p] b) ↔ a ∣ b := by
   refine' ⟨fun h => _, fun hab p => ord_compl_dvd_ord_compl_of_dvd hab p⟩
   rcases eq_or_ne b 0 with (rfl | hb0); · simp
-  by_cases pa : a.prime; swap; · simpa [pa] using h a
-  by_cases pb : b.prime; swap; · simpa [pb] using h b
+  by_cases pa : a.Prime; swap; · simpa [pa] using h a
+  by_cases pb : b.Prime; swap; · simpa [pb] using h b
   rw [prime_dvd_prime_iff_eq pa pb]
   by_contra hab
   apply pa.ne_one
   rw [← Nat.dvd_one, ← Nat.mul_dvd_mul_iff_left hb0.bot_lt, mul_one]
-  simpa [prime.factorization_self pb, prime.factorization pa, hab] using h b
+  simpa [Prime.factorization_self pb, Prime.factorization pa, hab] using h b
 #align nat.ord_compl_dvd_ord_compl_iff_dvd Nat.ord_compl_dvd_ord_compl_iff_dvd
 
 theorem dvd_iff_prime_pow_dvd_dvd (n d : ℕ) : d ∣ n ↔ ∀ p k : ℕ, Prime p → p ^ k ∣ d → p ^ k ∣ n :=
