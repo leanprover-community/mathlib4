@@ -485,7 +485,7 @@ def FunctorsInverting (W : MorphismProperty C) (D : Type _) [Category D] :=
 
 @[ext]
 lemma FunctorsInverting.ext {W : MorphismProperty C} {F₁ F₂ : FunctorsInverting W D}
-  (h : F₁.obj = F₂.obj) : F₁ = F₂ := by
+    (h : F₁.obj = F₂.obj) : F₁ = F₂ := by
   cases F₁
   cases F₂
   subst h
