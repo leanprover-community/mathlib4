@@ -145,7 +145,7 @@ instance commMonoid [CommMonoid α] : CommMonoid αᵐᵒᵖ :=
   { MulOpposite.monoid α, MulOpposite.commSemigroup α with }
 
 @[to_additive]
-instance [CancelCommMonoid α] : CancelCommMonoid αᵐᵒᵖ :=
+instance cancelCommMonoid [CancelCommMonoid α] : CancelCommMonoid αᵐᵒᵖ :=
   { MulOpposite.cancelMonoid α, MulOpposite.commMonoid α with }
 
 @[to_additive AddOpposite.subNegMonoid]
@@ -277,7 +277,7 @@ def opAddEquiv [Add α] : α ≃+ αᵐᵒᵖ :=
 #align mul_opposite.op_add_equiv_symm_apply MulOpposite.opAddEquiv_symm_apply
 
 @[simp]
-theorem opAddEquiv_toEquiv [Add α] : (opAddEquiv : α ≃+ αᵐᵒᵖ).toEquiv = opEquiv := rfl
+theorem opAddEquiv_toEquiv [Add α] : ((opAddEquiv : α ≃+ αᵐᵒᵖ) : α ≃ αᵐᵒᵖ) = opEquiv := rfl
 
 #align mul_opposite.op_add_equiv_to_equiv MulOpposite.opAddEquiv_toEquiv
 
@@ -305,7 +305,7 @@ instance commSemigroup [CommSemigroup α] : CommSemigroup αᵃᵒᵖ :=
 instance mulOneClass [MulOneClass α] : MulOneClass αᵃᵒᵖ :=
   unop_injective.mulOneClass _ (by exact rfl) fun _ _ => rfl
 
-instance {β} [Pow α β] : Pow αᵃᵒᵖ β where pow a b := op (unop a ^ b)
+instance pow {β} [Pow α β] : Pow αᵃᵒᵖ β where pow a b := op (unop a ^ b)
 
 @[simp]
 theorem op_pow {β} [Pow α β] (a : α) (b : β) : op (a ^ b) = op a ^ b :=
@@ -356,7 +356,7 @@ def opMulEquiv [Mul α] : α ≃* αᵃᵒᵖ :=
 #align add_opposite.op_mul_equiv_symm_apply AddOpposite.opMulEquiv_symm_apply
 
 @[simp]
-theorem opMulEquiv_toEquiv [Mul α] : (opMulEquiv : α ≃* αᵃᵒᵖ).toEquiv = opEquiv :=
+theorem opMulEquiv_toEquiv [Mul α] : ((opMulEquiv : α ≃* αᵃᵒᵖ) : α ≃ αᵃᵒᵖ) = opEquiv :=
   rfl
 #align add_opposite.op_mul_equiv_to_equiv AddOpposite.opMulEquiv_toEquiv
 
