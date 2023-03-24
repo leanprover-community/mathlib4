@@ -2621,7 +2621,7 @@ theorem closedComplemented_bot : ClosedComplemented (⊥ : Submodule R M) :=
 
 @[simp]
 theorem closedComplemented_top : ClosedComplemented (⊤ : Submodule R M) :=
-  ⟨(id R M).codRestrict ⊤ fun x => trivial, fun x => Subtype.ext_iff_val.2 <| by simp⟩
+  ⟨(id R M).codRestrict ⊤ fun _x => trivial, fun x => Subtype.ext_iff_val.2 <| by simp⟩
 #align submodule.closed_complemented_top Submodule.closedComplemented_top
 
 end Submodule
@@ -2640,28 +2640,32 @@ namespace Submodule
 variable {R M : Type _} [Ring R] [AddCommGroup M] [Module R M] [TopologicalSpace M]
   (S : Submodule R M)
 
+-- Porting note: This is required.
+local instance : TopologicalSpace (M ⧸ S) :=
+  inferInstanceAs (TopologicalSpace (Quotient S.quotientRel))
+
 theorem isOpenMap_mkQ [TopologicalAddGroup M] : IsOpenMap S.mkQ :=
   QuotientAddGroup.isOpenMap_coe S.toAddSubgroup
 #align submodule.is_open_map_mkq Submodule.isOpenMap_mkQ
 
 instance topologicalAddGroup_quotient [TopologicalAddGroup M] : TopologicalAddGroup (M ⧸ S) :=
-  topologicalAddGroup_quotient S.toAddSubgroup
+  _root_.topologicalAddGroup_quotient S.toAddSubgroup
 #align submodule.topological_add_group_quotient Submodule.topologicalAddGroup_quotient
 
 instance continuousSMul_quotient [TopologicalSpace R] [TopologicalAddGroup M] [ContinuousSMul R M] :
     ContinuousSMul R (M ⧸ S) := by
   constructor
-  have quot : QuotientMap fun au : R × M => (au.1, S.mkq au.2) :=
-    IsOpenMap.to_quotientMap (is_open_map.id.prod S.is_open_map_mkq)
+  have quot : QuotientMap fun au : R × M => (au.1, S.mkQ au.2) :=
+    IsOpenMap.to_quotientMap (IsOpenMap.id.prod S.isOpenMap_mkQ)
       (continuous_id.prod_map continuous_quot_mk)
-      (function.surjective_id.prod_map <| surjective_quot_mk _)
+      (Function.surjective_id.Prod_map <| surjective_quot_mk _)
   rw [quot.continuous_iff]
   exact continuous_quot_mk.comp continuous_smul
 #align submodule.has_continuous_smul_quotient Submodule.continuousSMul_quotient
 
 instance t3_quotient_of_isClosed [TopologicalAddGroup M] [IsClosed (S : Set M)] : T3Space (M ⧸ S) :=
-  letI : IsClosed (S.to_add_subgroup : Set M) := ‹_›
-  S.to_add_subgroup.t3_quotient_of_is_closed
+  letI : IsClosed (S.toAddSubgroup : Set M) := ‹_›
+  S.toAddSubgroup.t3_quotient_of_isClosed
 #align submodule.t3_quotient_of_is_closed Submodule.t3_quotient_of_isClosed
 
 end Submodule
