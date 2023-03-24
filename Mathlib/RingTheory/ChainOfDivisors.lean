@@ -16,26 +16,26 @@ import Mathlib.Algebra.GCDMonoid.Basic
 
 # Chains of divisors
 
-The results in this file show that in the monoid `associates M` of a `unique_factorization_monoid`
+The results in this file show that in the monoid `Associates M` of a `UniqueFactorizationMonoid`
 `M`, an element `a` is an n-th prime power iff its set of divisors is a strictly increasing chain
-of length `n + 1`, meaning that we can find a strictly increasing bijection between `fin (n + 1)`
+of length `n + 1`, meaning that we can find a strictly increasing bijection between `Fin (n + 1)`
 and the set of factors of `a`.
 
 ## Main results
 - `DivisorChain.exists_chain_of_prime_pow` : existence of a chain for prime powers.
 - `DivisorChain.is_prime_pow_of_has_chain` : elements that have a chain are prime powers.
-- `multiplicity_prime_eq_multiplicity_image_by_factor_order_iso` : if there is a
+- `multiplicity_prime_eq_multiplicity_image_by_factor_orderIso` : if there is a
   monotone bijection `d` between the set of factors of `a : Associates M` and the set of factors of
   `b : Associates N` then for any prime `p ∣ a`, `multiplicity p a = multiplicity (d p) b`.
-- `multiplicity_eq_multiplicity_factor_dvd_iso_of_mem_normalized_factor` : if there is a bijection
+- `multiplicity_eq_multiplicity_factor_dvd_iso_of_mem_normalizedFactors` : if there is a bijection
   between the set of factors of `a : M` and `b : N` then for any prime `p ∣ a`,
   `multiplicity p a = multiplicity (d p) b`
 
 
 ## Todo
 - Create a structure for chains of divisors.
-- Simplify proof of `mem_normalized_factors_factor_dvd_iso_of_mem_normalized_factors` using
-  `mem_normalized_factors_factor_order_iso_of_mem_normalized_factors` or vice versa.
+- Simplify proof of `mem_normalizedFactors_factor_dvd_iso_of_mem_normalizedFactors` using
+  `mem_normalizedFactors_factor_order_iso_of_mem_normalizedFactors` or vice versa.
 
 -/
 
@@ -288,7 +288,7 @@ theorem pow_image_of_prime_by_factor_orderIso_dvd
 
 theorem map_prime_of_factor_orderIso [DecidableEq (Associates M)] {m p : Associates M}
     {n : Associates N} (hn : n ≠ 0) (hp : p ∈ normalizedFactors m) (d : Set.Iic m ≃o Set.Iic n) :
-    Prime ↑(d ⟨p, dvd_of_mem_normalizedFactors hp⟩) := by
+    Prime (d ⟨p, dvd_of_mem_normalizedFactors hp⟩ : Associates N) := by
   rw [← irreducible_iff_prime]
   refine' (Associates.isAtom_iff <| ne_zero_of_dvd_ne_zero hn (d ⟨p, _⟩).prop).mp ⟨_, fun b hb => _⟩
   · rw [Ne.def, ← Associates.isUnit_iff_eq_bot, Associates.isUnit_iff_eq_one,
@@ -316,7 +316,7 @@ theorem map_prime_of_factor_orderIso [DecidableEq (Associates M)] {m p : Associa
 theorem mem_normalizedFactors_factor_orderIso_of_mem_normalizedFactors [DecidableEq (Associates M)]
     [DecidableEq (Associates N)] {m p : Associates M} {n : Associates N} (hn : n ≠ 0)
     (hp : p ∈ normalizedFactors m) (d : Set.Iic m ≃o Set.Iic n) :
-    (d ⟨p, dvd_of_mem_normalizedFactors hp⟩) ∈ normalizedFactors n := by
+    (d ⟨p, dvd_of_mem_normalizedFactors hp⟩ : Associates N) ∈ normalizedFactors n := by
   obtain ⟨q, hq, hq'⟩ :=
     exists_mem_normalizedFactors_of_dvd hn (map_prime_of_factor_orderIso hn hp d).irreducible
       (d ⟨p, dvd_of_mem_normalizedFactors hp⟩).prop
@@ -435,7 +435,7 @@ theorem mem_normalizedFactors_factor_dvd_iso_of_mem_normalizedFactors [Decidable
 
 variable [DecidableRel ((· ∣ ·) : M → M → Prop)] [DecidableRel ((· ∣ ·) : N → N → Prop)]
 
-theorem multiplicity_factor_dvd_iso_eq_multiplicity_of_mem_normalized_factor {m p : M} {n : N}
+theorem multiplicity_factor_dvd_iso_eq_multiplicity_of_mem_normalizedFactors {m p : M} {n : N}
     (hm : m ≠ 0) (hn : n ≠ 0) (hp : p ∈ normalizedFactors m)
     {d : { l : M // l ∣ m } ≃ { l : N // l ∣ n }} (hd : ∀ l l', (d l : N) ∣ d l' ↔ (l : M) ∣ l') :
     multiplicity (d ⟨p, dvd_of_mem_normalizedFactors hp⟩ : N) n = multiplicity p m := by
@@ -471,4 +471,4 @@ theorem multiplicity_factor_dvd_iso_eq_multiplicity_of_mem_normalized_factor {m 
       ((prime_mk p).mpr (prime_of_normalized_factor p hp)).irreducible
       (mk_le_mk_of_dvd (dvd_of_mem_normalizedFactors hp))
   rwa [associated_iff_eq.mp hq']
-#align multiplicity_factor_dvd_iso_eq_multiplicity_of_mem_normalized_factor multiplicity_factor_dvd_iso_eq_multiplicity_of_mem_normalized_factor
+#align multiplicity_factor_dvd_iso_eq_multiplicity_of_mem_normalized_factor multiplicity_factor_dvd_iso_eq_multiplicity_of_mem_normalizedFactors
