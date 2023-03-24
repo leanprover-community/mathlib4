@@ -25,7 +25,7 @@ We use the class `ContinuousSMul` for topological (semi) modules and topological
 
 In this file we define continuous (semi-)linear maps, as semilinear maps between topological
 modules which are continuous. The set of continuous semilinear maps between the topological
-`R₁`-module `M` and `R₂`-module `M₂` with respect to the `ring_hom` `σ` is denoted by `M →SL[σ] M₂`.
+`R₁`-module `M` and `R₂`-module `M₂` with respect to the `RingHom` `σ` is denoted by `M →SL[σ] M₂`.
 Plain linear maps are denoted by `M →L[R] M₂` and star-linear maps by `M →L⋆[R] M₂`.
 
 The corresponding notation for equivalences is `M ≃SL[σ] M₂`, `M ≃L[R] M₂` and `M ≃L⋆[R] M₂`.
@@ -80,13 +80,13 @@ theorem Submodule.eq_top_of_nonempty_interior' [NeBot (𝓝[{ x : R | IsUnit x }
 variable (R M)
 
 /-- Let `R` be a topological ring such that zero is not an isolated point (e.g., a nontrivially
-normed field, see `normed_field.punctured_nhds_ne_bot`). Let `M` be a nontrivial module over `R`
+normed field, see `NormedField.punctured_nhds_neBot`). Let `M` be a nontrivial module over `R`
 such that `c • x = 0` implies `c = 0 ∨ x = 0`. Then `M` has no isolated points. We formulate this
-using `ne_bot (𝓝[≠] x)`.
+using `NeBot (𝓝[≠] x)`.
 
 This lemma is not an instance because Lean would need to find `[ContinuousSMul ?m_1 M]` with
-unknown `?m_1`. We register this as an instance for `R = ℝ` in `real.punctured_nhds_module_ne_bot`.
-One can also use `haveI := module.punctured_nhds_ne_bot R M` in a proof.
+unknown `?m_1`. We register this as an instance for `R = ℝ` in `Real.punctured_nhds_module_neBot`.
+One can also use `haveI := Module.punctured_nhds_neBot R M` in a proof.
 -/
 theorem Module.punctured_nhds_neBot [Nontrivial M] [NeBot (𝓝[≠] (0 : R))] [NoZeroSMulDivisors R M]
     (x : M) : NeBot (𝓝[≠] x) := by
@@ -202,7 +202,7 @@ instance Submodule.topologicalClosure.completeSpace {M' : Type _} [AddCommMonoid
   isClosed_closure.completeSpace_coe
 #align submodule.topological_closure.complete_space Submodule.topologicalClosure.completeSpace
 
-/-- A maximal proper subspace of a topological module (i.e a `submodule` satisfying `is_coatom`)
+/-- A maximal proper subspace of a topological module (i.e a `Submodule` satisfying `IsCoatom`)
 is either closed or dense. -/
 theorem Submodule.isClosed_or_dense_of_isCoatom (s : Submodule R M) (hs : IsCoatom s) :
     IsClosed (s : Set M) ∨ Dense (s : Set M) := by
@@ -249,8 +249,8 @@ notation:25 M " →L[" R "] " M₂ => ContinuousLinearMap (RingHom.id R) M M₂
 @[inherit_doc]
 notation:25 M " →L⋆[" R "] " M₂ => ContinuousLinearMap (starRingEnd R) M M₂
 
-/-- `continuous_semilinear_map_class F σ M M₂` asserts `F` is a type of bundled continuous
-`σ`-semilinear maps `M → M₂`.  See also `continuous_linear_map_class F R M M₂` for the case where
+/-- `ContinuousSemilinearMapClass F σ M M₂` asserts `F` is a type of bundled continuous
+`σ`-semilinear maps `M → M₂`.  See also `ContinuousLinearMapClass F R M M₂` for the case where
 `σ` is the identity map on `R`.  A map `f` between an `R`-module and an `S`-module over a ring
 homomorphism `σ : R →+* S` is semilinear if it satisfies the two properties `f (x + y) = f x + f y`
 and `f (c • x) = (σ c) • f x`. -/
@@ -264,9 +264,9 @@ class ContinuousSemilinearMapClass (F : Type _) {R S : outParam (Type _)} [Semir
 -- porting note: was attribute [nolint dangerous_instance]
 -- attribute [nolint dangerous_instance] ContinuousSemilinearMapClass.toContinuousMapClass
 
-/-- `continuous_linear_map_class F R M M₂` asserts `F` is a type of bundled continuous
+/-- `ContinuousLinearMapClass F R M M₂` asserts `F` is a type of bundled continuous
 `R`-linear maps `M → M₂`.  This is an abbreviation for
-`continuous_semilinear_map_class F (ring_hom.id R) M M₂`.  -/
+`ContinuousSemilinearMapClass F (RingHom.id R) M M₂`.  -/
 abbrev ContinuousLinearMapClass (F : Type _) (R : outParam (Type _)) [Semiring R]
     (M : outParam (Type _)) [TopologicalSpace M] [AddCommMonoid M] (M₂ : outParam (Type _))
     [TopologicalSpace M₂] [AddCommMonoid M₂] [Module R M] [Module R M₂] :=
@@ -294,8 +294,8 @@ notation:50 M " ≃L[" R "] " M₂ => ContinuousLinearEquiv (RingHom.id R) M M�
 @[inherit_doc]
 notation:50 M " ≃L⋆[" R "] " M₂ => ContinuousLinearEquiv (starRingEnd R) M M₂
 
-/-- `continuous_semilinear_equiv_class F σ M M₂` asserts `F` is a type of bundled continuous
-`σ`-semilinear equivs `M → M₂`.  See also `continuous_linear_equiv_class F R M M₂` for the case
+/-- `ContinuousSemilinearEquivClass F σ M M₂` asserts `F` is a type of bundled continuous
+`σ`-semilinear equivs `M → M₂`.  See also `ContinuousLinearEquivClass F R M M₂` for the case
 where `σ` is the identity map on `R`.  A map `f` between an `R`-module and an `S`-module over a ring
 homomorphism `σ : R →+* S` is semilinear if it satisfies the two properties `f (x + y) = f x + f y`
 and `f (c • x) = (σ c) • f x`. -/
@@ -308,9 +308,9 @@ class ContinuousSemilinearEquivClass (F : Type _) {R : outParam (Type _)} {S : o
   inv_continuous : ∀ f : F, Continuous (inv f) := by continuity
 #align continuous_semilinear_equiv_class ContinuousSemilinearEquivClass
 
-/-- `continuous_linear_equiv_class F σ M M₂` asserts `F` is a type of bundled continuous
+/-- `ContinuousLinearEquivClass F σ M M₂` asserts `F` is a type of bundled continuous
 `R`-linear equivs `M → M₂`. This is an abbreviation for
-`continuous_semilinear_equiv_class F (ring_hom.id) M M₂`. -/
+`ContinuousSemilinearEquivClass F (RingHom.id R) M M₂`. -/
 abbrev ContinuousLinearEquivClass (F : Type _) (R : outParam (Type _)) [Semiring R]
     (M : outParam (Type _)) [TopologicalSpace M] [AddCommMonoid M] (M₂ : outParam (Type _))
     [TopologicalSpace M₂] [AddCommMonoid M₂] [Module R M] [Module R M₂] :=
@@ -464,7 +464,7 @@ theorem ext_iff {f g : M₁ →SL[σ₁₂] M₂} : f = g ↔ ∀ x, f x = g x :
   FunLike.ext_iff
 #align continuous_linear_map.ext_iff ContinuousLinearMap.ext_iff
 
-/-- Copy of a `continuous_linear_map` with a new `to_fun` equal to the old one. Useful to fix
+/-- Copy of a `ContinuousLinearMap` with a new `toFun` equal to the old one. Useful to fix
 definitional equalities. -/
 protected def copy (f : M₁ →SL[σ₁₂] M₂) (f' : M₁ → M₂) (h : f' = ⇑f) : M₁ →SL[σ₁₂] M₂ where
   toLinearMap := f.toLinearMap.copy f' h
@@ -526,7 +526,7 @@ theorem ext_ring_iff [TopologicalSpace R₁] {f g : R₁ →L[R₁] M₁} : f = 
 #align continuous_linear_map.ext_ring_iff ContinuousLinearMap.ext_ring_iff
 
 /-- If two continuous linear maps are equal on a set `s`, then they are equal on the closure
-of the `submodule.span` of this set. -/
+of the `Submodule.span` of this set. -/
 theorem eqOn_closure_span [T2Space M₂] {s : Set M₁} {f g : M₁ →SL[σ₁₂] M₂} (h : Set.EqOn f g s) :
     Set.EqOn f g (closure (Submodule.span R₁ s : Set M₁)) :=
   (LinearMap.eqOn_span' h).closure f.continuous g.continuous
@@ -539,8 +539,8 @@ theorem ext_on [T2Space M₂] {s : Set M₁} (hs : Dense (Submodule.span R₁ s 
   ext fun x => eqOn_closure_span h (hs x)
 #align continuous_linear_map.ext_on ContinuousLinearMap.ext_on
 
-/-- Under a continuous linear map, the image of the `topological_closure` of a submodule is
-contained in the `topological_closure` of its image. -/
+/-- Under a continuous linear map, the image of the `TopologicalClosure` of a submodule is
+contained in the `TopologicalClosure` of its image. -/
 theorem _root_.Submodule.topologicalClosure_map [RingHomSurjective σ₁₂] [TopologicalSpace R₁]
     [TopologicalSpace R₂] [ContinuousSMul R₁ M₁] [ContinuousAdd M₁] [ContinuousSMul R₂ M₂]
     [ContinuousAdd M₂] (f : M₁ →SL[σ₁₂] M₂) (s : Submodule R₁ M₁) :
@@ -549,7 +549,7 @@ theorem _root_.Submodule.topologicalClosure_map [RingHomSurjective σ₁₂] [To
   image_closure_subset_closure_image f.continuous
 #align submodule.topological_closure_map Submodule.topologicalClosure_map
 
-/-- Under a dense continuous linear map, a submodule whose `topological_closure` is `⊤` is sent to
+/-- Under a dense continuous linear map, a submodule whose `TopologicalClosure` is `⊤` is sent to
 another such submodule.  That is, the image of a dense set under a map with dense range is dense.
 -/
 theorem _root_.DenseRange.topologicalClosure_map_submodule [RingHomSurjective σ₁₂]
@@ -870,7 +870,7 @@ instance semiring [ContinuousAdd M₁] : Semiring (M₁ →L[R₁] M₁) :=
     right_distrib := fun _ _ _ => ext fun _ => LinearMap.add_apply _ _ _ }
 #align continuous_linear_map.semiring ContinuousLinearMap.semiring
 
-/-- `continuous_linear_map.to_linear_map` as a `ring_hom`.-/
+/-- `ContinuousLinearMap.toLinearMap` as a `RingHom`.-/
 @[simps]
 def toLinearMapRingHom [ContinuousAdd M₁] : (M₁ →L[R₁] M₁) →+* M₁ →ₗ[R₁] M₁ where
   toFun := toLinearMap
@@ -886,7 +886,7 @@ variable [ContinuousAdd M₁]
 
 /-- The tautological action by `M₁ →L[R₁] M₁` on `M`.
 
-This generalizes `function.End.apply_mul_action`. -/
+This generalizes `Function.End.applyMulAction`. -/
 instance applyModule : Module (M₁ →L[R₁] M₁) M₁ :=
   Module.compHom _ toLinearMapRingHom
 #align continuous_linear_map.apply_module ContinuousLinearMap.applyModule
@@ -896,7 +896,7 @@ protected theorem smul_def (f : M₁ →L[R₁] M₁) (a : M₁) : f • a = f a
   rfl
 #align continuous_linear_map.smul_def ContinuousLinearMap.smul_def
 
-/-- `continuous_linear_map.apply_module` is faithful. -/
+/-- `ContinuousLinearMap.applyModule` is faithful. -/
 instance applyFaithfulSMul : FaithfulSMul (M₁ →L[R₁] M₁) M₁ :=
   ⟨fun {_ _} => ContinuousLinearMap.ext⟩
 #align continuous_linear_map.apply_has_faithful_smul ContinuousLinearMap.applyFaithfulSMul
@@ -1019,7 +1019,7 @@ theorem ker_codRestrict (f : M₁ →SL[σ₁₂] M₂) (p : Submodule R₂ M₂
   (f : M₁ →ₛₗ[σ₁₂] M₂).ker_codRestrict p h
 #align continuous_linear_map.ker_cod_restrict ContinuousLinearMap.ker_codRestrict
 
-/-- `submodule.subtype` as a `continuous_linear_map`. -/
+/-- `Submodule.subtype` as a `ContinuousLinearMap`. -/
 def _root_.Submodule.subtypeL (p : Submodule R₁ M₁) : p →L[R₁] M₁ where
   cont := continuous_subtype_val
   toLinearMap := p.subtype
@@ -1059,13 +1059,13 @@ set_option linter.uppercaseLean3 false in
 
 variable (R₁ M₁ M₂)
 
-/-- `prod.fst` as a `continuous_linear_map`. -/
+/-- `Prod.fst` as a `ContinuousLinearMap`. -/
 def fst [Module R₁ M₂] : M₁ × M₂ →L[R₁] M₁ where
   cont := continuous_fst
   toLinearMap := LinearMap.fst R₁ M₁ M₂
 #align continuous_linear_map.fst ContinuousLinearMap.fst
 
-/-- `prod.snd` as a `continuous_linear_map`. -/
+/-- `Prod.snd` as a `ContinuousLinearMap`. -/
 def snd [Module R₁ M₂] : M₁ × M₂ →L[R₁] M₂ where
   cont := continuous_snd
   toLinearMap := LinearMap.snd R₁ M₁ M₂
@@ -1110,7 +1110,7 @@ theorem snd_comp_prod [Module R₁ M₂] [Module R₁ M₃] (f : M₁ →L[R₁]
   ext fun _x => rfl
 #align continuous_linear_map.snd_comp_prod ContinuousLinearMap.snd_comp_prod
 
-/-- `prod.map` of two continuous linear maps. -/
+/-- `Prod.map` of two continuous linear maps. -/
 def prodMap [Module R₁ M₂] [Module R₁ M₃] [Module R₁ M₄] (f₁ : M₁ →L[R₁] M₂) (f₂ : M₃ →L[R₁] M₄) :
     M₁ × M₃ →L[R₁] M₂ × M₄ :=
   (f₁.comp (fst R₁ M₁ M₃)).prod (f₂.comp (snd R₁ M₁ M₃))
@@ -1156,9 +1156,9 @@ section
 variable {R S : Type _} [Semiring R] [Semiring S] [Module R M₁] [Module R M₂] [Module R S]
   [Module S M₂] [IsScalarTower R S M₂] [TopologicalSpace S] [ContinuousSMul S M₂]
 
-/-- The linear map `λ x, c x • f`.  Associates to a scalar-valued linear map and an element of
+/-- The linear map `fun x => c x • f`.  Associates to a scalar-valued linear map and an element of
 `M₂` the `M₂`-valued linear map obtained by multiplying the two (a.k.a. tensoring by `M₂`).
-See also `continuous_linear_map.smul_rightₗ` and `continuous_linear_map.smul_rightL`. -/
+See also `ContinuousLinearMap.smulRightₗ` and `ContinuousLinearMap.smulRightL`. -/
 def smulRight (c : M₁ →L[R] S) (f : M₂) : M₁ →L[R] M₂ :=
   { c.toLinearMap.smulRight f with cont := c.2.smul continuous_const }
 #align continuous_linear_map.smul_right ContinuousLinearMap.smulRight
@@ -1460,7 +1460,8 @@ section
 variable {σ₂₁ : R₂ →+* R} [RingHomInvPair σ₁₂ σ₂₁]
 
 /-- Given a right inverse `f₂ : M₂ →L[R] M` to `f₁ : M →L[R] M₂`,
-`proj_ker_of_right_inverse f₁ f₂ h` is the projection `M →L[R] f₁.ker` along `f₂.range`. -/
+`projKerOfRightInverse f₁ f₂ h` is the projection `M →L[R] LinearMap.ker f₁` along
+`LinearMap.range f₂`. -/
 def projKerOfRightInverse [TopologicalAddGroup M] (f₁ : M →SL[σ₁₂] M₂) (f₂ : M₂ →SL[σ₂₁] M)
     (h : Function.RightInverse f₂ f₁) : M →L[R] LinearMap.ker f₁ :=
   (id R M - f₂.comp f₁).codRestrict (LinearMap.ker f₁) fun x => by simp [h (f₁ x)]
@@ -1573,7 +1574,7 @@ variable {R R₂ R₃ S S₃ : Type _} [Semiring R] [Semiring R₂] [Semiring R�
   {σ₁₂ : R →+* R₂} {σ₂₃ : R₂ →+* R₃} {σ₁₃ : R →+* R₃} [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] (c : S)
   (h : M₂ →SL[σ₂₃] M₃) (f g : M →SL[σ₁₂] M₂) (x y z : M)
 
-/-- `continuous_linear_map.prod` as an `equiv`. -/
+/-- `ContinuousLinearMap.prod` as an `Equiv`. -/
 @[simps apply]
 def prodEquiv : (M →L[R] N₂) × (M →L[R] N₃) ≃ (M →L[R] N₂ × N₃) where
   toFun f := f.1.prod f.2
@@ -1624,7 +1625,7 @@ instance isCentralScalar [Module S₃ᵐᵒᵖ M₃] [IsCentralScalar S₃ M₃]
 
 variable (S) [ContinuousAdd N₃]
 
-/-- `continuous_linear_map.prod` as a `linear_equiv`. -/
+/-- `ContinuousLinearMap.prod` as a `LinearEquiv`. -/
 @[simps apply]
 def prodₗ : ((M →L[R] N₂) × (M →L[R] N₃)) ≃ₗ[S] M →L[R] N₂ × N₃ :=
   { prodEquiv with
@@ -1662,8 +1663,8 @@ variable {R S T M M₂ : Type _} [Semiring R] [Semiring S] [Semiring T] [Module 
   [ContinuousAdd M₂] [Module T M₂] [ContinuousConstSMul T M₂] [SMulCommClass R T M₂]
   [SMulCommClass S T M₂]
 
-/-- Given `c : E →L[𝕜] 𝕜`, `c.smul_rightₗ` is the linear map from `F` to `E →L[𝕜] F`
-sending `f` to `λ e, c e • f`. See also `continuous_linear_map.smul_rightL`. -/
+/-- Given `c : E →L[𝕜] 𝕜`, `c.smulRightₗ` is the linear map from `F` to `E →L[𝕜] F`
+sending `f` to `fun e => c e • f`. See also `ContinuousLinearMap.smulRightL`. -/
 def smulRightₗ (c : M →L[R] S) : M₂ →ₗ[T] M →L[R] M₂ where
   toFun := c.smulRight
   map_add' x y := by
@@ -1707,8 +1708,8 @@ variable {A M M₂ : Type _} [Ring A] [AddCommGroup M] [AddCommGroup M₂] [Modu
   [LinearMap.CompatibleSMul M M₂ R A]
 
 /-- If `A` is an `R`-algebra, then a continuous `A`-linear map can be interpreted as a continuous
-`R`-linear map. We assume `linear_map.compatible_smul M M₂ R A` to match assumptions of
-`linear_map.map_smul_of_tower`. -/
+`R`-linear map. We assume `LinearMap.CompatibleSMul M M₂ R A` to match assumptions of
+`LinearMap.map_smul_of_tower`. -/
 def restrictScalars (f : M →L[A] M₂) : M →L[R] M₂ :=
   ⟨(f : M →ₗ[A] M₂).restrictScalars R, f.continuous⟩
 #align continuous_linear_map.restrict_scalars ContinuousLinearMap.restrictScalars
@@ -1761,8 +1762,8 @@ theorem restrictScalars_smul (c : S) (f : M →L[A] M₂) :
 variable (A M M₂ R S)
 variable [TopologicalAddGroup M₂]
 
-/-- `continuous_linear_map.restrict_scalars` as a `linear_map`. See also
-`continuous_linear_map.restrict_scalarsL`. -/
+/-- `ContinuousLinearMap.restrictScalars` as a `LinearMap`. See also
+`ContinuousLinearMap.restrictScalarsL`. -/
 def restrictScalarsₗ : (M →L[A] M₂) →ₗ[S] M →L[R] M₂ where
   toFun := restrictScalars R
   map_add' := restrictScalars_add
@@ -2193,7 +2194,7 @@ protected theorem _root_.LinearEquiv.uniformEmbedding {E₁ E₂ : Type _} [Unif
       E₁ ≃SL[σ₁₂] E₂)
 #align linear_equiv.uniform_embedding LinearEquiv.uniformEmbedding
 
-/-- Create a `continuous_linear_equiv` from two `continuous_linear_map`s that are
+/-- Create a `ContinuousLinearEquiv` from two `ContinuousLinearMap`s that are
 inverse of each other. -/
 def equivOfInverse (f₁ : M₁ →SL[σ₁₂] M₂) (f₂ : M₂ →SL[σ₂₁] M₁) (h₁ : Function.LeftInverse f₂ f₁)
     (h₂ : Function.RightInverse f₂ f₁) : M₁ ≃SL[σ₁₂] M₂ :=
@@ -2243,7 +2244,7 @@ variable {M₁} {R₄ : Type _} [Semiring R₄] [Module R₄ M₄] {σ₃₄ : R
   [RingHomInvPair σ₃₄ σ₄₃] [RingHomInvPair σ₄₃ σ₃₄] {σ₂₄ : R₂ →+* R₄} {σ₁₄ : R₁ →+* R₄}
   [RingHomCompTriple σ₂₁ σ₁₄ σ₂₄] [RingHomCompTriple σ₂₄ σ₄₃ σ₂₃] [RingHomCompTriple σ₁₃ σ₃₄ σ₁₄]
 
-/-- The continuous linear equivalence between `ulift M₁` and `M₁`. -/
+/-- The continuous linear equivalence between `ULift M₁` and `M₁`. -/
 def ulift : ULift M₁ ≃L[R₁] M₁ :=
   { Equiv.ulift with
     map_add' := fun _x _y => rfl
@@ -2253,7 +2254,7 @@ def ulift : ULift M₁ ≃L[R₁] M₁ :=
 #align continuous_linear_equiv.ulift ContinuousLinearEquiv.ulift
 
 /-- A pair of continuous (semi)linear equivalences generates an equivalence between the spaces of
-continuous linear maps. See also `continuous_linear_equiv.arrow_congr`. -/
+continuous linear maps. See also `ContinuousLinearEquiv.arrowCongr`. -/
 @[simps]
 def arrowCongrEquiv (e₁₂ : M₁ ≃SL[σ₁₂] M₂) (e₄₃ : M₄ ≃SL[σ₄₃] M₃) :
     (M₁ →SL[σ₁₄] M₄) ≃ (M₂ →SL[σ₂₃] M₃) where
@@ -2488,16 +2489,17 @@ theorem coe_funUnique_symm : ⇑(funUnique ι R M).symm = Function.const ι :=
 
 variable (R M)
 
-/-- Continuous linear equivalence between dependent functions `Π i : fin 2, M i` and `M 0 × M 1`. -/
+/-- Continuous linear equivalence between dependent functions `(i : Fin 2) → M i` and `M 0 × M 1`.
+-/
 @[simps! (config := { fullyApplied := false }) apply symm_apply]
 def piFinTwo (M : Fin 2 → Type _) [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)]
-    [∀ i, TopologicalSpace (M i)] : (∀ i, M i) ≃L[R] M 0 × M 1 :=
+    [∀ i, TopologicalSpace (M i)] : ((i : _) → M i) ≃L[R] M 0 × M 1 :=
   { Homeomorph.piFinTwo M with toLinearEquiv := LinearEquiv.piFinTwo R M }
 #align continuous_linear_equiv.pi_fin_two ContinuousLinearEquiv.piFinTwo
 #align continuous_linear_equiv.pi_fin_two_apply ContinuousLinearEquiv.piFinTwo_apply
 #align continuous_linear_equiv.pi_fin_two_symm_apply ContinuousLinearEquiv.piFinTwo_symm_apply
 
-/-- Continuous linear equivalence between vectors in `M² = fin 2 → M` and `M × M`. -/
+/-- Continuous linear equivalence between vectors in `M² = Fin 2 → M` and `M × M`. -/
 @[simps! (config := { fullyApplied := false }) apply symm_apply]
 def finTwoArrow : (Fin 2 → M) ≃L[R] M × M :=
   { piFinTwo R fun _ => M with toLinearEquiv := LinearEquiv.finTwoArrow R M }
@@ -2564,7 +2566,7 @@ theorem ring_inverse_equiv (e : M ≃L[R] M) : Ring.inverse ↑e = inverse (e : 
   rfl
 #align continuous_linear_map.ring_inverse_equiv ContinuousLinearMap.ring_inverse_equiv
 
-/-- The function `continuous_linear_equiv.inverse` can be written in terms of `ring.inverse` for the
+/-- The function `ContinuousLinearEquiv.inverse` can be written in terms of `Ring.inverse` for the
 ring of self-maps of the domain. -/
 theorem to_ring_inverse (e : M ≃L[R] M₂) (f : M →L[R] M₂) :
     inverse f = Ring.inverse ((e.symm : M₂ →L[R] M).comp f) ∘L e.symm := by
