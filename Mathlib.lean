@@ -269,6 +269,8 @@ import Mathlib.Algebra.TrivSqZeroExt
 import Mathlib.Algebra.Tropical.Basic
 import Mathlib.Algebra.Tropical.BigOperators
 import Mathlib.Algebra.Tropical.Lattice
+import Mathlib.Analysis.Convex.Segment
+import Mathlib.Analysis.Convex.Star
 import Mathlib.Analysis.Normed.Field.Basic
 import Mathlib.Analysis.Normed.Field.InfiniteSum
 import Mathlib.Analysis.Normed.Field.UnitBall
@@ -423,6 +425,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.SplitCoequalizer
 import Mathlib.CategoryTheory.Limits.Shapes.StrictInitial
 import Mathlib.CategoryTheory.Limits.Shapes.StrongEpi
 import Mathlib.CategoryTheory.Limits.Shapes.Terminal
+import Mathlib.CategoryTheory.Limits.Shapes.Types
 import Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
 import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
 import Mathlib.CategoryTheory.Limits.Shapes.ZeroObjects
@@ -436,6 +439,7 @@ import Mathlib.CategoryTheory.Linear.LinearFunctor
 import Mathlib.CategoryTheory.Localization.Construction
 import Mathlib.CategoryTheory.Localization.Opposite
 import Mathlib.CategoryTheory.Localization.Predicate
+import Mathlib.CategoryTheory.Monad.Basic
 import Mathlib.CategoryTheory.Monoidal.Category
 import Mathlib.CategoryTheory.Monoidal.End
 import Mathlib.CategoryTheory.Monoidal.Functor
@@ -763,6 +767,7 @@ import Mathlib.Data.MvPolynomial.Basic
 import Mathlib.Data.MvPolynomial.Comap
 import Mathlib.Data.MvPolynomial.CommRing
 import Mathlib.Data.MvPolynomial.Counit
+import Mathlib.Data.MvPolynomial.Equiv
 import Mathlib.Data.MvPolynomial.Invertible
 import Mathlib.Data.MvPolynomial.Rename
 import Mathlib.Data.MvPolynomial.Supported
@@ -855,6 +860,7 @@ import Mathlib.Data.Polynomial.Derivative
 import Mathlib.Data.Polynomial.Div
 import Mathlib.Data.Polynomial.EraseLead
 import Mathlib.Data.Polynomial.Eval
+import Mathlib.Data.Polynomial.FieldDivision
 import Mathlib.Data.Polynomial.HasseDeriv
 import Mathlib.Data.Polynomial.Identities
 import Mathlib.Data.Polynomial.Induction
