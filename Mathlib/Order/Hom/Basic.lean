@@ -1031,7 +1031,7 @@ theorem toRelIsoLT_symm (e : α ≃o β) : e.toRelIsoLT.symm = e.symm.toRelIsoLT
 /-- Converts a `RelIso (<) (<)` into an `OrderIso`. -/
 def ofRelIsoLT {α β} [PartialOrder α] [PartialOrder β]
     (e : ((· < ·) : α → α → Prop) ≃r ((· < ·) : β → β → Prop)) : α ≃o β :=
-  ⟨e.toEquiv, by simp [le_iff_eq_or_lt, e.map_rel_iff]⟩
+  ⟨e.toEquiv, by simp [le_iff_eq_or_lt, e.map_rel_iff, e.injective.eq_iff]⟩
 #align order_iso.of_rel_iso_lt OrderIso.ofRelIsoLT
 
 @[simp]
