@@ -524,17 +524,17 @@ theorem degree_pos_of_irreducible (hp : Irreducible p) : 0 < p.degree :=
 
 /- Porting note: factored out a have statement from isCoprime_of_is_root_of_eval_derivative_ne_zero 
 into multiple decls because the original proof was timing out -/
-theorem id_sub_modByMonic_eq_X_sub_C_prod_divByMonic {K : Type _} [Field K] (f : K[X]) (a : K) :
+theorem X_sub_C_mul_divByMonic_eq_sub_modByMonic {K : Type _} [Field K] (f : K[X]) (a : K) :
     (X - C a) * (f /ₘ (X - C a)) = f - f %ₘ (X - C a) := by
   rw [eq_sub_iff_add_eq, ← eq_sub_iff_add_eq', modByMonic_eq_sub_mul_div]
   exact monic_X_sub_C a
 
 /- Porting note: factored out a have statement from isCoprime_of_is_root_of_eval_derivative_ne_zero 
 because the original proof was timing out -/
-theorem derivative_eq_divByMonic_add_X_sub_C_prod_derivative_divByMonic 
+theorem divByMonic_add_X_Sub_C_mul_derivate_divByMonic_eq_derivative
     {K : Type _} [Field K] (f : K[X]) (a : K) :
     f /ₘ (X - C a) + (X - C a) * derivative (f /ₘ (X - C a)) = derivative f := by
-  have key := by apply congrArg derivative <| id_sub_modByMonic_eq_X_sub_C_prod_divByMonic f a
+  have key := by apply congrArg derivative <| X_sub_C_mul_divByMonic_eq_sub_modByMonic f a
   rw [modByMonic_X_sub_C_eq_C_eval] at key
   rw [derivative_mul,derivative_sub,derivative_X,derivative_sub] at key
   rw [derivative_C,sub_zero,one_mul] at key
@@ -545,7 +545,7 @@ theorem derivative_eq_divByMonic_add_X_sub_C_prod_derivative_divByMonic
 isCoprime_of_is_root_of_eval_derivative_ne_zero because the original proof was timing out -/
 theorem X_sub_C_dvd_derivative_of_X_sub_C_dvd_divByMonic {K : Type _} [Field K] (f : K[X]) {a : K}
     (hf : (X - C a) ∣ f /ₘ (X - C a)) : X - C a ∣ derivative f := by
-  have key := derivative_eq_divByMonic_add_X_sub_C_prod_derivative_divByMonic f a
+  have key := divByMonic_add_X_Sub_C_mul_derivate_divByMonic_eq_derivative f a
   have ⟨u,hu⟩ := hf
   rw [←key,hu,←mul_add (X - C a) u _]
   use (u + derivative ((X - C a) * u))
