@@ -8,11 +8,11 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Category.Mon.Basic
-import Mathbin.Algebra.Group.Pi
-import Mathbin.CategoryTheory.Limits.Creates
-import Mathbin.CategoryTheory.Limits.Types
-import Mathbin.GroupTheory.Submonoid.Operations
+import Mathlib.Algebra.Category.Mon.Basic
+import Mathlib.Algebra.Group.Pi
+import Mathlib.CategoryTheory.Limits.Creates
+import Mathlib.CategoryTheory.Limits.Types
+import Mathlib.GroupTheory.Submonoid.Operations
 
 /-!
 # The category of (commutative) (additive) monoids has all limits
@@ -36,8 +36,7 @@ namespace MonCat
 variable {J : Type v} [SmallCategory J]
 
 @[to_additive]
-instance monoidObj (F : J ⥤ MonCat.{max v u}) (j) : Monoid ((F ⋙ forget MonCat).obj j) :=
-  by
+instance monoidObj (F : J ⥤ MonCat.{max v u}) (j) : Monoid ((F ⋙ forget MonCat).obj j) := by
   change Monoid (F.obj j)
   infer_instance
 #align Mon.monoid_obj MonCat.monoidObj
@@ -158,8 +157,7 @@ variable {J : Type v} [SmallCategory J]
 
 @[to_additive]
 instance commMonoidObj (F : J ⥤ CommMonCat.{max v u}) (j) :
-    CommMonoid ((F ⋙ forget CommMonCat).obj j) :=
-  by
+    CommMonoid ((F ⋙ forget CommMonCat).obj j) := by
   change CommMonoid (F.obj j)
   infer_instance
 #align CommMon.comm_monoid_obj CommMonCat.commMonoidObj
