@@ -8,7 +8,7 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Algebra.Category.Mon.Basic
+import Mathlib.Algebra.Category.MonCat.Basic
 import Mathlib.Algebra.Group.Pi
 import Mathlib.CategoryTheory.Limits.Creates
 import Mathlib.CategoryTheory.Limits.Types
@@ -262,4 +262,3 @@ instance forgetPreservesLimits : PreservesLimits (forget CommMonCat.{u}) :=
 #align AddCommMon.forget_preserves_limits AddCommMonCat.forgetPreservesLimits
 
 end CommMonCat
-
