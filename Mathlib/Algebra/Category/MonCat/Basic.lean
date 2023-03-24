@@ -294,6 +294,8 @@ example (R : CommMonCat.{u}) : R ⟶ R :=
 
 variable {X Y : Type u}
 
+attribute [local ext] ConcreteCategory.hom_ext
+
 section
 
 variable [Monoid X] [Monoid Y]
