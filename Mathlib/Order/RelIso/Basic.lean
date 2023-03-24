@@ -278,6 +278,7 @@ theorem map_rel_iff (f : r ↪r s) {a b} : s (f a) (f b) ↔ r a b :=
   f.map_rel_iff'
 #align rel_embedding.map_rel_iff RelEmbedding.map_rel_iff
 
+@[simp]
 theorem coe_mk : ⇑(⟨f, h⟩ : r ↪r s) = f :=
   rfl
 #align rel_embedding.coe_fn_mk RelEmbedding.coe_mk
