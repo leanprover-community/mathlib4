@@ -24,11 +24,11 @@ one edge, and the edges of the subgraph represent the paired vertices.
 
 ## Main definitions
 
-* `simple_graph.subgraph.is_matching`: `M.is_matching` means that `M` is a matching of its
+* `SimpleGraph.Subgraph.IsMatching`: `M.is_matching` means that `M` is a matching of its
   underlying graph.
   denoted `M.is_matching`.
 
-* `simple_graph.subgraph.is_perfect_matching` defines when a subgraph `M` of a simple graph is a
+* `SimpleGraph.Subgraph.IsPerfectMatching` defines when a subgraph `M` of a simple graph is a
   perfect matching, denoted `M.is_perfect_matching`.
 
 ## TODO
