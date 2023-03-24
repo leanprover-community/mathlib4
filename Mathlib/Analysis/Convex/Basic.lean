@@ -17,7 +17,7 @@ import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace
 
 In a 𝕜-vector space, we define the following objects and properties.
 * `convex 𝕜 s`: A set `s` is convex if for any two points `x y ∈ s` it includes `segment 𝕜 x y`.
-* `std_simplex 𝕜 ι`: The standard simplex in `ι → 𝕜` (currently requires `fintype ι`). It is the
+* `stdSimplex 𝕜 ι`: The standard simplex in `ι → 𝕜` (currently requires `Fintype ι`). It is the
   intersection of the positive quadrant with the hyperplane `s.sum = 1`.
 
 We also provide various equivalent versions of the definitions above, prove that some specific sets
@@ -62,7 +62,7 @@ theorem Convex.starConvex (hs : Convex 𝕜 s) (hx : x ∈ s) : StarConvex 𝕜 
 #align convex.star_convex Convex.starConvex
 
 theorem convex_iff_segment_subset : Convex 𝕜 s ↔ ∀ ⦃x⦄, x ∈ s → ∀ ⦃y⦄, y ∈ s → [x -[𝕜] y] ⊆ s :=
-  forall₂_congr fun x hx => starConvex_iff_segment_subset
+  forall₂_congr fun _ _ => starConvex_iff_segment_subset
 #align convex_iff_segment_subset convex_iff_segment_subset
 
 theorem Convex.segment_subset (h : Convex 𝕜 s) {x y : E} (hx : x ∈ s) (hy : y ∈ s) :
@@ -88,18 +88,18 @@ theorem convex_iff_pointwise_add_subset :
 alias convex_iff_pointwise_add_subset ↔ Convex.set_combo_subset _
 #align convex.set_combo_subset Convex.set_combo_subset
 
-theorem convex_empty : Convex 𝕜 (∅ : Set E) := fun x => False.elim
+theorem convex_empty : Convex 𝕜 (∅ : Set E) := fun _ => False.elim
 #align convex_empty convex_empty
 
 theorem convex_univ : Convex 𝕜 (Set.univ : Set E) := fun _ _ => starConvex_univ _
 #align convex_univ convex_univ
 
 theorem Convex.inter {t : Set E} (hs : Convex 𝕜 s) (ht : Convex 𝕜 t) : Convex 𝕜 (s ∩ t) :=
-  fun x hx => (hs hx.1).inter (ht hx.2)
+  fun _ hx => (hs hx.1).inter (ht hx.2)
 #align convex.inter Convex.inter
 
-theorem convex_interₛ {S : Set (Set E)} (h : ∀ s ∈ S, Convex 𝕜 s) : Convex 𝕜 (⋂₀ S) := fun x hx =>
-  starConvex_interₛ fun s hs => h _ hs <| hx _ hs
+theorem convex_interₛ {S : Set (Set E)} (h : ∀ s ∈ S, Convex 𝕜 s) : Convex 𝕜 (⋂₀ S) := fun _ hx =>
+  starConvex_interₛ fun _ hs => h _ hs <| hx _ hs
 #align convex_sInter convex_interₛ
 
 theorem convex_interᵢ {ι : Sort _} {s : ι → Set E} (h : ∀ i, Convex 𝕜 (s i)) :
@@ -107,26 +107,24 @@ theorem convex_interᵢ {ι : Sort _} {s : ι → Set E} (h : ∀ i, Convex 𝕜
   interₛ_range s ▸ convex_interₛ <| forall_range_iff.2 h
 #align convex_Inter convex_interᵢ
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
-theorem convex_Inter₂ {ι : Sort _} {κ : ι → Sort _} {s : ∀ i, κ i → Set E}
+theorem convex_interᵢ₂ {ι : Sort _} {κ : ι → Sort _} {s : ∀ i, κ i → Set E}
     (h : ∀ i j, Convex 𝕜 (s i j)) : Convex 𝕜 (⋂ (i) (j), s i j) :=
   convex_interᵢ fun i => convex_interᵢ <| h i
-#align convex_Inter₂ convex_Inter₂
+#align convex_Inter₂ convex_interᵢ₂
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem Convex.prod {s : Set E} {t : Set F} (hs : Convex 𝕜 s) (ht : Convex 𝕜 t) :
-    Convex 𝕜 (s ×ˢ t) := fun x hx => (hs hx.1).Prod (ht hx.2)
+    Convex 𝕜 (s ×ˢ t) := fun _ hx => (hs hx.1).prod (ht hx.2)
 #align convex.prod Convex.prod
 
 theorem convex_pi {ι : Type _} {E : ι → Type _} [∀ i, AddCommMonoid (E i)] [∀ i, SMul 𝕜 (E i)]
     {s : Set ι} {t : ∀ i, Set (E i)} (ht : ∀ ⦃i⦄, i ∈ s → Convex 𝕜 (t i)) : Convex 𝕜 (s.pi t) :=
-  fun x hx => starConvex_pi fun i hi => ht hi <| hx _ hi
+  fun _ hx => starConvex_pi fun _ hi => ht hi <| hx _ hi
 #align convex_pi convex_pi
 
 theorem Directed.convex_unionᵢ {ι : Sort _} {s : ι → Set E} (hdir : Directed (· ⊆ ·) s)
     (hc : ∀ ⦃i : ι⦄, Convex 𝕜 (s i)) : Convex 𝕜 (⋃ i, s i) := by
   rintro x hx y hy a b ha hb hab
-  rw [mem_Union] at hx hy⊢
+  rw [mem_unionᵢ] at hx hy⊢
   obtain ⟨i, hx⟩ := hx
   obtain ⟨j, hy⟩ := hy
   obtain ⟨k, hik, hjk⟩ := hdir i j
@@ -135,7 +133,7 @@ theorem Directed.convex_unionᵢ {ι : Sort _} {s : ι → Set E} (hdir : Direct
 
 theorem DirectedOn.convex_unionₛ {c : Set (Set E)} (hdir : DirectedOn (· ⊆ ·) c)
     (hc : ∀ ⦃A : Set E⦄, A ∈ c → Convex 𝕜 A) : Convex 𝕜 (⋃₀ c) := by
-  rw [sUnion_eq_Union]
+  rw [unionₛ_eq_unionᵢ]
   exact (directedOn_iff_directed.1 hdir).convex_unionᵢ fun A => hc A.2
 #align directed_on.convex_sUnion DirectedOn.convex_unionₛ
 
@@ -147,13 +145,13 @@ variable [Module 𝕜 E] [Module 𝕜 F] {s : Set E} {x : E}
 
 theorem convex_iff_openSegment_subset :
     Convex 𝕜 s ↔ ∀ ⦃x⦄, x ∈ s → ∀ ⦃y⦄, y ∈ s → openSegment 𝕜 x y ⊆ s :=
-  forall₂_congr fun x => starConvex_iff_openSegment_subset
+  forall₂_congr fun _ => starConvex_iff_openSegment_subset
 #align convex_iff_open_segment_subset convex_iff_openSegment_subset
 
 theorem convex_iff_forall_pos :
     Convex 𝕜 s ↔
       ∀ ⦃x⦄, x ∈ s → ∀ ⦃y⦄, y ∈ s → ∀ ⦃a b : 𝕜⦄, 0 < a → 0 < b → a + b = 1 → a • x + b • y ∈ s :=
-  forall₂_congr fun x => starConvex_iff_forall_pos
+  forall₂_congr fun _ => starConvex_iff_forall_pos
 #align convex_iff_forall_pos convex_iff_forall_pos
 
 theorem convex_iff_pairwise_pos :
@@ -167,15 +165,15 @@ theorem convex_iff_pairwise_pos :
 #align convex_iff_pairwise_pos convex_iff_pairwise_pos
 
 theorem Convex.starConvex_iff (hs : Convex 𝕜 s) (h : s.Nonempty) : StarConvex 𝕜 x s ↔ x ∈ s :=
-  ⟨fun hxs => hxs.Mem h, hs.StarConvex⟩
+  ⟨fun hxs => hxs.mem h, hs.starConvex⟩
 #align convex.star_convex_iff Convex.starConvex_iff
 
 protected theorem Set.Subsingleton.convex {s : Set E} (h : s.Subsingleton) : Convex 𝕜 s :=
-  convex_iff_pairwise_pos.mpr (h.Pairwise _)
+  convex_iff_pairwise_pos.mpr (h.pairwise _)
 #align set.subsingleton.convex Set.Subsingleton.convex
 
 theorem convex_singleton (c : E) : Convex 𝕜 ({c} : Set E) :=
-  subsingleton_singleton.Convex
+  subsingleton_singleton.convex
 #align convex_singleton convex_singleton
 
 theorem convex_segment (x y : E) : Convex 𝕜 [x -[𝕜] y] := by
@@ -249,9 +247,10 @@ theorem convex_Iic (r : β) : Convex 𝕜 (Iic r) := fun x hx y hy a b ha hb hab
     a • x + b • y ≤ a • r + b • r :=
       add_le_add (smul_le_smul_of_nonneg hx ha) (smul_le_smul_of_nonneg hy hb)
     _ = r := Convex.combo_self hab _
-    
+
 #align convex_Iic convex_Iic
 
+set_option synthInstance.etaExperiment true in -- Porting note: lean4#2074
 theorem convex_Ici (r : β) : Convex 𝕜 (Ici r) :=
   @convex_Iic 𝕜 βᵒᵈ _ _ _ _ r
 #align convex_Ici convex_Ici
@@ -289,9 +288,10 @@ theorem convex_Iio (r : β) : Convex 𝕜 (Iio r) := by
     a • x + b • y < a • r + b • r :=
       add_lt_add_of_lt_of_le (smul_lt_smul_of_pos hx ha') (smul_le_smul_of_nonneg hy.le hb)
     _ = r := Convex.combo_self hab _
-    
+
 #align convex_Iio convex_Iio
 
+set_option synthInstance.etaExperiment true in -- Porting note: lean4#2074
 theorem convex_Ioi (r : β) : Convex 𝕜 (Ioi r) :=
   @convex_Iio 𝕜 βᵒᵈ _ _ _ _ r
 #align convex_Ioi convex_Ioi
@@ -338,25 +338,27 @@ variable [LinearOrderedAddCommMonoid E] [OrderedAddCommMonoid β] [Module 𝕜 E
   {s : Set E} {f : E → β}
 
 theorem MonotoneOn.convex_le (hf : MonotoneOn f s) (hs : Convex 𝕜 s) (r : β) :
-    Convex 𝕜 ({ x ∈ s | f x ≤ r }) := fun x hx y hy a b ha hb hab =>
+    Convex 𝕜 ({ x ∈ s | f x ≤ r }) := fun x hx y hy _ _ ha hb hab =>
   ⟨hs hx.1 hy.1 ha hb hab,
     (hf (hs hx.1 hy.1 ha hb hab) (max_rec' s hx.1 hy.1) (Convex.combo_le_max x y ha hb hab)).trans
-      (max_rec' _ hx.2 hy.2)⟩
+      (max_rec' { x | f x ≤ r } hx.2 hy.2)⟩
 #align monotone_on.convex_le MonotoneOn.convex_le
 
 theorem MonotoneOn.convex_lt (hf : MonotoneOn f s) (hs : Convex 𝕜 s) (r : β) :
-    Convex 𝕜 ({ x ∈ s | f x < r }) := fun x hx y hy a b ha hb hab =>
+    Convex 𝕜 ({ x ∈ s | f x < r }) := fun x hx y hy _ _ ha hb hab =>
   ⟨hs hx.1 hy.1 ha hb hab,
     (hf (hs hx.1 hy.1 ha hb hab) (max_rec' s hx.1 hy.1)
           (Convex.combo_le_max x y ha hb hab)).trans_lt
-      (max_rec' _ hx.2 hy.2)⟩
+      (max_rec' { x | f x < r } hx.2 hy.2)⟩
 #align monotone_on.convex_lt MonotoneOn.convex_lt
 
+set_option synthInstance.etaExperiment true in -- porting note: lean4#2074
 theorem MonotoneOn.convex_ge (hf : MonotoneOn f s) (hs : Convex 𝕜 s) (r : β) :
     Convex 𝕜 ({ x ∈ s | r ≤ f x }) :=
   @MonotoneOn.convex_le 𝕜 Eᵒᵈ βᵒᵈ _ _ _ _ _ _ _ hf.dual hs r
 #align monotone_on.convex_ge MonotoneOn.convex_ge
 
+set_option synthInstance.etaExperiment true in -- porting note: lean4#2074
 theorem MonotoneOn.convex_gt (hf : MonotoneOn f s) (hs : Convex 𝕜 s) (r : β) :
     Convex 𝕜 ({ x ∈ s | r < f x }) :=
   @MonotoneOn.convex_lt 𝕜 Eᵒᵈ βᵒᵈ _ _ _ _ _ _ _ hf.dual hs r
@@ -383,35 +385,35 @@ theorem AntitoneOn.convex_gt (hf : AntitoneOn f s) (hs : Convex 𝕜 s) (r : β)
 #align antitone_on.convex_gt AntitoneOn.convex_gt
 
 theorem Monotone.convex_le (hf : Monotone f) (r : β) : Convex 𝕜 { x | f x ≤ r } :=
-  Set.sep_univ.subst ((hf.MonotoneOn univ).convex_le convex_univ r)
+  Set.sep_univ.subst ((hf.monotoneOn univ).convex_le convex_univ r)
 #align monotone.convex_le Monotone.convex_le
 
 theorem Monotone.convex_lt (hf : Monotone f) (r : β) : Convex 𝕜 { x | f x ≤ r } :=
-  Set.sep_univ.subst ((hf.MonotoneOn univ).convex_le convex_univ r)
+  Set.sep_univ.subst ((hf.monotoneOn univ).convex_le convex_univ r)
 #align monotone.convex_lt Monotone.convex_lt
 
 theorem Monotone.convex_ge (hf : Monotone f) (r : β) : Convex 𝕜 { x | r ≤ f x } :=
-  Set.sep_univ.subst ((hf.MonotoneOn univ).convex_ge convex_univ r)
+  Set.sep_univ.subst ((hf.monotoneOn univ).convex_ge convex_univ r)
 #align monotone.convex_ge Monotone.convex_ge
 
 theorem Monotone.convex_gt (hf : Monotone f) (r : β) : Convex 𝕜 { x | f x ≤ r } :=
-  Set.sep_univ.subst ((hf.MonotoneOn univ).convex_le convex_univ r)
+  Set.sep_univ.subst ((hf.monotoneOn univ).convex_le convex_univ r)
 #align monotone.convex_gt Monotone.convex_gt
 
 theorem Antitone.convex_le (hf : Antitone f) (r : β) : Convex 𝕜 { x | f x ≤ r } :=
-  Set.sep_univ.subst ((hf.AntitoneOn univ).convex_le convex_univ r)
+  Set.sep_univ.subst ((hf.antitoneOn univ).convex_le convex_univ r)
 #align antitone.convex_le Antitone.convex_le
 
 theorem Antitone.convex_lt (hf : Antitone f) (r : β) : Convex 𝕜 { x | f x < r } :=
-  Set.sep_univ.subst ((hf.AntitoneOn univ).convex_lt convex_univ r)
+  Set.sep_univ.subst ((hf.antitoneOn univ).convex_lt convex_univ r)
 #align antitone.convex_lt Antitone.convex_lt
 
 theorem Antitone.convex_ge (hf : Antitone f) (r : β) : Convex 𝕜 { x | r ≤ f x } :=
-  Set.sep_univ.subst ((hf.AntitoneOn univ).convex_ge convex_univ r)
+  Set.sep_univ.subst ((hf.antitoneOn univ).convex_ge convex_univ r)
 #align antitone.convex_ge Antitone.convex_ge
 
 theorem Antitone.convex_gt (hf : Antitone f) (r : β) : Convex 𝕜 { x | r < f x } :=
-  Set.sep_univ.subst ((hf.AntitoneOn univ).convex_gt convex_univ r)
+  Set.sep_univ.subst ((hf.antitoneOn univ).convex_gt convex_univ r)
 #align antitone.convex_gt Antitone.convex_gt
 
 end LinearOrderedAddCommMonoid
@@ -486,14 +488,14 @@ theorem Convex.add_smul_sub_mem (h : Convex 𝕜 s) {x y : E} (hx : x ∈ s) (hy
 
 /-- Affine subspaces are convex. -/
 theorem AffineSubspace.convex (Q : AffineSubspace 𝕜 E) : Convex 𝕜 (Q : Set E) := by
-  intro x hx y hy a b ha hb hab
+  intro x hx y hy a b _ _ hab
   rw [eq_sub_of_add_eq hab, ← AffineMap.lineMap_apply_module]
   exact AffineMap.lineMap_mem b hx hy
 #align affine_subspace.convex AffineSubspace.convex
 
 /-- The preimage of a convex set under an affine map is convex. -/
 theorem Convex.affine_preimage (f : E →ᵃ[𝕜] F) {s : Set F} (hs : Convex 𝕜 s) : Convex 𝕜 (f ⁻¹' s) :=
-  fun x hx => (hs hx).affine_preimage _
+  fun _ hx => (hs hx).affine_preimage _
 #align convex.affine_preimage Convex.affine_preimage
 
 /-- The image of a convex set under an affine map is convex. -/
@@ -525,13 +527,9 @@ variable [AddCommGroup E] [AddCommGroup F] [Module 𝕜 E] [Module 𝕜 F] {s : 
 
 /-- Alternative definition of set convexity, using division. -/
 theorem convex_iff_div :
-    Convex 𝕜 s ↔
-      ∀ ⦃x⦄,
-        x ∈ s →
-          ∀ ⦃y⦄,
-            y ∈ s →
-              ∀ ⦃a b : 𝕜⦄, 0 ≤ a → 0 ≤ b → 0 < a + b → (a / (a + b)) • x + (b / (a + b)) • y ∈ s :=
-  forall₂_congr fun x hx => starConvex_iff_div
+    Convex 𝕜 s ↔ ∀ ⦃x⦄, x ∈ s → ∀ ⦃y⦄, y ∈ s →
+      ∀ ⦃a b : 𝕜⦄, 0 ≤ a → 0 ≤ b → 0 < a + b → (a / (a + b)) • x + (b / (a + b)) • y ∈ s :=
+  forall₂_congr fun _ _ => starConvex_iff_div
 #align convex_iff_div convex_iff_div
 
 theorem Convex.mem_smul_of_zero_mem (h : Convex 𝕜 s) {x : E} (zero_mem : (0 : E) ∈ s) (hx : x ∈ s)
@@ -590,7 +588,7 @@ theorem Set.OrdConnected.convex [OrderedSemiring 𝕜] [LinearOrderedAddCommMono
 #align set.ord_connected.convex Set.OrdConnected.convex
 
 theorem convex_iff_ordConnected [LinearOrderedField 𝕜] {s : Set 𝕜} : Convex 𝕜 s ↔ s.OrdConnected :=
-  by simp_rw [convex_iff_segment_subset, segment_eq_uIcc, ord_connected_iff_uIcc_subset]
+  by simp_rw [convex_iff_segment_subset, segment_eq_uIcc, ordConnected_iff_uIcc_subset]
 #align convex_iff_ord_connected convex_iff_ordConnected
 
 alias convex_iff_ordConnected ↔ Convex.ordConnected _
@@ -611,7 +609,7 @@ protected theorem convex (K : Submodule 𝕜 E) : Convex 𝕜 (↑K : Set E) := 
 #align submodule.convex Submodule.convex
 
 protected theorem starConvex (K : Submodule 𝕜 E) : StarConvex 𝕜 (0 : E) K :=
-  K.Convex K.zero_mem
+  K.convex K.zero_mem
 #align submodule.star_convex Submodule.starConvex
 
 end Submodule
@@ -645,9 +643,8 @@ theorem convex_stdSimplex : Convex 𝕜 (stdSimplex 𝕜 ι) := by
 variable {ι}
 
 theorem ite_eq_mem_stdSimplex (i : ι) : (fun j => ite (i = j) (1 : 𝕜) 0) ∈ stdSimplex 𝕜 ι :=
-  ⟨fun j => by simp only <;> split_ifs <;> norm_num, by
+  ⟨fun j => by simp only; split_ifs <;> norm_num, by
     rw [Finset.sum_ite_eq, if_pos (Finset.mem_univ _)]⟩
 #align ite_eq_mem_std_simplex ite_eq_mem_stdSimplex
 
 end Simplex
-
