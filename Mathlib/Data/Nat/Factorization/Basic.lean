@@ -773,13 +773,13 @@ we can define `P` for all natural numbers. -/
 @[elab_as_elim]
 def recOnPrimePow {P : ℕ → Sort _} (h0 : P 0) (h1 : P 1)
     (h : ∀ a p n : ℕ, p.Prime → ¬p ∣ a → 0 < n → P a → P (p ^ n * a)) : ∀ a : ℕ, P a := fun a =>
-  Nat.strongRecOn a fun n =>
+  Nat.strong_rec_on a fun n =>
     match n with
     | 0 => fun _ => h0
     | 1 => fun _ => h1
     | k + 2 => fun hk => by
       let p := (k + 2).minFac
-      have hp : Prime p := min_fac_prime (succ_succ_ne_one k)
+      have hp : Prime p := minFac_prime (succ_succ_ne_one k)
       -- the awkward `let` stuff here is because `factorization` is noncomputable (finsupp);
       -- we get around this by using the computable `factors.count`, and rewriting when we want
       -- to use the `factorization` API
@@ -790,7 +790,7 @@ def recOnPrimePow {P : ℕ → Sort _} (h0 : P 0) (h1 : P 1)
         exact ord_proj_dvd _ _
       have htp : 0 < t := by
         rw [ht]
-        exact hp.factorization_pos_of_dvd (Nat.succ_ne_zero _) (min_fac_dvd _)
+        exact hp.factorization_pos_of_dvd (Nat.succ_ne_zero _) (minFac_dvd _)
       convert h ((k + 2) / p ^ t) p t hp _ _ _
       · rw [Nat.mul_div_cancel' hpt]
       · rw [Nat.dvd_div_iff hpt, ← pow_succ', ht]
