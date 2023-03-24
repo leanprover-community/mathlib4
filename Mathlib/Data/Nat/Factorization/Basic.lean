@@ -651,24 +651,20 @@ theorem factorization_gcd {a b : ℕ} (ha_pos : a ≠ 0) (hb_pos : b ≠ 0) :
     have : p ∈ a.factors ∧ p ∈ b.factors := by simpa using hp
     exact prime_of_mem_factors this.1
   have h1 : d.factorization = dfac := prod_pow_factorization_eq_self dfac_prime
-
-  -- porting note: used to require all the below....
-  -- delete when we are sure nothing's wrong...
-
-  -- have hd_pos : d ≠ 0 := (factorization_equiv.inv_fun ⟨dfac, dfac_prime⟩).2.Ne.symm
-  -- suffices d = gcd a b by rwa [← this]
-  -- apply gcd_greatest
-  -- · rw [← factorization_le_iff_dvd hd_pos ha_pos, h1]
-  --   exact inf_le_left
-  -- · rw [← factorization_le_iff_dvd hd_pos hb_pos, h1]
-  --   exact inf_le_right
-  -- · intro e hea heb
-  --   rcases Decidable.eq_or_ne e 0 with (rfl | he_pos)
-  --   · simp only [zero_dvd_iff] at hea
-  --     contradiction
-  --   have hea' := (factorization_le_iff_dvd he_pos ha_pos).mpr hea
-  --   have heb' := (factorization_le_iff_dvd he_pos hb_pos).mpr heb
-  --   simp [← factorization_le_iff_dvd he_pos hd_pos, h1, hea', heb']
+  have hd_pos : d ≠ 0 := (factorizationEquiv.invFun ⟨dfac, dfac_prime⟩).2.ne.symm
+  suffices d = gcd a b by rwa [← this]
+  apply gcd_greatest
+  · rw [← factorization_le_iff_dvd hd_pos ha_pos, h1]
+    exact inf_le_left
+  · rw [← factorization_le_iff_dvd hd_pos hb_pos, h1]
+    exact inf_le_right
+  · intro e hea heb
+    rcases Decidable.eq_or_ne e 0 with (rfl | he_pos)
+    · simp only [zero_dvd_iff] at hea
+      contradiction
+    have hea' := (factorization_le_iff_dvd he_pos ha_pos).mpr hea
+    have heb' := (factorization_le_iff_dvd he_pos hb_pos).mpr heb
+    simp [← factorization_le_iff_dvd he_pos hd_pos, h1, hea', heb']
 #align nat.factorization_gcd Nat.factorization_gcd
 
 theorem factorization_lcm {a b : ℕ} (ha : a ≠ 0) (hb : b ≠ 0) :
