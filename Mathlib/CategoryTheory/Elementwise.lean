@@ -25,10 +25,8 @@ so we need to add the attribute after the fact.
 
 open CategoryTheory
 
--- Porting note: We remove the simp attribute to re-add it
--- with `elementwise nosimp (attr := simp)`
-attribute [-simp] Iso.hom_inv_id Iso.inv_hom_id IsIso.hom_inv_id IsIso.inv_hom_id
+-- Porting note: Iso.hom_inv_id and Iso.inv_hom_id produce trivial elementwise lemmas now.
 
 -- This list is incomplete, and it would probably be useful to add more.
-attribute [elementwise nosimp (attr := simp 1001)] Iso.hom_inv_id Iso.inv_hom_id
-attribute [elementwise nosimp (attr := simp)] IsIso.hom_inv_id IsIso.inv_hom_id
+set_option linter.existingAttributeWarning false in
+attribute [elementwise (attr := simp)] IsIso.hom_inv_id IsIso.inv_hom_id

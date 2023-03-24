@@ -74,15 +74,17 @@ for the first universe parameter to `ConcreteCategory`.
 The `simpSides` option controles whether to simplify both sides of the equality, for simpNF
 purposes.
 -/
-def elementwiseExpr (type pf : Expr) (simpSides := true) : MetaM (Expr × Option Level) := do
+def elementwiseExpr (src : Name) (type pf : Expr) (simpSides := true) :
+    MetaM (Expr × Option Level) := do
   let type := (← instantiateMVars type).cleanupAnnotations
   forallTelescope type fun fvars type' => do
     mkHomElementwise type' (mkAppN pf fvars) fun eqPf instConcr? => do
       -- First simplify using elementwise-specific lemmas
       let mut eqPf' ← simpType (simpOnlyNames elementwiseThms (config := { decide := false })) eqPf
       if (← inferType eqPf') == .const ``True [] then
-        throwError "elementwise lemma is trivial after applying ConcreteCategory lemmas, {""
-          }which can be caused by how applications are unfolded. Using elementwise is unnecessary."
+        throwError "elementwise lemma for {src} is trivial after applying ConcreteCategory {""
+          }lemmas, which can be caused by how applications are unfolded. {""
+          }Using elementwise is unnecessary."
       if simpSides then
         let ctx := { ← Simp.Context.mkDefault with config.decide := false }
         let (ty', eqPf'') ← simpEq (fun e => return (← simp e ctx).1) (← inferType eqPf') eqPf'
@@ -90,8 +92,9 @@ def elementwiseExpr (type pf : Expr) (simpSides := true) : MetaM (Expr × Option
         forallTelescope ty' fun _ ty' => do
           if let some (_, lhs, rhs) := ty'.eq? then
             if ← Std.Tactic.Lint.isSimpEq lhs rhs then
-              throwError "applying simp to both sides reduces elementwise lemma to the {""
-                }trivial equality {ty'}. Either add `nosimp` or remove the `elementwise` attribute."
+              throwError "applying simp to both sides reduces elementwise lemma for {src} {""
+                }to the trivial equality {ty'}. {""
+                }Either add `nosimp` or remove the `elementwise` attribute."
         eqPf' ← mkExpectedTypeHint eqPf'' ty'
       if let some (w, instConcr) := instConcr? then
         return (← Meta.mkLambdaFVars (fvars.push instConcr) eqPf', w)
@@ -186,7 +189,7 @@ initialize registerBuiltinAttribute {
     if (kind != AttributeKind.global) then
       throwError "`elementwise` can only be used as a global attribute"
     addRelatedDecl src "_apply" ref `elementwise stx? fun type value levels => do
-      let (newValue, level?) ← elementwiseExpr type value (simpSides := nosimp?.isNone)
+      let (newValue, level?) ← elementwiseExpr src type value (simpSides := nosimp?.isNone)
       let newLevels ← if let some level := level? then do
         let w := mkUnusedName levels `w
         unless ← isLevelDefEq level (mkLevelParam w) do
@@ -221,7 +224,7 @@ normal form. `elementwise_of%` does not do this.
 -/
 elab "elementwise_of% " t:term : term => do
   let e ← Term.elabTerm t none
-  let (pf, _) ← elementwiseExpr (← inferType e) e (simpSides := false)
+  let (pf, _) ← elementwiseExpr .anonymous (← inferType e) e (simpSides := false)
   return pf
 
 end Tactic.Elementwise
