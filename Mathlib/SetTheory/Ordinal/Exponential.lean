@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Floris van Doorn, Violeta Hernández Palacios
 
 ! This file was ported from Lean 3 source module set_theory.ordinal.exponential
-! leanprover-community/mathlib commit 32253a1a1071173b33dc7d6a218cf722c6feb514
+! leanprover-community/mathlib commit 8ee653c07a9ddb27ae466d045a3f0c2151b076cf
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -12,8 +12,9 @@ import Mathlib.SetTheory.Ordinal.Arithmetic
 
 /-! # Ordinal exponential
 
-In this file we define the power function and the logarithm function on ordinals,
-
+In this file we define the power function and the logarithm function on ordinals. The two are
+related by the lemma `Ordinal.opow_le_iff_le_log : (b^c) ≤ x ↔ c ≤ log b x` for nontrivial inputs 
+`b`, `c`.
 -/
 
 
