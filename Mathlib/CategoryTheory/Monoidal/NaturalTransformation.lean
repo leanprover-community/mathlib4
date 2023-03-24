@@ -226,7 +226,6 @@ instance (F : MonoidalFunctor C D) [IsEquivalence F.toFunctor] : IsIso (monoidal
 @[simps!] -- error here...
 def monoidalCounit (F : MonoidalFunctor C D) [IsEquivalence F.toFunctor] :
     (monoidalInverse F).toLaxMonoidalFunctor ⊗⋙ F.toLaxMonoidalFunctor ⟶ LaxMonoidalFunctor.id D :=
-  --let e := F.toFunctor.asEquivalence
   { toNatTrans := F.toFunctor.asEquivalence.counit
     unit := by
       dsimp
