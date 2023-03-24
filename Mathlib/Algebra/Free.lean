@@ -81,7 +81,7 @@ noncomputable def recOnMul {C : FreeMagma α → Sort l} (x) (ih1 : ∀ x, C (of
   FreeMagma.recOn x ih1 ih2
 #align free_magma.rec_on_mul FreeMagma.recOnMul
 
-@[to_additive (attr := ext 1001)]
+@[to_additive (attr := ext 1100)]
 theorem hom_ext {β : Type v} [Mul β] {f g : FreeMagma α →ₙ* β} (h : f ∘ of = g ∘ of) : f = g :=
   (FunLike.ext _ _) fun x ↦ recOnMul x (congr_fun h) <| by intros ; simp only [map_mul, *]
 #align free_magma.hom_ext FreeMagma.hom_ext
@@ -394,7 +394,7 @@ section lift
 
 variable {β : Type v} [Semigroup β] (f : α →ₙ* β)
 
-@[to_additive (attr := ext 1001)]
+@[to_additive (attr := ext 1100)]
 theorem hom_ext {f g : AssocQuotient α →ₙ* β} (h : f.comp of = g.comp of) : f = g :=
   (FunLike.ext _ _) fun x => AssocQuotient.induction_on x <| FunLike.congr_fun h
 #align magma.assoc_quotient.hom_ext Magma.AssocQuotient.hom_ext
@@ -514,7 +514,7 @@ protected noncomputable def recOnMul {C : FreeSemigroup α → Sort l} (x) (ih1 
       List.recOn s ih1 (fun hd tl ih f ↦ ih2 f ⟨hd, tl⟩ (ih1 f) (ih hd)) f
 #align free_semigroup.rec_on_mul FreeSemigroup.recOnMul
 
-@[to_additive (attr := ext 1001)]
+@[to_additive (attr := ext 1100)]
 theorem hom_ext {β : Type v} [Mul β] {f g : FreeSemigroup α →ₙ* β} (h : f ∘ of = g ∘ of) : f = g :=
   (FunLike.ext _ _) fun x ↦
     FreeSemigroup.recOnMul x (congr_fun h) fun x y hx hy ↦ by simp only [map_mul, *]

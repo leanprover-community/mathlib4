@@ -29,6 +29,7 @@ import Mathlib.Algebra.BigOperators.Pi
 import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Algebra.BigOperators.RingEquiv
 import Mathlib.Algebra.Bounds
+import Mathlib.Algebra.Category.GroupCat.Basic
 import Mathlib.Algebra.Category.MonCat.Basic
 import Mathlib.Algebra.CharP.Algebra
 import Mathlib.Algebra.CharP.Basic
@@ -455,6 +456,7 @@ import Mathlib.CategoryTheory.Products.Bifunctor
 import Mathlib.CategoryTheory.Quotient
 import Mathlib.CategoryTheory.Sigma.Basic
 import Mathlib.CategoryTheory.SingleObj
+import Mathlib.CategoryTheory.Sites.Grothendieck
 import Mathlib.CategoryTheory.Sites.Sieves
 import Mathlib.CategoryTheory.Skeletal
 import Mathlib.CategoryTheory.StructuredArrow
@@ -1006,6 +1008,7 @@ import Mathlib.GroupTheory.EckmannHilton
 import Mathlib.GroupTheory.Finiteness
 import Mathlib.GroupTheory.FreeAbelianGroup
 import Mathlib.GroupTheory.FreeGroup
+import Mathlib.GroupTheory.FreeProduct
 import Mathlib.GroupTheory.GroupAction.Basic
 import Mathlib.GroupTheory.GroupAction.BigOperators
 import Mathlib.GroupTheory.GroupAction.ConjAct
@@ -1181,7 +1184,9 @@ import Mathlib.NumberTheory.Basic
 import Mathlib.NumberTheory.ClassNumber.AdmissibleAbs
 import Mathlib.NumberTheory.ClassNumber.AdmissibleAbsoluteValue
 import Mathlib.NumberTheory.Divisors
+import Mathlib.NumberTheory.Fermat4
 import Mathlib.NumberTheory.FrobeniusNumber
+import Mathlib.NumberTheory.Padics.PadicNorm
 import Mathlib.NumberTheory.Padics.PadicVal
 import Mathlib.NumberTheory.Primorial
 import Mathlib.NumberTheory.PythagoreanTriples
