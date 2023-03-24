@@ -67,9 +67,14 @@ instance wellOrderExtension.isWellFounded_lt : IsWellFounded α hwf.wellOrderExt
     Ordinal.lt_wf.prod_lex Cardinal.lt_wf⟩
 #align well_founded.well_order_extension.is_well_founded_lt WellFounded.wellOrderExtension.isWellFounded_lt
 
+instance wellOrderExtension.isWellOrder_lt : IsWellOrder α hwf.wellOrderExtension.lt where
+  trichotomous := @lt_trichotomy α hwf.wellOrderExtension
+  trans := @lt_trans α hwf.wellOrderExtension.toPreorder
+
 /-- Any well-founded relation can be extended to a well-ordering on that type. -/
 theorem exists_well_order_ge : ∃ s, r ≤ s ∧ IsWellOrder α s :=
-  ⟨hwf.wellOrderExtension.lt, fun _ _ h => Prod.Lex.left _ _ (hwf.rank_lt_of_rel h), ⟨⟩⟩
+  ⟨hwf.wellOrderExtension.lt, fun _ _ h => Prod.Lex.left _ _ (hwf.rank_lt_of_rel h),
+    wellOrderExtension.isWellOrder_lt hwf⟩
 #align well_founded.exists_well_order_ge WellFounded.exists_well_order_ge
 
 end WellFounded

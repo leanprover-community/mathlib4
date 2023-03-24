@@ -328,6 +328,7 @@ instance (priority := 100) toNonUnitalStarAlgHomClass [CommSemiring R] [Semiring
   [StarAlgHomClass F R A B] :
   NonUnitalStarAlgHomClass F R A B :=
   { StarAlgHomClass.toAlgHomClass, StarAlgHomClass.toStarHomClass R with
+  { StarAlgHomClass.toAlgHomClass, StarAlgHomClass.toStarHomClass .. with
     map_smul := map_smul }
 #align star_alg_hom_class.to_non_unital_star_alg_hom_class StarAlgHomClass.toNonUnitalStarAlgHomClass
 

@@ -116,8 +116,8 @@ section Prio
 See the implementation notes in this file for discussion of the details of this definition.
 -/
 -- porting note: unsupported @[nolint has_nonempty_instance]
-class Algebra (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] extends SMul R A,
-  R →+* A where
+class Algebra (R : Type u) (A : Type v) [outParam <| CommSemiring R] [outParam <| Semiring A]
+    extends SMul R A, R →+* A where
   commutes' : ∀ r x, toRingHom r * x = x * toRingHom r
   smul_def' : ∀ r x, r • x = toRingHom r * x
 #align algebra Algebra
