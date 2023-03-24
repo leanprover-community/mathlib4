@@ -301,15 +301,11 @@ theorem isUnit_map [Field k] (f : R →+* k) : IsUnit (p.map f) ↔ IsUnit p := 
   simp_rw [isUnit_iff_degree_eq_zero, degree_map]
 #align polynomial.is_unit_map Polynomial.isUnit_map
 
--- set_option pp.all true in
-set_option maxHeartbeats 0 in 
 theorem map_div [Field k] (f : R →+* k) : (p / q).map f = p.map f / q.map f := by 
-  by_cases hq0 : q=0
-  · simp [hq0]
-  · rw [div_def, div_def, Polynomial.map_mul, map_divByMonic f (monic_mul_leadingCoeff_inv hq0)]
-    simp only [map_C, map_inv₀, Polynomial.map_mul, leadingCoeff_map, mul_eq_mul_left_iff, _root_.map_eq_zero, inv_eq_zero, leadingCoeff_eq_zero, hq0, or_false]
-    erw [map_inv₀ f (leadingCoeff q)]
-
+  if hq0 : q = 0 then simp [hq0]
+  else
+    rw [div_def, div_def, Polynomial.map_mul, map_divByMonic f (monic_mul_leadingCoeff_inv hq0), 
+      Polynomial.map_mul, map_C, leadingCoeff_map, map_inv₀]
 #align polynomial.map_div Polynomial.map_div
 
 theorem map_mod [Field k] (f : R →+* k) : (p % q).map f = p.map f % q.map f :=
@@ -445,31 +441,31 @@ theorem leadingCoeff_div (hpq : q.degree ≤ p.degree) :
   rwa [degree_mul_leadingCoeff_inv q hq]
 #align polynomial.leading_coeff_div Polynomial.leadingCoeff_div
 
-theorem div_c_mul : p / (C a * q) = C a⁻¹ * (p / q) := by
+theorem div_C_mul : p / (C a * q) = C a⁻¹ * (p / q) := by
   by_cases ha : a = 0
   · simp [ha]
   simp only [div_def, leadingCoeff_mul, mul_inv, leadingCoeff_C, C.map_mul, mul_assoc]
   congr 3
   rw [mul_left_comm q, ← mul_assoc, ← C.map_mul, mul_inv_cancel ha, C.map_one, one_mul]
 set_option linter.uppercaseLean3 false in
-#align polynomial.div_C_mul Polynomial.div_c_mul
+#align polynomial.div_C_mul Polynomial.div_C_mul
 
-theorem c_mul_dvd (ha : a ≠ 0) : C a * p ∣ q ↔ p ∣ q :=
+theorem C_mul_dvd (ha : a ≠ 0) : C a * p ∣ q ↔ p ∣ q :=
   ⟨fun h => dvd_trans (dvd_mul_left _ _) h, fun ⟨r, hr⟩ =>
     ⟨C a⁻¹ * r, by
       rw [mul_assoc, mul_left_comm p, ← mul_assoc, ← C.map_mul, _root_.mul_inv_cancel ha, C.map_one,
         one_mul, hr]⟩⟩
 set_option linter.uppercaseLean3 false in
-#align polynomial.C_mul_dvd Polynomial.c_mul_dvd
+#align polynomial.C_mul_dvd Polynomial.C_mul_dvd
 
-theorem dvd_c_mul (ha : a ≠ 0) : p ∣ Polynomial.C a * q ↔ p ∣ q :=
+theorem dvd_C_mul (ha : a ≠ 0) : p ∣ Polynomial.C a * q ↔ p ∣ q :=
   ⟨fun ⟨r, hr⟩ =>
     ⟨C a⁻¹ * r, by
       rw [mul_left_comm p, ← hr, ← mul_assoc, ← C.map_mul, _root_.inv_mul_cancel ha, C.map_one,
         one_mul]⟩,
     fun h => dvd_trans h (dvd_mul_left _ _)⟩
 set_option linter.uppercaseLean3 false in
-#align polynomial.dvd_C_mul Polynomial.dvd_c_mul
+#align polynomial.dvd_C_mul Polynomial.dvd_C_mul
 
 -- Porting note: previously could not synthesize NormalisationMonoid R[X]
 set_option synthInstance.etaExperiment true in
@@ -526,30 +522,34 @@ theorem degree_pos_of_irreducible (hp : Irreducible p) : 0 < p.degree :=
     not_irreducible_c (p.coeff 0) <| this ▸ hp
 #align polynomial.degree_pos_of_irreducible Polynomial.degree_pos_of_irreducible
 
--- set_option maxHeartbeats 0 in 
--- set_option profiler true in 
+/- Porting note: factored out a have statement from isCoprime_of_is_root_of_eval_derivative_ne_zero 
+because the original proof was timing out -/
+theorem monic_dvd_derivative_of_monic_dvd_modByMonic {K : Type _} [Field K] (f : K[X]) {a : K}
+    (hf : (X - C a) ∣ f /ₘ (X - C a)) : X - C a ∣ derivative f := by
+  have key : (X - C a) * (f /ₘ (X - C a)) = f - f %ₘ (X - C a) := by
+    rw [eq_sub_iff_add_eq, ← eq_sub_iff_add_eq', modByMonic_eq_sub_mul_div]
+    exact monic_X_sub_C a
+  replace key := congr_arg derivative key
+  rw [modByMonic_X_sub_C_eq_C_eval] at key
+  rw [derivative_mul,derivative_sub,derivative_X,derivative_sub] at key
+  rw [derivative_C,sub_zero,derivative_C,sub_zero,one_mul] at key
+  have ⟨u,hu⟩ := hf
+  rw [←key,hu,←mul_add (X - C a) u _]
+  use (u + derivative ((X - C a) * u))
+
 /-- If `f` is a polynomial over a field, and `a : K` satisfies `f' a ≠ 0`,
 then `f / (X - a)` is coprime with `X - a`.
 Note that we do not assume `f a = 0`, because `f / (X - a) = (f - f a) / (X - a)`. -/
 theorem isCoprime_of_is_root_of_eval_derivative_ne_zero {K : Type _} [Field K] (f : K[X]) (a : K)
     (hf' : f.derivative.eval a ≠ 0) : IsCoprime (X - C a : K[X]) (f /ₘ (X - C a)) := by
-  refine'
-    Or.resolve_left
+  refine Or.resolve_left
       (EuclideanDomain.dvd_or_coprime (X - C a) (f /ₘ (X - C a))
-        (irreducible_of_degree_eq_one (Polynomial.degree_X_sub_C a)))
-      _
+        (irreducible_of_degree_eq_one (Polynomial.degree_X_sub_C a))) ?_
   contrapose! hf' with h
-  have key : (X - C a) * (f /ₘ (X - C a)) = f - f %ₘ (X - C a) := by
-    rw [eq_sub_iff_add_eq, ← eq_sub_iff_add_eq', modByMonic_eq_sub_mul_div]
-    exact monic_X_sub_C a
-  replace key := congr_arg derivative key
-  -- sorry
-  simp only [derivative_X, derivative_mul, one_mul, sub_zero, derivative_sub, modByMonic_X_sub_C_eq_C_eval] at key
-  simp only [derivative_C] at key
-    -- modByMonic_X_sub_C_eq_C_eval, derivative_C] at key
-  -- have : X - C a ∣ derivative f := key ▸ dvd_add h (dvd_mul_right _ _)
-  -- rw [← dvd_iff_modByMonic_eq_zero (monic_X_sub_C _), modByMonic_X_sub_C_eq_C_eval] at this
-  -- rw [← C_inj, this, C_0]
+  have : X - C a ∣ derivative f := monic_dvd_derivative_of_monic_dvd_modByMonic f h
+  rw [← dvd_iff_modByMonic_eq_zero (monic_X_sub_C _), modByMonic_X_sub_C_eq_C_eval] at this
+  rw [← C_inj, C_0]
+  assumption
 #align polynomial.is_coprime_of_is_root_of_eval_derivative_ne_zero Polynomial.isCoprime_of_is_root_of_eval_derivative_ne_zero
 
 end Field
