@@ -79,6 +79,8 @@ theorem zero_divOf (g : G) : (0 : AddMonoidAlgebra k G) /ᵒᶠ g = 0 :=
 
 @[simp]
 theorem divOf_zero (x : AddMonoidAlgebra k G) : x /ᵒᶠ 0 = x := by
+  -- Porting note: throughout this file "ext ..." doesn't work; it needs to be
+  -- replaced with the two tactics below
   apply Finsupp.ext
   intro
   simp only [AddMonoidAlgebra.divOf_apply, zero_add]
