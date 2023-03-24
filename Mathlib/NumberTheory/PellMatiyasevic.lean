@@ -8,9 +8,9 @@ Authors: Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Star.Unitary
-import Mathbin.Data.Nat.Modeq
-import Mathbin.NumberTheory.Zsqrtd.Basic
+import Mathlib.Algebra.Star.Unitary
+import Mathlib.Data.Nat.ModEq
+import Mathlib.NumberTheory.Zsqrtd.Basic
 
 /-!
 # Pell's equation and Matiyasevic's theorem
@@ -374,21 +374,18 @@ theorem yn_add (m n) : yn (m + n) = xn m * yn n + yn m * xn n := by
     exact Int.ofNat.inj h
 #align pell.yn_add Pell.yn_add
 
-theorem pellZd_sub {m n} (h : n ≤ m) : pell_zd (m - n) = pell_zd m * star (pell_zd n) :=
-  by
+theorem pellZd_sub {m n} (h : n ≤ m) : pell_zd (m - n) = pell_zd m * star (pell_zd n) := by
   let t := pell_zd_add n (m - n)
   rw [add_tsub_cancel_of_le h] at t <;>
     rw [t, mul_comm (pell_zd _ n) _, mul_assoc, is_pell_norm.1 (is_pell_pell_zd _ _), mul_one]
 #align pell.pell_zd_sub Pell.pellZd_sub
 
-theorem xz_sub {m n} (h : n ≤ m) : xz (m - n) = xz m * xz n - d * yz m * yz n :=
-  by
+theorem xz_sub {m n} (h : n ≤ m) : xz (m - n) = xz m * xz n - d * yz m * yz n := by
   rw [sub_eq_add_neg, ← mul_neg]
   exact congr_arg Zsqrtd.re (pell_zd_sub a1 h)
 #align pell.xz_sub Pell.xz_sub
 
-theorem yz_sub {m n} (h : n ≤ m) : yz (m - n) = xz n * yz m - xz m * yz n :=
-  by
+theorem yz_sub {m n} (h : n ≤ m) : yz (m - n) = xz n * yz m - xz m * yz n := by
   rw [sub_eq_add_neg, ← mul_neg, mul_comm, add_comm]
   exact congr_arg Zsqrtd.im (pell_zd_sub a1 h)
 #align pell.yz_sub Pell.yz_sub
@@ -511,8 +508,7 @@ theorem dvd_of_ysq_dvd {n t} (h : yn n * yn n ∣ yn t) : yn n ∣ t :=
       exact dvd_mul_of_dvd_right (((xy_coprime _ _).pow_leftₓ _).symm.dvd_of_dvd_mul_right this) _
 #align pell.dvd_of_ysq_dvd Pell.dvd_of_ysq_dvd
 
-theorem pellZd_succ_succ (n) : pell_zd (n + 2) + pell_zd n = (2 * a : ℕ) * pell_zd (n + 1) :=
-  by
+theorem pellZd_succ_succ (n) : pell_zd (n + 2) + pell_zd n = (2 * a : ℕ) * pell_zd (n + 1) := by
   have : (1 : ℤ√d) + ⟨a, 1⟩ * ⟨a, 1⟩ = ⟨a, 1⟩ * (2 * a) :=
     by
     rw [Zsqrtd.coe_nat_val]
@@ -526,8 +522,7 @@ theorem pellZd_succ_succ (n) : pell_zd (n + 2) + pell_zd n = (2 * a : ℕ) * pel
 #align pell.pell_zd_succ_succ Pell.pellZd_succ_succ
 
 theorem xy_succ_succ (n) :
-    xn (n + 2) + xn n = 2 * a * xn (n + 1) ∧ yn (n + 2) + yn n = 2 * a * yn (n + 1) :=
-  by
+    xn (n + 2) + xn n = 2 * a * xn (n + 1) ∧ yn (n + 2) + yn n = 2 * a * yn (n + 1) := by
   have := pell_zd_succ_succ a1 n; unfold pell_zd at this
   erw [Zsqrtd.smul_val (2 * a : ℕ)] at this
   injection this with h₁ h₂
@@ -598,8 +593,7 @@ theorem x_sub_y_dvd_pow (y : ℕ) :
     exact dvd_sub (dvd_add this <| (x_sub_y_dvd_pow (n + 1)).mul_left _) (x_sub_y_dvd_pow n)
 #align pell.x_sub_y_dvd_pow Pell.x_sub_y_dvd_pow
 
-theorem xn_modeq_x2n_add_lem (n j) : xn n ∣ d * yn n * (yn n * xn j) + xn j :=
-  by
+theorem xn_modeq_x2n_add_lem (n j) : xn n ∣ d * yn n * (yn n * xn j) + xn j := by
   have h1 : d * yn n * (yn n * xn j) + xn j = (d * yn n * yn n + 1) * xn j := by
     simp [add_mul, mul_assoc]
   have h2 : d * yn n * yn n + 1 = xn n * xn n := by
@@ -608,8 +602,7 @@ theorem xn_modeq_x2n_add_lem (n j) : xn n ∣ d * yn n * (yn n * xn j) + xn j :=
   rw [h2] at h1 <;> rw [h1, mul_assoc] <;> exact dvd_mul_right _ _
 #align pell.xn_modeq_x2n_add_lem Pell.xn_modeq_x2n_add_lem
 
-theorem xn_modEq_x2n_add (n j) : xn (2 * n + j) + xn j ≡ 0 [MOD xn n] :=
-  by
+theorem xn_modEq_x2n_add (n j) : xn (2 * n + j) + xn j ≡ 0 [MOD xn n] := by
   rw [two_mul, add_assoc, xn_add, add_assoc, ← zero_add 0]
   refine' (dvd_mul_right (xn a1 n) (xn a1 (n + j))).modEq_zero_nat.add _
   rw [yn_add, left_distrib, add_assoc, ← zero_add 0]
@@ -617,8 +610,7 @@ theorem xn_modEq_x2n_add (n j) : xn (2 * n + j) + xn j ≡ 0 [MOD xn n] :=
     ((dvd_mul_right _ _).mul_left _).modEq_zero_nat.add (xn_modeq_x2n_add_lem _ _ _).modEq_zero_nat
 #align pell.xn_modeq_x2n_add Pell.xn_modEq_x2n_add
 
-theorem xn_modEq_x2n_sub_lem {n j} (h : j ≤ n) : xn (2 * n - j) + xn j ≡ 0 [MOD xn n] :=
-  by
+theorem xn_modEq_x2n_sub_lem {n j} (h : j ≤ n) : xn (2 * n - j) + xn j ≡ 0 [MOD xn n] := by
   have h1 : xz n ∣ ↑d * yz n * yz (n - j) + xz j := by
     rw [yz_sub _ h, mul_sub_left_distrib, sub_add_eq_add_sub] <;>
       exact
@@ -978,8 +970,7 @@ theorem eq_pow_of_pell {m n k} :
                 xn a1 k ≡ yn a1 k * (a - n) + m [MOD t] ∧
                   2 * a * n = t + (n * n + 1) ∧
                     m < t ∧
-                      n ≤ w ∧ k ≤ w ∧ a * a - ((w + 1) * (w + 1) - 1) * (w * z) * (w * z) = 1) :=
-  by
+                      n ≤ w ∧ k ≤ w ∧ a * a - ((w + 1) * (w + 1) - 1) * (w * z) * (w * z) = 1) := by
   constructor
   · rintro rfl
     refine' k.eq_zero_or_pos.imp (fun k0 => k0.symm ▸ ⟨rfl, rfl⟩) fun hk => ⟨hk, _⟩
