@@ -8,7 +8,7 @@ Authors: Joël Riou
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Triangulated.Pretriangulated
+import Mathlib.CategoryTheory.Triangulated.Pretriangulated
 
 /-!
 # Triangulated Categories
@@ -57,8 +57,7 @@ omit comm h₁₂ h₂₃ h₁₃
 instance (X : C) :
     Nonempty
       (Octahedron (comp_id (𝟙 X)) (contractible_distinguished X) (contractible_distinguished X)
-        (contractible_distinguished X)) :=
-  by
+        (contractible_distinguished X)) := by
   refine' ⟨⟨0, 0, _, _, _, _, by convert contractible_distinguished (0 : C)⟩⟩
   all_goals apply Subsingleton.elim
 
