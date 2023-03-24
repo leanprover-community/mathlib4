@@ -119,9 +119,8 @@ where
     else
       -- That failed, so we need to introduce the instance, which takes creating
       -- a fresh universe level for `ConcreteCategory`'s forgetful functor.
-      let instCty ← inferType instC
-      let .app (.const ``Category [v, u]) _ := instCty
-        | throwError "internal error in elementwise ({instCty} is not `Category _`)"
+      let .app (.const ``Category [v, u]) _ ← inferType instC
+        | throwError "internal error in elementwise"
       let w ← mkFreshLevelMVar
       let cty : Expr := mkApp2 (.const ``ConcreteCategory [w, v, u]) C instC
       withLocalDecl `inst .instImplicit cty fun cfvar => do
@@ -176,6 +175,7 @@ replacing morphism composition with function composition.
 The `[ConcreteCategory C]` argument will be omitted if it is possible to synthesize an instance.
 
 The name of the produced lemma can be specified with `@[elementwise other_lemma_name]`.
+If `simp` is added first, the generated lemma will also have the `simp` attribute.
  -/
 syntax (name := elementwise) "elementwise"
   "nosimp"? ("(" &"attr" ":=" Parser.Term.attrInstance,* ")")? : attr
