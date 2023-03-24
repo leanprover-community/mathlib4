@@ -51,11 +51,11 @@ variable [AddCancelCommMonoid G]
 
 /-- Divide by `of' k G g`, discarding terms not divisible by this. -/
 noncomputable def divOf (x : AddMonoidAlgebra k G) (g : G) : AddMonoidAlgebra k G :=
-  -- note: comapping by `+ g` has the effect of subtracting `g` from every element in the support, and
-    -- discarding the elements of the support from which `g` can't be subtracted. If `G` is an additive
-    -- group, such as `ℤ` when used for `LaurentPolynomial`, then no discarding occurs.
-    @Finsupp.comapDomain.addMonoidHom
-    _ _ _ _ ((· + ·) g) (add_right_injective g) x
+  -- note: comapping by `+ g` has the effect of subtracting `g` from every element in
+  -- the support, and discarding the elements of the support from which `g` can't be subtracted.
+  -- If `G` is an additive group, such as `ℤ` when used for `LaurentPolynomial`,
+  -- then no discarding occurs.
+  @Finsupp.comapDomain.addMonoidHom _ _ _ _ ((· + ·) g) (add_right_injective g) x
 #align add_monoid_algebra.div_of AddMonoidAlgebra.divOf
 
 local infixl:70 " /ᵒᶠ " => divOf
