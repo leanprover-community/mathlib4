@@ -6,6 +6,7 @@ Authors: Scott Morrison, Kyle Miller
 
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
 import Mathlib.Util.AddRelatedDecl
+import Std.Tactic.Lint
 
 /-!
 # Tools to reformulate category-theoretic lemmas in concrete categories
@@ -56,7 +57,10 @@ def elementwiseThms : List Name :=
   [``CategoryTheory.coe_id, ``CategoryTheory.coe_comp, ``CategoryTheory.comp_apply,
     ``CategoryTheory.id_apply,
     -- further simplifications if the category is `Type`
-    ``forget_hom_Type, ``forall_congr_forget_Type]
+    ``forget_hom_Type, ``forall_congr_forget_Type,
+    -- simp can itself simplify trivial equalities into `true`. Adding this lemma makes it
+    -- easier to detect when this has occurred.
+    ``implies_true]
 
 /--
 Given an equation `f = g` between morphisms `X ⟶ Y` in a category `C`
@@ -66,12 +70,32 @@ with compositions fully right associated and identities removed.
 
 Returns the proof of the new theorem along with (optionally) a new level metavariable
 for the first universe parameter to `ConcreteCategory`.
+
+The `simpSides` option controles whether to simplify both sides of the equality, for simpNF
+purposes.
 -/
-def elementwiseExpr (type pf : Expr) : MetaM (Expr × Option Level) := do
+def elementwiseExpr (src : Name) (type pf : Expr) (simpSides := true) :
+    MetaM (Expr × Option Level) := do
   let type := (← instantiateMVars type).cleanupAnnotations
   forallTelescope type fun fvars type' => do
     mkHomElementwise type' (mkAppN pf fvars) fun eqPf instConcr? => do
-      let eqPf' ← simpType (simpOnlyNames elementwiseThms) eqPf
+      -- First simplify using elementwise-specific lemmas
+      let mut eqPf' ← simpType (simpOnlyNames elementwiseThms (config := { decide := false })) eqPf
+      if (← inferType eqPf') == .const ``True [] then
+        throwError "elementwise lemma for {src} is trivial after applying ConcreteCategory {""
+          }lemmas, which can be caused by how applications are unfolded. {""
+          }Using elementwise is unnecessary."
+      if simpSides then
+        let ctx := { ← Simp.Context.mkDefault with config.decide := false }
+        let (ty', eqPf'') ← simpEq (fun e => return (← simp e ctx).1) (← inferType eqPf') eqPf'
+        -- check that it's not a simp-trivial equality:
+        forallTelescope ty' fun _ ty' => do
+          if let some (_, lhs, rhs) := ty'.eq? then
+            if ← Std.Tactic.Lint.isSimpEq lhs rhs then
+              throwError "applying simp to both sides reduces elementwise lemma for {src} {""
+                }to the trivial equality {ty'}. {""
+                }Either add `nosimp` or remove the `elementwise` attribute."
+        eqPf' ← mkExpectedTypeHint eqPf'' ty'
       if let some (w, instConcr) := instConcr? then
         return (← Meta.mkLambdaFVars (fvars.push instConcr) eqPf', w)
       else
@@ -89,11 +113,10 @@ where
       MetaM α := do
     let (C, instC) ← try extractCatInstance eqTy catch _ =>
       throwError "elementwise expects equality of morphisms in a category"
-    try
-      -- First try being optimistic that there is already a ConcreteCategory instance.
-      let eqPf' ← mkAppM ``hom_elementwise #[eqPf]
+    -- First try being optimistic that there is already a ConcreteCategory instance.
+    if let some eqPf' ← observing? (mkAppM ``hom_elementwise #[eqPf]) then
       k eqPf' none
-    catch _ =>
+    else
       -- That failed, so we need to introduce the instance, which takes creating
       -- a fresh universe level for `ConcreteCategory`'s forgetful functor.
       let .app (.const ``Category [v, u]) _ ← inferType instC
@@ -121,7 +144,13 @@ private partial def mkUnusedName (names : List Name) (baseName : Name) : Name :=
 creates a new lemma for a `ConcreteCategory` giving an equation with those morphisms applied
 to some value.
 
-For example:
+Syntax examples:
+- `@[elementwise]`
+- `@[elementwise nosimp]` to not use `simp` on both sides of the generated lemma
+- `@[elementwise (attr := simp)]` to apply the `simp` attribute to both the generated lemma and
+  the original lemma.
+
+Example application of `elementwise`:
 
 ```lean
 @[elementwise]
@@ -148,18 +177,19 @@ The `[ConcreteCategory C]` argument will be omitted if it is possible to synthes
 The name of the produced lemma can be specified with `@[elementwise other_lemma_name]`.
 If `simp` is added first, the generated lemma will also have the `simp` attribute.
  -/
-syntax (name := elementwise) "elementwise" ("(" &"attr" ":=" Parser.Term.attrInstance,* ")")? : attr
+syntax (name := elementwise) "elementwise"
+  "nosimp"? ("(" &"attr" ":=" Parser.Term.attrInstance,* ")")? : attr
 
 initialize registerBuiltinAttribute {
   name := `elementwise
   descr := ""
   applicationTime := .afterCompilation
   add := fun src ref kind => match ref with
-  | `(attr| elementwise $[(attr := $stx?,*)]?) => MetaM.run' do
+  | `(attr| elementwise $[nosimp%$nosimp?]? $[(attr := $stx?,*)]?) => MetaM.run' do
     if (kind != AttributeKind.global) then
       throwError "`elementwise` can only be used as a global attribute"
     addRelatedDecl src "_apply" ref `elementwise stx? fun type value levels => do
-      let (newValue, level?) ← elementwiseExpr type value
+      let (newValue, level?) ← elementwiseExpr src type value (simpSides := nosimp?.isNone)
       let newLevels ← if let some level := level? then do
         let w := mkUnusedName levels `w
         unless ← isLevelDefEq level (mkLevelParam w) do
@@ -187,10 +217,14 @@ Like the `@[elementwise]` attribute, `elementwise_of%` inserts a `ConcreteCatego
 instance argument if it can't synthesize a relevant `ConcreteCategory` instance.
 (Technical note: The forgetful functor's universe variable is instantiated with a
 fresh level metavariable in this case.)
+
+One difference between `elementwise_of%` and `@[elementwise]` is that `@[elementwise]` by
+default applies `simp` to both sides of the generated lemma to get something that is in simp
+normal form. `elementwise_of%` does not do this.
 -/
 elab "elementwise_of% " t:term : term => do
   let e ← Term.elabTerm t none
-  let (pf, _) ← elementwiseExpr (← inferType e) e
+  let (pf, _) ← elementwiseExpr .anonymous (← inferType e) e (simpSides := false)
   return pf
 
 end Tactic.Elementwise
