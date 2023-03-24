@@ -30,8 +30,14 @@ would be the degree `i+n`-th term of `C`.
 
 ## Implementation Notes
 
-Many of the definitions in this file are marked as an `abbreviation` so that the simp lemmas in
-`category_theory/monoidal/End` can apply.
+`[HasShift C A]` is implemented using `MonoidalFunctor (Discrete A) (C ⥤ C)`.
+However, the API of monodial functors is used only internally: one should use the API of
+shifts functors which includes `shiftFunctor C a : C ⥤ C` for `a : A`,
+`shiftFunctorZero C A : shiftFunctor C (0 : A) ≅ 𝟭 C` and
+`shiftFunctorAdd C i j : shiftFunctor C (i + j) ≅ shiftFunctor C i ⋙ shiftFunctor C j`
+(and its variant `shiftFunctorAdd'`). These isomorphisms satisfy some coherence properties
+which are stated in lemmas like `shiftFunctorAdd'_assoc`, `shiftFunctorAdd'_zero_add` and
+`shiftFunctorAdd'_add_zero`.
 
 -/
 
@@ -460,16 +466,6 @@ theorem shift_neg_shift' (i : A) :
       (shiftFunctorNegCompShiftFunctor C i).inv.app Y :=
   (NatIso.naturality_2 (shiftFunctorNegCompShiftFunctor C i) f).symm
 #align category_theory.shift_neg_shift' CategoryTheory.shift_neg_shift'
-
---theorem shift_shift_neg' (i : A) :
---    f⟦i⟧'⟦-i⟧' = (shiftShiftNeg X i).hom ≫ f ≫ (shiftShiftNeg Y i).inv :=
---  (NatIso.naturality_2 (shiftFunctorCompShiftFunctorNeg C i) f).symm
---#align category_theory.shift_shift_neg' CategoryTheory.shift_shift_neg'
---
---theorem shift_neg_shift' (i : A) :
---    f⟦-i⟧'⟦i⟧' = (shiftNegShift X i).hom ≫ f ≫ (shiftNegShift Y i).inv :=
---  (NatIso.naturality_2 (shiftFunctorNegCompShiftFunctor C i) f).symm
---#align category_theory.shift_neg_shift' CategoryTheory.shift_neg_shift'
 
 theorem shift_equiv_triangle (n : A) (X : C) :
     (shiftShiftNeg X n).inv⟦n⟧' ≫ (shiftNegShift (X⟦n⟧) n).hom = 𝟙 (X⟦n⟧) :=
