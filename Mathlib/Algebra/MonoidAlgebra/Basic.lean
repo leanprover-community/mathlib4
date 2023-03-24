@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury G. Kudryashov, Scott Morrison
 
 ! This file was ported from Lean 3 source module algebra.monoid_algebra.basic
-! leanprover-community/mathlib commit 6623e6af705e97002a9054c1c05a980180276fc1
+! leanprover-community/mathlib commit 57e09a1296bfb4330ddf6624f1028ba186117d82
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
