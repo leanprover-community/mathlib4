@@ -897,17 +897,17 @@ protected theorem smul_def (f : M₁ →L[R₁] M₁) (a : M₁) : f • a = f a
 #align continuous_linear_map.smul_def ContinuousLinearMap.smul_def
 
 /-- `continuous_linear_map.apply_module` is faithful. -/
-instance apply_faithfulSMul : FaithfulSMul (M₁ →L[R₁] M₁) M₁ :=
+instance applyFaithfulSMul : FaithfulSMul (M₁ →L[R₁] M₁) M₁ :=
   ⟨fun {_ _} => ContinuousLinearMap.ext⟩
-#align continuous_linear_map.apply_has_faithful_smul ContinuousLinearMap.apply_faithfulSMul
+#align continuous_linear_map.apply_has_faithful_smul ContinuousLinearMap.applyFaithfulSMul
 
-instance apply_sMulCommClass : SMulCommClass R₁ (M₁ →L[R₁] M₁) M₁
+instance applySMulCommClass : SMulCommClass R₁ (M₁ →L[R₁] M₁) M₁
     where smul_comm r e m := (e.map_smul r m).symm
-#align continuous_linear_map.apply_smul_comm_class ContinuousLinearMap.apply_sMulCommClass
+#align continuous_linear_map.apply_smul_comm_class ContinuousLinearMap.applySMulCommClass
 
-instance apply_smul_comm_class' : SMulCommClass (M₁ →L[R₁] M₁) R₁ M₁
+instance applySMulCommClass' : SMulCommClass (M₁ →L[R₁] M₁) R₁ M₁
     where smul_comm := ContinuousLinearMap.map_smul
-#align continuous_linear_map.apply_smul_comm_class' ContinuousLinearMap.apply_smul_comm_class'
+#align continuous_linear_map.apply_smul_comm_class' ContinuousLinearMap.applySMulCommClass'
 
 instance continuousConstSMul : ContinuousConstSMul (M₁ →L[R₁] M₁) M₁ :=
   ⟨ContinuousLinearMap.continuous⟩
@@ -995,8 +995,8 @@ theorem ker_prod [Module R₁ M₂] [Module R₁ M₃] (f : M₁ →L[R₁] M₂
 #align continuous_linear_map.ker_prod ContinuousLinearMap.ker_prod
 
 /-- Restrict codomain of a continuous linear map. -/
-def codRestrict (f : M₁ →SL[σ₁₂] M₂) (p : Submodule R₂ M₂) (h : ∀ x, f x ∈ p) : M₁ →SL[σ₁₂] p
-    where
+def codRestrict (f : M₁ →SL[σ₁₂] M₂) (p : Submodule R₂ M₂) (h : ∀ x, f x ∈ p) :
+    M₁ →SL[σ₁₂] p where
   cont := f.continuous.subtype_mk _
   toLinearMap := (f : M₁ →ₛₗ[σ₁₂] M₂).codRestrict p h
 #align continuous_linear_map.cod_restrict ContinuousLinearMap.codRestrict
@@ -1123,10 +1123,10 @@ theorem coe_prodMap [Module R₁ M₂] [Module R₁ M₃] [Module R₁ M₄] (f�
 #align continuous_linear_map.coe_prod_map ContinuousLinearMap.coe_prodMap
 
 @[simp, norm_cast]
-theorem coe_prod_map' [Module R₁ M₂] [Module R₁ M₃] [Module R₁ M₄] (f₁ : M₁ →L[R₁] M₂)
+theorem coe_prod_map [Module R₁ M₂] [Module R₁ M₃] [Module R₁ M₄] (f₁ : M₁ →L[R₁] M₂)
     (f₂ : M₃ →L[R₁] M₄) : ⇑(f₁.prodMap f₂) = Prod.map f₁ f₂ :=
   rfl
-#align continuous_linear_map.coe_prod_map' ContinuousLinearMap.coe_prod_map'
+#align continuous_linear_map.coe_prod_map' ContinuousLinearMap.coe_prod_map
 
 /-- The continuous linear map given by `(x, y) ↦ f₁ x + f₂ y`. -/
 def coprod [Module R₁ M₂] [Module R₁ M₃] [ContinuousAdd M₃] (f₁ : M₁ →L[R₁] M₃)
@@ -1256,7 +1256,7 @@ variable (R φ)
 
 /-- If `I` and `J` are complementary index sets, the product of the kernels of the `J`th projections
 of `φ` is linearly equivalent to the product over `I`. -/
-def infiKerProjEquiv {I J : Set ι} [DecidablePred fun i => i ∈ I] (hd : Disjoint I J)
+def infᵢKerProjEquiv {I J : Set ι} [DecidablePred fun i => i ∈ I] (hd : Disjoint I J)
     (hu : Set.univ ⊆ I ∪ J) :
     (⨅ i ∈ J, ker (proj i : (∀ i, φ i) →L[R] φ i) : Submodule R (∀ i, φ i)) ≃L[R] ∀ i : I, φ i
     where
@@ -1279,7 +1279,7 @@ def infiKerProjEquiv {I J : Set ι} [DecidablePred fun i => i ∈ I] (hd : Disjo
             (0 : ((i : I) → φ i) →ₗ[R] φ i)))
         split_ifs <;> [apply continuous_apply, exact continuous_zero])
       _
-#align continuous_linear_map.infi_ker_proj_equiv ContinuousLinearMap.infiKerProjEquiv
+#align continuous_linear_map.infi_ker_proj_equiv ContinuousLinearMap.infᵢKerProjEquiv
 
 end Pi
 
@@ -1634,21 +1634,21 @@ def prodₗ : ((M →L[R] N₂) × (M →L[R] N₃)) ≃ₗ[S] M →L[R] N₂ ×
 
 /-- The coercion from `M →L[R] M₂` to `M →ₗ[R] M₂`, as a linear map. -/
 @[simps]
-def coeLm : (M →L[R] N₃) →ₗ[S] M →ₗ[R] N₃ where
+def coeLM : (M →L[R] N₃) →ₗ[S] M →ₗ[R] N₃ where
   toFun := (↑)
   map_add' f g := coe_add f g
   map_smul' c f := coe_smul c f
-#align continuous_linear_map.coe_lm ContinuousLinearMap.coeLm
+#align continuous_linear_map.coe_lm ContinuousLinearMap.coeLM
 
 variable {S} (σ₁₃)
 
 /-- The coercion from `M →SL[σ] M₂` to `M →ₛₗ[σ] M₂`, as a linear map. -/
 @[simps]
-def coeLmₛₗ : (M →SL[σ₁₃] M₃) →ₗ[S₃] M →ₛₗ[σ₁₃] M₃ where
+def coeLMₛₗ : (M →SL[σ₁₃] M₃) →ₗ[S₃] M →ₛₗ[σ₁₃] M₃ where
   toFun := (↑)
   map_add' f g := coe_add f g
   map_smul' c f := coe_smul c f
-#align continuous_linear_map.coe_lmₛₗ ContinuousLinearMap.coeLmₛₗ
+#align continuous_linear_map.coe_lmₛₗ ContinuousLinearMap.coeLMₛₗ
 
 variable {σ₁₃}
 
@@ -1722,9 +1722,9 @@ theorem coe_restrictScalars (f : M →L[A] M₂) :
 #align continuous_linear_map.coe_restrict_scalars ContinuousLinearMap.coe_restrictScalars
 
 @[simp]
-theorem coe_restrict_scalars' (f : M →L[A] M₂) : ⇑(f.restrictScalars R) = f :=
+theorem coe_restrictScalars' (f : M →L[A] M₂) : ⇑(f.restrictScalars R) = f :=
   rfl
-#align continuous_linear_map.coe_restrict_scalars' ContinuousLinearMap.coe_restrict_scalars'
+#align continuous_linear_map.coe_restrict_scalars' ContinuousLinearMap.coe_restrictScalars'
 
 @[simp]
 theorem restrictScalars_zero : (0 : M →L[A] M₂).restrictScalars R = 0 :=
