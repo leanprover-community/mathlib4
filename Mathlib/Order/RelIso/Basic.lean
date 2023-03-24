@@ -232,13 +232,14 @@ def toRelHom (f : r ↪r s) : r →r s where
 instance : Coe (r ↪r s) (r →r s) :=
   ⟨toRelHom⟩
 
+--Porting note: removed
 -- see Note [function coercion]
-instance : CoeFun (r ↪r s) fun _ => α → β :=
-  ⟨fun o => o.toEmbedding⟩
+-- instance : CoeFun (r ↪r s) fun _ => α → β :=
+--   ⟨fun o => o.toEmbedding⟩
 
 -- TODO: define and instantiate a `RelEmbeddingClass` when `EmbeddingLike` is defined
 instance : RelHomClass (r ↪r s) r s where
-  coe := fun x => x
+  coe := fun x => x.toFun
   coe_injective' f g h := by
     rcases f with ⟨⟨⟩⟩
     rcases g with ⟨⟨⟩⟩
@@ -253,6 +254,14 @@ def Simps.apply (h : r ↪r s) : α → β :=
   h
 
 initialize_simps_projections RelEmbedding (toFun → apply)
+
+@[simp]
+theorem coe_toEmbedding : ((f : r ↪r s).toEmbedding : α → β)  = f :=
+  rfl
+
+@[simp]
+theorem coe_toRelHom : ((f : r ↪r s).toRelHom : α → β) = f :=
+  rfl
 
 theorem injective (f : r ↪r s) : Injective f :=
   f.inj'
@@ -595,12 +604,13 @@ def prodLexMkRight (r : α → α → Prop) {b : β} (h : ¬s b b) : r ↪r Prod
 #align rel_embedding.prod_lex_mk_right RelEmbedding.prodLexMkRight
 #align rel_embedding.prod_lex_mk_right_apply RelEmbedding.prodLexMkRight_apply
 
+set_option synthInstance.etaExperiment true
 /-- `Prod.map` as a relation embedding. -/
 @[simps]
 def prodLexMap (f : r ↪r s) (g : t ↪r u) : Prod.Lex r t ↪r Prod.Lex s u where
   toFun := Prod.map f g
   inj' := f.injective.Prod_map g.injective
-  map_rel_iff' := by simp [Prod.lex_def, f.map_rel_iff, g.map_rel_iff]
+  map_rel_iff' := by simp [Prod.lex_def, f.map_rel_iff, g.map_rel_iff, f.inj]
 #align rel_embedding.prod_lex_map RelEmbedding.prodLexMap
 #align rel_embedding.prod_lex_map_apply RelEmbedding.prodLexMap_apply
 
@@ -631,9 +641,10 @@ theorem toEquiv_injective : Injective (toEquiv : r ≃r s → α ≃ β)
 instance : CoeOut (r ≃r s) (r ↪r s) :=
   ⟨toRelEmbedding⟩
 
+--Porting note: removed
 -- see Note [function coercion]
-instance : CoeFun (r ≃r s) fun _ => α → β :=
-  ⟨fun f => f⟩
+-- instance : CoeFun (r ≃r s) fun _ => α → β :=
+--   ⟨fun f => f⟩
 
 -- TODO: define and instantiate a `RelIsoClass` when `EquivLike` is defined
 instance : RelHomClass (r ≃r s) r s where
@@ -822,7 +833,8 @@ lexicographic orders on the product.
 -/
 def prodLexCongr {α₁ α₂ β₁ β₂ r₁ r₂ s₁ s₂} (e₁ : @RelIso α₁ β₁ r₁ s₁) (e₂ : @RelIso α₂ β₂ r₂ s₂) :
     Prod.Lex r₁ r₂ ≃r Prod.Lex s₁ s₂ :=
-  ⟨Equiv.prodCongr e₁.toEquiv e₂.toEquiv, by simp [Prod.lex_def, e₁.map_rel_iff, e₂.map_rel_iff]⟩
+  ⟨Equiv.prodCongr e₁.toEquiv e₂.toEquiv, by simp [Prod.lex_def, e₁.map_rel_iff, e₂.map_rel_iff,
+    e₁.injective.eq_iff]⟩
 #align rel_iso.prod_lex_congr RelIso.prodLexCongr
 
 /-- Two relations on empty types are isomorphic. -/
