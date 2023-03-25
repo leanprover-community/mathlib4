@@ -251,12 +251,12 @@ def of_hasShiftOfFullyFaithful :
     zero := by
       ext X
       simp only [comp_obj, iso_zero_hom_app, shiftFunctorZero_of_hasShiftMk, Iso.symm_hom,
-        map_hasShiftOfFullyFaithful_ε_inv_app, id_obj, Category.assoc,
+        map_hasShiftOfFullyFaithful_zero_hom_app, id_obj, Category.assoc,
         Iso.hom_inv_id_app, Category.comp_id]
     add := fun a b => by
       ext X
       simp only [comp_obj, iso_add_hom_app, shiftFunctorAdd_of_hasShiftMk, Iso.symm_hom,
-        map_hasShiftOfFullyFaithful_μ_inv_app, Category.assoc, shiftFunctor_of_hasShiftMk,
+        map_hasShiftOfFullyFaithful_add_hom_app, Category.assoc, shiftFunctor_of_hasShiftMk,
         Iso.inv_hom_id_app_assoc, ← (shiftFunctor D b).map_comp_assoc, Iso.inv_hom_id_app,
         Functor.map_id, Category.id_comp, Iso.hom_inv_id_app, Category.comp_id] }
 
