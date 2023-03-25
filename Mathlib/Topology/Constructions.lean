@@ -1069,24 +1069,6 @@ theorem tendsto_subtype_rng {β : Type _} {p : α → Prop} {b : Filter β} {f :
   | ⟨a, ha⟩ => by rw [nhds_subtype_eq_comap, tendsto_comap_iff]; rfl
 #align tendsto_subtype_rng tendsto_subtype_rng
 
--- porting note: todo: see https://github.com/leanprover-community/mathlib/pull/18321
-theorem continuous_subtype_nhds_cover {ι : Sort _} {f : α → β} {c : ι → α → Prop}
-    (c_cover : ∀ x : α, ∃ i, { x | c i x } ∈ 𝓝 x)
-    (f_cont : ∀ i, Continuous fun x : Subtype (c i) => f x) : Continuous f :=
-  continuous_iff_continuousAt.mpr fun x => by
-    rcases c_cover x with ⟨i, c_sets⟩
-    lift x to Subtype (c i) using mem_of_mem_nhds c_sets
-    refine' (inducing_subtype_val.continuousAt_iff' _).1 (f_cont i).continuousAt
-    rwa [Subtype.range_coe]
-#align continuous_subtype_nhds_cover continuous_subtype_nhds_cover
-
-/- porting note: todo: see https://github.com/leanprover-community/mathlib/pull/18321
-
-I failed to quickly fix the proof. This is a leaf lemma, and it is going to be replaced by a lemma
-formulated using `ContinuousOn`.
--/
-#noalign continuous_subtype_is_closed_cover
-
 theorem closure_subtype {x : { a // p a }} {s : Set { a // p a }} :
     x ∈ closure s ↔ (x : α) ∈ closure (((↑) : _ → α) '' s) :=
   closure_induced
