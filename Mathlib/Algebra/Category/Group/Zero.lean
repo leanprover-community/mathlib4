@@ -8,8 +8,8 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Category.Group.Basic
-import Mathbin.CategoryTheory.Limits.Shapes.ZeroObjects
+import Mathlib.Algebra.Category.Group.Basic
+import Mathlib.CategoryTheory.Limits.Shapes.ZeroObjects
 
 /-!
 # The category of (commutative) (additive) groups has a zero object.
@@ -28,8 +28,7 @@ universe u
 namespace GroupCat
 
 @[to_additive]
-theorem isZero_of_subsingleton (G : GroupCat) [Subsingleton G] : IsZero G :=
-  by
+theorem isZero_of_subsingleton (G : GroupCat) [Subsingleton G] : IsZero G := by
   refine' ⟨fun X => ⟨⟨⟨1⟩, fun f => _⟩⟩, fun X => ⟨⟨⟨1⟩, fun f => _⟩⟩⟩
   · ext
     have : x = 1 := Subsingleton.elim _ _
@@ -48,8 +47,7 @@ end GroupCat
 namespace CommGroupCat
 
 @[to_additive]
-theorem isZero_of_subsingleton (G : CommGroupCat) [Subsingleton G] : IsZero G :=
-  by
+theorem isZero_of_subsingleton (G : CommGroupCat) [Subsingleton G] : IsZero G := by
   refine' ⟨fun X => ⟨⟨⟨1⟩, fun f => _⟩⟩, fun X => ⟨⟨⟨1⟩, fun f => _⟩⟩⟩
   · ext
     have : x = 1 := Subsingleton.elim _ _
