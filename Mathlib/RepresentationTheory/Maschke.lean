@@ -165,12 +165,12 @@ theorem exists_leftInverse_of_injective (f : V →ₗ[MonoidAlgebra k G] W)
 
 namespace Submodule
 
---set_option synthInstance.etaExperiment true in
 theorem exists_isCompl (p : Submodule (MonoidAlgebra k G) V) :
     ∃ q : Submodule (MonoidAlgebra k G) V, IsCompl p q := by
   have : IsScalarTower k (MonoidAlgebra k G) p := p.isScalarTower'
   rcases MonoidAlgebra.exists_leftInverse_of_injective p.subtype p.ker_subtype with ⟨f, hf⟩
-  exact ⟨LinearMap.ker f, LinearMap.isCompl_of_proj <| FunLike.congr_fun hf⟩
+  refine ⟨LinearMap.ker f, LinearMap.isCompl_of_proj ?_⟩
+  exact FunLike.congr_fun hf
 #align monoid_algebra.submodule.exists_is_compl MonoidAlgebra.Submodule.exists_isCompl
 
 /-- This also implies an instance `IsSemisimpleModule (MonoidAlgebra k G) V`. -/
