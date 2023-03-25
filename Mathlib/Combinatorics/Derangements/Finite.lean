@@ -8,10 +8,10 @@ Authors: Henry Swanson
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Combinatorics.Derangements.Basic
-import Mathbin.Data.Fintype.BigOperators
-import Mathbin.Tactic.DeltaInstance
-import Mathbin.Tactic.Ring
+import Mathlib.Combinatorics.Derangements.Basic
+import Mathlib.Data.Fintype.BigOperators
+import Mathlib.Tactic.DeltaInstance
+import Mathlib.Tactic.Ring
 
 /-!
 # Derangements on fintypes
@@ -48,8 +48,7 @@ theorem card_derangements_invariant {α β : Type _} [Fintype α] [DecidableEq �
 
 theorem card_derangements_fin_add_two (n : ℕ) :
     card (derangements (Fin (n + 2))) =
-      (n + 1) * card (derangements (Fin n)) + (n + 1) * card (derangements (Fin (n + 1))) :=
-  by
+      (n + 1) * card (derangements (Fin n)) + (n + 1) * card (derangements (Fin (n + 1))) := by
   -- get some basic results about the size of fin (n+1) plus or minus an element
   have h1 : ∀ a : Fin (n + 1), card ({a}ᶜ : Set (Fin (n + 1))) = card (Fin n) :=
     by
@@ -91,8 +90,7 @@ theorem numDerangements_add_two (n : ℕ) :
 #align num_derangements_add_two numDerangements_add_two
 
 theorem numDerangements_succ (n : ℕ) :
-    (numDerangements (n + 1) : ℤ) = (n + 1) * (numDerangements n : ℤ) - (-1) ^ n :=
-  by
+    (numDerangements (n + 1) : ℤ) = (n + 1) * (numDerangements n : ℤ) - (-1) ^ n := by
   induction' n with n hn
   · rfl
   · simp only [numDerangements_add_two, hn, pow_succ, Int.ofNat_mul, Int.ofNat_add, Int.ofNat_succ]
@@ -100,8 +98,7 @@ theorem numDerangements_succ (n : ℕ) :
 #align num_derangements_succ numDerangements_succ
 
 theorem card_derangements_fin_eq_numDerangements {n : ℕ} :
-    card (derangements (Fin n)) = numDerangements n :=
-  by
+    card (derangements (Fin n)) = numDerangements n := by
   induction' n using Nat.strong_induction_on with n hyp
   obtain _ | _ | n := n; · rfl; · rfl
   -- knock out cases 0 and 1
@@ -112,16 +109,14 @@ theorem card_derangements_fin_eq_numDerangements {n : ℕ} :
 #align card_derangements_fin_eq_num_derangements card_derangements_fin_eq_numDerangements
 
 theorem card_derangements_eq_numDerangements (α : Type _) [Fintype α] [DecidableEq α] :
-    card (derangements α) = numDerangements (card α) :=
-  by
+    card (derangements α) = numDerangements (card α) := by
   rw [← card_derangements_invariant (card_fin _)]
   exact card_derangements_fin_eq_numDerangements
 #align card_derangements_eq_num_derangements card_derangements_eq_numDerangements
 
 theorem numDerangements_sum (n : ℕ) :
     (numDerangements n : ℤ) =
-      ∑ k in Finset.range (n + 1), (-1 : ℤ) ^ k * Nat.ascFactorial k (n - k) :=
-  by
+      ∑ k in Finset.range (n + 1), (-1 : ℤ) ^ k * Nat.ascFactorial k (n - k) := by
   induction' n with n hn; · rfl
   rw [Finset.sum_range_succ, numDerangements_succ, hn, Finset.mul_sum, tsub_self,
     Nat.ascFactorial_zero, Int.ofNat_one, mul_one, pow_succ, neg_one_mul, sub_eq_add_neg,
