@@ -21,9 +21,9 @@ and that `ℚ_[p]` is Cauchy complete.
 
 ## Important definitions
 
-* `padic` : the type of `p`-adic numbers
-* `padic_norm_e` : the rational valued `p`-adic norm on `ℚ_[p]`
-* `padic.add_valuation` : the additive `p`-adic valuation on `ℚ_[p]`, with values in `with_top ℤ`
+* `Padic` : the type of `p`-adic numbers
+* `padicNormE` : the rational valued `p`-adic norm on `ℚ_[p]`
+* `Padic.addValuation` : the additive `p`-adic valuation on `ℚ_[p]`, with values in `WithTop ℤ`
 
 ## Notation
 
@@ -32,7 +32,7 @@ We introduce the notation `ℚ_[p]` for the `p`-adic numbers.
 ## Implementation notes
 
 Much, but not all, of this file assumes that `p` is prime. This assumption is inferred automatically
-by taking `[fact p.prime]` as a type class argument.
+by taking `[Fact p.Prime]` as a type class argument.
 
 We use the same concrete Cauchy sequence construction that is used to construct `ℝ`.
 `ℚ_[p]` inherits a field structure from this construction.
@@ -42,13 +42,13 @@ The extension of the norm on `ℚ` to `ℚ_[p]` is *not* analogous to extending 
 A small special-purpose simplification tactic, `padic_index_simp`, is used to manipulate sequence
 indices in the proof that the norm extends.
 
-`padic_norm_e` is the rational-valued `p`-adic norm on `ℚ_[p]`.
+`padicNormE` is the rational-valued `p`-adic norm on `ℚ_[p]`.
 To instantiate `ℚ_[p]` as a normed field, we must cast this into a `ℝ`-valued norm.
 The `ℝ`-valued norm, using notation `‖ ‖` from normed spaces,
 is the canonical representation of this norm.
 
-`simp` prefers `padic_norm` to `padic_norm_e` when possible.
-Since `padic_norm_e` and `‖ ‖` have different types, `simp` does not rewrite one to the other.
+`simp` prefers `padicNorm` to `padicNormE` when possible.
+Since `padicNormE` and `‖ ‖` have different types, `simp` does not rewrite one to the other.
 
 Coercions from `ℚ` to `ℚ_[p]` are set up to work with the `norm_cast` tactic.
 
@@ -105,7 +105,7 @@ theorem stationary {f : CauSeq ℚ (padicNorm p)} (hf : ¬f ≈ 0) :
     apply _root_.lt_irrefl _ this⟩
 #align padic_seq.stationary PadicSeq.stationary
 
-/-- For all `n ≥ stationary_point f hf`, the `p`-adic norm of `f n` is the same. -/
+/-- For all `n ≥ stationaryPoint f hf`, the `p`-adic norm of `f n` is the same. -/
 def stationaryPoint {f : PadicSeq p} (hf : ¬f ≈ 0) : ℕ :=
   Classical.choose <| stationary hf
 #align padic_seq.stationary_point PadicSeq.stationaryPoint
@@ -214,10 +214,10 @@ open CauSeq
 
 variable {p : ℕ} [Fact p.Prime]
 
-/-! ### Valuation on `padic_seq` -/
+/-! ### Valuation on `PadicSeq` -/
 
 
-/-- The `p`-adic valuation on `ℚ` lifts to `padic_seq p`.
+/-- The `p`-adic valuation on `ℚ` lifts to `PadicSeq p`.
 `valuation f` is defined to be the valuation of the (`ℚ`-valued) stationary point of `f`. -/
 def valuation (f : PadicSeq p) : ℤ :=
   if hf : f ≈ 0 then 0 else padicValRat p (f (stationaryPoint hf))
@@ -634,14 +634,14 @@ theorem defn (f : PadicSeq p) {ε : ℚ} (hε : 0 < ε) :
     exact hN _ le_rfl _ hi
 #align padic_norm_e.defn padicNormE.defn
 
-/-- Theorems about `padic_norm_e` are named with a `'` so the names do not conflict with the
+/-- Theorems about `padicNormE` are named with a `'` so the names do not conflict with the
 equivalent theorems about `norm` (`‖ ‖`). -/
 theorem nonarchimedean' (q r : ℚ_[p]) :
     padicNormE (q + r : ℚ_[p]) ≤ max (padicNormE q) (padicNormE r) :=
   Quotient.inductionOn₂ q r <| norm_nonarchimedean
 #align padic_norm_e.nonarchimedean' padicNormE.nonarchimedean'
 
-/-- Theorems about `padic_norm_e` are named with a `'` so the names do not conflict with the
+/-- Theorems about `padicNormE` are named with a `'` so the names do not conflict with the
 equivalent theorems about `norm` (`‖ ‖`). -/
 theorem add_eq_max_of_ne' {q r : ℚ_[p]} :
     padicNormE q ≠ padicNormE r → padicNormE (q + r : ℚ_[p]) = max (padicNormE q) (padicNormE r) :=
@@ -696,7 +696,7 @@ open Classical
 private theorem div_nat_pos (n : ℕ) : 0 < 1 / (n + 1 : ℚ) :=
   div_pos zero_lt_one (by exact_mod_cast succ_pos _)
 
-/-- `lim_seq f`, for `f` a Cauchy sequence of `p`-adic numbers, is a sequence of rationals with the
+/-- `limSeq f`, for `f` a Cauchy sequence of `p`-adic numbers, is a sequence of rationals with the
 same limit point as `f`. -/
 def limSeq : ℕ → ℚ := fun n => Classical.choose (rat_dense' (f n) (div_nat_pos n))
 #align padic.lim_seq Padic.limSeq
@@ -892,9 +892,9 @@ protected theorem is_rat (q : ℚ_[p]) : ∃ q' : ℚ, ‖q‖ = q' :=
     ⟨_, hn⟩
 #align padic_norm_e.is_rat padicNormE.is_rat
 
-/-- `rat_norm q`, for a `p`-adic number `q` is the `p`-adic norm of `q`, as rational number.
+/-- `ratNorm q`, for a `p`-adic number `q` is the `p`-adic norm of `q`, as rational number.
 
-The lemma `padic_norm_e.eq_rat_norm` asserts `‖q‖ = rat_norm q`. -/
+The lemma `padicNormE.eq_ratNorm` asserts `‖q‖ = ratNorm q`. -/
 def ratNorm (q : ℚ_[p]) : ℚ :=
   Classical.choose (padicNormE.is_rat q)
 #align padic_norm_e.rat_norm padicNormE.ratNorm
@@ -1039,7 +1039,7 @@ instance : CompleteSpace ℚ_[p] := by
 /-! ### Valuation on `ℚ_[p]` -/
 
 
-/-- `padic.valuation` lifts the `p`-adic valuation on rationals to `ℚ_[p]`. -/
+/-- `Padic.valuation` lifts the `p`-adic valuation on rationals to `ℚ_[p]`. -/
 def valuation : ℚ_[p] → ℤ :=
   Quotient.lift (@PadicSeq.valuation p _) fun f g h =>
     by
@@ -1121,7 +1121,7 @@ theorem valuation_map_mul {x y : ℚ_[p]} (hx : x ≠ 0) (hy : y ≠ 0) :
   exact h_norm
 #align padic.valuation_map_mul Padic.valuation_map_mul
 
-/-- The additive `p`-adic valuation on `ℚ_[p]`, with values in `with_top ℤ`. -/
+/-- The additive `p`-adic valuation on `ℚ_[p]`, with values in `WithTop ℤ`. -/
 def addValuationDef : ℚ_[p] → WithTop ℤ := fun x => if x = 0 then ⊤ else x.valuation
 #align padic.add_valuation_def Padic.addValuationDef
 
@@ -1163,7 +1163,7 @@ theorem AddValuation.map_add (x y : ℚ_[p]) :
         exact valuation_map_add hxy
 #align padic.add_valuation.map_add Padic.AddValuation.map_add
 
-/-- The additive `p`-adic valuation on `ℚ_[p]`, as an `add_valuation`. -/
+/-- The additive `p`-adic valuation on `ℚ_[p]`, as an `addValuation`. -/
 def addValuation : AddValuation ℚ_[p] (WithTop ℤ) :=
   AddValuation.of addValuationDef AddValuation.map_zero AddValuation.map_one AddValuation.map_add
     AddValuation.map_mul
