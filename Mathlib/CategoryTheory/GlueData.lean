@@ -98,7 +98,7 @@ theorem t'_iji (i j : D.J) : D.t' i j i = pullback.fst ≫ D.t i j ≫ inv pullb
   simp
 #align category_theory.glue_data.t'_iji CategoryTheory.GlueData.t'_iji
 
-@[simp, reassoc, elementwise]
+@[reassoc, elementwise (attr := simp)]
 theorem t_inv (i j : D.J) : D.t i j ≫ D.t j i = 𝟙 _ := by
   have eq : (pullbackSymmetry (D.f i i) (D.f i j)).hom = pullback.snd ≫ inv pullback.fst := by simp
   have := D.cocycle i j i
