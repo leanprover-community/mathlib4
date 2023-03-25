@@ -82,8 +82,7 @@ theorem essentiallySmall_congr {C : Type u} [Category.{v} C] {D : Type u'} [Cate
 theorem Discrete.essentiallySmallOfSmall {α : Type u} [Small.{w} α] :
     EssentiallySmall.{w} (Discrete α) :=
   ⟨⟨Discrete (Shrink α), ⟨inferInstance, ⟨Discrete.equivalence (equivShrink _)⟩⟩⟩⟩
-#align category_theory.discrete.essentially_small_of_small
-  CategoryTheory.Discrete.essentiallySmallOfSmall
+#align category_theory.discrete.essentially_small_of_small CategoryTheory.Discrete.essentiallySmallOfSmall
 
 theorem essentiallySmallSelf : EssentiallySmall.{max w v u} C :=
   EssentiallySmall.mk' (AsSmall.equiv : C ≌ AsSmall.{w} C)
