@@ -8,7 +8,7 @@ Authors: Bhavik Mehta
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Sites.Grothendieck
+import Mathlib.CategoryTheory.Sites.Grothendieck
 
 /-!
 # Grothendieck pretopologies
@@ -94,8 +94,7 @@ instance : PartialOrder (Pretopology C) :=
     le_trans := fun K₁ K₂ K₃ h₁₂ h₂₃ => le_def.mpr (le_trans h₁₂ h₂₃)
     le_antisymm := fun K₁ K₂ h₁₂ h₂₁ => Pretopology.ext _ _ (le_antisymm h₁₂ h₂₁) }
 
-instance : OrderTop (Pretopology C)
-    where
+instance : OrderTop (Pretopology C) where
   top :=
     { coverings := fun _ => Set.univ
       has_isos := fun _ _ _ _ => Set.mem_univ _
@@ -111,8 +110,7 @@ instance : Inhabited (Pretopology C) :=
 
 See <https://stacks.math.columbia.edu/tag/00ZC>, or [MM92] Chapter III, Section 2, Equation (2).
 -/
-def toGrothendieck (K : Pretopology C) : GrothendieckTopology C
-    where
+def toGrothendieck (K : Pretopology C) : GrothendieckTopology C where
   sieves X S := ∃ R ∈ K X, R ≤ (S : Presieve _)
   top_mem' X := ⟨Presieve.singleton (𝟙 _), K.has_isos _, fun _ _ _ => ⟨⟩⟩
   pullback_stable' X Y S g := by
@@ -138,8 +136,7 @@ theorem mem_toGrothendieck (K : Pretopology C) (X S) :
 
 See [MM92] Chapter III, Section 2, Equations (3,4).
 -/
-def ofGrothendieck (J : GrothendieckTopology C) : Pretopology C
-    where
+def ofGrothendieck (J : GrothendieckTopology C) : Pretopology C where
   coverings X R := Sieve.generate R ∈ J X
   has_isos X Y f i := J.covering_of_eq_top (by simp)
   pullbacks X Y f R hR := by
@@ -157,8 +154,7 @@ def ofGrothendieck (J : GrothendieckTopology C) : Pretopology C
 #align category_theory.pretopology.of_grothendieck CategoryTheory.Pretopology.ofGrothendieck
 
 /-- We have a galois insertion from pretopologies to Grothendieck topologies. -/
-def gi : GaloisInsertion (toGrothendieck C) (ofGrothendieck C)
-    where
+def gi : GaloisInsertion (toGrothendieck C) (ofGrothendieck C) where
   gc K J := by
     constructor
     · intro h X R hR
@@ -177,8 +173,7 @@ also known as the indiscrete, coarse, or chaotic topology.
 
 See <https://stacks.math.columbia.edu/tag/07GE>
 -/
-def trivial : Pretopology C
-    where
+def trivial : Pretopology C where
   coverings X S := ∃ (Y : _)(f : Y ⟶ X)(h : IsIso f), S = Presieve.singleton f
   has_isos X Y f i := ⟨_, _, i, rfl⟩
   pullbacks X Y f S := by
