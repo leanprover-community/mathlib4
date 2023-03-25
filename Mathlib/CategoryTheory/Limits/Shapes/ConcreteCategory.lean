@@ -8,9 +8,9 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Limits.Shapes.Kernels
-import Mathbin.CategoryTheory.ConcreteCategory.Basic
-import Mathbin.CategoryTheory.ConcreteCategory.Elementwise
+import Mathlib.CategoryTheory.Limits.Shapes.Kernels
+import Mathlib.CategoryTheory.ConcreteCategory.Basic
+import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 
 /-!
 # Facts about limits of functors into concrete categories
