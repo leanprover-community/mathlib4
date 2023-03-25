@@ -82,11 +82,10 @@ protected inductive Primrec : (ℕ → ℕ) → Prop
   | right : Nat.Primrec fun n => n.unpair.2
   | pair {f g} : Nat.Primrec f → Nat.Primrec g → Nat.Primrec fun n => mkpair (f n) (g n)
   | comp {f g} : Nat.Primrec f → Nat.Primrec g → Nat.Primrec fun n => f (g n)
-  |
-  prec {f g} :
-    Nat.Primrec f →
-      Nat.Primrec g →
-        Nat.Primrec (unpaired fun z n => n.rec (f z) fun y IH => g <| mkpair z <| mkpair y IH)
+  | prec {f g} :
+      Nat.Primrec f →
+        Nat.Primrec g →
+          Nat.Primrec (unpaired fun z n => n.rec (f z) fun y IH => g <| mkpair z <| mkpair y IH)
 #align nat.primrec Nat.Primrec
 
 namespace Primrec
