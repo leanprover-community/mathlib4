@@ -8,9 +8,9 @@ Authors: Chris Hughes, Junyan Xu
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Finsupp.Fintype
-import Mathbin.Data.MvPolynomial.Equiv
-import Mathbin.SetTheory.Cardinal.Ordinal
+import Mathlib.Data.Finsupp.Fintype
+import Mathlib.Data.MvPolynomial.Equiv
+import Mathlib.SetTheory.Cardinal.Ordinal
 
 /-!
 # Cardinality of Multivariate Polynomial Ring

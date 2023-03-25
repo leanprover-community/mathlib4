@@ -764,6 +764,7 @@ import Mathlib.Data.Multiset.Sections
 import Mathlib.Data.Multiset.Sort
 import Mathlib.Data.Multiset.Sum
 import Mathlib.Data.MvPolynomial.Basic
+import Mathlib.Data.MvPolynomial.Cardinal
 import Mathlib.Data.MvPolynomial.Comap
 import Mathlib.Data.MvPolynomial.CommRing
 import Mathlib.Data.MvPolynomial.Counit
