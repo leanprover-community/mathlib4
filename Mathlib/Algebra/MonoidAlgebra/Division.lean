@@ -79,10 +79,7 @@ theorem zero_divOf (g : G) : (0 : AddMonoidAlgebra k G) /ᵒᶠ g = 0 :=
 
 @[simp]
 theorem divOf_zero (x : AddMonoidAlgebra k G) : x /ᵒᶠ 0 = x := by
-  -- Porting note: throughout this file "ext ..." doesn't work; it needs to be
-  -- replaced with the two tactics below
-  apply Finsupp.ext
-  intro
+  refine Finsupp.ext fun _ => ?_  -- porting note: `ext` doesn't work
   simp only [AddMonoidAlgebra.divOf_apply, zero_add]
 #align add_monoid_algebra.div_of_zero AddMonoidAlgebra.divOf_zero
 
@@ -91,8 +88,7 @@ theorem add_divOf (x y : AddMonoidAlgebra k G) (g : G) : (x + y) /ᵒᶠ g = x /
 #align add_monoid_algebra.add_div_of AddMonoidAlgebra.add_divOf
 
 theorem divOf_add (x : AddMonoidAlgebra k G) (a b : G) : x /ᵒᶠ (a + b) = x /ᵒᶠ a /ᵒᶠ b := by
-  apply Finsupp.ext
-  intro
+  refine Finsupp.ext fun _ => ?_  -- porting note: `ext` doesn't work
   simp only [AddMonoidAlgebra.divOf_apply, add_assoc]
 #align add_monoid_algebra.div_of_add AddMonoidAlgebra.divOf_add
 
@@ -111,16 +107,14 @@ noncomputable def divOfHom : Multiplicative G →* AddMonoid.End (AddMonoidAlgeb
 #align add_monoid_algebra.div_of_hom AddMonoidAlgebra.divOfHom
 
 theorem of'_mul_divOf (a : G) (x : AddMonoidAlgebra k G) : of' k G a * x /ᵒᶠ a = x := by
-  apply Finsupp.ext
-  intro
+  refine Finsupp.ext fun _ => ?_  -- porting note: `ext` doesn't work
   rw [AddMonoidAlgebra.divOf_apply, of'_apply, single_mul_apply_aux, one_mul]
   intro c
   exact add_right_inj _
 #align add_monoid_algebra.of'_mul_div_of AddMonoidAlgebra.of'_mul_divOf
 
 theorem mul_of'_divOf (x : AddMonoidAlgebra k G) (a : G) : x * of' k G a /ᵒᶠ a = x := by
-  apply Finsupp.ext
-  intro
+  refine Finsupp.ext fun _ => ?_  -- porting note: `ext` doesn't work
   rw [AddMonoidAlgebra.divOf_apply, of'_apply, mul_single_apply_aux, mul_one]
   intro c
   rw [add_comm]
@@ -161,8 +155,7 @@ theorem modOf_apply_self_add (x : AddMonoidAlgebra k G) (g : G) (d : G) : (x %�
 #align add_monoid_algebra.mod_of_apply_self_add AddMonoidAlgebra.modOf_apply_self_add
 
 theorem of'_mul_modOf (g : G) (x : AddMonoidAlgebra k G) : of' k G g * x %ᵒᶠ g = 0 := by
-  apply Finsupp.ext
-  intro g'
+  refine Finsupp.ext fun g' => ?_  -- porting note: `ext g'` doesn't work
   rw [Finsupp.zero_apply]
   obtain ⟨d, rfl⟩ | h := em (∃ d, g' = g + d)
   · rw [modOf_apply_self_add]
@@ -170,8 +163,7 @@ theorem of'_mul_modOf (g : G) (x : AddMonoidAlgebra k G) : of' k G g * x %ᵒᶠ
 #align add_monoid_algebra.of'_mul_mod_of AddMonoidAlgebra.of'_mul_modOf
 
 theorem mul_of'_modOf (x : AddMonoidAlgebra k G) (g : G) : x * of' k G g %ᵒᶠ g = 0 := by
-  apply Finsupp.ext
-  intro g'
+  refine Finsupp.ext fun g' => ?_  -- porting note: `ext g'` doesn't work
   rw [Finsupp.zero_apply]
   obtain ⟨d, rfl⟩ | h := em (∃ d, g' = g + d)
   · rw [modOf_apply_self_add]
@@ -185,8 +177,7 @@ theorem of'_modOf (g : G) : of' k G g %ᵒᶠ g = 0 := by
 
 theorem divOf_add_modOf (x : AddMonoidAlgebra k G) (g : G) :
     of' k G g * (x /ᵒᶠ g) + x %ᵒᶠ g = x := by
-  apply Finsupp.ext
-  intro g'
+  refine Finsupp.ext fun g' => ?_  -- porting note: `ext` doesn't work
   rw [Finsupp.add_apply] -- porting note: changed from `simp_rw` which can't see through the type
   obtain ⟨d, rfl⟩ | h := em (∃ d, g' = g + d)
   swap
@@ -215,3 +206,4 @@ theorem of'_dvd_iff_modOf_eq_zero {x : AddMonoidAlgebra k G} {g : G} :
 end
 
 end AddMonoidAlgebra
+#check semigroupDvd
