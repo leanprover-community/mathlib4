@@ -358,13 +358,13 @@ attribute [local instance] hasColimit_mapGlueData_diagram
 
 /-- If `F` preserves the gluing, we obtain an iso between the glued objects. -/
 def gluedIso : F.obj D.glued ≅ (D.mapGlueData F).glued :=
-  have : HasColimit (MultispanIndex.multispan (diagram (mapGlueData D F))) := inferInstance
+  haveI : HasColimit (MultispanIndex.multispan (diagram (mapGlueData D F))) := inferInstance
   preservesColimitIso F D.diagram.multispan ≪≫ Limits.HasColimit.isoOfNatIso (D.diagramIso F)
 #align category_theory.glue_data.glued_iso CategoryTheory.GlueData.gluedIso
 
 @[reassoc (attr := simp)]
 theorem ι_gluedIso_hom (i : D.J) : F.map (D.ι i) ≫ (D.gluedIso F).hom = (D.mapGlueData F).ι i := by
-  have : HasColimit (MultispanIndex.multispan (diagram (mapGlueData D F))) := inferInstance
+  haveI : HasColimit (MultispanIndex.multispan (diagram (mapGlueData D F))) := inferInstance
   erw [ι_preservesColimitsIso_hom_assoc]
   rw [HasColimit.isoOfNatIso_ι_hom]
   erw [Category.id_comp]
