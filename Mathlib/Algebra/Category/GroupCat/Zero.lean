@@ -8,7 +8,7 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Algebra.Category.Group.Basic
+import Mathlib.Algebra.Category.GroupCat.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.ZeroObjects
 
 /-!
@@ -30,12 +30,14 @@ namespace GroupCat
 @[to_additive]
 theorem isZero_of_subsingleton (G : GroupCat) [Subsingleton G] : IsZero G := by
   refine' ⟨fun X => ⟨⟨⟨1⟩, fun f => _⟩⟩, fun X => ⟨⟨⟨1⟩, fun f => _⟩⟩⟩
-  · ext
+  · ext x
     have : x = 1 := Subsingleton.elim _ _
-    rw [this, map_one, map_one]
+    rw [this, Hom.map_one, Hom.map_one]
   · ext
     apply Subsingleton.elim
+set_option linter.uppercaseLean3 false in
 #align Group.is_zero_of_subsingleton GroupCat.isZero_of_subsingleton
+set_option linter.uppercaseLean3 false in
 #align AddGroup.is_zero_of_subsingleton AddGroupCat.isZero_of_subsingleton
 
 @[to_additive AddGroupCat.hasZeroObject]
@@ -49,12 +51,14 @@ namespace CommGroupCat
 @[to_additive]
 theorem isZero_of_subsingleton (G : CommGroupCat) [Subsingleton G] : IsZero G := by
   refine' ⟨fun X => ⟨⟨⟨1⟩, fun f => _⟩⟩, fun X => ⟨⟨⟨1⟩, fun f => _⟩⟩⟩
-  · ext
+  · ext x
     have : x = 1 := Subsingleton.elim _ _
-    rw [this, map_one, map_one]
+    rw [this, Hom.map_one, Hom.map_one]
   · ext
     apply Subsingleton.elim
+set_option linter.uppercaseLean3 false in
 #align CommGroup.is_zero_of_subsingleton CommGroupCat.isZero_of_subsingleton
+set_option linter.uppercaseLean3 false in
 #align AddCommGroup.is_zero_of_subsingleton AddCommGroupCat.isZero_of_subsingleton
 
 @[to_additive AddCommGroupCat.hasZeroObject]
@@ -62,4 +66,3 @@ instance : HasZeroObject CommGroupCat :=
   ⟨⟨of PUnit, isZero_of_subsingleton _⟩⟩
 
 end CommGroupCat
-
