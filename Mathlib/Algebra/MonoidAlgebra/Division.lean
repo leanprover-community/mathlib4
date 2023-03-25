@@ -100,12 +100,14 @@ theorem divOf_add (x : AddMonoidAlgebra k G) (a b : G) : x /ᵒᶠ (a + b) = x /
 @[simps]
 noncomputable def divOfHom : Multiplicative G →* AddMonoid.End (AddMonoidAlgebra k G) where
   toFun g :=
-    { toFun := fun x => divOf x g.toAdd
+    { toFun := fun x => divOf x (Multiplicative.toAdd g)
       map_zero' := zero_divOf _
-      map_add' := fun x y => add_divOf x y g.toAdd }
+      map_add' := fun x y => add_divOf x y (Multiplicative.toAdd g) }
   map_one' := AddMonoidHom.ext divOf_zero
   map_mul' g₁ g₂ :=
-    AddMonoidHom.ext fun x => (congr_arg _ (add_comm g₁.toAdd g₂.toAdd)).trans (divOf_add _ _ _)
+    AddMonoidHom.ext fun _x =>
+      (congr_arg _ (add_comm (Multiplicative.toAdd g₁) (Multiplicative.toAdd g₂))).trans
+        (divOf_add _ _ _)
 #align add_monoid_algebra.div_of_hom AddMonoidAlgebra.divOfHom
 
 theorem of'_mul_divOf (a : G) (x : AddMonoidAlgebra k G) : of' k G a * x /ᵒᶠ a = x := by
@@ -185,13 +187,13 @@ theorem divOf_add_modOf (x : AddMonoidAlgebra k G) (g : G) :
     of' k G g * (x /ᵒᶠ g) + x %ᵒᶠ g = x := by
   apply Finsupp.ext
   intro g'
-  simp_rw [Finsupp.add_apply]
+  rw [Finsupp.add_apply] -- porting note: changed from `simp_rw` which can't see through the type
   obtain ⟨d, rfl⟩ | h := em (∃ d, g' = g + d)
   swap
-  · rw [modOf_apply_of_not_exists_add _ _ _ h, of'_apply, single_mul_apply_of_not_exists_add _ _ h,
+  · rw [modOf_apply_of_not_exists_add x _ _ h, of'_apply, single_mul_apply_of_not_exists_add _ _ h,
       zero_add]
   · rw [modOf_apply_self_add, add_zero]
-    rw [of'_apply, single_mul_apply_aux _ _ _, one_mul, div_of_apply]
+    rw [of'_apply, single_mul_apply_aux _ _ _, one_mul, divOf_apply]
     intro a
     exact add_right_inj _
 #align add_monoid_algebra.div_of_add_mod_of AddMonoidAlgebra.divOf_add_modOf
