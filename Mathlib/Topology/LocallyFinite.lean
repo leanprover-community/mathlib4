@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 
 ! This file was ported from Lean 3 source module topology.locally_finite
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
+! leanprover-community/mathlib commit 55d771df074d0dd020139ee1cd4b95521422df9f
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -98,7 +98,7 @@ lemma continuousOn_unionᵢ' {g : X → Y} (hf : LocallyFinite f)
   rw [ContinuousWithinAt, hf.nhdsWithin_unionᵢ, tendsto_supᵢ]
   intro i
   by_cases hx : x ∈ closure (f i)
-  · exact hc i _ hx 
+  · exact hc i _ hx
   · rw [mem_closure_iff_nhdsWithin_neBot, not_neBot] at hx
     rw [hx]
     exact tendsto_bot

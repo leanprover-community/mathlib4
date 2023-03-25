@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 
 ! This file was ported from Lean 3 source module topology.constructions
-! leanprover-community/mathlib commit 0c1f285a9f6e608ae2bdffa3f993eafb01eba829
+! leanprover-community/mathlib commit 55d771df074d0dd020139ee1cd4b95521422df9f
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
