@@ -12,23 +12,23 @@ import Mathlib.Algebra.MonoidAlgebra.Division
 import Mathlib.Data.MvPolynomial.Basic
 
 /-!
-# Division of `mv_polynomial` by monomials
+# Division of `MvPolynomial` by monomials
 
 ## Main definitions
 
-* `mv_polynomial.div_monomial x s`: divides `x` by the monomial `mv_polynomial.monomial 1 s`
-* `mv_polynomial.mod_monomial x s`: the remainder upon dividing `x` by the monomial
-  `mv_polynomial.monomial 1 s`.
+* `MvPolynomial.divMonomial x s`: divides `x` by the monomial `MvPolynomial.monomial 1 s`
+* `MvPolynomial.modMonomial x s`: the remainder upon dividing `x` by the monomial
+  `MvPolynomial.monomial 1 s`.
 
 ## Main results
 
-* `mv_polynomial.div_monomial_add_mod_monomial`, `mv_polynomial.mod_monomial_add_div_monomial`:
-  `div_monomial` and `mod_monomial` are well-behaved as quotient and remainder operators.
+* `MvPolynomial.divMonomial_add_modMonomial`, `MvPolynomial.modMonomial_add_divMonomial`:
+  `divMonomial` and `modMonomial` are well-behaved as quotient and remainder operators.
 
 ## Implementation notes
 
 Where possible, the results in this file should be first proved in the generality of
-`add_monoid_algebra`, and then the versions specialized to `mv_polynomial` proved in terms of these.
+`AddMonoidAlgebra`, and then the versions specialized to `MvPolynomial` proved in terms of these.
 
 -/
 
@@ -104,7 +104,6 @@ noncomputable def modMonomial (x : MvPolynomial σ R) (s : σ →₀ ℕ) : MvPo
   x.modOf s
 #align mv_polynomial.mod_monomial MvPolynomial.modMonomial
 
--- mathport name: «expr %ᵐᵒⁿᵒᵐⁱᵃˡ »
 local infixl:70 " %ᵐᵒⁿᵒᵐⁱᵃˡ " => modMonomial
 
 @[simp]
@@ -158,10 +157,8 @@ end CopiedDeclarations
 
 section XLemmas
 
--- mathport name: «expr /ᵐᵒⁿᵒᵐⁱᵃˡ »
 local infixl:70 " /ᵐᵒⁿᵒᵐⁱᵃˡ " => divMonomial
 
--- mathport name: «expr %ᵐᵒⁿᵒᵐⁱᵃˡ »
 local infixl:70 " %ᵐᵒⁿᵒᵐⁱᵃˡ " => modMonomial
 
 @[simp]
