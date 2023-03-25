@@ -8,8 +8,8 @@ Authors: Eric Wieser
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.MonoidAlgebra.Basic
-import Mathbin.Data.Finsupp.Order
+import Mathlib.Algebra.MonoidAlgebra.Basic
+import Mathlib.Data.Finsupp.Order
 
 /-!
 # Division of `add_monoid_algebra` by monomials
@@ -79,8 +79,7 @@ theorem zero_divOf (g : G) : (0 : AddMonoidAlgebra k G) /ᵒᶠ g = 0 :=
 #align add_monoid_algebra.zero_div_of AddMonoidAlgebra.zero_divOf
 
 @[simp]
-theorem divOf_zero (x : AddMonoidAlgebra k G) : x /ᵒᶠ 0 = x :=
-  by
+theorem divOf_zero (x : AddMonoidAlgebra k G) : x /ᵒᶠ 0 = x := by
   ext
   simp only [AddMonoidAlgebra.divOf_apply, zero_add]
 #align add_monoid_algebra.div_of_zero AddMonoidAlgebra.divOf_zero
@@ -89,8 +88,7 @@ theorem add_divOf (x y : AddMonoidAlgebra k G) (g : G) : (x + y) /ᵒᶠ g = x /
   map_add _ _ _
 #align add_monoid_algebra.add_div_of AddMonoidAlgebra.add_divOf
 
-theorem divOf_add (x : AddMonoidAlgebra k G) (a b : G) : x /ᵒᶠ (a + b) = x /ᵒᶠ a /ᵒᶠ b :=
-  by
+theorem divOf_add (x : AddMonoidAlgebra k G) (a b : G) : x /ᵒᶠ (a + b) = x /ᵒᶠ a /ᵒᶠ b := by
   ext
   simp only [AddMonoidAlgebra.divOf_apply, add_assoc]
 #align add_monoid_algebra.div_of_add AddMonoidAlgebra.divOf_add
@@ -108,16 +106,14 @@ noncomputable def divOfHom : Multiplicative G →* AddMonoid.End (AddMonoidAlgeb
     AddMonoidHom.ext fun x => (congr_arg _ (add_comm g₁.toAdd g₂.toAdd)).trans (divOf_add _ _ _)
 #align add_monoid_algebra.div_of_hom AddMonoidAlgebra.divOfHom
 
-theorem of'_mul_divOf (a : G) (x : AddMonoidAlgebra k G) : of' k G a * x /ᵒᶠ a = x :=
-  by
+theorem of'_mul_divOf (a : G) (x : AddMonoidAlgebra k G) : of' k G a * x /ᵒᶠ a = x := by
   ext b
   rw [AddMonoidAlgebra.divOf_apply, of'_apply, single_mul_apply_aux, one_mul]
   intro c
   exact add_right_inj _
 #align add_monoid_algebra.of'_mul_div_of AddMonoidAlgebra.of'_mul_divOf
 
-theorem mul_of'_divOf (x : AddMonoidAlgebra k G) (a : G) : x * of' k G a /ᵒᶠ a = x :=
-  by
+theorem mul_of'_divOf (x : AddMonoidAlgebra k G) (a : G) : x * of' k G a /ᵒᶠ a = x := by
   ext b
   rw [AddMonoidAlgebra.divOf_apply, of'_apply, mul_single_apply_aux, mul_one]
   intro c
@@ -159,8 +155,7 @@ theorem modOf_apply_self_add (x : AddMonoidAlgebra k G) (g : G) (d : G) : (x %�
   modOf_apply_of_exists_add _ _ _ ⟨_, rfl⟩
 #align add_monoid_algebra.mod_of_apply_self_add AddMonoidAlgebra.modOf_apply_self_add
 
-theorem of'_mul_modOf (g : G) (x : AddMonoidAlgebra k G) : of' k G g * x %ᵒᶠ g = 0 :=
-  by
+theorem of'_mul_modOf (g : G) (x : AddMonoidAlgebra k G) : of' k G g * x %ᵒᶠ g = 0 := by
   ext g'
   rw [Finsupp.zero_apply]
   obtain ⟨d, rfl⟩ | h := em (∃ d, g' = g + d)
@@ -168,8 +163,7 @@ theorem of'_mul_modOf (g : G) (x : AddMonoidAlgebra k G) : of' k G g * x %ᵒᶠ
   · rw [mod_of_apply_of_not_exists_add _ _ _ h, of'_apply, single_mul_apply_of_not_exists_add _ _ h]
 #align add_monoid_algebra.of'_mul_mod_of AddMonoidAlgebra.of'_mul_modOf
 
-theorem mul_of'_modOf (x : AddMonoidAlgebra k G) (g : G) : x * of' k G g %ᵒᶠ g = 0 :=
-  by
+theorem mul_of'_modOf (x : AddMonoidAlgebra k G) (g : G) : x * of' k G g %ᵒᶠ g = 0 := by
   ext g'
   rw [Finsupp.zero_apply]
   obtain ⟨d, rfl⟩ | h := em (∃ d, g' = g + d)
