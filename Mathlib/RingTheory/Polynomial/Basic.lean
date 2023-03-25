@@ -566,11 +566,12 @@ set_option linter.uppercaseLean3 false in
 
 -- Porting note: failed to synthesize semilinearmapclass on modByMonic
 -- set_option synthInstance.etaExperiment true in fails
-theorem Polynomial.ker_mapRingHom (f : R →+* S) :
-    LinearMap.ker (Polynomial.mapRingHom f) = f.ker.map (C : R →+* R[X]) := by
+theorem _root_.Polynomial.ker_mapRingHom (f : R →+* S) :
+    LinearMap.ker (Polynomial.mapRingHom f).toSemilinearMap = f.ker.map (C : R →+* R[X]) := by
   ext
-  rw [mem_map_C_iff, RingHom.mem_ker, Polynomial.ext_iff]
-  simp_rw [coe_map_ring_hom, coeff_map, coeff_zero, RingHom.mem_ker]
+  simp only [LinearMap.mem_ker, RingHom.toSemilinearMap_apply, coe_mapRingHom]
+  rw [mem_map_C_iff, Polynomial.ext_iff]
+  simp_rw [RingHom.mem_ker f, coeff_map, coeff_zero]
 #align polynomial.ker_map_ring_hom Polynomial.ker_mapRingHom
 
 variable (I : Ideal R[X])
@@ -844,6 +845,7 @@ theorem prime_rename_iff (s : Set σ) {p : MvPolynomial s R} :
     Prime (rename ((↑) : s → σ) p) ↔ Prime p := by
   classical
     symm
+    let f := @AlgEquiv R (MvPolynomial ((↥(sᶜ)) ⊕ s) R) (MvPolynomial (↥(sᶜ)) (MvPolynomial s R)) _ _ _ _ _ (sumAlgEquiv R (↥(sᶜ)) s)
     let eqv :=
       (sumAlgEquiv R (↥(sᶜ)) s).symm.trans
         (renameEquiv R <| (Equiv.sumComm (↥(sᶜ)) s).trans <| Equiv.Set.sumCompl s)
@@ -1218,9 +1220,11 @@ theorem mem_map_C_iff {I : Ideal R} {f : MvPolynomial σ R} :
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.mem_map_C_iff MvPolynomial.mem_map_C_iff
 
--- set_option synthInstance.etaExperiment true in fails quickly
+attribute [-instance] Ring.toNonAssocRing
+
+set_option synthInstance.etaExperiment true in --  fails quickly
 theorem ker_map (f : R →+* S) :
-    LinearMap.ker (map f : MvPolynomial σ R →+* MvPolynomial σ S) = (LinearMap.ker f).map (C : R →+* MvPolynomial σ R) :=
+    LinearMap.ker (map f : MvPolynomial σ R →+* MvPolynomial σ S).toSemilinearMap = (LinearMap.ker f.toSemilinearMap).map (C : R →+* MvPolynomial σ R).toSemilinearMap :=
   by
   ext
   rw [MvPolynomial.mem_map_c_iff, RingHom.mem_ker, MvPolynomial.ext_iff]
