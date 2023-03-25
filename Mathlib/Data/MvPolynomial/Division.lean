@@ -39,7 +39,7 @@ namespace MvPolynomial
 
 section CopiedDeclarations
 
-/-! Please ensure the declarations in this section are direct translations of `add_monoid_algebra`
+/-! Please ensure the declarations in this section are direct translations of `AddMonoidAlgebra`
 results. -/
 
 
@@ -48,7 +48,6 @@ noncomputable def divMonomial (p : MvPolynomial σ R) (s : σ →₀ ℕ) : MvPo
   AddMonoidAlgebra.divOf p s
 #align mv_polynomial.div_monomial MvPolynomial.divMonomial
 
--- mathport name: «expr /ᵐᵒⁿᵒᵐⁱᵃˡ »
 local infixl:70 " /ᵐᵒⁿᵒᵐⁱᵃˡ " => divMonomial
 
 @[simp]
