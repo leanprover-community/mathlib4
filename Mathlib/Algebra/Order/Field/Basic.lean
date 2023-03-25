@@ -3,7 +3,7 @@ Copyright (c) 2014 Robert Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Lewis, Leonardo de Moura, Mario Carneiro, Floris van Doorn
 ! This file was ported from Lean 3 source module algebra.order.field.basic
-! leanprover-community/mathlib commit 5a82b0671532663333e205f422124a98bdfe673f
+! leanprover-community/mathlib commit acb3d204d4ee883eb686f45d486a2a6811a01329
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -581,7 +581,7 @@ theorem StrictMono.div_const {β : Type _} [Preorder β] {f : β → α} (hf : S
 #align strict_mono.div_const StrictMono.div_const
 
 -- see Note [lower instance priority]
-instance (priority := 100) LinearOrderedField.toDenselyOrdered : DenselyOrdered α where
+instance (priority := 100) LinearOrderedSemiField.toDenselyOrdered : DenselyOrdered α where
   dense a₁ a₂ h :=
     ⟨(a₁ + a₂) / 2,
       calc
@@ -592,7 +592,7 @@ instance (priority := 100) LinearOrderedField.toDenselyOrdered : DenselyOrdered 
         (a₁ + a₂) / 2 < (a₂ + a₂) / 2 := div_lt_div_of_lt zero_lt_two (add_lt_add_right h _)
         _ = a₂ := add_self_div_two a₂
         ⟩
-#align linear_ordered_field.to_densely_ordered LinearOrderedField.toDenselyOrdered
+#align linear_ordered_field.to_densely_ordered LinearOrderedSemiField.toDenselyOrdered
 
 theorem min_div_div_right {c : α} (hc : 0 ≤ c) (a b : α) : min (a / c) (b / c) = min a b / c :=
   Eq.symm <| Monotone.map_min fun _ _ => div_le_div_of_le hc
@@ -996,12 +996,5 @@ theorem abs_div (a b : α) : |a / b| = |a| / |b| :=
 
 theorem abs_one_div (a : α) : |1 / a| = 1 / |a| := by rw [abs_div, abs_one]
 #align abs_one_div abs_one_div
-
-theorem pow_minus_two_nonneg : 0 ≤ a ^ (-2 : ℤ) := by
-  simp only [inv_nonneg, zpow_neg]
-  change 0 ≤ a ^ ((2 : ℕ) : ℤ)
-  rw [zpow_ofNat]
-  apply sq_nonneg
-#align pow_minus_two_nonneg pow_minus_two_nonneg
 
 end

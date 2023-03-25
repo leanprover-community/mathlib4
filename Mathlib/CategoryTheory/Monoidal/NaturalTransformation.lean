@@ -191,7 +191,7 @@ end MonoidalNatIso
 noncomputable section
 
 /-- The unit of a monoidal equivalence can be upgraded to a monoidal natural transformation. -/
-@[simp] -- Porting note: changed to simp
+@[simps! toNatTrans] -- Porting note: have to manually specify the toNatTrans projection
 def monoidalUnit (F : MonoidalFunctor C D) [IsEquivalence F.toFunctor] :
     LaxMonoidalFunctor.id C ⟶ F.toLaxMonoidalFunctor ⊗⋙ (monoidalInverse F).toLaxMonoidalFunctor :=
   let e := F.toFunctor.asEquivalence
@@ -217,13 +217,11 @@ def monoidalUnit (F : MonoidalFunctor C D) [IsEquivalence F.toFunctor] :
 
 instance (F : MonoidalFunctor C D) [IsEquivalence F.toFunctor] : IsIso (monoidalUnit F) :=
   haveI : ∀ X : C, IsIso ((monoidalUnit F).toNatTrans.app X) := by
-    intros
-    dsimp
-    infer_instance
+    dsimp ; infer_instance
   MonoidalNatIso.isIso_of_isIso_app _
 
 /-- The counit of a monoidal equivalence can be upgraded to a monoidal natural transformation. -/
-@[simp] -- Porting note: changed to simp
+@[simps! toNatTrans] -- Porting note: have to manually specify the toNatTrans projection
 def monoidalCounit (F : MonoidalFunctor C D) [IsEquivalence F.toFunctor] :
     (monoidalInverse F).toLaxMonoidalFunctor ⊗⋙ F.toLaxMonoidalFunctor ⟶ LaxMonoidalFunctor.id D :=
   let e := F.toFunctor.asEquivalence

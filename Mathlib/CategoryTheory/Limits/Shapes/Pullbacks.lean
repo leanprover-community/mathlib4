@@ -1272,7 +1272,7 @@ abbrev pushout.mapLift {X Y S T : C} (f : T ⟶ X) (g : T ⟶ Y) (i : S ⟶ T) [
 
 /-- Two morphisms into a pullback are equal if their compositions with the pullback morphisms are
     equal -/
-@[ext]
+@[ext 1100]
 theorem pullback.hom_ext {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} [HasPullback f g] {W : C}
     {k l : W ⟶ pullback f g} (h₀ : k ≫ pullback.fst = l ≫ pullback.fst)
     (h₁ : k ≫ pullback.snd = l ≫ pullback.snd) : k = l :=
@@ -1283,7 +1283,7 @@ theorem pullback.hom_ext {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} [HasPullback f 
 def pullbackIsPullback {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g] :
     IsLimit (PullbackCone.mk (pullback.fst : pullback f g ⟶ _) pullback.snd pullback.condition) :=
   PullbackCone.IsLimit.mk _ (fun s => pullback.lift s.fst s.snd s.condition) (by simp) (by simp)
-    (by intros; apply pullback.hom_ext; simpa; simpa)
+    (by aesop_cat)
 #align category_theory.limits.pullback_is_pullback CategoryTheory.Limits.pullbackIsPullback
 
 /-- The pullback of a monomorphism is a monomorphism -/
@@ -1303,14 +1303,14 @@ instance mono_pullback_to_prod {C : Type _} [Category C] {X Y Z : C} (f : X ⟶ 
     [HasPullback f g] [HasBinaryProduct X Y] :
     Mono (prod.lift pullback.fst pullback.snd : pullback f g ⟶ _) :=
   ⟨fun {W} i₁ i₂ h => by
-    apply pullback.hom_ext
+    ext
     · simpa using congrArg (fun f => f ≫ prod.fst) h
     · simpa using congrArg (fun f => f ≫ prod.snd) h⟩
 #align category_theory.limits.mono_pullback_to_prod CategoryTheory.Limits.mono_pullback_to_prod
 
 /-- Two morphisms out of a pushout are equal if their compositions with the pushout morphisms are
     equal -/
-@[ext]
+@[ext 1100]
 theorem pushout.hom_ext {X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} [HasPushout f g] {W : C}
     {k l : pushout f g ⟶ W} (h₀ : pushout.inl ≫ k = pushout.inl ≫ l)
     (h₁ : pushout.inr ≫ k = pushout.inr ≫ l) : k = l :=
@@ -1321,7 +1321,7 @@ theorem pushout.hom_ext {X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} [HasPushout f g]
 def pushoutIsPushout {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) [HasPushout f g] :
     IsColimit (PushoutCocone.mk (pushout.inl : _ ⟶ pushout f g) pushout.inr pushout.condition) :=
   PushoutCocone.IsColimit.mk _ (fun s => pushout.desc s.inl s.inr s.condition) (by simp) (by simp)
-    (by intros; apply pushout.hom_ext; simpa; simpa)
+    (by aesop_cat)
 #align category_theory.limits.pushout_is_pushout CategoryTheory.Limits.pushoutIsPushout
 
 /-- The pushout of an epimorphism is an epimorphism -/
@@ -1341,7 +1341,7 @@ instance epi_coprod_to_pushout {C : Type _} [Category C] {X Y Z : C} (f : X ⟶ 
     [HasPushout f g] [HasBinaryCoproduct Y Z] :
     Epi (coprod.desc pushout.inl pushout.inr : _ ⟶ pushout f g) :=
   ⟨fun {W} i₁ i₂ h => by
-    apply pushout.hom_ext
+    ext
     · simpa using congrArg (fun f => coprod.inl ≫ f) h
     · simpa using congrArg (fun f => coprod.inr ≫ f) h⟩
 #align category_theory.limits.epi_coprod_to_pushout CategoryTheory.Limits.epi_coprod_to_pushout
@@ -1353,8 +1353,8 @@ instance pullback.map_isIso {W X Y Z S T : C} (f₁ : W ⟶ S) (f₂ : X ⟶ S) 
   refine' ⟨⟨pullback.map _ _ _ _ (inv i₁) (inv i₂) (inv i₃) _ _, _, _⟩⟩
   · rw [IsIso.comp_inv_eq, Category.assoc, eq₁, IsIso.inv_hom_id_assoc]
   · rw [IsIso.comp_inv_eq, Category.assoc, eq₂, IsIso.inv_hom_id_assoc]
-  · apply pullback.hom_ext; dsimp [map]; simp; dsimp [map]; simp
-  · apply pullback.hom_ext; dsimp [map]; simp; dsimp [map]; simp
+  · aesop_cat
+  · aesop_cat
 #align category_theory.limits.pullback.map_is_iso CategoryTheory.Limits.pullback.map_isIso
 
 /-- If `f₁ = f₂` and `g₁ = g₂`, we may construct a canonical
@@ -1370,7 +1370,7 @@ theorem pullback.congrHom_inv {X Y Z : C} {f₁ f₂ : X ⟶ Z} {g₁ g₂ : Y �
     (h₂ : g₁ = g₂) [HasPullback f₁ g₁] [HasPullback f₂ g₂] :
     (pullback.congrHom h₁ h₂).inv =
       pullback.map _ _ _ _ (𝟙 _) (𝟙 _) (𝟙 _) (by simp [h₁]) (by simp [h₂]) := by
-  apply pullback.hom_ext
+  ext
   · erw [pullback.lift_fst]
     rw [Iso.inv_comp_eq]
     erw [pullback.lift_fst_assoc]
@@ -1388,8 +1388,8 @@ instance pushout.map_isIso {W X Y Z S T : C} (f₁ : S ⟶ W) (f₂ : S ⟶ X) [
   refine' ⟨⟨pushout.map _ _ _ _ (inv i₁) (inv i₂) (inv i₃) _ _, _, _⟩⟩
   · rw [IsIso.comp_inv_eq, Category.assoc, eq₁, IsIso.inv_hom_id_assoc]
   · rw [IsIso.comp_inv_eq, Category.assoc, eq₂, IsIso.inv_hom_id_assoc]
-  · apply pushout.hom_ext; dsimp [map]; simp; dsimp [map]; simp
-  · apply pushout.hom_ext; dsimp [map]; simp; dsimp [map]; simp
+  · aesop_cat
+  · aesop_cat
 #align category_theory.limits.pushout.map_is_iso CategoryTheory.Limits.pushout.map_isIso
 
 theorem pullback.mapDesc_comp {X Y S T S' : C} (f : X ⟶ T) (g : Y ⟶ T) (i : T ⟶ S) (i' : S ⟶ S')
@@ -1397,7 +1397,7 @@ theorem pullback.mapDesc_comp {X Y S T S' : C} (f : X ⟶ T) (g : Y ⟶ T) (i : 
     [HasPullback ((f ≫ i) ≫ i') ((g ≫ i) ≫ i')] :
     pullback.mapDesc f g (i ≫ i') = pullback.mapDesc f g i ≫ pullback.mapDesc _ _ i' ≫
     (pullback.congrHom (Category.assoc _ _ _) (Category.assoc _ _ _)).hom := by
-  apply pullback.hom_ext; simp; simp
+  aesop_cat
 #align category_theory.limits.pullback.map_desc_comp CategoryTheory.Limits.pullback.mapDesc_comp
 
 /-- If `f₁ = f₂` and `g₁ = g₂`, we may construct a canonical
@@ -1413,7 +1413,7 @@ theorem pushout.congrHom_inv {X Y Z : C} {f₁ f₂ : X ⟶ Y} {g₁ g₂ : X �
     (h₂ : g₁ = g₂) [HasPushout f₁ g₁] [HasPushout f₂ g₂] :
     (pushout.congrHom h₁ h₂).inv =
       pushout.map _ _ _ _ (𝟙 _) (𝟙 _) (𝟙 _) (by simp [h₁]) (by simp [h₂]) := by
-  apply pushout.hom_ext
+  ext
   · erw [pushout.inl_desc]
     rw [Iso.comp_inv_eq, Category.id_comp]
     erw [pushout.inl_desc]
@@ -1430,7 +1430,7 @@ theorem pushout.mapLift_comp {X Y S T S' : C} (f : T ⟶ X) (g : T ⟶ Y) (i : S
     pushout.mapLift f g (i' ≫ i) =
       (pushout.congrHom (Category.assoc _ _ _) (Category.assoc _ _ _)).hom ≫
         pushout.mapLift _ _ i' ≫ pushout.mapLift f g i := by
-  apply pushout.hom_ext; simp; simp
+  aesop_cat
 #align category_theory.limits.pushout.map_lift_comp CategoryTheory.Limits.pushout.mapLift_comp
 
 section
@@ -1466,7 +1466,7 @@ theorem map_lift_pullbackComparison (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g
     [HasPullback (G.map f) (G.map g)] {W : C} {h : W ⟶ X} {k : W ⟶ Y} (w : h ≫ f = k ≫ g) :
     G.map (pullback.lift _ _ w) ≫ pullbackComparison G f g =
       pullback.lift (G.map h) (G.map k) (by simp only [← G.map_comp, w]) := by
-  apply pullback.hom_ext; simp [← G.map_comp]; simp [← G.map_comp]
+  ext <;> simp [← G.map_comp]
 #align category_theory.limits.map_lift_pullback_comparison CategoryTheory.Limits.map_lift_pullbackComparison
 
 /-- The comparison morphism for the pushout of `f,g`.
@@ -1496,7 +1496,7 @@ theorem pushoutComparison_map_desc (f : X ⟶ Y) (g : X ⟶ Z) [HasPushout f g]
     [HasPushout (G.map f) (G.map g)] {W : C} {h : Y ⟶ W} {k : Z ⟶ W} (w : f ≫ h = g ≫ k) :
     pushoutComparison G f g ≫ G.map (pushout.desc _ _ w) =
       pushout.desc (G.map h) (G.map k) (by simp only [← G.map_comp, w]) := by
-  apply pushout.hom_ext; simp [← G.map_comp]; simp [← G.map_comp]
+  ext <;> simp [← G.map_comp]
 #align category_theory.limits.pushout_comparison_map_desc CategoryTheory.Limits.pushoutComparison_map_desc
 
 end
@@ -1656,7 +1656,7 @@ attribute [local instance] hasPullback_of_left_iso
 
 instance pullback_snd_iso_of_left_iso : IsIso (pullback.snd : pullback f g ⟶ _) := by
   refine' ⟨⟨pullback.lift (g ≫ inv f) (𝟙 _) (by simp), _, by simp⟩⟩
-  apply pullback.hom_ext
+  ext
   · simp [← pullback.condition_assoc]
   · simp [pullback.condition_assoc]
 #align category_theory.limits.pullback_snd_iso_of_left_iso CategoryTheory.Limits.pullback_snd_iso_of_left_iso
@@ -1732,7 +1732,7 @@ attribute [local instance] hasPullback_of_right_iso
 
 instance pullback_snd_iso_of_right_iso : IsIso (pullback.fst : pullback f g ⟶ _) := by
   refine' ⟨⟨pullback.lift (𝟙 _) (f ≫ inv g) (by simp), _, by simp⟩⟩
-  apply pullback.hom_ext
+  ext
   · simp
   · simp [pullback.condition_assoc]
 #align category_theory.limits.pullback_snd_iso_of_right_iso CategoryTheory.Limits.pullback_snd_iso_of_right_iso
@@ -1821,7 +1821,7 @@ attribute [local instance] hasPushout_of_left_iso
 
 instance pushout_inr_iso_of_left_iso : IsIso (pushout.inr : _ ⟶ pushout f g) := by
   refine' ⟨⟨pushout.desc (inv f ≫ g) (𝟙 _) (by simp), by simp, _⟩⟩
-  apply pushout.hom_ext
+  ext
   · simp [← pushout.condition]
   · simp [pushout.condition_assoc]
 #align category_theory.limits.pushout_inr_iso_of_left_iso CategoryTheory.Limits.pushout_inr_iso_of_left_iso
@@ -1897,7 +1897,7 @@ attribute [local instance] hasPushout_of_right_iso
 
 instance pushout_inl_iso_of_right_iso : IsIso (pushout.inl : _ ⟶ pushout f g) := by
   refine' ⟨⟨pushout.desc (𝟙 _) (inv g ≫ f) (by simp), by simp, _⟩⟩
-  apply pushout.hom_ext
+  ext
   · simp [← pushout.condition]
   · simp [pushout.condition]
 #align category_theory.limits.pushout_inl_iso_of_right_iso CategoryTheory.Limits.pushout_inl_iso_of_right_iso
@@ -1939,12 +1939,12 @@ theorem fst_eq_snd_of_mono_eq [Mono f] : (pullback.fst : pullback f f ⟶ _) = p
 
 @[simp]
 theorem pullbackSymmetry_hom_of_mono_eq [Mono f] : (pullbackSymmetry f f).hom = 𝟙 _ := by
-  apply pullback.hom_ext; simp [fst_eq_snd_of_mono_eq]; simp [fst_eq_snd_of_mono_eq]
+  ext; simp [fst_eq_snd_of_mono_eq]; simp [fst_eq_snd_of_mono_eq]
 #align category_theory.limits.pullback_symmetry_hom_of_mono_eq CategoryTheory.Limits.pullbackSymmetry_hom_of_mono_eq
 
 instance fst_iso_of_mono_eq [Mono f] : IsIso (pullback.fst : pullback f f ⟶ _) := by
   refine' ⟨⟨pullback.lift (𝟙 _) (𝟙 _) (by simp), _, by simp⟩⟩
-  apply pullback.hom_ext
+  ext
   · simp
   · simp [fst_eq_snd_of_mono_eq]
 #align category_theory.limits.fst_iso_of_mono_eq CategoryTheory.Limits.fst_iso_of_mono_eq
@@ -1973,7 +1973,7 @@ theorem inl_eq_inr_of_epi_eq [Epi f] : (pushout.inl : _ ⟶ pushout f f) = pusho
 
 @[simp]
 theorem pullback_symmetry_hom_of_epi_eq [Epi f] : (pushoutSymmetry f f).hom = 𝟙 _ := by
-  apply pushout.hom_ext <;> simp [inl_eq_inr_of_epi_eq]
+  ext <;> simp [inl_eq_inr_of_epi_eq]
 #align category_theory.limits.pullback_symmetry_hom_of_epi_eq CategoryTheory.Limits.pullback_symmetry_hom_of_epi_eq
 
 instance inl_iso_of_epi_eq [Epi f] : IsIso (pushout.inl : _ ⟶ pushout f f) := by
