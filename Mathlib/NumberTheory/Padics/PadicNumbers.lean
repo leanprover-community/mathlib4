@@ -337,12 +337,12 @@ private theorem norm_eq_of_equiv_aux {f g : PadicSeq p} (hf : ¬f ≈ 0) (hg : �
   let i := max N (max (stationaryPoint hf) (stationaryPoint hg))
   have hi : N ≤ i := le_max_left _ _
   have hN' := hN _ hi
-  padic_index_simp [N, hf, hg]  at hN' h hlt
+  -- Porting note: originally `padic_index_simp [N, hf, hg] at hN' h hlt`
+  rw [lift_index_left hf N (stationaryPoint hg), lift_index_right hg N (stationaryPoint hf)]
+    at hN' h hlt
   have hpne : padicNorm p (f i) ≠ padicNorm p (-g i) := by rwa [← padicNorm.neg (g i)] at h
-  let hpnem := add_eq_max_of_ne hpne
-  have hpeq : padicNorm p ((f - g) i) = max (padicNorm p (f i)) (padicNorm p (g i)) := by
-    rwa [padicNorm.neg] at hpnem
-  rw [hpeq, max_eq_left_of_lt hlt] at hN'
+  rw [CauSeq.sub_apply, sub_eq_add_neg, add_eq_max_of_ne hpne, padicNorm.neg, max_eq_left_of_lt hlt]
+    at hN'
   have : padicNorm p (f i) < padicNorm p (f i) :=
     by
     apply lt_of_lt_of_le hN'
@@ -473,7 +473,7 @@ end PadicSeq
 /-- The `p`-adic numbers `ℚ_[p]` are the Cauchy completion of `ℚ` with respect to the `p`-adic norm.
 -/
 def Padic (p : ℕ) [Fact p.Prime] :=
-  @CauSeq.Completion.Cauchy _ _ _ _ (padicNorm p) _
+  CauSeq.Completion.Cauchy (padicNorm p)
 #align padic Padic
 
 -- mathport name: «exprℚ_[ ]»
@@ -612,7 +612,9 @@ open PadicSeq
 
 variable {p : ℕ} [Fact p.Prime]
 
-theorem defn (f : PadicSeq p) {ε : ℚ} (hε : 0 < ε) : ∃ N, ∀ i ≥ N, padicNormE (⟦f⟧ - f i) < ε := by
+-- Porting note: Expanded `⟦f⟧` to `Padic.mk f`
+theorem defn (f : PadicSeq p) {ε : ℚ} (hε : 0 < ε) :
+    ∃ N, ∀ i ≥ N, padicNormE (Padic.mk f - f i : ℚ_[p]) < ε := by
   dsimp [padicNormE]
   change ∃ N, ∀ i ≥ N, (f - const _ (f i)).norm < ε
   by_contra' h
@@ -621,11 +623,11 @@ theorem defn (f : PadicSeq p) {ε : ℚ} (hε : 0 < ε) : ∃ N, ∀ i ≥ N, pa
   have hne : ¬f - const (padicNorm p) (f i) ≈ 0 :=
     by
     intro h
-    unfold PadicSeq.norm at hge <;> split_ifs  at hge
+    unfold PadicSeq.norm at hge; split_ifs at hge
     exact not_lt_of_ge hge hε
-  unfold PadicSeq.norm at hge <;> split_ifs  at hge
+  unfold PadicSeq.norm at hge; split_ifs at hge; exact not_le_of_gt hε hge
   apply not_le_of_gt _ hge
-  cases' em (N ≤ stationaryPoint hne) with hgen hngen
+  cases' _root_.em (N ≤ stationaryPoint hne) with hgen hngen
   · apply hN _ hgen _ hi
   · have := stationaryPoint_spec hne le_rfl (le_of_not_le hngen)
     rw [← this]
@@ -906,7 +908,7 @@ theorem norm_rat_le_one : ∀ {q : ℚ} (hq : ¬p ∣ q.den), ‖(q : ℚ_[p])�
     if hnz : n = 0 then
       by
       have : (⟨n, d, hn, hd⟩ : ℚ) = 0 := Rat.zero_iff_num_zero.mpr hnz
-      norm_num [this]
+      rw [this]; norm_num
     else
       by
       have hnz' : (⟨n, d, hn, hd⟩ : ℚ) ≠ 0 := mt Rat.zero_iff_num_zero.1 hnz
