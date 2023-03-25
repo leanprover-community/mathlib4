@@ -240,12 +240,14 @@ theorem types_ι_jointly_surjective (D : GlueData (Type _)) (x : D.glued) :
   delta CategoryTheory.GlueData.ι
   simp_rw [← Multicoequalizer.ι_sigmaπ D.diagram]
   rcases D.types_π_surjective x with ⟨x', rfl⟩
-  have := colimit.isoColimitCocone (Types.coproductColimitCocone _)
+  --have := colimit.isoColimitCocone (Types.coproductColimitCocone _)
   rw [← show (colimit.isoColimitCocone (Types.coproductColimitCocone _)).inv _ = x' from
       ConcreteCategory.congr_hom
-        (colimit.iso_colimit_cocone (types.coproduct_colimit_cocone _)).hom_inv_id x']
-  rcases(colimit.iso_colimit_cocone (types.coproduct_colimit_cocone _)).hom x' with ⟨i, y⟩
-  exact ⟨i, y, by simpa [← multicoequalizer.ι_sigma_π, -multicoequalizer.ι_sigma_π] ⟩
+        (colimit.isoColimitCocone (Types.coproductColimitCocone _)).hom_inv_id x']
+  rcases(colimit.isoColimitCocone (Types.coproductColimitCocone _)).hom x' with ⟨i, y⟩
+  exact ⟨i, y, by
+    simp [← Multicoequalizer.ι_sigmaπ, -Multicoequalizer.ι_sigmaπ]
+    rfl ⟩
 #align category_theory.glue_data.types_ι_jointly_surjective CategoryTheory.GlueData.types_ι_jointly_surjective
 
 variable (F : C ⥤ C') [H : ∀ i j k, PreservesLimit (cospan (D.f i j) (D.f i k)) F]
