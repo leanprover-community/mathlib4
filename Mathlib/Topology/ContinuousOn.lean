@@ -256,6 +256,7 @@ theorem nhdsWithin_bunionᵢ {ι} {I : Set ι} (hI : I.Finite) (s : ι → Set �
     𝓝[⋃ i ∈ I, s i] a = ⨆ i ∈ I, 𝓝[s i] a :=
   Set.Finite.induction_on hI (by simp) fun _ _ hT ↦ by
     simp only [hT, nhdsWithin_union, supᵢ_insert, bunionᵢ_insert]
+#align nhds_within_bUnion nhdsWithin_bunionᵢ
 
 theorem nhdsWithin_unionₛ {S : Set (Set α)} (hS : S.Finite) (a : α) :
     𝓝[⋃₀ S] a = ⨆ s ∈ S, 𝓝[s] a := by
