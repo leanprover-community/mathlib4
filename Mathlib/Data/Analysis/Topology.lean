@@ -10,6 +10,7 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Data.Analysis.Filter
 import Mathlib.Topology.Bases
+import Mathlib.Topology.LocallyFinite
 
 /-!
 # Computational realization of topological spaces (experimental)
