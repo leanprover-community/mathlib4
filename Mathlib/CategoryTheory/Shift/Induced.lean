@@ -1,4 +1,4 @@
-import Mathlib.CategoryTheory.Functor.CommShift
+import Mathlib.CategoryTheory.Shift.CommShift
 
 namespace CategoryTheory
 

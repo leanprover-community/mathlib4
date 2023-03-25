@@ -9,7 +9,7 @@ Authors: Luke Kershaw
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Int.Basic
-import Mathlib.CategoryTheory.Shift
+import Mathlib.CategoryTheory.Shift.Basic
 
 /-!
 # Triangles

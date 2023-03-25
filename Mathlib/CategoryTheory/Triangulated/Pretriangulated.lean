@@ -9,7 +9,7 @@ Authors: Luke Kershaw
 ! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
-import Mathlib.CategoryTheory.Shift
+import Mathlib.CategoryTheory.Shift.Basic
 import Mathlib.CategoryTheory.Triangulated.Rotate
 
 /-!

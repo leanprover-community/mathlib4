@@ -1,4 +1,4 @@
-import Mathlib.CategoryTheory.Shift
+import Mathlib.CategoryTheory.Shift.Basic
 
 namespace CategoryTheory
 
