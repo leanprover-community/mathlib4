@@ -290,6 +290,10 @@ theorem nthLe_rotate_one (l : List α) (k : ℕ) (hk : k < (l.rotate 1).length) 
   nthLe_rotate l 1 k hk
 #align list.nth_le_rotate_one List.nthLe_rotate_one
 
+-- porting note: new lemma
+/-- A version of `List.get_rotate` that represents `List.get l` in terms of
+`List.get (List.rotate l n)`, not vice versa. Can be used instead of rewriting `List.get_rotate`
+from right to left. -/
 theorem get_eq_get_rotate (l : List α) (n : ℕ) (k : Fin l.length) :
     l.get k = (l.rotate n).get ⟨(l.length - n % l.length + k) % l.length,
       (Nat.mod_lt _ (k.1.zero_le.trans_lt k.2)).trans_eq (length_rotate _ _).symm⟩ := by
@@ -590,7 +594,7 @@ theorem cyclicPermutations_of_ne_nil (l : List α) (h : l ≠ []) :
 #align list.cyclic_permutations_of_ne_nil List.cyclicPermutations_of_ne_nil
 
 theorem length_cyclicPermutations_cons (x : α) (l : List α) :
-    length (cyclicPermutations (x :: l)) = length l + 1 := by simp [cyclicPermutations_of_ne_nil]
+    length (cyclicPermutations (x :: l)) = length l + 1 := by simp [cyclicPermutations_cons]
 #align list.length_cyclic_permutations_cons List.length_cyclicPermutations_cons
 
 @[simp]
@@ -688,6 +692,7 @@ theorem IsRotated.cyclicPermutations {l l' : List α} (h : l ~r l') :
   exact ⟨k, by simp⟩
 #align list.is_rotated.cyclic_permutations List.IsRotated.cyclicPermutations
 
+set_option linter.deprecated false in
 @[simp]
 theorem isRotated_cyclicPermutations_iff {l l' : List α} :
     l.cyclicPermutations ~r l'.cyclicPermutations ↔ l ~r l' := by
