@@ -14,6 +14,7 @@ import Mathlib.Data.Finset.Order
 import Mathlib.Data.Set.Accumulate
 import Mathlib.Data.Set.BoolIndicator
 import Mathlib.Topology.Bornology.Basic
+import Mathlib.Topology.LocallyFinite
 import Mathlib.Order.Minimal
 
 /-!

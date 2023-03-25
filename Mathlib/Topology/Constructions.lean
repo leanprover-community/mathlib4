@@ -9,7 +9,6 @@ Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 ! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Maps
-import Mathlib.Topology.LocallyFinite
 import Mathlib.Order.Filter.Pi
 
 /-!
