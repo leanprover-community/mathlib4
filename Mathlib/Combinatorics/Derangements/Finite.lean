@@ -10,7 +10,7 @@ Authors: Henry Swanson
 -/
 import Mathlib.Combinatorics.Derangements.Basic
 import Mathlib.Data.Fintype.BigOperators
-import Mathlib.Tactic.DeltaInstance
+--import Mathlib.Tactic.DeltaInstance
 import Mathlib.Tactic.Ring
 
 /-!
@@ -39,12 +39,33 @@ variable {α : Type _} [DecidableEq α] [Fintype α]
 
 instance : DecidablePred (derangements α) := fun _ => Fintype.decidableForallFintype
 
-instance : Fintype (derangements α) := by delta_instance derangements
+instance : Fintype (derangements α) := by sorry
+
 
 theorem card_derangements_invariant {α β : Type _} [Fintype α] [DecidableEq α] [Fintype β]
     [DecidableEq β] (h : card α = card β) : card (derangements α) = card (derangements β) :=
   Fintype.card_congr (Equiv.derangementsCongr <| equivOfCardEq h)
 #align card_derangements_invariant card_derangements_invariant
+
+-- porting note: two new theorems
+theorem card_derangements_fin_zero : card (derangements (Fin 0)) = 1 := by
+  unfold derangements
+  have : { x : Perm (Fin 0) // ∀ (x_1 : Fin 0),
+      ¬(@FunLike.coe (Perm (Fin 0)) (Fin 0) (fun a => Fin 0) instFunLikeEquiv x x_1 = x_1) }  =
+      { x: Perm (Fin 0) // True} := by
+    simp
+  simp only [ne_eq, eq_iff_true_of_subsingleton, not_true, IsEmpty.forall_iff,
+  Set.setOf_true, Set.coe_setOf]
+  simp [this]
+
+theorem card_derangements_fin_one : card (derangements (Fin 1)) = 0 := by
+  unfold derangements
+  have : { x // ∀ (x_1 : Fin 1),
+      ¬(@FunLike.coe (Perm (Fin 1)) (Fin 1) (fun a => Fin 1) instFunLikeEquiv x x_1 : Fin 1) = x_1 }
+      = {x : Perm (Fin 1) // True } := by sorry
+  simp
+  rw [this]
+  
 
 theorem card_derangements_fin_add_two (n : ℕ) :
     card (derangements (Fin (n + 2))) =
@@ -60,7 +81,7 @@ theorem card_derangements_fin_add_two (n : ℕ) :
   -- rewrite the LHS and substitute in our fintype-level equivalence
   simp only [card_derangements_invariant h2,
     card_congr
-      (@derangements_recursion_equiv (Fin (n + 1))
+      (@derangementsRecursionEquiv (Fin (n + 1))
         _),-- push the cardinality through the Σ and ⊕ so that we can use `card_n`
     card_sigma,
     card_sum, card_derangements_invariant (h1 _), Finset.sum_const, nsmul_eq_mul, Finset.card_fin,
@@ -100,7 +121,10 @@ theorem numDerangements_succ (n : ℕ) :
 theorem card_derangements_fin_eq_numDerangements {n : ℕ} :
     card (derangements (Fin n)) = numDerangements n := by
   induction' n using Nat.strong_induction_on with n hyp
-  obtain _ | _ | n := n; · rfl; · rfl
+  rcases n with _ | _ | n
+  · simp [card_derangements_fin_zero]
+  · rw [Nat.zero_eq, ← Nat.one_eq_succ_zero]
+    simp [card_derangements_fin_one]
   -- knock out cases 0 and 1
   -- now we have n ≥ 2. rewrite everything in terms of card_derangements, so that we can use
   -- `card_derangements_fin_add_two`
@@ -123,8 +147,7 @@ theorem numDerangements_sum (n : ℕ) :
     add_left_inj, Finset.sum_congr rfl]
   -- show that (n + 1) * (-1)^x * asc_fac x (n - x) = (-1)^x * asc_fac x (n.succ - x)
   intro x hx
-  have h_le : x ≤ n := finset.mem_range_succ_iff.mp hx
+  have h_le : x ≤ n := Finset.mem_range_succ_iff.mp hx
   rw [Nat.succ_sub h_le, Nat.ascFactorial_succ, add_tsub_cancel_of_le h_le, Int.ofNat_mul,
     Int.ofNat_succ, mul_left_comm]
 #align num_derangements_sum numDerangements_sum
-
