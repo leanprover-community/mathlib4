@@ -385,7 +385,6 @@ theorem map_nhdsWithin_eq (e : LocalHomeomorph α β) {x} (hx : x ∈ e.source) 
       (e.leftInvOn.mono <| inter_subset_left _ _).map_nhdsWithin_eq (e.left_inv hx)
         (e.continuousAt_symm (e.map_source hx)).continuousWithinAt
         (e.continuousAt hx).continuousWithinAt
-
 #align local_homeomorph.map_nhds_within_eq LocalHomeomorph.map_nhdsWithin_eq
 
 theorem map_nhdsWithin_preimage_eq (e : LocalHomeomorph α β) {x} (hx : x ∈ e.source) (s : Set β) :
@@ -1224,6 +1223,7 @@ def homeomorphOfImageSubsetSource {s : Set α} {t : Set β} (hs : s ⊆ e.source
 #align local_homeomorph.homeomorph_of_image_subset_source LocalHomeomorph.homeomorphOfImageSubsetSource
 
 /-- A local homeomrphism defines a homeomorphism between its source and target. -/
+@[simps!] -- porting note: new `simps`
 def toHomeomorphSourceTarget : e.source ≃ₜ e.target :=
   e.homeomorphOfImageSubsetSource subset_rfl e.image_source_eq_target
 #align local_homeomorph.to_homeomorph_source_target LocalHomeomorph.toHomeomorphSourceTarget
@@ -1232,6 +1232,13 @@ theorem secondCountableTopology_source [SecondCountableTopology β] (e : LocalHo
     SecondCountableTopology e.source :=
   e.toHomeomorphSourceTarget.secondCountableTopology
 #align local_homeomorph.second_countable_topology_source LocalHomeomorph.secondCountableTopology_source
+
+theorem nhds_eq_comap_inf_principal {x} (hx : x ∈ e.source) :
+    𝓝 x = comap e (𝓝 (e x)) ⊓ 𝓟 e.source := by
+  lift x to e.source using hx
+  rw [← e.open_source.nhdsWithin_eq x.2, ← map_nhds_subtype_val, ← map_comap_setCoe_val,
+    e.toHomeomorphSourceTarget.nhds_eq_comap, nhds_subtype_eq_comap]
+  simp only [(· ∘ ·), toHomeomorphSourceTarget_apply_coe, comap_comap]
 
 /-- If a local homeomorphism has source and target equal to univ, then it induces a homeomorphism
 between the whole spaces, expressed in this definition. -/

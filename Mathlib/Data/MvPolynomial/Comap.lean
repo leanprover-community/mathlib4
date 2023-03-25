@@ -22,9 +22,9 @@ This file defines the `comap` function on `MvPolynomial`.
 
 As in other polynomial files, we typically use the notation:
 
-+ `σ : Type*` (indexing the variables)
++ `σ : Type _` (indexing the variables)
 
-+ `R : Type*` `[CommSemiring R]` (the coefficients)
++ `R : Type _` `[CommSemiring R]` (the coefficients)
 
 -/
 
