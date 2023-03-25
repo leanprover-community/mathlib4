@@ -346,15 +346,15 @@ theorem hasColimit_multispan_comp : HasColimit (D.diagram.multispan ⋙ F) :=
 #align category_theory.glue_data.has_colimit_multispan_comp CategoryTheory.GlueData.hasColimit_multispan_comp
 
 -- porting note: commented out include
---include H
+-- include H
 
 attribute [local instance] hasColimit_multispan_comp
 
-theorem has_colimit_mapGlueData_diagram : HasMulticoequalizer (D.mapGlueData F).diagram :=
+theorem hasColimit_mapGlueData_diagram : HasMulticoequalizer (D.mapGlueData F).diagram :=
   hasColimitOfIso (D.diagramIso F).symm
-#align category_theory.glue_data.has_colimit_map_glue_data_diagram CategoryTheory.GlueData.has_colimit_mapGlueData_diagram
+#align category_theory.glue_data.has_colimit_map_glue_data_diagram CategoryTheory.GlueData.hasColimit_mapGlueData_diagram
 
-attribute [local instance] has_colimit_mapGlueData_diagram
+attribute [local instance] hasColimit_mapGlueData_diagram
 
 /-- If `F` preserves the gluing, we obtain an iso between the glued objects. -/
 def gluedIso : F.obj D.glued ≅ (D.mapGlueData F).glued :=
