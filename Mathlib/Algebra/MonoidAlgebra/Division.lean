@@ -206,4 +206,3 @@ theorem of'_dvd_iff_modOf_eq_zero {x : AddMonoidAlgebra k G} {g : G} :
 end
 
 end AddMonoidAlgebra
-#check semigroupDvd
