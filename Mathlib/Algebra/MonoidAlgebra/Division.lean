@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 
 ! This file was ported from Lean 3 source module algebra.monoid_algebra.division
-! leanprover-community/mathlib commit 57e09a1296bfb4330ddf6624f1028ba186117d82
+! leanprover-community/mathlib commit 72c366d0475675f1309d3027d3d7d47ee4423951
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -199,6 +199,16 @@ theorem divOf_add_modOf (x : AddMonoidAlgebra k G) (g : G) :
 theorem modOf_add_divOf (x : AddMonoidAlgebra k G) (g : G) : x %ᵒᶠ g + of' k G g * (x /ᵒᶠ g) = x :=
   by rw [add_comm, divOf_add_modOf]
 #align add_monoid_algebra.mod_of_add_div_of AddMonoidAlgebra.modOf_add_divOf
+
+theorem of'_dvd_iff_modOf_eq_zero {x : AddMonoidAlgebra k G} {g : G} :
+    of' k G g ∣ x ↔ x %ᵒᶠ g = 0 := by
+  constructor
+  · rintro ⟨x, rfl⟩
+    rw [of'_mul_modOf]
+  · intro h
+    rw [← divOf_add_modOf x g, h, add_zero]
+    exact dvd_mul_right _ _
+#align add_monoid_algebra.of'_dvd_iff_mod_of_eq_zero AddMonoidAlgebra.of'_dvd_iff_modOf_eq_zero
 
 end
 
