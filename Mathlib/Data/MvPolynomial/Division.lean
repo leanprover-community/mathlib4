@@ -8,8 +8,8 @@ Authors: Eric Wieser
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.MonoidAlgebra.Division
-import Mathbin.Data.MvPolynomial.Basic
+import Mathlib.Algebra.MonoidAlgebra.Division
+import Mathlib.Data.MvPolynomial.Basic
 
 /-!
 # Division of `mv_polynomial` by monomials
@@ -219,8 +219,7 @@ end XLemmas
 
 
 theorem monomial_dvd_monomial {r s : R} {i j : σ →₀ ℕ} :
-    monomial i r ∣ monomial j s ↔ (s = 0 ∨ i ≤ j) ∧ r ∣ s :=
-  by
+    monomial i r ∣ monomial j s ↔ (s = 0 ∨ i ≤ j) ∧ r ∣ s := by
   constructor
   · rintro ⟨x, hx⟩
     rw [MvPolynomial.ext_iff] at hx
@@ -240,16 +239,14 @@ theorem monomial_dvd_monomial {r s : R} {i j : σ →₀ ℕ} :
 
 @[simp]
 theorem monomial_one_dvd_monomial_one [Nontrivial R] {i j : σ →₀ ℕ} :
-    monomial i (1 : R) ∣ monomial j 1 ↔ i ≤ j :=
-  by
+    monomial i (1 : R) ∣ monomial j 1 ↔ i ≤ j := by
   rw [monomial_dvd_monomial]
   simp_rw [one_ne_zero, false_or_iff, dvd_rfl, and_true_iff]
 #align mv_polynomial.monomial_one_dvd_monomial_one MvPolynomial.monomial_one_dvd_monomial_one
 
 @[simp]
 theorem x_dvd_x [Nontrivial R] {i j : σ} :
-    (X i : MvPolynomial σ R) ∣ (X j : MvPolynomial σ R) ↔ i = j :=
-  by
+    (X i : MvPolynomial σ R) ∣ (X j : MvPolynomial σ R) ↔ i = j := by
   refine' monomial_one_dvd_monomial_one.trans _
   simp_rw [Finsupp.single_le_iff, Nat.one_le_iff_ne_zero, Finsupp.single_apply_ne_zero, Ne.def,
     one_ne_zero, not_false_iff, and_true_iff]
@@ -257,8 +254,7 @@ theorem x_dvd_x [Nontrivial R] {i j : σ} :
 
 @[simp]
 theorem x_dvd_monomial {i : σ} {j : σ →₀ ℕ} {r : R} :
-    (X i : MvPolynomial σ R) ∣ monomial j r ↔ r = 0 ∨ j i ≠ 0 :=
-  by
+    (X i : MvPolynomial σ R) ∣ monomial j r ↔ r = 0 ∨ j i ≠ 0 := by
   refine' monomial_dvd_monomial.trans _
   simp_rw [one_dvd, and_true_iff, Finsupp.single_le_iff, Nat.one_le_iff_ne_zero]
 #align mv_polynomial.X_dvd_monomial MvPolynomial.x_dvd_monomial
