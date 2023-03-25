@@ -10,8 +10,6 @@ Authors: Henry Swanson
 -/
 import Mathlib.Combinatorics.Derangements.Basic
 import Mathlib.Data.Fintype.BigOperators
--- porting Note: TODO: use DeltaInstance to have instance Fintype (derangements α) below
--- import Mathlib.Tactic.DeltaInstance
 import Mathlib.Tactic.Ring
 
 /-!
@@ -40,7 +38,8 @@ variable {α : Type _} [DecidableEq α] [Fintype α]
 
 instance : DecidablePred (derangements α) := fun _ => Fintype.decidableForallFintype
 
-instance : Fintype (derangements α) := by sorry
+-- porting note: used to use the tactic delta_instance
+instance : Fintype (derangements α) := Subtype.fintype (fun (_ : Perm α) => ∀ (x_1 : α), ¬_ = x_1)
 
 theorem card_derangements_invariant {α β : Type _} [Fintype α] [DecidableEq α] [Fintype β]
     [DecidableEq β] (h : card α = card β) : card (derangements α) = card (derangements β) :=
