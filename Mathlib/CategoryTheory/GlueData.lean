@@ -17,7 +17,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.Types
 /-!
 # Gluing data
 
-We define `glue_data` as a family of data needed to glue topological spaces, schemes, etc. We
+We define `GlueData` as a family of data needed to glue topological spaces, schemes, etc. We
 provide the API to realize it as a multispan diagram, and also states lemmas about its
 interaction with a functor that preserves certain pullbacks.
 
@@ -279,8 +279,8 @@ def mapGlueData : GlueData C' where
       Iso.inv_hom_id, CategoryTheory.Functor.map_id, Category.id_comp]
 #align category_theory.glue_data.map_glue_data CategoryTheory.GlueData.mapGlueData
 
-/-- The diagram of the image of a `glue_data` under a functor `F` is naturally isomorphic to the
-original diagram of the `glue_data` via `F`.
+/-- The diagram of the image of a `GlueData` under a functor `F` is naturally isomorphic to the
+original diagram of the `GlueData` via `F`.
 -/
 def diagramIso : D.diagram.multispan ⋙ F ≅ (D.mapGlueData F).diagram.multispan :=
   NatIso.ofComponents
