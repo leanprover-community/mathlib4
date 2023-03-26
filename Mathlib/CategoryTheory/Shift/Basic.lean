@@ -368,6 +368,20 @@ lemma shiftFunctorAdd'_assoc_inv_app (a₁ a₂ a₃ a₁₂ a₂₃ a₁₂₃ 
   simpa using NatTrans.congr_app (congr_arg Iso.inv
     (shiftFunctorAdd'_assoc C _ _ _ _ _ _ h₁₂ h₂₃ h₁₂₃)) X
 
+lemma shiftFunctorAdd_assoc_hom_app (a₁ a₂ a₃ : A) (X : C) :
+    (shiftFunctorAdd C (a₁ + a₂) a₃).hom.app X ≫
+      ((shiftFunctorAdd C a₁ a₂).hom.app X)⟦a₃⟧' =
+    (shiftFunctorAdd' C a₁ (a₂ + a₃) (a₁ + a₂ + a₃) (add_assoc _ _ _).symm).hom.app X ≫
+      (shiftFunctorAdd C a₂ a₃).hom.app (X⟦a₁⟧) := by
+  simpa using NatTrans.congr_app (congr_arg Iso.hom (shiftFunctorAdd_assoc C a₁ a₂ a₃)) X
+
+lemma shiftFunctorAdd_assoc_inv_app (a₁ a₂ a₃ : A) (X : C) :
+    ((shiftFunctorAdd C a₁ a₂).inv.app X)⟦a₃⟧' ≫
+      (shiftFunctorAdd C (a₁ + a₂) a₃).inv.app X =
+    (shiftFunctorAdd C a₂ a₃).inv.app (X⟦a₁⟧) ≫
+      (shiftFunctorAdd' C a₁ (a₂ + a₃) (a₁ + a₂ + a₃) (add_assoc _ _ _).symm).inv.app X := by
+  simpa using NatTrans.congr_app (congr_arg Iso.inv (shiftFunctorAdd_assoc C a₁ a₂ a₃)) X
+
 end Defs
 
 section AddMonoid
