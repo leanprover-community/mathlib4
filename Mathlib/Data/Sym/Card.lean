@@ -143,22 +143,19 @@ theorem card_image_diag (s : Finset α) : (s.diag.image Quotient.mk').card = s.c
 
 theorem two_mul_card_image_offDiag (s : Finset α) :
     2 * (s.offDiag.image Quotient.mk').card = s.offDiag.card := by
-  rw [card_eq_sum_card_fiberwise
-      (fun x => mem_image_of_mem _ :
-        ∀ x ∈ s.offDiag, Quotient.mk' x ∈ s.offDiag.image Quotient.mk'),
-    sum_const_nat (Quotient.ind _), mul_comm]
+  rw [card_eq_sum_card_image (Quotient.mk' : α × α → _), sum_const_nat (Quotient.ind' _), mul_comm]
   rintro ⟨x, y⟩ hxy
-  simp_rw [mem_image, exists_prop, mem_offDiag, Quotient.eq'] at hxy
+  simp_rw [mem_image, mem_offDiag] at hxy
   obtain ⟨a, ⟨ha₁, ha₂, ha⟩, h⟩ := hxy
+  replace h := Quotient.eq.1 h
   obtain ⟨hx, hy, hxy⟩ : x ∈ s ∧ y ∈ s ∧ x ≠ y := by
     cases h <;> have := ha.symm <;> exact ⟨‹_›, ‹_›, ‹_›⟩
   have hxy' : y ≠ x := hxy.symm
-  have : (s.off_diag.filter fun z => ⟦z⟧ = ⟦(x, y)⟧) = ({(x, y), (y, x)} : Finset _) :=
-    by
+  have : (s.offDiag.filter fun z => ⟦z⟧ = ⟦(x, y)⟧) = ({(x, y), (y, x)} : Finset _) := by
     ext ⟨x₁, y₁⟩
     rw [mem_filter, mem_insert, mem_singleton, Sym2.eq_iff, Prod.mk.inj_iff, Prod.mk.inj_iff,
       and_iff_right_iff_imp]
-    rintro (⟨rfl, rfl⟩ | ⟨rfl, rfl⟩) <;> rw [mem_off_diag] <;> exact ⟨‹_›, ‹_›, ‹_›⟩
+    rintro (⟨rfl, rfl⟩ | ⟨rfl, rfl⟩) <;> rw [mem_offDiag] <;> exact ⟨‹_›, ‹_›, ‹_›⟩
   -- hxy' is used here
   rw [this, card_insert_of_not_mem, card_singleton]
   simp only [not_and, Prod.mk.inj_iff, mem_singleton]
@@ -176,17 +173,17 @@ theorem card_image_offDiag (s : Finset α) :
 
 theorem card_subtype_diag [Fintype α] : card { a : Sym2 α // a.IsDiag } = card α := by
   convert card_image_diag (univ : Finset α)
-  rw [Fintype.card_of_subtype, ← filter_image_quotient_mk_is_diag]
+  rw [Fintype.card_of_subtype, ← filter_image_quotient_mk''_isDiag]
   rintro x
   rw [mem_filter, univ_product_univ, mem_image]
   obtain ⟨a, ha⟩ := Quotient.exists_rep x
   exact and_iff_right ⟨a, mem_univ _, ha⟩
 #align sym2.card_subtype_diag Sym2.card_subtype_diag
 
-theorem card_subtype_not_diag [Fintype α] : card { a : Sym2 α // ¬a.IsDiag } = (card α).choose 2 :=
-  by
-  convert card_image_off_diag (univ : Finset α)
-  rw [Fintype.card_of_subtype, ← filter_image_quotient_mk_not_is_diag]
+theorem card_subtype_not_diag [Fintype α] :
+    card { a : Sym2 α // ¬a.IsDiag } = (card α).choose 2 := by
+  convert card_image_offDiag (univ : Finset α)
+  rw [Fintype.card_of_subtype, ← filter_image_quotient_mk_not_isDiag]
   rintro x
   rw [mem_filter, univ_product_univ, mem_image]
   obtain ⟨a, ha⟩ := Quotient.exists_rep x
