@@ -193,7 +193,8 @@ theorem roots_ne_zero_of_splits' {f : K[X]} (hs : Splits i f) (hf0 : natDegree (
   let ⟨x, hx⟩ := exists_root_of_splits' i hs fun h => hf0 <| natDegree_eq_of_degree_eq_some h
   fun h => by
   rw [← eval_map] at hx
-  cases h.subst ((mem_roots _).2 hx)
+  have : f.map i ≠ 0 := by intro; simp_all
+  cases h.subst ((mem_roots this).2 hx)
 #align polynomial.roots_ne_zero_of_splits' Polynomial.roots_ne_zero_of_splits'
 
 /-- Pick a root of a polynomial that splits. See `rootOfSplits` for polynomials over a field
