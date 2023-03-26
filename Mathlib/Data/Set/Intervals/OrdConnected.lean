@@ -231,12 +231,12 @@ section PartialOrder
 
 variable {α : Type _} [PartialOrder α] {s : Set α}
 
-protected theorem IsAntichain.ordConnected (hs : IsAntichain (· ≤ ·) s) : s.OrdConnected :=
+protected theorem _root_.IsAntichain.ordConnected (hs : IsAntichain (· ≤ ·) s) : s.OrdConnected :=
   ⟨fun x hx y hy z hz => by
     obtain rfl := hs.eq hx hy (hz.1.trans hz.2)
     rw [Icc_self, mem_singleton_iff] at hz
     rwa [hz]⟩
-#align set.is_antichain.ord_connected Set.IsAntichain.ordConnected
+#align is_antichain.ord_connected IsAntichain.ordConnected
 
 end PartialOrder
 
