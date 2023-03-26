@@ -8,8 +8,8 @@ Authors: Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Order.Hom.Bounded
-import Mathbin.Topology.Order.Hom.Basic
+import Mathlib.Order.Hom.Bounded
+import Mathlib.Topology.Order.Hom.Basic
 
 /-!
 # Esakia morphisms

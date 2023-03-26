@@ -1613,6 +1613,7 @@ import Mathlib.Topology.OmegaCompletePartialOrder
 import Mathlib.Topology.Order
 import Mathlib.Topology.Order.Basic
 import Mathlib.Topology.Order.Hom.Basic
+import Mathlib.Topology.Order.Hom.Esakia
 import Mathlib.Topology.Order.Lattice
 import Mathlib.Topology.Order.LowerTopology
 import Mathlib.Topology.Order.Priestley
