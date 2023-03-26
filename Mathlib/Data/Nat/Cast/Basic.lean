@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 
 ! This file was ported from Lean 3 source module data.nat.cast.basic
-! leanprover-community/mathlib commit fc2ed6f838ce7c9b7c7171e58d78eaf7b438fb0e
+! leanprover-community/mathlib commit acebd8d49928f6ed8920e502a6c90674e75bd441
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -82,8 +82,7 @@ section OrderedSemiring
 
 variable [OrderedSemiring α]
 
--- porting note: missing mono attribute
--- @[mono]
+@[mono]
 theorem mono_cast : Monotone (Nat.cast : ℕ → α) :=
   monotone_nat_of_le_succ fun n ↦ by
     rw [Nat.cast_succ]; exact le_add_of_nonneg_right zero_le_one
@@ -110,27 +109,25 @@ end Nontrivial
 
 variable [CharZero α] {m n : ℕ}
 
-theorem StrictMono_cast : StrictMono (Nat.cast : ℕ → α) :=
+theorem strictMono_cast : StrictMono (Nat.cast : ℕ → α) :=
   mono_cast.strictMono_of_injective cast_injective
-#align nat.strict_mono_cast Nat.StrictMono_cast
+#align nat.strict_mono_cast Nat.strictMono_cast
 
 /-- `Nat.cast : ℕ → α` as an `OrderEmbedding` -/
 @[simps! (config := { fullyApplied := false })]
 def castOrderEmbedding : ℕ ↪o α :=
-  OrderEmbedding.ofStrictMono Nat.cast Nat.StrictMono_cast
+  OrderEmbedding.ofStrictMono Nat.cast Nat.strictMono_cast
 #align nat.cast_order_embedding Nat.castOrderEmbedding
 #align nat.cast_order_embedding_apply Nat.castOrderEmbedding_apply
 
 @[simp, norm_cast]
 theorem cast_le : (m : α) ≤ n ↔ m ≤ n :=
-  StrictMono_cast.le_iff_le
+  strictMono_cast.le_iff_le
 #align nat.cast_le Nat.cast_le
 
--- porting note: missing mono attribute
--- @[simp, norm_cast, mono]
-@[simp, norm_cast]
+@[simp, norm_cast, mono]
 theorem cast_lt : (m : α) < n ↔ m < n :=
-  StrictMono_cast.lt_iff_lt
+  strictMono_cast.lt_iff_lt
 #align nat.cast_lt Nat.cast_lt
 
 @[simp, norm_cast]
@@ -299,22 +296,6 @@ theorem Nat.castRingHom_nat : Nat.castRingHom ℕ = RingHom.id ℕ :=
 instance Nat.uniqueRingHom {R : Type _} [NonAssocSemiring R] : Unique (ℕ →+* R) where
   default := Nat.castRingHom R
   uniq := RingHom.eq_natCast'
-
-namespace MulOpposite
-
-variable [AddMonoidWithOne α]
-
-@[simp, norm_cast]
-theorem op_natCast (n : ℕ) : op (n : α) = n :=
-  rfl
-#align mul_opposite.op_nat_cast MulOpposite.op_natCast
-
-@[simp, norm_cast]
-theorem unop_natCast (n : ℕ) : unop (n : αᵐᵒᵖ) = n :=
-  rfl
-#align mul_opposite.unop_nat_cast MulOpposite.unop_natCast
-
-end MulOpposite
 
 namespace Pi
 

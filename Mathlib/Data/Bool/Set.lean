@@ -34,5 +34,6 @@ theorem range_eq {α : Type _} (f : Bool → α) : range f = {f false, f true} :
 
 @[simp] theorem compl_singleton (b : Bool) : ({b}ᶜ : Set Bool) = {!b} :=
   Set.ext fun _ => eq_not_iff.symm
+#align bool.compl_singleton Bool.compl_singleton
 
 end Bool
