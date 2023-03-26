@@ -8,10 +8,10 @@ Authors: Scott Morrison, Johannes Hölzl, Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Category.Group.Basic
-import Mathbin.CategoryTheory.ConcreteCategory.ReflectsIsomorphisms
-import Mathbin.CategoryTheory.Elementwise
-import Mathbin.Algebra.Ring.Equiv
+import Mathlib.Algebra.Category.Group.Basic
+import Mathlib.CategoryTheory.ConcreteCategory.ReflectsIsomorphisms
+import Mathlib.CategoryTheory.Elementwise
+import Mathlib.Algebra.Ring.Equiv
 
 /-!
 # Category instances for semiring, ring, comm_semiring, and comm_ring.
@@ -313,16 +313,14 @@ def commRingIsoToRingEquiv {X Y : CommRingCat} (i : X ≅ Y) : X ≃+* Y
 
 @[simp]
 theorem commRingIsoToRingEquiv_toRingHom {X Y : CommRingCat} (i : X ≅ Y) :
-    i.commRingIsoToRingEquiv.toRingHom = i.Hom :=
-  by
+    i.commRingIsoToRingEquiv.toRingHom = i.Hom := by
   ext
   rfl
 #align category_theory.iso.CommRing_iso_to_ring_equiv_to_ring_hom CategoryTheory.Iso.commRingIsoToRingEquiv_toRingHom
 
 @[simp]
 theorem commRingIsoToRingEquiv_symm_toRingHom {X Y : CommRingCat} (i : X ≅ Y) :
-    i.commRingIsoToRingEquiv.symm.toRingHom = i.inv :=
-  by
+    i.commRingIsoToRingEquiv.symm.toRingHom = i.inv := by
   ext
   rfl
 #align category_theory.iso.CommRing_iso_to_ring_equiv_symm_to_ring_hom CategoryTheory.Iso.commRingIsoToRingEquiv_symm_toRingHom
