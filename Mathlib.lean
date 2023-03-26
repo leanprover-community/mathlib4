@@ -30,6 +30,7 @@ import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Algebra.BigOperators.RingEquiv
 import Mathlib.Algebra.Bounds
 import Mathlib.Algebra.Category.GroupCat.Basic
+import Mathlib.Algebra.Category.GroupCat.Zero
 import Mathlib.Algebra.Category.MonCat.Basic
 import Mathlib.Algebra.CharP.Algebra
 import Mathlib.Algebra.CharP.Basic
