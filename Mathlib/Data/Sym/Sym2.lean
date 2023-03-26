@@ -668,8 +668,11 @@ theorem relBool_spec [DecidableEq α] (x y : α × α) : ↥(relBool x y) ↔ Re
 
 /-- Given `[DecidableEq α]` and `[Fintype α]`, the following instance gives `Fintype (Sym2 α)`.
 -/
-instance (α : Type _) [DecidableEq α] : DecidableRel (Sym2.Rel α) := fun x y =>
+instance instRelDecidable (α : Type _) [DecidableEq α] : DecidableRel (Sym2.Rel α) := fun x y =>
   decidable_of_bool (relBool x y) (relBool_spec x y)
+-- Porting note: add this other version needed for Data.Finset.Sym
+instance instRelDecidable' (α : Type _) [DecidableEq α] :
+  DecidableRel (· ≈ · : α × α → α × α → Prop) := instRelDecidable _
 
 -- porting note: extra definitions and lemmas for proving decidable equality in `Sym2`
 /-- An algorithm for deciding equality in `Sym2 α`. -/
@@ -681,10 +684,6 @@ def eqBool [DecidableEq α] : Sym2 α → Sym2 α → Bool :=
 @[aesop norm unfold (rule_sets [Sym2])]
 theorem eqBool_spec [DecidableEq α] (a b : Sym2 α) : (eqBool a b) ↔ (a = b) :=
   Sym2.inductionOn₂ a b <| by aesop (rule_sets [Sym2])
-
--- porting note: `filter_image_quotient_mk''_isDiag` needs this instance
-instance (α : Type _) [DecidableEq α] : DecidableEq (Sym2 α) :=
-  fun a b => decidable_of_bool (eqBool a b) (eqBool_spec a b)
 
 
 
