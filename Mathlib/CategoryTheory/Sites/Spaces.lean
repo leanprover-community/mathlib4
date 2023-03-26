@@ -53,8 +53,8 @@ def grothendieckTopology : GrothendieckTopology (Opens T)
   pullback_stable' X Y S f hf y hy :=
     by
     rcases hf y (f.le hy) with ⟨U, g, hg, hU⟩
-    refine' ⟨U ⊓ Y, hom_of_le inf_le_right, _, hU, hy⟩
-    apply S.downward_closed hg (hom_of_le inf_le_left)
+    refine' ⟨U ⊓ Y, homOfLE inf_le_right, _, hU, hy⟩
+    apply S.downward_closed hg (homOfLE inf_le_left)
   transitive' X S hS R hR x hx :=
     by
     rcases hS x hx with ⟨U, f, hf, hU⟩
@@ -66,13 +66,13 @@ def grothendieckTopology : GrothendieckTopology (Opens T)
 def pretopology : Pretopology (Opens T)
     where
   coverings X R := ∀ x ∈ X, ∃ (U : _)(f : U ⟶ X), R f ∧ x ∈ U
-  has_isos X Y f i x hx := ⟨_, _, presieve.singleton_self _, (inv f).le hx⟩
+  has_isos X Y f i x hx := ⟨_, _, Presieve.singleton_self _, (inv f).le hx⟩
   pullbacks X Y f S hS x hx :=
     by
     rcases hS _ (f.le hx) with ⟨U, g, hg, hU⟩
-    refine' ⟨_, _, presieve.pullback_arrows.mk _ _ hg, _⟩
+    refine' ⟨_, _, Presieve.pullbackArrows.mk _ _ hg, _⟩
     have : U ⊓ Y ≤ pullback g f
-    refine' le_of_hom (pullback.lift (hom_of_le inf_le_left) (hom_of_le inf_le_right) rfl)
+    refine' leOfHom (pullback.lift (homOfLE inf_le_left) (homOfLE inf_le_right) rfl)
     apply this ⟨hU, hx⟩
   Transitive X S Ti hS hTi x hx :=
     by
@@ -92,7 +92,7 @@ theorem pretopology_ofGrothendieck :
     exact ⟨V, g₂, hg₂, g₁.le hU⟩
   · intro X R hR x hx
     rcases hR x hx with ⟨U, f, hf, hU⟩
-    exact ⟨U, f, sieve.le_generate R U hf, hU⟩
+    exact ⟨U, f, Sieve.le_generate R U hf, hU⟩
 #align opens.pretopology_of_grothendieck Opens.pretopology_ofGrothendieck
 
 /-- The pretopology associated to a space induces the Grothendieck topology associated to the space.
@@ -100,9 +100,8 @@ theorem pretopology_ofGrothendieck :
 @[simp]
 theorem pretopology_toGrothendieck :
     Pretopology.toGrothendieck _ (Opens.pretopology T) = Opens.grothendieckTopology T := by
-  rw [← pretopology_of_grothendieck]
-  apply (pretopology.gi (opens T)).l_u_eq
+  rw [← pretopology_ofGrothendieck]
+  apply (Pretopology.gi (Opens T)).l_u_eq
 #align opens.pretopology_to_grothendieck Opens.pretopology_toGrothendieck
 
 end Opens
-
