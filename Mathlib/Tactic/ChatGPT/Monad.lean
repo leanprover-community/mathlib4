@@ -92,6 +92,11 @@ def getCodeBlock (response : String) : M IO CodeBlock := do
       | [] => throw <| IO.userError s!"Expected a single code block in ChatGPT's response:\n{response}"
       | block :: _ => pure block
 
+/-- Send a system message. -/
+def sendSystemMessage (prompt : String) : M IO Unit := do
+  recordMessage ⟨.system, prompt⟩
+  _ ← sendMessages <| (← getLog).reverse
+
 def askForAssistance (prompt : String) : M IO Unit := do
   recordMessage ⟨.user, prompt⟩
   let response ← sendMessages <| (← getLog).reverse

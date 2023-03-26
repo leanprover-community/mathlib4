@@ -30,8 +30,7 @@ def feedback : M IO String := do
       String.intercalate "\n" otherErrors.join ++
       "\nPlease fix these, but don't add any extra steps to the proof."
 
-def initialPrompt : M IO String := do
-  let prompt :=
+def systemPrompt : String :=
 "I'm a mathematician who is expert in the Lean 4 interactive theorem prover,
 and I'd like to you help me fix or complete a proof.
 
@@ -49,9 +48,10 @@ I'd like you to work step by step, and in each successive response you'll write 
 (That is, fixing an error, improving the last step, or adding one more step if there is a `sorry`.)
 
 Please make sure to include a complete declaration containing your suggestion, formatted in a code block.
-It's helpful to include some informal explanation of your reasoning before or after the code block.
+It's helpful to include some informal explanation of your reasoning before or after the code block."
 
-Let's start with the following proof:\n" ++ (← latestCodeBlock).markdownBody
+def initialPrompt : M IO String := do
+  let prompt := "Let's start with the following proof:\n" ++ (← latestCodeBlock).markdownBody
   -- TODO if there's no proof at all yet, just a sorry, we shouldn't separately restate the goal that appears in the sorry!
   match ← sorries with
   | [] => pure prompt
@@ -60,6 +60,7 @@ Let's start with the following proof:\n" ++ (← latestCodeBlock).markdownBody
       pure <| prompt ++ s!"\nThe remaining goal is \n{pp.fence}"
 
 def dialog (n : Nat) : M MetaM String := do
+  sendSystemMessage systemPrompt
   askForAssistance (← initialPrompt)
   for i in List.range (n-1) do try
     done
