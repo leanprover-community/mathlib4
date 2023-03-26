@@ -127,19 +127,28 @@ set_option linter.uppercaseLean3 false in
 instance hasForgetToMon : HasForget₂ SemiRingCat MonCat :=
   BundledHom.mkHasForget₂
     (fun R hR => @MonoidWithZero.toMonoid R (@Semiring.toMonoidWithZero R hR))
-    -- Porting note: Error here... TC
-    (fun {X Y} => RingHom.toMonoidHom)
-    _ -- (fun R₁ R₂ => RingHom.toMonoidHom) fun _ _ _ => rfl
+    (fun {X Y} =>
+      -- Porting note: without these lets, the following line fails.
+      letI : Semiring X := X.2
+      letI : Semiring Y := Y.2
+      RingHom.toMonoidHom)
+    (fun _ => rfl) -- (fun R₁ R₂ => RingHom.toMonoidHom) fun _ _ _ => rfl
+set_option linter.uppercaseLean3 false in
 #align SemiRing.has_forget_to_Mon SemiRingCat.hasForgetToMon
 
-instance hasForgetToAddCommMon : HasForget₂ SemiRing AddCommMonCat
-    where-- can't use bundled_hom.mk_has_forget₂, since AddCommMon is an induced category
+instance hasForgetToAddCommMon : HasForget₂ SemiRingCat AddCommMonCat
+    where  -- can't use bundled_hom.mk_has_forget₂, since AddCommMon is an induced category
   forget₂ :=
     { obj := fun R => AddCommMonCat.of R
-      map := fun R₁ R₂ f => RingHom.toAddMonoidHom f }
-#align SemiRing.has_forget_to_AddCommMon SemiRing.hasForgetToAddCommMon
+      -- Porting note: Error in the next line, again due to TC search failure.
+      map := fun {R₁ R₂} f => RingHom.toAddMonoidHom f
+      map_comp := sorry
+      map_id := sorry }
+  forget_comp := sorry
+set_option linter.uppercaseLean3 false in
+#align SemiRing.has_forget_to_AddCommMon SemiRingCat.hasForgetToAddCommMon
 
-end SemiRing
+end SemiRingCat
 
 /-- The category of rings. -/
 def RingCat : Type (u + 1) :=
