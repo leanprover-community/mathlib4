@@ -121,7 +121,7 @@ theorem length_filter_lt_length_iff_exists (l) :
 #align list.length_filter_lt_length_iff_exists List.length_filter_lt_length_iff_exists
 
 theorem Sublist.countp_le (s : l₁ <+ l₂) : countp p l₁ ≤ countp p l₂ := by
-  simpa only [countp_eq_length_filter] using length_le_of_sublist (s.filter p)
+  simpa only [countp_eq_length_filter] using length_le_of_sublist (s.filter' p)
 #align list.sublist.countp_le List.Sublist.countp_le
 
 @[simp]
