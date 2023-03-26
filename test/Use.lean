@@ -18,17 +18,19 @@ example : ∃ x : Nat, x = x := by
   exact 42
   rfl
 
-example (α : Type) : ∃ S : List α, S = S :=
-by use ∅
+example (α : Type) : ∃ S : List α, S = S := by use ∅
 
-example : ∃ x : Int, x = x :=
-by use 42
+example : ∃ x : Int, x = x := by use 42
 
-example : ∃ a b c : Int, a + b + c = 6 :=
-by use 1, 2, 3
+example : ∃ a b c : Int, a + b + c = 6 := by
+  use 1, 2, 3
+  rfl
 
-example : ∃ p : Int × Int, p.1 = 1 :=
-by use ⟨1, 42⟩
+example : ∃ p : Int × Int, p.1 = 1 := by use ⟨1, 42⟩
+
+example : ∃ n : Int, n * 3 = 3 * 2 := by
+  use 2
+  rfl
 
 -- FIXME Failing tests ported from mathlib3
 

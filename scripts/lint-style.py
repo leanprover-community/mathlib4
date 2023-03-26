@@ -146,7 +146,8 @@ def long_lines_check(lines, path):
     errors = []
     # TODO: some string literals (in e.g. tactic output messages) can be excepted from this rule
     for line_nr, line in enumerate(lines, 1):
-        if "http" in line:
+        # "!" excludes the porting marker comment
+        if "http" in line or "#align" in line or line[0] == '!':
             continue
         if len(line) > 101:
             errors += [(ERR_LIN, line_nr, path)]
@@ -237,8 +238,9 @@ def output_message(path, line_nr, code, msg):
             msg_type = "error"
         if code.startswith("WRN"):
             msg_type = "warning"
-        # We are outputting for github. It doesn't appear to surface code, so show it in the message too
-        print(f"::{msg_type} file={path},line={line_nr},code={code}::{code}: {msg}")
+        # We are outputting for github. We duplicate path, line_nr and code,
+        # so that they are also visible in the plaintext output.
+        print(f"::{msg_type} file={path},line={line_nr},code={code}::{path}#L{line_nr}: {code}: {msg}")
 
 def format_errors(errors):
     global new_exceptions

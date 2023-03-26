@@ -5,7 +5,7 @@ Authors: Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Yury Kudryashov, Ne
 Ported by: Moritz Doll
 
 ! This file was ported from Lean 3 source module algebra.ring.basic
-! leanprover-community/mathlib commit 70d50ecfd4900dd6d328da39ab7ebd516abe4025
+! leanprover-community/mathlib commit 2ed7e4aec72395b6a7c3ac4ac7873a7a43ead17c
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -33,12 +33,14 @@ namespace AddHom
 def mulLeft [Distrib R] (r : R) : AddHom R R :=
   ⟨(· * ·) r, mul_add r⟩
 #align add_hom.mul_left AddHom.mulLeft
+#align add_hom.mul_left_apply AddHom.mulLeft_apply
 
 /-- Left multiplication by an element of a type with distributive multiplication is an `AddHom`. -/
 @[simps (config := { fullyApplied := false })]
 def mulRight [Distrib R] (r : R) : AddHom R R :=
   ⟨fun a => a * r, fun _ _ => add_mul _ _ r⟩
 #align add_hom.mul_right AddHom.mulRight
+#align add_hom.mul_right_apply AddHom.mulRight_apply
 
 end AddHom
 
@@ -67,7 +69,7 @@ def mulLeft [NonUnitalNonAssocSemiring R] (r : R) :
 
 @[simp]
 theorem coe_mul_left [NonUnitalNonAssocSemiring R] (r : R) :
-    (mulLeft r) = (r * ·) :=
+    (mulLeft r : R → R) = HMul.hMul r :=
   rfl
 #align add_monoid_hom.coe_mul_left AddMonoidHom.coe_mul_left
 
@@ -100,8 +102,8 @@ variable [Mul α] [HasDistribNeg α]
 
 open MulOpposite
 
-instance : HasDistribNeg αᵐᵒᵖ :=
-  { MulOpposite.instInvolutiveNegMulOpposite _ with
+instance hasDistribNeg : HasDistribNeg αᵐᵒᵖ :=
+  { MulOpposite.involutiveNeg _ with
     neg_mul := fun _ _ => unop_injective <| mul_neg _ _,
     mul_neg := fun _ _ => unop_injective <| neg_mul _ _ }
 
@@ -135,6 +137,7 @@ theorem vieta_formula_quadratic {b c x : α} (h : x * x - b * x + c = 0) :
   have : c = x * (b - x) := (eq_neg_of_add_eq_zero_right h).trans (by simp [mul_sub, mul_comm])
   refine' ⟨b - x, _, by simp, by rw [this]⟩
   rw [this, sub_add, ← sub_mul, sub_self]
+set_option linter.uppercaseLean3 false in
 #align Vieta_formula_quadratic vieta_formula_quadratic
 
 end NonUnitalCommRing

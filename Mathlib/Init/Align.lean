@@ -100,6 +100,7 @@ set_option align.precheck false in #align mk_array mkArray'
 #align list.erase List.eraseₓ
 #align list.bag_inter List.bagInterₓ
 #align list.diff List.diffₓ
+#align list.empty List.isEmpty
 #align list.filter List.filterₓ
 #align list.partition List.partitionₓ
 #align list.drop_while List.dropWhileₓ
@@ -227,6 +228,20 @@ attribute [trans] Setoid.trans
 /-! ## `init.meta.widget.replace_save_info` -/
 
 /-! ## `init.meta.widget.tactic_component` -/
+
+/-! ## `init.prelude` -/
+
+#align function.comp Function.comp
+#align function.const Function.const
+
+#align infer_instance inferInstance
+
+#align inhabited Inhabited
+#align nonempty Nonempty
+#align classical.choice Classical.choice
+#align nonempty.elim Nonempty.elim
+
+#align fin Fin
 
 /-! ## `init.propext` -/
 

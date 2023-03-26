@@ -77,6 +77,7 @@ Mathlib/Init/Data/Nat/Basic.lean : line 7 : ERR_MOD : Module docstring missing, 
 Mathlib/Init/Data/Nat/Lemmas.lean : line 10 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Init/Function.lean : line 7 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Init/Logic.lean : line 16 : ERR_MOD : Module docstring missing, or too late
+Mathlib/Init/Meta/WellFoundedTactics.lean : line 11 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Lean/Exception.lean : line 1 : ERR_COP : Malformed or missing copyright header
 Mathlib/Lean/Exception.lean : line 4 : ERR_AUT : Authors line should look like: 'Authors: Jean Dupont, Иван Иванович Иванов'
 Mathlib/Lean/Exception.lean : line 7 : ERR_MOD : Module docstring missing, or too late

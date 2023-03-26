@@ -1,7 +1,7 @@
 import Mathlib.Tactic.Relation.Symm
-import Std.Tactic.ShowTerm
 import Mathlib.Algebra.Hom.Group
 import Mathlib.Logic.Equiv.Basic
+
 -- testing that the attribute is recognized
 @[symm] def eq_symm {α : Type} (a b : α) : a = b → b = a := Eq.symm
 
@@ -15,6 +15,12 @@ def sameParity : Nat → Nat → Prop
 
 example (a b : Nat) : sameParity a b → sameParity b a := by intros; symm; assumption
 
+example (a b c : Nat) (ab : a = b) (bc : b = c) : c = a := by
+  symm_saturate
+  -- Run twice to check that we don't add repeated copies.
+  -- Unfortunately `guard_hyp_nums` doesn't seem to work so I haven't made an assertion.
+  symm_saturate
+  apply Eq.trans <;> assumption
 
 def MulHom.inverse [Mul M] [Mul N] (f : M →ₙ* N) (g : N → M) (h₁ : Function.LeftInverse g f)
     (h₂ : Function.RightInverse g f) : N →ₙ* M where

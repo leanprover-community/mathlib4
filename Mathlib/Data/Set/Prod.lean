@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johannes Hölzl, Patrick Massot
 
 ! This file was ported from Lean 3 source module data.set.prod
-! leanprover-community/mathlib commit fc2ed6f838ce7c9b7c7171e58d78eaf7b438fb0e
+! leanprover-community/mathlib commit 27f315c5591c84687852f816d8ef31fe103d03de
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -159,12 +159,12 @@ theorem prod_union : s ×ˢ (t₁ ∪ t₂) = s ×ˢ t₁ ∪ s ×ˢ t₂ := by
 
 theorem inter_prod : (s₁ ∩ s₂) ×ˢ t = s₁ ×ˢ t ∩ s₂ ×ˢ t := by
   ext ⟨x, y⟩
-  simp only [← and_and_right, mem_inter_iff, mem_prod, iff_self]
+  simp only [← and_and_right, mem_inter_iff, mem_prod]
 #align set.inter_prod Set.inter_prod
 
 theorem prod_inter : s ×ˢ (t₁ ∩ t₂) = s ×ˢ t₁ ∩ s ×ˢ t₂ := by
   ext ⟨x, y⟩
-  simp only [← and_and_left, mem_inter_iff, mem_prod, iff_self]
+  simp only [← and_and_left, mem_inter_iff, mem_prod]
 #align set.prod_inter Set.prod_inter
 
 theorem prod_inter_prod : s₁ ×ˢ t₁ ∩ s₂ ×ˢ t₂ = (s₁ ∩ s₂) ×ˢ (t₁ ∩ t₂) := by
@@ -321,7 +321,7 @@ theorem prod_nonempty_iff : (s ×ˢ t).Nonempty ↔ s.Nonempty ∧ t.Nonempty :=
 #align set.prod_nonempty_iff Set.prod_nonempty_iff
 
 theorem prod_eq_empty_iff : s ×ˢ t = ∅ ↔ s = ∅ ∨ t = ∅ := by
-  simp only [not_nonempty_iff_eq_empty.symm, prod_nonempty_iff, not_and_or, iff_self]
+  simp only [not_nonempty_iff_eq_empty.symm, prod_nonempty_iff, not_and_or]
 #align set.prod_eq_empty_iff Set.prod_eq_empty_iff
 
 theorem prod_sub_preimage_iff {W : Set γ} {f : α × β → γ} :
@@ -476,6 +476,10 @@ theorem mem_diagonal_iff {x : α × α} : x ∈ diagonal α ↔ x.1 = x.2 :=
   Iff.rfl
 #align set.mem_diagonal_iff Set.mem_diagonal_iff
 
+lemma diagonal_nonempty [Nonempty α] : (diagonal α).Nonempty :=
+Nonempty.elim ‹_› <| fun x => ⟨_, mem_diagonal x⟩
+#align set.diagonal_nonempty Set.diagonal_nonempty
+
 instance decidableMemDiagonal [h : DecidableEq α] (x : α × α) : Decidable (x ∈ diagonal α) :=
   h x.1 x.2
 #align set.decidable_mem_diagonal Set.decidableMemDiagonal
@@ -492,11 +496,13 @@ theorem range_diag : (range fun x => (x, x)) = diagonal α := by
   simp [diagonal, eq_comm]
 #align set.range_diag Set.range_diag
 
+theorem diagonal_subset_iff {s} : diagonal α ⊆ s ↔ ∀ x, (x, x) ∈ s := by
+  rw [← range_diag, range_subset_iff]
+#align set.diagonal_subset_iff Set.diagonal_subset_iff
+
 @[simp]
 theorem prod_subset_compl_diagonal_iff_disjoint : s ×ˢ t ⊆ diagonal αᶜ ↔ Disjoint s t :=
-  subset_compl_comm.trans <| by
-    simp_rw [← range_diag, range_subset_iff, disjoint_left, mem_compl_iff, prod_mk_mem_set_prod_eq,
-      not_and]
+  prod_subset_iff.trans disjoint_iff_forall_ne.symm
 #align set.prod_subset_compl_diagonal_iff_disjoint Set.prod_subset_compl_diagonal_iff_disjoint
 
 @[simp]
@@ -507,6 +513,16 @@ theorem diag_preimage_prod (s t : Set α) : (fun x => (x, x)) ⁻¹' s ×ˢ t = 
 theorem diag_preimage_prod_self (s : Set α) : (fun x => (x, x)) ⁻¹' s ×ˢ s = s :=
   inter_self s
 #align set.diag_preimage_prod_self Set.diag_preimage_prod_self
+
+theorem diag_image (s : Set α) : (fun x => (x, x)) '' s = diagonal α ∩ s ×ˢ s := by
+  ext x
+  constructor
+  · rintro ⟨x, hx, rfl⟩
+    exact ⟨rfl, hx, hx⟩
+  · obtain ⟨x, y⟩ := x
+    rintro ⟨rfl : x = y, h2x⟩
+    exact mem_image_of_mem _ h2x.1
+#align set.diag_image Set.diag_image
 
 end Diagonal
 
@@ -539,8 +555,10 @@ theorem offDiag_eq_empty : s.offDiag = ∅ ↔ s.Subsingleton := by
 #align set.off_diag_eq_empty Set.offDiag_eq_empty
 
 alias offDiag_nonempty ↔ _ Nontrivial.offDiag_nonempty
+#align set.nontrivial.off_diag_nonempty Set.Nontrivial.offDiag_nonempty
 
 alias offDiag_nonempty ↔ _ Subsingleton.offDiag_eq_empty
+#align set.subsingleton.off_diag_eq_empty Set.Subsingleton.offDiag_eq_empty
 
 variable (s t)
 
@@ -644,7 +662,7 @@ theorem pi_mono (h : ∀ i ∈ s, t₁ i ⊆ t₂ i) : pi s t₁ ⊆ pi s t₂ :
 #align set.pi_mono Set.pi_mono
 
 theorem pi_inter_distrib : (s.pi fun i => t i ∩ t₁ i) = s.pi t ∩ s.pi t₁ :=
-  ext fun x => by simp only [forall_and, mem_pi, mem_inter_iff, iff_self]
+  ext fun x => by simp only [forall_and, mem_pi, mem_inter_iff]
 #align set.pi_inter_distrib Set.pi_inter_distrib
 
 theorem pi_congr (h : s₁ = s₂) (h' : ∀ i ∈ s₁, t₁ i = t₂ i) : s₁.pi t₁ = s₂.pi t₂ :=
@@ -688,7 +706,7 @@ theorem univ_pi_empty [h : Nonempty ι] : pi univ (fun _ => ∅ : ∀ i, Set (α
 
 @[simp]
 theorem disjoint_univ_pi : Disjoint (pi univ t₁) (pi univ t₂) ↔ ∃ i, Disjoint (t₁ i) (t₂ i) := by
-  simp only [disjoint_iff_inter_eq_empty, ← pi_inter_distrib, univ_pi_eq_empty_iff, iff_self]
+  simp only [disjoint_iff_inter_eq_empty, ← pi_inter_distrib, univ_pi_eq_empty_iff]
 #align set.disjoint_univ_pi Set.disjoint_univ_pi
 
 -- Porting note: Removing `simp` - LHS does not simplify
@@ -729,8 +747,7 @@ theorem preimage_pi (s : Set ι) (t : ∀ i, Set (β i)) (f : ∀ i, α i → β
 
 theorem pi_if {p : ι → Prop} [h : DecidablePred p] (s : Set ι) (t₁ t₂ : ∀ i, Set (α i)) :
     (pi s fun i => if p i then t₁ i else t₂ i) =
-      pi ({ i ∈ s | p i }) t₁ ∩ pi ({ i ∈ s | ¬p i }) t₂ :=
-  by
+      pi ({ i ∈ s | p i }) t₁ ∩ pi ({ i ∈ s | ¬p i }) t₂ := by
   ext f
   refine' ⟨fun h => _, _⟩
   · constructor <;>

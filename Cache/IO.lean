@@ -32,15 +32,30 @@ def IRDIR : FilePath :=
   "build" / "ir"
 
 /-- Target directory for caching -/
-def CACHEDIR : FilePath :=
-  ⟨".cache"⟩
+initialize CACHEDIR : FilePath ← do
+  match ← IO.getEnv "XDG_CACHE_HOME" with
+  | some path => return path / "mathlib"
+  | none => match ← IO.getEnv "HOME" with
+    | some path => return path / ".cache" / "mathlib"
+    | none => pure ⟨".cache"⟩
 
 /-- Target file path for `curl` configurations -/
 def CURLCFG :=
   IO.CACHEDIR / "curl.cfg"
 
+/-- curl version at https://github.com/leanprover-community/static-curl -/
+def CURLVERSION :=
+  "7.88.1"
+
+def CURLBIN :=
+  -- change file name if we ever need a more recent version to trigger re-download
+  IO.CACHEDIR / s!"curl-{CURLVERSION}"
+
 def LAKEPACKAGESDIR : FilePath :=
   ⟨"lake-packages"⟩
+
+def getCurl : IO String := do
+  return if (← CURLBIN.pathExists) then CURLBIN.toString else "curl"
 
 abbrev PackageDirs := Lean.RBMap String FilePath compare
 
@@ -73,6 +88,38 @@ def runCmd (cmd : String) (args : Array String) (throwFailure := true) : IO Stri
   if out.exitCode != 0 && throwFailure then throw $ IO.userError out.stderr
   else return out.stdout
 
+def runCurl (args : Array String) (throwFailure := true) : IO String := do
+  runCmd (← getCurl) args throwFailure
+
+def validateCurl : IO Bool := do
+  if (← CURLBIN.pathExists) then return true
+  match (← runCmd "curl" #["--version"]).splitOn " " with
+  | "curl" :: v :: _ => match v.splitOn "." with
+    | maj :: min :: _ =>
+      let version := (maj.toNat!, min.toNat!)
+      let _ := @lexOrd
+      let _ := @leOfOrd
+      if version >= (7, 81) then return true
+      -- TODO: support more platforms if the need arises
+      let arch ← (·.trim) <$> runCmd "uname" #["-m"] false
+      let kernel ← (·.trim) <$> runCmd "uname" #["-s"] false
+      if kernel == "Linux" && arch ∈ ["x86_64", "aarch64"] then
+        IO.println s!"curl is too old; downloading more recent version"
+        IO.FS.createDirAll IO.CACHEDIR
+        let _ ← runCmd "curl" #[
+          s!"https://github.com/leanprover-community/static-curl/releases/download/v{CURLVERSION}/curl-{arch}-linux-static",
+          "-L", "-o", CURLBIN.toString]
+        let _ ← runCmd "chmod" #["u+x", CURLBIN.toString]
+        return true
+      if version >= (7, 70) then
+        IO.println s!"Warning: recommended `curl` version ≥7.81. Found {v}"
+        return true
+      else
+        IO.println s!"`curl` version is required to be ≥7.70. Found {v}. Exiting..."
+        return false
+    | _ => throw $ IO.userError "Invalidly formatted version of `curl`"
+  | _ => throw $ IO.userError "Invalidly formatted response from `curl --version`"
+
 /-- Recursively gets all files from a directory with a certain extension -/
 partial def getFilesWithExtension
   (fp : FilePath) (extension : String) (acc : Array FilePath := #[]) :
@@ -100,27 +147,34 @@ def mkDir (path : FilePath) : IO Unit := do
   if !(← path.pathExists) then IO.FS.createDirAll path
 
 /-- Given a path to a Lean file, concatenates the paths to its build files -/
-def mkBuildPaths (path : FilePath) : IO $ Array String := do
+def mkBuildPaths (path : FilePath) : IO $ Array FilePath := do
   let packageDir ← getPackageDir path
   return #[
-    packageDir / LIBDIR / path.withExtension "olean"   |>.toString,
-    packageDir / LIBDIR / path.withExtension "ilean"   |>.toString,
-    packageDir / LIBDIR / path.withExtension "trace"   |>.toString,
-    packageDir / IRDIR  / path.withExtension "c"       |>.toString,
-    packageDir / IRDIR  / path.withExtension "c.trace" |>.toString]
+    packageDir / LIBDIR / path.withExtension "olean",
+    packageDir / LIBDIR / path.withExtension "ilean",
+    packageDir / LIBDIR / path.withExtension "trace",
+    packageDir / IRDIR  / path.withExtension "c",
+    packageDir / IRDIR  / path.withExtension "c.trace"]
 
-/-- Compresses build files into the local cache -/
-def mkCache (hashMap : HashMap) (overwrite : Bool) : IO $ Array String := do
+def allExist (paths : Array FilePath) : IO Bool := do
+  for path in paths do
+    if !(← path.pathExists) then return false
+  pure true
+
+/-- Compresses build files into the local cache and returns an array with the compressed files -/
+def packCache (hashMap : HashMap) (overwrite : Bool) : IO $ Array String := do
   mkDir CACHEDIR
   IO.println "Compressing cache"
   let mut acc := default
   for (path, hash) in hashMap.toList do
     let zip := hash.asTarGz
     let zipPath := CACHEDIR / zip
-    if overwrite || !(← zipPath.pathExists) then
-      discard $ runCmd "tar" $ #["-I", "gzip -9", "-cf", zipPath.toString] ++
-        (← mkBuildPaths path)
-    acc := acc.push zip
+    let buildPaths ← mkBuildPaths path
+    if ← allExist buildPaths then
+      if (overwrite || !(← zipPath.pathExists)) then
+        discard $ runCmd "tar" $ #["-I", "gzip -9", "-cf", zipPath.toString] ++
+          (buildPaths.map toString)
+      acc := acc.push zip
   return acc
 
 /-- Gets the set of all cached files -/
@@ -131,6 +185,7 @@ def getLocalCacheSet : IO $ Lean.RBTree String compare := do
 def isPathFromMathlib (path : FilePath) : Bool :=
   match path.components with
   | "Mathlib" :: _ => true
+  | ["Mathlib.lean"] => true
   | _ => false
 
 /-- Decompresses build files into their respective folders -/
@@ -141,6 +196,7 @@ def unpackCache (hashMap : HashMap) : IO Unit := do
     IO.println s!"Decompressing {size} file(s)"
     let isMathlibRoot ← isMathlibRoot
     hashMap.forM fun path hash => do
+      let _ ← IO.asTask do
       match path.parent with
       | none | some path => do
         let packageDir ← getPackageDir path
@@ -153,14 +209,14 @@ def unpackCache (hashMap : HashMap) : IO Unit := do
           "-C", mathlibDepPath.toString]
   else IO.println "No cache files to decompress"
 
-instance : Ord FilePath where
-  compare x y := compare x.toString y.toString
-
-/-- Retrieves the azure token from the file system -/
+/-- Retrieves the azure token from the environment -/
 def getToken : IO String := do
   let some token ← IO.getEnv "MATHLIB_CACHE_SAS"
     | throw $ IO.userError "environment variable MATHLIB_CACHE_SAS must be set to upload caches"
   return token
+
+instance : Ord FilePath where
+  compare x y := compare x.toString y.toString
 
 /-- Removes all cache files except for what's in the `keep` set -/
 def cleanCache (keep : Lean.RBTree FilePath compare := default) : IO Unit := do

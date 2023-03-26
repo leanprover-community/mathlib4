@@ -47,8 +47,6 @@ namespace AbsoluteValue
 -- Porting note: Removing nolints.
 -- attribute [nolint doc_blame] AbsoluteValue.toMulHom
 
--- initialize_simps_projections AbsoluteValue (to_mul_hom_to_fun → apply)
-
 section OrderedSemiring
 
 section Semiring
@@ -85,6 +83,12 @@ theorem coe_mk (f : R →ₙ* S) {h₁ h₂ h₃} : (AbsoluteValue.mk f h₁ h�
 theorem ext ⦃f g : AbsoluteValue R S⦄ : (∀ x, f x = g x) → f = g :=
   FunLike.ext _ _
 #align absolute_value.ext AbsoluteValue.ext
+
+/-- See Note [custom simps projection]. -/
+def Simps.apply (f : AbsoluteValue R S) : R → S := f
+#align absolute_value.simps.apply AbsoluteValue.Simps.apply
+
+initialize_simps_projections AbsoluteValue (toFun → apply)
 
 -- Porting note:
 -- These helper instances are unhelpful in Lean 4, so omitting:
@@ -249,7 +253,7 @@ section LinearOrderedRing
 variable {R S : Type _} [Semiring R] [LinearOrderedRing S] (abv : AbsoluteValue R S)
 
 /-- `AbsoluteValue.abs` is `abs` as a bundled `AbsoluteValue`. -/
---@[simps] -- Porting note: Removed simps lemma
+@[simps]
 protected def abs : AbsoluteValue S S where
   toFun := abs
   nonneg' := abs_nonneg
@@ -257,6 +261,8 @@ protected def abs : AbsoluteValue S S where
   add_le' := abs_add
   map_mul' := abs_mul
 #align absolute_value.abs AbsoluteValue.abs
+#align absolute_value.abs_apply AbsoluteValue.abs_apply
+#align absolute_value.abs_to_mul_hom_apply AbsoluteValue.abs_apply
 
 instance : Inhabited (AbsoluteValue S S) :=
   ⟨AbsoluteValue.abs⟩
@@ -284,13 +290,13 @@ See also the type `AbsoluteValue` which represents a bundled version of absolute
 -/
 class IsAbsoluteValue {S} [OrderedSemiring S] {R} [Semiring R] (f : R → S) : Prop where
   /-- The absolute value is nonnegative -/
-  abv_nonneg : ∀ x, 0 ≤ f x
+  abv_nonneg' : ∀ x, 0 ≤ f x
   /-- The absolute value is positive definitive -/
-  abv_eq_zero : ∀ {x}, f x = 0 ↔ x = 0
+  abv_eq_zero' : ∀ {x}, f x = 0 ↔ x = 0
   /-- The absolute value satisfies the triangle inequality -/
-  abv_add : ∀ x y, f (x + y) ≤ f x + f y
+  abv_add' : ∀ x y, f (x + y) ≤ f x + f y
   /-- The absolute value is multiplicative -/
-  abv_mul : ∀ x y, f (x * y) = f x * f y
+  abv_mul' : ∀ x y, f (x * y) = f x * f y
 #align is_absolute_value IsAbsoluteValue
 
 namespace IsAbsoluteValue
@@ -301,24 +307,38 @@ variable {S : Type _} [OrderedSemiring S]
 
 variable {R : Type _} [Semiring R] (abv : R → S) [IsAbsoluteValue abv]
 
+lemma abv_nonneg (x) : 0 ≤ abv x := abv_nonneg' x
+#align is_absolute_value.abv_nonneg IsAbsoluteValue.abv_nonneg
+
+lemma abv_eq_zero {x} : abv x = 0 ↔ x = 0 := abv_eq_zero'
+#align is_absolute_value.abv_eq_zero IsAbsoluteValue.abv_eq_zero
+
+lemma abv_add (x y) : abv (x + y) ≤ abv x + abv y := abv_add' x y
+#align is_absolute_value.abv_add IsAbsoluteValue.abv_add
+
+lemma abv_mul (x y) : abv (x * y) = abv x * abv y := abv_mul' x y
+#align is_absolute_value.abv_mul IsAbsoluteValue.abv_mul
+
 /-- A bundled absolute value is an absolute value. -/
 instance _root_.AbsoluteValue.isAbsoluteValue (abv : AbsoluteValue R S) :
     IsAbsoluteValue abv where
-  abv_nonneg := abv.nonneg
-  abv_eq_zero := abv.eq_zero
-  abv_add := abv.add_le
-  abv_mul := abv.map_mul
+  abv_nonneg' := abv.nonneg
+  abv_eq_zero' := abv.eq_zero
+  abv_add' := abv.add_le
+  abv_mul' := abv.map_mul
 #align absolute_value.is_absolute_value AbsoluteValue.isAbsoluteValue
 
 /-- Convert an unbundled `IsAbsoluteValue` to a bundled `AbsoluteValue`. -/
---@[simps] -- Porting note: Removed simps lemma
+@[simps]
 def toAbsoluteValue : AbsoluteValue R S where
   toFun := abv
-  add_le' := abv_add
-  eq_zero' _ := abv_eq_zero
-  nonneg' := abv_nonneg
-  map_mul' := abv_mul
+  add_le' := abv_add'
+  eq_zero' _ := abv_eq_zero'
+  nonneg' := abv_nonneg'
+  map_mul' := abv_mul'
 #align is_absolute_value.to_absolute_value IsAbsoluteValue.toAbsoluteValue
+#align is_absolute_value.to_absolute_value_apply IsAbsoluteValue.toAbsoluteValue_apply
+#align is_absolute_value.to_absolute_value_to_mul_hom_apply IsAbsoluteValue.toAbsoluteValue_apply
 
 theorem abv_zero : abv 0 = 0 :=
   map_zero (toAbsoluteValue abv)
@@ -371,7 +391,7 @@ section Ring
 variable {R : Type _} [Ring R] (abv : R → S) [IsAbsoluteValue abv]
 
 theorem abv_sub_le (a b c : R) : abv (a - c) ≤ abv (a - b) + abv (b - c) := by
-  simpa [sub_eq_add_neg, add_assoc] using abv_add (a - b) (b - c)
+  simpa [sub_eq_add_neg, add_assoc] using abv_add abv (a - b) (b - c)
 #align is_absolute_value.abv_sub_le IsAbsoluteValue.abv_sub_le
 
 theorem sub_abv_le_abv_sub (a b : R) : abv a - abv b ≤ abv (a - b) :=
@@ -435,7 +455,7 @@ theorem abv_one' : abv 1 = 1 :=
 
 /-- An absolute value as a monoid with zero homomorphism, assuming the target is a semifield. -/
 def abvHom' : R →*₀ S :=
-  ⟨⟨abv, abv_zero abv⟩, abv_one' abv, abv_mul⟩
+  ⟨⟨abv, abv_zero abv⟩, abv_one' abv, abv_mul abv⟩
 #align is_absolute_value.abv_hom' IsAbsoluteValue.abvHom'
 
 end Semiring

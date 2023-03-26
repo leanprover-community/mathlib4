@@ -155,8 +155,10 @@ theorem not_isTop_iff_ne_top : ¬IsTop a ↔ a ≠ ⊤ :=
 #align not_is_top_iff_ne_top not_isTop_iff_ne_top
 
 alias isMax_iff_eq_top ↔ IsMax.eq_top _
+#align is_max.eq_top IsMax.eq_top
 
 alias isTop_iff_eq_top ↔ IsTop.eq_top _
+#align is_top.eq_top IsTop.eq_top
 
 @[simp]
 theorem top_le_iff : ⊤ ≤ a ↔ a = ⊤ :=
@@ -361,8 +363,10 @@ theorem not_isBot_iff_ne_bot : ¬IsBot a ↔ a ≠ ⊥ :=
 #align not_is_bot_iff_ne_bot not_isBot_iff_ne_bot
 
 alias isMin_iff_eq_bot ↔ IsMin.eq_bot _
+#align is_min.eq_bot IsMin.eq_bot
 
 alias isBot_iff_eq_bot ↔ IsBot.eq_bot _
+#align is_bot.eq_bot IsBot.eq_bot
 
 @[simp]
 theorem le_bot_iff : a ≤ ⊥ ↔ a = ⊥ :=

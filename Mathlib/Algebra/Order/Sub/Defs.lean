@@ -252,6 +252,7 @@ theorem tsub_nonpos : a - b ≤ 0 ↔ a ≤ b := by rw [tsub_le_iff_left, add_ze
 #align tsub_nonpos tsub_nonpos
 
 alias tsub_nonpos ↔ _ tsub_nonpos_of_le
+#align tsub_nonpos_of_le tsub_nonpos_of_le
 
 end Preorder
 

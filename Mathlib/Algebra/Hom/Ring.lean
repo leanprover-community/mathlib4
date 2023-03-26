@@ -72,10 +72,12 @@ infixr:25 " →ₙ+* " => NonUnitalRingHom
 /-- Reinterpret a non-unital ring homomorphism `f : α →ₙ+* β` as a semigroup
 homomorphism `α →ₙ* β`. The `simp`-normal form is `(f : α →ₙ* β)`. -/
 add_decl_doc NonUnitalRingHom.toMulHom
+#align non_unital_ring_hom.to_mul_hom NonUnitalRingHom.toMulHom
 
 /-- Reinterpret a non-unital ring homomorphism `f : α →ₙ+* β` as an additive
 monoid homomorphism `α →+ β`. The `simp`-normal form is `(f : α →+ β)`. -/
 add_decl_doc NonUnitalRingHom.toAddMonoidHom
+#align non_unital_ring_hom.to_add_monoid_hom NonUnitalRingHom.toAddMonoidHom
 
 section NonUnitalRingHomClass
 
@@ -136,11 +138,7 @@ instance : NonUnitalRingHomClass (α →ₙ+* β) α β where
 #noalign non_unital_ring_hom.coe_mk
 #noalign non_unital_ring_hom.coe_coe
 
-/-- See Note [custom simps projection] -/
-def Simps.apply {α β : Type _} [NonUnitalNonAssocSemiring α]
-  [NonUnitalNonAssocSemiring β] (f : α →ₙ+* β) : α → β := f
-
-initialize_simps_projections NonUnitalRingHom (toMulHom_toFun → apply, -toMulHom)
+initialize_simps_projections NonUnitalRingHom (toFun → apply)
 
 @[simp]
 theorem coe_toMulHom (f : α →ₙ+* β) : ⇑f.toMulHom = f :=
@@ -153,9 +151,7 @@ theorem coe_mulHom_mk (f : α → β) (h₁ h₂ h₃) :
   rfl
 #align non_unital_ring_hom.coe_mul_hom_mk NonUnitalRingHom.coe_mulHom_mk
 
-@[simp]
-theorem coe_toAddMonoidHom (f : α →ₙ+* β) : ↑(f.toMulHom) = ↑f :=
-  rfl
+theorem coe_toAddMonoidHom (f : α →ₙ+* β) : ⇑f.toAddMonoidHom = f := rfl
 #align non_unital_ring_hom.coe_to_add_monoid_hom NonUnitalRingHom.coe_toAddMonoidHom
 
 @[simp]
@@ -201,9 +197,8 @@ theorem mk_coe (f : α →ₙ+* β) (h₁ h₂ h₃) : NonUnitalRingHom.mk (MulH
 #align non_unital_ring_hom.mk_coe NonUnitalRingHom.mk_coe
 
 theorem coe_addMonoidHom_injective : Injective fun f : α →ₙ+* β => (f : α →+ β) :=
-  fun _ _ h => ext <| AddMonoidHom.congr_fun h
-#align
-  non_unital_ring_hom.coe_add_monoid_hom_injective NonUnitalRingHom.coe_addMonoidHom_injective
+  fun _ _ h => ext <| FunLike.congr_fun (F := α →+ β) h
+#align non_unital_ring_hom.coe_add_monoid_hom_injective NonUnitalRingHom.coe_addMonoidHom_injective
 
 set_option linter.deprecated false in
 theorem coe_mulHom_injective : Injective fun f : α →ₙ+* β => (f : α →ₙ* β) := fun _ _ h =>
@@ -363,18 +358,22 @@ infixr:25 " →+* " => RingHom
 /-- Reinterpret a ring homomorphism `f : α →+* β` as a monoid with zero homomorphism `α →*₀ β`.
 The `simp`-normal form is `(f : α →*₀ β)`. -/
 add_decl_doc RingHom.toMonoidWithZeroHom
+#align ring_hom.to_monoid_with_zero_hom RingHom.toMonoidWithZeroHom
 
 /-- Reinterpret a ring homomorphism `f : α →+* β` as a monoid homomorphism `α →* β`.
 The `simp`-normal form is `(f : α →* β)`. -/
 add_decl_doc RingHom.toMonoidHom
+#align ring_hom.to_monoid_hom RingHom.toMonoidHom
 
 /-- Reinterpret a ring homomorphism `f : α →+* β` as an additive monoid homomorphism `α →+ β`.
 The `simp`-normal form is `(f : α →+ β)`. -/
 add_decl_doc RingHom.toAddMonoidHom
+#align ring_hom.to_add_monoid_hom RingHom.toAddMonoidHom
 
 /-- Reinterpret a ring homomorphism `f : α →+* β` as a non-unital ring homomorphism `α →ₙ+* β`. The
 `simp`-normal form is `(f : α →ₙ+* β)`. -/
 add_decl_doc RingHom.toNonUnitalRingHom
+#align ring_hom.to_non_unital_ring_hom RingHom.toNonUnitalRingHom
 
 section RingHomClass
 
@@ -388,6 +387,12 @@ class RingHomClass (F : Type _) (α β : outParam (Type _)) [NonAssocSemiring α
   [NonAssocSemiring β] extends MonoidHomClass F α β, AddMonoidHomClass F α β,
   MonoidWithZeroHomClass F α β
 #align ring_hom_class RingHomClass
+
+set_option linter.deprecated false in
+/-- Ring homomorphisms preserve `bit1`. -/
+@[simp] lemma map_bit1 [NonAssocSemiring α] [NonAssocSemiring β] [RingHomClass F α β]
+    (f : F) (a : α) : (f (bit1 a) : β) = bit1 (f a) := by simp [bit1]
+#align map_bit1 map_bit1
 
 -- Porting note: marked `{}` rather than `[]` to prevent dangerous instances
 variable {_ : NonAssocSemiring α} {_ : NonAssocSemiring β} [RingHomClass F α β]
@@ -440,10 +445,7 @@ instance : RingHomClass (α →+* β) α β where
 -- instance : CoeFun (α →+* β) fun _ => α → β :=
 --   ⟨RingHom.toFun⟩
 
-/-- See Note [custom simps projection] -/
-def Simps.apply {α β : Type _} [NonAssocSemiring α] [NonAssocSemiring β] (f : α →+* β) : α → β := f
-
-initialize_simps_projections RingHom (toMonoidHom_toOneHom_toFun → apply, -toMonoidHom)
+initialize_simps_projections RingHom (toFun → apply)
 
 -- Porting note: is this lemma still needed in Lean4?
 -- Porting note: because `f.toFun` really means `f.toMonoidHom.toOneHom.toFun` and
@@ -455,7 +457,7 @@ theorem toFun_eq_coe (f : α →+* β) : f.toFun = f :=
 #align ring_hom.to_fun_eq_coe RingHom.toFun_eq_coe
 
 @[simp]
-theorem coe_mk (f : α → β) (h₁ h₂ h₃ h₄) : ⇑(⟨⟨⟨f, h₁⟩, h₂⟩, h₃, h₄⟩ : α →+* β) = f :=
+theorem coe_mk (f : α →* β) (h₁ h₂) : ((⟨f, h₁, h₂⟩ : α →+* β) : α → β) = f :=
   rfl
 #align ring_hom.coe_mk RingHom.coe_mk
 
@@ -485,8 +487,7 @@ theorem toMonoidWithZeroHom_eq_coe (f : α →+* β) : (f.toMonoidWithZeroHom : 
 #align ring_hom.to_monoid_with_zero_hom_eq_coe RingHom.toMonoidWithZeroHom_eq_coe
 
 @[simp]
-theorem coe_monoidHom_mk (f : α → β) (h₁ h₂ h₃ h₄) :
-    ((⟨⟨⟨f, h₁⟩, h₂⟩, h₃, h₄⟩ : α →+* β) : α →* β) = ⟨⟨f, h₁⟩, h₂⟩ :=
+theorem coe_monoidHom_mk (f : α →* β) (h₁ h₂) : ((⟨f, h₁, h₂⟩ : α →+* β) : α →* β) = f :=
   rfl
 #align ring_hom.coe_monoid_hom_mk RingHom.coe_monoidHom_mk
 
@@ -552,7 +553,7 @@ theorem mk_coe (f : α →+* β) (h₁ h₂ h₃ h₄) : RingHom.mk ⟨⟨f, h�
 #align ring_hom.mk_coe RingHom.mk_coe
 
 theorem coe_addMonoidHom_injective : Injective (fun f : α →+* β => (f : α →+ β)) := fun _ _ h =>
-  ext <| AddMonoidHom.congr_fun h
+  ext <| FunLike.congr_fun (F := α →+ β) h
 #align ring_hom.coe_add_monoid_hom_injective RingHom.coe_addMonoidHom_injective
 
 set_option linter.deprecated false in
@@ -616,9 +617,7 @@ theorem codomain_trivial_iff_range_eq_singleton_zero : (0 : β) = 1 ↔ Set.rang
     ⟨fun h =>
       Set.ext fun y => ⟨fun ⟨x, hx⟩ => by simp [← hx, h x], fun hy => ⟨0, by simpa using hy.symm⟩⟩,
       fun h x => Set.mem_singleton_iff.mp (h ▸ Set.mem_range_self x)⟩
-#align
-  ring_hom.codomain_trivial_iff_range_eq_singleton_zero
-  RingHom.codomain_trivial_iff_range_eq_singleton_zero
+#align ring_hom.codomain_trivial_iff_range_eq_singleton_zero RingHom.codomain_trivial_iff_range_eq_singleton_zero
 
 /-- `f : α →+* β` doesn't map `1` to `0` if `β` is nontrivial -/
 theorem map_one_ne_zero [Nontrivial β] : f 1 ≠ 0 :=
@@ -795,16 +794,13 @@ def mkRingHomOfMulSelfOfTwoNeZero (h : ∀ x, f (x * x) = f x * f x) (h_two : (2
       rw [sub_sub, ← two_mul, ← add_sub_assoc, ← two_mul, ← mul_sub, mul_eq_zero (M₀ := α),
         sub_eq_zero, or_iff_not_imp_left] at hxy
       exact hxy h_two }
-#align
-  add_monoid_hom.mk_ring_hom_of_mul_self_of_two_ne_zero AddMonoidHom.mkRingHomOfMulSelfOfTwoNeZero
+#align add_monoid_hom.mk_ring_hom_of_mul_self_of_two_ne_zero AddMonoidHom.mkRingHomOfMulSelfOfTwoNeZero
 
 @[simp]
 theorem coe_fn_mkRingHomOfMulSelfOfTwoNeZero (h h_two h_one) :
     (f.mkRingHomOfMulSelfOfTwoNeZero h h_two h_one : β → α) = f :=
   rfl
-#align
-  add_monoid_hom.coe_fn_mk_ring_hom_of_mul_self_of_two_ne_zero
-  AddMonoidHom.coe_fn_mkRingHomOfMulSelfOfTwoNeZero
+#align add_monoid_hom.coe_fn_mk_ring_hom_of_mul_self_of_two_ne_zero AddMonoidHom.coe_fn_mkRingHomOfMulSelfOfTwoNeZero
 
 -- Porting note: `simp` can prove this
 -- @[simp]
@@ -813,8 +809,6 @@ theorem coe_addMonoidHom_mkRingHomOfMulSelfOfTwoNeZero (h h_two h_one) :
   apply AddMonoidHom.ext -- Porting note: why isn't `ext` picking up this lemma?
   intro
   rfl
-#align
-  add_monoid_hom.coe_add_monoid_hom_mk_ring_hom_of_mul_self_of_two_ne_zero
-  AddMonoidHom.coe_addMonoidHom_mkRingHomOfMulSelfOfTwoNeZero
+#align add_monoid_hom.coe_add_monoid_hom_mk_ring_hom_of_mul_self_of_two_ne_zero AddMonoidHom.coe_addMonoidHom_mkRingHomOfMulSelfOfTwoNeZero
 
 end AddMonoidHom

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 
 ! This file was ported from Lean 3 source module data.nat.order.basic
-! leanprover-community/mathlib commit 655994e298904d7e5bbd1e18c95defd7b543eb94
+! leanprover-community/mathlib commit 26f081a2fb920140ed5bc5cc5344e84bcc7cb2b2
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -74,7 +74,7 @@ instance canonicallyOrderedCommSemiring : CanonicallyOrderedCommSemiring ℕ :=
     (inferInstance : LinearOrderedSemiring ℕ), (inferInstance : CommSemiring ℕ) with
     exists_add_of_le := fun {_ _} h => (Nat.le.dest h).imp fun _ => Eq.symm,
     le_self_add := Nat.le_add_right,
-    eq_zero_or_eq_zero_of_mul_eq_zero := fun _ _ => Nat.eq_zero_of_mul_eq_zero }
+    eq_zero_or_eq_zero_of_mul_eq_zero := Nat.eq_zero_of_mul_eq_zero }
 
 instance canonicallyLinearOrderedAddMonoid : CanonicallyLinearOrderedAddMonoid ℕ :=
   { (inferInstance : CanonicallyOrderedAddMonoid ℕ), Nat.linearOrder with }
@@ -260,7 +260,7 @@ instance : OrderedSub ℕ := by
   intro m n k
   induction' n with n ih generalizing k
   · simp
-  · simp only [sub_succ, pred_le_iff, ih, succ_add, add_succ, iff_self]
+  · simp only [sub_succ, pred_le_iff, ih, succ_add, add_succ]
 
 theorem lt_pred_iff : n < pred m ↔ succ n < m :=
   show n < m - 1 ↔ n + 1 < m from lt_tsub_iff_right
@@ -465,13 +465,26 @@ theorem mul_div_mul_comm_of_dvd_dvd (hmk : k ∣ m) (hnl : l ∣ n) :
     Nat.mul_div_cancel_left _ (mul_pos hk0 hl0)]
 #align nat.mul_div_mul_comm_of_dvd_dvd Nat.mul_div_mul_comm_of_dvd_dvd
 
+theorem le_half_of_half_lt_sub {a b : ℕ} (h : a / 2 < a - b) : b ≤ a / 2 := by
+  rw [Nat.le_div_iff_mul_le two_pos]
+  rw [Nat.div_lt_iff_lt_mul two_pos, Nat.mul_sub_right_distrib, lt_tsub_iff_right, mul_two a] at h
+  exact le_of_lt (Nat.lt_of_add_lt_add_left h)
+#align nat.le_half_of_half_lt_sub Nat.le_half_of_half_lt_sub
+
+theorem half_le_of_sub_le_half {a b : ℕ} (h : a - b ≤ a / 2) : a / 2 ≤ b := by
+  rw [Nat.le_div_iff_mul_le two_pos, Nat.mul_sub_right_distrib, tsub_le_iff_right, mul_two,
+    add_le_add_iff_left] at h
+  rw [← Nat.mul_div_left b two_pos]
+  exact Nat.div_le_div_right h
+#align nat.half_le_of_sub_le_half Nat.half_le_of_sub_le_half
+
 /-! ### `mod`, `dvd` -/
 
 
 theorem two_mul_odd_div_two (hn : n % 2 = 1) : 2 * (n / 2) = n - 1 := by
   conv =>
     rhs
-    rw [← Nat.mod_add_div n 2, hn, add_tsub_cancel_left]
+    rw [← Nat.mod_add_div n 2, hn, @add_tsub_cancel_left]
 #align nat.two_mul_odd_div_two Nat.two_mul_odd_div_two
 
 theorem div_dvd_of_dvd (h : n ∣ m) : m / n ∣ m :=
@@ -508,7 +521,7 @@ theorem not_dvd_of_pos_of_lt (h1 : 0 < n) (h2 : n < m) : ¬m ∣ n := by
 /-- If `m` and `n` are equal mod `k`, `m - n` is zero mod `k`. -/
 theorem sub_mod_eq_zero_of_mod_eq (h : m % k = n % k) : (m - n) % k = 0 := by
   rw [← Nat.mod_add_div m k, ← Nat.mod_add_div n k, ← h, tsub_add_eq_tsub_tsub,
-    add_tsub_cancel_left, ← mul_tsub k, Nat.mul_mod_right]
+    @add_tsub_cancel_left, ← mul_tsub k, Nat.mul_mod_right]
 #align nat.sub_mod_eq_zero_of_mod_eq Nat.sub_mod_eq_zero_of_mod_eq
 
 @[simp]
@@ -663,8 +676,8 @@ theorem le_findGreatest (hmb : m ≤ n) (hm : P m) : m ≤ Nat.findGreatest P n 
   le_of_not_lt fun hlt => (findGreatest_eq_iff.1 rfl).2.2 hlt hmb hm
 #align nat.le_find_greatest Nat.le_findGreatest
 
-theorem findGreatest_mono_right (P : ℕ → Prop) [DecidablePred P] : Monotone (Nat.findGreatest P) :=
-  by
+theorem findGreatest_mono_right (P : ℕ → Prop) [DecidablePred P] :
+    Monotone (Nat.findGreatest P) := by
   refine monotone_nat_of_le_succ fun n => ?_
   rw [findGreatest_succ]
   split_ifs

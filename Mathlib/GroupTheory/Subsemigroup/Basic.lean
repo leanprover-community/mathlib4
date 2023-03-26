@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Kenny Lau, Johan Commelin, Mario Carneiro, Kevin Buzza
 Amelia Livingston, Yury Kudryashov, Yakov Pechersky
 
 ! This file was ported from Lean 3 source module group_theory.subsemigroup.basic
-! leanprover-community/mathlib commit 207cfac9fcd06138865b5d04f7091e46d9320432
+! leanprover-community/mathlib commit feb99064803fd3108e37c18b0f77d0a8344677a3
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -62,7 +62,7 @@ variable [Mul M] {s : Set M}
 variable [Add A] {t : Set A}
 
 /-- `MulMemClass S M` says `S` is a type of sets `s : Set M` that are closed under `(*)` -/
-class MulMemClass (S : Type _) (M : outParam <| Type _) [Mul M] [SetLike S M] : Prop where
+class MulMemClass (S : Type _) (M : Type _) [Mul M] [SetLike S M] : Prop where
   /-- A substructure satisfying `MulMemClass` is closed under multiplication. -/
   mul_mem : ∀ {s : S} {a b : M}, a ∈ s → b ∈ s → a * b ∈ s
 #align mul_mem_class MulMemClass
@@ -70,7 +70,7 @@ class MulMemClass (S : Type _) (M : outParam <| Type _) [Mul M] [SetLike S M] : 
 export MulMemClass (mul_mem)
 
 /-- `AddMemClass S M` says `S` is a type of sets `s : Set M` that are closed under `(+)` -/
-class AddMemClass (S : Type _) (M : outParam <| Type _) [Add M] [SetLike S M] : Prop where
+class AddMemClass (S : Type _) (M : Type _) [Add M] [SetLike S M] : Prop where
   /-- A substructure satisfying `AddMemClass` is closed under addition. -/
   add_mem : ∀ {s : S} {a b : M}, a ∈ s → b ∈ s → a + b ∈ s
 #align add_mem_class AddMemClass
@@ -106,42 +106,35 @@ instance : SetLike (Subsemigroup M) M :=
 @[to_additive]
 instance : MulMemClass (Subsemigroup M) M where mul_mem := fun {_ _ _} => Subsemigroup.mul_mem' _
 
-/-- See Note [custom simps projection] -/
-@[to_additive "See Note [custom simps projection]"]
-def Simps.coe (S : Subsemigroup M) : Set M :=
-  S
-#align subsemigroup.simps.coe Subsemigroup.Simps.coe
-#align add_subsemigroup.simps.coe AddSubsemigroup.Simps.coe
-
 initialize_simps_projections Subsemigroup (carrier → coe)
 initialize_simps_projections AddSubsemigroup (carrier → coe)
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem mem_carrier {s : Subsemigroup M} {x : M} : x ∈ s.carrier ↔ x ∈ s :=
   Iff.rfl
 #align subsemigroup.mem_carrier Subsemigroup.mem_carrier
 #align add_subsemigroup.mem_carrier AddSubsemigroup.mem_carrier
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem mem_mk {s : Set M} {x : M} (h_mul) : x ∈ mk s h_mul ↔ x ∈ s :=
   Iff.rfl
 #align subsemigroup.mem_mk Subsemigroup.mem_mk
 #align add_subsemigroup.mem_mk AddSubsemigroup.mem_mk
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem coe_set_mk {s : Set M} (h_mul) : (mk s h_mul : Set M) = s :=
   rfl
 #align subsemigroup.coe_set_mk Subsemigroup.coe_set_mk
 #align add_subsemigroup.coe_set_mk AddSubsemigroup.coe_set_mk
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem mk_le_mk {s t : Set M} (h_mul) (h_mul') : mk s h_mul ≤ mk t h_mul' ↔ s ⊆ t :=
   Iff.rfl
 #align subsemigroup.mk_le_mk Subsemigroup.mk_le_mk
 #align add_subsemigroup.mk_le_mk AddSubsemigroup.mk_le_mk
 
 /-- Two subsemigroups are equal if they have the same elements. -/
-@[ext, to_additive "Two `AddSubsemigroup`s are equal if they have the same elements."]
+@[to_additive (attr := ext) "Two `AddSubsemigroup`s are equal if they have the same elements."]
 theorem ext {S T : Subsemigroup M} (h : ∀ x, x ∈ S ↔ x ∈ T) : S = T :=
   SetLike.ext h
 #align subsemigroup.ext Subsemigroup.ext
@@ -158,7 +151,7 @@ protected def copy (S : Subsemigroup M) (s : Set M) (hs : s = S) :
 
 variable {S : Subsemigroup M}
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem coe_copy {s : Set M} (hs : s = S) : (S.copy s hs : Set M) = s :=
   rfl
 #align subsemigroup.coe_copy Subsemigroup.coe_copy
@@ -177,7 +170,7 @@ variable (S)
 protected theorem mul_mem {x y : M} : x ∈ S → y ∈ S → x * y ∈ S :=
   Subsemigroup.mul_mem' S
 #align subsemigroup.mul_mem Subsemigroup.mul_mem
-#align add_subsemigroup.mul_mem AddSubsemigroup.add_mem
+#align add_subsemigroup.add_mem AddSubsemigroup.add_mem
 
 /-- The subsemigroup `M` of the magma `M`. -/
 @[to_additive "The additive subsemigroup `M` of the magma `M`."]
@@ -201,19 +194,19 @@ theorem not_mem_bot {x : M} : x ∉ (⊥ : Subsemigroup M) :=
 #align subsemigroup.not_mem_bot Subsemigroup.not_mem_bot
 #align add_subsemigroup.not_mem_bot AddSubsemigroup.not_mem_bot
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem mem_top (x : M) : x ∈ (⊤ : Subsemigroup M) :=
   Set.mem_univ x
 #align subsemigroup.mem_top Subsemigroup.mem_top
 #align add_subsemigroup.mem_top AddSubsemigroup.mem_top
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem coe_top : ((⊤ : Subsemigroup M) : Set M) = Set.univ :=
   rfl
 #align subsemigroup.coe_top Subsemigroup.coe_top
 #align add_subsemigroup.coe_top AddSubsemigroup.coe_top
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem coe_bot : ((⊥ : Subsemigroup M) : Set M) = ∅ :=
   rfl
 #align subsemigroup.coe_bot Subsemigroup.coe_bot
@@ -221,18 +214,18 @@ theorem coe_bot : ((⊥ : Subsemigroup M) : Set M) = ∅ :=
 
 /-- The inf of two subsemigroups is their intersection. -/
 @[to_additive "The inf of two `AddSubsemigroup`s is their intersection."]
-instance : HasInf (Subsemigroup M) :=
+instance : Inf (Subsemigroup M) :=
   ⟨fun S₁ S₂ =>
     { carrier := S₁ ∩ S₂
       mul_mem' := fun ⟨hx, hx'⟩ ⟨hy, hy'⟩ => ⟨S₁.mul_mem hx hy, S₂.mul_mem hx' hy'⟩ }⟩
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem coe_inf (p p' : Subsemigroup M) : ((p ⊓ p' : Subsemigroup M) : Set M) = (p : Set M) ∩ p' :=
   rfl
 #align subsemigroup.coe_inf Subsemigroup.coe_inf
 #align add_subsemigroup.coe_inf AddSubsemigroup.coe_inf
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem mem_inf {p p' : Subsemigroup M} {x : M} : x ∈ p ⊓ p' ↔ x ∈ p ∧ x ∈ p' :=
   Iff.rfl
 #align subsemigroup.mem_inf Subsemigroup.mem_inf
@@ -246,7 +239,7 @@ instance : InfSet (Subsemigroup M) :=
         Set.mem_binterᵢ fun i h =>
           i.mul_mem (by apply Set.mem_interᵢ₂.1 hx i h) (by apply Set.mem_interᵢ₂.1 hy i h) }⟩
 
-@[simp, norm_cast, to_additive]
+@[to_additive (attr := simp, norm_cast)]
 theorem coe_infₛ (S : Set (Subsemigroup M)) : ((infₛ S : Subsemigroup M) : Set M) = ⋂ s ∈ S, ↑s :=
   rfl
 #align subsemigroup.coe_Inf Subsemigroup.coe_infₛ
@@ -264,7 +257,7 @@ theorem mem_infᵢ {ι : Sort _} {S : ι → Subsemigroup M} {x : M} : (x ∈ �
 #align subsemigroup.mem_infi Subsemigroup.mem_infᵢ
 #align add_subsemigroup.mem_infi AddSubsemigroup.mem_infᵢ
 
-@[simp, norm_cast, to_additive]
+@[to_additive (attr := simp, norm_cast)]
 theorem coe_infᵢ {ι : Sort _} {S : ι → Subsemigroup M} : (↑(⨅ i, S i) : Set M) = ⋂ i, S i := by
   simp only [infᵢ, coe_infₛ, Set.binterᵢ_range]
 #align subsemigroup.coe_infi Subsemigroup.coe_infᵢ
@@ -287,7 +280,7 @@ instance : CompleteLattice (Subsemigroup M) :=
     inf_le_left := fun _ _ _ => And.left
     inf_le_right := fun _ _ _ => And.right }
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem subsingleton_of_subsingleton [Subsingleton (Subsemigroup M)] : Subsingleton M := by
   constructor; intro x y
   have : ∀ a : M, a ∈ (⊥ : Subsemigroup M) := by simp [Subsingleton.elim (⊥ : Subsemigroup M) ⊤]
@@ -316,7 +309,7 @@ theorem mem_closure {x : M} : x ∈ closure s ↔ ∀ S : Subsemigroup M, s ⊆ 
 #align add_subsemigroup.mem_closure AddSubsemigroup.mem_closure
 
 /-- The subsemigroup generated by a set includes the set. -/
-@[simp, to_additive "The `AddSubsemigroup` generated by a set includes the set."]
+@[to_additive (attr := simp) "The `AddSubsemigroup` generated by a set includes the set."]
 theorem subset_closure : s ⊆ closure s := fun _ hx => mem_closure.2 fun _ hS => hS hx
 #align subsemigroup.subset_closure Subsemigroup.subset_closure
 #align add_subsemigroup.subset_closure AddSubsemigroup.subset_closure
@@ -332,8 +325,8 @@ variable {S}
 open Set
 
 /-- A subsemigroup `S` includes `closure s` if and only if it includes `s`. -/
-@[simp,
-  to_additive "An additive subsemigroup `S` includes `closure s` if and only if it includes `s`"]
+@[to_additive (attr := simp)
+  "An additive subsemigroup `S` includes `closure s` if and only if it includes `s`"]
 theorem closure_le : closure s ≤ S ↔ s ⊆ S :=
   ⟨Subset.trans subset_closure, fun h => infₛ_le h⟩
 #align subsemigroup.closure_le Subsemigroup.closure_le
@@ -358,7 +351,7 @@ variable (S)
 
 /-- An induction principle for closure membership. If `p` holds for all elements of `s`, and
 is preserved under multiplication, then `p` holds for all elements of the closure of `s`. -/
-@[elab_as_elim, to_additive "An induction principle for additive closure membership. If `p`
+@[to_additive (attr := elab_as_elim) "An induction principle for additive closure membership. If `p`
   holds for all elements of `s`, and is preserved under addition, then `p` holds for all
   elements of the additive closure of `s`."]
 theorem closure_induction {p : M → Prop} {x} (h : x ∈ closure s) (Hs : ∀ x ∈ s, p x)
@@ -368,7 +361,7 @@ theorem closure_induction {p : M → Prop} {x} (h : x ∈ closure s) (Hs : ∀ x
 #align add_subsemigroup.closure_induction AddSubsemigroup.closure_induction
 
 /-- A dependent version of `Subsemigroup.closure_induction`.  -/
-@[elab_as_elim, to_additive "A dependent version of `AddSubsemigroup.closure_induction`. "]
+@[to_additive (attr := elab_as_elim) "A dependent version of `AddSubsemigroup.closure_induction`. "]
 theorem closure_induction' (s : Set M) {p : ∀ x, x ∈ closure s → Prop}
     (Hs : ∀ (x) (h : x ∈ s), p x (subset_closure h))
     (Hmul : ∀ x hx y hy, p x hx → p y hy → p (x * y) (mul_mem hx hy)) {x} (hx : x ∈ closure s) :
@@ -381,7 +374,7 @@ theorem closure_induction' (s : Set M) {p : ∀ x, x ∈ closure s → Prop}
 #align add_subsemigroup.closure_induction' AddSubsemigroup.closure_induction'
 
 /-- An induction principle for closure membership for predicates with two arguments.  -/
-@[elab_as_elim, to_additive "An induction principle for additive closure membership for
+@[to_additive (attr := elab_as_elim) "An induction principle for additive closure membership for
   predicates with two arguments."]
 theorem closure_induction₂ {p : M → M → Prop} {x} {y : M} (hx : x ∈ closure s) (hy : y ∈ closure s)
     (Hs : ∀ x ∈ s, ∀ y ∈ s, p x y) (Hmul_left : ∀ x y z, p x z → p y z → p (x * y) z)
@@ -395,7 +388,7 @@ theorem closure_induction₂ {p : M → M → Prop} {x} {y : M} (hx : x ∈ clos
 /-- If `s` is a dense set in a magma `M`, `Subsemigroup.closure s = ⊤`, then in order to prove that
 some predicate `p` holds for all `x : M` it suffices to verify `p x` for `x ∈ s`,
 and verify that `p x` and `p y` imply `p (x * y)`. -/
-@[elab_as_elim, to_additive "If `s` is a dense set in an additive monoid `M`,
+@[to_additive (attr := elab_as_elim) "If `s` is a dense set in an additive monoid `M`,
   `AddSubsemigroup.closure s = ⊤`, then in order to prove that some predicate `p` holds
   for all `x : M` it suffices to verify `p x` for `x ∈ s`, and verify that `p x` and `p y` imply
   `p (x + y)`."]
@@ -418,19 +411,19 @@ protected def gi : GaloisInsertion (@closure M _) SetLike.coe :=
 variable {M}
 
 /-- Closure of a subsemigroup `S` equals `S`. -/
-@[simp, to_additive "Additive closure of an additive subsemigroup `S` equals `S`"]
+@[to_additive (attr := simp) "Additive closure of an additive subsemigroup `S` equals `S`"]
 theorem closure_eq : closure (S : Set M) = S :=
   (Subsemigroup.gi M).l_u_eq S
 #align subsemigroup.closure_eq Subsemigroup.closure_eq
 #align add_subsemigroup.closure_eq AddSubsemigroup.closure_eq
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem closure_empty : closure (∅ : Set M) = ⊥ :=
   (Subsemigroup.gi M).gc.l_bot
 #align subsemigroup.closure_empty Subsemigroup.closure_empty
 #align add_subsemigroup.closure_empty AddSubsemigroup.closure_empty
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem closure_univ : closure (univ : Set M) = ⊤ :=
   @coe_top M _ ▸ closure_eq ⊤
 #align subsemigroup.closure_univ Subsemigroup.closure_univ
@@ -536,7 +529,7 @@ semigroup.  Then `AddHom.ofDense` defines an additive homomorphism from `M` aski
 of `f (x + y) = f x + f y` only for `y ∈ s`. -/
 add_decl_doc AddHom.ofDense
 
-@[simp, norm_cast, to_additive]
+@[to_additive (attr := simp, norm_cast)]
 theorem coe_ofDense [Semigroup M] [Semigroup N] {s : Set M} (f : M → N) (hs : closure s = ⊤)
     (hmul) : (ofDense f hs hmul : M → N) = f :=
   rfl

@@ -52,8 +52,7 @@ instance [LinearOrderedAddCommMonoidWithTop α] :
     -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Type.20synonyms
     mul_zero := @add_top _ (_)
     zero_le_one := (le_top : (0 : α) ≤ ⊤) }
-#align multiplicative.linear_ordered_comm_monoid_with_zero
-  instLinearOrderedCommMonoidWithZeroMultiplicativeOrderDual
+#align multiplicative.linear_ordered_comm_monoid_with_zero instLinearOrderedCommMonoidWithZeroMultiplicativeOrderDual
 
 instance [LinearOrderedAddCommGroupWithTop α] :
     LinearOrderedCommGroupWithZero (Multiplicative αᵒᵈ) :=
@@ -81,7 +80,7 @@ The following facts are true more generally in a (linearly) ordered commutative 
 See note [reducible non-instances]. -/
 @[reducible]
 def Function.Injective.linearOrderedCommMonoidWithZero {β : Type _} [Zero β] [One β] [Mul β]
-    [Pow β ℕ] [HasSup β] [HasInf β] (f : β → α) (hf : Function.Injective f) (zero : f 0 = 0)
+    [Pow β ℕ] [Sup β] [Inf β] (f : β → α) (hf : Function.Injective f) (zero : f 0 = 0)
     (one : f 1 = 1) (mul : ∀ x y, f (x * y) = f x * f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
     (hsup : ∀ x y, f (x ⊔ y) = max (f x) (f y)) (hinf : ∀ x y, f (x ⊓ y) = min (f x) (f y)) :
     LinearOrderedCommMonoidWithZero β :=
@@ -89,8 +88,7 @@ def Function.Injective.linearOrderedCommMonoidWithZero {β : Type _} [Zero β] [
     hf.commMonoidWithZero f zero one mul npow with
     zero_le_one :=
       show f 0 ≤ f 1 by simp only [zero, one, LinearOrderedCommMonoidWithZero.zero_le_one] }
-#align function.injective.linear_ordered_comm_monoid_with_zero
-  Function.Injective.linearOrderedCommMonoidWithZero
+#align function.injective.linear_ordered_comm_monoid_with_zero Function.Injective.linearOrderedCommMonoidWithZero
 
 @[simp]
 theorem zero_le' : 0 ≤ a := by simpa only [mul_zero, mul_one] using mul_le_mul_left' zero_le_one a
@@ -118,8 +116,7 @@ instance : LinearOrderedAddCommMonoidWithTop (Additive αᵒᵈ) :=
     top := (0 : α)
     top_add' := fun a ↦ zero_mul (Additive.toMul a)
     le_top := fun _ ↦ zero_le' }
-#align additive.linear_ordered_add_comm_monoid_with_top
-  instLinearOrderedAddCommMonoidWithTopAdditiveOrderDual
+#align additive.linear_ordered_add_comm_monoid_with_top instLinearOrderedAddCommMonoidWithTopAdditiveOrderDual
 
 end LinearOrderedCommMonoid
 
@@ -209,11 +206,19 @@ theorem mul_lt_right₀ (c : α) (h : a < b) (hc : c ≠ 0) : a * c < b * c := b
 #align mul_lt_right₀ mul_lt_right₀
 
 theorem inv_lt_inv₀ (ha : a ≠ 0) (hb : b ≠ 0) : a⁻¹ < b⁻¹ ↔ b < a :=
-  show (Units.mk0 a ha)⁻¹ < (Units.mk0 b hb)⁻¹ ↔ Units.mk0 b hb < Units.mk0 a ha from inv_lt_inv_iff
+  show (Units.mk0 a ha)⁻¹ < (Units.mk0 b hb)⁻¹ ↔ Units.mk0 b hb < Units.mk0 a ha from
+    have : CovariantClass αˣ αˣ (· * ·) (· < ·) :=
+      LeftCancelSemigroup.covariant_mul_lt_of_covariant_mul_le αˣ
+    inv_lt_inv_iff
 #align inv_lt_inv₀ inv_lt_inv₀
 
 theorem inv_le_inv₀ (ha : a ≠ 0) (hb : b ≠ 0) : a⁻¹ ≤ b⁻¹ ↔ b ≤ a :=
-  show (Units.mk0 a ha)⁻¹ ≤ (Units.mk0 b hb)⁻¹ ↔ Units.mk0 b hb ≤ Units.mk0 a ha from inv_le_inv_iff
+  show (Units.mk0 a ha)⁻¹ ≤ (Units.mk0 b hb)⁻¹ ↔ Units.mk0 b hb ≤ Units.mk0 a ha from
+    have : CovariantClass αˣ αˣ (Function.swap (· * ·)) (· ≤ ·) :=
+      OrderedCommMonoid.to_covariantClass_right αˣ
+    have : CovariantClass αˣ αˣ (· * ·) (· ≤ ·) :=
+      OrderedCommGroup.to_covariantClass_left_le αˣ
+    inv_le_inv_iff
 #align inv_le_inv₀ inv_le_inv₀
 
 theorem lt_of_mul_lt_mul_of_le₀ (h : a * b < c * d) (hc : 0 < c) (hh : c ≤ a) : b < d := by
@@ -237,11 +242,7 @@ theorem div_le_div_right₀ (hc : c ≠ 0) : a / c ≤ b / c ↔ a ≤ b := by
 #align div_le_div_right₀ div_le_div_right₀
 
 theorem div_le_div_left₀ (ha : a ≠ 0) (hb : b ≠ 0) (hc : c ≠ 0) : a / b ≤ a / c ↔ c ≤ b := by
-  simp only [div_eq_mul_inv, mul_le_mul_left₀ ha, inv_le_inv₀ hb hc, iff_self]
--- Porting note: the simplifier in Lean 3 functioned in such a way that, effectively, `iff_self` was
--- silently added to a `simp only`.  It had to be manually added here.
--- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/.60simp.60.20.28or.20.60refl.60.3F.29.20difference.20Lean.203.2F4
--- would be resolved by https://github.com/leanprover/lean4/issues/1933
+  simp only [div_eq_mul_inv, mul_le_mul_left₀ ha, inv_le_inv₀ hb hc]
 #align div_le_div_left₀ div_le_div_left₀
 
 theorem le_div_iff₀ (hc : c ≠ 0) : a ≤ b / c ↔ a * c ≤ b := by
@@ -255,10 +256,12 @@ theorem div_le_iff₀ (hc : c ≠ 0) : a / c ≤ b ↔ a ≤ b * c := by
 /-- `Equiv.mulLeft₀` as an `OrderIso` on a `LinearOrderedCommGroupWithZero.`.
 
 Note that `OrderIso.mulLeft₀` refers to the `LinearOrderedField` version. -/
-@[simps (config := { simpRhs := true }) apply toEquiv]
+@[simps! (config := { simpRhs := true }) apply toEquiv]
 def OrderIso.mulLeft₀' {a : α} (ha : a ≠ 0) : α ≃o α :=
   { Equiv.mulLeft₀ a ha with map_rel_iff' := mul_le_mul_left₀ ha }
 #align order_iso.mul_left₀' OrderIso.mulLeft₀'
+#align order_iso.mul_left₀'_to_equiv OrderIso.mulLeft₀'_toEquiv
+#align order_iso.mul_left₀'_apply OrderIso.mulLeft₀'_apply
 
 theorem OrderIso.mulLeft₀'_symm {a : α} (ha : a ≠ 0) :
     (OrderIso.mulLeft₀' ha).symm = OrderIso.mulLeft₀' (inv_ne_zero ha) := by
@@ -269,10 +272,12 @@ theorem OrderIso.mulLeft₀'_symm {a : α} (ha : a ≠ 0) :
 /-- `Equiv.mulRight₀` as an `OrderIso` on a `LinearOrderedCommGroupWithZero.`.
 
 Note that `OrderIso.mulRight₀` refers to the `LinearOrderedField` version. -/
-@[simps (config := { simpRhs := true }) apply toEquiv]
+@[simps! (config := { simpRhs := true }) apply toEquiv]
 def OrderIso.mulRight₀' {a : α} (ha : a ≠ 0) : α ≃o α :=
   { Equiv.mulRight₀ a ha with map_rel_iff' := mul_le_mul_right₀ ha }
 #align order_iso.mul_right₀' OrderIso.mulRight₀'
+#align order_iso.mul_right₀'_apply OrderIso.mulRight₀'_apply
+#align order_iso.mul_right₀'_to_equiv OrderIso.mulRight₀'_toEquiv
 
 theorem OrderIso.mulRight₀'_symm {a : α} (ha : a ≠ 0) :
     (OrderIso.mulRight₀' ha).symm = OrderIso.mulRight₀' (inv_ne_zero ha) := by

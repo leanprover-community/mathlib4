@@ -57,7 +57,7 @@ remember to force recompilation of any files that call `polyrith`.
 
 namespace Mathlib.Tactic.Polyrith
 open Lean hiding Rat
-open Meta Ring Qq PrettyPrinter
+open Meta Ring Qq PrettyPrinter AtomM
 initialize registerTraceClass `Meta.Tactic.polyrith
 
 /-! # Poly Datatype -/
@@ -112,22 +112,22 @@ instance : Quote ℚ where
 
 variable (vars : Array Syntax.Term) in
 /-- Converts a `Poly` expression into a `Syntax` suitable as an input to `linear_combination`. -/
-def Poly.toSyntax : Poly → Syntax.Term
-  | .const z => quote z
-  | .var n => vars[n]!
-  | .hyp stx => stx
-  | .add p q => Unhygienic.run `($p.toSyntax + $q.toSyntax)
-  | .sub p q => Unhygienic.run `($p.toSyntax - $q.toSyntax)
-  | .mul p q => Unhygienic.run `($p.toSyntax * $q.toSyntax)
-  | .div p q => Unhygienic.run `($p.toSyntax / $q.toSyntax)
-  | .pow p q => Unhygienic.run `($p.toSyntax ^ $q.toSyntax)
-  | .neg p => Unhygienic.run `(-$p.toSyntax)
+def Poly.toSyntax : Poly → Unhygienic Syntax.Term
+  | .const z => pure (quote z)
+  | .var n => pure vars[n]!
+  | .hyp stx => pure stx
+  | .add p q => do `($(← p.toSyntax) + $(← q.toSyntax))
+  | .sub p q => do `($(← p.toSyntax) - $(← q.toSyntax))
+  | .mul p q => do `($(← p.toSyntax) * $(← q.toSyntax))
+  | .div p q => do `($(← p.toSyntax) / $(← q.toSyntax))
+  | .pow p q => do `($(← p.toSyntax) ^ $(← q.toSyntax))
+  | .neg p => do `(-$(← p.toSyntax))
 
 /-- Reifies a ring expression of type `α` as a `Poly`. -/
 partial def parse {u} {α : Q(Type u)} (sα : Q(CommSemiring $α))
-    (c : Ring.Cache α) (e : Q($α)) : RingM Poly := do
+    (c : Ring.Cache sα) (e : Q($α)) : AtomM Poly := do
   let els := do
-    try pure <| Poly.const (← NormNum.derive e).toRat
+    try pure <| Poly.const (← (← NormNum.derive e).toRat)
     catch _ => pure <| Poly.var (← addAtom e)
   let .const n _ := (← withReducible <| whnf e).getAppFn | els
   match n, c.rα with
@@ -159,14 +159,14 @@ inductive Source where
 
 /-- The first half of `polyrith` produces a list of arguments to be sent to Sage. -/
 def parseContext (only : Bool) (hyps : Array Expr) (tgt : Expr) :
-    RingM (Expr × Array (Source × Poly) × Poly) := do
-  let fail {α} : RingM α := throwError "polyrith failed: target is not an equality in semirings"
-  let some (α, e₁, e₂) := (← instantiateMVars tgt).eq? | fail
+    AtomM (Expr × Array (Source × Poly) × Poly) := do
+  let fail {α} : AtomM α := throwError "polyrith failed: target is not an equality in semirings"
+  let some (α, e₁, e₂) := (← whnfR <|← instantiateMVars tgt).eq? | fail
   let .sort (.succ u) ← whnf (← inferType α) | fail
   have α : Q(Type u) := α
   have e₁ : Q($α) := e₁; have e₂ : Q($α) := e₂
   let sα ← synthInstanceQ (q(CommSemiring $α) : Q(Type u))
-  let c := { rα := (← trySynthInstanceQ (q(Ring $α) : Q(Type u))).toOption }
+  let c ← mkCache sα
   let tgt := (← parse sα c e₁).sub (← parse sα c e₂)
   let rec
     /-- Parses a hypothesis and adds it to the `out` list. -/
@@ -282,9 +282,8 @@ def sageOutput (args : Array String) : IO SageResult := do
   unless ← path.pathExists do
     throw <| IO.userError "could not find python script scripts/polyrith_sage.py"
   let s ← IO.Process.run { cmd := "python3", args := #[path.toString] ++ args }
-  println! s
   match Json.parse s >>= fromJson? with
-  | .ok v => return .ok v
+  | .ok v => return v
   | .error e => throw <| .userError e
 
 /--
@@ -315,7 +314,7 @@ This returns `none` if this was a "dry run" attempt that does not actually invok
 def polyrith (g : MVarId) (only : Bool) (hyps : Array Expr)
     (traceOnly := false) : MetaM (Option MVarId × Syntax) := do
   IO.sleep 10 -- otherwise can lead to weird errors when actively editing code with polyrith calls
-  g.withContext <| RingM.run .reducible do
+  g.withContext <| AtomM.run .reducible do
     let (α, hyps', tgt) ← parseContext only hyps (← g.getType)
     let rec
       /-- Try to prove the goal by `ring` and fail with the given message otherwise. -/
@@ -340,9 +339,7 @@ def polyrith (g : MVarId) (only : Bool) (hyps : Array Expr)
           pure <| match p.unDiv? with
           | some (p, den) => (p.mul' h).div (.const den)
           | none => p.mul' h
-        let stx := p.toSyntax vars
-        println! repr p
-        println! stx
+        let stx := (withRef (← getRef) <| p.toSyntax vars).run
         let tac ←
           if let .const 0 := p then `(tactic| linear_combination)
           else `(tactic| linear_combination $stx:term)

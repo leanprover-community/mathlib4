@@ -4,15 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino
 -/
 
+import Lean.Data.Json.Parser
 import Cache.Hashing
-
-def ByteArray.startsWith (a b : ByteArray) : Bool := Id.run do
-  let size := b.size
-  let a := a.copySlice 0 .empty 0 size
-  if size != a.size then return false
-  for i in [0 : size] do
-    if a.get! i != b.get! i then return false
-  return true
 
 namespace Cache.Requests
 
@@ -41,31 +34,38 @@ def mkGetConfigContent (hashMap : IO.HashMap) : IO String := do
     pure $ (s!"url = {← mkFileURL fileName none}\n-o {IO.CACHEDIR / fileName}") :: acc
   return "\n".intercalate l
 
-/--
-Calls `curl` to download files from the server.
-
-It downloads the files to CACHEDIR (.cache).
--/
-def downloadFiles (hashMap : IO.HashMap) : IO Unit := do
+/-- Calls `curl` to download files from the server to `CACHEDIR` (`.cache`) -/
+def downloadFiles (hashMap : IO.HashMap) (forceDownload : Bool) : IO Unit := do
+  let hashMap := if forceDownload then hashMap else hashMap.filter (← IO.getLocalCacheSet) false
   let size := hashMap.size
   if size > 0 then
     IO.mkDir IO.CACHEDIR
     IO.println s!"Attempting to download {size} file(s)"
     IO.FS.writeFile IO.CURLCFG (← mkGetConfigContent hashMap)
-    discard $ IO.runCmd "curl"
-        #["-X", "GET", "--parallel", "-f", "-s", "-K", IO.CURLCFG.toString] false
+    let out ← IO.runCurl
+      #["--request", "GET", "--parallel", "--fail", "--silent",
+        "--write-out", "%{json}\n", "--config", IO.CURLCFG.toString] false
     IO.FS.removeFile IO.CURLCFG
+    -- output errors other than 404 and remove corresponding partial downloads
+    let mut failed := 0
+    for line in out.splitOn "\n" |>.filter (!·.isEmpty) do
+      let result ← IO.ofExcept <| Lean.Json.parse line.trim
+      if !(result.getObjValAs? Nat "http_code" matches .ok 200 | .ok 404) then
+        failed := failed + 1
+        if let .ok e := result.getObjValAs? String "errormsg" then
+          IO.println e
+        -- `curl --remove-on-error` can already do this, but only from 7.83 onwards
+        if let .ok fn := result.getObjValAs? String "filename_effective" then
+          if (← System.FilePath.pathExists fn) then
+            IO.FS.removeFile fn
+    if failed > 0 then
+      IO.println s!"{failed} download(s) failed"
+      IO.Process.exit 1
   else IO.println "No files to download"
 
-/--
-Downloads files from the server and unpacks them.
--/
+/-- Downloads missing files, and unpacks files. -/
 def getFiles (hashMap : IO.HashMap) (forceDownload : Bool) : IO Unit := do
-  downloadFiles
-    (← if forceDownload then
-      pure hashMap
-    else
-      pure (hashMap.filter (← IO.getLocalCacheSet) false))
+  downloadFiles hashMap forceDownload
   IO.unpackCache hashMap
 
 end Get
@@ -85,10 +85,10 @@ def putFiles (fileNames : Array String) (overwrite : Bool) (token : String) : IO
     IO.FS.writeFile IO.CURLCFG (← mkPutConfigContent fileNames token)
     IO.println s!"Attempting to upload {size} file(s)"
     if overwrite then
-      discard $ IO.runCmd "curl" #["-X", "PUT", "-H", "x-ms-blob-type: BlockBlob", "--parallel",
+      discard $ IO.runCurl #["-X", "PUT", "-H", "x-ms-blob-type: BlockBlob", "--parallel",
         "-K", IO.CURLCFG.toString]
     else
-      discard $ IO.runCmd "curl" #["-X", "PUT", "-H", "x-ms-blob-type: BlockBlob",
+      discard $ IO.runCurl #["-X", "PUT", "-H", "x-ms-blob-type: BlockBlob",
         "-H", "If-None-Match: *", "--parallel", "-K", IO.CURLCFG.toString]
     IO.FS.removeFile IO.CURLCFG
   else IO.println "No files to upload"
@@ -97,10 +97,10 @@ end Put
 
 section Commit
 
-def isStatusClean : IO Bool :=
+def isGitStatusClean : IO Bool :=
   return (← IO.runCmd "git" #["status", "--porcelain"]).isEmpty
 
-def getCommitHash : IO String := do
+def getGitCommitHash : IO String := do
   let ret := (← IO.runCmd "git" #["log", "-1"]).replace "\n" " "
   match ret.splitOn " " with
   | "commit" :: hash :: _ => return hash
@@ -112,14 +112,14 @@ Sends a commit file to the server, containing the hashes of the respective commi
 The file name is the current Git hash and the `c/` prefix means that it's a commit file.
 -/
 def commit (hashMap : IO.HashMap) (overwrite : Bool) (token : String) : IO Unit := do
-  let hash ← getCommitHash
+  let hash ← getGitCommitHash
   let path := IO.CACHEDIR / hash
   IO.mkDir IO.CACHEDIR
   IO.FS.writeFile path $ ("\n".intercalate $ hashMap.hashes.toList.map toString) ++ "\n"
   let params := if overwrite
     then #["-X", "PUT", "-H", "x-ms-blob-type: BlockBlob"]
     else #["-X", "PUT", "-H", "x-ms-blob-type: BlockBlob", "-H", "If-None-Match: *"]
-  discard $ IO.runCmd "curl" $ params ++ #["-T", path.toString, s!"{URL}/c/{hash}?{token}"]
+  discard $ IO.runCurl $ params ++ #["-T", path.toString, s!"{URL}/c/{hash}?{token}"]
   IO.FS.removeFile path
 
 end Commit
@@ -149,7 +149,7 @@ Example: `["f/39476538726384726.tar.gz", "Sat, 24 Dec 2022 17:33:01 GMT"]`
 -/
 def getFilesInfo (q : QueryType) : IO $ List (String × String) := do
   IO.println s!"Downloading info list of {q.desc}"
-  let ret ← IO.runCmd "curl" #["-X", "GET", s!"{URL}?comp=list&restype=container{q.prefix}"]
+  let ret ← IO.runCurl #["-X", "GET", s!"{URL}?comp=list&restype=container{q.prefix}"]
   match ret.splitOn "<Name>" with
   | [] => formatError
   | [_] => return default

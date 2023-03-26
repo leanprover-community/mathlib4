@@ -41,8 +41,7 @@ theorem reflTransGen_of_succ_of_le (r : α → α → Prop) {n m : α} (h : ∀ 
 /-- For `m ≤ n`, `(n, m)` is in the reflexive-transitive closure of `~` if `succ i ~ i`
   for all `i` between `n` and `m`. -/
 theorem reflTransGen_of_succ_of_ge (r : α → α → Prop) {n m : α} (h : ∀ i ∈ Ico m n, r (succ i) i)
-    (hmn : m ≤ n) : ReflTransGen r n m :=
-  by
+    (hmn : m ≤ n) : ReflTransGen r n m := by
   rw [← reflTransGen_swap]
   exact reflTransGen_of_succ_of_le (swap r) h hmn
 #align refl_trans_gen_of_succ_of_ge reflTransGen_of_succ_of_ge
@@ -86,8 +85,7 @@ theorem transGen_of_succ_of_ne (r : α → α → Prop) {n m : α} (h1 : ∀ i �
 /-- `(n, m)` is in the transitive closure of a reflexive relation `~` if `i ~ succ i` and
   `succ i ~ i` for all `i` between `n` and `m`. -/
 theorem transGen_of_succ_of_reflexive (r : α → α → Prop) {n m : α} (hr : Reflexive r)
-    (h1 : ∀ i ∈ Ico n m, r i (succ i)) (h2 : ∀ i ∈ Ico m n, r (succ i) i) : TransGen r n m :=
-  by
+    (h1 : ∀ i ∈ Ico n m, r i (succ i)) (h2 : ∀ i ∈ Ico m n, r (succ i) i) : TransGen r n m := by
   rcases eq_or_ne m n with (rfl | hmn); · exact TransGen.single (hr m)
   exact transGen_of_succ_of_ne r h1 h2 hmn.symm
 #align trans_gen_of_succ_of_reflexive transGen_of_succ_of_reflexive

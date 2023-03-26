@@ -262,7 +262,7 @@ def binaryRec {C : Nat → Sort u} (z : C 0) (f : ∀ b n, C n → C (bit b n)) 
       exact f (bodd n) n' (binaryRec z f n')
   decreasing_by exact binaryRec_decreasing n0
 
-#align nat.binaryRec Nat.binaryRec
+#align nat.binary_rec Nat.binaryRec
 
 /-- `size n` : Returns the size of a natural number in
 bits i.e. the length of its binary representation -/
@@ -283,17 +283,17 @@ def bits : ℕ → List Bool :=
 def bitwise' (f : Bool → Bool → Bool) : ℕ → ℕ → ℕ :=
   binaryRec (fun n => cond (f false true) n 0) fun a m Ia =>
     binaryRec (cond (f true false) (bit a m) 0) fun b n _ => bit (f a b) (Ia n)
-#align nat.bitwise Nat.bitwise
+#align nat.bitwise Nat.bitwise'
 
 /--`lor'` takes two natural numbers and returns their bitwise `or`-/
 def lor' : ℕ → ℕ → ℕ :=
   bitwise' or
-#align nat.lor Nat.lor
+#align nat.lor Nat.lor'
 
 /--`land'` takes two naturals numbers and returns their `and`-/
 def land' : ℕ → ℕ → ℕ :=
   bitwise' and
-#align nat.land Nat.land
+#align nat.land Nat.land'
 
 /--`ldiff' a b` performs bitwise set difference. For each corresponding
   pair of bits taken as booleans, say `aᵢ` and `bᵢ`, it applies the
@@ -371,16 +371,17 @@ theorem testBit_succ (m b n) : testBit (bit b n) (succ m) = testBit n m := by
 theorem binaryRec_eq {C : Nat → Sort u} {z : C 0} {f : ∀ b n, C n → C (bit b n)}
     (h : f false 0 z = z) (b n) : binaryRec z f (bit b n) = f b n (binaryRec z f n) := by
   rw [binaryRec]
-  by_cases bit b n = 0
+  by_cases h : bit b n = 0
+  -- Note: this renames the original `h : f false 0 z = z` to `h'` and leaves `h : bit b n = 0`
   case pos h' =>
-    simp [dif_pos h']
+    simp [dif_pos h]
     generalize binaryRec z f (bit b n) = e
     revert e
     have bf := bodd_bit b n
     have n0 := div2_bit b n
     rw [h] at bf n0
     simp at bf n0
-    rw [← bf, ← n0]
+    subst bf n0
     rw [binaryRec_zero]
     intros
     rw [h']
@@ -397,8 +398,7 @@ theorem binaryRec_eq {C : Nat → Sort u} {z : C 0} {f : ∀ b n, C n → C (bit
 theorem bitwise'_bit_aux {f : Bool → Bool → Bool} (h : f false false = false) :
     (@binaryRec (fun _ => ℕ) (cond (f true false) (bit false 0) 0) fun b n _ =>
         bit (f false b) (cond (f false true) n 0)) =
-      fun n : ℕ => cond (f false true) n 0 :=
-  by
+      fun n : ℕ => cond (f false true) n 0 := by
   funext n
   apply bitCasesOn n
   intro b n

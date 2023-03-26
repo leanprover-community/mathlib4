@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 
 ! This file was ported from Lean 3 source module dynamics.fixed_points.basic
-! leanprover-community/mathlib commit 550b58538991c8977703fdeb7c9d51a5aa27df11
+! leanprover-community/mathlib commit b86832321b586c6ac23ef8cdef6a7a27e42b13bd
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -48,7 +48,7 @@ theorem isFixedPt_id (x : α) : IsFixedPt id x :=
 
 namespace IsFixedPt
 
-instance instDecidable [h : DecidableEq α] {f : α → α} {x : α} : Decidable (IsFixedPt f x) :=
+instance decidable [h : DecidableEq α] {f : α → α} {x : α} : Decidable (IsFixedPt f x) :=
   h (f x) x
 
 /-- If `x` is a fixed point of `f`, then `f x = x`. This is useful, e.g., for `rw` or `simp`.-/
@@ -114,7 +114,7 @@ protected theorem perm_inv (h : IsFixedPt e x) : IsFixedPt (⇑e⁻¹) x :=
 #align function.is_fixed_pt.perm_inv Function.IsFixedPt.perm_inv
 
 protected theorem perm_pow (h : IsFixedPt e x) (n : ℕ) : IsFixedPt (⇑(e ^ n)) x := by
-  rw [← Equiv.Perm.iterate_eq_pow]
+  rw [Equiv.Perm.coe_pow]
   exact h.iterate _
 #align function.is_fixed_pt.perm_pow Function.IsFixedPt.perm_pow
 
@@ -136,10 +136,10 @@ def fixedPoints (f : α → α) : Set α :=
   { x : α | IsFixedPt f x }
 #align function.fixed_points Function.fixedPoints
 
-instance fixedPoints.instDecidable [DecidableEq α] (f : α → α) (x : α) :
+instance fixedPoints.decidable [DecidableEq α] (f : α → α) (x : α) :
     Decidable (x ∈ fixedPoints f) :=
-  IsFixedPt.instDecidable
-#align function.fixed_points.decidable Function.fixedPoints.instDecidable
+  IsFixedPt.decidable
+#align function.fixed_points.decidable Function.fixedPoints.decidable
 
 @[simp]
 theorem mem_fixedPoints : x ∈ fixedPoints f ↔ IsFixedPt f x :=

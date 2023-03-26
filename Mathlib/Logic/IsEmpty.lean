@@ -26,6 +26,7 @@ variable {α β γ : Sort _}
 /-- `IsEmpty α` expresses that `α` is empty. -/
 class IsEmpty (α : Sort _) : Prop where
   protected false : α → False
+#align is_empty IsEmpty
 
 instance : IsEmpty Empty :=
   ⟨Empty.elim⟩
@@ -86,6 +87,7 @@ example [h : Nonempty α] [IsEmpty β] : IsEmpty (α → β) := by infer_instanc
 @[elab_as_elim]
 def isEmptyElim [IsEmpty α] {p : α → Sort _} (a : α) : p a :=
   (IsEmpty.false a).elim
+#align is_empty_elim isEmptyElim
 
 theorem isEmpty_iff : IsEmpty α ↔ α → False :=
   ⟨@IsEmpty.false α, IsEmpty.mk⟩
@@ -99,24 +101,29 @@ open Function
 @[elab_as_elim]
 protected def elim {α : Sort u} (_ : IsEmpty α) {p : α → Sort _} (a : α) : p a :=
   isEmptyElim a
+#align is_empty.elim IsEmpty.elim
 
 /-- Non-dependent version of `IsEmpty.elim`. Helpful if the elaborator cannot elaborate `h.elim a`
   correctly. -/
 protected def elim' {β : Sort _} (h : IsEmpty α) (a : α) : β :=
   (h.false a).elim
+#align is_empty.elim' IsEmpty.elim'
 
 protected theorem prop_iff {p : Prop} : IsEmpty p ↔ ¬p :=
   isEmpty_iff
+#align is_empty.prop_iff IsEmpty.prop_iff
 
 variable [IsEmpty α]
 
 @[simp]
 theorem forall_iff {p : α → Prop} : (∀ a, p a) ↔ True :=
   iff_true_intro isEmptyElim
+#align is_empty.forall_iff IsEmpty.forall_iff
 
 @[simp]
 theorem exists_iff {p : α → Prop} : (∃ a, p a) ↔ False :=
   iff_false_intro fun ⟨x, _⟩ ↦ IsEmpty.false x
+#align is_empty.exists_iff IsEmpty.exists_iff
 
 -- see Note [lower instance priority]
 instance (priority := 100) : Subsingleton α :=
@@ -127,6 +134,7 @@ end IsEmpty
 @[simp]
 theorem not_nonempty_iff : ¬Nonempty α ↔ IsEmpty α :=
   ⟨fun h ↦ ⟨fun x ↦ h ⟨x⟩⟩, fun h1 h2 ↦ h2.elim h1.elim⟩
+#align not_nonempty_iff not_nonempty_iff
 
 @[simp]
 theorem not_isEmpty_iff : ¬IsEmpty α ↔ Nonempty α :=
@@ -135,57 +143,57 @@ theorem not_isEmpty_iff : ¬IsEmpty α ↔ Nonempty α :=
 
 @[simp]
 theorem isEmpty_Prop {p : Prop} : IsEmpty p ↔ ¬p := by
-  simp only [← not_nonempty_iff, nonempty_Prop, iff_self]
+  simp only [← not_nonempty_iff, nonempty_Prop]
 #align is_empty_Prop isEmpty_Prop
 
 @[simp]
 theorem isEmpty_pi {π : α → Sort _} : IsEmpty (∀ a, π a) ↔ ∃ a, IsEmpty (π a) := by
-  simp only [← not_nonempty_iff, Classical.nonempty_pi, not_forall, iff_self]
+  simp only [← not_nonempty_iff, Classical.nonempty_pi, not_forall]
 #align is_empty_pi isEmpty_pi
 
 @[simp]
 theorem isEmpty_sigma {α} {E : α → Type _} : IsEmpty (Sigma E) ↔ ∀ a, IsEmpty (E a) := by
-  simp only [← not_nonempty_iff, nonempty_sigma, not_exists, iff_self]
+  simp only [← not_nonempty_iff, nonempty_sigma, not_exists]
 #align is_empty_sigma isEmpty_sigma
 
 @[simp]
 theorem isEmpty_psigma {α} {E : α → Sort _} : IsEmpty (PSigma E) ↔ ∀ a, IsEmpty (E a) := by
-  simp only [← not_nonempty_iff, nonempty_psigma, not_exists, iff_self]
+  simp only [← not_nonempty_iff, nonempty_psigma, not_exists]
 #align is_empty_psigma isEmpty_psigma
 
 @[simp]
 theorem isEmpty_subtype (p : α → Prop) : IsEmpty (Subtype p) ↔ ∀ x, ¬p x := by
-  simp only [← not_nonempty_iff, nonempty_subtype, not_exists, iff_self]
+  simp only [← not_nonempty_iff, nonempty_subtype, not_exists]
 #align is_empty_subtype isEmpty_subtype
 
 @[simp]
 theorem isEmpty_prod {α β : Type _} : IsEmpty (α × β) ↔ IsEmpty α ∨ IsEmpty β := by
-  simp only [← not_nonempty_iff, nonempty_prod, not_and_or, iff_self]
+  simp only [← not_nonempty_iff, nonempty_prod, not_and_or]
 #align is_empty_prod isEmpty_prod
 
 @[simp]
 theorem isEmpty_pprod : IsEmpty (PProd α β) ↔ IsEmpty α ∨ IsEmpty β := by
-  simp only [← not_nonempty_iff, nonempty_pprod, not_and_or, iff_self]
+  simp only [← not_nonempty_iff, nonempty_pprod, not_and_or]
 #align is_empty_pprod isEmpty_pprod
 
 @[simp]
 theorem isEmpty_sum {α β} : IsEmpty (Sum α β) ↔ IsEmpty α ∧ IsEmpty β := by
-  simp only [← not_nonempty_iff, nonempty_sum, not_or, iff_self]
+  simp only [← not_nonempty_iff, nonempty_sum, not_or]
 #align is_empty_sum isEmpty_sum
 
 @[simp]
 theorem isEmpty_psum {α β} : IsEmpty (PSum α β) ↔ IsEmpty α ∧ IsEmpty β := by
-  simp only [← not_nonempty_iff, nonempty_psum, not_or, iff_self]
+  simp only [← not_nonempty_iff, nonempty_psum, not_or]
 #align is_empty_psum isEmpty_psum
 
 @[simp]
 theorem isEmpty_ulift {α} : IsEmpty (ULift α) ↔ IsEmpty α := by
-  simp only [← not_nonempty_iff, nonempty_ulift, iff_self]
+  simp only [← not_nonempty_iff, nonempty_ulift]
 #align is_empty_ulift isEmpty_ulift
 
 @[simp]
 theorem isEmpty_plift {α} : IsEmpty (PLift α) ↔ IsEmpty α := by
-  simp only [← not_nonempty_iff, nonempty_plift, iff_self]
+  simp only [← not_nonempty_iff, nonempty_plift]
 #align is_empty_plift isEmpty_plift
 
 theorem wellFounded_of_isEmpty {α} [IsEmpty α] (r : α → α → Prop) : WellFounded r :=

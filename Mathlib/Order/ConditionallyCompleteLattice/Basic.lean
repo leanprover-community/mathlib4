@@ -186,7 +186,7 @@ class ConditionallyCompleteLinearOrder (α : Type _) extends ConditionallyComple
 
 instance (α : Type _) [ConditionallyCompleteLinearOrder α] : LinearOrder α :=
 { ‹ConditionallyCompleteLinearOrder α› with
-  max := HasSup.sup, min := HasInf.inf,
+  max := Sup.sup, min := Inf.inf,
   min_def := fun a b ↦ by
     by_cases hab : a = b
     · simp [hab]
@@ -220,9 +220,7 @@ class ConditionallyCompleteLinearOrderBot (α : Type _) extends ConditionallyCom
 instance (priority := 100) ConditionallyCompleteLinearOrderBot.toOrderBot
     [h : ConditionallyCompleteLinearOrderBot α] : OrderBot α :=
   { h with }
-#align
-  conditionally_complete_linear_order_bot.to_order_bot
-  ConditionallyCompleteLinearOrderBot.toOrderBot
+#align conditionally_complete_linear_order_bot.to_order_bot ConditionallyCompleteLinearOrderBot.toOrderBot
 
 -- see Note [lower instance priority]
 /-- A complete lattice is a conditionally complete lattice, as there are no restrictions
@@ -234,16 +232,13 @@ instance (priority := 100) CompleteLattice.toConditionallyCompleteLattice [Compl
     csupₛ_le := by intros; apply supₛ_le; assumption
     cinfₛ_le := by intros; apply infₛ_le; assumption
     le_cinfₛ := by intros; apply le_infₛ; assumption }
-#align
-  complete_lattice.to_conditionally_complete_lattice CompleteLattice.toConditionallyCompleteLattice
+#align complete_lattice.to_conditionally_complete_lattice CompleteLattice.toConditionallyCompleteLattice
 
 -- see Note [lower instance priority]
 instance (priority := 100) CompleteLinearOrder.toConditionallyCompleteLinearOrderBot {α : Type _}
     [h : CompleteLinearOrder α] : ConditionallyCompleteLinearOrderBot α :=
   { CompleteLattice.toConditionallyCompleteLattice, h with csupₛ_empty := supₛ_empty }
-#align
-  complete_linear_order.to_conditionally_complete_linear_order_bot
-  CompleteLinearOrder.toConditionallyCompleteLinearOrderBot
+#align complete_linear_order.to_conditionally_complete_linear_order_bot CompleteLinearOrder.toConditionallyCompleteLinearOrderBot
 
 section
 
@@ -272,16 +267,14 @@ noncomputable def IsWellOrder.conditionallyCompleteLinearOrderBot (α : Type _)
       simp only [h's, dif_pos]
       simpa using h.wf.not_lt_min _ h's has
     csupₛ_empty := by simpa using eq_bot_iff.2 (not_lt.1 <| h.wf.not_lt_min _ _ <| mem_univ ⊥) }
-#align
-  is_well_order.conditionally_complete_linear_order_bot
-  IsWellOrder.conditionallyCompleteLinearOrderBot
+#align is_well_order.conditionally_complete_linear_order_bot IsWellOrder.conditionallyCompleteLinearOrderBot
 
 end
 
 section OrderDual
 
 instance (α : Type _) [ConditionallyCompleteLattice α] : ConditionallyCompleteLattice αᵒᵈ :=
-  { instHasInfOrderDual α, instHasSupOrderDual α, OrderDual.lattice α with
+  { instInfOrderDual α, instSupOrderDual α, OrderDual.lattice α with
     le_csupₛ := @ConditionallyCompleteLattice.cinfₛ_le α _
     csupₛ_le := @ConditionallyCompleteLattice.le_cinfₛ α _
     le_cinfₛ := @ConditionallyCompleteLattice.csupₛ_le α _
@@ -778,8 +771,8 @@ theorem le_csupᵢ_of_le {f : ι → α} (H : BddAbove (range f)) (c : ι) (h : 
 #align le_csupr_of_le le_csupᵢ_of_le
 
 /-- The indexed supremum of two functions are comparable if the functions are pointwise comparable-/
-theorem csupᵢ_mono {f g : ι → α} (B : BddAbove (range g)) (H : ∀ x, f x ≤ g x) : supᵢ f ≤ supᵢ g :=
-  by
+theorem csupᵢ_mono {f g : ι → α} (B : BddAbove (range g)) (H : ∀ x, f x ≤ g x) :
+    supᵢ f ≤ supᵢ g := by
   cases isEmpty_or_nonempty ι
   · rw [supᵢ_of_empty', supᵢ_of_empty']
   · exact csupᵢ_le fun x => le_csupᵢ_of_le B x (H x)
@@ -835,10 +828,17 @@ theorem cinfᵢ_unique [Unique ι] {s : ι → α} : (⨅ i, s i) = s default :=
   @csupᵢ_unique αᵒᵈ _ _ _ _
 #align infi_unique cinfᵢ_unique
 
+-- porting note: new lemma
+theorem csupᵢ_subsingleton [Subsingleton ι] (i : ι) (s : ι → α) : (⨆ i, s i) = s i :=
+  @csupᵢ_unique α ι _ ⟨⟨i⟩, fun j => Subsingleton.elim j i⟩ _
+
+-- porting note: new lemma
+theorem cinfᵢ_subsingleton [Subsingleton ι] (i : ι) (s : ι → α) : (⨅ i, s i) = s i :=
+  @cinfᵢ_unique α ι _ ⟨⟨i⟩, fun j => Subsingleton.elim j i⟩ _
+
 @[simp]
 theorem csupᵢ_pos {p : Prop} {f : p → α} (hp : p) : (⨆ h : p, f h) = f hp :=
-  haveI := uniqueProp hp
-  csupᵢ_unique
+  csupᵢ_subsingleton hp f
 #align csupr_pos csupᵢ_pos
 
 @[simp]
@@ -1193,10 +1193,10 @@ theorem isGLB_infₛ (s : Set (WithTop α)) : IsGLB s (infₛ s) := by
 
 noncomputable instance : CompleteLinearOrder (WithTop α) :=
   { WithTop.linearOrder, WithTop.lattice, WithTop.orderTop, WithTop.orderBot with
-    sup := HasSup.sup
+    sup := Sup.sup
     le_supₛ := fun s => (isLUB_supₛ s).1
     supₛ_le := fun s => (isLUB_supₛ s).2
-    inf := HasInf.inf
+    inf := Inf.inf
     le_infₛ := fun s => (isGLB_infₛ s).2
     infₛ_le := fun s => (isGLB_infₛ s).1 }
 
@@ -1465,10 +1465,11 @@ noncomputable instance WithTop.WithBot.completeLattice {α : Type _}
         split_ifs with h₁ h₂
         · rw [h] at h₁
           cases h₁
-        · convert @bot_le (WithTop (WithBot α)) _ _ a
-          convert @WithBot.supₛ_empty α _
-          rw [h]
-          rfl
+        · convert @bot_le _ _ _ a
+          -- porting note: previous proof relied on convert unfolding
+          -- the definition of ⊥
+          apply congr_arg
+          simp only [h, preimage_empty, WithBot.supₛ_empty]
         · exfalso
           apply h₂
           use ⊥
@@ -1523,7 +1524,7 @@ theorem WithTop.supr_coe_eq_top {ι : Sort _} {α : Type _} [ConditionallyComple
 
 theorem WithTop.supr_coe_lt_top {ι : Sort _} {α : Type _} [ConditionallyCompleteLinearOrderBot α]
     (f : ι → α) : (⨆ x, (f x : WithTop α)) < ⊤ ↔ BddAbove (Set.range f) :=
-  lt_top_iff_ne_top.trans <| (WithTop.supr_coe_eq_top f).not.trans _root_.not_not
+  lt_top_iff_ne_top.trans <| (WithTop.supr_coe_eq_top f).not.trans not_not
 #align with_top.supr_coe_lt_top WithTop.supr_coe_lt_top
 
 end WithTopBot

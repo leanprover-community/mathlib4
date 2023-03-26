@@ -27,7 +27,7 @@ open Classical
 
 /-- Any partial order can be extended to a linear order.
 -/
-theorem extend_partial_order {α : Type u} (r : α → α → Prop) [IsPartialOrder α r] :
+theorem extend_partialOrder {α : Type u} (r : α → α → Prop) [IsPartialOrder α r] :
     ∃ (s : α → α → Prop) (_ : IsLinearOrder α s), r ≤ s := by
   let S := { s | IsPartialOrder α s }
   have hS : ∀ c, c ⊆ S → IsChain (· ≤ ·) c → ∀ y ∈ c, ∃ ub ∈ S, ∀ z ∈ c, z ≤ ub := by
@@ -45,8 +45,8 @@ theorem extend_partial_order {α : Type u} (r : α → α → Prop) [IsPartialOr
       haveI : IsPartialOrder _ _ := hc₁ h₁s₁
       haveI : IsPartialOrder _ _ := hc₁ h₁s₂
       cases' hc₂.total h₁s₁ h₁s₂ with h h
-      · exact ⟨s₂, h₁s₂, trans (h _ _ h₂s₁) h₂s₂⟩
-      · exact ⟨s₁, h₁s₁, trans h₂s₁ (h _ _ h₂s₂)⟩
+      · exact ⟨s₂, h₁s₂, _root_.trans (h _ _ h₂s₁) h₂s₂⟩
+      · exact ⟨s₁, h₁s₁, _root_.trans h₂s₁ (h _ _ h₂s₂)⟩
     · rintro x y ⟨s₁, h₁s₁, h₂s₁⟩ ⟨s₂, h₁s₂, h₂s₂⟩
       haveI : IsPartialOrder _ _ := hc₁ h₁s₁
       haveI : IsPartialOrder _ _ := hc₁ h₁s₂
@@ -66,29 +66,28 @@ theorem extend_partial_order {α : Type u} (r : α → α → Prop) [IsPartialOr
       trans := _
       antisymm := _ }
     rintro a b c (ab | ⟨ax : s a x, yb : s y b⟩) (bc | ⟨bx : s b x, yc : s y c⟩)
-    · exact Or.inl (trans ab bc)
-    · exact Or.inr ⟨trans ab bx, yc⟩
-    · exact Or.inr ⟨ax, trans yb bc⟩
+    · exact Or.inl (_root_.trans ab bc)
+    · exact Or.inr ⟨_root_.trans ab bx, yc⟩
+    · exact Or.inr ⟨ax, _root_.trans yb bc⟩
     · exact Or.inr ⟨ax, yc⟩
     rintro a b (ab | ⟨ax : s a x, yb : s y b⟩) (ba | ⟨bx : s b x, ya : s y a⟩)
     · exact antisymm ab ba
-    · exact (h.2 (trans ya (trans ab bx))).elim
-    · exact (h.2 (trans yb (trans ba ax))).elim
-    · exact (h.2 (trans yb bx)).elim
-#align extend_partial_order extend_partial_order
+    · exact (h.2 (_root_.trans ya (_root_.trans ab bx))).elim
+    · exact (h.2 (_root_.trans yb (_root_.trans ba ax))).elim
+    · exact (h.2 (_root_.trans yb bx)).elim
+#align extend_partial_order extend_partialOrder
 
 /-- A type alias for `α`, intended to extend a partial order on `α` to a linear order. -/
 def LinearExtension (α : Type u) : Type u :=
   α
 #align linear_extension LinearExtension
 
-noncomputable instance {α : Type u} [PartialOrder α] : LinearOrder (LinearExtension α)
-    where
-  le := (extend_partial_order ((· ≤ ·) : α → α → Prop)).choose
-  le_refl := (extend_partial_order ((· ≤ ·) : α → α → Prop)).choose_spec.choose.1.1.1.1
-  le_trans := (extend_partial_order ((· ≤ ·) : α → α → Prop)).choose_spec.choose.1.1.2.1
-  le_antisymm := (extend_partial_order ((· ≤ ·) : α → α → Prop)).choose_spec.choose.1.2.1
-  le_total := (extend_partial_order ((· ≤ ·) : α → α → Prop)).choose_spec.choose.2.1
+noncomputable instance {α : Type u} [PartialOrder α] : LinearOrder (LinearExtension α) where
+  le := (extend_partialOrder ((· ≤ ·) : α → α → Prop)).choose
+  le_refl := (extend_partialOrder ((· ≤ ·) : α → α → Prop)).choose_spec.choose.1.1.1.1
+  le_trans := (extend_partialOrder ((· ≤ ·) : α → α → Prop)).choose_spec.choose.1.1.2.1
+  le_antisymm := (extend_partialOrder ((· ≤ ·) : α → α → Prop)).choose_spec.choose.1.2.1
+  le_total := (extend_partialOrder ((· ≤ ·) : α → α → Prop)).choose_spec.choose.2.1
   decidable_le := Classical.decRel _
 
 /-- The embedding of `α` into `LinearExtension α` as a relation homomorphism. -/
@@ -96,7 +95,7 @@ def toLinearExtension {α : Type u} [PartialOrder α] :
     ((· ≤ ·) : α → α → Prop) →r ((· ≤ ·) : LinearExtension α → LinearExtension α → Prop)
     where
   toFun x := x
-  map_rel' := (extend_partial_order ((· ≤ ·) : α → α → Prop)).choose_spec.choose_spec _ _
+  map_rel' := (extend_partialOrder ((· ≤ ·) : α → α → Prop)).choose_spec.choose_spec _ _
 #align to_linear_extension toLinearExtension
 
 instance {α : Type u} [Inhabited α] : Inhabited (LinearExtension α) :=
