@@ -313,8 +313,6 @@ noncomputable def ofEquiv (F : MonoidalFunctor C D) [IsEquivalence F.toFunctor]
         exact Adjunction.leftAdjointOfNatIso i }
 #align category_theory.monoidal_closed.of_equiv CategoryTheory.MonoidalClosed.ofEquiv
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- Suppose we have a monoidal equivalence `F : C ≌ D`, with `D` monoidal closed. We can pull the
 monoidal closed instance back along the equivalence. For `X, Y, Z : C`, this lemma describes the
 resulting currying map `Hom(X ⊗ Y, Z) → Hom(Y, (X ⟶[C] Z))`. (`X ⟶[C] Z` is defined to be
@@ -330,7 +328,6 @@ theorem ofEquiv_curry_def (F : MonoidalFunctor C D) [IsEquivalence F.toFunctor]
   rfl
 #align category_theory.monoidal_closed.of_equiv_curry_def CategoryTheory.MonoidalClosed.ofEquiv_curry_def
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- Suppose we have a monoidal equivalence `F : C ≌ D`, with `D` monoidal closed. We can pull the
 monoidal closed instance back along the equivalence. For `X, Y, Z : C`, this lemma describes the
 resulting uncurrying map `Hom(Y, (X ⟶[C] Z)) → Hom(X ⊗ Y ⟶ Z)`. (`X ⟶[C] Z` is
