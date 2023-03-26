@@ -793,8 +793,14 @@ end Polynomial
 
 namespace MvPolynomial
 
--- set_option synthInstance.etaExperiment true in does not help, timesout everywhere
-private theorem prime_C_iff_of_fintype [Fintype σ] : Prime (C r : MvPolynomial σ R) ↔ Prime r := by
+/- Porting note: had to move the heavy inference outside the convert call to stop timeouts. 
+Also, many @'s. etaExperiment caused more time outs-/
+private theorem prime_C_iff_of_fintype {R : Type u} (σ : Type v) {r : R} [CommRing R] [Fintype σ] : Prime (C r : MvPolynomial σ R) ↔ Prime r := by
+  let f (d : ℕ) := (finSuccEquiv R d).symm.toMulEquiv
+  let _coe' (d : ℕ) : CoeFun ((MvPolynomial (Fin d) R)[X] ≃* MvPolynomial (Fin (d + 1)) R)
+    (fun _ => (MvPolynomial (Fin d) R)[X] → MvPolynomial (Fin (d + 1)) R) := inferInstance
+  have that (d : ℕ) : @C R (Fin (d+1)) _ r = (f d) (Polynomial.C (@C R (Fin d) _ r)) := by 
+    rw [← finSuccEquiv_comp_C_eq_C]; rfl 
   rw [(renameEquiv R (Fintype.equivFin σ)).toMulEquiv.prime_iff]
   convert_to Prime (C r) ↔ _
   · congr!
@@ -803,18 +809,9 @@ private theorem prime_C_iff_of_fintype [Fintype σ] : Prime (C r : MvPolynomial 
     induction' Fintype.card σ with d hd
     · exact (isEmptyAlgEquiv R (Fin 0)).toMulEquiv.symm.prime_iff
     · rw [hd, ← Polynomial.prime_C_iff]
-      let f := (finSuccEquiv R d).symm.toMulEquiv
-      haveI : CoeFun ((MvPolynomial (Fin d) R)[X] ≃* MvPolynomial (Fin (d + 1)) R) 
-        fun _ => ((MvPolynomial (Fin d) R)[X] → MvPolynomial (Fin (d + 1)) R) := inferInstance
-      have : C r = f (Polynomial.C (C r)) := 
-        by rw [← finSuccEquiv_comp_C_eq_C]; sorry
-      rw [this]
-      haveI : CommMonoidWithZero (MvPolynomial (Fin d) R)[X] := sorry
-      -- apply MulEquiv.prime_iff f  -- times out
-      sorry
-      -- convert(finSuccEquiv R d).toMulEquiv.symm.prime_iff -- times out
-      -- rw [← fin_succ_equiv_comp_C_eq_C]
-      -- rfl
+      rw [that d]
+      -- Porting note: change ?_ to _ and watch it time out
+      refine @MulEquiv.prime_iff (MvPolynomial (Fin d) R)[X] (MvPolynomial (Fin (d + 1)) R) ?_ ?_ (Polynomial.C (C r)) ?_ 
 
 -- Porting note: @'s help with multiple timeouts. It seems like there are too many things to unify
 theorem prime_C_iff : Prime (C r : MvPolynomial σ R) ↔ Prime r :=
@@ -843,9 +840,9 @@ variable {σ}
 
 theorem prime_rename_iff (s : Set σ) {p : MvPolynomial s R} :
     Prime (rename ((↑) : s → σ) p) ↔ Prime p := by
+  let f := @AlgEquiv.symm R (MvPolynomial ((↥(sᶜ)) ⊕ s) R) (MvPolynomial (↥(sᶜ)) (MvPolynomial s R)) _ _ _ _ _ (sumAlgEquiv R (↥(sᶜ)) s)
   classical
     symm
-    let f := @AlgEquiv R (MvPolynomial ((↥(sᶜ)) ⊕ s) R) (MvPolynomial (↥(sᶜ)) (MvPolynomial s R)) _ _ _ _ _ (sumAlgEquiv R (↥(sᶜ)) s)
     let eqv :=
       (sumAlgEquiv R (↥(sᶜ)) s).symm.trans
         (renameEquiv R <| (Equiv.sumComm (↥(sᶜ)) s).trans <| Equiv.Set.sumCompl s)
@@ -1159,8 +1156,10 @@ instance {R : Type u} [CommSemiring R] [NoZeroDivisors R] {σ : Type v} :
     cases' this with that that <;> [left, right]
     all_goals simpa using congr_arg (rename Subtype.val) that⟩
 
+-- Porting note: named to use belwo
 /-- The multivariate polynomial ring over an integral domain is an integral domain. -/
-instance {R : Type u} {σ : Type v} [CommRing R] [IsDomain R] : IsDomain (MvPolynomial σ R) := by
+instance isDomain_of_isDomain {R : Type u} {σ : Type v} [CommRing R] [IsDomain R] :
+    IsDomain (MvPolynomial σ R) := by
   apply @NoZeroDivisors.to_isDomain (MvPolynomial σ R) _ ?_ _ 
   apply AddMonoidAlgebra.nontrivial 
 
@@ -1222,12 +1221,16 @@ set_option linter.uppercaseLean3 false in
 
 attribute [-instance] Ring.toNonAssocRing
 
-set_option synthInstance.etaExperiment true in --  fails quickly
+
+#synth Module (MvPolynomial σ R) (MvPolynomial σ R)
+
+-- set_option synthInstance.etaExperiment true in --  fails quickly
 theorem ker_map (f : R →+* S) :
+    haveI := instModuleToSemiringToAddCommMonoidToNonUnitalNonAssocSemiringToNonUnitalNonAssocRingToNonAssocRing (MvPolynomial σ R)
     LinearMap.ker (map f : MvPolynomial σ R →+* MvPolynomial σ S).toSemilinearMap = (LinearMap.ker f.toSemilinearMap).map (C : R →+* MvPolynomial σ R).toSemilinearMap :=
   by
   ext
-  rw [MvPolynomial.mem_map_c_iff, RingHom.mem_ker, MvPolynomial.ext_iff]
+  rw [MvPolynomial.mem_map_C_iff, RingHom.mem_ker, MvPolynomial.ext_iff]
   simp_rw [coeff_map, coeff_zero, RingHom.mem_ker]
 #align mv_polynomial.ker_map MvPolynomial.ker_map
 
@@ -1250,20 +1253,28 @@ instance (priority := 100) uniqueFactorizationMonoid : UniqueFactorizationMonoid
 end Polynomial
 
 namespace MvPolynomial
+variable (d : ℕ)
 
+-- attribute [-instance] Ring.toNonAssocRing NonUnitalRing.toNonUnitalNonAssocRing
+--   Semiring.toNonAssocSemiring NonUnitalSemiring.toNonUnitalNonAssocSemiring NonUnitalNonAssocSemiring.toMul
+
+-- set_option synthInstance.etaExperiment true in --  fails quickly
 private theorem uniqueFactorizationMonoid_of_fintype [Fintype σ] :
     UniqueFactorizationMonoid (MvPolynomial σ D) :=
-  (renameEquiv D (Fintype.equivFin σ)).toMulEquiv.symm.uniqueFactorizationMonoid <|
-    by
+  let f (d : ℕ) := (finSuccEquiv D d).toMulEquiv.symm
+  (renameEquiv D (Fintype.equivFin σ)).toMulEquiv.symm.uniqueFactorizationMonoid <| by
     induction' Fintype.card σ with d hd
     · apply (isEmptyAlgEquiv D (Fin 0)).toMulEquiv.symm.uniqueFactorizationMonoid
       infer_instance
-    · haveI : CancelCommMonoidWithZero (MvPolynomial (Fin d) D)[X] := sorry
-      let f := (finSuccEquiv D d).toMulEquiv.symm
-      rw [Nat.succ_eq_add_one d]
-      -- sorry
-      apply @MulEquiv.uniqueFactorizationMonoid ((MvPolynomial (Fin d) D)[X]) (MvPolynomial (Fin (d + 1)) D) _ _ f Polynomial.uniqueFactorizationMonoid
-
+    · rw [Nat.succ_eq_add_one d]
+      refine @MulEquiv.uniqueFactorizationMonoid ?_ _ ?_ _ ?_ ?_
+      · exact (MvPolynomial (Fin d) D)[X]
+      · have that : IsDomain (MvPolynomial (Fin d) D)[X] := inferInstance
+        refine @IsDomain.toCancelCommMonoidWithZero _ _ ?_
+        sorry
+      . sorry 
+      · sorry -- apply @Polynomial.uniqueFactorizationMonoid (MvPolynomial (Fin d) R) ?_ ?_ ?_
+        
 instance (priority := 100) : UniqueFactorizationMonoid (MvPolynomial σ D) := by
   rw [iff_exists_prime_factors]
   intro a ha; obtain ⟨s, a', rfl⟩ := exists_finset_rename a
