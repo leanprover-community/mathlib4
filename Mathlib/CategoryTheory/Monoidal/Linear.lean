@@ -8,8 +8,8 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Linear.LinearFunctor
-import Mathbin.CategoryTheory.Monoidal.Preadditive
+import Mathlib.CategoryTheory.Linear.LinearFunctor
+import Mathlib.CategoryTheory.Monoidal.Preadditive
 
 /-!
 # Linear monoidal categories
