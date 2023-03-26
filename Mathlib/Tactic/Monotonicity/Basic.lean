@@ -17,7 +17,7 @@ The tactic `mono` applies monotonicity rules (collected through the library by b
 `@[mono]`).
 -/
 
-open Lean Elab Meta Term Tactic Parser Qq Mathlib Tactic SolveByElim
+open Lean Elab Meta Tactic Parser Qq Mathlib.Tactic SolveByElim
 
 namespace Mathlib.Tactic.Monotonicity
 
@@ -104,7 +104,7 @@ def _root_.Lean.MVarId.mono (goal : MVarId) (side : Side := .both) :
   goal.assign expr
   return goals
 
-
+open Parser.Tactic in
 /--
 `mono` needs its documentation string written.
 -/
