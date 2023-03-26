@@ -915,7 +915,6 @@ def replicateAddMonoidHom (a : α) : ℕ →+ Multiset α where
 #align multiset.replicate_add_monoid_hom Multiset.replicateAddMonoidHom
 #align multiset.replicate_add_monoid_hom_apply Multiset.replicateAddMonoidHom_apply
 
--- @[simp] -- Porting note: simp can prove this
 theorem replicate_one (a : α) : replicate 1 a = {a} := rfl
 #align multiset.replicate_one Multiset.replicate_one
 
