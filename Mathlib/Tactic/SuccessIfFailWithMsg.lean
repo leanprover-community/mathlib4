@@ -35,7 +35,7 @@ def successIfFailWithMessage [Monad m] [MonadLiftT IO m] [MonadBacktrack s m] [M
     catch err => pure (some (← err.toMessageData.toString))
   restoreState s
   if let some err := err then
-    unless msg == err do
+    unless msg.trim == err.trim do
       if let some ref := ref then
         throwErrorAt ref "tactic '{ref}' failed, but got different error message:\n\n{err}"
       else

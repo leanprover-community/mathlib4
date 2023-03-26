@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Henrik Böving, Simon Hudon
 -/
 import Mathlib.Testing.SlimCheck.Gen
+import Qq
+
 /-!
 # `SampleableExt` Class
 This class permits the creation samples of a given type
@@ -245,5 +247,74 @@ instance sampleableExt [SampleableExt α] [Repr α] : SampleableExt (NoShrink α
   SampleableExt.mkSelfContained $ (NoShrink.mk ∘ SampleableExt.interp) <$> SampleableExt.sample
 
 end NoShrink
+
+
+/--
+Print (at most) 10 samples of a given type to stdout for debugging.
+-/
+-- Porting note: if `Control.ULiftable` is ported, make use of that here, as in mathlib3,
+-- to enable sampling from higher types.
+def printSamples {t : Type} [Repr t] (g : Gen t) : IO PUnit := do
+  for i in List.range 10 do
+    IO.println s!"{repr (← g.run i)}"
+
+open Lean Meta Qq
+
+/-- Create a `Gen α` expression from the argument of `#sample` -/
+def mkGenerator (e : Expr) : MetaM (Expr × Expr) := do
+  let t ← inferType e
+  match t.getAppFnArgs with
+  | (`Gen, #[t]) => do
+    let repr_inst ← synthInstance (← mkAppM ``Repr #[t])
+    pure (repr_inst, e)
+  | _ => do
+    let sampleableExt_inst ← synthInstance (mkApp (← mkConstWithFreshMVarLevels ``SampleableExt) e)
+    let repr_inst ← mkAppOptM ``SampleableExt.proxyRepr #[e, sampleableExt_inst]
+    let gen ← mkAppOptM ``SampleableExt.sample #[none, sampleableExt_inst]
+    pure (repr_inst, gen)
+
+open Elab
+
+/--
+`#sample type`, where `type` has an instance of `SampleableExt`, prints ten random
+values of type `type` using an increasing size parameter.
+
+```lean
+#sample Nat
+-- prints
+-- 0
+-- 0
+-- 2
+-- 24
+-- 64
+-- 76
+-- 5
+-- 132
+-- 8
+-- 449
+-- or some other sequence of numbers
+
+#sample List Int
+-- prints
+-- []
+-- [1, 1]
+-- [-7, 9, -6]
+-- [36]
+-- [-500, 105, 260]
+-- [-290]
+-- [17, 156]
+-- [-2364, -7599, 661, -2411, -3576, 5517, -3823, -968]
+-- [-643]
+-- [11892, 16329, -15095, -15461]
+-- or whatever
+```
+-/
+elab "#sample " e:term : command =>
+  Command.runTermElabM fun _ => do
+    let e ← Elab.Term.elabTermAndSynthesize e none
+    let (repr_inst, gen) ← mkGenerator e
+    let printSamples ← mkAppOptM ``printSamples #[none, repr_inst, gen]
+    let code ← unsafe evalExpr (IO PUnit) q(IO PUnit) printSamples
+    _ ← code
 
 end SlimCheck
