@@ -206,8 +206,7 @@ variable [Module R M] [Module R M₂] [Module S M₃]
 
 variable {σ : R →+* S}
 
-instance : SemilinearMapClass (M →ₛₗ[σ] M₃) σ M M₃
-    where
+instance : SemilinearMapClass (M →ₛₗ[σ] M₃) σ M M₃ where
   coe f := f.toFun
   coe_injective' f g h := by
     cases f
@@ -259,12 +258,6 @@ theorem coe_copy (f : M →ₛₗ[σ] M₃) (f' : M → M₃) (h : f' = ⇑f) : 
 theorem copy_eq (f : M →ₛₗ[σ] M₃) (f' : M → M₃) (h : f' = ⇑f) : f.copy f' h = f :=
   FunLike.ext' h
 #align linear_map.copy_eq LinearMap.copy_eq
-
-/-- See Note [custom simps projection]. -/
-protected def Simps.apply {R S : Type _} [Semiring R] [Semiring S] (σ : R →+* S) (M M₃ : Type _)
-    [AddCommMonoid M] [AddCommMonoid M₃] [Module R M] [Module S M₃] (f : M →ₛₗ[σ] M₃) : M → M₃ :=
-  f
-#align linear_map.simps.apply LinearMap.Simps.apply
 
 initialize_simps_projections LinearMap (toFun → apply)
 
@@ -499,7 +492,7 @@ theorem toAddMonoidHom_injective :
 #align linear_map.to_add_monoid_hom_injective LinearMap.toAddMonoidHom_injective
 
 /-- If two `σ`-linear maps from `R` are equal on `1`, then they are equal. -/
-@[ext]
+@[ext high]
 theorem ext_ring {f g : R →ₛₗ[σ] M₃} (h : f 1 = g 1) : f = g :=
   ext fun x ↦ by rw [← mul_one x, ← smul_eq_mul, f.map_smulₛₗ, g.map_smulₛₗ, h]
 #align linear_map.ext_ring LinearMap.ext_ring
@@ -508,9 +501,7 @@ theorem ext_ring_iff {σ : R →+* R} {f g : R →ₛₗ[σ] M} : f = g ↔ f 1 
   ⟨fun h ↦ h ▸ rfl, ext_ring⟩
 #align linear_map.ext_ring_iff LinearMap.ext_ring_iff
 
--- *TODO*: why are you still timing out?
-set_option maxHeartbeats 300000 in
-@[ext]
+@[ext high]
 theorem ext_ring_op {σ : Rᵐᵒᵖ →+* S} {f g : R →ₛₗ[σ] M₃} (h : f (1 : R) = g (1 : R)) :
     f = g :=
   ext fun x ↦ by

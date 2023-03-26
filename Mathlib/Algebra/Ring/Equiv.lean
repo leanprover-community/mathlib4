@@ -132,12 +132,18 @@ instance : RingEquivClass (R ≃+* S) R S where
   left_inv f := f.left_inv
   right_inv f := f.right_inv
 
--- Porting note: `toEquiv_eq_coe` no longer needed in Lean4
-#noalign ring_equiv.to_equiv_eq_coe
+@[simp]
+theorem toEquiv_eq_coe (f : R ≃+* S) : f.toEquiv = f :=
+  rfl
+#align ring_equiv.to_equiv_eq_coe RingEquiv.toEquiv_eq_coe
+
 -- Porting note: `toFun_eq_coe` no longer needed in Lean4
 #noalign ring_equiv.to_fun_eq_coe
--- Porting note: `coe_toEquiv` no longer needed in Lean4
-#noalign ring_equiv.coe_to_equiv
+
+@[simp]
+theorem coe_toEquiv (f : R ≃+* S) : ⇑(f : R ≃ S) = f :=
+  rfl
+#align ring_equiv.coe_to_equiv RingEquiv.coe_toEquiv
 
 /-- A ring isomorphism preserves multiplication. -/
 protected theorem map_mul (e : R ≃+* S) (x y : R) : e (x * y) = e x * e y :=
@@ -156,8 +162,11 @@ theorem ext {f g : R ≃+* S} (h : ∀ x, f x = g x) : f = g :=
   FunLike.ext f g h
 #align ring_equiv.ext RingEquiv.ext
 
--- Porting note: `coe_mk` no longer needed in Lean4
-#noalign ring_equiv.coe_mk
+@[simp]
+theorem coe_mk (e h₃ h₄) : ⇑(⟨e, h₃, h₄⟩ : R ≃+* S) = e :=
+  rfl
+#align ring_equiv.coe_mk RingEquiv.coe_mkₓ
+
 -- Porting note: `toEquiv_mk` no longer needed in Lean4
 #noalign ring_equiv.to_equiv_mk
 
@@ -243,8 +252,6 @@ protected def symm (e : R ≃+* S) : S ≃+* R :=
 #align ring_equiv.symm RingEquiv.symm
 
 /-- See Note [custom simps projection] -/
-def Simps.apply (e : R ≃+* S) : R → S := e
-/-- See Note [custom simps projection] -/
 def Simps.symm_apply (e : R ≃+* S) : S → R :=
   e.symm
 #align ring_equiv.simps.symm_apply RingEquiv.Simps.symm_apply
@@ -260,6 +267,11 @@ theorem invFun_eq_symm (f : R ≃+* S) : EquivLike.inv f = f.symm :=
 theorem symm_symm (e : R ≃+* S) : e.symm.symm = e :=
   ext fun _ => rfl
 #align ring_equiv.symm_symm RingEquiv.symm_symm
+
+--Porting note: new theorem
+@[simp]
+theorem symm_refl : (RingEquiv.refl R).symm = RingEquiv.refl R :=
+  rfl
 
 @[simp]
 theorem coe_toEquiv_symm (e : R ≃+* S) : (e.symm : S ≃ R) = (e : R ≃ S).symm :=
@@ -511,7 +523,7 @@ in higher generality -/
 
 
 @[simp]
-theorem coe_ringHom_refl : (RingEquiv.refl R : R →* R) = RingHom.id R :=
+theorem coe_ringHom_refl : (RingEquiv.refl R : R →+* R) = RingHom.id R :=
   rfl
 #align ring_equiv.coe_ring_hom_refl RingEquiv.coe_ringHom_refl
 

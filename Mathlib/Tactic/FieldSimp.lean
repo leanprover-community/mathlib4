@@ -9,7 +9,7 @@ import Lean.Meta.Tactic.Simp.Main
 import Std.Lean.Parser
 import Mathlib.Algebra.Group.Units
 import Mathlib.Tactic.NormNum.Core
-import Qq.Match
+import Qq
 
 /-!
 # `field_simp` tactic

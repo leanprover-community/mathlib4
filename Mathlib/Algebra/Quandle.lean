@@ -69,7 +69,7 @@ The following notation is localized in `quandles`:
 * `x ◃⁻¹ y` is `Rack.inv_act x y`
 * `S →◃ S'` is `ShelfHom S S'`
 
-Use `open_locale quandles` to use these.
+Use `open quandles` to use these.
 
 ## Todo
 
@@ -509,7 +509,6 @@ instance (n : ℕ) : Quandle (Dihedral n)
     intro x
     simp only [dihedralAct]
     ring_nf
-    rw [mul_two, add_sub_cancel]
 
 end Quandle
 
@@ -713,10 +712,10 @@ See `toEnvelGroup.map`.
 -/
 def toEnvelGroup.mapAux {R : Type _} [Rack R] {G : Type _} [Group G] (f : R →◃ Quandle.Conj G) :
     PreEnvelGroup R → G
-  | unit => 1
-  | incl x => f x
-  | mul a b => toEnvelGroup.mapAux f a * toEnvelGroup.mapAux f b
-  | inv a => (toEnvelGroup.mapAux f a)⁻¹
+  | .unit => 1
+  | .incl x => f x
+  | .mul a b => toEnvelGroup.mapAux f a * toEnvelGroup.mapAux f b
+  | .inv a => (toEnvelGroup.mapAux f a)⁻¹
 #align rack.to_envel_group.map_aux Rack.toEnvelGroup.mapAux
 
 namespace toEnvelGroup.mapAux

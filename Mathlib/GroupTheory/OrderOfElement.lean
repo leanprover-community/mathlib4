@@ -160,7 +160,8 @@ theorem orderOf_pos' (h : IsOfFinOrder x) : 0 < orderOf x :=
 -- porting note: `rw [mul_one]` does not work
 @[to_additive addOrderOf_nsmul_eq_zero]
 theorem pow_orderOf_eq_one (x : G) : x ^ orderOf x = 1 := by
-  convert isPeriodicPt_minimalPeriod (x * ·) 1
+  -- porting note: was `convert`, but the `1` in the lemma is equal only after unfolding
+  refine Eq.trans ?_ (isPeriodicPt_minimalPeriod (x * ·) 1)
   rw [orderOf, mul_left_iterate]; simp only [mul_one]
 #align pow_order_of_eq_one pow_orderOf_eq_one
 #align add_order_of_nsmul_eq_zero addOrderOf_nsmul_eq_zero
@@ -421,7 +422,7 @@ theorem orderOf_mul_eq_right_of_forall_prime_mul_dvd (hy : IsOfFinOrder y)
   refine' fun p hp hpy hd => hp.ne_one _
   rw [← Nat.dvd_one, ← mul_dvd_mul_iff_right hoy.ne', one_mul, ← dvd_div_iff hpy]
   refine' (orderOf_dvd_lcm_mul h).trans (lcm_dvd ((dvd_div_iff hpy).2 _) hd)
-  by_cases p ∣ orderOf x
+  by_cases h : p ∣ orderOf x
   exacts[hdvd p hp h, (hp.coprime_iff_not_dvd.2 h).mul_dvd_of_dvd_of_dvd hpy hxy]
 #align commute.order_of_mul_eq_right_of_forall_prime_mul_dvd Commute.orderOf_mul_eq_right_of_forall_prime_mul_dvd
 #align add_commute.add_order_of_add_eq_right_of_forall_prime_mul_dvd AddCommute.addOrderOf_add_eq_right_of_forall_prime_mul_dvd

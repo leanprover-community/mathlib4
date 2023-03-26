@@ -65,6 +65,8 @@ instance : EquivLike (α ≃ₜ β) α β where
   right_inv := fun h => h.right_inv
   coe_injective' := fun _ _ H _ => toEquiv_injective <| FunLike.ext' H
 
+instance : CoeFun (α ≃ₜ β) fun _ ↦ α → β := ⟨FunLike.coe⟩
+
 @[simp]
 theorem homeomorph_mk_coe (a : Equiv α β) (b c) : (Homeomorph.mk a b c : α → β) = a :=
   rfl
@@ -79,12 +81,6 @@ protected def symm (h : α ≃ₜ β) : β ≃ₜ α where
 
 @[simp] theorem symm_symm (h : α ≃ₜ β) : h.symm.symm = h := rfl
 #align homeomorph.symm_symm Homeomorph.symm_symm
-
-/-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
-  because it is a composition of multiple projections. -/
-def Simps.apply (h : α ≃ₜ β) : α → β :=
-  h
-#align homeomorph.simps.apply Homeomorph.Simps.apply
 
 /-- See Note [custom simps projection] -/
 def Simps.symm_apply (h : α ≃ₜ β) : β → α :=
