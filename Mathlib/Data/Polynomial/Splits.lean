@@ -174,7 +174,8 @@ theorem splits_id_iff_splits {f : K[X]} : (f.map i).Splits (RingHom.id L) ↔ f.
   rw [splits_map_iff, RingHom.id_comp]
 #align polynomial.splits_id_iff_splits Polynomial.splits_id_iff_splits
 
-attribute [-instance] Ring.toNonAssocRing in -- Porting note: gets around lean4#2074
+set_option synthInstance.maxHeartbeats 100000 in
+set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 theorem exists_root_of_splits' {f : K[X]} (hs : Splits i f) (hf0 : degree (f.map i) ≠ 0) :
     ∃ x, eval₂ i x f = 0 :=
   if hf0' : f.map i = 0 then by simp [eval₂_eq_eval_map, hf0']
@@ -289,7 +290,7 @@ theorem splits_prod_iff {ι : Type u} {s : ι → K[X]} {t : Finset ι} :
 
 theorem degree_eq_one_of_irreducible_of_splits {p : K[X]} (hp : Irreducible p)
     (hp_splits : Splits (RingHom.id K) p) : p.degree = 1 := by
-  rcases hp_splits with ⟨⟩
+  rcases hp_splits with ⟨⟩ | hp_splits
   · exfalso
     simp_all
   · apply hp_splits hp
@@ -382,6 +383,7 @@ theorem eq_X_sub_C_of_splits_of_single_root {x : K} {h : K[X]} (h_splits : Split
 set_option linter.uppercaseLean3 false in
 #align polynomial.eq_X_sub_C_of_splits_of_single_root Polynomial.eq_X_sub_C_of_splits_of_single_root
 
+set_option maxHeartbeats 400000 in -- Porting note: gets around lean4#2074
 theorem mem_lift_of_splits_of_roots_mem_range (R : Type _) [CommRing R] [Algebra R K] {f : K[X]}
     (hs : f.Splits (RingHom.id K)) (hm : f.Monic) (hr : ∀ a ∈ f.roots, a ∈ (algebraMap R K).range) :
     f ∈ Polynomial.lifts (algebraMap R K) := by
@@ -399,22 +401,27 @@ local infixl:50 " ~ᵤ " => Associated
 
 open UniqueFactorizationMonoid Associates
 
+set_option maxHeartbeats 400000 in
+set_option synthInstance.maxHeartbeats 100000 in
+set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 theorem splits_of_exists_multiset {f : K[X]} {s : Multiset L}
     (hs : f.map i = C (i f.leadingCoeff) * (s.map fun a : L => X - C a).prod) : Splits i f :=
   if hf0 : f = 0 then hf0.symm ▸ splits_zero i
   else
-    Or.inr fun p hp hdp => by
+    Or.inr @fun p hp hdp => by
       rw [irreducible_iff_prime] at hp
       rw [hs, ← Multiset.prod_toList] at hdp
       obtain hd | hd := hp.2.2 _ _ hdp
       · refine' (hp.2.1 <| isUnit_of_dvd_unit hd _).elim
         exact isUnit_C.2 ((leadingCoeff_ne_zero.2 hf0).isUnit.map i)
       · obtain ⟨q, hq, hd⟩ := hp.dvd_prod_iff.1 hd
-        obtain ⟨a, ha, rfl⟩ := Multiset.mem_map.1 (Multiset.mem_toList.1 hq)
+        obtain ⟨a, _, rfl⟩ := Multiset.mem_map.1 (Multiset.mem_toList.1 hq)
         rw [degree_eq_degree_of_associated ((hp.dvd_prime_iff_associated <| prime_X_sub_C a).1 hd)]
         exact degree_X_sub_C a
 #align polynomial.splits_of_exists_multiset Polynomial.splits_of_exists_multiset
 
+set_option synthInstance.maxHeartbeats 100000 in
+set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 theorem splits_of_splits_id {f : K[X]} : Splits (RingHom.id K) f → Splits i f :=
   UniqueFactorizationMonoid.induction_on_prime f (fun _ => splits_zero _)
     (fun _ hu _ => splits_of_degree_le_one _ ((isUnit_iff_degree_eq_zero.1 hu).symm ▸ by decide))
