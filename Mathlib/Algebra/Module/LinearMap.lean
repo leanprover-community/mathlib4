@@ -217,10 +217,8 @@ instance : SemilinearMapClass (M →ₛₗ[σ] M₃) σ M M₃ where
   map_add f := f.map_add'
   map_smulₛₗ := LinearMap.map_smul'
 
-/-- Helper instance for when there's too many metavariables to apply `FunLike.hasCoeToFun`
-directly. -/
-protected instance coeFun : CoeFun (M →ₛₗ[σ] M₃) fun _ ↦ M → M₃ := ⟨FunLike.coe⟩
-#align linear_map.has_coe_to_fun LinearMap.coeFun
+-- Porting note: we don't port specialized `CoeFun` instances if there is `FunLike` instead
+#noalign LinearMap.has_coe_to_fun
 
 -- Porting note: adding this instance prevents a timeout in `ext_ring_op`
 instance {σ : R →+* S} : FunLike (M →ₛₗ[σ] M₃) M (λ _ ↦ M₃) :=
