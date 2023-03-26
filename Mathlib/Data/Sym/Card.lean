@@ -8,9 +8,9 @@ Authors: Yaël Dillies, Bhavik Mehta, Huỳnh Trần Khanh, Stuart Presnell
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.BigOperators.Basic
-import Mathbin.Data.Finset.Sym
-import Mathbin.Data.Fintype.Sum
+import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Data.Finset.Sym
+import Mathlib.Data.Fintype.Sum
 
 /-!
 # Stars and bars
@@ -100,8 +100,7 @@ protected def e2 {n k : ℕ} : { s : Sym (Fin n.succ.succ) k // ↑0 ∉ s } ≃
     rw [← Fin.zero_succAbove v, ← @Fin.castSucc_zero n.succ, Fin.predAbove_succAbove 0 v]
 #align sym.E2 Sym.e2
 
-theorem card_sym_fin_eq_multichoose (n k : ℕ) : card (Sym (Fin n) k) = multichoose n k :=
-  by
+theorem card_sym_fin_eq_multichoose (n k : ℕ) : card (Sym (Fin n) k) = multichoose n k := by
   apply @pincer_recursion fun n k => card (Sym (Fin n) k) = multichoose n k
   · simp
   · intro b
@@ -122,8 +121,7 @@ theorem card_sym_fin_eq_multichoose (n k : ℕ) : card (Sym (Fin n) k) = multich
 
 /-- For any fintype `α` of cardinality `n`, `card (sym α k) = multichoose (card α) k` -/
 theorem card_sym_eq_multichoose (α : Type _) (k : ℕ) [Fintype α] [Fintype (Sym α k)] :
-    card (Sym α k) = multichoose (card α) k :=
-  by
+    card (Sym α k) = multichoose (card α) k := by
   rw [← card_sym_fin_eq_multichoose]
   exact card_congr (equiv_congr (equiv_fin α))
 #align sym.card_sym_eq_multichoose Sym.card_sym_eq_multichoose
@@ -144,8 +142,7 @@ namespace Sym2
 variable [DecidableEq α]
 
 /-- The `diag` of `s : finset α` is sent on a finset of `sym2 α` of card `s.card`. -/
-theorem card_image_diag (s : Finset α) : (s.diag.image Quotient.mk').card = s.card :=
-  by
+theorem card_image_diag (s : Finset α) : (s.diag.image Quotient.mk').card = s.card := by
   rw [card_image_of_inj_on, diag_card]
   rintro ⟨x₀, x₁⟩ hx _ _ h
   cases Quotient.eq'.1 h
@@ -155,8 +152,7 @@ theorem card_image_diag (s : Finset α) : (s.diag.image Quotient.mk').card = s.c
 #align sym2.card_image_diag Sym2.card_image_diag
 
 theorem two_mul_card_image_offDiag (s : Finset α) :
-    2 * (s.offDiag.image Quotient.mk').card = s.offDiag.card :=
-  by
+    2 * (s.offDiag.image Quotient.mk').card = s.offDiag.card := by
   rw [card_eq_sum_card_fiberwise
       (fun x => mem_image_of_mem _ :
         ∀ x ∈ s.off_diag, Quotient.mk' x ∈ s.off_diag.image Quotient.mk'),
@@ -188,8 +184,7 @@ theorem card_image_offDiag (s : Finset α) : (s.offDiag.image Quotient.mk').card
     Nat.div_eq_of_eq_mul_right zero_lt_two (two_mul_card_image_off_diag s).symm]
 #align sym2.card_image_off_diag Sym2.card_image_offDiag
 
-theorem card_subtype_diag [Fintype α] : card { a : Sym2 α // a.IsDiag } = card α :=
-  by
+theorem card_subtype_diag [Fintype α] : card { a : Sym2 α // a.IsDiag } = card α := by
   convert card_image_diag (univ : Finset α)
   rw [Fintype.card_of_subtype, ← filter_image_quotient_mk_is_diag]
   rintro x
@@ -209,8 +204,7 @@ theorem card_subtype_not_diag [Fintype α] : card { a : Sym2 α // ¬a.IsDiag } 
 #align sym2.card_subtype_not_diag Sym2.card_subtype_not_diag
 
 /-- Finset **stars and bars** for the case `n = 2`. -/
-theorem Finset.card_sym2 (s : Finset α) : s.Sym2.card = s.card * (s.card + 1) / 2 :=
-  by
+theorem Finset.card_sym2 (s : Finset α) : s.Sym2.card = s.card * (s.card + 1) / 2 := by
   rw [← image_diag_union_image_off_diag, card_union_eq, Sym2.card_image_diag,
     Sym2.card_image_offDiag, Nat.choose_two_right, add_comm, ← Nat.triangle_succ, Nat.succ_sub_one,
     mul_comm]
