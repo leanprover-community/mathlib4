@@ -28,27 +28,32 @@ theorem MonoidAlgebra.mem_ideal_span_of_image [Monoid G] [Semiring k] {s : Set G
     x ∈ Ideal.span (MonoidAlgebra.of k G '' s) ↔ ∀ m ∈ x.support, ∃ m' ∈ s, ∃ d, m = d * m' := by
   let RHS : Ideal (MonoidAlgebra k G) :=
     { carrier := { p | ∀ m : G, m ∈ p.support → ∃ m' ∈ s, ∃ d, m = d * m' }
-      add_mem' := fun x y hx hy m hm => by
+      add_mem' := @fun x y hx hy m hm => by
         classical exact (Finset.mem_union.1 <| Finsupp.support_add hm).elim (hx m) (hy m)
       zero_mem' := fun m hm => by cases hm
-      smul_mem' := fun x y hy m hm =>
-        by
-        replace hm := finset.mem_bUnion.mp (Finsupp.support_sum hm)
+      smul_mem' := fun x y hy m hm => by
+        classical
+        replace hm := Finset.mem_bunionᵢ.mp (Finsupp.support_sum hm)
         obtain ⟨xm, hxm, hm⟩ := hm
-        replace hm := finset.mem_bUnion.mp (Finsupp.support_sum hm)
+        replace hm := Finset.mem_bunionᵢ.mp (Finsupp.support_sum hm)
         obtain ⟨ym, hym, hm⟩ := hm
-        replace hm := finset.mem_singleton.mp (Finsupp.support_single_subset hm)
+        replace hm := Finset.mem_singleton.mp (Finsupp.support_single_subset hm)
         obtain rfl := hm
-        refine' (hy _ hym).imp fun sm => Exists.imp fun hsm => _
-        rintro ⟨d, rfl⟩
-        exact ⟨xm * d, (mul_assoc _ _ _).symm⟩ }
+        refine' (hy _ hym).imp fun sm => fun hsm => _
+        rcases hsm with ⟨hsm, d, dsm⟩
+        constructor
+        · exact hsm
+        · use xm * d
+          rw [dsm]
+          exact (mul_assoc _ _ _).symm
+    }
   change _ ↔ x ∈ RHS
   constructor
   · revert x
     refine' Ideal.span_le.2 _
     rintro _ ⟨i, hi, rfl⟩ m hm
     refine' ⟨_, hi, 1, _⟩
-    obtain rfl := finset.mem_singleton.mp (Finsupp.support_single_subset hm)
+    obtain rfl := Finset.mem_singleton.mp (Finsupp.support_single_subset hm)
     exact (one_mul _).symm
   · intro hx
     rw [← Finsupp.sum_single x]
@@ -68,4 +73,3 @@ theorem AddMonoidAlgebra.mem_ideal_span_of'_image [AddMonoid A] [Semiring k] {s 
     x ∈ Ideal.span (AddMonoidAlgebra.of' k A '' s) ↔ ∀ m ∈ x.support, ∃ m' ∈ s, ∃ d, m = d + m' :=
   @MonoidAlgebra.mem_ideal_span_of_image k (Multiplicative A) _ _ _ _
 #align add_monoid_algebra.mem_ideal_span_of'_image AddMonoidAlgebra.mem_ideal_span_of'_image
-
