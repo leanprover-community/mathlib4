@@ -14,7 +14,7 @@ import Mathlib.CategoryTheory.Monoidal.Preadditive
 /-!
 # Linear monoidal categories
 
-A monoidal category is `monoidal_linear R` if it is monoidal preadditive and
+A monoidal category is `MonoidalLinear R` if it is monoidal preadditive and
 tensor product of morphisms is `R`-linear in both factors.
 -/
 
@@ -31,26 +31,19 @@ variable (C : Type _) [Category C] [Preadditive C] [Linear R C]
 
 variable [MonoidalCategory C] [MonoidalPreadditive C]
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/-- A category is `monoidal_linear R` if tensoring is `R`-linear in both factors.
+/-- A category is `MonoidalLinear R` if tensoring is `R`-linear in both factors.
 -/
 class MonoidalLinear : Prop where
-  tensor_smul' : ∀ {W X Y Z : C} (f : W ⟶ X) (r : R) (g : Y ⟶ Z), f ⊗ r • g = r • (f ⊗ g) := by
-    obviously
-  smul_tensor' : ∀ {W X Y Z : C} (r : R) (f : W ⟶ X) (g : Y ⟶ Z), r • f ⊗ g = r • (f ⊗ g) := by
-    obviously
+  tensor_smul : ∀ {W X Y Z : C} (f : W ⟶ X) (r : R) (g : Y ⟶ Z), f ⊗ r • g = r • (f ⊗ g) := by
+    aesop_cat
+  smul_tensor : ∀ {W X Y Z : C} (r : R) (f : W ⟶ X) (g : Y ⟶ Z), r • f ⊗ g = r • (f ⊗ g) := by
+    aesop_cat
 #align category_theory.monoidal_linear CategoryTheory.MonoidalLinear
 
-restate_axiom monoidal_linear.tensor_smul'
+attribute [simp] MonoidalLinear.tensor_smul MonoidalLinear.smul_tensor
 
-restate_axiom monoidal_linear.smul_tensor'
-
-attribute [simp] monoidal_linear.tensor_smul monoidal_linear.smul_tensor
-
-variable {C} [MonoidalLinear R C]
+variable {C}
+variable [MonoidalLinear R C]
 
 instance tensorLeft_linear (X : C) : (tensorLeft X).Linear R where
 #align category_theory.tensor_left_linear CategoryTheory.tensorLeft_linear
@@ -64,24 +57,22 @@ instance tensoringLeft_linear (X : C) : ((tensoringLeft C).obj X).Linear R where
 instance tensoringRight_linear (X : C) : ((tensoringRight C).obj X).Linear R where
 #align category_theory.tensoring_right_linear CategoryTheory.tensoringRight_linear
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
+-- porting note: removed unused argument `[MonoidalPreadditive D]`
 /-- A faithful linear monoidal functor to a linear monoidal category
 ensures that the domain is linear monoidal. -/
 theorem monoidalLinearOfFaithful {D : Type _} [Category D] [Preadditive D] [Linear R D]
-    [MonoidalCategory D] [MonoidalPreadditive D] (F : MonoidalFunctor D C) [Faithful F.toFunctor]
+    [MonoidalCategory D] (F : MonoidalFunctor D C) [Faithful F.toFunctor]
     [F.toFunctor.Additive] [F.toFunctor.Linear R] : MonoidalLinear R D :=
-  { tensor_smul' := by
-      intros
-      apply F.to_functor.map_injective
-      simp only [F.to_functor.map_smul r (f ⊗ g), F.to_functor.map_smul r g, F.map_tensor,
-        monoidal_linear.tensor_smul, linear.smul_comp, linear.comp_smul]
-    smul_tensor' := by
-      intros
-      apply F.to_functor.map_injective
-      simp only [F.to_functor.map_smul r (f ⊗ g), F.to_functor.map_smul r f, F.map_tensor,
-        monoidal_linear.smul_tensor, linear.smul_comp, linear.comp_smul] }
+  { tensor_smul := by
+      intros W X Y Z f r g
+      apply F.toFunctor.map_injective
+      simp only [F.toFunctor.map_smul r (f ⊗ g), F.toFunctor.map_smul r g, F.map_tensor,
+        MonoidalLinear.tensor_smul, Linear.smul_comp, Linear.comp_smul]
+    smul_tensor := by
+      intros W X Y Z r f g
+      apply F.toFunctor.map_injective
+      simp only [F.toFunctor.map_smul r (f ⊗ g), F.toFunctor.map_smul r f, F.map_tensor,
+        MonoidalLinear.smul_tensor, Linear.smul_comp, Linear.comp_smul] }
 #align category_theory.monoidal_linear_of_faithful CategoryTheory.monoidalLinearOfFaithful
 
 end CategoryTheory
-
