@@ -8,8 +8,8 @@ Authors: Eric Wieser
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.MonoidAlgebra.Division
-import Mathbin.RingTheory.Ideal.Basic
+import Mathlib.Algebra.MonoidAlgebra.Division
+import Mathlib.RingTheory.Ideal.Basic
 
 /-!
 # Lemmas about ideals of `monoid_algebra` and `add_monoid_algebra`
@@ -25,8 +25,7 @@ We could spell `∃ d, m = d * m` as `mul_opposite.op m' ∣ mul_opposite.op m` 
 -/
 theorem MonoidAlgebra.mem_ideal_span_of_image [Monoid G] [Semiring k] {s : Set G}
     {x : MonoidAlgebra k G} :
-    x ∈ Ideal.span (MonoidAlgebra.of k G '' s) ↔ ∀ m ∈ x.support, ∃ m' ∈ s, ∃ d, m = d * m' :=
-  by
+    x ∈ Ideal.span (MonoidAlgebra.of k G '' s) ↔ ∀ m ∈ x.support, ∃ m' ∈ s, ∃ d, m = d * m' := by
   let RHS : Ideal (MonoidAlgebra k G) :=
     { carrier := { p | ∀ m : G, m ∈ p.support → ∃ m' ∈ s, ∃ d, m = d * m' }
       add_mem' := fun x y hx hy m hm => by
