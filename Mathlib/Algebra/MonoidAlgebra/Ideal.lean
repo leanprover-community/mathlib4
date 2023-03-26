@@ -34,7 +34,7 @@ theorem MonoidAlgebra.mem_ideal_span_of_image [Monoid G] [Semiring k] {s : Set G
       smul_mem' := fun x y hy m hm => by
         classical
         replace hm := Finset.mem_bunionᵢ.mp (Finsupp.support_sum hm)
-        obtain ⟨xm, hxm, hm⟩ := hm
+        obtain ⟨xm, -, hm⟩ := hm
         replace hm := Finset.mem_bunionᵢ.mp (Finsupp.support_sum hm)
         obtain ⟨ym, hym, hm⟩ := hm
         replace hm := Finset.mem_singleton.mp (Finsupp.support_single_subset hm)
@@ -47,14 +47,15 @@ theorem MonoidAlgebra.mem_ideal_span_of_image [Monoid G] [Semiring k] {s : Set G
   change _ ↔ x ∈ RHS
   constructor
   · revert x
-    refine' Ideal.span_le.2 _
+    rw [←SetLike.le_def] -- porting note: refine needs this even though it's defeq?
+    refine Ideal.span_le.2 ?_
     rintro _ ⟨i, hi, rfl⟩ m hm
     refine' ⟨_, hi, 1, _⟩
     obtain rfl := Finset.mem_singleton.mp (Finsupp.support_single_subset hm)
     exact (one_mul _).symm
   · intro hx
     rw [← Finsupp.sum_single x]
-    apply Ideal.sum_mem _ fun i hi => _
+    refine Ideal.sum_mem _ fun i hi => ?_  -- porting note: changed `apply` to `refine`
     obtain ⟨d, hd, d2, rfl⟩ := hx _ hi
     convert Ideal.mul_mem_left _ (id <| Finsupp.single d2 <| x (d2 * d) : MonoidAlgebra k G) _
     pick_goal 3
