@@ -140,7 +140,7 @@ lemma shiftFunctorZero_hom_app_obj_of_induced (X : C) :
   (shiftFunctorZero D A).hom.app (F.obj X) =
     (i 0).hom.app X ≫ F.map ((shiftFunctorZero C A).hom.app X) := by
   letI := Shift.induced F A s i
-  simp only [shiftFunctorZero_of_hasShiftMk, Shift.induced_zero_hom_app_obj]
+  simp only [ShiftMkCore.shiftFunctorZero_eq, Shift.induced_zero_hom_app_obj]
 
 @[simp]
 lemma shiftFunctorZero_inv_app_obj_of_induced (X : C) :
@@ -148,7 +148,7 @@ lemma shiftFunctorZero_inv_app_obj_of_induced (X : C) :
   (shiftFunctorZero D A).inv.app (F.obj X) =
     F.map ((shiftFunctorZero C A).inv.app X) ≫ (i 0).inv.app X := by
   letI := Shift.induced F A s i
-  simp only [shiftFunctorZero_of_hasShiftMk, Shift.induced_zero_inv_app_obj]
+  simp only [ShiftMkCore.shiftFunctorZero_eq, Shift.induced_zero_inv_app_obj]
 
 @[simp]
 lemma shiftFunctorAdd_hom_app_obj_of_induced (a b : A) (X : C) :
@@ -159,7 +159,7 @@ lemma shiftFunctorAdd_hom_app_obj_of_induced (a b : A) (X : C) :
       (i b).inv.app ((shiftFunctor C a).obj X) ≫
       (s b).map ((i a).inv.app X) := by
   letI := Shift.induced F A s i
-  simp only [shiftFunctorAdd_of_hasShiftMk, Shift.induced_add_hom_app_obj]
+  simp only [ShiftMkCore.shiftFunctorAdd_eq, Shift.induced_add_hom_app_obj]
 
 @[simp]
 lemma induced_add_inv_app_obj (a b : A) (X : C) :
@@ -170,7 +170,7 @@ lemma induced_add_inv_app_obj (a b : A) (X : C) :
     F.map ((shiftFunctorAdd C a b).inv.app X) ≫
     (i (a + b)).inv.app X := by
   letI := Shift.induced F A s i
-  simp only [shiftFunctorAdd_of_hasShiftMk, Shift.induced_add_inv_app_obj]
+  simp only [ShiftMkCore.shiftFunctorAdd_eq, Shift.induced_add_inv_app_obj]
 
 
 lemma Functor.HasCommShift.of_induced :
