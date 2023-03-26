@@ -5,6 +5,7 @@ Authors: Simon Hudon
 Ported by: Heather Macbeth
 -/
 import Mathlib.Lean.Meta
+import Mathlib.Control.Basic
 import Mathlib.Data.Array.MinMax
 import Mathlib.Tactic.Monotonicity.Attr
 import Mathlib.Tactic.SolveByElim
