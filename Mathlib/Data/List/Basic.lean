@@ -3623,9 +3623,9 @@ theorem monotone_filter_left (p : α → Bool) ⦃l l' : List α⦄ (h : l ⊆ l
 
 variable (p)
 
--- Porting note: The lemma `Sublist.filter` accidentally had its argument `p` change from explicit to
--- implicit when it was moved from Mathlib to Std.  This is a temporary copy providing the explicit
--- version, to be removed after `Std` is corrected.
+-- Porting note: The lemma `Sublist.filter` accidentally had its argument `p` change from explicit
+-- to implicit when it was moved from Mathlib to Std.  This is a temporary copy providing the
+-- explicit version, to be removed after `Std` is corrected.
 theorem Sublist.filter' {l₁ l₂} (s : l₁ <+ l₂) : l₁.filter p <+ l₂.filter p := by
   have := filterMap_eq_filter (fun a => p a)
   simp only [Bool.decide_coe] at this
