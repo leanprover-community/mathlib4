@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sean Leather, Mario Carneiro
 
 ! This file was ported from Lean 3 source module data.finmap
-! leanprover-community/mathlib commit c3fc15b26b3ff8958ec3e5711177a9ae3d5c45b7
+! leanprover-community/mathlib commit cea83e192eae2d368ab2b500a0975667da42c920
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
