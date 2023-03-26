@@ -97,7 +97,6 @@ theorem degrees_monomial (s : σ →₀ ℕ) (a : R) : degrees (monomial s a) �
     have := Finsupp.support_single_subset h
     rw [Finset.mem_singleton] at this
     rw [this]
-    exact le_refl _
 #align mv_polynomial.degrees_monomial MvPolynomial.degrees_monomial
 
 theorem degrees_monomial_eq (s : σ →₀ ℕ) (a : R) (ha : a ≠ 0) :
