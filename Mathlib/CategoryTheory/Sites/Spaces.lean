@@ -8,10 +8,10 @@ Authors: Bhavik Mehta
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Sites.Grothendieck
-import Mathbin.CategoryTheory.Sites.Pretopology
-import Mathbin.CategoryTheory.Limits.Lattice
-import Mathbin.Topology.Sets.Opens
+import Mathlib.CategoryTheory.Sites.Grothendieck
+import Mathlib.CategoryTheory.Sites.Pretopology
+import Mathlib.CategoryTheory.Limits.Lattice
+import Mathlib.Topology.Sets.Opens
 
 /-!
 # Grothendieck topology on a topological space
@@ -85,8 +85,7 @@ def pretopology : Pretopology (Opens T)
     generates the Grothendieck topology associated to the space. -/
 @[simp]
 theorem pretopology_ofGrothendieck :
-    Pretopology.ofGrothendieck _ (Opens.grothendieckTopology T) = Opens.pretopology T :=
-  by
+    Pretopology.ofGrothendieck _ (Opens.grothendieckTopology T) = Opens.pretopology T := by
   apply le_antisymm
   · intro X R hR x hx
     rcases hR x hx with ⟨U, f, ⟨V, g₁, g₂, hg₂, _⟩, hU⟩
@@ -100,8 +99,7 @@ theorem pretopology_ofGrothendieck :
 -/
 @[simp]
 theorem pretopology_toGrothendieck :
-    Pretopology.toGrothendieck _ (Opens.pretopology T) = Opens.grothendieckTopology T :=
-  by
+    Pretopology.toGrothendieck _ (Opens.pretopology T) = Opens.grothendieckTopology T := by
   rw [← pretopology_of_grothendieck]
   apply (pretopology.gi (opens T)).l_u_eq
 #align opens.pretopology_to_grothendieck Opens.pretopology_toGrothendieck
