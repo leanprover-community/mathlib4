@@ -96,29 +96,41 @@ set_option linter.uppercaseLean3 false in
 /-- Typecheck a `ring_hom` as a morphism in `SemiRing`. -/
 def ofHom {R S : Type u} [Semiring R] [Semiring S] (f : R →+* S) : of R ⟶ of S :=
   f
-#align SemiRing.of_hom SemiRing.ofHom
+set_option linter.uppercaseLean3 false in
+#align SemiRing.of_hom SemiRingCat.ofHom
+
+-- Porting note: needed for several lemmas below.
+-- I assume this is correct, given the useful bits of `FunLike` are now part of
+--  bundledHom` in some sense.
+instance {X Y : SemiRingCat} : CoeFun (X ⟶ Y) (fun _ => X → Y) :=
+  ConcreteCategory.hasCoeToFun
 
 @[simp]
 theorem ofHom_apply {R S : Type u} [Semiring R] [Semiring S] (f : R →+* S) (x : R) :
     ofHom f x = f x :=
   rfl
-#align SemiRing.of_hom_apply SemiRing.ofHom_apply
+set_option linter.uppercaseLean3 false in
+#align SemiRing.of_hom_apply SemiRingCat.ofHom_apply
 
-instance : Inhabited SemiRing :=
+instance : Inhabited SemiRingCat :=
   ⟨of PUnit⟩
 
-instance (R : SemiRing) : Semiring R :=
+instance (R : SemiRingCat) : Semiring R :=
   R.str
 
 @[simp]
-theorem coe_of (R : Type u) [Semiring R] : (SemiRing.of R : Type u) = R :=
+theorem coe_of (R : Type u) [Semiring R] : (SemiRingCat.of R : Type u) = R :=
   rfl
-#align SemiRing.coe_of SemiRing.coe_of
+set_option linter.uppercaseLean3 false in
+#align SemiRing.coe_of SemiRingCat.coe_of
 
-instance hasForgetToMon : HasForget₂ SemiRing MonCat :=
-  BundledHom.mkHasForget₂ (fun R hR => @MonoidWithZero.toMonoid R (@Semiring.toMonoidWithZero R hR))
-    (fun R₁ R₂ => RingHom.toMonoidHom) fun _ _ _ => rfl
-#align SemiRing.has_forget_to_Mon SemiRing.hasForgetToMon
+instance hasForgetToMon : HasForget₂ SemiRingCat MonCat :=
+  BundledHom.mkHasForget₂
+    (fun R hR => @MonoidWithZero.toMonoid R (@Semiring.toMonoidWithZero R hR))
+    -- Porting note: Error here... TC
+    (fun {X Y} => RingHom.toMonoidHom)
+    _ -- (fun R₁ R₂ => RingHom.toMonoidHom) fun _ _ _ => rfl
+#align SemiRing.has_forget_to_Mon SemiRingCat.hasForgetToMon
 
 instance hasForgetToAddCommMon : HasForget₂ SemiRing AddCommMonCat
     where-- can't use bundled_hom.mk_has_forget₂, since AddCommMon is an induced category
