@@ -263,4 +263,3 @@ instance instJordanHolderLattice : JordanHolderLattice (Submodule R M) where
 #align jordan_holder_module JordanHolderModule.instJordanHolderLattice
 
 end JordanHolderModule
-#lint
