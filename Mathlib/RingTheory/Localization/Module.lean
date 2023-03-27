@@ -8,9 +8,9 @@ Authors: Junyan Xu, Anne Baanen
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.LinearAlgebra.Basis
-import Mathbin.RingTheory.Localization.FractionRing
-import Mathbin.RingTheory.Localization.Integer
+import Mathlib.LinearAlgebra.Basis
+import Mathlib.RingTheory.Localization.FractionRing
+import Mathlib.RingTheory.Localization.Integer
 
 /-!
 # Modules / vector spaces over localizations / fraction fields
@@ -75,13 +75,11 @@ include hA
 open Submodule
 
 theorem LinearIndependent.localization_localization {ι : Type _} {v : ι → A}
-    (hv : LinearIndependent R v) : LinearIndependent Rₛ (algebraMap A Aₛ ∘ v) :=
-  by
+    (hv : LinearIndependent R v) : LinearIndependent Rₛ (algebraMap A Aₛ ∘ v) := by
   rw [linearIndependent_iff'] at hv⊢
   intro s g hg i hi
   choose! a g' hg' using IsLocalization.exist_integer_multiples S s g
-  have h0 : algebraMap A Aₛ (∑ i in s, g' i • v i) = 0 :=
-    by
+  have h0 : algebraMap A Aₛ (∑ i in s, g' i • v i) = 0 := by
     apply_fun (· • ·) (a : R)  at hg
     rw [smul_zero, Finset.smul_sum] at hg
     rw [map_sum, ← hg]
@@ -136,8 +134,7 @@ theorem Basis.localizationLocalization_repr_algebraMap {ι : Type _} (b : Basis 
   calc
     (b.localization_localization Rₛ S Aₛ).repr (algebraMap A Aₛ x) i =
         (b.localization_localization Rₛ S Aₛ).repr
-          ((b.repr x).Sum fun j c => algebraMap R Rₛ c • algebraMap A Aₛ (b j)) i :=
-      by
+          ((b.repr x).Sum fun j c => algebraMap R Rₛ c • algebraMap A Aₛ (b j)) i := by
       simp_rw [IsScalarTower.algebraMap_smul, Algebra.smul_def,
         IsScalarTower.algebraMap_apply R A Aₛ, ← _root_.map_mul, ← map_finsupp_sum, ←
         Algebra.smul_def, ← Finsupp.total_apply, Basis.total_repr]
