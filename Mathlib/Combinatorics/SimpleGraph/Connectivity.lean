@@ -798,7 +798,7 @@ theorem dart_snd_mem_support_of_mem_darts {u v : V} (p : G.Walk u v) {d : G.Dart
 theorem fst_mem_support_of_mem_edges {t u v w : V} (p : G.Walk v w) (he : ⟦(t, u)⟧ ∈ p.edges) :
     t ∈ p.support := by
   obtain ⟨d, hd, he⟩ := List.mem_map.mp he
-  rw [eq_comm, dart_edge_eq_mk'_iff'] at he
+  rw [dart_edge_eq_mk'_iff'] at he
   rcases he with (⟨rfl, rfl⟩ | ⟨rfl, rfl⟩)
   · exact dart_fst_mem_support_of_mem_darts _ hd
   · exact dart_snd_mem_support_of_mem_darts _ hd
