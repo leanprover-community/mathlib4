@@ -180,8 +180,7 @@ theorem IsAntichain.disjoint_slice_shadow_falling {m n : ℕ}
     refine' h𝒜 (slice_subset h₂) ht _ ((erase_subset _ _).trans hst)
     rintro rfl
     exact not_mem_erase _ _ (hst ha)
-#align finset.is_antichain.disjoint_slice_shadow_falling
-    Finset.IsAntichain.disjoint_slice_shadow_falling
+#align finset.is_antichain.disjoint_slice_shadow_falling Finset.IsAntichain.disjoint_slice_shadow_falling
 
 /-- A bound on any top part of the sum in LYM in terms of the size of `falling k 𝒜`. -/
 theorem le_card_falling_div_choose [Fintype α] (hk : k ≤ Fintype.card α)
