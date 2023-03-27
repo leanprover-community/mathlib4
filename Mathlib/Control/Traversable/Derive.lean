@@ -20,7 +20,7 @@ open Tactic List Monad Functor
 unsafe def with_prefix : Option Name → Name → Name
   | none, n => n
   | some p, n => p ++ n
-#align tactic.interactive.with_prefix tactic.interactive.with_prefix
+#align tactic.interactive.with_prefix Tactic.Interactive.with_prefix
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:207:4: warning: unsupported notation `t -/
 /-- similar to `nested_traverse` but for `functor` -/
@@ -34,7 +34,7 @@ unsafe def nested_map (f v : expr) : expr → tactic expr
           let f' ← nested_map t
           mk_mapp `` Functor.map [t, _inst, none, none, f']
         else fail f! "type {t } is not a functor with respect to variable {v}")
-#align tactic.interactive.nested_map tactic.interactive.nested_map
+#align tactic.interactive.nested_map Tactic.Interactive.nested_map
 
 /-- similar to `traverse_field` but for `functor` -/
 unsafe def map_field (n : Name) (cl f α β e : expr) : tactic expr := do
@@ -47,7 +47,7 @@ unsafe def map_field (n : Name) (cl f α β e : expr) : tactic expr := do
           let f' ← nested_map f α t
           pure <| f' e
         else is_def_eq t cl >> mk_app `` comp.mk [e] <|> pure e
-#align tactic.interactive.map_field tactic.interactive.map_field
+#align tactic.interactive.map_field Tactic.Interactive.map_field
 
 /-- similar to `traverse_constructor` but for `functor` -/
 unsafe def map_constructor (c n : Name) (f α β : expr) (args₀ : List expr)
@@ -62,7 +62,7 @@ unsafe def map_constructor (c n : Name) (f α β : expr) (args₀ : List expr)
   let constr ← mk_const c
   let r := constr.mk_app (args₀ ++ args')
   return r
-#align tactic.interactive.map_constructor tactic.interactive.map_constructor
+#align tactic.interactive.map_constructor Tactic.Interactive.map_constructor
 
 /-- derive the `map` definition of a `functor` -/
 unsafe def mk_map (type : Name) := do
@@ -78,7 +78,7 @@ unsafe def mk_map (type : Name) := do
             let b ← et <$> infer_type a
             pure (b, a)
       map_constructor c type f α β (ls ++ [β]) args₀ rec_call >>= tactic.exact
-#align tactic.interactive.mk_map tactic.interactive.mk_map
+#align tactic.interactive.mk_map Tactic.Interactive.mk_map
 
 unsafe def mk_mapp_aux' : expr → expr → List expr → tactic expr
   | fn, expr.pi n bi d b, a :: as => do
@@ -87,12 +87,12 @@ unsafe def mk_mapp_aux' : expr → expr → List expr → tactic expr
     let t ← whnf (b.instantiate_var a)
     mk_mapp_aux' fn t as
   | fn, _, _ => pure fn
-#align tactic.interactive.mk_mapp_aux' tactic.interactive.mk_mapp_aux'
+#align tactic.interactive.mk_mapp_aux' Tactic.Interactive.mk_mapp_aux'
 
 unsafe def mk_mapp' (fn : expr) (args : List expr) : tactic expr := do
   let t ← infer_type fn >>= whnf
   mk_mapp_aux' fn t args
-#align tactic.interactive.mk_mapp' tactic.interactive.mk_mapp'
+#align tactic.interactive.mk_mapp' Tactic.Interactive.mk_mapp'
 
 /-- derive the equations for a specific `map` definition -/
 unsafe def derive_map_equations (pre : Option Name) (n : Name) (vs : List expr) (tgt : expr) :
@@ -131,7 +131,7 @@ unsafe def derive_map_equations (pre : Option Name) (n : Name) (vs : List expr) 
       return ()
   set_goals []
   return ()
-#align tactic.interactive.derive_map_equations tactic.interactive.derive_map_equations
+#align tactic.interactive.derive_map_equations Tactic.Interactive.derive_map_equations
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:207:4: warning: unsupported notation `d -/
 unsafe def derive_functor (pre : Option Name) : tactic Unit := do
@@ -146,7 +146,7 @@ unsafe def derive_functor (pre : Option Name) : tactic Unit := do
   when (d d.is_trusted) do
       let tgt ← pis vs tgt
       derive_map_equations pre n vs tgt
-#align tactic.interactive.derive_functor tactic.interactive.derive_functor
+#align tactic.interactive.derive_functor Tactic.Interactive.derive_functor
 
 -- failed to format: unknown constant 'term.pseudo.antiquot'
 /-- `seq_apply_constructor f [x,y,z]` synthesizes `f <*> x <*> y <*> z` -/ private unsafe
@@ -161,7 +161,7 @@ unsafe def derive_functor (pre : Option Name) : tactic Unit := do
           ( to_expr ` `( $ ( e ) <*> $ ( x ) ) >>= flip seq_apply_constructor xs )
       | e , Sum.inl x :: xs => Prod.map ( cons <| pure x ) id <$> seq_apply_constructor e xs
       | e , [ ] => return ( [ ] , e )
-#align tactic.interactive.seq_apply_constructor tactic.interactive.seq_apply_constructor
+#align tactic.interactive.seq_apply_constructor Tactic.Interactive.seq_apply_constructor
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:207:4: warning: unsupported notation `t -/
 /-- ``nested_traverse f α (list (array n (list α)))`` synthesizes the expression
@@ -177,7 +177,7 @@ unsafe def nested_traverse (f v : expr) : expr → tactic expr
           let f' ← nested_traverse t
           mk_mapp `` Traversable.traverse [t, _inst, none, none, none, none, f']
         else fail f! "type {t } is not traversable with respect to variable {v}")
-#align tactic.interactive.nested_traverse tactic.interactive.nested_traverse
+#align tactic.interactive.nested_traverse Tactic.Interactive.nested_traverse
 
 /-- For a sum type `inductive foo (α : Type) | foo1 : list α → ℕ → foo | ...`
 ``traverse_field `foo appl_inst f `α `(x : list α)`` synthesizes
@@ -190,7 +190,7 @@ unsafe def traverse_field (n : Name) (appl_inst cl f v e : expr) : tactic (Sum e
         let f' ← nested_traverse f v t
         pure <| Sum.inr <| f' e
       else is_def_eq t cl >> Sum.inr <$> mk_app `` comp.mk [e] <|> pure (Sum.inl e)
-#align tactic.interactive.traverse_field tactic.interactive.traverse_field
+#align tactic.interactive.traverse_field Tactic.Interactive.traverse_field
 
 -- failed to format: unknown constant 'term.pseudo.antiquot'
 /--
@@ -238,7 +238,7 @@ unsafe def traverse_field (n : Name) (appl_inst cl f v e : expr) : tactic (Sum e
           done
           set_goals gs
           return r
-#align tactic.interactive.traverse_constructor tactic.interactive.traverse_constructor
+#align tactic.interactive.traverse_constructor Tactic.Interactive.traverse_constructor
 
 /-- derive the `traverse` definition of a `traversable` instance -/
 unsafe def mk_traverse (type : Name) := do
@@ -256,7 +256,7 @@ unsafe def mk_traverse (type : Name) := do
               let b ← et <$> infer_type a
               pure (b, a)
         traverse_constructor c type appl_inst f α β (ls ++ [β]) args₀ rec_call >>= tactic.exact
-#align tactic.interactive.mk_traverse tactic.interactive.mk_traverse
+#align tactic.interactive.mk_traverse Tactic.Interactive.mk_traverse
 
 open Applicative
 
@@ -299,7 +299,7 @@ unsafe def derive_traverse_equations (pre : Option Name) (n : Name) (vs : List e
       return ()
   set_goals []
   return ()
-#align tactic.interactive.derive_traverse_equations tactic.interactive.derive_traverse_equations
+#align tactic.interactive.derive_traverse_equations Tactic.Interactive.derive_traverse_equations
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:207:4: warning: unsupported notation `d -/
 unsafe def derive_traverse (pre : Option Name) : tactic Unit := do
@@ -314,7 +314,7 @@ unsafe def derive_traverse (pre : Option Name) : tactic Unit := do
   when (d d.is_trusted) do
       let tgt ← pis vs tgt
       derive_traverse_equations pre n vs tgt
-#align tactic.interactive.derive_traverse tactic.interactive.derive_traverse
+#align tactic.interactive.derive_traverse Tactic.Interactive.derive_traverse
 
 unsafe def mk_one_instance (n : Name) (cls : Name) (tac : tactic Unit) (namesp : Option Name)
     (mk_inst : Name → expr → tactic expr := fun n arg => mk_app n [arg]) : tactic Unit := do
@@ -351,7 +351,7 @@ unsafe def mk_one_instance (n : Name) (cls : Name) (tac : tactic Unit) (namesp :
       let inst_n := with_prefix namesp n ++ cls
       add_decl (declaration.defn inst_n decl tgt val ReducibilityHints.abbrev trusted)
       set_basic_attribute `instance inst_n namesp
-#align tactic.interactive.mk_one_instance tactic.interactive.mk_one_instance
+#align tactic.interactive.mk_one_instance Tactic.Interactive.mk_one_instance
 
 open Interactive
 
@@ -360,7 +360,7 @@ unsafe def get_equations_of (n : Name) : tactic (List pexpr) := do
   let pre := .str n "equations"
   let x := e.fold [] fun d xs => if pre.isPrefixOfₓ d.to_name then d.to_name :: xs else xs
   x resolve_name
-#align tactic.interactive.get_equations_of tactic.interactive.get_equations_of
+#align tactic.interactive.get_equations_of Tactic.Interactive.get_equations_of
 
 unsafe def derive_lawful_functor (pre : Option Name) : tactic Unit := do
   let q(@LawfulFunctor $(f) $(d)) ← target
@@ -380,18 +380,18 @@ unsafe def derive_lawful_functor (pre : Option Name) : tactic Unit := do
       andthen (() <$ tactic.induction vs)
           (simp none none ff (rules ``(Functor.map_comp_map)) [] goal)
   return ()
-#align tactic.interactive.derive_lawful_functor tactic.interactive.derive_lawful_functor
+#align tactic.interactive.derive_lawful_functor Tactic.Interactive.derive_lawful_functor
 
 unsafe def simp_functor (rs : List simp_arg_type := []) : tactic Unit :=
   simp none none false rs [`functor_norm] (Loc.ns [none])
-#align tactic.interactive.simp_functor tactic.interactive.simp_functor
+#align tactic.interactive.simp_functor Tactic.Interactive.simp_functor
 
 unsafe def traversable_law_starter (rs : List simp_arg_type) := do
   let vs ← tactic.intros
   resetI
   dunfold [`` Traversable.traverse, `` Functor.map] (loc.ns [none])
   andthen (() <$ tactic.induction vs) (simp_functor rs)
-#align tactic.interactive.traversable_law_starter tactic.interactive.traversable_law_starter
+#align tactic.interactive.traversable_law_starter Tactic.Interactive.traversable_law_starter
 
 unsafe def derive_lawful_traversable (pre : Option Name) : tactic Unit := do
   let q(@IsLawfulTraversable $(f) $(d)) ← target
@@ -420,13 +420,13 @@ unsafe def derive_lawful_traversable (pre : Option Name) : tactic Unit := do
               simp none none tt (natur η) [] goal)])
       refl
   return ()
-#align tactic.interactive.derive_lawful_traversable tactic.interactive.derive_lawful_traversable
+#align tactic.interactive.derive_lawful_traversable Tactic.Interactive.derive_lawful_traversable
 
 open Function
 
 unsafe def guard_class (cls : Name) (hdl : derive_handler) : derive_handler := fun p n =>
   if p.is_constant_of cls then hdl p n else pure false
-#align tactic.interactive.guard_class tactic.interactive.guard_class
+#align tactic.interactive.guard_class Tactic.Interactive.guard_class
 
 unsafe def higher_order_derive_handler (cls : Name) (tac : tactic Unit)
     (deps : List derive_handler := []) (namesp : Option Name)
@@ -435,47 +435,46 @@ unsafe def higher_order_derive_handler (cls : Name) (tac : tactic Unit)
   mmap' (fun f : derive_handler => f p n) deps
   mk_one_instance n cls tac namesp mk_inst
   pure tt
-#align tactic.interactive.higher_order_derive_handler tactic.interactive.higher_order_derive_handler
+#align tactic.interactive.higher_order_derive_handler Tactic.Interactive.higher_order_derive_handler
 
 unsafe def functor_derive_handler' (nspace : Option Name := none) : derive_handler :=
   higher_order_derive_handler `` Functor (derive_functor nspace) [] nspace
-#align tactic.interactive.functor_derive_handler' tactic.interactive.functor_derive_handler'
+#align tactic.interactive.functor_derive_handler' Tactic.Interactive.functor_derive_handler'
 
 @[derive_handler]
 unsafe def functor_derive_handler : derive_handler :=
   guard_class `` Functor functor_derive_handler'
-#align tactic.interactive.functor_derive_handler tactic.interactive.functor_derive_handler
+#align tactic.interactive.functor_derive_handler Tactic.Interactive.functor_derive_handler
 
 unsafe def traversable_derive_handler' (nspace : Option Name := none) : derive_handler :=
   higher_order_derive_handler `` Traversable (derive_traverse nspace)
     [functor_derive_handler' nspace] nspace
-#align tactic.interactive.traversable_derive_handler' tactic.interactive.traversable_derive_handler'
+#align tactic.interactive.traversable_derive_handler' Tactic.Interactive.traversable_derive_handler'
 
 @[derive_handler]
 unsafe def traversable_derive_handler : derive_handler :=
   guard_class `` Traversable traversable_derive_handler'
-#align tactic.interactive.traversable_derive_handler tactic.interactive.traversable_derive_handler
+#align tactic.interactive.traversable_derive_handler Tactic.Interactive.traversable_derive_handler
 
 unsafe def lawful_functor_derive_handler' (nspace : Option Name := none) : derive_handler :=
   higher_order_derive_handler `` LawfulFunctor (derive_lawful_functor nspace)
     [traversable_derive_handler' nspace] nspace fun n arg => mk_mapp n [arg, none]
-#align tactic.interactive.lawful_functor_derive_handler' tactic.interactive.lawful_functor_derive_handler'
+#align tactic.interactive.lawful_functor_derive_handler' Tactic.Interactive.lawful_functor_derive_handler'
 
 @[derive_handler]
 unsafe def lawful_functor_derive_handler : derive_handler :=
   guard_class `` LawfulFunctor lawful_functor_derive_handler'
-#align tactic.interactive.lawful_functor_derive_handler tactic.interactive.lawful_functor_derive_handler
+#align tactic.interactive.lawful_functor_derive_handler Tactic.Interactive.lawful_functor_derive_handler
 
 unsafe def lawful_traversable_derive_handler' (nspace : Option Name := none) : derive_handler :=
   higher_order_derive_handler `` IsLawfulTraversable (derive_lawful_traversable nspace)
     [traversable_derive_handler' nspace, lawful_functor_derive_handler' nspace] nspace fun n arg =>
     mk_mapp n [arg, none]
-#align tactic.interactive.lawful_traversable_derive_handler' tactic.interactive.lawful_traversable_derive_handler'
+#align tactic.interactive.lawful_traversable_derive_handler' Tactic.Interactive.lawful_traversable_derive_handler'
 
 @[derive_handler]
 unsafe def lawful_traversable_derive_handler : derive_handler :=
   guard_class `` IsLawfulTraversable lawful_traversable_derive_handler'
-#align tactic.interactive.lawful_traversable_derive_handler tactic.interactive.lawful_traversable_derive_handler
+#align tactic.interactive.lawful_traversable_derive_handler Tactic.Interactive.lawful_traversable_derive_handler
 
 end Tactic.Interactive
-
