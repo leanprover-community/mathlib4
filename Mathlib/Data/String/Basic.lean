@@ -109,7 +109,7 @@ def ltb.inductionOn.{u} {motive : Iterator → Iterator → Sort u} (it₁ it₂
       motive ⟨s₁, i₁⟩ ⟨s₂, i₂⟩)
     (base₂ : ∀ s₁ s₂ i₁ i₂, ¬ Iterator.hasNext ⟨s₂, i₂⟩ → motive ⟨s₁, i₁⟩ ⟨s₂, i₂⟩) :
     motive it₁ it₂ :=
-if h₂ : it₂.hasNext then
+  if h₂ : it₂.hasNext then
     if h₁ : it₁.hasNext then
       if heq : it₁.curr = it₂.curr then
         ind it₁.s it₂.s it₁.i it₂.i h₂ h₁ heq (inductionOn it₁.next it₂.next ind eq base₁ base₂)
