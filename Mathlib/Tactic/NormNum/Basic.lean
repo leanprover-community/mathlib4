@@ -548,25 +548,22 @@ such that `norm_num` successfully recognises both `a` and `b`, and returns `a / 
   let p : Q(IsRat ($na / $nb : ℚ) $n $d) := p
   return (.isRat' (inst := dℚ) q n d q(isRat_mkRat $pa $pb $p) : Result q(mkRat $a $b))
 
-/- Note: the following lemmas take a separate `OfScientific α` argument to prevent a
-`(kernel) deep recursion detected` error arising from `.ofScientific` being unfolded preferentially
-to `RatCast.ratCast`. When we use these lemmas in `evalOfScientific`, we always take `σα` to be the
-`OfScientific α` instance obtained from the `DivisionRing` structure even though this isn't
-enforced by the type. -/
+/- Note: the following lemmas take an explicit `OfScientific α` argument to prevent a
+`(kernel) deep recursion detected` error arising from `Nat.gcd` (see lean4#2171). When we use these
+lemmas in `evalOfScientific`, we always take `σα` to be the `OfScientific α` instance obtained from
+the `DivisionRing` structure even though this isn't enforced by the type. -/
 
 theorem isRat_ofScientific_of_true [DivisionRing α] (σα : OfScientific α) :
     {m e : ℕ} → {n : ℤ} → {d : ℕ} →
     @OfScientific.ofScientific α σα = (fun m s e ↦ (Rat.ofScientific m s e : α)) →
     IsRat (mkRat m (10 ^ e) : α) n d → IsRat (@OfScientific.ofScientific α σα m true e) n d
-  | _, _, _, _, σh, ⟨_, eq⟩ => ⟨_, by
-    simp only [σh, if_true, Rat.ofScientific, Rat.normalize_eq_mkRat]
-    exact eq⟩
+  | _, _, _, _, σh, ⟨_, eq⟩ => ⟨_, by simp only [σh, Rat.ofScientific_true_def]; exact eq⟩
 
 theorem isNat_ofScientific_of_false [DivisionRing α] (σα : OfScientific α) : {m e nm ne n : ℕ} →
     @OfScientific.ofScientific α σα = (fun m s e ↦ (Rat.ofScientific m s e : α)) →
     IsNat m nm → IsNat e ne → n = Nat.mul nm ((10 : ℕ) ^ ne) →
     IsNat (@OfScientific.ofScientific α σα m false e : α) n
-  | _, _, _, _, _, σh, ⟨rfl⟩, ⟨rfl⟩, h => ⟨by simp [σh, Rat.ofScientific, h]; norm_cast⟩
+  | _, _, _, _, _, σh, ⟨rfl⟩, ⟨rfl⟩, h => ⟨by simp [σh, Rat.ofScientific_false_def, h]; norm_cast⟩
 
 /-- The `norm_num` extension which identifies expressions in scientific notation, normalizing them
 to rat casts if the scientific notation is inherited from the one for rationals. -/
