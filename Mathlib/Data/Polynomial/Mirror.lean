@@ -74,7 +74,7 @@ theorem mirror_natDegree : p.mirror.natDegree = p.natDegree := by
   let _ : Nontrivial R := nontrivial_of_ne _ _ this
   rw [mirror, natDegree_mul', reverse_natDegree, natDegree_X_pow,
     tsub_add_cancel_of_le p.natTrailingDegree_le_natDegree]
-  rw [leadingCoeff_X_pow, mul_one, reverse_leadingCoeff, Ne, trailingCoeff_eq_zero]
+  rwa [leadingCoeff_X_pow, mul_one, reverse_leadingCoeff, Ne, trailingCoeff_eq_zero]
 #align polynomial.mirror_nat_degree Polynomial.mirror_natDegree
 
 theorem mirror_natTrailingDegree : p.mirror.natTrailingDegree = p.natTrailingDegree := by
