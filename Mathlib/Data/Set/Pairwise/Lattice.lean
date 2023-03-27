@@ -13,15 +13,20 @@ import Mathlib.Data.Set.Pairwise.Basic
 
 /-!
 # Relations holding pairwise
+
 In this file we prove many facts about `pairwise` and the set lattice.
 -/
 
+
 open Set Function
 
-variable {α β γ ι ι' : Type _} {r p q : α → α → Prop} {s t : Set ι}
+variable {α β γ ι ι' : Type _} {r p q : α → α → Prop}
+
+section Pairwise
+
+variable {f g : ι → α} {s t u : Set α} {a b : α}
 
 namespace Set
-variable {f g : ι → α}
 
 theorem pairwise_unionᵢ {f : ι → Set α} (h : Directed (· ⊆ ·) f) :
     (⋃ n, f n).Pairwise r ↔ ∀ n, (f n).Pairwise r := by
@@ -36,12 +41,19 @@ theorem pairwise_unionᵢ {f : ι → Set α} (h : Directed (· ⊆ ·) f) :
 #align set.pairwise_Union Set.pairwise_unionᵢ
 
 theorem pairwise_unionₛ {r : α → α → Prop} {s : Set (Set α)} (h : DirectedOn (· ⊆ ·) s) :
-    (⋃₀s).Pairwise r ↔ ∀ a ∈ s, Set.Pairwise a r := by
+    (⋃₀ s).Pairwise r ↔ ∀ a ∈ s, Set.Pairwise a r := by
   rw [unionₛ_eq_unionᵢ, pairwise_unionᵢ h.directed_val, SetCoe.forall]
 #align set.pairwise_sUnion Set.pairwise_unionₛ
 
-section PartialOrder
-variable [PartialOrder α] [OrderBot α]
+end Set
+
+end Pairwise
+
+namespace Set
+
+section PartialOrderBot
+
+variable [PartialOrder α] [OrderBot α] {s t : Set ι} {f g : ι → α}
 
 theorem pairwiseDisjoint_unionᵢ {g : ι' → Set ι} (h : Directed (· ⊆ ·) g) :
     (⋃ n, g n).PairwiseDisjoint f ↔ ∀ ⦃n⦄, (g n).PairwiseDisjoint f :=
@@ -49,22 +61,24 @@ theorem pairwiseDisjoint_unionᵢ {g : ι' → Set ι} (h : Directed (· ⊆ ·)
 #align set.pairwise_disjoint_Union Set.pairwiseDisjoint_unionᵢ
 
 theorem pairwiseDisjoint_unionₛ {s : Set (Set ι)} (h : DirectedOn (· ⊆ ·) s) :
-    (⋃₀s).PairwiseDisjoint f ↔ ∀ ⦃a⦄, a ∈ s → PairwiseDisjoint a f :=
+    (⋃₀ s).PairwiseDisjoint f ↔ ∀ ⦃a⦄, a ∈ s → Set.PairwiseDisjoint a f :=
   pairwise_unionₛ h
 #align set.pairwise_disjoint_sUnion Set.pairwiseDisjoint_unionₛ
 
-end PartialOrder
+end PartialOrderBot
 
 section CompleteLattice
+
 variable [CompleteLattice α]
 
-/-- Bind operation for `Set.PairwiseDisjoint`. If you want to only consider finsets of indices, you
-can use `Set.PairwiseDisjoint.bunionᵢ_finset`. -/
-theorem PairwiseDisjoint.bunionᵢ {s : Set ι'} {g : ι' → Set ι}
+
+/-- Bind operation for `set.pairwise_disjoint`. If you want to only consider finsets of indices, you
+can use `set.pairwise_disjoint.bUnion_finset`. -/
+theorem PairwiseDisjoint.bunionᵢ {s : Set ι'} {g : ι' → Set ι} {f : ι → α}
     (hs : s.PairwiseDisjoint fun i' : ι' => ⨆ i ∈ g i', f i)
     (hg : ∀ i ∈ s, (g i).PairwiseDisjoint f) : (⋃ i ∈ s, g i).PairwiseDisjoint f := by
   rintro a ha b hb hab
-  simp_rw [mem_unionᵢ] at ha hb
+  simp_rw [Set.mem_unionᵢ] at ha hb
   obtain ⟨c, hc, ha⟩ := ha
   obtain ⟨d, hd, hb⟩ := hb
   obtain hcd | hcd := eq_or_ne (g c) (g d)
@@ -86,16 +100,18 @@ theorem bunionᵢ_diff_bunionᵢ_eq {s t : Set ι} {f : ι → Set α} (h : (s �
   exact (h (Or.inl hi.1) (Or.inr hj) (ne_of_mem_of_not_mem hj hi.2).symm).le_bot ⟨ha, haj⟩
 #align set.bUnion_diff_bUnion_eq Set.bunionᵢ_diff_bunionᵢ_eq
 
+
 /-- Equivalence between a disjoint bounded union and a dependent sum. -/
 noncomputable def bunionᵢEqSigmaOfDisjoint {s : Set ι} {f : ι → Set α} (h : s.PairwiseDisjoint f) :
-    (⋃ i ∈ s, f i) ≃ Σ i : s, f i :=
+    (⋃ i ∈ s, f i) ≃ Σi : s, f i :=
   (Equiv.setCongr (bunionᵢ_eq_unionᵢ _ _)).trans <|
-    unionEqSigmaOfDisjoint fun ⟨_i, hi⟩ ⟨_j, hj⟩ ne => (h hi hj) fun eq => ne <| Subtype.eq eq
+    unionEqSigmaOfDisjoint fun ⟨_i, hi⟩ ⟨_j, hj⟩ ne => h hi hj fun eq => ne <| Subtype.eq eq
 #align set.bUnion_eq_sigma_of_disjoint Set.bunionᵢEqSigmaOfDisjoint
 
 end Set
 
 section
+
 variable {f : ι → Set α} {s t : Set ι}
 
 theorem Set.PairwiseDisjoint.subset_of_bunionᵢ_subset_bunionᵢ (h₀ : (s ∪ t).PairwiseDisjoint f)
@@ -113,7 +129,7 @@ theorem Pairwise.subset_of_bunionᵢ_subset_bunionᵢ (h₀ : Pairwise (Disjoint
 #align pairwise.subset_of_bUnion_subset_bUnion Pairwise.subset_of_bunionᵢ_subset_bunionᵢ
 
 theorem Pairwise.bunionᵢ_injective (h₀ : Pairwise (Disjoint on f)) (h₁ : ∀ i, (f i).Nonempty) :
-    Injective fun s : Set ι => ⋃ i ∈ s, f i := fun _ _ h =>
+    Injective fun s : Set ι => ⋃ i ∈ s, f i := fun _s _t h =>
   ((h₀.subset_of_bunionᵢ_subset_bunionᵢ fun _ _ => h₁ _) <| h.subset).antisymm <|
     (h₀.subset_of_bunionᵢ_subset_bunionᵢ fun _ _ => h₁ _) <| h.superset
 #align pairwise.bUnion_injective Pairwise.bunionᵢ_injective
