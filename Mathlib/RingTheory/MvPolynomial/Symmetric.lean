@@ -32,9 +32,9 @@ We also prove some basic facts about them.
 
 As in other polynomial files, we typically use the notation:
 
-+ `σ τ : Type*` (indexing the variables)
++ `σ τ : Type _` (indexing the variables)
 
-+ `R S : Type*` `[CommSemiring R]` `[CommSemiring S]` (the coefficients)
++ `R S : Type _` `[CommSemiring R]` `[CommSemiring S]` (the coefficients)
 
 + `r : R` elements of the coefficient ring
 
@@ -83,12 +83,11 @@ def IsSymmetric [CommSemiring R] (φ : MvPolynomial σ R) : Prop :=
 variable (σ R)
 
 /-- The subalgebra of symmetric `MvPolynomial`s. -/
-def symmetricSubalgebra [CommSemiring R] : Subalgebra R (MvPolynomial σ R)
-    where
+def symmetricSubalgebra [CommSemiring R] : Subalgebra R (MvPolynomial σ R) where
   carrier := setOf IsSymmetric
   algebraMap_mem' r e := rename_C e r
-  mul_mem' := @fun a b ha hb e => by rw [AlgHom.map_mul, ha, hb]
-  add_mem' := @fun a b ha hb e => by rw [AlgHom.map_add, ha, hb]
+  mul_mem' ha hb e := by rw [AlgHom.map_mul, ha, hb]
+  add_mem' ha hb e := by rw [AlgHom.map_add, ha, hb]
 #align mv_polynomial.symmetric_subalgebra MvPolynomial.symmetricSubalgebra
 
 variable {σ R}
@@ -106,10 +105,10 @@ section CommSemiring
 variable [CommSemiring R] [CommSemiring S] {φ ψ : MvPolynomial σ R}
 
 @[simp]
-theorem c (r : R) : IsSymmetric (C r : MvPolynomial σ R) :=
+theorem C (r : R) : IsSymmetric (C r : MvPolynomial σ R) :=
   (symmetricSubalgebra σ R).algebraMap_mem r
 set_option linter.uppercaseLean3 false in
-#align mv_polynomial.is_symmetric.C MvPolynomial.IsSymmetric.c
+#align mv_polynomial.is_symmetric.C MvPolynomial.IsSymmetric.C
 
 @[simp]
 theorem zero : IsSymmetric (0 : MvPolynomial σ R) :=

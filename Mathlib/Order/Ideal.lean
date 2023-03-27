@@ -372,8 +372,7 @@ instance : Sup (Ideal P) :=
   ⟨fun I J ↦
     { carrier := { x | ∃ i ∈ I, ∃ j ∈ J, x ≤ i ⊔ j }
       nonempty' := by
-        cases inter_nonempty I J
-        rename_i w h
+        cases' inter_nonempty I J with w h
         exact ⟨w, w, h.1, w, h.2, le_sup_left⟩
       directed' := fun x ⟨xi, _, xj, _, _⟩ y ⟨yi, _, yj, _, _⟩ ↦
         ⟨x ⊔ y,  ⟨xi ⊔ yi, sup_mem ‹_› ‹_›, xj ⊔ yj, sup_mem ‹_› ‹_›,
