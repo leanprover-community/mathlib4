@@ -4,14 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 
 ! This file was ported from Lean 3 source module data.string.basic
-! leanprover-community/mathlib commit 8a275d92e9f9f3069871cbdf0ddd54b88c17e144
+! leanprover-community/mathlib commit d13b3a4a392ea7273dfa4727dbd1892e26cfd518
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.List.Lex
 import Mathlib.Data.Char
-import Std.Tactic.RCases
-import Mathlib.Tactic.LibrarySearch
 
 /-!
 # Strings
@@ -19,229 +17,177 @@ import Mathlib.Tactic.LibrarySearch
 Supplementary theorems about the `String` type.
 -/
 
-
 namespace String
+
+@[simp]
+theorem Pos.byteIdx_zero : (0 : Pos).byteIdx = 0 :=
+  rfl
+
+@[simp]
+theorem Pos.eq_iff {i₁ i₂ : Pos} : i₁ = i₂ ↔ i₁.byteIdx = i₂.byteIdx :=
+  ⟨fun h ↦ h ▸ rfl, fun h ↦ show ⟨i₁.byteIdx⟩ = (⟨i₂.byteIdx⟩ : Pos) from h ▸ rfl⟩
+
+@[simp]
+theorem Pos.zero_add_char (c : Char) : (0 : Pos) + c = ⟨csize c⟩ :=
+  show ⟨0 + csize c⟩ = (⟨csize c⟩ : Pos) by rw [Nat.zero_add]
+
+@[simp]
+theorem Pos.zero_add_string (s : String) : (0 : Pos) + s = ⟨s.utf8ByteSize⟩ :=
+  show ⟨0 + s.utf8ByteSize⟩ = (⟨s.utf8ByteSize⟩ : Pos) by rw [Nat.zero_add]
+
+theorem utf8GetAux.inductionOn.{u} {motive : List Char → Pos → Pos → Sort u}
+    (s : List Char) (i p : Pos)
+    (nil : ∀ i p, motive [] i p)
+    (eq  : ∀ c cs i p, i = p → motive (c :: cs) i p)
+    (ind : ∀ c cs i p, i ≠ p → motive cs ⟨i.byteIdx + csize c⟩ p → motive (c :: cs) i p) :
+    motive s i p :=
+  match s with
+  | [] => nil i p
+  | c::cs =>
+    if h : i = p then
+      eq c cs i p h
+    else ind c cs i p h (inductionOn cs ⟨i.byteIdx + csize c⟩ p nil eq ind)
+
+open private utf8GetAux from Init.Data.String.Basic
+
+private lemma utf8GetAux.add_right_cancel (i p n : ℕ) (s : List Char) :
+    utf8GetAux s ⟨i + n⟩ ⟨p + n⟩ = utf8GetAux s ⟨i⟩ ⟨p⟩ := by
+  apply utf8GetAux.inductionOn s ⟨i⟩ ⟨p⟩ (motive := fun s i p ↦
+    utf8GetAux s ⟨i.byteIdx + n⟩ ⟨p.byteIdx + n⟩ = utf8GetAux s i p) <;>
+  simp [utf8GetAux]
+  · intro c cs ⟨i⟩ ⟨p⟩ h
+    simp at h
+    subst i
+    simp
+  · intro c cs ⟨i⟩ ⟨p⟩ h ih
+    simp at h
+    simp [h]
+    show utf8GetAux cs ⟨i + n + csize c⟩ ⟨p + n⟩ = utf8GetAux cs ⟨i + csize c⟩ ⟨p⟩
+    rw [Nat.add_right_comm]
+    exact ih
+
+lemma get.cons_add_csize (c : Char) (cs : List Char) (i : ℕ) :
+    get ⟨c :: cs⟩ ⟨i + csize c⟩ = get ⟨cs⟩ ⟨i⟩ := by
+  have : 0 ≠ i + csize c := Nat.ne_of_lt (Nat.add_pos_right i (csize_pos c))
+  simp [get, utf8GetAux, this]
+  rw [← Pos.zero_add_char]
+  apply utf8GetAux.add_right_cancel
+
+lemma Iterator.hasNext.cons_add_csize (c : Char) (cs : List Char) (i : ℕ) :
+    hasNext ⟨⟨c :: cs⟩, ⟨i + csize c⟩⟩ = hasNext ⟨⟨cs⟩, ⟨i⟩⟩ := by
+  simp [hasNext, endPos, utf8ByteSize, utf8ByteSize.go]
 
 /-- `<` on string iterators. This coincides with `<` on strings as lists. -/
 def ltb (s₁ s₂ : Iterator) : Bool :=
   if s₂.hasNext then
     if s₁.hasNext then
-      if s₁.curr = s₂.curr then ltb s₁.next s₂.next
+      if s₁.curr = s₂.curr then
+        have : s₁.i < s₁.next.i :=
+          match s₁ with
+          | ⟨s, i⟩ => show i.byteIdx < i.byteIdx + csize (get s i) from
+            Nat.lt_add_of_pos_right (csize_pos (get s i))
+        ltb s₁.next s₂.next
       else s₁.curr < s₂.curr
     else true
   else false
 #align string.ltb String.ltb
 
-instance lt' : LT String :=
-  ⟨fun s₁ s₂ => ltb s₁.mkIterator s₂.mkIterator⟩
-#align string.has_lt' String.lt'
+instance LT' : LT String :=
+  ⟨fun s₁ s₂ ↦ ltb s₁.iter s₂.iter⟩
+#align string.has_lt' String.LT'
 
-instance decidable_lt : @DecidableRel String (· < ·) := by
-  simp only [lt']
-  infer_instance  -- short-circuit type class inference
-#align string.decidable_lt String.decidable_lt
+instance decidableLT : @DecidableRel String (· < ·) := by
+  simp only [LT']
+  infer_instance
+#align string.decidable_lt String.decidableLT
 
--- TODO move this to the appropriate place
-theorem zero_lt_utf8Size (c : Char) : 0 < c.utf8Size.toNat := by
-  simp only [Char.utf8Size]
-  split_ifs <;> simp
+theorem ltb.inductionOn.{u} {motive : Iterator → Iterator → Sort u} (it₁ it₂ : Iterator)
+    (ind : ∀ s₁ s₂ i₁ i₂, Iterator.hasNext ⟨s₂, i₂⟩ → Iterator.hasNext ⟨s₁, i₁⟩ →
+      get s₁ i₁ = get s₂ i₂ → motive (Iterator.next ⟨s₁, i₁⟩) (Iterator.next ⟨s₂, i₂⟩) →
+      motive ⟨s₁, i₁⟩ ⟨s₂, i₂⟩)
+    (eq : ∀ s₁ s₂ i₁ i₂, Iterator.hasNext ⟨s₂, i₂⟩ → Iterator.hasNext ⟨s₁, i₁⟩ →
+      ¬ get s₁ i₁ = get s₂ i₂ → motive ⟨s₁, i₁⟩ ⟨s₂, i₂⟩)
+    (base₁ : ∀ s₁ s₂ i₁ i₂, Iterator.hasNext ⟨s₂, i₂⟩ → ¬ Iterator.hasNext ⟨s₁, i₁⟩ →
+      motive ⟨s₁, i₁⟩ ⟨s₂, i₂⟩)
+    (base₂ : ∀ s₁ s₂ i₁ i₂, ¬ Iterator.hasNext ⟨s₂, i₂⟩ → motive ⟨s₁, i₁⟩ ⟨s₂, i₂⟩) :
+    motive it₁ it₂ :=
+if h₂ : it₂.hasNext then
+    if h₁ : it₁.hasNext then
+      if heq : it₁.curr = it₂.curr then
+        ind it₁.s it₂.s it₁.i it₂.i h₂ h₁ heq (inductionOn it₁.next it₂.next ind eq base₁ base₂)
+      else eq it₁.s it₂.s it₁.i it₂.i h₂ h₁ heq
+    else base₁ it₁.s it₂.s it₁.i it₂.i h₂ h₁
+  else base₂ it₁.s it₂.s it₁.i it₂.i h₂
 
--- TODO move this to the appropriate place
-theorem zero_lt_utf8ByteSize_cons : 0 < utf8ByteSize ⟨hd :: tl⟩ := by
-  simp only [utf8ByteSize, utf8ByteSize.go, csize]
-  apply lt_of_lt_of_le
-  · exact zero_lt_utf8Size hd
-  · apply Nat.le_add_left
+lemma ltb.cons_add_csize (c : Char) (cs₁ cs₂ : List Char) (i₁ i₂ : ℕ) :
+    ltb ⟨⟨c :: cs₁⟩, ⟨i₁ + csize c⟩⟩ ⟨⟨c :: cs₂⟩, ⟨i₂ + csize c⟩⟩ =
+    ltb ⟨⟨cs₁⟩, ⟨i₁⟩⟩ ⟨⟨cs₂⟩, ⟨i₂⟩⟩ := by
+  apply ltb.inductionOn ⟨⟨cs₁⟩, ⟨i₁⟩⟩ ⟨⟨cs₂⟩, ⟨i₂⟩⟩ (motive := fun ⟨⟨cs₁⟩, ⟨i₁⟩⟩ ⟨⟨cs₂⟩, ⟨i₂⟩⟩ ↦
+    ltb ⟨⟨c :: cs₁⟩, ⟨i₁ + csize c⟩⟩ ⟨⟨c :: cs₂⟩, ⟨i₂ + csize c⟩⟩ =
+    ltb ⟨⟨cs₁⟩, ⟨i₁⟩⟩ ⟨⟨cs₂⟩, ⟨i₂⟩⟩) <;> simp <;>
+  intro ⟨cs₁⟩ ⟨cs₂⟩ ⟨i₁⟩ ⟨i₂⟩ <;>
+  intros <;>
+  (conv => lhs; rw [ltb]) <;> (conv => rhs; rw [ltb]) <;>
+  simp [Iterator.hasNext.cons_add_csize, *]
+  · rename_i h₂ h₁ heq ih
+    simp [Iterator.curr, Iterator.next, next, Iterator.hasNext.cons_add_csize,
+          get.cons_add_csize, *] at *
+    show ltb ⟨⟨c :: cs₁⟩, ⟨i₁ + csize c + csize (get ⟨cs₂⟩ ⟨i₂⟩)⟩⟩
+             ⟨⟨c :: cs₂⟩, ⟨i₂ + csize c + csize (get ⟨cs₂⟩ ⟨i₂⟩)⟩⟩ =
+         ltb ⟨⟨cs₁⟩, ⟨i₁ + csize (get ⟨cs₂⟩ ⟨i₂⟩)⟩⟩ ⟨⟨cs₂⟩, ⟨i₂ + csize (get ⟨cs₂⟩ ⟨i₂⟩)⟩⟩
+    repeat rw [Nat.add_right_comm _ (csize c)]
+    exact ih
+  · rename_i h₂ h₁ hne
+    simp [Iterator.curr, Iterator.hasNext.cons_add_csize, get.cons_add_csize, *] at *
 
--- TODO move this to the appropriate place
+-- short-circuit type class inference
 @[simp]
-theorem Iterator.hasNext_mkIterator_cons : (mkIterator ⟨hd :: tl⟩).hasNext = true := by
-  simp only [mkIterator, Iterator.hasNext, endPos, show (0 : Pos).byteIdx = 0 by rfl,
-    zero_lt_utf8ByteSize_cons, decide_True]
+theorem lt_iff_toList_lt : ∀ {s₁ s₂ : String}, s₁ < s₂ ↔ s₁.toList < s₂.toList
+| ⟨s₁⟩, ⟨s₂⟩ => show ltb ⟨⟨s₁⟩, 0⟩ ⟨⟨s₂⟩, 0⟩ ↔ s₁ < s₂ by
+  induction s₁ generalizing s₂ <;> cases s₂
+  · simp
+  · rename_i c₂ cs₂; apply iff_of_true
+    · rw [ltb]; simp; apply ne_false_of_eq_true; apply decide_eq_true
+      simp [endPos, utf8ByteSize, utf8ByteSize.go, csize_pos]
+    · apply List.nil_lt_cons
+  · rename_i c₁ cs₁ ih; apply iff_of_false
+    · rw [ltb]; simp
+    · apply not_lt_of_lt; apply List.nil_lt_cons
+  · rename_i c₁ cs₁ ih c₂ cs₂; rw [ltb]
+    simp [Iterator.hasNext, Iterator.curr, Iterator.next, next, endPos, utf8ByteSize,
+          utf8ByteSize.go, csize_pos]; rw [decide_eq_true_iff]
+    show (if c₁ = c₂ then
+            ltb ⟨⟨c₁ :: cs₁⟩, ⟨csize c₁⟩⟩ ⟨⟨c₂ :: cs₂⟩, ⟨csize c₂⟩⟩ = true
+          else c₁ < c₂) ↔ c₁ :: cs₁ < c₂ :: cs₂
+    split_ifs with h
+    · subst c₂
+      suffices ltb ⟨⟨c₁ :: cs₁⟩, ⟨csize c₁⟩⟩ ⟨⟨c₁ :: cs₂⟩, ⟨csize c₁⟩⟩ = ltb ⟨⟨cs₁⟩, 0⟩ ⟨⟨cs₂⟩, 0⟩
+        by rw [this]; exact (ih cs₂).trans List.Lex.cons_iff.symm
+      rw [← Pos.zero_add_char]
+      apply ltb.cons_add_csize
+    · refine ⟨List.Lex.rel, fun e ↦ ?_⟩
+      cases e <;> rename_i h'
+      · contradiction
+      · assumption
+#align string.lt_iff_to_list_lt String.lt_iff_toList_lt
 
--- Port note: A group of lemmas for String.extract_zero_endPos
-attribute [local ext] String
-attribute [local ext] String.Pos
+instance LE : LE String :=
+  ⟨fun s₁ s₂ ↦ ¬s₂ < s₁⟩
+#align string.has_le String.LE
 
-@[local simp]
-lemma String.extract_go₁_i_i_eq_go₂ (s : List Char) (b e : String.Pos) :
-  String.extract.go₁ s b b e = String.extract.go₂ s b e := by
-  cases' s with head tail
-  · rfl
-  · unfold extract.go₁; simp
+instance decidableLE : @DecidableRel String (· ≤ ·) := by
+  simp only [LE]
+  infer_instance
+#align string.decidable_le String.decidableLE
 
-lemma String.Pos.add_right_cancel (k m n : Pos) : m + k = n + k → m = n := by
-  unfold HAdd.hAdd
-  unfold instHAddPos
-  simp only
-  intro h
-  injection h with h
-  ext
-  exact Nat.add_right_cancel h
-
-lemma String.Pos.add_right_inj (k m n : Pos) : m = n → m + k = n + k := by
-  unfold HAdd.hAdd
-  unfold instHAddPos
-  simp only
-  intro h
-  ext
-  simp only
-  cases m; cases n; simp only; injection h; simp only [*]
-
-lemma String.Pos.add3_comm (m n k : Pos) : m + n + k = m + k + n := by
-  unfold HAdd.hAdd
-  unfold instHAddPos
-  simp only
-  ext
-  simp only
-  rw [Nat.add_assoc]
-  rw [Nat.add_assoc]
-  rw [Nat.add_comm n.byteIdx k.byteIdx]
-
-lemma String.Pos.add_char_eq_add_pos (c : Char) (m : Pos) : m + c = (m + (⟨csize c⟩:Pos)) := by
-  unfold HAdd.hAdd
-  unfold instHAddPosChar
-  unfold instHAddPos
-  simp only
-
-lemma String.extract_go₂_add_n (s : List Char) (b e n : String.Pos) :
-  String.extract.go₂ s b e = String.extract.go₂ s (b+n) (e+n) := by
-  cases' n with n
-  induction' s with head tail ih generalizing b e
-  · rfl
-  · simp only [extract.go₂]
-    split_ifs with h₁ h₂ h₂
-    · rfl
-    · apply h₂; apply String.Pos.add_right_inj _ _ _ h₁
-    · simp only
-      apply h₁; apply String.Pos.add_right_cancel _ _ _ h₂
-    · simp only [List.cons.injEq, true_and]
-      rw [ih (b+head) e]
-      rw [String.Pos.add_char_eq_add_pos head b]
-      rw [String.Pos.add_char_eq_add_pos head (b + ⟨n⟩)]
-      rw [String.Pos.add3_comm b ⟨csize head⟩ ⟨n⟩]
-
-@[simp]
-theorem String.extract_zero_endPos : String.extract s 0 (endPos s) = s := by
-  cases' s with s
-  apply String.ext
-  simp only
-  induction s with
-  | nil => rfl
-  | cons head tail tail_ih =>
-    simp only [extract, endPos]
-    have : ¬ (0 : Pos).byteIdx ≥ utf8ByteSize { data := head :: tail } :=
-      not_le.2 zero_lt_utf8ByteSize_cons
-    simp only [this, ite_false, extract.go₁, extract.go₂, ite_true]
-    have : (0 : Pos) ≠ { byteIdx := utf8ByteSize { data := head :: tail } } :=
-      fun x ↦ this (of_eq <| congrArg Pos.byteIdx x)
-    simp only [this, ite_false, List.cons.injEq, true_and]
-    simp only [extract, endPos, ge_iff_le] at tail_ih
-    by_cases h : utf8ByteSize { data := tail } ≤ (0 : Pos).byteIdx
-    · simp only [h, ite_true] at tail_ih
-      rw [←tail_ih]
-      simp only [extract.go₂]
-    · simp only [h, ite_false] at tail_ih
-      rw [String.extract_go₁_i_i_eq_go₂] at tail_ih
-      rw [String.Pos.add_char_eq_add_pos]
-      conv => { rhs; rw [←tail_ih] }
-      suffices : utf8ByteSize ⟨head :: tail⟩ = utf8ByteSize ⟨tail⟩ + csize head
-      rw [this]
-      symm
-      apply String.extract_go₂_add_n tail (0:Pos) ⟨utf8ByteSize ⟨tail⟩⟩ ⟨csize head⟩
-      -- now prove `this`
-      unfold utf8ByteSize
-      unfold utf8ByteSize.go
-      cases tail <;> simp only [utf8ByteSize.go]
-
-
-theorem adsiofuo {n : ℕ} (h : n ≤ 0) : n = 0 := Nat.eq_zero_of_le_zero h
-
-@[simp]
-theorem String.extract_empty : String.extract ⟨[]⟩ p₁ p₂ = ⟨[]⟩ := by
-  simp [extract, extract.go₁]
-
-@[simp]
-theorem Iterator.mkIterator_remainingToString (s : String) :
-    (mkIterator s).remainingToString = s := by
-  simp [Iterator.remainingToString, mkIterator]
-
--- Port note: the following theorem doesn't hold any more.
-example : ∃ (i : Iterator), i.hasNext → i.remainingToString.toList = [] := by exists ⟨"☺", ⟨1⟩⟩
-
--- theorem Iterator.hasNext_iff_remainingToString_not_empty (i : Iterator) :
---    i.hasNext ↔ i.remainingToString.toList ≠ [] := sorry
-
-theorem Iterator.curr_eq_hd_remainingToString (i : Iterator) :
-    i.curr = i.remainingToString.toList.headD default := sorry
-
-theorem Iterator.hasNextRec {p : (i : Iterator) → i.hasNext → Prop}
-    (hp : ∀ i hi' hi, p i.next hi' → p i hi) : ∀ i (hi : i.hasNext), p i hi := sorry
-
-theorem Iterator.next_remainingToString (i : Iterator) :
-    (Iterator.next i).remainingToString.toList = i.remainingToString.toList.tail := sorry
-
-namespace List.Lex
-
-theorem cons_iff_of_ne {r : α → α → Prop} [IsIrrefl α r] {a₁ a₂ l₁ l₂} (h : a₁ ≠ a₂):
-    List.Lex r (a₁ :: l₁) (a₂ :: l₂) ↔ r a₁ a₂ :=
-  ⟨fun h => by
-    cases h
-    · exfalso; apply h; rfl
-    · assumption,
-   List.Lex.rel⟩
-
-end List.Lex
-
--- TODO This proof probably has to be completely redone
-@[simp]
-theorem lt_iff_toList_lt : ∀ {s₁ s₂ : String}, s₁ < s₂ ↔ s₁.toList < s₂.toList := by
-  suffices ∀ i₁ i₂, ltb i₁ i₂ ↔ i₁.remainingToString.toList < i₂.remainingToString.toList by
-    intro s₁ s₂
-    have := this (mkIterator s₁) (mkIterator s₂)
-    simp only [Iterator.mkIterator_remainingToString] at this
-    exact this
-  intro i₁ i₂
-  change _ ↔ List.Lex _ _ _
-  by_cases h₂ : i₂.hasNext
-  · revert i₁
-    apply Iterator.hasNextRec ?_ i₂ h₂
-    intro i₂ _ hi₂ IH i₁
-    simp only [hi₂, ite_true]
-    rw [ltb]
-    split_ifs with h₁ hc
-      <;> rw [Iterator.hasNext_iff_remainingToString_not_empty] at h₁ hi₂
-      <;> rcases List.exists_cons_of_ne_nil hi₂ with ⟨_, _, hi₂⟩
-    · rw [IH]
-      rcases List.exists_cons_of_ne_nil h₁ with ⟨_, _, hi₁⟩
-      simp only [Iterator.curr_eq_hd_remainingToString, hi₁, List.headD_cons, hi₂] at hc
-      simp [hi₁, hi₂, hc, List.Lex.cons_iff, Iterator.next_remainingToString]
-    · rcases List.exists_cons_of_ne_nil h₁ with ⟨_, _, hi₁⟩
-      simp [Iterator.curr_eq_hd_remainingToString, hi₂, hi₁] at *
-      apply (List.Lex.cons_iff_of_ne hc).symm
-    · simp only [of_not_not h₁, hi₂, true_iff, List.Lex.nil]
-  · rw [ltb]
-    simp only [h₂, if_false, false_iff]
-    by_cases h₁ : i₁.hasNext <;> rw [Iterator.hasNext_iff_remainingToString_not_empty] at h₁ h₂
-    · simp [of_not_not h₂]
-    · simp [of_not_not h₁, of_not_not h₂]
-
-instance le : LE String :=
-  ⟨fun s₁ s₂ => ¬s₂ < s₁⟩
-#align string.has_le String.le
-
-instance decidableLe : @DecidableRel String (· ≤ ·) := by
-  simp only [le]
-  infer_instance  -- short-circuit type class inference
-#align string.decidable_le String.decidableLe
-
+-- short-circuit type class inference
 @[simp]
 theorem le_iff_toList_le {s₁ s₂ : String} : s₁ ≤ s₂ ↔ s₁.toList ≤ s₂.toList :=
   (not_congr lt_iff_toList_lt).trans not_lt
 #align string.le_iff_to_list_le String.le_iff_toList_le
 
-theorem toList_inj : ∀ {s₁ s₂}, toList s₁ = toList s₂ ↔ s₁ = s₂
-  | ⟨_⟩, _ => ⟨congr_arg _, congr_arg _⟩
+theorem toList_inj {s₁ s₂ : String} : s₁.toList = s₂.toList ↔ s₁ = s₂ :=
+  ⟨congr_arg mk, congr_arg toList⟩
 #align string.to_list_inj String.toList_inj
 
 theorem nil_asString_eq_empty : [].asString = "" :=
@@ -253,8 +199,7 @@ theorem toList_empty : "".toList = [] :=
   rfl
 #align string.to_list_empty String.toList_empty
 
-theorem asString_inv_toList (s : String) : s.toList.asString = s := by
-  cases s
+theorem asString_inv_toList (s : String) : s.toList.asString = s :=
   rfl
 #align string.as_string_inv_to_list String.asString_inv_toList
 
@@ -264,13 +209,13 @@ theorem toList_singleton (c : Char) : (String.singleton c).toList = [c] :=
 #align string.to_list_singleton String.toList_singleton
 
 theorem toList_nonempty : ∀ {s : String}, s ≠ "" → s.toList = s.head :: (s.popn 1).toList
-  | ⟨s⟩, h => by
-    cases s
-    · simp only [toList] at h
-    · simp only [toList, List.cons.injEq]
-      constructor
-      · rfl
-      · rfl
+| ⟨s⟩, h => by
+  cases s
+  · simp only [toList] at h
+  · rename_i c cs
+    simp only [toList, List.cons.injEq]
+    constructor <;>
+    rfl
 #align string.to_list_nonempty String.toList_nonempty
 
 @[simp]
@@ -284,48 +229,42 @@ theorem popn_empty {n : ℕ} : "".popn n = "" := by
 #align string.popn_empty String.popn_empty
 
 instance : LinearOrder String where
-  lt := (· < ·)
-  le := (· ≤ ·)
-  decidable_lt := by infer_instance
-  decidable_le := String.decidableLe
-  decidable_eq := by infer_instance
-  le_refl a := le_iff_toList_le.2 le_rfl
+  le_refl a := le_iff_toList_le.mpr le_rfl
   le_trans a b c := by
     simp only [le_iff_toList_le]
-    exact fun h₁ h₂ => h₁.trans h₂
-  le_total a b := by
-    simp only [le_iff_toList_le]
-    exact le_total _ _
+    apply le_trans
+  lt_iff_le_not_le a b := by
+    simp only [le_iff_toList_le, lt_iff_toList_lt, lt_iff_le_not_le]
   le_antisymm a b := by
     simp only [le_iff_toList_le, ← toList_inj]
     apply le_antisymm
-  lt_iff_le_not_le a b := by
-    simp only [le_iff_toList_le, lt_iff_toList_lt, lt_iff_le_not_le]
+  le_total a b := by
+    simp only [le_iff_toList_le]
+    apply le_total
+  decidable_le := String.decidableLE
 
 end String
 
 open String
 
-theorem List.to_list_inv_asString (l : List Char) : l.asString.toList = l := by
-  cases hl : l.asString
-  symm
-  injection hl
-#align list.to_list_inv_as_string List.to_list_inv_asString
+theorem List.toList_inv_asString (l : List Char) : l.asString.toList = l :=
+  rfl
+#align list.to_list_inv_as_string List.toList_inv_asString
 
 @[simp]
-theorem List.length_as_string (l : List Char) : l.asString.length = l.length :=
+theorem List.length_asString (l : List Char) : l.asString.length = l.length :=
   rfl
-#align list.length_as_string List.length_as_string
+#align list.length_as_string List.length_asString
 
 @[simp]
 theorem List.asString_inj {l l' : List Char} : l.asString = l'.asString ↔ l = l' :=
-  ⟨fun h => by rw [← List.to_list_inv_asString l, ← List.to_list_inv_asString l', toList_inj, h],
-    fun h => h ▸ rfl⟩
+  ⟨fun h ↦ by rw [← List.toList_inv_asString l, ← List.toList_inv_asString l', toList_inj, h],
+   fun h ↦ h ▸ rfl⟩
 #align list.as_string_inj List.asString_inj
 
 @[simp]
 theorem String.length_toList (s : String) : s.toList.length = s.length := by
-  rw [← String.asString_inv_toList s, List.to_list_inv_asString, List.length_as_string]
+  rw [← String.asString_inv_toList s, List.toList_inv_asString, List.length_asString]
 #align string.length_to_list String.length_toList
 
 theorem List.asString_eq {l : List Char} {s : String} : l.asString = s ↔ l = s.toList := by

@@ -31,6 +31,6 @@ def popn (s : String) (n : Nat) : String :=
 
 /-- Produce the head character from the string `s`, if `s` is not empty, otherwise 'A'. -/
 def head (s : String) : Char :=
-  s.toList.headD 'A'
+  s.iter.curr
 
 end String
