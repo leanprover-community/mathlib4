@@ -632,7 +632,7 @@ theorem sign_prod_list_swap {l : List (Perm α)} (hl : ∀ g ∈ l, IsSwap g) :
   have h₁ : l.map sign = List.replicate l.length (-1) :=
     List.eq_replicate.2
       ⟨by simp, fun u hu =>
-        let ⟨g, hg⟩ := List.mem_map'.1 hu
+        let ⟨g, hg⟩ := List.mem_map.1 hu
         hg.2 ▸ (hl _ hg.1).sign_eq⟩
   rw [← List.prod_replicate, ← h₁, List.prod_hom _ (@sign α _ _)]
 #align equiv.perm.sign_prod_list_swap Equiv.Perm.sign_prod_list_swap
@@ -659,7 +659,7 @@ theorem eq_sign_of_surjective_hom {s : Perm α →* ℤˣ} (hs : Surjective s) :
         let ⟨g, hg⟩ := hs (-1)
         let ⟨l, hl⟩ := (truncSwapFactors g).out
         have : ∀ a ∈ l.map s, a = (1 : ℤˣ) := fun a ha =>
-          let ⟨g, hg⟩ := List.mem_map'.1 ha
+          let ⟨g, hg⟩ := List.mem_map.1 ha
           hg.2 ▸ this _ (hl.2 _ hg.1)
         have : s l.prod = 1 := by
           rw [← l.prod_hom s, List.eq_replicate_length.2 this, List.prod_replicate, one_pow]
@@ -668,7 +668,7 @@ theorem eq_sign_of_surjective_hom {s : Perm α →* ℤˣ} (hs : Surjective s) :
   MonoidHom.ext fun f => by
     let ⟨l, hl₁, hl₂⟩ := (truncSwapFactors f).out
     have hsl : ∀ a ∈ l.map s, a = (-1 : ℤˣ) := fun a ha =>
-      let ⟨g, hg⟩ := List.mem_map'.1 ha
+      let ⟨g, hg⟩ := List.mem_map.1 ha
       hg.2 ▸ this (hl₂ _ hg.1)
     rw [← hl₁, ← l.prod_hom s, List.eq_replicate_length.2 hsl, List.length_map, List.prod_replicate,
       sign_prod_list_swap hl₂]
@@ -678,7 +678,7 @@ theorem sign_subtypePerm (f : Perm α) {p : α → Prop} [DecidablePred p] (h₁
     (h₂ : ∀ x, f x ≠ x → p x) : sign (subtypePerm f h₁) = sign f := by
   let l := (truncSwapFactors (subtypePerm f h₁)).out
   have hl' : ∀ g' ∈ l.1.map ofSubtype, IsSwap g' := fun g' hg' =>
-    let ⟨g, hg⟩ := List.mem_map'.1 hg'
+    let ⟨g, hg⟩ := List.mem_map.1 hg'
     hg.2 ▸ (l.2.2 _ hg.1).of_subtype_isSwap
   have hl'₂ : (l.1.map ofSubtype).prod = f := by
     rw [l.1.prod_hom ofSubtype, l.2.1, ofSubtype_subtypePerm _ h₂]

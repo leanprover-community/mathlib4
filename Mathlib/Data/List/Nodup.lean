@@ -255,8 +255,8 @@ theorem inj_on_of_nodup_map {f : α → β} {l : List α} (d : Nodup (map f l)) 
     simp only [mem_cons]
     rintro _ (rfl | h₁) _ (rfl | h₂) h₃
     · rfl
-    · apply (d.1 _ h₂ h₃).elim
-    · apply (d.1 _ h₁ h₃.symm).elim
+    · apply (d.1 _ h₂ h₃.symm).elim
+    · apply (d.1 _ h₁ h₃).elim
     · apply ih d.2 h₁ h₂ h₃
 #align list.inj_on_of_nodup_map List.inj_on_of_nodup_map
 
@@ -340,8 +340,8 @@ theorem nodup_bind {l₁ : List α} {f : α → List β} :
       (∀ x ∈ l₁, Nodup (f x)) ∧ Pairwise (fun a b : α => Disjoint (f a) (f b)) l₁ := by
   simp only [List.bind, nodup_join, pairwise_map, and_comm, and_left_comm, mem_map, exists_imp,
       and_imp]
-  rw [show (∀ (l : List β) (x : α), l = f x → x ∈ l₁ → Nodup l) ↔ ∀ x : α, x ∈ l₁ → Nodup (f x)
-      from forall_swap.trans <| forall_congr' fun _ => forall_eq]
+  rw [show (∀ (l : List β) (x : α), f x = l → x ∈ l₁ → Nodup l) ↔ ∀ x : α, x ∈ l₁ → Nodup (f x)
+      from forall_swap.trans <| forall_congr' fun _ => forall_eq']
 #align list.nodup_bind List.nodup_bind
 
 protected theorem Nodup.product {l₂ : List β} (d₁ : l₁.Nodup) (d₂ : l₂.Nodup) :
