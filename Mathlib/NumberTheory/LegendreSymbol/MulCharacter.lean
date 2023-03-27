@@ -387,8 +387,8 @@ noncomputable instance commGroup : CommGroup (MulChar R R') :=
       intro χ₁ χ₂
       ext a
       simp only [mul_comm, Pi.mul_apply, MulChar.coeToFun_mul]
-    one_mul := one_mul
-    mul_one := mul_one }
+    one_mul := MulChar.one_mul
+    mul_one := MulChar.mul_one }
 #align mul_char.comm_group MulChar.commGroup
 
 /-- If `a` is a unit and `n : ℕ`, then `(χ ^ n) a = (χ a) ^ n`. -/
@@ -489,8 +489,7 @@ theorem IsQuadratic.inv {χ : MulChar R R'} (hχ : χ.IsQuadratic) : χ⁻¹ = �
 
 /-- The square of a quadratic character is the trivial character. -/
 theorem IsQuadratic.sq_eq_one {χ : MulChar R R'} (hχ : χ.IsQuadratic) : χ ^ 2 = 1 := by
-  convert mul_left_inv _
-  rw [pow_two, hχ.inv]
+  rw [← mul_left_inv χ, pow_two, hχ.inv]
 #align mul_char.is_quadratic.sq_eq_one MulChar.IsQuadratic.sq_eq_one
 
 /-- The `p`th power of a quadratic character is itself, when `p` is the (prime) characteristic
