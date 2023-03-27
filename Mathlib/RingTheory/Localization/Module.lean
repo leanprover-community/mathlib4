@@ -19,11 +19,11 @@ This file contains some results about vector spaces over the field of fractions 
 
 ## Main results
 
- * `linear_independent.localization`: `b` is linear independent over a localization of `R`
+ * `LinearIndependent.localization`: `b` is linear independent over a localization of `R`
    if it is linear independent over `R` itself
- * `basis.localization_localization`: promote an `R`-basis `b` of `A` to an `Rₛ`-basis of `Aₛ`,
+ * `Basis.localizationLocalization`: promote an `R`-basis `b` of `A` to an `Rₛ`-basis of `Aₛ`,
    where `Rₛ` and `Aₛ` are localizations of `R` and `A` at `s` respectively
- * `linear_independent.iff_fraction_ring`: `b` is linear independent over `R` iff it is
+ * `LinearIndependent.iff_fractionRing`: `b` is linear independent over `R` iff it is
    linear independent over `Frac(R)`
 -/
 
@@ -113,7 +113,7 @@ theorem SpanEqTop.localization_localization {v : Set A} (hv : span R v = ⊤) :
 set_option synthInstance.etaExperiment true in
 /-- If `A` has an `R`-basis, then localizing `A` at `S` has a basis over `R` localized at `S`.
 
-A suitable instance for `[algebra A Aₛ]` is `localization_algebra`.
+A suitable instance for `[Algebra A Aₛ]` is `localizationAlgebra`.
 -/
 noncomputable def Basis.localizationLocalization {ι : Type _} (b : Basis ι R A) : Basis ι Rₛ Aₛ :=
   Basis.mk (b.linearIndependent.localization_localization _ S _)
@@ -146,7 +146,6 @@ theorem Basis.localizationLocalization_repr_algebraMap {ι : Type _} (b : Basis 
       (Finset.sum_eq_single i (fun j _ hj => by simp [hj]) fun hi => by
         simp [Finsupp.not_mem_support_iff.mp hi])
     _ = algebraMap R Rₛ (b.repr x i) := by simp [Algebra.smul_def]
-
 #align basis.localization_localization_repr_algebra_map Basis.localizationLocalization_repr_algebraMap
 
 end LocalizationLocalization
@@ -160,10 +159,10 @@ variable (R K : Type _) [CommRing R] [Field K] [Algebra R K] [IsFractionRing R K
 variable {V : Type _} [AddCommGroup V] [Module R V] [Module K V] [IsScalarTower R K V]
 
 set_option synthInstance.etaExperiment true in
-theorem LinearIndependent.iff_fraction_ring {ι : Type _} {b : ι → V} :
+theorem LinearIndependent.iff_fractionRing {ι : Type _} {b : ι → V} :
     LinearIndependent R b ↔ LinearIndependent K b :=
   ⟨LinearIndependent.localization K R⁰,
     LinearIndependent.restrict_scalars (smul_left_injective R one_ne_zero)⟩
-#align linear_independent.iff_fraction_ring LinearIndependent.iff_fraction_ring
+#align linear_independent.iff_fraction_ring LinearIndependent.iff_fractionRing
 
 end FractionRing
