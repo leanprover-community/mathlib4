@@ -233,6 +233,11 @@ theorem derivative_nat_cast {n : ℕ} : derivative (n : R[X]) = 0 := by
   exact derivative_C
 #align polynomial.derivative_nat_cast Polynomial.derivative_nat_cast
 
+--Porting note: new theorem
+@[simp]
+theorem derivative_ofNat (n : ℕ) [n.AtLeastTwo] : derivative (OfNat.ofNat n : R[X]) = 0 :=
+  derivative_nat_cast
+
 theorem iterate_derivative_eq_zero {p : R[X]} {x : ℕ} (hx : p.natDegree < x) :
     (Polynomial.derivative^[x]) p = 0 := by
   induction' h : p.natDegree using Nat.strong_induction_on with _ ih generalizing p x

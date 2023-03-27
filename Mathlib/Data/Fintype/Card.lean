@@ -549,6 +549,8 @@ theorem card_ne_zero [Nonempty α] : card α ≠ 0 :=
   _root_.ne_of_gt card_pos
 #align fintype.card_ne_zero Fintype.card_ne_zero
 
+instance [Nonempty α] : NeZero (card α) := ⟨card_ne_zero⟩
+
 theorem card_le_one_iff : card α ≤ 1 ↔ ∀ a b : α, a = b :=
   let n := card α
   have hn : n = card α := rfl

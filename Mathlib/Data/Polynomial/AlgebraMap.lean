@@ -88,7 +88,7 @@ set_option linter.uppercaseLean3 false in
 
 /-- Extensionality lemma for algebra maps out of `A'[X]` over a smaller base ring than `A'`
 -/
-@[ext 1001]
+@[ext 1100]
 theorem algHom_ext' [Algebra R A'] [Algebra R B'] {f g : A'[X] →ₐ[R] B'}
     (h₁ : f.comp (IsScalarTower.toAlgHom R A' A'[X]) = g.comp (IsScalarTower.toAlgHom R A' A'[X]))
     (h₂ : f X = g X) : f = g :=
@@ -184,7 +184,7 @@ theorem adjoin_X : Algebra.adjoin R ({X} : Set R[X]) = ⊤ := by
 set_option linter.uppercaseLean3 false in
 #align polynomial.adjoin_X Polynomial.adjoin_X
 
-@[ext 1002]
+@[ext 1200]
 theorem algHom_ext {f g : R[X] →ₐ[R] A} (h : f X = g X) : f = g :=
   AlgHom.ext_of_adjoin_eq_top adjoin_X fun _p hp => (Set.mem_singleton_iff.1 hp).symm ▸ h
 #align polynomial.alg_hom_ext Polynomial.algHom_ext

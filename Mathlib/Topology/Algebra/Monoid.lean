@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 
 ! This file was ported from Lean 3 source module topology.algebra.monoid
-! leanprover-community/mathlib commit dc6c365e751e34d100e80fe6e314c3c3e0fd2988
+! leanprover-community/mathlib commit 6efec6bb9fcaed3cf1baaddb2eaadd8a2a06679c
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -12,6 +12,7 @@ import Mathlib.Algebra.BigOperators.Finprod
 import Mathlib.Order.Filter.Pointwise
 import Mathlib.Topology.Algebra.MulAction
 import Mathlib.Algebra.BigOperators.Pi
+import Mathlib.Topology.ContinuousFunction.Basic
 
 /-!
 # Theory of topological monoids
@@ -865,3 +866,35 @@ theorem continuousMul_inf {t₁ t₂ : TopologicalSpace M} (h₁ : @ContinuousMu
 #align has_continuous_add_inf continuousAdd_inf
 
 end LatticeOps
+
+namespace ContinuousMap
+
+variable [Mul X] [ContinuousMul X]
+
+/-- The continuous map `fun y => y * x` -/
+@[to_additive "The continuous map `fun y => y + x"]
+protected def mulRight (x : X) : C(X, X) :=
+  mk _ (continuous_mul_right x)
+#align continuous_map.mul_right ContinuousMap.mulRight
+#align continuous_map.add_right ContinuousMap.addRight
+
+@[to_additive, simp]
+theorem coe_mulRight (x : X) : ⇑(ContinuousMap.mulRight x) = fun y => y * x :=
+  rfl
+#align continuous_map.coe_mul_right ContinuousMap.coe_mulRight
+#align continuous_map.coe_add_right ContinuousMap.coe_addRight
+
+/-- The continuous map `fun y => x * y` -/
+@[to_additive "The continuous map `fun y => x + y"]
+protected def mulLeft (x : X) : C(X, X) :=
+  mk _ (continuous_mul_left x)
+#align continuous_map.mul_left ContinuousMap.mulLeft
+#align continuous_map.add_left ContinuousMap.addLeft
+
+@[to_additive, simp]
+theorem coe_mulLeft (x : X) : ⇑(ContinuousMap.mulLeft x) = fun y => x * y :=
+  rfl
+#align continuous_map.coe_mul_left ContinuousMap.coe_mulLeft
+#align continuous_map.coe_add_left ContinuousMap.coe_addLeft
+
+end ContinuousMap
