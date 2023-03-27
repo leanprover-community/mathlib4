@@ -54,8 +54,8 @@ theorem inv_apply [Inv Y] (f : LocallyConstant X Y) (x : X) : f⁻¹ x = (f x)�
 #align locally_constant.neg_apply LocallyConstant.neg_apply
 
 @[to_additive]
-instance [Mul Y] : Mul (LocallyConstant X Y)
-    where mul f g := ⟨f * g, f.isLocallyConstant.mul g.isLocallyConstant⟩
+instance [Mul Y] : Mul (LocallyConstant X Y) where
+  mul f g := ⟨f * g, f.isLocallyConstant.mul g.isLocallyConstant⟩
 
 @[to_additive (attr := simp)]
 theorem coe_mul [Mul Y] (f g : LocallyConstant X Y) : ⇑(f * g) = f * g :=
@@ -73,8 +73,8 @@ theorem mul_apply [Mul Y] (f g : LocallyConstant X Y) (x : X) : (f * g) x = f x 
 instance [MulOneClass Y] : MulOneClass (LocallyConstant X Y) :=
   Function.Injective.mulOneClass FunLike.coe FunLike.coe_injective' rfl fun _ _ => rfl
 
-/-- `coe_fn` is a `monoid_hom`. -/
-@[to_additive (attr := simps) "`coe_fn` is an `add_monoid_hom`."]
+/-- `FunLike.coe` is a `MonoidHom`. -/
+@[to_additive (attr := simps) "`FunLike.coe` is an `AddMonoidHom`."]
 def coeFnMonoidHom [MulOneClass Y] : LocallyConstant X Y →* X → Y where
   toFun := FunLike.coe
   map_one' := rfl
@@ -127,8 +127,8 @@ theorem charFn_inj [Nontrivial Y] (hU : IsClopen U) (hV : IsClopen V)
 end CharFn
 
 @[to_additive]
-instance [Div Y] : Div (LocallyConstant X Y)
-    where div f g := ⟨f / g, f.isLocallyConstant.div g.isLocallyConstant⟩
+instance [Div Y] : Div (LocallyConstant X Y) where
+  div f g := ⟨f / g, f.isLocallyConstant.div g.isLocallyConstant⟩
 
 @[to_additive]
 theorem coe_div [Div Y] (f g : LocallyConstant X Y) : ⇑(f / g) = f / g :=
@@ -154,7 +154,7 @@ instance [CommSemigroup Y] : CommSemigroup (LocallyConstant X Y) :=
   Function.Injective.commSemigroup FunLike.coe FunLike.coe_injective' fun _ _ => rfl
 
 @[to_additive]
-instance instSMulLocallyConstant [SMul α Y] : SMul α (LocallyConstant X Y) where
+instance smul [SMul α Y] : SMul α (LocallyConstant X Y) where
   smul n f := f.map (n • ·)
 
 @[to_additive (attr := simp)]
@@ -167,7 +167,7 @@ theorem smul_apply [SMul R Y] (r : R) (f : LocallyConstant X Y) (x : X) : (r •
   rfl
 #align locally_constant.smul_apply LocallyConstant.smul_apply
 
-@[to_additive existing instSMulLocallyConstant]
+@[to_additive existing LocallyConstant.smul]
 instance [Pow Y α] : Pow (LocallyConstant X Y) α where
   pow f n := f.map (· ^ n)
 

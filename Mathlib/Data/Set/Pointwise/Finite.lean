@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Floris van Doorn
 
 ! This file was ported from Lean 3 source module data.set.pointwise.finite
-! leanprover-community/mathlib commit 0a0ec35061ed9960bf0e7ffb0335f44447b58977
+! leanprover-community/mathlib commit 517cc149e0b515d2893baa376226ed10feb319c7
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -19,6 +19,18 @@ open Pointwise
 variable {F α β γ : Type _}
 
 namespace Set
+
+section One
+
+variable [One α]
+
+@[to_additive (attr := simp)]
+theorem finite_one : (1 : Set α).Finite :=
+  finite_singleton _
+#align set.finite_one Set.finite_one
+#align set.finite_zero Set.finite_zero
+
+end One
 
 section InvolutiveInv
 

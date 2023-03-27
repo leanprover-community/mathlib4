@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Hunter Monroe, Kyle Miller, Alena Gusakov
 
 ! This file was ported from Lean 3 source module combinatorics.simple_graph.subgraph
-! leanprover-community/mathlib commit d6e84a0d3db8910c99b3aa0c56be88fa8bab6f80
+! leanprover-community/mathlib commit c6ef6387ede9983aee397d442974e61f89dfd87b
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -68,7 +68,7 @@ structure Subgraph {V : Type u} (G : SimpleGraph V) where
   symm : Symmetric Adj := by aesop_graph -- Porting note: Originally `by obviously`
 #align simple_graph.subgraph SimpleGraph.Subgraph
 
-variable {V : Type u} {W : Type v}
+variable {ι : Sort _} {V : Type u} {W : Type v}
 
 /-- The one-vertex subgraph. -/
 @[simps]
@@ -96,7 +96,7 @@ def subgraphOfAdj (G : SimpleGraph V) {v w : V} (hvw : G.Adj v w) : G.Subgraph w
 
 namespace Subgraph
 
-variable {G : SimpleGraph V}
+variable {G : SimpleGraph V} {G₁ G₂ : G.Subgraph} {a b : V}
 
 protected theorem loopless (G' : Subgraph G) : Irreflexive G'.Adj :=
   fun v h ↦ G.loopless v (G'.adj_sub h)
@@ -173,6 +173,10 @@ theorem Adj.of_spanningCoe {G' : Subgraph G} {u v : G'.verts} (h : G'.spanningCo
     G.Adj u v :=
   G'.adj_sub h
 #align simple_graph.subgraph.adj.of_spanning_coe SimpleGraph.Subgraph.Adj.of_spanningCoe
+
+theorem spanningCoe_inj : G₁.spanningCoe = G₂.spanningCoe ↔ G₁.Adj = G₂.Adj := by
+  simp [Subgraph.spanningCoe]
+#align simple_graph.subgraph.spanning_coe_inj SimpleGraph.Subgraph.spanningCoe_inj
 
 /-- `spanningCoe` is equivalent to `coe` for a subgraph that `IsSpanning`. -/
 @[simps]
@@ -286,122 +290,250 @@ theorem copy_eq (G' : Subgraph G) (V'' : Set V) (hV : V'' = G'.verts)
 #align simple_graph.subgraph.copy_eq SimpleGraph.Subgraph.copy_eq
 
 /-- The union of two subgraphs. -/
-def union (x y : Subgraph G) : Subgraph G where
-  verts := x.verts ∪ y.verts
-  Adj := x.Adj ⊔ y.Adj
-  adj_sub h := Or.casesOn h x.adj_sub y.adj_sub
-  edge_vert h := Or.casesOn h (fun h ↦ Or.inl (x.edge_vert h)) fun h ↦ Or.inr (y.edge_vert h)
-  symm v w h := by rwa [Pi.sup_apply, Pi.sup_apply, x.adj_comm, y.adj_comm]
-#align simple_graph.subgraph.union SimpleGraph.Subgraph.union
+instance : Sup G.Subgraph where
+  sup G₁ G₂ :=
+    { verts := G₁.verts ∪ G₂.verts
+      Adj := G₁.Adj ⊔ G₂.Adj
+      adj_sub := fun hab => Or.elim hab (fun h => G₁.adj_sub h) fun h => G₂.adj_sub h
+      edge_vert := Or.imp (fun h => G₁.edge_vert h) fun h => G₂.edge_vert h
+      symm := fun _ _ => Or.imp G₁.adj_symm G₂.adj_symm }
 
 /-- The intersection of two subgraphs. -/
-def inter (x y : Subgraph G) : Subgraph G where
-  verts := x.verts ∩ y.verts
-  Adj := x.Adj ⊓ y.Adj
-  adj_sub h := x.adj_sub h.1
-  edge_vert h := ⟨x.edge_vert h.1, y.edge_vert h.2⟩
-  symm _ _ h := by rwa [Pi.inf_apply, Pi.inf_apply, x.adj_comm, y.adj_comm]
-#align simple_graph.subgraph.inter SimpleGraph.Subgraph.inter
+instance : Inf G.Subgraph where
+  inf G₁ G₂ :=
+    { verts := G₁.verts ∩ G₂.verts
+      Adj := G₁.Adj ⊓ G₂.Adj
+      adj_sub := fun hab => G₁.adj_sub hab.1
+      edge_vert := And.imp (fun h => G₁.edge_vert h) fun h => G₂.edge_vert h
+      symm := fun _ _ => And.imp G₁.adj_symm G₂.adj_symm }
 
 /-- The `top` subgraph is `G` as a subgraph of itself. -/
-def top : Subgraph G where
-  verts := Set.univ
-  Adj := G.Adj
-  adj_sub h := h
-  edge_vert {v _} _ := Set.mem_univ v
-  symm := G.symm
-#align simple_graph.subgraph.top SimpleGraph.Subgraph.top
+instance : Top G.Subgraph where
+  top :=
+    { verts := Set.univ
+      Adj := G.Adj
+      adj_sub := id
+      edge_vert := @fun v _ _ => Set.mem_univ v
+      symm := G.symm }
 
 /-- The `bot` subgraph is the subgraph with no vertices or edges. -/
-def bot : Subgraph G where
-  verts := ∅
-  Adj := ⊥
-  adj_sub := False.elim
-  edge_vert := False.elim
-  symm _ _ := False.elim
-#align simple_graph.subgraph.bot SimpleGraph.Subgraph.bot
+instance : Bot G.Subgraph where
+  bot :=
+    { verts := ∅
+      Adj := ⊥
+      adj_sub := False.elim
+      edge_vert := False.elim
+      symm := fun _ _ => id }
 
-/-- The relation that one subgraph is a subgraph of another. -/
-def IsSubgraph (x y : Subgraph G) : Prop :=
-  x.verts ⊆ y.verts ∧ ∀ ⦃v w : V⦄, x.Adj v w → y.Adj v w
-#align simple_graph.subgraph.is_subgraph SimpleGraph.Subgraph.IsSubgraph
+instance : SupSet G.Subgraph where
+  supₛ s :=
+    { verts := ⋃ G' ∈ s, verts G'
+      Adj := fun a b => ∃ G' ∈ s, Adj G' a b
+      adj_sub := by
+        rintro a b ⟨G', -, hab⟩
+        exact G'.adj_sub hab
+      edge_vert := by
+        rintro a b ⟨G', hG', hab⟩
+        exact Set.mem_unionᵢ₂_of_mem hG' (G'.edge_vert hab)
+      symm := fun a b h => by simpa [adj_comm] using h }
 
-instance : Lattice (Subgraph G) where
-  le := IsSubgraph
-  sup := union
-  inf := inter
-  le_refl x := ⟨rfl.subset, fun _ _ ↦ id⟩
-  le_trans x y z hxy hyz := ⟨hxy.1.trans hyz.1, fun _ _ h ↦ hyz.2 (hxy.2 h)⟩
-  le_antisymm := by
-    intro x y hxy hyx
-    ext1
-    exact Set.Subset.antisymm hxy.1 hyx.1
-    ext v w
-    exact Iff.intro (fun h ↦ hxy.2 h) fun h ↦ hyx.2 h
-  sup_le x y z hxy hyz :=
-    ⟨Set.union_subset hxy.1 hyz.1, fun v w h ↦ h.casesOn (fun h ↦ hxy.2 h) fun h ↦ hyz.2 h⟩
-  le_sup_left x y := ⟨Set.subset_union_left x.verts y.verts, fun v w ↦ Or.inl⟩
-  le_sup_right x y := ⟨Set.subset_union_right x.verts y.verts, fun v w ↦ Or.inr⟩
-  le_inf x y z hxy hyz := ⟨Set.subset_inter hxy.1 hyz.1, fun v w h ↦ ⟨hxy.2 h, hyz.2 h⟩⟩
-  inf_le_left x y := ⟨Set.inter_subset_left x.verts y.verts, fun v w h ↦ h.1⟩
-  inf_le_right x y := ⟨Set.inter_subset_right x.verts y.verts, fun v w h ↦ h.2⟩
+instance : InfSet G.Subgraph where
+  infₛ s :=
+    { verts := ⋂ G' ∈ s, verts G'
+      Adj := fun a b => (∀ ⦃G'⦄, G' ∈ s → Adj G' a b) ∧ G.Adj a b
+      adj_sub := And.right
+      edge_vert := fun hab => Set.mem_interᵢ₂_of_mem fun G' hG' => G'.edge_vert <| hab.1 hG'
+      symm := fun _ _ => And.imp (forall₂_imp fun _ _ => Adj.symm) G.adj_symm }
+
+@[simp]
+theorem sup_adj : (G₁ ⊔ G₂).Adj a b ↔ G₁.Adj a b ∨ G₂.Adj a b :=
+  Iff.rfl
+#align simple_graph.subgraph.sup_adj SimpleGraph.Subgraph.sup_adj
+
+@[simp]
+theorem inf_adj : (G₁ ⊓ G₂).Adj a b ↔ G₁.Adj a b ∧ G₂.Adj a b :=
+  Iff.rfl
+#align simple_graph.subgraph.inf_adj SimpleGraph.Subgraph.inf_adj
+
+@[simp]
+theorem top_adj : (⊤ : Subgraph G).Adj a b ↔ G.Adj a b :=
+  Iff.rfl
+#align simple_graph.subgraph.top_adj SimpleGraph.Subgraph.top_adj
+
+@[simp]
+theorem not_bot_adj : ¬ (⊥ : Subgraph G).Adj a b :=
+  not_false
+#align simple_graph.subgraph.not_bot_adj SimpleGraph.Subgraph.not_bot_adj
+
+@[simp]
+theorem verts_sup (G₁ G₂ : G.Subgraph) : (G₁ ⊔ G₂).verts = G₁.verts ∪ G₂.verts :=
+  rfl
+#align simple_graph.subgraph.verts_sup SimpleGraph.Subgraph.verts_sup
+
+@[simp]
+theorem verts_inf (G₁ G₂ : G.Subgraph) : (G₁ ⊓ G₂).verts = G₁.verts ∩ G₂.verts :=
+  rfl
+#align simple_graph.subgraph.verts_inf SimpleGraph.Subgraph.verts_inf
+
+@[simp]
+theorem verts_top : (⊤ : G.Subgraph).verts = Set.univ :=
+  rfl
+#align simple_graph.subgraph.verts_top SimpleGraph.Subgraph.verts_top
+
+@[simp]
+theorem verts_bot : (⊥ : G.Subgraph).verts = ∅ :=
+  rfl
+#align simple_graph.subgraph.verts_bot SimpleGraph.Subgraph.verts_bot
+
+@[simp]
+theorem supₛ_adj {s : Set G.Subgraph} : (supₛ s).Adj a b ↔ ∃ G ∈ s, Adj G a b :=
+  Iff.rfl
+#align simple_graph.subgraph.Sup_adj SimpleGraph.Subgraph.supₛ_adj
+
+@[simp]
+theorem infₛ_adj {s : Set G.Subgraph} : (infₛ s).Adj a b ↔ (∀ G' ∈ s, Adj G' a b) ∧ G.Adj a b :=
+  Iff.rfl
+#align simple_graph.subgraph.Inf_adj SimpleGraph.Subgraph.infₛ_adj
+
+@[simp]
+theorem supᵢ_adj {f : ι → G.Subgraph} : (⨆ i, f i).Adj a b ↔ ∃ i, (f i).Adj a b := by
+  simp [supᵢ]
+#align simple_graph.subgraph.supr_adj SimpleGraph.Subgraph.supᵢ_adj
+
+@[simp]
+theorem infᵢ_adj {f : ι → G.Subgraph} : (⨅ i, f i).Adj a b ↔ (∀ i, (f i).Adj a b) ∧ G.Adj a b := by
+  simp [infᵢ]
+#align simple_graph.subgraph.infi_adj SimpleGraph.Subgraph.infᵢ_adj
+
+theorem infₛ_adj_of_nonempty {s : Set G.Subgraph} (hs : s.Nonempty) :
+    (infₛ s).Adj a b ↔ ∀ G' ∈ s, Adj G' a b :=
+  infₛ_adj.trans <|
+    and_iff_left_of_imp <| by
+      obtain ⟨G', hG'⟩ := hs
+      exact fun h => G'.adj_sub (h _ hG')
+#align simple_graph.subgraph.Inf_adj_of_nonempty SimpleGraph.Subgraph.infₛ_adj_of_nonempty
+
+theorem infᵢ_adj_of_nonempty [Nonempty ι] {f : ι → G.Subgraph} :
+    (⨅ i, f i).Adj a b ↔ ∀ i, (f i).Adj a b := by
+  rw [infᵢ, infₛ_adj_of_nonempty (Set.range_nonempty _)]
+  simp
+#align simple_graph.subgraph.infi_adj_of_nonempty SimpleGraph.Subgraph.infᵢ_adj_of_nonempty
+
+@[simp]
+theorem verts_supₛ (s : Set G.Subgraph) : (supₛ s).verts = ⋃ G' ∈ s, verts G' :=
+  rfl
+#align simple_graph.subgraph.verts_Sup SimpleGraph.Subgraph.verts_supₛ
+
+@[simp]
+theorem verts_infₛ (s : Set G.Subgraph) : (infₛ s).verts = ⋂ G' ∈ s, verts G' :=
+  rfl
+#align simple_graph.subgraph.verts_Inf SimpleGraph.Subgraph.verts_infₛ
+
+@[simp]
+theorem verts_supᵢ {f : ι → G.Subgraph} : (⨆ i, f i).verts = ⋃ i, (f i).verts := by simp [supᵢ]
+#align simple_graph.subgraph.verts_supr SimpleGraph.Subgraph.verts_supᵢ
+
+@[simp]
+theorem verts_infᵢ {f : ι → G.Subgraph} : (⨅ i, f i).verts = ⋂ i, (f i).verts := by simp [infᵢ]
+#align simple_graph.subgraph.verts_infi SimpleGraph.Subgraph.verts_infᵢ
+
+/-- For subgraphs `G₁`, `G₂`, `G₁ ≤ G₂` iff `G₁.verts ⊆ G₂.verts` and
+`∀ a b, G₁.adj a b → G₂.adj a b`. -/
+instance distribLattice : DistribLattice G.Subgraph :=
+  { show DistribLattice G.Subgraph from
+      Function.Injective.distribLattice (fun G' => (G'.verts, G'.spanningCoe))
+        (fun G₁ G₂ h => by
+          rw [Prod.ext_iff] at h
+          exact Subgraph.ext _ _ h.1 (spanningCoe_inj.1 h.2))
+        (fun _ _ => rfl) fun _ _ => rfl with
+    le := fun x y => x.verts ⊆ y.verts ∧ ∀ ⦃v w : V⦄, x.Adj v w → y.Adj v w }
 
 instance : BoundedOrder (Subgraph G) where
-  top := top
-  bot := bot
-  le_top x := ⟨Set.subset_univ _, fun _ _ ↦ x.adj_sub⟩
-  bot_le _ := ⟨Set.empty_subset _, fun _ _ ↦ False.elim⟩
+  top := ⊤
+  bot := ⊥
+  le_top x := ⟨Set.subset_univ _, fun _ _ => x.adj_sub⟩
+  bot_le _ := ⟨Set.empty_subset _, fun _ _ => False.elim⟩
+
+-- Note that subgraphs do not form a Boolean algebra, because of `verts`.
+instance : CompleteDistribLattice G.Subgraph :=
+  { Subgraph.distribLattice with
+    le := (· ≤ ·)
+    sup := (· ⊔ ·)
+    inf := (· ⊓ ·)
+    top := ⊤
+    bot := ⊥
+    le_top := fun G' => ⟨Set.subset_univ _, fun a b => G'.adj_sub⟩
+    bot_le := fun G' => ⟨Set.empty_subset _, fun a b => False.elim⟩
+    supₛ := supₛ
+    -- porting note: needed `apply` here to modify elaboration; previously the term itself was fine.
+    le_supₛ := fun s G' hG' => ⟨by apply Set.subset_unionᵢ₂ G' hG', fun a b hab => ⟨G', hG', hab⟩⟩
+    supₛ_le := fun s G' hG' =>
+      ⟨Set.unionᵢ₂_subset fun H hH => (hG' _ hH).1, by
+        rintro a b ⟨H, hH, hab⟩
+        exact (hG' _ hH).2 hab⟩
+    infₛ := infₛ
+    infₛ_le := fun s G' hG' => ⟨Set.interᵢ₂_subset G' hG', fun a b hab => hab.1 hG'⟩
+    le_infₛ := fun s G' hG' =>
+      ⟨Set.subset_interᵢ₂ fun H hH => (hG' _ hH).1, fun a b hab =>
+        ⟨fun H hH => (hG' _ hH).2 hab, G'.adj_sub hab⟩⟩
+    inf_supₛ_le_supᵢ_inf := fun G' s => by
+      constructor
+      · intro v
+        simp
+      · intros a b
+        simp
+    infᵢ_sup_le_sup_infₛ := fun G' s => by
+      constructor
+      · intro
+        simp [← forall_or_left]
+      · intros a b hab
+        simpa [forall_and, forall_or_left, or_and_right, and_iff_left_of_imp G'.adj_sub] using hab }
 
 @[simps]
 instance subgraphInhabited : Inhabited (Subgraph G) := ⟨⊥⟩
 #align simple_graph.subgraph.subgraph_inhabited SimpleGraph.Subgraph.subgraphInhabited
 
--- TODO simp lemmas for the other lattice operations on subgraphs
 @[simp]
-theorem top_verts : (⊤ : Subgraph G).verts = Set.univ := rfl
-#align simple_graph.subgraph.top_verts SimpleGraph.Subgraph.top_verts
-
-@[simp]
-theorem top_adj_iff {v w : V} : (⊤ : Subgraph G).Adj v w ↔ G.Adj v w := Iff.rfl
-#align simple_graph.subgraph.top_adj_iff SimpleGraph.Subgraph.top_adj_iff
-
-@[simp]
-theorem bot_verts : (⊥ : Subgraph G).verts = ∅ := rfl
-#align simple_graph.subgraph.bot_verts SimpleGraph.Subgraph.bot_verts
-
-@[simp]
-theorem not_bot_adj {v w : V} : ¬(⊥ : Subgraph G).Adj v w := not_false
-#align simple_graph.subgraph.not_bot_adj SimpleGraph.Subgraph.not_bot_adj
-
-@[simp]
-theorem inf_adj {H₁ H₂ : Subgraph G} {v w : V} : (H₁ ⊓ H₂).Adj v w ↔ H₁.Adj v w ∧ H₂.Adj v w :=
-  Iff.rfl
-#align simple_graph.subgraph.inf_adj SimpleGraph.Subgraph.inf_adj
-
-@[simp]
-theorem sup_adj {H₁ H₂ : Subgraph G} {v w : V} : (H₁ ⊔ H₂).Adj v w ↔ H₁.Adj v w ∨ H₂.Adj v w :=
-  Iff.rfl
-#align simple_graph.subgraph.sup_adj SimpleGraph.Subgraph.sup_adj
-
-@[simp]
-theorem verts_sup {H H' : G.Subgraph} : (H ⊔ H').verts = H.verts ∪ H'.verts := rfl
-#align simple_graph.subgraph.verts_sup SimpleGraph.Subgraph.verts_sup
-
-@[simp]
-theorem verts_inf {H H' : G.Subgraph} : (H ⊓ H').verts = H.verts ∩ H'.verts := rfl
-#align simple_graph.subgraph.verts_inf SimpleGraph.Subgraph.verts_inf
-
 theorem neighborSet_sup {H H' : G.Subgraph} (v : V) :
-    (H ⊔ H').neighborSet v = H.neighborSet v ∪ H'.neighborSet v := by
-  ext w
-  simp
+    (H ⊔ H').neighborSet v = H.neighborSet v ∪ H'.neighborSet v := rfl
 #align simple_graph.subgraph.neighbor_set_sup SimpleGraph.Subgraph.neighborSet_sup
 
+@[simp]
 theorem neighborSet_inf {H H' : G.Subgraph} (v : V) :
-    (H ⊓ H').neighborSet v = H.neighborSet v ∩ H'.neighborSet v := by
-  ext w
-  simp
+    (H ⊓ H').neighborSet v = H.neighborSet v ∩ H'.neighborSet v := rfl
 #align simple_graph.subgraph.neighbor_set_inf SimpleGraph.Subgraph.neighborSet_inf
+
+@[simp]
+theorem neighborSet_top (v : V) : (⊤ : G.Subgraph).neighborSet v = G.neighborSet v := rfl
+#align simple_graph.subgraph.neighbor_set_top SimpleGraph.Subgraph.neighborSet_top
+
+@[simp]
+theorem neighborSet_bot (v : V) : (⊥ : G.Subgraph).neighborSet v = ∅ := rfl
+#align simple_graph.subgraph.neighbor_set_bot SimpleGraph.Subgraph.neighborSet_bot
+
+@[simp]
+theorem neighborSet_supₛ (s : Set G.Subgraph) (v : V) :
+    (supₛ s).neighborSet v = ⋃ G' ∈ s, neighborSet G' v := by
+  ext
+  simp
+#align simple_graph.subgraph.neighbor_set_Sup SimpleGraph.Subgraph.neighborSet_supₛ
+
+@[simp]
+theorem neighborSet_infₛ (s : Set G.Subgraph) (v : V) :
+    (infₛ s).neighborSet v = (⋂ G' ∈ s, neighborSet G' v) ∩ G.neighborSet v := by
+  ext
+  simp
+#align simple_graph.subgraph.neighbor_set_Inf SimpleGraph.Subgraph.neighborSet_infₛ
+
+@[simp]
+theorem neighborSet_supᵢ (f : ι → G.Subgraph) (v : V) :
+    (⨆ i, f i).neighborSet v = ⋃ i, (f i).neighborSet v := by simp [supᵢ]
+#align simple_graph.subgraph.neighbor_set_supr SimpleGraph.Subgraph.neighborSet_supᵢ
+
+@[simp]
+theorem neighborSet_infᵢ (f : ι → G.Subgraph) (v : V) :
+    (⨅ i, f i).neighborSet v = (⋂ i, (f i).neighborSet v) ∩ G.neighborSet v := by simp [infᵢ]
+#align simple_graph.subgraph.neighbor_set_infi SimpleGraph.Subgraph.neighborSet_infᵢ
 
 @[simp]
 theorem edgeSet_top : (⊤ : Subgraph G).edgeSet = G.edgeSet := rfl
@@ -421,6 +553,32 @@ theorem edgeSet_inf {H₁ H₂ : Subgraph G} : (H₁ ⊓ H₂).edgeSet = H₁.ed
 theorem edgeSet_sup {H₁ H₂ : Subgraph G} : (H₁ ⊔ H₂).edgeSet = H₁.edgeSet ∪ H₂.edgeSet :=
   Set.ext <| Sym2.ind (by simp)
 #align simple_graph.subgraph.edge_set_sup SimpleGraph.Subgraph.edgeSet_sup
+
+@[simp]
+theorem edgeSet_supₛ (s : Set G.Subgraph) : (supₛ s).edgeSet = ⋃ G' ∈ s, edgeSet G' := by
+  ext e
+  induction e using Sym2.ind
+  simp
+#align simple_graph.subgraph.edge_set_Sup SimpleGraph.Subgraph.edgeSet_supₛ
+
+@[simp]
+theorem edgeSet_infₛ (s : Set G.Subgraph) :
+    (infₛ s).edgeSet = (⋂ G' ∈ s, edgeSet G') ∩ G.edgeSet := by
+  ext e
+  induction e using Sym2.ind
+  simp
+#align simple_graph.subgraph.edge_set_Inf SimpleGraph.Subgraph.edgeSet_infₛ
+
+@[simp]
+theorem edgeSet_supᵢ (f : ι → G.Subgraph) :
+    (⨆ i, f i).edgeSet = ⋃ i, (f i).edgeSet := by simp [supᵢ]
+#align simple_graph.subgraph.edge_set_supr SimpleGraph.Subgraph.edgeSet_supᵢ
+
+@[simp]
+theorem edgeSet_infᵢ (f : ι → G.Subgraph) :
+    (⨅ i, f i).edgeSet = (⋂ i, (f i).edgeSet) ∩ G.edgeSet := by
+  simp [infᵢ]
+#align simple_graph.subgraph.edge_set_infi SimpleGraph.Subgraph.edgeSet_infᵢ
 
 @[simp]
 theorem spanningCoe_top : (⊤ : Subgraph G).spanningCoe = G := rfl
@@ -1034,7 +1192,7 @@ theorem subgraphOfAdj_eq_induce {v w : V} (hvw : G.Adj v w) :
       simp only [subgraphOfAdj_Adj, Quotient.eq, Sym2.rel_iff] at h
       obtain ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ := h <;> simp [hvw, hvw.symm]
     · intro h
-      simp only [induce_Adj, Set.mem_insert_iff, Set.mem_singleton_iff, top_adj_iff] at h
+      simp only [induce_Adj, Set.mem_insert_iff, Set.mem_singleton_iff, top_adj] at h
       obtain ⟨rfl | rfl, rfl | rfl, ha⟩ := h <;> first |exact (ha.ne rfl).elim|simp
 #align simple_graph.subgraph.subgraph_of_adj_eq_induce SimpleGraph.Subgraph.subgraphOfAdj_eq_induce
 
