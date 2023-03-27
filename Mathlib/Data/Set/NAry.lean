@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 
 ! This file was ported from Lean 3 source module data.set.n_ary
-! leanprover-community/mathlib commit 20715f4ac6819ef2453d9e5106ecd086a5dc2a5e
+! leanprover-community/mathlib commit 517cc149e0b515d2893baa376226ed10feb319c7
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -429,5 +429,19 @@ lemma image2_right_identity {f : α → β → α} {b : β} (h : ∀ a, f a b = 
     image2 f s {b} = s := by
   rw [image2_singleton_right, funext h, image_id']
 #align set.image2_right_identity Set.image2_right_identity
+
+theorem image2_inter_union_subset {f : α → α → β} {s t : Set α} (hf : ∀ a b, f a b = f b a) :
+    image2 f (s ∩ t) (s ∪ t) ⊆ image2 f s t := by
+  rintro _ ⟨a, b, ha, hb | hb, rfl⟩
+  · rw [hf]
+    exact mem_image2_of_mem hb ha.2
+  · exact mem_image2_of_mem ha.1 hb
+#align set.image2_inter_union_subset Set.image2_inter_union_subset
+
+theorem image2_union_inter_subset {f : α → α → β} {s t : Set α} (hf : ∀ a b, f a b = f b a) :
+    image2 f (s ∪ t) (s ∩ t) ⊆ image2 f s t := by
+  rw [image2_comm hf]
+  exact image2_inter_union_subset hf
+#align set.image2_union_inter_subset Set.image2_union_inter_subset
 
 end Set

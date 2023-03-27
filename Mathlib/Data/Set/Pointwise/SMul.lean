@@ -700,6 +700,20 @@ end VSub
 
 open Pointwise
 
+@[to_additive]
+theorem image_smul_comm [SMul α β] [SMul α γ] (f : β → γ) (a : α) (s : Set β) :
+    (∀ b, f (a • b) = a • f b) → f '' (a • s) = a • f '' s :=
+  image_comm
+#align set.image_smul_comm Set.image_smul_comm
+#align set.image_vadd_comm Set.image_vadd_comm
+
+@[to_additive]
+theorem image_smul_distrib [MulOneClass α] [MulOneClass β] [MonoidHomClass F α β] (f : F) (a : α)
+    (s : Set α) : f '' (a • s) = f a • f '' s :=
+  image_comm <| map_mul _ _
+#align set.image_smul_distrib Set.image_smul_distrib
+#align set.image_vadd_distrib Set.image_vadd_distrib
+
 section SMulWithZero
 
 variable [Zero α] [Zero β] [SMulWithZero α β] {s : Set α} {t : Set β}
