@@ -323,11 +323,11 @@ namespace StarAlgHomClass
 variable (F R A B : Type _)
 
 -- See note [lower instance priority]
-instance (priority := 100) toNonUnitalStarAlgHomClass {_ : CommSemiring R} {_ : Semiring A}
-  {_ : Algebra R A} {_ : Star A} {_ : Semiring B} {_ : Algebra R B} {_ : Star B}
+instance (priority := 100) toNonUnitalStarAlgHomClass [CommSemiring R] [Semiring A]
+  [Algebra R A] [Star A] [Semiring B] [Algebra R B] [Star B]
   [StarAlgHomClass F R A B] :
   NonUnitalStarAlgHomClass F R A B :=
-  { StarAlgHomClass.toAlgHomClass, StarAlgHomClass.toStarHomClass with
+  { StarAlgHomClass.toAlgHomClass, StarAlgHomClass.toStarHomClass R with
     map_smul := map_smul }
 #align star_alg_hom_class.to_non_unital_star_alg_hom_class StarAlgHomClass.toNonUnitalStarAlgHomClass
 
@@ -697,10 +697,10 @@ class StarAlgEquivClass (F : Type _) (R : outParam (Type _)) (A : outParam (Type
 
 namespace StarAlgEquivClass
 
--- Porting note: Made following instance non-dangerous through [...] -> {_ : ...} replacement
+-- Porting note: Made following instance non-dangerous through [...] -> [...] replacement
 -- See note [lower instance priority]
-instance (priority := 50) {F R A B : Type _} {_ : Add A} {_ : Mul A} {_ : SMul R A} {_ : Star A}
-    {_ : Add B} {_ : Mul B} {_ : SMul R B} {_ : Star B} [hF : StarAlgEquivClass F R A B] :
+instance (priority := 50) {F R A B : Type _} [Add A] [Mul A] [SMul R A] [Star A]
+    [Add B] [Mul B] [SMul R B] [Star B] [hF : StarAlgEquivClass F R A B] :
     StarHomClass F A B :=
   { hF with
     coe := fun f => f
@@ -711,8 +711,8 @@ instance (priority := 50) {F R A B : Type _} {_ : Add A} {_ : Mul A} {_ : SMul R
 -- attribute [nolint dangerousInstance] StarAlgEquivClass.instStarHomClass
 
 -- See note [lower instance priority]
-instance (priority := 50) {F R A B : Type _} {_ : Add A} {_ : Mul A} {_ : Star A} {_ : SMul R A}
-    {_ : Add B} {_ : Mul B} {_ : SMul R B} {_ : Star B} [hF : StarAlgEquivClass F R A B] :
+instance (priority := 50) {F R A B : Type _} [Add A] [Mul A] [Star A] [SMul R A]
+    [Add B] [Mul B] [SMul R B] [Star B] [hF : StarAlgEquivClass F R A B] :
     SMulHomClass F R A B :=
   { hF with
     coe := fun f => f
@@ -723,9 +723,9 @@ instance (priority := 50) {F R A B : Type _} {_ : Add A} {_ : Mul A} {_ : Star A
 --attribute [nolint dangerous_instance] StarAlgEquivClass.smulHomClass
 
 -- See note [lower instance priority]
-instance (priority := 100) {F R A B : Type _} {_ : Monoid R} {_ : NonUnitalNonAssocSemiring A}
-    {_ : DistribMulAction R A} {_ : Star A} {_ : NonUnitalNonAssocSemiring B}
-    {_ : DistribMulAction R B} {_ : Star B} [hF : StarAlgEquivClass F R A B] :
+instance (priority := 100) {F R A B : Type _} [Monoid R] [NonUnitalNonAssocSemiring A]
+    [DistribMulAction R A] [Star A] [NonUnitalNonAssocSemiring B]
+    [DistribMulAction R B] [Star B] [hF : StarAlgEquivClass F R A B] :
     NonUnitalStarAlgHomClass F R A B :=
   { hF with
     coe := fun f => f
@@ -733,8 +733,8 @@ instance (priority := 100) {F R A B : Type _} {_ : Monoid R} {_ : NonUnitalNonAs
     map_zero := map_zero }
 
 -- See note [lower instance priority]
-instance (priority := 100) (F R A B : Type _) {_ : CommSemiring R} {_ : Semiring A}
-    {_ : Algebra R A} {_ : Star A} {_ : Semiring B} {_ : Algebra R B} {_ : Star B}
+instance (priority := 100) (F R A B : Type _) [CommSemiring R] [Semiring A]
+    [Algebra R A] [Star A] [Semiring B] [Algebra R B] [Star B]
     [hF : StarAlgEquivClass F R A B] : StarAlgHomClass F R A B :=
   { hF with
     coe := fun f => f

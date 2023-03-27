@@ -106,8 +106,7 @@ instance equivLike : EquivLike (P₁ ≃ᵃ[k] P₂) P₁ P₂ where
 instance : CoeFun (P₁ ≃ᵃ[k] P₂) fun _ => P₁ → P₂ :=
   FunLike.hasCoeToFun
 
-@[nolint dangerousInstance] -- Porting note: this was not a problem in Lean 3
-instance : Coe (P₁ ≃ᵃ[k] P₂) (P₁ ≃ P₂) :=
+instance : CoeOut (P₁ ≃ᵃ[k] P₂) (P₁ ≃ P₂) :=
   ⟨AffineEquiv.toEquiv⟩
 
 @[simp]
