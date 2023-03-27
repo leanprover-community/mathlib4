@@ -121,14 +121,9 @@ theorem mem_split {a : α} {l : List α} (h : a ∈ l) : ∃ s t : List α, l = 
 
 #align list.ne_and_not_mem_of_not_mem_cons List.ne_and_not_mem_of_not_mem_cons
 
--- Porting TODO: fix `List.mem_map` in Std to this statement.
-@[simp]
-theorem mem_map' {f : α → β} {b : β} {l : List α} : b ∈ map f l ↔ ∃ a, a ∈ l ∧ f a = b := by
-  simp only [List.mem_map, eq_comm]
-#align list.mem_map List.mem_map'
+#align list.mem_map List.mem_map
 
-alias mem_map' ↔ exists_of_mem_map' _
-#align list.exists_of_mem_map List.exists_of_mem_map'
+#align list.exists_of_mem_map List.exists_of_mem_map
 
 #align list.mem_map_of_mem List.mem_map_of_memₓ -- implicits order
 
@@ -144,7 +139,7 @@ theorem _root_.Function.Involutive.exists_mem_and_apply_eq_iff {f : α → α}
 #align function.involutive.exists_mem_and_apply_eq_iff Function.Involutive.exists_mem_and_apply_eq_iff
 
 theorem mem_map_of_involutive {f : α → α} (hf : Involutive f) {a : α} {l : List α} :
-    a ∈ map f l ↔ f a ∈ l := by rw [mem_map', hf.exists_mem_and_apply_eq_iff]
+    a ∈ map f l ↔ f a ∈ l := by rw [mem_map, hf.exists_mem_and_apply_eq_iff]
 #align list.mem_map_of_involutive List.mem_map_of_involutive
 
 #align list.forall_mem_map_iff List.forall_mem_map_iffₓ -- universe order
