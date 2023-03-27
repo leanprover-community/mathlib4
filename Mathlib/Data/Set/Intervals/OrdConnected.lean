@@ -4,12 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
 
 ! This file was ported from Lean 3 source module data.set.intervals.ord_connected
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
+! leanprover-community/mathlib commit b19481deb571022990f1baa9cbf9172e6757a479
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Intervals.UnorderedInterval
 import Mathlib.Data.Set.Lattice
+import Mathlib.Order.Antichain
 
 /-!
 # Order-connected sets
@@ -225,6 +226,19 @@ theorem dual_ordConnected {s : Set α} [OrdConnected s] : OrdConnected (ofDual �
 #align set.dual_ord_connected Set.dual_ordConnected
 
 end Preorder
+
+section PartialOrder
+
+variable {α : Type _} [PartialOrder α] {s : Set α}
+
+protected theorem _root_.IsAntichain.ordConnected (hs : IsAntichain (· ≤ ·) s) : s.OrdConnected :=
+  ⟨fun x hx y hy z hz => by
+    obtain rfl := hs.eq hx hy (hz.1.trans hz.2)
+    rw [Icc_self, mem_singleton_iff] at hz
+    rwa [hz]⟩
+#align is_antichain.ord_connected IsAntichain.ordConnected
+
+end PartialOrder
 
 section LinearOrder
 
