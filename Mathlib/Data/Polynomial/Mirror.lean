@@ -14,18 +14,18 @@ import Mathlib.Data.Polynomial.RingDivision
 /-!
 # "Mirror" of a univariate polynomial
 
-In this file we define `polynomial.mirror`, a variant of `polynomial.reverse`. The difference
+In this file we define `Polynomial.mirror`, a variant of `Polynomial.reverse`. The difference
 between `reverse` and `mirror` is that `reverse` will decrease the degree if the polynomial is
 divisible by `X`.
 
 ## Main definitions
 
-- `polynomial.mirror`
+- `Polynomial.mirror`
 
 ## Main results
 
-- `polynomial.mirror_mul_of_domain`: `mirror` preserves multiplication.
-- `polynomial.irreducible_of_mirror`: an irreducibility criterion involving `mirror`
+- `Polynomial.mirror_mul_of_domain`: `mirror` preserves multiplication.
+- `Polynomial.irreducible_of_mirror`: an irreducibility criterion involving `mirror`
 
 -/
 
@@ -38,7 +38,7 @@ section Semiring
 
 variable {R : Type _} [Semiring R] (p q : R[X])
 
-/-- mirror of a polynomial: reverses the coefficients while preserving `polynomial.nat_degree` -/
+/-- mirror of a polynomial: reverses the coefficients while preserving `Polynomial.natDegree` -/
 noncomputable def mirror :=
   p.reverse * X ^ p.natTrailingDegree
 #align polynomial.mirror Polynomial.mirror
