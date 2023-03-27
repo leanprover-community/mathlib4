@@ -50,8 +50,7 @@ theorem nsmul_mem_zmultiples_iff_exists_sub_div {r : R} {n : ℕ} (hn : n ≠ 0)
   rw [← coe_nat_zsmul r, zsmul_mem_zmultiples_iff_exists_sub_div (Int.coe_nat_ne_zero.mpr hn),
     Int.cast_ofNat]
   rfl
-#align add_subgroup.nsmul_mem_zmultiples_iff_exists_sub_div
-    AddSubgroup.nsmul_mem_zmultiples_iff_exists_sub_div
+#align add_subgroup.nsmul_mem_zmultiples_iff_exists_sub_div AddSubgroup.nsmul_mem_zmultiples_iff_exists_sub_div
 
 end AddSubgroup
 

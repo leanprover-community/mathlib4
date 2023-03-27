@@ -16,7 +16,7 @@ import Mathlib.Data.Polynomial.Eval
 
 Let `i : R → K` be a homomorphism of semirings.  Assume that `K` is commutative.  If `a` and
 `b` are elements of `R` such that `i b ∈ K` is invertible, then for any polynomial
-`f ∈ R[X]` the "mathematical" expression `b ^ f.nat_degree * f (a / b) ∈ K` is in
+`f ∈ R[X]` the "mathematical" expression `b ^ f.natDegree * f (a / b) ∈ K` is in
 the image of the homomorphism `i`.
 -/
 
@@ -31,7 +31,7 @@ variable {R K : Type _} [Semiring R] [CommSemiring K] {i : R →+* K}
 
 variable {a b : R} {bi : K}
 
--- TODO: use hypothesis (ub : is_unit (i b)) to work with localizations.
+-- TODO: use hypothesis (ub : IsUnit (i b)) to work with localizations.
 /-- `denomsClearable` formalizes the property that `b ^ N * f (a / b)`
 does not have denominators, if the inequality `f.natDegree ≤ N` holds.
 
@@ -87,7 +87,7 @@ end DenomsClearable
 
 open RingHom
 
---Porting note: `etaExmperiment` is required to synthesize the `RingHomClass (ℤ →+* K) ℤ K` instance
+--Porting note: `etaExperiment` is required to synthesize the `RingHomClass (ℤ →+* K) ℤ K` instance
 set_option synthInstance.etaExperiment true in
 /-- Evaluating a polynomial with integer coefficients at a rational number and clearing
 denominators, yields a number greater than or equal to one.  The target can be any
@@ -98,7 +98,7 @@ theorem one_le_pow_mul_abs_eval_div {K : Type _} [LinearOrderedField K] {f : ℤ
     (b0 : 0 < b) (fab : eval ((a : K) / b) (f.map (algebraMap ℤ K)) ≠ 0) :
     (1 : K) ≤ (b : K) ^ f.natDegree * |eval ((a : K) / b) (f.map (algebraMap ℤ K))| := by
   obtain ⟨ev, bi, bu, hF⟩ :=
-    @denomsClearable_natDegree _ _ _ _ b _ (algebraMap ℤ K) f a
+    denomsClearable_natDegree (b := b) (algebraMap ℤ K) f a
       (by
         rw [eq_intCast, one_div_mul_cancel]
         rw [Int.cast_ne_zero]

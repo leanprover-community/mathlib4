@@ -21,7 +21,7 @@ lexicographic `(· < ·)` is well-founded on `α →₀ N`.
 `Finsupp.Lex.wellFoundedLT_of_finite` says that if `α` is finite and equipped with a linear order
 and `(· < ·)` is well-founded on `N`, then the lexicographic `(· < ·)` is well-founded on `α →₀ N`.
 
-`Finsupp.wellFoundedLT` and `well_founded_lt_of_finite` state the same results for the product
+`Finsupp.wellFoundedLT` and `wellFoundedLT_of_finite` state the same results for the product
 order `(· < ·)`, but without the ordering conditions on `α`.
 
 All results are transferred from `Dfinsupp` via `Finsupp.toDfinsupp`.
@@ -77,10 +77,10 @@ protected theorem wellFoundedLT [Zero N] [Preorder N] [WellFoundedLT N] (hbot : 
   ⟨InvImage.wf toDfinsupp (Dfinsupp.wellFoundedLT fun _ a => hbot a).wf⟩
 #align finsupp.well_founded_lt Finsupp.wellFoundedLT
 
-instance well_founded_lt' {N} [CanonicallyOrderedAddMonoid N] [WellFoundedLT N] :
+instance wellFoundedLT' {N} [CanonicallyOrderedAddMonoid N] [WellFoundedLT N] :
     WellFoundedLT (α →₀ N) :=
   Finsupp.wellFoundedLT fun a => (zero_le a).not_lt
-#align finsupp.well_founded_lt' Finsupp.well_founded_lt'
+#align finsupp.well_founded_lt' Finsupp.wellFoundedLT'
 
 instance wellFoundedLT_of_finite [Finite α] [Zero N] [Preorder N] [WellFoundedLT N] :
     WellFoundedLT (α →₀ N) :=
