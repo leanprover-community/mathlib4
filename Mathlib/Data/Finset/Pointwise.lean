@@ -2038,7 +2038,8 @@ theorem toFinset_one : (1 : Set α).toFinset = 1 :=
 #align set.to_finset_one Set.toFinset_one
 #align set.to_finset_zero Set.toFinset_zero
 
-@[to_additive (attr := simp)]
+-- Porting note: should take priority over `Finite.toFinset_singleton`
+@[to_additive (attr := simp high)]
 theorem Finite.toFinset_one (h : (1 : Set α).Finite := finite_one) : h.toFinset = 1 :=
   Finite.toFinset_singleton _
 #align set.finite.to_finset_one Set.Finite.toFinset_one
