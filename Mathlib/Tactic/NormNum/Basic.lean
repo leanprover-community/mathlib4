@@ -588,8 +588,8 @@ to rat casts if the scientific notation is inherited from the one for rationals.
     let ⟨ne, pe⟩ ← deriveNat exp q(AddCommMonoidWithOne.toAddMonoidWithOne)
     have pm : Q(IsNat $m $nm) := pm
     have pe : Q(IsNat $exp $ne) := pe
-    let m' := m.natLit!
-    let exp' := exp.natLit!
+    let m' := nm.natLit!
+    let exp' := ne.natLit!
     let n' := Nat.mul m' (Nat.pow (10 : ℕ) exp')
     have n : Q(ℕ) := mkRawNatLit n'
     have r : Q($n = Nat.mul $nm ((10 : ℕ) ^ $ne)) := (q(Eq.refl $n) : Expr)
