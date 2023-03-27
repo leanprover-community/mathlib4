@@ -15,7 +15,7 @@ import Mathlib.Data.Set.Pairwise
 
 This file defines antichains. An antichain is a set where any two distinct elements are not related.
 If the relation is `(≤)`, this corresponds to incomparability and usual order antichains. If the
-relation is `G.adj` for `G : simple_graph α`, this corresponds to independent sets of `G`.
+relation is `G.adj` for `G : SimpleGraph α`, this corresponds to independent sets of `G`.
 
 ## Definitions
 
