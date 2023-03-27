@@ -9,7 +9,7 @@ Authors: Luke Kershaw
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Int.Basic
-import Mathlib.CategoryTheory.Shift
+import Mathlib.CategoryTheory.Shift.Basic
 
 /-!
 # Triangles
@@ -165,5 +165,39 @@ instance triangleCategory : Category (Triangle C)
   id A := triangleMorphismId A
   comp f g := f.comp g
 #align category_theory.pretriangulated.triangle_category CategoryTheory.Pretriangulated.triangleCategory
+
+@[ext]
+lemma Triangle.hom_ext {A B : Triangle C} (f g : A ⟶ B)
+  (h₁ : f.hom₁ = g.hom₁) (h₂ : f.hom₂ = g.hom₂) (h₃ : f.hom₃ = g.hom₃) : f = g :=
+  TriangleMorphism.ext _ _ h₁ h₂ h₃
+
+@[simps]
+def Triangle.homMk (A B : Triangle C)
+    (hom₁ : A.obj₁ ⟶ B.obj₁) (hom₂ : A.obj₂ ⟶ B.obj₂) (hom₃ : A.obj₃ ⟶ B.obj₃)
+    (comm₁ : A.mor₁ ≫ hom₂ = hom₁ ≫ B.mor₁) (comm₂ : A.mor₂ ≫ hom₃ = hom₂ ≫ B.mor₂)
+    (comm₃ : A.mor₃ ≫ hom₁⟦1⟧' = hom₃ ≫ B.mor₃) :
+    A ⟶ B where
+  hom₁ := hom₁
+  hom₂ := hom₂
+  hom₃ := hom₃
+  comm₁ := comm₁
+  comm₂ := comm₂
+  comm₃ := comm₃
+
+@[simps]
+def Triangle.isoMk (A B : Triangle C)
+    (iso₁ : A.obj₁ ≅ B.obj₁) (iso₂ : A.obj₂ ≅ B.obj₂) (iso₃ : A.obj₃ ≅ B.obj₃)
+    (comm₁ : A.mor₁ ≫ iso₂.hom = iso₁.hom ≫ B.mor₁)
+    (comm₂ : A.mor₂ ≫ iso₃.hom = iso₂.hom ≫ B.mor₂)
+    (comm₃ : A.mor₃ ≫ iso₁.hom⟦1⟧' = iso₃.hom ≫ B.mor₃) : A ≅ B where
+  hom := Triangle.homMk _ _ iso₁.hom iso₂.hom iso₃.hom comm₁ comm₂ comm₃
+  inv := Triangle.homMk _ _ iso₁.inv iso₂.inv iso₃.inv
+    (by simp only [← cancel_mono iso₂.hom, assoc, Iso.inv_hom_id, comp_id,
+      comm₁, Iso.inv_hom_id_assoc])
+    (by simp only [← cancel_mono iso₃.hom, assoc, Iso.inv_hom_id, comp_id,
+      comm₂, Iso.inv_hom_id_assoc])
+    (by simp only [← cancel_mono (iso₁.hom⟦(1 : ℤ)⟧'), Category.assoc, comm₃,
+      Iso.inv_hom_id_assoc, ← Functor.map_comp, Iso.inv_hom_id,
+      Functor.map_id, Category.comp_id])
 
 end CategoryTheory.Pretriangulated
