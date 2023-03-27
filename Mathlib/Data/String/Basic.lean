@@ -35,7 +35,7 @@ theorem Pos.zero_add_char (c : Char) : (0 : Pos) + c = ⟨csize c⟩ :=
 theorem Pos.zero_add_string (s : String) : (0 : Pos) + s = ⟨s.utf8ByteSize⟩ :=
   show ⟨0 + s.utf8ByteSize⟩ = (⟨s.utf8ByteSize⟩ : Pos) by rw [Nat.zero_add]
 
-theorem utf8GetAux.inductionOn.{u} {motive : List Char → Pos → Pos → Sort u}
+def utf8GetAux.inductionOn.{u} {motive : List Char → Pos → Pos → Sort u}
     (s : List Char) (i p : Pos)
     (nil : ∀ i p, motive [] i p)
     (eq  : ∀ c cs i p, i = p → motive (c :: cs) i p)
@@ -82,10 +82,6 @@ def ltb (s₁ s₂ : Iterator) : Bool :=
   if s₂.hasNext then
     if s₁.hasNext then
       if s₁.curr = s₂.curr then
-        have : s₁.i < s₁.next.i :=
-          match s₁ with
-          | ⟨s, i⟩ => show i.byteIdx < i.byteIdx + csize (get s i) from
-            Nat.lt_add_of_pos_right (csize_pos (get s i))
         ltb s₁.next s₂.next
       else s₁.curr < s₂.curr
     else true
@@ -101,7 +97,7 @@ instance decidableLT : @DecidableRel String (· < ·) := by
   infer_instance
 #align string.decidable_lt String.decidableLT
 
-theorem ltb.inductionOn.{u} {motive : Iterator → Iterator → Sort u} (it₁ it₂ : Iterator)
+def ltb.inductionOn.{u} {motive : Iterator → Iterator → Sort u} (it₁ it₂ : Iterator)
     (ind : ∀ s₁ s₂ i₁ i₂, Iterator.hasNext ⟨s₂, i₂⟩ → Iterator.hasNext ⟨s₁, i₁⟩ →
       get s₁ i₁ = get s₂ i₂ → motive (Iterator.next ⟨s₁, i₁⟩) (Iterator.next ⟨s₂, i₂⟩) →
       motive ⟨s₁, i₁⟩ ⟨s₂, i₂⟩)
