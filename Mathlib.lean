@@ -551,6 +551,7 @@ import Mathlib.Control.Monad.Basic
 import Mathlib.Control.Random
 import Mathlib.Control.SimpSet
 import Mathlib.Control.Traversable.Basic
+import Mathlib.Control.Traversable.Derive
 import Mathlib.Control.Traversable.Equiv
 import Mathlib.Control.Traversable.Instances
 import Mathlib.Control.Traversable.Lemmas
