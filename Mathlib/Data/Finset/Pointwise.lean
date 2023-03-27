@@ -2051,7 +2051,7 @@ section Mul
 variable [DecidableEq α] [Mul α] {s t : Set α}
 
 @[to_additive (attr := simp)]
-theorem toFinset_mul (s t : Set α) [Fintype s] [Fintype t] [Fintype ↥(s * t)] :
+theorem toFinset_mul (s t : Set α) [Fintype s] [Fintype t] [Fintype ↑(s * t)] :
     (s * t).toFinset = s.toFinset * t.toFinset :=
   toFinset_image2 _ _ _
 #align set.to_finset_mul Set.toFinset_mul
@@ -2071,7 +2071,7 @@ section SMul
 variable [SMul α β] [DecidableEq β] {a : α} {s : Set α} {t : Set β}
 
 @[to_additive (attr := simp)]
-theorem toFinset_smul (s : Set α) (t : Set β) [Fintype s] [Fintype t] [Fintype ↥(s • t)] :
+theorem toFinset_smul (s : Set α) (t : Set β) [Fintype s] [Fintype t] [Fintype ↑(s • t)] :
     (s • t).toFinset = s.toFinset • t.toFinset :=
   toFinset_image2 _ _ _
 #align set.to_finset_smul Set.toFinset_smul
@@ -2082,7 +2082,7 @@ theorem Finite.toFinset_smul (hs : s.Finite) (ht : t.Finite) (hf := hs.smul ht) 
     hf.toFinset = hs.toFinset • ht.toFinset :=
   Finite.toFinset_image2 _ _ _
 #align set.finite.to_finset_smul Set.Finite.toFinset_smul
-#align set.finite.to_finset_vadd Set.Finite.to_finset_vadd
+#align set.finite.to_finset_vadd Set.Finite.toFinset_vadd
 
 end SMul
 
@@ -2091,7 +2091,7 @@ section SMul
 variable [DecidableEq β] [SMul α β] {a : α} {s : Set β}
 
 @[to_additive (attr := simp)]
-theorem toFinset_smul_set (a : α) (s : Set β) [Fintype s] [Fintype ↥(a • s)] :
+theorem toFinset_smul_set (a : α) (s : Set β) [Fintype s] [Fintype ↑(a • s)] :
     (a • s).toFinset = a • s.toFinset :=
   toFinset_image _ _
 #align set.to_finset_smul_set Set.toFinset_smul_set
@@ -2110,10 +2110,8 @@ section VSub
 
 variable [DecidableEq α] [VSub α β] {s t : Set β}
 
-include α
-
 @[simp]
-theorem toFinset_vsub (s t : Set β) [Fintype s] [Fintype t] [Fintype ↥(s -ᵥ t)] :
+theorem toFinset_vsub (s t : Set β) [Fintype s] [Fintype t] [Fintype ↑(s -ᵥ t)] :
     (s -ᵥ t : Set α).toFinset = s.toFinset -ᵥ t.toFinset :=
   toFinset_image2 _ _ _
 #align set.to_finset_vsub Set.toFinset_vsub
