@@ -42,6 +42,8 @@ with a normalization function, and then deduplicated.  The basics of this have b
 
 -/
 
+-- Workaround for lean4#2038
+attribute [-instance] instBEqNat
 
 open Nat Finset List Finsupp
 
@@ -100,7 +102,7 @@ theorem multiplicity_eq_factorization {n p : ℕ} (pp : p.Prime) (hn : n ≠ 0) 
 
 
 @[simp]
-theorem factorization_prod_pow_eq_self {n : ℕ} (hn : n ≠ 0) : n.factorization.prod pow = n := by
+theorem factorization_prod_pow_eq_self {n : ℕ} (hn : n ≠ 0) : n.factorization.prod (· ^ ·) = n := by
   rw [factorization_eq_factors_multiset n]
   simp only [← prod_toMultiset, factorization, Multiset.coe_prod, Multiset.toFinsupp_toMultiset]
   exact prod_factors hn
@@ -154,7 +156,7 @@ theorem factorization_eq_zero_iff (n p : ℕ) : n.factorization p = 0 ↔ ¬p.Pr
   rw [← not_mem_support_iff, support_factorization, mem_toFinset]
   rcases eq_or_ne n 0 with (rfl | hn)
   · simp
-  · simp [hn, Nat.mem_factors, not_and_or]
+  · simp [hn, Nat.mem_factors, not_and_or, -not_and]
 #align nat.factorization_eq_zero_iff Nat.factorization_eq_zero_iff
 
 @[simp]
@@ -279,14 +281,15 @@ theorem Prime.factorization_self {p : ℕ} (hp : Prime p) : p.factorization p = 
 #align nat.prime.factorization_self Nat.Prime.factorization_self
 
 /-- For prime `p` the only prime factor of `p^k` is `p` with multiplicity `k` -/
-theorem Prime.factorization_pow {p k : ℕ} (hp : Prime p) : factorization (p ^ k) = single p k := by
+theorem Prime.factorization_pow {p k : ℕ} (hp : Prime p) : (p ^ k).factorization = single p k := by
   simp [hp]
 #align nat.prime.factorization_pow Nat.Prime.factorization_pow
 
 /-- If the factorization of `n` contains just one number `p` then `n` is a power of `p` -/
 theorem eq_pow_of_factorization_eq_single {n p k : ℕ} (hn : n ≠ 0)
     (h : n.factorization = Finsupp.single p k) : n = p ^ k := by
-  rw [← Nat.factorization_prod_pow_eq_self hn, h]
+  -- Porting note: explicitly added `Finsupp.prod_single_index`
+  rw [← Nat.factorization_prod_pow_eq_self hn, h, Finsupp.prod_single_index]
   simp
 #align nat.eq_pow_of_factorization_eq_single Nat.eq_pow_of_factorization_eq_single
 
@@ -301,7 +304,7 @@ theorem Prime.eq_of_factorization_pos {p q : ℕ} (hp : Prime p) (h : p.factoriz
 /-- Any finsupp `f : ℕ →₀ ℕ` whose support is in the primes is equal to the factorization of
 the product `∏ (a : ℕ) in f.support, a ^ f a`. -/
 theorem prod_pow_factorization_eq_self {f : ℕ →₀ ℕ} (hf : ∀ p : ℕ, p ∈ f.support → Prime p) :
-    (f.prod Nat.pow).factorization = f := by
+    (f.prod (· ^ ·)).factorization = f := by
   have h : ∀ x : ℕ, x ∈ f.support → x ^ f x ≠ 0 := fun p hp =>
     pow_ne_zero _ (Prime.ne_zero (hf p hp))
   simp only [Finsupp.prod, factorization_prod h]
@@ -312,14 +315,13 @@ theorem prod_pow_factorization_eq_self {f : ℕ →₀ ℕ} (hf : ∀ p : ℕ, p
 #align nat.prod_pow_factorization_eq_self Nat.prod_pow_factorization_eq_self
 
 theorem eq_factorization_iff {n : ℕ} {f : ℕ →₀ ℕ} (hn : n ≠ 0) (hf : ∀ p ∈ f.support, Prime p) :
-    f = n.factorization ↔ f.prod Nat.pow = n :=
+    f = n.factorization ↔ f.prod (· ^ ·) = n :=
   ⟨fun h => by rw [h, factorization_prod_pow_eq_self hn], fun h => by
     rw [← h, prod_pow_factorization_eq_self hf]⟩
 #align nat.eq_factorization_iff Nat.eq_factorization_iff
 
 /-- The equiv between `ℕ+` and `ℕ →₀ ℕ` with support in the primes. -/
-def factorizationEquiv : ℕ+ ≃ { f : ℕ →₀ ℕ | ∀ p ∈ f.support, Prime p }
-    where
+def factorizationEquiv : ℕ+ ≃ { f : ℕ →₀ ℕ | ∀ p ∈ f.support, Prime p } where
   toFun := fun ⟨n, _⟩ => ⟨n.factorization, fun _ => prime_of_mem_factorization⟩
   invFun := fun ⟨f, hf⟩ =>
     ⟨f.prod _, prod_pow_pos_of_zero_not_mem_support fun H => not_prime_zero (hf 0 H)⟩
@@ -333,7 +335,7 @@ theorem factorizationEquiv_apply (n : ℕ+) : (factorizationEquiv n).1 = n.1.fac
 #align nat.factorization_equiv_apply Nat.factorizationEquiv_apply
 
 theorem factorizationEquiv_inv_apply {f : ℕ →₀ ℕ} (hf : ∀ p ∈ f.support, Prime p) :
-    (factorizationEquiv.symm ⟨f, hf⟩).1 = f.prod pow :=
+    (factorizationEquiv.symm ⟨f, hf⟩).1 = f.prod (· ^ ·) :=
   rfl
 #align nat.factorization_equiv_inv_apply Nat.factorizationEquiv_inv_apply
 
@@ -444,7 +446,7 @@ theorem factorization_le_iff_dvd {d n : ℕ} (hd : d ≠ 0) (hn : n ≠ 0) :
   constructor
   · intro hdn
     set K := n.factorization - d.factorization with hK
-    use K.prod Nat.pow
+    use K.prod (· ^ ·)
     rw [← factorization_prod_pow_eq_self hn, ← factorization_prod_pow_eq_self hd,
         ←Finsupp.prod_add_index' pow_zero pow_add, hK, add_tsub_cancel_of_le hdn]
   · rintro ⟨c, rfl⟩
@@ -498,6 +500,8 @@ theorem exists_factorization_lt_of_lt {a b : ℕ} (ha : a ≠ 0) (hab : a < b) :
     ∃ p : ℕ, a.factorization p < b.factorization p := by
   have hb : b ≠ 0 := (ha.bot_lt.trans hab).ne'
   contrapose! hab
+  -- Porting note: `push_neg` fails to push the negation
+  simp_rw [not_exists, not_lt] at hab
   rw [← Finsupp.le_def, factorization_le_iff_dvd hb ha] at hab
   exact le_of_dvd ha.bot_lt hab
 #align nat.exists_factorization_lt_of_lt Nat.exists_factorization_lt_of_lt
@@ -531,7 +535,12 @@ theorem coprime_ord_compl {n p : ℕ} (hp : Prime p) (hn : n ≠ 0) : coprime p 
 theorem factorization_ord_compl (n p : ℕ) :
     (ord_compl[p] n).factorization = n.factorization.erase p := by
   rcases eq_or_ne n 0 with (rfl | hn); · simp
-  by_cases pp : p.Prime; swap; · simp [pp]
+  by_cases pp : p.Prime
+  case neg =>
+    -- porting note: needed to solve side goal explicitly
+    rw [Finsupp.erase_of_not_mem_support]
+    · simp [pp]
+    · simp [mt prime_of_mem_factors pp]
   ext q
   rcases eq_or_ne q p with (rfl | hqp)
   · simp only [Finsupp.erase_same, factorization_eq_zero_iff, not_dvd_ord_compl pp hn]
