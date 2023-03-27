@@ -1179,10 +1179,29 @@ theorem indexOf_nil (a : α) : indexOf a [] = 0 :=
   The ported versions of the earlier proofs are given in comments.
 -/
 
+-- Porting note: these lemmas recover the Lean 3 definition of `findIdx`
+@[simp] theorem findIdx_nil {α : Type _} (p : α → Bool) :
+  [].findIdx p = 0 := rfl
+
+theorem findIdx_cons (p : α → Bool) (b : α) (l : List α) :
+    (b :: l).findIdx p = bif p b then 0 else (l.findIdx p) + 1 := by
+    cases H : p b with
+      | true => simp [H, findIdx, findIdx.go]
+      | false => simp [H, findIdx, findIdx.go, findIdx_go_succ]
+  where
+    findIdx_go_succ (p : α → Bool) (l : List α) (n : ℕ) :
+        List.findIdx.go p l (n + 1) = (List.findIdx.go p l n) + 1 := by
+      cases l with
+      | nil => unfold List.findIdx.go; exact Nat.succ_eq_add_one n
+      | cons head tail =>
+        unfold List.findIdx.go
+        cases p head <;> simp only [cond_false, cond_true]
+        exact findIdx_go_succ p tail (n + 1)
+
 -- indexOf_cons_eq _ rfl
 @[simp]
 theorem indexOf_cons_self (a : α) (l : List α) : indexOf a (a :: l) = 0 := by
-  rw [indexOf, findIdx, findIdx.go, beq_self_eq_true, cond]
+  rw [indexOf, findIdx_cons, beq_self_eq_true, cond]
 #align list.index_of_cons_self List.indexOf_cons_self
 
 -- fun e => if_pos e
@@ -1193,36 +1212,15 @@ theorem indexOf_cons_eq {a b : α} (l : List α) : a = b → indexOf a (b :: l) 
 -- fun n => if_neg n
 @[simp]
 theorem indexOf_cons_ne {a b : α} (l : List α) : a ≠ b → indexOf a (b :: l) = succ (indexOf a l)
-  | n => by
-    cases l with
-    | nil => rw [indexOf, findIdx, findIdx.go, beq_false_of_ne n, cond, ←succ_eq_add_one]; rfl
-    | cons head tail =>
-      by_cases h : a = head
-      · rw [indexOf_cons_eq tail h, indexOf, findIdx, findIdx.go, beq_false_of_ne n, cond, h,
-          findIdx.go, beq_self_eq_true head, cond]
-      · rw [indexOf, findIdx, findIdx, findIdx.go, beq_false_of_ne, cond, findIdx.go,
-          beq_false_of_ne h, cond_false]
-        change _ = succ (cond (a == head) _ _)
-        rw [beq_false_of_ne h, cond_false]
-        simp only [findIdx_go_succ (fun x ↦ a == x) tail _]
-        exact n
-where
-  findIdx_go_succ (p : α → Bool) (l : List α) (n : ℕ) :
-      findIdx.go p l (n + 1) = succ (findIdx.go p l n) := by
-    cases l with
-    | nil => unfold findIdx.go; exact succ_eq_add_one n
-    | cons head tail =>
-      unfold findIdx.go
-      cases p head <;> simp only [cond]
-      · exact findIdx_go_succ p tail (n + 1)
+  | h => by simp only [indexOf, findIdx_cons, Bool.cond_eq_ite, beq_iff_eq, h, ite_false]
+
 #align list.index_of_cons_ne List.indexOf_cons_ne
 
 -- rfl
 theorem indexOf_cons (a b : α) (l : List α) :
     indexOf a (b :: l) = if a = b then 0 else succ (indexOf a l) := by
-  cases l <;> by_cases h : a = b
-  case pos | pos => rw [if_pos h]; exact indexOf_cons_eq _ h
-  case neg | neg => rw [if_neg h]; exact indexOf_cons_ne _ h
+  simp only [indexOf, findIdx_cons, Bool.cond_eq_ite, beq_iff_eq]
+
 #align list.index_of_cons List.indexOf_cons
 
 theorem indexOf_eq_length {a : α} {l : List α} : indexOf a l = length l ↔ a ∉ l := by
