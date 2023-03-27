@@ -8,8 +8,8 @@ Authors: Anne Baanen
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Order.EuclideanAbsoluteValue
-import Mathbin.Data.Polynomial.FieldDivision
+import Mathlib.Algebra.Order.EuclideanAbsoluteValue
+import Mathlib.Data.Polynomial.FieldDivision
 
 /-!
 # Absolute value on polynomials over a finite field.
@@ -97,8 +97,7 @@ theorem cardPowDegree_isEuclidean : IsEuclidean (cardPowDegree : AbsoluteValue F
   have pow_pos : ∀ n, 0 < (Fintype.card Fq : ℤ) ^ n := fun n =>
     pow_pos (Int.coe_nat_pos.mpr card_pos) n
   {
-    map_lt_map_iff' := fun p q =>
-      by
+    map_lt_map_iff' := fun p q => by
       simp only [EuclideanDomain.r, card_pow_degree_apply]
       split_ifs with hp hq hq
       · simp only [hp, hq, lt_self_iff_false]
