@@ -11,7 +11,6 @@ Authors: Scott Morrison, Johan Commelin, Andrew Yang
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
 import Mathlib.CategoryTheory.Monoidal.End
 import Mathlib.CategoryTheory.Monoidal.Discrete
-import Mathlib.Tactic.LibrarySearch
 
 /-!
 # Shift
