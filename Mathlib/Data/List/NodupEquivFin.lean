@@ -157,7 +157,7 @@ theorem sublist_iff_exists_orderEmbedding_get?_eq {l l' : List α} :
     · obtain ⟨f, hf⟩ := IH
       refine'
         ⟨OrderEmbedding.ofMapLEIff (fun ix : ℕ => if ix = 0 then 0 else (f ix.pred).succ) _, _⟩
-      · rintro ⟨_ | a⟩ ⟨_ | b⟩ <;> simp [Nat.succ_le_succ_iff, f.le_iff_le]
+      · rintro ⟨_ | a⟩ ⟨_ | b⟩ <;> simp [Nat.succ_le_succ_iff]
       · rintro ⟨_ | i⟩
         · simp
         · simpa using hf _
@@ -184,7 +184,7 @@ theorem sublist_iff_exists_fin_orderEmbedding_get_eq {l l' : List α} :
       obtain ⟨h, -⟩ := hf
       exact h
     refine' ⟨OrderEmbedding.ofMapLEIff (fun ix => ⟨f ix, h ix.is_lt⟩) _, _⟩
-    · simp [f.le_iff_le]
+    · simp
     · intro i
       apply Option.some_injective
       simpa [get?_eq_get i.2, get?_eq_get (h i.2)] using hf i
