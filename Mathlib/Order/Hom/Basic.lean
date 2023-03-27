@@ -647,19 +647,17 @@ theorem ltEmbedding_apply (x : α) : f.ltEmbedding x = f x :=
   rfl
 #align order_embedding.lt_embedding_apply OrderEmbedding.ltEmbedding_apply
 
---@[simp] Porting note: `simp` can prove it
+@[simp]
 theorem le_iff_le {a b} : f a ≤ f b ↔ a ≤ b :=
   f.map_rel_iff
 #align order_embedding.le_iff_le OrderEmbedding.le_iff_le
 
--- Porting note: `simp` can prove this.
--- @[simp]
+@[simp]
 theorem lt_iff_lt {a b} : f a < f b ↔ a < b :=
   f.ltEmbedding.map_rel_iff
 #align order_embedding.lt_iff_lt OrderEmbedding.lt_iff_lt
 
--- Porting note: `simp` can prove this.
--- @[simp]
+@[simp]
 theorem eq_iff_eq {a b} : f a = f b ↔ a = b :=
   f.injective.eq_iff
 #align order_embedding.eq_iff_eq OrderEmbedding.eq_iff_eq
