@@ -144,11 +144,9 @@ theorem map_infᵢ₂ [InfSet α] [InfSet β] [InfₛHomClass F α β] (f : F) (
     f (⨅ (i) (j), g i j) = ⨅ (i) (j), f (g i j) := by simp_rw [map_infᵢ]
 #align map_infi₂ map_infᵢ
 
-/- Porting note: in the following, [CompleteLattice x] to {_ : CompleteLattice x}
-  b/c dangerous instances -/
 -- See note [lower instance priority]
-instance (priority := 100) SupₛHomClass.toSupBotHomClass {_ : CompleteLattice α}
-    {_ : CompleteLattice β} [SupₛHomClass F α β] : SupBotHomClass F α β :=
+instance (priority := 100) SupₛHomClass.toSupBotHomClass [CompleteLattice α]
+    [CompleteLattice β] [SupₛHomClass F α β] : SupBotHomClass F α β :=
   {  ‹SupₛHomClass F α β› with
     map_sup := fun f a b => by
       rw [← supₛ_pair, map_supₛ]
@@ -160,8 +158,8 @@ instance (priority := 100) SupₛHomClass.toSupBotHomClass {_ : CompleteLattice 
 #align Sup_hom_class.to_sup_bot_hom_class SupₛHomClass.toSupBotHomClass
 
 -- See note [lower instance priority]
-instance (priority := 100) InfₛHomClass.toInfTopHomClass {_ : CompleteLattice α}
-    {_ : CompleteLattice β} [InfₛHomClass F α β] : InfTopHomClass F α β :=
+instance (priority := 100) InfₛHomClass.toInfTopHomClass [CompleteLattice α]
+    [CompleteLattice β] [InfₛHomClass F α β] : InfTopHomClass F α β :=
   { ‹InfₛHomClass F α β› with
     map_inf := fun f a b => by
       rw [← infₛ_pair, map_infₛ, Set.image_pair]
@@ -173,34 +171,34 @@ instance (priority := 100) InfₛHomClass.toInfTopHomClass {_ : CompleteLattice 
 #align Inf_hom_class.to_inf_top_hom_class InfₛHomClass.toInfTopHomClass
 
 -- See note [lower instance priority]
-instance (priority := 100) FrameHomClass.toSupₛHomClass {_ : CompleteLattice α}
-    {_ : CompleteLattice β} [FrameHomClass F α β] : SupₛHomClass F α β :=
+instance (priority := 100) FrameHomClass.toSupₛHomClass [CompleteLattice α]
+    [CompleteLattice β] [FrameHomClass F α β] : SupₛHomClass F α β :=
   { ‹FrameHomClass F α β› with }
 #align frame_hom_class.to_Sup_hom_class FrameHomClass.toSupₛHomClass
 
 -- See note [lower instance priority]
-instance (priority := 100) FrameHomClass.toBoundedLatticeHomClass {_ : CompleteLattice α}
-    {_ : CompleteLattice β} [FrameHomClass F α β] : BoundedLatticeHomClass F α β :=
+instance (priority := 100) FrameHomClass.toBoundedLatticeHomClass [CompleteLattice α]
+    [CompleteLattice β] [FrameHomClass F α β] : BoundedLatticeHomClass F α β :=
   { ‹FrameHomClass F α β›, SupₛHomClass.toSupBotHomClass with }
 #align frame_hom_class.to_bounded_lattice_hom_class FrameHomClass.toBoundedLatticeHomClass
 
 -- See note [lower instance priority]
-instance (priority := 100) CompleteLatticeHomClass.toFrameHomClass {_ : CompleteLattice α}
-    {_ : CompleteLattice β} [CompleteLatticeHomClass F α β] : FrameHomClass F α β :=
+instance (priority := 100) CompleteLatticeHomClass.toFrameHomClass [CompleteLattice α]
+    [CompleteLattice β] [CompleteLatticeHomClass F α β] : FrameHomClass F α β :=
   { ‹CompleteLatticeHomClass F α β›, InfₛHomClass.toInfTopHomClass with }
 #align complete_lattice_hom_class.to_frame_hom_class CompleteLatticeHomClass.toFrameHomClass
 
 -- See note [lower instance priority]
-instance (priority := 100) CompleteLatticeHomClass.toBoundedLatticeHomClass {_ : CompleteLattice α}
-    {_ : CompleteLattice β}  [CompleteLatticeHomClass F α β] : BoundedLatticeHomClass F α β :=
+instance (priority := 100) CompleteLatticeHomClass.toBoundedLatticeHomClass [CompleteLattice α]
+    [CompleteLattice β]  [CompleteLatticeHomClass F α β] : BoundedLatticeHomClass F α β :=
   { SupₛHomClass.toSupBotHomClass, InfₛHomClass.toInfTopHomClass with }
 #align
   complete_lattice_hom_class.to_bounded_lattice_hom_class
   CompleteLatticeHomClass.toBoundedLatticeHomClass
 
 -- See note [lower instance priority]
-instance (priority := 100) OrderIsoClass.toSupₛHomClass {_ : CompleteLattice α}
-    {_ : CompleteLattice β} [OrderIsoClass F α β] : SupₛHomClass F α β :=
+instance (priority := 100) OrderIsoClass.toSupₛHomClass [CompleteLattice α]
+    [CompleteLattice β] [OrderIsoClass F α β] : SupₛHomClass F α β :=
   { show OrderHomClass F α β from inferInstance with
     map_supₛ := fun f s =>
       eq_of_forall_ge_iff fun c => by
@@ -208,8 +206,8 @@ instance (priority := 100) OrderIsoClass.toSupₛHomClass {_ : CompleteLattice �
 #align order_iso_class.to_Sup_hom_class OrderIsoClass.toSupₛHomClass
 
 -- See note [lower instance priority]
-instance (priority := 100) OrderIsoClass.toInfₛHomClass {_ : CompleteLattice α}
-    {_ : CompleteLattice β} [OrderIsoClass F α β] : InfₛHomClass F α β :=
+instance (priority := 100) OrderIsoClass.toInfₛHomClass [CompleteLattice α]
+    [CompleteLattice β] [OrderIsoClass F α β] : InfₛHomClass F α β :=
   { show OrderHomClass F α β from inferInstance with
     map_infₛ := fun f s =>
       eq_of_forall_le_iff fun c => by
@@ -217,8 +215,8 @@ instance (priority := 100) OrderIsoClass.toInfₛHomClass {_ : CompleteLattice �
 #align order_iso_class.to_Inf_hom_class OrderIsoClass.toInfₛHomClass
 
 -- See note [lower instance priority]
-instance (priority := 100) OrderIsoClass.toCompleteLatticeHomClass {_ : CompleteLattice α}
-    {_ : CompleteLattice β} [OrderIsoClass F α β] : CompleteLatticeHomClass F α β :=
+instance (priority := 100) OrderIsoClass.toCompleteLatticeHomClass [CompleteLattice α]
+    [CompleteLattice β] [OrderIsoClass F α β] : CompleteLatticeHomClass F α β :=
   -- Porting note: Used to be:
     -- { OrderIsoClass.toSupₛHomClass, OrderIsoClass.toLatticeHomClass,
     -- show InfₛHomClass F α β from inferInstance with }
