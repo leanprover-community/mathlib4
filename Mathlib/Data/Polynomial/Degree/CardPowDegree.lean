@@ -19,12 +19,12 @@ to `q ^ degree p` (where `q ^ degree 0 = 0`) is an absolute value.
 
 ## Main definitions
 
- * `polynomial.card_pow_degree` is an absolute value on `𝔽_q[t]`, the ring of
+ * `Polynomial.cardPowDegree` is an absolute value on `𝔽_q[t]`, the ring of
    polynomials over a finite field of cardinality `q`, mapping a polynomial `p`
    to `q ^ degree p` (where `q ^ degree 0 = 0`)
 
 ## Main results
- * `polynomial.card_pow_degree_is_euclidean`: `card_pow_degree` respects the
+ * `Polynomial.cardPowDegree_isEuclidean`: `cardPowDegree` respects the
    Euclidean domain structure on the ring of polynomials
 
 -/
@@ -38,14 +38,14 @@ open AbsoluteValue
 
 open Classical Polynomial
 
-/-- `card_pow_degree` is the absolute value on `𝔽_q[t]` sending `f` to `q ^ degree f`.
+/-- `cardPowDegree` is the absolute value on `𝔽_q[t]` sending `f` to `q ^ degree f`.
 
-`card_pow_degree 0` is defined to be `0`. -/
+`cardPowDegree 0` is defined to be `0`. -/
 noncomputable def cardPowDegree : AbsoluteValue Fq[X] ℤ :=
   have card_pos : 0 < Fintype.card Fq := Fintype.card_pos_iff.mpr inferInstance
   have pow_pos : ∀ n, 0 < (Fintype.card Fq : ℤ) ^ n := fun n =>
     pow_pos (Int.coe_nat_pos.mpr card_pos) n
-  { toFun := fun p => if p = 0 then 0 else Fintype.card Fq ^ p.natDegree
+  { toFun := fun p => if p = 0 then 0 else (Fintype.card Fq : ℤ) ^ p.natDegree
     nonneg' := fun p => by
       dsimp
       split_ifs
@@ -67,7 +67,7 @@ noncomputable def cardPowDegree : AbsoluteValue Fq[X] ℤ :=
       refine'
         le_trans (le_max_iff.mpr _)
           (max_le_add_of_nonneg (pow_nonneg (by linarith) _) (pow_nonneg (by linarith) _))
-      exact (max_choice p.nat_degree q.nat_degree).imp (fun h => by rw [h]) fun h => by rw [h]
+      exact (max_choice p.natDegree q.natDegree).imp (fun h => by rw [h]) fun h => by rw [h]
     map_mul' := fun p q => by
       by_cases hp : p = 0; · simp [hp]
       by_cases hq : q = 0; · simp [hq]
@@ -77,7 +77,7 @@ noncomputable def cardPowDegree : AbsoluteValue Fq[X] ℤ :=
 #align polynomial.card_pow_degree Polynomial.cardPowDegree
 
 theorem cardPowDegree_apply (p : Fq[X]) :
-    cardPowDegree p = if p = 0 then 0 else Fintype.card Fq ^ natDegree p :=
+    cardPowDegree p = if p = 0 then 0 else (Fintype.card Fq : ℤ) ^ natDegree p :=
   rfl
 #align polynomial.card_pow_degree_apply Polynomial.cardPowDegree_apply
 
@@ -88,7 +88,7 @@ theorem cardPowDegree_zero : cardPowDegree (0 : Fq[X]) = 0 :=
 
 @[simp]
 theorem cardPowDegree_nonzero (p : Fq[X]) (hp : p ≠ 0) :
-    cardPowDegree p = Fintype.card Fq ^ p.natDegree :=
+    cardPowDegree p = (Fintype.card Fq : ℤ) ^ p.natDegree :=
   if_neg hp
 #align polynomial.card_pow_degree_nonzero Polynomial.cardPowDegree_nonzero
 
@@ -96,18 +96,17 @@ theorem cardPowDegree_isEuclidean : IsEuclidean (cardPowDegree : AbsoluteValue F
   have card_pos : 0 < Fintype.card Fq := Fintype.card_pos_iff.mpr inferInstance
   have pow_pos : ∀ n, 0 < (Fintype.card Fq : ℤ) ^ n := fun n =>
     pow_pos (Int.coe_nat_pos.mpr card_pos) n
-  {
-    map_lt_map_iff' := fun p q => by
-      simp only [EuclideanDomain.r, card_pow_degree_apply]
+  { map_lt_map_iff' := fun {p q} => by
+      show cardPowDegree p < cardPowDegree q ↔ degree p < degree q
+      simp only [cardPowDegree_apply]
       split_ifs with hp hq hq
       · simp only [hp, hq, lt_self_iff_false]
-      ·
-        simp only [hp, hq, degree_zero, Ne.def, bot_lt_iff_ne_bot, degree_eq_bot, pow_pos,
+      · simp only [hp, hq, degree_zero, Ne.def, bot_lt_iff_ne_bot, degree_eq_bot, pow_pos,
           not_false_iff]
       · simp only [hp, hq, degree_zero, not_lt_bot, (pow_pos _).not_lt]
-      · rw [degree_eq_nat_degree hp, degree_eq_nat_degree hq, WithBot.coe_lt_coe, pow_lt_pow_iff]
+      · rw [degree_eq_natDegree hp, degree_eq_natDegree hq, Nat.cast_withBot, Nat.cast_withBot,
+          WithBot.coe_lt_coe, pow_lt_pow_iff]
         exact_mod_cast @Fintype.one_lt_card Fq _ _ }
 #align polynomial.card_pow_degree_is_euclidean Polynomial.cardPowDegree_isEuclidean
 
 end Polynomial
-
