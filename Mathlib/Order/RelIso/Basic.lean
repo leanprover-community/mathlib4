@@ -268,8 +268,6 @@ theorem injective (f : r ↪r s) : Injective f :=
   f.inj'
 #align rel_embedding.injective RelEmbedding.injective
 
---Porting note: marked simp until `RelEmbedding` is `EmbeddingLike`
-@[simp]
 theorem inj (f : r ↪r s) {a b} : f a = f b ↔ a = b :=
   f.injective.eq_iff
 #align rel_embedding.inj RelEmbedding.inj
@@ -615,7 +613,7 @@ set_option synthInstance.etaExperiment true
 def prodLexMap (f : r ↪r s) (g : t ↪r u) : Prod.Lex r t ↪r Prod.Lex s u where
   toFun := Prod.map f g
   inj' := f.injective.Prod_map g.injective
-  map_rel_iff' := by simp [Prod.lex_def, f.map_rel_iff, g.map_rel_iff]
+  map_rel_iff' := by simp [Prod.lex_def, f.map_rel_iff, g.map_rel_iff, f.inj]
 #align rel_embedding.prod_lex_map RelEmbedding.prodLexMap
 #align rel_embedding.prod_lex_map_apply RelEmbedding.prodLexMap_apply
 
