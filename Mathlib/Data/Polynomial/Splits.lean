@@ -208,7 +208,7 @@ theorem map_rootOfSplits' {f : K[X]} (hf : f.Splits i) (hfd) :
   Classical.choose_spec <| exists_root_of_splits' i hf hfd
 #align polynomial.map_root_of_splits' Polynomial.map_rootOfSplits'
 
-attribute [-instance] Ring.toNonAssocRing in -- Porting note: gets around lean4#2074
+set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 theorem natDegree_eq_card_roots' {p : K[X]} {i : K →+* L} (hsplit : Splits i p) :
     (p.map i).natDegree = Multiset.card (p.map i).roots := by
   by_cases hp : p.map i = 0
@@ -220,7 +220,7 @@ theorem natDegree_eq_card_roots' {p : K[X]} {i : K →+* L} (hsplit : Splits i p
   rw [← hd, add_right_eq_self]
   by_contra h
   have h' : (map (RingHom.id L) q).natDegree ≠ 0 := by simp [h]
-  have := roots_ne_zero_of_splits' (RingHom.id L) (splits_of_splits_mul' _ _ hsplit).2 h'
+  have := roots_ne_zero_of_splits' (RingHom.id L) (splits_of_splits_mul' _ ?_ hsplit).2 h'
   · rw [map_id] at this
     exact this hr
   · rw [map_id]
@@ -345,9 +345,10 @@ theorem roots_map {f : K[X]} (hf : f.Splits <| RingHom.id K) : (f.map i).roots =
 set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 theorem image_rootSet [Algebra F K] [Algebra F L] {p : F[X]} (h : p.Splits (algebraMap F K))
     (f : K →ₐ[F] L) : f '' p.rootSet K = p.rootSet L := by
-  classical rw [rootSet, ← Finset.coe_image, ← Multiset.toFinset_map, ← f.coe_toRingHom, ←
-      roots_map (↑f) ((splits_id_iff_splits (algebraMap F K)).mpr h), map_map, f.comp_algebra_map, ←
-      root_set]
+  classical
+    rw [rootSet, ← Finset.coe_image, ← Multiset.toFinset_map, ← f.coe_toRingHom,
+      ← roots_map _ ((splits_id_iff_splits (algebraMap F K)).mpr h), map_map, f.comp_algebraMap,
+      ← rootSet]
 #align polynomial.image_root_set Polynomial.image_rootSet
 
 set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
@@ -444,9 +445,10 @@ theorem splits_iff_exists_multiset {f : K[X]} :
 #align polynomial.splits_iff_exists_multiset Polynomial.splits_iff_exists_multiset
 
 theorem splits_comp_of_splits (j : L →+* F) {f : K[X]} (h : Splits i f) : Splits (j.comp i) f := by
-  change i with (RingHom.id _).comp i at h
+  -- Porting note: was
+  -- change i with (RingHom.id _).comp i at h
   rw [← splits_map_iff]
-  rw [← splits_map_iff i] at h
+  rw [← RingHom.id_comp i, ← splits_map_iff i] at h
   exact splits_of_splits_id _ h
 #align polynomial.splits_comp_of_splits Polynomial.splits_comp_of_splits
 
