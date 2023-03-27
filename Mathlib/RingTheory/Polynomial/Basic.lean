@@ -170,7 +170,7 @@ def degreeLtEquiv (R) [Semiring R] (n : ℕ) : degreeLt R n ≃ₗ[R] Fin n → 
       exact (h (Finset.mem_univ _)).elim
 #align polynomial.degree_lt_equiv Polynomial.degreeLtEquiv
 
-@[simp]
+-- Porting note: removed @[simp] as simp can prove this
 theorem degreeLtEquiv_eq_zero_iff_eq_zero {n : ℕ} {p : R[X]} (hp : p ∈ degreeLt R n) :
     degreeLtEquiv _ _ ⟨p, hp⟩ = 0 ↔ p = 0 := by
   rw [LinearEquiv.map_eq_zero_iff, Submodule.mk_eq_zero]
@@ -283,7 +283,7 @@ theorem coeff_restriction {p : R[X]} {n : ℕ} : ↑(coeff (restriction p) n) = 
   · rfl
 #align polynomial.coeff_restriction Polynomial.coeff_restriction
 
-@[simp]
+-- Porting note: removed @[simp] as simp can prove this
 theorem coeff_restriction' {p : R[X]} {n : ℕ} : (coeff (restriction p) n).1 = coeff p n :=
   coeff_restriction
 #align polynomial.coeff_restriction' Polynomial.coeff_restriction'
@@ -368,7 +368,7 @@ theorem coeff_toSubring {n : ℕ} : ↑(coeff (toSubring p T hp) n) = coeff p n 
   · rfl
 #align polynomial.coeff_to_subring Polynomial.coeff_toSubring
 
-@[simp]
+-- Porting note: removed @[simp] as simp can prove this
 theorem coeff_to_subring' {n : ℕ} : (coeff (toSubring p T hp) n).1 = coeff p n :=
   coeff_toSubring _ _ hp
 #align polynomial.coeff_to_subring' Polynomial.coeff_to_subring'
@@ -841,7 +841,6 @@ set_option linter.uppercaseLean3 false in
 variable {σ}
 
 set_option maxHeartbeats 0 in
-set_option synthInstance.maxHeartbeats 0 in
 theorem prime_rename_iff (s : Set σ) {p : MvPolynomial s R} :
     Prime (rename ((↑) : s → σ) p) ↔ Prime p := by
   classical
@@ -1257,7 +1256,6 @@ namespace MvPolynomial
 variable (d : ℕ)
 
 set_option maxHeartbeats 0 in
-set_option synthInstance.maxHeartbeats 0 in
 private theorem uniqueFactorizationMonoid_of_fintype [Fintype σ] :
     UniqueFactorizationMonoid (MvPolynomial σ D) :=
   let f (d : ℕ) := (finSuccEquiv D d).toMulEquiv.symm
@@ -1292,3 +1290,4 @@ instance (priority := 100) : UniqueFactorizationMonoid (MvPolynomial σ D) := by
 end MvPolynomial
 
 end UniqueFactorizationDomain
+
