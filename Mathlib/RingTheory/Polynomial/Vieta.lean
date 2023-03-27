@@ -43,14 +43,16 @@ variable {R : Type _} [CommSemiring R]
 `esymm s` of the `λ`'s .-/
 theorem prod_X_add_C_eq_sum_esymm (s : Multiset R) :
     (s.map fun r => X + C r).prod =
-      ∑ j in Finset.range (Multiset.card s + 1), C (s.esymm j) * X ^ (Multiset.card s - j) := by
+      ∑ j in Finset.range (Multiset.card s + 1), (C (s.esymm j) * X ^ (Multiset.card s - j)) := by
   classical
     rw [prod_map_add, antidiagonal_eq_map_powerset, map_map, ← bind_powerset_len,
       map_bind, sum_bind, Finset.sum_eq_multiset_sum, Finset.range_val, map_congr (Eq.refl _)]
     intro _ _
     rw [esymm, ← sum_hom', ← sum_map_mul_right, map_congr (Eq.refl _)]
-    intro _ ht
+    intro s ht
     rw [mem_powersetLen] at ht
+    dsimp
+    rw [prod_hom' s (Polynomial.C : R →+* R[X])]
     simp [ht, map_const, prod_replicate, prod_hom', map_id', card_sub]
 set_option linter.uppercaseLean3 false in
 #align multiset.prod_X_add_C_eq_sum_esymm Multiset.prod_X_add_C_eq_sum_esymm
