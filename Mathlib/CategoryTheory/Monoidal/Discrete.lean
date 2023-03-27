@@ -46,13 +46,6 @@ instance Discrete.monoidal : MonoidalCategory (Discrete M)
 lemma Discrete.monoidal_tensorUnit_as :
   (𝟙_ (Discrete M)).as = 1 := rfl
 
--- porting note: we do not necessarily want to unfold the definition of `Discrete.monoidal`,
--- in `mathlib`, it was done by making it locally reducible or not, instead one may
--- activate/deactive the following simp attributes
-attribute [-simp] Discrete.monoidal_leftUnitor Discrete.addMonoidal_leftUnitor
-  Discrete.monoidal_rightUnitor Discrete.addMonoidal_rightUnitor
-  Discrete.monoidal_associator Discrete.addMonoidal_associator
-
 variable {M} {N : Type u} [Monoid N]
 
 /-- A multiplicative morphism between monoids gives a monoidal functor between the corresponding
