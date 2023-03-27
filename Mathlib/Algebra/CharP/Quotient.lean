@@ -8,8 +8,8 @@ Authors: Kenny Lau, Eric Wieser
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.CharP.Basic
-import Mathbin.RingTheory.Ideal.Quotient
+import Mathlib.Algebra.CharP.Basic
+import Mathlib.RingTheory.Ideal.Quotient
 
 /-!
 # Characteristic of quotients rings
@@ -48,8 +48,7 @@ theorem quotient' {R : Type _} [CommRing R] (p : ℕ) [CharP R p] (I : Ideal R)
 end CharP
 
 theorem Ideal.Quotient.index_eq_zero {R : Type _} [CommRing R] (I : Ideal R) :
-    (I.toAddSubgroup.index : R ⧸ I) = 0 :=
-  by
+    (I.toAddSubgroup.index : R ⧸ I) = 0 := by
   rw [AddSubgroup.index, Nat.card_eq]
   split_ifs with hq; swap; simp
   by_contra h
