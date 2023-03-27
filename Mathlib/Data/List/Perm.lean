@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 
 ! This file was ported from Lean 3 source module data.list.perm
-! leanprover-community/mathlib commit 7b78d1776212a91ecc94cf601f83bdcc46b04213
+! leanprover-community/mathlib commit 47adfab39a11a072db552f47594bf8ed2cf8a722
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -215,13 +215,8 @@ theorem singleton_perm {a : α} {l : List α} : [a] ~ l ↔ [a] = l :=
   @replicate_perm α 1 a l
 #align list.singleton_perm List.singleton_perm
 
-theorem Perm.eq_singleton {a : α} {l : List α} (p : l ~ [a]) : l = [a] :=
-  perm_singleton.1 p
-#align list.perm.eq_singleton List.Perm.eq_singleton
-
-theorem Perm.singleton_eq {a : α} {l : List α} (p : [a] ~ l) : [a] = l :=
-  p.symm.eq_singleton.symm
-#align list.perm.singleton_eq List.Perm.singleton_eq
+alias perm_singleton ↔ Perm.eq_singleton _
+alias singleton_perm ↔ Perm.singleton_eq _
 
 theorem singleton_perm_singleton {a b : α} : [a] ~ [b] ↔ a = b := by simp
 #align list.singleton_perm_singleton List.singleton_perm_singleton
