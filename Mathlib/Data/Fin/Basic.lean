@@ -1255,7 +1255,7 @@ theorem castLT_castSucc {n : ℕ} (a : Fin n) (h : (a : ℕ) < n) : castLT (cast
   cases a; rfl
 #align fin.cast_lt_cast_succ Fin.castLT_castSucc
 
-@[simp]
+--@[simp] Porting note: simp can prove it
 theorem castSucc_lt_castSucc_iff {a b : Fin n}: Fin.castSucc a < Fin.castSucc b ↔ a < b :=
   (@castSucc n).lt_iff_lt
 #align fin.cast_succ_lt_cast_succ_iff Fin.castSucc_lt_castSucc_iff
@@ -2544,3 +2544,4 @@ protected theorem zero_mul [NeZero n] (k : Fin n) : (0 : Fin n) * k = 0 := by
 end Mul
 
 end Fin
+#lint

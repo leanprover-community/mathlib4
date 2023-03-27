@@ -981,7 +981,7 @@ section LE
 
 variable [LE α] [LE β] [LE γ]
 
-@[simp]
+--@[simp] porting note: simp can prove it
 theorem le_iff_le (e : α ≃o β) {x y : α} : e x ≤ e y ↔ x ≤ y :=
   e.map_rel_iff
 #align order_iso.le_iff_le OrderIso.le_iff_le
