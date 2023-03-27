@@ -29,11 +29,12 @@ variable (R : Type _) [Semiring R]
 
 variable (C : Type _) [Category C] [Preadditive C] [Linear R C]
 
-variable [MonoidalCategory C] [MonoidalPreadditive C]
+variable [MonoidalCategory C]
 
+-- porting note: added `MonoidalPreadditive` as argument ``
 /-- A category is `MonoidalLinear R` if tensoring is `R`-linear in both factors.
 -/
-class MonoidalLinear : Prop where
+class MonoidalLinear [MonoidalPreadditive C] : Prop where
   tensor_smul : ∀ {W X Y Z : C} (f : W ⟶ X) (r : R) (g : Y ⟶ Z), f ⊗ r • g = r • (f ⊗ g) := by
     aesop_cat
   smul_tensor : ∀ {W X Y Z : C} (r : R) (f : W ⟶ X) (g : Y ⟶ Z), r • f ⊗ g = r • (f ⊗ g) := by
@@ -43,7 +44,7 @@ class MonoidalLinear : Prop where
 attribute [simp] MonoidalLinear.tensor_smul MonoidalLinear.smul_tensor
 
 variable {C}
-variable [MonoidalLinear R C]
+variable [MonoidalPreadditive C] [MonoidalLinear R C]
 
 instance tensorLeft_linear (X : C) : (tensorLeft X).Linear R where
 #align category_theory.tensor_left_linear CategoryTheory.tensorLeft_linear
@@ -57,11 +58,10 @@ instance tensoringLeft_linear (X : C) : ((tensoringLeft C).obj X).Linear R where
 instance tensoringRight_linear (X : C) : ((tensoringRight C).obj X).Linear R where
 #align category_theory.tensoring_right_linear CategoryTheory.tensoringRight_linear
 
--- porting note: removed unused argument `[MonoidalPreadditive D]`
 /-- A faithful linear monoidal functor to a linear monoidal category
 ensures that the domain is linear monoidal. -/
 theorem monoidalLinearOfFaithful {D : Type _} [Category D] [Preadditive D] [Linear R D]
-    [MonoidalCategory D] (F : MonoidalFunctor D C) [Faithful F.toFunctor]
+    [MonoidalCategory D] [MonoidalPreadditive D] (F : MonoidalFunctor D C) [Faithful F.toFunctor]
     [F.toFunctor.Additive] [F.toFunctor.Linear R] : MonoidalLinear R D :=
   { tensor_smul := by
       intros W X Y Z f r g
