@@ -38,7 +38,7 @@ and (where appropriate) choose a uniform canonical way of expressing these ideas
 with a normalization function, and then deduplicated.  The basics of this have been started in
 `ring_theory/unique_factorization_domain`.
 
-* Extend the inductions to any `normalization_monoid` with unique factorization.
+* Extend the inductions to any `NormalizationMonoid` with unique factorization.
 
 -/
 
@@ -240,7 +240,7 @@ theorem prod_factorization_eq_prod_factors {n : ℕ} {β : Type _} [CommMonoid �
   simp
 #align nat.prod_factorization_eq_prod_factors Nat.prod_factorization_eq_prod_factors
 
-/-- For any `p : ℕ` and any function `g : α → ℕ` that's non-zero on `S : finset α`,
+/-- For any `p : ℕ` and any function `g : α → ℕ` that's non-zero on `S : Finset α`,
 the power of `p` in `S.prod g` equals the sum over `x ∈ S` of the powers of `p` in `g x`.
 Generalises `factorization_mul`, which is the special case where `S.card = 2` and `g = id`. -/
 theorem factorization_prod {α : Type _} {S : Finset α} {g : α → ℕ} (hS : ∀ x ∈ S, g x ≠ 0) :
