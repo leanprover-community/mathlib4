@@ -1237,7 +1237,7 @@ theorem map_nsmul (f : α → β) (n : ℕ) (s) : map f (n • s) = n • map f 
 
 @[simp]
 theorem mem_map {f : α → β} {b : β} {s : Multiset α} : b ∈ map f s ↔ ∃ a, a ∈ s ∧ f a = b :=
-  Quot.inductionOn s fun _l => mem_map'
+  Quot.inductionOn s fun _l => List.mem_map
 #align multiset.mem_map Multiset.mem_map
 
 @[simp]

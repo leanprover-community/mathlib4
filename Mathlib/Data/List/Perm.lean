@@ -1373,7 +1373,7 @@ theorem count_permutations'Aux_self [DecidableEq α] (l : List α) (x : α) :
     · subst hx
       simpa [takeWhile, Nat.succ_inj', DecEq_eq] using IH _
     · rw [takeWhile]
-      simp only [mem_map', cons.injEq, Ne.symm hx, false_and, and_false, exists_false,
+      simp only [mem_map, cons.injEq, Ne.symm hx, false_and, and_false, exists_false,
         not_false_iff, count_eq_zero_of_not_mem, zero_add, hx, decide_False, length_nil]
 #align list.count_permutations'_aux_self List.count_permutations'Aux_self
 
@@ -1406,7 +1406,7 @@ theorem nodup_permutations'Aux_of_not_mem (s : List α) (x : α) (hx : x ∉ s) 
   induction' s with y s IH
   · simp
   · simp only [not_or, mem_cons] at hx
-    simp only [permutations'Aux, nodup_cons, mem_map', cons.injEq, exists_eq_right_right, not_and]
+    simp only [permutations'Aux, nodup_cons, mem_map, cons.injEq, exists_eq_right_right, not_and]
     refine' ⟨fun _ => Ne.symm hx.left, _⟩
     rw [nodup_map_iff]
     · exact IH hx.right
