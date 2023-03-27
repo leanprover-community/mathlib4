@@ -2835,8 +2835,8 @@ instance decidableSetOf (p : α → Prop) [Decidable (p a)] : Decidable (a ∈ {
 #align set.decidable_set_of Set.decidableSetOf
 
 -- porting note: Lean 3 unfolded `{a}` before finding instances but Lean 4 needs additional help
-instance singletonDecidableMem {α: Type _} {a j: α} [DecidableEq α] :
-    Decidable (j ∈ ({a} : Set α)) := decidableSetOf j (fun (b : α) => b = a)
+instance decidableMemSingleton {a b : α} [DecidableEq α] :
+    Decidable (a ∈ ({b} : Set α)) := decidableSetOf _ (· = b)
 
 end Set
 
