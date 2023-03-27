@@ -93,6 +93,9 @@ structure Equivalence (C : Type u₁) (D : Type u₂) [Category.{v₁} C] [Categ
     ∀ X : C, functor.map (unitIso.hom.app X) ≫ counitIso.hom.app (functor.obj X) =
       𝟙 (functor.obj X) := by aesop_cat
 #align category_theory.equivalence CategoryTheory.Equivalence
+#align category_theory.equivalence.unit_iso CategoryTheory.Equivalence.unitIso
+#align category_theory.equivalence.counit_iso CategoryTheory.Equivalence.counitIso
+#align category_theory.equivalence.functor_unit_iso_comp CategoryTheory.Equivalence.functor_unitIso_comp
 
 /-- We infix the usual notation for an equivalence -/
 infixr:10 " ≌ " => Equivalence
@@ -496,6 +499,9 @@ class IsEquivalence (F : C ⥤ D) where mk' ::
         𝟙 (F.obj X) := by
     aesop_cat
 #align category_theory.is_equivalence CategoryTheory.IsEquivalence
+#align category_theory.is_equivalence.unit_iso CategoryTheory.IsEquivalence.unitIso
+#align category_theory.is_equivalence.counit_iso CategoryTheory.IsEquivalence.counitIso
+#align category_theory.is_equivalence.functor_unit_iso_comp CategoryTheory.IsEquivalence.functor_unitIso_comp
 
 attribute [reassoc (attr := simp)] IsEquivalence.functor_unitIso_comp
 
@@ -697,9 +703,9 @@ namespace Equivalence
 
 See <https://stacks.math.columbia.edu/tag/02C3>.
 -/
-theorem ess_surj_of_equivalence (F : C ⥤ D) [IsEquivalence F] : EssSurj F :=
+theorem essSurj_of_equivalence (F : C ⥤ D) [IsEquivalence F] : EssSurj F :=
   ⟨fun Y => ⟨F.inv.obj Y, ⟨F.asEquivalence.counitIso.app Y⟩⟩⟩
-#align category_theory.equivalence.ess_surj_of_equivalence CategoryTheory.Equivalence.ess_surj_of_equivalence
+#align category_theory.equivalence.ess_surj_of_equivalence CategoryTheory.Equivalence.essSurj_of_equivalence
 
 -- see Note [lower instance priority]
 /-- An equivalence is faithful.
@@ -719,8 +725,8 @@ See <https://stacks.math.columbia.edu/tag/02C3>.
 -/
 instance (priority := 100) fullOfEquivalence (F : C ⥤ D) [IsEquivalence F] : Full F
     where
-  preimage := @fun X Y f => F.asEquivalence.unit.app X ≫ F.inv.map f ≫ F.asEquivalence.unitInv.app Y
-  witness := @fun X Y f =>
+  preimage {X Y} f := F.asEquivalence.unit.app X ≫ F.inv.map f ≫ F.asEquivalence.unitInv.app Y
+  witness {X Y} f :=
     F.inv.map_injective <| by
       simpa only [IsEquivalence.inv_fun_map, assoc, Iso.inv_hom_id_app_assoc,
         Iso.inv_hom_id_app] using comp_id _
@@ -730,9 +736,9 @@ instance (priority := 100) fullOfEquivalence (F : C ⥤ D) [IsEquivalence F] : F
 private noncomputable def equivalenceInverse (F : C ⥤ D) [Full F] [Faithful F] [EssSurj F] : D ⥤ C
     where
   obj X := F.objPreimage X
-  map := @fun X Y f => F.preimage ((F.objObjPreimageIso X).hom ≫ f ≫ (F.objObjPreimageIso Y).inv)
+  map {X Y} f := F.preimage ((F.objObjPreimageIso X).hom ≫ f ≫ (F.objObjPreimageIso Y).inv)
   map_id X := by apply F.map_injective; aesop_cat
-  map_comp := @fun X Y Z f g => by apply F.map_injective; simp
+  map_comp {X Y Z} f g := by apply F.map_injective; simp
 -- #align category_theory.equivalence.equivalence_inverse CategoryTheory.Equivalence.equivalenceInverse
 /- Porting note: this is a private def in mathlib -/
 
@@ -745,7 +751,7 @@ noncomputable def ofFullyFaithfullyEssSurj (F : C ⥤ D) [Full F] [Faithful F] [
     IsEquivalence F :=
   IsEquivalence.mk (equivalenceInverse F)
     (NatIso.ofComponents (fun X => (F.preimageIso <| F.objObjPreimageIso <| F.obj X).symm)
-      @fun X Y f => by
+      fun f => by
       apply F.map_injective
       aesop_cat)
     (NatIso.ofComponents F.objObjPreimageIso (by aesop_cat))
@@ -763,9 +769,8 @@ theorem inverse_map_inj_iff (e : C ≌ D) {X Y : D} (f g : X ⟶ Y) :
   functor_map_inj_iff e.symm f g
 #align category_theory.equivalence.inverse_map_inj_iff CategoryTheory.Equivalence.inverse_map_inj_iff
 
-instance essSurjInducedFunctor {C' : Type _} (e : C' ≃ D) : EssSurj (inducedFunctor e)
-    where mem_essImage Y :=
-      ⟨e.symm Y, by simpa using ⟨default⟩⟩
+instance essSurjInducedFunctor {C' : Type _} (e : C' ≃ D) : EssSurj (inducedFunctor e) where
+  mem_essImage Y := ⟨e.symm Y, by simpa using ⟨default⟩⟩
 #align category_theory.equivalence.ess_surj_induced_functor CategoryTheory.Equivalence.essSurjInducedFunctor
 
 noncomputable instance inducedFunctorOfEquiv {C' : Type _} (e : C' ≃ D) :

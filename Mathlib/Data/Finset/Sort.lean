@@ -89,7 +89,7 @@ section SortLinearOrder
 variable [LinearOrder α]
 
 theorem sort_sorted_lt (s : Finset α) : List.Sorted (· < ·) (sort (· ≤ ·) s) :=
-  (sort_sorted _ _).imp₂ (@lt_of_le_of_ne _ _) (sort_nodup _ _)
+  (sort_sorted _ _).lt_of_le (sort_nodup _ _)
 #align finset.sort_sorted_lt Finset.sort_sorted_lt
 
 theorem sorted_zero_eq_min'_aux (s : Finset α) (h : 0 < (s.sort (· ≤ ·)).length) (H : s.Nonempty) :

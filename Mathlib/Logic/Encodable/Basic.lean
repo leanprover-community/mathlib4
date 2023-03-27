@@ -567,10 +567,9 @@ private def good : Option α → Prop
   | some a => p a
   | none => False
 
--- TODO: remove `rename_i`
-private def decidable_good : DecidablePred (good p)
-  | n => by cases' n with a a <;>
-         unfold good <;> rename_i x <;> cases x <;> dsimp <;> infer_instance
+private def decidable_good : DecidablePred (good p) :=
+  fun n => by
+    cases n <;> unfold good <;> dsimp <;> infer_instance
 attribute [local instance] decidable_good
 
 open Encodable

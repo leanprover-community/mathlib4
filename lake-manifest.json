@@ -4,18 +4,18 @@
  [{"git":
    {"url": "https://github.com/gebner/quote4",
     "subDir?": null,
-    "rev": "7ac99aa3fac487bec1d5860e751b99c7418298cf",
+    "rev": "7ae096b232087096ff0243a2b70d32720d2621ae",
     "name": "Qq",
     "inputRev?": "master"}},
   {"git":
    {"url": "https://github.com/JLimperg/aesop",
     "subDir?": null,
-    "rev": "ba61f7fec6174d8c7d2796457da5a8d0b0da44c6",
+    "rev": "071464ac36e339afb7a87640aa1f8121f707a59a",
     "name": "aesop",
     "inputRev?": "master"}},
   {"git":
    {"url": "https://github.com/leanprover/std4",
     "subDir?": null,
-    "rev": "de7e2a79905a3f87cad1ad5bf57045206f9738c7",
+    "rev": "5507f9d8409f93b984ce04eccf4914d534e6fca2",
     "name": "std",
     "inputRev?": "main"}}]}
