@@ -148,7 +148,6 @@ end Prod
 
 /-! ### `Sym2.GameAdd` -/
 
-
 namespace Sym2
 
 /-- `Sym2.GameAdd rα x y` means that `x` can be reached from `y` by decreasing either entry with
