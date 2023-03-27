@@ -755,8 +755,7 @@ theorem filter_image_quotient_mk''_isDiag [DecidableEq α] (s : Finset α) :
     ((s ×ᶠ s).image Quotient.mk'').filter IsDiag = s.diag.image Quotient.mk'' :=
   by
   ext z
-  induction z using Sym2.inductionOn
-  rename_i x y
+  induction' z using Sym2.inductionOn
   simp only [mem_image, mem_diag, exists_prop, mem_filter, Prod.exists, mem_product]
   constructor
   · rintro ⟨⟨a, b, ⟨ha, hb⟩, (h : Quotient.mk _ _ = _)⟩, hab⟩
