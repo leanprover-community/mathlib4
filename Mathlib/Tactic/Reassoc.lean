@@ -37,6 +37,7 @@ theorem eq_whisker' {X Y : C} {f g : X ⟶ Y} (w : f = g) {Z : C} (h : Y ⟶ Z) 
 /-- Simplify an expression using only the axioms of a category. -/
 def categorySimp (e : Expr) : MetaM Simp.Result :=
   simpOnlyNames [``Category.comp_id, ``Category.id_comp, ``Category.assoc] e
+    (config := { decide := false })
 
 /--
 Given an equation `f = g` between morphisms `X ⟶ Y` in a category (possibly after a `∀` binder),
