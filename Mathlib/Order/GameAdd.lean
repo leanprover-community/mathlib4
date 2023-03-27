@@ -89,7 +89,7 @@ theorem gameAdd_le_lex : GameAdd rα rβ ≤ Prod.Lex rα rβ := fun _ _ h =>
   h.rec (Prod.Lex.left _ _) (Prod.Lex.right _)
 #align prod.game_add_le_lex Prod.gameAdd_le_lex
 
-/-- `Prod.RProd` is a subrelation of the transitive closure of `GameAdd`. -/
+/-- `Prod.RProd` is a subrelation of the transitive closure of `Prod.GameAdd`. -/
 theorem rprod_le_transGen_gameAdd : Prod.RProd rα rβ ≤ Relation.TransGen (GameAdd rα rβ)
   | _, _, h => h.rec (by
       intro _ _ _ _ hα hβ
