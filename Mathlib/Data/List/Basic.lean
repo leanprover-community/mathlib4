@@ -1079,9 +1079,8 @@ theorem eq_nil_of_sublist_nil {l : List α} (s : l <+ []) : l = [] :=
   eq_nil_of_subset_nil <| s.subset
 #align list.eq_nil_of_sublist_nil List.eq_nil_of_sublist_nil
 
-@[simp]
-theorem sublist_nil_iff_eq_nil {l : List α} : l <+ [] ↔ l = [] :=
-  ⟨eq_nil_of_sublist_nil, fun H => H ▸ Sublist.refl _⟩
+-- Porting note: this lemma seems to have been renamed on the occasion of its move to Std4
+alias sublist_nil ← sublist_nil_iff_eq_nil
 #align list.sublist_nil_iff_eq_nil List.sublist_nil_iff_eq_nil
 
 #align list.replicate_sublist_replicate List.replicate_sublist_replicate
