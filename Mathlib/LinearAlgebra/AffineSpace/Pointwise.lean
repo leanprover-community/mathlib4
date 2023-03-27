@@ -55,7 +55,7 @@ theorem pointwise_vadd_eq_map (v : V) (s : AffineSubspace k P) :
 
 @[simp]
 theorem coe_pointwise_vadd (v : V) (s : AffineSubspace k P) :
-    ((v +ᵥ s : AffineSubspace k P) : Set P) = v +ᵥ s :=
+    ((v +ᵥ s : AffineSubspace k P) : Set P) = v +ᵥ (s : Set P) :=
   rfl
 #align affine_subspace.coe_pointwise_vadd AffineSubspace.coe_pointwise_vadd
 
