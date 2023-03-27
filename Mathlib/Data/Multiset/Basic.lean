@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 
 ! This file was ported from Lean 3 source module data.multiset.basic
-! leanprover-community/mathlib commit f3187269ad18e82a809428a42d6282ce81e4ebcc
+! leanprover-community/mathlib commit 47adfab39a11a072db552f47594bf8ed2cf8a722
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -915,7 +915,6 @@ def replicateAddMonoidHom (a : α) : ℕ →+ Multiset α where
 #align multiset.replicate_add_monoid_hom Multiset.replicateAddMonoidHom
 #align multiset.replicate_add_monoid_hom_apply Multiset.replicateAddMonoidHom_apply
 
--- @[simp] -- Porting note: simp can prove this
 theorem replicate_one (a : α) : replicate 1 a = {a} := rfl
 #align multiset.replicate_one Multiset.replicate_one
 
@@ -954,6 +953,7 @@ theorem replicate_right_injective {n : ℕ} (hn : n ≠ 0) : Injective (@replica
 #align multiset.replicate_right_inj Multiset.replicate_right_inj
 
 theorem replicate_left_injective (a : α) : Injective (replicate · a) :=
+  -- Porting note: was `fun m n h => by rw [← (eq_replicate.1 h).1, card_replicate]`
   LeftInverse.injective (card_replicate · a)
 #align multiset.replicate_left_injective Multiset.replicate_left_injective
 
@@ -1198,6 +1198,7 @@ theorem map_singleton (f : α → β) (a : α) : ({a} : Multiset α).map f = {f 
   rfl
 #align multiset.map_singleton Multiset.map_singleton
 
+@[simp]
 theorem map_replicate (f : α → β) (k : ℕ) (a : α) : (replicate k a).map f = replicate k (f a) := by
   simp only [← coe_replicate, coe_map, List.map_replicate]
 #align multiset.map_replicate Multiset.map_replicate
@@ -1301,10 +1302,12 @@ theorem map_id' (s : Multiset α) : map (fun x => x) s = s :=
   map_id s
 #align multiset.map_id' Multiset.map_id'
 
+-- Porting note: was a `simp` lemma in mathlib3
 theorem map_const (s : Multiset α) (b : β) : map (const α b) s = replicate (card s) b :=
   Quot.inductionOn s fun _ => congr_arg _ <| List.map_const' _ _
 #align multiset.map_const Multiset.map_const
 
+-- Porting note: was not a `simp` lemma in mathlib3 because `function.const` was reducible
 @[simp] theorem map_const' (s : Multiset α) (b : β) : map (fun _ ↦ b) s = replicate (card s) b :=
   map_const _ _
 #align multiset.map_const' Multiset.map_const'
@@ -2847,9 +2850,7 @@ theorem rel_replicate_left {m : Multiset α} {a : α} {r : α → α → Prop} {
 
 theorem rel_replicate_right {m : Multiset α} {a : α} {r : α → α → Prop} {n : ℕ} :
     m.Rel r (replicate n a) ↔ card m = n ∧ ∀ x, x ∈ m → r x a :=
-  by
-  rw [← rel_flip]
-  exact rel_replicate_left
+  rel_flip.trans rel_replicate_left
 #align multiset.rel_replicate_right Multiset.rel_replicate_right
 
 protected nonrec -- Porting note: added
