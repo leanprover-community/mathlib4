@@ -171,7 +171,6 @@ theorem isOpen_binterᵢ {s : Set β} {f : β → Set α} (hs : s.Finite) (h : �
   interₛ_image f s ▸ isOpen_interₛ (hs.image _) (ball_image_iff.2 h)
 #align is_open_bInter isOpen_binterᵢ
 
--- porting note: generalized to `ι : Sort _`
 theorem isOpen_interᵢ [Finite ι] {s : ι → Set α} (h : ∀ i, IsOpen (s i)) : IsOpen (⋂ i, s i) :=
   isOpen_interₛ (finite_range _) (forall_range_iff.2 h)
 #align is_open_Inter isOpen_interᵢ
