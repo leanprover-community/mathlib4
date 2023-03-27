@@ -16,17 +16,17 @@ import Mathlib.RingTheory.Polynomial.Content
 import Mathlib.RingTheory.UniqueFactorizationDomain
 
 /-!
-# Ring-theoretic supplement of data.polynomial.
+# Ring-theoretic supplement of Data.Polynomial.
 
 ## Main results
-* `mv_polynomial.is_domain`:
+* `MvPolynomial.isDomain`:
   If a ring is an integral domain, then so is its polynomial ring over finitely many variables.
-* `polynomial.is_noetherian_ring`:
+* `Polynomial.isNoetherianRing`:
   Hilbert basis theorem, that if a ring is noetherian then so is its polynomial ring.
-* `polynomial.wf_dvd_monoid`:
-  If an integral domain is a `wf_dvd_monoid`, then so is its polynomial ring.
-* `polynomial.unique_factorization_monoid`, `mv_polynomial.unique_factorization_monoid`:
-  If an integral domain is a `unique_factorization_monoid`, then so is its polynomial ring (of any
+* `Polynomial.wfDvdMonoid`:
+  If an integral domain is a `WFDvdMonoid`, then so is its polynomial ring.
+* `Polynomial.uniqueFactorizationMonoid`, `MvPolynomial.uniqueFactorizationMonoid`:
+  If an integral domain is a `UniqueFactorizationMonoid`, then so is its polynomial ring (of any
   number of variables).
 -/
 
@@ -1118,10 +1118,10 @@ instance isNoetherianRing [Finite σ] [IsNoetherianRing R] : IsNoetherianRing (M
 
 /-- Auxiliary lemma:
 Multivariate polynomials over an integral domain
-with variables indexed by `fin n` form an integral domain.
+with variables indexed by `Fin n` form an integral domain.
 This fact is proven inductively,
 and then used to prove the general case without any finiteness hypotheses.
-See `mv_polynomial.no_zero_divisors` for the general case. -/
+See `MvPolynomial.noZeroDivisors` for the general case. -/
 theorem noZeroDivisors_fin (R : Type u) [CommSemiring R] [NoZeroDivisors R] :
     ∀ n : ℕ, NoZeroDivisors (MvPolynomial (Fin n) R)
   | 0 => (MvPolynomial.isEmptyAlgEquiv R _).injective.noZeroDivisors _ (map_zero _) (map_mul _)
@@ -1132,9 +1132,9 @@ theorem noZeroDivisors_fin (R : Type u) [CommSemiring R] [NoZeroDivisors R] :
 
 /-- Auxiliary definition:
 Multivariate polynomials in finitely many variables over an integral domain form an integral domain.
-This fact is proven by transport of structure from the `mv_polynomial.no_zero_divisors_fin`,
+This fact is proven by transport of structure from the `MvPolynomial.noZeroDivisors_fin`,
 and then used to prove the general case without finiteness hypotheses.
-See `mv_polynomial.no_zero_divisors` for the general case. -/
+See `MvPolynomial.noZeroDivisors` for the general case. -/
 theorem noZeroDivisors_of_finite (R : Type u) (σ : Type v) [CommSemiring R] [Finite σ]
     [NoZeroDivisors R] : NoZeroDivisors (MvPolynomial σ R) := by
   cases nonempty_fintype σ
@@ -1162,9 +1162,8 @@ instance {R : Type u} [CommSemiring R] [NoZeroDivisors R] {σ : Type v} :
     cases' this with that that <;> [left, right]
     all_goals simpa using congr_arg (rename Subtype.val) that⟩
 
--- Porting note: named to use belwo
 /-- The multivariate polynomial ring over an integral domain is an integral domain. -/
-instance isDomain_of_isDomain {R : Type u} {σ : Type v} [CommRing R] [IsDomain R] :
+instance {R : Type u} {σ : Type v} [CommRing R] [IsDomain R] :
     IsDomain (MvPolynomial σ R) := by
   apply @NoZeroDivisors.to_isDomain (MvPolynomial σ R) _ ?_ _
   apply AddMonoidAlgebra.nontrivial
@@ -1193,7 +1192,7 @@ theorem mem_ideal_of_coeff_mem_ideal (I : Ideal (MvPolynomial σ R)) (p : MvPoly
   simpa [Ideal.mem_comap] using hcoe m
 #align mv_polynomial.mem_ideal_of_coeff_mem_ideal MvPolynomial.mem_ideal_of_coeff_mem_ideal
 
-/-- The push-forward of an ideal `I` of `R` to `mv_polynomial σ R` via inclusion
+/-- The push-forward of an ideal `I` of `R` to `MvPolynomial σ R` via inclusion
  is exactly the set of polynomials whose coefficients are in `I` -/
 theorem mem_map_C_iff {I : Ideal R} {f : MvPolynomial σ R} :
     f ∈ (Ideal.map (C : R →+* MvPolynomial σ R) I : Ideal (MvPolynomial σ R)) ↔
