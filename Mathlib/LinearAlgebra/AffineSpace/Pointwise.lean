@@ -36,7 +36,7 @@ variable [AddCommGroup V₂] [Module k V₂] [AddTorsor V₂ P₂]
 
 /-- The additive action on an affine subspace corresponding to applying the action to every element.
 
-This is available as an instance in the `pointwise` locale. -/
+This is available as an instance in the `Pointwise` locale. -/
 protected def pointwiseAddAction : AddAction V (AffineSubspace k P) where
   vadd x S := S.map (AffineEquiv.constVAdd k P x)
   zero_vadd p := ((congr_arg fun f => p.map f) <| AffineMap.ext <| zero_vadd _).trans p.map_id
