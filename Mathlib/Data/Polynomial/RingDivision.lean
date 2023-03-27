@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Jens Wagemaker, Johan Commelin
 
 ! This file was ported from Lean 3 source module data.polynomial.ring_division
-! leanprover-community/mathlib commit cbdf7b565832144d024caa5a550117c6df0204a5
+! leanprover-community/mathlib commit 517cc149e0b515d2893baa376226ed10feb319c7
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -76,7 +76,7 @@ theorem modByMonic_eq_of_dvd_sub (hq : q.Monic) {p₁ p₂ : R[X]} (h : q ∣ p�
 theorem add_modByMonic (p₁ p₂ : R[X]) : (p₁ + p₂) %ₘ q = p₁ %ₘ q + p₂ %ₘ q := by
   by_cases hq : q.Monic
   · cases' subsingleton_or_nontrivial R with hR hR
-    · simp only [eq_iff_true_of_subsingleton] 
+    · simp only [eq_iff_true_of_subsingleton]
     · exact
       (div_modByMonic_unique (p₁ /ₘ q + p₂ /ₘ q) _ hq
           ⟨by
@@ -90,7 +90,7 @@ theorem add_modByMonic (p₁ p₂ : R[X]) : (p₁ + p₂) %ₘ q = p₁ %ₘ q +
 theorem smul_modByMonic (c : R) (p : R[X]) : c • p %ₘ q = c • (p %ₘ q) := by
   by_cases hq : q.Monic
   · cases' subsingleton_or_nontrivial R with hR hR
-    · simp only [eq_iff_true_of_subsingleton] 
+    · simp only [eq_iff_true_of_subsingleton]
     · exact
       (div_modByMonic_unique (c • (p /ₘ q)) (c • (p %ₘ q)) hq
           ⟨by rw [mul_smul_comm, ← smul_add, modByMonic_add_div p hq],
@@ -127,7 +127,7 @@ section NoZeroDivisors
 
 variable [Semiring R] [NoZeroDivisors R] {p q : R[X]}
 
-instance : NoZeroDivisors R[X] where 
+instance : NoZeroDivisors R[X] where
   eq_zero_or_eq_zero_of_mul_eq_zero h := by
     rw [← leadingCoeff_eq_zero, ← leadingCoeff_eq_zero]
     refine' eq_zero_or_eq_zero_of_mul_eq_zero _
@@ -135,8 +135,8 @@ instance : NoZeroDivisors R[X] where
 
 theorem natDegree_mul (hp : p ≠ 0) (hq : q ≠ 0) : (p*q).natDegree = p.natDegree + q.natDegree :=
   by
-  rw [← WithBot.coe_eq_coe, ← Nat.cast_withBot, ←degree_eq_natDegree (mul_ne_zero hp hq), 
-    WithBot.coe_add, ← Nat.cast_withBot, ←degree_eq_natDegree hp, ← Nat.cast_withBot, 
+  rw [← WithBot.coe_eq_coe, ← Nat.cast_withBot, ←degree_eq_natDegree (mul_ne_zero hp hq),
+    WithBot.coe_add, ← Nat.cast_withBot, ←degree_eq_natDegree hp, ← Nat.cast_withBot,
     ← degree_eq_natDegree hq, degree_mul]
 #align polynomial.nat_degree_mul Polynomial.natDegree_mul
 
@@ -320,7 +320,7 @@ theorem Monic.not_irreducible_iff_exists_add_mul_eq_coeff (hm : p.Monic) (hnd : 
   rw [hm.irreducible_iff_natDegree', and_iff_right, hnd]
   push_neg; constructor
   · rintro ⟨a, b, ha, hb, rfl, hdb⟩
-    simp only [zero_lt_two, Nat.div_self, ge_iff_le, 
+    simp only [zero_lt_two, Nat.div_self, ge_iff_le,
       Nat.Ioc_succ_singleton, zero_add, mem_singleton] at hdb
     have hda := hnd
     rw [ha.natDegree_mul hb, hdb] at hda
@@ -361,8 +361,8 @@ section CommRing
 
 variable [CommRing R]
 
-/- Porting note: the ML3 proof no longer worked because of a conflict in the 
-inferred type and synthesized type for `DecidableRel` when using `Nat.le_find_iff` from 
+/- Porting note: the ML3 proof no longer worked because of a conflict in the
+inferred type and synthesized type for `DecidableRel` when using `Nat.le_find_iff` from
 `Mathlib.Data.Polynomial.Div` After some discussion on [Zulip]
 (https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/decidability.20leakage)
 introduced  `Polynomial.rootMultipulicity_eq_nat_find_of_nonzero` to contain the issue
@@ -376,7 +376,7 @@ theorem le_rootMultiplicity_iff {p : R[X]} (p0 : p ≠ 0) {a : R} {n : ℕ} :
   refine ⟨fun h => ?_, fun h m hm => (pow_dvd_pow _ hm).trans h⟩
   cases' n with n;
   · rw [pow_zero]
-    apply one_dvd; 
+    apply one_dvd;
   · exact h n n.lt_succ_self
 #align polynomial.le_root_multiplicity_iff Polynomial.le_rootMultiplicity_iff
 
@@ -481,7 +481,7 @@ set_option linter.uppercaseLean3 false in
 #align polynomial.root_multiplicity_X_sub_C_pow Polynomial.rootMultiplicity_X_sub_C_pow
 
 theorem exists_multiset_roots :
-    ∀ {p : R[X]} (_ : p ≠ 0), ∃ s : Multiset R, 
+    ∀ {p : R[X]} (_ : p ≠ 0), ∃ s : Multiset R,
       (Multiset.card s : WithBot ℕ) ≤ degree p ∧ ∀ a, s.count a = rootMultiplicity a p
   | p, hp =>
     haveI := Classical.propDecidable (∃ x, IsRoot p x)
@@ -502,7 +502,7 @@ theorem exists_multiset_roots :
         mt (divByMonic_eq_zero_iff (monic_X_sub_C x)).1 <| not_lt.2 hdeg
       ⟨x ::ₘ t,
         calc
-          (card (x ::ₘ t) : WithBot ℕ) = Multiset.card t + 1 := by 
+          (card (x ::ₘ t) : WithBot ℕ) = Multiset.card t + 1 := by
             congr
             exact_mod_cast Multiset.card_cons _ _
           _ ≤ degree p := by
@@ -524,8 +524,8 @@ theorem exists_multiset_roots :
         intro a
         rw [count_zero, rootMultiplicity_eq_zero (not_exists.mp h a)]⟩
 termination_by _ p _ => natDegree p
-decreasing_by { 
-  simp_wf 
+decreasing_by {
+  simp_wf
   apply WithBot.coe_lt_coe.mp
   simp only [degree_eq_natDegree hp, degree_eq_natDegree hd0, ←Nat.cast_withBot] at wf;
   assumption}
@@ -716,7 +716,7 @@ theorem roots_pow (p : R[X]) (n : ℕ) : (p ^ n).roots = n • p.roots := by
         add_smul, one_smul]
 #align polynomial.roots_pow Polynomial.roots_pow
 
-theorem roots_X_pow (n : ℕ) : (X ^ n : R[X]).roots = n • ({0} : Multiset R) := by 
+theorem roots_X_pow (n : ℕ) : (X ^ n : R[X]).roots = n • ({0} : Multiset R) := by
   rw [roots_pow, roots_X]
 set_option linter.uppercaseLean3 false in
 #align polynomial.roots_X_pow Polynomial.roots_X_pow
@@ -792,7 +792,7 @@ theorem nthRoots_zero (r : R) : nthRoots 0 r = 0 := by
 theorem card_nthRoots (n : ℕ) (a : R) : Multiset.card (nthRoots n a) ≤ n :=
   if hn : n = 0 then
     if h : (X : R[X]) ^ n - C a = 0 then by
-      simp [Nat.zero_le, nthRoots, roots, h, dif_pos rfl, empty_eq_zero, card_zero]
+      simp [Nat.zero_le, nthRoots, roots, h, dif_pos rfl, empty_eq_zero, Multiset.card_zero]
     else
       WithBot.coe_le_coe.1
         (le_trans (card_roots h)
@@ -800,8 +800,8 @@ theorem card_nthRoots (n : ℕ) (a : R) : Multiset.card (nthRoots n a) ≤ n :=
             rw [hn, pow_zero, ← C_1, ← RingHom.map_sub]
             exact degree_C_le))
   else by
-    rw [← WithBot.coe_le_coe] 
-    simp only [← Nat.cast_withBot] 
+    rw [← WithBot.coe_le_coe]
+    simp only [← Nat.cast_withBot]
     rw [← degree_X_pow_sub_C (Nat.pos_of_ne_zero hn) a]
     exact card_roots (X_pow_sub_C_ne_zero (Nat.pos_of_ne_zero hn) a)
 #align polynomial.card_nth_roots Polynomial.card_nthRoots
@@ -1166,7 +1166,7 @@ theorem count_map_roots [IsDomain A] {p : A[X]} {f : A →+* B} (hmap : map f p 
   rw [le_rootMultiplicity_iff hmap, ← Multiset.prod_replicate, ←
     Multiset.map_replicate fun a => X - C a]
   rw [← Multiset.filter_eq]
-  refine 
+  refine
     (Multiset.prod_dvd_prod_of_le <| Multiset.map_le_map <| Multiset.filter_le (Eq b) _).trans ?_
   convert Polynomial.map_dvd f p.prod_multiset_X_sub_C_dvd
   simp only [Polynomial.map_multiset_prod, Multiset.map_map]
@@ -1210,7 +1210,7 @@ theorem card_roots_le_map_of_injective [IsDomain A] [IsDomain B] {p : A[X]} {f :
   exact card_roots_le_map ((Polynomial.map_ne_zero_iff hf).mpr hp0)
 #align polynomial.card_roots_le_map_of_injective Polynomial.card_roots_le_map_of_injective
 
-/- Porting note: resolving a diamond from Ring to NonAssocSemiRing in RingHom TC search 
+/- Porting note: resolving a diamond from Ring to NonAssocSemiRing in RingHom TC search
 This also works
 `attribute [-instance] Ring.toNonAssocRing`
 -/
@@ -1264,7 +1264,7 @@ theorem Monic.irreducible_of_irreducible_map (f : R[X]) (h_mon : Monic f)
   dsimp [Monic] at h_mon
   have q := (leadingCoeff_mul a b).symm
   rw [← h, h_mon] at q
-  refine' (h_irr.isUnit_or_isUnit <| 
+  refine' (h_irr.isUnit_or_isUnit <|
     (congr_arg (Polynomial.map φ) h).trans (Polynomial.map_mul φ)).imp _ _ <;>
       apply isUnit_of_isUnit_leadingCoeff_of_isUnit_map <;>
     apply isUnit_of_mul_eq_one
@@ -1276,4 +1276,3 @@ theorem Monic.irreducible_of_irreducible_map (f : R[X]) (h_mon : Monic f)
 end
 
 end Polynomial
-
