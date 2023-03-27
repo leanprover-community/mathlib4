@@ -462,7 +462,7 @@ theorem splits_iff_card_roots {p : K[X]} :
     rw [splits_iff_exists_multiset (RingHom.id K)]
     use p.roots
     simp only [RingHom.id_apply, map_id]
-    exact (c_leadingCoeff_mul_prod_multiset_X_sub_C hroots).symm
+    exact (C_leadingCoeff_mul_prod_multiset_X_sub_C hroots).symm
 #align polynomial.splits_iff_card_roots Polynomial.splits_iff_card_roots
 
 theorem aeval_root_derivative_of_splits [Algebra K L] {P : K[X]} (hmo : P.Monic)
