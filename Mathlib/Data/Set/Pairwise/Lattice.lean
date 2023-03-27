@@ -16,7 +16,7 @@ import Mathlib.Data.Set.Pairwise.Basic
 In this file we prove many facts about `pairwise` and the set lattice.
 -/
 
-open set function
+open Set Function
 
 variable {α β γ ι ι' : Type _} {r p q : α → α → Prop} {s t : Set ι}
 
