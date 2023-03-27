@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Mathlib.Data.ListM
+import Mathlib.Lean.CoreM
 import Mathlib.Lean.Expr.Basic
 import Mathlib.Lean.Meta
 import Mathlib.Lean.Meta.Basic
@@ -29,7 +30,7 @@ We could also try discharging side goals via `assumption` or `solve_by_elim`.
 
 -/
 
-namespace Mathlib.Tactic.Propose
+namespace Mathlib.Tactic.Rewrites
 
 open Lean Meta Std.Tactic.TryThis
 
@@ -61,6 +62,7 @@ initialize rewriteLemmas : DeclCache (DiscrTree (Name × Bool × Nat) true) ←
           |>.insertIfSpecific rhsKey (name, true, backwardWeight * rhsKey.size)
       | _ => pure lemmas
 
+/-- Data structure recording a potential rewrite to report from the `rewrites` tactic. -/
 structure RewriteResult where
   name : Name
   symm : Bool
@@ -69,6 +71,8 @@ structure RewriteResult where
   /-- Can the new goal in `result` be closed by `with_reducible rfl`? -/
   refl? : Option Bool
 
+/-- Update a `RewriteResult` by filling in the `refl?` field if it is currently `none`,
+to reflect whether the remaining goal can be closed by `with_reducible rfl`. -/
 def RewriteResult.computeRefl (r : RewriteResult) : MetaM RewriteResult := do
   if let some _ := r.refl? then
     return r
@@ -78,11 +82,8 @@ def RewriteResult.computeRefl (r : RewriteResult) : MetaM RewriteResult := do
   catch _ =>
     pure { r with refl? := some false }
 
-
-def getMaxHeartbeats : CoreM Nat := do pure (← read).maxHeartbeats
-def getRemainingHeartbeats : CoreM Nat := do pure <| (← getMaxHeartbeats) - (← IO.getNumHeartbeats)
-def heartbeatsPercent : CoreM Nat := do pure <| (← IO.getNumHeartbeats) * 100 / (← getMaxHeartbeats)
-
+/-- Take an initial segment of a `MetaM` lazy list,
+using at most `percent` of the remaining allowed heartbeats. -/
 unsafe def _root_.ListM.whileAtLeastHeartbeatsPercent (L : ListM MetaM α) (percent : Nat) :
     ListM MetaM α :=
 ListM.squash do
