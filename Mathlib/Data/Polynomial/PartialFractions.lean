@@ -8,12 +8,12 @@ Authors: Kevin Buzzard, Sidharth Hariharan
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Polynomial.Div
-import Mathbin.Data.Zmod.Basic
-import Mathbin.Logic.Function.Basic
-import Mathbin.RingTheory.Localization.FractionRing
-import Mathbin.Tactic.FieldSimp
-import Mathbin.Tactic.LinearCombination
+import Mathlib.Data.Polynomial.Div
+import Mathlib.Data.ZMod.Basic
+import Mathlib.Logic.Function.Basic
+import Mathlib.RingTheory.Localization.FractionRing
+import Mathlib.Tactic.FieldSimp
+import Mathlib.Tactic.LinearCombination
 
 /-!
 
@@ -64,8 +64,7 @@ theorem div_eq_quo_add_rem_div_add_rem_div (f : R[X]) {g₁ g₂ : R[X]} (hg₁ 
     (hg₂ : g₂.Monic) (hcoprime : IsCoprime g₁ g₂) :
     ∃ q r₁ r₂ : R[X],
       r₁.degree < g₁.degree ∧
-        r₂.degree < g₂.degree ∧ (↑f : K) / (↑g₁ * ↑g₂) = ↑q + ↑r₁ / ↑g₁ + ↑r₂ / ↑g₂ :=
-  by
+        r₂.degree < g₂.degree ∧ (↑f : K) / (↑g₁ * ↑g₂) = ↑q + ↑r₁ / ↑g₁ + ↑r₂ / ↑g₂ := by
   rcases hcoprime with ⟨c, d, hcd⟩
   refine'
     ⟨f * d /ₘ g₁ + f * c /ₘ g₂, f * d %ₘ g₁, f * c %ₘ g₂, degree_mod_by_monic_lt _ hg₁,
@@ -97,8 +96,7 @@ theorem div_eq_quo_add_sum_rem_div (f : R[X]) {ι : Type _} {g : ι → R[X]} {s
     (hg : ∀ i ∈ s, (g i).Monic) (hcop : Set.Pairwise ↑s fun i j => IsCoprime (g i) (g j)) :
     ∃ (q : R[X])(r : ι → R[X]),
       (∀ i ∈ s, (r i).degree < (g i).degree) ∧
-        ((↑f : K) / ∏ i in s, ↑(g i)) = ↑q + ∑ i in s, ↑(r i) / ↑(g i) :=
-  by
+        ((↑f : K) / ∏ i in s, ↑(g i)) = ↑q + ∑ i in s, ↑(r i) / ↑(g i) := by
   induction' s using Finset.induction_on with a b hab Hind f generalizing f
   · refine' ⟨f, fun i : ι => (0 : R[X]), fun i => _, by simp⟩
     rintro ⟨⟩
