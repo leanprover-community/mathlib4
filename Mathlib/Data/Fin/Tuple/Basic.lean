@@ -566,7 +566,7 @@ theorem init_update_castSucc : init (update q (castSucc i) y) = update (init q) 
   by_cases h : j = i
   · rw [h]
     simp [init]
-  · simp [init, h, castSucc.inj]
+  · simp [init, h]
 #align fin.init_update_cast_succ Fin.init_update_castSucc
 
 /-- `tail` and `init` commute. We state this lemma in a non-dependent setting, as otherwise it
