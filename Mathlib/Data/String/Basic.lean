@@ -35,6 +35,7 @@ theorem Pos.zero_add_char (c : Char) : (0 : Pos) + c = ⟨csize c⟩ :=
 theorem Pos.zero_add_string (s : String) : (0 : Pos) + s = ⟨s.utf8ByteSize⟩ :=
   show ⟨0 + s.utf8ByteSize⟩ = (⟨s.utf8ByteSize⟩ : Pos) by rw [Nat.zero_add]
 
+/-- Induction on `String.utf8GetAux`. -/
 def utf8GetAux.inductionOn.{u} {motive : List Char → Pos → Pos → Sort u}
     (s : List Char) (i p : Pos)
     (nil : ∀ i p, motive [] i p)
@@ -97,6 +98,7 @@ instance decidableLT : @DecidableRel String (· < ·) := by
   infer_instance
 #align string.decidable_lt String.decidableLT
 
+/-- Induction on `String.ltb`. -/
 def ltb.inductionOn.{u} {motive : Iterator → Iterator → Sort u} (it₁ it₂ : Iterator)
     (ind : ∀ s₁ s₂ i₁ i₂, Iterator.hasNext ⟨s₂, i₂⟩ → Iterator.hasNext ⟨s₁, i₁⟩ →
       get s₁ i₁ = get s₂ i₂ → motive (Iterator.next ⟨s₁, i₁⟩) (Iterator.next ⟨s₂, i₂⟩) →
