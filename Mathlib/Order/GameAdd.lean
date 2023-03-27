@@ -10,7 +10,6 @@ Authors: Junyan Xu
 -/
 import Mathlib.Data.Sym.Sym2
 import Mathlib.Logic.Relation
-import Mathlib.Order.Basic
 
 /-!
 # Game addition relation
@@ -34,9 +33,11 @@ decreases at a time.
 -/
 
 
-variable (rα : α → α → Prop) (rβ : β → β → Prop)
+variable {α β : Type _} {rα : α → α → Prop} {rβ : β → β → Prop}
 
 namespace Prod
+
+variable (rα rβ)
 
 /-- `Prod.GameAdd rα rβ x y` means that `x` can be reached from `y` by decreasing either entry with
   respect to the relations `rα` and `rβ`.
@@ -48,6 +49,7 @@ namespace Prod
   unchanged.
 
   See `sym2.game_add` for the unordered pair analog. -/
+
 inductive GameAdd : α × β → α × β → Prop
   | fst {a₁ a₂ b} : rα a₁ a₂ → GameAdd (a₁, b) (a₂, b)
   | snd {a b₁ b₂} : rβ b₁ b₂ → GameAdd (a, b₁) (a, b₂)
@@ -92,8 +94,6 @@ theorem rprod_le_transGen_gameAdd : Prod.RProd rα rβ ≤ Relation.TransGen (Ga
 #align prod.rprod_le_trans_gen_game_add Prod.rprod_le_transGen_gameAdd
 
 end Prod
-
-variable {rα rβ}
 
 /-- If `a` is accessible under `rα` and `b` is accessible under `rβ`, then `(a, b)` is
   accessible under `Prod.GameAdd rα rβ`. Notice that `Prod.lexAccessible` requires the
