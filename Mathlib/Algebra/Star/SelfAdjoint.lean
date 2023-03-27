@@ -182,16 +182,22 @@ section Field
 
 variable [Field R] [StarRing R]
 
-theorem inv {x : R} (hx : IsSelfAdjoint x) : IsSelfAdjoint x⁻¹ := by
-  simp only [isSelfAdjoint_iff, star_inv', hx.star_eq]
+theorem inv {x : R} (hx : IsSelfAdjoint x) : IsSelfAdjoint x⁻¹ :=
+  -- porting note: hack for lean4#2074, remove after forward-porting other changes to this file
+  set_option synthInstance.etaExperiment true in by
+    simp only [isSelfAdjoint_iff, star_inv', hx.star_eq]
 #align is_self_adjoint.inv IsSelfAdjoint.inv
 
-theorem div {x y : R} (hx : IsSelfAdjoint x) (hy : IsSelfAdjoint y) : IsSelfAdjoint (x / y) := by
-  simp only [isSelfAdjoint_iff, star_div', hx.star_eq, hy.star_eq]
+theorem div {x y : R} (hx : IsSelfAdjoint x) (hy : IsSelfAdjoint y) : IsSelfAdjoint (x / y) :=
+  -- porting note: hack for lean4#2074, remove after forward-porting other changes to this file
+  set_option synthInstance.etaExperiment true in by
+    simp only [isSelfAdjoint_iff, star_div', hx.star_eq, hy.star_eq]
 #align is_self_adjoint.div IsSelfAdjoint.div
 
-theorem zpow {x : R} (hx : IsSelfAdjoint x) (n : ℤ) : IsSelfAdjoint (x ^ n) := by
-  simp only [isSelfAdjoint_iff, star_zpow₀, hx.star_eq]
+theorem zpow {x : R} (hx : IsSelfAdjoint x) (n : ℤ) : IsSelfAdjoint (x ^ n) :=
+  -- porting note: hack for lean4#2074, remove after forward-porting other changes to this file
+  set_option synthInstance.etaExperiment true in by
+    simp only [isSelfAdjoint_iff, star_zpow₀, hx.star_eq]
 #align is_self_adjoint.zpow IsSelfAdjoint.zpow
 
 end Field
@@ -341,12 +347,10 @@ theorem val_zpow (x : selfAdjoint R) (z : ℤ) : (x ^ z : R) = (x : R) ^ z :=
 #align self_adjoint.coe_zpow selfAdjoint.val_zpow
 
 theorem ratCast_mem : ∀ x : ℚ, IsSelfAdjoint (x : R)
-  | ⟨a, b, h1, h2⟩ => by
-    -- Porting note: added
-    let inst : StarRing R := ‹_›
-    rw [IsSelfAdjoint, Rat.cast_mk', star_mul', star_inv']
-    rw [@star_natCast _ _ inst]
-    rw [star_intCast]
+  | ⟨a, b, h1, h2⟩ =>
+    -- porting note: hack for lean4#2074, remove after forward-porting other changes to this file
+    set_option synthInstance.etaExperiment true in by
+      rw [IsSelfAdjoint, Rat.cast_mk', star_mul', star_inv', star_natCast, star_intCast]
 #align self_adjoint.rat_cast_mem selfAdjoint.ratCast_mem
 
 instance : RatCast (selfAdjoint R) :=
