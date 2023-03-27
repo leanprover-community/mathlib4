@@ -445,6 +445,7 @@ import Mathlib.CategoryTheory.Monoidal.Category
 import Mathlib.CategoryTheory.Monoidal.End
 import Mathlib.CategoryTheory.Monoidal.Functor
 import Mathlib.CategoryTheory.Monoidal.Functorial
+import Mathlib.CategoryTheory.Monoidal.Linear
 import Mathlib.CategoryTheory.Monoidal.NaturalTransformation
 import Mathlib.CategoryTheory.Monoidal.Preadditive
 import Mathlib.CategoryTheory.MorphismProperty
