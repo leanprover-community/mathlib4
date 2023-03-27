@@ -1122,13 +1122,13 @@ set_option linter.uppercaseLean3 false in
 
 /-- A polynomial `p` that has as many roots as its degree
 can be written `p = p.leadingCoeff * ∏(X - a)`, for `a` in `p.roots`. -/
-theorem c_leadingCoeff_mul_prod_multiset_X_sub_C (hroots : Multiset.card p.roots = p.natDegree) :
+theorem C_leadingCoeff_mul_prod_multiset_X_sub_C (hroots : Multiset.card p.roots = p.natDegree) :
     C p.leadingCoeff * (p.roots.map fun a => X - C a).prod = p :=
   (eq_leadingCoeff_mul_of_monic_of_dvd_of_natDegree_le monic_prod_multiset_X_sub_C
       p.prod_multiset_X_sub_C_dvd
       ((natDegree_multiset_prod_X_sub_C_eq_card _).trans hroots).ge).symm
 set_option linter.uppercaseLean3 false in
-#align polynomial.C_leading_coeff_mul_prod_multiset_X_sub_C Polynomial.c_leadingCoeff_mul_prod_multiset_X_sub_C
+#align polynomial.C_leading_coeff_mul_prod_multiset_X_sub_C Polynomial.C_leadingCoeff_mul_prod_multiset_X_sub_C
 
 /-- A monic polynomial `p` that has as many roots as its degree
 can be written `p = ∏(X - a)`, for `a` in `p.roots`. -/
