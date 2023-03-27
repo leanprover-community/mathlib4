@@ -8,8 +8,8 @@ Authors: Thomas Browning
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.BigOperators.NatAntidiagonal
-import Mathbin.Data.Polynomial.RingDivision
+import Mathlib.Algebra.BigOperators.NatAntidiagonal
+import Mathlib.Data.Polynomial.RingDivision
 
 /-!
 # "Mirror" of a univariate polynomial
@@ -65,8 +65,7 @@ theorem mirror_x : X.mirror = (X : R[X]) :=
   mirror_monomial 1 (1 : R)
 #align polynomial.mirror_X Polynomial.mirror_x
 
-theorem mirror_natDegree : p.mirror.natDegree = p.natDegree :=
-  by
+theorem mirror_natDegree : p.mirror.natDegree = p.natDegree := by
   by_cases hp : p = 0
   · rw [hp, mirror_zero]
   nontriviality R
@@ -75,8 +74,7 @@ theorem mirror_natDegree : p.mirror.natDegree = p.natDegree :=
   rwa [leading_coeff_X_pow, mul_one, reverse_leading_coeff, Ne, trailing_coeff_eq_zero]
 #align polynomial.mirror_nat_degree Polynomial.mirror_natDegree
 
-theorem mirror_natTrailingDegree : p.mirror.natTrailingDegree = p.natTrailingDegree :=
-  by
+theorem mirror_natTrailingDegree : p.mirror.natTrailingDegree = p.natTrailingDegree := by
   by_cases hp : p = 0
   · rw [hp, mirror_zero]
   ·
@@ -85,8 +83,7 @@ theorem mirror_natTrailingDegree : p.mirror.natTrailingDegree = p.natTrailingDeg
 #align polynomial.mirror_nat_trailing_degree Polynomial.mirror_natTrailingDegree
 
 theorem coeff_mirror (n : ℕ) :
-    p.mirror.coeff n = p.coeff (revAt (p.natDegree + p.natTrailingDegree) n) :=
-  by
+    p.mirror.coeff n = p.coeff (revAt (p.natDegree + p.natTrailingDegree) n) := by
   by_cases h2 : p.nat_degree < n
   · rw [coeff_eq_zero_of_nat_degree_lt (by rwa [mirror_nat_degree])]
     by_cases h1 : n ≤ p.nat_degree + p.nat_trailing_degree
@@ -105,8 +102,7 @@ theorem coeff_mirror (n : ℕ) :
 #align polynomial.coeff_mirror Polynomial.coeff_mirror
 
 --TODO: Extract `finset.sum_range_rev_at` lemma.
-theorem mirror_eval_one : p.mirror.eval 1 = p.eval 1 :=
-  by
+theorem mirror_eval_one : p.mirror.eval 1 = p.eval 1 := by
   simp_rw [eval_eq_sum_range, one_pow, mul_one, mirror_nat_degree]
   refine' Finset.sum_bij_ne_zero _ _ _ _ _
   · exact fun n hn hp => rev_at (p.nat_degree + p.nat_trailing_degree) n
@@ -167,8 +163,7 @@ theorem mirror_leadingCoeff : p.mirror.leadingCoeff = p.trailingCoeff := by
 #align polynomial.mirror_leading_coeff Polynomial.mirror_leadingCoeff
 
 theorem coeff_mul_mirror :
-    (p * p.mirror).coeff (p.natDegree + p.natTrailingDegree) = p.Sum fun n => (· ^ 2) :=
-  by
+    (p * p.mirror).coeff (p.natDegree + p.natTrailingDegree) = p.Sum fun n => (· ^ 2) := by
   rw [coeff_mul, Finset.Nat.sum_antidiagonal_eq_sum_range_succ_mk]
   refine'
     (Finset.sum_congr rfl fun n hn => _).trans
@@ -180,8 +175,7 @@ theorem coeff_mul_mirror :
 
 variable [NoZeroDivisors R]
 
-theorem natDegree_mul_mirror : (p * p.mirror).natDegree = 2 * p.natDegree :=
-  by
+theorem natDegree_mul_mirror : (p * p.mirror).natDegree = 2 * p.natDegree := by
   by_cases hp : p = 0
   · rw [hp, MulZeroClass.zero_mul, nat_degree_zero, MulZeroClass.mul_zero]
   rw [nat_degree_mul hp (mt mirror_eq_zero.mp hp), mirror_nat_degree, two_mul]
@@ -206,8 +200,7 @@ theorem mirror_neg : (-p).mirror = -p.mirror := by
 
 variable [NoZeroDivisors R]
 
-theorem mirror_mul_of_domain : (p * q).mirror = p.mirror * q.mirror :=
-  by
+theorem mirror_mul_of_domain : (p * q).mirror = p.mirror * q.mirror := by
   by_cases hp : p = 0
   · rw [hp, MulZeroClass.zero_mul, mirror_zero, MulZeroClass.zero_mul]
   by_cases hq : q = 0
@@ -234,8 +227,7 @@ variable {R : Type _} [CommRing R] [NoZeroDivisors R] {f : R[X]}
 
 theorem irreducible_of_mirror (h1 : ¬IsUnit f)
     (h2 : ∀ k, f * f.mirror = k * k.mirror → k = f ∨ k = -f ∨ k = f.mirror ∨ k = -f.mirror)
-    (h3 : ∀ g, g ∣ f → g ∣ f.mirror → IsUnit g) : Irreducible f :=
-  by
+    (h3 : ∀ g, g ∣ f → g ∣ f.mirror → IsUnit g) : Irreducible f := by
   constructor
   · exact h1
   · intro g h fgh
@@ -250,8 +242,7 @@ theorem irreducible_of_mirror (h1 : ¬IsUnit f)
       rw [fgh]
       exact dvd_mul_left h g
     have g_dvd_k : g ∣ k := dvd_mul_right g h.mirror
-    have h_dvd_k_rev : h ∣ k.mirror :=
-      by
+    have h_dvd_k_rev : h ∣ k.mirror := by
       rw [mirror_mul_of_domain, mirror_mirror]
       exact dvd_mul_left h g.mirror
     have hk := h2 k key
