@@ -60,6 +60,7 @@ variable [𝒞 : BundledHom hom]
 -- porting note: include not needed
 -- include 𝒞
 
+set_option synthInstance.checkSynthOrder false in
 /-- Every `@BundledHom c _` defines a category with objects in `Bundled c`.
 
 This instance generates the type-class problem `BundledHom ?m` (which is why this is marked as
@@ -75,11 +76,7 @@ instance category : Category (Bundled c) := by
     aesop_cat
 #align category_theory.bundled_hom.category CategoryTheory.BundledHom.category
 
-/-- A category given by `BundledHom` is a concrete category.
-
-This instance generates the type-class problem `BundledHom ?m` (which is why this is marked as
-`[nolint]`). Currently that is not a problem, as there are almost no instances of `BundledHom`. -/
-@[nolint dangerousInstance]
+/-- A category given by `BundledHom` is a concrete category. -/
 instance concreteCategory : ConcreteCategory.{u} (Bundled c)
     where
   Forget :=

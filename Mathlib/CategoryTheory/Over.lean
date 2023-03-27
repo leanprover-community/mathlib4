@@ -93,7 +93,7 @@ def mk {X Y : T} (f : Y ⟶ X) : Over X :=
 
 /-- We can set up a coercion from arrows with codomain `X` to `over X`. This most likely should not
     be a global instance, but it is sometimes useful. -/
-def coeFromHom {X Y : T} : Coe (Y ⟶ X) (Over X) where coe := mk
+def coeFromHom {X Y : T} : CoeOut (Y ⟶ X) (Over X) where coe := mk
 #align category_theory.over.coe_from_hom CategoryTheory.Over.coeFromHom
 
 section
