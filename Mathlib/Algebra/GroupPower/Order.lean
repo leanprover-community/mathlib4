@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis
 
 ! This file was ported from Lean 3 source module algebra.group_power.order
-! leanprover-community/mathlib commit fc2ed6f838ce7c9b7c7171e58d78eaf7b438fb0e
+! leanprover-community/mathlib commit dd4c2044a9dee231309637e7fd4e61aea1506e33
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -25,7 +25,7 @@ depend on this file.
 
 open Function
 
-variable {A G M R : Type _}
+variable {β A G M R : Type _}
 
 section Monoid
 
@@ -156,6 +156,52 @@ theorem Right.pow_le_one_of_le (hx : x ≤ 1) : ∀ {n : ℕ}, x ^ n ≤ 1
 
 end Right
 
+section CovariantLtSwap
+
+variable [Preorder β] [CovariantClass M M (· * ·) (· < ·)]
+  [CovariantClass M M (swap (· * ·)) (· < ·)] {f : β → M}
+
+@[to_additive StrictMono.nsmul_left]
+theorem StrictMono.pow_right' (hf : StrictMono f) : ∀ {n : ℕ}, n ≠ 0 → StrictMono fun a => f a ^ n
+  | 0, hn => (hn rfl).elim
+  | 1, _ => by simpa
+  | Nat.succ <| Nat.succ n, _ => by
+    simp_rw [pow_succ _ (n + 1)]
+    exact hf.mul' (StrictMono.pow_right' hf n.succ_ne_zero)
+#align strict_mono.pow_right' StrictMono.pow_right'
+#align strict_mono.nsmul_left StrictMono.nsmul_left
+
+/-- See also `pow_strictMono_right` -/
+@[to_additive nsmul_strictMono_left]  -- Porting note: nolint to_additive_doc
+theorem pow_strictMono_right' {n : ℕ} (hn : n ≠ 0) : StrictMono fun a : M => a ^ n :=
+  strictMono_id.pow_right' hn
+#align pow_strict_mono_right' pow_strictMono_right'
+#align nsmul_strict_mono_left nsmul_strictMono_left
+
+end CovariantLtSwap
+
+section CovariantLeSwap
+
+variable [Preorder β] [CovariantClass M M (· * ·) (· ≤ ·)]
+  [CovariantClass M M (swap (· * ·)) (· ≤ ·)]
+
+@[to_additive Monotone.nsmul_left]
+theorem Monotone.pow_right {f : β → M} (hf : Monotone f) : ∀ n : ℕ, Monotone fun a => f a ^ n
+  | 0 => by simpa using monotone_const
+  | n + 1 => by
+    simp_rw [pow_succ]
+    exact hf.mul' (Monotone.pow_right hf _)
+#align monotone.pow_right Monotone.pow_right
+#align monotone.nsmul_left Monotone.nsmul_left
+
+@[to_additive nsmul_mono_left]
+theorem pow_mono_right (n : ℕ) : Monotone fun a : M => a ^ n :=
+  monotone_id.pow_right _
+#align pow_mono_right pow_mono_right
+#align nsmul_mono_left nsmul_mono_left
+
+end CovariantLeSwap
+
 @[to_additive Left.pow_neg]
 theorem Left.pow_lt_one_of_lt [CovariantClass M M (· * ·) (· < ·)] {n : ℕ} {x : M} (hn : 0 < n)
     (h : x < 1) : x ^ n < 1 :=
@@ -235,6 +281,64 @@ theorem pow_lt_pow_iff' (ha : 1 < a) : a ^ m < a ^ n ↔ m < n :=
 #align nsmul_lt_nsmul_iff nsmul_lt_nsmul_iff
 
 end CovariantLe
+
+section CovariantLeSwap
+
+variable [CovariantClass M M (· * ·) (· ≤ ·)] [CovariantClass M M (swap (· * ·)) (· ≤ ·)]
+
+@[to_additive lt_of_nsmul_lt_nsmul]
+theorem lt_of_pow_lt_pow' {a b : M} (n : ℕ) : a ^ n < b ^ n → a < b :=
+  (pow_mono_right _).reflect_lt
+#align lt_of_pow_lt_pow' lt_of_pow_lt_pow'
+#align lt_of_nsmul_lt_nsmul lt_of_nsmul_lt_nsmul
+
+@[to_additive]
+theorem min_lt_max_of_mul_lt_mul {a b c d : M} (h : a * b < c * d) : min a b < max c d :=
+  lt_of_pow_lt_pow' 2 <| by
+    simp_rw [pow_two]
+    exact
+      (mul_le_mul' inf_le_left inf_le_right).trans_lt
+        (h.trans_le <| mul_le_mul' le_sup_left le_sup_right)
+#align min_lt_max_of_mul_lt_mul min_lt_max_of_mul_lt_mul
+#align min_lt_max_of_add_lt_add min_lt_max_of_add_lt_add
+
+@[to_additive min_lt_of_add_lt_two_nsmul]
+theorem min_lt_of_mul_lt_sq {a b c : M} (h : a * b < c ^ 2) : min a b < c := by
+  simpa using min_lt_max_of_mul_lt_mul (h.trans_eq <| pow_two _)
+#align min_lt_of_mul_lt_sq min_lt_of_mul_lt_sq
+#align min_lt_of_add_lt_two_nsmul min_lt_of_add_lt_two_nsmul
+
+@[to_additive lt_max_of_two_nsmul_lt_add]
+theorem lt_max_of_sq_lt_mul {a b c : M} (h : a ^ 2 < b * c) : a < max b c := by
+  simpa using min_lt_max_of_mul_lt_mul ((pow_two _).symm.trans_lt h)
+#align lt_max_of_sq_lt_mul lt_max_of_sq_lt_mul
+#align lt_max_of_two_nsmul_lt_add lt_max_of_two_nsmul_lt_add
+
+end CovariantLeSwap
+
+section CovariantLtSwap
+
+variable [CovariantClass M M (· * ·) (· < ·)] [CovariantClass M M (swap (· * ·)) (· < ·)]
+
+@[to_additive le_of_nsmul_le_nsmul]
+theorem le_of_pow_le_pow' {a b : M} {n : ℕ} (hn : n ≠ 0) : a ^ n ≤ b ^ n → a ≤ b :=
+  (pow_strictMono_right' hn).le_iff_le.1
+#align le_of_pow_le_pow' le_of_pow_le_pow'
+#align le_of_nsmul_le_nsmul le_of_nsmul_le_nsmul
+
+@[to_additive min_le_of_add_le_two_nsmul]
+theorem min_le_of_mul_le_sq {a b c : M} (h : a * b ≤ c ^ 2) : min a b ≤ c := by
+  simpa using min_le_max_of_mul_le_mul (h.trans_eq <| pow_two _)
+#align min_le_of_mul_le_sq min_le_of_mul_le_sq
+#align min_le_of_add_le_two_nsmul min_le_of_add_le_two_nsmul
+
+@[to_additive le_max_of_two_nsmul_le_add]
+theorem le_max_of_sq_le_mul {a b c : M} (h : a ^ 2 ≤ b * c) : a ≤ max b c := by
+  simpa using min_le_max_of_mul_le_mul ((pow_two _).symm.trans_le h)
+#align le_max_of_sq_le_mul le_max_of_sq_le_mul
+#align le_max_of_two_nsmul_le_add le_max_of_two_nsmul_le_add
+
+end CovariantLtSwap
 
 @[to_additive Left.nsmul_neg_iff]
 theorem Left.pow_lt_one_iff' [CovariantClass M M (· * ·) (· < ·)] {n : ℕ} {x : M} (hn : 0 < n) :
@@ -394,22 +498,22 @@ theorem strictMonoOn_pow (hn : 0 < n) : StrictMonoOn (fun x : R => x ^ n) (Set.I
   fun _ hx _ _ h => pow_lt_pow_of_lt_left h hx hn
 #align strict_mono_on_pow strictMonoOn_pow
 
-theorem strictMono_pow (h : 1 < a) : StrictMono fun n : ℕ => a ^ n :=
+theorem pow_strictMono_right (h : 1 < a) : StrictMono fun n : ℕ => a ^ n :=
   have : 0 < a := zero_le_one.trans_lt h
   strictMono_nat_of_lt_succ fun n => by
     simpa only [one_mul, pow_succ] using mul_lt_mul h (le_refl (a ^ n)) (pow_pos this _) this.le
-#align strict_mono_pow strictMono_pow
+#align pow_strict_mono_right pow_strictMono_right
 
 theorem pow_lt_pow (h : 1 < a) (h2 : n < m) : a ^ n < a ^ m :=
-  strictMono_pow h h2
+  pow_strictMono_right h h2
 #align pow_lt_pow pow_lt_pow
 
 theorem pow_lt_pow_iff (h : 1 < a) : a ^ n < a ^ m ↔ n < m :=
-  (strictMono_pow h).lt_iff_lt
+  (pow_strictMono_right h).lt_iff_lt
 #align pow_lt_pow_iff pow_lt_pow_iff
 
 theorem pow_le_pow_iff (h : 1 < a) : a ^ n ≤ a ^ m ↔ n ≤ m :=
-  (strictMono_pow h).le_iff_le
+  (pow_strictMono_right h).le_iff_le
 #align pow_le_pow_iff pow_le_pow_iff
 
 theorem strictAnti_pow (h₀ : 0 < a) (h₁ : a < 1) : StrictAnti fun n : ℕ => a ^ n :=

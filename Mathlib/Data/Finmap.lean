@@ -4,12 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sean Leather, Mario Carneiro
 
 ! This file was ported from Lean 3 source module data.finmap
-! leanprover-community/mathlib commit c3fc15b26b3ff8958ec3e5711177a9ae3d5c45b7
+! leanprover-community/mathlib commit cea83e192eae2d368ab2b500a0975667da42c920
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.List.AList
-import Mathlib.Data.Finset.Basic
+import Mathlib.Data.Finset.Sigma
 import Mathlib.Data.Part
 
 /-!
@@ -46,6 +46,14 @@ def NodupKeys (s : Multiset (Sigma β)) : Prop :=
 theorem coe_nodupKeys {l : List (Sigma β)} : @NodupKeys α β l ↔ l.NodupKeys :=
   Iff.rfl
 #align multiset.coe_nodupkeys Multiset.coe_nodupKeys
+
+lemma nodup_keys {m : Multiset (Σ a, β a)} : m.keys.Nodup ↔ m.NodupKeys := by
+  rcases m with ⟨l⟩; rfl
+
+alias nodup_keys ↔ _ NodupKeys.nodup_keys
+
+protected lemma NodupKeys.nodup {m : Multiset (Σ a, β a)} (h : m.NodupKeys) : m.Nodup :=
+  h.nodup_keys.of_map _
 
 end Multiset
 
@@ -88,6 +96,8 @@ def List.toFinmap [DecidableEq α] (s : List (Sigma β)) : Finmap β :=
 namespace Finmap
 
 open AList
+
+lemma nodup_entries (f : Finmap β) : f.entries.Nodup := f.nodupKeys.nodup
 
 /-! ### Lifting from AList -/
 
@@ -180,7 +190,7 @@ theorem mem_toFinmap {a : α} {s : AList β} : a ∈ toFinmap s ↔ a ∈ s :=
 
 /-- The set of keys of a finite map. -/
 def keys (s : Finmap β) : Finset α :=
-  ⟨s.entries.keys, induction_on s keys_nodup⟩
+  ⟨s.entries.keys, s.nodupKeys.nodup_keys⟩
 #align finmap.keys Finmap.keys
 
 @[simp]
@@ -281,6 +291,19 @@ theorem lookup_eq_none {a} {s : Finmap β} : lookup a s = none ↔ a ∉ s :=
   induction_on s fun _ => AList.lookup_eq_none
 #align finmap.lookup_eq_none Finmap.lookup_eq_none
 
+lemma mem_lookup_iff {s : Finmap β} {a : α} {b : β a} :
+    b ∈ s.lookup a ↔ Sigma.mk a b ∈ s.entries := by
+  rcases s with ⟨⟨l⟩, hl⟩; exact List.mem_dlookup_iff hl
+
+lemma lookup_eq_some_iff {s : Finmap β} {a : α} {b : β a} :
+    s.lookup a = b ↔ Sigma.mk a b ∈ s.entries := mem_lookup_iff
+
+@[simp] lemma sigma_keys_lookup (s : Finmap β) :
+    s.keys.sigma (fun i => (s.lookup i).toFinset) = ⟨s.entries, s.nodup_entries⟩ := by
+  ext x
+  have : x ∈ s.entries → x.1 ∈ s.keys := Multiset.mem_map_of_mem _
+  simpa [lookup_eq_some_iff]
+
 @[simp]
 theorem lookup_singleton_eq {a : α} {b : β a} : (singleton a b).lookup a = some b := by
   rw [singleton, lookup_toFinmap, AList.singleton, AList.lookup, dlookup_cons_eq]
@@ -306,6 +329,36 @@ theorem ext_lookup {s₁ s₂ : Finmap β} : (∀ x, s₁.lookup x = s₂.lookup
     intro x y
     rw [h]
 #align finmap.ext_lookup Finmap.ext_lookup
+
+/-- An equivalence between `Finmap β` and pairs `(keys : Finset α, lookup : ∀ a, Option (β a))` such
+that `(lookup a).isSome ↔ a ∈ keys`. -/
+@[simps apply_coe_fst apply_coe_snd]
+def keysLookupEquiv :
+    Finmap β ≃ { f : Finset α × (∀ a, Option (β a)) // ∀ i, (f.2 i).isSome ↔ i ∈ f.1 } where
+  toFun s := ⟨(s.keys, fun i => s.lookup i), fun _ => lookup_isSome⟩
+  invFun f := mk (f.1.1.sigma <| fun i => (f.1.2 i).toFinset).val <| by
+    refine Multiset.nodup_keys.1 ((Finset.nodup _).map_on ?_)
+    simp only [Finset.mem_val, Finset.mem_sigma, Option.mem_toFinset, Option.mem_def]
+    rintro ⟨i, x⟩ ⟨_, hx⟩ ⟨j, y⟩ ⟨_, hy⟩ (rfl : i = j)
+    simpa using hx.symm.trans hy
+  left_inv f := ext <| by simp
+  right_inv := fun ⟨(s, f), hf⟩ => by
+    dsimp only at hf
+    ext
+    · simp [keys, Multiset.keys, ← hf, Option.isSome_iff_exists]
+    · simp (config := { contextual := true }) [lookup_eq_some_iff, ← hf]
+
+@[simp] lemma keysLookupEquiv_symm_apply_keys :
+    ∀ f : {f : Finset α × (∀ a, Option (β a)) // ∀ i, (f.2 i).isSome ↔ i ∈ f.1},
+      (keysLookupEquiv.symm f).keys = f.1.1 :=
+  keysLookupEquiv.surjective.forall.2 $ fun _ => by
+    simp only [Equiv.symm_apply_apply, keysLookupEquiv_apply_coe_fst]
+
+@[simp] lemma keysLookupEquiv_symm_apply_lookup :
+    ∀ (f : {f : Finset α × (∀ a, Option (β a)) // ∀ i, (f.2 i).isSome ↔ i ∈ f.1}) a,
+      (keysLookupEquiv.symm f).lookup a = f.1.2 a :=
+  keysLookupEquiv.surjective.forall.2 $ fun _ _ => by
+    simp only [Equiv.symm_apply_apply, keysLookupEquiv_apply_coe_snd]
 
 /-! ### replace -/
 
