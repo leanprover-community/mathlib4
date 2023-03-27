@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro
 
 ! This file was ported from Lean 3 source module algebra.module.basic
-! leanprover-community/mathlib commit 966e0cf0685c9cedf8a3283ac69eef4d5f2eaca2
+! leanprover-community/mathlib commit 30413fc89f202a090a54d78e540963ed3de0056e
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -465,32 +465,32 @@ theorem map_nat_cast_smul [AddCommMonoid M] [AddCommMonoid M₂] {F : Type _}
   simp only [← nsmul_eq_smul_cast, AddMonoidHom.map_nsmul, map_nsmul]
 #align map_nat_cast_smul map_nat_cast_smul
 
-theorem map_inv_int_cast_smul [AddCommGroup M] [AddCommGroup M₂] {F : Type _}
-    [AddMonoidHomClass F M M₂] (f : F) (R S : Type _) [DivisionRing R] [DivisionRing S] [Module R M]
-    [Module S M₂] (n : ℤ) (x : M) : f ((n⁻¹ : R) • x) = (n⁻¹ : S) • f x := by
+theorem map_inv_nat_cast_smul [AddCommMonoid M] [AddCommMonoid M₂] {F : Type _}
+    [AddMonoidHomClass F M M₂] (f : F) (R S : Type _)
+    [DivisionSemiring R] [DivisionSemiring S] [Module R M]
+    [Module S M₂] (n : ℕ) (x : M) : f ((n⁻¹ : R) • x) = (n⁻¹ : S) • f x := by
   by_cases hR : (n : R) = 0 <;> by_cases hS : (n : S) = 0
   · simp [hR, hS, map_zero f]
   · suffices ∀ y, f y = 0 by rw [this, this, smul_zero]
     clear x
     intro x
-    rw [← inv_smul_smul₀ hS (f x), ← map_int_cast_smul f R S]
+    rw [← inv_smul_smul₀ hS (f x), ← map_nat_cast_smul f R S]
     simp [hR, map_zero f]
   · suffices ∀ y, f y = 0 by simp [this]
     clear x
     intro x
-    rw [← smul_inv_smul₀ hR x, map_int_cast_smul f R S, hS, zero_smul]
-  · rw [← inv_smul_smul₀ hS (f _), ← map_int_cast_smul f R S, smul_inv_smul₀ hR]
-#align map_inv_int_cast_smul map_inv_int_cast_smul
-
-theorem map_inv_nat_cast_smul [AddCommGroup M] [AddCommGroup M₂] {F : Type _}
-    [AddMonoidHomClass F M M₂] (f : F) (R S : Type _) [DivisionRing R] [DivisionRing S] [Module R M]
-    [Module S M₂] (n : ℕ) (x : M) : f ((n⁻¹ : R) • x) = (n⁻¹ : S) • f x := by
-  -- Porting note: old proof was:
-  --exact_mod_cast map_inv_int_cast_smul f R S n x
-  convert map_inv_int_cast_smul f R S n x
-  · rw [Int.cast_Nat_cast]
-  · rw [Int.cast_Nat_cast]
+    rw [← smul_inv_smul₀ hR x, map_nat_cast_smul f R S, hS, zero_smul]
+  · rw [← inv_smul_smul₀ hS (f _), ← map_nat_cast_smul f R S, smul_inv_smul₀ hR]
 #align map_inv_nat_cast_smul map_inv_nat_cast_smul
+
+theorem map_inv_int_cast_smul [AddCommGroup M] [AddCommGroup M₂] {F : Type _}
+    [AddMonoidHomClass F M M₂] (f : F) (R S : Type _) [DivisionRing R] [DivisionRing S] [Module R M]
+    [Module S M₂] (z : ℤ) (x : M) : f ((z⁻¹ : R) • x) = (z⁻¹ : S) • f x := by
+  obtain ⟨n, rfl | rfl⟩ := z.eq_nat_or_neg
+  · rw [Int.cast_Nat_cast, Int.cast_Nat_cast, map_inv_nat_cast_smul _ R S]
+  · simp_rw [Int.cast_neg, Int.cast_Nat_cast, inv_neg, neg_smul, map_neg,
+      map_inv_nat_cast_smul _ R S]
+#align map_inv_int_cast_smul map_inv_int_cast_smul
 
 theorem map_rat_cast_smul [AddCommGroup M] [AddCommGroup M₂] {F : Type _} [AddMonoidHomClass F M M₂]
     (f : F) (R S : Type _) [DivisionRing R] [DivisionRing S] [Module R M] [Module S M₂] (c : ℚ)
@@ -509,6 +509,14 @@ instance subsingleton_rat_module (E : Type _) [AddCommGroup E] : Subsingleton (M
   ⟨fun P Q => (Module.ext' P Q) fun r x => @map_rat_smul _ _ _ _ P Q _ _ (AddMonoidHom.id E) r x⟩
 #align subsingleton_rat_module subsingleton_rat_module
 
+/-- If `E` is a vector space over two division semirings `R` and `S`, then scalar multiplications
+agree on inverses of natural numbers in `R` and `S`. -/
+theorem inv_nat_cast_smul_eq {E : Type _} (R S : Type _) [AddCommMonoid E] [DivisionSemiring R]
+    [DivisionSemiring S] [Module R E] [Module S E] (n : ℕ) (x : E) :
+    (n⁻¹ : R) • x = (n⁻¹ : S) • x :=
+  map_inv_nat_cast_smul (AddMonoidHom.id E) R S n x
+#align inv_nat_cast_smul_eq inv_nat_cast_smul_eq
+
 /-- If `E` is a vector space over two division rings `R` and `S`, then scalar multiplications
 agree on inverses of integer numbers in `R` and `S`. -/
 theorem inv_int_cast_smul_eq {E : Type _} (R S : Type _) [AddCommGroup E] [DivisionRing R]
@@ -516,28 +524,21 @@ theorem inv_int_cast_smul_eq {E : Type _} (R S : Type _) [AddCommGroup E] [Divis
   map_inv_int_cast_smul (AddMonoidHom.id E) R S n x
 #align inv_int_cast_smul_eq inv_int_cast_smul_eq
 
-/-- If `E` is a vector space over two division rings `R` and `S`, then scalar multiplications
-agree on inverses of natural numbers in `R` and `S`. -/
-theorem inv_nat_cast_smul_eq {E : Type _} (R S : Type _) [AddCommGroup E] [DivisionRing R]
-    [DivisionRing S] [Module R E] [Module S E] (n : ℕ) (x : E) : (n⁻¹ : R) • x = (n⁻¹ : S) • x :=
-  map_inv_nat_cast_smul (AddMonoidHom.id E) R S n x
-#align inv_nat_cast_smul_eq inv_nat_cast_smul_eq
+/-- If `E` is a vector space over a division semiring `R` and has a monoid action by `α`, then that
+action commutes by scalar multiplication of inverses of natural numbers in `R`. -/
+theorem inv_nat_cast_smul_comm {α E : Type _} (R : Type _) [AddCommMonoid E] [DivisionSemiring R]
+    [Monoid α] [Module R E] [DistribMulAction α E] (n : ℕ) (s : α) (x : E) :
+    (n⁻¹ : R) • s • x = s • (n⁻¹ : R) • x :=
+  (map_inv_nat_cast_smul (DistribMulAction.toAddMonoidHom E s) R R n x).symm
+#align inv_nat_cast_smul_comm inv_nat_cast_smul_comm
 
-/-- If `E` is a vector space over a division rings `R` and has a monoid action by `α`, then that
+/-- If `E` is a vector space over a division ring `R` and has a monoid action by `α`, then that
 action commutes by scalar multiplication of inverses of integers in `R` -/
 theorem inv_int_cast_smul_comm {α E : Type _} (R : Type _) [AddCommGroup E] [DivisionRing R]
     [Monoid α] [Module R E] [DistribMulAction α E] (n : ℤ) (s : α) (x : E) :
     (n⁻¹ : R) • s • x = s • (n⁻¹ : R) • x :=
   (map_inv_int_cast_smul (DistribMulAction.toAddMonoidHom E s) R R n x).symm
 #align inv_int_cast_smul_comm inv_int_cast_smul_comm
-
-/-- If `E` is a vector space over a division rings `R` and has a monoid action by `α`, then that
-action commutes by scalar multiplication of inverses of natural numbers in `R`. -/
-theorem inv_nat_cast_smul_comm {α E : Type _} (R : Type _) [AddCommGroup E] [DivisionRing R]
-    [Monoid α] [Module R E] [DistribMulAction α E] (n : ℕ) (s : α) (x : E) :
-    (n⁻¹ : R) • s • x = s • (n⁻¹ : R) • x :=
-  (map_inv_nat_cast_smul (DistribMulAction.toAddMonoidHom E s) R R n x).symm
-#align inv_nat_cast_smul_comm inv_nat_cast_smul_comm
 
 /-- If `E` is a vector space over two division rings `R` and `S`, then scalar multiplications
 agree on rational numbers in `R` and `S`. -/

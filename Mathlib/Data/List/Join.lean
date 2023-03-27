@@ -82,7 +82,7 @@ theorem length_bind (l : List α) (f : α → List β) :
 @[simp]
 theorem bind_eq_nil {l : List α} {f : α → List β} : List.bind l f = [] ↔ ∀ x ∈ l, f x = [] :=
   join_eq_nil.trans <| by
-    simp only [mem_map', forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
+    simp only [mem_map, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
 #align list.bind_eq_nil List.bind_eq_nil
 
 /-- In a join, taking the first elements up to an index which is the sum of the lengths of the
