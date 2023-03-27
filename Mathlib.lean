@@ -1374,6 +1374,7 @@ import Mathlib.RingTheory.Polynomial.Opposites
 import Mathlib.RingTheory.Polynomial.Pochhammer
 import Mathlib.RingTheory.Polynomial.ScaleRoots
 import Mathlib.RingTheory.Polynomial.Tower
+import Mathlib.RingTheory.Polynomial.Vieta
 import Mathlib.RingTheory.Prime
 import Mathlib.RingTheory.PrincipalIdealDomain
 import Mathlib.RingTheory.RingInvo
