@@ -431,8 +431,7 @@ lemma image2_right_identity {f : α → β → α} {b : β} (h : ∀ a, f a b = 
 #align set.image2_right_identity Set.image2_right_identity
 
 theorem image2_inter_union_subset {f : α → α → β} {s t : Set α} (hf : ∀ a b, f a b = f b a) :
-    image2 f (s ∩ t) (s ∪ t) ⊆ image2 f s t :=
-  by
+    image2 f (s ∩ t) (s ∪ t) ⊆ image2 f s t := by
   rintro _ ⟨a, b, ha, hb | hb, rfl⟩
   · rw [hf]
     exact mem_image2_of_mem hb ha.2
@@ -440,8 +439,7 @@ theorem image2_inter_union_subset {f : α → α → β} {s t : Set α} (hf : �
 #align set.image2_inter_union_subset Set.image2_inter_union_subset
 
 theorem image2_union_inter_subset {f : α → α → β} {s t : Set α} (hf : ∀ a b, f a b = f b a) :
-    image2 f (s ∪ t) (s ∩ t) ⊆ image2 f s t :=
-  by
+    image2 f (s ∪ t) (s ∩ t) ⊆ image2 f s t := by
   rw [image2_comm hf]
   exact image2_inter_union_subset hf
 #align set.image2_union_inter_subset Set.image2_union_inter_subset

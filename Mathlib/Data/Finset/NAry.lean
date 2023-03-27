@@ -9,6 +9,7 @@ Authors: Yaël Dillies
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finset.Prod
+import Mathlib.Data.Set.Finite
 
 /-!
 # N-ary images of finsets

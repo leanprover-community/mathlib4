@@ -10,9 +10,9 @@ Authors: Floris van Doorn, Yaël Dillies
 -/
 import Mathlib.Data.Finset.NAry
 import Mathlib.Data.Finset.Preimage
-import Mathbin.Data.Set.Pointwise.Finite
-import Mathlib.Data.Set.Pointwise.ListOfFn
+import Mathlib.Data.Set.Pointwise.Finite
 import Mathlib.Data.Set.Pointwise.SMul
+import Mathlib.Data.Set.Pointwise.ListOfFn
 
 /-!
 # Pointwise operations of finsets
