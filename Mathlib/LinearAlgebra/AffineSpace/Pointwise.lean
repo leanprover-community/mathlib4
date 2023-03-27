@@ -8,7 +8,7 @@ Authors: Hanting Zhang
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.LinearAlgebra.AffineSpace.AffineSubspace
+import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace
 
 /-! # Pointwise instances on `affine_subspace`s
 
@@ -39,8 +39,7 @@ include V
 /-- The additive action on an affine subspace corresponding to applying the action to every element.
 
 This is available as an instance in the `pointwise` locale. -/
-protected def pointwiseAddAction : AddAction V (AffineSubspace k P)
-    where
+protected def pointwiseAddAction : AddAction V (AffineSubspace k P) where
   vadd x S := S.map (AffineEquiv.constVAdd k P x)
   zero_vadd p := ((congr_arg fun f => p.map f) <| AffineMap.ext <| zero_vadd _).trans p.map_id
   add_vadd x y p :=
@@ -81,8 +80,7 @@ omit V
 include V₁ V₂
 
 theorem map_pointwise_vadd (f : P₁ →ᵃ[k] P₂) (v : V₁) (s : AffineSubspace k P₁) :
-    (v +ᵥ s).map f = f.linear v +ᵥ s.map f :=
-  by
+    (v +ᵥ s).map f = f.linear v +ᵥ s.map f := by
   unfold VAdd.vadd
   rw [map_map, map_map]
   congr 1
