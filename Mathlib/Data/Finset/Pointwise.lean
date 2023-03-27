@@ -141,7 +141,7 @@ theorem Nonempty.subset_one_iff (h : s.Nonempty) : s ⊆ 1 ↔ s = 1 :=
 #align finset.nonempty.subset_one_iff Finset.Nonempty.subset_one_iff
 #align finset.nonempty.subset_zero_iff Finset.Nonempty.subset_zero_iff
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem card_one : (1 : Finset α).card = 1 :=
   card_singleton _
 #align finset.card_one Finset.card_one
@@ -1882,7 +1882,7 @@ theorem subset_smul_finset_iff : s ⊆ a • t ↔ a⁻¹ • s ⊆ t := by
 #align finset.subset_smul_finset_iff Finset.subset_smul_finset_iff
 #align finset.subset_vadd_finset_iff Finset.subset_vadd_finset_iff
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem card_smul_finset (a : α) (s : Finset β) : (a • s).card = s.card :=
   card_image_of_injective _ <| MulAction.injective _
 #align finset.card_smul_finset Finset.card_smul_finset
@@ -2032,13 +2032,13 @@ section One
 
 variable [One α]
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem toFinset_one : (1 : Set α).toFinset = 1 :=
   rfl
 #align set.to_finset_one Set.toFinset_one
 #align set.to_finset_zero Set.toFinset_zero
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem Finite.toFinset_one (h : (1 : Set α).Finite := finite_one) : h.toFinset = 1 :=
   Finite.toFinset_singleton _
 #align set.finite.to_finset_one Set.Finite.toFinset_one
@@ -2050,7 +2050,7 @@ section Mul
 
 variable [DecidableEq α] [Mul α] {s t : Set α}
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem toFinset_mul (s t : Set α) [Fintype s] [Fintype t] [Fintype ↥(s * t)] :
     (s * t).toFinset = s.toFinset * t.toFinset :=
   toFinset_image2 _ _ _
@@ -2070,7 +2070,7 @@ section SMul
 
 variable [SMul α β] [DecidableEq β] {a : α} {s : Set α} {t : Set β}
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem toFinset_smul (s : Set α) (t : Set β) [Fintype s] [Fintype t] [Fintype ↥(s • t)] :
     (s • t).toFinset = s.toFinset • t.toFinset :=
   toFinset_image2 _ _ _
@@ -2090,7 +2090,7 @@ section SMul
 
 variable [DecidableEq β] [SMul α β] {a : α} {s : Set β}
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem toFinset_smul_set (a : α) (s : Set β) [Fintype s] [Fintype ↥(a • s)] :
     (a • s).toFinset = a • s.toFinset :=
   toFinset_image _ _
