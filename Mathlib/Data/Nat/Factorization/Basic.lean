@@ -741,15 +741,15 @@ theorem factorization_mul_apply_of_coprime {p a b : ℕ} (hab : coprime a b) :
 theorem factorization_mul_of_coprime {a b : ℕ} (hab : coprime a b) :
     (a * b).factorization = a.factorization + b.factorization := by
   ext q
-  simp only [Finsupp.coe_add, add_apply, ← factors_count_eq, factorization_mul_apply_of_coprime hab]
+  rw [Finsupp.add_apply, factorization_mul_apply_of_coprime hab]
 #align nat.factorization_mul_of_coprime Nat.factorization_mul_of_coprime
 
 /-- If `p` is a prime factor of `a` then the power of `p` in `a` is the same that in `a * b`,
 for any `b` coprime to `a`. -/
 theorem factorization_eq_of_coprime_left {p a b : ℕ} (hab : coprime a b) (hpa : p ∈ a.factors) :
     (a * b).factorization p = a.factorization p := by
-  rw [factorization_mul_apply_of_coprime hab, ← factors_count_eq, ← factors_count_eq]
-  simpa only [count_eq_zero_of_not_mem (coprime_factors_disjoint hab hpa)]
+  rw [factorization_mul_apply_of_coprime hab, ← factors_count_eq, ← factors_count_eq,
+    count_eq_zero_of_not_mem (coprime_factors_disjoint hab hpa), add_zero]
 #align nat.factorization_eq_of_coprime_left Nat.factorization_eq_of_coprime_left
 
 /-- If `p` is a prime factor of `b` then the power of `p` in `b` is the same that in `a * b`,
@@ -800,13 +800,16 @@ def recOnPrimePow {P : ℕ → Sort _} (h0 : P 0) (h1 : P 1)
       have htp : 0 < t := by
         rw [ht]
         exact hp.factorization_pos_of_dvd (Nat.succ_ne_zero _) (minFac_dvd _)
-      convert h ((k + 2) / p ^ t) p t hp _ _ _
+      convert h ((k + 2) / p ^ t) p t hp _ _ _ using 1
       · rw [Nat.mul_div_cancel' hpt]
-      · rw [Nat.dvd_div_iff hpt, ← pow_succ', ht]
+      · rw [Nat.dvd_div_iff hpt, ← pow_succ, ht]
         exact pow_succ_factorization_not_dvd (k + 1).succ_ne_zero hp
       · exact htp
       · apply hk _ (Nat.div_lt_of_lt_mul _)
-        simp [lt_mul_iff_one_lt_left Nat.succ_pos', one_lt_pow_iff htp.ne, hp.one_lt]
+        rw [lt_mul_iff_one_lt_left Nat.succ_pos', one_lt_pow_iff htp.ne]
+        exact hp.one_lt
+        -- Porting note: was
+        -- simp [lt_mul_iff_one_lt_left Nat.succ_pos', one_lt_pow_iff htp.ne, hp.one_lt]
 #align nat.rec_on_prime_pow Nat.recOnPrimePow
 
 /-- Given `P 0`, `P 1`, and `P (p ^ n)` for positive prime powers, and a way to extend `P a` and
@@ -837,12 +840,14 @@ def recOnPrimeCoprime {P : ℕ → Sort _} (h0 : P 0) (hp : ∀ p n : ℕ, Prime
 /-- Given `P 0`, `P 1`, `P p` for all primes, and a way to extend `P a` and `P b` to
 `P (a * b)`, we can define `P` for all natural numbers. -/
 @[elab_as_elim]
-def recOnMul {P : ℕ → Sort _} (h0 : P 0) (h1 : P 1) (hp : ∀ p, Prime p → P p)
+noncomputable def recOnMul {P : ℕ → Sort _} (h0 : P 0) (h1 : P 1) (hp : ∀ p, Prime p → P p)
     (h : ∀ a b, P a → P b → P (a * b)) : ∀ a, P a :=
   let hp : ∀ p n : ℕ, Prime p → P (p ^ n) := fun p n hp' =>
-    match n with
-    | 0 => h1
-    | n + 1 => h _ _ (hp p hp') (_match _)
+    n.recOn h1 (fun n hn => by rw [pow_succ]; apply h _ _ hn (hp p hp'))
+    -- Porting note: was
+    -- match n with
+    -- | 0 => h1
+    -- | n + 1 => h _ _ (hp p hp') (_match _)
   recOnPrimeCoprime h0 hp fun a b _ _ _ => h a b
 #align nat.rec_on_mul Nat.recOnMul
 
@@ -852,8 +857,10 @@ theorem multiplicative_factorization {β : Type _} [CommMonoid β] (f : ℕ → 
     (h_mult : ∀ x y : ℕ, coprime x y → f (x * y) = f x * f y) (hf : f 1 = 1) :
     ∀ {n : ℕ}, n ≠ 0 → f n = n.factorization.prod fun p k => f (p ^ k) := by
   apply Nat.recOnPosPrimePosCoprime
-  · intro p k hp hk hpk
-    simp [Prime.factorization_pow hp, Finsupp.prod_single_index _, hf]
+  · rintro p k hp - -
+    -- Porting note: replaced `simp` with `rw`
+    rw [Prime.factorization_pow hp, Finsupp.prod_single_index _]
+    rwa [pow_zero]
   · simp
   · rintro -
     rw [factorization_one, hf]
@@ -870,7 +877,7 @@ theorem multiplicative_factorization' {β : Type _} [CommMonoid β] (f : ℕ →
     (h_mult : ∀ x y : ℕ, coprime x y → f (x * y) = f x * f y) (hf0 : f 0 = 1) (hf1 : f 1 = 1) :
     ∀ {n : ℕ}, f n = n.factorization.prod fun p k => f (p ^ k) := by
   apply Nat.recOnPosPrimePosCoprime
-  · intro p k hp hk
+  · rintro p k hp -
     simp only [hp.factorization_pow]
     rw [prod_single_index _]
     simp [hf1]
@@ -897,18 +904,20 @@ theorem eq_iff_prime_padicValNat_eq (a b : ℕ) (ha : a ≠ 0) (hb : b ≠ 0) :
 
 theorem prod_pow_prime_padicValNat (n : Nat) (hn : n ≠ 0) (m : Nat) (pr : n < m) :
     (∏ p in Finset.filter Nat.Prime (Finset.range m), p ^ padicValNat p n) = n := by
-  nth_rw_rhs 1 [← factorization_prod_pow_eq_self hn]
+  -- Porting note: was `nth_rw_rhs`
+  conv =>
+    rhs
+    rw [← factorization_prod_pow_eq_self hn]
   rw [eq_comm]
   apply Finset.prod_subset_one_on_sdiff
-  ·
-    exact fun p hp =>
-      finset.mem_filter.mpr
-        ⟨finset.mem_range.mpr (gt_of_gt_of_ge pr (le_of_mem_factorization hp)),
+  · exact fun p hp =>
+      Finset.mem_filter.mpr
+        ⟨Finset.mem_range.mpr (gt_of_gt_of_ge pr (le_of_mem_factorization hp)),
           prime_of_mem_factorization hp⟩
   · intro p hp
-    cases' finset.mem_sdiff.mp hp with hp1 hp2
-    rw [← factorization_def n (finset.mem_filter.mp hp1).2]
-    simp [finsupp.not_mem_support_iff.mp hp2]
+    cases' Finset.mem_sdiff.mp hp with hp1 hp2
+    rw [← factorization_def n (Finset.mem_filter.mp hp1).2]
+    simp [Finsupp.not_mem_support_iff.mp hp2]
   · intro p hp
     simp [factorization_def n (prime_of_mem_factorization hp)]
 #align nat.prod_pow_prime_padic_val_nat Nat.prod_pow_prime_padicValNat
@@ -935,7 +944,7 @@ theorem Ioc_filter_dvd_card_eq_div (n p : ℕ) : ((Ioc 0 n).filter fun x => p �
     · simp
     simp_rw [← Ico_succ_succ, Ico_insert_right (succ_le_succ hn.le), Ico_succ_right]
   simp [Nat.succ_div, add_ite, add_zero, h1, filter_insert, apply_ite card, card_insert_eq_ite, IH,
-    Finset.mem_filter, mem_Ioc, not_le.2 (lt_add_one n)]
+    Finset.mem_filter, mem_Ioc, not_le.2 (lt_add_one n), Nat.succ_eq_add_one]
 #align nat.Ioc_filter_dvd_card_eq_div Nat.Ioc_filter_dvd_card_eq_div
 
 end Nat
