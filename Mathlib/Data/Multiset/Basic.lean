@@ -1968,7 +1968,7 @@ theorem filter_subset (s : Multiset α) : filter p s ⊆ s :=
 #align multiset.filter_subset Multiset.filter_subset
 
 theorem filter_le_filter {s t} (h : s ≤ t) : filter p s ≤ filter p t :=
-  leInductionOn h fun h => (h.filter (p ·)).subperm
+  leInductionOn h fun h => (h.filter' (p ·)).subperm
 #align multiset.filter_le_filter Multiset.filter_le_filter
 
 theorem monotone_filter_left : Monotone (filter p) := fun _s _t => filter_le_filter p
