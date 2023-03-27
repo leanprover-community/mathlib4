@@ -32,18 +32,17 @@ theorem pairwise_unionᵢ {f : ι → Set α} (h : Directed (· ⊆ ·) f) :
     (⋃ n, f n).Pairwise r ↔ ∀ n, (f n).Pairwise r := by
   constructor
   · intro H n
-    exact Pairwise.mono (subset_Union _ _) H
+    exact Pairwise.mono (subset_unionᵢ _ _) H
   · intro H i hi j hj hij
-    rcases mem_Union.1 hi with ⟨m, hm⟩
-    rcases mem_Union.1 hj with ⟨n, hn⟩
+    rcases mem_unionᵢ.1 hi with ⟨m, hm⟩
+    rcases mem_unionᵢ.1 hj with ⟨n, hn⟩
     rcases h m n with ⟨p, mp, np⟩
     exact H p (mp hm) (np hn) hij
 #align set.pairwise_Union Set.pairwise_unionᵢ
 
 theorem pairwise_unionₛ {r : α → α → Prop} {s : Set (Set α)} (h : DirectedOn (· ⊆ ·) s) :
     (⋃₀ s).Pairwise r ↔ ∀ a ∈ s, Set.Pairwise a r := by
-  rw [sUnion_eq_Union, pairwise_Union h.directed_coe, SetCoe.forall]
-  rfl
+  rw [unionₛ_eq_unionᵢ, pairwise_unionᵢ h.directed_val, SetCoe.forall]
 #align set.pairwise_sUnion Set.pairwise_unionₛ
 
 end Set
@@ -84,7 +83,10 @@ theorem PairwiseDisjoint.bunionᵢ {s : Set ι'} {g : ι' → Set ι} {f : ι �
   obtain ⟨d, hd, hb⟩ := hb
   obtain hcd | hcd := eq_or_ne (g c) (g d)
   · exact hg d hd (hcd.subst ha) hb hab
-  · exact (hs hc hd <| ne_of_apply_ne _ hcd).mono (le_supᵢ₂ a ha) (le_supᵢ₂ b hb)
+  -- Porting note: the elaborator couldn't figure out `f` here.
+  · exact (hs hc hd <| ne_of_apply_ne _ hcd).mono
+      (le_supᵢ₂ (f := fun i (_ : i ∈ g c) => f i) a ha)
+      (le_supᵢ₂ (f := fun i (_ : i ∈ g d) => f i) b hb)
 #align set.pairwise_disjoint.bUnion Set.PairwiseDisjoint.bunionᵢ
 
 end CompleteLattice
@@ -92,9 +94,9 @@ end CompleteLattice
 theorem bunionᵢ_diff_bunionᵢ_eq {s t : Set ι} {f : ι → Set α} (h : (s ∪ t).PairwiseDisjoint f) :
     ((⋃ i ∈ s, f i) \ ⋃ i ∈ t, f i) = ⋃ i ∈ s \ t, f i := by
   refine'
-    (bUnion_diff_bUnion_subset f s t).antisymm
-      (Union₂_subset fun i hi a ha => (mem_diff _).2 ⟨mem_bUnion hi.1 ha, _⟩)
-  rw [mem_Union₂]; rintro ⟨j, hj, haj⟩
+    (bunionᵢ_diff_bunionᵢ_subset f s t).antisymm
+      (unionᵢ₂_subset fun i hi a ha => (mem_diff _).2 ⟨mem_bunionᵢ hi.1 ha, _⟩)
+  rw [mem_unionᵢ₂]; rintro ⟨j, hj, haj⟩
   exact (h (Or.inl hi.1) (Or.inr hj) (ne_of_mem_of_not_mem hj hi.2).symm).le_bot ⟨ha, haj⟩
 #align set.bUnion_diff_bUnion_eq Set.bunionᵢ_diff_bunionᵢ_eq
 
@@ -103,7 +105,7 @@ theorem bunionᵢ_diff_bunionᵢ_eq {s t : Set ι} {f : ι → Set α} (h : (s �
 noncomputable def bunionᵢEqSigmaOfDisjoint {s : Set ι} {f : ι → Set α} (h : s.PairwiseDisjoint f) :
     (⋃ i ∈ s, f i) ≃ Σi : s, f i :=
   (Equiv.setCongr (bunionᵢ_eq_unionᵢ _ _)).trans <|
-    unionEqSigmaOfDisjoint fun ⟨i, hi⟩ ⟨j, hj⟩ ne => h hi hj fun eq => Ne <| Subtype.eq Eq
+    unionEqSigmaOfDisjoint fun ⟨_i, hi⟩ ⟨_j, hj⟩ ne => h hi hj fun eq => ne <| Subtype.eq eq
 #align set.bUnion_eq_sigma_of_disjoint Set.bunionᵢEqSigmaOfDisjoint
 
 end Set
@@ -116,7 +118,7 @@ theorem Set.PairwiseDisjoint.subset_of_bunionᵢ_subset_bunionᵢ (h₀ : (s ∪
     (h₁ : ∀ i ∈ s, (f i).Nonempty) (h : (⋃ i ∈ s, f i) ⊆ ⋃ i ∈ t, f i) : s ⊆ t := by
   rintro i hi
   obtain ⟨a, hai⟩ := h₁ i hi
-  obtain ⟨j, hj, haj⟩ := mem_Union₂.1 (h <| mem_Union₂_of_mem hi hai)
+  obtain ⟨j, hj, haj⟩ := mem_unionᵢ₂.1 (h <| mem_unionᵢ₂_of_mem hi hai)
   rwa [h₀.eq (subset_union_left _ _ hi) (subset_union_right _ _ hj)
       (not_disjoint_iff.2 ⟨a, hai, haj⟩)]
 #align set.pairwise_disjoint.subset_of_bUnion_subset_bUnion Set.PairwiseDisjoint.subset_of_bunionᵢ_subset_bunionᵢ
@@ -127,9 +129,9 @@ theorem Pairwise.subset_of_bunionᵢ_subset_bunionᵢ (h₀ : Pairwise (Disjoint
 #align pairwise.subset_of_bUnion_subset_bUnion Pairwise.subset_of_bunionᵢ_subset_bunionᵢ
 
 theorem Pairwise.bunionᵢ_injective (h₀ : Pairwise (Disjoint on f)) (h₁ : ∀ i, (f i).Nonempty) :
-    Injective fun s : Set ι => ⋃ i ∈ s, f i := fun s t h =>
-  ((h₀.subset_of_bunionᵢ_subset_bunionᵢ fun _ _ => h₁ _) <| h.Subset).antisymm <|
-    (h₀.subset_of_bunionᵢ_subset_bunionᵢ fun _ _ => h₁ _) <| h.Superset
+    Injective fun s : Set ι => ⋃ i ∈ s, f i := fun _s _t h =>
+  ((h₀.subset_of_bunionᵢ_subset_bunionᵢ fun _ _ => h₁ _) <| h.subset).antisymm <|
+    (h₀.subset_of_bunionᵢ_subset_bunionᵢ fun _ _ => h₁ _) <| h.superset
 #align pairwise.bUnion_injective Pairwise.bunionᵢ_injective
 
 end
