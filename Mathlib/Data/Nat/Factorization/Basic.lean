@@ -29,14 +29,14 @@ import Mathlib.Tactic.IntervalCases
 * As discussed in this Zulip thread:
 https://leanprover.zulipchat.com/#narrow/stream/217875/topic/Multiplicity.20in.20the.20naturals
 We have lots of disparate ways of talking about the multiplicity of a prime
-in a natural number, including `factors.count`, `padic_val_nat`, `multiplicity`,
-and the material in `data/pnat/factors`.  Move some of this material to this file,
+in a natural number, including `factors.count`, `padicValNat`, `multiplicity`,
+and the material in `Data/PNat/Factors`.  Move some of this material to this file,
 prove results about the relationships between these definitions,
 and (where appropriate) choose a uniform canonical way of expressing these ideas.
 
 * Moreover, the results here should be generalised to an arbitrary unique factorization monoid
 with a normalization function, and then deduplicated.  The basics of this have been started in
-`ring_theory/unique_factorization_domain`.
+`RingTheory/UniqueFactorizationDomain`.
 
 * Extend the inductions to any `NormalizationMonoid` with unique factorization.
 
@@ -53,8 +53,7 @@ namespace Nat
 
 /-- `n.factorization` is the finitely supported function `ℕ →₀ ℕ`
  mapping each prime factor of `n` to its multiplicity in `n`. -/
-def factorization (n : ℕ) : ℕ →₀ ℕ
-    where
+def factorization (n : ℕ) : ℕ →₀ ℕ where
   support := n.factors.toFinset
   toFun p := if p.Prime then padicValNat p n else 0
   mem_support_toFun := by
@@ -88,7 +87,7 @@ theorem factors_count_eq {n p : ℕ} : n.factors.count p = n.factorization p := 
 theorem factorization_eq_factors_multiset (n : ℕ) :
     n.factorization = Multiset.toFinsupp (n.factors : Multiset ℕ) := by
   ext p
-  -- porting note: previousl closed with `simp`
+  -- porting note: previously closed with `simp`
   simp only [Multiset.toFinsupp_apply, Multiset.mem_coe, Multiset.coe_nodup, Multiset.coe_count]
   rw [@factors_count_eq n p] -- porting note: TODO: why doesn't `factors_count_eq` take here?
 #align nat.factorization_eq_factors_multiset Nat.factorization_eq_factors_multiset
@@ -126,7 +125,7 @@ theorem factorization_zero : factorization 0 = 0 := by simp [factorization]
 theorem factorization_one : factorization 1 = 0 := by simp [factorization]
 #align nat.factorization_one Nat.factorization_one
 
-/-- The support of `n.factorization` is exactly `n.factors.to_finset` -/
+/-- The support of `n.factorization` is exactly `n.factors.toFinset` -/
 @[simp]
 theorem support_factorization {n : ℕ} : n.factorization.support = n.factors.toFinset := by
   simp [factorization]
@@ -151,8 +150,8 @@ theorem le_of_mem_factorization {n p : ℕ} (h : p ∈ n.factorization.support) 
 /-! ## Lemmas characterising when `n.factorization p = 0` -/
 
 
-theorem factorization_eq_zero_iff (n p : ℕ) : n.factorization p = 0 ↔ ¬p.Prime ∨ ¬p ∣ n ∨ n = 0 :=
-  by
+theorem factorization_eq_zero_iff (n p : ℕ) :
+    n.factorization p = 0 ↔ ¬p.Prime ∨ ¬p ∣ n ∨ n = 0 := by
   rw [← not_mem_support_iff, support_factorization, mem_toFinset]
   rcases eq_or_ne n 0 with (rfl | hn)
   · simp
@@ -233,7 +232,7 @@ theorem factorization_mul_support {a b : ℕ} (ha : a ≠ 0) (hb : b ≠ 0) :
 #align nat.factorization_mul_support Nat.factorization_mul_support
 
 /-- If a product over `n.factorization` doesn't use the multiplicities of the prime factors
-then it's equal to the corresponding product over `n.factors.to_finset` -/
+then it's equal to the corresponding product over `n.factors.toFinset` -/
 theorem prod_factorization_eq_prod_factors {n : ℕ} {β : Type _} [CommMonoid β] (f : ℕ → β) :
     (n.factorization.prod fun p _ => f p) = ∏ p in n.factors.toFinset, f p := by
   apply prod_congr support_factorization
@@ -301,7 +300,7 @@ theorem Prime.eq_of_factorization_pos {p q : ℕ} (hp : Prime p) (h : p.factoriz
 /-! ### Equivalence between `ℕ+` and `ℕ →₀ ℕ` with support in the primes. -/
 
 
-/-- Any finsupp `f : ℕ →₀ ℕ` whose support is in the primes is equal to the factorization of
+/-- Any Finsupp `f : ℕ →₀ ℕ` whose support is in the primes is equal to the factorization of
 the product `∏ (a : ℕ) in f.support, a ^ f a`. -/
 theorem prod_pow_factorization_eq_self {f : ℕ →₀ ℕ} (hf : ∀ p : ℕ, p ∈ f.support → Prime p) :
     (f.prod (· ^ ·)).factorization = f := by
@@ -630,8 +629,8 @@ theorem ord_compl_dvd_ord_compl_iff_dvd (a b : ℕ) :
   simpa [Prime.factorization_self pb, Prime.factorization pa, hab] using h b
 #align nat.ord_compl_dvd_ord_compl_iff_dvd Nat.ord_compl_dvd_ord_compl_iff_dvd
 
-theorem dvd_iff_prime_pow_dvd_dvd (n d : ℕ) : d ∣ n ↔ ∀ p k : ℕ, Prime p → p ^ k ∣ d → p ^ k ∣ n :=
-  by
+theorem dvd_iff_prime_pow_dvd_dvd (n d : ℕ) :
+    d ∣ n ↔ ∀ p k : ℕ, Prime p → p ^ k ∣ d → p ^ k ∣ n := by
   rcases eq_or_ne n 0 with (rfl | hn); · simp
   rcases eq_or_ne d 0 with (rfl | hd)
   · simp only [zero_dvd_iff, hn, false_iff_iff, not_forall]
@@ -654,8 +653,7 @@ theorem factorization_gcd {a b : ℕ} (ha_pos : a ≠ 0) (hb_pos : b ≠ 0) :
     (gcd a b).factorization = a.factorization ⊓ b.factorization := by
   let dfac := a.factorization ⊓ b.factorization
   let d := dfac.prod Nat.pow
-  have dfac_prime : ∀ p : ℕ, p ∈ dfac.support → Prime p :=
-    by
+  have dfac_prime : ∀ p : ℕ, p ∈ dfac.support → Prime p := by
     intro p hp
     have : p ∈ a.factors ∧ p ∈ b.factors := by simpa using hp
     exact prime_of_mem_factors this.1
@@ -789,7 +787,7 @@ def recOnPrimePow {P : ℕ → Sort _} (h0 : P 0) (h1 : P 1)
     | k + 2 => fun hk => by
       let p := (k + 2).minFac
       have hp : Prime p := minFac_prime (succ_succ_ne_one k)
-      -- the awkward `let` stuff here is because `factorization` is noncomputable (finsupp);
+      -- the awkward `let` stuff here is because `factorization` is noncomputable (Finsupp);
       -- we get around this by using the computable `factors.count`, and rewriting when we want
       -- to use the `factorization` API
       let t := (k + 2).factors.count p
@@ -925,7 +923,7 @@ theorem prod_pow_prime_padicValNat (n : Nat) (hn : n ≠ 0) (m : Nat) (pr : n < 
 /-! ### Lemmas about factorizations of particular functions -/
 
 
--- TODO: Port lemmas from `data/nat/multiplicity` to here, re-written in terms of `factorization`
+-- TODO: Port lemmas from `Data/Nat/Multiplicity` to here, re-written in terms of `factorization`
 /-- Exactly `n / p` naturals in `[1, n]` are multiples of `p`. -/
 theorem card_multiples (n p : ℕ) : card ((Finset.range n).filter fun e => p ∣ e + 1) = n / p := by
   induction' n with n hn; · simp
@@ -938,8 +936,7 @@ theorem Ioc_filter_dvd_card_eq_div (n p : ℕ) : ((Ioc 0 n).filter fun x => p �
   induction' n with n IH
   · simp
   -- TODO: Golf away `h1` after Yaël PRs a lemma asserting this
-  have h1 : Ioc 0 n.succ = insert n.succ (Ioc 0 n) :=
-    by
+  have h1 : Ioc 0 n.succ = insert n.succ (Ioc 0 n) := by
     rcases n.eq_zero_or_pos with (rfl | hn)
     · simp
     simp_rw [← Ico_succ_succ, Ico_insert_right (succ_le_succ hn.le), Ico_succ_right]
