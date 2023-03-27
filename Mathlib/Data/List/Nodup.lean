@@ -4,14 +4,14 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kenny Lau
 
 ! This file was ported from Lean 3 source module data.list.nodup
-! leanprover-community/mathlib commit f694c7dead66f5d4c80f446c796a5aad14707f0e
+! leanprover-community/mathlib commit c227d107bbada5d0d9d20287e3282c0a7f1651a0
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.List.Lattice
 import Mathlib.Data.List.Pairwise
 import Mathlib.Data.List.Forall2
-import Mathlib.Data.Set.Pairwise
+import Mathlib.Data.Set.Pairwise.Basic
 
 /-!
 # Lists with no duplicates

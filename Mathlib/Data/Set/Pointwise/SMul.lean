@@ -4,12 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Floris van Doorn
 
 ! This file was ported from Lean 3 source module data.set.pointwise.smul
-! leanprover-community/mathlib commit 7b78d1776212a91ecc94cf601f83bdcc46b04213
+! leanprover-community/mathlib commit c227d107bbada5d0d9d20287e3282c0a7f1651a0
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Module.Basic
-import Mathlib.Data.Set.Pairwise
+import Mathlib.Data.Set.Pairwise.Lattice
 import Mathlib.Data.Set.Pointwise.Basic
 import Mathlib.Tactic.ByContra
 
