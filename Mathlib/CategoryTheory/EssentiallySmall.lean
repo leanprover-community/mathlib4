@@ -124,8 +124,7 @@ instance (priority := 100) locallySmall_self (C : Type u) [Category.{v} C] : Loc
 instance (priority := 100) locallySmall_of_essentiallySmall (C : Type u) [Category.{v} C]
     [EssentiallySmall.{w} C] : LocallySmall.{w} C :=
   (locallySmall_congr (equivSmallModel C)).mpr (CategoryTheory.locallySmall_self _)
-#align category_theory.locally_small_of_essentially_small
-  CategoryTheory.locallySmall_of_essentiallySmall
+#align category_theory.locally_small_of_essentially_small CategoryTheory.locallySmall_of_essentiallySmall
 
 /-- We define a type alias `ShrinkHoms C` for `C`. When we have `LocallySmall.{w} C`,
 we'll put a `Category.{w}` instance on `ShrinkHoms C`.

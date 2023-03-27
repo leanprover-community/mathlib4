@@ -58,8 +58,7 @@ theorem IsEquipartition.average_le_card_part (hP : P.IsEquipartition) (ht : t �
     s.card / P.parts.card ≤ t.card := by
   rw [← P.sum_card_parts]
   exact Finset.EquitableOn.le hP ht
-#align finpartition.is_equipartition.average_le_card_part
-    Finpartition.IsEquipartition.average_le_card_part
+#align finpartition.is_equipartition.average_le_card_part Finpartition.IsEquipartition.average_le_card_part
 
 theorem IsEquipartition.card_part_le_average_add_one (hP : P.IsEquipartition) (ht : t ∈ P.parts) :
     t.card ≤ s.card / P.parts.card + 1 := by
