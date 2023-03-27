@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Deniz Aydin
 -/
 import Mathlib.Init.Logic
+import Mathlib.Init.Data.Ordering.Basic
 import Mathlib.Tactic.Relation.Rfl
 import Mathlib.Tactic.SplitIfs
 
