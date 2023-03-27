@@ -35,6 +35,9 @@ decreases at a time.
 
 variable {α β : Type _} {rα : α → α → Prop} {rβ : β → β → Prop}
 
+/-! ### `Prod.GameAdd` -/
+
+
 namespace Prod
 
 variable (rα rβ)
@@ -48,7 +51,7 @@ variable (rα rβ)
   the player is free to choose one of the games and make a move in it, while leaving the other game
   unchanged.
 
-  See `sym2.game_add` for the unordered pair analog. -/
+  See `Sym2.GameAdd` for the unordered pair analog. -/
 
 inductive GameAdd : α × β → α × β → Prop
   | fst {a₁ a₂ b} : rα a₁ a₂ → GameAdd (a₁, b) (a₂, b)
@@ -81,7 +84,7 @@ theorem gameAdd_swap_swap_mk (a₁ a₂ : α) (b₁ b₂ : β) :
   gameAdd_swap_swap rβ rα (b₁, a₁) (b₂, a₂)
 #align prod.game_add_swap_swap_mk Prod.gameAdd_swap_swap_mk
 
-/-- `GameAdd` is a subrelation of `Prod.Lex`. -/
+/-- `Prod.GameAdd` is a subrelation of `Prod.Lex`. -/
 theorem gameAdd_le_lex : GameAdd rα rβ ≤ Prod.Lex rα rβ := fun _ _ h =>
   h.rec (Prod.Lex.left _ _) (Prod.Lex.right _)
 #align prod.game_add_le_lex Prod.gameAdd_le_lex
@@ -117,7 +120,7 @@ theorem WellFounded.prod_gameAdd (hα : WellFounded rα) (hβ : WellFounded rβ)
 
 namespace Prod
 
-/-- Recursion on the well-founded `prod.game_add` relation.
+/-- Recursion on the well-founded `Prod.GameAdd` relation.
   Note that it's strictly more general to recurse on the lexicographic order instead. -/
 noncomputable def GameAdd.fix {C : α → β → Sort _} (hα : WellFounded rα) (hβ : WellFounded rβ)
     (IH : ∀ a₁ b₁, (∀ a₂ b₂, GameAdd rα rβ (a₂, b₂) (a₁, b₁) → C a₂ b₂) → C a₁ b₁) (a : α) (b : β) :
@@ -132,7 +135,7 @@ theorem GameAdd.fix_eq {C : α → β → Sort _} (hα : WellFounded rα) (hβ :
   WellFounded.fix_eq _ _ _
 #align prod.game_add.fix_eq Prod.GameAdd.fix_eq
 
-/-- Induction on the well-founded `prod.game_add` relation.
+/-- Induction on the well-founded `Prod.GameAdd` relation.
   Note that it's strictly more general to induct on the lexicographic order instead. -/
 theorem GameAdd.induction {C : α → β → Prop} :
     WellFounded rα →
@@ -143,7 +146,7 @@ theorem GameAdd.induction {C : α → β → Prop} :
 
 end Prod
 
-/-! ### `sym2.game_add` -/
+/-! ### `Sym2.GameAdd` -/
 
 
 namespace Sym2
@@ -219,14 +222,14 @@ theorem Acc.sym2_gameAdd {a b} (ha : Acc rα a) (hb : Acc rα b) : Acc (Sym2.Gam
     exact ihb c rc
 #align acc.sym2_game_add Acc.sym2_gameAdd
 
-/-- The `sym2.game_add` relation on well-founded inputs is well-founded. -/
+/-- The `Sym2.GameAdd` relation on well-founded inputs is well-founded. -/
 theorem WellFounded.sym2_gameAdd (h : WellFounded rα) : WellFounded (Sym2.GameAdd rα) :=
   ⟨fun i => Sym2.inductionOn i fun x y => (h.apply x).sym2_gameAdd (h.apply y)⟩
 #align well_founded.sym2_game_add WellFounded.sym2_gameAdd
 
 namespace Sym2
 
-/-- Recursion on the well-founded `sym2.game_add` relation. -/
+/-- Recursion on the well-founded `Sym2.GameAdd` relation. -/
 noncomputable def GameAdd.fix {C : α → α → Sort _} (hr : WellFounded rα)
     (IH : ∀ a₁ b₁, (∀ a₂ b₂, Sym2.GameAdd rα ⟦(a₂, b₂)⟧ ⟦(a₁, b₁)⟧ → C a₂ b₂) → C a₁ b₁) (a b : α) :
     C a b :=
@@ -240,7 +243,7 @@ theorem GameAdd.fix_eq {C : α → α → Sort _} (hr : WellFounded rα)
   WellFounded.fix_eq _ _ _
 #align sym2.game_add.fix_eq Sym2.GameAdd.fix_eq
 
-/-- Induction on the well-founded `sym2.game_add` relation. -/
+/-- Induction on the well-founded `Sym2.GameAdd` relation. -/
 theorem GameAdd.induction {C : α → α → Prop} :
     WellFounded rα →
       (∀ a₁ b₁, (∀ a₂ b₂, Sym2.GameAdd rα ⟦(a₂, b₂)⟧ ⟦(a₁, b₁)⟧ → C a₂ b₂) → C a₁ b₁) →
