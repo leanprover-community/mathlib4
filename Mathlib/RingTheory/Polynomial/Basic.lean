@@ -460,7 +460,8 @@ variable {q : R[X]}
 
 -- Porting note: failed to synthesize semilinearmapclass on modByMonic
 set_option synthInstance.etaExperiment true in
-theorem mem_ker_mod_by_monic (hq : q.Monic) {p : R[X]} : p ∈ LinearMap.ker (modByMonicHom q) ↔ q ∣ p :=
+theorem mem_ker_mod_by_monic (hq : q.Monic) {p : R[X]} :
+    p ∈ LinearMap.ker (modByMonicHom q) ↔ q ∣ p :=
   LinearMap.mem_ker.trans (dvd_iff_modByMonic_eq_zero hq)
 #align polynomial.mem_ker_mod_by_monic Polynomial.mem_ker_mod_by_monic
 
@@ -791,10 +792,11 @@ set_option linter.uppercaseLean3 false in
 end Polynomial
 
 namespace MvPolynomial
+
 /- Porting note: had to move the heavy inference outside the convert call to stop timeouts.
 Also, many @'s. etaExperiment caused more time outs-/
-set_option synthInstance.maxHeartbeats 0 in
-private theorem prime_C_iff_of_fintype {R : Type u} (σ : Type v) {r : R} [CommRing R] [Fintype σ] : Prime (C r : MvPolynomial σ R) ↔ Prime r := by
+private theorem prime_C_iff_of_fintype {R : Type u} (σ : Type v) {r : R} [CommRing R] [Fintype σ] :
+    Prime (C r : MvPolynomial σ R) ↔ Prime r := by
   let f (d : ℕ) := (finSuccEquiv R d).symm.toMulEquiv
   let _coe' (d : ℕ) : CoeFun ((MvPolynomial (Fin d) R)[X] ≃* MvPolynomial (Fin (d + 1)) R)
     (fun _ => (MvPolynomial (Fin d) R)[X] → MvPolynomial (Fin (d + 1)) R) := inferInstance
@@ -810,7 +812,8 @@ private theorem prime_C_iff_of_fintype {R : Type u} (σ : Type v) {r : R} [CommR
     · rw [hd, ← Polynomial.prime_C_iff]
       rw [that d]
       -- Porting note: change ?_ to _ and watch it time out
-      refine @MulEquiv.prime_iff (MvPolynomial (Fin d) R)[X] (MvPolynomial (Fin (d + 1)) R) ?_ ?_ (Polynomial.C (C r)) ?_
+      refine @MulEquiv.prime_iff (MvPolynomial (Fin d) R)[X] (MvPolynomial (Fin (d + 1)) R)
+        ?_ ?_ (Polynomial.C (C r)) ?_
 
 -- Porting note: @'s help with multiple timeouts. It seems like there are too many things to unify
 theorem prime_C_iff : Prime (C r : MvPolynomial σ R) ↔ Prime r :=
@@ -970,7 +973,8 @@ protected theorem Polynomial.isNoetherianRing [inst : IsNoetherianRing R] : IsNo
               by
               rw [Polynomial.degree_mul', Polynomial.degree_X_pow]
               rw [Polynomial.degree_eq_natDegree hp0, Polynomial.degree_eq_natDegree hq0]
-              rw [Nat.cast_withBot, Nat.cast_withBot, Nat.cast_withBot, ← WithBot.coe_add, add_tsub_cancel_of_le, hn]
+              rw [Nat.cast_withBot, Nat.cast_withBot, Nat.cast_withBot, ← WithBot.coe_add,
+                add_tsub_cancel_of_le, hn]
               · refine' le_trans (Polynomial.natDegree_le_of_degree_le hdq) (le_of_lt h)
               rw [Polynomial.leadingCoeff_X_pow, mul_one]
               exact mt Polynomial.leadingCoeff_eq_zero.1 hq0
@@ -984,7 +988,8 @@ protected theorem Polynomial.isNoetherianRing [inst : IsNoetherianRing R] : IsNo
               · rw [hpq]
                 exact Ideal.zero_mem _
               refine' ih _ _ (I.sub_mem hp (I.mul_mem_right _ hq)) rfl
-              rwa [Polynomial.degree_eq_natDegree hpq, Nat.cast_withBot, Nat.cast_withBot, WithBot.coe_lt_coe, hn] at this
+              rwa [Polynomial.degree_eq_natDegree hpq, Nat.cast_withBot, Nat.cast_withBot,
+                WithBot.coe_lt_coe, hn] at this
             exact hs2 ⟨Polynomial.mem_degreeLe.2 hdq, hq⟩⟩⟩
 #align polynomial.is_noetherian_ring Polynomial.isNoetherianRing
 
@@ -1058,7 +1063,8 @@ theorem sup_ker_aeval_le_ker_aeval_mul {f : M →ₗ[R] M} {p q : R[X]} :
 #align polynomial.sup_ker_aeval_le_ker_aeval_mul Polynomial.sup_ker_aeval_le_ker_aeval_mul
 
 theorem sup_ker_aeval_eq_ker_aeval_mul_of_coprime (f : M →ₗ[R] M) {p q : R[X]}
-    (hpq : IsCoprime p q) : LinearMap.ker (aeval f p) ⊔ LinearMap.ker (aeval f q) = LinearMap.ker (aeval f (p * q)) := by
+    (hpq : IsCoprime p q) :
+    LinearMap.ker (aeval f p) ⊔ LinearMap.ker (aeval f q) = LinearMap.ker (aeval f (p * q)) := by
   apply le_antisymm sup_ker_aeval_le_ker_aeval_mul
   intro v hv
   rw [Submodule.mem_sup]
@@ -1086,7 +1092,8 @@ end Polynomial
 
 namespace MvPolynomial
 
-theorem isNoetherianRing_fin_0 [IsNoetherianRing R] : IsNoetherianRing (MvPolynomial (Fin 0) R) := by
+theorem isNoetherianRing_fin_0 [IsNoetherianRing R] :
+    IsNoetherianRing (MvPolynomial (Fin 0) R) := by
   apply isNoetherianRing_of_ringEquiv R
   symm; apply MvPolynomial.isEmptyRingEquiv R (Fin 0)
 #align mv_polynomial.is_noetherian_ring_fin_0 MvPolynomial.isNoetherianRing_fin_0
@@ -1285,4 +1292,3 @@ instance (priority := 100) : UniqueFactorizationMonoid (MvPolynomial σ D) := by
 end MvPolynomial
 
 end UniqueFactorizationDomain
-
