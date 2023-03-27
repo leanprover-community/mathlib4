@@ -459,7 +459,7 @@ theorem Subperm.subset {l₁ l₂ : List α} : l₁ <+~ l₂ → l₁ ⊆ l₂
 theorem Subperm.filter (p : α → Bool) ⦃l l' : List α⦄ (h : l <+~ l') :
     filter p l <+~ filter p l' := by
   obtain ⟨xs, hp, h⟩ := h
-  exact ⟨_, hp.filter p, h.filter p⟩
+  exact ⟨_, hp.filter p, h.filter' p⟩
 #align list.subperm.filter List.Subperm.filter
 
 end Subperm
