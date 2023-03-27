@@ -84,7 +84,7 @@ the `Aᵢ` commute with the `Bⱼ`.
 The physical interpretation is that `A₀` and `A₁` are a pair of boolean observables which
 are spacelike separated from another pair `B₀` and `B₁` of boolean observables.
 -/
-@[nolint has_nonempty_instance]
+--@[nolint has_nonempty_instance] Porting note: linter does not exist
 structure IsCHSHTuple {R} [Monoid R] [StarSemigroup R] (A₀ A₁ B₀ B₁ : R) where
   A₀_inv : A₀ ^ 2 = 1
   A₁_inv : A₁ ^ 2 = 1
@@ -98,6 +98,7 @@ structure IsCHSHTuple {R} [Monoid R] [StarSemigroup R] (A₀ A₁ B₀ B₁ : R)
   A₀B₁_commutes : A₀ * B₁ = B₁ * A₀
   A₁B₀_commutes : A₁ * B₀ = B₀ * A₁
   A₁B₁_commutes : A₁ * B₁ = B₁ * A₁
+set_option linter.uppercaseLean3 false in
 #align is_CHSH_tuple IsCHSHTuple
 
 variable {R : Type u}
@@ -115,8 +116,10 @@ theorem CHSH_id [CommRing R] {A₀ A₁ B₀ B₁ : R} (A₀_inv : A₀ ^ 2 = 1)
       neg_add, neg_sub, sub_add, sub_sub, neg_mul, ← sq, A₀_inv, B₀_inv, ← sq, ← mul_assoc, one_mul,
       mul_one, add_right_neg, add_zero, sub_eq_add_neg, A₀_inv, mul_one, add_right_neg,
       MulZeroClass.zero_mul]
+set_option linter.uppercaseLean3 false in
 #align CHSH_id CHSH_id
 
+set_option synthInstance.etaExperiment true in
 /-- Given a CHSH tuple (A₀, A₁, B₀, B₁) in a *commutative* ordered `*`-algebra over ℝ,
 `A₀ * B₀ + A₀ * B₁ + A₁ * B₀ - A₁ * B₁ ≤ 2`.
 
@@ -133,21 +136,20 @@ theorem CHSH_inequality_of_comm [OrderedCommRing R] [StarOrderedRing R] [Algebra
       rw [idem, h, ← mul_smul]
       norm_num
     have sa : star P = P := by
-      dsimp [P]
-      simp only [star_add, star_sub, star_mul, star_bit0, star_one, T.A₀_sa, T.A₁_sa, T.B₀_sa,
+      dsimp
+      simp only [star_add, star_sub, star_mul, star_ofNat, star_one, T.A₀_sa, T.A₁_sa, T.B₀_sa,
         T.B₁_sa, mul_comm B₀, mul_comm B₁]
     rw [idem']
     conv_rhs =>
-      congr
-      skip
-      congr
+      arg 2
+      arg 1
       rw [← sa]
-    convert smul_le_smul_of_nonneg (star_mul_self_nonneg : 0 ≤ star P * P) _
+    convert smul_le_smul_of_nonneg (R := ℝ) (star_mul_self_nonneg : 0 ≤ star P * P) _
     · simp
-    · infer_instance
     · norm_num
   apply le_of_sub_nonneg
   simpa only [sub_add_eq_sub_sub, ← sub_add] using i₁
+set_option linter.uppercaseLean3 false in
 #align CHSH_inequality_of_comm CHSH_inequality_of_comm
 
 /-!
@@ -159,7 +161,7 @@ which we hide in a namespace as they are unlikely to be useful elsewhere.
 -- mathport name: «expr√2»
 local notation "√2" => (Real.sqrt 2 : ℝ)
 
-namespace tsirelson_inequality
+namespace TsirelsonInequality
 
 /-!
 Before proving Tsirelson's bound,
@@ -170,7 +172,8 @@ we prepare some easy lemmas about √2.
 -- This calculation, which we need for Tsirelson's bound,
 -- defeated me. Thanks for the rescue from Shing Tak Lam!
 theorem tsirelson_inequality_aux : √2 * √2 ^ 3 = √2 * (2 * √2⁻¹ + 4 * (√2⁻¹ * 2⁻¹)) := by
-  ring_nf; field_simp [(@Real.sqrt_pos 2).2 (by norm_num)]
+  ring_nf
+  rw [mul_inv_cancel (ne_of_gt (Real.sqrt_pos.2 (show (2 : ℝ) > 0 by norm_num)))]
   convert congr_arg (· ^ 2) (@Real.sq_sqrt 2 (by norm_num)) using 1 <;> simp only [← pow_mul] <;>
     norm_num
 #align tsirelson_inequality.tsirelson_inequality_aux TsirelsonInequality.tsirelson_inequality_aux
@@ -180,10 +183,11 @@ theorem sqrt_two_inv_mul_self : √2⁻¹ * √2⁻¹ = (2⁻¹ : ℝ) := by
   norm_num
 #align tsirelson_inequality.sqrt_two_inv_mul_self TsirelsonInequality.sqrt_two_inv_mul_self
 
-end tsirelson_inequality
+end TsirelsonInequality
 
-open tsirelson_inequality
+open TsirelsonInequality
 
+set_option synthInstance.etaExperiment true in
 /-- In a noncommutative ordered `*`-algebra over ℝ,
 Tsirelson's bound for a CHSH tuple (A₀, A₁, B₀, B₁) is
 `A₀ * B₀ + A₀ * B₁ + A₁ * B₀ - A₁ * B₁ ≤ 2^(3/2) • 1`.
@@ -195,14 +199,14 @@ of the difference.
 -/
 theorem tsirelson_inequality [OrderedRing R] [StarOrderedRing R] [Algebra ℝ R] [OrderedSMul ℝ R]
     [StarModule ℝ R] (A₀ A₁ B₀ B₁ : R) (T : IsCHSHTuple A₀ A₁ B₀ B₁) :
-    A₀ * B₀ + A₀ * B₁ + A₁ * B₀ - A₁ * B₁ ≤ √2 ^ 3 • 1 := by
+    A₀ * B₀ + A₀ * B₁ + A₁ * B₀ - A₁ * B₁ ≤ √2 ^ 3 • (1 : R) := by
   -- abel will create `ℤ` multiplication. We will `simp` them away to `ℝ` multiplication.
   have M : ∀ (m : ℤ) (a : ℝ) (x : R), m • a • x = ((m : ℝ) * a) • x := fun m a x => by
     rw [zsmul_eq_smul_cast ℝ, ← mul_smul]
   let P := √2⁻¹ • (A₁ + A₀) - B₀
   let Q := √2⁻¹ • (A₁ - A₀) + B₁
-  have w : √2 ^ 3 • 1 - A₀ * B₀ - A₀ * B₁ - A₁ * B₀ + A₁ * B₁ = √2⁻¹ • (P ^ 2 + Q ^ 2) := by
-    dsimp [P, Q]
+  have w : √2 ^ 3 • (1 : R) - A₀ * B₀ - A₀ * B₁ - A₁ * B₀ + A₁ * B₁ = √2⁻¹ • (P ^ 2 + Q ^ 2) := by
+    dsimp
     -- distribute out all the powers and products appearing on the RHS
     simp only [sq, sub_mul, mul_sub, add_mul, mul_add, smul_add, smul_sub]
     -- pull all coefficients out to the front, and combine `√2`s where possible
@@ -212,20 +216,19 @@ theorem tsirelson_inequality [OrderedRing R] [StarOrderedRing R] [Algebra ℝ R]
     -- move Aᵢ to the left of Bᵢ
     simp only [← T.A₀B₀_commutes, ← T.A₀B₁_commutes, ← T.A₁B₀_commutes, ← T.A₁B₁_commutes]
     -- collect terms, simplify coefficients, and collect terms again:
-    abel
+    abel_nf
     -- all terms coincide, but the last one. Simplify all other terms
     simp only [M]
-    simp only [neg_mul, Int.cast_bit0, one_mul, mul_inv_cancel_of_invertible, Int.cast_one,
-      one_smul, Int.cast_neg, add_right_inj, neg_smul, ← add_smul]
+    simp only [neg_mul, one_mul, mul_inv_cancel_of_invertible, Int.cast_one, add_assoc, add_comm,
+      add_left_comm, one_smul, Int.cast_neg, neg_smul, Int.int_cast_ofNat]
+    simp only [← add_assoc, ← add_smul]
     -- just look at the coefficients now:
     congr
     exact mul_left_cancel₀ (by norm_num) tsirelson_inequality_aux
   have pos : 0 ≤ √2⁻¹ • (P ^ 2 + Q ^ 2) := by
     have P_sa : star P = P := by
-      dsimp [P]
       simp only [star_smul, star_add, star_sub, star_id_of_comm, T.A₀_sa, T.A₁_sa, T.B₀_sa, T.B₁_sa]
     have Q_sa : star Q = Q := by
-      dsimp [Q]
       simp only [star_smul, star_add, star_sub, star_id_of_comm, T.A₀_sa, T.A₁_sa, T.B₀_sa, T.B₁_sa]
     have P2_nonneg : 0 ≤ P ^ 2 := by
       rw [sq]
@@ -248,6 +251,5 @@ theorem tsirelson_inequality [OrderedRing R] [StarOrderedRing R] [Algebra ℝ R]
     -- `norm_num` can't directly show `0 ≤ √2⁻¹`
     simp
   apply le_of_sub_nonneg
-  simpa only [sub_add_eq_sub_sub, ← sub_add, w] using Pos
+  simpa only [sub_add_eq_sub_sub, ← sub_add, w, Nat.cast_zero] using pos
 #align tsirelson_inequality tsirelson_inequality
-
