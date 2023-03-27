@@ -91,6 +91,8 @@ unsafe def ofList {α : Type u} : List α → ListM m α
 /-- The empty `ListM`. -/
 unsafe def empty {α : Type u} : ListM m α := ofList []
 
+unsafe instance : Inhabited (ListM m α) := ⟨empty⟩
+
 /-- Convert a `List` of values inside the monad into a `ListM`. -/
 unsafe def ofListM {α : Type u} : List (m α) → ListM m α
   | [] => nil

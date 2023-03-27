@@ -14,6 +14,18 @@ import Mathlib.Tactic.SolveByElim
 import Mathlib.Tactic.TryThis
 
 /-!
+# The `rewrites` tactic.
+
+`rewrites` tries to find a lemma which can rewrite the goal.
+
+`rewrites` should not be left in proofs; it is a search tool, like `library_search`.
+
+Suggestions are printed as `rw [h]` or `rw [←h]`.
+
+## Future work
+It would be nice to have `rewrites at h`.
+
+We could also try discharging side goals via `assumption` or `solve_by_elim`.
 
 -/
 
@@ -111,7 +123,7 @@ unsafe rewritesCore lemmas goal
   |>.mapM RewriteResult.computeRefl
   |>.takeUpToFirst (fun r => r.refl? = some true)
   -- Bound the number of results.
-  |>.take max
+  |>.takeAsList max
 
 open Lean.Parser.Tactic
 
@@ -120,7 +132,7 @@ open Lean.Parser.Tactic
 
 `rewrites` should not be left in proofs; it is a search tool, like `library_search`.
 
-Suggestions are printed as `rw h` or `rw ←h`.
+Suggestions are printed as `rw [h]` or `rw [←h]`.
 -/
 syntax (name := rewrites') "rewrites" "!"? : tactic
 
