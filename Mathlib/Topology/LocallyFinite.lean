@@ -91,7 +91,7 @@ protected theorem nhdsWithin_unionᵢ (hf : LocallyFinite f) (a : X) :
     _ ≤ ⨆ i, 𝓝[f i] a := supᵢ_mono fun i ↦ nhdsWithin_mono _ <| inter_subset_left _ _
 #align locally_finite.nhds_within_Union LocallyFinite.nhdsWithin_unionᵢ
 
-lemma continuousOn_unionᵢ' {g : X → Y} (hf : LocallyFinite f)
+theorem continuousOn_unionᵢ' {g : X → Y} (hf : LocallyFinite f)
     (hc : ∀ i x, x ∈ closure (f i) → ContinuousWithinAt g (f i) x) :
     ContinuousOn g (⋃ i, f i) := by
   rintro x -
@@ -104,18 +104,18 @@ lemma continuousOn_unionᵢ' {g : X → Y} (hf : LocallyFinite f)
     exact tendsto_bot
 #align locally_finite.continuous_on_Union' LocallyFinite.continuousOn_unionᵢ'
 
-lemma continuousOn_unionᵢ {g : X → Y} (hf : LocallyFinite f) (h_cl : ∀ i, IsClosed (f i))
+theorem continuousOn_unionᵢ {g : X → Y} (hf : LocallyFinite f) (h_cl : ∀ i, IsClosed (f i))
     (h_cont : ∀ i, ContinuousOn g (f i)) : ContinuousOn g (⋃ i, f i) :=
   hf.continuousOn_unionᵢ' fun i x hx ↦ h_cont i x <| (h_cl i).closure_subset hx
 #align locally_finite.continuous_on_Union LocallyFinite.continuousOn_unionᵢ
 
-protected lemma continuous' {g : X → Y} (hf : LocallyFinite f) (h_cov : (⋃ i, f i) = univ)
+protected theorem continuous' {g : X → Y} (hf : LocallyFinite f) (h_cov : (⋃ i, f i) = univ)
     (hc : ∀ i x, x ∈ closure (f i) → ContinuousWithinAt g (f i) x) :
     Continuous g :=
   continuous_iff_continuousOn_univ.2 <| h_cov ▸ hf.continuousOn_unionᵢ' hc
 #align locally_finite.continuous' LocallyFinite.continuous'
 
-protected lemma continuous {g : X → Y} (hf : LocallyFinite f) (h_cov : (⋃ i, f i) = univ)
+protected theorem continuous {g : X → Y} (hf : LocallyFinite f) (h_cov : (⋃ i, f i) = univ)
     (h_cl : ∀ i, IsClosed (f i)) (h_cont : ∀ i, ContinuousOn g (f i)) :
     Continuous g :=
   continuous_iff_continuousOn_univ.2 <| h_cov ▸ hf.continuousOn_unionᵢ h_cl h_cont
