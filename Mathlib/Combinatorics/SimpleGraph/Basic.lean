@@ -219,11 +219,8 @@ theorem ne_of_adj_of_not_adj {v w x : V} (h : G.Adj v x) (hn : ¬G.Adj w x) : v 
   hn (h' ▸ h)
 #align simple_graph.ne_of_adj_of_not_adj SimpleGraph.ne_of_adj_of_not_adj
 
-theorem adj_injective : Injective (Adj : SimpleGraph V → V → V → Prop) := fun G H h =>
-  by
-  cases G
-  cases H
-  congr
+theorem adj_injective : Injective (Adj : SimpleGraph V → V → V → Prop) :=
+  SimpleGraph.ext
 #align simple_graph.adj_injective SimpleGraph.adj_injective
 
 @[simp]
@@ -248,10 +245,10 @@ theorem isSubgraph_eq_le : (IsSubgraph : SimpleGraph V → SimpleGraph V → Pro
 #align simple_graph.is_subgraph_eq_le SimpleGraph.isSubgraph_eq_le
 
 /-- The supremum of two graphs `x ⊔ y` has edges where either `x` or `y` have edges. -/
-instance : Sup (SimpleGraph V) :=
-  ⟨fun x y =>
+instance : Sup (SimpleGraph V) where
+  sup x y :=
     { Adj := x.Adj ⊔ y.Adj
-      symm := fun v w h => by rwa [Pi.sup_apply, Pi.sup_apply, x.adj_comm, y.adj_comm] }⟩
+      symm := fun v w h => by rwa [Pi.sup_apply, Pi.sup_apply, x.adj_comm, y.adj_comm] }
 
 @[simp]
 theorem sup_adj (x y : SimpleGraph V) (v w : V) : (x ⊔ y).Adj v w ↔ x.Adj v w ∨ y.Adj v w :=
@@ -259,10 +256,10 @@ theorem sup_adj (x y : SimpleGraph V) (v w : V) : (x ⊔ y).Adj v w ↔ x.Adj v 
 #align simple_graph.sup_adj SimpleGraph.sup_adj
 
 /-- The infimum of two graphs `x ⊓ y` has edges where both `x` and `y` have edges. -/
-instance : Inf (SimpleGraph V) :=
-  ⟨fun x y =>
+instance : Inf (SimpleGraph V) where
+  inf x y :=
     { Adj := x.Adj ⊓ y.Adj
-      symm := fun v w h => by rwa [Pi.inf_apply, Pi.inf_apply, x.adj_comm, y.adj_comm] }⟩
+      symm := fun v w h => by rwa [Pi.inf_apply, Pi.inf_apply, x.adj_comm, y.adj_comm] }
 
 @[simp]
 theorem inf_adj (x y : SimpleGraph V) (v w : V) : (x ⊓ y).Adj v w ↔ x.Adj v w ∧ y.Adj v w :=
@@ -272,11 +269,11 @@ theorem inf_adj (x y : SimpleGraph V) (v w : V) : (x ⊓ y).Adj v w ↔ x.Adj v 
 /-- We define `Gᶜ` to be the `SimpleGraph V` such that no two adjacent vertices in `G`
 are adjacent in the complement, and every nonadjacent pair of vertices is adjacent
 (still ensuring that vertices are not adjacent to themselves). -/
-instance hasCompl : HasCompl (SimpleGraph V) :=
-  ⟨fun G =>
+instance hasCompl : HasCompl (SimpleGraph V) where
+  compl G :=
     { Adj := fun v w => v ≠ w ∧ ¬G.Adj v w
       symm := fun v w ⟨hne, _⟩ => ⟨hne.symm, by rwa [adj_comm]⟩
-      loopless := fun v ⟨hne, _⟩ => (hne rfl).elim }⟩
+      loopless := fun v ⟨hne, _⟩ => (hne rfl).elim }
 
 @[simp]
 theorem compl_adj (G : SimpleGraph V) (v w : V) : Gᶜ.Adj v w ↔ v ≠ w ∧ ¬G.Adj v w :=
@@ -284,29 +281,29 @@ theorem compl_adj (G : SimpleGraph V) (v w : V) : Gᶜ.Adj v w ↔ v ≠ w ∧ �
 #align simple_graph.compl_adj SimpleGraph.compl_adj
 
 /-- The difference of two graphs `x \ y` has the edges of `x` with the edges of `y` removed. -/
-instance sdiff : SDiff (SimpleGraph V) :=
-  ⟨fun x y =>
+instance sdiff : SDiff (SimpleGraph V) where
+  sdiff x y :=
     { Adj := x.Adj \ y.Adj
-      symm := fun v w h => by change x.Adj w v ∧ ¬y.Adj w v; rwa [x.adj_comm, y.adj_comm] }⟩
+      symm := fun v w h => by change x.Adj w v ∧ ¬y.Adj w v; rwa [x.adj_comm, y.adj_comm] }
 
 @[simp]
 theorem sdiff_adj (x y : SimpleGraph V) (v w : V) : (x \ y).Adj v w ↔ x.Adj v w ∧ ¬y.Adj v w :=
   Iff.rfl
 #align simple_graph.sdiff_adj SimpleGraph.sdiff_adj
 
-instance supSet : SupSet (SimpleGraph V) :=
-  ⟨fun s =>
+instance supSet : SupSet (SimpleGraph V) where
+  supₛ s :=
     { Adj := fun a b => ∃ G ∈ s, Adj G a b
       symm := fun a b => Exists.imp $ fun _ => And.imp_right Adj.symm
       loopless := by
         rintro a ⟨G, _, ha⟩
-        exact ha.ne rfl }⟩
+        exact ha.ne rfl }
 
-instance infSet : InfSet (SimpleGraph V) :=
-  ⟨fun s =>
+instance infSet : InfSet (SimpleGraph V) where
+  infₛ s :=
     { Adj := fun a b => (∀ ⦃G⦄, G ∈ s → Adj G a b) ∧ a ≠ b
       symm := fun _ _ => And.imp (forall₂_imp fun _ _ => Adj.symm) Ne.symm
-      loopless := fun _ h => h.2 rfl }⟩
+      loopless := fun _ h => h.2 rfl }
 
 @[simp]
 theorem supₛ_adj {s : Set (SimpleGraph V)} {a b : V} : (supₛ s).Adj a b ↔ ∃ G ∈ s, Adj G a b :=
@@ -342,8 +339,7 @@ theorem infᵢ_adj_of_nonempty [Nonempty ι] {f : ι → SimpleGraph V} :
 
 /-- For graphs `G`, `H`, `G ≤ H` iff `∀ a b, G.adj a b → H.adj a b`. -/
 instance distribLattice : DistribLattice (SimpleGraph V) :=
-  {
-    show DistribLattice (SimpleGraph V) from
+  { show DistribLattice (SimpleGraph V) from
       adj_injective.distribLattice _ (fun _ _ => rfl) fun _ _ => rfl with
     le := fun G H => ∀ ⦃a b⦄, G.Adj a b → H.Adj a b }
 
@@ -366,8 +362,8 @@ instance completeBooleanAlgebra : CompleteBooleanAlgebra (SimpleGraph V) :=
     inf_compl_le_bot := fun G v w h => False.elim <| h.2.2 h.1
     top_le_sup_compl := fun G v w hvw => by
       by_cases G.Adj v w
-      exact Or.inl h
-      exact Or.inr ⟨hvw, h⟩
+      · exact Or.inl h
+      · exact Or.inr ⟨hvw, h⟩
     supₛ := supₛ
     le_supₛ := fun s G hG a b hab => ⟨G, hG, hab⟩
     supₛ_le := fun s G hG a b => by
@@ -376,16 +372,9 @@ instance completeBooleanAlgebra : CompleteBooleanAlgebra (SimpleGraph V) :=
     infₛ := infₛ
     infₛ_le := fun s G hG a b hab => hab.1 hG
     le_infₛ := fun s G hG a b hab => ⟨fun H hH => hG _ hH hab, hab.ne⟩
-    inf_supₛ_le_supᵢ_inf := fun G s a b hab => by
-      simpa only [exists_prop, supₛ_adj, and_imp, forall_exists_index, infₛ_adj, supᵢ_adj, inf_adj,
-         ←exists_and_right, ←exists_and_left, and_assoc, and_self_right] using hab
-    infᵢ_sup_le_sup_infₛ := fun G s a b hab =>
-      by
-      simp only [sup_adj, infₛ_adj, infᵢ_adj] at hab ⊢
-      have : (∀ G' ∈ s, Adj G a b ∨ Adj G' a b) ∧ a ≠ b :=
-        (and_congr_left fun h => forall_congr' fun H => _).1 hab
-      simpa [forall_or_left, or_and_right, and_iff_left_of_imp Adj.ne] using this
-      exact and_iff_left h }
+    inf_supₛ_le_supᵢ_inf := fun G s a b hab => by simpa using hab
+    infᵢ_sup_le_sup_infₛ := fun G s a b hab => by
+      simpa [forall_and, forall_or_left, or_and_right, and_iff_left_of_imp Adj.ne] using hab }
 
 @[simp]
 theorem top_adj (v w : V) : (⊤ : SimpleGraph V).Adj v w ↔ v ≠ w :=
