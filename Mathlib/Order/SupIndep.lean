@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Kevin Buzzard, Yaël Dillies, Eric Wieser
 
 ! This file was ported from Lean 3 source module order.sup_indep
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
+! leanprover-community/mathlib commit 1c857a1f6798cb054be942199463c2cf904cb937
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -149,7 +149,7 @@ variable [DistribLattice α] [OrderBot α] {s : Finset ι} {f : ι → α}
 
 theorem supIndep_iff_pairwiseDisjoint : s.SupIndep f ↔ (s : Set ι).PairwiseDisjoint f :=
   ⟨SupIndep.pairwiseDisjoint, fun hs _ ht _ hi hit =>
-    disjoint_sup_right.2 fun _ hj => hs hi (ht hj) (ne_of_mem_of_not_mem hj hit).symm⟩
+    Finset.disjoint_sup_right.2 fun _ hj => hs hi (ht hj) (ne_of_mem_of_not_mem hj hit).symm⟩
 #align finset.sup_indep_iff_pairwise_disjoint Finset.supIndep_iff_pairwiseDisjoint
 
 alias supIndep_iff_pairwiseDisjoint ↔
@@ -365,12 +365,11 @@ theorem CompleteLattice.independent_iff_supIndep [CompleteLattice α] {s : Finse
   classical
     rw [Finset.supIndep_iff_disjoint_erase]
     refine' Subtype.forall.trans (forall₂_congr fun a b => _)
-    -- Porting note: `congr` doesn't seem to work with ↔
-    rw [Finset.sup_eq_supᵢ, ←eq_iff_iff]
-    congr 1
+    rw [Finset.sup_eq_supᵢ]
+    congr! 1
     refine' supᵢ_subtype.trans _
-    congr 1 with x
-    simp [supᵢ_and, @supᵢ_comm _ (x ∈ s)]
+    congr! 1
+    simp [supᵢ_and, @supᵢ_comm _ (_ ∈ s)]
 #align complete_lattice.independent_iff_sup_indep CompleteLattice.independent_iff_supIndep
 
 alias CompleteLattice.independent_iff_supIndep ↔

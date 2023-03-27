@@ -26,7 +26,7 @@ this is a small category at the next higher level.
 
 namespace CategoryTheory
 
--- declare the `v`'s first; see note [category_theory universes].
+-- declare the `v`'s first; see note [CategoryTheory universes].
 universe v₁ v₂ v₃ u₁ u₂ u₃
 
 open NatTrans Category CategoryTheory.Functor

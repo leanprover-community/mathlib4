@@ -65,7 +65,7 @@ theorem card_le_of_subset : s ⊆ t → s.card ≤ t.card :=
   Multiset.card_le_of_le ∘ val_le_iff.mpr
 #align finset.card_le_of_subset Finset.card_le_of_subset
 
--- Porting note: no @[mono]
+@[mono]
 theorem card_mono : Monotone (@card α) := by apply card_le_of_subset
 #align finset.card_mono Finset.card_mono
 

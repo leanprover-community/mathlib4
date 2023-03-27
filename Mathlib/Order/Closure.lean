@@ -72,12 +72,7 @@ namespace ClosureOperator
 instance [Preorder α] : CoeFun (ClosureOperator α) fun _ => α → α :=
   ⟨fun c => c.toFun⟩
 
-/-- See Note [custom simps projection] -/
-def Simps.apply [Preorder α] (f : ClosureOperator α) : α → α :=
-  f
-#align closure_operator.simps.apply ClosureOperator.Simps.apply
-
-initialize_simps_projections ClosureOperator (toOrderHom_toFun → apply, -toOrderHom)
+initialize_simps_projections ClosureOperator (toFun → apply)
 
 section PartialOrder
 
@@ -151,7 +146,7 @@ theorem closure_le_mk₃_iff {f : α → α} {p : α → Prop} {hf : ∀ x, x �
   hmin hxy hy
 #align closure_operator.closure_le_mk₃_iff ClosureOperator.closure_le_mk₃_iff
 
--- @[mono] Porting note: `mono` not yet implemented
+@[mono]
 theorem monotone : Monotone c :=
   c.monotone'
 #align closure_operator.monotone ClosureOperator.monotone
@@ -334,11 +329,6 @@ variable [Preorder α] [Preorder β] {u : β → α} (l : LowerAdjoint u)
 
 instance : CoeFun (LowerAdjoint u) fun _ => α → β where coe := toFun
 
-/-- See Note [custom simps projection] -/
-def Simps.apply : α → β :=
-  l
-#align lower_adjoint.simps.apply LowerAdjoint.Simps.apply
-
 theorem gc : GaloisConnection l u :=
   l.gc'
 #align lower_adjoint.gc LowerAdjoint.gc
@@ -349,7 +339,7 @@ theorem ext : ∀ l₁ l₂ : LowerAdjoint u, (l₁ : α → β) = (l₂ : α �
     congr
 #align lower_adjoint.ext LowerAdjoint.ext
 
---@[mono] Porting note: `mono` is not implemented yet
+@[mono]
 theorem monotone : Monotone (u ∘ l) :=
   l.gc.monotone_u.comp l.gc.monotone_l
 #align lower_adjoint.monotone LowerAdjoint.monotone

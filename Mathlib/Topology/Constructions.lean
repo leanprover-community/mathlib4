@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 
 ! This file was ported from Lean 3 source module topology.constructions
-! leanprover-community/mathlib commit dc6c365e751e34d100e80fe6e314c3c3e0fd2988
+! leanprover-community/mathlib commit 0c1f285a9f6e608ae2bdffa3f993eafb01eba829
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -830,6 +830,9 @@ theorem embedding_graph {f : α → β} (hf : Continuous f) : Embedding fun x =>
   embedding_of_embedding_compose (continuous_id.prod_mk hf) continuous_fst embedding_id
 #align embedding_graph embedding_graph
 
+theorem embedding_prod_mk (x : α) : Embedding (Prod.mk x : β → α × β) :=
+  embedding_of_embedding_compose (Continuous.Prod.mk x) continuous_snd embedding_id
+
 end Prod
 
 section Sum
@@ -843,6 +846,7 @@ theorem continuous_sum_dom {f : α ⊕ β → γ} :
   (continuous_sup_dom (t₁ := TopologicalSpace.coinduced Sum.inl _)
     (t₂ := TopologicalSpace.coinduced Sum.inr _)).trans <|
     continuous_coinduced_dom.and continuous_coinduced_dom
+#align continuous_sum_dom continuous_sum_dom
 
 theorem continuous_sum_elim {f : α → γ} {g : β → γ} :
     Continuous (Sum.elim f g) ↔ Continuous f ∧ Continuous g :=
@@ -1175,7 +1179,7 @@ theorem Continuous.quotient_liftOn' {f : α → β} (h : Continuous f)
   h.quotient_lift hs
 #align continuous.quotient_lift_on' Continuous.quotient_liftOn'
 
-theorem Continuous.quotient_map' {t : Setoid β} {f : α → β} (hf : Continuous f)
+@[continuity] theorem Continuous.quotient_map' {t : Setoid β} {f : α → β} (hf : Continuous f)
     (H : (s.r ⇒ t.r) f f) : Continuous (Quotient.map' f H) :=
   (continuous_quotient_mk'.comp hf).quotient_lift _
 #align continuous.quotient_map' Continuous.quotient_map'
@@ -1252,6 +1256,15 @@ theorem continuous_update [DecidableEq ι] (i : ι) :
     Continuous fun f : (∀ j, π j) × π i => update f.1 i f.2 :=
   continuous_fst.update i continuous_snd
 #align continuous_update continuous_update
+
+/-- `Pi.mulSingle i x` is continuous in `x`. -/
+-- porting note: todo: restore @[continuity]
+@[to_additive "`Pi.single i x` is continuous in `x`."]
+theorem continuous_mulSingle [∀ i, One (π i)] [DecidableEq ι] (i : ι) :
+    Continuous fun x => (Pi.mulSingle i x : ∀ i, π i) :=
+  continuous_const.update _ continuous_id
+#align continuous_mul_single continuous_mulSingle
+#align continuous_single continuous_single
 
 theorem Filter.Tendsto.fin_insertNth {n} {π : Fin (n + 1) → Type _} [∀ i, TopologicalSpace (π i)]
     (i : Fin (n + 1)) {f : β → π i} {l : Filter β} {x : π i} (hf : Tendsto f l (𝓝 x))
@@ -1377,7 +1390,8 @@ theorem pi_eq_generateFrom :
     Pi.topologicalSpace =
       generateFrom
         { g | ∃ (s : ∀ a, Set (π a)) (i : Finset ι), (∀ a ∈ i, IsOpen (s a)) ∧ g = pi (↑i) s } :=
-  calc Pi.topologicalSpace = @Pi.topologicalSpace ι π fun a => generateFrom { s | IsOpen s } :=
+  calc Pi.topologicalSpace
+  _ = @Pi.topologicalSpace ι π fun a => generateFrom { s | IsOpen s } :=
     by simp only [generateFrom_setOf_isOpen]
   _ = _ := pi_generateFrom_eq
 #align pi_eq_generate_from pi_eq_generateFrom
