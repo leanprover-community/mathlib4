@@ -465,6 +465,7 @@ instance : CompleteDistribLattice G.Subgraph :=
     le_top := fun G' => ⟨Set.subset_univ _, fun a b => G'.adj_sub⟩
     bot_le := fun G' => ⟨Set.empty_subset _, fun a b => False.elim⟩
     supₛ := supₛ
+    -- porting note: needed `apply` here to modify elaboration; previously the term itself was fine.
     le_supₛ := fun s G' hG' => ⟨by apply Set.subset_unionᵢ₂ G' hG', fun a b hab => ⟨G', hG', hab⟩⟩
     supₛ_le := fun s G' hG' =>
       ⟨Set.unionᵢ₂_subset fun H hH => (hG' _ hH).1, by
