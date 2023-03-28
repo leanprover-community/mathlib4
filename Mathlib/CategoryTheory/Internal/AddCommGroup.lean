@@ -21,6 +21,16 @@ def addCommGroup (G : Internal AddCommGroupCat C) (X : Cᵒᵖ) :
   add_comm := fun a b =>
     congr_fun (congr_app (AddCommGroupCat_add_comm.onInternal G) X) ⟨a, b⟩ }
 
+@[simp]
+def addCommGroup_addMonoidHom (G : Internal AddCommGroupCat C) {X Y : Cᵒᵖ} (f : X ⟶ Y) :
+    letI := addCommGroup G X
+    letI := addCommGroup G Y
+    (X.unop ⟶ G.obj) →+ (Y.unop ⟶ G.obj) :=
+  letI := addCommGroup G X
+  letI := addCommGroup G Y
+  AddMonoidHom.mk' (fun φ => f.unop ≫ φ) (fun a b =>
+    (congr_fun ((AddCommGroupCat_add.onInternal G).naturality f) ⟨a, b⟩).symm)
+
 end Internal
 
 end CategoryTheory
