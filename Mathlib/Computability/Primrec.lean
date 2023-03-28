@@ -433,11 +433,11 @@ theorem right : Primrec₂ fun (_ : α) (b : β) => b :=
   .snd
 #align primrec₂.right Primrec₂.right
 
-theorem nat_pair : Primrec₂ Nat.pair := by simp [Primrec₂, Primrec]; constructor
-#align primrec₂.mkpair Primrec₂.nat_pair
+theorem natPair : Primrec₂ Nat.pair := by simp [Primrec₂, Primrec]; constructor
+#align primrec₂.mkpair Primrec₂.natPair
 
 theorem unpaired {f : ℕ → ℕ → α} : Primrec (Nat.unpaired f) ↔ Primrec₂ f :=
-  ⟨fun h => by simpa using h.comp nat_pair, fun h => h.comp Primrec.unpair⟩
+  ⟨fun h => by simpa using h.comp natPair, fun h => h.comp Primrec.unpair⟩
 #align primrec₂.unpaired Primrec₂.unpaired
 
 theorem unpaired' {f : ℕ → ℕ → ℕ} : Nat.Primrec (Nat.unpaired f) ↔ Primrec₂ f :=
@@ -921,7 +921,7 @@ private theorem list_foldl' {f : α → List β} {g : α → σ} {h : α → σ 
 
 private theorem list_cons' : (haveI := prim H; Primrec₂ (@List.cons β)) :=
   letI := prim H
-  encode_iff.1 (succ.comp <| Primrec₂.nat_pair.comp (encode_iff.2 fst) (encode_iff.2 snd))
+  encode_iff.1 (succ.comp <| Primrec₂.natPair.comp (encode_iff.2 fst) (encode_iff.2 snd))
 
 private theorem list_reverse' :
     haveI := prim H
@@ -1478,15 +1478,15 @@ theorem if_lt {n a b f g} (ha : @Primrec' n a) (hb : @Primrec' n b) (hf : @Primr
     · simp [Nat.lt_of_sub_eq_succ e]
 #align nat.primrec'.if_lt Nat.Primrec'.if_lt
 
-theorem nat_pair : @Primrec' 2 fun v => v.head.pair v.tail.head :=
+theorem natPair : @Primrec' 2 fun v => v.head.pair v.tail.head :=
   if_lt head (tail head) (add.comp₂ _ (tail <| mul.comp₂ _ head head) head)
     (add.comp₂ _ (add.comp₂ _ (mul.comp₂ _ head head) head) (tail head))
-#align nat.primrec'.mkpair Nat.Primrec'.nat_pair
+#align nat.primrec'.mkpair Nat.Primrec'.natPair
 
 protected theorem encode : ∀ {n}, @Primrec' n encode
   | 0 => (const 0).of_eq fun v => by rw [v.eq_nil]; rfl
   | n + 1 =>
-    (succ.comp₁ _ (nat_pair.comp₂ _ head (tail Primrec'.encode))).of_eq fun ⟨a :: l, e⟩ => rfl
+    (succ.comp₁ _ (natPair.comp₂ _ head (tail Primrec'.encode))).of_eq fun ⟨a :: l, e⟩ => rfl
 #align nat.primrec'.encode Nat.Primrec'.encode
 
 theorem sqrt : @Primrec' 1 fun v => v.head.sqrt := by
@@ -1536,13 +1536,13 @@ theorem of_prim {n f} : Primrec f → @Primrec' n f :=
   case succ => exact succ
   case left => exact unpair₁ head
   case right => exact unpair₂ head
-  case pair f g _ _ hf hg => exact nat_pair.comp₂ _ hf hg
+  case pair f g _ _ hf hg => exact natPair.comp₂ _ hf hg
   case comp f g _ _ hf hg => exact hf.comp₁ _ hg
   case prec f g _ _ hf hg =>
     simpa using
       prec' (unpair₂ head) (hf.comp₁ _ (unpair₁ head))
         (hg.comp₁ _ <|
-          nat_pair.comp₂ _ (unpair₁ <| tail <| tail head) (nat_pair.comp₂ _ head (tail head)))
+          natPair.comp₂ _ (unpair₁ <| tail <| tail head) (natPair.comp₂ _ head (tail head)))
 #align nat.primrec'.of_prim Nat.Primrec'.of_prim
 
 theorem prim_iff {n f} : @Primrec' n f ↔ Primrec f :=
