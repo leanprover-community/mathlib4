@@ -3,7 +3,6 @@ Copyright (c) 2023 Arthur Paulino. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino
 -/
-import Std.Data.List.Basic
 import Lean.Data.Json.Parser
 import Cache.Hashing
 
@@ -75,7 +74,7 @@ def downloadFiles (hashMap : IO.HashMap) (forceDownload : Bool) (parallel : Bool
     else
       let r ← hashMap.foldM (init := []) fun acc _ hash => do
         pure <| (← IO.asTask do downloadFile hash) :: acc
-      failed := r.map Task.get |>.countp (fun r => if let .ok true := r then false else true)
+      failed := r.foldl (init := 0) fun f t => if let .ok true := t.get then f else f + 1
     if failed > 0 then
       IO.println s!"{failed} download(s) failed"
       IO.Process.exit 1
