@@ -344,7 +344,6 @@ theorem totient_gcd_mul_totient_mul (a b : ℕ) : φ (a.gcd b) * φ (a * b) = φ
       _ = a1 * a2 / (b1 * b2) * (c1 * c2) := by
         congr 1
         exact div_mul_div_comm h1 h2
-
   simp only [totient_eq_div_factors_mul]
   rw [shuffle, shuffle]
   rotate_left
