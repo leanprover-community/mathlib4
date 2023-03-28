@@ -508,9 +508,9 @@ section Split
 theorem splits_iff_card_roots (ha : P.a ≠ 0) :
     Splits φ P.toPoly ↔ Multiset.card (map φ P).roots = 3 := by
   replace ha : (map φ P).a ≠ 0 := (_root_.map_ne_zero φ).mpr ha
-  nth_rw_lhs 1 [← RingHom.id_comp φ]
-  rw [roots, ← splits_map_iff, ← map_toPoly, splits_iff_card_roots, ←
-    ((degree_eq_iff_nat_degree_eq <| ne_zero_of_a_ne_zero ha).mp <| degree_of_a_ne_zero ha : _ = 3)]
+  nth_rw 1 [← RingHom.id_comp φ]
+  rw [roots, ← splits_map_iff, ← map_toPoly, Polynomial.splits_iff_card_roots,
+    ← ((degree_eq_iff_natDegree_eq <| ne_zero_of_a_ne_zero ha).1 <| degree_of_a_ne_zero ha : _ = 3)]
 #align cubic.splits_iff_card_roots Cubic.splits_iff_card_roots
 
 theorem splits_iff_roots_eq_three (ha : P.a ≠ 0) :
