@@ -2,6 +2,7 @@ import Mathlib.Init.Data.Nat.Notation
 import Mathlib.Tactic.Basic
 import Mathlib.Tactic.ApplyFun
 import Mathlib.Init.Function
+import Mathlib.Data.Fintype.Card
 -- import Mathlib.Data.Matrix.Basic
 
 open Function
@@ -17,9 +18,9 @@ example (x : Int) (h : x = 1) : 1 = 1 := by
 
 example (a b : Int) (h : a = b) : a + 1 = b + 1 := by
   -- Make sure that we infer the type of the function only after we see the hypothesis:
-  apply_fun (fun n => n+1) at h
-  -- check that `h` was β-reduced (in Lean3 this required additional work)
-  guard_hyp h : a + 1 = b + 1
+  apply_fun (fun n => n + 1) at h
+  -- check that `h` was β-reduced
+  guard_hyp h :ₛ a + 1 = b + 1
   exact h
 
 -- Verify failure when applying a dependently typed function.
@@ -109,3 +110,52 @@ example : ∀ m n : ℕ, m = n → (m < 2) = (n < 2) := by
   intro m n h
   apply_fun (· < 2) at h
   exact h
+
+example (f : ℕ ≃ ℕ) (a b : ℕ) (h : a = b) : True := by
+  apply_fun f at h
+  guard_hyp h : f a = f b
+  trivial
+
+example (f : ℤ ≃ ℤ) (a b : ℕ) (h : a = b) : True := by
+  apply_fun f at h
+  guard_hyp h : f a = f b
+  trivial
+
+example (f : ℤ ≃ ℤ) (a b : α) (h : a = b) : True := by
+  fail_if_success apply_fun f at h
+  trivial
+
+example (f : ℕ → ℕ) (a b : ℕ) (h : a = b) : True := by
+  apply_fun f at h
+  guard_hyp h : f a = f b
+  trivial
+
+example (f : {i : Nat} → Fin i → ℕ) (a b : Fin 37) (h : a = b) : True := by
+  apply_fun f at h
+  guard_hyp h : f a = f b
+  trivial
+
+example (f : (p : Prop) → [Decidable p] → Nat) (p q : Prop) (h : p = q)
+    (h' : {n m : Nat} → n = m → True) : True := by
+  classical
+  apply_fun f at h
+  apply h'
+  exact h
+
+example (f : (p : Prop) → [Decidable p] → Nat) (p q : Prop) (h : p = q)
+    (h' : {n m : Nat} → n = m → True) : True := by
+  classical
+  apply_fun (fun x [Decidable x] => f x) at h
+  apply h'
+  exact h
+
+example (a b : ℕ) (h : a = b) : True := by
+  apply_fun (fun i => i + ?_) at h
+  · trivial
+  · exact 37
+
+-- Check that it can solve congruence (needs Subsingleton.elim for the fintype instances)
+example (α β : Type u) [Fintype α] [Fintype β] (h : α = β) : True := by
+  apply_fun Fintype.card at h
+  guard_hyp h : Fintype.card α = Fintype.card β
+  trivial

@@ -394,7 +394,7 @@ theorem colLen_eq_card (μ : YoungDiagram) {j : ℕ} : μ.colLen j = (μ.col j).
 
 @[mono]
 theorem colLen_anti (μ : YoungDiagram) (j1 j2 : ℕ) (hj : j1 ≤ j2) : μ.colLen j2 ≤ μ.colLen j1 := by
-  convert μ.transpose.rowLen_anti j1 j2 hj <;> simp
+  convert μ.transpose.rowLen_anti j1 j2 hj using 1 <;> simp
 #align young_diagram.col_len_anti YoungDiagram.colLen_anti
 
 end Columns
@@ -431,7 +431,7 @@ theorem rowLens_sorted (μ : YoungDiagram) : μ.rowLens.Sorted (· ≥ ·) :=
 #align young_diagram.row_lens_sorted YoungDiagram.rowLens_sorted
 
 theorem pos_of_mem_rowLens (μ : YoungDiagram) (x : ℕ) (hx : x ∈ μ.rowLens) : 0 < x := by
-  rw [rowLens, List.mem_map'] at hx
+  rw [rowLens, List.mem_map] at hx
   obtain ⟨i, hi, rfl : μ.rowLen i = x⟩ := hx
   rwa [List.mem_range, ← mem_iff_lt_colLen, mem_iff_lt_rowLen] at hi
 #align young_diagram.pos_of_mem_row_lens YoungDiagram.pos_of_mem_rowLens

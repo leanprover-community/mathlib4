@@ -53,9 +53,10 @@ def colimitCoconeIsColimit (X : Cᵒᵖ) : IsColimit (colimitCocone X)
   fac s Y := by
     funext f
     convert congr_fun (s.w f).symm (𝟙 (unop X))
-    simp
+    simp only [coyoneda_obj_obj, Functor.const_obj_obj, types_comp_apply,
+      coyoneda_obj_map, Category.id_comp]
   uniq s m w := by
-    apply funext; rintro ⟨⟩ 
+    apply funext; rintro ⟨⟩
     dsimp
     rw [← w]
     simp
@@ -130,7 +131,7 @@ def yonedaJointlyReflectsLimits (J : Type w) [SmallCategory J] (K : J ⥤ Cᵒ�
       suffices (fun _ : PUnit => m.unop) = (t s.pt.unop).lift (s' s) by
         apply congr_fun this PUnit.unit
       apply (t _).uniq (s' s) _ fun j => _
-      intro j 
+      intro j
       funext
       exact Quiver.Hom.op_inj (w j) }
 #align category_theory.yoneda_jointly_reflects_limits CategoryTheory.yonedaJointlyReflectsLimits
@@ -182,4 +183,3 @@ end CategoryTheory
 -- assert_not_exists Set.range
 
 -- assert_not_exists AddCommMonoid
-
