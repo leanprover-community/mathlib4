@@ -572,10 +572,10 @@ instance OrderRingHom.subsingleton [LinearOrderedField α] [LinearOrderedField �
   ⟨fun f g => by
     ext x
     by_contra' h' : f x ≠ g x
-    wlog h : f x < g x with h₂
-    -- porting note: is this a bug in `wlog`? It seems not to matter what is put
-    -- in instead of the 3 occurences of `δ`… (added the `@`)
-    · exact @h₂ δ _ _ δ δ _ _ _ g f x (Ne.symm h') (h'.lt_or_lt.resolve_left h)
+    wlog h : f x < g x generalizing α β with h₂
+    -- porting note: had to add the `generalizing` as there are random variables
+    -- `F γ δ` flying around in context.
+    · exact h₂ g f x (Ne.symm h') (h'.lt_or_lt.resolve_left h)
     obtain ⟨q, hf, hg⟩ := exists_rat_btwn h
     rw [← map_ratCast f] at hf
     rw [← map_ratCast g] at hg
