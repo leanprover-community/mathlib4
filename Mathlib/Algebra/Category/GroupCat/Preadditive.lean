@@ -15,7 +15,6 @@ import Mathlib.CategoryTheory.Preadditive.Basic
 # The category of additive commutative groups is preadditive.
 -/
 
-
 open CategoryTheory
 
 universe u
@@ -31,13 +30,16 @@ instance (P Q : AddCommGroupCat) : AddCommGroup (P ⟶ Q) :=
 lemma hom_add_apply {P Q : AddCommGroupCat} (f g : P ⟶ Q) (x : P) :
   (f + g) x = f x + g x := rfl
 
--- porting note: doing just `ext; simp` timeouts, what is wrong?
+section
+
+-- porting note: the simp attribute was locally deactivated here,
+-- otherwise Lean would try to infer `Preadditive AddCommGroupCat`
+-- in order to prove the axioms `add_comp` and `comp_add` in the
+-- next instance declaration
+attribute [-simp] Preadditive.add_comp Preadditive.comp_add
+
 instance : Preadditive AddCommGroupCat where
-  add_comp P Q R f f' g := by
-    ext
-    simp only [comp_apply, hom_add_apply, Hom.map_add]
-  comp_add P Q R f g g' := by
-    ext
-    simp only [comp_apply, hom_add_apply]
+
+end
 
 end AddCommGroupCat
