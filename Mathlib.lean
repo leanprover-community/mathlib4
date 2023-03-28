@@ -44,6 +44,7 @@ import Mathlib.Algebra.CharZero.Infinite
 import Mathlib.Algebra.CharZero.Lemmas
 import Mathlib.Algebra.CharZero.Quotient
 import Mathlib.Algebra.CovariantAndContravariant
+import Mathlib.Algebra.CubicDiscriminant
 import Mathlib.Algebra.DirectSum.Basic
 import Mathlib.Algebra.DirectSum.Finsupp
 import Mathlib.Algebra.DirectSum.Module
