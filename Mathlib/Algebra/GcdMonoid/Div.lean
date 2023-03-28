@@ -8,10 +8,10 @@ Authors: Riccardo Brasca
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.GcdMonoid.Finset
-import Mathbin.Algebra.GcdMonoid.Basic
-import Mathbin.RingTheory.Int.Basic
-import Mathbin.RingTheory.Polynomial.Content
+import Mathlib.Algebra.GCDMonoid.Finset
+import Mathlib.Algebra.GCDMonoid.Basic
+import Mathlib.RingTheory.Int.Basic
+import Mathlib.RingTheory.Polynomial.Content
 
 /-!
 # Basic results about setwise gcds on normalized gcd monoid with a division.
@@ -38,8 +38,7 @@ namespace Nat
 /-- Given a nonempty finset `s` and a function `f` from `s` to `ℕ`, if `d = s.gcd`,
 then the `gcd` of `(f i) / d` is equal to `1`. -/
 theorem gcd_div_eq_one {β : Type _} {f : β → ℕ} (s : Finset β) {x : β} (hx : x ∈ s)
-    (hfz : f x ≠ 0) : (s.gcd fun b => f b / s.gcd f) = 1 :=
-  by
+    (hfz : f x ≠ 0) : (s.gcd fun b => f b / s.gcd f) = 1 := by
   obtain ⟨g, he, hg⟩ := Finset.extract_gcd f ⟨x, hx⟩
   refine' (Finset.gcd_congr rfl fun a ha => _).trans hg
   rw [he a ha, Nat.mul_div_cancel_left]
@@ -58,8 +57,7 @@ namespace Int
 /-- Given a nonempty finset `s` and a function `f` from `s` to `ℤ`, if `d = s.gcd`,
 then the `gcd` of `(f i) / d` is equal to `1`. -/
 theorem gcd_div_eq_one {β : Type _} {f : β → ℤ} (s : Finset β) {x : β} (hx : x ∈ s)
-    (hfz : f x ≠ 0) : (s.gcd fun b => f b / s.gcd f) = 1 :=
-  by
+    (hfz : f x ≠ 0) : (s.gcd fun b => f b / s.gcd f) = 1 := by
   obtain ⟨g, he, hg⟩ := Finset.extract_gcd f ⟨x, hx⟩
   refine' (Finset.gcd_congr rfl fun a ha => _).trans hg
   rw [he a ha, Int.mul_ediv_cancel_left]
@@ -84,8 +82,7 @@ variable {K : Type _} [Field K]
 /-- Given a nonempty finset `s` and a function `f` from `s` to `K[X]`, if `d = s.gcd f`,
 then the `gcd` of `(f i) / d` is equal to `1`. -/
 theorem gcd_div_eq_one {β : Type _} {f : β → K[X]} (s : Finset β) {x : β} (hx : x ∈ s)
-    (hfz : f x ≠ 0) : (s.gcd fun b => f b / s.gcd f) = 1 :=
-  by
+    (hfz : f x ≠ 0) : (s.gcd fun b => f b / s.gcd f) = 1 := by
   obtain ⟨g, he, hg⟩ := Finset.extract_gcd f ⟨x, hx⟩
   refine' (Finset.gcd_congr rfl fun a ha => _).trans hg
   rw [he a ha, EuclideanDomain.mul_div_cancel_left]
