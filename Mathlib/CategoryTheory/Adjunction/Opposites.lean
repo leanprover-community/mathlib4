@@ -45,11 +45,13 @@ def adjointOfOpAdjointOp (F : C ⥤ D) (G : D ⥤ C) (h : G.op ⊣ F.op) : F ⊣
       ((h.homEquiv (Opposite.op Y) (Opposite.op X)).trans (opEquiv _ _)).symm.trans
         (opEquiv _ _)
     homEquiv_naturality_left_symm := by
+      -- Porting note: This proof was handled by `obviously` in mathlib3.
       intros X' X Y f g
       dsimp [opEquiv]
       erw [homEquiv_unit, homEquiv_unit] -- Porting note: Why is `erw` needed here?
       simp
     homEquiv_naturality_right := by
+      -- Porting note: This proof was handled by `obviously` in mathlib3.
       intros X Y Y' f g
       dsimp [opEquiv]
       erw [homEquiv_counit, homEquiv_counit] -- Porting note: Why is `erw` needed here?
