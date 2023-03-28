@@ -98,7 +98,7 @@ theorem weightedVSubOfPoint_congr {w₁ w₂ : ι → k} (hw : ∀ i ∈ s, w₁
     (hp : ∀ i ∈ s, p₁ i = p₂ i) (b : P) :
     s.weightedVSubOfPoint p₁ b w₁ = s.weightedVSubOfPoint p₂ b w₂ := by
   simp_rw [weightedVSubOfPoint_apply]
-  convert sum_congr rfl fun i hi => _
+  refine sum_congr rfl fun i hi => ?_
   rw [hw i hi, hp i hi]
 #align finset.weighted_vsub_of_point_congr Finset.weightedVSubOfPoint_congr
 
@@ -240,7 +240,7 @@ theorem weightedVSubOfPoint_filter_of_ne (w : ι → k) (p : ι → P) (b : P) {
   intro i hi hne
   refine' h i hi _
   intro hw
-  simp at hne
+  simp [hw] at hne
 #align finset.weighted_vsub_of_point_filter_of_ne Finset.weightedVSubOfPoint_filter_of_ne
 
 /-- A constant multiplier of the weights in `weightedVSubOfPoint` may be moved outside the
@@ -379,7 +379,7 @@ def affineCombination (p : ι → P) : (ι → k) →ᵃ[k] P
   map_vadd' w₁ w₂ := by simp_rw [vadd_vadd, weightedVSub, vadd_eq_add, LinearMap.map_add]
 #align finset.affine_combination Finset.affineCombination
 
-/-- The linear map corresponding to `affine_combination` is
+/-- The linear map corresponding to `affineCombination` is
 `weightedVSub`. -/
 @[simp]
 theorem affineCombination_linear (p : ι → P) :
@@ -387,12 +387,12 @@ theorem affineCombination_linear (p : ι → P) :
   rfl
 #align finset.affine_combination_linear Finset.affineCombination_linear
 
-/-- Applying `affine_combination` with given weights.  This is for the
+/-- Applying `affineCombination` with given weights.  This is for the
 case where a result involving a default base point is OK (for example,
 when that base point will cancel out later); a more typical use case
-for `affine_combination` would involve selecting a preferred base
+for `affineCombination` would involve selecting a preferred base
 point with
-`affine_combination_eq_weightedVSubOfPoint_vadd_of_sum_eq_one` and
+`affineCombination_eq_weightedVSubOfPoint_vadd_of_sum_eq_one` and
 then using `weightedVSubOfPoint_apply`. -/
 theorem affineCombination_apply (w : ι → k) (p : ι → P) :
     s.affineCombination p w =
@@ -400,14 +400,14 @@ theorem affineCombination_apply (w : ι → k) (p : ι → P) :
   rfl
 #align finset.affine_combination_apply Finset.affineCombination_apply
 
-/-- The value of `affine_combination`, where the given points are equal. -/
+/-- The value of `affineCombination`, where the given points are equal. -/
 @[simp]
 theorem affineCombination_apply_const (w : ι → k) (p : P) (h : (∑ i in s, w i) = 1) :
     s.affineCombination (fun _ => p) w = p := by
   rw [affineCombination_apply, s.weightedVSubOfPoint_apply_const, h, one_smul, vsub_vadd]
 #align finset.affine_combination_apply_const Finset.affineCombination_apply_const
 
-/-- `affine_combination` gives equal results for two families of weights and two families of
+/-- `affineCombination` gives equal results for two families of weights and two families of
 points that are equal on `s`. -/
 theorem affineCombination_congr {w₁ w₂ : ι → k} (hw : ∀ i ∈ s, w₁ i = w₂ i) {p₁ p₂ : ι → P}
     (hp : ∀ i ∈ s, p₁ i = p₂ i) : s.affineCombination p₁ w₁ = s.affineCombination p₂ w₂ := by
@@ -473,8 +473,6 @@ theorem affineCombination_eq_linear_combination (s : Finset ι) (p : ι → V) (
   simp [s.affine_combination_eq_weightedVSubOfPoint_vadd_of_sum_eq_one w p hw 0]
 #align finset.affine_combination_eq_linear_combination Finset.affineCombination_eq_linear_combination
 
-include S
-
 /-- An `affine_combination` equals a point if that point is in the set
 and has weight 1 and the other points in the set have weight 0. -/
 @[simp]
@@ -504,14 +502,14 @@ affine combination with the same points and weights over the original
 `finset`. -/
 theorem affineCombination_map (e : ι₂ ↪ ι) (w : ι → k) (p : ι → P) :
     (s₂.map e).affineCombination p w = s₂.affineCombination (p ∘ e) (w ∘ e) := by
-  simp_rw [affine_combination_apply, weightedVSubOfPoint_map]
+  simp_rw [affineCombination_apply, weightedVSubOfPoint_map]
 #align finset.affine_combination_map Finset.affineCombination_map
 
 /-- A weighted sum of pairwise subtractions, expressed as a subtraction of two `affine_combination`
 expressions. -/
 theorem sum_smul_vsub_eq_affineCombination_vsub (w : ι → k) (p₁ p₂ : ι → P) :
     (∑ i in s, w i • (p₁ i -ᵥ p₂ i)) = s.affineCombination p₁ w -ᵥ s.affineCombination p₂ w := by
-  simp_rw [affine_combination_apply, vadd_vsub_vadd_cancel_right]
+  simp_rw [affineCombination_apply, vadd_vsub_vadd_cancel_right]
   exact s.sum_smul_vsub_eq_weightedVSubOfPoint_sub _ _ _ _
 #align finset.sum_smul_vsub_eq_affine_combination_vsub Finset.sum_smul_vsub_eq_affineCombination_vsub
 
@@ -648,8 +646,6 @@ theorem map_affineCombination {V₂ P₂ : Type _} [AddCommGroup V₂] [Module k
 
 variable (k)
 
-omit S
-
 /-- Weights for expressing a single point as an affine combination. -/
 def affineCombinationSingleWeights [DecidableEq ι] (i : ι) : ι → k :=
   Function.update (Function.const ι 0) i 1
@@ -657,7 +653,7 @@ def affineCombinationSingleWeights [DecidableEq ι] (i : ι) : ι → k :=
 
 @[simp]
 theorem affineCombinationSingleWeights_apply_self [DecidableEq ι] (i : ι) :
-    affineCombinationSingleWeights k i i = 1 := by simp [affine_combination_single_weights]
+    affineCombinationSingleWeights k i i = 1 := by simp [affineCombination_single_weights]
 #align finset.affine_combination_single_weights_apply_self Finset.affineCombinationSingleWeights_apply_self
 
 @[simp]
@@ -706,7 +702,7 @@ theorem sum_weightedVSubVsubWeights [DecidableEq ι] {i j : ι} (hi : i ∈ s) (
 
 variable {k}
 
-/-- Weights for expressing `line_map` as an affine combination. -/
+/-- Weights for expressing `lineMap` as an affine combination. -/
 def affineCombinationLineMapWeights [DecidableEq ι] (i j : ι) (c : k) : ι → k :=
   c • weightedVSubVsubWeights k j i + affineCombinationSingleWeights k i
 #align finset.affine_combination_line_map_weights Finset.affineCombinationLineMapWeights
@@ -785,7 +781,7 @@ namespace Finset
 
 variable (k : Type _) {V : Type _} {P : Type _} [DivisionRing k] [AddCommGroup V] [Module k V]
 
-variable [affine_space V P] {ι : Type _} (s : Finset ι) {ι₂ : Type _} (s₂ : Finset ι₂)
+variable [AffineSpace V P] {ι : Type _} (s : Finset ι) {ι₂ : Type _} (s₂ : Finset ι₂)
 
 /-- The weights for the centroid of some points. -/
 def centroidWeights : ι → k :=
@@ -832,8 +828,6 @@ theorem sum_centroidWeights_eq_one_of_card_eq_add_one [CharZero k] {n : ℕ} (h 
     (∑ i in s, s.centroidWeights k i) = 1 :=
   s.sum_centroidWeights_eq_one_of_card_ne_zero k (h.symm ▸ Nat.succ_ne_zero n)
 #align finset.sum_centroid_weights_eq_one_of_card_eq_add_one Finset.sum_centroidWeights_eq_one_of_card_eq_add_one
-
-include V
 
 /-- The centroid of some points.  Although defined for any `s`, this
 is intended to be used in the case where the number of points,
@@ -891,8 +885,6 @@ theorem centroid_map (e : ι₂ ↪ ι) (p : ι → P) : (s₂.map e).centroid k
   by simp [centroid_def, affine_combination_map, centroid_weights]
 #align finset.centroid_map Finset.centroid_map
 
-omit V
-
 /-- `centroid_weights` gives the weights for the centroid as a
 constant function, which is suitable when summing over the points
 whose centroid is being taken.  This function gives the weights in a
@@ -939,8 +931,6 @@ theorem sum_centroidWeightsIndicator_eq_one_of_card_eq_add_one [CharZero k] [Fin
   rw [sum_centroid_weights_indicator]
   exact s.sum_centroid_weights_eq_one_of_card_eq_add_one k h
 #align finset.sum_centroid_weights_indicator_eq_one_of_card_eq_add_one Finset.sum_centroidWeightsIndicator_eq_one_of_card_eq_add_one
-
-include V
 
 /-- The centroid as an affine combination over a `fintype`. -/
 theorem centroid_eq_affineCombination_fintype [Fintype ι] (p : ι → P) :
@@ -1000,11 +990,9 @@ end Finset
 section AffineSpace'
 
 variable {k : Type _} {V : Type _} {P : Type _} [Ring k] [AddCommGroup V] [Module k V]
-  [affine_space V P]
+  [AffineSpace V P]
 
 variable {ι : Type _}
-
-include V
 
 /-- A `weighted_vsub` with sum of weights 0 is in the `vector_span` of
 an indexed family. -/
@@ -1210,9 +1198,7 @@ section DivisionRing
 
 variable {k : Type _} {V : Type _} {P : Type _} [DivisionRing k] [AddCommGroup V] [Module k V]
 
-variable [affine_space V P] {ι : Type _}
-
-include V
+variable [AffineSpace V P] {ι : Type _}
 
 open Set Finset
 
@@ -1252,9 +1238,7 @@ namespace AffineMap
 
 variable {k : Type _} {V : Type _} (P : Type _) [CommRing k] [AddCommGroup V] [Module k V]
 
-variable [affine_space V P] {ι : Type _} (s : Finset ι)
-
-include V
+variable [AffineSpace V P] {ι : Type _} (s : Finset ι)
 
 -- TODO: define `affine_map.proj`, `affine_map.fst`, `affine_map.snd`
 /-- A weighted sum, as an affine map on the points involved. -/
