@@ -60,32 +60,6 @@ def adjointOfOpAdjointOp (F : C ⥤ D) (G : D ⥤ C) (h : G.op ⊣ F.op) : F ⊣
   category_theory.adjunction.adjoint_of_op_adjoint_op
   CategoryTheory.Adjunction.adjointOfOpAdjointOp
 
-theorem adjointOfOpAdjointOp_homEquiv_apply {C : Type u₁} [Category C]
-    {D : Type u₂} [Category D] (F : C ⥤ D) (G : D ⥤ C) (h : Functor.op G ⊣ Functor.op F)
-    (X : C) (Y : D)
-    (a : Opposite.unop ((Functor.op F).obj (Opposite.op X)) ⟶ Opposite.unop (Opposite.op Y)) :
-    (opEquiv (Opposite.op (G.obj (F.obj X))) (Opposite.op X))
-      ((Equiv.symm (Adjunction.homEquiv h (Opposite.op (F.obj X)) (Opposite.op X)))
-      ((Equiv.symm (opEquiv (Opposite.op (F.obj X)) (Opposite.op (F.obj X)))) (𝟙 (F.obj X))))
-        ≫ G.map a =
-    (opEquiv (Opposite.op (G.obj Y)) (Opposite.op X))
-      ((Equiv.symm (homEquiv h (Opposite.op Y) (Opposite.op X)))
-        ((Equiv.symm (opEquiv (Opposite.op Y) (Opposite.op (F.obj X)))) a)) := by
-        erw [← Adjunction.adjointOfOpAdjointOp_unit_app, ← Adjunction.homEquiv_unit]
-        rfl
-
-theorem adjointOfOpAdjointOp_homEquiv_symm_apply {C : Type u₁} [Category C] {D : Type u₂}
-    [Category D] (F : C ⥤ D) (G : D ⥤ C) (h : Functor.op G ⊣ Functor.op F) (X : C) (Y : D)
-    (a : X ⟶ G.obj Y) : F.map a ≫
-      (opEquiv (Opposite.op Y) (Opposite.op (F.obj (G.obj Y))))
-        ((Adjunction.homEquiv h (Opposite.op Y) (Opposite.op (G.obj Y)))
-      ((Equiv.symm (opEquiv (Opposite.op (G.obj Y)) (Opposite.op (G.obj Y)))) (𝟙 (G.obj Y)))) =
-    (opEquiv (Opposite.op Y) (Opposite.op (F.obj X)))
-      ((homEquiv h (Opposite.op Y) (Opposite.op X))
-        ((Equiv.symm (opEquiv (Opposite.op (G.obj Y)) (Opposite.op X))) a)) := by
-      erw [← Adjunction.adjointOfOpAdjointOp_counit_app, ← Adjunction.homEquiv_counit]
-      rfl
-
 /-- If `G` is adjoint to `F.op` then `F` is adjoint to `G.unop`. -/
 def adjointUnopOfAdjointOp (F : C ⥤ D) (G : Dᵒᵖ ⥤ Cᵒᵖ) (h : G ⊣ F.op) : F ⊣ G.unop :=
   adjointOfOpAdjointOp F G.unop (h.ofNatIsoLeft G.opUnopIso.symm)
