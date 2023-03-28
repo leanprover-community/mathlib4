@@ -18,11 +18,11 @@ import Mathlib.RingTheory.Polynomial.Content
 
 ## Main results
 
-* `finset.nat.gcd_div_eq_one`: given a nonempty finset `s` and a function `f` from `s` to
+* `Finset.Nat.gcd_div_eq_one`: given a nonempty Finset `s` and a function `f` from `s` to
   `ℕ`, if `d = s.gcd`, then the `gcd` of `(f i) / d` equals `1`.
-* `finset.int.gcd_div_eq_one`: given a nonempty finset `s` and a function `f` from `s` to
+* `Finset.Int.gcd_div_eq_one`: given a nonempty Finset `s` and a function `f` from `s` to
   `ℤ`, if `d = s.gcd`, then the `gcd` of `(f i) / d` equals `1`.
-* `finset.polynomial.gcd_div_eq_one`: given a nonempty finset `s` and a function `f` from
+* `Finset.Polynomial.gcd_div_eq_one`: given a nonempty Finset `s` and a function `f` from
   `s` to `K[X]`, if `d = s.gcd`, then the `gcd` of `(f i) / d` equals `1`.
 
 ## TODO
@@ -35,7 +35,7 @@ namespace Finset
 
 namespace Nat
 
-/-- Given a nonempty finset `s` and a function `f` from `s` to `ℕ`, if `d = s.gcd`,
+/-- Given a nonempty Finset `s` and a function `f` from `s` to `ℕ`, if `d = s.gcd`,
 then the `gcd` of `(f i) / d` is equal to `1`. -/
 theorem gcd_div_eq_one {β : Type _} {f : β → ℕ} (s : Finset β) {x : β} (hx : x ∈ s)
     (hfz : f x ≠ 0) : (s.gcd fun b => f b / s.gcd f) = 1 := by
@@ -54,7 +54,7 @@ end Nat
 
 namespace Int
 
-/-- Given a nonempty finset `s` and a function `f` from `s` to `ℤ`, if `d = s.gcd`,
+/-- Given a nonempty Finset `s` and a function `f` from `s` to `ℤ`, if `d = s.gcd`,
 then the `gcd` of `(f i) / d` is equal to `1`. -/
 theorem gcd_div_eq_one {β : Type _} {f : β → ℤ} (s : Finset β) {x : β} (hx : x ∈ s)
     (hfz : f x ≠ 0) : (s.gcd fun b => f b / s.gcd f) = 1 := by
@@ -79,9 +79,9 @@ noncomputable section
 
 variable {K : Type _} [Field K]
 
-/-- Given a nonempty finset `s` and a function `f` from `s` to `K[X]`, if `d = s.gcd f`,
+/-- Given a nonempty Finset `s` and a function `f` from `s` to `K[X]`, if `d = s.gcd f`,
 then the `gcd` of `(f i) / d` is equal to `1`. -/
-theorem gcd_div_eq_one {β : Type _} {f : β → K[X]} (s : Finset β) {x : β} (hx : x ∈ s)
+theorem gcd_div_eq_one {β : Type _} {f : β → Polynomial K} (s : Finset β) {x : β} (hx : x ∈ s)
     (hfz : f x ≠ 0) : (s.gcd fun b => f b / s.gcd f) = 1 := by
   obtain ⟨g, he, hg⟩ := Finset.extract_gcd f ⟨x, hx⟩
   refine' (Finset.gcd_congr rfl fun a ha => _).trans hg
@@ -89,12 +89,13 @@ theorem gcd_div_eq_one {β : Type _} {f : β → K[X]} (s : Finset β) {x : β} 
   exact mt Finset.gcd_eq_zero_iff.1 fun h => hfz <| h x hx
 #align finset.polynomial.gcd_div_eq_one Finset.Polynomial.gcd_div_eq_one
 
-theorem gcd_div_id_eq_one {s : Finset K[X]} {x : K[X]} (hx : x ∈ s) (hnz : x ≠ 0) :
-    (s.gcd fun b => b / s.gcd id) = 1 :=
+theorem gcd_div_id_eq_one {s : Finset (Polynomial K)} {x : Polynomial K}
+    (hx : x ∈ s) (hnz : x ≠ 0) : (s.gcd fun b => b / s.gcd id) = 1 :=
   gcd_div_eq_one s hx hnz
 #align finset.polynomial.gcd_div_id_eq_one Finset.Polynomial.gcd_div_id_eq_one
+
+end
 
 end Polynomial
 
 end Finset
-
