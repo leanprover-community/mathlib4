@@ -8,8 +8,8 @@ Authors: Markus Himmel
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Category.Group.Basic
-import Mathbin.CategoryTheory.Preadditive.Basic
+import Mathlib.Algebra.Category.Group.Basic
+import Mathlib.CategoryTheory.Preadditive.Basic
 
 /-!
 # The category of additive commutative groups is preadditive.
@@ -22,8 +22,7 @@ universe u
 
 namespace AddCommGroupCat
 
-instance : Preadditive AddCommGroupCat
-    where
+instance : Preadditive AddCommGroupCat where
   add_comp P Q R f f' g :=
     show (f + f') ≫ g = f ≫ g + f' ≫ g by
       ext
