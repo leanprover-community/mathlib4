@@ -440,11 +440,15 @@ import Mathlib.CategoryTheory.Linear.Basic
 import Mathlib.CategoryTheory.Linear.FunctorCategory
 import Mathlib.CategoryTheory.Linear.LinearFunctor
 import Mathlib.CategoryTheory.Localization.Construction
+import Mathlib.CategoryTheory.Localization.Opposite
+import Mathlib.CategoryTheory.Localization.Predicate
 import Mathlib.CategoryTheory.Monad.Basic
 import Mathlib.CategoryTheory.Monoidal.Category
+import Mathlib.CategoryTheory.Monoidal.Discrete
 import Mathlib.CategoryTheory.Monoidal.End
 import Mathlib.CategoryTheory.Monoidal.Functor
 import Mathlib.CategoryTheory.Monoidal.Functorial
+import Mathlib.CategoryTheory.Monoidal.Linear
 import Mathlib.CategoryTheory.Monoidal.NaturalTransformation
 import Mathlib.CategoryTheory.Monoidal.Preadditive
 import Mathlib.CategoryTheory.MorphismProperty
@@ -488,6 +492,7 @@ import Mathlib.Combinatorics.Catalan
 import Mathlib.Combinatorics.Colex
 import Mathlib.Combinatorics.Composition
 import Mathlib.Combinatorics.Derangements.Basic
+import Mathlib.Combinatorics.Derangements.Finite
 import Mathlib.Combinatorics.DoubleCounting
 import Mathlib.Combinatorics.HalesJewett
 import Mathlib.Combinatorics.Hall.Finite
@@ -519,6 +524,7 @@ import Mathlib.Combinatorics.SimpleGraph.DegreeSum
 import Mathlib.Combinatorics.SimpleGraph.Density
 import Mathlib.Combinatorics.SimpleGraph.Hasse
 import Mathlib.Combinatorics.SimpleGraph.Init
+import Mathlib.Combinatorics.SimpleGraph.Matching
 import Mathlib.Combinatorics.SimpleGraph.Metric
 import Mathlib.Combinatorics.SimpleGraph.Partition
 import Mathlib.Combinatorics.SimpleGraph.Prod
@@ -774,6 +780,7 @@ import Mathlib.Data.MvPolynomial.Cardinal
 import Mathlib.Data.MvPolynomial.Comap
 import Mathlib.Data.MvPolynomial.CommRing
 import Mathlib.Data.MvPolynomial.Counit
+import Mathlib.Data.MvPolynomial.Division
 import Mathlib.Data.MvPolynomial.Equiv
 import Mathlib.Data.MvPolynomial.Invertible
 import Mathlib.Data.MvPolynomial.Rename
@@ -878,6 +885,7 @@ import Mathlib.Data.Polynomial.Monic
 import Mathlib.Data.Polynomial.Monomial
 import Mathlib.Data.Polynomial.Reverse
 import Mathlib.Data.Polynomial.RingDivision
+import Mathlib.Data.Polynomial.Splits
 import Mathlib.Data.Polynomial.Taylor
 import Mathlib.Data.Prod.Basic
 import Mathlib.Data.Prod.Lex
@@ -948,7 +956,8 @@ import Mathlib.Data.Set.Lattice
 import Mathlib.Data.Set.MulAntidiagonal
 import Mathlib.Data.Set.NAry
 import Mathlib.Data.Set.Opposite
-import Mathlib.Data.Set.Pairwise
+import Mathlib.Data.Set.Pairwise.Basic
+import Mathlib.Data.Set.Pairwise.Lattice
 import Mathlib.Data.Set.Pointwise.Basic
 import Mathlib.Data.Set.Pointwise.BigOperators
 import Mathlib.Data.Set.Pointwise.Finite
@@ -1418,7 +1427,6 @@ import Mathlib.Tactic.Convert
 import Mathlib.Tactic.Core
 import Mathlib.Tactic.Elementwise
 import Mathlib.Tactic.Existsi
-import Mathlib.Tactic.Expect
 import Mathlib.Tactic.FailIfNoProgress
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.FinCases

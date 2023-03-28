@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 
 ! This file was ported from Lean 3 source module analysis.normed_space.M_structure
-! leanprover-community/mathlib commit 17ef379e997badd73e5eabb4d38f11919ab3c4b3
+! leanprover-community/mathlib commit d11893b411025250c8e61ff2f12ccbd7ee35ab15
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -48,7 +48,7 @@ The approach to showing that the L-projections form a Boolean algebra is inspire
 `MeasureTheory.MeasurableSpace`.
 
 Instead of using `P : X →L[𝕜] X` to represent projections, we use an arbitrary ring `M` with a
-faithful action on `X`. `continuous_linear_map.apply_module` can be used to recover the `X →L[𝕜] X`
+faithful action on `X`. `ContinuousLinearMap.apply_module` can be used to recover the `X →L[𝕜] X`
 special case.
 
 ## References
@@ -64,7 +64,7 @@ M-summand, M-projection, L-summand, L-projection, M-ideal, M-structure
 
 variable (X : Type _) [NormedAddCommGroup X]
 
-variable {M : Type} [Ring M] [Module M X]
+variable {M : Type _} [Ring M] [Module M X]
 
 --porting note: Mathlib3 uses names with uppercase 'L' for L-projections
 set_option linter.uppercaseLean3 false
@@ -162,14 +162,12 @@ theorem mul [FaithfulSMul M X] {P Q : M} (h₁ : IsLprojection X P) (h₂ : IsLp
   refine' ⟨IsIdempotentElem.mul_of_commute (h₁.commute h₂) h₁.proj h₂.proj, _⟩
   intro x
   refine' le_antisymm _ _
-  ·
-    calc
+  · calc
       ‖x‖ = ‖(P * Q) • x + (x - (P * Q) • x)‖ := by rw [add_sub_cancel'_right ((P * Q) • x) x]
       _ ≤ ‖(P * Q) • x‖ + ‖x - (P * Q) • x‖ := by apply norm_add_le
       _ = ‖(P * Q) • x‖ + ‖(1 - P * Q) • x‖ := by rw [sub_smul, one_smul]
 
-  ·
-    calc
+  · calc
       ‖x‖ = ‖P • Q • x‖ + (‖Q • x - P • Q • x‖ + ‖x - Q • x‖) := by
         rw [h₂.Lnorm x, h₁.Lnorm (Q • x), sub_smul, one_smul, sub_smul, one_smul, add_assoc]
       _ ≥ ‖P • Q • x‖ + ‖Q • x - P • Q • x + (x - Q • x)‖ :=
@@ -188,7 +186,7 @@ theorem join [FaithfulSMul M X] {P Q : M} (h₁ : IsLprojection X P) (h₂ : IsL
 
 --porting note: Advice is to explicitly name instances
 -- https://github.com/leanprover-community/mathlib4/wiki/Porting-wiki#some-common-fixes
-instance IsLprojection.Subtype.HasCompl : HasCompl { f : M // IsLprojection X f } :=
+instance Subtype.hasCompl : HasCompl { f : M // IsLprojection X f } :=
   ⟨fun P => ⟨1 - P, P.prop.Lcomplement⟩⟩
 
 @[simp]
@@ -196,7 +194,7 @@ theorem coe_compl (P : { P : M // IsLprojection X P }) : ↑(Pᶜ) = (1 : M) - �
   rfl
 #align is_Lprojection.coe_compl IsLprojection.coe_compl
 
-instance IsLprojection.Subtype.Inf [FaithfulSMul M X] : Inf { P : M // IsLprojection X P } :=
+instance Subtype.inf [FaithfulSMul M X] : Inf { P : M // IsLprojection X P } :=
   ⟨fun P Q => ⟨P * Q, P.prop.mul Q.prop⟩⟩
 
 @[simp]
@@ -205,7 +203,7 @@ theorem coe_inf [FaithfulSMul M X] (P Q : { P : M // IsLprojection X P }) :
   rfl
 #align is_Lprojection.coe_inf IsLprojection.coe_inf
 
-instance IsLprojection.Subtype.Sup [FaithfulSMul M X] : Sup { P : M // IsLprojection X P } :=
+instance Subtype.sup [FaithfulSMul M X] : Sup { P : M // IsLprojection X P } :=
   ⟨fun P Q => ⟨P + Q - P * Q, P.prop.join Q.prop⟩⟩
 
 @[simp]
@@ -214,7 +212,7 @@ theorem coe_sup [FaithfulSMul M X] (P Q : { P : M // IsLprojection X P }) :
   rfl
 #align is_Lprojection.coe_sup IsLprojection.coe_sup
 
-instance IsLprojection.Subtype.SDiff [FaithfulSMul M X] : SDiff { P : M // IsLprojection X P } :=
+instance Subtype.sdiff [FaithfulSMul M X] : SDiff { P : M // IsLprojection X P } :=
   ⟨fun P Q => ⟨P * (1 - Q), P.prop.mul Q.prop.Lcomplement⟩⟩
 
 @[simp]
@@ -223,7 +221,7 @@ theorem coe_sdiff [FaithfulSMul M X] (P Q : { P : M // IsLprojection X P }) :
   rfl
 #align is_Lprojection.coe_sdiff IsLprojection.coe_sdiff
 
-instance IsLprojection.Subtype.PartialOrder [FaithfulSMul M X] :
+instance Subtype.partialOrder [FaithfulSMul M X] :
     PartialOrder { P : M // IsLprojection X P } where
   le P Q := (↑P : M) = ↑(P ⊓ Q)
   le_refl P := by simpa only [coe_inf, ← sq] using P.prop.proj.eq.symm
@@ -237,7 +235,7 @@ theorem le_def [FaithfulSMul M X] (P Q : { P : M // IsLprojection X P }) :
   Iff.rfl
 #align is_Lprojection.le_def IsLprojection.le_def
 
-instance IsLprojection.Subtype.Zero : Zero { P : M // IsLprojection X P } :=
+instance Subtype.zero : Zero { P : M // IsLprojection X P } :=
   ⟨⟨0, ⟨by rw [IsIdempotentElem, MulZeroClass.zero_mul], fun x => by
         simp only [zero_smul, norm_zero, sub_zero, one_smul, zero_add]⟩⟩⟩
 
@@ -246,7 +244,7 @@ theorem coe_zero : ↑(0 : { P : M // IsLprojection X P }) = (0 : M) :=
   rfl
 #align is_Lprojection.coe_zero IsLprojection.coe_zero
 
-instance IsLprojection.Subtype.One : One { P : M // IsLprojection X P } :=
+instance Subtype.one : One { P : M // IsLprojection X P } :=
   ⟨⟨1, sub_zero (1 : M) ▸ (0 : { P : M // IsLprojection X P }).prop.Lcomplement⟩⟩
 
 @[simp]
@@ -254,7 +252,7 @@ theorem coe_one : ↑(1 : { P : M // IsLprojection X P }) = (1 : M) :=
   rfl
 #align is_Lprojection.coe_one IsLprojection.coe_one
 
-instance IsLprojection.Subtype.BoundedOrder [FaithfulSMul M X] :
+instance Subtype.boundedOrder [FaithfulSMul M X] :
     BoundedOrder { P : M // IsLprojection X P } where
   top := 1
   le_top P := (mul_one (P : M)).symm
@@ -299,32 +297,29 @@ theorem distrib_lattice_lemma [FaithfulSMul M X] {P Q R : { P : M // IsLprojecti
 -- (deterministic) timeout at 'whnf', maximum number of heartbeats (800000) has been reached"
 -- My workaround is to show instance Lattice first
 instance [FaithfulSMul M X] : Lattice { P : M // IsLprojection X P } where
-  le_sup_left := fun P Q => by
+  le_sup_left P Q := by
     rw [le_def, coe_inf, coe_sup, ← add_sub, mul_add, mul_sub, ← mul_assoc, P.prop.proj.eq,
       sub_self, add_zero]
-  le_sup_right := fun P Q => by
+  le_sup_right P Q := by
     rw [le_def, coe_inf, coe_sup, ← add_sub, mul_add, mul_sub, (P.prop.commute Q.prop).eq,
       ← mul_assoc, Q.prop.proj.eq, add_sub_cancel'_right]
-  sup_le := fun P Q R =>
-    by
+  sup_le P Q R := by
     rw [le_def, le_def, le_def, coe_inf, coe_inf, coe_sup, coe_inf, coe_sup, ← add_sub, add_mul,
       sub_mul, mul_assoc]
     intro h₁ h₂
     rw [← h₂, ← h₁]
-  inf_le_left := fun P Q => by
+  inf_le_left P Q := by
     rw [le_def, coe_inf, coe_inf, coe_inf, mul_assoc, (Q.prop.commute P.prop).eq, ← mul_assoc,
       P.prop.proj.eq]
-  inf_le_right := fun P Q => by rw [le_def, coe_inf, coe_inf, coe_inf, mul_assoc, Q.prop.proj.eq]
-  le_inf := fun P Q R =>
-    by
+  inf_le_right P Q := by rw [le_def, coe_inf, coe_inf, coe_inf, mul_assoc, Q.prop.proj.eq]
+  le_inf P Q R := by
     rw [le_def, le_def, le_def, coe_inf, coe_inf, coe_inf, coe_inf, ← mul_assoc]
     intro h₁ h₂
     rw [← h₁, ← h₂]
 
-instance IsLprojection.Subtype.DistribLattice [FaithfulSMul M X] :
+instance Subtype.distribLattice [FaithfulSMul M X] :
     DistribLattice { P : M // IsLprojection X P } where
-  le_sup_inf := fun P Q R =>
-    by
+  le_sup_inf P Q R := by
     have e₁ : ↑((P ⊔ Q) ⊓ (P ⊔ R)) = ↑P + ↑Q * (R : M) * ↑(Pᶜ) := by
       rw [coe_inf, coe_sup, coe_sup, ← add_sub, ← add_sub, ← compl_mul, ← compl_mul, add_mul,
         mul_add, ((Pᶜ).prop.commute Q.prop).eq, mul_add, ← mul_assoc, mul_assoc (Q: M),
@@ -337,19 +332,19 @@ instance IsLprojection.Subtype.DistribLattice [FaithfulSMul M X] :
         distrib_lattice_lemma, (Q.prop.commute R.prop).eq, distrib_lattice_lemma]
     rw [le_def, e₁, coe_inf, e₂]
 
-instance IsLprojection.Subtype.BooleanAlgebra [FaithfulSMul M X] :
+instance Subtype.BooleanAlgebra [FaithfulSMul M X] :
     BooleanAlgebra { P : M // IsLprojection X P } :=
 --porting note: use explicitly specified instance names
-  { IsLprojection.Subtype.HasCompl,
-    IsLprojection.Subtype.SDiff,
-    IsLprojection.Subtype.BoundedOrder with
+  { IsLprojection.Subtype.hasCompl,
+    IsLprojection.Subtype.sdiff,
+    IsLprojection.Subtype.boundedOrder with
     inf_compl_le_bot := fun P =>
       (Subtype.ext (by rw [coe_inf, coe_compl, coe_bot, ← coe_compl, mul_compl_self])).le
     top_le_sup_compl := fun P =>
       (Subtype.ext
-          (by
-            rw [coe_top, coe_sup, coe_compl, add_sub_cancel'_right, ← coe_compl, mul_compl_self,
-              sub_zero])).le
+        (by
+          rw [coe_top, coe_sup, coe_compl, add_sub_cancel'_right, ← coe_compl, mul_compl_self,
+            sub_zero])).le
     sdiff_eq := fun P Q => Subtype.ext <| by rw [coe_sdiff, ← coe_compl, coe_inf] }
 
 end IsLprojection

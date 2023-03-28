@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Floris van Doorn
 
 ! This file was ported from Lean 3 source module data.set.pointwise.basic
-! leanprover-community/mathlib commit 207cfac9fcd06138865b5d04f7091e46d9320432
+! leanprover-community/mathlib commit 517cc149e0b515d2893baa376226ed10feb319c7
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -827,12 +827,30 @@ protected noncomputable def semigroup [Semigroup α] : Semigroup (Set α) :=
 #align set.semigroup Set.semigroup
 #align set.add_semigroup Set.addSemigroup
 
+section CommSemigroup
+
+variable [CommSemigroup α] {s t : Set α}
+
 /-- `Set α` is a `CommSemigroup` under pointwise operations if `α` is. -/
 @[to_additive "`Set α` is an `AddCommSemigroup` under pointwise operations if `α` is."]
-protected noncomputable def commSemigroup [CommSemigroup α] : CommSemigroup (Set α) :=
+protected noncomputable def commSemigroup : CommSemigroup (Set α) :=
   { Set.semigroup with mul_comm := fun _ _ => image2_comm mul_comm }
 #align set.comm_semigroup Set.commSemigroup
 #align set.add_comm_semigroup Set.addCommSemigroup
+
+@[to_additive]
+theorem inter_mul_union_subset : s ∩ t * (s ∪ t) ⊆ s * t :=
+  image2_inter_union_subset mul_comm
+#align set.inter_mul_union_subset Set.inter_mul_union_subset
+#align set.inter_add_union_subset Set.inter_add_union_subset
+
+@[to_additive]
+theorem union_mul_inter_subset : (s ∪ t) * (s ∩ t) ⊆ s * t :=
+  image2_union_inter_subset mul_comm
+#align set.union_mul_inter_subset Set.union_mul_inter_subset
+#align set.union_add_inter_subset Set.union_add_inter_subset
+
+end CommSemigroup
 
 section MulOneClass
 
