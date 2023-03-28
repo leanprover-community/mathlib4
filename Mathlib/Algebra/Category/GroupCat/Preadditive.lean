@@ -8,7 +8,7 @@ Authors: Markus Himmel
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Algebra.Category.Group.Basic
+import Mathlib.Algebra.Category.GroupCat.Basic
 import Mathlib.CategoryTheory.Preadditive.Basic
 
 /-!
@@ -22,15 +22,21 @@ universe u
 
 namespace AddCommGroupCat
 
+-- porting note: this instance was not necessary in mathlib
+instance (P Q : AddCommGroupCat) : AddCommGroup (P ⟶ Q) :=
+  (inferInstance : AddCommGroup (AddMonoidHom P Q))
+
+@[simp]
+lemma hom_add_apply {P Q : AddCommGroupCat} (f g : P ⟶ Q) (x : P) :
+  (f + g) x = f x + g x := rfl
+
+-- porting note: doing just `ext; simp` timeouts, what is wrong?
 instance : Preadditive AddCommGroupCat where
-  add_comp P Q R f f' g :=
-    show (f + f') ≫ g = f ≫ g + f' ≫ g by
-      ext
-      simp
-  comp_add P Q R f g g' :=
-    show f ≫ (g + g') = f ≫ g + f ≫ g' by
-      ext
-      simp
+  add_comp P Q R f f' g := by
+    ext
+    simp only [comp_apply, hom_add_apply, Hom.map_add]
+  comp_add P Q R f g g' := by
+    ext
+    simp only [comp_apply, hom_add_apply]
 
 end AddCommGroupCat
-
