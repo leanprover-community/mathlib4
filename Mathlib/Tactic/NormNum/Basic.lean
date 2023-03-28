@@ -60,8 +60,7 @@ theorem isNat_intOfNat : {n n' : ℕ} → IsNat n n' → IsNat (Int.ofNat n) n'
 /-- The `norm_num` extension which identifies the constructor application `Int.ofNat n` such that
 `norm_num` successfully recognizes `n`, returning `n`. -/
 @[norm_num Int.ofNat _] def evalIntOfNat : NormNumExt where eval {u α} e := do
-  let .app _ (n : Q(ℕ)) ← whnfR e | failure
-  guard <| α.isConstOf ``Int
+  let .app (.const ``Int.ofNat _) (n : Q(ℕ)) ← whnfR e | failure
   let sℕ : Q(AddMonoidWithOne ℕ) := q(AddCommMonoidWithOne.toAddMonoidWithOne)
   let sℤ : Q(AddMonoidWithOne ℤ) := q(AddGroupWithOne.toAddMonoidWithOne)
   let ⟨n', p⟩ ← deriveNat n sℕ
@@ -535,8 +534,7 @@ theorem isRat_mkRat : {a na n : ℤ} → {b nb d : ℕ} → IsInt a na → IsNat
 /-- The `norm_num` extension which identifies expressions of the form `mkRat a b`,
 such that `norm_num` successfully recognises both `a` and `b`, and returns `a / b`. -/
 @[norm_num mkRat _ _] def evalMkRat : NormNumExt where eval {u α} e := do
-  let .app (.app _ (a : Q(ℤ))) (b : Q(ℕ)) ← whnfR e | failure
-  guard <| α.isConstOf ``Rat
+  let .app (.app (.const ``mkRat _) (a : Q(ℤ))) (b : Q(ℕ)) ← whnfR e | failure
   let ra ← derive a
   let rℤ : Q(Ring ℤ) := q(Int.instRingInt)
   let some ⟨_, na, pa⟩ := ra.toInt | failure
