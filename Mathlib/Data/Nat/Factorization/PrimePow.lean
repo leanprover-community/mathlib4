@@ -139,7 +139,9 @@ theorem Nat.coprime.isPrimePow_dvd_mul {n a b : ℕ} (hab : Nat.coprime a b) (hn
   have : a.factorization p = 0 ∨ b.factorization p = 0 := by
     rw [← Finsupp.not_mem_support_iff, ← Finsupp.not_mem_support_iff, ← not_and_or, ←
       Finset.mem_inter]
-    exact fun t => (Nat.factorization_disjoint_of_coprime hab).le_bot t
+    intro t
+    -- porting note: used to be `exact`, but the definition of `∈` has changed.
+    simpa using (Nat.factorization_disjoint_of_coprime hab).le_bot t
   cases' this with h h <;> simp [h, imp_or]
 #align nat.coprime.is_prime_pow_dvd_mul Nat.coprime.isPrimePow_dvd_mul
 
