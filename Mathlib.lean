@@ -274,6 +274,7 @@ import Mathlib.Algebra.Tropical.Basic
 import Mathlib.Algebra.Tropical.BigOperators
 import Mathlib.Algebra.Tropical.Lattice
 import Mathlib.Analysis.Convex.Basic
+import Mathlib.Analysis.Convex.Hull
 import Mathlib.Analysis.Convex.Segment
 import Mathlib.Analysis.Convex.Star
 import Mathlib.Analysis.Normed.Field.Basic
