@@ -8,8 +8,8 @@ Authors: Yury Kudriashov, Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Convex.Basic
-import Mathbin.Order.Closure
+import Mathlib.Analysis.Convex.Basic
+import Mathlib.Order.Closure
 
 /-!
 # Convex hull
@@ -98,8 +98,7 @@ theorem convexHull_empty : convexHull 𝕜 (∅ : Set E) = ∅ :=
 #align convex_hull_empty convexHull_empty
 
 @[simp]
-theorem convexHull_empty_iff : convexHull 𝕜 s = ∅ ↔ s = ∅ :=
-  by
+theorem convexHull_empty_iff : convexHull 𝕜 s = ∅ ↔ s = ∅ := by
   constructor
   · intro h
     rw [← Set.subset_empty_iff, ← h]
@@ -109,8 +108,7 @@ theorem convexHull_empty_iff : convexHull 𝕜 s = ∅ ↔ s = ∅ :=
 #align convex_hull_empty_iff convexHull_empty_iff
 
 @[simp]
-theorem convexHull_nonempty_iff : (convexHull 𝕜 s).Nonempty ↔ s.Nonempty :=
-  by
+theorem convexHull_nonempty_iff : (convexHull 𝕜 s).Nonempty ↔ s.Nonempty := by
   rw [nonempty_iff_ne_empty, nonempty_iff_ne_empty, Ne.def, Ne.def]
   exact not_congr convexHull_empty_iff
 #align convex_hull_nonempty_iff convexHull_nonempty_iff
@@ -130,8 +128,7 @@ theorem convexHull_singleton (x : E) : convexHull 𝕜 ({x} : Set E) = {x} :=
 #align convex_hull_singleton convexHull_singleton
 
 @[simp]
-theorem convexHull_pair (x y : E) : convexHull 𝕜 {x, y} = segment 𝕜 x y :=
-  by
+theorem convexHull_pair (x y : E) : convexHull 𝕜 {x, y} = segment 𝕜 x y := by
   refine'
     (convexHull_min _ <| convex_segment _ _).antisymm
       (segment_subset_convexHull (mem_insert _ _) <| mem_insert_of_mem _ <| mem_singleton _)
@@ -150,8 +147,7 @@ theorem convexHull_convexHull_union_right (s t : Set E) :
 #align convex_hull_convex_hull_union_right convexHull_convexHull_union_right
 
 theorem Convex.convex_remove_iff_not_mem_convexHull_remove {s : Set E} (hs : Convex 𝕜 s) (x : E) :
-    Convex 𝕜 (s \ {x}) ↔ x ∉ convexHull 𝕜 (s \ {x}) :=
-  by
+    Convex 𝕜 (s \ {x}) ↔ x ∉ convexHull 𝕜 (s \ {x}) := by
   constructor
   · rintro hsx hx
     rw [hsx.convex_hull_eq] at hx
@@ -160,8 +156,7 @@ theorem Convex.convex_remove_iff_not_mem_convexHull_remove {s : Set E} (hs : Con
   suffices h : s \ {x} = convexHull 𝕜 (s \ {x}); · convert convex_convexHull 𝕜 _
   exact
     subset.antisymm (subset_convexHull 𝕜 _) fun y hy =>
-      ⟨convexHull_min (diff_subset _ _) hs hy,
-        by
+      ⟨convexHull_min (diff_subset _ _) hs hy, by
         rintro (rfl : y = x)
         exact hx hy⟩
 #align convex.convex_remove_iff_not_mem_convex_hull_remove Convex.convex_remove_iff_not_mem_convexHull_remove
@@ -221,15 +216,13 @@ theorem convexHull_subset_affineSpan : convexHull 𝕜 s ⊆ (affineSpan 𝕜 s 
 #align convex_hull_subset_affine_span convexHull_subset_affineSpan
 
 @[simp]
-theorem affineSpan_convexHull : affineSpan 𝕜 (convexHull 𝕜 s) = affineSpan 𝕜 s :=
-  by
+theorem affineSpan_convexHull : affineSpan 𝕜 (convexHull 𝕜 s) = affineSpan 𝕜 s := by
   refine' le_antisymm _ (affineSpan_mono 𝕜 (subset_convexHull 𝕜 s))
   rw [affineSpan_le]
   exact convexHull_subset_affineSpan s
 #align affine_span_convex_hull affineSpan_convexHull
 
-theorem convexHull_neg (s : Set E) : convexHull 𝕜 (-s) = -convexHull 𝕜 s :=
-  by
+theorem convexHull_neg (s : Set E) : convexHull 𝕜 (-s) = -convexHull 𝕜 s := by
   simp_rw [← image_neg]
   exact (AffineMap.image_convexHull _ <| -1).symm
 #align convex_hull_neg convexHull_neg
