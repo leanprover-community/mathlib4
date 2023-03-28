@@ -15,6 +15,10 @@ def functorConcat (F₁ F₂ : D ⥤ Type w) : D ⥤ Type w where
   map f a := ⟨F₁.map f a.1, F₂.map f a.2⟩
 
 @[simps]
+def functorPr₀ {F : D ⥤ Type w} : F ⟶ (Functor.const D).obj PUnit where
+  app _ _ := PUnit.unit
+
+@[simps]
 def functorPr₁ {F₁ F₂ : D ⥤ Type w} : functorConcat F₁ F₂ ⟶ F₁ where
   app X a := a.1
 
@@ -98,6 +102,10 @@ def functorOperation₂.equiv_of_iso {F₁ F₂ : D ⥤ Type w} (e : F₁ ≅ F�
     simp
 
 @[simp]
+def functorOperation₂.swap {F : D ⥤ Type w} (h : functorOperation₂ F) :
+  functorOperation₂ F := natTransConcat functorPr₂ functorPr₁ ≫ h
+
+@[simp]
 def functorOperation₃.of_iso {F₁ F₂ : D ⥤ Type w} (h : functorOperation₃ F₁)
     (e : F₁ ≅ F₂) : functorOperation₃ F₂ :=
   natTransConcat₃ (functorPr₃₁ ≫ e.inv) (functorPr₃₂ ≫ e.inv) (functorPr₃₃ ≫ e.inv) ≫
@@ -124,18 +132,11 @@ variable {X₁ X₂ X₃ X₁₂ X₂₃ X₁₂₃ : D ⥤ Type w}
   (φ₁₂ : functorConcat X₁ X₂ ⟶ X₁₂) (ψ₁₂ : functorConcat X₁₂ X₃ ⟶ X₁₂₃)
   (φ₂₃ : functorConcat X₂ X₃ ⟶ X₂₃) (ψ₂₃ : functorConcat X₁ X₂₃ ⟶ X₁₂₃)
 
-@[simp]
-def functorOperation_assoc'_lhs :=
+def functorOperation_assoc' : Prop :=
   Types.natTransConcat (Types.natTransConcat Types.functorPr₃₁ Types.functorPr₃₂ ≫ φ₁₂)
-    Types.functorPr₃₃ ≫ ψ₁₂
-
-@[simp]
-def functorOperation_assoc'_rhs :=
+    Types.functorPr₃₃ ≫ ψ₁₂ =
   Types.natTransConcat Types.functorPr₃₁
     (Types.natTransConcat Types.functorPr₃₂ Types.functorPr₃₃ ≫ φ₂₃) ≫ ψ₂₃
-
-def functorOperation_assoc' : Prop :=
-  functorOperation_assoc'_lhs φ₁₂ ψ₁₂ = functorOperation_assoc'_rhs φ₂₃ ψ₂₃
 
 def functorOperation₂.assoc {F : D ⥤ Type w} (oper : functorOperation₂ F) : Prop :=
   functorOperation_assoc' oper oper oper oper
@@ -152,6 +153,89 @@ lemma functorOperation₂.assoc.of_iso {F₁ F₂ : D ⥤ Type w} {oper : functo
 
 end
 
+section
+
+variable {X Y : D ⥤ Type w}
+  (add : functorConcat X Y ⟶ Y)
+  (zero : functorOperation₀ X)
+
+def functorOperation_zero_add' : Prop :=
+  (natTransConcat (Types.functorPr₀ ≫ zero) (𝟙 Y)) ≫ add = 𝟙 Y
+
+def functorOperation₂.zero_add (add : functorOperation₂ Y) (zero : functorOperation₀ Y) : Prop :=
+  functorOperation_zero_add' add zero
+
+lemma functorOperation₂.zero_add.of_iso {F₁ F₂ : D ⥤ Type w} {add : functorOperation₂ F₁}
+  {zero : functorOperation₀ F₁} (h : add.zero_add zero) (e : F₁ ≅ F₂) :
+  (add.of_iso e).zero_add (zero.of_iso e) := by
+  refine' Eq.trans _ ((congr_arg (fun (o : functorOperation₁ F₁) => o.of_iso e) h).trans _)
+  all_goals
+    apply NatTrans.ext
+    ext1
+    funext
+    dsimp
+    simp
+
+end
+
+section
+
+variable {X Y : D ⥤ Type w}
+  (add : functorConcat Y X ⟶ Y)
+  (zero : functorOperation₀ X)
+
+def functorOperation_add_zero' : Prop :=
+  (natTransConcat (𝟙 Y) (Types.functorPr₀ ≫ zero)) ≫ add = 𝟙 Y
+
+def functorOperation₂.add_zero (add : functorOperation₂ Y) (zero : functorOperation₀ Y) : Prop :=
+  functorOperation_add_zero' add zero
+
+lemma functorOperation₂.add_zero.of_iso {F₁ F₂ : D ⥤ Type w} {add : functorOperation₂ F₁}
+  {zero : functorOperation₀ F₁} (h : add.add_zero zero) (e : F₁ ≅ F₂) :
+  (add.of_iso e).add_zero (zero.of_iso e) := by
+  refine' Eq.trans _ ((congr_arg (fun (o : functorOperation₁ F₁) => o.of_iso e) h).trans _)
+  all_goals
+    apply NatTrans.ext
+    ext1
+    funext
+    dsimp
+    simp
+
+end
+
+section
+
+variable {F : D ⥤ Type w} (add : functorOperation₂ F)
+
+def functorOperation₂.comm : Prop := add = add.swap
+
+lemma functorOperation₂.comm.of_iso {F₁ F₂ : D ⥤ Type w} {add : functorOperation₂ F₁}
+  (h : add.comm) (e : F₁ ≅ F₂) : (add.of_iso e).comm :=
+  congr_arg (fun (o : functorOperation₂ F₁) => o.of_iso e) h
+
+end
+
+section
+
+variable {F : D ⥤ Type w} (add : functorOperation₂ F)
+  (neg : functorOperation₁ F) (zero : functorOperation₀ F)
+
+def functorOperation₂.add_left_neg : Prop :=
+  natTransConcat neg (𝟙 _) ≫ add = functorPr₀ ≫ zero
+
+lemma functorOperation₂.add_left_neg.of_iso {F₁ F₂ : D ⥤ Type w} {add : functorOperation₂ F₁}
+    {neg : functorOperation₁ F₁} {zero : functorOperation₀ F₁}
+    (h : add.add_left_neg neg zero) (e : F₁ ≅ F₂) :
+    (add.of_iso e).add_left_neg (neg.of_iso e) (zero.of_iso e) := by
+  refine' Eq.trans _ (congr_arg (fun (o : functorOperation₁ F₁) => o.of_iso e) h)
+  apply NatTrans.ext
+  ext1
+  funext
+  dsimp
+  simp
+
+end
+
 end Types
 
 variable (A : Type u) [Category.{v} A] [ConcreteCategory.{w} A]
@@ -165,20 +249,24 @@ def Operation₃ := Types.functorConcat (forget A) (Types.functorConcat (forget 
 
 namespace Operation₂
 
+variable {A}
 variable (oper : Operation₂ A)
 
 @[simp]
-def assoc_lhs : Operation₃ A :=
-  Types.natTransConcat (Types.natTransConcat Types.functorPr₃₁ Types.functorPr₃₂ ≫ oper)
-    Types.functorPr₃₃ ≫ oper
+def assoc : Prop := Types.functorOperation₂.assoc oper
 
 @[simp]
-def assoc_rhs : Operation₃ A :=
-  Types.natTransConcat Types.functorPr₃₁
-    (Types.natTransConcat Types.functorPr₃₂ Types.functorPr₃₃ ≫ oper) ≫ oper
+def zero_add (zero : Operation₀ A) : Prop := Types.functorOperation₂.zero_add oper zero
 
 @[simp]
-def assoc : Prop := oper.assoc_lhs = oper.assoc_rhs
+def add_zero (zero : Operation₀ A) : Prop := Types.functorOperation₂.add_zero oper zero
+
+@[simp]
+def comm : Prop := Types.functorOperation₂.comm oper
+
+@[simp]
+def add_left_neg (neg : Operation₁ A) (zero : Operation₀ A) : Prop :=
+  Types.functorOperation₂.add_left_neg oper neg zero
 
 end Operation₂
 
@@ -209,8 +297,32 @@ lemma AddCommGroupCat_add_assoc : AddCommGroupCat_add.assoc := by
   apply NatTrans.ext
   ext1 X
   funext ⟨(x : X), ⟨(y : X), (z : X)⟩⟩
-  dsimp [Operation₂.assoc_lhs, Operation₂.assoc_rhs]
   exact add_assoc x y z
+
+lemma AddCommGroupCat_add_zero : AddCommGroupCat_add.add_zero AddCommGroupCat_zero := by
+  apply NatTrans.ext
+  ext1 X
+  funext (x : X)
+  exact add_zero x
+
+lemma AddCommGroupCat_zero_add : AddCommGroupCat_add.zero_add AddCommGroupCat_zero := by
+  apply NatTrans.ext
+  ext1 X
+  funext (x : X)
+  exact zero_add x
+
+lemma AddCommGroupCat_add_comm : AddCommGroupCat_add.comm := by
+  apply NatTrans.ext
+  ext1 X
+  funext ⟨(x : X), (y : X)⟩
+  exact add_comm x y
+
+lemma AddCommGroupCat_add_left_neg : AddCommGroupCat_add.add_left_neg
+    AddCommGroupCat_neg AddCommGroupCat_zero := by
+  apply NatTrans.ext
+  ext1 X
+  funext (x : X)
+  exact add_left_neg x
 
 end ConcreteCategory
 

@@ -87,11 +87,52 @@ def ConcreteCategory.Operation₃.onInternal (oper : Operation₃ A)
 
 lemma ConcreteCategory.Operation₂.assoc.onTypesPresheaf {oper : Operation₂ A}
     (h : oper.assoc) (X : Internal A C) : (oper.onTypesPresheaf X).assoc := by
-  exact _root_.congr_arg (fun o => o.onTypesPresheaf X) h
+  exact _root_.congr_arg (fun (o : Operation₃ A) => o.onTypesPresheaf X) h
 
 lemma ConcreteCategory.Operation₂.assoc.onInternal {oper : Operation₂ A}
     (h : oper.assoc) (X : Internal A C) : (oper.onInternal X).assoc :=
   (h.onTypesPresheaf X).of_iso X.iso.symm
 
+lemma ConcreteCategory.Operation₂.zero_add.onTypesPresheaf {oper : Operation₂ A}
+    {zero : Operation₀ A} (h : oper.zero_add zero) (X : Internal A C) :
+      (oper.onTypesPresheaf X).zero_add (zero.onTypesPresheaf X) := by
+  exact _root_.congr_arg (fun (o : Operation₁ A) => o.onTypesPresheaf X) h
+
+lemma ConcreteCategory.Operation₂.zero_add.onInternal {oper : Operation₂ A}
+    {zero : Operation₀ A} (h : oper.zero_add zero) (X : Internal A C) :
+      (oper.onInternal X).zero_add (zero.onInternal X) :=
+  (h.onTypesPresheaf X).of_iso X.iso.symm
+
+lemma ConcreteCategory.Operation₂.add_zero.onTypesPresheaf {oper : Operation₂ A}
+    {zero : Operation₀ A} (h : oper.add_zero zero) (X : Internal A C) :
+      (oper.onTypesPresheaf X).add_zero (zero.onTypesPresheaf X) := by
+  exact _root_.congr_arg (fun (o : Operation₁ A) => o.onTypesPresheaf X) h
+
+lemma ConcreteCategory.Operation₂.add_zero.onInternal {oper : Operation₂ A}
+    {zero : Operation₀ A} (h : oper.add_zero zero) (X : Internal A C) :
+      (oper.onInternal X).add_zero (zero.onInternal X) :=
+  (h.onTypesPresheaf X).of_iso X.iso.symm
+
+lemma ConcreteCategory.Operation₂.comm.onTypesPresheaf {oper : Operation₂ A}
+    (h : oper.comm) (X : Internal A C) : (oper.onTypesPresheaf X).comm := by
+  exact _root_.congr_arg (fun (o : Operation₂ A) => o.onTypesPresheaf X) h
+
+lemma ConcreteCategory.Operation₂.comm.onInternal {oper : Operation₂ A}
+    (h : oper.comm) (X : Internal A C) : (oper.onInternal X).comm :=
+  (h.onTypesPresheaf X).of_iso X.iso.symm
+
+lemma ConcreteCategory.Operation₂.add_left_neg.onTypesPresheaf {oper : Operation₂ A}
+    {neg : Operation₁ A} {zero : Operation₀ A}
+    (h : oper.add_left_neg neg zero) (X : Internal A C) :
+      (oper.onTypesPresheaf X).add_left_neg
+        (neg.onTypesPresheaf X) (zero.onTypesPresheaf X) := by
+  exact _root_.congr_arg (fun (o : Operation₁ A) => o.onTypesPresheaf X) h
+
+lemma ConcreteCategory.Operation₂.add_left_neg.onInternal {oper : Operation₂ A}
+    {neg : Operation₁ A} {zero : Operation₀ A}
+    (h : oper.add_left_neg neg zero) (X : Internal A C) :
+      (oper.onInternal X).add_left_neg
+        (neg.onInternal X) (zero.onInternal X) :=
+  (h.onTypesPresheaf X).of_iso X.iso.symm
 
 end CategoryTheory
