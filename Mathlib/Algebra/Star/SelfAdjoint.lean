@@ -193,9 +193,9 @@ theorem bit1 {x : R} (hx : IsSelfAdjoint x) : IsSelfAdjoint (bit1 x) := by
 #align is_self_adjoint.bit1 IsSelfAdjoint.bit1
 
 @[simp]
-theorem _root_.isSelfAdjoint_nat_cast (n : ℕ) : IsSelfAdjoint (n : R) :=
+theorem _root_.isSelfAdjoint_natCast (n : ℕ) : IsSelfAdjoint (n : R) :=
   star_natCast _
-#align is_self_adjoint_nat_cast isSelfAdjoint_nat_cast
+#align is_self_adjoint_nat_cast isSelfAdjoint_natCast
 
 end Semiring
 
@@ -214,9 +214,9 @@ section Ring
 variable [Ring R] [StarRing R]
 
 @[simp]
-theorem _root_.isSelfAdjoint_int_cast (z : ℤ) : IsSelfAdjoint (z : R) :=
+theorem _root_.isSelfAdjoint_intCast (z : ℤ) : IsSelfAdjoint (z : R) :=
   star_intCast _
-#align is_self_adjoint_int_cast isSelfAdjoint_int_cast
+#align is_self_adjoint_int_cast isSelfAdjoint_intCast
 
 end Ring
 
@@ -238,9 +238,9 @@ section DivisionRing
 
 variable [DivisionRing R] [StarRing R]
 
-theorem _root_.isSelfAdjoint_rat_cast (x : ℚ) : IsSelfAdjoint (x : R) :=
+theorem _root_.isSelfAdjoint_ratCast (x : ℚ) : IsSelfAdjoint (x : R) :=
   star_ratCast _
-#align is_self_adjoint_rat_cast isSelfAdjoint_rat_cast
+#align is_self_adjoint_rat_cast isSelfAdjoint_ratCast
 
 end DivisionRing
 
@@ -324,10 +324,10 @@ instance [Nontrivial R] : Nontrivial (selfAdjoint R) :=
   ⟨⟨0, 1, Subtype.ne_of_val_ne zero_ne_one⟩⟩
 
 instance : NatCast (selfAdjoint R) :=
-  ⟨fun n => ⟨n, isSelfAdjoint_nat_cast _⟩⟩
+  ⟨fun n => ⟨n, isSelfAdjoint_natCast _⟩⟩
 
 instance : IntCast (selfAdjoint R) :=
-  ⟨fun n => ⟨n, isSelfAdjoint_int_cast _⟩⟩
+  ⟨fun n => ⟨n, isSelfAdjoint_intCast _⟩⟩
 
 instance : Pow (selfAdjoint R) ℕ :=
   ⟨fun x n => ⟨(x : R) ^ n, x.prop.pow n⟩⟩
@@ -390,8 +390,8 @@ theorem val_zpow (x : selfAdjoint R) (z : ℤ) : ↑(x ^ z) = (x : R) ^ z :=
   rfl
 #align self_adjoint.coe_zpow selfAdjoint.val_zpow
 
-instance : HasRatCast (selfAdjoint R) :=
-  ⟨fun n => ⟨n, isSelfAdjoint_rat_cast n⟩⟩
+instance : RatCast (selfAdjoint R) :=
+  ⟨fun n => ⟨n, isSelfAdjoint_ratCast n⟩⟩
 
 @[simp, norm_cast]
 theorem val_ratCast (x : ℚ) : ↑(x : selfAdjoint R) = (x : R) :=
@@ -400,7 +400,7 @@ theorem val_ratCast (x : ℚ) : ↑(x : selfAdjoint R) = (x : R) :=
 
 instance instQSMul : SMul ℚ (selfAdjoint R) :=
   ⟨fun a x =>
-    ⟨a • x, by rw [Rat.smul_def] <;> exact IsSelfAdjoint.mul (isSelfAdjoint_rat_cast a) x.prop⟩⟩
+    ⟨a • x, by rw [Rat.smul_def] <;> exact IsSelfAdjoint.mul (isSelfAdjoint_ratCast a) x.prop⟩⟩
 #align self_adjoint.has_qsmul selfAdjoint.instQSMul
 
 @[simp, norm_cast]
