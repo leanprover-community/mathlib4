@@ -361,7 +361,7 @@ theorem natDegree_iterate_comp (k : ℕ) :
   by
   induction' k with k IH
   · simp
-  · rw [Function.iterate_succ_apply', nat_degree_comp, IH, pow_succ, mul_assoc]
+  · rw [Function.iterate_succ_apply', natDegree_comp, IH, pow_succ, mul_assoc]
 #align polynomial.nat_degree_iterate_comp Polynomial.natDegree_iterate_comp
 
 theorem leadingCoeff_comp (hq : natDegree q ≠ 0) :
