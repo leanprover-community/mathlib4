@@ -299,17 +299,17 @@ theorem nfpBFamily_monotone (hf : ∀ i hi, Monotone (f i hi)) : Monotone (nfpBF
   nfpFamily_monotone fun _ => hf _ _
 #align ordinal.nfp_bfamily_monotone Ordinal.nfpBFamily_monotone
 
-theorem apply_lt_nfpBFamily (H : ∀ i hi, IsNormal (f i hi)) {a b} (hb : b < nfpBFamily o f a)
-    (i hi) : f i hi b < nfpBFamily o f a := by
-  apply apply_lt_nfp_family _ hb
-  exact fun _ => H _ _
+theorem apply_lt_nfpBFamily (H : ∀ i hi, IsNormal (f i hi)) {a b} (hb : b < nfpBFamily.{u, v} o f a)
+    (i hi) : f i hi b < nfpBFamily.{u, v} o f a := by
+  rw [←familyOfBFamily_enum o f]
+  apply apply_lt_nfpFamily (fun _ => H _ _) hb
 #align ordinal.apply_lt_nfp_bfamily Ordinal.apply_lt_nfpBFamily
 
 theorem apply_lt_nfpBFamily_iff (ho : o ≠ 0) (H : ∀ i hi, IsNormal (f i hi)) {a b} :
-    (∀ i hi, f i hi b < nfpBFamily o f a) ↔ b < nfpBFamily o f a :=
+    (∀ i hi, f i hi b < nfpBFamily.{u, v} o f a) ↔ b < nfpBFamily.{u, v} o f a :=
   ⟨fun h => by
     haveI := out_nonempty_iff_ne_zero.2 ho
-    refine' (apply_lt_nfp_family_iff _).1 fun _ => h _ _
+    refine' (apply_lt_nfpFamily_iff.{u, v} _).1 fun _ => h _ _
     exact fun _ => H _ _, apply_lt_nfpBFamily H⟩
 #align ordinal.apply_lt_nfp_bfamily_iff Ordinal.apply_lt_nfpBFamily_iff
 
