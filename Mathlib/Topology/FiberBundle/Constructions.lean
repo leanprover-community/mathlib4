@@ -232,7 +232,7 @@ theorem Prod.continuous_inv_fun :
   exact fun x h => ⟨⟨h.1.1, mem_univ _⟩, ⟨h.1.2, mem_univ _⟩⟩
 #align trivialization.prod.continuous_inv_fun Trivialization.Prod.continuous_inv_fun
 
-variable (e₁ e₂ e₁ e₂)
+variable (e₁ e₂)
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- Given trivializations `e₁`, `e₂` for bundle types `E₁`, `E₂` over a base `B`, the induced
@@ -310,7 +310,10 @@ section
 variable {B : Type _} (F : Type _) (E : B → Type _) {B' : Type _} (f : B' → B)
 
 instance [∀ x : B, TopologicalSpace (E x)] : ∀ x : B', TopologicalSpace ((f *ᵖ E) x) := by
-  delta_instance bundle.pullback
+  -- Porting note: Original proof was `delta_instance bundle.pullback`
+  intro x
+  rw [Bundle.Pullback]
+  infer_instance
 
 variable [TopologicalSpace B'] [TopologicalSpace (TotalSpace E)]
 
@@ -327,12 +330,12 @@ instance Pullback.TotalSpace.topologicalSpace : TopologicalSpace (TotalSpace (f 
 #align pullback.total_space.topological_space Pullback.TotalSpace.topologicalSpace
 
 theorem Pullback.continuous_proj (f : B' → B) : Continuous (@TotalSpace.proj _ (f *ᵖ E)) := by
-  rw [continuous_iff_le_induced, Pullback.TotalSpace.topologicalSpace, pullbackTopology]
+  rw [continuous_iff_le_induced, Pullback.TotalSpace.topologicalSpace, pullbackTopology_def]
   exact inf_le_left
 #align pullback.continuous_proj Pullback.continuous_proj
 
 theorem Pullback.continuous_lift (f : B' → B) : Continuous (@Pullback.lift B E B' f) := by
-  rw [continuous_iff_le_induced, Pullback.TotalSpace.topologicalSpace, pullbackTopology]
+  rw [continuous_iff_le_induced, Pullback.TotalSpace.topologicalSpace, pullbackTopology_def]
   exact inf_le_right
 #align pullback.continuous_lift Pullback.continuous_lift
 
@@ -340,7 +343,7 @@ theorem inducing_pullbackTotalSpaceEmbedding (f : B' → B) :
     Inducing (@pullbackTotalSpaceEmbedding B E B' f) := by
   constructor
   simp_rw [instTopologicalSpaceProd, induced_inf, induced_compose,
-    Pullback.TotalSpace.topologicalSpace, pullbackTopology]
+    Pullback.TotalSpace.topologicalSpace, pullbackTopology_def]
   rfl
 #align inducing_pullback_total_space_embedding inducing_pullbackTotalSpaceEmbedding
 
@@ -352,7 +355,7 @@ theorem Pullback.continuous_totalSpaceMk [∀ x, TopologicalSpace (E x)] [FiberB
     {f : B' → B} {x : B'} : Continuous (@totalSpaceMk _ (f *ᵖ E) x) := by
   simp only [continuous_iff_le_induced, Pullback.TotalSpace.topologicalSpace, induced_compose,
     induced_inf, Function.comp, totalSpaceMk, TotalSpace.proj, induced_const, top_inf_eq,
-    pullbackTopology]
+    pullbackTopology_def]
   exact le_of_eq (FiberBundle.totalSpaceMk_inducing F E (f x)).induced
 #align pullback.continuous_total_space_mk Pullback.continuous_totalSpaceMk
 
