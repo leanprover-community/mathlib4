@@ -1401,6 +1401,13 @@ import Mathlib.Tactic.ByContra
 import Mathlib.Tactic.Cache
 import Mathlib.Tactic.Cases
 import Mathlib.Tactic.CasesM
+import Mathlib.Tactic.ChatGPT.Curl
+import Mathlib.Tactic.ChatGPT.Dialog
+import Mathlib.Tactic.ChatGPT.Frontend
+import Mathlib.Tactic.ChatGPT.JSON
+import Mathlib.Tactic.ChatGPT.Lean
+import Mathlib.Tactic.ChatGPT.Monad
+import Mathlib.Tactic.ChatGPT.Send
 import Mathlib.Tactic.Choose
 import Mathlib.Tactic.Classical
 import Mathlib.Tactic.Clear!
