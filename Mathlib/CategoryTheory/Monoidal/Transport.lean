@@ -8,7 +8,7 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Monoidal.NaturalTransformation
+import Mathlib.CategoryTheory.Monoidal.NaturalTransformation
 
 /-!
 # Transport a monoidal structure along an equivalence.
@@ -48,8 +48,7 @@ variable {D : Type u₂} [Category.{v₂} D]
 /-- Transport a monoidal structure along an equivalence of (plain) categories.
 -/
 @[simps (config := { attrs := [`_refl_lemma] })]
-def transport (e : C ≌ D) : MonoidalCategory.{v₂} D
-    where
+def transport (e : C ≌ D) : MonoidalCategory.{v₂} D where
   tensorObj X Y := e.Functor.obj (e.inverse.obj X ⊗ e.inverse.obj Y)
   tensorHom W X Y Z f g := e.Functor.map (e.inverse.map f ⊗ e.inverse.map g)
   tensorUnit := e.Functor.obj (𝟙_ C)
@@ -121,8 +120,7 @@ def transport (e : C ≌ D) : MonoidalCategory.{v₂} D
     congr 2
     rw [e.inverse.map_id, tensor_id_comp_id_tensor_assoc, ← id_tensor_comp_tensor_id_assoc,
       right_unitor_naturality]
-  associator_naturality' X₁ X₂ X₃ Y₁ Y₂ Y₃ f₁ f₂ f₃ :=
-    by
+  associator_naturality' X₁ X₂ X₃ Y₁ Y₂ Y₃ f₁ f₂ f₃ := by
     dsimp
     simp only [equivalence.inv_fun_map, functor.map_comp, category.assoc]
     simp only [← e.functor.map_comp]
@@ -184,8 +182,7 @@ attribute [local simp]
 We can upgrade `e.functor` to a lax monoidal functor from `C` to `D` with the transported structure.
 -/
 @[simps]
-def laxToTransported (e : C ≌ D) : LaxMonoidalFunctor C (Transported e)
-    where
+def laxToTransported (e : C ≌ D) : LaxMonoidalFunctor C (Transported e) where
   toFunctor := e.Functor
   ε := 𝟙 (e.Functor.obj (𝟙_ C))
   μ X Y := e.Functor.map (e.unitInv.app X ⊗ e.unitInv.app Y)
@@ -243,8 +240,7 @@ end
 /-- We can upgrade `e.functor` to a monoidal functor from `C` to `D` with the transported structure.
 -/
 @[simps]
-def toTransported (e : C ≌ D) : MonoidalFunctor C (Transported e)
-    where
+def toTransported (e : C ≌ D) : MonoidalFunctor C (Transported e) where
   toLaxMonoidalFunctor := laxToTransported e
   ε_isIso := by
     dsimp
@@ -256,8 +252,7 @@ def toTransported (e : C ≌ D) : MonoidalFunctor C (Transported e)
 
 end
 
-instance (e : C ≌ D) : IsEquivalence (toTransported e).toFunctor :=
-  by
+instance (e : C ≌ D) : IsEquivalence (toTransported e).toFunctor := by
   dsimp
   infer_instance
 
