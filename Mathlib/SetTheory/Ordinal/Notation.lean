@@ -543,8 +543,7 @@ theorem repr_sub : ∀ (o₁ o₂) [NF o₁] [NF o₂], repr (o₁ - o₂) = rep
         simp [(· - ·), Sub.sub, sub, h, repr]
       cases mn : (n₁ : ℕ) - n₂ <;> dsimp
       · by_cases en : n₁ = n₂
-        · simp only [en, ite_true]
-          rwa [add_sub_add_cancel]
+        · simpa [en]
         · simp only [en, ite_false]
           exact
             (Ordinal.sub_eq_zero_iff_le.2 <|
