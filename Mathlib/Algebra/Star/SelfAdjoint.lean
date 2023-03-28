@@ -8,8 +8,8 @@ Authors: Frédéric Dupuis
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Star.Basic
-import Mathbin.GroupTheory.Subgroup.Basic
+import Mathlib.Algebra.Star.Basic
+import Mathlib.GroupTheory.Subgroup.Basic
 
 /-!
 # Self-adjoint, skew-adjoint and normal elements of a star additive group
@@ -269,8 +269,7 @@ end IsSelfAdjoint
 variable (R)
 
 /-- The self-adjoint elements of a star additive group, as an additive subgroup. -/
-def selfAdjoint [AddGroup R] [StarAddMonoid R] : AddSubgroup R
-    where
+def selfAdjoint [AddGroup R] [StarAddMonoid R] : AddSubgroup R where
   carrier := { x | IsSelfAdjoint x }
   zero_mem' := star_zero R
   add_mem' _ _ hx := hx.add
@@ -278,8 +277,7 @@ def selfAdjoint [AddGroup R] [StarAddMonoid R] : AddSubgroup R
 #align self_adjoint selfAdjoint
 
 /-- The skew-adjoint elements of a star additive group, as an additive subgroup. -/
-def skewAdjoint [AddCommGroup R] [StarAddMonoid R] : AddSubgroup R
-    where
+def skewAdjoint [AddCommGroup R] [StarAddMonoid R] : AddSubgroup R where
   carrier := { x | star x = -x }
   zero_mem' := show star (0 : R) = -0 by simp only [star_zero, neg_zero]
   add_mem' x y (hx : star x = -x) (hy : star y = -y) :=
@@ -295,8 +293,7 @@ section AddGroup
 
 variable [AddGroup R] [StarAddMonoid R]
 
-theorem mem_iff {x : R} : x ∈ selfAdjoint R ↔ star x = x :=
-  by
+theorem mem_iff {x : R} : x ∈ selfAdjoint R ↔ star x = x := by
   rw [← AddSubgroup.mem_carrier]
   exact Iff.rfl
 #align self_adjoint.mem_iff selfAdjoint.mem_iff
@@ -456,8 +453,7 @@ section AddGroup
 
 variable [AddCommGroup R] [StarAddMonoid R]
 
-theorem mem_iff {x : R} : x ∈ skewAdjoint R ↔ star x = -x :=
-  by
+theorem mem_iff {x : R} : x ∈ skewAdjoint R ↔ star x = -x := by
   rw [← AddSubgroup.mem_carrier]
   exact Iff.rfl
 #align skew_adjoint.mem_iff skewAdjoint.mem_iff
