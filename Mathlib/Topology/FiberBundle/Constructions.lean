@@ -50,10 +50,10 @@ instance topologicalSpace [I : TopologicalSpace F] : ∀ x : B, TopologicalSpace
 #align bundle.trivial.topological_space Bundle.Trivial.topologicalSpace
 
 -- Porting note: Added name for this instance.
-instance _root_.Bundle.TotalSpace.topologicalSpace [t₁ : TopologicalSpace B]
+instance Bundle.TotalSpace.topologicalSpace [t₁ : TopologicalSpace B]
     [t₂ : TopologicalSpace F] : TopologicalSpace (TotalSpace (Trivial B F)) :=
   induced TotalSpace.proj t₁ ⊓ induced (Trivial.projSnd B F) t₂
-#align bundle.total_space.topological_space Bundle.TotalSpace.topologicalSpace
+#align bundle.trivial.bundle.total_space.topological_space Bundle.Trivial.Bundle.TotalSpace.topologicalSpace
 
 variable [TopologicalSpace B] [TopologicalSpace F]
 
@@ -102,7 +102,7 @@ instance fiberBundle : FiberBundle F (Bundle.Trivial B F) where
     have : (fun x : Trivial B F b ↦ x) = @id F := by
       ext x
       rfl
-    simp only [TotalSpace.topologicalSpace, induced_inf, induced_compose, Function.comp,
+    simp only [Bundle.TotalSpace.topologicalSpace, induced_inf, induced_compose, Function.comp,
       induced_const, top_inf_eq, Trivial.projSnd, Trivial.topologicalSpace, this, induced_id]⟩
 #align bundle.trivial.fiber_bundle Bundle.Trivial.fiberBundle
 
