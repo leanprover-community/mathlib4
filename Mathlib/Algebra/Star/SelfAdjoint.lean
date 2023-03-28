@@ -14,30 +14,30 @@ import Mathlib.GroupTheory.Subgroup.Basic
 /-!
 # Self-adjoint, skew-adjoint and normal elements of a star additive group
 
-This file defines `self_adjoint R` (resp. `skew_adjoint R`), where `R` is a star additive group,
+This file defines `selfAdjoint R` (resp. `skewAdjoint R`), where `R` is a star additive group,
 as the additive subgroup containing the elements that satisfy `star x = x` (resp. `star x = -x`).
 This includes, for instance, (skew-)Hermitian operators on Hilbert spaces.
 
-We also define `is_star_normal R`, a `Prop` that states that an element `x` satisfies
+We also define `IsStarNormal R`, a `Prop` that states that an element `x` satisfies
 `star x * x = x * star x`.
 
 ## Implementation notes
 
-* When `R` is a `star_module R₂ R`, then `self_adjoint R` has a natural
-  `module (self_adjoint R₂) (self_adjoint R)` structure. However, doing this literally would be
-  undesirable since in the main case of interest (`R₂ = ℂ`) we want `module ℝ (self_adjoint R)`
-  and not `module (self_adjoint ℂ) (self_adjoint R)`. We solve this issue by adding the typeclass
-  `[has_trivial_star R₃]`, of which `ℝ` is an instance (registered in `data/real/basic`), and then
-  add a `[module R₃ (self_adjoint R)]` instance whenever we have
-  `[module R₃ R] [has_trivial_star R₃]`. (Another approach would have been to define
-  `[star_invariant_scalars R₃ R]` to express the fact that `star (x • v) = x • star v`, but
+* When `R` is a `StarModule R₂ R`, then `selfAdjoint R` has a natural
+  `Module (selfAdjoint R₂) (selfAdjoint R)` structure. However, doing this literally would be
+  undesirable since in the main case of interest (`R₂ = ℂ`) we want `Module ℝ (selfAdjoint R)`
+  and not `Module (selfAdjoint ℂ) (selfAdjoint R)`. We solve this issue by adding the typeclass
+  `[TrivialStar R₃]`, of which `ℝ` is an instance (registered in `data/Real/basic`), and then
+  add a `[Module R₃ (selfAdjoint R)]` instance whenever we have
+  `[Module R₃ R] [TrivialStar R₃]`. (Another approach would have been to define
+  `[StarInvariantScalars R₃ R]` to express the fact that `star (x • v) = x • star v`, but
   this typeclass would have the disadvantage of taking two type arguments.)
 
 ## TODO
 
-* Define `is_skew_adjoint` to match `is_self_adjoint`.
-* Define `λ z x, z * x * star z` (i.e. conjugation by `z`) as a monoid action of `R` on `R`
-  (similar to the existing `conj_act` for groups), and then state the fact that `self_adjoint R` is
+* Define `IsSkewAdjoint` to match `IsSelfAdjoint`.
+* Define `fun z x => z * x * star z` (i.e. conjugation by `z`) as a monoid action of `R` on `R`
+  (similar to the existing `ConjAct` for groups), and then state the fact that `selfAdjoint R` is
   invariant under it.
 
 -/
@@ -63,7 +63,7 @@ theorem star_comm_self' [Mul R] [Star R] (x : R) [IsStarNormal x] : star x * x =
 
 namespace IsSelfAdjoint
 
--- named to match `commute.all`
+-- named to match `Commute.allₓ`
 /-- All elements are self-adjoint when `star` is trivial. -/
 theorem all [Star R] [TrivialStar R] (r : R) : IsSelfAdjoint r :=
   star_trivial _
@@ -92,7 +92,7 @@ theorem mul_star_self [Semigroup R] [StarSemigroup R] (x : R) : IsSelfAdjoint (x
   simpa only [star_star] using star_mul_self (star x)
 #align is_self_adjoint.mul_star_self IsSelfAdjoint.mul_star_self
 
-/-- Functions in a `star_hom_class` preserve self-adjoint elements. -/
+/-- Functions in a `StarHomClass` preserve self-adjoint elements. -/
 theorem starHom_apply {F R S : Type _} [Star R] [Star S] [StarHomClass F R S] {x : R}
     (hx : IsSelfAdjoint x) (f : F) : IsSelfAdjoint (f x) :=
   show star (f x) = f x from map_star f x ▸ congr_arg f hx
