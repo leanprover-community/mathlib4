@@ -291,10 +291,13 @@ def equiv : Cubic R ≃ { p : R[X] // p.degree ≤ 3 } where
   invFun f := ⟨coeff f 3, coeff f 2, coeff f 1, coeff f 0⟩
   left_inv P := by ext <;> simp only [Subtype.coe_mk, coeffs]
   right_inv f := by
-    ext (_ | _ | _ | _ | n) <;> simp only [Subtype.coe_mk, coeffs]
-    have h3 : 3 < n + 4 := by linarith only
+    -- Porting note: Added `simp only [Nat.zero_eq, Nat.succ_eq_add_one] <;> ring_nf`
+    -- There's probably a better way to do this.
+    ext (_ | _ | _ | _ | n) <;> simp only [Nat.zero_eq, Nat.succ_eq_add_one] <;> ring_nf
+      <;> simp only [coeffs]
+    have h3 : 3 < 4 + n := by linarith only
     rw [coeff_eq_zero h3,
-      (degree_le_iff_coeff_zero (f : R[X]) 3).mp f.2 _ <| with_bot.coe_lt_coe.mpr h3]
+      (degree_le_iff_coeff_zero (f : R[X]) 3).mp f.2 _ <| WithBot.coe_lt_coe.mpr (by exact h3)]
 #align cubic.equiv Cubic.equiv
 
 @[simp]
