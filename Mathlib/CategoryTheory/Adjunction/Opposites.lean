@@ -34,7 +34,11 @@ variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 namespace CategoryTheory.Adjunction
 
 /-- If `G.op` is adjoint to `F.op` then `F` is adjoint to `G`. -/
-@[simps!]
+-- Porting note: in mathlib3 we generated all the default `simps` lemmas.
+-- However the `simpNF` linter correctly flags some of these as unsuitable simp lemmas.
+-- `unit_app` and `counit_app` appear to suffice (tested in mathlib3).
+-- See also the porting note on opAdjointOpOfAdjoint
+@[simps! unit_app counit_app]
 def adjointOfOpAdjointOp (F : C ⥤ D) (G : D ⥤ C) (h : G.op ⊣ F.op) : F ⊣ G :=
   Adjunction.mkOfHomEquiv {
     homEquiv := fun {X Y} =>
@@ -54,39 +58,31 @@ def adjointOfOpAdjointOp (F : C ⥤ D) (G : D ⥤ C) (h : G.op ⊣ F.op) : F ⊣
   category_theory.adjunction.adjoint_of_op_adjoint_op
   CategoryTheory.Adjunction.adjointOfOpAdjointOp
 
--- Porting note: LHS of these simplify to below
-attribute [-simp, nolint simpNF] adjointOfOpAdjointOp_homEquiv_apply 
-  adjointOfOpAdjointOp_homEquiv_symm_apply
-
--- Porting note: simpNF reports simplifying to itself here
-@[simp, nolint simpNF]
-theorem adjointOfOpAdjointOp_homEquiv_apply' {C : Type u₁} [Category C] 
+theorem adjointOfOpAdjointOp_homEquiv_apply {C : Type u₁} [Category C]
     {D : Type u₂} [Category D] (F : C ⥤ D) (G : D ⥤ C) (h : Functor.op G ⊣ Functor.op F)
-    (X : C) (Y : D) (a : 
-      Opposite.unop ((Functor.op F).obj (Opposite.op X)) ⟶ Opposite.unop (Opposite.op Y)) : 
+    (X : C) (Y : D)
+    (a : Opposite.unop ((Functor.op F).obj (Opposite.op X)) ⟶ Opposite.unop (Opposite.op Y)) :
     (opEquiv (Opposite.op (G.obj (F.obj X))) (Opposite.op X))
       ((Equiv.symm (Adjunction.homEquiv h (Opposite.op (F.obj X)) (Opposite.op X)))
-      ((Equiv.symm (opEquiv (Opposite.op (F.obj X)) (Opposite.op (F.obj X)))) (𝟙 (F.obj X)))) 
-        ≫ G.map a = 
+      ((Equiv.symm (opEquiv (Opposite.op (F.obj X)) (Opposite.op (F.obj X)))) (𝟙 (F.obj X))))
+        ≫ G.map a =
     (opEquiv (Opposite.op (G.obj Y)) (Opposite.op X))
       ((Equiv.symm (homEquiv h (Opposite.op Y) (Opposite.op X)))
-        ((Equiv.symm (opEquiv (Opposite.op Y) (Opposite.op (F.obj X)))) a)) := by 
+        ((Equiv.symm (opEquiv (Opposite.op Y) (Opposite.op (F.obj X)))) a)) := by
         erw [← Adjunction.adjointOfOpAdjointOp_unit_app, ← Adjunction.homEquiv_unit]
-        apply Adjunction.adjointOfOpAdjointOp_homEquiv_apply
+        rfl
 
--- Porting note: simpNF reports simplifying to itself here
-@[simp, nolint simpNF]
-theorem adjointOfOpAdjointOp_homEquiv_symm_apply' {C : Type u₁} [Category C] {D : Type u₂} 
-    [Category D] (F : C ⥤ D) (G : D ⥤ C) (h : Functor.op G ⊣ Functor.op F) (X : C) (Y : D) 
+theorem adjointOfOpAdjointOp_homEquiv_symm_apply {C : Type u₁} [Category C] {D : Type u₂}
+    [Category D] (F : C ⥤ D) (G : D ⥤ C) (h : Functor.op G ⊣ Functor.op F) (X : C) (Y : D)
     (a : X ⟶ G.obj Y) : F.map a ≫
       (opEquiv (Opposite.op Y) (Opposite.op (F.obj (G.obj Y))))
         ((Adjunction.homEquiv h (Opposite.op Y) (Opposite.op (G.obj Y)))
-      ((Equiv.symm (opEquiv (Opposite.op (G.obj Y)) (Opposite.op (G.obj Y)))) (𝟙 (G.obj Y)))) = 
+      ((Equiv.symm (opEquiv (Opposite.op (G.obj Y)) (Opposite.op (G.obj Y)))) (𝟙 (G.obj Y)))) =
     (opEquiv (Opposite.op Y) (Opposite.op (F.obj X)))
       ((homEquiv h (Opposite.op Y) (Opposite.op X))
-        ((Equiv.symm (opEquiv (Opposite.op (G.obj Y)) (Opposite.op X))) a)) := by 
+        ((Equiv.symm (opEquiv (Opposite.op (G.obj Y)) (Opposite.op X))) a)) := by
       erw [← Adjunction.adjointOfOpAdjointOp_counit_app, ← Adjunction.homEquiv_counit]
-      apply Adjunction.adjointOfOpAdjointOp_homEquiv_symm_apply
+      rfl
 
 /-- If `G` is adjoint to `F.op` then `F` is adjoint to `G.unop`. -/
 def adjointUnopOfAdjointOp (F : C ⥤ D) (G : Dᵒᵖ ⥤ Cᵒᵖ) (h : G ⊣ F.op) : F ⊣ G.unop :=
@@ -110,7 +106,11 @@ def unopAdjointUnopOfAdjoint (F : Cᵒᵖ ⥤ Dᵒᵖ) (G : Dᵒᵖ ⥤ Cᵒᵖ)
   CategoryTheory.Adjunction.unopAdjointUnopOfAdjoint
 
 /-- If `G` is adjoint to `F` then `F.op` is adjoint to `G.op`. -/
-@[simps!]
+@[simps! unit_app counit_app]
+-- Porting note: in mathlib3 we generated all the default `simps` lemmas.
+-- However the `simpNF` linter correctly flags some of these as unsuitable simp lemmas.
+-- `unit_app` and `counit_app` appear to suffice (tested in mathlib3).
+-- See also the porting note on adjointOfOpAdjointOp
 def opAdjointOpOfAdjoint (F : C ⥤ D) (G : D ⥤ C) (h : G ⊣ F) : F.op ⊣ G.op :=
   Adjunction.mkOfHomEquiv {
     homEquiv := fun X Y =>
@@ -128,10 +128,6 @@ def opAdjointOpOfAdjoint (F : C ⥤ D) (G : D ⥤ C) (h : G ⊣ F) : F.op ⊣ G.
 #align
   category_theory.adjunction.op_adjoint_op_of_adjoint
   CategoryTheory.Adjunction.opAdjointOpOfAdjoint
-
--- Porting note: simpNF reports simplifying to itself here
-attribute [nolint simpNF] opAdjointOpOfAdjoint_homEquiv_apply 
-  opAdjointOpOfAdjoint_homEquiv_symm_apply
 
 /-- If `G` is adjoint to `F.unop` then `F` is adjoint to `G.op`. -/
 def adjointOpOfAdjointUnop (F : Cᵒᵖ ⥤ Dᵒᵖ) (G : D ⥤ C) (h : G ⊣ F.unop) : F ⊣ G.op :=
@@ -177,7 +173,7 @@ def leftAdjointUniq {F F' : C ⥤ D} {G : D ⥤ C} (adj1 : F ⊣ G) (adj2 : F' �
 
 -- Porting note: removed simp as simp can prove this
 theorem homEquiv_leftAdjointUniq_hom_app {F F' : C ⥤ D} {G : D ⥤ C} (adj1 : F ⊣ G) (adj2 : F' ⊣ G)
-    (x : C) : adj1.homEquiv _ _ ((leftAdjointUniq adj1 adj2).hom.app x) = adj2.unit.app x := by 
+    (x : C) : adj1.homEquiv _ _ ((leftAdjointUniq adj1 adj2).hom.app x) = adj2.unit.app x := by
   apply (adj1.homEquiv _ _).symm.injective
   apply Quiver.Hom.op_inj
   apply coyoneda.map_injective
@@ -283,7 +279,7 @@ def rightAdjointUniq {F : C ⥤ D} {G G' : D ⥤ C} (adj1 : F ⊣ G) (adj2 : F �
   NatIso.removeOp (leftAdjointUniq (opAdjointOpOfAdjoint _ F adj2) (opAdjointOpOfAdjoint _ _ adj1))
 #align category_theory.adjunction.right_adjoint_uniq CategoryTheory.Adjunction.rightAdjointUniq
 
--- Porting note: simp can prove this 
+-- Porting note: simp can prove this
 theorem homEquiv_symm_rightAdjointUniq_hom_app {F : C ⥤ D} {G G' : D ⥤ C} (adj1 : F ⊣ G)
     (adj2 : F ⊣ G') (x : D) :
     (adj2.homEquiv _ _).symm ((rightAdjointUniq adj1 adj2).hom.app x) = adj1.counit.app x := by
@@ -421,4 +417,3 @@ def natIsoOfRightAdjointNatIso {F F' : C ⥤ D} {G G' : D ⥤ C} (adj1 : F ⊣ G
   CategoryTheory.Adjunction.natIsoOfRightAdjointNatIso
 
 end CategoryTheory.Adjunction
-
