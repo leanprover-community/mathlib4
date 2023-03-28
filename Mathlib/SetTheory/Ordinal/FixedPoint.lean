@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios, Mario Carneiro
 
 ! This file was ported from Lean 3 source module set_theory.ordinal.fixed_point
-! leanprover-community/mathlib commit bd9851ca476957ea4549eb19b40e7b5ade9428cc
+! leanprover-community/mathlib commit 0dd4319a17376eda5763cd0a7e0d35bbaaa50e83
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
