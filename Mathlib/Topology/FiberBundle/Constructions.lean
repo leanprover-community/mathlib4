@@ -15,13 +15,13 @@ import Mathlib.Topology.FiberBundle.Basic
 
 This file contains several standard constructions on fiber bundles:
 
-* `bundle.trivial.fiber_bundle 𝕜 B F`: the trivial fiber bundle with model fiber `F` over the base
+* `Bundle.Trivial.fiberBundle 𝕜 B F`: the trivial fiber bundle with model fiber `F` over the base
   `B`
 
-* `fiber_bundle.prod`: for fiber bundles `E₁` and `E₂` over a common base, a fiber bundle structure
-  on their fiberwise product `E₁ ×ᵇ E₂` (the notation stands for `λ x, E₁ x × E₂ x`).
+* `FiberBundle.prod`: for fiber bundles `E₁` and `E₂` over a common base, a fiber bundle structure
+  on their fiberwise product `E₁ ×ᵇ E₂` (the notation stands for `fun x ↦ E₁ x × E₂ x`).
 
-* `fiber_bundle.pullback`: for a fiber bundle `E` over `B`, a fiber bundle structure on its
+* `FiberBundle.pullback`: for a fiber bundle `E` over `B`, a fiber bundle structure on its
   pullback `f *ᵖ E` by a map `f : B' → B` (the notation is a type synonym for `E ∘ f`).
 
 ## Tags
@@ -133,7 +133,7 @@ variable (E₁ : B → Type _) (E₂ : B → Type _)
 variable [TopologicalSpace (TotalSpace E₁)] [TopologicalSpace (TotalSpace E₂)]
 
 /-- Equip the total space of the fiberwise product of two fiber bundles `E₁`, `E₂` with
-the induced topology from the diagonal embedding into `total_space E₁ × total_space E₂`. -/
+the induced topology from the diagonal embedding into `TotalSpace E₁ × TotalSpace E₂`. -/
 instance FiberBundle.Prod.topologicalSpace : TopologicalSpace (TotalSpace (E₁ ×ᵇ E₂)) :=
   TopologicalSpace.induced
     (fun p => ((⟨p.1, p.2.1⟩ : TotalSpace E₁), (⟨p.1, p.2.2⟩ : TotalSpace E₂)))
@@ -141,7 +141,7 @@ instance FiberBundle.Prod.topologicalSpace : TopologicalSpace (TotalSpace (E₁ 
 #align fiber_bundle.prod.topological_space FiberBundle.Prod.topologicalSpace
 
 /-- The diagonal map from the total space of the fiberwise product of two fiber bundles
-`E₁`, `E₂` into `total_space E₁ × total_space E₂` is `inducing`. -/
+`E₁`, `E₂` into `TotalSpace E₁ × TotalSpace E₂` is `inducing`. -/
 theorem FiberBundle.Prod.inducing_diag :
     Inducing
       (fun p => (⟨p.1, p.2.1⟩, ⟨p.1, p.2.2⟩) :
@@ -163,7 +163,7 @@ variable {F₁ E₁ F₂ E₂}
 variable (e₁ : Trivialization F₁ (π E₁)) (e₂ : Trivialization F₂ (π E₂))
 
 /-- Given trivializations `e₁`, `e₂` for fiber bundles `E₁`, `E₂` over a base `B`, the forward
-function for the construction `trivialization.prod`, the induced
+function for the construction `Trivialization.prod`, the induced
 trivialization for the fiberwise product of `E₁` and `E₂`. -/
 def Prod.toFun' : TotalSpace (E₁ ×ᵇ E₂) → B × F₁ × F₂ := fun p =>
   ⟨p.1, (e₁ ⟨p.1, p.2.1⟩).2, (e₂ ⟨p.1, p.2.2⟩).2⟩
@@ -171,7 +171,6 @@ def Prod.toFun' : TotalSpace (E₁ ×ᵇ E₂) → B × F₁ × F₂ := fun p =>
 
 variable {e₁ e₂}
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem Prod.continuous_to_fun :
     ContinuousOn (Prod.toFun' e₁ e₂)
       (@TotalSpace.proj B (E₁ ×ᵇ E₂) ⁻¹' (e₁.baseSet ∩ e₂.baseSet)) := by
@@ -197,7 +196,7 @@ theorem Prod.continuous_to_fun :
 variable (e₁ e₂) [∀ x, Zero (E₁ x)] [∀ x, Zero (E₂ x)]
 
 /-- Given trivializations `e₁`, `e₂` for fiber bundles `E₁`, `E₂` over a base `B`, the inverse
-function for the construction `trivialization.prod`, the induced
+function for the construction `Trivialization.prod`, the induced
 trivialization for the fiberwise product of `E₁` and `E₂`. -/
 noncomputable def Prod.invFun' (p : B × F₁ × F₂) : TotalSpace (E₁ ×ᵇ E₂) :=
   ⟨p.1, e₁.symm p.1 p.2.1, e₂.symm p.1 p.2.2⟩
@@ -213,7 +212,6 @@ theorem Prod.left_inv {x : TotalSpace (E₁ ×ᵇ E₂)}
   simp only [Prod.toFun', Prod.invFun', symm_apply_apply_mk, h₁, h₂]
 #align trivialization.prod.left_inv Trivialization.Prod.left_inv
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem Prod.right_inv {x : B × F₁ × F₂}
     (h : x ∈ (e₁.baseSet ∩ e₂.baseSet) ×ˢ (univ : Set (F₁ × F₂))) :
     Prod.toFun' e₁ e₂ (Prod.invFun' e₁ e₂ x) = x := by
@@ -222,7 +220,6 @@ theorem Prod.right_inv {x : B × F₁ × F₂}
   simp only [Prod.toFun', Prod.invFun', apply_mk_symm, h₁, h₂]
 #align trivialization.prod.right_inv Trivialization.Prod.right_inv
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem Prod.continuous_inv_fun :
     ContinuousOn (Prod.invFun' e₁ e₂) ((e₁.baseSet ∩ e₂.baseSet) ×ˢ univ) := by
   rw [(Prod.inducing_diag E₁ E₂).continuousOn_iff]
@@ -234,10 +231,9 @@ theorem Prod.continuous_inv_fun :
 
 variable (e₁ e₂)
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- Given trivializations `e₁`, `e₂` for bundle types `E₁`, `E₂` over a base `B`, the induced
 trivialization for the fiberwise product of `E₁` and `E₂`, whose base set is
-`e₁.base_set ∩ e₂.base_set`. -/
+`e₁.baseSet ∩ e₂.baseSet`. -/
 noncomputable def prod : Trivialization (F₁ × F₂) (π (E₁ ×ᵇ E₂)) where
   toFun := Prod.toFun' e₁ e₂
   invFun := Prod.invFun' e₁ e₂
@@ -317,7 +313,7 @@ instance [∀ x : B, TopologicalSpace (E x)] : ∀ x : B', TopologicalSpace ((f 
 
 variable [TopologicalSpace B'] [TopologicalSpace (TotalSpace E)]
 
-/-- Definition of `pullback.total_space.topological_space`, which we make irreducible. -/
+/-- Definition of `Pullback.TotalSpace.topologicalSpace`, which we make irreducible. -/
 irreducible_def pullbackTopology : TopologicalSpace (TotalSpace (f *ᵖ E)) :=
   induced TotalSpace.proj ‹TopologicalSpace B'› ⊓
     induced (Pullback.lift f) ‹TopologicalSpace (TotalSpace E)›
