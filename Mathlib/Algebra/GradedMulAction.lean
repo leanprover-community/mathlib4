@@ -63,7 +63,7 @@ variable (A : ι → Type _) (M : ι → Type _)
 
 /-- A graded version of `SMul`. Scalar multiplication combines grades additively, i.e.
 if `a ∈ A i` and `m ∈ M j`, then `a • b` must be in `M (i + j)`-/
-class GSmul [Add ι] where
+class GSmul (A : ι → Type _) (M : ι → Type _) [Add ι] where
   /-- The homogeneous multiplication map `smul` -/
   smul {i j} : A i → M j → M (i + j)
 #align graded_monoid.ghas_smul GradedMonoid.GSmul
@@ -82,7 +82,8 @@ theorem mk_smul_mk [Add ι] [GSmul A M] {i j} (a : A i) (b : M j) :
 #align graded_monoid.mk_smul_mk GradedMonoid.mk_smul_mk
 
 /-- A graded version of `MulAction`. -/
-class GMulAction [AddMonoid ι] [GMonoid A] extends GSmul A M where
+class GMulAction (A : ι → Type _) (M : ι → Type _) [AddMonoid ι] [semiOutParam <| GMonoid A]
+    extends GSmul A M where
   /-- One is the neutral element for `•` -/
   one_smul (b : GradedMonoid M) : (1 : GradedMonoid A) • b = b
   /-- Associativity of `•` and `*` -/
@@ -115,8 +116,8 @@ section Subobjects
 variable {R : Type _}
 
 /-- A version of `GradedMonoid.GSmul` for internally graded objects. -/
-class SetLike.GradedSmul {S R N M : Type _} [SetLike S R] [SetLike N M] [SMul R M] [Add ι]
-  (A : ι → S) (B : ι → N) : Prop where
+class SetLike.GradedSmul {S R N M : Type _} [SetLike S R]
+    [SetLike N M] [SMul R M] [Add ι] (A : semiOutParam <| ι → S) (B : ι → N) : Prop where
   /-- Multiplication is homogeneous -/
   smul_mem : ∀ ⦃i j : ι⦄ {ai bj}, ai ∈ A i → bj ∈ B j → ai • bj ∈ B (i + j)
 #align set_like.has_graded_smul SetLike.GradedSmul

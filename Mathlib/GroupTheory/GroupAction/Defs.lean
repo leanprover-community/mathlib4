@@ -99,7 +99,7 @@ theorem smul_eq_mul (α : Type _) [Mul α] {a a' : α} : a • a' = a * a' :=
 #align vadd_eq_add vadd_eq_add
 
 /-- Type class for additive monoid actions. -/
-class AddAction (G : semiOutParam (Type _)) (P : Type _) [outParam <| AddMonoid G]
+class AddAction (G : Type _) (P : Type _) [outParam <| AddMonoid G]
     extends VAdd G P where
   /-- Zero is a neutral element for `+ᵥ` -/
   protected zero_vadd : ∀ p : P, (0 : G) +ᵥ p = p
@@ -109,7 +109,7 @@ class AddAction (G : semiOutParam (Type _)) (P : Type _) [outParam <| AddMonoid 
 
 /-- Typeclass for multiplicative actions by monoids. This generalizes group actions. -/
 @[to_additive (attr := ext)]
-class MulAction (α : semiOutParam (Type _)) (β : Type _) [outParam <| Monoid α]
+class MulAction (α : Type _) (β : Type _) [outParam <| Monoid α]
     extends SMul α β where
   /-- One is the neutral element for `•` -/
   protected one_smul : ∀ b : β, (1 : α) • b = b
@@ -694,8 +694,6 @@ class SMulZeroClass (M : semiOutParam (Type u)) (A : Type v) [outParam <| Zero A
   /-- Multiplying `0` by a scalar gives `0` -/
   smul_zero : ∀ a : M, a • (0 : A) = 0
 #align smul_zero_class SMulZeroClass
-
-#check SMulZeroClass.toSMul
 
 section smul_zero
 
