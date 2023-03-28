@@ -44,6 +44,7 @@ import Mathlib.Algebra.CharZero.Infinite
 import Mathlib.Algebra.CharZero.Lemmas
 import Mathlib.Algebra.CharZero.Quotient
 import Mathlib.Algebra.CovariantAndContravariant
+import Mathlib.Algebra.CubicDiscriminant
 import Mathlib.Algebra.DirectSum.Basic
 import Mathlib.Algebra.DirectSum.Finsupp
 import Mathlib.Algebra.DirectSum.Module
@@ -64,6 +65,7 @@ import Mathlib.Algebra.FreeMonoid.Basic
 import Mathlib.Algebra.FreeMonoid.Count
 import Mathlib.Algebra.FreeNonUnitalNonAssocAlgebra
 import Mathlib.Algebra.GCDMonoid.Basic
+import Mathlib.Algebra.GCDMonoid.Div
 import Mathlib.Algebra.GCDMonoid.Finset
 import Mathlib.Algebra.GCDMonoid.Multiset
 import Mathlib.Algebra.GeomSum
@@ -271,6 +273,7 @@ import Mathlib.Algebra.TrivSqZeroExt
 import Mathlib.Algebra.Tropical.Basic
 import Mathlib.Algebra.Tropical.BigOperators
 import Mathlib.Algebra.Tropical.Lattice
+import Mathlib.Analysis.Convex.Basic
 import Mathlib.Analysis.Convex.Hull
 import Mathlib.Analysis.Convex.Segment
 import Mathlib.Analysis.Convex.Star
