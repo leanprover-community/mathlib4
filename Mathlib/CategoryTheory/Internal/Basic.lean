@@ -41,6 +41,18 @@ variable {A C}
 
 abbrev Internal.typesPresheaf (X : Internal A C) := (Internal.typesPresheafFunctor A C).obj X
 
+@[simps]
+def Internal.ofIsoObj (X : Internal A C) {Y : C} (e : X.obj ≅ Y) : Internal A C where
+  obj := Y
+  presheaf := X.presheaf
+  iso := yoneda.mapIso e.symm ≪≫ X.iso
+
+@[simps]
+def Internal.ofNatIsoObj {D : Type _} [Category D] (F : D ⥤ Internal A C)
+  {G : D ⥤ C} (e : F ⋙ Internal.objFunctor A C ≅ G) : D ⥤ Internal A C where
+  obj X := (F.obj X).ofIsoObj (e.app X)
+  map f := F.map f
+
 def ConcreteCategory.Operation₀.onTypesPresheaf (oper : Operation₀ A)
     (X : Internal A C) : Types.functorOperation₀ X.typesPresheaf :=
   whiskerLeft X.presheaf oper
@@ -72,5 +84,14 @@ def ConcreteCategory.Operation₃.onTypesPresheaf (oper : Operation₃ A)
 def ConcreteCategory.Operation₃.onInternal (oper : Operation₃ A)
     (X : Internal A C) : Types.functorOperation₃ (yoneda.obj X.obj) :=
   (oper.onTypesPresheaf X).of_iso X.iso.symm
+
+lemma ConcreteCategory.Operation₂.assoc.onTypesPresheaf {oper : Operation₂ A}
+    (h : oper.assoc) (X : Internal A C) : (oper.onTypesPresheaf X).assoc := by
+  exact _root_.congr_arg (fun o => o.onTypesPresheaf X) h
+
+lemma ConcreteCategory.Operation₂.assoc.onInternal {oper : Operation₂ A}
+    (h : oper.assoc) (X : Internal A C) : (oper.onInternal X).assoc :=
+  (h.onTypesPresheaf X).of_iso X.iso.symm
+
 
 end CategoryTheory

@@ -118,6 +118,40 @@ def functorOperation₃.equiv_of_iso {F₁ F₂ : D ⥤ Type w} (e : F₁ ≅ F�
     funext
     simp
 
+section
+
+variable {X₁ X₂ X₃ X₁₂ X₂₃ X₁₂₃ : D ⥤ Type w}
+  (φ₁₂ : functorConcat X₁ X₂ ⟶ X₁₂) (ψ₁₂ : functorConcat X₁₂ X₃ ⟶ X₁₂₃)
+  (φ₂₃ : functorConcat X₂ X₃ ⟶ X₂₃) (ψ₂₃ : functorConcat X₁ X₂₃ ⟶ X₁₂₃)
+
+@[simp]
+def functorOperation_assoc'_lhs :=
+  Types.natTransConcat (Types.natTransConcat Types.functorPr₃₁ Types.functorPr₃₂ ≫ φ₁₂)
+    Types.functorPr₃₃ ≫ ψ₁₂
+
+@[simp]
+def functorOperation_assoc'_rhs :=
+  Types.natTransConcat Types.functorPr₃₁
+    (Types.natTransConcat Types.functorPr₃₂ Types.functorPr₃₃ ≫ φ₂₃) ≫ ψ₂₃
+
+def functorOperation_assoc' : Prop :=
+  functorOperation_assoc'_lhs φ₁₂ ψ₁₂ = functorOperation_assoc'_rhs φ₂₃ ψ₂₃
+
+def functorOperation₂.assoc {F : D ⥤ Type w} (oper : functorOperation₂ F) : Prop :=
+  functorOperation_assoc' oper oper oper oper
+
+lemma functorOperation₂.assoc.of_iso {F₁ F₂ : D ⥤ Type w} {oper : functorOperation₂ F₁}
+    (h : oper.assoc) (e : F₁ ≅ F₂) : (oper.of_iso e).assoc := by
+  refine' Eq.trans _ ((congr_arg (fun (o : functorOperation₃ F₁) => o.of_iso e) h).trans _)
+  all_goals
+    apply NatTrans.ext
+    ext1 X
+    funext ⟨a, b, c⟩
+    dsimp
+    simp
+
+end
+
 end Types
 
 variable (A : Type u) [Category.{v} A] [ConcreteCategory.{w} A]
@@ -129,28 +163,54 @@ def Operation₁ := forget A ⟶ forget A
 def Operation₂ := Types.functorConcat (forget A) (forget A) ⟶ forget A
 def Operation₃ := Types.functorConcat (forget A) (Types.functorConcat (forget A) (forget A)) ⟶ forget A
 
+namespace Operation₂
+
+variable (oper : Operation₂ A)
+
+@[simp]
+def assoc_lhs : Operation₃ A :=
+  Types.natTransConcat (Types.natTransConcat Types.functorPr₃₁ Types.functorPr₃₂ ≫ oper)
+    Types.functorPr₃₃ ≫ oper
+
+@[simp]
+def assoc_rhs : Operation₃ A :=
+  Types.natTransConcat Types.functorPr₃₁
+    (Types.natTransConcat Types.functorPr₃₂ Types.functorPr₃₃ ≫ oper) ≫ oper
+
+@[simp]
+def assoc : Prop := oper.assoc_lhs = oper.assoc_rhs
+
+end Operation₂
+
 -- the naturality of these operations should be made automatic...
 
 @[simps]
-def AddCommGroup_zero : Operation₀ AddCommGroupCat.{u} where
+def AddCommGroupCat_zero : Operation₀ AddCommGroupCat.{u} where
   app M _ := (0 : M)
   naturality M N f := by
     ext
     exact (AddCommGroupCat.Hom.map_zero f).symm
 
 @[simps]
-def AddCommGroup_neg : Operation₁ AddCommGroupCat.{u} where
+def AddCommGroupCat_neg : Operation₁ AddCommGroupCat.{u} where
   app M (x : M) := -x
   naturality M N f := by
     ext x
     exact (AddMonoidHom.map_neg (show AddMonoidHom M N from f) x).symm
 
 @[simps]
-def AddCommGroup_add : Operation₂ AddCommGroupCat.{u} where
+def AddCommGroupCat_add : Operation₂ AddCommGroupCat.{u} where
   app M := fun ⟨(x : M), (y : M)⟩ => x + y
   naturality M N f := by
     ext
     exact (AddCommGroupCat.Hom.map_add _ _ _).symm
+
+lemma AddCommGroupCat_add_assoc : AddCommGroupCat_add.assoc := by
+  apply NatTrans.ext
+  ext1 X
+  funext ⟨(x : X), ⟨(y : X), (z : X)⟩⟩
+  dsimp [Operation₂.assoc_lhs, Operation₂.assoc_rhs]
+  exact add_assoc x y z
 
 end ConcreteCategory
 
