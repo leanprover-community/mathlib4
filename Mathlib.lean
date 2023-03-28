@@ -356,6 +356,7 @@ import Mathlib.CategoryTheory.Groupoid
 import Mathlib.CategoryTheory.Groupoid.Basic
 import Mathlib.CategoryTheory.Groupoid.VertexGroup
 import Mathlib.CategoryTheory.Internal.Basic
+import Mathlib.CategoryTheory.Internal.Preadditive
 import Mathlib.CategoryTheory.IsConnected
 import Mathlib.CategoryTheory.Iso
 import Mathlib.CategoryTheory.IsomorphismClasses

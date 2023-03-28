@@ -4,6 +4,10 @@ universe v₁ v₂ u₁ u₂
 
 namespace CategoryTheory
 
+@[simp]
+lemma NatTrans.hcomp_id {C D E : Type _} [Category C] [Category D] [Category E]
+    (F : C ⥤ D) (G : D ⥤ E) : 𝟙 F ◫ 𝟙 G = 𝟙 (F ⋙ G) := by aesop_cat
+
 variable (A : Type u₁) [Category.{v₁} A] [ConcreteCategory.{v₂} A]
   (C : Type u₂) [Category.{v₂} C]
 
@@ -17,6 +21,21 @@ instance : Category (Internal A C) := InducedCategory.category (fun X => X.presh
 def Internal.presheafFunctor : Internal A C ⥤ Cᵒᵖ ⥤ A := inducedFunctor _
 def Internal.typesPresheafFunctor : Internal A C ⥤ Cᵒᵖ ⥤ Type v₂ :=
   Internal.presheafFunctor A C ⋙ (whiskeringRight Cᵒᵖ A (Type v₂)).obj (forget A)
+
+def Internal.objFunctor : Internal A C ⥤ C where
+  obj X := X.obj
+  map {X Y} f := yoneda.preimage (X.iso.hom ≫ (f ◫ (𝟙 (forget A))) ≫ Y.iso.inv)
+  map_id X := yoneda.map_injective (by
+    dsimp
+    erw [Functor.image_preimage, Functor.map_id, NatTrans.hcomp_id,
+      Category.id_comp, Iso.hom_inv_id])
+  map_comp {X Y Z} f g := yoneda.map_injective (by
+    dsimp
+    simp only [Functor.image_preimage, Functor.map_comp, Category.assoc,
+      Iso.inv_hom_id_assoc, Iso.cancel_iso_hom_left]
+    ext X
+    dsimp
+    erw [NatTrans.comp_app, FunctorToTypes.map_comp_apply])
 
 variable {A C}
 
