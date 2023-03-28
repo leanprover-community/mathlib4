@@ -366,6 +366,10 @@ theorem weightedVSub_const_smul (w : ι → k) (p : ι → P) (c : k) :
   s.weightedVSubOfPoint_const_smul _ _ _ _
 #align finset.weighted_vsub_const_smul Finset.weightedVSub_const_smul
 
+instance : AffineSpace (ι → k) (ι → k) := Pi.instAddTorsorForAllForAllAddGroup
+
+variable (k)
+
 /-- A weighted sum of the results of subtracting a default base point
 from the given points, added to that base point, as an affine map on
 the weights.  This is intended to be used when the sum of the weights
@@ -379,11 +383,13 @@ def affineCombination (p : ι → P) : (ι → k) →ᵃ[k] P
   map_vadd' w₁ w₂ := by simp_rw [vadd_vadd, weightedVSub, vadd_eq_add, LinearMap.map_add]
 #align finset.affine_combination Finset.affineCombination
 
+variable {k}
+
 /-- The linear map corresponding to `affineCombination` is
 `weightedVSub`. -/
 @[simp]
 theorem affineCombination_linear (p : ι → P) :
-    (s.affineCombination p : (ι → k) →ᵃ[k] P).linear = s.weightedVSub p :=
+    (s.affineCombination k p).linear = s.weightedVSub p :=
   rfl
 #align finset.affine_combination_linear Finset.affineCombination_linear
 
@@ -395,10 +401,12 @@ point with
 `affineCombination_eq_weightedVSubOfPoint_vadd_of_sum_eq_one` and
 then using `weightedVSubOfPoint_apply`. -/
 theorem affineCombination_apply (w : ι → k) (p : ι → P) :
-    s.affineCombination p w =
+    (s.affineCombination k p) w =
       s.weightedVSubOfPoint p (Classical.choice S.Nonempty) w +ᵥ Classical.choice S.Nonempty :=
   rfl
 #align finset.affine_combination_apply Finset.affineCombination_apply
+
+#exit
 
 /-- The value of `affineCombination`, where the given points are equal. -/
 @[simp]
