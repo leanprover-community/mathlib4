@@ -19,45 +19,62 @@ def feedback : M IO String := do
       | (ctx, g, pos, _) :: _ => do
           -- TODO mention the later sorries?
           let pp ← ctx.ppGoals [g]
-          pure s!"In the proof you just gave me:\n{last}there's still a sorry at line {pos.line}, where the goal is:\n{pp.fence}Write one more step of the tactic proof, replacing the tactic `sorry`, that will make further progress on these goals."
+          pure s!"The new goal state is:\n{pp.fence}\n1. 1. Please write out a plan for proceeding, in English (with LaTeX).\n2. Please add the next tactic step to the proof. Include the new version of your proof in a code block. If your proof is not yet finished, include a `sorry` where the remaining tactic steps should go. Make sure the code block is self-contained and runs."
     | _ =>
         let goal := String.intercalate "\n" (unsolvedGoals.map List.tail).join |>.trim
-        pure s!"The proof you just gave me:\n{last}still has unsolved goals:\n{goal.fence}Add another step of the proof, after what you've already written, that will make further progress on these goals."
+        pure s!"The new goal state is:\n{goal.fence}\n1. 1. Please write out a plan for proceeding, in English (with LaTeX).\n2. Please add the next tactic step to the proof. Include the new version of your proof in a code block. If your proof is not yet finished, include a `sorry` where the remaining tactic steps should go. Make sure the code block is self-contained and runs."
   | _ =>
-    pure <| s!"In the proof you just gave me:\n{last}there are some errors:\n" ++
+    pure <| s!"When I try to run this code, I get errors:\n" ++
       -- TODO decide which other errors matter or deserve emphasise (or helpful advice!)
       -- TODO mention the lines numbers in prose, possibly extracting the relevant span and quoting it
       String.intercalate "\n" otherErrors.join ++
-      "\nPlease fix these, but don't add any extra steps to the proof."
+      "\nPlease describe how you are going to fix this and try again."
 
 def systemPrompt : String :=
-"I'm a mathematician who is expert in the Lean 4 interactive theorem prover,
-and I'd like to you help me fix or complete a proof.
+"You are a pure mathematician who is an expert in the Lean 4 interactive theorem prover. Your job is help your user write Lean proofs.
 
-I want to remind you that we're using Lean 4, not the older Lean 3,
-and there have been some syntax changes. In particular:
-* Tactics on separate lines should not be separated by commas.
-* In the `rw` tactic you must enclose the lemmas in square brackets, even if there is just one.
-* Ihe `induction` and `cases` tactic now use a structured format, like pattern matching
-  (you can alternatively use `induction' with x y ih`, like in Lean 3).
-* Capitalization rules have changed, e.g. we write `List` instead of `list`.
-* Indenting is significant.
-
-I'm going to show you a declaration in Lean 4, with an incomplete or erroneous proof.
-I'd like you to work step by step, and in each successive response you'll write one more step of the proof.
-(That is, fixing an error, improving the last step, or adding one more step if there is a `sorry`.)
-
-Please make sure to include a complete declaration containing your suggestion, formatted in a code block.
-It's helpful to include some informal explanation of your reasoning before or after the code block."
+I want to remind you that we're using Lean 4, not the older Lean 3, and there have been some syntax changes. In particular:
+- Type constants are now UpperCamelCase, eg `Nat`, `List`.
+- Term constants and variables are now `lowerCamelCase` rather than `snake_case`. For example, we now have `NumberTheory.Divisors.properDivisors instead of `number_theory.divisors.proper_divisors`.
+- Instead of being separated by a comma, tactics can be separated by a newline or by a semicolon. For example, we could write
+```
+theorem test (p q : Prop) (hp : p) (hq : q) : p ∧ q ∧ p := by
+  apply And.intro hp
+  exact And.intro hq hp
+```
+or
+```
+theorem test (p q : Prop) (hp : p) (hq : q) : p ∧ q ∧ p := by
+  apply And.intro hp; exact And.intro hq hp
+```
+- Indentation is significant.
+- In the `rw` tactic you must enclose the lemmas in square brackets, even if there is just one. For example `rw h1` is now `rw [h1]`.
+- The `induction` tactic now use a structured format, like pattern matching. For example, in Lean 4 we can write
+```
+theorem zero_add (n : Nat) : 0 + n = n := by
+  induction n with
+  | zero => rfl
+  | succ n ih => rw [Nat.add_succ, ih]
+```
+  Alternatively you can still use `induction' with x y ih`, like in Lean 3.
+- The `cases` tactic now uses a structured format, like pattern matching. For example, in Lean 4 we can write
+```
+example (p q : Prop) : p ∨ q → q ∨ p := by
+  intro h
+  cases h with
+  | inl hp => apply Or.inr; exact hp
+  | inr hq => apply Or.inl; exact hq
+```
+"
 
 def initialPrompt : M IO String := do
-  let prompt := "Let's start with the following proof:\n" ++ (← latestCodeBlock).markdownBody
+  let prompt := "I am going to show you an incomplete proof and the accompanying goal state. I will ask you to complete the proof step by step, adding one tactic step in each response.\nHere is the proof thus far:\n" ++ (← latestCodeBlock).markdownBody
   -- TODO if there's no proof at all yet, just a sorry, we shouldn't separately restate the goal that appears in the sorry!
   match ← sorries with
   | [] => pure prompt
   | (ctx, g, _, _) :: _ => do
       let pp ← ctx.ppGoals [g]
-      pure <| prompt ++ s!"\nThe remaining goal is \n{pp.fence}"
+      pure <| prompt ++ s!"\nHere is the goal state: \n{pp.fence}\n1. Please write out a plan for proceeding, in English (with LaTeX).\n2. Please add the next tactic step to the proof. Include the new version of your proof in a code block. If your proof is not yet finished, include a `sorry` where the remaining tactic steps should go. Make sure the code block is self-contained and runs."
 
 def dialog (n : Nat) : M MetaM String := do
   sendSystemMessage systemPrompt
