@@ -1,3 +1,4 @@
+*.gpt.log
 /build
 /lake-packages
 /.cache
