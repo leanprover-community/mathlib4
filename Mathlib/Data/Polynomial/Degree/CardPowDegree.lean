@@ -14,7 +14,7 @@ import Mathlib.Data.Polynomial.FieldDivision
 /-!
 # Absolute value on polynomials over a finite field.
 
-Let `Fq` be a finite field of cardinality `q`, then the map sending a polynomial `p`
+Let `𝔽_q` be a finite field of cardinality `q`, then the map sending a polynomial `p`
 to `q ^ degree p` (where `q ^ degree 0 = 0`) is an absolute value.
 
 ## Main definitions
