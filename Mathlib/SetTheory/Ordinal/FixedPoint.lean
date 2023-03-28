@@ -255,8 +255,6 @@ section
 
 variable {o : Ordinal.{u}} {f : ∀ b < o, Ordinal.{max u v} → Ordinal.{max u v}}
 
-set_option pp.universes true
-
 /-- The next common fixed point, at least `a`, for a family of normal functions indexed by ordinals.
 
 This is defined as `ordinal.nfp_family` of the type-indexed family associated to `f`. -/
