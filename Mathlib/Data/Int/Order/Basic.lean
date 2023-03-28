@@ -95,7 +95,7 @@ theorem sign_add_eq_of_sign_eq : ∀ {m n : ℤ}, m.sign = n.sign → (m + n).si
   have : (1 : ℤ) ≠ -1 := by decide
   rintro ((_ | m) | m) ((_ | n) | n) <;> simp [this, this.symm]
   rw [Int.sign_eq_one_iff_pos]
-  apply Int.add_pos <;> · exact zero_lt_one.trans_le (le_add_of_nonneg_left <| coe_zero_le _)
+  apply Int.add_pos <;> · exact zero_lt_one.trans_le (le_add_of_nonneg_left <| coe_nat_nonneg _)
 #align int.sign_add_eq_of_sign_eq Int.sign_add_eq_of_sign_eq
 
 /-! ### succ and pred -/
