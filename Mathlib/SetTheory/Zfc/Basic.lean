@@ -938,9 +938,9 @@ theorem singleton_nonempty (u : ZFSet) : ZFSet.Nonempty {u} :=
   insert_nonempty u ∅
 #align Set.singleton_nonempty ZFSet.singleton_nonempty
 
-@[simp]
 theorem mem_pair {x y z : ZFSet.{u}} : x ∈ ({y, z} : ZFSet) ↔ x = y ∨ x = z :=
-  Iff.trans mem_insert_iff <| or_congr Iff.rfl mem_singleton
+  by
+  simp
 #align Set.mem_pair ZFSet.mem_pair
 
 /-- `omega` is the first infinite von Neumann ordinal -/
@@ -1312,13 +1312,9 @@ theorem mem_prod {x y z : ZFSet.{u}} : z ∈ prod x y ↔ ∃ a ∈ x, ∃ b ∈
   simp [prod]
 #align Set.mem_prod ZFSet.mem_prod
 
-@[simp]
 theorem pair_mem_prod {x y a b : ZFSet.{u}} : pair a b ∈ prod x y ↔ a ∈ x ∧ b ∈ y :=
-  ⟨fun h =>
-    let ⟨a', a'x, b', b'y, e⟩ := mem_prod.1 h
-    match a', b', pair_injective e, a'x, b'y with
-    | _, _, ⟨rfl, rfl⟩, ax, bY => ⟨ax, bY⟩,
-    fun ⟨ax, bY⟩ => mem_prod.2 ⟨a, ax, b, bY, rfl⟩⟩
+  by
+  simp
 #align Set.pair_mem_prod ZFSet.pair_mem_prod
 
 /-- `isFunc x y f` is the assertion that `f` is a subset of `x × y` which relates to each element
@@ -1337,7 +1333,7 @@ theorem mem_funs {x y f : ZFSet.{u}} : f ∈ funs x y ↔ IsFunc x y f := by sim
 #align Set.mem_funs ZFSet.mem_funs
 
 -- TODO(Mario): Prove this computably
-noncomputable instance mapDefinableAux (f : ZFSet → ZFSet) [Definable 1 f] :
+noncomputable instance mapDefinableAux (f : ZFSet → ZFSet) [_H :Definable 1 f] :
     Definable 1 fun y => pair y (f y) :=
   @Classical.AllDefinable 1 _
 #align Set.map_definable_aux ZFSet.mapDefinableAux
@@ -1577,3 +1573,5 @@ theorem ofSet.inj {x y : ZFSet.{u}} (h : (x : Class.{u}) = y) : x = y :=
     change (x : Class.{u}) z ↔ (y : Class.{u}) z
     rw [h]
 #align Class.of_Set.inj Class.ofSet.inj
+
+#lint
