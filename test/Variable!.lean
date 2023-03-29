@@ -20,6 +20,22 @@ example : AddCommMonoid M := inferInstance
 example : Module R M := inferInstance
 end
 
+namespace foo
+class A (α : Type)
+class B (α : Type) [A α]
+class C (α : Type) [A α] [B α]
+variable!? [C α]
+
+-- Try this: variable [A α] [B α] [C α]
+
+end foo
+
+
+section
+variable! (f : Nat → Type) [∀ i, Module Nat (f i)]
+example : ∀ i, AddCommMonoid (f i) := inferInstance
+end
+
 section
 -- Checking that `Algebra` doesn't introduce its own `CommSemiring k`.
 variable! [Field k] [Algebra k A]
@@ -28,8 +44,7 @@ end
 
 /-- Alias for introducing a vector space using `variable!`. -/
 @[variable_alias]
-structure VectorSpace (k V : Type _)
-  [Field k] [AddCommGroup V] [Module k V]
+structure VectorSpace (k V : Type _) [Field k] [AddCommGroup V] [Module k V]
 
 section
 variable! [VectorSpace R M]
@@ -38,47 +53,55 @@ example : AddCommGroup M := inferInstance
 example : Module R M := inferInstance
 end
 
-section -- TODO fix bug
-variable! (k A V : Type _) [Algebra k V] [VectorSpace k V]
---example : Field k := inferInstance
---example : AddCommGroup V := inferInstance
-
---@[variable_alias]
---structure Rep [DistribMulAction A V] [SMulCommClass k A V]
+section
+variable! (k V : Type _) [VectorSpace k V] [Algebra k V]
+example : Field k := inferInstance
+example : AddCommGroup V := inferInstance
+example : Module k V := inferInstance
+example : Semiring V := inferInstance
+example : Algebra k V := inferInstance
 
 end
 
+section
+variable!? (k A V : Type _) [Field k] [Ring A] [Algebra k A] [VectorSpace k A]  [VectorSpace k V]
+
+-- Try this: variable (k A V : Type _) [Field k] [AddCommGroup A] [Module k A] [Ring A] [Algebra k A] [AddCommGroup V]
+--  [Module k V]
+
+-- Why is it not able to infer `Module k A` from `Algebra k A` here??
+
+
+
+-- note: `structure Rep [DistribMulAction A V] [SMulCommClass k A V]` doesn't pull in the
+-- `Algebra k A` instance on its own.
+
+/-- `variable!` alias for a representation of an algebra over a field. -/
 @[variable_alias]
-structure UniqueFactorizationDomain (R : Type _) [CommRing R] [IsDomain R] [UniqueFactorizationMonoid R]
+structure Rep (k A V : Type _)
+  [Field k] [AddCommGroup A] [Ring A] [Algebra k A] [AddCommGroup V] [Module k V]
+  [DistribMulAction A V] [SMulCommClass k A V]
+end
+
+section
+variable!? [Rep k A V]
+
+-- Try this: variable [Field k] [AddCommGroup A] [Ring A] [Algebra k A] [AddCommGroup V] [Module k V]
+--  [DistribMulAction A V] [SMulCommClass k A V]
+end
+
+@[variable_alias]
+structure UniqueFactorizationDomain (R : Type _)
+  [CommRing R] [IsDomain R] [UniqueFactorizationMonoid R]
 
 section
 variable! [UniqueFactorizationDomain R]
 
 end
 
-section
-variable! (k A V : Type _) [Algebra k A] [VectorSpace k V]
+section -- TODO bug in type inference?
+variable!? [Rep k A V] [VectorSpace k A]
 
-@[variable_alias]
-structure Rep [DistribMulAction A V] [SMulCommClass k A V]
-
-end
-
-section
-variable! [VectorSpace k A] [Rep k A V]
-/-
-k: Type ?u.53770
-A: Type ?u.53773
-V: Type ?u.54316
-inst✝⁷: Field k
-inst✝⁶: AddCommGroup A
-inst✝⁵: Module k A
-inst✝⁴: Semiring A
-inst✝³: AddCommGroup V
-inst✝²: Module k V
-inst✝¹: DistribMulAction A V
-inst✝: SMulCommClass k A V
--/
 end
 
 end Tests

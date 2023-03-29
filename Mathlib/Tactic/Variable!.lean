@@ -14,7 +14,9 @@ arguments. For example, `variable! [Module R M]` is the same as
 -/
 
 namespace Mathlib.Command
-open Lean Lean.Elab Lean.Elab.Command Lean.Parser.Term
+open Lean Lean.Elab Lean.Elab.Command Lean.Parser.Term Lean.Meta
+
+initialize registerTraceClass `variable!
 
 private def bracketedBinderType : Syntax → Option (TSyntax `term)
   | `(bracketedBinderF|($_* $[: $ty?]? $(_annot?)?)) => ty?
@@ -35,79 +37,101 @@ Example:
 structure VectorSpace (k V : Type _)
   [Field k] [AddCommGroup V] [Module k V]
 ```
-Then `variables! [VectorSpace k V]` introduces these three typeclasses.
+Then `variable! [VectorSpace k V]` introduces these three typeclasses.
 -/
 initialize variableAliasAttr : TagAttribute ←
- registerTagAttribute `variable_alias
-  "Attribute to record aliases for the `variable!` command."
+  registerTagAttribute `variable_alias "Attribute to record aliases for the `variable!` command."
+
+/-- Find a synthetic typeclass metavariable with no metavariables in its type. -/
+private def pendingActionableSynthMVar (binder : TSyntax `Lean.Parser.Term.bracketedBinder) :
+    TermElabM (Option MVarId) := do
+  let pendingMVars := (← get).pendingMVars
+  if pendingMVars.isEmpty then
+    return none
+  for mvarId in pendingMVars.reverse do
+    let some decl ← Term.getSyntheticMVarDecl? mvarId | continue
+    match decl.kind with
+    | .typeClass =>
+      let mvars ← getMVars (← mvarId.getType)
+      if mvars.isEmpty then
+        return mvarId
+    | _ => pure ()
+  throwErrorAt binder "Can not satisfy requirements for {binder} due to metavariables."
+
+/-- Try elaborating `ty`. Returns `none` if it doesn't need any additional typeclasses,
+or it returns a new binder that needs to come first. Does not add info unless it throws
+an error. -/
+private partial def getSubproblem
+    (binder : TSyntax `Lean.Parser.Term.bracketedBinder) (ty : TSyntax `term) :
+    TermElabM (Option (TSyntax `Lean.Parser.Term.bracketedBinder)) := do
+  let res : Term.TermElabResult (Option (TSyntax `Lean.Parser.Term.bracketedBinder)) ←
+    Term.observing do
+    withTheReader Term.Context (fun ctx => {ctx with ignoreTCFailures := true}) do
+    Term.withAutoBoundImplicit do
+      _ ← Term.elabType ty
+      Term.synthesizeSyntheticMVars (mayPostpone := true) (ignoreStuckTC := true)
+      let fvarIds := (← getLCtx).getFVarIds
+      if let some mvarId ← pendingActionableSynthMVar binder then
+        let fvarIds' := (← mvarId.getDecl).lctx.getFVarIds.filter
+                          (fun fvar => not (fvarIds.contains fvar))
+        -- TODO alter goal based on configuration, for example Semiring -> CommRing
+        let goal ← mvarId.withContext do instantiateMVars <|
+                    (← mkForallFVars (usedOnly := true) (fvarIds'.map .fvar) (← mvarId.getType))
+        -- Note: this is not guaranteed to round-trip, but it's what we can do.
+        let ty' ← PrettyPrinter.delab goal
+        let binder' ← withRef binder `(bracketedBinderF| [$ty'])
+        return some binder'
+      else
+        return none
+  match res with
+  | .ok v _ => return v
+  | .error .. => Term.applyResult res
 
 /-- Tries elaborating binders, inserting new binders whenever typeclass inference fails.
 `i` is the index of the next binder that needs to be checked. -/
 private partial def completeBinders (gas : Nat)
     (binders : TSyntaxArray `Lean.Parser.Term.bracketedBinder)
     (toOmit : Array Bool) (i : Nat) :
-    CommandElabM (TSyntaxArray `Lean.Parser.Term.bracketedBinder) := do
+    TermElabM (TSyntaxArray `Lean.Parser.Term.bracketedBinder × Array Bool) := do
   if 0 < gas && i < binders.size then
-    -- Try elaborating the binders so far and see if they create any pending metavariables.
-    let info ← getInfoState
-    -- TODO this algorithm has quadratic complexity. It doesn't need to be this way, since
-    -- we can commit to binders eventually.
-    let (newBinders, omitLast) ← runTermElabM fun _ => do
-      withTheReader Term.Context (fun ctx => {ctx with ignoreTCFailures := true})
-      <| withOptions (fun opts => Term.checkBinderAnnotations.set opts false) -- for aliases
-      <| Term.withAutoBoundImplicit
-      <| Term.withSynthesize (mayPostpone := true)
-      <| Term.elabBinders (binders.extract 0 (i + 1)) fun bindersElab => do
-        let mut binders' := #[]
-        let pendingSet : MVarIdSet := (← get).pendingMVars.foldl MVarIdSet.insert RBMap.empty
-        for mvarId in (← get).pendingMVars.reverse do
-          let some decl ← Term.getSyntheticMVarDecl? mvarId | continue
-          match decl.kind with
-          | .typeClass =>
-            let ty ← instantiateMVars (← mvarId.getType)
-            -- Only want to consider those that don't have natural metavariables, which helps
-            -- prevent infinite regress.
-            let nonSynthMVar? := ty.findMVar? fun mvar => not (RBMap.contains pendingSet mvar)
-            if nonSynthMVar?.isNone then
-              let bi ← `(bracketedBinderF| [$(← PrettyPrinter.delab ty)])
-              binders' := binders'.push bi
-          | _ => pure ()
-        -- Is the last elaborated binder tagged with `variableAliasAttr`?
-        let skipLast : Bool ← do
-          if bindersElab.isEmpty then
-            pure false
-          else
-            let last ← instantiateMVars (← Meta.inferType bindersElab[bindersElab.size - 1]!)
-            if let some name := last.getAppFn.constName? then
-              pure <| variableAliasAttr.hasTag (← getEnv) name
-            else
-              pure false
-        return (binders', skipLast)
-    setInfoState info
-    if newBinders.isEmpty then
-      let mut binders := binders
-      if omitLast then
-        -- Switch instance implicit for the omitted binder to anything else
-        -- for elaboration (and info) purposes. This binder will eventually be omitted anyway.
-        binders ← binders.modifyM i fun binder => withRef binder <|
-                    match binder with
-                    | `(bracketedBinderF|[$i : $ty]) => `(bracketedBinderF|{$i : $ty})
-                    | `(bracketedBinderF|[$ty])      => `(bracketedBinderF|{_ : $ty})
-                    | binder => pure binder
-      completeBinders gas binders (toOmit.push omitLast) (i + 1)
+    let binder := binders[i]!
+    trace[«variable!»]
+      "looking at {binder} ({(← getLCtx).getFVarIds.size}, {(← getLocalInstances).size})"
+    if let some binder' ← getSubproblem binder (bracketedBinderType binder).get! then
+      trace[«variable!»] m!"new subproblem {binder'}"
+      if binders.contains binder' then
+        throwErrorAt binder "Binder {binder} proposes adding {binder'} but it is already present. {
+          ""}This can either be due to {binder'} occurring later as a variable or due to {
+          ""}instance inference failure."
+      let binders := binders.insertAt! i binder'
+      completeBinders (gas - 1) binders toOmit i
     else
-      let binders := binders.extract 0 i ++ newBinders ++ binders.extract i binders.size
-      completeBinders (gas - newBinders.size) binders toOmit i
+      withOptions (fun opts => Term.checkBinderAnnotations.set opts false) <| -- for aliases
+      Term.withAutoBoundImplicit <|
+      Term.elabBinders #[binder] fun bindersElab => do
+        let types : Array Expr ← bindersElab.mapM (inferType ·)
+        trace[«variable!»] m!"elaborated binder types: {types}"
+        Term.synthesizeSyntheticMVarsNoPostponing -- checkpoint for withAutoBoundImplicit
+        Term.withoutAutoBoundImplicit do
+        let (binders, toOmit) := ← do
+          match binder with
+          | `(bracketedBinderF|[$[$ident? :]? $ty]) =>
+            -- Check if it's an alias
+            let type ← instantiateMVars (← inferType bindersElab[bindersElab.size - 1]!)
+            if let some name := type.getAppFn.constName? then
+              if variableAliasAttr.hasTag (← getEnv) name then
+                if ident?.isSome then
+                  throwErrorAt binder "Variable aliases can't have an explicit name"
+                -- switch to implicit so that it passes a full `elabBinders`.
+                let binder' ← withRef binder `(bracketedBinderF|{_ : $ty})
+                return (binders.set! i binder', toOmit.push true)
+            return (binders, toOmit.push false)
+          | _ => return (binders, toOmit.push false)
+        completeBinders gas binders toOmit (i + 1)
   else
-    if gas == 0 then
-      logError "Maximum recursion depth for variables! reached, likely due to a bug."
-    -- One last check with the correct configuration.
-    runTermElabM fun _ => Term.withAutoBoundImplicit <| Term.elabBinders binders fun _ => pure ()
-    let mut binders' := #[]
-    for binder in binders, omit in toOmit do
-      if not omit then
-        binders' := binders'.push binder
-    return binders'
+    if gas == 0 && i < binders.size then
+      logErrorAt binders[i]! "Maximum recursion depth for variables! reached, likely due to a bug."
+    return (binders, toOmit)
 
 /--
 Like `variable` but inserts missing typeclasses automatically as extra variables.
@@ -129,7 +153,10 @@ Unlike `variable`, the `variable!` command will not change binder types for vari
     for binder in binders do
       if (bracketedBinderType binder).isNone then
         throwErrorAt binder "variable! cannot update pre-existing variables"
-    let binders' ← completeBinders 10 binders #[] 0
+    let (binders, toOmit) ← runTermElabM fun _ => do completeBinders 10 binders #[] 0
+    -- One last check with the correct configuration, which also adds info.
+    runTermElabM fun _ => Term.withAutoBoundImplicit <| Term.elabBinders binders fun _ => pure ()
+    let binders' := (binders.zip toOmit).filterMap (fun (b, omit) => if omit then none else some b)
     if info.isSome then
       logInfo m!"Try this: {← `(variable $binders'*)}"
     for binder in binders' do
