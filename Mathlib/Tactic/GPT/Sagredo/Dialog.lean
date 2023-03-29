@@ -1,33 +1,48 @@
-import Mathlib.Tactic.ChatGPT.Monad
+import Mathlib.Tactic.GPT.Sagredo.Monad
 
 open Lean
 
-namespace Mathlib.Tactic.ChatGPT
+namespace Mathlib.Tactic.GPT.Sagredo
+
+def goalsFeedback (goals : Format) : String :=
+s!"The new goal state is:\n{goals.fence}
+1. Please write out a plan for proceeding, in English (with LaTeX).
+2. Please add the next tactic step to the proof.
+   Include the new version of your (possibly incomplete) proof in a code block.
+   Make sure the code block is self-contained and runs."
+
+def errorFeedback (e : Lean.Message) : M IO String := do
+  let preface ← match e.endPos with
+  | none => pure s!"On line {e.pos.line} there was an error:"
+  | some endPos => do
+    let block ← latestCodeBlock
+    let line := (block.body.splitOn "\n")[e.pos.line - 1]!
+    let substring := line.drop e.pos.column |>.take (endPos.column - e.pos.column)
+    pure s!"On line {e.pos.line} there was an error on `{substring}`:"
+  pure <| preface ++ "\n" ++
+    (match e.severity with | .error => "error: " | _ => "warning: ") ++
+    (← e.data.toString)
 
 def feedback : M IO String := do
-  --let last := (← latestCodeBlock).markdownBody
-
-  let errors ← (← errors).mapM fun m => do pure <| (← m.toString).splitOn "\n"
+  let errors ← (← errors).mapM fun m => do pure <| (m, (← m.toString).splitOn "\n")
   -- We now look at the errors, and given different responses depending on what we see.
-  let (unsolvedGoals, otherErrors) := errors.partition fun e => e.head! |>.endsWith "unsolved goals"
-  let (_usesSorry, otherErrors) := otherErrors.partition fun e => e.head! |>.endsWith "declaration uses 'sorry'"
+  let (unsolvedGoals, otherErrors) := errors.partition fun e => e.2.head! |>.endsWith "unsolved goals"
+  let (_usesSorry, otherErrors) := otherErrors.partition fun e => e.2.head! |>.endsWith "declaration uses 'sorry'"
 
   match otherErrors with
   | [] => match unsolvedGoals with
     | [] => match ← sorries with
       | [] => pure "That's great, it looks like that proof works!"
-      | (ctx, g, _, _) :: _ => do -- used to be (ctx, g, pos, _)
+      | (ctx, g, _, _) :: _ => do
           -- TODO mention the later sorries?
-          let pp ← ctx.ppGoals [g]
-          pure s!"The new goal state is:\n{pp.fence}\n1. Please write out a plan for proceeding, in English (with LaTeX).\n2. Please add the next tactic step to the proof. Include the new version of your (possibly incomplete) proof in a code block. Make sure the code block is self-contained and runs."
+          pure <| goalsFeedback (← ctx.ppGoals [g])
     | _ =>
-        let goal := String.intercalate "\n" (unsolvedGoals.map List.tail).join |>.trim
-        pure s!"The new goal state is:\n{goal.fence}\n1. Please write out a plan for proceeding, in English (with LaTeX).\n2. Please add the next tactic step to the proof. Include the new version of your (possibly incomplete) proof in a code block. Make sure the code block is self-contained and runs."
+        let goal := "\n".intercalate (unsolvedGoals.map fun p => p.2.tail).join |>.trim
+        pure <| goalsFeedback goal
   | _ =>
     pure <| s!"When I try to run this code, I get errors:\n" ++
       -- TODO decide which other errors matter or deserve emphasise (or helpful advice!)
-      -- TODO mention the lines numbers in prose, possibly extracting the relevant span and quoting it
-      String.intercalate "\n" otherErrors.join ++
+      String.intercalate "\n" (← otherErrors.mapM (fun p => errorFeedback p.1)) ++
       "\nPlease describe how you are going to fix this error and try again. Change the tactic step where there is an error, but do not add any additional tactic steps."
 
 def systemPrompt : String :=
@@ -76,8 +91,7 @@ Here is the proof thus far:\n" ++ (← latestCodeBlock).markdownBody
   match ← sorries with
   | [] => pure prompt
   | (ctx, g, _, _) :: _ => do
-      let pp ← ctx.ppGoals [g]
-      pure <| prompt ++ s!"\nHere is the goal state: \n{pp.fence}\n1. Please write out a plan for proceeding, in English (with LaTeX).\n2. Please add the next tactic step to the proof. Include a new version of your (possibly incomplete) proof in a code block. Make sure the code block is self-contained and runs."
+      pure <| prompt ++ "\n" ++ goalsFeedback (← ctx.ppGoals [g])
 
 def dialog (n : Nat) : M MetaM String := do
   sendSystemMessage systemPrompt
@@ -92,9 +106,9 @@ def dialog (n : Nat) : M MetaM String := do
     return s!"Success after {n} requests"
   catch _ => return s!"Failed after {n} requests"
 
-elab tk:"gpt" : tactic => do
+elab tk:"sagredo" : tactic => do
   let (newDecl, result) ← discussDeclContaining tk
-    (fun decl => decl.replace "gpt" "sorry") -- haha this will make some fun errors
+    (fun decl => decl.replace "sagredo" "sorry") -- TODO this is a hack
     (dialog 6)
   logInfoAt tk result
   logInfoAt tk newDecl

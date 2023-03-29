@@ -1,9 +1,11 @@
-import Mathlib.Tactic.ChatGPT.Frontend
-import Mathlib.Tactic.ChatGPT.Send
+import Mathlib.Tactic.GPT.Send
+import Mathlib.Tactic.GPT.Monad
+import Mathlib.Tactic.GPT.Sagredo.Frontend
+import Mathlib.Tactic.GPT.Sagredo.CodeBlock
 
 open Lean Meta Elab
 
-namespace Mathlib.Tactic.ChatGPT
+namespace Mathlib.Tactic.GPT.Sagredo
 
 structure Analysis : Type where
   env : Environment
@@ -19,17 +21,13 @@ def Analysis.subtractLineNumbers (a : Analysis) (n : Nat) : Analysis :=
   sorries := a.sorries.map
     fun ⟨ctx, g, s, t⟩ => ⟨ctx, g, ⟨s.line - n, s.column⟩, ⟨t.line - n, t.column⟩⟩ }
 
-structure State : Type where
+structure State extends GPT.State where
   preamble : String
   preambleAnalysis : Option Analysis := none
-  log : List Message := []
   solutions : List (CodeBlock × Option Analysis) := []
 
 variable {m : Type → Type} [Monad m]
 abbrev M := StateT State
-
-def _root_.String.count (s : String) (c : Char) : Nat :=
-s.foldl (fun n d => if d = c then n + 1 else n) 0
 
 -- FIXME ideally we would be able to use an existing `preambleEnv`
 -- and avoid recompiling the whole file from scratch.
@@ -95,7 +93,6 @@ def getCodeBlock (response : String) : M IO CodeBlock := do
 /-- Send a system message. -/
 def sendSystemMessage (prompt : String) : M IO Unit := do
   recordMessage ⟨.system, prompt⟩
-  _ ← sendMessages <| (← getLog).reverse
 
 def askForAssistance (prompt : String) : M IO Unit := do
   recordMessage ⟨.user, prompt⟩
@@ -131,8 +128,4 @@ def discussDeclContaining (stx : Syntax) (preEdit : String → String) (driver :
   let editedDecl := preEdit decl
   let analysis ← liftM <| analyzeSolution preamble (preambleAnalysis.map (·.env)) editedDecl
   StateT.run' (runAndLog stx driver)
-    ⟨preamble, preambleAnalysis, [], [({ text := editedDecl }, analysis)]⟩
-
--- Weird, why isn't this available in core?
-instance [MonadLift m n] : MonadLift (StateT α m) (StateT α n) where
-  monadLift := fun f s => f s
+    ⟨⟨[]⟩, preamble, preambleAnalysis, [({ text := editedDecl }, analysis)]⟩

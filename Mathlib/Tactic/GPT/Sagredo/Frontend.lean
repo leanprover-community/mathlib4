@@ -1,9 +1,9 @@
-import Mathlib.Tactic.ChatGPT.Lean
+import Mathlib.Tactic.GPT.Lean
 import Mathlib.Data.Option.Defs
 
 open Lean Elab Meta
 
-namespace Mathlib.Tactic.ChatGPT
+namespace Mathlib.Tactic.GPT.Sagredo
 
 /--
 A modified version of `Lean.Elab.Frontend`, that returns messages and info trees.

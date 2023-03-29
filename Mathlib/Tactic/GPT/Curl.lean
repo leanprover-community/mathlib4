@@ -7,11 +7,6 @@ def runCmd (cmd : String) (args : Array String) (throwFailure := true) : IO Stri
   if out.exitCode != 0 && throwFailure then throw $ IO.userError out.stderr
   else return out.stdout
 
--- curl https://api.openai.com/v1/chat/completions \
---   -H "Content-Type: application/json" \
---   -H "Authorization: Bearer ...api key here..." \
---   -d "@messages.json"%
-
 -- FIXME, customise where the JSON gets written? Or just pass it via stdin?
 def jsonFile (payload : String ):= s!"chatgpt.{hash payload}.json"
 
@@ -31,6 +26,3 @@ def curl (payload : String) : IO String := do
         "-d", s!"@{jsonFile}"] false
   IO.FS.removeFile jsonFile
   pure out
-
-def ISO8601Date : IO String := do
-  pure (← runCmd "date" #["+%Y-%m-%dT%H:%M:%S%z"]).trim
