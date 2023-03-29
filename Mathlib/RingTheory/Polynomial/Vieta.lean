@@ -137,8 +137,6 @@ theorem prod_X_sub_C_coeff (s : Multiset R) {k : ℕ} (h : k ≤ Multiset.card s
 set_option linter.uppercaseLean3 false in
 #align multiset.prod_X_sub_C_coeff Multiset.prod_X_sub_C_coeff
 
-example : ℕ := sorry
-
 /-- Vieta's formula for the coefficients and the roots of a polynomial over an integral domain
   with as many roots as its degree. -/
 theorem _root_.Polynomial.coeff_eq_esymm_roots_of_card [IsDomain R] {p : R[X]}
@@ -147,8 +145,7 @@ theorem _root_.Polynomial.coeff_eq_esymm_roots_of_card [IsDomain R] {p : R[X]}
   conv_lhs => rw [← C_leadingCoeff_mul_prod_multiset_X_sub_C hroots]
   rw [coeff_C_mul, mul_assoc]; congr
   have : k ≤ card (roots p) := by rw [hroots]; exact h
-  convert p.roots.prod_X_sub_C_coeff _ using 3 <;> rw [hroots]; exact h
-  -- convert p.roots.prod_X_sub_C_coeff this using 3 <;> rw [hroots]
+  convert p.roots.prod_X_sub_C_coeff this using 3 <;> rw [hroots]
 #align polynomial.coeff_eq_esymm_roots_of_card Polynomial.coeff_eq_esymm_roots_of_card
 
 /-- Vieta's formula for split polynomials over a field. -/
