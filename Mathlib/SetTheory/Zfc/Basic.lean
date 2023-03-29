@@ -1413,3 +1413,167 @@ theorem Hereditarily.empty : Hereditarily p x → p ∅ :=
 end Hereditarily
 
 end ZFSet
+
+/-- The collection of all classes.
+We define `Class` as `Set ZFSet`, as this allows us to get many instances automatically. However, in
+practice, we treat it as (the definitionally equal) `ZFSet → Prop`. This means, the preferred way to
+state that `x : ZFSet` belongs to `A : Class` is to write `A x`. -/
+def Class :=
+  Set ZFSet deriving HasSubset, EmptyCollection, Nonempty, Union, Inter, HasCompl, SDiff
+#align Class Class
+
+instance : Insert ZFSet Class :=
+  ⟨Set.insert⟩
+
+namespace Class
+
+-- Porting note: this is no longer an automatically derived instance.
+/-- `{x ∈ A | p x}` is the class of elements in `A` satisfying `p` -/
+protected def sep (p : Class → Prop) (A : Class) : Class :=
+  {y | A y ∧ p A}
+
+@[ext]
+theorem ext {x y : Class.{u}} : (∀ z : ZFSet.{u}, x z ↔ y z) → x = y :=
+  Set.ext
+#align Class.ext Class.ext
+
+theorem ext_iff {x y : Class.{u}} : x = y ↔ ∀ z, x z ↔ y z :=
+  Set.ext_iff
+#align Class.ext_iff Class.ext_iff
+
+/-- Coerce a ZFC set into a class -/
+def ofSet (x : ZFSet.{u}) : Class.{u} :=
+  { y | y ∈ x }
+#align Class.of_Set Class.ofSet
+
+instance : Coe ZFSet Class :=
+  ⟨ofSet⟩
+
+/-- The universal class -/
+def univ : Class :=
+  Set.univ
+#align Class.univ Class.univ
+
+/-- Assert that `A` is a ZFC set satisfying `B` -/
+def ToSet (B : Class.{u}) (A : Class.{u}) : Prop :=
+  ∃ x : ZFSet, ↑x = A ∧ B x
+#align Class.to_Set Class.ToSet
+
+/-- `A ∈ B` if `A` is a ZFC set which satisfies `B` -/
+protected def Mem (A B : Class.{u}) : Prop :=
+  ToSet.{u} B A
+#align Class.mem Class.Mem
+
+instance : Membership Class Class :=
+  ⟨Class.Mem⟩
+
+theorem mem_def (A B : Class.{u}) : A ∈ B ↔ ∃ x : ZFSet, ↑x = A ∧ B x :=
+  Iff.rfl
+#align Class.mem_def Class.mem_def
+
+@[simp]
+theorem not_mem_empty (x : Class.{u}) : x ∉ (∅ : Class.{u}) := fun ⟨_, _, h⟩ => h
+#align Class.not_mem_empty Class.not_mem_empty
+
+@[simp]
+theorem not_empty_hom (x : ZFSet.{u}) : ¬(∅ : Class.{u}) x :=
+  id
+#align Class.not_empty_hom Class.not_empty_hom
+
+@[simp]
+theorem mem_univ {A : Class.{u}} : A ∈ univ.{u} ↔ ∃ x : ZFSet.{u}, ↑x = A :=
+  exists_congr fun _ => and_true_iff _
+#align Class.mem_univ Class.mem_univ
+
+@[simp]
+theorem mem_univ_hom (x : ZFSet.{u}) : univ.{u} x :=
+  trivial
+#align Class.mem_univ_hom Class.mem_univ_hom
+
+theorem eq_univ_iff_forall {A : Class.{u}} : A = univ ↔ ∀ x : ZFSet, A x :=
+  Set.eq_univ_iff_forall
+#align Class.eq_univ_iff_forall Class.eq_univ_iff_forall
+
+theorem eq_univ_of_forall {A : Class.{u}} : (∀ x : ZFSet, A x) → A = univ :=
+  Set.eq_univ_of_forall
+#align Class.eq_univ_of_forall Class.eq_univ_of_forall
+
+theorem mem_wf : @WellFounded Class.{u} (· ∈ ·) :=
+  ⟨by
+    have H : ∀ x : ZFSet.{u}, @Acc Class.{u} (· ∈ ·) ↑x :=
+      by
+      refine' fun a => ZFSet.inductionOn a fun x IH => ⟨_, _⟩
+      rintro A ⟨z, rfl, hz⟩
+      exact IH z hz
+    · refine' fun A => ⟨A, _⟩
+      rintro B ⟨x, rfl, _⟩
+      exact H x⟩
+#align Class.mem_wf Class.mem_wf
+
+instance : WellFoundedRelation Class :=
+  ⟨_, mem_wf⟩
+
+instance : IsAsymm Class (· ∈ ·) :=
+  mem_wf.isAsymm
+
+-- Porting note: this can't be inferred automatically for some reason.
+instance : IsIrrefl Class (· ∈ ·) :=
+  mem_wf.isIrrefl
+
+theorem mem_asymm {x y : Class} : x ∈ y → y ∉ x :=
+  asymm
+#align Class.mem_asymm Class.mem_asymm
+
+theorem mem_irrefl (x : Class) : x ∉ x :=
+  irrefl x
+#align Class.mem_irrefl Class.mem_irrefl
+
+/-- **There is no universal set.**
+This is stated as `univ ∉ univ`, meaning that `univ` (the class of all sets) is proper (does not
+belong to the class of all sets). -/
+theorem univ_not_mem_univ : univ ∉ univ :=
+  mem_irrefl _
+#align Class.univ_not_mem_univ Class.univ_not_mem_univ
+
+/-- Convert a conglomerate (a collection of classes) into a class -/
+def congToClass (x : Set Class.{u}) : Class.{u} :=
+  { y | ↑y ∈ x }
+#align Class.Cong_to_Class Class.congToClass
+
+@[simp]
+theorem congToClass_empty : congToClass ∅ = ∅ :=
+  by
+  ext z
+  simp only [congToClass, not_empty_hom, iff_false_iff]
+  exact Set.not_mem_empty z
+#align Class.Cong_to_Class_empty Class.congToClass_empty
+
+/-- Convert a class into a conglomerate (a collection of classes) -/
+def classToCong (x : Class.{u}) : Set Class.{u} :=
+  { y | y ∈ x }
+#align Class.Class_to_Cong Class.classToCong
+
+@[simp]
+theorem classToCong_empty : classToCong ∅ = ∅ :=
+  by
+  ext
+  simp [classToCong]
+#align Class.Class_to_Cong_empty Class.classToCong_empty
+
+/-- The power class of a class is the class of all subclasses that are ZFC sets -/
+def powerset (x : Class) : Class :=
+  congToClass (Set.powerset x)
+#align Class.powerset Class.powerset
+
+/-- The union of a class is the class of all members of ZFC sets in the class -/
+def unionₛ (x : Class) : Class :=
+  ⋃₀ classToCong x
+#align Class.sUnion Class.unionₛ
+
+prefix:110 "⋃₀ " => Class.unionₛ
+
+theorem ofSet.inj {x y : ZFSet.{u}} (h : (x : Class.{u}) = y) : x = y :=
+  ZFSet.ext fun z => by
+    change (x : Class.{u}) z ↔ (y : Class.{u}) z
+    rw [h]
+#align Class.of_Set.inj Class.ofSet.inj
