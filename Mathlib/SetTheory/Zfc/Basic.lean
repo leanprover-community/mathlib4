@@ -810,3 +810,154 @@ theorem toSet_inj {x y : ZFSet} : x.toSet = y.toSet ↔ x = y :=
 
 instance : IsAntisymm ZFSet (· ⊆ ·) :=
   ⟨fun _ _ hab hba => ext fun c => ⟨@hab c, @hba c⟩⟩
+
+/-- The empty ZFC set -/
+protected def empty : ZFSet :=
+  mk ∅
+#align Set.empty ZFSet.empty
+
+instance : EmptyCollection ZFSet :=
+  ⟨ZFSet.empty⟩
+
+instance : Inhabited ZFSet :=
+  ⟨∅⟩
+
+@[simp]
+theorem not_mem_empty (x) : x ∉ (∅ : ZFSet.{u}) :=
+  Quotient.inductionOn x PSet.not_mem_empty
+#align Set.not_mem_empty ZFSet.not_mem_empty
+
+@[simp]
+theorem toSet_empty : toSet ∅ = ∅ := by simp [toSet]
+#align Set.to_set_empty ZFSet.toSet_empty
+
+@[simp]
+theorem empty_subset (x : ZFSet.{u}) : (∅ : ZFSet) ⊆ x :=
+  Quotient.inductionOn x fun y => subset_iff.2 <| PSet.empty_subset y
+#align Set.empty_subset ZFSet.empty_subset
+
+@[simp]
+theorem not_nonempty_empty : ¬ZFSet.Nonempty ∅ := by simp [ZFSet.Nonempty]
+#align Set.not_nonempty_empty ZFSet.not_nonempty_empty
+
+@[simp]
+theorem nonempty_mk_iff {x : PSet} : (mk x).Nonempty ↔ x.Nonempty := by
+  refine' ⟨_, fun ⟨a, h⟩ => ⟨mk a, h⟩⟩
+  rintro ⟨a, h⟩
+  induction a using Quotient.inductionOn
+  exact ⟨_, h⟩
+#align Set.nonempty_mk_iff ZFSet.nonempty_mk_iff
+
+theorem eq_empty (x : ZFSet.{u}) : x = ∅ ↔ ∀ y : ZFSet.{u}, y ∉ x :=
+  by
+  rw [ext_iff]
+  simp
+#align Set.eq_empty ZFSet.eq_empty
+
+theorem eq_empty_or_nonempty (u : ZFSet) : u = ∅ ∨ u.Nonempty :=
+  by
+  rw [eq_empty, ← not_exists]
+  apply em'
+#align Set.eq_empty_or_nonempty ZFSet.eq_empty_or_nonempty
+
+/-- `Insert x y` is the set `{x} ∪ y` -/
+protected def Insert : ZFSet → ZFSet → ZFSet :=
+  Resp.eval 2
+    ⟨PSet.insert, fun _ _ uv ⟨_, _⟩ ⟨_, _⟩ ⟨αβ, βα⟩ =>
+      ⟨fun o =>
+        match o with
+        | some a =>
+          let ⟨b, hb⟩ := αβ a
+          ⟨some b, hb⟩
+        | none => ⟨none, uv⟩,
+        fun o =>
+        match o with
+        | some b =>
+          let ⟨a, ha⟩ := βα b
+          ⟨some a, ha⟩
+        | none => ⟨none, uv⟩⟩⟩
+#align Set.insert ZFSet.Insert
+
+instance : Insert ZFSet ZFSet :=
+  ⟨ZFSet.Insert⟩
+
+instance : Singleton ZFSet ZFSet :=
+  ⟨fun x => insert x ∅⟩
+
+instance : IsLawfulSingleton ZFSet ZFSet :=
+  ⟨fun _ => rfl⟩
+
+@[simp]
+theorem mem_insert_iff {x y z : ZFSet.{u}} : x ∈ insert y z ↔ x = y ∨ x ∈ z :=
+  Quotient.inductionOn₃ x y z fun x y ⟨α, A⟩ =>
+    show (x ∈ PSet.mk (Option α) fun o => Option.rec y A o) ↔ mk x = mk y ∨ x ∈ PSet.mk α A from
+      ⟨fun m =>
+        match m with
+        | ⟨some a, ha⟩ => Or.inr ⟨a, ha⟩
+        | ⟨none, h⟩ => Or.inl (Quotient.sound h),
+        fun m =>
+        match m with
+        | Or.inr ⟨a, ha⟩ => ⟨some a, ha⟩
+        | Or.inl h => ⟨none, Quotient.exact h⟩⟩
+#align Set.mem_insert_iff ZFSet.mem_insert_iff
+
+theorem mem_insert (x y : ZFSet) : x ∈ insert x y :=
+  mem_insert_iff.2 <| Or.inl rfl
+#align Set.mem_insert ZFSet.mem_insert
+
+theorem mem_insert_of_mem {y z : ZFSet} (x) (h : z ∈ y) : z ∈ insert x y :=
+  mem_insert_iff.2 <| Or.inr h
+#align Set.mem_insert_of_mem ZFSet.mem_insert_of_mem
+
+@[simp]
+theorem toSet_insert (x y : ZFSet) : (insert x y).toSet = insert x y.toSet :=
+  by
+  ext
+  simp
+#align Set.to_set_insert ZFSet.toSet_insert
+
+@[simp]
+theorem mem_singleton {x y : ZFSet.{u}} : x ∈ @singleton ZFSet.{u} ZFSet.{u} _ y ↔ x = y :=
+  Iff.trans mem_insert_iff
+    ⟨fun o => Or.rec (fun h => h) (fun n => absurd n (not_mem_empty _)) o, Or.inl⟩
+#align Set.mem_singleton ZFSet.mem_singleton
+
+@[simp]
+theorem toSet_singleton (x : ZFSet) : ({x} : ZFSet).toSet = {x} :=
+  by
+  ext
+  simp
+#align Set.to_set_singleton ZFSet.toSet_singleton
+
+theorem insert_nonempty (u v : ZFSet) : (insert u v).Nonempty :=
+  ⟨u, mem_insert u v⟩
+#align Set.insert_nonempty ZFSet.insert_nonempty
+
+theorem singleton_nonempty (u : ZFSet) : ZFSet.Nonempty {u} :=
+  insert_nonempty u ∅
+#align Set.singleton_nonempty ZFSet.singleton_nonempty
+
+@[simp]
+theorem mem_pair {x y z : ZFSet.{u}} : x ∈ ({y, z} : ZFSet) ↔ x = y ∨ x = z :=
+  Iff.trans mem_insert_iff <| or_congr Iff.rfl mem_singleton
+#align Set.mem_pair ZFSet.mem_pair
+
+/-- `omega` is the first infinite von Neumann ordinal -/
+def omega : ZFSet :=
+  mk PSet.omega
+#align Set.omega ZFSet.omega
+
+@[simp]
+theorem omega_zero : ∅ ∈ omega :=
+  ⟨⟨0⟩, Equiv.rfl⟩
+#align Set.omega_zero ZFSet.omega_zero
+
+@[simp]
+theorem omega_succ {n} : n ∈ omega.{u} → insert n n ∈ omega.{u} :=
+  Quotient.inductionOn n fun x ⟨⟨n⟩, h⟩ =>
+    ⟨⟨n + 1⟩,
+      ZFSet.exact <|
+        show insert (mk x) (mk x) = insert (mk <| ofNat n) (mk <| ofNat n) by
+          rw [ZFSet.sound h]
+          rfl⟩
+#align Set.omega_succ ZFSet.omega_succ
