@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 
 ! This file was ported from Lean 3 source module topology.order.basic
-! leanprover-community/mathlib commit b363547b3113d350d053abdf2884e9850a56b205
+! leanprover-community/mathlib commit c985ae9840e06836a71db38de372f20acb49b790
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -174,8 +174,8 @@ theorem le_of_tendsto_of_tendsto {f g : β → α} {b : Filter β} {a₁ a₂ : 
   show (a₁, a₂) ∈ { p : α × α | p.1 ≤ p.2 } from t.isClosed_le'.mem_of_tendsto this h
 #align le_of_tendsto_of_tendsto le_of_tendsto_of_tendsto
 
-alias le_of_tendsto_of_tendsto ← tendsto_le_of_eventuallyLe
-#align tendsto_le_of_eventually_le tendsto_le_of_eventuallyLe
+alias le_of_tendsto_of_tendsto ← tendsto_le_of_eventuallyLE
+#align tendsto_le_of_eventually_le tendsto_le_of_eventuallyLE
 
 theorem le_of_tendsto_of_tendsto' {f g : β → α} {b : Filter β} {a₁ a₂ : α} [NeBot b]
     (hf : Tendsto f b (𝓝 a₁)) (hg : Tendsto g b (𝓝 a₂)) (h : ∀ x, f x ≤ g x) : a₁ ≤ a₂ :=
@@ -401,6 +401,9 @@ theorem Ioo_mem_nhdsWithin_Ioi {a b c : α} (H : b ∈ Ico a c) : Ioo a c ∈ �
 theorem Ioo_mem_nhdsWithin_Ioi' {a b : α} (H : a < b) : Ioo a b ∈ 𝓝[>] a :=
   Ioo_mem_nhdsWithin_Ioi ⟨le_rfl, H⟩
 
+theorem Covby.nhdsWithin_Ioi {a b : α} (h : a ⋖ b) : 𝓝[>] a = ⊥ :=
+  empty_mem_iff_bot.mp <| h.Ioo_eq ▸ Ioo_mem_nhdsWithin_Ioi' h.1
+
 theorem Ioc_mem_nhdsWithin_Ioi {a b c : α} (H : b ∈ Ico a c) : Ioc a c ∈ 𝓝[>] b :=
   mem_of_superset (Ioo_mem_nhdsWithin_Ioi H) Ioo_subset_Ioc_self
 #align Ioc_mem_nhds_within_Ioi Ioc_mem_nhdsWithin_Ioi
@@ -459,6 +462,9 @@ theorem Ioo_mem_nhdsWithin_Iio {a b c : α} (H : b ∈ Ioc a c) : Ioo a c ∈ �
 -- porting note: new lemma; todo: swap `'`?
 theorem Ioo_mem_nhdsWithin_Iio' {a b : α} (H : a < b) : Ioo a b ∈ 𝓝[<] b :=
   Ioo_mem_nhdsWithin_Iio ⟨H, le_rfl⟩
+
+theorem Covby.nhdsWithin_Iio {a b : α} (h : a ⋖ b) : 𝓝[<] b = ⊥ :=
+  empty_mem_iff_bot.mp <| h.Ioo_eq ▸ Ioo_mem_nhdsWithin_Iio' h.1
 
 theorem Ico_mem_nhdsWithin_Iio {a b c : α} (H : b ∈ Ioc a c) : Ico a c ∈ 𝓝[<] b :=
   mem_of_superset (Ioo_mem_nhdsWithin_Iio H) Ioo_subset_Ico_self
@@ -668,14 +674,14 @@ nonrec theorem ContinuousAt.eventually_lt {x₀ : β} (hf : ContinuousAt f x₀)
   hf.eventually_lt hg hfg
 #align continuous_at.eventually_lt ContinuousAt.eventually_lt
 
--- porting note: todo: restore @[continuity]
+@[continuity]
 protected theorem Continuous.min (hf : Continuous f) (hg : Continuous g) :
     Continuous fun b => min (f b) (g b) := by
   simp only [min_def]
   exact hf.if_le hg hf hg fun x => id
 #align continuous.min Continuous.min
 
--- porting note: todo: restore @[continuity]
+@[continuity]
 protected theorem Continuous.max (hf : Continuous f) (hg : Continuous g) :
     Continuous fun b => max (f b) (g b) :=
   @Continuous.min αᵒᵈ _ _ _ _ _ _ _ hf hg
@@ -784,6 +790,16 @@ theorem Dense.exists_between [DenselyOrdered α] {s : Set α} (hs : Dense s) {x 
   hs.exists_mem_open isOpen_Ioo (nonempty_Ioo.2 h)
 #align dense.exists_between Dense.exists_between
 
+theorem Dense.Ioi_eq_bunionᵢ [DenselyOrdered α] {s : Set α} (hs : Dense s) (x : α) :
+    Ioi x = ⋃ y ∈ s ∩ Ioi x, Ioi y := by
+  refine Subset.antisymm (fun z hz ↦ ?_) (unionᵢ₂_subset fun y hy ↦ Ioi_subset_Ioi (le_of_lt hy.2))
+  rcases hs.exists_between hz with ⟨y, hys, hxy, hyz⟩
+  exact mem_unionᵢ₂.2 ⟨y, ⟨hys, hxy⟩, hyz⟩
+
+theorem Dense.Iio_eq_bunionᵢ [DenselyOrdered α] {s : Set α} (hs : Dense s) (x : α) :
+    Iio x = ⋃ y ∈ s ∩ Iio x, Iio y :=
+  Dense.Ioi_eq_bunionᵢ (α := αᵒᵈ) hs x
+
 variable [Nonempty α] [TopologicalSpace β]
 
 /-- A compact set is bounded below -/
@@ -875,8 +891,8 @@ variable [TopologicalSpace α] [Preorder α] [t : OrderTopology α]
 
 instance : OrderTopology αᵒᵈ :=
   ⟨by
-    convert @OrderTopology.topology_eq_generate_intervals α _ _ _
-    conv in _ ∨ _ => rw [or_comm]⟩
+    convert @OrderTopology.topology_eq_generate_intervals α _ _ _ using 6
+    apply or_comm⟩
 
 theorem isOpen_iff_generate_intervals {s : Set α} :
     IsOpen s ↔ GenerateOpen { s | ∃ a, s = Ioi a ∨ s = Iio a } s := by
@@ -1037,15 +1053,30 @@ theorem induced_orderTopology {α : Type u} {β : Type v} [Preorder α] [ta : To
     fun ax => let ⟨b, ab, bx⟩ := H ax; ⟨b, hf.1 ab, le_of_lt bx⟩
 #align induced_order_topology induced_orderTopology
 
+/-- The topology induced by a strictly monotone function with order-connected range is the preorder
+topology. -/
+nonrec theorem StrictMono.induced_topology_eq_preorder {α β : Type _} [LinearOrder α]
+    [LinearOrder β] [t : TopologicalSpace β] [OrderTopology β] {f : α → β}
+    (hf : StrictMono f) (hc : OrdConnected (range f)) : t.induced f = Preorder.topology α := by
+  refine induced_topology_eq_preorder hf.lt_iff_lt (fun h₁ h₂ => ?_) fun h₁ h₂ => ?_
+  · rcases hc.out (mem_range_self _) (mem_range_self _) ⟨not_lt.1 h₂, h₁.le⟩ with ⟨y, rfl⟩
+    exact ⟨y, hf.lt_iff_lt.1 h₁, le_rfl⟩
+  · rcases hc.out (mem_range_self _) (mem_range_self _) ⟨h₁.le, not_lt.1 h₂⟩ with ⟨y, rfl⟩
+    exact ⟨y, hf.lt_iff_lt.1 h₁, le_rfl⟩
+
+/-- A strictly monotone function between linear orders with order topology is a topological
+embedding provided that the range of `f` is  order-connected. -/
+theorem StrictMono.embedding_of_ordConnected {α β : Type _} [LinearOrder α] [LinearOrder β]
+    [TopologicalSpace α] [h : OrderTopology α] [TopologicalSpace β] [OrderTopology β] {f : α → β}
+    (hf : StrictMono f) (hc : OrdConnected (range f)) : Embedding f :=
+  ⟨⟨h.1.trans <| Eq.symm <| hf.induced_topology_eq_preorder hc⟩, hf.injective⟩
+
 /-- On an `Set.OrdConnected` subset of a linear order, the order topology for the restriction of the
 order is the same as the restriction to the subset of the order topology. -/
 instance orderTopology_of_ordConnected {α : Type u} [TopologicalSpace α] [LinearOrder α]
-    [OrderTopology α] {t : Set α} [ht : OrdConnected t] : OrderTopology t := by
-  refine ⟨induced_topology_eq_preorder Iff.rfl (fun h₁ h₂ => ?_) (fun h₁ h₂ => ?_)⟩
-  · have := ht.out (Subtype.property _) (Subtype.property _) ⟨not_lt.1 h₂, h₁.le⟩
-    exact ⟨⟨_, this⟩, h₁, le_rfl⟩
-  · have := ht.out (Subtype.property _) (Subtype.property _) ⟨h₁.le, not_lt.1 h₂⟩
-    exact ⟨⟨_, this⟩, h₁, le_rfl⟩
+    [OrderTopology α] {t : Set α} [ht : OrdConnected t] : OrderTopology t :=
+  ⟨(Subtype.strictMono_coe t).induced_topology_eq_preorder $ by
+    rwa [← @Subtype.range_val _ t] at ht⟩
 #align order_topology_of_ord_connected orderTopology_of_ordConnected
 
 theorem nhdsWithin_Ici_eq'' [TopologicalSpace α] [Preorder α] [OrderTopology α] (a : α) :
@@ -1081,8 +1112,8 @@ theorem nhdsWithin_Ici_basis' [TopologicalSpace α] [LinearOrder α] [OrderTopol
 
 theorem nhdsWithin_Iic_basis' [TopologicalSpace α] [LinearOrder α] [OrderTopology α] {a : α}
     (ha : ∃ l, l < a) : (𝓝[≤] a).HasBasis (fun l => l < a) fun l => Ioc l a := by
-  convert @nhdsWithin_Ici_basis' αᵒᵈ _ _ _ (toDual a) ha
-  exact funext fun x => (@dual_Ico _ _ _ _).symm
+  convert @nhdsWithin_Ici_basis' αᵒᵈ _ _ _ (toDual a) ha using 2
+  exact (@dual_Ico _ _ _ _).symm
 #align nhds_within_Iic_basis' nhdsWithin_Iic_basis'
 
 theorem nhdsWithin_Ici_basis [TopologicalSpace α] [LinearOrder α] [OrderTopology α] [NoMaxOrder α]
@@ -1308,6 +1339,33 @@ theorem Filter.Eventually.exists_Ioo_subset [NoMaxOrder α] [NoMinOrder α] {a :
   mem_nhds_iff_exists_Ioo_subset.1 hp
 #align filter.eventually.exists_Ioo_subset Filter.Eventually.exists_Ioo_subset
 
+theorem Dense.topology_eq_generateFrom [DenselyOrdered α] {s : Set α} (hs : Dense s) :
+    ‹TopologicalSpace α› = .generateFrom (Ioi '' s ∪ Iio '' s) := by
+  refine (OrderTopology.topology_eq_generate_intervals (α := α)).trans ?_
+  refine le_antisymm (generateFrom_anti ?_) (le_generateFrom ?_)
+  · simp only [union_subset_iff, image_subset_iff]
+    exact ⟨fun a _ ↦ ⟨a, .inl rfl⟩, fun a _ ↦ ⟨a, .inr rfl⟩⟩
+  · rintro _ ⟨a, rfl | rfl⟩
+    · rw [hs.Ioi_eq_bunionᵢ]
+      let _ := generateFrom (Ioi '' s ∪ Iio '' s)
+      exact isOpen_unionᵢ fun x ↦ isOpen_unionᵢ fun h ↦ .basic _ <| .inl <| mem_image_of_mem _ h.1
+    · rw [hs.Iio_eq_bunionᵢ]
+      let _ := generateFrom (Ioi '' s ∪ Iio '' s)
+      exact isOpen_unionᵢ fun x ↦ isOpen_unionᵢ fun h ↦ .basic _ <| .inr <| mem_image_of_mem _ h.1
+
+variable (α)
+
+/-- Let `α` be a densely ordered linear order with order topology. If `α` is a separable space, then
+it has second countable topology. Note that the "densely ordered" assumption cannot be droped, see
+[double arrow space](https://topology.pi-base.org/spaces/S000093) for a counterexample. -/
+theorem TopologicalSpace.SecondCountableTopology.of_separableSpace_orderTopology [DenselyOrdered α]
+    [SeparableSpace α] : SecondCountableTopology α := by
+  rcases exists_countable_dense α with ⟨s, hc, hd⟩
+  refine ⟨⟨_, ?_, hd.topology_eq_generateFrom⟩⟩
+  exact (hc.image _).union (hc.image _)
+
+variable {α}
+
 -- porting note: new lemma
 /-- The set of points which are isolated on the right is countable when the space is
 second-countable. -/
@@ -1363,8 +1421,8 @@ theorem countable_of_isolated_right' [SecondCountableTopology α] :
 second-countable. -/
 theorem countable_setOf_covby_left [SecondCountableTopology α] :
     Set.Countable { x : α | ∃ y, y ⋖ x } := by
-  convert @countable_setOf_covby_right αᵒᵈ _ _ _ _
-  exact Set.ext fun x => exists_congr fun y => toDual_covby_toDual_iff.symm
+  convert @countable_setOf_covby_right αᵒᵈ _ _ _ _ using 5
+  exact toDual_covby_toDual_iff.symm
 
 /-- The set of points which are isolated on the left is countable when the space is
 second-countable. -/
@@ -1556,6 +1614,17 @@ theorem mem_nhdsWithin_Ioi_iff_exists_Ioo_subset' {a u' : α} {s : Set α} (hu' 
   (TFAE_mem_nhdsWithin_Ioi hu' s).out 0 4
 #align mem_nhds_within_Ioi_iff_exists_Ioo_subset' mem_nhdsWithin_Ioi_iff_exists_Ioo_subset'
 
+theorem nhdsWithin_Ioi_basis' {a : α} (h : ∃ b, a < b) : (𝓝[>] a).HasBasis (a < ·) (Ioo a) :=
+  let ⟨_, h⟩ := h
+  ⟨fun _ => mem_nhdsWithin_Ioi_iff_exists_Ioo_subset' h⟩
+
+theorem nhdsWithin_Ioi_eq_bot_iff {a : α} : 𝓝[>] a = ⊥ ↔ IsTop a ∨ ∃ b, a ⋖ b := by
+  by_cases ha : IsTop a
+  · simp [ha, ha.isMax.Ioi_eq]
+  · simp only [ha, false_or]
+    rw [isTop_iff_isMax, not_isMax_iff] at ha
+    simp only [(nhdsWithin_Ioi_basis' ha).eq_bot_iff, covby_iff_Ioo_eq]
+
 /-- A set is a neighborhood of `a` within `(a, +∞)` if and only if it contains an interval `(a, u)`
 with `a < u`. -/
 theorem mem_nhdsWithin_Ioi_iff_exists_Ioo_subset [NoMaxOrder α] {a : α} {s : Set α} :
@@ -1563,6 +1632,19 @@ theorem mem_nhdsWithin_Ioi_iff_exists_Ioo_subset [NoMaxOrder α] {a : α} {s : S
   let ⟨_u', hu'⟩ := exists_gt a
   mem_nhdsWithin_Ioi_iff_exists_Ioo_subset' hu'
 #align mem_nhds_within_Ioi_iff_exists_Ioo_subset mem_nhdsWithin_Ioi_iff_exists_Ioo_subset
+
+/-- The set of points which are isolated on the right is countable when the space is
+second-countable. -/
+theorem countable_setOf_isolated_right [SecondCountableTopology α] :
+    { x : α | 𝓝[>] x = ⊥ }.Countable := by
+  simp only [nhdsWithin_Ioi_eq_bot_iff, setOf_or]
+  exact (subsingleton_isTop α).countable.union countable_setOf_covby_right
+
+/-- The set of points which are isolated on the left is countable when the space is
+second-countable. -/
+theorem countable_setOf_isolated_left [SecondCountableTopology α] :
+    { x : α | 𝓝[<] x = ⊥ }.Countable :=
+  countable_setOf_isolated_right (α := αᵒᵈ)
 
 /-- A set is a neighborhood of `a` within `(a, +∞)` if and only if it contains an interval `(a, u]`
 with `a < u`. -/
@@ -1622,6 +1704,15 @@ theorem mem_nhdsWithin_Iio_iff_exists_Ico_subset [NoMinOrder α] [DenselyOrdered
   have : ofDual ⁻¹' s ∈ 𝓝[>] toDual a ↔ _ := mem_nhdsWithin_Ioi_iff_exists_Ioc_subset
   simpa only [OrderDual.exists, exists_prop, dual_Ioc] using this
 #align mem_nhds_within_Iio_iff_exists_Ico_subset mem_nhdsWithin_Iio_iff_exists_Ico_subset
+
+theorem nhdsWithin_Iio_basis' {a : α} (h : ∃ b, b < a) : (𝓝[<] a).HasBasis (· < a) (Ioo · a) :=
+  let ⟨_, h⟩ := h
+  ⟨fun _ => mem_nhdsWithin_Iio_iff_exists_Ioo_subset' h⟩
+
+theorem nhdsWithin_Iio_eq_bot_iff {a : α} : 𝓝[<] a = ⊥ ↔ IsBot a ∨ ∃ b, b ⋖ a := by
+    convert (config := {preTransparency := .default})
+      nhdsWithin_Ioi_eq_bot_iff (a := OrderDual.toDual a) using 4
+    exact ofDual_covby_ofDual_iff
 
 open List in
 /-- The following statements are equivalent:
@@ -2255,8 +2346,8 @@ theorem frontier_Iio [NoMinOrder α] {a : α} : frontier (Iio a) = {a} :=
 #align frontier_Iio frontier_Iio
 
 @[simp]
-theorem frontier_Icc [NoMinOrder α] [NoMaxOrder α] {a b : α} (h : a < b) :
-    frontier (Icc a b) = {a, b} := by simp [frontier, le_of_lt h, Icc_diff_Ioo_same]
+theorem frontier_Icc [NoMinOrder α] [NoMaxOrder α] {a b : α} (h : a ≤ b) :
+    frontier (Icc a b) = {a, b} := by simp [frontier, h, Icc_diff_Ioo_same]
 #align frontier_Icc frontier_Icc
 
 @[simp]

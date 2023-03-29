@@ -100,8 +100,7 @@ theorem fib_add_two {n : ℕ} : fib (n + 2) = fib n + fib (n + 1) := by
 theorem fib_le_fib_succ {n : ℕ} : fib n ≤ fib (n + 1) := by cases n <;> simp [fib_add_two]
 #align nat.fib_le_fib_succ Nat.fib_le_fib_succ
 
--- porting note: At the time of this port in time attribute @[mono] is unknown
--- @[mono]
+@[mono]
 theorem fib_mono : Monotone fib :=
   monotone_nat_of_le_succ fun _ => fib_le_fib_succ
 #align nat.fib_mono Nat.fib_mono
@@ -261,11 +260,9 @@ theorem fast_fib_eq (n : ℕ) : fastFib n = fib n := by rw [fastFib, fast_fib_au
 #align nat.fast_fib_eq Nat.fast_fib_eq
 
 theorem gcd_fib_add_self (m n : ℕ) : gcd (fib m) (fib (n + m)) = gcd (fib m) (fib n) := by
-  cases Nat.eq_zero_or_pos n
-  · rename_i h
-    rw [h]
+  cases' Nat.eq_zero_or_pos n with h h
+  · rw [h]
     simp
-  rename_i h
   replace h := Nat.succ_pred_eq_of_pos h; rw [← h, succ_eq_add_one]
   calc
     gcd (fib m) (fib (n.pred + 1 + m)) =
@@ -294,7 +291,7 @@ theorem gcd_fib_add_mul_self (m n : ℕ) : ∀ k, gcd (fib m) (fib (n + k * m)) 
 /-- `fib n` is a strong divisibility sequence,
   see https://proofwiki.org/wiki/GCD_of_Fibonacci_Numbers -/
 theorem fib_gcd (m n : ℕ) : fib (gcd m n) = gcd (fib m) (fib n) := by
-  cases le_total m n <;> rename_i h
+  cases' le_total m n with h h
   case inl =>
       apply @Nat.gcd.induction _ m n
       case H0 => simp

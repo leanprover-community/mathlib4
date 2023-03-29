@@ -134,7 +134,7 @@ class CanonicallyOrderedMonoid (α : Type _) extends OrderedCommMonoid α, Bot �
 #align canonically_ordered_monoid CanonicallyOrderedMonoid
 
 -- see Note [lower instance priority]
-@[to_additive]
+@[to_additive existing]
 instance (priority := 100) CanonicallyOrderedMonoid.toOrderBot (α : Type u)
     [h : CanonicallyOrderedMonoid α] : OrderBot α :=
   { h with }
@@ -375,8 +375,8 @@ theorem min_one (a : α) : min a 1 = 1 :=
 #align min_zero min_zero
 
 /-- In a linearly ordered monoid, we are happy for `bot_eq_one` to be a `@[simp]` lemma. -/
-@[simp,
-to_additive "In a linearly ordered monoid, we are happy for `bot_eq_zero` to be a `@[simp]` lemma"]
+@[to_additive (attr := simp)
+  "In a linearly ordered monoid, we are happy for `bot_eq_zero` to be a `@[simp]` lemma"]
 theorem bot_eq_one' : (⊥ : α) = 1 :=
   bot_eq_one
 #align bot_eq_one' bot_eq_one'

@@ -99,6 +99,8 @@ class IsCancelMulZero (M₀ : Type u) [Mul M₀] [Zero M₀]
 
 export MulZeroClass (zero_mul mul_zero)
 attribute [simp] zero_mul mul_zero
+#align zero_mul MulZeroClass.zero_mul
+#align mul_zero MulZeroClass.mul_zero
 
 /-- Predicate typeclass for expressing that `a * b = 0` implies `a = 0` or `b = 0`
 for all `a` and `b` of type `G₀`. -/
@@ -168,7 +170,7 @@ class CancelCommMonoidWithZero (M₀ : Type _) extends CommMonoidWithZero M₀, 
 
 instance (priority := 100) CancelCommMonoidWithZero.toCancelMonoidWithZero
     [CancelCommMonoidWithZero M₀] : CancelMonoidWithZero M₀ :=
-{ IsLeftCancelMulZero.to_isCancelMulZero with }
+{ IsLeftCancelMulZero.to_isCancelMulZero (M₀ := M₀) with }
 
 /-- A type `G₀` is a “group with zero” if it is a monoid with zero element (distinct from `1`)
 such that every nonzero element is invertible.
