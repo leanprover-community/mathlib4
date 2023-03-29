@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 
 ! This file was ported from Lean 3 source module order.hom.complete_lattice
-! leanprover-community/mathlib commit bcfa726826abd57587355b4b5b7e78ad6527b7e4
+! leanprover-community/mathlib commit e8ac6315bcfcbaf2d19a046719c3b553206dac75
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -23,7 +23,7 @@ be satisfied by itself and all stricter types.
 
 * `SupₛHom`: Maps which preserve `⨆`.
 * `InfₛHom`: Maps which preserve `⨅`.
-* `FrameHom`: Frame homomorphisms. Maps which preserve `⨆`, `⊓` and `⊤`.
+* `FrameHom`: Frm homomorphisms. Maps which preserve `⨆`, `⊓` and `⊤`.
 * `CompleteLatticeHom`: Complete lattice homomorphisms. Maps which preserve `⨆` and `⨅`.
 
 ## Typeclasses
@@ -39,7 +39,7 @@ be satisfied by itself and all stricter types.
 
 ## TODO
 
-Frame homs are Heyting homs.
+Frm homs are Heyting homs.
 -/
 
 
@@ -527,7 +527,7 @@ theorem top_apply (a : α) : (⊤ : InfₛHom α β) a = ⊤ :=
 
 end InfₛHom
 
-/-! ### Frame homomorphisms -/
+/-! ### Frm homomorphisms -/
 
 
 namespace FrameHom
