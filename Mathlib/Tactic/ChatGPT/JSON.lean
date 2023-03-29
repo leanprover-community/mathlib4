@@ -23,7 +23,7 @@ deriving ToJson, FromJson
 structure Request where
   model : String := "gpt-4"
   messages : List Message
-  temperature : Float := 0.7
+  temperature : Float := 0.2
 deriving ToJson, FromJson
 
 structure Choice where

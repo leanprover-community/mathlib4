@@ -108,7 +108,7 @@ variable [MonadLog m] [AddMessageContext m] [MonadOptions m]
 
 variable [MonadLiftT IO m] [MonadLiftT CoreM m]
 
-def versionNumber := 0
+def versionNumber := 0.1
 
 def runAndLog (stx : Syntax) (driver : M m α) : M m (String × α) := do
   let a ← driver
