@@ -357,7 +357,7 @@ theorem toIcoDiv_neg (a : α) {b : α} (hb : 0 < b) (x : α) :
     toIcoDiv a hb (-x) = -(toIocDiv (-a) hb x + 1) := by
   suffices toIcoDiv a hb (-x) = -toIocDiv (-(a + b)) hb x by
     rwa [neg_add, ← sub_eq_add_neg, ← toIocDiv_add_right', toIocDiv_add_right] at this
-  rw [eq_neg_iff_eq_neg, eq_comm]
+  rw [← neg_eq_iff_eq_neg, eq_comm]
   apply eq_toIocDiv_of_sub_zsmul_mem_Ioc
   obtain ⟨hc, ho⟩ := sub_toIcoDiv_zsmul_mem_Ico a hb (-x)
   rw [← neg_lt_neg_iff, neg_sub' (-x), neg_neg, ← neg_smul] at ho
