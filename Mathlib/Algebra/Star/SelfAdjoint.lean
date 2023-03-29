@@ -250,15 +250,16 @@ theorem _root_.isSelfAdjoint_ratCast (x : ℚ) : IsSelfAdjoint (x : R) :=
 
 end DivisionRing
 
-section Field
+section Semifield
 
+-- porting note: generalize to `Semifield` to fix lean4#2074-related errors
 variable [Semifield R] [StarRing R]
 
 theorem div {x y : R} (hx : IsSelfAdjoint x) (hy : IsSelfAdjoint y) : IsSelfAdjoint (x / y) := by
   simp only [isSelfAdjoint_iff, star_div', hx.star_eq, hy.star_eq]
 #align is_self_adjoint.div IsSelfAdjoint.div
 
-end Field
+end Semifield
 
 section SMul
 
