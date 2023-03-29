@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Jens Wagemaker
 
 ! This file was ported from Lean 3 source module data.polynomial.degree.lemmas
-! leanprover-community/mathlib commit 302eab4f46abb63de520828de78c04cb0f9b5836
+! leanprover-community/mathlib commit 728baa2f54e6062c5879a3e397ac6bac323e506f
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -354,6 +354,14 @@ theorem natDegree_comp : natDegree (p.comp q) = natDegree p * natDegree q := by
     simp only [coeff_comp_degree_mul_degree q0, p0, mul_eq_zero, leadingCoeff_eq_zero, or_self_iff,
       ne_zero_of_natDegree_gt (Nat.pos_of_ne_zero q0), pow_ne_zero, Ne.def, not_false_iff]
 #align polynomial.nat_degree_comp Polynomial.natDegree_comp
+
+@[simp]
+theorem natDegree_iterate_comp (k : ℕ) :
+    ((p.comp^[k]) q).natDegree = p.natDegree ^ k * q.natDegree := by
+  induction' k with k IH
+  · simp
+  · rw [Function.iterate_succ_apply', natDegree_comp, IH, pow_succ, mul_assoc]
+#align polynomial.nat_degree_iterate_comp Polynomial.natDegree_iterate_comp
 
 theorem leadingCoeff_comp (hq : natDegree q ≠ 0) :
     leadingCoeff (p.comp q) = leadingCoeff p * leadingCoeff q ^ natDegree p := by
