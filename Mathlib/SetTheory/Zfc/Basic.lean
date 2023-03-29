@@ -145,3 +145,66 @@ theorem mk_func (α A) : Func ⟨α, A⟩ = A :=
 theorem eta : ∀ x : PSet, mk x.Type x.Func = x
   | ⟨_, _⟩ => rfl
 #align pSet.eta PSet.eta
+
+/-- Two pre-sets are extensionally equivalent if every element of the first family is extensionally
+equivalent to some element of the second family and vice-versa. -/
+def Equiv : PSet → PSet → Prop
+  | ⟨_, A⟩, ⟨_, B⟩ => (∀ a, ∃ b, Equiv (A a) (B b)) ∧ (∀ b, ∃ a, Equiv (A a) (B b))
+#align pSet.equiv PSet.Equiv
+
+theorem equiv_iff :
+   ∀ {x y : PSet},
+      Equiv x y ↔ (∀ i, ∃ j, Equiv (x.Func i) (y.Func j)) ∧ ∀ j, ∃ i, Equiv (x.Func i) (y.Func j)
+  | ⟨_, _⟩, ⟨_, _⟩ => Iff.rfl
+#align pSet.equiv_iff PSet.equiv_iff
+
+theorem Equiv.exists_left {x y : PSet} (h : Equiv x y) : ∀ i, ∃ j, Equiv (x.Func i) (y.Func j) :=
+  (equiv_iff.1 h).1
+#align pSet.equiv.exists_left PSet.Equiv.exists_left
+
+theorem Equiv.exists_right {x y : PSet} (h : Equiv x y) : ∀ j, ∃ i, Equiv (x.Func i) (y.Func j) :=
+  (equiv_iff.1 h).2
+#align pSet.equiv.exists_right PSet.Equiv.exists_right
+
+@[refl]
+protected theorem Equiv.refl : ∀ x, Equiv x x
+  | ⟨_, _⟩ => ⟨fun a => ⟨a, Equiv.refl _⟩, fun a => ⟨a, Equiv.refl _⟩⟩
+#align pSet.equiv.refl PSet.Equiv.refl
+
+protected theorem Equiv.rfl {x} : Equiv x x :=
+  Equiv.refl x
+#align pSet.equiv.rfl PSet.Equiv.rfl
+
+protected theorem Equiv.euc : ∀ {x y z}, Equiv x y → Equiv z y → Equiv x z
+  | ⟨_, _⟩, ⟨_, _⟩, ⟨_, _⟩, ⟨αβ, βα⟩, ⟨γβ, βγ⟩ =>
+    ⟨ fun a =>
+        let ⟨b, ab⟩ := αβ a
+        let ⟨c, bc⟩ := βγ b
+        ⟨c, Equiv.euc ab bc⟩,
+      fun c =>
+        let ⟨b, cb⟩ := γβ c
+        let ⟨a, ba⟩ := βα b
+        ⟨a, Equiv.euc ba cb⟩ ⟩
+#align pSet.equiv.euc PSet.Equiv.euc
+
+@[symm]
+protected theorem Equiv.symm {x y} : Equiv x y → Equiv y x :=
+  (Equiv.refl y).euc
+#align pSet.equiv.symm PSet.Equiv.symm
+
+protected theorem Equiv.comm {x y} : Equiv x y ↔ Equiv y x :=
+  ⟨Equiv.symm, Equiv.symm⟩
+#align pSet.equiv.comm PSet.Equiv.comm
+
+@[trans]
+protected theorem Equiv.trans {x y z} (h1 : Equiv x y) (h2 : Equiv y z) : Equiv x z :=
+  h1.euc h2.symm
+#align pSet.equiv.trans PSet.Equiv.trans
+
+protected theorem equiv_of_isEmpty (x y : PSet) [IsEmpty x.Type] [IsEmpty y.Type] : Equiv x y :=
+  equiv_iff.2 <| by simp
+#align pSet.equiv_of_is_empty PSet.equiv_of_isEmpty
+
+instance setoid : Setoid PSet :=
+  ⟨PSet.Equiv, Equiv.refl, Equiv.symm, Equiv.trans⟩
+#align pSet.setoid PSet.setoid
