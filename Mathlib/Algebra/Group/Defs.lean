@@ -45,6 +45,8 @@ actions and register the following instances:
 
 open Function
 
+class FlatHack : Prop where
+
 /--
 The notation typeclass for heterogeneous additive actions.
 This enables the notation `a +ᵥ b : γ` where `a : α`, `b : β`.
@@ -143,7 +145,7 @@ class IsRightCancelMul (G : Type u) [Mul G] : Prop where
   /-- Multiplication is right cancellative. -/
   protected mul_right_cancel : ∀ a b c : G, a * b = c * b → a = c
 /-- A mixin for cancellative multiplication. -/
-class IsCancelMul (G : Type u) [Mul G] extends IsLeftCancelMul G, IsRightCancelMul G : Prop
+class IsCancelMul (G : Type u) [Mul G] extends FlatHack, IsLeftCancelMul G, IsRightCancelMul G : Prop
 #align is_cancel_mul IsCancelMul
 #align is_right_cancel_mul IsRightCancelMul
 #align is_left_cancel_mul IsLeftCancelMul
@@ -165,7 +167,7 @@ class IsRightCancelAdd (G : Type u) [Add G] : Prop where
 attribute [to_additive IsRightCancelAdd] IsRightCancelMul
 
 /-- A mixin for cancellative addition. -/
-class IsCancelAdd (G : Type u) [Add G] extends IsLeftCancelAdd G, IsRightCancelAdd G : Prop
+class IsCancelAdd (G : Type u) [Add G] extends FlatHack, IsLeftCancelAdd G, IsRightCancelAdd G : Prop
 #align is_cancel_add IsCancelAdd
 
 attribute [to_additive IsCancelAdd] IsCancelMul
@@ -244,7 +246,7 @@ end Mul
 
 /-- A semigroup is a type with an associative `(*)`. -/
 @[ext]
-class Semigroup (G : Type u) extends Mul G where
+class Semigroup (G : Type u) extends FlatHack, Mul G where
   /-- Multiplication is associative -/
   mul_assoc : ∀ a b c : G, a * b * c = a * (b * c)
 #align semigroup Semigroup
@@ -253,7 +255,7 @@ class Semigroup (G : Type u) extends Mul G where
 
 /-- An additive semigroup is a type with an associative `(+)`. -/
 @[ext]
-class AddSemigroup (G : Type u) extends Add G where
+class AddSemigroup (G : Type u) extends FlatHack, Add G where
   /-- Addition is associative -/
   add_assoc : ∀ a b c : G, a + b + c = a + (b + c)
 #align add_semigroup AddSemigroup
@@ -282,7 +284,7 @@ end Semigroup
 
 /-- A commutative semigroup is a type with an associative commutative `(*)`. -/
 @[ext]
-class CommSemigroup (G : Type u) extends Semigroup G where
+class CommSemigroup (G : Type u) extends FlatHack, Semigroup G where
   /-- Multiplication is commutative in a commutative semigroup. -/
   mul_comm : ∀ a b : G, a * b = b * a
 #align comm_semigroup CommSemigroup
@@ -291,7 +293,7 @@ class CommSemigroup (G : Type u) extends Semigroup G where
 
 /-- A commutative additive semigroup is a type with an associative commutative `(+)`. -/
 @[ext]
-class AddCommSemigroup (G : Type u) extends AddSemigroup G where
+class AddCommSemigroup (G : Type u) extends FlatHack, AddSemigroup G where
   /-- Addition is commutative in an additive commutative semigroup. -/
   add_comm : ∀ a b : G, a + b = b + a
 #align add_comm_semigroup AddCommSemigroup
@@ -364,7 +366,7 @@ end CommSemigroup
 
 /-- A `LeftCancelSemigroup` is a semigroup such that `a * b = a * c` implies `b = c`. -/
 @[ext]
-class LeftCancelSemigroup (G : Type u) extends Semigroup G where
+class LeftCancelSemigroup (G : Type u) extends FlatHack, Semigroup G where
   mul_left_cancel : ∀ a b c : G, a * b = a * c → b = c
 #align left_cancel_semigroup LeftCancelSemigroup
 #align left_cancel_semigroup.ext_iff LeftCancelSemigroup.ext_iff
@@ -373,7 +375,7 @@ class LeftCancelSemigroup (G : Type u) extends Semigroup G where
 /-- An `AddLeftCancelSemigroup` is an additive semigroup such that
 `a + b = a + c` implies `b = c`. -/
 @[ext]
-class AddLeftCancelSemigroup (G : Type u) extends AddSemigroup G where
+class AddLeftCancelSemigroup (G : Type u) extends FlatHack, AddSemigroup G where
   add_left_cancel : ∀ a b c : G, a + b = a + c → b = c
 #align add_left_cancel_semigroup AddLeftCancelSemigroup
 #align add_left_cancel_semigroup.ext AddLeftCancelSemigroup.ext
@@ -392,7 +394,7 @@ instance (priority := 100) LeftCancelSemigroup.toIsLeftCancelMul (G : Type u)
 
 /-- A `RightCancelSemigroup` is a semigroup such that `a * b = c * b` implies `a = c`. -/
 @[ext]
-class RightCancelSemigroup (G : Type u) extends Semigroup G where
+class RightCancelSemigroup (G : Type u) extends FlatHack, Semigroup G where
   mul_right_cancel : ∀ a b c : G, a * b = c * b → a = c
 #align right_cancel_semigroup RightCancelSemigroup
 #align right_cancel_semigroup.ext_iff RightCancelSemigroup.ext_iff
@@ -401,7 +403,7 @@ class RightCancelSemigroup (G : Type u) extends Semigroup G where
 /-- An `AddRightCancelSemigroup` is an additive semigroup such that
 `a + b = c + b` implies `a = c`. -/
 @[ext]
-class AddRightCancelSemigroup (G : Type u) extends AddSemigroup G where
+class AddRightCancelSemigroup (G : Type u) extends FlatHack, AddSemigroup G where
   add_right_cancel : ∀ a b c : G, a + b = c + b → a = c
 #align add_right_cancel_semigroup AddRightCancelSemigroup
 #align add_right_cancel_semigroup.ext_iff AddRightCancelSemigroup.ext_iff
@@ -420,7 +422,7 @@ instance (priority := 100) RightCancelSemigroup.toIsRightCancelMul (G : Type u)
 
 /-- Typeclass for expressing that a type `M` with multiplication and a one satisfies
 `1 * a = a` and `a * 1 = a` for all `a : M`. -/
-class MulOneClass (M : Type u) extends One M, Mul M where
+class MulOneClass (M : Type u) extends FlatHack, One M, Mul M where
   /-- One is a left neutral element for multiplication -/
   one_mul : ∀ a : M, 1 * a = a
   /-- One is a right neutral element for multiplication -/
@@ -429,7 +431,7 @@ class MulOneClass (M : Type u) extends One M, Mul M where
 
 /-- Typeclass for expressing that a type `M` with addition and a zero satisfies
 `0 + a = a` and `a + 0 = a` for all `a : M`. -/
-class AddZeroClass (M : Type u) extends Zero M, Add M where
+class AddZeroClass (M : Type u) extends FlatHack, Zero M, Add M where
   /-- Zero is a left neutral element for addition -/
   zero_add : ∀ a : M, 0 + a = a
   /-- Zero is a right neutral element for addition -/
@@ -440,7 +442,7 @@ attribute [to_additive] MulOneClass
 
 @[to_additive (attr := ext)]
 theorem MulOneClass.ext {M : Type u} : ∀ ⦃m₁ m₂ : MulOneClass M⦄, m₁.mul = m₂.mul → m₁ = m₂ := by
-  rintro @⟨⟨one₁⟩, ⟨mul₁⟩, one_mul₁, mul_one₁⟩ @⟨⟨one₂⟩, ⟨mul₂⟩, one_mul₂, mul_one₂⟩ ⟨rfl⟩
+  rintro @⟨_, ⟨one₁⟩, ⟨mul₁⟩, one_mul₁, mul_one₁⟩ @⟨_, ⟨one₂⟩, ⟨mul₂⟩, one_mul₂, mul_one₂⟩ ⟨rfl⟩
   -- FIXME (See https://github.com/leanprover/lean4/issues/1711)
   -- congr
   suffices one₁ = one₂ by cases this; rfl
@@ -574,7 +576,7 @@ need right away.
 
 
 /-- An `AddMonoid` is an `AddSemigroup` with an element `0` such that `0 + a = a + 0 = a`. -/
-class AddMonoid (M : Type u) extends AddSemigroup M, AddZeroClass M where
+class AddMonoid (M : Type u) extends FlatHack, AddSemigroup M, AddZeroClass M where
   /-- Multiplication by a natural number. -/
   nsmul : ℕ → M → M := nsmulRec
   /-- Multiplication by `(0 : ℕ)` gives `0`. -/
@@ -588,7 +590,7 @@ class AddMonoid (M : Type u) extends AddSemigroup M, AddZeroClass M where
 
 /-- A `Monoid` is a `Semigroup` with an element `1` such that `1 * a = a * 1 = a`. -/
 @[to_additive]
-class Monoid (M : Type u) extends Semigroup M, MulOneClass M where
+class Monoid (M : Type u) extends FlatHack, Semigroup M, MulOneClass M where
   /-- Raising to the power of a natural number. -/
   npow : ℕ → M → M := npowRec
   /-- Raising to the power `(0 : ℕ)` gives `1`. -/
@@ -602,6 +604,7 @@ class Monoid (M : Type u) extends Semigroup M, MulOneClass M where
 
 -- Bug #660
 attribute [to_additive existing] Monoid.toMulOneClass
+attribute [to_additive existing] Monoid.toSemigroup
 
 @[default_instance high] instance Monoid.Pow {M : Type _} [Monoid M] : Pow M ℕ :=
   ⟨fun x n ↦ Monoid.npow n x⟩
@@ -651,14 +654,15 @@ theorem left_inv_eq_right_inv {a b c : M} (hba : b * a = 1) (hac : a * c = 1) : 
 end Monoid
 
 /-- An additive commutative monoid is an additive monoid with commutative `(+)`. -/
-class AddCommMonoid (M : Type u) extends AddMonoid M, AddCommSemigroup M
+class AddCommMonoid (M : Type u) extends FlatHack, AddMonoid M, AddCommSemigroup M
 #align add_comm_monoid AddCommMonoid
 
 /-- A commutative monoid is a monoid with commutative `(*)`. -/
 @[to_additive]
-class CommMonoid (M : Type u) extends Monoid M, CommSemigroup M
+class CommMonoid (M : Type u) extends FlatHack, Monoid M, CommSemigroup M
 #align comm_monoid CommMonoid
 
+attribute [to_additive existing] CommMonoid.toMonoid
 attribute [to_additive existing] CommMonoid.toCommSemigroup
 
 section LeftCancelMonoid
@@ -666,14 +670,15 @@ section LeftCancelMonoid
 /-- An additive monoid in which addition is left-cancellative.
 Main examples are `ℕ` and groups. This is the right typeclass for many sum lemmas, as having a zero
 is useful to define the sum over the empty set, so `AddLeftCancelSemigroup` is not enough. -/
-class AddLeftCancelMonoid (M : Type u) extends AddLeftCancelSemigroup M, AddMonoid M
+class AddLeftCancelMonoid (M : Type u) extends FlatHack, AddLeftCancelSemigroup M, AddMonoid M
 #align add_left_cancel_monoid AddLeftCancelMonoid
 
 /-- A monoid in which multiplication is left-cancellative. -/
 @[to_additive]
-class LeftCancelMonoid (M : Type u) extends LeftCancelSemigroup M, Monoid M
+class LeftCancelMonoid (M : Type u) extends FlatHack, LeftCancelSemigroup M, Monoid M
 #align left_cancel_monoid LeftCancelMonoid
 
+attribute [to_additive existing] LeftCancelMonoid.toLeftCancelSemigroup
 attribute [to_additive existing] LeftCancelMonoid.toMonoid
 
 end LeftCancelMonoid
@@ -683,14 +688,15 @@ section RightCancelMonoid
 /-- An additive monoid in which addition is right-cancellative.
 Main examples are `ℕ` and groups. This is the right typeclass for many sum lemmas, as having a zero
 is useful to define the sum over the empty set, so `AddRightCancelSemigroup` is not enough. -/
-class AddRightCancelMonoid (M : Type u) extends AddRightCancelSemigroup M, AddMonoid M
+class AddRightCancelMonoid (M : Type u) extends FlatHack, AddRightCancelSemigroup M, AddMonoid M
 #align add_right_cancel_monoid AddRightCancelMonoid
 
 /-- A monoid in which multiplication is right-cancellative. -/
 @[to_additive]
-class RightCancelMonoid (M : Type u) extends RightCancelSemigroup M, Monoid M
+class RightCancelMonoid (M : Type u) extends FlatHack, RightCancelSemigroup M, Monoid M
 #align right_cancel_monoid RightCancelMonoid
 
+attribute [to_additive existing] RightCancelMonoid.toRightCancelSemigroup
 attribute [to_additive existing] RightCancelMonoid.toMonoid
 
 end RightCancelMonoid
@@ -700,32 +706,34 @@ section CancelMonoid
 /-- An additive monoid in which addition is cancellative on both sides.
 Main examples are `ℕ` and groups. This is the right typeclass for many sum lemmas, as having a zero
 is useful to define the sum over the empty set, so `AddRightCancelMonoid` is not enough. -/
-class AddCancelMonoid (M : Type u) extends AddLeftCancelMonoid M, AddRightCancelMonoid M
+class AddCancelMonoid (M : Type u) extends FlatHack, AddLeftCancelMonoid M, AddRightCancelMonoid M
 #align add_cancel_monoid AddCancelMonoid
 
 /-- A monoid in which multiplication is cancellative. -/
 @[to_additive]
-class CancelMonoid (M : Type u) extends LeftCancelMonoid M, RightCancelMonoid M
+class CancelMonoid (M : Type u) extends FlatHack, LeftCancelMonoid M, RightCancelMonoid M
 #align cancel_monoid CancelMonoid
 
+attribute [to_additive existing] CancelMonoid.toLeftCancelMonoid
 attribute [to_additive existing] CancelMonoid.toRightCancelMonoid
 
 /-- Commutative version of `AddCancelMonoid`. -/
-class AddCancelCommMonoid (M : Type u) extends AddLeftCancelMonoid M, AddCommMonoid M
+class AddCancelCommMonoid (M : Type u) extends FlatHack, AddLeftCancelMonoid M, AddCommMonoid M
 #align add_cancel_comm_monoid AddCancelCommMonoid
 
 /-- Commutative version of `CancelMonoid`. -/
 @[to_additive]
-class CancelCommMonoid (M : Type u) extends LeftCancelMonoid M, CommMonoid M
+class CancelCommMonoid (M : Type u) extends FlatHack, LeftCancelMonoid M, CommMonoid M
 #align cancel_comm_monoid CancelCommMonoid
 
+attribute [to_additive existing] CancelCommMonoid.toLeftCancelMonoid
 attribute [to_additive existing] CancelCommMonoid.toCommMonoid
 
 -- see Note [lower instance priority]
 @[to_additive]
 instance (priority := 100) CancelCommMonoid.toCancelMonoid (M : Type u) [CancelCommMonoid M] :
     CancelMonoid M :=
-  { CommSemigroup.IsLeftCancelMul.toIsRightCancelMul M with }
+  { ‹CancelCommMonoid M›, CommSemigroup.IsLeftCancelMul.toIsRightCancelMul M with }
 #align cancel_comm_monoid.to_cancel_monoid CancelCommMonoid.toCancelMonoid
 #align add_cancel_comm_monoid.to_cancel_add_monoid AddCancelCommMonoid.toAddCancelMonoid
 
@@ -759,14 +767,14 @@ attribute [to_additive existing] zpowRec
 section InvolutiveInv
 
 /-- Auxiliary typeclass for types with an involutive `Neg`. -/
-class InvolutiveNeg (A : Type _) extends Neg A where
+class InvolutiveNeg (A : Type _) extends FlatHack, Neg A where
   neg_neg : ∀ x : A, - -x = x
 
 #align has_involutive_neg InvolutiveNeg
 
 /-- Auxiliary typeclass for types with an involutive `Inv`. -/
 @[to_additive]
-class InvolutiveInv (G : Type _) extends Inv G where
+class InvolutiveInv (G : Type _) extends FlatHack, Inv G where
   inv_inv : ∀ x : G, x⁻¹⁻¹ = x
 
 #align has_involutive_inv InvolutiveInv
@@ -820,7 +828,7 @@ the `Div` instance in `DivInvMonoid`.
 We keep it as a separate definition rather than inlining it in `DivInvMonoid` so that the `Div`
 field of individual `DivInvMonoid`s constructed using that default value will not be unfolded at
 `.instance` transparency. -/
-def DivInvMonoid.div' {G : Type u} [Monoid G] [Inv G] (a b : G) : G := a * b⁻¹
+def DivInvMonoid.div' {G : Type u} [Mul G] [Inv G] (a b : G) : G := a * b⁻¹
 
 /-- A `DivInvMonoid` is a `Monoid` with operations `/` and `⁻¹` satisfying
 `div_eq_mul_inv : ∀ a b, a / b = a * b⁻¹`.
@@ -840,7 +848,7 @@ In the same way, adding a `zpow` field makes it possible to avoid definitional f
 in diamonds. See the definition of `Monoid` and Note [forgetful inheritance] for more
 explanations on this.
 -/
-class DivInvMonoid (G : Type u) extends Monoid G, Inv G, Div G where
+class DivInvMonoid (G : Type u) extends FlatHack, Monoid G, Inv G, Div G where
   div := DivInvMonoid.div'
   /-- `a / b := a * b⁻¹` -/
   div_eq_mul_inv : ∀ a b : G, a / b = a * b⁻¹ := by intros; rfl
@@ -862,7 +870,7 @@ for the `Sub` instance in `SubNegMonoid`.
 We keep it as a separate definition rather than inlining it in `SubNegMonoid` so that the `Sub`
 field of individual `SubNegMonoid`s constructed using that default value will not be unfolded at
 `.instance` transparency. -/
-def SubNegMonoid.sub' {G : Type u} [AddMonoid G] [Neg G] (a b : G) : G := a + -b
+def SubNegMonoid.sub' {G : Type u} [Add G] [Neg G] (a b : G) : G := a + -b
 
 attribute [to_additive existing SubNegMonoid.sub'] DivInvMonoid.div'
 
@@ -883,7 +891,7 @@ In the same way, adding a `zsmul` field makes it possible to avoid definitional 
 in diamonds. See the definition of `AddMonoid` and Note [forgetful inheritance] for more
 explanations on this.
 -/
-class SubNegMonoid (G : Type u) extends AddMonoid G, Neg G, Sub G where
+class SubNegMonoid (G : Type u) extends FlatHack, AddMonoid G, Neg G, Sub G where
   sub := SubNegMonoid.sub'
   sub_eq_add_neg : ∀ a b : G, a - b = a + -b := by intros; rfl
   zsmul : ℤ → G → G := zsmulRec
@@ -894,6 +902,7 @@ class SubNegMonoid (G : Type u) extends AddMonoid G, Neg G, Sub G where
 #align sub_neg_monoid SubNegMonoid
 
 attribute [to_additive SubNegMonoid] DivInvMonoid
+attribute [to_additive existing] DivInvMonoid.toMonoid
 
 instance DivInvMonoid.Pow {M} [DivInvMonoid M] : Pow M ℤ :=
   ⟨fun x n ↦ DivInvMonoid.zpow n x⟩
@@ -963,26 +972,27 @@ end DivInvMonoid
 section InvOneClass
 
 /-- Typeclass for expressing that `-0 = 0`. -/
-class NegZeroClass (G : Type _) extends Zero G, Neg G where
+class NegZeroClass (G : Type _) extends FlatHack, Zero G, Neg G where
   neg_zero : -(0 : G) = 0
 #align neg_zero_class NegZeroClass
 
 /-- A `SubNegMonoid` where `-0 = 0`. -/
-class SubNegZeroMonoid (G : Type _) extends SubNegMonoid G, NegZeroClass G
+class SubNegZeroMonoid (G : Type _) extends FlatHack, SubNegMonoid G, NegZeroClass G
 #align sub_neg_zero_monoid SubNegZeroMonoid
 
 /-- Typeclass for expressing that `1⁻¹ = 1`. -/
 @[to_additive]
-class InvOneClass (G : Type _) extends One G, Inv G where
+class InvOneClass (G : Type _) extends FlatHack, One G, Inv G where
   inv_one : (1 : G)⁻¹ = 1
 #align inv_one_class InvOneClass
 
 /-- A `DivInvMonoid` where `1⁻¹ = 1`. -/
 @[to_additive SubNegZeroMonoid]
-class DivInvOneMonoid (G : Type _) extends DivInvMonoid G, InvOneClass G
+class DivInvOneMonoid (G : Type _) extends FlatHack, DivInvMonoid G, InvOneClass G
 #align div_inv_one_monoid DivInvOneMonoid
 
 -- FIXME: `to_additive` is not operating on the second parent. (#660)
+attribute [to_additive existing SubNegZeroMonoid.toSubNegMonoid] DivInvOneMonoid.toDivInvMonoid
 attribute [to_additive existing] DivInvOneMonoid.toInvOneClass
 
 variable [InvOneClass G]
@@ -997,7 +1007,7 @@ end InvOneClass
 
 /-- A `SubtractionMonoid` is a `SubNegMonoid` with involutive negation and such that
 `-(a + b) = -b + -a` and `a + b = 0 → -a = b`. -/
-class SubtractionMonoid (G : Type u) extends SubNegMonoid G, InvolutiveNeg G where
+class SubtractionMonoid (G : Type u) extends FlatHack, SubNegMonoid G, InvolutiveNeg G where
   neg_add_rev (a b : G) : -(a + b) = -b + -a
   /- Despite the asymmetry of `neg_eq_of_add`, the symmetric version is true thanks to the
   involutivity of negation. -/
@@ -1009,13 +1019,14 @@ class SubtractionMonoid (G : Type u) extends SubNegMonoid G, InvolutiveNeg G whe
 
 This is the immediate common ancestor of `Group` and `GroupWithZero`. -/
 @[to_additive SubtractionMonoid]
-class DivisionMonoid (G : Type u) extends DivInvMonoid G, InvolutiveInv G where
+class DivisionMonoid (G : Type u) extends FlatHack, DivInvMonoid G, InvolutiveInv G where
   mul_inv_rev (a b : G) : (a * b)⁻¹ = b⁻¹ * a⁻¹
   /- Despite the asymmetry of `inv_eq_of_mul`, the symmetric version is true thanks to the
   involutivity of inversion. -/
   inv_eq_of_mul (a b : G) : a * b = 1 → a⁻¹ = b
 #align division_monoid DivisionMonoid
 
+attribute [to_additive existing SubtractionMonoid.toSubNegMonoid] DivisionMonoid.toDivInvMonoid
 attribute [to_additive existing] DivisionMonoid.toInvolutiveInv
 
 section DivisionMonoid
@@ -1037,16 +1048,18 @@ theorem inv_eq_of_mul_eq_one_right : a * b = 1 → a⁻¹ = b :=
 end DivisionMonoid
 
 /-- Commutative `SubtractionMonoid`. -/
-class SubtractionCommMonoid (G : Type u) extends SubtractionMonoid G, AddCommMonoid G
+class SubtractionCommMonoid (G : Type u) extends FlatHack, SubtractionMonoid G, AddCommMonoid G
 #align subtraction_comm_monoid SubtractionCommMonoid
 
 /-- Commutative `DivisionMonoid`.
 
 This is the immediate common ancestor of `CommGroup` and `CommGroupWithZero`. -/
 @[to_additive SubtractionCommMonoid]
-class DivisionCommMonoid (G : Type u) extends DivisionMonoid G, CommMonoid G
+class DivisionCommMonoid (G : Type u) extends FlatHack, DivisionMonoid G, CommMonoid G
 #align division_comm_monoid DivisionCommMonoid
 
+attribute [to_additive existing SubtractionCommMonoid.toSubtractionMonoid]
+  DivisionCommMonoid.toDivisionMonoid
 attribute [to_additive existing] DivisionCommMonoid.toCommMonoid
 
 /-- A `Group` is a `Monoid` with an operation `⁻¹` satisfying `a⁻¹ * a = 1`.
@@ -1054,7 +1067,7 @@ attribute [to_additive existing] DivisionCommMonoid.toCommMonoid
 There is also a division operation `/` such that `a / b = a * b⁻¹`,
 with a default so that `a / b = a * b⁻¹` holds by definition.
 -/
-class Group (G : Type u) extends DivInvMonoid G where
+class Group (G : Type u) extends FlatHack, DivInvMonoid G where
   mul_left_inv : ∀ a : G, a⁻¹ * a = 1
 #align group Group
 
@@ -1063,11 +1076,12 @@ class Group (G : Type u) extends DivInvMonoid G where
 There is also a binary operation `-` such that `a - b = a + -b`,
 with a default so that `a - b = a + -b` holds by definition.
 -/
-class AddGroup (A : Type u) extends SubNegMonoid A where
+class AddGroup (A : Type u) extends FlatHack, SubNegMonoid A where
   add_left_neg : ∀ a : A, -a + a = 0
 #align add_group AddGroup
 
 attribute [to_additive] Group
+attribute [to_additive existing AddGroup.toSubNegMonoid] Group.toDivInvMonoid
 
 section Group
 
@@ -1127,7 +1141,8 @@ theorem inv_mul_cancel_right (a b : G) : a * b⁻¹ * b = a :=
 
 @[to_additive AddGroup.toSubtractionMonoid]
 instance (priority := 100) Group.toDivisionMonoid : DivisionMonoid G :=
-  { inv_inv := fun a ↦ inv_eq_of_mul (mul_left_inv a)
+  { ‹Group G› with
+    inv_inv := fun a ↦ inv_eq_of_mul (mul_left_inv a)
     mul_inv_rev :=
       fun a b ↦ inv_eq_of_mul <| by rw [mul_assoc, mul_inv_cancel_left, mul_right_inv]
     inv_eq_of_mul := fun _ _ ↦ inv_eq_of_mul }
@@ -1148,14 +1163,15 @@ theorem Group.toDivInvMonoid_injective {G : Type _} :
 #align add_group.to_sub_neg_add_monoid_injective AddGroup.toSubNegAddMonoid_injective
 
 /-- An additive commutative group is an additive group with commutative `(+)`. -/
-class AddCommGroup (G : Type u) extends AddGroup G, AddCommMonoid G
+class AddCommGroup (G : Type u) extends FlatHack, AddGroup G, AddCommMonoid G
 #align add_comm_group AddCommGroup
 
 /-- A commutative group is a group with commutative `(*)`. -/
 @[to_additive]
-class CommGroup (G : Type u) extends Group G, CommMonoid G
+class CommGroup (G : Type u) extends FlatHack, Group G, CommMonoid G
 #align comm_group CommGroup
 
+attribute [to_additive existing] CommGroup.toGroup
 attribute [to_additive existing] CommGroup.toCommMonoid
 
 @[to_additive]
