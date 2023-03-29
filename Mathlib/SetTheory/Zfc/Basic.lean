@@ -582,3 +582,86 @@ instance Resp.setoid {n} : Setoid (Resp n) :=
 #align pSet.resp.setoid PSet.Resp.setoid
 
 end PSet
+
+/-- The ZFC universe of sets consists of the type of pre-sets,
+  quotiented by extensional equivalence. -/
+def ZFSet : Type (u + 1) :=
+  Quotient PSet.setoid.{u}
+#align Set ZFSet
+
+namespace PSet
+
+namespace Resp
+
+/-- Helper function for `pSet.eval`. -/
+def EvalAux :
+    ∀ {n}, { f : Resp n → Arity ZFSet.{u} n // ∀ a b : Resp n, Resp.Equiv a b → f a = f b }
+  | 0 => ⟨fun a => ⟦a.1⟧, fun _ _ h => Quotient.sound h⟩
+  | n + 1 =>
+    let F : Resp (n + 1) → Arity ZFSet (n + 1) := fun a =>
+      @Quotient.lift _ _ PSet.setoid (fun x => EvalAux.1 (a.f x)) fun _ _ h =>
+        EvalAux.2 _ _ (a.2 _ _ h)
+    ⟨F, fun b c h =>
+      funext <|
+        (@Quotient.ind _ _ fun q => F b q = F c q) fun z =>
+          EvalAux.2 (Resp.f b z) (Resp.f c z) (h _ _ (PSet.Equiv.refl z))⟩
+#align pSet.resp.eval_aux PSet.Resp.EvalAux
+
+/-- An equivalence-respecting function yields an n-ary ZFC set function. -/
+def eval (n) : Resp n → Arity ZFSet.{u} n :=
+  EvalAux.1
+#align pSet.resp.eval PSet.Resp.eval
+
+theorem eval_val {n f x} : (@eval (n + 1) f : ZFSet → Arity ZFSet n) ⟦x⟧ = eval n (Resp.f f x) :=
+  rfl
+#align pSet.resp.eval_val PSet.Resp.eval_val
+
+end Resp
+
+/-- A set function is "definable" if it is the image of some n-ary pre-set
+  function. This isn't exactly definability, but is useful as a sufficient
+  condition for functions that have a computable image. -/
+class inductive Definable (n) : Arity ZFSet.{u} n → Type (u + 1)
+  | mk (f) : Definable n (Resp.eval n f)
+#align pSet.definable PSet.Definable
+
+attribute [instance] Definable.mk
+
+/-- The evaluation of a function respecting equivalence is definable, by that same function. -/
+def Definable.EqMk {n} (f) : ∀ {s : Arity ZFSet.{u} n} (_ : Resp.eval _ f = s), Definable n s
+  | _, rfl => ⟨f⟩
+#align pSet.definable.eq_mk PSet.Definable.EqMk
+
+/-- Turns a definable function into a function that respects equivalence. -/
+def Definable.Resp {n} : ∀ (s : Arity ZFSet.{u} n) [Definable n s], Resp n
+  | _, ⟨f⟩ => f
+#align pSet.definable.resp PSet.Definable.Resp
+
+theorem Definable.eq {n} :
+    ∀ (s : Arity ZFSet.{u} n) [H : Definable n s], (@Definable.Resp n s H).eval _ = s
+  | _, ⟨_⟩ => rfl
+#align pSet.definable.eq PSet.Definable.eq
+
+end PSet
+
+namespace Classical
+
+open PSet
+
+/-- All functions are classically definable. -/
+noncomputable def AllDefinable : ∀ {n} (F : Arity ZFSet n), Definable n F
+  | 0, F =>
+    let p := @Quotient.exists_rep PSet _ F
+    @Definable.EqMk 0 ⟨choose p, Equiv.rfl⟩ _ (choose_spec p)
+  | n + 1, (F : Arity ZFSet (n + 1)) =>
+    by
+    have I := fun x => AllDefinable (F x)
+    refine' @Definable.EqMk (n + 1) ⟨fun x : PSet => (@Definable.Resp _ _ (I ⟦x⟧)).1, _⟩ _ _
+    · dsimp [Arity.Equiv]
+      intro x y h
+      rw [@Quotient.sound PSet _ _ _ h]
+      exact (Definable.Resp (F ⟦y⟧)).2
+    refine' funext fun q => Quotient.inductionOn q fun x => _
+    simp_rw [Resp.eval_val, Resp.f]
+    exact @Definable.eq _ (F ⟦x⟧) (I ⟦x⟧)
+#align classical.all_definable Classical.AllDefinable
