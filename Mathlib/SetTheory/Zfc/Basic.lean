@@ -665,3 +665,77 @@ noncomputable def AllDefinable : ∀ {n} (F : Arity ZFSet n), Definable n F
     simp_rw [Resp.eval_val, Resp.f]
     exact @Definable.eq _ (F ⟦x⟧) (I ⟦x⟧)
 #align classical.all_definable Classical.AllDefinable
+
+end Classical
+
+namespace ZFSet
+
+open PSet
+
+/-- Turns a pre-set into a ZFC set. -/
+def mk : PSet → ZFSet :=
+  Quotient.mk''
+#align Set.mk ZFSet.mk
+
+@[simp]
+theorem mk_eq (x : PSet) : @Eq ZFSet ⟦x⟧ (mk x) :=
+  rfl
+#align Set.mk_eq ZFSet.mk_eq
+
+@[simp]
+theorem mk_out : ∀ x : ZFSet, mk x.out = x :=
+  Quotient.out_eq
+#align Set.mk_out ZFSet.mk_out
+
+theorem eq {x y : PSet} : mk x = mk y ↔ Equiv x y :=
+  Quotient.eq
+#align Set.eq ZFSet.eq
+
+theorem sound {x y : PSet} (h : PSet.Equiv x y) : mk x = mk y :=
+  Quotient.sound h
+#align Set.sound ZFSet.sound
+
+theorem exact {x y : PSet} : mk x = mk y → PSet.Equiv x y :=
+  Quotient.exact
+#align Set.exact ZFSet.exact
+
+@[simp]
+theorem eval_mk {n f x} :
+    (@Resp.eval (n + 1) f : ZFSet → Arity ZFSet n) (mk x) = Resp.eval n (Resp.f f x) :=
+  rfl
+#align Set.eval_mk ZFSet.eval_mk
+
+/-- The membership relation for ZFC sets is inherited from the membership relation for pre-sets. -/
+protected def Mem : ZFSet → ZFSet → Prop :=
+  Quotient.lift₂ PSet.Mem fun _ _ _ _ hx hy =>
+    propext ((Mem.congr_left hx).trans (Mem.congr_right hy))
+#align Set.mem ZFSet.Mem
+
+instance : Membership ZFSet ZFSet :=
+  ⟨ZFSet.Mem⟩
+
+@[simp]
+theorem mk_mem_iff {x y : PSet} : mk x ∈ mk y ↔ x ∈ y :=
+  Iff.rfl
+#align Set.mk_mem_iff ZFSet.mk_mem_iff
+
+/-- Convert a ZFC set into a `set` of ZFC sets -/
+def toSet (u : ZFSet.{u}) : Set ZFSet.{u} :=
+  { x | x ∈ u }
+#align Set.to_set ZFSet.toSet
+
+@[simp]
+theorem mem_toSet (a u : ZFSet.{u}) : a ∈ u.toSet ↔ a ∈ u :=
+  Iff.rfl
+#align Set.mem_to_set ZFSet.mem_toSet
+
+instance small_toSet (x : ZFSet.{u}) : Small.{u} x.toSet :=
+  Quotient.inductionOn x fun a =>
+    by
+    let f : a.Type → (mk a).toSet := fun i => ⟨mk <| a.Func i, func_mem a i⟩
+    suffices Function.Surjective f by exact small_of_surjective this
+    rintro ⟨y, hb⟩
+    induction y using Quotient.inductionOn
+    cases' hb with i h
+    exact ⟨i, Subtype.coe_injective (Quotient.sound h.symm)⟩
+#align Set.small_to_set ZFSet.small_toSet
