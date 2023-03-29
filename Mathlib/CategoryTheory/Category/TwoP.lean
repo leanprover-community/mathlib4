@@ -33,16 +33,14 @@ set_option linter.uppercaseLean3 false
 
 /-- The category of two-pointed types. -/
 structure TwoP : Type (u + 1) where
-  X : Type u
+  protected X : Type u
   toTwoPointing : TwoPointing X
 #align Twop TwoP
 
 namespace TwoP
 
 instance : CoeSort TwoP (Type _) :=
-  ⟨X⟩
-
--- attribute [protected] TwoP.X -- Porting note: protected attribute doesn't work
+  ⟨TwoP.X⟩
 
 /-- Turns a two-pointing into a two-pointed type. -/
 def of {X : Type _} (toTwoPointing : TwoPointing X) : TwoP :=
