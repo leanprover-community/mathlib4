@@ -840,6 +840,8 @@ set_option linter.uppercaseLean3 false in
 
 variable {σ}
 
+/- Porting note: this suffers from serious time out issues without removing
+this instance -/
 attribute [-instance] MvPolynomial.instCommRingMvPolynomialToCommSemiring in
 theorem prime_rename_iff (s : Set σ) {p : MvPolynomial s R} :
     Prime (rename ((↑) : s → σ) p) ↔ Prime (p : MvPolynomial s R) := by
@@ -1261,36 +1263,16 @@ end Polynomial
 namespace MvPolynomial
 variable (d : ℕ)
 
-#check CommRing.toCommSemiring
-#check Polynomial.semiring
-#check  instIsDomainPolynomialToSemiringSemiring
-
--- attribute [-instance] Polynomial.semiring -- Polynomial.commSemiring
--- attribute [-instance] MvPolynomial.instCommRingMvPolynomialToCommSemiring
-#synth CommSemiring R[X]
-set_option profiler true in
--- set_option maxHeartbeats 0 in
--- set_option synthInstance.maxHeartbeats 0 in
-set_option trace.Meta.synthInstance true in
-set_option trace.Meta.isDefEq true in
--- attribute [-instance] MvPolynomial.instCommRingMvPolynomialToCommSemiring in
+/- Porting note: lean can come up with this instance in infinite time by resolving
+the diamond with CommSemiring.toSemiring. I don't know how to inline this
+attribute for a haveI in the proof of the uniqueFactorizationMonoid_of_fintype.
+The proof times out if we remove these from instance graph for all of
+uniqueFactorizationMonoid_of_fintype. -/
 attribute [-instance] Polynomial.semiring Polynomial.commSemiring in
--- set_option synthInstance.etaExperiment true in
-instance : CancelCommMonoidWithZero (MvPolynomial (Fin d) D)[X] := by
+private instance : CancelCommMonoidWithZero (MvPolynomial (Fin d) D)[X] := by
   apply IsDomain.toCancelCommMonoidWithZero
-#check MulEquiv.uniqueFactorizationMonoid
-#synth IsDomain (MvPolynomial (Fin d) D)[X]
-#synth CancelCommMonoidWithZero (MvPolynomial (Fin d) D)[X]
-#synth CancelCommMonoidWithZero D[X]
--- set_option maxHeartbeats 0 in
--- set_option synthInstance.etaExperiment true in
--- attribute [-instance] MvPolynomial.instCommRingMvPolynomialToCommSemiring in
-attribute [-instance] Semiring.toNonAssocSemiring
-set_option profiler true in
--- set_option maxHeartbeats 0 in
--- set_option synthInstance.maxHeartbeats 0 in
-set_option trace.Meta.synthInstance true in
-set_option trace.Meta.isDefEq true in
+
+/- Porting note: this can probably be cleaned up a little -/
 private theorem uniqueFactorizationMonoid_of_fintype [Fintype σ] :
     UniqueFactorizationMonoid (MvPolynomial σ D) :=
   (renameEquiv D (Fintype.equivFin σ)).toMulEquiv.symm.uniqueFactorizationMonoid <| by
@@ -1303,18 +1285,6 @@ private theorem uniqueFactorizationMonoid_of_fintype [Fintype σ] :
       · apply @Polynomial.uniqueFactorizationMonoid (MvPolynomial (Fin d) D) _ _ ?_
         assumption
 
-
-
-      -- refine @MulEquiv.uniqueFactorizationMonoid ?_ _ ?_ _ ?_ ?_
-      -- · exact (MvPolynomial (Fin d) D)[X]
-      -- · refine @IsDomain.toCancelCommMonoidWithZero _ _ ?_
-      --   sorry -- infer_instance
-      -- . exact (f d)
-      -- · refine @Polynomial.uniqueFactorizationMonoid ?_ ?_ ?_ ?_
-      -- -- · refine @Polynomial.uniqueFactorizationMonoid (MvPolynomial (Fin d) D) ?_ ?_ ?_
-      --   · infer_instance
-      --   · apply hd
-#exit
 instance (priority := 100) : UniqueFactorizationMonoid (MvPolynomial σ D) := by
   rw [iff_exists_prime_factors]
   intro a ha; obtain ⟨s, a', rfl⟩ := exists_finset_rename a
