@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Jens Wagemaker, Johan Commelin
 
 ! This file was ported from Lean 3 source module data.polynomial.ring_division
-! leanprover-community/mathlib commit cbdf7b565832144d024caa5a550117c6df0204a5
+! leanprover-community/mathlib commit 517cc149e0b515d2893baa376226ed10feb319c7
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -792,7 +792,7 @@ theorem nthRoots_zero (r : R) : nthRoots 0 r = 0 := by
 theorem card_nthRoots (n : ℕ) (a : R) : Multiset.card (nthRoots n a) ≤ n :=
   if hn : n = 0 then
     if h : (X : R[X]) ^ n - C a = 0 then by
-      simp [Nat.zero_le, nthRoots, roots, h, dif_pos rfl, empty_eq_zero, card_zero]
+      simp [Nat.zero_le, nthRoots, roots, h, dif_pos rfl, empty_eq_zero, Multiset.card_zero]
     else
       WithBot.coe_le_coe.1
         (le_trans (card_roots h)
@@ -1122,19 +1122,19 @@ set_option linter.uppercaseLean3 false in
 
 /-- A polynomial `p` that has as many roots as its degree
 can be written `p = p.leadingCoeff * ∏(X - a)`, for `a` in `p.roots`. -/
-theorem c_leadingCoeff_mul_prod_multiset_X_sub_C (hroots : Multiset.card p.roots = p.natDegree) :
+theorem C_leadingCoeff_mul_prod_multiset_X_sub_C (hroots : Multiset.card p.roots = p.natDegree) :
     C p.leadingCoeff * (p.roots.map fun a => X - C a).prod = p :=
   (eq_leadingCoeff_mul_of_monic_of_dvd_of_natDegree_le monic_prod_multiset_X_sub_C
       p.prod_multiset_X_sub_C_dvd
       ((natDegree_multiset_prod_X_sub_C_eq_card _).trans hroots).ge).symm
 set_option linter.uppercaseLean3 false in
-#align polynomial.C_leading_coeff_mul_prod_multiset_X_sub_C Polynomial.c_leadingCoeff_mul_prod_multiset_X_sub_C
+#align polynomial.C_leading_coeff_mul_prod_multiset_X_sub_C Polynomial.C_leadingCoeff_mul_prod_multiset_X_sub_C
 
 /-- A monic polynomial `p` that has as many roots as its degree
 can be written `p = ∏(X - a)`, for `a` in `p.roots`. -/
 theorem prod_multiset_X_sub_C_of_monic_of_roots_card_eq (hp : p.Monic)
     (hroots : Multiset.card p.roots = p.natDegree) : (p.roots.map fun a => X - C a).prod = p := by
-  convert c_leadingCoeff_mul_prod_multiset_X_sub_C hroots
+  convert C_leadingCoeff_mul_prod_multiset_X_sub_C hroots
   rw [hp.leadingCoeff, C_1, one_mul]
 set_option linter.uppercaseLean3 false in
 #align polynomial.prod_multiset_X_sub_C_of_monic_of_roots_card_eq Polynomial.prod_multiset_X_sub_C_of_monic_of_roots_card_eq
