@@ -351,7 +351,7 @@ structure Hom where
   toFun : M → N
   /-- The homomorphism commutes with the interpretations of the function symbols -/
   map_fun' : ∀ {n} (f : L.Functions n) (x), toFun (funMap f x) = funMap f (toFun ∘ x) := by
-    aesop
+    intros; trivial
   /-- The homomorphism sends related elements to related elements -/
   map_rel' : ∀ {n} (r : L.Relations n) (x), rel_map r x → rel_map r (toFun ∘ x) := by
     intros; trivial
