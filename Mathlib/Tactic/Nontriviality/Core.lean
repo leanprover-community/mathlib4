@@ -29,21 +29,22 @@ including `Subsingleton.le` and `eq_iff_true_of_subsingleton`.
 -/
 def nontrivialityByElim (α : Q(Type u)) (g : MVarId) (simpArgs : Array Syntax) : MetaM MVarId := do
   let p : Q(Prop) ← g.getType
-  guard (← inferType p).isProp
-  let g₁ ← mkFreshExprMVarQ q(Subsingleton $α → $p)
-  let (_, g₁') ← g₁.mvarId!.intro1
-  g₁'.withContext try
-    -- FIXME: restore after lean4#2054 is fixed
-    -- g₁'.inferInstance <|> do
-    (do g₁'.assign (← synthInstance (← g₁'.getType))) <|> do
-      let simpArgs := simpArgs.push (Unhygienic.run `(Parser.Tactic.simpLemma| nontriviality))
-      let stx := open TSyntax.Compat in Unhygienic.run `(tactic| simp [$simpArgs,*])
-      let ([], _) ← runTactic g₁' stx | failure
-  catch _ => throwError
-    "Could not prove goal assuming `{q(Subsingleton $α)}`\n{MessageData.ofGoal g₁'}"
-  let g₂ : Q(Nontrivial $α → $p) ← mkFreshExprMVarQ q(Nontrivial $α → $p)
-  g.assign q(subsingleton_or_nontrivial_elim $g₁ $g₂)
-  pure g₂.mvarId!
+  guard (←instantiateMVars (← inferType p)).isProp
+  g.withContext do
+    let g₁ ← mkFreshExprMVarQ q(Subsingleton $α → $p)
+    let (_, g₁') ← g₁.mvarId!.intro1
+    g₁'.withContext try
+      -- FIXME: restore after lean4#2054 is fixed
+      -- g₁'.inferInstance <|> do
+      (do g₁'.assign (← synthInstance (← g₁'.getType))) <|> do
+        let simpArgs := simpArgs.push (Unhygienic.run `(Parser.Tactic.simpLemma| nontriviality))
+        let stx := open TSyntax.Compat in Unhygienic.run `(tactic| simp [$simpArgs,*])
+        let ([], _) ← runTactic g₁' stx | failure
+    catch _ => throwError
+      "Could not prove goal assuming `{q(Subsingleton $α)}`\n{MessageData.ofGoal g₁'}"
+    let g₂ : Q(Nontrivial $α → $p) ← mkFreshExprMVarQ q(Nontrivial $α → $p)
+    g.assign q(subsingleton_or_nontrivial_elim $g₁ $g₂)
+    pure g₂.mvarId!
 
 /--
 Tries to generate a `nontrivial α` instance using `nontrivial_of_ne` or `nontrivial_of_lt`

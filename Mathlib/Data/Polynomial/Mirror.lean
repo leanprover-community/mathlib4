@@ -69,9 +69,7 @@ set_option linter.uppercaseLean3 false in
 theorem mirror_natDegree : p.mirror.natDegree = p.natDegree := by
   by_cases hp : p = 0
   · rw [hp, mirror_zero]
-  --Porting note: below two lines were `nontriviality R` in Lean3
-  have : p.leadingCoeff ≠ 0 := by simpa
-  let _ : Nontrivial R := nontrivial_of_ne _ _ this
+  nontriviality R
   rw [mirror, natDegree_mul', reverse_natDegree, natDegree_X_pow,
     tsub_add_cancel_of_le p.natTrailingDegree_le_natDegree]
   rwa [leadingCoeff_X_pow, mul_one, reverse_leadingCoeff, Ne, trailingCoeff_eq_zero]
