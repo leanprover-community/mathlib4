@@ -144,7 +144,11 @@ theorem _root_.Polynomial.coeff_eq_esymm_roots_of_card [IsDomain R] {p : R[X]}
     p.coeff k = p.leadingCoeff * (-1) ^ (p.natDegree - k) * p.roots.esymm (p.natDegree - k) := by
   conv_lhs => rw [← C_leadingCoeff_mul_prod_multiset_X_sub_C hroots]
   rw [coeff_C_mul, mul_assoc]; congr
-  convert p.roots.prod_X_sub_C_coeff _ using 3 <;> rw [hroots]; exact h
+  have : natDegree p - k = card (roots p) -k  := by rw [hroots]
+  simp only [this]
+  apply p.roots.prod_X_sub_C_coeff _
+  rw [hroots]
+  exact h
 #align polynomial.coeff_eq_esymm_roots_of_card Polynomial.coeff_eq_esymm_roots_of_card
 
 /-- Vieta's formula for split polynomials over a field. -/
