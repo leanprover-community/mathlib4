@@ -91,7 +91,7 @@ casesm* _ ∨ _, _ ∧ _
 -/
 elab (name := casesM) "casesm" recursive:"*"? ppSpace pats:term,+ : tactic => do
   let pats ← elabPatterns pats.getElems
-  liftMetaTactic (MVarId.casesMatching (matchPatterns pats) recursive.isSome)
+  liftMetaTactic (casesMatching (matchPatterns pats) recursive.isSome)
 
 /-- Common implementation of `cases_type` and `cases_type!`. -/
 def elabCasesType (heads : Array Ident)
