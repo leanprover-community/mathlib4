@@ -378,7 +378,7 @@ section Field
 variable [Field R] [StarRing R]
 
 instance : Inv (selfAdjoint R) where
--- porting note: `(_)` works around lean4#2074
+  -- porting note: `(_)` works around lean4#2074
   inv x := ⟨x.val⁻¹, @IsSelfAdjoint.inv _ _ (_) _ x.prop⟩
 
 @[simp, norm_cast]
@@ -395,8 +395,8 @@ theorem val_div (x y : selfAdjoint R) : ↑(x / y) = (x / y : R) :=
   rfl
 #align self_adjoint.coe_div selfAdjoint.val_div
 
--- porting note: `(_)` works around lean4#2074
 instance : Pow (selfAdjoint R) ℤ where
+  -- porting note: `(_)` works around lean4#2074
   pow x z := ⟨(x : R) ^ z, @IsSelfAdjoint.zpow _ _ (_) _ x.prop z⟩
 
 @[simp, norm_cast]
