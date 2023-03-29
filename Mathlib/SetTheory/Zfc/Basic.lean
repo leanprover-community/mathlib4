@@ -996,3 +996,52 @@ theorem toSet_sep (a : ZFSet) (p : ZFSet → Prop) :
   ext
   simp
 #align Set.to_set_sep ZFSet.toSet_sep
+
+/-- The powerset operation, the collection of subsets of a ZFC set -/
+def powerset : ZFSet → ZFSet :=
+  Resp.eval 1
+    ⟨PSet.powerset, fun ⟨_, A⟩ ⟨_, B⟩ ⟨αβ, βα⟩ =>
+      ⟨fun p =>
+        ⟨{ b | ∃ a, p a ∧ Equiv (A a) (B b) }, fun ⟨a, pa⟩ =>
+          let ⟨b, ab⟩ := αβ a
+          ⟨⟨b, a, pa, ab⟩, ab⟩,
+          fun ⟨_, a, pa, ab⟩ => ⟨⟨a, pa⟩, ab⟩⟩,
+        fun q =>
+        ⟨{ a | ∃ b, q b ∧ Equiv (A a) (B b) }, fun ⟨_, b, qb, ab⟩ => ⟨⟨b, qb⟩, ab⟩, fun ⟨b, qb⟩ =>
+          let ⟨a, ab⟩ := βα b
+          ⟨⟨a, b, qb, ab⟩, ab⟩⟩⟩⟩
+#align Set.powerset ZFSet.powerset
+
+@[simp]
+theorem mem_powerset {x y : ZFSet.{u}} : y ∈ powerset x ↔ y ⊆ x :=
+  Quotient.inductionOn₂ x y fun ⟨α, A⟩ ⟨β, B⟩ =>
+    show (⟨β, B⟩ : PSet.{u}) ∈ PSet.powerset.{u} ⟨α, A⟩ ↔ _ by simp [mem_powerset, subset_iff]
+#align Set.mem_powerset ZFSet.mem_powerset
+
+theorem unionₛ_lem {α β : Type u} (A : α → PSet) (B : β → PSet) (αβ : ∀ a, ∃ b, Equiv (A a) (B b)) :
+    ∀ a, ∃ b, Equiv ((unionₛ ⟨α, A⟩).Func a) ((unionₛ ⟨β, B⟩).Func b)
+  | ⟨a, c⟩ => by
+    let ⟨b, hb⟩ := αβ a
+    induction' ea : A a with γ Γ
+    induction' eb : B b with δ Δ
+    rw [ea, eb] at hb
+    cases' hb with γδ δγ
+    let c : (A a).Type := c
+    let ⟨d, hd⟩ := γδ (by rwa [ea] at c)
+    use ⟨b, Eq.ndrec d (Eq.symm eb)⟩
+    change PSet.Equiv ((A a).Func c) ((B b).Func (Eq.ndrec d eb.symm))
+    match A a, B b, ea, eb, c, d, hd with
+    | _, _, rfl, rfl, _, _, hd => exact hd
+#align Set.sUnion_lem ZFSet.unionₛ_lem
+
+/-- The union operator, the collection of elements of elements of a ZFC set -/
+def unionₛ : ZFSet → ZFSet :=
+  Resp.eval 1
+    ⟨PSet.unionₛ, fun ⟨_, A⟩ ⟨_, B⟩ ⟨αβ, βα⟩ =>
+      ⟨unionₛ_lem A B αβ, fun a =>
+        Exists.elim
+          (unionₛ_lem B A (fun b => Exists.elim (βα b) fun c hc => ⟨c, PSet.Equiv.symm hc⟩) a)
+          fun b hb => ⟨b, PSet.Equiv.symm hb⟩⟩⟩
+#align Set.sUnion ZFSet.unionₛ
+
+prefix:110 "⋃₀ " => ZFSet.unionₛ
