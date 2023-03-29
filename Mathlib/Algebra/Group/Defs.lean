@@ -301,6 +301,7 @@ class AddCommSemigroup (G : Type u) extends FlatHack, AddSemigroup G where
 #align add_comm_semigroup.ext_iff AddCommSemigroup.ext_iff
 
 attribute [to_additive] CommSemigroup
+attribute [to_additive existing] CommSemigroup.toSemigroup
 
 section CommSemigroup
 
