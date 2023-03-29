@@ -339,3 +339,82 @@ theorem mem_asymm {x y : PSet} : x ∈ y → y ∉ x :=
 theorem mem_irrefl (x : PSet) : x ∉ x :=
   irrefl x
 #align pSet.mem_irrefl PSet.mem_irrefl
+
+/-- Convert a pre-set to a `set` of pre-sets. -/
+def toSet (u : PSet.{u}) : Set PSet.{u} :=
+  { x | x ∈ u }
+#align pSet.to_set PSet.toSet
+
+@[simp]
+theorem mem_toSet (a u : PSet.{u}) : a ∈ u.toSet ↔ a ∈ u :=
+  Iff.rfl
+#align pSet.mem_to_set PSet.mem_toSet
+
+/-- A nonempty set is one that contains some element. -/
+protected def Nonempty (u : PSet) : Prop :=
+  u.toSet.Nonempty
+#align pSet.nonempty PSet.Nonempty
+
+theorem nonempty_def (u : PSet) : u.Nonempty ↔ ∃ x, x ∈ u :=
+  Iff.rfl
+#align pSet.nonempty_def PSet.nonempty_def
+
+theorem nonempty_of_mem {x u : PSet} (h : x ∈ u) : u.Nonempty :=
+  ⟨x, h⟩
+#align pSet.nonempty_of_mem PSet.nonempty_of_mem
+
+@[simp]
+theorem nonempty_toSet_iff {u : PSet} : u.toSet.Nonempty ↔ u.Nonempty :=
+  Iff.rfl
+#align pSet.nonempty_to_set_iff PSet.nonempty_toSet_iff
+
+theorem nonempty_type_iff_nonempty {x : PSet} : Nonempty x.Type ↔ PSet.Nonempty x :=
+  ⟨fun ⟨i⟩ => ⟨_, func_mem _ i⟩, fun ⟨_, j, _⟩ => ⟨j⟩⟩
+#align pSet.nonempty_type_iff_nonempty PSet.nonempty_type_iff_nonempty
+
+theorem nonempty_of_nonempty_type (x : PSet) [h : Nonempty x.Type] : PSet.Nonempty x :=
+  nonempty_type_iff_nonempty.1 h
+#align pSet.nonempty_of_nonempty_type PSet.nonempty_of_nonempty_type
+
+/-- Two pre-sets are equivalent iff they have the same members. -/
+theorem Equiv.eq {x y : PSet} : Equiv x y ↔ toSet x = toSet y :=
+  equiv_iff_mem.trans Set.ext_iff.symm
+#align pSet.equiv.eq PSet.Equiv.eq
+
+instance : Coe PSet (Set PSet) :=
+  ⟨toSet⟩
+
+/-- The empty pre-set -/
+protected def empty : PSet :=
+  ⟨_, PEmpty.elim⟩
+#align pSet.empty PSet.empty
+
+instance : EmptyCollection PSet :=
+  ⟨PSet.empty⟩
+
+instance : Inhabited PSet :=
+  ⟨∅⟩
+
+instance : IsEmpty («Type» ∅) :=
+  ⟨PEmpty.elim⟩
+
+@[simp]
+theorem not_mem_empty (x : PSet.{u}) : x ∉ (∅ : PSet.{u}) :=
+  IsEmpty.exists_iff.1
+#align pSet.not_mem_empty PSet.not_mem_empty
+
+@[simp]
+theorem toSet_empty : toSet ∅ = ∅ := by simp [toSet]
+#align pSet.to_set_empty PSet.toSet_empty
+
+@[simp]
+theorem empty_subset (x : PSet.{u}) : (∅ : PSet) ⊆ x := fun x => x.elim
+#align pSet.empty_subset PSet.empty_subset
+
+@[simp]
+theorem not_nonempty_empty : ¬PSet.Nonempty ∅ := by simp [PSet.Nonempty]
+#align pSet.not_nonempty_empty PSet.not_nonempty_empty
+
+protected theorem equiv_empty (x : PSet) [IsEmpty x.Type] : Equiv x ∅ :=
+  PSet.equiv_of_isEmpty x _
+#align pSet.equiv_empty PSet.equiv_empty
