@@ -92,17 +92,11 @@ theorem mod_two_of_bodd (n : ℕ) : n % 2 = cond (bodd n) 1 0 := by
   have := congr_arg bodd (mod_add_div n 2)
   simp [not] at this
   have _ : ∀ b, and false b = false := by
-    intros
-    rename_i b
-    cases b
-    case false => rfl
-    case true => rfl
+    intro b
+    cases b <;> rfl
   have _ : ∀ b, bxor b false = b := by
-    intros
-    rename_i b'
-    cases b'
-    case false => rfl
-    case true => rfl
+    intro b
+    cases b <;> rfl
   rw [← this]
   cases' mod_two_eq_zero_or_one n with h h <;> rw [h] <;> rfl
 #align nat.mod_two_of_bodd Nat.mod_two_of_bodd
@@ -123,8 +117,7 @@ theorem div2_two : div2 2 = 1 :=
 @[simp]
 theorem div2_succ (n : ℕ) : div2 (succ n) = cond (bodd n) (succ (div2 n)) (div2 n) := by
   simp only [bodd, boddDiv2, div2]
-  cases boddDiv2 n
-  rename_i fst snd
+  cases' boddDiv2 n with fst snd
   cases fst
   case mk.false =>
     simp
@@ -222,8 +215,7 @@ def shiftr : ℕ → ℕ → ℕ
 #align nat.shiftr Nat.shiftr
 
 theorem shiftr_zero : ∀ n, shiftr 0 n = 0 := by
-  intros
-  rename_i n
+  intro n
   induction' n with n IH
   case zero =>
     rw [shiftr]
@@ -283,17 +275,17 @@ def bits : ℕ → List Bool :=
 def bitwise' (f : Bool → Bool → Bool) : ℕ → ℕ → ℕ :=
   binaryRec (fun n => cond (f false true) n 0) fun a m Ia =>
     binaryRec (cond (f true false) (bit a m) 0) fun b n _ => bit (f a b) (Ia n)
-#align nat.bitwise Nat.bitwise
+#align nat.bitwise Nat.bitwise'
 
 /--`lor'` takes two natural numbers and returns their bitwise `or`-/
 def lor' : ℕ → ℕ → ℕ :=
   bitwise' or
-#align nat.lor Nat.lor
+#align nat.lor Nat.lor'
 
 /--`land'` takes two naturals numbers and returns their `and`-/
 def land' : ℕ → ℕ → ℕ :=
   bitwise' and
-#align nat.land Nat.land
+#align nat.land Nat.land'
 
 /--`ldiff' a b` performs bitwise set difference. For each corresponding
   pair of bits taken as booleans, say `aᵢ` and `bᵢ`, it applies the
@@ -371,16 +363,17 @@ theorem testBit_succ (m b n) : testBit (bit b n) (succ m) = testBit n m := by
 theorem binaryRec_eq {C : Nat → Sort u} {z : C 0} {f : ∀ b n, C n → C (bit b n)}
     (h : f false 0 z = z) (b n) : binaryRec z f (bit b n) = f b n (binaryRec z f n) := by
   rw [binaryRec]
-  by_cases bit b n = 0
+  by_cases h : bit b n = 0
+  -- Note: this renames the original `h : f false 0 z = z` to `h'` and leaves `h : bit b n = 0`
   case pos h' =>
-    simp [dif_pos h']
+    simp [dif_pos h]
     generalize binaryRec z f (bit b n) = e
     revert e
     have bf := bodd_bit b n
     have n0 := div2_bit b n
     rw [h] at bf n0
     simp at bf n0
-    rw [← bf, ← n0]
+    subst bf n0
     rw [binaryRec_zero]
     intros
     rw [h']

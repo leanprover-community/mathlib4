@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 
 ! This file was ported from Lean 3 source module algebra.big_operators.basic
-! leanprover-community/mathlib commit 47adfab39a11a072db552f47594bf8ed2cf8a722
+! leanprover-community/mathlib commit c227d107bbada5d0d9d20287e3282c0a7f1651a0
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -17,7 +17,7 @@ import Mathlib.Data.Finset.Sum
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.Finset.Sigma
 import Mathlib.Data.Multiset.Powerset
-import Mathlib.Data.Set.Pairwise
+import Mathlib.Data.Set.Pairwise.Basic
 import Mathlib.Tactic.ScopedNS
 
 /-!
@@ -402,7 +402,6 @@ theorem _root_.Equiv.Perm.prod_comp (σ : Equiv.Perm α) (s : Finset α) (f : α
 theorem _root_.Equiv.Perm.prod_comp' (σ : Equiv.Perm α) (s : Finset α) (f : α → α → β)
     (hs : { a | σ a ≠ a } ⊆ s) : (∏ x in s, f (σ x) x) = ∏ x in s, f x (σ.symm x) := by
   convert σ.prod_comp s (fun x => f x (σ.symm x)) hs
-  ext
   rw [Equiv.symm_apply_apply]
 #align equiv.perm.prod_comp' Equiv.Perm.prod_comp'
 #align equiv.perm.sum_comp' Equiv.Perm.sum_comp'
@@ -887,8 +886,7 @@ theorem prod_subtype {p : α → Prop} {F : Fintype (Subtype p)} (s : Finset α)
   have : (· ∈ s) = p := Set.ext h
   subst p
   rw [← prod_coe_sort]
-  congr
-  apply Subsingleton.elim
+  congr!
 #align finset.prod_subtype Finset.prod_subtype
 #align finset.sum_subtype Finset.sum_subtype
 
@@ -1409,6 +1407,12 @@ theorem prod_const (b : β) : (∏ _x in s, b) = b ^ s.card :=
 #align finset.prod_const Finset.prod_const
 #align finset.sum_const Finset.sum_const
 
+@[to_additive sum_eq_card_nsmul]
+theorem prod_eq_pow_card {b : β} (hf : ∀ a ∈ s, f a = b) : (∏ a in s, f a) = b ^ s.card :=
+  (prod_congr rfl hf).trans <| prod_const _
+#align finset.prod_eq_pow_card Finset.prod_eq_pow_card
+#align finset.sum_eq_card_nsmul Finset.sum_eq_card_nsmul
+
 @[to_additive]
 theorem pow_eq_prod_const (b : β) : ∀ n, b ^ n = ∏ _k in range n, b := by simp
 #align finset.pow_eq_prod_const Finset.pow_eq_prod_const
@@ -1904,6 +1908,26 @@ theorem prod_unique_nonempty {α β : Type _} [CommMonoid β] [Unique α] (s : F
 #align finset.prod_unique_nonempty Finset.prod_unique_nonempty
 #align finset.sum_unique_nonempty Finset.sum_unique_nonempty
 
+theorem sum_nat_mod (s : Finset α) (n : ℕ) (f : α → ℕ) :
+    (∑ i in s, f i) % n = (∑ i in s, f i % n) % n :=
+  (Multiset.sum_nat_mod _ _).trans <| by rw [Finset.sum, Multiset.map_map]; rfl
+#align finset.sum_nat_mod Finset.sum_nat_mod
+
+theorem prod_nat_mod (s : Finset α) (n : ℕ) (f : α → ℕ) :
+    (∏ i in s, f i) % n = (∏ i in s, f i % n) % n :=
+  (Multiset.prod_nat_mod _ _).trans <| by rw [Finset.prod, Multiset.map_map]; rfl
+#align finset.prod_nat_mod Finset.prod_nat_mod
+
+theorem sum_int_mod (s : Finset α) (n : ℤ) (f : α → ℤ) :
+    (∑ i in s, f i) % n = (∑ i in s, f i % n) % n :=
+  (Multiset.sum_int_mod _ _).trans <| by rw [Finset.sum, Multiset.map_map]; rfl
+#align finset.sum_int_mod Finset.sum_int_mod
+
+theorem prod_int_mod (s : Finset α) (n : ℤ) (f : α → ℤ) :
+    (∏ i in s, f i) % n = (∏ i in s, f i % n) % n :=
+  (Multiset.prod_int_mod _ _).trans <| by rw [Finset.prod, Multiset.map_map]; rfl
+#align finset.prod_int_mod Finset.prod_int_mod
+
 end Finset
 
 namespace Fintype
@@ -2068,7 +2092,7 @@ theorem finset_sum_eq_sup_iff_disjoint {β : Type _} {i : Finset β} {f : β →
 
 theorem sup_powerset_len {α : Type _} [DecidableEq α] (x : Multiset α) :
     (Finset.sup (Finset.range (card x + 1)) fun k => x.powersetLen k) = x.powerset := by
-  convert bind_powerset_len x
+  convert bind_powerset_len x using 1
   rw [Multiset.bind, Multiset.join, ← Finset.range_val, ← Finset.sum_eq_multiset_sum]
   exact
     Eq.symm (finset_sum_eq_sup_iff_disjoint.mpr fun _ _ _ _ h => pairwise_disjoint_powersetLen x h)

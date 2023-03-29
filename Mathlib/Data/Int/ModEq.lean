@@ -127,7 +127,7 @@ protected theorem mul_right' (hc : 0 ≤ c) (h : a ≡ b [ZMOD n]) : a * c ≡ b
 
 protected theorem add (h₁ : a ≡ b [ZMOD n]) (h₂ : c ≡ d [ZMOD n]) : a + c ≡ b + d [ZMOD n] :=
   modEq_iff_dvd.2 <| by
-    convert dvd_add h₁.dvd h₂.dvd
+    convert dvd_add h₁.dvd h₂.dvd using 1
     ring
 #align int.modeq.add Int.ModEq.add
 

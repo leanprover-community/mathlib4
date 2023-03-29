@@ -4,12 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Mario Carneiro, Sean Leather
 
 ! This file was ported from Lean 3 source module data.finset.option
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
+! leanprover-community/mathlib commit c227d107bbada5d0d9d20287e3282c0a7f1651a0
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finset.Card
-import Mathlib.Order.Hom.Basic
 
 /-!
 # Finite sets in `option α`
@@ -66,7 +65,7 @@ namespace Finset
 /-- Given a finset on `α`, lift it to being a finset on `Option α`
 using `Option.some` and then insert `Option.none`. -/
 def insertNone : Finset α ↪o Finset (Option α) :=
-  (OrderEmbedding.ofMapLeIff fun s => cons none (s.map Embedding.some) <| by simp) fun s t => by
+  (OrderEmbedding.ofMapLEIff fun s => cons none (s.map Embedding.some) <| by simp) fun s t => by
     rw [le_iff_subset, cons_subset_cons, map_subset_map, le_iff_subset]
 #align finset.insert_none Finset.insertNone
 

@@ -4,11 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 
 ! This file was ported from Lean 3 source module data.set_like.basic
-! leanprover-community/mathlib commit fc2ed6f838ce7c9b7c7171e58d78eaf7b438fb0e
+! leanprover-community/mathlib commit feb99064803fd3108e37c18b0f77d0a8344677a3
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Basic
+import Mathlib.Tactic.Monotonicity.Attr
 
 /-!
 # Typeclass for types with a set-like extensionality property
@@ -94,6 +95,7 @@ Then you should *not* repeat the `outParam` declaration so `SetLike` will supply
 This ensures your subclass will not have issues with synthesis of the `[Mul M]` parameter starting
 before the value of `M` is known.
 -/
+@[notation_class * carrier Simps.findCoercionArgs]
 class SetLike (A : Type _) (B : outParam <| Type _) where
   /-- The coercion from a term of a `SetLike` to its corresponding `Set`. -/
   protected coe : A → Set B
@@ -192,7 +194,7 @@ theorem coe_subset_coe {S T : A} : (S : Set B) ⊆ T ↔ S ≤ T :=
   Iff.rfl
 #align set_like.coe_subset_coe SetLike.coe_subset_coe
 
--- porting note: TODO: add back @[mono]
+@[mono]
 theorem coe_mono : Monotone (SetLike.coe : A → Set B) := fun _ _ => coe_subset_coe.mpr
 #align set_like.coe_mono SetLike.coe_mono
 
@@ -201,7 +203,7 @@ theorem coe_ssubset_coe {S T : A} : (S : Set B) ⊂ T ↔ S < T :=
   Iff.rfl
 #align set_like.coe_ssubset_coe SetLike.coe_ssubset_coe
 
--- porting note: TODO: add back @[mono]
+@[mono]
 theorem coe_strictMono : StrictMono (SetLike.coe : A → Set B) := fun _ _ => coe_ssubset_coe.mpr
 #align set_like.coe_strict_mono SetLike.coe_strictMono
 

@@ -117,4 +117,4 @@ class LinearOrderedCancelCommMonoid (α : Type u) extends OrderedCancelCommMonoi
 #align linear_ordered_cancel_comm_monoid LinearOrderedCancelCommMonoid
 
 attribute [to_additive LinearOrderedCancelAddCommMonoid] LinearOrderedCancelCommMonoid
-attribute [to_additive] LinearOrderedCancelCommMonoid.toLinearOrderedCommMonoid
+attribute [to_additive existing] LinearOrderedCancelCommMonoid.toLinearOrderedCommMonoid

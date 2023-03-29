@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Simon Hudon, Mario Carneiro
 
 ! This file was ported from Lean 3 source module algebra.group.basic
-! leanprover-community/mathlib commit 966e0cf0685c9cedf8a3283ac69eef4d5f2eaca2
+! leanprover-community/mathlib commit 2196ab363eb097c008d4497125e0dde23fb36db2
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -241,21 +241,10 @@ theorem inv_inj {a b : G} : a⁻¹ = b⁻¹ ↔ a = b :=
 #align neg_inj neg_inj
 
 @[to_additive]
-theorem eq_inv_of_eq_inv (h : a = b⁻¹) : b = a⁻¹ := by simp [h]
-#align eq_inv_of_eq_inv eq_inv_of_eq_inv
-#align eq_neg_of_eq_neg eq_neg_of_eq_neg
-
-@[to_additive]
-theorem eq_inv_iff_eq_inv : a = b⁻¹ ↔ b = a⁻¹ :=
-  ⟨eq_inv_of_eq_inv, eq_inv_of_eq_inv⟩
-#align eq_inv_iff_eq_inv eq_inv_iff_eq_inv
-#align eq_neg_iff_eq_neg eq_neg_iff_eq_neg
-
-@[to_additive]
-theorem inv_eq_iff_inv_eq : a⁻¹ = b ↔ b⁻¹ = a :=
-  eq_comm.trans <| eq_inv_iff_eq_inv.trans eq_comm
-#align inv_eq_iff_inv_eq inv_eq_iff_inv_eq
-#align neg_eq_iff_neg_eq neg_eq_iff_neg_eq
+theorem inv_eq_iff_eq_inv : a⁻¹ = b ↔ a = b⁻¹ :=
+  ⟨fun h => h ▸ (inv_inv a).symm, fun h => h.symm ▸ inv_inv b⟩
+#align inv_eq_iff_eq_inv inv_eq_iff_eq_inv
+#align neg_eq_iff_eq_neg neg_eq_iff_eq_neg
 
 variable (G)
 
@@ -663,7 +652,7 @@ theorem mul_eq_one_iff_eq_inv : a * b = 1 ↔ a = b⁻¹ :=
 
 @[to_additive]
 theorem mul_eq_one_iff_inv_eq : a * b = 1 ↔ a⁻¹ = b :=
-  by rw [mul_eq_one_iff_eq_inv, eq_inv_iff_eq_inv, eq_comm]
+  by rw [mul_eq_one_iff_eq_inv, inv_eq_iff_eq_inv]
 #align mul_eq_one_iff_inv_eq mul_eq_one_iff_inv_eq
 #align add_eq_zero_iff_neg_eq add_eq_zero_iff_neg_eq
 
