@@ -85,6 +85,9 @@ structure MultilinearMap (R : Type u) {ι : Type u'} (M₁ : ι → Type v) (M�
       toFun (update m i (c • x)) = c • toFun (update m i x)
 #align multilinear_map MultilinearMap
 
+-- Porting note: added to avoid a linter timeout.
+attribute [nolint simpNF] MultilinearMap.mk.injEq
+
 namespace MultilinearMap
 
 section Semiring
