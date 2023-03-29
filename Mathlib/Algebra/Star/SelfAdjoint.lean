@@ -330,15 +330,15 @@ theorem val_one : ↑(1 : selfAdjoint R) = (1 : R) :=
 instance [Nontrivial R] : Nontrivial (selfAdjoint R) :=
   ⟨⟨0, 1, Subtype.ne_of_val_ne zero_ne_one⟩⟩
 
-instance : NatCast (selfAdjoint R) :=
+instance : NatCast (selfAdjoint R) where
   -- porting note: `(_)` works around lean4#2074
-  ⟨fun n => ⟨n, @isSelfAdjoint_natCast _ _ (_) n⟩⟩
+  natCast n := ⟨n, @isSelfAdjoint_natCast _ _ (_) n⟩
 
-instance : IntCast (selfAdjoint R) :=
-  ⟨fun n => ⟨n, isSelfAdjoint_intCast _⟩⟩
+instance : IntCast (selfAdjoint R) where
+  intCast n := ⟨n, isSelfAdjoint_intCast _⟩
 
-instance : Pow (selfAdjoint R) ℕ :=
-  ⟨fun x n => ⟨(x : R) ^ n, x.prop.pow n⟩⟩
+instance : Pow (selfAdjoint R) ℕ where
+  pow x n := ⟨(x : R) ^ n, x.prop.pow n⟩
 
 @[simp, norm_cast]
 theorem val_pow (x : selfAdjoint R) (n : ℕ) : ↑(x ^ n) = (x : R) ^ n :=
@@ -351,8 +351,8 @@ section NonUnitalCommRing
 
 variable [NonUnitalCommRing R] [StarRing R]
 
-instance : Mul (selfAdjoint R) :=
-  ⟨fun x y => ⟨(x : R) * y, x.prop.mul y.prop⟩⟩
+instance : Mul (selfAdjoint R) where
+  mul x y := ⟨(x : R) * y, x.prop.mul y.prop⟩
 
 @[simp, norm_cast]
 theorem val_mul (x y : selfAdjoint R) : ↑(x * y) = (x : R) * y :=
@@ -404,8 +404,8 @@ theorem val_zpow (x : selfAdjoint R) (z : ℤ) : ↑(x ^ z) = (x : R) ^ z :=
   rfl
 #align self_adjoint.coe_zpow selfAdjoint.val_zpow
 
-instance : RatCast (selfAdjoint R) :=
-  ⟨fun n => ⟨n, isSelfAdjoint_ratCast n⟩⟩
+instance : RatCast (selfAdjoint R) where
+  ratCast n := ⟨n, isSelfAdjoint_ratCast n⟩
 
 @[simp, norm_cast]
 theorem val_ratCast (x : ℚ) : ↑(x : selfAdjoint R) = (x : R) :=
