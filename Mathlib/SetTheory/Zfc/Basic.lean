@@ -1649,32 +1649,29 @@ theorem unionₛ_apply {x : Class} {y : ZFSet} : (⋃₀ x) y ↔ ∃ z : ZFSet,
   · exact fun ⟨z, hxz, hyz⟩ => ⟨_, coe_mem.2 hxz, hyz⟩
 #align Class.sUnion_apply Class.unionₛ_apply
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[simp, norm_cast]
 theorem coe_unionₛ (x : ZFSet.{u}) : ↑(⋃₀ x : ZFSet) = ⋃₀ (x : Class.{u}) :=
   ext fun y =>
     ZFSet.mem_unionₛ.trans (unionₛ_apply.trans <| by rfl).symm
 #align Class.coe_sUnion Class.coe_unionₛ
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[simp]
-theorem mem_sUnion {x y : Class.{u}} : y ∈ ⋃₀ x ↔ ∃ z, z ∈ x ∧ y ∈ z :=
+theorem mem_unionₛ {x y : Class.{u}} : y ∈ ⋃₀ x ↔ ∃ z, z ∈ x ∧ y ∈ z :=
   by
   constructor
   · rintro ⟨w, rfl, z, hzx, hwz⟩
     exact ⟨z, hzx, coe_mem.2 hwz⟩
   · rintro ⟨w, hwx, z, rfl, hwz⟩
     exact ⟨z, rfl, w, hwx, hwz⟩
-#align Class.mem_sUnion Class.mem_sUnion
+#align Class.mem_sUnion Class.mem_unionₛ
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[simp]
-theorem sUnion_empty : ⋃₀ (∅ : Class.{u}) = (∅ : Class.{u}) :=
+theorem unionₛ_empty : ⋃₀ (∅ : Class.{u}) = (∅ : Class.{u}) :=
   by
   ext
   simp
-#align Class.sUnion_empty Class.sUnion_empty
+#align Class.sUnion_empty Class.unionₛ_empty
 
 /-- An induction principle for sets. If every subset of a class is a member, then the class is
   universal. -/
