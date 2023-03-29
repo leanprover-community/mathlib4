@@ -961,3 +961,38 @@ theorem omega_succ {n} : n ∈ omega.{u} → insert n n ∈ omega.{u} :=
           rw [ZFSet.sound h]
           rfl⟩
 #align Set.omega_succ ZFSet.omega_succ
+
+/-- `{x ∈ a | p x}` is the set of elements in `a` satisfying `p` -/
+protected def sep (p : ZFSet → Prop) : ZFSet → ZFSet :=
+  Resp.eval 1
+    ⟨PSet.sep fun y => p (mk y), fun ⟨α, A⟩ ⟨β, B⟩ ⟨αβ, βα⟩ =>
+      ⟨fun ⟨a, pa⟩ =>
+        let ⟨b, hb⟩ := αβ a
+        ⟨⟨b, by simpa only [mk_func, ← ZFSet.sound hb]⟩, hb⟩,
+        fun ⟨b, pb⟩ =>
+        let ⟨a, ha⟩ := βα b
+        ⟨⟨a, by simpa only [mk_func, ZFSet.sound ha]⟩, ha⟩⟩⟩
+#align Set.sep ZFSet.sep
+
+instance : Sep ZFSet ZFSet :=
+  ⟨ZFSet.sep⟩
+
+-- Porting note: using { y ∈ x | p y } defaults to `Set ZFSet` instead of `ZFSet`.
+@[simp]
+theorem mem_sep {p : ZFSet.{u} → Prop} {x y : ZFSet.{u}} :
+    y ∈ (ZFSet.sep p x) ↔ y ∈ x ∧ p y :=
+  Quotient.inductionOn₂ x y fun ⟨α, A⟩ y =>
+    ⟨fun ⟨⟨a, pa⟩, h⟩ => ⟨⟨a, h⟩, by rwa [@Quotient.sound PSet _ _ _ h]⟩, fun ⟨⟨a, h⟩, pa⟩ =>
+      ⟨⟨a, by
+          rw [mk_func] at h
+          rwa [mk_func, ← ZFSet.sound h]⟩,
+        h⟩⟩
+#align Set.mem_sep ZFSet.mem_sep
+
+@[simp]
+theorem toSet_sep (a : ZFSet) (p : ZFSet → Prop) :
+    (ZFSet.sep p a).toSet = { x ∈ a.toSet | p x } :=
+  by
+  ext
+  simp
+#align Set.to_set_sep ZFSet.toSet_sep
