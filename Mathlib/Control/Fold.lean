@@ -433,18 +433,11 @@ theorem length_toList {xs : t α} : length xs = List.length (toList xs) := by
   unfold length
   rw [foldl_toList]
   generalize toList xs = ys
-  let f (n : ℕ) (a : α) := n + 1
-  -- porting note: this used to work with `transitivity`, instead of this convert here
-  convert of_eq_true (eq_self (List.foldl f 0 ys))
-  · generalize 0 = n
-    induction' ys with _ _ ih generalizing n
-    · simp only [List.foldl_nil]
-    · simp only [List.foldl, ih _]
-  · induction' ys with _ tl ih
-    · simp only [List.length, List.foldl_nil]
-    · rw [List.foldl, List.length]
-      rw [ih]
-      exact (tl.foldl_hom (fun x => x + 1) f f 0 fun n x => rfl).symm
+  rw [← Nat.add_zero ys.length]
+  generalize 0 = n
+  induction' ys with _ _ ih generalizing n
+  . simp
+  . simp_arith [ih]
 #align traversable.length_to_list Traversable.length_toList
 
 variable {m : Type u → Type u} [Monad m] [LawfulMonad m]
