@@ -262,3 +262,80 @@ theorem Subset.congr_right : ∀ {x y z : PSet}, Equiv x y → (z ⊆ x ↔ z �
       let ⟨a, ab⟩ := βα b
       ⟨a, cb.trans (Equiv.symm ab)⟩⟩
 #align pSet.subset.congr_right PSet.Subset.congr_right
+
+/-- `x ∈ y` as pre-sets if `x` is extensionally equivalent to a member of the family `y`. -/
+protected def Mem (x y : PSet.{u}) : Prop :=
+  ∃ b, Equiv x (y.Func b)
+#align pSet.mem PSet.Mem
+
+instance : Membership PSet PSet :=
+  ⟨PSet.Mem⟩
+
+theorem Mem.mk {α : Type u} (A : α → PSet) (a : α) : A a ∈ mk α A :=
+  ⟨a, Equiv.refl (A a)⟩
+#align pSet.mem.mk PSet.Mem.mk
+
+theorem func_mem (x : PSet) (i : x.Type) : x.Func i ∈ x := by
+  cases x
+  apply Mem.mk
+#align pSet.func_mem PSet.func_mem
+
+theorem Mem.ext : ∀ {x y : PSet.{u}}, (∀ w : PSet.{u}, w ∈ x ↔ w ∈ y) → Equiv x y
+  | ⟨_, A⟩, ⟨_, B⟩, h =>
+    ⟨fun a => (h (A a)).1 (Mem.mk A a), fun b =>
+      let ⟨a, ha⟩ := (h (B b)).2 (Mem.mk B b)
+      ⟨a, ha.symm⟩⟩
+#align pSet.mem.ext PSet.Mem.ext
+
+theorem Mem.congr_right : ∀ {x y : PSet.{u}}, Equiv x y → ∀ {w : PSet.{u}}, w ∈ x ↔ w ∈ y
+  | ⟨_, _⟩, ⟨_, _⟩, ⟨αβ, βα⟩, _ =>
+    ⟨fun ⟨a, ha⟩ =>
+      let ⟨b, hb⟩ := αβ a
+      ⟨b, ha.trans hb⟩,
+      fun ⟨b, hb⟩ =>
+      let ⟨a, ha⟩ := βα b
+      ⟨a, hb.euc ha⟩⟩
+#align pSet.mem.congr_right PSet.Mem.congr_right
+
+theorem equiv_iff_mem {x y : PSet.{u}} : Equiv x y ↔ ∀ {w : PSet.{u}}, w ∈ x ↔ w ∈ y :=
+  ⟨Mem.congr_right,
+    match x, y with
+    | ⟨_, A⟩, ⟨_, B⟩ => fun h =>
+      ⟨fun a => h.1 (Mem.mk A a), fun b =>
+        let ⟨a, h⟩ := h.2 (Mem.mk B b)
+        ⟨a, h.symm⟩⟩⟩
+#align pSet.equiv_iff_mem PSet.equiv_iff_mem
+
+theorem Mem.congr_left : ∀ {x y : PSet.{u}}, Equiv x y → ∀ {w : PSet.{u}}, x ∈ w ↔ y ∈ w
+  | _, _, h, ⟨_, _⟩ => ⟨fun ⟨a, ha⟩ => ⟨a, h.symm.trans ha⟩, fun ⟨a, ha⟩ => ⟨a, h.trans ha⟩⟩
+#align pSet.mem.congr_left PSet.Mem.congr_left
+
+private theorem mem_wf_aux : ∀ {x y : PSet.{u}}, Equiv x y → Acc (· ∈ ·) y
+  | ⟨α, A⟩, ⟨β, B⟩, H =>
+    ⟨_, by
+      rintro ⟨γ, C⟩ ⟨b, hc⟩
+      cases' H.exists_right b with a ha
+      have H := ha.trans hc.symm
+      rw [mk_func] at H
+      exact mem_wf_aux H⟩
+
+theorem mem_wf : @WellFounded PSet (· ∈ ·) :=
+  ⟨fun x => mem_wf_aux <| Equiv.refl x⟩
+#align pSet.mem_wf PSet.mem_wf
+
+instance : WellFoundedRelation PSet :=
+  ⟨_, mem_wf⟩
+
+instance : IsAsymm PSet (· ∈ ·) :=
+  mem_wf.isAsymm
+
+instance : IsIrrefl PSet (· ∈ ·) :=
+  mem_wf.isIrrefl
+
+theorem mem_asymm {x y : PSet} : x ∈ y → y ∉ x :=
+  asymm
+#align pSet.mem_asymm PSet.mem_asymm
+
+theorem mem_irrefl (x : PSet) : x ∉ x :=
+  irrefl x
+#align pSet.mem_irrefl PSet.mem_irrefl
