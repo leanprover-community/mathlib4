@@ -418,3 +418,108 @@ theorem not_nonempty_empty : ¬PSet.Nonempty ∅ := by simp [PSet.Nonempty]
 protected theorem equiv_empty (x : PSet) [IsEmpty x.Type] : Equiv x ∅ :=
   PSet.equiv_of_isEmpty x _
 #align pSet.equiv_empty PSet.equiv_empty
+
+/-- Insert an element into a pre-set -/
+protected def insert (x y : PSet) : PSet :=
+  ⟨Option y.Type, fun o => Option.casesOn o x y.Func⟩
+#align pSet.insert PSet.insert
+
+instance : Insert PSet PSet :=
+  ⟨PSet.insert⟩
+
+instance : Singleton PSet PSet :=
+  ⟨fun s => insert s ∅⟩
+
+instance : IsLawfulSingleton PSet PSet :=
+  ⟨fun _ => rfl⟩
+
+instance (x y : PSet) : Inhabited (insert x y).Type :=
+  inferInstanceAs (Inhabited <| Option y.Type)
+
+/-- The n-th von Neumann ordinal -/
+def ofNat : ℕ → PSet
+  | 0 => ∅
+  | n + 1 => insert (ofNat n) (ofNat n)
+#align pSet.of_nat PSet.ofNat
+
+/-- The von Neumann ordinal ω -/
+def omega : PSet :=
+  ⟨ULift ℕ, fun n => ofNat n.down⟩
+#align pSet.omega PSet.omega
+
+/-- The pre-set separation operation `{x ∈ a | p x}` -/
+protected def sep (p : PSet → Prop) (x : PSet) : PSet :=
+  ⟨{ a // p (x.Func a) }, fun y => x.Func y.1⟩
+#align pSet.sep PSet.sep
+
+instance : Sep PSet PSet :=
+  ⟨PSet.sep⟩
+
+/-- The pre-set powerset operator -/
+def powerset (x : PSet) : PSet :=
+  ⟨Set x.Type, fun p => ⟨{ a // p a }, fun y => x.Func y.1⟩⟩
+#align pSet.powerset PSet.powerset
+
+@[simp]
+theorem mem_powerset : ∀ {x y : PSet}, y ∈ powerset x ↔ y ⊆ x
+  | ⟨_, A⟩, ⟨_, B⟩ =>
+    ⟨fun ⟨_, e⟩ => (Subset.congr_left e).2 fun ⟨a, _⟩ => ⟨a, Equiv.refl (A a)⟩, fun βα =>
+      ⟨{ a | ∃ b, Equiv (B b) (A a) }, fun b =>
+        let ⟨a, ba⟩ := βα b
+        ⟨⟨a, b, ba⟩, ba⟩,
+        fun ⟨_, b, ba⟩ => ⟨b, ba⟩⟩⟩
+#align pSet.mem_powerset PSet.mem_powerset
+
+/-- The pre-set union operator -/
+def unionₛ (a : PSet) : PSet :=
+  ⟨Σx, (a.Func x).Type, fun ⟨x, y⟩ => (a.Func x).Func y⟩
+#align pSet.sUnion PSet.unionₛ
+
+prefix:110 "⋃₀ " => unionₛ
+
+@[simp]
+theorem mem_unionₛ : ∀ {x y : PSet.{u}}, y ∈ ⋃₀ x ↔ ∃ z ∈ x, y ∈ z
+  | ⟨α, A⟩, y =>
+    ⟨fun ⟨⟨a, c⟩, (e : Equiv y ((A a).Func c))⟩ =>
+      have : Func (A a) c ∈ mk (A a).Type (A a).Func := Mem.mk (A a).Func c
+      ⟨_, Mem.mk _ _, (Mem.congr_left e).2 (by rwa [eta] at this)⟩,
+      fun ⟨⟨β, B⟩, ⟨a, (e : Equiv (mk β B) (A a))⟩, ⟨b, yb⟩⟩ => by
+      rw [← eta (A a)] at e
+      exact
+        let ⟨βt, _⟩ := e
+        let ⟨c, bc⟩ := βt b
+        ⟨⟨a, c⟩, yb.trans bc⟩⟩
+#align pSet.mem_sUnion PSet.mem_unionₛ
+
+@[simp]
+theorem toSet_unionₛ (x : PSet.{u}) : (⋃₀ x).toSet = ⋃₀ (toSet '' x.toSet) := by
+  ext
+  simp
+#align pSet.to_set_sUnion PSet.toSet_unionₛ
+
+/-- The image of a function from pre-sets to pre-sets. -/
+def image (f : PSet.{u} → PSet.{u}) (x : PSet.{u}) : PSet :=
+  ⟨x.Type, f ∘ x.Func⟩
+#align pSet.image PSet.image
+
+theorem mem_image {f : PSet.{u} → PSet.{u}} (H : ∀ {x y}, Equiv x y → Equiv (f x) (f y)) :
+    ∀ {x y : PSet.{u}}, y ∈ image f x ↔ ∃ z ∈ x, Equiv y (f z)
+  | ⟨_, A⟩, _ =>
+    ⟨fun ⟨a, ya⟩ => ⟨A a, Mem.mk A a, ya⟩, fun ⟨_, ⟨a, za⟩, yz⟩ => ⟨a, yz.trans (H za)⟩⟩
+#align pSet.mem_image PSet.mem_image
+
+/-- Universe lift operation -/
+protected def Lift : PSet.{u} → PSet.{max u v}
+  | ⟨α, A⟩ => ⟨ULift.{v, u} α, fun ⟨x⟩ => PSet.Lift (A x)⟩
+#align pSet.lift PSet.Lift
+
+-- intended to be used with explicit universe parameters
+/-- Embedding of one universe in another -/
+@[nolint checkUnivs]
+def embed : PSet.{max (u + 1) v} :=
+  ⟨ULift.{v, u + 1} PSet, fun ⟨x⟩ => PSet.Lift.{u, max (u + 1) v} x⟩
+#align pSet.embed PSet.embed
+
+theorem lift_mem_embed : ∀ x : PSet.{u}, PSet.Lift.{u, max (u + 1) v} x ∈ embed.{u, v} := fun x =>
+  ⟨⟨x⟩, Equiv.rfl⟩
+#align pSet.lift_mem_embed PSet.lift_mem_embed
