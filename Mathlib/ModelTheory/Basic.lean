@@ -282,7 +282,7 @@ instance Countable.countable_functions [h : Countable L.Symbols] : Countable (Σ
 #align
   first_order.language.countable.countable_functions
   FirstOrder.Language.Countable.countable_functions
---set_option pp.universes true
+
 @[simp]
 theorem card_functions_sum (i : ℕ) :
     (#(L.sum L').Functions i)
@@ -351,7 +351,7 @@ structure Hom where
   toFun : M → N
   /-- The homomorphism commutes with the interpretations of the function symbols -/
   map_fun' : ∀ {n} (f : L.Functions n) (x), toFun (funMap f x) = funMap f (toFun ∘ x) := by
-    intros; trivial
+    aesop
   /-- The homomorphism sends related elements to related elements -/
   map_rel' : ∀ {n} (r : L.Relations n) (x), rel_map r x → rel_map r (toFun ∘ x) := by
     intros; trivial
@@ -396,11 +396,8 @@ def constantMap (c : L.Constants) : M := funMap c default
 instance : CoeTC L.Constants M :=
   ⟨constantMap⟩
 
-theorem funMap_eq_coe_constants {c : L.Constants} {x : Fin 0 → M} : funMap c x = c := by
-  congr
-  funext Fin.elim0
-  exact _root_.Fin.elim0 Fin.elim0
-  -- porting note: was `congr rfl (funext Fin.elim0)`
+theorem funMap_eq_coe_constants {c : L.Constants} {x : Fin 0 → M} : funMap c x = c :=
+  congr rfl (funext finZeroElim)
 #align first_order.language.fun_map_eq_coe_constants FirstOrder.Language.funMap_eq_coe_constants
 
 /-- Given a language with a nonempty type of constants, any structure will be nonempty. This cannot
@@ -583,9 +580,6 @@ variable (L) (M)
 @[refl]
 def id : M →[L] M where
   toFun m := m
-  -- Porting note: Added two lines below.
-  map_fun' _ _ := rfl
-  map_rel' _ _ h := h
 #align first_order.language.hom.id FirstOrder.Language.Hom.id
 
 variable {L} {M}
