@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Kappelmann, Kyle Miller, Mario Carneiro
 
 ! This file was ported from Lean 3 source module data.nat.fib
-! leanprover-community/mathlib commit 008205aa645b3f194c1da47025c5f110c8406eab
+! leanprover-community/mathlib commit 92ca63f0fb391a9ca5f22d2409a6080e786d99f7
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -15,17 +15,15 @@ import Mathlib.Logic.Function.Iterate
 import Mathlib.Data.Finset.NatAntidiagonal
 import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.Tactic.Ring
+import Mathlib.Tactic.WLOG
 import Mathlib.Tactic.Zify
+
 /-!
 # Fibonacci Numbers
 
 This file defines the fibonacci series, proves results about it and introduces
 methods to compute it quickly.
 -/
--- porting note: Previously `Mathlib.Tactic.Wlog` was imported.
--- This is no longer needed because the `wlog` tactic was only used once
--- in the proof of `fib_gcd` in mathlib3. That occurrence has been rewritten using `cases`.
--- The reason : `wlog` has not yet been ported at the time of the porting of this file.
 
 /-!
 # The Fibonacci Sequence
@@ -291,25 +289,12 @@ theorem gcd_fib_add_mul_self (m n : ℕ) : ∀ k, gcd (fib m) (fib (n + k * m)) 
 /-- `fib n` is a strong divisibility sequence,
   see https://proofwiki.org/wiki/GCD_of_Fibonacci_Numbers -/
 theorem fib_gcd (m n : ℕ) : fib (gcd m n) = gcd (fib m) (fib n) := by
-  cases' le_total m n with h h
-  case inl =>
-      apply @Nat.gcd.induction _ m n
-      case H0 => simp
-      intro n m _ h
-      rw [←gcd_rec n m] at h
-      conv_rhs =>
-        rw [← mod_add_div' m n]
-      rw [gcd_fib_add_mul_self n (m % n) (m / n)]
-      rwa [gcd_comm (fib n)]
-  case inr =>
-    apply @Nat.gcd.induction _ m n
-    case H0 => simp
-    intro n m _ h
-    rw [←gcd_rec n m] at h
-    conv_rhs =>
-      rw [← mod_add_div' m n]
-    rw [gcd_fib_add_mul_self n (m % n) (m / n)]
-    rwa [gcd_comm (fib n) _]
+  induction m, n using Nat.gcd.induction with
+  | H0 => simp
+  | H1 m n _ h' =>
+    rw [← gcd_rec m n] at h'
+    conv_rhs => rw [← mod_add_div' n m]
+    rwa [gcd_fib_add_mul_self m (n % m) (n / m), gcd_comm (fib m) _]
 #align nat.fib_gcd Nat.fib_gcd
 
 theorem fib_dvd (m n : ℕ) (h : m ∣ n) : fib m ∣ fib n := by
