@@ -23,7 +23,7 @@ be satisfied by itself and all stricter types.
 
 * `SupₛHom`: Maps which preserve `⨆`.
 * `InfₛHom`: Maps which preserve `⨅`.
-* `FrameHom`: Frm homomorphisms. Maps which preserve `⨆`, `⊓` and `⊤`.
+* `FrameHom`: Frame homomorphisms. Maps which preserve `⨆`, `⊓` and `⊤`.
 * `CompleteLatticeHom`: Complete lattice homomorphisms. Maps which preserve `⨆` and `⨅`.
 
 ## Typeclasses
@@ -39,7 +39,7 @@ be satisfied by itself and all stricter types.
 
 ## TODO
 
-Frm homs are Heyting homs.
+Frame homs are Heyting homs.
 -/
 
 
@@ -527,7 +527,7 @@ theorem top_apply (a : α) : (⊤ : InfₛHom α β) a = ⊤ :=
 
 end InfₛHom
 
-/-! ### Frm homomorphisms -/
+/-! ### Frame homomorphisms -/
 
 
 namespace FrameHom

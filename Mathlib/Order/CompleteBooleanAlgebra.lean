@@ -20,7 +20,7 @@ distributive Boolean algebras.
 
 ## Typeclasses
 
-* `Order.Frame`: Frm: A complete lattice whose `⊓` distributes over `⨆`.
+* `Order.Frame`: Frame: A complete lattice whose `⊓` distributes over `⨆`.
 * `Order.Coframe`: Coframe: A complete lattice whose `⊔` distributes over `⨅`.
 * `CompleteDistribLattice`: Completely distributive lattices: A complete lattice whose `⊓` and `⊔`
   distribute over `⨆` and `⨅` respectively.
