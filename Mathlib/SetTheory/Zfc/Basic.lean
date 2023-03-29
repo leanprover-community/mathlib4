@@ -502,10 +502,11 @@ def image (f : PSet.{u} → PSet.{u}) (x : PSet.{u}) : PSet :=
   ⟨x.Type, f ∘ x.Func⟩
 #align pSet.image PSet.image
 
-theorem mem_image {f : PSet.{u} → PSet.{u}} (H : ∀ {x y}, Equiv x y → Equiv (f x) (f y)) :
+-- Porting note: H arguments made explicit.
+theorem mem_image {f : PSet.{u} → PSet.{u}} (H : ∀ x y, Equiv x y → Equiv (f x) (f y)) :
     ∀ {x y : PSet.{u}}, y ∈ image f x ↔ ∃ z ∈ x, Equiv y (f z)
   | ⟨_, A⟩, _ =>
-    ⟨fun ⟨a, ya⟩ => ⟨A a, Mem.mk A a, ya⟩, fun ⟨_, ⟨a, za⟩, yz⟩ => ⟨a, yz.trans (H za)⟩⟩
+    ⟨fun ⟨a, ya⟩ => ⟨A a, Mem.mk A a, ya⟩, fun ⟨_, ⟨a, za⟩, yz⟩ => ⟨a, yz.trans (H _ _ za)⟩⟩
 #align pSet.mem_image PSet.mem_image
 
 /-- Universe lift operation -/
@@ -530,6 +531,13 @@ def Arity.Equiv : ∀ {n}, Arity PSet.{u} n → Arity PSet.{u} n → Prop
   | 0, a, b => PSet.Equiv a b
   | _ + 1, a, b => ∀ x y : PSet, PSet.Equiv x y → Arity.Equiv (a x) (b y)
 #align pSet.arity.equiv PSet.Arity.Equiv
+
+@[simp] theorem Arity.equiv_zero {a b : PSet} : @Arity.Equiv 0 a b ↔ PSet.Equiv a b :=
+  Iff.rfl
+
+@[simp] theorem Arity.equiv_succ {n : ℕ} {a b : Arity PSet.{u} (n + 1)} :
+    @Arity.Equiv (n + 1) a b ↔ ∀ x y : PSet, PSet.Equiv x y → Arity.Equiv (a x) (b y) :=
+  Iff.rfl
 
 theorem Arity.equiv_const {a : PSet.{u}} : ∀ n, Arity.Equiv (Arity.Const a n) (Arity.Const a n)
   | 0 => Equiv.rfl
@@ -1185,3 +1193,63 @@ theorem regularity (x : ZFSet.{u}) (h : x ≠ ∅) : ∃ y ∈ x, x ∩ y = ∅ 
           let ⟨wx, wz⟩ := mem_inter.1 wxz
           IH w wz wx⟩
 #align Set.regularity ZFSet.regularity
+
+/-- The image of a (definable) ZFC set function -/
+def image (f : ZFSet → ZFSet) [Definable 1 f] : ZFSet → ZFSet :=
+  let ⟨r, hr⟩ := @Definable.Resp 1 f _
+  Resp.eval 1
+    ⟨PSet.image r, fun _ _ e =>
+      Mem.ext fun _ =>
+        Iff.trans (mem_image hr) <|
+          Iff.trans
+              ⟨fun ⟨w, h1, h2⟩ => ⟨w, (Mem.congr_right e).1 h1, h2⟩, fun ⟨w, h1, h2⟩ =>
+                ⟨w, (Mem.congr_right e).2 h1, h2⟩⟩ <|
+            Iff.symm (mem_image hr)⟩
+#align Set.image ZFSet.image
+
+theorem image.mk :
+    ∀ (f : ZFSet.{u} → ZFSet.{u}) [H : Definable 1 f] (x) {y} (_ : y ∈ x), f y ∈ @image f H x
+  | _, ⟨F⟩, x, y => Quotient.inductionOn₂ x y fun ⟨_, _⟩ _ ⟨a, ya⟩ => ⟨a, F.2 _ _ ya⟩
+#align Set.image.mk ZFSet.image.mk
+
+@[simp]
+theorem mem_image :
+    ∀ {f : ZFSet.{u} → ZFSet.{u}} [H : Definable 1 f] {x y : ZFSet.{u}},
+      y ∈ @image f H x ↔ ∃ z ∈ x, f z = y
+  | _, ⟨_⟩, x, y =>
+    Quotient.inductionOn₂ x y fun ⟨_, A⟩ _ =>
+      ⟨fun ⟨a, ya⟩ => ⟨⟦A a⟧, Mem.mk A a, Eq.symm <| Quotient.sound ya⟩, fun ⟨_, hz, e⟩ =>
+        e ▸ image.mk _ _ hz⟩
+#align Set.mem_image ZFSet.mem_image
+
+@[simp]
+theorem toSet_image (f : ZFSet → ZFSet) [H : Definable 1 f] (x : ZFSet) :
+    (image f x).toSet = f '' x.toSet := by
+  ext
+  simp
+#align Set.to_set_image ZFSet.toSet_image
+
+/-- The range of an indexed family of sets. The universes allow for a more general index type
+  without manual use of `ulift`. -/
+noncomputable def range {α : Type u} (f : α → ZFSet.{max u v}) : ZFSet.{max u v} :=
+  ⟦⟨ULift.{v} α, Quotient.out ∘ f ∘ ULift.down⟩⟧
+#align Set.range ZFSet.range
+
+@[simp]
+theorem mem_range {α : Type u} {f : α → ZFSet.{max u v}} {x : ZFSet.{max u v}} :
+    x ∈ range.{u, v} f ↔ x ∈ Set.range f :=
+  Quotient.inductionOn x fun y => by
+    constructor
+    · rintro ⟨z, hz⟩
+      exact ⟨z.down, Quotient.eq_mk_iff_out.2 hz.symm⟩
+    · rintro ⟨z, hz⟩
+      use ULift.up z
+      simpa [hz] using PSet.Equiv.symm (Quotient.mk_out y)
+#align Set.mem_range ZFSet.mem_range
+
+@[simp]
+theorem toSet_range {α : Type u} (f : α → ZFSet.{max u v}) : (range.{u, v} f).toSet = Set.range f :=
+  by
+  ext
+  simp
+#align Set.to_set_range ZFSet.toSet_range
