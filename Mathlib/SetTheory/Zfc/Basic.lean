@@ -1148,3 +1148,40 @@ theorem mem_inter {x y z : ZFSet.{u}} : z ∈ x ∩ y ↔ z ∈ x ∧ z ∈ y :=
 theorem mem_diff {x y z : ZFSet.{u}} : z ∈ x \ y ↔ z ∈ x ∧ z ∉ y :=
   @mem_sep (fun z : ZFSet.{u} => z ∉ y) x z
 #align Set.mem_diff ZFSet.mem_diff
+
+theorem mem_wf : @WellFounded ZFSet (· ∈ ·) :=
+  wellFounded_lift₂_iff.mpr PSet.mem_wf
+#align Set.mem_wf ZFSet.mem_wf
+
+/-- Induction on the `∈` relation. -/
+@[elab_as_elim]
+theorem inductionOn {p : ZFSet → Prop} (x) (h : ∀ x, (∀ y ∈ x, p y) → p x) : p x :=
+  mem_wf.induction x h
+#align Set.induction_on ZFSet.inductionOn
+
+instance : WellFoundedRelation ZFSet :=
+  ⟨_, mem_wf⟩
+
+instance : IsAsymm ZFSet (· ∈ ·) :=
+  mem_wf.isAsymm
+
+-- Porting note: this can't be inferred automatically for some reason.
+instance : IsIrrefl ZFSet (· ∈ ·) :=
+  mem_wf.isIrrefl
+
+theorem mem_asymm {x y : ZFSet} : x ∈ y → y ∉ x :=
+  asymm
+#align Set.mem_asymm ZFSet.mem_asymm
+
+theorem mem_irrefl (x : ZFSet) : x ∉ x :=
+  irrefl x
+#align Set.mem_irrefl ZFSet.mem_irrefl
+
+theorem regularity (x : ZFSet.{u}) (h : x ≠ ∅) : ∃ y ∈ x, x ∩ y = ∅ :=
+  by_contradiction fun ne =>
+    h <| (eq_empty x).2 fun y =>
+      @inductionOn (fun z => z ∉ x) y fun z IH zx =>
+        ne ⟨z, zx, (eq_empty _).2 fun w wxz =>
+          let ⟨wx, wz⟩ := mem_inter.1 wxz
+          IH w wz wx⟩
+#align Set.regularity ZFSet.regularity
