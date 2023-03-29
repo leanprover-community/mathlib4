@@ -8,7 +8,7 @@ Authors: Yaël Dillies, Bhavik Mehta
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Convex.Hull
+import Mathlib.Analysis.Convex.Hull
 
 /-!
 # Extreme sets
@@ -81,8 +81,7 @@ protected theorem IsExtreme.rfl : IsExtreme 𝕜 A A :=
 
 @[trans]
 protected theorem IsExtreme.trans (hAB : IsExtreme 𝕜 A B) (hBC : IsExtreme 𝕜 B C) :
-    IsExtreme 𝕜 A C :=
-  by
+    IsExtreme 𝕜 A C := by
   refine' ⟨subset.trans hBC.1 hAB.1, fun x₁ hx₁A x₂ hx₂A x hxC hx => _⟩
   obtain ⟨hx₁B, hx₂B⟩ := hAB.2 hx₁A hx₂A (hBC.1 hxC) hx
   exact hBC.2 hx₁B hx₂B hxC hx
@@ -92,8 +91,7 @@ protected theorem IsExtreme.antisymm : AntiSymmetric (IsExtreme 𝕜 : Set E →
   fun A B hAB hBA => Subset.antisymm hBA.1 hAB.1
 #align is_extreme.antisymm IsExtreme.antisymm
 
-instance : IsPartialOrder (Set E) (IsExtreme 𝕜)
-    where
+instance : IsPartialOrder (Set E) (IsExtreme 𝕜) where
   refl := IsExtreme.refl 𝕜
   trans A B C := IsExtreme.trans
   antisymm := IsExtreme.antisymm
@@ -113,8 +111,7 @@ protected theorem IsExtreme.mono (hAC : IsExtreme 𝕜 A C) (hBA : B ⊆ A) (hCB
 #align is_extreme.mono IsExtreme.mono
 
 theorem isExtreme_interᵢ {ι : Sort _} [Nonempty ι] {F : ι → Set E}
-    (hAF : ∀ i : ι, IsExtreme 𝕜 A (F i)) : IsExtreme 𝕜 A (⋂ i : ι, F i) :=
-  by
+    (hAF : ∀ i : ι, IsExtreme 𝕜 A (F i)) : IsExtreme 𝕜 A (⋂ i : ι, F i) := by
   obtain i := Classical.arbitrary ι
   refine' ⟨Inter_subset_of_subset i (hAF i).1, fun x₁ hx₁A x₂ hx₂A x hxF hx => _⟩
   simp_rw [mem_Inter] at hxF⊢
@@ -145,8 +142,7 @@ theorem mem_extremePoints :
 #align mem_extreme_points mem_extremePoints
 
 /-- x is an extreme point to A iff {x} is an extreme set of A. -/
-theorem mem_extremePoints_iff_extreme_singleton : x ∈ A.extremePoints 𝕜 ↔ IsExtreme 𝕜 A {x} :=
-  by
+theorem mem_extremePoints_iff_extreme_singleton : x ∈ A.extremePoints 𝕜 ↔ IsExtreme 𝕜 A {x} := by
   refine' ⟨_, fun hx => ⟨singleton_subset_iff.1 hx.1, fun x₁ hx₁ x₂ hx₂ => hx.2 hx₁ hx₂ rfl⟩⟩
   rintro ⟨hxA, hAx⟩
   use singleton_subset_iff.2 hxA
@@ -201,8 +197,7 @@ theorem IsExtreme.convex_diff (hA : Convex 𝕜 A) (hAB : IsExtreme 𝕜 A B) : 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[simp]
 theorem extremePoints_prod (s : Set E) (t : Set F) :
-    (s ×ˢ t).extremePoints 𝕜 = s.extremePoints 𝕜 ×ˢ t.extremePoints 𝕜 :=
-  by
+    (s ×ˢ t).extremePoints 𝕜 = s.extremePoints 𝕜 ×ˢ t.extremePoints 𝕜 := by
   ext
   refine' (and_congr_right fun hx => ⟨fun h => _, fun h => _⟩).trans (and_and_and_comm _ _ _ _)
   constructor
@@ -228,8 +223,7 @@ theorem extremePoints_prod (s : Set E) (t : Set F) :
 
 @[simp]
 theorem extremePoints_pi (s : ∀ i, Set (π i)) :
-    (univ.pi s).extremePoints 𝕜 = univ.pi fun i => (s i).extremePoints 𝕜 :=
-  by
+    (univ.pi s).extremePoints 𝕜 = univ.pi fun i => (s i).extremePoints 𝕜 := by
   ext
   simp only [mem_extremePoints, mem_pi, mem_univ, true_imp_iff, @forall_and ι]
   refine' and_congr_right fun hx => ⟨fun h i => _, fun h => _⟩
@@ -263,8 +257,7 @@ variable [DenselyOrdered 𝕜] [NoZeroSMulDivisors 𝕜 E] {A B : Set E} {x : E}
 that contain it are those with `x` as one of their endpoints. -/
 theorem mem_extremePoints_iff_forall_segment :
     x ∈ A.extremePoints 𝕜 ↔
-      x ∈ A ∧ ∀ (x₁) (_ : x₁ ∈ A) (x₂) (_ : x₂ ∈ A), x ∈ segment 𝕜 x₁ x₂ → x₁ = x ∨ x₂ = x :=
-  by
+      x ∈ A ∧ ∀ (x₁) (_ : x₁ ∈ A) (x₂) (_ : x₂ ∈ A), x ∈ segment 𝕜 x₁ x₂ → x₁ = x ∨ x₂ = x := by
   refine' and_congr_right fun hxA => forall₄_congr fun x₁ h₁ x₂ h₂ => _
   constructor
   · rw [← insert_endpoints_openSegment]
@@ -276,8 +269,7 @@ theorem mem_extremePoints_iff_forall_segment :
 #align mem_extreme_points_iff_forall_segment mem_extremePoints_iff_forall_segment
 
 theorem Convex.mem_extremePoints_iff_convex_diff (hA : Convex 𝕜 A) :
-    x ∈ A.extremePoints 𝕜 ↔ x ∈ A ∧ Convex 𝕜 (A \ {x}) :=
-  by
+    x ∈ A.extremePoints 𝕜 ↔ x ∈ A ∧ Convex 𝕜 (A \ {x}) := by
   use fun hx => ⟨hx.1, (mem_extremePoints_iff_extreme_singleton.1 hx).convex_diff hA⟩
   rintro ⟨hxA, hAx⟩
   refine' mem_extremePoints_iff_forall_segment.2 ⟨hxA, fun x₁ hx₁ x₂ hx₂ hx => _⟩
@@ -295,8 +287,7 @@ theorem Convex.mem_extremePoints_iff_mem_diff_convexHull_diff (hA : Convex 𝕜 
     mem_diff]
 #align convex.mem_extreme_points_iff_mem_diff_convex_hull_diff Convex.mem_extremePoints_iff_mem_diff_convexHull_diff
 
-theorem extremePoints_convexHull_subset : (convexHull 𝕜 A).extremePoints 𝕜 ⊆ A :=
-  by
+theorem extremePoints_convexHull_subset : (convexHull 𝕜 A).extremePoints 𝕜 ⊆ A := by
   rintro x hx
   rw [(convex_convexHull 𝕜 _).mem_extremePoints_iff_convex_diff] at hx
   by_contra
