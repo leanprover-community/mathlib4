@@ -18,14 +18,14 @@ This file defines extreme sets and extreme points for sets in a module.
 An extreme set of `A` is a subset of `A` that is as far as it can get in any outward direction: If
 point `x` is in it and point `y ∈ A`, then the line passing through `x` and `y` leaves `A` at `x`.
 This is an analytic notion of "being on the side of". It is weaker than being exposed (see
-`is_exposed.is_extreme`).
+`IsExposed.isExtreme`).
 
 ## Main declarations
 
-* `is_extreme 𝕜 A B`: States that `B` is an extreme set of `A` (in the literature, `A` is often
+* `IsExtreme 𝕜 A B`: States that `B` is an extreme set of `A` (in the literature, `A` is often
   implicit).
-* `set.extreme_points 𝕜 A`: Set of extreme points of `A` (corresponding to extreme singletons).
-* `convex.mem_extreme_points_iff_convex_diff`: A useful equivalent condition to being an extreme
+* `Set.extremePoints 𝕜 A`: Set of extreme points of `A` (corresponding to extreme singletons).
+* `Convex.mem_extremePoints_iff_convex_diff`: A useful equivalent condition to being an extreme
   point: `x` is an extreme point iff `A \ {x}` is convex.
 
 ## Implementation notes
@@ -134,7 +134,6 @@ theorem isExtreme_interₛ {F : Set (Set E)} (hF : F.Nonempty) (hAF : ∀ B ∈ 
   exact ⟨fun B hB => (h B hB).1, fun B hB => (h B hB).2⟩
 #align is_extreme_sInter isExtreme_interₛ
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:635:2: warning: expanding binder collection (x₁ x₂ «expr ∈ » A) -/
 theorem mem_extremePoints :
     x ∈ A.extremePoints 𝕜 ↔
       x ∈ A ∧ ∀ (x₁) (_ : x₁ ∈ A) (x₂) (_ : x₂ ∈ A), x ∈ openSegment 𝕜 x₁ x₂ → x₁ = x ∧ x₂ = x :=
@@ -193,8 +192,6 @@ theorem IsExtreme.convex_diff (hA : Convex 𝕜 A) (hAB : IsExtreme 𝕜 A B) : 
     ⟨hA.openSegment_subset hx₁A hx₂A hx, fun hxB => hx₁B (hAB.2 hx₁A hx₂A hxB hx).1⟩
 #align is_extreme.convex_diff IsExtreme.convex_diff
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[simp]
 theorem extremePoints_prod (s : Set E) (t : Set F) :
     (s ×ˢ t).extremePoints 𝕜 = s.extremePoints 𝕜 ×ˢ t.extremePoints 𝕜 := by
@@ -252,7 +249,6 @@ variable [LinearOrderedRing 𝕜] [AddCommGroup E] [Module 𝕜 E]
 
 variable [DenselyOrdered 𝕜] [NoZeroSMulDivisors 𝕜 E] {A B : Set E} {x : E}
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:635:2: warning: expanding binder collection (x₁ x₂ «expr ∈ » A) -/
 /-- A useful restatement using `segment`: `x` is an extreme point iff the only (closed) segments
 that contain it are those with `x` as one of their endpoints. -/
 theorem mem_extremePoints_iff_forall_segment :
