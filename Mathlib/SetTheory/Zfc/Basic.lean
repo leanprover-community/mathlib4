@@ -739,3 +739,74 @@ instance small_toSet (x : ZFSet.{u}) : Small.{u} x.toSet :=
     cases' hb with i h
     exact ⟨i, Subtype.coe_injective (Quotient.sound h.symm)⟩
 #align Set.small_to_set ZFSet.small_toSet
+
+/-- A nonempty set is one that contains some element. -/
+protected def Nonempty (u : ZFSet) : Prop :=
+  u.toSet.Nonempty
+#align Set.nonempty ZFSet.Nonempty
+
+theorem nonempty_def (u : ZFSet) : u.Nonempty ↔ ∃ x, x ∈ u :=
+  Iff.rfl
+#align Set.nonempty_def ZFSet.nonempty_def
+
+theorem nonempty_of_mem {x u : ZFSet} (h : x ∈ u) : u.Nonempty :=
+  ⟨x, h⟩
+#align Set.nonempty_of_mem ZFSet.nonempty_of_mem
+
+@[simp]
+theorem nonempty_toSet_iff {u : ZFSet} : u.toSet.Nonempty ↔ u.Nonempty :=
+  Iff.rfl
+#align Set.nonempty_to_set_iff ZFSet.nonempty_toSet_iff
+
+/-- `x ⊆ y` as ZFC sets means that all members of `x` are members of `y`. -/
+protected def Subset (x y : ZFSet.{u}) :=
+  ∀ ⦃z⦄, z ∈ x → z ∈ y
+#align Set.subset ZFSet.Subset
+
+instance hasSubset : HasSubset ZFSet :=
+  ⟨ZFSet.Subset⟩
+#align Set.has_subset ZFSet.hasSubset
+
+theorem subset_def {x y : ZFSet.{u}} : x ⊆ y ↔ ∀ ⦃z⦄, z ∈ x → z ∈ y :=
+  Iff.rfl
+#align Set.subset_def ZFSet.subset_def
+
+instance : IsRefl ZFSet (· ⊆ ·) :=
+  ⟨fun _ _ => id⟩
+
+instance : IsTrans ZFSet (· ⊆ ·) :=
+  ⟨fun _ _ _ hxy hyz _ ha => hyz (hxy ha)⟩
+
+@[simp]
+theorem subset_iff : ∀ {x y : PSet}, mk x ⊆ mk y ↔ x ⊆ y
+  | ⟨_, A⟩, ⟨_, _⟩ =>
+    ⟨fun h a => @h ⟦A a⟧ (Mem.mk A a), fun h z =>
+      Quotient.inductionOn z fun _ ⟨a, za⟩ =>
+        let ⟨b, ab⟩ := h a
+        ⟨b, za.trans ab⟩⟩
+#align Set.subset_iff ZFSet.subset_iff
+
+@[simp]
+theorem toSet_subset_iff {x y : ZFSet} : x.toSet ⊆ y.toSet ↔ x ⊆ y := by
+  simp [subset_def, Set.subset_def]
+#align Set.to_set_subset_iff ZFSet.toSet_subset_iff
+
+@[ext]
+theorem ext {x y : ZFSet.{u}} : (∀ z : ZFSet.{u}, z ∈ x ↔ z ∈ y) → x = y :=
+  Quotient.inductionOn₂ x y fun _ _ h => Quotient.sound (Mem.ext fun w => h ⟦w⟧)
+#align Set.ext ZFSet.ext
+
+theorem ext_iff {x y : ZFSet.{u}} : x = y ↔ ∀ z : ZFSet.{u}, z ∈ x ↔ z ∈ y :=
+  ⟨fun h => by simp [h], ext⟩
+#align Set.ext_iff ZFSet.ext_iff
+
+theorem toSet_injective : Function.Injective toSet := fun _ _ h => ext <| Set.ext_iff.1 h
+#align Set.to_set_injective ZFSet.toSet_injective
+
+@[simp]
+theorem toSet_inj {x y : ZFSet} : x.toSet = y.toSet ↔ x = y :=
+  toSet_injective.eq_iff
+#align Set.to_set_inj ZFSet.toSet_inj
+
+instance : IsAntisymm ZFSet (· ⊆ ·) :=
+  ⟨fun _ _ hab hba => ext fun c => ⟨@hab c, @hba c⟩⟩
