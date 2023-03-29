@@ -18,14 +18,14 @@ This file defines extreme sets and extreme points for sets in a module.
 An extreme set of `A` is a subset of `A` that is as far as it can get in any outward direction: If
 point `x` is in it and point `y ∈ A`, then the line passing through `x` and `y` leaves `A` at `x`.
 This is an analytic notion of "being on the side of". It is weaker than being exposed (see
-`is_exposed.is_extreme`).
+`IsExposed.isExtreme`).
 
 ## Main declarations
 
-* `is_extreme 𝕜 A B`: States that `B` is an extreme set of `A` (in the literature, `A` is often
+* `IsExtreme 𝕜 A B`: States that `B` is an extreme set of `A` (in the literature, `A` is often
   implicit).
-* `set.extreme_points 𝕜 A`: Set of extreme points of `A` (corresponding to extreme singletons).
-* `convex.mem_extreme_points_iff_convex_diff`: A useful equivalent condition to being an extreme
+* `Set.extremePoints 𝕜 A`: Set of extreme points of `A` (corresponding to extreme singletons).
+* `Convex.mem_extremePoints_iff_convex_diff`: A useful equivalent condition to being an extreme
   point: `x` is an extreme point iff `A \ {x}` is convex.
 
 ## Implementation notes
