@@ -1045,3 +1045,42 @@ def unionₛ : ZFSet → ZFSet :=
 #align Set.sUnion ZFSet.unionₛ
 
 prefix:110 "⋃₀ " => ZFSet.unionₛ
+
+@[simp]
+theorem mem_unionₛ {x y : ZFSet.{u}} : y ∈ ⋃₀ x ↔ ∃ z ∈ x, y ∈ z :=
+  Quotient.inductionOn₂ x y fun _ _ =>
+    Iff.trans PSet.mem_unionₛ
+      ⟨fun ⟨z, h⟩ => ⟨⟦z⟧, h⟩, fun ⟨z, h⟩ => Quotient.inductionOn z (fun z h => ⟨z, h⟩) h⟩
+#align Set.mem_sUnion ZFSet.mem_unionₛ
+
+theorem mem_unionₛ_of_mem {x y z : ZFSet} (hy : y ∈ z) (hz : z ∈ x) : y ∈ ⋃₀ x :=
+  mem_unionₛ.2 ⟨z, hz, hy⟩
+#align Set.mem_sUnion_of_mem ZFSet.mem_unionₛ_of_mem
+
+@[simp]
+theorem unionₛ_empty : ⋃₀ (∅ : ZFSet.{u}) = ∅ :=
+  by
+  ext
+  simp
+#align Set.sUnion_empty ZFSet.unionₛ_empty
+
+@[simp]
+theorem unionₛ_singleton {x : ZFSet.{u}} : ⋃₀ ({x} : ZFSet) = x :=
+  ext fun y => by simp_rw [mem_unionₛ, exists_prop, mem_singleton, exists_eq_left]
+#align Set.sUnion_singleton ZFSet.unionₛ_singleton
+
+@[simp]
+theorem to_set_unionₛ (x : ZFSet.{u}) : (⋃₀ x).toSet = ⋃₀ (toSet '' x.toSet) := by
+  ext
+  simp
+#align Set.to_set_sUnion ZFSet.to_set_unionₛ
+
+theorem singleton_injective : Function.Injective (@singleton ZFSet ZFSet _) := fun x y H => by
+  let this := congr_arg unionₛ H
+  rwa [unionₛ_singleton, unionₛ_singleton] at this
+#align Set.singleton_injective ZFSet.singleton_injective
+
+@[simp]
+theorem singleton_inj {x y : ZFSet} : ({x} : ZFSet) = {y} ↔ x = y :=
+  singleton_injective.eq_iff
+#align Set.singleton_inj ZFSet.singleton_inj
