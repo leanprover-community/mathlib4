@@ -119,11 +119,11 @@ theorem isExtreme_interᵢ {ι : Sort _} [Nonempty ι] {F : ι → Set E}
   exact ⟨fun i => (h i).1, fun i => (h i).2⟩
 #align is_extreme_Inter isExtreme_interᵢ
 
-theorem isExtreme_bInter {F : Set (Set E)} (hF : F.Nonempty) (hA : ∀ B ∈ F, IsExtreme 𝕜 A B) :
+theorem isExtreme_binterᵢ {F : Set (Set E)} (hF : F.Nonempty) (hA : ∀ B ∈ F, IsExtreme 𝕜 A B) :
     IsExtreme 𝕜 A (⋂ B ∈ F, B) := by
   haveI := hF.to_subtype
   simpa only [interᵢ_subtype] using isExtreme_interᵢ fun i : F => hA _ i.2
-#align is_extreme_bInter isExtreme_bInter
+#align is_extreme_bInter isExtreme_binterᵢ
 
 theorem isExtreme_interₛ {F : Set (Set E)} (hF : F.Nonempty) (hAF : ∀ B ∈ F, IsExtreme 𝕜 A B) :
     IsExtreme 𝕜 A (⋂₀ F) := by
