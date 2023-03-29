@@ -8,10 +8,10 @@ Authors: Bolton Bailey
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Fintype.Basic
-import Mathbin.GroupTheory.OrderOfElement
-import Mathbin.Tactic.Zify
-import Mathbin.Data.Nat.Totient
+import Mathlib.Data.Fintype.Basic
+import Mathlib.GroupTheory.OrderOfElement
+import Mathlib.Tactic.Zify
+import Mathlib.Data.Nat.Totient
 
 /-!
 # The Lucas test for primes.
@@ -43,8 +43,7 @@ is prime. This is true because `a` has order `p-1` in the multiplicative group m
 group must itself have order `p-1`, which only happens when `p` is prime.
 -/
 theorem lucas_primality (p : ℕ) (a : ZMod p) (ha : a ^ (p - 1) = 1)
-    (hd : ∀ q : ℕ, q.Prime → q ∣ p - 1 → a ^ ((p - 1) / q) ≠ 1) : p.Prime :=
-  by
+    (hd : ∀ q : ℕ, q.Prime → q ∣ p - 1 → a ^ ((p - 1) / q) ≠ 1) : p.Prime := by
   have h0 : p ≠ 0 := by
     rintro ⟨⟩
     exact hd 2 Nat.prime_two (dvd_zero _) (pow_zero _)
@@ -52,8 +51,7 @@ theorem lucas_primality (p : ℕ) (a : ZMod p) (ha : a ^ (p - 1) = 1)
     rintro ⟨⟩
     exact hd 2 Nat.prime_two (dvd_zero _) (pow_zero _)
   have hp1 : 1 < p := lt_of_le_of_ne h0.bot_lt h1.symm
-  have order_of_a : orderOf a = p - 1 :=
-    by
+  have order_of_a : orderOf a = p - 1 := by
     apply orderOf_eq_of_pow_and_pow_div_prime _ ha hd
     exact tsub_pos_of_lt hp1
   haveI : NeZero p := ⟨h0⟩
