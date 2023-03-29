@@ -980,7 +980,7 @@ instance : Sep ZFSet ZFSet :=
 -- Porting note: using { y ∈ x | p y } defaults to `Set ZFSet` instead of `ZFSet`.
 @[simp]
 theorem mem_sep {p : ZFSet.{u} → Prop} {x y : ZFSet.{u}} :
-    y ∈ (ZFSet.sep p x) ↔ y ∈ x ∧ p y :=
+    y ∈ ZFSet.sep p x ↔ y ∈ x ∧ p y :=
   Quotient.inductionOn₂ x y fun ⟨α, A⟩ y =>
     ⟨fun ⟨⟨a, pa⟩, h⟩ => ⟨⟨a, h⟩, by rwa [@Quotient.sound PSet _ _ _ h]⟩, fun ⟨⟨a, h⟩, pa⟩ =>
       ⟨⟨a, by
@@ -1084,3 +1084,67 @@ theorem singleton_injective : Function.Injective (@singleton ZFSet ZFSet _) := f
 theorem singleton_inj {x y : ZFSet} : ({x} : ZFSet) = {y} ↔ x = y :=
   singleton_injective.eq_iff
 #align Set.singleton_inj ZFSet.singleton_inj
+
+/-- The binary union operation -/
+protected def union (x y : ZFSet.{u}) : ZFSet.{u} :=
+  ⋃₀ {x, y}
+#align Set.union ZFSet.union
+
+/-- The binary intersection operation -/
+protected def inter (x y : ZFSet.{u}) : ZFSet.{u} :=
+  ZFSet.sep (fun z => z ∈ y) x -- { z ∈ x | z ∈ y }
+#align Set.inter ZFSet.inter
+
+/-- The set difference operation -/
+protected def diff (x y : ZFSet.{u}) : ZFSet.{u} :=
+  ZFSet.sep (fun z => z ∉ y) x -- { z ∈ x | z ∉ y }
+#align Set.diff ZFSet.diff
+
+instance : Union ZFSet :=
+  ⟨ZFSet.union⟩
+
+instance : Inter ZFSet :=
+  ⟨ZFSet.inter⟩
+
+instance : SDiff ZFSet :=
+  ⟨ZFSet.diff⟩
+
+@[simp]
+theorem toSet_union (x y : ZFSet.{u}) : (x ∪ y).toSet = x.toSet ∪ y.toSet :=
+  by
+  change (⋃₀ {x, y}).toSet = _
+  simp
+#align Set.to_set_union ZFSet.toSet_union
+
+@[simp]
+theorem toSet_inter (x y : ZFSet.{u}) : (x ∩ y).toSet = x.toSet ∩ y.toSet :=
+  by
+  change (ZFSet.sep (fun z => z ∈ y) x).toSet = _
+  ext
+  simp
+#align Set.to_set_inter ZFSet.toSet_inter
+
+@[simp]
+theorem toSet_sdiff (x y : ZFSet.{u}) : (x \ y).toSet = x.toSet \ y.toSet :=
+  by
+  change (ZFSet.sep (fun z => z ∉ y) x).toSet = _
+  ext
+  simp
+#align Set.to_set_sdiff ZFSet.toSet_sdiff
+
+@[simp]
+theorem mem_union {x y z : ZFSet.{u}} : z ∈ x ∪ y ↔ z ∈ x ∨ z ∈ y :=
+  by
+  rw [← mem_toSet]
+  simp
+#align Set.mem_union ZFSet.mem_union
+
+@[simp]
+theorem mem_inter {x y z : ZFSet.{u}} : z ∈ x ∩ y ↔ z ∈ x ∧ z ∈ y :=
+  @mem_sep (fun z : ZFSet.{u} => z ∈ y) x z
+#align Set.mem_inter ZFSet.mem_inter
+
+@[simp]
+theorem mem_diff {x y z : ZFSet.{u}} : z ∈ x \ y ↔ z ∈ x ∧ z ∉ y :=
+  @mem_sep (fun z : ZFSet.{u} => z ∉ y) x z
+#align Set.mem_diff ZFSet.mem_diff
