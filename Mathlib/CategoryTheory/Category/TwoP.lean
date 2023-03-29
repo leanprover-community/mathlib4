@@ -50,7 +50,7 @@ def of {X : Type _} (toTwoPointing : TwoPointing X) : TwoP :=
 #align Twop.of TwoP.of
 
 @[simp]
-theorem coe_of {X : Type _} (to_two_pointing : TwoPointing X) : ↥(of to_two_pointing) = X :=
+theorem coe_of {X : Type _} (toTwoPointing : TwoPointing X) : ↥(of toTwoPointing) = X :=
   rfl
 #align Twop.coe_of TwoP.coe_of
 
