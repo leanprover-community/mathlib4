@@ -25,7 +25,7 @@ certificate.
 ## TODO
 
 - Bonus: Show the reverse implication i.e. if a number is prime then it has a Lucas witness.
-  Use `units.is_cyclic` from `ring_theory/integral_domain` to show the group is cyclic.
+  Use `Units.IsCyclic` from `RingTheory/IntegralDomain` to show the group is cyclic.
 - Write a tactic that uses this theorem to generate Pratt primality certificates
 - Integrate Pratt primality certificates into the norm_num primality verifier
 
@@ -56,7 +56,7 @@ theorem lucas_primality (p : ℕ) (a : ZMod p) (ha : a ^ (p - 1) = 1)
     exact tsub_pos_of_lt hp1
   haveI : NeZero p := ⟨h0⟩
   rw [Nat.prime_iff_card_units]
-  -- Prove cardinality of `units` of `zmod p` is both `≤ p-1` and `≥ p-1`
+  -- Prove cardinality of `Units` of `ZMod p` is both `≤ p-1` and `≥ p-1`
   refine' le_antisymm (Nat.card_units_zMod_lt_sub_one hp1) _
   have hp' : p - 2 + 1 = p - 1 := tsub_add_eq_add_tsub hp1
   let a' : (ZMod p)ˣ := Units.mkOfMulEqOne a (a ^ (p - 2)) (by rw [← pow_succ, hp', ha])
@@ -64,6 +64,5 @@ theorem lucas_primality (p : ℕ) (a : ZMod p) (ha : a ^ (p - 1) = 1)
     p - 1 = orderOf a := order_of_a.symm
     _ = orderOf a' := (orderOf_injective (Units.coeHom (ZMod p)) Units.ext a')
     _ ≤ Fintype.card (ZMod p)ˣ := orderOf_le_card_univ
-    
-#align lucas_primality lucas_primality
 
+#align lucas_primality lucas_primality
