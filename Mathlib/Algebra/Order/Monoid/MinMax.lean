@@ -16,6 +16,7 @@ import Mathlib.Tactic.Contrapose
 # Lemmas about `min` and `max` in an ordered monoid.
 -/
 
+
 open Function
 
 variable {α β : Type _}
