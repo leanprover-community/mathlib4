@@ -1569,6 +1569,7 @@ import Mathlib.Topology.Algebra.Order.MonotoneConvergence
 import Mathlib.Topology.Algebra.Order.ProjIcc
 import Mathlib.Topology.Algebra.Order.T5
 import Mathlib.Topology.Algebra.Order.UpperLower
+import Mathlib.Topology.Algebra.Polynomial
 import Mathlib.Topology.Algebra.Ring.Basic
 import Mathlib.Topology.Algebra.Ring.Ideal
 import Mathlib.Topology.Algebra.Semigroup

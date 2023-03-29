@@ -8,11 +8,11 @@ Authors: Robert Y. Lewis
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Polynomial.AlgebraMap
-import Mathbin.Data.Polynomial.Inductions
-import Mathbin.Data.Polynomial.Splits
-import Mathbin.RingTheory.Polynomial.Vieta
-import Mathbin.Analysis.Normed.Field.Basic
+import Mathlib.Data.Polynomial.AlgebraMap
+import Mathlib.Data.Polynomial.Inductions
+import Mathlib.Data.Polynomial.Splits
+import Mathlib.RingTheory.Polynomial.Vieta
+import Mathlib.Analysis.Normed.Field.Basic
 
 /-!
 # Polynomials and limits
@@ -50,8 +50,7 @@ variable {R S : Type _} [Semiring R] [TopologicalSpace R] [TopologicalSemiring R
 
 @[continuity]
 protected theorem continuous_eval₂ [Semiring S] (p : S[X]) (f : S →+* R) :
-    Continuous fun x => p.eval₂ f x :=
-  by
+    Continuous fun x => p.eval₂ f x := by
   simp only [eval₂_eq_sum, Finsupp.sum]
   exact continuous_finset_sum _ fun c hc => continuous_const.mul (continuous_pow _)
 #align polynomial.continuous_eval₂ Polynomial.continuous_eval₂
@@ -103,8 +102,7 @@ end TopologicalAlgebra
 theorem tendsto_abv_eval₂_atTop {R S k α : Type _} [Semiring R] [Ring S] [LinearOrderedField k]
     (f : R →+* S) (abv : S → k) [IsAbsoluteValue abv] (p : R[X]) (hd : 0 < degree p)
     (hf : f p.leadingCoeff ≠ 0) {l : Filter α} {z : α → S} (hz : Tendsto (abv ∘ z) l atTop) :
-    Tendsto (fun x => abv (p.eval₂ f (z x))) l atTop :=
-  by
+    Tendsto (fun x => abv (p.eval₂ f (z x))) l atTop := by
   revert hf; refine' degree_pos_induction_on p hd _ _ _ <;> clear hd p
   · rintro c - hc
     rw [leading_coeff_mul_X, leading_coeff_C] at hc
@@ -165,8 +163,7 @@ theorem eq_one_of_roots_le {p : F[X]} {f : F →+* K} {B : ℝ} (hB : B < 0) (h1
 
 theorem coeff_le_of_roots_le {p : F[X]} {f : F →+* K} {B : ℝ} (i : ℕ) (h1 : p.Monic)
     (h2 : Splits f p) (h3 : ∀ z ∈ (map f p).roots, ‖z‖ ≤ B) :
-    ‖(map f p).coeff i‖ ≤ B ^ (p.natDegree - i) * p.natDegree.choose i :=
-  by
+    ‖(map f p).coeff i‖ ≤ B ^ (p.natDegree - i) * p.natDegree.choose i := by
   obtain hB | hB := lt_or_le B 0
   · rw [eq_one_of_roots_le hB h1 h2 h3, Polynomial.map_one, nat_degree_one, zero_tsub, pow_zero,
       one_mul, coeff_one]
@@ -196,8 +193,7 @@ theorem coeff_le_of_roots_le {p : F[X]} {f : F →+* K} {B : ℝ} (i : ℕ) (h1 
 uniformely bounded. -/
 theorem coeff_bdd_of_roots_le {B : ℝ} {d : ℕ} (f : F →+* K) {p : F[X]} (h1 : p.Monic)
     (h2 : Splits f p) (h3 : p.natDegree ≤ d) (h4 : ∀ z ∈ (map f p).roots, ‖z‖ ≤ B) (i : ℕ) :
-    ‖(map f p).coeff i‖ ≤ max B 1 ^ d * d.choose (d / 2) :=
-  by
+    ‖(map f p).coeff i‖ ≤ max B 1 ^ d * d.choose (d / 2) := by
   obtain hB | hB := le_or_lt 0 B
   · apply (coeff_le_of_roots_le i h1 h2 h4).trans
     calc
