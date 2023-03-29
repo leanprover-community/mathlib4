@@ -15,9 +15,9 @@ import Mathlib.Logic.Function.Iterate
 # The primitive recursive functions
 
 The primitive recursive functions are the least collection of functions
-`ℕ → ℕ` which are closed under projections (using the mkpair
+`ℕ → ℕ` which are closed under projections (using the `pair`
 pairing function), composition, zero, successor, and primitive recursion
-(i.e. Nat.rec where the motive is C n := ℕ).
+(i.e. `Nat.rec` where the motive is `C n := ℕ`).
 
 We can extend this definition to a large class of basic types by
 using canonical encodings of types as natural numbers (Gödel numbering),
@@ -80,12 +80,12 @@ protected inductive Primrec : (ℕ → ℕ) → Prop
   | protected succ : Nat.Primrec succ
   | left : Nat.Primrec fun n => n.unpair.1
   | right : Nat.Primrec fun n => n.unpair.2
-  | pair {f g} : Nat.Primrec f → Nat.Primrec g → Nat.Primrec fun n => mkpair (f n) (g n)
+  | pair {f g} : Nat.Primrec f → Nat.Primrec g → Nat.Primrec fun n => pair (f n) (g n)
   | comp {f g} : Nat.Primrec f → Nat.Primrec g → Nat.Primrec fun n => f (g n)
   | prec {f g} :
       Nat.Primrec f →
         Nat.Primrec g →
-          Nat.Primrec (unpaired fun z n => n.rec (f z) fun y IH => g <| mkpair z <| mkpair y IH)
+          Nat.Primrec (unpaired fun z n => n.rec (f z) fun y IH => g <| pair z <| pair y IH)
 #align nat.primrec Nat.Primrec
 
 namespace Primrec
@@ -104,7 +104,7 @@ protected theorem id : Nat.Primrec id :=
 #align nat.primrec.id Nat.Primrec.id
 
 theorem prec1 {f} (m : ℕ) (hf : Nat.Primrec f) :
-    Nat.Primrec fun n => n.rec m fun y IH => f <| mkpair y IH :=
+    Nat.Primrec fun n => n.rec m fun y IH => f <| Nat.pair y IH :=
   ((prec (const m) (hf.comp right)).comp (zero.pair Primrec.id)).of_eq fun n => by simp
 #align nat.primrec.prec1 Nat.Primrec.prec1
 
@@ -113,11 +113,11 @@ theorem cases1 {f} (m : ℕ) (hf : Nat.Primrec f) : Nat.Primrec (Nat.casesOn · 
 #align nat.primrec.cases1 Nat.Primrec.cases1
 
 theorem cases {f g} (hf : Nat.Primrec f) (hg : Nat.Primrec g) :
-    Nat.Primrec (unpaired fun z n => n.casesOn (f z) fun y => g <| mkpair z y) :=
+    Nat.Primrec (unpaired fun z n => n.casesOn (f z) fun y => g <| Nat.pair z y) :=
   (prec hf (hg.comp (pair left (left.comp right)))).of_eq <| fun n => by simp
 #align nat.primrec.cases Nat.Primrec.cases
 
-protected theorem swap : Nat.Primrec (unpaired (swap mkpair)) :=
+protected theorem swap : Nat.Primrec (unpaired (swap Nat.pair)) :=
   (pair right left).of_eq fun n => by simp
 #align nat.primrec.swap Nat.Primrec.swap
 
@@ -433,11 +433,11 @@ theorem right : Primrec₂ fun (_ : α) (b : β) => b :=
   .snd
 #align primrec₂.right Primrec₂.right
 
-theorem mkpair : Primrec₂ Nat.mkpair := by simp [Primrec₂, Primrec]; constructor
-#align primrec₂.mkpair Primrec₂.mkpair
+theorem natPair : Primrec₂ Nat.pair := by simp [Primrec₂, Primrec]; constructor
+#align primrec₂.mkpair Primrec₂.natPair
 
 theorem unpaired {f : ℕ → ℕ → α} : Primrec (Nat.unpaired f) ↔ Primrec₂ f :=
-  ⟨fun h => by simpa using h.comp mkpair, fun h => h.comp Primrec.unpair⟩
+  ⟨fun h => by simpa using h.comp natPair, fun h => h.comp Primrec.unpair⟩
 #align primrec₂.unpaired Primrec₂.unpaired
 
 theorem unpaired' {f : ℕ → ℕ → ℕ} : Nat.Primrec (Nat.unpaired f) ↔ Primrec₂ f :=
@@ -921,7 +921,7 @@ private theorem list_foldl' {f : α → List β} {g : α → σ} {h : α → σ 
 
 private theorem list_cons' : (haveI := prim H; Primrec₂ (@List.cons β)) :=
   letI := prim H
-  encode_iff.1 (succ.comp <| Primrec₂.mkpair.comp (encode_iff.2 fst) (encode_iff.2 snd))
+  encode_iff.1 (succ.comp <| Primrec₂.natPair.comp (encode_iff.2 fst) (encode_iff.2 snd))
 
 private theorem list_reverse' :
     haveI := prim H
@@ -984,7 +984,7 @@ instance list : Primcodable (List α) :=
         · rfl
         · injection IH
         · injection IH
-        · exact congr_arg (fun k => (Nat.mkpair (encode a) k).succ.succ) (Nat.succ.inj IH)⟩
+        · exact congr_arg (fun k => (Nat.pair (encode a) k).succ.succ) (Nat.succ.inj IH)⟩
 
 #align primcodable.list Primcodable.list
 end Primcodable
@@ -1478,15 +1478,15 @@ theorem if_lt {n a b f g} (ha : @Primrec' n a) (hb : @Primrec' n b) (hf : @Primr
     · simp [Nat.lt_of_sub_eq_succ e]
 #align nat.primrec'.if_lt Nat.Primrec'.if_lt
 
-theorem mkpair : @Primrec' 2 fun v => v.head.mkpair v.tail.head :=
+theorem natPair : @Primrec' 2 fun v => v.head.pair v.tail.head :=
   if_lt head (tail head) (add.comp₂ _ (tail <| mul.comp₂ _ head head) head)
     (add.comp₂ _ (add.comp₂ _ (mul.comp₂ _ head head) head) (tail head))
-#align nat.primrec'.mkpair Nat.Primrec'.mkpair
+#align nat.primrec'.mkpair Nat.Primrec'.natPair
 
 protected theorem encode : ∀ {n}, @Primrec' n encode
   | 0 => (const 0).of_eq fun v => by rw [v.eq_nil]; rfl
   | n + 1 =>
-    (succ.comp₁ _ (mkpair.comp₂ _ head (tail Primrec'.encode))).of_eq fun ⟨a :: l, e⟩ => rfl
+    (succ.comp₁ _ (natPair.comp₂ _ head (tail Primrec'.encode))).of_eq fun ⟨a :: l, e⟩ => rfl
 #align nat.primrec'.encode Nat.Primrec'.encode
 
 theorem sqrt : @Primrec' 1 fun v => v.head.sqrt := by
@@ -1536,13 +1536,13 @@ theorem of_prim {n f} : Primrec f → @Primrec' n f :=
   case succ => exact succ
   case left => exact unpair₁ head
   case right => exact unpair₂ head
-  case pair f g _ _ hf hg => exact mkpair.comp₂ _ hf hg
+  case pair f g _ _ hf hg => exact natPair.comp₂ _ hf hg
   case comp f g _ _ hf hg => exact hf.comp₁ _ hg
   case prec f g _ _ hf hg =>
     simpa using
       prec' (unpair₂ head) (hf.comp₁ _ (unpair₁ head))
         (hg.comp₁ _ <|
-          mkpair.comp₂ _ (unpair₁ <| tail <| tail head) (mkpair.comp₂ _ head (tail head)))
+          natPair.comp₂ _ (unpair₁ <| tail <| tail head) (natPair.comp₂ _ head (tail head)))
 #align nat.primrec'.of_prim Nat.Primrec'.of_prim
 
 theorem prim_iff {n f} : @Primrec' n f ↔ Primrec f :=
