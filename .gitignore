@@ -1,4 +1,5 @@
 *.gpt.log
+chatgpt.*.json
 /build
 /lake-packages
 /.cache
