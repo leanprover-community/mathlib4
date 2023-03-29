@@ -289,14 +289,12 @@ theorem gcd_fib_add_mul_self (m n : ℕ) : ∀ k, gcd (fib m) (fib (n + k * m)) 
 /-- `fib n` is a strong divisibility sequence,
   see https://proofwiki.org/wiki/GCD_of_Fibonacci_Numbers -/
 theorem fib_gcd (m n : ℕ) : fib (gcd m n) = gcd (fib m) (fib n) := by
-  wlog h : m ≤ n
-  · simpa only [gcd_comm] using this _ _ (le_of_not_le h)
-  apply @Nat.gcd.induction _ m n -- porting note: why do I need the `@ … _`?
-  · simp
-  intro m n _ h
-  rw [← gcd_rec m n] at h
-  conv_rhs => rw [← mod_add_div' n m]
-  rwa [gcd_fib_add_mul_self m (n % m) (n / m), gcd_comm (fib m) _]
+  induction m, n using Nat.gcd.induction with
+  | H0 => simp
+  | H1 m n _ h' =>
+    rw [← gcd_rec m n] at h'
+    conv_rhs => rw [← mod_add_div' n m]
+    rwa [gcd_fib_add_mul_self m (n % m) (n / m), gcd_comm (fib m) _]
 #align nat.fib_gcd Nat.fib_gcd
 
 theorem fib_dvd (m n : ℕ) (h : m ∣ n) : fib m ∣ fib n := by
