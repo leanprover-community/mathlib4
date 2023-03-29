@@ -104,7 +104,7 @@ theorem tendsto_abv_eval₂_atTop {R S k α : Type _} [Semiring R] [Ring S] [Lin
     (hf : f p.leadingCoeff ≠ 0) {l : Filter α} {z : α → S} (hz : Tendsto (abv ∘ z) l atTop) :
     Tendsto (fun x => abv (p.eval₂ f (z x))) l atTop := by
   revert hf; refine' degree_pos_induction_on p hd _ _ _ <;> clear hd p
-  · rintro c - hc
+  · rintro _ - hc
     rw [leadingCoeff_mul_X, leadingCoeff_C] at hc
     simpa [abv_mul abv] using hz.const_mul_atTop ((abv_pos abv).2 hc)
   · intro _ _ ihp hf
@@ -141,7 +141,7 @@ theorem tendsto_norm_atTop (p : R[X]) (h : 0 < degree p) {l : Filter α} {z : α
 theorem exists_forall_norm_le [ProperSpace R] (p : R[X]) : ∃ x, ∀ y, ‖p.eval x‖ ≤ ‖p.eval y‖ :=
   if hp0 : 0 < degree p then
     p.continuous.norm.exists_forall_le <| p.tendsto_norm_atTop hp0 tendsto_norm_cocompact_atTop
-  else ⟨p.coeff 0, by rw [eq_C_of_degree_le_zero (le_of_not_gt hp0)] <;> simp⟩
+  else ⟨p.coeff 0, by rw [eq_C_of_degree_le_zero (le_of_not_gt hp0)]; simp⟩
 #align polynomial.exists_forall_norm_le Polynomial.exists_forall_norm_le
 
 section Roots
@@ -154,12 +154,11 @@ open Multiset
 
 theorem eq_one_of_roots_le {p : F[X]} {f : F →+* K} {B : ℝ} (hB : B < 0) (h1 : p.Monic)
     (h2 : Splits f p) (h3 : ∀ z ∈ (map f p).roots, ‖z‖ ≤ B) : p = 1 :=
-  h1.natDegree_eq_zero_iff_eq_one.mp
-    (by
-      contrapose! hB
-      rw [← h1.natDegree_map f, natDegree_eq_card_roots' h2] at hB
-      obtain ⟨z, hz⟩ := card_pos_iff_exists_mem.mp (zero_lt_iff.mpr hB)
-      exact le_trans (norm_nonneg _) (h3 z hz))
+  h1.natDegree_eq_zero_iff_eq_one.mp (by
+    contrapose! hB
+    rw [← h1.natDegree_map f, natDegree_eq_card_roots' h2] at hB
+    obtain ⟨z, hz⟩ := card_pos_iff_exists_mem.mp (zero_lt_iff.mpr hB)
+    exact le_trans (norm_nonneg _) (h3 z hz))
 #align polynomial.eq_one_of_roots_le Polynomial.eq_one_of_roots_le
 
 theorem coeff_le_of_roots_le {p : F[X]} {f : F →+* K} {B : ℝ} (i : ℕ) (h1 : p.Monic)
