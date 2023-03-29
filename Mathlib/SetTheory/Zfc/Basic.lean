@@ -208,3 +208,57 @@ protected theorem equiv_of_isEmpty (x y : PSet) [IsEmpty x.Type] [IsEmpty y.Type
 instance setoid : Setoid PSet :=
   ⟨PSet.Equiv, Equiv.refl, Equiv.symm, Equiv.trans⟩
 #align pSet.setoid PSet.setoid
+
+/-- A pre-set is a subset of another pre-set if every element of the first family is extensionally
+equivalent to some element of the second family.-/
+protected def Subset (x y : PSet) : Prop :=
+  ∀ a, ∃ b, Equiv (x.Func a) (y.Func b)
+#align pSet.subset PSet.Subset
+
+instance : HasSubset PSet :=
+  ⟨PSet.Subset⟩
+
+instance : IsRefl PSet (· ⊆ ·) :=
+  ⟨fun _ a => ⟨a, Equiv.refl _⟩⟩
+
+instance : IsTrans PSet (· ⊆ ·) :=
+  ⟨fun x y z hxy hyz a => by
+    cases' hxy a with b hb
+    cases' hyz b with c hc
+    exact ⟨c, hb.trans hc⟩⟩
+
+theorem Equiv.ext : ∀ x y : PSet, Equiv x y ↔ x ⊆ y ∧ y ⊆ x
+  | ⟨_, _⟩, ⟨_, _⟩ =>
+    ⟨fun ⟨αβ, βα⟩ =>
+      ⟨αβ, fun b =>
+        let ⟨a, h⟩ := βα b
+        ⟨a, Equiv.symm h⟩⟩,
+      fun ⟨αβ, βα⟩ =>
+      ⟨αβ, fun b =>
+        let ⟨a, h⟩ := βα b
+        ⟨a, Equiv.symm h⟩⟩⟩
+#align pSet.equiv.ext PSet.Equiv.ext
+
+theorem Subset.congr_left : ∀ {x y z : PSet}, Equiv x y → (x ⊆ z ↔ y ⊆ z)
+  | ⟨_, _⟩, ⟨_, _⟩, ⟨_, _⟩, ⟨αβ, βα⟩ =>
+    ⟨fun αγ b =>
+      let ⟨a, ba⟩ := βα b
+      let ⟨c, ac⟩ := αγ a
+      ⟨c, (Equiv.symm ba).trans ac⟩,
+      fun βγ a =>
+      let ⟨b, ab⟩ := αβ a
+      let ⟨c, bc⟩ := βγ b
+      ⟨c, Equiv.trans ab bc⟩⟩
+#align pSet.subset.congr_left PSet.Subset.congr_left
+
+theorem Subset.congr_right : ∀ {x y z : PSet}, Equiv x y → (z ⊆ x ↔ z ⊆ y)
+  | ⟨_, _⟩, ⟨_, _⟩, ⟨_, _⟩, ⟨αβ, βα⟩ =>
+    ⟨fun γα c =>
+      let ⟨a, ca⟩ := γα c
+      let ⟨b, ab⟩ := αβ a
+      ⟨b, ca.trans ab⟩,
+      fun γβ c =>
+      let ⟨b, cb⟩ := γβ c
+      let ⟨a, ab⟩ := βα b
+      ⟨a, cb.trans (Equiv.symm ab)⟩⟩
+#align pSet.subset.congr_right PSet.Subset.congr_right
