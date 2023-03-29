@@ -257,14 +257,14 @@ def fromTransported (e : C ≌ D) : MonoidalFunctor (Transported e) C :=
 #align category_theory.monoidal.from_transported CategoryTheory.Monoidal.fromTransported
 
 /-- The unit isomorphism upgrades to a monoidal isomorphism. -/
-@[simp]
+@[simps! hom inv]
 def transportedMonoidalUnitIso (e : C ≌ D) :
     LaxMonoidalFunctor.id C ≅ laxToTransported e ⊗⋙ (fromTransported e).toLaxMonoidalFunctor :=
   asIso (monoidalUnit (toTransported e))
 #align category_theory.monoidal.transported_monoidal_unit_iso CategoryTheory.Monoidal.transportedMonoidalUnitIso
 
 /-- The counit isomorphism upgrades to a monoidal isomorphism. -/
-@[simp]
+@[simps! hom inv]
 def transportedMonoidalCounitIso (e : C ≌ D) :
     (fromTransported e).toLaxMonoidalFunctor ⊗⋙ laxToTransported e ≅
       LaxMonoidalFunctor.id (Transported e) :=
