@@ -840,19 +840,16 @@ set_option linter.uppercaseLean3 false in
 
 variable {σ}
 
-set_option maxHeartbeats 0 in
+attribute [-instance] MvPolynomial.instCommRingMvPolynomialToCommSemiring in
 theorem prime_rename_iff (s : Set σ) {p : MvPolynomial s R} :
-    Prime (rename ((↑) : s → σ) p) ↔ Prime p := by
+    Prime (rename ((↑) : s → σ) p) ↔ Prime (p : MvPolynomial s R) := by
   classical
     symm
     let eqv :=
       (sumAlgEquiv R (↥(sᶜ)) s).symm.trans
         (renameEquiv R <| (Equiv.sumComm (↥(sᶜ)) s).trans <| Equiv.Set.sumCompl s)
-    rw [← prime_C_iff (↥(sᶜ)), eqv.toMulEquiv.prime_iff]
-    convert Iff.rfl
-    suffices (rename (↑)).toRingHom = eqv.toAlgHom.toRingHom.comp C by
-      apply RingHom.congr_fun this
-    · apply ringHom_ext
+    have : (rename (↑)).toRingHom = eqv.toAlgHom.toRingHom.comp C := by
+      apply ringHom_ext
       · intro
         dsimp
         erw [iterToSum_C_C, rename_C, rename_C]
@@ -860,6 +857,12 @@ theorem prime_rename_iff (s : Set σ) {p : MvPolynomial s R} :
         dsimp
         erw [iterToSum_C_X, rename_X, rename_X]
         rfl
+    rw [← @prime_C_iff (MvPolynomial s R) (↥(sᶜ)) instCommRingMvPolynomialToCommSemiring p]
+    rw [@MulEquiv.prime_iff (MvPolynomial (↑(sᶜ)) (MvPolynomial (↑s) R)) (MvPolynomial σ R) (_) (_)]
+    rotate_left
+    exact eqv.toMulEquiv
+    convert Iff.rfl
+    apply RingHom.congr_fun this p
 #align mv_polynomial.prime_rename_iff MvPolynomial.prime_rename_iff
 
 end MvPolynomial
