@@ -36,6 +36,7 @@ def systemPrompt : String :=
 I want to remind you that we're using Lean 4, not the older Lean 3, and there have been some syntax changes. In particular:
 - Type constants are now UpperCamelCase, eg `Nat`, `List`.
 - Term constants and variables are now `lowerCamelCase` rather than `snake_case`. For example, we now have `NumberTheory.Divisors.properDivisors instead of `number_theory.divisors.proper_divisors`.
+- Pure functions are now written with the syntax `fun x => f x`. The old `λ x, f x` syntax will not work.
 - Instead of being separated by a comma, tactics can be separated by a newline or by a semicolon. For example, we could write
 ```lean
 theorem test (p q : Prop) (hp : p) (hq : q) : p ∧ q ∧ p := by
