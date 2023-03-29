@@ -506,7 +506,7 @@ def image (f : PSet.{u} → PSet.{u}) (x : PSet.{u}) : PSet :=
 theorem mem_image {f : PSet.{u} → PSet.{u}} (H : ∀ x y, Equiv x y → Equiv (f x) (f y)) :
     ∀ {x y : PSet.{u}}, y ∈ image f x ↔ ∃ z ∈ x, Equiv y (f z)
   | ⟨_, A⟩, _ =>
-    ⟨fun ⟨a, ya⟩ => ⟨A a, Mem.mk A a, ya⟩, fun ⟨_, ⟨a, za⟩, yz⟩ => ⟨a, yz.trans (H _ _ za)⟩⟩
+    ⟨fun ⟨a, ya⟩ => ⟨A a, Mem.mk A a, ya⟩, fun ⟨_, ⟨a, za⟩, yz⟩ => ⟨a, yz.trans <| H _ _ za⟩⟩
 #align pSet.mem_image PSet.mem_image
 
 /-- Universe lift operation -/
@@ -531,13 +531,6 @@ def Arity.Equiv : ∀ {n}, Arity PSet.{u} n → Arity PSet.{u} n → Prop
   | 0, a, b => PSet.Equiv a b
   | _ + 1, a, b => ∀ x y : PSet, PSet.Equiv x y → Arity.Equiv (a x) (b y)
 #align pSet.arity.equiv PSet.Arity.Equiv
-
-@[simp] theorem Arity.equiv_zero {a b : PSet} : @Arity.Equiv 0 a b ↔ PSet.Equiv a b :=
-  Iff.rfl
-
-@[simp] theorem Arity.equiv_succ {n : ℕ} {a b : Arity PSet.{u} (n + 1)} :
-    @Arity.Equiv (n + 1) a b ↔ ∀ x y : PSet, PSet.Equiv x y → Arity.Equiv (a x) (b y) :=
-  Iff.rfl
 
 theorem Arity.equiv_const {a : PSet.{u}} : ∀ n, Arity.Equiv (Arity.Const a n) (Arity.Const a n)
   | 0 => Equiv.rfl
@@ -982,10 +975,10 @@ protected def sep (p : ZFSet → Prop) : ZFSet → ZFSet :=
         ⟨⟨a, by simpa only [mk_func, ZFSet.sound ha]⟩, ha⟩⟩⟩
 #align Set.sep ZFSet.sep
 
+-- Porting note: the { x | p x } notation appears to be disabled in Lean 4.
 instance : Sep ZFSet ZFSet :=
   ⟨ZFSet.sep⟩
 
--- Porting note: using { y ∈ x | p y } defaults to `Set ZFSet` instead of `ZFSet`.
 @[simp]
 theorem mem_sep {p : ZFSet.{u} → Prop} {x y : ZFSet.{u}} :
     y ∈ ZFSet.sep p x ↔ y ∈ x ∧ p y :=
@@ -1200,11 +1193,11 @@ def image (f : ZFSet → ZFSet) [Definable 1 f] : ZFSet → ZFSet :=
   Resp.eval 1
     ⟨PSet.image r, fun _ _ e =>
       Mem.ext fun _ =>
-        Iff.trans (mem_image hr) <|
+        (mem_image hr).trans <|
           Iff.trans
               ⟨fun ⟨w, h1, h2⟩ => ⟨w, (Mem.congr_right e).1 h1, h2⟩, fun ⟨w, h1, h2⟩ =>
                 ⟨w, (Mem.congr_right e).2 h1, h2⟩⟩ <|
-            Iff.symm (mem_image hr)⟩
+            (mem_image hr).symm⟩
 #align Set.image ZFSet.image
 
 theorem image.mk :
@@ -1253,3 +1246,77 @@ theorem toSet_range {α : Type u} (f : α → ZFSet.{max u v}) : (range.{u, v} f
   ext
   simp
 #align Set.to_set_range ZFSet.toSet_range
+
+/-- Kuratowski ordered pair -/
+def pair (x y : ZFSet.{u}) : ZFSet.{u} :=
+  {{x}, {x, y}}
+#align Set.pair ZFSet.pair
+
+@[simp]
+theorem toSet_pair (x y : ZFSet.{u}) : (pair x y).toSet = {{x}, {x, y}} := by simp [pair]
+#align Set.to_set_pair ZFSet.toSet_pair
+
+/-- A subset of pairs `{(a, b) ∈ x × y | p a b}` -/
+def pairSep (p : ZFSet.{u} → ZFSet.{u} → Prop) (x y : ZFSet.{u}) : ZFSet.{u} :=
+  ZFSet.sep (fun z => ∃ a ∈ x, ∃ b ∈ y, z = pair a b ∧ p a b) (powerset (powerset (x ∪ y)))
+#align Set.pair_sep ZFSet.pairSep
+
+@[simp]
+theorem mem_pairSep {p} {x y z : ZFSet.{u}} :
+    z ∈ pairSep p x y ↔ ∃ a ∈ x, ∃ b ∈ y, z = pair a b ∧ p a b :=
+  by
+  refine' mem_sep.trans ⟨And.right, fun e => ⟨_, e⟩⟩
+  rcases e with ⟨a, ax, b, bY, rfl, pab⟩
+  simp only [mem_powerset, subset_def, mem_union, pair, mem_pair]
+  rintro u (rfl | rfl) v <;> simp only [mem_singleton, mem_pair]
+  · rintro rfl
+    exact Or.inl ax
+  · rintro (rfl | rfl) <;> [left, right] <;> assumption
+#align Set.mem_pair_sep ZFSet.mem_pairSep
+
+theorem pair_injective : Function.Injective2 pair := fun x x' y y' H =>
+  by
+  have ae := ext_iff.1 H
+  simp only [pair, mem_pair] at ae
+  obtain rfl : x = x' := by
+    cases' (ae {x}).1 (by simp) with h h
+    · exact singleton_injective h
+    · have m : x' ∈ ({x} : ZFSet) := by simp [h]
+      rw [mem_singleton.mp m]
+  have he : x = y → y = y' := by
+    rintro rfl
+    cases' (ae {x, y'}).2 (by simp only [eq_self_iff_true, or_true_iff]) with xy'x xy'xx
+    · rw [eq_comm, ← mem_singleton, ← xy'x, mem_pair]
+      exact Or.inr rfl
+    · simpa [eq_comm] using (ext_iff.1 xy'xx y').1 (by simp)
+  obtain xyx | xyy' := (ae {x, y}).1 (by simp)
+  · obtain rfl := mem_singleton.mp ((ext_iff.1 xyx y).1 <| by simp)
+    simp [he rfl]
+  · obtain rfl | yy' := mem_pair.mp ((ext_iff.1 xyy' y).1 <| by simp)
+    · simp [he rfl]
+    · simp [yy']
+#align Set.pair_injective ZFSet.pair_injective
+
+@[simp]
+theorem pair_inj {x y x' y' : ZFSet} : pair x y = pair x' y' ↔ x = x' ∧ y = y' :=
+  pair_injective.eq_iff
+#align Set.pair_inj ZFSet.pair_inj
+
+/-- The cartesian product, `{(a, b) | a ∈ x, b ∈ y}` -/
+def prod : ZFSet.{u} → ZFSet.{u} → ZFSet.{u} :=
+  pairSep fun _ _ => True
+#align Set.prod ZFSet.prod
+
+@[simp]
+theorem mem_prod {x y z : ZFSet.{u}} : z ∈ prod x y ↔ ∃ a ∈ x, ∃ b ∈ y, z = pair a b := by
+  simp [prod]
+#align Set.mem_prod ZFSet.mem_prod
+
+@[simp]
+theorem pair_mem_prod {x y a b : ZFSet.{u}} : pair a b ∈ prod x y ↔ a ∈ x ∧ b ∈ y :=
+  ⟨fun h =>
+    let ⟨a', a'x, b', b'y, e⟩ := mem_prod.1 h
+    match a', b', pair_injective e, a'x, b'y with
+    | _, _, ⟨rfl, rfl⟩, ax, bY => ⟨ax, bY⟩,
+    fun ⟨ax, bY⟩ => mem_prod.2 ⟨a, ax, b, bY, rfl⟩⟩
+#align Set.pair_mem_prod ZFSet.pair_mem_prod
