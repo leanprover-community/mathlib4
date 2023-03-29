@@ -1146,7 +1146,7 @@ theorem Ico_subset_Ico_iff (h₁ : a₁ < b₁) : Ico a₁ b₁ ⊆ Ico a₂ b�
 #align set.Ico_subset_Ico_iff Set.Ico_subset_Ico_iff
 
 theorem Ioc_subset_Ioc_iff (h₁ : a₁ < b₁) : Ioc a₁ b₁ ⊆ Ioc a₂ b₂ ↔ b₁ ≤ b₂ ∧ a₂ ≤ a₁ := by
-  convert @Ico_subset_Ico_iff αᵒᵈ _ b₁ b₂ a₁ a₂ h₁ <;> exact (@dual_Ico α _ _ _).symm
+  convert @Ico_subset_Ico_iff αᵒᵈ _ b₁ b₂ a₁ a₂ h₁ using 2 <;> exact (@dual_Ico α _ _ _).symm
 #align set.Ioc_subset_Ioc_iff Set.Ioc_subset_Ioc_iff
 
 theorem Ioo_subset_Ioo_iff [DenselyOrdered α] (h₁ : a₁ < b₁) :
@@ -1361,10 +1361,9 @@ theorem Icc_union_Ici' (h₁ : c ≤ b) : Icc a b ∪ Ici c = Ici (min a c) := b
 theorem Icc_union_Ici (h : c ≤ max a b) : Icc a b ∪ Ici c = Ici (min a c) := by
   cases' le_or_lt a b with hab hab <;> simp [hab] at h
   · exact Icc_union_Ici' h
-  · cases h
+  · cases' h with h h
     · simp [*]
-    · rename_i h
-      have hca : c ≤ a := h.trans hab.le
+    · have hca : c ≤ a := h.trans hab.le
       simp [*]
 #align set.Icc_union_Ici Set.Icc_union_Ici
 
@@ -1480,9 +1479,8 @@ theorem Iic_union_Icc' (h₁ : c ≤ b) : Iic b ∪ Icc c d = Iic (max b d) := b
 theorem Iic_union_Icc (h : min c d ≤ b) : Iic b ∪ Icc c d = Iic (max b d) := by
   cases' le_or_lt c d with hcd hcd <;> simp [hcd] at h
   · exact Iic_union_Icc' h
-  · cases h
-    · rename_i h
-      have hdb : d ≤ b := hcd.le.trans h
+  · cases' h with h h
+    · have hdb : d ≤ b := hcd.le.trans h
       simp [*]
     · simp [*]
 #align set.Iic_union_Icc Set.Iic_union_Icc
