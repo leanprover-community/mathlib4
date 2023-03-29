@@ -75,8 +75,8 @@ theorem WithTop.coe_infₛ' [InfSet α] {s : Set α} (hs : s.Nonempty) :
     ↑(infₛ s) = (infₛ ((fun (a : α) ↦ ↑a) '' s) : WithTop α) := by
   obtain ⟨x, hx⟩ := hs
   change _ = ite _ _ _
-  split_ifs
-  · rename_i h; cases h (mem_image_of_mem _ hx)
+  split_ifs with h
+  · cases h (mem_image_of_mem _ hx)
   · rw [preimage_image_eq]
     exact Option.some_injective _
 #align with_top.coe_Inf' WithTop.coe_infₛ'
@@ -1460,7 +1460,7 @@ noncomputable instance WithTop.WithBot.completeLattice {α : Type _}
   { instInfSetWithTop, instSupSetWithTop, WithTop.boundedOrder, WithTop.lattice with
     le_supₛ := fun S a haS => (WithTop.isLUB_supₛ' ⟨a, haS⟩).1 haS
     supₛ_le := fun S a ha => by
-      cases' S.eq_empty_or_nonempty with h
+      cases' S.eq_empty_or_nonempty with h h
       · show ite _ _ _ ≤ a
         split_ifs with h₁ h₂
         · rw [h] at h₁
@@ -1475,8 +1475,7 @@ noncomputable instance WithTop.WithBot.completeLattice {α : Type _}
           use ⊥
           rw [h]
           rintro b ⟨⟩
-      · rename_i h
-        refine' (WithTop.isLUB_supₛ' h).2 ha
+      · refine' (WithTop.isLUB_supₛ' h).2 ha
     infₛ_le := fun S a haS =>
       show ite _ _ _ ≤ a by
         split_ifs with h₁
