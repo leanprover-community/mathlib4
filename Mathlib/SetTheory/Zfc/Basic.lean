@@ -1223,7 +1223,7 @@ theorem toSet_image (f : ZFSet → ZFSet) [H : Definable 1 f] (x : ZFSet) :
 #align Set.to_set_image ZFSet.toSet_image
 
 /-- The range of an indexed family of sets. The universes allow for a more general index type
-  without manual use of `ulift`. -/
+  without manual use of `ULift`. -/
 noncomputable def range {α : Type u} (f : α → ZFSet.{max u v}) : ZFSet.{max u v} :=
   ⟦⟨ULift.{v} α, Quotient.out ∘ f ∘ ULift.down⟩⟧
 #align Set.range ZFSet.range
@@ -1320,3 +1320,57 @@ theorem pair_mem_prod {x y a b : ZFSet.{u}} : pair a b ∈ prod x y ↔ a ∈ x 
     | _, _, ⟨rfl, rfl⟩, ax, bY => ⟨ax, bY⟩,
     fun ⟨ax, bY⟩ => mem_prod.2 ⟨a, ax, b, bY, rfl⟩⟩
 #align Set.pair_mem_prod ZFSet.pair_mem_prod
+
+/-- `isFunc x y f` is the assertion that `f` is a subset of `x × y` which relates to each element
+of `x` a unique element of `y`, so that we can consider `f` as a ZFC function `x → y`. -/
+def IsFunc (x y f : ZFSet.{u}) : Prop :=
+  f ⊆ prod x y ∧ ∀ z : ZFSet.{u}, z ∈ x → ∃! w, pair z w ∈ f
+#align Set.is_func ZFSet.IsFunc
+
+/-- `funs x y` is `y ^ x`, the set of all set functions `x → y` -/
+def funs (x y : ZFSet.{u}) : ZFSet.{u} :=
+  ZFSet.sep (IsFunc x y) (powerset (prod x y))
+#align Set.funs ZFSet.funs
+
+@[simp]
+theorem mem_funs {x y f : ZFSet.{u}} : f ∈ funs x y ↔ IsFunc x y f := by simp [funs, IsFunc]
+#align Set.mem_funs ZFSet.mem_funs
+
+-- TODO(Mario): Prove this computably
+noncomputable instance mapDefinableAux (f : ZFSet → ZFSet) [Definable 1 f] :
+    Definable 1 fun y => pair y (f y) :=
+  @Classical.AllDefinable 1 _
+#align Set.map_definable_aux ZFSet.mapDefinableAux
+
+/-- Graph of a function: `map f x` is the ZFC function which maps `a ∈ x` to `f a` -/
+noncomputable def map (f : ZFSet → ZFSet) [Definable 1 f] : ZFSet → ZFSet :=
+  image fun y => pair y (f y)
+#align Set.map ZFSet.map
+
+@[simp]
+theorem mem_map {f : ZFSet → ZFSet} [Definable 1 f] {x y : ZFSet} :
+    y ∈ map f x ↔ ∃ z ∈ x, pair z (f z) = y :=
+  mem_image
+#align Set.mem_map ZFSet.mem_map
+
+theorem map_unique {f : ZFSet.{u} → ZFSet.{u}} [H : Definable 1 f] {x z : ZFSet.{u}}
+    (zx : z ∈ x) : ∃! w, pair z w ∈ map f x :=
+  ⟨f z, image.mk _ _ zx, fun y yx =>
+    by
+    let ⟨w, _, we⟩ := mem_image.1 yx
+    let ⟨wz, fy⟩ := pair_injective we
+    rw [← fy, wz]⟩
+#align Set.map_unique ZFSet.map_unique
+
+@[simp]
+theorem map_isFunc {f : ZFSet → ZFSet} [Definable 1 f] {x y : ZFSet} :
+    IsFunc x y (map f x) ↔ ∀ z ∈ x, f z ∈ y :=
+  ⟨fun ⟨ss, h⟩ z zx =>
+    let ⟨_, t1, t2⟩ := h z zx
+    (t2 (f z) (image.mk _ _ zx)).symm ▸ (pair_mem_prod.1 (ss t1)).right,
+    fun h =>
+    ⟨fun _ yx =>
+      let ⟨z, zx, ze⟩ := mem_image.1 yx
+      ze ▸ pair_mem_prod.2 ⟨zx, h z zx⟩,
+      fun _ => map_unique⟩⟩
+#align Set.map_is_func ZFSet.map_isFunc
