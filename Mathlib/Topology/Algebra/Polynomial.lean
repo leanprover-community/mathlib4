@@ -138,6 +138,7 @@ theorem tendsto_norm_atTop (p : R[X]) (h : 0 < degree p) {l : Filter α} {z : α
   p.tendsto_abv_atTop norm h hz
 #align polynomial.tendsto_norm_at_top Polynomial.tendsto_norm_atTop
 
+set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 theorem exists_forall_norm_le [ProperSpace R] (p : R[X]) : ∃ x, ∀ y, ‖p.eval x‖ ≤ ‖p.eval y‖ :=
   if hp0 : 0 < degree p then
     p.continuous.norm.exists_forall_le <| p.tendsto_norm_atTop hp0 tendsto_norm_cocompact_atTop
