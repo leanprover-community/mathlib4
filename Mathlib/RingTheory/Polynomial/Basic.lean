@@ -1171,6 +1171,9 @@ instance {R : Type u} {σ : Type v} [CommRing R] [IsDomain R] :
   apply @NoZeroDivisors.to_isDomain (MvPolynomial σ R) _ ?_ _
   apply AddMonoidAlgebra.nontrivial
 
+-- instance {R : Type u} {σ : Type v} [CommRing R] [IsDomain R] :
+--     IsDomain (MvPolynomial σ R)[X] := inferInstance
+
 theorem map_mvPolynomial_eq_eval₂ {S : Type _} [CommRing S] [Finite σ] (ϕ : MvPolynomial σ R →+* S)
     (p : MvPolynomial σ R) :
     ϕ p = MvPolynomial.eval₂ (ϕ.comp MvPolynomial.C) (fun s => ϕ (MvPolynomial.X s)) p := by
@@ -1246,6 +1249,7 @@ open UniqueFactorizationMonoid
 
 namespace Polynomial
 
+attribute [-instance] Ring.toSemiring in
 instance (priority := 100) uniqueFactorizationMonoid : UniqueFactorizationMonoid D[X] := by
   haveI : NormalizationMonoid D:= Inhabited.default
   haveI := toNormalizedGCDMonoid D
@@ -1257,25 +1261,60 @@ end Polynomial
 namespace MvPolynomial
 variable (d : ℕ)
 
-set_option maxHeartbeats 0 in
+#check CommRing.toCommSemiring
+#check Polynomial.semiring
+#check  instIsDomainPolynomialToSemiringSemiring
+
+-- attribute [-instance] Polynomial.semiring -- Polynomial.commSemiring
+-- attribute [-instance] MvPolynomial.instCommRingMvPolynomialToCommSemiring
+#synth CommSemiring R[X]
+set_option profiler true in
+-- set_option maxHeartbeats 0 in
+-- set_option synthInstance.maxHeartbeats 0 in
+set_option trace.Meta.synthInstance true in
+set_option trace.Meta.isDefEq true in
+-- attribute [-instance] MvPolynomial.instCommRingMvPolynomialToCommSemiring in
+attribute [-instance] Polynomial.semiring Polynomial.commSemiring in
+-- set_option synthInstance.etaExperiment true in
+instance : CancelCommMonoidWithZero (MvPolynomial (Fin d) D)[X] := by
+  apply IsDomain.toCancelCommMonoidWithZero
+#check MulEquiv.uniqueFactorizationMonoid
+#synth IsDomain (MvPolynomial (Fin d) D)[X]
+#synth CancelCommMonoidWithZero (MvPolynomial (Fin d) D)[X]
+#synth CancelCommMonoidWithZero D[X]
+-- set_option maxHeartbeats 0 in
+-- set_option synthInstance.etaExperiment true in
+-- attribute [-instance] MvPolynomial.instCommRingMvPolynomialToCommSemiring in
+attribute [-instance] Semiring.toNonAssocSemiring
+set_option profiler true in
+-- set_option maxHeartbeats 0 in
+-- set_option synthInstance.maxHeartbeats 0 in
+set_option trace.Meta.synthInstance true in
+set_option trace.Meta.isDefEq true in
 private theorem uniqueFactorizationMonoid_of_fintype [Fintype σ] :
     UniqueFactorizationMonoid (MvPolynomial σ D) :=
-  let f (d : ℕ) := (finSuccEquiv D d).toMulEquiv.symm
-  have that (d : ℕ) : IsDomain (MvPolynomial (Fin d) D)[X] := inferInstance
   (renameEquiv D (Fintype.equivFin σ)).toMulEquiv.symm.uniqueFactorizationMonoid <| by
     induction' Fintype.card σ with d hd
     · apply (isEmptyAlgEquiv D (Fin 0)).toMulEquiv.symm.uniqueFactorizationMonoid
       infer_instance
     · rw [Nat.succ_eq_add_one d]
-      refine @MulEquiv.uniqueFactorizationMonoid ?_ _ ?_ _ ?_ ?_
-      · exact (MvPolynomial (Fin d) D)[X]
-      · refine @IsDomain.toCancelCommMonoidWithZero _ _ ?_
-        infer_instance
-      . exact (f d)
-      · refine @Polynomial.uniqueFactorizationMonoid (MvPolynomial (Fin d) D) ?_ ?_ ?_
-        · infer_instance
-        · apply hd
+      apply @MulEquiv.uniqueFactorizationMonoid _ _ (_) (_)
+      · exact (finSuccEquiv D d).toMulEquiv.symm
+      · apply @Polynomial.uniqueFactorizationMonoid (MvPolynomial (Fin d) D) _ _ ?_
+        assumption
 
+
+
+      -- refine @MulEquiv.uniqueFactorizationMonoid ?_ _ ?_ _ ?_ ?_
+      -- · exact (MvPolynomial (Fin d) D)[X]
+      -- · refine @IsDomain.toCancelCommMonoidWithZero _ _ ?_
+      --   sorry -- infer_instance
+      -- . exact (f d)
+      -- · refine @Polynomial.uniqueFactorizationMonoid ?_ ?_ ?_ ?_
+      -- -- · refine @Polynomial.uniqueFactorizationMonoid (MvPolynomial (Fin d) D) ?_ ?_ ?_
+      --   · infer_instance
+      --   · apply hd
+#exit
 instance (priority := 100) : UniqueFactorizationMonoid (MvPolynomial σ D) := by
   rw [iff_exists_prime_factors]
   intro a ha; obtain ⟨s, a', rfl⟩ := exists_finset_rename a
