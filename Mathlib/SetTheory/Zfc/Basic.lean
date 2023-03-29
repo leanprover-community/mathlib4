@@ -523,3 +523,62 @@ def embed : PSet.{max (u + 1) v} :=
 theorem lift_mem_embed : ∀ x : PSet.{u}, PSet.Lift.{u, max (u + 1) v} x ∈ embed.{u, v} := fun x =>
   ⟨⟨x⟩, Equiv.rfl⟩
 #align pSet.lift_mem_embed PSet.lift_mem_embed
+
+/-- Function equivalence is defined so that `f ~ g` iff `∀ x y, x ~ y → f x ~ g y`. This extends to
+equivalence of `n`-ary functions. -/
+def Arity.Equiv : ∀ {n}, Arity PSet.{u} n → Arity PSet.{u} n → Prop
+  | 0, a, b => PSet.Equiv a b
+  | _ + 1, a, b => ∀ x y : PSet, PSet.Equiv x y → Arity.Equiv (a x) (b y)
+#align pSet.arity.equiv PSet.Arity.Equiv
+
+theorem Arity.equiv_const {a : PSet.{u}} : ∀ n, Arity.Equiv (Arity.Const a n) (Arity.Const a n)
+  | 0 => Equiv.rfl
+  | _ + 1 => fun _ _ _ => Arity.equiv_const _
+#align pSet.arity.equiv_const PSet.Arity.equiv_const
+
+/-- `resp n` is the collection of n-ary functions on `pSet` that respect
+  equivalence, i.e. when the inputs are equivalent the output is as well. -/
+def Resp (n) :=
+  { x : Arity PSet.{u} n // Arity.Equiv x x }
+#align pSet.resp PSet.Resp
+
+instance Resp.inhabited {n} : Inhabited (Resp n) :=
+  ⟨⟨Arity.Const default _, Arity.equiv_const _⟩⟩
+#align pSet.resp.inhabited PSet.Resp.inhabited
+
+/-- The `n`-ary image of a `(n + 1)`-ary function respecting equivalence as a function respecting
+equivalence. -/
+def Resp.f {n} (f : Resp (n + 1)) (x : PSet) : Resp n :=
+  ⟨f.1 x, f.2 _ _ <| Equiv.refl x⟩
+#align pSet.resp.f PSet.Resp.f
+
+/-- Function equivalence for functions respecting equivalence. See `pSet.arity.equiv`. -/
+def Resp.Equiv {n} (a b : Resp n) : Prop :=
+  Arity.Equiv a.1 b.1
+#align pSet.resp.equiv PSet.Resp.Equiv
+
+protected theorem Resp.Equiv.refl {n} (a : Resp n) : Resp.Equiv a a :=
+  a.2
+#align pSet.resp.equiv.refl PSet.Resp.Equiv.refl
+
+protected theorem Resp.Equiv.euc :
+    ∀ {n} {a b c : Resp n}, Resp.Equiv a b → Resp.Equiv c b → Resp.Equiv a c
+  | 0, _, _, _, hab, hcb => PSet.Equiv.euc hab hcb
+  | n + 1, a, b, c, hab, hcb => fun x y h =>
+    @Resp.Equiv.euc n (a.f x) (b.f y) (c.f y) (hab _ _ h) (hcb _ _ <| PSet.Equiv.refl y)
+#align pSet.resp.equiv.euc PSet.Resp.Equiv.euc
+
+protected theorem Resp.Equiv.symm {n} {a b : Resp n} : Resp.Equiv a b → Resp.Equiv b a :=
+  (Resp.Equiv.refl b).euc
+#align pSet.resp.equiv.symm PSet.Resp.Equiv.symm
+
+protected theorem Resp.Equiv.trans {n} {x y z : Resp n} (h1 : Resp.Equiv x y)
+    (h2 : Resp.Equiv y z) : Resp.Equiv x z :=
+  h1.euc h2.symm
+#align pSet.resp.equiv.trans PSet.Resp.Equiv.trans
+
+instance Resp.setoid {n} : Setoid (Resp n) :=
+  ⟨Resp.Equiv, Resp.Equiv.refl, Resp.Equiv.symm, Resp.Equiv.trans⟩
+#align pSet.resp.setoid PSet.Resp.setoid
+
+end PSet
