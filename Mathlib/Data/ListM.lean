@@ -28,8 +28,8 @@ universe u v
 
 /-- A monadic lazy list, controlled by an arbitrary monad. -/
 unsafe inductive ListM (m : Type u → Type u) (α : Type u) : Type u
-| nil : ListM m α
-| cons : m (Option α × ListM m α) → ListM m α
+  | nil : ListM m α
+  | cons : m (Option α × ListM m α) → ListM m α
 #align tactic.mllist ListM
 
 namespace ListM
@@ -52,10 +52,10 @@ unsafe def fixl_with [Alternative m] (f : α → m (α × List β)) : α → Lis
 | s, [] =>
   cons <|
     (do
-        let (s', l) ← f s
-        match l with
-          | b :: rest => pure (some b, fixl_with f s' rest)
-          | [] => pure (none, fixl_with f s' [])) <|>
+      let (s', l) ← f s
+      match l with
+      | b :: rest => pure (some b, fixl_with f s' rest)
+      | [] => pure (none, fixl_with f s' [])) <|>
       pure (none, nil)
 #align tactic.mllist.fixl_with ListM.fixl_with
 
@@ -71,8 +71,7 @@ unsafe def uncons {α : Type u} : ListM m α → m (Option (α × ListM m α))
 | nil => pure none
 | cons l => do
   let (x, xs) ← l
-  let some x ← pure x |
-    uncons xs
+  let some x ← pure x | uncons xs
   return (x, xs)
 #align tactic.mllist.uncons ListM.uncons
 
