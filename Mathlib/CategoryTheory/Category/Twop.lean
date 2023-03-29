@@ -8,8 +8,8 @@ Authors: Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Category.Bipointed
-import Mathbin.Data.TwoPointing
+import Mathlib.CategoryTheory.Category.Bipointed
+import Mathlib.Data.TwoPointing
 
 /-!
 # The category of two-pointed types
@@ -119,8 +119,7 @@ theorem twop_swap_comp_forget_to_bipointed :
 
 /-- The functor from `Pointed` to `Twop` which adds a second point. -/
 @[simps]
-def pointedToTwopFst : Pointed.{u} ⥤ Twop
-    where
+def pointedToTwopFst : Pointed.{u} ⥤ Twop where
   obj X := ⟨Option X, ⟨X.point, none⟩, some_ne_none _⟩
   map X Y f := ⟨Option.map f.toFun, congr_arg _ f.map_point, rfl⟩
   map_id' X := Bipointed.Hom.ext _ _ Option.map_id
@@ -129,8 +128,7 @@ def pointedToTwopFst : Pointed.{u} ⥤ Twop
 
 /-- The functor from `Pointed` to `Twop` which adds a first point. -/
 @[simps]
-def pointedToTwopSnd : Pointed.{u} ⥤ Twop
-    where
+def pointedToTwopSnd : Pointed.{u} ⥤ Twop where
   obj X := ⟨Option X, ⟨none, X.point⟩, (some_ne_none _).symm⟩
   map X Y f := ⟨Option.map f.toFun, rfl, congr_arg _ f.map_point⟩
   map_id' X := Bipointed.Hom.ext _ _ Option.map_id
@@ -172,8 +170,7 @@ def pointedToTwopFstForgetCompBipointedToPointedFstAdjunction :
             exact f.map_snd.symm
             rfl
           right_inv := fun f => Pointed.Hom.ext _ _ rfl }
-      homEquiv_naturality_left_symm := fun X' X Y f g =>
-        by
+      homEquiv_naturality_left_symm := fun X' X Y f g => by
         ext
         cases x <;> rfl }
 #align Pointed_to_Twop_fst_forget_comp_Bipointed_to_Pointed_fst_adjunction pointedToTwopFstForgetCompBipointedToPointedFstAdjunction
@@ -191,8 +188,7 @@ def pointedToTwopSndForgetCompBipointedToPointedSndAdjunction :
             exact f.map_fst.symm
             rfl
           right_inv := fun f => Pointed.Hom.ext _ _ rfl }
-      homEquiv_naturality_left_symm := fun X' X Y f g =>
-        by
+      homEquiv_naturality_left_symm := fun X' X Y f g => by
         ext
         cases x <;> rfl }
 #align Pointed_to_Twop_snd_forget_comp_Bipointed_to_Pointed_snd_adjunction pointedToTwopSndForgetCompBipointedToPointedSndAdjunction
