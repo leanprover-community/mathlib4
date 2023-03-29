@@ -1374,3 +1374,42 @@ theorem map_isFunc {f : ZFSet → ZFSet} [Definable 1 f] {x y : ZFSet} :
       ze ▸ pair_mem_prod.2 ⟨zx, h z zx⟩,
       fun _ => map_unique⟩⟩
 #align Set.map_is_func ZFSet.map_isFunc
+
+/-- Given a predicate `p` on ZFC sets. `hereditarily p x` means that `x` has property `p` and the
+members of `x` are all `hereditarily p`. -/
+def Hereditarily (p : ZFSet → Prop) : ZFSet → Prop
+  | x => p x ∧ ∀ y ∈ x, Hereditarily p y
+termination_by' ⟨_, mem_wf⟩
+#align Set.hereditarily ZFSet.Hereditarily
+
+section Hereditarily
+
+variable {p : ZFSet.{u} → Prop} {x y : ZFSet.{u}}
+
+theorem hereditarily_iff : Hereditarily p x ↔ p x ∧ ∀ y ∈ x, Hereditarily p y := by
+  rw [← Hereditarily]
+#align Set.hereditarily_iff ZFSet.hereditarily_iff
+
+alias hereditarily_iff ↔ Hereditarily.def _
+#align Set.hereditarily.def ZFSet.Hereditarily.def
+
+theorem Hereditarily.self (h : x.Hereditarily p) : p x :=
+  h.def.1
+#align Set.hereditarily.self ZFSet.Hereditarily.self
+
+theorem Hereditarily.mem (h : x.Hereditarily p) (hy : y ∈ x) : y.Hereditarily p :=
+  h.def.2 _ hy
+#align Set.hereditarily.mem ZFSet.Hereditarily.mem
+
+theorem Hereditarily.empty : Hereditarily p x → p ∅ :=
+  by
+  apply @ZFSet.inductionOn _ x
+  intro y IH h
+  rcases ZFSet.eq_empty_or_nonempty y with (rfl | ⟨a, ha⟩)
+  · exact h.self
+  · exact IH a ha (h.mem ha)
+#align Set.hereditarily.empty ZFSet.Hereditarily.empty
+
+end Hereditarily
+
+end ZFSet
