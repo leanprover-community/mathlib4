@@ -216,7 +216,8 @@ multiplication by zero law (`MulZeroClass`). -/
 class NonUnitalCommSemiring (α : Type u) extends FlatHack, NonUnitalSemiring α, CommSemigroup α
 #align non_unital_comm_semiring NonUnitalCommSemiring
 
-class CommSemiring (R : Type u) extends FlatHack, Semiring R, CommMonoid R
+class CommSemiring (R : Type u) extends FlatHack, Semiring R, CommMonoid R where
+  nsmul := nsmulRec
 #align comm_semiring CommSemiring
 
 -- see Note [lower instance priority]
