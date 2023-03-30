@@ -60,7 +60,8 @@ protected def directSum :
   -- porting note: entirely rewritten to allow unification to happen one step at a time
   refine LinearEquiv.ofLinear (R := R) (R₂ := R) ?toFun ?invFun ?left ?right
   · refine lift ?_
-    refine DirectSum.toModule R _ _ fun i₁ => LinearMap.flip <| ?_
+    refine DirectSum.toModule R _ _ fun i₁ => ?_
+    refine @LinearMap.flip R _ R _ R _ R _ _ _ _ _ _ _ _ _ _ _ _ _ _ ?_
     refine DirectSum.toModule R _ _ fun i₂ => LinearMap.flip <| ?_
     refine curry ?_
     exact DirectSum.lof R (ι₁ × ι₂) (fun i => M₁ i.1 ⊗[R] M₂ i.2) (i₁, i₂)
@@ -84,13 +85,15 @@ protected def directSum :
       LinearEquiv.ofLinear
         (lift <|
           DirectSum.toModule R _ _ fun i₁ => LinearMap.flip <| DirectSum.toModule R _ _ fun i₂ =>
-                LinearMap.flip <| curry <| DirectSum.lof R (ι₁ × ι₂) (fun i => M₁ i.1 ⊗[R] M₂ i.2) (i₁, i₂))
+                LinearMap.flip <| curry <|
+                  DirectSum.lof R (ι₁ × ι₂) (fun i => M₁ i.1 ⊗[R] M₂ i.2) (i₁, i₂))
         (DirectSum.toModule R _ _ fun i => map (DirectSum.lof R _ _ _) (DirectSum.lof R _ _ _)) _
         _ <;>
     [ext (⟨i₁, i₂⟩x₁ x₂) : 4, ext (i₁ i₂ x₁ x₂) : 5]
   repeat'
     first
-      |rw [compr₂_apply]|rw [comp_apply]|rw [id_apply]|rw [mk_apply]|rw [DirectSum.toModule_lof]|rw [map_tmul]|rw [lift.tmul]|rw [flip_apply]|rw [curry_apply]
+      |rw [compr₂_apply]|rw [comp_apply]|rw [id_apply]|rw [mk_apply]|rw [DirectSum.toModule_lof]
+      |rw [map_tmul]|rw [lift.tmul]|rw [flip_apply]|rw [curry_apply]
   -/
 
 /- alternative with explicit types:
@@ -112,7 +115,8 @@ protected def directSum :
     [ext (⟨i₁, i₂⟩x₁ x₂) : 4, ext (i₁ i₂ x₁ x₂) : 5]
   repeat'
     first
-      |rw [compr₂_apply]|rw [comp_apply]|rw [id_apply]|rw [mk_apply]|rw [DirectSum.toModule_lof]|rw [map_tmul]|rw [lift.tmul]|rw [flip_apply]|rw [curry_apply]
+      |rw [compr₂_apply]|rw [comp_apply]|rw [id_apply]|rw [mk_apply]|rw [DirectSum.toModule_lof]
+      |rw [map_tmul]|rw [lift.tmul]|rw [flip_apply]|rw [curry_apply]
 -/
 #align tensor_product.direct_sum TensorProduct.directSum
 
