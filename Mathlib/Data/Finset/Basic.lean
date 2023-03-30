@@ -1207,8 +1207,8 @@ theorem cons_induction_on {α : Type _} {p : Finset α → Prop} (s : Finset α)
 
 @[elab_as_elim]
 protected theorem induction {α : Type _} {p : Finset α → Prop} [DecidableEq α] (empty : p ∅)
-    (cons : ∀ ⦃a : α⦄ {s : Finset α}, a ∉ s → p s → p (insert a s)) : ∀ s, p s :=
-  cons_induction empty fun a s ha => (s.cons_eq_insert a ha).symm ▸ cons ha
+    (insert : ∀ ⦃a : α⦄ {s : Finset α}, a ∉ s → p s → p (insert a s)) : ∀ s, p s :=
+  cons_induction empty fun a s ha => (s.cons_eq_insert a ha).symm ▸ insert ha
 #align finset.induction Finset.induction
 
 /-- To prove a proposition about an arbitrary `Finset α`,
