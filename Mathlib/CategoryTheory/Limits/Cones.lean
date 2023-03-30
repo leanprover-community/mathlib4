@@ -926,7 +926,7 @@ def coconeEquivalenceOpConeOp : Cocone F ≌ (Cone F.op)ᵒᵖ where
   counitIso :=
     NatIso.ofComponents
       (fun c => by
-        induction c using Opposite.rec
+        induction c using Opposite.rec'
         dsimp
         apply Iso.op
         exact
