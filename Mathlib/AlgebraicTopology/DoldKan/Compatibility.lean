@@ -52,7 +52,7 @@ namespace Compatibility
 
 variable {A A' B B' : Type _} [Category A] [Category A'] [Category B] [Category B'] (eA : A ≌ A')
   (eB : B ≌ B') (e' : A' ≌ B') {F : A ⥤ B'} (hF : eA.functor ⋙ e'.functor ≅ F) {G : B ⥤ A}
-  (hG : eB.Functor ⋙ e'.inverse ≅ G ⋙ eA.functor)
+  (hG : eB.functor ⋙ e'.inverse ≅ G ⋙ eA.functor)
 
 /-- A basic equivalence `A ≅ B'` obtained by composing `eA : A ≅ A'` and `e' : A' ≅ B'`. -/
 @[simps! functor inverse unitIso_hom_app]
@@ -67,11 +67,11 @@ variable {eA} {e'}
 
 /-- An intermediate equivalence `A ≅ B'` whose functor is `F` and whose inverse is
 `e'.inverse ⋙ eA.inverse`. -/
-@[simps Functor]
+@[simps! functor]
 def equivalence₁ : A ≌ B' :=
-  letI : is_equivalence F :=
-    is_equivalence.of_iso hF (is_equivalence.of_equivalence (equivalence₀ eA e'))
-  F.as_equivalence
+  letI : IsEquivalence F :=
+    IsEquivalence.ofIso hF (IsEquivalence.ofEquivalence (equivalence₀ eA e'))
+  F.asEquivalence
 #align algebraic_topology.dold_kan.compatibility.equivalence₁ AlgebraicTopology.DoldKan.Compatibility.equivalence₁
 
 theorem equivalence₁_inverse : (equivalence₁ hF).inverse = e'.inverse ⋙ eA.inverse :=
