@@ -331,26 +331,50 @@ squash do match ← StateT.run (uncons L) s with
 unsafe def run' {σ α : Type u} (L : ListM (StateT.{u} σ m) α) (s : σ) : ListM m α :=
 L.run s |>.map (·.1)
 
+section Alternative
+variable [Alternative m]
+
 /-- Return the head of a monadic lazy list, as a value in the monad. -/
-unsafe def head [Alternative m] {α} (L : ListM m α) : m α := do
+unsafe def head {α} (L : ListM m α) : m α := do
   let some (r, _) ← L.uncons |
     failure
   return r
 #align tactic.mllist.head ListM.head
 
 /-- Return the head of a monadic lazy list if it exists, as an `Option` in the monad. -/
-unsafe def head? [Alternative m] (L : ListM m α) : m (Option α) := do
+unsafe def head? (L : ListM m α) : m (Option α) := do
   pure <| (← L.uncons).map (·.1)
 
 /-- Apply a function returning values inside the monad to a monadic lazy list,
 returning only the first successful result. -/
-unsafe def firstM [Alternative m] {α β} (L : ListM m α) (f : α → m β) : m β :=
+unsafe def firstM {α β} (L : ListM m α) (f : α → m β) : m β :=
 (L.filterMapM f).head
 #align tactic.mllist.mfirst ListM.firstM
 
 /-- Return the first value on which a predicate returns true. -/
-unsafe def first [Alternative m] {α} (L : ListM m α) (p : α → Prop) [DecidablePred p] : m α :=
+unsafe def first {α} (L : ListM m α) (p : α → Prop) [DecidablePred p] : m α :=
 (L.filter p).head
+
+/-- Take the initial segment of the lazy list,
+up to and including the first place where `f` succeeeds. -/
+unsafe def takeUpToFirstM (f : α → m β) : ListM m α → ListM m α
+  | nil => nil
+  | cons l =>
+    cons do
+      let (a, r) ← l
+      let some a ← pure a |
+        return (none, takeUpToFirstM f r)
+      (f a >>= fun _ => return (some a, (empty : ListM m α))) <|>
+        return (some a, takeUpToFirstM f r)
+
+/-- Take the initial segment of the lazy list,
+up to and including the first place where `f` gives `true`. -/
+unsafe def takeUpToFirst (f : α → Bool) : ListM m α → ListM m α :=
+takeUpToFirstM <| fun a => do
+  let .true := f a | failure
+  pure PUnit.unit
+
+end Alternative
 
 unsafe instance : Monad (ListM m) where
   pure := fun a => .ofList [a]
