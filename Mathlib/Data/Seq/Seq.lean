@@ -271,7 +271,8 @@ theorem get?_tail (s : Seq α) (n) : get? (tail s) n = get? s (n + 1) :=
 #align stream.seq.nth_tail Stream'.Seq.get?_tail
 
 /-- Recursion principle for sequences, compare with `list.rec_on`. -/
-def recOn {C : Seq α → Sort v} (s : Seq α) (h1 : C nil) (h2 : ∀ x s, C (cons x s)) : C s := by
+-- porting note: TODO: use match rather than `induction'`
+noncomputable def recOn {C : Seq α → Sort v} (s : Seq α) (h1 : C nil) (h2 : ∀ x s, C (cons x s)) : C s := by
   induction' H : destruct s with v v
   · rw [destruct_eq_nil H]
     apply h1
@@ -286,12 +287,12 @@ theorem mem_rec_on {C : Seq α → Prop} {a s} (M : a ∈ s)
   induction' k with k IH generalizing s
   · have TH : s = cons a (tail s) := by
       apply destruct_eq_cons
-      unfold destruct nth Functor.map
+      unfold destruct get? Functor.map
       rw [← e]
       rfl
     rw [TH]
     apply h1 _ _ (Or.inl rfl)
-  revert e; apply s.rec_on _ fun b s' => _ <;> intro e
+  revert e; apply s.recOn _ fun b s' => _ <;> intro e
   · injection e
   · have h_eq : (cons b s').val (Nat.succ k) = s'.val k := by cases s' <;> rfl
     rw [h_eq] at e
@@ -310,37 +311,38 @@ def Corec.f (f : β → Option (α × β)) : Option β → Option α × Option �
 /-- Corecursor for `seq α` as a coinductive type. Iterates `f` to produce new elements
   of the sequence until `none` is obtained. -/
 def corec (f : β → Option (α × β)) (b : β) : Seq α := by
-  refine' ⟨Stream'.corec' (corec.F f) (some b), fun n h => _⟩
+  refine' ⟨Stream'.corec' (Corec.f f) (some b), fun {n} h => _⟩
   rw [Stream'.corec'_eq]
-  change Stream'.corec' (corec.F f) (corec.F f (some b)).2 n = none
+  change Stream'.corec' (Corec.f f) (Corec.f f (some b)).2 n = none
   revert h; generalize some b = o; revert o
   induction' n with n IH <;> intro o
-  · change (corec.F f o).1 = none → (corec.F f (corec.F f o).2).1 = none
+  · change (Corec.f f o).1 = none → (Corec.f f (Corec.f f o).2).1 = none
     cases' o with b <;> intro h
     · rfl
-    dsimp [corec.F] at h
-    dsimp [corec.F]
+    dsimp [Corec.f] at h
+    dsimp [Corec.f]
     cases' f b with s
     · rfl
     · cases' s with a b'
       contradiction
-  · rw [Stream'.corec'_eq (corec.F f) (corec.F f o).2, Stream'.corec'_eq (corec.F f) o]
-    exact IH (corec.F f o).2
+  · rw [Stream'.corec'_eq (Corec.f f) (Corec.f f o).2, Stream'.corec'_eq (Corec.f f) o]
+    exact IH (Corec.f f o).2
 #align stream.seq.corec Stream'.Seq.corec
 
 @[simp]
 theorem corec_eq (f : β → Option (α × β)) (b : β) : destruct (corec f b) = omap (corec f) (f b) :=
   by
   dsimp [corec, destruct, nth]
-  change Stream'.corec' (corec.F f) (some b) 0 with (corec.F f (some b)).1
-  dsimp [corec.F]
+  dsimp
+  change Stream'.corec' (Corec.f f) (some b) 0 with (Corec.f f (some b)).1
+  dsimp [Corec.f]
   induction' h : f b with s; · rfl
-  cases' s with a b'; dsimp [corec.F]
+  cases' s with a b'; dsimp [Corec.f]
   apply congr_arg fun b' => some (a, b')
   apply Subtype.eq
   dsimp [corec, tail]
   rw [Stream'.corec'_eq, Stream'.tail_cons]
-  dsimp [corec.F]; rw [h]; rfl
+  dsimp [Corec.f]; rw [h]; rfl
 #align stream.seq.corec_eq Stream'.Seq.corec_eq
 
 section Bisim
@@ -357,7 +359,7 @@ def BisimO : Option (Seq1 α) → Option (Seq1 α) → Prop
   | _, _ => False
 #align stream.seq.bisim_o Stream'.Seq.BisimO
 
-attribute [simp] bisim_o
+attribute [simp] BisimO
 
 /-- a relation is bisimiar if it meets the `bisim_o` test-/
 def IsBisimulation :=
@@ -367,7 +369,7 @@ def IsBisimulation :=
 -- If two streams are bisimilar, then they are equal
 theorem eq_of_bisim (bisim : IsBisimulation R) {s₁ s₂} (r : s₁ ~ s₂) : s₁ = s₂ := by
   apply Subtype.eq
-  apply Stream'.eq_of_bisim fun x y => ∃ s s' : seq α, s.1 = x ∧ s'.1 = y ∧ R s s'
+  apply Stream'.eq_of_bisim fun x y => ∃ s s' : Seq α, s.1 = x ∧ s'.1 = y ∧ R s s'
   dsimp [Stream'.IsBisimulation]
   intro t₁ t₂ e
   exact
@@ -376,7 +378,7 @@ theorem eq_of_bisim (bisim : IsBisimulation R) {s₁ s₂} (r : s₁ ~ s₂) : s
       suffices head s = head s' ∧ R (tail s) (tail s') from
         And.imp id (fun r => ⟨tail s, tail s', by cases s <;> rfl, by cases s' <;> rfl, r⟩) this
       have := bisim r; revert r this
-      apply rec_on s _ _ <;> intros <;> apply rec_on s' _ _ <;> intros <;> intro r this
+      apply recOn s _ _ <;> intros <;> apply recOn s' _ _ <;> intros <;> intro r this
       · constructor
         rfl
         assumption
