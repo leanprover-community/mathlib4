@@ -1154,12 +1154,6 @@ theorem mem_diff {x y z : ZFSet.{u}} : z ∈ x \ y ↔ z ∈ x ∧ z ∉ y :=
 #align Set.mem_diff ZFSet.mem_diff
 
 @[simp]
-theorem unionₛ_insert {x y : ZFSet.{u}} : ⋃₀ (insert x y) = x ∪ (⋃₀ y) :=
-  by
-  ext
-  simp
-#align Set.sUnion_insert ZFSet.unionₛ_insert
-
 theorem unionₛ_pair {x y : ZFSet.{u}} : ⋃₀ ({x, y} : ZFSet.{u}) = x ∪ y :=
   rfl
 #align Set.sUnion_pair ZFSet.unionₛ_pair
