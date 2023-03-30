@@ -84,7 +84,7 @@ def reduct (M : Type _) [L'.Structure M] : L.Structure M where
 /-- The identity language homomorphism. -/
 @[simps]
 protected def id (L : Language) : L →ᴸ L :=
-  ⟨fun n => id, fun n => id⟩
+  ⟨fun _n => id, fun _n => id⟩
 #align first_order.language.LHom.id FirstOrder.Language.LHom.id
 
 instance : Inhabited (L →ᴸ L) :=
@@ -93,13 +93,13 @@ instance : Inhabited (L →ᴸ L) :=
 /-- The inclusion of the left factor into the sum of two languages. -/
 @[simps]
 protected def sumInl : L →ᴸ L.sum L' :=
-  ⟨fun n => Sum.inl, fun n => Sum.inl⟩
+  ⟨fun _n => Sum.inl, fun _n => Sum.inl⟩
 #align first_order.language.LHom.sum_inl FirstOrder.Language.LHom.sumInl
 
 /-- The inclusion of the right factor into the sum of two languages. -/
 @[simps]
 protected def sumInr : L' →ᴸ L.sum L' :=
-  ⟨fun n => Sum.inr, fun n => Sum.inr⟩
+  ⟨fun _n => Sum.inr, fun _n => Sum.inr⟩
 #align first_order.language.LHom.sum_inr FirstOrder.Language.LHom.sumInr
 
 variable (L L')
@@ -135,17 +135,17 @@ theorem mk₂_funext {c f₁ f₂ : Type u} {r₁ r₂ : Type v} {F G : Language
     (funext fun n =>
       Nat.casesOn n (funext h0) fun n =>
         Nat.casesOn n (funext h1) fun n =>
-          Nat.casesOn n (funext h2) fun n => funext fun f => PEmpty.elim f)
+          Nat.casesOn n (funext h2) fun _n => funext fun f => PEmpty.elim f)
     (funext fun n =>
       Nat.casesOn n (funext fun r => PEmpty.elim r) fun n =>
         Nat.casesOn n (funext h1') fun n =>
-          Nat.casesOn n (funext h2') fun n => funext fun r => PEmpty.elim r)
+          Nat.casesOn n (funext h2') fun _n => funext fun r => PEmpty.elim r)
 #align first_order.language.LHom.mk₂_funext FirstOrder.Language.LHom.mk₂_funext
 
 /-- The composition of two language homomorphisms. -/
 @[simps]
 def comp (g : L' →ᴸ L'') (f : L →ᴸ L') : L →ᴸ L'' :=
-  ⟨fun n F => g.1 (f.1 F), fun _ R => g.2 (f.2 R)⟩
+  ⟨fun _n F => g.1 (f.1 F), fun _ R => g.2 (f.2 R)⟩
 #align first_order.language.LHom.comp FirstOrder.Language.LHom.comp
 
 -- mathport name: LHom.comp
@@ -175,8 +175,8 @@ variable (ψ : L'' →ᴸ L')
 /-- A language map defined on two factors of a sum. -/
 @[simps]
 protected def sumElim : L.sum L'' →ᴸ L' where
-  onFunction n := Sum.elim (fun f => ϕ.onFunction f) fun f => ψ.onFunction f
-  onRelation n := Sum.elim (fun f => ϕ.onRelation f) fun f => ψ.onRelation f
+  onFunction _n := Sum.elim (fun f => ϕ.onFunction f) fun f => ψ.onFunction f
+  onRelation _n := Sum.elim (fun f => ϕ.onRelation f) fun f => ψ.onRelation f
 #align first_order.language.LHom.sum_elim FirstOrder.Language.LHom.sumElim
 
 theorem sumElim_comp_inl (ψ : L'' →ᴸ L') : ϕ.sumElim ψ ∘' LHom.sumInl = ϕ :=
@@ -192,7 +192,7 @@ theorem sumElim_inl_inr : LHom.sumInl.sumElim LHom.sumInr = LHom.id (L.sum L') :
 #align first_order.language.LHom.sum_elim_inl_inr FirstOrder.Language.LHom.sumElim_inl_inr
 
 theorem comp_sumElim {L3 : Language} (θ : L' →ᴸ L3) : θ ∘' ϕ.sumElim ψ = (θ ∘' ϕ).sumElim (θ ∘' ψ) :=
-  LHom.funext (funext fun n => Sum.comp_elim _ _ _) (funext fun n => Sum.comp_elim _ _ _)
+  LHom.funext (funext fun _n => Sum.comp_elim _ _ _) (funext fun _n => Sum.comp_elim _ _ _)
 #align first_order.language.LHom.comp_sum_elim FirstOrder.Language.LHom.comp_sumElim
 
 end SumElim
@@ -204,8 +204,8 @@ variable {L₁ L₂ : Language} (ψ : L₁ →ᴸ L₂)
 /-- The map between two sum-languages induced by maps on the two factors. -/
 @[simps]
 def sumMap : L.sum L₁ →ᴸ L'.sum L₂ where
-  onFunction n := Sum.map (fun f => ϕ.onFunction f) fun f => ψ.onFunction f
-  onRelation n := Sum.map (fun f => ϕ.onRelation f) fun f => ψ.onRelation f
+  onFunction _n := Sum.map (fun f => ϕ.onFunction f) fun f => ψ.onFunction f
+  onRelation _n := Sum.map (fun f => ϕ.onRelation f) fun f => ψ.onRelation f
 #align first_order.language.LHom.sum_map FirstOrder.Language.LHom.sumMap
 
 @[simp]
@@ -284,12 +284,12 @@ instance sumMap_isExpansionOn {L₁ L₂ : Language} (ψ : L₁ →ᴸ L₂) (M 
 
 instance sumInl_isExpansionOn (M : Type _) [L.Structure M] [L'.Structure M] :
     (LHom.sumInl : L →ᴸ L.sum L').IsExpansionOn M :=
-  ⟨fun f _ => rfl, fun R _ => rfl⟩
+  ⟨fun _f _ => rfl, fun _R _ => rfl⟩
 #align first_order.language.LHom.sum_inl_is_expansion_on FirstOrder.Language.LHom.sumInl_isExpansionOn
 
 instance sumInr_isExpansionOn (M : Type _) [L.Structure M] [L'.Structure M] :
     (LHom.sumInr : L' →ᴸ L.sum L').IsExpansionOn M :=
-  ⟨fun f _ => rfl, fun R _ => rfl⟩
+  ⟨fun _f _ => rfl, fun _R _ => rfl⟩
 #align first_order.language.LHom.sum_inr_is_expansion_on FirstOrder.Language.LHom.sumInr_isExpansionOn
 
 @[simp]
@@ -315,7 +315,7 @@ theorem sumInr_injective : (LHom.sumInr : L' →ᴸ L.sum L').Injective :=
 instance (priority := 100) isExpansionOn_reduct (ϕ : L →ᴸ L') (M : Type _) [L'.Structure M] :
     @IsExpansionOn L L' ϕ M (ϕ.reduct M) _ :=
   letI := ϕ.reduct M
-  ⟨fun f _ => rfl, fun R _ => rfl⟩
+  ⟨fun _f _ => rfl, fun _R _ => rfl⟩
 #align first_order.language.LHom.is_expansion_on_reduct FirstOrder.Language.LHom.isExpansionOn_reduct
 
 theorem Injective.isExpansionOn_default {ϕ : L →ᴸ L'}
@@ -400,7 +400,7 @@ instance isAlgebraic_constantsOn : IsAlgebraic (constantsOn α) :=
   Language.isAlgebraic_mk₂
 #align first_order.language.is_algebraic_constants_on FirstOrder.Language.isAlgebraic_constantsOn
 
-instance isRelational_constantsOn [ie : IsEmpty α] : IsRelational (constantsOn α) :=
+instance isRelational_constantsOn [_ie : IsEmpty α] : IsRelational (constantsOn α) :=
   Language.isRelational_mk₂
 #align first_order.language.is_relational_constants_on FirstOrder.Language.isRelational_constantsOn
 
@@ -431,7 +431,7 @@ theorem constantsOnMap_isExpansionOn {f : α → β} {fα : α → M} {fβ : β 
   letI := constantsOn.structure fα
   letI := constantsOn.structure fβ
   exact
-    ⟨fun {n} => Nat.casesOn n (fun F x => (congr_fun h F : _)) fun n F => isEmptyElim F, fun R =>
+    ⟨fun {n} => Nat.casesOn n (fun F _x => (congr_fun h F : _)) fun n F => isEmptyElim F, fun R =>
       isEmptyElim R⟩
 #align first_order.language.constants_on_map_is_expansion_on FirstOrder.Language.constantsOnMap_isExpansionOn
 
@@ -460,7 +460,7 @@ theorem card_withConstants :
 #align first_order.language.card_with_constants FirstOrder.Language.card_withConstants
 
 /-- The language map adding constants.  -/
-@[simps]
+@[simps!] --Porting note: add `!` to `simps`
 def lhomWithConstants : L →ᴸ L[[α]] :=
   LHom.sumInl
 #align first_order.language.LHom_with_constants FirstOrder.Language.lhomWithConstants
