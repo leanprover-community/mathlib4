@@ -591,9 +591,8 @@ def isColimitEquivIsLimitUnop {X Y Z : Cᵒᵖ} {f : X ⟶ Y} {g : X ⟶ Z} (c :
     IsColimit c ≃ IsLimit c.unop := by
   apply equivOfSubsingletonOfSubsingleton
   . intro h
-    sorry
-    --exact isLimitCoconeOp _ ((IsColimit.precomposeHomEquiv _ _).invFun
-    --  ((IsColimit.whiskerEquivalenceEquiv ).toFun h))
+    exact isLimitCoconeUnop _ ((IsColimit.precomposeHomEquiv _ _).invFun
+      ((IsColimit.whiskerEquivalenceEquiv _).toFun h))
   . intro h
     exact (IsColimit.equivIsoColimit c.unopOp).toFun
       ((IsColimit.precomposeHomEquiv _ _).invFun
