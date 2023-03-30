@@ -1153,6 +1153,11 @@ theorem mem_diff {x y z : ZFSet.{u}} : z ∈ x \ y ↔ z ∈ x ∧ z ∉ y :=
   @mem_sep (fun z : ZFSet.{u} => z ∉ y) x z
 #align Set.mem_diff ZFSet.mem_diff
 
+@[simp]
+theorem unionₛ_pair {x y : ZFSet.{u}} : ⋃₀ ({x, y} : ZFSet.{u}) = x ∪ y :=
+  rfl
+#align Set.sUnion_pair ZFSet.unionₛ_pair
+
 theorem mem_wf : @WellFounded ZFSet (· ∈ ·) :=
   wellFounded_lift₂_iff.mpr PSet.mem_wf
 #align Set.mem_wf ZFSet.mem_wf
