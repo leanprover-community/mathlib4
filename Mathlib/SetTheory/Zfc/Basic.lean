@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 
 ! This file was ported from Lean 3 source module set_theory.zfc.basic
-! leanprover-community/mathlib commit ef5f2ce93dd79b7fb184018b6f48132a10c764e7
+! leanprover-community/mathlib commit 98bbc3526516bca903bff09ea10c4206bf079e6b
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -1154,6 +1154,12 @@ theorem mem_diff {x y z : ZFSet.{u}} : z ∈ x \ y ↔ z ∈ x ∧ z ∉ y :=
 #align Set.mem_diff ZFSet.mem_diff
 
 @[simp]
+theorem unionₛ_insert {x y : ZFSet.{u}} : ⋃₀ (insert x y) = x ∪ (⋃₀ y) :=
+  by
+  ext
+  simp
+#align Set.sUnion_insert ZFSet.unionₛ_insert
+
 theorem unionₛ_pair {x y : ZFSet.{u}} : ⋃₀ ({x, y} : ZFSet.{u}) = x ∪ y :=
   rfl
 #align Set.sUnion_pair ZFSet.unionₛ_pair
