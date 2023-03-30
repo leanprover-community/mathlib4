@@ -144,9 +144,9 @@ def head (s : Seq α) : Option α :=
 
 /-- Get the tail of a sequence (or `nil` if the sequence is `nil`) -/
 def tail (s : Seq α) : Seq α :=
-  ⟨s.1.tail, fun n => by
+  ⟨s.1.tail, fun n' => by
     cases' s with f al
-    exact al⟩
+    exact al n'⟩
 #align stream.seq.tail Stream'.Seq.tail
 
 /-- member definition for `seq`-/
