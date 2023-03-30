@@ -445,7 +445,7 @@ theorem ofList_cons (a : α) (l : List α) : ofList (a::l) = cons a (ofList l) :
 
 /-- Embed an infinite stream as a sequence -/
 def ofStream (s : Stream' α) : Seq α :=
-  ⟨s.map some, fun n h => by contradiction⟩
+  ⟨s.map some, fun {n} h => by contradiction⟩
 #align stream.seq.of_stream Stream'.Seq.ofStream
 
 instance coeStream : Coe (Stream' α) (Seq α) :=
