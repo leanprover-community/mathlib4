@@ -70,12 +70,7 @@ open Structure Cardinal Fin
 
 namespace Term
 
-/- warning: first_order.language.term.realize -> FirstOrder.Language.Term.realize is a dubious translation:
-lean 3 declaration is
-  forall {L : FirstOrder.Language.{u1, u2}} {M : Type.{u3}} [_inst_1 : FirstOrder.Language.Structure.{u1, u2, u3} L M] {α : Type.{u4}}, (α -> M) -> (FirstOrder.Language.Term.{u1, u2, u4} L α) -> M
-but is expected to have type
-  forall {L : FirstOrder.Language.{u1, u3}} {M : Type.{u4}} [_inst_1 : FirstOrder.Language.Structure.{u1, u3, u4} L M] {α : Type.{u2}}, (α -> M) -> (FirstOrder.Language.Term.{u1, u3, u2} L α) -> M
-Case conversion may be inaccurate. Consider using '#align first_order.language.term.realize FirstOrder.Language.Term.realizeₓ'. -/
+--Porting note: universes in different order
 /-- A term `t` with variables indexed by `α` can be evaluated by giving a value to each variable. -/
 @[simp]
 def realize (v : α → M) : ∀ t : L.Term α, M
@@ -246,12 +241,7 @@ namespace BoundedFormula
 
 open Term
 
-/- warning: first_order.language.bounded_formula.realize -> FirstOrder.Language.BoundedFormula.Realize is a dubious translation:
-lean 3 declaration is
-  forall {L : FirstOrder.Language.{u1, u2}} {M : Type.{u3}} [_inst_1 : FirstOrder.Language.Structure.{u1, u2, u3} L M] {α : Type.{u4}} {l : Nat}, (FirstOrder.Language.BoundedFormula.{u1, u2, u4} L α l) -> (α -> M) -> ((Fin l) -> M) -> Prop
-but is expected to have type
-  forall {L : FirstOrder.Language.{u1, u3}} {M : Type.{u4}} [_inst_1 : FirstOrder.Language.Structure.{u1, u3, u4} L M] {α : Type.{u2}} {l : Nat}, (FirstOrder.Language.BoundedFormula.{u1, u3, u2} L α l) -> (α -> M) -> ((Fin l) -> M) -> Prop
-Case conversion may be inaccurate. Consider using '#align first_order.language.bounded_formula.realize FirstOrder.Language.BoundedFormula.Realizeₓ'. -/
+--Porting note: universes in different order
 /-- A bounded formula can be evaluated as true or false by giving values to each free variable. -/
 def Realize : ∀ {l} (f : L.BoundedFormula α l) (v : α → M) (xs : Fin l → M), Prop
   | _, falsum, v, xs => False
@@ -511,7 +501,7 @@ theorem realize_all_liftAt_one_self {n : ℕ} {φ : L.BoundedFormula α n} {v : 
   · refine' (congr rfl (funext fun i => _)).mp h
     simp
 #align first_order.language.bounded_formula.realize_all_lift_at_one_self FirstOrder.Language.BoundedFormula.realize_all_liftAt_one_self
-#print toPrenexImpRight
+
 theorem realize_toPrenexImpRight {φ ψ : L.BoundedFormula α n} (hφ : IsQF φ) (hψ : IsPrenex ψ)
     {v : α → M} {xs : Fin n → M} : (φ.toPrenexImpRight ψ).Realize v xs ↔ (φ.imp ψ).Realize v xs :=
   by
@@ -723,7 +713,6 @@ nonrec def Sentence.Realize (φ : L.Sentence) : Prop :=
   φ.Realize (default : _ → M)
 #align first_order.language.sentence.realize FirstOrder.Language.Sentence.Realize
 
--- mathport name: sentence.realize
 infixl:51
   " ⊨ " =>-- input using \|= or \vDash, but not using \models
   Sentence.Realize
@@ -785,7 +774,6 @@ def ElementarilyEquivalent : Prop :=
   L.completeTheory M = L.completeTheory N
 #align first_order.language.elementarily_equivalent FirstOrder.Language.ElementarilyEquivalent
 
--- mathport name: elementarily_equivalent
 scoped[FirstOrder]
   notation:25 A " ≅[" L "] " B:50 => FirstOrder.Language.ElementarilyEquivalent L A B
 
@@ -808,30 +796,23 @@ class Theory.Model (T : L.Theory) : Prop where
 set_option linter.uppercaseLean3 false in
 #align first_order.language.Theory.model FirstOrder.Language.Theory.Model
 
--- mathport name: Theory.model
 infixl:51
   " ⊨ " =>-- input using \|= or \vDash, but not using \models
   Theory.Model
 
 variable {M} (T : L.Theory)
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[simp]
 theorem Theory.model_iff : M ⊨ T ↔ ∀ φ ∈ T, M ⊨ φ :=
   ⟨fun h => h.realize_of_mem, fun h => ⟨h⟩⟩
 set_option linter.uppercaseLean3 false in
 #align first_order.language.Theory.model_iff FirstOrder.Language.Theory.model_iff
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem Theory.realize_sentence_of_mem [M ⊨ T] {φ : L.Sentence} (h : φ ∈ T) : M ⊨ φ :=
   Theory.Model.realize_of_mem φ h
 set_option linter.uppercaseLean3 false in
 #align first_order.language.Theory.realize_sentence_of_mem FirstOrder.Language.Theory.realize_sentence_of_mem
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[simp]
 theorem Lhom.onTheory_model [L'.Structure M] (φ : L →ᴸ L') [φ.IsExpansionOn M] (T : L.Theory) :
     M ⊨ φ.onTheory T ↔ M ⊨ T := by simp [Theory.model_iff, LHom.onTheory]
@@ -840,32 +821,23 @@ set_option linter.uppercaseLean3 false in
 
 variable {T}
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 instance model_empty : M ⊨ (∅ : L.Theory) :=
   ⟨fun φ hφ => (Set.not_mem_empty φ hφ).elim⟩
 #align first_order.language.model_empty FirstOrder.Language.model_empty
 
 namespace Theory
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem Model.mono {T' : L.Theory} (h : M ⊨ T') (hs : T ⊆ T') : M ⊨ T :=
   ⟨fun φ hφ => T'.realize_sentence_of_mem (hs hφ)⟩
 set_option linter.uppercaseLean3 false in
 #align first_order.language.Theory.model.mono FirstOrder.Language.Theory.Model.mono
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem Model.union {T' : L.Theory} (h : M ⊨ T) (h' : M ⊨ T') : M ⊨ T ∪ T' := by
   simp only [model_iff, Set.mem_union] at *
   exact fun φ hφ => hφ.elim (h _) (h' _)
 set_option linter.uppercaseLean3 false in
 #align first_order.language.Theory.model.union FirstOrder.Language.Theory.Model.union
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[simp]
 theorem model_union_iff {T' : L.Theory} : M ⊨ T ∪ T' ↔ M ⊨ T ∧ M ⊨ T' :=
   ⟨fun h => ⟨h.mono (T.subset_union_left T'), h.mono (T.subset_union_right T')⟩, fun h =>
@@ -873,19 +845,15 @@ theorem model_union_iff {T' : L.Theory} : M ⊨ T ∪ T' ↔ M ⊨ T ∧ M ⊨ T
 set_option linter.uppercaseLean3 false in
 #align first_order.language.Theory.model_union_iff FirstOrder.Language.Theory.model_union_iff
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem model_singleton_iff {φ : L.Sentence} : M ⊨ ({φ} : L.Theory) ↔ M ⊨ φ := by simp
 set_option linter.uppercaseLean3 false in
 #align first_order.language.Theory.model_singleton_iff FirstOrder.Language.Theory.model_singleton_iff
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem model_iff_subset_completeTheory : M ⊨ T ↔ T ⊆ L.completeTheory M :=
   T.model_iff
 set_option linter.uppercaseLean3 false in
 #align first_order.language.Theory.model_iff_subset_complete_theory FirstOrder.Language.Theory.model_iff_subset_completeTheory
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem CompleteTheory.subset [MT : M ⊨ T] : T ⊆ L.completeTheory M :=
   model_iff_subset_completeTheory.1 MT
 set_option linter.uppercaseLean3 false in
@@ -893,16 +861,12 @@ set_option linter.uppercaseLean3 false in
 
 end Theory
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 instance model_completeTheory : M ⊨ L.completeTheory M :=
   Theory.model_iff_subset_completeTheory.2 (subset_refl _)
 #align first_order.language.model_complete_theory FirstOrder.Language.model_completeTheory
 
 variable (M N)
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem realize_iff_of_model_completeTheory [N ⊨ L.completeTheory M] (φ : L.Sentence) :
     N ⊨ φ ↔ M ⊨ φ := by
   refine' ⟨fun h => _, (L.completeTheory M).realize_sentence_of_mem⟩
@@ -1000,14 +964,10 @@ theorem realize_formula (g : M ≃[L] N) (φ : L.Formula α) {v : α → M} :
     Unique.eq_default (g ∘ default)]
 #align first_order.language.equiv.realize_formula FirstOrder.Language.Equiv.realize_formula
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem realize_sentence (g : M ≃[L] N) (φ : L.Sentence) : M ⊨ φ ↔ N ⊨ φ := by
   rw [Sentence.Realize, Sentence.Realize, ← g.realize_formula, Unique.eq_default (g ∘ default)]
 #align first_order.language.equiv.realize_sentence FirstOrder.Language.Equiv.realize_sentence
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem theory_model (g : M ≃[L] N) [M ⊨ T] : N ⊨ T :=
   ⟨fun φ hφ => (g.realize_sentence φ).1 (Theory.realize_sentence_of_mem T hφ)⟩
 set_option linter.uppercaseLean3 false in
@@ -1025,25 +985,21 @@ open BoundedFormula
 
 variable {r : L.Relations 2}
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[simp]
 theorem realize_reflexive : M ⊨ r.reflexive ↔ Reflexive fun x y : M => rel_map r ![x, y] :=
   forall_congr' fun _ => realize_rel₂
 #align first_order.language.relations.realize_reflexive FirstOrder.Language.Relations.realize_reflexive
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[simp]
 theorem realize_irreflexive : M ⊨ r.irreflexive ↔ Irreflexive fun x y : M => rel_map r ![x, y] :=
   forall_congr' fun _ => not_congr realize_rel₂
 #align first_order.language.relations.realize_irreflexive FirstOrder.Language.Relations.realize_irreflexive
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[simp]
 theorem realize_symmetric : M ⊨ r.symmetric ↔ Symmetric fun x y : M => rel_map r ![x, y] :=
   forall_congr' fun _ => forall_congr' fun _ => imp_congr realize_rel₂ realize_rel₂
 #align first_order.language.relations.realize_symmetric FirstOrder.Language.Relations.realize_symmetric
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[simp]
 theorem realize_antisymmetric :
     M ⊨ r.antisymmetric ↔ AntiSymmetric fun x y : M => rel_map r ![x, y] :=
@@ -1051,7 +1007,6 @@ theorem realize_antisymmetric :
     forall_congr' fun _ => imp_congr realize_rel₂ (imp_congr realize_rel₂ Iff.rfl)
 #align first_order.language.relations.realize_antisymmetric FirstOrder.Language.Relations.realize_antisymmetric
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[simp]
 theorem realize_transitive : M ⊨ r.transitive ↔ Transitive fun x y : M => rel_map r ![x, y] :=
   forall_congr' fun _ =>
@@ -1059,7 +1014,6 @@ theorem realize_transitive : M ⊨ r.transitive ↔ Transitive fun x y : M => re
       forall_congr' fun _ => imp_congr realize_rel₂ (imp_congr realize_rel₂ realize_rel₂)
 #align first_order.language.relations.realize_transitive FirstOrder.Language.Relations.realize_transitive
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[simp]
 theorem realize_total : M ⊨ r.total ↔ Total fun x y : M => rel_map r ![x, y] :=
   forall_congr' fun _ =>
@@ -1071,11 +1025,9 @@ end Relations
 section Cardinality
 
 variable (L)
-
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[simp]
 theorem Sentence.realize_cardGe (n) : M ⊨ Sentence.cardGe L n ↔ ↑n ≤ (#M) := by
-  rw [← lift_mk_fin, ← lift_le, lift_lift, lift_mk_le, Sentence.cardGe, Sentence.Realize,
+  rw [← lift_mk_fin, ← lift_le.{w, 0}, lift_lift, lift_mk_le, Sentence.cardGe, Sentence.Realize,
     BoundedFormula.realize_exs]
   simp_rw [BoundedFormula.realize_foldr_inf]
   simp only [Function.comp_apply, List.mem_map, Prod.exists, Ne.def, List.mem_product,
@@ -1092,46 +1044,40 @@ theorem Sentence.realize_cardGe (n) : M ⊨ Sentence.cardGe L n ↔ ↑n ≤ (#M
     simpa using ij
 #align first_order.language.sentence.realize_card_ge FirstOrder.Language.Sentence.realize_cardGe
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[simp]
 theorem model_infiniteTheory_iff : M ⊨ L.infiniteTheory ↔ Infinite M := by
   simp [infiniteTheory, infinite_iff, aleph0_le]
 #align first_order.language.model_infinite_theory_iff FirstOrder.Language.model_infiniteTheory_iff
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 instance model_infiniteTheory [h : Infinite M] : M ⊨ L.infiniteTheory :=
   L.model_infiniteTheory_iff.2 h
 #align first_order.language.model_infinite_theory FirstOrder.Language.model_infiniteTheory
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[simp]
 theorem model_nonemptyTheory_iff : M ⊨ L.nonemptyTheory ↔ Nonempty M := by
-  simp only [nonempty_theory, Theory.model_iff, Set.mem_singleton_iff, forall_eq,
-    sentence.realize_card_ge, Nat.cast_one, one_le_iff_ne_zero, mk_ne_zero_iff]
+  simp only [nonemptyTheory, Theory.model_iff, Set.mem_singleton_iff, forall_eq,
+    Sentence.realize_cardGe, Nat.cast_one, one_le_iff_ne_zero, mk_ne_zero_iff]
 #align first_order.language.model_nonempty_theory_iff FirstOrder.Language.model_nonemptyTheory_iff
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 instance model_nonempty [h : Nonempty M] : M ⊨ L.nonemptyTheory :=
   L.model_nonemptyTheory_iff.2 h
 #align first_order.language.model_nonempty FirstOrder.Language.model_nonempty
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem model_distinctConstantsTheory {M : Type w} [L[[α]].Structure M] (s : Set α) :
     M ⊨ L.distinctConstantsTheory s ↔ Set.InjOn (fun i : α => (L.con i : M)) s := by
-  simp only [distinct_constants_theory, Theory.model_iff, Set.mem_image, Set.mem_inter,
+  simp only [distinctConstantsTheory, Theory.model_iff, Set.mem_image, Set.mem_inter,
     Set.mem_prod, Set.mem_compl, Prod.exists, forall_exists_index, and_imp]
   refine' ⟨fun h a as b bs ab => _, _⟩
   · contrapose! ab
     have h' := h _ a b ⟨⟨as, bs⟩, ab⟩ rfl
-    simp only [sentence.realize, formula.realize_not, formula.realize_equal,
-      term.realize_constants] at h'
+    simp only [Sentence.Realize, Formula.realize_not, Formula.realize_equal,
+      Term.realize_constants] at h'
     exact h'
   · rintro h φ a b ⟨⟨as, bs⟩, ab⟩ rfl
-    simp only [sentence.realize, formula.realize_not, formula.realize_equal, term.realize_constants]
+    simp only [Sentence.Realize, Formula.realize_not, Formula.realize_equal, Term.realize_constants]
     exact fun contra => ab (h as bs contra)
 #align first_order.language.model_distinct_constants_theory FirstOrder.Language.model_distinctConstantsTheory
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem card_le_of_model_distinctConstantsTheory (s : Set α) (M : Type w) [L[[α]].Structure M]
     [h : M ⊨ L.distinctConstantsTheory s] : Cardinal.lift.{w} (#s) ≤ Cardinal.lift.{u'} (#M) :=
   lift_mk_le'.2 ⟨⟨_, Set.injOn_iff_injective.1 ((L.model_distinctConstantsTheory s).1 h)⟩⟩
@@ -1142,12 +1088,12 @@ end Cardinality
 namespace ElementarilyEquivalent
 
 @[symm]
-theorem symm (h : M ≅[L] N) : N ≅[L] M :=
+nonrec theorem symm (h : M ≅[L] N) : N ≅[L] M :=
   h.symm
 #align first_order.language.elementarily_equivalent.symm FirstOrder.Language.ElementarilyEquivalent.symm
 
 @[trans]
-theorem trans (MN : M ≅[L] N) (NP : N ≅[L] P) : M ≅[L] P :=
+nonrec theorem trans (MN : M ≅[L] N) (NP : N ≅[L] P) : M ≅[L] P :=
   MN.trans NP
 #align first_order.language.elementarily_equivalent.trans FirstOrder.Language.ElementarilyEquivalent.trans
 
@@ -1155,23 +1101,19 @@ theorem completeTheory_eq (h : M ≅[L] N) : L.completeTheory M = L.completeTheo
   h
 #align first_order.language.elementarily_equivalent.complete_theory_eq FirstOrder.Language.ElementarilyEquivalent.completeTheory_eq
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem realize_sentence (h : M ≅[L] N) (φ : L.Sentence) : M ⊨ φ ↔ N ⊨ φ :=
   (elementarilyEquivalent_iff.1 h) φ
 #align first_order.language.elementarily_equivalent.realize_sentence FirstOrder.Language.ElementarilyEquivalent.realize_sentence
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem theory_model_iff (h : M ≅[L] N) : M ⊨ T ↔ N ⊨ T := by
-  rw [Theory.model_iff_subset_complete_theory, Theory.model_iff_subset_complete_theory,
-    h.complete_theory_eq]
+  rw [Theory.model_iff_subset_completeTheory, Theory.model_iff_subset_completeTheory,
+    h.completeTheory_eq]
+set_option linter.uppercaseLean3 false in
 #align first_order.language.elementarily_equivalent.Theory_model_iff FirstOrder.Language.ElementarilyEquivalent.theory_model_iff
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem theory_model [MT : M ⊨ T] (h : M ≅[L] N) : N ⊨ T :=
   h.theory_model_iff.1 MT
+set_option linter.uppercaseLean3 false in
 #align first_order.language.elementarily_equivalent.Theory_model FirstOrder.Language.ElementarilyEquivalent.theory_model
 
 theorem nonempty_iff (h : M ≅[L] N) : Nonempty M ↔ Nonempty N :=
