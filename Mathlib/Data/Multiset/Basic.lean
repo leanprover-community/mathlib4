@@ -1237,7 +1237,7 @@ theorem map_nsmul (f : α → β) (n : ℕ) (s) : map f (n • s) = n • map f 
 
 @[simp]
 theorem mem_map {f : α → β} {b : β} {s : Multiset α} : b ∈ map f s ↔ ∃ a, a ∈ s ∧ f a = b :=
-  Quot.inductionOn s fun _l => mem_map'
+  Quot.inductionOn s fun _l => List.mem_map
 #align multiset.mem_map Multiset.mem_map
 
 @[simp]
@@ -2360,12 +2360,13 @@ variable [DecidableEq α]
 
 /-- `count a s` is the multiplicity of `a` in `s`. -/
 def count (a : α) : Multiset α → ℕ :=
-  countp (· = a)
+  countp (a = ·)
 #align multiset.count Multiset.count
 
 @[simp]
-theorem coe_count (a : α) (l : List α) : count a (ofList l) = l.count a :=
-  coe_countp (· = a) l
+theorem coe_count (a : α) (l : List α) : count a (ofList l) = l.count a := by
+  simp_rw [count, List.count, coe_countp (a = ·) l, @eq_comm _ a]
+  rfl
 #align multiset.coe_count Multiset.coe_count
 
 @[simp, nolint simpNF] -- Porting note: simp can prove this at EOF, but not right now
@@ -2380,7 +2381,7 @@ theorem count_cons_self (a : α) (s : Multiset α) : count a (a ::ₘ s) = count
 
 @[simp]
 theorem count_cons_of_ne {a b : α} (h : a ≠ b) (s : Multiset α) : count a (b ::ₘ s) = count a s :=
-  countp_cons_of_neg _ $ h.symm
+  countp_cons_of_neg _ $ h
 #align multiset.count_cons_of_ne Multiset.count_cons_of_ne
 
 theorem count_le_card (a : α) (s) : count a s ≤ card s :=
@@ -2396,9 +2397,8 @@ theorem count_le_count_cons (a b : α) (s : Multiset α) : count a s ≤ count a
 #align multiset.count_le_count_cons Multiset.count_le_count_cons
 
 theorem count_cons (a b : α) (s : Multiset α) :
-    count a (b ::ₘ s) = count a s + if a = b then 1 else 0 := by
-  refine' (countp_cons (· = a) _ _).trans _
-  simp only [@eq_comm _ a b]; rfl
+    count a (b ::ₘ s) = count a s + if a = b then 1 else 0 :=
+  countp_cons (a = ·) _ _
 #align multiset.count_cons Multiset.count_cons
 
 theorem count_singleton_self (a : α) : count a ({a} : Multiset α) = 1 :=
@@ -2417,7 +2417,7 @@ theorem count_add (a : α) : ∀ s t, count a (s + t) = count a s + count a t :=
 
 /-- `count a`, the multiplicity of `a` in a multiset, promoted to an `AddMonoidHom`. -/
 def countAddMonoidHom (a : α) : Multiset α →+ ℕ :=
-  countpAddMonoidHom (· = a)
+  countpAddMonoidHom (a = ·)
 #align multiset.count_add_monoid_hom Multiset.countAddMonoidHom
 
 @[simp]
@@ -2456,23 +2456,27 @@ theorem count_eq_card {a : α} {s} : count a s = card s ↔ ∀ x ∈ s, a = x :
 #align multiset.count_eq_card Multiset.count_eq_card
 
 @[simp]
-theorem count_replicate_self (a : α) (n : ℕ) : count a (replicate n a) = n :=
-  List.count_replicate_self ..
+theorem count_replicate_self (a : α) (n : ℕ) : count a (replicate n a) = n := by
+  convert List.count_replicate_self a n
+  rw [←coe_count, coe_replicate]
 #align multiset.count_replicate_self Multiset.count_replicate_self
 
-theorem count_replicate (a b : α) (n : ℕ) : count a (replicate n b) = if a = b then n else 0 :=
-  List.count_replicate ..
+theorem count_replicate (a b : α) (n : ℕ) : count a (replicate n b) = if a = b then n else 0 := by
+  convert List.count_replicate a b n
+  rw [←coe_count, coe_replicate]
 #align multiset.count_replicate Multiset.count_replicate
 
 @[simp]
 theorem count_erase_self (a : α) (s : Multiset α) : count a (erase s a) = count a s - 1 :=
-  Quotient.inductionOn s <| List.count_erase_self a
+  Quotient.inductionOn s <| fun l => by
+    convert List.count_erase_self a l <;> rw [←coe_count] <;> simp
 #align multiset.count_erase_self Multiset.count_erase_self
 
 @[simp]
 theorem count_erase_of_ne {a b : α} (ab : a ≠ b) (s : Multiset α) :
     count a (erase s b) = count a s :=
-  Quotient.inductionOn s <| List.count_erase_of_ne ab
+  Quotient.inductionOn s <| fun l => by
+    convert List.count_erase_of_ne ab l <;> rw [←coe_count] <;> simp
 #align multiset.count_erase_of_ne Multiset.count_erase_of_ne
 
 @[simp]
@@ -2499,13 +2503,18 @@ theorem count_inter (a : α) (s t : Multiset α) : count a (s ∩ t) = min (coun
 
 theorem le_count_iff_replicate_le {a : α} {s : Multiset α} {n : ℕ} :
     n ≤ count a s ↔ replicate n a ≤ s :=
-  Quot.inductionOn s fun _l => le_count_iff_replicate_sublist.trans replicate_le_coe.symm
+  Quot.inductionOn s fun _l => by
+    simp only [quot_mk_to_coe'', mem_coe, coe_count]
+    exact le_count_iff_replicate_sublist.trans replicate_le_coe.symm
 #align multiset.le_count_iff_replicate_le Multiset.le_count_iff_replicate_le
 
 @[simp]
 theorem count_filter_of_pos {p} [DecidablePred p] {a} {s : Multiset α} (h : p a) :
     count a (filter p s) = count a s :=
-  Quot.inductionOn s fun _l => count_filter $ by simpa using h
+  Quot.inductionOn s fun _l => by
+    simp only [quot_mk_to_coe'', coe_filter, mem_coe, coe_count, decide_eq_true_eq]
+    apply count_filter
+    simpa using h
 #align multiset.count_filter_of_pos Multiset.count_filter_of_pos
 
 @[simp]
@@ -2523,7 +2532,9 @@ theorem count_filter {p} [DecidablePred p] {a} {s : Multiset α} :
 #align multiset.count_filter Multiset.count_filter
 
 theorem ext {s t : Multiset α} : s = t ↔ ∀ a, count a s = count a t :=
-  Quotient.inductionOn₂ s t fun _l₁ _l₂ => Quotient.eq.trans perm_iff_count
+  Quotient.inductionOn₂ s t fun _l₁ _l₂ => Quotient.eq.trans <| by
+    simp only [quot_mk_to_coe, coe_filter, mem_coe, coe_count, decide_eq_true_eq]
+    apply perm_iff_count
 #align multiset.ext Multiset.ext
 
 @[ext]
@@ -2560,7 +2571,7 @@ the multiset -/
 theorem count_map_eq_count [DecidableEq β] (f : α → β) (s : Multiset α)
     (hf : Set.InjOn f { x : α | x ∈ s }) (x) (H : x ∈ s) : (s.map f).count (f x) = s.count x :=
   by
-  suffices (filter (fun a : α => f a = f x) s).count x = card (filter (fun a : α => f a = f x) s)
+  suffices (filter (fun a : α => f x = f a) s).count x = card (filter (fun a : α => f x = f a) s)
     by
     rw [count, countp_map, ← this]
     exact count_filter_of_pos $ rfl
@@ -2591,7 +2602,9 @@ theorem attach_count_eq_count_coe (m : Multiset α) (a) : m.attach.count a = m.c
 #align multiset.attach_count_eq_count_coe Multiset.attach_count_eq_count_coe
 
 theorem filter_eq' (s : Multiset α) (b : α) : s.filter (· = b) = replicate (count b s) b :=
-  Quotient.inductionOn s <| fun l => congr_arg _ <| List.filter_eq' l b
+  Quotient.inductionOn s <| fun l => by
+    simp only [quot_mk_to_coe, coe_filter, mem_coe, coe_count]
+    rw [List.filter_eq' l b, coe_replicate]
 #align multiset.filter_eq' Multiset.filter_eq'
 
 theorem filter_eq (s : Multiset α) (b : α) : s.filter (Eq b) = replicate (count b s) b := by
@@ -2646,7 +2659,7 @@ def mapEmbedding (f : α ↪ β) : Multiset α ↪o Multiset β :=
 end Embedding
 
 theorem count_eq_card_filter_eq [DecidableEq α] (s : Multiset α) (a : α) :
-    s.count a = card (s.filter (· = a)) := by rw [count, countp_eq_card_filter]
+    s.count a = card (s.filter (a = ·)) := by rw [count, countp_eq_card_filter]
 #align multiset.count_eq_card_filter_eq Multiset.count_eq_card_filter_eq
 
 /--
@@ -2663,7 +2676,7 @@ theorem map_count_True_eq_filter_card (s : Multiset α) (p : α → Prop) [Decid
   simp only [count_eq_card_filter_eq, map_filter, card_map, Function.comp.left_id,
     eq_true_eq_id, Function.comp]
   congr; funext _
-  simp only [eq_iff_iff, iff_true]
+  simp only [eq_iff_iff, true_iff]
 #align multiset.map_count_true_eq_filter_card Multiset.map_count_True_eq_filter_card
 
 /-! ### Lift a relation to `Multiset`s -/

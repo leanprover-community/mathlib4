@@ -418,7 +418,7 @@ theorem _root_.wellFounded_lift₂_iff [s : Setoid α] {r : α → α → Prop}
     (Quotient.outRelEmbedding H).wellFounded⟩
 #align well_founded_lift₂_iff wellFounded_lift₂_iff
 
-alias wellFounded_lift₂_iff ↔ WellFounded.of_quotient_lift₂ WellFounded.quotient_lift₂
+alias wellFounded_lift₂_iff ↔ _root_.WellFounded.of_quotient_lift₂ _root_.WellFounded.quotient_lift₂
 
 /-- To define an relation embedding from an antisymmetric relation `r` to a reflexive relation `s`
 it suffices to give a function together with a proof that it satisfies `s (f a) (f b) ↔ r a b`.
