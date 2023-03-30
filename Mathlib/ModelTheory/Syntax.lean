@@ -35,16 +35,16 @@ above a particular index.
 * `FirstOrder.Language.Term.subst` and `FirstOrder.Language.BoundedFormula.subst` substitute
 variables with given terms.
 * Language maps can act on syntactic objects with functions such as
-`first_order.language.LHom.on_formula`.
+`FirstOrder.Language.LHom.onFormula`.
 * `FirstOrder.Language.Term.constantsVarsEquiv` and
 `FirstOrder.Language.BoundedFormula.constantsVarsEquiv` switch terms and formulas between having
 constants in the language and having extra variables indexed by the same type.
 
 ## Implementation Notes
-* Formulas use a modified version of de Bruijn variables. Specifically, a `L.bounded_formula α n`
+* Formulas use a modified version of de Bruijn variables. Specifically, a `L.boundedFormula α n`
 is a formula with some variables indexed by a type `α`, which cannot be quantified over, and some
-indexed by `Fin n`, which can. For any `φ : L.bounded_formula α (n + 1)`, we define the formula
-`∀' φ : L.bounded_formula α n` by universally quantifying over the variable indexed by
+indexed by `Fin n`, which can. For any `φ : L.boundedFormula α (n + 1)`, we define the formula
+`∀' φ : L.boundedFormula α n` by universally quantifying over the variable indexed by
 `n : Fin (n + 1)`.
 
 ## References
@@ -315,7 +315,7 @@ set_option linter.uppercaseLean3 false in
 variable (L) (α)
 
 /- ./././Mathport/Syntax/Translate/Command.lean:364:30: infer kinds are unsupported in Lean 4: falsum {} -/
-/-- `bounded_formula α n` is the type of formulas with free variables indexed by `α` and up to `n`
+/-- `BoundedFormula α n` is the type of formulas with free variables indexed by `α` and up to `n`
   additional free variables. -/
 inductive BoundedFormula : ℕ → Type max u v u'
   | falsum {n} : BoundedFormula n
