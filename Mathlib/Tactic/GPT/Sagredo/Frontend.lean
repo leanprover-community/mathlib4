@@ -11,20 +11,39 @@ open Lean Elab Meta
 namespace Mathlib.Tactic.GPT.Sagredo
 
 /--
-A modified version of `Lean.Elab.Frontend`, that returns messages and info trees.
+Wrapper for `IO.processCommands` that enables info states, and returns
+* the new environment
+* messages
+* info trees
 -/
-def runFrontend (input : String) (opts : Options) (fileName : String) (mainModuleName : Name) :
+def processCommandsWithInfoTrees
+    (inputCtx : Parser.InputContext) (parserState : Parser.ModuleParserState)
+    (commandState : Command.State) : IO (Environment × List Message × List InfoTree) := do
+  let commandState := { commandState with infoState.enabled := true }
+  let s ← IO.processCommands inputCtx parserState commandState <&> Frontend.State.commandState
+  pure (s.env, s.messages.msgs.toList, s.infoState.trees.toList)
+
+/--
+Process some text input, with or without an existing environment.
+If there is no existing environment, we parse the input for headers (e.g. import statements),
+and create a new environment.
+Otherwise, we add to the existing environment.
+
+Returns the resulting environment, along with a list of messages and info trees.
+-/
+def processInput (input : String) (env? : Option Environment)
+    (opts : Options) (fileName : Option String := none) :
     IO (Environment × List Message × List InfoTree) := do
-  let inputCtx := Parser.mkInputContext input fileName
-  let (header, parserState, messages) ← Parser.parseHeader inputCtx
-  let (env, messages) ← processHeader header opts messages inputCtx
-  let env := env.setMainModule mainModuleName
-  let mut commandState := Command.mkState env messages opts
-  commandState := { commandState with infoState.enabled := true }
-  let s ← IO.processCommands inputCtx parserState commandState
-  pure (s.commandState.env,
-    s.commandState.messages.msgs.toList,
-    s.commandState.infoState.trees.toList)
+  let fileName   := fileName.getD "<input>"
+  let inputCtx   := Parser.mkInputContext input fileName
+  let (parserState, commandState) ← match env? with
+  | none => do
+    let (header, parserState, messages) ← Parser.parseHeader inputCtx
+    let (env, messages) ← processHeader header opts messages inputCtx
+    pure (parserState, (Command.mkState env messages opts))
+  | some env => do
+    pure ({ : Parser.ModuleParserState }, Command.mkState env {} opts)
+  processCommandsWithInfoTrees inputCtx parserState commandState
 
 /--
 Given a token (e.g. a tactic invocation), we read the current source file,

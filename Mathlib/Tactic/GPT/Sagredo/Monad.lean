@@ -34,11 +34,11 @@ structure State extends GPT.State where
 variable {m : Type → Type} [Monad m]
 abbrev M := StateT State
 
--- FIXME ideally we would be able to use an existing `preambleEnv`
--- and avoid recompiling the whole file from scratch.
-def analyzeSolution (preamble : String) (_preambleEnv : Option Environment) (sol : String) :
+def analyzeSolution (preamble : String) (preambleEnv : Option Environment) (sol : String) :
     IO Analysis := do
-  let (env, errors, trees) ← runFrontend (preamble ++ "\n\n" ++ sol) {} "" default
+  let (env, errors, trees) ← match preambleEnv with
+    | none => processInput (preamble ++ "\n\n" ++ sol) none {} ""
+    | some env => processInput sol env {} ""
   pure <| Analysis.subtractLineNumbers ⟨env, errors, trees.bind InfoTree.sorries⟩ (preamble.count '\n' + 2)
 
 def recordSolution (sol : CodeBlock) : M IO Unit := do
