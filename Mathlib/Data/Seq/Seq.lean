@@ -296,7 +296,7 @@ theorem mem_rec_on {C : Seq α → Prop} {a s} (M : a ∈ s)
   revert e; apply s.recOn _ fun b s' => _ --<;> intro e
   · intro e; injection e
   · intro b s' e
-    have h_eq : (cons b s').val (Nat.succ k) = s'.val k := by cases s' <;> rfl
+    have h_eq : (cons b s').val (Nat.succ k) = s'.val k := by cases s' ; rfl
     rw [h_eq] at e
     apply h1 _ _ (Or.inr (IH e))
 #align stream.seq.mem_rec_on Stream'.Seq.mem_rec_on
@@ -308,6 +308,7 @@ def Corec.f (f : β → Option (α × β)) : Option β → Option α × Option �
     match f b with
     | none => (none, none)
     | some (a, b') => (some a, some b')
+set_option linter.uppercaseLean3 false in
 #align stream.seq.corec.F Stream'.Seq.Corec.f
 
 /-- Corecursor for `seq α` as a coinductive type. Iterates `f` to produce new elements
