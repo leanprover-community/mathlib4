@@ -92,7 +92,7 @@ theorem singleton_unop (x : αᵒᵖ) : ({x} : Set αᵒᵖ).unop = {unop x} := 
   . apply unop_injective
 #align set.singleton_unop Set.singleton_unop
 
-@[simp]
+@[simp 1100]
 theorem singleton_op_unop (x : α) : ({op x} : Set αᵒᵖ).unop = {x} := by
   ext
   constructor
@@ -100,7 +100,7 @@ theorem singleton_op_unop (x : α) : ({op x} : Set αᵒᵖ).unop = {x} := by
   . apply unop_injective
 #align set.singleton_op_unop Set.singleton_op_unop
 
-@[simp]
+@[simp 1100]
 theorem singleton_unop_op (x : αᵒᵖ) : ({unop x} : Set α).op = {x} := by
   ext
   constructor
