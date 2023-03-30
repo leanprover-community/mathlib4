@@ -112,13 +112,19 @@ instance instInv : Inv αˣ :=
   ⟨fun u => ⟨u.2, u.1, u.4, u.3⟩⟩
 attribute [instance] AddUnits.instNeg
 
-/- porting note: the result of these definitions is syntactically equal to `Units.val` and
-`Units.inv` because of the way coercions work in Lean 4, so there is no need for these custom
-`simp` projections. -/
+/- porting note: the result of these definitions is syntactically equal to `Units.val` because of
+the way coercions work in Lean 4, so there is no need for these custom `simp` projections. -/
 #noalign units.simps.coe
 #noalign add_units.simps.coe
-#noalign units.simps.coe_inv
-#noalign add_units.simps.coe_neg
+
+/-- See Note [custom simps projection] -/
+@[to_additive "See Note [custom simps projection]"]
+def Simps.coe_inv (u : αˣ) : α := ↑(u⁻¹)
+#align units.simps.coe_inv Units.Simps.coe_inv
+#align add_units.simps.coe_neg AddUnits.Simps.coe_neg
+
+initialize_simps_projections Units (val → coe, as_prefix coe, inv → coe_inv, as_prefix coe_inv)
+initialize_simps_projections AddUnits (val → coe, as_prefix coe, neg → coe_neg, as_prefix coe_neg)
 
 -- Porting note: removed `simp` tag because of the tautology
 @[to_additive]
