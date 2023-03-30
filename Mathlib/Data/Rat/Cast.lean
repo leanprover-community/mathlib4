@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 
 ! This file was ported from Lean 3 source module data.rat.cast
-! leanprover-community/mathlib commit 422e70f7ce183d2900c586a8cda8381e788a0c62
+! leanprover-community/mathlib commit acebd8d49928f6ed8920e502a6c90674e75bd441
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -498,24 +498,6 @@ theorem RingHom.ext_rat {R : Type _} [Semiring R] [RingHomClass F ℚ R] (f g : 
 instance Rat.subsingleton_ringHom {R : Type _} [Semiring R] : Subsingleton (ℚ →+* R) :=
   ⟨RingHom.ext_rat⟩
 #align rat.subsingleton_ring_hom Rat.subsingleton_ringHom
-
-namespace MulOpposite
-
-variable [DivisionRing α]
-
-@[simp, norm_cast]
-theorem op_ratCast (r : ℚ) : op (r : α) = (↑r : αᵐᵒᵖ) := by
-  rw [cast_def, div_eq_mul_inv, op_mul, op_inv, op_natCast, op_intCast,
-    (Commute.cast_int_right _ r.num).eq, cast_def, div_eq_mul_inv]
-#align mul_opposite.op_rat_cast MulOpposite.op_ratCast
-
-@[simp, norm_cast]
-theorem unop_ratCast (r : ℚ) : unop (r : αᵐᵒᵖ) = r := by
-  rw [cast_def, div_eq_mul_inv, unop_mul, unop_inv, unop_natCast, unop_intCast,
-    (Commute.cast_int_right _ r.num).eq, cast_def, div_eq_mul_inv]
-#align mul_opposite.unop_rat_cast MulOpposite.unop_ratCast
-
-end MulOpposite
 
 section SMul
 
