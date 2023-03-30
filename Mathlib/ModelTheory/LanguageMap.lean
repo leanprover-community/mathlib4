@@ -148,7 +148,8 @@ def comp (g : L' →ᴸ L'') (f : L →ᴸ L') : L →ᴸ L'' :=
   ⟨fun _n F => g.1 (f.1 F), fun _ R => g.2 (f.2 R)⟩
 #align first_order.language.LHom.comp FirstOrder.Language.LHom.comp
 
--- mathport name: LHom.comp
+--Porting note: added ' to avoid clash with function composition
+@[inherit_doc]
 local infixl:60 " ∘' " => LHom.comp
 
 @[simp]
@@ -191,7 +192,8 @@ theorem sumElim_inl_inr : LHom.sumInl.sumElim LHom.sumInr = LHom.id (L.sum L') :
   LHom.funext (funext fun _ => Sum.elim_inl_inr) (funext fun _ => Sum.elim_inl_inr)
 #align first_order.language.LHom.sum_elim_inl_inr FirstOrder.Language.LHom.sumElim_inl_inr
 
-theorem comp_sumElim {L3 : Language} (θ : L' →ᴸ L3) : θ ∘' ϕ.sumElim ψ = (θ ∘' ϕ).sumElim (θ ∘' ψ) :=
+theorem comp_sumElim {L3 : Language} (θ : L' →ᴸ L3) :
+    θ ∘' ϕ.sumElim ψ = (θ ∘' ϕ).sumElim (θ ∘' ψ) :=
   LHom.funext (funext fun _n => Sum.comp_elim _ _ _) (funext fun _n => Sum.comp_elim _ _ _)
 #align first_order.language.LHom.comp_sum_elim FirstOrder.Language.LHom.comp_sumElim
 
