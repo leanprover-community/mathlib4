@@ -133,14 +133,14 @@ theorem equivalence₂_inverse :
 
 /-- The counit isomorphism of the equivalence `equivalence₂` between `A` and `B`. -/
 @[simps]
-def equivalence₂CounitIso : (eB.Functor ⋙ e'.inverse ⋙ eA.inverse) ⋙ F ⋙ eB.inverse ≅ 𝟭 B :=
+def equivalence₂CounitIso : (eB.functor ⋙ e'.inverse ⋙ eA.inverse) ⋙ F ⋙ eB.inverse ≅ 𝟭 B :=
   calc
-    (eB.Functor ⋙ e'.inverse ⋙ eA.inverse) ⋙ F ⋙ eB.inverse ≅
-        eB.Functor ⋙ (e'.inverse ⋙ eA.inverse ⋙ F) ⋙ eB.inverse :=
+    (eB.functor ⋙ e'.inverse ⋙ eA.inverse) ⋙ F ⋙ eB.inverse ≅
+        eB.functor ⋙ (e'.inverse ⋙ eA.inverse ⋙ F) ⋙ eB.inverse :=
       Iso.refl _
-    _ ≅ eB.Functor ⋙ 𝟭 _ ⋙ eB.inverse :=
+    _ ≅ eB.functor ⋙ 𝟭 _ ⋙ eB.inverse :=
       (isoWhiskerLeft _ (isoWhiskerRight (equivalence₁CounitIso hF) _))
-    _ ≅ eB.Functor ⋙ eB.inverse := (Iso.refl _)
+    _ ≅ eB.functor ⋙ eB.inverse := (Iso.refl _)
     _ ≅ 𝟭 B := eB.unitIso.symm
 
 #align algebraic_topology.dold_kan.compatibility.equivalence₂_counit_iso AlgebraicTopology.DoldKan.Compatibility.equivalence₂CounitIso
