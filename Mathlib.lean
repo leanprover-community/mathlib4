@@ -1237,6 +1237,7 @@ import Mathlib.MeasureTheory.MeasurableSpaceDef
 import Mathlib.MeasureTheory.PiSystem
 import Mathlib.ModelTheory.Basic
 import Mathlib.ModelTheory.LanguageMap
+import Mathlib.ModelTheory.Semantics
 import Mathlib.ModelTheory.Syntax
 import Mathlib.NumberTheory.ADEInequality
 import Mathlib.NumberTheory.Basic
