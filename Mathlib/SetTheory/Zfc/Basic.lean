@@ -1335,11 +1335,10 @@ def funs (x y : ZFSet.{u}) : ZFSet.{u} :=
 theorem mem_funs {x y f : ZFSet.{u}} : f ∈ funs x y ↔ IsFunc x y f := by simp [funs, IsFunc]
 #align Set.mem_funs ZFSet.mem_funs
 
+-- TODO(Mario): Prove this computably
 /- Porting note: the `Definable` argument in `mapDefinableAux` is unused, though the TODO remark
    suggests it shouldn't be. -/
-set_option linter.unusedVariables false
-
--- TODO(Mario): Prove this computably
+@[nolint unusedArguments]
 noncomputable instance mapDefinableAux (f : ZFSet → ZFSet) [Definable 1 f] :
     Definable 1 fun y => pair y (f y) :=
   @Classical.AllDefinable 1 _
