@@ -569,8 +569,8 @@ theorem comp_sup_eq_sup_comp_of_is_total [SemilatticeSup β] [OrderBot β] (g : 
 protected theorem le_sup_iff (ha : ⊥ < a) : a ≤ s.sup f ↔ ∃ b ∈ s, a ≤ f b := by
   apply Iff.intro
   · induction s using cons_induction with
-    | base => exact (absurd · (not_le_of_lt ha))
-    | @ind c t hc ih =>
+    | empty => exact (absurd · (not_le_of_lt ha))
+    | @cons c t hc ih =>
       rw [sup_cons, le_sup_iff]
       exact fun
       | Or.inl h => ⟨c, mem_cons.2 (Or.inl rfl), h⟩
@@ -582,8 +582,8 @@ protected theorem le_sup_iff (ha : ⊥ < a) : a ≤ s.sup f ↔ ∃ b ∈ s, a �
 protected theorem lt_sup_iff : a < s.sup f ↔ ∃ b ∈ s, a < f b := by
   apply Iff.intro
   · induction s using cons_induction with
-    | base => exact (absurd · not_lt_bot)
-    | @ind c t hc ih =>
+    | empty => exact (absurd · not_lt_bot)
+    | @cons c t hc ih =>
       rw [sup_cons, lt_sup_iff]
       exact fun
       | Or.inl h => ⟨c, mem_cons.2 (Or.inl rfl), h⟩
