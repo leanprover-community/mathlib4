@@ -159,7 +159,7 @@ instance : Membership α (Seq α) :=
 
 theorem le_stable (s : Seq α) {m n} (h : m ≤ n) : s.get? m = none → s.get? n = none := by
   cases' s with f al
-  induction' h with n h IH
+  induction' h with n _ IH
   exacts[id, fun h2 => al (IH h2)]
 #align stream.seq.le_stable Stream'.Seq.le_stable
 
@@ -182,11 +182,11 @@ theorem not_mem_nil (a : α) : a ∉ @nil α := fun ⟨_, (h : some a = none)⟩
 #align stream.seq.not_mem_nil Stream'.Seq.not_mem_nil
 
 theorem mem_cons (a : α) : ∀ s : Seq α, a ∈ cons a s
-  | ⟨f, al⟩ => Stream'.mem_cons (some a) _
+  | ⟨_, _⟩ => Stream'.mem_cons (some a) _
 #align stream.seq.mem_cons Stream'.Seq.mem_cons
 
 theorem mem_cons_of_mem (y : α) {a : α} : ∀ {s : Seq α}, a ∈ s → a ∈ cons y s
-  | ⟨f, al⟩ => Stream'.mem_cons_of_mem (some y)
+  | ⟨_, _⟩ => Stream'.mem_cons_of_mem (some y)
 #align stream.seq.mem_cons_of_mem Stream'.Seq.mem_cons_of_mem
 
 theorem eq_or_mem_of_mem_cons {a b : α} : ∀ {s : Seq α}, a ∈ cons b s → a = b ∨ a ∈ s
@@ -201,7 +201,7 @@ theorem mem_cons_iff {a b : α} {s : Seq α} : a ∈ cons b s ↔ a = b ∨ a �
 /-- Destructor for a sequence, resulting in either `none` (for `nil`) or
   `some (a, s)` (for `cons a s`). -/
 def destruct (s : Seq α) : Option (Seq1 α) :=
-  (fun a' => (a', s.tail)) <$> nth s 0
+  (fun a' => (a', s.tail)) <$> get? s 0
 #align stream.seq.destruct Stream'.Seq.destruct
 
 theorem destruct_eq_nil {s : Seq α} : destruct s = none → s = nil := by
