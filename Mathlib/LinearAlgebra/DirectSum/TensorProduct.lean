@@ -14,13 +14,13 @@ import Mathlib.Algebra.DirectSum.Module
 /-!
 # Tensor products of direct sums
 
-This file shows that taking `tensor_product`s commutes with taking `direct_sum`s in both arguments.
+This file shows that taking `TensorProduct`s commutes with taking `DirectSum`s in both arguments.
 
 ## Main results
 
-* `tensor_product.direct_sum`
-* `tensor_product.directSumLeft`
-* `tensor_product.directSumRight`
+* `TensorProduct.directSum`
+* `TensorProduct.directSumLeft`
+* `TensorProduct.directSumRight`
 -/
 
 universe u v₁ v₂ w₁ w₁' w₂ w₂'
@@ -158,4 +158,3 @@ theorem directSumRight_symm_lof_tmul (x : M₁') (i : ι₂) (y : M₂ i) :
 end TensorProduct
 
 end Ring
-
