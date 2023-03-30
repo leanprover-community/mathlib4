@@ -194,21 +194,13 @@ instance [L.IsAlgebraic] {n : ℕ} : IsEmpty (L.Relations n) :=
 
 instance isRelational_of_empty_functions {symb : ℕ → Type _} :
     IsRelational ⟨fun _ => Empty, symb⟩ :=
-  -- Porting note: Previous code was
-  -- ⟨fun _ => Empty.isEmpty⟩
-  --
-  -- No instance Empty.isEmpty.
-  ⟨fun _ => by simp only [isEmpty_iff]⟩
+  ⟨fun _ => instIsEmptyEmpty⟩
 #align
   first_order.language.is_relational_of_empty_functions
   FirstOrder.Language.isRelational_of_empty_functions
 
 instance isAlgebraic_of_empty_relations {symb : ℕ → Type _} : IsAlgebraic ⟨symb, fun _ => Empty⟩ :=
-  -- Porting note: Previous code was
-  -- ⟨fun _ => Empty.isEmpty⟩
-  --
-  -- No instance Empty.isEmpty.
-  ⟨fun _ => by simp only [isEmpty_iff]⟩
+  ⟨fun _ => instIsEmptyEmpty⟩
 #align
   first_order.language.is_algebraic_of_empty_relations
   FirstOrder.Language.isAlgebraic_of_empty_relations
@@ -222,19 +214,11 @@ instance isAlgebraic_empty : IsAlgebraic Language.empty :=
 #align first_order.language.is_algebraic_empty FirstOrder.Language.isAlgebraic_empty
 
 instance isRelational_sum [L.IsRelational] [L'.IsRelational] : IsRelational (L.sum L') :=
-  -- Porting note: Previous code was
-  -- ⟨fun n => Sum.isEmpty⟩
-  --
-  -- Failed to synthesize instance
-  ⟨fun n => by simp only [isEmpty_iff]; intro x; apply x.elim <;> simp only [IsEmpty.forall_iff]⟩
+  ⟨fun _ => instIsEmptySum⟩
 #align first_order.language.is_relational_sum FirstOrder.Language.isRelational_sum
 
 instance isAlgebraic_sum [L.IsAlgebraic] [L'.IsAlgebraic] : IsAlgebraic (L.sum L') :=
-  -- Porting note: Previous code was
-  -- ⟨fun n => Sum.isEmpty⟩
-  --
-  -- Failed to synthesize instance
-  ⟨fun n => by simp only [isEmpty_iff]; intro x; apply x.elim <;> simp only [IsEmpty.forall_iff]⟩
+  ⟨fun _ => instIsEmptySum⟩
 #align first_order.language.is_algebraic_sum FirstOrder.Language.isAlgebraic_sum
 
 instance isRelational_mk₂ {c f₁ f₂ : Type u} {r₁ r₂ : Type v} [h0 : IsEmpty c] [h1 : IsEmpty f₁]
