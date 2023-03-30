@@ -98,14 +98,14 @@ theorem equivalence₁CounitIso_eq : (equivalence₁ hF).counitIso = equivalence
 #align algebraic_topology.dold_kan.compatibility.equivalence₁_counit_iso_eq AlgebraicTopology.DoldKan.Compatibility.equivalence₁CounitIso_eq
 
 /-- The unit isomorphism of the equivalence `equivalence₁` between `A` and `B'`. -/
-@[simps]
+@[simps!]
 def equivalence₁UnitIso : 𝟭 A ≅ F ⋙ e'.inverse ⋙ eA.inverse :=
   calc
-    𝟭 A ≅ eA.Functor ⋙ eA.inverse := eA.unitIso
-    _ ≅ eA.Functor ⋙ 𝟭 A' ⋙ eA.inverse := (Iso.refl _)
-    _ ≅ eA.Functor ⋙ (e'.Functor ⋙ e'.inverse) ⋙ eA.inverse :=
+    𝟭 A ≅ eA.functor ⋙ eA.inverse := eA.unitIso
+    _ ≅ eA.functor ⋙ 𝟭 A' ⋙ eA.inverse := (Iso.refl _)
+    _ ≅ eA.functor ⋙ (e'.functor ⋙ e'.inverse) ⋙ eA.inverse :=
       (isoWhiskerLeft _ (isoWhiskerRight e'.unitIso _))
-    _ ≅ (eA.Functor ⋙ e'.Functor) ⋙ e'.inverse ⋙ eA.inverse := (Iso.refl _)
+    _ ≅ (eA.functor ⋙ e'.functor) ⋙ e'.inverse ⋙ eA.inverse := (Iso.refl _)
     _ ≅ F ⋙ e'.inverse ⋙ eA.inverse := isoWhiskerRight hF _
 
 #align algebraic_topology.dold_kan.compatibility.equivalence₁_unit_iso AlgebraicTopology.DoldKan.Compatibility.equivalence₁UnitIso
@@ -120,7 +120,7 @@ include eB
 
 /-- An intermediate equivalence `A ≅ B` obtained as the composition of `equivalence₁` and
 the inverse of `eB : B ≌ B'`. -/
-@[simps Functor]
+@[simps! functor]
 def equivalence₂ : A ≌ B :=
   (equivalence₁ hF).trans eB.symm
 #align algebraic_topology.dold_kan.compatibility.equivalence₂ AlgebraicTopology.DoldKan.Compatibility.equivalence₂
