@@ -193,7 +193,7 @@ def equivalence : A ≌ B :=
   G.asEquivalence.symm
 #align algebraic_topology.dold_kan.compatibility.equivalence AlgebraicTopology.DoldKan.Compatibility.equivalence
 
-theorem equivalence_functor : (equivalence hF hG).Functor = F ⋙ eB.inverse :=
+theorem equivalence_functor : (equivalence hF hG).functor = F ⋙ eB.inverse :=
   rfl
 #align algebraic_topology.dold_kan.compatibility.equivalence_functor AlgebraicTopology.DoldKan.Compatibility.equivalence_functor
 
