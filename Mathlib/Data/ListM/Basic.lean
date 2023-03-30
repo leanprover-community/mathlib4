@@ -41,22 +41,20 @@ unsafe instance : EmptyCollection (ListM m α) := ⟨nil⟩
 /-- The implementation of `ForIn`, which enables `for a in L do ...` notation. -/
 @[specialize] protected unsafe def forIn [Monad m]
     (as : ListM m α) (init : δ) (f : α → δ → m (ForInStep δ)) : m δ :=
-  match as with
+match as with
   | nil => pure init
-  | cons l => do
-    match ← l with
+  | cons l => do match ← l with
     | (none, t) => t.forIn init f
-    | (some a, t) =>
-    match (← f a init) with
-    | ForInStep.done d  => pure d
-    | ForInStep.yield d => t.forIn d f
+    | (some a, t) => match (← f a init) with
+      | ForInStep.done d  => pure d
+      | ForInStep.yield d => t.forIn d f
 
 unsafe instance : ForIn m (ListM m α) α where
   forIn := ListM.forIn
 
 /-- Construct a `ListM` recursively. -/
 unsafe def fix [Alternative m] (f : α → m α) : α → ListM m α
-| x => cons <| (fun a => (some x, fix f a)) <$> f x <|> pure (some x, nil)
+  | x => cons <| (fun a => (some x, fix f a)) <$> f x <|> pure (some x, nil)
 #align tactic.mllist.fix ListM.fix
 
 variable [Monad m]
@@ -296,8 +294,7 @@ unsafe def concat {α : Type u} : ListM m α → α → ListM m α
 
 /-- Take the product of two monadic lazy lists. -/
 unsafe def zip (L : ListM m α) (M : ListM m β) : ListM m (α × β) :=
-squash do
-  match ← uncons L, ← uncons M with
+squash do match ← uncons L, ← uncons M with
   | some (a, L'), some (b, M') => pure <| cons <| pure ((a, b), L'.zip M')
   | _, _ => pure nil
 
@@ -320,15 +317,13 @@ cons <| (flip Prod.mk nil ∘ some) <$> x
 
 /-- Lift the monad of a lazy list. -/
 unsafe def liftM [Monad n] [MonadLift m n] (L : ListM m α) : ListM n α :=
-squash do
-  match ← (uncons L : m _) with
+squash do match ← (uncons L : m _) with
   | none => pure empty
   | some (a, L') => pure <| cons do pure (a, L'.liftM)
 
 /-- Given a lazy list in a state monad, run it on some initial state, recording the states. -/
 unsafe def run {σ α : Type u} (L : ListM (StateT.{u} σ m) α) (s : σ) : ListM m (α × σ) :=
-squash do
-  match ← StateT.run (uncons L) s with
+squash do match ← StateT.run (uncons L) s with
   | (none, _) => pure empty
   | (some (a, L'), s') => pure <| cons do pure (some (a, s'), L'.run s')
 
@@ -355,7 +350,7 @@ unsafe def firstM [Alternative m] {α β} (L : ListM m α) (f : α → m β) : m
 
 /-- Return the first value on which a predicate returns true. -/
 unsafe def first [Alternative m] {α} (L : ListM m α) (p : α → Prop) [DecidablePred p] : m α :=
-  (L.filter p).head
+(L.filter p).head
 
 unsafe instance : Monad (ListM m) where
   pure := fun a => .ofList [a]
