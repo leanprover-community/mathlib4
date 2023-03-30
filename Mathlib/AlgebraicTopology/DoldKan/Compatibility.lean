@@ -79,14 +79,14 @@ theorem equivalence₁_inverse : (equivalence₁ hF).inverse = e'.inverse ⋙ eA
 #align algebraic_topology.dold_kan.compatibility.equivalence₁_inverse AlgebraicTopology.DoldKan.Compatibility.equivalence₁_inverse
 
 /-- The counit isomorphism of the equivalence `equivalence₁` between `A` and `B'`. -/
-@[simps]
+@[simps!]
 def equivalence₁CounitIso : (e'.inverse ⋙ eA.inverse) ⋙ F ≅ 𝟭 B' :=
   calc
-    (e'.inverse ⋙ eA.inverse) ⋙ F ≅ (e'.inverse ⋙ eA.inverse) ⋙ eA.Functor ⋙ e'.Functor :=
+    (e'.inverse ⋙ eA.inverse) ⋙ F ≅ (e'.inverse ⋙ eA.inverse) ⋙ eA.functor ⋙ e'.functor :=
       isoWhiskerLeft _ hF.symm
-    _ ≅ e'.inverse ⋙ (eA.inverse ⋙ eA.Functor) ⋙ e'.Functor := (Iso.refl _)
-    _ ≅ e'.inverse ⋙ 𝟭 _ ⋙ e'.Functor := (isoWhiskerLeft _ (isoWhiskerRight eA.counitIso _))
-    _ ≅ e'.inverse ⋙ e'.Functor := (Iso.refl _)
+    _ ≅ e'.inverse ⋙ (eA.inverse ⋙ eA.functor) ⋙ e'.functor := (Iso.refl _)
+    _ ≅ e'.inverse ⋙ 𝟭 _ ⋙ e'.functor := (isoWhiskerLeft _ (isoWhiskerRight eA.counitIso _))
+    _ ≅ e'.inverse ⋙ e'.functor := (Iso.refl _)
     _ ≅ 𝟭 B' := e'.counitIso
 
 #align algebraic_topology.dold_kan.compatibility.equivalence₁_counit_iso AlgebraicTopology.DoldKan.Compatibility.equivalence₁CounitIso
