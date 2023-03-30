@@ -19,33 +19,33 @@ This file defines first-order terms, formulas, sentences, and theories in a styl
 [Flypitch project](https://flypitch.github.io/).
 
 ## Main Definitions
-* A `first_order.language.term` is defined so that `L.Term α` is the type of `L`-terms with free
+* A `FirstOrder.Language.Term` is defined so that `L.Term α` is the type of `L`-terms with free
   variables indexed by `α`.
-* A `first_order.language.formula` is defined so that `L.formula α` is the type of `L`-formulas with
+* A `FirstOrder.Language.Formula` is defined so that `L.formula α` is the type of `L`-formulas with
   free variables indexed by `α`.
-* A `first_order.language.sentence` is a formula with no free variables.
-* A `first_order.language.Theory` is a set of sentences.
-* The variables of terms and formulas can be relabelled with `first_order.language.term.relabel`,
-`first_order.language.bounded_formula.relabel`, and `first_order.language.formula.relabel`.
+* A `FirstOrder.Language.Sentence` is a formula with no free variables.
+* A `FirstOrder.Language.Theory` is a set of sentences.
+* The variables of terms and formulas can be relabelled with `FirstOrder.Language.Term.relabel`,
+`FirstOrder.Language.BoundedFormula.relabel`, and `FirstOrder.Language.Formula.relabel`.
 * Given an operation on terms and an operation on relations,
-  `first_order.language.bounded_formula.map_term_rel` gives an operation on formulas.
-* `first_order.language.bounded_formula.cast_le` adds more `fin`-indexed variables.
-* `first_order.language.bounded_formula.lift_at` raises the indexes of the `fin`-indexed variables
+  `FirstOrder.Language.BoundedFormula.mapTermRel` gives an operation on formulas.
+* `FirstOrder.Language.BoundedFormula.castLe` adds more `Fin`-indexed variables.
+* `FirstOrder.Language.BoundedFormula.liftAt` raises the indexes of the `Fin`-indexed variables
 above a particular index.
-* `first_order.language.term.subst` and `first_order.language.bounded_formula.subst` substitute
+* `FirstOrder.Language.Term.subst` and `FirstOrder.Language.BoundedFormula.subst` substitute
 variables with given terms.
 * Language maps can act on syntactic objects with functions such as
 `first_order.language.LHom.on_formula`.
-* `first_order.language.term.constants_vars_equiv` and
-`first_order.language.bounded_formula.constants_vars_equiv` switch terms and formulas between having
+* `FirstOrder.Language.Term.constantsVarsEquiv` and
+`FirstOrder.Language.BoundedFormula.constantsVarsEquiv` switch terms and formulas between having
 constants in the language and having extra variables indexed by the same type.
 
 ## Implementation Notes
 * Formulas use a modified version of de Bruijn variables. Specifically, a `L.bounded_formula α n`
 is a formula with some variables indexed by a type `α`, which cannot be quantified over, and some
-indexed by `fin n`, which can. For any `φ : L.bounded_formula α (n + 1)`, we define the formula
+indexed by `Fin n`, which can. For any `φ : L.bounded_formula α (n + 1)`, we define the formula
 `∀' φ : L.bounded_formula α n` by universally quantifying over the variable indexed by
-`n : fin (n + 1)`.
+`n : Fin (n + 1)`.
 
 ## References
 For the Flypitch project:
@@ -87,7 +87,7 @@ namespace Term
 
 open Finset
 
-/-- The `finset` of variables used in a given term. -/
+/-- The `Finset` of variables used in a given term. -/
 @[simp]
 def varFinset [DecidableEq α] : L.Term α → Finset α
   | var i => {i}
@@ -95,7 +95,7 @@ def varFinset [DecidableEq α] : L.Term α → Finset α
 #align first_order.language.term.var_finset FirstOrder.Language.Term.varFinset
 
 --Porting note: universes in different order
-/-- The `finset` of variables from the left side of a sum used in a given term. -/
+/-- The `Finset` of variables from the left side of a sum used in a given term. -/
 @[simp]
 def varFinsetLeft [DecidableEq α] : L.Term (Sum α β) → Finset α
   | var (Sum.inl i) => {i}
@@ -246,7 +246,7 @@ instance inhabitedOfConstant [Inhabited L.Constants] : Inhabited (L.Term α) :=
   ⟨(default : L.Constants).term⟩
 #align first_order.language.term.inhabited_of_constant FirstOrder.Language.Term.inhabitedOfConstant
 
-/-- Raises all of the `fin`-indexed variables of a term greater than or equal to `m` by `n'`. -/
+/-- Raises all of the `Fin`-indexed variables of a term greater than or equal to `m` by `n'`. -/
 def liftAt {n : ℕ} (n' m : ℕ) : L.Term (Sum α (Fin n)) → L.Term (Sum α (Fin (n + n'))) :=
   relabel (Sum.map id fun i => if ↑i < m then Fin.castAdd n' i else Fin.addNat n' i)
 #align first_order.language.term.lift_at FirstOrder.Language.Term.liftAt
@@ -426,7 +426,7 @@ protected def iff (φ ψ : L.BoundedFormula α n) :=
 open Finset
 
 --Porting note: universes in different order
-/-- The `finset` of variables used in a given formula. -/
+/-- The `Finset` of variables used in a given formula. -/
 @[simp]
 def freeVarFinset [DecidableEq α] : ∀ {n}, L.BoundedFormula α n → Finset α
   | _n, falsum => ∅
@@ -524,7 +524,7 @@ def mapTermRel {g : ℕ → ℕ} (ft : ∀ n, L.Term (Sum α (Fin n)) → L'.Ter
   | n, all φ => (h n (φ.mapTermRel ft fr h)).all
 #align first_order.language.bounded_formula.map_term_rel FirstOrder.Language.BoundedFormula.mapTermRel
 
-/-- Raises all of the `fin`-indexed variables of a formula greater than or equal to `m` by `n'`. -/
+/-- Raises all of the `Fin`-indexed variables of a formula greater than or equal to `m` by `n'`. -/
 def liftAt : ∀ {n : ℕ} (n' _m : ℕ), L.BoundedFormula α n → L.BoundedFormula α (n + n') :=
   fun {n} n' m φ =>
   φ.mapTermRel (fun k t => t.liftAt n' m) (fun _ => id) fun _ =>
@@ -795,7 +795,7 @@ theorem IsPrenex.liftAt {k m : ℕ} (h : IsPrenex φ) : (φ.liftAt k m).IsPrenex
 #align first_order.language.bounded_formula.is_prenex.lift_at FirstOrder.Language.BoundedFormula.IsPrenex.liftAt
 
 --Porting note: universes in different order
-/-- An auxiliary operation to `first_order.language.bounded_formula.to_prenex`.
+/-- An auxiliary operation to `FirstOrder.Language.BoundedFormula.toPrenex`.
   If `φ` is quantifier-free and `ψ` is in prenex normal form, then `φ.to_prenex_imp_right ψ`
   is a prenex normal form for `φ.imp ψ`. -/
 def toPrenexImpRight : ∀ {n}, L.BoundedFormula α n → L.BoundedFormula α n → L.BoundedFormula α n
@@ -825,7 +825,7 @@ theorem isPrenex_toPrenexImpRight {φ ψ : L.BoundedFormula α n} (hφ : IsQF φ
 #align first_order.language.bounded_formula.is_prenex_to_prenex_imp_right FirstOrder.Language.BoundedFormula.isPrenex_toPrenexImpRight
 
 --Porting note: universes in different order
-/-- An auxiliary operation to `first_order.language.bounded_formula.to_prenex`.
+/-- An auxiliary operation to `FirstOrder.Language.BoundedFormula.toPrenex`.
   If `φ` and `ψ` are in prenex normal form, then `φ.to_prenex_imp ψ`
   is a prenex normal form for `φ.imp ψ`. -/
 def toPrenexImp : ∀ {n}, L.BoundedFormula α n → L.BoundedFormula α n → L.BoundedFormula α n
