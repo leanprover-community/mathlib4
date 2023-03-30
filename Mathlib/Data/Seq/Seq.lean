@@ -253,7 +253,7 @@ theorem head_nil : head (nil : Seq α) = none :=
 
 @[simp]
 theorem head_cons (a : α) (s) : head (cons a s) = some a := by
-  rw [head_eq_destruct, destruct_cons] <;> rfl
+  rw [head_eq_destruct, destruct_cons] ; rfl
 #align stream.seq.head_cons Stream'.Seq.head_cons
 
 @[simp]
@@ -263,7 +263,7 @@ theorem tail_nil : tail (nil : Seq α) = nil :=
 
 @[simp]
 theorem tail_cons (a : α) (s) : tail (cons a s) = s := by
-  cases' s with f al <;> apply Subtype.eq <;> dsimp [tail, cons] <;> rw [Stream'.tail_cons]
+  cases' s with f al ; apply Subtype.eq ; dsimp [tail, cons] ; rw [Stream'.tail_cons]
 #align stream.seq.tail_cons Stream'.Seq.tail_cons
 
 @[simp]
