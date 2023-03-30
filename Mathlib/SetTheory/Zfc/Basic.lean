@@ -63,6 +63,7 @@ respectively as "`set`" and "ZFC set".
 Prove `Set.map_definable_aux` computably.
 -/
 
+-- Porting note: Lean 3 uses `Set` for `ZFSet`.
 set_option linter.uppercaseLean3 false
 
 universe u v
@@ -475,6 +476,7 @@ def unionₛ (a : PSet) : PSet :=
   ⟨Σx, (a.Func x).Type, fun ⟨x, y⟩ => (a.Func x).Func y⟩
 #align pSet.sUnion PSet.unionₛ
 
+@[inherit_doc]
 prefix:110 "⋃₀ " => unionₛ
 
 @[simp]
@@ -1045,6 +1047,7 @@ def unionₛ : ZFSet → ZFSet :=
           fun b hb => ⟨b, PSet.Equiv.symm hb⟩⟩⟩
 #align Set.sUnion ZFSet.unionₛ
 
+@[inherit_doc]
 prefix:110 "⋃₀ " => ZFSet.unionₛ
 
 @[simp]
@@ -1571,6 +1574,7 @@ def unionₛ (x : Class) : Class :=
   ⋃₀ classToCong x
 #align Class.sUnion Class.unionₛ
 
+@[inherit_doc]
 prefix:110 "⋃₀ " => Class.unionₛ
 
 theorem ofSet.inj {x y : ZFSet.{u}} (h : (x : Class.{u}) = y) : x = y :=
@@ -1713,7 +1717,7 @@ def fval (F A : Class.{u}) : Class.{u} :=
   iota fun y => ToSet (fun x => F (ZFSet.pair x y)) A
 #align Class.fval Class.fval
 
--- mathport name: «expr ′ »
+@[inherit_doc]
 infixl:100 " ′ " => fval
 
 theorem fval_ex (F A : Class.{u}) : F ′ A ∈ univ.{u} :=
