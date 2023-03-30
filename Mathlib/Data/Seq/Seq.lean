@@ -468,18 +468,18 @@ instance coeLazyList : Coe (LazyList α) (Seq α) :=
 
 /-- Translate a sequence into a `lazy_list`. Since `lazy_list` and `list`
   are isomorphic as non-meta types, this function is necessarily meta. -/
-unsafe def to_lazy_list : Seq α → LazyList α
+unsafe def toLazyList : Seq α → LazyList α
   | s =>
     match destruct s with
     | none => LazyList.nil
-    | some (a, s') => LazyList.cons a (to_lazy_list s')
-#align stream.seq.to_lazy_list stream.seq.to_lazy_list
+    | some (a, s') => LazyList.cons a (toLazyList s')
+#align stream.seq.to_lazy_list Stream'.Seq.toLazyList
 
 /-- Translate a sequence to a list. This function will run forever if
   run on an infinite sequence. -/
 unsafe def force_to_list (s : Seq α) : List α :=
-  (to_lazy_list s).toList
-#align stream.seq.force_to_list stream.seq.force_to_list
+  (toLazyList s).toList
+#align stream.seq.force_to_list stream.seq.toLazyList
 
 /-- The sequence of natural numbers some 0, some 1, ... -/
 def nats : Seq ℕ :=
