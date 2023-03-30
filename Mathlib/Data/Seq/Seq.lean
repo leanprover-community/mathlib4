@@ -47,7 +47,7 @@ variable {α : Type u} {β : Type v} {γ : Type w}
 
 /-- The empty sequence -/
 def nil : Seq α :=
-  ⟨Stream'.const none, fun n h => rfl⟩
+  ⟨Stream'.const none, fun {_} _ => rfl⟩
 #align stream.seq.nil Stream'.Seq.nil
 
 instance : Inhabited (Seq α) :=
@@ -69,14 +69,14 @@ theorem val_cons (s : Seq α) (x : α) : (cons x s).val = some x::s.val :=
 #align stream.seq.val_cons Stream'.Seq.val_cons
 
 /-- Get the nth element of a sequence (if it exists) -/
-def nth : Seq α → ℕ → Option α :=
+def get? : Seq α → ℕ → Option α :=
   Subtype.val
-#align stream.seq.nth Stream'.Seq.nth
+#align stream.seq.nth Stream'.Seq.get?
 
 @[simp]
-theorem nth_mk (f hf) : @nth α ⟨f, hf⟩ = f :=
+theorem get?_mk (f hf) : @get? α ⟨f, hf⟩ = f :=
   rfl
-#align stream.seq.nth_mk Stream'.Seq.nth_mk
+#align stream.seq.nth_mk Stream'.Seq.get?_mk
 
 @[simp]
 theorem nth_nil (n : ℕ) : (@nil α).get? n = none :=
@@ -84,14 +84,14 @@ theorem nth_nil (n : ℕ) : (@nil α).get? n = none :=
 #align stream.seq.nth_nil Stream'.Seq.nth_nil
 
 @[simp]
-theorem nth_cons_zero (a : α) (s : Seq α) : (cons a s).get? 0 = some a :=
+theorem get?_cons_zero (a : α) (s : Seq α) : (cons a s).get? 0 = some a :=
   rfl
-#align stream.seq.nth_cons_zero Stream'.Seq.nth_cons_zero
+#align stream.seq.nth_cons_zero Stream'.Seq.get?_cons_zero
 
 @[simp]
-theorem nth_cons_succ (a : α) (s : Seq α) (n : ℕ) : (cons a s).get? (n + 1) = s.get? n :=
+theorem get?_cons_succ (a : α) (s : Seq α) (n : ℕ) : (cons a s).get? (n + 1) = s.get? n :=
   rfl
-#align stream.seq.nth_cons_succ Stream'.Seq.nth_cons_succ
+#align stream.seq.nth_cons_succ Stream'.Seq.get?_cons_succ
 
 @[ext]
 protected theorem ext {s t : Seq α} (h : ∀ n : ℕ, s.get? n = t.get? n) : s = t :=
@@ -99,8 +99,8 @@ protected theorem ext {s t : Seq α} (h : ∀ n : ℕ, s.get? n = t.get? n) : s 
 #align stream.seq.ext Stream'.Seq.ext
 
 theorem cons_injective2 : Function.Injective2 (cons : α → Seq α → Seq α) := fun x y s t h =>
-  ⟨by rw [← Option.some_inj, ← nth_cons_zero, h, nth_cons_zero],
-    Seq.ext fun n => by simp_rw [← nth_cons_succ x s n, h, nth_cons_succ]⟩
+  ⟨by rw [← Option.some_inj, ← get?_cons_zero, h, get?_cons_zero],
+    Seq.ext fun n => by simp_rw [← get?_cons_succ x s n, h, get?_cons_succ]⟩
 #align stream.seq.cons_injective2 Stream'.Seq.cons_injective2
 
 theorem cons_left_injective (s : Seq α) : Function.Injective fun x => cons x s :=
@@ -118,7 +118,7 @@ def TerminatedAt (s : Seq α) (n : ℕ) : Prop :=
 
 /-- It is decidable whether a sequence terminates at a given position. -/
 instance terminatedAtDecidable (s : Seq α) (n : ℕ) : Decidable (s.TerminatedAt n) :=
-  decidable_of_iff' (s.get? n).isNone <| by unfold terminated_at <;> cases s.nth n <;> simp
+  decidable_of_iff' (s.get? n).isNone <| by unfold TerminatedAt ; cases s.get? n <;> simp
 #align stream.seq.terminated_at_decidable Stream'.Seq.terminatedAtDecidable
 
 /-- A sequence terminates if there is some position `n` at which it has terminated. -/
@@ -127,7 +127,7 @@ def Terminates (s : Seq α) : Prop :=
 #align stream.seq.terminates Stream'.Seq.Terminates
 
 theorem not_terminates_iff {s : Seq α} : ¬s.Terminates ↔ ∀ n, (s.get? n).isSome := by
-  simp [terminates, terminated_at, ← Ne.def, Option.ne_none_iff_isSome]
+  simp only [Terminates, TerminatedAt, ← Ne.def, Option.ne_none_iff_isSome, not_exists, iff_self]
 #align stream.seq.not_terminates_iff Stream'.Seq.not_terminates_iff
 
 /-- Functorial action of the functor `option (α × _)` -/
@@ -139,7 +139,7 @@ def omap (f : β → γ) : Option (α × β) → Option (α × γ)
 
 /-- Get the first element of a sequence -/
 def head (s : Seq α) : Option α :=
-  nth s 0
+  get? s 0
 #align stream.seq.head Stream'.Seq.head
 
 /-- Get the tail of a sequence (or `nil` if the sequence is `nil`) -/
@@ -178,7 +178,7 @@ theorem ge_stable (s : Seq α) {aₙ : α} {n m : ℕ} (m_le_n : m ≤ n)
   Option.ne_none_iff_exists'.mp this
 #align stream.seq.ge_stable Stream'.Seq.ge_stable
 
-theorem not_mem_nil (a : α) : a ∉ @nil α := fun ⟨n, (h : some a = none)⟩ => by injection h
+theorem not_mem_nil (a : α) : a ∉ @nil α := fun ⟨_, (h : some a = none)⟩ => by injection h
 #align stream.seq.not_mem_nil Stream'.Seq.not_mem_nil
 
 theorem mem_cons (a : α) : ∀ s : Seq α, a ∈ cons a s
@@ -206,7 +206,7 @@ def destruct (s : Seq α) : Option (Seq1 α) :=
 
 theorem destruct_eq_nil {s : Seq α} : destruct s = none → s = nil := by
   dsimp [destruct]
-  induction' f0 : nth s 0 with <;> intro h
+  induction' f0 : get? s 0 <;> intro h
   · apply Subtype.eq
     funext n
     induction' n with n IH
@@ -216,7 +216,7 @@ theorem destruct_eq_nil {s : Seq α} : destruct s = none → s = nil := by
 
 theorem destruct_eq_cons {s : Seq α} {a s'} : destruct s = some (a, s') → s = cons a s' := by
   dsimp [destruct]
-  induction' f0 : nth s 0 with a' <;> intro h
+  induction' f0 : get? s 0 with a' <;> intro h
   · contradiction
   · cases' s with f al
     injections _ h1 h2
@@ -266,9 +266,9 @@ theorem tail_cons (a : α) (s) : tail (cons a s) = s := by
 #align stream.seq.tail_cons Stream'.Seq.tail_cons
 
 @[simp]
-theorem nth_tail (s : Seq α) (n) : nth (tail s) n = nth s (n + 1) :=
+theorem get?_tail (s : Seq α) (n) : get? (tail s) n = get? s (n + 1) :=
   rfl
-#align stream.seq.nth_tail Stream'.Seq.nth_tail
+#align stream.seq.nth_tail Stream'.Seq.get?_tail
 
 /-- Recursion principle for sequences, compare with `list.rec_on`. -/
 def recOn {C : Seq α → Sort v} (s : Seq α) (h1 : C nil) (h2 : ∀ x s, C (cons x s)) : C s := by
@@ -1035,4 +1035,3 @@ instance : LawfulMonad Seq1 where
 end Seq1
 
 end Stream'
-
