@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Luke Kershaw
 
 ! This file was ported from Lean 3 source module category_theory.triangulated.basic
-! leanprover-community/mathlib commit f7707875544ef1f81b32cb68c79e0e24e45a0e76
+! leanprover-community/mathlib commit 6876fa15e3158ff3e4a4e2af1fb6e1945c6e8803
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -122,12 +122,6 @@ structure TriangleMorphism (T₁ : Triangle C) (T₂ : Triangle C) where
   comm₃ : T₁.mor₃ ≫ hom₁⟦1⟧' = hom₃ ≫ T₂.mor₃ := by aesop_cat
 #align category_theory.pretriangulated.triangle_morphism CategoryTheory.Pretriangulated.TriangleMorphism
 
---restate_axiom triangle_morphism.comm₁'
---
---restate_axiom triangle_morphism.comm₂'
---
---restate_axiom triangle_morphism.comm₃'
-
 attribute [reassoc (attr := simp)] TriangleMorphism.comm₁ TriangleMorphism.comm₂
   TriangleMorphism.comm₃
 
@@ -183,6 +177,7 @@ def Triangle.homMk (A B : Triangle C)
   comm₁ := comm₁
   comm₂ := comm₂
   comm₃ := comm₃
+#align category_theory.pretriangulated.triangle.hom_mk CategoryTheory.Pretriangulated.Triangle.homMk
 
 @[simps]
 def Triangle.isoMk (A B : Triangle C)
@@ -199,5 +194,6 @@ def Triangle.isoMk (A B : Triangle C)
     (by simp only [← cancel_mono (iso₁.hom⟦(1 : ℤ)⟧'), Category.assoc, comm₃,
       Iso.inv_hom_id_assoc, ← Functor.map_comp, Iso.inv_hom_id,
       Functor.map_id, Category.comp_id])
+#align category_theory.pretriangulated.triangle.iso_mk CategoryTheory.Pretriangulated.Triangle.isoMk
 
 end CategoryTheory.Pretriangulated
