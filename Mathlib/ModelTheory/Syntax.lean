@@ -944,7 +944,7 @@ set_option linter.uppercaseLean3 false in
 
 end LHom
 
-namespace Lequiv
+namespace LEquiv
 
 /-- Maps a bounded formula's symbols along a language equivalence. -/
 @[simps]
@@ -958,43 +958,43 @@ def onBoundedFormula (φ : L ≃ᴸ L') : L.BoundedFormula α n ≃ L'.BoundedFo
     rw [Function.rightInverse_iff_comp, ← LHom.comp_onBoundedFormula, φ.right_inv,
       LHom.id_onBoundedFormula]
 set_option linter.uppercaseLean3 false in
-#align first_order.language.Lequiv.on_bounded_formula FirstOrder.Language.Lequiv.onBoundedFormula
+#align first_order.language.Lequiv.on_bounded_formula FirstOrder.Language.LEquiv.onBoundedFormula
 
 theorem onBoundedFormula_symm (φ : L ≃ᴸ L') :
     (φ.onBoundedFormula.symm : L'.BoundedFormula α n ≃ L.BoundedFormula α n) =
       φ.symm.onBoundedFormula :=
   rfl
 set_option linter.uppercaseLean3 false in
-#align first_order.language.Lequiv.on_bounded_formula_symm FirstOrder.Language.Lequiv.onBoundedFormula_symm
+#align first_order.language.Lequiv.on_bounded_formula_symm FirstOrder.Language.LEquiv.onBoundedFormula_symm
 
 /-- Maps a formula's symbols along a language equivalence. -/
 def onFormula (φ : L ≃ᴸ L') : L.Formula α ≃ L'.Formula α :=
   φ.onBoundedFormula
 set_option linter.uppercaseLean3 false in
-#align first_order.language.Lequiv.on_formula FirstOrder.Language.Lequiv.onFormula
+#align first_order.language.Lequiv.on_formula FirstOrder.Language.LEquiv.onFormula
 
 @[simp]
 theorem onFormula_apply (φ : L ≃ᴸ L') :
     (φ.onFormula : L.Formula α → L'.Formula α) = φ.toLHom.onFormula :=
   rfl
 set_option linter.uppercaseLean3 false in
-#align first_order.language.Lequiv.on_formula_apply FirstOrder.Language.Lequiv.onFormula_apply
+#align first_order.language.Lequiv.on_formula_apply FirstOrder.Language.LEquiv.onFormula_apply
 
 @[simp]
 theorem onFormula_symm (φ : L ≃ᴸ L') :
     (φ.onFormula.symm : L'.Formula α ≃ L.Formula α) = φ.symm.onFormula :=
   rfl
 set_option linter.uppercaseLean3 false in
-#align first_order.language.Lequiv.on_formula_symm FirstOrder.Language.Lequiv.onFormula_symm
+#align first_order.language.Lequiv.on_formula_symm FirstOrder.Language.LEquiv.onFormula_symm
 
 /-- Maps a sentence's symbols along a language equivalence. -/
 @[simps!] --Porting note: add `!` to `simps`
 def onSentence (φ : L ≃ᴸ L') : L.Sentence ≃ L'.Sentence :=
   φ.onFormula
 set_option linter.uppercaseLean3 false in
-#align first_order.language.Lequiv.on_sentence FirstOrder.Language.Lequiv.onSentence
+#align first_order.language.Lequiv.on_sentence FirstOrder.Language.LEquiv.onSentence
 
-end Lequiv
+end LEquiv
 
 -- mathport name: term.bd_equal
 scoped[FirstOrder] infixl:88 " =' " => FirstOrder.Language.Term.bdEqual
