@@ -114,7 +114,7 @@ structured arrow given by `(X ⟶ F(U)) ⟶ (X ⟶ F(U) ⟶ F(Y))`.
 -/
 def homMk' {F : C ⥤ D} {X : D} {Y : C} (U : StructuredArrow X F) (f : U.right ⟶ Y) :
     U ⟶ mk (U.hom ≫ F.map f) where
-  left := eq_to_hom (by ext)
+  left := eqToHom (by ext)
   right := f
 #align category_theory.structured_arrow.hom_mk' CategoryTheory.StructuredArrow.homMk'
 
