@@ -8,10 +8,8 @@ Authors: Kenny Lau, Joey van Langen, Casper Putz
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Algebra.Hom.Iterate
 import Mathlib.Data.Int.ModEq
-import Mathlib.Data.Nat.Choose.Dvd
-import Mathlib.Data.Nat.Choose.Sum
+import Mathlib.Data.Nat.Multiplicity
 import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.RingTheory.Nilpotent
 
@@ -22,7 +20,81 @@ import Mathlib.RingTheory.Nilpotent
 
 universe u v
 
-variable (R : Type u)
+open Finset
+
+open BigOperators
+
+variable {R : Type _}
+
+namespace Commute
+
+variable [Semiring R] {p : ℕ} {x y : R}
+
+protected theorem add_pow_prime_pow_eq (hp : p.Prime) (h : Commute x y) (n : ℕ) :
+    (x + y) ^ p ^ n =
+      x ^ p ^ n + y ^ p ^ n +
+        p * ∑ k in Ioo 0 (p ^ n), x ^ k * y ^ (p ^ n - k) * ↑((p ^ n).choose k / p) :=
+  by
+  trans x ^ p ^ n + y ^ p ^ n + ∑ k in Ioo 0 (p ^ n), x ^ k * y ^ (p ^ n - k) * (p ^ n).choose k
+  ·
+    simp_rw [h.add_pow, ← Nat.Ico_zero_eq_range, Nat.Ico_succ_right, Icc_eq_cons_Ico (zero_le _),
+      Finset.sum_cons, Ico_eq_cons_Ioo (pow_pos hp.pos _), Finset.sum_cons, tsub_self, tsub_zero,
+      pow_zero, Nat.choose_zero_right, Nat.choose_self, Nat.cast_one, mul_one, one_mul, ← add_assoc]
+  · congr 1
+    simp_rw [Finset.mul_sum, Nat.cast_comm, mul_assoc _ _ (p : R), ← Nat.cast_mul]
+    refine' Finset.sum_congr rfl fun i hi => _
+    rw [mem_Ioo] at hi
+    rw [Nat.div_mul_cancel (hp.dvd_choose_pow hi.1.ne' hi.2.Ne)]
+#align commute.add_pow_prime_pow_eq Commute.add_pow_prime_pow_eq
+
+protected theorem add_pow_prime_eq (hp : p.Prime) (h : Commute x y) :
+    (x + y) ^ p =
+      x ^ p + y ^ p + p * ∑ k in Finset.Ioo 0 p, x ^ k * y ^ (p - k) * ↑(p.choose k / p) :=
+  by simpa using h.add_pow_prime_pow_eq hp 1
+#align commute.add_pow_prime_eq Commute.add_pow_prime_eq
+
+protected theorem exists_add_pow_prime_pow_eq (hp : p.Prime) (h : Commute x y) (n : ℕ) :
+    ∃ r, (x + y) ^ p ^ n = x ^ p ^ n + y ^ p ^ n + p * r :=
+  ⟨_, h.add_pow_prime_pow_eq hp n⟩
+#align commute.exists_add_pow_prime_pow_eq Commute.exists_add_pow_prime_pow_eq
+
+protected theorem exists_add_pow_prime_eq (hp : p.Prime) (h : Commute x y) :
+    ∃ r, (x + y) ^ p = x ^ p + y ^ p + p * r :=
+  ⟨_, h.add_pow_prime_eq hp⟩
+#align commute.exists_add_pow_prime_eq Commute.exists_add_pow_prime_eq
+
+end Commute
+
+section CommSemiring
+
+variable [CommSemiring R] {p : ℕ} {x y : R}
+
+theorem add_pow_prime_pow_eq (hp : p.Prime) (x y : R) (n : ℕ) :
+    (x + y) ^ p ^ n =
+      x ^ p ^ n + y ^ p ^ n +
+        p * ∑ k in Finset.Ioo 0 (p ^ n), x ^ k * y ^ (p ^ n - k) * ↑((p ^ n).choose k / p) :=
+  (Commute.all x y).add_pow_prime_pow_eq hp n
+#align add_pow_prime_pow_eq add_pow_prime_pow_eq
+
+theorem add_pow_prime_eq (hp : p.Prime) (x y : R) :
+    (x + y) ^ p =
+      x ^ p + y ^ p + p * ∑ k in Finset.Ioo 0 p, x ^ k * y ^ (p - k) * ↑(p.choose k / p) :=
+  (Commute.all x y).add_pow_prime_eq hp
+#align add_pow_prime_eq add_pow_prime_eq
+
+theorem exists_add_pow_prime_pow_eq (hp : p.Prime) (x y : R) (n : ℕ) :
+    ∃ r, (x + y) ^ p ^ n = x ^ p ^ n + y ^ p ^ n + p * r :=
+  (Commute.all x y).exists_add_pow_prime_pow_eq hp n
+#align exists_add_pow_prime_pow_eq exists_add_pow_prime_pow_eq
+
+theorem exists_add_pow_prime_eq (hp : p.Prime) (x y : R) :
+    ∃ r, (x + y) ^ p = x ^ p + y ^ p + p * r :=
+  (Commute.all x y).exists_add_pow_prime_eq hp
+#align exists_add_pow_prime_eq exists_add_pow_prime_eq
+
+end CommSemiring
+
+variable (R)
 
 /-- The generator of the kernel of the unique homomorphism ℕ → R for a semiring R.
 
@@ -46,6 +118,7 @@ theorem CharP.cast_eq_zero_iff (R : Type u) [AddMonoidWithOne R] (p : ℕ) [Char
   (x : R) = 0 ↔ p ∣ x :=
 CharP.cast_eq_zero_iff' (R := R) (p := p) x
 
+@[simp]
 theorem CharP.cast_eq_zero [AddMonoidWithOne R] (p : ℕ) [CharP R p] : (p : R) = 0 :=
   (CharP.cast_eq_zero_iff R p p).2 (dvd_refl p)
 #align char_p.cast_eq_zero CharP.cast_eq_zero
@@ -168,33 +241,30 @@ theorem Nat.cast_ringChar : (ringChar R : R) = 0 := by rw [ringChar.spec]
 
 end ringChar
 
-theorem add_pow_char_of_commute [Semiring R] {p : ℕ} [Fact p.Prime] [CharP R p] (x y : R)
-    (h : Commute x y) : (x + y) ^ p = x ^ p + y ^ p := by
-  rw [Commute.add_pow h, Finset.sum_range_succ_comm, tsub_self, pow_zero, Nat.choose_self]
-  rw [Nat.cast_one, mul_one, mul_one]; congr 1
-  convert Finset.sum_eq_single (f := fun (x_1 : ℕ) => x ^ x_1 * y ^ (p - x_1) * (Nat.choose p x_1))
-    (s := Finset.range p) 0
-    (by
-      intro b h1 h2
-      suffices (p.choose b : R) = 0 by
-        simp [this]
-      rw [CharP.cast_eq_zero_iff R p]
-      exact Nat.Prime.dvd_choose_self Fact.out h2 (Finset.mem_range.1 h1))
-    (by
-      intro h1
-      contrapose! h1
-      rw [Finset.mem_range]
-      exact Nat.Prime.pos Fact.out)
-  simp only [mul_one, one_mul, Nat.choose_zero_right, tsub_zero, Nat.cast_one, pow_zero]
+/- warning: add_pow_char_of_commute -> add_pow_char_of_commute is a dubious translation:
+lean 3 declaration is
+  forall (R : Type.{u1}) [_inst_1 : Semiring.{u1} R] {p : Nat} [hp : Fact (Nat.Prime p)] [_inst_2 : CharP.{u1} R (AddCommMonoidWithOne.toAddMonoidWithOne.{u1} R (NonAssocSemiring.toAddCommMonoidWithOne.{u1} R (Semiring.toNonAssocSemiring.{u1} R _inst_1))) p] (x : R) (y : R), (Commute.{u1} R (Distrib.toHasMul.{u1} R (NonUnitalNonAssocSemiring.toDistrib.{u1} R (NonAssocSemiring.toNonUnitalNonAssocSemiring.{u1} R (Semiring.toNonAssocSemiring.{u1} R _inst_1)))) x y) -> (Eq.{succ u1} R (HPow.hPow.{u1, 0, u1} R Nat R (instHPow.{u1, 0} R Nat (Monoid.Pow.{u1} R (MonoidWithZero.toMonoid.{u1} R (Semiring.toMonoidWithZero.{u1} R _inst_1)))) (HAdd.hAdd.{u1, u1, u1} R R R (instHAdd.{u1} R (Distrib.toHasAdd.{u1} R (NonUnitalNonAssocSemiring.toDistrib.{u1} R (NonAssocSemiring.toNonUnitalNonAssocSemiring.{u1} R (Semiring.toNonAssocSemiring.{u1} R _inst_1))))) x y) p) (HAdd.hAdd.{u1, u1, u1} R R R (instHAdd.{u1} R (Distrib.toHasAdd.{u1} R (NonUnitalNonAssocSemiring.toDistrib.{u1} R (NonAssocSemiring.toNonUnitalNonAssocSemiring.{u1} R (Semiring.toNonAssocSemiring.{u1} R _inst_1))))) (HPow.hPow.{u1, 0, u1} R Nat R (instHPow.{u1, 0} R Nat (Monoid.Pow.{u1} R (MonoidWithZero.toMonoid.{u1} R (Semiring.toMonoidWithZero.{u1} R _inst_1)))) x p) (HPow.hPow.{u1, 0, u1} R Nat R (instHPow.{u1, 0} R Nat (Monoid.Pow.{u1} R (MonoidWithZero.toMonoid.{u1} R (Semiring.toMonoidWithZero.{u1} R _inst_1)))) y p)))
+but is expected to have type
+  forall (R : Type.{u1}) [_inst_1 : Semiring.{u1} R] {p : Nat} [hp : Fact (Nat.Prime p)] [_inst_2 : CharP.{u1} R (AddCommMonoidWithOne.toAddMonoidWithOne.{u1} R (NonAssocSemiring.toAddCommMonoidWithOne.{u1} R (Semiring.toNonAssocSemiring.{u1} R _inst_1))) p] (x : R) (y : R), (Commute.{u1} R (NonUnitalNonAssocSemiring.toMul.{u1} R (NonAssocSemiring.toNonUnitalNonAssocSemiring.{u1} R (Semiring.toNonAssocSemiring.{u1} R _inst_1))) x y) -> (Eq.{succ u1} R (HPow.hPow.{u1, 0, u1} R Nat R (instHPow.{u1, 0} R Nat (Monoid.Pow.{u1} R (MonoidWithZero.toMonoid.{u1} R (Semiring.toMonoidWithZero.{u1} R _inst_1)))) (HAdd.hAdd.{u1, u1, u1} R R R (instHAdd.{u1} R (Distrib.toAdd.{u1} R (NonUnitalNonAssocSemiring.toDistrib.{u1} R (NonAssocSemiring.toNonUnitalNonAssocSemiring.{u1} R (Semiring.toNonAssocSemiring.{u1} R _inst_1))))) x y) p) (HAdd.hAdd.{u1, u1, u1} R R R (instHAdd.{u1} R (Distrib.toAdd.{u1} R (NonUnitalNonAssocSemiring.toDistrib.{u1} R (NonAssocSemiring.toNonUnitalNonAssocSemiring.{u1} R (Semiring.toNonAssocSemiring.{u1} R _inst_1))))) (HPow.hPow.{u1, 0, u1} R Nat R (instHPow.{u1, 0} R Nat (Monoid.Pow.{u1} R (MonoidWithZero.toMonoid.{u1} R (Semiring.toMonoidWithZero.{u1} R _inst_1)))) x p) (HPow.hPow.{u1, 0, u1} R Nat R (instHPow.{u1, 0} R Nat (Monoid.Pow.{u1} R (MonoidWithZero.toMonoid.{u1} R (Semiring.toMonoidWithZero.{u1} R _inst_1)))) y p)))
+Case conversion may be inaccurate. Consider using '#align add_pow_char_of_commute add_pow_char_of_commuteₓ'. -/
+theorem add_pow_char_of_commute [Semiring R] {p : ℕ} [hp : Fact p.Prime] [CharP R p] (x y : R)
+    (h : Commute x y) : (x + y) ^ p = x ^ p + y ^ p :=
+  by
+  let ⟨r, hr⟩ := h.exists_add_pow_prime_eq hp.out
+  simp [hr]
 #align add_pow_char_of_commute add_pow_char_of_commute
 
-theorem add_pow_char_pow_of_commute [Semiring R] {p : ℕ} [Fact p.Prime] [CharP R p] {n : ℕ}
-    (x y : R) (h : Commute x y) : (x + y) ^ p ^ n = x ^ p ^ n + y ^ p ^ n := by
-  induction n with
-  | zero => simp
-  | succ n n_ih =>
-      rw [pow_succ', pow_mul, pow_mul, pow_mul, n_ih]
-      apply add_pow_char_of_commute; apply Commute.pow_pow h
+/- warning: add_pow_char_pow_of_commute -> add_pow_char_pow_of_commute is a dubious translation:
+lean 3 declaration is
+  forall (R : Type.{u1}) [_inst_1 : Semiring.{u1} R] {p : Nat} {n : Nat} [hp : Fact (Nat.Prime p)] [_inst_2 : CharP.{u1} R (AddCommMonoidWithOne.toAddMonoidWithOne.{u1} R (NonAssocSemiring.toAddCommMonoidWithOne.{u1} R (Semiring.toNonAssocSemiring.{u1} R _inst_1))) p] (x : R) (y : R), (Commute.{u1} R (Distrib.toHasMul.{u1} R (NonUnitalNonAssocSemiring.toDistrib.{u1} R (NonAssocSemiring.toNonUnitalNonAssocSemiring.{u1} R (Semiring.toNonAssocSemiring.{u1} R _inst_1)))) x y) -> (Eq.{succ u1} R (HPow.hPow.{u1, 0, u1} R Nat R (instHPow.{u1, 0} R Nat (Monoid.Pow.{u1} R (MonoidWithZero.toMonoid.{u1} R (Semiring.toMonoidWithZero.{u1} R _inst_1)))) (HAdd.hAdd.{u1, u1, u1} R R R (instHAdd.{u1} R (Distrib.toHasAdd.{u1} R (NonUnitalNonAssocSemiring.toDistrib.{u1} R (NonAssocSemiring.toNonUnitalNonAssocSemiring.{u1} R (Semiring.toNonAssocSemiring.{u1} R _inst_1))))) x y) (HPow.hPow.{0, 0, 0} Nat Nat Nat (instHPow.{0, 0} Nat Nat (Monoid.Pow.{0} Nat Nat.monoid)) p n)) (HAdd.hAdd.{u1, u1, u1} R R R (instHAdd.{u1} R (Distrib.toHasAdd.{u1} R (NonUnitalNonAssocSemiring.toDistrib.{u1} R (NonAssocSemiring.toNonUnitalNonAssocSemiring.{u1} R (Semiring.toNonAssocSemiring.{u1} R _inst_1))))) (HPow.hPow.{u1, 0, u1} R Nat R (instHPow.{u1, 0} R Nat (Monoid.Pow.{u1} R (MonoidWithZero.toMonoid.{u1} R (Semiring.toMonoidWithZero.{u1} R _inst_1)))) x (HPow.hPow.{0, 0, 0} Nat Nat Nat (instHPow.{0, 0} Nat Nat (Monoid.Pow.{0} Nat Nat.monoid)) p n)) (HPow.hPow.{u1, 0, u1} R Nat R (instHPow.{u1, 0} R Nat (Monoid.Pow.{u1} R (MonoidWithZero.toMonoid.{u1} R (Semiring.toMonoidWithZero.{u1} R _inst_1)))) y (HPow.hPow.{0, 0, 0} Nat Nat Nat (instHPow.{0, 0} Nat Nat (Monoid.Pow.{0} Nat Nat.monoid)) p n))))
+but is expected to have type
+  forall (R : Type.{u1}) [_inst_1 : Semiring.{u1} R] {p : Nat} [n : Fact (Nat.Prime p)] [hp : CharP.{u1} R (AddCommMonoidWithOne.toAddMonoidWithOne.{u1} R (NonAssocSemiring.toAddCommMonoidWithOne.{u1} R (Semiring.toNonAssocSemiring.{u1} R _inst_1))) p] {_inst_2 : Nat} (x : R) (y : R), (Commute.{u1} R (NonUnitalNonAssocSemiring.toMul.{u1} R (NonAssocSemiring.toNonUnitalNonAssocSemiring.{u1} R (Semiring.toNonAssocSemiring.{u1} R _inst_1))) x y) -> (Eq.{succ u1} R (HPow.hPow.{u1, 0, u1} R Nat R (instHPow.{u1, 0} R Nat (Monoid.Pow.{u1} R (MonoidWithZero.toMonoid.{u1} R (Semiring.toMonoidWithZero.{u1} R _inst_1)))) (HAdd.hAdd.{u1, u1, u1} R R R (instHAdd.{u1} R (Distrib.toAdd.{u1} R (NonUnitalNonAssocSemiring.toDistrib.{u1} R (NonAssocSemiring.toNonUnitalNonAssocSemiring.{u1} R (Semiring.toNonAssocSemiring.{u1} R _inst_1))))) x y) (HPow.hPow.{0, 0, 0} Nat Nat Nat (instHPow.{0, 0} Nat Nat instPowNat) p _inst_2)) (HAdd.hAdd.{u1, u1, u1} R R R (instHAdd.{u1} R (Distrib.toAdd.{u1} R (NonUnitalNonAssocSemiring.toDistrib.{u1} R (NonAssocSemiring.toNonUnitalNonAssocSemiring.{u1} R (Semiring.toNonAssocSemiring.{u1} R _inst_1))))) (HPow.hPow.{u1, 0, u1} R Nat R (instHPow.{u1, 0} R Nat (Monoid.Pow.{u1} R (MonoidWithZero.toMonoid.{u1} R (Semiring.toMonoidWithZero.{u1} R _inst_1)))) x (HPow.hPow.{0, 0, 0} Nat Nat Nat (instHPow.{0, 0} Nat Nat instPowNat) p _inst_2)) (HPow.hPow.{u1, 0, u1} R Nat R (instHPow.{u1, 0} R Nat (Monoid.Pow.{u1} R (MonoidWithZero.toMonoid.{u1} R (Semiring.toMonoidWithZero.{u1} R _inst_1)))) y (HPow.hPow.{0, 0, 0} Nat Nat Nat (instHPow.{0, 0} Nat Nat instPowNat) p _inst_2))))
+Case conversion may be inaccurate. Consider using '#align add_pow_char_pow_of_commute add_pow_char_pow_of_commuteₓ'. -/
+theorem add_pow_char_pow_of_commute [Semiring R] {p n : ℕ} [hp : Fact p.Prime] [CharP R p] (x y : R)
+    (h : Commute x y) : (x + y) ^ p ^ n = x ^ p ^ n + y ^ p ^ n :=
+  by
+  let ⟨r, hr⟩ := h.exists_add_pow_prime_pow_eq hp.out n
+  simp [hr]
 #align add_pow_char_pow_of_commute add_pow_char_pow_of_commute
 
 theorem sub_pow_char_of_commute [Ring R] {p : ℕ} [Fact p.Prime] [CharP R p] (x y : R)
