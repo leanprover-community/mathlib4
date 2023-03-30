@@ -57,8 +57,34 @@ set_option synthInstance.etaExperiment true in
 "tensor product distributes over direct sum". -/
 protected def directSum :
     ((⨁ i₁, M₁ i₁) ⊗[R] ⨁ i₂, M₂ i₂) ≃ₗ[R] ⨁ i : ι₁ × ι₂, M₁ i.1 ⊗[R] M₂ i.2 := by
-set_option synthInstance.etaExperiment false in
-  refine'
+  -- porting note: entirely rewritten to allow unification to happen one step at a time
+  refine LinearEquiv.ofLinear (R := R) (R₂ := R) ?toFun ?invFun ?left ?right
+  · refine lift ?_
+    refine DirectSum.toModule R _ _ fun i₁ => LinearMap.flip <| ?_
+    refine DirectSum.toModule R _ _ fun i₂ => LinearMap.flip <| ?_
+    refine curry ?_
+    exact DirectSum.lof R (ι₁ × ι₂) (fun i => M₁ i.1 ⊗[R] M₂ i.2) (i₁, i₂)
+  · refine DirectSum.toModule R _ _ fun i => ?_
+    exact map (DirectSum.lof R _ M₁ i.1) (DirectSum.lof R _ M₂ i.2)
+  · refine DirectSum.linearMap_ext R fun ⟨i₁, i₂⟩ => ?_
+    refine TensorProduct.ext ?_
+    refine LinearMap.ext₂ fun m₁ m₂ => ?_
+    repeat'
+      first
+        |rw [compr₂_apply]|rw [comp_apply]|rw [id_apply]|rw [mk_apply]|rw [DirectSum.toModule_lof]|rw [map_tmul]|rw [lift.tmul]|rw [flip_apply]|rw [curry_apply]
+  · -- `(_)` prevents typeclass search timing out on problems that can be solved immediately by
+    -- unification
+    refine TensorProduct.ext ?_
+    refine @DirectSum.linearMap_ext R _ _ _ _ _ _ _ _ (_) _ _ fun i₁ => ?_
+    refine @LinearMap.ext _ _ _ _ _ _ _ _ (_) (_) _ _ _ fun x₁ => ?_
+    refine @DirectSum.linearMap_ext R _ _ _ _ _ _ _ _ (_) _ _ fun i₂ => ?_
+    refine LinearMap.ext fun x₂ => ?_
+    repeat'
+      first
+        |rw [compr₂_apply]|rw [comp_apply]|rw [id_apply]|rw [mk_apply]|rw [DirectSum.toModule_lof]|rw [map_tmul]|rw [lift.tmul]|rw [flip_apply]|rw [curry_apply]
+  /- was:
+
+    refine'
       LinearEquiv.ofLinear
         (lift <|
           DirectSum.toModule R _ _ fun i₁ => LinearMap.flip <| DirectSum.toModule R _ _ fun i₂ =>
@@ -69,6 +95,29 @@ set_option synthInstance.etaExperiment false in
   repeat'
     first
       |rw [compr₂_apply]|rw [comp_apply]|rw [id_apply]|rw [mk_apply]|rw [DirectSum.toModule_lof]|rw [map_tmul]|rw [lift.tmul]|rw [flip_apply]|rw [curry_apply]
+  -/
+
+/-- alternative with explicit types:
+  refine'
+      LinearEquiv.ofLinear
+        (lift <|
+          DirectSum.toModule
+            (R := R) (M := M₁) (N := (⨁ i₂, M₂ i₂) →ₗ[R] ⨁ i : ι₁ × ι₂, M₁ i.1 ⊗[R] M₂ i.2)
+            (φ := fun i₁ => LinearMap.flip <|
+              DirectSum.toModule (R := R) (M := M₂) (N := ⨁ i : ι₁ × ι₂, M₁ i.1 ⊗[R] M₂ i.2)
+              (φ := fun i₂ => LinearMap.flip <| curry <|
+                  DirectSum.lof R (ι₁ × ι₂) (fun i => M₁ i.1 ⊗[R] M₂ i.2) (i₁, i₂))))
+        (DirectSum.toModule
+          (R := R)
+          (M := fun i : ι₁ × ι₂ => M₁ i.1 ⊗[R] M₂ i.2)
+          (N := (⨁ i₁, M₁ i₁) ⊗[R] ⨁ i₂, M₂ i₂)
+          (φ := fun i : ι₁ × ι₂ => map (DirectSum.lof R _ M₁ i.1) (DirectSum.lof R _ M₂ i.2))) _
+        _ <;>
+    [ext (⟨i₁, i₂⟩x₁ x₂) : 4, ext (i₁ i₂ x₁ x₂) : 5]
+  repeat'
+    first
+      |rw [compr₂_apply]|rw [comp_apply]|rw [id_apply]|rw [mk_apply]|rw [DirectSum.toModule_lof]|rw [map_tmul]|rw [lift.tmul]|rw [flip_apply]|rw [curry_apply]
+-/
 #align tensor_product.direct_sum TensorProduct.directSum
 
 -- Porting note: again cannot synthesize RingHomInvPair
