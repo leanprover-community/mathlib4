@@ -10,7 +10,6 @@ Authors: Kenny Lau, Mario Carneiro, Eric Wieser
 -/
 import Mathlib.LinearAlgebra.TensorProduct
 import Mathlib.Algebra.DirectSum.Module
-import Mathlib.Tactic.LibrarySearch
 /-!
 # Tensor products of direct sums
 
