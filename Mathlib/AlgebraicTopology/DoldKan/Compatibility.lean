@@ -155,13 +155,13 @@ theorem equivalence₂CounitIso_eq : (equivalence₂ eB hF).counitIso = equivale
 
 /-- The unit isomorphism of the equivalence `equivalence₂` between `A` and `B`. -/
 @[simps]
-def equivalence₂UnitIso : 𝟭 A ≅ (F ⋙ eB.inverse) ⋙ eB.Functor ⋙ e'.inverse ⋙ eA.inverse :=
+def equivalence₂UnitIso : 𝟭 A ≅ (F ⋙ eB.inverse) ⋙ eB.functor ⋙ e'.inverse ⋙ eA.inverse :=
   calc
     𝟭 A ≅ F ⋙ e'.inverse ⋙ eA.inverse := equivalence₁UnitIso hF
     _ ≅ F ⋙ 𝟭 B' ⋙ e'.inverse ⋙ eA.inverse := (Iso.refl _)
-    _ ≅ F ⋙ (eB.inverse ⋙ eB.Functor) ⋙ e'.inverse ⋙ eA.inverse :=
+    _ ≅ F ⋙ (eB.inverse ⋙ eB.functor) ⋙ e'.inverse ⋙ eA.inverse :=
       (isoWhiskerLeft _ (isoWhiskerRight eB.counitIso.symm _))
-    _ ≅ (F ⋙ eB.inverse) ⋙ eB.Functor ⋙ e'.inverse ⋙ eA.inverse := Iso.refl _
+    _ ≅ (F ⋙ eB.inverse) ⋙ eB.functor ⋙ e'.inverse ⋙ eA.inverse := Iso.refl _
 
 #align algebraic_topology.dold_kan.compatibility.equivalence₂_unit_iso AlgebraicTopology.DoldKan.Compatibility.equivalence₂UnitIso
 
