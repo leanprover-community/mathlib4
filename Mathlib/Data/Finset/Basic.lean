@@ -9,6 +9,7 @@ Authors: Leonardo de Moura, Jeremy Avigad, Minchao Wu, Mario Carneiro
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Multiset.FinsetOps
+import Mathlib.Data.Set.Lattice
 
 /-!
 # Finite sets

@@ -308,6 +308,12 @@ theorem star_natCast [Semiring R] [StarRing R] (n : ℕ) : star (n : R) = n :=
   (congr_arg unop (map_natCast (starRingEquiv : R ≃+* Rᵐᵒᵖ) n)).trans (unop_natCast _)
 #align star_nat_cast star_natCast
 
+--Porting note: new theorem
+@[simp]
+theorem star_ofNat [Semiring R] [StarRing R] (n : ℕ) [n.AtLeastTwo]:
+    star (OfNat.ofNat n : R) = OfNat.ofNat n :=
+  star_natCast _
+
 section
 -- Porting note: This takes too long
 set_option maxHeartbeats 0

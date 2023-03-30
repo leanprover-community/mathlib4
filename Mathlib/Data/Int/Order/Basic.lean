@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 
 ! This file was ported from Lean 3 source module data.int.order.basic
-! leanprover-community/mathlib commit bd835ef554f37ef9b804f0903089211f89cb370b
+! leanprover-community/mathlib commit 728baa2f54e6062c5879a3e397ac6bac323e506f
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -89,6 +89,13 @@ theorem coe_nat_ne_zero_iff_pos {n : ℕ} : (n : ℤ) ≠ 0 ↔ 0 < n :=
 
 @[norm_cast] lemma abs_coe_nat (n : ℕ) : |(n : ℤ)| = n := abs_of_nonneg (coe_nat_nonneg n)
 #align int.abs_coe_nat Int.abs_coe_nat
+
+theorem sign_add_eq_of_sign_eq : ∀ {m n : ℤ}, m.sign = n.sign → (m + n).sign = n.sign := by
+  have : (1 : ℤ) ≠ -1 := by decide
+  rintro ((_ | m) | m) ((_ | n) | n) <;> simp [this, this.symm]
+  rw [Int.sign_eq_one_iff_pos]
+  apply Int.add_pos <;> · exact zero_lt_one.trans_le (le_add_of_nonneg_left <| coe_nat_nonneg _)
+#align int.sign_add_eq_of_sign_eq Int.sign_add_eq_of_sign_eq
 
 /-! ### succ and pred -/
 
