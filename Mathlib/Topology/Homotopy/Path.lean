@@ -59,25 +59,20 @@ section
 
 variable {p₀ p₁ : Path x₀ x₁}
 
-instance : CoeFun (Homotopy p₀ p₁) fun _ => I × I → X :=
-  ⟨fun F => F.toFun⟩
-
-theorem coeFn_injective : @Function.Injective (Homotopy p₀ p₁) (I × I → X) coeFn :=
-  ContinuousMap.HomotopyWith.coeFn_injective
+theorem coeFn_injective : @Function.Injective (Homotopy p₀ p₁) (I × I → X) (⇑) :=
+  FunLike.coe_injective
 #align path.homotopy.coe_fn_injective Path.Homotopy.coeFn_injective
 
 @[simp]
-theorem source (F : Homotopy p₀ p₁) (t : I) : F (t, 0) = x₀ := by
-  simp_rw [← p₀.source]
-  apply ContinuousMap.HomotopyRel.eq_fst
-  simp
+theorem source (F : Homotopy p₀ p₁) (t : I) : F (t, 0) = x₀ :=
+  calc F (t, 0) = p₀ 0 := ContinuousMap.HomotopyRel.eq_fst _ _ (.inl rfl)
+  _ = x₀ := p₀.source
 #align path.homotopy.source Path.Homotopy.source
 
 @[simp]
-theorem target (F : Homotopy p₀ p₁) (t : I) : F (t, 1) = x₁ := by
-  simp_rw [← p₁.target]
-  apply ContinuousMap.HomotopyRel.eq_snd
-  simp
+theorem target (F : Homotopy p₀ p₁) (t : I) : F (t, 1) = x₁ :=
+  calc F (t, 1) = p₀ 1 := ContinuousMap.HomotopyRel.eq_fst _ _ (.inr rfl)
+  _ = x₁ := p₀.target
 #align path.homotopy.target Path.Homotopy.target
 
 /-- Evaluating a path homotopy at an intermediate point, giving us a `path`.
@@ -108,14 +103,14 @@ variable {p₀ p₁ p₂ : Path x₀ x₁}
 
 /-- Given a path `p`, we can define a `homotopy p p` by `F (t, x) = p x`
 -/
-@[simps]
+@[simps!]
 def refl (p : Path x₀ x₁) : Homotopy p p :=
   ContinuousMap.HomotopyRel.refl p.toContinuousMap {0, 1}
 #align path.homotopy.refl Path.Homotopy.refl
 
 /-- Given a `homotopy p₀ p₁`, we can define a `homotopy p₁ p₀` by reversing the homotopy.
 -/
-@[simps]
+@[simps!]
 def symm (F : Homotopy p₀ p₁) : Homotopy p₁ p₀ :=
   ContinuousMap.HomotopyRel.symm F
 #align path.homotopy.symm Path.Homotopy.symm
@@ -147,9 +142,8 @@ theorem symm_trans (F : Homotopy p₀ p₁) (G : Homotopy p₁ p₂) :
   ContinuousMap.HomotopyRel.symm_trans _ _
 #align path.homotopy.symm_trans Path.Homotopy.symm_trans
 
-/-- Casting a `homotopy p₀ p₁` to a `homotopy q₀ q₁` where `p₀ = q₀` and `p₁ = q₁`.
--/
-@[simps]
+/-- Casting a `homotopy p₀ p₁` to a `homotopy q₀ q₁` where `p₀ = q₀` and `p₁ = q₁`. -/
+@[simps!]
 def cast {p₀ p₁ q₀ q₁ : Path x₀ x₁} (F : Homotopy p₀ p₁) (h₀ : p₀ = q₀) (h₁ : p₁ = q₁) :
     Homotopy q₀ q₁ :=
   ContinuousMap.HomotopyRel.cast F (congr_arg _ h₀) (congr_arg _ h₁)
@@ -168,25 +162,24 @@ from `p₀.trans p₁` to `q₀.trans q₁`.
 def hcomp (F : Homotopy p₀ q₀) (G : Homotopy p₁ q₁) : Homotopy (p₀.trans p₁) (q₀.trans q₁) where
   toFun x :=
     if (x.2 : ℝ) ≤ 1 / 2 then (F.eval x.1).extend (2 * x.2) else (G.eval x.1).extend (2 * x.2 - 1)
-  continuous_toFun := by
-    refine'
-      continuous_if_le (continuous_induced_dom.comp continuous_snd) continuous_const
-        (F.to_homotopy.continuous.comp (by continuity)).ContinuousOn
-        (G.to_homotopy.continuous.comp (by continuity)).ContinuousOn _
-    intro x hx
-    norm_num [hx]
-  map_zero_left' x := by norm_num [Path.trans]
-  map_one_left' x := by norm_num [Path.trans]
+  continuous_toFun := continuous_if_le (continuous_induced_dom.comp continuous_snd) continuous_const
+    (F.toHomotopy.continuous.comp (by continuity)).continuousOn
+    (G.toHomotopy.continuous.comp (by continuity)).continuousOn fun x hx => by rw [hx]; norm_num
+  map_zero_left x := by simp [Path.trans]
+  map_one_left x := by simp [Path.trans]
   prop' := by
-    rintro x t ht
-    cases ht
-    · rw [ht]
-      simp
-    · rw [Set.mem_singleton_iff] at ht
-      rw [ht]
-      norm_num
+    rintro x t
+    sorry
+    -- ((rfl : t = 0) | (rfl : t = 1))
+    -- cases ht
+    -- · rw [ht]
+    --   simp
+    -- · rw [Set.mem_singleton_iff] at ht
+    --   rw [ht]
+    --   norm_num
 #align path.homotopy.hcomp Path.Homotopy.hcomp
 
+#exit
 theorem hcomp_apply (F : Homotopy p₀ q₀) (G : Homotopy p₁ q₁) (x : I × I) :
     F.hcomp G x =
       if h : (x.2 : ℝ) ≤ 1 / 2 then
@@ -209,11 +202,9 @@ Suppose `p` is a path, then we have a homotopy from `p` to `p.reparam f` by the 
 -/
 def reparam (p : Path x₀ x₁) (f : I → I) (hf : Continuous f) (hf₀ : f 0 = 0) (hf₁ : f 1 = 1) :
     Homotopy p (p.reparam f hf hf₀ hf₁) where
-  toFun x :=
-    p
-      ⟨σ x.1 * x.2 + x.1 * f x.2,
-        show (σ x.1 : ℝ) • (x.2 : ℝ) + (x.1 : ℝ) • (f x.2 : ℝ) ∈ I from
-          convex_Icc _ _ x.2.2 (f x.2).2 (by unit_interval) (by unit_interval) (by simp)⟩
+  toFun x := p ⟨σ x.1 * x.2 + x.1 * f x.2,
+    show (σ x.1 : ℝ) • (x.2 : ℝ) + (x.1 : ℝ) • (f x.2 : ℝ) ∈ I from
+      convex_Icc _ _ x.2.2 (f x.2).2 (by unit_interval) (by unit_interval) (by simp)⟩
   map_zero_left' x := by norm_num
   map_one_left' x := by norm_num
   prop' t x hx := by
