@@ -10,7 +10,7 @@ Authors: Kenny Lau, Mario Carneiro, Eric Wieser
 -/
 import Mathlib.LinearAlgebra.TensorProduct
 import Mathlib.Algebra.DirectSum.Module
-
+import Mathlib.Tactic.LibrarySearch
 /-!
 # Tensor products of direct sums
 
@@ -69,9 +69,7 @@ protected def directSum :
   · refine DirectSum.linearMap_ext R fun ⟨i₁, i₂⟩ => ?_
     refine TensorProduct.ext ?_
     refine LinearMap.ext₂ fun m₁ m₂ => ?_
-    repeat'
-      first
-        |rw [compr₂_apply]|rw [comp_apply]|rw [id_apply]|rw [mk_apply]|rw [DirectSum.toModule_lof]|rw [map_tmul]|rw [lift.tmul]|rw [flip_apply]|rw [curry_apply]
+    simp only [compr₂_apply, comp_apply, id_apply, mk_apply, DirectSum.toModule_lof, map_tmul, lift.tmul, flip_apply, curry_apply]
   · -- `(_)` prevents typeclass search timing out on problems that can be solved immediately by
     -- unification
     refine TensorProduct.ext ?_
@@ -79,9 +77,7 @@ protected def directSum :
     refine @LinearMap.ext _ _ _ _ _ _ _ _ (_) (_) _ _ _ fun x₁ => ?_
     refine @DirectSum.linearMap_ext R _ _ _ _ _ _ _ _ (_) _ _ fun i₂ => ?_
     refine LinearMap.ext fun x₂ => ?_
-    repeat'
-      first
-        |rw [compr₂_apply]|rw [comp_apply]|rw [id_apply]|rw [mk_apply]|rw [DirectSum.toModule_lof]|rw [map_tmul]|rw [lift.tmul]|rw [flip_apply]|rw [curry_apply]
+    simp only [compr₂_apply, comp_apply, id_apply, mk_apply, DirectSum.toModule_lof, map_tmul, lift.tmul, flip_apply, curry_apply]
   /- was:
 
     refine'
@@ -97,7 +93,7 @@ protected def directSum :
       |rw [compr₂_apply]|rw [comp_apply]|rw [id_apply]|rw [mk_apply]|rw [DirectSum.toModule_lof]|rw [map_tmul]|rw [lift.tmul]|rw [flip_apply]|rw [curry_apply]
   -/
 
-/-- alternative with explicit types:
+/- alternative with explicit types:
   refine'
       LinearEquiv.ofLinear
         (lift <|
@@ -192,7 +188,7 @@ theorem directSumRight_tmul_lof (x : M₁') (i : ι₂) (y : M₂ i) :
   by
   dsimp only [directSumRight, LinearEquiv.trans_apply, TensorProduct.comm_tmul]
   rw [directSumLeft_tmul_lof]
-  exact Dfinsupp.mapRange_single
+  exact Dfinsupp.mapRange_single (hf := fun _ => rfl)
 #align tensor_product.direct_sum_right_tmul_lof TensorProduct.directSumRight_tmul_lof
 
 -- Porting note: cannot find coercion to functions
