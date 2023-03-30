@@ -13,6 +13,8 @@ open Lean (ToJson FromJson Json fromJson?)
 
 namespace Mathlib.Tactic.GPT
 
+/-- A GPT role,
+either `.system` for system messages, `.user` for queries, or `.assistant` for responses. -/
 inductive Role
 | system | assistant | user
 deriving ToJson, FromJson, BEq
@@ -20,29 +22,35 @@ deriving ToJson, FromJson, BEq
 instance : ToString Role where
   toString r := match r with | .system => "system" | .assistant => "assistant" | .user => "user"
 
+/-- A message consists of a role and the contents of the message. -/
 structure Message where
   role : Role
   content : String
 deriving ToJson, FromJson
 
+/-- A request consists of the desired model and temperature, and a list of messages so far. -/
 structure Request where
   model : String := "gpt-4"
   messages : List Message
   temperature : Float := 0.2
 deriving ToJson, FromJson
 
+/-- GPT may return multiple choices, if instructed. -/
 structure Choice where
   message : Message
   finish_reason : String
   index : Nat
 deriving ToJson, FromJson
 
+/-- Usage information about a GPT query. -/
 structure Usage where
   prompt_tokens : Nat
   completion_tokens : Nat
   total_tokens : Nat
 deriving ToJson, FromJson
 
+/-- A response from GPT records some basic information,
+along with usage information and a choice of results. -/
 structure Response where
   id : String
   object : String
@@ -52,6 +60,7 @@ structure Response where
   choices : List Choice
 deriving ToJson, FromJson
 
+/-- An error message from GPT. -/
 structure ErrorMessage where
   message : String
   type : String
@@ -59,6 +68,7 @@ structure ErrorMessage where
   code : Option Nat := none
 deriving ToJson, FromJson
 
+/-- An error response from GPT. -/
 structure Error where
   error : ErrorMessage
 deriving ToJson, FromJson

@@ -3,7 +3,7 @@ Copyright (c) 2023 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.Tactic.GPT.Curl
+import Mathlib.Tactic.GPT.API
 import Mathlib.Tactic.GPT.JSON
 
 open Lean
@@ -18,7 +18,7 @@ where
   | 0 => throw <| IO.userError <|
       s!"Failed after {attempts} attempts.\n" ++ error.getD "" ++ "\n" ++ lastJSON.getD ""
   | i+1 => do
-    let jsonResponse ← curl <| jsonMessage
+    let jsonResponse ← chat <| jsonMessage
     match parseResponse jsonResponse with
     | .error e =>
         if e.startsWith "server_error: " then

@@ -1401,7 +1401,7 @@ import Mathlib.Tactic.ByContra
 import Mathlib.Tactic.Cache
 import Mathlib.Tactic.Cases
 import Mathlib.Tactic.CasesM
-import Mathlib.Tactic.GPT.Curl
+import Mathlib.Tactic.GPT.API
 import Mathlib.Tactic.GPT.JSON
 import Mathlib.Tactic.GPT.Lean
 import Mathlib.Tactic.GPT.Monad

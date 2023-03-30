@@ -38,7 +38,7 @@ end Lean.Elab
 
 namespace Lean.Elab.InfoTree
 
-/-- Analogue of `Lean.Elab.InfoTree.findInfo?`. -/
+/-- Analogue of `Lean.Elab.InfoTree.findInfo?`, but that returns all results. -/
 partial def findAllInfo (t : InfoTree) (ctx : Option ContextInfo) (p : Info → Bool) :
     List (Info × Option ContextInfo) :=
 match t with
