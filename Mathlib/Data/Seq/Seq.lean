@@ -479,7 +479,7 @@ unsafe def toLazyList : Seq α → LazyList α
   run on an infinite sequence. -/
 unsafe def force_to_list (s : Seq α) : List α :=
   (toLazyList s).toList
-#align stream.seq.force_to_list stream.seq.toLazyList
+#align stream.seq.force_to_list Stream'.Seq.toLazyList
 
 /-- The sequence of natural numbers some 0, some 1, ... -/
 def nats : Seq ℕ :=
