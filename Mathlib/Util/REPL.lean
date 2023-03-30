@@ -1,7 +1,54 @@
+/-
+Copyright (c) 2023 Scott Morrison. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Scott Morrison
+-/
 import Lean
 import Mathlib.Tactic.GPT.Sagredo.Frontend
 
 open Lean Elab
+
+/-!
+# A REPL for Lean.
+
+Communicates via JSON on stdin and stdout. Commands should be separated by blank lines.
+
+Commands may be of the form
+```
+{ "body" : "import Mathlib.Data.List.Basic\ndef f := 2" }
+```
+or
+```
+{ "body" : "example : f = 2 := rfl", "env" : 3 }
+```
+
+The `env` field, if present,
+must contain a number received in the `env` field of a previous response,
+and causes the command to be run in the existing environment.
+
+If there is no `env` field, a new environment is created.
+
+You can only use `import` commands when you do not specify the `env` field.
+
+You can backtrack simply by using earlier values for `env`.
+
+The results are of the form
+```
+{"sorries":
+ [{"pos": {"line": 1, "column": 18},
+   "endPos": {"line": 1, "column": 23},
+   "goal": "\n⊢ Nat"}],
+ "messages":
+ [{"severity": "error",
+   "pos": {"line": 1, "column": 23},
+   "endPos": {"line": 1, "column": 26},
+   "data":
+   "type mismatch\n  rfl\nhas type\n  f = f : Prop\nbut is expected to have type\n  f = 2 : Prop"}],
+ "env": 6}
+ ```
+ showing any messages generated, or sorries with their goal states.
+ Information is generated for tactic mode sorries, but not for term mode sorries.
+-/
 
 namespace REPL
 
