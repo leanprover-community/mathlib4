@@ -8,8 +8,8 @@ Authors: Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Order.LocallyFinite
-import Mathbin.Order.UpperLower.Basic
+import Mathlib.Order.LocallyFinite
+import Mathlib.Order.UpperLower.Basic
 
 /-!
 # Upper and lower sets in a locally finite order
