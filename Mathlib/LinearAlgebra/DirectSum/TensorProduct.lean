@@ -192,7 +192,7 @@ theorem directSumRight_tmul_lof (x : M₁') (i : ι₂) (y : M₂ i) :
     directSumRight R M₁' M₂ (x ⊗ₜ[R] DirectSum.lof R _ _ i y) = DirectSum.lof R _ _ i (x ⊗ₜ[R] y) :=
   by
   dsimp only [directSumRight, LinearEquiv.trans_apply, TensorProduct.comm_tmul]
-  rw [directSumLeft_tmul_lof]
+  erw [directSumLeft_tmul_lof, Dfinsupp.mapRange.linearEquiv_apply]
   exact Dfinsupp.mapRange_single
 #align tensor_product.direct_sum_right_tmul_lof TensorProduct.directSumRight_tmul_lof
 
