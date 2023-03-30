@@ -350,10 +350,16 @@ structure Hom where
   /-- The underlying function of a homomorphism of structures -/
   toFun : M → N
   /-- The homomorphism commutes with the interpretations of the function symbols -/
+  -- Porting note:
+  -- The autoparam here used to be `obviously`. We would like to replace it with `aesop`
+  -- but that isn't currently sufficient.
+  -- See https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Aesop.20and.20cases
+  -- If that can be improved, we should change this to `by aesop` and remove the proofs below.
   map_fun' : ∀ {n} (f : L.Functions n) (x), toFun (funMap f x) = funMap f (toFun ∘ x) := by
     intros; trivial
   /-- The homomorphism sends related elements to related elements -/
   map_rel' : ∀ {n} (r : L.Relations n) (x), rel_map r x → rel_map r (toFun ∘ x) := by
+    -- Porting note: see porting note on `Hom.map_fun'`
     intros; trivial
 #align first_order.language.hom FirstOrder.Language.Hom
 
@@ -364,8 +370,10 @@ scoped[FirstOrder] notation:25 A " →[" L "] " B => FirstOrder.Language.Hom L A
   interpretations of functions and relations. -/
 structure Embedding extends M ↪ N where
   map_fun' : ∀ {n} (f : L.Functions n) (x), toFun (funMap f x) = funMap f (toFun ∘ x) := by
+    -- Porting note: see porting note on `Hom.map_fun'`
     intros; trivial
   map_rel' : ∀ {n} (r : L.Relations n) (x), rel_map r (toFun ∘ x) ↔ rel_map r x := by
+    -- Porting note: see porting note on `Hom.map_fun'`
     intros; trivial
 #align first_order.language.embedding FirstOrder.Language.Embedding
 
@@ -376,8 +384,10 @@ scoped[FirstOrder] notation:25 A " ↪[" L "] " B => FirstOrder.Language.Embeddi
   interpretations of functions and relations. -/
 structure Equiv extends M ≃ N where
   map_fun' : ∀ {n} (f : L.Functions n) (x), toFun (funMap f x) = funMap f (toFun ∘ x) := by
+    -- Porting note: see porting note on `Hom.map_fun'`
     intros; trivial
   map_rel' : ∀ {n} (r : L.Relations n) (x), rel_map r (toFun ∘ x) ↔ rel_map r x := by
+    -- Porting note: see porting note on `Hom.map_fun'`
     intros; trivial
 #align first_order.language.equiv FirstOrder.Language.Equiv
 
@@ -596,13 +606,10 @@ theorem id_apply (x : M) : id L M x = x :=
 @[trans]
 def comp (hnp : N →[L] P) (hmn : M →[L] N) : M →[L] P where
   toFun := hnp ∘ hmn
-  -- Porting note: Added a line below.
+  -- Porting note: should be done by autoparam?
   map_fun' _ _ := by simp; rfl
+  -- Porting note: should be done by autoparam?
   map_rel' _ _ h := map_rel _ _ _ (map_rel _ _ _ h)
-    -- Porting note: Previous code was
-    -- simp [h]
-    --
-    -- Does not terminate the proof
 #align first_order.language.hom.comp FirstOrder.Language.Hom.comp
 
 @[simp]
@@ -741,8 +748,9 @@ theorem refl_apply (x : M) : refl L M x = x :=
 def comp (hnp : N ↪[L] P) (hmn : M ↪[L] N) : M ↪[L] P where
   toFun := hnp ∘ hmn
   inj' := hnp.injective.comp hmn.injective
-  -- Porting note: Added custom proof for `map_fun'` and `map_rel'`
+  -- Porting note: should be done by autoparam?
   map_fun' := by intros; simp only [Function.comp_apply, map_fun]; trivial
+  -- Porting note: should be done by autoparam?
   map_rel' := by intros; rw [Function.comp.assoc, map_rel, map_rel]
 #align first_order.language.embedding.comp FirstOrder.Language.Embedding.comp
 
@@ -910,8 +918,9 @@ theorem refl_apply (x : M) : refl L M x = x := by simp [refl]; rfl
 def comp (hnp : N ≃[L] P) (hmn : M ≃[L] N) : M ≃[L] P :=
   { hmn.toEquiv.trans hnp.toEquiv with
     toFun := hnp ∘ hmn
-    -- Porting note: Added custom proof for `map_fun'` and `map_rel'`
+    -- Porting note: should be done by autoparam?
     map_fun' := by intros; simp only [Function.comp_apply, map_fun]; trivial
+    -- Porting note: should be done by autoparam?
     map_rel' := by intros; rw [Function.comp.assoc, map_rel, map_rel] }
 #align first_order.language.equiv.comp FirstOrder.Language.Equiv.comp
 
