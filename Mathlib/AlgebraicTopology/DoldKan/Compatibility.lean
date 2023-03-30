@@ -168,27 +168,29 @@ def equivalence₂UnitIso : 𝟭 A ≅ (F ⋙ eB.inverse) ⋙ eB.functor ⋙ e'.
 theorem equivalence₂UnitIso_eq : (equivalence₂ eB hF).unitIso = equivalence₂UnitIso eB hF := by
   ext X
   dsimp [equivalence₂]
-  simpa only [equivalence₂_unit_iso_hom_app, equivalence₁_unit_iso_eq,
-    equivalence₁_unit_iso_hom_app, assoc, nat_iso.cancel_nat_iso_hom_left]
+  simp only [equivalence₂UnitIso_hom_app, equivalence₁UnitIso_eq,
+    equivalence₁UnitIso_hom_app, assoc, NatIso.cancel_natIso_hom_left]
+  rfl
 #align algebraic_topology.dold_kan.compatibility.equivalence₂_unit_iso_eq AlgebraicTopology.DoldKan.Compatibility.equivalence₂UnitIso_eq
 
 variable {eB}
 
-include hG
+-- porting note: commented out include
+-- include hG
 
 /-- The equivalence `A ≅ B` whose functor is `F ⋙ eB.inverse` and
 whose inverse is `G : B ≅ A`. -/
-@[simps inverse]
+@[simps! inverse]
 def equivalence : A ≌ B :=
-  letI : is_equivalence G := by
-    refine' is_equivalence.of_iso _ (is_equivalence.of_equivalence (equivalence₂ eB hF).symm)
+  letI : IsEquivalence G := by
+    refine' IsEquivalence.ofIso _ (IsEquivalence.ofEquivalence (equivalence₂ eB hF).symm)
     calc
-      eB.functor ⋙ e'.inverse ⋙ eA.inverse ≅ (eB.functor ⋙ e'.inverse) ⋙ eA.inverse := iso.refl _
-      _ ≅ (G ⋙ eA.functor) ⋙ eA.inverse := (iso_whisker_right hG _)
-      _ ≅ G ⋙ 𝟭 A := (iso_whisker_left _ eA.unit_iso.symm)
-      _ ≅ G := functor.right_unitor G
+      eB.functor ⋙ e'.inverse ⋙ eA.inverse ≅ (eB.functor ⋙ e'.inverse) ⋙ eA.inverse := Iso.refl _
+      _ ≅ (G ⋙ eA.functor) ⋙ eA.inverse := (isoWhiskerRight hG _)
+      _ ≅ G ⋙ 𝟭 A := (isoWhiskerLeft _ eA.unitIso.symm)
+      _ ≅ G := Functor.rightUnitor G
 
-  G.as_equivalence.symm
+  G.asEquivalence.symm
 #align algebraic_topology.dold_kan.compatibility.equivalence AlgebraicTopology.DoldKan.Compatibility.equivalence
 
 theorem equivalence_functor : (equivalence hF hG).Functor = F ⋙ eB.inverse :=
