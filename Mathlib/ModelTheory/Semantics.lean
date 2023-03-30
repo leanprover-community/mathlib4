@@ -73,7 +73,7 @@ namespace Term
 --Porting note: universes in different order
 /-- A term `t` with variables indexed by `α` can be evaluated by giving a value to each variable. -/
 @[simp]
-def realize (v : α → M) : ∀ t : L.Term α, M
+def realize (v : α → M) : ∀ _t : L.Term α, M
   | var k => v k
   | func f ts => funMap f fun i => (ts i).realize v
 #align first_order.language.term.realize FirstOrder.Language.Term.realize
@@ -243,8 +243,8 @@ open Term
 
 --Porting note: universes in different order
 /-- A bounded formula can be evaluated as true or false by giving values to each free variable. -/
-def Realize : ∀ {l} (f : L.BoundedFormula α l) (v : α → M) (xs : Fin l → M), Prop
-  | _, falsum, v, xs => False
+def Realize : ∀ {l} (_f : L.BoundedFormula α l) (_v : α → M) (_xs : Fin l → M), Prop
+  | _, falsum, _v, _xs => False
   | _, BoundedFormula.equal t₁ t₂, v, xs => t₁.realize (Sum.elim v xs) = t₂.realize (Sum.elim v xs)
   | _, BoundedFormula.Rel R ts, v, xs => rel_map R fun i => (ts i).realize (Sum.elim v xs)
   | _, BoundedFormula.imp f₁ f₂, v, xs => Realize f₁ v xs → Realize f₂ v xs
@@ -505,7 +505,7 @@ theorem realize_all_liftAt_one_self {n : ℕ} {φ : L.BoundedFormula α n} {v : 
 theorem realize_toPrenexImpRight {φ ψ : L.BoundedFormula α n} (hφ : IsQF φ) (hψ : IsPrenex ψ)
     {v : α → M} {xs : Fin n → M} : (φ.toPrenexImpRight ψ).Realize v xs ↔ (φ.imp ψ).Realize v xs :=
   by
-  induction' hψ with _ _ hψ _ _ hψ ih _ _ hψ ih
+  induction' hψ with _ _ hψ _ _ _hψ ih _ _ _hψ ih
   · rw [hψ.toPrenexImpRight]
   · refine' _root_.trans (forall_congr' fun _ => ih hφ.liftAt) _
     simp only [realize_imp, realize_liftAt_one_self, snoc_comp_cast_succ, realize_all]
@@ -527,7 +527,7 @@ theorem realize_toPrenexImpRight {φ ψ : L.BoundedFormula α n} (hφ : IsQF φ)
 theorem realize_toPrenexImp {φ ψ : L.BoundedFormula α n} (hφ : IsPrenex φ) (hψ : IsPrenex ψ)
     {v : α → M} {xs : Fin n → M} : (φ.toPrenexImp ψ).Realize v xs ↔ (φ.imp ψ).Realize v xs := by
   revert ψ
-  induction' hφ with _ _ hφ _ _ hφ ih _ _ hφ ih <;> intro ψ hψ
+  induction' hφ with _ _ hφ _ _ _hφ ih _ _ _hφ ih <;> intro ψ hψ
   · rw [hφ.toPrenexImp]
     exact realize_toPrenexImpRight hφ hψ
   · unfold toPrenexImp
@@ -539,7 +539,7 @@ theorem realize_toPrenexImp {φ ψ : L.BoundedFormula α n} (hφ : IsPrenex φ) 
       exact ha (h a)
     · by_cases ψ.Realize v xs
       · inhabit M
-        exact ⟨default, fun h'' => h⟩
+        exact ⟨default, fun _h'' => h⟩
       · obtain ⟨a, ha⟩ := not_forall.1 (h ∘ h')
         exact ⟨a, fun h => (ha h).elim⟩
   · refine' _root_.trans (forall_congr' fun _ => ih hψ.liftAt) _
@@ -827,8 +827,8 @@ instance model_empty : M ⊨ (∅ : L.Theory) :=
 
 namespace Theory
 
-theorem Model.mono {T' : L.Theory} (h : M ⊨ T') (hs : T ⊆ T') : M ⊨ T :=
-  ⟨fun φ hφ => T'.realize_sentence_of_mem (hs hφ)⟩
+theorem Model.mono {T' : L.Theory} (_h : M ⊨ T') (hs : T ⊆ T') : M ⊨ T :=
+  ⟨fun _φ hφ => T'.realize_sentence_of_mem (hs hφ)⟩
 set_option linter.uppercaseLean3 false in
 #align first_order.language.Theory.model.mono FirstOrder.Language.Theory.Model.mono
 
