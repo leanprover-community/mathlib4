@@ -148,9 +148,9 @@ def equivalence₂CounitIso : (eB.functor ⋙ e'.inverse ⋙ eA.inverse) ⋙ F �
 theorem equivalence₂CounitIso_eq : (equivalence₂ eB hF).counitIso = equivalence₂CounitIso eB hF :=
   by
   ext Y'
-  dsimp [equivalence₂, iso.refl]
-  simp only [equivalence₁_counit_iso_eq, equivalence₂_counit_iso_hom_app,
-    equivalence₁_counit_iso_hom_app, functor.map_comp, assoc]
+  dsimp [equivalence₂, Iso.refl]
+  simp only [equivalence₁CounitIso_eq, equivalence₂CounitIso_hom_app,
+    equivalence₁CounitIso_hom_app, Functor.map_comp, assoc]
 #align algebraic_topology.dold_kan.compatibility.equivalence₂_counit_iso_eq AlgebraicTopology.DoldKan.Compatibility.equivalence₂CounitIso_eq
 
 /-- The unit isomorphism of the equivalence `equivalence₂` between `A` and `B`. -/
