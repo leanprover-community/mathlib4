@@ -241,8 +241,9 @@ theorem destruct_cons (a : α) : ∀ s, destruct (cons a s) = some (a, s)
     apply Subtype.eq; dsimp [tail]; rw [Stream'.tail_cons]
 #align stream.seq.destruct_cons Stream'.Seq.destruct_cons
 
-theorem head_eq_destruct (s : Seq α) : head s = Prod.fst <$> destruct s := by
-  unfold destruct head <;> cases nth s 0 <;> rfl
+-- porting note: needed universe annotation to avoid universe issues
+theorem head_eq_destruct (s : Seq α) : head.{u} s = Prod.fst.{u} <$> destruct.{u} s := by
+  unfold destruct head ; cases get? s 0 <;> rfl
 #align stream.seq.head_eq_destruct Stream'.Seq.head_eq_destruct
 
 @[simp]
