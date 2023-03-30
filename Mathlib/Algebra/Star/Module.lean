@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Frédéric Dupuis
 
 ! This file was ported from Lean 3 source module algebra.star.module
-! leanprover-community/mathlib commit 09d7fe375d1f63d17cf6b2aa4b413ab3e6ec49df
+! leanprover-community/mathlib commit 30413fc89f202a090a54d78e540963ed3de0056e
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -38,28 +38,28 @@ section SmulLemmas
 variable {R M : Type _}
 
 @[simp]
-theorem star_int_cast_smul [Ring R] [AddCommGroup M] [Module R M] [StarAddMonoid M] (n : ℤ)
-    (x : M) : star ((n : R) • x) = (n : R) • star x :=
-  map_int_cast_smul (starAddEquiv : M ≃+ M) R R n x
-#align star_int_cast_smul star_int_cast_smul
-
-@[simp]
 theorem star_nat_cast_smul [Semiring R] [AddCommMonoid M] [Module R M] [StarAddMonoid M] (n : ℕ)
     (x : M) : star ((n : R) • x) = (n : R) • star x :=
   map_nat_cast_smul (starAddEquiv : M ≃+ M) R R n x
 #align star_nat_cast_smul star_nat_cast_smul
 
 @[simp]
+theorem star_int_cast_smul [Ring R] [AddCommGroup M] [Module R M] [StarAddMonoid M] (n : ℤ)
+    (x : M) : star ((n : R) • x) = (n : R) • star x :=
+  map_int_cast_smul (starAddEquiv : M ≃+ M) R R n x
+#align star_int_cast_smul star_int_cast_smul
+
+@[simp]
+theorem star_inv_nat_cast_smul [DivisionSemiring R] [AddCommMonoid M] [Module R M] [StarAddMonoid M]
+    (n : ℕ) (x : M) : star ((n⁻¹ : R) • x) = (n⁻¹ : R) • star x :=
+  map_inv_nat_cast_smul (starAddEquiv : M ≃+ M) R R n x
+#align star_inv_nat_cast_smul star_inv_nat_cast_smul
+
+@[simp]
 theorem star_inv_int_cast_smul [DivisionRing R] [AddCommGroup M] [Module R M] [StarAddMonoid M]
     (n : ℤ) (x : M) : star ((n⁻¹ : R) • x) = (n⁻¹ : R) • star x :=
   map_inv_int_cast_smul (starAddEquiv : M ≃+ M) R R n x
 #align star_inv_int_cast_smul star_inv_int_cast_smul
-
-@[simp]
-theorem star_inv_nat_cast_smul [DivisionRing R] [AddCommGroup M] [Module R M] [StarAddMonoid M]
-    (n : ℕ) (x : M) : star ((n⁻¹ : R) • x) = (n⁻¹ : R) • star x :=
-  map_inv_nat_cast_smul (starAddEquiv : M ≃+ M) R R n x
-#align star_inv_nat_cast_smul star_inv_nat_cast_smul
 
 @[simp]
 theorem star_rat_cast_smul [DivisionRing R] [AddCommGroup M] [Module R M] [StarAddMonoid M] (n : ℚ)
@@ -97,7 +97,7 @@ variable (R : Type _) (A : Type _) [Semiring R] [StarSemigroup R] [TrivialStar R
 
 /-- The self-adjoint elements of a star module, as a submodule. -/
 def selfAdjoint.submodule : Submodule R A :=
-  { selfAdjoint A with smul_mem' := IsSelfAdjoint.smul }
+  { selfAdjoint A with smul_mem' := fun _ _ => (IsSelfAdjoint.all _).smul }
 #align self_adjoint.submodule selfAdjoint.submodule
 
 /-- The skew-adjoint elements of a star module, as a submodule. -/

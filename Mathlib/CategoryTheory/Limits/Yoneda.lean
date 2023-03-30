@@ -53,7 +53,8 @@ def colimitCoconeIsColimit (X : Cᵒᵖ) : IsColimit (colimitCocone X)
   fac s Y := by
     funext f
     convert congr_fun (s.w f).symm (𝟙 (unop X))
-    simp
+    simp only [coyoneda_obj_obj, Functor.const_obj_obj, types_comp_apply,
+      coyoneda_obj_map, Category.id_comp]
   uniq s m w := by
     apply funext; rintro ⟨⟩
     dsimp
