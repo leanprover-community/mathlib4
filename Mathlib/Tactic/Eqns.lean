@@ -9,7 +9,7 @@ import Std.Lean.NameMapAttribute
 
 /-! # The `@[eqns]` attribute
 
-This file provide the `eqns` attribute as a way of overring the default equation lemmas. For
+This file provides the `eqns` attribute as a way of overriding the default equation lemmas. For
 example
 
 ```lean4
