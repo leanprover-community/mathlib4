@@ -1356,6 +1356,7 @@ import Mathlib.Order.SymmDiff
 import Mathlib.Order.Synonym
 import Mathlib.Order.UpperLower.Basic
 import Mathlib.Order.UpperLower.Hom
+import Mathlib.Order.UpperLower.LocallyFinite
 import Mathlib.Order.WellFounded
 import Mathlib.Order.WellFoundedSet
 import Mathlib.Order.WithBot
