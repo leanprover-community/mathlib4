@@ -78,8 +78,8 @@ open Structure Fin
 /-- A term on `α` is either a variable indexed by an element of `α`
   or a function symbol applied to simpler terms. -/
 inductive Term (α : Type u') : Type max u u'
-  | var : ∀ a : α, Term α
-  | func : ∀ {l : ℕ} (f : L.Functions l) (ts : Fin l → Term α), Term α
+  | var : ∀ _a : α, Term α
+  | func : ∀ {l : ℕ} (_f : L.Functions l) (_ts : Fin l → Term α), Term α
 #align first_order.language.term FirstOrder.Language.Term
 export Term (var func)
 
@@ -99,7 +99,7 @@ Case conversion may be inaccurate. Consider using '#align first_order.language.t
 @[simp]
 def varFinset [DecidableEq α] : L.Term α → Finset α
   | var i => {i}
-  | func f ts => univ.bunionᵢ fun i => (ts i).varFinset
+  | func _f ts => univ.bunionᵢ fun i => (ts i).varFinset
 #align first_order.language.term.var_finset FirstOrder.Language.Term.varFinset
 
 /- warning: first_order.language.term.var_finset_left -> FirstOrder.Language.Term.varFinsetLeft is a dubious translation:
@@ -112,8 +112,8 @@ Case conversion may be inaccurate. Consider using '#align first_order.language.t
 @[simp]
 def varFinsetLeft [DecidableEq α] : L.Term (Sum α β) → Finset α
   | var (Sum.inl i) => {i}
-  | var (Sum.inr i) => ∅
-  | func f ts => univ.bunionᵢ fun i => (ts i).varFinsetLeft
+  | var (Sum.inr _i) => ∅
+  | func _f ts => univ.bunionᵢ fun i => (ts i).varFinsetLeft
 #align first_order.language.term.var_finset_left FirstOrder.Language.Term.varFinsetLeft
 
 /- warning: first_order.language.term.relabel -> FirstOrder.Language.Term.relabel is a dubious translation:
@@ -167,7 +167,7 @@ but is expected to have type
   PUnit.{max (max (max (succ (succ u1)) (succ (succ u2))) (succ (succ u3))) (succ (succ u4))}
 Case conversion may be inaccurate. Consider using '#align first_order.language.term.restrict_var FirstOrder.Language.Term.restrictVarₓ'. -/
 /-- Restricts a term to use only a set of the given variables. -/
-def restrictVar [DecidableEq α] : ∀ (t : L.Term α) (f : t.varFinset → β), L.Term β
+def restrictVar [DecidableEq α] : ∀ (t : L.Term α) (_f : t.varFinset → β), L.Term β
   | var a, f => var (f ⟨a, mem_singleton_self a⟩)
   | func F ts, f =>
     func F fun i => (ts i).restrictVar (f ∘ Set.inclusion
@@ -182,9 +182,9 @@ but is expected to have type
 Case conversion may be inaccurate. Consider using '#align first_order.language.term.restrict_var_left FirstOrder.Language.Term.restrictVarLeftₓ'. -/
 /-- Restricts a term to use only a set of the given variables on the left side of a sum. -/
 def restrictVarLeft [DecidableEq α] {γ : Type _} :
-    ∀ (t : L.Term (Sum α γ)) (f : t.varFinsetLeft → β), L.Term (Sum β γ)
+    ∀ (t : L.Term (Sum α γ)) (_f : t.varFinsetLeft → β), L.Term (Sum β γ)
   | var (Sum.inl a), f => var (Sum.inl (f ⟨a, mem_singleton_self a⟩))
-  | var (Sum.inr a), f => var (Sum.inr a)
+  | var (Sum.inr a), _f => var (Sum.inr a)
   | func F ts, f =>
     func F fun i =>
       (ts i).restrictVarLeft (f ∘ Set.inclusion (subset_bunionᵢ_of_mem
@@ -222,7 +222,7 @@ def constantsToVars : L[[γ]].Term α → L.Term (Sum γ α)
   | var a => var (Sum.inr a)
   | @func _ _ 0 f ts =>
     Sum.casesOn f (fun f => func f fun i => (ts i).constantsToVars) fun c => var (Sum.inl c)
-  | @func _ _ (n + 1) f ts =>
+  | @func _ _ (_n + 1) f ts =>
     Sum.casesOn f (fun f => func f fun i => (ts i).constantsToVars) fun c => isEmptyElim c
 #align first_order.language.term.constants_to_vars FirstOrder.Language.Term.constantsToVars
 
@@ -483,11 +483,11 @@ Case conversion may be inaccurate. Consider using '#align first_order.language.b
 /-- The `finset` of variables used in a given formula. -/
 @[simp]
 def freeVarFinset [DecidableEq α] : ∀ {n}, L.BoundedFormula α n → Finset α
-  | n, falsum => ∅
-  | n, equal t₁ t₂ => t₁.varFinsetLeft ∪ t₂.varFinsetLeft
-  | n, Rel R ts => univ.bunionᵢ fun i => (ts i).varFinsetLeft
-  | n, imp f₁ f₂ => f₁.freeVarFinset ∪ f₂.freeVarFinset
-  | n, all f => f.freeVarFinset
+  | _n, falsum => ∅
+  | _n, equal t₁ t₂ => t₁.varFinsetLeft ∪ t₂.varFinsetLeft
+  | _n, Rel _R ts => univ.bunionᵢ fun i => (ts i).varFinsetLeft
+  | _n, imp f₁ f₂ => f₁.freeVarFinset ∪ f₂.freeVarFinset
+  | _n, all f => f.freeVarFinset
 #align first_order.language.bounded_formula.free_var_finset FirstOrder.Language.BoundedFormula.freeVarFinset
 
 /- warning: first_order.language.bounded_formula.cast_le -> FirstOrder.Language.BoundedFormula.castLe is a dubious translation:
@@ -498,13 +498,13 @@ but is expected to have type
 Case conversion may be inaccurate. Consider using '#align first_order.language.bounded_formula.cast_le FirstOrder.Language.BoundedFormula.castLeₓ'. -/
 /-- Casts `L.bounded_formula α m` as `L.bounded_formula α n`, where `m ≤ n`. -/
 @[simp]
-def castLe : ∀ {m n : ℕ} (h : m ≤ n), L.BoundedFormula α m → L.BoundedFormula α n
-  | m, n, h, falsum => falsum
-  | m, n, h, equal t₁ t₂ =>
+def castLe : ∀ {m n : ℕ} (_h : m ≤ n), L.BoundedFormula α m → L.BoundedFormula α n
+  | _m, _n, _h, falsum => falsum
+  | _m, _n, h, equal t₁ t₂ =>
     equal (t₁.relabel (Sum.map id (Fin.castLe h))) (t₂.relabel (Sum.map id (Fin.castLe h)))
-  | m, n, h, Rel R ts => Rel R (Term.relabel (Sum.map id (Fin.castLe h)) ∘ ts)
-  | m, n, h, imp f₁ f₂ => (f₁.castLe h).imp (f₂.castLe h)
-  | m, n, h, all f => (f.castLe (add_le_add_right h 1)).all
+  | _m, _n, h, Rel R ts => Rel R (Term.relabel (Sum.map id (Fin.castLe h)) ∘ ts)
+  | _m, _n, h, imp f₁ f₂ => (f₁.castLe h).imp (f₂.castLe h)
+  | _m, _n, h, all f => (f.castLe (add_le_add_right h 1)).all
 #align first_order.language.bounded_formula.cast_le FirstOrder.Language.BoundedFormula.castLe
 
 @[simp]
@@ -547,18 +547,18 @@ but is expected to have type
 Case conversion may be inaccurate. Consider using '#align first_order.language.bounded_formula.restrict_free_var FirstOrder.Language.BoundedFormula.restrictFreeVarₓ'. -/
 /-- Restricts a bounded formula to only use a particular set of free variables. -/
 def restrictFreeVar [DecidableEq α] :
-    ∀ {n : ℕ} (φ : L.BoundedFormula α n) (f : φ.freeVarFinset → β), L.BoundedFormula β n
-  | n, falsum, f => falsum
-  | n, equal t₁ t₂, f =>
+    ∀ {n : ℕ} (φ : L.BoundedFormula α n) (_f : φ.freeVarFinset → β), L.BoundedFormula β n
+  | _n, falsum, _f => falsum
+  | _n, equal t₁ t₂, f =>
     equal (t₁.restrictVarLeft (f ∘ Set.inclusion (subset_union_left _ _)))
       (t₂.restrictVarLeft (f ∘ Set.inclusion (subset_union_right _ _)))
-  | n, Rel R ts, f =>
+  | _n, Rel R ts, f =>
     Rel R fun i => (ts i).restrictVarLeft (f ∘ Set.inclusion
       (subset_bunionᵢ_of_mem (fun i => Term.varFinsetLeft (ts i)) (mem_univ i)))
-  | n, imp φ₁ φ₂, f =>
+  | _n, imp φ₁ φ₂, f =>
     (φ₁.restrictFreeVar (f ∘ Set.inclusion (subset_union_left _ _))).imp
       (φ₂.restrictFreeVar (f ∘ Set.inclusion (subset_union_right _ _)))
-  | n, all φ, f => (φ.restrictFreeVar f).all
+  | _n, all φ, f => (φ.restrictFreeVar f).all
 #align first_order.language.bounded_formula.restrict_free_var FirstOrder.Language.BoundedFormula.restrictFreeVar
 
 /- warning: first_order.language.bounded_formula.alls -> FirstOrder.Language.BoundedFormula.alls is a dubious translation:
@@ -570,7 +570,7 @@ Case conversion may be inaccurate. Consider using '#align first_order.language.b
 /-- Places universal quantifiers on all extra variables of a bounded formula. -/
 def alls : ∀ {n}, L.BoundedFormula α n → L.Formula α
   | 0, φ => φ
-  | n + 1, φ => φ.all.alls
+  | _n + 1, φ => φ.all.alls
 #align first_order.language.bounded_formula.alls FirstOrder.Language.BoundedFormula.alls
 
 /- warning: first_order.language.bounded_formula.exs -> FirstOrder.Language.BoundedFormula.exs is a dubious translation:
@@ -582,7 +582,7 @@ Case conversion may be inaccurate. Consider using '#align first_order.language.b
 /-- Places existential quantifiers on all extra variables of a bounded formula. -/
 def exs : ∀ {n}, L.BoundedFormula α n → L.Formula α
   | 0, φ => φ
-  | n + 1, φ => φ.ex.exs
+  | _n + 1, φ => φ.ex.exs
 #align first_order.language.bounded_formula.exs FirstOrder.Language.BoundedFormula.exs
 
 /- warning: first_order.language.bounded_formula.map_term_rel -> FirstOrder.Language.BoundedFormula.mapTermRel is a dubious translation:
@@ -596,15 +596,15 @@ def mapTermRel {g : ℕ → ℕ} (ft : ∀ n, L.Term (Sum α (Fin n)) → L'.Ter
     (fr : ∀ n, L.Relations n → L'.Relations n)
     (h : ∀ n, L'.BoundedFormula β (g (n + 1)) → L'.BoundedFormula β (g n + 1)) :
     ∀ {n}, L.BoundedFormula α n → L'.BoundedFormula β (g n)
-  | n, falsum => falsum
-  | n, equal t₁ t₂ => equal (ft _ t₁) (ft _ t₂)
-  | n, Rel R ts => Rel (fr _ R) fun i => ft _ (ts i)
-  | n, imp φ₁ φ₂ => (φ₁.mapTermRel ft fr h).imp (φ₂.mapTermRel ft fr h)
+  | _n, falsum => falsum
+  | _n, equal t₁ t₂ => equal (ft _ t₁) (ft _ t₂)
+  | _n, Rel R ts => Rel (fr _ R) fun i => ft _ (ts i)
+  | _n, imp φ₁ φ₂ => (φ₁.mapTermRel ft fr h).imp (φ₂.mapTermRel ft fr h)
   | n, all φ => (h n (φ.mapTermRel ft fr h)).all
 #align first_order.language.bounded_formula.map_term_rel FirstOrder.Language.BoundedFormula.mapTermRel
 
 /-- Raises all of the `fin`-indexed variables of a formula greater than or equal to `m` by `n'`. -/
-def liftAt : ∀ {n : ℕ} (n' m : ℕ), L.BoundedFormula α n → L.BoundedFormula α (n + n') :=
+def liftAt : ∀ {n : ℕ} (n' _m : ℕ), L.BoundedFormula α n → L.BoundedFormula α (n + n') :=
   fun {n} n' m φ =>
   φ.mapTermRel (fun k t => t.liftAt n' m) (fun _ => id) fun _ =>
     castLe (by rw [add_assoc, add_comm 1, add_assoc])
@@ -679,8 +679,8 @@ def relabel (g : α → Sum β (Fin n)) {k} (φ : L.BoundedFormula α k) : L.Bou
 
 /-- Relabels a bounded formula's free variables along a bijection. -/
 def relabelEquiv (g : α ≃ β) {k} : L.BoundedFormula α k ≃ L.BoundedFormula β k :=
-  mapTermRelEquiv (fun n => Term.relabelEquiv (g.sumCongr (_root_.Equiv.refl _)))
-    fun n => _root_.Equiv.refl _
+  mapTermRelEquiv (fun _n => Term.relabelEquiv (g.sumCongr (_root_.Equiv.refl _)))
+    fun _n => _root_.Equiv.refl _
 #align first_order.language.bounded_formula.relabel_equiv FirstOrder.Language.BoundedFormula.relabelEquiv
 
 @[simp]
@@ -750,11 +750,11 @@ Case conversion may be inaccurate. Consider using '#align first_order.language.b
 /-- Turns the extra variables of a bounded formula into free variables. -/
 @[simp]
 def toFormula : ∀ {n : ℕ}, L.BoundedFormula α n → L.Formula (Sum α (Fin n))
-  | n, falsum => falsum
-  | n, equal t₁ t₂ => t₁.equal t₂
-  | n, Rel R ts => R.formula ts
-  | n, imp φ₁ φ₂ => φ₁.toFormula.imp φ₂.toFormula
-  | n, all φ =>
+  | _n, falsum => falsum
+  | _n, equal t₁ t₂ => t₁.equal t₂
+  | _n, Rel R ts => R.formula ts
+  | _n, imp φ₁ φ₂ => φ₁.toFormula.imp φ₂.toFormula
+  | _n, all φ =>
     (φ.toFormula.relabel
         (Sum.elim (Sum.inl ∘ Sum.inl) (Sum.map Sum.inr id ∘ finSumFinEquiv.symm))).all
 #align first_order.language.bounded_formula.to_formula FirstOrder.Language.BoundedFormula.toFormula
@@ -890,7 +890,7 @@ Case conversion may be inaccurate. Consider using '#align first_order.language.b
 def toPrenexImpRight : ∀ {n}, L.BoundedFormula α n → L.BoundedFormula α n → L.BoundedFormula α n
   | n, φ, BoundedFormula.ex ψ => ((φ.liftAt 1 n).toPrenexImpRight ψ).ex
   | n, φ, all ψ => ((φ.liftAt 1 n).toPrenexImpRight ψ).all
-  | n, φ, ψ => φ.imp ψ
+  | _n, φ, ψ => φ.imp ψ
 #align first_order.language.bounded_formula.to_prenex_imp_right FirstOrder.Language.BoundedFormula.toPrenexImpRight
 
 theorem IsQF.toPrenexImpRight {φ : L.BoundedFormula α n} :
@@ -985,11 +985,11 @@ Case conversion may be inaccurate. Consider using '#align first_order.language.L
 /-- Maps a bounded formula's symbols along a language map. -/
 @[simp]
 def onBoundedFormula (g : L →ᴸ L') : ∀ {k : ℕ}, L.BoundedFormula α k → L'.BoundedFormula α k
-  | k, falsum => falsum
-  | k, equal t₁ t₂ => (g.onTerm t₁).bdEqual (g.onTerm t₂)
-  | k, Rel R ts => (g.onRelation R).boundedFormula (g.onTerm ∘ ts)
-  | k, imp f₁ f₂ => (onBoundedFormula g f₁).imp (onBoundedFormula g f₂)
-  | k, all f => (onBoundedFormula g f).all
+  | _k, falsum => falsum
+  | _k, equal t₁ t₂ => (g.onTerm t₁).bdEqual (g.onTerm t₂)
+  | _k, Rel R ts => (g.onRelation R).boundedFormula (g.onTerm ∘ ts)
+  | _k, imp f₁ f₂ => (onBoundedFormula g f₁).imp (onBoundedFormula g f₂)
+  | _k, all f => (onBoundedFormula g f).all
 set_option linter.uppercaseLean3 false in
 #align first_order.language.Lhom.on_bounded_formula FirstOrder.Language.LHom.onBoundedFormula
 
@@ -1239,7 +1239,7 @@ variable {L}
 open Set
 
 theorem monotone_distinctConstantsTheory :
-    Monotone (L.distinctConstantsTheory : Set α → L[[α]].Theory) := fun s t st =>
+    Monotone (L.distinctConstantsTheory : Set α → L[[α]].Theory) := fun _s _t st =>
   image_subset _ (inter_subset_inter_left _ (prod_mono st st))
 #align first_order.language.monotone_distinct_constants_theory FirstOrder.Language.monotone_distinctConstantsTheory
 
