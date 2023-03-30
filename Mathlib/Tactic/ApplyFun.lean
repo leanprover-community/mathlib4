@@ -40,7 +40,7 @@ def applyFunHyp (f : TSyntax `term) (using? : Option Expr) (h : FVarId) (g : MVa
         Term.synthesizeSyntheticMVarsUsingDefault
         instantiateMVars eq
     let mvar ← mkFreshExprMVar eq'
-    let [] ← mvar.mvarId!.congrN | throwError "`apply_fun` could not construct congruence"
+    let [] ← mvar.mvarId!.congrN! | throwError "`apply_fun` could not construct congruence"
     pure (mvar, gs)
   | (``LE.le, _) =>
     let (monotone_f, newGoals) ← match using? with
