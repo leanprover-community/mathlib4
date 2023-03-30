@@ -13,17 +13,17 @@ import Mathlib.CategoryTheory.Equivalence
 /-! Tools for compatibilities between Dold-Kan equivalences
 
 The purpose of this file is to introduce tools which will enable the
-construction of the Dold-Kan equivalence `simplicial_object C ≌ chain_complex C ℕ`
+construction of the Dold-Kan equivalence `SimplicialObject C ≌ ChainComplex C ℕ`
 for a pseudoabelian category `C` from the equivalence
-`karoubi (simplicial_object C) ≌ karoubi (chain_complex C ℕ)` and the two
-equivalences `simplicial_object C ≅ karoubi (simplicial_object C)` and
-`chain_complex C ℕ ≅ karoubi (chain_complex C ℕ)`.
+`Karoubi (SimplicialObject C) ≌ Karoubi (ChainComplex C ℕ)` and the two
+equivalences `simplicial_object C ≅ Karoubi (SimplicialObject C)` and
+`ChainComplex C ℕ ≅ Karoubi (ChainComplex C ℕ)`.
 
-It is certainly possible to get an equivalence `simplicial_object C ≌ chain_complex C ℕ`
+It is certainly possible to get an equivalence `SimplicialObject C ≌ ChainComplex C ℕ`
 using a compositions of the three equivalences above, but then neither the functor
 nor the inverse would have good definitional properties. For example, it would be better
 if the inverse functor of the equivalence was exactly the functor
-`Γ₀ : simplicial_object C ⥤ chain_complex C ℕ` which was constructed in `functor_gamma.lean`.
+`Γ₀ : SimplicialObject C ⥤ ChainComplex C ℕ` which was constructed in `FunctorGamma.lean`.
 
 In this file, given four categories `A`, `A'`, `B`, `B'`, equivalences `eA : A ≅ A'`,
 `eB : B ≅ B'`, `e' : A' ≅ B'`, functors `F : A ⥤ B'`, `G : B ⥤ A` equipped with certain
@@ -94,8 +94,7 @@ def equivalence₁CounitIso : (e'.inverse ⋙ eA.inverse) ⋙ F ≅ 𝟭 B' :=
 theorem equivalence₁CounitIso_eq : (equivalence₁ hF).counitIso = equivalence₁CounitIso hF := by
   ext Y
   dsimp [equivalence₀, equivalence₁, IsEquivalence.inverse, IsEquivalence.ofEquivalence]
-  simp only [equivalence₁CounitIso_hom_app, CategoryTheory.Functor.map_id, comp_id]
-
+  simp  [equivalence₁CounitIso_hom_app, CategoryTheory.Functor.map_id, comp_id]
 #align algebraic_topology.dold_kan.compatibility.equivalence₁_counit_iso_eq AlgebraicTopology.DoldKan.Compatibility.equivalence₁CounitIso_eq
 
 /-- The unit isomorphism of the equivalence `equivalence₁` between `A` and `B'`. -/
@@ -108,7 +107,6 @@ def equivalence₁UnitIso : 𝟭 A ≅ F ⋙ e'.inverse ⋙ eA.inverse :=
       (isoWhiskerLeft _ (isoWhiskerRight e'.unitIso _))
     _ ≅ (eA.functor ⋙ e'.functor) ⋙ e'.inverse ⋙ eA.inverse := (Iso.refl _)
     _ ≅ F ⋙ e'.inverse ⋙ eA.inverse := isoWhiskerRight hF _
-
 #align algebraic_topology.dold_kan.compatibility.equivalence₁_unit_iso AlgebraicTopology.DoldKan.Compatibility.equivalence₁UnitIso
 
 theorem equivalence₁UnitIso_eq : (equivalence₁ hF).unitIso = equivalence₁UnitIso hF := by
@@ -143,7 +141,6 @@ def equivalence₂CounitIso : (eB.functor ⋙ e'.inverse ⋙ eA.inverse) ⋙ F �
       (isoWhiskerLeft _ (isoWhiskerRight (equivalence₁CounitIso hF) _))
     _ ≅ eB.functor ⋙ eB.inverse := (Iso.refl _)
     _ ≅ 𝟭 B := eB.unitIso.symm
-
 #align algebraic_topology.dold_kan.compatibility.equivalence₂_counit_iso AlgebraicTopology.DoldKan.Compatibility.equivalence₂CounitIso
 
 theorem equivalence₂CounitIso_eq : (equivalence₂ eB hF).counitIso = equivalence₂CounitIso eB hF :=
@@ -163,7 +160,6 @@ def equivalence₂UnitIso : 𝟭 A ≅ (F ⋙ eB.inverse) ⋙ eB.functor ⋙ e'.
     _ ≅ F ⋙ (eB.inverse ⋙ eB.functor) ⋙ e'.inverse ⋙ eA.inverse :=
       (isoWhiskerLeft _ (isoWhiskerRight eB.counitIso.symm _))
     _ ≅ (F ⋙ eB.inverse) ⋙ eB.functor ⋙ e'.inverse ⋙ eA.inverse := Iso.refl _
-
 #align algebraic_topology.dold_kan.compatibility.equivalence₂_unit_iso AlgebraicTopology.DoldKan.Compatibility.equivalence₂UnitIso
 
 theorem equivalence₂UnitIso_eq : (equivalence₂ eB hF).unitIso = equivalence₂UnitIso eB hF := by
@@ -190,7 +186,6 @@ def equivalence : A ≌ B :=
       _ ≅ (G ⋙ eA.functor) ⋙ eA.inverse := (isoWhiskerRight hG _)
       _ ≅ G ⋙ 𝟭 A := (isoWhiskerLeft _ eA.unitIso.symm)
       _ ≅ G := Functor.rightUnitor G
-
   G.asEquivalence.symm
 #align algebraic_topology.dold_kan.compatibility.equivalence AlgebraicTopology.DoldKan.Compatibility.equivalence
 
