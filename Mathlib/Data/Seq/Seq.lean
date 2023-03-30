@@ -401,7 +401,7 @@ theorem coinduction :
     ∀ {s₁ s₂ : Seq α},
       head s₁ = head s₂ →
         (∀ (β : Type u) (fr : Seq α → β), fr s₁ = fr s₂ → fr (tail s₁) = fr (tail s₂)) → s₁ = s₂
-  | ⟨f₁, a₁⟩, ⟨f₂, a₂⟩, hh, ht =>
+  | _, _, hh, ht =>
     Subtype.eq (Stream'.coinduction hh fun β fr => ht β fun s => fr s.1)
 #align stream.seq.coinduction Stream'.Seq.coinduction
 
