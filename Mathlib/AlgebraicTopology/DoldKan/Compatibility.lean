@@ -8,7 +8,7 @@ Authors: Joël Riou
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Equivalence
+import Mathlib.CategoryTheory.Equivalence
 
 /-! Tools for compatibilities between Dold-Kan equivalences
 
@@ -90,8 +90,7 @@ def equivalence₁CounitIso : (e'.inverse ⋙ eA.inverse) ⋙ F ≅ 𝟭 B' :=
     
 #align algebraic_topology.dold_kan.compatibility.equivalence₁_counit_iso AlgebraicTopology.DoldKan.Compatibility.equivalence₁CounitIso
 
-theorem equivalence₁CounitIso_eq : (equivalence₁ hF).counitIso = equivalence₁CounitIso hF :=
-  by
+theorem equivalence₁CounitIso_eq : (equivalence₁ hF).counitIso = equivalence₁CounitIso hF := by
   ext Y
   dsimp [equivalence₀, equivalence₁, is_equivalence.inverse, is_equivalence.of_equivalence]
   simp only [equivalence₁_counit_iso_hom_app, CategoryTheory.Functor.map_id, comp_id]
@@ -110,8 +109,7 @@ def equivalence₁UnitIso : 𝟭 A ≅ F ⋙ e'.inverse ⋙ eA.inverse :=
     
 #align algebraic_topology.dold_kan.compatibility.equivalence₁_unit_iso AlgebraicTopology.DoldKan.Compatibility.equivalence₁UnitIso
 
-theorem equivalence₁UnitIso_eq : (equivalence₁ hF).unitIso = equivalence₁UnitIso hF :=
-  by
+theorem equivalence₁UnitIso_eq : (equivalence₁ hF).unitIso = equivalence₁UnitIso hF := by
   ext X
   dsimp [equivalence₀, equivalence₁, nat_iso.hcomp, is_equivalence.of_equivalence]
   simp only [id_comp, assoc, equivalence₁_unit_iso_hom_app]
@@ -165,8 +163,7 @@ def equivalence₂UnitIso : 𝟭 A ≅ (F ⋙ eB.inverse) ⋙ eB.Functor ⋙ e'.
     
 #align algebraic_topology.dold_kan.compatibility.equivalence₂_unit_iso AlgebraicTopology.DoldKan.Compatibility.equivalence₂UnitIso
 
-theorem equivalence₂UnitIso_eq : (equivalence₂ eB hF).unitIso = equivalence₂UnitIso eB hF :=
-  by
+theorem equivalence₂UnitIso_eq : (equivalence₂ eB hF).unitIso = equivalence₂UnitIso eB hF := by
   ext X
   dsimp [equivalence₂]
   simpa only [equivalence₂_unit_iso_hom_app, equivalence₁_unit_iso_eq,
@@ -181,8 +178,7 @@ include hG
 whose inverse is `G : B ≅ A`. -/
 @[simps inverse]
 def equivalence : A ≌ B :=
-  letI : is_equivalence G :=
-    by
+  letI : is_equivalence G := by
     refine' is_equivalence.of_iso _ (is_equivalence.of_equivalence (equivalence₂ eB hF).symm)
     calc
       eB.functor ⋙ e'.inverse ⋙ eA.inverse ≅ (eB.functor ⋙ e'.inverse) ⋙ eA.inverse := iso.refl _
