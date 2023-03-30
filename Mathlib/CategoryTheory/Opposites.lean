@@ -637,7 +637,7 @@ def opUnopEquiv : (C ⥤ D)ᵒᵖ ≌ Cᵒᵖ ⥤ Dᵒᵖ
         rw [show f = f.unop.op by simp, ← op_comp, ← op_comp]
         congr 1
         aesop_cat)
-  counitIso := NatIso.ofComponents (fun F => F.unopOpIso) (fun _ => by aesop_cat)
+  counitIso := NatIso.ofComponents (fun F => F.unopOpIso) (by aesop_cat)
 #align category_theory.functor.op_unop_equiv CategoryTheory.Functor.opUnopEquiv
 
 /-- The equivalence of functor categories induced by `leftOp` and `rightOp`.
@@ -659,7 +659,7 @@ def leftOpRightOpEquiv : (Cᵒᵖ ⥤ D)ᵒᵖ ≌ C ⥤ Dᵒᵖ
         rw [show η = η.unop.op by simp, ← op_comp, ← op_comp]
         congr 1
         aesop_cat)
-  counitIso := NatIso.ofComponents (fun F => F.leftOpRightOpIso) (fun _ => by aesop_cat)
+  counitIso := NatIso.ofComponents (fun F => F.leftOpRightOpIso) (by aesop_cat)
 #align category_theory.functor.left_op_right_op_equiv CategoryTheory.Functor.leftOpRightOpEquiv
 
 end Functor
