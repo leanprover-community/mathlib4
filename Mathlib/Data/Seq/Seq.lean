@@ -293,9 +293,10 @@ theorem mem_rec_on {C : Seq α → Prop} {a s} (M : a ∈ s)
       rfl
     rw [TH]
     apply h1 _ _ (Or.inl rfl)
-  revert e; apply s.recOn _ fun b s' => _ <;> intro e
-  · injection e
-  · have h_eq : (cons b s').val (Nat.succ k) = s'.val k := by cases s' <;> rfl
+  revert e; apply s.recOn _ fun b s' => _ --<;> intro e
+  · intro e; injection e
+  · intro b s' e
+    have h_eq : (cons b s').val (Nat.succ k) = s'.val k := by cases s' <;> rfl
     rw [h_eq] at e
     apply h1 _ _ (Or.inr (IH e))
 #align stream.seq.mem_rec_on Stream'.Seq.mem_rec_on
