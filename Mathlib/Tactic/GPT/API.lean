@@ -5,7 +5,8 @@ Authors: Scott Morrison
 -/
 
 open IO.Process in
-/-- Pipe input into stdin of the spawned process, then return output upon completion. -/
+/-- Pipe input into stdin of the spawned process, then return stdout upon completion. -/
+-- TODO Put this somewhere central / share with `cache` executable.
 def runCmd (cmd : String) (args : Array String) (throwFailure := true) (input : String := "") :
     IO String := do
   let child ← spawn

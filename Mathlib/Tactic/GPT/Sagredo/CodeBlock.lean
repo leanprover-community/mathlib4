@@ -5,14 +5,16 @@ Authors: Scott Morrison
 -/
 import Lean.Data.Json
 import Mathlib.Tactic.GPT.String
+import Mathlib.Data.List.Basic
 
 open Lean
 
--- Err, this must exist already!
-def _root_.List.everySecond : List α → List α
+/-- Filter list elements according to a predicate on the index. -/
+def List.filterIdx (p : Nat → Bool) : List α → List α :=
+  aux 0
+where aux (n : Nat) (L : List α) := match L with
 | [] => []
-| _ :: [] => []
-| _ :: b :: t => b :: t.everySecond
+| h :: t => if p n then h :: aux (n + 1) t else aux (n + 1) t
 
 def _root_.String.fence (s : String) := s!"```\n{s}\n```\n"
 def _root_.Std.Format.fence (f : Format) := s!"{f}".trim.fence
@@ -42,6 +44,6 @@ end CodeBlock
 
 /-- Process some markdown text, extracting the contents of any code blocks. -/
 def codeBlocks (text : String) : List CodeBlock :=
-(text.splitOn "```").everySecond.map fun c =>
+(text.splitOn "```").filterIdx (· % 2 = 1) |>.map fun c =>
   { text := c.trim.stripPrefix "lean" |>.trim,
     language := if c.trim.startsWith "lean" then some "lean" else "" }

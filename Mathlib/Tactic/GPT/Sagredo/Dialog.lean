@@ -92,7 +92,6 @@ def initialPrompt : M IO String := do
   let prompt := "I am going to show you an incomplete proof and the accompanying goal state. I will ask you to complete the proof step by step, adding one tactic step in each response.
 
 Here is the proof thus far:\n" ++ (← latestCodeBlock).markdownBody
-  -- TODO if there's no proof at all yet, just a sorry, we shouldn't separately restate the goal that appears in the sorry!
   match ← sorries with
   | [] => pure prompt
   | (ctx, g, _, _) :: _ => do
