@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Joey van Langen, Casper Putz
 
 ! This file was ported from Lean 3 source module algebra.char_p.basic
-! leanprover-community/mathlib commit 05a78c9451101108e638a0f213fb1bed82483545
+! leanprover-community/mathlib commit ceb887ddf3344dab425292e497fa2af91498437c
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
