@@ -165,57 +165,57 @@ def Foldr.ofFreeMonoid (f : α → β → β) : FreeMonoid α →* Monoid.Foldr 
 
 -- porting note: no docstring present in mathlib3
 @[reducible, nolint docBlame]
-def Mfoldl (m : Type u → Type u) [Monad m] (α : Type u) : Type u :=
+def foldlM (m : Type u → Type u) [Monad m] (α : Type u) : Type u :=
   MulOpposite <| End <| KleisliCat.mk m α
-#align monoid.mfoldl Monoid.Mfoldl
+#align monoid.mfoldl Monoid.foldlM
 
 -- porting note: no docstring present in mathlib3
 @[nolint docBlame]
-def Mfoldl.mk (f : α → m α) : Mfoldl m α :=
+def foldlM.mk (f : α → m α) : foldlM m α :=
   op f
-#align monoid.mfoldl.mk Monoid.Mfoldl.mk
+#align monoid.mfoldl.mk Monoid.foldlM.mk
 
 -- porting note: no docstring present in mathlib3
 @[nolint docBlame]
-def Mfoldl.get (x : Mfoldl m α) : α → m α :=
+def foldlM.get (x : foldlM m α) : α → m α :=
   unop x
-#align monoid.mfoldl.get Monoid.Mfoldl.get
+#align monoid.mfoldl.get Monoid.foldlM.get
 
 -- porting note: no docstring present in mathlib3
 @[simps, nolint docBlame]
-def Mfoldl.ofFreeMonoid [LawfulMonad m] (f : β → α → m β) : FreeMonoid α →* Monoid.Mfoldl m β
+def foldlM.ofFreeMonoid [LawfulMonad m] (f : β → α → m β) : FreeMonoid α →* Monoid.foldlM m β
     where
   toFun xs := op <| flip (List.foldlM f) (FreeMonoid.toList xs)
   map_one' := rfl
   map_mul' := by intros; apply unop_injective; funext; apply List.foldlM_append
-#align monoid.mfoldl.of_free_monoid Monoid.Mfoldl.ofFreeMonoid
+#align monoid.mfoldl.of_free_monoid Monoid.foldlM.ofFreeMonoid
 
 -- porting note: no docstring present in mathlib3
 @[reducible, nolint docBlame]
-def Mfoldr (m : Type u → Type u) [Monad m] (α : Type u) : Type u :=
+def foldrM (m : Type u → Type u) [Monad m] (α : Type u) : Type u :=
   End <| KleisliCat.mk m α
-#align monoid.mfoldr Monoid.Mfoldr
+#align monoid.mfoldr Monoid.foldrM
 
 -- porting note: no docstring present in mathlib3
 @[nolint docBlame]
-def Mfoldr.mk (f : α → m α) : Mfoldr m α :=
+def foldrM.mk (f : α → m α) : foldrM m α :=
   f
-#align monoid.mfoldr.mk Monoid.Mfoldr.mk
+#align monoid.mfoldr.mk Monoid.foldrM.mk
 
 -- porting note: no docstring present in mathlib3
 @[nolint docBlame]
-def Mfoldr.get (x : Mfoldr m α) : α → m α :=
+def foldrM.get (x : foldrM m α) : α → m α :=
   x
-#align monoid.mfoldr.get Monoid.Mfoldr.get
+#align monoid.mfoldr.get Monoid.foldrM.get
 
 -- porting note: no docstring present in mathlib3
 @[simps, nolint docBlame]
-def Mfoldr.ofFreeMonoid [LawfulMonad m] (f : α → β → m β) : FreeMonoid α →* Monoid.Mfoldr m β
+def foldrM.ofFreeMonoid [LawfulMonad m] (f : α → β → m β) : FreeMonoid α →* Monoid.foldrM m β
     where
   toFun xs := flip (List.foldrM f) (FreeMonoid.toList xs)
   map_one' := rfl
   map_mul' := by intros; funext; apply List.foldrM_append
-#align monoid.mfoldr.of_free_monoid Monoid.Mfoldr.ofFreeMonoid
+#align monoid.mfoldr.of_free_monoid Monoid.foldrM.ofFreeMonoid
 
 end Monoid
 
@@ -275,15 +275,15 @@ variable {m : Type u → Type u} [Monad m]
 
 -- porting note: no docstring present in mathlib3
 @[nolint docBlame]
-def mfoldl (f : α → β → m α) (x : α) (xs : t β) : m α :=
-  (foldMap (Mfoldl.mk ∘ flip f) xs).get x
-#align traversable.mfoldl Traversable.mfoldl
+def foldlm (f : α → β → m α) (x : α) (xs : t β) : m α :=
+  (foldMap (foldlM.mk ∘ flip f) xs).get x
+#align traversable.mfoldl Traversable.foldlm
 
 -- porting note: no docstring present in mathlib3
 @[nolint docBlame]
-def mfoldr (f : α → β → m β) (x : β) (xs : t α) : m β :=
-  (foldMap (Mfoldr.mk ∘ f) xs).get x
-#align traversable.mfoldr Traversable.mfoldr
+def foldrm (f : α → β → m β) (x : β) (xs : t α) : m β :=
+  (foldMap (foldrM.mk ∘ f) xs).get x
+#align traversable.mfoldr Traversable.foldrm
 
 end Defs
 
@@ -358,18 +358,18 @@ theorem foldr.ofFreeMonoid_comp_of (f : β → α → α) :
 #align traversable.foldr.of_free_monoid_comp_of Traversable.foldr.ofFreeMonoid_comp_of
 
 @[simp]
-theorem mfoldl.ofFreeMonoid_comp_of {m} [Monad m] [LawfulMonad m] (f : α → β → m α) :
-    Mfoldl.ofFreeMonoid f ∘ FreeMonoid.of = Mfoldl.mk ∘ flip f := by
+theorem foldlm.ofFreeMonoid_comp_of {m} [Monad m] [LawfulMonad m] (f : α → β → m α) :
+    foldlM.ofFreeMonoid f ∘ FreeMonoid.of = foldlM.mk ∘ flip f := by
   ext1 x
-  simp [(· ∘ ·), Mfoldl.ofFreeMonoid, Mfoldl.mk, flip]
-#align traversable.mfoldl.of_free_monoid_comp_of Traversable.mfoldl.ofFreeMonoid_comp_of
+  simp [(· ∘ ·), foldlM.ofFreeMonoid, foldlM.mk, flip]
+#align traversable.mfoldl.of_free_monoid_comp_of Traversable.foldlm.ofFreeMonoid_comp_of
 
 @[simp]
-theorem mfoldr.ofFreeMonoid_comp_of {m} [Monad m] [LawfulMonad m] (f : β → α → m α) :
-    Mfoldr.ofFreeMonoid f ∘ FreeMonoid.of = Mfoldr.mk ∘ f := by
+theorem foldrm.ofFreeMonoid_comp_of {m} [Monad m] [LawfulMonad m] (f : β → α → m α) :
+    foldrM.ofFreeMonoid f ∘ FreeMonoid.of = foldrM.mk ∘ f := by
   ext
-  simp [(· ∘ ·), Mfoldr.ofFreeMonoid, Mfoldr.mk, flip]
-#align traversable.mfoldr.of_free_monoid_comp_of Traversable.mfoldr.ofFreeMonoid_comp_of
+  simp [(· ∘ ·), foldrM.ofFreeMonoid, foldrM.mk, flip]
+#align traversable.mfoldr.of_free_monoid_comp_of Traversable.foldrm.ofFreeMonoid_comp_of
 
 theorem toList_spec (xs : t α) : toList xs = FreeMonoid.toList (foldMap FreeMonoid.of xs) :=
   Eq.symm <|
@@ -442,33 +442,33 @@ theorem length_toList {xs : t α} : length xs = List.length (toList xs) := by
 
 variable {m : Type u → Type u} [Monad m] [LawfulMonad m]
 
-theorem mfoldl_toList {f : α → β → m α} {x : α} {xs : t β} :
-    mfoldl f x xs = List.foldlM f x (toList xs) :=
+theorem foldlm_toList {f : α → β → m α} {x : α} {xs : t β} :
+    foldlm f x xs = List.foldlM f x (toList xs) :=
   calc
-    mfoldl f x xs = unop (Mfoldl.ofFreeMonoid f (FreeMonoid.ofList <| toList xs)) x :=
-    by simp only [mfoldl, toList_spec, foldMap_hom_free (Mfoldl.ofFreeMonoid f),
-        mfoldl.ofFreeMonoid_comp_of, Mfoldl.get, FreeMonoid.ofList_toList]
-    _ = List.foldlM f x (toList xs) := by simp [Mfoldl.ofFreeMonoid, unop_op, flip]
+    foldlm f x xs = unop (foldlM.ofFreeMonoid f (FreeMonoid.ofList <| toList xs)) x :=
+    by simp only [foldlm, toList_spec, foldMap_hom_free (foldlM.ofFreeMonoid f),
+        foldlm.ofFreeMonoid_comp_of, foldlM.get, FreeMonoid.ofList_toList]
+    _ = List.foldlM f x (toList xs) := by simp [foldlM.ofFreeMonoid, unop_op, flip]
 
-#align traversable.mfoldl_to_list Traversable.mfoldl_toList
+#align traversable.mfoldl_to_list Traversable.foldlm_toList
 
-theorem mfoldr_toList (f : α → β → m β) (x : β) (xs : t α) :
-    mfoldr f x xs = List.foldrM f x (toList xs) := by
-  change _ = Mfoldr.ofFreeMonoid f (FreeMonoid.ofList <| toList xs) x
-  simp only [mfoldr, toList_spec, foldMap_hom_free (Mfoldr.ofFreeMonoid f),
-    mfoldr.ofFreeMonoid_comp_of, Mfoldr.get, FreeMonoid.ofList_toList]
-#align traversable.mfoldr_to_list Traversable.mfoldr_toList
-
-@[simp]
-theorem mfoldl_map (g : β → γ) (f : α → γ → m α) (a : α) (l : t β) :
-    mfoldl f a (g <$> l) = mfoldl (fun x y => f x (g y)) a l := by
-  simp only [mfoldl, foldMap_map, (· ∘ ·), flip]
-#align traversable.mfoldl_map Traversable.mfoldl_map
+theorem foldrm_toList (f : α → β → m β) (x : β) (xs : t α) :
+    foldrm f x xs = List.foldrM f x (toList xs) := by
+  change _ = foldrM.ofFreeMonoid f (FreeMonoid.ofList <| toList xs) x
+  simp only [foldrm, toList_spec, foldMap_hom_free (foldrM.ofFreeMonoid f),
+    foldrm.ofFreeMonoid_comp_of, foldrM.get, FreeMonoid.ofList_toList]
+#align traversable.mfoldr_to_list Traversable.foldrm_toList
 
 @[simp]
-theorem mfoldr_map (g : β → γ) (f : γ → α → m α) (a : α) (l : t β) :
-    mfoldr f a (g <$> l) = mfoldr (f ∘ g) a l := by simp only [mfoldr, foldMap_map, (· ∘ ·), flip]
-#align traversable.mfoldr_map Traversable.mfoldr_map
+theorem foldlm_map (g : β → γ) (f : α → γ → m α) (a : α) (l : t β) :
+    foldlm f a (g <$> l) = foldlm (fun x y => f x (g y)) a l := by
+  simp only [foldlm, foldMap_map, (· ∘ ·), flip]
+#align traversable.mfoldl_map Traversable.foldlm_map
+
+@[simp]
+theorem foldrm_map (g : β → γ) (f : γ → α → m α) (a : α) (l : t β) :
+    foldrm f a (g <$> l) = foldrm (f ∘ g) a l := by simp only [foldrm, foldMap_map, (· ∘ ·), flip]
+#align traversable.mfoldr_map Traversable.foldrm_map
 
 end Equalities
 
