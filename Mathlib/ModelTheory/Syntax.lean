@@ -314,7 +314,6 @@ set_option linter.uppercaseLean3 false in
 
 variable (L) (α)
 
-/- ./././Mathport/Syntax/Translate/Command.lean:364:30: infer kinds are unsupported in Lean 4: falsum {} -/
 /-- `BoundedFormula α n` is the type of formulas with free variables indexed by `α` and up to `n`
   additional free variables. -/
 inductive BoundedFormula : ℕ → Type max u v u'
@@ -325,7 +324,7 @@ inductive BoundedFormula : ℕ → Type max u v u'
   | all {n} (f : BoundedFormula (n + 1)) : BoundedFormula n
 #align first_order.language.bounded_formula FirstOrder.Language.BoundedFormula
 
-/-- `formula α` is the type of formulas with all free variables indexed by `α`. -/
+/-- `Formula α` is the type of formulas with all free variables indexed by `α`. -/
 @[reducible]
 def Formula :=
   L.BoundedFormula α 0
