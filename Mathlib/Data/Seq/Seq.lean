@@ -459,7 +459,7 @@ def ofLazyList : LazyList α → Seq α :=
   corec fun l =>
     match l with
     | LazyList.nil => none
-    | LazyList.cons a l' => some (a, l' ())
+    | LazyList.cons a l' => some (a, l'.get)
 #align stream.seq.of_lazy_list Stream'.Seq.ofLazyList
 
 instance coeLazyList : Coe (LazyList α) (Seq α) :=
