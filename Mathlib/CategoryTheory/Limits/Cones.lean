@@ -962,14 +962,14 @@ and replace with `@[simps]`-/
 -- Here and below we only automatically generate the `@[simp]` lemma for the `X` field,
 -- as we can write a simpler `rfl` lemma for the components of the natural transformation by hand.
 /-- Change a cocone on `F.leftOp : Jᵒᵖ ⥤ C` to a cocone on `F : J ⥤ Cᵒᵖ`. -/
-@[simps!]
+@[simps! π_app]
 def coneOfCoconeLeftOp (c : Cocone F.leftOp) : Cone F where
   pt := op c.pt
   π := NatTrans.removeLeftOp c.ι
 #align category_theory.limits.cone_of_cocone_left_op CategoryTheory.Limits.coneOfCoconeLeftOp
 
 /-- Change a cone on `F : J ⥤ Cᵒᵖ` to a cocone on `F.leftOp : Jᵒᵖ ⥤ C`. -/
-@[simps!]
+@[simps! ι_app]
 def coconeLeftOpOfCone (c : Cone F) : Cocone F.leftOp where
   pt := unop c.pt
   ι := NatTrans.leftOp c.π

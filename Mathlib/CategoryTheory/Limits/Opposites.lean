@@ -432,7 +432,7 @@ def spanOp {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) :
 #align category_theory.limits.span_op CategoryTheory.Limits.spanOp
 
 /-- The canonical isomorphism relating `(Cospan f g).op` and `Span f.op g.op` -/
-@[simps!]
+@[simps! hom_app inv_app]
 def opCospan {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) :
     (cospan f g).op ≅ walkingCospanOpEquiv.functor ⋙ span f.op g.op :=
   calc
@@ -453,7 +453,7 @@ def cospanOp {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) :
 #align category_theory.limits.cospan_op CategoryTheory.Limits.cospanOp
 
 /-- The canonical isomorphism relating `(Span f g).op` and `Cospan f.op g.op` -/
-@[simps!]
+@[simps! hom_app inv_app]
 def opSpan {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) :
     (span f g).op ≅ walkingSpanOpEquiv.functor ⋙ cospan f.op g.op :=
   calc
@@ -480,17 +480,17 @@ def unop {X Y Z : Cᵒᵖ} {f : X ⟶ Y} {g : X ⟶ Z} (c : PushoutCocone f g) :
 
 -- porting note: removed simp attribute as the equality can already be obtained by simp
 theorem unop_fst {X Y Z : Cᵒᵖ} {f : X ⟶ Y} {g : X ⟶ Z} (c : PushoutCocone f g) :
-    c.unop.fst = c.inl.unop := by simp
+    c.unop.fst = c.inl.unop := by simp [opCospan]
 #align category_theory.limits.pushout_cocone.unop_fst CategoryTheory.Limits.PushoutCocone.unop_fst
 
 -- porting note: removed simp attribute as the equality can already be obtained by simp
 theorem unop_snd {X Y Z : Cᵒᵖ} {f : X ⟶ Y} {g : X ⟶ Z} (c : PushoutCocone f g) :
-    c.unop.snd = c.inr.unop := by aesop_cat
+    c.unop.snd = c.inr.unop := by simp
 #align category_theory.limits.pushout_cocone.unop_snd CategoryTheory.Limits.PushoutCocone.unop_snd
 
 -- porting note: it was originally @[simps (config := lemmasOnly)]
 /-- The obvious map `PushoutCocone f.op g.op → PullbackCone f g` -/
-@[simps!]
+@[simps! π_app]
 def op {X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} (c : PushoutCocone f g) : PullbackCone f.op g.op :=
   (Cones.postcompose (cospanOp f g).symm.hom).obj
     (Cone.whisker walkingSpanOpEquiv.inverse (Cocone.op c))
@@ -531,7 +531,7 @@ theorem unop_inr {X Y Z : Cᵒᵖ} {f : X ⟶ Z} {g : Y ⟶ Z} (c : PullbackCone
 #align category_theory.limits.pullback_cone.unop_inr CategoryTheory.Limits.PullbackCone.unop_inr
 
 /-- The obvious map `PullbackCone f g → PushoutCocone f.op g.op` -/
-@[simps!]
+@[simps! ι_app]
 def op {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} (c : PullbackCone f g) : PushoutCocone f.op g.op :=
   (Cocones.precompose (spanOp f g).hom).obj
     (Cocone.whisker walkingCospanOpEquiv.inverse (Cone.op c))
@@ -591,8 +591,9 @@ def isColimitEquivIsLimitUnop {X Y Z : Cᵒᵖ} {f : X ⟶ Y} {g : X ⟶ Z} (c :
     IsColimit c ≃ IsLimit c.unop := by
   apply equivOfSubsingletonOfSubsingleton
   . intro h
-    exact isLimitCoconeOp _ ((IsColimit.precomposeHomEquiv _ _).invFun
-      ((IsColimit.whiskerEquivalenceEquiv _).toFun h))
+    sorry
+    --exact isLimitCoconeOp _ ((IsColimit.precomposeHomEquiv _ _).invFun
+    --  ((IsColimit.whiskerEquivalenceEquiv ).toFun h))
   . intro h
     exact (IsColimit.equivIsoColimit c.unopOp).toFun
       ((IsColimit.precomposeHomEquiv _ _).invFun
