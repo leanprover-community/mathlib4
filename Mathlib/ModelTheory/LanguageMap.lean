@@ -448,6 +448,7 @@ section
 variable (α : Type w')
 
 /-- Extends a language with a constant for each element of a parameter set in `M`. -/
+@[reducible]
 def withConstants : Language.{max u w', v} :=
   L.sum (constantsOn α)
 #align first_order.language.with_constants FirstOrder.Language.withConstants
