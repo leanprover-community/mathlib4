@@ -112,11 +112,12 @@ def equivalence₁UnitIso : 𝟭 A ≅ F ⋙ e'.inverse ⋙ eA.inverse :=
 
 theorem equivalence₁UnitIso_eq : (equivalence₁ hF).unitIso = equivalence₁UnitIso hF := by
   ext X
-  dsimp [equivalence₀, equivalence₁, nat_iso.hcomp, is_equivalence.of_equivalence]
-  simp only [id_comp, assoc, equivalence₁_unit_iso_hom_app]
+  dsimp [equivalence₀, equivalence₁, NatIso.hcomp, IsEquivalence.ofEquivalence]
+  simp only [id_comp, assoc, equivalence₁UnitIso_hom_app]
 #align algebraic_topology.dold_kan.compatibility.equivalence₁_unit_iso_eq AlgebraicTopology.DoldKan.Compatibility.equivalence₁UnitIso_eq
 
-include eB
+-- porting note: commented out include
+-- include eB
 
 /-- An intermediate equivalence `A ≅ B` obtained as the composition of `equivalence₁` and
 the inverse of `eB : B ≌ B'`. -/
@@ -126,7 +127,7 @@ def equivalence₂ : A ≌ B :=
 #align algebraic_topology.dold_kan.compatibility.equivalence₂ AlgebraicTopology.DoldKan.Compatibility.equivalence₂
 
 theorem equivalence₂_inverse :
-    (equivalence₂ eB hF).inverse = eB.Functor ⋙ e'.inverse ⋙ eA.inverse :=
+    (equivalence₂ eB hF).inverse = eB.functor ⋙ e'.inverse ⋙ eA.inverse :=
   rfl
 #align algebraic_topology.dold_kan.compatibility.equivalence₂_inverse AlgebraicTopology.DoldKan.Compatibility.equivalence₂_inverse
 
