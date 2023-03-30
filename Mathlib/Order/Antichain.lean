@@ -4,11 +4,14 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 
 ! This file was ported from Lean 3 source module order.antichain
-! leanprover-community/mathlib commit b19481deb571022990f1baa9cbf9172e6757a479
+! leanprover-community/mathlib commit c227d107bbada5d0d9d20287e3282c0a7f1651a0
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Data.Set.Pairwise
+import Mathlib.Data.Set.Pairwise.Basic
+import Mathlib.Order.Bounds.Basic
+import Mathlib.Order.Directed
+import Mathlib.Order.Hom.Set
 
 /-!
 # Antichains
