@@ -93,8 +93,9 @@ def equivalence₁CounitIso : (e'.inverse ⋙ eA.inverse) ⋙ F ≅ 𝟭 B' :=
 
 theorem equivalence₁CounitIso_eq : (equivalence₁ hF).counitIso = equivalence₁CounitIso hF := by
   ext Y
-  dsimp [equivalence₀, equivalence₁, is_equivalence.inverse, is_equivalence.of_equivalence]
-  simp only [equivalence₁_counit_iso_hom_app, CategoryTheory.Functor.map_id, comp_id]
+  dsimp [equivalence₀, equivalence₁, IsEquivalence.inverse, IsEquivalence.ofEquivalence]
+  simp only [equivalence₁CounitIso_hom_app, CategoryTheory.Functor.map_id, comp_id]
+
 #align algebraic_topology.dold_kan.compatibility.equivalence₁_counit_iso_eq AlgebraicTopology.DoldKan.Compatibility.equivalence₁CounitIso_eq
 
 /-- The unit isomorphism of the equivalence `equivalence₁` between `A` and `B'`. -/
@@ -132,7 +133,7 @@ theorem equivalence₂_inverse :
 #align algebraic_topology.dold_kan.compatibility.equivalence₂_inverse AlgebraicTopology.DoldKan.Compatibility.equivalence₂_inverse
 
 /-- The counit isomorphism of the equivalence `equivalence₂` between `A` and `B`. -/
-@[simps]
+@[simps!]
 def equivalence₂CounitIso : (eB.functor ⋙ e'.inverse ⋙ eA.inverse) ⋙ F ⋙ eB.inverse ≅ 𝟭 B :=
   calc
     (eB.functor ⋙ e'.inverse ⋙ eA.inverse) ⋙ F ⋙ eB.inverse ≅
@@ -154,7 +155,7 @@ theorem equivalence₂CounitIso_eq : (equivalence₂ eB hF).counitIso = equivale
 #align algebraic_topology.dold_kan.compatibility.equivalence₂_counit_iso_eq AlgebraicTopology.DoldKan.Compatibility.equivalence₂CounitIso_eq
 
 /-- The unit isomorphism of the equivalence `equivalence₂` between `A` and `B`. -/
-@[simps]
+@[simps!]
 def equivalence₂UnitIso : 𝟭 A ≅ (F ⋙ eB.inverse) ⋙ eB.functor ⋙ e'.inverse ⋙ eA.inverse :=
   calc
     𝟭 A ≅ F ⋙ e'.inverse ⋙ eA.inverse := equivalence₁UnitIso hF
@@ -168,8 +169,8 @@ def equivalence₂UnitIso : 𝟭 A ≅ (F ⋙ eB.inverse) ⋙ eB.functor ⋙ e'.
 theorem equivalence₂UnitIso_eq : (equivalence₂ eB hF).unitIso = equivalence₂UnitIso eB hF := by
   ext X
   dsimp [equivalence₂]
-  simp only [equivalence₂UnitIso_hom_app, equivalence₁UnitIso_eq,
-    equivalence₁UnitIso_hom_app, assoc, NatIso.cancel_natIso_hom_left]
+  simp only [equivalence₂UnitIso_hom_app, equivalence₁UnitIso_eq, equivalence₁UnitIso_hom_app,
+      assoc, NatIso.cancel_natIso_hom_left]
   rfl
 #align algebraic_topology.dold_kan.compatibility.equivalence₂_unit_iso_eq AlgebraicTopology.DoldKan.Compatibility.equivalence₂UnitIso_eq
 
