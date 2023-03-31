@@ -879,7 +879,7 @@ theorem enum_cons (s : Seq α) (x : α) :
     enum (cons x s) = cons (0, x) (map (Prod.map Nat.succ id) (enum s)) := by
   ext ⟨n⟩ : 1
   · simp
-  · simp only [nth_enum, get?_cons_succ, map_get?, Option.map_map]
+  · simp only [get?_enum, get?_cons_succ, map_get?, Option.map_map]
     congr
 #align stream.seq.enum_cons Stream'.Seq.enum_cons
 
