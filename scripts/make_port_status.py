@@ -33,16 +33,6 @@ def mk_label(path: Path) -> str:
     rel = path.relative_to(Path(mathlib3_root))
     return str(rel.with_suffix('')).replace(os.sep, '.')
 
-def condense(s):
-    if s.startswith('Mathlib/'):
-        s = s[len('Mathlib/'):]
-    if s.endswith('.lean'):
-        s = s[:-5]
-    s = s.lower()
-    s = s.replace('/', '.')
-    s = s.replace('_', '')
-    return s
-
 graph = nx.DiGraph()
 
 for path in Path(mathlib3_root).glob('**/*.lean'):
@@ -132,7 +122,7 @@ for pr in mathlib4repo.get_pulls(state='open'):
 os.system("git branch -D $(git branch --list 'port-status-pull/*')")
 subprocess.run(fetch_args)
 
-prs_of_condensed = {}
+prs_of_import = {}
 for num in nums:
     p = subprocess.run(
         ['git', 'diff', '--name-only', '--diff-filter=A',
@@ -142,8 +132,8 @@ for num in nums:
         f = subprocess.run(
             ['git', 'cat-file', 'blob', f'port-status-pull/{num}:{l}'],
             capture_output=True)
-        _, repo, commit = get_mathlib4_module_commit_info(f.stdout.decode())
-        prs_of_condensed.setdefault(condense(l), []).append({'pr': num, 'repo': repo, 'commit': commit, 'fname': l})
+        import_, repo, commit = get_mathlib4_module_commit_info(f.stdout.decode())
+        prs_of_import.setdefault(import_, []).append({'pr': num, 'repo': repo, 'commit': commit, 'fname': l})
 
 COMMENTS_URL = "https://raw.githubusercontent.com/wiki/leanprover-community/mathlib4/port-comments.md"
 comments_dict = yaml.safe_load(requests.get(COMMENTS_URL).content.replace(b"```", b""))
@@ -174,8 +164,8 @@ for node in sorted(graph.nodes):
     else:
         new_status = dict(ported=False)
         status = f'No'
-        if condense(node) in prs_of_condensed:
-            pr_info = prs_of_condensed[condense(node)][0]
+        if node in prs_of_import:
+            pr_info = prs_of_import[node][0]
             if pr_info['commit'] is None:
                 print('PR seems to be missing a source header', node, pr_info)
                 assert(False)

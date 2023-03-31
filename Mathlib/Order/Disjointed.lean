@@ -123,9 +123,8 @@ as `f`. -/
 theorem disjointed_unique {f d : ℕ → α} (hdisj : Pairwise (Disjoint on d))
     (hsups : partialSups d = partialSups f) : d = disjointed f := by
   ext n
-  cases n
+  cases' n with n
   · rw [← partialSups_zero d, hsups, partialSups_zero, disjointed_zero]
-  rename_i n
   suffices h : d n.succ = partialSups d n.succ \ partialSups d n
   · rw [h, hsups, partialSups_succ, disjointed_succ, sup_sdiff, sdiff_self, bot_sup_eq]
   rw [partialSups_succ, sup_sdiff, sdiff_self, bot_sup_eq, eq_comm, sdiff_eq_self_iff_disjoint]

@@ -231,7 +231,7 @@ theorem mulLeft_bound (x : α) : ∀ y : α, ‖AddMonoidHom.mulLeft x y‖ ≤ 
 /-- In a seminormed ring, the right-multiplication `AddMonoidHom` is bounded. -/
 theorem mulRight_bound (x : α) : ∀ y : α, ‖AddMonoidHom.mulRight x y‖ ≤ ‖x‖ * ‖y‖ := fun y => by
   rw [mul_comm]
-  convert norm_mul_le y x
+  exact norm_mul_le y x
 #align mul_right_bound mulRight_bound
 
 instance ULift.nonUnitalSeminormedRing : NonUnitalSeminormedRing (ULift α) :=
@@ -274,7 +274,7 @@ instance Pi.nonUnitalSeminormedRing {π : ι → Type _} [Fintype ι]
 #align pi.non_unital_semi_normed_ring Pi.nonUnitalSeminormedRing
 
 instance MulOpposite.nonUnitalSeminormedRing : NonUnitalSeminormedRing αᵐᵒᵖ :=
-  { MulOpposite.seminormedAddCommGroup, MulOpposite.instNonUnitalRingMulOpposite α with
+  { MulOpposite.seminormedAddCommGroup, MulOpposite.nonUnitalRing α with
     norm_mul :=
       MulOpposite.rec' fun x =>
         MulOpposite.rec' fun y => (norm_mul_le y x).trans_eq (mul_comm _ _) }
@@ -404,7 +404,7 @@ instance Pi.seminormedRing {π : ι → Type _} [Fintype ι] [∀ i, SeminormedR
 #align pi.semi_normed_ring Pi.seminormedRing
 
 instance MulOpposite.seminormedRing : SeminormedRing αᵐᵒᵖ :=
-  { MulOpposite.nonUnitalSeminormedRing, MulOpposite.instRingMulOpposite α with }
+  { MulOpposite.nonUnitalSeminormedRing, MulOpposite.ring α with }
 #align mul_opposite.semi_normed_ring MulOpposite.seminormedRing
 
 end SeminormedRing

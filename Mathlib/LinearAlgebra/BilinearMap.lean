@@ -368,7 +368,7 @@ theorem compl₁₂_inj {f₁ f₂ : Mₗ →ₗ[R] Nₗ →ₗ[R] Pₗ} {g : Q�
     subst hx
     cases' hᵣ y with y' hy
     subst hy
-    convert LinearMap.congr_fun₂ h x' y'
+    convert LinearMap.congr_fun₂ h x' y' using 0
   · -- B₁ = B₂ → B₁.comp l r = B₂.comp l r
     subst h; rfl
 #align linear_map.compl₁₂_inj LinearMap.compl₁₂_inj

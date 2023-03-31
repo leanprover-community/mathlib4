@@ -505,7 +505,7 @@ variable (x y : ℂ)
 theorem exp_zero : exp 0 = 1 := by
   rw [exp]
   refine' lim_eq_of_equiv_const fun ε ε0 => ⟨1, fun j hj => _⟩
-  convert ε0
+  convert (config := .unfoldSameFun) ε0 -- porting note: ε0 : ε > 0 but goal is _ < ε
   cases' j with j j
   · exact absurd hj (not_le_of_gt zero_lt_one)
   · dsimp [exp']
@@ -1754,7 +1754,7 @@ open Complex Finset
 nonrec theorem exp_bound {x : ℝ} (hx : |x| ≤ 1) {n : ℕ} (hn : 0 < n) :
     |exp x - ∑ m in range n, x ^ m / m.factorial| ≤ |x| ^ n * (n.succ / (n.factorial * n)) := by
   have hxc : Complex.abs x ≤ 1 := by exact_mod_cast hx
-  convert exp_bound hxc hn <;>
+  convert exp_bound hxc hn using 2 <;>
   --Porting note: was `norm_cast`
   simp only [← abs_ofReal, ← ofReal_sub, ← ofReal_exp, ← ofReal_sum, ← ofReal_pow,
     ← ofReal_div, ← ofReal_nat_cast]
@@ -1830,7 +1830,7 @@ theorem exp_approx_succ {n} {x a₁ b₁ : ℝ} (m : ℕ) (e₁ : n + 1 = m) (a�
   refine' (abs_sub_le _ _ _).trans ((add_le_add_right h _).trans _)
   subst e₁; rw [expNear_succ, expNear_sub, abs_mul]
   convert mul_le_mul_of_nonneg_left (a := abs' x ^ n / ↑(Nat.factorial n))
-      (le_sub_iff_add_le'.1 e) ?_
+      (le_sub_iff_add_le'.1 e) ?_ using 1
   · simp [mul_add, pow_succ', div_eq_mul_inv, abs_mul, abs_inv, ← pow_abs, mul_inv]
     ac_rfl
   · simp [div_nonneg, abs_nonneg]
@@ -2058,7 +2058,7 @@ theorem one_sub_div_pow_le_exp_neg {n : ℕ} {t : ℝ} (ht' : t ≤ n) : (1 - t 
   rcases eq_or_ne n 0 with (rfl | hn)
   · simp
     rwa [Nat.cast_zero] at ht'
-  convert pow_le_pow_of_le_left ?_ (add_one_le_exp (-(t / n))) n
+  convert pow_le_pow_of_le_left ?_ (add_one_le_exp (-(t / n))) n using 2
   · abel
   · rw [← Real.exp_nat_mul]
     congr 1
