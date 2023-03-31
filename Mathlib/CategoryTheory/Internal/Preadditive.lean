@@ -30,6 +30,7 @@ def ofInternalAddCommGroupCat : Preadditive C := by
 
 variable (C)
 
+@[simps]
 def toInternalAddCommGroupCatFunctor [Preadditive C] : C ⥤ Internal AddCommGroupCat C where
   obj X :=
   { obj := X
@@ -48,6 +49,10 @@ def toInternalAddCommGroupCatFunctor [Preadditive C] : C ⥤ Internal AddCommGro
     ext1
     exact (Category.assoc _ _ _).symm
 
+def toInternalAddCommGroupCatFunctor_comp_objFunctor [Preadditive C] :
+    toInternalAddCommGroupCatFunctor C ⋙ Internal.objFunctor _ _ ≅ 𝟭 C :=
+  NatIso.ofComponents (fun X => Iso.refl _)
+    (fun f => yoneda.map_injective (by aesop_cat))
 
 end Preadditive
 
