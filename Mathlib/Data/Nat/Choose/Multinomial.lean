@@ -141,8 +141,7 @@ theorem succ_mul_binomial [DecidableEq α] (h : a ≠ b) :
       (f a).succ * multinomial {a, b} (Function.update f a (f a).succ) := by
   rw [binomial_eq_choose _ h, binomial_eq_choose _ h, mul_comm (f a).succ, Function.update_same,
     Function.update_noteq (ne_comm.mp h)]
-  convert succ_mul_choose_eq (f a + f b) (f a)
-  exact succ_add (f a) (f b)
+  rw [succ_mul_choose_eq (f a + f b) (f a), succ_add (f a) (f b)]
 #align nat.succ_mul_binomial Nat.succ_mul_binomial
 
 /-! ### Simple cases -/
@@ -156,7 +155,8 @@ theorem multinomial_univ_two (a b : ℕ) :
 
 theorem multinomial_univ_three (a b c : ℕ) :
     multinomial Finset.univ ![a, b, c] = (a + b + c)! / (a ! * b ! * c !) := by
-  simp [multinomial, Fin.sum_univ_three, Fin.prod_univ_three]
+  rw [multinomial, Fin.sum_univ_three, Fin.prod_univ_three]
+  rfl
 #align nat.multinomial_univ_three Nat.multinomial_univ_three
 
 end Nat
@@ -209,9 +209,10 @@ noncomputable def multinomial (m : Multiset α) : ℕ :=
 theorem multinomial_filter_ne [DecidableEq α] (a : α) (m : Multiset α) :
     m.multinomial = m.card.choose (m.count a) * (m.filter ((· ≠ ·) a)).multinomial := by
   dsimp only [multinomial]
-  convert Finsupp.multinomial_update a ↑(toFinsupp m)
+  convert Finsupp.multinomial_update a _
   · rw [← Finsupp.card_toMultiset, m.toFinsupp_toMultiset]
-  · ext1 a'
+  · simp only [toFinsupp_apply]
+  · ext1 a
     rw [toFinsupp_apply, count_filter, Finsupp.coe_update]
     split_ifs with h
     · rw [Function.update_noteq h.symm, toFinsupp_apply]
@@ -223,7 +224,6 @@ end Multiset
 namespace Finset
 
 /-! ### Multinomial theorem -/
-
 
 variable {α : Type _} [DecidableEq α] (s : Finset α) {R : Type _}
 
@@ -265,15 +265,14 @@ theorem sum_pow_of_commute [Semiring R] (x : α → R)
     rw [Multiset.noncommProd_eq_pow_card _ _ _ fun _ => Multiset.eq_of_mem_replicate]
     rw [Multiset.card_replicate, Nat.cast_mul, mul_assoc, Nat.cast_comm]
     congr 1; simp_rw [← mul_assoc, Nat.cast_comm]; rfl
-  intros b hb
-  exact hc (mem_insert_self a s) (mem_insert_of_mem hb) (ne_of_mem_of_not_mem hb ha).symm
 #align finset.sum_pow_of_commute Finset.sum_pow_of_commute
+
 
 theorem sum_pow [CommSemiring R] (x : α → R) (n : ℕ) :
     s.sum x ^ n = ∑ k in s.sym n, k.val.multinomial * (k.val.map x).prod := by
   conv_rhs => rw [← sum_coe_sort]
   convert sum_pow_of_commute s x (fun _ _ _ _ _ => mul_comm _ _) n
-  ext1; rw [Multiset.noncommProd_eq_prod]
+  rw [Multiset.noncommProd_eq_prod]
 #align finset.sum_pow Finset.sum_pow
 
 end Finset
