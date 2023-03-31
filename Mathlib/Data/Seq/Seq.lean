@@ -381,17 +381,21 @@ theorem eq_of_bisim (bisim : IsBisimulation R) {s₁ s₂} (r : s₁ ~ s₂) : s
     match t₁, t₂, e with
     | _, _, ⟨s, s', rfl, rfl, r⟩ => by
       suffices head s = head s' ∧ R (tail s) (tail s') from
-        And.imp id (fun r => ⟨tail s, tail s', by cases s <;> rfl, by cases s' <;> rfl, r⟩) this
+        And.imp id (fun r => ⟨tail s, tail s', by cases s ; rfl, by cases s' ; rfl, r⟩) this
       have := bisim r; revert r this
-      apply recOn s _ _ <;> intros <;> apply recOn s' _ _ <;> intros <;> intro r this
-      · constructor
-        rfl
-        assumption
-      · rw [destruct_nil, destruct_cons] at this
+      apply recOn s _ _ <;> apply recOn s' _ _
+      · intro r _
+        constructor
+        . rfl
+        . assumption
+      · intro x s _ this
+        rw [destruct_nil, destruct_cons] at this
         exact False.elim this
-      · rw [destruct_nil, destruct_cons] at this
+      · intro x s _ this
+        rw [destruct_nil, destruct_cons] at this
         exact False.elim this
-      · rw [destruct_cons, destruct_cons] at this
+      · intro x s x' s' _ this
+        rw [destruct_cons, destruct_cons] at this
         rw [head_cons, head_cons, tail_cons, tail_cons]
         cases' this with h1 h2
         constructor
