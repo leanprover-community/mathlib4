@@ -233,6 +233,20 @@ If `α` is an inductive type with name `I`, then as a side effect this elaborato
 `I.proxyType` and `I.proxyTypeEquiv`.
 
 The elaborator makes use of the expected type, so `(proxy_equiv% _ : _ ≃ α)` works.
+
+For example, given this inductive type
+```
+inductive foo (n : Nat) (α : Type)
+  | a
+  | b : Bool → foo n α
+  | c (x : Fin n) : Fin x → foo n α
+  | d : Bool → α → foo n α
+```
+the proxy type it generates is `Unit ⊕ Bool ⊕ (x : Fin n) × Fin x ⊕ (_ : Bool) × α` and
+in particular
+```
+proxy_equiv% (foo n α) : Unit ⊕ Bool ⊕ (x : Fin n) × Fin x ⊕ (_ : Bool) × α ≃ foo n α
+```
 -/
 elab "proxy_equiv% " t:term : term <= expectedType => do
   let type ← Term.elabType t
