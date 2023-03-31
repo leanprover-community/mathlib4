@@ -8,9 +8,9 @@ Authors: Johannes Hölzl
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.DirectSum.Finsupp
-import Mathbin.LinearAlgebra.Finsupp
-import Mathbin.LinearAlgebra.DirectSum.TensorProduct
+import Mathlib.Algebra.DirectSum.Finsupp
+import Mathlib.LinearAlgebra.Finsupp
+import Mathlib.LinearAlgebra.DirectSum.TensorProduct
 
 /-!
 # Results on finitely supported functions.
@@ -55,8 +55,7 @@ theorem finsuppTensorFinsupp_single (R M N ι κ : Sort _) [CommRing R] [AddComm
 @[simp]
 theorem finsuppTensorFinsupp_apply (R M N ι κ : Sort _) [CommRing R] [AddCommGroup M] [Module R M]
     [AddCommGroup N] [Module R N] (f : ι →₀ M) (g : κ →₀ N) (i : ι) (k : κ) :
-    finsuppTensorFinsupp R M N ι κ (f ⊗ₜ g) (i, k) = f i ⊗ₜ g k :=
-  by
+    finsuppTensorFinsupp R M N ι κ (f ⊗ₜ g) (i, k) = f i ⊗ₜ g k := by
   apply Finsupp.induction_linear f
   · simp
   · intro f₁ f₂ hf₁ hf₂
@@ -103,8 +102,7 @@ theorem finsuppTensorFinsupp'_apply_apply (f : α →₀ S) (g : β →₀ S) (a
 @[simp]
 theorem finsuppTensorFinsupp'_single_tmul_single (a : α) (b : β) (r₁ r₂ : S) :
     finsuppTensorFinsupp' S α β (Finsupp.single a r₁ ⊗ₜ[S] Finsupp.single b r₂) =
-      Finsupp.single (a, b) (r₁ * r₂) :=
-  by
+      Finsupp.single (a, b) (r₁ * r₂) := by
   ext ⟨a', b'⟩
   simp [Finsupp.single_apply, ite_and]
 #align finsupp_tensor_finsupp'_single_tmul_single finsuppTensorFinsupp'_single_tmul_single
