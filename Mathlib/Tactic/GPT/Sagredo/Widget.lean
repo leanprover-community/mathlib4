@@ -57,14 +57,20 @@ def runnerWidget : Component RunnerWidgetProps where
     const e = React.createElement;
 
     export default function(props) {
-      const [contents, setContents] = React.useState('Run!')
+      const [contents, setContents] = React.useState('Sagredo log:')
       const rs = React.useContext(RpcContext)
-      return e('button', { onClick: () => {
-        setContents('Running..')
+      const callSagredo = (props) =>
         rs.call('runMetaMStringCont', props)
-          .then(setContents)
-          .catch(e => { setContents(mapRpcError(e).message) })
-      }}, contents)
+          .then(resp => {
+            const [s, props] = resp
+            setContents(currS => currS + '\\n' + s)
+            callSagredo(props)
+          })
+          .catch(e => setContents(mapRpcError(e).message))
+      return e('div', null, [
+        e('button', { onClick: () => callSagredo(props) }, 'Go.'),
+        e('pre', null, contents)
+      ])
     }
   "
 
@@ -87,6 +93,6 @@ syntax (name := makeRunnerTac) "sagredo!" : tactic
     savePanelWidgetInfo tk ``runnerWidget (rpcEncode props)
   | _ => throwUnsupportedSyntax
 
--- example : True := by
---   sagredo!
---   trivial
+example : 2 + 2 = 4 := by
+  sagredo!
+  trivial
