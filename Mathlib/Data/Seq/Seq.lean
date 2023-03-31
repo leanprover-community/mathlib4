@@ -643,13 +643,12 @@ theorem cons_append (a : α) (s t) : append (cons a s) t = cons a (append s t) :
   destruct_eq_cons <| by
     dsimp [append]; rw [corec_eq]
     dsimp [append]; rw [destruct_cons]
-    dsimp [append]; rfl
 #align stream.seq.cons_append Stream'.Seq.cons_append
 
 @[simp]
 theorem append_nil (s : Seq α) : append s nil = s := by
   apply coinduction2 s; intro s
-  apply rec_on s _ _
+  apply recOn s _ _
   · trivial
   · intro x s
     rw [cons_append, destruct_cons, destruct_cons]
