@@ -439,12 +439,11 @@ end PrincipalSeg
 
 /-- A relation is well-founded iff every principal segment of it is well-founded.
 
-In this lemma we use `subrel` to indicate its principal segments because it's usually more
+In this lemma we use `Subrel` to indicate its principal segments because it's usually more
 convenient to use.
 -/
 theorem wellFounded_iff_wellFounded_subrel {β : Type _} {s : β → β → Prop} [IsTrans β s] :
-    WellFounded s ↔ ∀ b, WellFounded (Subrel s { b' | s b' b }) :=
-  by
+    WellFounded s ↔ ∀ b, WellFounded (Subrel s { b' | s b' b }) := by
   refine'
     ⟨fun wf b => ⟨fun b' => ((PrincipalSeg.ofElement _ b).acc b').mpr (wf.apply b')⟩, fun wf =>
       ⟨fun b => Acc.intro _ fun b' hb' => _⟩⟩
