@@ -101,7 +101,10 @@ def mkCType (ctypes : List Expr) : TermElabM (Expr × TSyntax `tactic) :=
     return (← mkAppM ``Sum #[x, ty], pf)
 
 structure EquivData where
+  /-- Name of the declaration for a type that is `Equiv` to the given type. -/
   proxyName : Name
+  /-- A term that elaborates to something of type `proxyType ≃ type`.
+  Needs to be elaborated with this expected type. -/
   equiv : TSyntax `term
 
 /--
@@ -178,22 +181,48 @@ def mkProxyEquiv (indVal : InductiveVal) : TermElabM EquivData := do
     return { proxyName := proxyName
              equiv := equivBody }
 
+/--
+The term elaborator `derive_fintype% α` tries to synthesize a `Fintype α` instance
+using all the assumptions in the local context. It only works when `α` is an inductive
+type that the `Fintype` deriving handler can normally process. The handler makes use of the
+expected type, so `(derive_fintype% _ : Fintype α)` works as well.
+
+A side effect of this is that it defines a type named `fintypeProxy` in the namespace associated
+to `α`, just like the `Fintype` deriving handler normally would for non-enum types.
+-/
+elab "derive_fintype% " t:term : term <= expectedType => do
+  let type ← Term.elabType t
+  let f ← Term.elabType (← `(Fintype $(← Term.exprToSyntax type)))
+  unless ← isDefEq expectedType f do
+    throwError "Could not unify expected type{indentExpr expectedType}\nwith{indentExpr f}"
+  let mut type ← instantiateMVars type
+  if type.hasExprMVar then
+    Term.synthesizeSyntheticMVars
+    type ← instantiateMVars type
+    if type.hasExprMVar then
+      throwError "Provided type {type} has metavariables"
+  type ← whnf type
+  let .const declName _ := type.getAppFn
+    | throwError "{type} is not a constant or constant application"
+  let indVal ← getConstInfoInduct declName
+  let data ← mkProxyEquiv indVal
+  let proxy ← mkAppOptM data.proxyName (type.getAppArgs.map .some)
+  let equivType ← mkAppM ``Equiv #[proxy, type]
+  let equiv ← Term.elabTerm data.equiv equivType
+  return ← mkAppM ``Fintype.ofEquiv #[proxy, equiv]
+
 /-
-Creates a `Fintype` instance by creating an equivalence to this proxy type, where we
-add additional `Fintype` and `Decidable` instance arguments for every type and prop
-parameter of the type.
+Creates a `Fintype` instance by adding additional `Fintype` and `Decidable` instance arguments
+for every type and prop parameter of the type, then use the `derive_fintype%` elaborator.
 -/
 def mkFintype (declName : Name) : CommandElabM Bool := do
   let indVal ← getConstInfoInduct declName
   let cmd ← liftTermElabM do
-    let data ← mkProxyEquiv indVal
     let header ← Deriving.mkHeader `Fintype 0 indVal
-    let args := header.argNames.map mkIdent
     let binders' ← Deriving.mkInstImplicitBinders `Decidable indVal header.argNames
     let instCmd ← `(command|
       instance $header.binders:bracketedBinder* $(binders'.map TSyntax.mk):bracketedBinder* :
-          Fintype $header.targetType :=
-        Fintype.ofEquiv (@$(mkIdent data.proxyName) $args*) $data.equiv)
+          Fintype $header.targetType := derive_fintype% _)
     return instCmd
   trace[Elab.Deriving.fintype] "instance command:\n{cmd}"
   elabCommand cmd
@@ -281,35 +310,5 @@ def mkFintypeInstanceHandler (declNames : Array Name) : CommandElabM Bool := do
 initialize
   registerDerivingHandler `Fintype mkFintypeInstanceHandler
   registerTraceClass `Elab.Deriving.fintype
-
-/--
-The term elaborator `derive_fintype% α` tries to synthesize a `Fintype α` instance
-using all the assumptions in the local context. It only works when `α` is an inductive
-type that the `Fintype` deriving handler can normally process. The handler makes use of the
-expected type, so `(derive_fintype% _ : Fintype α)` works as well.
-
-A side effect of this is that it defines a type named `fintypeProxy` in the namespace associated
-to `α`, just like the `Fintype` deriving handler normally would for non-enum types.
--/
-elab "derive_fintype% " t:term : term <= expectedType => do
-  let type ← Term.elabType t
-  let f ← Term.elabTerm (← `(Fintype $(← Term.exprToSyntax type))) none
-  unless ← isDefEq expectedType f do
-    throwError "Could not unify expected type{indentExpr expectedType}\nwith{indentExpr f}"
-  let mut type ← instantiateMVars type
-  if type.hasExprMVar then
-    Term.synthesizeSyntheticMVars
-    type ← instantiateMVars type
-    if type.hasExprMVar then
-      throwError "Provided type {type} has metavariables"
-  type ← whnf type
-  let .const declName _ := type.getAppFn
-    | throwError "{type} is not a constant or constant application"
-  let indVal ← getConstInfoInduct declName
-  let data ← mkProxyEquiv indVal
-  let proxy ← mkAppM data.proxyName type.getAppArgs
-  let equivType ← mkAppM ``Equiv #[proxy, type]
-  let equiv ← Term.elabTerm data.equiv equivType
-  return ← mkAppM ``Fintype.ofEquiv #[proxy, equiv]
 
 end Mathlib.Deriving.Fintype

@@ -31,10 +31,14 @@ Now for general inductive types
 inductive B
   deriving Fintype
 
+example : (Finset.univ : Finset B) = ∅ := rfl
+
 inductive C (α : Type _) | c (x : α)
-  deriving Fintype
+  deriving Fintype, DecidableEq
 
 #synth Fintype (C Bool)
+
+example : (Finset.univ : Finset (C Bool)) = Finset.univ.image .c := rfl
 
 section
 variable [Fintype α]
@@ -66,6 +70,8 @@ inductive Y : Nat → Type
 structure S where
   (x y z : Bool)
   deriving Fintype
+
+example : Fintype.card S = 8 := rfl
 
 inductive MyOption (α : Type _)
   | none
