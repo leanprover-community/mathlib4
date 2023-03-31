@@ -682,24 +682,24 @@ theorem map_nil (f : α → β) : map f nil = nil :=
 
 @[simp]
 theorem map_cons (f : α → β) (a) : ∀ s, map f (cons a s) = cons (f a) (map f s)
-  | ⟨s, al⟩ => by apply Subtype.eq <;> dsimp [cons, map] <;> rw [Stream'.map_cons] <;> rfl
+  | ⟨s, al⟩ => by apply Subtype.eq ; dsimp [cons, map] ; rw [Stream'.map_cons] ; rfl
 #align stream.seq.map_cons Stream'.Seq.map_cons
 
 @[simp]
 theorem map_id : ∀ s : Seq α, map id s = s
   | ⟨s, al⟩ => by
-    apply Subtype.eq <;> dsimp [map]
-    rw [Option.map_id, Stream'.map_id] <;> rfl
+    apply Subtype.eq ; dsimp [map]
+    rw [Option.map_id, Stream'.map_id]
 #align stream.seq.map_id Stream'.Seq.map_id
 
 @[simp]
 theorem map_tail (f : α → β) : ∀ s, map f (tail s) = tail (map f s)
-  | ⟨s, al⟩ => by apply Subtype.eq <;> dsimp [tail, map] <;> rw [Stream'.map_tail] <;> rfl
+  | ⟨s, al⟩ => by apply Subtype.eq ; dsimp [tail, map] ; rw [Stream'.map_tail]
 #align stream.seq.map_tail Stream'.Seq.map_tail
 
 theorem map_comp (f : α → β) (g : β → γ) : ∀ s : Seq α, map (g ∘ f) s = map g (map f s)
   | ⟨s, al⟩ => by
-    apply Subtype.eq <;> dsimp [map]
+    apply Subtype.eq ; dsimp [map]
     rw [Stream'.map_map]
     apply congr_arg fun f : _ → Option γ => Stream'.map f s
     ext ⟨⟩ <;> rfl
