@@ -132,10 +132,12 @@ def runAndLog (stx : Syntax) (driver : M m α) : M m (String × α) := do
     logInfoAt stx (s!"{msg.role}:\n" ++ msg.content)
   pure (← latestSolution, a)
 
+variable [MonadEnv m]
+
 def discussDeclContaining (stx : Syntax) (preEdit : String → String) (driver : M m α) :
     m (String × α) := do
   let (preamble, decl) ← getSourceUpTo stx
-  let preambleAnalysis ← analyzeCode none preamble
+  let preambleAnalysis ← analyzeCode (←getEnv) ""
   let editedDecl := preEdit decl
   let analysis ← liftM <| analyzeCode preambleAnalysis.env editedDecl
   StateT.run' (runAndLog stx driver)
