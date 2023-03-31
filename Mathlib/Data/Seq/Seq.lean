@@ -947,7 +947,7 @@ def bind (s : Seq1 α) (f : α → Seq1 β) : Seq1 β :=
 
 @[simp]
 theorem join_map_ret (s : Seq α) : Seq.join (Seq.map ret s) = s := by
-  apply coinduction2 s <;> intro s <;> apply rec_on s <;> simp [ret]
+  apply coinduction2 s ; intro s ; apply recOn s <;> simp [ret]
 #align stream.seq1.join_map_ret Stream'.Seq1.join_map_ret
 
 @[simp]
@@ -961,7 +961,7 @@ theorem bind_ret (f : α → β) : ∀ s, bind s (ret ∘ f) = map f s
 theorem ret_bind (a : α) (f : α → Seq1 β) : bind (ret a) f = f a := by
   simp [ret, bind, map]
   cases' f a with a s
-  apply rec_on s <;> intros <;> simp
+  apply recOn s <;> intros <;> simp
 #align stream.seq1.ret_bind Stream'.Seq1.ret_bind
 
 @[simp]
