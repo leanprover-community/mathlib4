@@ -10,47 +10,73 @@ open Lean
 
 namespace Mathlib.Tactic.GPT.Sagredo
 
--- FIXME if this came from a sorry, we should say which line it is on!
-def goalsFeedback (goals : Format) : String :=
-s!"The new goal state is:\n{goals.fence}
-1. Please write out a plan for proceeding, in English (with LaTeX).
+inductive MessageType
+  | unsolvedGoals | usesSorry | unknownTactic | other
+deriving BEq
+
+structure ParsedMessage where
+  type : MessageType
+  severity : MessageSeverity
+  lines : List String
+  onLine : Nat
+  span : String
+
+def ParsedMessage.of (code : String) (m : Lean.Message) : IO ParsedMessage := do
+  let lines := (← m.data.toString).splitOn "\n"
+  let type : MessageType := if lines.head!.endsWith "unsolved goals" then
+      .unsolvedGoals
+    else if lines.head!.endsWith "declaration uses 'sorry'" then
+      .usesSorry
+    else if lines.head!.endsWith "unknown tactic" then
+      .unknownTactic
+    else
+      .other
+  let onLine := m.pos.line
+  let codeLines := code.splitOn "\n"
+  let span := match m.endPos with
+    | none => codeLines[m.pos.line - 1]!.drop (m.pos.column - 1) |>.trim.takeWhile (· ≠ ' ')
+    | some e => codeLines[m.pos.line - 1]!.drop (m.pos.column - 1) |>.take (e.column - m.pos.column)
+  pure ⟨type, m.severity, lines, onLine, span⟩
+
+def ParsedMessage.toString (m : ParsedMessage) : String :=
+s!"There was an error on line {m.onLine}, located on the tokens {m.span}:\n" ++
+  (match m.severity with | .error => "error: " | .warning => "warning: " | _ => "") ++
+    "\n".intercalate m.lines
+
+def goalsFeedback (line? : Option Nat) (goals : Format) : String :=
+(match line? with
+| none => s!"The goal state is currently:\n"
+| some line => s!"The goal state for the sorry on line {line} is:\n") ++
+  goals.fence ++
+  "1. Please write out a plan for proceeding, in English (with LaTeX).
 2. Please add the next tactic step to the proof.
    Include the new version of your (possibly incomplete) proof in a code block.
    Make sure the code block is self-contained and runs."
 
-def errorFeedback (e : Lean.Message) : M IO String := do
-  let preface ← match e.endPos with
-  | none => pure s!"On line {e.pos.line} there was an error:"
-  | some endPos => do
-    let block ← latestCodeBlock
-    let line := (block.body.splitOn "\n")[e.pos.line - 1]!
-    let substring := line.drop e.pos.column |>.take (endPos.column - e.pos.column)
-    pure s!"On line {e.pos.line} there was an error on `{substring}`:"
-  pure <| preface ++ "\n" ++
-    (match e.severity with | .error => "error: " | _ => "warning: ") ++
-    (← e.data.toString)
-
 def feedback : M IO String := do
-  let errors ← (← errors).mapM fun m => do pure <| (m, (← m.toString).splitOn "\n")
+  let errors ← (← errors).mapM (fun e => do ParsedMessage.of (← latestCodeBlock).body e)
   -- We now look at the errors, and given different responses depending on what we see.
-  let (unsolvedGoals, otherErrors) := errors.partition fun e => e.2.head! |>.endsWith "unsolved goals"
-  let (_usesSorry, otherErrors) := otherErrors.partition fun e => e.2.head! |>.endsWith "declaration uses 'sorry'"
+  let (unsolvedGoals, otherErrors) := errors.partition fun e => e.type == .unsolvedGoals
+  let (_usesSorry, otherErrors) := otherErrors.partition fun e => e.type == .usesSorry
 
   match otherErrors with
-  | [] => match unsolvedGoals with
-    | [] => match ← sorries with
+  | [] => match ← sorries with
+    | [] => match unsolvedGoals with
       | [] => pure "That's great, it looks like that proof works!"
-      | (ctx, g, _, _) :: _ => do
-          -- TODO mention the later sorries?
-          pure <| goalsFeedback (← ctx.ppGoals [g])
-    | _ =>
-        let goal := "\n".intercalate (unsolvedGoals.map fun p => p.2.tail).join |>.trim
-        pure <| goalsFeedback goal
+      | _ => do
+          let goal := "\n".intercalate (unsolvedGoals.map fun p => p.lines.tail).join |>.trim
+          pure <| goalsFeedback none goal
+    | (ctx, g, pos, _) :: _ =>
+        -- TODO mention the later sorries?
+        -- FIXME the new line characters are disappearing from this goal.
+        pure <| goalsFeedback pos.line (← ctx.ppGoals [g])
   | _ =>
-    pure <| s!"When I try to run this code, I get errors:\n" ++
+    pure <| s!"When I try to run this code, I get the following error:\n" ++
       -- TODO decide which other errors matter or deserve emphasise (or helpful advice!)
-      String.intercalate "\n" (← otherErrors.mapM (fun p => errorFeedback p.1)) ++
-      "\nPlease describe how you are going to fix this error and try again. Change the tactic step where there is an error, but do not add any additional tactic steps."
+      -- TODO mention the later errors?
+      (otherErrors.head?.map (fun p => p.toString)).get! ++
+      "\n\nPlease describe how you are going to fix this error and try again.\n" ++
+      "Change the tactic step where there is an error, but do not add any additional tactic steps."
 
 def systemPrompt : String :=
 "You are a pure mathematician who is an expert in the Lean 4 theorem prover. Your job is help your user write Lean proofs.
@@ -72,7 +98,7 @@ theorem test (p q : Prop) (hp : p) (hq : q) : p ∧ q ∧ p := by
 ```
 - Indentation is significant.
 - In the `rw` tactic you must enclose the lemmas in square brackets, even if there is just one. For example `rw h1` is now `rw [h1]`.
-- The `induction` tactic now use a structured format, like pattern matching. For example, in Lean 4 we can write
+- The `induction` tactic now uses a structured format, like pattern matching. For example, in Lean 4 we can write
 ```lean
 theorem zero_add (n : Nat) : 0 + n = n := by
   induction n with
@@ -96,22 +122,26 @@ def initialPrompt : M IO String := do
 Here is the proof thus far:\n" ++ (← latestCodeBlock).markdownBody
   match ← sorries with
   | [] => pure prompt
-  | (ctx, g, _, _) :: _ => do
-      pure <| prompt ++ "\n" ++ goalsFeedback (← ctx.ppGoals [g])
+  | (ctx, g, pos, _) :: _ => do
+      if pos.line <= 2 then
+        -- GPT can just read the goal from the theorem statement.
+        pure prompt
+      else
+        pure <| prompt ++ "\n" ++ goalsFeedback none (← ctx.ppGoals [g])
 
-unsafe def forever' : ListM (M MetaM) Bool :=
-ListM.cons do
-  sendSystemMessage systemPrompt
-  askForAssistance (← initialPrompt)
-  pure ((← isDone), ListM.iterate do askForAssistance (← feedback); isDone)
+-- unsafe def forever' : ListM (M MetaM) Bool :=
+-- ListM.cons do
+--   sendSystemMessage systemPrompt
+--   askForAssistance (← initialPrompt)
+--   pure ((← isDone), ListM.iterate do askForAssistance (← feedback); isDone)
 
-unsafe def whileProgressing' (k : Nat := 3) : ListM (M MetaM) Bool :=
-forever'.takeWhileM (fun _ => do guard (← recentProgress k))
+-- unsafe def whileProgressing' (k : Nat := 3) : ListM (M MetaM) Bool :=
+-- forever'.takeWhileM (fun _ => do guard (← recentProgress k))
 
-unsafe def whileProgressing (k : Nat := 3) : State → ListM MetaM (Bool × State) :=
-ListM.run (whileProgressing' k)
+-- unsafe def whileProgressing (k : Nat := 3) : State → ListM MetaM (Bool × State) :=
+-- ListM.run (whileProgressing' k)
 
-def dialog (totalSteps : Nat := 10) (progressSteps : Nat := 3) : M IO String := do
+def dialog (totalSteps : Nat := 10) (progressSteps : Nat := 4) : M IO String := do
   sendSystemMessage systemPrompt
   askForAssistance (← initialPrompt)
   for i in List.range (totalSteps - 1) do
@@ -130,6 +160,6 @@ def dialog (totalSteps : Nat := 10) (progressSteps : Nat := 3) : M IO String := 
 elab tk:"sagredo" : tactic => do
   let (newDecl, result) ← discussDeclContaining tk
     (fun decl => decl.replace "sagredo" "sorry") -- TODO this is a hack
-    (dialog 10 3)
+    (dialog 10 4)
   logInfoAt tk result
   logInfoAt tk newDecl

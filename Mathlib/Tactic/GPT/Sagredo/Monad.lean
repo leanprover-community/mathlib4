@@ -22,8 +22,9 @@ def linesBeforeError (block : CodeBlock) (analysis : Analysis) : IO Nat := do
     let firstLine := (← e.toString).splitOn "\n" |>.head!
     pure <| !firstLine.endsWith "unsolved goals" && !firstLine.endsWith "declaration uses 'sorry'"
   let errorLines : List Nat := errors.map (·.pos.line - 1)
+  let sorryLines : List Nat := analysis.sorries.map (·.2.2.1.line - 1)
   let totalLines := block.body.splitOn "\n" |>.length
-  pure <| errorLines.foldl min totalLines
+  pure <| (errorLines ++ sorryLines).foldl min totalLines
 
 structure State extends GPT.State where
   preamble : String

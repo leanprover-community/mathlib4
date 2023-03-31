@@ -172,5 +172,5 @@ and allow tweaking various knobs, which for now you need to modify the source co
 ## Future work
 
 We obviously need to test this on many more examples.
-So far it's just of proof of concept implementation, written over several days.
+So far it's just a proof of concept implementation, written over several days.
 We're getting ready to try it on `minif2f` and `proofnet` problems.

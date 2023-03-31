@@ -16,8 +16,8 @@ where aux (n : Nat) (L : List α) := match L with
 | [] => []
 | h :: t => if p n then h :: aux (n + 1) t else aux (n + 1) t
 
-def _root_.String.fence (s : String) := s!"```\n{s}\n```\n"
-def _root_.Std.Format.fence (f : Format) := s!"{f}".trim.fence
+def _root_.String.fence (s : String) := "```\n" ++ s ++ "\n```\n"
+def _root_.Std.Format.fence (f : Format) := toString f |>.trim.fence
 
 namespace Mathlib.Tactic.GPT.Sagredo
 
