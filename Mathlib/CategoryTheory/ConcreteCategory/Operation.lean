@@ -273,52 +273,52 @@ end Operation₂
 -- the naturality of these operations should be made automatic...
 
 @[simps]
-def AddCommGroupCat_zero : Operation₀ AddCommGroupCat.{u} where
+def addCommGroupCat_zero : Operation₀ AddCommGroupCat.{u} where
   app M _ := (0 : M)
   naturality M N f := by
     ext
     exact (AddCommGroupCat.Hom.map_zero f).symm
 
 @[simps]
-def AddCommGroupCat_neg : Operation₁ AddCommGroupCat.{u} where
+def addCommGroupCat_neg : Operation₁ AddCommGroupCat.{u} where
   app M (x : M) := -x
   naturality M N f := by
     ext x
     exact (AddMonoidHom.map_neg (show AddMonoidHom M N from f) x).symm
 
 @[simps]
-def AddCommGroupCat_add : Operation₂ AddCommGroupCat.{u} where
+def addCommGroupCat_add : Operation₂ AddCommGroupCat.{u} where
   app M := fun ⟨(x : M), (y : M)⟩ => x + y
   naturality M N f := by
     ext
     exact (AddCommGroupCat.Hom.map_add _ _ _).symm
 
-lemma AddCommGroupCat_add_assoc : AddCommGroupCat_add.assoc := by
+lemma addCommGroupCat_add_assoc : addCommGroupCat_add.assoc := by
   apply NatTrans.ext
   ext1 X
   funext ⟨(x : X), ⟨(y : X), (z : X)⟩⟩
   exact add_assoc x y z
 
-lemma AddCommGroupCat_add_zero : AddCommGroupCat_add.add_zero AddCommGroupCat_zero := by
+lemma addCommGroupCat_add_zero : addCommGroupCat_add.add_zero addCommGroupCat_zero := by
   apply NatTrans.ext
   ext1 X
   funext (x : X)
   exact add_zero x
 
-lemma AddCommGroupCat_zero_add : AddCommGroupCat_add.zero_add AddCommGroupCat_zero := by
+lemma addCommGroupCat_zero_add : addCommGroupCat_add.zero_add addCommGroupCat_zero := by
   apply NatTrans.ext
   ext1 X
   funext (x : X)
   exact zero_add x
 
-lemma AddCommGroupCat_add_comm : AddCommGroupCat_add.comm := by
+lemma addCommGroupCat_add_comm : addCommGroupCat_add.comm := by
   apply NatTrans.ext
   ext1 X
   funext ⟨(x : X), (y : X)⟩
   exact add_comm x y
 
-lemma AddCommGroupCat_add_left_neg : AddCommGroupCat_add.add_left_neg
-    AddCommGroupCat_neg AddCommGroupCat_zero := by
+lemma addCommGroupCat_add_left_neg : addCommGroupCat_add.add_left_neg
+    addCommGroupCat_neg addCommGroupCat_zero := by
   apply NatTrans.ext
   ext1 X
   funext (x : X)

@@ -19,6 +19,7 @@ structure Internal :=
 instance : Category (Internal A C) := InducedCategory.category (fun X => X.presheaf)
 
 def Internal.presheafFunctor : Internal A C ⥤ Cᵒᵖ ⥤ A := inducedFunctor _
+@[simps!]
 def Internal.typesPresheafFunctor : Internal A C ⥤ Cᵒᵖ ⥤ Type v₂ :=
   Internal.presheafFunctor A C ⋙ (whiskeringRight Cᵒᵖ A (Type v₂)).obj (forget A)
 
@@ -39,6 +40,12 @@ def Internal.objFunctor : Internal A C ⥤ C where
 
 variable {A C}
 
+@[simp]
+lemma Internal.map_objFunctor_map {X Y : Internal A C} (f : X ⟶ Y) :
+  yoneda.map ((Internal.objFunctor A C).map f) =
+    X.iso.hom ≫ (f ◫ (𝟙 (forget A))) ≫ Y.iso.inv := by
+  simp only [Internal.objFunctor, Functor.image_preimage]
+
 abbrev Internal.typesPresheaf (X : Internal A C) := (Internal.typesPresheafFunctor A C).obj X
 
 @[simps]
@@ -46,12 +53,6 @@ def Internal.ofIsoObj (X : Internal A C) {Y : C} (e : X.obj ≅ Y) : Internal A 
   obj := Y
   presheaf := X.presheaf
   iso := yoneda.mapIso e.symm ≪≫ X.iso
-
-@[simps]
-def Internal.ofNatIsoObj {D : Type _} [Category D] (F : D ⥤ Internal A C)
-  {G : D ⥤ C} (e : F ⋙ Internal.objFunctor A C ≅ G) : D ⥤ Internal A C where
-  obj X := (F.obj X).ofIsoObj (e.app X)
-  map f := F.map f
 
 def ConcreteCategory.Operation₀.onTypesPresheaf (oper : Operation₀ A)
     (X : Internal A C) : Types.functorOperation₀ X.typesPresheaf :=
@@ -134,5 +135,31 @@ lemma ConcreteCategory.Operation₂.add_left_neg.onInternal {oper : Operation₂
       (oper.onInternal X).add_left_neg
         (neg.onInternal X) (zero.onInternal X) :=
   (h.onTypesPresheaf X).of_iso X.iso.symm
+
+lemma ConcreteCategory.Operation₂.onTypesPresheaf_naturality (oper : Operation₂ A)
+    {X Y : Internal A C} (f : X ⟶ Y) :
+    Types.natTransConcat
+      (Types.functorPr₁ ≫ (Internal.typesPresheafFunctor _ _).map f)
+      (Types.functorPr₂ ≫ (Internal.typesPresheafFunctor _ _).map f) ≫
+      oper.onTypesPresheaf Y =
+    oper.onTypesPresheaf X ≫ (Internal.typesPresheafFunctor _ _).map f := by
+  ext1
+  ext1 Z
+  exact oper.naturality (f.app Z)
+
+lemma ConcreteCategory.Operation₂.onInternal_naturality (oper : Operation₂ A)
+    {X Y : Internal A C} (f : X ⟶ Y) (f_obj : X.obj ⟶ Y.obj)
+    (h : f_obj = (Internal.objFunctor _ _).map f) :
+    Types.natTransConcat (Types.functorPr₁ ≫ yoneda.map f_obj)
+      (Types.functorPr₂ ≫ yoneda.map f_obj) ≫ oper.onInternal Y =
+    oper.onInternal X ≫ yoneda.map f_obj := by
+  ext Z ⟨x, y⟩
+  have h : (Internal.typesPresheafFunctor A C).map f =
+      X.iso.inv ≫ yoneda.map f_obj ≫ Y.iso.hom := by
+    ext
+    simp [h, Internal.objFunctor]
+    rfl
+  simpa [h] using congr_fun (congr_app
+    (oper.onTypesPresheaf_naturality f =≫ Y.iso.inv) Z) (⟨X.iso.hom.app _ x, X.iso.hom.app _ y⟩)
 
 end CategoryTheory
