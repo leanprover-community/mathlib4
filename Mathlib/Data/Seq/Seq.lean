@@ -856,10 +856,12 @@ theorem of_mem_append {s₁ s₂ : Seq α} {a : α} (h : a ∈ append s₁ s₂)
   generalize e : append s₁ s₂ = ss; intro h; revert s₁
   apply mem_rec_on h _
   intro b s' o s₁
-  apply s₁.rec_on _ fun c t₁ => _ <;> intro m e <;> have := congr_arg destruct e
-  · apply Or.inr
+  apply s₁.recOn _ fun c t₁ => _ <;> have := congr_arg destruct e
+  · intro m _
+    apply Or.inr
     simpa using m
-  · cases' show a = c ∨ a ∈ append t₁ s₂ by simpa using m with e' m
+  · intro c t₁ m e
+    cases' show a = c ∨ a ∈ append t₁ s₂ by simpa using m with e' m
     · rw [e']
       exact Or.inl (mem_cons _ _)
     · cases' show c = b ∧ append t₁ s₂ = s' by simpa with i1 i2
