@@ -1034,11 +1034,11 @@ instance : Monad Seq1 where
   pure := @ret
   bind := @bind
 
-instance : LawfulMonad Seq1 where
-  id_map := @map_id
-  bind_pure_comp_eq_map := @bind_ret
-  pure_bind := @ret_bind
-  bind_assoc := @bind_assoc
+instance : LawfulMonad Seq1 := LawfulMonad.mk'
+  (id_map := @map_id)
+  (bind_pure_comp := @bind_ret)
+  (pure_bind := @ret_bind)
+  (bind_assoc := @bind_assoc)
 
 end Seq1
 
