@@ -129,7 +129,7 @@ theorem restrictYonedaHomEquiv_natural (P : Cᵒᵖ ⥤ Type u₁) (E₁ E₂ : 
     restrictYonedaHomEquiv A P E₂ t (k ≫ g) =
       restrictYonedaHomEquiv A P E₁ t k ≫ (restrictedYoneda A).map g := by
   ext (x X p)
-  convert (assoc _ k g).symm
+  apply (assoc _ k g).symm
 #align category_theory.colimit_adj.restrict_yoneda_hom_equiv_natural CategoryTheory.ColimitAdj.restrictYonedaHomEquiv_natural
 
 variable [HasColimits ℰ]
@@ -224,25 +224,25 @@ This follows from `category_theory.category_of_elements.costructured_arrow_yoned
 def extendAlongYonedaIsoKanApp (X) :
     (extendAlongYoneda A).obj X ≅ ((lan yoneda : (_ ⥤ ℰ) ⥤ _).obj A).obj X :=
   let eq := CategoryOfElements.costructuredArrowYonedaEquivalence X
-  { hom := colimit.pre (Lan.diagram (yoneda : C ⥤ _ ⥤ Type u₁) A X) Eq.Functor
-    inv := colimit.pre ((CategoryOfElements.π X).leftOp ⋙ A) Eq.inverse
+  { hom := colimit.pre (Lan.diagram (yoneda : C ⥤ _ ⥤ Type u₁) A X) eq.functor
+    inv := colimit.pre ((CategoryOfElements.π X).leftOp ⋙ A) eq.inverse
     hom_inv_id := by
-      erw [colimit.pre_pre ((category_of_elements.π X).leftOp ⋙ A) eq.inverse]
-      trans colimit.pre ((category_of_elements.π X).leftOp ⋙ A) (𝟭 _)
+      erw [colimit.pre_pre ((CategoryOfElements.π X).leftOp ⋙ A) eq.inverse]
+      trans colimit.pre ((CategoryOfElements.π X).leftOp ⋙ A) (𝟭 _)
       congr
-      · exact congr_arg functor.op (category_of_elements.from_to_costructured_arrow_eq X)
+      · exact congr_arg Functor.op (CategoryOfElements.from_toCostructuredArrow_eq X)
       · ext
         simp only [colimit.ι_pre]
-        erw [category.comp_id]
+        erw [Category.comp_id]
         congr
     inv_hom_id := by
       erw [colimit.pre_pre (Lan.diagram (yoneda : C ⥤ _ ⥤ Type u₁) A X) eq.functor]
       trans colimit.pre (Lan.diagram (yoneda : C ⥤ _ ⥤ Type u₁) A X) (𝟭 _)
       congr
-      · exact category_of_elements.to_from_costructured_arrow_eq X
+      · exact CategoryOfElements.to_fromCostructuredArrow_eq X
       · ext
         simp only [colimit.ι_pre]
-        erw [category.comp_id]
+        erw [Category.comp_id]
         congr }
 #align category_theory.colimit_adj.extend_along_yoneda_iso_Kan_app CategoryTheory.ColimitAdj.extendAlongYonedaIsoKanApp
 
