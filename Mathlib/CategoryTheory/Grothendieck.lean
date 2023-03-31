@@ -8,8 +8,8 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Category.Cat
-import Mathbin.CategoryTheory.Elements
+import Mathlib.CategoryTheory.Category.Cat
+import Mathlib.CategoryTheory.Elements
 
 /-!
 # The Grothendieck construction
@@ -75,8 +75,7 @@ structure Hom (X Y : Grothendieck F) where
 
 @[ext]
 theorem ext {X Y : Grothendieck F} (f g : Hom X Y) (w_base : f.base = g.base)
-    (w_fiber : eqToHom (by rw [w_base]) ≫ f.fiber = g.fiber) : f = g :=
-  by
+    (w_fiber : eqToHom (by rw [w_base]) ≫ f.fiber = g.fiber) : f = g := by
   cases f <;> cases g
   congr
   dsimp at w_base
@@ -101,8 +100,7 @@ instance (X : Grothendieck F) : Inhabited (Hom X X) :=
 /-- Composition of morphisms in the Grothendieck category.
 -/
 @[simps]
-def comp {X Y Z : Grothendieck F} (f : Hom X Y) (g : Hom Y Z) : Hom X Z
-    where
+def comp {X Y Z : Grothendieck F} (f : Hom X Y) (g : Hom Y Z) : Hom X Z where
   base := f.base ≫ g.base
   fiber :=
     eqToHom (by erw [functor.map_comp, functor.comp_obj]) ≫ (F.map g.base).map f.fiber ≫ g.fiber
@@ -110,8 +108,7 @@ def comp {X Y Z : Grothendieck F} (f : Hom X Y) (g : Hom Y Z) : Hom X Z
 
 attribute [local simp] eq_to_hom_map
 
-instance : Category (Grothendieck F)
-    where
+instance : Category (Grothendieck F) where
   Hom X Y := Grothendieck.Hom X Y
   id X := Grothendieck.id X
   comp X Y Z f g := Grothendieck.comp f g
@@ -139,8 +136,7 @@ theorem id_fiber' (X : Grothendieck F) :
 #align category_theory.grothendieck.id_fiber' CategoryTheory.Grothendieck.id_fiber'
 
 theorem congr {X Y : Grothendieck F} {f g : X ⟶ Y} (h : f = g) :
-    f.fiber = eqToHom (by subst h) ≫ g.fiber :=
-  by
+    f.fiber = eqToHom (by subst h) ≫ g.fiber := by
   subst h
   dsimp
   simp
@@ -165,16 +161,14 @@ variable (G : C ⥤ Type w)
 
 /-- Auxiliary definition for `grothendieck_Type_to_Cat`, to speed up elaboration. -/
 @[simps]
-def grothendieckTypeToCatFunctor : Grothendieck (G ⋙ typeToCat) ⥤ G.Elements
-    where
+def grothendieckTypeToCatFunctor : Grothendieck (G ⋙ typeToCat) ⥤ G.Elements where
   obj X := ⟨X.1, X.2.as⟩
   map X Y f := ⟨f.1, f.2.1.1⟩
 #align category_theory.grothendieck.grothendieck_Type_to_Cat_functor CategoryTheory.Grothendieck.grothendieckTypeToCatFunctor
 
 /-- Auxiliary definition for `grothendieck_Type_to_Cat`, to speed up elaboration. -/
 @[simps]
-def grothendieckTypeToCatInverse : G.Elements ⥤ Grothendieck (G ⋙ typeToCat)
-    where
+def grothendieckTypeToCatInverse : G.Elements ⥤ Grothendieck (G ⋙ typeToCat) where
   obj X := ⟨X.1, ⟨X.2⟩⟩
   map X Y f := ⟨f.1, ⟨⟨f.2⟩⟩⟩
 #align category_theory.grothendieck.grothendieck_Type_to_Cat_inverse CategoryTheory.Grothendieck.grothendieckTypeToCatInverse
@@ -184,8 +178,7 @@ def grothendieckTypeToCatInverse : G.Elements ⥤ Grothendieck (G ⋙ typeToCat)
 is the same as the 'category of elements' construction.
 -/
 @[simps]
-def grothendieckTypeToCat : Grothendieck (G ⋙ typeToCat) ≌ G.Elements
-    where
+def grothendieckTypeToCat : Grothendieck (G ⋙ typeToCat) ≌ G.Elements where
   Functor := grothendieckTypeToCatFunctor G
   inverse := grothendieckTypeToCatInverse G
   unitIso :=
