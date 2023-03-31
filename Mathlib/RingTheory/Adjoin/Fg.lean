@@ -8,9 +8,9 @@ Authors: Kenny Lau
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.RingTheory.Polynomial.Basic
-import Mathbin.RingTheory.PrincipalIdealDomain
-import Mathbin.Data.MvPolynomial.Basic
+import Mathlib.RingTheory.Polynomial.Basic
+import Mathlib.RingTheory.PrincipalIdealDomain
+import Mathlib.Data.MvPolynomial.Basic
 
 /-!
 # Adjoining elements to form subalgebras
@@ -41,8 +41,7 @@ variable {R : Type u} {A : Type v} {B : Type w} [CommSemiring R] [CommSemiring A
   {s t : Set A}
 
 theorem fg_trans (h1 : (adjoin R s).toSubmodule.Fg) (h2 : (adjoin (adjoin R s) t).toSubmodule.Fg) :
-    (adjoin R (s ∪ t)).toSubmodule.Fg :=
-  by
+    (adjoin R (s ∪ t)).toSubmodule.Fg := by
   rcases fg_def.1 h1 with ⟨p, hp, hp'⟩
   rcases fg_def.1 h2 with ⟨q, hq, hq'⟩
   refine' fg_def.2 ⟨p * q, hp.mul hq, le_antisymm _ _⟩
@@ -54,8 +53,7 @@ theorem fg_trans (h1 : (adjoin R s).toSubmodule.Fg) (h2 : (adjoin (adjoin R s) t
         rw [← hp']
         exact subset_span hx
       exact adjoin_mono (Set.subset_union_left _ _) this
-    have : y ∈ (adjoin (adjoin R s) t).toSubmodule :=
-      by
+    have : y ∈ (adjoin (adjoin R s) t).toSubmodule := by
       rw [← hq']
       exact subset_span hy
     change y ∈ adjoin R (s ∪ t)
@@ -128,8 +126,7 @@ theorem fg_of_noetherian [IsNoetherian R A] (S : Subalgebra R A) : S.Fg :=
 theorem fg_of_submodule_fg (h : (⊤ : Submodule R A).Fg) : (⊤ : Subalgebra R A).Fg :=
   let ⟨s, hs⟩ := h
   ⟨s,
-    toSubmodule.Injective <|
-      by
+    toSubmodule.Injective <| by
       rw [Algebra.top_toSubmodule, eq_top_iff, ← hs, span_le]
       exact Algebra.subset_adjoin⟩
 #align subalgebra.fg_of_submodule_fg Subalgebra.fg_of_submodule_fg
@@ -162,8 +159,7 @@ theorem fg_of_fg_map (S : Subalgebra R A) (f : A →ₐ[R] B) (hf : Function.Inj
     (hs : (S.map f).Fg) : S.Fg :=
   let ⟨s, hs⟩ := hs
   ⟨s.Preimage f fun _ _ _ _ h => hf h,
-    map_injective hf <|
-      by
+    map_injective hf <| by
       rw [← Algebra.adjoin_image, Finset.coe_preimage, Set.image_preimage_eq_of_subset, hs]
       rw [← AlgHom.coe_range, ← Algebra.adjoin_le_iff, hs, ← Algebra.map_top]
       exact map_mono le_top⟩
@@ -173,8 +169,7 @@ theorem fg_top (S : Subalgebra R A) : (⊤ : Subalgebra R S).Fg ↔ S.Fg :=
   ⟨fun h => by
     rw [← S.range_val, ← Algebra.map_top]
     exact fg.map _ h, fun h =>
-    fg_of_fg_map _ S.val Subtype.val_injective <|
-      by
+    fg_of_fg_map _ S.val Subtype.val_injective <| by
       rw [Algebra.map_top, range_val]
       exact h⟩
 #align subalgebra.fg_top Subalgebra.fg_top
