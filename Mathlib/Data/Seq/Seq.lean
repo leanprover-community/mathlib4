@@ -850,10 +850,13 @@ theorem mem_map (f : α → β) {a : α} : ∀ {s : Seq α}, a ∈ s → f a ∈
   | ⟨_, _⟩ => Stream'.mem_map (Option.map f)
 #align stream.seq.mem_map Stream'.Seq.mem_map
 
-theorem exists_of_mem_map {f} {b : β} : ∀ {s : Seq α}, b ∈ map f s → ∃ a, a ∈ s ∧ f a = b
-  | ⟨g, al⟩, h => by
-    let ⟨o, om, oe⟩ := Stream'.exists_of_mem_map h
-    cases' o with a <;> injection oe with h' <;> exact ⟨a, om, h'⟩
+theorem exists_of_mem_map {f} {b : β} : ∀ {s : Seq α}, b ∈ map f s → ∃ a, a ∈ s ∧ f a = b :=
+  fun {s} h => by match s with
+  | ⟨g, al⟩ =>
+    let ⟨o, om, oe⟩ := @Stream'.exists_of_mem_map _ _ (Option.map f) (some b) g h
+    cases' o with a
+    . injection oe
+    . injection oe with h' ; exact ⟨a, om, h'⟩
 #align stream.seq.exists_of_mem_map Stream'.Seq.exists_of_mem_map
 
 theorem of_mem_append {s₁ s₂ : Seq α} {a : α} (h : a ∈ append s₁ s₂) : a ∈ s₁ ∨ a ∈ s₂ := by
