@@ -240,8 +240,7 @@ theorem Nat.cast_ringChar : (ringChar R : R) = 0 := by rw [ringChar.spec]
 end ringChar
 
 theorem add_pow_char_of_commute [Semiring R] {p : ℕ} [hp : Fact p.Prime] [CharP R p] (x y : R)
-    (h : Commute x y) : (x + y) ^ p = x ^ p + y ^ p :=
-  by
+    (h : Commute x y) : (x + y) ^ p = x ^ p + y ^ p := by
   let ⟨r, hr⟩ := h.exists_add_pow_prime_eq hp.out
   simp [hr]
 #align add_pow_char_of_commute add_pow_char_of_commute
@@ -564,7 +563,6 @@ end Semiring
 section Ring
 
 variable [Ring R] [NoZeroDivisors R] [Nontrivial R] [Finite R]
--- porting note: redundant binder annotation update
 
 theorem char_is_prime (p : ℕ) [CharP R p] : p.Prime :=
   Or.resolve_right (char_is_prime_or_zero R p) (char_ne_zero_of_finite R p)
@@ -644,12 +642,10 @@ end
 section
 
 variable [NonAssocRing R] [Fintype R] (n : ℕ)
--- porting note: redundant binder annotation update
 
 theorem charP_of_ne_zero (hn : Fintype.card R = n) (hR : ∀ i < n, (i : R) = 0 → i = 0) :
     CharP R n :=
-  { cast_eq_zero_iff' :=
-      by
+  { cast_eq_zero_iff' := by
       have H : (n : R) = 0 := by rw [← hn, CharP.cast_card_eq_zero]
       intro k
       constructor
@@ -715,8 +711,7 @@ theorem Int.cast_injOn_of_ringChar_ne_two {R : Type _} [NonAssocRing R] [Nontriv
   by_contra hf
   replace ha : a = 0 ∨ a = 1 ∨ a = -1 := ha
   replace hb : b = 0 ∨ b = 1 ∨ b = -1 := hb
-  have hh : a - b = 1 ∨ b - a = 1 ∨ a - b = 2 ∨ b - a = 2 :=
-    by
+  have hh : a - b = 1 ∨ b - a = 1 ∨ a - b = 2 ∨ b - a = 2 := by
     rcases ha with (ha | ha | ha) <;> rcases hb with (hb | hb | hb)
     pick_goal 5
     pick_goal 9
@@ -742,7 +737,6 @@ end
 namespace NeZero
 
 variable [AddMonoidWithOne R] {r : R} {n p : ℕ} {a : ℕ+}
--- porting note: redundant binder annotation update
 
 theorem of_not_dvd [CharP R p] (h : ¬p ∣ n) : NeZero (n : R) :=
   ⟨(CharP.cast_eq_zero_iff R p n).not.mpr h⟩
