@@ -144,8 +144,8 @@ theorem mulEquiv_apply (e : α ≃ β) [Mul β] (a : α) : (mulEquiv e) a = e a 
 @[to_additive]
 theorem mulEquiv_symm_apply (e : α ≃ β) [Mul β] (b : β) :
     letI := Equiv.Mul e
-    (MulEquiv e).symm b = e.symm b :=
-  by intros ; rfl
+    (mulEquiv e).symm b = e.symm b :=
+  by intros; rfl
 #align equiv.mul_equiv_symm_apply Equiv.mulEquiv_symm_apply
 #align equiv.add_equiv_symm_apply Equiv.addEquiv_symm_apply
 
@@ -176,7 +176,7 @@ theorem ringEquiv_apply (e : α ≃ β) [Add β] [Mul β] (a : α) : (ringEquiv 
 theorem ringEquiv_symm_apply (e : α ≃ β) [Add β] [Mul β] (b : β) : by
     letI := Equiv.Add e
     letI := Equiv.Mul e
-    exact (RingEquiv e).symm b = e.symm b := by intros; rfl
+    exact (ringEquiv e).symm b = e.symm b := by intros; rfl
 #align equiv.ring_equiv_symm_apply Equiv.ringEquiv_symm_apply
 
 /-- Transfer `Semigroup` across an `Equiv` -/
@@ -301,7 +301,7 @@ protected def nonUnitalSemiring [NonUnitalSemiring β] : NonUnitalSemiring α :=
 protected def addMonoidWithOne [AddMonoidWithOne β] : AddMonoidWithOne α :=
   { e.addMonoid, e.One with
     natCast := fun n => e.symm n
-    natCast_zero := show e.symm _ = _ by simp [zero_def]
+    natCast_zero := show e.symm _ = _ by simp [zero_def]; rfl
     natCast_succ := fun n => show e.symm _ = e.symm (e (e.symm _) + _) by simp [add_def, one_def] }
 #align equiv.add_monoid_with_one Equiv.addMonoidWithOne
 
@@ -311,7 +311,7 @@ protected def addGroupWithOne [AddGroupWithOne β] : AddGroupWithOne α :=
   { e.addMonoidWithOne,
     e.addGroup with
     intCast := fun n => e.symm n
-    intCast_ofNat := fun n => by rw [Int.cast_ofNat] <;> rfl
+    intCast_ofNat := fun n => by simp only [Int.cast_ofNat]; rfl
     intCast_negSucc := fun n =>
       congr_arg e.symm <| (Int.cast_negSucc _).trans <| congr_arg _ (e.apply_symm_apply _).symm }
 #align equiv.add_group_with_one Equiv.addGroupWithOne
@@ -429,38 +429,36 @@ protected theorem isDomain [Ring α] [Ring β] [IsDomain β] (e : α ≃+* β) :
   Function.Injective.isDomain e.toRingHom e.injective
 #align equiv.is_domain Equiv.isDomain
 
-/-- Transfer `HasRatCast` across an `Equiv` -/
+/-- Transfer `RatCast` across an `Equiv` -/
 @[reducible]
-protected def hasRatCast [HasRatCast β] : HasRatCast α where ratCast n := e.symm n
-#align equiv.has_rat_cast Equiv.hasRatCast
+protected def RatCast [RatCast β] : RatCast α where ratCast n := e.symm n
+#align equiv.has_rat_cast Equiv.RatCast
 
 /-- Transfer `DivisionRing` across an `Equiv` -/
 @[reducible]
 protected def divisionRing [DivisionRing β] : DivisionRing α := by
   let add_group_with_one := e.addGroupWithOne
-  let mul := e.Mul
   let inv := e.Inv
   let div := e.Div
   let mul := e.Mul
   let npow := e.Pow ℕ
   let zpow := e.Pow ℤ
-  let rat_cast := e.HasRatCast
+  let rat_cast := e.RatCast
   let qsmul := e.SMul ℚ
-  apply e.injective.division_ring _ <;> intros <;> exact e.apply_symm_apply _
+  apply e.injective.divisionRing _ <;> intros <;> exact e.apply_symm_apply _
 #align equiv.division_ring Equiv.divisionRing
 
 /-- Transfer `Field` across an `Equiv` -/
 @[reducible]
 protected def field [Field β] : Field α := by
   let add_group_with_one := e.addGroupWithOne
-  let mul := e.Mul
   let neg := e.Neg
   let inv := e.Inv
   let div := e.Div
   let mul := e.Mul
   let npow := e.Pow ℕ
   let zpow := e.Pow ℤ
-  let rat_cast := e.HasRatCast
+  let rat_cast := e.RatCast
   let qsmul := e.SMul ℚ
   apply e.injective.field _ <;> intros <;> exact e.apply_symm_apply _
 #align equiv.field Equiv.field
