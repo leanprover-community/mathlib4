@@ -112,7 +112,7 @@ instance : Category (Grothendieck F) where
   comp_id := @fun X Y f => by
     dsimp; ext; swap
     · simp
-    · simp
+    · dsimp
       rw [← NatIso.naturality_2 (eqToIso (F.map_id Y.base)) f.fiber]
       simp
   id_comp := @fun X Y f => by dsimp; ext <;> simp
