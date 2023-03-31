@@ -337,7 +337,9 @@ theorem corec_eq (f : β → Option (α × β)) (b : β) : destruct (corec f b) 
   by
   dsimp [corec, destruct, nth]
   dsimp
-  change Stream'.corec' (Corec.f f) (some b) 0 with (Corec.f f (some b)).1
+  -- porting note: next two lines were `change`...`with`...
+  have h: Stream'.corec' (Corec.f f) (some b) 0 = (Corec.f f (some b)).1 := rfl
+  rw [h]
   dsimp [Corec.f]
   induction' h : f b with s; · rfl
   cases' s with a b'; dsimp [Corec.f]
@@ -345,7 +347,7 @@ theorem corec_eq (f : β → Option (α × β)) (b : β) : destruct (corec f b) 
   apply Subtype.eq
   dsimp [corec, tail]
   rw [Stream'.corec'_eq, Stream'.tail_cons]
-  dsimp [Corec.f]; rw [h]; rfl
+  dsimp [Corec.f]; rw [h]
 #align stream.seq.corec_eq Stream'.Seq.corec_eq
 
 section Bisim
