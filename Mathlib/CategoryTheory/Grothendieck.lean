@@ -161,19 +161,33 @@ def grothendieckTypeToCatFunctor : Grothendieck (G ⋙ typeToCat) ⥤ G.Elements
 set_option linter.uppercaseLean3 false in
 #align category_theory.grothendieck.grothendieck_Type_to_Cat_functor CategoryTheory.Grothendieck.grothendieckTypeToCatFunctor
 
+-- porting note: simpNF linter complaints:
+--
+-- #check @CategoryTheory.Grothendieck.grothendieckTypeToCatInverse_map_fiber_down_down
+-- Left-hand side does not simplify, when using the simp lemma on itself.
+-- This usually means that it will never apply.
+--
+-- but this seems to be a false postive, hence we commenting out `@[simps!]`
 /-- Auxiliary definition for `grothendieck_Type_to_Cat`, to speed up elaboration. -/
-@[simps!]
+--@[simps!]
 def grothendieckTypeToCatInverse : G.Elements ⥤ Grothendieck (G ⋙ typeToCat) where
   obj X := ⟨X.1, ⟨X.2⟩⟩
   map := @fun X Y f => ⟨f.1, ⟨⟨f.2⟩⟩⟩
 set_option linter.uppercaseLean3 false in
 #align category_theory.grothendieck.grothendieck_Type_to_Cat_inverse CategoryTheory.Grothendieck.grothendieckTypeToCatInverse
 
+-- porting note: simpNF linter complaints:
+--
+-- #check @CategoryTheory.Grothendieck.grothendieckTypeToCat_inverse_map_fiber_down_down
+-- Left-hand side does not simplify, when using the simp lemma on itself.
+-- This usually means that it will never apply.
+--
+-- but this seems to be a false postive, hence we commenting out `@[simps!]`
 /-- The Grothendieck construction applied to a functor to `Type`
 (thought of as a functor to `Cat` by realising a type as a discrete category)
 is the same as the 'category of elements' construction.
 -/
-@[simps!]
+-- @[simps!]
 def grothendieckTypeToCat : Grothendieck (G ⋙ typeToCat) ≌ G.Elements where
   functor := grothendieckTypeToCatFunctor G
   inverse := grothendieckTypeToCatInverse G
