@@ -77,8 +77,23 @@ namespace ObjOperation₃
 noncomputable def yonedaEquiv' (X₁ X₂ X₃ Y : C) [HasBinaryProduct X₂ X₃]
   [HasBinaryProduct X₁ (X₂ ⨯ X₃)] :
   (X₁ ⨯ (X₂ ⨯ X₃) ⟶ Y) ≃
-    (Types.functorConcat₃ (yoneda.obj X₁) (yoneda.obj X₂) (yoneda.obj X₃) ⟶ yoneda.obj Z ) :=
-    sorry
+    (Types.functorConcat₃ (yoneda.obj X₁) (yoneda.obj X₂) (yoneda.obj X₃) ⟶ yoneda.obj Y) where
+  toFun f :=
+  { app := fun T ⟨x, y, z⟩ => prod.lift x (prod.lift y z) ≫ f
+    naturality := fun _ _ f => by
+      ext
+      dsimp
+      simp only [prod.comp_lift_assoc, prod.comp_lift] }
+  invFun φ := φ.app (Opposite.op (X₁ ⨯ X₂ ⨯ X₃))
+    ⟨prod.fst, prod.snd ≫ prod.fst, prod.snd ≫ prod.snd⟩
+  left_inv := fun f => by
+    convert Category.id_comp f
+    refine' prod.hom_ext (by simp) (prod.hom_ext (by simp) (by simp))
+  right_inv := fun φ => by
+    ext Z ⟨x, y, z⟩
+    refine' (congr_fun (φ.naturality (prod.lift x (prod.lift y z)).op) ⟨prod.fst, prod.snd ≫ prod.fst, prod.snd ≫ prod.snd⟩).symm.trans _
+    dsimp
+    simp
 
 noncomputable def yonedaEquiv (X : C) [HasBinaryProduct X X] [HasBinaryProduct X (X ⨯ X)] :
   ObjOperation₃ X ≃ Types.functorOperation₃ (yoneda.obj X) :=
