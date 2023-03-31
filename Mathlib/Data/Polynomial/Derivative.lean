@@ -579,7 +579,7 @@ theorem derivative_prod {s : Multiset ι} {f : ι → R[X]} :
   rw [Multiset.map_cons, Multiset.prod_cons, derivative_mul, Multiset.map_cons _ i s,
     Multiset.sum_cons, Multiset.erase_cons_head, mul_comm (derivative (f i))]
   congr
-  rw [h, ← AddMonoidHom.mulLeft_apply, (AddMonoidHom.mulLeft (f i)).map_multiset_sum _,
+  rw [h, ← AddMonoidHom.coe_mulLeft, (AddMonoidHom.mulLeft (f i)).map_multiset_sum _,
     AddMonoidHom.coe_mulLeft]
   simp only [Function.comp_apply, Multiset.map_map]
   refine' congr_arg _ (Multiset.map_congr rfl fun j hj => _)

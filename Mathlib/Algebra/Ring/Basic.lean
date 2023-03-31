@@ -68,14 +68,9 @@ def mulLeft [NonUnitalNonAssocSemiring R] (r : R) : R →+ R where
 
 @[simp]
 theorem coe_mulLeft [NonUnitalNonAssocSemiring R] (r : R) :
-    (mulLeft r : R → R) = (r * ·) :=
+    (mulLeft r : R → R) = HMul.hMul r :=
   rfl
-#align add_monoid_hom.coe_mul_left AddMonoidHom.coe_mulLeft
-
--- Porting note: added
-theorem mulLeft_apply [NonUnitalNonAssocSemiring R] (a r : R) :
-    mulLeft r a = r * a :=
-  rfl
+#align add_monoid_hom.coe_mul_left AddMonoidHom.coe_mul_left
 
 /-- Right multiplication by an element of a (semi)ring is an `AddMonoidHom` -/
 def mulRight [NonUnitalNonAssocSemiring R] (r : R) : R →+ R where
