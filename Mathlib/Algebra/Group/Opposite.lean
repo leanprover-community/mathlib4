@@ -115,6 +115,7 @@ instance commSemigroup [CommSemigroup α] : CommSemigroup αᵐᵒᵖ :=
   { MulOpposite.semigroup α with
     mul_comm := fun x y => unop_injective <| mul_comm (unop y) (unop x) }
 
+attribute [-instance] Monoid.End.instMonoidEnd in -- FIXME: otherwise to_additive crashes
 @[to_additive]
 instance mulOneClass [MulOneClass α] : MulOneClass αᵐᵒᵖ :=
   { MulOpposite.mul α, MulOpposite.one α with

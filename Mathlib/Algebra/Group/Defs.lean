@@ -383,6 +383,7 @@ class AddLeftCancelSemigroup (G : Type u) extends FlatHack, AddSemigroup G where
 #align add_left_cancel_semigroup.ext_iff AddLeftCancelSemigroup.ext_iff
 
 attribute [to_additive] LeftCancelSemigroup
+attribute [to_additive existing] LeftCancelSemigroup.toSemigroup
 
 /-- Any `LeftCancelSemigroup` satisfies `IsLeftCancelMul`. -/
 @[to_additive AddLeftCancelSemigroup.toIsLeftCancelAdd "Any `AddLeftCancelSemigroup` satisfies
@@ -411,7 +412,7 @@ class AddRightCancelSemigroup (G : Type u) extends FlatHack, AddSemigroup G wher
 #align add_right_cancel_semigroup.ext AddRightCancelSemigroup.ext
 
 attribute [to_additive] RightCancelSemigroup
-attribute [to_additive] RightCancelSemigroup.toAddSemigroup
+attribute [to_additive existing] RightCancelSemigroup.toSemigroup
 
 /-- Any `RightCancelSemigroup` satisfies `IsRightCancelMul`. -/
 @[to_additive AddRightCancelSemigroup.toIsRightCancelAdd "Any `AddRightCancelSemigroup` satisfies

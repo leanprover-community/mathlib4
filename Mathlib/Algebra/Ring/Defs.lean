@@ -117,7 +117,9 @@ class NonAssocSemiring (α : Type u) extends FlatHack, NonUnitalNonAssocSemiring
     AddCommMonoidWithOne α
 #align non_assoc_semiring NonAssocSemiring
 
-class Semiring (α : Type u) extends FlatHack, NonUnitalSemiring α, NonAssocSemiring α, MonoidWithZero α
+class Semiring (α : Type u) extends FlatHack, NonUnitalSemiring α, NonAssocSemiring α,
+    MonoidWithZero α where
+  nsmul := nsmulRec
 #align semiring Semiring
 
 section DistribMulOneClass
@@ -216,8 +218,7 @@ multiplication by zero law (`MulZeroClass`). -/
 class NonUnitalCommSemiring (α : Type u) extends FlatHack, NonUnitalSemiring α, CommSemigroup α
 #align non_unital_comm_semiring NonUnitalCommSemiring
 
-class CommSemiring (R : Type u) extends FlatHack, Semiring R, CommMonoid R where
-  nsmul := nsmulRec
+class CommSemiring (R : Type u) extends FlatHack, Semiring R, CommMonoid R
 #align comm_semiring CommSemiring
 
 -- see Note [lower instance priority]
@@ -337,7 +338,8 @@ class NonAssocRing (α : Type _) extends FlatHack, NonUnitalNonAssocRing α, Non
     AddCommGroupWithOne α
 #align non_assoc_ring NonAssocRing
 
-class Ring (R : Type u) extends FlatHack, Semiring R, AddCommGroup R, AddGroupWithOne R
+class Ring (R : Type u) extends FlatHack, Semiring R, AddCommGroup R, AddGroupWithOne R where
+  nsmul := nsmulRec
 #align ring Ring
 
 section NonUnitalNonAssocRing

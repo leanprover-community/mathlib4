@@ -1444,7 +1444,7 @@ namespace MulHom
 /-- Given two mul morphisms `f`, `g` to a commutative semigroup, `f * g` is the mul morphism
 sending `x` to `f x * g x`. -/
 @[to_additive]
-instance [Mul M] [CommSemigroup N] : Mul (M →ₙ* N) :=
+instance instMul [Mul M] [CommSemigroup N] : Mul (M →ₙ* N) :=
   ⟨fun f g =>
     { toFun := fun m => f m * g m,
       map_mul' := fun x y => by
@@ -1454,7 +1454,7 @@ instance [Mul M] [CommSemigroup N] : Mul (M →ₙ* N) :=
 
 /-- Given two additive morphisms `f`, `g` to an additive commutative semigroup, `f + g` is the
 additive morphism sending `x` to `f x + g x`. -/
-add_decl_doc AddHom.instAddAddHomToAddToAddSemigroup
+add_decl_doc AddHom.instAdd
 
 @[to_additive (attr := simp)]
 theorem mul_apply {M N} {_ : Mul M} {_ : CommSemigroup N} (f g : M →ₙ* N) (x : M) :
