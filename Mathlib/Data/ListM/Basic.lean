@@ -39,8 +39,8 @@ variable {α β : Type u} {m : Type u → Type u}
 unsafe instance : EmptyCollection (ListM m α) := ⟨nil⟩
 
 /-- The implementation of `ForIn`, which enables `for a in L do ...` notation. -/
-@[specialize] protected unsafe def forIn [Monad m]
-    (as : ListM m α) (init : δ) (f : α → δ → m (ForInStep δ)) : m δ :=
+@[specialize] protected unsafe def forIn [Monad m] [Monad n] [MonadLiftT m n]
+    (as : ListM m α) (init : δ) (f : α → δ → n (ForInStep δ)) : n δ :=
 match as with
   | nil => pure init
   | cons l => do match ← l with
@@ -49,7 +49,7 @@ match as with
       | ForInStep.done d  => pure d
       | ForInStep.yield d => t.forIn d f
 
-unsafe instance : ForIn m (ListM m α) α where
+unsafe instance [Monad m] [Monad n] [MonadLiftT m n] : ForIn n (ListM m α) α where
   forIn := ListM.forIn
 
 /-- Construct a `ListM` recursively. -/
