@@ -714,18 +714,18 @@ theorem map_append (f : α → β) (s t) : map f (append s t) = append (map f s)
   exact
     match s1, s2, h with
     | _, _, ⟨s, t, rfl, rfl⟩ => by
-      apply rec_on s <;> simp
-      · apply rec_on t <;> simp
-        · intro x t
+      apply recOn s <;> simp
+      · apply recOn t <;> simp
+        · intro _ t
           refine' ⟨nil, t, _, _⟩ <;> simp
-      · intro x s
+      · intro _ s
         refine' ⟨s, t, rfl, rfl⟩
 #align stream.seq.map_append Stream'.Seq.map_append
 
 @[simp]
-theorem map_nth (f : α → β) : ∀ s n, nth (map f s) n = (nth s n).map f
-  | ⟨s, al⟩, n => rfl
-#align stream.seq.map_nth Stream'.Seq.map_nth
+theorem map_get? (f : α → β) : ∀ s n, get? (map f s) n = (get? s n).map f
+  | ⟨_, _⟩, _ => rfl
+#align stream.seq.map_nth Stream'.Seq.map_get?
 
 instance : Functor Seq where map := @map
 
