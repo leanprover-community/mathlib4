@@ -8,9 +8,9 @@ Authors: Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Set.Image
-import Mathbin.Data.List.Basic
-import Mathbin.Data.Fin.Basic
+import Mathlib.Data.Set.Image
+import Mathlib.Data.List.Basic
+import Mathlib.Data.Fin.Basic
 
 /-!
 # Lemmas about `list`s and `set.range`
@@ -25,8 +25,7 @@ variable {α β : Type _} (l : List α)
 
 namespace Set
 
-theorem range_list_map (f : α → β) : range (map f) = { l | ∀ x ∈ l, x ∈ range f } :=
-  by
+theorem range_list_map (f : α → β) : range (map f) = { l | ∀ x ∈ l, x ∈ range f } := by
   refine'
     subset.antisymm (range_subset_iff.2 fun l => forall_mem_map_iff.2 fun y _ => mem_range_self _)
       fun l hl => _
@@ -41,15 +40,13 @@ theorem range_list_map_coe (s : Set α) : range (map (coe : s → α)) = { l | �
 #align set.range_list_map_coe Set.range_list_map_coe
 
 @[simp]
-theorem range_list_nthLe : (range fun k : Fin l.length => l.nthLe k k.2) = { x | x ∈ l } :=
-  by
+theorem range_list_nthLe : (range fun k : Fin l.length => l.nthLe k k.2) = { x | x ∈ l } := by
   ext x
   rw [mem_set_of_eq, mem_iff_nth_le]
   exact ⟨fun ⟨⟨n, h₁⟩, h₂⟩ => ⟨n, h₁, h₂⟩, fun ⟨n, h₁, h₂⟩ => ⟨⟨n, h₁⟩, h₂⟩⟩
 #align set.range_list_nth_le Set.range_list_nthLe
 
-theorem range_list_get? : range l.get? = insert none (some '' { x | x ∈ l }) :=
-  by
+theorem range_list_get? : range l.get? = insert none (some '' { x | x ∈ l }) := by
   rw [← range_list_nth_le, ← range_comp]
   refine' (range_subset_iff.2 fun n => _).antisymm (insert_subset.2 ⟨_, _⟩)
   exacts[(le_or_lt l.length n).imp nth_eq_none_iff.2 fun hlt => ⟨⟨_, _⟩, (nth_le_nth hlt).symm⟩,
