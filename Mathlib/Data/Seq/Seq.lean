@@ -572,10 +572,10 @@ def zipWith (f : α → β → γ) (s₁ : Seq α) (s₂ : Seq β) : Seq γ :=
 variable {s : Seq α} {s' : Seq β} {n : ℕ}
 
 @[simp]
-theorem nth_zipWith (f : α → β → γ) (s s' n) :
+theorem get?_zipWith (f : α → β → γ) (s s' n) :
     (zipWith f s s').get? n = Option.map₂ f (s.get? n) (s'.get? n) :=
   rfl
-#align stream.seq.nth_zip_with Stream'.Seq.nth_zipWith
+#align stream.seq.nth_zip_with Stream'.Seq.get?_zipWith
 
 end ZipWith
 
@@ -586,7 +586,7 @@ def zip : Seq α → Seq β → Seq (α × β) :=
 
 theorem get?_zip (s : Seq α) (t : Seq β) (n : ℕ) :
     get? (zip s t) n = Option.map₂ Prod.mk (get? s n) (get? t n) :=
-  nth_zipWith _ _ _ _
+  get?_zipWith _ _ _ _
 #align stream.seq.nth_zip Stream'.Seq.get?_zip
 
 /-- Separate a sequence of pairs into two sequences -/
@@ -630,7 +630,7 @@ def toListOrStream (s : Seq α) [Decidable s.Terminates] : Sum (List α) (Stream
 theorem nil_append (s : Seq α) : append nil s = s := by
   apply coinduction2; intro s
   dsimp [append]; rw [corec_eq]
-  dsimp [append]; apply rec_on s _ _
+  dsimp [append]; apply recOn s _ _
   · trivial
   · intro x s
     rw [destruct_cons]
