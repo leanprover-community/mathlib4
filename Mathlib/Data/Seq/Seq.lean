@@ -993,22 +993,22 @@ theorem map_join (f : α → β) : ∀ S, map f (join S) = join (map (map f) S)
 theorem join_join (SS : Seq (Seq1 (Seq1 α))) :
     Seq.join (Seq.join SS) = Seq.join (Seq.map join SS) := by
   apply
-    seq.eq_of_bisim fun s1 s2 =>
+    Seq.eq_of_bisim fun s1 s2 =>
       ∃ s SS,
-        s1 = seq.append s (seq.join (seq.join SS)) ∧ s2 = seq.append s (seq.join (seq.map join SS))
+        s1 = Seq.append s (Seq.join (Seq.join SS)) ∧ s2 = Seq.append s (Seq.join (Seq.map join SS))
   · intro s1 s2 h
     exact
       match s1, s2, h with
       | _, _, ⟨s, SS, rfl, rfl⟩ => by
-        apply rec_on s <;> simp
-        · apply rec_on SS <;> simp
+        apply recOn s <;> simp
+        · apply recOn SS <;> simp
           · intro S SS
-            cases' S with s S <;> cases' s with x s <;> simp [map]
-            apply rec_on s <;> simp
+            cases' S with s S ; cases' s with x s ; simp [map]
+            apply recOn s <;> simp
             · exact ⟨_, _, rfl, rfl⟩
             · intro x s
-              refine' ⟨seq.cons x (append s (seq.join S)), SS, _, _⟩ <;> simp
-        · intro x s
+              refine' ⟨Seq.cons x (append s (Seq.join S)), SS, _, _⟩ <;> simp
+        · intro _ s
           exact ⟨s, SS, rfl, rfl⟩
   · refine' ⟨nil, SS, _, _⟩ <;> simp
 #align stream.seq1.join_join Stream'.Seq1.join_join
