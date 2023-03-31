@@ -292,6 +292,12 @@ def proj (S : C ⥤ D) (T : D) : CostructuredArrow S T ⥤ C :=
 
 variable {T T' T'' : D} {Y Y' : C} {S : C ⥤ D}
 
+-- porting note: this lemma was added because `Comma.hom_ext`
+-- was not triggered automatically
+@[ext]
+lemma hom_ext {X Y : CostructuredArrow S T} (f g : X ⟶ Y) (h : f.left = g.left) : f = g :=
+  CommaMorphism.ext _ _ h (Subsingleton.elim _ _)
+
 /-- Construct a costructured arrow from a morphism. -/
 def mk (f : S.obj Y ⟶ T) : CostructuredArrow S T :=
   ⟨Y, ⟨⟨⟩⟩, f⟩

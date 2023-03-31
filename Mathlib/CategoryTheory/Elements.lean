@@ -50,6 +50,15 @@ def Functor.Elements (F : C ⥤ Type w) :=
   Σc : C, F.obj c
 #align category_theory.functor.elements CategoryTheory.Functor.Elements
 
+-- porting note: added because Sigma.ext would be trigged automatically
+lemma Functor.Elements.ext {F : C ⥤ Type w} (x y : F.Elements) (h₁ : x.fst = y.fst)
+  (h₂ : F.map (eqToHom h₁) x.snd = y.snd) : x = y := by
+  cases x
+  cases y
+  cases h₁
+  simp at h₂
+  simp [h₂]
+
 /-- The category structure on `F.Elements`, for `F : C ⥤ Type`.
     A morphism `(X, x) ⟶ (Y, y)` is a morphism `f : X ⟶ Y` in `C`, so `F.map f` takes `x` to `y`.
  -/
@@ -173,7 +182,7 @@ theorem fromStructuredArrow_map {X Y} (f : X ⟶ Y) :
 
 /-- The equivalence between the category of elements `F.Elements`
     and the comma category `(*, F)`. -/
-@[simps!]
+@[simps!?]
 def structuredArrowEquivalence : F.Elements ≌ StructuredArrow PUnit F :=
   Equivalence.mk (toStructuredArrow F) (fromStructuredArrow F)
     (NatIso.ofComponents (fun X => eqToIso (by aesop_cat)) (by aesop_cat))
@@ -232,20 +241,16 @@ theorem fromCostructuredArrow_obj_mk (F : Cᵒᵖ ⥤ Type v) {X : C} (f : yoned
 /-- The unit of the equivalence `F.Elementsᵒᵖ ≅ (yoneda, F)` is indeed iso. -/
 theorem from_toCostructuredArrow_eq (F : Cᵒᵖ ⥤ Type v) :
     (toCostructuredArrow F).rightOp ⋙ fromCostructuredArrow F = 𝟭 _ := by
-  apply Functor.ext
-  intro X Y f
-  have :
-    ∀ {a b : F.elements} (H : a = b),
-      ↑(eqToHom H) =
-        eqToHom
-          (show a.fst = b.fst by
-            cases H
-            rfl) :=
-    fun _ _ H => by
-    cases H
-    rfl
-  ext; simp [this]
-  aesop_cat
+  refine' Functor.ext _ _
+  . intro X
+    exact Functor.Elements.ext _ _ rfl (by simp [yonedaEquiv])
+  . intro X Y f
+    have : ∀ {a b : F.Elements} (H : a = b),
+        (eqToHom H).1 = eqToHom (show a.fst = b.fst by cases H; rfl) := by
+      rintro _ _ rfl
+      simp
+    ext
+    simp [this]
 #align category_theory.category_of_elements.from_to_costructured_arrow_eq
   CategoryTheory.CategoryOfElements.from_toCostructuredArrow_eq
 
