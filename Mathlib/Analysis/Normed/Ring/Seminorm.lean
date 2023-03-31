@@ -48,7 +48,7 @@ variable {F R S : Type _} (x y : R) (r : ℝ)
 /-- A seminorm on a ring `R` is a function `f : R → ℝ` that preserves zero, takes nonnegative
   values, is subadditive and submultiplicative and such that `f (-x) = f x` for all `x ∈ R`. -/
 structure RingSeminorm (R : Type _) [NonUnitalNonAssocRing R] extends AddGroupSeminorm R where
-  mul_le' : ∀ x y : R, to_fun (x * y) ≤ to_fun x * to_fun y
+  mul_le' : ∀ x y : R, toFun (x * y) ≤ toFun x * toFun y
 #align ring_seminorm RingSeminorm
 
 /-- A function `f : R → ℝ` is a norm on a (nonunital) ring if it is a seminorm and `f x = 0`
@@ -68,7 +68,7 @@ implies `x = 0`. -/
 structure MulRingNorm (R : Type _) [NonAssocRing R] extends MulRingSeminorm R, AddGroupNorm R
 #align mul_ring_norm MulRingNorm
 
-attribute [nolint doc_blame]
+attribute [nolint docBlame]
   RingSeminorm.toAddGroupSeminorm RingNorm.toAddGroupNorm RingNorm.toRingSeminorm MulRingSeminorm.toAddGroupSeminorm MulRingSeminorm.toMonoidWithZeroHom MulRingNorm.toAddGroupNorm MulRingNorm.toMulRingSeminorm
 
 namespace RingSeminorm
@@ -101,7 +101,14 @@ theorem ext {p q : RingSeminorm R} : (∀ x, p x = q x) → p = q :=
 #align ring_seminorm.ext RingSeminorm.ext
 
 instance : Zero (RingSeminorm R) :=
-  ⟨{ AddGroupSeminorm.hasZero.zero with mul_le' := fun _ _ => (MulZeroClass.zero_mul _).ge }⟩
+  ⟨{ AddGroupSeminorm.instZeroAddGroupSeminorm.zero with mul_le' :=
+    fun _ _ => (MulZeroClass.zero_mul _).ge }⟩
+
+
+/- **PORTING NOTE:** This should work from the previous instance because a `Field` is a `Ring`.
+  Something is wrong here with typeclass inference. -/
+variable {K : Type _} [Ring K] in #synth Zero (RingSeminorm K)
+variable {K : Type _} [Field K] in #synth Zero (RingSeminorm K)
 
 theorem eq_zero_iff {p : RingSeminorm R} : p = 0 ↔ ∀ x, p x = 0 :=
   FunLike.ext_iff
@@ -125,7 +132,7 @@ instance [DecidableEq R] : One (RingSeminorm R) :=
               split_ifs
               exacts[le_rfl, zero_le_one]
         · change ite _ _ _ ≤ ite _ _ _ * ite _ _ _
-          simp only [if_false, h, left_ne_zero_of_mul h, right_ne_zero_of_mul h, mul_one] }⟩
+          simp only [if_false, h, left_ne_zero_of_mul h, right_ne_zero_of_mul h, mul_one, le_refl] }⟩
 
 @[simp]
 theorem apply_one [DecidableEq R] (x : R) : (1 : RingSeminorm R) x = if x = 0 then 0 else 1 :=
@@ -145,9 +152,10 @@ theorem seminorm_one_eq_one_iff_ne_zero (hp : p 1 ≤ 1) : p 1 = 1 ↔ p ≠ 0 :
         ⟨1, by
           rw [h]
           exact one_ne_zero⟩,
-      fun h => _⟩
+      fun h => ?_⟩
   obtain hp0 | hp0 := (map_nonneg p (1 : R)).eq_or_gt
-  · cases h (ext fun x => (map_nonneg _ _).antisymm' _)
+  · exfalso
+    refine h (ext fun x => (map_nonneg _ _).antisymm' ?_)
     simpa only [hp0, mul_one, MulZeroClass.mul_zero] using map_mul_le_mul p x 1
   · refine' hp.antisymm ((le_mul_iff_one_le_left hp0).1 _)
     simpa only [one_mul] using map_mul_le_mul p (1 : R) _
@@ -175,7 +183,7 @@ instance ringNormClass : RingNormClass (RingNorm R) R ℝ where
   map_add_le_add f := f.add_le'
   map_mul_le_mul f := f.mul_le'
   map_neg_eq_map f := f.neg'
-  eq_zero_of_map_eq_zero f := f.eq_zero_of_map_eq_zero'
+  eq_zero_of_map_eq_zero f := f.eq_zero_of_map_eq_zero' _
 #align ring_norm.ring_norm_class RingNorm.ringNormClass
 
 /-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_to_fun`. -/
@@ -273,7 +281,7 @@ instance mulRingNormClass : MulRingNormClass (MulRingNorm R) R ℝ where
   map_add_le_add f := f.add_le'
   map_mul f := f.map_mul'
   map_neg_eq_map f := f.neg'
-  eq_zero_of_map_eq_zero f := f.eq_zero_of_map_eq_zero'
+  eq_zero_of_map_eq_zero f := f.eq_zero_of_map_eq_zero' _
 #align mul_ring_norm.mul_ring_norm_class MulRingNorm.mulRingNormClass
 
 /-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_to_fun`. -/
@@ -290,7 +298,9 @@ theorem ext {p q : MulRingNorm R} : (∀ x, p x = q x) → p = q :=
   FunLike.ext p q
 #align mul_ring_norm.ext MulRingNorm.ext
 
-variable (R) [DecidableEq R] [NoZeroDivisors R] [Nontrivial R]
+variable (R)
+
+variable [DecidableEq R] [NoZeroDivisors R] [Nontrivial R]
 
 /-- The trivial norm on a ring `R` is the `mul_ring_norm` taking value `0` at `0` and `1` at every
 other element. -/
@@ -312,7 +322,7 @@ def RingSeminorm.toRingNorm {K : Type _} [Field K] (f : RingSeminorm K) (hnt : f
     RingNorm K :=
   { f with
     eq_zero_of_map_eq_zero' := fun x hx => by
-      obtain ⟨c, hc⟩ := ring_seminorm.ne_zero_iff.mp hnt
+      obtain ⟨c, hc⟩ := RingSeminorm.ne_zero_iff.mp hnt
       by_contra hn0
       have hc0 : f c = 0 := by
         rw [← mul_one c, ← mul_inv_cancel hn0, ← mul_assoc, mul_comm c, mul_assoc]
@@ -329,4 +339,3 @@ def RingSeminorm.toRingNorm {K : Type _} [Field K] (f : RingSeminorm K) (hnt : f
 def normRingNorm (R : Type _) [NonUnitalNormedRing R] : RingNorm R :=
   { normAddGroupNorm R, normRingSeminorm R with }
 #align norm_ring_norm normRingNorm
-
