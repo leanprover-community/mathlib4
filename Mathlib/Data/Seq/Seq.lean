@@ -535,14 +535,14 @@ def join : Seq (Seq1 α) → Seq α :=
 /-- Remove the first `n` elements from the sequence. -/
 def drop (s : Seq α) : ℕ → Seq α
   | 0 => s
-  | n + 1 => tail (drop n)
+  | n + 1 => tail (drop s n)
 #align stream.seq.drop Stream'.Seq.drop
 
 attribute [simp] drop
 
 /-- Take the first `n` elements of the sequence (producing a list) -/
 def take : ℕ → Seq α → List α
-  | 0, s => []
+  | 0, _ => []
   | n + 1, s =>
     match destruct s with
     | none => []
@@ -557,7 +557,7 @@ def splitAt : ℕ → Seq α → List α × Seq α
     match destruct s with
     | none => ([], nil)
     | some (x, s') =>
-      let (l, r) := split_at n s'
+      let (l, r) := splitAt n s'
       (List.cons x l, r)
 #align stream.seq.split_at Stream'.Seq.splitAt
 
@@ -565,7 +565,7 @@ section ZipWith
 
 /-- Combine two sequences with a function -/
 def zipWith (f : α → β → γ) (s₁ : Seq α) (s₂ : Seq β) : Seq γ :=
-  ⟨fun n => Option.map₂ f (s₁.get? n) (s₂.get? n), fun n hn =>
+  ⟨fun n => Option.map₂ f (s₁.get? n) (s₂.get? n), fun {_} hn =>
     Option.map₂_eq_none_iff.2 <| (Option.map₂_eq_none_iff.1 hn).imp s₁.2 s₂.2⟩
 #align stream.seq.zip_with Stream'.Seq.zipWith
 
@@ -584,10 +584,10 @@ def zip : Seq α → Seq β → Seq (α × β) :=
   zipWith Prod.mk
 #align stream.seq.zip Stream'.Seq.zip
 
-theorem nth_zip (s : Seq α) (t : Seq β) (n : ℕ) :
-    nth (zip s t) n = Option.map₂ Prod.mk (nth s n) (nth t n) :=
+theorem get?_zip (s : Seq α) (t : Seq β) (n : ℕ) :
+    get? (zip s t) n = Option.map₂ Prod.mk (get? s n) (get? t n) :=
   nth_zipWith _ _ _ _
-#align stream.seq.nth_zip Stream'.Seq.nth_zip
+#align stream.seq.nth_zip Stream'.Seq.get?_zip
 
 /-- Separate a sequence of pairs into two sequences -/
 def unzip (s : Seq (α × β)) : Seq α × Seq β :=
@@ -600,9 +600,9 @@ def enum (s : Seq α) : Seq (ℕ × α) :=
 #align stream.seq.enum Stream'.Seq.enum
 
 @[simp]
-theorem nth_enum (s : Seq α) (n : ℕ) : nth (enum s) n = Option.map (Prod.mk n) (nth s n) :=
-  nth_zip _ _ _
-#align stream.seq.nth_enum Stream'.Seq.nth_enum
+theorem get?_enum (s : Seq α) (n : ℕ) : get? (enum s) n = Option.map (Prod.mk n) (get? s n) :=
+  get?_zip _ _ _
+#align stream.seq.nth_enum Stream'.Seq.get?_enum
 
 @[simp]
 theorem enum_nil : enum (nil : Seq α) = nil :=
