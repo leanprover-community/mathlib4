@@ -732,6 +732,7 @@ instance : Functor Seq where map := @map
 instance : LawfulFunctor Seq where
   id_map := @map_id
   comp_map := @map_comp
+  map_const := rfl
 
 @[simp]
 theorem join_nil : join nil = (nil : Seq α) :=
