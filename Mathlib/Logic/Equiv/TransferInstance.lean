@@ -124,14 +124,15 @@ on `β` back along `e`. -/
 the additive structure on `α` is the one obtained by transporting an additive structure
 on `β` back along `e`."]
 def mulEquiv (e : α ≃ β) [Mul β] :
-    letI := Equiv.Mul e
+    let mul := Equiv.Mul e
     α ≃* β := by
   intros
   exact
     { e with
       map_mul' := fun x y => by
         apply e.symm.injective
-        simp }
+        simp only [toFun_as_coe_apply, symm_apply_apply]
+        rfl }
 #align equiv.mul_equiv Equiv.mulEquiv
 #align equiv.add_equiv Equiv.addEquiv
 
@@ -154,18 +155,20 @@ where the ring structure on `α` is
 the one obtained by transporting a ring structure on `β` back along `e`.
 -/
 def ringEquiv (e : α ≃ β) [Add β] [Mul β] : by
-    letI := Equiv.Add e
-    letI := Equiv.Mul e
+    let add := Equiv.Add e
+    let mul := Equiv.Mul e
     exact α ≃+* β := by
   intros
   exact
     { e with
       map_add' := fun x y => by
         apply e.symm.injective
-        simp
+        simp only [toFun_as_coe_apply, symm_apply_apply]
+        rfl
       map_mul' := fun x y => by
         apply e.symm.injective
-        simp }
+        simp only [toFun_as_coe_apply, symm_apply_apply]
+        rfl }
 #align equiv.ring_equiv Equiv.ringEquiv
 
 @[simp]
@@ -502,7 +505,7 @@ variable [Semiring R]
 /-- Transfer `Module` across an `Equiv` -/
 @[reducible]
 protected def module (e : α ≃ β) [AddCommMonoid β] :
-    letI := Equiv.addCommMonoid e
+    let addCommMonoid := Equiv.addCommMonoid e
     ∀ [Module R β], Module R α := by
   intros
   exact
@@ -517,8 +520,8 @@ where the `R`-module structure on `α` is
 the one obtained by transporting an `R`-module structure on `β` back along `e`.
 -/
 def linearEquiv (e : α ≃ β) [AddCommMonoid β] [Module R β] : by
-    letI := Equiv.addCommMonoid e
-    letI := Equiv.module R e
+    let addCommMonoid := Equiv.addCommMonoid e
+    let module := Equiv.module R e
     exact α ≃ₗ[R] β := by
   intros
   exact
@@ -526,7 +529,7 @@ def linearEquiv (e : α ≃ β) [AddCommMonoid β] [Module R β] : by
       map_smul' := fun r x => by
         apply e.symm.injective
         simp
-        rfl }
+        exact Iff.mpr (apply_eq_iff_eq_symm_apply _) rfl }
 #align equiv.linear_equiv Equiv.linearEquiv
 
 end
@@ -538,19 +541,19 @@ variable [CommSemiring R]
 /-- Transfer `Algebra` across an `Equiv` -/
 @[reducible]
 protected def algebra (e : α ≃ β) [Semiring β] :
-    letI := Equiv.semiring e
+    let semiring := Equiv.semiring e
     ∀ [Algebra R β], Algebra R α := by
   intros
   fapply RingHom.toAlgebra'
-  · exact ((RingEquiv e).symm : β →+* α).comp (algebraMap R β)
+  · exact ((ringEquiv e).symm : β →+* α).comp (algebraMap R β)
   · intro r x
     simp only [Function.comp_apply, RingHom.coe_comp]
-    have p := ring_equiv_symm_apply e
+    have p := ringEquiv_symm_apply e
     dsimp at p
     erw [p]
     clear p
-    apply (RingEquiv e).Injective
-    simp only [(RingEquiv e).map_mul]
+    apply (ringEquiv e).injective
+    simp only [(ringEquiv e).map_mul]
     simp [Algebra.commutes]
 #align equiv.algebra Equiv.algebra
 
@@ -559,8 +562,8 @@ where the `R`-algebra structure on `α` is
 the one obtained by transporting an `R`-algebra structure on `β` back along `e`.
 -/
 def algEquiv (e : α ≃ β) [Semiring β] [Algebra R β] : by
-    letI := Equiv.semiring e
-    letI := Equiv.algebra R e
+    let semiring := Equiv.semiring e
+    let algebra := Equiv.algebra R e
     exact α ≃ₐ[R] β := by
   intros
   exact
