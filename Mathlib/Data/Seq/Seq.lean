@@ -324,7 +324,7 @@ def corec (f : β → Option (α × β)) (b : β) : Seq α := by
     · rfl
     dsimp [Corec.f] at h
     dsimp [Corec.f]
-    cases' f b with s
+    revert h; cases' h₁: f b with s <;> intro h
     · rfl
     · cases' s with a b'
       contradiction
