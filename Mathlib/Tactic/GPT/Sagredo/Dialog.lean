@@ -97,18 +97,18 @@ Here is the proof thus far:\n" ++ (← latestCodeBlock).markdownBody
   | (ctx, g, _, _) :: _ => do
       pure <| prompt ++ "\n" ++ goalsFeedback (← ctx.ppGoals [g])
 
-def dialog (n : Nat) : M MetaM String := do
+def dialog (n : Nat) : M IO String := do
   sendSystemMessage systemPrompt
   askForAssistance (← initialPrompt)
-  for i in List.range (n-1) do try
-    done
-    return s!"Success after {i+1} requests"
-  catch _ =>
-    askForAssistance (← feedback)
-  try
-    done
+  for i in List.range (n-1) do
+    if (← isDone) then
+      return s!"Success after {i+1} requests"
+    else
+      askForAssistance (← feedback)
+  if (← isDone) then
     return s!"Success after {n} requests"
-  catch _ => return s!"Failed after {n} requests"
+  else
+    return s!"Failed after {n} requests"
 
 elab tk:"sagredo" : tactic => do
   let (newDecl, result) ← discussDeclContaining tk

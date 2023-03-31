@@ -29,7 +29,7 @@ def Analysis.subtractLineNumbers (a : Analysis) (n : Nat) : Analysis :=
 structure State extends GPT.State where
   preamble : String
   preambleAnalysis : Option Analysis := none
-  solutions : List (CodeBlock × Option Analysis) := []
+  solutions : List (CodeBlock × Analysis) := []
 
 variable {m : Type → Type} [Monad m]
 abbrev M := StateT State
@@ -47,16 +47,18 @@ def recordSolution (sol : CodeBlock) : M IO Unit := do
   set { σ with solutions := (sol, a) :: σ.solutions }
 
 def latestCodeBlock : M m CodeBlock := do
-  pure <| (← get).solutions.head!.1
+  match (← get).solutions.head? with
+  | none => pure { text := "" }
+  | some ⟨c, _⟩ => pure c
 
 def latestSolution : M m String := do
   pure (← latestCodeBlock).body
 
 def errors : M m (List Lean.Message) := do
-  pure <| (← get).solutions.head!.2.toList.bind Analysis.errors
+  pure <| (← get).solutions.head? |>.map (·.2) |>.toList.bind Analysis.errors
 
 def sorries : M m (List (ContextInfo × MVarId × Position × Position)) := do
-  pure <| (← get).solutions.head!.2.toList.bind Analysis.sorries
+  pure <| (← get).solutions.head? |>.map (·.2) |>.toList.bind Analysis.sorries
 
 def isDone : M m Bool := do
   pure <| (← errors).isEmpty && (← sorries).isEmpty
