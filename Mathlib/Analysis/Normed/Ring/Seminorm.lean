@@ -104,12 +104,6 @@ instance : Zero (RingSeminorm R) :=
   ⟨{ AddGroupSeminorm.instZeroAddGroupSeminorm.zero with mul_le' :=
     fun _ _ => (MulZeroClass.zero_mul _).ge }⟩
 
-
-/- **PORTING NOTE:** This should work from the previous instance because a `Field` is a `Ring`.
-  Something is wrong here with typeclass inference. -/
-variable {K : Type _} [Ring K] in #synth Zero (RingSeminorm K)
-variable {K : Type _} [Field K] in #synth Zero (RingSeminorm K)
-
 theorem eq_zero_iff {p : RingSeminorm R} : p = 0 ↔ ∀ x, p x = 0 :=
   FunLike.ext_iff
 #align ring_seminorm.eq_zero_iff RingSeminorm.eq_zero_iff
@@ -317,6 +311,7 @@ instance : Inhabited (MulRingNorm R) :=
 
 end MulRingNorm
 
+set_option synthInstance.etaExperiment true in
 /-- A nonzero ring seminorm on a field `K` is a ring norm. -/
 def RingSeminorm.toRingNorm {K : Type _} [Field K] (f : RingSeminorm K) (hnt : f ≠ 0) :
     RingNorm K :=
