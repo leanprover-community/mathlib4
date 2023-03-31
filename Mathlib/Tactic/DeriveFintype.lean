@@ -104,23 +104,24 @@ def mkCType (ctypes : List Expr) : TermElabM (Expr × TSyntax `tactic) :=
 structure EquivData where
   /-- Name of the declaration for a type that is `Equiv` to the given type. -/
   proxyName : Name
-  /-- A term that elaborates to something of type `proxyType ≃ type`.
-  Needs to be elaborated with this expected type. -/
-  equiv : TSyntax `term
+  /-- Name of the declaration for the equivalenec `proxyType ≃ type`. -/
+  proxyEquivName : Name
 
 /--
-Generates a proxy type for the inductive type (defining it at `fintypeProxy` in the
-inductive type's namespace) and returns an equivalence to it.
+Generates a proxy type for the inductive type and an equivalence from the proxy type to the type.
+The resulting declaration names are returned.
+
+If the declarations already exist, there is a check that they are correct.
 -/
 def mkProxyEquiv (indVal : InductiveVal) : TermElabM EquivData := do
   if indVal.isRec then
     throwError
-      "deriving Fintype: recursive inductive types are not supported (and are usually infinite)"
+      "proxy equivalence: recursive inductive types are not supported (and are usually infinite)"
   if 0 < indVal.numIndices then
-    throwError
-      "deriving Fintype: inductive indices are not supported"
+    throwError "proxy equivalence: inductive indices are not supported"
   let levels := indVal.levelParams.map Level.param
-  let proxyName := indVal.name.mkStr "fintypeProxy"
+  let proxyName := indVal.name.mkStr "proxyType"
+  let proxyEquivName := indVal.name.mkStr "proxyTypeEquiv"
   forallBoundedTelescope indVal.type indVal.numParams fun params _sort => do
     let mut cdata := #[]
     for ctorName in indVal.ctors do
@@ -164,6 +165,7 @@ def mkProxyEquiv (indVal : InductiveVal) : TermElabM EquivData := do
           value := ctype' }
       -- Set to be reducible so that typeclass inference can see it's a Fintype
       setReducibleAttribute proxyName
+      setProtected proxyName
       trace[Elab.Deriving.fintype] "defined {proxyName}"
 
     -- Create the `Equiv`
@@ -173,29 +175,50 @@ def mkProxyEquiv (indVal : InductiveVal) : TermElabM EquivData := do
       -- Empty matches don't elaborate, so use `nomatch` here.
       toFun ← `(term| fun x => nomatch x)
       invFun ← `(term| fun x => nomatch x)
-    let equivBody ← `(term|
-      { toFun := $toFun,
-        invFun := $invFun,
-        right_inv := by intro x; cases x <;> rfl
-        left_inv := by intro x; $pf:tactic })
-
+    let equivBody ← `(term| { toFun := $toFun,
+                              invFun := $invFun,
+                              right_inv := by intro x; cases x <;> rfl
+                              left_inv := by intro x; $pf:tactic })
+    let equivType ← mkAppM ``Equiv #[ctype, mkAppN (mkConst indVal.name levels) params]
+    equivType.ensureHasNoMVars
+    let equiv ← Term.elabTerm equivBody equivType
+    Term.synthesizeSyntheticMVarsNoPostponing
+    let equiv ← instantiateMVars equiv
+    let equiv' ← mkLambdaFVars params equiv
+    equiv'.ensureHasNoMVars
+    if let some const := (← getEnv).find? proxyEquivName then
+      unless ← isDefEq const.value! equiv' do
+        throwError
+          "Declaration {proxyEquivName} already exists and it is not the proxy equivalence."
+      trace[Elab.Deriving.fintype] "proxy equivalence already exists"
+    else
+      addAndCompile <| Declaration.defnDecl
+        { name := proxyEquivName
+          levelParams := indVal.levelParams
+          safety := DefinitionSafety.safe
+          hints := ReducibilityHints.abbrev
+          type := (← inferType equiv')
+          value := equiv' }
+      setProtected proxyEquivName
     return { proxyName := proxyName
-             equiv := equivBody }
+             proxyEquivName := proxyEquivName }
 
 /--
-The term elaborator `derive_fintype% α` tries to synthesize a `Fintype α` instance
-using all the assumptions in the local context. It only works when `α` is an inductive
-type that the `Fintype` deriving handler can normally process. The handler makes use of the
-expected type, so `(derive_fintype% _ : Fintype α)` works as well.
+The term elaborator `proxy_equiv% α` for a type `α` synthesizes a "proxy type" `β` composed
+of basic type constructors like `Sum`, `PSigma`, and `PLift` and an equivalence `β ≃ α`.
+Then `proxy_equiv% α : β ≃ α`.
 
-A side effect of this is that it defines a type named `fintypeProxy` in the namespace associated
-to `α`, just like the `Fintype` deriving handler normally would for non-enum types.
+This only works for inductive types `α` that are neither recursive nor have indices.
+If `α` is an inductive type with name `I`, then as a side effect this elaborator defines
+`I.proxyType` and `I.proxyTypeEquiv`.
+
+The elaborator makes use of the expected type, so `(proxy_equiv% _ : _ ≃ α)` works.
 -/
-elab "derive_fintype% " t:term : term <= expectedType => do
+elab "proxy_equiv% " t:term : term <= expectedType => do
   let type ← Term.elabType t
-  let f ← Term.elabType (← `(Fintype $(← Term.exprToSyntax type)))
-  unless ← isDefEq expectedType f do
-    throwError "Could not unify expected type{indentExpr expectedType}\nwith{indentExpr f}"
+  let equivType ← Term.elabType (← `(_ ≃ $(← Term.exprToSyntax type)))
+  unless ← isDefEq expectedType equivType do
+    throwError "Could not unify expected type{indentExpr expectedType}\nwith{indentExpr equivType}"
   let mut type ← instantiateMVars type
   if type.hasExprMVar then
     Term.synthesizeSyntheticMVars
@@ -207,10 +230,19 @@ elab "derive_fintype% " t:term : term <= expectedType => do
     | throwError "{type} is not a constant or constant application"
   let indVal ← getConstInfoInduct declName
   let data ← mkProxyEquiv indVal
-  let proxy ← mkAppOptM data.proxyName (type.getAppArgs.map .some)
-  let equivType ← mkAppM ``Equiv #[proxy, type]
-  let equiv ← Term.elabTerm data.equiv equivType
-  return ← mkAppM ``Fintype.ofEquiv #[proxy, equiv]
+  mkAppOptM data.proxyEquivName (type.getAppArgs.map .some)
+
+/--
+The term elaborator `derive_fintype% α` tries to synthesize a `Fintype α` instance
+using all the assumptions in the local context. It only works when `α` is an inductive
+type that `proxy_equiv% α` can handle. The elaborator makes use of the
+expected type, so `(derive_fintype% _ : Fintype α)` works.
+
+This uses `prox_equiv% α`, so as a side effect it defines `proxyType` and `proxyTypeEquiv` in
+the namespace associated to the inductive type `α`.
+-/
+elab "derive_fintype% " t:term : term <= expectedType => do
+  Term.elabTerm (← `(term| Fintype.ofEquiv _ (proxy_equiv% $t))) expectedType
 
 /-
 Creates a `Fintype` instance by adding additional `Fintype` and `Decidable` instance arguments
