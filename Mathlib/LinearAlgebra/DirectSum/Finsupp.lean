@@ -36,6 +36,8 @@ open TensorProduct
 
 open TensorProduct Classical
 
+set_option synthInstance.etaExperiment true -- Porting note: gets around lean4#2074
+
 /-- The tensor product of ι →₀ M and κ →₀ N is linearly equivalent to (ι × κ) →₀ (M ⊗ N). -/
 def finsuppTensorFinsupp (R M N ι κ : Sort _) [CommRing R] [AddCommGroup M] [Module R M]
     [AddCommGroup N] [Module R N] : (ι →₀ M) ⊗[R] (κ →₀ N) ≃ₗ[R] ι × κ →₀ M ⊗[R] N :=
@@ -74,7 +76,7 @@ theorem finsuppTensorFinsupp_apply (R M N ι κ : Sort _) [CommRing R] [AddCommG
         simp [h1]
       · simp only [h1, if_false]
         simp only [Prod.mk.inj_iff, not_and_or] at h1
-        cases h1 <;> simp [h1]
+        cases' h1 with h1 h1 <;> simp [h1]
 #align finsupp_tensor_finsupp_apply finsuppTensorFinsupp_apply
 
 @[simp]
@@ -82,14 +84,13 @@ theorem finsuppTensorFinsupp_symm_single (R M N ι κ : Sort _) [CommRing R] [Ad
     [Module R M] [AddCommGroup N] [Module R N] (i : ι × κ) (m : M) (n : N) :
     (finsuppTensorFinsupp R M N ι κ).symm (Finsupp.single i (m ⊗ₜ n)) =
       Finsupp.single i.1 m ⊗ₜ Finsupp.single i.2 n :=
-  Prod.casesOn i fun i k =>
+  Prod.casesOn i fun _ _ =>
     (LinearEquiv.symm_apply_eq _).2 (finsuppTensorFinsupp_single _ _ _ _ _ _ _ _ _).symm
 #align finsupp_tensor_finsupp_symm_single finsuppTensorFinsupp_symm_single
 
 variable (S : Type _) [CommRing S] (α β : Type _)
 
-/-- A variant of `finsupp_tensor_finsupp` where both modules are the ground ring.
--/
+/-- A variant of `finsuppTensorFinsupp` where both modules are the ground ring. -/
 def finsuppTensorFinsupp' : (α →₀ S) ⊗[S] (β →₀ S) ≃ₗ[S] α × β →₀ S :=
   (finsuppTensorFinsupp S S S α β).trans (Finsupp.lcongr (Equiv.refl _) (TensorProduct.lid S S))
 #align finsupp_tensor_finsupp' finsuppTensorFinsupp'
@@ -104,8 +105,10 @@ theorem finsuppTensorFinsupp'_single_tmul_single (a : α) (b : β) (r₁ r₂ : 
     finsuppTensorFinsupp' S α β (Finsupp.single a r₁ ⊗ₜ[S] Finsupp.single b r₂) =
       Finsupp.single (a, b) (r₁ * r₂) := by
   ext ⟨a', b'⟩
-  simp [Finsupp.single_apply, ite_and]
+  -- Porting note: was simp [Finsupp.single_apply, ite_and] from here on out
+  simp only [finsuppTensorFinsupp'_apply_apply, Finsupp.single_apply, mul_ite, ite_mul, zero_mul,
+      mul_zero, Prod.mk.injEq, ite_and]
+  split <;> simp_all only [ite_self]
 #align finsupp_tensor_finsupp'_single_tmul_single finsuppTensorFinsupp'_single_tmul_single
 
 end TensorProduct
-
