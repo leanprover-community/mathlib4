@@ -110,25 +110,22 @@ instance : Category (Grothendieck F) where
   id X := Grothendieck.id X
   comp := @fun X Y Z f g => Grothendieck.comp f g
   comp_id := @fun X Y f => by
-    ext
-    · dsimp
-      -- We need to turn `F.map_id` (which is an equation between functors)
-      -- into a natural isomorphism.
-      rw [← nat_iso.naturality_2 (eq_to_iso (F.map_id Y.base)) f.fiber]
-      simp
+    dsimp; ext; swap
     · simp
-  id_comp := @fun X Y f => by ext <;> simp
+    · simp
+      rw [← NatIso.naturality_2 (eqToIso (F.map_id Y.base)) f.fiber]
+      simp
+  id_comp := @fun X Y f => by dsimp; ext <;> simp
   assoc := @fun W X Y Z f g h => by
-    ext; swap
+    dsimp; ext; swap
     · simp
     · dsimp
-      rw [← nat_iso.naturality_2 (eq_to_iso (F.map_comp _ _)) f.fiber]
+      rw [← NatIso.naturality_2 (eqToIso (F.map_comp _ _)) f.fiber]
       simp
-      rfl
 
 @[simp]
 theorem id_fiber' (X : Grothendieck F) :
-    Hom.fiber (𝟙 X) = eqToHom (by erw [CategoryTheory.Functor.map_id, functor.id_obj X.fiber]) :=
+    Hom.fiber (𝟙 X) = eqToHom (by erw [CategoryTheory.Functor.map_id, Functor.id_obj X.fiber]) :=
   id_fiber X
 #align category_theory.grothendieck.id_fiber' CategoryTheory.Grothendieck.id_fiber'
 
@@ -188,9 +185,8 @@ def grothendieckTypeToCat : Grothendieck (G ⋙ typeToCat) ≌ G.Elements where
       (by
         rintro ⟨_, ⟨⟩⟩ ⟨_, ⟨⟩⟩ ⟨base, ⟨⟨f⟩⟩⟩
         dsimp at *
-        subst f
-        ext
-        simp)
+        simp
+        rfl )
   counitIso :=
     NatIso.ofComponents
       (fun X => by
@@ -199,9 +195,8 @@ def grothendieckTypeToCat : Grothendieck (G ⋙ typeToCat) ≌ G.Elements where
       (by
         rintro ⟨⟩ ⟨⟩ ⟨f, e⟩
         dsimp at *
-        subst e
-        ext
-        simp)
+        simp
+        rfl)
   functor_unitIso_comp := by
     rintro ⟨_, ⟨⟩⟩
     dsimp
