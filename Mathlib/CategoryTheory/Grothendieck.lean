@@ -130,7 +130,7 @@ theorem id_fiber' (X : Grothendieck F) :
 #align category_theory.grothendieck.id_fiber' CategoryTheory.Grothendieck.id_fiber'
 
 theorem congr {X Y : Grothendieck F} {f g : X ⟶ Y} (h : f = g) :
-    f.fiber = eqToHom (by subst h) ≫ g.fiber := by
+    f.fiber = eqToHom (by subst h; rfl) ≫ g.fiber := by
   subst h
   dsimp
   simp
