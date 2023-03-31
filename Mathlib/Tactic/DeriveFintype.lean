@@ -143,6 +143,7 @@ def mkProxyEquiv (indVal : InductiveVal) : TermElabM EquivData := do
       "proxy equivalence: recursive inductive types are not supported (and are usually infinite)"
   if 0 < indVal.numIndices then
     throwError "proxy equivalence: inductive indices are not supported"
+
   let levels := indVal.levelParams.map Level.param
   let proxyName := indVal.name.mkStr "proxyType"
   let proxyEquivName := indVal.name.mkStr "proxyTypeEquiv"
@@ -189,29 +190,25 @@ def mkProxyEquiv (indVal : InductiveVal) : TermElabM EquivData := do
       trace[Elab.Deriving.fintype] "defined {proxyName}"
 
     -- Create the `Equiv`
-    let mut toFun ← `(term| fun $toFunAlts:matchAlt*)
-    let mut invFun ← `(term| fun $invFunAlts:matchAlt*)
-    if indVal.numCtors == 0 then
-      -- Empty matches don't elaborate, so use `nomatch` here.
-      toFun ← `(term| fun x => nomatch x)
-      invFun ← `(term| fun x => nomatch x)
-    let equivBody ← `(term| { toFun := $toFun,
-                              invFun := $invFun,
-                              right_inv := by intro x; cases x <;> rfl
-                              left_inv := by intro x; $pf:tactic })
     let equivType ← mkAppM ``Equiv #[ctype, mkAppN (mkConst indVal.name levels) params]
-    equivType.ensureHasNoMVars
-    let equiv ← Term.elabTerm equivBody equivType
-    Term.synthesizeSyntheticMVarsNoPostponing
-    let equiv ← instantiateMVars equiv
-    let equiv' ← mkLambdaFVars params equiv
-    equiv'.ensureHasNoMVars
     if let some const := (← getEnv).find? proxyEquivName then
-      unless ← isDefEq const.value! equiv' do
-        throwError
-          "Declaration {proxyEquivName} already exists and it is not the proxy equivalence."
+      unless ← isDefEq const.type (← mkForallFVars params equivType) do
+        throwError "Declaration {proxyEquivName} already exists and has the wrong type."
       trace[Elab.Deriving.fintype] "proxy equivalence already exists"
     else
+      let mut toFun ← `(term| fun $toFunAlts:matchAlt*)
+      let mut invFun ← `(term| fun $invFunAlts:matchAlt*)
+      if indVal.numCtors == 0 then
+        -- Empty matches don't elaborate, so use `nomatch` here.
+        toFun ← `(term| fun x => nomatch x)
+        invFun ← `(term| fun x => nomatch x)
+      let equivBody ← `(term| { toFun := $toFun,
+                                invFun := $invFun,
+                                right_inv := by intro x; cases x <;> rfl
+                                left_inv := by intro x; $pf:tactic })
+      let equiv ← Term.elabTerm equivBody equivType
+      Term.synthesizeSyntheticMVarsNoPostponing
+      let equiv' ← mkLambdaFVars params (← instantiateMVars equiv)
       addAndCompile <| Declaration.defnDecl
         { name := proxyEquivName
           levelParams := indVal.levelParams
@@ -220,6 +217,8 @@ def mkProxyEquiv (indVal : InductiveVal) : TermElabM EquivData := do
           type := (← inferType equiv')
           value := equiv' }
       setProtected proxyEquivName
+      trace[Elab.Deriving.fintype] "defined {proxyEquivName}"
+
     return { proxyName := proxyName
              proxyEquivName := proxyEquivName }
 
@@ -243,7 +242,7 @@ inductive foo (n : Nat) (α : Type)
   | d : Bool → α → foo n α
 ```
 the proxy type it generates is `Unit ⊕ Bool ⊕ (x : Fin n) × Fin x ⊕ (_ : Bool) × α` and
-in particular
+in particular we have that
 ```
 proxy_equiv% (foo n α) : Unit ⊕ Bool ⊕ (x : Fin n) × Fin x ⊕ (_ : Bool) × α ≃ foo n α
 ```
