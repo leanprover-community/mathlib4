@@ -31,7 +31,7 @@ where morphisms consists again of `β : b ⟶ b'` and `φ : f ⟶ (F.map (op β)
 
 ## References
 
-See also `category_theory.functor.elements` for the category of elements of functor `F : C ⥤ Type`.
+See also `CategoryTheory.Functor.Elements` for the category of elements of functor `F : C ⥤ Type`.
 
 * https://stacks.math.columbia.edu/tag/02XV
 * https://ncatlab.org/nlab/show/Grothendieck+construction
