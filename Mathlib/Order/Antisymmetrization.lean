@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 
 ! This file was ported from Lean 3 source module order.antisymmetrization
-! leanprover-community/mathlib commit f1a2caaf51ef593799107fe9a8d5e411599f3996
+! leanprover-community/mathlib commit 3353f661228bd27f632c600cd1a58b874d847c90
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -161,18 +161,12 @@ theorem antisymmetrization_fibration :
 
 theorem acc_antisymmetrization_iff : Acc (· < ·)
     (@toAntisymmetrization α (· ≤ ·) _ a) ↔ Acc (· < ·) a :=
-  ⟨fun h =>
-    haveI := InvImage.accessible _ h
-    this,
-    Acc.of_fibration _ antisymmetrization_fibration⟩
+  acc_liftOn₂'_iff
 #align acc_antisymmetrization_iff acc_antisymmetrization_iff
 
 theorem wellFounded_antisymmetrization_iff :
     WellFounded (@LT.lt (Antisymmetrization α (· ≤ ·)) _) ↔ WellFounded (@LT.lt α _) :=
-  ⟨fun h => ⟨fun a => acc_antisymmetrization_iff.1 <| h.apply _⟩, fun h =>
-    ⟨by
-      rintro ⟨a⟩
-      exact acc_antisymmetrization_iff.2 (h.apply a)⟩⟩
+  wellFounded_liftOn₂'_iff
 #align well_founded_antisymmetrization_iff wellFounded_antisymmetrization_iff
 
 instance [WellFoundedLT α] : WellFoundedLT (Antisymmetrization α (· ≤ ·)) :=
@@ -250,10 +244,8 @@ variable (α)
 
 /-- `ofAntisymmetrization` as an order embedding. -/
 @[simps]
-noncomputable def OrderEmbedding.ofAntisymmetrization : Antisymmetrization α (· ≤ ·) ↪o α where
-  toFun := _root_.ofAntisymmetrization (. ≤ .)
-  inj' _ _ := Quotient.out_inj.1
-  map_rel_iff' := ofAntisymmetrization_le_ofAntisymmetrization_iff
+noncomputable def OrderEmbedding.ofAntisymmetrization : Antisymmetrization α (· ≤ ·) ↪o α :=
+  { Quotient.out'RelEmbedding _ with toFun := _root_.ofAntisymmetrization _ }
 #align order_embedding.of_antisymmetrization OrderEmbedding.ofAntisymmetrization
 #align order_embedding.of_antisymmetrization_apply OrderEmbedding.ofAntisymmetrization_apply
 
