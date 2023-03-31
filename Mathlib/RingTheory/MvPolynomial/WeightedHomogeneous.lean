@@ -241,7 +241,8 @@ set_option linter.uppercaseLean3 false in
 
 namespace IsWeightedHomogeneous
 
-variable {R} {φ ψ : MvPolynomial σ R} {m n : M}
+variable {R}
+variable {φ ψ : MvPolynomial σ R} {m n : M}
 
 /-- The weighted degree of a weighted homogeneous polynomial controls its support. -/
 theorem coeff_eq_zero {w : σ → M} (hφ : IsWeightedHomogeneous w φ n) (d : σ →₀ ℕ)
