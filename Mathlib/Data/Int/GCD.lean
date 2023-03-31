@@ -513,94 +513,94 @@ theorem pow_gcd_eq_one {M : Type _} [Monoid M] (x : M) {m n : ℕ} (hm : x ^ m =
 
 -- open NormNum
 
--- namespace Tactic
+namespace Tactic
 
--- namespace NormNum
+namespace NormNum
 
--- theorem int_gcd_helper' {d : ℕ} {x y a b : ℤ} (h₁ : (d : ℤ) ∣ x) (h₂ : (d : ℤ) ∣ y)
---     (h₃ : x * a + y * b = d) : Int.gcd x y = d := by
---   refine' Nat.dvd_antisymm _ (Int.coe_nat_dvd.1 (Int.dvd_gcd h₁ h₂))
---   rw [← Int.coe_nat_dvd, ← h₃]
---   apply dvd_add
---   · exact (Int.gcd_dvd_left _ _).mul_right _
---   · exact (Int.gcd_dvd_right _ _).mul_right _
--- #align tactic.norm_num.int_gcd_helper' Tactic.NormNum.int_gcd_helper'
+theorem int_gcd_helper' {d : ℕ} {x y a b : ℤ} (h₁ : (d : ℤ) ∣ x) (h₂ : (d : ℤ) ∣ y)
+    (h₃ : x * a + y * b = d) : Int.gcd x y = d := by
+  refine' Nat.dvd_antisymm _ (Int.coe_nat_dvd.1 (Int.dvd_gcd h₁ h₂))
+  rw [← Int.coe_nat_dvd, ← h₃]
+  apply dvd_add
+  · exact (Int.gcd_dvd_left _ _).mul_right _
+  · exact (Int.gcd_dvd_right _ _).mul_right _
+#align tactic.norm_num.int_gcd_helper' Tactic.NormNum.int_gcd_helper'
 
--- theorem nat_gcd_helper_dvd_left (x y a : ℕ) (h : x * a = y) : Nat.gcd x y = x :=
---   Nat.gcd_eq_left ⟨a, h.symm⟩
--- #align tactic.norm_num.nat_gcd_helper_dvd_left Tactic.NormNum.nat_gcd_helper_dvd_left
+theorem nat_gcd_helper_dvd_left (x y a : ℕ) (h : x * a = y) : Nat.gcd x y = x :=
+  Nat.gcd_eq_left ⟨a, h.symm⟩
+#align tactic.norm_num.nat_gcd_helper_dvd_left Tactic.NormNum.nat_gcd_helper_dvd_left
 
--- theorem nat_gcd_helper_dvd_right (x y a : ℕ) (h : y * a = x) : Nat.gcd x y = y :=
---   Nat.gcd_eq_right ⟨a, h.symm⟩
--- #align tactic.norm_num.nat_gcd_helper_dvd_right Tactic.NormNum.nat_gcd_helper_dvd_right
+theorem nat_gcd_helper_dvd_right (x y a : ℕ) (h : y * a = x) : Nat.gcd x y = y :=
+  Nat.gcd_eq_right ⟨a, h.symm⟩
+#align tactic.norm_num.nat_gcd_helper_dvd_right Tactic.NormNum.nat_gcd_helper_dvd_right
 
--- theorem nat_gcd_helper_2 (d x y a b u v tx ty : ℕ) (hu : d * u = x) (hv : d * v = y)
---     (hx : x * a = tx) (hy : y * b = ty) (h : ty + d = tx) : Nat.gcd x y = d := by
---   rw [← Int.coe_nat_gcd];
---   apply
---     @int_gcd_helper' _ _ _ a (-b) (Int.coe_nat_dvd.2 ⟨_, hu.symm⟩) (Int.coe_nat_dvd.2
---      ⟨_, hv.symm⟩)
---   rw [mul_neg, ← sub_eq_add_neg, sub_eq_iff_eq_add']
---   norm_cast; rw [hx, hy, h]
--- #align tactic.norm_num.nat_gcd_helper_2 Tactic.NormNum.nat_gcd_helper_2
+theorem nat_gcd_helper_2 (d x y a b u v tx ty : ℕ) (hu : d * u = x) (hv : d * v = y)
+    (hx : x * a = tx) (hy : y * b = ty) (h : ty + d = tx) : Nat.gcd x y = d := by
+  rw [← Int.coe_nat_gcd];
+  apply
+    @int_gcd_helper' _ _ _ a (-b) (Int.coe_nat_dvd.2 ⟨_, hu.symm⟩) (Int.coe_nat_dvd.2
+     ⟨_, hv.symm⟩)
+  rw [mul_neg, ← sub_eq_add_neg, sub_eq_iff_eq_add']
+  norm_cast; rw [hx, hy, h]
+#align tactic.norm_num.nat_gcd_helper_2 Tactic.NormNum.nat_gcd_helper_2
 
--- theorem nat_gcd_helper_1 (d x y a b u v tx ty : ℕ) (hu : d * u = x) (hv : d * v = y)
---     (hx : x * a = tx) (hy : y * b = ty) (h : tx + d = ty) : Nat.gcd x y = d :=
---   (Nat.gcd_comm _ _).trans <| nat_gcd_helper_2 _ _ _ _ _ _ _ _ _ hv hu hy hx h
--- #align tactic.norm_num.nat_gcd_helper_1 Tactic.NormNum.nat_gcd_helper_1
+theorem nat_gcd_helper_1 (d x y a b u v tx ty : ℕ) (hu : d * u = x) (hv : d * v = y)
+    (hx : x * a = tx) (hy : y * b = ty) (h : tx + d = ty) : Nat.gcd x y = d :=
+  (Nat.gcd_comm _ _).trans <| nat_gcd_helper_2 _ _ _ _ _ _ _ _ _ hv hu hy hx h
+#align tactic.norm_num.nat_gcd_helper_1 Tactic.NormNum.nat_gcd_helper_1
 
--- --Porting note: the `simp only` was not necessary in Lean3.
--- theorem nat_lcm_helper (x y d m n : ℕ) (hd : Nat.gcd x y = d) (d0 : 0 < d) (xy : x * y = n)
---     (dm : d * m = n) : Nat.lcm x y = m :=
---   mul_right_injective₀ d0.ne' <| by simp only; rw [dm, ← xy, ← hd, Nat.gcd_mul_lcm]
--- #align tactic.norm_num.nat_lcm_helper Tactic.NormNum.nat_lcm_helper
+--Porting note: the `simp only` was not necessary in Lean3.
+theorem nat_lcm_helper (x y d m n : ℕ) (hd : Nat.gcd x y = d) (d0 : 0 < d) (xy : x * y = n)
+    (dm : d * m = n) : Nat.lcm x y = m :=
+  mul_right_injective₀ d0.ne' <| by simp only; rw [dm, ← xy, ← hd, Nat.gcd_mul_lcm]
+#align tactic.norm_num.nat_lcm_helper Tactic.NormNum.nat_lcm_helper
 
--- theorem nat_coprime_helper_zero_left (x : ℕ) (h : 1 < x) : ¬Nat.coprime 0 x :=
---   mt (Nat.coprime_zero_left _).1 <| ne_of_gt h
--- #align tactic.norm_num.nat_coprime_helper_zero_left Tactic.NormNum.nat_coprime_helper_zero_left
+theorem nat_coprime_helper_zero_left (x : ℕ) (h : 1 < x) : ¬Nat.coprime 0 x :=
+  mt (Nat.coprime_zero_left _).1 <| ne_of_gt h
+#align tactic.norm_num.nat_coprime_helper_zero_left Tactic.NormNum.nat_coprime_helper_zero_left
 
--- theorem nat_coprime_helper_zero_right (x : ℕ) (h : 1 < x) : ¬Nat.coprime x 0 :=
---   mt (Nat.coprime_zero_right _).1 <| ne_of_gt h
--- #align tactic.norm_num.nat_coprime_helper_zero_right Tactic.NormNum.nat_coprime_helper_zero_right
+theorem nat_coprime_helper_zero_right (x : ℕ) (h : 1 < x) : ¬Nat.coprime x 0 :=
+  mt (Nat.coprime_zero_right _).1 <| ne_of_gt h
+#align tactic.norm_num.nat_coprime_helper_zero_right Tactic.NormNum.nat_coprime_helper_zero_right
 
--- theorem nat_coprime_helper_1 (x y a b tx ty : ℕ) (hx : x * a = tx) (hy : y * b = ty)
---     (h : tx + 1 = ty) : Nat.coprime x y :=
---   nat_gcd_helper_1 _ _ _ _ _ _ _ _ _ (one_mul _) (one_mul _) hx hy h
--- #align tactic.norm_num.nat_coprime_helper_1 Tactic.NormNum.nat_coprime_helper_1
+theorem nat_coprime_helper_1 (x y a b tx ty : ℕ) (hx : x * a = tx) (hy : y * b = ty)
+    (h : tx + 1 = ty) : Nat.coprime x y :=
+  nat_gcd_helper_1 _ _ _ _ _ _ _ _ _ (one_mul _) (one_mul _) hx hy h
+#align tactic.norm_num.nat_coprime_helper_1 Tactic.NormNum.nat_coprime_helper_1
 
--- theorem nat_coprime_helper_2 (x y a b tx ty : ℕ) (hx : x * a = tx) (hy : y * b = ty)
---     (h : ty + 1 = tx) : Nat.coprime x y :=
---   nat_gcd_helper_2 _ _ _ _ _ _ _ _ _ (one_mul _) (one_mul _) hx hy h
--- #align tactic.norm_num.nat_coprime_helper_2 Tactic.NormNum.nat_coprime_helper_2
+theorem nat_coprime_helper_2 (x y a b tx ty : ℕ) (hx : x * a = tx) (hy : y * b = ty)
+    (h : ty + 1 = tx) : Nat.coprime x y :=
+  nat_gcd_helper_2 _ _ _ _ _ _ _ _ _ (one_mul _) (one_mul _) hx hy h
+#align tactic.norm_num.nat_coprime_helper_2 Tactic.NormNum.nat_coprime_helper_2
 
--- theorem nat_not_coprime_helper (d x y u v : ℕ) (hu : d * u = x) (hv : d * v = y) (h : 1 < d) :
---     ¬Nat.coprime x y :=
---   Nat.not_coprime_of_dvd_of_dvd h ⟨_, hu.symm⟩ ⟨_, hv.symm⟩
--- #align tactic.norm_num.nat_not_coprime_helper Tactic.NormNum.nat_not_coprime_helper
+theorem nat_not_coprime_helper (d x y u v : ℕ) (hu : d * u = x) (hv : d * v = y) (h : 1 < d) :
+    ¬Nat.coprime x y :=
+  Nat.not_coprime_of_dvd_of_dvd h ⟨_, hu.symm⟩ ⟨_, hv.symm⟩
+#align tactic.norm_num.nat_not_coprime_helper Tactic.NormNum.nat_not_coprime_helper
 
--- theorem int_gcd_helper (x y : ℤ) (nx ny d : ℕ) (hx : (nx : ℤ) = x) (hy : (ny : ℤ) = y)
---     (h : Nat.gcd nx ny = d) : Int.gcd x y = d := by rwa [← hx, ← hy, Int.coe_nat_gcd]
--- #align tactic.norm_num.int_gcd_helper Tactic.NormNum.int_gcd_helper
+theorem int_gcd_helper (x y : ℤ) (nx ny d : ℕ) (hx : (nx : ℤ) = x) (hy : (ny : ℤ) = y)
+    (h : Nat.gcd nx ny = d) : Int.gcd x y = d := by rwa [← hx, ← hy, Int.coe_nat_gcd]
+#align tactic.norm_num.int_gcd_helper Tactic.NormNum.int_gcd_helper
 
--- theorem int_gcd_helper_neg_left (x y : ℤ) (d : ℕ) (h : Int.gcd x y = d) : Int.gcd (-x) y = d :=
---  by rw [Int.gcd] at h⊢; rwa [Int.natAbs_neg]
--- #align tactic.norm_num.int_gcd_helper_neg_left Tactic.NormNum.int_gcd_helper_neg_left
+theorem int_gcd_helper_neg_left (x y : ℤ) (d : ℕ) (h : Int.gcd x y = d) : Int.gcd (-x) y = d :=
+ by rw [Int.gcd] at h⊢; rwa [Int.natAbs_neg]
+#align tactic.norm_num.int_gcd_helper_neg_left Tactic.NormNum.int_gcd_helper_neg_left
 
--- theorem int_gcd_helper_neg_right (x y : ℤ) (d : ℕ) (h : Int.gcd x y = d) : Int.gcd x (-y) = d :=
---  by rw [Int.gcd] at h⊢; rwa [Int.natAbs_neg]
--- #align tactic.norm_num.int_gcd_helper_neg_right Tactic.NormNum.int_gcd_helper_neg_right
+theorem int_gcd_helper_neg_right (x y : ℤ) (d : ℕ) (h : Int.gcd x y = d) : Int.gcd x (-y) = d :=
+ by rw [Int.gcd] at h⊢; rwa [Int.natAbs_neg]
+#align tactic.norm_num.int_gcd_helper_neg_right Tactic.NormNum.int_gcd_helper_neg_right
 
--- theorem int_lcm_helper (x y : ℤ) (nx ny d : ℕ) (hx : (nx : ℤ) = x) (hy : (ny : ℤ) = y)
---     (h : Nat.lcm nx ny = d) : Int.lcm x y = d := by rwa [← hx, ← hy, Int.coe_nat_lcm]
--- #align tactic.norm_num.int_lcm_helper Tactic.NormNum.int_lcm_helper
+theorem int_lcm_helper (x y : ℤ) (nx ny d : ℕ) (hx : (nx : ℤ) = x) (hy : (ny : ℤ) = y)
+    (h : Nat.lcm nx ny = d) : Int.lcm x y = d := by rwa [← hx, ← hy, Int.coe_nat_lcm]
+#align tactic.norm_num.int_lcm_helper Tactic.NormNum.int_lcm_helper
 
--- theorem int_lcm_helper_neg_left (x y : ℤ) (d : ℕ) (h : Int.lcm x y = d) : Int.lcm (-x) y = d :=
---  by rw [Int.lcm] at h⊢; rwa [Int.natAbs_neg]
--- #align tactic.norm_num.int_lcm_helper_neg_left Tactic.NormNum.int_lcm_helper_neg_left
+theorem int_lcm_helper_neg_left (x y : ℤ) (d : ℕ) (h : Int.lcm x y = d) : Int.lcm (-x) y = d :=
+ by rw [Int.lcm] at h⊢; rwa [Int.natAbs_neg]
+#align tactic.norm_num.int_lcm_helper_neg_left Tactic.NormNum.int_lcm_helper_neg_left
 
--- theorem int_lcm_helper_neg_right (x y : ℤ) (d : ℕ) (h : Int.lcm x y = d) : Int.lcm x (-y) = d :=
---  by rw [Int.lcm] at h⊢; rwa [Int.natAbs_neg]
--- #align tactic.norm_num.int_lcm_helper_neg_right Tactic.NormNum.int_lcm_helper_neg_right
+theorem int_lcm_helper_neg_right (x y : ℤ) (d : ℕ) (h : Int.lcm x y = d) : Int.lcm x (-y) = d :=
+ by rw [Int.lcm] at h⊢; rwa [Int.natAbs_neg]
+#align tactic.norm_num.int_lcm_helper_neg_right Tactic.NormNum.int_lcm_helper_neg_right
 
 -- /-- Evaluates the `nat.gcd` function. -/
 -- unsafe def prove_gcd_nat (c : instance_cache) (ex ey : expr) :
@@ -760,6 +760,6 @@ theorem pow_gcd_eq_one {M : Type _} [Monoid M] (x : M) {m n : ℕ} (hm : x ^ m =
 --   | _ => failed
 -- #align tactic.norm_num.eval_gcd tactic.norm_num.eval_gcd
 
--- end NormNum
+end NormNum
 
--- end Tactic
+end Tactic

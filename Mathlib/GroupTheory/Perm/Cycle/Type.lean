@@ -616,6 +616,9 @@ theorem orderOf {g : Perm α} (ht : IsThreeCycle g) : orderOf g = 3 := by
 theorem isThreeCycle_sq {g : Perm α} (ht : IsThreeCycle g) : IsThreeCycle (g * g) := by
   rw [← pow_two, ← card_support_eq_three_iff, support_pow_coprime, ht.card_support]
   rw [ht.orderOf, Nat.coprime_iff_gcd_eq_one]
+  -- Porting note: was `norm_num`
+  apply Tactic.NormNum.nat_gcd_helper_1
+    _ _ _ _ _ _ _ _ _ (one_mul _) (one_mul _) (mul_one _) (mul_one _)
   norm_num
 #align equiv.perm.is_three_cycle.is_three_cycle_sq Equiv.Perm.IsThreeCycle.isThreeCycle_sq
 
