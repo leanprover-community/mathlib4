@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis
 
 ! This file was ported from Lean 3 source module algebra.group_power.lemmas
-! leanprover-community/mathlib commit e1bccd6e40ae78370f01659715d3c948716e3b7e
+! leanprover-community/mathlib commit 05101c3df9d9cfe9430edc205860c79b6d660102
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -733,7 +733,7 @@ end LinearOrderedRing
 
 namespace Int
 
-lemma natAbs_sq (x : ℤ) : ↑(x.natAbs ^ 2) = x ^ 2 := by rw [sq, Int.natAbs_mul_self, sq]
+lemma natAbs_sq (x : ℤ) : (x.natAbs : ℤ) ^ 2 = x ^ 2 := by rw [sq, Int.natAbs_mul_self', sq]
 #align int.nat_abs_sq Int.natAbs_sq
 
 alias natAbs_sq ← natAbs_pow_two
@@ -1067,12 +1067,14 @@ theorem cast_nat_mul_cast_nat_mul (h : Commute a b)
   SemiconjBy.cast_nat_mul_cast_nat_mul h m n
 #align commute.cast_nat_mul_cast_nat_mul Commute.cast_nat_mul_cast_nat_mul
 
+variable (a) (m n : ℕ)
+
 /- Porting note: `simp` attribute removed as linter reports:
 simp can prove this:
   by simp only [Commute.refl, Commute.cast_nat_mul_right]
 -/
 -- @[simp]
-theorem self_cast_nat_mul (n : ℕ) : Commute a (n * a : R) :=
+theorem self_cast_nat_mul : Commute a (n * a : R) :=
   (Commute.refl a).cast_nat_mul_right n
 #align commute.self_cast_nat_mul Commute.self_cast_nat_mul
 
@@ -1081,7 +1083,7 @@ simp can prove this:
   by simp only [Commute.refl, Commute.cast_nat_mul_left]
 -/
 -- @[simp]
-theorem cast_nat_mul_self (n : ℕ) : Commute ((n : R) * a) a :=
+theorem cast_nat_mul_self : Commute ((n : R) * a) a :=
   (Commute.refl a).cast_nat_mul_left n
 #align commute.cast_nat_mul_self Commute.cast_nat_mul_self
 
@@ -1090,7 +1092,7 @@ simp can prove this:
   by simp only [Commute.refl, Commute.cast_nat_mul_left, Commute.cast_nat_mul_right]
 -/
 -- @[simp]
-theorem self_cast_nat_mul_cast_nat_mul (m n : ℕ) : Commute (m * a : R) (n * a : R) :=
+theorem self_cast_nat_mul_cast_nat_mul : Commute (m * a : R) (n * a : R) :=
   (Commute.refl a).cast_nat_mul_cast_nat_mul m n
 #align commute.self_cast_nat_mul_cast_nat_mul Commute.self_cast_nat_mul_cast_nat_mul
 
@@ -1133,15 +1135,11 @@ theorem cast_int_mul_cast_int_mul (h : Commute a b)
 variable (a) (m n : ℤ)
 
 @[simp]
-theorem cast_int_left : Commute (m : R) a := by
-  rw [← mul_one (m : R)]
-  exact (one_left a).cast_int_mul_left m
+theorem cast_int_left : Commute (m : R) a := Int.cast_commute _ _
 #align commute.cast_int_left Commute.cast_int_left
 
 @[simp]
-theorem cast_int_right : Commute a m := by
-  rw [← mul_one (m : R)]
-  exact (one_right a).cast_int_mul_right m
+theorem cast_int_right : Commute a m := Int.commute_cast _ _
 #align commute.cast_int_right Commute.cast_int_right
 
 /- Porting note: `simp` attribute removed as linter reports:

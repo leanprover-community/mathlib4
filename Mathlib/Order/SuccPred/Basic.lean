@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 
 ! This file was ported from Lean 3 source module order.succ_pred.basic
-! leanprover-community/mathlib commit 207cfac9fcd06138865b5d04f7091e46d9320432
+! leanprover-community/mathlib commit 0111834459f5d7400215223ea95ae38a1265a907
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -1105,6 +1105,14 @@ theorem pred_coe (a : α) : pred (↑a : WithTop α) = ↑(pred a) :=
   rfl
 #align with_top.pred_coe WithTop.pred_coe
 
+@[simp]
+theorem pred_untop :
+    ∀ (a : WithTop α) (ha : a ≠ ⊤),
+      pred (a.untop ha) = (pred a).untop (by induction a using WithTop.recTopCoe <;> simp)
+  | ⊤, ha => (ha rfl).elim
+  | (a : α), _ => rfl
+#align with_top.pred_untop WithTop.pred_untop
+
 end Pred
 
 /-! #### Adding a `⊤` to a `NoMaxOrder` -/
@@ -1207,6 +1215,14 @@ theorem succ_bot : succ (⊥ : WithBot α) = ↑(⊥ : α) :=
 theorem succ_coe (a : α) : succ (↑a : WithBot α) = ↑(succ a) :=
   rfl
 #align with_bot.succ_coe WithBot.succ_coe
+
+@[simp]
+theorem succ_unbot :
+    ∀ (a : WithBot α) (ha : a ≠ ⊥),
+      succ (a.unbot ha) = (succ a).unbot (by induction a using WithBot.recBotCoe <;> simp)
+  | ⊥, ha => (ha rfl).elim
+  | (a : α), _ => rfl
+#align with_bot.succ_unbot WithBot.succ_unbot
 
 end Succ
 

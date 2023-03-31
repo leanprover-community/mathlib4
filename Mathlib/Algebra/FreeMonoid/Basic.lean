@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Yury Kudryashov
 
 ! This file was ported from Lean 3 source module algebra.free_monoid.basic
-! leanprover-community/mathlib commit dd71334db81d0bd444af1ee339a29298bef40734
+! leanprover-community/mathlib commit 657df4339ae6ceada048c8a2980fb10e393143ec
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
