@@ -168,7 +168,7 @@ theorem weightedHomogeneousSubmodule_eq_finsupp_supported (w : σ → M) (m : M)
     weightedHomogeneousSubmodule R w m = Finsupp.supported R R { d | weightedDegree' w d = m } := by
   ext x
   rw [mem_supported, Set.subset_def]
-  simp [Finsupp.mem_support_iff, mem_coe]
+  simp only [Finsupp.mem_support_iff, mem_coe]
   rfl
 #align mv_polynomial.weighted_homogeneous_submodule_eq_finsupp_supported MvPolynomial.weightedHomogeneousSubmodule_eq_finsupp_supported
 
@@ -243,6 +243,7 @@ set_option linter.uppercaseLean3 false in
 namespace IsWeightedHomogeneous
 
 variable {R}
+
 variable {φ ψ : MvPolynomial σ R} {m n : M}
 
 /-- The weighted degree of a weighted homogeneous polynomial controls its support. -/
@@ -372,8 +373,8 @@ theorem weightedHomogeneousComponent_eq_zero [SemilatticeSup M] [OrderBot M]
     (h : weightedTotalDegree w φ < n) : weightedHomogeneousComponent w n φ = 0 := by
   rw [weightedHomogeneousComponent_apply, sum_eq_zero]
   intro d hd
-  have := @Finset.mem_filter (σ →₀ ℕ) (fun d => (weightedDegree' w) d = n)
-      (fun a => propDecidable ((fun d => (weightedDegree' w) d = n) a)) (support φ)
+  have := @Finset.mem_filter _ _
+      (fun a => propDecidable ((fun d => weightedDegree' w d = n) a)) (support φ)
   rw [this] at hd
   exfalso
   apply lt_irrefl n
@@ -410,10 +411,9 @@ theorem sum_weightedHomogeneousComponent :
   · intro hm
     rw [if_pos rfl]
     simp only [Finite.mem_toFinset, mem_support, Ne.def, Classical.not_not] at hm
-    refine' Eq.symm _
-    rw [← coeff_zero, ← hm]
-    rw [coeff_weightedHomogeneousComponent _ φ d]
-    simp only [ite_true]
+    have := coeff_weightedHomogeneousComponent (w := w) (weightedDegree' w d) φ d
+    rw [hm, if_pos rfl, coeff_zero] at this
+    exact this.symm
 #align mv_polynomial.sum_weighted_homogeneous_component MvPolynomial.sum_weightedHomogeneousComponent
 
 variable {w}
