@@ -27,8 +27,11 @@ recursive or that have indices.
 
 To get debugging information, do `set_option trace.Elab.Deriving.fintype true`.
 
-There is also a term elaborator `derive_fintype%` for deriving `Fintype` instances.
+There is a term elaborator `derive_fintype%` implementing the derivation of `Fintype` instances.
 This can be useful in cases when there are necessary additional assumptions (like `DecidableEq`).
+
+Underlying this is a term elaborator `proxy_equiv%` for creating an equivalence from a
+"proxy type" composed of basic type constructors to the inductive type.
 
 ## Implementation notes
 
@@ -39,12 +42,12 @@ complete `List` of all constructors; see `Mathlib.Deriving.Fintype.mkFintypeEnum
 details. The proof has $O(n)$ complexity in the number of constructors.
 
 Otherwise, the strategy we take is to generate a "proxy type", define an equivalence between
-our type and the proxy type, and then use `Fintype.ofEquiv` to pull a `Fintype` instance on
-the proxy type (if one exists) to our inductive type. For example, with the `MyOption α` type
-above, we generate `Unit ⊕ α`. While the proxy type is not a finite type in general, we add
-`Fintype` instances for every type parameter of our inductive type (and `Decidable` instances
-for every `Prop` parameter). Hence, in our example we get `Fintype (MyOption α)` assuming
-`Fintype α`.
+our type and the proxy type (see `proxy_equiv%`), and then use `Fintype.ofEquiv` to pull a
+`Fintype` instance on the proxy type (if one exists) to our inductive type. For example, with
+the `MyOption α` type above, we generate `Unit ⊕ α`. While the proxy type is not a finite type
+in general, we add `Fintype` instances for every type parameter of our inductive type (and
+`Decidable` instances for every `Prop` parameter). Hence, in our example we get
+`Fintype (MyOption α)` assuming `Fintype α`.
 
 There is a source of quadratic complexity in this `Fintype` instance from the fact that an
 inductive type with `n` constructors has a proxy type of the form `C₁ ⊕ (C₂ ⊕ (⋯ ⊕ Cₙ))`,
@@ -53,6 +56,10 @@ Ignoring time spent looking through these constructors, the construction of `Fin
 contributes linear time with respect to the cardinality of the type since the instances
 involved compute the underlying `List` for the `Finset` as `l₁ ++ (l₂ ++ (⋯ ++ lₙ))` with
 right associativity.
+
+Note that an alterantive design could be that instead of using `Sum` we could create a
+function `C : Fin n → Type _` with `C i = ulift Cᵢ` and then use `(i : Fin n) × C i` for
+the proxy type, which would save us from the nested `Sum` constructors.
 
 This implementation takes some inspiration from the one by Mario Carneiro for Mathlib 3.
 A difference is that the Mathlib 3 version does not explicitly construct the total proxy type,
@@ -69,7 +76,7 @@ Also returns data for the pattern for matching an element of this type: the list
 the pattern itself.
 
 Always returns a `Type _`. Uses `Unit`, `PLift`, and `Sigma`. Avoids using `PSigma` since
-then the `Fintype` instances for it go through `Sigma`'s anyway. -/
+then the `Fintype` instances for it go through `Sigma`s anyway. -/
 def mkCtorType (xs : List Expr) : TermElabM (Expr × List Name × TSyntax `term) :=
   match xs with
   | [] => return (mkConst ``Unit, [], ← `(term| ()))
@@ -106,7 +113,8 @@ def wrapSumAccess (cidx nctors : Nat) (spatt : TSyntax `term) : TermElabM (TSynt
     `(term| Sum.inr $spatt)
 
 /-- Create a `Sum` of types, mildly optimized to not have a trailing `Empty`.
-Returns also the necessary tactic for the `left_inv` proof in the `Equiv` we construct. -/
+Returns also the necessary tactic for the `left_inv` proof in the `Equiv` we construct.
+This proof assumes we start with `intro x`. -/
 def mkCType (ctypes : List Expr) : TermElabM (Expr × TSyntax `tactic) :=
   match ctypes with
   | [] => return (mkConst ``Empty, ← `(tactic| cases x))
@@ -116,6 +124,7 @@ def mkCType (ctypes : List Expr) : TermElabM (Expr × TSyntax `tactic) :=
     let pf ← `(tactic| cases x with | inl _ => rfl | inr x => $pf:tactic)
     return (← mkAppM ``Sum #[x, ty], pf)
 
+/-- Names of the auxiliary definitions created by `mkProxyEquiv`. -/
 structure EquivData where
   /-- Name of the declaration for a type that is `Equiv` to the given type. -/
   proxyName : Name
@@ -245,7 +254,8 @@ elab "proxy_equiv% " t:term : term <= expectedType => do
 
 /--
 The term elaborator `derive_fintype% α` tries to synthesize a `Fintype α` instance
-using all the assumptions in the local context. It only works when `α` is an inductive
+using all the assumptions in the local context; this can be useful, for example, if one
+needs an extra `DecidableEq` instance. It only works when `α` is an inductive
 type that `proxy_equiv% α` can handle. The elaborator makes use of the
 expected type, so `(derive_fintype% _ : Fintype α)` works.
 
@@ -273,6 +283,8 @@ def mkFintype (declName : Name) : CommandElabM Bool := do
   return true
 
 /-- Derive a `Fintype` instance for enum types. These come with a `toCtorIdx` function.
+
+We generate a more optimized instance than the one produced by `mkFintype`.
 The strategy is to (1) create a list `enumList` of all the constructors, (2) prove that this
 is in `toCtorIdx` order, (3) show that `toCtorIdx` maps `enumList` to `List.range numCtors` to show
 the list has no duplicates, and (4) give the `Fintype` instance, using 2 for completeness.
