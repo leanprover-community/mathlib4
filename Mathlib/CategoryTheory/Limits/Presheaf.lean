@@ -8,13 +8,13 @@ Authors: Bhavik Mehta
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Adjunction.Limits
-import Mathbin.CategoryTheory.Adjunction.Opposites
-import Mathbin.CategoryTheory.Elements
-import Mathbin.CategoryTheory.Limits.FunctorCategory
-import Mathbin.CategoryTheory.Limits.KanExtension
-import Mathbin.CategoryTheory.Limits.Shapes.Terminal
-import Mathbin.CategoryTheory.Limits.Types
+import Mathlib.CategoryTheory.Adjunction.Limits
+import Mathlib.CategoryTheory.Adjunction.Opposites
+import Mathlib.CategoryTheory.Elements
+import Mathlib.CategoryTheory.Limits.FunctorCategory
+import Mathlib.CategoryTheory.Limits.KanExtension
+import Mathlib.CategoryTheory.Limits.Shapes.Terminal
+import Mathlib.CategoryTheory.Limits.Types
 
 /-!
 # Colimit of representables
@@ -124,8 +124,7 @@ def restrictYonedaHomEquiv (P : Cᵒᵖ ⥤ Type u₁) (E : ℰ)
 theorem restrictYonedaHomEquiv_natural (P : Cᵒᵖ ⥤ Type u₁) (E₁ E₂ : ℰ) (g : E₁ ⟶ E₂) {c : Cocone _}
     (t : IsColimit c) (k : c.pt ⟶ E₁) :
     restrictYonedaHomEquiv A P E₂ t (k ≫ g) =
-      restrictYonedaHomEquiv A P E₁ t k ≫ (restrictedYoneda A).map g :=
-  by
+      restrictYonedaHomEquiv A P E₁ t k ≫ (restrictedYoneda A).map g := by
   ext (_ X p)
   apply (assoc _ _ _).symm
 #align category_theory.colimit_adj.restrict_yoneda_hom_equiv_natural CategoryTheory.ColimitAdj.restrictYonedaHomEquiv_natural
@@ -150,8 +149,7 @@ theorem extendAlongYoneda_obj (P : Cᵒᵖ ⥤ Type u₁) :
 
 theorem extendAlongYoneda_map {X Y : Cᵒᵖ ⥤ Type u₁} (f : X ⟶ Y) :
     (extendAlongYoneda A).map f =
-      colimit.pre ((CategoryOfElements.π Y).leftOp ⋙ A) (CategoryOfElements.map f).op :=
-  by
+      colimit.pre ((CategoryOfElements.π Y).leftOp ⋙ A) (CategoryOfElements.map f).op := by
   ext J
   erw [colimit.ι_pre ((category_of_elements.π Y).leftOp ⋙ A) (category_of_elements.map f).op]
   dsimp only [extend_along_yoneda, restrict_yoneda_hom_equiv, is_colimit.hom_iso',
@@ -177,8 +175,7 @@ def Elements.initial (A : C) : (yoneda.obj A).Elements :=
 
 /-- Show that `elements.initial A` is initial in the category of elements for the `yoneda` functor.
 -/
-def isInitial (A : C) : IsInitial (Elements.initial A)
-    where
+def isInitial (A : C) : IsInitial (Elements.initial A) where
   desc s := ⟨s.pt.2.op, comp_id _⟩
   uniq s m w := by
     simp_rw [← m.2]
@@ -226,8 +223,7 @@ def extendAlongYonedaIsoKanApp (X) :
   let eq := CategoryOfElements.costructuredArrowYonedaEquivalence X
   { Hom := colimit.pre (Lan.diagram (yoneda : C ⥤ _ ⥤ Type u₁) A X) Eq.Functor
     inv := colimit.pre ((CategoryOfElements.π X).leftOp ⋙ A) Eq.inverse
-    hom_inv_id' :=
-      by
+    hom_inv_id' := by
       erw [colimit.pre_pre ((category_of_elements.π X).leftOp ⋙ A) eq.inverse]
       trans colimit.pre ((category_of_elements.π X).leftOp ⋙ A) (𝟭 _)
       congr
@@ -236,8 +232,7 @@ def extendAlongYonedaIsoKanApp (X) :
         simp only [colimit.ι_pre]
         erw [category.comp_id]
         congr
-    inv_hom_id' :=
-      by
+    inv_hom_id' := by
       erw [colimit.pre_pre (Lan.diagram (yoneda : C ⥤ _ ⥤ Type u₁) A X) eq.functor]
       trans colimit.pre (Lan.diagram (yoneda : C ⥤ _ ⥤ Type u₁) A X) (𝟭 _)
       congr
@@ -324,8 +319,7 @@ theorem coconeOfRepresentable_ι_app (P : Cᵒᵖ ⥤ Type u₁) (j : P.Elements
 /-- The legs of the cocone `cocone_of_representable` are natural in the choice of presheaf. -/
 theorem coconeOfRepresentable_naturality {P₁ P₂ : Cᵒᵖ ⥤ Type u₁} (α : P₁ ⟶ P₂) (j : P₁.Elementsᵒᵖ) :
     (coconeOfRepresentable P₁).ι.app j ≫ α =
-      (coconeOfRepresentable P₂).ι.app ((CategoryOfElements.map α).op.obj j) :=
-  by
+      (coconeOfRepresentable P₂).ι.app ((CategoryOfElements.map α).op.obj j) := by
   ext (T f)
   simpa [cocone_of_representable_ι_app] using functor_to_types.naturality _ _ α f.op _
 #align category_theory.cocone_of_representable_naturality CategoryTheory.coconeOfRepresentable_naturality
@@ -335,8 +329,7 @@ arbitrary presheaf `P` as a colimit of representables.
 
 The result of [MM92], Chapter I, Section 5, Corollary 3.
 -/
-def colimitOfRepresentable (P : Cᵒᵖ ⥤ Type u₁) : IsColimit (coconeOfRepresentable P) :=
-  by
+def colimitOfRepresentable (P : Cᵒᵖ ⥤ Type u₁) : IsColimit (coconeOfRepresentable P) := by
   apply is_colimit.of_point_iso (colimit.is_colimit (functor_to_representables P))
   change is_iso (colimit.desc _ (cocone.extend _ _))
   rw [colimit.desc_extend, colimit.desc_cocone]
@@ -347,8 +340,7 @@ def colimitOfRepresentable (P : Cᵒᵖ ⥤ Type u₁) : IsColimit (coconeOfRepr
 representable presheaves then they agree everywhere.
 -/
 def natIsoOfNatIsoOnRepresentables (L₁ L₂ : (Cᵒᵖ ⥤ Type u₁) ⥤ ℰ) [PreservesColimits L₁]
-    [PreservesColimits L₂] (h : yoneda ⋙ L₁ ≅ yoneda ⋙ L₂) : L₁ ≅ L₂ :=
-  by
+    [PreservesColimits L₂] (h : yoneda ⋙ L₁ ≅ yoneda ⋙ L₂) : L₁ ≅ L₂ := by
   apply nat_iso.of_components _ _
   · intro P
     refine'
@@ -363,8 +355,7 @@ def natIsoOfNatIsoOnRepresentables (L₁ L₂ : (Cᵒᵖ ⥤ Type u₁) ⥤ ℰ)
     have :
       (L₁.map_cocone (cocone_of_representable P₁)).ι.app j ≫ L₁.map f =
         (L₁.map_cocone (cocone_of_representable P₂)).ι.app
-          ((category_of_elements.map f).op.obj j) :=
-      by
+          ((category_of_elements.map f).op.obj j) := by
       dsimp
       rw [← L₁.map_comp, cocone_of_representable_naturality]
       rfl
