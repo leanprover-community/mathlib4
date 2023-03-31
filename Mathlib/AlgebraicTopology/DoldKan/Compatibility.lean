@@ -93,8 +93,10 @@ def equivalence₁CounitIso : (e'.inverse ⋙ eA.inverse) ⋙ F ≅ 𝟭 B' :=
 
 theorem equivalence₁CounitIso_eq : (equivalence₁ hF).counitIso = equivalence₁CounitIso hF := by
   ext Y
-  dsimp [equivalence₀, equivalence₁, IsEquivalence.inverse, IsEquivalence.ofEquivalence]
-  simp  [equivalence₁CounitIso_hom_app, CategoryTheory.Functor.map_id, comp_id]
+  dsimp [equivalence₁]
+  unfold Functor.asEquivalence
+  dsimp [equivalence₀, IsEquivalence.inverse, IsEquivalence.ofEquivalence]
+  simp
 #align algebraic_topology.dold_kan.compatibility.equivalence₁_counit_iso_eq AlgebraicTopology.DoldKan.Compatibility.equivalence₁CounitIso_eq
 
 /-- The unit isomorphism of the equivalence `equivalence₁` between `A` and `B'`. -/
@@ -111,8 +113,10 @@ def equivalence₁UnitIso : 𝟭 A ≅ F ⋙ e'.inverse ⋙ eA.inverse :=
 
 theorem equivalence₁UnitIso_eq : (equivalence₁ hF).unitIso = equivalence₁UnitIso hF := by
   ext X
-  dsimp [equivalence₀, equivalence₁, NatIso.hcomp, IsEquivalence.ofEquivalence]
-  simp only [id_comp, assoc, equivalence₁UnitIso_hom_app]
+  dsimp [equivalence₁]
+  unfold Functor.asEquivalence
+  dsimp [NatIso.hcomp, IsEquivalence.ofEquivalence]
+  simp
 #align algebraic_topology.dold_kan.compatibility.equivalence₁_unit_iso_eq AlgebraicTopology.DoldKan.Compatibility.equivalence₁UnitIso_eq
 
 -- porting note: commented out include
