@@ -760,12 +760,12 @@ theorem join_cons (a : α) (s S) : join (cons (a, s) S) = cons a (append s (join
   exact
     match s1, s2, h with
     | _, _, Or.inl <| Eq.refl s => by
-      apply rec_on s; · trivial
+      apply recOn s; · trivial
       · intro x s
         rw [destruct_cons]
         exact ⟨rfl, Or.inl rfl⟩
     | _, _, Or.inr ⟨a, s, S, rfl, rfl⟩ => by
-      apply rec_on s
+      apply recOn s
       · simp
       · intro x s
         simp
@@ -781,17 +781,17 @@ theorem join_append (S T : Seq (Seq1 α)) : join (append S T) = append (join S) 
     exact
       match s1, s2, h with
       | _, _, ⟨s, S, T, rfl, rfl⟩ => by
-        apply rec_on s <;> simp
-        · apply rec_on S <;> simp
-          · apply rec_on T
+        apply recOn s <;> simp
+        · apply recOn S <;> simp
+          · apply recOn T
             · simp
             · intro s T
-              cases' s with a s <;> simp
+              cases' s with a s ; simp
               refine' ⟨s, nil, T, _, _⟩ <;> simp
           · intro s S
-            cases' s with a s <;> simp
+            cases' s with a s ; simp
             exact ⟨s, S, T, rfl, rfl⟩
-        · intro x s
+        · intro _ s
           exact ⟨s, S, T, rfl, rfl⟩
   · refine' ⟨nil, S, T, _, _⟩ <;> simp
 #align stream.seq.join_append Stream'.Seq.join_append
