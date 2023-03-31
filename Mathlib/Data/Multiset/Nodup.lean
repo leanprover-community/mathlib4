@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 
 ! This file was ported from Lean 3 source module data.multiset.nodup
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
+! leanprover-community/mathlib commit f694c7dead66f5d4c80f446c796a5aad14707f0e
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -83,7 +83,9 @@ theorem nodup_iff_ne_cons_cons {s : Multiset α} : s.Nodup ↔ ∀ a t, s ≠ a 
 #align multiset.nodup_iff_ne_cons_cons Multiset.nodup_iff_ne_cons_cons
 
 theorem nodup_iff_count_le_one [DecidableEq α] {s : Multiset α} : Nodup s ↔ ∀ a, count a s ≤ 1 :=
-  Quot.induction_on s fun _l => List.nodup_iff_count_le_one
+  Quot.induction_on s fun _l => by
+    simp only [quot_mk_to_coe'', coe_nodup, mem_coe, coe_count]
+    apply List.nodup_iff_count_le_one
 #align multiset.nodup_iff_count_le_one Multiset.nodup_iff_count_le_one
 
 @[simp]

@@ -88,14 +88,15 @@ theorem add_nsmul (a : A) (m n : ℕ) : (m + n) • a = m • a + n • a := by
   | succ m ih => rw [Nat.succ_add, Nat.succ_eq_add_one, succ_nsmul, ih, succ_nsmul, add_assoc]
 #align add_nsmul add_nsmul
 
-@[to_additive nsmul_zero, simp]
+-- the attributes are intentionally out of order.
+@[to_additive existing nsmul_zero, simp]
 theorem one_pow (n : ℕ) : (1 : M) ^ n = 1 := by
   induction' n with n ih
   · exact pow_zero _
   · rw [pow_succ, ih, one_mul]
 #align one_pow one_pow
 
-@[to_additive (attr := simp) one_nsmul]
+@[to_additive existing (attr := simp) one_nsmul]
 theorem pow_one (a : M) : a ^ 1 = a := by rw [pow_succ, pow_zero, mul_one]
 #align pow_one pow_one
 
@@ -114,7 +115,7 @@ theorem pow_three' (a : M) : a ^ 3 = a * a * a := by rw [pow_succ', pow_two]
 theorem pow_three (a : M) : a ^ 3 = a * (a * a) := by rw [pow_succ, pow_two]
 #align pow_three pow_three
 
-@[to_additive add_nsmul]
+@[to_additive existing add_nsmul]
 theorem pow_add (a : M) (m n : ℕ) : a ^ (m + n) = a ^ m * a ^ n := by
   induction' n with n ih
   · rw [Nat.add_zero, pow_zero, mul_one]
@@ -261,10 +262,9 @@ theorem mul_pow (a b : M) (n : ℕ) : (a * b) ^ n = a ^ n * b ^ n :=
 
 /-- The `n`th power map on a commutative monoid for a natural `n`, considered as a morphism of
 monoids. -/
-@[to_additive
+@[to_additive (attr := simps)
       "Multiplication by a natural `n` on a commutative additive
-       monoid, considered as a morphism of additive monoids.",
-  simps]
+       monoid, considered as a morphism of additive monoids."]
 def powMonoidHom (n : ℕ) : M →* M where
   toFun := (· ^ n)
   map_one' := one_pow _
@@ -272,6 +272,7 @@ def powMonoidHom (n : ℕ) : M →* M where
 #align pow_monoid_hom powMonoidHom
 #align nsmul_add_monoid_hom nsmulAddMonoidHom
 #align pow_monoid_hom_apply powMonoidHom_apply
+#align nsmul_add_monoid_hom_apply nsmulAddMonoidHom_apply
 
 end CommMonoid
 
@@ -401,10 +402,9 @@ theorem div_zpow (a b : α) (n : ℤ) : (a / b) ^ n = a ^ n / b ^ n := by
 
 /-- The `n`-th power map (for an integer `n`) on a commutative group, considered as a group
 homomorphism. -/
-@[to_additive
+@[to_additive (attr := simps)
       "Multiplication by an integer `n` on a commutative additive group, considered as an
-       additive group homomorphism.",
-  simps]
+       additive group homomorphism."]
 def zpowGroupHom (n : ℤ) : α →* α where
   toFun := (· ^ n)
   map_one' := one_zpow n
@@ -412,6 +412,7 @@ def zpowGroupHom (n : ℤ) : α →* α where
 #align zpow_group_hom zpowGroupHom
 #align zsmul_add_group_hom zsmulAddGroupHom
 #align zpow_group_hom_apply zpowGroupHom_apply
+#align zsmul_add_group_hom_apply zsmulAddGroupHom_apply
 
 end DivisionCommMonoid
 

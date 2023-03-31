@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 
 ! This file was ported from Lean 3 source module order.prop_instances
-! leanprover-community/mathlib commit 70d50ecfd4900dd6d328da39ab7ebd516abe4025
+! leanprover-community/mathlib commit 6623e6af705e97002a9054c1c05a980180276fc1
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -50,8 +50,7 @@ theorem Prop.top_eq_true : (⊤ : Prop) = True :=
 #align Prop.top_eq_true Prop.top_eq_true
 
 instance Prop.le_isTotal : IsTotal Prop (· ≤ ·) :=
-  ⟨fun p q => by
-    by_cases p <;> by_cases q <;> simp [h]⟩
+  ⟨fun p q => by by_cases h : q <;> simp [h]⟩
 #align Prop.le_is_total Prop.le_isTotal
 
 noncomputable instance Prop.linearOrder : LinearOrder Prop := by

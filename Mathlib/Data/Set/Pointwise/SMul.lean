@@ -4,15 +4,14 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Floris van Doorn
 
 ! This file was ported from Lean 3 source module data.set.pointwise.smul
-! leanprover-community/mathlib commit 7b78d1776212a91ecc94cf601f83bdcc46b04213
+! leanprover-community/mathlib commit b685f506164f8d17a6404048bc4d696739c5d976
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Module.Basic
-import Mathlib.Data.Set.Pairwise
+import Mathlib.Data.Set.Pairwise.Lattice
 import Mathlib.Data.Set.Pointwise.Basic
 import Mathlib.Tactic.ByContra
-import Mathlib.Tactic.LibrarySearch
 
 /-!
 # Pointwise operations of sets
@@ -168,8 +167,7 @@ theorem singleton_smul_singleton : ({a} : Set α) • ({b} : Set β) = {a • b}
 #align set.singleton_smul_singleton Set.singleton_smul_singleton
 #align set.singleton_vadd_singleton Set.singleton_vadd_singleton
 
---Porting note: no [mono]
-@[to_additive]
+@[to_additive (attr := mono)]
 theorem smul_subset_smul : s₁ ⊆ s₂ → t₁ ⊆ t₂ → s₁ • t₁ ⊆ s₂ • t₂ :=
   image2_subset
 #align set.smul_subset_smul Set.smul_subset_smul
@@ -193,8 +191,6 @@ theorem smul_subset_iff : s • t ⊆ u ↔ ∀ a ∈ s, ∀ b ∈ t, a • b �
 #align set.smul_subset_iff Set.smul_subset_iff
 #align set.vadd_subset_iff Set.vadd_subset_iff
 
--- Porting note: no [mono]
--- attribute [mono] vadd_subset_vadd
 
 @[to_additive]
 theorem union_smul : (s₁ ∪ s₂) • t = s₁ • t ∪ s₂ • t :=
@@ -472,10 +468,12 @@ instance isScalarTower'' [SMul α β] [SMul α γ] [SMul β γ] [IsScalarTower �
 #align set.is_scalar_tower'' Set.isScalarTower''
 #align set.vadd_assoc_class'' Set.vAddAssocClass''
 
+@[to_additive]
 instance isCentralScalar [SMul α β] [SMul αᵐᵒᵖ β] [IsCentralScalar α β] :
     IsCentralScalar α (Set β) :=
   ⟨fun _ S ↦ (congr_arg fun f ↦ f '' S) <| funext fun _ ↦ op_smul_eq_smul _ _⟩
 #align set.is_central_scalar Set.isCentralScalar
+#align set.is_central_vadd Set.isCentralVAdd
 
 /-- A multiplicative action of a monoid `α` on a type `β` gives a multiplicative action of `Set α`
 on `Set β`. -/
@@ -619,7 +617,7 @@ theorem singleton_vsub_singleton : ({b} : Set β) -ᵥ {c} = {b -ᵥ c} :=
   image2_singleton
 #align set.singleton_vsub_singleton Set.singleton_vsub_singleton
 
--- @[mono] Porting note: mono not implemented yet
+@[mono]
 theorem vsub_subset_vsub : s₁ ⊆ s₂ → t₁ ⊆ t₂ → s₁ -ᵥ t₁ ⊆ s₂ -ᵥ t₂ :=
   image2_subset
 #align set.vsub_subset_vsub Set.vsub_subset_vsub
@@ -703,6 +701,20 @@ theorem vsub_interᵢ₂_subset (s : Set β) (t : ∀ i, κ i → Set β) :
 end VSub
 
 open Pointwise
+
+@[to_additive]
+theorem image_smul_comm [SMul α β] [SMul α γ] (f : β → γ) (a : α) (s : Set β) :
+    (∀ b, f (a • b) = a • f b) → f '' (a • s) = a • f '' s :=
+  image_comm
+#align set.image_smul_comm Set.image_smul_comm
+#align set.image_vadd_comm Set.image_vadd_comm
+
+@[to_additive]
+theorem image_smul_distrib [MulOneClass α] [MulOneClass β] [MonoidHomClass F α β] (f : F) (a : α)
+    (s : Set α) : f '' (a • s) = f a • f '' s :=
+  image_comm <| map_mul _ _
+#align set.image_smul_distrib Set.image_smul_distrib
+#align set.image_vadd_distrib Set.image_vadd_distrib
 
 section SMulWithZero
 

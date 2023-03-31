@@ -136,14 +136,14 @@ theorem range_extend_subset (f : α → β) (g : α → γ) (g' : β → γ) :
   rintro _ ⟨y, rfl⟩
   rw [extend_def]
   split_ifs with h
-  exacts[Or.inl (mem_range_self _), Or.inr (mem_image_of_mem _ h)]
+  exacts [Or.inl (mem_range_self _), Or.inr (mem_image_of_mem _ h)]
 #align set.range_extend_subset Set.range_extend_subset
 
 theorem range_extend {f : α → β} (hf : Injective f) (g : α → γ) (g' : β → γ) :
     range (extend f g g') = range g ∪ g' '' range fᶜ := by
   refine' (range_extend_subset _ _ _).antisymm _
   rintro z (⟨x, rfl⟩ | ⟨y, hy, rfl⟩)
-  exacts[⟨f x, hf.extend_apply _ _ _⟩, ⟨y, extend_apply' _ _ _ hy⟩]
+  exacts [⟨f x, hf.extend_apply _ _ _⟩, ⟨y, extend_apply' _ _ _ hy⟩]
 #align set.range_extend Set.range_extend
 
 /-- Restrict codomain of a function `f` to a set `s`. Same as `Subtype.coind` but this version
@@ -240,8 +240,8 @@ theorem eqOn_range {ι : Sort _} {f : ι → α} {g₁ g₂ : α → β} :
   forall_range_iff.trans <| funext_iff.symm
 #align set.eq_on_range Set.eqOn_range
 
-alias eqOn_range ↔ eqOn.comp_eq _
-#align set.eq_on.comp_eq Set.eqOn.comp_eq
+alias eqOn_range ↔ EqOn.comp_eq _
+#align set.eq_on.comp_eq Set.EqOn.comp_eq
 
 /-! ### Congruence lemmas -/
 
@@ -550,7 +550,7 @@ section
 variable (t f)
 
 /-- The restriction of a function onto the preimage of a set. -/
-@[simps]
+@[simps!]
 def restrictPreimage : f ⁻¹' t → t :=
   (Set.mapsTo_preimage f t).restrict _ _ _
 #align set.restrict_preimage Set.restrictPreimage
@@ -637,7 +637,7 @@ theorem injOn_union (h : Disjoint s₁ s₂) :
     exact h.le_bot ⟨hx, hy⟩
   · rintro ⟨h₁, h₂, h₁₂⟩
     rintro x (hx | hx) y (hy | hy) hxy
-    exacts[h₁ hx hy hxy, (h₁₂ _ hx _ hy hxy).elim, (h₁₂ _ hy _ hx hxy.symm).elim, h₂ hx hy hxy]
+    exacts [h₁ hx hy hxy, (h₁₂ _ hx _ hy hxy).elim, (h₁₂ _ hy _ hx hxy.symm).elim, h₂ hx hy hxy]
 #align set.inj_on_union Set.injOn_union
 
 theorem injOn_insert {f : α → β} {s : Set α} {a : α} (has : a ∉ s) :
@@ -1160,8 +1160,8 @@ theorem eqOn_of_leftInvOn_of_rightInvOn (h₁ : LeftInvOn f₁' f s) (h₂ : Rig
 
 theorem SurjOn.leftInvOn_of_rightInvOn (hf : SurjOn f s t) (hf' : RightInvOn f f' s) :
     LeftInvOn f f' t := fun y hy => by
-  let ⟨x, hx, HEq⟩ := hf hy
-  rw [← HEq, hf' hx]
+  let ⟨x, hx, heq⟩ := hf hy
+  rw [← heq, hf' hx]
 #align set.surj_on.left_inv_on_of_right_inv_on Set.SurjOn.leftInvOn_of_rightInvOn
 
 /-! ### Two-side inverses -/
@@ -1440,7 +1440,7 @@ theorem piecewise_compl [∀ i, Decidable (i ∈ sᶜ)] : sᶜ.piecewise f g = s
 @[simp]
 theorem piecewise_range_comp {ι : Sort _} (f : ι → α) [∀ j, Decidable (j ∈ range f)]
     (g₁ g₂ : α → β) : (range f).piecewise g₁ g₂ ∘ f = g₁ ∘ f :=
-  eqOn.comp_eq <| piecewise_eqOn _ _ _
+  (piecewise_eqOn ..).comp_eq
 #align set.piecewise_range_comp Set.piecewise_range_comp
 
 theorem MapsTo.piecewise_ite {s s₁ s₂ : Set α} {t t₁ t₂ : Set β} {f₁ f₂ : α → β}
@@ -1448,7 +1448,7 @@ theorem MapsTo.piecewise_ite {s s₁ s₂ : Set α} {t t₁ t₂ : Set β} {f₁
     (h₂ : MapsTo f₂ (s₂ ∩ sᶜ) (t₂ ∩ tᶜ)) :
     MapsTo (s.piecewise f₁ f₂) (s.ite s₁ s₂) (t.ite t₁ t₂) := by
   refine' (h₁.congr _).union_union (h₂.congr _)
-  exacts[(piecewise_eqOn s f₁ f₂).symm.mono (inter_subset_right _ _),
+  exacts [(piecewise_eqOn s f₁ f₂).symm.mono (inter_subset_right _ _),
     (piecewise_eqOn_compl s f₁ f₂).symm.mono (inter_subset_right _ _)]
 #align set.maps_to.piecewise_ite Set.MapsTo.piecewise_ite
 

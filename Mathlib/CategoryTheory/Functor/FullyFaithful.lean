@@ -212,7 +212,7 @@ def natTransOfCompFullyFaithful (α : F ⋙ H ⟶ G ⋙ H) :
 
 /-- We can construct a natural isomorphism between functors by constructing a natural isomorphism
 between those functors composed with a fully faithful functor. -/
-@[simps]
+@[simps!]
 def natIsoOfCompFullyFaithful (i : F ⋙ H ≅ G ⋙ H) : F ≅ G :=
   NatIso.ofComponents (fun X => (isoEquivOfFullyFaithful H).symm (i.app X)) fun f => by
     dsimp

@@ -4,13 +4,14 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Jeremy Avigad
 
 ! This file was ported from Lean 3 source module topology.basic
-! leanprover-community/mathlib commit 8631e2d5ea77f6c13054d9151d82b83069680cb1
+! leanprover-community/mathlib commit e8da5f215e815d9ed3455f0216ef52b53e05438a
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
 import Mathlib.Order.Filter.Ultrafilter
 import Mathlib.Algebra.Support
 import Mathlib.Order.Filter.Lift
+import Mathlib.Tactic.Continuity
 
 /-!
 # Basic theory of topological spaces.
@@ -170,14 +171,9 @@ theorem isOpen_binterᵢ {s : Set β} {f : β → Set α} (hs : s.Finite) (h : �
   interₛ_image f s ▸ isOpen_interₛ (hs.image _) (ball_image_iff.2 h)
 #align is_open_bInter isOpen_binterᵢ
 
--- porting note: generalized to `ι : Sort _`
 theorem isOpen_interᵢ [Finite ι] {s : ι → Set α} (h : ∀ i, IsOpen (s i)) : IsOpen (⋂ i, s i) :=
   isOpen_interₛ (finite_range _) (forall_range_iff.2 h)
 #align is_open_Inter isOpen_interᵢ
-
-theorem isOpen_interᵢ_prop {p : Prop} {s : p → Set α} (h : ∀ h : p, IsOpen (s h)) :
-    IsOpen (interᵢ s) := by by_cases p <;> simp [*]
-#align is_open_Inter_prop isOpen_interᵢ_prop
 
 theorem isOpen_binterᵢ_finset {s : Finset β} {f : β → Set α} (h : ∀ i ∈ s, IsOpen (f i)) :
     IsOpen (⋂ i ∈ s, f i) :=
@@ -260,17 +256,11 @@ theorem isClosed_bunionᵢ {s : Set β} {f : β → Set α} (hs : s.Finite) (h :
   exact isOpen_binterᵢ hs h
 #align is_closed_bUnion isClosed_bunionᵢ
 
--- porting note: generalized to `ι : Sort _`
 theorem isClosed_unionᵢ [Finite ι] {s : ι → Set α} (h : ∀ i, IsClosed (s i)) :
     IsClosed (⋃ i, s i) := by
   simp only [← isOpen_compl_iff, compl_unionᵢ] at *
   exact isOpen_interᵢ h
 #align is_closed_Union isClosed_unionᵢ
-
-@[deprecated isClosed_unionᵢ]
-theorem isClosed_unionᵢ_prop {p : Prop} {s : p → Set α} (h : ∀ h : p, IsClosed (s h)) :
-    IsClosed (unionᵢ s) := by by_cases p <;> simp [*]
-#align is_closed_Union_prop isClosed_unionᵢ_prop
 
 theorem isClosed_imp {p q : α → Prop} (hp : IsOpen { x | p x }) (hq : IsClosed { x | q x }) :
     IsClosed { x | p x → q x } := by
@@ -329,7 +319,7 @@ theorem subset_interior_iff {s t : Set α} : t ⊆ interior s ↔ ∃ U, IsOpen 
     htU.trans (interior_maximal hUs hU)⟩
 #align subset_interior_iff subset_interior_iff
 
--- porting note: todo: restore @[mono]
+@[mono]
 theorem interior_mono {s t : Set α} (h : s ⊆ t) : interior s ⊆ interior t :=
   interior_maximal (Subset.trans interior_subset h) isOpen_interior
 #align interior_mono interior_mono
@@ -466,7 +456,7 @@ theorem IsClosed.mem_iff_closure_subset {s : Set α} (hs : IsClosed s) {x : α} 
   (hs.closure_subset_iff.trans Set.singleton_subset_iff).symm
 #align is_closed.mem_iff_closure_subset IsClosed.mem_iff_closure_subset
 
--- porting note: todo: restore @[mono]
+@[mono]
 theorem closure_mono {s t : Set α} (h : s ⊆ t) : closure s ⊆ closure t :=
   closure_minimal (Subset.trans h subset_closure) isClosed_closure
 #align closure_mono closure_mono
@@ -676,7 +666,7 @@ theorem Dense.nonempty [h : Nonempty α] {s : Set α} (hs : Dense s) : s.Nonempt
   hs.nonempty_iff.2 h
 #align dense.nonempty Dense.nonempty
 
--- porting note: todo: restore @[mono]
+@[mono]
 theorem Dense.mono {s₁ s₂ : Set α} (h : s₁ ⊆ s₂) (hd : Dense s₁) : Dense s₂ := fun x =>
   closure_mono h (hd x)
 #align dense.mono Dense.mono
@@ -944,8 +934,7 @@ theorem IsOpen.eventually_mem {a : α} {s : Set α} (hs : IsOpen s) (ha : a ∈ 
 for a variant using open sets around `a` instead. -/
 theorem nhds_basis_opens' (a : α) :
     (𝓝 a).HasBasis (fun s : Set α => s ∈ 𝓝 a ∧ IsOpen s) fun x => x := by
-  convert nhds_basis_opens a
-  ext s
+  convert nhds_basis_opens a using 2
   exact and_congr_left_iff.2 IsOpen.mem_nhds_iff
 #align nhds_basis_opens' nhds_basis_opens'
 
@@ -1005,10 +994,10 @@ theorem Filter.EventuallyEq.eq_of_nhds {f g : α → β} {a : α} (h : f =ᶠ[�
 #align filter.eventually_eq.eq_of_nhds Filter.EventuallyEq.eq_of_nhds
 
 @[simp]
-theorem eventually_eventuallyLe_nhds [LE β] {f g : α → β} {a : α} :
+theorem eventually_eventuallyLE_nhds [LE β] {f g : α → β} {a : α} :
     (∀ᶠ y in 𝓝 a, f ≤ᶠ[𝓝 y] g) ↔ f ≤ᶠ[𝓝 a] g :=
   eventually_eventually_nhds
-#align eventually_eventually_le_nhds eventually_eventuallyLe_nhds
+#align eventually_eventually_le_nhds eventually_eventuallyLE_nhds
 
 /-- If two functions are equal in a neighbourhood of `a`, then for `y` sufficiently close
 to `a` these functions are equal in a neighbourhood of `y`. -/
@@ -1019,10 +1008,10 @@ theorem Filter.EventuallyEq.eventuallyEq_nhds {f g : α → β} {a : α} (h : f 
 
 /-- If `f x ≤ g x` in a neighbourhood of `a`, then for `y` sufficiently close to `a` we have
 `f x ≤ g x` in a neighbourhood of `y`. -/
-theorem Filter.EventuallyLe.eventuallyLe_nhds [LE β] {f g : α → β} {a : α} (h : f ≤ᶠ[𝓝 a] g) :
+theorem Filter.EventuallyLE.eventuallyLE_nhds [LE β] {f g : α → β} {a : α} (h : f ≤ᶠ[𝓝 a] g) :
     ∀ᶠ y in 𝓝 a, f ≤ᶠ[𝓝 y] g :=
   h.eventually_nhds
-#align filter.eventually_le.eventually_le_nhds Filter.EventuallyLe.eventuallyLe_nhds
+#align filter.eventually_le.eventually_le_nhds Filter.EventuallyLE.eventuallyLE_nhds
 
 theorem all_mem_nhds (x : α) (P : Set α → Prop) (hP : ∀ s t, s ⊆ t → P s → P t) :
     (∀ s ∈ 𝓝 x, P s) ↔ ∀ s, IsOpen s → x ∈ s → P s :=
@@ -1640,14 +1629,24 @@ theorem preimage_interior_subset_interior_preimage {f : α → β} {s : Set β} 
   interior_maximal (preimage_mono interior_subset) (isOpen_interior.preimage hf)
 #align preimage_interior_subset_interior_preimage preimage_interior_subset_interior_preimage
 
+@[continuity]
 theorem continuous_id : Continuous (id : α → α) :=
   continuous_def.2 fun _ => id
 #align continuous_id continuous_id
+
+-- This is needed due to reducibility issues with the `continuity` tactic.
+@[continuity]
+theorem continuous_id' : Continuous (fun (x : α) => x) := continuous_id
 
 theorem Continuous.comp {g : β → γ} {f : α → β} (hg : Continuous g) (hf : Continuous f) :
     Continuous (g ∘ f) :=
   continuous_def.2 fun _ h => (h.preimage hg).preimage hf
 #align continuous.comp Continuous.comp
+
+-- This is needed due to reducibility issues with the `continuity` tactic.
+@[continuity]
+theorem Continuous.comp' {g : β → γ} {f : α → β} (hg : Continuous g) (hf : Continuous f) :
+    Continuous (fun x => g (f x)) := hg.comp hf
 
 theorem Continuous.iterate {f : α → α} (h : Continuous f) (n : ℕ) : Continuous (f^[n]) :=
   Nat.recOn n continuous_id fun _ ihn => ihn.comp h
@@ -1683,6 +1682,7 @@ theorem continuousAt_const {x : α} {b : β} : ContinuousAt (fun _ : α => b) x 
   tendsto_const_nhds
 #align continuous_at_const continuousAt_const
 
+@[continuity]
 theorem continuous_const {b : β} : Continuous fun _ : α => b :=
   continuous_iff_continuousAt.mpr fun _ => continuousAt_const
 #align continuous_const continuous_const
@@ -1755,6 +1755,13 @@ theorem image_closure_subset_closure_image {f : α → β} {s : Set α} (h : Con
     f '' closure s ⊆ closure (f '' s) :=
   ((mapsTo_image f s).closure h).image_subset
 #align image_closure_subset_closure_image image_closure_subset_closure_image
+
+-- porting note: new lemma
+theorem closure_image_closure {f : α → β} {s : Set α} (h : Continuous f) :
+    closure (f '' closure s) = closure (f '' s) :=
+  Subset.antisymm
+    (closure_minimal (image_closure_subset_closure_image h) isClosed_closure)
+    (closure_mono <| image_subset _ subset_closure)
 
 theorem closure_subset_preimage_closure_image {f : α → β} {s : Set α} (h : Continuous f) :
     closure s ⊆ f ⁻¹' closure (f '' s) := by

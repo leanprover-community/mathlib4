@@ -4,10 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 
 ! This file was ported from Lean 3 source module topology.uniform_space.cauchy
-! leanprover-community/mathlib commit d90e4e186f1d18e375dcd4e5b5f6364b01cb3e46
+! leanprover-community/mathlib commit 22131150f88a2d125713ffa0f4693e3355b1eb49
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
+import Mathlib.Topology.Algebra.Constructions
 import Mathlib.Topology.Bases
 import Mathlib.Topology.UniformSpace.Basic
 
@@ -126,8 +127,7 @@ theorem le_nhds_of_cauchy_adhp {f : Filter α} {x : α} (hf : Cauchy f) (adhs : 
     f ≤ 𝓝 x :=
   le_nhds_of_cauchy_adhp_aux
     (fun s hs => by
-      obtain ⟨t, t_mem, ht⟩ : ∃ t ∈ f, t ×ˢ t ⊆ s
-      exact (cauchy_iff.1 hf).2 s hs
+      obtain ⟨t, t_mem, ht⟩ : ∃ t ∈ f, t ×ˢ t ⊆ s := (cauchy_iff.1 hf).2 s hs
       use t, t_mem, ht
       exact forall_mem_nonempty_iff_neBot.2 adhs _ (inter_mem_inf (mem_nhds_left x hs) t_mem))
 #align le_nhds_of_cauchy_adhp le_nhds_of_cauchy_adhp
@@ -271,7 +271,7 @@ theorem Filter.Tendsto.subseq_mem_entourage {V : ℕ → Set (α × α)} (hV : �
     ∃ φ : ℕ → ℕ, StrictMono φ ∧ (u (φ 0), a) ∈ V 0 ∧ ∀ n, (u <| φ (n + 1), u <| φ n) ∈ V (n + 1) :=
   by
   rcases mem_atTop_sets.1 (hu (ball_mem_nhds a (symm_le_uniformity <| hV 0))) with ⟨n, hn⟩
-  rcases(hu.comp (tendsto_add_atTop_nat n)).cauchySeq.subseq_mem fun n => hV (n + 1) with
+  rcases (hu.comp (tendsto_add_atTop_nat n)).cauchySeq.subseq_mem fun n => hV (n + 1) with
     ⟨φ, φ_mono, hφV⟩
   exact ⟨fun k => φ k + n, φ_mono.add_const _, hn _ le_add_self, hφV⟩
 #align filter.tendsto.subseq_mem_entourage Filter.Tendsto.subseq_mem_entourage
@@ -387,6 +387,15 @@ instance CompleteSpace.prod [UniformSpace β] [CompleteSpace α] [CompleteSpace 
       rw [nhds_prod_eq, Filter.prod_def]
       exact Filter.le_lift.2 fun s hs => Filter.le_lift'.2 fun t ht => inter_mem (hx1 hs) (hx2 ht)⟩
 #align complete_space.prod CompleteSpace.prod
+
+@[to_additive]
+instance CompleteSpace.mulOpposite [CompleteSpace α] : CompleteSpace αᵐᵒᵖ where
+  complete hf :=
+    MulOpposite.op_surjective.exists.mpr <|
+      let ⟨x, hx⟩ := CompleteSpace.complete (hf.map MulOpposite.uniformContinuous_unop)
+      ⟨x, (map_le_iff_le_comap.mp hx).trans_eq <| MulOpposite.comap_unop_nhds _⟩
+#align complete_space.mul_opposite CompleteSpace.mulOpposite
+#align complete_space.add_opposite CompleteSpace.addOpposite
 
 /-- If `univ` is complete, the space is a complete space -/
 theorem completeSpace_of_isComplete_univ (h : IsComplete (univ : Set α)) : CompleteSpace α :=
@@ -534,7 +543,7 @@ theorem Ultrafilter.cauchy_of_totallyBounded {s : Set α} (f : Ultrafilter α) (
 theorem totallyBounded_iff_filter {s : Set α} :
     TotallyBounded s ↔ ∀ f, NeBot f → f ≤ 𝓟 s → ∃ c ≤ f, Cauchy c := by
   constructor
-  · exact fun  H f hf hfs => ⟨Ultrafilter.of f, Ultrafilter.of_le f,
+  · exact fun H f hf hfs => ⟨Ultrafilter.of f, Ultrafilter.of_le f,
       (Ultrafilter.of f).cauchy_of_totallyBounded H ((Ultrafilter.of_le f).trans hfs)⟩
   · intro H d hd
     contrapose! H with hd_cover
@@ -598,8 +607,8 @@ theorem isCompact_of_totallyBounded_isClosed [CompleteSpace α] {s : Set α} (ht
 #align is_compact_of_totally_bounded_is_closed isCompact_of_totallyBounded_isClosed
 
 /-- Every Cauchy sequence over `ℕ` is totally bounded. -/
-theorem CauchySeq.totallyBounded_range {s : ℕ → α} (hs : CauchySeq s) : TotallyBounded (range s) :=
-  by
+theorem CauchySeq.totallyBounded_range {s : ℕ → α} (hs : CauchySeq s) :
+    TotallyBounded (range s) := by
   refine' totallyBounded_iff_subset.2 fun a ha => _
   cases' cauchySeq_iff.1 hs a ha with n hn
   refine' ⟨s '' { k | k ≤ n }, image_subset_range _ _, (finite_le_nat _).image _, _⟩
@@ -607,7 +616,7 @@ theorem CauchySeq.totallyBounded_range {s : ℕ → α} (hs : CauchySeq s) : Tot
   intro m
   rw [mem_unionᵢ₂]
   cases' le_total m n with hm hm
-  exacts[⟨m, hm, refl_mem_uniformity ha⟩, ⟨n, le_refl n, hn m hm n le_rfl⟩]
+  exacts [⟨m, hm, refl_mem_uniformity ha⟩, ⟨n, le_refl n, hn m hm n le_rfl⟩]
 #align cauchy_seq.totally_bounded_range CauchySeq.totallyBounded_range
 
 /-!
@@ -743,7 +752,7 @@ one obtains a countable basis by taking the balls centered at points in a dense 
 and with rational "radii" from a countable open symmetric antitone basis of `𝓤 α`. We do not
 register this as an instance, as there is already an instance going in the other direction
 from second countable spaces to separable spaces, and we want to avoid loops. -/
-theorem second_countable_of_separable [SeparableSpace α] : SecondCountableTopology α := by
+theorem secondCountable_of_separable [SeparableSpace α] : SecondCountableTopology α := by
   rcases exists_countable_dense α with ⟨s, hsc, hsd⟩
   obtain
     ⟨t : ℕ → Set (α × α), hto : ∀ i : ℕ, t i ∈ (𝓤 α).sets ∧ IsOpen (t i) ∧ SymmetricRel (t i),
@@ -765,6 +774,6 @@ theorem second_countable_of_separable [SeparableSpace α] : SecondCountableTopol
       ⟨y, hxy, hys⟩
     refine' ⟨_, ⟨y, hys, k, rfl⟩, (hts k).subset hxy, fun z hz => _⟩
     exact hUV (ball_subset_of_comp_subset (hk hxy) hUU' (hk hz))
-#align uniform_space.second_countable_of_separable UniformSpace.second_countable_of_separable
+#align uniform_space.second_countable_of_separable UniformSpace.secondCountable_of_separable
 
 end UniformSpace

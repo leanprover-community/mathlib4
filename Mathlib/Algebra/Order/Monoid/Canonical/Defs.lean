@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 
 ! This file was ported from Lean 3 source module algebra.order.monoid.canonical.defs
-! leanprover-community/mathlib commit 70d50ecfd4900dd6d328da39ab7ebd516abe4025
+! leanprover-community/mathlib commit de87d5053a9fe5cbde723172c0fb7e27e7436473
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -134,7 +134,7 @@ class CanonicallyOrderedMonoid (α : Type _) extends OrderedCommMonoid α, Bot �
 #align canonically_ordered_monoid CanonicallyOrderedMonoid
 
 -- see Note [lower instance priority]
-@[to_additive]
+@[to_additive existing]
 instance (priority := 100) CanonicallyOrderedMonoid.toOrderBot (α : Type u)
     [h : CanonicallyOrderedMonoid α] : OrderBot α :=
   { h with }
@@ -188,6 +188,18 @@ theorem le_of_mul_le_right : a * b ≤ c → b ≤ c :=
   le_mul_self.trans
 #align le_of_mul_le_right le_of_mul_le_right
 #align le_of_add_le_right le_of_add_le_right
+
+@[to_additive]
+theorem le_mul_of_le_left : a ≤ b → a ≤ b * c :=
+  le_self_mul.trans'
+#align le_mul_of_le_left le_mul_of_le_left
+#align le_add_of_le_left le_add_of_le_left
+
+@[to_additive]
+theorem le_mul_of_le_right : a ≤ c → a ≤ b * c :=
+  le_mul_self.trans'
+#align le_mul_of_le_right le_mul_of_le_right
+#align le_add_of_le_right le_add_of_le_right
 
 @[to_additive]
 theorem le_iff_exists_mul : a ≤ b ↔ ∃ c, b = a * c :=
@@ -375,8 +387,8 @@ theorem min_one (a : α) : min a 1 = 1 :=
 #align min_zero min_zero
 
 /-- In a linearly ordered monoid, we are happy for `bot_eq_one` to be a `@[simp]` lemma. -/
-@[simp,
-to_additive "In a linearly ordered monoid, we are happy for `bot_eq_zero` to be a `@[simp]` lemma"]
+@[to_additive (attr := simp)
+  "In a linearly ordered monoid, we are happy for `bot_eq_zero` to be a `@[simp]` lemma"]
 theorem bot_eq_one' : (⊥ : α) = 1 :=
   bot_eq_one
 #align bot_eq_one' bot_eq_one'

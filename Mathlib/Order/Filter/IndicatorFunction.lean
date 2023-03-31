@@ -54,10 +54,10 @@ section Order
 
 variable [Zero β] [Preorder β] {s t : Set α} {f g : α → β} {a : α} {l : Filter α}
 
-theorem indicator_eventuallyLe_indicator (h : f ≤ᶠ[l ⊓ 𝓟 s] g) :
+theorem indicator_eventuallyLE_indicator (h : f ≤ᶠ[l ⊓ 𝓟 s] g) :
     indicator s f ≤ᶠ[l] indicator s g :=
   (eventually_inf_principal.1 h).mono fun _ => indicator_rel_indicator le_rfl
-#align indicator_eventually_le_indicator indicator_eventuallyLe_indicator
+#align indicator_eventually_le_indicator indicator_eventuallyLE_indicator
 
 end Order
 
@@ -89,13 +89,13 @@ theorem Antitone.tendsto_indicator {ι} [Preorder ι] [Zero β] (s : ι → Set 
     simp only [indicator_of_mem, h, mem_interᵢ.2 h, tendsto_const_pure]
 #align antitone.tendsto_indicator Antitone.tendsto_indicator
 
-theorem tendsto_indicator_bUnion_finset {ι} [Zero β] (s : ι → Set α) (f : α → β) (a : α) :
+theorem tendsto_indicator_bunionᵢ_finset {ι} [Zero β] (s : ι → Set α) (f : α → β) (a : α) :
     Tendsto (fun n : Finset ι => indicator (⋃ i ∈ n, s i) f a) atTop
       (pure <| indicator (unionᵢ s) f a) := by
   rw [unionᵢ_eq_unionᵢ_finset s]
   refine' Monotone.tendsto_indicator (fun n : Finset ι => ⋃ i ∈ n, s i) _ f a
   exact fun t₁ t₂ => bunionᵢ_subset_bunionᵢ_left
-#align tendsto_indicator_bUnion_finset tendsto_indicator_bUnion_finset
+#align tendsto_indicator_bUnion_finset tendsto_indicator_bunionᵢ_finset
 
 theorem Filter.EventuallyEq.support [Zero β] {f g : α → β} {l : Filter α} (h : f =ᶠ[l] g) :
     Function.support f =ᶠ[l] Function.support g := by
@@ -115,4 +115,3 @@ theorem Filter.EventuallyEq.indicator_zero [Zero β] {l : Filter α} {f : α →
   refine' hf.indicator.trans _
   rw [indicator_zero']
 #align filter.eventually_eq.indicator_zero Filter.EventuallyEq.indicator_zero
-

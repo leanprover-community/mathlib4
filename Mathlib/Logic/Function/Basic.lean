@@ -17,6 +17,7 @@ import Mathlib.Util.WhatsNew
 # Miscellaneous function constructions and lemmas
 -/
 
+open Function
 
 universe u v w
 
@@ -674,7 +675,7 @@ theorem update_comm {α} [DecidableEq α] {β : α → Sort _} {a b : α} (h : a
 theorem update_idem {α} [DecidableEq α] {β : α → Sort _} {a : α} (v w : β a) (f : ∀ a, β a) :
     update (update f a v) a w = update f a w := by
   funext b
-  by_cases b = a <;> simp [update, h]
+  by_cases h : b = a <;> simp [update, h]
 #align function.update_idem Function.update_idem
 
 end Update
@@ -1058,3 +1059,11 @@ theorem InvImage.equivalence {α : Sort u} {β : Sort v} (r : β → β → Prop
     (h : Equivalence r) : Equivalence (InvImage r f) :=
   ⟨fun _ ↦ h.1 _, fun w ↦ h.symm w, fun h₁ h₂ ↦ InvImage.trans r f (fun _ _ _ ↦ h.trans) h₁ h₂⟩
 #align inv_image.equivalence InvImage.equivalence
+
+instance {α β : Type _} {r : α → β → Prop} {x : α × β} [Decidable (r x.1 x.2)] :
+  Decidable (uncurry r x) :=
+‹Decidable _›
+
+instance {α β : Type _} {r : α × β → Prop} {a : α} {b : β} [Decidable (r (a, b))] :
+  Decidable (curry r a b) :=
+‹Decidable _›

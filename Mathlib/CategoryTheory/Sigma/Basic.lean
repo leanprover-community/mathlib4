@@ -226,7 +226,7 @@ lemma map_map {j : J} {X Y : C (g j)} (f : X ⟶ Y) :
 
 /-- The functor `Sigma.map C g` restricted to the subcategory `C j` acts as the inclusion of `g j`.
 -/
-@[simps]
+@[simps!]
 def inclCompMap (j : J) : incl j ⋙ map C g ≅ incl (g j) :=
   Iso.refl _
 #align category_theory.sigma.incl_comp_map CategoryTheory.Sigma.inclCompMap
@@ -234,7 +234,7 @@ def inclCompMap (j : J) : incl j ⋙ map C g ≅ incl (g j) :=
 variable (I)
 
 /-- The functor `Sigma.map` applied to the identity function is just the identity functor. -/
-@[simps]
+@[simps!]
 def mapId : map C (id : I → I) ≅ 𝟭 (Σi, C i) :=
   natIso fun i => NatIso.ofComponents (fun X => Iso.refl _) (by aesop)
 #align category_theory.sigma.map_id CategoryTheory.Sigma.mapId
@@ -244,7 +244,7 @@ variable {I} {K : Type w₃}
 -- Porting note: Had to expand (G ∘ g) to (fun i => C (g i)) in lemma statement
 -- so that the suitable cateogry instances could be found
 /-- The functor `sigma.map` applied to a composition is a composition of functors. -/
-@[simps]
+@[simps!]
 def mapComp (f : K → J) (g : J → I) : map (fun x => C (g x)) f ⋙ (map C g : _) ≅ map C (g ∘ f) :=
   (descUniq _ _) fun k =>
     (isoWhiskerRight (inclCompMap (fun i => C (g i)) f k) (map C g : _) : _) ≪≫ inclCompMap _ _ _

@@ -22,7 +22,7 @@ and `Fintype B` then `Fintype A`.
 namespace SetLike
 
 /-- TODO: It should be possible to obtain a computable version of this for most
-set_like objects. If we add those instances, we should remove this one. -/
+SetLike objects. If we add those instances, we should remove this one. -/
 noncomputable instance (priority := 100) {A B : Type _} [SetLike A B] [Fintype B] : Fintype A :=
   Fintype.ofInjective SetLike.coe SetLike.coe_injective
 

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Floris van Doorn
 
 ! This file was ported from Lean 3 source module data.set.pointwise.basic
-! leanprover-community/mathlib commit 207cfac9fcd06138865b5d04f7091e46d9320432
+! leanprover-community/mathlib commit 517cc149e0b515d2893baa376226ed10feb319c7
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -414,7 +414,7 @@ theorem singleton_mul_singleton : ({a} : Set α) * {b} = {a * b} :=
 #align set.singleton_mul_singleton Set.singleton_mul_singleton
 #align set.singleton_add_singleton Set.singleton_add_singleton
 
-@[to_additive] -- Porting note: no [mono]
+@[to_additive (attr := mono)]
 theorem mul_subset_mul : s₁ ⊆ t₁ → s₂ ⊆ t₂ → s₁ * s₂ ⊆ t₁ * t₂ :=
   image2_subset
 #align set.mul_subset_mul Set.mul_subset_mul
@@ -437,9 +437,6 @@ theorem mul_subset_iff : s * t ⊆ u ↔ ∀ x ∈ s, ∀ y ∈ t, x * y ∈ u :
   image2_subset_iff
 #align set.mul_subset_iff Set.mul_subset_iff
 #align set.add_subset_iff Set.add_subset_iff
-
--- Porting note: no [mono]
--- attribute [mono] add_subset_add
 
 @[to_additive]
 theorem union_mul : (s₁ ∪ s₂) * t = s₁ * t ∪ s₂ * t :=
@@ -671,7 +668,7 @@ theorem singleton_div_singleton : ({a} : Set α) / {b} = {a / b} :=
 #align set.singleton_div_singleton Set.singleton_div_singleton
 #align set.singleton_sub_singleton Set.singleton_sub_singleton
 
-@[to_additive] -- Porting note: no [mono]
+@[to_additive (attr := mono)]
 theorem div_subset_div : s₁ ⊆ t₁ → s₂ ⊆ t₂ → s₁ / s₂ ⊆ t₁ / t₂ :=
   image2_subset
 #align set.div_subset_div Set.div_subset_div
@@ -694,9 +691,6 @@ theorem div_subset_iff : s / t ⊆ u ↔ ∀ x ∈ s, ∀ y ∈ t, x / y ∈ u :
   image2_subset_iff
 #align set.div_subset_iff Set.div_subset_iff
 #align set.sub_subset_iff Set.sub_subset_iff
-
--- Porting note: no [mono]
--- attribute [mono] sub_subset_sub
 
 @[to_additive]
 theorem union_div : (s₁ ∪ s₂) / t = s₁ / t ∪ s₂ / t :=
@@ -806,12 +800,10 @@ protected def NSMul [Zero α] [Add α] : SMul ℕ (Set α) :=
 
 /-- Repeated pointwise multiplication (not the same as pointwise repeated multiplication!) of a
 `Set`. See note [pointwise nat action]. -/
--- Porting note: removed @[to_additive]
+@[to_additive existing]
 protected def NPow [One α] [Mul α] : Pow (Set α) ℕ :=
   ⟨fun s n => npowRec n s⟩
 #align set.has_npow Set.NPow
-
-attribute [to_additive Set.NSMul] Set.NPow
 
 /-- Repeated pointwise addition/subtraction (not the same as pointwise repeated
 addition/subtraction!) of a `Set`. See note [pointwise nat action]. -/
@@ -821,12 +813,10 @@ protected def ZSMul [Zero α] [Add α] [Neg α] : SMul ℤ (Set α) :=
 
 /-- Repeated pointwise multiplication/division (not the same as pointwise repeated
 multiplication/division!) of a `Set`. See note [pointwise nat action]. -/
--- Porting note: removed @[to_additive]
+@[to_additive existing]
 protected def ZPow [One α] [Mul α] [Inv α] : Pow (Set α) ℤ :=
   ⟨fun s n => zpowRec n s⟩
 #align set.has_zpow Set.ZPow
-
-attribute [to_additive Set.ZSMul] Set.ZPow
 
 scoped[Pointwise] attribute [instance] Set.NSMul Set.NPow Set.ZSMul Set.ZPow
 
@@ -837,12 +827,30 @@ protected noncomputable def semigroup [Semigroup α] : Semigroup (Set α) :=
 #align set.semigroup Set.semigroup
 #align set.add_semigroup Set.addSemigroup
 
+section CommSemigroup
+
+variable [CommSemigroup α] {s t : Set α}
+
 /-- `Set α` is a `CommSemigroup` under pointwise operations if `α` is. -/
 @[to_additive "`Set α` is an `AddCommSemigroup` under pointwise operations if `α` is."]
-protected noncomputable def commSemigroup [CommSemigroup α] : CommSemigroup (Set α) :=
+protected noncomputable def commSemigroup : CommSemigroup (Set α) :=
   { Set.semigroup with mul_comm := fun _ _ => image2_comm mul_comm }
 #align set.comm_semigroup Set.commSemigroup
 #align set.add_comm_semigroup Set.addCommSemigroup
+
+@[to_additive]
+theorem inter_mul_union_subset : s ∩ t * (s ∪ t) ⊆ s * t :=
+  image2_inter_union_subset mul_comm
+#align set.inter_mul_union_subset Set.inter_mul_union_subset
+#align set.inter_add_union_subset Set.inter_add_union_subset
+
+@[to_additive]
+theorem union_mul_inter_subset : (s ∪ t) * (s ∩ t) ⊆ s * t :=
+  image2_union_inter_subset mul_comm
+#align set.union_mul_inter_subset Set.union_mul_inter_subset
+#align set.union_add_inter_subset Set.union_add_inter_subset
+
+end CommSemigroup
 
 section MulOneClass
 
@@ -908,7 +916,7 @@ protected noncomputable def monoid : Monoid (Set α) :=
 
 scoped[Pointwise] attribute [instance] Set.monoid Set.addMonoid
 
-@[to_additive nsmul_mem_nsmul]
+@[to_additive]
 theorem pow_mem_pow (ha : a ∈ s) : ∀ n : ℕ, a ^ n ∈ s ^ n
   | 0 => by
     rw [pow_zero]
@@ -919,7 +927,7 @@ theorem pow_mem_pow (ha : a ∈ s) : ∀ n : ℕ, a ^ n ∈ s ^ n
 #align set.pow_mem_pow Set.pow_mem_pow
 #align set.nsmul_mem_nsmul Set.nsmul_mem_nsmul
 
-@[to_additive nsmul_subset_nsmul]
+@[to_additive]
 theorem pow_subset_pow (hst : s ⊆ t) : ∀ n : ℕ, s ^ n ⊆ t ^ n
   | 0 => by
     rw [pow_zero]
@@ -930,7 +938,7 @@ theorem pow_subset_pow (hst : s ⊆ t) : ∀ n : ℕ, s ^ n ⊆ t ^ n
 #align set.pow_subset_pow Set.pow_subset_pow
 #align set.nsmul_subset_nsmul Set.nsmul_subset_nsmul
 
-@[to_additive nsmul_subset_nsmul_of_zero_mem]
+@[to_additive]
 theorem pow_subset_pow_of_one_mem (hs : (1 : α) ∈ s) (hn : m ≤ n) : s ^ m ⊆ s ^ n := by
   -- Porting note: `Nat.le_induction` didn't work as an induction principle in mathlib3, this was
   -- `refine nat.le_induction ...`
@@ -942,7 +950,7 @@ theorem pow_subset_pow_of_one_mem (hs : (1 : α) ∈ s) (hn : m ≤ n) : s ^ m �
 #align set.pow_subset_pow_of_one_mem Set.pow_subset_pow_of_one_mem
 #align set.nsmul_subset_nsmul_of_zero_mem Set.nsmul_subset_nsmul_of_zero_mem
 
-@[to_additive (attr := simp) empty_nsmul]
+@[to_additive (attr := simp)]
 theorem empty_pow {n : ℕ} (hn : n ≠ 0) : (∅ : Set α) ^ n = ∅ := by
   rw [← tsub_add_cancel_of_le (Nat.succ_le_of_lt <| Nat.pos_of_ne_zero hn), pow_succ, empty_mul]
 #align set.empty_pow Set.empty_pow
@@ -974,7 +982,7 @@ theorem nsmul_univ {α : Type _} [AddMonoid α] : ∀ {n : ℕ}, n ≠ 0 → n �
   | n + 2 => fun _ => by rw [succ_nsmul, nsmul_univ n.succ_ne_zero, univ_add_univ]
 #align set.nsmul_univ Set.nsmul_univ
 
-@[to_additive (attr := simp) nsmul_univ]
+@[to_additive existing (attr := simp) nsmul_univ]
 theorem univ_pow : ∀ {n : ℕ}, n ≠ 0 → (univ : Set α) ^ n = univ
   | 0 => fun h => (h rfl).elim
   | 1 => fun _ => pow_one _

@@ -177,7 +177,6 @@ theorem lt_one_iff {n : ℕ} : n < 1 ↔ n = 0 :=
 
 
 theorem add_pos_left {m : ℕ} (h : 0 < m) (n : ℕ) : 0 < m + n :=
-  show _ > _ from -- lean4#2073
   calc
     m + n > 0 + n := Nat.add_lt_add_right h n
     _ = n := Nat.zero_add n
@@ -485,7 +484,7 @@ theorem half_le_of_sub_le_half {a b : ℕ} (h : a - b ≤ a / 2) : a / 2 ≤ b :
 theorem two_mul_odd_div_two (hn : n % 2 = 1) : 2 * (n / 2) = n - 1 := by
   conv =>
     rhs
-    rw [← Nat.mod_add_div n 2, hn, add_tsub_cancel_left]
+    rw [← Nat.mod_add_div n 2, hn, @add_tsub_cancel_left]
 #align nat.two_mul_odd_div_two Nat.two_mul_odd_div_two
 
 theorem div_dvd_of_dvd (h : n ∣ m) : m / n ∣ m :=
@@ -522,7 +521,7 @@ theorem not_dvd_of_pos_of_lt (h1 : 0 < n) (h2 : n < m) : ¬m ∣ n := by
 /-- If `m` and `n` are equal mod `k`, `m - n` is zero mod `k`. -/
 theorem sub_mod_eq_zero_of_mod_eq (h : m % k = n % k) : (m - n) % k = 0 := by
   rw [← Nat.mod_add_div m k, ← Nat.mod_add_div n k, ← h, tsub_add_eq_tsub_tsub,
-    add_tsub_cancel_left, ← mul_tsub k, Nat.mul_mod_right]
+    @add_tsub_cancel_left, ← mul_tsub k, Nat.mul_mod_right]
 #align nat.sub_mod_eq_zero_of_mod_eq Nat.sub_mod_eq_zero_of_mod_eq
 
 @[simp]

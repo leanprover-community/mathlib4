@@ -762,12 +762,10 @@ open MulOpposite
 
 /-- Canonical homomorphism of monoids from `αˣ` into `α × αᵐᵒᵖ`.
 Used mainly to define the natural topology of `αˣ`. -/
-@[to_additive
+@[to_additive (attr := simps)
       "Canonical homomorphism of additive monoids from `AddUnits α` into `α × αᵃᵒᵖ`.
-      Used mainly to define the natural topology of `AddUnits α`.",
-  simps]
-def embedProduct (α : Type _) [Monoid α] :
-    αˣ →* α × αᵐᵒᵖ where
+      Used mainly to define the natural topology of `AddUnits α`."]
+def embedProduct (α : Type _) [Monoid α] : αˣ →* α × αᵐᵒᵖ where
   toFun x := ⟨x, op ↑x⁻¹⟩
   map_one' := by
     simp only [inv_one, eq_self_iff_true, Units.val_one, op_one, Prod.mk_eq_one, and_self_iff]
@@ -775,6 +773,7 @@ def embedProduct (α : Type _) [Monoid α] :
 #align units.embed_product Units.embedProduct
 #align add_units.embed_product AddUnits.embedProduct
 #align units.embed_product_apply Units.embedProduct_apply
+#align add_units.embed_product_apply AddUnits.embedProduct_apply
 
 @[to_additive]
 theorem embedProduct_injective (α : Type _) [Monoid α] : Function.Injective (embedProduct α) :=
@@ -792,7 +791,7 @@ section BundledMulDiv
 variable {α : Type _}
 
 /-- Multiplication as a multiplicative homomorphism. -/
-@[to_additive "Addition as an additive homomorphism.", simps]
+@[to_additive (attr := simps) "Addition as an additive homomorphism."]
 def mulMulHom [CommSemigroup α] :
     α × α →ₙ* α where
   toFun a := a.1 * a.2
@@ -800,14 +799,16 @@ def mulMulHom [CommSemigroup α] :
 #align mul_mul_hom mulMulHom
 #align add_add_hom addAddHom
 #align mul_mul_hom_apply mulMulHom_apply
+#align add_add_hom_apply addAddHom_apply
 
 /-- Multiplication as a monoid homomorphism. -/
-@[to_additive "Addition as an additive monoid homomorphism.", simps]
+@[to_additive (attr := simps) "Addition as an additive monoid homomorphism."]
 def mulMonoidHom [CommMonoid α] : α × α →* α :=
   { mulMulHom with map_one' := mul_one _ }
 #align mul_monoid_hom mulMonoidHom
 #align add_add_monoid_hom addAddMonoidHom
 #align mul_monoid_hom_apply mulMonoidHom_apply
+#align add_add_monoid_hom_apply addAddMonoidHom_apply
 
 /-- Multiplication as a multiplicative homomorphism with zero. -/
 @[simps]
@@ -817,20 +818,19 @@ def mulMonoidWithZeroHom [CommMonoidWithZero α] : α × α →*₀ α :=
 #align mul_monoid_with_zero_hom_apply mulMonoidWithZeroHom_apply
 
 /-- Division as a monoid homomorphism. -/
-@[to_additive "Subtraction as an additive monoid homomorphism.", simps]
-def divMonoidHom [DivisionCommMonoid α] :
-    α × α →* α where
+@[to_additive (attr := simps) "Subtraction as an additive monoid homomorphism."]
+def divMonoidHom [DivisionCommMonoid α] : α × α →* α where
   toFun a := a.1 / a.2
   map_one' := div_one _
   map_mul' _ _ := mul_div_mul_comm _ _ _ _
 #align div_monoid_hom divMonoidHom
 #align sub_add_monoid_hom subAddMonoidHom
 #align div_monoid_hom_apply divMonoidHom_apply
+#align sub_add_monoid_hom_apply subAddMonoidHom_apply
 
 /-- Division as a multiplicative homomorphism with zero. -/
 @[simps]
-def divMonoidWithZeroHom [CommGroupWithZero α] :
-    α × α →*₀ α where
+def divMonoidWithZeroHom [CommGroupWithZero α] : α × α →*₀ α where
   toFun a := a.1 / a.2
   map_zero' := zero_div _
   map_one' := div_one _

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro, Johannes Hölzl, Chris Hughes, Jens Wagemaker, Jon Eugster
 
 ! This file was ported from Lean 3 source module algebra.group.units
-! leanprover-community/mathlib commit 0f601d095cdfe465edc51882323d19e6b333c419
+! leanprover-community/mathlib commit 369525b73f229ccd76a6ec0e0e0bf2be57599768
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -13,6 +13,7 @@ import Mathlib.Logic.Nontrivial
 import Mathlib.Logic.Unique
 import Mathlib.Tactic.Nontriviality
 import Mathlib.Tactic.Simps.Basic
+import Mathlib.Tactic.Lift
 
 /-!
 # Units (i.e., invertible elements) of a monoid
@@ -166,7 +167,7 @@ theorem mk_val (u : αˣ) (y h₁ h₂) : mk (u : α) y h₁ h₂ = u :=
 #align add_units.mk_coe Units.mk_val
 
 /-- Copy a unit, adjusting definition equalities. -/
-@[to_additive "Copy an `AddUnit`, adjusting definitional equalities.", simps]
+@[to_additive (attr := simps) "Copy an `AddUnit`, adjusting definitional equalities."]
 def copy (u : αˣ) (val : α) (hv : val = u) (inv : α) (hi : inv = ↑u⁻¹) : αˣ :=
   { val, inv, inv_val := hv.symm ▸ hi.symm ▸ u.inv_val, val_inv := hv.symm ▸ hi.symm ▸ u.val_inv }
 #align units.copy Units.copy
@@ -485,7 +486,9 @@ theorem divp_divp_eq_divp_mul (x : α) (u₁ u₂ : αˣ) : x /ₚ u₁ /ₚ u�
   simp only [divp, mul_inv_rev, Units.val_mul, mul_assoc]
 #align divp_divp_eq_divp_mul divp_divp_eq_divp_mul
 
-@[field_simps]
+/- Port note: to match the mathlib3 behavior, this needs to have higher simp
+priority than eq_divp_iff_mul_eq. -/
+@[field_simps 1010]
 theorem divp_eq_iff_mul_eq {x : α} {u : αˣ} {y : α} : x /ₚ u = y ↔ y * u = x :=
   u.mul_left_inj.symm.trans <| by rw [divp_mul_cancel]; exact ⟨Eq.symm, Eq.symm⟩
 #align divp_eq_iff_mul_eq divp_eq_iff_mul_eq
@@ -580,7 +583,9 @@ theorem isUnit_of_subsingleton [Monoid M] [Subsingleton M] (a : M) : IsUnit a :=
 
 attribute [nontriviality] isAddUnit_of_subsingleton
 
--- Porting note: removing the `CanLift` instance
+@[to_additive]
+instance [Monoid M] : CanLift M Mˣ Units.val IsUnit :=
+{ prf := fun _ ↦ id }
 
 /-- A subsingleton `Monoid` has a unique unit. -/
 @[to_additive "A subsingleton `AddMonoid` has a unique additive unit."]
@@ -707,7 +712,7 @@ protected noncomputable def _root_.IsAddUnit.addUnit [AddMonoid N] {a : N} (h : 
     AddUnits N :=
   (Classical.choose h).copy a (Classical.choose_spec h).symm _ rfl
 #align is_add_unit.add_unit IsAddUnit.addUnit
-attribute [to_additive] IsUnit.unit
+attribute [to_additive existing] IsUnit.unit
 
 @[to_additive (attr := simp)]
 theorem unit_of_val_units {a : Mˣ} (h : IsUnit (a : M)) : h.unit = a :=
@@ -734,7 +739,7 @@ theorem mul_val_inv (h : IsUnit a) : a * ↑h.unit⁻¹ = 1 := by
 #align is_add_unit.add_coe_neg IsAddUnit.add_val_neg
 
 /-- `IsUnit x` is decidable if we can decide if `x` comes from `Mˣ`. -/
-@[to_additive]
+@[to_additive "`IsAddUnit x` is decidable if we can decide if `x` comes from `AddUnits M`."]
 instance (x : M) [h : Decidable (∃ u : Mˣ, ↑u = x)] : Decidable (IsUnit x) :=
   h
 attribute [instance] IsAddUnit.instDecidableIsAddUnit
