@@ -28,8 +28,7 @@ variable {α : Type _}
 
 namespace Finset
 
--- porting note: added `DecidableRel`
-variable [DecidableEq α] [DecidableRel ((. ⊂ .) : Finset α → Finset α → Prop)] (s t : Finset α)
+variable [DecidableEq α] (s t : Finset α)
 
 instance : LocallyFiniteOrder (Finset α)
     where
