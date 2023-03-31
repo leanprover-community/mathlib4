@@ -128,7 +128,7 @@ theorem restrictYonedaHomEquiv_natural (P : Cᵒᵖ ⥤ Type u₁) (E₁ E₂ : 
     (t : IsColimit c) (k : c.pt ⟶ E₁) :
     restrictYonedaHomEquiv A P E₂ t (k ≫ g) =
       restrictYonedaHomEquiv A P E₁ t k ≫ (restrictedYoneda A).map g := by
-  ext (x X p)
+  ext (_ X p)
   apply (assoc _ k g).symm
 #align category_theory.colimit_adj.restrict_yoneda_hom_equiv_natural CategoryTheory.ColimitAdj.restrictYonedaHomEquiv_natural
 
@@ -154,9 +154,9 @@ theorem extendAlongYoneda_map {X Y : Cᵒᵖ ⥤ Type u₁} (f : X ⟶ Y) :
     (extendAlongYoneda A).map f =
       colimit.pre ((CategoryOfElements.π Y).leftOp ⋙ A) (CategoryOfElements.map f).op := by
   ext J
-  erw [colimit.ι_pre ((category_of_elements.π Y).leftOp ⋙ A) (category_of_elements.map f).op]
-  dsimp only [extend_along_yoneda, restrict_yoneda_hom_equiv, is_colimit.hom_iso',
-    is_colimit.hom_iso, ulift_trivial]
+  simp [colimit.ι_pre ((CategoryOfElements.π Y).leftOp ⋙ A) (CategoryOfElements.map f).op]
+  dsimp only [extendAlongYoneda, restrictYonedaHomEquiv, IsColimit.homIso,
+    IsColimit.homIso, uliftTrivial]
   simpa
 #align category_theory.colimit_adj.extend_along_yoneda_map CategoryTheory.ColimitAdj.extendAlongYoneda_map
 
