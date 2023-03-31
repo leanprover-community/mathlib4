@@ -664,14 +664,14 @@ theorem append_assoc (s t u : Seq α) : append (append s t) u = append s (append
     exact
       match s1, s2, h with
       | _, _, ⟨s, t, u, rfl, rfl⟩ => by
-        apply rec_on s <;> simp
-        · apply rec_on t <;> simp
-          · apply rec_on u <;> simp
-            · intro x u
+        apply recOn s <;> simp
+        · apply recOn t <;> simp
+          · apply recOn u <;> simp
+            · intro _ u
               refine' ⟨nil, nil, u, _, _⟩ <;> simp
-          · intro x t
+          · intro _ t
             refine' ⟨nil, t, u, _, _⟩ <;> simp
-        · intro x s
+        · intro _ s
           exact ⟨s, t, u, rfl, rfl⟩
   · exact ⟨s, t, u, rfl, rfl⟩
 #align stream.seq.append_assoc Stream'.Seq.append_assoc
