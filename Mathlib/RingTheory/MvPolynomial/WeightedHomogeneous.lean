@@ -405,14 +405,15 @@ theorem sum_weightedHomogeneousComponent :
   simp only [coeff_sum, coeff_weightedHomogeneousComponent]
   rw [Finset.sum_eq_single (weightedDegree' w d)]
   · rw [if_pos rfl]
-  · intro m hm hm'
+  · intro m _ hm'
     rw [if_neg hm'.symm]
   · intro hm
     rw [if_pos rfl]
     simp only [Finite.mem_toFinset, mem_support, Ne.def, Classical.not_not] at hm
-    have := coeff_weightedHomogeneousComponent _ φ d
-    rw [hm, if_pos rfl, coeff_zero] at this
-    exact this.symm
+    refine' Eq.symm _
+    rw [← coeff_zero, ← hm]
+    rw [coeff_weightedHomogeneousComponent _ φ d]
+    simp only [ite_true]
 #align mv_polynomial.sum_weighted_homogeneous_component MvPolynomial.sum_weightedHomogeneousComponent
 
 variable {w}
