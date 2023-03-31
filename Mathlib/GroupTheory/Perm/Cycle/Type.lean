@@ -26,9 +26,9 @@ In this file we define the cycle type of a permutation.
 
 ## Main results
 
-- `sum_cycle_type` : The sum of `σ.cycle_type` equals `σ.support.card`
-- `lcm_cycle_type` : The lcm of `σ.cycle_type` equals `orderOf σ`
-- `is_conj_iff_cycle_type_eq` : Two permutations are conjugate if and only if they have the same
+- `sum_cycleType` : The sum of `σ.cycleType` equals `σ.support.card`
+- `lcm_cycleType` : The lcm of `σ.cycleType` equals `orderOf σ`
+- `isConj_iff_cycleType_eq` : Two permutations are conjugate if and only if they have the same
   cycle type.
 - `exists_prime_orderOf_dvd_card`: For every prime `p` dividing the order of a finite group `G`
   there exists an element of order `p` in `G`. This is known as Cauchy's theorem.
