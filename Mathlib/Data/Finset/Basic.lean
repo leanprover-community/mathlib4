@@ -2499,8 +2499,11 @@ instance decidableSubsetFinset [DecidableEq α] {s t : Finset α} : Decidable (s
 
 -- porting notes: In lean3, the above was picked up when decidability of s ⊂ t was needed
 -- in lean4 it seems this is not the case.
-instance decidableSSubsetFinset [DecidableEq α] {s t : Finset α} : Decidable (s ⊂ t) :=
-  decidableDforallFinset
+instance decidableSSubsetFinset [DecidableEq α] {s t : Finset α} : Decidable (s ⊂ t) := by
+  rw [ssubset_iff_subset_ne]
+  have h₁ : Decidable (s ⊆ t) := decidableSubsetFinset
+  have h₂ : Decidable (s ≠ t) := instDecidableNot
+  exact instDecidableAnd
 
 /-- decidable equality for functions whose domain is bounded by finsets -/
 instance decidableEqPiFinset {β : α → Type _} [_h : ∀ a, DecidableEq (β a)] :
