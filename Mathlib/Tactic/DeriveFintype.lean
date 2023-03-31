@@ -49,14 +49,14 @@ for every `Prop` parameter). Hence, in our example we get `Fintype (MyOption α)
 There is a source of quadratic complexity in this `Fintype` instance from the fact that an
 inductive type with `n` constructors has a proxy type of the form `C₁ ⊕ (C₂ ⊕ (⋯ ⊕ Cₙ))`,
 so mapping to and from `Cᵢ` requires looking through `i` levels of `Sum` constructors.
-Ignoring this, the construction of `Finset.univ` takes linear time in the cardinality of the type
-since the instances involved compute the underlying `List` for the `Finset`
-as `l₁ ++ (l₂ ++ (⋯ ++ lₙ))` with right associativity.
+Ignoring time spent looking through these constructors, the construction of `Finset.univ`
+takes linear time in the cardinality of the type since the instances involved compute the
+underlying `List` for the `Finset` as `l₁ ++ (l₂ ++ (⋯ ++ lₙ))` with right associativity.
 
 This implementation takes some inspiration from the one by Mario Carneiro for Mathlib 3.
-A difference is that Mario does not explicitly construct the total proxy type, instead opting to
-construct the underlying `Finset` as a disjoint union of the `Finset.univ` for each individual
-constructor's proxy type.
+A difference is that the Mathlib 3 version does not explicitly construct the total proxy type,
+and instead it opts to construct the underlying `Finset` as a disjoint union of the `Finset.univ`
+for each individual constructor's proxy type.
 -/
 
 namespace Mathlib.Deriving.Fintype
