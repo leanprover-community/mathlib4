@@ -15,7 +15,7 @@ import Mathlib.RingTheory.Adjoin.Fg
 
 ## Main results
 
- * `algebra.fg_trans'`: if `S` is finitely generated as `R`-algebra and `A` as `S`-algebra,
+ * `Algebra.fg_trans'`: if `S` is finitely generated as `R`-algebra and `A` as `S`-algebra,
    then `A` is finitely generated as `R`-algebra
  * `fg_of_fg_of_fg`: **Artin--Tate lemma**: if C/B/A is a tower of rings, and A is noetherian, and
    C is algebra-finite over A, and C is module-finite over B, then B is algebra-finite over A.
@@ -62,7 +62,7 @@ theorem adjoin_res_eq_adjoin_res (C D E F : Type _) [CommSemiring C] [CommSemiri
     (hS : Algebra.adjoin C S = ⊤) (hT : Algebra.adjoin C T = ⊤) :
     (Algebra.adjoin E (algebraMap D F '' S)).restrictScalars C =
       (Algebra.adjoin D (algebraMap E F '' T)).restrictScalars C := by
-  rw [adjoin_restrict_scalars C E, adjoin_restrict_scalars C D, ← hS, ← hT, ← Algebra.adjoin_image,
+  rw [adjoin_restrictScalars C E, adjoin_restrictScalars C D, ← hS, ← hT, ← Algebra.adjoin_image,
     ← Algebra.adjoin_image, ← AlgHom.coe_toRingHom, ← AlgHom.coe_toRingHom,
     IsScalarTower.coe_toAlgHom, IsScalarTower.coe_toAlgHom, ← adjoin_union_eq_adjoin_adjoin, ←
     adjoin_union_eq_adjoin_adjoin, Set.union_comm]
@@ -107,7 +107,7 @@ theorem exists_subalgebra_of_fg (hAC : (⊤ : Subalgebra A C).Fg) (hBC : (⊤ : 
   cases' hBC with y hy
   have := hy
   simp_rw [eq_top_iff', mem_span_finset] at this
-  choose f hf
+  choose f hf using this
   let s : Finset B := Finset.image₂ f (x ∪ y * y) y
   have hxy :
     ∀ xi ∈ x, xi ∈ span (Algebra.adjoin A (↑s : Set B)) (↑(insert 1 y : Finset C) : Set C) :=
@@ -122,7 +122,7 @@ theorem exists_subalgebra_of_fg (hAC : (⊤ : Subalgebra A C).Fg) (hBC : (⊤ : 
         span (Algebra.adjoin A (↑s : Set B)) (↑(insert 1 y : Finset C) : Set C) ≤
       span (Algebra.adjoin A (↑s : Set B)) (↑(insert 1 y : Finset C) : Set C) := by
     rw [span_mul_span, span_le, coe_insert]
-    rintro _ ⟨yi, yj, rfl | hyi, rfl | hyj, rfl⟩
+    rintro _ ⟨yi, yj, rfl | hyi, rfl | hyj, rfl⟩ <;> dsimp
     · rw [mul_one]
       exact subset_span (Set.mem_insert _ _)
     · rw [one_mul]
@@ -139,8 +139,8 @@ theorem exists_subalgebra_of_fg (hAC : (⊤ : Subalgebra A C).Fg) (hBC : (⊤ : 
                   mem_image₂_of_mem (mem_union_right _ <| mul_mem_mul hyi hyj) hyk⟩
               (subset_span <| Set.mem_insert_of_mem _ hyk : yk ∈ _))
   refine' ⟨Algebra.adjoin A (↑s : Set B), Subalgebra.fg_adjoin_finset _, insert 1 y, _⟩
-  refine' restrict_scalars_injective A _ _ _
-  rw [restrict_scalars_top, eq_top_iff, ← Algebra.top_toSubmodule, ← hx, Algebra.adjoin_eq_span,
+  refine' restrictScalars_injective A (Algebra.adjoin A s) C _
+  rw [restrictScalars_top, eq_top_iff, ← Algebra.top_toSubmodule, ← hx, Algebra.adjoin_eq_span,
     span_le]
   refine' fun r hr =>
     Submonoid.closure_induction hr (fun c hc => hxy c hc) (subset_span <| mem_insert_self _ _)
@@ -155,6 +155,8 @@ variable [CommRing A] [CommRing B] [CommRing C]
 
 variable [Algebra A B] [Algebra B C] [Algebra A C] [IsScalarTower A B C]
 
+-- Porting note: failed to synthesize Noetherian instance on submodule
+set_option synthInstance.etaExperiment true in
 /-- **Artin--Tate lemma**: if A ⊆ B ⊆ C is a chain of subrings of commutative rings, and
 A is noetherian, and C is algebra-finite over A, and C is module-finite over B,
 then B is algebra-finite over A.
