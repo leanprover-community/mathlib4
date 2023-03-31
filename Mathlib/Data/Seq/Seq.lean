@@ -508,11 +508,12 @@ def append (s₁ s₂ : Seq α) : Seq α :=
 /-- Map a function over a sequence. -/
 def map (f : α → β) : Seq α → Seq β
   | ⟨s, al⟩ =>
-    ⟨s.map (Option.map f), fun n => by
+    ⟨s.map (Option.map f), fun {n} => by
       dsimp [Stream'.map, Stream'.nth]
-      induction' e : s n with <;> intro
+      induction' e : s n with e <;> intro
       · rw [al e]
-        assumption; · contradiction⟩
+        assumption
+      . contradiction⟩
 #align stream.seq.map Stream'.Seq.map
 
 /-- Flatten a sequence of sequences. (It is required that the
