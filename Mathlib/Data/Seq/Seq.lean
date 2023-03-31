@@ -925,7 +925,7 @@ theorem join_nil (a : α) (S) : join ((a, nil), S) = (a, Seq.join S) :=
 @[simp]
 theorem join_cons (a b : α) (s S) :
     join ((a, Seq.cons b s), S) = (a, Seq.join (Seq.cons (b, s) S)) := by
-  dsimp [join] <;> rw [destruct_cons] <;> rfl
+  dsimp [join] ; rw [destruct_cons]
 #align stream.seq1.join_cons Stream'.Seq1.join_cons
 
 /-- The `return` operator for the `seq1` monad,
