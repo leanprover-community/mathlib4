@@ -27,6 +27,9 @@ recursive or that have indices.
 
 To get debugging information, do `set_option trace.Elab.Deriving.fintype true`.
 
+There is also a term elaborator `derive_fintype%` for deriving `Fintype` instances.
+This can be useful in cases when there are necessary additional assumptions (like `DecidableEq`).
+
 ## Implementation notes
 
 There are two kinds of `Fintype` instances that we generate, depending on the inductive type.
@@ -97,14 +100,21 @@ def mkCType (ctypes : List Expr) : TermElabM (Expr × TSyntax `tactic) :=
     let pf ← `(tactic| cases x with | inl _ => rfl | inr x => $pf:tactic)
     return (← mkAppM ``Sum #[x, ty], pf)
 
+structure EquivData where
+  proxyName : Name
+  equiv : TSyntax `term
+
 /--
 Generates a proxy type for the inductive type (defining it at `fintypeProxy` in the
-inductive type's namespace).
-Creates a `Fintype` instance by creating an equivalence to this proxy type, where we
-add additional `Fintype` and `Decidable` instance arguments for every type and prop
-parameter of the type.
+inductive type's namespace) and returns an equivalence to it.
 -/
-def mkFintypeInstance (indVal : InductiveVal) : TermElabM (TSyntax `command) := do
+def mkProxyEquiv (indVal : InductiveVal) : TermElabM EquivData := do
+  if indVal.isRec then
+    throwError
+      "deriving Fintype: recursive inductive types are not supported (and are usually infinite)"
+  if 0 < indVal.numIndices then
+    throwError
+      "deriving Fintype: inductive indices are not supported"
   let levels := indVal.levelParams.map Level.param
   let proxyName := indVal.name.mkStr "fintypeProxy"
   forallBoundedTelescope indVal.type indVal.numParams fun params _sort => do
@@ -136,18 +146,23 @@ def mkFintypeInstance (indVal : InductiveVal) : TermElabM (TSyntax `command) := 
     let (ctype, pf) ← mkCType ctypes.toList
     trace[Elab.Deriving.fintype] "proxy type: {ctype}"
     let ctype' ← mkLambdaFVars params ctype
-    addAndCompile <| Declaration.defnDecl
-      { name := proxyName
-        levelParams := indVal.levelParams
-        safety := DefinitionSafety.safe
-        hints := ReducibilityHints.abbrev
-        type := (← inferType ctype')
-        value := ctype' }
-    -- Set to be reducible so that typeclass inference can see it's a Fintype
-    setReducibleAttribute proxyName
-    trace[Elab.Deriving.fintype] "defined {proxyName}"
+    if let some const := (← getEnv).find? proxyName then
+      unless ← isDefEq const.value! ctype' do
+        throwError "Declaration {proxyName} already exists and it is not the proxy type."
+      trace[Elab.Deriving.fintype] "proxy type already exists"
+    else
+      addAndCompile <| Declaration.defnDecl
+        { name := proxyName
+          levelParams := indVal.levelParams
+          safety := DefinitionSafety.safe
+          hints := ReducibilityHints.abbrev
+          type := (← inferType ctype')
+          value := ctype' }
+      -- Set to be reducible so that typeclass inference can see it's a Fintype
+      setReducibleAttribute proxyName
+      trace[Elab.Deriving.fintype] "defined {proxyName}"
 
-    -- Create the Fintype instance command
+    -- Create the `Equiv`
     let mut toFun ← `(term| fun $toFunAlts:matchAlt*)
     let mut invFun ← `(term| fun $invFunAlts:matchAlt*)
     if indVal.numCtors == 0 then
@@ -159,25 +174,28 @@ def mkFintypeInstance (indVal : InductiveVal) : TermElabM (TSyntax `command) := 
         invFun := $invFun,
         right_inv := by intro x; cases x <;> rfl
         left_inv := by intro x; $pf:tactic })
+
+    return { proxyName := proxyName
+             equiv := equivBody }
+
+/-
+Creates a `Fintype` instance by creating an equivalence to this proxy type, where we
+add additional `Fintype` and `Decidable` instance arguments for every type and prop
+parameter of the type.
+-/
+def mkFintype (declName : Name) : CommandElabM Bool := do
+  let indVal ← getConstInfoInduct declName
+  let cmd ← liftTermElabM do
+    let data ← mkProxyEquiv indVal
     let header ← Deriving.mkHeader `Fintype 0 indVal
     let args := header.argNames.map mkIdent
     let binders' ← Deriving.mkInstImplicitBinders `Decidable indVal header.argNames
     let instCmd ← `(command|
       instance $header.binders:bracketedBinder* $(binders'.map TSyntax.mk):bracketedBinder* :
           Fintype $header.targetType :=
-        Fintype.ofEquiv (@$(mkIdent proxyName) $args*) $equivBody)
-    trace[Elab.Deriving.fintype] "inst: {instCmd}"
+        Fintype.ofEquiv (@$(mkIdent data.proxyName) $args*) $data.equiv)
     return instCmd
-
-def mkFintype (declName : Name) : CommandElabM Bool := do
-  let indVal ← getConstInfoInduct declName
-  if indVal.isRec then
-    throwError
-      "deriving Fintype: recursive inductive types are not supported (and are usually infinite)"
-  if 0 < indVal.numIndices then
-    throwError
-      "deriving Fintype: inductive indices are not supported"
-  let cmd ← liftTermElabM <| mkFintypeInstance indVal
+  trace[Elab.Deriving.fintype] "instance command:\n{cmd}"
   elabCommand cmd
   return true
 
@@ -263,5 +281,35 @@ def mkFintypeInstanceHandler (declNames : Array Name) : CommandElabM Bool := do
 initialize
   registerDerivingHandler `Fintype mkFintypeInstanceHandler
   registerTraceClass `Elab.Deriving.fintype
+
+/--
+The term elaborator `derive_fintype% α` tries to synthesize a `Fintype α` instance
+using all the assumptions in the local context. It only works when `α` is an inductive
+type that the `Fintype` deriving handler can normally process. The handler makes use of the
+expected type, so `(derive_fintype% _ : Fintype α)` works as well.
+
+A side effect of this is that it defines a type named `fintypeProxy` in the namespace associated
+to `α`, just like the `Fintype` deriving handler normally would for non-enum types.
+-/
+elab "derive_fintype% " t:term : term <= expectedType => do
+  let type ← Term.elabType t
+  let f ← Term.elabTerm (← `(Fintype $(← Term.exprToSyntax type))) none
+  unless ← isDefEq expectedType f do
+    throwError "Could not unify expected type{indentExpr expectedType}\nwith{indentExpr f}"
+  let mut type ← instantiateMVars type
+  if type.hasExprMVar then
+    Term.synthesizeSyntheticMVars
+    type ← instantiateMVars type
+    if type.hasExprMVar then
+      throwError "Provided type {type} has metavariables"
+  type ← whnf type
+  let .const declName _ := type.getAppFn
+    | throwError "{type} is not a constant or constant application"
+  let indVal ← getConstInfoInduct declName
+  let data ← mkProxyEquiv indVal
+  let proxy ← mkAppM data.proxyName type.getAppArgs
+  let equivType ← mkAppM ``Equiv #[proxy, type]
+  let equiv ← Term.elabTerm data.equiv equivType
+  return ← mkAppM ``Fintype.ofEquiv #[proxy, equiv]
 
 end Mathlib.Deriving.Fintype
