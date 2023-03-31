@@ -371,7 +371,10 @@ theorem weightedHomogeneousComponent_eq_zero'
 theorem weightedHomogeneousComponent_eq_zero [SemilatticeSup M] [OrderBot M]
     (h : weightedTotalDegree w φ < n) : weightedHomogeneousComponent w n φ = 0 := by
   rw [weightedHomogeneousComponent_apply, sum_eq_zero]
-  intro d hd; rw [mem_filter] at hd
+  intro d hd
+  have := @Finset.mem_filter (σ →₀ ℕ) (fun d => (weightedDegree' w) d = n)
+      (fun a => propDecidable ((fun d => (weightedDegree' w) d = n) a)) (support φ)
+  rw [this] at hd
   exfalso
   apply lt_irrefl n
   nth_rw 1 [← hd.2]
