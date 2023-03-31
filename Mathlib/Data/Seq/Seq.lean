@@ -842,7 +842,7 @@ theorem head_dropn (s : Seq α) (n) : head (drop s n) = get? s n := by
 #align stream.seq.head_dropn Stream'.Seq.head_dropn
 
 theorem mem_map (f : α → β) {a : α} : ∀ {s : Seq α}, a ∈ s → f a ∈ map f s
-  | ⟨g, al⟩ => Stream'.mem_map (Option.map f)
+  | ⟨_, _⟩ => Stream'.mem_map (Option.map f)
 #align stream.seq.mem_map Stream'.Seq.mem_map
 
 theorem exists_of_mem_map {f} {b : β} : ∀ {s : Seq α}, b ∈ map f s → ∃ a, a ∈ s ∧ f a = b
