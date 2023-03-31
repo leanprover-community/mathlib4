@@ -128,6 +128,7 @@ injective coercion to functions from `α` to `β`.
 This typeclass is used in the definition of the homomorphism typeclasses,
 such as `ZeroHomClass`, `MulHomClass`, `MonoidHomClass`, ....
 -/
+@[notation_class * toFun Simps.findCoercionArgs]
 class FunLike (F : Sort _) (α : outParam (Sort _)) (β : outParam <| α → Sort _) where
   /-- The coercion from `F` to a function. -/
   coe : F → ∀ a : α, β a

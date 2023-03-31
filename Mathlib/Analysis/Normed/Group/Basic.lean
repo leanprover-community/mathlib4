@@ -520,13 +520,11 @@ theorem ne_one_of_norm_ne_zero : ‖a‖ ≠ 0 → a ≠ 1 :=
 #align ne_one_of_norm_ne_zero ne_one_of_norm_ne_zero
 #align ne_zero_of_norm_ne_zero ne_zero_of_norm_ne_zero
 
-@[nontriviality, to_additive norm_of_subsingleton]
+@[to_additive (attr := nontriviality) norm_of_subsingleton]
 theorem norm_of_subsingleton' [Subsingleton E] (a : E) : ‖a‖ = 0 := by
   rw [Subsingleton.elim a 1, norm_one']
 #align norm_of_subsingleton' norm_of_subsingleton'
 #align norm_of_subsingleton norm_of_subsingleton
-
-attribute [nontriviality] norm_of_subsingleton
 
 @[to_additive zero_lt_one_add_norm_sq]
 theorem zero_lt_one_add_norm_sq' (x : E) : 0 < 1 + ‖x‖ ^ 2 := by

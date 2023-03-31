@@ -54,6 +54,12 @@ def proj (S : D) (T : C ⥤ D) : StructuredArrow S T ⥤ C :=
 
 variable {S S' S'' : D} {Y Y' : C} {T : C ⥤ D}
 
+-- porting note: this lemma was added because `Comma.hom_ext`
+-- was not triggered automatically
+@[ext]
+lemma hom_ext {X Y : StructuredArrow S T} (f g : X ⟶ Y) (h : f.right = g.right) : f = g :=
+  CommaMorphism.ext _ _ (Subsingleton.elim _ _) h
+
 /-- Construct a structured arrow from a morphism. -/
 def mk (f : S ⟶ T.obj Y) : StructuredArrow S T :=
   ⟨⟨⟨⟩⟩, Y, f⟩
@@ -286,6 +292,12 @@ def proj (S : C ⥤ D) (T : D) : CostructuredArrow S T ⥤ C :=
 
 variable {T T' T'' : D} {Y Y' : C} {S : C ⥤ D}
 
+-- porting note: this lemma was added because `Comma.hom_ext`
+-- was not triggered automatically
+@[ext]
+lemma hom_ext {X Y : CostructuredArrow S T} (f g : X ⟶ Y) (h : f.left = g.left) : f = g :=
+  CommaMorphism.ext _ _ h (Subsingleton.elim _ _)
+
 /-- Construct a costructured arrow from a morphism. -/
 def mk (f : S.obj Y ⟶ T) : CostructuredArrow S T :=
   ⟨Y, ⟨⟨⟩⟩, f⟩
@@ -318,6 +330,11 @@ theorem comp_left {X Y Z : CostructuredArrow S T} (f : X ⟶ Y) (g : Y ⟶ Z) :
 @[simp]
 theorem id_left (X : CostructuredArrow S T) :
   (𝟙 X : X ⟶ X).left = 𝟙 X.left := rfl
+
+theorem eqToHom_left {X Y : CostructuredArrow S T} (h : X = Y) :
+  (eqToHom h).left = eqToHom (by rw [h]) := by
+  subst h
+  simp only [eqToHom_refl, id_left]
 
 @[simp]
 theorem right_eq_id {X Y : CostructuredArrow S T} (f : X ⟶ Y) :

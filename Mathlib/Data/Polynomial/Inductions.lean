@@ -4,10 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Damiano Testa, Jens Wagemaker
 
 ! This file was ported from Lean 3 source module data.polynomial.inductions
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
+! leanprover-community/mathlib commit 57e09a1296bfb4330ddf6624f1028ba186117d82
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
+import Mathlib.Algebra.MonoidAlgebra.Division
 import Mathlib.Data.Nat.Interval
 import Mathlib.Data.Polynomial.Degree.Definitions
 import Mathlib.Data.Polynomial.Induction
@@ -38,16 +39,13 @@ variable [Semiring R] {p q : R[X]}
 /-- `divX p` returns a polynomial `q` such that `q * X + C (p.coeff 0) = p`.
   It can be used in a semiring where the usual division algorithm is not possible -/
 def divX (p : R[X]) : R[X] :=
-  ∑ n in Ico 0 p.natDegree, monomial n (p.coeff (n + 1))
+  ⟨AddMonoidAlgebra.divOf p.toFinsupp 1⟩
 set_option linter.uppercaseLean3 false in
 #align polynomial.div_X Polynomial.divX
 
 @[simp]
 theorem coeff_divX : (divX p).coeff n = p.coeff (n + 1) := by
-  simp only [divX, coeff_monomial, true_and_iff, finset_sum_coeff, not_lt, mem_Ico, zero_le,
-    Finset.sum_ite_eq', ite_eq_left_iff]
-  intro h
-  rw [coeff_eq_zero_of_natDegree_lt (Nat.lt_succ_of_le h)]
+  rw [add_comm]; cases p; rfl
 set_option linter.uppercaseLean3 false in
 #align polynomial.coeff_div_X Polynomial.coeff_divX
 
@@ -58,7 +56,7 @@ set_option linter.uppercaseLean3 false in
 
 @[simp]
 theorem divX_C (a : R) : divX (C a) = 0 :=
-  ext fun n => by simp [divX, coeff_C]
+  ext fun n => by simp [coeff_divX, coeff_C, Finsupp.single_eq_of_ne _]
 set_option linter.uppercaseLean3 false in
 #align polynomial.div_X_C Polynomial.divX_C
 
