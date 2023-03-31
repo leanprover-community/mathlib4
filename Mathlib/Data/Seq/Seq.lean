@@ -802,10 +802,9 @@ theorem join_append (S T : Seq (Seq1 α)) : join (append S T) = append (join S) 
   · refine' ⟨nil, S, T, _, _⟩ <;> simp
 #align stream.seq.join_append Stream'.Seq.join_append
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[simp]
 theorem ofStream_cons (a : α) (s) : ofStream (a::s) = cons a (ofStream s) := by
-  apply Subtype.eq <;> simp [of_stream, cons] <;> rw [Stream'.map_cons]
+  apply Subtype.eq ; simp [ofStream, cons] ; rw [Stream'.map_cons]
 #align stream.seq.of_stream_cons Stream'.Seq.ofStream_cons
 
 @[simp]
