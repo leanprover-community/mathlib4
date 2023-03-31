@@ -97,9 +97,9 @@ theorem multinomial_congr {f g : α → ℕ} (h : ∀ a ∈ s, f a = g a) :
 
 /-! ### Connection to binomial coefficients
 
-When `nat.multinomial` is applied to a `finset` of two elements `{a, b}`, the
+When `Nat.multinomial` is applied to a `Finset` of two elements `{a, b}`, the
 result a binomial coefficient. We use `binomial` in the names of lemmas that
-involves `nat.multinomial {a, b}`.
+involves `Nat.multinomial {a, b}`.
 -/
 
 
@@ -199,7 +199,7 @@ namespace Multiset
 
 variable {α : Type _}
 
-/-- Alternative definition of multinomial based on `multiset` delegating to the
+/-- Alternative definition of multinomial based on `Multiset` delegating to the
   finsupp definition
 -/
 noncomputable def multinomial (m : Multiset α) : ℕ :=
