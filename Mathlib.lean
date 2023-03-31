@@ -341,6 +341,7 @@ import Mathlib.CategoryTheory.Conj
 import Mathlib.CategoryTheory.ConnectedComponents
 import Mathlib.CategoryTheory.Core
 import Mathlib.CategoryTheory.DiscreteCategory
+import Mathlib.CategoryTheory.Elements
 import Mathlib.CategoryTheory.Elementwise
 import Mathlib.CategoryTheory.Endomorphism
 import Mathlib.CategoryTheory.EpiMono
