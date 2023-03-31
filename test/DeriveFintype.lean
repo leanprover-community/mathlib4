@@ -103,6 +103,14 @@ example : Fintype Bool := myBoolInst'
 
 def myProdInst [Fintype α] [Fintype β] : Fintype (α × β) := derive_fintype% _
 
+structure MySubtype (s : Set α) where
+  val : α
+  mem : val ∈ s
+  --deriving Fintype -- fails
+
+instance (s : Set α) [Fintype α] [DecidablePred (· ∈ s)] : Fintype (MySubtype s) :=
+  derive_fintype% _
+
 /-
 Tests from mathlib 3
 -/
