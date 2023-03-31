@@ -28,8 +28,8 @@ definition, we show that this isn't a primitive recursive function.
 We very broadly adapt the proof idea from
 https://www.planetmath.org/ackermannfunctionisnotprimitiverecursive. Namely, we prove that for any
 primitive recursive `f : ℕ → ℕ`, there exists `m` such that `f n < ack m n` for all `n`. This then
-implies that `λ n, ack n n` can't be primitive recursive, and so neither can `ack`. We aren't able
-to use the same bounds as in that proof though, since our approach of using pairing functions
+implies that `fun n => ack n n` can't be primitive recursive, and so neither can `ack`. We aren't
+able to use the same bounds as in that proof though, since our approach of using pairing functions
 differs from their approach of using multivariate functions.
 
 The important bounds we show during the main inductive proof (`exists_lt_ack_of_nat_primrec`)
@@ -37,12 +37,12 @@ are the following. Assuming `∀ n, f n < ack a n` and `∀ n, g n < ack b n`, w
 
 - `∀ n, pair (f n) (g n) < ack (max a b + 3) n`.
 - `∀ n, g (f n) < ack (max a b + 2) n`.
-- `∀ n, Nat.rec (f n.unpair.1) (λ (y IH : ℕ), g (pair n.unpair.1 (pair y IH)))
+- `∀ n, Nat.rec (f n.unpair.1) (fun (y IH : ℕ) => g (pair n.unpair.1 (pair y IH)))
   n.unpair.2 < ack (max a b + 9) n`.
 
 The last one is evidently the hardest. Using `unpair_add_le`, we reduce it to the more manageable
 
-- `∀ m n, rec (f m) (λ (y IH : ℕ), g (pair m (pair y IH))) n <
+- `∀ m n, rec (f m) (fun (y IH : ℕ) => g (pair m (pair y IH))) n <
   ack (max a b + 9) (m + n)`.
 
 We then prove this by induction on `n`. Our proof crucially depends on `ack_pair_lt`, which is
@@ -99,10 +99,8 @@ theorem ack_two (n : ℕ) : ack 2 n = 2 * n + 3 := by
 theorem ack_three (n : ℕ) : ack 3 n = 2 ^ (n + 3) - 3 := by
   induction' n with n IH
   · rfl
-  · rw [ack_succ_succ, IH, ack_two]
-    rw [Nat.succ_add, Nat.pow_succ 2 (n + 3), mul_comm _ 2]
-    rw [Nat.mul_sub_left_distrib]
-    rw [←Nat.sub_add_comm, two_mul 3, Nat.add_sub_add_right]
+  · rw [ack_succ_succ, IH, ack_two, Nat.succ_add, Nat.pow_succ 2 (n + 3), mul_comm _ 2,
+        Nat.mul_sub_left_distrib, ← Nat.sub_add_comm, two_mul 3, Nat.add_sub_add_right]
     have H : 2 * 3 ≤ 2 * 2 ^ 3 := by norm_num
     apply H.trans
     simp [pow_le_pow]
