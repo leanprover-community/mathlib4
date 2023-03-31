@@ -88,15 +88,17 @@ to `x + p'`, where `p` and `p'` are submodules of an ambient module.
 -/
 def quotientInfToSupQuotient (p p' : Submodule R M) :
     (↥p) ⧸ (comap p.subtype (p ⊓ p')) →ₗ[R] (↥(p ⊔ p')) ⧸ (comap (p ⊔ p').subtype p') :=
-   (comap p.subtype (p ⊓ p')).liftQ (aux' p p') (aux p p') 
+   (comap p.subtype (p ⊓ p')).liftQ (aux' p p') (aux p p')
 #align linear_map.quotient_inf_to_sup_quotient LinearMap.quotientInfToSupQuotient
 
-theorem quotientInfEquivSupQuotient_injective (p p' : Submodule R M) : Function.Injective (quotientInfToSupQuotient p p') := by
+theorem quotientInfEquivSupQuotient_injective (p p' : Submodule R M) :
+    Function.Injective (quotientInfToSupQuotient p p') := by
   rw [← ker_eq_bot, quotientInfToSupQuotient, ker_liftQ_eq_bot]
   rw [ker_comp, ker_mkQ]
   exact fun ⟨x, hx1⟩ hx2 => ⟨hx1, hx2⟩
 
-theorem quotientInfEquivSupQuotient_surjective (p p' : Submodule R M) : Function.Surjective (quotientInfToSupQuotient p p') := by 
+theorem quotientInfEquivSupQuotient_surjective (p p' : Submodule R M) :
+    Function.Surjective (quotientInfToSupQuotient p p') := by
   rw [← range_eq_top, quotientInfToSupQuotient, range_liftQ, eq_top_iff']
   rintro ⟨x, hx⟩; rcases mem_sup.1 hx with ⟨y, hy, z, hz, rfl⟩
   use ⟨y, hy⟩; apply (Submodule.Quotient.eq _).2
@@ -108,10 +110,11 @@ Second Isomorphism Law : the canonical map from `p/(p ∩ p')` to `(p+p')/p'` as
 -/
 noncomputable def quotientInfEquivSupQuotient (p p' : Submodule R M) :
     (p ⧸ comap p.subtype (p ⊓ p')) ≃ₗ[R] _ ⧸ comap (p ⊔ p').subtype p' :=
-  LinearEquiv.ofBijective (quotientInfToSupQuotient p p') 
-    ⟨quotientInfEquivSupQuotient_injective p p', quotientInfEquivSupQuotient_surjective p p'⟩ 
+  LinearEquiv.ofBijective (quotientInfToSupQuotient p p')
+    ⟨quotientInfEquivSupQuotient_injective p p', quotientInfEquivSupQuotient_surjective p p'⟩
 #align linear_map.quotient_inf_equiv_sup_quotient LinearMap.quotientInfEquivSupQuotient
-attribute [-instance] SMulHomClass.toFunLike EmbeddingLike.toFunLike -- AddHomClass.toFunLike instFunLikeLinearMap
+attribute [-instance] SMulHomClass.toFunLike EmbeddingLike.toFunLike
+-- AddHomClass.toFunLike instFunLikeLinearMap
 
 set_option synthInstance.maxHeartbeats 200000 in
 -- @[simp]
@@ -129,7 +132,9 @@ theorem quotientInfEquivSupQuotient_apply_mk (p p' : Submodule R M) (x : p) :
     quotientInfEquivSupQuotient p p' (Submodule.Quotient.mk x) =
       Submodule.Quotient.mk (ofLe (le_sup_left : p ≤ p ⊔ p') x) :=
   rfl
-#align linear_map.quotient_inf_equiv_sup_quotient_apply_mk LinearMap.quotientInfEquivSupQuotient_apply_mk
+#align
+  linear_map.quotient_inf_equiv_sup_quotient_apply_mk
+  LinearMap.quotientInfEquivSupQuotient_apply_mk
 
 set_option synthInstance.maxHeartbeats 200000 in
 theorem quotientInfEquivSupQuotient_symm_apply_left (p p' : Submodule R M) (x : ↥(p ⊔ p'))
@@ -139,7 +144,9 @@ theorem quotientInfEquivSupQuotient_symm_apply_left (p p' : Submodule R M) (x : 
   (LinearEquiv.symm_apply_eq _).2 <| by
     -- Porting note: Was `simp`.
     rw [quotientInfEquivSupQuotient_apply_mk, ofLe_apply]
-#align linear_map.quotient_inf_equiv_sup_quotient_symm_apply_left LinearMap.quotientInfEquivSupQuotient_symm_apply_left
+#align
+  linear_map.quotient_inf_equiv_sup_quotient_symm_apply_left
+  LinearMap.quotientInfEquivSupQuotient_symm_apply_left
 
 set_option synthInstance.maxHeartbeats 200000 in
 set_option maxHeartbeats 2000000 in
@@ -149,13 +156,17 @@ theorem quotientInfEquivSupQuotient_symm_apply_eq_zero_iff {p p' : Submodule R M
   (LinearEquiv.symm_apply_eq _).trans <| by
     -- Porting note: Was `simp`.
     rw [_root_.map_zero, Quotient.mk_eq_zero, mem_comap, Submodule.coeSubtype]
-#align linear_map.quotient_inf_equiv_sup_quotient_symm_apply_eq_zero_iff LinearMap.quotientInfEquivSupQuotient_symm_apply_eq_zero_iff
+#align
+  linear_map.quotient_inf_equiv_sup_quotient_symm_apply_eq_zero_iff
+  LinearMap.quotientInfEquivSupQuotient_symm_apply_eq_zero_iff
 
 set_option synthInstance.maxHeartbeats 200000 in
 theorem quotientInfEquivSupQuotient_symm_apply_right (p p' : Submodule R M) {x : ↥(p ⊔ p')}
     (hx : (x : M) ∈ p') : (quotientInfEquivSupQuotient p p').symm (Submodule.Quotient.mk x) = 0 :=
   quotientInfEquivSupQuotient_symm_apply_eq_zero_iff.2 hx
-#align linear_map.quotient_inf_equiv_sup_quotient_symm_apply_right LinearMap.quotientInfEquivSupQuotient_symm_apply_right
+#align
+  linear_map.quotient_inf_equiv_sup_quotient_symm_apply_right
+  LinearMap.quotientInfEquivSupQuotient_symm_apply_right
 
 end IsomorphismLaws
 
@@ -181,12 +192,16 @@ def quotientQuotientEquivQuotientAux (h : S ≤ T) : (M ⧸ S) ⧸ T.map S.mkQ �
 theorem quotientQuotientEquivQuotientAux_mk (x : M ⧸ S) :
     quotientQuotientEquivQuotientAux S T h (Quotient.mk x) = mapQ S T LinearMap.id h x :=
   liftQ_apply _ _ _
-#align submodule.quotient_quotient_equiv_quotient_aux_mk Submodule.quotientQuotientEquivQuotientAux_mk
+#align
+  submodule.quotient_quotient_equiv_quotient_aux_mk
+  Submodule.quotientQuotientEquivQuotientAux_mk
 
 -- @[simp] -- Porting note: simp can prove this
 theorem quotientQuotientEquivQuotientAux_mk_mk (x : M) :
     quotientQuotientEquivQuotientAux S T h (Quotient.mk (Quotient.mk x)) = Quotient.mk x := by simp
-#align submodule.quotient_quotient_equiv_quotient_aux_mk_mk Submodule.quotientQuotientEquivQuotientAux_mk_mk
+#align
+  submodule.quotient_quotient_equiv_quotient_aux_mk_mk
+  Submodule.quotientQuotientEquivQuotientAux_mk_mk
 
 /-- **Noether's third isomorphism theorem** for modules: `(M / S) / (T / S) ≃ M / T`. -/
 def quotientQuotientEquivQuotient : ((M ⧸ S) ⧸ T.map S.mkQ) ≃ₗ[R] M ⧸ T :=
