@@ -54,6 +54,12 @@ def proj (S : D) (T : C ⥤ D) : StructuredArrow S T ⥤ C :=
 
 variable {S S' S'' : D} {Y Y' : C} {T : C ⥤ D}
 
+-- porting note: this lemma was added because `Comma.hom_ext`
+-- was not triggered automatically
+@[ext]
+lemma hom_ext {X Y : StructuredArrow S T} (f g : X ⟶ Y) (h : f.right = g.right) : f = g :=
+  CommaMorphism.ext _ _ (Subsingleton.elim _ _) h
+
 /-- Construct a structured arrow from a morphism. -/
 def mk (f : S ⟶ T.obj Y) : StructuredArrow S T :=
   ⟨⟨⟨⟩⟩, Y, f⟩
