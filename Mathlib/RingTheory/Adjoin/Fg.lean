@@ -19,7 +19,7 @@ This file develops the basic theory of finitely-generated subalgebras.
 
 ## Definitions
 
-* `fg (S : subalgebra R A)` : A predicate saying that the subalgebra is finitely-generated
+* `Fg (S : Subalgebra R A)` : A predicate saying that the subalgebra is finitely-generated
 as an A-algebra
 
 ## Tags
@@ -109,15 +109,14 @@ theorem fg_bot : (⊥ : Subalgebra R A).Fg :=
   ⟨∅, Finset.coe_empty ▸ Algebra.adjoin_empty R A⟩
 #align subalgebra.fg_bot Subalgebra.fg_bot
 
-theorem fg_of_fg_toSubmodule {S : Subalgebra R A} : S.toSubmodule.Fg → S.Fg := fun ⟨t, ht⟩ =>
-  ⟨t,
-    le_antisymm
-      (Algebra.adjoin_le fun x hx => show x ∈ Subalgebra.toSubmodule S from ht ▸ subset_span hx) <|
-      show Subalgebra.toSubmodule S ≤ Subalgebra.toSubmodule (Algebra.adjoin R ↑t) from fun x hx =>
-        span_le.mpr (fun x hx => Algebra.subset_adjoin hx)
-          (show x ∈ span R ↑t by
-            rw [ht]
-            exact hx)⟩
+theorem fg_of_fg_toSubmodule {S : Subalgebra R A} : S.toSubmodule.Fg → S.Fg :=
+  fun ⟨t, ht⟩ ↦ ⟨t, le_antisymm
+    (Algebra.adjoin_le fun x hx ↦ show x ∈ Subalgebra.toSubmodule S from ht ▸ subset_span hx) <|
+    show Subalgebra.toSubmodule S ≤ Subalgebra.toSubmodule (Algebra.adjoin R ↑t) from fun x hx ↦
+      span_le.mpr (fun x hx ↦ Algebra.subset_adjoin hx)
+        (show x ∈ span R ↑t by
+          rw [ht]
+          exact hx)⟩
 #align subalgebra.fg_of_fg_to_submodule Subalgebra.fg_of_fg_toSubmodule
 
 theorem fg_of_noetherian [IsNoetherian R A] (S : Subalgebra R A) : S.Fg :=
@@ -126,23 +125,20 @@ theorem fg_of_noetherian [IsNoetherian R A] (S : Subalgebra R A) : S.Fg :=
 
 theorem fg_of_submodule_fg (h : (⊤ : Submodule R A).Fg) : (⊤ : Subalgebra R A).Fg :=
   let ⟨s, hs⟩ := h
-  ⟨s,
-    toSubmodule.injective <| by
-      rw [Algebra.top_toSubmodule, eq_top_iff, ← hs, span_le]
-      exact Algebra.subset_adjoin⟩
+  ⟨s, toSubmodule.injective <| by
+    rw [Algebra.top_toSubmodule, eq_top_iff, ← hs, span_le]
+    exact Algebra.subset_adjoin⟩
 #align subalgebra.fg_of_submodule_fg Subalgebra.fg_of_submodule_fg
 
-theorem Fg.prod {S : Subalgebra R A} {T : Subalgebra R B} (hS : S.Fg) (hT : T.Fg) : (S.prod T).Fg :=
-  by
+theorem Fg.prod {S : Subalgebra R A} {T : Subalgebra R B} (hS : S.Fg) (hT : T.Fg) :
+    (S.prod T).Fg := by
   obtain ⟨s, hs⟩ := fg_def.1 hS
   obtain ⟨t, ht⟩ := fg_def.1 hT
   rw [← hs.2, ← ht.2]
-  exact
-    fg_def.2
-      ⟨LinearMap.inl R A B '' (s ∪ {1}) ∪ LinearMap.inr R A B '' (t ∪ {1}),
-        Set.Finite.union (Set.Finite.image _ (Set.Finite.union hs.1 (Set.finite_singleton _)))
-          (Set.Finite.image _ (Set.Finite.union ht.1 (Set.finite_singleton _))),
-        Algebra.adjoin_inl_union_inr_eq_prod R s t⟩
+  exact fg_def.2 ⟨LinearMap.inl R A B '' (s ∪ {1}) ∪ LinearMap.inr R A B '' (t ∪ {1}),
+    Set.Finite.union (Set.Finite.image _ (Set.Finite.union hs.1 (Set.finite_singleton _)))
+      (Set.Finite.image _ (Set.Finite.union ht.1 (Set.finite_singleton _))),
+    Algebra.adjoin_inl_union_inr_eq_prod R s t⟩
 #align subalgebra.fg.prod Subalgebra.Fg.prod
 
 section
@@ -159,7 +155,7 @@ end
 theorem fg_of_fg_map (S : Subalgebra R A) (f : A →ₐ[R] B) (hf : Function.Injective f)
     (hs : (S.map f).Fg) : S.Fg :=
   let ⟨s, hs⟩ := hs
-  ⟨s.preimage f fun _ _ _ _ h => hf h,
+  ⟨s.preimage f fun _ _ _ _ h ↦ hf h,
     map_injective hf <| by
       rw [← Algebra.adjoin_image, Finset.coe_preimage, Set.image_preimage_eq_of_subset, hs]
       rw [← AlgHom.coe_range, ← Algebra.adjoin_le_iff, hs, ← Algebra.map_top]
@@ -167,9 +163,9 @@ theorem fg_of_fg_map (S : Subalgebra R A) (f : A →ₐ[R] B) (hf : Function.Inj
 #align subalgebra.fg_of_fg_map Subalgebra.fg_of_fg_map
 
 theorem fg_top (S : Subalgebra R A) : (⊤ : Subalgebra R S).Fg ↔ S.Fg :=
-  ⟨fun h => by
+  ⟨fun h ↦ by
     rw [← S.range_val, ← Algebra.map_top]
-    exact Fg.map _ h, fun h =>
+    exact Fg.map _ h, fun h ↦
     fg_of_fg_map _ S.val Subtype.val_injective <| by
       rw [Algebra.map_top, range_val]
       exact h⟩
@@ -179,12 +175,12 @@ theorem induction_on_adjoin [IsNoetherian R A] (P : Subalgebra R A → Prop) (ba
     (ih : ∀ (S : Subalgebra R A) (x : A), P S → P (Algebra.adjoin R (insert x S)))
     (S : Subalgebra R A) : P S := by
   classical
-    obtain ⟨t, rfl⟩ := S.fg_of_noetherian
-    refine' Finset.induction_on t _ _
-    · simpa using base
-    intro x t _ h
-    rw [Finset.coe_insert]
-    simpa only [Algebra.adjoin_insert_adjoin] using ih _ x h
+  obtain ⟨t, rfl⟩ := S.fg_of_noetherian
+  refine' Finset.induction_on t _ _
+  · simpa using base
+  intro x t _ h
+  rw [Finset.coe_insert]
+  simpa only [Algebra.adjoin_insert_adjoin] using ih _ x h
 #align subalgebra.induction_on_adjoin Subalgebra.induction_on_adjoin
 
 end Subalgebra
