@@ -64,19 +64,34 @@ namespace Mathlib.Deriving.Fintype
 open Lean Elab Lean.Parser.Term
 open Meta Command
 
-/-- Returns the portion of the proxy type for the constructor with arguments `xs`,
-the list of names used in the pattern, and the pattern for matching an element of this type. -/
+/-- Returns the portion of the proxy type corresponding to a constructor with arguments `xs`.
+Also returns data for the pattern for matching an element of this type: the list of names and
+the pattern itself.
+
+Always returns a `Type _`. Uses `Unit`, `PLift`, and `Sigma`. Avoids using `PSigma` since
+then the `Fintype` instances for it go through `Sigma`'s anyway. -/
 def mkCtorType (xs : List Expr) : TermElabM (Expr × List Name × TSyntax `term) :=
   match xs with
   | [] => return (mkConst ``Unit, [], ← `(term| ()))
   | [x] => do
     let a ← mkFreshUserName `a
-    return (← inferType x, [a], mkIdent a)
+    let xty ← inferType x
+    if ← Meta.isProp xty then
+      return (← mkAppM ``PLift #[xty], [a], ← `(term| ⟨$(mkIdent a)⟩))
+    else
+      return (xty, [a], mkIdent a)
   | x :: xs => do
-    let (ty, names, patt) ← mkCtorType xs
-    let ty ← mkAppM ``PSigma #[← mkLambdaFVars #[x] ty]
+    let (xsty, names, patt) ← mkCtorType xs
     let a ← mkFreshUserName `a
-    return (ty, a :: names, ← `(term| ⟨$(mkIdent a), $patt⟩))
+    let xty ← inferType x
+    if ← Meta.isProp xty then
+      withLocalDeclD `x' (← mkAppM ``PLift #[xty]) fun x' => do
+        let xsty' := xsty.replaceFVar x (← mkAppM ``PLift.down #[x'])
+        let ty ← mkAppM ``Sigma #[← mkLambdaFVars #[x'] xsty']
+        return (ty, a :: names, ← `(term| ⟨⟨$(mkIdent a)⟩, $patt⟩))
+    else
+      let ty ← mkAppM ``Sigma #[← mkLambdaFVars #[x] xsty]
+      return (ty, a :: names, ← `(term| ⟨$(mkIdent a), $patt⟩))
 
 /-- Navigates into the sum type that we create in `mkCType` for the given constructor index. -/
 def wrapSumAccess (cidx nctors : Nat) (spatt : TSyntax `term) : TermElabM (TSyntax `term) :=
@@ -129,11 +144,7 @@ def mkProxyEquiv (indVal : InductiveVal) : TermElabM EquivData := do
       let ctorType ← inferType <| mkAppN (mkConst ctorName levels) params
       cdata := cdata.push <| ←
         forallBoundedTelescope ctorType ctorInfo.numFields fun xs _itype => do
-          let mut (ty, names, patt) ← mkCtorType xs.toList
-          if ← Meta.isProp ty then
-            -- We're using `Sum`, so insert a `PLift`.
-            ty ← mkAppM ``PLift #[ty]
-            patt ← `(term| ⟨$patt⟩)
+          let (ty, names, patt) ← mkCtorType xs.toList
           let places := mkArray ctorInfo.numParams (← `(term| _))
           let argNames := (names.map mkIdent).toArray
           let tpatt ← `(term| @$(mkIdent ctorName) $places* $argNames*)
@@ -204,9 +215,9 @@ def mkProxyEquiv (indVal : InductiveVal) : TermElabM EquivData := do
              proxyEquivName := proxyEquivName }
 
 /--
-The term elaborator `proxy_equiv% α` for a type `α` synthesizes a "proxy type" `β` composed
-of basic type constructors like `Sum`, `PSigma`, and `PLift` and an equivalence `β ≃ α`.
-Then `proxy_equiv% α : β ≃ α`.
+The term elaborator `proxy_equiv% α` for a type `α` elaborates to an equivalence `β ≃ α`
+for a "proxy type" `β` composed out of basic type constructors `Unit`, `PLift`, and `Sigma`,
+`Empty`, and `Sum`.
 
 This only works for inductive types `α` that are neither recursive nor have indices.
 If `α` is an inductive type with name `I`, then as a side effect this elaborator defines
@@ -290,6 +301,7 @@ def mkFintypeEnum (declName : Name) : CommandElabM Unit := do
           hints := ReducibilityHints.abbrev
           type := listType
           value := enumList }
+      setProtected enumListName
     do -- Prove that this list is in `toCtorIdx` order
       trace[Elab.Deriving.fintype] "proving {toCtorThmName}"
       let goalStx ← `(term| ∀ (x : $(← Term.exprToSyntax <| mkConst declName levels)),
@@ -302,6 +314,7 @@ def mkFintypeEnum (declName : Name) : CommandElabM Unit := do
           levelParams := indVal.levelParams
           type := ← instantiateMVars goal
           value := ← instantiateMVars pf }
+      setProtected toCtorThmName
     do -- Use this theorem to prove `enumList` has no duplicates
       trace[Elab.Deriving.fintype] "proving {enumListNodupName}"
       let enum ← Term.exprToSyntax <| mkConst enumListName levels
@@ -318,6 +331,7 @@ def mkFintypeEnum (declName : Name) : CommandElabM Unit := do
           levelParams := indVal.levelParams
           type := ← instantiateMVars goal
           value := ← instantiateMVars pf }
+      setProtected enumListNodupName
   -- Make the Fintype instance
   trace[Elab.Deriving.fintype] "defining fintype instance"
   let cmd ← `(command|

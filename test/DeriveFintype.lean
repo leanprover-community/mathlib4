@@ -40,6 +40,18 @@ inductive C (α : Type _) | c (x : α)
 
 example : (Finset.univ : Finset (C Bool)) = Finset.univ.image .c := rfl
 
+inductive C' (P : Prop) | c (h : P)
+  deriving Fintype
+
+#synth Fintype (C' (1 = 2))
+
+example : Fintype.card (C' (1 = 2)) = 0 := rfl
+
+inductive C'' (P : Prop) | c (h : P) (b : Bool)
+  deriving Fintype
+
+example : Fintype.card (C'' (1 = 2)) = 0 := rfl
+
 section
 variable [Fintype α]
 #synth Fintype (C α)
