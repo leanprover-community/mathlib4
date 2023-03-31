@@ -19,8 +19,8 @@ definition, we show that this isn't a primitive recursive function.
 
 ## Main results
 
-- `exists_lt_ack_of_primrec`: any primitive recursive function is pointwise bounded above by `ack m`
-  for some `m`.
+- `exists_lt_ack_of_nat_primrec`: any primitive recursive function is pointwise bounded above by
+  `ack m` for some `m`.
 - `not_primrec₂_ack`: the two-argument Ackermann function is not primitive recursive.
 
 ## Proof approach
@@ -32,21 +32,20 @@ implies that `λ n, ack n n` can't be primitive recursive, and so neither can `a
 to use the same bounds as in that proof though, since our approach of using pairing functions
 differs from their approach of using multivariate functions.
 
-The important bounds we show during the main inductive proof (`exists_lt_ack_of_primrec`) are the
-following. Assuming `∀ n, f n < ack a n` and `∀ n, g n < ack b n`, we have:
+The important bounds we show during the main inductive proof (`exists_lt_ack_of_nat_primrec`)
+are the following. Assuming `∀ n, f n < ack a n` and `∀ n, g n < ack b n`, we have:
 
-- `∀ n, Nat.mkpair (f n) (g n) < ack (max a b + 3) n`.
+- `∀ n, pair (f n) (g n) < ack (max a b + 3) n`.
 - `∀ n, g (f n) < ack (max a b + 2) n`.
-- `∀ n, Nat.rec (f n.unpair.1) (λ (y IH : ℕ), g (Nat.mkpair n.unpair.1 (Nat.mkpair y IH)))
+- `∀ n, Nat.rec (f n.unpair.1) (λ (y IH : ℕ), g (pair n.unpair.1 (pair y IH)))
   n.unpair.2 < ack (max a b + 9) n`.
 
-The last one is evidently the hardest. Using `Nat.unpair_add_le`, we reduce it to the more
-manageable
+The last one is evidently the hardest. Using `unpair_add_le`, we reduce it to the more manageable
 
-- `∀ m n, rec (f m) (λ (y IH : ℕ), g (Nat.mkpair m (Nat.mkpair y IH))) n <
+- `∀ m n, rec (f m) (λ (y IH : ℕ), g (pair m (pair y IH))) n <
   ack (max a b + 9) (m + n)`.
 
-We then prove this by induction on `n`. Our proof crucially depends on `ack_mkpair_lt`, which is
+We then prove this by induction on `n`. Our proof crucially depends on `ack_pair_lt`, which is
 applied twice, giving us a constant of `4 + 4`. The rest of the proof consists of simpler bounds
 which bump up our constant to `9`.
 -/
@@ -205,7 +204,7 @@ theorem lt_ack_right (m n : ℕ) : n < ack m n :=
 
 -- we reorder the arguments to appease the equation compiler
 private theorem ack_strict_mono_left' : ∀ {m₁ m₂} (n), m₁ < m₂ → ack m₁ n < ack m₂ n
-  | m, 0, n => fun h => (Nat.not_lt_zero m h).elim
+  | m, 0, n => fun h => (not_lt_zero m h).elim
   | 0, m + 1, 0 => fun _h => by simpa using one_lt_ack_succ_right m 0
   | 0, m + 1, n + 1 => fun h => by
     rw [ack_zero, ack_succ_succ]
@@ -297,7 +296,6 @@ theorem ack_ack_lt_ack_max_add_two (m n k : ℕ) : ack m (ack n k) < ack (max m 
       ack_strictMono_right _ <| ack_strictMono_left k <| lt_succ_of_le <| le_max_right m n
     _ = ack (max m n + 1) (k + 1) := (ack_succ_succ _ _).symm
     _ ≤ ack (max m n + 2) k := ack_succ_right_le_ack_succ_left _ _
-    
 #align ack_ack_lt_ack_max_add_two ack_ack_lt_ack_max_add_two
 
 theorem ack_add_one_sq_lt_ack_add_four (m n : ℕ) : ack m ((n + 1) ^ 2) < ack (m + 4) n :=
@@ -308,17 +306,16 @@ theorem ack_add_one_sq_lt_ack_add_four (m n : ℕ) : ack m ((n + 1) ^ 2) < ack (
     _ ≤ ack (m + 2) (ack (m + 3) n) := ack_mono_left _ <| by linarith
     _ = ack (m + 3) (n + 1) := (ack_succ_succ _ n).symm
     _ ≤ ack (m + 4) n := ack_succ_right_le_ack_succ_left _ n
-    
 #align ack_add_one_sq_lt_ack_add_four ack_add_one_sq_lt_ack_add_four
 
-theorem ack_mkpair_lt (m n k : ℕ) : ack m (mkpair n k) < ack (m + 4) (max n k) :=
-  (ack_strictMono_right m <| mkpair_lt_max_add_one_sq n k).trans <|
+theorem ack_pair_lt (m n k : ℕ) : ack m (pair n k) < ack (m + 4) (max n k) :=
+  (ack_strictMono_right m <| pair_lt_max_add_one_sq n k).trans <|
     ack_add_one_sq_lt_ack_add_four _ _
-#align ack_mkpair_lt ack_mkpair_lt
+#align ack_mkpair_lt ack_pair_lt
 
 /-- If `f` is primitive recursive, there exists `m` such that `f n < ack m n` for all `n`. -/
-theorem exists_lt_ack_of_nat_primrec {f : ℕ → ℕ} (hf : Nat.Primrec f) : ∃ m, ∀ n, f n < ack m n :=
-  by
+theorem exists_lt_ack_of_nat_primrec {f : ℕ → ℕ} (hf : Nat.Primrec f) :
+    ∃ m, ∀ n, f n < ack m n := by
   induction' hf with f g hf hg IHf IHg f g hf hg IHf IHg f g hf hg IHf IHg
   -- Zero function:
   · exact ⟨0, ack_pos 0⟩
@@ -338,8 +335,8 @@ theorem exists_lt_ack_of_nat_primrec {f : ℕ → ℕ} (hf : Nat.Primrec f) : �
   -- Pairing:
   · refine'
       ⟨max a b + 3, fun n =>
-        (mkpair_lt_max_add_one_sq _ _).trans_le <|
-          (Nat.pow_le_pow_of_le_left (add_le_add_right _ _) 2).trans <|
+        (pair_lt_max_add_one_sq _ _).trans_le <|
+          (pow_le_pow_of_le_left (add_le_add_right _ _) 2).trans <|
             ack_add_one_sq_lt_ack_add_three _ _⟩
     rw [max_ack_left]
     exact max_le_max (ha n).le (hb n).le
@@ -351,24 +348,24 @@ theorem exists_lt_ack_of_nat_primrec {f : ℕ → ℕ} (hf : Nat.Primrec f) : �
   · -- We prove this simpler inequality first.
     have :
       ∀ {m n},
-        rec (f m) (fun y IH => g <| mkpair m <| mkpair y IH) n < ack (max a b + 9) (m + n) := by
+        rec (f m) (fun y IH => g <| pair m <| pair y IH) n < ack (max a b + 9) (m + n) := by
       intro m n
       -- We induct on n.
       induction' n with n IH
       -- The base case is easy.
       · apply (ha m).trans (ack_strictMono_left m <| (le_max_left a b).trans_lt _)
         linarith
-      · -- We get rid of the first `mkpair`.
+      · -- We get rid of the first `pair`.
         simp only [ge_iff_le]
-        apply (hb _).trans ((ack_mkpair_lt _ _ _).trans_le _)
+        apply (hb _).trans ((ack_pair_lt _ _ _).trans_le _)
         -- If m is the maximum, we get a very weak inequality.
         cases' lt_or_le _ m with h₁ h₁
         · rw [max_eq_left h₁.le]
           exact ack_le_ack (Nat.add_le_add (le_max_right a b) <| by norm_num)
                            (self_le_add_right m _)
         rw [max_eq_right h₁]
-        -- We get rid of the second `mkpair`.
-        apply (ack_mkpair_lt _ _ _).le.trans
+        -- We get rid of the second `pair`.
+        apply (ack_pair_lt _ _ _).le.trans
         -- If n is the maximum, we get a very weak inequality.
         cases' lt_or_le _ n with h₂ h₂
         · rw [max_eq_left h₂.le, add_assoc]
