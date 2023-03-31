@@ -8,7 +8,7 @@ Authors: Kenny Lau
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.RingTheory.Adjoin.Fg
+import Mathlib.RingTheory.Adjoin.Fg
 
 /-!
 # Adjoining elements and being finitely generated in an algebra tower
@@ -41,12 +41,10 @@ theorem adjoin_restrictScalars (C D E : Type _) [CommSemiring C] [CommSemiring D
     [Algebra C D] [Algebra C E] [Algebra D E] [IsScalarTower C D E] (S : Set E) :
     (Algebra.adjoin D S).restrictScalars C =
       (Algebra.adjoin ((⊤ : Subalgebra C D).map (IsScalarTower.toAlgHom C D E)) S).restrictScalars
-        C :=
-  by
+        C := by
   suffices
     Set.range (algebraMap D E) =
-      Set.range (algebraMap ((⊤ : Subalgebra C D).map (IsScalarTower.toAlgHom C D E)) E)
-    by
+      Set.range (algebraMap ((⊤ : Subalgebra C D).map (IsScalarTower.toAlgHom C D E)) E) by
     ext x
     change x ∈ Subsemiring.closure (_ ∪ S) ↔ x ∈ Subsemiring.closure (_ ∪ S)
     rw [this]
@@ -63,8 +61,7 @@ theorem adjoin_res_eq_adjoin_res (C D E F : Type _) [CommSemiring C] [CommSemiri
     [Algebra E F] [IsScalarTower C D F] [IsScalarTower C E F] {S : Set D} {T : Set E}
     (hS : Algebra.adjoin C S = ⊤) (hT : Algebra.adjoin C T = ⊤) :
     (Algebra.adjoin E (algebraMap D F '' S)).restrictScalars C =
-      (Algebra.adjoin D (algebraMap E F '' T)).restrictScalars C :=
-  by
+      (Algebra.adjoin D (algebraMap E F '' T)).restrictScalars C := by
   rw [adjoin_restrict_scalars C E, adjoin_restrict_scalars C D, ← hS, ← hT, ← Algebra.adjoin_image,
     ← Algebra.adjoin_image, ← AlgHom.coe_toRingHom, ← AlgHom.coe_toRingHom,
     IsScalarTower.coe_toAlgHom, IsScalarTower.coe_toAlgHom, ← adjoin_union_eq_adjoin_adjoin, ←
@@ -105,8 +102,7 @@ open Finset Submodule
 open Classical
 
 theorem exists_subalgebra_of_fg (hAC : (⊤ : Subalgebra A C).Fg) (hBC : (⊤ : Submodule B C).Fg) :
-    ∃ B₀ : Subalgebra A B, B₀.Fg ∧ (⊤ : Submodule B₀ C).Fg :=
-  by
+    ∃ B₀ : Subalgebra A B, B₀.Fg ∧ (⊤ : Submodule B₀ C).Fg := by
   cases' hAC with x hx
   cases' hBC with y hy
   have := hy
@@ -124,8 +120,7 @@ theorem exists_subalgebra_of_fg (hAC : (⊤ : Subalgebra A C).Fg) (hBC : (⊤ : 
   have hyy :
     span (Algebra.adjoin A (↑s : Set B)) (↑(insert 1 y : Finset C) : Set C) *
         span (Algebra.adjoin A (↑s : Set B)) (↑(insert 1 y : Finset C) : Set C) ≤
-      span (Algebra.adjoin A (↑s : Set B)) (↑(insert 1 y : Finset C) : Set C) :=
-    by
+      span (Algebra.adjoin A (↑s : Set B)) (↑(insert 1 y : Finset C) : Set C) := by
     rw [span_mul_span, span_le, coe_insert]
     rintro _ ⟨yi, yj, rfl | hyi, rfl | hyj, rfl⟩
     · rw [mul_one]
