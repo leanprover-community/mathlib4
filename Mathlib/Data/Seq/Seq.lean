@@ -967,19 +967,19 @@ theorem ret_bind (a : α) (f : α → Seq1 β) : bind (ret a) f = f a := by
 @[simp]
 theorem map_join' (f : α → β) (S) : Seq.map f (Seq.join S) = Seq.join (Seq.map (map f) S) := by
   apply
-    seq.eq_of_bisim fun s1 s2 =>
+    Seq.eq_of_bisim fun s1 s2 =>
       ∃ s S,
-        s1 = seq.append s (seq.map f (seq.join S)) ∧ s2 = append s (seq.join (seq.map (map f) S))
+        s1 = Seq.append s (Seq.map f (Seq.join S)) ∧ s2 = append s (Seq.join (Seq.map (map f) S))
   · intro s1 s2 h
     exact
       match s1, s2, h with
       | _, _, ⟨s, S, rfl, rfl⟩ => by
-        apply rec_on s <;> simp
-        · apply rec_on S <;> simp
+        apply recOn s <;> simp
+        · apply recOn S <;> simp
           · intro x S
-            cases' x with a s <;> simp [map]
+            cases' x with a s ; simp [map]
             exact ⟨_, _, rfl, rfl⟩
-        · intro x s
+        · intro _ s
           refine' ⟨s, S, rfl, rfl⟩
   · refine' ⟨nil, S, _, _⟩ <;> simp
 #align stream.seq1.map_join' Stream'.Seq1.map_join'
