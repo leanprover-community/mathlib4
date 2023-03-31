@@ -244,6 +244,7 @@ def extendAlongYonedaIsoKanApp (X) :
         simp only [colimit.ι_pre]
         erw [Category.comp_id]
         congr }
+set_option linter.uppercaseLean3 false in
 #align category_theory.colimit_adj.extend_along_yoneda_iso_Kan_app CategoryTheory.ColimitAdj.extendAlongYonedaIsoKanApp
 
 /-- Verify that `extend_along_yoneda` is indeed the left Kan extension along the yoneda embedding.
@@ -256,9 +257,10 @@ def extendAlongYonedaIsoKan : extendAlongYoneda A ≅ (lan yoneda : (_ ⥤ ℰ) 
       rw [extendAlongYoneda_map]
       erw [colimit.pre_pre (Lan.diagram (yoneda : C ⥤ _ ⥤ Type u₁) A Y) (CostructuredArrow.map f)]
       erw [colimit.pre_pre (Lan.diagram (yoneda : C ⥤ _ ⥤ Type u₁) A Y)
-          (category_of_elements.costructured_arrow_yoneda_equivalence Y).Functor]
+          (CategoryOfElements.costructuredArrowYonedaEquivalence Y).functor]
       congr 1
-      apply category_of_elements.costructured_arrow_yoneda_equivalence_naturality)
+      apply CategoryOfElements.costructuredArrow_yoneda_equivalence_naturality)
+set_option linter.uppercaseLean3 false in
 #align category_theory.colimit_adj.extend_along_yoneda_iso_Kan CategoryTheory.ColimitAdj.extendAlongYonedaIsoKan
 
 /-- extending `F ⋙ yoneda` along the yoneda embedding is isomorphic to `Lan F.op`. -/
