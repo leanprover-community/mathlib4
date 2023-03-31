@@ -17,33 +17,30 @@ structure Analysis : Type where
   errors : List Lean.Message
   sorries : List (ContextInfo × MVarId × Position × Position)
 
-def Analysis.subtractLineNumbers (a : Analysis) (n : Nat) : Analysis :=
-{ a with
-  errors := a.errors.map
-    fun e => { e with
-      pos := ⟨e.pos.line - n, e.pos.column⟩,
-      endPos := e.endPos.map fun p => ⟨p.line - n, p.column⟩ }
-  sorries := a.sorries.map
-    fun ⟨ctx, g, s, t⟩ => ⟨ctx, g, ⟨s.line - n, s.column⟩, ⟨t.line - n, t.column⟩⟩ }
+def linesBeforeError (block : CodeBlock) (analysis : Analysis) : IO Nat := do
+  let errors ← analysis.errors.filterM fun e => do
+    let firstLine := (← e.toString).splitOn "\n" |>.head!
+    pure <| !firstLine.endsWith "unsolved goals" && !firstLine.endsWith "declaration uses 'sorry'"
+  let errorLines : List Nat := errors.map (·.pos.line - 1)
+  let totalLines := block.body.splitOn "\n" |>.length
+  pure <| errorLines.foldl min totalLines
 
 structure State extends GPT.State where
   preamble : String
-  preambleAnalysis : Option Analysis := none
+  preambleAnalysis : Analysis
   solutions : List (CodeBlock × Analysis) := []
 
 variable {m : Type → Type} [Monad m]
 abbrev M := StateT State
 
-def analyzeSolution (preamble : String) (preambleEnv : Option Environment) (sol : String) :
+def analyzeCode (env? : Option Environment) (code : String) :
     IO Analysis := do
-  let (env, errors, trees) ← match preambleEnv with
-    | none => processInput (preamble ++ "\n\n" ++ sol) none {} ""
-    | some env => processInput sol env {} ""
-  pure <| Analysis.subtractLineNumbers ⟨env, errors, trees.bind InfoTree.sorries⟩ (preamble.count '\n' + 2)
+  let (env, errors, trees) ← processInput code env? {} ""
+  pure ⟨env, errors, trees.bind InfoTree.sorries⟩
 
 def recordSolution (sol : CodeBlock) : M IO Unit := do
   let σ ← get
-  let a ← analyzeSolution σ.preamble (σ.preambleAnalysis.map (·.env)) sol.body
+  let a ← analyzeCode σ.preambleAnalysis.env sol.body
   set { σ with solutions := (sol, a) :: σ.solutions }
 
 def latestCodeBlock : M m CodeBlock := do
@@ -63,8 +60,13 @@ def sorries : M m (List (ContextInfo × MVarId × Position × Position)) := do
 def isDone : M m Bool := do
   pure <| (← errors).isEmpty && (← sorries).isEmpty
 
-def done [Alternative m] : M m Unit := do
-  guard (← isDone)
+/--
+Was the longest solution (measured in lines before the first error)
+first achieved during the last k steps?
+-/
+def recentProgress (k : Nat) : M IO Bool := do
+  let lines ← (← get).solutions |>.mapM fun ⟨c, a⟩ => linesBeforeError c a
+  pure <| lines.drop k |>.all fun a => lines.take k |>.any fun b => b > a
 
 def lastResponse : M m String := do
   pure <| (← get).log.find? (·.role == .assistant) |>.map (·.content) |>.getD ""
@@ -125,14 +127,15 @@ def runAndLog (stx : Syntax) (driver : M m α) : M m (String × α) := do
 
   logInfoAt stx "Message log follows:"
   for msg in (← get).log do
+    logInfoAt stx m!"{← (← get).solutions |>.mapM fun ⟨c, a⟩ => linesBeforeError c a}"
     logInfoAt stx (s!"{msg.role}:\n" ++ msg.content)
   pure (← latestSolution, a)
 
 def discussDeclContaining (stx : Syntax) (preEdit : String → String) (driver : M m α) :
     m (String × α) := do
   let (preamble, decl) ← getSourceUpTo stx
-  let preambleAnalysis := none
+  let preambleAnalysis ← analyzeCode none preamble
   let editedDecl := preEdit decl
-  let analysis ← liftM <| analyzeSolution preamble (preambleAnalysis.map (·.env)) editedDecl
+  let analysis ← liftM <| analyzeCode preambleAnalysis.env editedDecl
   StateT.run' (runAndLog stx driver)
     ⟨⟨[]⟩, preamble, preambleAnalysis, [({ text := editedDecl }, analysis)]⟩

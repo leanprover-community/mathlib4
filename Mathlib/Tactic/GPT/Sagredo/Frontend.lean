@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Mathlib.Tactic.GPT.Lean
+import Std.Util.TermUnsafe
 
 open Lean Elab Meta
 
@@ -36,7 +37,8 @@ def processInput (input : String) (env? : Option Environment)
   let fileName   := fileName.getD "<input>"
   let inputCtx   := Parser.mkInputContext input fileName
   let (parserState, commandState) ← match env? with
-  | none => do
+  | none => unsafe do
+    -- enableInitializersExecution
     let (header, parserState, messages) ← Parser.parseHeader inputCtx
     let (env, messages) ← processHeader header opts messages inputCtx
     pure (parserState, (Command.mkState env messages opts))

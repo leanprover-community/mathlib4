@@ -4,11 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Zhangir Azerbayev
 -/
 import Mathlib.Tactic.GPT.Sagredo.Monad
+import Mathlib.Data.ListM.Basic
 
 open Lean
 
 namespace Mathlib.Tactic.GPT.Sagredo
 
+-- FIXME if this came from a sorry, we should say which line it is on!
 def goalsFeedback (goals : Format) : String :=
 s!"The new goal state is:\n{goals.fence}
 1. Please write out a plan for proceeding, in English (with LaTeX).
@@ -97,22 +99,37 @@ Here is the proof thus far:\n" ++ (← latestCodeBlock).markdownBody
   | (ctx, g, _, _) :: _ => do
       pure <| prompt ++ "\n" ++ goalsFeedback (← ctx.ppGoals [g])
 
-def dialog (n : Nat) : M IO String := do
+unsafe def forever' : ListM (M MetaM) Bool :=
+ListM.cons do
   sendSystemMessage systemPrompt
   askForAssistance (← initialPrompt)
-  for i in List.range (n-1) do
+  pure ((← isDone), ListM.iterate do askForAssistance (← feedback); isDone)
+
+unsafe def whileProgressing' (k : Nat := 3) : ListM (M MetaM) Bool :=
+forever'.takeWhileM (fun _ => do guard (← recentProgress k))
+
+unsafe def whileProgressing (k : Nat := 3) : State → ListM MetaM (Bool × State) :=
+ListM.run (whileProgressing' k)
+
+def dialog (totalSteps : Nat := 10) (progressSteps : Nat := 3) : M IO String := do
+  sendSystemMessage systemPrompt
+  askForAssistance (← initialPrompt)
+  for i in List.range (totalSteps - 1) do
     if (← isDone) then
       return s!"Success after {i+1} requests"
     else
-      askForAssistance (← feedback)
+      if (← recentProgress progressSteps) then
+        askForAssistance (← feedback)
+      else
+        return s!"Failed after {i+1} requests, because no progress was make after {progressSteps} steps"
   if (← isDone) then
-    return s!"Success after {n} requests"
+    return s!"Success after {totalSteps} requests"
   else
-    return s!"Failed after {n} requests"
+    return s!"Failed after {totalSteps} requests"
 
 elab tk:"sagredo" : tactic => do
   let (newDecl, result) ← discussDeclContaining tk
     (fun decl => decl.replace "sagredo" "sorry") -- TODO this is a hack
-    (dialog 6)
+    (dialog 10 3)
   logInfoAt tk result
   logInfoAt tk newDecl

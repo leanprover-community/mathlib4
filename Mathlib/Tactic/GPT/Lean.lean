@@ -14,7 +14,7 @@ Mostly additional functions to deal with `InfoTree`.
 open Lean Elab Meta
 
 -- Weird, why isn't this available in core already?
-instance [MonadLift m n] : MonadLift (StateT α m) (StateT α n) where
+instance [MonadLiftT m n] : MonadLift (StateT α m) (StateT α n) where
   monadLift := fun f s => f s
 
 namespace Lean.Syntax
