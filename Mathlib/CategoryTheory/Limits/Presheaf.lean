@@ -66,7 +66,7 @@ In the case where `ℰ = Cᵒᵖ ⥤ Type u` and `A = yoneda`, this functor is i
 
 Defined as in [MM92], Chapter I, Section 5, Theorem 2.
 -/
-@[simps]
+@[simps!]
 def restrictedYoneda : ℰ ⥤ Cᵒᵖ ⥤ Type u₁ :=
   yoneda ⋙ (whiskeringLeft _ _ (Type u₁)).obj (Functor.op A)
 #align category_theory.colimit_adj.restricted_yoneda CategoryTheory.ColimitAdj.restrictedYoneda
@@ -78,13 +78,17 @@ embedding.
 def restrictedYonedaYoneda : restrictedYoneda (yoneda : C ⥤ Cᵒᵖ ⥤ Type u₁) ≅ 𝟭 _ :=
   NatIso.ofComponents
     (fun P =>
-      NatIso.ofComponents (fun X => yonedaSectionsSmall X.unop _) fun X Y f =>
+      NatIso.ofComponents (fun X => yonedaSectionsSmall X.unop _) @ fun X Y f =>
         funext fun x => by
           dsimp
-          rw [← functor_to_types.naturality _ _ x f (𝟙 _)]
-          dsimp
-          simp)
-    fun _ _ _ => rfl
+          have : x.app (Opposite.unop X) (CategoryStruct.id (Opposite.unop (Opposite.unop X))) =
+              (x.app X (𝟙 (Opposite.unop X)))
+               := by rfl
+          rw [this]
+          rw [← FunctorToTypes.naturality _ _ x f (𝟙 _)]
+          simp only [id_comp, Functor.op_obj, Opposite.unop_op, yoneda_obj_map, comp_id]
+          rfl)
+    @fun _ _ _ => rfl
 #align category_theory.colimit_adj.restricted_yoneda_yoneda CategoryTheory.ColimitAdj.restrictedYonedaYoneda
 
 /-- (Implementation). The equivalence of homsets which helps construct the left adjoint to
@@ -97,14 +101,14 @@ def restrictYonedaHomEquiv (P : Cᵒᵖ ⥤ Type u₁) (E : ℰ)
   ((uliftTrivial _).symm ≪≫ t.homIso' E).toEquiv.trans
     { toFun := fun k =>
         { app := fun c p => k.1 (Opposite.op ⟨_, p⟩)
-          naturality' := fun c c' f =>
+          naturality := fun c c' f =>
             funext fun p =>
               (k.2
                   (Quiver.Hom.op ⟨f, rfl⟩ :
                     (Opposite.op ⟨c', P.map f p⟩ : P.Elementsᵒᵖ) ⟶ Opposite.op ⟨c, p⟩)).symm }
       invFun := fun τ =>
         { val := fun p => τ.app p.unop.1 p.unop.2
-          property := fun p p' f => by
+          property := @fun p p' f => by
             simp_rw [← f.unop.2]
             apply (congr_fun (τ.naturality f.unop.1) p'.unop.2).symm }
       left_inv := by
@@ -112,7 +116,6 @@ def restrictYonedaHomEquiv (P : Cᵒᵖ ⥤ Type u₁) (E : ℰ)
         ext
         dsimp
         congr 1
-        simp
       right_inv := by
         rintro ⟨_, _⟩
         rfl }
@@ -179,7 +182,7 @@ def isInitial (A : C) : IsInitial (Elements.initial A) where
   desc s := ⟨s.pt.2.op, comp_id _⟩
   uniq s m w := by
     simp_rw [← m.2]
-    dsimp [elements.initial]
+    dsimp [Elements.initial]
     simp
   fac := by rintro s ⟨⟨⟩⟩
 #align category_theory.colimit_adj.is_initial CategoryTheory.ColimitAdj.isInitial
@@ -221,9 +224,9 @@ This follows from `category_theory.category_of_elements.costructured_arrow_yoned
 def extendAlongYonedaIsoKanApp (X) :
     (extendAlongYoneda A).obj X ≅ ((lan yoneda : (_ ⥤ ℰ) ⥤ _).obj A).obj X :=
   let eq := CategoryOfElements.costructuredArrowYonedaEquivalence X
-  { Hom := colimit.pre (Lan.diagram (yoneda : C ⥤ _ ⥤ Type u₁) A X) Eq.Functor
+  { hom := colimit.pre (Lan.diagram (yoneda : C ⥤ _ ⥤ Type u₁) A X) Eq.Functor
     inv := colimit.pre ((CategoryOfElements.π X).leftOp ⋙ A) Eq.inverse
-    hom_inv_id' := by
+    hom_inv_id := by
       erw [colimit.pre_pre ((category_of_elements.π X).leftOp ⋙ A) eq.inverse]
       trans colimit.pre ((category_of_elements.π X).leftOp ⋙ A) (𝟭 _)
       congr
@@ -232,7 +235,7 @@ def extendAlongYonedaIsoKanApp (X) :
         simp only [colimit.ι_pre]
         erw [category.comp_id]
         congr
-    inv_hom_id' := by
+    inv_hom_id := by
       erw [colimit.pre_pre (Lan.diagram (yoneda : C ⥤ _ ⥤ Type u₁) A X) eq.functor]
       trans colimit.pre (Lan.diagram (yoneda : C ⥤ _ ⥤ Type u₁) A X) (𝟭 _)
       congr
@@ -245,13 +248,13 @@ def extendAlongYonedaIsoKanApp (X) :
 
 /-- Verify that `extend_along_yoneda` is indeed the left Kan extension along the yoneda embedding.
 -/
-@[simps]
+@[simps!]
 def extendAlongYonedaIsoKan : extendAlongYoneda A ≅ (lan yoneda : (_ ⥤ ℰ) ⥤ _).obj A :=
   NatIso.ofComponents (extendAlongYonedaIsoKanApp A)
     (by
       intro X Y f; simp
-      rw [extend_along_yoneda_map]
-      erw [colimit.pre_pre (Lan.diagram (yoneda : C ⥤ _ ⥤ Type u₁) A Y) (costructured_arrow.map f)]
+      rw [extendAlongYoneda_map]
+      erw [colimit.pre_pre (Lan.diagram (yoneda : C ⥤ _ ⥤ Type u₁) A Y) (CostructuredArrow.map f)]
       erw [colimit.pre_pre (Lan.diagram (yoneda : C ⥤ _ ⥤ Type u₁) A Y)
           (category_of_elements.costructured_arrow_yoneda_equivalence Y).Functor]
       congr 1
@@ -259,7 +262,7 @@ def extendAlongYonedaIsoKan : extendAlongYoneda A ≅ (lan yoneda : (_ ⥤ ℰ) 
 #align category_theory.colimit_adj.extend_along_yoneda_iso_Kan CategoryTheory.ColimitAdj.extendAlongYonedaIsoKan
 
 /-- extending `F ⋙ yoneda` along the yoneda embedding is isomorphic to `Lan F.op`. -/
-@[simps]
+@[simps!]
 def extendOfCompYonedaIsoLan {D : Type u₁} [SmallCategory D] (F : C ⥤ D) :
     extendAlongYoneda (F ⋙ yoneda) ≅ lan F.op :=
   Adjunction.natIsoOfRightAdjointNatIso (yonedaAdjunction (F ⋙ yoneda))
@@ -272,10 +275,11 @@ end ColimitAdj
 open ColimitAdj
 
 /-- `F ⋙ yoneda` is naturally isomorphic to `yoneda ⋙ Lan F.op`. -/
-@[simps]
+@[simps!]
 def compYonedaIsoYonedaCompLan {D : Type u₁} [SmallCategory D] (F : C ⥤ D) :
     F ⋙ yoneda ≅ yoneda ⋙ lan F.op :=
   (isExtensionAlongYoneda (F ⋙ yoneda)).symm ≪≫ isoWhiskerLeft yoneda (extendOfCompYonedaIsoLan F)
+set_option linter.uppercaseLean3 false in
 #align category_theory.comp_yoneda_iso_yoneda_comp_Lan CategoryTheory.compYonedaIsoYonedaCompLan
 
 /-- Since `extend_along_yoneda A` is adjoint to `restricted_yoneda A`, if we use `A = yoneda`
@@ -398,4 +402,3 @@ def isLeftAdjointOfPreservesColimits (L : (C ⥤ Type u₁) ⥤ ℰ) [PreservesC
 #align category_theory.is_left_adjoint_of_preserves_colimits CategoryTheory.isLeftAdjointOfPreservesColimits
 
 end CategoryTheory
-
