@@ -411,6 +411,7 @@ class AddRightCancelSemigroup (G : Type u) extends FlatHack, AddSemigroup G wher
 #align add_right_cancel_semigroup.ext AddRightCancelSemigroup.ext
 
 attribute [to_additive] RightCancelSemigroup
+attribute [to_additive] RightCancelSemigroup.toAddSemigroup
 
 /-- Any `RightCancelSemigroup` satisfies `IsRightCancelMul`. -/
 @[to_additive AddRightCancelSemigroup.toIsRightCancelAdd "Any `AddRightCancelSemigroup` satisfies
