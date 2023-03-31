@@ -994,7 +994,7 @@ theorem map_join' (f : α → β) (S) : Seq.map f (Seq.join S) = Seq.join (Seq.m
 
 @[simp]
 theorem map_join (f : α → β) : ∀ S, map f (join S) = join (map (map f) S)
-  | ((a, s), S) => by apply rec_on s <;> intros <;> simp [map]
+  | ((a, s), S) => by apply recOn s <;> intros <;> simp [map]
 #align stream.seq1.map_join Stream'.Seq1.map_join
 
 @[simp]
