@@ -426,6 +426,7 @@ theorem coinduction2 (s) (f g : Seq α → Seq β)
 #align stream.seq.coinduction2 Stream'.Seq.coinduction2
 
 /-- Embed a list as a sequence -/
+@[coe]
 def ofList (l : List α) : Seq α :=
   ⟨List.get? l, fun {n} h => by
     rw [List.get?_eq_none] at h⊢
