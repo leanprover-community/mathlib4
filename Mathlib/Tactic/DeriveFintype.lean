@@ -50,8 +50,9 @@ There is a source of quadratic complexity in this `Fintype` instance from the fa
 inductive type with `n` constructors has a proxy type of the form `C₁ ⊕ (C₂ ⊕ (⋯ ⊕ Cₙ))`,
 so mapping to and from `Cᵢ` requires looking through `i` levels of `Sum` constructors.
 Ignoring time spent looking through these constructors, the construction of `Finset.univ`
-takes linear time in the cardinality of the type since the instances involved compute the
-underlying `List` for the `Finset` as `l₁ ++ (l₂ ++ (⋯ ++ lₙ))` with right associativity.
+contributes linear time with respect to the cardinality of the type since the instances
+involved compute the underlying `List` for the `Finset` as `l₁ ++ (l₂ ++ (⋯ ++ lₙ))` with
+right associativity.
 
 This implementation takes some inspiration from the one by Mario Carneiro for Mathlib 3.
 A difference is that the Mathlib 3 version does not explicitly construct the total proxy type,
