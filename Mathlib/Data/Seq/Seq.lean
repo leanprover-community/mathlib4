@@ -833,7 +833,7 @@ def toList' {α} (s : Seq α) : Computation (List α) :=
 
 theorem dropn_add (s : Seq α) (m) : ∀ n, drop s (m + n) = drop (drop s m) n
   | 0 => rfl
-  | n + 1 => congr_arg tail (dropn_add n)
+  | n + 1 => congr_arg tail (dropn_add s _ n)
 #align stream.seq.dropn_add Stream'.Seq.dropn_add
 
 theorem dropn_tail (s : Seq α) (n) : drop (tail s) n = drop s (n + 1) := by
