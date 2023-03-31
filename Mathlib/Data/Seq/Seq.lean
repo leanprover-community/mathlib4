@@ -765,7 +765,7 @@ theorem join_cons (a : α) (s S) : join (cons (a, s) S) = cons a (append s (join
   intro s1 s2 h
   exact
     match s1, s2, h with
-    | _, _, Or.inl <| Eq.refl s => by
+    | s, _, Or.inl <| Eq.refl s => by
       apply recOn s; · trivial
       · intro x s
         rw [destruct_cons]
