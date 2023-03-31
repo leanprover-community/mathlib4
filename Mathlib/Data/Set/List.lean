@@ -13,7 +13,7 @@ import Mathlib.Data.List.Basic
 import Mathlib.Data.Fin.Basic
 
 /-!
-# Lemmas about `list`s and `set.range`
+# Lemmas about `List`s and `Set.range`
 
 In this file we prove lemmas about range of some operations on lists.
 -/
@@ -27,7 +27,7 @@ namespace Set
 
 theorem range_list_map (f : α → β) : range (map f) = { l | ∀ x ∈ l, x ∈ range f } := by
   refine'
-    subset.antisymm (range_subset_iff.2 fun l => forall_mem_map_iff.2 fun y _ => mem_range_self _)
+    antisymm (range_subset_iff.2 fun l => forall_mem_map_iff.2 fun y _ => mem_range_self _)
       fun l hl => _
   induction' l with a l ihl; · exact ⟨[], rfl⟩
   rcases ihl fun x hx => hl x <| subset_cons _ _ hx with ⟨l, rfl⟩
@@ -35,32 +35,31 @@ theorem range_list_map (f : α → β) : range (map f) = { l | ∀ x ∈ l, x �
   exact ⟨a :: l, map_cons _ _ _⟩
 #align set.range_list_map Set.range_list_map
 
-theorem range_list_map_coe (s : Set α) : range (map (coe : s → α)) = { l | ∀ x ∈ l, x ∈ s } := by
+theorem range_list_map_coe (s : Set α) : range (map ((↑) : s → α)) = { l | ∀ x ∈ l, x ∈ s } := by
   rw [range_list_map, Subtype.range_coe]
 #align set.range_list_map_coe Set.range_list_map_coe
 
 @[simp]
 theorem range_list_nthLe : (range fun k : Fin l.length => l.nthLe k k.2) = { x | x ∈ l } := by
   ext x
-  rw [mem_set_of_eq, mem_iff_nth_le]
-  exact ⟨fun ⟨⟨n, h₁⟩, h₂⟩ => ⟨n, h₁, h₂⟩, fun ⟨n, h₁, h₂⟩ => ⟨⟨n, h₁⟩, h₂⟩⟩
+  rw [mem_setOf_eq, mem_iff_get]
+  exact ⟨fun ⟨⟨n, h₁⟩, h₂⟩ => ⟨⟨n, h₁⟩, h₂⟩, fun ⟨⟨n, h₁⟩, h₂⟩ => ⟨⟨n, h₁⟩, h₂⟩⟩
 #align set.range_list_nth_le Set.range_list_nthLe
 
 theorem range_list_get? : range l.get? = insert none (some '' { x | x ∈ l }) := by
-  rw [← range_list_nth_le, ← range_comp]
+  rw [← range_list_nthLe, ← range_comp]
   refine' (range_subset_iff.2 fun n => _).antisymm (insert_subset.2 ⟨_, _⟩)
-  exacts[(le_or_lt l.length n).imp nth_eq_none_iff.2 fun hlt => ⟨⟨_, _⟩, (nth_le_nth hlt).symm⟩,
-    ⟨_, nth_eq_none_iff.2 le_rfl⟩, range_subset_iff.2 fun k => ⟨_, nth_le_nth _⟩]
+  exacts [(le_or_lt l.length n).imp get?_eq_none.2 (fun hlt => ⟨⟨_, hlt⟩, (get?_eq_get hlt).symm⟩),
+    ⟨_, get?_eq_none.2 le_rfl⟩, range_subset_iff.2 <| fun k => ⟨_, get?_eq_get _⟩]
 #align set.range_list_nth Set.range_list_get?
 
 @[simp]
 theorem range_list_getD (d : α) : (range fun n => l.getD n d) = insert d { x | x ∈ l } :=
   calc
     (range fun n => l.getD n d) = (fun o : Option α => o.getD d) '' range l.get? := by
-      simp only [← range_comp, (· ∘ ·), nthd_eq_get_or_else_nth]
+      simp only [← range_comp, (· ∘ ·), getD_eq_getD_get?]
     _ = insert d { x | x ∈ l } := by
-      simp only [range_list_nth, image_insert_eq, Option.getD, image_image, image_id']
-    
+      simp only [range_list_get?, image_insert_eq, Option.getD, image_image, image_id']
 #align set.range_list_nthd Set.range_list_getD
 
 @[simp]
@@ -70,14 +69,11 @@ theorem range_list_getI [Inhabited α] (l : List α) : range l.getI = insert def
 
 end Set
 
-#print List.canLift /-
-/-- If each element of a list can be lifted to some type, then the whole list can be lifted to this
-type. -/
+/-- If each element of a list can be lifted to some type, then the whole list can be
+lifted to this type. -/
 instance List.canLift (c) (p) [CanLift α β c p] :
-    CanLift (List α) (List β) (List.map c) fun l => ∀ x ∈ l, p x
-    where prf l H := by
+    CanLift (List α) (List β) (List.map c) fun l => ∀ x ∈ l, p x where
+  prf l H := by
     rw [← Set.mem_range, Set.range_list_map]
     exact fun a ha => CanLift.prf a (H a ha)
 #align list.can_lift List.canLift
--/
-
