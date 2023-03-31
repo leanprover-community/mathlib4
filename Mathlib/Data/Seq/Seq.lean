@@ -616,7 +616,7 @@ def toList (s : Seq α) (h : s.Terminates) : List α :=
 
 /-- Convert a sequence which is known not to terminate into a stream -/
 def toStream (s : Seq α) (h : ¬s.Terminates) : Stream' α := fun n =>
-  Option.get <| not_terminates_iff.1 h n
+  Option.get _ <| not_terminates_iff.1 h n
 #align stream.seq.to_stream Stream'.Seq.toStream
 
 /-- Convert a sequence into either a list or a stream depending on whether
