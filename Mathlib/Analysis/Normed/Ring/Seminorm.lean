@@ -8,7 +8,7 @@ Authors: María Inés de Frutos-Fernández, Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Normed.Field.Basic
+import Mathlib.Analysis.Normed.Field.Basic
 
 /-!
 # Seminorms and norms on rings
@@ -77,8 +77,7 @@ section NonUnitalRing
 
 variable [NonUnitalRing R]
 
-instance ringSeminormClass : RingSeminormClass (RingSeminorm R) R ℝ
-    where
+instance ringSeminormClass : RingSeminormClass (RingSeminorm R) R ℝ where
   coe f := f.toFun
   coe_injective' f g h := by cases f <;> cases g <;> congr
   map_zero f := f.map_zero'
@@ -139,8 +138,7 @@ section Ring
 
 variable [Ring R] (p : RingSeminorm R)
 
-theorem seminorm_one_eq_one_iff_ne_zero (hp : p 1 ≤ 1) : p 1 = 1 ↔ p ≠ 0 :=
-  by
+theorem seminorm_one_eq_one_iff_ne_zero (hp : p 1 ≤ 1) : p 1 = 1 ↔ p ≠ 0 := by
   refine'
     ⟨fun h =>
       ne_zero_iff.mpr
@@ -170,8 +168,7 @@ namespace RingNorm
 
 variable [NonUnitalRing R]
 
-instance ringNormClass : RingNormClass (RingNorm R) R ℝ
-    where
+instance ringNormClass : RingNormClass (RingNorm R) R ℝ where
   coe f := f.toFun
   coe_injective' f g h := by cases f <;> cases g <;> congr
   map_zero f := f.map_zero'
@@ -216,8 +213,7 @@ namespace MulRingSeminorm
 
 variable [NonAssocRing R]
 
-instance mulRingSeminormClass : MulRingSeminormClass (MulRingSeminorm R) R ℝ
-    where
+instance mulRingSeminormClass : MulRingSeminormClass (MulRingSeminorm R) R ℝ where
   coe f := f.toFun
   coe_injective' f g h := by cases f <;> cases g <;> congr
   map_zero f := f.map_zero'
@@ -269,8 +265,7 @@ namespace MulRingNorm
 
 variable [NonAssocRing R]
 
-instance mulRingNormClass : MulRingNormClass (MulRingNorm R) R ℝ
-    where
+instance mulRingNormClass : MulRingNormClass (MulRingNorm R) R ℝ where
   coe f := f.toFun
   coe_injective' f g h := by cases f <;> cases g <;> congr
   map_zero f := f.map_zero'
@@ -316,12 +311,10 @@ end MulRingNorm
 def RingSeminorm.toRingNorm {K : Type _} [Field K] (f : RingSeminorm K) (hnt : f ≠ 0) :
     RingNorm K :=
   { f with
-    eq_zero_of_map_eq_zero' := fun x hx =>
-      by
+    eq_zero_of_map_eq_zero' := fun x hx => by
       obtain ⟨c, hc⟩ := ring_seminorm.ne_zero_iff.mp hnt
       by_contra hn0
-      have hc0 : f c = 0 :=
-        by
+      have hc0 : f c = 0 := by
         rw [← mul_one c, ← mul_inv_cancel hn0, ← mul_assoc, mul_comm c, mul_assoc]
         exact
           le_antisymm
