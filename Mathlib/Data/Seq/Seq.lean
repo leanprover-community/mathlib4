@@ -832,13 +832,13 @@ theorem dropn_add (s : Seq α) (m) : ∀ n, drop s (m + n) = drop (drop s m) n
 #align stream.seq.dropn_add Stream'.Seq.dropn_add
 
 theorem dropn_tail (s : Seq α) (n) : drop (tail s) n = drop s (n + 1) := by
-  rw [add_comm] <;> symm <;> apply dropn_add
+  rw [add_comm] ; symm ; apply dropn_add
 #align stream.seq.dropn_tail Stream'.Seq.dropn_tail
 
 @[simp]
-theorem head_dropn (s : Seq α) (n) : head (drop s n) = nth s n := by
+theorem head_dropn (s : Seq α) (n) : head (drop s n) = get? s n := by
   induction' n with n IH generalizing s; · rfl
-  rw [Nat.succ_eq_add_one, ← nth_tail, ← dropn_tail]; apply IH
+  rw [Nat.succ_eq_add_one, ← get?_tail, ← dropn_tail]; apply IH
 #align stream.seq.head_dropn Stream'.Seq.head_dropn
 
 theorem mem_map (f : α → β) {a : α} : ∀ {s : Seq α}, a ∈ s → f a ∈ map f s
@@ -871,7 +871,7 @@ theorem of_mem_append {s₁ s₂ : Seq α} {a : α} (h : a ∈ append s₁ s₂)
 #align stream.seq.of_mem_append Stream'.Seq.of_mem_append
 
 theorem mem_append_left {s₁ s₂ : Seq α} {a : α} (h : a ∈ s₁) : a ∈ append s₁ s₂ := by
-  apply mem_rec_on h <;> intros <;> simp [*]
+  apply mem_rec_on h ; intros ; simp [*]
 #align stream.seq.mem_append_left Stream'.Seq.mem_append_left
 
 @[simp]
@@ -879,7 +879,7 @@ theorem enum_cons (s : Seq α) (x : α) :
     enum (cons x s) = cons (0, x) (map (Prod.map Nat.succ id) (enum s)) := by
   ext ⟨n⟩ : 1
   · simp
-  · simp only [nth_enum, nth_cons_succ, map_nth, Option.map_map]
+  · simp only [nth_enum, get?_cons_succ, map_get?, Option.map_map]
     congr
 #align stream.seq.enum_cons Stream'.Seq.enum_cons
 
