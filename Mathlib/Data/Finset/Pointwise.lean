@@ -4,12 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Yaël Dillies
 
 ! This file was ported from Lean 3 source module data.finset.pointwise
-! leanprover-community/mathlib commit f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c
+! leanprover-community/mathlib commit 517cc149e0b515d2893baa376226ed10feb319c7
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finset.NAry
 import Mathlib.Data.Finset.Preimage
+import Mathlib.Data.Set.Pointwise.Finite
 import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.Data.Set.Pointwise.ListOfFn
 
@@ -139,6 +140,12 @@ theorem Nonempty.subset_one_iff (h : s.Nonempty) : s ⊆ 1 ↔ s = 1 :=
   h.subset_singleton_iff
 #align finset.nonempty.subset_one_iff Finset.Nonempty.subset_one_iff
 #align finset.nonempty.subset_zero_iff Finset.Nonempty.subset_zero_iff
+
+@[to_additive (attr := simp)]
+theorem card_one : (1 : Finset α).card = 1 :=
+  card_singleton _
+#align finset.card_one Finset.card_one
+#align finset.card_zero Finset.card_zero
 
 /-- The singleton operation as a `OneHom`. -/
 @[to_additive "The singleton operation as a `ZeroHom`."]
@@ -719,12 +726,30 @@ protected def semigroup [Semigroup α] : Semigroup (Finset α) :=
 #align finset.semigroup Finset.semigroup
 #align finset.add_semigroup Finset.addSemigroup
 
+section CommSemigroup
+
+variable [CommSemigroup α] {s t : Finset α}
+
 /-- `Finset α` is a `CommSemigroup` under pointwise operations if `α` is. -/
 @[to_additive "`Finset α` is an `AddCommSemigroup` under pointwise operations if `α` is. "]
-protected def commSemigroup [CommSemigroup α] : CommSemigroup (Finset α) :=
+protected def commSemigroup : CommSemigroup (Finset α) :=
   coe_injective.commSemigroup _ coe_mul
 #align finset.comm_semigroup Finset.commSemigroup
 #align finset.add_comm_semigroup Finset.addCommSemigroup
+
+@[to_additive]
+theorem inter_mul_union_subset : s ∩ t * (s ∪ t) ⊆ s * t :=
+  image₂_inter_union_subset mul_comm
+#align finset.inter_mul_union_subset Finset.inter_mul_union_subset
+#align finset.inter_add_union_subset Finset.inter_add_union_subset
+
+@[to_additive]
+theorem union_mul_inter_subset : (s ∪ t) * (s ∩ t) ⊆ s * t :=
+  image₂_union_inter_subset mul_comm
+#align finset.union_mul_inter_subset Finset.union_mul_inter_subset
+#align finset.union_add_inter_subset Finset.union_add_inter_subset
+
+end CommSemigroup
 
 section MulOneClass
 
@@ -1799,6 +1824,20 @@ end
 
 open Pointwise
 
+@[to_additive]
+theorem image_smul_comm [DecidableEq β] [DecidableEq γ] [SMul α β] [SMul α γ] (f : β → γ) (a : α)
+    (s : Finset β) : (∀ b, f (a • b) = a • f b) → (a • s).image f = a • s.image f :=
+  image_comm
+#align finset.image_smul_comm Finset.image_smul_comm
+#align finset.image_vadd_comm Finset.image_vadd_comm
+
+@[to_additive]
+theorem image_smul_distrib [DecidableEq α] [DecidableEq β] [Monoid α] [Monoid β]
+    [MonoidHomClass F α β] (f : F) (a : α) (s : Finset α) : (a • s).image f = f a • s.image f :=
+  image_comm <| map_mul _ _
+#align finset.image_smul_distrib Finset.image_smul_distrib
+#align finset.image_vadd_distrib Finset.image_vadd_distrib
+
 section Group
 
 variable [DecidableEq β] [Group α] [MulAction α β] {s t : Finset β} {a : α} {b : β}
@@ -1842,6 +1881,12 @@ theorem subset_smul_finset_iff : s ⊆ a • t ↔ a⁻¹ • s ⊆ t := by
   exact Set.subset_set_smul_iff
 #align finset.subset_smul_finset_iff Finset.subset_smul_finset_iff
 #align finset.subset_vadd_finset_iff Finset.subset_vadd_finset_iff
+
+@[to_additive (attr := simp)]
+theorem card_smul_finset (a : α) (s : Finset β) : (a • s).card = s.card :=
+  card_image_of_injective _ <| MulAction.injective _
+#align finset.card_smul_finset Finset.card_smul_finset
+#align finset.card_vadd_finset Finset.card_vadd_finset
 
 end Group
 
@@ -1978,3 +2023,105 @@ protected theorem neg_smul [DecidableEq α] : -s • t = -(s • t) := by
 end Ring
 
 end Finset
+
+open Pointwise
+
+namespace Set
+
+section One
+
+variable [One α]
+
+@[to_additive (attr := simp)]
+theorem toFinset_one : (1 : Set α).toFinset = 1 :=
+  rfl
+#align set.to_finset_one Set.toFinset_one
+#align set.to_finset_zero Set.toFinset_zero
+
+-- Porting note: should take priority over `Finite.toFinset_singleton`
+@[to_additive (attr := simp high)]
+theorem Finite.toFinset_one (h : (1 : Set α).Finite := finite_one) : h.toFinset = 1 :=
+  Finite.toFinset_singleton _
+#align set.finite.to_finset_one Set.Finite.toFinset_one
+#align set.finite.to_finset_zero Set.Finite.toFinset_zero
+
+end One
+
+section Mul
+
+variable [DecidableEq α] [Mul α] {s t : Set α}
+
+@[to_additive (attr := simp)]
+theorem toFinset_mul (s t : Set α) [Fintype s] [Fintype t] [Fintype ↑(s * t)] :
+    (s * t).toFinset = s.toFinset * t.toFinset :=
+  toFinset_image2 _ _ _
+#align set.to_finset_mul Set.toFinset_mul
+#align set.to_finset_add Set.toFinset_add
+
+@[to_additive]
+theorem Finite.toFinset_mul (hs : s.Finite) (ht : t.Finite) (hf := hs.mul ht) :
+    hf.toFinset = hs.toFinset * ht.toFinset :=
+  Finite.toFinset_image2 _ _ _
+#align set.finite.to_finset_mul Set.Finite.toFinset_mul
+#align set.finite.to_finset_add Set.Finite.toFinset_add
+
+end Mul
+
+section SMul
+
+variable [SMul α β] [DecidableEq β] {a : α} {s : Set α} {t : Set β}
+
+@[to_additive (attr := simp)]
+theorem toFinset_smul (s : Set α) (t : Set β) [Fintype s] [Fintype t] [Fintype ↑(s • t)] :
+    (s • t).toFinset = s.toFinset • t.toFinset :=
+  toFinset_image2 _ _ _
+#align set.to_finset_smul Set.toFinset_smul
+#align set.to_finset_vadd Set.toFinset_vadd
+
+@[to_additive]
+theorem Finite.toFinset_smul (hs : s.Finite) (ht : t.Finite) (hf := hs.smul ht) :
+    hf.toFinset = hs.toFinset • ht.toFinset :=
+  Finite.toFinset_image2 _ _ _
+#align set.finite.to_finset_smul Set.Finite.toFinset_smul
+#align set.finite.to_finset_vadd Set.Finite.toFinset_vadd
+
+end SMul
+
+section SMul
+
+variable [DecidableEq β] [SMul α β] {a : α} {s : Set β}
+
+@[to_additive (attr := simp)]
+theorem toFinset_smul_set (a : α) (s : Set β) [Fintype s] [Fintype ↑(a • s)] :
+    (a • s).toFinset = a • s.toFinset :=
+  toFinset_image _ _
+#align set.to_finset_smul_set Set.toFinset_smul_set
+#align set.to_finset_vadd_set Set.toFinset_vadd_set
+
+@[to_additive]
+theorem Finite.toFinset_smul_set (hs : s.Finite) (hf : (a • s).Finite := hs.smul_set) :
+    hf.toFinset = a • hs.toFinset :=
+  Finite.toFinset_image _ _ _
+#align set.finite.to_finset_smul_set Set.Finite.toFinset_smul_set
+#align set.finite.to_finset_vadd_set Set.Finite.toFinset_vadd_set
+
+end SMul
+
+section VSub
+
+variable [DecidableEq α] [VSub α β] {s t : Set β}
+
+@[simp]
+theorem toFinset_vsub (s t : Set β) [Fintype s] [Fintype t] [Fintype ↑(s -ᵥ t)] :
+    (s -ᵥ t : Set α).toFinset = s.toFinset -ᵥ t.toFinset :=
+  toFinset_image2 _ _ _
+#align set.to_finset_vsub Set.toFinset_vsub
+
+theorem Finite.toFinset_vsub (hs : s.Finite) (ht : t.Finite) (hf := hs.vsub ht) :
+    hf.toFinset = hs.toFinset -ᵥ ht.toFinset :=
+  Finite.toFinset_image2 _ _ _
+#align set.finite.to_finset_vsub Set.Finite.toFinset_vsub
+
+end VSub
+
+end Set

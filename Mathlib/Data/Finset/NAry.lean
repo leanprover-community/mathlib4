@@ -4,11 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 
 ! This file was ported from Lean 3 source module data.finset.n_ary
-! leanprover-community/mathlib commit 20715f4ac6819ef2453d9e5106ecd086a5dc2a5e
+! leanprover-community/mathlib commit 517cc149e0b515d2893baa376226ed10feb319c7
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finset.Prod
+import Mathlib.Data.Set.Finite
 
 /-!
 # N-ary images of finsets
@@ -28,12 +29,13 @@ and `Set.image2` already fulfills this task.
 
 open Function Set
 
+variable {α α' β β' γ γ' δ δ' ε ε' ζ ζ' ν : Type _}
+
 namespace Finset
 
-variable {α α' β β' γ γ' δ δ' ε ε' ζ ζ' ν : Type _} [DecidableEq α'] [DecidableEq β']
-  [DecidableEq γ] [DecidableEq γ'] [DecidableEq δ] [DecidableEq δ'] [DecidableEq ε] [DecidableEq ε']
-  {f f' : α → β → γ} {g g' : α → β → γ → δ} {s s' : Finset α} {t t' : Finset β} {u u' : Finset γ}
-  {a a' : α} {b b' : β} {c : γ}
+variable [DecidableEq α'] [DecidableEq β'] [DecidableEq γ] [DecidableEq γ'] [DecidableEq δ]
+  [DecidableEq δ'] [DecidableEq ε] [DecidableEq ε'] {f f' : α → β → γ} {g g' : α → β → γ → δ}
+  {s s' : Finset α} {t t' : Finset β} {u u' : Finset γ} {a a' : α} {b b' : β} {c : γ}
 
 /-- The image of a binary function `f : α → β → γ` as a function `Finset α → Finset β → Finset γ`.
 Mathematically this should be thought of as the image of the corresponding function `α × β → γ`. -/
@@ -498,4 +500,37 @@ theorem image₂_right_identity {f : γ → β → γ} {b : β} (h : ∀ a, f a 
     image₂ f s {b} = s := by rw [image₂_singleton_right, funext h, image_id']
 #align finset.image₂_right_identity Finset.image₂_right_identity
 
+variable [DecidableEq α] [DecidableEq β]
+
+theorem image₂_inter_union_subset {f : α → α → β} {s t : Finset α} (hf : ∀ a b, f a b = f b a) :
+    image₂ f (s ∩ t) (s ∪ t) ⊆ image₂ f s t :=
+  coe_subset.1 <| by
+    push_cast
+    exact image2_inter_union_subset hf
+#align finset.image₂_inter_union_subset Finset.image₂_inter_union_subset
+
+theorem image₂_union_inter_subset {f : α → α → β} {s t : Finset α} (hf : ∀ a b, f a b = f b a) :
+    image₂ f (s ∪ t) (s ∩ t) ⊆ image₂ f s t :=
+  coe_subset.1 <| by
+    push_cast
+    exact image2_union_inter_subset hf
+#align finset.image₂_union_inter_subset Finset.image₂_union_inter_subset
+
 end Finset
+
+namespace Set
+
+variable [DecidableEq γ] {s : Set α} {t : Set β}
+
+@[simp]
+theorem toFinset_image2 (f : α → β → γ) (s : Set α) (t : Set β) [Fintype s] [Fintype t]
+    [Fintype (image2 f s t)] : (image2 f s t).toFinset = Finset.image₂ f s.toFinset t.toFinset :=
+  Finset.coe_injective <| by simp
+#align set.to_finset_image2 Set.toFinset_image2
+
+theorem Finite.toFinset_image2 (f : α → β → γ) (hs : s.Finite) (ht : t.Finite)
+    (hf := hs.image2 f ht) : hf.toFinset = Finset.image₂ f hs.toFinset ht.toFinset :=
+  Finset.coe_injective <| by simp
+#align set.finite.to_finset_image2 Set.Finite.toFinset_image2
+
+end Set
