@@ -165,9 +165,10 @@ theorem mem_weightedHomogeneousSubmodule (w : σ → M) (m : M) (p : MvPolynomia
   `p.support ⊆ {d | weightedDegree' w d = m}`. While equal, the former has a
   convenient definitional reduction. -/
 theorem weightedHomogeneousSubmodule_eq_finsupp_supported (w : σ → M) (m : M) :
-    weightedHomogeneousSubmodule R w m = Finsupp.supported _ R { d | weightedDegree' w d = m } := by
-  ext
-  simp only [mem_supported, Set.subset_def, Finsupp.mem_support_iff, mem_coe]
+    weightedHomogeneousSubmodule R w m = Finsupp.supported R R { d | weightedDegree' w d = m } := by
+  ext x
+  rw [mem_supported, Set.subset_def]
+  simp [Finsupp.mem_support_iff, mem_coe]
   rfl
 #align mv_polynomial.weighted_homogeneous_submodule_eq_finsupp_supported MvPolynomial.weightedHomogeneousSubmodule_eq_finsupp_supported
 
