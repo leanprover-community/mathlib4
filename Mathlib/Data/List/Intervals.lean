@@ -77,7 +77,7 @@ theorem eq_nil_of_le {n m : ℕ} (h : m ≤ n) : Ico n m = [] := by
 #align list.Ico.eq_nil_of_le List.Ico.eq_nil_of_le
 
 theorem map_add (n m k : ℕ) : (Ico n m).map ((· + ·) k) = Ico (n + k) (m + k) := by
-  rw [Ico, Ico, map_add_range', add_tsub_add_eq_tsub_right, add_comm n k]
+  rw [Ico, Ico, map_add_range', add_tsub_add_eq_tsub_right m k, add_comm n k]
 #align list.Ico.map_add List.Ico.map_add
 
 theorem map_sub (n m k : ℕ) (h₁ : k ≤ n) :
@@ -98,9 +98,10 @@ theorem eq_empty_iff {n m : ℕ} : Ico n m = [] ↔ m ≤ n :=
 theorem append_consecutive {n m l : ℕ} (hnm : n ≤ m) (hml : m ≤ l) :
     Ico n m ++ Ico m l = Ico n l := by
   dsimp only [Ico]
-  convert range'_append n (m-n) (l-m)
-  · exact (add_tsub_cancel_of_le hnm).symm
-  · rwa [← add_tsub_assoc_of_le hnm, tsub_add_cancel_of_le]
+  have := range'_append n (m-n) (l-m)
+  simp_all
+  rw [← Nat.sub_add_comm hml, ← Nat.add_sub_assoc hnm, Nat.sub_sub, Nat.add_comm n m,
+    ← Nat.sub_sub, Nat.add_sub_cancel]
 #align list.Ico.append_consecutive List.Ico.append_consecutive
 
 @[simp]
