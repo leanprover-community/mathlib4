@@ -924,8 +924,8 @@ protected theorem infinite_prod :
     by_contra'
     exact h ((this.1 h.nonempty.snd).Prod <| this.2 h.nonempty.fst)
   · rintro (h | h)
-    · exact h.1.prodLeft h.2
-    · exact h.1.prodRight h.2
+    · exact h.1.prod_left h.2
+    · exact h.1.prod_right h.2
 #align set.infinite_prod Set.infinite_prod
 
 theorem finite_prod : (s ×ˢ t).Finite ↔ (s.Finite ∨ t = ∅) ∧ (t.Finite ∨ s = ∅) := by
@@ -1314,7 +1314,7 @@ theorem infinite_image_iff {s : Set α} {f : α → β} (hi : InjOn f s) :
   not_congr <| finite_image_iff hi
 #align set.infinite_image_iff Set.infinite_image_iff
 
-alias infinite_image_iff ↔ _ infinite.image
+alias infinite_image_iff ↔ _ Infinite.image
 #align set.infinite.image Set.Infinite.image
 
 -- Porting note: attribute [protected] doesn't work
