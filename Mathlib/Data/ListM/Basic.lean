@@ -142,7 +142,7 @@ unsafe def take : ListM m α → Nat → ListM m α
   | nil, _ => empty
   | cons l, n+1 => cons do
     let (a, l) ← l
-    let some a ← pure a | return (none, l.take (n+1))
+    let some a := a | return (none, l.take (n+1))
     return (a, l.take n)
 
 /-- Drop the first `n` elements. -/
@@ -151,7 +151,7 @@ unsafe def drop : ListM m α → Nat → ListM m α
   | nil, _ => nil
   | cons l, n+1 => cons do
     let (a, l) ← l
-    let some _ ← pure a | return (none, drop l (n+1))
+    let some _ := a | return (none, drop l (n+1))
     return (none, drop l n)
 
 /-- Apply a function to every element of a `ListM`. -/
