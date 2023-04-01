@@ -49,36 +49,7 @@ def runQuery : RPCData → RequestM (RequestTask (String × String × RPCData))
 
 @[widget_module]
 def runnerWidget : Component RPCData where
-  javascript := "
-    import { RpcContext, mapRpcError } from '@leanprover/infoview'
-    import * as React from 'react';
-    const e = React.createElement;
-
-    export default function(data) {
-      const [contents, setContents] = React.useState('Sagredo log:')
-      const rs = React.useContext(RpcContext)
-      const renderQuery = (query) =>
-        setContents(currS => currS + '\\n---\\n' + query)
-      const renderResponse = (response) =>
-        setContents(currS => currS + '\\n---\\n' + response)
-      const callSagredo = (data) =>
-        rs.call('nextQuery', data)
-          .then(resp => {
-            const [query, data] = resp
-            renderQuery(query)
-            rs.call('runQuery', data)
-              .then(resp => {
-                const [text, [sol, data]] = resp
-                renderResponse(text)
-                callSagredo(data)
-              }) })
-          .catch(e => setContents(mapRpcError(e).message))
-      return e('div', null, [
-        e('button', { onClick: () => callSagredo(data) }, 'Go.'),
-        e('pre', null, contents)
-      ])
-    }
-  "
+  javascript := include_str "../../../../build/js/sagredo.js"
 
 syntax (name := makeRunnerTac) "sagredo!" : tactic
 
