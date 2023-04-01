@@ -156,10 +156,10 @@ theorem infinite_smul_set : (a • s).Infinite ↔ s.Infinite :=
 #align set.infinite_smul_set Set.infinite_smul_set
 #align set.infinite_vadd_set Set.infinite_vadd_set
 
-alias finite_smul_set ↔ finite.of_smul_set _
+alias finite_smul_set ↔ Finite.of_smul_set _
 #align set.finite.of_smul_set Set.Finite.of_smul_set
 
-alias infinite_smul_set ↔ _ infinite.smul_set
+alias infinite_smul_set ↔ _ Infinite.smul_set
 #align set.infinite.smul_set Set.Infinite.smul_set
 
 attribute [to_additive] finite.of_smul_set infinite.smul_set
