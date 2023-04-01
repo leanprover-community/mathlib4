@@ -323,16 +323,16 @@ def restr {k n : ℕ} (f : MultilinearMap R (fun _ : Fin n => M') M₂) (s : Fin
   map_add' v i x y := by
     have : FunLike.coe (s.orderIsoOfFin hk).symm = (s.orderIsoOfFin hk).toEquiv.symm := rfl
     simp only [this]
-    erw [dite_comp_equiv_update' (s.orderIsoOfFin hk).toEquiv,
-      dite_comp_equiv_update' (s.orderIsoOfFin hk).toEquiv,
-      dite_comp_equiv_update' (s.orderIsoOfFin hk).toEquiv]
+    erw [dite_comp_equiv_update (s.orderIsoOfFin hk).toEquiv,
+      dite_comp_equiv_update (s.orderIsoOfFin hk).toEquiv,
+      dite_comp_equiv_update (s.orderIsoOfFin hk).toEquiv]
     simp
   map_smul' v i c x := by
     have : FunLike.coe (s.orderIsoOfFin hk).symm = (s.orderIsoOfFin hk).toEquiv.symm := rfl
     simp only [this]
-    erw [dite_comp_equiv_update' (s.orderIsoOfFin hk).toEquiv,
-      dite_comp_equiv_update' (s.orderIsoOfFin hk).toEquiv,
-      dite_comp_equiv_update' (s.orderIsoOfFin hk).toEquiv]
+    erw [dite_comp_equiv_update (s.orderIsoOfFin hk).toEquiv,
+      dite_comp_equiv_update (s.orderIsoOfFin hk).toEquiv,
+      dite_comp_equiv_update (s.orderIsoOfFin hk).toEquiv]
     simp
 #align multilinear_map.restr MultilinearMap.restr
 
