@@ -13,8 +13,9 @@ types as well.
 
 It is originally based on the `Repr` derived handler from Lean 4 itself.
 
-This has a universe level limitation: it assumes all level variables are for `Type` (see
-where `levelOne` is used in this file).
+This has a universe level limitation: we don't have the universe levels available for
+generating the expression, so we set all the universe level variables to zero (see
+where `levelZero` is used in this file).
 
 -/
 
@@ -61,7 +62,7 @@ where
           ctorArgs := ctorArgs.push a
           rhsArgs := rhsArgs.push <| ← mkArg xs[ctorInfo.numParams + i]! a
         patterns := patterns.push (← `(@$(mkIdent ctorName):ident $ctorArgs:term*))
-        let levels ← indVal.levelParams.toArray.mapM (fun _ => `(levelOne))
+        let levels ← indVal.levelParams.toArray.mapM (fun _ => `(levelZero))
         let rhs : Term ←
           `(mkAppN (Expr.const $(quote ctorInfo.name) [$levels,*]) #[$rhsArgs,*])
         `(matchAltExpr| | $[$patterns:term],* => $rhs)
@@ -69,7 +70,7 @@ where
     return alts
 
 def mkToTypeExpr (argNames : Array Name) (indVal : InductiveVal) : TermElabM Term := do
-  let levels ← indVal.levelParams.toArray.mapM (fun _ => `(levelOne))
+  let levels ← indVal.levelParams.toArray.mapM (fun _ => `(levelZero))
   forallTelescopeReducing indVal.type fun xs _ => do
     let mut args : Array Term := #[]
     for i in [:xs.size] do
