@@ -131,37 +131,19 @@ instance : AddCommGroup (ColimitType F) where
         exact Relation.add_2 _ _ _ r
     · intro x x' r
       funext y
-      induction y
+      refine' y.induction_on _
+      intro a
       dsimp
       apply Quot.sound
-      · exact relation.add_1 _ _ _ r
-      · rfl
+      · exact Relation.add_1 _ _ _ r
   zero_add x := by
-    induction x
-    dsimp
-    apply Quot.sound
-    apply relation.zero_add
-    rfl
+    refine' x.induction_on
   add_zero x := by
-    induction x
-    dsimp
-    apply Quot.sound
-    apply relation.add_zero
-    rfl
+    refine' x.induction_on
   add_left_neg x := by
-    induction x
-    dsimp
-    apply Quot.sound
-    apply relation.add_left_neg
-    rfl
+    refine' x.induction_on
   add_comm x y := by
-    induction x
-    induction y
-    dsimp
-    apply Quot.sound
-    apply relation.add_comm
-    rfl
-    rfl
+    refine' x.induction_on
   add_assoc x y z := by
     induction x
     induction y
@@ -243,7 +225,7 @@ def descFun (s : Cocone F) : ColimitType F → s.pt := by
   fapply Quot.lift
   · exact descFunLift F s
   · intro x y r
-    induction r <;> try dsimp
+    induction' r <;> try dsimp
     -- refl
     · rfl
     -- symm
@@ -301,8 +283,8 @@ def colimitCoconeIsColimit : IsColimit (colimitCocone F) where
 #align AddCommGroup.colimits.colimit_cocone_is_colimit AddCommGroupCat.Colimits.colimitCoconeIsColimit
 
 instance hasColimits_addCommGroupCat : HasColimits AddCommGroupCat
-    where HasColimitsOfShape J 𝒥 :=
-    { HasColimit := fun F =>
+    where has_colimits_of_shape J 𝒥 :=
+    { has_colimit := fun F =>
         has_colimit.mk
           { Cocone := colimit_cocone F
             IsColimit := colimit_cocone_is_colimit F } }
@@ -341,7 +323,7 @@ noncomputable def cokernelIsoQuotient {G H : AddCommGroupCat.{u}} (f : G ⟶ H) 
     simp only [coequalizer_as_cokernel, Category.comp_id, cokernel.π_desc_assoc]; ext1; rfl
   inv_hom_id := by
     ext x : 2
-    simp only [AddMonoidHom.coe_comp, Function.comp_apply, comp_apply, lift_mk,
+    simp only [AddMonoidHom.coe_comp, Function.comp_apply, comp_apply,  lift_mk,
       cokernel.π_desc_apply, mk'_apply, id_apply]
 #align AddCommGroup.cokernel_iso_quotient AddCommGroupCat.cokernelIsoQuotient
 
