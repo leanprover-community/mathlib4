@@ -1184,17 +1184,19 @@ theorem ssubset_insert (h : a ∉ s) : s ⊂ insert a s :=
   ssubset_iff.mpr ⟨a, h, Subset.rfl⟩
 #align finset.ssubset_insert Finset.ssubset_insert
 
+#check Finset.mk
+
 @[elab_as_elim]
-theorem cons_induction {α : Type _} {p : Finset α → Prop} (h₁ : p ∅)
-    (h₂ : ∀ ⦃a : α⦄ {s : Finset α} (h : a ∉ s), p s → p (cons a s h)) : ∀ s, p s
-  | ⟨s, nd⟩ =>
-    Multiset.induction_on s (fun _ => h₁)
-      (fun a s IH nd => by
-        cases' nodup_cons.1 nd with m nd'
-        rw [← (eq_of_veq _ : cons a (Finset.mk s _) m = ⟨a ::ₘ s, nd⟩)]
-        · exact h₂ m (IH nd')
-        · rw [cons_val])
-      nd
+theorem cons_induction {α : Type _} {p : Finset α → Prop} (empty : p ∅)
+    (cons : ∀ ⦃a : α⦄ {s : Finset α} (h : a ∉ s), p s → p (cons a s h)) : ∀ s, p s
+  | ⟨s, nd⟩ => by
+    induction s using Multiset.induction with
+    | empty => exact empty
+    | @cons a s IH =>
+      cases' nodup_cons.1 nd with m nd'
+      rw [← (eq_of_veq _ : Finset.cons a ⟨s, _⟩ m = ⟨a ::ₘ s, nd⟩)]
+      · exact cons m (IH nd')
+      · rw [cons_val]
 #align finset.cons_induction Finset.cons_induction
 
 @[elab_as_elim]
@@ -1204,9 +1206,9 @@ theorem cons_induction_on {α : Type _} {p : Finset α → Prop} (s : Finset α)
 #align finset.cons_induction_on Finset.cons_induction_on
 
 @[elab_as_elim]
-protected theorem induction {α : Type _} {p : Finset α → Prop} [DecidableEq α] (h₁ : p ∅)
-    (h₂ : ∀ ⦃a : α⦄ {s : Finset α}, a ∉ s → p s → p (insert a s)) : ∀ s, p s :=
-  cons_induction h₁ fun a s ha => (s.cons_eq_insert a ha).symm ▸ h₂ ha
+protected theorem induction {α : Type _} {p : Finset α → Prop} [DecidableEq α] (empty : p ∅)
+    (insert : ∀ ⦃a : α⦄ {s : Finset α}, a ∉ s → p s → p (insert a s)) : ∀ s, p s :=
+  cons_induction empty fun a s ha => (s.cons_eq_insert a ha).symm ▸ insert ha
 #align finset.induction Finset.induction
 
 /-- To prove a proposition about an arbitrary `Finset α`,

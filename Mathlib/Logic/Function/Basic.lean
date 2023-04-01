@@ -17,6 +17,7 @@ import Mathlib.Util.WhatsNew
 # Miscellaneous function constructions and lemmas
 -/
 
+open Function
 
 universe u v w
 
@@ -1058,3 +1059,11 @@ theorem InvImage.equivalence {α : Sort u} {β : Sort v} (r : β → β → Prop
     (h : Equivalence r) : Equivalence (InvImage r f) :=
   ⟨fun _ ↦ h.1 _, fun w ↦ h.symm w, fun h₁ h₂ ↦ InvImage.trans r f (fun _ _ _ ↦ h.trans) h₁ h₂⟩
 #align inv_image.equivalence InvImage.equivalence
+
+instance {α β : Type _} {r : α → β → Prop} {x : α × β} [Decidable (r x.1 x.2)] :
+  Decidable (uncurry r x) :=
+‹Decidable _›
+
+instance {α β : Type _} {r : α × β → Prop} {a : α} {b : β} [Decidable (r (a, b))] :
+  Decidable (curry r a b) :=
+‹Decidable _›

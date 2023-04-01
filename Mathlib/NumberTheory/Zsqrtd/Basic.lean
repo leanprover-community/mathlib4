@@ -279,9 +279,17 @@ theorem coe_nat_re (n : ℕ) : (n : ℤ√d).re = n :=
 #align zsqrtd.coe_nat_re Zsqrtd.coe_nat_re
 
 @[simp]
+theorem ofNat_re (n : ℕ) [n.AtLeastTwo] : (OfNat.ofNat n : ℤ√d).re = n :=
+  rfl
+
+@[simp]
 theorem coe_nat_im (n : ℕ) : (n : ℤ√d).im = 0 :=
   rfl
 #align zsqrtd.coe_nat_im Zsqrtd.coe_nat_im
+
+@[simp]
+theorem ofNat_im (n : ℕ) [n.AtLeastTwo] : (OfNat.ofNat n : ℤ√d).im = 0 :=
+  rfl
 
 theorem coe_nat_val (n : ℕ) : (n : ℤ√d) = ⟨n, 0⟩ :=
   rfl
