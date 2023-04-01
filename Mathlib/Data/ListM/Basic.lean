@@ -322,13 +322,13 @@ squash do match ← (uncons L : m _) with
   | some (a, L') => pure <| cons do pure (a, L'.liftM)
 
 /-- Given a lazy list in a state monad, run it on some initial state, recording the states. -/
-unsafe def run {σ α : Type u} (L : ListM (StateT.{u} σ m) α) (s : σ) : ListM m (α × σ) :=
+unsafe def runState {σ α : Type u} (L : ListM (StateT.{u} σ m) α) (s : σ) : ListM m (α × σ) :=
 squash do match ← StateT.run (uncons L) s with
   | (none, _) => pure empty
   | (some (a, L'), s') => pure <| cons do pure (some (a, s'), L'.run s')
 
 /-- Given a lazy list in a state monad, run it on some initial state. -/
-unsafe def run' {σ α : Type u} (L : ListM (StateT.{u} σ m) α) (s : σ) : ListM m α :=
+unsafe def runState' {σ α : Type u} (L : ListM (StateT.{u} σ m) α) (s : σ) : ListM m α :=
 L.run s |>.map (·.1)
 
 section Alternative
