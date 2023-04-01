@@ -18,8 +18,6 @@ import Mathlib.RingTheory.Ideal.Quotient
 
 -- Porting note: Without this line, timeouts occur (lean4#2074)
 attribute [-instance] Ring.toNonAssocRing
--- Porting note: we need η for TC
--- set_option synthInstance.etaExperiment true
 
 universe u v w
 
@@ -615,11 +613,11 @@ theorem quotQuotEquivQuotSup_symm_quotQuotMk (x : R) :
 
 -- Porting note: failed to synth RingHomClass
 set_option synthInstance.etaExperiment true in
-set_option trace.Meta.synthInstance true in
 /-- The obvious isomorphism `(R/I)/J' → (R/J)/I' `   -/
 def quotQuotEquivComm : (R ⧸ I) ⧸ J.map (Ideal.Quotient.mk I) ≃+*
     (R ⧸ J) ⧸ I.map (Ideal.Quotient.mk J) :=
-  ((quotQuotEquivQuotSup I J).trans (quotEquivOfEq sup_comm)).trans (quotQuotEquivQuotSup J I).symm
+  ((quotQuotEquivQuotSup I J).trans (quotEquivOfEq (sup_comm))).trans
+    (quotQuotEquivQuotSup J I).symm
 #align double_quot.quot_quot_equiv_comm DoubleQuot.quotQuotEquivComm
 
 -- Porting note: mismatched instances
@@ -638,14 +636,20 @@ theorem quotQuotEquivComm_comp_quotQuotMk :
   RingHom.ext <| quotQuotEquivComm_quotQuotMk I J
 #align double_quot.quot_quot_equiv_comm_comp_quot_quot_mk DoubleQuot.quotQuotEquivComm_comp_quotQuotMk
 
--- set_option synthInstance.maxHeartbeats 0 in
--- Porting note: mismatched instances
-set_option trace.Meta.synthInstance true in
-set_option trace.Meta.isDefEq true in
 set_option synthInstance.etaExperiment true in
 @[simp]
-theorem quotQuotEquivComm_symm : RingEquiv.symm (quotQuotEquivComm I J) = quotQuotEquivComm J I :=
+theorem quotQuotEquivComm_symm : (quotQuotEquivComm I J).symm = quotQuotEquivComm J I := by
+  /-  Porting note: this proof used to just be rfl but currently rfl opens up a bottomless pit
+  of processor cycles. Synthesizing instances does not seem to be an issue.
+  -/
+  change (((quotQuotEquivQuotSup I J).trans (quotEquivOfEq (sup_comm))).trans
+    (quotQuotEquivQuotSup J I).symm).symm =
+      ((quotQuotEquivQuotSup J I).trans (quotEquivOfEq (sup_comm))).trans
+        (quotQuotEquivQuotSup I J).symm
+  ext r
+  dsimp
   rfl
+
 #align double_quot.quot_quot_equiv_comm_symm DoubleQuot.quotQuotEquivComm_symm
 
 variable {I J}
@@ -724,4 +728,3 @@ end Algebra
 
 end DoubleQuot
 
-#lint
