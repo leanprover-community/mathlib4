@@ -180,6 +180,8 @@ set_option linter.uppercaseLean3 false in
 
 section ConstructionRatAlgebra
 
+variable {R}
+
 /-- Internal: Not intended to be used outside this local construction. -/
 theorem PNat.isUnit_natCast [h : Fact (∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸ I))]
     (n : ℕ+) : IsUnit (n : R) := by
@@ -195,11 +197,9 @@ theorem PNat.isUnit_natCast [h : Fact (∀ I : Ideal R, I ≠ ⊤ → CharZero (
   exact Ideal.subset_span (Set.mem_singleton _)
 #align equal_char_zero.pnat_coe_is_unit  EqualCharZero.PNat.isUnit_natCast
 
-variable {R}
-
 @[coe]
 noncomputable def pnatCast [Fact (∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸ I))] : ℕ+ → Rˣ :=
-  fun n => (PNat.isUnit_natCast R n).unit
+  fun n => (PNat.isUnit_natCast n).unit
 
 /-- Internal: Not intended to be used outside this local construction. -/
 noncomputable instance coePNatUnits
@@ -212,8 +212,8 @@ noncomputable instance coePNatUnits
 theorem pnatCast_one [Fact (∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸ I))] : ((1 : ℕ+) : Rˣ) = 1 := by
   apply Units.ext
   rw [Units.val_one]
-  change ((PNat.isUnit_natCast R 1).unit : R) = 1
-  rw [IsUnit.unit_spec (PNat.isUnit_natCast R 1)]
+  change ((PNat.isUnit_natCast (R := R) 1).unit : R) = 1
+  rw [IsUnit.unit_spec (PNat.isUnit_natCast 1)]
   rw [PNat.one_coe, Nat.cast_one]
 #align equal_char_zero.pnat_coe_units_eq_one EqualCharZero.pnatCast_one
 
@@ -221,7 +221,7 @@ theorem pnatCast_one [Fact (∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸ I))] 
 @[simp]
 theorem pnatCast_eq_natCast [Fact (∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸ I))] (n : ℕ+) :
     ((n : Rˣ) : R) = ↑n := by
-  change ((PNat.isUnit_natCast R n).unit : R) = ↑n
+  change ((PNat.isUnit_natCast (R := R) n).unit : R) = ↑n
   simp only [IsUnit.unit_spec]
 #align equal_char_zero.pnat_coe_units_coe_eq_coe EqualCharZero.pnatCast_eq_natCast
 
@@ -230,25 +230,25 @@ noncomputable def ratAlgebra (h : ∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸
     Algebra ℚ R :=
   haveI : Fact (∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸ I)) := ⟨h⟩
   RingHom.toAlgebra
-    { toFun := fun x => x.num /ₚ ↑x.pnatDen
-      map_zero' := by simp [divp]
-      map_one' := by simp
-      map_mul' := by
-        intro a b
-        field_simp
-        trans (↑((a * b).num * a.den * b.den) : R)
-        · simp_rw [Int.cast_mul, Int.cast_ofNat, Rat.coe_pnatDen]
-          ring
-        rw [Rat.mul_num_den' a b]
-        simp
-      map_add' := by
-        intro a b
-        field_simp
-        trans (↑((a + b).num * a.den * b.den) : R)
-        · simp_rw [Int.cast_mul, Int.cast_ofNat, Rat.coe_pnatDen]
-          ring
-        rw [Rat.add_num_den' a b]
-        simp }
+  { toFun := fun x => x.num /ₚ ↑x.pnatDen
+    map_zero' := by simp [divp]
+    map_one' := by simp
+    map_mul' := by
+      intro a b
+      field_simp
+      trans (↑((a * b).num * a.den * b.den) : R)
+      · simp_rw [Int.cast_mul, Int.cast_ofNat, Rat.coe_pnatDen]
+        ring
+      rw [Rat.mul_num_den' a b]
+      simp
+    map_add' := by
+      intro a b
+      field_simp
+      trans (↑((a + b).num * a.den * b.den) : R)
+      · simp_rw [Int.cast_mul, Int.cast_ofNat, Rat.coe_pnatDen]
+        ring
+      rw [Rat.add_num_den' a b]
+      simp }
 set_option linter.uppercaseLean3 false in
 #align equal_char_zero_to_Q_algebra EqualCharZero.ratAlgebra
 
