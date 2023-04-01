@@ -39,8 +39,8 @@ theorem Monoid.ext {M : Type u} ⦃m₁ m₂ : Monoid M⦄ (h_mul : m₁.mul = m
   have : m₁.npow = m₂.npow := by
     ext (n x)
     exact @MonoidHom.map_pow M M m₁ m₂ f x n
-  rcases m₁ with @⟨@⟨⟨_⟩⟩, ⟨_⟩⟩
-  rcases m₂ with @⟨@⟨⟨_⟩⟩, ⟨_⟩⟩
+  rcases m₁ with @⟨_, ⟨_⟩, _, ⟨_⟩⟩
+  rcases m₂ with @⟨_, ⟨_⟩, _, ⟨_⟩⟩
   congr
 #align monoid.ext Monoid.ext
 #align add_monoid.ext AddMonoid.ext
@@ -49,6 +49,9 @@ theorem Monoid.ext {M : Type u} ⦃m₁ m₂ : Monoid M⦄ (h_mul : m₁.mul = m
 theorem CommMonoid.toMonoid_injective {M : Type u} :
     Function.Injective (@CommMonoid.toMonoid M) := by
   rintro ⟨⟩ ⟨⟩ h
+  have := congrArg (·.toOne) h
+  have := congrArg (·.toMul) h
+  have := congrArg (·.npow) h
   congr
 #align comm_monoid.to_monoid_injective CommMonoid.toMonoid_injective
 #align add_comm_monoid.to_add_monoid_injective AddCommMonoid.toAddMonoid_injective
@@ -93,6 +96,9 @@ theorem RightCancelMonoid.ext {M : Type u} ⦃m₁ m₂ : RightCancelMonoid M⦄
 theorem CancelMonoid.toLeftCancelMonoid_injective {M : Type u} :
     Function.Injective (@CancelMonoid.toLeftCancelMonoid M) := by
   rintro ⟨⟩ ⟨⟩ h
+  have := congrArg (·.toOne) h
+  have := congrArg (·.toMul) h
+  have := congrArg (·.npow) h
   congr
 #align cancel_monoid.to_left_cancel_monoid_injective CancelMonoid.toLeftCancelMonoid_injective
 #align add_cancel_monoid.to_left_cancel_add_monoid_injective AddCancelMonoid.toAddLeftCancelMonoid_injective
@@ -108,9 +114,7 @@ theorem CancelMonoid.ext {M : Type _} ⦃m₁ m₂ : CancelMonoid M⦄ (h_mul : 
 theorem CancelCommMonoid.toCommMonoid_injective {M : Type u} :
     Function.Injective (@CancelCommMonoid.toCommMonoid M) := by
   rintro @⟨@⟨@⟨⟩⟩⟩ @⟨@⟨@⟨⟩⟩⟩ h
-  congr <;> {
-    injection h with h'
-    injection h' }
+  congr <;> injection h with h'
 #align cancel_comm_monoid.to_comm_monoid_injective CancelCommMonoid.toCommMonoid_injective
 #align add_cancel_comm_monoid.to_add_comm_monoid_injective AddCancelCommMonoid.toAddCommMonoid_injective
 
@@ -124,9 +128,11 @@ theorem CancelCommMonoid.ext {M : Type _} ⦃m₁ m₂ : CancelCommMonoid M⦄ (
 @[to_additive (attr := ext)]
 theorem DivInvMonoid.ext {M : Type _} ⦃m₁ m₂ : DivInvMonoid M⦄ (h_mul : m₁.mul = m₂.mul)
   (h_inv : m₁.inv = m₂.inv) : m₁ = m₂ := by
-  have h_mon := Monoid.ext h_mul
+  have h_mon := Monoid.ext (m₁ := m₁.toMonoid) h_mul
   have h₁ : m₁.one = m₂.one := congr_arg (·.one) h_mon
-  let f : @MonoidHom M M m₁.toMulOneClass m₂.toMulOneClass :=
+  let f : @MonoidHom M M
+    (Monoid.toMulOneClass (self := m₁.toMonoid))
+    (Monoid.toMulOneClass (self := m₂.toMonoid)) :=
     @MonoidHom.mk _ _ (_) _ (@OneHom.mk _ _ (_) _ id h₁)
       (fun x y => congr_fun (congr_fun h_mul x) y)
   have : m₁.npow = m₂.npow := congr_arg (·.npow) h_mon
@@ -138,16 +144,20 @@ theorem DivInvMonoid.ext {M : Type _} ⦃m₁ m₂ : DivInvMonoid M⦄ (h_mul : 
     exact @map_div' _ _
       (@MonoidHom _ _ (_) _) (_) _
       (@MonoidHom.monoidHomClass _ _ (_) _) f (congr_fun h_inv) a b
-  rcases m₁ with @⟨_, ⟨_⟩, ⟨_⟩⟩
-  rcases m₂ with @⟨_, ⟨_⟩, ⟨_⟩⟩
+  rcases m₁ with @⟨_, ⟨_⟩, _, ⟨_⟩, _, _, _, _, _, ⟨_⟩, ⟨_⟩⟩
+  rcases m₂ with @⟨_, ⟨_⟩, _, ⟨_⟩, _, _, _, _, _, ⟨_⟩, ⟨_⟩⟩
   congr
 #align div_inv_monoid.ext DivInvMonoid.ext
 #align sub_neg_monoid.ext SubNegMonoid.ext
 
 @[to_additive (attr := ext)]
 theorem Group.ext {G : Type _} ⦃g₁ g₂ : Group G⦄ (h_mul : g₁.mul = g₂.mul) : g₁ = g₂ := by
-  have h₁ : g₁.one = g₂.one := congr_arg (·.one) (Monoid.ext h_mul)
-  let f : @MonoidHom G G g₁.toMulOneClass g₂.toMulOneClass :=
+  have h₁ : g₁.one = g₂.one :=
+    congr_arg (·.toOne.one)
+      (Monoid.ext (m₁ := DivInvMonoid.toMonoid (self := g₁.toDivInvMonoid)) h_mul)
+  let f : @MonoidHom G G
+    (Monoid.toMulOneClass (self := DivInvMonoid.toMonoid (self := g₁.toDivInvMonoid)))
+    (Monoid.toMulOneClass (self := DivInvMonoid.toMonoid (self := g₂.toDivInvMonoid))) :=
     @MonoidHom.mk _ _ (_) _ (@OneHom.mk _ _ (_) _ id h₁)
       (fun x y => congr_fun (congr_fun h_mul x) y)
   exact
