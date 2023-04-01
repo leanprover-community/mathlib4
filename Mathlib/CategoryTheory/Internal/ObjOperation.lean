@@ -1,5 +1,7 @@
 import Mathlib.CategoryTheory.ConcreteCategory.Operation
 import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
+import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
+import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
 
 lemma Function.Injective.eq_iff'' {X Y : Type _} {f : X → Y} (hf : Function.Injective f)
     (x₁ x₂ : X) (y₁ y₂ : Y) (h₁ : f x₁ = y₁) (h₂ : f x₂ = y₂) : x₁ = x₂ ↔ y₁ = y₂ := by
@@ -13,7 +15,7 @@ namespace CategoryTheory
 
 open Limits
 
-variable {C : Type _} [Category C]
+variable {C D : Type _} [Category C] [Category D]
 
 namespace Internal
 
@@ -46,6 +48,11 @@ noncomputable def yonedaEquiv [HasTerminal C] (X : C) :
     ext T ⟨⟩
     exact (congr_fun (φ.naturality (terminal.from T.unop).op) PUnit.unit).symm)
 
+noncomputable def map {X : C} [HasTerminal C] [HasTerminal D] (h : ObjOperation₀ X) (F : C ⥤ D)
+  [PreservesLimit (Functor.empty C) F] :
+    ObjOperation₀ (F.obj X) :=
+  (Limits.PreservesTerminal.iso F).inv ≫ F.map h
+
 end ObjOperation₀
 
 namespace ObjOperation₁
@@ -53,6 +60,9 @@ namespace ObjOperation₁
 def yonedaEquiv (X : C) :
   ObjOperation₁ X ≃ Types.functorOperation₁ (yoneda.obj X) :=
   Equiv.symm CategoryTheory.yonedaEquiv
+
+def map {X : C} (h : ObjOperation₁ X) (F : C ⥤ D) : ObjOperation₁ (F.obj X) :=
+  F.map h
 
 end ObjOperation₁
 
@@ -170,6 +180,11 @@ lemma add_zero_iff' (oper : Types.functorOperation₂ (yoneda.obj X))
     ((yonedaEquiv _).symm oper).add_zero ((ObjOperation₀.yonedaEquiv _).symm zero) := by
   rw [add_zero_iff, Equiv.apply_symm_apply, Equiv.apply_symm_apply]
 
+noncomputable def map (h : ObjOperation₂ X) (F : C ⥤ D) [HasBinaryProduct (F.obj X) (F.obj X)]
+  [PreservesLimit (pair X X) F] :
+    ObjOperation₂ (F.obj X) :=
+  (PreservesLimitPair.iso F X X).inv ≫ F.map h
+
 end ObjOperation₂
 
 namespace ObjOperation₃
@@ -198,6 +213,15 @@ noncomputable def yonedaEquiv' (X₁ X₂ X₃ Y : C) [HasBinaryProduct X₂ X�
 noncomputable def yonedaEquiv (X : C) [HasBinaryProduct X X] [HasBinaryProduct X (X ⨯ X)] :
   ObjOperation₃ X ≃ Types.functorOperation₃ (yoneda.obj X) :=
   yonedaEquiv' X X X X
+
+noncomputable def map [HasBinaryProduct X X] [HasBinaryProduct X (X ⨯ X)]
+    (h : ObjOperation₃ X) (F : C ⥤ D) [HasBinaryProduct (F.obj X) (F.obj X)]
+    [HasBinaryProduct (F.obj X) (F.obj X ⨯ F.obj X)]
+    [HasBinaryProduct (F.obj X) (F.obj (X ⨯ X))]
+    [PreservesLimit (pair X X) F] [PreservesLimit (pair X (X ⨯ X)) F] :
+    ObjOperation₃ (F.obj X) :=
+  prod.lift prod.fst (prod.snd ≫ (PreservesLimitPair.iso F X X).inv) ≫
+    (PreservesLimitPair.iso F X (X ⨯ X)).inv  ≫ F.map h
 
 end ObjOperation₃
 

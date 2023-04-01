@@ -9,7 +9,7 @@ namespace Internal
 
 open ConcreteCategory
 
-variable {C : Type _} [Category C]
+variable {C D : Type _} [Category C] [Category D]
 
 def addCommGroup (G : Internal AddCommGroupCat C) (X : C) :
     AddCommGroup (X ⟶ G.obj) :=
@@ -93,6 +93,20 @@ noncomputable def internal :
   obj := G
   presheaf := h.presheaf
   iso := Iso.refl _
+
+noncomputable def map (F : C ⥤ D)
+    [HasTerminal D] [HasBinaryProduct (F.obj G) (F.obj G)]
+    [HasBinaryProduct (F.obj G) (F.obj G ⨯ F.obj G)]
+    [PreservesLimit (Functor.empty C) F] [PreservesLimit (pair G G) F] :
+    AddCommGroupCatObjOperations (F.obj G) where
+  zero := h.zero.map F
+  neg := h.neg.map F
+  add := h.add.map F
+  add_assoc := sorry
+  add_comm := sorry
+  add_zero := sorry
+  zero_add := sorry
+  add_left_neg := sorry
 
 end AddCommGroupCatObjOperations
 
