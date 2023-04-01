@@ -35,7 +35,7 @@ def ParsedMessage.of (code : String) (m : Lean.Message) : IO ParsedMessage := do
   let codeLines := code.splitOn "\n"
   let span := match m.endPos with
     | none => codeLines[m.pos.line - 1]!.drop (m.pos.column - 1) |>.trim.takeWhile (· ≠ ' ')
-    | some e => codeLines[m.pos.line - 1]!.drop (m.pos.column - 1) |>.take (e.column - m.pos.column)
+    | some e => codeLines[m.pos.line - 1]!.drop m.pos.column |>.take (e.column - m.pos.column)
   pure ⟨type, m.severity, lines, onLine, span⟩
 
 def ParsedMessage.toString (m : ParsedMessage) : String :=
@@ -139,18 +139,6 @@ def nextQuery : M IO String := do
     initialPrompt
   else
     feedback
-
--- unsafe def forever' : ListM (M MetaM) Bool :=
--- ListM.cons do
---   sendSystemMessage systemPrompt
---   askForAssistance (← initialPrompt)
---   pure ((← isDone), ListM.iterate do askForAssistance (← feedback); isDone)
-
--- unsafe def whileProgressing' (k : Nat := 3) : ListM (M MetaM) Bool :=
--- forever'.takeWhileM (fun _ => do guard (← recentProgress k))
-
--- unsafe def whileProgressing (k : Nat := 3) : State → ListM MetaM (Bool × State) :=
--- ListM.run (whileProgressing' k)
 
 def dialog (totalSteps : Nat := 10) (progressSteps : Nat := 4) : M IO String := do
   sendSystemMessage systemPrompt
