@@ -2820,20 +2820,17 @@ theorem map_matrix_mul (M : Matrix m n α) (N : Matrix n o α) (i : m) (j : o) (
 
 theorem map_dotProduct [NonAssocSemiring R] [NonAssocSemiring S] (f : R →+* S) (v w : n → R) :
     f (v ⬝ᵥ w) = f ∘ v ⬝ᵥ f ∘ w := by
-  simp only [Matrix.dotProduct, f.map_sum, f.map_mul]
-  simp_rw [Function.comp_apply (f := f)] -- Porting note: (simp) this line wasnt needed before
+  simp only [Matrix.dotProduct, f.map_sum, f.map_mul, Function.comp]
 #align ring_hom.map_dot_product RingHom.map_dotProduct
 
 theorem map_vecMul [NonAssocSemiring R] [NonAssocSemiring S] (f : R →+* S) (M : Matrix n m R)
     (v : n → R) (i : m) : f (M.vecMul v i) = (M.map f).vecMul (f ∘ v) i := by
-  simp only [Matrix.vecMul, Matrix.map_apply, RingHom.map_dotProduct]
-  rfl -- Porting note: (rfl) in mathlib3 this `rfl` wasn't needed
+  simp only [Matrix.vecMul, Matrix.map_apply, RingHom.map_dotProduct, Function.comp]
 #align ring_hom.map_vec_mul RingHom.map_vecMul
 
 theorem map_mulVec [NonAssocSemiring R] [NonAssocSemiring S] (f : R →+* S) (M : Matrix m n R)
     (v : n → R) (i : m) : f (M.mulVec v i) = (M.map f).mulVec (f ∘ v) i := by
-  simp only [Matrix.mulVec, Matrix.map_apply, RingHom.map_dotProduct]
-  rfl -- Porting note: (rfl) in mathlib3 this `rfl` wasn't needed
+  simp only [Matrix.mulVec, Matrix.map_apply, RingHom.map_dotProduct, Function.comp]
 #align ring_hom.map_mul_vec RingHom.map_mulVec
 
 end RingHom
