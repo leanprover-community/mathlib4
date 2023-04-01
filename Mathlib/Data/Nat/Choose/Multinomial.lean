@@ -15,6 +15,8 @@ import Mathlib.Data.Fin.VecNotation
 import Mathlib.Data.Finset.Sym
 import Mathlib.Data.Finsupp.Multiset
 
+import Mathlib.Tactic.LibrarySearch
+
 /-!
 # Multinomial
 
@@ -242,21 +244,24 @@ theorem sum_pow_of_commute [Semiring R] (x : α → R)
   induction' s using Finset.induction with a s ha ih
   · rw [sum_empty]
     rintro (_ | n)
-    · have : Subsingleton (Finset.sym (∅ : Finset α) zero) := by
-        sorry
+      -- Porting note : Lean cannot infer this instance by itself
+    · have : Subsingleton (Sym α 0) := Unique.instSubsingleton
       rw [_root_.pow_zero, Fintype.sum_subsingleton]
       swap
-      · exact ⟨0, Or.inl rfl⟩
-      convert (one_mul _).symm
-      apply Nat.cast_one
+        -- Porting note : Lean cannot infer this instance by itself
+      · have : Zero (Sym α 0) := Sym.instZeroSymOfNatNatInstOfNatNat
+        exact ⟨0, by simp⟩
+      convert (@one_mul R _ _).symm
+      apply @Nat.cast_one R _
     · rw [_root_.pow_succ, zero_mul]
-      have : IsEmpty (Finset.sym ∅ (succ n)) := by
-        sorry
+      -- Porting note : Lean cannot infer this instance by itself
+      have : IsEmpty (Finset.sym (∅ : Finset α) (succ n)) :=
+        Finset.instIsEmptySubtypeMemFinsetInstMembershipFinsetEmptyCollectionInstEmptyCollectionFinset
       apply (Fintype.sum_empty _).symm
-      rw [sym_empty]
-      infer_instance
   intro n; specialize ih (hc.mono <| s.subset_insert a)
-  rw [sum_insert ha, (Commute.sum_right s _ _ _).add_pow, sum_range]
+  rw [sum_insert ha, (Commute.sum_right s _ _ _).add_pow, sum_range]; swap
+  · exact fun _ hb => hc (mem_insert_self a s) (mem_insert_of_mem hb)
+      (ne_of_mem_of_not_mem hb ha).symm
   · simp_rw [ih, mul_sum, sum_mul, sum_sigma', univ_sigma_univ]
     refine' (Fintype.sum_equiv (symInsertEquiv ha) _ _ fun m => _).symm
     rw [m.1.1.multinomial_filter_ne a]
