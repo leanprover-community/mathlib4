@@ -174,7 +174,7 @@ unsafe def map {α β : Type u} (f : α → β) (L : ListM m α) : ListM m β :=
 /-- Filter a `ListM` using a monadic function. -/
 unsafe def filterM {α : Type u} (p : α → m (ULift Bool)) (L : ListM m α) : ListM m α :=
   cons do match ← uncons L with
-  | some (x, xs) => return (if (← p x).down then some x else x, filterM p xs)
+  | some (x, xs) => return (if (← p x).down then some x else none, filterM p xs)
   | none => return (none, empty)
 #align tactic.mllist.mfilter ListM.filterM
 
@@ -203,7 +203,7 @@ unsafe def filterMap {α β : Type u} (f : α → Option β) : ListM m α → Li
 unsafe def takeWhileM [Alternative m] (f : α → m (ULift Bool)) (L : ListM m α) : ListM m α :=
   cons do match ← uncons L with
   | none => return (none, empty)
-  | some (x, xs) => return if (← f x).down then (some x, xs) else (none, empty)
+  | some (x, xs) => return if (← f x).down then (some x, xs.takeWhileM f) else (none, empty)
 
 /-- Take the initial segment of the lazy list, until the function `f` first returns `false`. -/
 unsafe def takeWhile [Alternative m] (f : α → Bool) : ListM m α → ListM m α :=
