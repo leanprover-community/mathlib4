@@ -759,7 +759,8 @@ set_option linter.uppercaseLean3 false in
 theorem is_fg_degreeLe [IsNoetherianRing R] (I : Ideal R[X]) (n : ℕ) :
     Submodule.Fg (I.degreeLe n) :=
   isNoetherian_submodule_left.1
-    (isNoetherian_of_fg_of_noetherian _ ⟨_, degreeLe_eq_span_X_pow.symm⟩) _
+    -- porting note: times out without explicit `R`.
+    (isNoetherian_of_fg_of_noetherian _ ⟨_, (degreeLe_eq_span_X_pow (R := R)).symm⟩) _
 #align ideal.is_fg_degree_le Ideal.is_fg_degreeLe
 
 end CommRing
@@ -1301,4 +1302,3 @@ instance (priority := 100) : UniqueFactorizationMonoid (MvPolynomial σ D) := by
 end MvPolynomial
 
 end UniqueFactorizationDomain
-
