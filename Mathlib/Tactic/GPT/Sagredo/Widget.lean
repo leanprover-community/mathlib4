@@ -1,98 +1,92 @@
 import ProofWidgets.Component.Basic
 import Mathlib.Tactic.GPT.Sagredo.Dialog
 
-namespace Mathlib.Tactic.GPT.Sagredo
-
-def init : M IO String := do
-  sendSystemMessage systemPrompt
-  askForAssistance (← initialPrompt)
-  pure (← latestCodeBlock).body
-
-def step : M IO String := do
-  askForAssistance (← feedback)
-  pure (← latestCodeBlock).body
+namespace Mathlib.Tactic.GPT.Sagredo.Widget
 
 open Lean Elab Meta Tactic
 
-def createState (stx : Syntax) (preEdit : String → String) : MetaM Sagredo.State := do
-  let (preamble, decl) ← getSourceUpTo stx
-  let preambleAnalysis ← analyzeCode (←getEnv) ""
-  let editedDecl := preEdit decl
-  let analysis ← liftM <| analyzeCode preambleAnalysis.env editedDecl
-  pure ⟨⟨[]⟩, preamble, preambleAnalysis, [({ text := editedDecl }, analysis)]⟩
 
-end Mathlib.Tactic.GPT.Sagredo
 
-open Mathlib.Tactic.GPT.Sagredo
+structure Data where
+  ci : Elab.ContextInfo
+  lctx : LocalContext
+  σ : State
+  deriving TypeName
+
+end Mathlib.Tactic.GPT.Sagredo.Widget
+
+open Mathlib.Tactic.GPT.Sagredo Widget
 
 open ProofWidgets
 open Lean Meta Server Elab Tactic
 
-/-- A `MetaM String` continuation, containing both the computation and all monad state. -/
-structure MetaMStringCont where
-  ci : Elab.ContextInfo
-  lctx : LocalContext
-  -- We can only derive `TypeName` for type constants, so this must be monomorphic.
-  σ : Mathlib.Tactic.GPT.Sagredo.State
-  deriving TypeName
+structure RPCData where
+  k : WithRpcRef Data
 
-structure RunnerWidgetProps where
-  /-- A continuation to run and print the results of when the button is clicked. -/
-  k : WithRpcRef MetaMStringCont
+-- Make it possible for widgets to receive `RPCData`.
+#mkrpcenc RPCData
 
--- Make it possible for widgets to receive `RunnerWidgetProps`. Uses the `TypeName` instance.
-#mkrpcenc RunnerWidgetProps
-
+/-- Returns the text of the next query we will make. (But doesn't run it.) -/
 @[server_rpc_method]
-def runMetaMStringCont : RunnerWidgetProps → RequestM (RequestTask (String × RunnerWidgetProps))
+def nextQuery : RPCData → RequestM (RequestTask (String × RPCData))
   | {k := ⟨{ci, lctx, σ}⟩} => RequestM.asTask do
-    let (s, σ') ← step σ
+    let (s, σ') ← Mathlib.Tactic.GPT.Sagredo.nextQuery σ
     pure ⟨s, ⟨ci, lctx, σ'⟩⟩
 
+/-- Runs the next query, and returns the entire response, as well as the extracted code block. -/
+@[server_rpc_method]
+def runQuery : RPCData → RequestM (RequestTask (String × String × RPCData))
+  | {k := ⟨{ci, lctx, σ}⟩} => RequestM.asTask do
+    let ((response, sol), σ') ← (do
+      askForAssistance (← feedback)
+      pure (← latestResponse, ← latestSolution)) σ
+    pure ⟨response, sol, ⟨ci, lctx, σ'⟩⟩
+
 @[widget_module]
-def runnerWidget : Component RunnerWidgetProps where
+def runnerWidget : Component RPCData where
   javascript := "
     import { RpcContext, mapRpcError } from '@leanprover/infoview'
     import * as React from 'react';
     const e = React.createElement;
 
-    export default function(props) {
+    export default function(data) {
       const [contents, setContents] = React.useState('Sagredo log:')
       const rs = React.useContext(RpcContext)
-      const callSagredo = (props) =>
-        rs.call('runMetaMStringCont', props)
+      const callSagredo = (data) =>
+        rs.call('nextQuery', data)
           .then(resp => {
-            const [s, props] = resp
-            setContents(currS => currS + '\\n' + s)
-            callSagredo(props)
-          })
+            const [query, data] = resp
+            setContents(currS => currS + '\\n' + query)
+            rs.call('runQuery', data)
+              .then(resp => {
+                const [text, [sol, data]] = resp
+                setContents(currS => currS + '\\n' + text)
+                callSagredo(data)
+              }) })
           .catch(e => setContents(mapRpcError(e).message))
       return e('div', null, [
-        e('button', { onClick: () => callSagredo(props) }, 'Go.'),
+        e('button', { onClick: () => callSagredo(data) }, 'Go.'),
         e('pre', null, contents)
       ])
     }
   "
-
-
 
 syntax (name := makeRunnerTac) "sagredo!" : tactic
 
 @[tactic makeRunnerTac] def makeRunner : Tactic
   | `(tactic| sagredo!%$tk) => do
     let σ ← createState tk (fun decl => decl.replace "sagredo!" "sorry")
-    let (firstCode, σ') ← init σ
+    let (_, σ') ← (do sendSystemMessage systemPrompt) σ
     -- Store the continuation and monad context.
-    let props : RunnerWidgetProps := {
+    let data : RPCData := {
       k := ⟨{
         ci := (← ContextInfo.save)
         lctx := (← getLCtx)
         σ := σ'
       }⟩}
     -- Save a widget together with a pointer to `props`.
-    savePanelWidgetInfo tk ``runnerWidget (rpcEncode props)
+    savePanelWidgetInfo tk ``runnerWidget (rpcEncode data)
   | _ => throwUnsupportedSyntax
 
 example : 2 + 2 = 4 := by
   sagredo!
-  trivial
