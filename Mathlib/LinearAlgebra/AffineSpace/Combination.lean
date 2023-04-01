@@ -452,6 +452,7 @@ theorem attach_affineCombination_of_injective [DecidableEq P] (s : Finset P) (w 
     ext
     simp
   rw [hgf, sum_image]
+  simp only [Function.comp_apply]
   exact fun _ _ _ _ hxy => hf hxy
 #align finset.attach_affine_combination_of_injective Finset.attach_affineCombination_of_injective
 
@@ -486,7 +487,7 @@ theorem affineCombination_of_eq_one_of_eq_zero (w : ι → k) (p : ι → P) {i 
   rw [s.affineCombination_eq_weightedVSubOfPoint_vadd_of_sum_eq_one w p h1 (p i),
     weightedVSubOfPoint_apply]
   convert zero_vadd V (p i)
-  convert sum_eq_zero _
+  refine sum_eq_zero ?_
   intro i2 hi2
   by_cases h : i2 = i
   · simp [h]
@@ -582,9 +583,9 @@ corresponding indexed family whose index type is the subtype
 corresponding to that subset. -/
 theorem eq_weightedVSubOfPoint_subset_iff_eq_weightedVSubOfPoint_subtype {v : V} {x : k} {s : Set ι}
     {p : ι → P} {b : P} :
-    (∃ (fs : Finset ι)(hfs : ↑fs ⊆ s)(w : ι → k)(hw : (∑ i in fs, w i) = x),
+    (∃ (fs : Finset ι)(_ : ↑fs ⊆ s)(w : ι → k)(_ : (∑ i in fs, w i) = x),
         v = fs.weightedVSubOfPoint p b w) ↔
-      ∃ (fs : Finset s)(w : s → k)(hw : (∑ i in fs, w i) = x),
+      ∃ (fs : Finset s)(w : s → k)(_ : (∑ i in fs, w i) = x),
         v = fs.weightedVSubOfPoint (fun i : s => p i) b w := by
   classical
     simp_rw [weightedVSubOfPoint_apply]
@@ -814,7 +815,11 @@ variable (k)
 /-- In the characteristic zero case, the weights in the centroid sum
 to 1 if the number of points is not zero. -/
 theorem sum_centroidWeights_eq_one_of_card_ne_zero [CharZero k] (h : card s ≠ 0) :
-    (∑ i in s, s.centroidWeights k i) = 1 := by simp [h]
+    (∑ i in s, s.centroidWeights k i) = 1 := by
+  -- Porting note: `simp` cannot find `mul_inv_cancel` and does not use `norm_cast`
+  simp only [centroidWeights_apply, sum_const, nsmul_eq_mul, ne_eq, Nat.cast_eq_zero, card_eq_zero]
+  refine mul_inv_cancel ?_
+  norm_cast
 #align finset.sum_centroid_weights_eq_one_of_card_ne_zero Finset.sum_centroidWeights_eq_one_of_card_ne_zero
 
 /-- In the characteristic zero case, the weights in the centroid sum
@@ -949,15 +954,15 @@ image. -/
 theorem centroid_eq_centroid_image_of_inj_on {p : ι → P}
     (hi : ∀ (i) (_ : i ∈ s) (j) (_ : j ∈ s), p i = p j → i = j) {ps : Set P} [Fintype ps]
     (hps : ps = p '' ↑s) : s.centroid k p = (univ : Finset ps).centroid k fun x => x := by
-  let f : p '' ↑s → ι := fun x => x.property.some
-  have hf : ∀ x, f x ∈ s ∧ p (f x) = x := fun x => x.property.some_spec
+  let f : p '' ↑s → ι := fun x => x.property.choose
+  have hf : ∀ x, f x ∈ s ∧ p (f x) = x := fun x => x.property.choose_spec
   let f' : ps → ι := fun x => f ⟨x, hps ▸ x.property⟩
   have hf' : ∀ x, f' x ∈ s ∧ p (f' x) = x := fun x => hf ⟨x, hps ▸ x.property⟩
   have hf'i : Function.Injective f' := by
     intro x y h
     rw [Subtype.ext_iff, ← (hf' x).2, ← (hf' y).2, h]
   let f'e : ps ↪ ι := ⟨f', hf'i⟩
-  have hu : finset.univ.map f'e = s := by
+  have hu : Finset.univ.map f'e = s := by
     ext x
     rw [mem_map]
     constructor
@@ -1026,15 +1031,15 @@ theorem affineCombination_mem_affineSpan [Nontrivial k] {s : Finset ι} {w : ι 
   by
   classical
     have hnz : (∑ i in s, w i) ≠ 0 := h.symm ▸ one_ne_zero
-    have hn : s.nonempty := Finset.nonempty_of_sum_ne_zero hnz
+    have hn : s.Nonempty := Finset.nonempty_of_sum_ne_zero hnz
     cases' hn with i1 hi1
     let w1 : ι → k := Function.update (Function.const ι 0) i1 1
     have hw1 : (∑ i in s, w1 i) = 1 := by
       rw [Finset.sum_update_of_mem hi1, Finset.sum_const_zero, add_zero]
-    have hw1s : s.affine_combination p w1 = p i1 :=
-      s.affine_combination_of_eq_one_of_eq_zero w1 p hi1 (Function.update_same _ _ _) fun _ _ hne =>
+    have hw1s : s.affineCombination p w1 = p i1 :=
+      s.affineCombination_of_eq_one_of_eq_zero w1 p hi1 (Function.update_same _ _ _) fun _ _ hne =>
         Function.update_noteq hne _ _
-    have hv : s.affine_combination p w -ᵥ p i1 ∈ (affineSpan k (Set.range p)).direction :=
+    have hv : s.affineCombination k p w -ᵥ p i1 ∈ (affineSpan k (Set.range p)).direction :=
       by
       rw [direction_affineSpan, ← hw1s, Finset.affineCombination_vsub]
       apply weightedVSub_mem_vectorSpan
