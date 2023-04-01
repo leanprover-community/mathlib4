@@ -15,7 +15,7 @@ import Mathlib.LinearAlgebra.DirectSum.TensorProduct
 /-!
 # Results on finitely supported functions.
 
-The tensor product of ι →₀ M and κ →₀ N is linearly equivalent to (ι × κ) →₀ (M ⊗ N).
+The tensor product of `ι →₀ M` and `κ →₀ N` is linearly equivalent to `(ι × κ) →₀ (M ⊗ N)`.
 -/
 
 
@@ -38,7 +38,7 @@ open TensorProduct Classical
 
 set_option synthInstance.etaExperiment true -- Porting note: gets around lean4#2074
 
-/-- The tensor product of ι →₀ M and κ →₀ N is linearly equivalent to (ι × κ) →₀ (M ⊗ N). -/
+/-- The tensor product of `ι →₀ M` and `κ →₀ N` is linearly equivalent to `(ι × κ) →₀ (M ⊗ N)`. -/
 def finsuppTensorFinsupp (R M N ι κ : Sort _) [CommRing R] [AddCommGroup M] [Module R M]
     [AddCommGroup N] [Module R N] : (ι →₀ M) ⊗[R] (κ →₀ N) ≃ₗ[R] ι × κ →₀ M ⊗[R] N :=
   TensorProduct.congr (finsuppLEquivDirectSum R M ι) (finsuppLEquivDirectSum R N κ) ≪≫ₗ
@@ -105,10 +105,7 @@ theorem finsuppTensorFinsupp'_single_tmul_single (a : α) (b : β) (r₁ r₂ : 
     finsuppTensorFinsupp' S α β (Finsupp.single a r₁ ⊗ₜ[S] Finsupp.single b r₂) =
       Finsupp.single (a, b) (r₁ * r₂) := by
   ext ⟨a', b'⟩
-  -- Porting note: was simp [Finsupp.single_apply, ite_and] from here on out
-  simp only [finsuppTensorFinsupp'_apply_apply, Finsupp.single_apply, mul_ite, ite_mul, zero_mul,
-      mul_zero, Prod.mk.injEq, ite_and]
-  split <;> simp_all only [ite_self]
+  aesop (add norm [Finsupp.single_apply])
 #align finsupp_tensor_finsupp'_single_tmul_single finsuppTensorFinsupp'_single_tmul_single
 
 end TensorProduct
