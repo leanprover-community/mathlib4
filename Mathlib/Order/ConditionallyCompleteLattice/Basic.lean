@@ -62,22 +62,22 @@ noncomputable instance {α : Type _} [Preorder α] [InfSet α] : InfSet (WithBot
   ⟨(@instSupSetWithTop αᵒᵈ _).supₛ⟩
 
 theorem WithTop.supₛ_eq [Preorder α] [SupSet α] {s : Set (WithTop α)} (hs : ⊤ ∉ s)
-    (hs' : BddAbove (coe ⁻¹' s : Set α)) : supₛ s = ↑(supₛ (coe ⁻¹' s) : α) :=
+    (hs' : BddAbove ((↑) ⁻¹' s : Set α)) : supₛ s = ↑(supₛ ((↑) ⁻¹' s) : α) :=
   (if_neg hs).trans $ if_pos hs'
 #align with_top.Sup_eq WithTop.supₛ_eq
 
 theorem WithTop.infₛ_eq [InfSet α] {s : Set (WithTop α)} (hs : ¬s ⊆ {⊤}) :
-    infₛ s = ↑(infₛ (coe ⁻¹' s) : α) :=
+    infₛ s = ↑(infₛ ((↑) ⁻¹' s) : α) :=
   if_neg hs
 #align with_top.Inf_eq WithTop.infₛ_eq
 
 theorem WithBot.infₛ_eq [Preorder α] [InfSet α] {s : Set (WithBot α)} (hs : ⊥ ∉ s)
-    (hs' : BddBelow (coe ⁻¹' s : Set α)) : infₛ s = ↑(infₛ (coe ⁻¹' s) : α) :=
+    (hs' : BddBelow ((↑) ⁻¹' s : Set α)) : infₛ s = ↑(infₛ ((↑) ⁻¹' s) : α) :=
   (if_neg hs).trans $ if_pos hs'
 #align with_bot.Inf_eq WithBot.infₛ_eq
 
 theorem WithBot.supₛ_eq [SupSet α] {s : Set (WithBot α)} (hs : ¬s ⊆ {⊥}) :
-    supₛ s = ↑(supₛ (coe ⁻¹' s) : α) :=
+    supₛ s = ↑(supₛ ((↑) ⁻¹' s) : α) :=
   if_neg hs
 #align with_bot.Sup_eq WithBot.supₛ_eq
 
