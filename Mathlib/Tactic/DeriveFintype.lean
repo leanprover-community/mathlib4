@@ -31,7 +31,8 @@ There is a term elaborator `derive_fintype%` implementing the derivation of `Fin
 This can be useful in cases when there are necessary additional assumptions (like `DecidableEq`).
 
 Underlying this is a term elaborator `proxy_equiv%` for creating an equivalence from a
-"proxy type" composed of basic type constructors to the inductive type.
+"proxy type" composed of basic type constructors to the inductive type. The `Fintype` instance
+can be derived when Lean can synthesize a `Fintype` instance for the proxy type.
 
 ## Implementation notes
 
@@ -53,7 +54,7 @@ There is a source of quadratic complexity in this `Fintype` instance from the fa
 inductive type with `n` constructors has a proxy type of the form `C₁ ⊕ (C₂ ⊕ (⋯ ⊕ Cₙ))`,
 so mapping to and from `Cᵢ` requires looking through `i` levels of `Sum` constructors.
 Ignoring time spent looking through these constructors, the construction of `Finset.univ`
-contributes linear time with respect to the cardinality of the type since the instances
+contributes just linear time with respect to the cardinality of the type since the instances
 involved compute the underlying `List` for the `Finset` as `l₁ ++ (l₂ ++ (⋯ ++ lₙ))` with
 right associativity.
 
@@ -76,7 +77,7 @@ Also returns data for the pattern for matching an element of this type: the list
 the pattern itself.
 
 Always returns a `Type _`. Uses `Unit`, `PLift`, and `Sigma`. Avoids using `PSigma` since
-then the `Fintype` instances for it go through `Sigma`s anyway. -/
+the `Fintype` instances for it go through `Sigma`s anyway. -/
 def mkCtorType (xs : List Expr) : TermElabM (Expr × List Name × TSyntax `term) :=
   match xs with
   | [] => return (mkConst ``Unit, [], ← `(term| ()))
@@ -128,7 +129,7 @@ def mkCType (ctypes : List Expr) : TermElabM (Expr × TSyntax `tactic) :=
 structure EquivData where
   /-- Name of the declaration for a type that is `Equiv` to the given type. -/
   proxyName : Name
-  /-- Name of the declaration for the equivalenec `proxyType ≃ type`. -/
+  /-- Name of the declaration for the equivalence `proxyType ≃ type`. -/
   proxyEquivName : Name
 
 /--
@@ -224,7 +225,7 @@ def mkProxyEquiv (indVal : InductiveVal) : TermElabM EquivData := do
 
 /--
 The term elaborator `proxy_equiv% α` for a type `α` elaborates to an equivalence `β ≃ α`
-for a "proxy type" `β` composed out of basic type constructors `Unit`, `PLift`, and `Sigma`,
+for a "proxy type" `β` composed out of basic type constructors `Unit`, `PLift`, `Sigma`,
 `Empty`, and `Sum`.
 
 This only works for inductive types `α` that are neither recursive nor have indices.
@@ -371,7 +372,7 @@ def mkFintypeEnum (declName : Name) : CommandElabM Unit := do
 
 def mkFintypeInstanceHandler (declNames : Array Name) : CommandElabM Bool := do
   if declNames.size != 1 then
-    return false -- mutually inductive types are not supported yet
+    return false -- mutually inductive types are not supported
   let declName := declNames[0]!
   if ← isEnumType declName then
     mkFintypeEnum declName
