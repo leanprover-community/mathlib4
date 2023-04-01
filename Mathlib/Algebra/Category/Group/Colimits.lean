@@ -8,7 +8,7 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Algebra.Category.Group.Preadditive
+import Mathlib.Algebra.Category.GroupCat.Preadditive
 import Mathlib.GroupTheory.QuotientGroup
 import Mathlib.CategoryTheory.Limits.Shapes.Kernels
 import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
@@ -25,6 +25,8 @@ In fact, in `AddCommGroup` there is a much nicer model of colimits as quotients
 of finitely supported functions, and we really should implement this as well (or instead).
 -/
 
+-- porting note: `AddCommGroup` in all the names
+set_option linter.uppercaseLean3 false
 
 universe u v
 
@@ -50,13 +52,13 @@ variable {J : Type v} [SmallCategory J] (F : J ⥤ AddCommGroupCat.{v})
 /-- An inductive type representing all group expressions (without relations)
 on a collection of types indexed by the objects of `J`.
 -/
-inductive Prequotient-- There's always `of`
-
-  | of : ∀ (j : J) (x : F.obj j), prequotient-- Then one generator for each operation
-
-  | zero : prequotient
-  | neg : prequotient → prequotient
-  | add : prequotient → prequotient → prequotient
+inductive Prequotient
+  -- There's always `of`
+  | of : ∀ (j : J) (_ : F.obj j), Prequotient
+  -- Then one generator for each operation
+  | zero : Prequotient
+  | neg : Prequotient → Prequotient
+  | add : Prequotient → Prequotient → Prequotient
 #align AddCommGroup.colimits.prequotient AddCommGroupCat.Colimits.Prequotient
 
 instance : Inhabited (Prequotient F) :=
@@ -68,54 +70,45 @@ open Prequotient
 because of the abelian group laws, or
 because one element is mapped to another by a morphism in the diagram.
 -/
-inductive Relation : Prequotient F → Prequotient F → Prop-- Make it an equivalence relation:
-
-  | refl : ∀ x, relation x x
-  | symm : ∀ (x y) (h : relation x y), relation y x
-  |
-  trans :
-    ∀ (x y z) (h : relation x y) (k : relation y z), relation x z-- There's always a `map` relation
-
-  |
-  map :
-    ∀ (j j' : J) (f : j ⟶ j') (x : F.obj j),
-      relation (of j' (F.map f x))
-        (of j x)-- Then one relation per operation, describing the interaction with `of`
-
-  | zero : ∀ j, relation (of j 0) zero
-  | neg : ∀ (j) (x : F.obj j), relation (of j (-x)) (neg (of j x))
-  |
-  add :
-    ∀ (j) (x y : F.obj j),
-      relation (of j (x + y))
-        (add (of j x) (of j y))-- Then one relation per argument of each operation
-
-  | neg_1 : ∀ (x x') (r : relation x x'), relation (neg x) (neg x')
-  | add_1 : ∀ (x x' y) (r : relation x x'), relation (add x y) (add x' y)
-  |
-  add_2 : ∀ (x y y') (r : relation y y'), relation (add x y) (add x y')-- And one relation per axiom
-
-  | zero_add : ∀ x, relation (add zero x) x
-  | add_zero : ∀ x, relation (add x zero) x
-  | add_left_neg : ∀ x, relation (add (neg x) x) zero
-  | add_comm : ∀ x y, relation (add x y) (add y x)
-  | add_assoc : ∀ x y z, relation (add (add x y) z) (add x (add y z))
+inductive Relation : Prequotient F → Prequotient F → Prop
+  -- Make it an equivalence relation:
+  | refl : ∀ x, Relation x x
+  | symm : ∀ (x y) (_ : Relation x y), Relation y x
+  | trans : ∀ (x y z) (_ : Relation x y) (_ : Relation y z), Relation x z
+  -- There's always a `map` relation
+  | map : ∀ (j j' : J) (f : j ⟶ j') (x : F.obj j), Relation (Prequotient.of j' (F.map f x))
+      (Prequotient.of j x)
+  -- Then one relation per operation, describing the interaction with `of`
+  | zero : ∀ j, Relation (Prequotient.of j 0) zero
+  | neg : ∀ (j) (x : F.obj j), Relation (Prequotient.of j (-x)) (neg (Prequotient.of j x))
+  | add : ∀ (j) (x y : F.obj j), Relation (Prequotient.of j (x + y)) (add (Prequotient.of j x)
+      (Prequotient.of j y))
+  -- Then one relation per argument of each operation
+  | neg_1 : ∀ (x x') (_ : Relation x x'), Relation (neg x) (neg x')
+  | add_1 : ∀ (x x' y) (_ : Relation x x'), Relation (add x y) (add x' y)
+  | add_2 : ∀ (x y y') (_ : Relation y y'), Relation (add x y) (add x y')
+  -- And one relation per axiom
+  | zero_add : ∀ x, Relation (add zero x) x
+  | add_zero : ∀ x, Relation (add x zero) x
+  | add_left_neg : ∀ x, Relation (add (neg x) x) zero
+  | add_comm : ∀ x y, Relation (add x y) (add y x)
+  | add_assoc : ∀ x y z, Relation (add (add x y) z) (add x (add y z))
 #align AddCommGroup.colimits.relation AddCommGroupCat.Colimits.Relation
 
 /--
 The setoid corresponding to group expressions modulo abelian group relations and identifications.
 -/
 def colimitSetoid : Setoid (Prequotient F) where
-  R := Relation F
+  r := Relation F
   iseqv := ⟨Relation.refl, Relation.symm, Relation.trans⟩
 #align AddCommGroup.colimits.colimit_setoid AddCommGroupCat.Colimits.colimitSetoid
 
-attribute [instance] colimit_setoid
+attribute [instance] colimitSetoid
 
 /-- The underlying type of the colimit of a diagram in `AddCommGroup`.
 -/
 def ColimitType : Type v :=
-  Quotient (colimitSetoid F)deriving Inhabited
+  Quotient (colimitSetoid F) deriving Inhabited
 #align AddCommGroup.colimits.colimit_type AddCommGroupCat.Colimits.ColimitType
 
 instance : AddCommGroup (ColimitType F) where
@@ -128,7 +121,7 @@ instance : AddCommGroup (ColimitType F) where
       apply Quot.sound
       exact relation.neg_1 _ _ r
   add := by
-    fapply @Quot.lift _ _ (colimit_type F → colimit_type F)
+    fapply @Quot.lift _ _ (ColimitType F → ColimitType F)
     · intro x
       fapply @Quot.lift
       · intro y
@@ -353,4 +346,3 @@ noncomputable def cokernelIsoQuotient {G H : AddCommGroupCat.{u}} (f : G ⟶ H) 
 #align AddCommGroup.cokernel_iso_quotient AddCommGroupCat.cokernelIsoQuotient
 
 end AddCommGroupCat
-
