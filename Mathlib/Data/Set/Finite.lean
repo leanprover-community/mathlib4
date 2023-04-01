@@ -1307,7 +1307,7 @@ theorem infinite_union {s t : Set α} : (s ∪ t).Infinite ↔ s.Infinite ∨ t.
 
 theorem Infinite.of_image (f : α → β) {s : Set α} (hs : (f '' s).Infinite) : s.Infinite :=
   mt (Finite.image f) hs
-+#align set.infinite.of_image Set.Infinite.of_image
+#align set.infinite.of_image Set.Infinite.of_image
 
 theorem infinite_image_iff {s : Set α} {f : α → β} (hi : InjOn f s) :
     (f '' s).Infinite ↔ s.Infinite :=
