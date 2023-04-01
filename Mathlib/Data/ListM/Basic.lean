@@ -49,7 +49,7 @@ unsafe instance : EmptyCollection (ListM m α) := ⟨nil⟩
       | ForInStep.done d  => pure d
       | ForInStep.yield d => t.forIn d f
 
-unsafe instance [Monad m] [Monad n] [MonadLiftT m n] : ForIn n (ListM m α) α where
+unsafe instance [Monad m] [MonadLiftT m n] : ForIn n (ListM m α) α where
   forIn := ListM.forIn
 
 /-- Construct a `ListM` recursively. -/
