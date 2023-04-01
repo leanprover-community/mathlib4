@@ -301,14 +301,14 @@ theorem toReal_eq_one_iff (x : ℝ≥0∞) : x.toReal = 1 ↔ x = 1 := by
 theorem ofReal_toReal_eq_iff : ENNReal.ofReal a.toReal = a ↔ a ≠ ⊤ :=
   ⟨fun h => by
     rw [← h]
-    exact of_real_ne_top, ofReal_toReal⟩
+    exact ofReal_ne_top, ofReal_toReal⟩
 #align ennreal.of_real_to_real_eq_iff ENNReal.ofReal_toReal_eq_iff
 
 @[simp]
 theorem toReal_ofReal_eq_iff {a : ℝ} : (ENNReal.ofReal a).toReal = a ↔ 0 ≤ a :=
   ⟨fun h => by
     rw [← h]
-    exact to_real_nonneg, toReal_ofReal⟩
+    exact toReal_nonneg, toReal_ofReal⟩
 #align ennreal.to_real_of_real_eq_iff ENNReal.toReal_ofReal_eq_iff
 
 @[simp] theorem zero_ne_top : 0 ≠ ∞ := coe_ne_top
