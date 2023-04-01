@@ -100,7 +100,7 @@ The setoid corresponding to group expressions modulo abelian group relations and
 -/
 def colimitSetoid : Setoid (Prequotient F) where
   r := Relation F
-  iseqv := ⟨Relation.refl, Relation.symm, Relation.trans⟩
+  iseqv := ⟨Relation.refl, fun r => Relation.symm _ _ r, fun r => Relation.trans _ _ _ r⟩
 #align AddCommGroup.colimits.colimit_setoid AddCommGroupCat.Colimits.colimitSetoid
 
 attribute [instance] colimitSetoid
@@ -119,7 +119,7 @@ instance : AddCommGroup (ColimitType F) where
       exact Quot.mk _ (neg x)
     · intro x x' r
       apply Quot.sound
-      exact relation.neg_1 _ _ r
+      exact Relation.neg_1 _ _ r
   add := by
     fapply @Quot.lift _ _ (ColimitType F → ColimitType F)
     · intro x
@@ -128,7 +128,7 @@ instance : AddCommGroup (ColimitType F) where
         exact Quot.mk _ (add x y)
       · intro y y' r
         apply Quot.sound
-        exact relation.add_2 _ _ _ r
+        exact Relation.add_2 _ _ _ r
     · intro x x' r
       funext y
       induction y
@@ -232,16 +232,16 @@ def colimitCocone : Cocone F where
 cocone. -/
 @[simp]
 def descFunLift (s : Cocone F) : Prequotient F → s.pt
-  | of j x => (s.ι.app j) x
+  | Prequotient.of j x => (s.ι.app j) x
   | zero => 0
-  | neg x => -desc_fun_lift x
-  | add x y => desc_fun_lift x + desc_fun_lift y
+  | neg x => -descFunLift x
+  | add x y => descFunLift x + descFunLift y
 #align AddCommGroup.colimits.desc_fun_lift AddCommGroupCat.Colimits.descFunLift
 
 /-- The function from the colimit abelian group to the cone point of any other cocone. -/
 def descFun (s : Cocone F) : ColimitType F → s.pt := by
   fapply Quot.lift
-  · exact desc_fun_lift F s
+  · exact descFunLift F s
   · intro x y r
     induction r <;> try dsimp
     -- refl
@@ -302,8 +302,7 @@ def colimitCoconeIsColimit : IsColimit (colimitCocone F) where
 
 instance hasColimits_addCommGroupCat : HasColimits AddCommGroupCat
     where HasColimitsOfShape J 𝒥 :=
-    {
-      HasColimit := fun F =>
+    { HasColimit := fun F =>
         has_colimit.mk
           { Cocone := colimit_cocone F
             IsColimit := colimit_cocone_is_colimit F } }
@@ -320,7 +319,7 @@ agrees with the usual group-theoretical quotient.
 -/
 noncomputable def cokernelIsoQuotient {G H : AddCommGroupCat.{u}} (f : G ⟶ H) :
     cokernel f ≅ AddCommGroupCat.of (H ⧸ AddMonoidHom.range f) where
-  Hom :=
+  hom :=
     cokernel.desc f (mk' _)
       (by
         ext
@@ -337,9 +336,10 @@ noncomputable def cokernelIsoQuotient {G H : AddCommGroupCat.{u}} (f : G ⟶ H) 
         induction H_1_h
         simp only [cokernel.condition_apply, zero_apply])
   -- obviously can take care of the next goals, but it is really slow
-  hom_inv_id' := by ext1;
-    simp only [coequalizer_as_cokernel, category.comp_id, cokernel.π_desc_assoc]; ext1; rfl
-  inv_hom_id' := by
+  hom_inv_id := by
+    ext1
+    simp only [coequalizer_as_cokernel, Category.comp_id, cokernel.π_desc_assoc]; ext1; rfl
+  inv_hom_id := by
     ext x : 2
     simp only [AddMonoidHom.coe_comp, Function.comp_apply, comp_apply, lift_mk,
       cokernel.π_desc_apply, mk'_apply, id_apply]
