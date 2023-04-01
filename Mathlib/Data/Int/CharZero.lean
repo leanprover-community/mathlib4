@@ -52,7 +52,7 @@ theorem cast_eq_one [AddGroupWithOne α] [CharZero α] {n : ℤ} : (n : α) = 1 
 #align int.cast_eq_one Int.cast_eq_one
 
 theorem cast_ne_one [AddGroupWithOne α] [CharZero α] {n : ℤ} : (n : α) ≠ 1 ↔ n ≠ 1 :=
-  cast_eq_one.Not
+  cast_eq_one.not
 #align int.cast_ne_one Int.cast_ne_one
 
 @[simp, norm_cast]
