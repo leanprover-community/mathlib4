@@ -588,6 +588,12 @@ def diag (A : Matrix n n α) (i : n) : α :=
   A i i
 #align matrix.diag Matrix.diag
 
+-- Porting note: new, because of removed `simp` above.
+-- TODO: set as an equation lemma for `diagonal`, see mathlib4#3024
+@[simp]
+theorem diag_apply [Zero α] (A : Matrix n n α) (i) : diag A i = A i i :=
+  rfl
+
 @[simp]
 theorem diag_diagonal [DecidableEq n] [Zero α] (a : n → α) : diag (diagonal a) = a :=
   funext <| @diagonal_apply_eq _ _ _ _ a
@@ -992,7 +998,7 @@ theorem smul_eq_diagonal_mul [Fintype m] [DecidableEq m] (M : Matrix m n α) (a 
 @[simp]
 theorem diag_col_mul_row (a b : n → α) : diag (col a ⬝ row b) = a * b := by
   ext
-  simp [diag, Matrix.mul_apply, col, row]
+  simp [Matrix.mul_apply, col, row]
 #align matrix.diag_col_mul_row Matrix.diag_col_mul_row
 
 /-- Left multiplication by a matrix, as an `AddMonoidHom` from matrices to matrices. -/
