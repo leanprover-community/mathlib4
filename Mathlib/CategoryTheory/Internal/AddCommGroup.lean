@@ -103,10 +103,10 @@ noncomputable def map (F : C ⥤ D)
   neg := h.neg.map F
   add := h.add.map F
   add_assoc := sorry
-  add_comm := sorry
-  add_zero := sorry
-  zero_add := sorry
-  add_left_neg := sorry
+  add_comm := h.add_comm.map F
+  add_zero := h.add_zero.map F
+  zero_add := h.zero_add.map F
+  add_left_neg := h.add_left_neg.map F
 
 end AddCommGroupCatObjOperations
 
