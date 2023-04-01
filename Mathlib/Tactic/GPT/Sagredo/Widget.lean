@@ -52,15 +52,19 @@ def runnerWidget : Component RPCData where
     export default function(data) {
       const [contents, setContents] = React.useState('Sagredo log:')
       const rs = React.useContext(RpcContext)
+      const renderQuery = (query) =>
+        setContents(currS => currS + '\\n---\\n' + query)
+      const renderResponse = (response) =>
+        setContents(currS => currS + '\\n---\\n' + response)
       const callSagredo = (data) =>
         rs.call('nextQuery', data)
           .then(resp => {
             const [query, data] = resp
-            setContents(currS => currS + '\\n---\\n' + query)
+            renderQuery(query)
             rs.call('runQuery', data)
               .then(resp => {
                 const [text, [sol, data]] = resp
-                setContents(currS => currS + '\\n---\\n' + text)
+                renderResponse(text)
                 callSagredo(data)
               }) })
           .catch(e => setContents(mapRpcError(e).message))
