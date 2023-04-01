@@ -920,7 +920,7 @@ protected theorem infinite_prod :
     (s ×ˢ t).Infinite ↔ s.Infinite ∧ t.Nonempty ∨ t.Infinite ∧ s.Nonempty :=
   by
   refine' ⟨fun h => _, _⟩
-  · simp_rw [Set.Infinite, and_comm ¬_, ← not_imp]
+  · simp_rw [Set.Infinite, @and_comm ¬_, ← not_imp]
     by_contra'
     exact h ((this.1 h.nonempty.snd).prod $ this.2 h.nonempty.fst)
   · rintro (h | h)
