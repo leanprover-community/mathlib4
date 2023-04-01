@@ -936,7 +936,7 @@ protected theorem Finite.offDiag {s : Set α} (hs : s.Finite) : s.offDiag.Finite
     apply Set.toFinite
 #align set.finite.off_diag Set.Finite.offDiag
 
-protected  theorem Finite.image2 (f : α → β → γ) (hs : s.Finite) (ht : t.Finite) :
+protected theorem Finite.image2 (f : α → β → γ) (hs : s.Finite) (ht : t.Finite) :
     (image2 f s t).Finite := by
   cases hs
   cases ht
