@@ -2037,7 +2037,7 @@ sdiff_eq_self_iff_disjoint.2 $ by simp [h]
 
 @[simp]
 theorem diff_singleton_sSubset {s : Set α} {a : α} : s \ {a} ⊂ s ↔ a ∈ s :=
-  sdiff_le.lt_iff_ne.trans <| sdiff_eq_left.Not.trans <| by simp
+  sdiff_le.lt_iff_ne.trans <| sdiff_eq_left.not.trans <| by simp
 #align set.diff_singleton_ssubset Set.diff_singleton_sSubset
 
 @[simp]
