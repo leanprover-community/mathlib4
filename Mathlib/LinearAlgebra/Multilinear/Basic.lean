@@ -22,11 +22,11 @@ import Mathlib.Data.Fintype.Sort
 We define multilinear maps as maps from `Π(i : ι), M₁ i` to `M₂` which are linear in each
 coordinate. Here, `M₁ i` and `M₂` are modules over a ring `R`, and `ι` is an arbitrary type
 (although some statements will require it to be a fintype). This space, denoted by
-`multilinear_map R M₁ M₂`, inherits a module structure by pointwise addition and multiplication.
+`MultilinearMap R M₁ M₂`, inherits a module structure by pointwise addition and multiplication.
 
 ## Main definitions
 
-* `multilinear_map R M₁ M₂` is the space of multilinear maps from `Π(i : ι), M₁ i` to `M₂`.
+* `MultilinearMap R M₁ M₂` is the space of multilinear maps from `Π(i : ι), M₁ i` to `M₂`.
 * `f.map_smul` is the multiplicativity of the multilinear map `f` along each coordinate.
 * `f.map_add` is the additivity of the multilinear map `f` along each coordinate.
 * `f.map_smul_univ` expresses the multiplicativity of `f` over all coordinates at the same time,
@@ -43,8 +43,8 @@ functions. These operations are called `f.curry_left` and `f.curry_right` respec
 (with inverses `f.uncurry_left` and `f.uncurry_right`). These operations induce linear equivalences
 between spaces of multilinear functions in `n+1` variables and spaces of linear functions into
 multilinear functions in `n` variables (resp. multilinear functions in `n` variables taking values
-in linear functions), called respectively `multilinear_curry_left_equiv` and
-`multilinear_curry_right_equiv`.
+in linear functions), called respectively `multilinearCurryLeftEquiv` and
+`multilinearCurryRightEquiv`.
 
 ## Implementation notes
 
@@ -56,21 +56,21 @@ can be done in two (equivalent) different ways:
 
 The second way is more artificial as the value of `m` at `i` is not relevant, but it has the
 advantage of avoiding subtype inclusion issues. This is the definition we use, based on
-`function.update` that allows to change the value of `m` at `i`.
+`Function.update` that allows to change the value of `m` at `i`.
 
-Note that the use of `function.update` requires a `decidableEq ι` term to appear somewhere in the
-statement of `multilinear_map.map_add'` and `multilinear_map.map_smul'`. Three possible choices
+Note that the use of `Function.update` requires a `decidableEq ι` term to appear somewhere in the
+statement of `MultilinearMap.map_add'` and `MultilinearMap.map_smul'`. Three possible choices
 are:
 
-1. Requiring `decidableEq ι` as an argument to `multilinear_map` (as we did originally).
-2. Using `classical.dec_eq ι` in the statement of `map_add'` and `map_smul'`.
+1. Requiring `decidableEq ι` as an argument to `MultilinearMap` (as we did originally).
+2. Using `Classical.decEq ι` in the statement of `map_add'` and `map_smul'`.
 3. Quantifying over all possible `decidableEq ι` instances in the statement of `map_add'` and
    `map_smul'`.
 
 Option 1 works fine, but puts unecessary constraints on the user (the zero map certainly does not
-need decidability). Option 2 looks great at first, but in the common case when `ι = fin n` it
+need decidability). Option 2 looks great at first, but in the common case when `ι = Fin n` it
 introduces non-defeq decidability instance diamonds within the context of proving `map_add'` and
-`map_smul'`, of the form `fin.decidableEq n = classical.dec_eq (fin n)`. Option 3 of course does
+`map_smul'`, of the form `fin.decidableEq n = Classical.decEq (Fin n)`. Option 3 of course does
 something similar, but of the form `fin.decidableEq n = _inst`, which is much easier to clean up
 since `_inst` is a free variable and so the equality can just be substituted.
 -/
@@ -300,10 +300,10 @@ def constOfIsEmpty [IsEmpty ι] (m : M₂) : MultilinearMap R M₁ M₂ where
 
 end
 
-/-- Given a multilinear map `f` on `n` variables (parameterized by `fin n`) and a subset `s` of `k`
-of these variables, one gets a new multilinear map on `fin k` by varying these variables, and fixing
+/-- Given a multilinear map `f` on `n` variables (parameterized by `Fin n`) and a subset `s` of `k`
+of these variables, one gets a new multilinear map on `Fin k` by varying these variables, and fixing
 the other ones equal to a given value `z`. It is denoted by `f.restr s hk z`, where `hk` is a
-proof that the cardinality of `s` is `k`. The implicit identification between `fin k` and `s` that
+proof that the cardinality of `s` is `k`. The implicit identification between `Fin k` and `s` that
 we use is the canonical (increasing) bijection. -/
 def restr {k n : ℕ} (f : MultilinearMap R (fun i : Fin n => M') M₂) (s : Finset (Fin n))
     (hk : s.card = k) (z : M') : MultilinearMap R (fun i : Fin k => M') M₂ where
@@ -318,32 +318,32 @@ def restr {k n : ℕ} (f : MultilinearMap R (fun i : Fin n => M') M₂) (s : Fin
 
 variable {R}
 
-/-- In the specific case of multilinear maps on spaces indexed by `fin (n+1)`, where one can build
-an element of `Π(i : fin (n+1)), M i` using `cons`, one can express directly the additivity of a
+/-- In the specific case of multilinear maps on spaces indexed by `Fin (n+1)`, where one can build
+an element of `Π(i : Fin (n+1)), M i` using `cons`, one can express directly the additivity of a
 multilinear map along the first variable. -/
 theorem cons_add (f : MultilinearMap R M M₂) (m : ∀ i : Fin n, M i.succ) (x y : M 0) :
     f (cons (x + y) m) = f (cons x m) + f (cons y m) := by
   rw [← update_cons_zero x m (x + y), f.map_add, update_cons_zero, update_cons_zero]
 #align multilinear_map.cons_add MultilinearMap.cons_add
 
-/-- In the specific case of multilinear maps on spaces indexed by `fin (n+1)`, where one can build
-an element of `Π(i : fin (n+1)), M i` using `cons`, one can express directly the multiplicativity
+/-- In the specific case of multilinear maps on spaces indexed by `Fin (n+1)`, where one can build
+an element of `Π(i : Fin (n+1)), M i` using `cons`, one can express directly the multiplicativity
 of a multilinear map along the first variable. -/
 theorem cons_smul (f : MultilinearMap R M M₂) (m : ∀ i : Fin n, M i.succ) (c : R) (x : M 0) :
     f (cons (c • x) m) = c • f (cons x m) := by
   rw [← update_cons_zero x m (c • x), f.map_smul, update_cons_zero]
 #align multilinear_map.cons_smul MultilinearMap.cons_smul
 
-/-- In the specific case of multilinear maps on spaces indexed by `fin (n+1)`, where one can build
-an element of `Π(i : fin (n+1)), M i` using `snoc`, one can express directly the additivity of a
+/-- In the specific case of multilinear maps on spaces indexed by `Fin (n+1)`, where one can build
+an element of `Π(i : Fin (n+1)), M i` using `snoc`, one can express directly the additivity of a
 multilinear map along the first variable. -/
 theorem snoc_add (f : MultilinearMap R M M₂) (m : ∀ i : Fin n, M i.cast_succ) (x y : M (last n)) :
     f (snoc m (x + y)) = f (snoc m x) + f (snoc m y) := by
   rw [← update_snoc_last x m (x + y), f.map_add, update_snoc_last, update_snoc_last]
 #align multilinear_map.snoc_add MultilinearMap.snoc_add
 
-/-- In the specific case of multilinear maps on spaces indexed by `fin (n+1)`, where one can build
-an element of `Π(i : fin (n+1)), M i` using `cons`, one can express directly the multiplicativity
+/-- In the specific case of multilinear maps on spaces indexed by `Fin (n+1)`, where one can build
+an element of `Π(i : Fin (n+1)), M i` using `cons`, one can express directly the multiplicativity
 of a multilinear map along the first variable. -/
 theorem snoc_smul (f : MultilinearMap R M M₂) (m : ∀ i : Fin n, M i.cast_succ) (c : R)
     (x : M (last n)) : f (snoc m (c • x)) = c • f (snoc m x) := by
@@ -653,7 +653,7 @@ end ApplySum
 
 /-- Restrict the codomain of a multilinear map to a submodule.
 
-This is the multilinear version of `linear_map.cod_restrict`. -/
+This is the multilinear version of `LinearMap.codRestrict`. -/
 @[simps]
 def codRestrict (f : MultilinearMap R M₁ M₂) (p : Submodule R M₂) (h : ∀ v, f v ∈ p) :
     MultilinearMap R M₁ p where
@@ -688,7 +688,7 @@ variable {ι₁ ι₂ ι₃ : Type _}
 
 /-- Transfer the arguments to a map along an equivalence between argument indices.
 
-The naming is derived from `finsupp.dom_congr`, noting that here the permutation applies to the
+The naming is derived from `Finsupp.domCongr`, noting that here the permutation applies to the
 domain of the domain. -/
 @[simps apply]
 def domDomCongr (σ : ι₁ ≃ ι₂) (m : MultilinearMap R (fun i : ι₁ => M₂) M₃) :
@@ -718,7 +718,7 @@ theorem domDomCongr_mul (σ₁ : Equiv.Perm ι₁) (σ₂ : Equiv.Perm ι₁)
   rfl
 #align multilinear_map.dom_dom_congr_mul MultilinearMap.domDomCongr_mul
 
-/-- `multilinear_map.dom_dom_congr` as an equivalence.
+/-- `MultilinearMap.domDomCongr` as an equivalence.
 
 This is declared separately because it does not work with dot notation. -/
 @[simps apply symm_apply]
@@ -775,14 +775,14 @@ theorem compMultilinearMap_apply (g : M₂ →ₗ[R] M₃) (f : MultilinearMap R
   rfl
 #align linear_map.comp_multilinear_map_apply LinearMap.compMultilinearMap_apply
 
-/-- The multilinear version of `linear_map.subtype_comp_cod_restrict` -/
+/-- The multilinear version of `LinearMap.subtype_comp_codRestrict` -/
 @[simp]
 theorem subtype_compMultilinearMap_codRestrict (f : MultilinearMap R M₁ M₂) (p : Submodule R M₂)
     (h) : p.subtype.compMultilinearMap (f.codRestrict p h) = f :=
   MultilinearMap.ext fun v => rfl
 #align linear_map.subtype_comp_multilinear_map_cod_restrict LinearMap.subtype_compMultilinearMap_codRestrict
 
-/-- The multilinear version of `linear_map.comp_cod_restrict` -/
+/-- The multilinear version of `LinearMap.comp_codRestrict` -/
 @[simp]
 theorem compMultilinearMap_codRestrict (g : M₂ →ₗ[R] M₃) (f : MultilinearMap R M₁ M₂)
     (p : Submodule R M₃) (h) :
@@ -876,7 +876,7 @@ instance [NoZeroSMulDivisors R' M₃] : NoZeroSMulDivisors R' (MultilinearMap A 
 
 variable (M₂ M₃ R' A)
 
-/-- `multilinear_map.dom_dom_congr` as a `linear_equiv`. -/
+/-- `MultilinearMap.domDomCongr` as a `LinearEquiv`. -/
 @[simps apply symm_apply]
 def domDomCongrLinearEquiv {ι₁ ι₂} (σ : ι₁ ≃ ι₂) :
     MultilinearMap A (fun i : ι₁ => M₂) M₃ ≃ₗ[R'] MultilinearMap A (fun i : ι₂ => M₂) M₃ :=
@@ -890,7 +890,7 @@ def domDomCongrLinearEquiv {ι₁ ι₂} (σ : ι₁ ≃ ι₂) :
 
 variable (R M₁)
 
-/-- The dependent version of `multilinear_map.dom_dom_congr_linear_equiv`. -/
+/-- The dependent version of `MultilinearMap.domDomCongrLinearEquiv`. -/
 @[simps apply symm_apply]
 def domDomCongrLinearEquiv' {ι' : Type _} (σ : ι ≃ ι') :
     MultilinearMap R M₁ M₂ ≃ₗ[R] MultilinearMap R (fun i => M₁ (σ.symm i)) M₂ where
@@ -957,8 +957,8 @@ variable (R ι) (A : Type _) [CommSemiring A] [Algebra R A] [Fintype ι]
 /-- Given an `R`-algebra `A`, `mk_pi_algebra` is the multilinear map on `A^ι` associating
 to `m` the product of all the `m i`.
 
-See also `multilinear_map.mk_pi_algebra_fin` for a version that works with a non-commutative
-algebra `A` but requires `ι = fin n`. -/
+See also `MultilinearMap.mkPiAlgebraFin` for a version that works with a non-commutative
+algebra `A` but requires `ι = Fin n`. -/
 protected def mkPiAlgebra : MultilinearMap R (fun i : ι => A) A where
   toFun m := ∏ i, m i
   map_add' m i x y := by simp [Finset.prod_update_of_mem, add_mul]
@@ -981,7 +981,7 @@ variable (R n) (A : Type _) [Semiring A] [Algebra R A]
 /-- Given an `R`-algebra `A`, `mk_pi_algebra_fin` is the multilinear map on `A^n` associating
 to `m` the product of all the `m i`.
 
-See also `multilinear_map.mk_pi_algebra` for a version that assumes `[comm_semiring A]` but works
+See also `MultilinearMap.mkPiAlgebra` for a version that assumes `[CommSemiring A]` but works
 for `A^ι` with any finite type `ι`. -/
 protected def mkPiAlgebraFin : MultilinearMap R (fun i : Fin n => A) A where
   toFun m := (List.ofFn m).Prod
@@ -1142,7 +1142,7 @@ variable [CommSemiring R] [∀ i, AddCommMonoid (M₁ i)] [AddCommMonoid M₂] [
 
 /-- When `ι` is finite, multilinear maps on `R^ι` with values in `M₂` are in bijection with `M₂`,
 as such a multilinear map is completely determined by its value on the constant vector made of ones.
-We register this bijection as a linear equivalence in `multilinear_map.pi_ring_equiv`. -/
+We register this bijection as a linear equivalence in `MultilinearMap.piRingEquiv`. -/
 protected def piRingEquiv [Fintype ι] : M₂ ≃ₗ[R] MultilinearMap R (fun i : ι => R) M₂ where
   toFun z := MultilinearMap.mkPiRing R ι z
   invFun f := f fun i => 1
@@ -1165,15 +1165,15 @@ section Currying
 /-!
 ### Currying
 
-We associate to a multilinear map in `n+1` variables (i.e., based on `fin n.succ`) two
+We associate to a multilinear map in `n+1` variables (i.e., based on `Fin n.succ`) two
 curried functions, named `f.curry_left` (which is a linear map on `E 0` taking values
 in multilinear maps in `n` variables) and `f.curry_right` (wich is a multilinear map in `n`
 variables taking values in linear maps on `E 0`). In both constructions, the variable that is
-singled out is `0`, to take advantage of the operations `cons` and `tail` on `fin n`.
+singled out is `0`, to take advantage of the operations `cons` and `tail` on `Fin n`.
 The inverse operations are called `uncurry_left` and `uncurry_right`.
 
 We also register linear equiv versions of these correspondences, in
-`multilinear_curry_left_equiv` and `multilinear_curry_right_equiv`.
+`multilinearCurryLeftEquiv` and `multilinearCurryRightEquiv`.
 -/
 
 
@@ -1264,10 +1264,10 @@ theorem MultilinearMap.uncurry_curryLeft (f : MultilinearMap R M M₂) :
 
 variable (R M M₂)
 
-/-- The space of multilinear maps on `Π(i : fin (n+1)), M i` is canonically isomorphic to
+/-- The space of multilinear maps on `Π(i : Fin (n+1)), M i` is canonically isomorphic to
 the space of linear maps from `M 0` to the space of multilinear maps on
-`Π(i : fin n), M i.succ `, by separating the first variable. We register this isomorphism as a
-linear isomorphism in `multilinear_curry_left_equiv R M M₂`.
+`Π(i : Fin n), M i.succ `, by separating the first variable. We register this isomorphism as a
+linear isomorphism in `multilinearCurryLeftEquiv R M M₂`.
 
 The direct and inverse maps are given by `f.uncurry_left` and `f.curry_left`. Use these
 unless you need the full framework of linear equivs. -/
@@ -1380,10 +1380,10 @@ theorem MultilinearMap.uncurry_curryRight (f : MultilinearMap R M M₂) :
 
 variable (R M M₂)
 
-/-- The space of multilinear maps on `Π(i : fin (n+1)), M i` is canonically isomorphic to
-the space of linear maps from the space of multilinear maps on `Π(i : fin n), M i.cast_succ` to the
+/-- The space of multilinear maps on `Π(i : Fin (n+1)), M i` is canonically isomorphic to
+the space of linear maps from the space of multilinear maps on `Π(i : Fin n), M i.cast_succ` to the
 space of linear maps on `M (last n)`, by separating the last variable. We register this isomorphism
-as a linear isomorphism in `multilinear_curry_right_equiv R M M₂`.
+as a linear isomorphism in `multilinearCurryRightEquiv R M M₂`.
 
 The direct and inverse maps are given by `f.uncurry_right` and `f.curry_right`. Use these
 unless you need the full framework of linear equivs. -/
@@ -1503,10 +1503,10 @@ theorem coe_curr_sum_equiv_symm : ⇑(currySumEquiv R ι M₂ M' ι').symm = unc
 
 variable (R M₂ M')
 
-/-- If `s : finset (fin n)` is a finite set of cardinality `k` and its complement has cardinality
-`l`, then the space of multilinear maps on `λ i : fin n, M'` is isomorphic to the space of
-multilinear maps on `λ i : fin k, M'` taking values in the space of multilinear maps
-on `λ i : fin l, M'`. -/
+/-- If `s : Finset (Fin n)` is a finite set of cardinality `k` and its complement has cardinality
+`l`, then the space of multilinear maps on `λ i : Fin n, M'` is isomorphic to the space of
+multilinear maps on `λ i : Fin k, M'` taking values in the space of multilinear maps
+on `λ i : Fin l, M'`. -/
 def curryFinFinset {k l n : ℕ} {s : Finset (Fin n)} (hk : s.card = k) (hl : sᶜ.card = l) :
     MultilinearMap R (fun x : Fin n => M') M₂ ≃ₗ[R]
       MultilinearMap R (fun x : Fin k => M') (MultilinearMap R (fun x : Fin l => M') M₂) :=
@@ -1597,7 +1597,7 @@ def map [Nonempty ι] (f : MultilinearMap R M₁ M₂) (p : ∀ i, Submodule R (
     · rw [f.map_smul, update_eq_self]
 #align multilinear_map.map MultilinearMap.map
 
-/-- The map is always nonempty. This lemma is needed to apply `sub_mul_action.zero_mem`. -/
+/-- The map is always nonempty. This lemma is needed to apply `SubMulAction.zero_mem`. -/
 theorem map_nonempty [Nonempty ι] (f : MultilinearMap R M₁ M₂) (p : ∀ i, Submodule R (M₁ i)) :
     (map f p : Set M₂).Nonempty :=
   ⟨f 0, 0, fun i => (p i).zero_mem, rfl⟩
