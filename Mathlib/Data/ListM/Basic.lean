@@ -116,85 +116,63 @@ unsafe def ofListM {α : Type u} : List (m α) → ListM m α
 #align tactic.mllist.m_of_list ListM.ofListM
 
 /-- Extract a list inside the monad from a `ListM`. -/
-unsafe def force {α} : ListM m α → m (List α)
-  | nil => pure []
-  | cons l => do
-    let (x, xs) ← l
-    let some x ← pure x |
-      force xs
-    (· :: ·) x <$> force xs
+unsafe def force {α} (L : ListM m α) : m (List α) := do
+  match ← uncons L with
+  | none => pure []
+  | some (x, xs) => (x :: ·) <$> force xs
+
 #align tactic.mllist.force ListM.force
 
 /-- Take the first `n` elements, as a list inside the monad. -/
 unsafe def takeAsList {α} : ListM m α → Nat → m (List α)
-  | nil, _ => pure []
-  | _, 0 => pure []
-  | cons l, n + 1 => do
-    let (x, xs) ← l
-    let some x ← pure x |
-      takeAsList xs (n + 1)
-    (· :: ·) x <$> takeAsList xs n
+  | _,  0 => pure []
+  | xs, n+1 => do
+    match ← uncons xs with
+    | some (x, xs) => (x :: ·) <$> takeAsList xs n
+    | none => pure []
 #align tactic.mllist.take ListM.takeAsList
 
 /-- Take the first `n` elements. -/
 unsafe def take : ListM m α → Nat → ListM m α
-  | _, 0 => empty
-  | nil, _ => empty
-  | cons l, n+1 => cons do
-    let (a, l) ← l
-    let some a := a | return (none, l.take (n+1))
-    return (a, l.take n)
+  | _,  0    => empty
+  | xs, n+1 => cons do
+    match ← uncons xs with
+    | some (x, xs) => return (x, xs.take n)
+    | none => return (none, empty)
 
 /-- Drop the first `n` elements. -/
 unsafe def drop : ListM m α → Nat → ListM m α
-  | e, 0 => e
-  | nil, _ => nil
-  | cons l, n+1 => cons do
-    let (a, l) ← l
-    let some _ := a | return (none, drop l (n+1))
-    return (none, drop l n)
-
-/-- Apply a function to every element of a `ListM`. -/
-unsafe def map {α β : Type u} (f : α → β) : ListM m α → ListM m β
-  | nil => nil
-  | cons l =>
-    cons do
-      let (x, xs) ← l
-      pure (f <$> x, map f xs)
-#align tactic.mllist.map ListM.map
+  | xs, 0    => xs
+  | xs, n+1 => cons do
+    match ← uncons xs with
+    | some (_, xs) => return (none, drop xs n)
+    | none => return (none, empty)
 
 /-- Apply a function which returns values in the monad to every element of a `ListM`. -/
-unsafe def mapM {α β : Type u} (f : α → m β) : ListM m α → ListM m β
-  | nil => nil
-  | cons l =>
-    cons do
-      let (x, xs) ← l
-      let b ← x.traverse f
-      return (b, mapM f xs)
+unsafe def mapM {α β : Type u} (f : α → m β) (L : ListM m α) : ListM m β :=
+cons do
+  match ← uncons L with
+  | some (x, xs) => return (← f x, mapM f xs)
+  | none => return (none, empty)
 #align tactic.mllist.mmap ListM.mapM
 
-/-- Filter a `ListM`. -/
-unsafe def filter {α : Type u} (p : α → Bool) : ListM m α → ListM m α
-  | nil => nil
-  | cons l =>
-    cons do
-      let (a, r) ← l
-      let some a ← pure a |
-        return (none, filter p r)
-      return (if p a then some a else none, filter p r)
-#align tactic.mllist.filter ListM.filter
+/-- Apply a function to every element of a `ListM`. -/
+unsafe def map {α β : Type u} (f : α → β) (L : ListM m α) : ListM m β :=
+L.mapM fun a => pure (f a)
+#align tactic.mllist.map ListM.map
 
-/-- Filter a `ListM` using a function which returns values in the (alternative) monad.
-Whenever the function "succeeds", we accept the element, and reject otherwise. -/
-unsafe def filterM [Alternative m] {α β : Type u} (p : α → m β) : ListM m α → ListM m α
-  | nil => nil
-  | cons l =>
-    cons do
-      let (a, r) ← l
-      let some a ← pure a |
-        return (none, filterM p r)
-      (do _ ← p a; return (a, filterM p r)) <|> return (none, filterM p r)
+/-- Filter a `ListM` using a monadic function. -/
+unsafe def filterM {α : Type u} (p : α → m (ULift Bool)) (L : ListM m α) : ListM m α :=
+cons do
+  match ← uncons L with
+  | some (x, xs) => return (if (← p x).down then some x else x, filterM p xs)
+  | none => return (none, empty)
 #align tactic.mllist.mfilter ListM.filterM
+
+/-- Filter a `ListM`. -/
+unsafe def filter {α : Type u} (p : α → Bool) (L : ListM m α) : ListM m α :=
+L.filterM fun a => pure <| .up (p a)
+#align tactic.mllist.filter ListM.filter
 
 /-- Filter and transform a `ListM` using an `Option` valued function. -/
 unsafe def filterMap {α β : Type u} (f : α → Option β) : ListM m α → ListM m β
@@ -325,11 +303,11 @@ squash do match ← (uncons L : m _) with
 unsafe def runState {σ α : Type u} (L : ListM (StateT.{u} σ m) α) (s : σ) : ListM m (α × σ) :=
 squash do match ← StateT.run (uncons L) s with
   | (none, _) => pure empty
-  | (some (a, L'), s') => pure <| cons do pure (some (a, s'), L'.run s')
+  | (some (a, L'), s') => pure <| cons do pure (some (a, s'), L'.runState s')
 
 /-- Given a lazy list in a state monad, run it on some initial state. -/
 unsafe def runState' {σ α : Type u} (L : ListM (StateT.{u} σ m) α) (s : σ) : ListM m α :=
-L.run s |>.map (·.1)
+L.runState s |>.map (·.1)
 
 section Alternative
 variable [Alternative m]
