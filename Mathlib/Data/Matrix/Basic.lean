@@ -749,7 +749,6 @@ section NonUnitalNonAssocSemiringDecidable
 
 variable [DecidableEq m] [NonUnitalNonAssocSemiring α] (u v w : m → α)
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:635:2: warning: expanding binder collection (j «expr ≠ » i) -/
 @[simp]
 theorem diagonal_dotProduct (i : m) : diagonal v i ⬝ᵥ w = v i * w i := by
   have : ∀ (j) (_ : j ≠ i), diagonal v i j * w j = 0 := fun j hij => by
@@ -757,7 +756,6 @@ theorem diagonal_dotProduct (i : m) : diagonal v i ⬝ᵥ w = v i * w i := by
   convert Finset.sum_eq_single i (fun j _ => this j) _ using 1 <;> simp
 #align matrix.diagonal_dot_product Matrix.diagonal_dotProduct
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:635:2: warning: expanding binder collection (j «expr ≠ » i) -/
 @[simp]
 theorem dotProduct_diagonal (i : m) : v ⬝ᵥ diagonal w i = v i * w i := by
   have : ∀ (j) (_ : j ≠ i), v j * diagonal w i j = 0 := fun j hij => by
@@ -765,7 +763,6 @@ theorem dotProduct_diagonal (i : m) : v ⬝ᵥ diagonal w i = v i * w i := by
   convert Finset.sum_eq_single i (fun j _ => this j) _ using 1 <;> simp
 #align matrix.dot_product_diagonal Matrix.dotProduct_diagonal
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:635:2: warning: expanding binder collection (j «expr ≠ » i) -/
 @[simp]
 theorem dotProduct_diagonal' (i : m) : (v ⬝ᵥ fun j => diagonal w j i) = v i * w i := by
   have : ∀ (j) (_ : j ≠ i), v j * diagonal w j i = 0 := fun j hij => by
@@ -773,7 +770,6 @@ theorem dotProduct_diagonal' (i : m) : (v ⬝ᵥ fun j => diagonal w j i) = v i 
   convert Finset.sum_eq_single i (fun j _ => this j) _ using 1 <;> simp
 #align matrix.dot_product_diagonal' Matrix.dotProduct_diagonal'
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:635:2: warning: expanding binder collection (j «expr ≠ » i) -/
 @[simp]
 theorem single_dotProduct (x : α) (i : m) : Pi.single i x ⬝ᵥ v = x * v i := by
   have : ∀ (j) (_ : j ≠ i), Pi.single (f := fun _ => α) i x j * v j = 0 := fun j hij => by
@@ -782,7 +778,6 @@ theorem single_dotProduct (x : α) (i : m) : Pi.single i x ⬝ᵥ v = x * v i :=
 #align matrix.single_dot_product Matrix.single_dotProduct
 -- Porting note: (implicit arg) added `(f := fun _ => α)`
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:635:2: warning: expanding binder collection (j «expr ≠ » i) -/
 @[simp]
 theorem dotProduct_single (x : α) (i : m) : v ⬝ᵥ Pi.single i x = v i * x := by
   have : ∀ (j) (_ : j ≠ i), v j * Pi.single (f := fun _ => α) i x j = 0 := fun j hij => by
@@ -1618,12 +1613,6 @@ section NonUnitalNonAssocSemiring
 
 variable [NonUnitalNonAssocSemiring α]
 
-/- warning: matrix.mul_vec -> Matrix.mulVec is a dubious translation:
-lean 3 declaration is
-  forall {m : Type.{u2}} {n : Type.{u3}} {α : Type.{u1}} [_inst_1 : NonUnitalNonAssocSemiring.{u1} α] [_inst_2 : Fintype.{u3} n], (Matrix.{u2, u3, u1} m n α) -> (n -> α) -> m -> α
-but is expected to have type
-  forall {m : Type.{u1}} {n : Type.{u2}} {α : Type.{u3}} [_inst_1 : NonUnitalNonAssocSemiring.{u3} α] [_inst_2 : Fintype.{u2} n], (Matrix.{u1, u2, u3} m n α) -> (n -> α) -> m -> α
-Case conversion may be inaccurate. Consider using '#align matrix.mul_vec Matrix.mulVecₓ'. -/
 /-- `mul_vec M v` is the matrix-vector product of `M` and `v`, where `v` is seen as a column matrix.
     Put another way, `mul_vec M v` is the vector whose entries
     are those of `M ⬝ col v` (see `col_mul_vec`). -/
@@ -1631,12 +1620,6 @@ def mulVec [Fintype n] (M : Matrix m n α) (v : n → α) : m → α
   | i => (fun j => M i j) ⬝ᵥ v
 #align matrix.mul_vec Matrix.mulVec
 
-/- warning: matrix.vec_mul -> Matrix.vecMul is a dubious translation:
-lean 3 declaration is
-  forall {m : Type.{u2}} {n : Type.{u3}} {α : Type.{u1}} [_inst_1 : NonUnitalNonAssocSemiring.{u1} α] [_inst_2 : Fintype.{u2} m], (m -> α) -> (Matrix.{u2, u3, u1} m n α) -> n -> α
-but is expected to have type
-  forall {m : Type.{u1}} {n : Type.{u2}} {α : Type.{u3}} [_inst_1 : NonUnitalNonAssocSemiring.{u3} α] [_inst_2 : Fintype.{u1} m], (m -> α) -> (Matrix.{u1, u2, u3} m n α) -> n -> α
-Case conversion may be inaccurate. Consider using '#align matrix.vec_mul Matrix.vecMulₓ'. -/
 /-- `vecMul v M` is the vector-matrix product of `v` and `M`, where `v` is seen as a row matrix.
     Put another way, `vecMul v M` is the vector whose entries
     are those of `row v ⬝ M` (see `row_vecMul`). -/
