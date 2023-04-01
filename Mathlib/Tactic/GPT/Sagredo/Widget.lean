@@ -92,5 +92,5 @@ syntax (name := makeRunnerTac) "sagredo!" : tactic
     savePanelWidgetInfo tk ``runnerWidget (rpcEncode data)
   | _ => throwUnsupportedSyntax
 
-example : 2 + 2 = 4 := by
-  sagredo!
+/--please use the refl tactic -/
+example : 2 + 2 = 4 := by sagredo!

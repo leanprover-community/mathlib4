@@ -5,21 +5,23 @@ Authors: Scott Morrison, Zhangir Azerbayev
 -/
 import Mathlib.Tactic.GPT.Sagredo.Monad
 import Mathlib.Data.ListM.Basic
-
+import Mathlib.Tactic.GPT.levenshtein
 open Lean
 
 namespace Mathlib.Tactic.GPT.Sagredo
 
 inductive MessageType
   | unsolvedGoals | usesSorry | unknownTactic | other
-deriving BEq
+deriving BEq, Repr
 
+deriving instance Repr for MessageSeverity
 structure ParsedMessage where
   type : MessageType
   severity : MessageSeverity
   lines : List String
   onLine : Nat
   span : String
+deriving Repr
 
 def ParsedMessage.of (code : String) (m : Lean.Message) : IO ParsedMessage := do
   let lines := (← m.data.toString).splitOn "\n"
@@ -70,7 +72,26 @@ def feedback : M IO String := do
   let errors ← (← errors).mapM (fun e => do ParsedMessage.of (← latestCodeBlock).body e)
   -- We now look at the errors, and given different responses depending on what we see.
   let (unsolvedGoals, otherErrors) := errors.partition fun e => e.type == .unsolvedGoals
+  let (unknownTactics, _) := errors.partition fun e => e.type == .unknownTactic
   let (_usesSorry, otherErrors) := otherErrors.partition fun e => e.type == .usesSorry
+
+  let badTactics := unknownTactics.map (fun t => t.span)
+  let tacs := ["all_goals", "any_goals", "apply", "assumption", "by_cases", "by_contra", "cases'", "congr", "contradiction", "contrapose", "convert", "convert_to", "exact", "exfalso", "field_simp", "have", "aesop", "induction'", "intro", "iterate", "left", "linarith", "push_neg", "rcases", "rfl", "repeat", "right", "ring", "rintro", "rw", "specialize", "constructor", "simp", "swap", "symm", "tauto", "try", "unfold", "use"]
+
+  let nearestToBad := fun badTac => (tacs.foldl (fun (best, dist) new =>
+    let newDist := lev badTac new
+    if lev badTac new < dist then
+      (new, newDist)
+    else
+      (best, dist))
+    ("", 5)).1
+
+  let replacements := badTactics.map nearestToBad
+  let tacticSuggetions :=
+    List.foldl
+    (fun currentStr (bt, rt) => currentStr ++ s!"You used {bt}, but it looks like you maybe meant {rt}. Try that instead\n")
+    ""
+    (badTactics.zip replacements)
 
   match otherErrors with
   | [] => match ← sorries with
@@ -89,6 +110,7 @@ def feedback : M IO String := do
       -- TODO mention the later errors?
       (otherErrors.head?.map (fun p => p.toString)).get! ++
       "\n\nPlease describe how you are going to fix this error and try again.\n" ++
+      tacticSuggetions ++
       "Change the tactic step where there is an error, but do not add any additional tactic steps."
 
 def systemPrompt : String :=
