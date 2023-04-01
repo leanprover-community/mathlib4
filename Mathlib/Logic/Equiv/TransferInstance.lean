@@ -11,6 +11,7 @@ Authors: Johannes Hölzl
 import Mathlib.Algebra.Algebra.Equiv
 import Mathlib.Algebra.Field.Basic
 import Mathlib.Logic.Equiv.Defs
+import Mathlib.Tactic.LibrarySearch
 
 /-!
 # Transfer algebraic structures across `Equiv`s
@@ -305,7 +306,10 @@ protected def addMonoidWithOne [AddMonoidWithOne β] : AddMonoidWithOne α :=
   { e.addMonoid, e.One with
     natCast := fun n => e.symm n
     natCast_zero := show e.symm _ = _ by simp [zero_def]; rfl
-    natCast_succ := fun n => show e.symm _ = e.symm (e (e.symm _) + _) by simp [add_def, one_def] }
+    natCast_succ := fun n => show e.symm _ = e.symm (e (e.symm _) + _) by
+      simp only [Nat.cast_add, Nat.cast_one, apply_symm_apply]
+      have : e 1 = 1 := Iff.mpr (apply_eq_iff_eq_symm_apply _) rfl
+      rw [this] }
 #align equiv.add_monoid_with_one Equiv.addMonoidWithOne
 
 /-- Transfer `AddGroupWithOne` across an `Equiv` -/
