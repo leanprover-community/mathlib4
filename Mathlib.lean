@@ -975,6 +975,7 @@ import Mathlib.Data.Set.Intervals.SurjOn
 import Mathlib.Data.Set.Intervals.UnorderedInterval
 import Mathlib.Data.Set.Intervals.WithBotTop
 import Mathlib.Data.Set.Lattice
+import Mathlib.Data.Set.List
 import Mathlib.Data.Set.MulAntidiagonal
 import Mathlib.Data.Set.NAry
 import Mathlib.Data.Set.Opposite
