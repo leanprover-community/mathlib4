@@ -378,7 +378,8 @@ instance subsingleton_of_empty_left [IsEmpty m] : Subsingleton (Matrix m n α) :
 
 instance subsingleton_of_empty_right [IsEmpty n] : Subsingleton (Matrix m n α) :=
   ⟨fun M N => by
-    ext i j
+    ext
+    rename_i i j -- Porting note: `ext` does not like `Matrix.ext` introducing two vars at once.
     exact isEmptyElim j⟩
 #align matrix.subsingleton_of_empty_right Matrix.subsingleton_of_empty_right
 
@@ -443,7 +444,8 @@ theorem diagonal_zero [Zero α] : (diagonal fun _ => 0 : Matrix n n α) = 0 := b
 
 @[simp]
 theorem diagonal_transpose [Zero α] (v : n → α) : (diagonal v)ᵀ = diagonal v := by
-  ext i j
+  ext
+  rename_i i j -- Porting note: `ext` does not like `Matrix.ext` introducing two vars at once.
   by_cases h : i = j
   · simp [h, transpose]
   · simp [h, transpose, diagonal_apply_ne' _ h]
@@ -452,7 +454,8 @@ theorem diagonal_transpose [Zero α] (v : n → α) : (diagonal v)ᵀ = diagonal
 @[simp]
 theorem diagonal_add [AddZeroClass α] (d₁ d₂ : n → α) :
     diagonal d₁ + diagonal d₂ = diagonal fun i => d₁ i + d₂ i := by
-  ext i j
+  ext
+  rename_i i j -- Porting note: `ext` does not like `Matrix.ext` introducing two vars at once.
   by_cases h : i = j <;>
   simp [h]
 #align matrix.diagonal_add Matrix.diagonal_add
@@ -460,7 +463,8 @@ theorem diagonal_add [AddZeroClass α] (d₁ d₂ : n → α) :
 @[simp]
 theorem diagonal_smul [Monoid R] [AddMonoid α] [DistribMulAction R α] (r : R) (d : n → α) :
     diagonal (r • d) = r • diagonal d := by
-  ext i j
+  ext
+  rename_i i j -- Porting note: `ext` does not like `Matrix.ext` introducing two vars at once.
   by_cases h : i = j <;>
   simp [h]
 #align matrix.diagonal_smul Matrix.diagonal_smul
@@ -979,7 +983,8 @@ theorem mul_diagonal [Fintype n] [DecidableEq n] (d : n → α) (M : Matrix m n 
 @[simp]
 theorem diagonal_mul_diagonal [Fintype n] [DecidableEq n] (d₁ d₂ : n → α) :
     diagonal d₁ ⬝ diagonal d₂ = diagonal fun i => d₁ i * d₂ i := by
-  ext i j
+  ext
+  rename_i i j -- Porting note: `ext` does not like `Matrix.ext` introducing two vars at once.
   by_cases i = j <;>
   simp [h]
 #align matrix.diagonal_mul_diagonal Matrix.diagonal_mul_diagonal
@@ -1069,7 +1074,8 @@ instance nonAssocSemiring [Fintype n] [DecidableEq n] : NonAssocSemiring (Matrix
       ext
       simp [Nat.cast]
     natCast_succ := fun n => by
-      ext i j
+      ext
+      rename_i i j -- Porting note: `ext` does not like `Matrix.ext` introducing two vars at once.
       by_cases i = j <;>
       simp [Nat.cast, *]}
 
@@ -1914,7 +1920,8 @@ theorem transpose_zero [Zero α] : (0 : Matrix m n α)ᵀ = 0 := by
 
 @[simp]
 theorem transpose_one [DecidableEq n] [Zero α] [One α] : (1 : Matrix n n α)ᵀ = 1 := by
-  ext i j
+  ext
+  rename_i i j -- Porting note: `ext` does not like `Matrix.ext` introducing two vars at once.
   rw [transpose_apply, ← diagonal_one]
   by_cases i = j
   · simp only [h, diagonal_apply_eq]
@@ -2714,39 +2721,41 @@ theorem updateColumn_apply [DecidableEq n] {j' : n} :
 @[simp]
 theorem updateColumn_subsingleton [Subsingleton n] (A : Matrix m n R) (i : n) (b : m → R) :
     A.updateColumn i b = (col b).submatrix id (Function.const n ()) := by
-  ext (x y)
+  ext
+  rename_i x y -- Porting note: `ext` does not like `Matrix.ext` introducing two vars at once.
   simp [updateColumn_apply, Subsingleton.elim i y]
 #align matrix.update_column_subsingleton Matrix.updateColumn_subsingleton
 
 @[simp]
 theorem updateRow_subsingleton [Subsingleton m] (A : Matrix m n R) (i : m) (b : n → R) :
     A.updateRow i b = (row b).submatrix (Function.const m ()) id := by
-  ext (x y)
+  ext
+  rename_i x y -- Porting note: `ext` does not like `Matrix.ext` introducing two vars at once.
   simp [updateColumn_apply, Subsingleton.elim i x]
 #align matrix.update_row_subsingleton Matrix.updateRow_subsingleton
 
 theorem map_updateRow [DecidableEq m] (f : α → β) :
     map (updateRow M i b) f = updateRow (M.map f) i (f ∘ b) := by
-  ext (i' j')
+  ext
   rw [updateRow_apply, map_apply, map_apply, updateRow_apply]
   exact apply_ite f _ _ _
 #align matrix.map_update_row Matrix.map_updateRow
 
 theorem map_updateColumn [DecidableEq n] (f : α → β) :
     map (updateColumn M j c) f = updateColumn (M.map f) j (f ∘ c) := by
-  ext (i' j')
+  ext
   rw [updateColumn_apply, map_apply, map_apply, updateColumn_apply]
   exact apply_ite f _ _ _
 #align matrix.map_update_column Matrix.map_updateColumn
 
 theorem updateRow_transpose [DecidableEq n] : updateRow Mᵀ j c = (updateColumn M j c)ᵀ := by
-  ext (i' j)
+  ext
   rw [transpose_apply, updateRow_apply, updateColumn_apply]
   rfl
 #align matrix.update_row_transpose Matrix.updateRow_transpose
 
 theorem updateColumn_transpose [DecidableEq m] : updateColumn Mᵀ i b = (updateRow M i b)ᵀ := by
-  ext (i' j)
+  ext
   rw [transpose_apply, updateRow_apply, updateColumn_apply]
   rfl
 #align matrix.update_column_transpose Matrix.updateColumn_transpose
@@ -2778,7 +2787,8 @@ theorem updateColumn_eq_self [DecidableEq n] (A : Matrix m n α) (i : n) :
 
 theorem diagonal_updateColumn_single [DecidableEq n] [Zero α] (v : n → α) (i : n) (x : α) :
     (diagonal v).updateColumn i (Pi.single i x) = diagonal (Function.update v i x) := by
-  ext (j k)
+  ext
+  rename_i j k -- Porting note: `ext` does not like `Matrix.ext` introducing two vars at once.
   obtain rfl | hjk := eq_or_ne j k
   · rw [diagonal_apply_eq]
     obtain rfl | hji := eq_or_ne j i
