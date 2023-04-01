@@ -13,14 +13,14 @@ Mostly additional functions to deal with `InfoTree`.
 
 open Lean Elab Meta
 
--- Weird, why isn't this available in core already?
-instance [MonadLiftT m n] : MonadLift (StateT α m) (StateT α n) where
-  monadLift := fun f s => f s
+-- -- Weird, why isn't this available in core already?
+-- instance [MonadLiftT m n] : MonadLiftT (StateT α m) (StateT α n) where
+--   monadLift := fun f s => f s
 
 namespace Lean.Syntax
 
 -- TODO better implementation
-def isSorry (stx : Syntax) : Bool := s!"{stx}" = "(Tactic.tacticSorry \"sorry\")"
+def isTacticSorry (stx : Syntax) : Bool := s!"{stx}" = "(Tactic.tacticSorry \"sorry\")"
 
 end Lean.Syntax
 
@@ -50,7 +50,7 @@ match t with
 each equipped with its relevant `ContextInfo`. -/
 partial def findSorryNodes (t : InfoTree) : List (TacticInfo × ContextInfo) :=
 let infos := t.findAllInfo none fun i => match i with
-  | .ofTacticInfo i => i.stx.isSorry
+  | .ofTacticInfo i => i.stx.isTacticSorry
   | _ => false
 infos.filterMap fun p => match p with
 | (.ofTacticInfo i, some ctx) => (i, ctx)
