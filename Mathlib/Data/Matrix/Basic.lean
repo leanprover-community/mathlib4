@@ -1195,14 +1195,14 @@ theorem coe_scalar : (scalar n : α → Matrix n n α) = fun a => a • (1 : Mat
 #align matrix.coe_scalar Matrix.coe_scalar
 
 theorem scalar_apply_eq (a : α) (i : n) : scalar n a i i = a := by
+  -- Porting note: replaced `Pi.smul_apply` with the new `Matrix.smul_apply`
   simp only [coe_scalar, Matrix.smul_apply, one_apply_eq, smul_eq_mul, mul_one]
 #align matrix.scalar_apply_eq Matrix.scalar_apply_eq
--- Porting note: replaced `Pi.smul_apply` with the new `Matrix.smul_apply`
 
 theorem scalar_apply_ne (a : α) (i j : n) (h : i ≠ j) : scalar n a i j = 0 := by
+  -- Porting note: replaced `Pi.smul_apply` with the new `Matrix.smul_apply`
   simp only [h, coe_scalar, one_apply_ne, Ne.def, not_false_iff, Matrix.smul_apply, smul_zero]
 #align matrix.scalar_apply_ne Matrix.scalar_apply_ne
--- Porting note: replaced `Pi.smul_apply` with the new `Matrix.smul_apply`
 
 theorem scalar_inj [Nonempty n] {r s : α} : scalar n r = scalar n s ↔ r = s := by
   constructor
