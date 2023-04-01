@@ -240,21 +240,21 @@ If `C` has an initial object and binary coproducts, then it has a coproduct for 
 This is a helper lemma for `hasCofiniteProductsOfHasBinaryAndTerminal`, which is more general
 than this.
 -/
-private theorem has_coproduct_fin : ∀ (n : ℕ) (f : Fin n → C), HasCoproduct f
+private theorem hasCoproduct_fin : ∀ (n : ℕ) (f : Fin n → C), HasCoproduct f
   | 0 => fun f =>
     by
     letI : HasColimitsOfShape (Discrete (Fin 0)) C :=
       hasColimitsOfShape_of_equivalence (Discrete.equivalence.{0} finZeroEquiv'.symm)
     infer_instance
   | n + 1 => fun f => by
-    haveI := has_coproduct_fin n
+    haveI := hasCoproduct_fin n
     apply
       HasColimit.mk ⟨_, extendCofanIsColimit f (colimit.isColimit _) (colimit.isColimit _)⟩
 
 /-- If `C` has an initial object and binary coproducts, then it has finite coproducts. -/
 theorem hasFiniteCoproducts_of_has_binary_and_initial : HasFiniteCoproducts C := by
   refine' ⟨fun n => ⟨fun K => _⟩⟩
-  letI := has_coproduct_fin n fun n => K.obj ⟨n⟩
+  letI := hasCoproduct_fin n fun n => K.obj ⟨n⟩
   let that : K ≅ Discrete.functor fun n => K.obj ⟨n⟩ := Discrete.natIso fun ⟨i⟩ => Iso.refl _
   apply @hasColimitOfIso _ _ _ _ _ _ this that
 #align category_theory.has_finite_coproducts_of_has_binary_and_initial CategoryTheory.hasFiniteCoproducts_of_has_binary_and_initial
