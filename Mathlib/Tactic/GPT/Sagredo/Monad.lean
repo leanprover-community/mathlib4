@@ -69,7 +69,7 @@ def recentProgress (k : Nat) : M IO Bool := do
   let lines ← (← get).solutions |>.mapM fun ⟨c, a⟩ => linesBeforeError c a
   pure <| lines.drop k |>.all fun a => lines.take k |>.any fun b => b > a
 
-def lastResponse : M m String := do
+def latestResponse : M m String := do
   pure <| (← get).log.find? (·.role == .assistant) |>.map (·.content) |>.getD ""
 
 def recordMessage (msg : Message) : M m Unit :=
@@ -134,11 +134,13 @@ def runAndLog (stx : Syntax) (driver : M m α) : M m (String × α) := do
 
 variable [MonadEnv m]
 
-def discussDeclContaining (stx : Syntax) (preEdit : String → String) (driver : M m α) :
-    m (String × α) := do
+def createState (stx : Syntax) (preEdit : String → String) : m State := do
   let (preamble, decl) ← getSourceUpTo stx
-  let preambleAnalysis ← analyzeCode (←getEnv) ""
+  let preambleAnalysis ← analyzeCode (← getEnv) ""
   let editedDecl := preEdit decl
   let analysis ← liftM <| analyzeCode preambleAnalysis.env editedDecl
-  StateT.run' (runAndLog stx driver)
-    ⟨⟨[]⟩, preamble, preambleAnalysis, [({ text := editedDecl }, analysis)]⟩
+  pure ⟨⟨[]⟩, preamble, preambleAnalysis, [({ text := editedDecl }, analysis)]⟩
+
+def discussDeclContaining (stx : Syntax) (preEdit : String → String) (driver : M m α) :
+    m (String × α) := do
+  StateT.run' (runAndLog stx driver) (← createState stx preEdit)
