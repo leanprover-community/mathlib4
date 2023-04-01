@@ -263,6 +263,8 @@ theorem Quotient.mkₐ_ker (I : Ideal A) : RingHom.ker (Quotient.mkₐ R₁ I : 
 
 variable {R₁}
 
+-- Porting note: cannot find Algebra R A
+set_option synthInstance.etaExperiment true in
 /-- `Ideal.quotient.lift` as an `AlgHom`. -/
 def Quotient.liftₐ (I : Ideal A) (f : A →ₐ[R₁] B) (hI : ∀ a : A, a ∈ I → f a = 0) :
     A ⧸ I →ₐ[R₁] B :=
@@ -311,26 +313,19 @@ theorem kerLiftAlg_mk (f : A →ₐ[R₁] B) (a : A) :
   rfl
 #align ideal.ker_lift_alg_mk Ideal.kerLiftAlg_mk
 
--- Porting note: this goes forever without some hints
-set_option maxHeartbeats 0 in
-set_option synthInstance.maxHeartbeats 0 in
---private instance test {f : A →ₐ[R₁] B} : Algebra R₁ ( A ⧸ RingHom.ker f):= inferInstance
+-- Porting note: short circuit tc synth and use unification (_)
 @[simp]
 theorem kerLiftAlg_toRingHom (f : A →ₐ[R₁] B) :
-    -- (kerLiftAlg f).toRingHom = RingHom.kerLift f := rfl
-    @AlgHom.toRingHom (R := R₁) (A := A ⧸ RingHom.ker f) (B := B) _ _ _ _ _ (kerLiftAlg f)
+    @AlgHom.toRingHom (R := R₁) (A := A ⧸ RingHom.ker f) (B := B) _ (_) _ (_) _ (kerLiftAlg f)
       = RingHom.kerLift (R := A) (S := B)
-        (@AlgHom.toRingHom (R := R₁) (A := A) (B := B) _ _ _ _ _ f) := by sorry
+        (@AlgHom.toRingHom (R := R₁) (A := A) (B := B) _ _ _ _ _ f) := rfl
 #align ideal.ker_lift_alg_to_ring_hom Ideal.kerLiftAlg_toRingHom
 
--- set_option maxHeartbeats 0 in
--- set_option synthInstance.maxHeartbeats 0 in
+-- Porting note: short circuit tc synth and use unification (_)
 /-- The induced algebra morphism from the quotient by the kernel is injective. -/
 theorem kerLiftAlg_injective (f : A →ₐ[R₁] B) : Function.Injective (kerLiftAlg f) :=
-  -- RingHom.kerLift_injective f
-  sorry
+  @RingHom.kerLift_injective A B (_) (_) f
 #align ideal.ker_lift_alg_injective Ideal.kerLiftAlg_injective
-
 
 /-- The **first isomorphism** theorem for algebras, computable version. -/
 def quotientKerAlgEquivOfRightInverse {f : A →ₐ[R₁] B} {g : B → A}
@@ -443,18 +438,17 @@ theorem quotientMap_surjective {J : Ideal R} {I : Ideal S} {f : R →+* S} {H : 
   ⟨(Quotient.mk J) y, by simp [hx, hy]⟩
 #align ideal.quotient_map_surjective Ideal.quotientMap_surjective
 
--- set_option maxHeartbeats 0 in
 /-- Commutativity of a square is preserved when taking quotients by an ideal. -/
 theorem comp_quotientMap_eq_of_comp_eq {R' S' : Type _} [CommRing R'] [CommRing S'] {f : R →+* S}
     {f' : R' →+* S'} {g : R →+* R'} {g' : S →+* S'} (hfg : f'.comp g = g'.comp f) (I : Ideal S') :
+    -- Porting note: was losing track of I
+    let leq := le_of_eq (_root_.trans (comap_comap (I := I) f g') (hfg ▸ comap_comap (I := I) g f'))
     (quotientMap I g' le_rfl).comp (quotientMap (I.comap g') f le_rfl) =
-      (quotientMap I f' le_rfl).comp
-        (quotientMap (I.comap f') g
-          (le_of_eq (_root_.trans (comap_comap f g') (hfg ▸ comap_comap g f')))) := by
-  refine' RingHom.ext fun a => _
+    (quotientMap I f' le_rfl).comp (quotientMap (I.comap f') g leq) := by
+  refine RingHom.ext fun a => ?_
   obtain ⟨r, rfl⟩ := Quotient.mk_surjective a
-  simp only [RingHom.comp_apply, quotient_map_mk]
-  exact congr_arg (Quotient.mk' I) (trans (g'.comp_apply f r).symm (hfg ▸ f'.comp_apply g r))
+  simp only [RingHom.comp_apply, quotientMap_mk]
+  exact congr_arg (Ideal.Quotient.mk I) (_root_.trans (g'.comp_apply f r).symm (hfg ▸ f'.comp_apply g r))
 #align ideal.comp_quotient_map_eq_of_comp_eq Ideal.comp_quotientMap_eq_of_comp_eq
 
 /-- The algebra hom `A/I →+* B/J` induced by an algebra hom `f : A →ₐ[R₁] B` with `I ≤ f⁻¹(J)`. -/
@@ -621,6 +615,7 @@ theorem quotQuotEquivQuotSup_symm_quotQuotMk (x : R) :
 
 -- Porting note: failed to synth RingHomClass
 set_option synthInstance.etaExperiment true in
+set_option trace.Meta.synthInstance true in
 /-- The obvious isomorphism `(R/I)/J' → (R/J)/I' `   -/
 def quotQuotEquivComm : (R ⧸ I) ⧸ J.map (Ideal.Quotient.mk I) ≃+*
     (R ⧸ J) ⧸ I.map (Ideal.Quotient.mk J) :=
@@ -643,10 +638,13 @@ theorem quotQuotEquivComm_comp_quotQuotMk :
   RingHom.ext <| quotQuotEquivComm_quotQuotMk I J
 #align double_quot.quot_quot_equiv_comm_comp_quot_quot_mk DoubleQuot.quotQuotEquivComm_comp_quotQuotMk
 
+-- set_option synthInstance.maxHeartbeats 0 in
 -- Porting note: mismatched instances
+set_option trace.Meta.synthInstance true in
+set_option trace.Meta.isDefEq true in
 set_option synthInstance.etaExperiment true in
 @[simp]
-theorem quotQuotEquivComm_symm : (quotQuotEquivComm I J).symm = quotQuotEquivComm J I :=
+theorem quotQuotEquivComm_symm : RingEquiv.symm (quotQuotEquivComm I J) = quotQuotEquivComm J I :=
   rfl
 #align double_quot.quot_quot_equiv_comm_symm DoubleQuot.quotQuotEquivComm_symm
 
