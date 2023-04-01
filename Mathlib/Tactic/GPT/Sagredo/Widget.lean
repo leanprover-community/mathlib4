@@ -56,11 +56,11 @@ def runnerWidget : Component RPCData where
         rs.call('nextQuery', data)
           .then(resp => {
             const [query, data] = resp
-            setContents(currS => currS + '\\n' + query)
+            setContents(currS => currS + '\\n---\\n' + query)
             rs.call('runQuery', data)
               .then(resp => {
                 const [text, [sol, data]] = resp
-                setContents(currS => currS + '\\n' + text)
+                setContents(currS => currS + '\\n---\\n' + text)
                 callSagredo(data)
               }) })
           .catch(e => setContents(mapRpcError(e).message))
