@@ -901,11 +901,11 @@ protected theorem Finite.prod (hs : s.Finite) (ht : t.Finite) : (s ×ˢ t : Set 
 #align set.finite.prod Set.Finite.prod
 
 theorem Finite.of_prod_left (h : (s ×ˢ t : Set (α × β)).Finite) : t.Nonempty → s.Finite :=
-  fun ⟨b, hb⟩ => (h.image Prod.fst).Subset fun a ha => ⟨(a, b), ⟨ha, hb⟩, rfl⟩
+  fun ⟨b, hb⟩ => (h.image Prod.fst).subset fun a ha => ⟨(a, b), ⟨ha, hb⟩, rfl⟩
 #align set.finite.of_prod_left Set.Finite.of_prod_left
 
 theorem Finite.of_prod_right (h : (s ×ˢ t : Set (α × β)).Finite) : s.Nonempty → t.Finite :=
-  fun ⟨a, ha⟩ => (h.image Prod.snd).Subset fun b hb => ⟨(a, b), ⟨ha, hb⟩, rfl⟩
+  fun ⟨a, ha⟩ => (h.image Prod.snd).subset fun b hb => ⟨(a, b), ⟨ha, hb⟩, rfl⟩
 #align set.finite.of_prod_right Set.Finite.of_prod_right
 
 protected theorem Infinite.prod_left (hs : s.Infinite) (ht : t.Nonempty) : (s ×ˢ t).Infinite :=
