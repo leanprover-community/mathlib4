@@ -125,7 +125,8 @@ def mkMutualBlock (ctx : Deriving.Context) : TermElabM Syntax := do
   `(mutual $auxDefs:command* end)
 
 open TSyntax.Compat in
-def mkInstanceCmds (ctx : Deriving.Context) (typeNames : Array Name) : TermElabM (Array Command) := do
+def mkInstanceCmds (ctx : Deriving.Context) (typeNames : Array Name) :
+    TermElabM (Array Command) := do
   let mut instances := #[]
   for i in [:ctx.typeInfos.size] do
     let indVal       := ctx.typeInfos[i]!
