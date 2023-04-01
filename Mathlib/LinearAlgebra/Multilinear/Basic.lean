@@ -318,38 +318,22 @@ def restr {k n : ℕ} (f : MultilinearMap R (fun _ : Fin n => M') M₂) (s : Fin
     (hk : s.card = k) (z : M') : MultilinearMap R (fun _ : Fin k => M') M₂
     where
   toFun v := f fun j => if h : j ∈ s then v ((FunLike.coe (s.orderIsoOfFin hk).symm) ⟨j, h⟩) else z
-  /- Porting note: The proofs of the following two lemmas used to only use simp and
-  `dite_comp_equiv_update`, but getting this lemma to apply takes a lot more work now -/
+  /- Porting note: The proofs of the following two lemmas used to only use `erw` followed by `simp`,
+  but it seems `erw` no longer unfolds or unifies well enough to work without more help. -/
   map_add' v i x y := by
-    dsimp only
-    have :
-      FunLike.coe (OrderIso.symm (Finset.orderIsoOfFin s hk)) =
-        FunLike.coe (Equiv.symm (Finset.orderIsoOfFin s hk).toEquiv) := rfl
-    have : ∀ x,
-      (fun j => if h : j ∈ s then update v i x
-        (FunLike.coe (OrderIso.symm (Finset.orderIsoOfFin s hk)) ⟨j,h⟩) else z)
-      = update (fun j =>
-        if h : j ∈ s then v (FunLike.coe (OrderIso.symm (Finset.orderIsoOfFin s hk)) ⟨j,h⟩) else z)
-          ((FunLike.coe (s.orderIsoOfFin hk).toEquiv) i) x := by
-        intro x
-        simp_rw [← Finset.mem_coe]
-        rw [this, dite_comp_equiv_update (s := s) (α := Fin n) (Finset.orderIsoOfFin s hk).toEquiv]
-    simp only [this, Finset.coe_orderIsoOfFin_apply, MultilinearMap.map_add]
+    have : FunLike.coe (s.orderIsoOfFin hk).symm = (s.orderIsoOfFin hk).toEquiv.symm := rfl
+    simp only [this]
+    erw [dite_comp_equiv_update' (s.orderIsoOfFin hk).toEquiv,
+      dite_comp_equiv_update' (s.orderIsoOfFin hk).toEquiv,
+      dite_comp_equiv_update' (s.orderIsoOfFin hk).toEquiv]
+    simp
   map_smul' v i c x := by
-    have :
-      FunLike.coe (OrderIso.symm (Finset.orderIsoOfFin s hk)) =
-        FunLike.coe (Equiv.symm (Finset.orderIsoOfFin s hk).toEquiv) := rfl
-    have : ∀ x,
-      (fun j => if h : j ∈ s then update v i x
-        (FunLike.coe (OrderIso.symm (Finset.orderIsoOfFin s hk)) ⟨j,h⟩) else z)
-      = update (fun j =>
-        if h : j ∈ s then v (FunLike.coe (OrderIso.symm (Finset.orderIsoOfFin s hk)) ⟨j,h⟩) else z)
-          ((FunLike.coe (s.orderIsoOfFin hk).toEquiv) i) x := by
-        intro x
-        simp_rw [← Finset.mem_coe]
-        rw [this, dite_comp_equiv_update (s := s) (α := Fin n) (Finset.orderIsoOfFin s hk).toEquiv]
-    simp_rw [dite_comp_equiv_update]
-    simp only [this, RelIso.coe_fn_toEquiv, Finset.coe_orderIsoOfFin_apply, MultilinearMap.map_smul]
+    have : FunLike.coe (s.orderIsoOfFin hk).symm = (s.orderIsoOfFin hk).toEquiv.symm := rfl
+    simp only [this]
+    erw [dite_comp_equiv_update' (s.orderIsoOfFin hk).toEquiv,
+      dite_comp_equiv_update' (s.orderIsoOfFin hk).toEquiv,
+      dite_comp_equiv_update' (s.orderIsoOfFin hk).toEquiv]
+    simp
 #align multilinear_map.restr MultilinearMap.restr
 
 /-- In the specific case of multilinear maps on spaces indexed by `Fin (n+1)`, where one can build
