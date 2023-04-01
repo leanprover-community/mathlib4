@@ -446,7 +446,8 @@ theorem comp_quotientMap_eq_of_comp_eq {R' S' : Type _} [CommRing R'] [CommRing 
   refine RingHom.ext fun a => ?_
   obtain ⟨r, rfl⟩ := Quotient.mk_surjective a
   simp only [RingHom.comp_apply, quotientMap_mk]
-  exact congr_arg (Ideal.Quotient.mk I) (_root_.trans (g'.comp_apply f r).symm (hfg ▸ f'.comp_apply g r))
+  exact congr_arg (Ideal.Quotient.mk I) (_root_.trans (g'.comp_apply f r).symm
+    (hfg ▸ f'.comp_apply g r))
 #align ideal.comp_quotient_map_eq_of_comp_eq Ideal.comp_quotientMap_eq_of_comp_eq
 
 /-- The algebra hom `A/I →+* B/J` induced by an algebra hom `f : A →ₐ[R₁] B` with `I ≤ f⁻¹(J)`. -/
@@ -649,7 +650,6 @@ theorem quotQuotEquivComm_symm : (quotQuotEquivComm I J).symm = quotQuotEquivCom
   ext r
   dsimp
   rfl
-
 #align double_quot.quot_quot_equiv_comm_symm DoubleQuot.quotQuotEquivComm_symm
 
 variable {I J}
@@ -724,7 +724,14 @@ theorem quotQuotEquivComm_algebraMap (x : R) :
   rfl
 #align double_quot.quot_quot_equiv_comm_algebra_map DoubleQuot.quotQuotEquivComm_algebraMap
 
+-- Porting note: timing out due to Lean4#2074
+attribute [nolint simpNF] Ideal.kerLiftAlg_toRingHom
+Ideal.quotientKerAlgEquivOfRightInverse.apply
+Ideal.QuotientKerAlgEquivOfRightInverseSymm.apply
+DoubleQuot.quotQuotEquivComm_comp_quotQuotMk
+DoubleQuot.quotQuotEquivComm_mk_mk
+
 end Algebra
 
 end DoubleQuot
-
+#lint
