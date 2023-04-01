@@ -33,7 +33,7 @@ Currently only `solveByElim` is implemented in terms of `backtrack`.
 open Lean
 
 /-- Visualize an `Except` using a checkmark or a cross. -/
-def exceptEmoji : Except ε α → String
+def Except.emoji : Except ε α → String
   | .error _ => crossEmoji
   | .ok _ => checkEmoji
 
@@ -107,6 +107,7 @@ run cfg.maxDepth goals []
   * `curr : List MVarId` the current list of unsolved goals.
   * `acc : List MVarId` a list of "suspended" goals, which will be returned as subgoals.
   -/
+  -- `acc` is intentionally a `List` rather than an `Array` so we can share across branches.
   run (n : Nat) (curr acc : List MVarId) : MetaM (List MVarId) := do
   match n with
   | 0 => do
@@ -133,7 +134,7 @@ run cfg.maxDepth goals []
   withTraceNode trace
     -- Note: the `addMessageContextFull` ensures we show the goal using the mvar context before
     -- the `do` block below runs, potentially unifying mvars in the goal.
-    (return m!"{exceptEmoji ·} working on: {← addMessageContextFull g}")
+    (return m!"{·.emoji} working on: {← addMessageContextFull g}")
     do
       -- Check if we should suspend the search here:
       if (← cfg.suspend g) then
