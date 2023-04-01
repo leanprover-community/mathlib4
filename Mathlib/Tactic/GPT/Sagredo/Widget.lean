@@ -1,3 +1,8 @@
+/-
+Copyright (c) 2023 Wojciech Nawrocki. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Wojciech Nawrocki, Scott Morrison
+-/
 import ProofWidgets.Component.Basic
 import Mathlib.Tactic.GPT.Sagredo.Dialog
 
@@ -90,6 +95,7 @@ syntax (name := makeRunnerTac) "sagredo!" : tactic
       }⟩}
     -- Save a widget together with a pointer to `props`.
     savePanelWidgetInfo tk ``runnerWidget (rpcEncode data)
+    liftMetaTactic fun g => do admitGoal g; pure []
   | _ => throwUnsupportedSyntax
 
 /--please use the refl tactic -/
