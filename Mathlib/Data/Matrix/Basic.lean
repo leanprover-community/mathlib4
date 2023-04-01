@@ -279,19 +279,19 @@ section NewSimpLemmas
 theorem zero_apply [Zero α] (i : m) (j : n) : (0 : Matrix m n α) i j = 0 := rfl
 
 @[simp]
-theorem add_apply [Add α] (i : m) (j : n) (A B : Matrix m n α) :
+theorem add_apply [Add α] (A B : Matrix m n α) (i : m) (j : n) :
   (A + B) i j = (A i j) + (B i j) := rfl
 
 @[simp]
-theorem smul_apply [SMul β α] (i : m) (j : n) (r : β) (A : Matrix m n α) :
+theorem smul_apply [SMul β α] (r : β) (A : Matrix m n α) (i : m) (j : n) :
   (r • A) i j = r • (A i j) := rfl
 
 @[simp]
-theorem sub_apply [Sub α] (i : m) (j : n) (A B : Matrix m n α) :
+theorem sub_apply [Sub α] (A B : Matrix m n α) (i : m) (j : n) :
   (A - B) i j = (A i j) - (B i j) := rfl
 
 @[simp]
-theorem neg_apply [Neg α] (i : m) (j : n) (A : Matrix m n α) :
+theorem neg_apply [Neg α] (A : Matrix m n α) (i : m) (j : n) :
   (-A) i j = -(A i j) := rfl
 
 end NewSimpLemmas
@@ -595,7 +595,7 @@ def diag (A : Matrix n n α) (i : n) : α :=
 -- Porting note: new, because of removed `simp` above.
 -- TODO: set as an equation lemma for `diag`, see mathlib4#3024
 @[simp]
-theorem diag_apply [Zero α] (A : Matrix n n α) (i) : diag A i = A i i :=
+theorem diag_apply (A : Matrix n n α) (i) : diag A i = A i i :=
   rfl
 
 @[simp]
