@@ -41,7 +41,7 @@ unsafe instance : EmptyCollection (ListM m α) := ⟨nil⟩
 /-- The implementation of `ForIn`, which enables `for a in L do ...` notation. -/
 @[specialize] protected unsafe def forIn [Monad m] [Monad n] [MonadLiftT m n]
     (as : ListM m α) (init : δ) (f : α → δ → n (ForInStep δ)) : n δ :=
-match as with
+  match as with
   | nil => pure init
   | cons l => do match ← l with
     | (none, t) => t.forIn init f
@@ -61,7 +61,7 @@ variable [Monad m]
 
 /-- Construct a `ListM` by iteration. (`m` must be a stateful monad for this to be useful.) -/
 unsafe def iterate (f : m α) : ListM m α :=
-cons do pure (← f, iterate f)
+  cons do pure (← f, iterate f)
 
 /-- Repeatedly apply a function `f : α → m (α × List β)` to an initial `a : α`,
 accumulating the elements of the resulting `List β` as a single monadic lazy list.
@@ -69,20 +69,18 @@ accumulating the elements of the resulting `List β` as a single monadic lazy li
 (This variant allows starting with a specified `List β` of elements, as well. )-/
 unsafe def fixl_with [Alternative m] (f : α → m (α × List β)) : α → List β → ListM m β
   | s, b :: rest => cons <| pure (some b, fixl_with f s rest)
-  | s, [] =>
-  cons <|
-    (do
-      let (s', l) ← f s
-      match l with
-        | b :: rest => pure (some b, fixl_with f s' rest)
-        | [] => pure (none, fixl_with f s' [])) <|>
-      pure (none, nil)
+  | s, [] => cons <| (do
+    let (s', l) ← f s
+    match l with
+      | b :: rest => pure (some b, fixl_with f s' rest)
+      | [] => pure (none, fixl_with f s' [])) <|>
+    pure (none, nil)
 #align tactic.mllist.fixl_with ListM.fixl_with
 
 /-- Repeatedly apply a function `f : α → m (α × List β)` to an initial `a : α`,
 accumulating the elements of the resulting `List β` as a single monadic lazy list. -/
 unsafe def fixl [Alternative m] (f : α → m (α × List β)) (s : α) : ListM m β :=
-fixl_with f s []
+  fixl_with f s []
 #align tactic.mllist.fixl ListM.fixl
 
 /-- Deconstruct a `ListM`, returning inside the monad an optional pair `α × ListM m α`
@@ -97,7 +95,7 @@ unsafe def uncons {α : Type u} : ListM m α → m (Option (α × ListM m α))
 
 /-- Compute, inside the monad, whether a `ListM` is empty. -/
 unsafe def isEmpty {α : Type u} (xs : ListM m α) : m (ULift Bool) :=
-(ULift.up ∘ Option.isSome) <$> uncons xs
+  (ULift.up ∘ Option.isSome) <$> uncons xs
 #align tactic.mllist.empty ListM.isEmpty
 
 /-- Convert a `List` to a `ListM`. -/
@@ -150,28 +148,26 @@ unsafe def drop : ListM m α → Nat → ListM m α
 
 /-- Apply a function which returns values in the monad to every element of a `ListM`. -/
 unsafe def mapM {α β : Type u} (f : α → m β) (L : ListM m α) : ListM m β :=
-cons do
-  match ← uncons L with
+  cons do match ← uncons L with
   | some (x, xs) => return (← f x, mapM f xs)
   | none => return (none, empty)
 #align tactic.mllist.mmap ListM.mapM
 
 /-- Apply a function to every element of a `ListM`. -/
 unsafe def map {α β : Type u} (f : α → β) (L : ListM m α) : ListM m β :=
-L.mapM fun a => pure (f a)
+  L.mapM fun a => pure (f a)
 #align tactic.mllist.map ListM.map
 
 /-- Filter a `ListM` using a monadic function. -/
 unsafe def filterM {α : Type u} (p : α → m (ULift Bool)) (L : ListM m α) : ListM m α :=
-cons do
-  match ← uncons L with
+  cons do match ← uncons L with
   | some (x, xs) => return (if (← p x).down then some x else x, filterM p xs)
   | none => return (none, empty)
 #align tactic.mllist.mfilter ListM.filterM
 
 /-- Filter a `ListM`. -/
 unsafe def filter {α : Type u} (p : α → Bool) (L : ListM m α) : ListM m α :=
-L.filterM fun a => pure <| .up (p a)
+  L.filterM fun a => pure <| .up (p a)
 #align tactic.mllist.filter ListM.filter
 
 /-- Filter and transform a `ListM` using an `Option` valued function. -/
@@ -211,9 +207,9 @@ unsafe def takeWhileM [Alternative m] (f : α → m β) : ListM m α → ListM m
 
 /-- Take the initial segment of the lazy list, until the function `f` first returns `false`. -/
 unsafe def takeWhile [Alternative m] (f : α → Bool) : ListM m α → ListM m α :=
-takeWhileM <| fun a => do
-  let .true := f a | failure
-  pure PUnit.unit
+  takeWhileM <| fun a => do
+    let .true := f a | failure
+    pure PUnit.unit
 
 /-- Concatenate two monadic lazy lists. -/
 unsafe def append {α : Type u} : ListM m α → ListM m α → ListM m α
@@ -241,7 +237,7 @@ unsafe def join {α : Type u} : ListM m (ListM m α) → ListM m α
 
 /-- Lift a monadic lazy list inside the monad to a monadic lazy list. -/
 unsafe def squash {α} (t : m (ListM m α)) : ListM m α :=
-(ListM.ofListM [t]).join
+  (ListM.ofListM [t]).join
 #align tactic.mllist.squash ListM.squash
 
 /-- Enumerate the elements of a monadic lazy list, starting at a specified offset. -/
@@ -257,12 +253,12 @@ unsafe def enum_from {α : Type u} : Nat → ListM m α → ListM m (Nat × α)
 
 /-- Enumerate the elements of a monadic lazy list. -/
 unsafe def enum {α : Type u} : ListM m α → ListM m (Nat × α) :=
-enum_from 0
+  enum_from 0
 #align tactic.mllist.enum ListM.enum
 
 /-- The infinite monadic lazy list of natural numbers.-/
 unsafe def range {m : Type → Type} [Alternative m] : ListM m Nat :=
-ListM.fix (fun n => pure (n + 1)) 0
+  ListM.fix (fun n => pure (n + 1)) 0
 #align tactic.mllist.range ListM.range
 
 /-- Add one element to the end of a monadic lazy list. -/
@@ -272,9 +268,9 @@ unsafe def concat {α : Type u} : ListM m α → α → ListM m α
 
 /-- Take the product of two monadic lazy lists. -/
 unsafe def zip (L : ListM m α) (M : ListM m β) : ListM m (α × β) :=
-squash do match ← uncons L, ← uncons M with
-  | some (a, L'), some (b, M') => pure <| cons <| pure ((a, b), L'.zip M')
-  | _, _ => pure nil
+  squash do match ← uncons L, ← uncons M with
+    | some (a, L'), some (b, M') => pure <| cons <| pure ((a, b), L'.zip M')
+    | _, _ => pure nil
 
 /-- Apply a function returning a monadic lazy list to each element of a monadic lazy list,
 joining the results. -/
@@ -290,32 +286,31 @@ unsafe def bind {α β : Type u} : ListM m α → (α → ListM m β) → ListM 
 
 /-- Convert any value in the monad to the singleton monadic lazy list. -/
 unsafe def monadLift {α} (x : m α) : ListM m α :=
-cons <| (flip Prod.mk nil ∘ some) <$> x
+  cons <| (flip Prod.mk nil ∘ some) <$> x
 #align tactic.mllist.monad_lift ListM.monadLift
 
 /-- Lift the monad of a lazy list. -/
 unsafe def liftM [Monad n] [MonadLift m n] (L : ListM m α) : ListM n α :=
-squash do match ← (uncons L : m _) with
-  | none => pure empty
-  | some (a, L') => pure <| cons do pure (a, L'.liftM)
+  squash do match ← (uncons L : m _) with
+    | none => pure empty
+    | some (a, L') => pure <| cons do pure (a, L'.liftM)
 
 /-- Given a lazy list in a state monad, run it on some initial state, recording the states. -/
 unsafe def runState {σ α : Type u} (L : ListM (StateT.{u} σ m) α) (s : σ) : ListM m (α × σ) :=
-squash do match ← StateT.run (uncons L) s with
-  | (none, _) => pure empty
-  | (some (a, L'), s') => pure <| cons do pure (some (a, s'), L'.runState s')
+  squash do match ← StateT.run (uncons L) s with
+    | (none, _) => pure empty
+    | (some (a, L'), s') => pure <| cons do pure (some (a, s'), L'.runState s')
 
 /-- Given a lazy list in a state monad, run it on some initial state. -/
 unsafe def runState' {σ α : Type u} (L : ListM (StateT.{u} σ m) α) (s : σ) : ListM m α :=
-L.runState s |>.map (·.1)
+  L.runState s |>.map (·.1)
 
 section Alternative
 variable [Alternative m]
 
 /-- Return the head of a monadic lazy list, as a value in the monad. -/
 unsafe def head {α} (L : ListM m α) : m α := do
-  let some (r, _) ← L.uncons |
-    failure
+  let some (r, _) ← L.uncons | failure
   return r
 #align tactic.mllist.head ListM.head
 
@@ -326,12 +321,12 @@ unsafe def head? (L : ListM m α) : m (Option α) := do
 /-- Apply a function returning values inside the monad to a monadic lazy list,
 returning only the first successful result. -/
 unsafe def firstM {α β} (L : ListM m α) (f : α → m β) : m β :=
-(L.filterMapM f).head
+  (L.filterMapM f).head
 #align tactic.mllist.mfirst ListM.firstM
 
 /-- Return the first value on which a predicate returns true. -/
 unsafe def first {α} (L : ListM m α) (p : α → Prop) [DecidablePred p] : m α :=
-(L.filter p).head
+  (L.filter p).head
 
 /-- Take the initial segment of the lazy list,
 up to and including the first place where `f` succeeeds. -/
@@ -348,9 +343,9 @@ unsafe def takeUpToFirstM (f : α → m β) : ListM m α → ListM m α
 /-- Take the initial segment of the lazy list,
 up to and including the first place where `f` gives `true`. -/
 unsafe def takeUpToFirst (f : α → Bool) : ListM m α → ListM m α :=
-takeUpToFirstM <| fun a => do
-  let .true := f a | failure
-  pure PUnit.unit
+  takeUpToFirstM <| fun a => do
+    let .true := f a | failure
+    pure PUnit.unit
 
 end Alternative
 
