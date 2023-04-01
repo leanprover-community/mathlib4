@@ -644,6 +644,7 @@ theorem toEquiv_injective : Injective (toEquiv : r ≃r s → α ≃ β)
 instance : CoeOut (r ≃r s) (r ↪r s) :=
   ⟨toRelEmbedding⟩
 
+-- Porting note: removed
 
 
 -- TODO: define and instantiate a `RelIsoClass` when `EquivLike` is defined
