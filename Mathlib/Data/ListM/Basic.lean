@@ -118,8 +118,21 @@ unsafe def force {α} (L : ListM m α) : m (List α) := do
   match ← uncons L with
   | none => pure []
   | some (x, xs) => (x :: ·) <$> force xs
-
 #align tactic.mllist.force ListM.force
+
+/-- Gives the monadic lazy list consisting all of folds of a function on a given initial element.
+Thus `[a₀, a₁, ...].foldsM f b` will give `[b, ← f b a₀, ← f (← f b a₀) a₁, ...]`. -/
+unsafe def foldsM (f : β → α → m β) (init : β) (L : ListM m α) : ListM m β :=
+  cons do match ← uncons L with
+  | none => return (some init, empty)
+  | some (x, xs) => do
+    let b ← f init x
+    return (some init, foldsM f b xs)
+
+/-- Gives the monadic lazy list consisting all of folds of a function on a given initial element.
+Thus `[a₀, a₁, ...].foldsM f b` will give `[b, f b a₀, f (f b a₀) a₁, ...]`. -/
+unsafe def folds (f : β → α → β) (init : β) (L : ListM m α) : ListM m β :=
+  L.foldsM (fun b a => pure (f b a)) init
 
 /-- Take the first `n` elements, as a list inside the monad. -/
 unsafe def takeAsList {α} : ListM m α → Nat → m (List α)
@@ -170,8 +183,9 @@ unsafe def filter {α : Type u} (p : α → Bool) (L : ListM m α) : ListM m α 
   L.filterM fun a => pure <| .up (p a)
 #align tactic.mllist.filter ListM.filter
 
-/-- Filter and transform a `ListM` using a function that returns values inside the monad.
-We discard elements where the function fails. -/
+/-- Filter and transform a `ListM` using a function that returns values inside the monad. -/
+-- Note that the type signature has changed since Lean 3, when we allowed `f` to fail.
+-- Use `try?` from `Mathlib.Control.Basic` to lift a possibly failing function to `Option`.
 unsafe def filterMapM {α β : Type u} (f : α → m (Option β)) (L : ListM m α) : ListM m β :=
   cons do match ← uncons L with
   | none => return (none, empty)
@@ -310,6 +324,16 @@ where aux (x : α) (L : ListM m α) : m (Option α) := do
 This will run forever if the list is infinite. -/
 unsafe def getLast! [Inhabited α] (L : ListM m α) : m α :=
   Option.get! <$> L.getLast?
+
+/-- Folds a binary function across a monadic lazy list, from an initial starting value.
+This will run forever if the list is infinite. -/
+unsafe def foldM (f : β → α → m β) (init : β) (L : ListM m α) : m β :=
+  (L.foldsM f init |>.getLast?) <&> (·.getD init) -- `foldsM` is always non-empty, anyway.
+
+/-- Folds a binary function across a monadic lazy list, from an initial starting value.
+This will run forever if the list is infinite. -/
+unsafe def fold (f : β → α → β) (init : β) (L : ListM m α) : m β :=
+  L.foldM (fun b a => pure (f b a)) init
 
 section Alternative
 variable [Alternative m]

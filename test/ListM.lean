@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Mathlib.Data.ListM.Basic
+import Mathlib.Control.Basic
 
 @[reducible] def S (α : Type) := StateT (List Nat) Option α
 def append (x : Nat) : S Unit :=
@@ -39,13 +40,13 @@ do guard (n % 2 = 0)
 
 #eval do
   let x : ListM MetaM Nat := ListM.range
-  let y := x.filterMapM half_or_fail
+  let y := x.filterMapM fun n => try? <| half_or_fail n
   let z ← y.takeAsList 10
   guard $ z.length = 10
 
 #eval do
   let R : ListM MetaM Nat := ListM.range
-  let S : ListM MetaM Nat := R.filterMapM fun n => do
+  let S : ListM MetaM Nat := R.filterMapM fun n => try? do
     guard (n % 5 = 0)
     pure n
   let n ← R.takeAsList 5
@@ -55,7 +56,7 @@ do guard (n % 2 = 0)
 
 #eval do
   let R : ListM MetaM Nat := ListM.range
-  let n ← R.firstM fun n => do
+  let n ← R.firstM fun n => try? do
     guard (n = 5)
     pure n
   guard $ n = 5
