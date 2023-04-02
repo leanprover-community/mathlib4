@@ -30,7 +30,7 @@ deriving ToJson, FromJson
 
 /-- A request consists of the desired model and temperature, and a list of messages so far. -/
 structure Request where
-  model : String := "gpt-3.5-turbo-0301"
+  model : String := "gpt-4"
   messages : List Message
   temperature : Float := 0.2
 deriving ToJson, FromJson
