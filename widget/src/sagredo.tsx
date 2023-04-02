@@ -6,57 +6,121 @@ interface RpcData {
   k : RpcPtr<'Mathlib.Tactic.GPT.Sagredo.Widget.Data'>
 }
 
-type MsgKind = 'query' | 'response' | 'error'
-
-interface Msg {
-  contents : string
-  kind : MsgKind
+type Msg = {
+  kind: 'response'
+  contents: string
+  proof: string
+} | {
+  kind: 'query'
+  contents: string
+} | {
+  kind: 'error'
+  contents: string
 }
 
-export default function(data: RpcData) {
-  const [msgLog, setMsgLog] = React.useState<Msg[]>([])
+interface NextQueryResponse {
+  query: string
+  data: any
+}
+
+interface RunQueryResponse {
+  response: string
+  proof: string
+  data: any
+}
+
+function ChatBubble
+    (props: React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>):
+    JSX.Element {
+  return (
+    <div
+        {...props}
+        style={{
+          ...props.style,
+          backgroundColor: 'var(--vscode-editorHoverWidget-background)',
+          borderColor: 'var(--vscode-editorHoverWidget-border)'
+        }}
+        className={'ba br3 pl3 pa2 shadow-1 mv2 ' + props.className}
+      >
+      {props.children}
+    </div>
+  )
+}
+
+export default function(data0: RpcData) {
   const rs = React.useContext(RpcContext)
-  const renderQuery = (query: string) =>
-    setMsgLog(ms => ms.concat([{ contents: query, kind: 'query' }]))
-  const renderResponse = (response: string) =>
-    setMsgLog(ms => ms.concat([{ contents: response, kind: 'response' }]))
-  const callSagredo = (data: RpcData) =>
-    rs.call<RpcData, [string, RpcData]>('nextQuery', data)
-      .then(resp => {
-        const [query, data] = resp
-        renderQuery(query)
-        rs.call<RpcData, [string, [string, RpcData]]>('runQuery', data)
-          .then(resp => {
-            const [text, [sol, data]] = resp
-            renderResponse(text)
-            callSagredo(data)
-          })
+
+  const [isAuto, setIsAuto] = React.useState<boolean>(false)
+
+  type Status = 'waitingNextQuery' | 'preRunQuery' | 'waitingRunQuery' | 'done' | 'error'
+  const [status, setStatus] = React.useState<Status>('waitingNextQuery')
+  const [data, setData] = React.useState<RpcData>(data0)
+
+  const [msgLog, setMsgLog] = React.useState<Msg[]>([])
+
+  React.useEffect(() => {
+    if (status === 'waitingNextQuery')
+      rs.call<RpcData, NextQueryResponse>('nextQuery', data)
+        .then(resp => {
+          setMsgLog(ms => ms.concat([{ kind: 'query', contents: resp.query }]))
+          setData(resp.data)
+          // HACK: hardcoded output
+          if (resp.query.includes('that proof works')) {
+            setStatus('done')
+          } else {
+            setStatus('preRunQuery')
+          }
         })
-      .catch(e => setMsgLog(ms =>
-        ms.concat([{ contents: mapRpcError(e).message, kind: 'error' }])))
+        .catch(e => {
+          setMsgLog(ms => ms.concat([{ kind: 'error', contents: mapRpcError(e).message }]))
+          setStatus('error')
+        })
+    if (status === 'preRunQuery' && isAuto)
+      setStatus('waitingRunQuery')
+    if (status === 'waitingRunQuery')
+      rs.call<RpcData, RunQueryResponse>('runQuery', data)
+        .then(resp => {
+          setMsgLog(ms =>
+              ms.concat([{ kind: 'response', contents: resp.response, proof: resp.proof}]))
+          setData(resp.data)
+          setStatus('waitingNextQuery')
+        })
+        .catch(e => {
+          setMsgLog(ms => ms.concat([{ contents: mapRpcError(e).message, kind: 'error' }]))
+          setStatus('error')
+        })
+  }, [status, isAuto])
 
   const stylesOfMsg = (msg: Msg) => {
-    let ret = 'ba br3 pl3 pa2 shadow-1 mv2 '
     if (msg.kind === 'query')
-      ret += 'w-80 self-end '
+      return 'w-80 self-end '
     if (msg.kind === 'response')
-      ret += 'w-80 self-start '
+      return 'w-80 self-start '
     if (msg.kind === 'error')
-      ret += 'bg-light-red '
-    return ret
+      return 'bg-light-red '
   }
 
   return <details open>
-    <summary className='mv2 pointer'>Sagredo</summary>
-    <button onClick={() => callSagredo(data)}>Go.</button>
+    <summary className='mv2 pointer'>
+      Sagredo
+      <span className='fr'>
+        <label>
+          <input
+            type='checkbox'
+            className='mr1'
+            checked={isAuto}
+            onChange={() => setIsAuto(b => !b)} />
+          Auto-send
+        </label>
+      </span>
+    </summary>
     <div className='flex flex-column'>
-      {msgLog.map(msg =>
-        <div
-            style={{
-              backgroundColor: 'var(--vscode-editorHoverWidget-background)',
-              borderColor: 'var(--vscode-editorHoverWidget-border)'
-            }}
-            className={stylesOfMsg(msg)}>
+      {msgLog.map((msg, iMsg) =>
+        <ChatBubble className={stylesOfMsg(msg)}>
+          {msg.kind === 'response' &&
+            <div>
+              Copy proof: {msg.proof}
+            </div>}
           <ReactMarkdown
             components={{
               pre: ({node, ...props}) => <pre {...props}
@@ -74,7 +138,15 @@ export default function(data: RpcData) {
                   <code {...props} className='font-code ' />
             }}
             children={msg.contents} />
-        </div>)}
+          {iMsg === msgLog.length - 1 && status === 'preRunQuery' &&
+            <button
+                className='fr'
+                onClick={() => setStatus('waitingRunQuery')}>
+              Send
+            </button>}
+        </ChatBubble>)}
+      {status === 'waitingNextQuery' && <ChatBubble>...</ChatBubble>}
+      {status === 'waitingRunQuery' && <ChatBubble>Waiting for GPT..</ChatBubble>}
     </div>
   </details>
 }
