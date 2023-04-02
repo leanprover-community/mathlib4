@@ -1,12 +1,21 @@
+/-
+Copyright (c) 2023 Scott Morrison. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Scott Morrison
+-/
 import Mathlib.Data.ListM
 import Mathlib.Lean.CoreM
 
-open Lean
+/-!
+# Truncate a `ListM` when running out of available heartbeats.
+-/
+
+open Lean.Core (CoreM)
 
 /-- Take an initial segment of a `MetaM` lazy list,
 using at most `percent` of the remaining allowed heartbeats. -/
-unsafe def ListM.whileAtLeastHeartbeatsPercent
-    [Monad m] [MonadLiftT CoreM m] (L : ListM m α) (percent : Nat) : ListM m α :=
+unsafe def ListM.whileAtLeastHeartbeatsPercent [Monad m] [MonadLiftT CoreM m]
+    (L : ListM m α) (percent : Nat) : ListM m α :=
 ListM.squash do
   let initialHeartbeats ← getRemainingHeartbeats
   pure <| L.takeWhileM fun _ => do
