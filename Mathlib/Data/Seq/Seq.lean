@@ -14,6 +14,14 @@ import Mathlib.Data.Nat.Basic
 import Mathlib.Data.Stream.Init
 import Mathlib.Data.Seq.Computation
 
+/-!
+# Possibly infinite list
+
+This file provides a `Seq α` type repesenting possibly infinite lists (referred here as sequences).
+  It is encoded as an infinite stream of options such that if `f n = none`, then
+  `f m = none` for all `m ≥ n`.
+-/
+
 namespace Stream'
 
 universe u v w
@@ -53,7 +61,6 @@ def nil : Seq α :=
 instance : Inhabited (Seq α) :=
   ⟨nil⟩
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- Prepend an element to a sequence -/
 def cons (a : α) (s : Seq α) : Seq α :=
   ⟨some a::s.1, by
@@ -62,7 +69,6 @@ def cons (a : α) (s : Seq α) : Seq α :=
     · exact s.2 h⟩
 #align stream.seq.cons Stream'.Seq.cons
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[simp]
 theorem val_cons (s : Seq α) (x : α) : (cons x s).val = some x::s.val :=
   rfl
