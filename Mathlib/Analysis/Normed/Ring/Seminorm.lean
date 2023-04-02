@@ -126,7 +126,8 @@ instance [DecidableEq R] : One (RingSeminorm R) :=
               split_ifs
               exacts[le_rfl, zero_le_one]
         · change ite _ _ _ ≤ ite _ _ _ * ite _ _ _
-          simp only [if_false, h, left_ne_zero_of_mul h, right_ne_zero_of_mul h, mul_one, le_refl] }⟩
+          simp only [if_false, h, left_ne_zero_of_mul h, right_ne_zero_of_mul h, mul_one, 
+            le_refl] }⟩
 
 @[simp]
 theorem apply_one [DecidableEq R] (x : R) : (1 : RingSeminorm R) x = if x = 0 then 0 else 1 :=
