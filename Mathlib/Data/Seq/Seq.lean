@@ -37,14 +37,14 @@ def IsSeq {α : Type u} (s : Stream' (Option α)) : Prop :=
   ∀ {n : ℕ}, s n = none → s (n + 1) = none
 #align stream.is_seq Stream'.IsSeq
 
-/-- `seq α` is the type of possibly infinite lists (referred here as sequences).
+/-- `Seq α` is the type of possibly infinite lists (referred here as sequences).
   It is encoded as an infinite stream of options such that if `f n = none`, then
   `f m = none` for all `m ≥ n`. -/
 def Seq (α : Type u) : Type u :=
   { f : Stream' (Option α) // f.IsSeq }
 #align stream.seq Stream'.Seq
 
-/-- `seq1 α` is the type of nonempty sequences. -/
+/-- `Seq1 α` is the type of nonempty sequences. -/
 def Seq1 (α) :=
   α × Seq α
 #align stream.seq1 Stream'.Seq1
@@ -155,7 +155,7 @@ def tail (s : Seq α) : Seq α :=
     exact al n'⟩
 #align stream.seq.tail Stream'.Seq.tail
 
-/-- member definition for `seq`-/
+/-- member definition for `Seq`-/
 protected def Mem (a : α) (s : Seq α) :=
   some a ∈ s.1
 #align stream.seq.mem Stream'.Seq.Mem
@@ -174,8 +174,8 @@ theorem terminated_stable : ∀ (s : Seq α) {m n : ℕ}, m ≤ n → s.Terminat
   le_stable
 #align stream.seq.terminated_stable Stream'.Seq.terminated_stable
 
-/-- If `s.nth n = some aₙ` for some value `aₙ`, then there is also some value `aₘ` such
-that `s.nth = some aₘ` for `m ≤ n`.
+/-- If `s.get? n = some aₙ` for some value `aₙ`, then there is also some value `aₘ` such
+that `s.get? = some aₘ` for `m ≤ n`.
 -/
 theorem ge_stable (s : Seq α) {aₙ : α} {n m : ℕ} (m_le_n : m ≤ n)
     (s_nth_eq_some : s.get? n = some aₙ) : ∃ aₘ : α, s.get? m = some aₘ :=
@@ -277,7 +277,7 @@ theorem get?_tail (s : Seq α) (n) : get? (tail s) n = get? s (n + 1) :=
   rfl
 #align stream.seq.nth_tail Stream'.Seq.get?_tail
 
-/-- Recursion principle for sequences, compare with `list.rec_on`. -/
+/-- Recursion principle for sequences, compare with `List.recOn`. -/
 -- porting note: TODO: use match rather than `induction'`
 noncomputable def recOn {C : Seq α → Sort v} (s : Seq α) (h1 : C nil) (h2 : ∀ x s, C (cons x s)) :
     C s := by
@@ -300,7 +300,8 @@ theorem mem_rec_on {C : Seq α → Prop} {a s} (M : a ∈ s)
       rfl
     rw [TH]
     apply h1 _ _ (Or.inl rfl)
-  revert e; apply s.recOn _ fun b s' => _ --<;> intro e
+  -- porting note: had to reshuffle `intro`
+  revert e; apply s.recOn _ fun b s' => _
   · intro e; injection e
   · intro b s' e
     have h_eq : (cons b s').val (Nat.succ k) = s'.val k := by cases s' ; rfl
@@ -318,7 +319,7 @@ def Corec.f (f : β → Option (α × β)) : Option β → Option α × Option �
 set_option linter.uppercaseLean3 false in
 #align stream.seq.corec.F Stream'.Seq.Corec.f
 
-/-- Corecursor for `seq α` as a coinductive type. Iterates `f` to produce new elements
+/-- Corecursor for `Seq α` as a coinductive type. Iterates `f` to produce new elements
   of the sequence until `none` is obtained. -/
 def corec (f : β → Option (α × β)) (b : β) : Seq α := by
   refine' ⟨Stream'.corec' (Corec.f f) (some b), fun {n} h => _⟩
@@ -364,7 +365,7 @@ variable (R : Seq α → Seq α → Prop)
 -- mathport name: R
 local infixl:50 " ~ " => R
 
-/-- Bisimilarity relation over `Option` of `seq1 α`-/
+/-- Bisimilarity relation over `Option` of `Seq1 α`-/
 def BisimO : Option (Seq1 α) → Option (Seq1 α) → Prop
   | none, none => True
   | some (a, s), some (a', s') => a = a' ∧ R s s'
@@ -373,7 +374,7 @@ def BisimO : Option (Seq1 α) → Option (Seq1 α) → Prop
 
 attribute [simp] BisimO
 
-/-- a relation is bisimiar if it meets the `bisim_o` test-/
+/-- a relation is bisimiar if it meets the `BisimO` test-/
 def IsBisimulation :=
   ∀ ⦃s₁ s₂⦄, s₁ ~ s₂ → BisimO R (destruct s₁) (destruct s₂)
 #align stream.seq.is_bisimulation Stream'.Seq.IsBisimulation
@@ -454,7 +455,6 @@ theorem ofList_nth (l : List α) (n : ℕ) : (ofList l).get? n = l.get? n :=
   rfl
 #align stream.seq.of_list_nth Stream'.Seq.ofList_nth
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[simp]
 theorem ofList_cons (a : α) (l : List α) : ofList (a::l) = cons a (ofList l) := by
   ext1 (_ | n) <;> rfl
@@ -827,7 +827,6 @@ theorem ofStream_append (l : List α) (s : Stream' α) :
   induction l <;> simp [*, Stream'.nil_append_stream, Stream'.cons_append_stream]
 #align stream.seq.of_stream_append Stream'.Seq.ofStream_append
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- Convert a sequence into a list, embedded in a computation to allow for
   the possibility of infinite sequences (in which case the computation
   never returns anything). -/
@@ -909,7 +908,7 @@ variable {α : Type u} {β : Type v} {γ : Type w}
 
 open Stream'.Seq
 
-/-- Convert a `seq1` to a sequence. -/
+/-- Convert a `Seq1` to a sequence. -/
 def toSeq : Seq1 α → Seq α
   | (a, s) => Seq.cons a s
 #align stream.seq1.to_seq Stream'.Seq1.toSeq
@@ -918,7 +917,7 @@ instance coeSeq : Coe (Seq1 α) (Seq α) :=
   ⟨toSeq⟩
 #align stream.seq1.coe_seq Stream'.Seq1.coeSeq
 
-/-- Map a function on a `seq1` -/
+/-- Map a function on a `Seq1` -/
 def map (f : α → β) : Seq1 α → Seq1 β
   | (a, s) => (f a, Seq.map f s)
 #align stream.seq1.map Stream'.Seq1.map
@@ -946,7 +945,7 @@ theorem join_cons (a b : α) (s S) :
   dsimp [join] ; rw [destruct_cons]
 #align stream.seq1.join_cons Stream'.Seq1.join_cons
 
-/-- The `return` operator for the `seq1` monad,
+/-- The `return` operator for the `Seq1` monad,
   which produces a singleton sequence. -/
 def ret (a : α) : Seq1 α :=
   (a, nil)
@@ -955,7 +954,7 @@ def ret (a : α) : Seq1 α :=
 instance [Inhabited α] : Inhabited (Seq1 α) :=
   ⟨ret default⟩
 
-/-- The `bind` operator for the `seq1` monad,
+/-- The `bind` operator for the `Seq1` monad,
   which maps `f` on each element of `s` and appends the results together.
   (Not all of `s` may be evaluated, because the first few elements of `s`
   may already produce an infinite result.) -/
