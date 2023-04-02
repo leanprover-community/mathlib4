@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
 import Lean
+import Mathlib.Init.Align
 
 /-!
 # A `ToExpr` derive handler
@@ -11,38 +12,41 @@ import Lean
 This module defines a `ToExpr` derive handler for inductive types. It supports mutually inductive
 types as well.
 
-It is originally based on the `Repr` derived handler from Lean 4 itself.
-
 The `ToExpr` derive handlers support universe level polymorphism. This is implemented using the
-`Lean.ToLevel` class, where `Lean.ToLevel.toLevel (Sort u)` evaluates to a `Lean.Level` term
+`Lean.ToLevel` class, where `Lean.ToLevel.toLevel.{u}` evaluates to a `Lean.Level` term
 representing `u`. To use `ToExpr` in places where there is universe polymorphism, make sure
-to have a `[ToLevel (Sort u)]` instance available.
+to have a `[ToLevel.{u}]` instance available.
+
+Implementation note: the handler is originally modeled after the `Repr` derive handler.
 -/
 
 namespace Lean
-/-- Given a type universe `Sort u`, produce a `Level` expression that denotes the level `u`.
 
-One reason this takes an argument rather than taking just a level parameter is
-to avoid the "unused universe parameter" error. -/
-class ToLevel (univ : Type u) where
+/-- A class to create `Level` expressions that denote particular universe levels in Lean. -/
+class ToLevel.{u} where
+  /-- A `Level` that represents the universe level `u`. -/
   toLevel : Level
+  /-- The universe itself. This is only here to avoid the "unused universe parameter" error. -/
+  univ : Type u := Sort u
 export ToLevel (toLevel)
+#align reflected_univ Lean.ToLevel
+#align reflected_univ.lvl Lean.ToLevel.toLevel
 
-instance : ToLevel Prop where
+instance : ToLevel.{0} where
   toLevel := .zero
 
-instance [ToLevel (Sort u)] : ToLevel (Sort (u + 1)) where
-  toLevel := .succ (toLevel (Sort u))
+instance [ToLevel.{u}] : ToLevel.{u+1} where
+  toLevel := .succ toLevel.{u}
 
 /-
 These instances are dangerous since, for example, the unifier can consider `u =?= max u ?v`.
 Omitting them until it's clear they are needed.
 
-instance (priority := 100) [ToLevel (Sort u)] [ToLevel (Sort v)] : ToLevel (Sort (max u v)) where
-  toLevel := .max (toLevel (Sort u)) (toLevel (Sort v))
+instance (priority := 100) [ToLevel.{u}] [ToLevel.{v}] : ToLevel.{max u v} where
+  toLevel := .max toLevel.{u} toLevel.{v}
 
-instance (priority := 100) [ToLevel (Sort u)] [ToLevel (Sort v)] : ToLevel (Sort (imax u v)) where
-  toLevel := .imax (toLevel (Sort u)) (toLevel (Sort v))
+instance (priority := 100) [ToLevel.{u}] [ToLevel.{v}] : ToLevel.{imax u v} where
+  toLevel := .imax toLevel.{u} toLevel.{v}
 -/
 
 end Lean
@@ -53,8 +57,14 @@ open Lean Elab Lean.Parser.Term
 open Meta Command Deriving
 
 def mkToExprHeader (indVal : InductiveVal) : TermElabM Header := do
+  -- The auxiliary functions we produce are `indtype -> Expr`.
   let header ← mkHeader ``ToExpr 1 indVal
   return header
+
+/-- Give an expression that is equivalent to `(term|mkAppN $f #[$args,*])` but
+expanded out to use `Expr.app` directly. -/
+def mkAppNExpr (f : Term) (args : Array Term) : TermElabM Term :=
+  args.foldlM (fun a b => `(Expr.app $a $b)) f
 
 def mkToExprBody (header : Header) (indVal : InductiveVal) (auxFunName : Name) :
     TermElabM Term := do
@@ -90,15 +100,15 @@ where
           ctorArgs := ctorArgs.push a
           rhsArgs := rhsArgs.push <| ← mkArg xs[ctorInfo.numParams + i]! a
         patterns := patterns.push (← `(@$(mkIdent ctorName):ident $ctorArgs:term*))
-        let levels ← indVal.levelParams.toArray.mapM (fun u => `(toLevel (Sort $(mkIdent u))))
+        let levels ← indVal.levelParams.toArray.mapM (fun u => `(toLevel.{$(mkIdent u)}))
         let rhs : Term ←
-          `(mkAppN (Expr.const $(quote ctorInfo.name) [$levels,*]) #[$rhsArgs,*])
+          mkAppNExpr (← `(Expr.const $(quote ctorInfo.name) [$levels,*])) rhsArgs
         `(matchAltExpr| | $[$patterns:term],* => $rhs)
       alts := alts.push alt
     return alts
 
 def mkToTypeExpr (argNames : Array Name) (indVal : InductiveVal) : TermElabM Term := do
-  let levels ← indVal.levelParams.toArray.mapM (fun u => `(toLevel (Sort $(mkIdent u))))
+  let levels ← indVal.levelParams.toArray.mapM (fun u => `(toLevel.{$(mkIdent u)}))
   forallTelescopeReducing indVal.type fun xs _ => do
     let mut args : Array Term := #[]
     for i in [:xs.size] do
@@ -108,7 +118,7 @@ def mkToTypeExpr (argNames : Array Name) (indVal : InductiveVal) : TermElabM Ter
         args := args.push <| ← `(toTypeExpr $a)
       else
         args := args.push <| ← `(toExpr $a)
-    `(mkAppN (Expr.const $(quote indVal.name) [$levels,*]) #[$args,*])
+    mkAppNExpr (← `((Expr.const $(quote indVal.name) [$levels,*]))) args
 
 def mkLocalInstanceLetDecls (ctx : Deriving.Context) (argNames : Array Name) :
     TermElabM (Array (TSyntax ``Parser.Term.letDecl)) := do
@@ -140,7 +150,7 @@ def fixIndType (indVal : InductiveVal) (t : Term) : TermElabM Term :=
 
 /-- Make `ToLevel` instance binders for all the level variables. -/
 def mkToLevelBinders (indVal : InductiveVal) : TermElabM (TSyntaxArray ``instBinderF) := do
-  indVal.levelParams.toArray.mapM (fun u => `(instBinderF| [ToLevel (Sort $(mkIdent u))]))
+  indVal.levelParams.toArray.mapM (fun u => `(instBinderF| [ToLevel.{$(mkIdent u)}]))
 
 open TSyntax.Compat in
 def mkAuxFunction (ctx : Deriving.Context) (i : Nat) : TermElabM Command := do
@@ -151,7 +161,7 @@ def mkAuxFunction (ctx : Deriving.Context) (i : Nat) : TermElabM Command := do
   if ctx.usePartial then
     let letDecls ← mkLocalInstanceLetDecls ctx header.argNames
     body ← mkLet letDecls body
-  -- We need to alter the last binder to have explicit universe levels
+  -- We need to alter the last binder (the one for the "target") to have explicit universe levels
   -- so that the `ToLevel` instance arguments can use them.
   let addLevels binder :=
     match binder with
