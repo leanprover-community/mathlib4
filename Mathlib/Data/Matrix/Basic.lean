@@ -2683,7 +2683,7 @@ theorem updateRow_self [DecidableEq m] : updateRow M i b i = b :=
 
 @[simp]
 theorem updateColumn_self [DecidableEq n] : updateColumn M j c i j = c i :=
--- Porting note: (implicit arg) added `(β := _)`
+  -- Porting note: (implicit arg) added `(β := _)`
   Function.update_same (β := fun _ => α) j (c i) (M i)
 #align matrix.update_column_self Matrix.updateColumn_self
 
