@@ -110,7 +110,7 @@ and return it explicitly.
 -/
 def librarySearchLemma (lem : Name) (mod : DeclMod) (required : List Expr) (solveByElimDepth := 6)
     (goal : MVarId) : MetaM (MetavarContext × List MVarId) :=
-  withTraceNode `Tactic.librarySearch (return m!"{exceptEmoji ·} trying {lem}") do
+  withTraceNode `Tactic.librarySearch (return m!"{·.emoji} trying {lem}") do
   withoutModifyingState do
     let lem ← mkConstWithFreshMVarLevels lem
     let lem ← match mod with
@@ -133,7 +133,7 @@ unsafe def librarySearchCore (goal : MVarId) (lemmas : DiscrTree (Name × DeclMo
     (required : List Expr) (solveByElimDepth := 6) : ListM MetaM (MetavarContext × List MVarId) :=
   .squash do
     let ty ← goal.getType
-    withTraceNode `Tactic.librarySearch (return m!"{exceptEmoji ·} {ty}") do
+    withTraceNode `Tactic.librarySearch (return m!"{·.emoji} {ty}") do
       let lemmas := ListM.ofList ((← lemmas.getMatch ty).toList)
       return lemmas.filterMapM fun (lem, mod) =>
         try? <| librarySearchLemma lem mod required solveByElimDepth goal
