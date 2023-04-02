@@ -110,9 +110,10 @@ unsafe def rewritesCore (lemmas : DiscrTree (Name × Bool × Nat) s) (goal : MVa
   pure <| candidates.filterMapM fun ⟨lem, symm, weight⟩ => do
     trace[Tactic.rewrites] "considering {if symm then "←" else ""}{lem}"
     let result ← goal.rewrite type (← mkConstWithFreshMVarLevels lem) symm
-    return if result.mvarIds.isEmpty then -- TODO Perhaps allow new goals? Try closing them with solveByElim?
+    return if result.mvarIds.isEmpty then
       some ⟨lem, symm, weight, result, none⟩
     else
+      -- TODO Perhaps allow new goals? Try closing them with solveByElim?
       none
 
 /-- Find lemmas which can rewrite the goal. -/
