@@ -34,8 +34,6 @@ namespace CategoryTheory.Limits.Types
 
 variable {J : Type v} [SmallCategory J]
 
-set_option pp.universes true
-
 /-- (internal implementation) the limit cone of a functor,
 implemented as flat sections of a pi type
 -/

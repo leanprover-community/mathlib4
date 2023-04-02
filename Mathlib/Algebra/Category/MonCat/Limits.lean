@@ -62,10 +62,6 @@ set_option linter.uppercaseLean3 false in
 set_option linter.uppercaseLean3 false in
 #align AddMon.sections_add_submonoid AddMonCat.sectionsAddSubmonoid
 
--- set_option pp.universes true
--- set_option pp.notation false
--- set_option pp.explicit true
-
 @[to_additive]
 instance limitMonoid (F : J ⥤ MonCat.{max v u}) :
     Monoid (Types.limitCone.{v, u} (F ⋙ forget MonCat.{max v u})).pt :=
@@ -75,14 +71,21 @@ set_option linter.uppercaseLean3 false in
 set_option linter.uppercaseLean3 false in
 #align AddMon.limit_add_monoid AddMonCat.limitAddMonoid
 
+-- set_option pp.universes true
+-- set_option pp.notation false
+-- set_option pp.explicit true
+
 /-- `limit.π (F ⋙ forget MonCat) j` as a `MonoidHom`. -/
-@[to_additive "`limit.π (F ⋙ forget AddMonCat) j` as an `AddMonoidHom`."]
+--@[to_additive "`limit.π (F ⋙ forget AddMonCat) j` as an `AddMonoidHom`."]
 def limitπMonoidHom (F : J ⥤ MonCat.{max v u}) (j) :
-    (Types.limitCone.{v, u} (F ⋙ forget MonCat.{max v u})).pt →* (F ⋙ forget MonCat.{max v u}).obj j
-    where
-  toFun := (Types.limitCone.{v, u} (F ⋙ forget MonCat.{max v u})).π.app j
-  map_one' := rfl
-  map_mul' x y := rfl
+    (Types.limitCone.{v, u}
+      (F ⋙ forget.{(max v u) + 1, (max v u), (max v u)} MonCat.{max v u})).pt →*
+      (F ⋙ forget.{(max v u) + 1, (max v u), (max v u)} MonCat.{max v u}).obj j
+    := sorry
+  --   where
+  -- toFun := (Types.limitCone.{v, u} (F ⋙ forget MonCat.{max v u})).π.app j
+  -- map_one' := rfl
+  -- map_mul' x y := rfl
 #align Mon.limit_π_monoid_hom MonCat.limitπMonoidHom
 #align AddMon.limit_π_add_monoid_hom AddMonCat.limitπAddMonoidHom
 
