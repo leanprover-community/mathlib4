@@ -75,10 +75,28 @@ theorem ext_iff : (∀ i j, M i j = N i j) ↔ M = N :=
   ⟨fun h => funext fun i => funext <| h i, fun h => by simp [h]⟩
 #align matrix.ext_iff Matrix.ext_iff
 
-@[ext]
+-- Porting note: `ext` does not like this, see new lemma below.
+-- @[ext]
 theorem ext : (∀ i j, M i j = N i j) → M = N :=
   ext_iff.mp
 #align matrix.ext Matrix.ext
+
+-- Porting note: `ext` does not like if there are two variables introduced at once. E.g.
+-- ```
+-- example (A B : Matrix m n α) : A = B := by
+--   ext i j
+--   sorry
+-- ```
+-- would only introduce the first variable, so that afterwards, the state is
+-- ```
+-- i : m
+-- ⊢ ∀ (j : n), A i j = B i j
+-- ```
+-- This is probably a bug in `ext`. Once it is fixed, you should delete `Matrix.ext'` below
+-- and restore the `@[ext]` attribute on `Matrix.ext` above.
+@[ext]
+theorem ext' : (∀ i, M i = N i) → M = N :=
+  fun h => Matrix.ext <| fun i => by simp[h]
 
 end Ext
 
@@ -268,10 +286,10 @@ instance distribMulAction [Monoid R] [AddMonoid α] [DistribMulAction R α] :
 instance module [Semiring R] [AddCommMonoid α] [Module R α] : Module R (Matrix m n α) :=
   Pi.module _ _ _
 
--- Porting note: added this section with simp lemmas because `simp` fails
+-- Porting note: added the following section with simp lemmas because `simp` fails
 -- to apply the corresponding lemmas in the namespace `Pi`.
 -- (e.g. `Pi.zero_apply` used on `OfNat.ofNat 0 i j`)
-section NewSimpLemmas
+section
 
 @[simp]
 theorem zero_apply [Zero α] (i : m) (j : n) : (0 : Matrix m n α) i j = 0 := rfl
@@ -292,7 +310,7 @@ theorem sub_apply [Sub α] (A B : Matrix m n α) (i : m) (j : n) :
 theorem neg_apply [Neg α] (A : Matrix m n α) (i : m) (j : n) :
   (-A) i j = -(A i j) := rfl
 
-end NewSimpLemmas
+end
 
 /-! simp-normal form pulls `of` to the outside. -/
 
@@ -376,8 +394,7 @@ instance subsingleton_of_empty_left [IsEmpty m] : Subsingleton (Matrix m n α) :
 
 instance subsingleton_of_empty_right [IsEmpty n] : Subsingleton (Matrix m n α) :=
   ⟨fun M N => by
-    ext
-    rename_i i j -- Porting note: `ext` does not like `Matrix.ext` introducing two vars at once.
+    ext i j
     exact isEmptyElim j⟩
 #align matrix.subsingleton_of_empty_right Matrix.subsingleton_of_empty_right
 
@@ -442,8 +459,7 @@ theorem diagonal_zero [Zero α] : (diagonal fun _ => 0 : Matrix n n α) = 0 := b
 
 @[simp]
 theorem diagonal_transpose [Zero α] (v : n → α) : (diagonal v)ᵀ = diagonal v := by
-  ext
-  rename_i i j -- Porting note: `ext` does not like `Matrix.ext` introducing two vars at once.
+  ext i j
   by_cases h : i = j
   · simp [h, transpose]
   · simp [h, transpose, diagonal_apply_ne' _ h]
@@ -452,8 +468,7 @@ theorem diagonal_transpose [Zero α] (v : n → α) : (diagonal v)ᵀ = diagonal
 @[simp]
 theorem diagonal_add [AddZeroClass α] (d₁ d₂ : n → α) :
     diagonal d₁ + diagonal d₂ = diagonal fun i => d₁ i + d₂ i := by
-  ext
-  rename_i i j -- Porting note: `ext` does not like `Matrix.ext` introducing two vars at once.
+  ext i j
   by_cases h : i = j <;>
   simp [h]
 #align matrix.diagonal_add Matrix.diagonal_add
@@ -461,8 +476,7 @@ theorem diagonal_add [AddZeroClass α] (d₁ d₂ : n → α) :
 @[simp]
 theorem diagonal_smul [Monoid R] [AddMonoid α] [DistribMulAction R α] (r : R) (d : n → α) :
     diagonal (r • d) = r • diagonal d := by
-  ext
-  rename_i i j -- Porting note: `ext` does not like `Matrix.ext` introducing two vars at once.
+  ext i j
   by_cases h : i = j <;>
   simp [h]
 #align matrix.diagonal_smul Matrix.diagonal_smul
@@ -540,13 +554,13 @@ theorem map_one [Zero β] [One β] (f : α → β) (h₀ : f 0 = 0) (h₁ : f 1 
   split_ifs <;> simp [h₀, h₁]
 #align matrix.map_one Matrix.map_one
 
+-- Porting note: added implicit argument `(f := fun_ => α)`, why is that needed?
 theorem one_eq_pi_single {i j} : (1 : Matrix n n α) i j = Pi.single (f := fun _ => α) i 1 j := by
   simp only [one_apply, Pi.single_apply, eq_comm]
+  -- Porting note: removed `<;> congr` at the end of the proof.
+  -- mathlib3 comment was: "deal with decidable_eq"
 #align matrix.one_eq_pi_single Matrix.one_eq_pi_single
--- Porting note: (implicit arg) added argument `(f := fun_ => α)` explicitely, why is that needed?
--- also removed `<;> congr` at the end of the proof.
 
--- deal with decidable_eq
 end One
 
 section Numeral
@@ -779,19 +793,19 @@ theorem dotProduct_diagonal' (i : m) : (v ⬝ᵥ fun j => diagonal w j i) = v i 
 
 @[simp]
 theorem single_dotProduct (x : α) (i : m) : Pi.single i x ⬝ᵥ v = x * v i := by
+  -- Porting note: (implicit arg) added `(f := fun _ => α)`
   have : ∀ (j) (_ : j ≠ i), Pi.single (f := fun _ => α) i x j * v j = 0 := fun j hij => by
     simp [Pi.single_eq_of_ne hij]
   convert Finset.sum_eq_single i (fun j _ => this j) _ using 1 <;> simp
 #align matrix.single_dot_product Matrix.single_dotProduct
--- Porting note: (implicit arg) added `(f := fun _ => α)`
 
 @[simp]
 theorem dotProduct_single (x : α) (i : m) : v ⬝ᵥ Pi.single i x = v i * x := by
+  -- Porting note: (implicit arg) added `(f := fun _ => α)`
   have : ∀ (j) (_ : j ≠ i), v j * Pi.single (f := fun _ => α) i x j = 0 := fun j hij => by
     simp [Pi.single_eq_of_ne hij]
   convert Finset.sum_eq_single i (fun j _ => this j) _ using 1 <;> simp
 #align matrix.dot_product_single Matrix.dotProduct_single
--- Porting note: (implicit arg) added `(f := fun _ => α)`
 
 end NonUnitalNonAssocSemiringDecidable
 
@@ -976,8 +990,7 @@ theorem mul_diagonal [Fintype n] [DecidableEq n] (d : n → α) (M : Matrix m n 
 @[simp]
 theorem diagonal_mul_diagonal [Fintype n] [DecidableEq n] (d₁ d₂ : n → α) :
     diagonal d₁ ⬝ diagonal d₂ = diagonal fun i => d₁ i * d₂ i := by
-  ext
-  rename_i i j -- Porting note: `ext` does not like `Matrix.ext` introducing two vars at once.
+  ext i j
   by_cases i = j <;>
   simp [h]
 #align matrix.diagonal_mul_diagonal Matrix.diagonal_mul_diagonal
@@ -1067,8 +1080,7 @@ instance nonAssocSemiring [Fintype n] [DecidableEq n] : NonAssocSemiring (Matrix
       ext
       simp [Nat.cast]
     natCast_succ := fun n => by
-      ext
-      rename_i i j -- Porting note: `ext` does not like `Matrix.ext` introducing two vars at once.
+      ext i j
       by_cases i = j <;>
       simp [Nat.cast, *]}
 
@@ -1910,8 +1922,7 @@ theorem transpose_zero [Zero α] : (0 : Matrix m n α)ᵀ = 0 := by
 
 @[simp]
 theorem transpose_one [DecidableEq n] [Zero α] [One α] : (1 : Matrix n n α)ᵀ = 1 := by
-  ext
-  rename_i i j -- Porting note: `ext` does not like `Matrix.ext` introducing two vars at once.
+  ext i j
   rw [transpose_apply, ← diagonal_one]
   by_cases i = j
   · simp only [h, diagonal_apply_eq]
@@ -2381,8 +2392,7 @@ theorem submatrix_diagonal [Zero α] [DecidableEq m] [DecidableEq l] (d : m → 
   ext fun i j => by
     rw [submatrix_apply]
     by_cases h : i = j
-    · rw [h, diagonal_apply_eq, diagonal_apply_eq]
-      simp only [Function.comp_apply] -- Porting note: (simp) added this
+    · rw [h, diagonal_apply_eq, diagonal_apply_eq, Function.comp]
     · rw [diagonal_apply_ne _ h, diagonal_apply_ne _ (he.ne h)]
 #align matrix.submatrix_diagonal Matrix.submatrix_diagonal
 
@@ -2667,28 +2677,28 @@ variable {M : Matrix m n α} {i : m} {j : n} {b : n → α} {c : m → α}
 
 @[simp]
 theorem updateRow_self [DecidableEq m] : updateRow M i b i = b :=
+  -- Porting note: (implicit arg) added `(β := _)`
   Function.update_same (β := fun _ => (n → α)) i b M
 #align matrix.update_row_self Matrix.updateRow_self
--- Porting note: (implicit arg) added `(β := _)`
 
 @[simp]
 theorem updateColumn_self [DecidableEq n] : updateColumn M j c i j = c i :=
+-- Porting note: (implicit arg) added `(β := _)`
   Function.update_same (β := fun _ => α) j (c i) (M i)
 #align matrix.update_column_self Matrix.updateColumn_self
--- Porting note: (implicit arg) added `(β := _)`
 
 @[simp]
 theorem updateRow_ne [DecidableEq m] {i' : m} (i_ne : i' ≠ i) : updateRow M i b i' = M i' :=
+  -- Porting note: (implicit arg) added `(β := _)`
   Function.update_noteq (β := fun _ => (n → α)) i_ne b M
 #align matrix.update_row_ne Matrix.updateRow_ne
--- Porting note: (implicit arg) added `(β := _)`
 
 @[simp]
 theorem updateColumn_ne [DecidableEq n] {j' : n} (j_ne : j' ≠ j) :
     updateColumn M j c i j' = M i j' :=
+  -- Porting note: (implicit arg) added `(β := _)`
   Function.update_noteq (β := fun _ => α) j_ne (c i) (M i)
 #align matrix.update_column_ne Matrix.updateColumn_ne
--- Porting note: (implicit arg) added `(β := _)`
 
 theorem updateRow_apply [DecidableEq m] {i' : m} :
     updateRow M i b i' j = if i' = i then b j else M i' j := by
@@ -2707,16 +2717,14 @@ theorem updateColumn_apply [DecidableEq n] {j' : n} :
 @[simp]
 theorem updateColumn_subsingleton [Subsingleton n] (A : Matrix m n R) (i : n) (b : m → R) :
     A.updateColumn i b = (col b).submatrix id (Function.const n ()) := by
-  ext
-  rename_i x y -- Porting note: `ext` does not like `Matrix.ext` introducing two vars at once.
+  ext x y
   simp [updateColumn_apply, Subsingleton.elim i y]
 #align matrix.update_column_subsingleton Matrix.updateColumn_subsingleton
 
 @[simp]
 theorem updateRow_subsingleton [Subsingleton m] (A : Matrix m n R) (i : m) (b : n → R) :
     A.updateRow i b = (row b).submatrix (Function.const m ()) id := by
-  ext
-  rename_i x y -- Porting note: `ext` does not like `Matrix.ext` introducing two vars at once.
+  ext x y
   simp [updateColumn_apply, Subsingleton.elim i x]
 #align matrix.update_row_subsingleton Matrix.updateRow_subsingleton
 
@@ -2773,8 +2781,7 @@ theorem updateColumn_eq_self [DecidableEq n] (A : Matrix m n α) (i : n) :
 
 theorem diagonal_updateColumn_single [DecidableEq n] [Zero α] (v : n → α) (i : n) (x : α) :
     (diagonal v).updateColumn i (Pi.single i x) = diagonal (Function.update v i x) := by
-  ext
-  rename_i j k -- Porting note: `ext` does not like `Matrix.ext` introducing two vars at once.
+  ext j k
   obtain rfl | hjk := eq_or_ne j k
   · rw [diagonal_apply_eq]
     obtain rfl | hji := eq_or_ne j i
