@@ -98,7 +98,7 @@ instance smulCommClass'' {g : I → Type _} {h : I → Type _} [∀ i, SMul (g i
 #align pi.vadd_comm_class'' Pi.vaddCommClass''
 
 @[to_additive]
-instance {α : Type _} [∀ i, SMul α <| f i] [∀ i, SMul αᵐᵒᵖ <| f i]
+instance isCentralScalar {α : Type _} [∀ i, SMul α <| f i] [∀ i, SMul αᵐᵒᵖ <| f i]
     [∀ i, IsCentralScalar α (f i)] : IsCentralScalar α (∀ i, f i) :=
   ⟨fun _ _ => funext fun _ => op_smul_eq_smul _ _⟩
 

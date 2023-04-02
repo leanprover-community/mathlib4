@@ -455,6 +455,7 @@ import Mathlib.CategoryTheory.Localization.Construction
 import Mathlib.CategoryTheory.Localization.Opposite
 import Mathlib.CategoryTheory.Localization.Predicate
 import Mathlib.CategoryTheory.Monad.Basic
+import Mathlib.CategoryTheory.Monad.Kleisli
 import Mathlib.CategoryTheory.Monoidal.Category
 import Mathlib.CategoryTheory.Monoidal.Discrete
 import Mathlib.CategoryTheory.Monoidal.End
@@ -770,6 +771,7 @@ import Mathlib.Data.List.Sublists
 import Mathlib.Data.List.TFAE
 import Mathlib.Data.List.Zip
 import Mathlib.Data.ListM
+import Mathlib.Data.Matrix.Basic
 import Mathlib.Data.Matrix.DMatrix
 import Mathlib.Data.Multiset.Antidiagonal
 import Mathlib.Data.Multiset.Basic
