@@ -666,27 +666,21 @@ end ApplySum
 /-- Restrict the codomain of a multilinear map to a submodule.
 
 This is the multilinear version of `LinearMap.codRestrict`. -/
--- Porting note: Removed [simps] & added simpNF-approved version of the generated lemma manually.
--- @[simps]
+@[simps]
 def codRestrict (f : MultilinearMap R M₁ M₂) (p : Submodule R M₂) (h : ∀ v, f v ∈ p) :
     MultilinearMap R M₁ p where
   toFun v := ⟨f v, h v⟩
   map_add' _ _ _ _ := Subtype.ext <| MultilinearMap.map_add _ _ _ _ _
   map_smul' _ _ _ _ := Subtype.ext <| MultilinearMap.map_smul _ _ _ _ _
 #align multilinear_map.cod_restrict MultilinearMap.codRestrict
-
-@[simp]
-lemma codRestrict_apply_coe (f : MultilinearMap R M₁ M₂) (p : Submodule R M₂) (h : ∀ v, f v ∈ p)
-    (v : (i : ι) → M₁ i): (codRestrict f p h) v = f v := by
-  simp only [codRestrict, coe_mk]
 #align multilinear_map.cod_restrict_apply_coe MultilinearMap.codRestrict_apply_coe
 
 section RestrictScalar
 
-/- Porting note: These used to be a single variable statement, had to split them up to two,
-would not be able to infer SMul A (M₁ i) otherwise -/
+/- Porting note: These used to be a single variable statement, had to split them up to two so that
+the universe metavariable is instantiated before typeclass search runs in `IsScalarTower`. -/
 variable (R) {A : Type _} [Semiring A] [SMul R A] [∀ i : ι, Module A (M₁ i)] [Module A M₂]
-variable  [∀ i, IsScalarTower R A (M₁ i)] [IsScalarTower R A M₂]
+variable [∀ i, IsScalarTower R A (M₁ i)] [IsScalarTower R A M₂]
 
 /-- Reinterpret an `A`-multilinear map as an `R`-multilinear map, if `A` is an algebra over `R`
 and their actions on all involved modules agree with the action of `R` on `A`. -/
@@ -974,8 +968,8 @@ end Module
 
 section
 
--- Porting note: added [CommSemiring R] here
-variable (R ι) (A : Type _) [CommSemiring A] [CommSemiring R] [Algebra R A] [Fintype ι]
+variable (R ι)
+variable (A : Type _) [CommSemiring A] [Algebra R A] [Fintype ι]
 
 /-- Given an `R`-algebra `A`, `mkPiAlgebra` is the multilinear map on `A^ι` associating
 to `m` the product of all the `m i`.
@@ -1000,8 +994,8 @@ end
 
 section
 
--- Porting note: added [CommSemiring R] here
-variable (R n) (A : Type _) [Semiring A] [CommSemiring R] [Algebra R A]
+variable (R n)
+variable (A : Type _) [Semiring A] [Algebra R A]
 
 /-- Given an `R`-algebra `A`, `mkPiAlgebraFin` is the multilinear map on `A^n` associating
 to `m` the product of all the `m i`.
