@@ -442,7 +442,7 @@ theorem acc_liftOn₂'_iff {s : Setoid α} {r : α → α → Prop} {H} {a} :
 
 /-- A relation is well founded iff its lift to a quotient is. -/
 @[simp]
-theorem wellFounded_lift₂_iff [s : Setoid α] {r : α → α → Prop}
+theorem wellFounded_lift₂_iff [Setoid α] {r : α → α → Prop}
     {H : ∀ (a₁ b₁ a₂ b₂ : α), a₁ ≈ a₂ → b₁ ≈ b₂ → r a₁ b₁ = r a₂ b₂} :
     WellFounded (Quotient.lift₂ r H) ↔ WellFounded r :=
   by
