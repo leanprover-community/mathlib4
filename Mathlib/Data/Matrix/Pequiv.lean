@@ -15,26 +15,26 @@ import Mathlib.Data.PEquiv
 # partial equivalences for matrices
 
 Using partial equivalences to represent matrices.
-This file introduces the function `pequiv.to_matrix`, which returns a matrix containing ones and
+This file introduces the function `PEquiv.toMatrix`, which returns a matrix containing ones and
 zeros. For any partial equivalence `f`, `f.to_matrix i j = 1 ↔ f i = some j`.
 
 The following important properties of this function are proved
 `to_matrix_trans : (f.trans g).to_matrix = f.to_matrix ⬝ g.to_matrix`
 `to_matrix_symm  : f.symm.to_matrix = f.to_matrixᵀ`
-`to_matrix_refl : (pequiv.refl n).to_matrix = 1`
+`to_matrix_refl : (PEquiv.refl n).to_matrix = 1`
 `to_matrix_bot : ⊥.to_matrix = 0`
 
 This theory gives the matrix representation of projection linear maps, and their right inverses.
-For example, the matrix `(single (0 : fin 1) (i : fin n)).to_matrix` corresponds to the ith
+For example, the matrix `(single (0 : Fin 1) (i : Fin n)).to_matrix` corresponds to the ith
 projection map from R^n to R.
 
-Any injective function `fin m → fin n` gives rise to a `pequiv`, whose matrix is the projection
+Any injective function `Fin m → Fin n` gives rise to a `PEquiv`, whose matrix is the projection
 map from R^m → R^n represented by the same function. The transpose of this matrix is the right
 inverse of this map, sending anything not in the image to zero.
 
 ## notations
 
-This file uses the notation ` ⬝ ` for `matrix.mul` and `ᵀ` for `matrix.transpose`.
+This file uses the notation ` ⬝ ` for `Matrix.mul` and `ᵀ` for `Matrix.transpose`.
 -/
 
 
