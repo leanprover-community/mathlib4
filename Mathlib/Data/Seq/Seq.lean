@@ -279,9 +279,9 @@ theorem get?_tail (s : Seq α) (n) : get? (tail s) n = get? s (n + 1) :=
 
 /-- Recursion principle for sequences, compare with `List.recOn`. -/
 -- porting note: TODO: use match rather than `induction'`
-noncomputable def recOn {C : Seq α → Sort v} (s : Seq α) (h1 : C nil) (h2 : ∀ x s, C (cons x s)) :
+def recOn {C : Seq α → Sort v} (s : Seq α) (h1 : C nil) (h2 : ∀ x s, C (cons x s)) :
     C s := by
-  induction' H : destruct s with v v
+  cases' H : destruct s with v
   · rw [destruct_eq_nil H]
     apply h1
   · cases' v with a s'
