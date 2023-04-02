@@ -89,8 +89,7 @@ unsafe def _root_.ListM.whileAtLeastHeartbeatsPercent (L : ListM MetaM α) (perc
 ListM.squash do
   let initialHeartbeats ← getRemainingHeartbeats
   pure <| L.takeWhileM fun _ => do
-    guard <| (← getRemainingHeartbeats) * 100 / initialHeartbeats > percent
-    pure PUnit.unit
+    return .up <| (← getRemainingHeartbeats) * 100 / initialHeartbeats > percent
 
 /--
 Find lemmas which can rewrite the goal.
@@ -111,8 +110,10 @@ unsafe def rewritesCore (lemmas : DiscrTree (Name × Bool × Nat) s) (goal : MVa
   pure <| candidates.filterMapM fun ⟨lem, symm, weight⟩ => do
     trace[Tactic.rewrites] "considering {if symm then "←" else ""}{lem}"
     let result ← goal.rewrite type (← mkConstWithFreshMVarLevels lem) symm
-    guard result.mvarIds.isEmpty -- TODO Perhaps allow new goals? Try closing them with solveByElim?
-    pure ⟨lem, symm, weight, result, none⟩
+    return if result.mvarIds.isEmpty then -- TODO Perhaps allow new goals? Try closing them with solveByElim?
+      some ⟨lem, symm, weight, result, none⟩
+    else
+      none
 
 /-- Find lemmas which can rewrite the goal. -/
 def rewrites (lemmas : DiscrTree (Name × Bool × Nat) s) (goal : MVarId)
