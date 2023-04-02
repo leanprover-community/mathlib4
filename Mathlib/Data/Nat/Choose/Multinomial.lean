@@ -253,7 +253,7 @@ theorem sum_pow_of_commute [Semiring R] (x : α → R)
         exact ⟨0, by simp⟩
       convert (@one_mul R _ _).symm
       dsimp only
-      convert @Nat.cast_one R
+      convert @Nat.cast_one R _
       sorry
     · rw [_root_.pow_succ, zero_mul]
       -- Porting note : Lean cannot infer this instance by itself
