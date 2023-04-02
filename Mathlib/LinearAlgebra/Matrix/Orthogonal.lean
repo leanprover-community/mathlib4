@@ -17,10 +17,10 @@ This file contains definitions and properties concerning orthogonality of rows a
 
 ## Main results
 
-- `matrix.has_orthogonal_rows`:
-  `A.has_orthogonal_rows` means `A` has orthogonal (with respect to `dot_product`) rows.
-- `matrix.has_orthogonal_cols`:
-  `A.has_orthogonal_cols` means `A` has orthogonal (with respect to `dot_product`) columns.
+- `Matrix.OrthogonalRows`:
+  `A.OrthogonalRows` means `A` has orthogonal (with respect to `dotProduct`) rows.
+- `Matrix.OrthogonalCols`:
+  `A.OrthogonalCols` means `A` has orthogonal (with respect to `dotProduct`) columns.
 
 ## Tags
 
@@ -38,53 +38,52 @@ variable (A : Matrix m n α)
 
 open Matrix
 
-/-- `A.has_orthogonal_rows` means matrix `A` has orthogonal rows (with respect to
-`matrix.dot_product`). -/
-def HasOrthogonalRows [Fintype n] : Prop :=
+/-- `A.OrthogonalRows` means matrix `A` has orthogonal rows (with respect to
+`Matrix.dotProduct`). -/
+def OrthogonalRows [Fintype n] : Prop :=
   ∀ ⦃i₁ i₂⦄, i₁ ≠ i₂ → dotProduct (A i₁) (A i₂) = 0
-#align matrix.has_orthogonal_rows Matrix.HasOrthogonalRows
+#align matrix.has_orthogonal_rows Matrix.OrthogonalRows
 
-/-- `A.has_orthogonal_rows` means matrix `A` has orthogonal columns (with respect to
-`matrix.dot_product`). -/
-def HasOrthogonalCols [Fintype m] : Prop :=
-  HasOrthogonalRows Aᵀ
-#align matrix.has_orthogonal_cols Matrix.HasOrthogonalCols
+/-- `A.OrthogonalCols` means matrix `A` has orthogonal columns (with respect to
+`Matrix.dotProduct`). -/
+def OrthogonalCols [Fintype m] : Prop :=
+  OrthogonalRows Aᵀ
+#align matrix.has_orthogonal_cols Matrix.OrthogonalCols
 
 /-- `Aᵀ` has orthogonal rows iff `A` has orthogonal columns. -/
 @[simp]
-theorem transpose_hasOrthogonalRows_iff_hasOrthogonalCols [Fintype m] :
-    Aᵀ.HasOrthogonalRows ↔ A.HasOrthogonalCols :=
+theorem transpose_OrthogonalRows_iff_OrthogonalCols [Fintype m] :
+    Aᵀ.OrthogonalRows ↔ A.OrthogonalCols :=
   Iff.rfl
-#align matrix.transpose_has_orthogonal_rows_iff_has_orthogonal_cols Matrix.transpose_hasOrthogonalRows_iff_hasOrthogonalCols
+#align matrix.transpose_has_orthogonal_rows_iff_has_orthogonal_cols Matrix.transpose_OrthogonalRows_iff_OrthogonalCols
 
 /-- `Aᵀ` has orthogonal columns iff `A` has orthogonal rows. -/
 @[simp]
-theorem transpose_hasOrthogonalCols_iff_hasOrthogonalRows [Fintype n] :
-    Aᵀ.HasOrthogonalCols ↔ A.HasOrthogonalRows :=
+theorem transpose_OrthogonalCols_iff_OrthogonalRows [Fintype n] :
+    Aᵀ.OrthogonalCols ↔ A.OrthogonalRows :=
   Iff.rfl
-#align matrix.transpose_has_orthogonal_cols_iff_has_orthogonal_rows Matrix.transpose_hasOrthogonalCols_iff_hasOrthogonalRows
+#align matrix.transpose_has_orthogonal_cols_iff_has_orthogonal_rows Matrix.transpose_OrthogonalCols_iff_OrthogonalRows
 
 variable {A}
 
-theorem HasOrthogonalRows.hasOrthogonalCols [Fintype m] (h : Aᵀ.HasOrthogonalRows) :
-    A.HasOrthogonalCols :=
+theorem OrthogonalRows.OrthogonalCols [Fintype m] (h : Aᵀ.OrthogonalRows) :
+    A.OrthogonalCols :=
   h
-#align matrix.has_orthogonal_rows.has_orthogonal_cols Matrix.HasOrthogonalRows.hasOrthogonalCols
+#align matrix.has_orthogonal_rows.has_orthogonal_cols Matrix.OrthogonalRows.OrthogonalCols
 
-theorem HasOrthogonalCols.transpose_hasOrthogonalRows [Fintype m] (h : A.HasOrthogonalCols) :
-    Aᵀ.HasOrthogonalRows :=
+theorem OrthogonalCols.transpose_OrthogonalRows [Fintype m] (h : A.OrthogonalCols) :
+    Aᵀ.OrthogonalRows :=
   h
-#align matrix.has_orthogonal_cols.transpose_has_orthogonal_rows Matrix.HasOrthogonalCols.transpose_hasOrthogonalRows
+#align matrix.has_orthogonal_cols.transpose_has_orthogonal_rows Matrix.OrthogonalCols.transpose_OrthogonalRows
 
-theorem HasOrthogonalCols.hasOrthogonalRows [Fintype n] (h : Aᵀ.HasOrthogonalCols) :
-    A.HasOrthogonalRows :=
+theorem OrthogonalCols.OrthogonalRows [Fintype n] (h : Aᵀ.OrthogonalCols) :
+    A.OrthogonalRows :=
   h
-#align matrix.has_orthogonal_cols.has_orthogonal_rows Matrix.HasOrthogonalCols.hasOrthogonalRows
+#align matrix.has_orthogonal_cols.has_orthogonal_rows Matrix.OrthogonalCols.OrthogonalRows
 
-theorem HasOrthogonalRows.transpose_hasOrthogonalCols [Fintype n] (h : A.HasOrthogonalRows) :
-    Aᵀ.HasOrthogonalCols :=
+theorem OrthogonalRows.transpose_OrthogonalCols [Fintype n] (h : A.OrthogonalRows) :
+    Aᵀ.OrthogonalCols :=
   h
-#align matrix.has_orthogonal_rows.transpose_has_orthogonal_cols Matrix.HasOrthogonalRows.transpose_hasOrthogonalCols
+#align matrix.has_orthogonal_rows.transpose_has_orthogonal_cols Matrix.OrthogonalRows.transpose_OrthogonalCols
 
 end Matrix
-
