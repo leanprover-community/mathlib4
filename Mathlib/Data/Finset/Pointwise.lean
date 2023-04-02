@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Yaël Dillies
 
 ! This file was ported from Lean 3 source module data.finset.pointwise
-! leanprover-community/mathlib commit b685f506164f8d17a6404048bc4d696739c5d976
+! leanprover-community/mathlib commit 5e526d18cea33550268dcbbddcb822d5cde40654
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -57,7 +57,7 @@ pointwise subtraction
 -/
 
 
-open Function
+open Function MulOpposite
 
 open BigOperators Pointwise
 
@@ -236,9 +236,11 @@ theorem inv_nonempty_iff : s⁻¹.Nonempty ↔ s.Nonempty :=
 #align finset.inv_nonempty_iff Finset.inv_nonempty_iff
 #align finset.neg_nonempty_iff Finset.neg_nonempty_iff
 
-alias inv_nonempty_iff ↔ nonempty.inv nonempty.of_inv
-#align finset.nonempty.inv Finset.nonempty.inv
-#align finset.nonempty.of_inv Finset.nonempty.of_inv
+alias inv_nonempty_iff ↔ Nonempty.of_inv Nonempty.inv
+#align finset.nonempty.of_inv Finset.Nonempty.of_inv
+#align finset.nonempty.inv Finset.Nonempty.inv
+
+attribute [to_additive] Nonempty.inv Nonempty.of_inv
 
 @[to_additive (attr := mono)]
 theorem inv_subset_inv (h : s ⊆ t) : s⁻¹ ⊆ t⁻¹ :=
@@ -457,6 +459,18 @@ theorem mul_inter_subset : s * (t₁ ∩ t₂) ⊆ s * t₁ ∩ (s * t₂) :=
 #align finset.mul_inter_subset Finset.mul_inter_subset
 #align finset.add_inter_subset Finset.add_inter_subset
 
+@[to_additive]
+theorem inter_mul_union_subset_union : s₁ ∩ s₂ * (t₁ ∪ t₂) ⊆ s₁ * t₁ ∪ s₂ * t₂ :=
+  image₂_inter_union_subset_union
+#align finset.inter_mul_union_subset_union Finset.inter_mul_union_subset_union
+#align finset.inter_add_union_subset_union Finset.inter_add_union_subset_union
+
+@[to_additive]
+theorem union_mul_inter_subset_union : (s₁ ∪ s₂) * (t₁ ∩ t₂) ⊆ s₁ * t₁ ∪ s₂ * t₂ :=
+  image₂_union_inter_subset_union
+#align finset.union_mul_inter_subset_union Finset.union_mul_inter_subset_union
+#align finset.union_add_inter_subset_union Finset.union_add_inter_subset_union
+
 /-- If a finset `u` is contained in the product of two sets `s * t`, we can find two finsets `s'`,
 `t'` such that `s' ⊆ s`, `t' ⊆ t` and `u ⊆ s' * t'`. -/
 @[to_additive
@@ -666,6 +680,18 @@ theorem div_inter_subset : s / (t₁ ∩ t₂) ⊆ s / t₁ ∩ (s / t₂) :=
   image₂_inter_subset_right
 #align finset.div_inter_subset Finset.div_inter_subset
 #align finset.sub_inter_subset Finset.sub_inter_subset
+
+@[to_additive]
+theorem inter_div_union_subset_union : s₁ ∩ s₂ / (t₁ ∪ t₂) ⊆ s₁ / t₁ ∪ s₂ / t₂ :=
+  image₂_inter_union_subset_union
+#align finset.inter_div_union_subset_union Finset.inter_div_union_subset_union
+#align finset.inter_sub_union_subset_union Finset.inter_sub_union_subset_union
+
+@[to_additive]
+theorem union_div_inter_subset_union : (s₁ ∪ s₂) / (t₁ ∩ t₂) ⊆ s₁ / t₁ ∪ s₂ / t₂ :=
+  image₂_union_inter_subset_union
+#align finset.union_div_inter_subset_union Finset.union_div_inter_subset_union
+#align finset.union_sub_inter_subset_union Finset.union_sub_inter_subset_union
 
 /-- If a finset `u` is contained in the product of two sets `s / t`, we can find two finsets `s'`,
 `t'` such that `s' ⊆ s`, `t' ⊆ t` and `u ⊆ s' / t'`. -/
@@ -1376,6 +1402,18 @@ theorem smul_inter_subset : s • (t₁ ∩ t₂) ⊆ s • t₁ ∩ s • t₂ 
 #align finset.smul_inter_subset Finset.smul_inter_subset
 #align finset.vadd_inter_subset Finset.vadd_inter_subset
 
+@[to_additive]
+theorem inter_smul_union_subset_union [DecidableEq α] : (s₁ ∩ s₂) • (t₁ ∪ t₂) ⊆ s₁ • t₁ ∪ s₂ • t₂ :=
+  image₂_inter_union_subset_union
+#align finset.inter_smul_union_subset_union Finset.inter_smul_union_subset_union
+#align finset.inter_vadd_union_subset_union Finset.inter_vadd_union_subset_union
+
+@[to_additive]
+theorem union_smul_inter_subset_union [DecidableEq α] : (s₁ ∪ s₂) • (t₁ ∩ t₂) ⊆ s₁ • t₁ ∪ s₂ • t₂ :=
+  image₂_union_inter_subset_union
+#align finset.union_smul_inter_subset_union Finset.union_smul_inter_subset_union
+#align finset.union_vadd_inter_subset_union Finset.union_vadd_inter_subset_union
+
 /-- If a finset `u` is contained in the scalar product of two sets `s • t`, we can find two finsets
 `s'`, `t'` such that `s' ⊆ s`, `t' ⊆ t` and `u ⊆ s' • t'`. -/
 @[to_additive
@@ -1567,10 +1605,10 @@ theorem coe_smul_finset (a : α) (s : Finset β) : ↑(a • s)  = a • (↑s :
 #align finset.coe_vadd_finset Finset.coe_vadd_finset
 
 @[to_additive]
-theorem smul_finset_mem_smul_finset : b ∈ s → a • b ∈ a • s :=
+theorem smul_mem_smul_finset : b ∈ s → a • b ∈ a • s :=
   mem_image_of_mem _
-#align finset.smul_finset_mem_smul_finset Finset.smul_finset_mem_smul_finset
-#align finset.vadd_finset_mem_vadd_finset Finset.vadd_finset_mem_vadd_finset
+#align finset.smul_mem_smul_finset Finset.smul_mem_smul_finset
+#align finset.vadd_mem_vadd_finset Finset.vadd_mem_vadd_finset
 
 @[to_additive]
 theorem smul_finset_card_le : (a • s).card ≤ s.card :=
@@ -1632,10 +1670,17 @@ theorem smul_finset_inter_subset : a • (s₁ ∩ s₂) ⊆ a • s₁ ∩ a �
 #align finset.smul_finset_inter_subset Finset.smul_finset_inter_subset
 #align finset.vadd_finset_inter_subset Finset.vadd_finset_inter_subset
 
-@[simp]
+@[to_additive]
+theorem smul_finset_subset_smul {s : Finset α} : a ∈ s → a • t ⊆ s • t :=
+  image_subset_image₂_right
+#align finset.smul_finset_subset_smul Finset.smul_finset_subset_smul
+#align finset.vadd_finset_subset_vadd Finset.vadd_finset_subset_vadd
+
+@[to_additive (attr := simp)]
 theorem bunionᵢ_smul_finset (s : Finset α) (t : Finset β) : s.bunionᵢ (· • t) = s • t :=
   bunionᵢ_image_left
 #align finset.bUnion_smul_finset Finset.bunionᵢ_smul_finset
+#align finset.bUnion_vadd_finset Finset.bunionᵢ_vadd_finset
 
 end SMul
 
@@ -1768,6 +1813,65 @@ instance noZeroSMulDivisors_finset [Zero α] [Zero β] [SMul α β] [NoZeroSMulD
 #align finset.no_zero_smul_divisors_finset Finset.noZeroSMulDivisors_finset
 
 end Instances
+
+section SMul
+
+variable [DecidableEq β] [DecidableEq γ] [SMul αᵐᵒᵖ β] [SMul β γ] [SMul α γ]
+
+-- TODO: replace hypothesis and conclusion with a typeclass
+@[to_additive]
+theorem op_smul_finset_smul_eq_smul_smul_finset (a : α) (s : Finset β) (t : Finset γ)
+    (h : ∀ (a : α) (b : β) (c : γ), (op a • b) • c = b • a • c) : (op a • s) • t = s • a • t :=
+  by
+  ext
+  simp [mem_smul, mem_smul_finset, h]
+#align finset.op_smul_finset_smul_eq_smul_smul_finset Finset.op_smul_finset_smul_eq_smul_smul_finset
+#align finset.op_vadd_finset_vadd_eq_vadd_vadd_finset Finset.op_vadd_finset_vadd_eq_vadd_vadd_finset
+
+end SMul
+
+section Mul
+
+variable [Mul α] [DecidableEq α] {s t u : Finset α} {a : α}
+
+@[to_additive]
+theorem op_smul_finset_subset_mul : a ∈ t → op a • s ⊆ s * t :=
+  image_subset_image₂_left
+#align finset.op_smul_finset_subset_mul Finset.op_smul_finset_subset_mul
+#align finset.op_vadd_finset_subset_add Finset.op_vadd_finset_subset_add
+
+@[to_additive (attr := simp)]
+theorem bunionᵢ_op_smul_finset (s t : Finset α) : (t.bunionᵢ fun a => op a • s) = s * t :=
+  bunionᵢ_image_right
+#align finset.bUnion_op_smul_finset Finset.bunionᵢ_op_smul_finset
+#align finset.bUnion_op_vadd_finset Finset.bunionᵢ_op_vadd_finset
+
+@[to_additive]
+theorem mul_subset_iff_left : s * t ⊆ u ↔ ∀ a ∈ s, a • t ⊆ u :=
+  image₂_subset_iff_left
+#align finset.mul_subset_iff_left Finset.mul_subset_iff_left
+#align finset.add_subset_iff_left Finset.add_subset_iff_left
+
+@[to_additive]
+theorem mul_subset_iff_right : s * t ⊆ u ↔ ∀ b ∈ t, op b • s ⊆ u :=
+  image₂_subset_iff_right
+#align finset.mul_subset_iff_right Finset.mul_subset_iff_right
+#align finset.add_subset_iff_right Finset.add_subset_iff_right
+
+end Mul
+
+section Semigroup
+
+variable [Semigroup α] [DecidableEq α]
+
+@[to_additive]
+theorem op_smul_finset_mul_eq_mul_smul_finset (a : α) (s : Finset α) (t : Finset α) :
+    op a • s * t = s * a • t :=
+  op_smul_finset_smul_eq_smul_smul_finset _ _ _ fun _ _ _ => mul_assoc _ _ _
+#align finset.op_smul_finset_mul_eq_mul_smul_finset Finset.op_smul_finset_mul_eq_mul_smul_finset
+#align finset.op_vadd_finset_add_eq_add_vadd_finset Finset.op_vadd_finset_add_eq_add_vadd_finset
+
+end Semigroup
 
 section LeftCancelSemigroup
 
