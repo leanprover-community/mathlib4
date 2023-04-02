@@ -1,0 +1,32 @@
+{
+  "name": "mathlib4-widgets",
+  "version": "0.1.0",
+  "description": "",
+  "scripts": {
+    "watch": "rollup --environment NODE_ENV:production --config --watch",
+    "build": "rollup --environment NODE_ENV:production --config"
+  },
+  "author": "",
+  "license": "Apache-2.0",
+  "type": "module",
+  "dependencies": {
+    "@leanprover/infoview": "~0.4.2",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "vscode-languageserver-protocol": "^3.17.2"
+  },
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^24.0.0",
+    "@rollup/plugin-node-resolve": "^15.0.1",
+    "@rollup/plugin-replace": "^5.0.2",
+    "@rollup/plugin-terser": "^0.3.0",
+    "@rollup/plugin-typescript": "^11.0.0",
+    "@types/react": "^18.0.26",
+    "@types/react-dom": "^18.0.10",
+    "glob": "^8.0.3",
+    "rollup": "^3.9.1",
+    "rollup-plugin-import-css": "^3.2.1",
+    "tslib": "^2.4.1",
+    "typescript": "^4.9.4"
+  }
+}

@@ -3,3 +3,4 @@ chatgpt.*.json
 /build
 /lake-packages
 /.cache
+node_modules/
