@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 
 ! This file was ported from Lean 3 source module algebra.star.self_adjoint
-! leanprover-community/mathlib commit 9abfa6f0727d5adc99067e325e15d1a9de17fd8e
+! leanprover-community/mathlib commit a6ece35404f60597c651689c1b46ead86de5ac1b
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -252,7 +252,6 @@ end DivisionRing
 
 section Semifield
 
--- porting note: generalize to `Semifield` to fix lean4#2074-related errors
 variable [Semifield R] [StarRing R]
 
 theorem div {x y : R} (hx : IsSelfAdjoint x) (hy : IsSelfAdjoint y) : IsSelfAdjoint (x / y) := by
