@@ -964,8 +964,10 @@ theorem join_map_ret (s : Seq α) : Seq.join (Seq.map ret s) = s := by
 @[simp]
 theorem bind_ret (f : α → β) : ∀ s, bind s (ret ∘ f) = map f s
   | ⟨a, s⟩ => by
-    dsimp [bind, map]; change fun x => ret (f x) with ret ∘ f
-    rw [map_comp]; simp [Function.comp, ret]
+    dsimp [bind, map]; --change fun x => ret (f x) with ret ∘ f
+    rw [map_comp]
+    -- porting note: same as Mathlib3 up to this point
+    simp [Function.comp, ret]
 #align stream.seq1.bind_ret Stream'.Seq1.bind_ret
 
 @[simp]
