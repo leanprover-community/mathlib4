@@ -452,8 +452,9 @@ theorem matches'_map (f : α → β) :
   | char a => by
     rw [eq_comm]
     exact image_singleton
-  | R + S => by simp only [matches'_map, map, matches'_add, map_add]
-  | R * S => by simp only [matches'_map, map, matches'_mul, map_mul]
+  -- porting note: the following close with last `rw` but not with `simp`?
+  | R + S => by simp only [matches'_map, map, matches'_add]; rw [map_add]
+  | R * S => by simp only [matches'_map, map, matches'_mul]; rw [map_mul]
   | star R => by
     simp_rw [map, matches', matches'_map]
     rw [Language.kstar_eq_supᵢ_pow, Language.kstar_eq_supᵢ_pow]
