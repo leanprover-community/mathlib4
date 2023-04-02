@@ -16,16 +16,16 @@ import Mathlib.Data.PEquiv
 
 Using partial equivalences to represent matrices.
 This file introduces the function `PEquiv.toMatrix`, which returns a matrix containing ones and
-zeros. For any partial equivalence `f`, `f.to_matrix i j = 1 ↔ f i = some j`.
+zeros. For any partial equivalence `f`, `f.toMatrix i j = 1 ↔ f i = some j`.
 
 The following important properties of this function are proved
-`to_matrix_trans : (f.trans g).to_matrix = f.to_matrix ⬝ g.to_matrix`
-`to_matrix_symm  : f.symm.to_matrix = f.to_matrixᵀ`
-`to_matrix_refl : (PEquiv.refl n).to_matrix = 1`
-`to_matrix_bot : ⊥.to_matrix = 0`
+`toMatrix_trans : (f.trans g).toMatrix = f.toMatrix ⬝ g.toMatrix`
+`toMatrix_symm  : f.symm.toMatrix = f.toMatrixᵀ`
+`toMatrix_refl : (PEquiv.refl n).toMatrix = 1`
+`toMatrix_bot : ⊥.toMatrix = 0`
 
 This theory gives the matrix representation of projection linear maps, and their right inverses.
-For example, the matrix `(single (0 : Fin 1) (i : Fin n)).to_matrix` corresponds to the ith
+For example, the matrix `(single (0 : Fin 1) (i : Fin n)).toMatrix` corresponds to the ith
 projection map from R^n to R.
 
 Any injective function `Fin m → Fin n` gives rise to a `PEquiv`, whose matrix is the projection
@@ -55,13 +55,13 @@ instance [DecidableEq n] (j : n) (o : Option n) : Decidable (j ∈ o) := by
   rw [←Option.mem_toList]
   infer_instance
 
-/-- `to_matrix` returns a matrix containing ones and zeros. `f.to_matrix i j` is `1` if
+/-- `toMatrix` returns a matrix containing ones and zeros. `f.toMatrix i j` is `1` if
   `f i = some j` and `0` otherwise -/
 def toMatrix [DecidableEq n] [Zero α] [One α] (f : m ≃. n) : Matrix m n α :=
   of fun i j => if j ∈ f i then (1 : α) else 0
 #align pequiv.to_matrix PEquiv.toMatrix
 
--- TODO: set as an equation lemma for `to_matrix`, see mathlib4#3024
+-- TODO: set as an equation lemma for `toMatrix`, see mathlib4#3024
 @[simp]
 theorem toMatrix_apply [DecidableEq n] [Zero α] [One α] (f : m ≃. n) (i j) :
     toMatrix f i j = if j ∈ f i then (1 : α) else 0 :=
