@@ -68,30 +68,27 @@ Here is the proof thus far:\n" ++ (← latestCodeBlock).markdownBody
       else
         pure <| prompt ++ "\n" ++ goalsFeedback none (← ctx.ppGoals [g])
 
-def feedback : M IO String := do
-  let errors ← (← errors).mapM (fun e => do ParsedMessage.of (← latestCodeBlock).body e)
-  -- We now look at the errors, and given different responses depending on what we see.
-  let (unsolvedGoals, otherErrors) := errors.partition fun e => e.type == .unsolvedGoals
-  let (unknownTactics, _) := errors.partition fun e => e.type == .unknownTactic
-  let (_usesSorry, otherErrors) := otherErrors.partition fun e => e.type == .usesSorry
-
-  let badTactics := unknownTactics.map (fun t => t.span)
+def tacticSuggestion (badTactic : String) : String :=
   let tacs := ["all_goals", "any_goals", "apply", "assumption", "by_cases", "by_contra", "cases'", "congr", "contradiction", "contrapose", "convert", "convert_to", "exact", "exfalso", "field_simp", "have", "aesop", "induction'", "intro", "iterate", "left", "linarith", "push_neg", "rcases", "rfl", "repeat", "right", "ring", "rintro", "rw", "specialize", "constructor", "simp", "swap", "symm", "tauto", "try", "unfold", "use"]
 
-  let nearestToBad := fun badTac => (tacs.foldl (fun (best, dist) new =>
-    let newDist := badTac.levenshtein new
+  let suggestion := (tacs.foldl (fun (best, dist) new =>
+    let newDist := badTactic.levenshtein new
     if newDist < dist then
       (new, newDist)
     else
       (best, dist))
     ("", 5)).1
 
-  let replacements := badTactics.map nearestToBad
-  let tacticSuggetions :=
-    List.foldl
-    (fun currentStr (bt, rt) => currentStr ++ s!"You used {bt}, but it looks like you maybe meant {rt}. Try that instead\n")
-    ""
-    (badTactics.zip replacements)
+  s!"You used {badTactic}, but it looks like you maybe meant {suggestion}. Try that instead.\n"
+
+def feedback : M IO String := do
+  let errors ← (← errors).mapM (fun e => do ParsedMessage.of (← latestCodeBlock).body e)
+  -- We now look at the errors, and given different responses depending on what we see.
+  let (unsolvedGoals, otherErrors) := errors.partition fun e => e.type == .unsolvedGoals
+  let (_usesSorry, otherErrors) := otherErrors.partition fun e => e.type == .usesSorry
+  let unknownTactics := otherErrors.filter fun e => e.type == .unknownTactic
+
+  let badTactics := unknownTactics.map (fun t => t.span)
 
   match otherErrors with
   | [] => match ← sorries with
@@ -110,7 +107,7 @@ def feedback : M IO String := do
       -- TODO mention the later errors?
       (otherErrors.head?.map (fun p => p.toString)).get! ++
       "\n\nPlease describe how you are going to fix this error and try again.\n" ++
-      tacticSuggetions ++
+      String.join (badTactics.map tacticSuggestion) ++
       "Change the tactic step where there is an error, but do not add any additional tactic steps."
 
 def systemPrompt : String :=
