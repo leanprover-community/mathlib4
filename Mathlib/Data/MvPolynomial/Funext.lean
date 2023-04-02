@@ -8,9 +8,9 @@ Authors: Johan Commelin
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Polynomial.RingDivision
-import Mathbin.Data.MvPolynomial.Rename
-import Mathbin.RingTheory.Polynomial.Basic
+import Mathlib.Data.Polynomial.RingDivision
+import Mathlib.Data.MvPolynomial.Rename
+import Mathlib.RingTheory.Polynomial.Basic
 
 /-!
 ## Function extensionality for multivariate polynomials
@@ -31,8 +31,7 @@ namespace MvPolynomial
 variable {R : Type _} [CommRing R] [IsDomain R] [Infinite R]
 
 private theorem funext_fin {n : ℕ} {p : MvPolynomial (Fin n) R}
-    (h : ∀ x : Fin n → R, eval x p = 0) : p = 0 :=
-  by
+    (h : ∀ x : Fin n → R, eval x p = 0) : p = 0 := by
   induction' n with n ih generalizing R
   · let e := MvPolynomial.isEmptyRingEquiv R (Fin 0)
     apply e.injective
@@ -40,8 +39,7 @@ private theorem funext_fin {n : ℕ} {p : MvPolynomial (Fin n) R}
     convert h finZeroElim
     suffices
       (eval₂_hom (RingHom.id _) (IsEmpty.elim' Fin.isEmpty)) p =
-        (eval finZeroElim : MvPolynomial (Fin 0) R →+* R) p
-      by
+        (eval finZeroElim : MvPolynomial (Fin 0) R →+* R) p by
       rw [← this]
       simp only [coe_eval₂_hom, is_empty_ring_equiv_apply, RingEquiv.trans_apply,
         aeval_eq_eval₂_hom]
@@ -84,10 +82,8 @@ private theorem funext_fin {n : ℕ} {p : MvPolynomial (Fin n) R}
 /-- Two multivariate polynomials over an infinite integral domain are equal
 if they are equal upon evaluating them on an arbitrary assignment of the variables. -/
 theorem funext {σ : Type _} {p q : MvPolynomial σ R} (h : ∀ x : σ → R, eval x p = eval x q) :
-    p = q :=
-  by
-  suffices ∀ p, (∀ x : σ → R, eval x p = 0) → p = 0
-    by
+    p = q := by
+  suffices ∀ p, (∀ x : σ → R, eval x p = 0) → p = 0 by
     rw [← sub_eq_zero, this (p - q)]
     simp only [h, RingHom.map_sub, forall_const, sub_self]
   clear h p q
