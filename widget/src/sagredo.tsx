@@ -1,6 +1,7 @@
-import { RpcContext, RpcPtr, mapRpcError } from '@leanprover/infoview'
+import { EditorContext, RpcContext, RpcPtr, mapRpcError } from '@leanprover/infoview'
 import ReactMarkdown from 'react-markdown';
 import * as React from 'react';
+import { WorkspaceEdit } from 'vscode-languageserver-protocol';
 
 interface RpcData {
   k : RpcPtr<'Mathlib.Tactic.GPT.Sagredo.Widget.Data'>
@@ -29,6 +30,10 @@ interface RunQueryResponse {
   data: any
 }
 
+interface MakeProofEditResponse {
+  edit: WorkspaceEdit
+}
+
 function ChatBubble
     (props: React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>):
     JSX.Element {
@@ -49,6 +54,7 @@ function ChatBubble
 
 export default function(data0: RpcData) {
   const rs = React.useContext(RpcContext)
+  const ec = React.useContext(EditorContext)
 
   const [isAuto, setIsAuto] = React.useState<boolean>(false)
 
@@ -118,8 +124,18 @@ export default function(data0: RpcData) {
       {msgLog.map((msg, iMsg) =>
         <ChatBubble className={stylesOfMsg(msg)}>
           {msg.kind === 'response' &&
-            <div>
-              Copy proof: {msg.proof}
+            <div className='mb2 ' style={{ display: 'flow-root' }}>
+              <a
+                className='link pointer dim fr '
+                onClick={() => {
+                  rs.call<[RpcData, string], MakeProofEditResponse>
+                      ('makeProofEdit', [data, msg.proof])
+                    .then(resp => ec.api.applyEdit(resp.edit))
+                    .catch(e => console.error(`Error creating proof replacement edit: ${e}`))
+                }}
+              >
+                Insert proof
+              </a>
             </div>}
           <ReactMarkdown
             components={{

@@ -29,21 +29,49 @@ structure RPCData where
 -- Make it possible for widgets to receive `RPCData`.
 #mkrpcenc RPCData
 
+structure NextQueryResponse where
+  /-- The next query we will make. -/
+  query : String
+  data : RPCData
+
+#mkrpcenc NextQueryResponse
+
+structure RunQueryResponse where
+  /-- The LLM's entire response. -/
+  response : String
+  /-- The latest proof suggested by the LLM. -/
+  proof : String
+  data : RPCData
+
+#mkrpcenc RunQueryResponse
+
+structure MakeProofEditResponse where
+  edit: Lsp.WorkspaceEdit
+
+#mkrpcenc MakeProofEditResponse
+
 /-- Returns the text of the next query we will make. (But doesn't run it.) -/
 @[server_rpc_method]
-def nextQuery : RPCData → RequestM (RequestTask (String × RPCData))
+def nextQuery : RPCData → RequestM (RequestTask NextQueryResponse)
   | {k := ⟨{ci, lctx, σ}⟩} => RequestM.asTask do
     let (s, σ') ← Mathlib.Tactic.GPT.Sagredo.nextQuery σ
     pure ⟨s, ⟨ci, lctx, σ'⟩⟩
 
 /-- Runs the next query, and returns the entire response, as well as the extracted code block. -/
 @[server_rpc_method]
-def runQuery : RPCData → RequestM (RequestTask (String × String × RPCData))
+def runQuery : RPCData → RequestM (RequestTask RunQueryResponse)
   | {k := ⟨{ci, lctx, σ}⟩} => RequestM.asTask do
     let ((response, sol), σ') ← (do
       askForAssistance (← feedback)
       pure (← latestResponse, ← latestSolution)) σ
     pure ⟨response, sol, ⟨ci, lctx, σ'⟩⟩
+
+/-- Compute an edit to replace the current proof with one suggested by the LLM. -/
+@[server_rpc_method]
+def makeProofEdit : RPCData × String → RequestM (RequestTask MakeProofEditResponse)
+  | (data, proof) => RequestM.asTask do
+    -- TODO
+    return { edit := { changes := {} } }
 
 @[widget_module]
 def runnerWidget : Component RPCData where
@@ -67,4 +95,7 @@ syntax (name := makeRunnerTac) "sagredo!" : tactic
     liftMetaTactic fun g => do admitGoal g; pure []
   | _ => throwUnsupportedSyntax
 
-example : 1 = [1].length := by sagredo!
+/-- The length of the concatenation of two lists is the sum of the lengths of the lists. -/
+theorem length_append : ∀ (L1 L2 : List α), (L1 ++ L2).length = L1.length + L2.length := by
+  -- Please don't use the `refl` tactic.
+  sorry
