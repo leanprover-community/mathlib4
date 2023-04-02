@@ -8,7 +8,7 @@ Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Matrix.Basic
+import Mathlib.Data.Matrix.Basic
 
 /-!
 # Trace of a matrix
@@ -79,8 +79,7 @@ variable (n α R)
 
 /-- `matrix.trace` as an `add_monoid_hom` -/
 @[simps]
-def traceAddMonoidHom : Matrix n n R →+ R
-    where
+def traceAddMonoidHom : Matrix n n R →+ R where
   toFun := trace
   map_zero' := trace_zero n R
   map_add' := trace_add
@@ -88,8 +87,7 @@ def traceAddMonoidHom : Matrix n n R →+ R
 
 /-- `matrix.trace` as a `linear_map` -/
 @[simps]
-def traceLinearMap [Semiring α] [Module α R] : Matrix n n R →ₗ[α] R
-    where
+def traceLinearMap [Semiring α] [Module α R] : Matrix n n R →ₗ[α] R where
   toFun := trace
   map_add' := trace_add
   map_smul' := trace_smul
@@ -195,8 +193,7 @@ theorem trace_fin_two (A : Matrix (Fin 2) (Fin 2) R) : trace A = A 0 0 + A 1 1 :
   congr_arg ((· + ·) _) (add_zero (A 1 1))
 #align matrix.trace_fin_two Matrix.trace_fin_two
 
-theorem trace_fin_three (A : Matrix (Fin 3) (Fin 3) R) : trace A = A 0 0 + A 1 1 + A 2 2 :=
-  by
+theorem trace_fin_three (A : Matrix (Fin 3) (Fin 3) R) : trace A = A 0 0 + A 1 1 + A 2 2 := by
   rw [← add_zero (A 2 2), add_assoc]
   rfl
 #align matrix.trace_fin_three Matrix.trace_fin_three
