@@ -16,7 +16,7 @@ import Mathlib.Data.Matrix.Basic
 This file defines the trace of a matrix, the map sending a matrix to the sum of its diagonal
 entries.
 
-See also `linear_algebra.trace` for the trace of an endomorphism.
+See also `LinearAlgebra.Trace` for the trace of an endomorphism.
 
 ## Tags
 
@@ -38,8 +38,8 @@ section AddCommMonoid
 variable [AddCommMonoid R]
 
 /-- The trace of a square matrix. For more bundled versions, see:
-* `matrix.trace_add_monoid_hom`
-* `matrix.trace_linear_map`
+* `Matrix.traceAddMonoidHom`
+* `Matrix.traceLinearMap`
 -/
 def trace (A : Matrix n n R) : R :=
   ∑ i, diag A i
@@ -77,7 +77,7 @@ theorem trace_conjTranspose [StarAddMonoid R] (A : Matrix n n R) : trace Aᴴ = 
 
 variable (n α R)
 
-/-- `matrix.trace` as an `add_monoid_hom` -/
+/-- `Matrix.trace` as an `AddMonoidHom` -/
 @[simps]
 def traceAddMonoidHom : Matrix n n R →+ R where
   toFun := trace
@@ -85,7 +85,7 @@ def traceAddMonoidHom : Matrix n n R →+ R where
   map_add' := trace_add
 #align matrix.trace_add_monoid_hom Matrix.traceAddMonoidHom
 
-/-- `matrix.trace` as a `linear_map` -/
+/-- `Matrix.trace` as a `LinearMap` -/
 @[simps]
 def traceLinearMap [Semiring α] [Module α R] : Matrix n n R →ₗ[α] R where
   toFun := trace
@@ -96,12 +96,12 @@ def traceLinearMap [Semiring α] [Module α R] : Matrix n n R →ₗ[α] R where
 variable {n α R}
 
 @[simp]
-theorem trace_list_sum (l : List (Matrix n n R)) : trace l.Sum = (l.map trace).Sum :=
+theorem trace_list_sum (l : List (Matrix n n R)) : trace l.sum = (l.map trace).sum :=
   map_list_sum (traceAddMonoidHom n R) l
 #align matrix.trace_list_sum Matrix.trace_list_sum
 
 @[simp]
-theorem trace_multiset_sum (s : Multiset (Matrix n n R)) : trace s.Sum = (s.map trace).Sum :=
+theorem trace_multiset_sum (s : Multiset (Matrix n n R)) : trace s.sum = (s.map trace).sum :=
   map_multiset_sum (traceAddMonoidHom n R) s
 #align matrix.trace_multiset_sum Matrix.trace_multiset_sum
 
@@ -164,7 +164,9 @@ theorem trace_mul_cycle' [NonUnitalCommSemiring R] (A : Matrix m n R) (B : Matri
 
 @[simp]
 theorem trace_col_mul_row [NonUnitalNonAssocSemiring R] (a b : n → R) :
-    trace (col a ⬝ row b) = dotProduct a b := by simp [dot_product, trace]
+    trace (col a ⬝ row b) = dotProduct a b := by
+  apply Finset.sum_congr rfl
+  simp [mul_apply]
 #align matrix.trace_col_mul_row Matrix.trace_col_mul_row
 
 end Mul
@@ -173,10 +175,10 @@ section Fin
 
 variable [AddCommMonoid R]
 
-/-! ### Special cases for `fin n`
+/-! ### Special cases for `Fin n`
 
-While `simp [fin.sum_univ_succ]` can prove these, we include them for convenience and consistency
-with `matrix.det_fin_two` etc.
+While `simp [Fin.sum_univ_succ]` can prove these, we include them for convenience and consistency
+with `Matrix.det_fin_two` etc.
 -/
 
 
@@ -201,4 +203,3 @@ theorem trace_fin_three (A : Matrix (Fin 3) (Fin 3) R) : trace A = A 0 0 + A 1 1
 end Fin
 
 end Matrix
-
