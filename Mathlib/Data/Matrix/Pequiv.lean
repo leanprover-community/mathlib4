@@ -65,7 +65,7 @@ theorem toMatrix_apply [DecidableEq n] [Zero α] [One α] (f : m ≃. n) (i j) :
 
 theorem mul_matrix_apply [Fintype m] [DecidableEq m] [Semiring α] (f : l ≃. m) (M : Matrix m n α)
     (i j) : (f.toMatrix ⬝ M) i j = Option.casesOn (f i) 0 fun fi => M fi j := by
-  dsimp [to_matrix, Matrix.mul_apply]
+  dsimp [toMatrix, Matrix.mul_apply]
   cases' h : f i with fi
   · simp [h]
   · rw [Finset.sum_eq_single fi] <;> simp (config := { contextual := true }) [h, eq_comm]
@@ -73,18 +73,18 @@ theorem mul_matrix_apply [Fintype m] [DecidableEq m] [Semiring α] (f : l ≃. m
 
 theorem toMatrix_symm [DecidableEq m] [DecidableEq n] [Zero α] [One α] (f : m ≃. n) :
     (f.symm.toMatrix : Matrix n m α) = f.toMatrixᵀ := by
-  ext <;> simp only [transpose, mem_iff_mem f, to_matrix_apply] <;> congr
+  ext <;> simp only [transpose, mem_iff_mem f, toMatrix_apply] <;> congr
 #align pequiv.to_matrix_symm PEquiv.toMatrix_symm
 
 @[simp]
 theorem toMatrix_refl [DecidableEq n] [Zero α] [One α] :
     ((PEquiv.refl n).toMatrix : Matrix n n α) = 1 := by
-  ext <;> simp [to_matrix_apply, one_apply] <;> congr
+  ext <;> simp [toMatrix_apply, one_apply] <;> congr
 #align pequiv.to_matrix_refl PEquiv.toMatrix_refl
 
 theorem matrix_mul_apply [Fintype m] [Semiring α] [DecidableEq n] (M : Matrix l m α) (f : m ≃. n)
     (i j) : (M ⬝ f.toMatrix) i j = Option.casesOn (f.symm j) 0 fun fj => M i fj := by
-  dsimp [to_matrix, Matrix.mul_apply]
+  dsimp [toMatrix, Matrix.mul_apply]
   cases' h : f.symm j with fj
   · simp [h, ← f.eq_some_iff]
   · rw [Finset.sum_eq_single fj]
@@ -111,7 +111,7 @@ theorem toMatrix_trans [Fintype m] [DecidableEq m] [DecidableEq n] [Semiring α]
     (g : m ≃. n) : ((f.trans g).toMatrix : Matrix l n α) = f.toMatrix ⬝ g.toMatrix := by
   ext (i j)
   rw [mul_matrix_apply]
-  dsimp [to_matrix, PEquiv.trans]
+  dsimp [toMatrix, PEquiv.trans]
   cases f i <;> simp
 #align pequiv.to_matrix_trans PEquiv.toMatrix_trans
 
@@ -126,12 +126,14 @@ theorem toMatrix_injective [DecidableEq n] [MonoidWithZero α] [Nontrivial α] :
   classical
     intro f g
     refine' not_imp_not.1 _
-    simp only [matrix.ext_iff.symm, to_matrix_apply, PEquiv.ext_iff, not_forall, exists_imp]
+    simp only [Matrix.ext_iff.symm, toMatrix_apply, PEquiv.ext_iff, not_forall, exists_imp]
     intro i hi
     use i
     cases' hf : f i with fi
     · cases' hg : g i with gi
-      · cc
+      -- Porting note: was `cc`
+      · rw [hf, hg] at hi
+        exact (hi rfl).elim
       · use gi
         simp
     · use fi
@@ -143,25 +145,21 @@ theorem toMatrix_swap [DecidableEq n] [Ring α] (i j : n) :
       (1 : Matrix n n α) - (single i i).toMatrix - (single j j).toMatrix + (single i j).toMatrix +
         (single j i).toMatrix := by
   ext
-  dsimp [to_matrix, single, Equiv.swap_apply_def, Equiv.toPEquiv, one_apply]
-  split_ifs <;>
-    first
-      |· simp_all|·
-        exfalso
-        assumption
+  dsimp [toMatrix, single, Equiv.swap_apply_def, Equiv.toPEquiv, one_apply]
+  split_ifs <;> simp_all
 #align pequiv.to_matrix_swap PEquiv.toMatrix_swap
 
 @[simp]
 theorem single_mul_single [Fintype n] [DecidableEq k] [DecidableEq m] [DecidableEq n] [Semiring α]
     (a : m) (b : n) (c : k) :
     ((single a b).toMatrix : Matrix _ _ α) ⬝ (single b c).toMatrix = (single a c).toMatrix := by
-  rw [← to_matrix_trans, single_trans_single]
+  rw [← toMatrix_trans, single_trans_single]
 #align pequiv.single_mul_single PEquiv.single_mul_single
 
 theorem single_mul_single_of_ne [Fintype n] [DecidableEq n] [DecidableEq k] [DecidableEq m]
     [Semiring α] {b₁ b₂ : n} (hb : b₁ ≠ b₂) (a : m) (c : k) :
     ((single a b₁).toMatrix : Matrix _ _ α) ⬝ (single b₂ c).toMatrix = 0 := by
-  rw [← to_matrix_trans, single_trans_single_of_ne hb, to_matrix_bot]
+  rw [← toMatrix_trans, single_trans_single_of_ne hb, toMatrix_bot]
 #align pequiv.single_mul_single_of_ne PEquiv.single_mul_single_of_ne
 
 /-- Restatement of `single_mul_single`, which will simplify expressions in `simp` normal form,
@@ -180,4 +178,3 @@ theorem equiv_toPEquiv_toMatrix [DecidableEq n] [Zero α] [One α] (σ : Equiv n
 #align pequiv.equiv_to_pequiv_to_matrix PEquiv.equiv_toPEquiv_toMatrix
 
 end PEquiv
-
