@@ -86,7 +86,7 @@ end Ext
 
 The two sides of the equivalence are definitionally equal types. We want to use an explicit cast
 to distinguish the types because `Matrix` has different instances to pi types (such as `Pi.mul`,
-which performs elementwise multiplication, vs `Matrix.has_mul`).
+which performs elementwise multiplication, vs `Matrix.mul`).
 
 If you are defining a matrix, in terms of its entries, use `of (λ i j, _)`. The
 purpose of this approach is to ensure that terms of th
@@ -162,7 +162,6 @@ theorem transpose_apply (M : Matrix m n α) (i j) : transpose M i j = M j i :=
   rfl
 #align matrix.transpose_apply Matrix.transpose_apply
 
--- mathport name: matrix.transpose
 @[inherit_doc]
 scoped postfix:1024 "ᵀ" => Matrix.transpose
 
@@ -171,7 +170,6 @@ def conjTranspose [Star α] (M : Matrix m n α) : Matrix n m α :=
   M.transpose.map star
 #align matrix.conj_transpose Matrix.conjTranspose
 
--- mathport name: matrix.conjTranspose
 @[inherit_doc]
 scoped postfix:1024 "ᴴ" => Matrix.conjTranspose
 
@@ -696,7 +694,6 @@ def dotProduct [Mul α] [AddCommMonoid α] (v w : m → α) : α :=
   ∑ i, v i * w i
 #align matrix.dot_product Matrix.dotProduct
 
--- mathport name: matrix.dotProduct
 /- The precedence of 72 comes immediately after ` • ` for `SMul.smul`,
    so that `r₁ • a ⬝ᵥ r₂ • b` is parsed as `(r₁ • a) ⬝ᵥ (r₂ • b)` here. -/
 @[inherit_doc]
@@ -862,7 +859,6 @@ protected def mul [Fintype m] [Mul α] [AddCommMonoid α] (M : Matrix l m α) (N
     Matrix l n α := fun i k => (fun j => M i j) ⬝ᵥ fun j => N j k
 #align matrix.mul Matrix.mul
 
--- mathport name: matrix.mul
 @[inherit_doc]
 scoped infixl:75 " ⬝ " => Matrix.mul
 
@@ -900,11 +896,8 @@ theorem two_mul_expl {R : Type _} [CommRing R] (A B : Matrix (Fin 2) (Fin 2) R) 
     (A * B) 0 1 = A 0 0 * B 0 1 + A 0 1 * B 1 1 ∧
     (A * B) 1 0 = A 1 0 * B 0 0 + A 1 1 * B 1 0 ∧
     (A * B) 1 1 = A 1 0 * B 0 1 + A 1 1 * B 1 1 := by
-  constructor
-  on_goal 2 => constructor
-  on_goal 3 => constructor
-  all_goals
-    simp only [Matrix.mul_eq_mul]
+  refine ⟨?_, ?_, ?_, ?_⟩ <;>
+  · simp only [Matrix.mul_eq_mul]
     rw [Matrix.mul_apply, Finset.sum_fin_eq_sum_range, Finset.sum_range_succ, Finset.sum_range_succ]
     simp
 #align matrix.two_mul_expl Matrix.two_mul_expl
@@ -1039,10 +1032,10 @@ instance Semiring.isScalarTower [Fintype n] [Monoid R] [DistribMulAction R α]
 #align matrix.semiring.is_scalar_tower Matrix.Semiring.isScalarTower
 
 /-- This instance enables use with `mul_smul_comm`. -/
-instance Semiring.sMulCommClass [Fintype n] [Monoid R] [DistribMulAction R α]
+instance Semiring.smulCommClass [Fintype n] [Monoid R] [DistribMulAction R α]
     [SMulCommClass R α α] : SMulCommClass R (Matrix n n α) (Matrix n n α) :=
   ⟨fun r m n => (Matrix.mul_smul m r n).symm⟩
-#align matrix.semiring.smul_comm_class Matrix.Semiring.sMulCommClass
+#align matrix.semiring.smul_comm_class Matrix.Semiring.smulCommClass
 
 end NonUnitalNonAssocSemiring
 
@@ -1253,10 +1246,7 @@ variable [Fintype n] [DecidableEq n]
 variable [CommSemiring R] [Semiring α] [Semiring β] [Algebra R α] [Algebra R β]
 
 instance : Algebra R (Matrix n n α) :=
-  {
-    (Matrix.scalar n).comp
-      (algebraMap R
-        α) with
+  { (Matrix.scalar n).comp (algebraMap R α) with
     commutes' := fun r x => by
       ext
       simp [Matrix.scalar, Matrix.mul_apply, Matrix.one_apply, Algebra.commutes, smul_ite]
@@ -2021,9 +2011,7 @@ variable (m α)
 @[simps]
 def transposeRingEquiv [AddCommMonoid α] [CommSemigroup α] [Fintype m] :
     Matrix m m α ≃+* (Matrix m m α)ᵐᵒᵖ :=
-  {
-    (transposeAddEquiv m m α).trans
-      MulOpposite.opAddEquiv with
+  { (transposeAddEquiv m m α).trans MulOpposite.opAddEquiv with
     toFun := fun M => MulOpposite.op Mᵀ
     invFun := fun M => M.unopᵀ
     map_mul' := fun M N =>
@@ -2257,9 +2245,7 @@ variable (m α)
 @[simps]
 def conjTransposeRingEquiv [Semiring α] [StarRing α] [Fintype m] :
     Matrix m m α ≃+* (Matrix m m α)ᵐᵒᵖ :=
-  {
-    (conjTransposeAddEquiv m m α).trans
-      MulOpposite.opAddEquiv with
+  { (conjTransposeAddEquiv m m α).trans MulOpposite.opAddEquiv with
     toFun := fun M => MulOpposite.op Mᴴ
     invFun := fun M => M.unopᴴ
     map_mul' := fun M N =>
@@ -2296,15 +2282,15 @@ theorem star_apply [Star α] (M : Matrix n n α) (i j) : (star M) i j = star (M 
   rfl
 #align matrix.star_apply Matrix.star_apply
 
-instance [InvolutiveStar α] : InvolutiveStar (Matrix n n α)
-    where star_involutive := conjTranspose_conjTranspose
+instance [InvolutiveStar α] : InvolutiveStar (Matrix n n α) where
+  star_involutive := conjTranspose_conjTranspose
 
 /-- When `α` is a `*`-additive monoid, `Matrix.star` is also a `*`-additive monoid. -/
-instance [AddMonoid α] [StarAddMonoid α] : StarAddMonoid (Matrix n n α)
-    where star_add := conjTranspose_add
+instance [AddMonoid α] [StarAddMonoid α] : StarAddMonoid (Matrix n n α) where
+  star_add := conjTranspose_add
 
-instance [Star α] [Star β] [SMul α β] [StarModule α β] : StarModule α (Matrix n n β)
-    where star_smul := conjTranspose_smul
+instance [Star α] [Star β] [SMul α β] [StarModule α β] : StarModule α (Matrix n n β) where
+  star_smul := conjTranspose_smul
 
 /-- When `α` is a `*`-(semi)ring, `Matrix.star` is also a `*`-(semi)ring. -/
 instance [Fintype n] [NonUnitalSemiring α] [StarRing α] : StarRing (Matrix n n α) where
