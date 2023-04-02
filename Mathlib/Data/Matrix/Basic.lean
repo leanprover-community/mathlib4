@@ -114,15 +114,15 @@ theorem of_symm_apply (f : Matrix m n α) (i j) : of.symm f i j = f i j :=
 /-- `M.map f` is the matrix obtained by applying `f` to each entry of the matrix `M`.
 
 This is available in bundled forms as:
-* `AddMonoidHom.map_matrix`
-* `LinearMap.map_matrix`
-* `RingHom.map_matrix`
-* `AlgHom.map_matrix`
-* `Equiv.map_matrix`
-* `AddEquiv.map_matrix`
-* `LinearEquiv.map_matrix`
-* `RingEquiv.map_matrix`
-* `AlgEquiv.map_matrix`
+* `AddMonoidHom.mapMatrix`
+* `LinearMap.mapMatrix`
+* `RingHom.mapMatrix`
+* `AlgHom.mapMatrix`
+* `Equiv.mapMatrix`
+* `AddEquiv.mapMatrix`
+* `LinearEquiv.mapMatrix`
+* `RingEquiv.mapMatrix`
+* `AlgEquiv.mapMatrix`
 -/
 def map (M : Matrix m n α) (f : α → β) : Matrix m n β :=
   of fun i j => f (M i j)
@@ -395,10 +395,10 @@ variable [DecidableEq n]
 if `i ≠ j`.
 
 Note that bundled versions exist as:
-* `Matrix.diagonal_addMonoidHom`
-* `Matrix.diagonal_linearMap`
-* `Matrix.diagonal_ringHom`
-* `Matrix.diagonal_algHom`
+* `Matrix.diagonalAddMonoidHom`
+* `Matrix.diagonalLinearMap`
+* `Matrix.diagonalRingHom`
+* `Matrix.diagonalAlgHom`
 -/
 def diagonal [Zero α] (d : n → α) : Matrix n n α :=
   of fun i j => if i = j then d i else 0
