@@ -63,7 +63,7 @@ use Brendan McKay's method of "generation by canonical construction path".
 -- TODO can you make this work in `List` and `ListM m` simultaneously, by being tricky with monads?
 unsafe def depthFirstRemovingDuplicates {α : Type u} [BEq α] [Hashable α]
     (f : α → ListM m α) (a : α) (maxDepth : Option Nat := none) : ListM m α :=
-let f' : α → ListM (StateT (HashSet α) m) α := fun a =>
+let f' : α → ListM (StateT.{u} (HashSet α) m) α := fun a =>
   (f a).liftM >>= fun b => do
     let s ← get
     if s.contains b then failure
