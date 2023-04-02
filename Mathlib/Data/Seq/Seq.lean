@@ -1028,9 +1028,11 @@ theorem join_join (SS : Seq (Seq1 (Seq1 α))) :
 theorem bind_assoc (s : Seq1 α) (f : α → Seq1 β) (g : β → Seq1 γ) :
     bind (bind s f) g = bind s fun x : α => bind (f x) g := by
   cases' s with a s
-  simp [bind, map]
+  simp only [bind]
+  rw [map_join]
+  simp only [map]
   rw [← map_comp]
-  change fun x => join (map g (f x)) with join ∘ map g ∘ f
+  change fun x => join (map g (f x)) = join ∘ map (g ∘ f)
   rw [map_comp _ join]
   generalize seq.map (map g ∘ f) s = SS
   rcases map g (f a) with ⟨⟨a, s⟩, S⟩
