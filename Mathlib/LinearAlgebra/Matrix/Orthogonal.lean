@@ -8,7 +8,7 @@ Authors: Lu-Ming Zhang
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Matrix.Basic
+import Mathlib.Data.Matrix.Basic
 
 /-!
 # Orthogonal
