@@ -8,7 +8,7 @@ Authors: Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Finset.Pointwise
+import Mathlib.Data.Finset.Pointwise
 
 /-!
 # e-transforms
@@ -60,8 +60,7 @@ def mulDysonETransform : Finset α × Finset α :=
 
 @[to_additive]
 theorem mulDysonETransform.subset :
-    (mulDysonETransform e x).1 * (mulDysonETransform e x).2 ⊆ x.1 * x.2 :=
-  by
+    (mulDysonETransform e x).1 * (mulDysonETransform e x).2 ⊆ x.1 * x.2 := by
   refine' union_mul_inter_subset_union.trans (union_subset subset.rfl _)
   rw [mul_smul_comm, smul_mul_assoc, inv_smul_smul, mul_comm]
   rfl
@@ -70,8 +69,7 @@ theorem mulDysonETransform.subset :
 
 @[to_additive]
 theorem mulDysonETransform.card :
-    (mulDysonETransform e x).1.card + (mulDysonETransform e x).2.card = x.1.card + x.2.card :=
-  by
+    (mulDysonETransform e x).1.card + (mulDysonETransform e x).2.card = x.1.card + x.2.card := by
   dsimp
   rw [← card_smul_finset e (_ ∩ _), smul_finset_inter, smul_inv_smul, inter_comm,
     card_union_add_card_inter, card_smul_finset]
@@ -80,8 +78,7 @@ theorem mulDysonETransform.card :
 
 @[simp, to_additive]
 theorem mulDysonETransform_idem :
-    mulDysonETransform e (mulDysonETransform e x) = mulDysonETransform e x :=
-  by
+    mulDysonETransform e (mulDysonETransform e x) = mulDysonETransform e x := by
   ext : 1 <;> dsimp
   · rw [smul_finset_inter, smul_inv_smul, inter_comm, union_eq_left_iff_subset]
     exact inter_subset_union
@@ -94,8 +91,7 @@ variable {e x}
 
 @[to_additive]
 theorem mulDysonETransform.smul_finset_snd_subset_fst :
-    e • (mulDysonETransform e x).2 ⊆ (mulDysonETransform e x).1 :=
-  by
+    e • (mulDysonETransform e x).2 ⊆ (mulDysonETransform e x).1 := by
   dsimp
   rw [smul_finset_inter, smul_inv_smul, inter_comm]
   exact inter_subset_union
@@ -151,8 +147,7 @@ theorem mulETransformRight_one : mulETransformRight 1 x = x := by simp [mul_e_tr
 
 @[to_additive]
 theorem mulETransformLeft.fst_mul_snd_subset :
-    (mulETransformLeft e x).1 * (mulETransformLeft e x).2 ⊆ x.1 * x.2 :=
-  by
+    (mulETransformLeft e x).1 * (mulETransformLeft e x).2 ⊆ x.1 * x.2 := by
   refine' inter_mul_union_subset_union.trans (union_subset subset.rfl _)
   rw [op_smul_finset_mul_eq_mul_smul_finset, smul_inv_smul]
   rfl
@@ -161,8 +156,7 @@ theorem mulETransformLeft.fst_mul_snd_subset :
 
 @[to_additive]
 theorem mulETransformRight.fst_mul_snd_subset :
-    (mulETransformRight e x).1 * (mulETransformRight e x).2 ⊆ x.1 * x.2 :=
-  by
+    (mulETransformRight e x).1 * (mulETransformRight e x).2 ⊆ x.1 * x.2 := by
   refine' union_mul_inter_subset_union.trans (union_subset subset.rfl _)
   rw [op_smul_finset_mul_eq_mul_smul_finset, smul_inv_smul]
   rfl
@@ -189,8 +183,7 @@ theorem mulETransformRight.card :
 protected theorem MulETransform.card :
     (mulETransformLeft e x).1.card + (mulETransformLeft e x).2.card +
         ((mulETransformRight e x).1.card + (mulETransformRight e x).2.card) =
-      x.1.card + x.2.card + (x.1.card + x.2.card) :=
-  by
+      x.1.card + x.2.card + (x.1.card + x.2.card) := by
   rw [add_add_add_comm, mul_e_transform_left.card, mul_e_transform_right.card, ← mul_add, two_mul]
 #align finset.mul_e_transform.card Finset.MulETransform.card
 #align add_e_transform.card AddETransform.card
