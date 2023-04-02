@@ -206,10 +206,8 @@ variable {R' A : Type _} [Monoid R'] [Semiring A] [∀ i, Module A (M₁ i)] [Di
 
 instance : SMul R' (MultilinearMap A M₁ M₂) :=
   ⟨fun c f =>
-    ⟨fun m => c • f m, fun m i x y => by simp [smul_add], fun l i x d => by
-    simp only [MultilinearMap.map_smul]
-    rw [smul_comm x c]
-    ⟩⟩
+    ⟨fun m => c • f m, fun m i x y => by simp [smul_add],
+      fun l i x d => by simp [←smul_comm x c (_ : M₂)]⟩⟩
 
 @[simp]
 theorem smul_apply (f : MultilinearMap A M₁ M₂) (c : R') (m : ∀ i, M₁ i) : (c • f) m = c • f m :=
@@ -293,19 +291,14 @@ variable (M₁) {M₂}
 
 /-- The constant map is multilinear when `ι` is empty. -/
 -- Porting note: Removed [simps] & added simpNF-approved version of the generated lemma manually.
--- @[simps (config := { fullyApplied := false })]
-def constOfIsEmpty [IsEmpty ι] (m : M₂) : MultilinearMap R M₁ M₂
-    where
+@[simps (config := { fullyApplied := false })]
+def constOfIsEmpty [IsEmpty ι] (m : M₂) : MultilinearMap R M₁ M₂ where
   toFun := Function.const _ m
   map_add' _ := isEmptyElim
   map_smul' _ := isEmptyElim
 #align multilinear_map.const_of_is_empty MultilinearMap.constOfIsEmpty
-
-@[simp]
-lemma constOfIsEmpty_apply [inst_6 : IsEmpty ι] (m : M₂) :
-    ⇑(MultilinearMap.constOfIsEmpty R M₁ m) = Function.const ((i : ι) → M₁ i) m := by
-  simp only [constOfIsEmpty, coe_mk]
 #align multilinear_map.const_of_is_empty_apply MultilinearMap.constOfIsEmpty_apply
+
 end
 
 -- Porting note: Included `FunLike.coe` to avoid strange CoeFun instance for Equiv
@@ -331,7 +324,6 @@ def restr {k n : ℕ} (f : MultilinearMap R (fun _ : Fin n => M') M₂) (s : Fin
     have : FunLike.coe (s.orderIsoOfFin hk).symm = (s.orderIsoOfFin hk).toEquiv.symm := rfl
     simp only [this]
     erw [dite_comp_equiv_update (s.orderIsoOfFin hk).toEquiv,
-      dite_comp_equiv_update (s.orderIsoOfFin hk).toEquiv,
       dite_comp_equiv_update (s.orderIsoOfFin hk).toEquiv]
     simp
 #align multilinear_map.restr MultilinearMap.restr
@@ -468,9 +460,7 @@ theorem map_piecewise_add (m m' : ∀ i, M₁ i) (t : Finset ι) :
     · rw [h]
       simp [hit]
     · by_cases h' : j ∈ t <;> simp [h, hit, h']
-  rw [A, f.map_add, B, C, Finset.sum_powerset_insert hit, Hrec, Hrec]
-  -- Porting note: Needed to replace rw [add_comm] with below ugly line to find the correct addition
-  simp_rw [add_comm _ (Finset.sum (Finset.powerset t) fun s => f (Finset.piecewise s m m'))]
+  rw [A, f.map_add, B, C, Finset.sum_powerset_insert hit, Hrec, Hrec, add_comm (_ : M₂)]
   congr 1
   refine Finset.sum_congr rfl fun s hs => ?_
   have : (insert i s).piecewise m m' = s.piecewise m m'' := by
