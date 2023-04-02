@@ -1438,6 +1438,7 @@ import Mathlib.Tactic.Abel
 import Mathlib.Tactic.Alias
 import Mathlib.Tactic.ApplyFun
 import Mathlib.Tactic.ApplyWith
+import Mathlib.Tactic.Backtracking
 import Mathlib.Tactic.Basic
 import Mathlib.Tactic.ByContra
 import Mathlib.Tactic.Cache
