@@ -30,6 +30,7 @@ namespace MvPolynomial
 
 variable {R : Type _} [CommRing R] [IsDomain R] [Infinite R]
 
+set_option maxHeartbeats 1000000 in
 private theorem funext_fin {n : ℕ} {p : MvPolynomial (Fin n) R}
     (h : ∀ x : Fin n → R, eval x p = 0) : p = 0 := by
   induction' n with n ih generalizing R
@@ -58,13 +59,13 @@ private theorem funext_fin {n : ℕ} {p : MvPolynomial (Fin n) R}
     dsimp [this]
     rw [finSuccEquiv_apply]
     calc
-      _ = eval _ p := _
+      _ = eval ?_ p := ?_
       _ = 0 := h _
     · intro i
       exact Fin.cases (eval x q) x i
     apply induction_on p
     · intro r
-      simp only [eval_C, Polynomial.eval_C, RingHom.coe_comp, eval₂Hom_C]
+      simp only [eval_C, Polynomial.eval_C, RingHom.coe_comp, eval₂Hom_C, Function.comp_apply]
     · intros
       simp only [*, RingHom.map_add, Polynomial.eval_add]
     · intro φ i hφ
@@ -75,7 +76,6 @@ private theorem funext_fin {n : ℕ} {p : MvPolynomial (Fin n) R}
         simp only [Polynomial.eval_X, Fin.cases_zero]
       · rw [← Fin.succ_pred i hi]
         simp only [eval_X, Polynomial.eval_C, Fin.cases_succ]
-    · infer_instance
 
 /-- Two multivariate polynomials over an infinite integral domain are equal
 if they are equal upon evaluating them on an arbitrary assignment of the variables. -/
