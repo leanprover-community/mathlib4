@@ -287,7 +287,6 @@ theorem measurable_int_cast [IntCast α] (n : ℤ) : Measurable (n : β → α) 
   @measurable_const α _ _ _ n
 #align measurable_int_cast measurable_int_cast
 
-
 theorem measurable_of_countable [Countable α] [MeasurableSingletonClass α] (f : α → β) :
     Measurable f := fun s _ =>
   (f ⁻¹' s).to_countable.measurableSet
