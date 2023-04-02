@@ -209,22 +209,6 @@ unsafe def takeWhileM [Alternative m] (f : α → m (ULift Bool)) (L : ListM m �
 unsafe def takeWhile [Alternative m] (f : α → Bool) : ListM m α → ListM m α :=
   takeWhileM fun a => pure (.up (f a))
 
-/-- Take the initial segment of the lazy list, until the function `f` first fails. -/
-unsafe def takeWhileM [Alternative m] (f : α → m β) : ListM m α → ListM m α
-  | nil => nil
-  | cons l =>
-    cons do
-      let (a, r) ← l
-      let some a ← pure a |
-        return (none, takeWhileM f r)
-      (f a >>= fun _ => return (some a, takeWhileM f r)) <|> return (none, empty)
-
-/-- Take the initial segment of the lazy list, until the function `f` first returns `false`. -/
-unsafe def takeWhile [Alternative m] (f : α → Bool) : ListM m α → ListM m α :=
-takeWhileM <| fun a => do
-  let .true := f a | failure
-  pure PUnit.unit
-
 /-- Concatenate two monadic lazy lists. -/
 unsafe def append {α : Type u} (L M : ListM m α) : ListM m α :=
   cons do match ← uncons L with
