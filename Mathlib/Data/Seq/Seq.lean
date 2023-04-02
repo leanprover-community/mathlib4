@@ -1034,13 +1034,13 @@ theorem bind_assoc (s : Seq1 α) (f : α → Seq1 β) (g : β → Seq1 γ) :
   rw [map_join]
   simp only [map]
   rw [← map_comp]
-  change fun x => join (map g (f x)) = join ∘ map (g ∘ f)
+  change fun x => join (map g (f x)) with join ∘ map (g ∘ f)
   rw [map_comp _ join]
-  generalize seq.map (map g ∘ f) s = SS
+  generalize Seq.map (map g ∘ f) s = SS
   rcases map g (f a) with ⟨⟨a, s⟩, S⟩
-  apply rec_on s <;> intros <;> apply rec_on S <;> intros <;> simp
+  apply recOn s <;> intros <;> apply recOn S <;> intros <;> simp
   · cases' x with x t
-    apply rec_on t <;> intros <;> simp
+    apply recOn t <;> intros <;> simp
   · cases' x_1 with y t <;> simp
 #align stream.seq1.bind_assoc Stream'.Seq1.bind_assoc
 
