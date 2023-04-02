@@ -423,8 +423,7 @@ noncomputable def Quotient.out'RelEmbedding {_ : Setoid α} {r : α → α → P
 @[simp]
 theorem acc_lift₂_iff [Setoid α] {r : α → α → Prop}
     {H : ∀ (a₁ b₁ a₂ b₂ : α), a₁ ≈ a₂ → b₁ ≈ b₂ → r a₁ b₁ = r a₂ b₂} {a} :
-    Acc (Quotient.lift₂ r H) ⟦a⟧ ↔ Acc r a :=
-  by
+    Acc (Quotient.lift₂ r H) ⟦a⟧ ↔ Acc r a := by
   constructor
   · exact RelHomClass.acc (Quotient.mkRelHom H) a
   · intro ac
