@@ -100,6 +100,7 @@ theorem forget_obj_eq_coe {X : C} : (forget C).obj X = X := rfl
 
 /-- Usually a bundled hom structure already has a coercion to function
 that works with different universes. So we don't use this as a global instance. -/
+@[reducible]
 def ConcreteCategory.hasCoeToFun {X Y : C} : CoeFun (X ⟶ Y) fun _ => X → Y :=
   ⟨fun f => (forget _).map f⟩
 #align category_theory.concrete_category.has_coe_to_fun CategoryTheory.ConcreteCategory.hasCoeToFun

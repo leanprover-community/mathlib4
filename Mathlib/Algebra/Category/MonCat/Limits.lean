@@ -39,7 +39,9 @@ variable {J : Type v} [SmallCategory J]
 instance monoidObj (F : J ⥤ MonCat.{max v u}) (j) : Monoid ((F ⋙ forget MonCat).obj j) := by
   change Monoid (F.obj j)
   infer_instance
+set_option linter.uppercaseLean3 false in
 #align Mon.monoid_obj MonCat.monoidObj
+set_option linter.uppercaseLean3 false in
 #align AddMon.add_monoid_obj AddMonCat.addMonoidObj
 
 /-- The flat sections of a functor into `Mon` form a submonoid of all sections.
@@ -49,28 +51,36 @@ instance monoidObj (F : J ⥤ MonCat.{max v u}) (j) : Monoid ((F ⋙ forget MonC
 def sectionsSubmonoid (F : J ⥤ MonCat.{max v u}) : Submonoid (∀ j, F.obj j)
     where
   carrier := (F ⋙ forget MonCat).sections
-  one_mem' j j' f := by simp
-  mul_mem' a b ah bh j j' f :=
+  one_mem' {j} {j'} f := by simp
+  mul_mem' {a} {b} ah bh {j} {j'} f :=
     by
-    simp only [forget_map_eq_coe, functor.comp_map, MonoidHom.map_mul, Pi.mul_apply]
-    dsimp [functor.sections] at ah bh
-    rw [ah f, bh f]
+    simp only [Functor.comp_map, MonoidHom.map_mul, Pi.mul_apply]
+    dsimp [Functor.sections] at ah bh
+    rw [← ah f, ← bh f, MonCat.Hom.map_mul]
+set_option linter.uppercaseLean3 false in
 #align Mon.sections_submonoid MonCat.sectionsSubmonoid
+set_option linter.uppercaseLean3 false in
 #align AddMon.sections_add_submonoid AddMonCat.sectionsAddSubmonoid
+
+-- set_option pp.universes true
+-- set_option pp.notation false
+-- set_option pp.explicit true
 
 @[to_additive]
 instance limitMonoid (F : J ⥤ MonCat.{max v u}) :
-    Monoid (Types.limitCone (F ⋙ forget MonCat.{max v u})).pt :=
-  (sectionsSubmonoid F).toMonoid
+    Monoid (Types.limitCone.{v, u} (F ⋙ forget MonCat.{max v u})).pt :=
+  (sectionsSubmonoid.{v, u} F).toMonoid
+set_option linter.uppercaseLean3 false in
 #align Mon.limit_monoid MonCat.limitMonoid
+set_option linter.uppercaseLean3 false in
 #align AddMon.limit_add_monoid AddMonCat.limitAddMonoid
 
-/-- `limit.π (F ⋙ forget Mon) j` as a `monoid_hom`. -/
-@[to_additive "`limit.π (F ⋙ forget AddMon) j` as an `add_monoid_hom`."]
+/-- `limit.π (F ⋙ forget MonCat) j` as a `MonoidHom`. -/
+@[to_additive "`limit.π (F ⋙ forget AddMonCat) j` as an `AddMonoidHom`."]
 def limitπMonoidHom (F : J ⥤ MonCat.{max v u}) (j) :
-    (Types.limitCone (F ⋙ forget MonCat)).pt →* (F ⋙ forget MonCat).obj j
+    (Types.limitCone.{v, u} (F ⋙ forget MonCat.{max v u})).pt →* (F ⋙ forget MonCat.{max v u}).obj j
     where
-  toFun := (Types.limitCone (F ⋙ forget MonCat)).π.app j
+  toFun := (Types.limitCone.{v, u} (F ⋙ forget MonCat.{max v u})).π.app j
   map_one' := rfl
   map_mul' x y := rfl
 #align Mon.limit_π_monoid_hom MonCat.limitπMonoidHom

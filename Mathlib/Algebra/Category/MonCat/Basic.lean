@@ -76,9 +76,8 @@ instance concreteCategory : ConcreteCategory MonCat :=
 attribute [to_additive] MonCat.largeCategory MonCat.concreteCategory
 
 @[to_additive]
-instance : CoeSort MonCat (Type _) := by
-  dsimp only [MonCat]
-  infer_instance
+instance : CoeSort MonCat (Type _) :=
+  ⟨fun X => (forget MonCat).obj X⟩
 
 /-- Construct a bundled `MonCat` from the underlying type and typeclass. -/
 @[to_additive]
@@ -186,9 +185,8 @@ instance concreteCategory : ConcreteCategory CommMonCat := by
 attribute [to_additive] CommMonCat.largeCategory CommMonCat.concreteCategory
 
 @[to_additive]
-instance : CoeSort CommMonCat (Type _) := by
-  dsimp only [CommMonCat]
-  infer_instance
+instance : CoeSort CommMonCat (Type _) :=
+  ⟨fun X => (forget _).obj X⟩
 
 /-- Construct a bundled `CommMonCat` from the underlying type and typeclass. -/
 @[to_additive]
