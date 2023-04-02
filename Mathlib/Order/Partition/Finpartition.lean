@@ -278,7 +278,7 @@ section Inf
 
 variable [DecidableEq α] {a b c : α}
 
-instance : HasInf (Finpartition a) :=
+instance : Inf (Finpartition a) :=
   ⟨fun P Q ↦
     ofErase ((P.parts ×ᶠ Q.parts).image fun bc ↦ bc.1 ⊓ bc.2)
       (by
@@ -306,7 +306,7 @@ theorem parts_inf (P Q : Finpartition a) :
 
 instance : SemilatticeInf (Finpartition a) :=
   { (inferInstance : PartialOrder (Finpartition a)),
-    (inferInstance : HasInf (Finpartition a)) with
+    (inferInstance : Inf (Finpartition a)) with
     inf_le_left := fun P Q b hb ↦ by
       obtain ⟨c, hc, rfl⟩ := mem_image.1 (mem_of_mem_erase hb)
       rw [mem_product] at hc

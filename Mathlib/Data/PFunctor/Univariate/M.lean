@@ -109,7 +109,7 @@ theorem truncate_eq_of_agree {n : ℕ} (x : CofixA F n) (y : CofixA F (succ n)) 
     cases h
     simp only [truncate, Function.comp, true_and_iff, eq_self_iff_true, heq_iff_eq]
     -- porting note: used to be `ext y`
-    rename_i n_ih a f y h₁;
+    rename_i n_ih a f y h₁
     suffices (fun x => truncate (y x)) = f
       by simp [this]; try (exact HEq.rfl;)
     funext y
@@ -400,8 +400,8 @@ set_option linter.uppercaseLean3 false in
 
 @[simp]
 theorem agree'_refl {n : ℕ} (x : M F) : Agree' n x x := by
-  induction n generalizing x <;> induction x using PFunctor.M.casesOn' <;> constructor <;> try rfl
-  rename_i n_ih _ _
+  induction' n with _ n_ih generalizing x <;>
+  induction x using PFunctor.M.casesOn' <;> constructor <;> try rfl
   intros
   apply n_ih
 set_option linter.uppercaseLean3 false in
@@ -422,8 +422,7 @@ theorem agree_iff_agree' {n : ℕ} (x y : M F) :
       apply hagree
   · induction' n with _ n_ih generalizing x y
     constructor
-    · cases h
-      rename_i a x' y' _ _ _
+    · cases' h with _ _ _ a x' y'
       induction' x using PFunctor.M.casesOn' with x_a x_f
       induction' y using PFunctor.M.casesOn' with y_a y_f
       simp only [approx_mk]

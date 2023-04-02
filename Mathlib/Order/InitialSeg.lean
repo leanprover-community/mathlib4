@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Floris van Doorn
 
 ! This file was ported from Lean 3 source module order.initial_seg
-! leanprover-community/mathlib commit ee0c179cd3c8a45aa5bffbf1b41d8dbede452865
+! leanprover-community/mathlib commit 1a313d8bba1bad05faba71a4a4e9742ab5bd9efd
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -52,7 +52,7 @@ embedding whose range is an initial segment. That is, whenever `b < f a` in `β`
 range of `f`. -/
 structure InitialSeg {α β : Type _} (r : α → α → Prop) (s : β → β → Prop) extends r ↪r s where
   /-- The order embedding is an initial segment -/
-  init : ∀ a b, s b (toRelEmbedding a) → ∃ a', toRelEmbedding a' = b
+  init' : ∀ a b, s b (toRelEmbedding a) → ∃ a', toRelEmbedding a' = b
 #align initial_seg InitialSeg
 
 -- Porting notes: Deleted `scoped[InitialSeg]`
@@ -83,9 +83,9 @@ theorem coe_coe_fn (f : r ≼i s) : ((f : r ↪r s) : α → β) = f :=
   rfl
 #align initial_seg.coe_coe_fn InitialSeg.coe_coe_fn
 
-theorem init' (f : r ≼i s) {a : α} {b : β} : s b (f a) → ∃ a', f a' = b :=
-  f.init _ _
-#align initial_seg.init' InitialSeg.init'
+theorem init (f : r ≼i s) {a : α} {b : β} : s b (f a) → ∃ a', f a' = b :=
+  f.init' _ _
+#align initial_seg.init InitialSeg.init
 
 theorem map_rel_iff (f : r ≼i s) : s (f a) (f b) ↔ r a b :=
   f.map_rel_iff'
@@ -93,7 +93,7 @@ theorem map_rel_iff (f : r ≼i s) : s (f a) (f b) ↔ r a b :=
 
 theorem init_iff (f : r ≼i s) {a : α} {b : β} : s b (f a) ↔ ∃ a', f a' = b ∧ r a' a :=
   ⟨fun h => by
-    rcases f.init' h with ⟨a', rfl⟩
+    rcases f.init h with ⟨a', rfl⟩
     exact ⟨a', rfl, f.map_rel_iff.1 h⟩,
     fun ⟨a', e, h⟩ => e ▸ f.map_rel_iff.2 h⟩
 #align initial_seg.init_iff InitialSeg.init_iff
@@ -184,13 +184,13 @@ theorem eq_or_principal [IsWellOrder β s] (f : r ≼i s) :
               rw [← e];
                 exact
                   (trichotomous _ _).resolve_right
-                    (not_or_of_not (hn a) fun hl => not_exists.2 hn (f.init' hl))⟩⟩
+                    (not_or_of_not (hn a) fun hl => not_exists.2 hn (f.init hl))⟩⟩
 #align initial_seg.eq_or_principal InitialSeg.eq_or_principal
 
 /-- Restrict the codomain of an initial segment -/
 def codRestrict (p : Set β) (f : r ≼i s) (H : ∀ a, f a ∈ p) : r ≼i Subrel s p :=
   ⟨RelEmbedding.codRestrict p f H, fun a ⟨b, m⟩ h =>
-    let ⟨a', e⟩ := f.init' h
+    let ⟨a', e⟩ := f.init h
     ⟨a', by subst e; rfl⟩⟩
 #align initial_seg.cod_restrict InitialSeg.codRestrict
 
@@ -214,6 +214,13 @@ def leAdd (r : α → α → Prop) (s : β → β → Prop) : r ≼i Sum.Lex r s
 theorem leAdd_apply (r : α → α → Prop) (s : β → β → Prop) (a) : leAdd r s a = Sum.inl a :=
   rfl
 #align initial_seg.le_add_apply InitialSeg.leAdd_apply
+
+protected theorem acc (f : r ≼i s) (a : α) : Acc r a ↔ Acc s (f a) :=
+  ⟨by
+    refine' fun h => Acc.recOn h fun a _ ha => Acc.intro _ fun b hb => _
+    obtain ⟨a', rfl⟩ := f.init hb
+    exact ha _ (f.map_rel_iff.mp hb), f.toRelEmbedding.acc a⟩
+#align initial_seg.acc InitialSeg.acc
 
 end InitialSeg
 
@@ -424,7 +431,32 @@ def pemptyToPunit : @EmptyRelation PEmpty ≺i @EmptyRelation PUnit :=
   (@ofIsEmpty _ _ EmptyRelation _ _ PUnit.unit) fun _ => not_false
 #align principal_seg.pempty_to_punit PrincipalSeg.pemptyToPunit
 
+protected theorem acc [IsTrans β s] (f : r ≺i s) (a : α) : Acc r a ↔ Acc s (f a) :=
+  (f : r ≼i s).acc a
+#align principal_seg.acc PrincipalSeg.acc
+
 end PrincipalSeg
+
+/-- A relation is well-founded iff every principal segment of it is well-founded.
+
+In this lemma we use `Subrel` to indicate its principal segments because it's usually more
+convenient to use.
+-/
+theorem wellFounded_iff_wellFounded_subrel {β : Type _} {s : β → β → Prop} [IsTrans β s] :
+    WellFounded s ↔ ∀ b, WellFounded (Subrel s { b' | s b' b }) := by
+  refine'
+    ⟨fun wf b => ⟨fun b' => ((PrincipalSeg.ofElement _ b).acc b').mpr (wf.apply b')⟩, fun wf =>
+      ⟨fun b => Acc.intro _ fun b' hb' => _⟩⟩
+  let f := PrincipalSeg.ofElement s b
+  obtain ⟨b', rfl⟩ := f.down.mp ((PrincipalSeg.ofElement_top s b).symm ▸ hb' : s b' f.top)
+  exact (f.acc b').mp ((wf b).apply b')
+#align well_founded_iff_well_founded_subrel wellFounded_iff_wellFounded_subrel
+
+theorem wellFounded_iff_principalSeg.{u} {β : Type u} {s : β → β → Prop} [IsTrans β s] :
+    WellFounded s ↔ ∀ (α : Type u) (r : α → α → Prop) (_ : r ≺i s), WellFounded r :=
+  ⟨fun wf _ _ f => RelHomClass.wellFounded f.toRelEmbedding wf, fun h =>
+    wellFounded_iff_wellFounded_subrel.mpr fun b => h _ _ (PrincipalSeg.ofElement s b)⟩
+#align well_founded_iff_principal_seg wellFounded_iff_principalSeg
 
 /-! ### Properties of initial and principal segments -/
 

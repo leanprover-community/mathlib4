@@ -60,7 +60,7 @@ theorem support_mul [DecidableEq α] {g₁ g₂ : α →₀ β} :
   rw [← not_or]
   intro w
   apply h
-  cases w <;> (rename_i w ; rw [w] ; simp)
+  cases' w with w w <;> (rw [w] ; simp)
 #align finsupp.support_mul Finsupp.support_mul
 
 instance : MulZeroClass (α →₀ β) :=
@@ -95,8 +95,8 @@ instance [NonUnitalCommRing β] : NonUnitalCommRing (α →₀ β) :=
 -- TODO can this be generalized in the direction of `Pi.smul'`
 -- (i.e. dependent functions and finsupps)
 -- TODO in theory this could be generalised, we only really need `smul_zero` for the definition
-instance pointwiseScalar [Semiring β] : SMul (α → β) (α →₀ β)
-    where smul f g :=
+instance pointwiseScalar [Semiring β] : SMul (α → β) (α →₀ β) where
+  smul f g :=
     Finsupp.ofSupportFinite (fun a ↦ f a • g a) (by
       apply Set.Finite.subset g.finite_support
       simp only [Function.support_subset_iff, Finsupp.mem_support_iff, Ne.def,

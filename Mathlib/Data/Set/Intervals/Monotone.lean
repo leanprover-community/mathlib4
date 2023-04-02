@@ -236,9 +236,8 @@ theorem strictMonoOn_Iic_of_lt_succ [SuccOrder α] [IsSuccArchimedean α] {n : �
   obtain ⟨i, rfl⟩ := hxy.le.exists_succ_iterate
   induction' i with k ih
   · simp at hxy
-  cases k
+  cases' k with k
   · exact hψ _ (lt_of_lt_of_le hxy hy)
-  rename_i k
   rw [Set.mem_Iic] at *
   simp only [Function.iterate_succ', Function.comp_apply] at ih hxy hy⊢
   by_cases hmax : IsMax ((succ^[k]) x)

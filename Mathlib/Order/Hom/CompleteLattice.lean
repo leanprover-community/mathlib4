@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 
 ! This file was ported from Lean 3 source module order.hom.complete_lattice
-! leanprover-community/mathlib commit bcfa726826abd57587355b4b5b7e78ad6527b7e4
+! leanprover-community/mathlib commit 71b36b6f3bbe3b44e6538673819324d3ee9fcc96
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -873,7 +873,7 @@ variable [CompleteLattice α] [CompleteLattice β] [CompleteLattice γ]
 
 /-- Reinterpret a complete lattice homomorphism as a complete lattice homomorphism between the dual
 lattices. -/
-@[simps]
+@[simps!]
 protected def dual : CompleteLatticeHom α β ≃ CompleteLatticeHom αᵒᵈ βᵒᵈ
     where
   toFun f := ⟨SupₛHom.dual f.toSupₛHom, fun s ↦ f.map_infₛ' s⟩
