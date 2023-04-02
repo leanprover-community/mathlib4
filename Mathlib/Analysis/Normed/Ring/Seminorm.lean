@@ -69,7 +69,9 @@ structure MulRingNorm (R : Type _) [NonAssocRing R] extends MulRingSeminorm R, A
 #align mul_ring_norm MulRingNorm
 
 attribute [nolint docBlame]
-  RingSeminorm.toAddGroupSeminorm RingNorm.toAddGroupNorm RingNorm.toRingSeminorm MulRingSeminorm.toAddGroupSeminorm MulRingSeminorm.toMonoidWithZeroHom MulRingNorm.toAddGroupNorm MulRingNorm.toMulRingSeminorm
+  RingSeminorm.toAddGroupSeminorm RingNorm.toAddGroupNorm RingNorm.toRingSeminorm 
+    MulRingSeminorm.toAddGroupSeminorm MulRingSeminorm.toMonoidWithZeroHom 
+    MulRingNorm.toAddGroupNorm MulRingNorm.toMulRingSeminorm
 
 namespace RingSeminorm
 
