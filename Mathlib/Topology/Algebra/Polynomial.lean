@@ -30,7 +30,7 @@ In this file we prove the following lemmas.
   `λ x, ‖z x‖` tends to infinity and `0 < degree p`;
 * `Polynomial.tendsto_abv_eval₂_atTop`, `Polynomial.tendsto_abv_atTop`,
   `Polynomial.tendsto_abv_aeval_atTop`: a few versions of the previous statement for
-  `is_absolute_value abv` instead of norm.
+  `IsAbsoluteValue abv` instead of norm.
 
 ## Tags
 

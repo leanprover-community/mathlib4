@@ -1184,8 +1184,6 @@ theorem ssubset_insert (h : a ∉ s) : s ⊂ insert a s :=
   ssubset_iff.mpr ⟨a, h, Subset.rfl⟩
 #align finset.ssubset_insert Finset.ssubset_insert
 
-#check Finset.mk
-
 @[elab_as_elim]
 theorem cons_induction {α : Type _} {p : Finset α → Prop} (empty : p ∅)
     (cons : ∀ ⦃a : α⦄ {s : Finset α} (h : a ∉ s), p s → p (cons a s h)) : ∀ s, p s
