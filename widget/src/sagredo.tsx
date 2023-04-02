@@ -36,7 +36,7 @@ export default function(data: RpcData) {
         ms.concat([{ contents: mapRpcError(e).message, kind: 'error' }])))
 
   const stylesOfMsg = (msg: Msg) => {
-    let ret = 'ba br3 pl3 pa2 shadow-1 mv2 font-code '
+    let ret = 'ba br3 pl3 pa2 shadow-1 mv2 '
     if (msg.kind === 'query')
       ret += 'w-80 self-end '
     if (msg.kind === 'response')
@@ -59,7 +59,19 @@ export default function(data: RpcData) {
             className={stylesOfMsg(msg)}>
           <ReactMarkdown
             components={{
-              pre: ({node, ...props}) => <pre className='pre-wrap ' {...props} />,
+              pre: ({node, ...props}) => <pre {...props}
+                className='pre-wrap br2 pa1 '
+                style={{
+                  backgroundColor: 'var(--vscode-textCodeBlock-background)',
+                }} />,
+              code: ({node, ...props}) =>
+                props.inline ?
+                  <code {...props}
+                    className='font-code br2 '
+                    style={{
+                      backgroundColor: 'var(--vscode-textCodeBlock-background)',
+                    }} /> :
+                  <code {...props} className='font-code ' />
             }}
             children={msg.contents} />
         </div>)}
