@@ -323,8 +323,7 @@ the other ones equal to a given value `z`. It is denoted by `f.restr s hk z`, wh
 proof that the cardinality of `s` is `k`. The implicit identification between `Fin k` and `s` that
 we use is the canonical (increasing) bijection. -/
 def restr {k n : ℕ} (f : MultilinearMap R (fun _ : Fin n => M') M₂) (s : Finset (Fin n))
-    (hk : s.card = k) (z : M') : MultilinearMap R (fun _ : Fin k => M') M₂
-    where
+    (hk : s.card = k) (z : M') : MultilinearMap R (fun _ : Fin k => M') M₂ where
   toFun v := f fun j => if h : j ∈ s then v ((FunLike.coe (s.orderIsoOfFin hk).symm) ⟨j, h⟩) else z
   /- Porting note: The proofs of the following two lemmas used to only use `erw` followed by `simp`,
   but it seems `erw` no longer unfolds or unifies well enough to work without more help. -/
@@ -570,8 +569,7 @@ theorem map_sum_finset_aux [DecidableEq ι] [Fintype ι] {n : ℕ} (h : (∑ i, 
     ext i
     by_cases hi : i = i₀
     · rw [hi, update_same]
-      have : A i₀ = B i₀ ∪ C i₀ :=
-        by
+      have : A i₀ = B i₀ ∪ C i₀ := by
         simp only [Function.update_same, Finset.sdiff_union_self_eq_union]
         symm
         simp only [hj₂, Finset.singleton_subset_iff, Finset.union_eq_left_iff_subset]
@@ -600,10 +598,8 @@ theorem map_sum_finset_aux [DecidableEq ι] [Fintype ι] {n : ℕ} (h : (∑ i, 
       simp only [update_same]
     · simp only [hi, update_noteq, Ne.def, not_false_iff]
   -- Express the inductive assumption for `B`
-  have Brec : (f fun i => ∑ j in B i, g i j) = ∑ r in piFinset B, f fun i => g i (r i) :=
-    by
-    have : (∑ i, Finset.card (B i)) < ∑ i, Finset.card (A i) :=
-      by
+  have Brec : (f fun i => ∑ j in B i, g i j) = ∑ r in piFinset B, f fun i => g i (r i) := by
+    have : (∑ i, Finset.card (B i)) < ∑ i, Finset.card (A i) := by
       refine'
         Finset.sum_lt_sum (fun i _ => Finset.card_le_of_subset (B_subset_A i))
           ⟨i₀, Finset.mem_univ _, _⟩
@@ -613,8 +609,7 @@ theorem map_sum_finset_aux [DecidableEq ι] [Fintype ι] {n : ℕ} (h : (∑ i, 
     rw [h] at this
     exact IH _ this B rfl
   -- Express the inductive assumption for `C`
-  have Crec : (f fun i => ∑ j in C i, g i j) = ∑ r in piFinset C, f fun i => g i (r i) :=
-    by
+  have Crec : (f fun i => ∑ j in C i, g i j) = ∑ r in piFinset C, f fun i => g i (r i) := by
     have : (∑ i, Finset.card (C i)) < ∑ i, Finset.card (A i) :=
       Finset.sum_lt_sum (fun i _ => Finset.card_le_of_subset (C_subset_A i))
         ⟨i₀, Finset.mem_univ _, by simp [hi₀]⟩
@@ -623,8 +618,7 @@ theorem map_sum_finset_aux [DecidableEq ι] [Fintype ι] {n : ℕ} (h : (∑ i, 
   have D : Disjoint (piFinset B) (piFinset C) :=
     haveI : Disjoint (B i₀) (C i₀) := by simp
     piFinset_disjoint_of_disjoint B C this
-  have pi_BC : piFinset A = piFinset B ∪ piFinset C :=
-    by
+  have pi_BC : piFinset A = piFinset B ∪ piFinset C := by
     apply Finset.Subset.antisymm
     · intro r hr
       by_cases hri₀ : r i₀ = j₂
