@@ -31,7 +31,7 @@ coinductive seq (α : Type u) : Type u
 | nil : seq α
 | cons : α → seq α → seq α
 -/
-/-- A stream `s : option α` is a sequence if `s.nth n = none` implies `s.nth (n + 1) = none`.
+/-- A stream `s : Option α` is a sequence if `s.nth n = none` implies `s.nth (n + 1) = none`.
 -/
 def IsSeq {α : Type u} (s : Stream' (Option α)) : Prop :=
   ∀ {n : ℕ}, s n = none → s (n + 1) = none
@@ -136,7 +136,7 @@ theorem not_terminates_iff {s : Seq α} : ¬s.Terminates ↔ ∀ n, (s.get? n).i
   simp only [Terminates, TerminatedAt, ← Ne.def, Option.ne_none_iff_isSome, not_exists, iff_self]
 #align stream.seq.not_terminates_iff Stream'.Seq.not_terminates_iff
 
-/-- Functorial action of the functor `option (α × _)` -/
+/-- Functorial action of the functor `Option (α × _)` -/
 @[simp]
 def omap (f : β → γ) : Option (α × β) → Option (α × γ)
   | none => none
@@ -308,7 +308,7 @@ theorem mem_rec_on {C : Seq α → Prop} {a s} (M : a ∈ s)
     apply h1 _ _ (Or.inr (IH e))
 #align stream.seq.mem_rec_on Stream'.Seq.mem_rec_on
 
-/-- Corecursor over pairs of `option` values-/
+/-- Corecursor over pairs of `Option` values-/
 def Corec.f (f : β → Option (α × β)) : Option β → Option α × Option β
   | none => (none, none)
   | some b =>
@@ -364,7 +364,7 @@ variable (R : Seq α → Seq α → Prop)
 -- mathport name: R
 local infixl:50 " ~ " => R
 
-/-- Bisimilarity relation over `option` of `seq1 α`-/
+/-- Bisimilarity relation over `Option` of `seq1 α`-/
 def BisimO : Option (Seq1 α) → Option (Seq1 α) → Prop
   | none, none => True
   | some (a, s), some (a', s') => a = a' ∧ R s s'
@@ -470,9 +470,9 @@ instance coeStream : Coe (Stream' α) (Seq α) :=
   ⟨ofStream⟩
 #align stream.seq.coe_stream Stream'.Seq.coeStream
 
-/-- Embed a `lazy_list α` as a sequence. Note that even though this
+/-- Embed a `LazyList α` as a sequence. Note that even though this
   is non-meta, it will produce infinite sequences if used with
-  cyclic `lazy_list`s created by meta constructions. -/
+  cyclic `LazyList`s created by meta constructions. -/
 def ofLazyList : LazyList α → Seq α :=
   corec fun l =>
     match l with
@@ -484,7 +484,7 @@ instance coeLazyList : Coe (LazyList α) (Seq α) :=
   ⟨ofLazyList⟩
 #align stream.seq.coe_lazy_list Stream'.Seq.coeLazyList
 
-/-- Translate a sequence into a `lazy_list`. Since `lazy_list` and `list`
+/-- Translate a sequence into a `LazyList`. Since `LazyList` and `List`
   are isomorphic as non-meta types, this function is necessarily meta. -/
 unsafe def toLazyList : Seq α → LazyList α
   | s =>
