@@ -851,6 +851,7 @@ def SecondObj : Type max v₁ u₁ :=
 #align category_theory.equalizer.sieve.second_obj CategoryTheory.Equalizer.Sieve.SecondObj
 
 variable {P S}
+
 -- porting note: added to ease automation
 @[ext]
 lemma SecondObj.ext (z₁ z₂ : SecondObj P S) (h : ∀ (Y Z : C) (g : Z ⟶ Y) (f : Y ⟶ X)
@@ -901,24 +902,24 @@ theorem compatible_iff (x : FirstObj P S) :
 
 /-- `P` is a sheaf for `S`, iff the fork given by `w` is an equalizer. -/
 theorem equalizer_sheaf_condition :
-    Presieve.IsSheafFor P S ↔ Nonempty (IsLimit (Fork.ofι _ (w P S))) := by
-  rw [types.type_equalizer_iff_unique, ←
-    Equiv.forall_congr_left (first_obj_eq_family P S).toEquiv.symm]
+    Presieve.IsSheafFor P (S : Presieve X) ↔ Nonempty (IsLimit (Fork.ofι _ (w P S))) := by
+  rw [Types.type_equalizer_iff_unique,
+    ← Equiv.forall_congr_left (firstObjEqFamily P (S : Presieve X)).toEquiv.symm]
   simp_rw [← compatible_iff]
-  simp only [inv_hom_id_apply, iso.to_equiv_symm_fun]
+  simp only [inv_hom_id_apply, Iso.toEquiv_symm_fun]
   apply ball_congr
-  intro x tx
-  apply existsUnique_congr
+  intro x _
+  apply exists_unique_congr
   intro t
-  rw [← iso.to_equiv_symm_fun]
+  rw [← Iso.toEquiv_symm_fun]
   rw [Equiv.eq_symm_apply]
   constructor
-  · intro q
-    ext (Y f hf)
-    simpa [first_obj_eq_family, fork_map] using q _ _
+  . intro q
+    funext Y f hf
+    simpa [firstObjEqFamily, forkMap] using q _ _
   · intro q Y f hf
     rw [← q]
-    simp [first_obj_eq_family, fork_map]
+    simp [firstObjEqFamily, forkMap]
 #align category_theory.equalizer.sieve.equalizer_sheaf_condition CategoryTheory.Equalizer.Sieve.equalizer_sheaf_condition
 
 end Sieve
@@ -943,7 +944,7 @@ def SecondObj : Type max v₁ u₁ :=
 
 /-- The map `pr₀*` of <https://stacks.math.columbia.edu/tag/00VL>. -/
 def firstMap : FirstObj P R ⟶ SecondObj P R :=
-  Pi.lift fun fg => Pi.π _ _ ≫ P.map pullback.fst.op
+  Pi.lift fun _ => Pi.π _ _ ≫ P.map pullback.fst.op
 #align category_theory.equalizer.presieve.first_map CategoryTheory.Equalizer.Presieve.firstMap
 
 instance : Inhabited (SecondObj P (⊥ : Presieve X)) :=
@@ -951,15 +952,14 @@ instance : Inhabited (SecondObj P (⊥ : Presieve X)) :=
 
 /-- The map `pr₁*` of <https://stacks.math.columbia.edu/tag/00VL>. -/
 def secondMap : FirstObj P R ⟶ SecondObj P R :=
-  Pi.lift fun fg => Pi.π _ _ ≫ P.map pullback.snd.op
+  Pi.lift fun _ => Pi.π _ _ ≫ P.map pullback.snd.op
 #align category_theory.equalizer.presieve.second_map CategoryTheory.Equalizer.Presieve.secondMap
 
 theorem w : forkMap P R ≫ firstMap P R = forkMap P R ≫ secondMap P R := by
   apply limit.hom_ext
   rintro ⟨⟨Y, f, hf⟩, ⟨Z, g, hg⟩⟩
-  simp only [first_map, second_map, fork_map]
-  simp only [limit.lift_π, limit.lift_π_assoc, assoc, fan.mk_π_app, Subtype.coe_mk,
-    Subtype.val_eq_coe]
+  simp only [firstMap, secondMap, forkMap]
+  simp only [limit.lift_π, limit.lift_π_assoc, assoc, Fan.mk_π_app]
   rw [← P.map_comp, ← op_comp, pullback.condition]
   simp
 #align category_theory.equalizer.presieve.w CategoryTheory.Equalizer.Presieve.w
@@ -969,39 +969,42 @@ The family of elements given by `x : first_obj P S` is compatible iff `first_map
 map it to the same point.
 -/
 theorem compatible_iff (x : FirstObj P R) :
-    ((firstObjEqFamily P R).Hom x).Compatible ↔ firstMap P R x = secondMap P R x := by
-  rw [presieve.pullback_compatible_iff]
+    ((firstObjEqFamily P R).hom x).Compatible ↔ firstMap P R x = secondMap P R x := by
+  rw [Presieve.pullbackCompatible_iff]
   constructor
-  · intro t
-    ext ⟨⟨Y, f, hf⟩, Z, g, hg⟩
-    simpa [first_map, second_map] using t hf hg
+  . intro t
+    apply Limits.Types.limit_ext.{max u₁ v₁, u₁}
+    rintro ⟨⟨Y, f, hf⟩, Z, g, hg⟩
+    simpa [firstMap, secondMap] using t hf hg
   · intro t Y Z f g hf hg
-    rw [types.limit_ext_iff'] at t
-    simpa [first_map, second_map] using t ⟨⟨⟨Y, f, hf⟩, Z, g, hg⟩⟩
+    rw [Types.limit_ext_iff'] at t
+    simpa [firstMap, secondMap] using t ⟨⟨⟨Y, f, hf⟩, Z, g, hg⟩⟩
 #align category_theory.equalizer.presieve.compatible_iff CategoryTheory.Equalizer.Presieve.compatible_iff
 
 /-- `P` is a sheaf for `R`, iff the fork given by `w` is an equalizer.
 See <https://stacks.math.columbia.edu/tag/00VM>.
 -/
 theorem sheaf_condition : R.IsSheafFor P ↔ Nonempty (IsLimit (Fork.ofι _ (w P R))) := by
-  rw [types.type_equalizer_iff_unique]
-  erw [← Equiv.forall_congr_left (first_obj_eq_family P R).toEquiv.symm]
-  simp_rw [← compatible_iff, ← iso.to_equiv_fun, Equiv.apply_symm_apply]
+  rw [Types.type_equalizer_iff_unique]
+  erw [← Equiv.forall_congr_left (firstObjEqFamily P R).toEquiv.symm]
+  simp_rw [← compatible_iff, ← Iso.toEquiv_fun, Equiv.apply_symm_apply]
   apply ball_congr
-  intro x hx
-  apply existsUnique_congr
+  intro x _
+  apply exists_unique_congr
   intro t
   rw [Equiv.eq_symm_apply]
   constructor
   · intro q
-    ext (Y f hf)
-    simpa [fork_map] using q _ _
+    funext Y f hf
+    simpa [forkMap] using q _ _
   · intro q Y f hf
     rw [← q]
-    simp [fork_map]
+    simp [forkMap]
 #align category_theory.equalizer.presieve.sheaf_condition CategoryTheory.Equalizer.Presieve.sheaf_condition
 
 end Presieve
+
+end
 
 end Equalizer
 
@@ -1013,6 +1016,7 @@ variable (J : GrothendieckTopology C)
 structure SheafOfTypes (J : GrothendieckTopology C) : Type max u₁ v₁ (w + 1) where
   val : Cᵒᵖ ⥤ Type w
   cond : Presieve.IsSheaf J val
+  set_option linter.uppercaseLean3 false in
 #align category_theory.SheafOfTypes CategoryTheory.SheafOfTypes
 
 namespace SheafOfTypes
@@ -1023,16 +1027,17 @@ variable {J}
 @[ext]
 structure Hom (X Y : SheafOfTypes J) where
   val : X.val ⟶ Y.val
+  set_option linter.uppercaseLean3 false in
 #align category_theory.SheafOfTypes.hom CategoryTheory.SheafOfTypes.Hom
 
 @[simps]
 instance : Category (SheafOfTypes J) where
   Hom := Hom
-  id X := ⟨𝟙 _⟩
-  comp X Y Z f g := ⟨f.val ≫ g.val⟩
-  id_comp' X Y f := Hom.ext _ _ <| id_comp _
-  comp_id' X Y f := Hom.ext _ _ <| comp_id _
-  assoc' X Y Z W f g h := Hom.ext _ _ <| assoc _ _ _
+  id _ := ⟨𝟙 _⟩
+  comp f g := ⟨f.val ≫ g.val⟩
+  id_comp _ := Hom.ext _ _ <| id_comp _
+  comp_id _ := Hom.ext _ _ <| comp_id _
+  assoc _ _ _ := Hom.ext _ _ <| assoc _ _ _
 
 -- Let's make the inhabited linter happy...
 instance (X : SheafOfTypes J) : Inhabited (Hom X X) :=
@@ -1044,12 +1049,13 @@ end SheafOfTypes
 @[simps]
 def sheafOfTypesToPresheaf : SheafOfTypes J ⥤ Cᵒᵖ ⥤ Type w where
   obj := SheafOfTypes.val
-  map X Y f := f.val
-  map_id' X := rfl
-  map_comp' X Y Z f g := rfl
+  map f := f.val
+  map_id _ := rfl
+  map_comp _ _ := rfl
+set_option linter.uppercaseLean3 false in
 #align category_theory.SheafOfTypes_to_presheaf CategoryTheory.sheafOfTypesToPresheaf
 
-instance : Full (sheafOfTypesToPresheaf J) where Preimage X Y f := ⟨f⟩
+instance : Full (sheafOfTypesToPresheaf J) where preimage f := ⟨f⟩
 
 instance : Faithful (sheafOfTypesToPresheaf J) where
 
@@ -1059,14 +1065,15 @@ of presheaves.
 -/
 @[simps]
 def sheafOfTypesBotEquiv : SheafOfTypes (⊥ : GrothendieckTopology C) ≌ Cᵒᵖ ⥤ Type w where
-  Functor := sheafOfTypesToPresheaf _
+  functor := sheafOfTypesToPresheaf _
   inverse :=
     { obj := fun P => ⟨P, Presieve.isSheaf_bot⟩
-      map := fun P₁ P₂ f => (sheafOfTypesToPresheaf _).Preimage f }
+      map := fun f => (sheafOfTypesToPresheaf _).preimage f }
   unitIso :=
-    { Hom := { app := fun _ => ⟨𝟙 _⟩ }
+    { hom := { app := fun _ => ⟨𝟙 _⟩ }
       inv := { app := fun _ => ⟨𝟙 _⟩ } }
   counitIso := Iso.refl _
+set_option linter.uppercaseLean3 false in
 #align category_theory.SheafOfTypes_bot_equiv CategoryTheory.sheafOfTypesBotEquiv
 
 instance : Inhabited (SheafOfTypes (⊥ : GrothendieckTopology C)) :=
