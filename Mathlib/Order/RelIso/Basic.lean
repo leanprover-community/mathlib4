@@ -412,7 +412,7 @@ noncomputable def Quotient.outRelEmbedding [Setoid α] {r : α → α → Prop}
 #align quotient.out_rel_embedding Quotient.outRelEmbedding
 #align quotient.out_rel_embedding_apply Quotient.outRelEmbedding_apply
 
-/-- `quotient.out'` as a relation embedding between the lift of a relation and the relation. -/
+/-- `Quotient.out'` as a relation embedding between the lift of a relation and the relation. -/
 @[simps]
 noncomputable def Quotient.out'RelEmbedding {_ : Setoid α} {r : α → α → Prop}
     (H : ∀ (a₁ b₁ a₂ b₂ : α), a₁ ≈ a₂ → b₁ ≈ b₂ → r a₁ b₁ = r a₂ b₂) :
