@@ -1607,8 +1607,8 @@ theorem coe_smul_finset (a : α) (s : Finset β) : ↑(a • s)  = a • (↑s :
 @[to_additive]
 theorem smul_mem_smul_finset : b ∈ s → a • b ∈ a • s :=
   mem_image_of_mem _
-#align finset.smul_finset_mem_smul_finset Finset.smul_mem_smul_finset
-#align finset.vadd_finset_mem_vadd_finset Finset.vadd_mem_vadd_finset
+#align finset.smul_mem_smul_finset Finset.smul_mem_smul_finset
+#align finset.vadd_mem_vadd_finset Finset.vadd_mem_vadd_finset
 
 @[to_additive]
 theorem smul_finset_card_le : (a • s).card ≤ s.card :=
