@@ -20,7 +20,7 @@ if they are equal upon evaluating them on an arbitrary assignment of the variabl
 
 # Main declaration
 
-* `mv_polynomial.funext`: two polynomials `φ ψ : mv_polynomial σ R`
+* `MvPolynomial.funext`: two polynomials `φ ψ : MvPolynomial σ R`
   over an infinite integral domain `R` are equal if `eval x φ = eval x ψ` for all `x : σ → R`.
 
 -/
@@ -37,14 +37,15 @@ private theorem funext_fin {n : ℕ} {p : MvPolynomial (Fin n) R}
     apply e.injective
     rw [RingEquiv.map_zero]
     convert h finZeroElim
+    /- Porting note: this branch of the proof closes here in Lean 4!
     suffices
       (eval₂_hom (RingHom.id _) (IsEmpty.elim' Fin.isEmpty)) p =
         (eval finZeroElim : MvPolynomial (Fin 0) R →+* R) p by
       rw [← this]
-      simp only [coe_eval₂_hom, is_empty_ring_equiv_apply, RingEquiv.trans_apply,
-        aeval_eq_eval₂_hom]
+      simp only [coe_eval₂Hom, is_empty_ring_equiv_apply, RingEquiv.trans_apply,
+        aeval_eq_eval₂Hom]
       congr
-    exact eval₂_hom_congr rfl (Subsingleton.elim _ _) rfl
+    exact eval₂Hom_congr rfl (Subsingleton.elim _ _) rfl -/
   · let e := (finSuccEquiv R n).toRingEquiv
     apply e.injective
     simp only [RingEquiv.map_zero]
@@ -52,24 +53,22 @@ private theorem funext_fin {n : ℕ} {p : MvPolynomial (Fin n) R}
     intro q
     rw [Polynomial.eval_zero]
     apply ih
-    swap
-    · infer_instance
     intro x
-    dsimp [e]
-    rw [fin_succ_equiv_apply]
+    have : e = finSuccEquiv R n := rfl
+    dsimp [this]
+    rw [finSuccEquiv_apply]
     calc
       _ = eval _ p := _
       _ = 0 := h _
-      
     · intro i
       exact Fin.cases (eval x q) x i
     apply induction_on p
     · intro r
-      simp only [eval_C, Polynomial.eval_C, RingHom.coe_comp, eval₂_hom_C]
+      simp only [eval_C, Polynomial.eval_C, RingHom.coe_comp, eval₂Hom_C]
     · intros
       simp only [*, RingHom.map_add, Polynomial.eval_add]
     · intro φ i hφ
-      simp only [*, eval_X, Polynomial.eval_mul, RingHom.map_mul, eval₂_hom_X']
+      simp only [*, eval_X, Polynomial.eval_mul, RingHom.map_mul, eval₂Hom_X']
       congr 1
       by_cases hi : i = 0
       · subst hi
@@ -77,7 +76,6 @@ private theorem funext_fin {n : ℕ} {p : MvPolynomial (Fin n) R}
       · rw [← Fin.succ_pred i hi]
         simp only [eval_X, Polynomial.eval_C, Fin.cases_succ]
     · infer_instance
-#align mv_polynomial.funext_fin mv_polynomial.funext_fin
 
 /-- Two multivariate polynomials over an infinite integral domain are equal
 if they are equal upon evaluating them on an arbitrary assignment of the variables. -/
@@ -94,13 +92,12 @@ theorem funext {σ : Type _} {p q : MvPolynomial σ R} (h : ∀ x : σ → R, ev
   intro x
   classical
     convert h (Function.extend f x 0)
-    simp only [eval, eval₂_hom_rename, Function.extend_comp hf]
+    simp only [eval, eval₂Hom_rename, Function.extend_comp hf]
 #align mv_polynomial.funext MvPolynomial.funext
 
 theorem funext_iff {σ : Type _} {p q : MvPolynomial σ R} :
     p = q ↔ ∀ x : σ → R, eval x p = eval x q :=
-  ⟨by rintro rfl <;> simp only [forall_const, eq_self_iff_true], funext⟩
+  ⟨by rintro rfl; simp only [forall_const, eq_self_iff_true], funext⟩
 #align mv_polynomial.funext_iff MvPolynomial.funext_iff
 
 end MvPolynomial
-
