@@ -10,8 +10,6 @@ namespace Mathlib.Tactic.GPT.Sagredo.Widget
 
 open Lean Elab Meta Tactic
 
-
-
 structure Data where
   ci : Elab.ContextInfo
   lctx : LocalContext

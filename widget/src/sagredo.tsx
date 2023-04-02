@@ -35,11 +35,11 @@ export default function(data: RpcData) {
         ms.concat([{ contents: mapRpcError(e).message, kind: 'error' }])))
 
   const stylesOfMsg = (msg: Msg) => {
-    let ret = 'br3 pa2 mv1 '
+    let ret = 'br3 pa2 mv1 black '
     if (msg.kind === 'query')
       ret += 'w-80 bg-light-green self-end '
     if (msg.kind === 'response')
-      ret += 'w-80 bg-light-green self-start '
+      ret += 'w-80 bg-light-blue self-start '
     if (msg.kind === 'error')
       ret += 'bg-light-red '
     return ret

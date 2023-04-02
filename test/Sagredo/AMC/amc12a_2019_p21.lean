@@ -1,5 +1,5 @@
 -- from miniF2F https://github.com/facebookresearch
-import Mathlib.Tactic.GPT.Sagredo.Dialog
+import Mathlib.Tactic.GPT.Sagredo.Widget
 import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.Data.Complex.Basic
 
