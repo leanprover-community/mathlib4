@@ -252,7 +252,9 @@ theorem sum_pow_of_commute [Semiring R] (x : α → R)
       · have : Zero (Sym α 0) := Sym.instZeroSymOfNatNatInstOfNatNat
         exact ⟨0, by simp⟩
       convert (@one_mul R _ _).symm
-      apply @Nat.cast_one R _
+      dsimp only
+      convert @Nat.cast_one R
+      sorry
     · rw [_root_.pow_succ, zero_mul]
       -- Porting note : Lean cannot infer this instance by itself
       have : IsEmpty (Finset.sym (∅ : Finset α) (succ n)) :=
