@@ -79,8 +79,8 @@ def feedback : M IO String := do
   let tacs := ["all_goals", "any_goals", "apply", "assumption", "by_cases", "by_contra", "cases'", "congr", "contradiction", "contrapose", "convert", "convert_to", "exact", "exfalso", "field_simp", "have", "aesop", "induction'", "intro", "iterate", "left", "linarith", "push_neg", "rcases", "rfl", "repeat", "right", "ring", "rintro", "rw", "specialize", "constructor", "simp", "swap", "symm", "tauto", "try", "unfold", "use"]
 
   let nearestToBad := fun badTac => (tacs.foldl (fun (best, dist) new =>
-    let newDist := lev badTac new
-    if lev badTac new < dist then
+    let newDist := badTac.levenshtein new
+    if newDist < dist then
       (new, newDist)
     else
       (best, dist))
