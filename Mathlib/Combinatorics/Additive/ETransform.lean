@@ -122,8 +122,8 @@ def mulETransformLeft : Finset α × Finset α :=
 #align finset.mul_e_transform_left Finset.mulETransformLeft
 #align finset.add_e_transform_left Finset.addETransformLeft
 
-/-- An **e-transform**. Turns `(s, t)` into `(s ∪ s • e, t ∩ e⁻¹ • t)`. This reduces the product of
-the two sets. -/
+/-- An **e-transform**. Turns `(s, t)` into `(s ∪ s • e, t ∩ e⁻¹ • t)`. This reduces the
+product of the two sets. -/
 @[to_additive (attr := simps) "An **e-transform**.
 Turns `(s, t)` into `(s ∪ s +ᵥ e, t ∩ -e +ᵥ t)`. This reduces the sum of the two sets."]
 def mulETransformRight : Finset α × Finset α :=
