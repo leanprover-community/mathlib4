@@ -754,12 +754,12 @@ theorem join_nil : join nil = (nil : Seq α) :=
   destruct_eq_nil rfl
 #align stream.seq.join_nil Stream'.Seq.join_nil
 
-@[simp]
+--@[simp] -- porting note: simp can prove: `join_cons` is more general
 theorem join_cons_nil (a : α) (S) : join (cons (a, nil) S) = cons a (join S) :=
   destruct_eq_cons <| by simp [join]
 #align stream.seq.join_cons_nil Stream'.Seq.join_cons_nil
 
-@[simp]
+--@[simp] -- porting note: simp can prove: `join_cons` is more general
 theorem join_cons_cons (a b : α) (s S) :
     join (cons (a, cons b s) S) = cons a (join (cons (b, s) S)) :=
   destruct_eq_cons <| by simp [join]
@@ -781,9 +781,9 @@ theorem join_cons (a : α) (s S) : join (cons (a, s) S) = cons a (append s (join
         exact ⟨rfl, Or.inl rfl⟩
     | _, _, Or.inr ⟨a, s, S, rfl, rfl⟩ => by
       apply recOn s
-      · simp
+      · simp [join_cons_cons, join_cons_nil]
       · intro x s
-        simp
+        simp [join_cons_cons, join_cons_nil]
         refine' Or.inr ⟨x, s, S, rfl, rfl⟩
 #align stream.seq.join_cons Stream'.Seq.join_cons
 
