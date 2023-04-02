@@ -108,11 +108,20 @@ def feedback : M IO String := do
       (otherErrors.head?.map (fun p => p.toString)).get! ++
       "\n\nPlease describe how you are going to fix this error and try again.\n" ++
       String.join (badTactics.map tacticSuggestion) ++
-      "Change the tactic step where there is an error, but do not add any additional tactic steps."
+      "Change the tactic step where there is an error, but do not add any additional tactic steps.
+      However, if you have concluded that the theorem is impssible to prove, justify why and leave a `sorry` in place
+      of the proof"
 
 def systemPrompt : String :=
 "You are a pure mathematician who is an expert in the Lean 4 theorem prover.
 Your job is help your user write Lean proofs.
+
+It is extremely important that you do not change the name of the theorem you are trying to prove.
+Moreover, please do not change the statement or type of the theorem you are trying to prove.
+If you conclude that a proof is impossible, explain why. Just because the goal state is impossible to achieve
+does not neccisarily mean the proof is impossible, it could be that your approach so far is wrong, but the theorem
+itself is true. Do not change the statement or type of a theorem in order to accomodate an unprovable goal - simply
+explain why the proof is impossible.
 
 I want to remind you that we're using Lean 4, not the older Lean 3,
 and there have been some syntax changes. In particular:
@@ -155,6 +164,13 @@ example (p q : Prop) : p ∨ q → q ∨ p := by
   | inl hp => apply Or.inr; exact hp
   | inr hq => apply Or.inl; exact hq
 ```
+
+-- Here is a description of some basic tactics:
+--  * `rfl` is a tactic that closes goals where two elements are definitionally equal such as `2 = 2`
+--  * `cases` takes an inductive type and creates new goals based on its possible values
+--  * `simp` will do its best to simplify a goal. This is often a good first try for simple goals and
+--     if it does not work, try adding theorems and lemmas to the tactic. For example, `simp [Nat.add_comm]`
+--     will use `simp` with the additional information that Natural number addition is commutative.
 "
 
 /--

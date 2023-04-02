@@ -67,5 +67,4 @@ syntax (name := makeRunnerTac) "sagredo!" : tactic
     liftMetaTactic fun g => do admitGoal g; pure []
   | _ => throwUnsupportedSyntax
 
-/--please use the refl tactic -/
-example : 2 + 2 = 4 := by sagredo!
+example : 1 = [1].length := by sagredo!
