@@ -78,13 +78,16 @@ theorem mul_matrix_apply [Fintype m] [DecidableEq m] [Semiring α] (f : l ≃. m
 
 theorem toMatrix_symm [DecidableEq m] [DecidableEq n] [Zero α] [One α] (f : m ≃. n) :
     (f.symm.toMatrix : Matrix n m α) = f.toMatrixᵀ := by
-  ext <;> simp only [transpose, mem_iff_mem f, toMatrix_apply] <;> congr
+  ext
+  simp only [transpose, mem_iff_mem f, toMatrix_apply]
+  congr
 #align pequiv.to_matrix_symm PEquiv.toMatrix_symm
 
 @[simp]
 theorem toMatrix_refl [DecidableEq n] [Zero α] [One α] :
     ((PEquiv.refl n).toMatrix : Matrix n n α) = 1 := by
-  ext <;> simp [toMatrix_apply, one_apply] <;> congr
+  ext
+  simp [toMatrix_apply, one_apply]
 #align pequiv.to_matrix_refl PEquiv.toMatrix_refl
 
 theorem matrix_mul_apply [Fintype m] [Semiring α] [DecidableEq n] (M : Matrix l m α) (f : m ≃. n)
@@ -94,7 +97,7 @@ theorem matrix_mul_apply [Fintype m] [Semiring α] [DecidableEq n] (M : Matrix l
   · simp [h, ← f.eq_some_iff]
   · rw [Finset.sum_eq_single fj]
     · simp [h, ← f.eq_some_iff]
-    · intro b H n
+    · rintro b - n
       simp [h, ← f.eq_some_iff, n.symm]
     · simp
 #align pequiv.matrix_mul_apply PEquiv.matrix_mul_apply
