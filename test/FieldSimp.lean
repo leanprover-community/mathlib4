@@ -65,6 +65,6 @@ example (x : ℚ) (h₀ : x ≠ 0) :
   field_simp
   ring
 
-example {x y z w : ℚ) (h : x / y = z / w) (hy : y ≠ 0) (hw : w ≠ 0) : x * w = z * y := by
+example {x y z w : ℚ} (h : x / y = z / w) (hy : y ≠ 0) (hw : w ≠ 0) : x * w = z * y := by
   field_simp at h
   assumption
