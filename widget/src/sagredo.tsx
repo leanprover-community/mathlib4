@@ -1,4 +1,5 @@
 import { RpcContext, RpcPtr, mapRpcError } from '@leanprover/infoview'
+import ReactMarkdown from 'react-markdown';
 import * as React from 'react';
 
 interface RpcData {
@@ -35,11 +36,11 @@ export default function(data: RpcData) {
         ms.concat([{ contents: mapRpcError(e).message, kind: 'error' }])))
 
   const stylesOfMsg = (msg: Msg) => {
-    let ret = 'br3 pa2 mv1 black '
+    let ret = 'ba br3 pl3 pa2 shadow-1 mv2 font-code '
     if (msg.kind === 'query')
-      ret += 'w-80 bg-light-green self-end '
+      ret += 'w-80 self-end '
     if (msg.kind === 'response')
-      ret += 'w-80 bg-light-blue self-start '
+      ret += 'w-80 self-start '
     if (msg.kind === 'error')
       ret += 'bg-light-red '
     return ret
@@ -50,9 +51,18 @@ export default function(data: RpcData) {
     <button onClick={() => callSagredo(data)}>Go.</button>
     <div className='flex flex-column'>
       {msgLog.map(msg =>
-        <pre style={{whiteSpace: 'pre-wrap'}} className={stylesOfMsg(msg)}>
-          {msg.contents}
-        </pre>)}
+        <div
+            style={{
+              backgroundColor: 'var(--vscode-editorHoverWidget-background)',
+              borderColor: 'var(--vscode-editorHoverWidget-border)'
+            }}
+            className={stylesOfMsg(msg)}>
+          <ReactMarkdown
+            components={{
+              pre: ({node, ...props}) => <pre className='pre-wrap ' {...props} />,
+            }}
+            children={msg.contents} />
+        </div>)}
     </div>
   </details>
 }
