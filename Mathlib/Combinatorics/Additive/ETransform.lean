@@ -19,11 +19,11 @@ as internals of other proofs.
 
 ## Main declarations
 
-* `finset.mul_dyson_e_transform`: The Dyson e-transform. Replaces `(s, t)` by
+* `Finset.mulDysonETransform`: The Dyson e-transform. Replaces `(s, t)` by
   `(s ∪ e • t, t ∩ e⁻¹ • s)`. The additive version preserves `|s ∩ [1, m]| + |t ∩ [1, m - e]|`.
-* `finset.mul_e_transform_left`/`finset.mul_e_transform_right`: Replace `(s, t)` by
+* `Finset.mulETransformLeft`/`Finset.mulETransformRight`: Replace `(s, t)` by
   `(s ∩ s • e, t ∪ e⁻¹ • t)` and `(s ∪ s • e, t ∩ e⁻¹ • t)`. Preserve (together) the sum of
-  the cardinalities (see `finset.mul_e_transform.card`). In particular, one of the two transforms
+  the cardinalities (see `Finset.MulETransform.card`). In particular, one of the two transforms
   increases the sum of the cardinalities and the other one decreases it. See
   `le_or_lt_of_add_le_add` and around.
 
@@ -50,9 +50,8 @@ variable [CommGroup α] (e : α) (x : Finset α × Finset α)
 
 /-- The **Dyson e-transform**. Turns `(s, t)` into `(s ∪ e • t, t ∩ e⁻¹ • s)`. This reduces the
 product of the two sets. -/
-@[to_additive
-      "The **Dyson e-transform**. Turns `(s, t)` into `(s ∪ e +ᵥ t, t ∩ -e +ᵥ s)`. This\nreduces the sum of the two sets.",
-  simps]
+@[to_additive (attr := simps) "The **Dyson e-transform**.
+Turns `(s, t)` into `(s ∪ e +ᵥ t, t ∩ -e +ᵥ s)`. This reduces the sum of the two sets."]
 def mulDysonETransform : Finset α × Finset α :=
   (x.1 ∪ e • x.2, x.2 ∩ e⁻¹ • x.1)
 #align finset.mul_dyson_e_transform Finset.mulDysonETransform
@@ -76,7 +75,7 @@ theorem mulDysonETransform.card :
 #align finset.mul_dyson_e_transform.card Finset.mulDysonETransform.card
 #align finset.add_dyson_e_transform.card Finset.addDysonETransform.card
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem mulDysonETransform_idem :
     mulDysonETransform e (mulDysonETransform e x) = mulDysonETransform e x := by
   ext : 1 <;> dsimp
@@ -85,7 +84,7 @@ theorem mulDysonETransform_idem :
   · rw [smul_finset_union, inv_smul_smul, union_comm, inter_eq_left_iff_subset]
     exact inter_subset_union
 #align finset.mul_dyson_e_transform_idem Finset.mulDysonETransform_idem
-#align finset.add_dyson_e_transform_idem Finset.add_dyson_e_transform_idem
+#align finset.add_dyson_e_transform_idem Finset.addDysonETransform_idem
 
 variable {e x}
 
@@ -117,9 +116,8 @@ variable [Group α] (e : α) (x : Finset α × Finset α)
 
 /-- An **e-transform**. Turns `(s, t)` into `(s ∩ s • e, t ∪ e⁻¹ • t)`. This reduces the
 product of the two sets. -/
-@[to_additive
-      "An **e-transform**. Turns `(s, t)` into `(s ∩ s +ᵥ e, t ∪ -e +ᵥ t)`. This\nreduces the sum of the two sets.",
-  simps]
+@[to_additive (attr := simps) "An **e-transform**.
+Turns `(s, t)` into `(s ∩ s +ᵥ e, t ∪ -e +ᵥ t)`. This reduces the sum of the two sets."]
 def mulETransformLeft : Finset α × Finset α :=
   (x.1 ∩ op e • x.1, x.2 ∪ e⁻¹ • x.2)
 #align finset.mul_e_transform_left Finset.mulETransformLeft
@@ -127,23 +125,22 @@ def mulETransformLeft : Finset α × Finset α :=
 
 /-- An **e-transform**. Turns `(s, t)` into `(s ∪ s • e, t ∩ e⁻¹ • t)`. This reduces the product of
 the two sets. -/
-@[to_additive
-      "An **e-transform**. Turns `(s, t)` into `(s ∪ s +ᵥ e, t ∩ -e +ᵥ t)`. This reduces the\nsum of the two sets.",
-  simps]
+@[to_additive (attr := simps) "An **e-transform**.
+Turns `(s, t)` into `(s ∪ s +ᵥ e, t ∩ -e +ᵥ t)`. This reduces the sum of the two sets."]
 def mulETransformRight : Finset α × Finset α :=
   (x.1 ∪ op e • x.1, x.2 ∩ e⁻¹ • x.2)
 #align finset.mul_e_transform_right Finset.mulETransformRight
 #align finset.add_e_transform_right Finset.addETransformRight
 
-@[simp, to_additive]
-theorem mulETransformLeft_one : mulETransformLeft 1 x = x := by simp [mul_e_transform_left]
+@[to_additive (attr := simp)]
+theorem mulETransformLeft_one : mulETransformLeft 1 x = x := by simp [mulETransformLeft]
 #align finset.mul_e_transform_left_one Finset.mulETransformLeft_one
-#align finset.add_e_transform_left_zero Finset.add_e_transform_left_zero
+#align finset.add_e_transform_left_zero Finset.addETransformLeft_zero
 
-@[simp, to_additive]
-theorem mulETransformRight_one : mulETransformRight 1 x = x := by simp [mul_e_transform_right]
+@[to_additive (attr := simp)]
+theorem mulETransformRight_one : mulETransformRight 1 x = x := by simp [mulETransformRight]
 #align finset.mul_e_transform_right_one Finset.mulETransformRight_one
-#align finset.add_e_transform_right_zero Finset.add_e_transform_right_zero
+#align finset.add_e_transform_right_zero Finset.addETransformRight_zero
 
 @[to_additive]
 theorem mulETransformLeft.fst_mul_snd_subset :
@@ -178,15 +175,15 @@ theorem mulETransformRight.card :
 #align finset.add_e_transform_right.card Finset.addETransformRight.card
 
 /-- This statement is meant to be combined with `le_or_lt_of_add_le_add` and similar lemmas. -/
-@[to_additive AddETransform.card
-      "This statement is meant to be combined with\n`le_or_lt_of_add_le_add` and similar lemmas."]
+@[to_additive AddETransform.card "This statement is meant to be combined with
+`le_or_lt_of_add_le_add` and similar lemmas."]
 protected theorem MulETransform.card :
     (mulETransformLeft e x).1.card + (mulETransformLeft e x).2.card +
         ((mulETransformRight e x).1.card + (mulETransformRight e x).2.card) =
       x.1.card + x.2.card + (x.1.card + x.2.card) := by
-  rw [add_add_add_comm, mul_e_transform_left.card, mul_e_transform_right.card, ← mul_add, two_mul]
+  rw [add_add_add_comm, mulETransformLeft.card, mulETransformRight.card, ← mul_add, two_mul]
 #align finset.mul_e_transform.card Finset.MulETransform.card
-#align add_e_transform.card AddETransform.card
+#align finset.add_e_transform.card Finset.AddETransform.card
 
 end Group
 
@@ -194,19 +191,18 @@ section CommGroup
 
 variable [CommGroup α] (e : α) (x : Finset α × Finset α)
 
-@[simp, to_additive]
-theorem mulETransformLeft_inv : mulETransformLeft e⁻¹ x = (mulETransformRight e x.symm).symm := by
-  simp [-op_inv, op_smul_eq_smul, mul_e_transform_left, mul_e_transform_right]
+@[to_additive (attr := simp)]
+theorem mulETransformLeft_inv : mulETransformLeft e⁻¹ x = (mulETransformRight e x.swap).swap := by
+  simp [-op_inv, op_smul_eq_smul, mulETransformLeft, mulETransformRight]
 #align finset.mul_e_transform_left_inv Finset.mulETransformLeft_inv
-#align finset.add_e_transform_left_neg Finset.add_e_transform_left_neg
+#align finset.add_e_transform_left_neg Finset.addETransformLeft_neg
 
-@[simp, to_additive]
-theorem mulETransformRight_inv : mulETransformRight e⁻¹ x = (mulETransformLeft e x.symm).symm := by
-  simp [-op_inv, op_smul_eq_smul, mul_e_transform_left, mul_e_transform_right]
+@[to_additive (attr := simp)]
+theorem mulETransformRight_inv : mulETransformRight e⁻¹ x = (mulETransformLeft e x.swap).swap := by
+  simp [-op_inv, op_smul_eq_smul, mulETransformLeft, mulETransformRight]
 #align finset.mul_e_transform_right_inv Finset.mulETransformRight_inv
-#align finset.add_e_transform_right_neg Finset.add_e_transform_right_neg
+#align finset.add_e_transform_right_neg Finset.addETransformRight_neg
 
 end CommGroup
 
 end Finset
-
