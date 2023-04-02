@@ -277,15 +277,15 @@ theorem measurable_const' {f : β → α} (hf : ∀ x y, f x = f y) : Measurable
 
 -- porting note: Attribute not yet supported
 -- @[measurability]
-theorem measurable_nat_cast [NatCast α] (n : ℕ) : Measurable (n : β → α) :=
+theorem measurable_natCast [NatCast α] (n : ℕ) : Measurable (n : β → α) :=
   @measurable_const α _ _ _ n
-#align measurable_nat_cast measurable_nat_cast
+#align measurable_nat_cast measurable_natCast
 
 -- porting note: Attribute not yet supported
 -- @[measurability]
-theorem measurable_int_cast [IntCast α] (n : ℤ) : Measurable (n : β → α) :=
+theorem measurable_intCast [IntCast α] (n : ℤ) : Measurable (n : β → α) :=
   @measurable_const α _ _ _ n
-#align measurable_int_cast measurable_int_cast
+#align measurable_int_cast measurable_intCast
 
 theorem measurable_of_countable [Countable α] [MeasurableSingletonClass α] (f : α → β) :
     Measurable f := fun s _ =>
