@@ -1,11 +1,10 @@
 /-
 Copyright (c) 2023 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Zhangir Azerbayev
+Authors: Scott Morrison, Zhangir Azerbayev, Zach Battleman
 -/
 import Mathlib.Tactic.GPT.Sagredo.Monad
-import Mathlib.Data.ListM.Basic
-import Mathlib.Tactic.GPT.levenshtein
+import Mathlib.Tactic.GPT.Levenshtein
 open Lean
 
 namespace Mathlib.Tactic.GPT.Sagredo
@@ -56,7 +55,8 @@ def goalsFeedback (line? : Option Nat) (goals : Format) : String :=
    Make sure the code block is self-contained and runs."
 
 def initialPrompt : M IO String := do
-  let prompt := "I am going to show you an incomplete proof and the accompanying goal state. I will ask you to complete the proof step by step, adding one tactic step in each response.
+  let prompt := "I am going to show you an incomplete proof and the accompanying goal state.
+I will ask you to complete the proof step by step, adding one tactic step in each response.
 
 Here is the proof thus far:\n" ++ (← latestCodeBlock).markdownBody
   match ← sorries with
@@ -114,13 +114,19 @@ def feedback : M IO String := do
       "Change the tactic step where there is an error, but do not add any additional tactic steps."
 
 def systemPrompt : String :=
-"You are a pure mathematician who is an expert in the Lean 4 theorem prover. Your job is help your user write Lean proofs.
+"You are a pure mathematician who is an expert in the Lean 4 theorem prover.
+Your job is help your user write Lean proofs.
 
-I want to remind you that we're using Lean 4, not the older Lean 3, and there have been some syntax changes. In particular:
+I want to remind you that we're using Lean 4, not the older Lean 3,
+and there have been some syntax changes. In particular:
 - Type constants are now UpperCamelCase, eg `Nat`, `List`.
-- Term constants and variables are now `lowerCamelCase` rather than `snake_case`. For example, we now have `NumberTheory.Divisors.properDivisors instead of `number_theory.divisors.proper_divisors`.
-- Pure functions are now written with the syntax `fun x => f x`. The old `λ x, f x` syntax will not work.
-- Instead of being separated by a comma, tactics can be separated by a newline or by a semicolon. For example, we could write
+- Term constants and variables are now `lowerCamelCase` rather than `snake_case`.
+  For example, we now have `NumberTheory.Divisors.properDivisors instead of
+  `number_theory.divisors.proper_divisors`.
+- Pure functions are now written with the syntax `fun x => f x`.
+  The old `λ x, f x` syntax will not work.
+- Instead of being separated by a comma, tactics can be separated by a newline or by a semicolon.
+  For example, we could write
 ```lean
 theorem test (p q : Prop) (hp : p) (hq : q) : p ∧ q ∧ p := by
   apply And.intro hp
@@ -132,8 +138,10 @@ theorem test (p q : Prop) (hp : p) (hq : q) : p ∧ q ∧ p := by
   apply And.intro hp; exact And.intro hq hp
 ```
 - Indentation is significant.
-- In the `rw` tactic you must enclose the lemmas in square brackets, even if there is just one. For example `rw h1` is now `rw [h1]`.
-- The `induction` tactic now uses a structured format, like pattern matching. For example, in Lean 4 we can write
+- In the `rw` tactic you must enclose the lemmas in square brackets, even if there is just one.
+  For example `rw h1` is now `rw [h1]`.
+- The `induction` tactic now uses a structured format, like pattern matching.
+  For example, in Lean 4 we can write
 ```lean
 theorem zero_add (n : Nat) : 0 + n = n := by
   induction n with
@@ -141,7 +149,8 @@ theorem zero_add (n : Nat) : 0 + n = n := by
   | succ n ih => rw [Nat.add_succ, ih]
 ```
   Alternatively you can still use `induction' with x y ih`, like in Lean 3.
-- The `cases` tactic now uses a structured format, like pattern matching. For example, in Lean 4 we can write
+- The `cases` tactic now uses a structured format, like pattern matching.
+  For example, in Lean 4 we can write
 ```lean
 example (p q : Prop) : p ∨ q → q ∨ p := by
   intro h
@@ -172,7 +181,7 @@ def dialog (totalSteps : Nat := 10) (progressSteps : Nat := 4) : M IO String := 
       if (← recentProgress progressSteps) then
         askForAssistance (← feedback)
       else
-        return s!"Failed after {i+1} requests, because no progress was make after {progressSteps} steps"
+        return s!"Failed after {i+1} requests, because no progress was made after {progressSteps} steps"
   if (← isDone) then
     return s!"Success after {totalSteps} requests"
   else

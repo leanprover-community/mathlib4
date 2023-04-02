@@ -1,36 +1,55 @@
-/- Levenshtein Distance -/
-import Init.Data.Array
+/-
+Copyright (c) 2023 Zach Battleman. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Zach Battleman, Scott Morrison
+-/
+import Std.Data.List.Basic
 
-def iota (n : Nat) : Array Nat :=
-  ((List.iota n).reverse.map $ λ n => n-1).toArray
+/-!
+# Levenshtein Distance
+-/
 
-def lev' (s₀ : String) (s₁ : String) : Nat :=
-  let v₀ := iota (s₁.length + 1);
-  let v₁ := Array.mkArray (s₁.length + 1) 0;
+namespace List
+
+/-- Implementation of `levenshtein`. Assumes the first list is not longer than the second list. -/
+def levenshtein' [BEq α] (s₀ : List α) (s₁ : List α) : Nat :=
+  let v₀ := List.range (s₁.length + 1) |>.toArray
+  let v₁ := Array.mkArray (s₁.length + 1) 0
 
   let ⟨v₀, _⟩ : Array Nat × Array Nat :=
-    s₀.toList.enum.foldl (λ ⟨v₀, v₁⟩ ⟨i, c₀⟩ =>
-      let v₁ := v₁.set! 0 (i + 1);
+    s₀.foldlIdx (fun i ⟨v₀, v₁⟩ c₀ =>
+      let v₁ := v₁.set! 0 (i + 1)
 
-      let ⟨v₀, v₁⟩ : Array Nat × Array Nat :=
-        s₁.toList.enum.foldl (λ ⟨v₀, v₁⟩ ⟨j, c₁⟩ =>
-          let delCost := (v₀.get! (j + 1)) + 1;
-          let insCost := (v₁.get! j) + 1;
+      let v₁ : Array Nat :=
+        s₁.foldlIdx (fun j v₁ c₁ =>
+          let delCost := (v₀.get! (j + 1)) + 1
+          let insCost := (v₁.get! j) + 1
           let subCost :=
-            if c₀ = c₁ then v₀.get! j
-            else (v₀.get! j) + 1;
-          let v₁ := v₁.set! (j + 1) (Nat.min (Nat.min delCost insCost) subCost);
-          ⟨v₀, v₁⟩)
-        ⟨v₀, v₁⟩;
+            if c₀ == c₁ then v₀.get! j else (v₀.get! j) + 1
+          v₁.set! (j + 1) (min (min delCost insCost) subCost))
+        v₁
 
       ⟨v₁, v₀⟩)
-    ⟨v₀, v₁⟩;
+    ⟨v₀, v₁⟩
 
   v₀.get! s₁.length
 
-def lev (s₀ : String) (s₁ : String) : Nat :=
-  if s₀.length ≤ s₁.length then lev' s₀ s₁
-  else lev' s₁ s₀
+/-- Levenshtein distance between two lists. -/
+def levenshtein [BEq α] (s₀ : List α) (s₁ : List α) : Nat :=
+  if s₀.length ≤ s₁.length then levenshtein' s₀ s₁
+  else levenshtein' s₁ s₀
 
-def main : IO Unit := do
-  IO.println (lev "sitting" "kitten")
+end List
+
+namespace String
+
+/-- Levenshtein distance between two strings. -/
+def levenshtein (s₀ : String) (s₁ : String) : Nat :=
+  s₀.toList.levenshtein s₁.toList
+
+end String
+
+open Lean
+
+#eval "sitting".levenshtein "kitten" = 3
+#eval "guard".levenshtein "lords" = 4
