@@ -30,7 +30,7 @@ universe v u
 -- morphism levels before object levels. See note [CategoryTheory universes].
 variable {C : Type u} [Category.{v} C]
 
-/-- The objects for the Kleisli category of the monad `T : monad C`, which are the same
+/-- The objects for the Kleisli category of the monad `T : Monad C`, which are the same
 thing as objects of the base category `C`.
 -/
 @[nolint unusedArguments]
@@ -111,7 +111,7 @@ end Adjunction
 
 end Kleisli
 
-/-- The objects for the co-Kleisli category of the comonad `U : monad C`, which are the same
+/-- The objects for the co-Kleisli category of the comonad `U : Comonad C`, which are the same
 thing as objects of the base category `C`.
 -/
 @[nolint unusedArguments]
