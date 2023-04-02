@@ -184,6 +184,11 @@ def dialog (totalSteps : Nat := 10) (progressSteps : Nat := 4) : M IO String := 
   else
     return s!"Failed after {totalSteps} requests"
 
+-- FIXME: the tactic doesn't compile without this,
+-- however with this Lake doesn't compile...
+instance [MonadLiftT m n] : MonadLiftT (StateT α m) (StateT α n) where
+  monadLift := fun f s => f s
+
 elab tk:"sagredo" : tactic => do
   let (newDecl, result) ← discussDeclContaining tk
     (fun decl => decl.replace "sagredo" "sorry") -- TODO this is a hack
