@@ -50,6 +50,11 @@ variable {α : Type v}
 
 open Matrix
 
+-- Porting note: added
+instance [DecidableEq n] (j : n) (o : Option n) : Decidable (j ∈ o) := by
+  rw [←Option.mem_toList]
+  infer_instance
+
 /-- `to_matrix` returns a matrix containing ones and zeros. `f.to_matrix i j` is `1` if
   `f i = some j` and `0` otherwise -/
 def toMatrix [DecidableEq n] [Zero α] [One α] (f : m ≃. n) : Matrix m n α :=
@@ -115,9 +120,11 @@ theorem toMatrix_trans [Fintype m] [DecidableEq m] [DecidableEq n] [Semiring α]
   cases f i <;> simp
 #align pequiv.to_matrix_trans PEquiv.toMatrix_trans
 
+-- Porting note: proof was `rfl`
 @[simp]
 theorem toMatrix_bot [DecidableEq n] [Zero α] [One α] :
-    ((⊥ : PEquiv m n).toMatrix : Matrix m n α) = 0 :=
+    ((⊥ : PEquiv m n).toMatrix : Matrix m n α) = 0 := by
+  simp only [toMatrix, bot_apply, Option.mem_def, ite_false]
   rfl
 #align pequiv.to_matrix_bot PEquiv.toMatrix_bot
 
