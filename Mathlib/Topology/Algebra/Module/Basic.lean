@@ -782,6 +782,7 @@ def comp (g : M₂ →SL[σ₂₃] M₃) (f : M₁ →SL[σ₁₂] M₂) : M₁ 
   ⟨(g : M₂ →ₛₗ[σ₂₃] M₃).comp (f : M₁ →ₛₗ[σ₁₂] M₂), g.2.comp f.2⟩
 #align continuous_linear_map.comp ContinuousLinearMap.comp
 
+@[inherit_doc comp]
 infixr:80 " ∘L " =>
   @ContinuousLinearMap.comp _ _ _ _ _ _ (RingHom.id _) (RingHom.id _) (RingHom.id _) _ _ _ _ _ _ _ _
     _ _ _ _ RingHomCompTriple.ids
@@ -1456,7 +1457,8 @@ end
 
 -- Porting note: cannot synth RingHomCompTriple
 set_option synthInstance.etaExperiment true in
-@[simp]
+-- Porting note: checked that lack of eta causes simp to fail, otherwise works
+@[simp, nolint simpNF]
 theorem comp_neg [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [TopologicalAddGroup M₂] [TopologicalAddGroup M₃]
     (g : M₂ →SL[σ₂₃] M₃) (f : M →SL[σ₁₂] M₂) : g.comp (-f) = -g.comp f := by
   ext x
@@ -1465,7 +1467,8 @@ theorem comp_neg [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [TopologicalAddG
 
 -- Porting note: cannot synth RingHomCompTriple
 set_option synthInstance.etaExperiment true in
-@[simp]
+-- Porting note: checked that lack of eta causes simp to fail, otherwise works
+@[simp, nolint simpNF]
 theorem neg_comp [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [TopologicalAddGroup M₃] (g : M₂ →SL[σ₂₃] M₃)
     (f : M →SL[σ₁₂] M₂) : (-g).comp f = -g.comp f := by
   ext
@@ -1474,7 +1477,8 @@ theorem neg_comp [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [TopologicalAddG
 
 -- Porting note: cannot synth RingHomCompTriple
 set_option synthInstance.etaExperiment true in
-@[simp]
+-- Porting note: checked that lack of eta causes simp to fail, otherwise works
+@[simp, nolint simpNF]
 theorem comp_sub [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [TopologicalAddGroup M₂] [TopologicalAddGroup M₃]
     (g : M₂ →SL[σ₂₃] M₃) (f₁ f₂ : M →SL[σ₁₂] M₂) : g.comp (f₁ - f₂) = g.comp f₁ - g.comp f₂ := by
   ext
@@ -1483,7 +1487,8 @@ theorem comp_sub [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [TopologicalAddG
 
 -- Porting note: cannot synth RingHomCompTriple
 set_option synthInstance.etaExperiment true in
-@[simp]
+-- Porting note: checked that lack of eta causes simp to fail, otherwise works
+@[simp, nolint simpNF]
 theorem sub_comp [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [TopologicalAddGroup M₃] (g₁ g₂ : M₂ →SL[σ₂₃] M₃)
     (f : M →SL[σ₁₂] M₂) : (g₁ - g₂).comp f = g₁.comp f - g₂.comp f := by
   ext
@@ -2808,4 +2813,4 @@ instance t3_quotient_of_isClosed [TopologicalAddGroup M] [IsClosed (S : Set M)] 
 end Submodule
 
 end Quotient
-#lint
+
