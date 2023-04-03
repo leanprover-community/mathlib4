@@ -3,7 +3,7 @@ Copyright (c) 2023 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Lean
+import Mathlib.Tactic.ProxyType
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.Fintype.Sigma
 import Mathlib.Data.Fintype.Sum
@@ -25,14 +25,14 @@ inductive MyOption (α : Type _)
 This deriving handler does not attempt to process inductive types that are either
 recursive or that have indices.
 
-To get debugging information, do `set_option trace.Elab.Deriving.fintype true`.
+To get debugging information, do `set_option trace.Elab.Deriving.fintype true`
+and `set_option Elab.ProxyType true`.
 
 There is a term elaborator `derive_fintype%` implementing the derivation of `Fintype` instances.
 This can be useful in cases when there are necessary additional assumptions (like `DecidableEq`).
-
-Underlying this is a term elaborator `proxy_equiv%` for creating an equivalence from a
-"proxy type" composed of basic type constructors to the inductive type. The `Fintype` instance
-can be derived when Lean can synthesize a `Fintype` instance for the proxy type.
+This is implemented using `Fintype.ofEquiv` and `proxy_equiv%`, which is a term elaborator
+that creates an equivalence from a "proxy type" composed of basic type constructors. If Lean
+can synthesize a `Fintype` instance for the proxy type, then `derive_fintype%` succeeds.
 
 ## Implementation notes
 
@@ -58,7 +58,7 @@ contributes just linear time with respect to the cardinality of the type since t
 involved compute the underlying `List` for the `Finset` as `l₁ ++ (l₂ ++ (⋯ ++ lₙ))` with
 right associativity.
 
-Note that an alterantive design could be that instead of using `Sum` we could create a
+Note that an alternative design could be that instead of using `Sum` we could create a
 function `C : Fin n → Type _` with `C i = ulift Cᵢ` and then use `(i : Fin n) × C i` for
 the proxy type, which would save us from the nested `Sum` constructors.
 
@@ -72,204 +72,10 @@ namespace Mathlib.Deriving.Fintype
 open Lean Elab Lean.Parser.Term
 open Meta Command
 
-/-- Returns the portion of the proxy type corresponding to a constructor with arguments `xs`.
-Also returns data for the pattern for matching an element of this type: the list of names and
-the pattern itself.
-
-Always returns a `Type _`. Uses `Unit`, `PLift`, and `Sigma`. Avoids using `PSigma` since
-the `Fintype` instances for it go through `Sigma`s anyway. -/
-def mkCtorType (xs : List Expr) : TermElabM (Expr × List Name × TSyntax `term) :=
-  match xs with
-  | [] => return (mkConst ``Unit, [], ← `(term| ()))
-  | [x] => do
-    let a ← mkFreshUserName `a
-    let xty ← inferType x
-    if ← Meta.isProp xty then
-      return (← mkAppM ``PLift #[xty], [a], ← `(term| ⟨$(mkIdent a)⟩))
-    else
-      return (xty, [a], mkIdent a)
-  | x :: xs => do
-    let (xsty, names, patt) ← mkCtorType xs
-    let a ← mkFreshUserName `a
-    let xty ← inferType x
-    if ← Meta.isProp xty then
-      withLocalDeclD `x' (← mkAppM ``PLift #[xty]) fun x' => do
-        let xsty' := xsty.replaceFVar x (← mkAppM ``PLift.down #[x'])
-        let ty ← mkAppM ``Sigma #[← mkLambdaFVars #[x'] xsty']
-        return (ty, a :: names, ← `(term| ⟨⟨$(mkIdent a)⟩, $patt⟩))
-    else
-      let ty ← mkAppM ``Sigma #[← mkLambdaFVars #[x] xsty]
-      return (ty, a :: names, ← `(term| ⟨$(mkIdent a), $patt⟩))
-
-/-- Navigates into the sum type that we create in `mkCType` for the given constructor index. -/
-def wrapSumAccess (cidx nctors : Nat) (spatt : TSyntax `term) : TermElabM (TSyntax `term) :=
-  match cidx with
-  | 0 =>
-    if nctors = 1 then
-      return spatt
-    else
-      `(term| Sum.inl $spatt)
-  | cidx' + 1 => do
-    let spatt ← wrapSumAccess cidx' (nctors - 1) spatt
-    `(term| Sum.inr $spatt)
-
-/-- Create a `Sum` of types, mildly optimized to not have a trailing `Empty`.
-Returns also the necessary tactic for the `left_inv` proof in the `Equiv` we construct.
-This proof assumes we start with `intro x`. -/
-def mkCType (ctypes : List Expr) : TermElabM (Expr × TSyntax `tactic) :=
-  match ctypes with
-  | [] => return (mkConst ``Empty, ← `(tactic| cases x))
-  | [x] => return (x, ← `(tactic| rfl))
-  | x :: xs => do
-    let (ty, pf) ← mkCType xs
-    let pf ← `(tactic| cases x with | inl _ => rfl | inr x => $pf:tactic)
-    return (← mkAppM ``Sum #[x, ty], pf)
-
-/-- Names of the auxiliary definitions created by `mkProxyEquiv`. -/
-structure EquivData where
-  /-- Name of the declaration for a type that is `Equiv` to the given type. -/
-  proxyName : Name
-  /-- Name of the declaration for the equivalence `proxyType ≃ type`. -/
-  proxyEquivName : Name
-
-/--
-Generates a proxy type for the inductive type and an equivalence from the proxy type to the type.
-The resulting declaration names are returned.
-
-If the declarations already exist, there is a check that they are correct.
--/
-def mkProxyEquiv (indVal : InductiveVal) : TermElabM EquivData := do
-  if indVal.isRec then
-    throwError
-      "proxy equivalence: recursive inductive types are not supported (and are usually infinite)"
-  if 0 < indVal.numIndices then
-    throwError "proxy equivalence: inductive indices are not supported"
-
-  let levels := indVal.levelParams.map Level.param
-  let proxyName := indVal.name.mkStr "proxyType"
-  let proxyEquivName := indVal.name.mkStr "proxyTypeEquiv"
-  forallBoundedTelescope indVal.type indVal.numParams fun params _sort => do
-    let mut cdata := #[]
-    for ctorName in indVal.ctors do
-      let ctorInfo ← getConstInfoCtor ctorName
-      let ctorType ← inferType <| mkAppN (mkConst ctorName levels) params
-      cdata := cdata.push <| ←
-        forallBoundedTelescope ctorType ctorInfo.numFields fun xs _itype => do
-          let (ty, names, patt) ← mkCtorType xs.toList
-          let places := mkArray ctorInfo.numParams (← `(term| _))
-          let argNames := (names.map mkIdent).toArray
-          let tpatt ← `(term| @$(mkIdent ctorName) $places* $argNames*)
-          let spatt ← wrapSumAccess ctorInfo.cidx indVal.numCtors patt
-          return (ctorName, ty, tpatt, spatt)
-    let mut ctypes := #[]
-    let mut toFunAlts := #[]
-    let mut invFunAlts := #[]
-    for (_, ty, tpatt, spatt) in cdata do
-      ctypes := ctypes.push ty
-      toFunAlts := toFunAlts.push <| ← `(matchAltExpr| | $spatt => $tpatt)
-      invFunAlts := invFunAlts.push <| ← `(matchAltExpr| | $tpatt => $spatt)
-
-    -- Create the proxy type definition
-    let (ctype, pf) ← mkCType ctypes.toList
-    trace[Elab.Deriving.fintype] "proxy type: {ctype}"
-    let ctype' ← mkLambdaFVars params ctype
-    if let some const := (← getEnv).find? proxyName then
-      unless ← isDefEq const.value! ctype' do
-        throwError "Declaration {proxyName} already exists and it is not the proxy type."
-      trace[Elab.Deriving.fintype] "proxy type already exists"
-    else
-      addAndCompile <| Declaration.defnDecl
-        { name := proxyName
-          levelParams := indVal.levelParams
-          safety := DefinitionSafety.safe
-          hints := ReducibilityHints.abbrev
-          type := (← inferType ctype')
-          value := ctype' }
-      -- Set to be reducible so that typeclass inference can see it's a Fintype
-      setReducibleAttribute proxyName
-      setProtected proxyName
-      trace[Elab.Deriving.fintype] "defined {proxyName}"
-
-    -- Create the `Equiv`
-    let equivType ← mkAppM ``Equiv #[ctype, mkAppN (mkConst indVal.name levels) params]
-    if let some const := (← getEnv).find? proxyEquivName then
-      unless ← isDefEq const.type (← mkForallFVars params equivType) do
-        throwError "Declaration {proxyEquivName} already exists and has the wrong type."
-      trace[Elab.Deriving.fintype] "proxy equivalence already exists"
-    else
-      let mut toFun ← `(term| fun $toFunAlts:matchAlt*)
-      let mut invFun ← `(term| fun $invFunAlts:matchAlt*)
-      if indVal.numCtors == 0 then
-        -- Empty matches don't elaborate, so use `nomatch` here.
-        toFun ← `(term| fun x => nomatch x)
-        invFun ← `(term| fun x => nomatch x)
-      let equivBody ← `(term| { toFun := $toFun,
-                                invFun := $invFun,
-                                right_inv := by intro x; cases x <;> rfl
-                                left_inv := by intro x; $pf:tactic })
-      let equiv ← Term.elabTerm equivBody equivType
-      Term.synthesizeSyntheticMVarsNoPostponing
-      let equiv' ← mkLambdaFVars params (← instantiateMVars equiv)
-      addAndCompile <| Declaration.defnDecl
-        { name := proxyEquivName
-          levelParams := indVal.levelParams
-          safety := DefinitionSafety.safe
-          hints := ReducibilityHints.abbrev
-          type := (← inferType equiv')
-          value := equiv' }
-      setProtected proxyEquivName
-      trace[Elab.Deriving.fintype] "defined {proxyEquivName}"
-
-    return { proxyName := proxyName
-             proxyEquivName := proxyEquivName }
-
-/--
-The term elaborator `proxy_equiv% α` for a type `α` elaborates to an equivalence `β ≃ α`
-for a "proxy type" `β` composed out of basic type constructors `Unit`, `PLift`, `Sigma`,
-`Empty`, and `Sum`.
-
-This only works for inductive types `α` that are neither recursive nor have indices.
-If `α` is an inductive type with name `I`, then as a side effect this elaborator defines
-`I.proxyType` and `I.proxyTypeEquiv`.
-
-The elaborator makes use of the expected type, so `(proxy_equiv% _ : _ ≃ α)` works.
-
-For example, given this inductive type
-```
-inductive foo (n : Nat) (α : Type)
-  | a
-  | b : Bool → foo n α
-  | c (x : Fin n) : Fin x → foo n α
-  | d : Bool → α → foo n α
-```
-the proxy type it generates is `Unit ⊕ Bool ⊕ (x : Fin n) × Fin x ⊕ (_ : Bool) × α` and
-in particular we have that
-```
-proxy_equiv% (foo n α) : Unit ⊕ Bool ⊕ (x : Fin n) × Fin x ⊕ (_ : Bool) × α ≃ foo n α
-```
--/
-elab "proxy_equiv% " t:term : term <= expectedType => do
-  let type ← Term.elabType t
-  let equivType ← Term.elabType (← `(_ ≃ $(← Term.exprToSyntax type)))
-  unless ← isDefEq expectedType equivType do
-    throwError "Could not unify expected type{indentExpr expectedType}\nwith{indentExpr equivType}"
-  let mut type ← instantiateMVars type
-  if type.hasExprMVar then
-    Term.synthesizeSyntheticMVars
-    type ← instantiateMVars type
-    if type.hasExprMVar then
-      throwError "Provided type {type} has metavariables"
-  type ← whnf type
-  let .const declName _ := type.getAppFn
-    | throwError "{type} is not a constant or constant application"
-  let indVal ← getConstInfoInduct declName
-  let data ← mkProxyEquiv indVal
-  mkAppOptM data.proxyEquivName (type.getAppArgs.map .some)
-
 /--
 The term elaborator `derive_fintype% α` tries to synthesize a `Fintype α` instance
 using all the assumptions in the local context; this can be useful, for example, if one
-needs an extra `DecidableEq` instance. It only works when `α` is an inductive
+needs an extra `DecidableEq` instance. It works only if `α` is an inductive
 type that `proxy_equiv% α` can handle. The elaborator makes use of the
 expected type, so `(derive_fintype% _ : Fintype α)` works.
 
