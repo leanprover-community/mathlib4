@@ -11,6 +11,7 @@ Authors: Johan Commelin
 import Mathlib.Data.Polynomial.RingDivision
 import Mathlib.Data.MvPolynomial.Rename
 import Mathlib.RingTheory.Polynomial.Basic
+import Mathlib.Tactic.LibrarySearch
 
 /-!
 ## Function extensionality for multivariate polynomials
@@ -25,57 +26,67 @@ if they are equal upon evaluating them on an arbitrary assignment of the variabl
 
 -/
 
+-- TODO this needs a home
+local macro "refine " e:term : conv => `(conv| tactic => refine $e)
 
 namespace MvPolynomial
 
+-- TODO move
+theorem eval_eval₂ [CommSemiring R] [CommSemiring S]
+    (f : R →+* Polynomial S) (g : σ → Polynomial S) (p : MvPolynomial σ R) :
+    Polynomial.eval x (eval₂ f g p) =
+      eval₂ ((Polynomial.evalRingHom x).comp f) (fun s => Polynomial.eval x (g s)) p := by
+  apply induction_on p
+  · simp
+  · intro p q hp hq
+    simp [hp, hq]
+  · intro p n hp
+    simp [hp]
+
+-- TODO move
+theorem eval_eval₂' [CommSemiring R] [CommSemiring S]
+    (f : R →+* MvPolynomial τ S) (g : σ → MvPolynomial τ S) (p : MvPolynomial σ R) :
+    eval x (eval₂ f g p) = eval₂ ((eval x).comp f) (fun s => eval x (g s)) p := by
+  apply induction_on p
+  · simp
+  · intro p q hp hq
+    simp [hp, hq]
+  · intro p n hp
+    simp [hp]
+
+-- TODO move
+@[simp]
+theorem eval₂_id [CommSemiring R] (p : MvPolynomial σ R) : eval₂ (RingHom.id _) g p = eval g p :=
+  rfl
+
+-- TODO move
+theorem eval_eval_finSuccEquiv
+    [CommSemiring R] (f : MvPolynomial (Fin (n + 1)) R) (q : MvPolynomial (Fin n) R) :
+    (eval x) (Polynomial.eval q (finSuccEquiv R n f)) = eval (Fin.cases (eval x q) x) f := by
+  simp only [finSuccEquiv_apply, coe_eval₂Hom, eval_eval₂, eval_eval₂']
+  conv in RingHom.comp _ _ =>
+  { refine @RingHom.ext _ _ _ _ _ (RingHom.id _) fun r => ?_
+    simp }
+  simp only [eval₂_id]
+  congr
+  funext i
+  refine Fin.cases (by simp) (by simp) i
+
 variable {R : Type _} [CommRing R] [IsDomain R] [Infinite R]
 
-set_option maxHeartbeats 1000000 in
 private theorem funext_fin {n : ℕ} {p : MvPolynomial (Fin n) R}
     (h : ∀ x : Fin n → R, eval x p = 0) : p = 0 := by
-  induction' n with n ih generalizing R
-  · let e := MvPolynomial.isEmptyRingEquiv R (Fin 0)
-    apply e.injective
+  induction' n with n ih
+  · apply (MvPolynomial.isEmptyRingEquiv R (Fin 0)).injective
     rw [RingEquiv.map_zero]
     convert h finZeroElim
-    /- Porting note: this branch of the proof closes here in Lean 4!
-    suffices
-      (eval₂_hom (RingHom.id _) (IsEmpty.elim' Fin.isEmpty)) p =
-        (eval finZeroElim : MvPolynomial (Fin 0) R →+* R) p by
-      rw [← this]
-      simp only [coe_eval₂Hom, is_empty_ring_equiv_apply, RingEquiv.trans_apply,
-        aeval_eq_eval₂Hom]
-      congr
-    exact eval₂Hom_congr rfl (Subsingleton.elim _ _) rfl -/
-  · let e := (finSuccEquiv R n).toRingEquiv
-    apply e.injective
-    simp only [RingEquiv.map_zero]
-    apply Polynomial.funext
-    intro q
+  · apply (finSuccEquiv R n).injective
+    simp only [AlgEquiv.map_zero]
+    refine Polynomial.funext fun q => ?_
     rw [Polynomial.eval_zero]
-    apply ih
-    intro x
-    have : e = finSuccEquiv R n := rfl
-    dsimp [this]
-    rw [finSuccEquiv_apply]
-    calc
-      _ = eval ?_ p := ?_
-      _ = 0 := h _
-    · intro i
-      exact Fin.cases (eval x q) x i
-    apply induction_on p
-    · intro r
-      simp only [eval_C, Polynomial.eval_C, RingHom.coe_comp, eval₂Hom_C, Function.comp_apply]
-    · intros
-      simp only [*, RingHom.map_add, Polynomial.eval_add]
-    · intro φ i hφ
-      simp only [*, eval_X, Polynomial.eval_mul, RingHom.map_mul, eval₂Hom_X']
-      congr 1
-      by_cases hi : i = 0
-      · subst hi
-        simp only [Polynomial.eval_X, Fin.cases_zero]
-      · rw [← Fin.succ_pred i hi]
-        simp only [eval_X, Polynomial.eval_C, Fin.cases_succ]
+    apply ih fun x => ?_
+    calc _ = _ := eval_eval_finSuccEquiv p _
+         _ = 0 := h _
 
 /-- Two multivariate polynomials over an infinite integral domain are equal
 if they are equal upon evaluating them on an arbitrary assignment of the variables. -/
