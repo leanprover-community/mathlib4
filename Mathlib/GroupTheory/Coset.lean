@@ -400,8 +400,7 @@ theorem rightRel_r_eq_rightCosetEquivalence :
   ext
   rw [rightRel_eq]
   exact (rightCoset_eq_iff s).symm
-#align quotient_group.right_rel_r_eq_right_coset_equivalence
-  QuotientGroup.rightRel_r_eq_rightCosetEquivalence
+#align quotient_group.right_rel_r_eq_right_coset_equivalence QuotientGroup.rightRel_r_eq_rightCosetEquivalence
 
 @[to_additive]
 instance rightRelDecidable [DecidablePred (· ∈ s)] : DecidableRel (rightRel s).r := fun x y => by
@@ -438,10 +437,8 @@ def quotientRightRelEquivQuotientLeftRel : Quotient (QuotientGroup.rightRel s) �
         (by
           simp only [inv_inv]
           exact Quotient.exact' rfl)
-#align quotient_group.quotient_right_rel_equiv_quotient_left_rel
-  QuotientGroup.quotientRightRelEquivQuotientLeftRel
-#align quotient_add_group.quotient_right_rel_equiv_quotient_left_rel
-  QuotientAddGroup.quotientRightRelEquivQuotientLeftRel
+#align quotient_group.quotient_right_rel_equiv_quotient_left_rel QuotientGroup.quotientRightRelEquivQuotientLeftRel
+#align quotient_add_group.quotient_right_rel_equiv_quotient_left_rel QuotientAddGroup.quotientRightRelEquivQuotientLeftRel
 
 @[to_additive]
 instance fintypeQuotientRightRel [Fintype (α ⧸ s)] :
@@ -702,8 +699,7 @@ def quotientSubgroupOfEmbeddingOfLe (H : Subgroup α) (h : s ≤ t) :
       intro a b h
       simpa only [Quotient.map'_mk'', eq'] using h
 #align subgroup.quotient_subgroup_of_embedding_of_le Subgroup.quotientSubgroupOfEmbeddingOfLe
-#align add_subgroup.quotient_add_subgroup_of_embedding_of_le
-  AddSubgroup.quotientAddSubgroupOfEmbeddingOfLe
+#align add_subgroup.quotient_add_subgroup_of_embedding_of_le AddSubgroup.quotientAddSubgroupOfEmbeddingOfLe
 
 -- porting note: I had to add the type ascription to the right-hand side or else Lean times out.
 @[to_additive (attr := simp)]
@@ -712,10 +708,8 @@ theorem quotientSubgroupOfEmbeddingOfLe_apply_mk (H : Subgroup α) (h : s ≤ t)
       (QuotientGroup.mk (inclusion h g) : (fun _ => { x // x ∈ t } ⧸ subgroupOf H t) ↑g) :=
   rfl
 
-#align subgroup.quotient_subgroup_of_embedding_of_le_apply_mk
-  Subgroup.quotientSubgroupOfEmbeddingOfLe_apply_mk
-#align add_subgroup.quotient_add_subgroup_of_embedding_of_le_apply_mk
-  AddSubgroup.quotientAddSubgroupOfEmbeddingOfLe_apply_mk
+#align subgroup.quotient_subgroup_of_embedding_of_le_apply_mk Subgroup.quotientSubgroupOfEmbeddingOfLe_apply_mk
+#align add_subgroup.quotient_add_subgroup_of_embedding_of_le_apply_mk AddSubgroup.quotientAddSubgroupOfEmbeddingOfLe_apply_mk
 
 /-- If `s ≤ t`, then there is a map `H ⧸ s.subgroupOf H → H ⧸ t.subgroupOf H`. -/
 @[to_additive "If `s ≤ t`, then there is an map `H ⧸ s.addSubgroupOf H → H ⧸ t.addSubgroupOf H`."]
@@ -766,8 +760,7 @@ def quotientInfᵢSubgroupOfEmbedding {ι : Type _} (f : ι → Subgroup α) (H 
       simp_rw [funext_iff, quotientSubgroupOfMapOfLe_apply_mk, eq', mem_subgroupOf, mem_infᵢ,
         imp_self, forall_const]
 #align subgroup.quotient_infi_subgroup_of_embedding Subgroup.quotientInfᵢSubgroupOfEmbedding
-#align add_subgroup.quotient_infi_add_subgroup_of_embedding
-  AddSubgroup.quotientInfᵢAddSubgroupOfEmbedding
+#align add_subgroup.quotient_infi_add_subgroup_of_embedding AddSubgroup.quotientInfᵢAddSubgroupOfEmbedding
 
 -- porting note: I had to add the type ascription to the right-hand side or else Lean times out.
 @[to_additive (attr := simp)]
@@ -776,10 +769,8 @@ theorem quotientInfᵢSubgroupOfEmbedding_apply_mk {ι : Type _} (f : ι → Sub
     quotientInfᵢSubgroupOfEmbedding f H (QuotientGroup.mk g) i =
       (QuotientGroup.mk g : { x // x ∈ H } ⧸ subgroupOf (f i) H) :=
   rfl
-#align subgroup.quotient_infi_subgroup_of_embedding_apply_mk
-  Subgroup.quotientInfᵢSubgroupOfEmbedding_apply_mk
-#align add_subgroup.quotient_infi_add_subgroup_of_embedding_apply_mk
-  AddSubgroup.quotientInfᵢAddSubgroupOfEmbedding_apply_mk
+#align subgroup.quotient_infi_subgroup_of_embedding_apply_mk Subgroup.quotientInfᵢSubgroupOfEmbedding_apply_mk
+#align add_subgroup.quotient_infi_add_subgroup_of_embedding_apply_mk AddSubgroup.quotientInfᵢAddSubgroupOfEmbedding_apply_mk
 
 /-- The natural embedding `α ⧸ (⨅ i, f i) ↪ Π i, α ⧸ f i`. -/
 @[to_additive (attr := simps) "The natural embedding `α ⧸ (⨅ i, f i) ↪ Π i, α ⧸ f i`."]

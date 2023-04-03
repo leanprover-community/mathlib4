@@ -5,7 +5,7 @@ import Mathlib.Init.Set
 import Mathlib.Order.Basic
 import Mathlib.Algebra.Group.WithOne.Defs
 import Mathlib.Data.Set.Image
-import Mathlib.Data.List.Lemmas
+import Mathlib.Data.Set.List
 import Mathlib.Data.Rat.Defs
 import Mathlib.Data.PNat.Defs
 
