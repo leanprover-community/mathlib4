@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Rodriguez
 
 ! This file was ported from Lean 3 source module set_theory.cardinal.divisibility
-! leanprover-community/mathlib commit 92ca63f0fb391a9ca5f22d2409a6080e786d99f7
+! leanprover-community/mathlib commit ea050b44c0f9aba9d16a948c7cc7d2e7c8493567
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -61,7 +61,7 @@ theorem isUnit_iff : IsUnit a ↔ a = 1 := by
     exact zero_ne_one ht
 #align cardinal.is_unit_iff Cardinal.isUnit_iff
 
-instance : Unique Cardinal.{u}ˣ where
+noncomputable instance : Unique Cardinal.{u}ˣ where
   default := 1
   uniq a := Units.val_eq_one.mp <| isUnit_iff.mp a.isUnit
 
