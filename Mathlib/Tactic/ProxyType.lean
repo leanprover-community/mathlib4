@@ -71,8 +71,13 @@ For example, given `#[(a, x), (b, y)]` with `x : Nat` and `y : Fin x`, then this
 returns `Sigma (fun x => Fin x)` and `⟨a, b⟩`.
 
 Always returns a `Type _`. Uses `Unit`, `PLift`, and `Sigma`. Avoids using `PSigma` since
-the `Fintype` instances for it go through `Sigma`s anyway. -/
-def defaultMkCtorProxyType (xs : List (Expr × Name)) : TermElabM (Expr × Term) :=
+the `Fintype` instances for it go through `Sigma`s anyway.
+
+The `decorateSigma` function is to wrap the `Sigma` a decorator such as `Lex`.
+It should yield a definitionally equal type. -/
+def defaultMkCtorProxyType (xs : List (Expr × Name))
+    (decorateSigma : Expr → TermElabM Expr := pure) :
+    TermElabM (Expr × Term) :=
   match xs with
   | [] => return (mkConst ``Unit, ← `(term| ()))
   | [(x, a)] => do
@@ -87,14 +92,18 @@ def defaultMkCtorProxyType (xs : List (Expr × Name)) : TermElabM (Expr × Term)
     if ← Meta.isProp xty then
       withLocalDeclD `x' (← mkAppM ``PLift #[xty]) fun x' => do
         let xsty' := xsty.replaceFVar x (← mkAppM ``PLift.down #[x'])
-        let ty ← mkAppM ``Sigma #[← mkLambdaFVars #[x'] xsty']
+        let ty ← decorateSigma (← mkAppM ``Sigma #[← mkLambdaFVars #[x'] xsty'])
         return (ty, ← `(term| ⟨⟨$(mkIdent a)⟩, $patt⟩))
     else
-      let ty ← mkAppM ``Sigma #[← mkLambdaFVars #[x] xsty]
+      let ty ← decorateSigma (← mkAppM ``Sigma #[← mkLambdaFVars #[x] xsty])
       return (ty, ← `(term| ⟨$(mkIdent a), $patt⟩))
 
-/-- Create a `Sum` of types, mildly optimized to not have a trailing `Empty`. -/
-def defaultMkProxyType (ctors : Array (Name × Expr × Term)) :
+/-- Create a `Sum` of types, mildly optimized to not have a trailing `Empty`.
+
+The `decorateSum` function is to wrap the `Sum` a decorator such as `Lex`.
+It should yield a definitionally equal type. -/
+def defaultMkProxyType (ctors : Array (Name × Expr × Term))
+    (decorateSum : Expr → TermElabM Expr := pure) :
     TermElabM (Expr × Array Term × TSyntax `tactic) := do
   let mut types := #[]
   let mut patts := #[]
@@ -112,7 +121,7 @@ where
     | x :: xs => do
       let (ty, pf) ← mkCType xs
       let pf ← `(tactic| cases x with | inl _ => rfl | inr x => $pf:tactic)
-      return (← mkAppM ``Sum #[x, ty], pf)
+      return (← decorateSum (← mkAppM ``Sum #[x, ty]), pf)
   /-- Navigates into the sum type that we create in `mkCType` for the given constructor index. -/
   wrapSumAccess (cidx nctors : Nat) (spatt : Term) : TermElabM Term :=
     match cidx with
