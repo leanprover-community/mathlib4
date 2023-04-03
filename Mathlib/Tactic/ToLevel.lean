@@ -10,6 +10,10 @@ import Mathlib.Init.Align
 
 This module defines `Lean.ToLevel`, which is the `Lean.Level` analogue to `Lean.ToExpr`.
 
+**Warning:** Import `Mathlib.Tactic.ToExpr` instead of this one if you are writing `ToExpr`
+instances. This ensures that you are using the universe polymorphic `ToExpr` instances that
+override the ones from Lean 4 core.
+
 -/
 
 namespace Lean
