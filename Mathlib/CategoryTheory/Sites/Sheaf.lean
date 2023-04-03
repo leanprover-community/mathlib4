@@ -479,60 +479,60 @@ variable (P : Cᵒᵖ ⥤ A)
 section MultiequalizerConditions
 
 /-- When `P` is a sheaf and `S` is a cover, the associated multifork is a limit. -/
-def isLimitOfIsSheaf {X : C} (S : J.cover X) (hP : IsSheaf J P) : IsLimit (S.Multifork P) where
+def isLimitOfIsSheaf {X : C} (S : J.Cover X) (hP : IsSheaf J P) : IsLimit (S.multifork P) where
   lift := fun E : Multifork _ => hP.amalgamate S (fun I => E.ι _) fun I => E.condition _
   fac := by
-    rintro (E : multifork _) (a | b)
+    rintro (E : Multifork _) (a | b)
     · apply hP.amalgamate_map
-    · rw [← E.w (walking_multicospan.hom.fst b), ←
-        (S.multifork P).w (walking_multicospan.hom.fst b), ← assoc]
+    · rw [← E.w (WalkingMulticospan.Hom.fst b),
+        ← (S.multifork P).w (WalkingMulticospan.Hom.fst b), ← assoc]
       congr 1
       apply hP.amalgamate_map
   uniq := by
-    rintro (E : multifork _) m hm
+    rintro (E : Multifork _) m hm
     apply hP.hom_ext S
     intro I
-    erw [hm (walking_multicospan.left I)]
+    erw [hm (WalkingMulticospan.left I)]
     symm
     apply hP.amalgamate_map
 #align category_theory.presheaf.is_limit_of_is_sheaf CategoryTheory.Presheaf.isLimitOfIsSheaf
 
 theorem isSheaf_iff_multifork :
-    IsSheaf J P ↔ ∀ (X : C) (S : J.cover X), Nonempty (IsLimit (S.Multifork P)) := by
-  refine' ⟨fun hP X S => ⟨is_limit_of_is_sheaf _ _ _ hP⟩, _⟩
+    IsSheaf J P ↔ ∀ (X : C) (S : J.Cover X), Nonempty (IsLimit (S.multifork P)) := by
+  refine' ⟨fun hP X S => ⟨isLimitOfIsSheaf _ _ _ hP⟩, _⟩
   intro h E X S hS x hx
-  let T : J.cover X := ⟨S, hS⟩
+  let T : J.Cover X := ⟨S, hS⟩
   obtain ⟨hh⟩ := h _ T
-  let K : multifork (T.index P) := multifork.of_ι _ E (fun I => x I.f I.hf) fun I => hx _ _ _ _ I.w
+  let K : Multifork (T.index P) := Multifork.ofι _ E (fun I => x I.f I.hf) fun I => hx _ _ _ _ I.w
   use hh.lift K
   dsimp; constructor
   · intro Y f hf
-    apply hh.fac K (walking_multicospan.left ⟨Y, f, hf⟩)
+    apply hh.fac K (WalkingMulticospan.left ⟨Y, f, hf⟩)
   · intro e he
     apply hh.uniq K
     rintro (a | b)
     · apply he
-    · rw [← K.w (walking_multicospan.hom.fst b), ←
-        (T.multifork P).w (walking_multicospan.hom.fst b), ← assoc]
+    · rw [← K.w (WalkingMulticospan.Hom.fst b), ←
+        (T.multifork P).w (WalkingMulticospan.Hom.fst b), ← assoc]
       congr 1
       apply he
 #align category_theory.presheaf.is_sheaf_iff_multifork CategoryTheory.Presheaf.isSheaf_iff_multifork
 
-theorem isSheaf_iff_multiequalizer [∀ (X : C) (S : J.cover X), HasMultiequalizer (S.index P)] :
-    IsSheaf J P ↔ ∀ (X : C) (S : J.cover X), IsIso (S.toMultiequalizer P) := by
-  rw [is_sheaf_iff_multifork]
+theorem isSheaf_iff_multiequalizer [∀ (X : C) (S : J.Cover X), HasMultiequalizer (S.index P)] :
+    IsSheaf J P ↔ ∀ (X : C) (S : J.Cover X), IsIso (S.toMultiequalizer P) := by
+  rw [isSheaf_iff_multifork]
   refine' forall₂_congr fun X S => ⟨_, _⟩
   · rintro ⟨h⟩
     let e : P.obj (op X) ≅ multiequalizer (S.index P) :=
-      h.cone_point_unique_up_to_iso (limit.is_limit _)
-    exact (inferInstance : is_iso e.hom)
+      h.conePointUniqueUpToIso (limit.isLimit _)
+    exact (inferInstance : IsIso e.hom)
   · intro h
-    refine' ⟨is_limit.of_iso_limit (limit.is_limit _) (cones.ext _ _)⟩
-    · apply (@as_iso _ _ _ _ _ h).symm
+    refine' ⟨IsLimit.ofIsoLimit (limit.isLimit _) (Cones.ext _ _)⟩
+    · apply (@asIso _ _ _ _ _ h).symm
     · intro a
       symm
-      erw [is_iso.inv_comp_eq]
-      change _ = limit.lift _ _ ≫ _
+      erw [IsIso.inv_comp_eq]
+      dsimp
       simp
 #align category_theory.presheaf.is_sheaf_iff_multiequalizer CategoryTheory.Presheaf.isSheaf_iff_multiequalizer
 
@@ -570,19 +570,19 @@ def secondObj : A :=
 
 /-- The map `pr₀*` of <https://stacks.math.columbia.edu/tag/00VM>. -/
 def firstMap : firstObj R P ⟶ secondObj R P :=
-  Pi.lift fun fg => Pi.π _ _ ≫ P.map pullback.fst.op
+  Pi.lift fun _ => Pi.π _ _ ≫ P.map pullback.fst.op
 #align category_theory.presheaf.first_map CategoryTheory.Presheaf.firstMap
 
 /-- The map `pr₁*` of <https://stacks.math.columbia.edu/tag/00VM>. -/
 def secondMap : firstObj R P ⟶ secondObj R P :=
-  Pi.lift fun fg => Pi.π _ _ ≫ P.map pullback.snd.op
+  Pi.lift fun _ => Pi.π _ _ ≫ P.map pullback.snd.op
 #align category_theory.presheaf.second_map CategoryTheory.Presheaf.secondMap
 
 theorem w : forkMap R P ≫ firstMap R P = forkMap R P ≫ secondMap R P := by
   apply limit.hom_ext
   rintro ⟨⟨Y, f, hf⟩, ⟨Z, g, hg⟩⟩
-  simp only [first_map, second_map, fork_map, limit.lift_π, limit.lift_π_assoc, assoc, fan.mk_π_app,
-    Subtype.coe_mk, Subtype.val_eq_coe]
+  simp only [firstMap, secondMap, forkMap, limit.lift_π, limit.lift_π_assoc, assoc, Fan.mk_π_app,
+    Subtype.coe_mk]
   rw [← P.map_comp, ← op_comp, pullback.condition]
   simp
 #align category_theory.presheaf.w CategoryTheory.Presheaf.w
@@ -591,7 +591,7 @@ theorem w : forkMap R P ≫ firstMap R P = forkMap R P ≫ secondMap R P := by
 equivalent in `category_theory.presheaf.is_sheaf_iff_is_sheaf'`.
 -/
 def IsSheaf' (P : Cᵒᵖ ⥤ A) : Prop :=
-  ∀ (U : C) (R : Presieve U) (hR : generate R ∈ J U), Nonempty (IsLimit (Fork.ofι _ (w R P)))
+  ∀ (U : C) (R : Presieve U) (_ : generate R ∈ J U), Nonempty (IsLimit (Fork.ofι _ (w R P)))
 #align category_theory.presheaf.is_sheaf' CategoryTheory.Presheaf.IsSheaf'
 
 /-- (Implementation). An auxiliary lemma to convert between sheaf conditions. -/
@@ -599,26 +599,28 @@ def isSheafForIsSheafFor' (P : Cᵒᵖ ⥤ A) (s : A ⥤ Type max v₁ u₁)
     [∀ J, PreservesLimitsOfShape (Discrete.{max v₁ u₁} J) s] (U : C) (R : Presieve U) :
     IsLimit (s.mapCone (Fork.ofι _ (w R P))) ≃
       IsLimit (Fork.ofι _ (Equalizer.Presieve.w (P ⋙ s) R)) := by
-  apply Equiv.trans (is_limit_map_cone_fork_equiv _ _) _
-  apply (is_limit.postcompose_hom_equiv _ _).symm.trans (is_limit.equiv_iso_limit _)
-  · apply nat_iso.of_components _ _
+  apply Equiv.trans (isLimitMapConeForkEquiv _ _) _
+  apply (IsLimit.postcomposeHomEquiv _ _).symm.trans (IsLimit.equivIsoLimit _)
+  · apply NatIso.ofComponents _ _
     · rintro (_ | _)
-      · apply preserves_product.iso s
-      · apply preserves_product.iso s
+      · apply PreservesProduct.iso s
+      · apply PreservesProduct.iso s
     · rintro _ _ (_ | _)
       · ext : 1
-        dsimp [equalizer.presieve.first_map, first_map]
-        simp only [limit.lift_π, map_lift_pi_comparison, assoc, fan.mk_π_app, functor.map_comp]
-        erw [pi_comparison_comp_π_assoc]
+        sorry
+        --dsimp [Equalizer.Presieve.firstMap, firstMap]
+        --simp only [limit.lift_π, map_lift_piComparison, assoc, Fan.mk_π_app, Functor.map_comp]
+        --erw [piComparison_comp_π_assoc]
       · ext : 1
-        dsimp [equalizer.presieve.second_map, second_map]
-        simp only [limit.lift_π, map_lift_pi_comparison, assoc, fan.mk_π_app, functor.map_comp]
-        erw [pi_comparison_comp_π_assoc]
+        sorry
+        --dsimp [Equalizer.Presieve.secondMap, secondMap]
+        --simp only [limit.lift_π, map_lift_piComparison, assoc, Fan.mk_π_app, Functor.map_comp]
+        --erw [piComparison_comp_π_assoc]
       · dsimp
         simp
-  · refine' fork.ext (iso.refl _) _
-    dsimp [equalizer.fork_map, fork_map]
-    simp [fork.ι]
+  · refine' Fork.ext (Iso.refl _) _
+    dsimp [Equalizer.forkMap, forkMap]
+    simp [Fork.ι]
 #align category_theory.presheaf.is_sheaf_for_is_sheaf_for' CategoryTheory.Presheaf.isSheafForIsSheafFor'
 
 /-- The equalizer definition of a sheaf given by `is_sheaf'` is equivalent to `is_sheaf`. -/
@@ -626,20 +628,20 @@ theorem isSheaf_iff_isSheaf' : IsSheaf J P ↔ IsSheaf' J P := by
   constructor
   · intro h U R hR
     refine' ⟨_⟩
-    apply coyoneda_jointly_reflects_limits
+    apply coyonedaJointlyReflectsLimits
     intro X
-    have q : presieve.is_sheaf_for (P ⋙ coyoneda.obj X) _ := h X.unop _ hR
-    rw [← presieve.is_sheaf_for_iff_generate] at q
-    rw [equalizer.presieve.sheaf_condition] at q
+    have q : Presieve.IsSheafFor (P ⋙ coyoneda.obj X) _ := h X.unop _ hR
+    rw [← Presieve.isSheafFor_iff_generate] at q
+    rw [Equalizer.Presieve.sheaf_condition] at q
     replace q := Classical.choice q
-    apply (is_sheaf_for_is_sheaf_for' _ _ _ _).symm q
+    apply (isSheafForIsSheafFor' _ _ _ _).symm q
   · intro h U X S hS
-    rw [equalizer.presieve.sheaf_condition]
+    rw [Equalizer.Presieve.sheaf_condition]
     refine' ⟨_⟩
-    refine' is_sheaf_for_is_sheaf_for' _ _ _ _ _
-    letI := preserves_smallest_limits_of_preserves_limits (coyoneda.obj (op U))
-    apply is_limit_of_preserves
-    apply Classical.choice (h _ S _)
+    refine' isSheafForIsSheafFor' _ _ _ _ _
+    letI := preservesSmallestLimitsOfPreservesLimits (coyoneda.obj (op U))
+    apply isLimitOfPreserves
+    apply Classical.choice (h _ S.arrows _)
     simpa
 #align category_theory.presheaf.is_sheaf_iff_is_sheaf' CategoryTheory.Presheaf.isSheaf_iff_isSheaf'
 
@@ -660,18 +662,17 @@ hold.
 -/
 theorem isSheaf_iff_isSheaf_forget (s : A ⥤ Type max v₁ u₁) [HasLimits A] [PreservesLimits s]
     [ReflectsIsomorphisms s] : IsSheaf J P ↔ IsSheaf J (P ⋙ s) := by
-  rw [is_sheaf_iff_is_sheaf', is_sheaf_iff_is_sheaf']
-  apply forall_congr' fun U => _
-  apply ball_congr fun R hR => _
-  letI : reflects_limits s := reflects_limits_of_reflects_isomorphisms
-  have : is_limit (s.map_cone (fork.of_ι _ (w R P))) ≃ is_limit (fork.of_ι _ (w R (P ⋙ s))) :=
-    is_sheaf_for_is_sheaf_for' P s U R
+  rw [isSheaf_iff_isSheaf', isSheaf_iff_isSheaf']
+  refine' forall_congr' (fun U => ball_congr (fun R _ => _))
+  letI : ReflectsLimits s := reflectsLimitsOfReflectsIsomorphisms
+  have : IsLimit (s.mapCone (Fork.ofι _ (w R P))) ≃ IsLimit (Fork.ofι _ (w R (P ⋙ s))) :=
+    isSheafForIsSheafFor' P s U R
   rw [← Equiv.nonempty_congr this]
   constructor
-  · haveI := preserves_smallest_limits_of_preserves_limits s
-    exact Nonempty.map fun t => is_limit_of_preserves s t
-  · haveI := reflects_smallest_limits_of_reflects_limits s
-    exact Nonempty.map fun t => is_limit_of_reflects s t
+  · haveI := preservesSmallestLimitsOfPreservesLimits s
+    exact Nonempty.map fun t => isLimitOfPreserves s t
+  · haveI := reflectsSmallestLimitsOfReflectsLimits s
+    exact Nonempty.map fun t => isLimitOfReflects s t
 #align category_theory.presheaf.is_sheaf_iff_is_sheaf_forget CategoryTheory.Presheaf.isSheaf_iff_isSheaf_forget
 
 end Concrete
