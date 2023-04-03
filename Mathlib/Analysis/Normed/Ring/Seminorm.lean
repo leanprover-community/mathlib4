@@ -69,8 +69,8 @@ structure MulRingNorm (R : Type _) [NonAssocRing R] extends MulRingSeminorm R, A
 #align mul_ring_norm MulRingNorm
 
 attribute [nolint docBlame]
-  RingSeminorm.toAddGroupSeminorm RingNorm.toAddGroupNorm RingNorm.toRingSeminorm 
-    MulRingSeminorm.toAddGroupSeminorm MulRingSeminorm.toMonoidWithZeroHom 
+  RingSeminorm.toAddGroupSeminorm RingNorm.toAddGroupNorm RingNorm.toRingSeminorm
+    MulRingSeminorm.toAddGroupSeminorm MulRingSeminorm.toMonoidWithZeroHom
     MulRingNorm.toAddGroupNorm MulRingNorm.toMulRingSeminorm
 
 namespace RingSeminorm
@@ -81,7 +81,12 @@ variable [NonUnitalRing R]
 
 instance ringSeminormClass : RingSeminormClass (RingSeminorm R) R ℝ where
   coe f := f.toFun
-  coe_injective' f g h := by cases f <;> cases g <;> congr
+  coe_injective' f g h := by
+    cases f
+    cases g
+    congr
+    ext x
+    exact congr_fun h x
   map_zero f := f.map_zero'
   map_add_le_add f := f.add_le'
   map_mul_le_mul f := f.mul_le'
@@ -128,7 +133,7 @@ instance [DecidableEq R] : One (RingSeminorm R) :=
               split_ifs
               exacts[le_rfl, zero_le_one]
         · change ite _ _ _ ≤ ite _ _ _ * ite _ _ _
-          simp only [if_false, h, left_ne_zero_of_mul h, right_ne_zero_of_mul h, mul_one, 
+          simp only [if_false, h, left_ne_zero_of_mul h, right_ne_zero_of_mul h, mul_one,
             le_refl] }⟩
 
 @[simp]
@@ -175,7 +180,12 @@ variable [NonUnitalRing R]
 
 instance ringNormClass : RingNormClass (RingNorm R) R ℝ where
   coe f := f.toFun
-  coe_injective' f g h := by cases f <;> cases g <;> congr
+  coe_injective' f g h := by
+    cases f
+    cases g
+    congr
+    ext x
+    exact congr_fun h x
   map_zero f := f.map_zero'
   map_add_le_add f := f.add_le'
   map_mul_le_mul f := f.mul_le'
@@ -220,7 +230,12 @@ variable [NonAssocRing R]
 
 instance mulRingSeminormClass : MulRingSeminormClass (MulRingSeminorm R) R ℝ where
   coe f := f.toFun
-  coe_injective' f g h := by cases f <;> cases g <;> congr
+  coe_injective' f g h := by
+    cases f
+    cases g
+    congr
+    ext x
+    exact congr_fun h x
   map_zero f := f.map_zero'
   map_one f := f.map_one'
   map_add_le_add f := f.add_le'
@@ -272,7 +287,12 @@ variable [NonAssocRing R]
 
 instance mulRingNormClass : MulRingNormClass (MulRingNorm R) R ℝ where
   coe f := f.toFun
-  coe_injective' f g h := by cases f <;> cases g <;> congr
+  coe_injective' f g h := by
+    cases f
+    cases g
+    congr
+    ext x
+    exact congr_fun h x
   map_zero f := f.map_zero'
   map_one f := f.map_one'
   map_add_le_add f := f.add_le'
