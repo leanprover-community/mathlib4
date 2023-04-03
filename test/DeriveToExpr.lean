@@ -26,7 +26,6 @@ deriving instance ToExpr for ULift
 #eval do
   Meta.check <| toExpr <| (MyMaybe.some (ULift.up 2) : MyMaybe (ULift.{1,0} Nat))
 
-attribute [-instance] Lean.instToExprList
 deriving instance ToExpr for List
 
 inductive Foo

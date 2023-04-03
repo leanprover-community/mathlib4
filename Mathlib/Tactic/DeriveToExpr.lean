@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
 import Lean
-import Mathlib.Init.Align
+import Mathlib.Tactic.ToLevel
 
 /-!
 # A `ToExpr` derive handler
@@ -13,43 +13,11 @@ This module defines a `ToExpr` derive handler for inductive types. It supports m
 types as well.
 
 The `ToExpr` derive handlers support universe level polymorphism. This is implemented using the
-`Lean.ToLevel` class, where `Lean.ToLevel.toLevel.{u}` evaluates to a `Lean.Level` term
-representing `u`. To use `ToExpr` in places where there is universe polymorphism, make sure
+`Lean.ToLevel` class. To use `ToExpr` in places where there is universe polymorphism, make sure
 to have a `[ToLevel.{u}]` instance available.
 
 Implementation note: the handler is originally modeled after the `Repr` derive handler.
 -/
-
-namespace Lean
-
-/-- A class to create `Level` expressions that denote particular universe levels in Lean. -/
-class ToLevel.{u} where
-  /-- A `Level` that represents the universe level `u`. -/
-  toLevel : Level
-  /-- The universe itself. This is only here to avoid the "unused universe parameter" error. -/
-  univ : Type u := Sort u
-export ToLevel (toLevel)
-#align reflected_univ Lean.ToLevel
-#align reflected_univ.lvl Lean.ToLevel.toLevel
-
-instance : ToLevel.{0} where
-  toLevel := .zero
-
-instance [ToLevel.{u}] : ToLevel.{u+1} where
-  toLevel := .succ toLevel.{u}
-
-/-
-These instances are dangerous since, for example, the unifier can consider `u =?= max u ?v`.
-Omitting them until it's clear they are needed.
-
-instance (priority := 100) [ToLevel.{u}] [ToLevel.{v}] : ToLevel.{max u v} where
-  toLevel := .max toLevel.{u} toLevel.{v}
-
-instance (priority := 100) [ToLevel.{u}] [ToLevel.{v}] : ToLevel.{imax u v} where
-  toLevel := .imax toLevel.{u} toLevel.{v}
--/
-
-end Lean
 
 namespace Mathlib.Deriving.ToExpr
 
