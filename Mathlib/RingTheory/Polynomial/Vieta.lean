@@ -38,7 +38,7 @@ section Semiring
 
 variable {R : Type _} [CommSemiring R]
 
-/-- A sum version of Vieta's formula for `multiset`: the product of the linear terms `X + λ` where
+/-- A sum version of Vieta's formula for `Multiset`: the product of the linear terms `X + λ` where
 `λ` runs through a multiset `s` is equal to a linear combination of the symmetric functions
 `esymm s` of the `λ`'s .-/
 theorem prod_X_add_C_eq_sum_esymm (s : Multiset R) :
@@ -106,8 +106,8 @@ theorem esymm_neg (s : Multiset R) (k : ℕ) : (map Neg.neg s).esymm k = (-1) ^ 
 
 theorem prod_X_sub_X_eq_sum_esymm (s : Multiset R) :
     (s.map fun t => X - C t).prod =
-      ∑ j in Finset.range (Multiset.card s + 1), (-1) ^ j * (C (s.esymm j) *
-      X ^ (Multiset.card s - j)) := by
+      ∑ j in Finset.range (Multiset.card s + 1),
+        (-1) ^ j * (C (s.esymm j) * X ^ (Multiset.card s - j)) := by
   conv_lhs =>
     congr
     congr
@@ -173,12 +173,11 @@ theorem MvPolynomial.prod_C_add_X_eq_sum_esymm :
       ∑ j in range (card σ + 1), Polynomial.C
         (MvPolynomial.esymm σ R j) * Polynomial.X ^ (card σ - j) := by
   let s := Finset.univ.val.map fun i : σ => (MvPolynomial.X i : MvPolynomial σ R)
-  rw [(_ : card σ = Multiset.card s)]
-  · simp_rw [MvPolynomial.esymm_eq_multiset_esymm σ R, Finset.prod_eq_multiset_prod]
-    convert Multiset.prod_X_add_C_eq_sum_esymm s
-    rw [Multiset.map_map]; rfl
-  · rw [Multiset.card_map]
-    rfl
+  have : Fintype.card σ = Multiset.card s := by
+    rw [Multiset.card_map, ←Finset.card_univ, Finset.card_def]
+  simp_rw [this, MvPolynomial.esymm_eq_multiset_esymm σ R, Finset.prod_eq_multiset_prod]
+  convert Multiset.prod_X_add_C_eq_sum_esymm s
+  simp_rw [Multiset.map_map, Function.comp_apply]
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.prod_C_add_X_eq_sum_esymm MvPolynomial.prod_C_add_X_eq_sum_esymm
 
@@ -186,12 +185,13 @@ theorem MvPolynomial.prod_X_add_C_coeff (k : ℕ) (h : k ≤ card σ) :
     (∏ i : σ, (Polynomial.X + Polynomial.C (MvPolynomial.X i)) : Polynomial _).coeff k =
     MvPolynomial.esymm σ R (card σ - k) := by
   let s := Finset.univ.val.map fun i => (MvPolynomial.X i : MvPolynomial σ R)
-  rw [(_ : card σ = Multiset.card s)] at h⊢
-  · rw [MvPolynomial.esymm_eq_multiset_esymm σ R, Finset.prod_eq_multiset_prod]
-    convert Multiset.prod_X_add_C_coeff s h
-    dsimp
-    rw [Multiset.map_map]; rfl
-  repeat' rw [Multiset.card_map]; rfl
+  have : Fintype.card σ = Multiset.card s := by
+    rw [Multiset.card_map, ←Finset.card_univ, Finset.card_def]
+  rw [this] at h ⊢
+  rw [MvPolynomial.esymm_eq_multiset_esymm σ R, Finset.prod_eq_multiset_prod]
+  convert Multiset.prod_X_add_C_coeff s h
+  dsimp
+  simp_rw [Multiset.map_map, Function.comp_apply]
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.prod_X_add_C_coeff MvPolynomial.prod_X_add_C_coeff
 
