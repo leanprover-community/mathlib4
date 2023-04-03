@@ -305,7 +305,7 @@ theorem weightedVSub_indicator_subset (w : ι → k) (p : ι → P) {s₁ s₂ :
 
 /-- A weighted subtraction, over the image of an embedding, equals a
 weighted subtraction with the same points and weights over the
-original `finset`. -/
+original `Finset`. -/
 theorem weightedVSub_map (e : ι₂ ↪ ι) (w : ι → k) (p : ι → P) :
     (s₂.map e).weightedVSub p w = s₂.weightedVSub (p ∘ e) (w ∘ e) :=
   s₂.weightedVSubOfPoint_map _ _ _ _
@@ -504,7 +504,7 @@ theorem affineCombination_indicator_subset (w : ι → k) (p : ι → P) {s₁ s
 
 /-- An affine combination, over the image of an embedding, equals an
 affine combination with the same points and weights over the original
-`finset`. -/
+`Finset`. -/
 theorem affineCombination_map (e : ι₂ ↪ ι) (w : ι → k) (p : ι → P) :
     (s₂.map e).affineCombination k p w = s₂.affineCombination k (p ∘ e) (w ∘ e) := by
   simp_rw [affineCombination_apply, weightedVSubOfPoint_map]
@@ -1033,7 +1033,10 @@ theorem affineCombination_mem_affineSpan [Nontrivial k] {s : Finset ι} {w : ι 
     have hv : s.affineCombination k p w -ᵥ p i1 ∈ (affineSpan k (Set.range p)).direction := by
       rw [direction_affineSpan, ← hw1s, Finset.affineCombination_vsub]
       apply weightedVSub_mem_vectorSpan
-      simp [Pi.sub_apply, h, hw1]
+      -- Porting note: Rest was `simp [Pi.sub_apply, h, hw1]`,
+      -- but `Pi.sub_apply` transforms the goal into nonsense
+      change (Finset.sum s fun i => w i - w1 i) = 0
+      simp only [Finset.sum_sub_distrib, h, hw1, sub_self]
     rw [← vsub_vadd (s.affineCombination k p w) (p i1)]
     exact AffineSubspace.vadd_mem_of_mem_direction hv (mem_affineSpan k (Set.mem_range_self _))
 #align affine_combination_mem_affine_span affineCombination_mem_affineSpan
@@ -1116,8 +1119,9 @@ theorem eq_affineCombination_of_mem_affineSpan {p1 : P} {p : ι → P}
         (Function.update_same _ _ _) fun _ _ hne => Function.update_noteq hne _ _
     use s', w0 + w'
     constructor
-    · simp [Pi.add_apply, Finset.sum_add_distrib, hw0, h']
     · rw [add_comm, ← Finset.weightedVSub_vadd_affineCombination, hw0s, hs', vsub_vadd]
+    · change (Finset.sum s' fun i => w0 i + w' i) = 1
+      simp only [Finset.sum_add_distrib, hw0, h', add_zero]
 #align eq_affine_combination_of_mem_affine_span eq_affineCombination_of_mem_affineSpan
 
 theorem eq_affineCombination_of_mem_affineSpan_of_fintype [Fintype ι] {p1 : P} {p : ι → P}
@@ -1180,13 +1184,16 @@ theorem affineSpan_eq_affineSpan_lineMap_units [Nontrivial k] {s : Set P} {p : P
     (w : s → Units k) :
     affineSpan k (Set.range fun q : s => AffineMap.lineMap p ↑q (w q : k)) = affineSpan k s := by
   have : s = Set.range ((↑) : s → P) := by simp
-  conv_rhs => rw [this]
-  apply le_antisymm <;> intro q hq <;>
-            erw [mem_affineSpan_iff_eq_weightedVSubOfPoint_vadd k V _ (⟨p, hp⟩ : s) q] at hq⊢ <;>
-          obtain ⟨t, μ, rfl⟩ := hq <;>
-        use t <;>
-      [use fun x => μ x * ↑(w x), use fun x => μ x * ↑(w x)⁻¹] <;>
-    simp [smul_smul]
+  conv_rhs =>
+    rw [this]
+
+  apply le_antisymm <;>
+  intro q hq <;>
+  erw [mem_affineSpan_iff_eq_weightedVSubOfPoint_vadd k V _ (⟨p, hp⟩ : s) q] at hq⊢ <;>
+  obtain ⟨t, μ, rfl⟩ := hq <;>
+  use t <;>
+  [use fun x => μ x * ↑(w x), use fun x => μ x * ↑(w x)⁻¹] <;>
+  simp [smul_smul]
 #align affine_span_eq_affine_span_line_map_units affineSpan_eq_affineSpan_lineMap_units
 
 end AffineSpace'
