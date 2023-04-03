@@ -8,8 +8,8 @@ Authors: Eric Wieser
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.DualNumber
-import Mathbin.Data.Matrix.Basic
+import Mathlib.Algebra.DualNumber
+import Mathlib.Data.Matrix.Basic
 
 /-!
 # Matrices of dual numbers are isomorphic to dual numbers over matrices
@@ -25,8 +25,7 @@ open Matrix TrivSqZeroExt
 
 /-- Matrices over dual numbers and dual numbers over matrices are isomorphic. -/
 @[simps]
-def Matrix.dualNumberEquiv : Matrix n n (DualNumber R) ≃ₐ[R] DualNumber (Matrix n n R)
-    where
+def Matrix.dualNumberEquiv : Matrix n n (DualNumber R) ≃ₐ[R] DualNumber (Matrix n n R) where
   toFun A := ⟨of fun i j => (A i j).fst, of fun i j => (A i j).snd⟩
   invFun d := of fun i j => (d.fst i j, d.snd i j)
   left_inv A := Matrix.ext fun i j => TrivSqZeroExt.ext rfl rfl
@@ -36,8 +35,7 @@ def Matrix.dualNumberEquiv : Matrix n n (DualNumber R) ≃ₐ[R] DualNumber (Mat
     · simp_rw [fst_sum, fst_mul]
     · simp_rw [snd_sum, snd_mul, smul_eq_mul, op_smul_eq_mul, Finset.sum_add_distrib]
   map_add' A B := TrivSqZeroExt.ext rfl rfl
-  commutes' r :=
-    by
+  commutes' r := by
     simp_rw [algebra_map_eq_inl', algebra_map_eq_diagonal, Pi.algebraMap_def,
       Algebra.id.map_eq_self, algebra_map_eq_inl, ← diagonal_map (inl_zero R), map_apply, fst_inl,
       snd_inl]
