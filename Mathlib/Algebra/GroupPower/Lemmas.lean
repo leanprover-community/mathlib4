@@ -616,7 +616,8 @@ theorem one_add_mul_le_pow' (Hsq : 0 ≤ a * a) (Hsq' : 0 ≤ (1 + a) * (1 + a))
             Nat.cast_one, add_assoc, add_right_inj]
           simp only [← add_assoc, add_comm _ (↑n * a)]
           simp only [add_assoc, add_right_inj, (n.cast_commute (_ : R)).left_comm]
-          ac_rfl }
+          simp only [add_assoc, add_left_comm, add_right_comm, add_comm] }
+          -- FIXME: ac_rfl fails here
       _ ≤ (1 + a) * (1 + a) * (1 + a) ^ n :=
         mul_le_mul_of_nonneg_left (one_add_mul_le_pow' Hsq Hsq' H _) Hsq'
       _ = (1 + a) ^ (n + 2) := by simp only [pow_succ, mul_assoc]

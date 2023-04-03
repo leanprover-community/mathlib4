@@ -107,6 +107,7 @@ end MulAction
 
 /-- In a groupoid, endomorphisms form a group -/
 instance group {C : Type u} [Groupoid.{v} C] (X : C) : Group (End X) where
+  __ := monoid
   mul_left_inv := Groupoid.comp_inv
   inv := Groupoid.inv
 #align category_theory.End.group CategoryTheory.End.group

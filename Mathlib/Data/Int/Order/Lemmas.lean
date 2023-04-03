@@ -64,7 +64,7 @@ theorem eq_zero_of_abs_lt_dvd {m x : ℤ} (h1 : m ∣ x) (h2 : |x| < m) : x = 0 
     exact zero_dvd_iff.mp h1
   rcases h1 with ⟨d, rfl⟩
   apply mul_eq_zero_of_right
-  rw [← abs_lt_one_iff, ← mul_lt_iff_lt_one_right (abs_pos.mpr hm), ← abs_mul]
+  rw [← abs_lt_one_iff, ← mul_lt_iff_lt_one_right ((abs_pos (α := ℤ)).mpr hm), ← abs_mul]
   exact lt_of_lt_of_le h2 (le_abs_self m)
 #align int.eq_zero_of_abs_lt_dvd Int.eq_zero_of_abs_lt_dvd
 

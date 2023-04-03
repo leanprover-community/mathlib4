@@ -210,7 +210,7 @@ instance (priority := 100) preadditiveHasZeroMorphisms : HasZeroMorphisms C wher
 the correct Monoid structure on End. Moved both down after preadditiveHasZeroMorphisms
 to make use of them -/
 instance {X : C} : Semiring (End X) :=
-  { End.monoid with
+  { End.monoid, instAddCommGroupEndToCategoryStruct _ with
     zero_mul := fun f => by dsimp [mul]; exact HasZeroMorphisms.comp_zero f _
     mul_zero := fun f => by dsimp [mul]; exact HasZeroMorphisms.zero_comp _ f
     left_distrib := fun f g h => Preadditive.add_comp X X X g h f
