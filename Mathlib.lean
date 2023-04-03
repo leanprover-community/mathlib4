@@ -638,6 +638,7 @@ import Mathlib.Data.Finset.Finsupp
 import Mathlib.Data.Finset.Fold
 import Mathlib.Data.Finset.Functor
 import Mathlib.Data.Finset.Image
+import Mathlib.Data.Finset.Interval
 import Mathlib.Data.Finset.Lattice
 import Mathlib.Data.Finset.LocallyFinite
 import Mathlib.Data.Finset.MulAntidiagonal
