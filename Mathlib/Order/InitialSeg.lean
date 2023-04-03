@@ -509,7 +509,7 @@ noncomputable def collapseF [IsWellOrder β s] (f : r ↪r s) : ∀ a, { b // ¬
       ((trichotomous _ _).resolve_left fun h' =>
             (IH a' h).2 <| _root_.trans (f.map_rel_iff.2 h) h').resolve_left
         fun h' => (IH a' h).2 <| h' ▸ f.map_rel_iff.2 h
-    exact ⟨IsWellFounded.wf.min S ⟨_, this⟩, IsWellFounded.wf.not_lt_min _ _ this⟩
+    exact ⟨_, IsWellFounded.wf.not_lt_min _ ⟨_, this⟩ this⟩
 set_option linter.uppercaseLean3 false in
 #align rel_embedding.collapse_F RelEmbedding.collapseF
 
@@ -524,12 +524,10 @@ set_option linter.uppercaseLean3 false in
 #align rel_embedding.collapse_F.lt RelEmbedding.collapseF.lt
 
 theorem collapseF.not_lt [IsWellOrder β s] (f : r ↪r s) (a : α) {b}
-    (h : ∀ (a') (_ : r a' a), s (collapseF f a').1 b) : ¬s b (collapseF f a).1 := by
+    (h : ∀ a' (_ : r a' a), s (collapseF f a').1 b) : ¬s b (collapseF f a).1 := by
   unfold collapseF; rw [WellFounded.fix_eq]
   dsimp only
-  exact
-    WellFounded.not_lt_min _ _ _
-      (show b ∈ { b | ∀ (a') (_ : r a' a), s (collapseF f a').1 b } from h)
+  exact WellFounded.not_lt_min _ _ _ h
 set_option linter.uppercaseLean3 false in
 #align rel_embedding.collapse_F.not_lt RelEmbedding.collapseF.not_lt
 
@@ -540,14 +538,12 @@ noncomputable def collapse [IsWellOrder β s] (f : r ↪r s) : r ≼i s :=
   ⟨RelEmbedding.ofMonotone (fun a => (collapseF f a).1) fun a b => collapseF.lt f, fun a b =>
     Acc.recOn (IsWellFounded.wf.apply b : Acc s b)
       (fun b _ _ a h => by
-        let S := { a | ¬s (collapseF f a).1 b }
-        have : S.Nonempty := ⟨_, asymm h⟩
-        exists (IsWellFounded.wf : WellFounded r).min S this
-        refine' ((@trichotomous _ s _ _ _).resolve_left _).resolve_right _
-        · exact (IsWellFounded.wf : WellFounded r).min_mem S this
-        · refine' collapseF.not_lt f _ fun a' h' => _
-          by_contra hn
-          exact IsWellFounded.wf.not_lt_min S this hn h')
+        rcases (@IsWellFounded.wf _ r).has_min { a | ¬s (collapseF f a).1 b }
+          ⟨_, asymm h⟩ with ⟨m, hm, hm'⟩
+        refine' ⟨m, ((@trichotomous _ s _ _ _).resolve_left hm).resolve_right
+          (collapseF.not_lt f _ fun a' h' => _)⟩
+        by_contra hn
+        exact hm' _ hn h')
       a⟩
 #align rel_embedding.collapse RelEmbedding.collapse
 

@@ -276,6 +276,7 @@ import Mathlib.Algebra.TrivSqZeroExt
 import Mathlib.Algebra.Tropical.Basic
 import Mathlib.Algebra.Tropical.BigOperators
 import Mathlib.Algebra.Tropical.Lattice
+import Mathlib.AlgebraicTopology.DoldKan.Compatibility
 import Mathlib.Analysis.Convex.Basic
 import Mathlib.Analysis.Convex.Extreme
 import Mathlib.Analysis.Convex.Hull
@@ -485,10 +486,12 @@ import Mathlib.CategoryTheory.Products.Associator
 import Mathlib.CategoryTheory.Products.Basic
 import Mathlib.CategoryTheory.Products.Bifunctor
 import Mathlib.CategoryTheory.Quotient
+import Mathlib.CategoryTheory.Shift.Basic
 import Mathlib.CategoryTheory.Sigma.Basic
 import Mathlib.CategoryTheory.SingleObj
 import Mathlib.CategoryTheory.Sites.Grothendieck
 import Mathlib.CategoryTheory.Sites.Pretopology
+import Mathlib.CategoryTheory.Sites.SheafOfTypes
 import Mathlib.CategoryTheory.Sites.Sieves
 import Mathlib.CategoryTheory.Sites.Spaces
 import Mathlib.CategoryTheory.Skeletal
@@ -496,10 +499,12 @@ import Mathlib.CategoryTheory.StructuredArrow
 import Mathlib.CategoryTheory.Sums.Associator
 import Mathlib.CategoryTheory.Sums.Basic
 import Mathlib.CategoryTheory.Thin
+import Mathlib.CategoryTheory.Triangulated.Basic
 import Mathlib.CategoryTheory.Types
 import Mathlib.CategoryTheory.Whiskering
 import Mathlib.CategoryTheory.Yoneda
 import Mathlib.Combinatorics.Additive.Energy
+import Mathlib.Combinatorics.Additive.Etransform
 import Mathlib.Combinatorics.Additive.PluenneckeRuzsa
 import Mathlib.Combinatorics.Additive.RuzsaCovering
 import Mathlib.Combinatorics.Catalan
@@ -556,6 +561,7 @@ import Mathlib.Computability.EpsilonNFA
 import Mathlib.Computability.Language
 import Mathlib.Computability.NFA
 import Mathlib.Computability.Primrec
+import Mathlib.Computability.RegularExpressions
 import Mathlib.Computability.TuringMachine
 import Mathlib.Control.Applicative
 import Mathlib.Control.Basic
@@ -617,6 +623,7 @@ import Mathlib.Data.Fin.Tuple.Basic
 import Mathlib.Data.Fin.Tuple.BubbleSortInduction
 import Mathlib.Data.Fin.Tuple.Monotone
 import Mathlib.Data.Fin.Tuple.NatAntidiagonal
+import Mathlib.Data.Fin.Tuple.Reflection
 import Mathlib.Data.Fin.Tuple.Sort
 import Mathlib.Data.Fin.VecNotation
 import Mathlib.Data.FinEnum
@@ -632,6 +639,7 @@ import Mathlib.Data.Finset.Finsupp
 import Mathlib.Data.Finset.Fold
 import Mathlib.Data.Finset.Functor
 import Mathlib.Data.Finset.Image
+import Mathlib.Data.Finset.Interval
 import Mathlib.Data.Finset.Lattice
 import Mathlib.Data.Finset.LocallyFinite
 import Mathlib.Data.Finset.MulAntidiagonal
@@ -745,6 +753,7 @@ import Mathlib.Data.List.Forall2
 import Mathlib.Data.List.Func
 import Mathlib.Data.List.Indexes
 import Mathlib.Data.List.Infix
+import Mathlib.Data.List.Intervals
 import Mathlib.Data.List.Join
 import Mathlib.Data.List.Lattice
 import Mathlib.Data.List.Lemmas
@@ -771,7 +780,10 @@ import Mathlib.Data.List.TFAE
 import Mathlib.Data.List.Zip
 import Mathlib.Data.ListM
 import Mathlib.Data.Matrix.Basic
+import Mathlib.Data.Matrix.Block
 import Mathlib.Data.Matrix.DMatrix
+import Mathlib.Data.Matrix.DualNumber
+import Mathlib.Data.Matrix.Hadamard
 import Mathlib.Data.Matrix.PEquiv
 import Mathlib.Data.Multiset.Antidiagonal
 import Mathlib.Data.Multiset.Basic
@@ -1194,6 +1206,7 @@ import Mathlib.LinearAlgebra.GeneralLinearGroup
 import Mathlib.LinearAlgebra.InvariantBasisNumber
 import Mathlib.LinearAlgebra.LinearIndependent
 import Mathlib.LinearAlgebra.LinearPMap
+import Mathlib.LinearAlgebra.Matrix.Trace
 import Mathlib.LinearAlgebra.Pi
 import Mathlib.LinearAlgebra.Prod
 import Mathlib.LinearAlgebra.Projection
@@ -1224,6 +1237,7 @@ import Mathlib.Logic.Equiv.Set
 import Mathlib.Logic.Function.Basic
 import Mathlib.Logic.Function.Conjugate
 import Mathlib.Logic.Function.Iterate
+import Mathlib.Logic.Hydra
 import Mathlib.Logic.IsEmpty
 import Mathlib.Logic.Lemmas
 import Mathlib.Logic.Nonempty

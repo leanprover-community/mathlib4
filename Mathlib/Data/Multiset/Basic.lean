@@ -158,9 +158,9 @@ protected theorem induction {p : Multiset α → Prop} (empty : p 0)
 #align multiset.induction Multiset.induction
 
 @[elab_as_elim]
-protected theorem induction_on {p : Multiset α → Prop} (s : Multiset α) (h₁ : p 0)
-    (h₂ : ∀ ⦃a : α⦄ {s : Multiset α}, p s → p (a ::ₘ s)) : p s :=
-  Multiset.induction h₁ h₂ s
+protected theorem induction_on {p : Multiset α → Prop} (s : Multiset α) (empty : p 0)
+    (cons : ∀ ⦃a : α⦄ {s : Multiset α}, p s → p (a ::ₘ s)) : p s :=
+  Multiset.induction empty cons s
 #align multiset.induction_on Multiset.induction_on
 
 theorem cons_swap (a b : α) (s : Multiset α) : a ::ₘ b ::ₘ s = b ::ₘ a ::ₘ s :=

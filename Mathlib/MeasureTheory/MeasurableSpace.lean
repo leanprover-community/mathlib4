@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 
 ! This file was ported from Lean 3 source module measure_theory.measurable_space
-! leanprover-community/mathlib commit d101e93197bb5f6ea89bd7ba386b7f7dff1f3903
+! leanprover-community/mathlib commit 88fcb83fe7996142dfcfe7368d31304a9adc874a
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -274,6 +274,18 @@ theorem measurable_const' {f : β → α} (hf : ∀ x y, f x = f y) : Measurable
   convert @measurable_const α β ‹_› ‹_› (f default) using 2
   apply hf
 #align measurable_const' measurable_const'
+
+-- porting note: Attribute not yet supported
+-- @[measurability]
+theorem measurable_natCast [NatCast α] (n : ℕ) : Measurable (n : β → α) :=
+  @measurable_const α _ _ _ n
+#align measurable_nat_cast measurable_natCast
+
+-- porting note: Attribute not yet supported
+-- @[measurability]
+theorem measurable_intCast [IntCast α] (n : ℤ) : Measurable (n : β → α) :=
+  @measurable_const α _ _ _ n
+#align measurable_int_cast measurable_intCast
 
 theorem measurable_of_countable [Countable α] [MeasurableSingletonClass α] (f : α → β) :
     Measurable f := fun s _ =>
