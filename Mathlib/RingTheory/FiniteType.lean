@@ -34,7 +34,7 @@ section ModuleAndAlgebra
 
 variable (R) (A : Type u) (B M N : Type _)
 
-/-- An algebra over a commutative semiring is of `finite_type` if it is finitely generated
+/-- An algebra over a commutative semiring is of `FiniteType` if it is finitely generated
 over the base ring as algebra. -/
 class Algebra.FiniteType [CommSemiring R] [Semiring A] [Algebra R A] : Prop where
   out : (⊤ : Subalgebra R A).Fg
@@ -196,7 +196,7 @@ namespace RingHom
 
 variable {A B C : Type _} [CommRing A] [CommRing B] [CommRing C]
 
-/-- A ring morphism `A →+* B` is of `finite_type` if `B` is finitely generated as `A`-algebra. -/
+/-- A ring morphism `A →+* B` is of `FiniteType` if `B` is finitely generated as `A`-algebra. -/
 def FiniteType (f : A →+* B) : Prop :=
   @Algebra.FiniteType A B _ _ f.toAlgebra
 #align ring_hom.finite_type RingHom.FiniteType
@@ -277,7 +277,7 @@ variable [CommRing A] [CommRing B] [CommRing C]
 
 variable [Algebra R A] [Algebra R B] [Algebra R C]
 
-/-- An algebra morphism `A →ₐ[R] B` is of `finite_type` if it is of finite type as ring morphism.
+/-- An algebra morphism `A →ₐ[R] B` is of `FiniteType` if it is of finite type as ring morphism.
 In other words, if `B` is finitely generated as `A`-algebra. -/
 def FiniteType (f : A →ₐ[R] B) : Prop :=
   f.toRingHom.FiniteType
