@@ -14,8 +14,8 @@ import Mathlib.Data.Matrix.Basic
 /-!
 # Matrices of dual numbers are isomorphic to dual numbers over matrices
 
-Showing this for the more general case of `triv_sq_zero_ext R M` would require an action between
-`matrix n n R` and `matrix n n M`, which would risk causing diamonds.
+Showing this for the more general case of `TrivSqZeroExt R M` would require an action between
+`Matrix n n R` and `Matrix n n M`, which would risk causing diamonds.
 -/
 
 
