@@ -1120,7 +1120,8 @@ theorem eq_affineCombination_of_mem_affineSpan {p1 : P} {p : ι → P}
     use s', w0 + w'
     constructor
     · rw [add_comm, ← Finset.weightedVSub_vadd_affineCombination, hw0s, hs', vsub_vadd]
-    · change (Finset.sum s' fun i => w0 i + w' i) = 1
+    · -- Porting note: proof was `simp [Pi.add_apply, Finset.sum_add_distrib, hw0, h']`
+      change (Finset.sum s' fun i => w0 i + w' i) = 1
       simp only [Finset.sum_add_distrib, hw0, h', add_zero]
 #align eq_affine_combination_of_mem_affine_span eq_affineCombination_of_mem_affineSpan
 
