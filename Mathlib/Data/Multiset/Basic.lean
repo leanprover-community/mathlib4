@@ -4,11 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 
 ! This file was ported from Lean 3 source module data.multiset.basic
-! leanprover-community/mathlib commit 47adfab39a11a072db552f47594bf8ed2cf8a722
+! leanprover-community/mathlib commit 2ec920d35348cb2d13ac0e1a2ad9df0fdf1a76b4
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Data.List.Lemmas
+import Mathlib.Data.Set.List
 import Mathlib.Data.List.Perm
 import Mathlib.Init.Quot -- Porting note: added import
 
@@ -152,9 +152,9 @@ theorem cons_inj_right (a : α) : ∀ {s t : Multiset α}, a ::ₘ s = a ::ₘ t
 #align multiset.cons_inj_right Multiset.cons_inj_right
 
 @[recursor 5]
-protected theorem induction {p : Multiset α → Prop} (h₁ : p 0)
-    (h₂ : ∀ ⦃a : α⦄ {s : Multiset α}, p s → p (a ::ₘ s)) : ∀ s, p s := by
-  rintro ⟨l⟩; induction' l with _ _ ih <;> [exact h₁, exact h₂ ih]
+protected theorem induction {p : Multiset α → Prop} (empty : p 0)
+    (cons : ∀ ⦃a : α⦄ {s : Multiset α}, p s → p (a ::ₘ s)) : ∀ s, p s := by
+  rintro ⟨l⟩; induction' l with _ _ ih <;> [exact empty, exact cons ih]
 #align multiset.induction Multiset.induction
 
 @[elab_as_elim]
