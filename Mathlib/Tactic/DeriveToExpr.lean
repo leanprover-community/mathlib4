@@ -16,7 +16,10 @@ The `ToExpr` derive handlers support universe level polymorphism. This is implem
 `Lean.ToLevel` class. To use `ToExpr` in places where there is universe polymorphism, make sure
 to have a `[ToLevel.{u}]` instance available.
 
-Implementation note: the handler is originally modeled after the `Repr` derive handler.
+**Warning:** Import `Mathlib.Tactic.ToExpr` instead of this one. This ensures that you are using
+the universe polymorphic `ToExpr` instances that override the ones from Lean 4 core.
+
+Implementation note: this derive handler was originally modeled after the `Repr` derive handler.
 -/
 
 namespace Mathlib.Deriving.ToExpr
