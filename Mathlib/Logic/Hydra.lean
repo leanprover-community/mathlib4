@@ -114,6 +114,7 @@ theorem cutExpand_fibration (r : α → α → Prop) :
   rintro ⟨s₁, s₂⟩ s ⟨t, a, hr, he⟩; dsimp at he ⊢
   classical
   -- Porting note: Originally `obtain ⟨ha, rfl⟩`
+  -- This is https://github.com/leanprover/std4/issues/62
   obtain ⟨ha, hb⟩ := add_singleton_eq_iff.1 he
   rw [hb]
   rw [add_assoc, mem_add] at ha
