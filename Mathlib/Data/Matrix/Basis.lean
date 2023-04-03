@@ -67,10 +67,12 @@ theorem matrix_eq_sum_std_basis [Fintype m] [Fintype n] (x : Matrix m n α) :
   iterate 2 rw [Finset.sum_apply]
   -- Porting note: was `convert`
   refine (Fintype.sum_eq_single i ?_).trans ?_; swap
-  · simp only [stdBasisMatrix]
+  · -- Porting note: `simp` seems unwilling to apply `Fintype.sum_apply`
+    simp only [stdBasisMatrix]
     rw [Fintype.sum_apply, Fintype.sum_apply]
     simp
   · intro j' hj'
+    -- Porting note: `simp` seems unwilling to apply `Fintype.sum_apply`
     simp only [stdBasisMatrix]
     rw [Fintype.sum_apply, Fintype.sum_apply]
     simp [hj']
@@ -82,7 +84,10 @@ theorem matrix_eq_sum_std_basis [Fintype m] [Fintype n] (x : Matrix m n α) :
 theorem std_basis_eq_basis_mul_basis (i : m) (j : n) :
     stdBasisMatrix i j 1 = vecMulVec (fun i' => ite (i = i') 1 0) fun j' => ite (j = j') 1 0 := by
   ext i' j'
+  -- Porting note: was `norm_num [std_basis_matrix, vec_mul_vec]` though there are no numerals
+  -- involved.
   simp only [stdBasisMatrix, vecMulVec, mul_ite, mul_one, mul_zero, of_apply]
+  -- Porting note: added next line
   simp_rw [@and_comm (i = i')]
   exact ite_and _ _ _ _
 #align matrix.std_basis_eq_basis_mul_basis Matrix.std_basis_eq_basis_mul_basis
