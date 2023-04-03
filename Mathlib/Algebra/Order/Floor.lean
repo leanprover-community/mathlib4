@@ -711,8 +711,7 @@ theorem floor_zero : ⌊(0 : α)⌋ = 0 := by rw [← cast_zero, floor_intCast]
 theorem floor_one : ⌊(1 : α)⌋ = 1 := by rw [← cast_one, floor_intCast]
 #align int.floor_one Int.floor_one
 
--- Porting note: the `mono` tactic is not implemented yet
--- @[mono]
+@[mono]
 theorem floor_mono : Monotone (floor : α → ℤ) :=
   gc_coe_floor.monotone_u
 #align int.floor_mono Int.floor_mono
@@ -1043,9 +1042,7 @@ theorem fract_div_natCast_eq_div_natCast_mod {m n : ℕ} : fract ((m : k) / n) =
   have hn' : 0 < (n : k) := by
     norm_cast
   refine fract_eq_iff.mpr ⟨?_, ?_, m / n, ?_⟩
-  · -- porting note: eliminate `have` after we have positivity extension for casts of Nat
-    have : (0:k) ≤ m % n := Nat.cast_nonneg _
-    positivity
+  · positivity
   · simpa only [div_lt_one hn', Nat.cast_lt] using m.mod_lt hn
   · rw [sub_eq_iff_eq_add', ← mul_right_inj' hn'.ne.symm, mul_div_cancel' _ hn'.ne.symm, mul_add,
       mul_div_cancel' _ hn'.ne.symm]

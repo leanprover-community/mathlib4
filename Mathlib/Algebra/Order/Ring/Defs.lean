@@ -812,10 +812,10 @@ theorem zero_le_mul_right (h : 0 < c) : 0 ≤ b * c ↔ 0 ≤ b := by
 -- Porting note: we used to not need the type annotation on `(0 : α)` at the start of the `calc`.
 theorem add_le_mul_of_left_le_right (a2 : 2 ≤ a) (ab : a ≤ b) : a + b ≤ a * b :=
   have : 0 < b :=
-    calc
-      (0 : α) < 2 := zero_lt_two
-            _ ≤ a := a2
-            _ ≤ b := ab
+    calc (0 : α)
+      _ < 2 := zero_lt_two
+      _ ≤ a := a2
+      _ ≤ b := ab
 
   calc
     a + b ≤ b + b := add_le_add_right ab b
@@ -827,10 +827,10 @@ theorem add_le_mul_of_left_le_right (a2 : 2 ≤ a) (ab : a ≤ b) : a + b ≤ a 
 -- Porting note: we used to not need the type annotation on `(0 : α)` at the start of the `calc`.
 theorem add_le_mul_of_right_le_left (b2 : 2 ≤ b) (ba : b ≤ a) : a + b ≤ a * b :=
   have : 0 < a :=
-    calc
-      (0 : α) < 2 := zero_lt_two
-            _ ≤ b := b2
-            _ ≤ a := ba
+    calc (0 : α)
+      _ < 2 := zero_lt_two
+      _ ≤ b := b2
+      _ ≤ a := ba
 
   calc
     a + b ≤ a + a := add_le_add_left ba a

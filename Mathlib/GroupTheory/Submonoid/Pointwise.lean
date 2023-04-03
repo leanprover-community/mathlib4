@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 
 ! This file was ported from Lean 3 source module group_theory.submonoid.pointwise
-! leanprover-community/mathlib commit bcfa726826abd57587355b4b5b7e78ad6527b7e4
+! leanprover-community/mathlib commit 2bbc7e3884ba234309d2a43b19144105a753292e
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -34,7 +34,7 @@ Additionally, it provides various degrees of monoid structure:
 * `AddSubmonoid.mulOneClass`
 * `AddSubmonoid.semigroup`
 * `AddSubmonoid.monoid`
-which is available globally to match the monoid structure implied by `Submodule.semiring`.
+which is available globally to match the monoid structure implied by `Submodule.idemSemiring`.
 
 ## Implementation notes
 
@@ -553,7 +553,7 @@ protected theorem mul_induction_on {M N : AddSubmonoid R} {C : R → Prop} {r : 
 theorem closure_mul_closure (S T : Set R) : closure S * closure T = closure (S * T) := by
   apply le_antisymm
   · refine mul_le.2 fun a ha b hb => ?_
-    rw [← AddMonoidHom.mul_right_apply, ← AddSubmonoid.mem_comap]
+    rw [← AddMonoidHom.mulRight_apply, ← AddSubmonoid.mem_comap]
     refine (closure_le.2 fun a' ha' => ?_) ha
     change b ∈ (closure (S * T)).comap (AddMonoidHom.mulLeft a')
     refine (closure_le.2 fun b' hb' => ?_) hb
@@ -581,7 +581,7 @@ theorem bot_mul (S : AddSubmonoid R) : ⊥ * S = ⊥ :=
     rw [AddSubmonoid.mem_bot] at hm ⊢; rw [hm, zero_mul]
 #align add_submonoid.bot_mul AddSubmonoid.bot_mul
 
--- porting note: todo: restore @[mono]
+@[mono]
 theorem mul_le_mul {M N P Q : AddSubmonoid R} (hmp : M ≤ P) (hnq : N ≤ Q) : M * N ≤ P * Q :=
   mul_le.2 fun _m hm _n hn => mul_mem_mul (hmp hm) (hnq hn)
 #align add_submonoid.mul_le_mul AddSubmonoid.mul_le_mul

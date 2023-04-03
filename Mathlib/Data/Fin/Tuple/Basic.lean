@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Yury Kudryashov, Sébastien Gouëzel, Chris Hughes
 
 ! This file was ported from Lean 3 source module data.fin.tuple.basic
-! leanprover-community/mathlib commit 008205aa645b3f194c1da47025c5f110c8406eab
+! leanprover-community/mathlib commit d97a0c9f7a7efe6d76d652c5a6b7c9c634b70e0a
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -164,9 +164,7 @@ theorem consCases_cons {P : (∀ i : Fin n.succ, α i) → Sort v} (h : ∀ x₀
 @[elab_as_elim]
 def consInduction {α : Type _} {P : ∀ {n : ℕ}, (Fin n → α) → Sort v} (h0 : P Fin.elim0)
     (h : ∀ {n} (x₀) (x : Fin n → α), P x → P (Fin.cons x₀ x)) : ∀ {n : ℕ} (x : Fin n → α), P x
-  | 0, x => by
-    convert h0
-    simp
+  | 0, x => by convert h0
   | n + 1, x => consCases (fun x₀ x ↦ h _ _ <| consInduction h0 h _) x
 #align fin.cons_induction Fin.consInductionₓ -- Porting note: universes
 
@@ -350,6 +348,19 @@ theorem append_assoc {p : ℕ} {α : Type _} (a : Fin m → α) (b : Fin n → �
   · rw [append_right]
     simp [← natAdd_natAdd]
 #align fin.append_assoc Fin.append_assoc
+
+/-- Appending a one-tuple to the left is the same as `fin.cons`. -/
+theorem append_left_eq_cons {α : Type _} {n : ℕ} (x₀ : Fin 1 → α) (x : Fin n → α) :
+    Fin.append x₀ x = Fin.cons (x₀ 0) x ∘ Fin.cast (add_comm _ _) := by
+  ext i
+  refine' Fin.addCases _ _ i <;> clear i
+  · intro i
+    rw [Subsingleton.elim i 0, Fin.append_left, Function.comp_apply, eq_comm]
+    exact Fin.cons_zero _ _
+  · intro i
+    rw [Fin.append_right, Function.comp_apply, Fin.cast_natAdd, eq_comm, Fin.addNat_one]
+    exact Fin.cons_succ _ _ _
+#align fin.append_left_eq_cons Fin.append_left_eq_cons
 
 end Append
 
@@ -595,6 +606,19 @@ theorem comp_snoc {α : Type _} {β : Type _} (g : α → β) (q : Fin n → α)
   · rw [eq_last_of_not_lt h]
     simp
 #align fin.comp_snoc Fin.comp_snoc
+
+/-- Appending a one-tuple to the right is the same as `fin.snoc`. -/
+theorem append_right_eq_snoc {α : Type _} {n : ℕ} (x : Fin n → α) (x₀ : Fin 1 → α) :
+    Fin.append x x₀ = Fin.snoc x (x₀ 0) := by
+  ext i
+  refine' Fin.addCases _ _ i <;> clear i
+  · intro i
+    rw [Fin.append_left]
+    exact (@snoc_cast_succ _ (fun _ => α) _ _ i).symm
+  · intro i
+    rw [Subsingleton.elim i 0, Fin.append_right]
+    exact (@snoc_last _ (fun _ => α) _ _).symm
+#align fin.append_right_eq_snoc Fin.append_right_eq_snoc
 
 theorem comp_init {α : Type _} {β : Type _} (g : α → β) (q : Fin n.succ → α) :
     g ∘ init q = init (g ∘ q) := by

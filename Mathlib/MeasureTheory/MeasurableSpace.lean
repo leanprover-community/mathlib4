@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 
 ! This file was ported from Lean 3 source module measure_theory.measurable_space
-! leanprover-community/mathlib commit d101e93197bb5f6ea89bd7ba386b7f7dff1f3903
+! leanprover-community/mathlib commit 88fcb83fe7996142dfcfe7368d31304a9adc874a
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -271,9 +271,21 @@ for functions between empty types. -/
 theorem measurable_const' {f : β → α} (hf : ∀ x y, f x = f y) : Measurable f := by
   nontriviality β
   inhabit β
-  convert @measurable_const α β ‹_› ‹_› (f default)
-  exact funext fun x => hf x default
+  convert @measurable_const α β ‹_› ‹_› (f default) using 2
+  apply hf
 #align measurable_const' measurable_const'
+
+-- porting note: Attribute not yet supported
+-- @[measurability]
+theorem measurable_natCast [NatCast α] (n : ℕ) : Measurable (n : β → α) :=
+  @measurable_const α _ _ _ n
+#align measurable_nat_cast measurable_natCast
+
+-- porting note: Attribute not yet supported
+-- @[measurability]
+theorem measurable_intCast [IntCast α] (n : ℤ) : Measurable (n : β → α) :=
+  @measurable_const α _ _ _ n
+#align measurable_int_cast measurable_intCast
 
 theorem measurable_of_countable [Countable α] [MeasurableSingletonClass α] (f : α → β) :
     Measurable f := fun s _ =>
@@ -1177,8 +1189,7 @@ def Simps.apply (h : α ≃ᵐ β) : α → β := h
 def Simps.symm_apply (h : α ≃ᵐ β) : β → α := h.symm
 #align measurable_equiv.simps.symm_apply MeasurableEquiv.Simps.symm_apply
 
-initialize_simps_projections MeasurableEquiv (toEquiv_toFun → apply, toEquiv_invFun →
-  symm_apply)
+initialize_simps_projections MeasurableEquiv (toFun → apply, invFun → symm_apply)
 
 @[ext] theorem ext {e₁ e₂ : α ≃ᵐ β} (h : (e₁ : α → β) = e₂) : e₁ = e₂ := FunLike.ext' h
 #align measurable_equiv.ext MeasurableEquiv.ext
@@ -1725,7 +1736,7 @@ theorem coe_union (s t : Subtype (MeasurableSet : Set α → Prop)) : ↑(s ∪ 
   rfl
 #align measurable_set.coe_union MeasurableSet.coe_union
 
-noncomputable instance : HasSup (Subtype (MeasurableSet : Set α → Prop)) :=
+noncomputable instance : Sup (Subtype (MeasurableSet : Set α → Prop)) :=
   ⟨fun x y => x ∪ y⟩
 
 -- porting note: new lemma
@@ -1740,7 +1751,7 @@ theorem coe_inter (s t : Subtype (MeasurableSet : Set α → Prop)) : ↑(s ∩ 
   rfl
 #align measurable_set.coe_inter MeasurableSet.coe_inter
 
-noncomputable instance : HasInf (Subtype (MeasurableSet : Set α → Prop)) :=
+noncomputable instance : Inf (Subtype (MeasurableSet : Set α → Prop)) :=
   ⟨fun x y => x ∩ y⟩
 
 -- porting note: new lemma

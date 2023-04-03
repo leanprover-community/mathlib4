@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 
 ! This file was ported from Lean 3 source module combinatorics.composition
-! leanprover-community/mathlib commit 2705404e701abc6b3127da906f40bae062a169c9
+! leanprover-community/mathlib commit 92ca63f0fb391a9ca5f22d2409a6080e786d99f7
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -815,14 +815,13 @@ def compositionAsSetEquiv (n : ℕ) : CompositionAsSet n ≃ Finset (Fin (n - 1)
   left_inv := by
     intro c
     ext i
-    simp only [add_comm, Set.to_finset_set_of, Finset.mem_univ,
+    simp only [add_comm, Set.toFinset_setOf, Finset.mem_univ,
      forall_true_left, Finset.mem_filter, true_and, exists_prop]
     constructor
     · rintro (rfl | rfl | ⟨j, hj1, hj2⟩)
       · exact c.zero_mem
       · exact c.getLast_mem
       · convert hj1
-        rwa [Fin.ext_iff]
     · simp only [or_iff_not_imp_left]
       intro i_mem i_ne_zero i_ne_last
       simp [Fin.ext_iff] at i_ne_zero i_ne_last
@@ -848,7 +847,7 @@ def compositionAsSetEquiv (n : ℕ) : CompositionAsSet n ≃ Finset (Fin (n - 1)
       rw [add_comm]
       apply (Nat.succ_pred_eq_of_pos _).symm
       exact (zero_le i.val).trans_lt (i.2.trans_le (Nat.sub_le n 1))
-    simp only [add_comm, Fin.ext_iff, Fin.val_zero, Fin.val_last, exists_prop, Set.to_finset_set_of,
+    simp only [add_comm, Fin.ext_iff, Fin.val_zero, Fin.val_last, exists_prop, Set.toFinset_setOf,
       Finset.mem_univ, forall_true_left, Finset.mem_filter, add_eq_zero_iff, and_false,
       add_left_inj, false_or, true_and]
     erw [Set.mem_setOf_eq]
@@ -897,8 +896,7 @@ def length : ℕ :=
 
 theorem card_boundaries_eq_succ_length : c.boundaries.card = c.length + 1 :=
   (tsub_eq_iff_eq_add_of_le (Nat.succ_le_of_lt c.card_boundaries_pos)).mp rfl
-#align composition_as_set.card_boundaries_eq_succ_length
-  CompositionAsSet.card_boundaries_eq_succ_length
+#align composition_as_set.card_boundaries_eq_succ_length CompositionAsSet.card_boundaries_eq_succ_length
 
 theorem length_lt_card_boundaries : c.length < c.boundaries.card := by
   rw [c.card_boundaries_eq_succ_length]
@@ -1033,11 +1031,10 @@ theorem Composition.toCompositionAsSet_blocks (c : Composition n) :
   suffices H : ∀ i ≤ d.blocks.length, (d.blocks.take i).sum = (c.blocks.take i).sum
   exact eq_of_sum_take_eq length_eq H
   intro i hi
-  have i_lt : i < d.boundaries.card :=
-    by
-    convert Nat.lt_succ_iff.2 hi
-    convert d.card_boundaries_eq_succ_length
-    exact length_ofFn _
+  have i_lt : i < d.boundaries.card := by
+    -- porting note: relied on `convert` unfolding definitions, switched to using a `simpa`
+    simpa [CompositionAsSet.blocks, length_ofFn, Nat.succ_eq_add_one,
+      d.card_boundaries_eq_succ_length] using Nat.lt_succ_iff.2 hi
   have i_lt' : i < c.boundaries.card := i_lt
   have i_lt'' : i < c.length + 1 := by rwa [c.card_boundaries_eq_succ_length] at i_lt'
   have A :

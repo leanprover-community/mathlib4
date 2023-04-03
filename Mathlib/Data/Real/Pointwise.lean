@@ -42,7 +42,7 @@ theorem Real.infₛ_smul_of_nonneg (ha : 0 ≤ a) (s : Set ℝ) : infₛ (a • 
   obtain rfl | ha' := ha.eq_or_lt
   · rw [zero_smul_set hs, zero_smul]
     exact cinfₛ_singleton 0
-  by_cases BddBelow s
+  by_cases h : BddBelow s
   · exact ((OrderIso.smulLeft ℝ ha').map_cinfₛ' hs h).symm
   · rw [Real.infₛ_of_not_bddBelow (mt (bddBelow_smul_iff_of_pos ha').1 h),
         Real.infₛ_of_not_bddBelow h, smul_zero]
@@ -58,7 +58,7 @@ theorem Real.supₛ_smul_of_nonneg (ha : 0 ≤ a) (s : Set ℝ) : supₛ (a • 
   obtain rfl | ha' := ha.eq_or_lt
   · rw [zero_smul_set hs, zero_smul]
     exact csupₛ_singleton 0
-  by_cases BddAbove s
+  by_cases h : BddAbove s
   · exact ((OrderIso.smulLeft ℝ ha').map_csupₛ' hs h).symm
   · rw [Real.supₛ_of_not_bddAbove (mt (bddAbove_smul_iff_of_pos ha').1 h),
         Real.supₛ_of_not_bddAbove h, smul_zero]
@@ -80,7 +80,7 @@ theorem Real.infₛ_smul_of_nonpos (ha : a ≤ 0) (s : Set ℝ) : infₛ (a • 
   obtain rfl | ha' := ha.eq_or_lt
   · rw [zero_smul_set hs, zero_smul]
     exact cinfₛ_singleton 0
-  by_cases BddAbove s
+  by_cases h : BddAbove s
   · exact ((OrderIso.smulLeftDual ℝ ha').map_csupₛ' hs h).symm
   · rw [Real.infₛ_of_not_bddBelow (mt (bddBelow_smul_iff_of_neg ha').1 h),
         Real.supₛ_of_not_bddAbove h, smul_zero]
@@ -96,7 +96,7 @@ theorem Real.supₛ_smul_of_nonpos (ha : a ≤ 0) (s : Set ℝ) : supₛ (a • 
   obtain rfl | ha' := ha.eq_or_lt
   · rw [zero_smul_set hs, zero_smul]
     exact csupₛ_singleton 0
-  by_cases BddBelow s
+  by_cases h : BddBelow s
   · exact ((OrderIso.smulLeftDual ℝ ha').map_cinfₛ' hs h).symm
   · rw [Real.supₛ_of_not_bddAbove (mt (bddAbove_smul_iff_of_neg ha').1 h),
         Real.infₛ_of_not_bddBelow h, smul_zero]
@@ -148,4 +148,3 @@ theorem Real.supᵢ_mul_of_nonpos (ha : r ≤ 0) (f : ι → ℝ) : (⨆ i, f i)
 #align real.supr_mul_of_nonpos Real.supᵢ_mul_of_nonpos
 
 end Mul
-
