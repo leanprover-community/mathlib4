@@ -259,7 +259,7 @@ theorem toBlock_diagonal_self (d : m → α) (p : m → Prop) :
   ext (i j)
   by_cases i = j
   · simp [h]
-  · simp [One.one, h, fun h' => h <| Subtype.ext h']
+  · simp [One.one, h, Subtype.val_injective.ne h]
 #align matrix.to_block_diagonal_self Matrix.toBlock_diagonal_self
 
 theorem toBlock_diagonal_disjoint (d : m → α) {p q : m → Prop} (hpq : Disjoint p q) :
@@ -876,7 +876,7 @@ theorem toBlock_mul_eq_mul {m n k : Type _} [Fintype n] (p : m → Prop) (q : k 
   ext (i k)
   simp only [toBlock_apply, mul_apply]
   rw [Finset.sum_subtype]
-  simp [Top.top, CompleteLattice.top, BoundedOrder.top]
+  simp [Pi.top_apply, Prop.top_eq_true]
 #align matrix.to_block_mul_eq_mul Matrix.toBlock_mul_eq_mul
 
 theorem toBlock_mul_eq_add {m n k : Type _} [Fintype n] (p : m → Prop) (q : n → Prop)
