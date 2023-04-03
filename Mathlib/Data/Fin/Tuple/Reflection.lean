@@ -39,8 +39,8 @@ variable {m n : ℕ} {α β γ : Type _}
 
 /-- Evaluate `fin_vec.seq f v = ![(f 0) (v 0), (f 1) (v 1), ...]` -/
 def seq : ∀ {m}, (Fin m → α → β) → (Fin m → α) → Fin m → β
-  | 0, f, v => ![]
-  | n + 1, f, v => Matrix.vecCons (f 0 (v 0)) (seq (Matrix.vecTail f) (Matrix.vecTail v))
+  | 0, _, _ => ![]
+  | _ + 1, f, v => Matrix.vecCons (f 0 (v 0)) (seq (Matrix.vecTail f) (Matrix.vecTail v))
 #align fin_vec.seq FinVec.seq
 
 @[simp]
@@ -60,7 +60,7 @@ example {f₁ f₂ : α → β} (a₁ a₂ : α) : seq ![f₁, f₂] ![a₁, a�
 
 /-- `fin_vec.map f v = ![f (v 0), f (v 1), ...]` -/
 def map (f : α → β) {m} : (Fin m → α) → Fin m → β :=
-  seq fun i => f
+  seq fun _ => f
 #align fin_vec.map FinVec.map
 
 /-- This can be use to prove
@@ -92,13 +92,13 @@ theorem etaExpand_eq {m} (v : Fin m → α) : etaExpand v = v :=
   map_eq id v
 #align fin_vec.eta_expand_eq FinVec.etaExpand_eq
 
-example {f : α → β} (a : Fin 2 → α) : a = ![a 0, a 1] :=
+example {_ : α → β} (a : Fin 2 → α) : a = ![a 0, a 1] :=
   (etaExpand_eq _).symm
 
 /-- `∀` with better defeq for `∀ x : fin m → α, P x`. -/
-def Forall : ∀ {m} (P : (Fin m → α) → Prop), Prop
+def Forall : ∀ {m} (_ : (Fin m → α) → Prop), Prop
   | 0, P => P ![]
-  | n + 1, P => ∀ x : α, forall fun v => P (Matrix.vecCons x v)
+  | _ + 1, P => ∀ x : α, Forall fun v => P (Matrix.vecCons x v)
 #align fin_vec.forall FinVec.Forall
 
 /-- This can be use to prove
@@ -109,18 +109,18 @@ example (P : (fin 2 → α) → Prop) : (∀ f, P f) ↔ (∀ a₀ a₁, P ![a�
 @[simp]
 theorem forall_iff : ∀ {m} (P : (Fin m → α) → Prop), Forall P ↔ ∀ x, P x
   | 0, P => by
-    simp only [forall, Fin.forall_fin_zero_pi]
+    simp only [Forall, Fin.forall_fin_zero_pi]
     rfl
-  | n + 1, P => by simp only [forall, forall_iff, Fin.forall_fin_succ_pi, Matrix.vecCons]
+  | n + 1, P => by simp only [Forall, forall_iff, Fin.forall_fin_succ_pi, Matrix.vecCons, Nat.add]
 #align fin_vec.forall_iff FinVec.forall_iff
 
 example (P : (Fin 2 → α) → Prop) : (∀ f, P f) ↔ ∀ a₀ a₁, P ![a₀, a₁] :=
   (forall_iff _).symm
 
 /-- `∃` with better defeq for `∃ x : fin m → α, P x`. -/
-def Exists : ∀ {m} (P : (Fin m → α) → Prop), Prop
+def Exists : ∀ {m} (_ : (Fin m → α) → Prop), Prop
   | 0, P => P ![]
-  | n + 1, P => ∃ x : α, exists fun v => P (Matrix.vecCons x v)
+  | _ + 1, P => ∃ x : α, Exists fun v => P (Matrix.vecCons x v)
 #align fin_vec.exists FinVec.Exists
 
 /-- This can be use to prove
@@ -130,20 +130,20 @@ example (P : (fin 2 → α) → Prop) : (∃ f, P f) ↔ (∃ a₀ a₁, P ![a�
 -/
 theorem exists_iff : ∀ {m} (P : (Fin m → α) → Prop), Exists P ↔ ∃ x, P x
   | 0, P => by
-    simp only [exists, Fin.exists_fin_zero_pi, Matrix.vecEmpty]
+    simp only [Exists, Fin.exists_fin_zero_pi, Matrix.vecEmpty]
     rfl
-  | n + 1, P => by simp only [exists, exists_iff, Fin.exists_fin_succ_pi, Matrix.vecCons]
+  | n + 1, P => by simp only [Exists, exists_iff, Fin.exists_fin_succ_pi, Matrix.vecCons, Nat.add]
 #align fin_vec.exists_iff FinVec.exists_iff
 
 example (P : (Fin 2 → α) → Prop) : (∃ f, P f) ↔ ∃ a₀ a₁, P ![a₀, a₁] :=
   (exists_iff _).symm
 
 /-- `finset.univ.sum` with better defeq for `fin` -/
-def sum [Add α] [Zero α] : ∀ {m} (v : Fin m → α), α
-  | 0, v => 0
+def Sum [Add α] [Zero α] : ∀ {m} (_ : Fin m → α), α
+  | 0, _ => 0
   | 1, v => v 0
-  | n + 2, v => Sum (v ∘ Fin.castSucc) + v (Fin.last _)
-#align fin_vec.sum FinVec.sum
+  | _ + 2, v => Sum (v ∘ Fin.castSucc) + v (Fin.last _)
+#align fin_vec.sum FinVec.Sum
 
 open BigOperators
 
@@ -154,14 +154,13 @@ example [add_comm_monoid α] (a : fin 3 → α) : ∑ i, a i = a 0 + a 1 + a 2 :
 ```
 -/
 @[simp]
-theorem sum_eq [AddCommMonoid α] : ∀ {m} (a : Fin m → α), sum a = ∑ i, a i
+theorem sum_eq [AddCommMonoid α] : ∀ {m} (a : Fin m → α), Sum a = ∑ i, a i
   | 0, a => rfl
   | 1, a => (Fintype.sum_unique a).symm
-  | n + 2, a => by rw [Fin.sum_univ_castSucc, Sum, sum_eq]
+  | n + 2, a => by rw [Fin.sum_univ_castSucc, Sum, sum_eq]; simp_rw [Function.comp_apply]
 #align fin_vec.sum_eq FinVec.sum_eq
 
 example [AddCommMonoid α] (a : Fin 3 → α) : (∑ i, a i) = a 0 + a 1 + a 2 :=
   (sum_eq _).symm
 
 end FinVec
-
