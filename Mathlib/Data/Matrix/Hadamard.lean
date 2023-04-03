@@ -13,17 +13,17 @@ import Mathlib.LinearAlgebra.Matrix.Trace
 /-!
 # Hadamard product of matrices
 
-This file defines the Hadamard product `matrix.hadamard`
+This file defines the Hadamard product `Matrix.hadamard`
 and contains basic properties about them.
 
 ## Main definition
 
-- `matrix.hadamard`: defines the Hadamard product,
+- `Matrix.hadamard`: defines the Hadamard product,
   which is the pointwise product of two matrices of the same size.
 
 ## Notation
 
-* `⊙`: the Hadamard product `matrix.hadamard`;
+* `⊙`: the Hadamard product `Matrix.hadamard`;
 
 ## References
 
@@ -43,7 +43,7 @@ namespace Matrix
 
 open Matrix BigOperators
 
-/-- `matrix.hadamard` defines the Hadamard product,
+/-- `Matrix.hadamard` defines the Hadamard product,
     which is the pointwise product of two matrices of the same size.-/
 def hadamard [Mul α] (A : Matrix m n α) (B : Matrix m n α) : Matrix m n α :=
   of fun i j => A i j * B i j
