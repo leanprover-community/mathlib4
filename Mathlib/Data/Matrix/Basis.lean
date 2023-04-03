@@ -61,22 +61,20 @@ theorem stdBasisMatrix_add (i : m) (j : n) (a b : α) :
   split_ifs with h <;> simp [h]
 #align matrix.std_basis_matrix_add Matrix.stdBasisMatrix_add
 
--- TODO tidy
 theorem matrix_eq_sum_std_basis [Fintype m] [Fintype n] (x : Matrix m n α) :
     x = ∑ i : m, ∑ j : n, stdBasisMatrix i j (x i j) := by
   ext i j; symm
   iterate 2 rw [Finset.sum_apply]
-  rw [Fintype.sum_eq_single i (?_ : (∀ j', j' ≠ i → ((∑ j : n, (stdBasisMatrix j' j (x j' j))) i j) = 0))]
+  -- Porting note: was `convert`
+  rw [Fintype.sum_eq_single i
+    (?_ : (∀ j', j' ≠ i → ((∑ j : n, (stdBasisMatrix j' j (x j' j))) i j) = 0))]
   · simp only [stdBasisMatrix]
-    rw [Fintype.sum_apply]
-    rw [Fintype.sum_apply]
-    simp only [eq_self_iff_true, true_and]
-    simp [Finset.mem_univ, if_true, eq_self_iff_true, Finset.sum_ite_eq', true_and]
-  · intro j' hj'
-    simp [stdBasisMatrix, hj']
     rw [Fintype.sum_apply, Fintype.sum_apply]
-    simp only [hj', false_and, if_false]
     simp
+  · intro j' hj'
+    simp only [stdBasisMatrix]
+    rw [Fintype.sum_apply, Fintype.sum_apply]
+    simp [hj']
 #align matrix.matrix_eq_sum_std_basis Matrix.matrix_eq_sum_std_basis
 
 -- TODO: tie this up with the `basis` machinery of linear algebra
@@ -84,8 +82,9 @@ theorem matrix_eq_sum_std_basis [Fintype m] [Fintype n] (x : Matrix m n α) :
 -- TODO: add `std_basis_vec`
 theorem std_basis_eq_basis_mul_basis (i : m) (j : n) :
     stdBasisMatrix i j 1 = vecMulVec (fun i' => ite (i = i') 1 0) fun j' => ite (j = j') 1 0 := by
-  ext
-  norm_num [stdBasisMatrix, vec_mul_vec]
+  ext i' j'
+  simp only [stdBasisMatrix, vecMulVec, mul_ite, mul_one, mul_zero, of_apply]
+  simp_rw [@and_comm (i = i')]
   exact ite_and _ _ _ _
 #align matrix.std_basis_eq_basis_mul_basis Matrix.std_basis_eq_basis_mul_basis
 
@@ -147,23 +146,31 @@ variable (i j : n) (c : α) (i' j' : n)
 
 @[simp]
 theorem diag_zero (h : j ≠ i) : diag (stdBasisMatrix i j c) = 0 :=
-  funext fun k => if_neg fun ⟨e₁, e₂⟩ => h (e₂.trans e₁.symm)
+  funext fun _ => if_neg fun ⟨e₁, e₂⟩ => h (e₂.trans e₁.symm)
 #align matrix.std_basis_matrix.diag_zero Matrix.StdBasisMatrix.diag_zero
 
 @[simp]
 theorem diag_same : diag (stdBasisMatrix i i c) = Pi.single i c := by
   ext j
-  by_cases hij : i = j <;> try rw [hij] <;> simp [hij]
+  by_cases hij : i = j <;> (try rw [hij]) <;> simp [hij]
 #align matrix.std_basis_matrix.diag_same Matrix.StdBasisMatrix.diag_same
 
 variable [Fintype n]
 
 @[simp]
-theorem trace_zero (h : j ≠ i) : trace (stdBasisMatrix i j c) = 0 := by simp [trace, h]
+theorem trace_zero (h : j ≠ i) : trace (stdBasisMatrix i j c) = 0 := by
+  simp only [trace, diag_zero (h := h)]
+  simp
+  -- Porting note: was
+  -- simp [trace, h]
 #align matrix.std_basis_matrix.trace_zero Matrix.StdBasisMatrix.trace_zero
 
 @[simp]
-theorem trace_eq : trace (stdBasisMatrix i i c) = c := by simp [trace]
+theorem trace_eq : trace (stdBasisMatrix i i c) = c := by
+  simp only [trace, diag_same]
+  simp
+  -- Porting note: was
+  -- simp [trace]
 #align matrix.std_basis_matrix.trace_eq Matrix.StdBasisMatrix.trace_eq
 
 @[simp]
@@ -199,7 +206,14 @@ theorem mul_of_ne {k l : n} (h : j ≠ k) (d : α) : stdBasisMatrix i j c ⬝ st
   by
   ext (a b)
   simp only [mul_apply, boole_mul, stdBasisMatrix]
-  by_cases h₁ : i = a <;> simp [h₁, h, h.symm]
+  by_cases h₁ : i = a
+  -- Porting note: was `simp [h₁, h, h.symm]`
+  · simp only [h₁, true_and, mul_ite, ite_mul, zero_mul, mul_zero, ← ite_and, zero_apply]
+    refine Finset.sum_eq_zero (fun x _ => ?_)
+    apply if_neg
+    rintro ⟨⟨rfl, rfl⟩, h⟩
+    contradiction
+  · simp only [h₁, false_and, ite_false, mul_ite, zero_mul, mul_zero, ite_self, Finset.sum_const_zero, zero_apply]
 #align matrix.std_basis_matrix.mul_of_ne Matrix.StdBasisMatrix.mul_of_ne
 
 end
