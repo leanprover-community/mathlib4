@@ -60,9 +60,6 @@ def equivalence₀ : A ≌ B' :=
   eA.trans e'
 #align algebraic_topology.dold_kan.compatibility.equivalence₀ AlgebraicTopology.DoldKan.Compatibility.equivalence₀
 
--- porting note: commented out include
--- include hF
-
 variable {eA} {e'}
 
 /-- An intermediate equivalence `A ≅ B'` whose functor is `F` and whose inverse is
@@ -119,9 +116,6 @@ theorem equivalence₁UnitIso_eq : (equivalence₁ hF).unitIso = equivalence₁U
   simp
 #align algebraic_topology.dold_kan.compatibility.equivalence₁_unit_iso_eq AlgebraicTopology.DoldKan.Compatibility.equivalence₁UnitIso_eq
 
--- porting note: commented out include
--- include eB
-
 /-- An intermediate equivalence `A ≅ B` obtained as the composition of `equivalence₁` and
 the inverse of `eB : B ≌ B'`. -/
 @[simps! functor]
@@ -175,9 +169,6 @@ theorem equivalence₂UnitIso_eq : (equivalence₂ eB hF).unitIso = equivalence�
 #align algebraic_topology.dold_kan.compatibility.equivalence₂_unit_iso_eq AlgebraicTopology.DoldKan.Compatibility.equivalence₂UnitIso_eq
 
 variable {eB}
-
--- porting note: commented out include
--- include hG
 
 /-- The equivalence `A ≅ B` whose functor is `F ⋙ eB.inverse` and
 whose inverse is `G : B ≅ A`. -/
