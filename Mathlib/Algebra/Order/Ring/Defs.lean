@@ -351,11 +351,11 @@ instance (priority := 100) OrderedRing.toOrderedSemiring : OrderedSemiring α :=
 #align ordered_ring.to_ordered_semiring OrderedRing.toOrderedSemiring
 
 theorem mul_le_mul_of_nonpos_left (h : b ≤ a) (hc : c ≤ 0) : c * a ≤ c * b := by
-  simpa only [neg_mul, neg_le_neg_iff] using mul_le_mul_of_nonneg_left h (neg_nonneg.2 hc)
+  simpa only [neg_mul, neg_le_neg_iff] using mul_le_mul_of_nonneg_left h ((neg_nonneg (α := α)).2 hc)
 #align mul_le_mul_of_nonpos_left mul_le_mul_of_nonpos_left
 
 theorem mul_le_mul_of_nonpos_right (h : b ≤ a) (hc : c ≤ 0) : a * c ≤ b * c := by
-  simpa only [mul_neg, neg_le_neg_iff] using mul_le_mul_of_nonneg_right h (neg_nonneg.2 hc)
+  simpa only [mul_neg, neg_le_neg_iff] using mul_le_mul_of_nonneg_right h ((neg_nonneg (α := α)).2 hc)
 #align mul_le_mul_of_nonpos_right mul_le_mul_of_nonpos_right
 
 theorem mul_nonneg_of_nonpos_of_nonpos (ha : a ≤ 0) (hb : b ≤ 0) : 0 ≤ a * b := by
@@ -438,7 +438,7 @@ end Monotone
 
 theorem le_iff_exists_nonneg_add (a b : α) : a ≤ b ↔ ∃ c ≥ 0, b = a + c :=
   ⟨fun h => ⟨b - a, sub_nonneg.mpr h, by simp⟩, fun ⟨c, hc, h⟩ => by
-    rw [h, le_add_iff_nonneg_right]
+    rw [h, le_add_iff_nonneg_right (α := α)]
     exact hc⟩
 #align le_iff_exists_nonneg_add le_iff_exists_nonneg_add
 
@@ -1056,7 +1056,7 @@ theorem mul_nonneg_of_three (a b c : α) : 0 ≤ a * b ∨ 0 ≤ b * c ∨ 0 ≤
 #align mul_nonneg_of_three mul_nonneg_of_three
 
 theorem mul_nonpos_iff : a * b ≤ 0 ↔ 0 ≤ a ∧ b ≤ 0 ∨ a ≤ 0 ∧ 0 ≤ b := by
-  rw [← neg_nonneg, neg_mul_eq_mul_neg, mul_nonneg_iff, neg_nonneg, neg_nonpos]
+  rw [← neg_nonneg (α := α), neg_mul_eq_mul_neg, mul_nonneg_iff, neg_nonneg (α := α), neg_nonpos (α := α)]
 #align mul_nonpos_iff mul_nonpos_iff
 
 theorem mul_self_nonneg (a : α) : 0 ≤ a * a :=
@@ -1116,11 +1116,11 @@ theorem mul_lt_mul_right_of_neg {a b c : α} (h : c < 0) : a * c < b * c ↔ b <
 #align mul_lt_mul_right_of_neg mul_lt_mul_right_of_neg
 
 theorem lt_of_mul_lt_mul_of_nonpos_left (h : c * a < c * b) (hc : c ≤ 0) : b < a :=
-  lt_of_mul_lt_mul_left (by rwa [neg_mul, neg_mul, neg_lt_neg_iff]) <| neg_nonneg.2 hc
+  lt_of_mul_lt_mul_left (by rwa [neg_mul, neg_mul, neg_lt_neg_iff]) <| (neg_nonneg (α := α)).2 hc
 #align lt_of_mul_lt_mul_of_nonpos_left lt_of_mul_lt_mul_of_nonpos_left
 
 theorem lt_of_mul_lt_mul_of_nonpos_right (h : a * c < b * c) (hc : c ≤ 0) : b < a :=
-  lt_of_mul_lt_mul_right (by rwa [mul_neg, mul_neg, neg_lt_neg_iff]) <| neg_nonneg.2 hc
+  lt_of_mul_lt_mul_right (by rwa [mul_neg, mul_neg, neg_lt_neg_iff]) <| (neg_nonneg (α := α)).2 hc
 #align lt_of_mul_lt_mul_of_nonpos_right lt_of_mul_lt_mul_of_nonpos_right
 
 theorem cmp_mul_neg_left {a : α} (ha : a < 0) (b c : α) : cmp (a * b) (a * c) = cmp c b :=
@@ -1149,7 +1149,7 @@ theorem mul_self_pos {a : α} : 0 < a * a ↔ a ≠ 0 := by
 theorem mul_self_le_mul_self_of_le_of_neg_le {x y : α} (h₁ : x ≤ y) (h₂ : -x ≤ y) : x * x ≤ y * y :=
   (le_total 0 x).elim (fun h => mul_le_mul h₁ h₁ h (h.trans h₁)) fun h =>
     le_of_eq_of_le (neg_mul_neg x x).symm
-      (mul_le_mul h₂ h₂ (neg_nonneg.mpr h) ((neg_nonneg.mpr h).trans h₂))
+      (mul_le_mul h₂ h₂ ((neg_nonneg (α := α)).mpr h) (((neg_nonneg (α := α)).mpr h).trans h₂))
 #align mul_self_le_mul_self_of_le_of_neg_le mul_self_le_mul_self_of_le_of_neg_le
 
 theorem nonneg_of_mul_nonpos_left {a b : α} (h : a * b ≤ 0) (hb : b < 0) : 0 ≤ a :=
@@ -1178,7 +1178,7 @@ theorem pos_iff_neg_of_mul_neg (hab : a * b < 0) : 0 < a ↔ b < 0 :=
 
 /-- The sum of two squares is zero iff both elements are zero. -/
 theorem mul_self_add_mul_self_eq_zero {x y : α} : x * x + y * y = 0 ↔ x = 0 ∧ y = 0 := by
-  rw [add_eq_zero_iff', mul_self_eq_zero, mul_self_eq_zero] <;> apply mul_self_nonneg
+  rw [add_eq_zero_iff' (α := α), mul_self_eq_zero, mul_self_eq_zero] <;> apply mul_self_nonneg
 #align mul_self_add_mul_self_eq_zero mul_self_add_mul_self_eq_zero
 
 theorem eq_zero_of_mul_self_add_mul_self_eq_zero (h : a * a + b * b = 0) : a = 0 :=
