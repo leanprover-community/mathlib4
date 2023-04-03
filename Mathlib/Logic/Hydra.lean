@@ -23,10 +23,10 @@ what order) you choose cut off the heads, the game always terminates, i.e. all h
 eventually be cut off (but of course it can last arbitrarily long, i.e. takes an
 arbitrary finite number of steps).
 
-This result is stated as the well-foundedness of the `cut_expand` relation defined in
+This result is stated as the well-foundedness of the `CutExpand` relation defined in
 this file: we model the heads of the hydra as a multiset of elements of `α`, and the
-valid "moves" of the game are modelled by the relation `cut_expand r` on `multiset α`:
-`cut_expand r s' s` is true iff `s'` is obtained by removing one head `a ∈ s` and
+valid "moves" of the game are modelled by the relation `CutExpand r` on `Multiset α`:
+`CutExpand r s' s` is true iff `s'` is obtained by removing one head `a ∈ s` and
 adding back an arbitrary multiset `t` of heads such that all `a' ∈ t` satisfy `r a' a`.
 
 We follow the proof by Peter LeFanu Lumsdaine at https://mathoverflow.net/a/229084/3332.
@@ -42,19 +42,19 @@ open Multiset Prod
 
 variable {α : Type _}
 
-/-- The relation that specifies valid moves in our hydra game. `cut_expand r s' s`
+/-- The relation that specifies valid moves in our hydra game. `CutExpand r s' s`
   means that `s'` is obtained by removing one head `a ∈ s` and adding back an arbitrary
   multiset `t` of heads such that all `a' ∈ t` satisfy `r a' a`.
 
-  This is most directly translated into `s' = s.erase a + t`, but `multiset.erase` requires
-  `decidable_eq α`, so we use the equivalent condition `s' + {a} = s + t` instead, which
+  This is most directly translated into `s' = s.erase a + t`, but `Multiset.erase` requires
+  `DecidableEq α`, so we use the equivalent condition `s' + {a} = s + t` instead, which
   is also easier to verify for explicit multisets `s'`, `s` and `t`.
 
   We also don't include the condition `a ∈ s` because `s' + {a} = s + t` already
   guarantees `a ∈ s + t`, and if `r` is irreflexive then `a ∉ t`, which is the
   case when `r` is well-founded, the case we are primarily interested in.
 
-  The lemma `relation.cut_expand_iff` below converts between this convenient definition
+  The lemma `Relation.cutExpand_iff` below converts between this convenient definition
   and the direct translation when `r` is irreflexive. -/
 def CutExpand (r : α → α → Prop) (s' s : Multiset α) : Prop :=
   ∃ (t : Multiset α) (a : α), (∀ a' ∈ t, r a' a) ∧ s' + {a} = s + t
@@ -107,8 +107,8 @@ theorem not_cutExpand_zero [IsIrrefl α r] (s) : ¬CutExpand r s 0 := by
     rintro ⟨_, _, _, ⟨⟩, _⟩
 #align relation.not_cut_expand_zero Relation.not_cutExpand_zero
 
-/-- For any relation `r` on `α`, multiset addition `multiset α × multiset α → multiset α` is a
-  fibration between the game sum of `cut_expand r` with itself and `cut_expand r` itself. -/
+/-- For any relation `r` on `α`, multiset addition `Multiset α × Multiset α → Multiset α` is a
+  fibration between the game sum of `CutExpand r` with itself and `CutExpand r` itself. -/
 theorem cutExpand_fibration (r : α → α → Prop) :
     Fibration (GameAdd (CutExpand r) (CutExpand r)) (CutExpand r) fun s => s.1 + s.2 := by
   rintro ⟨s₁, s₂⟩ s ⟨t, a, hr, he⟩; dsimp at he ⊢
@@ -126,7 +126,7 @@ theorem cutExpand_fibration (r : α → α → Prop) :
       · rw [add_assoc, erase_add_right_pos _ h]
 #align relation.cut_expand_fibration Relation.cutExpand_fibration
 
-/-- A multiset is accessible under `cut_expand` if all its singleton subsets are,
+/-- A multiset is accessible under `CutExpand` if all its singleton subsets are,
   assuming `r` is irreflexive. -/
 theorem acc_of_singleton [IsIrrefl α r] {s : Multiset α} (hs : ∀ a ∈ s, Acc (CutExpand r) {a}) :
     Acc (CutExpand r) s := by
@@ -138,7 +138,7 @@ theorem acc_of_singleton [IsIrrefl α r] {s : Multiset α} (hs : ∀ a ∈ s, Ac
     exact (hs.1.prod_gameAdd <| ihs fun a ha => hs.2 a ha).of_fibration _ (cutExpand_fibration r)
 #align relation.acc_of_singleton Relation.acc_of_singleton
 
-/-- A singleton `{a}` is accessible under `cut_expand r` if `a` is accessible under `r`,
+/-- A singleton `{a}` is accessible under `CutExpand r` if `a` is accessible under `r`,
   assuming `r` is irreflexive. -/
 theorem _root_.Acc.cutExpand [IsIrrefl α r] {a : α} (hacc : Acc r a) : Acc (CutExpand r) {a} := by
   induction' hacc with a h ih
@@ -151,7 +151,7 @@ theorem _root_.Acc.cutExpand [IsIrrefl α r] {a : α} (hacc : Acc r a) : Acc (Cu
     exact ih a' ∘ hr a'
 #align acc.cut_expand Acc.cutExpand
 
-/-- `cut_expand r` is well-founded when `r` is. -/
+/-- `CutExpand r` is well-founded when `r` is. -/
 theorem _root_.WellFounded.cutExpand (hr : WellFounded r) : WellFounded (CutExpand r) :=
   ⟨have := hr.isIrrefl; fun _ => acc_of_singleton fun a _ => (hr.apply a).cutExpand⟩
 #align well_founded.cut_expand WellFounded.cutExpand
