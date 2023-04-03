@@ -32,9 +32,9 @@ def mkToExprHeader (indVal : InductiveVal) : TermElabM Header := do
   let header ← mkHeader ``ToExpr 1 indVal
   return header
 
-/-- Give an expression that is equivalent to `(term|mkAppN $f #[$args,*])` but
-expanded out to use `Expr.app` directly. -/
-def mkAppNExpr (f : Term) (args : Array Term) : TermElabM Term :=
+/-- Give a term that is equivalent to `(term|mkAppN $f #[$args,*])`.
+As an optimization, `mkAppN` is pre-expanded out to use `Expr.app` directly. -/
+def mkAppNTerm (f : Term) (args : Array Term) : MetaM Term :=
   args.foldlM (fun a b => `(Expr.app $a $b)) f
 
 def mkToExprBody (header : Header) (indVal : InductiveVal) (auxFunName : Name) :
@@ -73,7 +73,7 @@ where
         patterns := patterns.push (← `(@$(mkIdent ctorName):ident $ctorArgs:term*))
         let levels ← indVal.levelParams.toArray.mapM (fun u => `(toLevel.{$(mkIdent u)}))
         let rhs : Term ←
-          mkAppNExpr (← `(Expr.const $(quote ctorInfo.name) [$levels,*])) rhsArgs
+          mkAppNTerm (← `(Expr.const $(quote ctorInfo.name) [$levels,*])) rhsArgs
         `(matchAltExpr| | $[$patterns:term],* => $rhs)
       alts := alts.push alt
     return alts
@@ -89,7 +89,7 @@ def mkToTypeExpr (argNames : Array Name) (indVal : InductiveVal) : TermElabM Ter
         args := args.push <| ← `(toTypeExpr $a)
       else
         args := args.push <| ← `(toExpr $a)
-    mkAppNExpr (← `((Expr.const $(quote indVal.name) [$levels,*]))) args
+    mkAppNTerm (← `((Expr.const $(quote indVal.name) [$levels,*]))) args
 
 def mkLocalInstanceLetDecls (ctx : Deriving.Context) (argNames : Array Name) :
     TermElabM (Array (TSyntax ``Parser.Term.letDecl)) := do
