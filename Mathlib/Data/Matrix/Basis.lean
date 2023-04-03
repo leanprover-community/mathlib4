@@ -8,8 +8,8 @@ Authors: Jalex Stark, Scott Morrison, Eric Wieser, Oliver Nash
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Matrix.Basic
-import Mathbin.LinearAlgebra.Matrix.Trace
+import Mathlib.Data.Matrix.Basic
+import Mathlib.LinearAlgebra.Matrix.Trace
 
 /-!
 # Matrices with a single non-zero element.
@@ -42,31 +42,27 @@ def stdBasisMatrix (i : m) (j : n) (a : α) : Matrix m n α := fun i' j' =>
 
 @[simp]
 theorem smul_stdBasisMatrix (i : m) (j : n) (a b : α) :
-    b • stdBasisMatrix i j a = stdBasisMatrix i j (b • a) :=
-  by
+    b • stdBasisMatrix i j a = stdBasisMatrix i j (b • a) := by
   unfold std_basis_matrix
   ext
   simp
 #align matrix.smul_std_basis_matrix Matrix.smul_stdBasisMatrix
 
 @[simp]
-theorem stdBasisMatrix_zero (i : m) (j : n) : stdBasisMatrix i j (0 : α) = 0 :=
-  by
+theorem stdBasisMatrix_zero (i : m) (j : n) : stdBasisMatrix i j (0 : α) = 0 := by
   unfold std_basis_matrix
   ext
   simp
 #align matrix.std_basis_matrix_zero Matrix.stdBasisMatrix_zero
 
 theorem stdBasisMatrix_add (i : m) (j : n) (a b : α) :
-    stdBasisMatrix i j (a + b) = stdBasisMatrix i j a + stdBasisMatrix i j b :=
-  by
+    stdBasisMatrix i j (a + b) = stdBasisMatrix i j a + stdBasisMatrix i j b := by
   unfold std_basis_matrix; ext
   split_ifs with h <;> simp [h]
 #align matrix.std_basis_matrix_add Matrix.stdBasisMatrix_add
 
 theorem matrix_eq_sum_std_basis [Fintype m] [Fintype n] (x : Matrix m n α) :
-    x = ∑ (i : m) (j : n), stdBasisMatrix i j (x i j) :=
-  by
+    x = ∑ (i : m) (j : n), stdBasisMatrix i j (x i j) := by
   ext; symm
   iterate 2 rw [Finset.sum_apply]
   convert Fintype.sum_eq_single i _
@@ -79,8 +75,7 @@ theorem matrix_eq_sum_std_basis [Fintype m] [Fintype n] (x : Matrix m n α) :
 -- this is not completely trivial because we are indexing by two types, instead of one
 -- TODO: add `std_basis_vec`
 theorem std_basis_eq_basis_mul_basis (i : m) (j : n) :
-    stdBasisMatrix i j 1 = vecMulVec (fun i' => ite (i = i') 1 0) fun j' => ite (j = j') 1 0 :=
-  by
+    stdBasisMatrix i j 1 = vecMulVec (fun i' => ite (i = i') 1 0) fun j' => ite (j = j') 1 0 := by
   ext
   norm_num [std_basis_matrix, vec_mul_vec]
   exact ite_and _ _ _ _
@@ -90,8 +85,7 @@ theorem std_basis_eq_basis_mul_basis (i : m) (j : n) :
 @[elab_as_elim]
 protected theorem induction_on' [Fintype m] [Fintype n] {P : Matrix m n α → Prop} (M : Matrix m n α)
     (h_zero : P 0) (h_add : ∀ p q, P p → P q → P (p + q))
-    (h_std_basis : ∀ (i : m) (j : n) (x : α), P (stdBasisMatrix i j x)) : P M :=
-  by
+    (h_std_basis : ∀ (i : m) (j : n) (x : α), P (stdBasisMatrix i j x)) : P M := by
   rw [matrix_eq_sum_std_basis M, ← Finset.sum_product']
   apply Finset.sum_induction _ _ h_add h_zero
   · intros
@@ -122,8 +116,7 @@ theorem apply_same : stdBasisMatrix i j c i j = c :=
 #align matrix.std_basis_matrix.apply_same Matrix.stdBasisMatrix.apply_same
 
 @[simp]
-theorem apply_of_ne (h : ¬(i = i' ∧ j = j')) : stdBasisMatrix i j c i' j' = 0 :=
-  by
+theorem apply_of_ne (h : ¬(i = i' ∧ j = j')) : stdBasisMatrix i j c i' j' = 0 := by
   simp only [std_basis_matrix, and_imp, ite_eq_right_iff]
   tauto
 #align matrix.std_basis_matrix.apply_of_ne Matrix.stdBasisMatrix.apply_of_ne
@@ -150,8 +143,7 @@ theorem diag_zero (h : j ≠ i) : diag (stdBasisMatrix i j c) = 0 :=
 #align matrix.std_basis_matrix.diag_zero Matrix.stdBasisMatrix.diag_zero
 
 @[simp]
-theorem diag_same : diag (stdBasisMatrix i i c) = Pi.single i c :=
-  by
+theorem diag_same : diag (stdBasisMatrix i i c) = Pi.single i c := by
   ext j
   by_cases hij : i = j <;> try rw [hij] <;> simp [hij]
 #align matrix.std_basis_matrix.diag_same Matrix.stdBasisMatrix.diag_same
@@ -188,8 +180,7 @@ theorem mul_right_apply_of_ne (a b : n) (hbj : b ≠ j) (M : Matrix n n α) :
 
 @[simp]
 theorem mul_same (k : n) (d : α) :
-    stdBasisMatrix i j c ⬝ stdBasisMatrix j k d = stdBasisMatrix i k (c * d) :=
-  by
+    stdBasisMatrix i j c ⬝ stdBasisMatrix j k d = stdBasisMatrix i k (c * d) := by
   ext (a b)
   simp only [mul_apply, std_basis_matrix, boole_mul]
   by_cases h₁ : i = a <;> by_cases h₂ : k = b <;> simp [h₁, h₂]
