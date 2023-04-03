@@ -110,9 +110,9 @@ example (P : (Fin 2 → α) → Prop) : (∀ f, P f) ↔ ∀ a₀ a₁, P ![a₀
 @[simp]
 theorem forall_iff : ∀ {m} (P : (Fin m → α) → Prop), Forall P ↔ ∀ x, P x
   | 0, P => by
-    rw [Forall, Fin.forall_fin_zero_pi]
+    simp only [Forall, Fin.forall_fin_zero_pi]
     rfl
-  | n + 1, P => by simp only [Forall, forall_iff, Fin.forall_fin_succ_pi, Matrix.vecCons, Nat.add]
+  | .succ n, P => by simp only [Forall, forall_iff, Fin.forall_fin_succ_pi, Matrix.vecCons]
 #align fin_vec.forall_iff FinVec.forall_iff
 
 example (P : (Fin 2 → α) → Prop) : (∀ f, P f) ↔ ∀ a₀ a₁, P ![a₀, a₁] :=
@@ -132,9 +132,9 @@ example (P : (Fin 2 → α) → Prop) : (∃ f, P f) ↔ ∃ a₀ a₁, P ![a₀
 -/
 theorem exists_iff : ∀ {m} (P : (Fin m → α) → Prop), Exists P ↔ ∃ x, P x
   | 0, P => by
-    rw [Exists, Fin.exists_fin_zero_pi, Matrix.vecEmpty]
+    simp only [Exists, Fin.exists_fin_zero_pi, Matrix.vecEmpty]
     rfl
-  | n + 1, P => by simp only [Exists, exists_iff, Fin.exists_fin_succ_pi, Matrix.vecCons, Nat.add]
+  | .succ n, P => by simp only [Exists, exists_iff, Fin.exists_fin_succ_pi, Matrix.vecCons]
 #align fin_vec.exists_iff FinVec.exists_iff
 
 example (P : (Fin 2 → α) → Prop) : (∃ f, P f) ↔ ∃ a₀ a₁, P ![a₀, a₁] :=
