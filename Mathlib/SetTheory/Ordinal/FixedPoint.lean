@@ -87,7 +87,6 @@ theorem nfpFamily_monotone (hf : ∀ i, Monotone (f i)) : Monotone (nfpFamily.{u
   fun _ _ h => sup_le.{u, v} fun l => (List.foldr_monotone hf l h).trans (le_sup.{u, v} _ l)
 #align ordinal.nfp_family_monotone Ordinal.nfpFamily_monotone
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem apply_lt_nfpFamily (H : ∀ i, IsNormal (f i)) {a b} (hb : b < nfpFamily.{u, v} f a) (i) :
     f i b < nfpFamily.{u, v} f a :=
   let ⟨l, hl⟩ := lt_nfpFamily.1 hb
@@ -114,15 +113,12 @@ theorem nfpFamily_le_fp (H : ∀ i, Monotone (f i)) {a b} (ab : a ≤ b) (h : �
     nfpFamily.{u, v} f a ≤ b :=
   sup_le fun l => by
     by_cases hι : IsEmpty ι
-    · skip
-      rwa [Unique.eq_default l]
-    · haveI := not_isEmpty_iff.1 hι
-      induction' l with i l IH generalizing a
+    · rwa [Unique.eq_default l]
+    · induction' l with i l IH generalizing a
       · exact ab
       exact (H i (IH ab)).trans (h i)
 #align ordinal.nfp_family_le_fp Ordinal.nfpFamily_le_fp
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem nfpFamily_fp {i} (H : IsNormal (f i)) (a) :
     f i (nfpFamily.{u, v} f a) = nfpFamily.{u, v} f a := by
   unfold nfpFamily
@@ -641,7 +637,8 @@ theorem nfp_mul_zero (a : Ordinal) : nfp (a * .) 0 = 0 := by
 theorem nfp_zero_mul : nfp (HMul.hMul 0) = id := by
   rw [← sup_iterate_eq_nfp]
   refine' funext fun a => (sup_le fun n => _).antisymm (le_sup (fun n => ((· * ·) 0^[n]) a) 0)
-  induction' n with n _; · rfl
+  induction' n with n _
+  · rfl
   rw [Function.iterate_succ']
   change 0 * _ ≤ a
   rw [zero_mul]
