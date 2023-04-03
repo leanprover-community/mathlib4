@@ -390,6 +390,8 @@ def constantMap (c : L.Constants) : M := funMap c default
 instance : CoeTC L.Constants M :=
   ⟨constantMap⟩
 
+--Porting note: added simp
+@[simp]
 theorem funMap_eq_coe_constants {c : L.Constants} {x : Fin 0 → M} : funMap c x = c :=
   congr rfl (funext finZeroElim)
 #align first_order.language.fun_map_eq_coe_constants FirstOrder.Language.funMap_eq_coe_constants
