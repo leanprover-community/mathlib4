@@ -19,18 +19,18 @@ consider multiple (semi)norms on a given ring.
 ## Main declarations
 
 For a ring `R`:
-* `ring_seminorm`: A seminorm on a ring `R` is a function `f : R → ℝ` that preserves zero, takes
+* `RingSeminorm`: A seminorm on a ring `R` is a function `f : R → ℝ` that preserves zero, takes
   nonnegative values, is subadditive and submultiplicative and such that `f (-x) = f x` for all
   `x ∈ R`.
-* `ring_norm`: A seminorm `f` is a norm if `f x = 0` if and only if `x = 0`.
-* `mul_ring_seminorm`: A multiplicative seminorm on a ring `R` is a ring seminorm that preserves
+* `RingNorm`: A seminorm `f` is a norm if `f x = 0` if and only if `x = 0`.
+* `MulRingSeminorm`: A multiplicative seminorm on a ring `R` is a ring seminorm that preserves
   multiplication.
-* `mul_ring_norm`: A multiplicative norm on a ring `R` is a ring norm that preserves multiplication.
+* `MulRingNorm`: A multiplicative norm on a ring `R` is a ring norm that preserves multiplication.
 
 ## Notes
 
-The corresponding hom classes are defined in `analysis.order.hom.basic` to be used by absolute
-values.
+The corresponding hom classes are defined in `Mathlib.Analysis.Order.Hom.Basic` to be used by
+absolute values.
 
 ## References
 
@@ -93,7 +93,7 @@ instance ringSeminormClass : RingSeminormClass (RingSeminorm R) R ℝ where
   map_neg_eq_map f := f.neg'
 #align ring_seminorm.ring_seminorm_class RingSeminorm.ringSeminormClass
 
-/-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_to_fun`. -/
+/-- Helper instance for when there's too many metavariables to apply `FunLike.hasCoeToFun`. -/
 instance : CoeFun (RingSeminorm R) fun _ => R → ℝ :=
   FunLike.hasCoeToFun
 
@@ -121,7 +121,7 @@ theorem ne_zero_iff {p : RingSeminorm R} : p ≠ 0 ↔ ∃ x, p x ≠ 0 := by si
 instance : Inhabited (RingSeminorm R) :=
   ⟨0⟩
 
-/-- The trivial seminorm on a ring `R` is the `ring_seminorm` taking value `0` at `0` and `1` at
+/-- The trivial seminorm on a ring `R` is the `RingSeminorm` taking value `0` at `0` and `1` at
 every other element. -/
 instance [DecidableEq R] : One (RingSeminorm R) :=
   ⟨{ (1 : AddGroupSeminorm R) with
@@ -167,7 +167,7 @@ end Ring
 
 end RingSeminorm
 
-/-- The norm of a `non_unital_semi_normed_ring` as a `ring_seminorm`. -/
+/-- The norm of a `NonUnitalSeminormedRing` as a `RingSeminorm`. -/
 def normRingSeminorm (R : Type _) [NonUnitalSeminormedRing R] : RingSeminorm R :=
   { normAddGroupSeminorm R with
     toFun := norm
@@ -193,7 +193,7 @@ instance ringNormClass : RingNormClass (RingNorm R) R ℝ where
   eq_zero_of_map_eq_zero f := f.eq_zero_of_map_eq_zero' _
 #align ring_norm.ring_norm_class RingNorm.ringNormClass
 
-/-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_to_fun`. -/
+/-- Helper instance for when there's too many metavariables to apply `FunLike.hasCoeToFun`. -/
 instance : CoeFun (RingNorm R) fun _ => R → ℝ :=
   ⟨fun p => p.toFun⟩
 
@@ -209,7 +209,7 @@ theorem ext {p q : RingNorm R} : (∀ x, p x = q x) → p = q :=
 
 variable (R)
 
-/-- The trivial norm on a ring `R` is the `ring_norm` taking value `0` at `0` and `1` at every
+/-- The trivial norm on a ring `R` is the `RingNorm` taking value `0` at `0` and `1` at every
   other element. -/
 instance [DecidableEq R] : One (RingNorm R) :=
   ⟨{ (1 : RingSeminorm R), (1 : AddGroupNorm R) with }⟩
@@ -243,7 +243,7 @@ instance mulRingSeminormClass : MulRingSeminormClass (MulRingSeminorm R) R ℝ w
   map_neg_eq_map f := f.neg'
 #align mul_ring_seminorm.mul_ring_seminorm_class MulRingSeminorm.mulRingSeminormClass
 
-/-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_to_fun`. -/
+/-- Helper instance for when there's too many metavariables to apply `FunLike.hasCoeToFun`. -/
 instance : CoeFun (MulRingSeminorm R) fun _ => R → ℝ :=
   FunLike.hasCoeToFun
 
@@ -259,7 +259,7 @@ theorem ext {p q : MulRingSeminorm R} : (∀ x, p x = q x) → p = q :=
 
 variable [DecidableEq R] [NoZeroDivisors R] [Nontrivial R]
 
-/-- The trivial seminorm on a ring `R` is the `mul_ring_seminorm` taking value `0` at `0` and `1` at
+/-- The trivial seminorm on a ring `R` is the `MulRingSeminorm` taking value `0` at `0` and `1` at
 every other element. -/
 instance : One (MulRingSeminorm R) :=
   ⟨{ (1 : AddGroupSeminorm R) with
@@ -301,7 +301,7 @@ instance mulRingNormClass : MulRingNormClass (MulRingNorm R) R ℝ where
   eq_zero_of_map_eq_zero f := f.eq_zero_of_map_eq_zero' _
 #align mul_ring_norm.mul_ring_norm_class MulRingNorm.mulRingNormClass
 
-/-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_to_fun`. -/
+/-- Helper instance for when there's too many metavariables to apply `FunLike.hasCoeToFun`. -/
 instance : CoeFun (MulRingNorm R) fun _ => R → ℝ :=
   ⟨fun p => p.toFun⟩
 
@@ -319,7 +319,7 @@ variable (R)
 
 variable [DecidableEq R] [NoZeroDivisors R] [Nontrivial R]
 
-/-- The trivial norm on a ring `R` is the `mul_ring_norm` taking value `0` at `0` and `1` at every
+/-- The trivial norm on a ring `R` is the `MulRingNorm` taking value `0` at `0` and `1` at every
 other element. -/
 instance : One (MulRingNorm R) :=
   ⟨{ (1 : MulRingSeminorm R), (1 : AddGroupNorm R) with }⟩
@@ -352,8 +352,8 @@ def RingSeminorm.toRingNorm {K : Type _} [Field K] (f : RingSeminorm K) (hnt : f
       exact hc hc0 }
 #align ring_seminorm.to_ring_norm RingSeminorm.toRingNorm
 
-/-- The norm of a normed_ring as a ring_norm. -/
-@[simps]
+/-- The norm of a `NonUnitalNormedRing` as a `RingNorm`. -/
+@[simps!]
 def normRingNorm (R : Type _) [NonUnitalNormedRing R] : RingNorm R :=
   { normAddGroupNorm R, normRingSeminorm R with }
 #align norm_ring_norm normRingNorm
