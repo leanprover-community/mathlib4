@@ -94,7 +94,7 @@ protected theorem mvPolynomial (ι : Type _) [Finite ι] : FiniteType R (MvPolyn
         exact MvPolynomial.adjoin_range_X⟩⟩
 #align algebra.finite_type.mv_polynomial Algebra.FiniteType.mvPolynomial
 
-theorem of_restrict_scalars_finiteType [Algebra A B] [IsScalarTower R A B] [hB : FiniteType R B] :
+theorem of_restrictScalars_finiteType [Algebra A B] [IsScalarTower R A B] [hB : FiniteType R B] :
     FiniteType A B := by
   obtain ⟨S, hS⟩ := hB.out
   refine' ⟨⟨S, eq_top_iff.2 fun b => _⟩⟩
@@ -103,7 +103,7 @@ theorem of_restrict_scalars_finiteType [Algebra A B] [IsScalarTower R A B] [hB :
     simp only [Subalgebra.coe_restrictScalars]
     exact Algebra.subset_adjoin
   exact le (eq_top_iff.1 hS b)
-#align algebra.finite_type.of_restrict_scalars_finite_type Algebra.FiniteType.of_restrict_scalars_finiteType
+#align algebra.finite_type.of_restrict_scalars_finite_type Algebra.FiniteType.of_restrictScalars_finiteType
 
 variable {R A B}
 
@@ -262,7 +262,7 @@ theorem of_comp_finiteType {f : A →+* B} {g : B →+* C} (h : (g.comp f).Finit
   let _ := (g.comp f).toAlgebra
   let _ : IsScalarTower A B C := RestrictScalars.isScalarTower A B C
   let _ : Algebra.FiniteType A C := h
-  exact Algebra.FiniteType.of_restrict_scalars_finiteType A B C
+  exact Algebra.FiniteType.of_restrictScalars_finiteType A B C
 #align ring_hom.finite_type.of_comp_finite_type RingHom.FiniteType.of_comp_finiteType
 
 end FiniteType
