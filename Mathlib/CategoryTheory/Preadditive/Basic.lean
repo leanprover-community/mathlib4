@@ -63,9 +63,9 @@ variable (C : Type u) [Category.{v} C]
 class Preadditive where
   homGroup : ∀ P Q : C, AddCommGroup (P ⟶ Q) := by infer_instance
   add_comp : ∀ (P Q R : C) (f f' : P ⟶ Q) (g : Q ⟶ R), (f + f') ≫ g = f ≫ g + f' ≫ g := by
-    aesop
+    aesop_cat
   comp_add : ∀ (P Q R : C) (f : P ⟶ Q) (g g' : Q ⟶ R), f ≫ (g + g') = f ≫ g + f ≫ g' := by
-    aesop
+    aesop_cat
 #align category_theory.preadditive CategoryTheory.Preadditive
 #align category_theory.preadditive.add_comp' CategoryTheory.Preadditive.add_comp
 #align category_theory.preadditive.comp_add' CategoryTheory.Preadditive.comp_add
