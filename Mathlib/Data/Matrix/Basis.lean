@@ -66,8 +66,7 @@ theorem matrix_eq_sum_std_basis [Fintype m] [Fintype n] (x : Matrix m n α) :
   ext i j; symm
   iterate 2 rw [Finset.sum_apply]
   -- Porting note: was `convert`
-  rw [Fintype.sum_eq_single i
-    (?_ : (∀ j', j' ≠ i → ((∑ j : n, (stdBasisMatrix j' j (x j' j))) i j) = 0))]
+  refine (Fintype.sum_eq_single i ?_).trans ?_; swap
   · simp only [stdBasisMatrix]
     rw [Fintype.sum_apply, Fintype.sum_apply]
     simp
