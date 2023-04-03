@@ -337,7 +337,7 @@ theorem infᵢ_adj_of_nonempty [Nonempty ι] {f : ι → SimpleGraph V} :
   rw [infᵢ, infₛ_adj_of_nonempty (Set.range_nonempty _), Set.forall_range_iff]
 #align simple_graph.infi_adj_of_nonempty SimpleGraph.infᵢ_adj_of_nonempty
 
-/-- For graphs `G`, `H`, `G ≤ H` iff `∀ a b, G.adj a b → H.adj a b`. -/
+/-- For graphs `G`, `H`, `G ≤ H` iff `∀ a b, G.Adj a b → H.Adj a b`. -/
 instance distribLattice : DistribLattice (SimpleGraph V) :=
   { show DistribLattice (SimpleGraph V) from
       adj_injective.distribLattice _ (fun _ _ => rfl) fun _ _ => rfl with
