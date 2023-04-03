@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz, Scott Morrison
 
 ! This file was ported from Lean 3 source module category_theory.structured_arrow
-! leanprover-community/mathlib commit fef8efdf78f223294c34a41875923ab1272322d4
+! leanprover-community/mathlib commit 8a318021995877a44630c898d0b2bc376fceef3b
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -53,6 +53,12 @@ def proj (S : D) (T : C ⥤ D) : StructuredArrow S T ⥤ C :=
 #align category_theory.structured_arrow.proj CategoryTheory.StructuredArrow.proj
 
 variable {S S' S'' : D} {Y Y' : C} {T : C ⥤ D}
+
+-- porting note: this lemma was added because `Comma.hom_ext`
+-- was not triggered automatically
+@[ext]
+lemma hom_ext {X Y : StructuredArrow S T} (f g : X ⟶ Y) (h : f.right = g.right) : f = g :=
+  CommaMorphism.ext _ _ (Subsingleton.elim _ _) h
 
 /-- Construct a structured arrow from a morphism. -/
 def mk (f : S ⟶ T.obj Y) : StructuredArrow S T :=
@@ -114,7 +120,7 @@ structured arrow given by `(X ⟶ F(U)) ⟶ (X ⟶ F(U) ⟶ F(Y))`.
 -/
 def homMk' {F : C ⥤ D} {X : D} {Y : C} (U : StructuredArrow X F) (f : U.right ⟶ Y) :
     U ⟶ mk (U.hom ≫ F.map f) where
-  left := by cases U.left; exact 𝟙 _
+  left := eqToHom (by ext)
   right := f
 #align category_theory.structured_arrow.hom_mk' CategoryTheory.StructuredArrow.homMk'
 
@@ -246,14 +252,8 @@ def pre (S : D) (F : B ⥤ C) (G : C ⥤ D) : StructuredArrow S (F ⋙ G) ⥤ St
 @[simps]
 def post (S : C) (F : B ⥤ C) (G : C ⥤ D) : StructuredArrow S F ⥤ StructuredArrow (G.obj S) (F ⋙ G)
     where
-  obj X :=
-    { left := ⟨⟨⟩⟩
-      right := X.right
-      hom := G.map X.hom }
-  map f :=
-    { left := 𝟙 ⟨⟨⟩⟩
-      right := f.right
-      w := by simp [Functor.comp_map, ← G.map_comp, ← f.w] }
+  obj X := StructuredArrow.mk (G.map X.hom)
+  map f := StructuredArrow.homMk f.right (by simp [Functor.comp_map, ←G.map_comp, ← f.w])
 #align category_theory.structured_arrow.post CategoryTheory.StructuredArrow.post
 
 instance small_proj_preimage_of_locallySmall {𝒢 : Set C} [Small.{v₁} 𝒢] [LocallySmall.{v₁} D] :
@@ -285,6 +285,12 @@ def proj (S : C ⥤ D) (T : D) : CostructuredArrow S T ⥤ C :=
 #align category_theory.costructured_arrow.proj CategoryTheory.CostructuredArrow.proj
 
 variable {T T' T'' : D} {Y Y' : C} {S : C ⥤ D}
+
+-- porting note: this lemma was added because `Comma.hom_ext`
+-- was not triggered automatically
+@[ext]
+lemma hom_ext {X Y : CostructuredArrow S T} (f g : X ⟶ Y) (h : f.left = g.left) : f = g :=
+  CommaMorphism.ext _ _ h (Subsingleton.elim _ _)
 
 /-- Construct a costructured arrow from a morphism. -/
 def mk (f : S.obj Y ⟶ T) : CostructuredArrow S T :=
@@ -318,6 +324,11 @@ theorem comp_left {X Y Z : CostructuredArrow S T} (f : X ⟶ Y) (g : Y ⟶ Z) :
 @[simp]
 theorem id_left (X : CostructuredArrow S T) :
   (𝟙 X : X ⟶ X).left = 𝟙 X.left := rfl
+
+theorem eqToHom_left {X Y : CostructuredArrow S T} (h : X = Y) :
+  (eqToHom h).left = eqToHom (by rw [h]) := by
+  subst h
+  simp only [eqToHom_refl, id_left]
 
 @[simp]
 theorem right_eq_id {X Y : CostructuredArrow S T} (f : X ⟶ Y) :
@@ -467,14 +478,8 @@ def pre (F : B ⥤ C) (G : C ⥤ D) (S : D) : CostructuredArrow (F ⋙ G) S ⥤ 
 @[simps]
 def post (F : B ⥤ C) (G : C ⥤ D) (S : C) :
     CostructuredArrow F S ⥤ CostructuredArrow (F ⋙ G) (G.obj S) where
-  obj X :=
-    { left := X.left
-      right := ⟨⟨⟩⟩
-      hom := G.map X.hom }
-  map f :=
-    { left := f.left
-      right := 𝟙 _
-      w := by simp [Functor.comp_map, ← G.map_comp, ← f.w] }
+  obj X := CostructuredArrow.mk (G.map X.hom)
+  map f := CostructuredArrow.homMk f.left (by simp [Functor.comp_map, ←G.map_comp, ← f.w])
 #align category_theory.costructured_arrow.post CategoryTheory.CostructuredArrow.post
 
 instance small_proj_preimage_of_locallySmall {𝒢 : Set C} [Small.{v₁} 𝒢] [LocallySmall.{v₁} D] :
