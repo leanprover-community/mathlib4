@@ -238,7 +238,8 @@ def elabProxyEquiv (type : Term) (expectedType? : Option Expr) :
   if let some expectedType := expectedType? then
     let equivType ← Term.elabType (← `(_ ≃ $(← Term.exprToSyntax type)))
     unless ← isDefEq expectedType equivType do
-      throwError "Could not unify expected type{indentExpr expectedType}\nwith{indentExpr equivType}"
+      throwError
+        "Could not unify expected type{indentExpr expectedType}\nwith{indentExpr equivType}"
   let mut type ← instantiateMVars type
   if type.hasExprMVar then
     Term.synthesizeSyntheticMVars
