@@ -1258,13 +1258,13 @@ theorem inv_lt_one_of_one_lt : 1 < a → a⁻¹ < 1 :=
 --  The additive version is also a `linarith` lemma.
 @[to_additive]
 theorem inv_le_one_of_one_le : 1 ≤ a → a⁻¹ ≤ 1 :=
-  inv_le_one'.mpr
+  (inv_le_one' (α := α)).mpr
 #align inv_le_one_of_one_le inv_le_one_of_one_le
 #align neg_nonpos_of_nonneg neg_nonpos_of_nonneg
 
 @[to_additive neg_nonneg_of_nonpos]
 theorem one_le_inv_of_le_one : a ≤ 1 → 1 ≤ a⁻¹ :=
-  one_le_inv'.mpr
+  (one_le_inv' (α := α)).mpr
 #align one_le_inv_of_le_one one_le_inv_of_le_one
 #align neg_nonneg_of_nonpos neg_nonneg_of_nonpos
 
