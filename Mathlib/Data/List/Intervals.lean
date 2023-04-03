@@ -98,10 +98,9 @@ theorem eq_empty_iff {n m : ℕ} : Ico n m = [] ↔ m ≤ n :=
 theorem append_consecutive {n m l : ℕ} (hnm : n ≤ m) (hml : m ≤ l) :
     Ico n m ++ Ico m l = Ico n l := by
   dsimp only [Ico]
-  have := range'_append n (m-n) (l-m)
-  simp_all
-  rw [← Nat.sub_add_comm hml, ← Nat.add_sub_assoc hnm, Nat.sub_sub, Nat.add_comm n m,
-    ← Nat.sub_sub, Nat.add_sub_cancel]
+  convert range'_append n (m-n) (l-m) using 2
+  · rw [add_tsub_cancel_of_le hnm]
+  · rw [tsub_add_tsub_cancel hml hnm]
 #align list.Ico.append_consecutive List.Ico.append_consecutive
 
 @[simp]
