@@ -561,6 +561,7 @@ import Mathlib.Computability.EpsilonNFA
 import Mathlib.Computability.Language
 import Mathlib.Computability.NFA
 import Mathlib.Computability.Primrec
+import Mathlib.Computability.RegularExpressions
 import Mathlib.Computability.TuringMachine
 import Mathlib.Control.Applicative
 import Mathlib.Control.Basic
@@ -780,6 +781,7 @@ import Mathlib.Data.List.Zip
 import Mathlib.Data.ListM
 import Mathlib.Data.Matrix.Basic
 import Mathlib.Data.Matrix.Basis
+import Mathlib.Data.Matrix.Block
 import Mathlib.Data.Matrix.DMatrix
 import Mathlib.Data.Matrix.DualNumber
 import Mathlib.Data.Matrix.Hadamard
