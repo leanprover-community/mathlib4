@@ -184,7 +184,8 @@ def toSquareBlockProp (M : Matrix m m α) (p : m → Prop) : Matrix { a // p a }
 #align matrix.to_square_block_prop Matrix.toSquareBlockProp
 
 theorem toSquareBlockProp_def (M : Matrix m m α) (p : m → Prop) :
-    toSquareBlockProp M p = fun i j => M ↑i ↑j :=
+    -- porting note: added missing `of`
+    toSquareBlockProp M p = of (fun i j : { a // p a } => M ↑i ↑j) :=
   rfl
 #align matrix.to_square_block_prop_def Matrix.toSquareBlockProp_def
 
@@ -196,7 +197,8 @@ def toSquareBlock (M : Matrix m m α) (b : m → β) (k : β) :
 #align matrix.to_square_block Matrix.toSquareBlock
 
 theorem toSquareBlock_def (M : Matrix m m α) (b : m → β) (k : β) :
-    toSquareBlock M b k = fun i j => M ↑i ↑j :=
+    -- porting note: added missing `of`
+    toSquareBlock M b k = of (fun i j : { a // b a = k } => M ↑i ↑j) :=
   rfl
 #align matrix.to_square_block_def Matrix.toSquareBlock_def
 
@@ -638,8 +640,8 @@ theorem blockDiagonal'_transpose (M : ∀ i, Matrix (m' i) (n' i) α) :
     (blockDiagonal' M)ᵀ = blockDiagonal' fun k => (M k)ᵀ := by
   ext (⟨ii, ix⟩⟨ji, jx⟩)
   simp only [transpose_apply, blockDiagonal'_apply]
-  split_ifs -- Porting note: was split_ifs <;> cc
-  · rename ii = ji => h; subst h; rfl
+  split_ifs with h -- Porting note: was split_ifs <;> cc
+  · subst h; rfl
   · simp_all only [not_true]
   · simp_all only [not_true]
   · rfl
@@ -804,8 +806,7 @@ theorem blockDiag'_diagonal [DecidableEq o] [∀ i, DecidableEq (m' i)] (d : (Σ
   ext fun i j => by
     obtain rfl | hij := Decidable.eq_or_ne i j
     · rw [blockDiag'_apply, diagonal_apply_eq, diagonal_apply_eq]
-    · rw [blockDiag'_apply, diagonal_apply_ne _ hij, diagonal_apply_ne _ (mt (fun h => _) hij)]
-      intro h
+    · rw [blockDiag'_apply, diagonal_apply_ne _ hij, diagonal_apply_ne _ (mt (fun h => ?_) hij)]
       cases h
       rfl
 #align matrix.block_diag'_diagonal Matrix.blockDiag'_diagonal
