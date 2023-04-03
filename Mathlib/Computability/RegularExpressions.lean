@@ -166,7 +166,6 @@ def matchEpsilon : RegularExpression α → Bool
   | star _P => true
 #align regular_expression.match_epsilon RegularExpression.matchEpsilon
 
---include dec
 
 /-- `P.deriv a` matches `x` if `P` matches `a :: x`, the Brzozowski derivative of `P` with respect
   to `a` -/
