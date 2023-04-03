@@ -318,9 +318,6 @@ theorem star_rmatch_iff (P : RegularExpression α) :
         constructor
         · simp [hs, hsum]
         · intro t' ht'
-          -- porting note: was `cases' with ht' ht'` but a `cases'` bug
-          -- caused the last `ht'` not to take, requiring `rename_i`
-          -- moved to explicit cases.
           cases ht'
           case head ht' =>
             simp only [ne_eq, not_false_iff, true_and, rmatch]
