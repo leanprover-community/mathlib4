@@ -52,6 +52,7 @@ instance [ToLevel.{u}] : ToExpr PUnit.{u+1} where
   toExpr _ := mkConst ``PUnit.unit [toLevel.{u+1}]
   toTypeExpr := mkConst ``PUnit [toLevel.{u+1}]
 
+-- TODO implement `ofSyntax` case properly
 open DataValue in
 private def toExprMData (md : MData) : Expr := Id.run do
   let mut e := mkConst ``MData.empty
@@ -63,7 +64,8 @@ private def toExprMData (md : MData) : Expr := Id.run do
           | ofName v   => mkApp3 (mkConst ``KVMap.setName) e k (toExpr v)
           | ofNat v    => mkApp3 (mkConst ``KVMap.setNat) e k (mkNatLit v)
           | ofInt v    => mkApp3 (mkConst ``KVMap.setInt) e k (toExpr v)
-          | ofSyntax _ => panic! "toExpr for Syntax is not implemented in toExprMData"
+          | ofSyntax _ => mkApp3 (mkConst ``KVMap.setString) e k
+                            (mkStrLit "error: Syntax values not implemented in ToExpr MData")
   return e
 
 instance : ToExpr MData where
