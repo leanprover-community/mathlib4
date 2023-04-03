@@ -7,6 +7,17 @@ import Mathlib.Tactic.GPT.Sagredo.Monad
 import Mathlib.Tactic.GPT.Levenshtein
 open Lean
 
+namespace Lean.Elab
+
+/-- The core function glues all the lines together, instead of putting newlines between them. -/
+def ContextInfo.ppGoals' (ctx : ContextInfo) (goals : List MVarId) : IO Format :=
+  if goals.isEmpty then
+    return "no goals"
+  else
+    ctx.runMetaM {} (return Std.Format.joinSep (← goals.mapM (Meta.ppGoal ·)) "\n")
+
+end Lean.Elab
+
 namespace Mathlib.Tactic.GPT.Sagredo
 
 inductive MessageType
@@ -66,7 +77,7 @@ Here is the proof thus far:\n" ++ (← latestCodeBlock).markdownBody
         -- GPT can just read the goal from the theorem statement.
         pure prompt
       else
-        pure <| prompt ++ "\n" ++ goalsFeedback none (← ctx.ppGoals [g])
+        pure <| prompt ++ "\n" ++ goalsFeedback none (← ctx.ppGoals' [g])
 
 def tacticSuggestion (badTactic : String) : String :=
   let tacs := ["all_goals", "any_goals", "apply", "assumption", "by_cases", "by_contra", "cases'", "congr", "contradiction", "contrapose", "convert", "convert_to", "exact", "exfalso", "field_simp", "have", "aesop", "induction'", "intro", "iterate", "left", "linarith", "push_neg", "rcases", "rfl", "repeat", "right", "ring", "rintro", "rw", "specialize", "constructor", "simp", "swap", "symm", "tauto", "try", "unfold", "use"]
@@ -100,7 +111,7 @@ def feedback : M IO String := do
     | (ctx, g, pos, _) :: _ =>
         -- TODO mention the later sorries?
         -- FIXME the new line characters are disappearing from this goal.
-        pure <| goalsFeedback pos.line (← ctx.ppGoals [g])
+        pure <| goalsFeedback pos.line (← ctx.ppGoals' [g])
   | _ =>
     pure <| s!"When I try to run this code, I get the following error:\n\n" ++
       -- TODO decide which other errors matter or deserve emphasise (or helpful advice!)

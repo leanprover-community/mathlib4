@@ -29,6 +29,7 @@ def linesBeforeError (block : CodeBlock) (analysis : Analysis) : IO Nat := do
 structure State extends GPT.State where
   preamble : String
   preambleAnalysis : Analysis
+  declRange : Lsp.Range
   solutions : List (CodeBlock × Analysis) := []
 
 variable {m : Type → Type} [Monad m]
@@ -100,14 +101,6 @@ def getCodeBlock (response : String) : M IO CodeBlock := do
       | [] => throw <| IO.userError s!"Expected a single code block in ChatGPT's response:\n{response}"
       | block :: _ => pure block
 
-def declRange : M IO Lsp.Range := do
-  let startLine := (←get).preamble.count '\n' + 1
-  let endLine := startLine +
-    ((←get).solutions.map (fun p => (p.1 : CodeBlock).body) |>.getLastI |>.count '\n') + 1
-  pure <|
-  { start := { line := startLine, character := 0 },
-    «end» := { line := endLine, character := 0 } }
-
 /-- Send a system message. -/
 def sendSystemMessage (prompt : String) : M IO Unit := do
   recordMessage ⟨.system, prompt⟩
@@ -142,12 +135,23 @@ def runAndLog (stx : Syntax) (driver : M m α) : M m (String × α) := do
 
 variable [MonadEnv m]
 
+def declRange (preamble decl : String) : Lsp.Range :=
+  let startLine := preamble.count '\n' + 1
+  let endLine := startLine + decl.count '\n' + 1
+  { start := { line := startLine, character := 0 },
+    «end» := { line := endLine, character := 0 } }
+
 def createState (stx : Syntax) (preEdit : String → String) : m State := do
   let (preamble, decl) ← getSourceUpTo stx
   let preambleAnalysis ← analyzeCode (← getEnv) ""
   let editedDecl := preEdit decl
   let analysis ← liftM <| analyzeCode preambleAnalysis.env editedDecl
-  pure ⟨⟨[]⟩, preamble, preambleAnalysis, [({ text := editedDecl }, analysis)]⟩
+  pure <|
+  { log := []
+    preamble := preamble
+    preambleAnalysis := preambleAnalysis,
+    declRange := declRange preamble decl
+    solutions := [({ text := editedDecl }, analysis)] }
 
 def discussDeclContaining (stx : Syntax) (preEdit : String → String) (driver : M m α) :
     m (String × α) := do

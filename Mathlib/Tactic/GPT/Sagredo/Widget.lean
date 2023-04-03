@@ -69,27 +69,22 @@ def runQuery : RPCData → RequestM (RequestTask RunQueryResponse)
       pure (← latestResponse, ← latestSolution)) σ
     pure ⟨response, sol, ⟨ci, lctx, σ'⟩⟩
 
--- I think this shouldn't be a separate RPC method.
--- `runQuery` can just return the `WorkspaceEdit`.
 /-- Compute an edit to replace the current proof with one suggested by the LLM. -/
 @[server_rpc_method]
 def makeProofEdit : RPCData × String → RequestM (RequestTask MakeProofEditResponse)
   | ({k := ⟨{ci, lctx, σ}⟩}, proof) => RequestM.asTask do
-    -- TODO
-    let rc ← read
-    let uri ← documentUriFromModule rc.srcSearchPath (← ci.runMetaM lctx getMainModule)
-    let (range, _) ← Mathlib.Tactic.GPT.Sagredo.declRange σ
+    let uri ← documentUriFromModule (← read).srcSearchPath (← ci.runMetaM lctx getMainModule)
     return { edit := Lsp.WorkspaceEdit.ofTextEdit uri.get! <|
-      { range := range,
+      { range := σ.declRange,
         newText := proof }  }
 
 @[widget_module]
-def runnerWidget : Component RPCData where
+def sagredoWidget : Component RPCData where
   javascript := include_str "../../../../build/js/sagredo.js"
 
-syntax (name := makeRunnerTac) "sagredo!" : tactic
+syntax (name := sagredoInteractive') "sagredo!" : tactic
 
-@[tactic makeRunnerTac] def makeRunner : Tactic
+@[tactic sagredoInteractive'] def sagredoInteractive : Tactic
   | `(tactic| sagredo!%$tk) => do
     let σ ← createState tk (fun decl => decl.replace "sagredo!" "sorry")
     let (_, σ') ← (do sendSystemMessage systemPrompt) σ
@@ -101,10 +96,10 @@ syntax (name := makeRunnerTac) "sagredo!" : tactic
         σ := σ'
       }⟩}
     -- Save a widget together with a pointer to `props`.
-    savePanelWidgetInfo tk ``runnerWidget (rpcEncode data)
+    savePanelWidgetInfo tk ``sagredoWidget (rpcEncode data)
     liftMetaTactic fun g => do admitGoal g; pure []
   | _ => throwUnsupportedSyntax
 
 /-- The length of the concatenation of two lists is the sum of the lengths of the lists. -/
-theorem length_append (L1 L2 : List α) : (L1 ++ L2).length = L1.length + L2.length := by
+theorem length_append : ∀ (L1 L2 : List α), (L1 ++ L2).length = L1.length + L2.length := by
   sagredo!
