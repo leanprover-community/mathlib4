@@ -129,7 +129,7 @@ theorem cutExpand_fibration (r : α → α → Prop) :
 theorem acc_of_singleton [IsIrrefl α r] {s : Multiset α} (hs : ∀ a ∈ s, Acc (CutExpand r) {a}) :
     Acc (CutExpand r) s := by
   induction s using Multiset.induction
-  case zero => exact Acc.intro 0 fun s h => (not_cutExpand_zero s h).elim
+  case empty => exact Acc.intro 0 fun s h => (not_cutExpand_zero s h).elim
   case cons a s ihs =>
     rw [← s.singleton_add a]
     rw [forall_mem_cons] at hs
@@ -155,4 +155,3 @@ theorem _root_.WellFounded.cutExpand (hr : WellFounded r) : WellFounded (CutExpa
 #align well_founded.cut_expand WellFounded.cutExpand
 
 end Relation
-
