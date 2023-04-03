@@ -40,9 +40,9 @@ def ParsedMessage.of (code : String) (m : Lean.Message) : IO ParsedMessage := do
   pure ⟨type, m.severity, lines, onLine, span⟩
 
 def ParsedMessage.toString (m : ParsedMessage) : String :=
-s!"There was an error on line {m.onLine}, located on the tokens {m.span}:\n" ++
+s!"There was an error on line {m.onLine}, located on the tokens `{m.span}`:\n\n```\n" ++
   (match m.severity with | .error => "error: " | .warning => "warning: " | _ => "") ++
-    "\n".intercalate m.lines
+    "\n".intercalate m.lines ++ "\n```\n"
 
 def goalsFeedback (line? : Option Nat) (goals : Format) : String :=
 (match line? with
@@ -102,26 +102,29 @@ def feedback : M IO String := do
         -- FIXME the new line characters are disappearing from this goal.
         pure <| goalsFeedback pos.line (← ctx.ppGoals [g])
   | _ =>
-    pure <| s!"When I try to run this code, I get the following error:\n" ++
+    pure <| s!"When I try to run this code, I get the following error:\n\n" ++
       -- TODO decide which other errors matter or deserve emphasise (or helpful advice!)
       -- TODO mention the later errors?
       (otherErrors.head?.map (fun p => p.toString)).get! ++
       "\n\nPlease describe how you are going to fix this error and try again.\n" ++
       String.join (badTactics.map tacticSuggestion) ++
-      "Change the tactic step where there is an error, but do not add any additional tactic steps.
-      However, if you have concluded that the theorem is impssible to prove, justify why and leave a `sorry` in place
-      of the proof"
+      "Change the tactic step where there is an error, but do not add any additional tactic steps."
+
+-- Wojciech proposes adding the following:
+-- ```
+
+-- ```
+-- and
+-- ```
+-- However, if you have concluded that the theorem is impossible to prove, justify why and leave a `sorry` in place
+-- of the proof
+-- ```
+-- to the feedback prompt.
+-- I'd like to see an example where this happens, before making this change.
 
 def systemPrompt : String :=
 "You are a pure mathematician who is an expert in the Lean 4 theorem prover.
 Your job is help your user write Lean proofs.
-
-It is extremely important that you do not change the name of the theorem you are trying to prove.
-Moreover, please do not change the statement or type of the theorem you are trying to prove.
-If you conclude that a proof is impossible, explain why. Just because the goal state is impossible to achieve
-does not neccisarily mean the proof is impossible, it could be that your approach so far is wrong, but the theorem
-itself is true. Do not change the statement or type of a theorem in order to accomodate an unprovable goal - simply
-explain why the proof is impossible.
 
 I want to remind you that we're using Lean 4, not the older Lean 3,
 and there have been some syntax changes. In particular:
@@ -165,13 +168,30 @@ example (p q : Prop) : p ∨ q → q ∨ p := by
   | inr hq => apply Or.inl; exact hq
 ```
 
+It is extremely important that you do not change the name of the theorem you are trying to prove.
+Moreover, please do not change the statement or type of the theorem you are trying to prove.
+(In Lean 4 we can leave out many implicit arguments,
+so don't put this back in if they look like they are missing.)
+
+If there is a doc-string on the code the user provides,
+please include it unchanged in your suggestion.
+
+If you conclude that a proof is impossible, explain why.
+If the current goal state is impossible to achieve
+that does not mean that the proof is impossible.
+Your approach so far might be wrong, but the theorem itself is true.
+Do not change the statement or type of a theorem in order to accomodate an unprovable goal:
+simply explain why the proof is impossible.
+"
+
+--- Zach proposes adding:
 -- Here is a description of some basic tactics:
 --  * `rfl` is a tactic that closes goals where two elements are definitionally equal such as `2 = 2`
 --  * `cases` takes an inductive type and creates new goals based on its possible values
 --  * `simp` will do its best to simplify a goal. This is often a good first try for simple goals and
 --     if it does not work, try adding theorems and lemmas to the tactic. For example, `simp [Nat.add_comm]`
 --     will use `simp` with the additional information that Natural number addition is commutative.
-"
+
 
 /--
 Generate the text of the next query to send.

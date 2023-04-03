@@ -100,6 +100,14 @@ def getCodeBlock (response : String) : M IO CodeBlock := do
       | [] => throw <| IO.userError s!"Expected a single code block in ChatGPT's response:\n{response}"
       | block :: _ => pure block
 
+def declRange : M IO Lsp.Range := do
+  let startLine := (←get).preamble.count '\n' + 1
+  let endLine := startLine +
+    ((←get).solutions.map (fun p => (p.1 : CodeBlock).body) |>.getLastI |>.count '\n') + 1
+  pure <|
+  { start := { line := startLine, character := 0 },
+    «end» := { line := endLine, character := 0 } }
+
 /-- Send a system message. -/
 def sendSystemMessage (prompt : String) : M IO Unit := do
   recordMessage ⟨.system, prompt⟩

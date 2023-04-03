@@ -6,6 +6,9 @@ Authors: Wojciech Nawrocki, Scott Morrison
 import ProofWidgets.Component.Basic
 import Mathlib.Tactic.GPT.Sagredo.Dialog
 
+-- This requires `npm install react-markdown`
+-- Then in `./widget`, `npm run build`.
+
 namespace Mathlib.Tactic.GPT.Sagredo.Widget
 
 open Lean Elab Meta Tactic
@@ -46,7 +49,7 @@ structure RunQueryResponse where
 #mkrpcenc RunQueryResponse
 
 structure MakeProofEditResponse where
-  edit: Lsp.WorkspaceEdit
+  edit : Lsp.WorkspaceEdit
 
 #mkrpcenc MakeProofEditResponse
 
@@ -66,12 +69,19 @@ def runQuery : RPCData → RequestM (RequestTask RunQueryResponse)
       pure (← latestResponse, ← latestSolution)) σ
     pure ⟨response, sol, ⟨ci, lctx, σ'⟩⟩
 
+-- I think this shouldn't be a separate RPC method.
+-- `runQuery` can just return the `WorkspaceEdit`.
 /-- Compute an edit to replace the current proof with one suggested by the LLM. -/
 @[server_rpc_method]
 def makeProofEdit : RPCData × String → RequestM (RequestTask MakeProofEditResponse)
-  | (data, proof) => RequestM.asTask do
+  | ({k := ⟨{ci, lctx, σ}⟩}, proof) => RequestM.asTask do
     -- TODO
-    return { edit := { changes := {} } }
+    let rc ← read
+    let uri ← documentUriFromModule rc.srcSearchPath (← ci.runMetaM lctx getMainModule)
+    let (range, _) ← Mathlib.Tactic.GPT.Sagredo.declRange σ
+    return { edit := Lsp.WorkspaceEdit.ofTextEdit uri.get! <|
+      { range := range,
+        newText := proof }  }
 
 @[widget_module]
 def runnerWidget : Component RPCData where
@@ -96,6 +106,5 @@ syntax (name := makeRunnerTac) "sagredo!" : tactic
   | _ => throwUnsupportedSyntax
 
 /-- The length of the concatenation of two lists is the sum of the lengths of the lists. -/
-theorem length_append : ∀ (L1 L2 : List α), (L1 ++ L2).length = L1.length + L2.length := by
-  -- Please don't use the `refl` tactic.
-  sorry
+theorem length_append (L1 L2 : List α) : (L1 ++ L2).length = L1.length + L2.length := by
+  sagredo!

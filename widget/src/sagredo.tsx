@@ -123,20 +123,6 @@ export default function(data0: RpcData) {
     <div className='flex flex-column'>
       {msgLog.map((msg, iMsg) =>
         <ChatBubble className={stylesOfMsg(msg)}>
-          {msg.kind === 'response' &&
-            <div className='mb2 ' style={{ display: 'flow-root' }}>
-              <a
-                className='link pointer dim fr '
-                onClick={() => {
-                  rs.call<[RpcData, string], MakeProofEditResponse>
-                      ('makeProofEdit', [data, msg.proof])
-                    .then(resp => ec.api.applyEdit(resp.edit))
-                    .catch(e => console.error(`Error creating proof replacement edit: ${e}`))
-                }}
-              >
-                Insert proof
-              </a>
-            </div>}
           <ReactMarkdown
             components={{
               pre: ({node, ...props}) => <pre {...props}
@@ -154,6 +140,20 @@ export default function(data0: RpcData) {
                   <code {...props} className='font-code ' />
             }}
             children={msg.contents} />
+          {msg.kind === 'response' &&
+            <div className='mb2 ' style={{ display: 'flow-root' }}>
+              <a
+                className='link pointer dim fr '
+                onClick={() => {
+                  rs.call<[RpcData, string], MakeProofEditResponse>
+                      ('makeProofEdit', [data, msg.proof])
+                    .then(resp => ec.api.applyEdit(resp.edit))
+                    .catch(e => console.error(`Error creating proof replacement edit: ${e}`))
+                }}
+              >
+                📝 Copy proof to editor.
+              </a>
+            </div>}
           {iMsg === msgLog.length - 1 && status === 'preRunQuery' &&
             <button
                 className='fr'
@@ -162,7 +162,7 @@ export default function(data0: RpcData) {
             </button>}
         </ChatBubble>)}
       {status === 'waitingNextQuery' && <ChatBubble>...</ChatBubble>}
-      {status === 'waitingRunQuery' && <ChatBubble>Waiting for GPT..</ChatBubble>}
+      {status === 'waitingRunQuery' && <ChatBubble>Waiting for GPT...</ChatBubble>}
     </div>
   </details>
 }
