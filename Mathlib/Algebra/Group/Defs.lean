@@ -46,6 +46,7 @@ actions and register the following instances:
 open Function
 
 class FlatHack : Prop where
+instance : FlatHack where
 
 /--
 The notation typeclass for heterogeneous additive actions.
