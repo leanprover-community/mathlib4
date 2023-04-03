@@ -122,11 +122,11 @@ theorem le_sub_one_iff {a b : ℤ} : a ≤ b - 1 ↔ a < b :=
 @[simp]
 theorem abs_lt_one_iff {a : ℤ} : |a| < 1 ↔ a = 0 :=
   ⟨fun a0 => by
-    let ⟨hn, hp⟩ := abs_lt.mp a0
+    let ⟨hn, hp⟩ := (abs_lt (α := ℤ)).mp a0
     rw [←zero_add 1, lt_add_one_iff] at hp
     -- Defeq abuse: `hn : -1 < a` but should be `hn : 0 λ a`.
     exact hp.antisymm hn,
-    fun a0 => (abs_eq_zero.mpr a0).le.trans_lt zero_lt_one⟩
+    fun a0 => ((abs_eq_zero (α := ℤ)).mpr a0).le.trans_lt zero_lt_one⟩
 #align int.abs_lt_one_iff Int.abs_lt_one_iff
 
 theorem abs_le_one_iff {a : ℤ} : |a| ≤ 1 ↔ a = 0 ∨ a = 1 ∨ a = -1 := by
@@ -134,7 +134,7 @@ theorem abs_le_one_iff {a : ℤ} : |a| ≤ 1 ↔ a = 0 ∨ a = 1 ∨ a = -1 := b
 #align int.abs_le_one_iff Int.abs_le_one_iff
 
 theorem one_le_abs {z : ℤ} (h₀ : z ≠ 0) : 1 ≤ |z| :=
-  add_one_le_iff.mpr (abs_pos.mpr h₀)
+  add_one_le_iff.mpr ((abs_pos (α := ℤ)).mpr h₀)
 #align int.one_le_abs Int.one_le_abs
 
 /-- Inductively define a function on `ℤ` by defining it at `b`, for the `succ` of a number greater
@@ -236,7 +236,7 @@ theorem emod_abs (a b : ℤ) : a % |b| = a % b :=
 #align int.mod_lt_of_pos Int.emod_lt_of_pos
 
 theorem emod_lt (a : ℤ) {b : ℤ} (H : b ≠ 0) : a % b < |b| := by
-  rw [← emod_abs]; exact emod_lt_of_pos _ (abs_pos.2 H)
+  rw [← emod_abs]; exact emod_lt_of_pos _ ((abs_pos (α := ℤ)).2 H)
 #align int.mod_lt Int.emod_lt
 
 #align int.add_mul_mod_self Int.add_mul_emod_self
@@ -412,7 +412,7 @@ attribute [local simp] Int.ediv_zero
 
 protected theorem sign_eq_ediv_abs (a : ℤ) : sign a = a / |a| :=
   if az : a = 0 then by simp [az]
-  else (Int.ediv_eq_of_eq_mul_left (mt abs_eq_zero.1 az) (sign_mul_abs _).symm).symm
+  else (Int.ediv_eq_of_eq_mul_left (mt (abs_eq_zero (α := ℤ)).1 az) (sign_mul_abs _).symm).symm
 #align int.sign_eq_div_abs Int.sign_eq_ediv_abs
 
 /-! ### `/` and ordering -/
