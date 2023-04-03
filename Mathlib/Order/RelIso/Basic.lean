@@ -453,7 +453,7 @@ theorem wellFounded_lift₂_iff [Setoid α] {r : α → α → Prop}
     exact acc_lift₂_iff.2 (wf.apply a)
 #align well_founded_lift₂_iff wellFounded_lift₂_iff
 
-alias wellFounded_lift₂_iff ↔ _root_.WellFounded.of_quotient_lift₂ _root_.WellFounded.quotient_lift₂
+alias wellFounded_lift₂_iff ↔ WellFounded.of_quotient_lift₂ WellFounded.quotient_lift₂
 
 @[simp]
 theorem wellFounded_liftOn₂'_iff {s : Setoid α} {r : α → α → Prop} {H} :
@@ -462,9 +462,9 @@ theorem wellFounded_liftOn₂'_iff {s : Setoid α} {r : α → α → Prop} {H} 
 #align well_founded_lift_on₂'_iff wellFounded_liftOn₂'_iff
 
 alias wellFounded_liftOn₂'_iff ↔
-  wellFounded.of_quotient_liftOn₂' wellFounded.quotient_liftOn₂'
-#align well_founded.of_quotient_lift_on₂' wellFounded.of_quotient_liftOn₂'
-#align well_founded.quotient_lift_on₂' wellFounded.quotient_liftOn₂'
+  WellFounded.of_quotient_liftOn₂' WellFounded.quotient_liftOn₂'
+#align well_founded.of_quotient_lift_on₂' WellFounded.of_quotient_liftOn₂'
+#align well_founded.quotient_lift_on₂' WellFounded.quotient_liftOn₂'
 
 namespace RelEmbedding
 
