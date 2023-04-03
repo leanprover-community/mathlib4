@@ -158,18 +158,14 @@ variable [Fintype n]
 
 @[simp]
 theorem trace_zero (h : j ≠ i) : trace (stdBasisMatrix i j c) = 0 := by
-  simp only [trace, diag_zero (h := h)]
-  simp
-  -- Porting note: was
-  -- simp [trace, h]
+  -- Porting note: added `-diag_apply`
+  simp [trace, -diag_apply, h]
 #align matrix.std_basis_matrix.trace_zero Matrix.StdBasisMatrix.trace_zero
 
 @[simp]
 theorem trace_eq : trace (stdBasisMatrix i i c) = c := by
-  simp only [trace, diag_same]
-  simp
-  -- Porting note: was
-  -- simp [trace]
+  -- Porting note: added `-diag_apply`
+  simp [trace, -diag_apply]
 #align matrix.std_basis_matrix.trace_eq Matrix.StdBasisMatrix.trace_eq
 
 @[simp]
