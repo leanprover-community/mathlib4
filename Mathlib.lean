@@ -1232,6 +1232,7 @@ import Mathlib.Logic.Equiv.Set
 import Mathlib.Logic.Function.Basic
 import Mathlib.Logic.Function.Conjugate
 import Mathlib.Logic.Function.Iterate
+import Mathlib.Logic.Hydra
 import Mathlib.Logic.IsEmpty
 import Mathlib.Logic.Lemmas
 import Mathlib.Logic.Nonempty
