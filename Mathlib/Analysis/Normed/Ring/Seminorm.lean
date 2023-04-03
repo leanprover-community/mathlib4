@@ -48,6 +48,8 @@ variable {F R S : Type _} (x y : R) (r : ℝ)
 /-- A seminorm on a ring `R` is a function `f : R → ℝ` that preserves zero, takes nonnegative
   values, is subadditive and submultiplicative and such that `f (-x) = f x` for all `x ∈ R`. -/
 structure RingSeminorm (R : Type _) [NonUnitalNonAssocRing R] extends AddGroupSeminorm R where
+  /-- The property of a `RingSeminorm` that for all `x` and `y` in the ring, the norm of `x * y` is
+    less than the norm of `x` times the norm of `y`. -/
   mul_le' : ∀ x y : R, toFun (x * y) ≤ toFun x * toFun y
 #align ring_seminorm RingSeminorm
 
