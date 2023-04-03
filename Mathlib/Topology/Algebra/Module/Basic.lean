@@ -142,12 +142,10 @@ theorem Submodule.mapsTo_smul_closure (s : Submodule R M) (c : R) :
     Set.MapsTo (c • ·) (closure s : Set M) (closure s) :=
   have : Set.MapsTo (c • ·) (s : Set M) s := fun _ h ↦ s.smul_mem c h
   this.closure (continuous_const_smul c)
-#align submodule.maps_to_smul_closure Submodule.mapsTo_smul_closure
 
 theorem Submodule.smul_closure_subset (s : Submodule R M) (c : R) :
     c • closure (s : Set M) ⊆ closure (s : Set M) :=
   (s.mapsTo_smul_closure c).image_subset
-#align submodule.smul_closure_subset Submodule.smul_closure_subset
 
 variable [ContinuousAdd M]
 
