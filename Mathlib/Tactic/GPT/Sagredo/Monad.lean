@@ -29,6 +29,7 @@ def linesBeforeError (block : CodeBlock) (analysis : Analysis) : IO Nat := do
 structure State extends GPT.State where
   preamble : String
   preambleAnalysis : Analysis
+  declRange : Lsp.Range
   solutions : List (CodeBlock × Analysis) := []
 
 variable {m : Type → Type} [Monad m]
@@ -134,12 +135,23 @@ def runAndLog (stx : Syntax) (driver : M m α) : M m (String × α) := do
 
 variable [MonadEnv m]
 
+def declRange (preamble decl : String) : Lsp.Range :=
+  let startLine := preamble.count '\n' + 1
+  let endLine := startLine + decl.count '\n' + 1
+  { start := { line := startLine, character := 0 },
+    «end» := { line := endLine, character := 0 } }
+
 def createState (stx : Syntax) (preEdit : String → String) : m State := do
   let (preamble, decl) ← getSourceUpTo stx
   let preambleAnalysis ← analyzeCode (← getEnv) ""
   let editedDecl := preEdit decl
   let analysis ← liftM <| analyzeCode preambleAnalysis.env editedDecl
-  pure ⟨⟨[]⟩, preamble, preambleAnalysis, [({ text := editedDecl }, analysis)]⟩
+  pure <|
+  { log := []
+    preamble := preamble
+    preambleAnalysis := preambleAnalysis,
+    declRange := declRange preamble decl
+    solutions := [({ text := editedDecl }, analysis)] }
 
 def discussDeclContaining (stx : Syntax) (preEdit : String → String) (driver : M m α) :
     m (String × α) := do

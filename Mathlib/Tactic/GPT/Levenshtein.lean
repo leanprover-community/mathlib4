@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2023 Zach Battleman. All rights reserved.
+Copyright (c) 2023 Wojciech Nawrocki. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Zach Battleman, Scott Morrison
+Authors: Wojciech Nawrocki, Zach Battleman, Scott Morrison
 -/
 import Std.Data.List.Basic
 
