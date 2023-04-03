@@ -1094,7 +1094,7 @@ variable {k}
 `eq_affineCombination_of_mem_affineSpan_of_fintype`. -/
 theorem eq_affineCombination_of_mem_affineSpan {p1 : P} {p : ι → P}
     (h : p1 ∈ affineSpan k (Set.range p)) :
-    ∃ (s : Finset ι)(w : ι → k)(hw : (∑ i in s, w i) = 1), p1 = s.affineCombination k p w := by
+    ∃ (s : Finset ι) (w : ι → k) (_ : (∑ i in s, w i) = 1), p1 = s.affineCombination k p w := by
   classical
     have hn : (affineSpan k (Set.range p) : Set P).Nonempty := ⟨p1, h⟩
     rw [affineSpan_nonempty, Set.range_nonempty_iff_nonempty] at hn
@@ -1113,7 +1113,9 @@ theorem eq_affineCombination_of_mem_affineSpan {p1 : P} {p : ι → P}
       exact (Finset.weightedVSub_indicator_subset _ _ (Finset.subset_insert i0 s)).symm
     let w0 : ι → k := Function.update (Function.const ι 0) i0 1
     have hw0 : (∑ i in s', w0 i) = 1 := by
-      rw [Finset.sum_update_of_mem (Finset.mem_insert_self _ _), Finset.sum_const_zero, add_zero]
+      rw [Finset.sum_update_of_mem (Finset.mem_insert_self _ _)]
+      simp only [Finset.mem_insert, true_or, not_true, Function.const_apply, Finset.sum_const_zero,
+        add_zero]
     have hw0s : s'.affineCombination k p w0 = p i0 :=
       s'.affineCombination_of_eq_one_of_eq_zero w0 p (Finset.mem_insert_self _ _)
         (Function.update_same _ _ _) fun _ _ hne => Function.update_noteq hne _ _
@@ -1188,13 +1190,19 @@ theorem affineSpan_eq_affineSpan_lineMap_units [Nontrivial k] {s : Set P} {p : P
   conv_rhs =>
     rw [this]
 
-  apply le_antisymm <;>
-  intro q hq <;>
-  erw [mem_affineSpan_iff_eq_weightedVSubOfPoint_vadd k V _ (⟨p, hp⟩ : s) q] at hq⊢ <;>
-  obtain ⟨t, μ, rfl⟩ := hq <;>
-  use t <;>
-  [use fun x => μ x * ↑(w x), use fun x => μ x * ↑(w x)⁻¹] <;>
-  simp [smul_smul]
+  apply le_antisymm
+    <;> intro q hq
+    <;> erw [mem_affineSpan_iff_eq_weightedVSubOfPoint_vadd k V _ (⟨p, hp⟩ : s) q] at hq ⊢
+    <;> obtain ⟨t, μ, rfl⟩ := hq
+    <;> use t
+    -- Porting note: remaining proof was:
+    --<;> [use fun x => μ x * ↑(w x), use fun x => μ x * ↑(w x)⁻¹]
+    --<;> simp [smul_smul]
+    -- but this fails with `no enough tactics` error
+  { use fun x => μ x * ↑(w x)
+    simp [smul_smul] }
+  { use fun x => μ x * ↑(w x)⁻¹
+    simp [smul_smul] }
 #align affine_span_eq_affine_span_line_map_units affineSpan_eq_affineSpan_lineMap_units
 
 end AffineSpace'
@@ -1253,8 +1261,20 @@ def weightedVSubOfPoint (w : ι → k) : (ι → P) × P →ᵃ[k] V
   linear := ∑ i in s, w i • ((LinearMap.proj i).comp (LinearMap.fst _ _ _) - LinearMap.snd _ _ _)
   map_vadd' := by
     rintro ⟨p, b⟩ ⟨v, b'⟩
-    simp [LinearMap.sum_apply, Finset.weightedVSubOfPoint, vsub_vadd_eq_vsub_sub, vadd_vsub_assoc,
-      add_sub, ← sub_add_eq_add_sub, smul_add, Finset.sum_add_distrib]
+    simp only [Finset.weightedVSubOfPoint_apply, LinearMap.coeFn_sum, Finset.sum_apply,
+      LinearMap.smul_apply, LinearMap.sub_apply, LinearMap.coe_comp, LinearMap.coe_proj,
+      Function.eval, Function.comp_apply, LinearMap.fst_apply, LinearMap.snd_apply, vadd_eq_add]
+    rw [← Finset.sum_add_distrib]
+    refine Finset.sum_congr rfl (fun x _ => ?_)
+    rw [← smul_add]
+    congr
+    -- Porting note: `simp` fails to simplify `Prod.fst` and `Prod.snd`
+    change (v +ᵥ p) x -ᵥ (b' +ᵥ b) = _
+    rw [Pi.vadd_apply', sub_add_eq_add_sub, vsub_vadd_eq_vsub_sub, vadd_vsub_assoc]
+    -- Porting note proof was:
+    --rintro ⟨p, b⟩ ⟨v, b'⟩
+    --simp only [LinearMap.sum_apply, Finset.weightedVSubOfPoint, vsub_vadd_eq_vsub_sub, vadd_vsub_assoc,
+    --  add_sub, ← sub_add_eq_add_sub, smul_add, Finset.sum_add_distrib]
 #align affine_map.weighted_vsub_of_point AffineMap.weightedVSubOfPoint
 
 end AffineMap
