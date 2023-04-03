@@ -113,13 +113,15 @@ theorem cutExpand_fibration (r : α → α → Prop) :
     Fibration (GameAdd (CutExpand r) (CutExpand r)) (CutExpand r) fun s => s.1 + s.2 := by
   rintro ⟨s₁, s₂⟩ s ⟨t, a, hr, he⟩; dsimp at he ⊢
   classical
-    obtain ⟨ha, rfl⟩ := add_singleton_eq_iff.1 he
+    -- Porting note: Originally `obtain ⟨ha, rfl⟩`
+    obtain ⟨ha, hb⟩ := add_singleton_eq_iff.1 he
+    rw [hb]
     rw [add_assoc, mem_add] at ha
     obtain h | h := ha
-    · refine' ⟨(s₁.erase a + t, s₂), game_add.fst ⟨t, a, hr, _⟩, _⟩
+    · refine' ⟨(s₁.erase a + t, s₂), GameAdd.fst ⟨t, a, hr, _⟩, _⟩
       · rw [add_comm, ← add_assoc, singleton_add, cons_erase h]
       · rw [add_assoc s₁, erase_add_left_pos _ h, add_right_comm, add_assoc]
-    · refine' ⟨(s₁, (s₂ + t).eraseₓ a), game_add.snd ⟨t, a, hr, _⟩, _⟩
+    · refine' ⟨(s₁, (s₂ + t).erase a), GameAdd.snd ⟨t, a, hr, _⟩, _⟩
       · rw [add_comm, singleton_add, cons_erase h]
       · rw [add_assoc, erase_add_right_pos _ h]
 #align relation.cut_expand_fibration Relation.cutExpand_fibration
