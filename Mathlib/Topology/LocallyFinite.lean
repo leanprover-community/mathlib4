@@ -56,6 +56,15 @@ theorem comp_injective {g : ι' → ι} (hf : LocallyFinite f) (hg : Injective g
   hf.comp_injOn (hg.injOn _)
 #align locally_finite.comp_injective LocallyFinite.comp_injective
 
+-- porting note: new lemma
+theorem of_comp_surjective {g : ι' → ι} (hg : Surjective g) (hfg : LocallyFinite (f ∘ g)) :
+    LocallyFinite f := by
+  simpa only [(· ∘ ·), surjInv_eq hg] using hfg.comp_injective (injective_surjInv hg)
+
+-- porting note: new lemma
+theorem on_range (hf : LocallyFinite f) : LocallyFinite ((↑) : range f → Set X) :=
+  of_comp_surjective surjective_onto_range hf
+
 theorem _root_.locallyFinite_iff_smallSets :
     LocallyFinite f ↔ ∀ x, ∀ᶠ s in (𝓝 x).smallSets, { i | (f i ∩ s).Nonempty }.Finite :=
   forall_congr' fun _ => Iff.symm <|
