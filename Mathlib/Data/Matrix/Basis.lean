@@ -88,7 +88,7 @@ theorem std_basis_eq_basis_mul_basis (i : m) (j : n) :
   exact ite_and _ _ _ _
 #align matrix.std_basis_eq_basis_mul_basis Matrix.std_basis_eq_basis_mul_basis
 
--- todo: the old proof used fintypes, I don't know `finsupp` but this feels generalizable
+-- todo: the old proof used fintypes, I don't know `Finsupp` but this feels generalizable
 @[elab_as_elim]
 protected theorem induction_on' [Fintype m] [Fintype n] {P : Matrix m n α → Prop} (M : Matrix m n α)
     (h_zero : P 0) (h_add : ∀ p q, P p → P q → P (p + q))
@@ -213,7 +213,8 @@ theorem mul_of_ne {k l : n} (h : j ≠ k) (d : α) : stdBasisMatrix i j c ⬝ st
     apply if_neg
     rintro ⟨⟨rfl, rfl⟩, h⟩
     contradiction
-  · simp only [h₁, false_and, ite_false, mul_ite, zero_mul, mul_zero, ite_self, Finset.sum_const_zero, zero_apply]
+  · simp only [h₁, false_and, ite_false, mul_ite, zero_mul, mul_zero, ite_self,
+      Finset.sum_const_zero, zero_apply]
 #align matrix.std_basis_matrix.mul_of_ne Matrix.StdBasisMatrix.mul_of_ne
 
 end
