@@ -232,11 +232,13 @@ def ensureProxyEquiv (config : ProxyEquivConfig) (indVal : InductiveVal) : TermE
 
 Elaborate `type` and get its `InductiveVal`. Uses the `expectedType`, where the
 expected type should be of the form `_ ≃ type`. -/
-def elabProxyEquiv (type : Term) (expectedType : Expr) : TermElabM (Expr × InductiveVal) := do
+def elabProxyEquiv (type : Term) (expectedType? : Option Expr) :
+    TermElabM (Expr × InductiveVal) := do
   let type ← Term.elabType type
-  let equivType ← Term.elabType (← `(_ ≃ $(← Term.exprToSyntax type)))
-  unless ← isDefEq expectedType equivType do
-    throwError "Could not unify expected type{indentExpr expectedType}\nwith{indentExpr equivType}"
+  if let some expectedType := expectedType? then
+    let equivType ← Term.elabType (← `(_ ≃ $(← Term.exprToSyntax type)))
+    unless ← isDefEq expectedType equivType do
+      throwError "Could not unify expected type{indentExpr expectedType}\nwith{indentExpr equivType}"
   let mut type ← instantiateMVars type
   if type.hasExprMVar then
     Term.synthesizeSyntheticMVars
@@ -273,10 +275,16 @@ in particular we have that
 proxy_equiv% (foo n α) : Unit ⊕ Bool ⊕ (x : Fin n) × Fin x ⊕ (_ : Bool) × α ≃ foo n α
 ```
 -/
-elab "proxy_equiv% " t:term : term <= expectedType => do
-  let (type, indVal) ← elabProxyEquiv t expectedType
-  let config : ProxyEquivConfig := ProxyEquivConfig.default indVal
-  ensureProxyEquiv config indVal
-  mkAppOptM config.proxyEquivName (type.getAppArgs.map .some)
+syntax (name := proxy_equiv) "proxy_equiv% " term : term
+
+@[term_elab proxy_equiv]
+def elab_proxy_equiv : Elab.Term.TermElab := fun stx expectedType? =>
+  match stx with
+  | `(proxy_equiv% $t) => do
+    let (type, indVal) ← elabProxyEquiv t expectedType?
+    let config : ProxyEquivConfig := ProxyEquivConfig.default indVal
+    ensureProxyEquiv config indVal
+    mkAppOptM config.proxyEquivName (type.getAppArgs.map .some)
+  | _ => throwUnsupportedSyntax
 
 end Mathlib.ProxyType
