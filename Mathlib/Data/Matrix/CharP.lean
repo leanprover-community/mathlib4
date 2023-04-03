@@ -8,8 +8,8 @@ Authors: Aaron Anderson
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Matrix.Basic
-import Mathbin.Algebra.CharP.Basic
+import Mathlib.Data.Matrix.Basic
+import Mathlib.Algebra.CharP.Basic
 
 /-!
 # Matrices in prime characteristic
@@ -24,6 +24,6 @@ instance Matrix.charP [DecidableEq n] [Nonempty n] (p : ℕ) [CharP R p] : CharP
   ⟨by
     intro k
     rw [← CharP.cast_eq_zero_iff R p k, ← Nat.cast_zero, ← map_natCast <| scalar n]
-    convert scalar_inj; · simp; · assumption⟩
+    convert @scalar_inj n _ _ _ _ _ (@Nat.cast R NonAssocSemiring.toNatCast k) 0
+    simp⟩
 #align matrix.char_p Matrix.charP
-
