@@ -71,6 +71,7 @@ impose here that the `ℤ`-multiplication field from the module structure is def
 from the `isAddCommGroup` structure (contrary to what we do for all module structures in
 mathlib), which creates some difficulties down the road. -/
 structure ModuleCat where
+  /-- the underlying type of an object in `ModuleCat R` -/
   carrier : Type v
   [isAddCommGroup : AddCommGroup carrier]
   [isModule : Module R carrier]
@@ -111,6 +112,7 @@ instance moduleConcreteCategory : ConcreteCategory.{v} (ModuleCat.{v} R) where
 set_option linter.uppercaseLean3 false in
 #align Module.Module_concrete_category ModuleCat.moduleConcreteCategory
 
+-- porting note: added to ease automation
 @[ext]
 lemma hom_ext {M N : ModuleCat.{v} R} (f₁ f₂ : M ⟶ N) (h : ∀ (x : M), f₁ x = f₂ x) : f₁ = f₂ :=
   FunLike.ext _ _ h
@@ -131,14 +133,14 @@ def of (X : Type v) [AddCommGroup X] [Module R X] : ModuleCat R :=
 set_option linter.uppercaseLean3 false in
 #align Module.of ModuleCat.of
 
-@[simp]
+-- porting note: remove simp attribute because it makes the linter complain
 theorem forget₂_obj (X : ModuleCat R) :
     (forget₂ (ModuleCat R) AddCommGroupCat).obj X = AddCommGroupCat.of X :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align Module.forget₂_obj ModuleCat.forget₂_obj
 
-@[simp]
+@[simp 900]
 theorem forget₂_obj_moduleCat_of (X : Type v) [AddCommGroup X] [Module R X] :
     (forget₂ (ModuleCat R) AddCommGroupCat).obj (of R X) = AddCommGroupCat.of X :=
   rfl
@@ -152,14 +154,14 @@ theorem forget₂_map (X Y : ModuleCat R) (f : X ⟶ Y) :
 set_option linter.uppercaseLean3 false in
 #align Module.forget₂_map ModuleCat.forget₂_map
 
-/-- Typecheck a `linear_map` as a morphism in `Module R`. -/
+/-- Typecheck a `LinearMap` as a morphism in `Module R`. -/
 def ofHom {R : Type u} [Ring R] {X Y : Type v} [AddCommGroup X] [Module R X] [AddCommGroup Y]
     [Module R Y] (f : X →ₗ[R] Y) : of R X ⟶ of R Y :=
   f
 set_option linter.uppercaseLean3 false in
 #align Module.of_hom ModuleCat.ofHom
 
-@[simp]
+@[simp 1100]
 theorem ofHom_apply {R : Type u} [Ring R] {X Y : Type v} [AddCommGroup X] [Module R X]
     [AddCommGroup Y] [Module R Y] (f : X →ₗ[R] Y) (x : X) : ofHom f x = f x :=
   rfl
@@ -174,7 +176,7 @@ instance ofUnique {X : Type v} [AddCommGroup X] [Module R X] [i : Unique X] : Un
 set_option linter.uppercaseLean3 false in
 #align Module.of_unique ModuleCat.ofUnique
 
-@[simp]
+-- porting note: remove simp attribute because it makes the linter complain
 theorem coe_of (X : Type v) [AddCommGroup X] [Module R X] : (of R X : Type v) = X :=
   rfl
 set_option linter.uppercaseLean3 false in
@@ -215,16 +217,12 @@ set_option linter.uppercaseLean3 false in
 #align Module.id_apply ModuleCat.id_apply
 
 @[simp]
-theorem comp_apply (f : M ⟶ N) (g : N ⟶ U) (m : M) : (f ≫ g) m = g (f m) := rfl
-
-@[simp]
 theorem coe_comp (f : M ⟶ N) (g : N ⟶ U) : (f ≫ g : M → U) = g ∘ f :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align Module.coe_comp ModuleCat.coe_comp
 
-theorem comp_def (f : M ⟶ N) (g : N ⟶ U) : f ≫ g =
-    @LinearMap.comp _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ RingHomCompTriple.ids g f :=
+theorem comp_def (f : M ⟶ N) (g : N ⟶ U) : f ≫ g = g.comp f :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align Module.comp_def ModuleCat.comp_def
@@ -242,7 +240,7 @@ def ModuleCat.asHom [AddCommGroup X₁] [Module R X₁] [AddCommGroup X₂] [Mod
 set_option linter.uppercaseLean3 false in
 #align Module.as_hom ModuleCat.asHom
 
--- mathport name: Module.as_hom
+/-- Reinterpreting a linear map in the category of `R`-modules -/
 scoped[ModuleCat] notation "↟" f:1024 => ModuleCat.asHom f
 
 /-- Reinterpreting a linear map in the category of `R`-modules. -/
@@ -252,7 +250,7 @@ def ModuleCat.asHomRight [AddCommGroup X₁] [Module R X₁] {X₂ : ModuleCat.{
 set_option linter.uppercaseLean3 false in
 #align Module.as_hom_right ModuleCat.asHomRight
 
--- mathport name: Module.as_hom_right
+/-- Reinterpreting a linear map in the category of `R`-modules. -/
 scoped[ModuleCat] notation "↾" f:1024 => ModuleCat.asHomRight f
 
 /-- Reinterpreting a linear map in the category of `R`-modules. -/
@@ -262,14 +260,14 @@ def ModuleCat.asHomLeft {X₁ : ModuleCat.{v} R} [AddCommGroup X₂] [Module R X
 set_option linter.uppercaseLean3 false in
 #align Module.as_hom_left ModuleCat.asHomLeft
 
--- mathport name: Module.as_hom_left
+/-- Reinterpreting a linear map in the category of `R`-modules. -/
 scoped[ModuleCat] notation "↿" f:1024 => ModuleCat.asHomLeft f
 
 section
 
 attribute [-instance] Ring.toNonAssocRing
 
-/-- Build an isomorphism in the category `Module R` from a `linear_equiv` between `module`s. -/
+/-- Build an isomorphism in the category `Module R` from a `LinearEquiv` between `Module`s. -/
 @[simps]
 def LinearEquiv.toModuleIso {g₁ : AddCommGroup X₁} {g₂ : AddCommGroup X₂} {m₁ : Module R X₁}
     {m₂ : Module R X₂} (e : X₁ ≃ₗ[R] X₂) : ModuleCat.of R X₁ ≅ ModuleCat.of R X₂ where
@@ -280,63 +278,26 @@ def LinearEquiv.toModuleIso {g₁ : AddCommGroup X₁} {g₂ : AddCommGroup X₂
 set_option linter.uppercaseLean3 false in
 #align linear_equiv.to_Module_iso LinearEquiv.toModuleIso
 
-/-- Build an isomorphism in the category `Module R` from a `linear_equiv` between `module`s.
-
-This version is better than `linear_equiv_to_Module_iso` when applicable, because Lean can't see
-`Module.of R M` is defeq to `M` when `M : Module R`. -/
-@[simps]
-def LinearEquiv.toModuleIso' {M N : ModuleCat.{v} R} (i : M ≃ₗ[R] N) : M ≅ N where
-  hom := i.toLinearMap
-  inv := i.symm.toLinearMap
-  hom_inv_id := LinearMap.ext fun x => by
-    -- porting note: was `by simp`
-    erw [LinearMap.comp_apply]
-    aesop
-  inv_hom_id := LinearMap.ext fun x => by
-    -- porting note: was `by simp`
-    erw [LinearMap.comp_apply]
-    aesop
+-- porting note: for the following three definitions, Lean3 is not able to see that
+-- `Module.of R M` is defeq to `M` when `M : Module R`. Lean4 is, so that we no longer
+-- need different versions of `LinearEquiv.toModuleIso`.
+/-- Build an isomorphism in the category `Module R` from a `LinearEquiv` between `Module`s. -/
+abbrev LinearEquiv.toModuleIso' {M N : ModuleCat.{v} R} (i : M ≃ₗ[R] N) : M ≅ N :=
+  i.toModuleIso
 set_option linter.uppercaseLean3 false in
 #align linear_equiv.to_Module_iso' LinearEquiv.toModuleIso'
 
-/-- Build an isomorphism in the category `Module R` from a `linear_equiv` between `module`s.
-
-This version is better than `linear_equiv_to_Module_iso` when applicable, because Lean can't see
-`Module.of R M` is defeq to `M` when `M : Module R`. -/
-@[simps]
-def LinearEquiv.toModuleIso'Left {X₁ : ModuleCat.{v} R} {g₂ : AddCommGroup X₂} {m₂ : Module R X₂}
-    (e : X₁ ≃ₗ[R] X₂) : X₁ ≅ ModuleCat.of R X₂ where
-  hom := (e : X₁ →ₗ[R] X₂)
-  inv := (e.symm : X₂ →ₗ[R] X₁)
-  hom_inv_id := LinearMap.ext fun x => by
-    -- porting note: was `by simp`
-    simp
-    erw [LinearMap.comp_apply]
-    aesop
-  inv_hom_id := LinearMap.ext fun x => by
-    -- porting note: was `by simp`
-    erw [LinearMap.comp_apply]
-    aesop
+/-- Build an isomorphism in the category `Module R` from a `linear_equiv` between `module`s. -/
+abbrev LinearEquiv.toModuleIso'Left {X₁ : ModuleCat.{v} R} [AddCommGroup X₂] [Module R X₂]
+    (e : X₁ ≃ₗ[R] X₂) : X₁ ≅ ModuleCat.of R X₂ :=
+  e.toModuleIso
 set_option linter.uppercaseLean3 false in
 #align linear_equiv.to_Module_iso'_left LinearEquiv.toModuleIso'Left
 
-/-- Build an isomorphism in the category `Module R` from a `linear_equiv` between `module`s.
-
-This version is better than `linear_equiv_to_Module_iso` when applicable, because Lean can't see
-`Module.of R M` is defeq to `M` when `M : Module R`. -/
-@[simps]
-def LinearEquiv.toModuleIso'Right {g₁ : AddCommGroup X₁} {m₁ : Module R X₁} {X₂ : ModuleCat.{v} R}
-    (e : X₁ ≃ₗ[R] X₂) : ModuleCat.of R X₁ ≅ X₂ where
-  hom := (e : X₁ →ₗ[R] X₂)
-  inv := (e.symm : X₂ →ₗ[R] X₁)
-  hom_inv_id := LinearMap.ext fun x => by
-    -- porting note: was `by simp`
-    erw [LinearMap.comp_apply]
-    aesop
-  inv_hom_id := LinearMap.ext fun x => by
-    -- porting note: was `by simp`
-    erw [LinearMap.comp_apply]
-    aesop
+/-- Build an isomorphism in the category `Module R` from a `linear_equiv` between `module`s. -/
+abbrev LinearEquiv.toModuleIso'Right [AddCommGroup X₁] [Module R X₁] {X₂ : ModuleCat.{v} R}
+    (e : X₁ ≃ₗ[R] X₂) : ModuleCat.of R X₁ ≅ X₂ :=
+  e.toModuleIso
 set_option linter.uppercaseLean3 false in
 #align linear_equiv.to_Module_iso'_right LinearEquiv.toModuleIso'Right
 
