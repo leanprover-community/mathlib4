@@ -8,12 +8,12 @@ Authors: Robert A. Spencer, Markus Himmel
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Category.Group.Preadditive
-import Mathbin.CategoryTheory.Linear.Basic
-import Mathbin.CategoryTheory.Elementwise
-import Mathbin.LinearAlgebra.Basic
-import Mathbin.CategoryTheory.Conj
-import Mathbin.CategoryTheory.Preadditive.AdditiveFunctor
+import Mathlib.Algebra.Category.Group.Preadditive
+import Mathlib.CategoryTheory.Linear.Basic
+import Mathlib.CategoryTheory.Elementwise
+import Mathlib.LinearAlgebra.Basic
+import Mathlib.CategoryTheory.Conj
+import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 
 /-!
 # The category of `R`-modules
@@ -83,8 +83,7 @@ namespace ModuleCat
 instance : CoeSort (ModuleCat.{v} R) (Type v) :=
   ⟨ModuleCat.Carrier⟩
 
-instance moduleCategory : Category (ModuleCat.{v} R)
-    where
+instance moduleCategory : Category (ModuleCat.{v} R) where
   Hom M N := M →ₗ[R] N
   id M := 1
   comp A B C f g := g.comp f
@@ -93,8 +92,7 @@ instance moduleCategory : Category (ModuleCat.{v} R)
   assoc' W X Y Z f g h := LinearMap.comp_assoc _ _ _
 #align Module.Module_category ModuleCat.moduleCategory
 
-instance moduleConcreteCategory : ConcreteCategory.{v} (ModuleCat.{v} R)
-    where
+instance moduleConcreteCategory : ConcreteCategory.{v} (ModuleCat.{v} R) where
   forget :=
     { obj := fun R => R
       map := fun R S f => (f : R → S) }
@@ -162,14 +160,12 @@ variable {R}
 /-- Forgetting to the underlying type and then building the bundled object returns the original
 module. -/
 @[simps]
-def ofSelfIso (M : ModuleCat R) : ModuleCat.of R M ≅ M
-    where
+def ofSelfIso (M : ModuleCat R) : ModuleCat.of R M ≅ M where
   Hom := 𝟙 M
   inv := 𝟙 M
 #align Module.of_self_iso ModuleCat.ofSelfIso
 
-theorem isZero_of_subsingleton (M : ModuleCat R) [Subsingleton M] : IsZero M :=
-  by
+theorem isZero_of_subsingleton (M : ModuleCat R) [Subsingleton M] : IsZero M := by
   refine' ⟨fun X => ⟨⟨⟨0⟩, fun f => _⟩⟩, fun X => ⟨⟨⟨0⟩, fun f => _⟩⟩⟩
   · ext
     have : x = 0 := Subsingleton.elim _ _
@@ -233,8 +229,7 @@ scoped[ModuleCat] notation "↿" f:1024 => ModuleCat.asHomLeft f
 /-- Build an isomorphism in the category `Module R` from a `linear_equiv` between `module`s. -/
 @[simps]
 def LinearEquiv.toModuleIso {g₁ : AddCommGroup X₁} {g₂ : AddCommGroup X₂} {m₁ : Module R X₁}
-    {m₂ : Module R X₂} (e : X₁ ≃ₗ[R] X₂) : ModuleCat.of R X₁ ≅ ModuleCat.of R X₂
-    where
+    {m₂ : Module R X₂} (e : X₁ ≃ₗ[R] X₂) : ModuleCat.of R X₁ ≅ ModuleCat.of R X₂ where
   Hom := (e : X₁ →ₗ[R] X₂)
   inv := (e.symm : X₂ →ₗ[R] X₁)
   hom_inv_id' := by ext; exact e.left_inv x
@@ -246,8 +241,7 @@ def LinearEquiv.toModuleIso {g₁ : AddCommGroup X₁} {g₂ : AddCommGroup X₂
 This version is better than `linear_equiv_to_Module_iso` when applicable, because Lean can't see
 `Module.of R M` is defeq to `M` when `M : Module R`. -/
 @[simps]
-def LinearEquiv.toModuleIso' {M N : ModuleCat.{v} R} (i : M ≃ₗ[R] N) : M ≅ N
-    where
+def LinearEquiv.toModuleIso' {M N : ModuleCat.{v} R} (i : M ≃ₗ[R] N) : M ≅ N where
   Hom := i
   inv := i.symm
   hom_inv_id' := LinearMap.ext fun x => by simp
@@ -260,8 +254,7 @@ This version is better than `linear_equiv_to_Module_iso` when applicable, becaus
 `Module.of R M` is defeq to `M` when `M : Module R`. -/
 @[simps]
 def LinearEquiv.toModuleIso'Left {X₁ : ModuleCat.{v} R} {g₂ : AddCommGroup X₂} {m₂ : Module R X₂}
-    (e : X₁ ≃ₗ[R] X₂) : X₁ ≅ ModuleCat.of R X₂
-    where
+    (e : X₁ ≃ₗ[R] X₂) : X₁ ≅ ModuleCat.of R X₂ where
   Hom := (e : X₁ →ₗ[R] X₂)
   inv := (e.symm : X₂ →ₗ[R] X₁)
   hom_inv_id' := LinearMap.ext fun x => by simp
@@ -274,8 +267,7 @@ This version is better than `linear_equiv_to_Module_iso` when applicable, becaus
 `Module.of R M` is defeq to `M` when `M : Module R`. -/
 @[simps]
 def LinearEquiv.toModuleIso'Right {g₁ : AddCommGroup X₁} {m₁ : Module R X₁} {X₂ : ModuleCat.{v} R}
-    (e : X₁ ≃ₗ[R] X₂) : ModuleCat.of R X₁ ≅ X₂
-    where
+    (e : X₁ ≃ₗ[R] X₂) : ModuleCat.of R X₁ ≅ X₂ where
   Hom := (e : X₁ →ₗ[R] X₂)
   inv := (e.symm : X₂ →ₗ[R] X₁)
   hom_inv_id' := LinearMap.ext fun x => by simp
@@ -286,8 +278,7 @@ namespace CategoryTheory.Iso
 
 /-- Build a `linear_equiv` from an isomorphism in the category `Module R`. -/
 @[simps]
-def toLinearEquiv {X Y : ModuleCat R} (i : X ≅ Y) : X ≃ₗ[R] Y
-    where
+def toLinearEquiv {X Y : ModuleCat R} (i : X ≅ Y) : X ≃ₗ[R] Y where
   toFun := i.Hom
   invFun := i.inv
   left_inv := by tidy
@@ -302,16 +293,14 @@ end CategoryTheory.Iso
 in `Module` -/
 @[simps]
 def linearEquivIsoModuleIso {X Y : Type u} [AddCommGroup X] [AddCommGroup Y] [Module R X]
-    [Module R Y] : (X ≃ₗ[R] Y) ≅ ModuleCat.of R X ≅ ModuleCat.of R Y
-    where
+    [Module R Y] : (X ≃ₗ[R] Y) ≅ ModuleCat.of R X ≅ ModuleCat.of R Y where
   Hom e := e.toModuleIso
   inv i := i.toLinearEquiv
 #align linear_equiv_iso_Module_iso linearEquivIsoModuleIso
 
 namespace ModuleCat
 
-instance : Preadditive (ModuleCat.{v} R)
-    where
+instance : Preadditive (ModuleCat.{v} R) where
   add_comp P Q R f f' g :=
     show (f + f') ≫ g = f ≫ g + f' ≫ g by
       ext
@@ -329,8 +318,7 @@ section
 
 variable {S : Type u} [CommRing S]
 
-instance : Linear S (ModuleCat.{v} S)
-    where
+instance : Linear S (ModuleCat.{v} S) where
   homModule X Y := LinearMap.module
   smul_comp' := by
     intros
