@@ -8,8 +8,8 @@ Authors: Johan Commelin
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Order.Antisymmetrization
-import Mathbin.Order.Category.Preord
+import Mathlib.Order.Antisymmetrization
+import Mathlib.Order.Category.Preord
 
 /-!
 # Category of partial orders
@@ -59,8 +59,7 @@ instance hasForgetToPreord : HasForget₂ PartOrd Preord :=
 
 /-- Constructs an equivalence between partial orders from an order isomorphism between them. -/
 @[simps]
-def Iso.mk {α β : PartOrd.{u}} (e : α ≃o β) : α ≅ β
-    where
+def Iso.mk {α β : PartOrd.{u}} (e : α ≃o β) : α ≅ β where
   Hom := e
   inv := e.symm
   hom_inv_id' := by
@@ -94,8 +93,7 @@ theorem partOrd_dual_comp_forget_to_preord :
 #align PartOrd_dual_comp_forget_to_Preord partOrd_dual_comp_forget_to_preord
 
 /-- `antisymmetrization` as a functor. It is the free functor. -/
-def preordToPartOrd : Preord.{u} ⥤ PartOrd
-    where
+def preordToPartOrd : Preord.{u} ⥤ PartOrd where
   obj X := PartOrd.of (Antisymmetrization X (· ≤ ·))
   map X Y f := f.Antisymmetrization
   map_id' X := by
