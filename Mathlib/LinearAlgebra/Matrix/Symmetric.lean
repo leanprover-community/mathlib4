@@ -8,7 +8,7 @@ Authors: Lu-Ming Zhang
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Matrix.Block
+import Mathlib.Data.Matrix.Block
 
 /-!
 # Symmetric matrices
@@ -133,8 +133,7 @@ theorem isSymm_diagonal [DecidableEq n] [Zero α] (v : n → α) : (diagonal v).
     if `A` and `D` are symmetric and `Bᵀ = C`. -/
 theorem IsSymm.fromBlocks {A : Matrix m m α} {B : Matrix m n α} {C : Matrix n m α}
     {D : Matrix n n α} (hA : A.IsSymm) (hBC : Bᵀ = C) (hD : D.IsSymm) :
-    (A.fromBlocks B C D).IsSymm :=
-  by
+    (A.fromBlocks B C D).IsSymm := by
   have hCB : Cᵀ = B := by
     rw [← hBC]
     simp
