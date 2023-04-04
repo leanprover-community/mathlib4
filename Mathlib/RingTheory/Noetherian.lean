@@ -322,21 +322,17 @@ theorem isNoetherian_iff_fg_wellFounded :
   · intro H
     constructor
     intro N
-    obtain ⟨⟨N₀, h₁⟩, e : N₀ ≤ N, h₂⟩ :=
-      WellFounded.has_min H { N' : α | N'.1 ≤ N } ⟨⟨⊥, Submodule.fg_bot⟩, bot_le⟩
+    obtain ⟨⟨N₀, h₁⟩, e : N₀ ≤ N, h₂ : ∀ _, _ → ¬ _ < _⟩ :=
+      WellFounded.has_min H { N' : α | N'.1 ≤ N } ⟨⟨⊥, Submodule.fg_bot⟩, @bot_le _ _ _ N⟩
     convert h₁
     refine' (e.antisymm _).symm
     by_contra h₃
     obtain ⟨x, hx₁ : x ∈ N, hx₂ : x ∉ N₀⟩ := Set.not_subset.mp h₃
     apply hx₂
-    have := eq_of_le_of_not_lt _ (h₂ ⟨(R ∙ x) ⊔ N₀, _⟩ _)
-    · injection this with eq
-      rw [eq]
-      exact (le_sup_left : (R ∙ x) ≤ (R ∙ x) ⊔ N₀) (Submodule.mem_span_singleton_self _)
-    · exact Submodule.Fg.sup ⟨{x}, by rw [Finset.coe_singleton]⟩ h₁
-    · show N₀ ≤ (R ∙ x) ⊔ N₀
-      exact le_sup_right
-    · exact sup_le ((Submodule.span_singleton_le_iff_mem _ _).mpr hx₁) e
+    rw [eq_of_le_of_not_lt (le_sup_right : N₀ ≤ _) (h₂
+      ⟨_, Submodule.Fg.sup ⟨{x}, by rw [Finset.coe_singleton]⟩ h₁⟩ <|
+      sup_le ((Submodule.span_singleton_le_iff_mem _ _).mpr hx₁) e)]
+    exact (le_sup_left : (R ∙ x) ≤ _) (Submodule.mem_span_singleton_self _)
 #align is_noetherian_iff_fg_well_founded isNoetherian_iff_fg_wellFounded
 
 variable (R M)
