@@ -17,7 +17,7 @@ This file contains the definition and basic results about symmetric matrices.
 
 ## Main definition
 
- * `matrix.is_symm `: a matrix `A : matrix n n α` is "symmetric" if `Aᵀ = A`.
+ * `Matrix.isSymm`: a matrix `A : Matrix n n α` is "symmetric" if `Aᵀ = A`.
 
 ## Tags
 
@@ -31,7 +31,7 @@ namespace Matrix
 
 open Matrix
 
-/-- A matrix `A : matrix n n α` is "symmetric" if `Aᵀ = A`. -/
+/-- A matrix `A : Matrix n n α` is "symmetric" if `Aᵀ = A`. -/
 def IsSymm (A : Matrix n n α) : Prop :=
   Aᵀ = A
 #align matrix.is_symm Matrix.IsSymm
@@ -40,12 +40,12 @@ theorem IsSymm.eq {A : Matrix n n α} (h : A.IsSymm) : Aᵀ = A :=
   h
 #align matrix.is_symm.eq Matrix.IsSymm.eq
 
-/-- A version of `matrix.ext_iff` that unfolds the `matrix.transpose`. -/
+/-- A version of `Matrix.ext_iff` that unfolds the `Matrix.transpose`. -/
 theorem IsSymm.ext_iff {A : Matrix n n α} : A.IsSymm ↔ ∀ i j, A j i = A i j :=
   Matrix.ext_iff.symm
 #align matrix.is_symm.ext_iff Matrix.IsSymm.ext_iff
 
-/-- A version of `matrix.ext` that unfolds the `matrix.transpose`. -/
+/-- A version of `Matrix.ext` that unfolds the `Matrix.transpose`. -/
 @[ext]
 theorem IsSymm.ext {A : Matrix n n α} : (∀ i j, A j i = A i j) → A.IsSymm :=
   Matrix.ext
@@ -129,7 +129,7 @@ theorem isSymm_diagonal [DecidableEq n] [Zero α] (v : n → α) : (diagonal v).
   diagonal_transpose _
 #align matrix.is_symm_diagonal Matrix.isSymm_diagonal
 
-/-- A block matrix `A.from_blocks B C D` is symmetric,
+/-- A block matrix `A.fromBlocks B C D` is symmetric,
     if `A` and `D` are symmetric and `Bᵀ = C`. -/
 theorem IsSymm.fromBlocks {A : Matrix m m α} {B : Matrix m n α} {C : Matrix n m α}
     {D : Matrix n n α} (hA : A.IsSymm) (hBC : Bᵀ = C) (hD : D.IsSymm) :
@@ -138,18 +138,17 @@ theorem IsSymm.fromBlocks {A : Matrix m m α} {B : Matrix m n α} {C : Matrix n 
     rw [← hBC]
     simp
   unfold Matrix.IsSymm
-  rw [from_blocks_transpose]
-  congr <;> assumption
+  rw [fromBlocks_transpose]
+  congr; rw [hA, hCB, hBC, hD]
 #align matrix.is_symm.from_blocks Matrix.IsSymm.fromBlocks
 
-/-- This is the `iff` version of `matrix.is_symm.from_blocks`. -/
+/-- This is the `iff` version of `Matrix.isSymm.fromBlocks`. -/
 theorem isSymm_fromBlocks_iff {A : Matrix m m α} {B : Matrix m n α} {C : Matrix n m α}
     {D : Matrix n n α} : (A.fromBlocks B C D).IsSymm ↔ A.IsSymm ∧ Bᵀ = C ∧ Cᵀ = B ∧ D.IsSymm :=
   ⟨fun h =>
     ⟨(congr_arg toBlocks₁₁ h : _), (congr_arg toBlocks₂₁ h : _), (congr_arg toBlocks₁₂ h : _),
       (congr_arg toBlocks₂₂ h : _)⟩,
-    fun ⟨hA, hBC, hCB, hD⟩ => IsSymm.fromBlocks hA hBC hD⟩
+    fun ⟨hA, hBC, _, hD⟩ => IsSymm.fromBlocks hA hBC hD⟩
 #align matrix.is_symm_from_blocks_iff Matrix.isSymm_fromBlocks_iff
 
 end Matrix
-
