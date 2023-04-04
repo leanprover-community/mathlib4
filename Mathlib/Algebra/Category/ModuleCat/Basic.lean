@@ -125,7 +125,7 @@ set_option linter.uppercaseLean3 false in
 #align Module.has_forget_to_AddCommGroup ModuleCat.hasForgetToAddCommGroup
 
 instance (M N : ModuleCat R) : LinearMapClass (M ⟶ N) R M N :=
-  { LinearMap.semilinearMapClass with coe := fun f => f }
+  { LinearMap.instSemilinearMapClassLinearMap with coe := fun f => f }
 
 /-- The object in the category of R-modules associated to an R-module -/
 def of (X : Type v) [AddCommGroup X] [Module R X] : ModuleCat R :=
