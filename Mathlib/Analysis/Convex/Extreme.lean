@@ -42,7 +42,7 @@ See chapter 8 of [Barry Simon, *Convexity*][simon2011]
 
 Prove lemmas relating extreme sets and points to the intrinsic frontier.
 
-More not-yet-PRed stuff is available on the branch `sperner_again`.
+More not-yet-PRed stuff is available on the mathlib3 branch `sperner_again`.
 -/
 
 
@@ -63,7 +63,7 @@ def IsExtreme (A B : Set E) : Prop :=
 #align is_extreme IsExtreme
 
 /-- A point `x` is an extreme point of a set `A` if `x` belongs to no open segment with ends in
-`A`, except for the obvious `open_segment x x`. -/
+`A`, except for the obvious `openSegment x x`. -/
 def Set.extremePoints (A : Set E) : Set E :=
   { x ∈ A | ∀ ⦃x₁⦄, x₁ ∈ A → ∀ ⦃x₂⦄, x₂ ∈ A → x ∈ openSegment 𝕜 x₁ x₂ → x₁ = x ∧ x₂ = x }
 #align set.extreme_points Set.extremePoints
