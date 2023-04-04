@@ -67,8 +67,8 @@ set_option linter.uppercaseLean3 false in
 /-- Constructs an equivalence between partial orders from an order isomorphism between them. -/
 @[simps]
 def Iso.mk {α β : PartOrdCat.{u}} (e : α ≃o β) : α ≅ β where
-  hom := e.toOrderEmbedding.toOrderHom
-  inv := e.symm.toOrderEmbedding.toOrderHom
+  hom := (e : OrderHom α β)
+  inv := (e.symm : OrderHom β α)
   hom_inv_id := by
     ext x
     exact e.symm_apply_apply x
