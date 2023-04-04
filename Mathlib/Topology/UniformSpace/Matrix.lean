@@ -8,8 +8,8 @@ Authors: Eric Wieser, Heather Macbeth
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.UniformSpace.Pi
-import Mathbin.Data.Matrix.Basic
+import Mathlib.Topology.UniformSpace.Pi
+import Mathlib.Data.Matrix.Basic
 
 /-!
 # Uniform space structure on matrices
@@ -26,8 +26,7 @@ instance : UniformSpace (Matrix m n 𝕜) :=
   (by infer_instance : UniformSpace (m → n → 𝕜))
 
 theorem uniformity :
-    𝓤 (Matrix m n 𝕜) = ⨅ (i : m) (j : n), (𝓤 𝕜).comap fun a => (a.1 i j, a.2 i j) :=
-  by
+    𝓤 (Matrix m n 𝕜) = ⨅ (i : m) (j : n), (𝓤 𝕜).comap fun a => (a.1 i j, a.2 i j) := by
   erw [Pi.uniformity, Pi.uniformity]
   simp_rw [Filter.comap_infᵢ, Filter.comap_comap]
   rfl
