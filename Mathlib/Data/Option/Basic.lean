@@ -366,8 +366,8 @@ theorem casesOn'_none_coe (f : Option α → β) (o : Option α) :
 section recursor_workarounds
 /-- A computable version of `Option.rec`. Workaround until Lean has native support for this. -/
 def recC.{u_1, u} {α : Type u} {motive : Option α → Sort u_1} (none : motive none)
-  (some : (a : α) → motive (some a)) :
-    (o : Option α) → motive o
+  (some : (val : α) →  motive (some val)) :
+    (t : Option α) → motive t
 | Option.none => none
 | Option.some a => some a
 
