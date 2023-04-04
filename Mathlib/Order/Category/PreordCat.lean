@@ -67,8 +67,8 @@ instance (α : PreordCat) : Preorder α :=
 /-- Constructs an equivalence between preorders from an order isomorphism between them. -/
 @[simps]
 def Iso.mk {α β : PreordCat.{u}} (e : α ≃o β) : α ≅ β where
-  hom := e.toOrderEmbedding.toOrderHom
-  inv := e.symm.toOrderEmbedding.toOrderHom
+  hom := (e : OrderHom α β)
+  inv := (e.symm : OrderHom β α)
   hom_inv_id := by
     ext x
     exact e.symm_apply_apply x
