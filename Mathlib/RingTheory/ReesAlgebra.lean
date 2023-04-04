@@ -8,7 +8,7 @@ Authors: Andrew Yang
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.RingTheory.FiniteType
+import Mathlib.RingTheory.FiniteType
 
 /-!
 
@@ -38,8 +38,7 @@ open Polynomial BigOperators
 
 /-- The Rees algebra of an ideal `I`, defined as the subalgebra of `R[X]` whose `i`-th coefficient
 falls in `I ^ i`. -/
-def reesAlgebra : Subalgebra R R[X]
-    where
+def reesAlgebra : Subalgebra R R[X] where
   carrier := { f | ∀ i, f.coeff i ∈ I ^ i }
   mul_mem' f g hf hg i := by
     rw [coeff_mul]
@@ -70,8 +69,7 @@ theorem mem_reesAlgebra_iff (f : R[X]) : f ∈ reesAlgebra I ↔ ∀ i, f.coeff 
 #align mem_rees_algebra_iff mem_reesAlgebra_iff
 
 theorem mem_reesAlgebra_iff_support (f : R[X]) :
-    f ∈ reesAlgebra I ↔ ∀ i ∈ f.support, f.coeff i ∈ I ^ i :=
-  by
+    f ∈ reesAlgebra I ↔ ∀ i ∈ f.support, f.coeff i ∈ I ^ i := by
   apply forall_congr'
   intro a
   rw [mem_support_iff, Iff.comm, imp_iff_right_iff, Ne.def, ← imp_iff_not_or]
@@ -85,8 +83,7 @@ theorem reesAlgebra.monomial_mem {I : Ideal R} {i : ℕ} {r : R} :
 #align rees_algebra.monomial_mem reesAlgebra.monomial_mem
 
 theorem monomial_mem_adjoin_monomial {I : Ideal R} {n : ℕ} {r : R} (hr : r ∈ I ^ n) :
-    monomial n r ∈ Algebra.adjoin R (Submodule.map (monomial 1 : R →ₗ[R] R[X]) I : Set R[X]) :=
-  by
+    monomial n r ∈ Algebra.adjoin R (Submodule.map (monomial 1 : R →ₗ[R] R[X]) I : Set R[X]) := by
   induction' n with n hn generalizing r
   · exact Subalgebra.algebraMap_mem _ _
   · rw [pow_succ] at hr
@@ -100,8 +97,7 @@ theorem monomial_mem_adjoin_monomial {I : Ideal R} {n : ℕ} {r : R} (hr : r ∈
 #align monomial_mem_adjoin_monomial monomial_mem_adjoin_monomial
 
 theorem adjoin_monomial_eq_reesAlgebra :
-    Algebra.adjoin R (Submodule.map (monomial 1 : R →ₗ[R] R[X]) I : Set R[X]) = reesAlgebra I :=
-  by
+    Algebra.adjoin R (Submodule.map (monomial 1 : R →ₗ[R] R[X]) I : Set R[X]) = reesAlgebra I := by
   apply le_antisymm
   · apply Algebra.adjoin_le _
     rintro _ ⟨r, hr, rfl⟩
