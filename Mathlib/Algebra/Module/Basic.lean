@@ -82,7 +82,7 @@ instance AddCommMonoid.natModule : Module ℕ M where
   one_smul := one_nsmul
   mul_smul m n a := mul_nsmul' a m n
   smul_add n a b := nsmul_add a b n
-  smul_zero := _root_.nsmul_zero
+  smul_zero := nsmul_zero
   zero_smul := zero_nsmul
   add_smul r s x := add_nsmul x r s
 #align add_comm_monoid.nat_module AddCommMonoid.natModule
