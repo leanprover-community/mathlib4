@@ -371,7 +371,7 @@ def recC.{u_1, u} {α : Type u} {motive : Option α → Sort u_1} (none : motive
 | Option.none => none
 | Option.some a => some a
 
-@[simp]
+@[csimp]
 lemma rec_eq_recC : @Option.rec = @Option.recC := by
   ext α motive none some o
   induction o with
