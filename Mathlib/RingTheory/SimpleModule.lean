@@ -8,8 +8,8 @@ Authors: Aaron Anderson
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.LinearAlgebra.Isomorphisms
-import Mathbin.Order.JordanHolder
+import Mathlib.LinearAlgebra.Isomorphisms
+import Mathlib.Order.JordanHolder
 
 /-!
 # Simple Modules
@@ -60,23 +60,20 @@ theorem IsSimpleModule.congr (l : M ≃ₗ[R] N) [IsSimpleModule R N] : IsSimple
   (Submodule.orderIsoMapComap l).IsSimpleOrder
 #align is_simple_module.congr IsSimpleModule.congr
 
-theorem isSimpleModule_iff_isAtom : IsSimpleModule R m ↔ IsAtom m :=
-  by
+theorem isSimpleModule_iff_isAtom : IsSimpleModule R m ↔ IsAtom m := by
   rw [← Set.isSimpleOrder_Iic_iff_isAtom]
   apply OrderIso.isSimpleOrder_iff
   exact Submodule.MapSubtype.relIso m
 #align is_simple_module_iff_is_atom isSimpleModule_iff_isAtom
 
-theorem isSimpleModule_iff_isCoatom : IsSimpleModule R (M ⧸ m) ↔ IsCoatom m :=
-  by
+theorem isSimpleModule_iff_isCoatom : IsSimpleModule R (M ⧸ m) ↔ IsCoatom m := by
   rw [← Set.isSimpleOrder_Ici_iff_isCoatom]
   apply OrderIso.isSimpleOrder_iff
   exact Submodule.comapMkQRelIso m
 #align is_simple_module_iff_is_coatom isSimpleModule_iff_isCoatom
 
 theorem covby_iff_quot_is_simple {A B : Submodule R M} (hAB : A ≤ B) :
-    A ⋖ B ↔ IsSimpleModule R (B ⧸ Submodule.comap B.Subtype A) :=
-  by
+    A ⋖ B ↔ IsSimpleModule R (B ⧸ Submodule.comap B.Subtype A) := by
   set f : Submodule R B ≃o Set.Iic B := Submodule.MapSubtype.relIso B with hf
   rw [covby_iff_coatom_Iic hAB, isSimpleModule_iff_isCoatom, ← OrderIso.isCoatom_iff f, hf]
   simp [-OrderIso.isCoatom_iff, Submodule.MapSubtype.relIso, Submodule.map_comap_subtype,
@@ -103,8 +100,7 @@ namespace IsSemisimpleModule
 
 variable [IsSemisimpleModule R M]
 
-theorem supₛ_simples_eq_top : supₛ { m : Submodule R M | IsSimpleModule R m } = ⊤ :=
-  by
+theorem supₛ_simples_eq_top : supₛ { m : Submodule R M | IsSimpleModule R m } = ⊤ := by
   simp_rw [isSimpleModule_iff_isAtom]
   exact supₛ_atoms_eq_top
 #align is_semisimple_module.Sup_simples_eq_top IsSemisimpleModule.supₛ_simples_eq_top
@@ -137,8 +133,7 @@ theorem injective_of_ne_zero [IsSimpleModule R M] {f : M →ₗ[R] N} (h : f ≠
 #align linear_map.injective_of_ne_zero LinearMap.injective_of_ne_zero
 
 theorem surjective_or_eq_zero [IsSimpleModule R N] (f : M →ₗ[R] N) :
-    Function.Surjective f ∨ f = 0 :=
-  by
+    Function.Surjective f ∨ f = 0 := by
   rw [← range_eq_top, ← range_eq_bot, or_comm']
   apply eq_bot_or_eq_top
 #align linear_map.surjective_or_eq_zero LinearMap.surjective_or_eq_zero
@@ -163,8 +158,7 @@ theorem bijective_of_ne_zero [IsSimpleModule R M] [IsSimpleModule R N] {f : M �
 #align linear_map.bijective_of_ne_zero LinearMap.bijective_of_ne_zero
 
 theorem isCoatom_ker_of_surjective [IsSimpleModule R N] {f : M →ₗ[R] N}
-    (hf : Function.Surjective f) : IsCoatom f.ker :=
-  by
+    (hf : Function.Surjective f) : IsCoatom f.ker := by
   rw [← isSimpleModule_iff_isCoatom]
   exact IsSimpleModule.congr (f.quot_ker_equiv_of_surjective hf)
 #align linear_map.is_coatom_ker_of_surjective LinearMap.isCoatom_ker_of_surjective
@@ -202,8 +196,7 @@ noncomputable instance Module.End.divisionRing [DecidableEq (Module.End R M)] [I
 
 end LinearMap
 
-instance jordanHolderModule : JordanHolderLattice (Submodule R M)
-    where
+instance jordanHolderModule : JordanHolderLattice (Submodule R M) where
   IsMaximal := (· ⋖ ·)
   lt_of_isMaximal x y := Covby.lt
   sup_eq_of_isMaximal x y z hxz hyz := Wcovby.sup_eq hxz.Wcovby hyz.Wcovby
