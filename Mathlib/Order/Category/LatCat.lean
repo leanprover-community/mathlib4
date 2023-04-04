@@ -14,15 +14,15 @@ import Mathlib.Order.Hom.Lattice
 /-!
 # The category of lattices
 
-This defines `Lat`, the category of lattices.
+This defines `LatCat`, the category of lattices.
 
-Note that `Lat` doesn't correspond to the literature definition of [`Lat`]
-(https://ncatlab.org/nlab/show/Lat) as we don't require bottom or top elements. Instead, `Lat`
-corresponds to `BddLat`.
+Note that `LatCat` doesn't correspond to the literature definition of [`LatCat`]
+(https://ncatlab.org/nlab/show/Lat) as we don't require bottom or top elements. Instead, `LatCat`
+corresponds to `BddLatCat`.
 
 ## TODO
 
-The free functor from `Lat` to `BddLat` is `X → with_top (with_bot X)`.
+The free functor from `LatCat` to `BddLat` is `X → WithTop (WithBot X)`.
 -/
 
 
@@ -31,82 +31,82 @@ universe u
 open CategoryTheory
 
 /-- The category of lattices. -/
-def Lat :=
+def LatCat :=
   Bundled Lattice
-#align Lat Lat
+set_option linter.uppercaseLean3 false
+#align Lat LatCat
 
-namespace Lat
+namespace LatCat
 
-instance : CoeSort Lat (Type _) :=
-  Bundled.hasCoeToSort
+instance : CoeSort LatCat (Type _) :=
+  Bundled.coeSort
 
-instance (X : Lat) : Lattice X :=
+instance (X : LatCat) : Lattice X :=
   X.str
 
-/-- Construct a bundled `Lat` from a `lattice`. -/
-def of (α : Type _) [Lattice α] : Lat :=
+/-- Construct a bundled `LatCat` from a `Lattice`. -/
+def of (α : Type _) [Lattice α] : LatCat :=
   Bundled.of α
-#align Lat.of Lat.of
+#align Lat.of LatCat.of
 
 @[simp]
 theorem coe_of (α : Type _) [Lattice α] : ↥(of α) = α :=
   rfl
-#align Lat.coe_of Lat.coe_of
+#align Lat.coe_of LatCat.coe_of
 
-instance : Inhabited Lat :=
+instance : Inhabited LatCat :=
   ⟨of Bool⟩
 
 instance : BundledHom @LatticeHom where
-  toFun _ _ _ _ := coeFn
+  toFun _ _ f := f.toFun
   id := @LatticeHom.id
   comp := @LatticeHom.comp
-  hom_ext X Y _ _ := FunLike.coe_injective
+  hom_ext _ _ _ _ h := FunLike.coe_injective h
 
-instance : LargeCategory.{u} Lat :=
+instance : LargeCategory.{u} LatCat :=
   BundledHom.category LatticeHom
 
-instance : ConcreteCategory Lat :=
+instance : ConcreteCategory LatCat :=
   BundledHom.concreteCategory LatticeHom
 
-instance hasForgetToPartOrd : HasForget₂ Lat PartOrd where
+instance hasForgetToPartOrd : HasForget₂ LatCat PartOrdCat where
   forget₂ :=
-    { obj := fun X => ⟨X⟩
-      map := fun X Y f => f }
-  forget_comp := rfl
-#align Lat.has_forget_to_PartOrd Lat.hasForgetToPartOrd
+    { obj := fun X => Bundled.mk X inferInstance
+      map := fun {X Y} (f : LatticeHom X Y) => (f : OrderHom X Y) }
+#align Lat.has_forget_to_PartOrd LatCat.hasForgetToPartOrd
 
 /-- Constructs an isomorphism of lattices from an order isomorphism between them. -/
 @[simps]
-def Iso.mk {α β : Lat.{u}} (e : α ≃o β) : α ≅ β where
-  Hom := e
-  inv := e.symm
-  hom_inv_id' := by
+def Iso.mk {α β : LatCat.{u}} (e : α ≃o β) : α ≅ β where
+  hom := (e : LatticeHom _ _)
+  inv := (e.symm : LatticeHom _ _)
+  hom_inv_id := by
     ext
     exact e.symm_apply_apply _
-  inv_hom_id' := by
+  inv_hom_id := by
     ext
     exact e.apply_symm_apply _
-#align Lat.iso.mk Lat.Iso.mk
+#align Lat.iso.mk LatCat.Iso.mk
 
-/-- `order_dual` as a functor. -/
+/-- `OrderDual` as a functor. -/
 @[simps]
-def dual : Lat ⥤ Lat where
+def dual : LatCat ⥤ LatCat where
   obj X := of Xᵒᵈ
-  map X Y := LatticeHom.dual
-#align Lat.dual Lat.dual
+  map := LatticeHom.dual
+#align Lat.dual LatCat.dual
 
-/-- The equivalence between `Lat` and itself induced by `order_dual` both ways. -/
-@[simps Functor inverse]
-def dualEquiv : Lat ≌ Lat :=
-  Equivalence.mk dual dual
-    (NatIso.ofComponents (fun X => Iso.mk <| OrderIso.dualDual X) fun X Y f => rfl)
-    (NatIso.ofComponents (fun X => Iso.mk <| OrderIso.dualDual X) fun X Y f => rfl)
-#align Lat.dual_equiv Lat.dualEquiv
+/-- The equivalence between `LatCat` and itself induced by `OrderDual` both ways. -/
+@[simps functor inverse]
+def dualEquiv : LatCat ≌ LatCat where
+  functor := dual
+  inverse := dual
+  unitIso := NatIso.ofComponents (fun X => Iso.mk <| OrderIso.dualDual X) (fun _ => rfl)
+  counitIso := NatIso.ofComponents (fun X => Iso.mk <| OrderIso.dualDual X) (fun _ => rfl)
+#align Lat.dual_equiv LatCat.dualEquiv
 
-end Lat
+end LatCat
 
-theorem lat_dual_comp_forget_to_partOrd :
-    Lat.dual ⋙ forget₂ Lat PartOrd = forget₂ Lat PartOrd ⋙ PartOrd.dual :=
+theorem latCat_dual_comp_forget_to_partOrdCat :
+    LatCat.dual ⋙ forget₂ LatCat PartOrdCat = forget₂ LatCat PartOrdCat ⋙ PartOrdCat.dual :=
   rfl
-#align Lat_dual_comp_forget_to_PartOrd lat_dual_comp_forget_to_partOrd
-
+#align Lat_dual_comp_forget_to_PartOrd latCat_dual_comp_forget_to_partOrdCat
