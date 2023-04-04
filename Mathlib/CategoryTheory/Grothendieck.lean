@@ -58,7 +58,9 @@ gives a category whose
 -- porting note: no such linter yet
 -- @[nolint has_nonempty_instance]
 structure Grothendieck where
+  /-- The underlying object in `C` -/
   base : C
+  /-- The object in the fiber of the base object. -/
   fiber : F.obj base
 #align category_theory.grothendieck CategoryTheory.Grothendieck
 
@@ -70,7 +72,9 @@ variable {F}
 `base : X.base ⟶ Y.base` and `f.fiber : (F.map base).obj X.fiber ⟶ Y.fiber`.
 -/
 structure Hom (X Y : Grothendieck F) where
+  /-- The morphism between base objects. -/
   base : X.base ⟶ Y.base
+  /-- The morphism from the pushforward to the source fiber object to the target fiber object. -/
   fiber : (F.map base).obj X.fiber ⟶ Y.fiber
 #align category_theory.grothendieck.hom CategoryTheory.Grothendieck.Hom
 
@@ -162,15 +166,12 @@ set_option linter.uppercaseLean3 false in
 #align category_theory.grothendieck.grothendieck_Type_to_Cat_functor CategoryTheory.Grothendieck.grothendieckTypeToCatFunctor
 
 /-- Auxiliary definition for `grothendieck_Type_to_Cat`, to speed up elaboration. -/
-@[simps!]
+@[simps! obj_base obj_fiber_as map_base]
 def grothendieckTypeToCatInverse : G.Elements ⥤ Grothendieck (G ⋙ typeToCat) where
   obj X := ⟨X.1, ⟨X.2⟩⟩
-  map := @fun X Y f => ⟨f.1, ⟨⟨f.2⟩⟩⟩
+  map f := ⟨f.1, ⟨⟨f.2⟩⟩⟩
 set_option linter.uppercaseLean3 false in
 #align category_theory.grothendieck.grothendieck_Type_to_Cat_inverse CategoryTheory.Grothendieck.grothendieckTypeToCatInverse
-
--- Porting note: simpNF says the LHS of this does not apply when using the lemma on itself
-attribute [nolint simpNF] grothendieckTypeToCatInverse_map_fiber_down_down
 
 /-- The Grothendieck construction applied to a functor to `Type`
 (thought of as a functor to `Cat` by realising a type as a discrete category)
