@@ -8,8 +8,8 @@ Authors: Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Order.Category.PartOrd
-import Mathbin.Order.Hom.Lattice
+import Mathlib.Order.Category.PartOrd
+import Mathlib.Order.Hom.Lattice
 
 /-!
 # The category of lattices
@@ -68,8 +68,7 @@ instance : LargeCategory.{u} Lat :=
 instance : ConcreteCategory Lat :=
   BundledHom.concreteCategory LatticeHom
 
-instance hasForgetToPartOrd : HasForget₂ Lat PartOrd
-    where
+instance hasForgetToPartOrd : HasForget₂ Lat PartOrd where
   forget₂ :=
     { obj := fun X => ⟨X⟩
       map := fun X Y f => f }
@@ -78,8 +77,7 @@ instance hasForgetToPartOrd : HasForget₂ Lat PartOrd
 
 /-- Constructs an isomorphism of lattices from an order isomorphism between them. -/
 @[simps]
-def Iso.mk {α β : Lat.{u}} (e : α ≃o β) : α ≅ β
-    where
+def Iso.mk {α β : Lat.{u}} (e : α ≃o β) : α ≅ β where
   Hom := e
   inv := e.symm
   hom_inv_id' := by
