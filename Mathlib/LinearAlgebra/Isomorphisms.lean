@@ -139,8 +139,7 @@ theorem quotientInfEquivSupQuotient_apply_mk (p p' : Submodule R M) (x : p) :
       Submodule.Quotient.mk (ofLe (le_sup_left : p ≤ p ⊔ p') x) :=
   rfl
 #align
-  linear_map.quotient_inf_equiv_sup_quotient_apply_mk
-  LinearMap.quotientInfEquivSupQuotient_apply_mk
+  linear_map.quotient_inf_equiv_sup_quotient_apply_mk LinearMap.quotientInfEquivSupQuotient_apply_mk
 
 theorem quotientInfEquivSupQuotient_symm_apply_left (p p' : Submodule R M) (x : ↥(p ⊔ p'))
     (hx : (x : M) ∈ p) :
@@ -149,9 +148,7 @@ theorem quotientInfEquivSupQuotient_symm_apply_left (p p' : Submodule R M) (x : 
   (LinearEquiv.symm_apply_eq _).2 <| by
     -- Porting note: Was `simp`.
     rw [← asFun_coe, quotientInfEquivSupQuotient_apply_mk, ofLe_apply]
-#align
-  linear_map.quotient_inf_equiv_sup_quotient_symm_apply_left
-  LinearMap.quotientInfEquivSupQuotient_symm_apply_left
+#align linear_map.quotient_inf_equiv_sup_quotient_symm_apply_left LinearMap.quotientInfEquivSupQuotient_symm_apply_left
 
 -- @[simp] -- Porting note: simp can prove this
 theorem quotientInfEquivSupQuotient_symm_apply_eq_zero_iff {p p' : Submodule R M} {x : ↥(p ⊔ p')} :
@@ -159,16 +156,12 @@ theorem quotientInfEquivSupQuotient_symm_apply_eq_zero_iff {p p' : Submodule R M
   (LinearEquiv.symm_apply_eq _).trans <| by
     -- Porting note: Was `simp`.
     rw [_root_.map_zero, Quotient.mk_eq_zero, mem_comap, Submodule.coeSubtype]
-#align
-  linear_map.quotient_inf_equiv_sup_quotient_symm_apply_eq_zero_iff
-  LinearMap.quotientInfEquivSupQuotient_symm_apply_eq_zero_iff
+#align linear_map.quotient_inf_equiv_sup_quotient_symm_apply_eq_zero_iff LinearMap.quotientInfEquivSupQuotient_symm_apply_eq_zero_iff
 
 theorem quotientInfEquivSupQuotient_symm_apply_right (p p' : Submodule R M) {x : ↥(p ⊔ p')}
     (hx : (x : M) ∈ p') : asFun ((quotientInfEquivSupQuotient p p').symm) (Submodule.Quotient.mk x) = 0 :=
   quotientInfEquivSupQuotient_symm_apply_eq_zero_iff.2 hx
-#align
-  linear_map.quotient_inf_equiv_sup_quotient_symm_apply_right
-  LinearMap.quotientInfEquivSupQuotient_symm_apply_right
+#align linear_map.quotient_inf_equiv_sup_quotient_symm_apply_right LinearMap.quotientInfEquivSupQuotient_symm_apply_right
 
 end IsomorphismLaws
 
@@ -194,16 +187,12 @@ def quotientQuotientEquivQuotientAux (h : S ≤ T) : (M ⧸ S) ⧸ T.map S.mkQ �
 theorem quotientQuotientEquivQuotientAux_mk (x : M ⧸ S) :
     quotientQuotientEquivQuotientAux S T h (Quotient.mk x) = mapQ S T LinearMap.id h x :=
   liftQ_apply _ _ _
-#align
-  submodule.quotient_quotient_equiv_quotient_aux_mk
-  Submodule.quotientQuotientEquivQuotientAux_mk
+#align submodule.quotient_quotient_equiv_quotient_aux_mk Submodule.quotientQuotientEquivQuotientAux_mk
 
 -- @[simp] -- Porting note: simp can prove this
 theorem quotientQuotientEquivQuotientAux_mk_mk (x : M) :
     quotientQuotientEquivQuotientAux S T h (Quotient.mk (Quotient.mk x)) = Quotient.mk x := by simp
-#align
-  submodule.quotient_quotient_equiv_quotient_aux_mk_mk
-  Submodule.quotientQuotientEquivQuotientAux_mk_mk
+#align submodule.quotient_quotient_equiv_quotient_aux_mk_mk Submodule.quotientQuotientEquivQuotientAux_mk_mk
 
 /-- **Noether's third isomorphism theorem** for modules: `(M / S) / (T / S) ≃ M / T`. -/
 def quotientQuotientEquivQuotient : ((M ⧸ S) ⧸ T.map S.mkQ) ≃ₗ[R] M ⧸ T :=
