@@ -21,26 +21,26 @@ sequences (chains) in a partial order.
 
 ## Main definition
 
-- `set.subchain`: The set of strictly ascending lists of `α` contained in a `set α`.
-- `set.chain_height`: The maximal length of a strictly ascending sequence in a partial order.
-This is defined as the maximum of the lengths of `set.subchain`s, valued in `ℕ∞`.
+- `Set.subchain`: The set of strictly ascending lists of `α` contained in a `Set α`.
+- `Set.chainHeight`: The maximal length of a strictly ascending sequence in a partial order.
+This is defined as the maximum of the lengths of `Set.subchain`s, valued in `ℕ∞`.
 
 ## Main results
 
-- `set.exists_chain_of_le_chain_height`: For each `n : ℕ` such that `n ≤ s.chain_height`, there
+- `Set.exists_chain_of_le_chainHeight`: For each `n : ℕ` such that `n ≤ s.chainHeight`, there
   exists `s.subchain` of length `n`.
-- `set.chain_height_mono`: If `s ⊆ t` then `s.chain_height ≤ t.chain_height`.
-- `set.chain_height_image`: If `f` is an order embedding, then
-  `(f '' s).chain_height = s.chain_height`.
-- `set.chain_height_insert_of_forall_lt`: If `∀ y ∈ s, y < x`, then
-  `(insert x s).chain_height = s.chain_height + 1`.
-- `set.chain_height_insert_of_lt_forall`: If `∀ y ∈ s, x < y`, then
-  `(insert x s).chain_height = s.chain_height + 1`.
-- `set.chain_height_union_eq`: If `∀ x ∈ s, ∀ y ∈ t, s ≤ t`, then
-  `(s ∪ t).chain_height = s.chain_height + t.chain_height`.
-- `set.well_founded_gt_of_chain_height_ne_top`:
+- `Set.chainHeight_mono`: If `s ⊆ t` then `s.chainHeight ≤ t.chainHeight`.
+- `Set.chainHeight_image`: If `f` is an order embedding, then
+  `(f '' s).chainHeight = s.chainHeight`.
+- `Set.chainHeight_insert_of_forall_lt`: If `∀ y ∈ s, y < x`, then
+  `(insert x s).chainHeight = s.chainHeight + 1`.
+- `Set.chainHeight_insert_of_forall_gt`: If `∀ y ∈ s, x < y`, then
+  `(insert x s).chainHeight = s.chainHeight + 1`.
+- `Set.chainHeight_union_eq`: If `∀ x ∈ s, ∀ y ∈ t, s ≤ t`, then
+  `(s ∪ t).chainHeight = s.chainHeight + t.chainHeight`.
+- `Set.wellFoundedGT_of_chainHeight_ne_top`:
   If `s` has finite height, then `>` is well-founded on `s`.
-- `set.well_founded_lt_of_chain_height_ne_top`:
+- `Set.wellFoundedLT_of_chainHeight_ne_top`:
   If `s` has finite height, then `<` is well-founded on `s`.
 
 -/
@@ -59,7 +59,7 @@ section LT
 
 variable [LT α] [LT β] (s t : Set α)
 
-/-- The set of strictly ascending lists of `α` contained in a `set α`. -/
+/-- The set of strictly ascending lists of `α` contained in a `Set α`. -/
 def subchain : Set (List α) :=
   { l | l.Chain' (· < ·) ∧ ∀ i ∈ l, i ∈ s }
 #align set.subchain Set.subchain
@@ -214,7 +214,6 @@ theorem chainHeight_mono (h : s ⊆ t) : s.chainHeight ≤ t.chainHeight :=
   chainHeight_le_chainHeight_iff.2 fun l hl => ⟨l, ⟨hl.1, fun i hi => h <| hl.2 i hi⟩, rfl⟩
 #align set.chain_height_mono Set.chainHeight_mono
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem chainHeight_image (f : α → β) (hf : ∀ {x y}, x < y ↔ f x < f y) (s : Set α) :
     (f '' s).chainHeight = s.chainHeight := by
   apply le_antisymm <;> rw [chainHeight_le_chainHeight_iff]
@@ -285,7 +284,6 @@ theorem chainHeight_eq_supᵢ_Iic : s.chainHeight = ⨆ i ∈ s, (s ∩ Set.Iic 
 
 variable {s t}
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem chainHeight_insert_of_forall_gt (a : α) (hx : ∀ b ∈ s, a < b) :
     (insert a s).chainHeight = s.chainHeight + 1 := by
   rw [← add_zero (insert a s).chainHeight]
