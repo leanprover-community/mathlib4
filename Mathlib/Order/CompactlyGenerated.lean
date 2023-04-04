@@ -206,14 +206,13 @@ theorem finset_sup_compact_of_compact {α β : Type _} [CompleteLattice α] {f :
 theorem WellFounded.isSupFiniteCompact (h : WellFounded ((· > ·) : α → α → Prop)) :
     IsSupFiniteCompact α := fun s =>
   by
-  obtain ⟨m, ⟨t, ⟨ht₁, rfl⟩⟩, hm⟩ :=
-    well_founded.well_founded_iff_has_min.mp h { x | ∃ t : Finset α, ↑t ⊆ s ∧ t.sup id = x }
-      ⟨⊥, ∅, by simp⟩
-  refine' ⟨t, ht₁, (supₛ_le fun y hy => _).antisymm _⟩
+  let S := { x | ∃ t : Finset α, ↑t ⊆ s ∧ t.sup id = x }
+  obtain ⟨m, ⟨t, ⟨ht₁, rfl⟩⟩, hm⟩ := h.has_min S ⟨⊥, ∅, by simp⟩
+  refine' ⟨t, ht₁, (supₛ_le _ _ fun y hy => _).antisymm _⟩
   · classical
-      rw [eq_of_le_of_not_lt (Finset.sup_mono (t.subset_insert y))
-          (hm _ ⟨insert y t, by simp [Set.insert_subset, hy, ht₁]⟩)]
-      simp
+    rw [eq_of_le_of_not_lt (Finset.sup_mono (t.subset_insert y))
+        (hm _ ⟨insert y t, by simp [Set.insert_subset, hy, ht₁]⟩)]
+    simp
   · rw [Finset.sup_id_eq_supₛ]
     exact supₛ_le_supₛ ht₁
 #align complete_lattice.well_founded.is_Sup_finite_compact CompleteLattice.WellFounded.isSupFiniteCompact
