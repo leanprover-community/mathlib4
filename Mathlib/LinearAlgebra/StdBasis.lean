@@ -239,7 +239,7 @@ theorem basis_repr_stdBasis [DecidableEq η] (s : ∀ j, Basis (ιs j) R (Ms j))
     symm
     exact
       Finsupp.single_apply_left
-        (fun i i' (h : (⟨j, i⟩ : Σj, ιs j) = ⟨j, i'⟩) => eq_of_hEq (Sigma.mk.inj h).2) _ _ _
+        (fun i i' (h : (⟨j, i⟩ : Σj, ιs j) = ⟨j, i'⟩) => eq_of_heq (Sigma.mk.inj h).2) _ _ _
   simp only [Pi.basis, LinearEquiv.trans_apply, Finsupp.sigmaFinsuppLEquivPiFinsupp_symm_apply,
     LinearEquiv.piCongrRight]
   dsimp
@@ -274,12 +274,12 @@ noncomputable def basisFun : Basis η R (∀ j : η, R) :=
 
 @[simp]
 theorem basisFun_apply [DecidableEq η] (i) : basisFun R η i = stdBasis R (fun i : η => R) i 1 := by
-  simp only [basis_fun, Basis.coe_ofEquivFun, LinearEquiv.refl_symm, LinearEquiv.refl_apply,
+  simp only [basisFun, Basis.coe_ofEquivFun, LinearEquiv.refl_symm, LinearEquiv.refl_apply,
     stdBasis_apply]
 #align pi.basis_fun_apply Pi.basisFun_apply
 
 @[simp]
-theorem basisFun_repr (x : η → R) (i : η) : (Pi.basisFun R η).repr x i = x i := by simp [basis_fun]
+theorem basisFun_repr (x : η → R) (i : η) : (Pi.basisFun R η).repr x i = x i := by simp [basisFun]
 #align pi.basis_fun_repr Pi.basisFun_repr
 
 end
