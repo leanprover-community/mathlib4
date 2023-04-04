@@ -83,7 +83,7 @@ open Mathlib.Meta Qq NormNum Lean.Meta AtomM
 open Lean (MetaM Expr mkRawNatLit)
 
 /-- A shortcut instance for `CommSemiring ℕ` used by ring. -/
-def instCommSemiringNat : CommSemiring ℕ := inferInstance
+abbrev instCommSemiringNat : CommSemiring ℕ := inferInstance
 
 /--
 A typed expression of type `CommSemiring ℕ` used when we are working on

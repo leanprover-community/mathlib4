@@ -73,6 +73,7 @@ theorem toMultiset_single (a : α) (n : ℕ) : toMultiset (single a n) = n • {
 
 theorem toMultiset_sum {f : ι → α →₀ ℕ} (s : Finset ι) :
     Finsupp.toMultiset (∑ i in s, f i) = ∑ i in s, Finsupp.toMultiset (f i) :=
+  letI : AddZeroClass (α →₀ ℕ) := inferInstance -- FIXME: caching issue in TC synthesis
   map_sum _ _ _
 #align finsupp.to_multiset_sum Finsupp.toMultiset_sum
 

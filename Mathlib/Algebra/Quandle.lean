@@ -690,9 +690,10 @@ instance (R : Type _) [Rack R] : DivInvMonoid (EnvelGroup R)
   one_mul a := Quotient.inductionOn a fun a => Quotient.sound (PreEnvelGroupRel'.one_mul a).rel
   mul_one a := Quotient.inductionOn a fun a => Quotient.sound (PreEnvelGroupRel'.mul_one a).rel
 
-instance (R : Type _) [Rack R] : Group (EnvelGroup R) :=
-  { mul_left_inv := fun a =>
-      Quotient.inductionOn a fun a => Quotient.sound (PreEnvelGroupRel'.mul_left_inv a).rel }
+instance (R : Type _) [Rack R] : Group (EnvelGroup R) where
+  __ := instDivInvMonoidEnvelGroup R
+  mul_left_inv := fun a =>
+    Quotient.inductionOn a fun a => Quotient.sound (PreEnvelGroupRel'.mul_left_inv a).rel
 
 instance EnvelGroup.inhabited (R : Type _) [Rack R] : Inhabited (EnvelGroup R) :=
   ⟨1⟩
