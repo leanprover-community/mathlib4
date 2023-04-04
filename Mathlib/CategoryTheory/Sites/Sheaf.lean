@@ -105,8 +105,8 @@ variable {P S E} {x : FamilyOfElements (P ⋙ coyoneda.obj E) S.arrows} (hx : Si
 
 /-- The cone corresponding to a sieve_compatible family of elements, dot notation enabled. -/
 @[simp]
-def _root_.CategoryTheory.Presieve.FamilyOfElements.SieveCompatible.cone : Cone (S.arrows.diagram.op ⋙ P)
-    where
+def _root_.CategoryTheory.Presieve.FamilyOfElements.SieveCompatible.cone :
+    Cone (S.arrows.diagram.op ⋙ P) where
   pt := E.unop
   π := (conesEquivSieveCompatibleFamily P S E).invFun ⟨x, hx⟩
 #align category_theory.presieve.family_of_elements.sieve_compatible.cone CategoryTheory.Presieve.FamilyOfElements.SieveCompatible.cone
