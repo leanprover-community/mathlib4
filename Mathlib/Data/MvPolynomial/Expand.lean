@@ -8,7 +8,7 @@ Authors: Johan Commelin, Robert Y. Lewis
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.MvPolynomial.Monad
+import Mathlib.Data.MvPolynomial.Monad
 
 /-!
 ## Expand multivariate polynomials
@@ -59,15 +59,13 @@ theorem expand_one_apply (f : MvPolynomial σ R) : expand 1 f = f := by
 #align mv_polynomial.expand_one_apply MvPolynomial.expand_one_apply
 
 @[simp]
-theorem expand_one : expand 1 = AlgHom.id R (MvPolynomial σ R) :=
-  by
+theorem expand_one : expand 1 = AlgHom.id R (MvPolynomial σ R) := by
   ext1 f
   rw [expand_one_apply, AlgHom.id_apply]
 #align mv_polynomial.expand_one MvPolynomial.expand_one
 
 theorem expand_comp_bind₁ (p : ℕ) (f : σ → MvPolynomial τ R) :
-    (expand p).comp (bind₁ f) = bind₁ fun i => expand p (f i) :=
-  by
+    (expand p).comp (bind₁ f) = bind₁ fun i => expand p (f i) := by
   apply alg_hom_ext
   intro i
   simp only [AlgHom.comp_apply, bind₁_X_right]
@@ -91,8 +89,7 @@ theorem rename_expand (f : σ → τ) (p : ℕ) (φ : MvPolynomial σ R) :
 @[simp]
 theorem rename_comp_expand (f : σ → τ) (p : ℕ) :
     (rename f).comp (expand p) =
-      (expand p).comp (rename f : MvPolynomial σ R →ₐ[R] MvPolynomial τ R) :=
-  by
+      (expand p).comp (rename f : MvPolynomial σ R →ₐ[R] MvPolynomial τ R) := by
   ext1 φ
   simp only [rename_expand, AlgHom.comp_apply]
 #align mv_polynomial.rename_comp_expand MvPolynomial.rename_comp_expand
