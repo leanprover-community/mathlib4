@@ -136,10 +136,8 @@ theorem supᵢ_range_stdBasis_eq_infᵢ_ker_proj {I J : Set ι} (hd : Disjoint I
 theorem supᵢ_range_stdBasis [Finite ι] : (⨆ i, range (stdBasis R φ i)) = ⊤ := by
   cases nonempty_fintype ι
   convert top_unique (infᵢ_emptyset.ge.trans <| infᵢ_ker_proj_le_supᵢ_range_stdBasis R φ _)
-  ·
-    exact
-      funext fun i =>
-        ((@supᵢ_pos _ _ _ fun h => range <| stdBasis R φ i) <| Finset.mem_univ i).symm
+  · rename_i i
+    exact ((@supᵢ_pos _ _ _ fun _ => range <| stdBasis R φ i) <| Finset.mem_univ i).symm
   · rw [Finset.coe_univ, Set.union_empty]
 #align linear_map.supr_range_std_basis LinearMap.supᵢ_range_stdBasis
 
@@ -160,7 +158,7 @@ theorem disjoint_stdBasis_stdBasis (I J : Set ι) (h : Disjoint I J) :
 #align linear_map.disjoint_std_basis_std_basis LinearMap.disjoint_stdBasis_stdBasis
 
 theorem stdBasis_eq_single {a : R} :
-    (fun i : ι => (stdBasis R (fun _ : ι => R) i) a) = fun i : ι => Finsupp.single i a :=
+    (fun i : ι => (stdBasis R (fun _ : ι => R) i) a) = fun i : ι => ↑(Finsupp.single i a) :=
   funext fun i => (Finsupp.single_eq_pi_single i a).symm
 #align linear_map.std_basis_eq_single LinearMap.stdBasis_eq_single
 
