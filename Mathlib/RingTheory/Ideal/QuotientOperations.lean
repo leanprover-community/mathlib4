@@ -199,11 +199,12 @@ instance Quotient.algebra {I : Ideal A} : Algebra R₁ (A ⧸ I) :=
 #align ideal.quotient.algebra Ideal.Quotient.algebra
 
 -- Porting note: cannot synth IsScalarTower R₁ R₂ (A ⧸ I)
--- set_option synthInstance.etaExperiment true in
 -- Lean can struggle to find this instance later if we don't provide this shortcut
--- instance Quotient.isScalarTower [SMul R₁ R₂] [IsScalarTower R₁ R₂ A] (I : Ideal A) :
---     IsScalarTower R₁ R₂ (A ⧸ I) := by infer_instance
--- #align ideal.quotient.is_scalar_tower Ideal.Quotient.isScalarTower
+-- Porting note: this can probably now be deleted
+set_option synthInstance.etaExperiment true in
+instance Quotient.isScalarTower [SMul R₁ R₂] [IsScalarTower R₁ R₂ A] (I : Ideal A) :
+    IsScalarTower R₁ R₂ (A ⧸ I) := by infer_instance
+#align ideal.quotient.is_scalar_tower Ideal.Quotient.isScalarTower
 
 /-- The canonical morphism `A →ₐ[R₁] A ⧸ I` as morphism of `R₁`-algebras, for `I` an ideal of
 `A`, where `A` is an `R₁`-algebra. -/
@@ -305,9 +306,10 @@ def kerLiftAlg (f : A →ₐ[R₁] B) : A ⧸ (RingHom.ker f.toRingHom) →ₐ[R
   AlgHom.mk' f.toRingHom.kerLift fun _ _ => KerLift.map_smul f _ _
 #align ideal.ker_lift_alg Ideal.kerLiftAlg
 
+-- Porting note: changed from f.toRingHom to f on LHS since f.toRingHom = f is in simp
 @[simp]
 theorem kerLiftAlg_mk (f : A →ₐ[R₁] B) (a : A) :
-    kerLiftAlg f (Quotient.mk (RingHom.ker f.toRingHom) a) = f a :=
+    kerLiftAlg f (Quotient.mk (RingHom.ker f) a) = f a := by
   rfl
 #align ideal.ker_lift_alg_mk Ideal.kerLiftAlg_mk
 
@@ -401,7 +403,8 @@ def quotientEquiv (I : Ideal R) (J : Ideal S) (f : R ≃+* S) (hIJ : J = I.map (
         quotientMap_mk, RingEquiv.coe_toRingHom, RingEquiv.apply_symm_apply] }
 #align ideal.quotient_equiv Ideal.quotientEquiv
 
-@[simp]
+/- Porting note: removed simp. LHS simplified. Slightly different version of the simplified
+form closed this and was itself closed by simp -/
 theorem quotientEquiv_mk (I : Ideal R) (J : Ideal S) (f : R ≃+* S) (hIJ : J = I.map (f : R →+* S))
     (x : R) : quotientEquiv I J f hIJ (Ideal.Quotient.mk I x) = Ideal.Quotient.mk J (f x) :=
   rfl
@@ -730,8 +733,9 @@ Ideal.quotientKerAlgEquivOfRightInverse.apply
 Ideal.QuotientKerAlgEquivOfRightInverseSymm.apply
 DoubleQuot.quotQuotEquivComm_comp_quotQuotMk
 DoubleQuot.quotQuotEquivComm_mk_mk
+Ideal.kerLiftAlg_mk
 
 end Algebra
 
 end DoubleQuot
-#lint
+
