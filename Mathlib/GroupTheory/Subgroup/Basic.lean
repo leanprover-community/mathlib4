@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 
 ! This file was ported from Lean 3 source module group_theory.subgroup.basic
-! leanprover-community/mathlib commit c10e724be91096453ee3db13862b9fb9a992fef2
+! leanprover-community/mathlib commit 6b60020790e39e77bfd633ba3d5562ff82e52c79
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -286,13 +286,13 @@ instance (priority := 75) toLinearOrderedCommGroup {G : Type _} [LinearOrderedCo
 /-- The natural group hom from a subgroup of group `G` to `G`. -/
 @[to_additive (attr := coe)
   "The natural group hom from an additive subgroup of `AddGroup` `G` to `G`."]
-def subtype : H →* G :=
+protected def subtype : H →* G :=
   ⟨⟨((↑) : H → G), rfl⟩, fun _ _ => rfl⟩
 #align subgroup_class.subtype SubgroupClass.subtype
 #align add_subgroup_class.subtype AddSubgroupClass.subtype
 
 @[to_additive (attr := simp)]
-theorem coeSubtype : (subtype H : H → G) = ((↑) : H → G) := by
+theorem coeSubtype : (SubgroupClass.subtype H : H → G) = ((↑) : H → G) := by
   rfl
 #align subgroup_class.coe_subtype SubgroupClass.coeSubtype
 #align add_subgroup_class.coe_subtype AddSubgroupClass.coeSubtype
@@ -354,7 +354,7 @@ theorem coe_inclusion {H K : S} {h : H ≤ K} (a : H) : (inclusion h a : G) = a 
 
 @[to_additive (attr := simp)]
 theorem subtype_comp_inclusion {H K : S} (hH : H ≤ K) :
-    (subtype K).comp (inclusion hH) = subtype H := by
+    (SubgroupClass.subtype K).comp (inclusion hH) = SubgroupClass.subtype H := by
   ext
   simp only [MonoidHom.comp_apply, coeSubtype, coe_inclusion]
 #align subgroup_class.subtype_comp_inclusion SubgroupClass.subtype_comp_inclusion
@@ -790,7 +790,7 @@ instance toLinearOrderedCommGroup {G : Type _} [LinearOrderedCommGroup G] (H : S
 
 /-- The natural group hom from a subgroup of group `G` to `G`. -/
 @[to_additive "The natural group hom from an `AddSubgroup` of `AddGroup` `G` to `G`."]
-def subtype : H →* G :=
+protected def subtype : H →* G :=
   ⟨⟨((↑) : H → G), rfl⟩, fun _ _ => rfl⟩
 #align subgroup.subtype Subgroup.subtype
 #align add_subgroup.subtype AddSubgroup.subtype
@@ -802,7 +802,7 @@ theorem coeSubtype : ⇑ H.subtype = ((↑) : H → G) :=
 #align add_subgroup.coe_subtype AddSubgroup.coeSubtype
 
 @[to_additive]
-theorem subtype_injective : Function.Injective (subtype H) :=
+theorem subtype_injective : Function.Injective (Subgroup.subtype H) :=
   Subtype.coe_injective
 #align subgroup.subtype_injective Subgroup.subtype_injective
 #align add_subgroup.subtype_injective AddSubgroup.subtype_injective
