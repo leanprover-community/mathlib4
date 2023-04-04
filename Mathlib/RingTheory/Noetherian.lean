@@ -322,7 +322,7 @@ theorem isNoetherian_iff_fg_wellFounded :
   · intro H
     constructor
     intro N
-    obtain ⟨⟨N₀, h₁⟩, e : N₀ ≤ N, h₂ : ∀ _, _ → ¬ _ < _⟩ :=
+    obtain ⟨⟨N₀, h₁⟩, e : N₀ ≤ N, h₂⟩ :=
       WellFounded.has_min H { N' : α | N'.1 ≤ N } ⟨⟨⊥, Submodule.fg_bot⟩, @bot_le _ _ _ N⟩
     convert h₁
     refine' (e.antisymm _).symm
