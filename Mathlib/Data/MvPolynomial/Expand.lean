@@ -37,7 +37,7 @@ noncomputable def expand (p : ℕ) : MvPolynomial σ R →ₐ[R] MvPolynomial σ
     commutes' := fun _ ↦ eval₂Hom_C _ _ _ }
 #align mv_polynomial.expand MvPolynomial.expand
 
-@[simp]
+-- @[simp] -- Porting note: simp can prove this
 theorem expand_C (p : ℕ) (r : R) : expand p (C r : MvPolynomial σ R) = C r :=
   eval₂Hom_C _ _ _
 set_option linter.uppercaseLean3 false in
