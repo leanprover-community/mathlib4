@@ -358,7 +358,7 @@ section
 variable {S : Type u} [CommRing S]
 
 instance : Linear S (ModuleCat.{v} S) where
-  homModule X Y := LinearMap.module
+  homModule X Y := LinearMap.instModuleLinearMapAddCommMonoid
   smul_comp := by
     intros
     ext
