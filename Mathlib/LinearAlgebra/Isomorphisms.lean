@@ -34,7 +34,6 @@ variable (f : M →ₗ[R] M₂)
 
 /-! The first and second isomorphism theorems for modules. -/
 
-
 namespace LinearMap
 
 open Submodule
@@ -67,16 +66,8 @@ theorem quotKerEquivRange_symm_apply_image (x : M) (h : f x ∈ LinearMap.range 
   f.quotKerEquivRange.symm_apply_apply (f.ker.mkQ x)
 #align linear_map.quot_ker_equiv_range_symm_apply_image LinearMap.quotKerEquivRange_symm_apply_image
 
-/-
-Porting note: In these definitions and theorems, a match to `Submodule.module` which takes 0.1s
-  happens a few hundreds times, so `maxHeartbeats` and
-  `synthInstance.maxHeartbeats` should be increased.
-TODO: We hope these problem will be resolved by
-  https://github.com/leanprover/lean4/issues/2055.
-  In that time, Please erase these `set_option`s.
--/
-
 -- Porting note: breaking up original definition of quotientInfToSupQuotient to avoid timing out
+/-- Linear map from `p` to `p+p'/p'` where `p p'` are submodules of `R` -/
 @[reducible]
 def subToSupQuotient (p p' : Submodule R M) :=
   (comap (p ⊔ p').subtype p').mkQ.comp (Submodule.ofLe le_sup_left)
@@ -121,6 +112,7 @@ noncomputable def quotientInfEquivSupQuotient (p p' : Submodule R M) :
 #align linear_map.quotient_inf_equiv_sup_quotient LinearMap.quotientInfEquivSupQuotient
 
 -- Porting note: wrapper to help with tc synthesis timing out
+/-- These should be removed -/
 abbrev asFun (f : M ≃ₗ[R] M₂) : M → M₂ := f
 theorem asFun_coe (f : M ≃ₗ[R] M₂) : asFun f = f := rfl
 
@@ -132,6 +124,8 @@ theorem coe_quotientInfToSupQuotient (p p' : Submodule R M) :
   rfl
 #align linear_map.coe_quotient_inf_to_sup_quotient LinearMap.coe_quotientInfToSupQuotient
 
+-- Porting note: cannot synth semilinearmapclass. Needs help with Submodule.Quotient.mk
+-- Porting note: using asFun to avoid timing out
 set_option synthInstance.etaExperiment true in
 @[simp, nolint simpNF] -- Porting note: The linter timeouts.
 theorem quotientInfEquivSupQuotient_apply_mk (p p' : Submodule R M) (x : p) :
@@ -141,6 +135,7 @@ theorem quotientInfEquivSupQuotient_apply_mk (p p' : Submodule R M) (x : p) :
   rfl
 #align linear_map.quotient_inf_equiv_sup_quotient_apply_mk LinearMap.quotientInfEquivSupQuotient_apply_mk
 
+-- Porting note: using asFun to avoid timing out
 theorem quotientInfEquivSupQuotient_symm_apply_left (p p' : Submodule R M) (x : ↥(p ⊔ p'))
     (hx : (x : M) ∈ p) :
     asFun ((quotientInfEquivSupQuotient p p').symm) (Submodule.Quotient.mk x) =
@@ -150,6 +145,8 @@ theorem quotientInfEquivSupQuotient_symm_apply_left (p p' : Submodule R M) (x : 
     rw [← asFun_coe, quotientInfEquivSupQuotient_apply_mk, ofLe_apply]
 #align linear_map.quotient_inf_equiv_sup_quotient_symm_apply_left LinearMap.quotientInfEquivSupQuotient_symm_apply_left
 
+
+-- Porting note: using asFun to avoid timing out
 -- @[simp] -- Porting note: simp can prove this
 theorem quotientInfEquivSupQuotient_symm_apply_eq_zero_iff {p p' : Submodule R M} {x : ↥(p ⊔ p')} :
     asFun ((quotientInfEquivSupQuotient p p').symm) (Submodule.Quotient.mk x) = 0 ↔ (x : M) ∈ p' :=
@@ -158,8 +155,10 @@ theorem quotientInfEquivSupQuotient_symm_apply_eq_zero_iff {p p' : Submodule R M
     rw [_root_.map_zero, Quotient.mk_eq_zero, mem_comap, Submodule.coeSubtype]
 #align linear_map.quotient_inf_equiv_sup_quotient_symm_apply_eq_zero_iff LinearMap.quotientInfEquivSupQuotient_symm_apply_eq_zero_iff
 
+-- Porting note: using asFun to avoid timing out
 theorem quotientInfEquivSupQuotient_symm_apply_right (p p' : Submodule R M) {x : ↥(p ⊔ p')}
-    (hx : (x : M) ∈ p') : asFun ((quotientInfEquivSupQuotient p p').symm) (Submodule.Quotient.mk x) = 0 :=
+    (hx : (x : M) ∈ p') : asFun ((quotientInfEquivSupQuotient p p').symm) (Submodule.Quotient.mk x)
+    = 0 :=
   quotientInfEquivSupQuotient_symm_apply_eq_zero_iff.2 hx
 #align linear_map.quotient_inf_equiv_sup_quotient_symm_apply_right LinearMap.quotientInfEquivSupQuotient_symm_apply_right
 
@@ -168,7 +167,6 @@ end IsomorphismLaws
 end LinearMap
 
 /-! The third isomorphism theorem for modules. -/
-
 
 namespace Submodule
 
@@ -212,3 +210,4 @@ theorem card_quotient_mul_card_quotient (S T : Submodule R M) (hST : T ≤ S)
 #align submodule.card_quotient_mul_card_quotient Submodule.card_quotient_mul_card_quotient
 
 end Submodule
+
