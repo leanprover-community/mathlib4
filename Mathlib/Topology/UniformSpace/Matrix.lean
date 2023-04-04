@@ -16,7 +16,7 @@ import Mathlib.Data.Matrix.Basic
 -/
 
 
-open uniformity Topology
+open Uniformity Topology
 
 variable (m n 𝕜 : Type _) [UniformSpace 𝕜]
 
@@ -35,6 +35,7 @@ theorem uniformity :
 theorem uniformContinuous {β : Type _} [UniformSpace β] {f : β → Matrix m n 𝕜} :
     UniformContinuous f ↔ ∀ i j, UniformContinuous fun x => f x i j := by
   simp only [UniformContinuous, Matrix.uniformity, Filter.tendsto_infᵢ, Filter.tendsto_comap_iff]
+  apply Iff.intro <;> intro a <;> apply a
 #align matrix.uniform_continuous Matrix.uniformContinuous
 
 instance [CompleteSpace 𝕜] : CompleteSpace (Matrix m n 𝕜) :=
@@ -44,4 +45,3 @@ instance [SeparatedSpace 𝕜] : SeparatedSpace (Matrix m n 𝕜) :=
   (by infer_instance : SeparatedSpace (m → n → 𝕜))
 
 end Matrix
-
