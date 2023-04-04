@@ -8,9 +8,9 @@ Authors: Alex J. Best
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Squarefree
-import Mathbin.Data.Zmod.Basic
-import Mathbin.RingTheory.Int.Basic
+import Mathlib.Algebra.Squarefree
+import Mathlib.Data.ZMod.Basic
+import Mathlib.RingTheory.Int.Basic
 
 /-!
 # Ring theoretic facts about `zmod n`
