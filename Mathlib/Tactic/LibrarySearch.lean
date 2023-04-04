@@ -173,8 +173,11 @@ def librarySearch (goal : MVarId) (lemmas : DiscrTree (Name × DeclMod) s) (requ
       setMCtx ctx
       return none)
 
-def lines (ls : List MessageData) :=
-  MessageData.joinSep ls (MessageData.ofFormat Format.line)
+/-- Log a message if it looks like we ran out of time. -/
+def reportOutOfHeartbeats (stx : Syntax) : MetaM Unit := do
+  if (← heartbeatsPercent) ≥ 90 then
+    logInfoAt stx ("`library_search` stopped because it was running out of time.\n" ++
+      "You may get better results using `set_option maxHeartbeats 0`.")
 
 open Lean.Parser.Tactic
 
@@ -196,6 +199,7 @@ elab_rules : tactic | `(tactic| library_search%$tk $[using $[$required:term],*]?
   goal.withContext do
     let required := (← (required.getD #[]).mapM getFVarId).toList.map .fvar
     if let some suggestions ← librarySearch goal (← librarySearchLemmas.get) required then
+      reportOutOfHeartbeats tk
       for suggestion in suggestions do
         withMCtx suggestion.1 do
           addExactSuggestion tk (← instantiateMVars (mkMVar mvar)).headBeta
@@ -209,6 +213,7 @@ elab tk:"library_search%" : term <= expectedType => do
   let (_, introdGoal) ← goal.mvarId!.intros
   introdGoal.withContext do
     if let some suggestions ← librarySearch introdGoal (← librarySearchLemmas.get) [] then
+      reportOutOfHeartbeats tk
       for suggestion in suggestions do
         withMCtx suggestion.1 do
           addTermSuggestion tk (← instantiateMVars goal).headBeta

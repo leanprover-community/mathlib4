@@ -13,7 +13,7 @@ import Mathlib.Lean.CoreM
 open Lean.Core (CoreM)
 
 /-- Take an initial segment of a `MetaM` lazy list,
-using at most `percent` of the remaining allowed heartbeats. -/
+trying to leave at least `percent` of the remaining allowed heartbeats. -/
 unsafe def ListM.whileAtLeastHeartbeatsPercent [Monad m] [MonadLiftT CoreM m]
     (L : ListM m α) (percent : Nat) : ListM m α :=
 ListM.squash do
