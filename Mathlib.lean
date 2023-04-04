@@ -1287,7 +1287,8 @@ import Mathlib.Order.Bounded
 import Mathlib.Order.BoundedOrder
 import Mathlib.Order.Bounds.Basic
 import Mathlib.Order.Bounds.OrderIso
-import Mathlib.Order.Category.PartOrd
+import Mathlib.Order.Category.PartOrdCat
+import Mathlib.Order.Category.PreordCat
 import Mathlib.Order.Chain
 import Mathlib.Order.Circular
 import Mathlib.Order.Closure
