@@ -15,15 +15,15 @@ import Mathlib.Order.JordanHolder
 # Simple Modules
 
 ## Main Definitions
-  * `is_simple_module` indicates that a module has no proper submodules
+  * `IsSimpleModule` indicates that a module has no proper submodules
   (the only submodules are `⊥` and `⊤`).
-  * `is_semisimple_module` indicates that every submodule has a complement, or equivalently,
+  * `IsSemisimpleModule` indicates that every submodule has a complement, or equivalently,
     the module is a direct sum of simple modules.
-  * A `division_ring` structure on the endomorphism ring of a simple module.
+  * A `DivisionRing` structure on the endomorphism ring of a simple module.
 
 ## Main Results
   * Schur's Lemma: `bijective_or_eq_zero` shows that a linear map between simple modules
-  is either bijective or 0, leading to a `division_ring` structure on the endomorphism ring.
+  is either bijective or 0, leading to a `DivisionRing` structure on the endomorphism ring.
 
 ## TODO
   * Artin-Wedderburn Theory
@@ -50,14 +50,24 @@ theorem IsSimpleModule.nontrivial [IsSimpleModule R M] : Nontrivial M :=
   ⟨⟨0, by
       have h : (⊥ : Submodule R M) ≠ ⊤ := bot_ne_top
       contrapose! h
-      ext
+      -- Porting note: push_neg at h not giving fun y => 0 = y
+      have h : ∀ (y : M), 0 = y := by
+        intro y
+        have em := Classical.em (0 = y)
+        match em with
+        | .inl h' => exact h'
+        | .inr h' => apply False.elim <| h ⟨y,h'⟩
+      ext x
       simp [Submodule.mem_bot, Submodule.mem_top, h x]⟩⟩
 #align is_simple_module.nontrivial IsSimpleModule.nontrivial
 
-variable {R} {M} {m : Submodule R M} {N : Type _} [AddCommGroup N] [Module R N]
+variable {R} {M} -- Porting note: had break line or all hell breaks loose
+variable {m : Submodule R M} {N : Type _} [AddCommGroup N] [Module R N]
 
+-- Porting note: cannot synth RingInvHomPair
+set_option synthInstance.etaExperiment true in
 theorem IsSimpleModule.congr (l : M ≃ₗ[R] N) [IsSimpleModule R N] : IsSimpleModule R M :=
-  (Submodule.orderIsoMapComap l).IsSimpleOrder
+  (Submodule.orderIsoMapComap l).isSimpleOrder
 #align is_simple_module.congr IsSimpleModule.congr
 
 theorem isSimpleModule_iff_isAtom : IsSimpleModule R m ↔ IsAtom m := by
@@ -73,7 +83,7 @@ theorem isSimpleModule_iff_isCoatom : IsSimpleModule R (M ⧸ m) ↔ IsCoatom m 
 #align is_simple_module_iff_is_coatom isSimpleModule_iff_isCoatom
 
 theorem covby_iff_quot_is_simple {A B : Submodule R M} (hAB : A ≤ B) :
-    A ⋖ B ↔ IsSimpleModule R (B ⧸ Submodule.comap B.Subtype A) := by
+    A ⋖ B ↔ IsSimpleModule R (B ⧸ Submodule.comap B.subtype A) := by
   set f : Submodule R B ≃o Set.Iic B := Submodule.MapSubtype.relIso B with hf
   rw [covby_iff_coatom_Iic hAB, isSimpleModule_iff_isCoatom, ← OrderIso.isCoatom_iff f, hf]
   simp [-OrderIso.isCoatom_iff, Submodule.MapSubtype.relIso, Submodule.map_comap_subtype,
@@ -107,7 +117,7 @@ theorem supₛ_simples_eq_top : supₛ { m : Submodule R M | IsSimpleModule R m 
 
 instance is_semisimple_submodule {m : Submodule R M} : IsSemisimpleModule R m :=
   haveI f : Submodule R m ≃o Set.Iic m := Submodule.MapSubtype.relIso m
-  f.complemented_lattice_iff.2 IsModularLattice.complementedLattice_Iic
+  f.complementedLattice_iff.2 IsModularLattice.complementedLattice_Iic
 #align is_semisimple_module.is_semisimple_submodule IsSemisimpleModule.is_semisimple_submodule
 
 end IsSemisimpleModule
@@ -121,28 +131,38 @@ theorem is_semisimple_iff_top_eq_supₛ_simples :
 
 namespace LinearMap
 
+-- Porting note: cannot coerce to function or synth OfNat
+set_option synthInstance.etaExperiment true in
 theorem injective_or_eq_zero [IsSimpleModule R M] (f : M →ₗ[R] N) : Function.Injective f ∨ f = 0 :=
   by
   rw [← ker_eq_bot, ← ker_eq_top]
   apply eq_bot_or_eq_top
 #align linear_map.injective_or_eq_zero LinearMap.injective_or_eq_zero
 
+-- Porting note: cannot coerce to function
+set_option synthInstance.etaExperiment true in
 theorem injective_of_ne_zero [IsSimpleModule R M] {f : M →ₗ[R] N} (h : f ≠ 0) :
     Function.Injective f :=
   f.injective_or_eq_zero.resolve_right h
 #align linear_map.injective_of_ne_zero LinearMap.injective_of_ne_zero
 
+-- Porting note: cannot coerce to function or synth OfNat
+set_option synthInstance.etaExperiment true in
 theorem surjective_or_eq_zero [IsSimpleModule R N] (f : M →ₗ[R] N) :
     Function.Surjective f ∨ f = 0 := by
-  rw [← range_eq_top, ← range_eq_bot, or_comm']
+  rw [← range_eq_top, ← range_eq_bot, or_comm]
   apply eq_bot_or_eq_top
 #align linear_map.surjective_or_eq_zero LinearMap.surjective_or_eq_zero
 
+-- Porting note: cannot coerce to function or synth OfNat
+set_option synthInstance.etaExperiment true in
 theorem surjective_of_ne_zero [IsSimpleModule R N] {f : M →ₗ[R] N} (h : f ≠ 0) :
     Function.Surjective f :=
   f.surjective_or_eq_zero.resolve_right h
 #align linear_map.surjective_of_ne_zero LinearMap.surjective_of_ne_zero
 
+-- Porting note: cannot coerce to function or synth OfNat
+set_option synthInstance.etaExperiment true in
 /-- **Schur's Lemma** for linear maps between (possibly distinct) simple modules -/
 theorem bijective_or_eq_zero [IsSimpleModule R M] [IsSimpleModule R N] (f : M →ₗ[R] N) :
     Function.Bijective f ∨ f = 0 := by
@@ -152,20 +172,24 @@ theorem bijective_or_eq_zero [IsSimpleModule R M] [IsSimpleModule R N] (f : M �
   exact Or.intro_left _ ⟨injective_of_ne_zero h, surjective_of_ne_zero h⟩
 #align linear_map.bijective_or_eq_zero LinearMap.bijective_or_eq_zero
 
+-- Porting note: cannot coerce to function or synth OfNat
+set_option synthInstance.etaExperiment true in
 theorem bijective_of_ne_zero [IsSimpleModule R M] [IsSimpleModule R N] {f : M →ₗ[R] N} (h : f ≠ 0) :
     Function.Bijective f :=
   f.bijective_or_eq_zero.resolve_right h
 #align linear_map.bijective_of_ne_zero LinearMap.bijective_of_ne_zero
 
+-- Porting note: cannot coerce to function
+set_option synthInstance.etaExperiment true in
 theorem isCoatom_ker_of_surjective [IsSimpleModule R N] {f : M →ₗ[R] N}
-    (hf : Function.Surjective f) : IsCoatom f.ker := by
+    (hf : Function.Surjective f) : IsCoatom (LinearMap.ker f) := by
   rw [← isSimpleModule_iff_isCoatom]
-  exact IsSimpleModule.congr (f.quot_ker_equiv_of_surjective hf)
+  exact IsSimpleModule.congr (f.quotKerEquivOfSurjective hf)
 #align linear_map.is_coatom_ker_of_surjective LinearMap.isCoatom_ker_of_surjective
 
 /-- Schur's Lemma makes the endomorphism ring of a simple module a division ring. -/
-noncomputable instance Module.End.divisionRing [DecidableEq (Module.End R M)] [IsSimpleModule R M] :
-    DivisionRing (Module.End R M) :=
+noncomputable instance _root_.Module.End.divisionRing
+    [DecidableEq (Module.End R M)] [IsSimpleModule R M] : DivisionRing (Module.End R M) :=
   {
     (Module.End.ring :
       Ring
@@ -182,29 +206,33 @@ noncomputable instance Module.End.divisionRing [DecidableEq (Module.End R M)] [I
         haveI := IsSimpleModule.nontrivial R M
         have h := exists_pair_ne M
         contrapose! h
+        push_neg at h -- Porting note: needed to hit this again here. regression?
         intro x y
         simp_rw [ext_iff, one_apply, zero_apply] at h
         rw [← h x, h y]⟩
     mul_inv_cancel := by
       intro a a0
       change a * dite _ _ _ = 1
-      ext
+      ext x
       rw [dif_neg a0, mul_eq_comp, one_apply, comp_apply]
       exact (Equiv.ofBijective _ (bijective_of_ne_zero a0)).right_inv x
     inv_zero := dif_pos rfl }
 #align module.End.division_ring Module.End.divisionRing
 
 end LinearMap
-
+#check JordanHolderLattice
+-- Porting note: cannot synth RingHomInvPair
+-- set_option maxHeartbeats 0 in
+set_option synthInstance.etaExperiment true in
 instance jordanHolderModule : JordanHolderLattice (Submodule R M) where
   IsMaximal := (· ⋖ ·)
-  lt_of_isMaximal x y := Covby.lt
-  sup_eq_of_isMaximal x y z hxz hyz := Wcovby.sup_eq hxz.Wcovby hyz.Wcovby
-  isMaximal_inf_left_of_isMaximal_sup A B := inf_covby_of_covby_sup_of_covby_sup_left
-  Iso X Y := Nonempty <| (X.2 ⧸ X.1.comap X.2.Subtype) ≃ₗ[R] Y.2 ⧸ Y.1.comap Y.2.Subtype
-  iso_symm := fun A B ⟨f⟩ => ⟨f.symm⟩
-  iso_trans := fun A B C ⟨f⟩ ⟨g⟩ => ⟨f.trans g⟩
-  second_iso A B h :=
+  lt_of_isMaximal := Covby.lt
+  sup_eq_of_isMaximal hxz hyz := Wcovby.sup_eq hxz.wcovby hyz.wcovby
+  isMaximal_inf_left_of_isMaximal_sup := inf_covby_of_covby_sup_of_covby_sup_left
+  Iso X Y := Nonempty <| (X.2 ⧸ X.1.comap X.2.subtype) ≃ₗ[R] Y.2 ⧸ Y.1.comap Y.2.subtype
+  iso_symm := fun ⟨f⟩ => ⟨f.symm⟩
+  iso_trans := fun ⟨f⟩ ⟨g⟩ => ⟨f.trans g⟩
+  second_iso h :=
     ⟨by
       rw [sup_comm, inf_comm]
       exact (LinearMap.quotientInfEquivSupQuotient B A).symm⟩
