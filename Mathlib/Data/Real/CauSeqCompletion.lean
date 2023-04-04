@@ -79,36 +79,48 @@ theorem mk_eq_zero {f : CauSeq _ abv} : mk f = 0 ↔ LimZero f := by
   rwa [sub_zero] at this
 #align cau_seq.completion.mk_eq_zero CauSeq.Completion.mk_eq_zero
 
-instance : Add (Cauchy abv) :=
-  ⟨(Quotient.map₂ (· + ·)) fun _ _ hf _ _ hg => add_equiv_add hf hg⟩
+/-- Addition of Cauchy sequences. -/
+@[irreducible] protected def add : Cauchy abv → Cauchy abv → Cauchy abv :=
+  (Quotient.map₂ (· + ·)) fun _ _ hf _ _ hg => add_equiv_add hf hg
+
+instance : Add (Cauchy abv) where add := Completion.add
 
 @[simp]
 theorem mk_add (f g : CauSeq β abv) : mk f + mk g = mk (f + g) :=
-  rfl
+  show Completion.add _ _ = _ by rw [Completion.add]; rfl
 #align cau_seq.completion.mk_add CauSeq.Completion.mk_add
 
-instance : Neg (Cauchy abv) :=
-  ⟨(Quotient.map Neg.neg) fun _ _ hf => neg_equiv_neg hf⟩
+@[irreducible] protected def neg : Cauchy abv → Cauchy abv :=
+  (Quotient.map Neg.neg) fun _ _ hf => neg_equiv_neg hf
+
+instance : Neg (Cauchy abv) where neg := Completion.neg
 
 @[simp]
 theorem mk_neg (f : CauSeq β abv) : -mk f = mk (-f) :=
-  rfl
+  show Completion.neg _ = _ by rw [Completion.neg]; rfl
 #align cau_seq.completion.mk_neg CauSeq.Completion.mk_neg
 
-instance : Mul (Cauchy abv) :=
-  ⟨(Quotient.map₂ (· * ·)) fun _ _ hf _ _ hg => mul_equiv_mul hf hg⟩
+/-- Multiplication of Cauchy sequences. -/
+@[irreducible] protected def mul : Cauchy abv → Cauchy abv → Cauchy abv :=
+  (Quotient.map₂ (· * ·)) fun _ _ hf _ _ hg => mul_equiv_mul hf hg
+
+instance : Mul (Cauchy abv) where mul := Completion.mul
 
 @[simp]
 theorem mk_mul (f g : CauSeq β abv) : mk f * mk g = mk (f * g) :=
-  rfl
+  show Completion.mul _ _ = _ by rw [Completion.mul]; rfl
 #align cau_seq.completion.mk_mul CauSeq.Completion.mk_mul
 
-instance : Sub (Cauchy abv) :=
-  ⟨(Quotient.map₂ Sub.sub) fun _ _ hf _ _ hg => sub_equiv_sub hf hg⟩
+/-- Subtraction of Cauchy sequences. -/
+@[irreducible]
+protected def sub : Cauchy abv → Cauchy abv → Cauchy abv :=
+  (Quotient.map₂ Sub.sub) fun _ _ hf _ _ hg => sub_equiv_sub hf hg
+
+instance : Sub (Cauchy abv) where sub := Completion.sub
 
 @[simp]
 theorem mk_sub (f g : CauSeq β abv) : mk f - mk g = mk (f - g) :=
-  rfl
+  show Completion.sub _ _ = _ by rw [Completion.sub]; rfl
 #align cau_seq.completion.mk_sub CauSeq.Completion.mk_sub
 
 instance {γ : Type _} [SMul γ β] [IsScalarTower γ β β] : SMul γ (Cauchy abv) :=
@@ -145,17 +157,17 @@ theorem ofRat_intCast (z : ℤ) : (ofRat z : Cauchy abv) = z :=
 #align cau_seq.completion.of_rat_int_cast CauSeq.Completion.ofRat_intCast
 
 theorem ofRat_add (x y : β) :
-    ofRat (x + y) = (ofRat x + ofRat y : Cauchy abv) :=
-  congr_arg mk (const_add _ _)
+    ofRat (x + y) = (ofRat x + ofRat y : Cauchy abv) := by
+  rw [ofRat, const_add, ← mk_add]; rfl
 #align cau_seq.completion.of_rat_add CauSeq.Completion.ofRat_add
 
-theorem ofRat_neg (x : β) : ofRat (-x) = (-ofRat x : Cauchy abv) :=
-  congr_arg mk (const_neg _)
+theorem ofRat_neg (x : β) : ofRat (-x) = (-ofRat x : Cauchy abv) := by
+  rw [ofRat, const_neg, ← mk_neg]; rfl
 #align cau_seq.completion.of_rat_neg CauSeq.Completion.ofRat_neg
 
 theorem ofRat_mul (x y : β) :
-    ofRat (x * y) = (ofRat x * ofRat y : Cauchy abv) :=
-  congr_arg mk (const_mul _ _)
+    ofRat (x * y) = (ofRat x * ofRat y : Cauchy abv) := by
+  rw [ofRat, const_mul, ← mk_mul]; rfl
 #align cau_seq.completion.of_rat_mul CauSeq.Completion.ofRat_mul
 
 private theorem zero_def : 0 = @mk _ _ _ _ abv _ 0 :=
@@ -181,8 +193,8 @@ def ofRatRingHom : β →+* (Cauchy abv) where
 #align cau_seq.completion.of_rat_ring_hom CauSeq.Completion.ofRatRingHom
 #align cau_seq.completion.of_rat_ring_hom_apply CauSeq.Completion.ofRatRingHom_apply
 
-theorem ofRat_sub (x y : β) : ofRat (x - y) = (ofRat x - ofRat y : Cauchy abv) :=
-  congr_arg mk (const_sub _ _)
+theorem ofRat_sub (x y : β) : ofRat (x - y) = (ofRat x - ofRat y : Cauchy abv) := by
+  rw [ofRat, const_sub, ← mk_sub]; rfl
 #align cau_seq.completion.of_rat_sub CauSeq.Completion.ofRat_sub
 
 end
@@ -226,9 +238,9 @@ noncomputable instance : Inv (Cauchy abv) :=
       · simp [hf, this.1 hf, Setoid.refl]
       · have hg := mt this.2 hf
         simp [hf, hg]
-        have If : mk (inv f hf) * mk f = 1 := mk_eq.2 (inv_mul_cancel hf)
-        have Ig : mk (inv g hg) * mk g = 1 := mk_eq.2 (inv_mul_cancel hg)
-        have Ig' : mk g * mk (inv g hg) = 1 := mk_eq.2 (mul_inv_cancel hg)
+        have If : mk (inv f hf) * mk f = 1 := mk_mul _ f ▸ mk_eq.2 (inv_mul_cancel hf)
+        have Ig : mk (inv g hg) * mk g = 1 := mk_mul _ g ▸ mk_eq.2 (inv_mul_cancel hg)
+        have Ig' : mk g * mk (inv g hg) = 1 := mk_mul g _ ▸ mk_eq.2 (mul_inv_cancel hg)
         rw [mk_eq.2 fg, ← Ig] at If
         rw [← mul_one (mk (inv f hf)), ← Ig', ← mul_assoc, If, mul_assoc, Ig', mul_one]⟩
 
