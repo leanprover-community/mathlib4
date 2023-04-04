@@ -8,7 +8,7 @@ Authors: Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Order.Category.PartOrd
+import Mathlib.Order.Category.PartOrdCat
 import Mathlib.Order.Hom.Lattice
 
 /-!
