@@ -8,10 +8,10 @@ Authors: Johan Commelin
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Category.Cat
-import Mathbin.CategoryTheory.Category.Preorder
-import Mathbin.CategoryTheory.ConcreteCategory.BundledHom
-import Mathbin.Order.Hom.Basic
+import Mathlib.CategoryTheory.Category.Cat
+import Mathlib.CategoryTheory.Category.Preorder
+import Mathlib.CategoryTheory.ConcreteCategory.BundledHom
+import Mathlib.Order.Hom.Basic
 
 /-!
 # Category of preorders
@@ -60,8 +60,7 @@ instance (α : Preord) : Preorder α :=
 
 /-- Constructs an equivalence between preorders from an order isomorphism between them. -/
 @[simps]
-def Iso.mk {α β : Preord.{u}} (e : α ≃o β) : α ≅ β
-    where
+def Iso.mk {α β : Preord.{u}} (e : α ≃o β) : α ≅ β where
   Hom := e
   inv := e.symm
   hom_inv_id' := by
@@ -102,8 +101,7 @@ def preordToCat : Preord.{u} ⥤ Cat where
 instance : Faithful preordToCat.{u}
     where map_injective' X Y f g h := by ext x; exact functor.congr_obj h x
 
-instance : Full preordToCat.{u}
-    where
+instance : Full preordToCat.{u} where
   preimage X Y f := ⟨f.obj, f.Monotone⟩
   witness' X Y f := by apply CategoryTheory.Functor.ext; tidy
 
