@@ -76,10 +76,14 @@ TODO: We hope these problem will be resolved by
   In that time, Please erase these `set_option`s.
 -/
 
+-- Porting note: breaking up original definition of quotientInfToSupQuotient to avoid timing out
 @[reducible]
-def aux' (p p' : Submodule R M) := (comap (p ⊔ p').subtype p').mkQ.comp (Submodule.ofLe le_sup_left)
+def subToSupQuotient (p p' : Submodule R M) :=
+  (comap (p ⊔ p').subtype p').mkQ.comp (Submodule.ofLe le_sup_left)
 
-theorem aux (p p' : Submodule R M) : comap (Submodule.subtype p) (p ⊓ p') ≤ ker (aux' p p') := by
+-- Porting note: breaking up original definition of quotientInfToSupQuotient to avoid timing out
+theorem comap_leq_ker_subToSupQuotient (p p' : Submodule R M) :
+    comap (Submodule.subtype p) (p ⊓ p') ≤ ker (subToSupQuotient p p') := by
   rw [LinearMap.ker_comp, Submodule.ofLe, comap_codRestrict, ker_mkQ, map_comap_subtype]
   exact comap_mono (inf_le_inf_right _ le_sup_left)
 
@@ -88,15 +92,17 @@ to `x + p'`, where `p` and `p'` are submodules of an ambient module.
 -/
 def quotientInfToSupQuotient (p p' : Submodule R M) :
     (↥p) ⧸ (comap p.subtype (p ⊓ p')) →ₗ[R] (↥(p ⊔ p')) ⧸ (comap (p ⊔ p').subtype p') :=
-   (comap p.subtype (p ⊓ p')).liftQ (aux' p p') (aux p p')
+   (comap p.subtype (p ⊓ p')).liftQ (subToSupQuotient p p') (comap_leq_ker_subToSupQuotient p p')
 #align linear_map.quotient_inf_to_sup_quotient LinearMap.quotientInfToSupQuotient
 
+-- Porting note: breaking up original definition of quotientInfEquivSupQuotient to avoid timing out
 theorem quotientInfEquivSupQuotient_injective (p p' : Submodule R M) :
     Function.Injective (quotientInfToSupQuotient p p') := by
   rw [← ker_eq_bot, quotientInfToSupQuotient, ker_liftQ_eq_bot]
   rw [ker_comp, ker_mkQ]
   exact fun ⟨x, hx1⟩ hx2 => ⟨hx1, hx2⟩
 
+-- Porting note: breaking up original definition of quotientInfEquivSupQuotient to avoid timing out
 theorem quotientInfEquivSupQuotient_surjective (p p' : Submodule R M) :
     Function.Surjective (quotientInfToSupQuotient p p') := by
   rw [← range_eq_top, quotientInfToSupQuotient, range_liftQ, eq_top_iff']
@@ -113,46 +119,43 @@ noncomputable def quotientInfEquivSupQuotient (p p' : Submodule R M) :
   LinearEquiv.ofBijective (quotientInfToSupQuotient p p')
     ⟨quotientInfEquivSupQuotient_injective p p', quotientInfEquivSupQuotient_surjective p p'⟩
 #align linear_map.quotient_inf_equiv_sup_quotient LinearMap.quotientInfEquivSupQuotient
-attribute [-instance] SMulHomClass.toFunLike EmbeddingLike.toFunLike
--- AddHomClass.toFunLike instFunLikeLinearMap
 
-set_option synthInstance.maxHeartbeats 200000 in
+-- Porting note: wrapper to help with tc synthesis timing out
+abbrev asFun (f : M ≃ₗ[R] M₂) : M → M₂ := f
+theorem asFun_coe (f : M ≃ₗ[R] M₂) : asFun f = f := rfl
+
 -- @[simp]
 -- Porting note: `simp` affects the type arguments of `FunLike.coe`, so this theorem can't be
 --               a simp theorem anymore, even if it has high priority.
 theorem coe_quotientInfToSupQuotient (p p' : Submodule R M) :
-    ⇑(quotientInfToSupQuotient p p') = quotientInfEquivSupQuotient p p' :=
+    ⇑(quotientInfToSupQuotient p p') = asFun (quotientInfEquivSupQuotient p p') :=
   rfl
 #align linear_map.coe_quotient_inf_to_sup_quotient LinearMap.coe_quotientInfToSupQuotient
 
-set_option synthInstance.maxHeartbeats 200000 in
-set_option maxHeartbeats 2000000 in
+set_option maxHeartbeats 0 in
 @[simp, nolint simpNF] -- Porting note: The linter timeouts.
 theorem quotientInfEquivSupQuotient_apply_mk (p p' : Submodule R M) (x : p) :
-    quotientInfEquivSupQuotient p p' (Submodule.Quotient.mk x) =
+    asFun (quotientInfEquivSupQuotient p p') (Submodule.Quotient.mk x) =
       Submodule.Quotient.mk (ofLe (le_sup_left : p ≤ p ⊔ p') x) :=
   rfl
 #align
   linear_map.quotient_inf_equiv_sup_quotient_apply_mk
   LinearMap.quotientInfEquivSupQuotient_apply_mk
 
-set_option synthInstance.maxHeartbeats 200000 in
 theorem quotientInfEquivSupQuotient_symm_apply_left (p p' : Submodule R M) (x : ↥(p ⊔ p'))
     (hx : (x : M) ∈ p) :
-    (quotientInfEquivSupQuotient p p').symm (Submodule.Quotient.mk x) =
+    asFun ((quotientInfEquivSupQuotient p p').symm) (Submodule.Quotient.mk x) =
       Submodule.Quotient.mk ⟨x, hx⟩ :=
   (LinearEquiv.symm_apply_eq _).2 <| by
     -- Porting note: Was `simp`.
-    rw [quotientInfEquivSupQuotient_apply_mk, ofLe_apply]
+    rw [← asFun_coe, quotientInfEquivSupQuotient_apply_mk, ofLe_apply]
 #align
   linear_map.quotient_inf_equiv_sup_quotient_symm_apply_left
   LinearMap.quotientInfEquivSupQuotient_symm_apply_left
 
-set_option synthInstance.maxHeartbeats 200000 in
-set_option maxHeartbeats 2000000 in
 -- @[simp] -- Porting note: simp can prove this
 theorem quotientInfEquivSupQuotient_symm_apply_eq_zero_iff {p p' : Submodule R M} {x : ↥(p ⊔ p')} :
-    (quotientInfEquivSupQuotient p p').symm (Submodule.Quotient.mk x) = 0 ↔ (x : M) ∈ p' :=
+    asFun ((quotientInfEquivSupQuotient p p').symm) (Submodule.Quotient.mk x) = 0 ↔ (x : M) ∈ p' :=
   (LinearEquiv.symm_apply_eq _).trans <| by
     -- Porting note: Was `simp`.
     rw [_root_.map_zero, Quotient.mk_eq_zero, mem_comap, Submodule.coeSubtype]
@@ -160,9 +163,8 @@ theorem quotientInfEquivSupQuotient_symm_apply_eq_zero_iff {p p' : Submodule R M
   linear_map.quotient_inf_equiv_sup_quotient_symm_apply_eq_zero_iff
   LinearMap.quotientInfEquivSupQuotient_symm_apply_eq_zero_iff
 
-set_option synthInstance.maxHeartbeats 200000 in
 theorem quotientInfEquivSupQuotient_symm_apply_right (p p' : Submodule R M) {x : ↥(p ⊔ p')}
-    (hx : (x : M) ∈ p') : (quotientInfEquivSupQuotient p p').symm (Submodule.Quotient.mk x) = 0 :=
+    (hx : (x : M) ∈ p') : asFun ((quotientInfEquivSupQuotient p p').symm) (Submodule.Quotient.mk x) = 0 :=
   quotientInfEquivSupQuotient_symm_apply_eq_zero_iff.2 hx
 #align
   linear_map.quotient_inf_equiv_sup_quotient_symm_apply_right
