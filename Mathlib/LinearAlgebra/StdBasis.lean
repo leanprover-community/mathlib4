@@ -77,7 +77,8 @@ theorem stdBasis_ne (i j : ι) (h : j ≠ i) (b : φ i) : stdBasis R φ i b j = 
 
 theorem stdBasis_eq_pi_diag (i : ι) : stdBasis R φ i = pi (diag i) := by
   ext (x j)
-  convert(update_apply 0 x i j _).symm
+  -- Porting note: made types explicit
+  convert (update_apply (R := R) (φ := φ) (ι := ι) 0 x i j _).symm
   rfl
 #align linear_map.std_basis_eq_pi_diag LinearMap.stdBasis_eq_pi_diag
 
