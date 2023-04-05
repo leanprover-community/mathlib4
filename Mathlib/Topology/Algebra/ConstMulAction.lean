@@ -140,7 +140,8 @@ instance OrderDual.continuousConstSMul' : ContinuousConstSMul Mᵒᵈ α :=
 #align order_dual.has_continuous_const_vadd' OrderDual.continuousConstVAdd'
 
 @[to_additive]
-instance [SMul M β] [ContinuousConstSMul M β] : ContinuousConstSMul M (α × β) :=
+instance Prod.continuousConstSMul [SMul M β] [ContinuousConstSMul M β] :
+    ContinuousConstSMul M (α × β) :=
   ⟨fun _ => (continuous_fst.const_smul _).prod_mk (continuous_snd.const_smul _)⟩
 
 @[to_additive]

@@ -231,7 +231,8 @@ theorem ContinuousWithinAt.mul {f g : X → M} {s : Set X} {x : X} (hf : Continu
 #align continuous_within_at.add ContinuousWithinAt.add
 
 @[to_additive]
-instance [TopologicalSpace N] [Mul N] [ContinuousMul N] : ContinuousMul (M × N) :=
+instance Prod.continuousMul [TopologicalSpace N] [Mul N] [ContinuousMul N] :
+    ContinuousMul (M × N) :=
   ⟨(continuous_fst.fst'.mul continuous_fst.snd').prod_mk
       (continuous_snd.fst'.mul continuous_snd.snd')⟩
 
