@@ -56,6 +56,7 @@ theorem tendsto_one_div_add_atTop_nhds_0_nat :
   (tendsto_add_atTop_iff_nat 1).2 (_root_.tendsto_const_div_atTop_nhds_0_nat 1)
 #align tendsto_one_div_add_at_top_nhds_0_nat tendsto_one_div_add_atTop_nhds_0_nat
 
+set_option synthInstance.etaExperiment true in
 /-- The limit of `n / (n + x)` is 1, for any constant `x` (valid in `ℝ` or any topological division
 algebra over `ℝ`, e.g., `ℂ`).
 
@@ -67,18 +68,17 @@ theorem tendsto_coe_nat_div_add_atTop {𝕜 : Type _} [DivisionRing 𝕜] [Topol
   refine' Tendsto.congr' ((eventually_ne_atTop 0).mp (eventually_of_forall fun n hn => _)) _
   · exact fun n : ℕ => 1 / (1 + x / n)
   · field_simp [Nat.cast_ne_zero.mpr hn]
-  · have : 𝓝 (1 : 𝕜) = 𝓝 (1 / (1 + x * ↑(0 : ℝ))) := by
-      rw [algebraMap.coe_zero, MulZeroClass.mul_zero, add_zero, div_one]
+  · have : 𝓝 (1 : 𝕜) = 𝓝 (1 / (1 + x * (0 : 𝕜))) := by
+      rw [MulZeroClass.mul_zero, add_zero, div_one]
     rw [this]
     refine' tendsto_const_nhds.div (tendsto_const_nhds.add _) (by simp)
     simp_rw [div_eq_mul_inv]
     refine' tendsto_const_nhds.mul _
-    have : (fun n : ℕ => (n : 𝕜)⁻¹) = fun n : ℕ => ↑(n : ℝ)⁻¹ := by
+    have : (fun n : ℕ => (n : 𝕜)⁻¹) = fun n : ℕ => (n : 𝕜)⁻¹ := by
       ext1 n
       rw [← map_natCast (algebraMap ℝ 𝕜) n, ← map_inv₀ (algebraMap ℝ 𝕜)]
-      rfl
     rw [this]
-    exact ((continuous_algebraMap ℝ 𝕜).Tendsto _).comp tendsto_inverse_atTop_nhds_0_nat
+    exact ((continuous_algebraMap ℝ 𝕜).tendsto _).comp tendsto_inverse_atTop_nhds_0_nat
 #align tendsto_coe_nat_div_add_at_top tendsto_coe_nat_div_add_atTop
 
 /-! ### Powers -/
@@ -100,16 +100,16 @@ theorem Nat.tendsto_pow_atTop_atTop_of_one_lt {m : ℕ} (h : 1 < m) :
   tsub_add_cancel_of_le (le_of_lt h) ▸ tendsto_add_one_pow_atTop_atTop_of_pos (tsub_pos_of_lt h)
 #align nat.tendsto_pow_at_top_at_top_of_one_lt Nat.tendsto_pow_atTop_atTop_of_one_lt
 
+set_option maxHeartbeats 10000000 in -- XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX TODO
 theorem tendsto_pow_atTop_nhds_0_of_lt_1 {𝕜 : Type _} [LinearOrderedField 𝕜] [Archimedean 𝕜]
     [TopologicalSpace 𝕜] [OrderTopology 𝕜] {r : 𝕜} (h₁ : 0 ≤ r) (h₂ : r < 1) :
-    Tendsto (fun n : ℕ => r ^ n) atTop (𝓝 0) :=
-  h₁.eq_or_lt.elim
-    (fun this : 0 = r =>
-      (tendsto_add_atTop_iff_nat 1).mp <| by simp [pow_succ, ← this, tendsto_const_nhds])
-    fun this : 0 < r =>
-    have : Tendsto (fun n => (r⁻¹ ^ n)⁻¹) atTop (𝓝 0) :=
-      tendsto_inv_atTop_zero.comp (tendsto_pow_atTop_atTop_of_one_lt <| one_lt_inv this h₂)
-    this.congr fun n => by simp
+    Tendsto (fun n : ℕ => r ^ n) atTop (𝓝 0) := by
+  cases' h₁.eq_or_lt with h h
+  · exact (tendsto_add_atTop_iff_nat 1).mp <| by simp only [_root_.pow_succ, ← h, zero_mul,
+      tendsto_const_nhds_iff]
+  · have : Tendsto (fun n => (r⁻¹ ^ n)⁻¹) atTop (𝓝 0) :=
+      tendsto_inv_atTop_zero.comp (tendsto_pow_atTop_atTop_of_one_lt <| one_lt_inv h h₂)
+    exact this.congr fun n => by simp
 #align tendsto_pow_at_top_nhds_0_of_lt_1 tendsto_pow_atTop_nhds_0_of_lt_1
 
 theorem tendsto_pow_atTop_nhdsWithin_0_of_lt_1 {𝕜 : Type _} [LinearOrderedField 𝕜] [Archimedean 𝕜]
@@ -234,7 +234,7 @@ theorem tsum_geometric_inv_two_ge (n : ℕ) :
   have A : Summable fun i : ℕ => ite (n ≤ i) ((2⁻¹ : ℝ) ^ i) 0 := by
     apply summable_of_nonneg_of_le _ _ summable_geometric_two <;>
       · intro i
-        by_cases hi : n ≤ i <;> simp [hi]
+        by_cases hi : n ≤ i <;> simp [hi]; apply pow_nonneg; exact zero_le_two
   have B : ((Finset.range n).sum fun i : ℕ => ite (n ≤ i) ((2⁻¹ : ℝ) ^ i) 0) = 0 :=
     Finset.sum_eq_zero fun i hi =>
       ite_eq_right_iff.2 fun h => (lt_irrefl _ ((Finset.mem_range.1 hi).trans_le h)).elim
@@ -243,7 +243,8 @@ theorem tsum_geometric_inv_two_ge (n : ℕ) :
 #align tsum_geometric_inv_two_ge tsum_geometric_inv_two_ge
 
 theorem hasSum_geometric_two' (a : ℝ) : HasSum (fun n : ℕ => a / 2 / 2 ^ n) a := by
-  convert HasSum.mul_left (a / 2) (hasSum_geometric_of_lt_1 (le_of_lt one_half_pos) one_half_lt_one)
+  convert HasSum.mul_left (a / 2)
+      (hasSum_geometric_of_lt_1 (le_of_lt one_half_pos) one_half_lt_one) using 1
   · funext n
     simp
     rfl
@@ -353,7 +354,7 @@ theorem edist_le_of_edist_le_geometric_two_of_tendsto (n : ℕ) : edist (f n) a 
   simp only [div_eq_mul_inv, ENNReal.inv_pow] at *
   rw [mul_assoc, mul_comm]
   convert edist_le_of_edist_le_geometric_of_tendsto 2⁻¹ C hu ha n using 1
-  rw [ENNReal.one_sub_inv_two, inv_inv]
+  rw [ENNReal.one_sub_inv_two, div_eq_mul_inv, inv_inv]
 #align edist_le_of_edist_le_geometric_two_of_tendsto edist_le_of_edist_le_geometric_two_of_tendsto
 
 /-- If `edist (f n) (f (n+1))` is bounded by `C * 2^-n`, then the distance from
@@ -538,7 +539,8 @@ theorem factorial_tendsto_atTop : Tendsto Nat.factorial atTop atTop :=
   tendsto_atTop_atTop_of_monotone Nat.monotone_factorial fun n => ⟨n, n.self_le_factorial⟩
 #align factorial_tendsto_at_top factorial_tendsto_atTop
 
-theorem tendsto_factorial_div_pow_self_atTop : Tendsto (fun n => n ! / n ^ n : ℕ → ℝ) atTop (𝓝 0) :=
+theorem tendsto_factorial_div_pow_self_atTop :
+    Tendsto (fun n => n ! / (n : ℝ) ^ n : ℕ → ℝ) atTop (𝓝 0) :=
   tendsto_of_tendsto_of_tendsto_of_le_of_le' tendsto_const_nhds
     (tendsto_const_div_atTop_nhds_0_nat 1)
     (eventually_of_forall fun n =>
@@ -548,7 +550,7 @@ theorem tendsto_factorial_div_pow_self_atTop : Tendsto (fun n => n ! / n ^ n : �
       refine' (eventually_gt_atTop 0).mono fun n hn => _
       rcases Nat.exists_eq_succ_of_ne_zero hn.ne.symm with ⟨k, rfl⟩
       rw [← prod_range_add_one_eq_factorial, pow_eq_prod_const, div_eq_mul_inv, ← inv_eq_one_div,
-        prod_nat_cast, Nat.cast_succ, ← prod_inv_distrib, ← prod_mul_distrib,
+        prod_natCast, Nat.cast_succ, ← prod_inv_distrib, ← prod_mul_distrib,
         Finset.prod_range_succ']
       simp only [prod_range_succ', one_mul, Nat.cast_add, zero_add, Nat.cast_one]
       refine'
