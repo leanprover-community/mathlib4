@@ -226,7 +226,8 @@ protected noncomputable def basis (s : ∀ j, Basis (ιs j) R (Ms j)) :
       (Finsupp.sigmaFinsuppLEquivPiFinsupp R).symm)
   --  Porting note: was
   -- -- The `AddCommMonoid (Π j, Ms j)` instance was hard to find.
-  -- -- Defining this in tactic mode seems to shake up instance search enough that it works by itself.
+  -- -- Defining this in tactic mode seems to shake up instance search enough
+  -- -- that it works by itself.
   -- refine Basis.ofRepr (?_ ≪≫ₗ (Finsupp.sigmaFinsuppLEquivPiFinsupp R).symm)
   -- exact LinearEquiv.piCongrRight fun j => (s j).repr
 #align pi.basis Pi.basis
@@ -314,16 +315,16 @@ theorem stdBasis_eq_stdBasisMatrix (i : n) (j : m) [DecidableEq n] [DecidableEq 
       StdBasisMatrix.apply_same]
     erw [Pi.basis_apply]
     simp
-  · simp only [stdBasis, hi, Basis.coe_reindex, comp_apply, Equiv.sigmaEquivProd_symm_apply, hj,
-      and_false, not_false_iff, StdBasisMatrix.apply_of_ne]
+  · simp only [stdBasis, hi, Basis.coe_reindex, comp_apply, Equiv.sigmaEquivProd_symm_apply,
+      hj, and_false, not_false_iff, StdBasisMatrix.apply_of_ne]
     erw [Pi.basis_apply]
     simp [hj]
-  · simp only [stdBasis, hj, Basis.coe_reindex, comp_apply, Equiv.sigmaEquivProd_symm_apply, hi, and_true,
-  not_false_iff, StdBasisMatrix.apply_of_ne]
+  · simp only [stdBasis, hj, Basis.coe_reindex, comp_apply, Equiv.sigmaEquivProd_symm_apply,
+      hi, and_true, not_false_iff, StdBasisMatrix.apply_of_ne]
     erw [Pi.basis_apply]
     simp [hi, hj, Ne.symm hi, LinearMap.stdBasis_ne]
-  · simp only [stdBasis, Basis.coe_reindex, comp_apply, Equiv.sigmaEquivProd_symm_apply, hi, hj, and_self,
-  not_false_iff, StdBasisMatrix.apply_of_ne]
+  · simp only [stdBasis, Basis.coe_reindex, comp_apply, Equiv.sigmaEquivProd_symm_apply,
+      hi, hj, and_self, not_false_iff, StdBasisMatrix.apply_of_ne]
     erw [Pi.basis_apply]
     simp [hi, hj, Ne.symm hj, Ne.symm hi, LinearMap.stdBasis_ne]
 #align matrix.std_basis_eq_std_basis_matrix Matrix.stdBasis_eq_stdBasisMatrix
