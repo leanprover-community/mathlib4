@@ -438,10 +438,11 @@ a module filter basis then it's a topological module. -/
 instance (priority := 100) continuousSMul [TopologicalRing R] :
     @ContinuousSMul R M _ _ B.topology := by
   let B' := B.toAddGroupFilterBasis
-  letI := B'.topology
-  haveI := B'.isTopologicalAddGroup
-  exact
-    ContinuousSMul.of_basis_zero B'.nhds_zero_hasBasis (fun _ ↦ B.smul) B.smul_left B.smul_right
+  let _ := B'.topology
+  have _ := B'.isTopologicalAddGroup
+  exact ContinuousSMul.of_basis_zero B'.nhds_zero_hasBasis
+      (fun {_} => by simpa using B.smul)
+      (by simpa using B.smul_left) B.smul_right
 #align module_filter_basis.has_continuous_smul ModuleFilterBasis.continuousSMul
 
 /-- Build a module filter basis from compatible ring and additive group filter bases. -/
@@ -450,16 +451,17 @@ def ofBases {R M : Type _} [CommRing R] [AddCommGroup M] [Module R M] (BR : Ring
     (smul_left : ∀ (x₀ : R) {U}, U ∈ BM → ∃ V ∈ BM, V ⊆ (fun x ↦ x₀ • x) ⁻¹' U)
     (smul_right : ∀ (m₀ : M) {U}, U ∈ BM → ∃ V ∈ BR, V ⊆ (fun x ↦ x • m₀) ⁻¹' U) :
     @ModuleFilterBasis R M _ BR.topology _ _ :=
+  let _ := BR.topology
   { BM with
     smul' := by
       intro U U_in
       rcases smul U_in with ⟨V, V_in, W, W_in, H⟩
-      exact ⟨V, BR.to_add_group_filter_basis.mem_nhds_zero V_in, W, W_in, H⟩
+      exact ⟨V, BR.toAddGroupFilterBasis.mem_nhds_zero V_in, W, W_in, H⟩
     smul_left' := smul_left
     smul_right' := by
       intro m₀ U U_in
       rcases smul_right m₀ U_in with ⟨V, V_in, H⟩
-      exact mem_of_superset (BR.to_add_group_filter_basis.mem_nhds_zero V_in) H }
+      exact mem_of_superset (BR.toAddGroupFilterBasis.mem_nhds_zero V_in) H }
 #align module_filter_basis.of_bases ModuleFilterBasis.ofBases
 
 end ModuleFilterBasis
