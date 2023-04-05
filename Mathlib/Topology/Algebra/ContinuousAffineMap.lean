@@ -8,9 +8,9 @@ Authors: Oliver Nash
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.LinearAlgebra.AffineSpace.AffineMap
-import Mathbin.Topology.ContinuousFunction.Basic
-import Mathbin.Topology.Algebra.Module.Basic
+import Mathlib.LinearAlgebra.AffineSpace.AffineMap
+import Mathlib.Topology.ContinuousFunction.Basic
+import Mathlib.Topology.Algebra.Module.Basic
 
 /-!
 # Continuous affine maps.
@@ -64,8 +64,7 @@ theorem to_affineMap_injective {f g : P →A[R] Q} (h : (f : P →ᵃ[R] Q) = (g
   congr
 #align continuous_affine_map.to_affine_map_injective ContinuousAffineMap.to_affineMap_injective
 
-instance : ContinuousMapClass (P →A[R] Q) P Q
-    where
+instance : ContinuousMapClass (P →A[R] Q) P Q where
   coe f := f.toAffineMap
   coe_injective' f g h := to_affineMap_injective <| FunLike.coe_injective h
   map_continuous := cont
@@ -146,8 +145,7 @@ theorem coe_mk (f : P →ᵃ[R] Q) (h) : ((⟨f, h⟩ : P →A[R] Q) : P → Q) 
 #align continuous_affine_map.coe_mk ContinuousAffineMap.coe_mk
 
 @[simp]
-theorem mk_coe (f : P →A[R] Q) (h) : (⟨(f : P →ᵃ[R] Q), h⟩ : P →A[R] Q) = f :=
-  by
+theorem mk_coe (f : P →A[R] Q) (h) : (⟨(f : P →ᵃ[R] Q), h⟩ : P →A[R] Q) = f := by
   ext
   rfl
 #align continuous_affine_map.mk_coe ContinuousAffineMap.mk_coe
@@ -306,8 +304,7 @@ variable [AddCommGroup V] [Module R V] [TopologicalSpace V]
 variable [AddCommGroup W] [Module R W] [TopologicalSpace W]
 
 /-- A continuous linear map can be regarded as a continuous affine map. -/
-def toContinuousAffineMap (f : V →L[R] W) : V →A[R] W
-    where
+def toContinuousAffineMap (f : V →L[R] W) : V →A[R] W where
   toFun := f
   linear := f
   map_vadd' := by simp

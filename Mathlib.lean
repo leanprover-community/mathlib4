@@ -1934,6 +1934,7 @@ import Mathlib.Topology.Algebra.Affine
 import Mathlib.Topology.Algebra.Algebra
 import Mathlib.Topology.Algebra.ConstMulAction
 import Mathlib.Topology.Algebra.Constructions
+import Mathlib.Topology.Algebra.ContinuousAffineMap
 import Mathlib.Topology.Algebra.Equicontinuity
 import Mathlib.Topology.Algebra.Field
 import Mathlib.Topology.Algebra.FilterBasis
