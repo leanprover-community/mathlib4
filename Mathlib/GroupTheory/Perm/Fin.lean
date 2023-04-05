@@ -98,8 +98,7 @@ theorem finRotate_succ_eq_decomposeFin {n : ℕ} :
   rw [coe_finRotate, decomposeFin_symm_apply_succ, if_congr i.succ_eq_last_succ rfl rfl]
   split_ifs with h
   · simp [h]
-  ·
-    rw [Fin.val_succ, Function.Injective.map_swap Fin.val_injective, Fin.val_succ, coe_finRotate,
+  · rw [Fin.val_succ, Function.Injective.map_swap Fin.val_injective, Fin.val_succ, coe_finRotate,
       if_neg h, Fin.val_zero, Fin.val_one,
       swap_apply_of_ne_of_ne (Nat.succ_ne_zero _) (Nat.succ_succ_ne_one _)]
 #align fin_rotate_succ finRotate_succ_eq_decomposeFin
