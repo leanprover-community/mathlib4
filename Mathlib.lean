@@ -1297,6 +1297,7 @@ import Mathlib.Order.Bounds.Basic
 import Mathlib.Order.Bounds.OrderIso
 import Mathlib.Order.Category.LatCat
 import Mathlib.Order.Category.LinOrdCat
+import Mathlib.Order.Category.NonemptyFinLinOrdCat
 import Mathlib.Order.Category.PartOrdCat
 import Mathlib.Order.Category.PreordCat
 import Mathlib.Order.Chain
