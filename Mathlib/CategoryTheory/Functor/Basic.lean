@@ -142,7 +142,7 @@ theorem comp_map (F : C ⥤ D) (G : D ⥤ E) {X Y : C} (f : X ⟶ Y) :
 
 -- These are not simp lemmas because rewriting along equalities between functors
 -- is not necessarily a good idea.
--- Natural isomorphisms are also provided in `whiskering.lean`.
+-- Natural isomorphisms are also provided in `Whiskering.lean`.
 protected theorem comp_id (F : C ⥤ D) : F ⋙ 𝟭 D = F := by cases F; rfl
 #align category_theory.functor.comp_id CategoryTheory.Functor.comp_id
 
