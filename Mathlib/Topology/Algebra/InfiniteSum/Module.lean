@@ -88,8 +88,7 @@ protected theorem ContinuousLinearEquiv.summable {f : ι → M} (e : M ≃SL[σ]
 theorem ContinuousLinearEquiv.tsum_eq_iff [T2Space M] [T2Space M₂] {f : ι → M} (e : M ≃SL[σ] M₂)
     {y : M₂} : (∑' z, e (f z)) = y ↔ (∑' z, f z) = e.symm y := by
   by_cases hf : Summable f
-  ·
-    exact
+  · exact
       ⟨fun h => (e.hasSum.mp ((e.summable.mpr hf).hasSum_iff.mpr h)).tsum_eq, fun h =>
         (e.hasSum.mpr (hf.hasSum_iff.mpr h)).tsum_eq⟩
   · have hf' : ¬Summable fun z => e (f z) := fun h => hf (e.summable.mp h)
