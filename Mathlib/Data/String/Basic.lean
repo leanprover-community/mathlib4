@@ -240,6 +240,7 @@ instance : LinearOrder String where
     simp only [le_iff_toList_le]
     apply le_total
   decidable_le := String.decidableLE
+  compare a b := compareOfLessAndEq a b
 
 end String
 
