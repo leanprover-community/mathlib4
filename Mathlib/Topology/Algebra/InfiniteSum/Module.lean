@@ -26,11 +26,11 @@ theorem HasSum.smul_const {r : R} (hf : HasSum f r) (a : M) : HasSum (fun z => f
 #align has_sum.smul_const HasSum.smul_const
 
 theorem Summable.smul_const (hf : Summable f) (a : M) : Summable fun z => f z • a :=
-  (hf.HasSum.smul_const _).Summable
+  (hf.hasSum.smul_const _).summable
 #align summable.smul_const Summable.smul_const
 
 theorem tsum_smul_const [T2Space M] (hf : Summable f) (a : M) : (∑' z, f z • a) = (∑' z, f z) • a :=
-  (hf.HasSum.smul_const _).tsum_eq
+  (hf.hasSum.smul_const _).tsum_eq
 #align tsum_smul_const tsum_smul_const
 
 end SmulConst
@@ -46,43 +46,43 @@ variable [Semiring R] [Semiring R₂] [AddCommMonoid M] [Module R M] [AddCommMon
 /-- Applying a continuous linear map commutes with taking an (infinite) sum. -/
 protected theorem ContinuousLinearMap.hasSum {f : ι → M} (φ : M →SL[σ] M₂) {x : M}
     (hf : HasSum f x) : HasSum (fun b : ι => φ (f b)) (φ x) := by
-  simpa only using hf.map φ.to_linear_map.to_add_monoid_hom φ.continuous
+  simpa only using hf.map φ.toLinearMap.toAddMonoidHom φ.continuous
 #align continuous_linear_map.has_sum ContinuousLinearMap.hasSum
 
 alias ContinuousLinearMap.hasSum ← HasSum.mapL
+set_option linter.uppercaseLean3 false in
 #align has_sum.mapL HasSum.mapL
 
 protected theorem ContinuousLinearMap.summable {f : ι → M} (φ : M →SL[σ] M₂) (hf : Summable f) :
     Summable fun b : ι => φ (f b) :=
-  (hf.HasSum.mapL φ).Summable
+  (hf.hasSum.mapL φ).summable
 #align continuous_linear_map.summable ContinuousLinearMap.summable
 
 alias ContinuousLinearMap.summable ← Summable.mapL
+set_option linter.uppercaseLean3 false in
 #align summable.mapL Summable.mapL
 
 protected theorem ContinuousLinearMap.map_tsum [T2Space M₂] {f : ι → M} (φ : M →SL[σ] M₂)
     (hf : Summable f) : φ (∑' z, f z) = ∑' z, φ (f z) :=
-  (hf.HasSum.mapL φ).tsum_eq.symm
+  (hf.hasSum.mapL φ).tsum_eq.symm
 #align continuous_linear_map.map_tsum ContinuousLinearMap.map_tsum
-
-include σ'
 
 /-- Applying a continuous linear map commutes with taking an (infinite) sum. -/
 protected theorem ContinuousLinearEquiv.hasSum {f : ι → M} (e : M ≃SL[σ] M₂) {y : M₂} :
     HasSum (fun b : ι => e (f b)) y ↔ HasSum f (e.symm y) :=
   ⟨fun h => by simpa only [e.symm.coe_coe, e.symm_apply_apply] using h.mapL (e.symm : M₂ →SL[σ'] M),
-    fun h => by simpa only [e.coe_coe, e.apply_symm_apply] using (e : M →SL[σ] M₂).HasSum h⟩
+    fun h => by simpa only [e.coe_coe, e.apply_symm_apply] using (e : M →SL[σ] M₂).hasSum h⟩
 #align continuous_linear_equiv.has_sum ContinuousLinearEquiv.hasSum
 
 /-- Applying a continuous linear map commutes with taking an (infinite) sum. -/
 protected theorem ContinuousLinearEquiv.has_sum' {f : ι → M} (e : M ≃SL[σ] M₂) {x : M} :
     HasSum (fun b : ι => e (f b)) (e x) ↔ HasSum f x := by
-  rw [e.has_sum, ContinuousLinearEquiv.symm_apply_apply]
+  rw [e.hasSum, ContinuousLinearEquiv.symm_apply_apply]
 #align continuous_linear_equiv.has_sum' ContinuousLinearEquiv.has_sum'
 
 protected theorem ContinuousLinearEquiv.summable {f : ι → M} (e : M ≃SL[σ] M₂) :
     (Summable fun b : ι => e (f b)) ↔ Summable f :=
-  ⟨fun hf => (e.HasSum.1 hf.HasSum).Summable, (e : M →SL[σ] M₂).Summable⟩
+  ⟨fun hf => (e.hasSum.1 hf.hasSum).summable, (e : M →SL[σ] M₂).summable⟩
 #align continuous_linear_equiv.summable ContinuousLinearEquiv.summable
 
 theorem ContinuousLinearEquiv.tsum_eq_iff [T2Space M] [T2Space M₂] {f : ι → M} (e : M ≃SL[σ] M₂)
@@ -90,8 +90,8 @@ theorem ContinuousLinearEquiv.tsum_eq_iff [T2Space M] [T2Space M₂] {f : ι →
   by_cases hf : Summable f
   ·
     exact
-      ⟨fun h => (e.has_sum.mp ((e.summable.mpr hf).hasSum_iff.mpr h)).tsum_eq, fun h =>
-        (e.has_sum.mpr (hf.has_sum_iff.mpr h)).tsum_eq⟩
+      ⟨fun h => (e.hasSum.mp ((e.summable.mpr hf).hasSum_iff.mpr h)).tsum_eq, fun h =>
+        (e.hasSum.mpr (hf.hasSum_iff.mpr h)).tsum_eq⟩
   · have hf' : ¬Summable fun z => e (f z) := fun h => hf (e.summable.mp h)
     rw [tsum_eq_zero_of_not_summable hf, tsum_eq_zero_of_not_summable hf']
     exact
@@ -107,4 +107,3 @@ protected theorem ContinuousLinearEquiv.map_tsum [T2Space M] [T2Space M₂] {f :
 #align continuous_linear_equiv.map_tsum ContinuousLinearEquiv.map_tsum
 
 end HasSum
-
