@@ -82,7 +82,7 @@ theorem length_bind (l : List α) (f : α → List β) :
 @[simp]
 theorem bind_eq_nil {l : List α} {f : α → List β} : List.bind l f = [] ↔ ∀ x ∈ l, f x = [] :=
   join_eq_nil.trans <| by
-    simp only [mem_map', forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
+    simp only [mem_map, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
 #align list.bind_eq_nil List.bind_eq_nil
 
 /-- In a join, taking the first elements up to an index which is the sum of the lengths of the
@@ -149,8 +149,7 @@ original sublist of index `i` if `A` is the sum of the lenghts of sublists of in
 @[deprecated drop_take_succ_join_eq_get]
 theorem drop_take_succ_join_eq_nthLe (L : List (List α)) {i : ℕ} (hi : i < L.length) :
     (L.join.take ((L.map length).take (i + 1)).sum).drop ((L.map length).take i).sum =
-      nthLe L i hi :=
-  by
+      nthLe L i hi := by
   have : (L.map length).take i = ((L.take (i + 1)).map length).take i := by
     simp [map_take, take_take]
   simp [take_sum_join, this, drop_sum_join, drop_take_succ_eq_cons_nthLe _ hi]

@@ -32,15 +32,30 @@ def IRDIR : FilePath :=
   "build" / "ir"
 
 /-- Target directory for caching -/
-def CACHEDIR : FilePath :=
-  ⟨".cache"⟩
+initialize CACHEDIR : FilePath ← do
+  match ← IO.getEnv "XDG_CACHE_HOME" with
+  | some path => return path / "mathlib"
+  | none => match ← IO.getEnv "HOME" with
+    | some path => return path / ".cache" / "mathlib"
+    | none => pure ⟨".cache"⟩
 
 /-- Target file path for `curl` configurations -/
 def CURLCFG :=
   IO.CACHEDIR / "curl.cfg"
 
+/-- curl version at https://github.com/leanprover-community/static-curl -/
+def CURLVERSION :=
+  "7.88.1"
+
+def CURLBIN :=
+  -- change file name if we ever need a more recent version to trigger re-download
+  IO.CACHEDIR / s!"curl-{CURLVERSION}"
+
 def LAKEPACKAGESDIR : FilePath :=
   ⟨"lake-packages"⟩
+
+def getCurl : IO String := do
+  return if (← CURLBIN.pathExists) then CURLBIN.toString else "curl"
 
 abbrev PackageDirs := Lean.RBMap String FilePath compare
 
@@ -73,18 +88,34 @@ def runCmd (cmd : String) (args : Array String) (throwFailure := true) : IO Stri
   if out.exitCode != 0 && throwFailure then throw $ IO.userError out.stderr
   else return out.stdout
 
+def runCurl (args : Array String) (throwFailure := true) : IO String := do
+  runCmd (← getCurl) args throwFailure
+
 def validateCurl : IO Bool := do
+  if (← CURLBIN.pathExists) then return true
   match (← runCmd "curl" #["--version"]).splitOn " " with
   | "curl" :: v :: _ => match v.splitOn "." with
     | maj :: min :: _ =>
-      let (maj, min) := (maj.toNat!, min.toNat!)
-      if maj > 7 then return true
-      if maj == 7 && min >= 69 then
-        if min < 81 then
-          IO.println s!"Warning: recommended `curl` version ≥7.81. Found {v}"
+      let version := (maj.toNat!, min.toNat!)
+      let _ := @lexOrd
+      let _ := @leOfOrd
+      if version >= (7, 81) then return true
+      -- TODO: support more platforms if the need arises
+      let arch ← (·.trim) <$> runCmd "uname" #["-m"] false
+      let kernel ← (·.trim) <$> runCmd "uname" #["-s"] false
+      if kernel == "Linux" && arch ∈ ["x86_64", "aarch64"] then
+        IO.println s!"curl is too old; downloading more recent version"
+        IO.FS.createDirAll IO.CACHEDIR
+        let _ ← runCmd "curl" #[
+          s!"https://github.com/leanprover-community/static-curl/releases/download/v{CURLVERSION}/curl-{arch}-linux-static",
+          "-L", "-o", CURLBIN.toString]
+        let _ ← runCmd "chmod" #["u+x", CURLBIN.toString]
+        return true
+      if version >= (7, 70) then
+        IO.println s!"Warning: recommended `curl` version ≥7.81. Found {v}"
         return true
       else
-        IO.println s!"`curl` version is required to be ≥7.69. Found {v}. Exiting..."
+        IO.println s!"`curl` version is required to be ≥7.70. Found {v}. Exiting..."
         return false
     | _ => throw $ IO.userError "Invalidly formatted version of `curl`"
   | _ => throw $ IO.userError "Invalidly formatted response from `curl --version`"
@@ -131,7 +162,7 @@ def allExist (paths : Array FilePath) : IO Bool := do
   pure true
 
 /-- Compresses build files into the local cache and returns an array with the compressed files -/
-def mkCache (hashMap : HashMap) (overwrite : Bool) : IO $ Array String := do
+def packCache (hashMap : HashMap) (overwrite : Bool) : IO $ Array String := do
   mkDir CACHEDIR
   IO.println "Compressing cache"
   let mut acc := default
@@ -165,6 +196,7 @@ def unpackCache (hashMap : HashMap) : IO Unit := do
     IO.println s!"Decompressing {size} file(s)"
     let isMathlibRoot ← isMathlibRoot
     hashMap.forM fun path hash => do
+      let _ ← IO.asTask do
       match path.parent with
       | none | some path => do
         let packageDir ← getPackageDir path

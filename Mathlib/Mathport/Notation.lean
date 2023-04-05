@@ -21,34 +21,34 @@ open Std.ExtendedBinder
 /--
 Expands binders into nested combinators.
 For example, the familiar exists is given by:
-`expandBinders% (p => Exists p) x y : Nat, x < y`
+`expand_binders% (p => Exists p) x y : Nat, x < y`
 which expands to the same expression as
 `∃ x y : Nat, x < y`
 -/
-syntax "expandBinders% " "(" ident " => " term ")" extBinders ", " term : term
+syntax "expand_binders% " "(" ident " => " term ")" extBinders ", " term : term
 
 macro_rules
-  | `(expandBinders% ($x => $term) $y:extBinder, $res) =>
-    `(expandBinders% ($x => $term) ($y:extBinder), $res)
-  | `(expandBinders% ($_ => $_), $res) => pure res
+  | `(expand_binders% ($x => $term) $y:extBinder, $res) =>
+    `(expand_binders% ($x => $term) ($y:extBinder), $res)
+  | `(expand_binders% ($_ => $_), $res) => pure res
 macro_rules
-  | `(expandBinders% ($x => $term) ($y:ident $[: $ty]?) $binders*, $res) => do
+  | `(expand_binders% ($x => $term) ($y:ident $[: $ty]?) $binders*, $res) => do
     let ty := ty.getD (← `(_))
     term.replaceM fun x' ↦ do
       unless x == x' do return none
-      `(fun $y:ident : $ty ↦ expandBinders% ($x => $term) $[$binders]*, $res)
-  | `(expandBinders% ($x => $term) ($y:ident $pred:binderPred) $binders*, $res) =>
+      `(fun $y:ident : $ty ↦ expand_binders% ($x => $term) $[$binders]*, $res)
+  | `(expand_binders% ($x => $term) ($y:ident $pred:binderPred) $binders*, $res) =>
     term.replaceM fun x' ↦ do
       unless x == x' do return none
-      `(fun $y:ident ↦ expandBinders% ($x => $term) (h : satisfies_binder_pred% $y $pred)
+      `(fun $y:ident ↦ expand_binders% ($x => $term) (h : satisfies_binder_pred% $y $pred)
         $[$binders]*, $res)
 
-macro (name := expandFoldl) "expandFoldl% "
+macro (name := expandFoldl) "expand_foldl% "
   "(" x:ident y:ident " => " term:term ")" init:term:max "[" args:term,* "]" : term =>
   args.getElems.foldlM (init := init) fun res arg ↦ do
     term.replaceM fun e ↦
       return if e == x then some res else if e == y then some arg else none
-macro (name := expandFoldr) "expandFoldr% "
+macro (name := expandFoldr) "expand_foldr% "
   "(" x:ident y:ident " => " term:term ")" init:term:max "[" args:term,* "]" : term =>
   args.getElems.foldrM (init := init) fun arg res ↦ do
     term.replaceM fun e ↦
@@ -65,11 +65,11 @@ syntax identOptScoped := ident (":" "(" "scoped " ident " => " term ")")?
 /-- `notation3` argument. -/
 syntax notation3Item := strLit <|> bindersItem <|> identOptScoped <|> foldAction
 /--
-`notation3` declares notation using Lean 3-style syntax.
-Only to be used for mathport.
+`notation3` declares notation using Lean 3-style syntax. This command can be used in mathlib4
+but it has an uncertain future and exists primarily for backward compatibility.
 -/
-macro doc:(docComment)? ak:Term.attrKind "notation3"
-    prec:(precedence)? name:(namedName)? prio:(namedPrio)?
+macro doc:(docComment)? attrs:(Parser.Term.attributes)? ak:Term.attrKind
+    "notation3" prec:(precedence)? name:(namedName)? prio:(namedPrio)?
     lits:(notation3Item)+ " => " val:term : command => do
   let mut boundNames : Lean.HashMap Name Syntax := {}
   let mut macroArgs := #[]
@@ -104,7 +104,7 @@ macro doc:(docComment)? ak:Term.attrKind "notation3"
         | Syntax.ident _ _ id .. => pure $ boundNames.find? id
         | _ => pure none
       boundNames := boundNames.insert id <|
-        ← `(expandBinders% ($scopedId => $scopedTerm) $$binders:extBinders,
+        ← `(expand_binders% ($scopedId => $scopedTerm) $$binders:extBinders,
           $(⟨lit.1.mkAntiquotNode `term⟩):term)
     | `(notation3Item| $lit:ident) =>
       macroArgs := macroArgs.push (← `(macroArg| $lit:ident:term))
@@ -113,7 +113,6 @@ macro doc:(docComment)? ak:Term.attrKind "notation3"
   let val ← val.replaceM fun
     | Syntax.ident _ _ id .. => pure $ boundNames.find? id
     | _ => pure none
-  `($[$doc:docComment]? $ak:attrKind macro $[$prec]? $[$name]? $[$prio]? $[$macroArgs]* : term => do
-    `($val:term))
+  `($[$doc]? $(attrs)? $ak macro $(prec)? $(name)? $(prio)? $[$macroArgs]* : term => do `($val))
 
 end Parser.Command

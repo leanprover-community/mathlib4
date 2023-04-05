@@ -111,9 +111,6 @@ instance : RelHomClass (r →r s) r s where
     congr
   map_rel := map_rel'
 
-/-- See Note [custom simps projection] -/
-def Simps.apply (f : r →r s) : α → β := f
-
 initialize_simps_projections RelHom (toFun → apply)
 
 protected theorem map_rel (f : r →r s) {a b} : r a b → s (f a) (f b) :=
@@ -144,12 +141,14 @@ theorem ext_iff {f g : r →r s} : f = g ↔ ∀ x, f x = g x :=
 protected def id (r : α → α → Prop) : r →r r :=
   ⟨fun x => x, fun x => x⟩
 #align rel_hom.id RelHom.id
+#align rel_hom.id_apply RelHom.id_apply
 
 /-- Composition of two relation homomorphisms is a relation homomorphism. -/
 @[simps]
 protected def comp (g : s →r t) (f : r →r s) : r →r t :=
   ⟨fun x => g (f x), fun h => g.2 (f.2 h)⟩
 #align rel_hom.comp RelHom.comp
+#align rel_hom.comp_apply RelHom.comp_apply
 
 /-- A relation homomorphism is also a relation homomorphism between dual relations. -/
 protected def swap (f : r →r s) : swap r →r swap s :=
@@ -247,13 +246,14 @@ instance : RelHomClass (r ↪r s) r s where
     congr
   map_rel f a b := Iff.mpr (map_rel_iff' f)
 
-/-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
-because it is a composition of multiple projections. -/
+
+/-- See Note [custom simps projection]. We specify this explicitly because we have a coercion not
+given by the `FunLike` instance. Todo: remove that instance?
+-/
 def Simps.apply (h : r ↪r s) : α → β :=
   h
-#align rel_embedding.simps.apply RelEmbedding.Simps.apply
 
-initialize_simps_projections RelEmbedding (toEmbedding_toFun → apply, -toEmbedding)
+initialize_simps_projections RelEmbedding (toFun → apply)
 
 theorem injective (f : r ↪r s) : Injective f :=
   f.inj'
@@ -266,6 +266,9 @@ theorem inj (f : r ↪r s) {a b} : f a = f b ↔ a = b :=
 theorem map_rel_iff (f : r ↪r s) {a b} : s (f a) (f b) ↔ r a b :=
   f.map_rel_iff'
 #align rel_embedding.map_rel_iff RelEmbedding.map_rel_iff
+
+#noalign coe_fn_mk
+#noalign coe_fn_to_embedding
 
 /-- The map `coe_fn : (r ↪r s) → (α → β)` is injective. -/
 theorem coe_fn_injective : Injective fun f : r ↪r s => (f : α → β) :=
@@ -282,10 +285,11 @@ theorem ext_iff {f g : r ↪r s} : f = g ↔ ∀ x, f x = g x :=
 #align rel_embedding.ext_iff RelEmbedding.ext_iff
 
 /-- Identity map is a relation embedding. -/
-@[refl, simps]
+@[refl, simps!]
 protected def refl (r : α → α → Prop) : r ↪r r :=
   ⟨Embedding.refl _, Iff.rfl⟩
 #align rel_embedding.refl RelEmbedding.refl
+#align rel_embedding.refl_apply RelEmbedding.refl_apply
 
 /-- Composition of two relation embeddings is a relation embedding. -/
 protected def trans (f : r ↪r s) (g : s ↪r t) : r ↪r t :=
@@ -390,13 +394,14 @@ protected theorem isWellOrder : ∀ (_ : r ↪r s) [IsWellOrder β s], IsWellOrd
 #align rel_embedding.is_well_order RelEmbedding.isWellOrder
 
 /-- `Quotient.out` as a relation embedding between the lift of a relation and the relation. -/
-@[simps]
+@[simps!]
 noncomputable def _root_.Quotient.outRelEmbedding [s : Setoid α] {r : α → α → Prop}
     (H : ∀ (a₁ b₁ a₂ b₂ : α), a₁ ≈ a₂ → b₁ ≈ b₂ → r a₁ b₁ = r a₂ b₂) : Quotient.lift₂ r H ↪r r :=
   ⟨Embedding.quotientOut α, by
     refine' @fun x y => Quotient.inductionOn₂ x y fun a b => _
     apply iff_iff_eq.2 (H _ _ _ _ _ _) <;> apply Quotient.mk_out⟩
 #align quotient.out_rel_embedding Quotient.outRelEmbedding
+#align quotient.out_rel_embedding_apply Quotient.outRelEmbedding_apply
 
 /-- A relation is well founded iff its lift to a quotient is. -/
 @[simp]
@@ -413,7 +418,7 @@ theorem _root_.wellFounded_lift₂_iff [s : Setoid α] {r : α → α → Prop}
     (Quotient.outRelEmbedding H).wellFounded⟩
 #align well_founded_lift₂_iff wellFounded_lift₂_iff
 
-alias wellFounded_lift₂_iff ↔ WellFounded.of_quotient_lift₂ WellFounded.quotient_lift₂
+alias wellFounded_lift₂_iff ↔ _root_.WellFounded.of_quotient_lift₂ _root_.WellFounded.quotient_lift₂
 
 /-- To define an relation embedding from an antisymmetric relation `r` to a reflexive relation `s`
 it suffices to give a function together with a proof that it satisfies `s (f a) (f b) ↔ r a b`.
@@ -468,6 +473,7 @@ def sumLiftRelInl (r : α → α → Prop) (s : β → β → Prop) : r ↪r Sum
   inj' := Sum.inl_injective
   map_rel_iff' := Sum.liftRel_inl_inl
 #align rel_embedding.sum_lift_rel_inl RelEmbedding.sumLiftRelInl
+#align rel_embedding.sum_lift_rel_inl_apply RelEmbedding.sumLiftRelInl_apply
 
 /-- `Sum.inr` as a relation embedding into `Sum.LiftRel r s`. -/
 @[simps]
@@ -476,6 +482,7 @@ def sumLiftRelInr (r : α → α → Prop) (s : β → β → Prop) : s ↪r Sum
   inj' := Sum.inr_injective
   map_rel_iff' := Sum.liftRel_inr_inr
 #align rel_embedding.sum_lift_rel_inr RelEmbedding.sumLiftRelInr
+#align rel_embedding.sum_lift_rel_inr_apply RelEmbedding.sumLiftRelInr_apply
 
 /-- `Sum.map` as a relation embedding between `Sum.LiftRel` relations. -/
 @[simps]
@@ -484,6 +491,7 @@ def sumLiftRelMap (f : r ↪r s) (g : t ↪r u) : Sum.LiftRel r t ↪r Sum.LiftR
   inj' := f.injective.sum_map g.injective
   map_rel_iff' := by rintro (a | b) (c | d) <;> simp [f.map_rel_iff, g.map_rel_iff]
 #align rel_embedding.sum_lift_rel_map RelEmbedding.sumLiftRelMap
+#align rel_embedding.sum_lift_rel_map_apply RelEmbedding.sumLiftRelMap_apply
 
 /-- `Sum.inl` as a relation embedding into `Sum.Lex r s`. -/
 @[simps]
@@ -492,6 +500,7 @@ def sumLexInl (r : α → α → Prop) (s : β → β → Prop) : r ↪r Sum.Lex
   inj' := Sum.inl_injective
   map_rel_iff' := Sum.lex_inl_inl
 #align rel_embedding.sum_lex_inl RelEmbedding.sumLexInl
+#align rel_embedding.sum_lex_inl_apply RelEmbedding.sumLexInl_apply
 
 /-- `Sum.inr` as a relation embedding into `Sum.Lex r s`. -/
 @[simps]
@@ -500,6 +509,7 @@ def sumLexInr (r : α → α → Prop) (s : β → β → Prop) : s ↪r Sum.Lex
   inj' := Sum.inr_injective
   map_rel_iff' := Sum.lex_inr_inr
 #align rel_embedding.sum_lex_inr RelEmbedding.sumLexInr
+#align rel_embedding.sum_lex_inr_apply RelEmbedding.sumLexInr_apply
 
 /-- `Sum.map` as a relation embedding between `Sum.Lex` relations. -/
 @[simps]
@@ -508,6 +518,7 @@ def sumLexMap (f : r ↪r s) (g : t ↪r u) : Sum.Lex r t ↪r Sum.Lex s u where
   inj' := f.injective.sum_map g.injective
   map_rel_iff' := by rintro (a | b) (c | d) <;> simp [f.map_rel_iff, g.map_rel_iff]
 #align rel_embedding.sum_lex_map RelEmbedding.sumLexMap
+#align rel_embedding.sum_lex_map_apply RelEmbedding.sumLexMap_apply
 
 /-- `λ b, Prod.mk a b` as a relation embedding. -/
 @[simps]
@@ -516,6 +527,7 @@ def prodLexMkLeft (s : β → β → Prop) {a : α} (h : ¬r a a) : s ↪r Prod.
   inj' := Prod.mk.inj_left a
   map_rel_iff' := by simp [Prod.lex_def, h]
 #align rel_embedding.prod_lex_mk_left RelEmbedding.prodLexMkLeft
+#align rel_embedding.prod_lex_mk_left_apply RelEmbedding.prodLexMkLeft_apply
 
 /-- `λ a, Prod.mk a b` as a relation embedding. -/
 @[simps]
@@ -524,6 +536,7 @@ def prodLexMkRight (r : α → α → Prop) {b : β} (h : ¬s b b) : r ↪r Prod
   inj' := Prod.mk.inj_right b
   map_rel_iff' := by simp [Prod.lex_def, h]
 #align rel_embedding.prod_lex_mk_right RelEmbedding.prodLexMkRight
+#align rel_embedding.prod_lex_mk_right_apply RelEmbedding.prodLexMkRight_apply
 
 /-- `Prod.map` as a relation embedding. -/
 @[simps]
@@ -532,6 +545,7 @@ def prodLexMap (f : r ↪r s) (g : t ↪r u) : Prod.Lex r t ↪r Prod.Lex s u wh
   inj' := f.injective.Prod_map g.injective
   map_rel_iff' := by simp [Prod.lex_def, f.map_rel_iff, g.map_rel_iff]
 #align rel_embedding.prod_lex_map RelEmbedding.prodLexMap
+#align rel_embedding.prod_lex_map_apply RelEmbedding.prodLexMap_apply
 
 end RelEmbedding
 
@@ -607,29 +621,31 @@ protected def symm (f : r ≃r s) : s ≃r r :=
 #align rel_iso.symm RelIso.symm
 
 /-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
-  because it is a composition of multiple projections. -/
+  because `RelIso` defines custom coercions other than the ones given by `FunLike`. -/
 def Simps.apply (h : r ≃r s) : α → β :=
   h
 #align rel_iso.simps.apply RelIso.Simps.apply
 
 /-- See Note [custom simps projection]. -/
-def Simps.symmApply (h : r ≃r s) : β → α :=
+def Simps.symm_apply (h : r ≃r s) : β → α :=
   h.symm
-#align rel_iso.simps.symm_apply RelIso.Simps.symmApply
+#align rel_iso.simps.symm_apply RelIso.Simps.symm_apply
 
-initialize_simps_projections RelIso (toEquiv_toFun → apply, toEquiv_invFun → symmApply, -toEquiv)
+initialize_simps_projections RelIso (toFun → apply, invFun → symm_apply)
 
 /-- Identity map is a relation isomorphism. -/
-@[refl, simps apply]
+@[refl, simps! apply]
 protected def refl (r : α → α → Prop) : r ≃r r :=
   ⟨Equiv.refl _, Iff.rfl⟩
 #align rel_iso.refl RelIso.refl
+#align rel_iso.refl_apply RelIso.refl_apply
 
 /-- Composition of two relation isomorphisms is a relation isomorphism. -/
-@[simps apply]
+@[simps! apply]
 protected def trans (f₁ : r ≃r s) (f₂ : s ≃r t) : r ≃r t :=
   ⟨f₁.toEquiv.trans f₂.toEquiv, f₂.map_rel_iff.trans f₁.map_rel_iff⟩
 #align rel_iso.trans RelIso.trans
+#align rel_iso.trans_apply RelIso.trans_apply
 
 instance (r : α → α → Prop) : Inhabited (r ≃r r) :=
   ⟨RelIso.refl _⟩
@@ -640,7 +656,7 @@ theorem default_def (r : α → α → Prop) : default = RelIso.refl r :=
 #align rel_iso.default_def RelIso.default_def
 
 /-- A relation isomorphism between equal relations on equal types. -/
-@[simps toEquiv apply]
+@[simps! toEquiv apply]
 protected def cast {α β : Type u} {r : α → α → Prop} {s : β → β → Prop} (h₁ : α = β)
     (h₂ : HEq r s) : r ≃r s :=
   ⟨Equiv.cast h₁, @fun a b => by
@@ -648,6 +664,8 @@ protected def cast {α β : Type u} {r : α → α → Prop} {s : β → β → 
     rw [eq_of_heq h₂]
     rfl⟩
 #align rel_iso.cast RelIso.cast
+#align rel_iso.cast_apply RelIso.cast_apply
+#align rel_iso.cast_to_equiv RelIso.cast_toEquiv
 
 @[simp]
 protected theorem cast_symm {α β : Type u} {r : α → α → Prop} {s : β → β → Prop} (h₁ : α = β)
@@ -731,10 +749,11 @@ instance IsWellOrder.ulift {α : Type u} (r : α → α → Prop) [IsWellOrder �
 #align rel_iso.is_well_order.ulift RelIso.IsWellOrder.ulift
 
 /-- A surjective relation embedding is a relation isomorphism. -/
-@[simps apply]
+@[simps! apply]
 noncomputable def ofSurjective (f : r ↪r s) (H : Surjective f) : r ≃r s :=
   ⟨Equiv.ofBijective f ⟨f.injective, H⟩, f.map_rel_iff⟩
 #align rel_iso.of_surjective RelIso.ofSurjective
+#align rel_iso.of_surjective_apply RelIso.ofSurjective_apply
 
 /-- Given relation isomorphisms `r₁ ≃r s₁` and `r₂ ≃r s₂`, construct a relation isomorphism for the
 lexicographic orders on the sum.

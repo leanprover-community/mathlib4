@@ -179,8 +179,7 @@ theorem subset_inter {l l₁ l₂ : List α} (h₁ : l ⊆ l₁) (h₂ : l ⊆ l
   mem_inter.2 ⟨h₁ h, h₂ h⟩
 #align list.subset_inter List.subset_inter
 
-theorem inter_eq_nil_iff_disjoint : l₁ ∩ l₂ = [] ↔ Disjoint l₁ l₂ :=
-  by
+theorem inter_eq_nil_iff_disjoint : l₁ ∩ l₂ = [] ↔ Disjoint l₁ l₂ := by
   simp only [eq_nil_iff_forall_not_mem, mem_inter, not_and]
   rfl
 #align list.inter_eq_nil_iff_disjoint List.inter_eq_nil_iff_disjoint
@@ -234,7 +233,7 @@ theorem cons_bagInter_of_neg (l₁ : List α) (h : a ∉ l₂) :
 theorem mem_bagInter {a : α} : ∀ {l₁ l₂ : List α}, a ∈ l₁.bagInter l₂ ↔ a ∈ l₁ ∧ a ∈ l₂
   | [], l₂ => by simp only [nil_bagInter, not_mem_nil, false_and_iff]
   | b :: l₁, l₂ => by
-    by_cases b ∈ l₂
+    by_cases h : b ∈ l₂
     · rw [cons_bagInter_of_pos _ h, mem_cons, mem_cons, mem_bagInter]
       by_cases ba : a = b
       · simp only [ba, h, eq_self_iff_true, true_or_iff, true_and_iff]
@@ -256,7 +255,7 @@ theorem count_bagInter {a : α} :
     · rw [cons_bagInter_of_pos _ hb, count_cons', count_cons', count_bagInter, count_erase, ←
         min_add_add_right]
       by_cases ab : a = b
-      · rw [if_pos ab, tsub_add_cancel_of_le]
+      · rw [if_pos ab, @tsub_add_cancel_of_le]
         rwa [succ_le_iff, count_pos, ab]
       · rw [if_neg ab, tsub_zero, add_zero, add_zero]
     · rw [cons_bagInter_of_neg _ hb, count_bagInter]
@@ -270,7 +269,7 @@ theorem bagInter_sublist_left : ∀ l₁ l₂ : List α, l₁.bagInter l₂ <+ l
   | [], l₂ => by simp
   | b :: l₁, l₂ =>
     by
-    by_cases b ∈ l₂ <;> simp only [h, cons_bagInter_of_pos, cons_bagInter_of_neg, not_false_iff]
+    by_cases h : b ∈ l₂ <;> simp only [h, cons_bagInter_of_pos, cons_bagInter_of_neg, not_false_iff]
     · exact (bagInter_sublist_left _ _).cons_cons _
     · apply sublist_cons_of_sublist
       apply bagInter_sublist_left

@@ -55,8 +55,7 @@ def sumEmbeddingEquivProdEmbeddingDisjoint {α β γ : Type _} :
   right_inv := fun ⟨⟨f, g⟩, _⟩ => by
     simp only [Prod.mk.inj_iff]
     constructor
-#align
-  equiv.sum_embedding_equiv_prod_embedding_disjoint Equiv.sumEmbeddingEquivProdEmbeddingDisjoint
+#align equiv.sum_embedding_equiv_prod_embedding_disjoint Equiv.sumEmbeddingEquivProdEmbeddingDisjoint
 
 /-- Embeddings whose range lies within a set are equivalent to embeddings to that set.
 This is `Function.Embedding.codRestrict` as an equiv. -/
@@ -81,9 +80,7 @@ def prodEmbeddingDisjointEquivSigmaEmbeddingRestricted {α β γ : Type _} :
             ext f
             rw [← Set.range_subset_iff, Set.subset_compl_iff_disjoint_right, disjoint_comm]).trans
         (codRestrict _ _)
-#align
-  equiv.prod_embedding_disjoint_equiv_sigma_embedding_restricted
-  Equiv.prodEmbeddingDisjointEquivSigmaEmbeddingRestricted
+#align equiv.prod_embedding_disjoint_equiv_sigma_embedding_restricted Equiv.prodEmbeddingDisjointEquivSigmaEmbeddingRestricted
 
 /-- A combination of the above results, allowing us to turn one embedding over a sum type
 into two dependent embeddings, the second of which avoids any members of the range
@@ -92,9 +89,7 @@ def sumEmbeddingEquivSigmaEmbeddingRestricted {α β γ : Type _} :
     (Sum α β ↪ γ) ≃ Σf : α ↪ γ, β ↪ ↥(Set.range fᶜ) :=
   Equiv.trans sumEmbeddingEquivProdEmbeddingDisjoint
     prodEmbeddingDisjointEquivSigmaEmbeddingRestricted
-#align
-  equiv.sum_embedding_equiv_sigma_embedding_restricted
-  Equiv.sumEmbeddingEquivSigmaEmbeddingRestricted
+#align equiv.sum_embedding_equiv_sigma_embedding_restricted Equiv.sumEmbeddingEquivSigmaEmbeddingRestricted
 
 /-- Embeddings from a single-member type are equivalent to members of the target type. -/
 def uniqueEmbeddingEquivResult {α β : Type _} [Unique α] :

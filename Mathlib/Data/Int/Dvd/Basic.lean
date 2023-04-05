@@ -5,7 +5,7 @@ Authors: Jeremy Avigad
 Ported by: Scott Morrison
 
 ! This file was ported from Lean 3 source module data.int.dvd.basic
-! leanprover-community/mathlib commit fc2ed6f838ce7c9b7c7171e58d78eaf7b438fb0e
+! leanprover-community/mathlib commit e1bccd6e40ae78370f01659715d3c948716e3b7e
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -35,11 +35,11 @@ theorem coe_nat_dvd {m n : ℕ} : (↑m : ℤ) ∣ ↑n ↔ m ∣ n :=
 #align int.coe_nat_dvd Int.coe_nat_dvd
 
 theorem coe_nat_dvd_left {n : ℕ} {z : ℤ} : (↑n : ℤ) ∣ z ↔ n ∣ z.natAbs := by
-  rcases natAbs_eq z with (eq | eq) <;> rw [eq] <;> simp [coe_nat_dvd]
+  rcases natAbs_eq z with (eq | eq) <;> rw [eq] <;> simp [←coe_nat_dvd]
 #align int.coe_nat_dvd_left Int.coe_nat_dvd_left
 
 theorem coe_nat_dvd_right {n : ℕ} {z : ℤ} : z ∣ (↑n : ℤ) ↔ z.natAbs ∣ n := by
-  rcases natAbs_eq z with (eq | eq) <;> rw [eq] <;> simp [coe_nat_dvd]
+  rcases natAbs_eq z with (eq | eq) <;> rw [eq] <;> simp [←coe_nat_dvd]
 #align int.coe_nat_dvd_right Int.coe_nat_dvd_right
 
 #align int.le_of_dvd Int.le_of_dvd

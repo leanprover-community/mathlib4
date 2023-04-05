@@ -27,8 +27,7 @@ open Nat
 
 namespace Int
 
-theorem le_coe_nat_sub (m n : ℕ) : (m - n : ℤ) ≤ ↑(m - n : ℕ) :=
-  by
+theorem le_coe_nat_sub (m n : ℕ) : (m - n : ℤ) ≤ ↑(m - n : ℕ) := by
   by_cases h : m ≥ n
   · exact le_of_eq (Int.ofNat_sub h).symm
   · simp [le_of_not_ge h, ofNat_le]
@@ -47,20 +46,17 @@ theorem succ_coe_nat_pos (n : ℕ) : 0 < (n : ℤ) + 1 :=
 
 variable {a b : ℤ} {n : ℕ}
 
-theorem natAbs_eq_iff_sq_eq {a b : ℤ} : a.natAbs = b.natAbs ↔ a ^ 2 = b ^ 2 :=
-  by
+theorem natAbs_eq_iff_sq_eq {a b : ℤ} : a.natAbs = b.natAbs ↔ a ^ 2 = b ^ 2 := by
   rw [sq, sq]
   exact natAbs_eq_iff_mul_self_eq
 #align int.nat_abs_eq_iff_sq_eq Int.natAbs_eq_iff_sq_eq
 
-theorem natAbs_lt_iff_sq_lt {a b : ℤ} : a.natAbs < b.natAbs ↔ a ^ 2 < b ^ 2 :=
-  by
+theorem natAbs_lt_iff_sq_lt {a b : ℤ} : a.natAbs < b.natAbs ↔ a ^ 2 < b ^ 2 := by
   rw [sq, sq]
   exact natAbs_lt_iff_mul_self_lt
 #align int.nat_abs_lt_iff_sq_lt Int.natAbs_lt_iff_sq_lt
 
-theorem natAbs_le_iff_sq_le {a b : ℤ} : a.natAbs ≤ b.natAbs ↔ a ^ 2 ≤ b ^ 2 :=
-  by
+theorem natAbs_le_iff_sq_le {a b : ℤ} : a.natAbs ≤ b.natAbs ↔ a ^ 2 ≤ b ^ 2 := by
   rw [sq, sq]
   exact natAbs_le_iff_mul_self_le
 #align int.nat_abs_le_iff_sq_le Int.natAbs_le_iff_sq_le
@@ -126,8 +122,7 @@ This lemma is orphaned from `Data.Int.Bitwise` as it also requires material from
 attribute [local simp] Int.zero_div
 
 @[simp]
-theorem div2_bit (b n) : div2 (bit b n) = n :=
-  by
+theorem div2_bit (b n) : div2 (bit b n) = n := by
   rw [bit_val, div2_val, add_comm, Int.add_mul_ediv_left, (_ : (_ / 2 : ℤ) = 0), zero_add]
   cases b
   · simp

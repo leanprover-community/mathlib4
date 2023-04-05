@@ -68,7 +68,6 @@ theorem csupₛ_eq_greatest_of_bdd {s : Set ℤ} [DecidablePred (· ∈ s)] (b :
   have : s.Nonempty ∧ BddAbove s := ⟨Hinh, b, Hb⟩
   simp only [supₛ, this, and_self, dite_true]
   convert (coe_greatestOfBdd_eq Hb (Classical.choose_spec (⟨b, Hb⟩ : BddAbove s)) Hinh).symm
-  simp
 #align int.cSup_eq_greatest_of_bdd Int.csupₛ_eq_greatest_of_bdd
 
 @[simp]
@@ -86,7 +85,6 @@ theorem cinfₛ_eq_least_of_bdd {s : Set ℤ} [DecidablePred (· ∈ s)] (b : �
   have : s.Nonempty ∧ BddBelow s := ⟨Hinh, b, Hb⟩
   simp only [infₛ, this, and_self, dite_true]
   convert (coe_leastOfBdd_eq Hb (Classical.choose_spec (⟨b, Hb⟩ : BddBelow s)) Hinh).symm
-  simp
 #align int.cInf_eq_least_of_bdd Int.cinfₛ_eq_least_of_bdd
 
 @[simp]
@@ -98,14 +96,12 @@ theorem cinfₛ_of_not_bdd_below {s : Set ℤ} (h : ¬BddBelow s) : infₛ s = 0
   dif_neg (by simp [h])
 #align int.cInf_of_not_bdd_below Int.cinfₛ_of_not_bdd_below
 
-theorem csupₛ_mem {s : Set ℤ} (h1 : s.Nonempty) (h2 : BddAbove s) : supₛ s ∈ s :=
-  by
+theorem csupₛ_mem {s : Set ℤ} (h1 : s.Nonempty) (h2 : BddAbove s) : supₛ s ∈ s := by
   convert (greatestOfBdd _ (Classical.choose_spec h2) h1).2.1
   exact dif_pos ⟨h1, h2⟩
 #align int.cSup_mem Int.csupₛ_mem
 
-theorem cinfₛ_mem {s : Set ℤ} (h1 : s.Nonempty) (h2 : BddBelow s) : infₛ s ∈ s :=
-  by
+theorem cinfₛ_mem {s : Set ℤ} (h1 : s.Nonempty) (h2 : BddBelow s) : infₛ s ∈ s := by
   convert (leastOfBdd _ (Classical.choose_spec h2) h1).2.1
   exact dif_pos ⟨h1, h2⟩
 #align int.cInf_mem Int.cinfₛ_mem

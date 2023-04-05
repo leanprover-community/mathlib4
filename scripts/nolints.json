@@ -40,7 +40,7 @@
  ["docBlame", "bit0"],
  ["docBlame", "bit1"],
  ["docBlame", "condM"],
- ["docBlame", "decidable_eq_of_bool_pred"],
+ ["docBlame", "decidableEq_of_bool_pred"],
  ["docBlame", "joinM"],
  ["docBlame", "setOf"],
  ["docBlame", "«term_+ᵥ_»"],

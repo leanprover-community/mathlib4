@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Keeley Hoek
 
 ! This file was ported from Lean 3 source module data.fin.basic
-! leanprover-community/mathlib commit 7c523cb78f4153682c2929e3006c863bfef463d0
+! leanprover-community/mathlib commit 008af8bb14b3ebef7e04ec3b0d63b947dee4d26a
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -80,8 +80,6 @@ This file expands on the development in the core library.
 * `Fin.rev : Fin n → Fin n` : the antitone involution given by `i ↦ n-(i+1)`
 
 -/
-
--- set_option autoImplicit false
 
 universe u v
 
@@ -165,6 +163,8 @@ def equivSubtype : Fin n ≃ { i // i < n } where
   left_inv := fun ⟨_, _⟩ => rfl
   right_inv := fun ⟨_, _⟩ => rfl
 #align fin.equiv_subtype Fin.equivSubtype
+#align fin.equiv_subtype_symm_apply Fin.equivSubtype_symm_apply
+#align fin.equiv_subtype_apply Fin.equivSubtype_apply
 
 section coe
 
@@ -300,9 +300,9 @@ theorem val_fin_le {n : ℕ} {a b : Fin n} : (a : ℕ) ≤ (b : ℕ) ↔ a ≤ b
 #align fin.coe_fin_le Fin.val_fin_le
 
 instance {n : ℕ} : LinearOrder (Fin n) :=
-  @LinearOrder.lift (Fin n) _ _ ⟨fun x y => ⟨max x y, max_rec' (· < n) x.2 y.2⟩⟩
-    ⟨fun x y => ⟨min x y, min_rec' (· < n) x.2 y.2⟩⟩ Fin.val Fin.val_injective (fun _ _ => rfl)
-    fun _ _ => rfl
+  @LinearOrder.liftWithOrd (Fin n) _ _ ⟨fun x y => ⟨max x y, max_rec' (· < n) x.2 y.2⟩⟩
+    ⟨fun x y => ⟨min x y, min_rec' (· < n) x.2 y.2⟩⟩ _ Fin.val Fin.val_injective (fun _ _ => rfl)
+    (fun _ _ => rfl) (fun _ _ => rfl)
 
 @[simp]
 theorem mk_le_mk {x y : Nat} {hx} {hy} : (⟨x, hx⟩ : Fin n) ≤ ⟨y, hy⟩ ↔ x ≤ y :=
@@ -328,10 +328,12 @@ theorem val_strictMono : StrictMono (val : Fin n → ℕ) := fun _ _ => id
 #align fin.coe_strict_mono Fin.val_strictMono
 
 /-- The equivalence `Fin n ≃ { i // i < n }` is an order isomorphism. -/
-@[simps apply symmApply]
+@[simps! apply symm_apply]
 def orderIsoSubtype : Fin n ≃o { i // i < n } :=
   equivSubtype.toOrderIso (by simp [Monotone]) (by simp [Monotone])
 #align fin.order_iso_subtype Fin.orderIsoSubtype
+#align fin.order_iso_subtype_symm_apply Fin.orderIsoSubtype_symm_apply
+#align fin.order_iso_subtype_apply Fin.orderIsoSubtype_apply
 
 /-- The inclusion map `Fin n → ℕ` is an embedding. -/
 @[simps apply]
@@ -346,7 +348,7 @@ theorem equivSubtype_symm_trans_valEmbedding :
 #align fin.equiv_subtype_symm_trans_val_embedding Fin.equivSubtype_symm_trans_valEmbedding
 
 /-- The inclusion map `Fin n → ℕ` is an order embedding. -/
-@[simps apply]
+@[simps! apply]
 def valOrderEmbedding (n) : Fin n ↪o ℕ :=
   ⟨valEmbedding, Iff.rfl⟩
 #align fin.coe_order_embedding Fin.valOrderEmbedding
@@ -491,10 +493,12 @@ theorem rev_lt_rev {i j : Fin n} : rev i < rev j ↔ j < i :=
 #align fin.rev_lt_rev Fin.rev_lt_rev
 
 /-- `Fin.rev n` as an order-reversing isomorphism. -/
-@[simps apply toEquiv]
+@[simps! apply toEquiv]
 def revOrderIso {n} : (Fin n)ᵒᵈ ≃o Fin n :=
   ⟨OrderDual.ofDual.trans rev, rev_le_rev⟩
 #align fin.rev_order_iso Fin.revOrderIso
+#align fin.rev_order_iso_apply Fin.revOrderIso_apply
+#align fin.rev_order_iso_to_equiv Fin.revOrderIso_toEquiv
 
 @[simp]
 theorem revOrderIso_symm_apply (i : Fin n) : revOrderIso.symm i = OrderDual.toDual (rev i) :=
@@ -503,7 +507,7 @@ theorem revOrderIso_symm_apply (i : Fin n) : revOrderIso.symm i = OrderDual.toDu
 
 /-- The greatest value of `Fin (n+1)` -/
 def last (n : ℕ) : Fin (n + 1) :=
-  ⟨_, n.lt_succ_self⟩
+  ⟨n, n.lt_succ_self⟩
 #align fin.last Fin.last
 
 @[simp, norm_cast]
@@ -534,6 +538,9 @@ theorem eq_last_of_not_lt {i : Fin (n + 1)} (h : ¬(i : ℕ) < n) : i = last n :
   le_antisymm (le_last i) (not_lt.1 h)
 #align fin.eq_last_of_not_lt Fin.eq_last_of_not_lt
 
+theorem val_lt_last {i : Fin (n + 1)} (h : i ≠ last n) : (i : ℕ) < n :=
+  by_contra <| mt eq_last_of_not_lt h
+
 theorem top_eq_last (n : ℕ) : ⊤ = Fin.last n :=
   rfl
 #align fin.top_eq_last Fin.top_eq_last
@@ -558,6 +565,8 @@ theorem coe_orderIso_apply (e : Fin n ≃o Fin m) (i : Fin n) : (e i : ℕ) = i 
   refine' le_antisymm (forall_lt_iff_le.1 fun j hj => _) (forall_lt_iff_le.1 fun j hj => _)
   · have := e.symm.lt_iff_lt.2 (mk_lt_of_lt_val hj)
     rw [e.symm_apply_apply] at this
+    -- porting note: convert was abusing definitional equality
+    have : _ < i := this
     convert this
     simpa using h _ this (e.symm _).is_lt
   · rwa [← h j hj (hj.trans hi), ← lt_iff_val_lt_val, e.lt_iff_lt]
@@ -649,7 +658,6 @@ protected theorem zero_add [NeZero n] (k : Fin n) : 0 + k = k := by
   simp [eq_iff_veq, add_def, mod_eq_of_lt (is_lt k)]
 #align fin.zero_add Fin.zero_add
 
-@[to_additive_fixed_numeral]
 instance [NeZero n] : OfNat (Fin n) a where
   ofNat := Fin.ofNat' a (NeZero.pos n)
 
@@ -716,8 +724,7 @@ theorem val_bit1 {n : ℕ} [NeZero n] (k : Fin n) :
 
 end deprecated
 
-theorem val_add_one_of_lt {n : ℕ} {i : Fin n.succ} (h : i < last _) : (↑(i + 1) : ℕ) = i + 1 :=
-  by
+theorem val_add_one_of_lt {n : ℕ} {i : Fin n.succ} (h : i < last _) : (↑(i + 1) : ℕ) = i + 1 := by
   -- First show that `((1 : Fin n.succ) : ℕ) = 1`, because `n.succ` is at least 2.
   cases n
   · cases h
@@ -753,8 +760,7 @@ theorem mk_bit0 {m n : ℕ} (h : bit0 m < n) :
 @[simp, deprecated]
 theorem mk_bit1 {m n : ℕ} [NeZero n] (h : bit1 m < n) :
     (⟨bit1 m, h⟩ : Fin n) =
-      (bit1 ⟨m, (Nat.le_add_right m m).trans_lt ((m + m).lt_succ_self.trans h)⟩ : Fin _) :=
-  by
+      (bit1 ⟨m, (Nat.le_add_right m m).trans_lt ((m + m).lt_succ_self.trans h)⟩ : Fin _) := by
   ext
   simp only [bit1, bit0] at h
   simp only [bit1, bit0, val_add, val_one', ← Nat.add_mod, Nat.mod_eq_of_lt h]
@@ -1125,8 +1131,6 @@ theorem castAdd_lt {m : ℕ} (n : ℕ) (i : Fin m) : (castAdd n i : ℕ) < m := 
   simp
 #align fin.cast_add_lt Fin.castAdd_lt
 
-set_option autoImplicit false
-
 @[simp]
 theorem castAdd_mk (m : ℕ) (i : ℕ) (h : i < n) : castAdd m ⟨i, h⟩ = ⟨i, Nat.lt_add_right i n m h⟩ :=
   rfl
@@ -1307,6 +1311,9 @@ theorem range_castSucc {n : ℕ} : Set.range (castSucc : Fin n → Fin n.succ) =
     ({ i | (i : ℕ) < n } : Set (Fin n.succ)) :=
   range_castLe le_self_add
 #align fin.range_cast_succ Fin.range_castSucc
+
+theorem exists_castSucc_eq {n : ℕ} {i : Fin (n + 1)} : (∃ j, castSucc j = i) ↔ i ≠ last n :=
+  ⟨fun ⟨j, hj⟩ => hj ▸ j.castSucc_lt_last.ne, fun hi => ⟨i.castLt $ Fin.val_lt_last hi, rfl⟩⟩
 
 @[simp]
 theorem coe_of_injective_castSucc_symm {n : ℕ} (i : Fin n.succ) (hi) :
@@ -1663,8 +1670,7 @@ This function has two arguments: `h0` handles the base case on `C 0`,
 and `hs` defines the inductive step using `C i.castSucc`.
 -/
 @[elab_as_elim]
---Porting note: marked noncomputable
-noncomputable def induction {C : Fin (n + 1) → Sort _} (h0 : C 0)
+def induction {C : Fin (n + 1) → Sort _} (h0 : C 0)
     (hs : ∀ i : Fin n, C (castSucc i) → C i.succ) :
     ∀ i : Fin (n + 1), C i := by
   rintro ⟨i, hi⟩
@@ -1702,7 +1708,7 @@ and `hs` defines the inductive step using `C i.castSucc`.
 A version of `Fin.induction` taking `i : Fin (n + 1)` as the first argument.
 -/
 @[elab_as_elim]
-noncomputable def inductionOn (i : Fin (n + 1)) {C : Fin (n + 1) → Sort _} (h0 : C 0)
+def inductionOn (i : Fin (n + 1)) {C : Fin (n + 1) → Sort _} (h0 : C 0)
     (hs : ∀ i : Fin n, C (castSucc i) → C i.succ) : C i :=
   induction h0 hs i
 #align fin.induction_on Fin.inductionOn
@@ -1710,7 +1716,7 @@ noncomputable def inductionOn (i : Fin (n + 1)) {C : Fin (n + 1) → Sort _} (h0
 /-- Define `f : Π i : Fin n.succ, C i` by separately handling the cases `i = 0` and
 `i = j.succ`, `j : Fin n`. -/
 @[elab_as_elim]
-noncomputable def cases {C : Fin (n + 1) → Sort _} (H0 : C 0) (Hs : ∀ i : Fin n, C i.succ) :
+def cases {C : Fin (n + 1) → Sort _} (H0 : C 0) (Hs : ∀ i : Fin n, C i.succ) :
     ∀ i : Fin (n + 1), C i :=
   induction H0 fun i _ => Hs i
 #align fin.cases Fin.cases
@@ -1789,8 +1795,8 @@ theorem reverse_induction_last {n : ℕ} {C : Fin (n + 1) → Sort _} (h0 : C (F
 @[simp]
 theorem reverse_induction_castSucc {n : ℕ} {C : Fin (n + 1) → Sort _} (h0 : C (Fin.last n))
     (hs : ∀ i : Fin n, C i.succ → C (castSucc i)) (i : Fin n) :
-    (reverseInduction h0 hs (castSucc i) : C (castSucc i)) = hs i (reverseInduction h0 hs i.succ) :=
-  by
+    (reverseInduction h0 hs (castSucc i) :
+    C (castSucc i)) = hs i (reverseInduction h0 hs i.succ) := by
   rw [reverseInduction, dif_neg (_root_.ne_of_lt (Fin.castSucc_lt_last i))]
   cases i
   rfl
@@ -1858,7 +1864,7 @@ theorem lift_fun_iff_succ {α : Type _} (r : α → α → Prop) [IsTrans α r] 
     · intro j ihj hij
       rw [← le_castSucc_iff] at hij
       rcases hij.eq_or_lt with (rfl | hlt)
-      exacts[H j, trans (ihj hlt) (H j)]
+      exacts[H j, _root_.trans (ihj hlt) (H j)]
 #align fin.lift_fun_iff_succ Fin.lift_fun_iff_succ
 
 /-- A function `f` on `Fin (n + 1)` is strictly monotone if and only if `f i < f (i + 1)`
@@ -2260,8 +2266,8 @@ theorem predAbove_right_monotone (p : Fin n) : Monotone p.predAbove := fun a b H
   · exact H
 #align fin.pred_above_right_monotone Fin.predAbove_right_monotone
 
-theorem predAbove_left_monotone (i : Fin (n + 1)) : Monotone fun p => predAbove p i := fun a b H =>
-  by
+theorem predAbove_left_monotone (i : Fin (n + 1)) :
+    Monotone fun p => predAbove p i := fun a b H => by
   dsimp [predAbove]
   split_ifs with ha hb hb
   · rfl
@@ -2480,15 +2486,10 @@ theorem coe_clamp (n m : ℕ) : (clamp n m : ℕ) = min n m :=
 #align fin.coe_clamp Fin.coe_clamp
 
 @[simp]
-theorem coe_ofNat_eq_mod' (m n : ℕ) [NeZero m] :
-    (@Fin.ofNat' m n (Nat.pos_of_ne_zero (NeZero.ne m)) : ℕ) = n % m :=
+theorem coe_ofNat_eq_mod (m n : ℕ) [NeZero m] :
+    ((n : Fin m) : ℕ) = n % m :=
   rfl
-#align fin.coe_of_nat_eq_mod' Fin.coe_ofNat_eq_mod'
-
-@[simp]
-theorem coe_of_nat_eq_mod (m n : ℕ) : ((n : Fin (m+1)) : ℕ) = n % Nat.succ m :=
-  rfl
-#align fin.coe_of_nat_eq_mod Fin.coe_of_nat_eq_mod
+#align fin.coe_of_nat_eq_mod Fin.coe_ofNat_eq_mod
 
 section Mul
 

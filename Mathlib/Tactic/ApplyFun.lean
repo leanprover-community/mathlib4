@@ -23,25 +23,32 @@ open Lean Parser Tactic Elab Tactic Meta
 initialize registerTraceClass `apply_fun
 
 /-- Apply a function to a hypothesis. -/
-def applyFunHyp (f : Expr) (using? : Option Expr) (h : FVarId) (g : MVarId) :
-    MetaM (List MVarId) := do
+def applyFunHyp (f : TSyntax `term) (using? : Option Expr) (h : FVarId) (g : MVarId) :
+    TacticM (List MVarId) := do
   let d ← h.getDecl
-  let (prf, newGoals) ← match d.type.getAppFnArgs with
-  | (``Eq, #[α, _, _]) => do
-    -- We have to jump through a hoop here!
-    -- At this point Lean may think `f` is a dependently-typed function,
-    -- so we can't just feed it to `congrArg`.
-    -- To solve this, we first unify `f` with a metavariable `_ : α → _`
-    -- (i.e. an arrow, but with the target as some fresh type metavariable).
-    if ¬ (← isDefEq f (← mkFreshExprMVar (← mkArrow α (← mkFreshTypeMVar)))) then
-      throwError "Can not use `apply_fun` with a dependently typed function."
-    pure (← mkCongrArg f d.toExpr, [])
+  let (prf, newGoals) ← match (← whnfR (← instantiateMVars d.type)).getAppFnArgs with
+  | (``Eq, #[_, lhs, rhs]) => do
+    let (eq', gs) ← withCollectingNewGoalsFrom (tagSuffix := `apply_fun) <|
+      withoutRecover <| runTermElab <| do
+        let f ← Term.elabTerm f none
+        let lhs' ← Term.elabAppArgs f #[] #[.expr lhs] none false false
+        let rhs' ← Term.elabAppArgs f #[] #[.expr rhs] none false false
+        unless ← isDefEq (← inferType lhs') (← inferType rhs') do
+          let msg ← mkHasTypeButIsExpectedMsg (← inferType rhs') (← inferType lhs')
+          throwError "In generated equality, right-hand side {msg}"
+        let eq ← mkEq lhs'.headBeta rhs'.headBeta
+        Term.synthesizeSyntheticMVarsUsingDefault
+        instantiateMVars eq
+    let mvar ← mkFreshExprMVar eq'
+    let [] ← mvar.mvarId!.congrN! | throwError "`apply_fun` could not construct congruence"
+    pure (mvar, gs)
   | (``LE.le, _) =>
     let (monotone_f, newGoals) ← match using? with
     -- Use the expression passed with `using`
     | some r => pure (r, [])
     -- Create a new `Monotone f` goal
     | none => do
+      let f ← elabTermForApply f
       let ng ← mkFreshExprMVar (← mkAppM ``Monotone #[f])
       -- TODO attempt to solve this goal using `mono` when it has been ported,
       -- via `synthesizeUsing`.
@@ -86,18 +93,18 @@ Apply a function to an equality or inequality in either a local hypothesis or th
 
 * If we have `h : a = b`, then `apply_fun f at h` will replace this with `h : f a = f b`.
 * If we have `h : a ≤ b`, then `apply_fun f at h` will replace this with `h : f a ≤ f b`,
-  and create a subsidiary goal `monotone f`.
+  and create a subsidiary goal `Monotone f`.
   `apply_fun` will automatically attempt to discharge this subsidiary goal using `mono`,
   or an explicit solution can be provided with `apply_fun f at h using P`, where `P : monotone f`.
 * If the goal is `a ≠ b`, `apply_fun f` will replace this with `f a ≠ f b`.
 * If the goal is `a = b`, `apply_fun f` will replace this with `f a = f b`,
   and create a subsidiary goal `injective f`.
   `apply_fun` will automatically attempt to discharge this subsidiary goal using local hypotheses,
-  or if `f` is actually an `equiv`,
+  or if `f` is actually an `Equiv`,
   or an explicit solution can be provided with `apply_fun f using P`, where `P : Injective f`.
 * If the goal is `a ≤ b` (or similarly for `a < b`), and `f` is actually an `OrderIso`,
   `apply_fun f` will replace the goal with `f a ≤ f b`.
-  If `f` is anything else (e.g. just a function, or an `equiv`), `apply_fun` will fail.
+  If `f` is anything else (e.g. just a function, or an `Equiv`), `apply_fun` will fail.
 
 
 Typical usage is:
@@ -114,9 +121,10 @@ example (X Y Z : Type) (f : X → Y) (g : Y → Z) (H : Injective <| g ∘ f) :
 syntax (name := applyFun) "apply_fun " term (ppSpace location)? (" using " term)? : tactic
 
 elab_rules : tactic | `(tactic| apply_fun $f $[$loc]? $[using $P]?) => do
-  let f ← elabTermForApply f
   let P ← P.mapM (elabTerm · none)
   withLocation (expandOptLocation (Lean.mkOptionalNode loc))
-    (atLocal := fun h ↦ liftMetaTactic <| applyFunHyp f P h)
-    (atTarget := liftMetaTactic <| applyFunTarget f P)
+    (atLocal := fun h ↦ do replaceMainGoal <| ← applyFunHyp f P h (← getMainGoal))
+    (atTarget := withMainContext do
+      let f ← elabTermForApply f
+      liftMetaTactic fun g => applyFunTarget f P g)
     (failed := fun _ ↦ throwError "apply_fun failed")

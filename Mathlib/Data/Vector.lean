@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 
 ! This file was ported from Lean 3 source module lean_core.data.vector
-! leanprover-community/mathlib commit e574b1a4e891376b0ef974b926da39e05da12a06
+! leanprover-community/lean commit 855e5b74e3a52a40552e8f067169d747d48743fd
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -30,9 +30,8 @@ variable {α : Type u} {β : Type v} {φ : Type w}
 
 variable {n : ℕ}
 
-instance [DecidableEq α] : DecidableEq (Vector α n) := by
-  unfold Vector
-  infer_instance
+instance [DecidableEq α] : DecidableEq (Vector α n) :=
+  inferInstanceAs (DecidableEq {l : List α // l.length = n})
 
 /-- The empty vector with elements of type `α` -/
 @[match_pattern]
@@ -90,10 +89,11 @@ def toList (v : Vector α n) : List α :=
   v.1
 #align vector.to_list Vector.toList
 
+-- porting notes: align to `List` API
 /-- nth element of a vector, indexed by a `Fin` type. -/
-def nth : ∀ _ : Vector α n, Fin n → α
+def get : ∀ _ : Vector α n, Fin n → α
   | ⟨l, h⟩, i => l.nthLe i.1 (by rw [h] ; exact i.2)
-#align vector.nth Vector.nth
+#align vector.nth Vector.get
 
 /-- Appending a vector to another. -/
 def append {n m : Nat} : Vector α n → Vector α m → Vector α (n + m)
@@ -147,9 +147,9 @@ def map₂ (f : α → β → φ) : Vector α n → Vector β n → Vector φ n
 #align vector.map₂ Vector.map₂
 
 /-- Vector obtained by repeating an element. -/
-def «repeat» (a : α) (n : ℕ) : Vector α n :=
+def replicate (n : ℕ) (a : α) : Vector α n :=
   ⟨List.replicate n a, List.length_replicate n a⟩
-#align vector.repeat Vector.repeat
+#align vector.replicate Vector.replicate
 
 /-- Drop `i` elements from a vector of length `n`; we can have `i > n`. -/
 def drop (i : ℕ) : Vector α n → Vector α (n - i)
@@ -217,7 +217,7 @@ theorem toList_mk (v : List α) (P : List.length v = n) : toList (Subtype.mk v P
 #align vector.to_list_mk Vector.toList_mk
 
 /-- A nil vector maps to a nil list. -/
-@[simp]
+@[simp, nolint simpNF] -- Porting note: simp can prove this in the future
 theorem toList_nil : toList nil = @List.nil α :=
   rfl
 #align vector.to_list_nil Vector.toList_nil

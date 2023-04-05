@@ -34,6 +34,7 @@ theorem smul_pi_subset [∀ i, SMul K (R i)] (r : K) (s : Set ι) (t : ∀ i, Se
   rintro x ⟨y, h, rfl⟩ i hi
   exact smul_mem_smul_set (h i hi)
 #align smul_pi_subset smul_pi_subset
+#align vadd_pi_subset vadd_pi_subset
 
 -- Porting note: Lean 4 can't synthesize `Set.mem_univ i`?
 @[to_additive]
@@ -45,6 +46,7 @@ theorem smul_univ_pi [∀ i, SMul K (R i)] (r : K) (t : ∀ i, Set (R i)) :
     · exact (Classical.choose_spec (h i <| Set.mem_univ i)).left
     · exact (Classical.choose_spec (h i <| Set.mem_univ i)).right
 #align smul_univ_pi smul_univ_pi
+#align vadd_univ_pi vadd_univ_pi
 
 @[to_additive]
 theorem smul_pi [Group K] [∀ i, MulAction K (R i)] (r : K) (S : Set ι) (t : ∀ i, Set (R i)) :
@@ -52,6 +54,7 @@ theorem smul_pi [Group K] [∀ i, MulAction K (R i)] (r : K) (S : Set ι) (t : �
   (Subset.antisymm (smul_pi_subset _ _ _)) fun x h ↦
     ⟨r⁻¹ • x, fun i hiS ↦ mem_smul_set_iff_inv_smul_mem.mp (h i hiS), smul_inv_smul _ _⟩
 #align smul_pi smul_pi
+#align vadd_pi vadd_pi
 
 theorem smul_pi₀ [GroupWithZero K] [∀ i, MulAction K (R i)] {r : K} (S : Set ι) (t : ∀ i, Set (R i))
     (hr : r ≠ 0) : r • S.pi t = S.pi (r • t) :=

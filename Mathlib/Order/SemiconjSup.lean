@@ -28,7 +28,7 @@ Second, consider two actions `f₁ f₂ : G → α → α` of a group on a compl
 isomorphisms. Then the map `x ↦ ⨆ g : G, (f₁ g)⁻¹ (f₂ g x)` semiconjugates each `f₁ g'` to `f₂ g'`,
 see `Function.supₛ_div_semiconj`.  In the case of a conditionally complete lattice, a similar
 statement holds true under an additional assumption that each set `{(f₁ g)⁻¹ (f₂ g x) | g : G}` is
-bounded above, see `function.csupₛ_div_semiconj`.
+bounded above, see `Function.csupₛ_div_semiconj`.
 
 The lemmas come from [Étienne Ghys, Groupes d'homéomorphismes du cercle et cohomologie
 bornée][ghys87:groupes], Proposition 2.1 and 5.4 respectively. In the paper they are formulated for
@@ -74,8 +74,7 @@ theorem orderIso_comp [Preorder α] [Preorder β] [Preorder γ] {f : α → β} 
 #align is_order_right_adjoint.order_iso_comp IsOrderRightAdjoint.orderIso_comp
 
 theorem comp_orderIso [Preorder α] [Preorder β] [Preorder γ] {f : α → β} {g : β → α}
-    (h : IsOrderRightAdjoint f g) (e : γ ≃o α) : IsOrderRightAdjoint (f ∘ e) (e.symm ∘ g) :=
-  by
+    (h : IsOrderRightAdjoint f g) (e : γ ≃o α) : IsOrderRightAdjoint (f ∘ e) (e.symm ∘ g) := by
   intro y
   change IsLUB (e ⁻¹' { x | f x ≤ y }) (e.symm (g y))
   rw [e.isLUB_preimage, e.apply_symm_apply]
@@ -94,8 +93,7 @@ This is a version of Proposition 2.1 from [Étienne Ghys, Groupes d'homéomorphi
 cohomologie bornée][ghys87:groupes]. -/
 theorem Semiconj.symm_adjoint [PartialOrder α] [Preorder β] {fa : α ≃o α} {fb : β ↪o β} {g : α → β}
     (h : Function.Semiconj g fa fb) {g' : β → α} (hg' : IsOrderRightAdjoint g g') :
-    Function.Semiconj g' fb fa :=
-  by
+    Function.Semiconj g' fb fa := by
   refine' fun y => (hg' _).unique _
   rw [← fa.surjective.image_preimage { x | g x ≤ fb y }, preimage_setOf_eq]
   simp only [h.eq, fb.le_iff_le, fa.leftOrdContinuous (hg' _)]
@@ -105,8 +103,7 @@ variable {G : Type _}
 
 theorem semiconj_of_isLUB [PartialOrder α] [Group G] (f₁ f₂ : G →* α ≃o α) {h : α → α}
     (H : ∀ x, IsLUB (range fun g' => (f₁ g')⁻¹ (f₂ g' x)) (h x)) (g : G) :
-    Function.Semiconj h (f₂ g) (f₁ g) :=
-  by
+    Function.Semiconj h (f₂ g) (f₁ g) := by
   refine' fun y => (H _).unique _
   have := (f₁ g).leftOrdContinuous (H y)
   rw [← range_comp, ← (Equiv.mulRight g).surjective.range_comp _] at this

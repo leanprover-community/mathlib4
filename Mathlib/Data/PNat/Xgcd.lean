@@ -400,7 +400,7 @@ theorem reduce_v : ∀ u : XgcdType, u.reduce.v = u.v
 
 end XgcdType
 
-section Gcd
+section gcd
 
 variable (a b : ℕ+)
 
@@ -550,6 +550,6 @@ theorem gcd_rel_right : (gcdW a b * b : ℕ) = gcdY a b * a + gcd a b :=
   gcd_eq a b ▸ (gcd_props a b).2.2.2.2.2.2
 #align pnat.gcd_rel_right PNat.gcd_rel_right
 
-end Gcd
+end gcd
 
 end PNat

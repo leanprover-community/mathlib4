@@ -316,8 +316,7 @@ theorem btw_rfl_right {a b : α} : btw a b b :=
   btw_refl_right _ _
 #align btw_rfl_right btw_rfl_right
 
-theorem sbtw_iff_not_btw {a b c : α} : sbtw a b c ↔ ¬btw c b a :=
-  by
+theorem sbtw_iff_not_btw {a b c : α} : sbtw a b c ↔ ¬btw c b a := by
   rw [sbtw_iff_btw_not_btw]
   exact and_iff_right_of_imp (btw_total _ _ _).resolve_left
 #align sbtw_iff_not_btw sbtw_iff_not_btw
@@ -371,15 +370,13 @@ theorem right_mem_cIcc (a b : α) : b ∈ cIcc a b :=
   btw_rfl_right
 #align set.right_mem_cIcc Set.right_mem_cIcc
 
-theorem compl_cIcc {a b : α} : cIcc a bᶜ = cIoo b a :=
-  by
+theorem compl_cIcc {a b : α} : cIcc a bᶜ = cIoo b a := by
   ext
   rw [Set.mem_cIoo, sbtw_iff_not_btw]
   rfl
 #align set.compl_cIcc Set.compl_cIcc
 
-theorem compl_cIoo {a b : α} : cIoo a bᶜ = cIcc b a :=
-  by
+theorem compl_cIoo {a b : α} : cIoo a bᶜ = cIcc b a := by
   ext
   rw [Set.mem_cIcc, btw_iff_not_sbtw]
   rfl

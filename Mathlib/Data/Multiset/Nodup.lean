@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 
 ! This file was ported from Lean 3 source module data.multiset.nodup
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
+! leanprover-community/mathlib commit f694c7dead66f5d4c80f446c796a5aad14707f0e
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -72,7 +72,7 @@ theorem not_nodup_pair : ∀ a : α, ¬Nodup (a ::ₘ a ::ₘ 0) :=
 
 theorem nodup_iff_le {s : Multiset α} : Nodup s ↔ ∀ a : α, ¬a ::ₘ a ::ₘ 0 ≤ s :=
   Quot.induction_on s fun _ =>
-    nodup_iff_sublist.trans <| forall_congr' fun a => not_congr (@repeat_le_coe _ a 2 _).symm
+    nodup_iff_sublist.trans <| forall_congr' fun a => not_congr (@replicate_le_coe _ a 2 _).symm
 #align multiset.nodup_iff_le Multiset.nodup_iff_le
 
 theorem nodup_iff_ne_cons_cons {s : Multiset α} : s.Nodup ↔ ∀ a t, s ≠ a ::ₘ a ::ₘ t :=
@@ -83,7 +83,9 @@ theorem nodup_iff_ne_cons_cons {s : Multiset α} : s.Nodup ↔ ∀ a t, s ≠ a 
 #align multiset.nodup_iff_ne_cons_cons Multiset.nodup_iff_ne_cons_cons
 
 theorem nodup_iff_count_le_one [DecidableEq α] {s : Multiset α} : Nodup s ↔ ∀ a, count a s ≤ 1 :=
-  Quot.induction_on s fun _l => List.nodup_iff_count_le_one
+  Quot.induction_on s fun _l => by
+    simp only [quot_mk_to_coe'', coe_nodup, mem_coe, coe_count]
+    apply List.nodup_iff_count_le_one
 #align multiset.nodup_iff_count_le_one Multiset.nodup_iff_count_le_one
 
 @[simp]
@@ -149,8 +151,8 @@ theorem nodup_map_iff_inj_on {f : α → β} {s : Multiset α} (d : Nodup s) :
   ⟨inj_on_of_nodup_map, fun h => d.map_on h⟩
 #align multiset.nodup_map_iff_inj_on Multiset.nodup_map_iff_inj_on
 
-theorem Nodup.filter (p : α → Bool) {s} : Nodup s → Nodup (filter p s) :=
-  Quot.induction_on s fun _ => List.Nodup.filter p
+theorem Nodup.filter (p : α → Prop) [DecidablePred p] {s} : Nodup s → Nodup (filter p s) :=
+  Quot.induction_on s fun _ => List.Nodup.filter (p ·)
 #align multiset.nodup.filter Multiset.Nodup.filter
 
 @[simp]
@@ -180,7 +182,6 @@ theorem Nodup.erase [DecidableEq α] (a : α) {l} : Nodup l → Nodup (l.erase a
 theorem Nodup.mem_erase_iff [DecidableEq α] {a b : α} {l} (d : Nodup l) :
     a ∈ l.erase b ↔ a ≠ b ∧ a ∈ l := by
   rw [d.erase_eq_filter b, mem_filter, and_comm]
-  simp
 #align multiset.nodup.mem_erase_iff Multiset.Nodup.mem_erase_iff
 
 theorem Nodup.not_mem_erase [DecidableEq α] {a : α} {s} (h : Nodup s) : a ∉ s.erase a := fun ha =>
@@ -198,10 +199,10 @@ protected theorem Nodup.sigma {σ : α → Type _} {t : ∀ a, Multiset (σ a)} 
     simpa [←funext hf] using List.Nodup.sigma
 #align multiset.nodup.sigma Multiset.Nodup.sigma
 
-protected theorem Nodup.filter_map (f : α → Option β) (H : ∀ a a' b, b ∈ f a → b ∈ f a' → a = a') :
+protected theorem Nodup.filterMap (f : α → Option β) (H : ∀ a a' b, b ∈ f a → b ∈ f a' → a = a') :
     Nodup s → Nodup (filterMap f s) :=
-  Quot.induction_on s fun _ => Nodup.filterMap H
-#align multiset.nodup.filter_map Multiset.Nodup.filter_map
+  Quot.induction_on s fun _ => List.Nodup.filterMap H
+#align multiset.nodup.filter_map Multiset.Nodup.filterMap
 
 theorem nodup_range (n : ℕ) : Nodup (range n) :=
   List.nodup_range _

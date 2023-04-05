@@ -55,6 +55,7 @@ theorem directedOn_iff_directed {s} : @DirectedOn α r s ↔ Directed r (Subtype
 #align directed_on_iff_directed directedOn_iff_directed
 
 alias directedOn_iff_directed ↔ DirectedOn.directed_val _
+#align directed_on.directed_coe DirectedOn.directed_val
 
 theorem directedOn_range {f : β → α} : Directed r f ↔ DirectedOn r (Set.range f) := by
   simp_rw [Directed, DirectedOn, Set.forall_range_iff, Set.exists_range_iff]
@@ -87,8 +88,9 @@ theorem Directed.mono {s : α → α → Prop} {ι} {f : ι → α} (H : ∀ a b
   ⟨c, H _ _ h₁, H _ _ h₂⟩
 #align directed.mono Directed.mono
 
-theorem Directed.mono_comp {ι} {rb : β → β → Prop} {g : α → β} {f : ι → α}
-    (hg : ∀ ⦃x y⦄, x ≼ y → rb (g x) (g y)) (hf : Directed r f) : Directed rb (g ∘ f) :=
+-- Porting note: due to some interaction with the local notation, `r` became explicit here in lean3
+theorem Directed.mono_comp (r : α → α → Prop) {ι} {rb : β → β → Prop} {g : α → β} {f : ι → α}
+    (hg : ∀ ⦃x y⦄, r x y → rb (g x) (g y)) (hf : Directed r f) : Directed rb (g ∘ f) :=
   directed_comp.2 <| hf.mono hg
 #align directed.mono_comp Directed.mono_comp
 

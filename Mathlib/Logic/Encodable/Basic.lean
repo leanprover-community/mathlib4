@@ -129,7 +129,7 @@ theorem encode_nat (n : ℕ) : encode n = n :=
   rfl
 #align encodable.encode_nat Encodable.encode_nat
 
-@[simp]
+@[simp 1100]
 theorem decode_nat (n : ℕ) : decode n = some n :=
   rfl
 #align encodable.decode_nat Encodable.decode_nat
@@ -340,9 +340,9 @@ theorem decode_ge_two (n) (h : 2 ≤ n) : (decode n : Option Bool) = none :=
   simp [decodeSum, div2_val]; cases bodd n <;> simp [e]
 #align encodable.decode_ge_two Encodable.decode_ge_two
 
-noncomputable instance PropCat.encodable : Encodable Prop :=
+noncomputable instance Prop.encodable : Encodable Prop :=
   ofEquiv Bool Equiv.propEquivBool
-#align Prop.encodable Encodable.PropCat.encodable
+#align Prop.encodable Encodable.Prop.encodable
 
 section Sigma
 
@@ -350,7 +350,7 @@ variable {γ : α → Type _} [Encodable α] [∀ a, Encodable (γ a)]
 
 /-- Explicit encoding function for `Sigma γ` -/
 def encodeSigma : Sigma γ → ℕ
-  | ⟨a, b⟩ => mkpair (encode a) (encode b)
+  | ⟨a, b⟩ => pair (encode a) (encode b)
 #align encodable.encode_sigma Encodable.encodeSigma
 
 /-- Explicit decoding function for `Sigma γ` -/
@@ -361,7 +361,7 @@ def decodeSigma (n : ℕ) : Option (Sigma γ) :=
 
 instance Sigma.encodable : Encodable (Sigma γ) :=
   ⟨encodeSigma, decodeSigma, fun ⟨a, b⟩ => by
-    simp [encodeSigma, decodeSigma, unpair_mkpair, encodek]⟩
+    simp [encodeSigma, decodeSigma, unpair_pair, encodek]⟩
 #align sigma.encodable Encodable.Sigma.encodable
 
 @[simp]
@@ -372,7 +372,7 @@ theorem decode_sigma_val (n : ℕ) :
 #align encodable.decode_sigma_val Encodable.decode_sigma_val
 
 @[simp]
-theorem encode_sigma_val (a b) : @encode (Sigma γ) _ ⟨a, b⟩ = mkpair (encode a) (encode b) :=
+theorem encode_sigma_val (a b) : @encode (Sigma γ) _ ⟨a, b⟩ = pair (encode a) (encode b) :=
   rfl
 #align encodable.encode_sigma_val Encodable.encode_sigma_val
 
@@ -396,7 +396,7 @@ theorem decode_prod_val [i : Encodable α] (n : ℕ) :
 #align encodable.decode_prod_val Encodable.decode_prod_val
 
 @[simp]
-theorem encode_prod_val (a b) : @encode (α × β) _ (a, b) = mkpair (encode a) (encode b) :=
+theorem encode_prod_val (a b) : @encode (α × β) _ (a, b) = pair (encode a) (encode b) :=
   rfl
 #align encodable.encode_prod_val Encodable.encode_prod_val
 
@@ -553,8 +553,8 @@ end Ulower
 Choice function for encodable types and decidable predicates.
 We provide the following API
 
-choose      {α : Type*} {p : α → Prop} [c : encodable α] [d : decidable_pred p] : (∃ x, p x) → α :=
-choose_spec {α : Type*} {p : α → Prop} [c : encodable α] [d : decidable_pred p] (ex : ∃ x, p x) :
+choose      {α : Type _} {p : α → Prop} [c : encodable α] [d : decidable_pred p] : (∃ x, p x) → α :=
+choose_spec {α : Type _} {p : α → Prop} [c : encodable α] [d : decidable_pred p] (ex : ∃ x, p x) :
   p (choose ex) :=
 -/
 namespace Encodable
@@ -567,10 +567,9 @@ private def good : Option α → Prop
   | some a => p a
   | none => False
 
--- TODO: remove `rename_i`
-private def decidable_good : DecidablePred (good p)
-  | n => by cases' n with a a <;>
-         unfold good <;> rename_i x <;> cases x <;> dsimp <;> infer_instance
+private def decidable_good : DecidablePred (good p) :=
+  fun n => by
+    cases n <;> unfold good <;> dsimp <;> infer_instance
 attribute [local instance] decidable_good
 
 open Encodable

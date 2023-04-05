@@ -53,6 +53,7 @@ theorem Dvd.intro (c : α) (h : a * c = b) : a ∣ b :=
 #align dvd.intro Dvd.intro
 
 alias Dvd.intro ← dvd_of_mul_right_eq
+#align dvd_of_mul_right_eq dvd_of_mul_right_eq
 
 theorem exists_eq_mul_right_of_dvd (h : a ∣ b) : ∃ c, b = a * c :=
   h
@@ -71,11 +72,9 @@ theorem dvd_trans : a ∣ b → b ∣ c → a ∣ c
 
 alias dvd_trans ← Dvd.dvd.trans
 
-instance : IsTrans α (· ∣ ·) :=
+/-- Transitivity of `|` for use in `calc` blocks. -/
+instance : IsTrans α Dvd.dvd :=
   ⟨fun _ _ _ => dvd_trans⟩
-
-/-- Transitivity of `|` for use in `calc` blocks -/
-instance : @Trans α α α Dvd.dvd Dvd.dvd Dvd.dvd := ⟨dvd_trans⟩
 
 @[simp]
 theorem dvd_mul_right (a b : α) : a ∣ a * b :=
@@ -142,6 +141,7 @@ theorem Dvd.intro_left (c : α) (h : c * a = b) : a ∣ b :=
 #align dvd.intro_left Dvd.intro_left
 
 alias Dvd.intro_left ← dvd_of_mul_left_eq
+#align dvd_of_mul_left_eq dvd_of_mul_left_eq
 
 theorem exists_eq_mul_left_of_dvd (h : a ∣ b) : ∃ c, b = c * a :=
   Dvd.elim h fun c => fun H1 : b = a * c => Exists.intro c (Eq.trans H1 (mul_comm a c))
