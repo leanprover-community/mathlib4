@@ -261,7 +261,8 @@ theorem ContinuousWithinAt.inv (hf : ContinuousWithinAt f s x) :
 #align continuous_within_at.neg ContinuousWithinAt.neg
 
 @[to_additive]
-instance [TopologicalSpace H] [Inv H] [ContinuousInv H] : ContinuousInv (G × H) :=
+instance Prod.continuousInv [TopologicalSpace H] [Inv H] [ContinuousInv H] :
+    ContinuousInv (G × H) :=
   ⟨continuous_inv.fst'.prod_mk continuous_inv.snd'⟩
 
 variable {ι : Type _}

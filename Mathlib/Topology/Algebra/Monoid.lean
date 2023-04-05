@@ -231,7 +231,8 @@ theorem ContinuousWithinAt.mul {f g : X → M} {s : Set X} {x : X} (hf : Continu
 #align continuous_within_at.add ContinuousWithinAt.add
 
 @[to_additive]
-instance [TopologicalSpace N] [Mul N] [ContinuousMul N] : ContinuousMul (M × N) :=
+instance Prod.continuousMul [TopologicalSpace N] [Mul N] [ContinuousMul N] :
+    ContinuousMul (M × N) :=
   ⟨(continuous_fst.fst'.mul continuous_fst.snd').prod_mk
       (continuous_snd.fst'.mul continuous_snd.snd')⟩
 
@@ -701,8 +702,8 @@ because the predicate `ContinuousInv` has not yet been defined. -/
 @[to_additive "If addition on an additive monoid is continuous, then addition on the additive units
 of the monoid, with respect to the induced topology, is continuous.
 
-Negation is also continuous, but we register this in a later file, `topology.algebra.group`, because
-the predicate `has_continuous_neg` has not yet been defined."]
+Negation is also continuous, but we register this in a later file, `Topology.Algebra.Group`, because
+the predicate `ContinuousNeg` has not yet been defined."]
 instance : ContinuousMul αˣ :=
   inducing_embedProduct.continuousMul (embedProduct α)
 
