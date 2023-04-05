@@ -166,21 +166,27 @@ set_option linter.uppercaseLean3 false in
 #align category_theory.grothendieck.grothendieck_Type_to_Cat_functor CategoryTheory.Grothendieck.grothendieckTypeToCatFunctor
 
 /-- Auxiliary definition for `grothendieck_Type_to_Cat`, to speed up elaboration. -/
-@[simps!?]
+-- Porting note:
+-- `simps` is incorrectly producing Prop-valued projections here,
+-- so we manually specify which ones to produce.
+-- See https://leanprover.zulipchat.com/#narrow/stream/144837-PR-reviews/topic/!4.233204.20simps.20bug.20.28Grothendieck.20construction.29
+@[simps! obj_base obj_fiber_as map_base]
 def grothendieckTypeToCatInverse : G.Elements ⥤ Grothendieck (G ⋙ typeToCat) where
   obj X := ⟨X.1, ⟨X.2⟩⟩
   map f := ⟨f.1, ⟨⟨f.2⟩⟩⟩
 set_option linter.uppercaseLean3 false in
 #align category_theory.grothendieck.grothendieck_Type_to_Cat_inverse CategoryTheory.Grothendieck.grothendieckTypeToCatInverse
 
--- FIXME `simps` is incorrectly producing this Prop-valued projection, which then fails `simpNF`.
-#print grothendieckTypeToCatInverse_map_fiber_down_down
-
 /-- The Grothendieck construction applied to a functor to `Type`
 (thought of as a functor to `Cat` by realising a type as a discrete category)
 is the same as the 'category of elements' construction.
 -/
-@[simps!?]
+-- See porting note on grothendieckTypeToCatInverse.
+-- We just want to turn off grothendieckTypeToCat_inverse_map_fiber_down_down,
+-- so have to list the complement here for `@[simps]`.
+@[simps! functor_obj_fst functor_obj_snd functor_map_coe inverse_obj_base inverse_obj_fiber_as
+  inverse_map_base unitIso_hom_app_base unitIso_hom_app_fiber unitIso_inv_app_base
+  unitIso_inv_app_fiber counitIso_hom_app_coe counitIso_inv_app_coe]
 def grothendieckTypeToCat : Grothendieck (G ⋙ typeToCat) ≌ G.Elements where
   functor := grothendieckTypeToCatFunctor G
   inverse := grothendieckTypeToCatInverse G
@@ -211,9 +217,6 @@ def grothendieckTypeToCat : Grothendieck (G ⋙ typeToCat) ≌ G.Elements where
     rfl
 set_option linter.uppercaseLean3 false in
 #align category_theory.grothendieck.grothendieck_Type_to_Cat CategoryTheory.Grothendieck.grothendieckTypeToCat
-
--- FIXME `simps` is incorrectly producing this Prop-valued projection, which then fails `simpNF`.
-#print grothendieckTypeToCat_inverse_map_fiber_down_down
 
 end Grothendieck
 
