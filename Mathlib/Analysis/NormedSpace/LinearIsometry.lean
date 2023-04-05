@@ -15,7 +15,7 @@ import Mathlib.LinearAlgebra.Basis
 /-!
 # (Semi-)linear isometries
 
-In this file we define `linear_isometry σ₁₂ E E₂` (notation: `E →ₛₗᵢ[σ₁₂] E₂`) to be a semilinear
+In this file we define `LinearIsometry σ₁₂ E E₂` (notation: `E →ₛₗᵢ[σ₁₂] E₂`) to be a semilinear
 isometric embedding of `E` into `E₂` and `linear_isometry_equiv` (notation: `E ≃ₛₗᵢ[σ₁₂] E₂`) to be
 a semilinear isometric equivalence between `E` and `E₂`.  The notation for the associated purely
 linear concepts is `E →ₗᵢ[R] E₂`, `E ≃ₗᵢ[R] E₂`, and `E →ₗᵢ⋆[R] E₂`, `E ≃ₗᵢ⋆[R] E₂` for
@@ -47,7 +47,7 @@ variable {R R₂ R₃ R₄ E E₂ E₃ E₄ F 𝓕 : Type _} [Semiring R] [Semir
 /-- A `σ₁₂`-semilinear isometric embedding of a normed `R`-module into an `R₂`-module. -/
 structure LinearIsometry (σ₁₂ : R →+* R₂) (E E₂ : Type _) [SeminormedAddCommGroup E]
   [SeminormedAddCommGroup E₂] [Module R E] [Module R₂ E₂] extends E →ₛₗ[σ₁₂] E₂ where
-  norm_map' : ∀ x, ‖to_linear_map x‖ = ‖x‖
+  norm_map' : ∀ x, ‖toLinearMap x‖ = ‖x‖
 #align linear_isometry LinearIsometry
 
 -- mathport name: «expr →ₛₗᵢ[ ] »
@@ -59,10 +59,10 @@ notation:25 E " →ₗᵢ[" R:25 "] " E₂:0 => LinearIsometry (RingHom.id R) E 
 -- mathport name: «expr →ₗᵢ⋆[ ] »
 notation:25 E " →ₗᵢ⋆[" R:25 "] " E₂:0 => LinearIsometry (starRingEnd R) E E₂
 
-/-- `semilinear_isometry_class F σ E E₂` asserts `F` is a type of bundled `σ`-semilinear isometries
+/-- `SemilinearIsometryClass F σ E E₂` asserts `F` is a type of bundled `σ`-semilinear isometries
 `E → E₂`.
 
-See also `linear_isometry_class F R E E₂` for the case where `σ` is the identity map on `R`.
+See also `LinearIsometryClass F R E E₂` for the case where `σ` is the identity map on `R`.
 
 A map `f` between an `R`-module and an `S`-module over a ring homomorphism `σ : R →+* S`
 is semilinear if it satisfies the two properties `f (x + y) = f x + f y` and
@@ -74,7 +74,7 @@ class SemilinearIsometryClass (𝓕 : Type _) {R R₂ : outParam (Type _)} [Semi
   norm_map : ∀ (f : 𝓕) (x : E), ‖f x‖ = ‖x‖
 #align semilinear_isometry_class SemilinearIsometryClass
 
-/-- `linear_isometry_class F R E E₂` asserts `F` is a type of bundled `R`-linear isometries
+/-- `LinearIsometryClass F R E E₂` asserts `F` is a type of bundled `R`-linear isometries
 `M → M₂`.
 
 This is an abbreviation for `semilinear_isometry_class F (ring_hom.id R) E E₂`.
@@ -92,7 +92,7 @@ protected theorem isometry [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] (f : �
 
 @[continuity]
 protected theorem continuous [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] (f : 𝓕) : Continuous f :=
-  (SemilinearIsometryClass.isometry f).Continuous
+  (SemilinearIsometryClass.isometry f).continuous
 #align semilinear_isometry_class.continuous SemilinearIsometryClass.continuous
 
 @[simp]
@@ -140,7 +140,7 @@ namespace LinearIsometry
 variable (f : E →ₛₗᵢ[σ₁₂] E₂) (f₁ : F →ₛₗᵢ[σ₁₂] E₂)
 
 theorem toLinearMap_injective : Injective (toLinearMap : (E →ₛₗᵢ[σ₁₂] E₂) → E →ₛₗ[σ₁₂] E₂)
-  | ⟨f, _⟩, ⟨g, _⟩, rfl => rfl
+  | ⟨_, _⟩, ⟨_, _⟩, rfl => rfl
 #align linear_isometry.to_linear_map_injective LinearIsometry.toLinearMap_injective
 
 @[simp]
@@ -150,7 +150,7 @@ theorem toLinearMap_inj {f g : E →ₛₗᵢ[σ₁₂] E₂} : f.toLinearMap = 
 
 instance : SemilinearIsometryClass (E →ₛₗᵢ[σ₁₂] E₂) σ₁₂ E E₂ where
   coe f := f.toFun
-  coe_injective' f g h := toLinearMap_injective (FunLike.coe_injective h)
+  coe_injective' _ _ h := toLinearMap_injective (FunLike.coe_injective h)
   map_add f := map_add f.toLinearMap
   map_smulₛₗ f := map_smulₛₗ f.toLinearMap
   norm_map f := f.norm_map'
@@ -171,8 +171,10 @@ theorem coe_mk (f : E →ₛₗ[σ₁₂] E₂) (hf) : ⇑(mk f hf) = f :=
   rfl
 #align linear_isometry.coe_mk LinearIsometry.coe_mk
 
-theorem coe_injective : @Injective (E →ₛₗᵢ[σ₁₂] E₂) (E → E₂) coeFn :=
-  FunLike.coe_injective
+theorem coe_injective : @Injective (E →ₛₗᵢ[σ₁₂] E₂) (E → E₂) (fun f => f) := by
+  rintro ⟨_⟩ ⟨_⟩
+  simp
+
 #align linear_isometry.coe_injective LinearIsometry.coe_injective
 
 /-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
@@ -1250,4 +1252,3 @@ noncomputable def LinearIsometry.equivRange {R S : Type _} [Semiring R] [Ring S]
     (f : F →ₛₗᵢ[σ₁₂] E) : F ≃ₛₗᵢ[σ₁₂] f.toLinearMap.range :=
   { f with toLinearEquiv := LinearEquiv.ofInjective f.toLinearMap f.Injective }
 #align linear_isometry.equiv_range LinearIsometry.equivRange
-
