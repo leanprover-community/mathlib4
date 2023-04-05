@@ -23,15 +23,15 @@ We show that this category is equivalent to `NonemptyFinLinOrdCat`.
 
 ## Remarks
 
-The definitions `simplex_category` and `simplex_category.hom` are marked as irreducible.
+The definitions `SimplexCategory` and `SimplexCategory.Hom` are marked as irreducible.
 
 We provide the following functions to work with these objects:
-1. `simplex_category.mk` creates an object of `simplex_category` out of a natural number.
-  Use the notation `[n]` in the `simplicial` locale.
-2. `simplex_category.len` gives the "length" of an object of `simplex_category`, as a natural.
-3. `simplex_category.hom.mk` makes a morphism out of a monotone map between `fin`'s.
-4. `simplex_category.hom.to_order_hom` gives the underlying monotone map associated to a
-  term of `simplex_category.hom`.
+1. `SimplexCategory.mk` creates an object of `SimplexCategory` out of a natural number.
+  Use the notation `[n]` in the `Simplicial` locale.
+2. `SimplexCategory.len` gives the "length" of an object of `SimplexCategory`, as a natural.
+3. `SimplexCategory.Hom.mk` makes a morphism out of a monotone map between `fin`'s.
+4. `SimplexCategory.Hom.toOrderHom` gives the underlying monotone map associated to a
+  term of `SimplexCategory.Hom`.
 
 -/
 
@@ -55,7 +55,6 @@ section
 
 
 -- porting note: the definition of `SimplexCategory` is made irreducible
-
 /-- Interpet a natural number as an object of the simplex category. -/
 def mk (n : ℕ) : SimplexCategory :=
   n
@@ -88,7 +87,7 @@ theorem mk_len (n : SimplexCategory) : ([n.len] : SimplexCategory) = n :=
   rfl
 #align simplex_category.mk_len SimplexCategory.mk_len
 
-/-- A recursor for `SimplexCategory`. Use it as `induction Δ using simplex_category.rec`. -/
+/-- A recursor for `SimplexCategory`. Use it as `induction Δ using SimplexCategory.rec`. -/
 protected def rec {F : ∀ _ : SimplexCategory, Sort _} (h : ∀ n : ℕ, F [n]) : ∀ X, F X := fun n =>
   h n.len
 #align simplex_category.rec SimplexCategory.rec
@@ -168,7 +167,7 @@ def const (x : SimplexCategory) (i : Fin (x.len + 1)) : ([0] : SimplexCategory) 
   Hom.mk <| ⟨fun _ => i, by tauto⟩
 #align simplex_category.const SimplexCategory.const
 
-@[simp]
+-- porting note: removed @[simp] as the linter complains
 theorem const_comp (x y : SimplexCategory) (i : Fin (x.len + 1)) (f : x ⟶ y) :
     const x i ≫ f = const y (f.toOrderHom i) :=
   rfl
@@ -363,7 +362,7 @@ def skeletalFunctor : SimplexCategory ⥤ NonemptyFinLinOrdCat.{v} where
 #align simplex_category.skeletal_functor SimplexCategory.skeletalFunctor
 
 theorem skeletalFunctor.coe_map {Δ₁ Δ₂ : SimplexCategory} (f : Δ₁ ⟶ Δ₂) :
-    coeFn (skeletalFunctor.{v}.map f) = ULift.up ∘ f.toOrderHom ∘ ULift.down :=
+    ↑(skeletalFunctor.{v}.map f) = ULift.up ∘ f.toOrderHom ∘ ULift.down :=
   rfl
 #align simplex_category.skeletal_functor.coe_map SimplexCategory.skeletalFunctor.coe_map
 
@@ -371,44 +370,37 @@ theorem skeletal : Skeletal SimplexCategory := fun X Y ⟨I⟩ => by
   suffices Fintype.card (Fin (X.len + 1)) = Fintype.card (Fin (Y.len + 1)) by
     ext
     simpa
-  · apply Fintype.card_congr
-    refine' equiv.ulift.symm.trans (((skeletal_functor ⋙ forget _).mapIso I).toEquiv.trans _)
-    apply Equiv.ulift
+  apply Fintype.card_congr
+  exact Equiv.ulift.symm.trans
+    (((skeletalFunctor.{0} ⋙ forget NonemptyFinLinOrdCat).mapIso I).toEquiv.trans Equiv.ulift)
 #align simplex_category.skeletal SimplexCategory.skeletal
 
 namespace SkeletalFunctor
 
 instance : Full skeletalFunctor.{v} where
-  Preimage a b f :=
-    SimplexCategory.Hom.mk ⟨fun i => (f (ULift.up i)).down, fun i j h => f.Monotone h⟩
-  witness' := by
-    intro m n f
-    dsimp at *
-    ext1 ⟨i⟩
-    ext1
-    ext1
-    cases x
-    simp
+  preimage f :=
+    SimplexCategory.Hom.mk ⟨fun i => (f (ULift.up i)).down, fun i j h => f.monotone h⟩
 
-instance : Faithful skeletalFunctor.{v}
-    where map_injective' m n f g h := by
-    ext1; ext1; ext1 i; apply ULift.up.inj
-    change (skeletal_functor.map f) ⟨i⟩ = (skeletal_functor.map g) ⟨i⟩
+instance : Faithful skeletalFunctor.{v} where
+  map_injective {_ _ f g} h := by
+    ext x : 3
+    apply ULift.up_injective.{v}
+    change (skeletalFunctor.{v}.map f) ⟨x⟩  = (skeletalFunctor.map g) ⟨x⟩
     rw [h]
 
-instance : EssSurj skeletalFunctor.{v}
-    where mem_essImage X :=
+instance : EssSurj skeletalFunctor.{v} where
+  mem_essImage X :=
     ⟨mk (Fintype.card X - 1 : ℕ),
       ⟨by
         have aux : Fintype.card X = Fintype.card X - 1 + 1 :=
-          (Nat.succ_pred_eq_of_pos <| fintype.card_pos_iff.mpr ⟨⊥⟩).symm
+          (Nat.succ_pred_eq_of_pos <| Fintype.card_pos_iff.mpr ⟨⊥⟩).symm
         let f := monoEquivOfFin X aux
-        have hf := (finset.univ.order_emb_of_fin aux).StrictMono
+        have hf := (Finset.univ.orderEmbOfFin aux).strictMono
         refine'
-          { Hom := ⟨fun i => f i.down, _⟩
+          { hom := ⟨fun i => f i.down, _⟩
             inv := ⟨fun i => ⟨f.symm i⟩, _⟩
-            hom_inv_id' := _
-            inv_hom_id' := _ }
+            hom_inv_id := _
+            inv_hom_id := _ }
         · rintro ⟨i⟩ ⟨j⟩ h
           show f i ≤ f j
           exact hf.monotone h
@@ -417,40 +409,40 @@ instance : EssSurj skeletalFunctor.{v}
           rw [← hf.le_iff_le]
           show f (f.symm i) ≤ f (f.symm j)
           simpa only [OrderIso.apply_symm_apply]
-        · ext1
-          ext1 ⟨i⟩
-          ext1
-          exact f.symm_apply_apply i
-        · ext1
-          ext1 i
+        . ext1 ⟨i⟩
+          exact congr_arg ULift.up (f.symm_apply_apply i)
+        . ext1 i
           exact f.apply_symm_apply i⟩⟩
 
 noncomputable instance isEquivalence : IsEquivalence skeletalFunctor.{v} :=
   Equivalence.ofFullyFaithfullyEssSurj skeletalFunctor
-#align simplex_category.skeletal_functor.is_equivalence SimplexCategory.skeletalFunctor.isEquivalence
+#align simplex_category.skeletal_functor.is_equivalence SimplexCategory.SkeletalFunctor.isEquivalence
 
 end SkeletalFunctor
 
-/-- The equivalence that exhibits `simplex_category` as skeleton
-of `NonemptyFinLinOrd` -/
+/-- The equivalence that exhibits `SimplexCategory` as skeleton
+of `NonemptyFinLinOrdCat` -/
 noncomputable def skeletalEquivalence : SimplexCategory ≌ NonemptyFinLinOrdCat.{v} :=
   Functor.asEquivalence skeletalFunctor
 #align simplex_category.skeletal_equivalence SimplexCategory.skeletalEquivalence
 
 end Skeleton
 
-/-- `simplex_category` is a skeleton of `NonemptyFinLinOrd`.
+/-- `SimplexCategory` is a skeleton of `NonemptyFinLinOrdCat`.
 -/
 noncomputable def isSkeletonOf :
     IsSkeletonOf NonemptyFinLinOrdCat SimplexCategory skeletalFunctor.{v} where
   skel := skeletal
-  eqv := skeletalFunctor.isEquivalence
+  eqv := SkeletalFunctor.isEquivalence
 #align simplex_category.is_skeleton_of SimplexCategory.isSkeletonOf
 
 /-- The truncated simplex category. -/
 def Truncated (n : ℕ) :=
-  FullSubcategory fun a : SimplexCategory => a.len ≤ n deriving SmallCategory
+  FullSubcategory fun a : SimplexCategory => a.len ≤ n
 #align simplex_category.truncated SimplexCategory.Truncated
+
+instance (n : ℕ) : SmallCategory.{0} (Truncated n) :=
+  FullSubcategory.category _
 
 namespace Truncated
 
@@ -461,64 +453,67 @@ instance {n} : Inhabited (Truncated n) :=
 simplex category.
 -/
 def inclusion {n : ℕ} : SimplexCategory.Truncated n ⥤ SimplexCategory :=
-  fullSubcategoryInclusion _ deriving Full, Faithful
+  fullSubcategoryInclusion _
 #align simplex_category.truncated.inclusion SimplexCategory.Truncated.inclusion
+
+instance (n : ℕ) : Full (inclusion : Truncated n ⥤ _) := FullSubcategory.full _
+instance (n : ℕ) : Faithful (inclusion : Truncated n ⥤ _) := FullSubcategory.faithful _
 
 end Truncated
 
 section Concrete
 
 instance : ConcreteCategory.{0} SimplexCategory where
-  forget :=
+  Forget :=
     { obj := fun i => Fin (i.len + 1)
-      map := fun i j f => f.toOrderHom }
-  forget_faithful := { }
+      map := fun f => f.toOrderHom }
+  forget_faithful := ⟨fun h => by ext : 2 ; exact h⟩
 
 end Concrete
 
 section EpiMono
 
-/-- A morphism in `simplex_category` is a monomorphism precisely when it is an injective function
+/-- A morphism in `SimplexCategory` is a monomorphism precisely when it is an injective function
 -/
 theorem mono_iff_injective {n m : SimplexCategory} {f : n ⟶ m} :
     Mono f ↔ Function.Injective f.toOrderHom := by
-  rw [← functor.mono_map_iff_mono skeletal_equivalence.Functor]
-  dsimp only [skeletal_equivalence, functor.as_equivalence_functor]
-  rw [NonemptyFinLinOrdCat.mono_iff_injective, skeletal_functor.coe_map,
+  rw [← Functor.mono_map_iff_mono skeletalEquivalence.functor.{0}]
+  dsimp only [skeletalEquivalence, Functor.asEquivalence_functor]
+  rw [NonemptyFinLinOrdCat.mono_iff_injective, skeletalFunctor.coe_map,
     Function.Injective.of_comp_iff ULift.up_injective,
     Function.Injective.of_comp_iff' _ ULift.down_bijective]
 #align simplex_category.mono_iff_injective SimplexCategory.mono_iff_injective
 
-/-- A morphism in `simplex_category` is an epimorphism if and only if it is a surjective function
+/-- A morphism in `SimplexCategory` is an epimorphism if and only if it is a surjective function
 -/
 theorem epi_iff_surjective {n m : SimplexCategory} {f : n ⟶ m} :
     Epi f ↔ Function.Surjective f.toOrderHom := by
-  rw [← functor.epi_map_iff_epi skeletal_equivalence.Functor]
-  dsimp only [skeletal_equivalence, functor.as_equivalence_functor]
-  rw [NonemptyFinLinOrdCat.epi_iff_surjective, skeletal_functor.coe_map,
+  rw [← Functor.epi_map_iff_epi skeletalEquivalence.functor.{0}]
+  dsimp only [skeletalEquivalence, Functor.asEquivalence_functor]
+  rw [NonemptyFinLinOrdCat.epi_iff_surjective, skeletalFunctor.coe_map,
     Function.Surjective.of_comp_iff' ULift.up_bijective,
     Function.Surjective.of_comp_iff _ ULift.down_surjective]
 #align simplex_category.epi_iff_surjective SimplexCategory.epi_iff_surjective
 
-/-- A monomorphism in `simplex_category` must increase lengths-/
+/-- A monomorphism in `SimplexCategory` must increase lengths-/
 theorem len_le_of_mono {x y : SimplexCategory} {f : x ⟶ y} : Mono f → x.len ≤ y.len := by
   intro hyp_f_mono
-  have f_inj : Function.Injective f.to_order_hom.to_fun := mono_iff_injective.elim_left hyp_f_mono
-  simpa using Fintype.card_le_of_injective f.to_order_hom.to_fun f_inj
+  have f_inj : Function.Injective f.toOrderHom.toFun := mono_iff_injective.1 hyp_f_mono
+  simpa using Fintype.card_le_of_injective f.toOrderHom.toFun f_inj
 #align simplex_category.len_le_of_mono SimplexCategory.len_le_of_mono
 
-theorem le_of_mono {n m : ℕ} {f : [n] ⟶ [m]} : CategoryTheory.Mono f → n ≤ m :=
+theorem le_of_mono {n m : ℕ} {f : ([n] : SimplexCategory) ⟶ [m]} : CategoryTheory.Mono f → n ≤ m :=
   len_le_of_mono
 #align simplex_category.le_of_mono SimplexCategory.le_of_mono
 
-/-- An epimorphism in `simplex_category` must decrease lengths-/
+/-- An epimorphism in `SimplexCategory` must decrease lengths-/
 theorem len_le_of_epi {x y : SimplexCategory} {f : x ⟶ y} : Epi f → y.len ≤ x.len := by
   intro hyp_f_epi
-  have f_surj : Function.Surjective f.to_order_hom.to_fun := epi_iff_surjective.elim_left hyp_f_epi
-  simpa using Fintype.card_le_of_surjective f.to_order_hom.to_fun f_surj
+  have f_surj : Function.Surjective f.toOrderHom.toFun := epi_iff_surjective.1 hyp_f_epi
+  simpa using Fintype.card_le_of_surjective f.toOrderHom.toFun f_surj
 #align simplex_category.len_le_of_epi SimplexCategory.len_le_of_epi
 
-theorem le_of_epi {n m : ℕ} {f : [n] ⟶ [m]} : Epi f → m ≤ n :=
+theorem le_of_epi {n m : ℕ} {f : ([n] : SimplexCategory) ⟶ [m]} : Epi f → m ≤ n :=
   len_le_of_epi
 #align simplex_category.le_of_epi SimplexCategory.le_of_epi
 
@@ -529,11 +524,11 @@ instance {n : ℕ} {i : Fin (n + 2)} : Mono (δ i) := by
 instance {n : ℕ} {i : Fin (n + 1)} : Epi (σ i) := by
   rw [epi_iff_surjective]
   intro b
-  simp only [σ, mk_hom, hom.to_order_hom_mk, OrderHom.coe_fun_mk]
+  simp only [σ, mkHom, Hom.toOrderHom_mk, OrderHom.coe_fun_mk]
   by_cases b ≤ i
-  · use b
+  . use b
     rw [Fin.predAbove_below i b (by simpa only [Fin.coe_eq_castSucc] using h)]
-    simp only [Fin.coe_eq_castSucc, Fin.castPred_castSucc]
+    simp only [len_mk, Fin.coe_eq_castSucc, Fin.castPred_castSucc]
   · use b.succ
     rw [Fin.predAbove_above i b.succ _, Fin.pred_succ]
     rw [not_le] at h
