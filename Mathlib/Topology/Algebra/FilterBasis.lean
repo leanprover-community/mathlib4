@@ -72,7 +72,7 @@ attribute [to_additive existing] GroupFilterBasis GroupFilterBasis.conj'
   GroupFilterBasis.toFilterBasis
 
 /-- `GroupFilterBasis` constructor in the commutative group case. -/
-@[to_additive "`add_group_filter_basis` constructor in the additive commutative group case."]
+@[to_additive "`AddGroupFilterBasis` constructor in the additive commutative group case."]
 def groupFilterBasisOfComm {G : Type _} [CommGroup G] (sets : Set (Set G))
     (nonempty : sets.Nonempty) (inter_sets : ∀ x y, x ∈ sets → y ∈ sets → ∃ z ∈ sets, z ⊆ x ∩ y)
     (one : ∀ U ∈ sets, (1 : G) ∈ U) (mul : ∀ U ∈ sets, ∃ V ∈ sets, V * V ⊆ U)
