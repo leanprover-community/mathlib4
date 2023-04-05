@@ -203,7 +203,7 @@ instance : SMul S (P →A[R] W) where
   smul t f := { t • (f : P →ᵃ[R] W) with cont := f.continuous.const_smul t }
 
 @[norm_cast, simp]
-theorem coe_smul (t : S) (f : P →A[R] W) : ⇑(t • f) = t • f := rfl
+theorem coe_smul (t : S) (f : P →A[R] W) : ⇑(t • f) = t • ⇑f := rfl
 #align continuous_affine_map.coe_smul ContinuousAffineMap.coe_smul
 
 theorem smul_apply (t : S) (f : P →A[R] W) (x : P) : (t • f) x = t • f x := rfl
