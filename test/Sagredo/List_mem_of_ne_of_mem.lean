@@ -1,5 +1,5 @@
-import Mathlib.Tactic.GPT.Sagredo.Dialog
+import Mathlib.Tactic.GPT.Sagredo.Widget
 import Mathlib.Data.List.Basic
 
-theorem mem_of_ne_of_mem {a y : α} {l : List α} (h₁ : a ≠ y) (h₂ : a ∈ y :: l) : a ∈ l := by
-  sagredo
+theorem mem_of_ne_of_mem {α : Type u_1} {a y : α} {l : List α} (h₁ : a ≠ y) (h₂ : a ∈ y :: l) : a ∈ l := by
+  sagredo!

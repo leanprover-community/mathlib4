@@ -100,6 +100,6 @@ syntax (name := sagredoInteractive') "sagredo!" : tactic
     liftMetaTactic fun g => do admitGoal g; pure []
   | _ => throwUnsupportedSyntax
 
-/-- The length of the concatenation of two lists is the sum of the lengths of the lists. -/
-theorem length_append : ∀ (L1 L2 : List α), (L1 ++ L2).length = L1.length + L2.length := by
-  sagredo!
+-- /-- The length of the concatenation of two lists is the sum of the lengths of the lists. -/
+-- theorem length_append : ∀ (L1 L2 : List α), (L1 ++ L2).length = L1.length + L2.length := by
+--   sagredo!

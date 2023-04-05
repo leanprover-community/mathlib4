@@ -1,4 +1,4 @@
-import Mathlib.Tactic.GPT.Sagredo.Dialog
+import Mathlib.Tactic.GPT.Sagredo.Widget
 import Mathlib.Data.Nat.Prime
 
 example : ∀ N : Nat, ∃ n, N < n ∧ Prime n := by
@@ -7,4 +7,4 @@ example : ∀ N : Nat, ∃ n, N < n ∧ Prime n := by
   -- To see that it is larger than `N`, we argue by contradiction.
   -- If `p ≤ N`, then it must divide `N`.
   -- Since it divides `N!` and `N! + 1`, it must divide `1`, which is not possible.
-  sagredo
+  sagredo!
