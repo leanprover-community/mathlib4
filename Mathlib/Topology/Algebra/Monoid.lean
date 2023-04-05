@@ -702,8 +702,8 @@ because the predicate `ContinuousInv` has not yet been defined. -/
 @[to_additive "If addition on an additive monoid is continuous, then addition on the additive units
 of the monoid, with respect to the induced topology, is continuous.
 
-Negation is also continuous, but we register this in a later file, `topology.algebra.group`, because
-the predicate `has_continuous_neg` has not yet been defined."]
+Negation is also continuous, but we register this in a later file, `Topology.Algebra.Group`, because
+the predicate `ContinuousNeg` has not yet been defined."]
 instance : ContinuousMul αˣ :=
   inducing_embedProduct.continuousMul (embedProduct α)
 
