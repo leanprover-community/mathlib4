@@ -8,10 +8,10 @@ Authors: Aaron Anderson, Jalex Stark, Kyle Miller, Lu-Ming Zhang
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Combinatorics.SimpleGraph.Basic
-import Mathbin.Combinatorics.SimpleGraph.Connectivity
-import Mathbin.LinearAlgebra.Matrix.Trace
-import Mathbin.LinearAlgebra.Matrix.Symmetric
+import Mathlib.Combinatorics.SimpleGraph.Basic
+import Mathlib.Combinatorics.SimpleGraph.Connectivity
+import Mathlib.LinearAlgebra.Matrix.Trace
+import Mathlib.LinearAlgebra.Matrix.Symmetric
 
 /-!
 # Adjacency Matrices
@@ -81,8 +81,7 @@ theorem apply_ne_zero_iff [MulZeroOneClass α] [Nontrivial α] (h : IsAdjMatrix 
 /-- For `A : matrix V V α` and `h : is_adj_matrix A`,
     `h.to_graph` is the simple graph whose adjacency matrix is `A`. -/
 @[simps]
-def toGraph [MulZeroOneClass α] [Nontrivial α] (h : IsAdjMatrix A) : SimpleGraph V
-    where
+def toGraph [MulZeroOneClass α] [Nontrivial α] (h : IsAdjMatrix A) : SimpleGraph V where
   Adj i j := A i j = 1
   symm i j hij := by rwa [h.symm.apply i j]
   loopless i := by simp [h]
@@ -110,15 +109,13 @@ theorem compl_apply_diag [Zero α] [One α] (i : V) : A.compl i i = 0 := by simp
 #align matrix.compl_apply_diag Matrix.compl_apply_diag
 
 @[simp]
-theorem compl_apply [Zero α] [One α] (i j : V) : A.compl i j = 0 ∨ A.compl i j = 1 :=
-  by
+theorem compl_apply [Zero α] [One α] (i j : V) : A.compl i j = 0 ∨ A.compl i j = 1 := by
   unfold compl
   split_ifs <;> simp
 #align matrix.compl_apply Matrix.compl_apply
 
 @[simp]
-theorem isSymm_compl [Zero α] [One α] (h : A.IsSymm) : A.compl.IsSymm :=
-  by
+theorem isSymm_compl [Zero α] [One α] (h : A.IsSymm) : A.compl.IsSymm := by
   ext
   simp [compl, h.apply, eq_comm]
 #align matrix.is_symm_compl Matrix.isSymm_compl
@@ -173,8 +170,7 @@ theorem adjMatrix_apply (v w : V) [Zero α] [One α] :
 #align simple_graph.adj_matrix_apply SimpleGraph.adjMatrix_apply
 
 @[simp]
-theorem transpose_adjMatrix [Zero α] [One α] : (G.adjMatrix α)ᵀ = G.adjMatrix α :=
-  by
+theorem transpose_adjMatrix [Zero α] [One α] : (G.adjMatrix α)ᵀ = G.adjMatrix α := by
   ext
   simp [adj_comm]
 #align simple_graph.transpose_adj_matrix SimpleGraph.transpose_adjMatrix
@@ -222,8 +218,7 @@ theorem adjMatrix_mulVec_apply [NonAssocSemiring α] (v : V) (vec : V → α) :
 
 @[simp]
 theorem adjMatrix_vecMul_apply [NonAssocSemiring α] (v : V) (vec : V → α) :
-    ((G.adjMatrix α).vecMul vec) v = ∑ u in G.neighborFinset v, vec u :=
-  by
+    ((G.adjMatrix α).vecMul vec) v = ∑ u in G.neighborFinset v, vec u := by
   rw [← dot_product_adj_matrix, vec_mul]
   refine' congr rfl _; ext
   rw [← transpose_apply (adj_matrix α G) x v, transpose_adj_matrix]
@@ -267,8 +262,7 @@ theorem adjMatrix_mulVec_const_apply_of_regular [Semiring α] {d : ℕ} {a : α}
 #align simple_graph.adj_matrix_mul_vec_const_apply_of_regular SimpleGraph.adjMatrix_mulVec_const_apply_of_regular
 
 theorem adjMatrix_pow_apply_eq_card_walk [DecidableEq V] [Semiring α] (n : ℕ) (u v : V) :
-    (G.adjMatrix α ^ n) u v = Fintype.card { p : G.Walk u v | p.length = n } :=
-  by
+    (G.adjMatrix α ^ n) u v = Fintype.card { p : G.Walk u v | p.length = n } := by
   rw [card_set_walk_length_eq]
   induction' n with n ih generalizing u v
   · obtain rfl | h := eq_or_ne u v <;> simp [finset_walk_length, *]
@@ -299,8 +293,7 @@ variable {A : Matrix V V α} (h : IsAdjMatrix A)
 
 /-- If `A` is qualified as an adjacency matrix,
     then the adjacency matrix of the graph induced by `A` is itself. -/
-theorem adjMatrix_toGraph_eq [DecidableEq α] : h.toGraph.adjMatrix α = A :=
-  by
+theorem adjMatrix_toGraph_eq [DecidableEq α] : h.toGraph.adjMatrix α = A := by
   ext (i j)
   obtain h' | h' := h.zero_or_one i j <;> simp [h']
 #align matrix.is_adj_matrix.adj_matrix_to_graph_eq Matrix.IsAdjMatrix.adjMatrix_toGraph_eq
