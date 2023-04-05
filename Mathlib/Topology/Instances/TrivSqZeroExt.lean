@@ -8,9 +8,9 @@ Authors: Eric Wieser
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.TrivSqZeroExt
-import Mathbin.Topology.Algebra.InfiniteSum.Basic
-import Mathbin.Topology.Algebra.Module.Basic
+import Mathlib.Algebra.TrivSqZeroExt
+import Mathlib.Topology.Algebra.InfiniteSum.Basic
+import Mathlib.Topology.Algebra.Module.Basic
 
 /-!
 # Topology on `triv_sq_zero_ext R M`

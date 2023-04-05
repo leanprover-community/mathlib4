@@ -1664,6 +1664,7 @@ import Mathlib.Topology.Instances.Nat
 import Mathlib.Topology.Instances.Rat
 import Mathlib.Topology.Instances.Real
 import Mathlib.Topology.Instances.Sign
+import Mathlib.Topology.Instances.TrivSqZeroExt
 import Mathlib.Topology.IsLocallyHomeomorph
 import Mathlib.Topology.List
 import Mathlib.Topology.LocalExtr
