@@ -349,7 +349,7 @@ theorem append_assoc {p : ℕ} {α : Type _} (a : Fin m → α) (b : Fin n → �
     simp [← natAdd_natAdd]
 #align fin.append_assoc Fin.append_assoc
 
-/-- Appending a one-tuple to the left is the same as `fin.cons`. -/
+/-- Appending a one-tuple to the left is the same as `Fin.cons`. -/
 theorem append_left_eq_cons {α : Type _} {n : ℕ} (x₀ : Fin 1 → α) (x : Fin n → α) :
     Fin.append x₀ x = Fin.cons (x₀ 0) x ∘ Fin.cast (add_comm _ _) := by
   ext i
