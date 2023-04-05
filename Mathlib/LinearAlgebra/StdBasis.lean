@@ -15,25 +15,25 @@ import Mathlib.LinearAlgebra.Pi
 /-!
 # The standard basis
 
-This file defines the standard basis `pi.basis (s : ∀ j, basis (ι j) R (M j))`,
+This file defines the standard basis `Pi.basis (s : ∀ j, Basis (ι j) R (M j))`,
 which is the `Σ j, ι j`-indexed basis of `Π j, M j`. The basis vectors are given by
-`pi.basis s ⟨j, i⟩ j' = linear_map.std_basis R M j' (s j) i = if j = j' then s i else 0`.
+`Pi.basis s ⟨j, i⟩ j' = LinearMap.stdBasis R M j' (s j) i = if j = j' then s i else 0`.
 
-The standard basis on `R^η`, i.e. `η → R` is called `pi.basis_fun`.
+The standard basis on `R^η`, i.e. `η → R` is called `Pi.basisFun`.
 
-To give a concrete example, `linear_map.std_basis R (λ (i : fin 3), R) i 1`
-gives the `i`th unit basis vector in `R³`, and `pi.basis_fun R (fin 3)` proves
-this is a basis over `fin 3 → R`.
+To give a concrete example, `LinearMap.stdBasis R (λ (i : Fin 3), R) i 1`
+gives the `i`th unit basis vector in `R³`, and `Pi.basisFun R (Fin 3)` proves
+this is a basis over `Fin 3 → R`.
 
 ## Main definitions
 
- - `linear_map.std_basis R M`: if `x` is a basis vector of `M i`, then
-   `linear_map.std_basis R M i x` is the `i`th standard basis vector of `Π i, M i`.
- - `pi.basis s`: given a basis `s i` for each `M i`, the standard basis on `Π i, M i`
- - `pi.basis_fun R η`: the standard basis on `R^η`, i.e. `η → R`, given by
-   `pi.basis_fun R η i j = if i = j then 1 else 0`.
- - `matrix.std_basis R n m`: the standard basis on `matrix n m R`, given by
-   `matrix.std_basis R n m (i, j) i' j' = if (i, j) = (i', j') then 1 else 0`.
+ - `LinearMap.stdBasis R M`: if `x` is a basis vector of `M i`, then
+   `LinearMap.stdBasis R M i x` is the `i`th standard basis vector of `Π i, M i`.
+ - `Pi.basis s`: given a basis `s i` for each `M i`, the standard basis on `Π i, M i`
+ - `Pi.basisFun R η`: the standard basis on `R^η`, i.e. `η → R`, given by
+   `Pi.basisFun R η i j = if i = j then 1 else 0`.
+ - `Matrix.stdBasis R n m`: the standard basis on `Matrix n m R`, given by
+   `Matrix.stdBasis R n m (i, j) i' j' = if (i, j) = (i', j') then 1 else 0`.
 
 -/
 
@@ -214,10 +214,10 @@ section
 
 open LinearEquiv
 
-/-- `pi.basis (s : ∀ j, basis (ιs j) R (Ms j))` is the `Σ j, ιs j`-indexed basis on `Π j, Ms j`
+/-- `Pi.basis (s : ∀ j, Basis (ιs j) R (Ms j))` is the `Σ j, ιs j`-indexed basis on `Π j, Ms j`
 given by `s j` on each component.
 
-For the standard basis over `R` on the finite-dimensional space `η → R` see `pi.basis_fun`.
+For the standard basis over `R` on the finite-dimensional space `η → R` see `Pi.basisFun`.
 -/
 protected noncomputable def basis (s : ∀ j, Basis (ιs j) R (Ms j)) :
     Basis (Σj, ιs j) R (∀ j, Ms j) :=
@@ -225,7 +225,7 @@ protected noncomputable def basis (s : ∀ j, Basis (ιs j) R (Ms j)) :
     ((LinearEquiv.piCongrRight fun j => (s j).repr) ≪≫ₗ
       (Finsupp.sigmaFinsuppLEquivPiFinsupp R).symm)
   --  Porting note: was
-  -- -- The `add_comm_monoid (Π j, Ms j)` instance was hard to find.
+  -- -- The `AddCommMonoid (Π j, Ms j)` instance was hard to find.
   -- -- Defining this in tactic mode seems to shake up instance search enough that it works by itself.
   -- refine Basis.ofRepr (?_ ≪≫ₗ (Finsupp.sigmaFinsuppLEquivPiFinsupp R).symm)
   -- exact LinearEquiv.piCongrRight fun j => (s j).repr
@@ -273,7 +273,7 @@ section
 
 variable (R η)
 
-/-- The basis on `η → R` where the `i`th basis vector is `function.update 0 i 1`. -/
+/-- The basis on `η → R` where the `i`th basis vector is `Function.update 0 i 1`. -/
 noncomputable def basisFun : Basis η R (∀ j : η, R) :=
   Basis.ofEquivFun (LinearEquiv.refl _ _)
 #align pi.basis_fun Pi.basisFun
@@ -298,7 +298,7 @@ namespace Matrix
 
 variable (R : Type _) (m n : Type _) [Fintype m] [Fintype n] [Semiring R]
 
-/-- The standard basis of `matrix m n R`. -/
+/-- The standard basis of `Matrix m n R`. -/
 noncomputable def stdBasis : Basis (m × n) R (Matrix m n R) :=
   Basis.reindex (Pi.basis fun _ : m => Pi.basisFun R n) (Equiv.sigmaEquivProd _ _)
 #align matrix.std_basis Matrix.stdBasis
