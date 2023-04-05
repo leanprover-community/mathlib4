@@ -54,7 +54,7 @@ namespace SimplexCategory
 section
 
 
--- porting note: the definition of `SimplexCategory` is made irreducible
+-- porting note: the definition of `SimplexCategory` is made irreducible below
 /-- Interpet a natural number as an object of the simplex category. -/
 def mk (n : ℕ) : SimplexCategory :=
   n
@@ -536,50 +536,46 @@ instance {n : ℕ} {i : Fin (n + 1)} : Epi (σ i) := by
     simpa only [Fin.val_succ, Fin.coe_castSucc] using Nat.lt.step h
 
 instance : ReflectsIsomorphisms (forget SimplexCategory) :=
-  ⟨by
-    intro x y f
-    intro
-    exact
-      is_iso.of_iso
-        { Hom := f
-          inv :=
-            hom.mk
-              { toFun := inv ((forget SimplexCategory).map f)
-                monotone' := fun y₁ y₂ h => by
-                  by_cases h' : y₁ < y₂
-                  · by_contra h''
-                    have eq := fun i => congr_hom (iso.inv_hom_id (as_iso ((forget _).map f))) i
-                    have ineq := f.to_order_hom.monotone' (le_of_not_ge h'')
-                    dsimp at ineq
-                    erw [Eq, Eq] at ineq
-                    exact not_le.mpr h' ineq
-                  · rw [eq_of_le_of_not_lt h h'] }
-          hom_inv_id' := by
-            ext1
-            ext1
-            exact iso.hom_inv_id (as_iso ((forget _).map f))
-          inv_hom_id' := by
-            ext1
-            ext1
-            exact iso.inv_hom_id (as_iso ((forget _).map f)) }⟩
+  ⟨fun f hf =>
+    IsIso.of_iso
+      { hom := f
+        inv := Hom.mk
+            { toFun := inv ((forget SimplexCategory).map f)
+              monotone' := fun y₁ y₂ h => by
+                by_cases h' : y₁ < y₂
+                · by_contra h''
+                  apply not_le.mpr h'
+                  convert f.toOrderHom.monotone (le_of_not_ge h'')
+                  all_goals
+                    exact (congr_hom (Iso.inv_hom_id
+                      (asIso ((forget SimplexCategory).map f))) _).symm
+                · rw [eq_of_le_of_not_lt h h'] }
+        hom_inv_id := by
+          ext1
+          ext1
+          exact Iso.hom_inv_id (asIso ((forget _).map f))
+        inv_hom_id := by
+          ext1
+          ext1
+          exact Iso.inv_hom_id (asIso ((forget _).map f)) }⟩
 
 theorem isIso_of_bijective {x y : SimplexCategory} {f : x ⟶ y}
     (hf : Function.Bijective f.toOrderHom.toFun) : IsIso f :=
-  haveI : is_iso ((forget SimplexCategory).map f) := (is_iso_iff_bijective _).mpr hf
-  is_iso_of_reflects_iso f (forget SimplexCategory)
+  haveI : IsIso ((forget SimplexCategory).map f) := (isIso_iff_bijective _).mpr hf
+  isIso_of_reflects_iso f (forget SimplexCategory)
 #align simplex_category.is_iso_of_bijective SimplexCategory.isIso_of_bijective
 
-/-- An isomorphism in `simplex_category` induces an `order_iso`. -/
+/-- An isomorphism in `SimplexCategory` induces an `OrderIso`. -/
 @[simp]
 def orderIsoOfIso {x y : SimplexCategory} (e : x ≅ y) : Fin (x.len + 1) ≃o Fin (y.len + 1) :=
   Equiv.toOrderIso
-    { toFun := e.Hom.toOrderHom
+    { toFun := e.hom.toOrderHom
       invFun := e.inv.toOrderHom
       left_inv := fun i => by
-        simpa only using congr_arg (fun φ => (hom.to_order_hom φ) i) e.hom_inv_id'
+        simpa only using congr_arg (fun φ => (Hom.toOrderHom φ) i) e.hom_inv_id
       right_inv := fun i => by
-        simpa only using congr_arg (fun φ => (hom.to_order_hom φ) i) e.inv_hom_id' }
-    e.Hom.toOrderHom.Monotone e.inv.toOrderHom.Monotone
+        simpa only using congr_arg (fun φ => (Hom.toOrderHom φ) i) e.inv_hom_id }
+    e.hom.toOrderHom.monotone e.inv.toOrderHom.monotone
 #align simplex_category.order_iso_of_iso SimplexCategory.orderIsoOfIso
 
 theorem iso_eq_iso_refl {x : SimplexCategory} (e : x ≅ x) : e = Iso.refl x := by
