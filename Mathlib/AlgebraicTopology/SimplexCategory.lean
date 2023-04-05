@@ -8,18 +8,18 @@ Authors: Johan Commelin, Scott Morrison, Adam Topaz
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Tactic.Linarith.Default
+import Mathlib.Tactic.Linarith
 import Mathlib.CategoryTheory.Skeletal
 import Mathlib.Data.Fintype.Sort
-import Mathlib.Order.Category.NonemptyFinLinOrd
-import Mathlib.CategoryTheory.Functor.ReflectsIsomorphisms
+import Mathlib.Order.Category.NonemptyFinLinOrdCat
+import Mathlib.CategoryTheory.Functor.ReflectsIso
 
 /-! # The simplex category
 
 We construct a skeletal model of the simplex category, with objects `ℕ` and the
-morphism `n ⟶ m` being the monotone maps from `fin (n+1)` to `fin (m+1)`.
+morphism `n ⟶ m` being the monotone maps from `Fin (n+1)` to `Fin (m+1)`.
 
-We show that this category is equivalent to `NonemptyFinLinOrd`.
+We show that this category is equivalent to `NonemptyFinLinOrdCat`.
 
 ## Remarks
 
@@ -43,9 +43,9 @@ open CategoryTheory CategoryTheory.Limits
 /- ./././Mathport/Syntax/Translate/Command.lean:318:31: unsupported: @[derive, irreducible] def -/
 /-- The simplex category:
 * objects are natural numbers `n : ℕ`
-* morphisms from `n` to `m` are monotone functions `fin (n+1) → fin (m+1)`
+* morphisms from `n` to `m` are monotone functions `Fin (n+1) → Fin (m+1)`
 -/
-irreducible_def SimplexCategory :=
+def SimplexCategory :=
   ℕ
 #align simplex_category SimplexCategory
 
@@ -53,19 +53,20 @@ namespace SimplexCategory
 
 section
 
-attribute [local semireducible] SimplexCategory
 
--- TODO: Make `mk` irreducible.
+-- porting note: the definition of `SimplexCategory` is made irreducible
+
 /-- Interpet a natural number as an object of the simplex category. -/
 def mk (n : ℕ) : SimplexCategory :=
   n
 #align simplex_category.mk SimplexCategory.mk
 
--- mathport name: simplex_category.mk
-scoped[Simplicial] notation "[" n "]" => SimplexCategory.mk n
+-- what is wrong with this???
+--scoped[Simplicial] notation "[" n "]" => SimplexCategory.mk n
+notation "[" n "]" => SimplexCategory.mk n
 
 -- TODO: Make `len` irreducible.
-/-- The length of an object of `simplex_category`. -/
+/-- The length of an object of `SimplexCategory`. -/
 def len (n : SimplexCategory) : ℕ :=
   n
 #align simplex_category.len SimplexCategory.len
@@ -75,32 +76,32 @@ theorem ext (a b : SimplexCategory) : a.len = b.len → a = b :=
   id
 #align simplex_category.ext SimplexCategory.ext
 
+attribute [irreducible] SimplexCategory
+
 @[simp]
 theorem len_mk (n : ℕ) : [n].len = n :=
   rfl
 #align simplex_category.len_mk SimplexCategory.len_mk
 
 @[simp]
-theorem mk_len (n : SimplexCategory) : [n.len] = n :=
+theorem mk_len (n : SimplexCategory) : ([n.len] : SimplexCategory) = n :=
   rfl
 #align simplex_category.mk_len SimplexCategory.mk_len
 
-/-- A recursor for `simplex_category`. Use it as `induction Δ using simplex_category.rec`. -/
-protected def rec {F : ∀ Δ : SimplexCategory, Sort _} (h : ∀ n : ℕ, F [n]) : ∀ X, F X := fun n =>
+/-- A recursor for `SimplexCategory`. Use it as `induction Δ using simplex_category.rec`. -/
+protected def rec {F : ∀ _ : SimplexCategory, Sort _} (h : ∀ n : ℕ, F [n]) : ∀ X, F X := fun n =>
   h n.len
 #align simplex_category.rec SimplexCategory.rec
 
+-- porting note: removed @[nolint has_nonempty_instance]
 /-- Morphisms in the simplex_category. -/
-@[nolint has_nonempty_instance]
-protected irreducible_def Hom (a b : SimplexCategory) :=
+protected def Hom (a b : SimplexCategory) :=
   Fin (a.len + 1) →o Fin (b.len + 1)
 #align simplex_category.hom SimplexCategory.Hom
 
 namespace Hom
 
-attribute [local semireducible] SimplexCategory.Hom
-
-/-- Make a moprhism in `simplex_category` from a monotone map of fin's. -/
+/-- Make a moprhism in `SimplexCategory` from a monotone map of fin's. -/
 def mk {a b : SimplexCategory} (f : Fin (a.len + 1) →o Fin (b.len + 1)) : SimplexCategory.Hom a b :=
   f
 #align simplex_category.hom.mk SimplexCategory.Hom.mk
@@ -111,11 +112,12 @@ def toOrderHom {a b : SimplexCategory} (f : SimplexCategory.Hom a b) :
   f
 #align simplex_category.hom.to_order_hom SimplexCategory.Hom.toOrderHom
 
-@[ext]
-theorem ext {a b : SimplexCategory} (f g : SimplexCategory.Hom a b) :
+theorem ext' {a b : SimplexCategory} (f g : SimplexCategory.Hom a b) :
     f.toOrderHom = g.toOrderHom → f = g :=
   id
-#align simplex_category.hom.ext SimplexCategory.Hom.ext
+#align simplex_category.hom.ext SimplexCategory.Hom.ext'
+
+attribute [irreducible] SimplexCategory.Hom
 
 @[simp]
 theorem mk_toOrderHom {a b : SimplexCategory} (f : SimplexCategory.Hom a b) : mk f.toOrderHom = f :=
@@ -133,13 +135,13 @@ theorem mk_toOrderHom_apply {a b : SimplexCategory} (f : Fin (a.len + 1) →o Fi
   rfl
 #align simplex_category.hom.mk_to_order_hom_apply SimplexCategory.Hom.mk_toOrderHom_apply
 
-/-- Identity morphisms of `simplex_category`. -/
+/-- Identity morphisms of `SimplexCategory`. -/
 @[simp]
 def id (a : SimplexCategory) : SimplexCategory.Hom a a :=
   mk OrderHom.id
 #align simplex_category.hom.id SimplexCategory.Hom.id
 
-/-- Composition of morphisms of `simplex_category`. -/
+/-- Composition of morphisms of `SimplexCategory`. -/
 @[simp]
 def comp {a b c : SimplexCategory} (f : SimplexCategory.Hom b c) (g : SimplexCategory.Hom a b) :
     SimplexCategory.Hom a c :=
@@ -152,11 +154,17 @@ end Hom
 instance smallCategory : SmallCategory.{0} SimplexCategory where
   Hom n m := SimplexCategory.Hom n m
   id m := SimplexCategory.Hom.id _
-  comp _ _ _ f g := SimplexCategory.Hom.comp g f
+  comp f g := SimplexCategory.Hom.comp g f
 #align simplex_category.small_category SimplexCategory.smallCategory
 
+-- porting note: added because `Hom.ext'` is not triggered automatically
+@[ext]
+theorem Hom.ext {a b : SimplexCategory} (f g : a ⟶ b) :
+    f.toOrderHom = g.toOrderHom → f = g :=
+  Hom.ext' _ _
+
 /-- The constant morphism from [0]. -/
-def const (x : SimplexCategory) (i : Fin (x.len + 1)) : [0] ⟶ x :=
+def const (x : SimplexCategory) (i : Fin (x.len + 1)) : ([0] : SimplexCategory) ⟶ x :=
   Hom.mk <| ⟨fun _ => i, by tauto⟩
 #align simplex_category.const SimplexCategory.const
 
@@ -171,19 +179,18 @@ This is useful for constructing morphisms beetween `[n]` directly
 without identifying `n` with `[n].len`.
 -/
 @[simp]
-def mkHom {n m : ℕ} (f : Fin (n + 1) →o Fin (m + 1)) : [n] ⟶ [m] :=
+def mkHom {n m : ℕ} (f : Fin (n + 1) →o Fin (m + 1)) : ([n] : SimplexCategory) ⟶ [m] :=
   SimplexCategory.Hom.mk f
 #align simplex_category.mk_hom SimplexCategory.mkHom
 
-theorem hom_zero_zero (f : [0] ⟶ [0]) : f = 𝟙 _ := by
-  ext : 2
-  dsimp
-  apply Subsingleton.elim
+theorem hom_zero_zero (f : ([0] : SimplexCategory) ⟶ [0]) : f = 𝟙 _ := by
+  ext : 3
+  apply @Subsingleton.elim (Fin 1)
 #align simplex_category.hom_zero_zero SimplexCategory.hom_zero_zero
 
 end
 
-open Simplicial
+--open_locale Simplicial
 
 section Generators
 
@@ -196,19 +203,19 @@ one given by the following generators and relations.
 
 
 /-- The `i`-th face map from `[n]` to `[n+1]` -/
-def δ {n} (i : Fin (n + 2)) : [n] ⟶ [n + 1] :=
+def δ {n} (i : Fin (n + 2)) : ([n] : SimplexCategory) ⟶ [n + 1] :=
   mkHom (Fin.succAbove i).toOrderHom
 #align simplex_category.δ SimplexCategory.δ
 
 /-- The `i`-th degeneracy map from `[n+1]` to `[n]` -/
-def σ {n} (i : Fin (n + 1)) : [n + 1] ⟶ [n] :=
+def σ {n} (i : Fin (n + 1)) : ([n + 1] : SimplexCategory) ⟶ [n] :=
   mkHom
     { toFun := Fin.predAbove i
       monotone' := Fin.predAbove_right_monotone i }
 #align simplex_category.σ SimplexCategory.σ
 
 /-- The generic case of the first simplicial identity -/
-theorem δ_comp_δ {n} {i j : Fin (n + 2)} (H : i ≤ j) : δ i ≫ δ j.succ = δ j ≫ δ i.cast_succ := by
+theorem δ_comp_δ {n} {i j : Fin (n + 2)} (H : i ≤ j) : δ i ≫ δ j.succ = δ j ≫ δ (Fin.castSucc i) := by
   ext k
   dsimp [δ, Fin.succAbove]
   simp only [OrderEmbedding.toOrderHom_coe, OrderEmbedding.coe_ofStrictMono, Function.comp_apply,
@@ -219,18 +226,16 @@ theorem δ_comp_δ {n} {i j : Fin (n + 2)} (H : i ≤ j) : δ i ≫ δ j.succ = 
   split_ifs <;> · simp at * <;> linarith
 #align simplex_category.δ_comp_δ SimplexCategory.δ_comp_δ
 
-theorem δ_comp_δ' {n} {i : Fin (n + 2)} {j : Fin (n + 3)} (H : i.cast_succ < j) :
-    δ i ≫ δ j = δ (j.pred fun hj => by simpa only [hj, Fin.not_lt_zero] using H) ≫ δ i.cast_succ :=
-  by
+theorem δ_comp_δ' {n} {i : Fin (n + 2)} {j : Fin (n + 3)} (H : Fin.castSucc i < j) :
+    δ i ≫ δ j = δ (j.pred fun hj => by simp [hj, Fin.not_lt_zero] at H) ≫ δ (Fin.castSucc i) := by
   rw [← δ_comp_δ]
   · rw [Fin.succ_pred]
-  ·
-    simpa only [Fin.le_iff_val_le_val, ← Nat.lt_succ_iff, Nat.succ_eq_add_one, ← Fin.val_succ,
+  · simpa only [Fin.le_iff_val_le_val, ← Nat.lt_succ_iff, Nat.succ_eq_add_one, ← Fin.val_succ,
       j.succ_pred, Fin.lt_iff_val_lt_val] using H
 #align simplex_category.δ_comp_δ' SimplexCategory.δ_comp_δ'
 
-theorem δ_comp_δ'' {n} {i : Fin (n + 3)} {j : Fin (n + 2)} (H : i ≤ j.cast_succ) :
-    δ (i.cast_lt (Nat.lt_of_le_of_lt (Fin.le_iff_val_le_val.mp H) j.is_lt)) ≫ δ j.succ =
+theorem δ_comp_δ'' {n} {i : Fin (n + 3)} {j : Fin (n + 2)} (H : i ≤ Fin.castSucc j) :
+    δ (i.castLt (Nat.lt_of_le_of_lt (Fin.le_iff_val_le_val.mp H) j.is_lt)) ≫ δ j.succ =
       δ j ≫ δ i := by
   rw [δ_comp_δ]
   · rfl
@@ -238,44 +243,45 @@ theorem δ_comp_δ'' {n} {i : Fin (n + 3)} {j : Fin (n + 2)} (H : i ≤ j.cast_s
 #align simplex_category.δ_comp_δ'' SimplexCategory.δ_comp_δ''
 
 /-- The special case of the first simplicial identity -/
-@[reassoc.1]
-theorem δ_comp_δ_self {n} {i : Fin (n + 2)} : δ i ≫ δ i.cast_succ = δ i ≫ δ i.succ :=
+@[reassoc]
+theorem δ_comp_δ_self {n} {i : Fin (n + 2)} : δ i ≫ δ (Fin.castSucc i) = δ i ≫ δ i.succ :=
   (δ_comp_δ (le_refl i)).symm
 #align simplex_category.δ_comp_δ_self SimplexCategory.δ_comp_δ_self
 
-@[reassoc.1]
-theorem δ_comp_δ_self' {n} {i : Fin (n + 2)} {j : Fin (n + 3)} (H : j = i.cast_succ) :
+@[reassoc]
+theorem δ_comp_δ_self' {n} {i : Fin (n + 2)} {j : Fin (n + 3)} (H : j = Fin.castSucc i) :
     δ i ≫ δ j = δ i ≫ δ i.succ := by
   subst H
   rw [δ_comp_δ_self]
 #align simplex_category.δ_comp_δ_self' SimplexCategory.δ_comp_δ_self'
 
 /-- The second simplicial identity -/
-@[reassoc.1]
-theorem δ_comp_σ_of_le {n} {i : Fin (n + 2)} {j : Fin (n + 1)} (H : i ≤ j.cast_succ) :
-    δ i.cast_succ ≫ σ j.succ = σ j ≫ δ i := by
+@[reassoc]
+theorem δ_comp_σ_of_le {n} {i : Fin (n + 2)} {j : Fin (n + 1)} (H : i ≤ Fin.castSucc j) :
+    δ (Fin.castSucc i) ≫ σ j.succ = σ j ≫ δ i := by
   ext k
   suffices
-    ite (j.succ.cast_succ < ite (k < i) k.cast_succ k.succ) (ite (k < i) (k : ℕ) (k + 1) - 1)
+    ite (Fin.castSucc j.succ < ite (k < i) (Fin.castSucc k) k.succ) (ite (k < i) (k : ℕ) (k + 1) - 1)
         (ite (k < i) k (k + 1)) =
       ite
-        ((if h : (j : ℕ) < k then
+        (Fin.castSucc (if h : (j : ℕ) < k then
               k.pred
                 (by
                   rintro rfl
                   exact Nat.not_lt_zero _ h)
             else
-              k.cast_lt
+              k.castLt
                 (by
                   cases j
                   cases k
                   simp only [len_mk]
-                  linarith)).cast_succ <
-          i)
-        (ite (j.cast_succ < k) (k - 1) k) (ite (j.cast_succ < k) (k - 1) k + 1) by
+                  sorry --linearith
+                  )) < i)
+        (ite (Fin.castSucc j < k) (k - 1) k) (ite (Fin.castSucc j < k) (k - 1) k + 1) by
     dsimp [δ, σ, Fin.succAbove, Fin.predAbove]
     simp [Fin.predAbove, push_cast]
     convert rfl
+    sorry
   rcases i with ⟨i, _⟩
   rcases j with ⟨j, _⟩
   rcases k with ⟨k, _⟩
@@ -285,46 +291,48 @@ theorem δ_comp_σ_of_le {n} {i : Fin (n + 2)} {j : Fin (n + 1)} (H : i ≤ j.ca
   -- Most of the goals can now be handled by `linarith`,
   -- but we have to deal with two of them by hand.
   pick_goal 8
-  · exact (Nat.succ_pred_eq_of_pos (lt_of_le_of_lt (zero_le _) ‹_›)).symm
+  · sorry --exact (Nat.succ_pred_eq_of_pos (lt_of_le_of_lt (zero_le _) ‹_›)).symm
   pick_goal 7
-  · have : k ≤ i := Nat.le_of_pred_lt ‹_›
-    linarith
+  · sorry
+    --have : k ≤ i := Nat.le_of_pred_lt ‹_›
+    --linarith
   -- Hope for the best from `linarith`:
   all_goals try first |rfl|simp at * <;> linarith
 #align simplex_category.δ_comp_σ_of_le SimplexCategory.δ_comp_σ_of_le
 
 /-- The first part of the third simplicial identity -/
-@[reassoc.1]
-theorem δ_comp_σ_self {n} {i : Fin (n + 1)} : δ i.cast_succ ≫ σ i = 𝟙 [n] := by
+@[reassoc]
+theorem δ_comp_σ_self {n} {i : Fin (n + 1)} : δ (Fin.castSucc i) ≫ σ i = 𝟙 ([n] : SimplexCategory) := by
   ext j
   suffices
     ite (Fin.castSucc i < ite (j < i) (Fin.castSucc j) j.succ) (ite (j < i) (j : ℕ) (j + 1) - 1)
         (ite (j < i) j (j + 1)) =
       j by
     dsimp [δ, σ, Fin.succAbove, Fin.predAbove]
-    simpa [Fin.predAbove, push_cast]
+    simp [Fin.predAbove, push_cast]
+    sorry
   rcases i with ⟨i, _⟩
   rcases j with ⟨j, _⟩
   dsimp
   split_ifs <;> · simp at * <;> linarith
 #align simplex_category.δ_comp_σ_self SimplexCategory.δ_comp_σ_self
 
-@[reassoc.1]
-theorem δ_comp_σ_self' {n} {j : Fin (n + 2)} {i : Fin (n + 1)} (H : j = i.cast_succ) :
-    δ j ≫ σ i = 𝟙 [n] := by
+@[reassoc]
+theorem δ_comp_σ_self' {n} {j : Fin (n + 2)} {i : Fin (n + 1)} (H : j = Fin.castSucc i) :
+    δ j ≫ σ i = 𝟙 ([n] : SimplexCategory) := by
   subst H
   rw [δ_comp_σ_self]
 #align simplex_category.δ_comp_σ_self' SimplexCategory.δ_comp_σ_self'
 
 /-- The second part of the third simplicial identity -/
-@[reassoc.1]
-theorem δ_comp_σ_succ {n} {i : Fin (n + 1)} : δ i.succ ≫ σ i = 𝟙 [n] := by
+@[reassoc]
+theorem δ_comp_σ_succ {n} {i : Fin (n + 1)} : δ i.succ ≫ σ i = 𝟙 ([n] : SimplexCategory) := by
   ext j
   rcases i with ⟨i, _⟩
   rcases j with ⟨j, _⟩
   dsimp [δ, σ, Fin.succAbove, Fin.predAbove]
   simp [Fin.predAbove, push_cast]
-  split_ifs <;> · simp at * <;> linarith
+  split_ifs <;> simp <;> simp at * <;> linarith
 #align simplex_category.δ_comp_σ_succ SimplexCategory.δ_comp_σ_succ
 
 @[reassoc.1]
@@ -906,4 +914,3 @@ def toCat : SimplexCategory ⥤ Cat.{0} :=
 #align simplex_category.to_Cat SimplexCategory.toCat
 
 end SimplexCategory
-
