@@ -68,17 +68,8 @@ class AddGroupFilterBasis (A : Type u) [AddGroup A] extends FilterBasis A where
   conj' : ∀ x₀, ∀ {U}, U ∈ sets → ∃ V ∈ sets, V ⊆ (fun x ↦ x₀ + x + -x₀) ⁻¹' U
 #align add_group_filter_basis AddGroupFilterBasis
 
-attribute [to_additive] GroupFilterBasis
-
-attribute [to_additive] GroupFilterBasis.one'
-
-attribute [to_additive] GroupFilterBasis.mul'
-
-attribute [to_additive] GroupFilterBasis.inv'
-
-attribute [to_additive] GroupFilterBasis.conj'
-
-attribute [to_additive] GroupFilterBasis.toFilterBasis
+attribute [to_additive existing] GroupFilterBasis GroupFilterBasis.conj'
+  GroupFilterBasis.toFilterBasis
 
 /-- `GroupFilterBasis` constructor in the commutative group case. -/
 @[to_additive "`add_group_filter_basis` constructor in the additive commutative group case."]
