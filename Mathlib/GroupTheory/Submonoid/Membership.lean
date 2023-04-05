@@ -438,7 +438,6 @@ theorem mem_powers (n : M) : n ∈ powers n :=
   ⟨1, pow_one _⟩
 #align submonoid.mem_powers Submonoid.mem_powers
 
-@[norm_cast]
 theorem coe_powers (x : M) : ↑(powers x) = Set.range fun n : ℕ => x ^ n :=
   rfl
 #align submonoid.coe_powers Submonoid.coe_powers
@@ -625,7 +624,7 @@ attribute [to_additive existing multiples] Submonoid.powers
 attribute [to_additive (attr := simp) mem_multiples] Submonoid.mem_powers
 #align add_submonoid.mem_multiples AddSubmonoid.mem_multiples
 
-attribute [to_additive coe_multiples] Submonoid.coe_powers
+attribute [to_additive (attr := norm_cast) coe_multiples] Submonoid.coe_powers
 #align add_submonoid.coe_multiples AddSubmonoid.coe_multiples
 
 attribute [to_additive mem_multiples_iff] Submonoid.mem_powers_iff
