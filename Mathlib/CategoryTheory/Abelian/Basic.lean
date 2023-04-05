@@ -275,7 +275,7 @@ variable {C : Type u} [Category.{v} C] [Abelian C]
 -- during the simpNF linter, so for now we turn it on locally in this file.
 -- This will likely cause problems in downstream ports, unfortunately.
 -- instance (priority := 100)
-def hasFiniteBiproducts : HasFiniteBiproducts C :=
+theorem hasFiniteBiproducts : HasFiniteBiproducts C :=
   Limits.HasFiniteBiproducts.of_hasFiniteProducts
 #align category_theory.abelian.has_finite_biproducts CategoryTheory.Abelian.hasFiniteBiproducts
 
