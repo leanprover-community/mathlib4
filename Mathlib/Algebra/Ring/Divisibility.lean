@@ -125,7 +125,8 @@ theorem dvd_iff_dvd_of_dvd_sub {a b c : α} (h : a ∣ b - c) : a ∣ b ↔ a �
     exact eq_add_of_sub_eq rfl
 #align dvd_iff_dvd_of_dvd_sub dvd_iff_dvd_of_dvd_sub
 
-theorem dvd_sub_comm : a ∣ b - c ↔ a ∣ c - b := by rw [← dvd_neg, neg_sub]
+--porting note: Needed to give an explicit argument to `dvd_neg`
+theorem dvd_sub_comm : a ∣ b - c ↔ a ∣ c - b := by rw [← dvd_neg a, neg_sub]
 #align dvd_sub_comm dvd_sub_comm
 
 end NonUnitalRing
