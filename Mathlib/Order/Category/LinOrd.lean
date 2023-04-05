@@ -8,7 +8,7 @@ Authors: Johan Commelin
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Order.Category.Lat
+import Mathlib.Order.Category.Lat
 
 /-!
 # Category of linear orders
@@ -60,8 +60,7 @@ instance hasForgetToLat : HasForget₂ LinOrd Lat
 
 /-- Constructs an equivalence between linear orders from an order isomorphism between them. -/
 @[simps]
-def Iso.mk {α β : LinOrd.{u}} (e : α ≃o β) : α ≅ β
-    where
+def Iso.mk {α β : LinOrd.{u}} (e : α ≃o β) : α ≅ β where
   Hom := e
   inv := e.symm
   hom_inv_id' := by
