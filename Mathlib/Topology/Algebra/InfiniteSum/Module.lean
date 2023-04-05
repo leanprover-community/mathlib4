@@ -8,8 +8,8 @@ Authors: Heather Macbeth, Yury Kudryashov, Frédéric Dupuis
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.Algebra.InfiniteSum.Basic
-import Mathbin.Topology.Algebra.Module.Basic
+import Mathlib.Topology.Algebra.InfiniteSum.Basic
+import Mathlib.Topology.Algebra.Module.Basic
 
 /-! # Infinite sums in topological vector spaces -/
 
@@ -86,8 +86,7 @@ protected theorem ContinuousLinearEquiv.summable {f : ι → M} (e : M ≃SL[σ]
 #align continuous_linear_equiv.summable ContinuousLinearEquiv.summable
 
 theorem ContinuousLinearEquiv.tsum_eq_iff [T2Space M] [T2Space M₂] {f : ι → M} (e : M ≃SL[σ] M₂)
-    {y : M₂} : (∑' z, e (f z)) = y ↔ (∑' z, f z) = e.symm y :=
-  by
+    {y : M₂} : (∑' z, e (f z)) = y ↔ (∑' z, f z) = e.symm y := by
   by_cases hf : Summable f
   ·
     exact
@@ -102,8 +101,7 @@ theorem ContinuousLinearEquiv.tsum_eq_iff [T2Space M] [T2Space M₂] {f : ι →
 #align continuous_linear_equiv.tsum_eq_iff ContinuousLinearEquiv.tsum_eq_iff
 
 protected theorem ContinuousLinearEquiv.map_tsum [T2Space M] [T2Space M₂] {f : ι → M}
-    (e : M ≃SL[σ] M₂) : e (∑' z, f z) = ∑' z, e (f z) :=
-  by
+    (e : M ≃SL[σ] M₂) : e (∑' z, f z) = ∑' z, e (f z) := by
   refine' symm (e.tsum_eq_iff.mpr _)
   rw [e.symm_apply_apply _]
 #align continuous_linear_equiv.map_tsum ContinuousLinearEquiv.map_tsum
