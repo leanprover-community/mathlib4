@@ -8,9 +8,9 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Algebra.Subalgebra.Basic
-import Mathbin.Topology.Algebra.Module.Basic
-import Mathbin.RingTheory.Adjoin.Basic
+import Mathlib.Algebra.Algebra.Subalgebra.Basic
+import Mathlib.Topology.Algebra.Module.Basic
+import Mathlib.RingTheory.Adjoin.Basic
 
 /-!
 # Topological (sub)algebras
@@ -43,8 +43,7 @@ variable [CommSemiring R] [Semiring A] [Algebra R A]
 variable [TopologicalSpace R] [TopologicalSpace A] [TopologicalSemiring A]
 
 theorem continuous_algebraMap_iff_smul :
-    Continuous (algebraMap R A) ↔ Continuous fun p : R × A => p.1 • p.2 :=
-  by
+    Continuous (algebraMap R A) ↔ Continuous fun p : R × A => p.1 • p.2 := by
   refine' ⟨fun h => _, fun h => _⟩
   · simp only [Algebra.smul_def]
     exact (h.comp continuous_fst).mul continuous_snd
@@ -140,8 +139,7 @@ along with a witness that as functions they are the same.
 -/
 theorem Subalgebra.topologicalClosure_comap_homeomorph (s : Subalgebra R A) {B : Type _}
     [TopologicalSpace B] [Ring B] [TopologicalRing B] [Algebra R B] (f : B →ₐ[R] A) (f' : B ≃ₜ A)
-    (w : (f : B → A) = f') : s.topologicalClosure.comap f = (s.comap f).topologicalClosure :=
-  by
+    (w : (f : B → A) = f') : s.topologicalClosure.comap f = (s.comap f).topologicalClosure := by
   apply SetLike.ext'
   simp only [Subalgebra.topologicalClosure_coe]
   simp only [Subalgebra.coe_comap, Subsemiring.coe_comap, AlgHom.coe_toRingHom]
@@ -186,8 +184,7 @@ variable {R}
 instance [T2Space A] {x : A} : CommRing (Algebra.elementalAlgebra R x) :=
   Subalgebra.commRingTopologicalClosure _
     letI : CommRing (Algebra.adjoin R ({x} : Set A)) :=
-      Algebra.adjoinCommRingOfComm R fun y hy z hz =>
-        by
+      Algebra.adjoinCommRingOfComm R fun y hy z hz => by
         rw [mem_singleton_iff] at hy hz
         rw [hy, hz]
     fun _ _ => mul_comm _ _
