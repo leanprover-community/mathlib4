@@ -8,10 +8,10 @@ Authors: Chris Hughes
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Nat.Cast.WithTop
-import Mathbin.RingTheory.Prime
-import Mathbin.RingTheory.Polynomial.Content
-import Mathbin.RingTheory.Ideal.QuotientOperations
+import Mathlib.Data.Nat.Cast.WithTop
+import Mathlib.RingTheory.Prime
+import Mathlib.RingTheory.Polynomial.Content
+import Mathlib.RingTheory.Ideal.QuotientOperations
 
 /-!
 # Eisenstein's criterion
@@ -69,8 +69,7 @@ theorem eval_zero_mem_ideal_of_eq_mul_x_pow {n : ℕ} {P : Ideal R} {q : R[X]}
 #align polynomial.eisenstein_criterion_aux.eval_zero_mem_ideal_of_eq_mul_X_pow Polynomial.EisensteinCriterionAux.eval_zero_mem_ideal_of_eq_mul_x_pow
 
 theorem isUnit_of_natDegree_eq_zero_of_forall_dvd_isUnit {p q : R[X]}
-    (hu : ∀ x : R, C x ∣ p * q → IsUnit x) (hpm : p.natDegree = 0) : IsUnit p :=
-  by
+    (hu : ∀ x : R, C x ∣ p * q → IsUnit x) (hpm : p.natDegree = 0) : IsUnit p := by
   rw [eq_C_of_degree_le_zero (nat_degree_eq_zero_iff_degree_le_zero.1 hpm), is_unit_C]
   refine' hu _ _
   rw [← eq_C_of_degree_le_zero (nat_degree_eq_zero_iff_degree_le_zero.1 hpm)]
@@ -94,8 +93,7 @@ theorem irreducible_of_eisenstein_criterion {f : R[X]} {P : Ideal R} (hP : P.IsP
   have hf : f.map (mk P) = C (mk P (leadingCoeff f)) * X ^ natDegree f :=
     map_eq_c_mul_x_pow_of_forall_coeff_mem hfP
   have hfd0 : 0 < f.natDegree := WithBot.coe_lt_coe.1 (lt_of_lt_of_le hfd0 degree_le_natDegree)
-  ⟨mt degree_eq_zero_of_isUnit fun h => by simp_all only [lt_irrefl],
-    by
+  ⟨mt degree_eq_zero_of_isUnit fun h => by simp_all only [lt_irrefl], by
     rintro p q rfl
     rw [Polynomial.map_mul] at hf
     rcases mul_eq_mul_prime_pow
@@ -113,14 +111,12 @@ theorem irreducible_of_eisenstein_criterion {f : R[X]} {P : Ideal R} (hP : P.IsP
       simp_all only [MulZeroClass.zero_mul, eq_self_iff_true, not_true, Ne.def]
     have hq0 : q ≠ 0 := fun h => by
       simp_all only [eq_self_iff_true, not_true, Ne.def, MulZeroClass.mul_zero]
-    have hbc0 : degree b = 0 ∧ degree c = 0 :=
-      by
+    have hbc0 : degree b = 0 ∧ degree c = 0 := by
       apply_fun degree  at hbc
       rwa [degree_C hpql0, degree_mul, eq_comm, Nat.WithBot.add_eq_zero_iff] at hbc
     have hmp : m ≤ nat_degree p := le_nat_degree_of_map_eq_mul_X_pow hP hp hbc0.1
     have hnq : n ≤ nat_degree q := le_nat_degree_of_map_eq_mul_X_pow hP hq hbc0.2
-    have hpmqn : p.nat_degree = m ∧ q.nat_degree = n :=
-      by
+    have hpmqn : p.nat_degree = m ∧ q.nat_degree = n := by
       rw [nat_degree_mul hp0 hq0] at hmnd
       clear * - hmnd hmp hnq
       contrapose hmnd
