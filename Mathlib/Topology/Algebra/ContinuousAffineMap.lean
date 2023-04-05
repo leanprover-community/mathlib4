@@ -239,8 +239,10 @@ theorem coe_sub (f g : P →A[R] W) : ⇑(f - g) = f - g := rfl
 theorem sub_apply (f g : P →A[R] W) (x : P) : (f - g) x = f x - g x := rfl
 #align continuous_affine_map.sub_apply ContinuousAffineMap.sub_apply
 
-instance : Neg (P →A[R] W) where
-  neg f := { -(f : P →ᵃ[R] W) with cont := f.continuous.neg }
+instance : Neg (P →A[R] W) :=
+  --Porting note: Why does this instance need to be given explicitly
+  let _ : ContinuousNeg W := TopologicalAddGroup.toContinuousNeg
+  { neg := fun f => { -(f : P →ᵃ[R] W) with cont := f.continuous.neg } }
 
 @[norm_cast, simp]
 theorem coe_neg (f : P →A[R] W) : ⇑(-f) = -f := rfl
@@ -283,10 +285,12 @@ def toContinuousAffineMap (f : V →L[R] W) : V →A[R] W where
   cont := f.cont
 #align continuous_linear_map.to_continuous_affine_map ContinuousLinearMap.toContinuousAffineMap
 
+set_option synthInstance.etaExperiment true in
 @[simp]
-theorem coe_toContinuousAffineMap (f : V →L[R] W) : ⇑f.toContinuousAffineMap = f := rfl
+theorem coe_toContinuousAffineMap (f : V →L[R] W) : (f.toContinuousAffineMap : V → W) = f := rfl
 #align continuous_linear_map.coe_to_continuous_affine_map ContinuousLinearMap.coe_toContinuousAffineMap
 
+set_option synthInstance.etaExperiment true in
 @[simp]
 theorem toContinuousAffineMap_map_zero (f : V →L[R] W) : f.toContinuousAffineMap 0 = 0 := by simp
 #align continuous_linear_map.to_continuous_affine_map_map_zero ContinuousLinearMap.toContinuousAffineMap_map_zero
