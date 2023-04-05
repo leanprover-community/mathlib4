@@ -219,11 +219,15 @@ given by `s j` on each component.
 For the standard basis over `R` on the finite-dimensional space `η → R` see `pi.basis_fun`.
 -/
 protected noncomputable def basis (s : ∀ j, Basis (ιs j) R (Ms j)) :
-    Basis (Σj, ιs j) R (∀ j, Ms j) := by
-  -- The `add_comm_monoid (Π j, Ms j)` instance was hard to find.
-  -- Defining this in tactic mode seems to shake up instance search enough that it works by itself.
-  refine' Basis.ofRepr (_ ≪≫ₗ (Finsupp.sigmaFinsuppLEquivPiFinsupp R).symm)
-  exact LinearEquiv.piCongrRight fun j => (s j).repr
+    Basis (Σj, ιs j) R (∀ j, Ms j) :=
+  Basis.ofRepr
+    ((LinearEquiv.piCongrRight fun j => (s j).repr) ≪≫ₗ
+      (Finsupp.sigmaFinsuppLEquivPiFinsupp R).symm)
+  --  Porting note: was
+  -- -- The `add_comm_monoid (Π j, Ms j)` instance was hard to find.
+  -- -- Defining this in tactic mode seems to shake up instance search enough that it works by itself.
+  -- refine Basis.ofRepr (?_ ≪≫ₗ (Finsupp.sigmaFinsuppLEquivPiFinsupp R).symm)
+  -- exact LinearEquiv.piCongrRight fun j => (s j).repr
 #align pi.basis Pi.basis
 
 @[simp]
