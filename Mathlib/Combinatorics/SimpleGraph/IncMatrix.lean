@@ -8,8 +8,8 @@ Authors: Gabriel Moise, Yaël Dillies, Kyle Miller
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Combinatorics.SimpleGraph.Basic
-import Mathbin.Data.Matrix.Basic
+import Mathlib.Combinatorics.SimpleGraph.Basic
+import Mathlib.Data.Matrix.Basic
 
 /-!
 # Incidence matrix of a simple graph
@@ -84,8 +84,7 @@ theorem incMatrix_apply_mul_incMatrix_apply :
 #align simple_graph.inc_matrix_apply_mul_inc_matrix_apply SimpleGraph.incMatrix_apply_mul_incMatrix_apply
 
 theorem incMatrix_apply_mul_incMatrix_apply_of_not_adj (hab : a ≠ b) (h : ¬G.Adj a b) :
-    G.incMatrix R a e * G.incMatrix R b e = 0 :=
-  by
+    G.incMatrix R a e * G.incMatrix R b e = 0 := by
   rw [inc_matrix_apply_mul_inc_matrix_apply, Set.indicator_of_not_mem]
   rw [G.incidence_set_inter_incidence_set_of_not_adj h hab]
   exact Set.not_mem_empty e
@@ -101,14 +100,12 @@ theorem incMatrix_of_mem_incidenceSet (h : e ∈ G.incidenceSet a) : G.incMatrix
 
 variable [Nontrivial R]
 
-theorem incMatrix_apply_eq_zero_iff : G.incMatrix R a e = 0 ↔ e ∉ G.incidenceSet a :=
-  by
+theorem incMatrix_apply_eq_zero_iff : G.incMatrix R a e = 0 ↔ e ∉ G.incidenceSet a := by
   simp only [inc_matrix_apply, Set.indicator_apply_eq_zero, Pi.one_apply, one_ne_zero]
   exact Iff.rfl
 #align simple_graph.inc_matrix_apply_eq_zero_iff SimpleGraph.incMatrix_apply_eq_zero_iff
 
-theorem incMatrix_apply_eq_one_iff : G.incMatrix R a e = 1 ↔ e ∈ G.incidenceSet a :=
-  by
+theorem incMatrix_apply_eq_one_iff : G.incMatrix R a e = 1 ↔ e ∈ G.incidenceSet a := by
   convert one_ne_zero.ite_eq_left_iff
   infer_instance
 #align simple_graph.inc_matrix_apply_eq_one_iff SimpleGraph.incMatrix_apply_eq_one_iff
@@ -125,8 +122,7 @@ theorem sum_incMatrix_apply [DecidableEq α] [DecidableRel G.Adj] :
 #align simple_graph.sum_inc_matrix_apply SimpleGraph.sum_incMatrix_apply
 
 theorem incMatrix_mul_transpose_diag [DecidableEq α] [DecidableRel G.Adj] :
-    (G.incMatrix R ⬝ (G.incMatrix R)ᵀ) a a = G.degree a :=
-  by
+    (G.incMatrix R ⬝ (G.incMatrix R)ᵀ) a a = G.degree a := by
   rw [← sum_inc_matrix_apply]
   simp [Matrix.mul_apply, inc_matrix_apply', ← ite_and_mul_zero]
 #align simple_graph.inc_matrix_mul_transpose_diag SimpleGraph.incMatrix_mul_transpose_diag
@@ -188,8 +184,7 @@ theorem incMatrix_mul_transpose_apply_of_adj (h : G.Adj a b) :
 
 theorem incMatrix_mul_transpose [Fintype α] [DecidableEq α] [DecidableRel G.Adj] :
     G.incMatrix R ⬝ (G.incMatrix R)ᵀ = fun a b =>
-      if a = b then G.degree a else if G.Adj a b then 1 else 0 :=
-  by
+      if a = b then G.degree a else if G.Adj a b then 1 else 0 := by
   ext (a b)
   split_ifs with h h'
   · subst b
