@@ -1661,6 +1661,7 @@ import Mathlib.Topology.Instances.NNReal
 import Mathlib.Topology.Instances.Nat
 import Mathlib.Topology.Instances.Rat
 import Mathlib.Topology.Instances.Real
+import Mathlib.Topology.Instances.RealVectorSpace
 import Mathlib.Topology.Instances.Sign
 import Mathlib.Topology.IsLocallyHomeomorph
 import Mathlib.Topology.List

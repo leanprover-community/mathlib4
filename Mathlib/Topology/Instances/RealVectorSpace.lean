@@ -8,8 +8,8 @@ Authors: Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.Algebra.Module.Basic
-import Mathbin.Topology.Instances.Rat
+import Mathlib.Topology.Algebra.Module.Basic
+import Mathlib.Topology.Instances.Rat
 
 /-!
 # Continuous additive maps are `ℝ`-linear
