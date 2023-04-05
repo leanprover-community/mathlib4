@@ -8,9 +8,9 @@ Authors: Yury Kudryashov, Frédéric Dupuis, Heather Macbeth
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Normed.Group.Basic
-import Mathbin.Topology.Algebra.Module.Basic
-import Mathbin.LinearAlgebra.Basis
+import Mathlib.Analysis.Normed.Group.Basic
+import Mathlib.Topology.Algebra.Module.Basic
+import Mathlib.LinearAlgebra.Basis
 
 /-!
 # (Semi-)linear isometries
@@ -148,8 +148,7 @@ theorem toLinearMap_inj {f g : E →ₛₗᵢ[σ₁₂] E₂} : f.toLinearMap = 
   toLinearMap_injective.eq_iff
 #align linear_isometry.to_linear_map_inj LinearIsometry.toLinearMap_inj
 
-instance : SemilinearIsometryClass (E →ₛₗᵢ[σ₁₂] E₂) σ₁₂ E E₂
-    where
+instance : SemilinearIsometryClass (E →ₛₗᵢ[σ₁₂] E₂) σ₁₂ E E₂ where
   coe f := f.toFun
   coe_injective' f g h := toLinearMap_injective (FunLike.coe_injective h)
   map_add f := map_add f.toLinearMap
@@ -562,8 +561,7 @@ theorem toLinearEquiv_inj {f g : E ≃ₛₗᵢ[σ₁₂] E₂} : f.toLinearEqui
   toLinearEquiv_injective.eq_iff
 #align linear_isometry_equiv.to_linear_equiv_inj LinearIsometryEquiv.toLinearEquiv_inj
 
-instance : SemilinearIsometryEquivClass (E ≃ₛₗᵢ[σ₁₂] E₂) σ₁₂ E E₂
-    where
+instance : SemilinearIsometryEquivClass (E ≃ₛₗᵢ[σ₁₂] E₂) σ₁₂ E E₂ where
   coe e := e.toFun
   inv e := e.invFun
   coe_injective' f g h₁ h₂ := by
@@ -668,8 +666,7 @@ theorem coe_toIsometryEquiv : ⇑e.toIsometryEquiv = e :=
   rfl
 #align linear_isometry_equiv.coe_to_isometry_equiv LinearIsometryEquiv.coe_toIsometryEquiv
 
-theorem range_eq_univ (e : E ≃ₛₗᵢ[σ₁₂] E₂) : Set.range e = Set.univ :=
-  by
+theorem range_eq_univ (e : E ≃ₛₗᵢ[σ₁₂] E₂) : Set.range e = Set.univ := by
   rw [← coe_to_isometry_equiv]
   exact IsometryEquiv.range_eq_univ _
 #align linear_isometry_equiv.range_eq_univ LinearIsometryEquiv.range_eq_univ
@@ -1125,8 +1122,7 @@ noncomputable def ofSurjective (f : F →ₛₗᵢ[σ₁₂] E₂) (hfr : Functi
 
 @[simp]
 theorem coe_ofSurjective (f : F →ₛₗᵢ[σ₁₂] E₂) (hfr : Function.Surjective f) :
-    ⇑(LinearIsometryEquiv.ofSurjective f hfr) = f :=
-  by
+    ⇑(LinearIsometryEquiv.ofSurjective f hfr) = f := by
   ext
   rfl
 #align linear_isometry_equiv.coe_of_surjective LinearIsometryEquiv.coe_ofSurjective
