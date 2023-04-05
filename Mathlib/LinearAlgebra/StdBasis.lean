@@ -274,12 +274,12 @@ section
 variable (R η)
 
 /-- The basis on `η → R` where the `i`th basis vector is `Function.update 0 i 1`. -/
-noncomputable def basisFun : Basis η R (∀ j : η, R) :=
+noncomputable def basisFun : Basis η R (∀ _ : η, R) :=
   Basis.ofEquivFun (LinearEquiv.refl _ _)
 #align pi.basis_fun Pi.basisFun
 
 @[simp]
-theorem basisFun_apply [DecidableEq η] (i) : basisFun R η i = stdBasis R (fun i : η => R) i 1 := by
+theorem basisFun_apply [DecidableEq η] (i) : basisFun R η i = stdBasis R (fun _ : η => R) i 1 := by
   simp only [basisFun, Basis.coe_ofEquivFun, LinearEquiv.refl_symm, LinearEquiv.refl_apply,
     stdBasis_apply]
 #align pi.basis_fun_apply Pi.basisFun_apply
