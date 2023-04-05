@@ -496,7 +496,7 @@ theorem inv_mul' : (a * b)⁻¹ = a⁻¹ / b := by simp
 #align inv_mul' inv_mul'
 #align neg_add' neg_add'
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem inv_div_inv : a⁻¹ / b⁻¹ = b / a := by simp
 #align inv_div_inv inv_div_inv
 #align neg_sub_neg neg_sub_neg
