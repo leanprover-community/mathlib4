@@ -442,8 +442,6 @@ instance Sheaf.Hom.addCommGroup : AddCommGroup (P ⟶ Q) :=
 
 instance : Preadditive (Sheaf J A) where
   homGroup P Q := Sheaf.Hom.addCommGroup
-  -- porting note: the following two proofs were `ext; simp` in mathlib
-  -- these still work, but take a very long time to run. Why?
   add_comp P Q R f f' g := by
     ext
     dsimp
