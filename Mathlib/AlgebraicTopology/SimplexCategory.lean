@@ -259,62 +259,28 @@ theorem δ_comp_δ_self' {n} {i : Fin (n + 2)} {j : Fin (n + 3)} (H : j = Fin.ca
 @[reassoc]
 theorem δ_comp_σ_of_le {n} {i : Fin (n + 2)} {j : Fin (n + 1)} (H : i ≤ Fin.castSucc j) :
     δ (Fin.castSucc i) ≫ σ j.succ = σ j ≫ δ i := by
-  ext k
-  suffices
-    ite (Fin.castSucc j.succ < ite (k < i) (Fin.castSucc k) k.succ) (ite (k < i) (k : ℕ) (k + 1) - 1)
-        (ite (k < i) k (k + 1)) =
-      ite
-        (Fin.castSucc (if h : (j : ℕ) < k then
-              k.pred
-                (by
-                  rintro rfl
-                  exact Nat.not_lt_zero _ h)
-            else
-              k.castLt
-                (by
-                  cases j
-                  cases k
-                  simp only [len_mk]
-                  sorry --linearith
-                  )) < i)
-        (ite (Fin.castSucc j < k) (k - 1) k) (ite (Fin.castSucc j < k) (k - 1) k + 1) by
-    dsimp [δ, σ, Fin.succAbove, Fin.predAbove]
-    simp [Fin.predAbove, push_cast]
-    convert rfl
-    sorry
-  rcases i with ⟨i, _⟩
-  rcases j with ⟨j, _⟩
-  rcases k with ⟨k, _⟩
-  simp only [Fin.mk_le_mk, Fin.castSucc_mk] at H
-  dsimp
+  rcases i with ⟨i, hi⟩
+  rcases j with ⟨j, hj⟩
+  ext ⟨k, hk⟩
+  simp at H hk
+  dsimp [σ, δ, Fin.predAbove, Fin.succAbove]
+  simp [Fin.lt_iff_val_lt_val, Fin.ite_val, Fin.dite_val]
   split_ifs
-  -- Most of the goals can now be handled by `linarith`,
-  -- but we have to deal with two of them by hand.
-  pick_goal 8
-  · sorry --exact (Nat.succ_pred_eq_of_pos (lt_of_le_of_lt (zero_le _) ‹_›)).symm
-  pick_goal 7
-  · sorry
-    --have : k ≤ i := Nat.le_of_pred_lt ‹_›
-    --linarith
-  -- Hope for the best from `linarith`:
-  all_goals try first |rfl|simp at * <;> linarith
+  all_goals try simp <;> linarith
+  all_goals cases k <;> simp at * <;> linarith
 #align simplex_category.δ_comp_σ_of_le SimplexCategory.δ_comp_σ_of_le
 
 /-- The first part of the third simplicial identity -/
 @[reassoc]
-theorem δ_comp_σ_self {n} {i : Fin (n + 1)} : δ (Fin.castSucc i) ≫ σ i = 𝟙 ([n] : SimplexCategory) := by
-  ext j
-  suffices
-    ite (Fin.castSucc i < ite (j < i) (Fin.castSucc j) j.succ) (ite (j < i) (j : ℕ) (j + 1) - 1)
-        (ite (j < i) j (j + 1)) =
-      j by
-    dsimp [δ, σ, Fin.succAbove, Fin.predAbove]
-    simp [Fin.predAbove, push_cast]
-    sorry
-  rcases i with ⟨i, _⟩
-  rcases j with ⟨j, _⟩
-  dsimp
-  split_ifs <;> · simp at * <;> linarith
+theorem δ_comp_σ_self {n} {i : Fin (n + 1)} :
+    δ (Fin.castSucc i) ≫ σ i = 𝟙 ([n] : SimplexCategory) := by
+  rcases i with ⟨i, hi⟩
+  ext ⟨j, hj⟩
+  simp at hj
+  dsimp [σ, δ, Fin.predAbove, Fin.succAbove]
+  simp [Fin.lt_iff_val_lt_val, Fin.ite_val, Fin.dite_val]
+  split_ifs
+  all_goals try simp <;> linarith
 #align simplex_category.δ_comp_σ_self SimplexCategory.δ_comp_σ_self
 
 @[reassoc]
@@ -331,106 +297,57 @@ theorem δ_comp_σ_succ {n} {i : Fin (n + 1)} : δ i.succ ≫ σ i = 𝟙 ([n] :
   rcases i with ⟨i, _⟩
   rcases j with ⟨j, _⟩
   dsimp [δ, σ, Fin.succAbove, Fin.predAbove]
-  simp [Fin.predAbove, push_cast]
+  simp only [Fin.mk_lt_mk]
   split_ifs <;> simp <;> simp at * <;> linarith
 #align simplex_category.δ_comp_σ_succ SimplexCategory.δ_comp_σ_succ
 
-@[reassoc.1]
+@[reassoc]
 theorem δ_comp_σ_succ' {n} (j : Fin (n + 2)) (i : Fin (n + 1)) (H : j = i.succ) :
-    δ j ≫ σ i = 𝟙 [n] := by
+    δ j ≫ σ i = 𝟙 ([n] : SimplexCategory) := by
   subst H
   rw [δ_comp_σ_succ]
 #align simplex_category.δ_comp_σ_succ' SimplexCategory.δ_comp_σ_succ'
 
 /-- The fourth simplicial identity -/
-@[reassoc.1]
-theorem δ_comp_σ_of_gt {n} {i : Fin (n + 2)} {j : Fin (n + 1)} (H : j.cast_succ < i) :
-    δ i.succ ≫ σ j.cast_succ = σ j ≫ δ i := by
-  ext k
-  dsimp [δ, σ, Fin.succAbove, Fin.predAbove]
-  rcases i with ⟨i, _⟩
-  rcases j with ⟨j, _⟩
-  rcases k with ⟨k, _⟩
-  simp only [Fin.mk_lt_mk, Fin.castSucc_mk] at H
-  suffices
-    ite (_ < ite (k < i + 1) _ _) _ _ = ite _ (ite (j < k) (k - 1) k) (ite (j < k) (k - 1) k + 1) by
-    simpa [apply_dite Fin.castSucc, Fin.predAbove, push_cast]
+@[reassoc]
+theorem δ_comp_σ_of_gt {n} {i : Fin (n + 2)} {j : Fin (n + 1)} (H : Fin.castSucc j < i) :
+    δ i.succ ≫ σ (Fin.castSucc j) = σ j ≫ δ i := by
+  ext ⟨k, hk⟩
+  rcases i with ⟨i, hi⟩
+  rcases j with ⟨j, hj⟩
+  simp at H hk
+  dsimp [δ, σ, Fin.predAbove, Fin.succAbove]
+  simp [Fin.lt_iff_val_lt_val, Fin.ite_val, Fin.dite_val]
   split_ifs
-  -- Most of the goals can now be handled by `linarith`,
-  -- but we have to deal with three of them by hand.
-  swap
-  · simp only [Fin.mk_lt_mk] at h_1
-    simp only [not_lt] at h_2
-    simp only [self_eq_add_right, one_ne_zero]
-    exact
-      lt_irrefl (k - 1)
-        (lt_of_lt_of_le (Nat.pred_lt (ne_of_lt (lt_of_le_of_lt (zero_le _) h_1)).symm)
-          (le_trans (Nat.le_of_lt_succ h) h_2))
-  pick_goal 4
-  · simp only [Fin.mk_lt_mk] at h_1
-    simp only [not_lt] at h
-    simp only [Nat.add_succ_sub_one, add_zero]
-    exfalso
-    exact lt_irrefl _ (lt_of_le_of_lt (Nat.le_pred_of_lt (Nat.lt_of_succ_le h)) h_3)
-  pick_goal 4
-  · simp only [Fin.mk_lt_mk] at h_1
-    simp only [not_lt] at h_3
-    simp only [Nat.add_succ_sub_one, add_zero]
-    exact (Nat.succ_pred_eq_of_pos (lt_of_le_of_lt (zero_le _) h_2)).symm
-  -- Hope for the best from `linarith`:
-  all_goals simp at h_1 h_2⊢ <;> linarith
+  all_goals try simp <;> linarith
+  all_goals cases k <;> simp at * <;> linarith
 #align simplex_category.δ_comp_σ_of_gt SimplexCategory.δ_comp_σ_of_gt
 
-@[reassoc.1]
+@[reassoc]
 theorem δ_comp_σ_of_gt' {n} {i : Fin (n + 3)} {j : Fin (n + 2)} (H : j.succ < i) :
-    δ i ≫ σ j =
-      σ
-          (j.cast_lt
-            ((add_lt_add_iff_right 1).mp
-              (lt_of_lt_of_le
-                (by simpa only [[anonymous], ← Fin.val_succ] using fin.lt_iff_coe_lt_coe.mp H)
-                i.is_le))) ≫
-        δ (i.pred fun hi => by simpa only [Fin.not_lt_zero, hi] using H) := by
+    δ i ≫ σ j = σ (j.castLt ((add_lt_add_iff_right 1).mp (lt_of_lt_of_le H i.is_le))) ≫
+      δ (i.pred fun hi => by simp only [Fin.not_lt_zero, hi] at H) := by
   rw [← δ_comp_σ_of_gt]
-  · simpa only [Fin.succ_pred]
+  · simp
   · rw [Fin.castSucc_cast_lt, ← Fin.succ_lt_succ_iff, Fin.succ_pred]
     exact H
 #align simplex_category.δ_comp_σ_of_gt' SimplexCategory.δ_comp_σ_of_gt'
 
-attribute [local simp] Fin.pred_mk
+--attribute [local simp] Fin.pred_mk
 
 /-- The fifth simplicial identity -/
-@[reassoc.1]
-theorem σ_comp_σ {n} {i j : Fin (n + 1)} (H : i ≤ j) : σ i.cast_succ ≫ σ j = σ j.succ ≫ σ i := by
-  ext k
+@[reassoc]
+theorem σ_comp_σ {n} {i j : Fin (n + 1)} (H : i ≤ j) :
+    σ (Fin.castSucc i) ≫ σ j = σ j.succ ≫ σ i := by
+  ext ⟨k, hk⟩
+  rcases i with ⟨i, hi⟩
+  rcases j with ⟨j, hj⟩
+  simp at H hk
   dsimp [σ, Fin.predAbove]
-  rcases i with ⟨i, _⟩
-  rcases j with ⟨j, _⟩
-  rcases k with ⟨k, _⟩
-  simp only [Fin.mk_le_mk] at H
-  -- At this point `simp with push_cast` makes good progress, but neither `simp?` nor `squeeze_simp`
-  -- return usable sets of lemmas.
-  -- To avoid using a non-terminal simp, we make a `suffices` statement indicating the shape
-  -- of the goal we're looking for, and then use `simpa with push_cast`.
-  -- I'm not sure this is actually much more robust that a non-terminal simp.
-  suffices ite (_ < dite (i < k) _ _) _ _ = ite (_ < dite (j + 1 < k) _ _) _ _ by
-    simpa [Fin.predAbove, push_cast]
+  simp [Fin.lt_iff_val_lt_val, Fin.ite_val]
   split_ifs
-  -- `split_ifs` created 12 goals.
-  -- Most of them are dealt with `by simp at *; linarith`,
-  -- but we pull out two harder ones to do by hand.
-  pick_goal 3
-  · simp only [not_lt] at h_2
-    exact
-      False.elim
-        (lt_irrefl (k - 1)
-          (lt_of_lt_of_le (Nat.pred_lt (id (ne_of_lt (lt_of_le_of_lt (zero_le i) h)).symm))
-            (le_trans h_2 (Nat.succ_le_of_lt h_1))))
-  pick_goal 3
-  · simp only [Subtype.mk_lt_mk, not_lt] at h_1
-    exact False.elim (lt_irrefl j (lt_of_lt_of_le (Nat.pred_lt_pred (Nat.succ_ne_zero j) h_2) h_1))
-  -- Deal with the rest automatically.
-  all_goals simp at * <;> linarith
+  all_goals try linarith
+  all_goals cases k <;> simp at * ; linarith
 #align simplex_category.σ_comp_σ SimplexCategory.σ_comp_σ
 
 end Generators
@@ -442,13 +359,7 @@ of `NonemptyFinLinOrd` -/
 @[simps obj map]
 def skeletalFunctor : SimplexCategory ⥤ NonemptyFinLinOrdCat.{v} where
   obj a := NonemptyFinLinOrdCat.of <| ULift (Fin (a.len + 1))
-  map a b f := ⟨fun i => ULift.up (f.toOrderHom i.down), fun i j h => f.toOrderHom.Monotone h⟩
-  map_id' a := by
-    ext
-    simp
-  map_comp' a b c f g := by
-    ext
-    simp
+  map f := ⟨fun i => ULift.up (f.toOrderHom i.down), fun i j h => f.toOrderHom.monotone h⟩
 #align simplex_category.skeletal_functor SimplexCategory.skeletalFunctor
 
 theorem skeletalFunctor.coe_map {Δ₁ Δ₂ : SimplexCategory} (f : Δ₁ ⟶ Δ₂) :
