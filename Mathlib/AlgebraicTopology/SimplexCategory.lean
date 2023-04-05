@@ -13,6 +13,7 @@ import Mathlib.CategoryTheory.Skeletal
 import Mathlib.Data.Fintype.Sort
 import Mathlib.Order.Category.NonemptyFinLinOrdCat
 import Mathlib.CategoryTheory.Functor.ReflectsIso
+import Mathlib.Tactic.ScopedNS
 
 /-! # The simplex category
 
@@ -59,10 +60,8 @@ def mk (n : ℕ) : SimplexCategory :=
   n
 #align simplex_category.mk SimplexCategory.mk
 
--- what is wrong with this???
---scoped[Simplicial] notation "[" n "]" => SimplexCategory.mk n
 /-- the `n`-dimensional simplex can be denoted `[n]` -/
-notation "[" n "]" => SimplexCategory.mk n
+scoped[Simplicial] notation "[" n "]" => SimplexCategory.mk n
 
 -- TODO: Make `len` irreducible.
 /-- The length of an object of `SimplexCategory`. -/
@@ -76,6 +75,8 @@ theorem ext (a b : SimplexCategory) : a.len = b.len → a = b :=
 #align simplex_category.ext SimplexCategory.ext
 
 attribute [irreducible] SimplexCategory
+
+open Simplicial
 
 @[simp]
 theorem len_mk (n : ℕ) : [n].len = n :=
@@ -189,7 +190,7 @@ theorem hom_zero_zero (f : ([0] : SimplexCategory) ⟶ [0]) : f = 𝟙 _ := by
 
 end
 
---open_locale Simplicial
+open Simplicial
 
 section Generators
 
