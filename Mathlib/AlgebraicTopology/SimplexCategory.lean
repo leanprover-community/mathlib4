@@ -332,8 +332,6 @@ theorem δ_comp_σ_of_gt' {n} {i : Fin (n + 3)} {j : Fin (n + 2)} (H : j.succ < 
     exact H
 #align simplex_category.δ_comp_σ_of_gt' SimplexCategory.δ_comp_σ_of_gt'
 
---attribute [local simp] Fin.pred_mk
-
 /-- The fifth simplicial identity -/
 @[reassoc]
 theorem σ_comp_σ {n} {i j : Fin (n + 1)} (H : i ≤ j) :
@@ -353,8 +351,8 @@ end Generators
 
 section Skeleton
 
-/-- The functor that exhibits `simplex_category` as skeleton
-of `NonemptyFinLinOrd` -/
+/-- The functor that exhibits `SimplexCategory` as skeleton
+of `NonemptyFinLinOrdCat` -/
 @[simps obj map]
 def skeletalFunctor : SimplexCategory ⥤ NonemptyFinLinOrdCat.{v} where
   obj a := NonemptyFinLinOrdCat.of <| ULift (Fin (a.len + 1))
@@ -580,54 +578,52 @@ def orderIsoOfIso {x y : SimplexCategory} (e : x ≅ y) : Fin (x.len + 1) ≃o F
 
 theorem iso_eq_iso_refl {x : SimplexCategory} (e : x ≅ x) : e = Iso.refl x := by
   have h : (Finset.univ : Finset (Fin (x.len + 1))).card = x.len + 1 := Finset.card_fin (x.len + 1)
-  have eq₁ := Finset.orderEmbOfFin_unique' h fun i => Finset.mem_univ ((order_iso_of_iso e) i)
+  have eq₁ := Finset.orderEmbOfFin_unique' h fun i => Finset.mem_univ ((orderIsoOfIso e) i)
   have eq₂ :=
-    Finset.orderEmbOfFin_unique' h fun i => Finset.mem_univ ((order_iso_of_iso (iso.refl x)) i)
+    Finset.orderEmbOfFin_unique' h fun i => Finset.mem_univ ((orderIsoOfIso (Iso.refl x)) i)
   ext1; ext1
-  convert congr_arg (fun φ => OrderEmbedding.toOrderHom φ) (eq₁.trans eq₂.symm)
-  ext1; ext1 i
-  rfl
+  exact congr_arg (fun φ => OrderEmbedding.toOrderHom φ) (eq₁.trans eq₂.symm)
 #align simplex_category.iso_eq_iso_refl SimplexCategory.iso_eq_iso_refl
 
-theorem eq_id_of_isIso {x : SimplexCategory} (f : x ⟶ x) [hf : IsIso f] : f = 𝟙 _ :=
-  congr_arg (fun φ : _ ≅ _ => φ.Hom) (iso_eq_iso_refl (asIso f))
+theorem eq_id_of_isIso {x : SimplexCategory} (f : x ⟶ x) [IsIso f] : f = 𝟙 _ :=
+  congr_arg (fun φ : _ ≅ _ => φ.hom) (iso_eq_iso_refl (asIso f))
 #align simplex_category.eq_id_of_is_iso SimplexCategory.eq_id_of_isIso
 
 theorem eq_σ_comp_of_not_injective' {n : ℕ} {Δ' : SimplexCategory} (θ : mk (n + 1) ⟶ Δ')
-    (i : Fin (n + 1)) (hi : θ.toOrderHom i.cast_succ = θ.toOrderHom i.succ) :
+    (i : Fin (n + 1)) (hi : θ.toOrderHom (Fin.castSucc i) = θ.toOrderHom i.succ) :
     ∃ θ' : mk n ⟶ Δ', θ = σ i ≫ θ' := by
   use δ i.succ ≫ θ
   ext1; ext1; ext1 x
-  simp only [hom.to_order_hom_mk, Function.comp_apply, OrderHom.comp_coe, hom.comp,
-    small_category_comp, σ, mk_hom, OrderHom.coe_fun_mk]
-  by_cases h' : x ≤ i.cast_succ
+  simp only [Hom.toOrderHom_mk, Function.comp_apply, OrderHom.comp_coe, Hom.comp,
+    smallCategory_comp, σ, mkHom, OrderHom.coe_fun_mk]
+  by_cases h' : x ≤ Fin.castSucc i
   · rw [Fin.predAbove_below i x h']
     have eq := Fin.castSucc_castPred (gt_of_gt_of_ge (Fin.castSucc_lt_last i) h')
-    erw [Fin.succAbove_below i.succ x.cast_pred _]
+    dsimp [δ]
+    erw [Fin.succAbove_below i.succ x.castPred _]
     swap
-    · rwa [Eq, ← Fin.le_castSucc_iff]
-    rw [Eq]
+    · rwa [eq, ← Fin.le_castSucc_iff]
+    rw [eq]
   · simp only [not_le] at h'
-    let y :=
-      x.pred
-        (by
-          intro h
-          rw [h] at h'
-          simpa only [Fin.lt_iff_val_lt_val, Nat.not_lt_zero, Fin.val_zero] using h')
-    simp only [show x = y.succ by rw [Fin.succ_pred]] at h'⊢
+    let y := x.pred (by rintro rfl ; simp at h')
+    have hy : x = y.succ := (Fin.succ_pred x _).symm
+    rw [hy] at h' ⊢
     rw [Fin.predAbove_above i y.succ h', Fin.pred_succ]
     by_cases h'' : y = i
     · rw [h'']
-      convert hi.symm
-      erw [Fin.succAbove_below i.succ _]
+      refine' hi.symm.trans _
+      congr 1
+      dsimp [δ]
+      erw [Fin.succAbove_below i.succ]
       exact Fin.lt_succ
-    · erw [Fin.succAbove_above i.succ _]
+    · dsimp [δ]
+      erw [Fin.succAbove_above i.succ _]
       simp only [Fin.lt_iff_val_lt_val, Fin.le_iff_val_le_val, Fin.val_succ, Fin.coe_castSucc,
         Nat.lt_succ_iff, Fin.ext_iff] at h' h''⊢
       cases' Nat.le.dest h' with c hc
       cases c
       · exfalso
-        rw [add_zero] at hc
+        simp only [Nat.zero_eq, add_zero, len_mk, Fin.coe_pred, ge_iff_le] at hc
         rw [hc] at h''
         exact h'' rfl
       · rw [← hc]
