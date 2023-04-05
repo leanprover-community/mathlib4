@@ -107,8 +107,12 @@ theorem incMatrix_apply_eq_zero_iff : G.incMatrix R a e = 0 ↔ e ∉ G.incidenc
 #align simple_graph.inc_matrix_apply_eq_zero_iff SimpleGraph.incMatrix_apply_eq_zero_iff
 
 theorem incMatrix_apply_eq_one_iff : G.incMatrix R a e = 1 ↔ e ∈ G.incidenceSet a := by
-  convert one_ne_zero.ite_eq_left_iff
-  infer_instance
+  -- Porting note: was `convert one_ne_zero.ite_eq_left_iff; infer_instance`
+  unfold incMatrix Set.indicator
+  simp only [Pi.one_apply]
+  apply Iff.intro <;> intro h
+  · split at h <;> simp_all only [zero_ne_one]
+  · simp_all only [ite_true]
 #align simple_graph.inc_matrix_apply_eq_one_iff SimpleGraph.incMatrix_apply_eq_one_iff
 
 end MulZeroOneClass
@@ -178,7 +182,7 @@ theorem incMatrix_mul_transpose_apply_of_adj (h : G.Adj a b) :
   classical
     simp_rw [Matrix.mul_apply, Matrix.transpose_apply, incMatrix_apply_mul_incMatrix_apply,
       Set.indicator_apply, Pi.one_apply, sum_boole]
-    convert Nat.cast_one
+    convert @Nat.cast_one R _
     convert card_singleton ⟦(a, b)⟧
     rw [← coe_eq_singleton, coe_filter_univ]
     exact G.incidenceSet_inter_incidenceSet_of_adj h
