@@ -118,11 +118,11 @@ theorem infᵢ_ker_proj_le_supᵢ_range_stdBasis {I : Finset ι} {J : Set ι} (h
         show (∑ i in I, stdBasis R φ i (b i)) = b by
           ext i
           rw [Finset.sum_apply, ← stdBasis_same R φ i (b i)]
-          refine' Finset.sum_eq_single i (fun j hjI ne => stdBasis_ne _ _ _ _ ne.symm _) _
+          refine' Finset.sum_eq_single i (fun j _ ne => stdBasis_ne _ _ _ _ ne.symm _) _
           intro hiI
           rw [stdBasis_same]
           exact hb _ ((hu trivial).resolve_left hiI)]
-      exact sum_mem_bsupᵢ fun i hi => mem_range_self (stdBasis R φ i) (b i))
+      exact sum_mem_bsupᵢ fun i _ => mem_range_self (stdBasis R φ i) (b i))
 #align linear_map.infi_ker_proj_le_supr_range_std_basis LinearMap.infᵢ_ker_proj_le_supᵢ_range_stdBasis
 
 theorem supᵢ_range_stdBasis_eq_infᵢ_ker_proj {I J : Set ι} (hd : Disjoint I J)
