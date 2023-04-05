@@ -285,7 +285,7 @@ structure Hom (X Y : Sheaf J A) where
 set_option linter.uppercaseLean3 false in
 #align category_theory.Sheaf.hom CategoryTheory.Sheaf.Hom
 
-@[simps]
+@[simps id_val comp_val]
 instance : Category (Sheaf J A) where
   Hom := Hom
   id _ := ⟨𝟙 _⟩
@@ -435,25 +435,22 @@ theorem Sheaf.Hom.add_app (f g : P ⟶ Q) (U) : (f + g).1.app U = f.1.app U + g.
 set_option linter.uppercaseLean3 false in
 #align category_theory.Sheaf.hom.add_app CategoryTheory.Sheaf.Hom.add_app
 
-instance : AddCommGroup (P ⟶ Q) :=
+instance Sheaf.Hom.addCommGroup : AddCommGroup (P ⟶ Q) :=
   Function.Injective.addCommGroup (fun f : Sheaf.Hom P Q => f.1)
     (fun _ _ h => Sheaf.Hom.ext _ _ h) rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
     (fun _ _ => by aesop_cat) (fun _ _ => by aesop_cat)
 
 instance : Preadditive (Sheaf J A) where
-  homGroup P Q := inferInstance
-  -- porting note: the following two proofs were `ext; simp` in mathlib,
-  -- why is not simp able to use `Sheaf.Hom.add_app`?
+  homGroup P Q := Sheaf.Hom.addCommGroup
+  -- porting note: the following two proofs were `ext; simp` in mathlib
+  -- these still work, but take a very long time to run. Why?
   add_comp P Q R f f' g := by
     ext
     dsimp
-    rw [Sheaf.Hom.add_app, Sheaf.Hom.add_app]
     simp
   comp_add P Q R f g g' := by
     ext
-    rw [Sheaf.Hom.add_app]
-    simp only [Sheaf.instCategorySheaf_Hom, Sheaf.instCategorySheaf_comp_val, NatTrans.comp_app]
-    rw [Sheaf.Hom.add_app]
+    dsimp
     simp
 
 end Preadditive
