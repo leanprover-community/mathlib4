@@ -8,8 +8,8 @@ Authors: Patrick Massot
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Order.Filter.Bases
-import Mathbin.Topology.Algebra.Module.Basic
+import Mathlib.Order.Filter.Bases
+import Mathlib.Topology.Algebra.Module.Basic
 
 /-!
 # Group and ring filter bases
@@ -186,8 +186,7 @@ def topology (B : GroupFilterBasis G) : TopologicalSpace G :=
 #align add_group_filter_basis.topology AddGroupFilterBasis.topology
 
 @[to_additive]
-theorem nhds_eq (B : GroupFilterBasis G) {x₀ : G} : @nhds G B.topology x₀ = B.n x₀ :=
-  by
+theorem nhds_eq (B : GroupFilterBasis G) {x₀ : G} : @nhds G B.topology x₀ = B.n x₀ := by
   rw [TopologicalSpace.nhds_mkOfNhds]
   · intro x U U_in
     rw [(B.has_basis x).mem_iff] at U_in
@@ -213,8 +212,7 @@ theorem nhds_eq (B : GroupFilterBasis G) {x₀ : G} : @nhds G B.topology x₀ = 
 
 @[to_additive]
 theorem nhds_one_eq (B : GroupFilterBasis G) :
-    @nhds G B.topology (1 : G) = B.toFilterBasis.filterₓ :=
-  by
+    @nhds G B.topology (1 : G) = B.toFilterBasis.filterₓ := by
   rw [B.nhds_eq]
   simp only [N, one_mul]
   exact map_id
@@ -223,8 +221,7 @@ theorem nhds_one_eq (B : GroupFilterBasis G) :
 
 @[to_additive]
 theorem nhds_hasBasis (B : GroupFilterBasis G) (x₀ : G) :
-    HasBasis (@nhds G B.topology x₀) (fun V : Set G => V ∈ B) fun V => (fun y => x₀ * y) '' V :=
-  by
+    HasBasis (@nhds G B.topology x₀) (fun V : Set G => V ∈ B) fun V => (fun y => x₀ * y) '' V := by
   rw [B.nhds_eq]
   apply B.has_basis
 #align group_filter_basis.nhds_has_basis GroupFilterBasis.nhds_hasBasis
@@ -232,8 +229,7 @@ theorem nhds_hasBasis (B : GroupFilterBasis G) (x₀ : G) :
 
 @[to_additive]
 theorem nhds_one_hasBasis (B : GroupFilterBasis G) :
-    HasBasis (@nhds G B.topology 1) (fun V : Set G => V ∈ B) id :=
-  by
+    HasBasis (@nhds G B.topology 1) (fun V : Set G => V ∈ B) id := by
   rw [B.nhds_one_eq]
   exact B.to_filter_basis.has_basis
 #align group_filter_basis.nhds_one_has_basis GroupFilterBasis.nhds_one_hasBasis
@@ -318,8 +314,7 @@ def topology : TopologicalSpace R :=
 /-- If a ring is endowed with a topological structure coming from
 a ring filter basis then it's a topological ring. -/
 instance (priority := 100) is_topologicalRing {R : Type u} [Ring R] (B : RingFilterBasis R) :
-    @TopologicalRing R B.topology _ :=
-  by
+    @TopologicalRing R B.topology _ := by
   let B' := B.to_add_group_filter_basis
   letI := B'.topology
   have basis := B'.nhds_zero_has_basis
@@ -426,8 +421,7 @@ theorem ContinuousSMul.of_basis_zero {ι : Type _} [TopologicalRing R] [Topologi
     [TopologicalAddGroup M] {p : ι → Prop} {b : ι → Set M} (h : HasBasis (𝓝 0) p b)
     (hsmul : ∀ {i}, p i → ∃ V ∈ 𝓝 (0 : R), ∃ (j : _)(hj : p j), V • b j ⊆ b i)
     (hsmul_left : ∀ (x₀ : R) {i}, p i → ∃ (j : _)(hj : p j), b j ⊆ (fun x => x₀ • x) ⁻¹' b i)
-    (hsmul_right : ∀ (m₀ : M) {i}, p i → ∀ᶠ x in 𝓝 (0 : R), x • m₀ ∈ b i) : ContinuousSMul R M :=
-  by
+    (hsmul_right : ∀ (m₀ : M) {i}, p i → ∀ᶠ x in 𝓝 (0 : R), x • m₀ ∈ b i) : ContinuousSMul R M := by
   apply ContinuousSMul.of_nhds_zero
   · rw [h.tendsto_right_iff]
     intro i hi
@@ -449,8 +443,7 @@ theorem ContinuousSMul.of_basis_zero {ι : Type _} [TopologicalRing R] [Topologi
 /-- If a module is endowed with a topological structure coming from
 a module filter basis then it's a topological module. -/
 instance (priority := 100) continuousSMul [TopologicalRing R] :
-    @ContinuousSMul R M _ _ B.topology :=
-  by
+    @ContinuousSMul R M _ _ B.topology := by
   let B' := B.to_add_group_filter_basis
   letI := B'.topology
   haveI := B'.is_topological_add_group
