@@ -1024,7 +1024,7 @@ variable (J : GrothendieckTopology C)
 structure SheafOfTypes (J : GrothendieckTopology C) : Type max u₁ v₁ (w + 1) where
   /-- the underlying presheaf -/
   val : Cᵒᵖ ⥤ Type w
-  /-- the condition the a presheaf is a sheaf -/
+  /-- the condition that the presheaf is a sheaf -/
   cond : Presieve.IsSheaf J val
   set_option linter.uppercaseLean3 false in
 #align category_theory.SheafOfTypes CategoryTheory.SheafOfTypes

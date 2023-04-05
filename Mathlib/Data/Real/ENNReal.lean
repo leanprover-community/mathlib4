@@ -2345,7 +2345,7 @@ theorem mul_infᵢ_of_ne {ι} {f : ι → ℝ≥0∞} {x : ℝ≥0∞} (h0 : x �
     x * infᵢ f = ⨅ i, x * f i := by simpa only [mul_comm] using infᵢ_mul_of_ne h0 h
 #align ennreal.mul_infi_of_ne ENNReal.mul_infᵢ_of_ne
 
-/-! `supr_mul`, `mul_supr` and variants are in `topology.instances.ennreal`. -/
+/-! `supr_mul`, `mul_supr` and variants are in `Topology.Instances.ENNReal`. -/
 
 end infᵢ
 
