@@ -267,7 +267,7 @@ theorem coe_homeomorphUnitBall_apply_zero [NormedSpace ℝ E] :
 
 open NormedField
 
-instance : NormedSpace α (ULift E) :=
+instance ULift.normedSpace : NormedSpace α (ULift E) :=
   { ULift.normedAddCommGroup, ULift.module' with
     norm_smul_le := fun s x => (norm_smul_le s x.down : _) }
 
@@ -635,10 +635,10 @@ instance {𝕜 : Type _} {𝕜' : Type _} {E : Type _} [I : NormedAddCommGroup E
 
 /-- If `E` is a normed space over `𝕜'` and `𝕜` is a normed algebra over `𝕜'`, then
 `RestrictScalars.module` is additionally a `NormedSpace`. -/
-instance : NormedSpace 𝕜 (RestrictScalars 𝕜 𝕜' E) :=
+instance RestrictScalars.normedSpace : NormedSpace 𝕜 (RestrictScalars 𝕜 𝕜' E) :=
   { RestrictScalars.module 𝕜 𝕜' E with
     norm_smul_le := fun c x =>
-      (norm_smul_le (algebraMap 𝕜 𝕜' c) (_ : E)).trans_eq <| by rw [norm_algebraMap'] }
+      (norm_smul_le (algebraMap 𝕜 𝕜' c) (_ : E)).trans_eq <| by rw [norm_algebra_map'] }
 
 -- If you think you need this, consider instead reproducing `RestrictScalars.lsmul`
 -- appropriately modified here.
