@@ -8,7 +8,7 @@ Authors: Joël Riou
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Abelian.Basic
+import Mathlib.CategoryTheory.Abelian.Basic
 
 /-!
 # Idempotent complete categories
@@ -62,8 +62,7 @@ namespace Idempotents
 /-- A category is idempotent complete iff for all idempotent endomorphisms,
 the equalizer of the identity and this idempotent exists. -/
 theorem isIdempotentComplete_iff_hasEqualizer_of_id_and_idempotent :
-    IsIdempotentComplete C ↔ ∀ (X : C) (p : X ⟶ X), p ≫ p = p → HasEqualizer (𝟙 X) p :=
-  by
+    IsIdempotentComplete C ↔ ∀ (X : C) (p : X ⟶ X), p ≫ p = p → HasEqualizer (𝟙 X) p := by
   constructor
   · intro
     intro X p hp
@@ -112,8 +111,7 @@ variable (C)
 
 /-- A preadditive category is pseudoabelian iff all idempotent endomorphisms have a kernel. -/
 theorem isIdempotentComplete_iff_idempotents_have_kernels [Preadditive C] :
-    IsIdempotentComplete C ↔ ∀ (X : C) (p : X ⟶ X), p ≫ p = p → HasKernel p :=
-  by
+    IsIdempotentComplete C ↔ ∀ (X : C) (p : X ⟶ X), p ≫ p = p → HasKernel p := by
   rw [is_idempotent_complete_iff_has_equalizer_of_id_and_idempotent]
   constructor
   · intro h X p hp
@@ -127,8 +125,7 @@ theorem isIdempotentComplete_iff_idempotents_have_kernels [Preadditive C] :
 
 /-- An abelian category is idempotent complete. -/
 instance (priority := 100) isIdempotentComplete_of_abelian (D : Type _) [Category D] [Abelian D] :
-    IsIdempotentComplete D :=
-  by
+    IsIdempotentComplete D := by
   rw [is_idempotent_complete_iff_idempotents_have_kernels]
   intros
   infer_instance
@@ -138,8 +135,7 @@ variable {C}
 
 theorem split_imp_of_iso {X X' : C} (φ : X ≅ X') (p : X ⟶ X) (p' : X' ⟶ X')
     (hpp' : p ≫ φ.Hom = φ.Hom ≫ p') (h : ∃ (Y : C)(i : Y ⟶ X)(e : X ⟶ Y), i ≫ e = 𝟙 Y ∧ e ≫ i = p) :
-    ∃ (Y' : C)(i' : Y' ⟶ X')(e' : X' ⟶ Y'), i' ≫ e' = 𝟙 Y' ∧ e' ≫ i' = p' :=
-  by
+    ∃ (Y' : C)(i' : Y' ⟶ X')(e' : X' ⟶ Y'), i' ≫ e' = 𝟙 Y' ∧ e' ≫ i' = p' := by
   rcases h with ⟨Y, i, e, ⟨h₁, h₂⟩⟩
   use Y, i ≫ φ.hom, φ.inv ≫ e
   constructor
@@ -152,8 +148,7 @@ theorem split_imp_of_iso {X X' : C} (φ : X ≅ X') (p : X ⟶ X) (p' : X' ⟶ X
 theorem split_iff_of_iso {X X' : C} (φ : X ≅ X') (p : X ⟶ X) (p' : X' ⟶ X')
     (hpp' : p ≫ φ.Hom = φ.Hom ≫ p') :
     (∃ (Y : C)(i : Y ⟶ X)(e : X ⟶ Y), i ≫ e = 𝟙 Y ∧ e ≫ i = p) ↔
-      ∃ (Y' : C)(i' : Y' ⟶ X')(e' : X' ⟶ Y'), i' ≫ e' = 𝟙 Y' ∧ e' ≫ i' = p' :=
-  by
+      ∃ (Y' : C)(i' : Y' ⟶ X')(e' : X' ⟶ Y'), i' ≫ e' = 𝟙 Y' ∧ e' ≫ i' = p' := by
   constructor
   · exact split_imp_of_iso φ p p' hpp'
   · apply split_imp_of_iso φ.symm p' p
@@ -164,8 +159,7 @@ theorem split_iff_of_iso {X X' : C} (φ : X ≅ X') (p : X ⟶ X) (p' : X' ⟶ X
 #align category_theory.idempotents.split_iff_of_iso CategoryTheory.Idempotents.split_iff_of_iso
 
 theorem Equivalence.isIdempotentComplete {D : Type _} [Category D] (ε : C ≌ D)
-    (h : IsIdempotentComplete C) : IsIdempotentComplete D :=
-  by
+    (h : IsIdempotentComplete C) : IsIdempotentComplete D := by
   refine' ⟨_⟩
   intro X' p hp
   let φ := ε.counit_iso.symm.app X'
@@ -184,8 +178,7 @@ theorem Equivalence.isIdempotentComplete {D : Type _} [Category D] (ε : C ≌ D
 
 /-- If `C` and `D` are equivalent categories, that `C` is idempotent complete iff `D` is. -/
 theorem isIdempotentComplete_iff_of_equivalence {D : Type _} [Category D] (ε : C ≌ D) :
-    IsIdempotentComplete C ↔ IsIdempotentComplete D :=
-  by
+    IsIdempotentComplete C ↔ IsIdempotentComplete D := by
   constructor
   · exact equivalence.is_idempotent_complete ε
   · exact equivalence.is_idempotent_complete ε.symm
@@ -203,8 +196,7 @@ theorem isIdempotentComplete_of_isIdempotentComplete_opposite (h : IsIdempotentC
   · simpa only [← unop_comp, h₂]
 #align category_theory.idempotents.is_idempotent_complete_of_is_idempotent_complete_opposite CategoryTheory.Idempotents.isIdempotentComplete_of_isIdempotentComplete_opposite
 
-theorem isIdempotentComplete_iff_opposite : IsIdempotentComplete Cᵒᵖ ↔ IsIdempotentComplete C :=
-  by
+theorem isIdempotentComplete_iff_opposite : IsIdempotentComplete Cᵒᵖ ↔ IsIdempotentComplete C := by
   constructor
   · exact is_idempotent_complete_of_is_idempotent_complete_opposite
   · intro h
