@@ -8,11 +8,11 @@ Authors: Johan Commelin
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Fintype.Order
-import Mathbin.Data.Set.Finite
-import Mathbin.Order.Category.LinOrd
-import Mathbin.CategoryTheory.Limits.Shapes.Images
-import Mathbin.CategoryTheory.Limits.Shapes.RegularMono
+import Mathlib.Data.Fintype.Order
+import Mathlib.Data.Set.Finite
+import Mathlib.Order.Category.LinOrd
+import Mathlib.CategoryTheory.Limits.Shapes.Images
+import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
 
 /-!
 # Nonempty finite linear orders
@@ -90,8 +90,7 @@ instance hasForgetToLinOrd : HasForget₂ NonemptyFinLinOrdCat LinOrd :=
 /-- Constructs an equivalence between nonempty finite linear orders from an order isomorphism
 between them. -/
 @[simps]
-def Iso.mk {α β : NonemptyFinLinOrdCat.{u}} (e : α ≃o β) : α ≅ β
-    where
+def Iso.mk {α β : NonemptyFinLinOrdCat.{u}} (e : α ≃o β) : α ≅ β where
   hom := e
   inv := e.symm
   hom_inv_id' := by
@@ -104,8 +103,7 @@ def Iso.mk {α β : NonemptyFinLinOrdCat.{u}} (e : α ≃o β) : α ≅ β
 
 /-- `order_dual` as a functor. -/
 @[simps]
-def dual : NonemptyFinLinOrdCat ⥤ NonemptyFinLinOrdCat
-    where
+def dual : NonemptyFinLinOrdCat ⥤ NonemptyFinLinOrdCat where
   obj X := of Xᵒᵈ
   map X Y := OrderHom.dual
 #align NonemptyFinLinOrd.dual NonemptyFinLinOrdCat.dual
@@ -119,8 +117,7 @@ def dualEquiv : NonemptyFinLinOrdCat ≌ NonemptyFinLinOrdCat :=
 #align NonemptyFinLinOrd.dual_equiv NonemptyFinLinOrdCat.dualEquiv
 
 theorem mono_iff_injective {A B : NonemptyFinLinOrdCat.{u}} (f : A ⟶ B) :
-    Mono f ↔ Function.Injective f :=
-  by
+    Mono f ↔ Function.Injective f := by
   refine' ⟨_, concrete_category.mono_of_injective f⟩
   intro
   intro a₁ a₂ h
@@ -143,8 +140,7 @@ theorem epi_iff_surjective {A B : NonemptyFinLinOrdCat.{u}} (f : A ⟶ B) :
     rcases hf' with ⟨m, hm⟩
     let Y : NonemptyFinLinOrdCat.{u} := ⟨ULift (Fin 2)⟩
     let p₁ : B ⟶ Y :=
-      ⟨fun b => if b < m then ULift.up 0 else ULift.up 1, fun x₁ x₂ h =>
-        by
+      ⟨fun b => if b < m then ULift.up 0 else ULift.up 1, fun x₁ x₂ h => by
         simp only
         split_ifs with h₁ h₂ h₂
         any_goals apply Fin.zero_le
@@ -152,8 +148,7 @@ theorem epi_iff_surjective {A B : NonemptyFinLinOrdCat.{u}} (f : A ⟶ B) :
           exact h₁ (lt_of_le_of_lt h h₂)
         · rfl⟩
     let p₂ : B ⟶ Y :=
-      ⟨fun b => if b ≤ m then ULift.up 0 else ULift.up 1, fun x₁ x₂ h =>
-        by
+      ⟨fun b => if b ≤ m then ULift.up 0 else ULift.up 1, fun x₁ x₂ h => by
         simp only
         split_ifs with h₁ h₂ h₂
         any_goals apply Fin.zero_le
@@ -178,10 +173,8 @@ theorem epi_iff_surjective {A B : NonemptyFinLinOrdCat.{u}} (f : A ⟶ B) :
 #align NonemptyFinLinOrd.epi_iff_surjective NonemptyFinLinOrdCat.epi_iff_surjective
 
 instance : SplitEpiCategory NonemptyFinLinOrdCat.{u} :=
-  ⟨fun X Y f hf =>
-    by
-    have H : ∀ y : Y, Nonempty (f ⁻¹' {y}) :=
-      by
+  ⟨fun X Y f hf => by
+    have H : ∀ y : Y, Nonempty (f ⁻¹' {y}) := by
       rw [epi_iff_surjective] at hf
       intro y
       exact Nonempty.intro ⟨(hf y).some, (hf y).choose_spec⟩
