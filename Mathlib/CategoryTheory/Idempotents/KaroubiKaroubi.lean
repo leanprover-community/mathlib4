@@ -32,7 +32,7 @@ namespace KaroubiKaroubi
 variable (C : Type _) [Category C]
 
 -- porting note: added to ease automation
-@[simp]
+@[reassoc (attr := simp)]
 lemma idem_f (P : Karoubi (Karoubi C)) : P.p.f ≫ P.p.f = P.p.f := by
   simpa only [hom_ext_iff, comp_f] using P.idem
 
