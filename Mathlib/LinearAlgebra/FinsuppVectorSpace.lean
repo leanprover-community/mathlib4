@@ -8,7 +8,7 @@ Authors: Johannes Hölzl
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.LinearAlgebra.StdBasis
+import Mathlib.LinearAlgebra.StdBasis
 
 /-!
 # Linear structures on function with finite support `ι →₀ M`
@@ -39,12 +39,10 @@ variable [Ring R] [AddCommGroup M] [Module R M]
 
 theorem linearIndependent_single {φ : ι → Type _} {f : ∀ ι, φ ι → M}
     (hf : ∀ i, LinearIndependent R (f i)) :
-    LinearIndependent R fun ix : Σi, φ i => single ix.1 (f ix.1 ix.2) :=
-  by
+    LinearIndependent R fun ix : Σi, φ i => single ix.1 (f ix.1 ix.2) := by
   apply @linearIndependent_unionᵢ_finite R _ _ _ _ ι φ fun i x => single i (f i x)
   · intro i
-    have h_disjoint : Disjoint (span R (range (f i))) (ker (lsingle i)) :=
-      by
+    have h_disjoint : Disjoint (span R (range (f i))) (ker (lsingle i)) := by
       rw [ker_lsingle]
       exact disjoint_bot_right
     apply (hf i).map h_disjoint
@@ -75,8 +73,7 @@ protected def basis {φ : ι → Type _} (b : ∀ i, Basis (φ i) R M) : Basis (
     { toFun := fun g =>
         { toFun := fun ix => (b ix.1).repr (g ix.1) ix.2
           support := g.support.Sigma fun i => ((b i).repr (g i)).support
-          mem_support_toFun := fun ix =>
-            by
+          mem_support_toFun := fun ix => by
             simp only [Finset.mem_sigma, mem_support_iff, and_iff_right_iff_imp, Ne.def]
             intro b hg
             simpa [hg] using b }
@@ -84,8 +81,7 @@ protected def basis {φ : ι → Type _} (b : ∀ i, Basis (φ i) R M) : Basis (
         { toFun := fun i =>
             (b i).repr.symm (g.comapDomain _ (Set.injOn_of_injective sigma_mk_injective _))
           support := g.support.image Sigma.fst
-          mem_support_toFun := fun i =>
-            by
+          mem_support_toFun := fun i => by
             rw [Ne.def, ← (b i).repr.Injective.eq_iff, (b i).repr.apply_symm_apply, ext_iff]
             simp only [exists_prop, LinearEquiv.map_zero, comap_domain_apply, zero_apply,
               exists_and_right, mem_support_iff, exists_eq_right, Sigma.exists, Finset.mem_image,
@@ -153,8 +149,7 @@ variable [DecidableEq n] [Fintype n]
 variable [Semiring R] [AddCommMonoid M] [Module R M]
 
 theorem Finset.sum_single_ite (a : R) (i : n) :
-    (Finset.univ.Sum fun x : n => Finsupp.single x (ite (i = x) a 0)) = Finsupp.single i a :=
-  by
+    (Finset.univ.Sum fun x : n => Finsupp.single x (ite (i = x) a 0)) = Finsupp.single i a := by
   rw [Finset.sum_congr_set {i} (fun x : n => Finsupp.single x (ite (i = x) a 0)) fun _ =>
       Finsupp.single i a]
   · simp
@@ -170,8 +165,7 @@ theorem Finset.sum_single_ite (a : R) (i : n) :
 
 @[simp]
 theorem equivFun_symm_stdBasis (b : Basis n R M) (i : n) :
-    b.equivFun.symm (LinearMap.stdBasis R (fun _ => R) i 1) = b i :=
-  by
+    b.equivFun.symm (LinearMap.stdBasis R (fun _ => R) i 1) = b i := by
   have := EquivLike.injective b.repr
   apply_fun b.repr
   simp only [equiv_fun_symm_apply, std_basis_apply', LinearEquiv.map_sum, LinearEquiv.map_smulₛₗ,
