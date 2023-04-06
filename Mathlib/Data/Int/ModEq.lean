@@ -224,12 +224,9 @@ theorem cancel_right_div_gcd (hm : 0 < m) (h : a * c ≡ b * c [ZMOD m]) : a ≡
   letI d := gcd m c
   have hmd := gcd_dvd_left m c
   have hcd := gcd_dvd_right m c
-  rw [modEq_iff_dvd] at h⊢
-  refine' Int.dvd_of_dvd_mul_right_of_gcd_one _ _
-  -- porting note: The `show` below doesn't assign the metavariable properly, so we need an extra
-  -- `swap`
-  swap
-  show m / d ∣ c / d * (b - a)
+  rw [modEq_iff_dvd] at h ⊢
+  -- porting note: removed `show` due to leanprover-community/mathlib4#3305
+  refine Int.dvd_of_dvd_mul_right_of_gcd_one (?_ : m / d ∣ c / d * (b - a)) ?_
   · rw [mul_comm, ← Int.mul_ediv_assoc (b - a) hcd, sub_mul]
     exact Int.ediv_dvd_ediv hmd h
   · rw [gcd_div hmd hcd, natAbs_ofNat, Nat.div_self (gcd_pos_of_ne_zero_left c hm.ne')]
