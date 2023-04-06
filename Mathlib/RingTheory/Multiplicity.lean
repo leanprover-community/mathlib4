@@ -427,7 +427,7 @@ protected theorem neg (a b : α) : multiplicity a (-b) = multiplicity a b :=
     PartENat.natCast_inj.1 (by
       rw [PartENat.natCast_get]
       exact Eq.symm
-              (Unique (pow_multiplicity_dvd _).neg_right
+              (unique (pow_multiplicity_dvd _).neg_right
                 (mt dvd_neg.1 (is_greatest' _ (lt_succ_self _)))))
 #align multiplicity.neg multiplicity.neg
 
