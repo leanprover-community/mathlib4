@@ -16,7 +16,7 @@ import Mathlib.Order.Zorn
 import Mathlib.Data.Finset.Order
 import Mathlib.Data.Set.Intervals.OrderIso
 import Mathlib.Data.Finite.Set
-import Mathlib.Data.List.TFAE
+import Mathlib.Tactic.TFAE
 
 /-!
 # Compactness properties for complete lattices
@@ -286,23 +286,15 @@ open List in
 theorem wellFounded_characterisations : List.TFAE
     [WellFounded (( · > · ) : α → α → Prop),
       IsSupFiniteCompact α, IsSupClosedCompact α, ∀ k : α, IsCompactElement k] := by
-  have h12 := WellFounded.isSupFiniteCompact α
-  have h23 := IsSupFiniteCompact.isSupClosedCompact α
-  have h31 := IsSupClosedCompact.wellFounded α
-  have h24 := isSupFiniteCompact_iff_all_elements_compact α
-  apply_rules [tfae_of_cycle, Chain.cons, Chain.nil] <;> dsimp only [ilast']
-  · rw [← h24]; exact h12 ∘ h31
-  · rw [← h24]; exact h31 ∘ h23
-  -- Porting note: proof using `tfae`
-  -- tfae_have 1 → 2
-  -- · exact WellFounded.isSupFiniteCompact α
-  -- tfae_have 2 → 3
-  -- · exact IsSupFiniteCompact.isSupClosedCompact α
-  -- tfae_have 3 → 1
-  -- · exact IsSupClosedCompact.wellFounded α
-  -- tfae_have 2 ↔ 4
-  -- · exact isSupFiniteCompact_iff_all_elements_compact α
-  -- tfae_finish
+  tfae_have 1 → 2
+  · exact WellFounded.isSupFiniteCompact α
+  tfae_have 2 → 3
+  · exact IsSupFiniteCompact.isSupClosedCompact α
+  tfae_have 3 → 1
+  · exact IsSupClosedCompact.wellFounded α
+  tfae_have 2 ↔ 4
+  · exact isSupFiniteCompact_iff_all_elements_compact α
+  tfae_finish
 #align complete_lattice.well_founded_characterisations CompleteLattice.wellFounded_characterisations
 
 theorem wellFounded_iff_isSupFiniteCompact :
