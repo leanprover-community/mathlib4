@@ -169,9 +169,12 @@ theorem _root_.Finset.sum_single_ite (a : R) (i : n) :
 
 -- Porting note: LHS of equivFUn_symm_stdBassis simplifies to this
 @[simp]
-theorem _root_.Finset.sum_univ_ite (b : Basis n R M) (i : n) : (Finset.sum Finset.univ fun (x : n) => (if i = x then (1:R) else 0) • b x) = b i := by
-  suffices b.repr (Finset.sum Finset.univ fun x => (if i = x then (1:R) else 0) • b x) = b.repr (b i) from EquivLike.injective b.repr this
-  simp only [LinearEquiv.map_sum, SMulHomClass.map_smul, repr_self, Finsupp.smul_single, smul_eq_mul, mul_one]
+theorem _root_.Finset.sum_univ_ite (b : Basis n R M) (i : n) :
+    (Finset.sum Finset.univ fun (x : n) => (if i = x then (1:R) else 0) • b x) = b i := by
+  suffices b.repr (Finset.sum Finset.univ fun x => (if i = x then (1:R) else 0) • b x) =
+    b.repr (b i) from EquivLike.injective b.repr this
+  simp only [LinearEquiv.map_sum, SMulHomClass.map_smul, repr_self,
+    Finsupp.smul_single, smul_eq_mul, mul_one]
   apply Finset.sum_single_ite 1 i
 
 theorem equivFun_symm_stdBasis (b : Basis n R M) (i : n) :
