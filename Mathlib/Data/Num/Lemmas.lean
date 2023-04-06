@@ -26,6 +26,9 @@ unnecessary.
 -/
 set_option linter.deprecated false
 
+-- Porting note: Required for the notation `-[n+1]`.
+open Int
+
 attribute [local simp] add_assoc
 
 namespace PosNum
@@ -781,8 +784,7 @@ theorem toZNum_inj {m n : Num} : m.toZNum = n.toZNum ↔ m = n :=
 #align num.to_znum_inj Num.toZNum_inj
 
 
-@[simp] -- @[norm_cast squash]
-        -- Porting note: `norm_cast squash` requires no `↑` on rhs in Nathlib4.
+@[simp]
 theorem cast_toZNum [Zero α] [One α] [Add α] [Neg α] : ∀ n : Num, (n.toZNum : α) = n
   | 0 => rfl
   | Num.pos _p => rfl
@@ -1181,8 +1183,6 @@ theorem cast_to_znum : ∀ n : PosNum, (n : ZNum) = ZNum.pos n
   | bit1 p => (ZNum.bit1_of_bit1 p).trans <| congr_arg _ (cast_to_znum p)
 #align pos_num.cast_to_znum PosNum.cast_to_znum
 
--- attribute [-simp] Int.add_neg_one -- Porting note: `Int.add_neg_one` doesn't have this.
-
 theorem cast_sub' [AddGroupWithOne α] : ∀ m n : PosNum, (sub' m n : α) = m - n
   | a, 1 => by
     rw [sub'_one, Num.cast_toZNum, ← Num.cast_to_nat, pred'_to_nat, ← Nat.sub_one]
@@ -1250,10 +1250,8 @@ theorem pred_succ : ∀ n : ZNum, n.pred.succ = n
   | ZNum.pos p => by rw [ZNum.pred, ← toZNum_succ, Num.succ, PosNum.succ'_pred', toZNum]
 #align num.pred_succ Num.pred_succ
 
--- Porting note: Required for the notation `-[n+1]`.
 -- Porting note: `erw [ZNum.ofInt', ZNum.ofInt']` yields `match` so
 --               `change` & `dsimp` are required.
-open Int in
 theorem succ_ofInt' : ∀ n, ZNum.ofInt' (n + 1) = ZNum.ofInt' n + 1
   | (n : ℕ) => by
     change ZNum.ofInt' (n + 1 : ℕ) = ZNum.ofInt' (n : ℕ) + 1
@@ -1355,8 +1353,6 @@ theorem cast_mul [Ring α] (m n) : ((m * n : ZNum) : α) = m * n := by
   rw [← cast_to_int, mul_to_int, Int.cast_mul, cast_to_int, cast_to_int]
 #align znum.cast_mul ZNum.cast_mul
 
--- Porting note: Required for the notation `-[n+1]`.
-open Int in
 theorem ofInt'_neg : ∀ n : ℤ, ofInt' (-n) = -ofInt' n
   | -[n+1] => show ofInt' (n + 1 : ℕ) = _ by simp only [ofInt', Num.zneg_toZNumNeg]
   | 0 => show Num.toZNum (Num.ofNat' 0) = -Num.toZNum (Num.ofNat' 0) by rw [Num.ofNat'_zero]; rfl
@@ -1529,8 +1525,6 @@ instance linearOrderedCommRing : LinearOrderedCommRing ZNum :=
 theorem cast_sub [Ring α] (m n) : ((m - n : ZNum) : α) = m - n := by simp [sub_eq_neg_add]
 #align znum.cast_sub ZNum.cast_sub
 
--- Porting note: Required for the notation `-[n+1]`.
-open Int in
 @[norm_cast] -- @[simp] -- Porting note: simp can prove this
 theorem neg_of_int : ∀ n, ((-n : ℤ) : ZNum) = -n
   | (n + 1 : ℕ) => rfl
@@ -1538,8 +1532,6 @@ theorem neg_of_int : ∀ n, ((-n : ℤ) : ZNum) = -n
   | -[n+1] => (zneg_zneg _).symm
 #align znum.neg_of_int ZNum.neg_of_int
 
--- Porting note: Required for the notation `-[n+1]`.
-open Int in
 @[simp]
 theorem ofInt'_eq : ∀ n : ℤ, ZNum.ofInt' n = n
   | (n : ℕ) => rfl
@@ -1741,8 +1733,6 @@ protected theorem div_zero (n : ZNum) : n / 0 = 0 :=
   show n.div 0 = 0 by cases n <;> rfl
 #align znum.div_zero ZNum.div_zero
 
--- Porting note: Required for the notation `-[n+1]`.
-open Int in
 @[simp, norm_cast]
 theorem div_to_int : ∀ n d, ((n / d : ZNum) : ℤ) = n / d
   | 0, 0 => by simp [Int.ediv_zero]
