@@ -8,8 +8,8 @@ Authors: Oliver Nash
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.RingTheory.Nilpotent
-import Mathbin.RingTheory.Ideal.QuotientOperations
+import Mathlib.RingTheory.Nilpotent
+import Mathlib.RingTheory.Ideal.QuotientOperations
 
 /-!
 # Nilpotent elements in quotient rings
@@ -17,8 +17,7 @@ import Mathbin.RingTheory.Ideal.QuotientOperations
 
 
 theorem Ideal.isRadical_iff_quotient_reduced {R : Type _} [CommRing R] (I : Ideal R) :
-    I.IsRadical ↔ IsReduced (R ⧸ I) :=
-  by
+    I.IsRadical ↔ IsReduced (R ⧸ I) := by
   conv_lhs => rw [← @Ideal.mk_ker R _ I]
   exact RingHom.ker_isRadical_iff_reduced_of_surjective (@Ideal.Quotient.mk_surjective R _ I)
 #align ideal.is_radical_iff_quotient_reduced Ideal.isRadical_iff_quotient_reduced
@@ -61,8 +60,7 @@ theorem Ideal.IsNilpotent.induction_on (hI : IsNilpotent I)
 #align ideal.is_nilpotent.induction_on Ideal.IsNilpotent.induction_on
 
 theorem IsNilpotent.isUnit_quotient_mk_iff {R : Type _} [CommRing R] {I : Ideal R}
-    (hI : IsNilpotent I) {x : R} : IsUnit (Ideal.Quotient.mk I x) ↔ IsUnit x :=
-  by
+    (hI : IsNilpotent I) {x : R} : IsUnit (Ideal.Quotient.mk I x) ↔ IsUnit x := by
   refine' ⟨_, fun h => h.map I.Quotient.mk⟩
   revert x
   apply Ideal.IsNilpotent.induction_on I hI <;> clear hI I
@@ -83,8 +81,7 @@ theorem IsNilpotent.isUnit_quotient_mk_iff {R : Type _} [CommRing R] {I : Ideal 
     have : (x * y - 1) ^ 2 = 0 := by
       rw [← Ideal.mem_bot, ← e]
       exact Ideal.pow_mem_pow this _
-    have : x * (y * (2 - x * y)) = 1 :=
-      by
+    have : x * (y * (2 - x * y)) = 1 := by
       rw [eq_comm, ← sub_eq_zero, ← this]
       ring
     exact isUnit_of_mul_eq_one _ _ this
