@@ -8,7 +8,7 @@ Authors: Moritz Doll
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.LinearAlgebra.LinearPmap
+import Mathlib.LinearAlgebra.LinearPMap
 import Mathlib.Topology.Algebra.Module.Basic
 
 /-!
@@ -63,7 +63,7 @@ namespace LinearPMap
 
 /-- An unbounded operator is closed iff its graph is closed. -/
 def IsClosed (f : E →ₗ.[R] F) : Prop :=
-  IsClosed (f.graph : Set (E × F))
+  _root_.IsClosed (f.graph : Set (E × F))
 #align linear_pmap.is_closed LinearPMap.IsClosed
 
 variable [ContinuousAdd E] [ContinuousAdd F]
@@ -84,10 +84,10 @@ theorem IsClosed.isClosable {f : E →ₗ.[R] F} (hf : f.IsClosed) : f.IsClosabl
 theorem IsClosable.leIsClosable {f g : E →ₗ.[R] F} (hf : f.IsClosable) (hfg : g ≤ f) :
     g.IsClosable := by
   cases' hf with f' hf
-  have : g.graph.topological_closure ≤ f'.graph := by
+  have : g.graph.topologicalClosure ≤ f'.graph := by
     rw [← hf]
     exact Submodule.topologicalClosure_mono (le_graph_of_le hfg)
-  refine' ⟨g.graph.topological_closure.to_linear_pmap _, _⟩
+  refine' ⟨g.graph.topologicalClosure.toLinearPMap _, _⟩
   · intro x hx hx'
     cases x
     exact f'.graph_fst_eq_zero_snd (this hx) hx'
@@ -97,7 +97,7 @@ theorem IsClosable.leIsClosable {f g : E →ₗ.[R] F} (hf : f.IsClosable) (hfg 
 /-- The closure is unique. -/
 theorem IsClosable.existsUnique {f : E →ₗ.[R] F} (hf : f.IsClosable) :
     ∃! f' : E →ₗ.[R] F, f.graph.topologicalClosure = f'.graph := by
-  refine' existsUnique_of_exists_of_unique hf fun _ _ hy₁ hy₂ => eq_of_eq_graph _
+  refine' exists_unique_of_exists_of_unique hf fun _ _ hy₁ hy₂ => eq_of_eq_graph _
   rw [← hy₁, ← hy₂]
 #align linear_pmap.is_closable.exists_unique LinearPMap.IsClosable.existsUnique
 
@@ -106,10 +106,10 @@ open Classical
 /-- If `f` is closable, then `f.closure` is the closure. Otherwise it is defined
 as `f.closure = f`. -/
 noncomputable def closure (f : E →ₗ.[R] F) : E →ₗ.[R] F :=
-  if hf : f.IsClosable then hf.some else f
+  if hf : f.IsClosable then hf.choose else f
 #align linear_pmap.closure LinearPMap.closure
 
-theorem closure_def {f : E →ₗ.[R] F} (hf : f.IsClosable) : f.closure = hf.some := by
+theorem closure_def {f : E →ₗ.[R] F} (hf : f.IsClosable) : f.closure = hf.choose := by
   simp [closure, hf]
 #align linear_pmap.closure_def LinearPMap.closure_def
 
@@ -121,12 +121,12 @@ theorem closure_def' {f : E →ₗ.[R] F} (hf : ¬f.IsClosable) : f.closure = f 
 theorem IsClosable.graph_closure_eq_closure_graph {f : E →ₗ.[R] F} (hf : f.IsClosable) :
     f.graph.topologicalClosure = f.closure.graph := by
   rw [closure_def hf]
-  exact hf.some_spec
+  exact hf.choose_spec
 #align linear_pmap.is_closable.graph_closure_eq_closure_graph LinearPMap.IsClosable.graph_closure_eq_closure_graph
 
 /-- A `linear_pmap` is contained in its closure. -/
 theorem le_closure (f : E →ₗ.[R] F) : f ≤ f.closure := by
-  by_cases hf : f.is_closable
+  by_cases hf : f.IsClosable
   · refine' le_of_le_graph _
     rw [← hf.graph_closure_eq_closure_graph]
     exact (graph f).le_topologicalClosure
@@ -136,7 +136,7 @@ theorem le_closure (f : E →ₗ.[R] F) : f ≤ f.closure := by
 theorem IsClosable.closure_mono {f g : E →ₗ.[R] F} (hg : g.IsClosable) (h : f ≤ g) :
     f.closure ≤ g.closure := by
   refine' le_of_le_graph _
-  rw [← (hg.le_is_closable h).graph_closure_eq_closure_graph]
+  rw [← (hg.leIsClosable h).graph_closure_eq_closure_graph]
   rw [← hg.graph_closure_eq_closure_graph]
   exact Submodule.topologicalClosure_mono (le_graph_of_le h)
 #align linear_pmap.is_closable.closure_mono LinearPMap.IsClosable.closure_mono
@@ -144,18 +144,18 @@ theorem IsClosable.closure_mono {f g : E →ₗ.[R] F} (hg : g.IsClosable) (h : 
 /-- If `f` is closable, then the closure is closed. -/
 theorem IsClosable.closure_isClosed {f : E →ₗ.[R] F} (hf : f.IsClosable) : f.closure.IsClosed := by
   rw [IsClosed, ← hf.graph_closure_eq_closure_graph]
-  exact f.graph.is_closed_topological_closure
+  exact f.graph.isClosed_topologicalClosure
 #align linear_pmap.is_closable.closure_is_closed LinearPMap.IsClosable.closure_isClosed
 
 /-- If `f` is closable, then the closure is closable. -/
 theorem IsClosable.closureIsClosable {f : E →ₗ.[R] F} (hf : f.IsClosable) : f.closure.IsClosable :=
-  hf.closure_isClosed.IsClosable
+  hf.closure_isClosed.isClosable
 #align linear_pmap.is_closable.closure_is_closable LinearPMap.IsClosable.closureIsClosable
 
 theorem isClosable_iff_exists_closed_extension {f : E →ₗ.[R] F} :
     f.IsClosable ↔ ∃ (g : E →ₗ.[R] F)(hg : g.IsClosed), f ≤ g :=
   ⟨fun h => ⟨f.closure, h.closure_isClosed, f.le_closure⟩, fun ⟨_, hg, h⟩ =>
-    hg.IsClosable.leIsClosable h⟩
+    hg.isClosable.leIsClosable h⟩
 #align linear_pmap.is_closable_iff_exists_closed_extension LinearPMap.isClosable_iff_exists_closed_extension
 
 /-! ### The core of a linear operator -/
@@ -179,15 +179,14 @@ theorem closureHasCore (f : E →ₗ.[R] F) : f.closure.HasCore f.domain := by
   refine' ⟨f.le_closure.1, _⟩
   congr
   ext
-  · simp only [dom_restrict_domain, Submodule.mem_inf, and_iff_left_iff_imp]
+  · simp only [domRestrict_domain, Submodule.mem_inf, and_iff_left_iff_imp]
     intro hx
     exact f.le_closure.1 hx
   intro x y hxy
   let z : f.closure.domain := ⟨y.1, f.le_closure.1 y.2⟩
   have hyz : (y : E) = z := by simp
   rw [f.le_closure.2 hyz]
-  exact dom_restrict_apply (hxy.trans hyz)
+  exact domRestrict_apply (hxy.trans hyz)
 #align linear_pmap.closure_has_core LinearPMap.closureHasCore
 
 end LinearPMap
-
