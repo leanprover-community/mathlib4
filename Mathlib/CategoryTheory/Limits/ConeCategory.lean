@@ -156,8 +156,7 @@ def Cocone.fromStructuredArrow (F : J ⥤ C) : StructuredArrow F (const J) ⥤ C
         convert (congr_fun (congr_arg NatTrans.app f.w) j).symm
         dsimp
         simp }
-#align category_theory.limits.cocone.from_structured_arrow
-  CategoryTheory.Limits.Cocone.fromStructuredArrow
+#align category_theory.limits.cocone.from_structured_arrow CategoryTheory.Limits.Cocone.fromStructuredArrow
 
 /-- The category of cocones on `F` is just the comma category `(F ↓ Δ)`, where `Δ` is the constant
     functor. -/
@@ -182,8 +181,7 @@ theorem hasColimit_iff_hasInitial_cocone (F : J ⥤ C) : HasColimit F ↔ HasIni
   ⟨fun _ => (Cocone.isColimitEquivIsInitial _ (colimit.isColimit F)).hasInitial, fun h =>
     haveI : HasInitial (Cocone F) := h
     ⟨⟨⟨⊥_ _, (Cocone.isColimitEquivIsInitial _).symm initialIsInitial⟩⟩⟩⟩
-#align category_theory.limits.has_colimit_iff_has_initial_cocone
-  CategoryTheory.Limits.hasColimit_iff_hasInitial_cocone
+#align category_theory.limits.has_colimit_iff_has_initial_cocone CategoryTheory.Limits.hasColimit_iff_hasInitial_cocone
 
 theorem hasColimitsOfShape_iff_isRightAdjoint_const :
     HasColimitsOfShape J C ↔ Nonempty (IsRightAdjoint (const J : C ⥤ _)) :=
@@ -196,8 +194,7 @@ theorem hasColimitsOfShape_iff_isRightAdjoint_const :
     _ ↔ Nonempty (IsRightAdjoint (const J : C ⥤ _)) :=
       nonempty_isRightAdjoint_iff_hasInitial_structuredArrow.symm
 
-#align category_theory.limits.has_colimits_of_shape_iff_is_right_adjoint_const
-  CategoryTheory.Limits.hasColimitsOfShape_iff_isRightAdjoint_const
+#align category_theory.limits.has_colimits_of_shape_iff_is_right_adjoint_const CategoryTheory.Limits.hasColimitsOfShape_iff_isRightAdjoint_const
 
 theorem IsColimit.descCoconeMorphism_eq_isInitial_to {F : J ⥤ C} {c : Cocone F} (hc : IsColimit c)
     (s : Cocone F) :
