@@ -84,10 +84,12 @@ def equivalence : Karoubi C ≌ Karoubi (Karoubi C) where
   counitIso := KaroubiKaroubi.counitIso C
 #align category_theory.idempotents.karoubi_karoubi.equivalence CategoryTheory.Idempotents.KaroubiKaroubi.equivalence
 
-instance equivalence.additive_functor [Preadditive C] : Functor.Additive (equivalence C).functor where
+instance equivalence.additive_functor [Preadditive C] :
+  Functor.Additive (equivalence C).functor where
 #align category_theory.idempotents.karoubi_karoubi.equivalence.additive_functor CategoryTheory.Idempotents.KaroubiKaroubi.equivalence.additive_functor
 
-instance equivalence.additive_inverse [Preadditive C] : Functor.Additive (equivalence C).inverse where
+instance equivalence.additive_inverse [Preadditive C] :
+  Functor.Additive (equivalence C).inverse where
 #align category_theory.idempotents.karoubi_karoubi.equivalence.additive_inverse CategoryTheory.Idempotents.KaroubiKaroubi.equivalence.additive_inverse
 
 end KaroubiKaroubi
