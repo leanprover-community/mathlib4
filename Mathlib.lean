@@ -1415,6 +1415,7 @@ import Mathlib.RingTheory.Congruence
 import Mathlib.RingTheory.Coprime.Basic
 import Mathlib.RingTheory.Coprime.Ideal
 import Mathlib.RingTheory.Coprime.Lemmas
+import Mathlib.RingTheory.EisensteinCriterion
 import Mathlib.RingTheory.EuclideanDomain
 import Mathlib.RingTheory.FiniteType
 import Mathlib.RingTheory.Finiteness
@@ -1452,6 +1453,7 @@ import Mathlib.RingTheory.Polynomial.Tower
 import Mathlib.RingTheory.Polynomial.Vieta
 import Mathlib.RingTheory.Prime
 import Mathlib.RingTheory.PrincipalIdealDomain
+import Mathlib.RingTheory.QuotientNilpotent
 import Mathlib.RingTheory.ReesAlgebra
 import Mathlib.RingTheory.RingInvo
 import Mathlib.RingTheory.Subring.Basic
@@ -1604,6 +1606,7 @@ import Mathlib.Topology.Algebra.Algebra
 import Mathlib.Topology.Algebra.ConstMulAction
 import Mathlib.Topology.Algebra.Constructions
 import Mathlib.Topology.Algebra.Field
+import Mathlib.Topology.Algebra.FilterBasis
 import Mathlib.Topology.Algebra.Group.Basic
 import Mathlib.Topology.Algebra.Group.Compact
 import Mathlib.Topology.Algebra.GroupCompletion
@@ -1615,6 +1618,7 @@ import Mathlib.Topology.Algebra.InfiniteSum.Real
 import Mathlib.Topology.Algebra.InfiniteSum.Ring
 import Mathlib.Topology.Algebra.Localization
 import Mathlib.Topology.Algebra.Module.Basic
+import Mathlib.Topology.Algebra.Module.LinearPMap
 import Mathlib.Topology.Algebra.Monoid
 import Mathlib.Topology.Algebra.MulAction
 import Mathlib.Topology.Algebra.Nonarchimedean.Basic
