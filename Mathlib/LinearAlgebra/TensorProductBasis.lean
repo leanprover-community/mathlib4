@@ -8,8 +8,8 @@ Authors: Jakob von Raumer
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.LinearAlgebra.DirectSum.Finsupp
-import Mathbin.LinearAlgebra.FinsuppVectorSpace
+import Mathlib.LinearAlgebra.DirectSum.Finsupp
+import Mathlib.LinearAlgebra.FinsuppVectorSpace
 
 /-!
 # Bases and dimensionality of tensor products of modules
