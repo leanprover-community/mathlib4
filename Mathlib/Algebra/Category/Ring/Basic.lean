@@ -101,7 +101,7 @@ set_option linter.uppercaseLean3 false in
 
 -- Porting note: needed for several lemmas below.
 -- I assume this is correct, given the useful bits of `FunLike` are now part of
---  bundledHom` in some sense.
+--  `bundledHom` in some sense.
 instance {X Y : SemiRingCat} : CoeFun (X ⟶ Y) (fun _ => X → Y) :=
   ConcreteCategory.hasCoeToFun
 
@@ -170,13 +170,13 @@ instance : CoeSort RingCat (Type _) := by
   dsimp [RingCat]
   infer_instance
 
-/-- Construct a bundled Ring from the underlying type and typeclass. -/
+/-- Construct a bundled `Ring` from the underlying type and typeclass. -/
 def of (R : Type u) [Ring R] : RingCat :=
   Bundled.of R
 set_option linter.uppercaseLean3 false in
 #align Ring.of RingCat.of
 
-/-- Typecheck a `ring_hom` as a morphism in `Ring`. -/
+/-- Typecheck a `RingHom` as a morphism in `Ring`. -/
 def ofHom {R S : Type u} [Ring R] [Ring S] (f : R →+* S) : of R ⟶ of S :=
   f
 set_option linter.uppercaseLean3 false in
@@ -241,13 +241,13 @@ instance : CoeSort CommSemiRingCat (Type _) := by
   dsimp [CommSemiRingCat]
   infer_instance
 
-/-- Construct a bundled CommSemiRing from the underlying type and typeclass. -/
+/-- Construct a bundled `CommSemiRing` from the underlying type and typeclass. -/
 def of (R : Type u) [CommSemiring R] : CommSemiRingCat :=
   Bundled.of R
 set_option linter.uppercaseLean3 false in
 #align CommSemiRing.of CommSemiRing.of
 
-/-- Typecheck a `ring_hom` as a morphism in `CommSemiRing`. -/
+/-- Typecheck a `RingHom` as a morphism in `CommSemiRing`. -/
 def ofHom {R S : Type u} [CommSemiring R] [CommSemiring S] (f : R →+* S) : of R ⟶ of S :=
   f
 set_option linter.uppercaseLean3 false in
@@ -301,7 +301,7 @@ namespace CommRingCat
 instance : BundledHom.ParentProjection @CommRing.toRing :=
   ⟨⟩
 
--- Porting note: deriving dails for concrete category.
+-- Porting note: deriving fails for concrete category.
 deriving instance LargeCategory for CommRingCat
 
 instance : ConcreteCategory CommRingCat := by
@@ -312,13 +312,13 @@ instance : CoeSort CommRingCat (Type _) := by
   dsimp [CommRingCat]
   infer_instance
 
-/-- Construct a bundled CommRing from the underlying type and typeclass. -/
+/-- Construct a bundled `CommRing` from the underlying type and typeclass. -/
 def of (R : Type u) [CommRing R] : CommRingCat :=
   Bundled.of R
 set_option linter.uppercaseLean3 false in
 #align CommRing.of CommRingCat.of
 
-/-- Typecheck a `ring_hom` as a morphism in `CommRing`. -/
+/-- Typecheck a `RingHom` as a morphism in `CommRing`. -/
 def ofHom {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S) : of R ⟶ of S :=
   f
 set_option linter.uppercaseLean3 false in
@@ -373,7 +373,7 @@ namespace RingEquiv
 
 variable {X Y : Type u}
 
-/-- Build an isomorphism in the category `Ring` from a `ring_equiv` between `ring`s. -/
+/-- Build an isomorphism in the category `RingCat` from a `RingEquiv` between `Ring`s. -/
 @[simps]
 def toRingCatIso [Ring X] [Ring Y] (e : X ≃+* Y) : RingCat.of X ≅ RingCat.of Y
     where
@@ -386,7 +386,7 @@ def toRingCatIso [Ring X] [Ring Y] (e : X ≃+* Y) : RingCat.of X ≅ RingCat.of
 set_option linter.uppercaseLean3 false in
 #align ring_equiv.to_Ring_iso RingEquiv.toRingCatIso
 
-/-- Build an isomorphism in the category `CommRing` from a `ring_equiv` between `comm_ring`s. -/
+/-- Build an isomorphism in the category `CommRingCat` from a `RingEquiv` between `CommRing`s. -/
 @[simps]
 def toCommRingCatIso [CommRing X] [CommRing Y] (e : X ≃+* Y) : CommRingCat.of X ≅ CommRingCat.of Y
     where
@@ -403,7 +403,7 @@ end RingEquiv
 
 namespace CategoryTheory.Iso
 
-/-- Build a `ring_equiv` from an isomorphism in the category `RingCat`. -/
+/-- Build a `RingEquiv` from an isomorphism in the category `RingCat`. -/
 def ringCatIsoToRingEquiv {X Y : RingCat} (i : X ≅ Y) : X ≃+* Y
     where
   toFun := i.hom
@@ -416,7 +416,7 @@ def ringCatIsoToRingEquiv {X Y : RingCat} (i : X ≅ Y) : X ≃+* Y
 set_option linter.uppercaseLean3 false in
 #align category_theory.iso.Ring_iso_to_ring_equiv CategoryTheory.Iso.ringCatIsoToRingEquiv
 
-/-- Build a `ring_equiv` from an isomorphism in the category `CommRing`. -/
+/-- Build a `RingEquiv` from an isomorphism in the category `CommRing`. -/
 def commRingCatIsoToRingEquiv {X Y : CommRingCat} (i : X ≅ Y) : X ≃+* Y
     where
   toFun := i.hom
@@ -447,7 +447,7 @@ set_option linter.uppercaseLean3 false in
 
 end CategoryTheory.Iso
 
-/-- Ring equivalences between `ring`s are the same as (isomorphic to) isomorphisms in `Ring`. -/
+/-- Ring equivalences between `Ring`s are the same as (isomorphic to) isomorphisms in `RingCat`. -/
 def ringEquivIsoRingIso {X Y : Type u} [Ring X] [Ring Y] : X ≃+* Y ≅ RingCat.of X ≅ RingCat.of Y
     where
   hom e := e.toRingCatIso
@@ -455,8 +455,8 @@ def ringEquivIsoRingIso {X Y : Type u} [Ring X] [Ring Y] : X ≃+* Y ≅ RingCat
 set_option linter.uppercaseLean3 false in
 #align ring_equiv_iso_Ring_iso ringEquivIsoRingIso
 
-/-- Ring equivalences between `comm_ring`s are the same as (isomorphic to) isomorphisms
-in `CommRing`. -/
+/-- Ring equivalences between `CommRing`s are the same as (isomorphic to) isomorphisms
+in `CommRingCat`. -/
 def ringEquivIsoCommRingIso {X Y : Type u} [CommRing X] [CommRing Y] :
     X ≃+* Y ≅ CommRingCat.of X ≅ CommRingCat.of Y
     where
@@ -497,11 +497,10 @@ theorem CommRingCat.ringHom_comp_eq_comp {R S T : Type _} [CommRing R] [CommRing
 set_option linter.uppercaseLean3 false in
 #align CommRing.ring_hom_comp_eq_comp CommRingCat.ringHom_comp_eq_comp
 
--- Porting note: Again, the following attribute and example fail in lean 4, unfortunately.
-
 -- It would be nice if we could have the following,
--- but it requires making `reflects_isomorphisms_forget₂` an instance,
+-- but it requires making `reflectsIsomorphisms_forget₂` an instance,
 -- which can cause typeclass loops:
--- attribute [local instance] reflects_isomorphisms_forget₂
+-- Porting note: This was the case in mathlib3, perhaps it is different now?
+attribute [local instance] reflectsIsomorphisms_forget₂
 
--- example : ReflectsIsomorphisms (forget₂ RingCat AddCommGroupCat) := by infer_instance
+example : ReflectsIsomorphisms (forget₂ RingCat AddCommGroupCat) := by infer_instance
