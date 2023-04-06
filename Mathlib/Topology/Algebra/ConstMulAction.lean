@@ -140,7 +140,8 @@ instance OrderDual.continuousConstSMul' : ContinuousConstSMul Mᵒᵈ α :=
 #align order_dual.has_continuous_const_vadd' OrderDual.continuousConstVAdd'
 
 @[to_additive]
-instance [SMul M β] [ContinuousConstSMul M β] : ContinuousConstSMul M (α × β) :=
+instance Prod.continuousConstSMul [SMul M β] [ContinuousConstSMul M β] :
+    ContinuousConstSMul M (α × β) :=
   ⟨fun _ => (continuous_fst.const_smul _).prod_mk (continuous_snd.const_smul _)⟩
 
 @[to_additive]
@@ -171,7 +172,7 @@ instance Units.continuousConstSMul : ContinuousConstSMul Mˣ α
 
 @[to_additive]
 theorem smul_closure_subset (c : M) (s : Set α) : c • closure s ⊆ closure (c • s) :=
-  ((Set.mapsTo_image _ _).closure <| continuous_id.const_smul c).image_subset
+  ((Set.mapsTo_image _ _).closure <| continuous_const_smul c).image_subset
 #align smul_closure_subset smul_closure_subset
 #align vadd_closure_subset vadd_closure_subset
 
@@ -181,6 +182,14 @@ theorem smul_closure_orbit_subset (c : M) (x : α) :
   (smul_closure_subset c _).trans <| closure_mono <| MulAction.smul_orbit_subset _ _
 #align smul_closure_orbit_subset smul_closure_orbit_subset
 #align vadd_closure_orbit_subset vadd_closure_orbit_subset
+
+theorem isClosed_setOf_map_smul [Monoid N] (α β) [MulAction M α] [MulAction N β]
+    [TopologicalSpace β] [T2Space β] [ContinuousConstSMul N β] (σ : M → N) :
+    IsClosed { f : α → β | ∀ c x, f (c • x) = σ c • f x } := by
+  simp only [Set.setOf_forall]
+  exact isClosed_interᵢ fun c => isClosed_interᵢ fun x =>
+    isClosed_eq (continuous_apply _) ((continuous_apply _).const_smul _)
+#align is_closed_set_of_map_smul isClosed_setOf_map_smulₓ
 
 end Monoid
 
