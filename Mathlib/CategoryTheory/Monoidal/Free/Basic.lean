@@ -331,10 +331,11 @@ def project : MonoidalFunctor (F C) D where
   μ_natural := @fun X Y X' Y' f g => by
     induction' f using Quotient.recOn
     induction' g using Quotient.recOn
-    -- FIXME
-    -- There are goals here, but even proving them by `sorry`
-    -- generates a warning about unreachable code...?
-    sorry
+    · dsimp
+      simp
+      rfl
+    · rfl
+    · rfl
 #align category_theory.free_monoidal_category.project CategoryTheory.FreeMonoidalCategory.project
 
 end Functor
