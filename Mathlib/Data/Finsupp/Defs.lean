@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Scott Morrison
 
 ! This file was ported from Lean 3 source module data.finsupp.defs
-! leanprover-community/mathlib commit 6623e6af705e97002a9054c1c05a980180276fc1
+! leanprover-community/mathlib commit 842328d9df7e96fd90fc424e115679c15fb23a71
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -317,11 +317,11 @@ theorem single_apply_left {f : α → β} (hf : Function.Injective f) (x z : α)
     single (f x) y (f z) = single x y z := by classical simp only [single_apply, hf.eq_iff]
 #align finsupp.single_apply_left Finsupp.single_apply_left
 
-theorem single_eq_indicator : ⇑(single a b) = Set.indicator {a} fun _ => b := by
+theorem single_eq_set_indicator : ⇑(single a b) = Set.indicator {a} fun _ => b := by
   classical
   ext
   simp [single_apply, Set.indicator, @eq_comm _ a]
-#align finsupp.single_eq_indicator Finsupp.single_eq_indicator
+#align finsupp.single_eq_set_indicator Finsupp.single_eq_set_indicator
 
 @[simp]
 theorem single_eq_same : (single a b : α →₀ M) a = b := by
@@ -335,7 +335,7 @@ theorem single_eq_of_ne (h : a ≠ a') : (single a b : α →₀ M) a' = 0 := by
 
 theorem single_eq_update [DecidableEq α] (a : α) (b : M) :
     ⇑(single a b) = Function.update (0 : _) a b :=
-  by classical rw [single_eq_indicator, ← Set.piecewise_eq_indicator, Set.piecewise_singleton]
+  by classical rw [single_eq_set_indicator, ← Set.piecewise_eq_indicator, Set.piecewise_singleton]
 #align finsupp.single_eq_update Finsupp.single_eq_update
 
 theorem single_eq_pi_single [DecidableEq α] (a : α) (b : M) : ⇑(single a b) = Pi.single a b :=
@@ -382,7 +382,7 @@ theorem single_injective (a : α) : Function.Injective (single a : M → α →�
 #align finsupp.single_injective Finsupp.single_injective
 
 theorem single_apply_eq_zero {a x : α} {b : M} : single a b x = 0 ↔ x = a → b = 0 := by
-  simp [single_eq_indicator]
+  simp [single_eq_set_indicator]
 #align finsupp.single_apply_eq_zero Finsupp.single_apply_eq_zero
 
 theorem single_apply_ne_zero {a x : α} {b : M} : single a b x ≠ 0 ↔ x = a ∧ b ≠ 0 := by
@@ -438,7 +438,8 @@ theorem support_single_disjoint {b' : M} (hb : b ≠ 0) (hb' : b' ≠ 0) {i j : 
 #align finsupp.support_single_disjoint Finsupp.support_single_disjoint
 
 @[simp]
-theorem single_eq_zero : single a b = 0 ↔ b = 0 := by simp [FunLike.ext_iff, single_eq_indicator]
+theorem single_eq_zero : single a b = 0 ↔ b = 0 := by
+  simp [FunLike.ext_iff, single_eq_set_indicator]
 #align finsupp.single_eq_zero Finsupp.single_eq_zero
 
 theorem single_swap (a₁ a₂ : α) (b : M) : single a₁ b a₂ = single a₂ b a₁ := by

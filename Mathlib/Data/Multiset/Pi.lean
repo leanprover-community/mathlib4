@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 
 ! This file was ported from Lean 3 source module data.multiset.pi
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
+! leanprover-community/mathlib commit 4c586d291f189eecb9d00581aeb3dd998ac34442
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -25,11 +25,12 @@ open Function
 
 /-- Given `δ : α → Type _`, `Pi.empty δ` is the trivial dependent function out of the empty
 multiset. -/
-def Pi.empty (δ : α → Type _) : ∀ a ∈ (0 : Multiset α), δ a :=
+def Pi.empty (δ : α → Sort _) : ∀ a ∈ (0 : Multiset α), δ a :=
   fun.
 #align multiset.pi.empty Multiset.Pi.empty
 
-variable [DecidableEq α] {δ : α → Type _}
+universe u v
+variable [DecidableEq α] {β : α → Type u} {δ : α → Sort v}
 
 /-- Given `δ : α → Type _`, a multiset `m` and a term `a`, as well as a term `b : δ a` and a
 function `f` such that `f a' : δ a'` for all `a'` in `m`, `Pi.cons m a b f` is a function `g` such
@@ -62,9 +63,9 @@ theorem Pi.cons_swap {a a' : α} {b : δ a} {b' : δ a'} {m : Multiset α} {f : 
 #align multiset.pi.cons_swap Multiset.Pi.cons_swap
 
 /-- `pi m t` constructs the Cartesian product over `t` indexed by `m`. -/
-def pi (m : Multiset α) (t : ∀ a, Multiset (δ a)) : Multiset (∀ a ∈ m, δ a) :=
-  m.recOn {Pi.empty δ}
-    (fun a m (p : Multiset (∀ a ∈ m, δ a)) => (t a).bind fun b => p.map <| Pi.cons m a b)
+def pi (m : Multiset α) (t : ∀ a, Multiset (β a)) : Multiset (∀ a ∈ m, β a) :=
+  m.recOn {Pi.empty β}
+    (fun a m (p : Multiset (∀ a ∈ m, β a)) => (t a).bind fun b => p.map <| Pi.cons m a b)
     (by
       intro a a' m n
       by_cases eq : a = a'
@@ -83,12 +84,12 @@ def pi (m : Multiset α) (t : ∀ a, Multiset (δ a)) : Multiset (∀ a ∈ m, �
 #align multiset.pi Multiset.pi
 
 @[simp]
-theorem pi_zero (t : ∀ a, Multiset (δ a)) : pi 0 t = {Pi.empty δ} :=
+theorem pi_zero (t : ∀ a, Multiset (β a)) : pi 0 t = {Pi.empty β} :=
   rfl
 #align multiset.pi_zero Multiset.pi_zero
 
 @[simp]
-theorem pi_cons (m : Multiset α) (t : ∀ a, Multiset (δ a)) (a : α) :
+theorem pi_cons (m : Multiset α) (t : ∀ a, Multiset (β a)) (a : α) :
     pi (a ::ₘ m) t = (t a).bind fun b => (pi m t).map <| Pi.cons m a b :=
   recOn_cons a m
 #align multiset.pi_cons Multiset.pi_cons
@@ -105,12 +106,12 @@ theorem pi_cons_injective {a : α} {b : δ a} {s : Multiset α} (hs : a ∉ s) :
         _ = f₂ a' h' := by rw [Pi.cons_ne this ne.symm]
 #align multiset.pi_cons_injective Multiset.pi_cons_injective
 
-theorem card_pi (m : Multiset α) (t : ∀ a, Multiset (δ a)) :
+theorem card_pi (m : Multiset α) (t : ∀ a, Multiset (β a)) :
     card (pi m t) = prod (m.map fun a => card (t a)) :=
   Multiset.induction_on m (by simp) (by simp (config := { contextual := true }) [mul_comm])
 #align multiset.card_pi Multiset.card_pi
 
-protected theorem Nodup.pi {s : Multiset α} {t : ∀ a, Multiset (δ a)} :
+protected theorem Nodup.pi {s : Multiset α} {t : ∀ a, Multiset (β a)} :
     Nodup s → (∀ a ∈ s, Nodup (t a)) → Nodup (pi s t) :=
   Multiset.induction_on s (fun _ _ => nodup_singleton _)
     (by
@@ -139,14 +140,11 @@ theorem pi.cons_ext {m : Multiset α} {a : α} (f : ∀ a' ∈ a ::ₘ m, δ a')
   · rw [Pi.cons_ne _ h]
 #align multiset.pi.cons_ext Multiset.pi.cons_ext
 
-theorem pi.con_ext {m : Multiset α} {a : α} (f : ∀ a' ∈ a ::ₘ m, δ a') :
-    (Pi.cons m a (f _ (mem_cons_self _ _)) fun a' ha' => f a' (mem_cons_of_mem ha')) = f := by simp
-
-theorem mem_pi (m : Multiset α) (t : ∀ a, Multiset (δ a)) :
-    ∀ f : ∀ a ∈ m, δ a, f ∈ pi m t ↔ ∀ (a) (h : a ∈ m), f a h ∈ t a := by
+theorem mem_pi (m : Multiset α) (t : ∀ a, Multiset (β a)) :
+    ∀ f : ∀ a ∈ m, β a, f ∈ pi m t ↔ ∀ (a) (h : a ∈ m), f a h ∈ t a := by
   intro f
   induction' m using Multiset.induction_on with a m ih
-  . have : f = Pi.empty δ := funext (fun _ => funext fun h => (not_mem_zero _ h).elim)
+  . have : f = Pi.empty β := funext (fun _ => funext fun h => (not_mem_zero _ h).elim)
     simp only [this, pi_zero, mem_singleton, true_iff]
     intro _ h; exact (not_mem_zero _ h).elim
   simp_rw [pi_cons, mem_bind, mem_map, ih]

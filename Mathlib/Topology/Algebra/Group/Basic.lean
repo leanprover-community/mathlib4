@@ -261,7 +261,8 @@ theorem ContinuousWithinAt.inv (hf : ContinuousWithinAt f s x) :
 #align continuous_within_at.neg ContinuousWithinAt.neg
 
 @[to_additive]
-instance [TopologicalSpace H] [Inv H] [ContinuousInv H] : ContinuousInv (G × H) :=
+instance Prod.continuousInv [TopologicalSpace H] [Inv H] [ContinuousInv H] :
+    ContinuousInv (G × H) :=
   ⟨continuous_inv.fst'.prod_mk continuous_inv.snd'⟩
 
 variable {ι : Type _}
@@ -1514,7 +1515,7 @@ theorem Subgroup.properlyDiscontinuousSMul_opposite_of_tendsto_cofinite (S : Sub
         hS ((hK.prod hL).image (continuous_mul.comp this)).compl_mem_cocompact
       simp only [preimage_compl, compl_compl, coeSubtype, comp_apply] at H
       apply Finite.of_preimage _ (oppositeEquiv S).surjective
-      convert H
+      convert H using 1
       ext x
       simp only [image_smul, mem_setOf_eq, coeSubtype, mem_preimage, mem_image, Prod.exists]
       exact Set.op_smul_inter_ne_empty_iff }

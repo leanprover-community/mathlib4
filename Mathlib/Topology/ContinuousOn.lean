@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 
 ! This file was ported from Lean 3 source module topology.continuous_on
-! leanprover-community/mathlib commit bcfa726826abd57587355b4b5b7e78ad6527b7e4
+! leanprover-community/mathlib commit 55d771df074d0dd020139ee1cd4b95521422df9f
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -227,9 +227,9 @@ theorem nhdsWithin_eq_nhdsWithin {a : α} {s t u : Set α} (h₀ : a ∈ s) (h�
   rw [nhdsWithin_restrict t h₀ h₁, nhdsWithin_restrict u h₀ h₁, h₂]
 #align nhds_within_eq_nhds_within nhdsWithin_eq_nhdsWithin
 
--- porting note: new lemma; todo: make it `@[simp]`
-theorem nhdsWithin_eq_nhds {a : α} {s : Set α} : 𝓝[s] a = 𝓝 a ↔ s ∈ 𝓝 a :=
+@[simp] theorem nhdsWithin_eq_nhds {a : α} {s : Set α} : 𝓝[s] a = 𝓝 a ↔ s ∈ 𝓝 a :=
   inf_eq_left.trans le_principal_iff
+#align nhds_within_eq_nhds nhdsWithin_eq_nhds
 
 theorem IsOpen.nhdsWithin_eq {a : α} {s : Set α} (h : IsOpen s) (ha : a ∈ s) : 𝓝[s] a = 𝓝 a :=
   nhdsWithin_eq_nhds.2 <| h.mem_nhds ha
@@ -252,6 +252,22 @@ theorem nhdsWithin_union (a : α) (s t : Set α) : 𝓝[s ∪ t] a = 𝓝[s] a �
   rw [← inf_sup_left, sup_principal]
 #align nhds_within_union nhdsWithin_union
 
+theorem nhdsWithin_bunionᵢ {ι} {I : Set ι} (hI : I.Finite) (s : ι → Set α) (a : α) :
+    𝓝[⋃ i ∈ I, s i] a = ⨆ i ∈ I, 𝓝[s i] a :=
+  Set.Finite.induction_on hI (by simp) fun _ _ hT ↦ by
+    simp only [hT, nhdsWithin_union, supᵢ_insert, bunionᵢ_insert]
+#align nhds_within_bUnion nhdsWithin_bunionᵢ
+
+theorem nhdsWithin_unionₛ {S : Set (Set α)} (hS : S.Finite) (a : α) :
+    𝓝[⋃₀ S] a = ⨆ s ∈ S, 𝓝[s] a := by
+  rw [unionₛ_eq_bunionᵢ, nhdsWithin_bunionᵢ hS]
+#align nhds_within_sUnion nhdsWithin_unionₛ
+
+theorem nhdsWithin_unionᵢ {ι} [Finite ι] (s : ι → Set α) (a : α) :
+    𝓝[⋃ i, s i] a = ⨆ i, 𝓝[s i] a := by
+  rw [← unionₛ_range, nhdsWithin_unionₛ (finite_range s), supᵢ_range]
+#align nhds_within_Union nhdsWithin_unionᵢ
+
 theorem nhdsWithin_inter (a : α) (s t : Set α) : 𝓝[s ∩ t] a = 𝓝[s] a ⊓ 𝓝[t] a := by
   delta nhdsWithin
   rw [inf_left_comm, inf_assoc, inf_principal, ← inf_assoc, inf_idem]
@@ -267,9 +283,9 @@ theorem nhdsWithin_inter_of_mem {a : α} {s t : Set α} (h : s ∈ 𝓝[t] a) : 
   exact nhdsWithin_le_of_mem h
 #align nhds_within_inter_of_mem nhdsWithin_inter_of_mem
 
--- porting note: new lemma
 theorem nhdsWithin_inter_of_mem' {a : α} {s t : Set α} (h : t ∈ 𝓝[s] a) : 𝓝[s ∩ t] a = 𝓝[s] a := by
   rw [inter_comm, nhdsWithin_inter_of_mem h]
+#align nhds_within_inter_of_mem' nhdsWithin_inter_of_mem'
 
 @[simp]
 theorem nhdsWithin_singleton (a : α) : 𝓝[{a}] a = pure a := by
@@ -651,6 +667,14 @@ theorem ContinuousOn.prod_map {f : α → γ} {g : β → δ} {s : Set α} {t : 
     (hf : ContinuousOn f s) (hg : ContinuousOn g t) : ContinuousOn (Prod.map f g) (s ×ˢ t) :=
   fun ⟨x, y⟩ ⟨hx, hy⟩ => ContinuousWithinAt.prod_map (hf x hx) (hg y hy)
 #align continuous_on.prod_map ContinuousOn.prod_map
+
+theorem continuous_of_cover_nhds {ι : Sort _} {f : α → β} {s : ι → Set α}
+    (hs : ∀ x : α, ∃ i, s i ∈ 𝓝 x) (hf : ∀ i, ContinuousOn f (s i)) :
+    Continuous f :=
+  continuous_iff_continuousAt.mpr fun x ↦ let ⟨i, hi⟩ := hs x; by
+    rw [ContinuousAt, ← nhdsWithin_eq_nhds.2 hi]
+    exact hf _ _ (mem_of_mem_nhds hi)
+#align continuous_of_cover_nhds continuous_of_cover_nhds
 
 theorem continuousOn_empty (f : α → β) : ContinuousOn f ∅ := fun _ => False.elim
 #align continuous_on_empty continuousOn_empty

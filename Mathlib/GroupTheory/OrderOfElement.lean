@@ -160,7 +160,8 @@ theorem orderOf_pos' (h : IsOfFinOrder x) : 0 < orderOf x :=
 -- porting note: `rw [mul_one]` does not work
 @[to_additive addOrderOf_nsmul_eq_zero]
 theorem pow_orderOf_eq_one (x : G) : x ^ orderOf x = 1 := by
-  convert isPeriodicPt_minimalPeriod (x * ·) 1
+  -- porting note: was `convert`, but the `1` in the lemma is equal only after unfolding
+  refine Eq.trans ?_ (isPeriodicPt_minimalPeriod (x * ·) 1)
   rw [orderOf, mul_left_iterate]; simp only [mul_one]
 #align pow_order_of_eq_one pow_orderOf_eq_one
 #align add_order_of_nsmul_eq_zero addOrderOf_nsmul_eq_zero
@@ -780,7 +781,7 @@ theorem finEquivPowers_symm_apply [Finite G] (x : G) (n : ℕ) {hn : ∃ m : ℕ
 /-- The equivalence between `Submonoid.powers` of two elements `x, y` of the same order, mapping
   `x ^ i` to `y ^ i`. -/
 @[to_additive multiplesEquivMultiples
-  "The equivalence between `submonoid.multiples` of two elements `a, b` of the same additive order,
+  "The equivalence between `Submonoid.multiples` of two elements `a, b` of the same additive order,
   mapping `i • a` to `i • b`."]
 noncomputable def powersEquivPowers [Finite G] (h : orderOf x = orderOf y) :
     (Submonoid.powers x : Set G) ≃ (Submonoid.powers y : Set G) :=

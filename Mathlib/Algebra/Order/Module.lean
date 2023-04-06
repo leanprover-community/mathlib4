@@ -29,7 +29,7 @@ open Pointwise
 
 variable {k M N : Type _}
 
-instance [Semiring k] [OrderedAddCommMonoid M] [Module k M] : Module k Mᵒᵈ
+instance instModuleOrderDual [Semiring k] [OrderedAddCommMonoid M] [Module k M] : Module k Mᵒᵈ
     where
   add_smul _ _ x := OrderDual.rec (add_smul _ _) x
   zero_smul m := OrderDual.rec (zero_smul _) m
