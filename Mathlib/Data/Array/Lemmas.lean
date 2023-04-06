@@ -225,20 +225,20 @@ section ToArray
 variable {n : ℕ} {α : Type u}
 
 @[simp]
-theorem toList_toArray (a : Array' n α) : HEq a.toList.toArray a :=
+theorem toList_toArray (a : Array' n α) : HEq a.toList.toArray' a :=
   heq_of_heq_of_eq
-      (@Eq.recOn
+      (@Eq.recOn _ _
         (fun m (e : a.toList.length = m) ↦
-          HEq (DArray.mk fun v ↦ a.toList.get v.val v.property)
-            (@DArray.mk m (fun _ ↦ α) fun v ↦ a.toList.get v.val <| e.symm ▸ v.property))
-        a.toList_length HEq.rfl) <|
+          HEq (DArray.mk fun v ↦ a.toList.get v)
+            (@DArray.mk m (fun _ ↦ α) fun v ↦ a.toList.get ⟨v.val, e.symm ▸ v.prop⟩))
+        _ a.toList_length HEq.rfl) <|
     DArray.ext fun ⟨i, h⟩ ↦ toList_get i h _
 #align array.to_list_to_array Array'.toList_toArray
 
 @[simp]
-theorem toArray_toList (l : List α) : l.toArray.toList = l := by
-  rw [Array.toList_eq, Array.data_toArray]
-#align array.to_array_to_list Array'.toArray_toList
+theorem toArray'_toList (l : List α) : l.toArray'.toList = l :=
+  List.ext_get (toList_length _) fun _ _ h2 => toList_get _ h2 _
+#align array.to_array_to_list Array'.toArray'_toList
 
 end ToArray
 

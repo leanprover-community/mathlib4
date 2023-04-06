@@ -11,6 +11,7 @@ Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, M
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Control.Functor
 import Mathlib.Data.Nat.Basic
+import Mathlib.Init.Data.Array.Basic
 import Mathlib.Logic.Basic
 import Std.Tactic.Lint.Basic
 import Std.Data.RBMap.Basic
@@ -70,7 +71,10 @@ instance [DecidableEq α] : SDiff (List α) :=
 #align list.split_on List.splitOn
 #align list.concat List.concat
 #align list.head' List.head?
-#align list.to_array List.toArray
+
+def toArray' (l : List α) : Array' l.length α where data v := l.get v
+#align list.to_array List.toArray'
+
 #align list.nthd List.getD
 -- porting notes: see
 -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/List.2Ehead/near/313204716
