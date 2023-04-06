@@ -103,13 +103,13 @@ theorem Nat.tendsto_pow_atTop_atTop_of_one_lt {m : ℕ} (h : 1 < m) :
 
 theorem tendsto_pow_atTop_nhds_0_of_lt_1 {𝕜 : Type _} [LinearOrderedField 𝕜] [Archimedean 𝕜]
     [TopologicalSpace 𝕜] [OrderTopology 𝕜] {r : 𝕜} (h₁ : 0 ≤ r) (h₂ : r < 1) :
-    Tendsto (fun n : ℕ => r ^ n) atTop (𝓝 0) := by
-  cases' h₁.eq_or_lt with h h
-  · exact (tendsto_add_atTop_iff_nat 1).mp <| by simp only [_root_.pow_succ, ← h, zero_mul,
-      tendsto_const_nhds_iff]
-  · have : Tendsto (fun n => (r⁻¹ ^ n)⁻¹) atTop (𝓝 0) :=
-      (tendsto_inv_atTop_zero (𝕜 := 𝕜)).comp (tendsto_pow_atTop_atTop_of_one_lt <| one_lt_inv h h₂)
-    exact this.congr fun n => by simp
+    Tendsto (fun n : ℕ => r ^ n) atTop (𝓝 0) :=
+  h₁.eq_or_lt.elim
+    (fun hr => (tendsto_add_atTop_iff_nat 1).mp <| by
+      simp [_root_.pow_succ, ← hr, tendsto_const_nhds])
+    (fun hr =>
+      have := one_lt_inv hr h₂ |> tendsto_pow_atTop_atTop_of_one_lt
+      (tendsto_inv_atTop_zero.comp this).congr fun n => by simp)
 #align tendsto_pow_at_top_nhds_0_of_lt_1 tendsto_pow_atTop_nhds_0_of_lt_1
 
 theorem tendsto_pow_atTop_nhdsWithin_0_of_lt_1 {𝕜 : Type _} [LinearOrderedField 𝕜] [Archimedean 𝕜]
@@ -473,7 +473,8 @@ theorem Set.Countable.exists_pos_hasSum_le {ι : Type _} {s : Set ι} (hs : s.Co
   haveI := hs.toEncodable
   rcases posSumOfEncodable hε s with ⟨f, hf0, ⟨c, hfc, hcε⟩⟩
   refine' ⟨fun i => if h : i ∈ s then f ⟨i, h⟩ else 1, fun i => _, ⟨c, _, hcε⟩⟩
-  · split_ifs
+  · conv_rhs => simp
+    split_ifs
     exacts [hf0 _, zero_lt_one]
   · simpa only [Subtype.coe_prop, dif_pos, Subtype.coe_eta]
 #align set.countable.exists_pos_has_sum_le Set.Countable.exists_pos_hasSum_le
