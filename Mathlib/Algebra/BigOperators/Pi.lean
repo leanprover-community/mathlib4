@@ -77,7 +77,7 @@ variable {I : Type _} [DecidableEq I] {Z : I → Type _}
 
 variable [∀ i, AddCommMonoid (Z i)]
 
--- As we only defined `single` into `add_monoid`, we only prove the `finset.sum` version here.
+-- As we only defined `single` into `add_monoid`, we only prove the `Finset.sum` version here.
 theorem Finset.univ_sum_single [Fintype I] (f : ∀ i, Z i) : (∑ i, Pi.single i (f i)) = f := by
   ext a
   simp

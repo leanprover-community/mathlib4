@@ -35,6 +35,7 @@ import Mathlib.Algebra.Category.GroupCat.Zero
 import Mathlib.Algebra.Category.MonCat.Basic
 import Mathlib.Algebra.CharP.Algebra
 import Mathlib.Algebra.CharP.Basic
+import Mathlib.Algebra.CharP.CharAndCard
 import Mathlib.Algebra.CharP.ExpChar
 import Mathlib.Algebra.CharP.Invertible
 import Mathlib.Algebra.CharP.Pi
@@ -298,6 +299,7 @@ import Mathlib.Analysis.NormedSpace.IndicatorFunction
 import Mathlib.Analysis.NormedSpace.Int
 import Mathlib.Analysis.NormedSpace.MStructure
 import Mathlib.Analysis.Subadditive
+import Mathlib.CategoryTheory.Abelian.Basic
 import Mathlib.CategoryTheory.Abelian.Images
 import Mathlib.CategoryTheory.Abelian.NonPreadditive
 import Mathlib.CategoryTheory.Adjunction.Basic
@@ -365,6 +367,7 @@ import Mathlib.CategoryTheory.Functor.Hom
 import Mathlib.CategoryTheory.Functor.InvIsos
 import Mathlib.CategoryTheory.Functor.ReflectsIso
 import Mathlib.CategoryTheory.GlueData
+import Mathlib.CategoryTheory.Grothendieck
 import Mathlib.CategoryTheory.Groupoid
 import Mathlib.CategoryTheory.Groupoid.Basic
 import Mathlib.CategoryTheory.Groupoid.VertexGroup
@@ -491,6 +494,7 @@ import Mathlib.CategoryTheory.Sigma.Basic
 import Mathlib.CategoryTheory.SingleObj
 import Mathlib.CategoryTheory.Sites.Grothendieck
 import Mathlib.CategoryTheory.Sites.Pretopology
+import Mathlib.CategoryTheory.Sites.Sheaf
 import Mathlib.CategoryTheory.Sites.SheafOfTypes
 import Mathlib.CategoryTheory.Sites.Sieves
 import Mathlib.CategoryTheory.Sites.Spaces
@@ -535,6 +539,7 @@ import Mathlib.Combinatorics.SetFamily.Kleitman
 import Mathlib.Combinatorics.SetFamily.LYM
 import Mathlib.Combinatorics.SetFamily.Shadow
 import Mathlib.Combinatorics.SimpleGraph.Acyclic
+import Mathlib.Combinatorics.SimpleGraph.AdjMatrix
 import Mathlib.Combinatorics.SimpleGraph.Basic
 import Mathlib.Combinatorics.SimpleGraph.Clique
 import Mathlib.Combinatorics.SimpleGraph.Coloring
@@ -542,6 +547,7 @@ import Mathlib.Combinatorics.SimpleGraph.Connectivity
 import Mathlib.Combinatorics.SimpleGraph.DegreeSum
 import Mathlib.Combinatorics.SimpleGraph.Density
 import Mathlib.Combinatorics.SimpleGraph.Hasse
+import Mathlib.Combinatorics.SimpleGraph.IncMatrix
 import Mathlib.Combinatorics.SimpleGraph.Init
 import Mathlib.Combinatorics.SimpleGraph.Matching
 import Mathlib.Combinatorics.SimpleGraph.Metric
@@ -556,6 +562,7 @@ import Mathlib.Combinatorics.SimpleGraph.Trails
 import Mathlib.Combinatorics.SimpleGraph.Triangle.Basic
 import Mathlib.Combinatorics.Young.SemistandardTableau
 import Mathlib.Combinatorics.Young.YoungDiagram
+import Mathlib.Computability.Ackermann
 import Mathlib.Computability.DFA
 import Mathlib.Computability.EpsilonNFA
 import Mathlib.Computability.Language
@@ -1022,6 +1029,7 @@ import Mathlib.Data.Sigma.Order
 import Mathlib.Data.Sign
 import Mathlib.Data.Stream.Defs
 import Mathlib.Data.Stream.Init
+import Mathlib.Data.String.Basic
 import Mathlib.Data.String.Defs
 import Mathlib.Data.String.Lemmas
 import Mathlib.Data.Subtype
@@ -1103,6 +1111,7 @@ import Mathlib.GroupTheory.NoncommPiCoprod
 import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.GroupTheory.Perm.Basic
 import Mathlib.GroupTheory.Perm.Cycle.Basic
+import Mathlib.GroupTheory.Perm.Cycle.Type
 import Mathlib.GroupTheory.Perm.List
 import Mathlib.GroupTheory.Perm.Option
 import Mathlib.GroupTheory.Perm.Sign
@@ -1287,6 +1296,11 @@ import Mathlib.Order.Bounded
 import Mathlib.Order.BoundedOrder
 import Mathlib.Order.Bounds.Basic
 import Mathlib.Order.Bounds.OrderIso
+import Mathlib.Order.Category.LatCat
+import Mathlib.Order.Category.LinOrdCat
+import Mathlib.Order.Category.NonemptyFinLinOrdCat
+import Mathlib.Order.Category.PartOrdCat
+import Mathlib.Order.Category.PreordCat
 import Mathlib.Order.Chain
 import Mathlib.Order.Circular
 import Mathlib.Order.Closure
@@ -1399,6 +1413,7 @@ import Mathlib.RingTheory.Congruence
 import Mathlib.RingTheory.Coprime.Basic
 import Mathlib.RingTheory.Coprime.Ideal
 import Mathlib.RingTheory.Coprime.Lemmas
+import Mathlib.RingTheory.EisensteinCriterion
 import Mathlib.RingTheory.EuclideanDomain
 import Mathlib.RingTheory.FiniteType
 import Mathlib.RingTheory.Finiteness
@@ -1410,6 +1425,7 @@ import Mathlib.RingTheory.Ideal.IdempotentFg
 import Mathlib.RingTheory.Ideal.Operations
 import Mathlib.RingTheory.Ideal.Prod
 import Mathlib.RingTheory.Ideal.Quotient
+import Mathlib.RingTheory.Ideal.QuotientOperations
 import Mathlib.RingTheory.Int.Basic
 import Mathlib.RingTheory.Localization.Basic
 import Mathlib.RingTheory.Localization.FractionRing
@@ -1462,6 +1478,7 @@ import Mathlib.SetTheory.Ordinal.FixedPoint
 import Mathlib.SetTheory.Ordinal.NaturalOps
 import Mathlib.SetTheory.Ordinal.Principal
 import Mathlib.SetTheory.Ordinal.Topology
+import Mathlib.Tactic
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.Alias
 import Mathlib.Tactic.ApplyFun
@@ -1583,6 +1600,7 @@ import Mathlib.Testing.SlimCheck.Sampleable
 import Mathlib.Testing.SlimCheck.Testable
 import Mathlib.Topology.Alexandroff
 import Mathlib.Topology.Algebra.Affine
+import Mathlib.Topology.Algebra.Algebra
 import Mathlib.Topology.Algebra.ConstMulAction
 import Mathlib.Topology.Algebra.Constructions
 import Mathlib.Topology.Algebra.Field
@@ -1591,6 +1609,7 @@ import Mathlib.Topology.Algebra.Group.Compact
 import Mathlib.Topology.Algebra.GroupCompletion
 import Mathlib.Topology.Algebra.GroupWithZero
 import Mathlib.Topology.Algebra.InfiniteSum.Basic
+import Mathlib.Topology.Algebra.InfiniteSum.Module
 import Mathlib.Topology.Algebra.InfiniteSum.Order
 import Mathlib.Topology.Algebra.InfiniteSum.Real
 import Mathlib.Topology.Algebra.InfiniteSum.Ring
@@ -1661,7 +1680,9 @@ import Mathlib.Topology.Instances.NNReal
 import Mathlib.Topology.Instances.Nat
 import Mathlib.Topology.Instances.Rat
 import Mathlib.Topology.Instances.Real
+import Mathlib.Topology.Instances.RealVectorSpace
 import Mathlib.Topology.Instances.Sign
+import Mathlib.Topology.Instances.TrivSqZeroExt
 import Mathlib.Topology.IsLocallyHomeomorph
 import Mathlib.Topology.List
 import Mathlib.Topology.LocalExtr
