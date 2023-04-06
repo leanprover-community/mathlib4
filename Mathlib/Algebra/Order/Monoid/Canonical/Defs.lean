@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 
 ! This file was ported from Lean 3 source module algebra.order.monoid.canonical.defs
-! leanprover-community/mathlib commit de87d5053a9fe5cbde723172c0fb7e27e7436473
+! leanprover-community/mathlib commit e8638a0fcaf73e4500469f368ef9494e495099b3
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -227,6 +227,8 @@ theorem bot_eq_one : (⊥ : α) = 1 :=
 #align bot_eq_one bot_eq_one
 #align bot_eq_zero bot_eq_zero
 
+--TODO: This is a special case of `mul_eq_one`. We need the instance
+-- `CanonicallyOrderedMonoid α → Unique αˣ`
 @[to_additive (attr := simp)]
 theorem mul_eq_one_iff : a * b = 1 ↔ a = 1 ∧ b = 1 :=
   mul_eq_one_iff' (one_le _) (one_le _)

@@ -275,15 +275,6 @@ instance (priority := 10) GroupWithZero.noZeroDivisors : NoZeroDivisors G₀ :=
       exact (Units.mk0 a h.1 * Units.mk0 b h.2).ne_zero }
 #align group_with_zero.no_zero_divisors GroupWithZero.noZeroDivisors
 
--- see Note [lower instance priority]
-instance (priority := 10) GroupWithZero.cancelMonoidWithZero : CancelMonoidWithZero G₀ :=
-  { (‹_› : GroupWithZero G₀) with
-    mul_left_cancel_of_ne_zero := @fun x y z hx h => by
-      rw [← inv_mul_cancel_left₀ hx y, h, inv_mul_cancel_left₀ hx z],
-    mul_right_cancel_of_ne_zero := @fun x y z hy h => by
-      rw [← mul_inv_cancel_right₀ hy x, h, mul_inv_cancel_right₀ hy z] }
-#align group_with_zero.cancel_monoid_with_zero GroupWithZero.cancelMonoidWithZero
-
 -- Can't be put next to the other `mk0` lemmas because it depends on the
 -- `NoZeroDivisors` instance, which depends on `mk0`.
 @[simp]

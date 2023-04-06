@@ -6,7 +6,7 @@ Neil Strickland, Aaron Anderson
 Ported by: Matej Penciak
 
 ! This file was ported from Lean 3 source module algebra.divisibility.basic
-! leanprover-community/mathlib commit 70d50ecfd4900dd6d328da39ab7ebd516abe4025
+! leanprover-community/mathlib commit e8638a0fcaf73e4500469f368ef9494e495099b3
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -107,13 +107,13 @@ theorem MonoidHom.map_dvd (f : M →* N) {a b} : a ∣ b → f a ∣ f b :=
   _root_.map_dvd f
 #align monoid_hom.map_dvd MonoidHom.map_dvd
 
-end map_dvd
+end map_dvdpeucd
 
 end Semigroup
 
 section Monoid
 
-variable [Monoid α]
+variable [Monoid α] {a b : α}
 
 @[refl, simp]
 theorem dvd_refl (a : α) : a ∣ a :=
@@ -129,6 +129,12 @@ instance : IsRefl α (· ∣ ·) :=
 theorem one_dvd (a : α) : 1 ∣ a :=
   Dvd.intro a (one_mul a)
 #align one_dvd one_dvd
+
+theorem dvd_of_eq (h : a = b) : a ∣ b := by rw [h]
+#align dvd_of_eq dvd_of_eq
+
+alias dvd_of_eq ← Eq.dvd
+#align eq.dvd Eq.dvd
 
 end Monoid
 
