@@ -8,7 +8,7 @@ Authors: Joël Riou
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Idempotents.Karoubi
+import Mathlib.CategoryTheory.Idempotents.Karoubi
 
 /-!
 # Idempotence of the Karoubi envelope
@@ -33,8 +33,7 @@ variable (C : Type _) [Category C]
 
 /-- The canonical functor `karoubi (karoubi C) ⥤ karoubi C` -/
 @[simps]
-def inverse : Karoubi (Karoubi C) ⥤ Karoubi C
-    where
+def inverse : Karoubi (Karoubi C) ⥤ Karoubi C where
   obj P := ⟨P.pt.pt, P.p.f, by simpa only [hom_ext] using P.idem⟩
   map P Q f := ⟨f.f.f, by simpa only [hom_ext] using f.comm⟩
 #align category_theory.idempotents.karoubi_karoubi.inverse CategoryTheory.Idempotents.KaroubiKaroubi.inverse
@@ -49,8 +48,7 @@ def unitIso : 𝟭 (Karoubi C) ≅ toKaroubi (Karoubi C) ⋙ inverse C :=
 
 /-- The counit isomorphism of the equivalence -/
 @[simps]
-def counitIso : inverse C ⋙ toKaroubi (Karoubi C) ≅ 𝟭 (Karoubi (Karoubi C))
-    where
+def counitIso : inverse C ⋙ toKaroubi (Karoubi C) ≅ 𝟭 (Karoubi (Karoubi C)) where
   Hom :=
     { app := fun P =>
         { f :=
@@ -87,8 +85,7 @@ def counitIso : inverse C ⋙ toKaroubi (Karoubi C) ≅ 𝟭 (Karoubi (Karoubi C
 
 /-- The equivalence `karoubi C ≌ karoubi (karoubi C)` -/
 @[simps]
-def equivalence : Karoubi C ≌ Karoubi (Karoubi C)
-    where
+def equivalence : Karoubi C ≌ Karoubi (Karoubi C) where
   Functor := toKaroubi (Karoubi C)
   inverse := KaroubiKaroubi.inverse C
   unitIso := KaroubiKaroubi.unitIso C
