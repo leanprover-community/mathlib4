@@ -13,11 +13,11 @@ import Mathlib.CategoryTheory.Idempotents.Karoubi
 /-!
 # Idempotent completeness and functor categories
 
-In this file we define an instance `functor_category_is_idempotent_complete` expressing
+In this file we define an instance `functor_category_isIdempotentComplete` expressing
 that a functor category `J ⥤ C` is idempotent complete when the target category `C` is.
 
 We also provide a fully faithful functor
-`karoubi_functor_category_embedding : karoubi (J ⥤ C)) : J ⥤ karoubi C` for all categories
+`karoubiFunctorCategoryEmbedding : Karoubi (J ⥤ C)) : J ⥤ Karoubi C` for all categories
 `J` and `C`.
 
 -/
@@ -37,24 +37,24 @@ namespace Idempotents
 
 variable {J C : Type _} [Category J] [Category C] (P Q : Karoubi (J ⥤ C)) (f : P ⟶ Q) (X : J)
 
-@[simp, reassoc.1]
+@[reassoc (attr := simp)]
 theorem app_idem : P.p.app X ≫ P.p.app X = P.p.app X :=
   congr_app P.idem X
 #align category_theory.idempotents.app_idem CategoryTheory.Idempotents.app_idem
 
 variable {P Q}
 
-@[simp, reassoc.1]
+@[reassoc (attr := simp)]
 theorem app_p_comp : P.p.app X ≫ f.f.app X = f.f.app X :=
   congr_app (p_comp f) X
 #align category_theory.idempotents.app_p_comp CategoryTheory.Idempotents.app_p_comp
 
-@[simp, reassoc.1]
+@[reassoc (attr := simp)]
 theorem app_comp_p : f.f.app X ≫ Q.p.app X = f.f.app X :=
   congr_app (comp_p f) X
 #align category_theory.idempotents.app_comp_p CategoryTheory.Idempotents.app_comp_p
 
-@[reassoc.1]
+@[reassoc]
 theorem app_p_comm : P.p.app X ≫ f.f.app X = f.f.app X ≫ Q.p.app X :=
   congr_app (p_comm f) X
 #align category_theory.idempotents.app_p_comm CategoryTheory.Idempotents.app_p_comm
@@ -63,63 +63,53 @@ variable (J C)
 
 instance functor_category_isIdempotentComplete [IsIdempotentComplete C] :
     IsIdempotentComplete (J ⥤ C) := by
-  refine' ⟨_⟩
-  intro F p hp
-  have hC := (is_idempotent_complete_iff_has_equalizer_of_id_and_idempotent C).mp inferInstance
-  haveI : ∀ j : J, has_equalizer (𝟙 _) (p.app j) := fun j => hC _ _ (congr_app hp j)
+  refine' ⟨fun F p hp => _⟩
+  have hC := (isIdempotentComplete_iff_hasEqualizer_of_id_and_idempotent C).mp inferInstance
+  haveI : ∀ j : J, HasEqualizer (𝟙 _) (p.app j) := fun j => hC _ _ (congr_app hp j)
   /- We construct the direct factor `Y` associated to `p : F ⟶ F` by computing
       the equalizer of the identity and `p.app j` on each object `(j : J)`.  -/
   let Y : J ⥤ C :=
-    { obj := fun j => limits.equalizer (𝟙 _) (p.app j)
-      map := fun j j' φ =>
-        equalizer.lift (limits.equalizer.ι (𝟙 _) (p.app j) ≫ F.map φ)
-          (by rw [comp_id, assoc, p.naturality φ, ← assoc, ← limits.equalizer.condition, comp_id])
-      map_id' := fun j => by
-        ext
-        simp only [comp_id, Functor.map_id, equalizer.lift_ι, id_comp]
-      map_comp' := fun j j' j'' φ φ' => by
-        ext
-        simp only [assoc, functor.map_comp, equalizer.lift_ι, equalizer.lift_ι_assoc] }
+    { obj := fun j => Limits.equalizer (𝟙 _) (p.app j)
+      map := fun {j j'} φ =>
+        equalizer.lift (Limits.equalizer.ι (𝟙 _) (p.app j) ≫ F.map φ)
+          (by rw [comp_id, assoc, p.naturality φ, ← assoc, ← Limits.equalizer.condition, comp_id])
+      map_id := fun _ => equalizer.hom_ext (by simp)
+      map_comp := fun _ _ => equalizer.hom_ext (by simp) }
   let i : Y ⟶ F :=
     { app := fun j => equalizer.ι _ _
-      naturality' := fun j j' φ => by rw [equalizer.lift_ι] }
+      naturality := fun _ _ _ => by rw [equalizer.lift_ι] }
   let e : F ⟶ Y :=
     { app := fun j =>
-        equalizer.lift (p.app j)
-          (by
-            rw [comp_id]
-            exact (congr_app hp j).symm)
-      naturality' := fun j j' φ => by
-        ext
-        simp only [assoc, equalizer.lift_ι, nat_trans.naturality, equalizer.lift_ι_assoc] }
+        equalizer.lift (p.app j) (by simpa only [comp_id] using (congr_app hp j).symm)
+      naturality := fun j j' φ => equalizer.hom_ext (by simp) }
   use Y, i, e
-  constructor <;> ext j
-  ·
-    simp only [nat_trans.comp_app, assoc, equalizer.lift_ι, nat_trans.id_app, id_comp, ←
-      equalizer.condition, comp_id]
-  · simp only [nat_trans.comp_app, equalizer.lift_ι]
-#align category_theory.idempotents.functor_category_is_idempotent_complete CategoryTheory.Idempotents.functor_category_isIdempotentComplete
-
+  constructor
+  . ext j
+    apply equalizer.hom_ext
+    dsimp
+    rw [assoc, equalizer.lift_ι, ← equalizer.condition, id_comp, comp_id]
+  . ext j
+    simp
 namespace KaroubiFunctorCategoryEmbedding
 
 variable {J C}
 
 /-- On objects, the functor which sends a formal direct factor `P` of a
-functor `F : J ⥤ C` to the functor `J ⥤ karoubi C` which sends `(j : J)` to
+functor `F : J ⥤ C` to the functor `J ⥤ Karoubi C` which sends `(j : J)` to
 the corresponding direct factor of `F.obj j`. -/
 @[simps]
 def obj (P : Karoubi (J ⥤ C)) : J ⥤ Karoubi C where
-  obj j := ⟨P.pt.obj j, P.p.app j, congr_app P.idem j⟩
-  map j j' φ :=
-    { f := P.p.app j ≫ P.pt.map φ
+  obj j := ⟨P.X.obj j, P.p.app j, congr_app P.idem j⟩
+  map {j j'} φ :=
+    { f := P.p.app j ≫ P.X.map φ
       comm := by
-        simp only [nat_trans.naturality, assoc]
+        simp only [NatTrans.naturality, assoc]
         have h := congr_app P.idem j
-        rw [nat_trans.comp_app] at h
-        slice_rhs 1 3 => erw [h, h] }
+        rw [NatTrans.comp_app] at h
+        erw [reassoc_of% h, reassoc_of% h] }
 #align category_theory.idempotents.karoubi_functor_category_embedding.obj CategoryTheory.Idempotents.KaroubiFunctorCategoryEmbedding.obj
 
-/-- Tautological action on maps of the functor `karoubi (J ⥤ C) ⥤ (J ⥤ karoubi C)`. -/
+/-- Tautological action on maps of the functor `Karoubi (J ⥤ C) ⥤ (J ⥤ Karoubi C)`. -/
 @[simps]
 def map {P Q : Karoubi (J ⥤ C)} (f : P ⟶ Q) : obj P ⟶ obj Q
     where app j := ⟨f.f.app j, congr_app f.comm j⟩
@@ -127,55 +117,51 @@ def map {P Q : Karoubi (J ⥤ C)} (f : P ⟶ Q) : obj P ⟶ obj Q
 
 end KaroubiFunctorCategoryEmbedding
 
-variable (J C)
-
-/-- The tautological fully faithful functor `karoubi (J ⥤ C) ⥤ (J ⥤ karoubi C)`. -/
+/-- The tautological fully faithful functor `Karoubi (J ⥤ C) ⥤ (J ⥤ Karoubi C)`. -/
 @[simps]
 def karoubiFunctorCategoryEmbedding : Karoubi (J ⥤ C) ⥤ J ⥤ Karoubi C where
   obj := KaroubiFunctorCategoryEmbedding.obj
-  map P Q := KaroubiFunctorCategoryEmbedding.map
+  map := KaroubiFunctorCategoryEmbedding.map
 #align category_theory.idempotents.karoubi_functor_category_embedding CategoryTheory.Idempotents.karoubiFunctorCategoryEmbedding
 
 instance : Full (karoubiFunctorCategoryEmbedding J C) where
-  preimage P Q f :=
+  preimage {P Q} f :=
     { f :=
         { app := fun j => (f.app j).f
-          naturality' := fun j j' φ => by
-            rw [← karoubi.comp_p_assoc]
-            have h := hom_ext.mp (f.naturality φ)
+          naturality := fun j j' φ => by
+            rw [← Karoubi.comp_p_assoc]
+            have h := hom_ext_iff.mp (f.naturality φ)
             simp only [comp_f] at h
-            dsimp [karoubi_functor_category_embedding] at h
+            dsimp [karoubiFunctorCategoryEmbedding] at h
             erw [← h, assoc, ← P.p.naturality_assoc φ, p_comp (f.app j')] }
       comm := by
         ext j
         exact (f.app j).comm }
-  witness' P Q f := by
-    ext j
-    rfl
+  witness f := rfl
 
-instance : Faithful (karoubiFunctorCategoryEmbedding J C)
-    where map_injective' P Q f f' h := by
+instance : Faithful (karoubiFunctorCategoryEmbedding J C) where
+  map_injective h := by
     ext j
-    exact hom_ext.mp (congr_app h j)
+    exact hom_ext_iff.mp (congr_app h j)
 
-/-- The composition of `(J ⥤ C) ⥤ karoubi (J ⥤ C)` and `karoubi (J ⥤ C) ⥤ (J ⥤ karoubi C)`
-equals the functor `(J ⥤ C) ⥤ (J ⥤ karoubi C)` given by the composition with
-`to_karoubi C : C ⥤ karoubi C`. -/
+/-- The composition of `(J ⥤ C) ⥤ Karoubi (J ⥤ C)` and `Karoubi (J ⥤ C) ⥤ (J ⥤ Karoubi C)`
+equals the functor `(J ⥤ C) ⥤ (J ⥤ Karoubi C)` given by the composition with
+`toKaroubi C : C ⥤ Karoubi C`. -/
 theorem toKaroubi_comp_karoubiFunctorCategoryEmbedding :
-    toKaroubi _ ⋙ karoubiFunctorCategoryEmbedding J C = (whiskeringRight J _ _).obj (toKaroubi C) :=
-  by
+    toKaroubi _ ⋙ karoubiFunctorCategoryEmbedding J C =
+      (whiskeringRight J _ _).obj (toKaroubi C) := by
   apply Functor.ext
   · intro X Y f
     ext j
-    dsimp [to_karoubi]
-    simp only [eq_to_hom_app, eq_to_hom_refl, id_comp]
-    erw [comp_id]
+    dsimp [toKaroubi]
+    simp only [eqToHom_app, eqToHom_refl]
+    erw [comp_id, id_comp]
   · intro X
     apply Functor.ext
     · intro j j' φ
       ext
       dsimp
-      simpa only [comp_id, id_comp]
+      simp
     · intro j
       rfl
 #align category_theory.idempotents.to_karoubi_comp_karoubi_functor_category_embedding CategoryTheory.Idempotents.toKaroubi_comp_karoubiFunctorCategoryEmbedding
@@ -183,4 +169,3 @@ theorem toKaroubi_comp_karoubiFunctorCategoryEmbedding :
 end Idempotents
 
 end CategoryTheory
-
