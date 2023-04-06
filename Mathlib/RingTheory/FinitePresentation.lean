@@ -58,7 +58,7 @@ variable {R A B}
 /-- A finitely presented algebra is of finite type. -/
 theorem of_finitePresentation : FinitePresentation R A → FiniteType R A := by
   rintro ⟨n, f, hf⟩
-  apply finite_type.iff_quotient_mv_polynomial''.2
+  apply FiniteType.iff_quotient_mvPolynomial''.2
   exact ⟨n, f, hf.1⟩
 #align algebra.finite_type.of_finite_presentation Algebra.FiniteType.of_finitePresentation
 
@@ -85,7 +85,7 @@ theorem equiv (hfp : FinitePresentation R A) (e : A ≃ₐ[R] B) : FinitePresent
   use n, AlgHom.comp (↑e) f
   constructor
   · exact Function.Surjective.comp e.surjective hf.1
-  suffices hker : (AlgHom.comp (↑e) f).toRingHom.ker = f.to_ring_hom.ker
+  suffices hker : (AlgHom.comp (↑e) f).toRingHom.ker = f.toRingHom.ker
   · rw [hker]
     exact hf.2
   · have hco : (AlgHom.comp (↑e) f).toRingHom = RingHom.comp (↑e.to_ring_equiv) f.to_ring_hom := by
@@ -104,8 +104,8 @@ protected theorem mvPolynomial (ι : Type u_2) [Finite ι] :
   cases nonempty_fintype ι <;>
     exact
       let eqv := (MvPolynomial.renameEquiv R <| Fintype.equivFin ι).symm
-      ⟨Fintype.card ι, eqv, eqv.Surjective,
-        ((RingHom.injective_iff_ker_eq_bot _).1 eqv.Injective).symm ▸ Submodule.fg_bot⟩
+      ⟨Fintype.card ι, eqv, eqv.surjective,
+        ((RingHom.injective_iff_ker_eq_bot _).1 eqv.injective).symm ▸ Submodule.fg_bot⟩
 #align algebra.finite_presentation.mv_polynomial Algebra.FinitePresentation.mvPolynomial
 
 /-- `R` is finitely presented as `R`-algebra. -/
@@ -135,7 +135,7 @@ protected theorem quotient {I : Ideal A} (h : I.FG) (hfp : FinitePresentation R 
 then so is `B`. -/
 theorem of_surjective {f : A →ₐ[R] B} (hf : Function.Surjective f) (hker : f.toRingHom.ker.FG)
     (hfp : FinitePresentation R A) : FinitePresentation R B :=
-  equiv (hfp.Quotient hker) (Ideal.quotientKerAlgEquivOfSurjective hf)
+  equiv (hfp.quotient hker) (Ideal.quotientKerAlgEquivOfSurjective hf)
 #align algebra.finite_presentation.of_surjective Algebra.FinitePresentation.of_surjective
 
 theorem iff :
@@ -143,7 +143,7 @@ theorem iff :
       ∃ (n : _)(I : Ideal (MvPolynomial (Fin n) R))(e : (_ ⧸ I) ≃ₐ[R] A), I.FG := by
   constructor
   · rintro ⟨n, f, hf⟩
-    exact ⟨n, f.to_ring_hom.ker, Ideal.quotientKerAlgEquivOfSurjective hf.1, hf.2⟩
+    exact ⟨n, f.toRingHom.ker, Ideal.quotientKerAlgEquivOfSurjective hf.1, hf.2⟩
   · rintro ⟨n, I, e, hfg⟩
     exact Equiv ((finite_presentation.mv_polynomial R _).Quotient hfg) e
 #align algebra.finite_presentation.iff Algebra.FinitePresentation.iff
@@ -509,4 +509,3 @@ theorem of_comp_finiteType (f : A →ₐ[R] B) {g : B →ₐ[R] C} (h : (g.comp 
 end FinitePresentation
 
 end AlgHom
-
