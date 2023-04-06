@@ -8,11 +8,11 @@ Authors: Riccardo Brasca
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.LinearAlgebra.DirectSum.Finsupp
-import Mathbin.Logic.Small.Basic
-import Mathbin.LinearAlgebra.StdBasis
-import Mathbin.LinearAlgebra.FinsuppVectorSpace
-import Mathbin.LinearAlgebra.TensorProductBasis
+import Mathlib.LinearAlgebra.DirectSum.Finsupp
+import Mathlib.Logic.Small.Basic
+import Mathlib.LinearAlgebra.StdBasis
+import Mathlib.LinearAlgebra.FinsuppVectorSpace
+import Mathlib.LinearAlgebra.TensorProductBasis
 
 /-!
 
