@@ -115,7 +115,7 @@ theorem mod_modEq (a n) : a % n ≡ a [ZMOD n] :=
 @[simp]
 theorem neg_modEq_neg : -a ≡ -b [ZMOD n] ↔ a ≡ b [ZMOD n] := by
 --porting note: Restore old proof once #3309 is through
-  simp [neg_sub_neg, modEq_iff_dvd, dvd_sub_comm]
+  simp [-sub_neg_eq_add, neg_sub_neg, modEq_iff_dvd, dvd_sub_comm]
 #align int.neg_modeq_neg Int.neg_modEq_neg
 
 @[simp]
