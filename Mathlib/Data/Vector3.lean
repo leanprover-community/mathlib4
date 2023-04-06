@@ -8,8 +8,8 @@ Authors: Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Fin.Fin2
-import Mathbin.Tactic.Localized
+import Mathlib.Data.Fin.Fin2
+import Mathlib.Tactic.Localized
 
 /-!
 # Alternate definition of `vector` in terms of `fin2`
@@ -45,8 +45,7 @@ def nil : Vector3 α 0 :=
 
 /-- The vector cons operation -/
 @[match_pattern]
-def cons (a : α) (v : Vector3 α n) : Vector3 α (succ n) := fun i =>
-  by
+def cons (a : α) (v : Vector3 α n) : Vector3 α (succ n) := fun i => by
   refine' i.cases' _ _
   exact a
   exact v
@@ -201,8 +200,7 @@ theorem insert_fs (a : α) (b : α) (v : Vector3 α n) (i : Fin2 (succ n)) :
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem append_insert (a : α) (t : Vector3 α m) (v : Vector3 α n) (i : Fin2 (succ n))
     (e : succ n + m = succ (n + m)) :
-    insert a (t +-+ v) (Eq.recOn e (i.add m)) = Eq.recOn e (t +-+ insert a v i) :=
-  by
+    insert a (t +-+ v) (Eq.recOn e (i.add m)) = Eq.recOn e (t +-+ insert a v i) := by
   refine' Vector3.recOn t (fun e => _) (fun k b t IH e => _) e; rfl
   have e' := succ_add n k
   change
@@ -284,8 +282,7 @@ theorem vectorAllp_cons (p : α → Prop) (x : α) (v : Vector3 α n) :
   Vector3.recOn v (and_true_iff _).symm fun n a v IH => Iff.rfl
 #align vector_allp_cons vectorAllp_cons
 
-theorem vectorAllp_iff_forall (p : α → Prop) (v : Vector3 α n) : VectorAllp p v ↔ ∀ i, p (v i) :=
-  by
+theorem vectorAllp_iff_forall (p : α → Prop) (v : Vector3 α n) : VectorAllp p v ↔ ∀ i, p (v i) := by
   refine' v.rec_on _ _
   · exact ⟨fun _ => Fin2.elim0, fun _ => trivial⟩
   · simp
