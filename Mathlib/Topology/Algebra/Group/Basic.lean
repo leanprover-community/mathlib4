@@ -1471,7 +1471,7 @@ variable (S : Subgroup G) [Subgroup.Normal S] [IsClosed (S : Set G)]
 instance Subgroup.t3_quotient_of_isClosed (S : Subgroup G) [Subgroup.Normal S]
     [hS : IsClosed (S : Set G)] : T3Space (G ⧸ S) := by
   rw [← QuotientGroup.ker_mk' S] at hS
-  haveI := TopologicalGroup.t1Space (G ⧸ S) (quotient_map_quotient_mk.is_closed_preimage.mp hS)
+  haveI := TopologicalGroup.t1Space (G ⧸ S) (quotientMap_quotient_mk'.isClosed_preimage.mp hS)
   exact TopologicalGroup.t3Space _
 #align subgroup.t3_quotient_of_is_closed Subgroup.t3_quotient_of_isClosed
 #align add_subgroup.t3_quotient_of_is_closed AddSubgroup.t3_quotient_of_isClosed
@@ -1725,10 +1725,7 @@ variable [Group G] [TopologicalSpace G] [ContinuousMul G] {Γ : Subgroup G}
 @[to_additive]
 instance QuotientGroup.continuousConstSMul : ContinuousConstSMul G (G ⧸ Γ) where
   continuous_const_smul g := by
-    have quot := IsOpenMap.to_quotientMap
-      (QuotientGroup.isOpenMap_coe Γ) continuous_quot_mk (surjective_quot_mk _)
-    rw [quot.continuous_iff]
-    exact continuous_quot_mk.comp (continuous_mul_left _)
+     convert ((@continuous_const _ _ _ _ g).mul continuous_id).quotient_map' _
 #align quotient_group.has_continuous_const_smul QuotientGroup.continuousConstSMul
 #align quotient_add_group.has_continuous_const_vadd QuotientAddGroup.continuousConstVAdd
 
