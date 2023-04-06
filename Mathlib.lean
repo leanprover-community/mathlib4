@@ -1233,6 +1233,7 @@ import Mathlib.LinearAlgebra.Ray
 import Mathlib.LinearAlgebra.SModEq
 import Mathlib.LinearAlgebra.SesquilinearForm
 import Mathlib.LinearAlgebra.Span
+import Mathlib.LinearAlgebra.StdBasis
 import Mathlib.LinearAlgebra.TensorProduct
 import Mathlib.Logic.Basic
 import Mathlib.Logic.Denumerable
