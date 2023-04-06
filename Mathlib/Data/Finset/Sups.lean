@@ -191,7 +191,7 @@ theorem bunionᵢ_image_sup_right : (t.bunionᵢ fun b => s.image fun a => a ⊔
   bunionᵢ_image_right
 #align finset.bUnion_image_sup_right Finset.bunionᵢ_image_sup_right
 
-@[simp]
+-- Porting note: simpNF linter doesn't like @[simp]
 theorem image_sup_product (s t : Finset α) : (s ×ᶠ t).image (uncurry (· ⊔ ·)) = s ⊻ t :=
   image_uncurry_product _ _ _
 #align finset.image_sup_product Finset.image_sup_product
@@ -365,7 +365,7 @@ theorem bunionᵢ_image_inf_right : (t.bunionᵢ fun b => s.image fun a => a ⊓
   bunionᵢ_image_right
 #align finset.bUnion_image_inf_right Finset.bunionᵢ_image_inf_right
 
-@[simp]
+-- Porting note: simpNF linter doesn't like @[simp]
 theorem image_inf_product (s t : Finset α) : (s ×ᶠ t).image (uncurry (· ⊓ ·)) = s ⊼ t :=
   image_uncurry_product _ _ _
 #align finset.image_inf_product Finset.image_inf_product
@@ -426,7 +426,7 @@ def disjSups : Finset α :=
   ((s ×ᶠ t).filter fun ab : α × α => Disjoint ab.1 ab.2).image fun ab => ab.1 ⊔ ab.2
 #align finset.disj_sups Finset.disjSups
 
--- mathport name: finset.disj_sups
+@[inherit_doc]
 scoped[FinsetFamily] infixl:74 " ○ " => Finset.disjSups
 
 open FinsetFamily
