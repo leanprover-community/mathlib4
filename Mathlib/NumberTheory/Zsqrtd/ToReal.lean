@@ -12,7 +12,7 @@ import Mathlib.Data.Real.Sqrt
 import Mathlib.NumberTheory.Zsqrtd.Basic
 
 /-!
-# Image of `zsqrtd` in `ℝ`
+# Image of `Zsqrtd` in `ℝ`
 
 This file defines `Zsqrtd.toReal` and related lemmas.
 It is in a separate file to avoid pulling in all of `Data.Real` into `Data.Zsqrtd`.
@@ -23,7 +23,7 @@ namespace Zsqrtd
 
 /-- The image of `Zsqrtd` in `ℝ`, using `Real.sqrt` which takes the positive root of `d`.
 
-If the negative root is desired, use `toReal h a.conj`. -/
+If the negative root is desired, use `toReal h (star a)`. -/
 @[simps!]
 noncomputable def toReal {d : ℤ} (h : 0 ≤ d) : ℤ√d →+* ℝ :=
   lift ⟨Real.sqrt d, Real.mul_self_sqrt (Int.cast_nonneg.mpr h)⟩

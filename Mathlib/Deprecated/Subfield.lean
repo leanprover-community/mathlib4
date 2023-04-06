@@ -26,7 +26,7 @@ of the field `F`. The bundled variant `Subfield F` should be used in preference 
 
 ## Tags
 
-is_subfield
+IsSubfield, subfield
 -/
 
 

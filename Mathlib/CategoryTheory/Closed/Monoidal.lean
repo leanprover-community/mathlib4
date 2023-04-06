@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Bhavik Mehta
 
 ! This file was ported from Lean 3 source module category_theory.closed.monoidal
-! leanprover-community/mathlib commit c0e00a871b9f6d3aca7c10fb3abdc8720a2c5313
+! leanprover-community/mathlib commit 0caf3701139ef2e69c215717665361cda205a90b
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -313,6 +313,36 @@ noncomputable def ofEquiv (F : MonoidalFunctor C D) [IsEquivalence F.toFunctor]
         exact Adjunction.leftAdjointOfNatIso i }
 #align category_theory.monoidal_closed.of_equiv CategoryTheory.MonoidalClosed.ofEquiv
 
+/-- Suppose we have a monoidal equivalence `F : C ≌ D`, with `D` monoidal closed. We can pull the
+monoidal closed instance back along the equivalence. For `X, Y, Z : C`, this lemma describes the
+resulting currying map `Hom(X ⊗ Y, Z) → Hom(Y, (X ⟶[C] Z))`. (`X ⟶[C] Z` is defined to be
+`F⁻¹(F(X) ⟶[D] F(Z))`, so currying in `C` is given by essentially conjugating currying in
+`D` by `F.`) -/
+theorem ofEquiv_curry_def (F : MonoidalFunctor C D) [IsEquivalence F.toFunctor]
+    [MonoidalClosed D] {X Y Z : C} (f : X ⊗ Y ⟶ Z) :
+    @MonoidalClosed.curry _ _ _ _ _ _ ((MonoidalClosed.ofEquiv F).1 _) f =
+      (F.1.1.adjunction.homEquiv Y ((ihom _).obj _))
+        (MonoidalClosed.curry
+          (F.1.1.inv.adjunction.homEquiv (F.1.1.obj X ⊗ F.1.1.obj Y) Z
+            ((compInvIso (F.commTensorLeft X)).hom.app Y ≫ f))) :=
+  rfl
+#align category_theory.monoidal_closed.of_equiv_curry_def CategoryTheory.MonoidalClosed.ofEquiv_curry_def
+
+/-- Suppose we have a monoidal equivalence `F : C ≌ D`, with `D` monoidal closed. We can pull the
+monoidal closed instance back along the equivalence. For `X, Y, Z : C`, this lemma describes the
+resulting uncurrying map `Hom(Y, (X ⟶[C] Z)) → Hom(X ⊗ Y ⟶ Z)`. (`X ⟶[C] Z` is
+defined to be `F⁻¹(F(X) ⟶[D] F(Z))`, so uncurrying in `C` is given by essentially conjugating
+uncurrying in `D` by `F.`) -/
+theorem ofEquiv_uncurry_def (F : MonoidalFunctor C D) [IsEquivalence F.toFunctor]
+    [MonoidalClosed D] {X Y Z : C}
+    (f : Y ⟶ (@ihom _ _ _ X <| (MonoidalClosed.ofEquiv F).1 X).obj Z) :
+    @MonoidalClosed.uncurry _ _ _ _ _ _ ((MonoidalClosed.ofEquiv F).1 _) f =
+      (compInvIso (F.commTensorLeft X)).inv.app Y ≫
+        (F.1.1.inv.adjunction.homEquiv (F.1.1.obj X ⊗ F.1.1.obj Y) Z).symm
+          (MonoidalClosed.uncurry
+            ((F.1.1.adjunction.homEquiv Y ((ihom (F.1.1.obj X)).obj (F.1.1.obj Z))).symm f)) :=
+  rfl
+#align category_theory.monoidal_closed.of_equiv_uncurry_def CategoryTheory.MonoidalClosed.ofEquiv_uncurry_def
 end OfEquiv
 
 end MonoidalClosed

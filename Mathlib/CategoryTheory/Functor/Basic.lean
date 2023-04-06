@@ -60,7 +60,7 @@ Without this, we would have `Prefunctor.obj F.toPrefunctor X`.
 -/
 @[app_unexpander Prefunctor.obj] def
   unexpandFunctorObj : Lean.PrettyPrinter.Unexpander
-  | `($_ $(F).toPrefunctor $X)  => set_option hygiene false in `($(F).obj $X)
+  | `($_ $(F).toPrefunctor $(X)*)  => set_option hygiene false in `($(F).obj $(X)*)
   | _                           => throw ()
 
 /--
@@ -69,7 +69,7 @@ Without this, we would have `Prefunctor.map F.toPrefunctor f`.
 -/
 @[app_unexpander Prefunctor.map] def
   unexpandFunctorMap : Lean.PrettyPrinter.Unexpander
-  | `($_ $(F).toPrefunctor $X)  => set_option hygiene false in `($(F).map $X)
+  | `($_ $(F).toPrefunctor $(X)*)  => set_option hygiene false in `($(F).map $(X)*)
   | _                           => throw ()
 
 end
@@ -142,7 +142,7 @@ theorem comp_map (F : C ⥤ D) (G : D ⥤ E) {X Y : C} (f : X ⟶ Y) :
 
 -- These are not simp lemmas because rewriting along equalities between functors
 -- is not necessarily a good idea.
--- Natural isomorphisms are also provided in `whiskering.lean`.
+-- Natural isomorphisms are also provided in `Whiskering.lean`.
 protected theorem comp_id (F : C ⥤ D) : F ⋙ 𝟭 D = F := by cases F; rfl
 #align category_theory.functor.comp_id CategoryTheory.Functor.comp_id
 
