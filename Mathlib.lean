@@ -1030,6 +1030,7 @@ import Mathlib.Data.Sigma.Order
 import Mathlib.Data.Sign
 import Mathlib.Data.Stream.Defs
 import Mathlib.Data.Stream.Init
+import Mathlib.Data.String.Basic
 import Mathlib.Data.String.Defs
 import Mathlib.Data.String.Lemmas
 import Mathlib.Data.Subtype
@@ -1298,6 +1299,7 @@ import Mathlib.Order.Bounds.Basic
 import Mathlib.Order.Bounds.OrderIso
 import Mathlib.Order.Category.LatCat
 import Mathlib.Order.Category.LinOrdCat
+import Mathlib.Order.Category.NonemptyFinLinOrdCat
 import Mathlib.Order.Category.PartOrdCat
 import Mathlib.Order.Category.PreordCat
 import Mathlib.Order.Chain
@@ -1412,6 +1414,7 @@ import Mathlib.RingTheory.Congruence
 import Mathlib.RingTheory.Coprime.Basic
 import Mathlib.RingTheory.Coprime.Ideal
 import Mathlib.RingTheory.Coprime.Lemmas
+import Mathlib.RingTheory.EisensteinCriterion
 import Mathlib.RingTheory.EuclideanDomain
 import Mathlib.RingTheory.FiniteType
 import Mathlib.RingTheory.Finiteness
@@ -1601,6 +1604,7 @@ import Mathlib.Topology.Algebra.Algebra
 import Mathlib.Topology.Algebra.ConstMulAction
 import Mathlib.Topology.Algebra.Constructions
 import Mathlib.Topology.Algebra.Field
+import Mathlib.Topology.Algebra.FilterBasis
 import Mathlib.Topology.Algebra.Group.Basic
 import Mathlib.Topology.Algebra.Group.Compact
 import Mathlib.Topology.Algebra.GroupCompletion
