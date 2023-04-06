@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Bhavik Mehta, Adam Topaz
 
 ! This file was ported from Lean 3 source module category_theory.monad.basic
-! leanprover-community/mathlib commit 1995c7bbdbb0adb1b6d5acdc654f6cf46ed96cfa
+! leanprover-community/mathlib commit 9c6816cab5872990d450d2c2e7832176167b1c07
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
