@@ -8,8 +8,8 @@ Authors: Anne Baanen
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.RingTheory.Noetherian
-import Mathbin.RingTheory.QuotientNilpotent
+import Mathlib.RingTheory.Noetherian
+import Mathlib.RingTheory.QuotientNilpotent
 
 /-!
 # Noetherian quotient rings and quotient modules
