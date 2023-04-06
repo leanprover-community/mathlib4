@@ -64,7 +64,7 @@ abbrev Cofan (f : β → C) :=
 #align category_theory.limits.cofan CategoryTheory.Limits.Cofan
 
 /-- A fan over `f : β → C` consists of a collection of maps from an object `P` to every `f b`. -/
-@[simps]
+@[simps! pt π_app]
 def Fan.mk {f : β → C} (P : C) (p : ∀ b, P ⟶ f b) : Fan f
     where
   pt := P
@@ -72,7 +72,7 @@ def Fan.mk {f : β → C} (P : C) (p : ∀ b, P ⟶ f b) : Fan f
 #align category_theory.limits.fan.mk CategoryTheory.Limits.Fan.mk
 
 /-- A cofan over `f : β → C` consists of a collection of maps from every `f b` to an object `P`. -/
-@[simps]
+@[simps! pt ι_app]
 def Cofan.mk {f : β → C} (P : C) (p : ∀ b, f b ⟶ P) : Cofan f
     where
   pt := P
@@ -243,7 +243,7 @@ theorem map_lift_piComparison [HasProduct f] [HasProduct fun b => G.obj (f b)] (
     (g : ∀ j, P ⟶ f j) : G.map (Pi.lift g) ≫ piComparison G f = Pi.lift fun j => G.map (g j) := by
   ext ⟨j⟩
   simp only [Discrete.functor_obj, Category.assoc, piComparison_comp_π, ← G.map_comp,
-    limit.lift_π, Fan.mk_pt, Fan.mk_π, Discrete.natTrans_app]
+    limit.lift_π, Fan.mk_pt, Fan.mk_π_app]
 #align category_theory.limits.map_lift_pi_comparison CategoryTheory.Limits.map_lift_piComparison
 
 /-- The comparison morphism for the coproduct of `f`. This is an iso iff `G` preserves the coproduct
@@ -265,7 +265,7 @@ theorem sigmaComparison_map_desc [HasCoproduct f] [HasCoproduct fun b => G.obj (
     sigmaComparison G f ≫ G.map (Sigma.desc g) = Sigma.desc fun j => G.map (g j) := by
   ext ⟨j⟩
   simp only [Discrete.functor_obj, ι_comp_sigmaComparison_assoc, ← G.map_comp, colimit.ι_desc,
-    Cofan.mk_pt, Cofan.mk_ι, Discrete.natTrans_app]
+    Cofan.mk_pt, Cofan.mk_ι_app]
 #align category_theory.limits.sigma_comparison_map_desc CategoryTheory.Limits.sigmaComparison_map_desc
 
 end Comparison
