@@ -1124,8 +1124,8 @@ theorem separated_by_openEmbedding {α β : Type _} [TopologicalSpace α] [Topol
 instance {α : Type _} {p : α → Prop} [TopologicalSpace α] [T2Space α] : T2Space (Subtype p) :=
   ⟨fun _ _ h => separated_by_continuous continuous_subtype_val (mt Subtype.eq h)⟩
 
-instance {α : Type _} {β : Type _} [TopologicalSpace α] [T2Space α] [TopologicalSpace β]
-    [T2Space β] : T2Space (α × β) :=
+instance Prod.t2Space {α : Type _} {β : Type _} [TopologicalSpace α] [T2Space α]
+    [TopologicalSpace β] [T2Space β] : T2Space (α × β) :=
   ⟨fun _ _ h => Or.elim (not_and_or.mp (mt Prod.ext_iff.mpr h))
     (fun h₁ => separated_by_continuous continuous_fst h₁) fun h₂ =>
     separated_by_continuous continuous_snd h₂⟩
