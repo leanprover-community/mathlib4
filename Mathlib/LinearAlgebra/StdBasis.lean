@@ -118,7 +118,7 @@ theorem infᵢ_ker_proj_le_supᵢ_range_stdBasis {I : Finset ι} {J : Set ι} (h
         show (∑ i in I, stdBasis R φ i (b i)) = b by
           ext i
           rw [Finset.sum_apply, ← stdBasis_same R φ i (b i)]
-          refine' Finset.sum_eq_single i (fun j _ ne => stdBasis_ne _ _ _ _ ne.symm _) _
+          refine Finset.sum_eq_single i (fun j _ ne => stdBasis_ne _ _ _ _ ne.symm _) ?_
           intro hiI
           rw [stdBasis_same]
           exact hb _ ((hu trivial).resolve_left hiI)]
