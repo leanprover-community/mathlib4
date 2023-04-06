@@ -46,15 +46,15 @@ theorem linearIndependent_single {φ : ι → Type _} {f : ∀ ι, φ ι → M}
       rw [ker_lsingle]
       exact disjoint_bot_right
     apply (hf i).map h_disjoint
-  · intro i t ht hit
+  · intro i t _ hit
     refine' (disjoint_lsingle_lsingle {i} t (disjoint_singleton_left.2 hit)).mono _ _
     · rw [span_le]
       simp only [supᵢ_singleton]
       rw [range_coe]
-      apply range_comp_subset_range
+      apply range_comp_subset_range _ (lsingle i)
     · refine' supᵢ₂_mono fun i hi => _
       rw [span_le, range_coe]
-      apply range_comp_subset_range
+      apply range_comp_subset_range _ (lsingle i)
 #align finsupp.linear_independent_single Finsupp.linearIndependent_single
 
 end Ring
@@ -72,28 +72,28 @@ protected def basis {φ : ι → Type _} (b : ∀ i, Basis (φ i) R M) : Basis (
   Basis.ofRepr
     { toFun := fun g =>
         { toFun := fun ix => (b ix.1).repr (g ix.1) ix.2
-          support := g.support.Sigma fun i => ((b i).repr (g i)).support
+          support := g.support.sigma fun i => ((b i).repr (g i)).support
           mem_support_toFun := fun ix => by
             simp only [Finset.mem_sigma, mem_support_iff, and_iff_right_iff_imp, Ne.def]
             intro b hg
-            simpa [hg] using b }
+            simp [hg] at b }
       invFun := fun g =>
         { toFun := fun i =>
             (b i).repr.symm (g.comapDomain _ (Set.injOn_of_injective sigma_mk_injective _))
           support := g.support.image Sigma.fst
           mem_support_toFun := fun i => by
-            rw [Ne.def, ← (b i).repr.Injective.eq_iff, (b i).repr.apply_symm_apply, ext_iff]
-            simp only [exists_prop, LinearEquiv.map_zero, comap_domain_apply, zero_apply,
+            rw [Ne.def, ← (b i).repr.injective.eq_iff, (b i).repr.apply_symm_apply, FunLike.ext_iff]
+            simp only [exists_prop, LinearEquiv.map_zero, comapDomain_apply, zero_apply,
               exists_and_right, mem_support_iff, exists_eq_right, Sigma.exists, Finset.mem_image,
               not_forall] }
       left_inv := fun g => by
         ext i
-        rw [← (b i).repr.Injective.eq_iff]
+        rw [← (b i).repr.injective.eq_iff]
         ext x
-        simp only [coe_mk, LinearEquiv.apply_symm_apply, comap_domain_apply]
+        simp only [coe_mk, LinearEquiv.apply_symm_apply, comapDomain_apply]
       right_inv := fun g => by
         ext ⟨i, x⟩
-        simp only [coe_mk, LinearEquiv.apply_symm_apply, comap_domain_apply]
+        simp only [coe_mk, LinearEquiv.apply_symm_apply, comapDomain_apply]
       map_add' := fun g h => by
         ext ⟨i, x⟩
         simp only [coe_mk, add_apply, LinearEquiv.map_add]
@@ -118,7 +118,9 @@ theorem coe_basis {φ : ι → Type _} (b : ∀ i, Basis (φ i) R M) :
       · cases h
         simp only [basis_repr, single_eq_same, Basis.repr_self,
           Finsupp.single_apply_left sigma_mk_injective]
-      simp only [basis_repr, single_apply, h, false_and_iff, if_false, LinearEquiv.map_zero,
+      · have : Sigma.mk i x ≠ Sigma.mk j y := fun h' => h <| congrArg (fun s => s.fst) h'
+        -- Porting note: previously `this` not needed
+        simp only [basis_repr, single_apply, h, this, false_and_iff, if_false, LinearEquiv.map_zero,
         zero_apply]
 #align finsupp.coe_basis Finsupp.coe_basis
 
@@ -130,7 +132,7 @@ protected def basisSingleOne : Basis ι R (ι →₀ R) :=
 
 @[simp]
 theorem coe_basisSingleOne : (Finsupp.basisSingleOne : ι → ι →₀ R) = fun i => Finsupp.single i 1 :=
-  funext fun i => Basis.apply_eq_iff.mpr rfl
+  funext fun _ => Basis.apply_eq_iff.mpr rfl
 #align finsupp.coe_basis_single_one Finsupp.coe_basisSingleOne
 
 end Semiring
@@ -148,8 +150,10 @@ variable [DecidableEq n] [Fintype n]
 
 variable [Semiring R] [AddCommMonoid M] [Module R M]
 
-theorem Finset.sum_single_ite (a : R) (i : n) :
-    (Finset.univ.Sum fun x : n => Finsupp.single x (ite (i = x) a 0)) = Finsupp.single i a := by
+-- Porting note: looks like a diamond with Subtype.fintype
+attribute [-instance] fintypePure fintypeSingleton
+theorem _root_.Finset.sum_single_ite (a : R) (i : n) :
+    (Finset.univ.sum fun x : n => Finsupp.single x (ite (i = x) a 0)) = Finsupp.single i a := by
   rw [Finset.sum_congr_set {i} (fun x : n => Finsupp.single x (ite (i = x) a 0)) fun _ =>
       Finsupp.single i a]
   · simp
@@ -166,9 +170,10 @@ theorem Finset.sum_single_ite (a : R) (i : n) :
 @[simp]
 theorem equivFun_symm_stdBasis (b : Basis n R M) (i : n) :
     b.equivFun.symm (LinearMap.stdBasis R (fun _ => R) i 1) = b i := by
-  have := EquivLike.injective b.repr
-  apply_fun b.repr
-  simp only [equiv_fun_symm_apply, std_basis_apply', LinearEquiv.map_sum, LinearEquiv.map_smulₛₗ,
+  -- Porting note: apply_fun b.repr failed even with a proof of injectivity in the context
+  suffices b.repr (b.equivFun.symm (LinearMap.stdBasis R (fun _ => R) i 1)) = b.repr (b i) from
+    EquivLike.injective b.repr this
+  simp only [equivFun_symm_apply, stdBasis_apply', LinearEquiv.map_sum, LinearEquiv.map_smulₛₗ,
     RingHom.id_apply, repr_self, Finsupp.smul_single', boole_mul]
   exact Finset.sum_single_ite 1 i
 #align basis.equiv_fun_symm_std_basis Basis.equivFun_symm_stdBasis
