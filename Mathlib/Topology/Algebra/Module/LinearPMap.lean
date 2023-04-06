@@ -21,12 +21,12 @@ underlying spaces are normed.
 
 ## Main definitions
 
-* `linear_pmap.is_closed`: An unbounded operator is closed iff its graph is closed.
-* `linear_pmap.is_closable`: An unbounded operator is closable iff the closure of its graph is a
+* `LinearPMap.IsClosed`: An unbounded operator is closed iff its graph is closed.
+* `LinearPMap.IsClosable`: An unbounded operator is closable iff the closure of its graph is a
   graph.
-* `linear_pmap.closure`: For a closable unbounded operator `f : linear_pmap R E F` the closure is
+* `LinearPMap.closure`: For a closable unbounded operator `f : LinearPMap R E F` the closure is
   the smallest closed extension of `f`. If `f` is not closable, then `f.closure` is defined as `f`.
-* `linear_pmap.has_core`: a submodule contained in the domain is a core if restricting to the core
+* `LinearPMap.HasCore`: a submodule contained in the domain is a core if restricting to the core
   does not lose information about the unbounded operator.
 
 ## Main statements
@@ -34,7 +34,7 @@ underlying spaces are normed.
 * `linear_pmap.closable_iff_exists_closed_extension`: an unbounded operator is closable iff it has a
   closed extension.
 * `linear_pmap.closable.exists_unique`: there exists a unique closure
-* `linear_pmap.closure_has_core`: the domain of `f` is a core of its closure
+* `LinearPMap.closureHasCore`: the domain of `f` is a core of its closure
 
 ## References
 
@@ -117,14 +117,14 @@ theorem closure_def' {f : E →ₗ.[R] F} (hf : ¬f.IsClosable) : f.closure = f 
 #align linear_pmap.closure_def' LinearPMap.closure_def'
 
 /-- The closure (as a submodule) of the graph is equal to the graph of the closure
-  (as a `linear_pmap`). -/
+  (as a `LinearPMap`). -/
 theorem IsClosable.graph_closure_eq_closure_graph {f : E →ₗ.[R] F} (hf : f.IsClosable) :
     f.graph.topologicalClosure = f.closure.graph := by
   rw [closure_def hf]
   exact hf.choose_spec
 #align linear_pmap.is_closable.graph_closure_eq_closure_graph LinearPMap.IsClosable.graph_closure_eq_closure_graph
 
-/-- A `linear_pmap` is contained in its closure. -/
+/-- A `LinearPMap` is contained in its closure. -/
 theorem le_closure (f : E →ₗ.[R] F) : f ≤ f.closure := by
   by_cases hf : f.IsClosable
   · refine' le_of_le_graph _
