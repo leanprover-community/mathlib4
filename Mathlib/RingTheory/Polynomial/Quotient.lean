@@ -76,7 +76,7 @@ theorem eval₂_C_mk_eq_zero {I : Ideal R} :
   rw [eval₂_monomial (C.comp (Quotient.mk' I)) X]
   refine' mul_eq_zero_of_left (Polynomial.ext fun m => _) (X ^ n)
   erw [coeff_C]
-  byCcases h : m = 0
+  by_cases h : m = 0
   · simpa [h] using quotient.eq_zero_iff_mem.2 ((mem_map_C_iff.1 ha) n)
   · simp [h]
 #align ideal.eval₂_C_mk_eq_zero Ideal.eval₂_C_mk_eq_zero
