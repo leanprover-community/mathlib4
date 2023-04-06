@@ -14,13 +14,13 @@ import Mathlib.Data.Set.Sups
 /-!
 # Set family operations
 
-This file defines a few binary operations on `finset α` for use in set family combinatorics.
+This file defines a few binary operations on `Finset α` for use in set family combinatorics.
 
 ## Main declarations
 
 * `s ⊻ t`: Finset of elements of the form `a ⊔ b` where `a ∈ s`, `b ∈ t`.
 * `s ⊼ t`: Finset of elements of the form `a ⊓ b` where `a ∈ s`, `b ∈ t`.
-* `finset.disj_sups s t`: Finset of elements of the form `a ⊔ b` where `a ∈ s`, `b ∈ t` and `a`
+* `Finset.disjSups s t`: Finset of elements of the form `a ⊔ b` where `a ∈ s`, `b ∈ t` and `a`
   and `b` are disjoint.
 
 ## Notation
@@ -28,7 +28,7 @@ This file defines a few binary operations on `finset α` for use in set family c
 We define the following notation in locale `finset_family`:
 * `s ⊻ t`
 * `s ⊼ t`
-* `s ○ t` for `finset.disj_sups s t`
+* `s ○ t` for `Finset.disjSups s t`
 
 ## References
 
