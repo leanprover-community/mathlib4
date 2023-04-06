@@ -54,7 +54,6 @@ inductive FreeMonoidalCategory : Type u
 
 end
 
--- mathport name: exprF
 local notation "F" => FreeMonoidalCategory
 
 namespace FreeMonoidalCategory
@@ -76,7 +75,6 @@ inductive Hom : F C → F C → Type u
   | tensor {W X Y Z} (f : Hom W Y) (g : Hom X Z) : Hom (W.tensor X) (Y.tensor Z)
 #align category_theory.free_monoidal_category.hom CategoryTheory.FreeMonoidalCategory.Hom
 
--- mathport name: «expr ⟶ᵐ »
 local infixr:10 " ⟶ᵐ " => Hom
 
 /-- The morphisms of the free monoidal category satisfy 21 relations ensuring that the resulting
@@ -85,48 +83,39 @@ inductive HomEquiv : ∀ {X Y : F C}, (X ⟶ᵐ Y) → (X ⟶ᵐ Y) → Prop
   | refl {X Y} (f : X ⟶ᵐ Y) : HomEquiv f f
   | symm {X Y} (f g : X ⟶ᵐ Y) : HomEquiv f g → HomEquiv g f
   | trans {X Y} {f g h : X ⟶ᵐ Y} : HomEquiv f g → HomEquiv g h → HomEquiv f h
-  |
-  comp {X Y Z} {f f' : X ⟶ᵐ Y} {g g' : Y ⟶ᵐ Z} :
-    HomEquiv f f' → HomEquiv g g' → HomEquiv (f.comp g) (f'.comp g')
-  |
-  tensor {W X Y Z} {f f' : W ⟶ᵐ X} {g g' : Y ⟶ᵐ Z} :
-    HomEquiv f f' → HomEquiv g g' → HomEquiv (f.tensor g) (f'.tensor g')
+  | comp {X Y Z} {f f' : X ⟶ᵐ Y} {g g' : Y ⟶ᵐ Z} :
+      HomEquiv f f' → HomEquiv g g' → HomEquiv (f.comp g) (f'.comp g')
+  | tensor {W X Y Z} {f f' : W ⟶ᵐ X} {g g' : Y ⟶ᵐ Z} :
+      HomEquiv f f' → HomEquiv g g' → HomEquiv (f.tensor g) (f'.tensor g')
   | comp_id {X Y} (f : X ⟶ᵐ Y) : HomEquiv (f.comp (Hom.id _)) f
   | id_comp {X Y} (f : X ⟶ᵐ Y) : HomEquiv ((Hom.id _).comp f) f
-  |
-  assoc {X Y U V : F C} (f : X ⟶ᵐ U) (g : U ⟶ᵐ V) (h : V ⟶ᵐ Y) :
-    HomEquiv ((f.comp g).comp h) (f.comp (g.comp h))
+  | assoc {X Y U V : F C} (f : X ⟶ᵐ U) (g : U ⟶ᵐ V) (h : V ⟶ᵐ Y) :
+      HomEquiv ((f.comp g).comp h) (f.comp (g.comp h))
   | tensor_id {X Y} : HomEquiv ((Hom.id X).tensor (Hom.id Y)) (Hom.id _)
-  |
-  tensor_comp {X₁ Y₁ Z₁ X₂ Y₂ Z₂ : F C} (f₁ : X₁ ⟶ᵐ Y₁) (f₂ : X₂ ⟶ᵐ Y₂) (g₁ : Y₁ ⟶ᵐ Z₁)
-    (g₂ : Y₂ ⟶ᵐ Z₂) :
+  | tensor_comp {X₁ Y₁ Z₁ X₂ Y₂ Z₂ : F C} (f₁ : X₁ ⟶ᵐ Y₁) (f₂ : X₂ ⟶ᵐ Y₂) (g₁ : Y₁ ⟶ᵐ Z₁)
+      (g₂ : Y₂ ⟶ᵐ Z₂) :
     HomEquiv ((f₁.comp g₁).tensor (f₂.comp g₂)) ((f₁.tensor f₂).comp (g₁.tensor g₂))
   | α_hom_inv {X Y Z} : HomEquiv ((Hom.α_hom X Y Z).comp (Hom.α_inv X Y Z)) (Hom.id _)
   | α_inv_hom {X Y Z} : HomEquiv ((Hom.α_inv X Y Z).comp (Hom.α_hom X Y Z)) (Hom.id _)
-  |
-  associator_naturality {X₁ X₂ X₃ Y₁ Y₂ Y₃} (f₁ : X₁ ⟶ᵐ Y₁) (f₂ : X₂ ⟶ᵐ Y₂) (f₃ : X₃ ⟶ᵐ Y₃) :
-    HomEquiv (((f₁.tensor f₂).tensor f₃).comp (Hom.α_hom Y₁ Y₂ Y₃))
-      ((Hom.α_hom X₁ X₂ X₃).comp (f₁.tensor (f₂.tensor f₃)))
+  | associator_naturality {X₁ X₂ X₃ Y₁ Y₂ Y₃} (f₁ : X₁ ⟶ᵐ Y₁) (f₂ : X₂ ⟶ᵐ Y₂) (f₃ : X₃ ⟶ᵐ Y₃) :
+      HomEquiv (((f₁.tensor f₂).tensor f₃).comp (Hom.α_hom Y₁ Y₂ Y₃))
+        ((Hom.α_hom X₁ X₂ X₃).comp (f₁.tensor (f₂.tensor f₃)))
   | ρ_hom_inv {X} : HomEquiv ((Hom.ρ_hom X).comp (Hom.ρ_inv X)) (Hom.id _)
   | ρ_inv_hom {X} : HomEquiv ((Hom.ρ_inv X).comp (Hom.ρ_hom X)) (Hom.id _)
-  |
-  ρ_naturality {X Y} (f : X ⟶ᵐ Y) :
-    HomEquiv ((f.tensor (Hom.id Unit)).comp (Hom.ρ_hom Y)) ((Hom.ρ_hom X).comp f)
+  | ρ_naturality {X Y} (f : X ⟶ᵐ Y) :
+      HomEquiv ((f.tensor (Hom.id Unit)).comp (Hom.ρ_hom Y)) ((Hom.ρ_hom X).comp f)
   | l_hom_inv {X} : HomEquiv ((Hom.l_hom X).comp (Hom.l_inv X)) (Hom.id _)
   | l_inv_hom {X} : HomEquiv ((Hom.l_inv X).comp (Hom.l_hom X)) (Hom.id _)
-  |
-  l_naturality {X Y} (f : X ⟶ᵐ Y) :
-    HomEquiv (((Hom.id Unit).tensor f).comp (Hom.l_hom Y)) ((Hom.l_hom X).comp f)
-  |
-  pentagon {W X Y Z} :
-    HomEquiv
-      (((Hom.α_hom W X Y).tensor (Hom.id Z)).comp
-        ((Hom.α_hom W (X.tensor Y) Z).comp ((Hom.id W).tensor (Hom.α_hom X Y Z))))
-      ((Hom.α_hom (W.tensor X) Y Z).comp (Hom.α_hom W X (Y.tensor Z)))
-  |
-  triangle {X Y} :
-    HomEquiv ((Hom.α_hom X Unit Y).comp ((Hom.id X).tensor (Hom.l_hom Y)))
-      ((Hom.ρ_hom X).tensor (Hom.id Y))
+  | l_naturality {X Y} (f : X ⟶ᵐ Y) :
+      HomEquiv (((Hom.id Unit).tensor f).comp (Hom.l_hom Y)) ((Hom.l_hom X).comp f)
+  | pentagon {W X Y Z} :
+      HomEquiv
+        (((Hom.α_hom W X Y).tensor (Hom.id Z)).comp
+          ((Hom.α_hom W (X.tensor Y) Z).comp ((Hom.id W).tensor (Hom.α_hom X Y Z))))
+        ((Hom.α_hom (W.tensor X) Y Z).comp (Hom.α_hom W X (Y.tensor Z)))
+  | triangle {X Y} :
+      HomEquiv ((Hom.α_hom X Unit Y).comp ((Hom.id X).tensor (Hom.l_hom Y)))
+        ((Hom.ρ_hom X).tensor (Hom.id Y))
 set_option linter.uppercaseLean3 false
 #align category_theory.free_monoidal_category.HomEquiv CategoryTheory.FreeMonoidalCategory.HomEquiv
 
@@ -145,8 +134,7 @@ section
 
 open FreeMonoidalCategory.HomEquiv
 
-instance categoryFreeMonoidalCategory : Category.{u} (F C)
-    where
+instance categoryFreeMonoidalCategory : Category.{u} (F C) where
   Hom X Y := Quotient (FreeMonoidalCategory.setoidHom X Y)
   id X := ⟦FreeMonoidalCategory.Hom.id _⟧
   comp := @fun X Y Z f g =>
@@ -166,8 +154,7 @@ instance categoryFreeMonoidalCategory : Category.{u} (F C)
     exact Quotient.sound (assoc f g h)
 #align category_theory.free_monoidal_category.category_free_monoidal_category CategoryTheory.FreeMonoidalCategory.categoryFreeMonoidalCategory
 
-instance : MonoidalCategory (F C)
-    where
+instance : MonoidalCategory (F C) where
   tensorObj X Y := FreeMonoidalCategory.tensor X Y
   tensorHom := @fun X₁ Y₁ X₂ Y₂ =>
     Quotient.map₂ Hom.tensor <| by
@@ -243,7 +230,6 @@ theorem mk'_l_inv {X : F C} : ⟦Hom.l_inv X⟧ = (λ_ X).inv :=
   rfl
 #align category_theory.free_monoidal_category.mk_l_inv CategoryTheory.FreeMonoidalCategory.mk'_l_inv
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[simp]
 theorem tensor_eq_tensor {X Y : F C} : X.tensor Y = X ⊗ Y :=
   rfl
@@ -258,13 +244,6 @@ section Functor
 
 variable {D : Type u'} [Category.{v'} D] [MonoidalCategory D] (f : C → D)
 
-/- warning: category_theory.free_monoidal_category.project_obj -> CategoryTheory.FreeMonoidalCategory.projectObj is a dubious translation:
-lean 3 declaration is
-  forall {C : Type.{u2}} {D : Type.{u3}} [_inst_1 : CategoryTheory.Category.{u1, u3} D] [_inst_2 : CategoryTheory.MonoidalCategory.{u1, u3} D _inst_1], (C -> D) -> (CategoryTheory.FreeMonoidalCategory.{u2} C) -> D
-but is expected to have type
-  forall {C : Type.{u1}} {D : Type.{u2}} [_inst_1 : CategoryTheory.Category.{u3, u2} D] [_inst_2 : CategoryTheory.MonoidalCategory.{u3, u2} D _inst_1], (C -> D) -> (CategoryTheory.FreeMonoidalCategory.{u1} C) -> D
-Case conversion may be inaccurate. Consider using '#align category_theory.free_monoidal_category.project_obj CategoryTheory.FreeMonoidalCategory.projectObjₓ'. -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- Auxiliary definition for `free_monoidal_category.project`. -/
 def projectObj : F C → D
   | FreeMonoidalCategory.of X => f X
@@ -274,16 +253,12 @@ def projectObj : F C → D
 
 section
 
+
 open Hom
 
-/- warning: category_theory.free_monoidal_category.project_map_aux -> CategoryTheory.FreeMonoidalCategory.projectMapAux is a dubious translation:
-lean 3 declaration is
-  forall {C : Type.{u2}} {D : Type.{u3}} [_inst_1 : CategoryTheory.Category.{u1, u3} D] [_inst_2 : CategoryTheory.MonoidalCategory.{u1, u3} D _inst_1] (f : C -> D) {X : CategoryTheory.FreeMonoidalCategory.{u2} C} {Y : CategoryTheory.FreeMonoidalCategory.{u2} C}, (CategoryTheory.FreeMonoidalCategory.Hom.{u2} C X Y) -> (Quiver.Hom.{succ u1, u3} D (CategoryTheory.CategoryStruct.toQuiver.{u1, u3} D (CategoryTheory.Category.toCategoryStruct.{u1, u3} D _inst_1)) (CategoryTheory.FreeMonoidalCategory.projectObj.{u1, u2, u3} C D _inst_1 _inst_2 f X) (CategoryTheory.FreeMonoidalCategory.projectObj.{u1, u2, u3} C D _inst_1 _inst_2 f Y))
-but is expected to have type
-  PUnit.{max (max (succ (succ u1)) (succ (succ u2))) (succ (succ u3))}
-Case conversion may be inaccurate. Consider using '#align category_theory.free_monoidal_category.project_map_aux CategoryTheory.FreeMonoidalCategory.projectMapAuxₓ'. -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- Auxiliary definition for `free_monoidal_category.project`. -/
+-- Porting note: `@[simp]` here generates a panic in
+-- _private.Lean.Meta.Match.MatchEqs.0.Lean.Meta.Match.SimpH.substRHS
 @[simp]
 def projectMapAux : ∀ {X Y : F C}, (X ⟶ᵐ Y) → (projectObj f X ⟶ projectObj f Y)
   | _, _, Hom.id _ => 𝟙 _
@@ -297,55 +272,69 @@ def projectMapAux : ∀ {X Y : F C}, (X ⟶ᵐ Y) → (projectObj f X ⟶ projec
   | _, _, Hom.tensor f g => projectMapAux f ⊗ projectMapAux g
 #align category_theory.free_monoidal_category.project_map_aux CategoryTheory.FreeMonoidalCategory.projectMapAux
 
+-- Porting note: this declaration generates the same panic.
 /-- Auxiliary definition for `free_monoidal_category.project`. -/
 def projectMap (X Y : F C) : (X ⟶ Y) → (projectObj f X ⟶ projectObj f Y) :=
-  Quotient.lift (projectMapAux f)
-    (by
-      intro f g h
-      induction' h with
-        X Y f X Y f g _ hfg' X Y f g h _ _ hfg hgh X Y Z f f' g g' _ _ hf hg W X Y Z f g f' g' _ _ hfg hfg'
-      · rfl
-      · exact hfg'.symm
-      · exact hfg.trans hgh
-      · simp only [projectMapAux, hf, hg]
-      · simp only [projectMapAux, hfg, hfg']
-      · simp only [projectMapAux, Category.comp_id]
-      · simp only [projectMapAux, Category.id_comp]
-      · simp only [projectMapAux, Category.assoc]
-      · simp only [projectMapAux, MonoidalCategory.tensor_id]
-        rfl
-      · simp only [projectMapAux, MonoidalCategory.tensor_comp]
-      · simp only [projectMapAux, Iso.hom_inv_id]
-      · simp only [projectMapAux, Iso.inv_hom_id]
-      · simp only [projectMapAux, MonoidalCategory.associator_naturality]
-      · simp only [projectMapAux, Iso.hom_inv_id]
-      · simp only [projectMapAux, Iso.inv_hom_id]
-      · simp only [projectMapAux]
+  Quotient.lift (projectMapAux f) <| by
+    intro f g h
+    induction h with
+    | refl => rfl
+    | symm _ _ _ hfg' => exact hfg'.symm
+    | trans _ _  hfg hgh => exact hfg.trans hgh
+    | comp _ _  hf hg => simp only [projectMapAux, hf, hg]
+    | tensor _ _ hfg hfg' => simp only [projectMapAux, hfg, hfg']
+    | comp_id => simp only [projectMapAux, Category.comp_id]
+    | id_comp => simp only [projectMapAux, Category.id_comp]
+    | assoc => simp only [projectMapAux, Category.assoc]
+    | tensor_id => simp only [projectMapAux, MonoidalCategory.tensor_id]; rfl
+    | tensor_comp => simp only [projectMapAux, MonoidalCategory.tensor_comp]
+    | α_hom_inv => simp only [projectMapAux, Iso.hom_inv_id]
+    | α_inv_hom => simp only [projectMapAux, Iso.inv_hom_id]
+    | associator_naturality => simp only [projectMapAux, MonoidalCategory.associator_naturality]
+    | ρ_hom_inv => simp only [projectMapAux, Iso.hom_inv_id]
+    | ρ_inv_hom => simp only [projectMapAux, Iso.inv_hom_id]
+    | ρ_naturality =>
+        simp only [projectMapAux]
         dsimp [projectObj]
         exact MonoidalCategory.rightUnitor_naturality _
-      · simp only [projectMapAux, Iso.hom_inv_id]
-      · simp only [projectMapAux, Iso.inv_hom_id]
-      · simp only [projectMapAux]
+    | l_hom_inv => simp only [projectMapAux, Iso.hom_inv_id]
+    | l_inv_hom => simp only [projectMapAux, Iso.inv_hom_id]
+    | l_naturality =>
+        simp only [projectMapAux]
         dsimp [projectObj]
         exact MonoidalCategory.leftUnitor_naturality _
-      · simp only [projectMapAux]
+    | pentagon =>
+        simp only [projectMapAux]
         exact MonoidalCategory.pentagon _ _ _ _
-      · simp only [projectMapAux]
-        exact MonoidalCategory.triangle _ _)
+    | triangle =>
+        simp only [projectMapAux]
+        exact MonoidalCategory.triangle _ _
 #align category_theory.free_monoidal_category.project_map CategoryTheory.FreeMonoidalCategory.projectMap
 
 end
 
 /-- If `D` is a monoidal category and we have a function `C → D`, then we have a functor from the
     free monoidal category over `C` to the category `D`. -/
-def project : MonoidalFunctor (F C) D
-    where
+def project : MonoidalFunctor (F C) D where
   obj := projectObj f
   map := projectMap f _ _
-  map_comp := @fun X Y Z f_1 g => by sorry
+  -- Porting note: `map_comp` and `μ_natural` were proved in mathlib3 by tidy, using induction.
+  -- We probably don't expect `aesop_cat` to handle this yet, see https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Aesop.20and.20cases
+  -- In any case I don't understand why we need to specify `using Quotient.recOn`.
+  map_comp := @fun X Y Z f g => by
+    induction' f using Quotient.recOn
+    induction' g using Quotient.recOn
+    all_goals
+      rfl
   ε := 𝟙 _
   μ X Y := 𝟙 _
-  μ_natural := @fun X Y X' Y' f g => by sorry
+  μ_natural := @fun X Y X' Y' f g => by
+    induction' f using Quotient.recOn
+    induction' g using Quotient.recOn
+    -- FIXME
+    -- There are goals here, but even proving them by `sorry`
+    -- generates a warning about unreachable code...?
+    sorry
 #align category_theory.free_monoidal_category.project CategoryTheory.FreeMonoidalCategory.project
 
 end Functor
