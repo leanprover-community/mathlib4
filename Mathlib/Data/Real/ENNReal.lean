@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
 
 ! This file was ported from Lean 3 source module data.real.ennreal
-! leanprover-community/mathlib commit 57ac39bd365c2f80589a700f9fbb664d3a1a30c2
+! leanprover-community/mathlib commit 29cb56a7b35f72758b05a30490e1f10bd62c35c1
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -296,6 +296,20 @@ theorem toReal_eq_one_iff (x : ℝ≥0∞) : x.toReal = 1 ↔ x = 1 := by
 
 @[simp] theorem top_ne_ofReal {r : ℝ} : ∞ ≠ ENNReal.ofReal r := top_ne_coe
 #align ennreal.top_ne_of_real ENNReal.top_ne_ofReal
+
+@[simp]
+theorem ofReal_toReal_eq_iff : ENNReal.ofReal a.toReal = a ↔ a ≠ ⊤ :=
+  ⟨fun h => by
+    rw [← h]
+    exact ofReal_ne_top, ofReal_toReal⟩
+#align ennreal.of_real_to_real_eq_iff ENNReal.ofReal_toReal_eq_iff
+
+@[simp]
+theorem toReal_ofReal_eq_iff {a : ℝ} : (ENNReal.ofReal a).toReal = a ↔ 0 ≤ a :=
+  ⟨fun h => by
+    rw [← h]
+    exact toReal_nonneg, toReal_ofReal⟩
+#align ennreal.to_real_of_real_eq_iff ENNReal.toReal_ofReal_eq_iff
 
 @[simp] theorem zero_ne_top : 0 ≠ ∞ := coe_ne_top
 #align ennreal.zero_ne_top ENNReal.zero_ne_top
@@ -2331,7 +2345,7 @@ theorem mul_infᵢ_of_ne {ι} {f : ι → ℝ≥0∞} {x : ℝ≥0∞} (h0 : x �
     x * infᵢ f = ⨅ i, x * f i := by simpa only [mul_comm] using infᵢ_mul_of_ne h0 h
 #align ennreal.mul_infi_of_ne ENNReal.mul_infᵢ_of_ne
 
-/-! `supr_mul`, `mul_supr` and variants are in `topology.instances.ennreal`. -/
+/-! `supr_mul`, `mul_supr` and variants are in `Topology.Instances.ENNReal`. -/
 
 end infᵢ
 

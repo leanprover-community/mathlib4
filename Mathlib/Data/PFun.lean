@@ -63,7 +63,6 @@ def PFun (α β : Type _) :=
   α → Part β
 #align pfun PFun
 
--- mathport name: «expr →. »
 /-- `α  →. β` is notation for the type `PFun α β` of partial functions from `α` to `β`.  -/
 infixr:25 " →. " => PFun
 
@@ -207,7 +206,7 @@ theorem lift_graph {f : α → β} {a b} : (a, b) ∈ (f : α →. β).graph ↔
 protected def pure (x : β) : α →. β := fun _ => Part.some x
 #align pfun.pure PFun.pure
 
-/-- The monad `bind` function, pointwise `part.bind` -/
+/-- The monad `bind` function, pointwise `Part.bind` -/
 def bind (f : α →. β) (g : β → α →. γ) : α →. γ := fun a => (f a).bind fun b => g b a
 #align pfun.bind PFun.bind
 
@@ -216,14 +215,14 @@ theorem bind_apply (f : α →. β) (g : β → α →. γ) (a : α) : f.bind g 
   rfl
 #align pfun.bind_apply PFun.bind_apply
 
-/-- The monad `map` function, pointwise `part.map` -/
+/-- The monad `map` function, pointwise `Part.map` -/
 def map (f : β → γ) (g : α →. β) : α →. γ := fun a => (g a).map f
 #align pfun.map PFun.map
 
 instance : Monad (PFun α) where
-  pure := @PFun.pure _
-  bind := @PFun.bind _
-  map := @PFun.map _
+  pure := PFun.pure
+  bind := PFun.bind
+  map := PFun.map
 
 instance : LawfulMonad (PFun α) := LawfulMonad.mk'
   (bind_pure_comp := fun f x => funext fun a => Part.bind_some_eq_map _ _)
@@ -249,7 +248,7 @@ it is in the `α` part of `β ⊕ α` (in which case we repeat the procedure, so
 -- Porting note: had to mark `noncomputable`
 noncomputable def fix (f : α →. Sum β α) : α →. β := fun a =>
   Part.assert (Acc (fun x y => Sum.inr x ∈ f y) a) $ fun h =>
-    @WellFounded.fixF _ (fun x y => Sum.inr x ∈ f y) _
+    WellFounded.fixF
       (fun a IH =>
         Part.assert (f a).Dom $ fun hf =>
           match e : (f a).get hf with
@@ -521,7 +520,7 @@ theorem core_eq (f : α →. β) (s : Set β) : f.core s = f.preimage s ∪ f.Do
     Set.inter_univ, Set.union_eq_self_of_subset_right (f.compl_dom_subset_core s)]
 #align pfun.core_eq PFun.core_eq
 
-theorem preimage_as_subtype (f : α →. β) (s : Set β) :
+theorem preimage_asSubtype (f : α →. β) (s : Set β) :
     f.asSubtype ⁻¹' s = Subtype.val ⁻¹' f.preimage s := by
   ext x
   simp only [Set.mem_preimage, Set.mem_setOf_eq, PFun.asSubtype, PFun.mem_preimage]
@@ -530,32 +529,32 @@ theorem preimage_as_subtype (f : α →. β) (s : Set β) :
     Iff.intro (fun h => ⟨_, h, Part.get_mem _⟩) fun ⟨y, ys, fxy⟩ =>
       have : f.fn x.val x.property ∈ f x.val := Part.get_mem _
       Part.mem_unique fxy this ▸ ys
-#align pfun.preimage_as_subtype PFun.preimage_as_subtype
+#align pfun.preimage_as_subtype PFun.preimage_asSubtype
 
 /-- Turns a function into a partial function to a subtype. -/
 def toSubtype (p : β → Prop) (f : α → β) : α →. Subtype p := fun a => ⟨p (f a), Subtype.mk _⟩
 #align pfun.to_subtype PFun.toSubtype
 
 @[simp]
-theorem dom_to_subtype (p : β → Prop) (f : α → β) : (toSubtype p f).Dom = { a | p (f a) } :=
+theorem dom_toSubtype (p : β → Prop) (f : α → β) : (toSubtype p f).Dom = { a | p (f a) } :=
   rfl
-#align pfun.dom_to_subtype PFun.dom_to_subtype
+#align pfun.dom_to_subtype PFun.dom_toSubtype
 
 @[simp]
-theorem to_subtype_apply (p : β → Prop) (f : α → β) (a : α) :
+theorem toSubtype_apply (p : β → Prop) (f : α → β) (a : α) :
     toSubtype p f a = ⟨p (f a), Subtype.mk _⟩ :=
   rfl
-#align pfun.to_subtype_apply PFun.to_subtype_apply
+#align pfun.to_subtype_apply PFun.toSubtype_apply
 
-theorem dom_to_subtype_apply_iff {p : β → Prop} {f : α → β} {a : α} :
+theorem dom_toSubtype_apply_iff {p : β → Prop} {f : α → β} {a : α} :
     (toSubtype p f a).Dom ↔ p (f a) :=
   Iff.rfl
-#align pfun.dom_to_subtype_apply_iff PFun.dom_to_subtype_apply_iff
+#align pfun.dom_to_subtype_apply_iff PFun.dom_toSubtype_apply_iff
 
-theorem mem_to_subtype_iff {p : β → Prop} {f : α → β} {a : α} {b : Subtype p} :
+theorem mem_toSubtype_iff {p : β → Prop} {f : α → β} {a : α} {b : Subtype p} :
     b ∈ toSubtype p f a ↔ ↑b = f a := by
-  rw [to_subtype_apply, Part.mem_mk_iff, exists_subtype_mk_eq_iff, eq_comm]
-#align pfun.mem_to_subtype_iff PFun.mem_to_subtype_iff
+  rw [toSubtype_apply, Part.mem_mk_iff, exists_subtype_mk_eq_iff, eq_comm]
+#align pfun.mem_to_subtype_iff PFun.mem_toSubtype_iff
 
 /-- The identity as a partial function -/
 protected def id (α : Type _) : α →. α :=
