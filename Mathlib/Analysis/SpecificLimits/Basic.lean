@@ -27,7 +27,7 @@ noncomputable section
 
 open Classical Set Function Filter Finset Metric
 
-open Classical Topology Nat BigOperators Uniformity NNReal ENNReal
+open Classical Topology Nat BigOperators Uniformity NNReal ENNReal algebraMap
 
 variable {α : Type _} {β : Type _} {ι : Type _}
 
@@ -68,15 +68,16 @@ theorem tendsto_coe_nat_div_add_atTop {𝕜 : Type _} [DivisionRing 𝕜] [Topol
   refine' Tendsto.congr' ((eventually_ne_atTop 0).mp (eventually_of_forall fun n hn => _)) _
   · exact fun n : ℕ => 1 / (1 + x / n)
   · field_simp [Nat.cast_ne_zero.mpr hn]
-  · have : 𝓝 (1 : 𝕜) = 𝓝 (1 / (1 + x * (0 : 𝕜))) := by
-      rw [MulZeroClass.mul_zero, add_zero, div_one]
+  · have : 𝓝 (1 : 𝕜) = 𝓝 (1 / (1 + x * ↑(0 : ℝ))) := by
+      rw [algebraMap.coe_zero, MulZeroClass.mul_zero, add_zero, div_one]
     rw [this]
     refine' tendsto_const_nhds.div (tendsto_const_nhds.add _) (by simp)
     simp_rw [div_eq_mul_inv]
     refine' tendsto_const_nhds.mul _
-    have : (fun n : ℕ => (n : 𝕜)⁻¹) = fun n : ℕ => (n : 𝕜)⁻¹ := by
+    have : (fun n : ℕ => (n : 𝕜)⁻¹) = fun n : ℕ => ↑((n : ℝ)⁻¹) := by
       ext1 n
       rw [← map_natCast (algebraMap ℝ 𝕜) n, ← map_inv₀ (algebraMap ℝ 𝕜)]
+      rfl
     rw [this]
     exact ((continuous_algebraMap ℝ 𝕜).tendsto _).comp tendsto_inverse_atTop_nhds_0_nat
 #align tendsto_coe_nat_div_add_at_top tendsto_coe_nat_div_add_atTop
