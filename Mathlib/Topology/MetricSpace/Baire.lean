@@ -8,10 +8,10 @@ Authors: Sébastien Gouëzel
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.SpecificLimits.Basic
-import Mathbin.Order.Filter.CountableInter
-import Mathbin.Topology.GDelta
-import Mathbin.Topology.Sets.Compacts
+import Mathlib.Analysis.SpecificLimits.Basic
+import Mathlib.Order.Filter.CountableInter
+import Mathlib.Topology.GDelta
+import Mathlib.Topology.Sets.Compacts
 
 /-!
 # Baire theorem
@@ -53,8 +53,7 @@ class BaireSpace (α : Type _) [TopologicalSpace α] : Prop where
 Two versions of these theorems are given.
 The first states that complete pseudo_emetric spaces are Baire. -/
 instance (priority := 100) baire_category_theorem_emetric_complete [PseudoEMetricSpace α]
-    [CompleteSpace α] : BaireSpace α :=
-  by
+    [CompleteSpace α] : BaireSpace α := by
   refine' ⟨fun f ho hd => _⟩
   let B : ℕ → ℝ≥0∞ := fun n => 1 / 2 ^ n
   have Bpos : ∀ n, 0 < B n := by
@@ -117,8 +116,7 @@ instance (priority := 100) baire_category_theorem_emetric_complete [PseudoEMetri
     exact HB n (c n) (r n) (r0 n)
   have incl : ∀ n, closed_ball (c (n + 1)) (r (n + 1)) ⊆ closed_ball (c n) (r n) ∩ f n := fun n =>
     Hball n (c n) (r n) (r0 n)
-  have cdist : ∀ n, edist (c n) (c (n + 1)) ≤ B n :=
-    by
+  have cdist : ∀ n, edist (c n) (c (n + 1)) ≤ B n := by
     intro n
     rw [edist_comm]
     have A : c (n + 1) ∈ closed_ball (c (n + 1)) (r (n + 1)) := mem_closed_ball_self
@@ -136,14 +134,12 @@ instance (priority := 100) baire_category_theorem_emetric_complete [PseudoEMetri
   -- `f n` and to `ball x ε`.
   use y
   simp only [exists_prop, Set.mem_interᵢ]
-  have I : ∀ n, ∀ m ≥ n, closed_ball (c m) (r m) ⊆ closed_ball (c n) (r n) :=
-    by
+  have I : ∀ n, ∀ m ≥ n, closed_ball (c m) (r m) ⊆ closed_ball (c n) (r n) := by
     intro n
     refine' Nat.le_induction _ fun m hnm h => _
     · exact subset.refl _
     · exact subset.trans (incl m) (subset.trans (inter_subset_left _ _) h)
-  have yball : ∀ n, y ∈ closed_ball (c n) (r n) :=
-    by
+  have yball : ∀ n, y ∈ closed_ball (c n) (r n) := by
     intro n
     refine' is_closed_ball.mem_of_tendsto ylim _
     refine' (Filter.eventually_ge_atTop n).mono fun m hm => _
@@ -160,8 +156,7 @@ instance (priority := 100) baire_category_theorem_emetric_complete [PseudoEMetri
 
 /-- The second theorem states that locally compact spaces are Baire. -/
 instance (priority := 100) baire_category_theorem_locally_compact [TopologicalSpace α] [T2Space α]
-    [LocallyCompactSpace α] : BaireSpace α :=
-  by
+    [LocallyCompactSpace α] : BaireSpace α := by
   constructor
   intro f ho hd
   /- To prove that an intersection of open dense subsets is dense, prove that its intersection
@@ -172,8 +167,7 @@ instance (priority := 100) baire_category_theorem_locally_compact [TopologicalSp
   apply dense_iff_inter_open.2
   intro U U_open U_nonempty
   rcases exists_positiveCompacts_subset U_open U_nonempty with ⟨K₀, hK₀⟩
-  have : ∀ (n) (K : positive_compacts α), ∃ K' : positive_compacts α, ↑K' ⊆ f n ∩ interior K :=
-    by
+  have : ∀ (n) (K : positive_compacts α), ∃ K' : positive_compacts α, ↑K' ⊆ f n ∩ interior K := by
     refine' fun n K => exists_positiveCompacts_subset ((ho n).inter isOpen_interior) _
     rw [inter_comm]
     exact (hd n).inter_open_nonempty _ isOpen_interior K.interior_nonempty
@@ -183,8 +177,7 @@ instance (priority := 100) baire_category_theorem_locally_compact [TopologicalSp
   have hK_decreasing : ∀ n : ℕ, ↑(K (n + 1)) ⊆ f n ∩ K n := fun n =>
     (hK_next n (K n)).trans <| inter_subset_inter_right _ interior_subset
   -- Prove that ̀`⋂ n : ℕ, K n` is inside `U ∩ ⋂ n : ℕ, (f n)`.
-  have hK_subset : (⋂ n, K n : Set α) ⊆ U ∩ ⋂ n, f n :=
-    by
+  have hK_subset : (⋂ n, K n : Set α) ⊆ U ∩ ⋂ n, f n := by
     intro x hx
     simp only [mem_inter_iff, mem_Inter] at hx⊢
     exact ⟨hK₀ <| hx 0, fun n => (hK_decreasing n (hx (n + 1))).1⟩
@@ -207,8 +200,7 @@ theorem dense_interᵢ_of_open_nat {f : ℕ → Set α} (ho : ∀ n, IsOpen (f n
 
 /-- Baire theorem: a countable intersection of dense open sets is dense. Formulated here with ⋂₀. -/
 theorem dense_interₛ_of_open {S : Set (Set α)} (ho : ∀ s ∈ S, IsOpen s) (hS : S.Countable)
-    (hd : ∀ s ∈ S, Dense s) : Dense (⋂₀ S) :=
-  by
+    (hd : ∀ s ∈ S, Dense s) : Dense (⋂₀ S) := by
   cases' S.eq_empty_or_nonempty with h h
   · simp [h]
   · rcases hS.exists_eq_range h with ⟨f, hf⟩
@@ -220,8 +212,7 @@ theorem dense_interₛ_of_open {S : Set (Set α)} (ho : ∀ s ∈ S, IsOpen s) (
 /-- Baire theorem: a countable intersection of dense open sets is dense. Formulated here with
 an index set which is a countable set in any type. -/
 theorem dense_bInter_of_open {S : Set β} {f : β → Set α} (ho : ∀ s ∈ S, IsOpen (f s))
-    (hS : S.Countable) (hd : ∀ s ∈ S, Dense (f s)) : Dense (⋂ s ∈ S, f s) :=
-  by
+    (hS : S.Countable) (hd : ∀ s ∈ S, Dense (f s)) : Dense (⋂ s ∈ S, f s) := by
   rw [← sInter_image]
   apply dense_interₛ_of_open
   · rwa [ball_image_iff]
@@ -232,8 +223,7 @@ theorem dense_bInter_of_open {S : Set β} {f : β → Set α} (ho : ∀ s ∈ S,
 /-- Baire theorem: a countable intersection of dense open sets is dense. Formulated here with
 an index set which is an encodable type. -/
 theorem dense_interᵢ_of_open [Encodable β] {f : β → Set α} (ho : ∀ s, IsOpen (f s))
-    (hd : ∀ s, Dense (f s)) : Dense (⋂ s, f s) :=
-  by
+    (hd : ∀ s, Dense (f s)) : Dense (⋂ s, f s) := by
   rw [← sInter_range]
   apply dense_interₛ_of_open
   · rwa [forall_range_iff]
@@ -243,8 +233,7 @@ theorem dense_interᵢ_of_open [Encodable β] {f : β → Set α} (ho : ∀ s, I
 
 /-- Baire theorem: a countable intersection of dense Gδ sets is dense. Formulated here with ⋂₀. -/
 theorem dense_interₛ_of_Gδ {S : Set (Set α)} (ho : ∀ s ∈ S, IsGδ s) (hS : S.Countable)
-    (hd : ∀ s ∈ S, Dense s) : Dense (⋂₀ S) :=
-  by
+    (hd : ∀ s ∈ S, Dense s) : Dense (⋂₀ S) := by
   -- the result follows from the result for a countable intersection of dense open sets,
   -- by rewriting each set as a countable intersection of open sets, which are of course dense.
   choose T hTo hTc hsT using ho
@@ -266,8 +255,7 @@ theorem dense_interₛ_of_Gδ {S : Set (Set α)} (ho : ∀ s ∈ S, IsGδ s) (hS
 /-- Baire theorem: a countable intersection of dense Gδ sets is dense. Formulated here with
 an index set which is an encodable type. -/
 theorem dense_interᵢ_of_Gδ [Encodable β] {f : β → Set α} (ho : ∀ s, IsGδ (f s))
-    (hd : ∀ s, Dense (f s)) : Dense (⋂ s, f s) :=
-  by
+    (hd : ∀ s, Dense (f s)) : Dense (⋂ s, f s) := by
   rw [← sInter_range]
   exact dense_interₛ_of_Gδ (forall_range_iff.2 ‹_›) (countable_range _) (forall_range_iff.2 ‹_›)
 #align dense_Inter_of_Gδ dense_interᵢ_of_Gδ
@@ -275,8 +263,7 @@ theorem dense_interᵢ_of_Gδ [Encodable β] {f : β → Set α} (ho : ∀ s, Is
 /-- Baire theorem: a countable intersection of dense Gδ sets is dense. Formulated here with
 an index set which is a countable set in any type. -/
 theorem dense_bInter_of_Gδ {S : Set β} {f : ∀ x ∈ S, Set α} (ho : ∀ s ∈ S, IsGδ (f s ‹_›))
-    (hS : S.Countable) (hd : ∀ s ∈ S, Dense (f s ‹_›)) : Dense (⋂ s ∈ S, f s ‹_›) :=
-  by
+    (hS : S.Countable) (hd : ∀ s ∈ S, Dense (f s ‹_›)) : Dense (⋂ s ∈ S, f s ‹_›) := by
   rw [bInter_eq_Inter]
   haveI := hS.to_encodable
   exact dense_interᵢ_of_Gδ (fun s => ho s s.2) fun s => hd s s.2
@@ -334,8 +321,7 @@ theorem IsGδ.dense_unionᵢ_interior_of_closed [Encodable ι] {s : Set α} (hs 
   by
   let g i := frontier (f i)ᶜ
   have hgo : ∀ i, IsOpen (g i) := fun i => is_closed_frontier.is_open_compl
-  have hgd : Dense (⋂ i, g i) :=
-    by
+  have hgd : Dense (⋂ i, g i) := by
     refine' dense_interᵢ_of_open hgo fun i x => _
     rw [closure_compl, interior_frontier (hc _)]
     exact id
@@ -350,8 +336,7 @@ theorem IsGδ.dense_unionᵢ_interior_of_closed [Encodable ι] {s : Set α} (hs 
 is dense. Formulated here with a union over a countable set in any type. -/
 theorem IsGδ.dense_bUnion_interior_of_closed {t : Set ι} {s : Set α} (hs : IsGδ s) (hd : Dense s)
     (ht : t.Countable) {f : ι → Set α} (hc : ∀ i ∈ t, IsClosed (f i)) (hU : s ⊆ ⋃ i ∈ t, f i) :
-    Dense (⋃ i ∈ t, interior (f i)) :=
-  by
+    Dense (⋃ i ∈ t, interior (f i)) := by
   haveI := ht.to_encodable
   simp only [bUnion_eq_Union, SetCoe.forall'] at *
   exact hs.dense_Union_interior_of_closed hd hc hU
