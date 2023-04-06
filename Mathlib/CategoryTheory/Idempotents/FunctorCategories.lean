@@ -8,7 +8,7 @@ Authors: Joël Riou
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Idempotents.Karoubi
+import Mathlib.CategoryTheory.Idempotents.Karoubi
 
 /-!
 # Idempotent completeness and functor categories
@@ -108,8 +108,7 @@ variable {J C}
 functor `F : J ⥤ C` to the functor `J ⥤ karoubi C` which sends `(j : J)` to
 the corresponding direct factor of `F.obj j`. -/
 @[simps]
-def obj (P : Karoubi (J ⥤ C)) : J ⥤ Karoubi C
-    where
+def obj (P : Karoubi (J ⥤ C)) : J ⥤ Karoubi C where
   obj j := ⟨P.pt.obj j, P.p.app j, congr_app P.idem j⟩
   map j j' φ :=
     { f := P.p.app j ≫ P.pt.map φ
@@ -132,14 +131,12 @@ variable (J C)
 
 /-- The tautological fully faithful functor `karoubi (J ⥤ C) ⥤ (J ⥤ karoubi C)`. -/
 @[simps]
-def karoubiFunctorCategoryEmbedding : Karoubi (J ⥤ C) ⥤ J ⥤ Karoubi C
-    where
+def karoubiFunctorCategoryEmbedding : Karoubi (J ⥤ C) ⥤ J ⥤ Karoubi C where
   obj := KaroubiFunctorCategoryEmbedding.obj
   map P Q := KaroubiFunctorCategoryEmbedding.map
 #align category_theory.idempotents.karoubi_functor_category_embedding CategoryTheory.Idempotents.karoubiFunctorCategoryEmbedding
 
-instance : Full (karoubiFunctorCategoryEmbedding J C)
-    where
+instance : Full (karoubiFunctorCategoryEmbedding J C) where
   preimage P Q f :=
     { f :=
         { app := fun j => (f.app j).f
