@@ -40,14 +40,10 @@ variable (C : Type u) [Category.{v} C]
 -- porting note: removed @[nolint has_nonempty_instance]
 /-- The category of simplicial objects valued in a category `C`.
 This is the category of contravariant functors from `SimplexCategory` to `C`. -/
+@[reducible]
 def SimplicialObject :=
   SimplexCategoryᵒᵖ ⥤ C
 #align category_theory.simplicial_object CategoryTheory.SimplicialObject
-
-@[simps!]
-instance : Category (SimplicialObject C) := by
-  dsimp only [SimplicialObject]
-  infer_instance
 
 namespace SimplicialObject
 
@@ -76,13 +72,6 @@ instance [HasColimits C] : HasColimits (SimplicialObject C) :=
   ⟨inferInstance⟩
 
 variable {C}
-
--- porting note: added to ease automation
-@[ext]
-lemma hom_ext {X Y : SimplicialObject C} (f g : X ⟶ Y)
-  (h : ∀ (n : SimplexCategory), f.app n = g.app n) : f = g :=
-  NatTrans.ext _ _ (by ext ; apply h)
-
 variable (X : SimplicialObject C)
 
 /-- Face maps for a simplicial object. -/
@@ -230,13 +219,10 @@ def whiskering (D : Type _) [Category D] : (C ⥤ D) ⥤ SimplicialObject C ⥤ 
 
 -- porting note: removed @[nolint has_nonempty_instance]
 /-- Truncated simplicial objects. -/
+@[reducible]
 def Truncated (n : ℕ) :=
   (SimplexCategory.Truncated n)ᵒᵖ ⥤ C
 #align category_theory.simplicial_object.truncated CategoryTheory.SimplicialObject.Truncated
-
-instance : Category (Truncated C n) := by
-  dsimp [Truncated]
-  infer_instance
 
 variable {C}
 
@@ -288,24 +274,14 @@ abbrev const : C ⥤ SimplicialObject C :=
 
 -- porting note: removed @[nolint has_nonempty_instance]
 /-- The category of augmented simplicial objects, defined as a comma category. -/
+@[reducible]
 def Augmented :=
   Comma (𝟭 (SimplicialObject C)) (const C)
 #align category_theory.simplicial_object.augmented CategoryTheory.SimplicialObject.Augmented
 
-@[simps!]
-instance : Category (Augmented C) := by
-  dsimp only [Augmented]
-  infer_instance
-
 variable {C}
 
 namespace Augmented
-
--- porting note: added to ease automation
-@[ext]
-lemma hom_ext {X Y : Augmented C} (f g : X ⟶ Y) (h₁ : f.left = g.left) (h₂ : f.right = g.right) :
-    f = g :=
-  Comma.hom_ext _ _ h₁ h₂
 
 /-- Drop the augmentation. -/
 @[simps!]
@@ -411,14 +387,10 @@ end SimplicialObject
 
 -- porting note: removed @[nolint has_nonempty_instance]
 /-- Cosimplicial objects. -/
+@[reducible]
 def CosimplicialObject :=
   SimplexCategory ⥤ C
 #align category_theory.cosimplicial_object CategoryTheory.CosimplicialObject
-
-@[simps!]
-instance : Category (CosimplicialObject C) := by
-  dsimp only [CosimplicialObject]
-  infer_instance
 
 namespace CosimplicialObject
 
@@ -446,13 +418,6 @@ instance [HasColimits C] : HasColimits (CosimplicialObject C) :=
   ⟨inferInstance⟩
 
 variable {C}
-
--- porting note: added to ease automation
-@[ext]
-lemma hom_ext {X Y : CosimplicialObject C} (f g : X ⟶ Y)
-  (h : ∀ (n : SimplexCategory), f.app n = g.app n) : f = g :=
-  NatTrans.ext _ _ (by ext ; apply h)
-
 variable (X : CosimplicialObject C)
 
 open Simplicial
@@ -600,13 +565,10 @@ def whiskering (D : Type _) [Category D] : (C ⥤ D) ⥤ CosimplicialObject C �
 
 -- porting note: removed @[nolint has_nonempty_instance]
 /-- Truncated cosimplicial objects. -/
+@[reducible]
 def Truncated (n : ℕ) :=
   SimplexCategory.Truncated n ⥤ C
 #align category_theory.cosimplicial_object.truncated CategoryTheory.CosimplicialObject.Truncated
-
-instance : Category (Truncated C n) := by
-  dsimp [Truncated]
-  infer_instance
 
 variable {C}
 
@@ -658,24 +620,14 @@ abbrev const : C ⥤ CosimplicialObject C :=
 
 -- porting note: removed @[nolint has_nonempty_instance]
 /-- Augmented cosimplicial objects. -/
+@[reducible]
 def Augmented :=
   Comma (const C) (𝟭 (CosimplicialObject C))
 #align category_theory.cosimplicial_object.augmented CategoryTheory.CosimplicialObject.Augmented
 
-@[simps!]
-instance : Category (Augmented C) := by
-  dsimp only [Augmented]
-  infer_instance
-
 variable {C}
 
 namespace Augmented
-
--- porting note: added to ease automation
-@[ext]
-lemma hom_ext {X Y : Augmented C} (f g : X ⟶ Y) (h₁ : f.left = g.left) (h₂ : f.right = g.right) :
-    f = g :=
-  Comma.hom_ext _ _ h₁ h₂
 
 /-- Drop the augmentation. -/
 @[simps!]
