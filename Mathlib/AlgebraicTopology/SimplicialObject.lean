@@ -376,6 +376,7 @@ def whiskering (D : Type u') [Category.{v'} D] : (C ⥤ D) ⥤ Augmented C ⥤ A
             ext n
             dsimp
             rw [Category.comp_id, Category.comp_id, η.naturality] } }
+  map_comp := fun _ _ => by ext <;> rfl
 #align category_theory.simplicial_object.augmented.whiskering CategoryTheory.SimplicialObject.Augmented.whiskering
 
 variable {C}
