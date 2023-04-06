@@ -147,10 +147,9 @@ theorem CharP.intCast_eq_intCast [AddGroupWithOne R] (p : ℕ) [CharP R p] {a b 
 #align char_p.int_cast_eq_int_cast CharP.intCast_eq_intCast
 
 theorem CharP.natCast_eq_natCast [AddGroupWithOne R] (p : ℕ) [CharP R p] {a b : ℕ} :
-    (a : R) = b ↔ a ≡ b [MOD p] :=
-  by
+    (a : R) = b ↔ a ≡ b [MOD p] := by
   rw [← Int.cast_ofNat, ← Int.cast_ofNat b]
-  exact (CharP.int_cast_eq_int_cast _ _).trans Int.coe_nat_modEq_iff
+  exact (CharP.intCast_eq_intCast _ _).trans Int.coe_nat_modEq_iff
 #align char_p.nat_cast_eq_nat_cast CharP.natCast_eq_natCast
 
 theorem CharP.eq [AddMonoidWithOne R] {p q : ℕ} (_c1 : CharP R p) (_c2 : CharP R q) : p = q :=

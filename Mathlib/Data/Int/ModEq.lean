@@ -113,7 +113,8 @@ theorem mod_modEq (a n) : a % n ≡ a [ZMOD n] :=
 #align int.mod_modeq Int.mod_modEq
 
 @[simp]
-theorem neg_modEq_neg : -a ≡ -b [ZMOD n] ↔ a ≡ b [ZMOD n] := by simp [modEq_iff_dvd, dvd_sub_comm]
+theorem neg_modEq_neg : -a ≡ -b [ZMOD n] ↔ a ≡ b [ZMOD n] := by
+  simp [-sub_neg_eq_add, modEq_iff_dvd, dvd_sub_comm]
 #align int.neg_modeq_neg Int.neg_modEq_neg
 
 @[simp]
@@ -126,8 +127,7 @@ protected theorem of_dvd (d : m ∣ n) (h : a ≡ b [ZMOD n]) : a ≡ b [ZMOD m]
   modEq_iff_dvd.2 <| d.trans h.dvd
 #align int.modeq.of_dvd Int.ModEq.of_dvd
 
-protected theorem mul_left' (h : a ≡ b [ZMOD n]) : c * a ≡ c * b [ZMOD c * n] :=
-  by
+protected theorem mul_left' (h : a ≡ b [ZMOD n]) : c * a ≡ c * b [ZMOD c * n] := by
   obtain hc | rfl | hc := lt_trichotomy c 0
   · rw [← neg_modEq_neg, ← modEq_neg, ← neg_mul, ← neg_mul, ← neg_mul]
     simp only [ModEq, mul_emod_mul_of_pos _ _ (neg_pos.2 hc), h.eq]
@@ -136,7 +136,7 @@ protected theorem mul_left' (h : a ≡ b [ZMOD n]) : c * a ≡ c * b [ZMOD c * n
 #align int.modeq.mul_left' Int.ModEq.mul_left'
 
 protected theorem mul_right' (h : a ≡ b [ZMOD n]) : a * c ≡ b * c [ZMOD n * c] := by
-  rw [mul_comm a, mul_comm b, mul_comm n] <;> exact h.mul_left'
+  rw [mul_comm a, mul_comm b, mul_comm n]; exact h.mul_left'
 #align int.modeq.mul_right' Int.ModEq.mul_right'
 
 protected theorem add (h₁ : a ≡ b [ZMOD n]) (h₂ : c ≡ d [ZMOD n]) : a + c ≡ b + d [ZMOD n] :=
@@ -196,7 +196,7 @@ protected theorem mul_left (c : ℤ) (h : a ≡ b [ZMOD n]) : c * a ≡ c * b [Z
   h.mul_left'.of_dvd <| dvd_mul_left _ _
 #align int.modeq.mul_left Int.ModEq.mul_left
 
-protected theorem mul_right (c : ℤ) (h : a ≡ b [ZMOD n]) : a * c ≡ b * c [ZMOD n] := by
+protected theorem mul_right (c : ℤ) (h : a ≡ b [ZMOD n]) : a * c ≡ b * c [ZMOD n] :=
   h.mul_right'.of_dvd <| dvd_mul_right _ _
 #align int.modeq.mul_right Int.ModEq.mul_right
 
@@ -218,7 +218,7 @@ lemma of_mul_right (m : ℤ) : a ≡ b [ZMOD n * m] → a ≡ b [ZMOD n] :=
   mul_comm m n ▸ of_mul_left _
 #align int.modeq.of_mul_right Int.ModEq.of_mul_right
 
-/-- To cancel a common factor `c` from a `modeq` we must divide the modulus `m` by `gcd m c`. -/
+/-- To cancel a common factor `c` from a `ModEq` we must divide the modulus `m` by `gcd m c`. -/
 theorem cancel_right_div_gcd (hm : 0 < m) (h : a * c ≡ b * c [ZMOD m]) : a ≡ b [ZMOD m / gcd m c] :=
   by
   let d := gcd m c
@@ -226,13 +226,16 @@ theorem cancel_right_div_gcd (hm : 0 < m) (h : a * c ≡ b * c [ZMOD m]) : a ≡
   have hcd := gcd_dvd_right m c
   rw [modEq_iff_dvd] at h⊢
   refine' Int.dvd_of_dvd_mul_right_of_gcd_one _ _
+  -- porting note: The `show` below doesn't assign the metavariable properly, so we need an extra
+  -- `swap`
+  swap
   show m / d ∣ c / d * (b - a)
   · rw [mul_comm, ← Int.mul_ediv_assoc (b - a) hcd, sub_mul]
     exact Int.ediv_dvd_ediv hmd h
-  · rw [gcd_div hmd hcd, nat_abs_of_nat, Nat.div_self (gcd_pos_of_ne_zero_left c hm.ne')]
+  · rw [gcd_div hmd hcd, natAbs_ofNat, Nat.div_self (gcd_pos_of_ne_zero_left c hm.ne')]
 #align int.modeq.cancel_right_div_gcd Int.ModEq.cancel_right_div_gcd
 
-/-- To cancel a common factor `c` from a `modeq` we must divide the modulus `m` by `gcd m c`. -/
+/-- To cancel a common factor `c` from a `ModEq` we must divide the modulus `m` by `gcd m c`. -/
 theorem cancel_left_div_gcd (hm : 0 < m) (h : c * a ≡ c * b [ZMOD m]) : a ≡ b [ZMOD m / gcd m c] :=
   cancel_right_div_gcd hm <| by simpa [mul_comm] using h
 #align int.modeq.cancel_left_div_gcd Int.ModEq.cancel_left_div_gcd
