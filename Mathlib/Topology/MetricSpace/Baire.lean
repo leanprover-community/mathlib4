@@ -111,7 +111,7 @@ instance (priority := 100) baire_category_theorem_emetric_complete [PseudoEMetri
   have r0 : ∀ n, r n ≠ 0 := fun n => (rpos n).ne'
   have rB : ∀ n, r n ≤ B n := by
     intro n
-    induction' n with n hn
+    induction' n with n _
     exact min_le_right _ _
     exact HB n (c n) (r n) (r0 n)
   have incl : ∀ n, closedBall (c (n + 1)) (r (n + 1)) ⊆ closedBall (c n) (r n) ∩ f n := fun n =>
@@ -125,7 +125,6 @@ instance (priority := 100) baire_category_theorem_emetric_complete [PseudoEMetri
         closedBall (c (n + 1)) (r (n + 1)) ⊆ closedBall (c n) (r n) :=
           Subset.trans (incl n) (inter_subset_left _ _)
         _ ⊆ closedBall (c n) (B n) := closedBall_subset_closedBall (rB n)
-
     exact I A
   have : CauchySeq c := cauchySeq_of_edist_le_geometric_two _ one_ne_top cdist
   -- as the sequence `c n` is Cauchy in a complete space, it converges to a limit `y`.
@@ -136,7 +135,7 @@ instance (priority := 100) baire_category_theorem_emetric_complete [PseudoEMetri
   simp only [exists_prop, Set.mem_interᵢ]
   have I : ∀ n, ∀ m ≥ n, closedBall (c m) (r m) ⊆ closedBall (c n) (r n) := by
     intro n
-    refine' Nat.le_induction _ fun m hnm h => _
+    refine' Nat.le_induction _ fun m _ h => _
     · exact Subset.refl _
     · exact Subset.trans (incl m) (Subset.trans (inter_subset_left _ _) h)
   have yball : ∀ n, y ∈ closedBall (c n) (r n) := by
@@ -171,22 +170,25 @@ instance (priority := 100) baire_category_theorem_locally_compact [TopologicalSp
     refine' fun n K => exists_positiveCompacts_subset ((ho n).inter isOpen_interior) _
     rw [inter_comm]
     exact (hd n).inter_open_nonempty _ isOpen_interior K.interior_nonempty
-  choose K_next hK_next
+  choose K_next hK_next using this
   let K : ℕ → PositiveCompacts α := fun n => Nat.recOn n K₀ K_next
   -- This is a decreasing sequence of positive compacts contained in suitable open sets `f n`.
-  have hK_decreasing : ∀ n : ℕ, ↑(K (n + 1)) ⊆ f n ∩ K n := fun n =>
+  have hK_decreasing : ∀ n : ℕ, ((K (n + 1)).carrier) ⊆ (f n ∩ (K n).carrier) := fun n =>
     (hK_next n (K n)).trans <| inter_subset_inter_right _ interior_subset
   -- Prove that ̀`⋂ n : ℕ, K n` is inside `U ∩ ⋂ n : ℕ, (f n)`.
-  have hK_subset : (⋂ n, K n : Set α) ⊆ U ∩ ⋂ n, f n := by
+  have hK_subset : (⋂ n, (K n).carrier : Set α) ⊆ U ∩ ⋂ n, f n := by
     intro x hx
-    simp only [mem_inter_iff, mem_Inter] at hx⊢
-    exact ⟨hK₀ <| hx 0, fun n => (hK_decreasing n (hx (n + 1))).1⟩
+    simp only [mem_interᵢ] at hx
+    simp only [mem_inter_iff, mem_inter] at hx⊢
+    refine' ⟨hK₀ <| hx 0, _⟩
+    simp only [mem_interᵢ]
+    exact fun n => (hK_decreasing n (hx (n + 1))).1
   /- Prove that `⋂ n : ℕ, K n` is not empty, as an intersection of a decreasing sequence
     of nonempty compact subsets.-/
-  have hK_nonempty : (⋂ n, K n : Set α).Nonempty :=
+  have hK_nonempty : (⋂ n, (K n).carrier : Set α).Nonempty :=
     IsCompact.nonempty_interᵢ_of_sequence_nonempty_compact_closed _
-      (fun n => (hK_decreasing n).trans (inter_subset_right _ _)) (fun n => (K n).Nonempty)
-      (K 0).IsCompact fun n => (K n).IsCompact.IsClosed
+      (fun n => (hK_decreasing n).trans (inter_subset_right _ _)) (fun n => (K n).nonempty)
+      (K 0).isCompact fun n => (K n).isCompact.isClosed
   exact hK_nonempty.mono hK_subset
 #align baire_category_theorem_locally_compact baire_category_theorem_locally_compact
 
