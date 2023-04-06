@@ -129,29 +129,27 @@ theorem uniformity_basis_dist_pow_of_lt_1 {α : Type _} [PseudoMetricSpace α] {
 
 theorem geom_lt {u : ℕ → ℝ} {c : ℝ} (hc : 0 ≤ c) {n : ℕ} (hn : 0 < n)
     (h : ∀ k < n, c * u k < u (k + 1)) : c ^ n * u 0 < u n := by
-  refine' (monotone_mul_left_of_nonneg hc).seq_pos_lt_seq_of_le_of_lt
-    (x := fun n => c ^ n * u 0) hn _ _ h
+  apply (monotone_mul_left_of_nonneg hc).seq_pos_lt_seq_of_le_of_lt hn _ _ h
   · simp
   · simp [_root_.pow_succ, mul_assoc, le_refl]
 #align geom_lt geom_lt
 
 theorem geom_le {u : ℕ → ℝ} {c : ℝ} (hc : 0 ≤ c) (n : ℕ) (h : ∀ k < n, c * u k ≤ u (k + 1)) :
     c ^ n * u 0 ≤ u n := by
-  refine' (monotone_mul_left_of_nonneg hc).seq_le_seq (x := fun n => c ^ n * u 0) n _ _ h <;>
+  apply (monotone_mul_left_of_nonneg hc).seq_le_seq n _ _ h <;>
     simp [_root_.pow_succ, mul_assoc, le_refl]
 #align geom_le geom_le
 
 theorem lt_geom {u : ℕ → ℝ} {c : ℝ} (hc : 0 ≤ c) {n : ℕ} (hn : 0 < n)
     (h : ∀ k < n, u (k + 1) < c * u k) : u n < c ^ n * u 0 := by
-  refine' (monotone_mul_left_of_nonneg hc).seq_pos_lt_seq_of_lt_of_le (y := fun n => c ^ n * u 0)
-    hn _ h _
+  apply (monotone_mul_left_of_nonneg hc).seq_pos_lt_seq_of_lt_of_le hn _ h _
   · simp
   · simp [_root_.pow_succ, mul_assoc, le_refl]
 #align lt_geom lt_geom
 
 theorem le_geom {u : ℕ → ℝ} {c : ℝ} (hc : 0 ≤ c) (n : ℕ) (h : ∀ k < n, u (k + 1) ≤ c * u k) :
     u n ≤ c ^ n * u 0 := by
-  refine' (monotone_mul_left_of_nonneg hc).seq_le_seq n _ h _ (y := fun n => c ^ n * u 0) <;>
+  apply (monotone_mul_left_of_nonneg hc).seq_le_seq n _ h _ <;>
     simp [_root_.pow_succ, mul_assoc, le_refl]
 #align le_geom le_geom
 
