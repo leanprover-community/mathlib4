@@ -38,23 +38,20 @@ protected def uniformSpace : UniformSpace G :=
 
 /-- The uniform space structure associated to an abelian group filter basis via the associated
 topological abelian group structure is compatible with its group structure. -/
-protected theorem uniformAddGroup : @UniformAddGroup G B.UniformSpace _ :=
+protected theorem uniformAddGroup : @UniformAddGroup G B.uniformSpace _ :=
   @comm_topologicalAddGroup_is_uniform G _ B.topology B.isTopologicalAddGroup
 #align add_group_filter_basis.uniform_add_group AddGroupFilterBasis.uniformAddGroup
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:635:2: warning: expanding binder collection (x y «expr ∈ » M) -/
-/- ./././Mathport/Syntax/Translate/Basic.lean:635:2: warning: expanding binder collection (x y «expr ∈ » M) -/
 theorem cauchy_iff {F : Filter G} :
-    @Cauchy G B.UniformSpace F ↔
-      F.ne_bot ∧ ∀ U ∈ B, ∃ M ∈ F, ∀ (x) (_ : x ∈ M) (y) (_ : y ∈ M), y - x ∈ U := by
-  letI := B.uniform_space
-  haveI := B.uniform_add_group
-  suffices F ×ᶠ F ≤ 𝓤 G ↔ ∀ U ∈ B, ∃ M ∈ F, ∀ (x) (_ : x ∈ M) (y) (_ : y ∈ M), y - x ∈ U by
+    @Cauchy G B.uniformSpace F ↔
+      F.NeBot ∧ ∀ U ∈ B, ∃ M ∈ F, ∀ (x) (_ : x ∈ M) (y) (_ : y ∈ M), y - x ∈ U := by
+  letI := B.uniformSpace
+  haveI := B.uniformAddGroup
+  suffices F ×ᶠ F ≤ uniformity G ↔ ∀ U ∈ B, ∃ M ∈ F, ∀ (x) (_ : x ∈ M) (y) (_ : y ∈ M), y - x ∈ U by
     constructor <;> rintro ⟨h', h⟩ <;> refine' ⟨h', _⟩ <;> [rwa [← this], rwa [this]]
   rw [uniformity_eq_comap_nhds_zero G, ← map_le_iff_le_comap]
-  change tendsto _ _ _ ↔ _
-  simp [(basis_sets F).prod_self.tendsto_iffₓ B.nhds_zero_has_basis, @forall_swap (_ ∈ _) G]
+  change Tendsto _ _ _ ↔ _
+  simp [(basis_sets F).prod_self.tendsto_iff B.nhds_zero_hasBasis, @forall_swap (_ ∈ _) G]
 #align add_group_filter_basis.cauchy_iff AddGroupFilterBasis.cauchy_iff
 
 end AddGroupFilterBasis
-
