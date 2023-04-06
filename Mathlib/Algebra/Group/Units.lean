@@ -566,7 +566,7 @@ theorem eq_one_of_mul_left (h : a * b = 1) : b = 1 :=
 #align eq_one_of_mul_left eq_one_of_mul_left
 #align eq_zero_of_add_left eq_zero_of_add_left
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem mul_eq_one : a * b = 1 ↔ a = 1 ∧ b = 1 :=
   ⟨fun h => ⟨eq_one_of_mul_right h, eq_one_of_mul_left h⟩,
     by

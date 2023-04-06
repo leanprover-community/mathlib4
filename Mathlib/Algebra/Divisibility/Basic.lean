@@ -107,7 +107,7 @@ theorem MonoidHom.map_dvd (f : M →* N) {a b} : a ∣ b → f a ∣ f b :=
   _root_.map_dvd f
 #align monoid_hom.map_dvd MonoidHom.map_dvd
 
-end map_dvdpeucd
+end map_dvd
 
 end Semigroup
 
