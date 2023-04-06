@@ -372,7 +372,7 @@ import Mathlib.CategoryTheory.Grothendieck
 import Mathlib.CategoryTheory.Groupoid
 import Mathlib.CategoryTheory.Groupoid.Basic
 import Mathlib.CategoryTheory.Groupoid.VertexGroup
-import Mathlib.CategoryTheory.Idempotents.Basi
+import Mathlib.CategoryTheory.Idempotents.Basic
 import Mathlib.CategoryTheory.Idempotents.FunctorExtension
 import Mathlib.CategoryTheory.Idempotents.Karoubi
 import Mathlib.CategoryTheory.IsConnected
