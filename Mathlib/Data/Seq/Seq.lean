@@ -921,6 +921,9 @@ def map (f : α → β) : Seq1 α → Seq1 β
   | (a, s) => (f a, Seq.map f s)
 #align stream.seq1.map Stream'.Seq1.map
 
+-- Porting note: New theorem.
+theorem map_pair {f : α → β} {a s} : map f (a, s) = (f a, Seq.map f s) := rfl
+
 theorem map_id : ∀ s : Seq1 α, map id s = s
   | ⟨a, s⟩ => by simp [map]
 #align stream.seq1.map_id Stream'.Seq1.map_id
@@ -969,10 +972,10 @@ theorem join_map_ret (s : Seq α) : Seq.join (Seq.map ret s) = s := by
 @[simp]
 theorem bind_ret (f : α → β) : ∀ s, bind s (ret ∘ f) = map f s
   | ⟨a, s⟩ => by
-    dsimp [bind, map]; --change fun x => ret (f x) with ret ∘ f
-    rw [map_comp]
-    -- porting note: same as Mathlib3 up to this point
-    simp [Function.comp, ret]
+    dsimp [bind, map]
+    -- Porting note: Was `rw [map_comp]; simp [Function.comp, ret]`
+    rw [map_comp, ret]
+    simp
 #align stream.seq1.bind_ret Stream'.Seq1.bind_ret
 
 @[simp]
@@ -1035,30 +1038,33 @@ theorem join_join (SS : Seq (Seq1 (Seq1 α))) :
 theorem bind_assoc (s : Seq1 α) (f : α → Seq1 β) (g : β → Seq1 γ) :
     bind (bind s f) g = bind s fun x : α => bind (f x) g := by
   cases' s with a s
-  simp only [bind]
-  rw [map_join]
-  simp only [map]
+  -- Porting note: Was `simp [bind, map]`.
+  simp [bind, map_pair]
   rw [← map_comp]
-  change fun x => join (map g (f x)) with join ∘ map (g ∘ f)
+  simp only [show (fun x => join (map g (f x))) = join ∘ (map g ∘ f) from rfl]
   rw [map_comp _ join]
   generalize Seq.map (map g ∘ f) s = SS
   rcases map g (f a) with ⟨⟨a, s⟩, S⟩
-  apply recOn s <;> intros <;> apply recOn S <;> intros <;> simp
-  · cases' x with x t
+  -- Porting note: Instead of `apply recOn s <;> intros`, `induction'` are used to
+  --   give names to variables.
+  induction' s using recOn with x s_1 <;> induction' S using recOn with x_1 s_2 <;> simp
+  · cases' x_1 with x t
     apply recOn t <;> intros <;> simp
-  · cases' x_1 with y t <;> simp
+  · cases' x_1 with y t; simp
 #align stream.seq1.bind_assoc Stream'.Seq1.bind_assoc
 
-instance : Monad Seq1 where
+instance monad : Monad Seq1 where
   map := @map
   pure := @ret
   bind := @bind
+#align stream.seq1.monad Stream'.Seq1.monad
 
-instance : LawfulMonad Seq1 := LawfulMonad.mk'
+instance lawfulMonad : LawfulMonad Seq1 := LawfulMonad.mk'
   (id_map := @map_id)
   (bind_pure_comp := @bind_ret)
   (pure_bind := @ret_bind)
   (bind_assoc := @bind_assoc)
+#align stream.seq1.is_lawful_monad Stream'.Seq1.lawfulMonad
 
 end Seq1
 
