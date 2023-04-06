@@ -221,7 +221,7 @@ lemma of_mul_right (m : ℤ) : a ≡ b [ZMOD n * m] → a ≡ b [ZMOD n] :=
 /-- To cancel a common factor `c` from a `ModEq` we must divide the modulus `m` by `gcd m c`. -/
 theorem cancel_right_div_gcd (hm : 0 < m) (h : a * c ≡ b * c [ZMOD m]) : a ≡ b [ZMOD m / gcd m c] :=
   by
-  let d := gcd m c
+  letI d := gcd m c
   have hmd := gcd_dvd_left m c
   have hcd := gcd_dvd_right m c
   rw [modEq_iff_dvd] at h⊢
@@ -255,7 +255,7 @@ theorem modEq_sub (a b : ℤ) : a ≡ b [ZMOD a - b] :=
 #align int.modeq_sub Int.modEq_sub
 
 @[simp]
-theorem modEq_zero_iff : a ≡ b [ZMOD 0] ↔ a = b := by rw [modeq, mod_zero, mod_zero]
+theorem modEq_zero_iff : a ≡ b [ZMOD 0] ↔ a = b := by rw [ModEq, emod_zero, emod_zero]
 #align int.modeq_zero_iff Int.modEq_zero_iff
 
 @[simp]
