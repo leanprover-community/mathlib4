@@ -206,7 +206,7 @@ theorem dense_interₛ_of_open {S : Set (Set α)} (ho : ∀ s ∈ S, IsOpen s) (
   cases' S.eq_empty_or_nonempty with h h
   · simp [h]
   · rcases hS.exists_eq_range h with ⟨f, hf⟩
-    have F : ∀ n, f n ∈ S := fun n => by rw [hf] <;> exact mem_range_self _
+    have F : ∀ n, f n ∈ S := fun n => by rw [hf]; exact mem_range_self _
     rw [hf, interₛ_range]
     exact dense_interᵢ_of_open_nat (fun n => ho _ (F n)) fun n => hd _ (F n)
 #align dense_sInter_of_open dense_interₛ_of_open
@@ -239,15 +239,14 @@ theorem dense_interₛ_of_Gδ {S : Set (Set α)} (ho : ∀ s ∈ S, IsGδ s) (hS
   -- the result follows from the result for a countable intersection of dense open sets,
   -- by rewriting each set as a countable intersection of open sets, which are of course dense.
   choose T hTo hTc hsT using ho
-  have : ⋂₀ S = ⋂₀ ⋃ s ∈ S, T s ‹_› := by
-  -- := (sInter_bUnion (λs hs, (hT s hs).2.2)).symm,
-    simp only [interₛ_union, (hsT _ _).symm, ← interₛ_eq_binterᵢ]
-
+  -- porting note: the commented out term was there before
+  have : ⋂₀ S = ⋂₀ ⋃ s ∈ S, T s ‹_› := by --(interₛ_unionᵢ (fun s hs => (hT s hs).2.2)).symm
+    simp [interₛ_unionᵢ, (hsT _ _).symm, ← interₛ_eq_binterᵢ]
   rw [this]
-  refine' dense_interₛ_of_open _ (hS.bunionᵢ hTc) _ <;> simp only [mem_union] <;>
+  refine' dense_interₛ_of_open _ (hS.bunionᵢ hTc) _ <;> simp only [mem_unionᵢ] <;>
     rintro t ⟨s, hs, tTs⟩
   show IsOpen t
-  exact hTo _ _ t _
+  exact hTo s hs t tTs
   show Dense t
   · intro x
     have := hd s hs x
