@@ -43,14 +43,14 @@ theorem addLsb_eq_twice_add_one {x b} : addLsb x b = 2 * x + cond b 1 0 := by
 #align bitvec.add_lsb_eq_twice_add_one Bitvec.addLsb_eq_twice_add_one
 
 theorem toNat_eq_foldr_reverse {n : ℕ} (v : Bitvec n) :
-    v.toNat = v.toList.reverse.foldr (flip addLsb) 0 := by rw [List.foldr_reverse] ; rfl
+    v.toNat = v.toList.reverse.foldr (flip addLsb) 0 := by rw [List.foldr_reverse]; rfl
 #align bitvec.to_nat_eq_foldr_reverse Bitvec.toNat_eq_foldr_reverse
 
 theorem toNat_lt {n : ℕ} (v : Bitvec n) : v.toNat < 2 ^ n := by
   suffices : v.toNat + 1 ≤ 2 ^ n; simpa
   rw [toNat_eq_foldr_reverse]
   cases' v with xs h
-  dsimp
+  dsimp [Bitvec.toNat, bitsToNat]
   rw [← List.length_reverse] at h
   generalize xs.reverse = ys at h
   induction' ys with head tail ih generalizing n
@@ -58,6 +58,7 @@ theorem toNat_lt {n : ℕ} (v : Bitvec n) : v.toNat < 2 ^ n := by
   · simp only [← h, pow_add, flip, List.length, List.foldr, pow_one]
     rw [addLsb_eq_twice_add_one]
     trans 2 * List.foldr (fun (x : Bool) (y : ℕ) => addLsb y x) 0 tail + 2 * 1
+    -- Porting note: removed `ac_mono`, `mono` calls
     · rw [add_assoc]
       apply Nat.add_le_add_left
       cases head <;> simp only
@@ -82,6 +83,7 @@ theorem decide_addLsb_mod_two {x b} : decide (addLsb x b % 2 = 1) = b := by
 
 theorem ofNat_toNat {n : ℕ} (v : Bitvec n) : Bitvec.ofNat n v.toNat = v := by
   cases' v with xs h
+  -- Porting note: was `ext1`
   apply Subtype.ext
   change Vector.toList _ = xs
   dsimp [Bitvec.toNat, bitsToNat]
@@ -102,9 +104,7 @@ theorem ofNat_toNat {n : ℕ} (v : Bitvec n) : Bitvec.ofNat n v.toNat = v := by
 #align bitvec.of_nat_to_nat Bitvec.ofNat_toNat
 
 theorem toFin_val {n : ℕ} (v : Bitvec n) : (toFin v : ℕ) = v.toNat := by
-  rw [toFin]
-  rw [Fin.coe_ofNat_eq_mod]
-  rw [Nat.mod_eq_of_lt]
+  rw [toFin, Fin.coe_ofNat_eq_mod, Nat.mod_eq_of_lt]
   apply toNat_lt
 #align bitvec.to_fin_val Bitvec.toFin_val
 
