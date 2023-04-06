@@ -56,7 +56,7 @@ theorem tendsto_one_div_add_atTop_nhds_0_nat :
   (tendsto_add_atTop_iff_nat 1).2 (_root_.tendsto_const_div_atTop_nhds_0_nat 1)
 #align tendsto_one_div_add_at_top_nhds_0_nat tendsto_one_div_add_atTop_nhds_0_nat
 
-set_option synthInstance.etaExperiment true in
+set_option synthInstance.etaExperiment true in -- porting note: gets around lean4#2074
 /-- The limit of `n / (n + x)` is 1, for any constant `x` (valid in `ℝ` or any topological division
 algebra over `ℝ`, e.g., `ℂ`).
 
@@ -74,7 +74,7 @@ theorem tendsto_coe_nat_div_add_atTop {𝕜 : Type _} [DivisionRing 𝕜] [Topol
     refine' tendsto_const_nhds.div (tendsto_const_nhds.add _) (by simp)
     simp_rw [div_eq_mul_inv]
     refine' tendsto_const_nhds.mul _
-    have : (fun n : ℕ => (n : 𝕜)⁻¹) = fun n : ℕ => ↑((n : ℝ)⁻¹) := by
+    have : (fun n : ℕ => (n : 𝕜)⁻¹) = fun n : ℕ => ↑(n⁻¹ : ℝ) := by
       ext1 n
       rw [← map_natCast (algebraMap ℝ 𝕜) n, ← map_inv₀ (algebraMap ℝ 𝕜)]
       rfl
@@ -129,28 +129,30 @@ theorem uniformity_basis_dist_pow_of_lt_1 {α : Type _} [PseudoMetricSpace α] {
 
 theorem geom_lt {u : ℕ → ℝ} {c : ℝ} (hc : 0 ≤ c) {n : ℕ} (hn : 0 < n)
     (h : ∀ k < n, c * u k < u (k + 1)) : c ^ n * u 0 < u n := by
-  refine' (monotone_mul_left_of_nonneg hc).seq_pos_lt_seq_of_le_of_lt hn _ _ h
+  refine' (monotone_mul_left_of_nonneg hc).seq_pos_lt_seq_of_le_of_lt
+    (x := fun n => c ^ n * u 0) hn _ _ h
   · simp
-  · simp [pow_succ, mul_assoc, le_refl]
+  · simp [_root_.pow_succ, mul_assoc, le_refl]
 #align geom_lt geom_lt
 
 theorem geom_le {u : ℕ → ℝ} {c : ℝ} (hc : 0 ≤ c) (n : ℕ) (h : ∀ k < n, c * u k ≤ u (k + 1)) :
     c ^ n * u 0 ≤ u n := by
-  refine' (monotone_mul_left_of_nonneg hc).seq_le_seq n _ _ h <;>
-    simp [pow_succ, mul_assoc, le_refl]
+  refine' (monotone_mul_left_of_nonneg hc).seq_le_seq (x := fun n => c ^ n * u 0) n _ _ h <;>
+    simp [_root_.pow_succ, mul_assoc, le_refl]
 #align geom_le geom_le
 
 theorem lt_geom {u : ℕ → ℝ} {c : ℝ} (hc : 0 ≤ c) {n : ℕ} (hn : 0 < n)
     (h : ∀ k < n, u (k + 1) < c * u k) : u n < c ^ n * u 0 := by
-  refine' (monotone_mul_left_of_nonneg hc).seq_pos_lt_seq_of_lt_of_le hn _ h _
+  refine' (monotone_mul_left_of_nonneg hc).seq_pos_lt_seq_of_lt_of_le (y := fun n => c ^ n * u 0)
+    hn _ h _
   · simp
-  · simp [pow_succ, mul_assoc, le_refl]
+  · simp [_root_.pow_succ, mul_assoc, le_refl]
 #align lt_geom lt_geom
 
 theorem le_geom {u : ℕ → ℝ} {c : ℝ} (hc : 0 ≤ c) (n : ℕ) (h : ∀ k < n, u (k + 1) ≤ c * u k) :
     u n ≤ c ^ n * u 0 := by
-  refine' (monotone_mul_left_of_nonneg hc).seq_le_seq n _ h _ <;>
-    simp [pow_succ, mul_assoc, le_refl]
+  refine' (monotone_mul_left_of_nonneg hc).seq_le_seq n _ h _ (y := fun n => c ^ n * u 0) <;>
+    simp [_root_.pow_succ, mul_assoc, le_refl]
 #align le_geom le_geom
 
 /-- If a sequence `v` of real numbers satisfies `k * v n ≤ v (n+1)` with `1 < k`,
@@ -164,7 +166,8 @@ theorem tendsto_atTop_of_geom_le {v : ℕ → ℝ} {c : ℝ} (h₀ : 0 < v 0) (h
 theorem NNReal.tendsto_pow_atTop_nhds_0_of_lt_1 {r : ℝ≥0} (hr : r < 1) :
     Tendsto (fun n : ℕ => r ^ n) atTop (𝓝 0) :=
   NNReal.tendsto_coe.1 <| by
-    simp only [NNReal.coe_pow, NNReal.coe_zero, tendsto_pow_atTop_nhds_0_of_lt_1 r.coe_nonneg hr]
+    simp only [NNReal.coe_pow, NNReal.coe_zero,
+      _root_.tendsto_pow_atTop_nhds_0_of_lt_1 r.coe_nonneg hr]
 #align nnreal.tendsto_pow_at_top_nhds_0_of_lt_1 NNReal.tendsto_pow_atTop_nhds_0_of_lt_1
 
 theorem ENNReal.tendsto_pow_atTop_nhds_0_of_lt_1 {r : ℝ≥0∞} (hr : r < 1) :
@@ -172,7 +175,7 @@ theorem ENNReal.tendsto_pow_atTop_nhds_0_of_lt_1 {r : ℝ≥0∞} (hr : r < 1) :
   rcases ENNReal.lt_iff_exists_coe.1 hr with ⟨r, rfl, hr'⟩
   rw [← ENNReal.coe_zero]
   norm_cast at *
-  apply NNReal.tendsto_pow_atTop_nhds_0_of_lt_1 hr
+  apply NNReal.tendsto_pow_atTop_nhds_0_of_lt_1 (coe_lt_one_iff.mp hr)
 #align ennreal.tendsto_pow_at_top_nhds_0_of_lt_1 ENNReal.tendsto_pow_atTop_nhds_0_of_lt_1
 
 /-! ### Geometric series-/
@@ -281,9 +284,9 @@ and for `1 ≤ r` the RHS equals `∞`. -/
 theorem ENNReal.tsum_geometric (r : ℝ≥0∞) : (∑' n : ℕ, r ^ n) = (1 - r)⁻¹ := by
   cases' lt_or_le r 1 with hr hr
   · rcases ENNReal.lt_iff_exists_coe.1 hr with ⟨r, rfl, hr'⟩
-    norm_cast  at *
-    convert ENNReal.tsum_coe_eq (NNReal.hasSum_geometric hr)
-    rw [ENNReal.coe_inv <| ne_of_gt <| tsub_pos_iff_lt.2 hr, coe_sub, coe_one]
+    norm_cast at *
+    convert ENNReal.tsum_coe_eq (NNReal.hasSum_geometric (coe_lt_one_iff.mp hr))
+    rw [ENNReal.coe_inv <| ne_of_gt <| tsub_pos_iff_lt.2 (coe_lt_one_iff.mp hr), coe_sub, coe_one]
   · rw [tsub_eq_zero_iff_le.mpr hr, ENNReal.inv_zero, ENNReal.tsum_eq_supᵢ_nat, supᵢ_eq_top]
     refine' fun a ha =>
       (ENNReal.exists_nat_gt (lt_top_iff_ne_top.1 ha)).imp fun n hn => lt_of_lt_of_le hn _
