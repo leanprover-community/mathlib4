@@ -27,7 +27,7 @@ noncomputable section
 
 open Classical Set Function Filter Finset Metric
 
-open Classical Topology Nat BigOperators uniformity NNReal ENNReal
+open Classical Topology Uniformity Nat BigOperators uniformity NNReal ENNReal
 
 variable {α : Type _} {β : Type _} {ι : Type _}
 
@@ -42,7 +42,7 @@ theorem tendsto_const_div_atTop_nhds_0_nat (C : ℝ) : Tendsto (fun n : ℕ => C
 theorem NNReal.tendsto_inverse_atTop_nhds_0_nat :
     Tendsto (fun n : ℕ => (n : ℝ≥0)⁻¹) atTop (𝓝 0) := by
   rw [← NNReal.tendsto_coe]
-  exact tendsto_inverse_atTop_nhds_0_nat
+  exact _root_.tendsto_inverse_atTop_nhds_0_nat
 #align nnreal.tendsto_inverse_at_top_nhds_0_nat NNReal.tendsto_inverse_atTop_nhds_0_nat
 
 theorem NNReal.tendsto_const_div_atTop_nhds_0_nat (C : ℝ≥0) :
@@ -100,7 +100,6 @@ theorem Nat.tendsto_pow_atTop_atTop_of_one_lt {m : ℕ} (h : 1 < m) :
   tsub_add_cancel_of_le (le_of_lt h) ▸ tendsto_add_one_pow_atTop_atTop_of_pos (tsub_pos_of_lt h)
 #align nat.tendsto_pow_at_top_at_top_of_one_lt Nat.tendsto_pow_atTop_atTop_of_one_lt
 
-set_option maxHeartbeats 10000000 in -- XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX TODO
 theorem tendsto_pow_atTop_nhds_0_of_lt_1 {𝕜 : Type _} [LinearOrderedField 𝕜] [Archimedean 𝕜]
     [TopologicalSpace 𝕜] [OrderTopology 𝕜] {r : 𝕜} (h₁ : 0 ≤ r) (h₂ : r < 1) :
     Tendsto (fun n : ℕ => r ^ n) atTop (𝓝 0) := by
@@ -108,7 +107,7 @@ theorem tendsto_pow_atTop_nhds_0_of_lt_1 {𝕜 : Type _} [LinearOrderedField �
   · exact (tendsto_add_atTop_iff_nat 1).mp <| by simp only [_root_.pow_succ, ← h, zero_mul,
       tendsto_const_nhds_iff]
   · have : Tendsto (fun n => (r⁻¹ ^ n)⁻¹) atTop (𝓝 0) :=
-      tendsto_inv_atTop_zero.comp (tendsto_pow_atTop_atTop_of_one_lt <| one_lt_inv h h₂)
+      (tendsto_inv_atTop_zero (𝕜 := 𝕜)).comp (tendsto_pow_atTop_atTop_of_one_lt <| one_lt_inv h h₂)
     exact this.congr fun n => by simp
 #align tendsto_pow_at_top_nhds_0_of_lt_1 tendsto_pow_atTop_nhds_0_of_lt_1
 
@@ -122,9 +121,9 @@ theorem tendsto_pow_atTop_nhdsWithin_0_of_lt_1 {𝕜 : Type _} [LinearOrderedFie
 
 theorem uniformity_basis_dist_pow_of_lt_1 {α : Type _} [PseudoMetricSpace α] {r : ℝ} (h₀ : 0 < r)
     (h₁ : r < 1) :
-    (𝓤 α).HasBasis (fun k : ℕ => True) fun k => { p : α × α | dist p.1 p.2 < r ^ k } :=
-  Metric.mk_uniformity_basis (fun i _ => pow_pos h₀ _) fun ε ε0 =>
-    (exists_pow_lt_of_lt_one ε0 h₁).imp fun k hk => ⟨trivial, hk.le⟩
+    (𝓤 α).HasBasis (fun _ : ℕ => True) fun k => { p : α × α | dist p.1 p.2 < r ^ k } :=
+  Metric.mk_uniformity_basis (fun _ _ => pow_pos h₀ _) fun _ ε0 =>
+    (exists_pow_lt_of_lt_one ε0 h₁).imp fun _ hk => ⟨trivial, hk.le⟩
 #align uniformity_basis_dist_pow_of_lt_1 uniformity_basis_dist_pow_of_lt_1
 
 theorem geom_lt {u : ℕ → ℝ} {c : ℝ} (hc : 0 ≤ c) {n : ℕ} (hn : 0 < n)
