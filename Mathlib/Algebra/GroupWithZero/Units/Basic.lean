@@ -318,7 +318,7 @@ variable [CommGroupWithZero G₀] {a b c d : G₀}
 -- see Note [lower instance priority]
 instance (priority := 10) CommGroupWithZero.cancelCommMonoidWithZero :
     CancelCommMonoidWithZero G₀ :=
-  { GroupWithZero.cancelMonoidWithZero,
+  { GroupWithZero.toCancelMonoidWithZero,
     CommGroupWithZero.toCommMonoidWithZero with }
 #align comm_group_with_zero.cancel_comm_monoid_with_zero CommGroupWithZero.cancelCommMonoidWithZero
 

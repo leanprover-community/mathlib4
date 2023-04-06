@@ -127,11 +127,11 @@ theorem dvd_antisymm' : a ∣ b → b ∣ a → b = a :=
   flip dvd_antisymm
 #align dvd_antisymm' dvd_antisymm'
 
-alias dvd_antisymm ← Dvd.Dvd.antisymm
-#align has_dvd.dvd.antisymm Dvd.Dvd.antisymm
+alias dvd_antisymm ← Dvd.dvd.antisymm
+#align has_dvd.dvd.antisymm Dvd.dvd.antisymm
 
-alias dvd_antisymm' ← Dvd.Dvd.antisymm'
-#align has_dvd.dvd.antisymm' Dvd.Dvd.antisymm'
+alias dvd_antisymm' ← Dvd.dvd.antisymm'
+#align has_dvd.dvd.antisymm' Dvd.dvd.antisymm'
 
 theorem eq_of_forall_dvd (h : ∀ c, a ∣ c ↔ b ∣ c) : a = b :=
   ((h _).2 dvd_rfl).antisymm <| (h _).1 dvd_rfl
