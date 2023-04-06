@@ -253,6 +253,18 @@ theorem forall_iff {p : Fin n → Prop} : (∀ i, p i) ↔ ∀ i h, p ⟨i, h⟩
   ⟨fun h i hi => h ⟨i, hi⟩, fun h ⟨i, hi⟩ => h i hi⟩
 #align fin.forall_iff Fin.forall_iff
 
+lemma ite_val {n : ℕ} {c : Prop} [Decidable c] {x : c → Fin n} (y : ¬c → Fin n) :
+    (if h : c then x h else y h).val = if h : c then (x h).val else (y h).val := by
+  by_cases c
+  . simp only [dif_pos h]
+  . simp only [dif_neg h]
+
+lemma dite_val {n : ℕ} {c : Prop} [Decidable c] {x y : Fin n} :
+    (if c then x else y).val = if c then x.val else y.val := by
+  by_cases c
+  . simp only [if_pos h]
+  . simp only [if_neg h]
+
 end coe
 
 section Order
