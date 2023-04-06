@@ -14,8 +14,8 @@ import Mathlib.LinearAlgebra.FinsuppVectorSpace
 /-!
 # Bases and dimensionality of tensor products of modules
 
-These can not go into `linear_algebra.tensor_product` since they depend on
-`linear_algebra.finsupp_vector_space` which in turn imports `linear_algebra.tensor_product`.
+These can not go into `LinearAlgebra.TensorProduct` since they depend on
+`LinearAlgebra.FinsuppVectorSpace` which in turn imports `LinearAlgebra.TensorProduct`.
 
 -/
 
@@ -30,6 +30,8 @@ variable {R : Type _} {M : Type _} {N : Type _} {ι : Type _} {κ : Type _}
 
 variable [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
 
+-- Porting note: cannot synth RingHomCompTriple
+set_option synthInstance.etaExperiment true in
 /-- If b : ι → M and c : κ → N are bases then so is λ i, b i.1 ⊗ₜ c i.2 : ι × κ → M ⊗ N. -/
 def Basis.tensorProduct (b : Basis ι R M) (c : Basis κ R N) :
     Basis (ι × κ) R (TensorProduct R M N) :=
@@ -39,11 +41,15 @@ def Basis.tensorProduct (b : Basis ι R M) (c : Basis κ R N) :
           Finsupp.lcongr (Equiv.refl _) (TensorProduct.lid R R)).symm
 #align basis.tensor_product Basis.tensorProduct
 
+-- Porting note: resolved diamond
+set_option synthInstance.etaExperiment true in
 @[simp]
 theorem Basis.tensorProduct_apply (b : Basis ι R M) (c : Basis κ R N) (i : ι) (j : κ) :
     Basis.tensorProduct b c (i, j) = b i ⊗ₜ c j := by simp [Basis.tensorProduct]
 #align basis.tensor_product_apply Basis.tensorProduct_apply
 
+-- Porting note: resolved diamond
+set_option synthInstance.etaExperiment true in
 theorem Basis.tensorProduct_apply' (b : Basis ι R M) (c : Basis κ R N) (i : ι × κ) :
     Basis.tensorProduct b c i = b i.1 ⊗ₜ c i.2 := by simp [Basis.tensorProduct]
 #align basis.tensor_product_apply' Basis.tensorProduct_apply'
