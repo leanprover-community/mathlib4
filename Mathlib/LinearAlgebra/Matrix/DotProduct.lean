@@ -8,8 +8,8 @@ Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Matrix.Basic
-import Mathbin.LinearAlgebra.StdBasis
+import Mathlib.Data.Matrix.Basic
+import Mathlib.LinearAlgebra.StdBasis
 
 /-!
 # Dot product of two vectors
@@ -39,8 +39,7 @@ variable {R : Type v} [Semiring R] {n : Type w} [Fintype n]
 
 @[simp]
 theorem dotProduct_stdBasis_eq_mul [DecidableEq n] (v : n → R) (c : R) (i : n) :
-    dotProduct v (LinearMap.stdBasis R (fun _ => R) i c) = v i * c :=
-  by
+    dotProduct v (LinearMap.stdBasis R (fun _ => R) i c) = v i * c := by
   rw [dot_product, Finset.sum_eq_single i, LinearMap.stdBasis_same]
   exact fun _ _ hb => by rw [LinearMap.stdBasis_ne _ _ _ _ hb, MulZeroClass.mul_zero]
   exact fun hi => False.elim (hi <| Finset.mem_univ _)
@@ -52,8 +51,7 @@ theorem dotProduct_stdBasis_one [DecidableEq n] (v : n → R) (i : n) :
   rw [dot_product_std_basis_eq_mul, mul_one]
 #align matrix.dot_product_std_basis_one Matrix.dotProduct_stdBasis_one
 
-theorem dotProduct_eq (v w : n → R) (h : ∀ u, dotProduct v u = dotProduct w u) : v = w :=
-  by
+theorem dotProduct_eq (v w : n → R) (h : ∀ u, dotProduct v u = dotProduct w u) : v = w := by
   funext x
   classical rw [← dot_product_std_basis_one v x, ← dot_product_std_basis_one w x, h]
 #align matrix.dot_product_eq Matrix.dotProduct_eq
