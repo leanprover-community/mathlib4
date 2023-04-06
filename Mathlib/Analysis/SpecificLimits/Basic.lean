@@ -27,7 +27,7 @@ noncomputable section
 
 open Classical Set Function Filter Finset Metric
 
-open Classical Topology Uniformity Nat BigOperators uniformity NNReal ENNReal
+open Classical Topology Nat BigOperators Uniformity NNReal ENNReal
 
 variable {α : Type _} {β : Type _} {ι : Type _}
 
