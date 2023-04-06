@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 
 ! This file was ported from Lean 3 source module data.nat.modeq
-! leanprover-community/mathlib commit 2ed7e4aec72395b6a7c3ac4ac7873a7a43ead17c
+! leanprover-community/mathlib commit 47a1a73351de8dd6c8d3d32b569c8e434b03ca47
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -211,6 +211,10 @@ lemma of_mul_left (m : ℕ) (h : a ≡ b [MOD m * n]) : a ≡ b [MOD n] := by
 For cancelling right multiplication on both sides of the `≡`, see `nat.modeq.mul_right_cancel'`. -/
 lemma of_mul_right (m : ℕ) : a ≡ b [MOD n * m] → a ≡ b [MOD n] := mul_comm m n ▸ of_mul_left _
 #align nat.modeq.of_mul_right Nat.ModEq.of_mul_right
+
+theorem of_div (h : a / c ≡ b / c [MOD m / c]) (ha : c ∣ a) (ha : c ∣ b) (ha : c ∣ m) :
+    a ≡ b [MOD m] := by convert h.mul_left' c <;> rwa [Nat.mul_div_cancel']
+#align nat.modeq.of_div Nat.ModEq.of_div
 
 end ModEq
 
