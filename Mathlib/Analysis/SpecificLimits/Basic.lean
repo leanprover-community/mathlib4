@@ -27,7 +27,7 @@ noncomputable section
 
 open Classical Set Function Filter Finset Metric
 
-open Classical Topology Nat BigOperators Uniformity NNReal ENNReal algebraMap
+open Classical Topology Nat BigOperators uniformity NNReal ENNReal
 
 variable {α : Type _} {β : Type _} {ι : Type _}
 
@@ -68,18 +68,17 @@ theorem tendsto_coe_nat_div_add_atTop {𝕜 : Type _} [DivisionRing 𝕜] [Topol
   refine' Tendsto.congr' ((eventually_ne_atTop 0).mp (eventually_of_forall fun n hn => _)) _
   · exact fun n : ℕ => 1 / (1 + x / n)
   · field_simp [Nat.cast_ne_zero.mpr hn]
-  · have : 𝓝 (1 : 𝕜) = 𝓝 (1 / (1 + x * ↑(0 : ℝ))) := by
-      rw [algebraMap.coe_zero, MulZeroClass.mul_zero, add_zero, div_one]
+  · have : 𝓝 (1 : 𝕜) = 𝓝 (1 / (1 + x * (0 : 𝕜))) := by
+      rw [MulZeroClass.mul_zero, add_zero, div_one]
     rw [this]
     refine' tendsto_const_nhds.div (tendsto_const_nhds.add _) (by simp)
     simp_rw [div_eq_mul_inv]
     refine' tendsto_const_nhds.mul _
-    have : (fun n : ℕ => (n : 𝕜)⁻¹) = fun n : ℕ => ↑(n⁻¹ : ℝ) := by
-      ext1 n
-      rw [← map_natCast (algebraMap ℝ 𝕜) n, ← map_inv₀ (algebraMap ℝ 𝕜)]
-      rfl
-    rw [this]
-    exact ((continuous_algebraMap ℝ 𝕜).tendsto _).comp tendsto_inverse_atTop_nhds_0_nat
+    have := ((continuous_algebraMap ℝ 𝕜).tendsto _).comp tendsto_inverse_atTop_nhds_0_nat
+    rw [map_zero, tendsto_atTop'] at this
+    refine' Iff.mpr tendsto_atTop' _
+    intros
+    simp_all only [comp_apply, map_inv₀, map_natCast]
 #align tendsto_coe_nat_div_add_at_top tendsto_coe_nat_div_add_atTop
 
 /-! ### Powers -/
@@ -122,7 +121,7 @@ theorem tendsto_pow_atTop_nhdsWithin_0_of_lt_1 {𝕜 : Type _} [LinearOrderedFie
 
 theorem uniformity_basis_dist_pow_of_lt_1 {α : Type _} [PseudoMetricSpace α] {r : ℝ} (h₀ : 0 < r)
     (h₁ : r < 1) :
-    (𝓤 α).HasBasis (fun _ : ℕ => True) fun k => { p : α × α | dist p.1 p.2 < r ^ k } :=
+    (uniformity α).HasBasis (fun _ : ℕ => True) fun k => { p : α × α | dist p.1 p.2 < r ^ k } :=
   Metric.mk_uniformity_basis (fun _ _ => pow_pos h₀ _) fun _ ε0 =>
     (exists_pow_lt_of_lt_one ε0 h₁).imp fun _ hk => ⟨trivial, hk.le⟩
 #align uniformity_basis_dist_pow_of_lt_1 uniformity_basis_dist_pow_of_lt_1
@@ -173,7 +172,7 @@ theorem ENNReal.tendsto_pow_atTop_nhds_0_of_lt_1 {r : ℝ≥0∞} (hr : r < 1) :
   rcases ENNReal.lt_iff_exists_coe.1 hr with ⟨r, rfl, hr'⟩
   rw [← ENNReal.coe_zero]
   norm_cast at *
-  apply NNReal.tendsto_pow_atTop_nhds_0_of_lt_1 (coe_lt_one_iff.mp hr)
+  apply NNReal.tendsto_pow_atTop_nhds_0_of_lt_1 hr
 #align ennreal.tendsto_pow_at_top_nhds_0_of_lt_1 ENNReal.tendsto_pow_atTop_nhds_0_of_lt_1
 
 /-! ### Geometric series-/
@@ -283,8 +282,8 @@ theorem ENNReal.tsum_geometric (r : ℝ≥0∞) : (∑' n : ℕ, r ^ n) = (1 - r
   cases' lt_or_le r 1 with hr hr
   · rcases ENNReal.lt_iff_exists_coe.1 hr with ⟨r, rfl, hr'⟩
     norm_cast at *
-    convert ENNReal.tsum_coe_eq (NNReal.hasSum_geometric (coe_lt_one_iff.mp hr))
-    rw [ENNReal.coe_inv <| ne_of_gt <| tsub_pos_iff_lt.2 (coe_lt_one_iff.mp hr), coe_sub, coe_one]
+    convert ENNReal.tsum_coe_eq (NNReal.hasSum_geometric hr)
+    rw [ENNReal.coe_inv <| ne_of_gt <| tsub_pos_iff_lt.2 hr, coe_sub, coe_one]
   · rw [tsub_eq_zero_iff_le.mpr hr, ENNReal.inv_zero, ENNReal.tsum_eq_supᵢ_nat, supᵢ_eq_top]
     refine' fun a ha =>
       (ENNReal.exists_nat_gt (lt_top_iff_ne_top.1 ha)).imp fun n hn => lt_of_lt_of_le hn _
