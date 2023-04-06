@@ -39,7 +39,7 @@ variable {α : Type _} {β : Type _} {γ : Type _} {ι : Type _}
 
 section BaireTheorem
 
-open Emetric ENNReal
+open EMetric ENNReal
 
 /-- The property `baire_space α` means that the topological space `α` has the Baire property:
 any countable intersection of open dense subsets is dense.
@@ -58,33 +58,33 @@ instance (priority := 100) baire_category_theorem_emetric_complete [PseudoEMetri
   let B : ℕ → ℝ≥0∞ := fun n => 1 / 2 ^ n
   have Bpos : ∀ n, 0 < B n := by
     intro n
-    simp only [B, one_div, one_mul, ENNReal.inv_pos]
+    simp only [one_div, one_mul, ENNReal.inv_pos]
     exact pow_ne_top two_ne_top
   /- Translate the density assumption into two functions `center` and `radius` associating
     to any n, x, δ, δpos a center and a positive radius such that
     `closed_ball center radius` is included both in `f n` and in `closed_ball x δ`.
     We can also require `radius ≤ (1/2)^(n+1)`, to ensure we get a Cauchy sequence later. -/
-  have : ∀ n x δ, δ ≠ 0 → ∃ y r, 0 < r ∧ r ≤ B (n + 1) ∧ closed_ball y r ⊆ closed_ball x δ ∩ f n :=
+  have : ∀ n x δ, δ ≠ 0 → ∃ y r, 0 < r ∧ r ≤ B (n + 1) ∧ closedBall y r ⊆ closedBall x δ ∩ f n :=
     by
     intro n x δ δpos
     have : x ∈ closure (f n) := hd n x
     rcases EMetric.mem_closure_iff.1 this (δ / 2) (ENNReal.half_pos δpos) with ⟨y, ys, xy⟩
     rw [edist_comm] at xy
-    obtain ⟨r, rpos, hr⟩ : ∃ r > 0, closed_ball y r ⊆ f n :=
+    obtain ⟨r, rpos, hr⟩ : ∃ r > 0, closedBall y r ⊆ f n :=
       nhds_basis_closed_eball.mem_iff.1 (isOpen_iff_mem_nhds.1 (ho n) y ys)
     refine' ⟨y, min (min (δ / 2) r) (B (n + 1)), _, _, fun z hz => ⟨_, _⟩⟩
     show 0 < min (min (δ / 2) r) (B (n + 1))
     exact lt_min (lt_min (ENNReal.half_pos δpos) rpos) (Bpos (n + 1))
     show min (min (δ / 2) r) (B (n + 1)) ≤ B (n + 1)
     exact min_le_right _ _
-    show z ∈ closed_ball x δ
+    show z ∈ closedBall x δ
     exact
       calc
         edist z x ≤ edist z y + edist y x := edist_triangle _ _ _
         _ ≤ min (min (δ / 2) r) (B (n + 1)) + δ / 2 := (add_le_add hz (le_of_lt xy))
         _ ≤ δ / 2 + δ / 2 := (add_le_add (le_trans (min_le_left _ _) (min_le_left _ _)) le_rfl)
         _ = δ := ENNReal.add_halves δ
-        
+
     show z ∈ f n
     exact
       hr
@@ -114,18 +114,18 @@ instance (priority := 100) baire_category_theorem_emetric_complete [PseudoEMetri
     induction' n with n hn
     exact min_le_right _ _
     exact HB n (c n) (r n) (r0 n)
-  have incl : ∀ n, closed_ball (c (n + 1)) (r (n + 1)) ⊆ closed_ball (c n) (r n) ∩ f n := fun n =>
+  have incl : ∀ n, closedBall (c (n + 1)) (r (n + 1)) ⊆ closedBall (c n) (r n) ∩ f n := fun n =>
     Hball n (c n) (r n) (r0 n)
   have cdist : ∀ n, edist (c n) (c (n + 1)) ≤ B n := by
     intro n
     rw [edist_comm]
-    have A : c (n + 1) ∈ closed_ball (c (n + 1)) (r (n + 1)) := mem_closed_ball_self
+    have A : c (n + 1) ∈ closedBall (c (n + 1)) (r (n + 1)) := mem_closedBall_self
     have I :=
       calc
-        closed_ball (c (n + 1)) (r (n + 1)) ⊆ closed_ball (c n) (r n) :=
-          subset.trans (incl n) (inter_subset_left _ _)
-        _ ⊆ closed_ball (c n) (B n) := closed_ball_subset_closed_ball (rB n)
-        
+        closedBall (c (n + 1)) (r (n + 1)) ⊆ closedBall (c n) (r n) :=
+          Subset.trans (incl n) (inter_subset_left _ _)
+        _ ⊆ closedBall (c n) (B n) := closedBall_subset_closedBall (rB n)
+
     exact I A
   have : CauchySeq c := cauchySeq_of_edist_le_geometric_two _ one_ne_top cdist
   -- as the sequence `c n` is Cauchy in a complete space, it converges to a limit `y`.
@@ -134,21 +134,21 @@ instance (priority := 100) baire_category_theorem_emetric_complete [PseudoEMetri
   -- `f n` and to `ball x ε`.
   use y
   simp only [exists_prop, Set.mem_interᵢ]
-  have I : ∀ n, ∀ m ≥ n, closed_ball (c m) (r m) ⊆ closed_ball (c n) (r n) := by
+  have I : ∀ n, ∀ m ≥ n, closedBall (c m) (r m) ⊆ closedBall (c n) (r n) := by
     intro n
     refine' Nat.le_induction _ fun m hnm h => _
-    · exact subset.refl _
-    · exact subset.trans (incl m) (subset.trans (inter_subset_left _ _) h)
-  have yball : ∀ n, y ∈ closed_ball (c n) (r n) := by
+    · exact Subset.refl _
+    · exact Subset.trans (incl m) (Subset.trans (inter_subset_left _ _) h)
+  have yball : ∀ n, y ∈ closedBall (c n) (r n) := by
     intro n
-    refine' is_closed_ball.mem_of_tendsto ylim _
+    refine' isClosed_ball.mem_of_tendsto ylim _
     refine' (Filter.eventually_ge_atTop n).mono fun m hm => _
-    exact I n m hm mem_closed_ball_self
+    exact I n m hm mem_closedBall_self
   constructor
   show ∀ n, y ∈ f n
   · intro n
-    have : closed_ball (c (n + 1)) (r (n + 1)) ⊆ f n :=
-      subset.trans (incl n) (inter_subset_right _ _)
+    have : closedBall (c (n + 1)) (r (n + 1)) ⊆ f n :=
+      Subset.trans (incl n) (inter_subset_right _ _)
     exact this (yball (n + 1))
   show edist y x ≤ ε
   exact le_trans (yball 0) (min_le_left _ _)
@@ -288,7 +288,7 @@ theorem eventually_residual {p : α → Prop} :
           ⟨t₁ ∩ t₂, ⟨h₁.1.inter h₂.1, Dense.inter_of_Gδ h₁.1 h₂.1 h₁.2 h₂.2⟩, by simp⟩)
         ⟨univ, isGδ_univ, dense_univ⟩)
     _ ↔ _ := by simp [and_assoc']
-    
+
 #align eventually_residual eventually_residual
 
 /- ./././Mathport/Syntax/Translate/Basic.lean:635:2: warning: expanding binder collection (t «expr ⊆ » s) -/
@@ -379,4 +379,3 @@ theorem nonempty_interior_of_unionᵢ_of_closed [Nonempty α] [Encodable β] {f 
 #align nonempty_interior_of_Union_of_closed nonempty_interior_of_unionᵢ_of_closed
 
 end BaireTheorem
-
