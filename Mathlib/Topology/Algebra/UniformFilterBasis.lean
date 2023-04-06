@@ -8,8 +8,8 @@ Authors: Patrick Massot
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.Algebra.FilterBasis
-import Mathbin.Topology.Algebra.UniformGroup
+import Mathlib.Topology.Algebra.FilterBasis
+import Mathlib.Topology.Algebra.UniformGroup
 
 /-!
 # Uniform properties of neighborhood bases in topological algebra
@@ -46,8 +46,7 @@ protected theorem uniformAddGroup : @UniformAddGroup G B.UniformSpace _ :=
 /- ./././Mathport/Syntax/Translate/Basic.lean:635:2: warning: expanding binder collection (x y «expr ∈ » M) -/
 theorem cauchy_iff {F : Filter G} :
     @Cauchy G B.UniformSpace F ↔
-      F.ne_bot ∧ ∀ U ∈ B, ∃ M ∈ F, ∀ (x) (_ : x ∈ M) (y) (_ : y ∈ M), y - x ∈ U :=
-  by
+      F.ne_bot ∧ ∀ U ∈ B, ∃ M ∈ F, ∀ (x) (_ : x ∈ M) (y) (_ : y ∈ M), y - x ∈ U := by
   letI := B.uniform_space
   haveI := B.uniform_add_group
   suffices F ×ᶠ F ≤ 𝓤 G ↔ ∀ U ∈ B, ∃ M ∈ F, ∀ (x) (_ : x ∈ M) (y) (_ : y ∈ M), y - x ∈ U by
