@@ -14,14 +14,14 @@ import Mathlib.LinearAlgebra.StdBasis
 /-!
 # Dot product of two vectors
 
-This file contains some results on the map `matrix.dot_product`, which maps two
+This file contains some results on the map `Matrix.dotProduct`, which maps two
 vectors `v w : n → R` to the sum of the entrywise products `v i * w i`.
 
 ## Main results
 
-* `matrix.dot_product_std_basis_one`: the dot product of `v` with the `i`th
+* `Matrix.dotProduct_stdBasis_one`: the dot product of `v` with the `i`th
   standard basis vector is `v i`
-* `matrix.dot_product_eq_zero_iff`: if `v`'s' dot product with all `w` is zero,
+* `Matrix.dotProduct_eq_zero_iff`: if `v`'s' dot product with all `w` is zero,
   then `v` is zero
 
 ## Tags
@@ -40,7 +40,7 @@ variable {R : Type v} [Semiring R] {n : Type w} [Fintype n]
 @[simp]
 theorem dotProduct_stdBasis_eq_mul [DecidableEq n] (v : n → R) (c : R) (i : n) :
     dotProduct v (LinearMap.stdBasis R (fun _ => R) i c) = v i * c := by
-  rw [dot_product, Finset.sum_eq_single i, LinearMap.stdBasis_same]
+  rw [dotProduct, Finset.sum_eq_single i, LinearMap.stdBasis_same]
   exact fun _ _ hb => by rw [LinearMap.stdBasis_ne _ _ _ _ hb, MulZeroClass.mul_zero]
   exact fun hi => False.elim (hi <| Finset.mem_univ _)
 #align matrix.dot_product_std_basis_eq_mul Matrix.dotProduct_stdBasis_eq_mul
@@ -48,12 +48,12 @@ theorem dotProduct_stdBasis_eq_mul [DecidableEq n] (v : n → R) (c : R) (i : n)
 @[simp]
 theorem dotProduct_stdBasis_one [DecidableEq n] (v : n → R) (i : n) :
     dotProduct v (LinearMap.stdBasis R (fun _ => R) i 1) = v i := by
-  rw [dot_product_std_basis_eq_mul, mul_one]
+  rw [dotProduct_stdBasis_eq_mul, mul_one]
 #align matrix.dot_product_std_basis_one Matrix.dotProduct_stdBasis_one
 
 theorem dotProduct_eq (v w : n → R) (h : ∀ u, dotProduct v u = dotProduct w u) : v = w := by
   funext x
-  classical rw [← dot_product_std_basis_one v x, ← dot_product_std_basis_one w x, h]
+  classical rw [← dotProduct_stdBasis_one v x, ← dotProduct_stdBasis_one w x, h]
 #align matrix.dot_product_eq Matrix.dotProduct_eq
 
 theorem dotProduct_eq_iff {v w : n → R} : (∀ u, dotProduct v u = dotProduct w u) ↔ v = w :=
@@ -69,4 +69,3 @@ theorem dotProduct_eq_zero_iff {v : n → R} : (∀ w, dotProduct v w = 0) ↔ v
 #align matrix.dot_product_eq_zero_iff Matrix.dotProduct_eq_zero_iff
 
 end Matrix
-
