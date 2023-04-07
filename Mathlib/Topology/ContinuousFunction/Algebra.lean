@@ -37,7 +37,7 @@ one should use `C(α, β)` with the appropriate instance of the structure.
 -/
 
 
-attribute [local elab_without_expected_type] Continuous.comp
+--attribute [elab_without_expected_type] Continuous.comp
 
 namespace ContinuousFunctions
 
@@ -59,23 +59,23 @@ variable [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
 -- ### "mul" and "add"
 @[to_additive]
 instance hasMul [Mul β] [ContinuousMul β] : Mul C(α, β) :=
-  ⟨fun f g => ⟨f * g, continuous_mul.comp (f.Continuous.prod_mk g.Continuous : _)⟩⟩
+  ⟨fun f g => ⟨f * g, continuous_mul.comp (f.continuous.prod_mk g.continuous : _)⟩⟩
 #align continuous_map.has_mul ContinuousMap.hasMul
 #align continuous_map.has_add ContinuousMap.hasAdd
 
-@[simp, norm_cast, to_additive]
+@[to_additive (attr := norm_cast, simp)]
 theorem coe_mul [Mul β] [ContinuousMul β] (f g : C(α, β)) : ⇑(f * g) = f * g :=
   rfl
 #align continuous_map.coe_mul ContinuousMap.coe_mul
 #align continuous_map.coe_add ContinuousMap.coe_add
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem mul_apply [Mul β] [ContinuousMul β] (f g : C(α, β)) (x : α) : (f * g) x = f x * g x :=
   rfl
 #align continuous_map.mul_apply ContinuousMap.mul_apply
 #align continuous_map.add_apply ContinuousMap.add_apply
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem mul_comp [Mul γ] [ContinuousMul γ] (f₁ f₂ : C(β, γ)) (g : C(α, β)) :
     (f₁ * f₂).comp g = f₁.comp g * f₂.comp g :=
   rfl
@@ -87,19 +87,19 @@ theorem mul_comp [Mul γ] [ContinuousMul γ] (f₁ f₂ : C(β, γ)) (g : C(α, 
 instance [One β] : One C(α, β) :=
   ⟨const α 1⟩
 
-@[simp, norm_cast, to_additive]
+@[to_additive (attr := norm_cast, simp)]
 theorem coe_one [One β] : ⇑(1 : C(α, β)) = 1 :=
   rfl
 #align continuous_map.coe_one ContinuousMap.coe_one
 #align continuous_map.coe_zero ContinuousMap.coe_zero
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem one_apply [One β] (x : α) : (1 : C(α, β)) x = 1 :=
   rfl
 #align continuous_map.one_apply ContinuousMap.one_apply
 #align continuous_map.zero_apply ContinuousMap.zero_apply
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem one_comp [One γ] (g : C(α, β)) : (1 : C(β, γ)).comp g = 1 :=
   rfl
 #align continuous_map.one_comp ContinuousMap.one_comp
@@ -135,14 +135,14 @@ theorem int_cast_apply [IntCast β] (n : ℤ) (x : α) : (n : C(α, β)) x = n :
 
 -- ### "nsmul" and "pow"
 instance hasNsmul [AddMonoid β] [ContinuousAdd β] : SMul ℕ C(α, β) :=
-  ⟨fun n f => ⟨n • f, f.Continuous.nsmul n⟩⟩
+  ⟨fun n f => ⟨SMul.smul n f, f.continuous.nsmul n⟩⟩
 #align continuous_map.has_nsmul ContinuousMap.hasNsmul
 
 @[to_additive]
 instance hasPow [Monoid β] [ContinuousMul β] : Pow C(α, β) ℕ :=
-  ⟨fun f n => ⟨f ^ n, f.Continuous.pow n⟩⟩
+  ⟨fun f n => ⟨Pow.pow f n, f.continuous.pow n⟩⟩
 #align continuous_map.has_pow ContinuousMap.hasPow
-#align continuous_map.has_nsmul ContinuousMap.hasNsmul
+--#align continuous_map.has_nsmul ContinuousMap.hasNsmul
 
 @[norm_cast, to_additive]
 theorem coe_pow [Monoid β] [ContinuousMul β] (f : C(α, β)) (n : ℕ) : ⇑(f ^ n) = f ^ n :=
@@ -197,7 +197,7 @@ theorem inv_comp [Group γ] [TopologicalGroup γ] (f : C(β, γ)) (g : C(α, β)
 -- ### "div" and "sub"
 @[to_additive]
 instance [Div β] [ContinuousDiv β] : Div C(α, β)
-    where div f g := ⟨f / g, f.Continuous.div' g.Continuous⟩
+    where div f g := ⟨f / g, f.continuous.div' g.Continuous⟩
 
 @[simp, norm_cast, to_additive]
 theorem coe_div [Div β] [ContinuousDiv β] (f g : C(α, β)) : ⇑(f / g) = f / g :=
@@ -220,12 +220,12 @@ theorem div_comp [Div γ] [ContinuousDiv γ] (f g : C(β, γ)) (h : C(α, β)) :
 
 -- ### "zpow" and "zsmul"
 instance hasZsmul [AddGroup β] [TopologicalAddGroup β] : SMul ℤ C(α, β)
-    where smul z f := ⟨z • f, f.Continuous.zsmul z⟩
+    where smul z f := ⟨z • f, f.continuous.zsmul z⟩
 #align continuous_map.has_zsmul ContinuousMap.hasZsmul
 
 @[to_additive]
 instance hasZpow [Group β] [TopologicalGroup β] : Pow C(α, β) ℤ
-    where pow f z := ⟨f ^ z, f.Continuous.zpow z⟩
+    where pow f z := ⟨f ^ z, f.continuous.zpow z⟩
 #align continuous_map.has_zpow ContinuousMap.hasZpow
 #align continuous_map.has_zsmul ContinuousMap.hasZsmul
 
@@ -1101,4 +1101,3 @@ def compStarAlgEquiv' (f : X ≃ₜ Y) : C(Y, A) ≃⋆ₐ[𝕜] C(X, A) :=
 #align homeomorph.comp_star_alg_equiv' Homeomorph.compStarAlgEquiv'
 
 end Homeomorph
-
