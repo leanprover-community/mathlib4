@@ -983,7 +983,6 @@ theorem eq_of_linearIndependent_of_span_subtype [Nontrivial R] {s t : Set M}
     rcases h_surj ⟨x, hx⟩ with ⟨y, hy⟩
     convert y.mem
     rw [← Subtype.mk.inj hy]
-    rfl
 #align eq_of_linear_independent_of_span_subtype eq_of_linearIndependent_of_span_subtype
 
 open LinearMap

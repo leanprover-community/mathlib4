@@ -79,6 +79,8 @@ def FreeAbelianGroup : Type u :=
   Additive <| Abelianization <| FreeGroup α
 #align free_abelian_group FreeAbelianGroup
 
+-- FIXME: this is super broken, because the functions have type `Additive .. → ..`
+-- instead of `FreeAbelianGroup α → ..` and those are not defeq!
 instance FreeAbelianGroup.addCommGroup : AddCommGroup (FreeAbelianGroup α) :=
   @Additive.addCommGroup _ <| Abelianization.commGroup _
 
@@ -421,8 +423,7 @@ theorem of_mul (x y : α) : of (x * y) = of x * of y :=
 #align free_abelian_group.of_mul FreeAbelianGroup.of_mul
 
 instance distrib : Distrib (FreeAbelianGroup α) :=
-  { FreeAbelianGroup.mul _ with
-    add := (· + ·)
+  { FreeAbelianGroup.mul α, FreeAbelianGroup.addCommGroup α with
     left_distrib := fun x y z ↦ (lift _).map_add _ _
     right_distrib := fun x y z ↦ by simp only [(· * ·), Mul.mul, map_add, ← Pi.add_def, lift.add'] }
 

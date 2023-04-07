@@ -1159,8 +1159,13 @@ protected theorem pow {M : Type _} [Monoid M] (c : Con M) :
 #align add_con.nsmul AddCon.nsmul
 
 @[to_additive]
-instance {M : Type _} [MulOneClass M] (c : Con M) : One c.Quotient
-    where one := ((1 : M) : c.Quotient)
+instance [MulOneClass M] (c : Con M) : One c.Quotient where
+  -- Using Quotient.mk'' here instead of c.toQuotient
+  -- since c.toQuotient is not reducible.
+  -- This would lead to non-defeq diamonds since this instance ends up in
+  -- quotients modulo ideals.
+  one := Quotient.mk'' (1 : M)
+  -- one := ((1 : M) : c.Quotient)
 
 @[to_additive]
 theorem smul {α M : Type _} [MulOneClass M] [SMul α M] [IsScalarTower α M M] (c : Con M) (a : α)
@@ -1274,7 +1279,8 @@ instance zpowinst : Pow c.Quotient ℤ :=
 @[to_additive "The quotient of an `AddGroup` by an additive congruence relation is
 an `add_group`."]
 instance group : Group c.Quotient :=
-  Function.Surjective.group _ Quotient.surjective_Quotient_mk'' rfl (fun _ _ => rfl) (fun _ => rfl)
+  Function.Surjective.group Quotient.mk''
+    Quotient.surjective_Quotient_mk'' rfl (fun _ _ => rfl) (fun _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
 #align con.group Con.group
 #align add_con.add_group AddCon.addGroup

@@ -67,7 +67,7 @@ example (α : Type u) [OrderedAddCommGroup α] : CovariantClass α α (swap (· 
 
 /-- A choice-free shortcut instance. -/
 @[to_additive "A choice-free shortcut instance."]
-instance OrderedCommGroup.to_contravariantClass_left_le (α : Type u) [OrderedCommGroup α] :
+def OrderedCommGroup.to_contravariantClass_left_le (α : Type u) [OrderedCommGroup α] :
     ContravariantClass α α (· * ·)
       (· ≤ ·) where elim a b c bc := by simpa using mul_le_mul_left' bc a⁻¹
 #align ordered_comm_group.to_contravariant_class_left_le OrderedCommGroup.to_contravariantClass_left_le
@@ -75,7 +75,7 @@ instance OrderedCommGroup.to_contravariantClass_left_le (α : Type u) [OrderedCo
 
 /-- A choice-free shortcut instance. -/
 @[to_additive "A choice-free shortcut instance."]
-instance OrderedCommGroup.to_contravariantClass_right_le (α : Type u) [OrderedCommGroup α] :
+def OrderedCommGroup.to_contravariantClass_right_le (α : Type u) [OrderedCommGroup α] :
     ContravariantClass α α (swap (· * ·))
       (· ≤ ·) where elim a b c bc := by simpa using mul_le_mul_right' bc a⁻¹
 #align ordered_comm_group.to_contravariant_class_right_le OrderedCommGroup.to_contravariantClass_right_le

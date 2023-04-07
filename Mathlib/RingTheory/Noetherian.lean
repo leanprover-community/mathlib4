@@ -489,7 +489,7 @@ noncomputable def IsNoetherian.equivPunitOfProdInjective [IsNoetherian R M] (f :
   -- Porting note: refine' makes this line time out at elaborator
   refine (LinearMap.tailingLinearEquiv f i n).symm ≪≫ₗ ?_
   rw [w]
-  exact Submodule.botEquivPUnit
+  apply Submodule.botEquivPUnit
 #align is_noetherian.equiv_punit_of_prod_injective IsNoetherian.equivPunitOfProdInjective
 
 end
