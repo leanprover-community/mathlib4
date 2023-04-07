@@ -39,15 +39,18 @@ theorem Basis.ext_multilinear_fin {f g : MultilinearMap R M M₂} {ι₁ : Fin n
     (h : ∀ v : ∀ i, ι₁ i, (f fun i => e i (v i)) = g fun i => e i (v i)) : f = g := by
   induction' n with m hm
   · ext x
-    convert h finZeroElim
-  · apply Function.LeftInverse.injective uncurry_curry_left
+    convert h finZeroElim <;>
+    -- Porting note: added below
+    · rename_i x
+      apply finZeroElim x
+  · apply Function.LeftInverse.injective uncurry_curryLeft
     refine' Basis.ext (e 0) _
     intro i
     apply hm (Fin.tail e)
     intro j
     convert h (Fin.cons i j)
-    iterate 2 
-      rw [curry_left_apply]
+    iterate 2
+      rw [curryLeft_apply]
       congr 1 with x
       refine' Fin.cases rfl (fun x => _) x
       dsimp [Fin.tail]
@@ -58,11 +61,10 @@ theorem Basis.ext_multilinear_fin {f g : MultilinearMap R M M₂} {ι₁ : Fin n
 are basis vectors. Unlike `basis.ext_multilinear_fin`, this only uses a single basis; a
 dependently-typed version would still be true, but the proof would need a dependently-typed
 version of `dom_dom_congr`. -/
-theorem Basis.ext_multilinear [Finite ι] {f g : MultilinearMap R (fun i : ι => M₂) M₃} {ι₁ : Type _}
+theorem Basis.ext_multilinear [Finite ι] {f g : MultilinearMap R (fun _ : ι => M₂) M₃} {ι₁ : Type _}
     (e : Basis ι₁ R M₂) (h : ∀ v : ι → ι₁, (f fun i => e (v i)) = g fun i => e (v i)) : f = g := by
   cases nonempty_fintype ι
   exact
-    (dom_dom_congr_eq_iff (Fintype.equivFin ι) f g).mp
-      (Basis.ext_multilinear_fin (fun i => e) fun i => h (i ∘ _))
+    (domDomCongr_eq_iff (Fintype.equivFin ι) f g).mp
+      (Basis.ext_multilinear_fin (fun _ => e) fun i => h (i ∘ _))
 #align basis.ext_multilinear Basis.ext_multilinear
-
