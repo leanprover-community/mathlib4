@@ -8,9 +8,9 @@ Authors: Jireh Loreaux
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Star.Subalgebra
-import Mathbin.Topology.Algebra.Algebra
-import Mathbin.Topology.Algebra.Star
+import Mathlib.Algebra.Star.Subalgebra
+import Mathlib.Topology.Algebra.Algebra
+import Mathlib.Topology.Algebra.Star
 
 /-!
 # Topological star (sub)algebras
@@ -132,8 +132,7 @@ theorem StarAlgHom.ext_topologicalClosure [T2Space B] {S : StarSubalgebra R A}
       φ.comp (inclusion (le_topologicalClosure S)) = ψ.comp (inclusion (le_topologicalClosure S))) :
     φ = ψ := by
   rw [FunLike.ext'_iff]
-  have : Dense (Set.range <| inclusion (le_topological_closure S)) :=
-    by
+  have : Dense (Set.range <| inclusion (le_topological_closure S)) := by
     refine' embedding_subtype_coe.to_inducing.dense_iff.2 fun x => _
     convert show ↑x ∈ closure (S : Set A) from x.prop
     rw [← Set.range_comp]
@@ -152,8 +151,7 @@ theorem StarAlgHomClass.ext_topologicalClosure [T2Space B] {F : Type _} {S : Sta
     (h :
       ∀ x : S,
         φ (inclusion (le_topologicalClosure S) x) = ψ ((inclusion (le_topologicalClosure S)) x)) :
-    φ = ψ :=
-  by
+    φ = ψ := by
   have : (φ : S.topological_closure →⋆ₐ[R] B) = (ψ : S.topological_closure →⋆ₐ[R] B) := by
     refine' StarAlgHom.ext_topologicalClosure hφ hψ (StarAlgHom.ext _) <;>
       simpa only [StarAlgHom.coe_comp, StarAlgHom.coe_coe] using h
@@ -230,8 +228,7 @@ theorem closedEmbedding_coe (x : A) : ClosedEmbedding (coe : elementalStarAlgebr
 
 theorem starAlgHomClass_ext [T2Space B] {F : Type _} {a : A}
     [StarAlgHomClass F R (elementalStarAlgebra R a) B] {φ ψ : F} (hφ : Continuous φ)
-    (hψ : Continuous ψ) (h : φ ⟨a, self_mem R a⟩ = ψ ⟨a, self_mem R a⟩) : φ = ψ :=
-  by
+    (hψ : Continuous ψ) (h : φ ⟨a, self_mem R a⟩ = ψ ⟨a, self_mem R a⟩) : φ = ψ := by
   refine' StarAlgHomClass.ext_topologicalClosure hφ hψ fun x => adjoin_induction' x _ _ _ _ _
   exacts[fun y hy => by simpa only [set.mem_singleton_iff.mp hy] using h, fun r => by
     simp only [AlgHomClass.commutes], fun x y hx hy => by simp only [map_add, hx, hy],
