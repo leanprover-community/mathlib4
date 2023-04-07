@@ -1068,7 +1068,7 @@ import Mathlib.Data.ZMod.Basic
 import Mathlib.Data.ZMod.Coprime
 import Mathlib.Data.ZMod.Defs
 import Mathlib.Data.ZMod.Parity
-import Mathlib.Data.Zmod.Quotient
+import Mathlib.Data.ZMod.Quotient
 import Mathlib.Deprecated.Group
 import Mathlib.Deprecated.Ring
 import Mathlib.Deprecated.Subfield
