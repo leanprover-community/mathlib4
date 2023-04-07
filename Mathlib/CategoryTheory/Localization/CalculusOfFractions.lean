@@ -2,6 +2,16 @@ import Mathlib.CategoryTheory.Localization.Opposite
 
 namespace CategoryTheory
 
+namespace Functor
+
+lemma congr_map_conjugate {C D : Type _} [Category C] [Category D] {F₁ F₂ : C ⥤ D}
+    (h : F₁ = F₂) {X Y : C} (f : X ⟶ Y) :
+    F₁.map f = eqToHom (by congr) ≫ F₂.map f ≫ eqToHom (by symm; congr) := by
+  subst h
+  simp
+
+end Functor
+
 namespace MorphismProperty
 
 variable {C D : Type _} [Category C] [Category D] (L : C ⥤ D) {W : MorphismProperty C}
@@ -99,8 +109,6 @@ lemma HasRightCalculusOfFractions.unop (W : MorphismProperty Cᵒᵖ) [HasRightC
 attribute [instance] HasLeftCalculusOfFractions.op HasRightCalculusOfFractions.op
 
 namespace HasLeftCalculusOfFractions
-
-section
 
 structure Roof (X Y : C) :=
 (Z : C)
@@ -303,6 +311,9 @@ lemma Hom.comp_eq {X Y Z : C} (z : Roof W X Y) (z' : Roof W Y Z)
         Quot.mk _ (Roof.comp₀ z z' sq) :=
   Roof.comp_eq _ _ _
 
+-- the category `Localization W` that is constructed when `[HasLeftCalculusOfFractions W]` should
+-- not be used: it is introduced only in order to prove the lemmas
+-- `HasLeftCalculusOfFractions.fac` and `HasLeftCalculusOfFractions.map_eq_iff`
 structure Localization (W : MorphismProperty C) :=
 (obj : C)
 
@@ -358,6 +369,7 @@ variable {W}
 noncomputable def Qinv {X Y : C} (s : X ⟶ Y) (hs : W s) : (Q W).obj Y ⟶ (Q W).obj X :=
   homOfRoof (Roof.inv s hs)
 
+@[reassoc]
 lemma Qinv_comp {X Y : C} (s : X ⟶ Y) (hs : W s) : Qinv s hs ≫ (Q W).map s = 𝟙 _ := by
   dsimp only [Qinv, comp_eq, id_eq]
   erw [Hom.comp_eq (Roof.inv s hs) (Roof.ofHom W s)
@@ -365,6 +377,7 @@ lemma Qinv_comp {X Y : C} (s : X ⟶ Y) (hs : W s) : Qinv s hs ≫ (Q W).map s =
   simp [Roof.comp₀, Roof.ofHom]
   rfl
 
+@[reassoc]
 lemma comp_Qinv {X Y : C} (s : X ⟶ Y) (hs : W s) : (Q W).map s ≫ Qinv s hs = 𝟙 _ := by
   dsimp only [Qinv, comp_eq, id_eq]
   erw [Hom.comp_eq (Roof.ofHom W s) (Roof.inv s hs)
@@ -400,28 +413,136 @@ variable (W)
 
 lemma inverts : W.IsInvertedBy (Q W) := fun _ _ s hs => isIso_Qmap s hs
 
+variable {E : Type _} [Category E]
+variable {W}
+
+noncomputable def lift (F : C ⥤ E) (hF : W.IsInvertedBy F) : Localization W ⥤ E := by
+  haveI : ∀ {X Y : C} (z : Roof W X Y), IsIso (F.map z.s) := fun z => hF z.s z.hs
+  exact
+  { obj := fun ⟨X⟩ => F.obj X
+    map := by
+      rintro ⟨X⟩ ⟨Y⟩
+      refine' Quot.lift (fun z => F.map z.f ≫ inv (F.map z.s))
+        (fun z z' ⟨Z₃, t₁, t₂, hs, hf, hst⟩ => by
+          dsimp
+          haveI : IsIso (F.map (z.s ≫ t₁)) := hF _ hst
+          haveI : IsIso (F.map (z'.s ≫ t₂)) := by
+            rw [← hs]
+            infer_instance
+          have eq₁ : inv (F.map z.s) = F.map t₁ ≫ inv (F.map (z.s ≫ t₁)) := by
+            rw [← cancel_mono (F.map (z.s ≫ t₁)), ← cancel_epi (F.map z.s),
+              Category.assoc, IsIso.hom_inv_id_assoc, IsIso.inv_hom_id, Category.comp_id,
+              F.map_comp]
+          have eq₂ : inv (F.map z'.s) = F.map t₂ ≫ inv (F.map (z'.s ≫ t₂)) := by
+            rw [← cancel_mono (F.map (z'.s ≫ t₂)), ← cancel_epi (F.map z'.s),
+              Category.assoc, IsIso.hom_inv_id_assoc, IsIso.inv_hom_id, Category.comp_id,
+              F.map_comp]
+          rw [eq₁, ← F.map_comp_assoc, hf, F.map_comp, Category.assoc]
+          simp only [hs, eq₂])
+    map_id := by
+      rintro ⟨X⟩
+      dsimp [id_eq]
+      simp
+    map_comp := by
+      rintro ⟨X⟩ ⟨Y⟩ ⟨Z⟩ ⟨f : Roof W X Y⟩ ⟨g : Roof W Y Z⟩
+      dsimp
+      have sq := toSq f.s f.hs g.f
+      haveI : IsIso (F.map sq.s') := hF _ sq.hs'
+      haveI : IsIso (F.map (g.s ≫ sq.s')) := by
+        rw [F.map_comp]
+        infer_instance
+      rw [comp_eq, Hom.comp_eq f g sq]
+      dsimp [Roof.comp₀]
+      rw [← cancel_mono (F.map (g.s ≫ sq.s')), Category.assoc, Category.assoc, Category.assoc,
+        Category.assoc, IsIso.inv_hom_id, Category.comp_id, F.map_comp g.s, IsIso.inv_hom_id_assoc,
+        ← F.map_comp, sq.fac, F.map_comp f.s, IsIso.inv_hom_id_assoc, F.map_comp] }
+
+lemma fac (F : C ⥤ E) (hF : W.IsInvertedBy F) : (Q W) ⋙ lift F hF = F :=
+  Functor.ext (fun X => rfl) (fun X Y f => by simp [lift, Q, homOfRoof])
+
+lemma uniq (F₁ F₂ : Localization W ⥤ E) (h : Q W ⋙ F₁ = Q W ⋙ F₂) : F₁ = F₂ := by
+  refine' Functor.ext _ _
+  . rintro ⟨X⟩
+    exact Functor.congr_obj h X
+  . rintro ⟨X⟩ ⟨Y⟩ ⟨f : Roof W X Y⟩
+    have eq := facOfRoof f
+    dsimp only [homOfRoof] at eq
+    have eq' : F₂.map (Qinv f.s f.hs) = eqToHom (Functor.congr_obj h.symm f.Z) ≫
+        F₁.map (Qinv f.s f.hs) ≫ eqToHom (Functor.congr_obj h Y) := by
+      haveI : IsIso (((Q W) ⋙ F₂).map f.s) := by
+        haveI : IsIso ((Q W).map f.s) := inverts _ _ f.hs
+        dsimp
+        infer_instance
+      rw [← cancel_mono (((Q W) ⋙ F₂).map f.s)]
+      erw [← F₂.map_comp, Qinv_comp, F₂.map_id, Functor.congr_map_conjugate h.symm f.s]
+      simp only [Functor.comp_obj, Functor.comp_map, Category.assoc, eqToHom_trans_assoc,
+        eqToHom_refl, Category.id_comp, ← F₁.map_comp_assoc, Qinv_comp, F₁.map_id, eqToHom_trans]
+    simp only [eq, Functor.map_comp]
+    erw [Functor.congr_map_conjugate h f.f, eq']
+    simp
+
+variable (W E)
+
+noncomputable def strictUniversalPropertyFixedTarget :
+    Localization.StrictUniversalPropertyFixedTarget (Q W) W E where
+  inverts := inverts W
+  lift := lift
+  fac := fac
+  uniq := uniq
+
+instance : (Q W).IsLocalization W :=
+  Functor.IsLocalization.mk' _ _ (strictUniversalPropertyFixedTarget W _)
+    (strictUniversalPropertyFixedTarget W _)
+
 end Localization
 
-end
-
 variable [W.HasLeftCalculusOfFractions] [L.IsLocalization W]
+
+instance {X Y : C} (z : Roof W X Y) : IsIso (L.map z.s) :=
+  CategoryTheory.Localization.inverts L W _ z.hs
+
+noncomputable def Roof.map {X Y : C} (z : Roof W X Y) (L : C ⥤ D) [L.IsLocalization W] :
+    L.obj X ⟶ L.obj Y :=
+  L.map z.f ≫ CategoryTheory.inv (L.map z.s)
+
+variable (W)
+
+@[simp]
+lemma Roof.map_ofHom {X Y : C} (f : X ⟶ Y) (L : C ⥤ D) [L.IsLocalization W] :
+    (Roof.ofHom W f).map L = L.map f := by
+  simp [Roof.map]
+
+lemma fac' {X Y : C} (f : L.obj X ⟶ L.obj Y) :
+  ∃ (z : Roof W X Y), f = z.map L := by
+  have h : HasLeftCalculusOfFractions W := inferInstance
+  sorry
 
 lemma fac {X Y : C} (f : L.obj X ⟶ L.obj Y) :
   ∃ (Z : C) (g : X ⟶ Z) (s : Y ⟶ Z) (hs : W s),
     f = L.map g ≫ (Localization.isoOfHom L W s hs).inv := by
+  obtain ⟨z, hz⟩ := fac' L W f
+  exact ⟨_, z.f, z.s, z.hs, hz⟩
+
+lemma map_eq_iff' {X Y : C} (z₁ z₂ : Roof W X Y) :
+    z₁.map L = z₂.map L ↔ roofRel z₁ z₂ := by
   have h : HasLeftCalculusOfFractions W := inferInstance
   sorry
 
 lemma map_eq_iff {X Y : C} (f₁ f₂ : X ⟶ Y) :
-    L.map f₁ = L.map f₂ ↔ ∃ (Z : C) (s : Y ⟶ Z) (hs : W s), f₁ ≫ s = f₂ ≫ s := by
-  have h : HasLeftCalculusOfFractions W := inferInstance
+    L.map f₁ = L.map f₂ ↔ ∃ (Z : C) (s : Y ⟶ Z) (_ : W s), f₁ ≫ s = f₂ ≫ s := by
   constructor
-  swap
+  . intro h
+    have h' : (Roof.ofHom W f₁).map L = (Roof.ofHom W f₂).map L := by simpa using h
+    rw [map_eq_iff'] at h'
+    obtain ⟨Z, t₁, t₂, hst, hft, ht⟩ := h'
+    dsimp at t₁ t₂ hst hft ht
+    simp only [Category.id_comp] at hst ht
+    subst hst
+    exact ⟨Z, t₁, ht, hft⟩
   . rintro ⟨Z, s, hs, fac⟩
     rw [← cancel_mono (Localization.isoOfHom L W s hs).hom]
     dsimp
     simp only [← L.map_comp, fac]
-  . sorry
 
 end HasLeftCalculusOfFractions
 
