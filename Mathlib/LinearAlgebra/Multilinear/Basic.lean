@@ -683,10 +683,10 @@ def codRestrict (f : MultilinearMap R M₁ M₂) (p : Submodule R M₂) (h : ∀
 
 section RestrictScalar
 
-/- Porting note: These used to be a single variable statement, had to split them up to two so that
-the universe metavariable is instantiated before typeclass search runs in `IsScalarTower`. -/
-variable (R) {A : Type _} [Semiring A] [SMul R A] [∀ i : ι, Module A (M₁ i)] [Module A M₂]
-variable [∀ i, IsScalarTower R A (M₁ i)] [IsScalarTower R A M₂]
+variable (R)
+
+variable {A : Type _} [Semiring A] [SMul R A] [∀ i : ι, Module A (M₁ i)] [Module A M₂]
+  [∀ i, IsScalarTower R A (M₁ i)] [IsScalarTower R A M₂]
 
 /-- Reinterpret an `A`-multilinear map as an `R`-multilinear map, if `A` is an algebra over `R`
 and their actions on all involved modules agree with the action of `R` on `A`. -/
@@ -712,8 +712,8 @@ variable {ι₁ ι₂ ι₃ : Type _}
 The naming is derived from `Finsupp.domCongr`, noting that here the permutation applies to the
 domain of the domain. -/
 @[simps apply]
-def domDomCongr (σ : ι₁ ≃ ι₂) (m : MultilinearMap R (fun _i : ι₁ => M₂) M₃) :
-    MultilinearMap R (fun _i : ι₂ => M₂) M₃ where
+def domDomCongr (σ : ι₁ ≃ ι₂) (m : MultilinearMap R (fun _ : ι₁ => M₂) M₃) :
+    MultilinearMap R (fun _ : ι₂ => M₂) M₃ where
   toFun v := m fun i => v (σ i)
   map_add' v i a b := by
     skip
@@ -745,7 +745,7 @@ theorem domDomCongr_mul (σ₁ : Equiv.Perm ι₁) (σ₂ : Equiv.Perm ι₁)
 This is declared separately because it does not work with dot notation. -/
 @[simps apply symm_apply]
 def domDomCongrEquiv (σ : ι₁ ≃ ι₂) :
-    MultilinearMap R (fun _i : ι₁ => M₂) M₃ ≃+ MultilinearMap R (fun _i : ι₂ => M₂) M₃ where
+    MultilinearMap R (fun _ : ι₁ => M₂) M₃ ≃+ MultilinearMap R (fun _ : ι₂ => M₂) M₃ where
   toFun := domDomCongr σ
   invFun := domDomCongr σ.symm
   left_inv m := by
@@ -803,7 +803,7 @@ theorem compMultilinearMap_apply (g : M₂ →ₗ[R] M₃) (f : MultilinearMap R
 @[simp]
 theorem subtype_compMultilinearMap_codRestrict (f : MultilinearMap R M₁ M₂) (p : Submodule R M₂)
     (h) : p.subtype.compMultilinearMap (f.codRestrict p h) = f :=
-  MultilinearMap.ext fun _v => rfl
+  MultilinearMap.ext fun _ => rfl
 #align linear_map.subtype_comp_multilinear_map_cod_restrict LinearMap.subtype_compMultilinearMap_codRestrict
 
 /-- The multilinear version of `LinearMap.comp_codRestrict` -/
@@ -877,10 +877,10 @@ variable {R' A : Type _} [Monoid R'] [Semiring A] [∀ i, Module A (M₁ i)] [Di
   [Module A M₂] [SMulCommClass A R' M₂]
 
 instance : DistribMulAction R' (MultilinearMap A M₁ M₂) where
-  one_smul _f := ext fun _x => one_smul _ _
-  mul_smul _c₁ _c₂ _f := ext fun _x => mul_smul _ _ _
-  smul_zero _r := ext fun _x => smul_zero _
-  smul_add _r _f₁ _f₂ := ext fun _x => smul_add _ _ _
+  one_smul _ := ext fun _ => one_smul _ _
+  mul_smul _ _ _ := ext fun _ => mul_smul _ _ _
+  smul_zero _ := ext fun _ => smul_zero _
+  smul_add _ _ _ := ext fun _ => smul_add _ _ _
 
 end DistribMulAction
 
@@ -892,8 +892,8 @@ variable {R' A : Type _} [Semiring R'] [Semiring A] [∀ i, Module A (M₁ i)] [
 /-- The space of multilinear maps over an algebra over `R` is a module over `R`, for the pointwise
 addition and scalar multiplication. -/
 instance [Module R' M₂] [SMulCommClass A R' M₂] : Module R' (MultilinearMap A M₁ M₂) where
-  add_smul _r₁ _r₂ _f := ext fun _x => add_smul _ _ _
-  zero_smul _f := ext fun _x => zero_smul _ _
+  add_smul _ _ _ := ext fun _ => add_smul _ _ _
+  zero_smul _ := ext fun _ => zero_smul _ _
 
 instance [NoZeroSMulDivisors R' M₃] : NoZeroSMulDivisors R' (MultilinearMap A M₁ M₃) :=
   coe_injective.noZeroSMulDivisors _ rfl coe_smul
@@ -903,9 +903,9 @@ variable (M₂ M₃ R' A)
 /-- `MultilinearMap.domDomCongr` as a `LinearEquiv`. -/
 @[simps apply symm_apply]
 def domDomCongrLinearEquiv {ι₁ ι₂} (σ : ι₁ ≃ ι₂) :
-    MultilinearMap A (fun _i : ι₁ => M₂) M₃ ≃ₗ[R'] MultilinearMap A (fun _i : ι₂ => M₂) M₃ :=
+    MultilinearMap A (fun _ : ι₁ => M₂) M₃ ≃ₗ[R'] MultilinearMap A (fun _ : ι₂ => M₂) M₃ :=
   { (domDomCongrEquiv σ :
-      MultilinearMap A (fun _i : ι₁ => M₂) M₃ ≃+ MultilinearMap A (fun _i : ι₂ => M₂) M₃) with
+      MultilinearMap A (fun _ : ι₁ => M₂) M₃ ≃+ MultilinearMap A (fun _ : ι₂ => M₂) M₃) with
     map_smul' := fun c f => by
       ext
       simp [MultilinearMap.domDomCongr] }
@@ -987,7 +987,7 @@ to `m` the product of all the `m i`.
 
 See also `MultilinearMap.mkPiAlgebraFin` for a version that works with a non-commutative
 algebra `A` but requires `ι = Fin n`. -/
-protected def mkPiAlgebra : MultilinearMap R (fun _i : ι => A) A where
+protected def mkPiAlgebra : MultilinearMap R (fun _ : ι => A) A where
   toFun m := ∏ i, m i
   map_add' m i x y := by simp [Finset.prod_update_of_mem, add_mul]
   map_smul' m i c x := by simp [Finset.prod_update_of_mem]
@@ -1012,7 +1012,7 @@ to `m` the product of all the `m i`.
 
 See also `MultilinearMap.mkPiAlgebra` for a version that assumes `[CommSemiring A]` but works
 for `A^ι` with any finite type `ι`. -/
-protected def mkPiAlgebraFin : MultilinearMap R (fun _i : Fin n => A) A where
+protected def mkPiAlgebraFin : MultilinearMap R (fun _ : Fin n => A) A where
   toFun m := (List.ofFn m).prod
   map_add' := by
     intro dec m i x y
@@ -1060,7 +1060,7 @@ variable (R ι)
 /-- The canonical multilinear map on `R^ι` when `ι` is finite, associating to `m` the product of
 all the `m i` (multiplied by a fixed reference element `z` in the target module). See also
 `mk_pi_algebra` for a more general version. -/
-protected def mkPiRing [Fintype ι] (z : M₂) : MultilinearMap R (fun _i : ι => R) M₂ :=
+protected def mkPiRing [Fintype ι] (z : M₂) : MultilinearMap R (fun _ : ι => R) M₂ :=
   (MultilinearMap.mkPiAlgebra R ι R).smulRight z
 #align multilinear_map.mk_pi_ring MultilinearMap.mkPiRing
 
@@ -1142,7 +1142,7 @@ instance : AddCommGroup (MultilinearMap R M₁ M₂) :=
       { toFun := fun m => n • f m
         map_add' := fun m i x y => by simp [smul_add]
         map_smul' := fun l i x d => by simp [← smul_comm x n (_ : M₂)] }
-    -- porting note: changed from `AddCommMonoid.` to `SubNegMonoid.`.
+    -- porting note: changed from `AddCommGroup` to `SubNegMonoid`
     zsmul_zero' := fun a => MultilinearMap.ext fun v => SubNegMonoid.zsmul_zero' _
     zsmul_succ' := fun z a => MultilinearMap.ext fun v => SubNegMonoid.zsmul_succ' _ _
     zsmul_neg' := fun z a => MultilinearMap.ext fun v => SubNegMonoid.zsmul_neg' _ _ }
@@ -1177,7 +1177,7 @@ variable [CommSemiring R] [∀ i, AddCommMonoid (M₁ i)] [AddCommMonoid M₂] [
 /-- When `ι` is finite, multilinear maps on `R^ι` with values in `M₂` are in bijection with `M₂`,
 as such a multilinear map is completely determined by its value on the constant vector made of ones.
 We register this bijection as a linear equivalence in `MultilinearMap.piRingEquiv`. -/
-protected def piRingEquiv [Fintype ι] : M₂ ≃ₗ[R] MultilinearMap R (fun _i : ι => R) M₂ where
+protected def piRingEquiv [Fintype ι] : M₂ ≃ₗ[R] MultilinearMap R (fun _ : ι => R) M₂ where
   toFun z := MultilinearMap.mkPiRing R ι z
   invFun f := f fun _ => 1
   map_add' z z' := by
@@ -1447,8 +1447,8 @@ variable {ι' : Type _} {R M₂}
 
 /-- A multilinear map on `∀ i : ι ⊕ ι', M'` defines a multilinear map on `∀ i : ι, M'`
 taking values in the space of multilinear maps on `∀ i : ι', M'`. -/
-def currySum (f : MultilinearMap R (fun _x : Sum ι ι' => M') M₂) :
-    MultilinearMap R (fun _x : ι => M') (MultilinearMap R (fun _x : ι' => M') M₂) where
+def currySum (f : MultilinearMap R (fun _ : Sum ι ι' => M') M₂) :
+    MultilinearMap R (fun _ : ι => M') (MultilinearMap R (fun _ : ι' => M') M₂) where
   toFun u :=
     { toFun := fun v => f (Sum.elim u v)
       map_add' := fun v i x y => by
@@ -1479,8 +1479,8 @@ theorem currySum_apply (f : MultilinearMap R (fun _ : Sum ι ι' => M') M₂) (u
 
 /-- A multilinear map on `∀ i : ι, M'` taking values in the space of multilinear maps
 on `∀ i : ι', M'` defines a multilinear map on `∀ i : ι ⊕ ι', M'`. -/
-def uncurrySum (f : MultilinearMap R (fun _x : ι => M') (MultilinearMap R (fun _x : ι' => M') M₂)) :
-    MultilinearMap R (fun _x : Sum ι ι' => M') M₂ where
+def uncurrySum (f : MultilinearMap R (fun _ : ι => M') (MultilinearMap R (fun _ : ι' => M') M₂)) :
+    MultilinearMap R (fun _ : Sum ι ι' => M') M₂ where
   toFun u := f (u ∘ Sum.inl) (u ∘ Sum.inr)
   map_add' u i x y := by
     skip
@@ -1511,8 +1511,8 @@ variable (ι ι' R M₂ M')
 of multilinear maps on `∀ i : ι, M'` taking values in the space of multilinear maps
 on `∀ i : ι', M'`. -/
 def currySumEquiv :
-    MultilinearMap R (fun _x : Sum ι ι' => M') M₂ ≃ₗ[R]
-      MultilinearMap R (fun _x : ι => M') (MultilinearMap R (fun _x : ι' => M') M₂) where
+    MultilinearMap R (fun _ : Sum ι ι' => M') M₂ ≃ₗ[R]
+      MultilinearMap R (fun _ : ι => M') (MultilinearMap R (fun _ : ι' => M') M₂) where
   toFun := currySum
   invFun := uncurrySum
   left_inv f := ext fun u => by simp
