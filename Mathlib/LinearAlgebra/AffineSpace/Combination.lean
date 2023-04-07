@@ -85,7 +85,7 @@ theorem weightedVSubOfPoint_apply (w : ι → k) (p : ι → P) (b : P) :
 #align finset.weighted_vsub_of_point_apply Finset.weightedVSubOfPoint_apply
 
 /-- The value of `weightedVSubOfPoint`, where the given points are equal. -/
-@[simp]
+@[simp (high)]
 theorem weightedVSubOfPoint_apply_const (w : ι → k) (p : P) (b : P) :
     s.weightedVSubOfPoint (fun _ => p) b w = (∑ i in s, w i) • (p -ᵥ b) := by
   rw [weightedVSubOfPoint_apply, sum_smul]
@@ -147,7 +147,7 @@ theorem weightedVSubOfPoint_vadd_eq_of_sum_eq_one (w : ι → k) (p : ι → P) 
 
 /-- The weighted sum is unaffected by removing the base point, if
 present, from the set of points. -/
-@[simp]
+@[simp (high)]
 theorem weightedVSubOfPoint_erase [DecidableEq ι] (w : ι → k) (p : ι → P) (i : ι) :
     (s.erase i).weightedVSubOfPoint p (p i) w = s.weightedVSubOfPoint p (p i) w := by
   rw [weightedVSubOfPoint_apply, weightedVSubOfPoint_apply]
@@ -157,7 +157,7 @@ theorem weightedVSubOfPoint_erase [DecidableEq ι] (w : ι → k) (p : ι → P)
 
 /-- The weighted sum is unaffected by adding the base point, whether
 or not present, to the set of points. -/
-@[simp]
+@[simp (high)]
 theorem weightedVSubOfPoint_insert [DecidableEq ι] (w : ι → k) (p : ι → P) (i : ι) :
     (insert i s).weightedVSubOfPoint p (p i) w = s.weightedVSubOfPoint p (p i) w := by
   rw [weightedVSubOfPoint_apply, weightedVSubOfPoint_apply]
