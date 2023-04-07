@@ -8,10 +8,10 @@ Authors: Johannes Hölzl
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.CharP.Basic
-import Mathbin.Data.Polynomial.AlgebraMap
-import Mathbin.Data.MvPolynomial.Variables
-import Mathbin.LinearAlgebra.FinsuppVectorSpace
+import Mathlib.Algebra.CharP.Basic
+import Mathlib.Data.Polynomial.AlgebraMap
+import Mathlib.Data.MvPolynomial.Variables
+import Mathlib.LinearAlgebra.FinsuppVectorSpace
 
 /-!
 # Multivariate polynomials over commutative rings
@@ -63,8 +63,7 @@ end CharP
 section Homomorphism
 
 theorem mapRange_eq_map {R S : Type _} [CommRing R] [CommRing S] (p : MvPolynomial σ R)
-    (f : R →+* S) : Finsupp.mapRange f f.map_zero p = map f p :=
-  by
+    (f : R →+* S) : Finsupp.mapRange f f.map_zero p = map f p := by
   -- `finsupp.map_range_finset_sum` expects `f : R →+ S`
   change Finsupp.mapRange (f : R →+ S) (f : R →+ S).map_zero p = map f p
   rw [p.as_sum, Finsupp.mapRange_finset_sum, (map f).map_sum]
@@ -91,22 +90,19 @@ def restrictDegree (m : ℕ) : Submodule R (MvPolynomial σ R) :=
 variable {R}
 
 theorem mem_restrictTotalDegree (p : MvPolynomial σ R) :
-    p ∈ restrictTotalDegree σ R m ↔ p.totalDegree ≤ m :=
-  by
+    p ∈ restrictTotalDegree σ R m ↔ p.totalDegree ≤ m := by
   rw [total_degree, Finset.sup_le_iff]
   rfl
 #align mv_polynomial.mem_restrict_total_degree MvPolynomial.mem_restrictTotalDegree
 
 theorem mem_restrictDegree (p : MvPolynomial σ R) (n : ℕ) :
-    p ∈ restrictDegree σ R n ↔ ∀ s ∈ p.support, ∀ i, (s : σ →₀ ℕ) i ≤ n :=
-  by
+    p ∈ restrictDegree σ R n ↔ ∀ s ∈ p.support, ∀ i, (s : σ →₀ ℕ) i ≤ n := by
   rw [restrict_degree, Finsupp.mem_supported]
   rfl
 #align mv_polynomial.mem_restrict_degree MvPolynomial.mem_restrictDegree
 
 theorem mem_restrictDegree_iff_sup (p : MvPolynomial σ R) (n : ℕ) :
-    p ∈ restrictDegree σ R n ↔ ∀ i, p.degrees.count i ≤ n :=
-  by
+    p ∈ restrictDegree σ R n ↔ ∀ i, p.degrees.count i ≤ n := by
   simp only [mem_restrict_degree, degrees, Multiset.count_finset_sup, Finsupp.count_toMultiset,
     Finset.sup_le_iff]
   exact ⟨fun h n s hs => h s hs n, fun h s hs n => h n s hs⟩
