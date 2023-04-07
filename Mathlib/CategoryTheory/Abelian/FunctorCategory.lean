@@ -8,10 +8,10 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Abelian.Basic
-import Mathbin.CategoryTheory.Preadditive.FunctorCategory
-import Mathbin.CategoryTheory.Limits.Shapes.FunctorCategory
-import Mathbin.CategoryTheory.Limits.Preserves.Shapes.Kernels
+import Mathlib.CategoryTheory.Abelian.Basic
+import Mathlib.CategoryTheory.Preadditive.FunctorCategory
+import Mathlib.CategoryTheory.Limits.Shapes.FunctorCategory
+import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
 
 /-!
 # If `D` is abelian, then the functor category `C ⥤ D` is also abelian.
@@ -65,8 +65,7 @@ def imageObjIso : (Abelian.image α).obj X ≅ Abelian.image (α.app X) :=
 
 theorem coimageImageComparison_app :
     coimageImageComparison (α.app X) =
-      (coimage_obj_iso α X).inv ≫ (coimageImageComparison α).app X ≫ (image_obj_iso α X).Hom :=
-  by
+      (coimage_obj_iso α X).inv ≫ (coimageImageComparison α).app X ≫ (image_obj_iso α X).Hom := by
   ext
   dsimp
   simp only [category.comp_id, category.id_comp, category.assoc, coimage_image_factorisation,
@@ -80,16 +79,14 @@ theorem coimageImageComparison_app :
 
 theorem coimageImageComparison_app' :
     (coimageImageComparison α).app X =
-      (coimage_obj_iso α X).Hom ≫ coimageImageComparison (α.app X) ≫ (image_obj_iso α X).inv :=
-  by
+      (coimage_obj_iso α X).Hom ≫ coimageImageComparison (α.app X) ≫ (image_obj_iso α X).inv := by
   simp only [coimage_image_comparison_app, iso.hom_inv_id_assoc, iso.hom_inv_id, category.assoc,
     category.comp_id]
 #align category_theory.abelian.functor_category.coimage_image_comparison_app' CategoryTheory.Abelian.FunctorCategory.coimageImageComparison_app'
 
 instance functor_category_isIso_coimageImageComparison : IsIso (Abelian.coimageImageComparison α) :=
   by
-  have : ∀ X : C, is_iso ((abelian.coimage_image_comparison α).app X) :=
-    by
+  have : ∀ X : C, is_iso ((abelian.coimage_image_comparison α).app X) := by
     intros
     rw [coimage_image_comparison_app']
     infer_instance
