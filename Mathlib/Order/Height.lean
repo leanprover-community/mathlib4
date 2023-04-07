@@ -319,14 +319,14 @@ theorem chainHeight_union_le : (s ∪ t).chainHeight ≤ s.chainHeight + t.chain
     let l₂ := l.filter (· ∈ t)
     have hl₁ : ↑l₁.length ≤ s.chainHeight := by
       apply Set.length_le_chainHeight_of_mem_subchain
-      exact ⟨hl.1.sublist (filter_sublist _), fun i h ↦ (of_mem_filter h : _)⟩
+      exact ⟨hl.1.sublist (filter_sublist _), fun i h ↦ by simpa using (of_mem_filter h : _)⟩
     have hl₂ : ↑l₂.length ≤ t.chainHeight := by
       apply Set.length_le_chainHeight_of_mem_subchain
-      exact ⟨hl.1.sublist (filter_sublist _), fun i h ↦ (of_mem_filter h : _)⟩
+      exact ⟨hl.1.sublist (filter_sublist _), fun i h ↦ by simpa using (of_mem_filter h : _)⟩
     refine' le_trans _ (add_le_add hl₁ hl₂)
-    simp_rw [← WithTop.coe_add, WithTop.coe_le_coe, ← Multiset.coe_card, ← Multiset.card_add,
-      ← Multiset.coe_filter]
-    rw [Multiset.filter_add_filter, multiset.filter_eq_self.mpr, Multiset.card_add]
+    simp_rw [← WithTop.coe_add, ← Nat.cast_add, WithTop.coe_le_coe, ← Multiset.coe_card,
+      ← Multiset.card_add, ← Multiset.coe_filter]
+    rw [Multiset.filter_add_filter, Multiset.filter_eq_self.mpr, Multiset.card_add, Nat.cast_add]
     exacts [le_add_right rfl.le, hl.2]
 #align set.chain_height_union_le Set.chainHeight_union_le
 
@@ -339,29 +339,32 @@ theorem chainHeight_union_eq (s t : Set α) (H : ∀ a ∈ s, ∀ b ∈ t, a < b
   · rw [← h]
     exact chainHeight_union_le
   rw [WithTop.some_eq_coe, ← add_zero (s ∪ t).chainHeight, ← WithTop.coe_zero,
-    chainHeight_add_le_chainHeight_add]
+    ENat.some_eq_coe, chainHeight_add_le_chainHeight_add]
   intro l hl
   obtain ⟨l', hl', rfl⟩ := exists_chain_of_le_chainHeight t h.symm.le
-  refine' ⟨l ++ l', ⟨chain'.append hl.1 hl'.1 fun x hx y hy ↦ _, fun i hi ↦ _⟩, by simp⟩
-  · exact H x (hl.2 _ <| mem_of_mem_last' hx) y (hl'.2 _ <| mem_of_mem_head' hy)
+  refine' ⟨l ++ l', ⟨Chain'.append hl.1 hl'.1 fun x hx y hy ↦ _, fun i hi ↦ _⟩, by simp⟩
+  · exact H x (hl.2 _ <| mem_of_mem_getLast? hx) y (hl'.2 _ <| mem_of_mem_head? hy)
   · rw [mem_append] at hi
-    cases hi
+    cases' hi with hi hi
     exacts [Or.inl (hl.2 _ hi), Or.inr (hl'.2 _ hi)]
 #align set.chain_height_union_eq Set.chainHeight_union_eq
 
 theorem wellFoundedGT_of_chainHeight_ne_top (s : Set α) (hs : s.chainHeight ≠ ⊤) :
     WellFoundedGT s := by
+  -- Porting note: added
+  haveI : IsTrans { x // x ∈ s } fun x x_1 => ↑x < ↑x_1 := inferInstance
+
   obtain ⟨n, hn⟩ := WithTop.ne_top_iff_exists.1 hs
   refine' ⟨RelEmbedding.wellFounded_iff_no_descending_seq.2 ⟨fun f ↦ _⟩⟩
   refine' n.lt_succ_self.not_le (WithTop.coe_le_coe.1 <| hn.symm ▸ _)
   refine'
     le_supᵢ₂_of_le _
-      ⟨chain'_map_of_chain' (↑) (fun _ _ ↦ id)
+      ⟨chain'_map_of_chain' ((↑) : {x // x ∈ s} → α) (fun _ _ ↦ id)
           (chain'_iff_pairwise.2 <| pairwise_ofFn.2 fun i j ↦ f.map_rel_iff.2),
         fun i h ↦ _⟩
       _
   · exact n.succ
-  · obtain ⟨a, ha, rfl⟩ := mem_map.1 h
+  · obtain ⟨a, -, rfl⟩ := mem_map.1 h
     exact a.prop
   · rw [length_map, length_ofFn]
     exact le_rfl
