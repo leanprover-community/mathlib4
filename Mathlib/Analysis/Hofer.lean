@@ -57,7 +57,6 @@ theorem hofer {X : Type _} [MetricSpace X] [CompleteSpace X] (x : X) (ε : ℝ) 
   -- Use the axiom of choice
   -- Now define u by induction starting at x, with u_{n+1} = F(n, u_n)
   let u : ℕ → X := fun n => Nat.recOn n x F
-  have hu0 : u 0 = x := rfl
   -- The properties of F translate to properties of u
   have hu :
     ∀ n,
@@ -71,7 +70,7 @@ theorem hofer {X : Type _} [MetricSpace X] [CompleteSpace X] (x : X) (ε : ℝ) 
     intro n
     induction' n using Nat.case_strong_induction_on with n IH
     · specialize hu 0
-      simpa [hu0, mul_nonneg_iff, zero_le_one, ε_pos.le, le_refl] using hu
+      simpa [mul_nonneg_iff, zero_le_one, ε_pos.le, le_refl] using hu
     have A : d (u (n + 1)) x ≤ 2 * ε := by
       rw [dist_comm]
       let r := range (n + 1) -- range (n+1) = {0, ..., n}
@@ -82,7 +81,7 @@ theorem hofer {X : Type _} [MetricSpace X] [CompleteSpace X] (x : X) (ε : ℝ) 
         _ = ∑ i in r, (1 / 2) ^ i * ε := by
           congr with i
           field_simp
-        _ = (∑ i in r, (1 / 2) ^ i) * ε := Finset.sum_mul.symm
+        _ = (∑ i in r, ((1 : ℝ) / 2) ^ i) * ε := Finset.sum_mul.symm
         _ ≤ 2 * ε := mul_le_mul_of_nonneg_right (sum_geometric_two_le _) (le_of_lt ε_pos)
     have B : 2 ^ (n + 1) * ϕ x ≤ ϕ (u (n + 1)) := by
       refine' @geom_le (ϕ ∘ u) _ zero_le_two (n + 1) fun m hm => _
