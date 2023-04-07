@@ -16,7 +16,7 @@ import Mathlib.RingTheory.Ideal.QuotientOperations
 
 The support of a valuation `v : Valuation R Γ₀` is `supp v`. If `J` is an ideal of `R`
 with `h : J ⊆ supp v` then the induced valuation
-on R / J = `Ideal.Quotient J` is `onQuot v h`.
+on `R / J` = `Ideal.Quotient J` is `onQuot v h`.
 
 -/
 
@@ -27,7 +27,7 @@ variable {R Γ₀ : Type _} [CommRing R] [LinearOrderedCommMonoidWithZero Γ₀]
 
 variable (v : Valuation R Γ₀)
 
-/-- If `hJ : J ⊆ supp v` then `onQuotVal hJ` is the induced function on R / J as a function.
+/-- If `hJ : J ⊆ supp v` then `onQuotVal hJ` is the induced function on `R / J` as a function.
 Note: it's just the function; the valuation is `onQuot hJ`. -/
 def onQuotVal {J : Ideal R} (hJ : J ≤ supp v) : R ⧸ J → Γ₀ := fun q =>
   Quotient.liftOn' q v fun a b h =>
