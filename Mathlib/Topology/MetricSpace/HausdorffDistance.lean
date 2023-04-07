@@ -25,11 +25,13 @@ expressed in the setting of emetric spaces.
 ## Main definitions
 
 This files introduces:
-* `inf_edist x s`, the infimum edistance of a point `x` to a set `s` in an emetric space
-* `Hausdorff_edist s t`, the Hausdorff edistance of two sets in an emetric space
-* Versions of these notions on metric spaces, called respectively `inf_dist` and `Hausdorff_dist`
-* `thickening δ s`, the open thickening by radius `δ` of a set `s` in a pseudo emetric space.
-* `cthickening δ s`, the closed thickening by radius `δ` of a set `s` in a pseudo emetric space.
+* `EMetric.infEdist x s`, the infimum edistance of a point `x` to a set `s` in an emetric space
+* `EMetric.hausdorffEdist s t`, the Hausdorff edistance of two sets in an emetric space
+* Versions of these notions on metric spaces, called respectively `Metric.infDist`
+  and `Metric.hausdorffDist`
+* `Metric.thickening δ s`, the open thickening by radius `δ` of a set `s` in a pseudo emetric space.
+* `Metric.cthickening δ s`, the closed thickening by radius `δ` of a set `s` in a pseudo emetric
+  space.
 -/
 
 
@@ -48,7 +50,6 @@ section InfEdist
 variable [PseudoEMetricSpace α] [PseudoEMetricSpace β] {x y : α} {s t : Set α} {Φ : α → β}
 
 /-! ### Distance of a point to a set as a function into `ℝ≥0∞`. -/
-
 
 /-- The minimal edistance of a point to a set -/
 def infEdist (x : α) (s : Set α) : ℝ≥0∞ :=
@@ -295,8 +296,8 @@ theorem infEdist_le_hausdorffEdist_of_mem (h : x ∈ s) : infEdist x t ≤ hausd
   exact le_supᵢ₂ (α := ℝ≥0∞) x h
 #align emetric.inf_edist_le_Hausdorff_edist_of_mem EMetric.infEdist_le_hausdorffEdist_of_mem
 
-/-- If the Hausdorff distance is `<r`, then any point in one of the sets has
-a corresponding point at distance `<r` in the other set -/
+/-- If the Hausdorff distance is `< r`, then any point in one of the sets has
+a corresponding point at distance `< r` in the other set -/
 theorem exists_edist_lt_of_hausdorffEdist_lt {r : ℝ≥0∞} (h : x ∈ s) (H : hausdorffEdist s t < r) :
     ∃ y ∈ t, edist x y < r :=
   infEdist_lt_iff.mp <|
@@ -455,23 +456,22 @@ open EMetric
 
 /-! ### Distance of a point to a set as a function into `ℝ`. -/
 
-
 /-- The minimal distance of a point to a set -/
 def infDist (x : α) (s : Set α) : ℝ :=
   ENNReal.toReal (infEdist x s)
 #align metric.inf_dist Metric.infDist
 
-/-- the minimal distance is always nonnegative -/
+/-- The minimal distance is always nonnegative -/
 theorem infDist_nonneg : 0 ≤ infDist x s := toReal_nonneg
 #align metric.inf_dist_nonneg Metric.infDist_nonneg
 
-/-- the minimal distance to the empty set is 0 (if you want to have the more reasonable
-value ∞ instead, use `infEdist`, which takes values in ℝ≥0∞) -/
+/-- The minimal distance to the empty set is 0 (if you want to have the more reasonable
+value `∞` instead, use `EMetric.infEdist`, which takes values in `ℝ≥0∞`) -/
 @[simp]
 theorem infDist_empty : infDist x ∅ = 0 := by simp [infDist]
 #align metric.inf_dist_empty Metric.infDist_empty
 
-/-- In a metric space, the minimal edistance to a nonempty set is finite -/
+/-- In a metric space, the minimal edistance to a nonempty set is finite. -/
 theorem infEdist_ne_top (h : s.Nonempty) : infEdist x s ≠ ⊤ := by
   rcases h with ⟨y, hy⟩
   exact ne_top_of_le_ne_top (edist_ne_top _ _) (infEdist_le_edist_of_mem hy)
@@ -569,7 +569,7 @@ theorem infDist_closure : infDist x (closure s) = infDist x s := by
 #align metric.inf_dist_eq_closure Metric.infDist_closure
 
 /-- If a point belongs to the closure of `s`, then its infimum distance to `s` equals zero.
-The converse is true provided that `s` is nonempty, see `mem_closure_iff_inf_dist_zero`. -/
+The converse is true provided that `s` is nonempty, see `Metric.mem_closure_iff_infDist_zero`. -/
 theorem infDist_zero_of_mem_closure (hx : x ∈ closure s) : infDist x s = 0 := by
   rw [← infDist_closure]
   exact infDist_zero_of_mem hx
@@ -704,7 +704,7 @@ theorem hausdorffDist_comm : hausdorffDist s t = hausdorffDist t s := by
 #align metric.Hausdorff_dist_comm Metric.hausdorffDist_comm
 
 /-- The Hausdorff distance to the empty set vanishes (if you want to have the more reasonable
-value ∞ instead, use `hausdorffEdist`, which takes values in ℝ≥0∞) -/
+value ∞ instead, use `EMetric.hausdorffEdist`, which takes values in ℝ≥0∞) -/
 @[simp]
 theorem hausdorffDist_empty : hausdorffDist s ∅ = 0 := by
   cases' s.eq_empty_or_nonempty with h h
@@ -713,7 +713,7 @@ theorem hausdorffDist_empty : hausdorffDist s ∅ = 0 := by
 #align metric.Hausdorff_dist_empty Metric.hausdorffDist_empty
 
 /-- The Hausdorff distance to the empty set vanishes (if you want to have the more reasonable
-value ∞ instead, use `hausdorffEdist`, which takes values in ℝ≥0∞) -/
+value `∞` instead, use `EMetric.hausdorffEdist`, which takes values in `ℝ≥0∞`) -/
 @[simp]
 theorem hausdorffDist_empty' : hausdorffDist ∅ s = 0 := by simp [hausdorffDist_comm]
 #align metric.Hausdorff_dist_empty' Metric.hausdorffDist_empty'
@@ -761,14 +761,12 @@ theorem hausdorffDist_le_diam (hs : s.Nonempty) (bs : Bounded s) (ht : t.Nonempt
   rcases hs with ⟨x, xs⟩
   rcases ht with ⟨y, yt⟩
   refine hausdorffDist_le_of_mem_dist diam_nonneg ?_ ?_
-  · exact fun z hz =>
-      ⟨y, yt,
-        dist_le_diam_of_mem (bounded_union.2 ⟨bs, bt⟩) (subset_union_left _ _ hz)
-          (subset_union_right _ _ yt)⟩
-  · exact fun z hz =>
-      ⟨x, xs,
-        dist_le_diam_of_mem (bounded_union.2 ⟨bs, bt⟩) (subset_union_right _ _ hz)
-          (subset_union_left _ _ xs)⟩
+  · exact fun z hz => ⟨y, yt,
+      dist_le_diam_of_mem (bounded_union.2 ⟨bs, bt⟩) (subset_union_left _ _ hz)
+        (subset_union_right _ _ yt)⟩
+  · exact fun z hz => ⟨x, xs,
+      dist_le_diam_of_mem (bounded_union.2 ⟨bs, bt⟩) (subset_union_right _ _ hz)
+        (subset_union_left _ _ xs)⟩
 #align metric.Hausdorff_dist_le_diam Metric.hausdorffDist_le_diam
 
 /-- The distance to a set is controlled by the Hausdorff distance -/
@@ -777,8 +775,8 @@ theorem infDist_le_hausdorffDist_of_mem (hx : x ∈ s) (fin : hausdorffEdist s t
   toReal_mono fin (infEdist_le_hausdorffEdist_of_mem hx)
 #align metric.inf_dist_le_Hausdorff_dist_of_mem Metric.infDist_le_hausdorffDist_of_mem
 
-/-- If the Hausdorff distance is `<r`, then any point in one of the sets is at distance
-`<r` of a point in the other set -/
+/-- If the Hausdorff distance is `< r`, then any point in one of the sets is at distance
+`< r` of a point in the other set -/
 theorem exists_dist_lt_of_hausdorffDist_lt {r : ℝ} (h : x ∈ s) (H : hausdorffDist s t < r)
     (fin : hausdorffEdist s t ≠ ⊤) : ∃ y ∈ t, dist x y < r := by
   have r0 : 0 < r := lt_of_le_of_lt hausdorffDist_nonneg H
@@ -790,8 +788,8 @@ theorem exists_dist_lt_of_hausdorffDist_lt {r : ℝ} (h : x ∈ s) (H : hausdorf
   exact ⟨y, hy, yr⟩
 #align metric.exists_dist_lt_of_Hausdorff_dist_lt Metric.exists_dist_lt_of_hausdorffDist_lt
 
-/-- If the Hausdorff distance is `<r`, then any point in one of the sets is at distance
-`<r` of a point in the other set -/
+/-- If the Hausdorff distance is `< r`, then any point in one of the sets is at distance
+`< r` of a point in the other set -/
 theorem exists_dist_lt_of_hausdorffDist_lt' {r : ℝ} (h : y ∈ t) (H : hausdorffDist s t < r)
     (fin : hausdorffEdist s t ≠ ⊤) : ∃ x ∈ s, dist x y < r := by
   rw [hausdorffDist_comm] at H
@@ -878,8 +876,8 @@ variable [PseudoEMetricSpace α] {δ : ℝ} {s : Set α} {x : α}
 
 open EMetric
 
-/-- The (open) `δ`-thickening `thickening δ E` of a subset `E` in a pseudo emetric space consists
-of those points that are at distance less than `δ` from some point of `E`. -/
+/-- The (open) `δ`-thickening `Metric.thickening δ E` of a subset `E` in a pseudo emetric space
+consists of those points that are at distance less than `δ` from some point of `E`. -/
 def thickening (δ : ℝ) (E : Set α) : Set α :=
   { x : α | infEdist x E < ENNReal.ofReal δ }
 #align metric.thickening Metric.thickening
@@ -888,9 +886,9 @@ theorem mem_thickening_iff_infEdist_lt : x ∈ thickening δ s ↔ infEdist x s 
   Iff.rfl
 #align metric.mem_thickening_iff_inf_edist_lt Metric.mem_thickening_iff_infEdist_lt
 
-/-- The (open) thickening equals the preimage of an open interval under `infEdist`. -/
+/-- The (open) thickening equals the preimage of an open interval under `EMetric.infEdist`. -/
 theorem thickening_eq_preimage_infEdist (δ : ℝ) (E : Set α) :
-    thickening δ E = (fun x => infEdist x E) ⁻¹' Iio (ENNReal.ofReal δ) :=
+    thickening δ E = (infEdist · E) ⁻¹' Iio (ENNReal.ofReal δ) :=
   rfl
 #align metric.thickening_eq_preimage_inf_edist Metric.thickening_eq_preimage_infEdist
 
@@ -909,14 +907,14 @@ theorem thickening_of_nonpos (hδ : δ ≤ 0) (s : Set α) : thickening δ s = �
   eq_empty_of_forall_not_mem fun _ => ((ENNReal.ofReal_of_nonpos hδ).trans_le bot_le).not_lt
 #align metric.thickening_of_nonpos Metric.thickening_of_nonpos
 
-/-- The (open) thickening `thickening δ E` of a fixed subset `E` is an increasing function of the
-thickening radius `δ`. -/
+/-- The (open) thickening `Metric.thickening δ E` of a fixed subset `E` is an increasing function of
+the thickening radius `δ`. -/
 theorem thickening_mono {δ₁ δ₂ : ℝ} (hle : δ₁ ≤ δ₂) (E : Set α) :
     thickening δ₁ E ⊆ thickening δ₂ E :=
   preimage_mono (Iio_subset_Iio (ENNReal.ofReal_le_ofReal hle))
 #align metric.thickening_mono Metric.thickening_mono
 
-/-- The (open) thickening `thickening δ E` with a fixed thickening radius `δ` is
+/-- The (open) thickening `Metric.thickening δ E` with a fixed thickening radius `δ` is
 an increasing function of the subset `E`. -/
 theorem thickening_subset_of_subset (δ : ℝ) {E₁ E₂ : Set α} (h : E₁ ⊆ E₂) :
     thickening δ E₁ ⊆ thickening δ E₂ := fun _ hx => lt_of_le_of_lt (infEdist_anti h) hx
@@ -927,7 +925,8 @@ theorem mem_thickening_iff_exists_edist_lt {δ : ℝ} (E : Set α) (x : α) :
   infEdist_lt_iff
 #align metric.mem_thickening_iff_exists_edist_lt Metric.mem_thickening_iff_exists_edist_lt
 
-/-- The frontier of the (open) thickening of a set is contained in an `infEdist` level set. -/
+/-- The frontier of the (open) thickening of a set is contained in an `EMetric.infEdist` level
+set. -/
 theorem frontier_thickening_subset (E : Set α) {δ : ℝ} :
     frontier (thickening δ E) ⊆ { x : α | infEdist x E = ENNReal.ofReal δ } :=
   frontier_lt_subset_eq continuous_infEdist continuous_const
@@ -970,7 +969,7 @@ theorem ball_subset_thickening {x : X} {E : Set X} (hx : x ∈ E) (δ : ℝ) :
   Subset.trans (by simp [Subset.rfl]) (thickening_subset_of_subset δ <| singleton_subset_iff.mpr hx)
 #align metric.ball_subset_thickening Metric.ball_subset_thickening
 
-/-- The (open) `δ`-thickening `thickening δ E` of a subset `E` in a metric space equals the
+/-- The (open) `δ`-thickening `Metric.thickening δ E` of a subset `E` in a metric space equals the
 union of balls of radius `δ` centered at points of `E`. -/
 theorem thickening_eq_bUnion_ball {δ : ℝ} {E : Set X} : thickening δ E = ⋃ x ∈ E, ball x δ := by
   ext x
@@ -997,8 +996,8 @@ variable [PseudoEMetricSpace α] {δ ε : ℝ} {s t : Set α} {x : α}
 
 open EMetric
 
-/-- The closed `δ`-thickening `cthickening δ E` of a subset `E` in a pseudo emetric space consists
-of those points that are at infimum distance at most `δ` from `E`. -/
+/-- The closed `δ`-thickening `Metric.cthickening δ E` of a subset `E` in a pseudo emetric space
+consists of those points that are at infimum distance at most `δ` from `E`. -/
 def cthickening (δ : ℝ) (E : Set α) : Set α :=
   { x : α | infEdist x E ≤ ENNReal.ofReal δ }
 #align metric.cthickening Metric.cthickening
@@ -1051,8 +1050,8 @@ theorem cthickening_max_zero (δ : ℝ) (E : Set α) : cthickening (max 0 δ) E 
   cases le_total δ 0 <;> simp [cthickening_of_nonpos, *]
 #align metric.cthickening_max_zero Metric.cthickening_max_zero
 
-/-- The closed thickening `cthickening δ E` of a fixed subset `E` is an increasing function of
-the thickening radius `δ`. -/
+/-- The closed thickening `Metric.cthickening δ E` of a fixed subset `E` is an increasing function
+of the thickening radius `δ`. -/
 theorem cthickening_mono {δ₁ δ₂ : ℝ} (hle : δ₁ ≤ δ₂) (E : Set α) :
     cthickening δ₁ E ⊆ cthickening δ₂ E :=
   preimage_mono (Iic_subset_Iic.mpr (ENNReal.ofReal_le_ofReal hle))
@@ -1072,7 +1071,7 @@ theorem closedBall_subset_cthickening_singleton {α : Type _} [PseudoMetricSpace
   · simp only [cthickening_singleton x hδ, Subset.rfl]
 #align metric.closed_ball_subset_cthickening_singleton Metric.closedBall_subset_cthickening_singleton
 
-/-- The closed thickening `cthickening δ E` with a fixed thickening radius `δ` is
+/-- The closed thickening `Metric.cthickening δ E` with a fixed thickening radius `δ` is
 an increasing function of the subset `E`. -/
 theorem cthickening_subset_of_subset (δ : ℝ) {E₁ E₂ : Set α} (h : E₁ ⊆ E₂) :
     cthickening δ E₁ ⊆ cthickening δ E₂ := fun _ hx => le_trans (infEdist_anti h) hx
@@ -1083,15 +1082,15 @@ theorem cthickening_subset_thickening {δ₁ : ℝ≥0} {δ₂ : ℝ} (hlt : (δ
   hx.out.trans_lt ((ENNReal.ofReal_lt_ofReal_iff (lt_of_le_of_lt δ₁.prop hlt)).mpr hlt)
 #align metric.cthickening_subset_thickening Metric.cthickening_subset_thickening
 
-/-- The closed thickening `cthickening δ₁ E` is contained in the open thickening `thickening δ₂ E`
-if the radius of the latter is positive and larger. -/
+/-- The closed thickening `Metric.cthickening δ₁ E` is contained in the open thickening
+`Metric.thickening δ₂ E` if the radius of the latter is positive and larger. -/
 theorem cthickening_subset_thickening' {δ₁ δ₂ : ℝ} (δ₂_pos : 0 < δ₂) (hlt : δ₁ < δ₂) (E : Set α) :
     cthickening δ₁ E ⊆ thickening δ₂ E := fun _ hx =>
   lt_of_le_of_lt hx.out ((ENNReal.ofReal_lt_ofReal_iff δ₂_pos).mpr hlt)
 #align metric.cthickening_subset_thickening' Metric.cthickening_subset_thickening'
 
-/-- The open thickening `thickening δ E` is contained in the closed thickening `cthickening δ E`
-with the same radius. -/
+/-- The open thickening `Metric.thickening δ E` is contained in the closed thickening
+`Metric.cthickening δ E` with the same radius. -/
 theorem thickening_subset_cthickening (δ : ℝ) (E : Set α) : thickening δ E ⊆ cthickening δ E := by
   intro x hx
   rw [thickening, mem_setOf_eq] at hx
@@ -1358,7 +1357,8 @@ theorem closure_eq_interᵢ_thickening (E : Set α) :
   exact cthickening_eq_interᵢ_thickening rfl.ge E
 #align metric.closure_eq_Inter_thickening Metric.closure_eq_interᵢ_thickening
 
-/-- The frontier of the closed thickening of a set is contained in an `infEdist` level set. -/
+/-- The frontier of the closed thickening of a set is contained in an `EMetric.infEdist` level
+set. -/
 theorem frontier_cthickening_subset (E : Set α) {δ : ℝ} :
     frontier (cthickening δ E) ⊆ { x : α | infEdist x E = ENNReal.ofReal δ } :=
   frontier_le_subset_eq continuous_infEdist continuous_const
@@ -1379,10 +1379,10 @@ theorem cthickening_subset_unionᵢ_closedBall_of_lt {α : Type _} [PseudoMetric
   exact mem_unionᵢ₂.mpr ⟨y, hy₁, hy₂.le⟩
 #align metric.cthickening_subset_Union_closed_ball_of_lt Metric.cthickening_subset_unionᵢ_closedBall_of_lt
 
-/-- The closed thickening of a compact set `E` is the union of the balls `closed_ball x δ` over
-`x ∈ E`.
+/-- The closed thickening of a compact set `E` is the union of the balls `Metric.closedBall x δ`
+over `x ∈ E`.
 
-See also `metric.cthickening_eq_bUnion_closed_ball`. -/
+See also `Metric.cthickening_eq_bunionᵢ_closedBall`. -/
 theorem _root_.IsCompact.cthickening_eq_bUnion_closedBall {α : Type _} [PseudoMetricSpace α] {δ : ℝ}
     {E : Set α} (hE : IsCompact E) (hδ : 0 ≤ δ) : cthickening δ E = ⋃ x ∈ E, closedBall x δ := by
   rcases eq_empty_or_nonempty E with (rfl | hne)
