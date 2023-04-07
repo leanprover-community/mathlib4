@@ -258,7 +258,8 @@ theorem sum_pow_of_commute [Semiring R] (x : α → R)
     · rw [_root_.pow_succ, zero_mul]
       -- Porting note : Lean cannot infer this instance by itself
       have : IsEmpty (Finset.sym (∅ : Finset α) (succ n)) :=
-        Finset.instIsEmptySubtypeMemFinsetInstMembershipFinsetEmptyCollectionInstEmptyCollectionFinset
+      -- Porting note : slightly unusual indendation to fit within the line length limit
+      Finset.instIsEmptySubtypeMemFinsetInstMembershipFinsetEmptyCollectionInstEmptyCollectionFinset
       apply (Fintype.sum_empty _).symm
   intro n; specialize ih (hc.mono <| s.subset_insert a)
   rw [sum_insert ha, (Commute.sum_right s _ _ _).add_pow, sum_range]; swap
