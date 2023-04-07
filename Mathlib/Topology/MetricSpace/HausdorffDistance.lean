@@ -1383,8 +1383,9 @@ theorem cthickening_subset_unionᵢ_closedBall_of_lt {α : Type _} [PseudoMetric
 over `x ∈ E`.
 
 See also `Metric.cthickening_eq_bunionᵢ_closedBall`. -/
-theorem _root_.IsCompact.cthickening_eq_bunionᵢ_closedBall {α : Type _} [PseudoMetricSpace α] {δ : ℝ}
-    {E : Set α} (hE : IsCompact E) (hδ : 0 ≤ δ) : cthickening δ E = ⋃ x ∈ E, closedBall x δ := by
+theorem _root_.IsCompact.cthickening_eq_bunionᵢ_closedBall {α : Type _} [PseudoMetricSpace α]
+    {δ : ℝ} {E : Set α} (hE : IsCompact E) (hδ : 0 ≤ δ) :
+    cthickening δ E = ⋃ x ∈ E, closedBall x δ := by
   rcases eq_empty_or_nonempty E with (rfl | hne)
   · simp only [cthickening_empty, bunionᵢ_empty]
   refine Subset.antisymm (fun x hx ↦ ?_)
