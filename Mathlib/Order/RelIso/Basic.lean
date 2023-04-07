@@ -393,18 +393,16 @@ protected theorem isWellOrder : ∀ (_ : r ↪r s) [IsWellOrder β s], IsWellOrd
   | f, H => { f.isStrictTotalOrder with wf := f.wellFounded H.wf }
 #align rel_embedding.is_well_order RelEmbedding.isWellOrder
 
-end RelEmbedding
-
 /-- `quotient.mk` as a relation homomorphism between the relation and the lift of a relation. -/
 @[simps]
-def Quotient.mkRelHom [Setoid α] {r : α → α → Prop}
+def _root_.Quotient.mkRelHom [Setoid α] {r : α → α → Prop}
     (H : ∀ (a₁ b₁ a₂ b₂ : α), a₁ ≈ a₂ → b₁ ≈ b₂ → r a₁ b₁ = r a₂ b₂) : r →r Quotient.lift₂ r H :=
   ⟨@Quotient.mk' α _, id⟩
 #align quotient.mk_rel_hom Quotient.mkRelHom
 
 /-- `Quotient.out` as a relation embedding between the lift of a relation and the relation. -/
 @[simps!]
-noncomputable def Quotient.outRelEmbedding [Setoid α] {r : α → α → Prop}
+noncomputable def _root_.Quotient.outRelEmbedding [Setoid α] {r : α → α → Prop}
     (H : ∀ (a₁ b₁ a₂ b₂ : α), a₁ ≈ a₂ → b₁ ≈ b₂ → r a₁ b₁ = r a₂ b₂) : Quotient.lift₂ r H ↪r r :=
   ⟨Embedding.quotientOut α, by
     refine' @fun x y => Quotient.inductionOn₂ x y fun a b => _
@@ -414,14 +412,14 @@ noncomputable def Quotient.outRelEmbedding [Setoid α] {r : α → α → Prop}
 
 /-- `Quotient.out'` as a relation embedding between the lift of a relation and the relation. -/
 @[simps]
-noncomputable def Quotient.out'RelEmbedding {_ : Setoid α} {r : α → α → Prop}
+noncomputable def _root_.Quotient.out'RelEmbedding {_ : Setoid α} {r : α → α → Prop}
     (H : ∀ (a₁ b₁ a₂ b₂ : α), a₁ ≈ a₂ → b₁ ≈ b₂ → r a₁ b₁ = r a₂ b₂) :
     (fun a b => Quotient.liftOn₂' a b r H) ↪r r :=
   { Quotient.outRelEmbedding _ with toFun := Quotient.out' }
 #align rel_embedding.quotient.out'_rel_embedding Quotient.out'RelEmbedding
 
 @[simp]
-theorem acc_lift₂_iff [Setoid α] {r : α → α → Prop}
+theorem _root_.acc_lift₂_iff [Setoid α] {r : α → α → Prop}
     {H : ∀ (a₁ b₁ a₂ b₂ : α), a₁ ≈ a₂ → b₁ ≈ b₂ → r a₁ b₁ = r a₂ b₂} {a} :
     Acc (Quotient.lift₂ r H) ⟦a⟧ ↔ Acc r a := by
   constructor
@@ -435,14 +433,14 @@ theorem acc_lift₂_iff [Setoid α] {r : α → α → Prop}
 #align acc_lift₂_iff acc_lift₂_iff
 
 @[simp]
-theorem acc_liftOn₂'_iff {s : Setoid α} {r : α → α → Prop} {H} {a} :
+theorem _root_.acc_liftOn₂'_iff {s : Setoid α} {r : α → α → Prop} {H} {a} :
     Acc (fun x y => Quotient.liftOn₂' x y r H) (Quotient.mk'' a : Quotient s) ↔ Acc r a :=
   acc_lift₂_iff
 #align acc_lift_on₂'_iff acc_liftOn₂'_iff
 
 /-- A relation is well founded iff its lift to a quotient is. -/
 @[simp]
-theorem wellFounded_lift₂_iff [Setoid α] {r : α → α → Prop}
+theorem _root_.wellFounded_lift₂_iff [Setoid α] {r : α → α → Prop}
     {H : ∀ (a₁ b₁ a₂ b₂ : α), a₁ ≈ a₂ → b₁ ≈ b₂ → r a₁ b₁ = r a₂ b₂} :
     WellFounded (Quotient.lift₂ r H) ↔ WellFounded r :=
   by
@@ -453,20 +451,21 @@ theorem wellFounded_lift₂_iff [Setoid α] {r : α → α → Prop}
     exact acc_lift₂_iff.2 (wf.apply a)
 #align well_founded_lift₂_iff wellFounded_lift₂_iff
 
-alias wellFounded_lift₂_iff ↔ WellFounded.of_quotient_lift₂ WellFounded.quotient_lift₂
+alias _root_.wellFounded_lift₂_iff ↔
+  _root_.WellFounded.of_quotient_lift₂ _root_.WellFounded.quotient_lift₂
+#align well_founded.of_quotient_lift₂ WellFounded.of_quotient_lift₂
+#align well_founded.quotient_lift₂ WellFounded.quotient_lift₂
 
 @[simp]
-theorem wellFounded_liftOn₂'_iff {s : Setoid α} {r : α → α → Prop} {H} :
+theorem _root_.wellFounded_liftOn₂'_iff {s : Setoid α} {r : α → α → Prop} {H} :
     (WellFounded fun x y : Quotient s => Quotient.liftOn₂' x y r H) ↔ WellFounded r :=
   wellFounded_lift₂_iff
 #align well_founded_lift_on₂'_iff wellFounded_liftOn₂'_iff
 
-alias wellFounded_liftOn₂'_iff ↔
-  WellFounded.of_quotient_liftOn₂' WellFounded.quotient_liftOn₂'
+alias _root_.wellFounded_liftOn₂'_iff ↔
+  _root_.WellFounded.of_quotient_liftOn₂' _root_.WellFounded.quotient_liftOn₂'
 #align well_founded.of_quotient_lift_on₂' WellFounded.of_quotient_liftOn₂'
 #align well_founded.quotient_lift_on₂' WellFounded.quotient_liftOn₂'
-
-namespace RelEmbedding
 
 /-- To define an relation embedding from an antisymmetric relation `r` to a reflexive relation `s`
 it suffices to give a function together with a proof that it satisfies `s (f a) (f b) ↔ r a b`.
