@@ -50,7 +50,7 @@ variable {α : Type v}
 
 open Matrix
 
--- Porting note: added
+-- Porting note: added, to be removed after std4#112 is merged
 local instance [DecidableEq n] (j : n) (o : Option n) : Decidable (j ∈ o) :=
   haveI : Decidable (o = some j) := inferInstance
   this
