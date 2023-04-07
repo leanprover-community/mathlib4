@@ -49,6 +49,8 @@ class NormedSpace (α : Type _) (β : Type _) [NormedField α] [SeminormedAddCom
   norm_smul_le : ∀ (a : α) (b : β), ‖a • b‖ ≤ ‖a‖ * ‖b‖
 #align normed_space NormedSpace
 
+attribute [inherit_doc NormedSpace] NormedSpace.norm_smul_le
+
 end Prio
 
 variable [NormedField α] [SeminormedAddCommGroup β]
@@ -268,9 +270,9 @@ noncomputable def homeomorphUnitBall [NormedSpace ℝ E] : E ≃ₜ ball (0 : E)
     nlinarith [norm_nonneg (y : E), (mem_ball_zero_iff.1 y.2 : ‖(y : E)‖ < 1)]
 #align homeomorph_unit_ball homeomorphUnitBall
 
-@[simp]
+-- Porting note: simp can prove this; removed simp
 theorem coe_homeomorphUnitBall_apply_zero [NormedSpace ℝ E] :
-    (homeomorphUnitBall (0 : E) : E) = 0 := by simp [homeomorphUnitBall]
+    (homeomorphUnitBall (0 : E) : E) = 0 := by simp
 #align coe_homeomorph_unit_ball_apply_zero coe_homeomorphUnitBall_apply_zero
 
 open NormedField
@@ -509,6 +511,8 @@ class NormedAlgebra (𝕜 : Type _) (𝕜' : Type _) [NormedField 𝕜] [Seminor
   norm_smul_le : ∀ (r : 𝕜) (x : 𝕜'), ‖r • x‖ ≤ ‖r‖ * ‖x‖
 #align normed_algebra NormedAlgebra
 
+attribute [inherit_doc NormedAlgebra] NormedAlgebra.norm_smul_le
+
 variable {𝕜 : Type _} (𝕜' : Type _) [NormedField 𝕜] [SeminormedRing 𝕜'] [NormedAlgebra 𝕜 𝕜']
 
 instance (priority := 100) NormedAlgebra.toNormedSpace : NormedSpace 𝕜 𝕜' :=
@@ -691,3 +695,4 @@ def NormedSpace.restrictScalars : NormedSpace 𝕜 E :=
 #align normed_space.restrict_scalars NormedSpace.restrictScalars
 
 end RestrictScalars
+
