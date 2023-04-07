@@ -114,6 +114,9 @@ def Roof.ofHom [ContainsIdentities W] {X Y : C} (f : X ⟶ Y) : Roof W X Y :=
 
 variable {W}
 
+@[simps]
+def Roof.inv {X Y : C} (s : X ⟶ Y) (hs : W s) : Roof W Y X := ⟨Y, 𝟙 Y, s, hs⟩
+
 def roofRel ⦃X Y : C⦄ (z₁ z₂ : Roof W X Y) : Prop :=
   ∃ (Z₃ : C)  (t₁ : z₁.Z ⟶ Z₃) (t₂ : z₂.Z ⟶ Z₃) (_ : z₁.s ≫ t₁ = z₂.s ≫ t₂)
     (_ : z₁.f ≫ t₁ = z₂.f ≫ t₂), W (z₁.s ≫ t₁)
@@ -194,11 +197,105 @@ lemma Roof.comp_eq {X Y Z : C} (z : Roof W X Y) (z' : Roof W Y Z)
     (sq : ToSq z.s z.hs z'.f) : z.comp z' = Quot.mk _ (z.comp₀ z' sq) :=
   Quot.sound (Roof.comp₀_rel z z' _ _)
 
+lemma Roof.ofHom_comp {X Y Z : C} (f : X ⟶ Y) (g : Roof W Y Z) :
+    Roof.comp (Roof.ofHom W f) g = Quot.mk _ ⟨g.Z, f ≫ g.f, g.s, g.hs⟩ := by
+  let sq : ToSq (𝟙 Y) (ContainsIdentities.mem W Y) g.f :=
+    ⟨_, g.f, 𝟙 _, ContainsIdentities.mem _ _, by simp⟩
+  rw [Roof.comp_eq (Roof.ofHom W f) g sq]
+  dsimp [comp₀]
+  congr
+  simp
+
+variable (W)
+
+lemma Roof.ofHom_comp_ofHom {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) :
+    Roof.comp (Roof.ofHom W f) (Roof.ofHom W g) = Quot.mk _ (Roof.ofHom W (f ≫ g)) :=
+  Roof.ofHom_comp _ _
+
+variable {W}
+
 noncomputable def Hom.comp {X Y Z : C} :
     Hom W X Y → Hom W Y Z → Hom W X Z := by
   refine' Quot.lift₂ (fun z z' => Roof.comp z z') _ _
-  . sorry
-  . sorry
+  . rintro z₁₂ z₂₃ z₂₃' ⟨Y, t, t', hst, hft, ht⟩
+    have sq := toSq z₁₂.s z₁₂.hs z₂₃.f
+    have sq' := toSq z₁₂.s z₁₂.hs z₂₃'.f
+    have H₀ := toSq sq.s' sq.hs' t
+    have H₀' := toSq sq'.s' sq'.hs' t'
+    have H₁ := toSq H₀.s' H₀.hs' H₀'.s'
+    have eq : z₁₂.s ≫ sq.g ≫ H₀.g ≫ H₁.g = z₁₂.s ≫ sq'.g ≫ H₀'.g ≫ H₁.s' := by
+      rw [← sq.fac_assoc, ← sq'.fac_assoc, ← H₀.fac_assoc, ← H₀'.fac_assoc,
+        reassoc_of% hft, H₁.fac]
+    obtain ⟨Z, u, hu, fac⟩ := ext _ _ _ z₁₂.hs eq
+    simp only [Category.assoc] at fac
+    dsimp
+    rw [Roof.comp_eq _ _ sq, Roof.comp_eq _ _ sq']
+    apply Quot.sound
+    refine' ⟨Z, H₀.g ≫ H₁.g ≫ u, H₀'.g ≫ H₁.s' ≫ u, _, _, _⟩
+    . simp only [Roof.comp₀, Category.assoc, ← H₀.fac_assoc, ← H₀'.fac_assoc,
+        reassoc_of% hst, reassoc_of% H₁.fac]
+    . simp only [Roof.comp₀, Category.assoc, fac]
+    . simp only [Roof.comp₀, Category.assoc]
+      rw [← H₀.fac_assoc, ← H₁.fac_assoc, ← Category.assoc]
+      exact IsMultiplicative.comp _ _ _ ht
+        (IsMultiplicative.comp _ _ _ H₀'.hs'
+        (IsMultiplicative.comp _ _ _ H₁.hs' hu))
+  . rintro z₁₂ z₁₂' z₂₃ ⟨Y, t, t', hst, hft, ht⟩
+    have sq := toSq z₁₂.s z₁₂.hs z₂₃.f
+    have sq' := toSq z₁₂'.s z₁₂'.hs z₂₃.f
+    have H := toSq (z₁₂.s ≫ t) ht (z₂₃.f ≫ sq.s')
+    have H' := toSq (z₁₂'.s ≫ t') (show W _ by rw [← hst]; exact ht) (z₂₃.f ≫ sq'.s')
+    let z : Roof W X Z := ⟨H.obj, z₁₂.f ≫ t ≫ H.g, z₂₃.s ≫ sq.s' ≫ H.s',
+      IsMultiplicative.comp _ _ _ z₂₃.hs (IsMultiplicative.comp _ _ _ sq.hs' H.hs')⟩
+    let z' : Roof W X Z := ⟨H'.obj, z₁₂'.f ≫ t' ≫ H'.g, z₂₃.s ≫ sq'.s' ≫ H'.s',
+      IsMultiplicative.comp _ _ _ z₂₃.hs (IsMultiplicative.comp _ _ _ sq'.hs' H'.hs')⟩
+    dsimp
+    rw [Roof.comp_eq _ _ sq, Roof.comp_eq _ _ sq']
+    apply Quot.sound
+    refine' roofRel.trans _ (roofRel.trans (_ : roofRel z z') (symm _))
+    . have eq : z₁₂.s ≫ sq.g ≫ H.s' = z₁₂.s ≫ t ≫ H.g := by
+        have h := H.fac
+        simp only [Category.assoc] at h
+        rw [← h, sq.fac_assoc]
+      obtain ⟨Z, u, hu, fac⟩ := ext _ _ _ z₁₂.hs eq
+      simp only [Category.assoc] at fac
+      refine' ⟨Z, H.s' ≫ u, u, _, _, _⟩
+      . simp only [Roof.comp₀, Category.assoc, Category.comp_id]
+      . simp only [Roof.comp₀, Category.assoc, Category.comp_id, fac]
+      . simp only [Roof.comp₀, Category.assoc]
+        refine' IsMultiplicative.comp _ _ _ z₂₃.hs
+          (IsMultiplicative.comp _ _ _ sq.hs'
+          (IsMultiplicative.comp _ _ _ H.hs' hu))
+    . have T := toSq (sq.s' ≫ H.s') (IsMultiplicative.comp _ _ _ sq.hs' H.hs') (sq'.s' ≫ H'.s')
+      have Tfac := T.fac
+      have fac := H.fac
+      have fac' := H'.fac
+      simp only [Category.assoc] at Tfac fac fac'
+      have eq : z₁₂.s ≫ t ≫ H.g ≫ T.g = z₁₂.s ≫ t ≫ H'.g ≫ T.s' := by
+        simp only [reassoc_of% hst, ← reassoc_of% fac', Tfac, reassoc_of% fac]
+      obtain ⟨Z, u, hu, fac''⟩ := ext _ _ _ z₁₂.hs eq
+      simp only [Category.assoc] at fac''
+      refine' ⟨Z, T.g ≫ u, T.s' ≫ u, _, _, _⟩
+      . simp only [Category.assoc, reassoc_of% Tfac]
+      . rw [Category.assoc, Category.assoc, Category.assoc, Category.assoc, fac'', reassoc_of% hft]
+      . simp only [Category.assoc, ← reassoc_of% Tfac]
+        exact IsMultiplicative.comp _ _ _ z₂₃.hs
+          (IsMultiplicative.comp _ _ _ sq'.hs'
+          (IsMultiplicative.comp _ _ _ H'.hs'
+          (IsMultiplicative.comp _ _ _ T.hs' hu)))
+    . have eq : z₁₂'.s ≫ sq'.g ≫ H'.s' = z₁₂'.s ≫ t' ≫ H'.g := by
+        have h := H'.fac
+        simp only [Category.assoc] at h
+        rw [← h, sq'.fac_assoc]
+      obtain ⟨Z, u, hu, fac⟩ := ext _ _ _ z₁₂'.hs eq
+      simp only [Category.assoc] at fac
+      refine' ⟨Z, H'.s' ≫ u, u, _, _, _⟩
+      . simp only [Roof.comp₀, Category.assoc, Category.comp_id]
+      . simp only [Roof.comp₀, Category.assoc, Category.comp_id, fac]
+      . simp only [Roof.comp₀, Category.assoc]
+        refine' IsMultiplicative.comp _ _ _ z₂₃.hs
+          (IsMultiplicative.comp _ _ _ sq'.hs'
+          (IsMultiplicative.comp _ _ _ H'.hs' hu))
 
 lemma Hom.comp_eq {X Y Z : C} (z : Roof W X Y) (z' : Roof W Y Z)
     (sq : ToSq z.s z.hs z'.f) :
@@ -208,6 +305,10 @@ lemma Hom.comp_eq {X Y Z : C} (z : Roof W X Y) (z' : Roof W Y Z)
 
 structure Localization (W : MorphismProperty C) :=
 (obj : C)
+
+namespace Localization
+
+variable (W)
 
 noncomputable instance : Category (Localization W) where
   Hom X Y := Hom W X.obj Y.obj
@@ -231,6 +332,76 @@ noncomputable instance : Category (Localization W) where
     congr <;> simp
   assoc := sorry
 
+variable {W}
+
+lemma comp_eq {X Y Z : Localization W} (f : X ⟶ Y) (g : Y ⟶ Z) :
+  f ≫ g = Hom.comp f g := rfl
+
+lemma id_eq (X : Localization W) :
+  𝟙 X = Quot.mk _ (Roof.ofHom _ (𝟙 X.obj)) := rfl
+
+def homOfRoof {X Y : C} (z : Roof W X Y) : (⟨X⟩ : Localization W) ⟶ ⟨Y⟩ :=
+  Quot.mk _ z
+
+variable (W)
+
+def Q : C ⥤ Localization W where
+  obj X := ⟨X⟩
+  map f := homOfRoof (Roof.ofHom _ f)
+  map_id _ := rfl
+  map_comp f g := by
+    symm
+    apply Roof.ofHom_comp_ofHom W f g
+
+variable {W}
+
+noncomputable def Qinv {X Y : C} (s : X ⟶ Y) (hs : W s) : (Q W).obj Y ⟶ (Q W).obj X :=
+  homOfRoof (Roof.inv s hs)
+
+lemma Qinv_comp {X Y : C} (s : X ⟶ Y) (hs : W s) : Qinv s hs ≫ (Q W).map s = 𝟙 _ := by
+  dsimp only [Qinv, comp_eq, id_eq]
+  erw [Hom.comp_eq (Roof.inv s hs) (Roof.ofHom W s)
+    ⟨Y, 𝟙 Y, 𝟙 Y, ContainsIdentities.mem _ _, rfl⟩]
+  simp [Roof.comp₀, Roof.ofHom]
+  rfl
+
+lemma comp_Qinv {X Y : C} (s : X ⟶ Y) (hs : W s) : (Q W).map s ≫ Qinv s hs = 𝟙 _ := by
+  dsimp only [Qinv, comp_eq, id_eq]
+  erw [Hom.comp_eq (Roof.ofHom W s) (Roof.inv s hs)
+    ⟨Y, 𝟙 Y, 𝟙 Y, ContainsIdentities.mem _ _, rfl⟩]
+  dsimp [Roof.comp₀]
+  apply Quot.sound
+  refine' ⟨Y, 𝟙 Y, s, by simp, _ , by simpa using hs⟩
+  . simp only [Category.comp_id, Roof.ofHom_Z, Roof.ofHom_f]
+    erw [Category.id_comp]
+
+noncomputable def iso {X Y : C} (s : X ⟶ Y) (hs : W s) : (Q W).obj X ≅ (Q W).obj Y where
+  hom := (Q W).map s
+  inv := Qinv s hs
+  hom_inv_id := comp_Qinv s hs
+  inv_hom_id := Qinv_comp s hs
+
+lemma isIso_Qmap {X Y : C} (s : X ⟶ Y) (hs : W s) : IsIso ((Q W).map s) :=
+  IsIso.of_iso (iso s hs)
+
+instance {X Y : C} (s : X ⟶ Y) (hs : W s) : IsIso (Qinv s hs) :=
+  IsIso.of_iso (iso s hs).symm
+
+lemma facOfRoof {X Y : C} (z : Roof W X Y) :
+    homOfRoof z = (Q W).map z.f ≫ Qinv z.s z.hs := by
+  dsimp only [Qinv, comp_eq, homOfRoof, Q]
+  erw [Hom.comp_eq (Roof.ofHom W z.f) (Roof.inv z.s z.hs)
+    ⟨_, 𝟙 _, 𝟙 _, ContainsIdentities.mem _ _, rfl⟩]
+  dsimp [Roof.comp₀]
+  apply Quot.sound
+  exact ⟨z.Z, 𝟙 _, 𝟙 _, by simp, by simp, by simpa using z.hs⟩
+
+variable (W)
+
+lemma inverts : W.IsInvertedBy (Q W) := fun _ _ s hs => isIso_Qmap s hs
+
+end Localization
+
 end
 
 variable [W.HasLeftCalculusOfFractions] [L.IsLocalization W]
@@ -245,11 +416,13 @@ lemma map_eq_iff {X Y : C} (f₁ f₂ : X ⟶ Y) :
     L.map f₁ = L.map f₂ ↔ ∃ (Z : C) (s : Y ⟶ Z) (hs : W s), f₁ ≫ s = f₂ ≫ s := by
   have h : HasLeftCalculusOfFractions W := inferInstance
   constructor
-  . sorry
+  swap
   . rintro ⟨Z, s, hs, fac⟩
     rw [← cancel_mono (Localization.isoOfHom L W s hs).hom]
     dsimp
     simp only [← L.map_comp, fac]
+  . sorry
+
 end HasLeftCalculusOfFractions
 
 namespace HasRightCalculusOfFractions
