@@ -69,9 +69,9 @@ variable {K}
 
 /-- extension of inversion to the completion of a field. -/
 def hatInv : hat K → hat K :=
-  denseInducing_coe.extend fun x : K => (Coe.coe x⁻¹ : hat K)
+  denseInducing_coe.extend fun x : K => (↑x⁻¹ : hat K)
 #align uniform_space.completion.hat_inv UniformSpace.Completion.hatInv
-
+#print hatInv
 theorem continuous_hatInv [CompletableTopField K] {x : hat K} (h : x ≠ 0) : ContinuousAt hatInv x :=
   by
   haveI : T3Space (hat K) := Completion.t3Space K
@@ -80,8 +80,8 @@ theorem continuous_hatInv [CompletableTopField K] {x : hat K} (h : x ≠ 0) : Co
   intro y y_ne
   rw [mem_compl_singleton_iff] at y_ne
   apply CompleteSpace.complete
-  have : (fun (x : K) => (Coe.coe x⁻¹: hat K)) =
-      ((fun (y : K) => (Coe.coe y: hat K))∘(fun (x : K) => (x⁻¹ : K))) := by
+  have : (fun (x : K) => (↑x⁻¹: hat K)) =
+      ((fun (y : K) => (↑y: hat K))∘(fun (x : K) => (x⁻¹ : K))) := by
     unfold Function.comp
     simp
   rw [this, ← Filter.map_map]
@@ -106,7 +106,7 @@ instance : Inv (hat K) :=
 
 variable [TopologicalDivisionRing K]
 
-theorem hatInv_extends {x : K} (h : x ≠ 0) : hatInv (x : hat K) = Coe.coe (x⁻¹ : K) :=
+theorem hatInv_extends {x : K} (h : x ≠ 0) : hatInv (x : hat K) = ↑(x⁻¹ : K) :=
   denseInducing_coe.extend_eq_at ((continuous_coe K).continuousAt.comp (continuousAt_inv₀ h))
 #align uniform_space.completion.hat_inv_extends UniformSpace.Completion.hatInv_extends
 
@@ -156,7 +156,7 @@ theorem mul_hatInv_cancel {x : hat K} (x_ne : x ≠ 0) : x * hatInv x = 1 := by
     rw [this]
     simp only
     rw [hatInv_extends z_ne]
-    have : Coe.coe z⁻¹ = ((z:K)⁻¹ : hat K) := by norm_cast
+    have : ↑z⁻¹ = ((z:K)⁻¹ : hat K) := by norm_cast
     rw [this]
     norm_cast
     simp only [ne_eq, mul_inv_cancel z_ne]
