@@ -1273,7 +1273,8 @@ def weightedVSubOfPoint (w : ι → k) : (ι → P) × P →ᵃ[k] V
     rw [Pi.vadd_apply', sub_add_eq_add_sub, vsub_vadd_eq_vsub_sub, vadd_vsub_assoc]
     -- Porting note proof was:
     --rintro ⟨p, b⟩ ⟨v, b'⟩
-    --simp only [LinearMap.sum_apply, Finset.weightedVSubOfPoint, vsub_vadd_eq_vsub_sub, vadd_vsub_assoc,
+    --simp only [LinearMap.sum_apply, Finset.weightedVSubOfPoint, vsub_vadd_eq_vsub_sub,
+    --  vadd_vsub_assoc,
     --  add_sub, ← sub_add_eq_add_sub, smul_add, Finset.sum_add_distrib]
 #align affine_map.weighted_vsub_of_point AffineMap.weightedVSubOfPoint
 
