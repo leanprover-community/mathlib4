@@ -72,21 +72,23 @@ set_option linter.uppercaseLean3 false in
 #align AddMon.limit_add_monoid AddMonCat.limitAddMonoid
 
 -- set_option pp.universes true
--- set_option pp.notation false
+set_option pp.all true
 -- set_option pp.explicit true
 
+
 /-- `limit.π (F ⋙ forget MonCat) j` as a `MonoidHom`. -/
---@[to_additive "`limit.π (F ⋙ forget AddMonCat) j` as an `AddMonoidHom`."]
-def limitπMonoidHom (F : J ⥤ MonCat.{max v u}) (j) :
-    (Types.limitCone.{v, u}
-      (F ⋙ forget.{(max v u) + 1, (max v u), (max v u)} MonCat.{max v u})).pt →*
-      (F ⋙ forget.{(max v u) + 1, (max v u), (max v u)} MonCat.{max v u}).obj j
-    := sorry
-  --   where
-  -- toFun := (Types.limitCone.{v, u} (F ⋙ forget MonCat.{max v u})).π.app j
-  -- map_one' := rfl
-  -- map_mul' x y := rfl
+@[to_additive "`limit.π (F ⋙ forget AddMonCat) j` as an `AddMonoidHom`."]
+def limitπMonoidHom (F : J ⥤ MonCat.{max v u}) (j : J) :
+  letI : Monoid ((F ⋙ forget MonCat.{max v u}).obj j) := show Monoid (F.obj j) from inferInstance
+  (Types.limitCone.{v, u} (F ⋙ forget MonCat)).pt →*
+    ((F ⋙ forget MonCat.{max v u}).obj j) :=
+  letI : Monoid ((F ⋙ forget MonCat.{max v u}).obj j) := show Monoid (F.obj j) from inferInstance
+  { toFun := (Types.limitCone.{v, u} (F ⋙ forget MonCat.{max v u})).π.app j,
+    map_one' := rfl
+    map_mul' := fun _ _ => rfl }
+set_option linter.uppercaseLean3 false in
 #align Mon.limit_π_monoid_hom MonCat.limitπMonoidHom
+set_option linter.uppercaseLean3 false in
 #align AddMon.limit_π_add_monoid_hom AddMonCat.limitπAddMonoidHom
 
 namespace HasLimits
@@ -98,13 +100,12 @@ namespace HasLimits
 (Internal use only; use the limits API.)
 -/
 @[to_additive "(Internal use only; use the limits API.)"]
-def limitCone (F : J ⥤ MonCat.{max v u}) : Cone F
-    where
-  pt := MonCat.of (Types.limitCone (F ⋙ forget _)).pt
-  π :=
+def limitCone (F : J ⥤ MonCat.{max v u}) : Cone F :=
+  { pt := MonCat.of (Types.limitCone (F ⋙ forget _)).pt
+    π :=
     { app := limitπMonoidHom F
-      naturality' := fun j j' f =>
-        MonoidHom.coe_inj ((Types.limitCone (F ⋙ forget _)).π.naturality f) }
+      naturality := fun j j' f =>
+        MonoidHom.coe_inj ((Types.limitCone (F ⋙ forget _)).π.naturality f) } }
 #align Mon.has_limits.limit_cone MonCat.HasLimits.limitCone
 #align AddMon.has_limits.limit_cone AddMonCat.HasLimits.limitCone
 
