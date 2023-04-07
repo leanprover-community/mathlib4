@@ -14,9 +14,9 @@ import Mathlib.RingTheory.Ideal.QuotientOperations
 /-!
 # The valuation on a quotient ring
 
-The support of a valuation `v : valuation R Γ₀` is `supp v`. If `J` is an ideal of `R`
+The support of a valuation `v : Valuation R Γ₀` is `supp v`. If `J` is an ideal of `R`
 with `h : J ⊆ supp v` then the induced valuation
-on R / J = `ideal.quotient J` is `on_quot v h`.
+on R / J = `Ideal.Quotient J` is `onQuot v h`.
 
 -/
 
@@ -27,18 +27,18 @@ variable {R Γ₀ : Type _} [CommRing R] [LinearOrderedCommMonoidWithZero Γ₀]
 
 variable (v : Valuation R Γ₀)
 
-/-- If `hJ : J ⊆ supp v` then `on_quot_val hJ` is the induced function on R/J as a function.
-Note: it's just the function; the valuation is `on_quot hJ`. -/
+/-- If `hJ : J ⊆ supp v` then `onQuotVal hJ` is the induced function on R / J as a function.
+Note: it's just the function; the valuation is `onQuot hJ`. -/
 def onQuotVal {J : Ideal R} (hJ : J ≤ supp v) : R ⧸ J → Γ₀ := fun q =>
   Quotient.liftOn' q v fun a b h =>
     calc
       v a = v (b + -(-a + b)) := by simp
       _ = v b :=
         v.map_add_supp b <| (Ideal.neg_mem_iff _).2 <| hJ <| QuotientAddGroup.leftRel_apply.mp h
-      
+
 #align valuation.on_quot_val Valuation.onQuotVal
 
-/-- The extension of valuation v on R to valuation on R/J if J ⊆ supp v -/
+/-- The extension of valuation `v` on `R` to valuation on `R / J` if `J ⊆ supp v`. -/
 def onQuot {J : Ideal R} (hJ : J ≤ supp v) : Valuation (R ⧸ J) Γ₀ where
   toFun := v.onQuotVal hJ
   map_zero' := v.map_zero
@@ -50,9 +50,10 @@ def onQuot {J : Ideal R} (hJ : J ≤ supp v) : Valuation (R ⧸ J) Γ₀ where
 @[simp]
 theorem onQuot_comap_eq {J : Ideal R} (hJ : J ≤ supp v) :
     (v.onQuot hJ).comap (Ideal.Quotient.mk J) = v :=
-  ext fun r => rfl
+  ext fun _ => rfl
 #align valuation.on_quot_comap_eq Valuation.onQuot_comap_eq
 
+set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 theorem self_le_supp_comap (J : Ideal R) (v : Valuation (R ⧸ J) Γ₀) :
     J ≤ (v.comap (Ideal.Quotient.mk J)).supp := by
   rw [comap_supp, ← Ideal.map_le_iff_le_comap]
@@ -67,7 +68,8 @@ theorem comap_onQuot_eq (J : Ideal R) (v : Valuation (R ⧸ J) Γ₀) :
     rfl
 #align valuation.comap_on_quot_eq Valuation.comap_onQuot_eq
 
-/-- The quotient valuation on R/J has support supp(v)/J if J ⊆ supp v. -/
+set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
+/-- The quotient valuation on `R / J` has support `(supp v) / J` if `J ⊆ supp v`. -/
 theorem supp_quot {J : Ideal R} (hJ : J ≤ supp v) :
     supp (v.onQuot hJ) = (supp v).map (Ideal.Quotient.mk J) := by
   apply le_antisymm
@@ -94,50 +96,51 @@ variable [CommRing R] [LinearOrderedAddCommMonoidWithTop Γ₀]
 
 variable (v : AddValuation R Γ₀)
 
-attribute [local reducible] AddValuation
+-- attribute [local reducible] AddValuation -- Porting note: reducible not supported
 
-/-- If `hJ : J ⊆ supp v` then `on_quot_val hJ` is the induced function on R/J as a function.
-Note: it's just the function; the valuation is `on_quot hJ`. -/
+/-- If `hJ : J ⊆ supp v` then `onQuotVal hJ` is the induced function on `R / J` as a function.
+Note: it's just the function; the valuation is `onQuot hJ`. -/
 def onQuotVal {J : Ideal R} (hJ : J ≤ supp v) : R ⧸ J → Γ₀ :=
-  v.onQuotVal hJ
+  Valuation.onQuotVal v hJ
 #align add_valuation.on_quot_val AddValuation.onQuotVal
 
-/-- The extension of valuation v on R to valuation on R/J if J ⊆ supp v -/
+/-- The extension of valuation `v` on `R` to valuation on `R / J` if `J ⊆ supp v`. -/
 def onQuot {J : Ideal R} (hJ : J ≤ supp v) : AddValuation (R ⧸ J) Γ₀ :=
-  v.onQuot hJ
+  Valuation.onQuot v hJ
 #align add_valuation.on_quot AddValuation.onQuot
 
 @[simp]
 theorem onQuot_comap_eq {J : Ideal R} (hJ : J ≤ supp v) :
     (v.onQuot hJ).comap (Ideal.Quotient.mk J) = v :=
-  v.onQuot_comap_eq hJ
+  Valuation.onQuot_comap_eq v hJ
 #align add_valuation.on_quot_comap_eq AddValuation.onQuot_comap_eq
 
+set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 theorem comap_supp {S : Type _} [CommRing S] (f : S →+* R) :
     supp (v.comap f) = Ideal.comap f v.supp :=
-  v.comap_supp f
+  Valuation.comap_supp v f
 #align add_valuation.comap_supp AddValuation.comap_supp
 
 theorem self_le_supp_comap (J : Ideal R) (v : AddValuation (R ⧸ J) Γ₀) :
     J ≤ (v.comap (Ideal.Quotient.mk J)).supp :=
-  v.self_le_supp_comap J
+  Valuation.self_le_supp_comap J v
 #align add_valuation.self_le_supp_comap AddValuation.self_le_supp_comap
 
 @[simp]
 theorem comap_onQuot_eq (J : Ideal R) (v : AddValuation (R ⧸ J) Γ₀) :
     (v.comap (Ideal.Quotient.mk J)).onQuot (v.self_le_supp_comap J) = v :=
-  v.comap_onQuot_eq J
+  Valuation.comap_onQuot_eq J v
 #align add_valuation.comap_on_quot_eq AddValuation.comap_onQuot_eq
 
-/-- The quotient valuation on R/J has support supp(v)/J if J ⊆ supp v. -/
+set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
+/-- The quotient valuation on `R / J` has support `(supp v) / J` if `J ⊆ supp v`. -/
 theorem supp_quot {J : Ideal R} (hJ : J ≤ supp v) :
     supp (v.onQuot hJ) = (supp v).map (Ideal.Quotient.mk J) :=
-  v.supp_quot hJ
+  Valuation.supp_quot v hJ
 #align add_valuation.supp_quot AddValuation.supp_quot
 
-theorem supp_quot_supp : supp (v.onQuot le_rfl) = 0 :=
-  v.supp_quot_supp
+theorem supp_quot_supp : supp ((Valuation.onQuot v) le_rfl) = 0 :=
+  Valuation.supp_quot_supp v
 #align add_valuation.supp_quot_supp AddValuation.supp_quot_supp
 
 end AddValuation
-
