@@ -99,6 +99,8 @@ theorem comp_p {P Q : Karoubi C} (f : Hom P Q) : f.f ≫ Q.p = f.f := by
   rw [f.comm, assoc, assoc, Q.idem]
 #align category_theory.idempotents.karoubi.comp_p CategoryTheory.Idempotents.Karoubi.comp_p
 
+
+@[reassoc]
 theorem p_comm {P Q : Karoubi C} (f : Hom P Q) : P.p ≫ f.f = f.f ≫ Q.p := by rw [p_comp, comp_p]
 #align category_theory.idempotents.karoubi.p_comm CategoryTheory.Idempotents.Karoubi.p_comm
 

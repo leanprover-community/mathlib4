@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 
 ! This file was ported from Lean 3 source module data.zmod.basic
-! leanprover-community/mathlib commit 297619ec79dedf23525458b6bf5bf35c736fd2b8
+! leanprover-community/mathlib commit 47a1a73351de8dd6c8d3d32b569c8e434b03ca47
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -34,6 +34,7 @@ This is a ring hom if the ring has characteristic dividing `n`
 
 -/
 
+open Function
 
 namespace ZMod
 
@@ -455,7 +456,7 @@ end CharEq
 end UniversalProperty
 
 theorem int_cast_eq_int_cast_iff (a b : ℤ) (c : ℕ) : (a : ZMod c) = (b : ZMod c) ↔ a ≡ b [ZMOD c] :=
-  CharP.int_cast_eq_int_cast_iff (ZMod c) c a b
+  CharP.intCast_eq_intCast (ZMod c) c
 #align zmod.int_coe_eq_int_coe_iff ZMod.int_cast_eq_int_cast_iff
 
 theorem int_cast_eq_int_cast_iff' (a b : ℤ) (c : ℕ) : (a : ZMod c) = (b : ZMod c) ↔ a % c = b % c :=
@@ -1051,6 +1052,8 @@ theorem prime_ne_zero (p q : ℕ) [hp : Fact p.Prime] [hq : Fact q.Prime] (hpq :
     hp.1.coprime_iff_not_dvd, Nat.coprime_primes hp.1 hq.1]
 #align zmod.prime_ne_zero ZMod.prime_ne_zero
 
+variable {n a : ℕ}
+
 theorem valMinAbs_natAbs_eq_min {n : ℕ} [hpos : NeZero n] (a : ZMod n) :
     a.valMinAbs.natAbs = min a.val (n - a.val) := by
   rw [valMinAbs_def_pos]
@@ -1069,6 +1072,28 @@ theorem valMinAbs_natAbs_eq_min {n : ℕ} [hpos : NeZero n] (a : ZMod n) :
     rw [Nat.sub_sub_self (Nat.div_lt_self (lt_of_le_of_ne' (Nat.zero_le _) hpos.1) one_lt_two)]
     apply Nat.lt_succ_self
 #align zmod.val_min_abs_nat_abs_eq_min ZMod.valMinAbs_natAbs_eq_min
+
+theorem valMinAbs_natCast_of_le_half (ha : a ≤ n / 2) : (a : ZMod n).valMinAbs = a := by
+  cases n
+  · simp
+  · simp [valMinAbs_def_pos, val_nat_cast, Nat.mod_eq_of_lt (ha.trans_lt <| Nat.div_lt_self' _ 0),
+      ha]
+#align zmod.val_min_abs_nat_cast_of_le_half ZMod.valMinAbs_natCast_of_le_half
+
+theorem valMinAbs_natCast_of_half_lt (ha : n / 2 < a) (ha' : a < n) :
+    (a : ZMod n).valMinAbs = a - n := by
+  cases n
+  · cases not_lt_bot ha'
+  · simp [valMinAbs_def_pos, val_nat_cast, Nat.mod_eq_of_lt ha', ha.not_le]
+#align zmod.val_min_abs_nat_cast_of_half_lt ZMod.valMinAbs_natCast_of_half_lt
+
+-- porting note: There was an extraneous `nat_` in the mathlib3 name
+@[simp]
+theorem valMinAbs_natCast_eq_self [NeZero n] : (a : ZMod n).valMinAbs = a ↔ a ≤ n / 2 := by
+  refine' ⟨fun ha => _, valMinAbs_natCast_of_le_half⟩
+  rw [← Int.natAbs_ofNat a, ← ha]
+  exact natAbs_valMinAbs_le a
+#align zmod.val_min_nat_abs_nat_cast_eq_self ZMod.valMinAbs_natCast_eq_self
 
 theorem natAbs_min_of_le_div_two (n : ℕ) (x y : ℤ) (he : (x : ZMod n) = y) (hl : x.natAbs ≤ n / 2) :
     x.natAbs ≤ y.natAbs := by
