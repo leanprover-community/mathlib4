@@ -213,7 +213,7 @@ instance {E : Type _} [NormedAddCommGroup E] [NormedSpace ℚ E] (e : E) :
     DiscreteTopology <| AddSubgroup.zmultiples e := by
   rcases eq_or_ne e 0 with (rfl | he)
   · rw [AddSubgroup.zmultiples_zero_eq_bot]
-    refine Subsingleton.discreteTopology
+    refine Subsingleton.discreteTopology (α := ↑(⊥ : Subspace ℚ E))
   · rw [discreteTopology_iff_open_singleton_zero, isOpen_induced_iff]
     refine' ⟨Metric.ball 0 ‖e‖, Metric.isOpen_ball, _⟩
     ext ⟨x, hx⟩
@@ -254,8 +254,15 @@ noncomputable def homeomorphUnitBall [NormedSpace ℝ E] : E ≃ₜ ball (0 : E)
     exact (this.smul continuous_id).subtype_mk _
     refine' Continuous.inv₀ _ fun x => Real.sqrt_ne_zero'.mpr (by positivity)
     continuity
+    -- exact (continuous_const.add (continuous_norm.pow 2)).sqrt
   continuous_invFun := by
-    suffices ∀ y : ball (0 : E) 1, (1 - ‖(y : E)‖ ^ 2).sqrt ≠ 0 by continuity
+    suffices ∀ y : ball (0 : E) 1, (1 - ‖(y : E)‖ ^ 2).sqrt ≠ 0 by
+      /- Porting note: used to be continuity; should be restored. Has trouble with
+      Continuous.comp' being too eager -/
+      apply Continuous.smul (Continuous.inv₀
+        (continuous_const.sub ?_).sqrt this) continuous_induced_dom
+      continuity
+      -- apply (continuous_norm.comp continuous_induced_dom).pow 2
     intro y
     rw [Real.sqrt_ne_zero']
     nlinarith [norm_nonneg (y : E), (mem_ball_zero_iff.1 y.2 : ‖(y : E)‖ < 1)]
@@ -347,10 +354,14 @@ See note [reducible non-instances] -/
 @[reducible]
 def NormedSpace.induced {F : Type _} (α β γ : Type _) [NormedField α] [AddCommGroup β] [Module α β]
     [SeminormedAddCommGroup γ] [NormedSpace α γ] [LinearMapClass F α β γ] (f : F) :
-    @NormedSpace α β _ (SeminormedAddCommGroup.induced β γ f) where
-  norm_smul_le a b := by
-    unfold norm
-    exact (map_smul f a b).symm ▸ norm_smul_le a (f b)
+    @NormedSpace α β _ (SeminormedAddCommGroup.induced β γ f) := by
+    -- Porting note: trouble inferring SeminormedAddCommGroup β and Module α β
+    -- unfolding the induced semi-norm is fiddly
+    refine @NormedSpace.mk (α := α) (β := β) _ ?_ ?_ ?_
+    · infer_instance
+    · intro a b
+      change ‖(⇑f) (a • b)‖ ≤ ‖a‖ * ‖(⇑f) b‖
+      exact (map_smul f a b).symm ▸ norm_smul_le a (f b)
 #align normed_space.induced NormedSpace.induced
 
 section NormedAddCommGroup
@@ -622,9 +633,12 @@ See note [reducible non-instances] -/
 @[reducible]
 def NormedAlgebra.induced {F : Type _} (α β γ : Type _) [NormedField α] [Ring β] [Algebra α β]
     [SeminormedRing γ] [NormedAlgebra α γ] [NonUnitalAlgHomClass F α β γ] (f : F) :
-    @NormedAlgebra α β _ (SeminormedRing.induced β γ f) where
-  norm_smul_le a b := by
-    unfold norm
+    @NormedAlgebra α β _ (SeminormedRing.induced β γ f) := by
+  -- Porting note: trouble with SeminormedRing β, Algebra α β, and unfolding seminorm
+  refine @NormedAlgebra.mk (𝕜 := α) (𝕜' := β) _ ?_ ?_ ?_
+  · infer_instance
+  · intro a b
+    change ‖(⇑f) (a • b)‖ ≤ ‖a‖ * ‖(⇑f) b‖
     exact (map_smul f a b).symm ▸ norm_smul_le a (f b)
 #align normed_algebra.induced NormedAlgebra.induced
 
