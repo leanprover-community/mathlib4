@@ -152,7 +152,7 @@ theorem Cone.w {F : J ⥤ C} (c : Cone F) {j j' : J} (f : j ⟶ j') :
 * an object `c.pt` and
 * a natural transformation `c.ι : F ⟶ c.pt` from `F` to the constant `c.pt` functor.
 
-`Cocone F` is equivalent, via `cone.equiv` below, to `Σ X, F.cocones.obj X`.
+`Cocone F` is equivalent, via `Cone.equiv` below, to `Σ X, F.cocones.obj X`.
 -/
 structure Cocone (F : J ⥤ C) where
   /-- An object of `C` -/
@@ -175,7 +175,7 @@ instance inhabitedCocone (F : Discrete PUnit ⥤ C) : Inhabited (Cocone F) :=
   }⟩
 #align category_theory.limits.inhabited_cocone CategoryTheory.Limits.inhabitedCocone
 
-@[reassoc]
+@[reassoc (attr := simp 1001)]
 theorem Cocone.w {F : J ⥤ C} (c : Cocone F) {j j' : J} (f : j ⟶ j') :
     F.map f ≫ c.ι.app j' = c.ι.app j := by
   rw [c.ι.naturality f]
