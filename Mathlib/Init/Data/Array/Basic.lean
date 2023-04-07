@@ -201,13 +201,13 @@ instance [∀ i, DecidableEq (α i)] : DecidableEq (DArray n α) := fun a b =>
 
 end DArray
 
-/-- A non-dependent array (see `d_array`). Implemented in the VM as a persistent array.  -/
+/-- A non-dependent array (see `DArray`). Implemented in the VM as a persistent array.  -/
 def Array' (n : Nat) (α : Type u) : Type u :=
   DArray n fun _ => α
 #align array Array'
 
 /--
-`mk_array n v` creates a new array of length `n` where each element is `v`.
+`mkArray' n v` creates a new array of length `n` where each element is `v`.
 Has builtin VM implementation.
 -/
 def mkArray' {α} (n) (v : α) : Array' n α where data _ := v
