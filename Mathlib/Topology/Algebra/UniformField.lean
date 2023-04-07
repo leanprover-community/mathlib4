@@ -168,12 +168,12 @@ theorem mul_hatInv_cancel {x : hat K} (x_ne : x ≠ 0) : x * hatInv x = 1 := by
 #align uniform_space.completion.mul_hat_inv_cancel UniformSpace.Completion.mul_hatInv_cancel
 
 instance : Field (hat K) :=
-  { Completion.hasInv,
+  { Completion.instInvCompletion,
     (by infer_instance : CommRing (hat  K)) with
     exists_pair_ne := ⟨0, 1, fun h => zero_ne_one ((uniformEmbedding_coe K).inj h)⟩
     mul_inv_cancel := fun x x_ne => by
       dsimp [Inv.inv]
-      simp [if_neg x_ne, mul_hat_inv_cancel x_ne]
+      simp [if_neg x_ne, mul_hatInv_cancel x_ne]
     inv_zero := show ((0 : K) : hat K)⁻¹ = ((0 : K) : hat K) by rw [coe_inv, inv_zero] }
 
 instance : TopologicalDivisionRing (hat K) :=
