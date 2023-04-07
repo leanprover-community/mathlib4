@@ -71,7 +71,7 @@ variable {K}
 def hatInv : hat K → hat K :=
   denseInducing_coe.extend fun x : K => (↑x⁻¹ : hat K)
 #align uniform_space.completion.hat_inv UniformSpace.Completion.hatInv
-#print hatInv
+
 theorem continuous_hatInv [CompletableTopField K] {x : hat K} (h : x ≠ 0) : ContinuousAt hatInv x :=
   by
   haveI : T3Space (hat K) := Completion.t3Space K
@@ -152,15 +152,9 @@ theorem mul_hatInv_cancel {x : hat K} (x_ne : x ≠ 0) : x * hatInv x = 1 := by
     rintro _ ⟨z, z_ne, rfl⟩
     rw [mem_singleton_iff]
     rw [mem_compl_singleton_iff] at z_ne
-    have : (fun (x : K) => f (c x)) = fun (x : K) => (x : hat K) * hatInv (x : hat K) := by rfl
-    rw [this]
-    simp only
-    rw [hatInv_extends z_ne]
-    have : ↑z⁻¹ = ((z:K)⁻¹ : hat K) := by norm_cast
-    rw [this]
-    norm_cast
-    simp only [ne_eq, mul_inv_cancel z_ne]
-    norm_cast
+    dsimp
+    rw [hatInv_extends z_ne, ← coe_mul]
+    rw [mul_inv_cancel z_ne, coe_one]
   replace fxclo := closure_mono this fxclo
   rwa [closure_singleton, mem_singleton_iff] at fxclo
 #align uniform_space.completion.mul_hat_inv_cancel UniformSpace.Completion.mul_hatInv_cancel
