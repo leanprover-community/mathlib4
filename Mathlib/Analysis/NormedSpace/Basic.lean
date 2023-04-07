@@ -220,14 +220,8 @@ instance {E : Type _} [NormedAddCommGroup E] [NormedSpace ℚ E] (e : E) :
     obtain ⟨k, rfl⟩ := AddSubgroup.mem_zmultiples_iff.mp hx
     rw [mem_preimage, mem_ball_zero_iff, AddSubgroup.coe_mk, mem_singleton_iff, Subtype.ext_iff,
       AddSubgroup.coe_mk, AddSubgroup.coe_zero, norm_zsmul ℚ k e, Int.norm_cast_rat,
-<<<<<<< Updated upstream
-      Int.norm_eq_abs, Int.cast_abs, mul_lt_iff_lt_one_left (norm_pos_iff.mpr he),
-      ← @Int.cast_one ℝ _, ← Int.cast_abs, Int.cast_lt, Int.abs_lt_one_iff, smul_eq_zero,
-      or_iff_left he]
-=======
       Int.norm_eq_abs, mul_lt_iff_lt_one_left (norm_pos_iff.mpr he), ←
       @Int.cast_one ℝ _, Int.cast_lt, Int.abs_lt_one_iff, smul_eq_zero, or_iff_left he]
->>>>>>> Stashed changes
 
 /-- A (semi) normed real vector space is homeomorphic to the unit ball in the same space.
 This homeomorphism sends `x : E` to `(1 + ‖x‖²)^(- ½) • x`.
@@ -253,7 +247,8 @@ noncomputable def homeomorphUnitBall [NormedSpace ℝ E] : E ≃ₜ ball (0 : E)
   right_inv y := by
     have : 0 < 1 - ‖(y : E)‖ ^ 2 := by
       nlinarith [norm_nonneg (y : E), (mem_ball_zero_iff.1 y.2 : ‖(y : E)‖ < 1)]
-    field_simp [norm_smul, smul_smul, this.ne', sq_abs, Real.sq_sqrt this.le, ← Real.sqrt_div this.le]
+    field_simp [norm_smul, smul_smul, this.ne', sq_abs, Real.sq_sqrt this.le,
+      ← Real.sqrt_div this.le]
   continuous_toFun := by
     suffices : Continuous fun (x:E) => (1 + ‖x‖ ^ 2).sqrt⁻¹;
     exact (this.smul continuous_id).subtype_mk _
