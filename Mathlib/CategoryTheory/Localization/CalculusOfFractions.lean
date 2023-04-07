@@ -341,7 +341,22 @@ noncomputable instance : Category (Localization W) where
     rw [Roof.comp_eq f (Roof.ofHom _ (𝟙 Y)) sq]
     dsimp [Roof.comp₀]
     congr <;> simp
-  assoc := sorry
+  assoc := by
+    rintro ⟨X₁⟩ ⟨X₂⟩ ⟨X₃⟩ ⟨X₄⟩ ⟨f₁₂ : Roof W X₁ X₂⟩
+      ⟨f₂₃ : Roof W X₂ X₃⟩ ⟨f₃₄ : Roof W X₃ X₄⟩
+    have sq₁₃ := toSq f₁₂.s f₁₂.hs f₂₃.f
+    have sq₂₄ := toSq f₂₃.s f₂₃.hs f₃₄.f
+    have sq := toSq sq₁₃.s' sq₁₃.hs' sq₂₄.g
+    change Hom.comp (Hom.comp _ _) _ = Hom.comp _ (Hom.comp _ _)
+    rw [Hom.comp_eq f₁₂ f₂₃ sq₁₃, Hom.comp_eq f₂₃ f₃₄ sq₂₄,
+      Hom.comp_eq (Roof.comp₀ f₁₂ f₂₃ sq₁₃) f₃₄
+      ⟨sq.obj, sq.g, sq₂₄.s' ≫ sq.s', IsMultiplicative.comp _ _ _ sq₂₄.hs' sq.hs', by
+        simp only [Roof.comp₀, Category.assoc, sq₂₄.fac_assoc, sq.fac]⟩,
+      Hom.comp_eq f₁₂ (Roof.comp₀ f₂₃ f₃₄ sq₂₄)
+      ⟨sq.obj, sq₁₃.g ≫ sq.g, sq.s', sq.hs', by
+        simp only [Roof.comp₀, Category.assoc, sq.fac, sq₁₃.fac_assoc]⟩]
+    dsimp [Roof.comp₀]
+    simp only [Category.assoc]
 
 variable {W}
 
@@ -512,10 +527,35 @@ lemma Roof.map_ofHom {X Y : C} (f : X ⟶ Y) (L : C ⥤ D) [L.IsLocalization W] 
     (Roof.ofHom W f).map L = L.map f := by
   simp [Roof.map]
 
+variable {W}
+
+lemma Roof.map_eq {X Y : C} (z : Roof W X Y) (L : C ⥤ D) [L.IsLocalization W] :
+  z.map L = (Localization.compUniqFunctor (HasLeftCalculusOfFractions.Localization.Q W) L W).inv.app _ ≫
+    ((CategoryTheory.Localization.uniq _ L W).functor.map (Localization.homOfRoof z)) ≫
+    ((Localization.compUniqFunctor _ _ W)).hom.app _  := by
+  let E := CategoryTheory.Localization.uniq (HasLeftCalculusOfFractions.Localization.Q W) L W
+  let e : Localization.Q W ⋙ E.functor ≅ L := Localization.compUniqFunctor _ _ W
+  change L.map z.f ≫ _ = e.inv.app X ≫ E.functor.map (Localization.homOfRoof z) ≫ e.hom.app Y
+  rw [← cancel_mono (L.map z.s), Category.assoc, IsIso.inv_hom_id, Category.comp_id,
+    ← cancel_epi (e.hom.app X), Category.assoc, Category.assoc, Iso.hom_inv_id_app_assoc,
+    Localization.facOfRoof, E.functor.map_comp, Category.assoc, ← e.hom.naturality z.s,
+    Functor.comp_map, ← E.functor.map_comp_assoc _ ((Localization.Q W).map z.s),
+    Localization.Qinv_comp, E.functor.map_id, Category.id_comp]
+  exact (e.hom.naturality z.f).symm
+
+variable (W)
+
 lemma fac' {X Y : C} (f : L.obj X ⟶ L.obj Y) :
-  ∃ (z : Roof W X Y), f = z.map L := by
-  have h : HasLeftCalculusOfFractions W := inferInstance
-  sorry
+    ∃ (z : Roof W X Y), f = z.map L := by
+  let E := CategoryTheory.Localization.uniq
+    (HasLeftCalculusOfFractions.Localization.Q W) L W
+  let e : _ ⋙ E.functor ≅ L := Localization.compUniqFunctor _ _ _
+  obtain ⟨f', rfl⟩ : ∃ (f' : E.functor.obj ⟨X⟩ ⟶ E.functor.obj ⟨Y⟩),
+      f = e.inv.app _ ≫ f' ≫ e.hom.app _ :=
+    ⟨e.hom.app _ ≫ f ≫ e.inv.app _, by simp⟩
+  obtain ⟨⟨z : Roof W X Y⟩,
+    hz : E.functor.map (Localization.homOfRoof z) = _⟩ := E.functor.map_surjective f'
+  exact ⟨z, by simp only [← hz, Roof.map_eq]⟩
 
 lemma fac {X Y : C} (f : L.obj X ⟶ L.obj Y) :
   ∃ (Z : C) (g : X ⟶ Z) (s : Y ⟶ Z) (hs : W s),
@@ -525,8 +565,26 @@ lemma fac {X Y : C} (f : L.obj X ⟶ L.obj Y) :
 
 lemma map_eq_iff' {X Y : C} (z₁ z₂ : Roof W X Y) :
     z₁.map L = z₂.map L ↔ roofRel z₁ z₂ := by
-  have h : HasLeftCalculusOfFractions W := inferInstance
-  sorry
+  have H : Localization.homOfRoof z₁ = Localization.homOfRoof z₂ ↔ roofRel z₁ z₂ := by
+    constructor
+    . intro h
+      dsimp only [Localization.homOfRoof] at h
+      rw [Quot.eq] at h
+      induction' h with _ _ _ _ _ _ _ h₁ _ _ _ _ _ h₂ h₃
+      . assumption
+      . apply refl
+      . exact h₁.symm
+      . exact h₂.trans h₃
+    . apply Quot.sound
+  refine' Iff.trans _ H
+  simp only [Roof.map_eq]
+  constructor
+  . intro h
+    apply (CategoryTheory.Localization.uniq (Localization.Q W) L W).functor.map_injective
+    simpa only [NatIso.cancel_natIso_inv_left, NatIso.cancel_natIso_hom_right
+      (Localization.compUniqFunctor (Localization.Q W) L W)] using h
+  . intro h
+    rw [h]
 
 lemma map_eq_iff {X Y : C} (f₁ f₂ : X ⟶ Y) :
     L.map f₁ = L.map f₂ ↔ ∃ (Z : C) (s : Y ⟶ Z) (_ : W s), f₁ ≫ s = f₂ ≫ s := by
