@@ -8,10 +8,10 @@ Authors: Anne Baanen
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Zmod.Basic
-import Mathbin.GroupTheory.GroupAction.Quotient
-import Mathbin.RingTheory.Int.Basic
-import Mathbin.RingTheory.Ideal.QuotientOperations
+import Mathlib.Data.ZMod.Basic
+import Mathlib.GroupTheory.GroupAction.Quotient
+import Mathlib.RingTheory.Int.Basic
+import Mathlib.RingTheory.Ideal.QuotientOperations
 
 /-!
 # `zmod n` and quotient groups / rings
@@ -154,8 +154,7 @@ theorem orbitZpowersEquiv_symm_apply' (k : ℤ) :
 theorem AddAction.orbitZmultiplesEquiv_symm_apply' {α β : Type _} [AddGroup α] (a : α)
     [AddAction α β] (b : β) (k : ℤ) :
     (AddAction.orbitZmultiplesEquiv a b).symm k =
-      k • (⟨a, mem_zmultiples a⟩ : zmultiples a) +ᵥ ⟨b, AddAction.mem_orbit_self b⟩ :=
-  by
+      k • (⟨a, mem_zmultiples a⟩ : zmultiples a) +ᵥ ⟨b, AddAction.mem_orbit_self b⟩ := by
   rw [AddAction.orbit_zmultiples_equiv_symm_apply, ZMod.coe_int_cast]
   exact Subtype.ext (zsmul_vadd_mod_minimal_period _ _ k)
 #align add_action.orbit_zmultiples_equiv_symm_apply' AddAction.orbitZmultiplesEquiv_symm_apply'
@@ -190,8 +189,7 @@ variable {α : Type _} [Group α] (a : α)
 
 /-- See also `order_eq_card_zpowers`. -/
 @[to_additive add_order_eq_card_zmultiples' "See also `add_order_eq_card_zmultiples`."]
-theorem order_eq_card_zpowers' : orderOf a = Nat.card (zpowers a) :=
-  by
+theorem order_eq_card_zpowers' : orderOf a = Nat.card (zpowers a) := by
   have := Nat.card_congr (MulAction.orbitZpowersEquiv a (1 : α))
   rwa [Nat.card_zMod, orbit_subgroup_one_eq_self, eq_comm] at this
 #align order_eq_card_zpowers' order_eq_card_zpowers'
@@ -200,8 +198,7 @@ theorem order_eq_card_zpowers' : orderOf a = Nat.card (zpowers a) :=
 variable {a}
 
 @[to_additive IsOfFinAddOrder.finite_zmultiples]
-theorem IsOfFinOrder.finite_zpowers (h : IsOfFinOrder a) : Finite <| zpowers a :=
-  by
+theorem IsOfFinOrder.finite_zpowers (h : IsOfFinOrder a) : Finite <| zpowers a := by
   rw [← orderOf_pos_iff, order_eq_card_zpowers'] at h
   exact Nat.finite_of_card_ne_zero h.ne.symm
 #align is_of_fin_order.finite_zpowers IsOfFinOrder.finite_zpowers
