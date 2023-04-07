@@ -1341,7 +1341,7 @@ def MultilinearMap.uncurryRight
     · have : last n ≠ i := Ne.symm (ne_of_lt h)
       simp_rw [update_noteq this]
       revert x y
-      rw [(castSucc_cast_lt i h).symm]
+      rw [(castSucc_castLT i h).symm]
       intro x y
       rw [init_update_castSucc, MultilinearMap.map_add, init_update_castSucc,
         init_update_castSucc, LinearMap.add_apply]
@@ -1356,7 +1356,7 @@ def MultilinearMap.uncurryRight
     · have : last n ≠ i := Ne.symm (ne_of_lt h)
       simp_rw [update_noteq this]
       revert x
-      rw [(castSucc_cast_lt i h).symm]
+      rw [(castSucc_castLT i h).symm]
       intro x
       rw [init_update_castSucc, init_update_castSucc, MultilinearMap.map_smul,
         LinearMap.smul_apply]
