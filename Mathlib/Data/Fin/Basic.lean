@@ -1246,14 +1246,14 @@ theorem succ_eq_last_succ {n : ℕ} (i : Fin n.succ) : i.succ = last (n + 1) ↔
 #align fin.succ_eq_last_succ Fin.succ_eq_last_succ
 
 @[simp]
-theorem castSucc_cast_lt (i : Fin (n + 1)) (h : (i : ℕ) < n) : castSucc (castLt i h) = i :=
+theorem castSucc_castLt (i : Fin (n + 1)) (h : (i : ℕ) < n) : castSucc (castLt i h) = i :=
   Fin.eq_of_veq rfl
-#align fin.cast_succ_cast_lt Fin.castSucc_cast_lt
+#align fin.cast_succ_cast_lt Fin.castSucc_castLt
 
 @[simp]
-theorem cast_lt_castSucc {n : ℕ} (a : Fin n) (h : (a : ℕ) < n) : castLt (castSucc a) h = a := by
+theorem castLt_castSucc {n : ℕ} (a : Fin n) (h : (a : ℕ) < n) : castLt (castSucc a) h = a := by
   cases a; rfl
-#align fin.cast_lt_cast_succ Fin.cast_lt_castSucc
+#align fin.cast_lt_cast_succ Fin.castLt_castSucc
 
 @[simp]
 theorem castSucc_lt_castSucc_iff {a b : Fin n}: Fin.castSucc a < Fin.castSucc b ↔ a < b :=
@@ -2132,7 +2132,7 @@ theorem succAbove_pos [NeZero n] (p : Fin (n + 1)) (i : Fin n) (h : 0 < i) : 0 <
 @[simp]
 theorem succAbove_castLt {x y : Fin (n + 1)} (h : x < y)
     (hx : x.1 < n := lt_of_lt_of_le h y.le_last) : y.succAbove (x.castLt hx) = x := by
-  rw [succAbove_below, castSucc_cast_lt]
+  rw [succAbove_below, castSucc_castLt]
   exact h
 #align fin.succ_above_cast_lt Fin.succAbove_castLt
 
@@ -2145,7 +2145,7 @@ theorem succAbove_pred {x y : Fin (n + 1)} (h : x < y) (hy : y ≠ 0 := (x.zero_
 
 theorem castLt_succAbove {x : Fin n} {y : Fin (n + 1)} (h : castSucc x < y)
     (h' : (y.succAbove x).1 < n := lt_of_lt_of_le ((succAbove_lt_iff _ _).2 h) (le_last y)) :
-    (y.succAbove x).castLt h' = x := by simp only [succAbove_below _ _ h, cast_lt_castSucc]
+    (y.succAbove x).castLt h' = x := by simp only [succAbove_below _ _ h, castLt_castSucc]
 #align fin.cast_lt_succ_above Fin.castLt_succAbove
 
 theorem pred_succAbove {x : Fin n} {y : Fin (n + 1)} (h : y ≤ castSucc x)

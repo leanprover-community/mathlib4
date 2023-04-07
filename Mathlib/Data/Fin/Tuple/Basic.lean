@@ -444,7 +444,7 @@ theorem init_def {n : ℕ} {α : Fin (n + 1) → Type _} {q : ∀ i, α i} :
 /-- Adding an element at the end of an `n`-tuple, to get an `n+1`-tuple. The name `snoc` comes from
 `cons` (i.e., adding an element to the left of a tuple) read in reverse order. -/
 def snoc (p : ∀ i : Fin n, α (castSucc i)) (x : α (last n)) (i : Fin (n + 1)) : α i :=
-  if h : i.val < n then _root_.cast (by rw [Fin.castSucc_cast_lt i h]) (p (castLt i h))
+  if h : i.val < n then _root_.cast (by rw [Fin.castSucc_castLt i h]) (p (castLt i h))
   else _root_.cast (by rw [eq_last_of_not_lt h]) x
 #align fin.snoc Fin.snoc
 
@@ -511,7 +511,7 @@ theorem snoc_update : snoc (update p i y) x = update (snoc p x) (castSucc i) y :
         convert this
         · exact h'.symm
         · exact heq_of_cast_eq (congr_arg α (Eq.symm h')) rfl
-      have C2 : α (castSucc i) = α (castSucc (castLt j h)) := by rw [castSucc_cast_lt, h']
+      have C2 : α (castSucc i) = α (castSucc (castLt j h)) := by rw [castSucc_castLt, h']
       have E2 : update p i y (castLt j h) = _root_.cast C2 y := by
         have : update p (castLt j h) (_root_.cast C2 y) (castLt j h) = _root_.cast C2 y := by simp
         convert this
@@ -522,7 +522,7 @@ theorem snoc_update : snoc (update p i y) x = update (snoc p x) (castSucc i) y :
     · have : ¬castLt j h = i := by
         intro E
         apply h'
-        rw [← E, castSucc_cast_lt]
+        rw [← E, castSucc_castLt]
       simp [h', this, snoc, h]
   · rw [eq_last_of_not_lt h]
     simp [Ne.symm (ne_of_lt (castSucc_lt_last i))]
@@ -545,7 +545,7 @@ theorem snoc_init_self : snoc (init q) (q (last n)) = q := by
   ext j
   by_cases h : j.val < n
   · simp only [init, snoc, h, cast_eq, dite_true]
-    have _ : castSucc (castLt j h) = j := castSucc_cast_lt _ _
+    have _ : castSucc (castLt j h) = j := castSucc_castLt _ _
     rw [← cast_eq rfl (q j)]
     congr
   · rw [eq_last_of_not_lt h]
@@ -591,7 +591,7 @@ theorem cons_snoc_eq_snoc_cons {β : Type _} (a : β) (q : Fin n → β) (b : β
   rw [this, cons_succ]
   by_cases h' : j.val < n
   · set k := castLt j h' with jk
-    have : j = castSucc k := by rw [jk, castSucc_cast_lt]
+    have : j = castSucc k := by rw [jk, castSucc_castLt]
     rw [this, ← castSucc_fin_succ, snoc]
     simp [pred, snoc, cons]
   rw [eq_last_of_not_lt h', succ_last]
@@ -602,7 +602,7 @@ theorem comp_snoc {α : Type _} {β : Type _} (g : α → β) (q : Fin n → α)
     g ∘ snoc q y = snoc (g ∘ q) (g y) := by
   ext j
   by_cases h : j.val < n
-  · simp [h, snoc, castSucc_cast_lt]
+  · simp [h, snoc, castSucc_castLt]
   · rw [eq_last_of_not_lt h]
     simp
 #align fin.comp_snoc Fin.comp_snoc

@@ -330,7 +330,7 @@ theorem δ_comp_σ_of_gt' {n} {i : Fin (n + 3)} {j : Fin (n + 2)} (H : j.succ < 
       δ (i.pred fun hi => by simp only [Fin.not_lt_zero, hi] at H) := by
   rw [← δ_comp_σ_of_gt]
   · simp
-  · rw [Fin.castSucc_cast_lt, ← Fin.succ_lt_succ_iff, Fin.succ_pred]
+  · rw [Fin.castSucc_castLt, ← Fin.succ_lt_succ_iff, Fin.succ_pred]
     exact H
 #align simplex_category.δ_comp_σ_of_gt' SimplexCategory.δ_comp_σ_of_gt'
 
