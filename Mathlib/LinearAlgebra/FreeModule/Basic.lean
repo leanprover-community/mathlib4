@@ -18,14 +18,14 @@ import Mathlib.LinearAlgebra.TensorProductBasis
 
 # Free modules
 
-We introduce a class `module.free R M`, for `R` a `semiring` and `M` an `R`-module and we provide
+We introduce a class `Module.Free R M`, for `R` a `Semiring` and `M` an `R`-module and we provide
 several basic instances for this class.
 
-Use `finsupp.total_id_surjective` to prove that any module is the quotient of a free module.
+Use `Finsupp.total_id_surjective` to prove that any module is the quotient of a free module.
 
 ## Main definition
 
-* `module.free R M` : the class of free `R`-modules.
+* `Module.Free R M` : the class of free `R`-modules.
 
 -/
 
@@ -40,8 +40,7 @@ section Basic
 
 variable [Semiring R] [AddCommMonoid M] [Module R M]
 
-/- ./././Mathport/Syntax/Translate/Command.lean:388:30: infer kinds are unsupported in Lean 4: #[`exists_basis] [] -/
-/-- `module.free R M` is the statement that the `R`-module `M` is free.-/
+/-- `Module.Free R M` is the statement that the `R`-module `M` is free.-/
 class Module.Free : Prop where
   exists_basis : Nonempty <| (I : Type v) × Basis I R M
 #align module.free Module.Free
@@ -51,11 +50,15 @@ universe.
 
 Note that if `M` does not fit in `w`, the reverse direction of this implication is still true as
 `module.free.of_basis`. -/
-theorem Module.free_def [Small.{w} M] : Module.Free.{u,v} R M ↔ ∃ I : Type w, Nonempty (Basis I R M) :=
+theorem Module.free_def [Small.{w,v} M] :
+    Module.Free R M ↔ ∃ I : Type w, Nonempty (Basis I R M) :=
+  -- Porting note: this is required or Lean cannot solve universe constraints
+  -- The same error presents if interInstance is called to solve `small`
+  have _small (s : Set M) : Small.{w} ↑s := small_of_injective (fun _ _ => (Subtype.val_inj).mp)
   ⟨fun h =>
     ⟨Shrink (Set.range h.exists_basis.some.2),
       ⟨(Basis.reindexRange h.exists_basis.some.2).reindex (equivShrink _)⟩⟩,
-    fun h => ⟨(nonempty_sigma.2 h).map fun x => fun ⟨i, b⟩ => ⟨Set.range b, b.reindexRange⟩⟩⟩
+    fun h => ⟨(nonempty_sigma.2 h).map fun ⟨_, b⟩ => ⟨Set.range b, b.reindexRange⟩⟩⟩
 #align module.free_def Module.free_def
 
 theorem Module.free_iff_set : Module.Free R M ↔ ∃ S : Set M, Nonempty (Basis S R M) :=
