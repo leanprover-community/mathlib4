@@ -31,92 +31,99 @@ section
 
 universe z w v u
 
-variable {C : Type max v u} [Category.{v} C]
+-- porting note: removed restrictions on universes
 
-variable {D : Type w} [Category.{max z v u} D] [Abelian D]
+variable {C : Type u} [Category.{v} C]
+
+variable {D : Type w} [Category.{z} D] [Abelian D]
 
 namespace FunctorCategory
 
 variable {F G : C ⥤ D} (α : F ⟶ G) (X : C)
 
 /-- The abelian coimage in a functor category can be calculated componentwise. -/
-@[simps]
+@[simps!]
 def coimageObjIso : (Abelian.coimage α).obj X ≅ Abelian.coimage (α.app X) :=
   PreservesCokernel.iso ((evaluation C D).obj X) _ ≪≫
     cokernel.mapIso _ _ (PreservesKernel.iso ((evaluation C D).obj X) _) (Iso.refl _)
       (by
         dsimp
-        simp only [category.comp_id]
-        exact (kernel_comparison_comp_ι _ ((evaluation C D).obj X)).symm)
+        simp only [Category.comp_id, PreservesKernel.iso_hom]
+        exact (kernelComparison_comp_ι _ ((evaluation C D).obj X)).symm)
 #align category_theory.abelian.functor_category.coimage_obj_iso CategoryTheory.Abelian.FunctorCategory.coimageObjIso
 
 /-- The abelian image in a functor category can be calculated componentwise. -/
-@[simps]
+@[simps!]
 def imageObjIso : (Abelian.image α).obj X ≅ Abelian.image (α.app X) :=
   PreservesKernel.iso ((evaluation C D).obj X) _ ≪≫
     kernel.mapIso _ _ (Iso.refl _) (PreservesCokernel.iso ((evaluation C D).obj X) _)
       (by
-        apply (cancel_mono (preserves_cokernel.iso ((evaluation C D).obj X) α).inv).1
-        simp only [category.assoc, iso.hom_inv_id]
+        apply (cancel_mono (PreservesCokernel.iso ((evaluation C D).obj X) α).inv).1
+        simp only [Category.assoc, Iso.hom_inv_id]
         dsimp
-        simp only [category.id_comp, category.comp_id]
-        exact (π_comp_cokernel_comparison _ ((evaluation C D).obj X)).symm)
+        simp only [PreservesCokernel.iso_inv, Category.id_comp, Category.comp_id]
+        exact (π_comp_cokernelComparison _ ((evaluation C D).obj X)).symm)
 #align category_theory.abelian.functor_category.image_obj_iso CategoryTheory.Abelian.FunctorCategory.imageObjIso
 
 theorem coimageImageComparison_app :
     coimageImageComparison (α.app X) =
-      (coimage_obj_iso α X).inv ≫ (coimageImageComparison α).app X ≫ (image_obj_iso α X).Hom := by
-  ext
+      (coimageObjIso α X).inv ≫ (coimageImageComparison α).app X ≫ (imageObjIso α X).hom := by
+  apply coequalizer.hom_ext
+  apply equalizer.hom_ext
   dsimp
-  simp only [category.comp_id, category.id_comp, category.assoc, coimage_image_factorisation,
-    limits.cokernel.π_desc_assoc, limits.kernel.lift_ι]
-  simp only [← evaluation_obj_map C D X]
-  erw [kernel_comparison_comp_ι _ ((evaluation C D).obj X)]
-  erw [π_comp_cokernel_comparison_assoc _ ((evaluation C D).obj X)]
-  simp only [← functor.map_comp]
-  simp only [coimage_image_factorisation, evaluation_obj_map]
+  dsimp [imageObjIso, coimageObjIso, cokernel.map]
+  simp only [coimage_image_factorisation, PreservesKernel.iso_hom, Category.assoc,
+    kernel.lift_ι, Category.comp_id, PreservesCokernel.iso_inv,
+    cokernel.π_desc_assoc, Category.id_comp]
+  erw [kernelComparison_comp_ι _ ((evaluation C D).obj X),
+    π_comp_cokernelComparison_assoc _ ((evaluation C D).obj X)]
+  conv_lhs => rw [← coimage_image_factorisation α]
 #align category_theory.abelian.functor_category.coimage_image_comparison_app CategoryTheory.Abelian.FunctorCategory.coimageImageComparison_app
 
 theorem coimageImageComparison_app' :
     (coimageImageComparison α).app X =
-      (coimage_obj_iso α X).Hom ≫ coimageImageComparison (α.app X) ≫ (image_obj_iso α X).inv := by
-  simp only [coimage_image_comparison_app, iso.hom_inv_id_assoc, iso.hom_inv_id, category.assoc,
-    category.comp_id]
+      (coimageObjIso α X).hom ≫ coimageImageComparison (α.app X) ≫ (imageObjIso α X).inv := by
+  simp only [coimageImageComparison_app, Iso.hom_inv_id_assoc, Iso.hom_inv_id, Category.assoc,
+    Category.comp_id]
 #align category_theory.abelian.functor_category.coimage_image_comparison_app' CategoryTheory.Abelian.FunctorCategory.coimageImageComparison_app'
 
-instance functor_category_isIso_coimageImageComparison : IsIso (Abelian.coimageImageComparison α) :=
-  by
-  have : ∀ X : C, is_iso ((abelian.coimage_image_comparison α).app X) := by
+instance functor_category_isIso_coimageImageComparison :
+    IsIso (Abelian.coimageImageComparison α) := by
+  have : ∀ X : C, IsIso ((Abelian.coimageImageComparison α).app X) := by
     intros
-    rw [coimage_image_comparison_app']
+    rw [coimageImageComparison_app']
     infer_instance
-  apply nat_iso.is_iso_of_is_iso_app
+  apply NatIso.isIso_of_isIso_app
 #align category_theory.abelian.functor_category.functor_category_is_iso_coimage_image_comparison CategoryTheory.Abelian.FunctorCategory.functor_category_isIso_coimageImageComparison
 
 end FunctorCategory
 
 noncomputable instance functorCategoryAbelian : Abelian (C ⥤ D) :=
+  let _ : HasKernels (C ⥤ D) := inferInstance
+  let _ : HasCokernels (C ⥤ D) := inferInstance
   Abelian.ofCoimageImageComparisonIsIso
 #align category_theory.abelian.functor_category_abelian CategoryTheory.Abelian.functorCategoryAbelian
 
 end
 
-section
-
-universe u
-
-variable {C : Type u} [SmallCategory C]
-
-variable {D : Type (u + 1)} [LargeCategory D] [Abelian D]
-
-/-- A variant with specialized universes for a common case. -/
-noncomputable instance functorCategoryAbelian' : Abelian (C ⥤ D) :=
-  Abelian.functorCategoryAbelian.{u, u + 1, u, u}
-#align category_theory.abelian.functor_category_abelian' CategoryTheory.Abelian.functorCategoryAbelian'
-
-end
+--porting note: the following section should be unnecessary because there are no longer
+--any universe restrictions for `functorCategoryAbelian`
+--
+--section
+--
+--universe u
+--
+--variable {C : Type u} [SmallCategory C]
+--
+--variable {D : Type (u + 1)} [LargeCategory D] [Abelian D]
+--
+--/-- A variant with specialized universes for a common case. -/
+--noncomputable instance functorCategoryAbelian' : Abelian (C ⥤ D) :=
+--  Abelian.functorCategoryAbelian.{u, u + 1, u, u}
+--#align category_theory.abelian.functor_category_abelian' CategoryTheory.Abelian.functorCategoryAbelian'
+--
+--end
 
 end Abelian
 
 end CategoryTheory
-
