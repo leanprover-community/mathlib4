@@ -47,4 +47,12 @@ if s.endsWith p then s.dropRight p.length else s
 def count (s : String) (c : Char) : Nat :=
 s.foldl (fun n d => if d = c then n + 1 else n) 0
 
+/-- Removes the first `n` elements from the string `s` -/
+def popn (s : String) (n : Nat) : String :=
+  ⟨s.toList.drop n⟩
+
+/-- Produce the head character from the string `s`, if `s` is not empty, otherwise 'A'. -/
+def head (s : String) : Char :=
+  s.iter.curr
+
 end String

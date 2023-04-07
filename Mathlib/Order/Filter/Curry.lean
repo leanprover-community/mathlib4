@@ -13,7 +13,7 @@ import Mathlib.Order.Filter.Prod
 /-!
 # Curried Filters
 
-This file provides an operation (`filter.curry`) on filters which provides the equivalence
+This file provides an operation (`Filter.curry`) on filters which provides the equivalence
 `∀ᶠ a in l, ∀ᶠ b in l', p (a, b) ↔ ∀ᶠ c in (l.curry l'), p c` (see `filter.eventually_curry_iff`).
 
 To understand when this operation might arise, it is helpful to think of `∀ᶠ` as a combination of
@@ -24,7 +24,7 @@ yields the quantifier order `∃ ∀ ∃ ∀`. For instance,
 This is different from a product filter, which instead yields a quantifier order `∃ ∃ ∀ ∀`. For
 instance, `∀ᶠ n in at_top ×ᶠ at_top, p n ↔ ∃ M, ∃ N, ∀ m ≥ M, ∀ n ≥ N, p (m, n)`. This makes it
 clear that if something eventually occurs on the product filter, it eventually occurs on the curried
-filter (see `filter.curry_le_prod` and `filter.eventually.curry`), but the converse is not true.
+filter (see `Filter.curry_le_prod` and `Filter.eventually.curry`), but the converse is not true.
 
 Another way to think about the curried versus the product filter is that tending to some limit on
 the product filter is a version of uniform convergence (see `tendsto_prod_filter_iff`) whereas
