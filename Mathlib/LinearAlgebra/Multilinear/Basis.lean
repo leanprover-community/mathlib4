@@ -8,8 +8,8 @@ Authors: Joseph Myers
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.LinearAlgebra.Basis
-import Mathbin.LinearAlgebra.Multilinear.Basic
+import Mathlib.LinearAlgebra.Basis
+import Mathlib.LinearAlgebra.Multilinear.Basic
 
 /-!
 # Multilinear maps in relation to bases.
@@ -36,8 +36,7 @@ variable [∀ i, Module R (M i)] [Module R M₂] [Module R M₃]
 basis vectors. -/
 theorem Basis.ext_multilinear_fin {f g : MultilinearMap R M M₂} {ι₁ : Fin n → Type _}
     (e : ∀ i, Basis (ι₁ i) R (M i))
-    (h : ∀ v : ∀ i, ι₁ i, (f fun i => e i (v i)) = g fun i => e i (v i)) : f = g :=
-  by
+    (h : ∀ v : ∀ i, ι₁ i, (f fun i => e i (v i)) = g fun i => e i (v i)) : f = g := by
   induction' n with m hm
   · ext x
     convert h finZeroElim
@@ -60,8 +59,7 @@ are basis vectors. Unlike `basis.ext_multilinear_fin`, this only uses a single b
 dependently-typed version would still be true, but the proof would need a dependently-typed
 version of `dom_dom_congr`. -/
 theorem Basis.ext_multilinear [Finite ι] {f g : MultilinearMap R (fun i : ι => M₂) M₃} {ι₁ : Type _}
-    (e : Basis ι₁ R M₂) (h : ∀ v : ι → ι₁, (f fun i => e (v i)) = g fun i => e (v i)) : f = g :=
-  by
+    (e : Basis ι₁ R M₂) (h : ∀ v : ι → ι₁, (f fun i => e (v i)) = g fun i => e (v i)) : f = g := by
   cases nonempty_fintype ι
   exact
     (dom_dom_congr_eq_iff (Fintype.equivFin ι) f g).mp
