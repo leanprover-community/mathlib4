@@ -182,9 +182,9 @@ submonoid `sa` such that `x ∈ s ↔ x ∈ sg ↔ x ∈ sa`. -/
 protected def mk' (s : Set R) (sg : Subsemigroup R) (hg : ↑sg = s) (sa : AddSubmonoid R)
     (ha : ↑sa = s) : NonUnitalSubsemiring R where
   carrier := s
-  zero_mem' := ha ▸ sa.zero_mem
-  add_mem' x y := by simpa only [← ha] using sa.add_mem
-  mul_mem' x y := by simpa only [← hg] using sg.mul_mem
+  zero_mem' := by subst ha; exact sa.zero_mem
+  add_mem' := by subst ha; exact sa.add_mem
+  mul_mem' := by subst hg; exact sg.mul_mem
 #align non_unital_subsemiring.mk' NonUnitalSubsemiring.mk'
 
 @[simp]
@@ -305,8 +305,9 @@ theorem coe_map (f : F) (s : NonUnitalSubsemiring R) : (s.map f : Set S) = f '' 
 #align non_unital_subsemiring.coe_map NonUnitalSubsemiring.coe_map
 
 @[simp]
-theorem mem_map {f : F} {s : NonUnitalSubsemiring R} {y : S} : y ∈ s.map f ↔ ∃ x ∈ s, f x = y :=
-  Set.mem_image_iff_bex
+theorem mem_map {f : F} {s : NonUnitalSubsemiring R} {y : S} : y ∈ s.map f ↔ ∃ x ∈ s, f x = y := by
+  convert Set.mem_image_iff_bex
+  simp
 #align non_unital_subsemiring.mem_map NonUnitalSubsemiring.mem_map
 
 @[simp]
@@ -428,7 +429,7 @@ theorem mem_inf {p p' : NonUnitalSubsemiring R} {x : R} : x ∈ p ⊓ p' ↔ x �
 instance : InfSet (NonUnitalSubsemiring R) :=
   ⟨fun s =>
     NonUnitalSubsemiring.mk' (⋂ t ∈ s, ↑t) (⨅ t ∈ s, NonUnitalSubsemiring.toSubsemigroup t)
-      (by simp) (⨅ t ∈ s, NonUnitalSubsemiring.toAddSubmonoid t) (by simp)⟩
+      (by simp; congr) (⨅ t ∈ s, NonUnitalSubsemiring.toAddSubmonoid t) (by simp)⟩
 
 @[simp, norm_cast]
 theorem coe_infₛ (S : Set (NonUnitalSubsemiring R)) :
@@ -455,9 +456,8 @@ theorem infₛ_toAddSubmonoid (s : Set (NonUnitalSubsemiring R)) :
 /-- Non-unital subsemirings of a non-unital semiring form a complete lattice. -/
 instance : CompleteLattice (NonUnitalSubsemiring R) :=
   {
-    completeLatticeOfInf (NonUnitalSubsemiring R) fun s =>
-      IsGLB.of_image (fun s t => show (s : Set R) ≤ t ↔ s ≤ t from SetLike.coe_subset_coe)
-        isGLB_binfᵢ with
+    completeLatticeOfInf (NonUnitalSubsemiring R)
+      fun s => IsGLB.of_image SetLike.coe_subset_coe isGLB_binfᵢ with
     bot := ⊥
     bot_le := fun s x hx => (mem_bot.mp hx).symm ▸ zero_mem s
     top := ⊤
@@ -701,7 +701,8 @@ protected def gi : GaloisInsertion (@closure R _) coe where
   choice_eq s h := rfl
 #align non_unital_subsemiring.gi NonUnitalSubsemiring.gi
 
-variable {R} {F : Type _} [NonUnitalRingHomClass F R S]
+variable {R}
+variable {F : Type _} [NonUnitalRingHomClass F R S]
 
 /-- Closure of a non-unital subsemiring `S` equals `S`. -/
 theorem closure_eq (s : NonUnitalSubsemiring R) : closure (s : Set R) = s :=
@@ -764,54 +765,54 @@ theorem comap_top (f : F) : comap f (⊤ : NonUnitalSubsemiring S) = (⊤ : NonU
 /-- Given `non_unital_subsemiring`s `s`, `t` of semirings `R`, `S` respectively, `s.prod t` is
 `s × t` as a non-unital subsemiring of `R × S`. -/
 def prod (s : NonUnitalSubsemiring R) (t : NonUnitalSubsemiring S) : NonUnitalSubsemiring (R × S) :=
-  { s.toSubsemigroup.Prod t.toSubsemigroup, s.toAddSubmonoid.Prod t.toAddSubmonoid with
+  { s.toSubsemigroup.prod t.toSubsemigroup, s.toAddSubmonoid.prod t.toAddSubmonoid with
     carrier := (s : Set R) ×ˢ (t : Set S) }
 #align non_unital_subsemiring.prod NonUnitalSubsemiring.prod
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[norm_cast]
 theorem coe_prod (s : NonUnitalSubsemiring R) (t : NonUnitalSubsemiring S) :
-    (s.Prod t : Set (R × S)) = (s : Set R) ×ˢ (t : Set S) :=
+    (s.prod t : Set (R × S)) = (s : Set R) ×ˢ (t : Set S) :=
   rfl
 #align non_unital_subsemiring.coe_prod NonUnitalSubsemiring.coe_prod
 
 theorem mem_prod {s : NonUnitalSubsemiring R} {t : NonUnitalSubsemiring S} {p : R × S} :
-    p ∈ s.Prod t ↔ p.1 ∈ s ∧ p.2 ∈ t :=
+    p ∈ s.prod t ↔ p.1 ∈ s ∧ p.2 ∈ t :=
   Iff.rfl
 #align non_unital_subsemiring.mem_prod NonUnitalSubsemiring.mem_prod
 
 @[mono]
 theorem prod_mono ⦃s₁ s₂ : NonUnitalSubsemiring R⦄ (hs : s₁ ≤ s₂) ⦃t₁ t₂ : NonUnitalSubsemiring S⦄
-    (ht : t₁ ≤ t₂) : s₁.Prod t₁ ≤ s₂.Prod t₂ :=
+    (ht : t₁ ≤ t₂) : s₁.prod t₁ ≤ s₂.prod t₂ :=
   Set.prod_mono hs ht
 #align non_unital_subsemiring.prod_mono NonUnitalSubsemiring.prod_mono
 
 theorem prod_mono_right (s : NonUnitalSubsemiring R) :
-    Monotone fun t : NonUnitalSubsemiring S => s.Prod t :=
+    Monotone fun t : NonUnitalSubsemiring S => s.prod t :=
   prod_mono (le_refl s)
 #align non_unital_subsemiring.prod_mono_right NonUnitalSubsemiring.prod_mono_right
 
 theorem prod_mono_left (t : NonUnitalSubsemiring S) :
-    Monotone fun s : NonUnitalSubsemiring R => s.Prod t := fun s₁ s₂ hs => prod_mono hs (le_refl t)
+    Monotone fun s : NonUnitalSubsemiring R => s.prod t := fun s₁ s₂ hs => prod_mono hs (le_refl t)
 #align non_unital_subsemiring.prod_mono_left NonUnitalSubsemiring.prod_mono_left
 
 theorem prod_top (s : NonUnitalSubsemiring R) :
-    s.Prod (⊤ : NonUnitalSubsemiring S) = s.comap (NonUnitalRingHom.fst R S) :=
+    s.prod (⊤ : NonUnitalSubsemiring S) = s.comap (NonUnitalRingHom.fst R S) :=
   ext fun x => by simp [mem_prod, MonoidHom.coe_fst]
 #align non_unital_subsemiring.prod_top NonUnitalSubsemiring.prod_top
 
 theorem top_prod (s : NonUnitalSubsemiring S) :
-    (⊤ : NonUnitalSubsemiring R).Prod s = s.comap (NonUnitalRingHom.snd R S) :=
+    (⊤ : NonUnitalSubsemiring R).prod s = s.comap (NonUnitalRingHom.snd R S) :=
   ext fun x => by simp [mem_prod, MonoidHom.coe_snd]
 #align non_unital_subsemiring.top_prod NonUnitalSubsemiring.top_prod
 
 @[simp]
-theorem top_prod_top : (⊤ : NonUnitalSubsemiring R).Prod (⊤ : NonUnitalSubsemiring S) = ⊤ :=
+theorem top_prod_top : (⊤ : NonUnitalSubsemiring R).prod (⊤ : NonUnitalSubsemiring S) = ⊤ :=
   (top_prod _).trans <| comap_top _
 #align non_unital_subsemiring.top_prod_top NonUnitalSubsemiring.top_prod_top
 
 /-- Product of non-unital subsemirings is isomorphic to their product as semigroups. -/
-def prodEquiv (s : NonUnitalSubsemiring R) (t : NonUnitalSubsemiring S) : s.Prod t ≃+* s × t :=
+def prodEquiv (s : NonUnitalSubsemiring R) (t : NonUnitalSubsemiring S) : s.prod t ≃+* s × t :=
   { Equiv.Set.prod ↑s ↑t with
     map_mul' := fun x y => rfl
     map_add' := fun x y => rfl }
@@ -825,24 +826,25 @@ theorem mem_supᵢ_of_directed {ι} [hι : Nonempty ι] {S : ι → NonUnitalSub
       (Subsemigroup.coe_supᵢ_of_directed <| hS.mono_comp _ fun _ _ => id)
       (⨆ i, (S i).toAddSubmonoid)
       (AddSubmonoid.coe_supᵢ_of_directed <| hS.mono_comp _ fun _ _ => id)
-  suffices (⨆ i, S i) ≤ U by simpa using @this x
+  -- Porting note `@this` doesn't work
+  suffices H : (⨆ i, S i) ≤ U; simpa using @H x
   exact supᵢ_le fun i x hx => Set.mem_unionᵢ.2 ⟨i, hx⟩
 #align non_unital_subsemiring.mem_supr_of_directed NonUnitalSubsemiring.mem_supᵢ_of_directed
 
 theorem coe_supᵢ_of_directed {ι} [hι : Nonempty ι] {S : ι → NonUnitalSubsemiring R}
     (hS : Directed (· ≤ ·) S) : ((⨆ i, S i : NonUnitalSubsemiring R) : Set R) = ⋃ i, ↑(S i) :=
-  Set.ext fun x => by simp [mem_supr_of_directed hS]
+  Set.ext fun x => by simp [mem_supᵢ_of_directed hS]
 #align non_unital_subsemiring.coe_supr_of_directed NonUnitalSubsemiring.coe_supᵢ_of_directed
 
 theorem mem_supₛ_of_directedOn {S : Set (NonUnitalSubsemiring R)} (Sne : S.Nonempty)
     (hS : DirectedOn (· ≤ ·) S) {x : R} : x ∈ supₛ S ↔ ∃ s ∈ S, x ∈ s := by
   haveI : Nonempty S := Sne.to_subtype
-  simp only [supₛ_eq_supᵢ', mem_supr_of_directed hS.directed_coe, SetCoe.exists, Subtype.coe_mk]
+  simp only [supₛ_eq_supᵢ', mem_supᵢ_of_directed hS.directed_coe, SetCoe.exists, Subtype.coe_mk]
 #align non_unital_subsemiring.mem_Sup_of_directed_on NonUnitalSubsemiring.mem_supₛ_of_directedOn
 
 theorem coe_supₛ_of_directedOn {S : Set (NonUnitalSubsemiring R)} (Sne : S.Nonempty)
     (hS : DirectedOn (· ≤ ·) S) : (↑(supₛ S) : Set R) = ⋃ s ∈ S, ↑s :=
-  Set.ext fun x => by simp [mem_Sup_of_directed_on Sne hS]
+  Set.ext fun x => by simp [mem_supₛ_of_directedOn Sne hS]
 #align non_unital_subsemiring.coe_Sup_of_directed_on NonUnitalSubsemiring.coe_supₛ_of_directedOn
 
 end NonUnitalSubsemiring
