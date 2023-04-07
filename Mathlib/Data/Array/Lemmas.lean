@@ -11,6 +11,11 @@ Authors: Leonardo de Moura, Mario Carneiro
 import Mathlib.Control.Traversable.Equiv
 import Mathlib.Data.Vector.Basic
 import Mathlib.Init.Data.Array.Basic
+
+/-!
+# `DArray` and `Array'`
+-/
+
 universe u v w
 
 namespace DArray
@@ -26,10 +31,10 @@ namespace Array'
 
 instance {n α} [Inhabited α] : Inhabited (Array' n α) := DArray.instInhabitedDArray
 
-theorem toList_of_hEq {n₁ n₂ α} {a₁ : Array' n₁ α} {a₂ : Array' n₂ α} (hn : n₁ = n₂)
+theorem toList_of_heq {n₁ n₂ α} {a₁ : Array' n₁ α} {a₂ : Array' n₂ α} (hn : n₁ = n₂)
     (ha : HEq a₁ a₂) : a₁.toList = a₂.toList := by
   congr
-#align array.to_list_of_heq Array'.toList_of_hEq
+#align array.to_list_of_heq Array'.toList_of_heq
 
 -- rev_list
 section RevList
@@ -275,7 +280,7 @@ theorem pushBack_toList : (a.pushBack v).toList = a.toList ++ [v] := by
 #align array.push_back_to_list Array'.pushBack_toList
 
 @[simp]
-theorem read_pushBack_left (i : Fin n) : (a.pushBack v).read i = a.read i := by
+theorem read_pushBack_left (i : Fin n) : (a.pushBack v).read (Fin.castSucc i) = a.read i := by
   have : ¬i = n := ne_of_lt i.2
   simp [pushBack, this, Fin.castSucc, Fin.castAdd, Fin.castLe, Fin.castLt, read, DArray.read]
 #align array.read_push_back_left Array'.read_pushBack_left

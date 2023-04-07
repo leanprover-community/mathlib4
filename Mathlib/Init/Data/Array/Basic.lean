@@ -16,6 +16,10 @@ import Mathlib.Init.Data.Bool.Lemmas
 import Mathlib.Init.IteSimp
 import Init.Data.Format.Basic
 
+/-!
+# `DArray` and `Array'`
+-/
+
 universe u v w
 
 /-- In the VM, d_array is implemented as a persistent array. -/
@@ -203,7 +207,9 @@ def Array' (n : Nat) (α : Type u) : Type u :=
 #align array Array'
 
 /--
-`mk_array n v` creates a new array of length `n` where each element is `v`. Has builtin VM implementation. -/
+`mk_array n v` creates a new array of length `n` where each element is `v`.
+Has builtin VM implementation.
+-/
 def mkArray' {α} (n) (v : α) : Array' n α where data _ := v
 #align mk_array mkArray'
 
