@@ -8,8 +8,8 @@ Authors: Eric Wieser
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.LinearAlgebra.Multilinear.Basic
-import Mathbin.LinearAlgebra.TensorProduct
+import Mathlib.LinearAlgebra.Multilinear.Basic
+import Mathlib.LinearAlgebra.TensorProduct
 
 /-!
 # Constructions relating multilinear maps and tensor products.
@@ -48,8 +48,7 @@ https://leanprover.zulipchat.com/#narrow/stream/217875-Is-there.20code.20for.20X
 @[simps apply]
 def domCoprod (a : MultilinearMap R (fun _ : ι₁ => N) N₁)
     (b : MultilinearMap R (fun _ : ι₂ => N) N₂) :
-    MultilinearMap R (fun _ : Sum ι₁ ι₂ => N) (N₁ ⊗[R] N₂)
-    where
+    MultilinearMap R (fun _ : Sum ι₁ ι₂ => N) (N₁ ⊗[R] N₂) where
   toFun v := (a fun i => v (Sum.inl i)) ⊗ₜ b fun i => v (Sum.inr i)
   map_add' _ v i p q := by
     skip
