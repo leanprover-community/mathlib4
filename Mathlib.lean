@@ -1207,6 +1207,7 @@ import Mathlib.LinearAlgebra.AffineSpace.AffineEquiv
 import Mathlib.LinearAlgebra.AffineSpace.AffineMap
 import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace
 import Mathlib.LinearAlgebra.AffineSpace.Basic
+import Mathlib.LinearAlgebra.AffineSpace.Combination
 import Mathlib.LinearAlgebra.AffineSpace.Midpoint
 import Mathlib.LinearAlgebra.AffineSpace.MidpointZero
 import Mathlib.LinearAlgebra.AffineSpace.Ordered
@@ -1475,6 +1476,7 @@ import Mathlib.RingTheory.Subsemiring.Pointwise
 import Mathlib.RingTheory.UniqueFactorizationDomain
 import Mathlib.RingTheory.Valuation.Basic
 import Mathlib.RingTheory.Valuation.Integers
+import Mathlib.RingTheory.Valuation.Quotient
 import Mathlib.RingTheory.ZMod
 import Mathlib.SetTheory.Cardinal.Basic
 import Mathlib.SetTheory.Cardinal.Cofinality
@@ -1659,6 +1661,8 @@ import Mathlib.Topology.Algebra.Ring.Basic
 import Mathlib.Topology.Algebra.Ring.Ideal
 import Mathlib.Topology.Algebra.Semigroup
 import Mathlib.Topology.Algebra.Star
+import Mathlib.Topology.Algebra.StarSubalgebra
+import Mathlib.Topology.Algebra.UniformField
 import Mathlib.Topology.Algebra.UniformFilterBasis
 import Mathlib.Topology.Algebra.UniformGroup
 import Mathlib.Topology.Algebra.UniformMulAction
