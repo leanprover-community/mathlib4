@@ -1255,8 +1255,8 @@ theorem _root_.IsCompact.exists_cthickening_subset_open (hs : IsCompact s) (ht :
     ⟨h.1, disjoint_compl_right_iff_subset.1 <| h.2.mono_right <| self_subset_cthickening _⟩
 #align is_compact.exists_cthickening_subset_open IsCompact.exists_cthickening_subset_open
 
-theorem _root_.IsCompact.exists_thickening_subset_open (hs : IsCompact s) (ht : IsOpen t) (hst : s ⊆ t) :
-    ∃ δ, 0 < δ ∧ thickening δ s ⊆ t :=
+theorem _root_.IsCompact.exists_thickening_subset_open (hs : IsCompact s) (ht : IsOpen t)
+    (hst : s ⊆ t) : ∃ δ, 0 < δ ∧ thickening δ s ⊆ t :=
   let ⟨δ, h₀, hδ⟩ := hs.exists_cthickening_subset_open ht hst
   ⟨δ, h₀, (thickening_subset_cthickening _ _).trans hδ⟩
 #align is_compact.exists_thickening_subset_open IsCompact.exists_thickening_subset_open
