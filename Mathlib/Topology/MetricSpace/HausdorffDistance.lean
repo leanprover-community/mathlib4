@@ -1428,7 +1428,7 @@ theorem infEdist_le_infEdist_cthickening_add :
   obtain ⟨y, hy, hxy⟩ := h
   exact
     infEdist_le_edist_add_infEdist.trans_lt
-      ((ENNReal.add_lt_add_of_lt_of_le (hy.trans_lt ENNReal.ofReal_lt_top).Ne hxy hy).trans_le
+      ((ENNReal.add_lt_add_of_lt_of_le (hy.trans_lt ENNReal.ofReal_lt_top).ne hxy hy).trans_le
         (tsub_add_cancel_of_le <| le_self_add.trans (lt_tsub_iff_left.1 hxy).le).le)
 #align metric.inf_edist_le_inf_edist_cthickening_add Metric.infEdist_le_infEdist_cthickening_add
 
@@ -1463,9 +1463,8 @@ theorem thickening_cthickening_subset (ε : ℝ) (hδ : 0 ≤ δ) (s : Set α) :
   simp_rw [mem_thickening_iff_exists_edist_lt, mem_cthickening_iff, ← infEdist_lt_iff,
     ENNReal.ofReal_add hε hδ]
   rintro ⟨y, hy, hxy⟩
-  exact
-    infEdist_le_edist_add_infEdist.trans_lt
-      (ENNReal.add_lt_add_of_lt_of_le (hy.trans_lt ENNReal.ofReal_lt_top).Ne hxy hy)
+  exact infEdist_le_edist_add_infEdist.trans_lt
+    (ENNReal.add_lt_add_of_lt_of_le (hy.trans_lt ENNReal.ofReal_lt_top).ne hxy hy)
 #align metric.thickening_cthickening_subset Metric.thickening_cthickening_subset
 
 /-- For the equality, see `cthickening_thickening`. -/
@@ -1490,7 +1489,7 @@ theorem cthickening_cthickening_subset (hε : 0 ≤ ε) (hδ : 0 ≤ δ) (s : Se
 
 theorem frontier_cthickening_disjoint (A : Set α) :
     Pairwise (Disjoint on fun r : ℝ≥0 => frontier (cthickening r A)) := fun r₁ r₂ hr =>
-  ((disjoint_singleton.2 <| by simpa).Preimage _).mono (frontier_cthickening_subset _)
+  ((disjoint_singleton.2 <| by simpa).preimage _).mono (frontier_cthickening_subset _)
     (frontier_cthickening_subset _)
 #align metric.frontier_cthickening_disjoint Metric.frontier_cthickening_disjoint
 
