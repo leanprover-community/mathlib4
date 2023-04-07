@@ -8,8 +8,8 @@ Authors: Kevin Buzzard, Johan Commelin, Patrick Massot
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.RingTheory.Valuation.Basic
-import Mathbin.RingTheory.Ideal.QuotientOperations
+import Mathlib.RingTheory.Valuation.Basic
+import Mathlib.RingTheory.Ideal.QuotientOperations
 
 /-!
 # The valuation on a quotient ring
@@ -39,8 +39,7 @@ def onQuotVal {J : Ideal R} (hJ : J ≤ supp v) : R ⧸ J → Γ₀ := fun q =>
 #align valuation.on_quot_val Valuation.onQuotVal
 
 /-- The extension of valuation v on R to valuation on R/J if J ⊆ supp v -/
-def onQuot {J : Ideal R} (hJ : J ≤ supp v) : Valuation (R ⧸ J) Γ₀
-    where
+def onQuot {J : Ideal R} (hJ : J ≤ supp v) : Valuation (R ⧸ J) Γ₀ where
   toFun := v.onQuotVal hJ
   map_zero' := v.map_zero
   map_one' := v.map_one
@@ -55,8 +54,7 @@ theorem onQuot_comap_eq {J : Ideal R} (hJ : J ≤ supp v) :
 #align valuation.on_quot_comap_eq Valuation.onQuot_comap_eq
 
 theorem self_le_supp_comap (J : Ideal R) (v : Valuation (R ⧸ J) Γ₀) :
-    J ≤ (v.comap (Ideal.Quotient.mk J)).supp :=
-  by
+    J ≤ (v.comap (Ideal.Quotient.mk J)).supp := by
   rw [comap_supp, ← Ideal.map_le_iff_le_comap]
   simp
 #align valuation.self_le_supp_comap Valuation.self_le_supp_comap
@@ -71,8 +69,7 @@ theorem comap_onQuot_eq (J : Ideal R) (v : Valuation (R ⧸ J) Γ₀) :
 
 /-- The quotient valuation on R/J has support supp(v)/J if J ⊆ supp v. -/
 theorem supp_quot {J : Ideal R} (hJ : J ≤ supp v) :
-    supp (v.onQuot hJ) = (supp v).map (Ideal.Quotient.mk J) :=
-  by
+    supp (v.onQuot hJ) = (supp v).map (Ideal.Quotient.mk J) := by
   apply le_antisymm
   · rintro ⟨x⟩ hx
     apply Ideal.subset_span
@@ -82,8 +79,7 @@ theorem supp_quot {J : Ideal R} (hJ : J ≤ supp v) :
     exact hx
 #align valuation.supp_quot Valuation.supp_quot
 
-theorem supp_quot_supp : supp (v.onQuot le_rfl) = 0 :=
-  by
+theorem supp_quot_supp : supp (v.onQuot le_rfl) = 0 := by
   rw [supp_quot]
   exact Ideal.map_quotient_self _
 #align valuation.supp_quot_supp Valuation.supp_quot_supp
