@@ -46,10 +46,10 @@ def IsPrimitive (p : R[X]) : Prop :=
   ∀ r : R, C r ∣ p → IsUnit r
 #align polynomial.is_primitive Polynomial.IsPrimitive
 
-theorem isPrimitive_iff_isUnit_of_c_dvd {p : R[X]} : p.IsPrimitive ↔ ∀ r : R, C r ∣ p → IsUnit r :=
+theorem isPrimitive_iff_isUnit_of_C_dvd {p : R[X]} : p.IsPrimitive ↔ ∀ r : R, C r ∣ p → IsUnit r :=
   Iff.rfl
 set_option linter.uppercaseLean3 false in
-#align polynomial.is_primitive_iff_is_unit_of_C_dvd Polynomial.isPrimitive_iff_isUnit_of_c_dvd
+#align polynomial.is_primitive_iff_is_unit_of_C_dvd Polynomial.isPrimitive_iff_isUnit_of_C_dvd
 
 @[simp]
 theorem isPrimitive_one : IsPrimitive (1 : R[X]) := fun _ h =>
@@ -67,7 +67,7 @@ theorem IsPrimitive.ne_zero [Nontrivial R] {p : R[X]} (hp : p.IsPrimitive) : p �
 #align polynomial.is_primitive.ne_zero Polynomial.IsPrimitive.ne_zero
 
 theorem isPrimitive_of_dvd {p q : R[X]} (hp : IsPrimitive p) (hq : q ∣ p) : IsPrimitive q :=
-  fun a ha => isPrimitive_iff_isUnit_of_c_dvd.mp hp a (dvd_trans ha hq)
+  fun a ha => isPrimitive_iff_isUnit_of_C_dvd.mp hp a (dvd_trans ha hq)
 #align polynomial.is_primitive_of_dvd Polynomial.isPrimitive_of_dvd
 
 end Primitive

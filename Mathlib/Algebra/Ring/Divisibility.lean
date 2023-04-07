@@ -5,7 +5,7 @@ Authors: Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Yury Kudryashov, Ne
 Ported by: Matej Penciak
 
 ! This file was ported from Lean 3 source module algebra.ring.divisibility
-! leanprover-community/mathlib commit f1a2caaf51ef593799107fe9a8d5e411599f3996
+! leanprover-community/mathlib commit 47a1a73351de8dd6c8d3d32b569c8e434b03ca47
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -124,6 +124,10 @@ theorem dvd_iff_dvd_of_dvd_sub {a b c : α} (h : a ∣ b - c) : a ∣ b ↔ a �
     convert dvd_add h h'
     exact eq_add_of_sub_eq rfl
 #align dvd_iff_dvd_of_dvd_sub dvd_iff_dvd_of_dvd_sub
+
+--porting note: Needed to give an explicit argument to `dvd_neg`
+theorem dvd_sub_comm : a ∣ b - c ↔ a ∣ c - b := by rw [← dvd_neg a, neg_sub]
+#align dvd_sub_comm dvd_sub_comm
 
 end NonUnitalRing
 
