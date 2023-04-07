@@ -99,8 +99,8 @@ theorem read_write (a : DArray n α) (i : Fin n) (v : α i) : read (write a i v)
 @[simp]
 theorem read_write_of_ne (a : DArray n α) {i j : Fin n} (v : α i) :
     i ≠ j → read (write a i v) j = read a j := by
-    intro h
-    simp [read, write, h]
+  intro h
+  simp [read, write, h]
 #align d_array.read_write_of_ne DArray.read_write_of_ne
 
 protected theorem ext {a b : DArray n α} (h : ∀ i, read a i = read b i) : a = b := by
@@ -112,9 +112,9 @@ protected theorem ext {a b : DArray n α} (h : ∀ i, read a i = read b i) : a =
 
 protected theorem ext' {a b : DArray n α}
     (h : ∀ (i : Nat) (h : i < n), read a ⟨i, h⟩ = read b ⟨i, h⟩) : a = b := by
-    cases a
-    cases b
-    congr ; funext i; cases i; apply h
+  cases a
+  cases b
+  congr; funext i; cases i; apply h
 #align d_array.ext' DArray.ext'
 
 protected def beqAux [∀ i, DecidableEq (α i)] (a b : DArray n α) : ∀ i : Nat, i ≤ n → Bool
