@@ -8,7 +8,7 @@ Authors: Patrick Massot
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.SpecificLimits.Basic
+import Mathlib.Analysis.SpecificLimits.Basic
 
 /-!
 # Hofer's lemma
@@ -43,8 +43,7 @@ theorem hofer {X : Type _} [MetricSpace X] [CompleteSpace X] (x : X) (ε : ℝ) 
       ∃ x' : X, ε' ≤ ε ∧ d x' x ≤ 2 * ε ∧ ε * ϕ x ≤ ε' * ϕ x' ∧ ∀ y, d x' y ≤ ε' → ϕ y ≤ 2 * ϕ x' :=
   by
   by_contra H
-  have reformulation : ∀ (x') (k : ℕ), ε * ϕ x ≤ ε / 2 ^ k * ϕ x' ↔ 2 ^ k * ϕ x ≤ ϕ x' :=
-    by
+  have reformulation : ∀ (x') (k : ℕ), ε * ϕ x ≤ ε / 2 ^ k * ϕ x' ↔ 2 ^ k * ϕ x ≤ ϕ x' := by
     intro x' k
     rw [div_mul_eq_mul_div, le_div_iff, mul_assoc, mul_le_mul_left ε_pos, mul_comm]
     positivity
@@ -65,14 +64,12 @@ theorem hofer {X : Type _} [MetricSpace X] [CompleteSpace X] (x : X) (ε : ℝ) 
   have hu :
     ∀ n,
       d (u n) x ≤ 2 * ε ∧ 2 ^ n * ϕ x ≤ ϕ (u n) →
-        d (u n) (u <| n + 1) ≤ ε / 2 ^ n ∧ 2 * ϕ (u n) < ϕ (u <| n + 1) :=
-    by
+        d (u n) (u <| n + 1) ≤ ε / 2 ^ n ∧ 2 * ϕ (u n) < ϕ (u <| n + 1) := by
     intro n
     exact hF n (u n)
   clear hF
   -- Key properties of u, to be proven by induction
-  have key : ∀ n, d (u n) (u (n + 1)) ≤ ε / 2 ^ n ∧ 2 * ϕ (u n) < ϕ (u (n + 1)) :=
-    by
+  have key : ∀ n, d (u n) (u (n + 1)) ≤ ε / 2 ^ n ∧ 2 * ϕ (u n) < ϕ (u (n + 1)) := by
     intro n
     induction' n using Nat.case_strong_induction_on with n IH
     · specialize hu 0
@@ -91,24 +88,21 @@ theorem hofer {X : Type _} [MetricSpace X] [CompleteSpace X] (x : X) (ε : ℝ) 
         _ = (∑ i in r, (1 / 2) ^ i) * ε := finset.sum_mul.symm
         _ ≤ 2 * ε := mul_le_mul_of_nonneg_right (sum_geometric_two_le _) (le_of_lt ε_pos)
         
-    have B : 2 ^ (n + 1) * ϕ x ≤ ϕ (u (n + 1)) :=
-      by
+    have B : 2 ^ (n + 1) * ϕ x ≤ ϕ (u (n + 1)) := by
       refine' @geom_le (ϕ ∘ u) _ zero_le_two (n + 1) fun m hm => _
       exact (IH _ <| Nat.lt_add_one_iff.1 hm).2.le
     exact hu (n + 1) ⟨A, B⟩
   cases' forall_and_distrib.mp key with key₁ key₂
   clear hu key
   -- Hence u is Cauchy
-  have cauchy_u : CauchySeq u :=
-    by
+  have cauchy_u : CauchySeq u := by
     refine' cauchySeq_of_le_geometric _ ε one_half_lt_one fun n => _
     simpa only [one_div, inv_pow] using key₁ n
   -- So u converges to some y
   obtain ⟨y, limy⟩ : ∃ y, tendsto u at_top (𝓝 y)
   exact CompleteSpace.complete cauchy_u
   -- And ϕ ∘ u goes to +∞
-  have lim_top : tendsto (ϕ ∘ u) at_top at_top :=
-    by
+  have lim_top : tendsto (ϕ ∘ u) at_top at_top := by
     let v n := (ϕ ∘ u) (n + 1)
     suffices tendsto v at_top at_top by rwa [tendsto_add_at_top_iff_nat] at this
     have hv₀ : 0 < v 0 := by
