@@ -32,10 +32,10 @@ variable {s : Set β} {ι : Type _} {U : ι → Opens β} (hU : supᵢ U = ⊤)
 
 theorem Set.restrictPreimage_inducing (s : Set β) (h : Inducing f) :
     Inducing (s.restrictPreimage f) := by
-  simp_rw [inducing_coe.inducing_iff, inducing_iff_nhds, restrict_preimage, maps_to.coe_restrict,
-    restrict_eq, ← @Filter.comap_comap _ _ _ _ coe f] at h⊢
+  simp_rw [inducing_subtype_val.inducing_iff, inducing_iff_nhds, restrictPreimage,
+    MapsTo.coe_restrict, restrict_eq, ← @Filter.comap_comap _ _ _ _ _ f, Function.comp_apply] at h⊢
   intro a
-  rw [← h, ← inducing_coe.nhds_eq_comap]
+  rw [← h, ← inducing_subtype_val.nhds_eq_comap]
 #align set.restrict_preimage_inducing Set.restrictPreimage_inducing
 
 alias Set.restrictPreimage_inducing ← Inducing.restrictPreimage
@@ -74,9 +74,9 @@ theorem Set.restrictPreimage_isClosedMap (s : Set β) (H : IsClosedMap f) :
   rw [← (congr_arg HasCompl.compl e).trans (compl_compl t)]
   simp only [Set.preimage_compl, compl_inj_iff]
   ext ⟨x, hx⟩
-  suffices (∃ y, y ∉ u ∧ f y = x) ↔ ∃ y, f y ∈ s ∧ y ∉ u ∧ f y = x by
+  suffices (∃ y, y ∉ u ∧ f y = x) ↔ ∃ y, y ∉ u ∧ f y ∈ s ∧ f y = x by
     simpa [Set.restrictPreimage, ← Subtype.coe_inj]
-  exact ⟨fun ⟨a, b, c⟩ => ⟨a, c.symm ▸ hx, b, c⟩, fun ⟨a, _, b, c⟩ => ⟨a, b, c⟩⟩
+  exact ⟨fun ⟨a, b, c⟩ => ⟨a, b, c.symm ▸ hx, c⟩, fun ⟨a, b, _, c⟩ => ⟨a, b, c⟩⟩
 #align set.restrict_preimage_is_closed_map Set.restrictPreimage_isClosedMap
 
 theorem isOpen_iff_inter_of_supᵢ_eq_top (s : Set β) : IsOpen s ↔ ∀ i, IsOpen (s ∩ U i) := by
@@ -92,15 +92,13 @@ theorem isOpen_iff_inter_of_supᵢ_eq_top (s : Set β) : IsOpen s ↔ ∀ i, IsO
 
 theorem isOpen_iff_coe_preimage_of_supᵢ_eq_top (s : Set β) :
     IsOpen s ↔ ∀ i, IsOpen ((↑) ⁻¹' s : Set (U i)) := by
-  simp_rw [(U _).2.openEmbedding_subtype_val.open_iff_image_open]
-  simp_rw [@Set.image_preimage_eq_inter_range _ _ Subtype.val s]
-    --Set.image_preimage_eq_inter_range,
-    --Subtype.range_coe]
-  apply isOpen_iff_inter_of_supᵢ_eq_top hU s
-  assumption
+  -- Porting note: rewrote to avoid ´simp´ issues
+  rw [isOpen_iff_inter_of_supᵢ_eq_top hU s]
+  refine forall_congr' fun i => ?_
+  rw [(U _).2.openEmbedding_subtype_val.open_iff_image_open]
+  erw [Set.image_preimage_eq_inter_range]
+  rw [Subtype.range_coe, Opens.carrier_eq_coe]
 #align is_open_iff_coe_preimage_of_supr_eq_top isOpen_iff_coe_preimage_of_supᵢ_eq_top
-
-#exit
 
 theorem isClosed_iff_coe_preimage_of_supᵢ_eq_top (s : Set β) :
     IsClosed s ↔ ∀ i, IsClosed ((↑) ⁻¹' s : Set (U i)) := by
@@ -115,21 +113,21 @@ theorem isClosedMap_iff_isClosedMap_of_supᵢ_eq_top :
   intro i
   convert H i _ ⟨⟨_, hs.1, eq_compl_comm.mpr rfl⟩⟩
   ext ⟨x, hx⟩
-  suffices (∃ y, y ∈ s ∧ f y = x) ↔ ∃ y, f y ∈ U i ∧ y ∈ s ∧ f y = x by
+  suffices (∃ y, y ∈ s ∧ f y = x) ↔ ∃ y, y ∈ s ∧ f y ∈ U i ∧ f y = x by
     simpa [Set.restrictPreimage, ← Subtype.coe_inj]
-  exact ⟨fun ⟨a, b, c⟩ => ⟨a, c.symm ▸ hx, b, c⟩, fun ⟨a, _, b, c⟩ => ⟨a, b, c⟩⟩
+  exact ⟨fun ⟨a, b, c⟩ => ⟨a, b, c.symm ▸ hx, c⟩, fun ⟨a, b, _, c⟩ => ⟨a, b, c⟩⟩
 #align is_closed_map_iff_is_closed_map_of_supr_eq_top isClosedMap_iff_isClosedMap_of_supᵢ_eq_top
 
 theorem inducing_iff_inducing_of_supᵢ_eq_top (h : Continuous f) :
     Inducing f ↔ ∀ i, Inducing ((U i).1.restrictPreimage f) := by
-  simp_rw [inducing_coe.inducing_iff, inducing_iff_nhds, restrict_preimage, maps_to.coe_restrict,
-    restrict_eq, ← @Filter.comap_comap _ _ _ _ coe f]
+  simp_rw [inducing_subtype_val.inducing_iff, inducing_iff_nhds, restrictPreimage,
+    MapsTo.coe_restrict, restrict_eq, ← @Filter.comap_comap _ _ _ _ _ f]
   constructor
   · intro H i x
-    rw [← H, ← inducing_coe.nhds_eq_comap]
+    rw [Function.comp_apply, ← H, ← inducing_subtype_val.nhds_eq_comap]
   · intro H x
     obtain ⟨i, hi⟩ :=
-      opens.mem_supr.mp
+      Opens.mem_supᵢ.mp
         (show f x ∈ supᵢ U by
           rw [hU]
           triv)
@@ -144,7 +142,7 @@ theorem embedding_iff_embedding_of_supᵢ_eq_top (h : Continuous f) :
   simp_rw [embedding_iff]
   rw [forall_and]
   apply and_congr
-  · apply inducing_iff_inducing_of_supᵢ_eq_top; assumption
+  · apply inducing_iff_inducing_of_supᵢ_eq_top <;> assumption
   · apply Set.injective_iff_injective_of_unionᵢ_eq_univ
     convert congr_arg SetLike.coe hU
     simp
