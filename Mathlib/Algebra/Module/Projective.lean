@@ -67,7 +67,8 @@ projective module
 
 universe u v
 
-open LinearMap Finsupp
+open LinearMap hiding id
+open Finsupp
 
 /- The actual implementation we choose: `P` is projective if the natural surjection
    from the free `R`-module on `P` to `P` splits. -/
@@ -75,7 +76,7 @@ open LinearMap Finsupp
   if maps from the module lift along surjections. There are several other equivalent
   definitions. -/
 class Module.Projective (R : Type _) [Semiring R] (P : Type _) [AddCommMonoid P] [Module R P] :
-  Prop where
+    Prop where
   out : ∃ s : P →ₗ[R] P →₀ R, Function.LeftInverse (Finsupp.total P P R id) s
 #align module.projective Module.Projective
 
@@ -91,8 +92,9 @@ theorem projective_def :
   ⟨fun h => h.1, fun h => ⟨h⟩⟩
 #align module.projective_def Module.projective_def
 
-theorem projective_def' : Projective R P ↔ ∃ s : P →ₗ[R] P →₀ R, Finsupp.total P P R id ∘ₗ s = id :=
-  by simp_rw [projective_def, FunLike.ext_iff, Function.LeftInverse, coe_comp, id_coe, id.def]
+theorem projective_def' :
+    Projective R P ↔ ∃ s : P →ₗ[R] P →₀ R, Finsupp.total P P R id ∘ₗ s = .id :=
+  by simp_rw [projective_def, FunLike.ext_iff, Function.LeftInverse, comp_apply, id_apply]
 #align module.projective_def' Module.projective_def'
 
 /-- A projective R-module has the property that maps from it lift along surjections. -/
@@ -114,7 +116,7 @@ theorem projective_lifting_property [h : Projective R P] (f : M →ₗ[R] N) (g 
   use φ.comp s
   ext p
   conv_rhs => rw [← hs p]
-  simp [φ, Finsupp.total_apply, Function.surjInv_eq hf]
+  simp [Finsupp.total_apply, Function.surjInv_eq hf]
 #align module.projective_lifting_property Module.projective_lifting_property
 
 variable {Q : Type _} [AddCommMonoid Q] [Module R Q]
@@ -123,11 +125,11 @@ instance [hP : Projective R P] [hQ : Projective R Q] : Projective R (P × Q) := 
   rw [Module.projective_def']
   cases' hP.out with sP hsP
   cases' hQ.out with sQ hsQ
-  use coprod (lmap_domain R R (inl R P Q)) (lmap_domain R R (inr R P Q)) ∘ₗ sP.prod_map sQ
+  use coprod (lmapDomain R R (inl R P Q)) (lmapDomain R R (inr R P Q)) ∘ₗ sP.prodMap sQ
   ext <;>
-    simp only [coe_inl, coe_inr, coe_comp, Function.comp_apply, prod_map_apply, map_zero,
-      coprod_apply, lmap_domain_apply, map_domain_zero, add_zero, zero_add, id_comp,
-      total_map_domain]
+    simp only [coe_inl, coe_inr, coe_comp, Function.comp_apply, prodMap_apply, map_zero,
+      coprod_apply, lmapDomain_apply, mapDomain_zero, add_zero, zero_add, id_comp,
+      total_mapDomain]
   · rw [← fst_apply _, apply_total R]
     exact hsP x
   · rw [← snd_apply _, apply_total R]
