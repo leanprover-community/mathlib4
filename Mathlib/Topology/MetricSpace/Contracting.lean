@@ -163,7 +163,7 @@ theorem efixedPoint_eq_of_edist_lt_top (hf : ContractingWith K f) {x : α} (hx :
     <;> try apply efixedPoint_isFixedPt
   change edistLtTopSetoid.Rel _ _
   trans x;
-  · symm
+  · apply Setoid.symm' -- Porting note: Originally `symm`
     exact hf.edist_efixedPoint_lt_top hx
   trans y
   exacts [lt_top_iff_ne_top.2 h, hf.edist_efixedPoint_lt_top hy]
@@ -253,7 +253,7 @@ theorem efixedPoint_eq_of_edist_lt_top' (hf : ContractingWith K f) {s : Set α} 
     <;> try apply efixedPoint_is_fixed_pt'
   change edistLtTopSetoid.Rel _ _
   trans x;
-  · symm
+  · apply Setoid.symm' -- Porting note: Originally `symm`
     apply edist_efixedPoint_lt_top'
   trans y
   exact lt_top_iff_ne_top.2 hxy
