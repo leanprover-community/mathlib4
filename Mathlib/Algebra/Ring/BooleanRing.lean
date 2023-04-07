@@ -180,18 +180,18 @@ variable [BooleanRing α] [BooleanRing β] [BooleanRing γ]
 namespace BooleanRing
 
 /-- The join operation in a Boolean ring is `x + y + x * y`. -/
-def Sup : Sup α :=
+def sup : Sup α :=
   ⟨fun x y => x + y + x * y⟩
-#align boolean_ring.has_sup BooleanRing.Sup
+#align boolean_ring.has_sup BooleanRing.sup
 
 /-- The meet operation in a Boolean ring is `x * y`. -/
-def Inf : Inf α :=
+def inf : Inf α :=
   ⟨(· * ·)⟩
-#align boolean_ring.has_inf BooleanRing.Inf
+#align boolean_ring.has_inf BooleanRing.inf
 
 -- Porting note: TODO: add priority 100. lower instance priority
-scoped [BooleanAlgebraOfBooleanRing] attribute [instance] BooleanRing.Sup
-scoped [BooleanAlgebraOfBooleanRing] attribute [instance] BooleanRing.Inf
+scoped [BooleanAlgebraOfBooleanRing] attribute [instance] BooleanRing.sup
+scoped [BooleanAlgebraOfBooleanRing] attribute [instance] BooleanRing.inf
 open BooleanAlgebraOfBooleanRing
 
 theorem sup_comm (a b : α) : a ⊔ b = b ⊔ a := by
