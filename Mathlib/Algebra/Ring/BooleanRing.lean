@@ -251,9 +251,7 @@ The data is defined so that:
 * `a \ b` unfolds to `a * (1 + b)`
 -/
 def toBooleanAlgebra : BooleanAlgebra α :=
-  {
-    Lattice.mk' sup_comm sup_assoc inf_comm inf_assoc sup_inf_self
-      inf_sup_self with
+  { Lattice.mk' sup_comm sup_assoc inf_comm inf_assoc sup_inf_self inf_sup_self with
     le_sup_inf := le_sup_inf
     top := 1
     le_top := fun a => show a + 1 + a * 1 = 1 by rw [mul_one, (add_comm a 1),
@@ -361,8 +359,7 @@ protected def RingHom.asBoolalg (f : α →+* β) : BoundedLatticeHom (AsBoolalg
   toFun := toBoolalg ∘ f ∘ ofBoolalg
   map_sup' a b := by
     dsimp
-    simp_rw [map_add f, map_mul f]
-    rfl
+    simp_rw [map_add f, map_mul f, toBoolalg_add_add_mul]
   map_inf' := f.map_mul'
   map_top' := f.map_one'
   map_bot' := f.map_zero'
