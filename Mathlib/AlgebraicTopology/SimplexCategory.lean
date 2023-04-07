@@ -236,7 +236,7 @@ theorem δ_comp_δ' {n} {i : Fin (n + 2)} {j : Fin (n + 3)} (H : Fin.castSucc i 
 #align simplex_category.δ_comp_δ' SimplexCategory.δ_comp_δ'
 
 theorem δ_comp_δ'' {n} {i : Fin (n + 3)} {j : Fin (n + 2)} (H : i ≤ Fin.castSucc j) :
-    δ (i.castLt (Nat.lt_of_le_of_lt (Fin.le_iff_val_le_val.mp H) j.is_lt)) ≫ δ j.succ =
+    δ (i.castLT (Nat.lt_of_le_of_lt (Fin.le_iff_val_le_val.mp H) j.is_lt)) ≫ δ j.succ =
       δ j ≫ δ i := by
   rw [δ_comp_δ]
   · rfl
@@ -326,11 +326,11 @@ theorem δ_comp_σ_of_gt {n} {i : Fin (n + 2)} {j : Fin (n + 1)} (H : Fin.castSu
 
 @[reassoc]
 theorem δ_comp_σ_of_gt' {n} {i : Fin (n + 3)} {j : Fin (n + 2)} (H : j.succ < i) :
-    δ i ≫ σ j = σ (j.castLt ((add_lt_add_iff_right 1).mp (lt_of_lt_of_le H i.is_le))) ≫
+    δ i ≫ σ j = σ (j.castLT ((add_lt_add_iff_right 1).mp (lt_of_lt_of_le H i.is_le))) ≫
       δ (i.pred fun hi => by simp only [Fin.not_lt_zero, hi] at H) := by
   rw [← δ_comp_σ_of_gt]
   · simp
-  · rw [Fin.castSucc_cast_lt, ← Fin.succ_lt_succ_iff, Fin.succ_pred]
+  · rw [Fin.castSucc_castLT, ← Fin.succ_lt_succ_iff, Fin.succ_pred]
     exact H
 #align simplex_category.δ_comp_σ_of_gt' SimplexCategory.δ_comp_σ_of_gt'
 
