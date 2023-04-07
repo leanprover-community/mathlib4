@@ -614,5 +614,5 @@ instance : BooleanRing Bool where
   left_distrib := and_xor_distrib_left
   right_distrib := and_xor_distrib_right
   mul_self := Bool.and_self
-  zero_mul := λ a => rfl
-  mul_zero := λ a => by cases a <;> rfl
+  zero_mul a := rfl
+  mul_zero a := by cases a <;> rfl
