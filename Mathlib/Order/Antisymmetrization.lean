@@ -193,16 +193,14 @@ theorem toAntisymmetrization_lt_toAntisymmetrization_iff :
 
 @[simp]
 theorem ofAntisymmetrization_le_ofAntisymmetrization_iff {a b : Antisymmetrization α (· ≤ ·)} :
-    ofAntisymmetrization (· ≤ ·) a ≤ ofAntisymmetrization (· ≤ ·) b ↔ a ≤ b := by
-  rw [← toAntisymmetrization_le_toAntisymmetrization_iff]
-  simp
+    ofAntisymmetrization (· ≤ ·) a ≤ ofAntisymmetrization (· ≤ ·) b ↔ a ≤ b :=
+  (Quotient.out'RelEmbedding _).map_rel_iff
 #align of_antisymmetrization_le_of_antisymmetrization_iff ofAntisymmetrization_le_ofAntisymmetrization_iff
 
 @[simp]
 theorem ofAntisymmetrization_lt_ofAntisymmetrization_iff {a b : Antisymmetrization α (· ≤ ·)} :
-    ofAntisymmetrization (· ≤ ·) a < ofAntisymmetrization (· ≤ ·) b ↔ a < b := by
-  rw [← toAntisymmetrization_lt_toAntisymmetrization_iff]
-  simp
+    ofAntisymmetrization (· ≤ ·) a < ofAntisymmetrization (· ≤ ·) b ↔ a < b :=
+  (Quotient.out'RelEmbedding _).map_rel_iff
 #align of_antisymmetrization_lt_of_antisymmetrization_iff ofAntisymmetrization_lt_ofAntisymmetrization_iff
 
 @[mono]
