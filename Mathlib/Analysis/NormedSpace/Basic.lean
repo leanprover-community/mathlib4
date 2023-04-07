@@ -213,16 +213,21 @@ instance {E : Type _} [NormedAddCommGroup E] [NormedSpace ℚ E] (e : E) :
     DiscreteTopology <| AddSubgroup.zmultiples e := by
   rcases eq_or_ne e 0 with (rfl | he)
   · rw [AddSubgroup.zmultiples_zero_eq_bot]
-    infer_instance
+    refine Subsingleton.discreteTopology
   · rw [discreteTopology_iff_open_singleton_zero, isOpen_induced_iff]
     refine' ⟨Metric.ball 0 ‖e‖, Metric.isOpen_ball, _⟩
     ext ⟨x, hx⟩
     obtain ⟨k, rfl⟩ := AddSubgroup.mem_zmultiples_iff.mp hx
     rw [mem_preimage, mem_ball_zero_iff, AddSubgroup.coe_mk, mem_singleton_iff, Subtype.ext_iff,
       AddSubgroup.coe_mk, AddSubgroup.coe_zero, norm_zsmul ℚ k e, Int.norm_cast_rat,
+<<<<<<< Updated upstream
       Int.norm_eq_abs, Int.cast_abs, mul_lt_iff_lt_one_left (norm_pos_iff.mpr he),
       ← @Int.cast_one ℝ _, ← Int.cast_abs, Int.cast_lt, Int.abs_lt_one_iff, smul_eq_zero,
       or_iff_left he]
+=======
+      Int.norm_eq_abs, mul_lt_iff_lt_one_left (norm_pos_iff.mpr he), ←
+      @Int.cast_one ℝ _, Int.cast_lt, Int.abs_lt_one_iff, smul_eq_zero, or_iff_left he]
+>>>>>>> Stashed changes
 
 /-- A (semi) normed real vector space is homeomorphic to the unit ball in the same space.
 This homeomorphism sends `x : E` to `(1 + ‖x‖²)^(- ½) • x`.
@@ -243,16 +248,16 @@ noncomputable def homeomorphUnitBall [NormedSpace ℝ E] : E ≃ₜ ball (0 : E)
       exact lt_one_add _⟩
   invFun y := (1 - ‖(y : E)‖ ^ 2).sqrt⁻¹ • (y : E)
   left_inv x := by
-    field_simp [norm_smul, smul_smul, (zero_lt_one_add_norm_sq x).ne',
+    field_simp [norm_smul, smul_smul, (zero_lt_one_add_norm_sq x).ne', sq_abs,
       Real.sq_sqrt (zero_lt_one_add_norm_sq x).le, ← Real.sqrt_div (zero_lt_one_add_norm_sq x).le]
   right_inv y := by
     have : 0 < 1 - ‖(y : E)‖ ^ 2 := by
       nlinarith [norm_nonneg (y : E), (mem_ball_zero_iff.1 y.2 : ‖(y : E)‖ < 1)]
-    field_simp [norm_smul, smul_smul, this.ne', Real.sq_sqrt this.le, ← Real.sqrt_div this.le]
+    field_simp [norm_smul, smul_smul, this.ne', sq_abs, Real.sq_sqrt this.le, ← Real.sqrt_div this.le]
   continuous_toFun := by
-    suffices : Continuous fun x => (1 + ‖x‖ ^ 2).sqrt⁻¹;
+    suffices : Continuous fun (x:E) => (1 + ‖x‖ ^ 2).sqrt⁻¹;
     exact (this.smul continuous_id).subtype_mk _
-    refine' Continuous.inv₀ _ fun x => real.sqrt_ne_zero'.mpr (by positivity)
+    refine' Continuous.inv₀ _ fun x => Real.sqrt_ne_zero'.mpr (by positivity)
     continuity
   continuous_invFun := by
     suffices ∀ y : ball (0 : E) 1, (1 - ‖(y : E)‖ ^ 2).sqrt ≠ 0 by continuity
@@ -269,13 +274,15 @@ theorem coe_homeomorphUnitBall_apply_zero [NormedSpace ℝ E] :
 open NormedField
 
 instance ULift.normedSpace : NormedSpace α (ULift E) :=
-  { ULift.normedAddCommGroup, ULift.module' with
+  { ULift.seminormedAddCommGroup (E := E), ULift.module' with
     norm_smul_le := fun s x => (norm_smul_le s x.down : _) }
 
 /-- The product of two normed spaces is a normed space, with the sup norm. -/
 instance Prod.normedSpace : NormedSpace α (E × F) :=
-  { Prod.normedAddCommGroup, Prod.module with
-    norm_smul_le := fun s x => by simp [Prod.norm_def, norm_smul_le, mul_max_of_nonneg] }
+  { Prod.seminormedAddCommGroup (E := E) (F := F), Prod.module with
+    norm_smul_le := fun s x => by
+      simp only [norm_smul, Prod.norm_def, Prod.smul_snd, Prod.smul_fst,
+        mul_max_of_nonneg, norm_nonneg, le_rfl] }
 #align prod.normed_space Prod.normedSpace
 
 /-- The product of finitely many normed spaces is a normed space, with the sup norm. -/
@@ -288,7 +295,7 @@ instance Pi.normedSpace {E : ι → Type _} [Fintype ι] [∀ i, SeminormedAddCo
 #align pi.normed_space Pi.normedSpace
 
 instance MulOpposite.normedSpace : NormedSpace α Eᵐᵒᵖ :=
-  { MulOpposite.normedAddCommGroup, MulOpposite.module _ with
+  { MulOpposite.seminormedAddCommGroup (E := Eᵐᵒᵖ), MulOpposite.module _ with
     norm_smul_le := fun s x => norm_smul_le s x.unop }
 #align mul_opposite.normed_space MulOpposite.normedSpace
 
@@ -389,7 +396,7 @@ theorem exists_norm_eq {c : ℝ} (hc : 0 ≤ c) : ∃ x : E, ‖x‖ = c := by
   rcases exists_ne (0 : E) with ⟨x, hx⟩
   rw [← norm_ne_zero_iff] at hx
   use c • ‖x‖⁻¹ • x
-  simp [norm_smul, Real.norm_of_nonneg hc, hx]
+  simp [norm_smul, Real.norm_of_nonneg hc, abs_of_nonneg hc, inv_mul_cancel hx]
 #align exists_norm_eq exists_norm_eq
 
 @[simp]
@@ -498,8 +505,10 @@ class NormedAlgebra (𝕜 : Type _) (𝕜' : Type _) [NormedField 𝕜] [Seminor
 
 variable {𝕜 : Type _} (𝕜' : Type _) [NormedField 𝕜] [SeminormedRing 𝕜'] [NormedAlgebra 𝕜 𝕜']
 
-instance (priority := 100) NormedAlgebra.toNormedSpace : NormedSpace 𝕜 𝕜' where
-  norm_smul_le := NormedAlgebra.norm_smul_le
+instance (priority := 100) NormedAlgebra.toNormedSpace : NormedSpace 𝕜 𝕜' :=
+  -- Porting note: previous Lean could figure out what we were extending
+  { NormedAlgebra.toAlgebra.toModule with
+  norm_smul_le := NormedAlgebra.norm_smul_le }
 #align normed_algebra.to_normed_space NormedAlgebra.toNormedSpace
 
 /-- While this may appear identical to `NormedAlgebra.toNormedSpace`, it contains an implicit
@@ -565,6 +574,8 @@ instance NormedAlgebra.id : NormedAlgebra 𝕜 𝕜 :=
   { NormedField.toNormedSpace, Algebra.id 𝕜 with }
 #align normed_algebra.id NormedAlgebra.id
 
+-- Porting note: cannot synth scalar tower ℚ ℝ k
+set_option synthInstance.etaExperiment true in
 /-- Any normed characteristic-zero division ring that is a normed algebra over the reals is also a
 normed algebra over the rationals.
 
@@ -573,7 +584,10 @@ norm. -/
 instance normedAlgebraRat {𝕜} [NormedDivisionRing 𝕜] [CharZero 𝕜] [NormedAlgebra ℝ 𝕜] :
     NormedAlgebra ℚ 𝕜 where
   norm_smul_le q x := by
-    rw [← smul_one_smul ℝ q x, Rat.smul_one_eq_coe, norm_smul, Rat.norm_cast_real]
+    rw [← smul_one_smul ℝ q x]
+    -- Porting note: broken notation class seems to cause a problem here
+    conv_lhs => change ‖(SMul.smul q (1:ℝ)) • x‖; rw [Rat.smul_one_eq_coe q]
+    rw [norm_smul, Rat.norm_cast_real]
 #align normed_algebra_rat normedAlgebraRat
 
 instance PUnit.normedAlgebra : NormedAlgebra 𝕜 PUnit where
@@ -581,23 +595,26 @@ instance PUnit.normedAlgebra : NormedAlgebra 𝕜 PUnit where
 #align punit.normed_algebra PUnit.normedAlgebra
 
 instance : NormedAlgebra 𝕜 (ULift 𝕜') :=
-  { ULift.normedSpace with }
+  { ULift.normedSpace, ULift.algebra with }
 
 /-- The product of two normed algebras is a normed algebra, with the sup norm. -/
 instance Prod.normedAlgebra {E F : Type _} [SeminormedRing E] [SeminormedRing F] [NormedAlgebra 𝕜 E]
     [NormedAlgebra 𝕜 F] : NormedAlgebra 𝕜 (E × F) :=
-  { Prod.normedSpace with }
+  { Prod.normedSpace, Prod.algebra 𝕜 E F with }
 #align prod.normed_algebra Prod.normedAlgebra
 
+-- Porting note: Lean 3 could synth the algebra instances for Pi Pr
 /-- The product of finitely many normed algebras is a normed algebra, with the sup norm. -/
 instance Pi.normedAlgebra {E : ι → Type _} [Fintype ι] [∀ i, SeminormedRing (E i)]
     [∀ i, NormedAlgebra 𝕜 (E i)] : NormedAlgebra 𝕜 (∀ i, E i) :=
   { Pi.normedSpace, Pi.algebra _ E with }
 #align pi.normed_algebra Pi.normedAlgebra
 
+variable {E : Type _} [SeminormedRing E] [NormedAlgebra 𝕜 E]
+
 instance MulOpposite.normedAlgebra {E : Type _} [SeminormedRing E] [NormedAlgebra 𝕜 E] :
     NormedAlgebra 𝕜 Eᵐᵒᵖ :=
-  { MulOpposite.normedSpace with }
+  { MulOpposite.normedSpace, MulOpposite.instAlgebraMulOppositeSemiring with }
 #align mul_opposite.normed_algebra MulOpposite.normedAlgebra
 
 end NormedAlgebra
@@ -616,9 +633,11 @@ def NormedAlgebra.induced {F : Type _} (α β γ : Type _) [NormedField α] [Rin
     exact (map_smul f a b).symm ▸ norm_smul_le a (f b)
 #align normed_algebra.induced NormedAlgebra.induced
 
+-- Porting note: failed to synth NonunitalAlgHomClass
+set_option synthInstance.etaExperiment true in
 instance Subalgebra.toNormedAlgebra {𝕜 A : Type _} [SeminormedRing A] [NormedField 𝕜]
     [NormedAlgebra 𝕜 A] (S : Subalgebra 𝕜 A) : NormedAlgebra 𝕜 S :=
-  @NormedAlgebra.induced _ 𝕜 S A _ (SubringClass.toRing S) S.Algebra _ _ _ S.val
+  @NormedAlgebra.induced _ 𝕜 S A _ (SubringClass.toRing S) _ _ _ _ S.val
 #align subalgebra.to_normed_algebra Subalgebra.toNormedAlgebra
 
 section RestrictScalars
