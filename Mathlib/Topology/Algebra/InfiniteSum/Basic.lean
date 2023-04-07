@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 
 ! This file was ported from Lean 3 source module topology.algebra.infinite_sum.basic
-! leanprover-community/mathlib commit 32253a1a1071173b33dc7d6a218cf722c6feb514
+! leanprover-community/mathlib commit 3b1890e71632be9e3b2086ab512c3259a7e9a3ef
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -1132,8 +1132,6 @@ theorem cauchySeq_finset_iff_vanishing :
     exact hde _ (h _ Finset.sdiff_disjoint) _ (h _ Finset.sdiff_disjoint)
 #align cauchy_seq_finset_iff_vanishing cauchySeq_finset_iff_vanishing
 
-attribute [local instance] TopologicalAddGroup.t3Space
-
 /-- The sum over the complement of a finset tends to `0` when the finset grows to cover the whole
 space. This does not need a summability assumption, as otherwise all sums are zero. -/
 theorem tendsto_tsum_compl_atTop_zero (f : β → α) :
@@ -1220,20 +1218,30 @@ theorem Summable.prod_factor {f : β × γ → α} (h : Summable f) (b : β) :
   h.comp_injective fun _ _ h => (Prod.ext_iff.1 h).2
 #align summable.prod_factor Summable.prod_factor
 
-theorem tsum_sigma [T1Space α] {γ : β → Type _} {f : (Σb : β, γ b) → α} (ha : Summable f) :
+section LocInstances
+
+-- enable inferring a T3-topological space from a topological group
+attribute [local instance] TopologicalAddGroup.t3Space
+
+-- disable getting a T0-space from a T1-space as this causes loops
+attribute [-instance] T1Space.t0Space
+
+theorem tsum_sigma [T0Space α] {γ : β → Type _} {f : (Σb : β, γ b) → α} (ha : Summable f) :
     (∑' p, f p) = ∑' (b) (c), f ⟨b, c⟩ :=
   tsum_sigma' (fun b => ha.sigma_factor b) ha
 #align tsum_sigma tsum_sigma
 
-theorem tsum_prod [T1Space α] {f : β × γ → α} (h : Summable f) :
+theorem tsum_prod [T0Space α] {f : β × γ → α} (h : Summable f) :
     (∑' p, f p) = ∑' (b) (c), f ⟨b, c⟩ :=
   tsum_prod' h h.prod_factor
 #align tsum_prod tsum_prod
 
-theorem tsum_comm [T1Space α] {f : β → γ → α} (h : Summable (Function.uncurry f)) :
+theorem tsum_comm [T0Space α] {f : β → γ → α} (h : Summable (Function.uncurry f)) :
     (∑' (c) (b), f b c) = ∑' (b) (c), f b c :=
   tsum_comm' h h.prod_factor h.prod_symm.prod_factor
 #align tsum_comm tsum_comm
+
+end LocInstances
 
 theorem tsum_subtype_add_tsum_subtype_compl [T2Space α] {f : β → α} (hf : Summable f) (s : Set β) :
     ((∑' x : s, f x) + ∑' x : ↑(sᶜ), f x) = ∑' x, f x :=

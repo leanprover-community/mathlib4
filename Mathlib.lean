@@ -278,6 +278,7 @@ import Mathlib.Algebra.Tropical.Basic
 import Mathlib.Algebra.Tropical.BigOperators
 import Mathlib.Algebra.Tropical.Lattice
 import Mathlib.AlgebraicTopology.DoldKan.Compatibility
+import Mathlib.AlgebraicTopology.SimplexCategory
 import Mathlib.Analysis.Convex.Basic
 import Mathlib.Analysis.Convex.Extreme
 import Mathlib.Analysis.Convex.Hull
@@ -298,6 +299,7 @@ import Mathlib.Analysis.Normed.Order.Lattice
 import Mathlib.Analysis.NormedSpace.IndicatorFunction
 import Mathlib.Analysis.NormedSpace.Int
 import Mathlib.Analysis.NormedSpace.MStructure
+import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Analysis.Subadditive
 import Mathlib.CategoryTheory.Abelian.Basic
 import Mathlib.CategoryTheory.Abelian.Images
@@ -371,6 +373,11 @@ import Mathlib.CategoryTheory.Grothendieck
 import Mathlib.CategoryTheory.Groupoid
 import Mathlib.CategoryTheory.Groupoid.Basic
 import Mathlib.CategoryTheory.Groupoid.VertexGroup
+import Mathlib.CategoryTheory.Idempotents.Basic
+import Mathlib.CategoryTheory.Idempotents.FunctorCategories
+import Mathlib.CategoryTheory.Idempotents.FunctorExtension
+import Mathlib.CategoryTheory.Idempotents.Karoubi
+import Mathlib.CategoryTheory.Idempotents.KaroubiKaroubi
 import Mathlib.CategoryTheory.IsConnected
 import Mathlib.CategoryTheory.Iso
 import Mathlib.CategoryTheory.IsomorphismClasses
@@ -1220,6 +1227,7 @@ import Mathlib.LinearAlgebra.InvariantBasisNumber
 import Mathlib.LinearAlgebra.Isomorphisms
 import Mathlib.LinearAlgebra.LinearIndependent
 import Mathlib.LinearAlgebra.LinearPMap
+import Mathlib.LinearAlgebra.Matrix.DotProduct
 import Mathlib.LinearAlgebra.Matrix.Orthogonal
 import Mathlib.LinearAlgebra.Matrix.Symmetric
 import Mathlib.LinearAlgebra.Matrix.Trace
@@ -1454,8 +1462,11 @@ import Mathlib.RingTheory.Polynomial.Tower
 import Mathlib.RingTheory.Polynomial.Vieta
 import Mathlib.RingTheory.Prime
 import Mathlib.RingTheory.PrincipalIdealDomain
+import Mathlib.RingTheory.QuotientNilpotent
+import Mathlib.RingTheory.QuotientNoetherian
 import Mathlib.RingTheory.ReesAlgebra
 import Mathlib.RingTheory.RingInvo
+import Mathlib.RingTheory.SimpleModule
 import Mathlib.RingTheory.Subring.Basic
 import Mathlib.RingTheory.Subring.Pointwise
 import Mathlib.RingTheory.Subsemiring.Basic
@@ -1463,6 +1474,7 @@ import Mathlib.RingTheory.Subsemiring.Pointwise
 import Mathlib.RingTheory.UniqueFactorizationDomain
 import Mathlib.RingTheory.Valuation.Basic
 import Mathlib.RingTheory.Valuation.Integers
+import Mathlib.RingTheory.Valuation.Quotient
 import Mathlib.RingTheory.ZMod
 import Mathlib.SetTheory.Cardinal.Basic
 import Mathlib.SetTheory.Cardinal.Cofinality
@@ -1480,6 +1492,7 @@ import Mathlib.SetTheory.Ordinal.FixedPoint
 import Mathlib.SetTheory.Ordinal.NaturalOps
 import Mathlib.SetTheory.Ordinal.Principal
 import Mathlib.SetTheory.Ordinal.Topology
+import Mathlib.SetTheory.Zfc.Basic
 import Mathlib.Tactic
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.Alias
@@ -1606,6 +1619,7 @@ import Mathlib.Topology.Algebra.Algebra
 import Mathlib.Topology.Algebra.ConstMulAction
 import Mathlib.Topology.Algebra.Constructions
 import Mathlib.Topology.Algebra.Field
+import Mathlib.Topology.Algebra.FilterBasis
 import Mathlib.Topology.Algebra.Group.Basic
 import Mathlib.Topology.Algebra.Group.Compact
 import Mathlib.Topology.Algebra.GroupCompletion
@@ -1617,6 +1631,8 @@ import Mathlib.Topology.Algebra.InfiniteSum.Real
 import Mathlib.Topology.Algebra.InfiniteSum.Ring
 import Mathlib.Topology.Algebra.Localization
 import Mathlib.Topology.Algebra.Module.Basic
+import Mathlib.Topology.Algebra.Module.LinearPMap
+import Mathlib.Topology.Algebra.Module.Simple
 import Mathlib.Topology.Algebra.Monoid
 import Mathlib.Topology.Algebra.MulAction
 import Mathlib.Topology.Algebra.Nonarchimedean.Basic
@@ -1643,6 +1659,8 @@ import Mathlib.Topology.Algebra.Ring.Basic
 import Mathlib.Topology.Algebra.Ring.Ideal
 import Mathlib.Topology.Algebra.Semigroup
 import Mathlib.Topology.Algebra.Star
+import Mathlib.Topology.Algebra.StarSubalgebra
+import Mathlib.Topology.Algebra.UniformFilterBasis
 import Mathlib.Topology.Algebra.UniformGroup
 import Mathlib.Topology.Algebra.UniformMulAction
 import Mathlib.Topology.Algebra.UniformRing
