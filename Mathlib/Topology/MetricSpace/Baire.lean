@@ -304,7 +304,7 @@ theorem mem_residual {s : Set α} : s ∈ residual α ↔ ∃ (t : _)(_ : t ⊆ 
 #align mem_residual mem_residual
 
 theorem dense_of_mem_residual {s : Set α} (hs : s ∈ residual α) : Dense s :=
-  let ⟨t, hts, _, hd⟩ := mem_residual.1 hs
+  let ⟨_, hts, _, hd⟩ := mem_residual.1 hs
   hd.mono hts
 #align dense_of_mem_residual dense_of_mem_residual
 
