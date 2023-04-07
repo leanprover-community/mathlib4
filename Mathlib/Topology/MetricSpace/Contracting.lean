@@ -21,11 +21,11 @@ of convergence, and some properties of the map sending a contracting map to its 
 
 ## Main definitions
 
-* `contracting_with K f` : a Lipschitz continuous self-map with `K < 1`;
-* `efixed_point` : given a contracting map `f` on a complete emetric space and a point `x`
-  such that `edist x (f x) ≠ ∞`, `efixed_point f hf x hx` is the unique fixed point of `f`
-  in `emetric.ball x ∞`;
-* `fixed_point` : the unique fixed point of a contracting map on a complete nonempty metric space.
+* `ContractingWith K f` : a Lipschitz continuous self-map with `K < 1`;
+* `efixedPoint` : given a contracting map `f` on a complete emetric space and a point `x`
+  such that `edist x (f x) ≠ ∞`, `efixedPoint f hf x hx` is the unique fixed point of `f`
+  in `EMetric.ball x ∞`;
+* `fixedPoint` : the unique fixed point of a contracting map on a complete nonempty metric space.
 
 ## Tags
 
@@ -39,7 +39,7 @@ open Filter Function
 
 variable {α : Type _}
 
-/-- A map is said to be `contracting_with K`, if `K < 1` and `f` is `lipschitz_with K`. -/
+/-- A map is said to be `ContractingWith K`, if `K < 1` and `f` is `LipschitzWith K`. -/
 def ContractingWith [EMetricSpace α] (K : ℝ≥0) (f : α → α) :=
   K < 1 ∧ LipschitzWith K f
 #align contracting_with ContractingWith
@@ -91,18 +91,18 @@ theorem eq_or_edist_eq_top_of_fixed_points (hf : ContractingWith K f) {x y} (hx 
   simpa only [hx.eq, edist_self, add_zero, ENNReal.zero_div] using hf.edist_le_of_fixed_point h hy
 #align contracting_with.eq_or_edist_eq_top_of_fixed_points ContractingWith.eq_or_edist_eq_top_of_fixed_points
 
-/-- If a map `f` is `contracting_with K`, and `s` is a forward-invariant set, then
-restriction of `f` to `s` is `contracting_with K` as well. -/
+/-- If a map `f` is `ContractingWith K`, and `s` is a forward-invariant set, then
+restriction of `f` to `s` is `ContractingWith K` as well. -/
 theorem restrict (hf : ContractingWith K f) {s : Set α} (hs : MapsTo f s s) :
     ContractingWith K (hs.restrict f s s) :=
   ⟨hf.1, fun x y ↦ hf.2 x y⟩
 #align contracting_with.restrict ContractingWith.restrict
 
-/-- Banach fixed-point theorem, contraction mapping theorem, `emetric_space` version.
+/-- Banach fixed-point theorem, contraction mapping theorem, `EMetricSpace` version.
 A contracting map on a complete metric space has a fixed point.
 We include more conclusions in this theorem to avoid proving them again later.
 
-The main API for this theorem are the functions `efixed_point` and `fixed_point`,
+The main API for this theorem are the functions `efixedPoint` and `fixedPoint`,
 and lemmas about these functions. -/
 theorem exists_fixed_point (hf : ContractingWith K f) (x : α) (hx : edist x (f x) ≠ ∞) :
     ∃ y, IsFixedPt f y ∧ Tendsto (fun n ↦ (f^[n]) x) atTop (𝓝 y) ∧
@@ -118,10 +118,10 @@ theorem exists_fixed_point (hf : ContractingWith K f) (x : α) (hx : edist x (f 
 
 variable (f)
 
--- avoid `efixed_point _` in pretty printer
+-- avoid `efixedPoint _` in pretty printer
 /-- Let `x` be a point of a complete emetric space. Suppose that `f` is a contracting map,
-and `edist x (f x) ≠ ∞`. Then `efixed_point` is the unique fixed point of `f`
-in `emetric.ball x ∞`. -/
+and `edist x (f x) ≠ ∞`. Then `efixedPoint` is the unique fixed point of `f`
+in `EMetric.ball x ∞`. -/
 noncomputable def efixedPoint (hf : ContractingWith K f) (x : α) (hx : edist x (f x) ≠ ∞) : α :=
   Classical.choose <| hf.exists_fixed_point x hx
 #align contracting_with.efixed_point ContractingWith.efixedPoint
@@ -185,10 +185,10 @@ theorem exists_fixed_point' {s : Set α} (hsc : IsComplete s) (hsf : MapsTo f s 
 
 variable (f)
 
--- avoid `efixed_point _` in pretty printer
+-- avoid `efixedPoint _` in pretty printer
 /-- Let `s` be a complete forward-invariant set of a self-map `f`. If `f` contracts on `s`
-and `x ∈ s` satisfies `edist x (f x) ≠ ∞`, then `efixed_point'` is the unique fixed point
-of the restriction of `f` to `s ∩ emetric.ball x ∞`. -/
+and `x ∈ s` satisfies `edist x (f x) ≠ ∞`, then `efixedPoint'` is the unique fixed point
+of the restriction of `f` to `s ∩ EMetric.ball x ∞`. -/
 noncomputable def efixedPoint' {s : Set α} (hsc : IsComplete s) (hsf : MapsTo f s s)
     (hf : ContractingWith K <| hsf.restrict f s s) (x : α) (hxs : x ∈ s) (hx : edist x (f x) ≠ ∞) :
     α :=
@@ -238,8 +238,8 @@ theorem edist_efixed_point_lt_top' {s : Set α} (hsc : IsComplete s) (hsf : Maps
 #align contracting_with.edist_efixed_point_lt_top' ContractingWith.edist_efixed_point_lt_top'
 
 /-- If a globally contracting map `f` has two complete forward-invariant sets `s`, `t`,
-and `x ∈ s` is at a finite distance from `y ∈ t`, then the `efixed_point'` constructed by `x`
-is the same as the `efixed_point'` constructed by `y`.
+and `x ∈ s` is at a finite distance from `y ∈ t`, then the `efixedPoint'` constructed by `x`
+is the same as the `efixedPoint'` constructed by `y`.
 
 This lemma takes additional arguments stating that `f` contracts on `s` and `t` because this way
 it can be used to prove the desired equality with non-trivial proofs of these facts. -/
@@ -317,7 +317,7 @@ noncomputable def fixedPoint : α :=
 
 variable {f}
 
-/-- The point provided by `contracting_with.fixed_point` is actually a fixed point. -/
+/-- The point provided by `ContractingWith.fixedPoint` is actually a fixed point. -/
 theorem fixedPoint_isFixedPt : IsFixedPt f (fixedPoint f hf) :=
   hf.efixedPoint_isFixedPt _
 #align contracting_with.fixed_point_is_fixed_pt ContractingWith.fixedPoint_isFixedPt
