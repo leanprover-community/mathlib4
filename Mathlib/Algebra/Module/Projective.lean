@@ -8,9 +8,9 @@ Authors: Kevin Buzzard, Antoine Labelle
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Module.Basic
-import Mathbin.LinearAlgebra.Finsupp
-import Mathbin.LinearAlgebra.FreeModule.Basic
+import Mathlib.Algebra.Module.Basic
+import Mathlib.LinearAlgebra.Finsupp
+import Mathlib.LinearAlgebra.FreeModule.Basic
 
 /-!
 
@@ -97,8 +97,7 @@ theorem projective_def' : Projective R P ↔ ∃ s : P →ₗ[R] P →₀ R, Fin
 
 /-- A projective R-module has the property that maps from it lift along surjections. -/
 theorem projective_lifting_property [h : Projective R P] (f : M →ₗ[R] N) (g : P →ₗ[R] N)
-    (hf : Function.Surjective f) : ∃ h : P →ₗ[R] M, f.comp h = g :=
-  by
+    (hf : Function.Surjective f) : ∃ h : P →ₗ[R] M, f.comp h = g := by
   /-
     Here's the first step of the proof.
     Recall that `X →₀ R` is Lean's way of talking about the free `R`-module
@@ -120,8 +119,7 @@ theorem projective_lifting_property [h : Projective R P] (f : M →ₗ[R] N) (g 
 
 variable {Q : Type _} [AddCommMonoid Q] [Module R Q]
 
-instance [hP : Projective R P] [hQ : Projective R Q] : Projective R (P × Q) :=
-  by
+instance [hP : Projective R P] [hQ : Projective R Q] : Projective R (P × Q) := by
   rw [Module.projective_def']
   cases' hP.out with sP hsP
   cases' hQ.out with sQ hsQ
@@ -176,8 +174,7 @@ section Ring
 variable {R : Type _} [Ring R] {P : Type _} [AddCommGroup P] [Module R P]
 
 /-- Free modules are projective. -/
-theorem projectiveOfBasis {ι : Type _} (b : Basis ι R P) : Projective R P :=
-  by
+theorem projectiveOfBasis {ι : Type _} (b : Basis ι R P) : Projective R P := by
   -- need P →ₗ (P →₀ R) for definition of projective.
   -- get it from `ι → (P →₀ R)` coming from `b`.
   use b.constr ℕ fun i => Finsupp.single (b i) (1 : R)
@@ -207,8 +204,7 @@ theorem projectiveOfLiftingProperty' {R : Type u} [Semiring R] {P : Type max u v
           ∀ (f : M →ₗ[R] N) (g : P →ₗ[R] N),
             Function.Surjective f → ∃ h : P →ₗ[R] M, f.comp h = g) :-- then `P` is projective.
       Projective
-      R P :=
-  by
+      R P := by
   -- let `s` be the universal map `(P →₀ R) →ₗ P` coming from the identity map `P →ₗ P`.
   obtain ⟨s, hs⟩ : ∃ s : P →ₗ[R] P →₀ R, (Finsupp.total P P R id).comp s = LinearMap.id :=
     huniv (Finsupp.total P P R (id : P → P)) (LinearMap.id : P →ₗ[R] P) _
@@ -231,8 +227,7 @@ theorem projectiveOfLiftingProperty {R : Type u} [Ring R] {P : Type max u v} [Ad
           ∀ (f : M →ₗ[R] N) (g : P →ₗ[R] N),
             Function.Surjective f → ∃ h : P →ₗ[R] M, f.comp h = g) :-- then `P` is projective.
       Projective
-      R P :=
-  by
+      R P := by
   -- We could try and prove this *using* `of_lifting_property`,
   -- but this quickly leads to typeclass hell,
   -- so we just prove it over again.
