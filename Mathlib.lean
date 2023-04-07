@@ -1368,6 +1368,7 @@ import Mathlib.Order.FixedPoints
 import Mathlib.Order.GaloisConnection
 import Mathlib.Order.GameAdd
 import Mathlib.Order.Grade
+import Mathlib.Order.Height
 import Mathlib.Order.Heyting.Basic
 import Mathlib.Order.Heyting.Boundary
 import Mathlib.Order.Heyting.Hom
