@@ -884,15 +884,15 @@ protected theorem IsStrongLimit.isSuccLimit {c} (H : IsStrongLimit c) : IsSuccLi
 #align cardinal.is_strong_limit.is_succ_limit Cardinal.IsStrongLimit.isSuccLimit
 
 theorem IsStrongLimit.isLimit {c} (H : IsStrongLimit c) : IsLimit c :=
-  ⟨H.NeZero, H.IsSuccLimit⟩
+  ⟨H.ne_zero, H.isSuccLimit⟩
 #align cardinal.is_strong_limit.is_limit Cardinal.IsStrongLimit.isLimit
 
-theorem isStrongLimit_beth {o : Ordinal} (H : IsSuccLimit o) : IsStrongLimit (beth o) :=
+theorem isStrongLimit_beth {o : Ordinal} (H : IsSuccLimit o) : IsStrongLimit (beth o) := by
   rcases eq_or_ne o 0 with (rfl | h)
   · rw [beth_zero]
     exact isStrongLimit_aleph0
   · refine' ⟨beth_ne_zero o, fun a ha => _⟩
-    rw [beth_limit ⟨h, is_succ_limit_iff_succ_lt.1 H⟩] at ha
+    rw [beth_limit ⟨h, isSuccLimit_iff_succ_lt.1 H⟩] at ha
     rcases exists_lt_of_lt_csupᵢ' ha with ⟨⟨i, hi⟩, ha⟩
     have := power_le_power_left two_ne_zero ha.le
     rw [← beth_succ] at this
