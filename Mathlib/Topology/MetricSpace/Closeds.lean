@@ -19,10 +19,10 @@ This file defines the metric and emetric space structure on the types of closed 
 compact subsets of a metric or emetric space.
 
 The Hausdorff distance induces an emetric space structure on the type of closed subsets
-of an emetric space, called `closeds`. Its completeness, resp. compactness, resp.
+of an emetric space, called `Closeds`. Its completeness, resp. compactness, resp.
 second-countability, follow from the corresponding properties of the original space.
 
-In a metric space, the type of nonempty compact subsets (called `nonempty_compacts`) also
+In a metric space, the type of nonempty compact subsets (called `NonemptyCompacts`) also
 inherits a metric space structure from the Hausdorff distance, as the Hausdorff edistance is
 always finite in this context.
 -/
@@ -194,7 +194,6 @@ instance Closeds.completeSpace [CompleteSpace α] : CompleteSpace (Closeds α) :
   exact ⟨N, fun n hn => lt_of_le_of_lt (main n) (hN n hn)⟩
 #align emetric.closeds.complete_space EMetric.Closeds.completeSpace
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:635:2: warning: expanding binder collection (v «expr ⊆ » s) -/
 /-- In a compact space, the type of closed subsets is compact. -/
 instance Closeds.compactSpace [CompactSpace α] : CompactSpace (Closeds α) :=
   ⟨by
@@ -257,13 +256,13 @@ instance NonemptyCompacts.emetricSpace : EMetricSpace (NonemptyCompacts α) wher
       rwa [s.isCompact.isClosed.closure_eq, t.isCompact.isClosed.closure_eq] at this
 #align emetric.nonempty_compacts.emetric_space EMetric.NonemptyCompacts.emetricSpace
 
-/-- `nonempty_compacts.to_closeds` is a uniform embedding (as it is an isometry) -/
+/-- `NonemptyCompacts.toCloseds` is a uniform embedding (as it is an isometry) -/
 theorem NonemptyCompacts.ToCloseds.uniformEmbedding :
     UniformEmbedding (@NonemptyCompacts.toCloseds α _ _) :=
   Isometry.uniformEmbedding fun _ _ => rfl
 #align emetric.nonempty_compacts.to_closeds.uniform_embedding EMetric.NonemptyCompacts.ToCloseds.uniformEmbedding
 
-/-- The range of `nonempty_compacts.to_closeds` is closed in a complete space -/
+/-- The range of `NonemptyCompacts.toCloseds` is closed in a complete space -/
 theorem NonemptyCompacts.isClosed_in_closeds [CompleteSpace α] :
     IsClosed (range <| @NonemptyCompacts.toCloseds α _ _) := by
   have :
@@ -323,7 +322,7 @@ instance NonemptyCompacts.compactSpace [CompactSpace α] : CompactSpace (Nonempt
 instance NonemptyCompacts.secondCountableTopology [SecondCountableTopology α] :
     SecondCountableTopology (NonemptyCompacts α) :=
   haveI : SeparableSpace (NonemptyCompacts α) := by
-    /- To obtain a countable dense subset of `nonempty_compacts α`, start from
+    /- To obtain a countable dense subset of `NonemptyCompacts α`, start from
         a countable dense subset `s` of α, and then consider all its finite nonempty subsets.
         This set is countable and made of nonempty compact sets. It turns out to be dense:
         by total boundedness, any compact set `t` can be covered by finitely many small balls, and
@@ -385,7 +384,7 @@ instance NonemptyCompacts.secondCountableTopology [SecondCountableTopology α] :
       have Dtc : hausdorffEdist (t : Set α) c < ε := this.trans_lt δlt
       -- the set `c` is not empty, as it is well approximated by a nonempty set
       have hc : c.Nonempty := nonempty_of_hausdorffEdist_ne_top t.nonempty (ne_top_of_lt Dtc)
-      -- let `d` be the version of `c` in the type `nonempty_compacts α`
+      -- let `d` be the version of `c` in the type `NonemptyCompacts α`
       let d : NonemptyCompacts α := ⟨⟨c, ‹c.Finite›.isCompact⟩, hc⟩
       have : c ⊆ s := by
         intro x hx
@@ -410,7 +409,7 @@ section
 
 variable {α : Type u} [MetricSpace α]
 
-/-- `nonempty_compacts α` inherits a metric space structure, as the Hausdorff
+/-- `NonemptyCompacts α` inherits a metric space structure, as the Hausdorff
 edistance between two such sets is finite. -/
 instance NonemptyCompacts.metricSpace : MetricSpace (NonemptyCompacts α) :=
   EMetricSpace.toMetricSpace fun x y =>
@@ -418,7 +417,7 @@ instance NonemptyCompacts.metricSpace : MetricSpace (NonemptyCompacts α) :=
       y.isCompact.bounded
 #align metric.nonempty_compacts.metric_space Metric.NonemptyCompacts.metricSpace
 
-/-- The distance on `nonempty_compacts α` is the Hausdorff distance, by construction -/
+/-- The distance on `NonemptyCompacts α` is the Hausdorff distance, by construction -/
 theorem NonemptyCompacts.dist_eq {x y : NonemptyCompacts α} :
     dist x y = hausdorffDist (x : Set α) y :=
   rfl
