@@ -304,6 +304,7 @@ import Mathlib.Analysis.NormedSpace.MStructure
 import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Analysis.Subadditive
 import Mathlib.CategoryTheory.Abelian.Basic
+import Mathlib.CategoryTheory.Abelian.FunctorCategory
 import Mathlib.CategoryTheory.Abelian.Images
 import Mathlib.CategoryTheory.Abelian.NonPreadditive
 import Mathlib.CategoryTheory.Adjunction.Basic
