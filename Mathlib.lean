@@ -1136,6 +1136,7 @@ import Mathlib.GroupTheory.PresentedGroup
 import Mathlib.GroupTheory.QuotientGroup
 import Mathlib.GroupTheory.SemidirectProduct
 import Mathlib.GroupTheory.Solvable
+import Mathlib.GroupTheory.SpecificGroups.Alternating
 import Mathlib.GroupTheory.Subgroup.Actions
 import Mathlib.GroupTheory.Subgroup.Basic
 import Mathlib.GroupTheory.Subgroup.Finite
