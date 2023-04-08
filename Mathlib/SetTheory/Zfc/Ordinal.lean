@@ -8,7 +8,7 @@ Authors: Violeta Hernández Palacios
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.SetTheory.Zfc.Basic
+import Mathlib.SetTheory.Zfc.Basic
 
 /-!
 # Von Neumann ordinals
@@ -58,8 +58,7 @@ alias is_transitive_iff_mem_trans ↔ is_transitive.mem_trans _
 #align Set.is_transitive.mem_trans ZFSet.IsTransitive.mem_trans
 
 protected theorem IsTransitive.inter (hx : x.IsTransitive) (hy : y.IsTransitive) :
-    (x ∩ y).IsTransitive := fun z hz w hw =>
-  by
+    (x ∩ y).IsTransitive := fun z hz w hw => by
   rw [mem_inter] at hz⊢
   exact ⟨hx.mem_trans hw hz.1, hy.mem_trans hw hz.2⟩
 #align Set.is_transitive.inter ZFSet.IsTransitive.inter
