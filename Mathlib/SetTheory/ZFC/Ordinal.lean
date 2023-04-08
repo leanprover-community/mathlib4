@@ -8,7 +8,7 @@ Authors: Violeta Hernández Palacios
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.SetTheory.Zfc.Basic
+import Mathlib.SetTheory.ZFC.Basic
 
 /-!
 # Von Neumann ordinals
@@ -20,14 +20,14 @@ Further development can be found on the branch `von_neumann_v2`.
 
 ## Definitions
 
-- `Set.is_transitive` means that every element of a set is a subset.
+- `ZFSet.IsTransitive` means that every element of a set is a subset.
 
 ## Todo
 
 - Define von Neumann ordinals.
 - Define the basic arithmetic operations on ordinals from a purely set-theoretic perspective.
 - Prove the equivalences between these definitions and those provided in
-  `set_theory/ordinal/arithmetic.lean`.
+  `SetTheory/Ordinal/Arithmetic.lean`.
 -/
 
 
@@ -36,6 +36,8 @@ universe u
 variable {x y z : ZFSet.{u}}
 
 namespace ZFSet
+
+set_option linter.uppercaseLean3 false
 
 /-- A transitive set is one where every element is a subset. -/
 def IsTransitive (x : ZFSet) : Prop :=
@@ -51,10 +53,10 @@ theorem IsTransitive.subset_of_mem (h : x.IsTransitive) : y ∈ x → y ⊆ x :=
 #align Set.is_transitive.subset_of_mem ZFSet.IsTransitive.subset_of_mem
 
 theorem isTransitive_iff_mem_trans : z.IsTransitive ↔ ∀ {x y : ZFSet}, x ∈ y → y ∈ z → x ∈ z :=
-  ⟨fun h x y hx hy => h.subset_of_mem hy hx, fun H x hx y hy => H hy hx⟩
+  ⟨fun h _ _ hx hy => h.subset_of_mem hy hx, fun H _ hx _ hy => H hy hx⟩
 #align Set.is_transitive_iff_mem_trans ZFSet.isTransitive_iff_mem_trans
 
-alias is_transitive_iff_mem_trans ↔ is_transitive.mem_trans _
+alias isTransitive_iff_mem_trans ↔ IsTransitive.mem_trans _
 #align Set.is_transitive.mem_trans ZFSet.IsTransitive.mem_trans
 
 protected theorem IsTransitive.inter (hx : x.IsTransitive) (hy : y.IsTransitive) :
@@ -63,24 +65,23 @@ protected theorem IsTransitive.inter (hx : x.IsTransitive) (hy : y.IsTransitive)
   exact ⟨hx.mem_trans hw hz.1, hy.mem_trans hw hz.2⟩
 #align Set.is_transitive.inter ZFSet.IsTransitive.inter
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-protected theorem IsTransitive.unionₛ (h : x.IsTransitive) : (⋃₀ x).IsTransitive := fun y hy z hz =>
-  by
-  rcases mem_sUnion.1 hy with ⟨w, hw, hw'⟩
-  exact mem_sUnion_of_mem hz (h.mem_trans hw' hw)
+protected theorem IsTransitive.unionₛ (h : x.IsTransitive) :
+    (⋃₀ x : ZFSet).IsTransitive := fun y hy z hz => by
+  rcases mem_unionₛ.1 hy with ⟨w, hw, hw'⟩
+  exact mem_unionₛ_of_mem hz (h.mem_trans hw' hw)
 #align Set.is_transitive.sUnion ZFSet.IsTransitive.unionₛ
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-theorem IsTransitive.sUnion' (H : ∀ y ∈ x, IsTransitive y) : (⋃₀ x).IsTransitive := fun y hy z hz =>
-  by
-  rcases mem_sUnion.1 hy with ⟨w, hw, hw'⟩
-  exact mem_sUnion_of_mem ((H w hw).mem_trans hz hw') hw
-#align Set.is_transitive.sUnion' ZFSet.IsTransitive.sUnion'
+theorem IsTransitive.unionₛ' (H : ∀ y ∈ x, IsTransitive y) :
+    (⋃₀ x : ZFSet).IsTransitive := fun y hy z hz => by
+  rcases mem_unionₛ.1 hy with ⟨w, hw, hw'⟩
+  exact mem_unionₛ_of_mem ((H w hw).mem_trans hz hw') hw
+#align Set.is_transitive.sUnion' ZFSet.IsTransitive.unionₛ'
 
 protected theorem IsTransitive.union (hx : x.IsTransitive) (hy : y.IsTransitive) :
     (x ∪ y).IsTransitive := by
-  rw [← sUnion_pair]
-  apply is_transitive.sUnion' fun z => _
+  rw [← unionₛ_pair]
+  apply IsTransitive.unionₛ' fun z => _
+  intro
   rw [mem_pair]
   rintro (rfl | rfl)
   assumption'
@@ -92,22 +93,20 @@ protected theorem IsTransitive.powerset (h : x.IsTransitive) : (powerset x).IsTr
   exact h.subset_of_mem (hy hz)
 #align Set.is_transitive.powerset ZFSet.IsTransitive.powerset
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-theorem isTransitive_iff_unionₛ_subset : x.IsTransitive ↔ ⋃₀ x ⊆ x :=
+theorem isTransitive_iff_unionₛ_subset : x.IsTransitive ↔ (⋃₀ x : ZFSet) ⊆ x :=
   ⟨fun h y hy => by
-    rcases mem_sUnion.1 hy with ⟨z, hz, hz'⟩
+    rcases mem_unionₛ.1 hy with ⟨z, hz, hz'⟩
     exact h.mem_trans hz' hz, fun H y hy z hz => H <| mem_unionₛ_of_mem hz hy⟩
 #align Set.is_transitive_iff_sUnion_subset ZFSet.isTransitive_iff_unionₛ_subset
 
-alias is_transitive_iff_sUnion_subset ↔ is_transitive.sUnion_subset _
+alias isTransitive_iff_unionₛ_subset ↔ IsTransitive.unionₛ_subset _
 #align Set.is_transitive.sUnion_subset ZFSet.IsTransitive.unionₛ_subset
 
 theorem isTransitive_iff_subset_powerset : x.IsTransitive ↔ x ⊆ powerset x :=
-  ⟨fun h y hy => mem_powerset.2 <| h.subset_of_mem hy, fun H y hy z hz => mem_powerset.1 (H hy) hz⟩
+  ⟨fun h _ hy => mem_powerset.2 <| h.subset_of_mem hy, fun H _ hy _ hz => mem_powerset.1 (H hy) hz⟩
 #align Set.is_transitive_iff_subset_powerset ZFSet.isTransitive_iff_subset_powerset
 
-alias is_transitive_iff_subset_powerset ↔ is_transitive.subset_powerset _
+alias isTransitive_iff_subset_powerset ↔ IsTransitive.subset_powerset _
 #align Set.is_transitive.subset_powerset ZFSet.IsTransitive.subset_powerset
 
 end ZFSet
-
