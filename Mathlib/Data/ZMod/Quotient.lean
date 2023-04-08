@@ -81,14 +81,14 @@ noncomputable def zmultiplesQuotientStabilizerEquiv :
   (ofBijective
           (map _ (stabilizer (zmultiples a) b) (zmultiplesHom (zmultiples a) ⟨a, mem_zmultiples a⟩)
             (by
-              rw [zmultiples_le, mem_comap, mem_stabilizer_iff, zmultiplesHom_apply, coe_nat_zsmul],
+              rw [zmultiples_le, mem_comap, mem_stabilizer_iff, zmultiplesHom_apply, coe_nat_zsmul]
               simp only [← vadd_iterate]
-              exact is_periodic_pt_minimal_period (a +ᵥ ·) b))
+              exact isPeriodicPt_minimalPeriod (a +ᵥ ·) b))
           ⟨by
             rw [← ker_eq_bot_iff, eq_bot_iff]
             refine' fun q => induction_on' q fun n hn => _
             rw [mem_bot, eq_zero_iff, Int.mem_zmultiples_iff, ←
-              zsmul_vadd_eq_iff_minimal_period_dvd]
+              zsmul_vadd_eq_iff_minimalPeriod_dvd]
             exact (eq_zero_iff _).mp hn, fun q =>
             induction_on' q fun ⟨_, n, rfl⟩ => ⟨n, rfl⟩⟩).symm.trans
     (Int.quotientZmultiplesNatEquivZmod (minimalPeriod ((· +ᵥ ·) a) b))
@@ -140,13 +140,13 @@ theorem orbitZpowersEquiv_symm_apply (k : ZMod (minimalPeriod (a • ·) b)) :
       (⟨a, mem_zpowers a⟩ : zpowers a) ^ (k : ℤ) • ⟨b, mem_orbit_self b⟩ :=
   rfl
 #align mul_action.orbit_zpowers_equiv_symm_apply MulAction.orbitZpowersEquiv_symm_apply
-#align add_action.orbit_zmultiples_equiv_symm_apply AddAction.orbit_zmultiples_equiv_symm_apply
+#align add_action.orbit_zmultiples_equiv_symm_apply AddAction.orbitZmultiplesEquiv_symm_apply
 
 theorem orbitZpowersEquiv_symm_apply' (k : ℤ) :
     (orbitZpowersEquiv a b).symm k = (⟨a, mem_zpowers a⟩ : zpowers a) ^ k • ⟨b, mem_orbit_self b⟩ :=
   by
-  rw [orbit_zpowers_equiv_symm_apply, ZMod.coe_int_cast]
-  exact Subtype.ext (zpow_smul_mod_minimal_period _ _ k)
+  rw [orbitZpowersEquiv_symm_apply, ZMod.coe_int_cast]
+  exact Subtype.ext (zpow_smul_mod_minimalPeriod _ _ k)
 #align mul_action.orbit_zpowers_equiv_symm_apply' MulAction.orbitZpowersEquiv_symm_apply'
 
 theorem AddAction.orbitZmultiplesEquiv_symm_apply' {α β : Type _} [AddGroup α] (a : α)
@@ -154,7 +154,7 @@ theorem AddAction.orbitZmultiplesEquiv_symm_apply' {α β : Type _} [AddGroup α
     (AddAction.orbitZmultiplesEquiv a b).symm k =
       k • (⟨a, mem_zmultiples a⟩ : zmultiples a) +ᵥ ⟨b, AddAction.mem_orbit_self b⟩ := by
   rw [AddAction.orbitZmultiplesEquiv_symm_apply, ZMod.coe_int_cast]
-  exact Subtype.ext (zsmul_vadd_mod_minimal_period _ _ k)
+  exact Subtype.ext (zsmul_vadd_mod_minimalPeriod _ _ k) -- Porting note: timeout
 #align add_action.orbit_zmultiples_equiv_symm_apply' AddAction.orbitZmultiplesEquiv_symm_apply'
 
 attribute [to_additive orbit_zmultiples_equiv_symm_apply'] orbit_zpowers_equiv_symm_apply'
@@ -203,4 +203,3 @@ theorem IsOfFinOrder.finite_zpowers (h : IsOfFinOrder a) : Finite <| zpowers a :
 #align is_of_fin_add_order.finite_zmultiples IsOfFinAddOrder.finite_zmultiples
 
 end Group
-
