@@ -280,6 +280,10 @@ theorem coprodMap_apply (f : ∀ i : ι, M i →ₗ[R] N) (x : Π₀ i, M i) :
   rfl
 #align dfinsupp.coprod_map_apply Dfinsupp.coprodMap_apply
 
+theorem coprodMap_apply_single (f : ∀ i : ι, M i →ₗ[R] N) (i : ι) (x : M i) :
+    coprodMap f (single i x) = f i x := by
+  simp [coprodMap_apply]
+
 end CoprodMap
 
 section Basis

@@ -24,17 +24,17 @@ proof that all free modules are projective.
 
 Let `R` be a ring (or a semiring) and let `M` be an `R`-module.
 
-* `is_projective R M` : the proposition saying that `M` is a projective `R`-module.
+* `Module.Projective R M` : the proposition saying that `M` is a projective `R`-module.
 
 ## Main theorems
 
-* `is_projective.lifting_property` : a map from a projective module can be lifted along
+* `Module.projective_lifting_property` : a map from a projective module can be lifted along
   a surjection.
 
-* `is_projective.of_lifting_property` : If for all R-module surjections `A →ₗ B`, all
+* `Module.Projective.of_lifting_property` : If for all R-module surjections `A →ₗ B`, all
   maps `M →ₗ B` lift to `M →ₗ A`, then `M` is projective.
 
-* `is_projective.of_free` : Free modules are projective
+* `Module.Projective.of_free` : Free modules are projective
 
 ## Implementation notes
 
@@ -118,32 +118,35 @@ theorem projective_lifting_property [h : Projective R P] (f : M →ₗ[R] N) (g 
   simp [Finsupp.total_apply, Function.surjInv_eq hf]
 #align module.projective_lifting_property Module.projective_lifting_property
 
+/-- A module which satisfies the universal property is projective: If all surjections of
+`R`-modules `(P →₀ R) →ₗ[R] P` have `R`-linear left inverse maps, then `P` is
+projective. -/
+theorem Projective.of_lifting_property'' {R : Type u} [Semiring R] {P : Type v} [AddCommMonoid P]
+    [Module R P] (huniv : ∀ (f : (P →₀ R) →ₗ[R] P), Function.Surjective f →
+      ∃ h : P →ₗ[R] (P →₀ R), f.comp h = .id) :
+    Projective R P :=
+  projective_def'.2 <| huniv (Finsupp.total P P R (id : P → P))
+    (total_surjective _ Function.surjective_id)
+
 variable {Q : Type _} [AddCommMonoid Q] [Module R Q]
 
-instance [hP : Projective R P] [hQ : Projective R Q] : Projective R (P × Q) := by
-  rw [Module.projective_def']
-  cases' hP.out with sP hsP
-  cases' hQ.out with sQ hsQ
-  use coprod (lmapDomain R R (inl R P Q) ∘ₗ sP) (lmapDomain R R (inr R P Q) ∘ₗ sQ)
-  -- porting note: golfed by using a less agressive `ext`
-  refine FunLike.ext _ _ fun x ↦ ?_
-  simp only [comp_apply, coprod_apply, map_add, lmapDomain_apply, id_apply, total_mapDomain,
-    Function.comp.left_id, ← apply_total_id, hsP _, hsQ _, inl_apply, inr_apply, Prod.fst_add_snd]
+instance [Projective R P] [Projective R Q] : Projective R (P × Q) := by
+  refine .of_lifting_property'' fun f hf ↦ ?_
+  rcases projective_lifting_property f (.inl _ _ _) hf with ⟨g₁, hg₁⟩
+  rcases projective_lifting_property f (.inr _ _ _) hf with ⟨g₂, hg₂⟩
+  refine ⟨coprod g₁ g₂, ?_⟩
+  rw [LinearMap.comp_coprod, hg₁, hg₂, LinearMap.coprod_inl_inr]
 
 variable {ι : Type _} (A : ι → Type _) [∀ i : ι, AddCommMonoid (A i)] [∀ i : ι, Module R (A i)]
 
-instance [h : ∀ i : ι, Projective R (A i)] : Projective R (Π₀ i, A i) := by
-  classical
-    rw [Module.projective_def']
-    simp_rw [projective_def] at h
-    choose s hs using h
-    let f i := lmapDomain R R (Dfinsupp.lsingle i : A i →ₗ[R] Π₀ i, A i)
-    use Dfinsupp.coprodMap f ∘ₗ Dfinsupp.mapRange.linearMap s
-    ext i x j
-    simp only [comp_apply, Dfinsupp.mapRange.linearMap_apply, Dfinsupp.lsingle_apply,
-      Dfinsupp.mapRange_single, Dfinsupp.coprodMap_apply, _root_.map_finsupp_sum,
-      Dfinsupp.toFinsupp_single, Finsupp.sum_single_index, id_apply, id.def, lmapDomain_apply,
-      total_mapDomain, Function.comp.left_id, ← apply_total_id, hs _ _]
+instance [h : ∀ i : ι, Projective R (A i)] : Projective R (Π₀ i, A i) :=
+  .of_lifting_property'' fun f hf ↦ by
+    classical
+      choose g hg using fun i ↦ projective_lifting_property f (Dfinsupp.lsingle i) hf
+      replace hg : ∀ i x, f (g i x) = Dfinsupp.single i x := fun i ↦ FunLike.congr_fun (hg i)
+      refine ⟨Dfinsupp.coprodMap g, ?_⟩
+      ext i x j
+      simp only [comp_apply, id_apply, Dfinsupp.lsingle_apply, Dfinsupp.coprodMap_apply_single, hg]
 
 end Semiring
 
@@ -152,7 +155,7 @@ section Ring
 variable {R : Type _} [Ring R] {P : Type _} [AddCommGroup P] [Module R P]
 
 /-- Free modules are projective. -/
-theorem projectiveOfBasis {ι : Type _} (b : Basis ι R P) : Projective R P := by
+theorem Projective.of_basis {ι : Type _} (b : Basis ι R P) : Projective R P := by
   -- need P →ₗ (P →₀ R) for definition of projective.
   -- get it from `ι → (P →₀ R)` coming from `b`.
   use b.constr ℕ fun i => Finsupp.single (b i) (1 : R)
@@ -160,58 +163,46 @@ theorem projectiveOfBasis {ι : Type _} (b : Basis ι R P) : Projective R P := b
   simp only [b.constr_apply, mul_one, id.def, Finsupp.smul_single', Finsupp.total_single,
     LinearMap.map_finsupp_sum]
   exact b.total_repr m
-#align module.projective_of_basis Module.projectiveOfBasis
+#align module.projective_of_basis Module.Projective.of_basis
 
-instance (priority := 100) projectiveOfFree [Module.Free R P] : Module.Projective R P :=
-  projectiveOfBasis <| Module.Free.chooseBasis R P
-#align module.projective_of_free Module.projectiveOfFree
+instance (priority := 100) Projective.of_free [Module.Free R P] : Module.Projective R P :=
+  .of_basis <| Module.Free.chooseBasis R P
+#align module.projective_of_free Module.Projective.of_free
 
 end Ring
 
 --This is in a different section because special universe restrictions are required.
 section OfLiftingProperty
 
+-- porting note: todo: generalize to `P : Type v`?
 /-- A module which satisfies the universal property is projective. Note that the universe variables
 in `huniv` are somewhat restricted. -/
-theorem projectiveOfLiftingProperty' {R : Type u} [Semiring R] {P : Type max u v} [AddCommMonoid P]
-    [Module R P]
+theorem Projective.of_lifting_property' {R : Type u} [Semiring R] {P : Type max u v}
+    [AddCommMonoid P] [Module R P]
     -- If for all surjections of `R`-modules `M →ₗ N`, all maps `P →ₗ N` lift to `P →ₗ M`,
     (huniv : ∀ {M : Type max v u} {N : Type max u v} [AddCommMonoid M] [AddCommMonoid N]
       [Module R M] [Module R N] (f : M →ₗ[R] N) (g : P →ₗ[R] N),
         Function.Surjective f → ∃ h : P →ₗ[R] M, f.comp h = g) :
     -- then `P` is projective.
-    Projective R P := by
-  -- let `s` be the universal map `(P →₀ R) →ₗ P` coming from the identity map `P →ₗ P`.
-  have : ∃ s : P →ₗ[R] P →₀ R, (Finsupp.total P P R id).comp s = LinearMap.id :=
-    huniv (Finsupp.total P P R (id : P → P)) (LinearMap.id : P →ₗ[R] P)
-      (total_surjective _ Function.surjective_id)
-  -- This `s` works.
-  rwa [projective_def']
-#align module.projective_of_lifting_property' Module.projectiveOfLiftingProperty'
+    Projective R P :=
+  .of_lifting_property'' (huniv · _)
+#align module.projective_of_lifting_property' Module.Projective.of_lifting_property'
 
+-- porting note: todo: generalize to `P : Type v`?
 set_option synthInstance.etaExperiment true in
 /-- A variant of `of_lifting_property'` when we're working over a `[ring R]`,
 which only requires quantifying over modules with an `add_comm_group` instance. -/
-theorem projectiveOfLiftingProperty {R : Type u} [Ring R] {P : Type max u v} [AddCommGroup P]
+theorem Projective.of_lifting_property {R : Type u} [Ring R] {P : Type max u v} [AddCommGroup P]
     [Module R P]
     -- If for all surjections of `R`-modules `M →ₗ N`, all maps `P →ₗ N` lift to `P →ₗ M`,
     (huniv : ∀ {M : Type max v u} {N : Type max u v} [AddCommGroup M] [AddCommGroup N]
       [Module R M] [Module R N] (f : M →ₗ[R] N) (g : P →ₗ[R] N),
         Function.Surjective f → ∃ h : P →ₗ[R] M, f.comp h = g) :
     -- then `P` is projective.
-    Projective R P := by
-  -- We could try and prove this *using* `of_lifting_property`,
-  -- but this quickly leads to typeclass hell,
-  -- so we just prove it over again.
-  -- let `s` be the universal map `(P →₀ R) →ₗ P` coming from the identity map `P →ₗ P`.
-  have : ∃ s : P →ₗ[R] P →₀ R, (Finsupp.total P P R id).comp s = LinearMap.id :=
-    huniv (Finsupp.total P P R (id : P → P)) (LinearMap.id : P →ₗ[R] P)
-      (total_surjective _ Function.surjective_id)
-  -- This `s` works.
-  rwa [projective_def']
-#align module.projective_of_lifting_property Module.projectiveOfLiftingProperty
+    Projective R P :=
+  .of_lifting_property'' (huniv · _)
+#align module.projective_of_lifting_property Module.Projective.of_lifting_property
 
 end OfLiftingProperty
 
 end Module
-
