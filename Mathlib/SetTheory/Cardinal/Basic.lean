@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 
 ! This file was ported from Lean 3 source module set_theory.cardinal.basic
-! leanprover-community/mathlib commit 4c19a16e4b705bf135cf9a80ac18fcc99c438514
+! leanprover-community/mathlib commit 7c2ce0c2da15516b4e65d0c9e254bb6dc93abd1f
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -14,7 +14,7 @@ import Mathlib.Data.Nat.PartENat
 import Mathlib.Data.Set.Countable
 import Mathlib.Logic.Small.Basic
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
-import Mathlib.Order.SuccPred.Basic
+import Mathlib.Order.SuccPred.Limit
 import Mathlib.SetTheory.Cardinal.SchroederBernstein
 import Mathlib.Tactic.Positivity
 
@@ -32,6 +32,7 @@ We define cardinal numbers as a quotient of types under the equivalence relation
 * Multiplication `c₁ * c₂` is defined by `Cardinal.mul_def : #α * #β = #(α × β)`.
 * The order `c₁ ≤ c₂` is defined by `Cardinal.le_def α β : #α ≤ #β ↔ Nonempty (α ↪ β)`.
 * Exponentiation `c₁ ^ c₂` is defined by `Cardinal.power_def α β : #α ^ #β = #(β → α)`.
+* `cardinal.is_limit c` means that `c` is a (weak) limit cardinal: `c ≠ 0 ∧ ∀ x < c, succ x < c`.
 * `Cardinal.aleph0` or `ℵ₀` is the cardinality of `ℕ`. This definition is universe polymorphic:
   `Cardinal.aleph0.{u} : Cardinal.{u}` (contrast with `ℕ : Type`, which lives in a specific
   universe). In some cases the universe level has to be given explicitly.
@@ -783,13 +784,37 @@ theorem infₛ_empty : infₛ (∅ : Set Cardinal.{u}) = 0 :=
   dif_neg Set.not_nonempty_empty
 #align cardinal.Inf_empty Cardinal.infₛ_empty
 
-/-- Note that the successor of `c` is not the same as `c + 1` except in the case of finite `c`.-/
+/-- Note that the successor of `c` is not the same as `c + 1` except in the case of finite `c`. -/
 instance : SuccOrder Cardinal :=
   SuccOrder.ofSuccLeIff (fun c => infₛ { c' | c < c' })
     -- Porting note: Needed to insert `by apply` in the next line
     ⟨by apply lt_of_lt_of_le <| cinfₛ_mem <| exists_gt _,
     -- Porting note used to be just `cinfₛ_le'`
     fun h ↦ by apply cinfₛ_le'; exact h⟩
+
+/-- A cardinal is a limit if it is not zero or a successor cardinal. Note that `ℵ₀` is a limit
+  cardinal by this definition, but `0` isn't.
+
+  Use `is_succ_limit` if you want to include the `c = 0` case. -/
+def IsLimit (c : Cardinal) : Prop :=
+  c ≠ 0 ∧ IsSuccLimit c
+#align cardinal.is_limit Cardinal.IsLimit
+
+protected theorem IsLimit.ne_zero {c} (h : IsLimit c) : c ≠ 0 :=
+  h.1
+#align cardinal.is_limit.ne_zero Cardinal.IsLimit.ne_zero
+
+protected theorem IsLimit.isSuccLimit {c} (h : IsLimit c) : IsSuccLimit c :=
+  h.2
+#align cardinal.is_limit.is_succ_limit Cardinal.IsLimit.isSuccLimit
+
+theorem IsLimit.succ_lt {x c} (h : IsLimit c) : x < c → succ x < c :=
+  h.isSuccLimit.succ_lt
+#align cardinal.is_limit.succ_lt Cardinal.IsLimit.succ_lt
+
+theorem isSuccLimit_zero : IsSuccLimit (0 : Cardinal) :=
+  isSuccLimit_bot
+#align cardinal.is_succ_limit_zero Cardinal.isSuccLimit_zero
 
 theorem succ_def (c : Cardinal) : succ c = infₛ { c' | c < c' } :=
   rfl
@@ -1451,6 +1476,30 @@ theorem le_aleph0_iff_subtype_countable {p : α → Prop} :
     (#{ x // p x }) ≤ ℵ₀ ↔ { x | p x }.Countable :=
   le_aleph0_iff_set_countable
 #align cardinal.le_aleph_0_iff_subtype_countable Cardinal.le_aleph0_iff_subtype_countable
+
+theorem isSuccLimit_aleph0 : IsSuccLimit ℵ₀ :=
++  isSuccLimit_of_succ_lt fun a ha =>
++    by
++    rcases lt_aleph_0.1 ha with ⟨n, rfl⟩
++    rw [← nat_succ]
++    apply nat_lt_aleph_0
++#align cardinal.is_succ_limit_aleph_0 Cardinal.isSuccLimit_aleph0
++
++#print Cardinal.isLimit_aleph0 /-
++theorem isLimit_aleph0 : IsLimit ℵ₀ :=
++  ⟨aleph0_ne_zero, isSuccLimit_aleph0⟩
++#align cardinal.is_limit_aleph_0 Cardinal.isLimit_aleph0
++-/
++
++#print Cardinal.IsLimit.aleph0_le /-
++theorem IsLimit.aleph0_le {c : Cardinal} (h : IsLimit c) : ℵ₀ ≤ c :=
++  by
++  by_contra' h'
++  rcases lt_aleph_0.1 h' with ⟨_ | n, rfl⟩
++  · exact h.ne_zero.irrefl
++  · rw [nat_succ] at h
++    exact not_is_succ_limit_succ _ h.is_succ_limit
++#align cardinal.is_limit.aleph_0_le Cardinal.IsLimit.aleph0_le
 
 instance canLiftCardinalNat : CanLift Cardinal ℕ (↑) fun x => x < ℵ₀ :=
   ⟨fun _ hx =>
