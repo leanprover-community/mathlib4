@@ -20,6 +20,9 @@ import Mathlib.Topology.Algebra.UniformGroup
 import Mathlib.Topology.ContinuousFunction.Ordered
 import Mathlib.Topology.UniformSpace.CompactConvergence
 
+
+set_option autoImplicit false -- **TODO** delete this later
+
 /-!
 # Algebraic structures over continuous functions
 
@@ -134,28 +137,29 @@ theorem int_cast_apply [IntCast β] (n : ℤ) (x : α) : (n : C(α, β)) x = n :
 #align continuous_map.int_cast_apply ContinuousMap.int_cast_apply
 
 -- ### "nsmul" and "pow"
-instance hasNsmul [AddMonoid β] [ContinuousAdd β] : SMul ℕ C(α, β) :=
+instance hasNSMul [AddMonoid β] [ContinuousAdd β] : SMul ℕ C(α, β) :=
   ⟨fun n f => ⟨SMul.smul n f, f.continuous.nsmul n⟩⟩
-#align continuous_map.has_nsmul ContinuousMap.hasNsmul
+#align continuous_map.has_nsmul ContinuousMap.hasNSMul
 
-@[to_additive]
+@[to_additive existing]
 instance hasPow [Monoid β] [ContinuousMul β] : Pow C(α, β) ℕ :=
   ⟨fun f n => ⟨Pow.pow f n, f.continuous.pow n⟩⟩
 #align continuous_map.has_pow ContinuousMap.hasPow
---#align continuous_map.has_nsmul ContinuousMap.hasNsmul
+--#align continuous_map.has_nsmul ContinuousMap.hasNSMul
 
-@[norm_cast, to_additive]
+--@[norm_cast, to_additive]
+@[to_additive]
 theorem coe_pow [Monoid β] [ContinuousMul β] (f : C(α, β)) (n : ℕ) : ⇑(f ^ n) = f ^ n :=
   rfl
 #align continuous_map.coe_pow ContinuousMap.coe_pow
-#align continuous_map.coe_nsmul ContinuousMap.coe_nsmul
+--#align continuous_map.coe_nsmul ContinuousMap.coe_nsmul
 
 @[to_additive]
 theorem pow_apply [Monoid β] [ContinuousMul β] (f : C(α, β)) (n : ℕ) (x : α) :
     (f ^ n) x = f x ^ n :=
   rfl
 #align continuous_map.pow_apply ContinuousMap.pow_apply
-#align continuous_map.nsmul_apply ContinuousMap.nsmul_apply
+--#align continuous_map.nsmul_apply ContinuousMap.nsmul_apply
 
 -- don't make auto-generated `coe_nsmul` and `nsmul_apply` simp, as the linter complains they're
 -- redundant WRT `coe_smul`
@@ -166,28 +170,28 @@ theorem pow_comp [Monoid γ] [ContinuousMul γ] (f : C(β, γ)) (n : ℕ) (g : C
     (f ^ n).comp g = f.comp g ^ n :=
   rfl
 #align continuous_map.pow_comp ContinuousMap.pow_comp
-#align continuous_map.nsmul_comp ContinuousMap.nsmul_comp
+--#align continuous_map.nsmul_comp ContinuousMap.nsmul_comp
 
 -- don't make `nsmul_comp` simp as the linter complains it's redundant WRT `smul_comp`
 attribute [simp] pow_comp
 
 -- ### "inv" and "neg"
 @[to_additive]
-instance [Group β] [TopologicalGroup β] : Inv C(α, β) where inv f := ⟨f⁻¹, f.Continuous.inv⟩
+instance [Group β] [TopologicalGroup β] : Inv C(α, β) where inv f := ⟨f⁻¹, f.continuous.inv⟩
 
-@[simp, norm_cast, to_additive]
+@[to_additive (attr := simp)]
 theorem coe_inv [Group β] [TopologicalGroup β] (f : C(α, β)) : ⇑f⁻¹ = f⁻¹ :=
   rfl
 #align continuous_map.coe_inv ContinuousMap.coe_inv
 #align continuous_map.coe_neg ContinuousMap.coe_neg
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem inv_apply [Group β] [TopologicalGroup β] (f : C(α, β)) (x : α) : f⁻¹ x = (f x)⁻¹ :=
   rfl
 #align continuous_map.inv_apply ContinuousMap.inv_apply
 #align continuous_map.neg_apply ContinuousMap.neg_apply
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem inv_comp [Group γ] [TopologicalGroup γ] (f : C(β, γ)) (g : C(α, β)) :
     f⁻¹.comp g = (f.comp g)⁻¹ :=
   rfl
@@ -197,21 +201,21 @@ theorem inv_comp [Group γ] [TopologicalGroup γ] (f : C(β, γ)) (g : C(α, β)
 -- ### "div" and "sub"
 @[to_additive]
 instance [Div β] [ContinuousDiv β] : Div C(α, β)
-    where div f g := ⟨f / g, f.continuous.div' g.Continuous⟩
+    where div f g := ⟨f / g, f.continuous.div' g.continuous⟩
 
-@[simp, norm_cast, to_additive]
+@[to_additive (attr := norm_cast, simp)]
 theorem coe_div [Div β] [ContinuousDiv β] (f g : C(α, β)) : ⇑(f / g) = f / g :=
   rfl
 #align continuous_map.coe_div ContinuousMap.coe_div
 #align continuous_map.coe_sub ContinuousMap.coe_sub
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem div_apply [Div β] [ContinuousDiv β] (f g : C(α, β)) (x : α) : (f / g) x = f x / g x :=
   rfl
 #align continuous_map.div_apply ContinuousMap.div_apply
 #align continuous_map.sub_apply ContinuousMap.sub_apply
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem div_comp [Div γ] [ContinuousDiv γ] (f g : C(β, γ)) (h : C(α, β)) :
     (f / g).comp h = f.comp h / g.comp h :=
   rfl
@@ -220,20 +224,21 @@ theorem div_comp [Div γ] [ContinuousDiv γ] (f g : C(β, γ)) (h : C(α, β)) :
 
 -- ### "zpow" and "zsmul"
 instance hasZsmul [AddGroup β] [TopologicalAddGroup β] : SMul ℤ C(α, β)
-    where smul z f := ⟨z • f, f.continuous.zsmul z⟩
+    where smul z f := ⟨SMul.smul z  f, f.continuous.zsmul z⟩
 #align continuous_map.has_zsmul ContinuousMap.hasZsmul
 
-@[to_additive]
+@[to_additive existing]
 instance hasZpow [Group β] [TopologicalGroup β] : Pow C(α, β) ℤ
-    where pow f z := ⟨f ^ z, f.continuous.zpow z⟩
+    where pow f z := ⟨Pow.pow f z, f.continuous.zpow z⟩
 #align continuous_map.has_zpow ContinuousMap.hasZpow
-#align continuous_map.has_zsmul ContinuousMap.hasZsmul
+--#align continuous_map.has_zsmul ContinuousMap.hasZsmul
 
-@[norm_cast, to_additive]
+--@[norm_cast, to_additive]
+@[to_additive]
 theorem coe_zpow [Group β] [TopologicalGroup β] (f : C(α, β)) (z : ℤ) : ⇑(f ^ z) = f ^ z :=
   rfl
 #align continuous_map.coe_zpow ContinuousMap.coe_zpow
-#align continuous_map.coe_zsmul ContinuousMap.coe_zsmul
+--#align continuous_map.coe_zsmul ContinuousMap.coe_zsmul
 
 @[to_additive]
 theorem zpow_apply [Group β] [TopologicalGroup β] (f : C(α, β)) (z : ℤ) (x : α) :
