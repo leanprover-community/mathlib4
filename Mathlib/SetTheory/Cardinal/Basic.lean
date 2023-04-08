@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 
 ! This file was ported from Lean 3 source module set_theory.cardinal.basic
-! leanprover-community/mathlib commit 7c2ce0c2da15516b4e65d0c9e254bb6dc93abd1f
+! leanprover-community/mathlib commit 9dba31df156d9d65b9d78db449542ca73d147c68
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -1270,6 +1270,16 @@ theorem lift_le_aleph0 {c : Cardinal.{u}} : lift.{v} c ≤ ℵ₀ ↔ c ≤ ℵ�
   rw [← lift_aleph0.{u,v}, lift_le]
 #align cardinal.lift_le_aleph_0 Cardinal.lift_le_aleph0
 
+@[simp]
+theorem aleph0_lt_lift {c : Cardinal.{u}} : ℵ₀ < lift.{v} c ↔ ℵ₀ < c := by
+  rw [← lift_aleph0.{u,v}, lift_lt]
+#align cardinal.aleph_0_lt_lift Cardinal.aleph0_lt_lift
+
+@[simp]
+theorem lift_lt_aleph0 {c : Cardinal.{u}} : lift.{v} c < ℵ₀ ↔ c < ℵ₀ := by
+  rw [← lift_aleph0.{u,v}, lift_lt]
+#align cardinal.lift_lt_aleph_0 Cardinal.lift_lt_aleph0
+
 /-! ### Properties about the cast from `ℕ` -/
 
 -- Porting note : simp can prove this
@@ -1291,6 +1301,26 @@ theorem nat_eq_lift_iff {n : ℕ} {a : Cardinal.{u}} :
     (n : Cardinal) = lift.{v} a ↔ (n : Cardinal) = a := by
   rw [← lift_natCast.{v,u} n, lift_inj]
 #align cardinal.nat_eq_lift_iff Cardinal.nat_eq_lift_iff
+
+@[simp]
+theorem lift_le_nat_iff {a : Cardinal.{u}} {n : ℕ} : lift.{v} a ≤ n ↔ a ≤ n := by
+  rw [← lift_natCast.{v,u}, lift_le]
+#align cardinal.lift_le_nat_iff Cardinal.lift_le_nat_iff
+
+@[simp]
+theorem nat_le_lift_iff {n : ℕ} {a : Cardinal.{u}} : n ≤ lift.{v} a ↔ n ≤ a := by
+  rw [← lift_natCast.{v,u}, lift_le]
+#align cardinal.nat_le_lift_iff Cardinal.nat_le_lift_iff
+
+@[simp]
+theorem lift_lt_nat_iff {a : Cardinal.{u}} {n : ℕ} : lift.{v} a < n ↔ a < n := by
+  rw [← lift_natCast.{v,u}, lift_lt]
+#align cardinal.lift_lt_nat_iff Cardinal.lift_lt_nat_iff
+
+@[simp]
+theorem nat_lt_lift_iff {n : ℕ} {a : Cardinal.{u}} : n < lift.{v} a ↔ n < a := by
+  rw [← lift_natCast.{v,u}, lift_lt]
+#align cardinal.nat_lt_lift_iff Cardinal.nat_lt_lift_iff
 
 theorem lift_mk_fin (n : ℕ) : lift (#Fin n) = n := by simp
 #align cardinal.lift_mk_fin Cardinal.lift_mk_fin
@@ -1766,9 +1796,9 @@ theorem toNat_lift (c : Cardinal.{v}) : toNat (lift.{u, v} c) = toNat c :=
   apply natCast_injective
   cases' lt_or_ge c ℵ₀ with hc hc
   · rw [cast_toNat_of_lt_aleph0, ← lift_natCast.{u,v}, cast_toNat_of_lt_aleph0 hc]
-    rwa [← lift_aleph0.{v,u}, lift_lt]
+    rwa [lift_lt_aleph0]
   · rw [cast_toNat_of_aleph0_le, ← lift_natCast.{u,v}, cast_toNat_of_aleph0_le hc, lift_zero]
-    rwa [← lift_aleph0.{v,u}, lift_le]
+    rwa [aleph0_le_lift]
 #align cardinal.to_nat_lift Cardinal.toNat_lift
 
 theorem toNat_congr {β : Type v} (e : α ≃ β) : toNat (#α) = toNat (#β) := by
@@ -1813,12 +1843,8 @@ theorem toNat_add_of_lt_aleph0 {a : Cardinal.{u}} {b : Cardinal.{v}} (ha : a < �
     toNat (lift.{v, u} a + lift.{u, v} b) = toNat a + toNat b :=
   by
   apply Cardinal.natCast_injective
-  replace ha : lift.{v, u} a < ℵ₀ := by
-    rw [← lift_aleph0.{u,v}]
-    exact lift_lt.2 ha
-  replace hb : lift.{u, v} b < ℵ₀ := by
-    rw [← lift_aleph0.{v,u}]
-    exact lift_lt.2 hb
+  replace ha : lift.{v, u} a < ℵ₀ := by rwa [lift_lt_aleph0]
+  replace hb : lift.{u, v} b < ℵ₀ := by rwa [lift_lt_aleph0]
   rw [Nat.cast_add, ← toNat_lift.{v, u} a, ← toNat_lift.{u, v} b, cast_toNat_of_lt_aleph0 ha,
     cast_toNat_of_lt_aleph0 hb, cast_toNat_of_lt_aleph0 (add_lt_aleph0 ha hb)]
 #align cardinal.to_nat_add_of_lt_aleph_0 Cardinal.toNat_add_of_lt_aleph0
