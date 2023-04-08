@@ -126,18 +126,18 @@ instance [hP : Projective R P] [hQ : Projective R Q] : Projective R (P × Q) := 
   cases' hP.out with sP hsP
   cases' hQ.out with sQ hsQ
   use coprod (lmapDomain R R (inl R P Q)) (lmapDomain R R (inr R P Q)) ∘ₗ sP.prodMap sQ
-  ext <;>
-    simp only [coe_inl, coe_inr, coe_comp, Function.comp_apply, prodMap_apply, map_zero,
-      coprod_apply, lmapDomain_apply, mapDomain_zero, add_zero, zero_add, id_comp,
-      total_mapDomain]
-  · rw [← fst_apply _, apply_total R]
-    exact hsP x
-  · rw [← snd_apply _, apply_total R]
-    exact Finsupp.total_zero_apply _ (sP x)
-  · rw [← fst_apply _, apply_total R]
-    exact Finsupp.total_zero_apply _ (sQ x)
-  · rw [← snd_apply _, apply_total R]
-    exact hsQ x
+  ext
+  --   simp only [coe_inl, coe_inr, coe_comp, Function.comp_apply, prodMap_apply, map_zero,
+  --     coprod_apply, lmapDomain_apply, mapDomain_zero, add_zero, zero_add, id_comp,
+  --     total_mapDomain]
+  -- · rw [← fst_apply (_ : P × Q), apply_total R]
+  --   exact hsP x
+  -- · rw [← snd_apply _, apply_total R]
+  --   exact Finsupp.total_zero_apply _ (sP x)
+  -- · rw [← fst_apply _, apply_total R]
+  --   exact Finsupp.total_zero_apply _ (sQ x)
+  -- · rw [← snd_apply _, apply_total R]
+  --   exact hsQ x
 
 variable {ι : Type _} (A : ι → Type _) [∀ i : ι, AddCommMonoid (A i)] [∀ i : ι, Module R (A i)]
 
