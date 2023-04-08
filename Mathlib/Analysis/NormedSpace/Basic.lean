@@ -32,7 +32,7 @@ section SeminormedAddCommGroup
 
 section Prio
 
--- set_option extends_priority 920 -- Porting note: XXX
+-- set_option extends_priority 920 -- Porting note: option unsupported
 
 -- Here, we set a rather high priority for the instance `[NormedSpace α β] : Module α β`
 -- to take precedence over `Semiring.toModule` as this leads to instance paths with better
@@ -695,4 +695,3 @@ def NormedSpace.restrictScalars : NormedSpace 𝕜 E :=
 #align normed_space.restrict_scalars NormedSpace.restrictScalars
 
 end RestrictScalars
-
