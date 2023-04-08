@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 
 ! This file was ported from Lean 3 source module topology.algebra.group.basic
-! leanprover-community/mathlib commit c10e724be91096453ee3db13862b9fb9a992fef2
+! leanprover-community/mathlib commit 3b1890e71632be9e3b2086ab512c3259a7e9a3ef
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -552,7 +552,7 @@ end Zpow
 
 section OrderedCommGroup
 
-variable [TopologicalSpace H] [OrderedCommGroup H] [TopologicalGroup H]
+variable [TopologicalSpace H] [OrderedCommGroup H] [ContinuousInv H]
 
 @[to_additive]
 theorem tendsto_inv_nhdsWithin_Ioi {a : H} : Tendsto Inv.inv (𝓝[>] a) (𝓝[<] a⁻¹) :=
@@ -618,7 +618,7 @@ instance Pi.topologicalGroup {C : β → Type _} [∀ b, TopologicalSpace (C b)]
 open MulOpposite
 
 @[to_additive]
-instance [Group α] [ContinuousInv α] : ContinuousInv αᵐᵒᵖ :=
+instance [Inv α] [ContinuousInv α] : ContinuousInv αᵐᵒᵖ :=
   opHomeomorph.symm.inducing.continuousInv unop_inv
 
 /-- If multiplication is continuous in `α`, then it also is in `αᵐᵒᵖ`. -/
@@ -1418,7 +1418,7 @@ section FilterMul
 
 section
 
-variable (G) [TopologicalSpace G] [Group G] [TopologicalGroup G]
+variable (G) [TopologicalSpace G] [Group G] [ContinuousMul G]
 
 @[to_additive]
 theorem TopologicalGroup.t1Space (h : @IsClosed G _ {1}) : T1Space G :=
@@ -1427,6 +1427,12 @@ theorem TopologicalGroup.t1Space (h : @IsClosed G _ {1}) : T1Space G :=
     simp⟩
 #align topological_group.t1_space TopologicalGroup.t1Space
 #align topological_add_group.t1_space TopologicalAddGroup.t1Space
+
+end
+
+section
+
+variable (G) [TopologicalSpace G] [Group G] [TopologicalGroup G]
 
 @[to_additive]
 instance (priority := 100) TopologicalGroup.regularSpace : RegularSpace G := by
@@ -1446,13 +1452,13 @@ instance (priority := 100) TopologicalGroup.regularSpace : RegularSpace G := by
 #align topological_add_group.regular_space TopologicalAddGroup.regularSpace
 
 @[to_additive]
-theorem TopologicalGroup.t3Space [T1Space G] : T3Space G :=
+theorem TopologicalGroup.t3Space [T0Space G] : T3Space G :=
   ⟨⟩
 #align topological_group.t3_space TopologicalGroup.t3Space
 #align topological_add_group.t3_space TopologicalAddGroup.t3Space
 
 @[to_additive]
-theorem TopologicalGroup.t2Space [T1Space G] : T2Space G := by
+theorem TopologicalGroup.t2Space [T0Space G] : T2Space G := by
   haveI := TopologicalGroup.t3Space G
   infer_instance
 #align topological_group.t2_space TopologicalGroup.t2Space
@@ -1463,11 +1469,10 @@ variable (S : Subgroup G) [Subgroup.Normal S] [IsClosed (S : Set G)]
 
 @[to_additive]
 instance Subgroup.t3_quotient_of_isClosed (S : Subgroup G) [Subgroup.Normal S]
-    [IsClosed (S : Set G)] : T3Space (G ⧸ S) := by
-  suffices T1Space (G ⧸ S) by exact @TopologicalGroup.t3Space _ _ _ _ this
-  have hS : IsClosed (S : Set G) := inferInstance
+    [hS : IsClosed (S : Set G)] : T3Space (G ⧸ S) := by
   rw [← QuotientGroup.ker_mk' S] at hS
-  exact TopologicalGroup.t1Space (G ⧸ S) (quotientMap_quotient_mk'.isClosed_preimage.mp hS)
+  haveI := TopologicalGroup.t1Space (G ⧸ S) (quotientMap_quotient_mk'.isClosed_preimage.mp hS)
+  exact TopologicalGroup.t3Space _
 #align subgroup.t3_quotient_of_is_closed Subgroup.t3_quotient_of_isClosed
 #align add_subgroup.t3_quotient_of_is_closed AddSubgroup.t3_quotient_of_isClosed
 
@@ -1529,7 +1534,7 @@ section
 /-! Some results about an open set containing the product of two sets in a topological group. -/
 
 
-variable [TopologicalSpace G] [Group G] [TopologicalGroup G]
+variable [TopologicalSpace G] [MulOneClass G] [ContinuousMul G]
 
 /-- Given a compact set `K` inside an open set `U`, there is a open neighborhood `V` of `1`
   such that `K * V ⊆ U`. -/
@@ -1574,6 +1579,12 @@ theorem compact_open_separated_mul_left {K U : Set G} (hK : IsCompact K) (hU : I
     preimage_image_eq _ op_injective] at hV'
 #align compact_open_separated_mul_left compact_open_separated_mul_left
 #align compact_open_separated_add_left compact_open_separated_add_left
+
+end
+
+section
+
+variable [TopologicalSpace G] [Group G] [TopologicalGroup G]
 
 /-- A compact set is covered by finitely many left multiplicative translates of a set
   with non-empty interior. -/
@@ -1709,15 +1720,12 @@ instance {G} [TopologicalSpace G] [AddGroup G] [TopologicalAddGroup G] :
 
 section Quotient
 
-variable [Group G] [TopologicalSpace G] [TopologicalGroup G] {Γ : Subgroup G}
+variable [Group G] [TopologicalSpace G] [ContinuousMul G] {Γ : Subgroup G}
 
 @[to_additive]
 instance QuotientGroup.continuousConstSMul : ContinuousConstSMul G (G ⧸ Γ) where
   continuous_const_smul g := by
-    have quot := IsOpenMap.to_quotientMap
-      (QuotientGroup.isOpenMap_coe Γ) continuous_quot_mk (surjective_quot_mk _)
-    rw [quot.continuous_iff]
-    exact continuous_quot_mk.comp (continuous_mul_left _)
+     convert ((@continuous_const _ _ _ _ g).mul continuous_id).quotient_map' _
 #align quotient_group.has_continuous_const_smul QuotientGroup.continuousConstSMul
 #align quotient_add_group.has_continuous_const_vadd QuotientAddGroup.continuousConstVAdd
 
