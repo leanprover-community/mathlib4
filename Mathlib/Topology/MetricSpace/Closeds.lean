@@ -267,7 +267,7 @@ theorem NonemptyCompacts.ToCloseds.uniformEmbedding :
 theorem NonemptyCompacts.isClosed_in_closeds [CompleteSpace α] :
     IsClosed (range <| @NonemptyCompacts.toCloseds α _ _) := by
   have :
-    range NonemptyCompacts.ToCloseds =
+    range NonemptyCompacts.toCloseds =
       { s : Closeds α | (s : Set α).Nonempty ∧ IsCompact (s : Set α) } := by
     ext s
     refine' ⟨_, fun h => ⟨⟨⟨s, h.2⟩, h.1⟩, Closeds.ext rfl⟩⟩
@@ -280,27 +280,26 @@ theorem NonemptyCompacts.isClosed_in_closeds [CompleteSpace α] :
     rw [edist_comm] at Dst
     -- since `t` is nonempty, so is `s`
     exact nonempty_of_hausdorffEdist_ne_top ht.1 (ne_of_lt Dst)
-  · refine' isCompact_iff_totallyBounded_isComplete.2 ⟨_, s.closed.is_complete⟩
-    refine' totally_bounded_iff.2 fun ε (εpos : 0 < ε) => _
+  · refine' isCompact_iff_totallyBounded_isComplete.2 ⟨_, s.closed.isComplete⟩
+    refine' totallyBounded_iff.2 fun ε (εpos : 0 < ε) => _
     -- we have to show that s is covered by finitely many eballs of radius ε
     -- pick a nonempty compact set t at distance at most ε/2 of s
     rcases mem_closure_iff.1 hs (ε / 2) (ENNReal.half_pos εpos.ne') with ⟨t, ht, Dst⟩
     -- cover this space with finitely many balls of radius ε/2
-    rcases totally_bounded_iff.1 (isCompact_iff_totallyBounded_isComplete.1 ht.2).1 (ε / 2)
+    rcases totallyBounded_iff.1 (isCompact_iff_totallyBounded_isComplete.1 ht.2).1 (ε / 2)
         (ENNReal.half_pos εpos.ne') with
       ⟨u, fu, ut⟩
     refine' ⟨u, ⟨fu, fun x hx => _⟩⟩
     -- u : set α,  fu : u.finite,  ut : t ⊆ ⋃ (y : α) (H : y ∈ u), eball y (ε / 2)
     -- then s is covered by the union of the balls centered at u of radius ε
     rcases exists_edist_lt_of_hausdorffEdist_lt hx Dst with ⟨z, hz, Dxz⟩
-    rcases mem_Union₂.1 (ut hz) with ⟨y, hy, Dzy⟩
+    rcases mem_unionᵢ₂.1 (ut hz) with ⟨y, hy, Dzy⟩
     have : edist x y < ε :=
       calc
         edist x y ≤ edist x z + edist z y := edist_triangle _ _ _
         _ < ε / 2 + ε / 2 := (ENNReal.add_lt_add Dxz Dzy)
         _ = ε := ENNReal.add_halves _
-
-    exact mem_bUnion hy this
+    exact mem_bunionᵢ hy this
 #align emetric.nonempty_compacts.is_closed_in_closeds EMetric.NonemptyCompacts.isClosed_in_closeds
 
 /-- In a complete space, the type of nonempty compact subsets is complete. This follows
