@@ -798,13 +798,9 @@ namespace Simplex
 
 variable {P}
 
--- porting note: TODO: check what is the best place to put this instance
-instance : Subsingleton (Fin (1 + 0)) := by
-  rw [add_zero]
-  infer_instance
-
 /-- Construct a 0-simplex from a point. -/
 def mkOfPoint (p : P) : Simplex k P 0 :=
+  have : Subsingleton (Fin (1 + 0)) := by rw [add_zero]; infer_instance
   ⟨fun _ => p, affineIndependent_of_subsingleton k _⟩
 #align affine.simplex.mk_of_point Affine.Simplex.mkOfPoint
 
