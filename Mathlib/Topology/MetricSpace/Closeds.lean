@@ -429,9 +429,10 @@ theorem lipschitz_infDist_set (x : α) : LipschitzWith 1 fun s : NonemptyCompact
     exact infDist_le_infDist_add_hausdorffDist (edist_ne_top t s)
 #align metric.lipschitz_inf_dist_set Metric.lipschitz_infDist_set
 
-theorem lipschitz_infDist : LipschitzWith 2 fun p : α × NonemptyCompacts α => infDist p.1 p.2 :=
-  @LipschitzWith.uncurry _ _ _ _ _ _ (fun (x : α) (s : NonemptyCompacts α) => infDist x s) 1 1
-    (fun s => lipschitz_infDist_pt s) lipschitz_infDist_set
+theorem lipschitz_infDist : LipschitzWith 2 fun p : α × NonemptyCompacts α => infDist p.1 p.2 := by
+  exact @LipschitzWith.uncurry α (NonemptyCompacts α) ℝ _ _ _
+      (fun (x : α) (s : NonemptyCompacts α) => infDist x s) 1 1
+      (fun s => lipschitz_infDist_pt s) lipschitz_infDist_set
 #align metric.lipschitz_inf_dist Metric.lipschitz_infDist
 
 theorem uniformContinuous_infDist_Hausdorff_dist :
