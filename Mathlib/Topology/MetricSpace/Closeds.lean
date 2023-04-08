@@ -134,7 +134,8 @@ instance Closeds.completeSpace [CompleteSpace α] : CompleteSpace (Closeds α) :
           rw [← pow_add]
           apply hs <;> simp
         exact ⟨⟨z', z'_mem⟩, le_of_lt hz'⟩
-      use fun k => Nat.recOn k ⟨x, hx⟩ fun l z => choose (this l z), rfl
+      use fun k => Nat.recOn k ⟨x, hx⟩ fun l z => choose (this l z)
+      simp only [Nat.add_zero, Nat.zero_eq, Nat.rec_zero, Nat.rec_add_one, true_and]
       exact fun k => choose_spec (this k _)
     -- it follows from the previous bound that `z` is a Cauchy sequence
     have : CauchySeq fun k => (z k : α) := cauchySeq_of_edist_le_geometric_two (B n) (B_ne_top n) hz
