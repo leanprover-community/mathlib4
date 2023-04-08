@@ -8,8 +8,8 @@ Authors: Johannes Hölzl, Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.MeasureTheory.Measure.OuterMeasure
-import Mathbin.Order.Filter.CountableInter
+import Mathlib.MeasureTheory.Measure.OuterMeasure
+import Mathlib.Order.Filter.CountableInter
 
 /-!
 # Measure spaces
@@ -110,13 +110,11 @@ def ofMeasurable (m : ∀ s : Set α, MeasurableSet s → ℝ≥0∞) (m0 : m �
     inducedOuterMeasure m _
       m0 with
     m_unionᵢ := fun f hf hd =>
-      show inducedOuterMeasure m _ m0 (unionᵢ f) = ∑' i, inducedOuterMeasure m _ m0 (f i)
-        by
+      show inducedOuterMeasure m _ m0 (unionᵢ f) = ∑' i, inducedOuterMeasure m _ m0 (f i) by
         rw [induced_outer_measure_eq m0 mU, mU hf hd]
         congr ; funext n; rw [induced_outer_measure_eq m0 mU]
     trimmed :=
-      show (inducedOuterMeasure m _ m0).trim = inducedOuterMeasure m _ m0
-        by
+      show (inducedOuterMeasure m _ m0).trim = inducedOuterMeasure m _ m0 by
         unfold outer_measure.trim
         congr ; funext s hs
         exact induced_outer_measure_eq m0 mU hs }
@@ -244,29 +242,25 @@ theorem measure_unionᵢ_le [Countable β] (s : β → Set α) : μ (⋃ i, s i)
 #align measure_theory.measure_Union_le MeasureTheory.measure_unionᵢ_le
 
 theorem measure_bUnion_le {s : Set β} (hs : s.Countable) (f : β → Set α) :
-    μ (⋃ b ∈ s, f b) ≤ ∑' p : s, μ (f p) :=
-  by
+    μ (⋃ b ∈ s, f b) ≤ ∑' p : s, μ (f p) := by
   haveI := hs.to_subtype
   rw [bUnion_eq_Union]
   apply measure_Union_le
 #align measure_theory.measure_bUnion_le MeasureTheory.measure_bUnion_le
 
 theorem measure_bUnion_finset_le (s : Finset β) (f : β → Set α) :
-    μ (⋃ b ∈ s, f b) ≤ ∑ p in s, μ (f p) :=
-  by
+    μ (⋃ b ∈ s, f b) ≤ ∑ p in s, μ (f p) := by
   rw [← Finset.sum_attach, Finset.attach_eq_univ, ← tsum_fintype]
   exact measure_bUnion_le s.countable_to_set f
 #align measure_theory.measure_bUnion_finset_le MeasureTheory.measure_bUnion_finset_le
 
-theorem measure_unionᵢ_fintype_le [Fintype β] (f : β → Set α) : μ (⋃ b, f b) ≤ ∑ p, μ (f p) :=
-  by
+theorem measure_unionᵢ_fintype_le [Fintype β] (f : β → Set α) : μ (⋃ b, f b) ≤ ∑ p, μ (f p) := by
   convert measure_bUnion_finset_le Finset.univ f
   simp
 #align measure_theory.measure_Union_fintype_le MeasureTheory.measure_unionᵢ_fintype_le
 
 theorem measure_bUnion_lt_top {s : Set β} {f : β → Set α} (hs : s.Finite)
-    (hfin : ∀ i ∈ s, μ (f i) ≠ ∞) : μ (⋃ i ∈ s, f i) < ∞ :=
-  by
+    (hfin : ∀ i ∈ s, μ (f i) ≠ ∞) : μ (⋃ i ∈ s, f i) < ∞ := by
   convert(measure_bUnion_finset_le hs.to_finset f).trans_lt _
   · ext
     rw [finite.mem_to_finset]
@@ -321,8 +315,7 @@ theorem measure_union_lt_top (hs : μ s < ∞) (ht : μ t < ∞) : μ (s ∪ t) 
 #align measure_theory.measure_union_lt_top MeasureTheory.measure_union_lt_top
 
 @[simp]
-theorem measure_union_lt_top_iff : μ (s ∪ t) < ∞ ↔ μ s < ∞ ∧ μ t < ∞ :=
-  by
+theorem measure_union_lt_top_iff : μ (s ∪ t) < ∞ ↔ μ s < ∞ ∧ μ t < ∞ := by
   refine' ⟨fun h => ⟨_, _⟩, fun h => measure_union_lt_top h.1 h.2⟩
   · exact (measure_mono (Set.subset_union_left s t)).trans_lt h
   · exact (measure_mono (Set.subset_union_right s t)).trans_lt h
@@ -338,8 +331,7 @@ theorem measure_union_eq_top_iff : μ (s ∪ t) = ∞ ↔ μ s = ∞ ∨ μ t = 
 #align measure_theory.measure_union_eq_top_iff MeasureTheory.measure_union_eq_top_iff
 
 theorem exists_measure_pos_of_not_measure_unionᵢ_null [Countable β] {s : β → Set α}
-    (hs : μ (⋃ n, s n) ≠ 0) : ∃ n, 0 < μ (s n) :=
-  by
+    (hs : μ (⋃ n, s n) ≠ 0) : ∃ n, 0 < μ (s n) := by
   contrapose! hs
   exact measure_Union_null fun n => nonpos_iff_eq_zero.1 (hs n)
 #align measure_theory.exists_measure_pos_of_not_measure_Union_null MeasureTheory.exists_measure_pos_of_not_measure_unionᵢ_null
@@ -364,8 +356,7 @@ theorem measure_inter_null_of_null_left {S : Set α} (T : Set α) (h : μ S = 0)
 
 
 /-- The “almost everywhere” filter of co-null sets. -/
-def Measure.ae {α} {m : MeasurableSpace α} (μ : Measure α) : Filter α
-    where
+def Measure.ae {α} {m : MeasurableSpace α} (μ : Measure α) : Filter α where
   sets := { s | μ (sᶜ) = 0 }
   univ_sets := by simp
   inter_sets s t hs ht := by
@@ -443,8 +434,7 @@ theorem ae_eq_trans {f g h : α → δ} (h₁ : f =ᵐ[μ] g) (h₂ : g =ᵐ[μ]
   h₁.trans h₂
 #align measure_theory.ae_eq_trans MeasureTheory.ae_eq_trans
 
-theorem ae_le_of_ae_lt {f g : α → ℝ≥0∞} (h : ∀ᵐ x ∂μ, f x < g x) : f ≤ᵐ[μ] g :=
-  by
+theorem ae_le_of_ae_lt {f g : α → ℝ≥0∞} (h : ∀ᵐ x ∂μ, f x < g x) : f ≤ᵐ[μ] g := by
   rw [Filter.EventuallyLE, ae_iff]
   rw [ae_iff] at h
   refine' measure_mono_null (fun x hx => _) h
@@ -520,52 +510,44 @@ theorem ae_eq_set_union {s' t' : Set α} (h : s =ᵐ[μ] t) (h' : s' =ᵐ[μ] t'
   h.union h'
 #align measure_theory.ae_eq_set_union MeasureTheory.ae_eq_set_union
 
-theorem union_ae_eq_univ_of_ae_eq_univ_left (h : s =ᵐ[μ] univ) : (s ∪ t : Set α) =ᵐ[μ] univ :=
-  by
+theorem union_ae_eq_univ_of_ae_eq_univ_left (h : s =ᵐ[μ] univ) : (s ∪ t : Set α) =ᵐ[μ] univ := by
   convert ae_eq_set_union h (ae_eq_refl t)
   rw [univ_union]
 #align measure_theory.union_ae_eq_univ_of_ae_eq_univ_left MeasureTheory.union_ae_eq_univ_of_ae_eq_univ_left
 
-theorem union_ae_eq_univ_of_ae_eq_univ_right (h : t =ᵐ[μ] univ) : (s ∪ t : Set α) =ᵐ[μ] univ :=
-  by
+theorem union_ae_eq_univ_of_ae_eq_univ_right (h : t =ᵐ[μ] univ) : (s ∪ t : Set α) =ᵐ[μ] univ := by
   convert ae_eq_set_union (ae_eq_refl s) h
   rw [union_univ]
 #align measure_theory.union_ae_eq_univ_of_ae_eq_univ_right MeasureTheory.union_ae_eq_univ_of_ae_eq_univ_right
 
-theorem union_ae_eq_right_of_ae_eq_empty (h : s =ᵐ[μ] (∅ : Set α)) : (s ∪ t : Set α) =ᵐ[μ] t :=
-  by
+theorem union_ae_eq_right_of_ae_eq_empty (h : s =ᵐ[μ] (∅ : Set α)) : (s ∪ t : Set α) =ᵐ[μ] t := by
   convert ae_eq_set_union h (ae_eq_refl t)
   rw [empty_union]
 #align measure_theory.union_ae_eq_right_of_ae_eq_empty MeasureTheory.union_ae_eq_right_of_ae_eq_empty
 
-theorem union_ae_eq_left_of_ae_eq_empty (h : t =ᵐ[μ] (∅ : Set α)) : (s ∪ t : Set α) =ᵐ[μ] s :=
-  by
+theorem union_ae_eq_left_of_ae_eq_empty (h : t =ᵐ[μ] (∅ : Set α)) : (s ∪ t : Set α) =ᵐ[μ] s := by
   convert ae_eq_set_union (ae_eq_refl s) h
   rw [union_empty]
 #align measure_theory.union_ae_eq_left_of_ae_eq_empty MeasureTheory.union_ae_eq_left_of_ae_eq_empty
 
-theorem inter_ae_eq_right_of_ae_eq_univ (h : s =ᵐ[μ] univ) : (s ∩ t : Set α) =ᵐ[μ] t :=
-  by
+theorem inter_ae_eq_right_of_ae_eq_univ (h : s =ᵐ[μ] univ) : (s ∩ t : Set α) =ᵐ[μ] t := by
   convert ae_eq_set_inter h (ae_eq_refl t)
   rw [univ_inter]
 #align measure_theory.inter_ae_eq_right_of_ae_eq_univ MeasureTheory.inter_ae_eq_right_of_ae_eq_univ
 
-theorem inter_ae_eq_left_of_ae_eq_univ (h : t =ᵐ[μ] univ) : (s ∩ t : Set α) =ᵐ[μ] s :=
-  by
+theorem inter_ae_eq_left_of_ae_eq_univ (h : t =ᵐ[μ] univ) : (s ∩ t : Set α) =ᵐ[μ] s := by
   convert ae_eq_set_inter (ae_eq_refl s) h
   rw [inter_univ]
 #align measure_theory.inter_ae_eq_left_of_ae_eq_univ MeasureTheory.inter_ae_eq_left_of_ae_eq_univ
 
 theorem inter_ae_eq_empty_of_ae_eq_empty_left (h : s =ᵐ[μ] (∅ : Set α)) :
-    (s ∩ t : Set α) =ᵐ[μ] (∅ : Set α) :=
-  by
+    (s ∩ t : Set α) =ᵐ[μ] (∅ : Set α) := by
   convert ae_eq_set_inter h (ae_eq_refl t)
   rw [empty_inter]
 #align measure_theory.inter_ae_eq_empty_of_ae_eq_empty_left MeasureTheory.inter_ae_eq_empty_of_ae_eq_empty_left
 
 theorem inter_ae_eq_empty_of_ae_eq_empty_right (h : t =ᵐ[μ] (∅ : Set α)) :
-    (s ∩ t : Set α) =ᵐ[μ] (∅ : Set α) :=
-  by
+    (s ∩ t : Set α) =ᵐ[μ] (∅ : Set α) := by
   convert ae_eq_set_inter (ae_eq_refl s) h
   rw [inter_empty]
 #align measure_theory.inter_ae_eq_empty_of_ae_eq_empty_right MeasureTheory.inter_ae_eq_empty_of_ae_eq_empty_right
@@ -621,8 +603,7 @@ irreducible_def toMeasurable (μ : Measure α) (s : Set α) : Set α :=
     else (exists_measurable_superset μ s).some
 #align measure_theory.to_measurable MeasureTheory.toMeasurable
 
-theorem subset_toMeasurable (μ : Measure α) (s : Set α) : s ⊆ toMeasurable μ s :=
-  by
+theorem subset_toMeasurable (μ : Measure α) (s : Set α) : s ⊆ toMeasurable μ s := by
   rw [to_measurable]; split_ifs with hs h's
   exacts[hs.some_spec.fst, h's.some_spec.fst, (exists_measurable_superset μ s).choose_spec.1]
 #align measure_theory.subset_to_measurable MeasureTheory.subset_toMeasurable
@@ -639,8 +620,7 @@ theorem measurableSet_toMeasurable (μ : Measure α) (s : Set α) : MeasurableSe
 #align measure_theory.measurable_set_to_measurable MeasureTheory.measurableSet_toMeasurable
 
 @[simp]
-theorem measure_toMeasurable (s : Set α) : μ (toMeasurable μ s) = μ s :=
-  by
+theorem measure_toMeasurable (s : Set α) : μ (toMeasurable μ s) = μ s := by
   rw [to_measurable]; split_ifs with hs h's
   · exact measure_congr hs.some_spec.snd.2
   · simpa only [inter_univ] using h's.some_spec.snd.2 univ MeasurableSet.univ
