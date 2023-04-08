@@ -229,16 +229,15 @@ theorem popn_empty {n : ℕ} : "".popn n = "" := by
 end String
 
 theorem List.lt_iff_lex_char_lt (l l' : List Char) : List.lt l l' ↔ List.Lex Char.lt l l' := by
-  constructor
-  · intro h
-    induction h with
+  constructor <;>
+  intro h
+  · induction h with
     | nil b bs => exact Lex.nil
     | @head a as b bs hab => apply Lex.rel; assumption
     | @tail a as b bs hab hba _ ih =>
       have heq : a = b := _root_.le_antisymm (le_of_not_lt hba) (le_of_not_lt hab)
       subst b; apply Lex.cons; assumption
-  · intro h
-    induction h with
+  · induction h with
     | @nil a as => apply List.lt.nil
     | @cons a as bs _ ih => apply List.lt.tail <;> simp [ih]
     | @rel a as b bs h => apply List.lt.head; assumption
