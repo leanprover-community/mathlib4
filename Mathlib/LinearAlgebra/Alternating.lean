@@ -747,12 +747,13 @@ theorem map_linearDependent {K : Type _} [Ring K] {M : Type _} [AddCommGroup M] 
   suffices f (update v i (g i • v i)) = 0 by
     rw [f.map_smul, Function.update_eq_self, smul_eq_zero] at this
     exact Or.resolve_left this hz
-  conv at h in g _ • v _ => rw [← ite_self (i = x) (g _ • v _)]
+  -- Porting note: Was `conv at h in .. => ..`.
+  rw [← (funext fun x => ite_self (c := i = x) (d := Classical.decEq ι i x) (g x • v x))] at h
   rw [Finset.sum_ite, Finset.filter_eq, Finset.filter_ne, if_pos hi, Finset.sum_singleton,
     add_eq_zero_iff_eq_neg] at h
-  rw [h, f.map_neg, f.map_update_sum, neg_eq_zero, Finset.sum_eq_zero]
+  rw [h, f.map_neg, f.map_update_sum, neg_eq_zero]; apply Finset.sum_eq_zero
   intro j hj
-  obtain ⟨hij, _⟩ := finset.mem_erase.mp hj
+  obtain ⟨hij, _⟩ := Finset.mem_erase.mp hj
   rw [f.map_smul, f.map_update_self _ hij.symm, smul_zero]
 #align alternating_map.map_linear_dependent AlternatingMap.map_linearDependent
 
