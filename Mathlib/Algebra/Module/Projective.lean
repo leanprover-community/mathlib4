@@ -64,7 +64,6 @@ projective module
 
 -/
 
-
 universe u v
 
 open LinearMap hiding id
@@ -125,19 +124,11 @@ instance [hP : Projective R P] [hQ : Projective R Q] : Projective R (P × Q) := 
   rw [Module.projective_def']
   cases' hP.out with sP hsP
   cases' hQ.out with sQ hsQ
-  use coprod (lmapDomain R R (inl R P Q)) (lmapDomain R R (inr R P Q)) ∘ₗ sP.prodMap sQ
-  ext
-  --   simp only [coe_inl, coe_inr, coe_comp, Function.comp_apply, prodMap_apply, map_zero,
-  --     coprod_apply, lmapDomain_apply, mapDomain_zero, add_zero, zero_add, id_comp,
-  --     total_mapDomain]
-  -- · rw [← fst_apply (_ : P × Q), apply_total R]
-  --   exact hsP x
-  -- · rw [← snd_apply _, apply_total R]
-  --   exact Finsupp.total_zero_apply _ (sP x)
-  -- · rw [← fst_apply _, apply_total R]
-  --   exact Finsupp.total_zero_apply _ (sQ x)
-  -- · rw [← snd_apply _, apply_total R]
-  --   exact hsQ x
+  use coprod (lmapDomain R R (inl R P Q) ∘ₗ sP) (lmapDomain R R (inr R P Q) ∘ₗ sQ)
+  -- porting note: golfed by using a less agressive `ext`
+  refine FunLike.ext _ _ fun x ↦ ?_
+  simp only [comp_apply, coprod_apply, map_add, lmapDomain_apply, id_apply, total_mapDomain,
+    Function.comp.left_id, ← apply_total_id, hsP _, hsQ _, inl_apply, inr_apply, Prod.fst_add_snd]
 
 variable {ι : Type _} (A : ι → Type _) [∀ i : ι, AddCommMonoid (A i)] [∀ i : ι, Module R (A i)]
 
@@ -146,28 +137,13 @@ instance [h : ∀ i : ι, Projective R (A i)] : Projective R (Π₀ i, A i) := b
     rw [Module.projective_def']
     simp_rw [projective_def] at h
     choose s hs using h
-    letI : ∀ i : ι, AddCommMonoid (A i →₀ R) := fun i => by infer_instance
-    letI : ∀ i : ι, Module R (A i →₀ R) := fun i => by infer_instance
-    letI : AddCommMonoid (Π₀ i : ι, A i →₀ R) := @Dfinsupp.addCommMonoid ι (fun i => A i →₀ R) _
-    letI : Module R (Π₀ i : ι, A i →₀ R) := @Dfinsupp.module ι R (fun i => A i →₀ R) _ _ _
-    let f i := lmap_domain R R (Dfinsupp.single i : A i → Π₀ i, A i)
+    let f i := lmapDomain R R (Dfinsupp.lsingle i : A i →ₗ[R] Π₀ i, A i)
     use Dfinsupp.coprodMap f ∘ₗ Dfinsupp.mapRange.linearMap s
-    ext (i x j)
-    simp only [Dfinsupp.coprodMap, DirectSum.lof, total_map_domain, coe_comp, coe_lsum, id_coe,
-      LinearEquiv.coe_toLinearMap, finsuppLequivDfinsupp_symm_apply, Function.comp_apply,
-      Dfinsupp.lsingle_apply, Dfinsupp.mapRange.linearMap_apply, Dfinsupp.mapRange_single,
-      lmap_domain_apply, Dfinsupp.toFinsupp_single, Finsupp.sum_single_index, id.def,
-      Function.comp.left_id, Dfinsupp.single_apply]
-    rw [← Dfinsupp.lapply_apply j, apply_total R]
-    obtain rfl | hij := eq_or_ne i j
-    · convert(hs i) x
-      · ext
-        simp
-      · simp
-    · convert Finsupp.total_zero_apply _ ((s i) x)
-      · ext
-        simp [hij]
-      · simp [hij]
+    ext i x j
+    simp only [comp_apply, Dfinsupp.mapRange.linearMap_apply, Dfinsupp.lsingle_apply,
+      Dfinsupp.mapRange_single, Dfinsupp.coprodMap_apply, _root_.map_finsupp_sum,
+      Dfinsupp.toFinsupp_single, Finsupp.sum_single_index, id_apply, id.def, lmapDomain_apply,
+      total_mapDomain, Function.comp.left_id, ← apply_total_id, hs _ _]
 
 end Semiring
 
@@ -200,48 +176,39 @@ in `huniv` are somewhat restricted. -/
 theorem projectiveOfLiftingProperty' {R : Type u} [Semiring R] {P : Type max u v} [AddCommMonoid P]
     [Module R P]
     -- If for all surjections of `R`-modules `M →ₗ N`, all maps `P →ₗ N` lift to `P →ₗ M`,
-    (huniv :
-      ∀ {M : Type max v u} {N : Type max u v} [AddCommMonoid M] [AddCommMonoid N],
-        ∀ [Module R M] [Module R N],
-          ∀ (f : M →ₗ[R] N) (g : P →ₗ[R] N),
-            Function.Surjective f → ∃ h : P →ₗ[R] M, f.comp h = g) :-- then `P` is projective.
-      Projective
-      R P := by
+    (huniv : ∀ {M : Type max v u} {N : Type max u v} [AddCommMonoid M] [AddCommMonoid N]
+      [Module R M] [Module R N] (f : M →ₗ[R] N) (g : P →ₗ[R] N),
+        Function.Surjective f → ∃ h : P →ₗ[R] M, f.comp h = g) :
+    -- then `P` is projective.
+    Projective R P := by
   -- let `s` be the universal map `(P →₀ R) →ₗ P` coming from the identity map `P →ₗ P`.
-  obtain ⟨s, hs⟩ : ∃ s : P →ₗ[R] P →₀ R, (Finsupp.total P P R id).comp s = LinearMap.id :=
-    huniv (Finsupp.total P P R (id : P → P)) (LinearMap.id : P →ₗ[R] P) _
+  have : ∃ s : P →ₗ[R] P →₀ R, (Finsupp.total P P R id).comp s = LinearMap.id :=
+    huniv (Finsupp.total P P R (id : P → P)) (LinearMap.id : P →ₗ[R] P)
+      (total_surjective _ Function.surjective_id)
   -- This `s` works.
-  · use s
-    rwa [LinearMap.ext_iff] at hs
-  · intro p
-    use Finsupp.single p 1
-    simp
+  rwa [projective_def']
 #align module.projective_of_lifting_property' Module.projectiveOfLiftingProperty'
 
+set_option synthInstance.etaExperiment true in
 /-- A variant of `of_lifting_property'` when we're working over a `[ring R]`,
 which only requires quantifying over modules with an `add_comm_group` instance. -/
 theorem projectiveOfLiftingProperty {R : Type u} [Ring R] {P : Type max u v} [AddCommGroup P]
     [Module R P]
     -- If for all surjections of `R`-modules `M →ₗ N`, all maps `P →ₗ N` lift to `P →ₗ M`,
-    (huniv :
-      ∀ {M : Type max v u} {N : Type max u v} [AddCommGroup M] [AddCommGroup N],
-        ∀ [Module R M] [Module R N],
-          ∀ (f : M →ₗ[R] N) (g : P →ₗ[R] N),
-            Function.Surjective f → ∃ h : P →ₗ[R] M, f.comp h = g) :-- then `P` is projective.
-      Projective
-      R P := by
+    (huniv : ∀ {M : Type max v u} {N : Type max u v} [AddCommGroup M] [AddCommGroup N]
+      [Module R M] [Module R N] (f : M →ₗ[R] N) (g : P →ₗ[R] N),
+        Function.Surjective f → ∃ h : P →ₗ[R] M, f.comp h = g) :
+    -- then `P` is projective.
+    Projective R P := by
   -- We could try and prove this *using* `of_lifting_property`,
   -- but this quickly leads to typeclass hell,
   -- so we just prove it over again.
   -- let `s` be the universal map `(P →₀ R) →ₗ P` coming from the identity map `P →ₗ P`.
-  obtain ⟨s, hs⟩ : ∃ s : P →ₗ[R] P →₀ R, (Finsupp.total P P R id).comp s = LinearMap.id :=
-    huniv (Finsupp.total P P R (id : P → P)) (LinearMap.id : P →ₗ[R] P) _
+  have : ∃ s : P →ₗ[R] P →₀ R, (Finsupp.total P P R id).comp s = LinearMap.id :=
+    huniv (Finsupp.total P P R (id : P → P)) (LinearMap.id : P →ₗ[R] P)
+      (total_surjective _ Function.surjective_id)
   -- This `s` works.
-  · use s
-    rwa [LinearMap.ext_iff] at hs
-  · intro p
-    use Finsupp.single p 1
-    simp
+  rwa [projective_def']
 #align module.projective_of_lifting_property Module.projectiveOfLiftingProperty
 
 end OfLiftingProperty
