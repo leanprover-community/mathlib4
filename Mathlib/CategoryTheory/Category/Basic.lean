@@ -108,6 +108,8 @@ class CategoryStruct (obj : Type u) extends Quiver.{v + 1} obj : Type max u (v +
   comp : ∀ {X Y Z : obj}, (X ⟶ Y) → (Y ⟶ Z) → (X ⟶ Z)
 #align category_theory.category_struct CategoryTheory.CategoryStruct
 
+initialize_simps_projections CategoryStruct (-toQuiver_Hom)
+
 /-- Notation for the identity morphism in a category. -/
 notation "𝟙" => CategoryStruct.id  -- type as \b1
 
@@ -184,7 +186,7 @@ section
 
 variable {C : Type u} [Category.{v} C] {X Y Z : C}
 
-initialize_simps_projections Category
+initialize_simps_projections Category (-Hom)
 
 /-- postcompose an equation between morphisms by another morphism -/
 theorem eq_whisker {f g : X ⟶ Y} (w : f = g) (h : Y ⟶ Z) : f ≫ h = g ≫ h := by rw [w]
