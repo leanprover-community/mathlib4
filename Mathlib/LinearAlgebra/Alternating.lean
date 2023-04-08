@@ -1091,9 +1091,13 @@ theorem MultilinearMap.domCoprod_alternization [DecidableEq ιa] [DecidableEq ι
   ext1 σ
   refine Quotient.inductionOn' σ fun σ => ?_
   -- unfold the quotient mess left by `Finset.sum_partition`
-  conv in _ = Quotient.mk'' _ =>
-    change Quotient.mk'' _ = Quotient.mk'' _
-    rw [QuotientGroup.eq']
+  -- Porting note: Was `conv in .. => ..`.
+  erw
+    [@Finset.filter_congr _ _ (fun a => @Quotient.decidableEq _ _
+      (QuotientGroup.leftRelDecidable (MonoidHom.range (Perm.sumCongrHom ιa ιb)))
+      (Quotient.mk (QuotientGroup.leftRel (MonoidHom.range (Perm.sumCongrHom ιa ιb))) a)
+      (Quotient.mk'' σ)) _ (s := Finset.univ)
+    fun x _ => QuotientGroup.eq' (s := MonoidHom.range (Perm.sumCongrHom ιa ιb)) (a := x) (b := σ)]
   -- eliminate a multiplication
   rw [← Finset.map_univ_equiv (Equiv.mulLeft σ), Finset.filter_map, Finset.sum_map]
   simp_rw [Equiv.coe_toEmbedding, Equiv.coe_mulLeft, (· ∘ ·), mul_inv_rev, inv_mul_cancel_right,
