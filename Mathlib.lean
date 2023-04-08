@@ -1220,6 +1220,7 @@ import Mathlib.LinearAlgebra.AffineSpace.Ordered
 import Mathlib.LinearAlgebra.AffineSpace.Pointwise
 import Mathlib.LinearAlgebra.AffineSpace.Restrict
 import Mathlib.LinearAlgebra.AffineSpace.Slope
+import Mathlib.LinearAlgebra.Alternating
 import Mathlib.LinearAlgebra.Basic
 import Mathlib.LinearAlgebra.Basis
 import Mathlib.LinearAlgebra.Basis.Bilinear
