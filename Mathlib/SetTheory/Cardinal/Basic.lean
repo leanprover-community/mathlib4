@@ -792,6 +792,34 @@ instance : SuccOrder Cardinal :=
     -- Porting note used to be just `cinfₛ_le'`
     fun h ↦ by apply cinfₛ_le'; exact h⟩
 
+theorem succ_def (c : Cardinal) : succ c = infₛ { c' | c < c' } :=
+  rfl
+#align cardinal.succ_def Cardinal.succ_def
+
+theorem succ_pos : ∀ c : Cardinal, 0 < succ c :=
+  bot_lt_succ
+#align cardinal.succ_pos Cardinal.succ_pos
+
+theorem succ_ne_zero (c : Cardinal) : succ c ≠ 0 :=
+  (succ_pos _).ne'
+#align cardinal.succ_ne_zero Cardinal.succ_ne_zero
+
+theorem add_one_le_succ (c : Cardinal.{u}) : c + 1 ≤ succ c := by
+  -- Porting note: rewrote the next three lines to avoid defeq abuse.
+  have : Set.Nonempty { c' | c < c' } := exists_gt c
+  simp_rw [succ_def, le_cinfₛ_iff'' this, mem_setOf]
+  intro b hlt
+  rcases b, c with ⟨⟨β⟩, ⟨γ⟩⟩
+  cases' le_of_lt hlt with f
+  have : ¬Surjective f := fun hn => (not_le_of_lt hlt) (mk_le_of_surjective hn)
+  simp only [Surjective, not_forall] at this
+  rcases this with ⟨b, hb⟩
+  calc
+    (#γ) + 1 = (#Option γ) := mk_option.symm
+    _ ≤ (#β) := (f.optionElim b hb).cardinal_le
+
+#align cardinal.add_one_le_succ Cardinal.add_one_le_succ
+
 /-- A cardinal is a limit if it is not zero or a successor cardinal. Note that `ℵ₀` is a limit
   cardinal by this definition, but `0` isn't.
 
@@ -815,34 +843,6 @@ theorem IsLimit.succ_lt {x c} (h : IsLimit c) : x < c → succ x < c :=
 theorem isSuccLimit_zero : IsSuccLimit (0 : Cardinal) :=
   isSuccLimit_bot
 #align cardinal.is_succ_limit_zero Cardinal.isSuccLimit_zero
-
-theorem succ_def (c : Cardinal) : succ c = infₛ { c' | c < c' } :=
-  rfl
-#align cardinal.succ_def Cardinal.succ_def
-
-theorem add_one_le_succ (c : Cardinal.{u}) : c + 1 ≤ succ c := by
-  -- Porting note: rewrote the next three lines to avoid defeq abuse.
-  have : Set.Nonempty { c' | c < c' } := exists_gt c
-  simp_rw [succ_def, le_cinfₛ_iff'' this, mem_setOf]
-  intro b hlt
-  rcases b, c with ⟨⟨β⟩, ⟨γ⟩⟩
-  cases' le_of_lt hlt with f
-  have : ¬Surjective f := fun hn => (not_le_of_lt hlt) (mk_le_of_surjective hn)
-  simp only [Surjective, not_forall] at this
-  rcases this with ⟨b, hb⟩
-  calc
-    (#γ) + 1 = (#Option γ) := mk_option.symm
-    _ ≤ (#β) := (f.optionElim b hb).cardinal_le
-
-#align cardinal.add_one_le_succ Cardinal.add_one_le_succ
-
-theorem succ_pos : ∀ c : Cardinal, 0 < succ c :=
-  bot_lt_succ
-#align cardinal.succ_pos Cardinal.succ_pos
-
-theorem succ_ne_zero (c : Cardinal) : succ c ≠ 0 :=
-  (succ_pos _).ne'
-#align cardinal.succ_ne_zero Cardinal.succ_ne_zero
 
 /-- The indexed sum of cardinals is the cardinality of the
   indexed disjoint union, i.e. sigma type. -/
@@ -1418,6 +1418,27 @@ theorem aleph0_le {c : Cardinal} : ℵ₀ ≤ c ↔ ∀ n : ℕ, ↑n ≤ c :=
       exact (Nat.lt_succ_self _).not_le (natCast_le.1 (h (n + 1)))⟩
 #align cardinal.aleph_0_le Cardinal.aleph0_le
 
+theorem isSuccLimit_aleph0 : IsSuccLimit ℵ₀ :=
+  isSuccLimit_of_succ_lt fun a ha =>
+    by
+    rcases lt_aleph0.1 ha with ⟨n, rfl⟩
+    rw [← nat_succ]
+    apply nat_lt_aleph0
+#align cardinal.is_succ_limit_aleph_0 Cardinal.isSuccLimit_aleph0
+
+theorem isLimit_aleph0 : IsLimit ℵ₀ :=
+  ⟨aleph0_ne_zero, isSuccLimit_aleph0⟩
+#align cardinal.is_limit_aleph_0 Cardinal.isLimit_aleph0
+
+theorem IsLimit.aleph0_le {c : Cardinal} (h : IsLimit c) : ℵ₀ ≤ c :=
+  by
+  by_contra' h'
+  rcases lt_aleph0.1 h' with ⟨_ | n, rfl⟩
+  · exact h.ne_zero.irrefl
+  · rw [nat_succ] at h
+    exact not_isSuccLimit_succ _ h.isSuccLimit
+#align cardinal.is_limit.aleph_0_le Cardinal.IsLimit.aleph0_le
+
 @[simp]
 theorem range_natCast : range ((↑) : ℕ → Cardinal) = Iio ℵ₀ :=
   ext fun x => by simp only [mem_Iio, mem_range, eq_comm, lt_aleph0]
@@ -1476,30 +1497,6 @@ theorem le_aleph0_iff_subtype_countable {p : α → Prop} :
     (#{ x // p x }) ≤ ℵ₀ ↔ { x | p x }.Countable :=
   le_aleph0_iff_set_countable
 #align cardinal.le_aleph_0_iff_subtype_countable Cardinal.le_aleph0_iff_subtype_countable
-
-theorem isSuccLimit_aleph0 : IsSuccLimit ℵ₀ :=
-+  isSuccLimit_of_succ_lt fun a ha =>
-+    by
-+    rcases lt_aleph_0.1 ha with ⟨n, rfl⟩
-+    rw [← nat_succ]
-+    apply nat_lt_aleph_0
-+#align cardinal.is_succ_limit_aleph_0 Cardinal.isSuccLimit_aleph0
-+
-+#print Cardinal.isLimit_aleph0 /-
-+theorem isLimit_aleph0 : IsLimit ℵ₀ :=
-+  ⟨aleph0_ne_zero, isSuccLimit_aleph0⟩
-+#align cardinal.is_limit_aleph_0 Cardinal.isLimit_aleph0
-+-/
-+
-+#print Cardinal.IsLimit.aleph0_le /-
-+theorem IsLimit.aleph0_le {c : Cardinal} (h : IsLimit c) : ℵ₀ ≤ c :=
-+  by
-+  by_contra' h'
-+  rcases lt_aleph_0.1 h' with ⟨_ | n, rfl⟩
-+  · exact h.ne_zero.irrefl
-+  · rw [nat_succ] at h
-+    exact not_is_succ_limit_succ _ h.is_succ_limit
-+#align cardinal.is_limit.aleph_0_le Cardinal.IsLimit.aleph0_le
 
 instance canLiftCardinalNat : CanLift Cardinal ℕ (↑) fun x => x < ℵ₀ :=
   ⟨fun _ hx =>
