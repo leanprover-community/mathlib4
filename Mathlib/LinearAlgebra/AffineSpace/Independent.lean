@@ -110,7 +110,7 @@ theorem affineIndependent_iff_linearIndependent_vsub (p : ι → P) (i1 : ι) :
       have hf : (∑ ι in s2, f ι) = 0 := by
         rw [Finset.sum_insert
             (Finset.not_mem_map_subtype_of_not_property s (Classical.not_not.2 rfl)),
-          Finset.sum_subtype_map_embedding fun x hx => (hfg x).symm]
+          Finset.sum_subtype_map_embedding fun x _ => (hfg x).symm]
         rw [hfdef]
         dsimp only
         rw [dif_pos rfl]
@@ -119,11 +119,12 @@ theorem affineIndependent_iff_linearIndependent_vsub (p : ι → P) (i1 : ι) :
         set f2 : ι → V := fun x => f x • (p x -ᵥ p i1) with hf2def
         set g2 : { x // x ≠ i1 } → V := fun x => g x • (p x -ᵥ p i1) with hg2def
         have hf2g2 : ∀ x : { x // x ≠ i1 }, f2 x = g2 x := by
-          simp_rw [hf2def, hg2def, hfg]
-          exact fun x => rfl
+          simp only [hf2def, hg2def]
+          refine' fun x => _
+          rw [hfg]
         rw [Finset.weightedVSub_eq_weightedVSubOfPoint_of_sum_eq_zero s2 f p hf (p i1),
           Finset.weightedVSubOfPoint_insert, Finset.weightedVSubOfPoint_apply,
-          Finset.sum_subtype_map_embedding fun x hx => hf2g2 x]
+          Finset.sum_subtype_map_embedding fun x _ => hf2g2 x]
         exact hg
       exact h s2 f hf hs2 i (Finset.mem_insert_of_mem (Finset.mem_map.2 ⟨i, hi, rfl⟩))
     · intro h
