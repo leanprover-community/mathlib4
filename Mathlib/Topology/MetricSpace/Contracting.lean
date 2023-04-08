@@ -180,7 +180,8 @@ theorem exists_fixedPoint' {s : Set α} (hsc : IsComplete s) (hsf : MapsTo f s s
   · convert (continuous_subtype_val.tendsto _).comp h_tendsto
     simp only [(· ∘ ·), MapsTo.iterate_restrict, MapsTo.val_restrict_apply]
   · convert hle n
-    rw [MapsTo.iterate_restrict, eq_comm, MapsTo.val_restrict_apply, Subtype.coe_mk]
+    rw [MapsTo.iterate_restrict]
+    rfl
 #align contracting_with.exists_fixed_point' ContractingWith.exists_fixedPoint'
 
 variable (f)
