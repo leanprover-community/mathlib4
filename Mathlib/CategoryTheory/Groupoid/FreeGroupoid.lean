@@ -175,13 +175,11 @@ theorem lift_unique (φ : V ⥤q V') (Φ : FreeGroupoid V ⥤ V') (hΦ : of V �
   fapply @Quiver.Symmetrify.lift_unique _ _ _ _ _ _ _ _ _
   · rw [← Functor.toPrefunctor_comp]
     exact hΦ
-  · constructor
-    rintro X Y f
-    simp only [← functor.to_prefunctor_comp, Prefunctor.comp_map, paths.of_map, inv_eq_inv]
-    change
-      Φ.map (inv ((quotient.functor red_step).toPrefunctor.map f.to_path)) =
-        inv (Φ.map ((quotient.functor red_step).toPrefunctor.map f.to_path))
-    have := functor.map_inv Φ ((quotient.functor red_step).toPrefunctor.map f.to_path)
+  · rintro X Y f
+    simp only [← Functor.toPrefunctor_comp, Prefunctor.comp_map, Paths.of_map, inv_eq_inv]
+    change Φ.map (inv ((Quotient.functor redStep).toPrefunctor.map f.toPath)) =
+      inv (Φ.map ((Quotient.functor redStep).toPrefunctor.map f.toPath))
+    have := Functor.map_inv Φ ((Quotient.functor redStep).toPrefunctor.map f.toPath)
     convert this <;> simp only [inv_eq_inv]
 #align category_theory.groupoid.free.lift_unique CategoryTheory.Groupoid.Free.lift_unique
 
@@ -192,19 +190,19 @@ section Functoriality
 variable {V' : Type u'} [Quiver.{v' + 1} V'] {V'' : Type u''} [Quiver.{v'' + 1} V'']
 
 /-- The functor of free groupoid induced by a prefunctor of quivers -/
-def CategoryTheory.freeGroupoidFunctor (φ : V ⥤q V') : FreeGroupoid V ⥤ FreeGroupoid V' :=
+def _root_.CategoryTheory.freeGroupoidFunctor (φ : V ⥤q V') : FreeGroupoid V ⥤ FreeGroupoid V' :=
   lift (φ ⋙q of V')
 #align category_theory.free_groupoid_functor CategoryTheory.freeGroupoidFunctor
 
 theorem freeGroupoidFunctor_id :
     freeGroupoidFunctor (Prefunctor.id V) = Functor.id (FreeGroupoid V) := by
-  dsimp only [free_groupoid_functor]; symm
+  dsimp only [freeGroupoidFunctor]; symm
   apply lift_unique; rfl
 #align category_theory.groupoid.free.free_groupoid_functor_id CategoryTheory.Groupoid.Free.freeGroupoidFunctor_id
 
 theorem freeGroupoidFunctor_comp (φ : V ⥤q V') (φ' : V' ⥤q V'') :
     freeGroupoidFunctor (φ ⋙q φ') = freeGroupoidFunctor φ ⋙ freeGroupoidFunctor φ' := by
-  dsimp only [free_groupoid_functor]; symm
+  dsimp only [freeGroupoidFunctor]; symm
   apply lift_unique; rfl
 #align category_theory.groupoid.free.free_groupoid_functor_comp CategoryTheory.Groupoid.Free.freeGroupoidFunctor_comp
 
