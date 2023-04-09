@@ -23,23 +23,23 @@ file.
 
 One can define a combinatorial distance on `Π (n : ℕ), E n`, as follows:
 
-* `pi_nat.cylinder x n` is the set of points `y` with `x i = y i` for `i < n`.
-* `pi_nat.first_diff x y` is the first index at which `x i ≠ y i`.
+* `PiNat.cylinder x n` is the set of points `y` with `x i = y i` for `i < n`.
+* `PiNat.firstDiff x y` is the first index at which `x i ≠ y i`.
 * `pi_nat.dist x y` is equal to `(1/2) ^ (first_diff x y)`. It defines a distance
   on `Π (n : ℕ), E n`, compatible with the topology when the `E n` have the discrete topology.
-* `pi_nat.metric_space`: the metric space structure, given by this distance. Not registered as an
+* `PiNat.metricSpace`: the metric space structure, given by this distance. Not registered as an
   instance. This space is a complete metric space.
-* `pi_nat.metric_space_of_discrete_uniformity`: the same metric space structure, but adjusting the
+* `PiNat.metricSpaceOfDiscreteUniformity`: the same metric space structure, but adjusting the
   uniformity defeqness when the `E n` already have the discrete uniformity. Not registered as an
   instance
-* `pi_nat.metric_space_nat_nat`: the particular case of `ℕ → ℕ`, not registered as an instance.
+* `PiNat.metricSpaceNatNat`: the particular case of `ℕ → ℕ`, not registered as an instance.
 
 These results are used to construct continuous functions on `Π n, E n`:
 
-* `pi_nat.exists_retraction_of_is_closed`: given a nonempty closed subset `s` of `Π (n : ℕ), E n`,
+* `PiNat.exists_retraction_of_isClosed`: given a nonempty closed subset `s` of `Π (n : ℕ), E n`,
   there exists a retraction onto `s`, i.e., a continuous map from the whole space to `s`
   restricting to the identity on `s`.
-* `exists_nat_nat_continuous_surjective_of_complete_space`: given any nonempty complete metric
+* `exists_nat_nat_continuous_surjective_of_completeSpace`: given any nonempty complete metric
   space with second-countable topology, there exists a continuous surjection from `ℕ → ℕ` onto
   this space.
 
@@ -48,7 +48,7 @@ in general), and `ι` is countable.
 
 * `pi_countable.dist` is the distance on `Π i, E i` given by
     `dist x y = ∑' i, min (1/2)^(encode i) (dist (x i) (y i))`.
-* `pi_countable.metric_space` is the corresponding metric space structure, adjusted so that
+* `PiCountable.metricSpace` is the corresponding metric space structure, adjusted so that
   the uniformity is definitionally the product uniformity. Not registered as an instance.
 -/
 
@@ -196,8 +196,8 @@ theorem update_mem_cylinder (x : ∀ n, E n) (n : ℕ) (y : E n) : update x n y 
 
 We define a distance function on `Π n, E n`, given by `dist x y = (1/2)^n` where `n` is the first
 index at which `x` and `y` differ. When each `E n` has the discrete topology, this distance will
-define the right topology on the product space. We do not record a global `has_dist` instance nor
-a `metric_space`instance, as other distances may be used on these spaces, but we register them as
+define the right topology on the product space. We do not record a global `Dist` instance nor
+a `MetricSpace`instance, as other distances may be used on these spaces, but we register them as
 local instances in this section.
 -/
 
@@ -274,7 +274,7 @@ theorem apply_eq_of_dist_lt {x y : ∀ n, E n} {n : ℕ} (h : dist x y < (1 / 2)
 
 /-- A function to a pseudo-metric-space is `1`-Lipschitz if and only if points in the same cylinder
 of length `n` are sent to points within distance `(1/2)^n`.
-Not expressed using `lipschitz_with` as we don't have a metric space structure -/
+Not expressed using `LipschitzWith` as we don't have a metric space structure -/
 theorem lipschitz_with_one_iff_forall_dist_image_le_of_mem_cylinder {α : Type _}
     [PseudoMetricSpace α] {f : (∀ n, E n) → α} :
     (∀ x y : ∀ n, E n, dist (f x) (f y) ≤ dist x y) ↔
