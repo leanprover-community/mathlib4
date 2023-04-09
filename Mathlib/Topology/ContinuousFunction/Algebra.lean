@@ -281,7 +281,7 @@ def continuousSubmonoid (α : Type _) (β : Type _) [TopologicalSpace α] [Topol
     [Monoid β] [ContinuousMul β] : Submonoid (α → β) where
   carrier := { f : α → β | Continuous f }
   one_mem' := @continuous_const _ _ _ _ 1
-  mul_mem' f g fc gc := fc.mul gc
+  mul_mem' fc gc := fc.mul gc
 #align continuous_submonoid continuousSubmonoid
 #align continuous_add_submonoid continuousAddSubmonoid
 
@@ -289,7 +289,7 @@ def continuousSubmonoid (α : Type _) (β : Type _) [TopologicalSpace α] [Topol
 @[to_additive "The `add_subgroup` of continuous maps `α → β`. "]
 def continuousSubgroup (α : Type _) (β : Type _) [TopologicalSpace α] [TopologicalSpace β] [Group β]
     [TopologicalGroup β] : Subgroup (α → β) :=
-  { continuousSubmonoid α β with inv_mem' := fun f fc => Continuous.inv fc }
+  { continuousSubmonoid α β with inv_mem' := fun fc => Continuous.inv fc }
 #align continuous_subgroup continuousSubgroup
 #align continuous_add_subgroup continuousAddSubgroup
 
