@@ -8,9 +8,9 @@ Authors: Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Set.Intervals.Basic
-import Mathbin.Data.Set.Lattice
-import Mathbin.Data.SetLike.Basic
+import Mathlib.Data.Set.Intervals.Basic
+import Mathlib.Data.Set.Lattice
+import Mathlib.Data.SetLike.Basic
 
 /-!
 # Order intervals
@@ -77,16 +77,14 @@ theorem le_def : s ≤ t ↔ t.fst ≤ s.fst ∧ s.snd ≤ t.snd :=
 
 /-- `to_dual_prod` as an order embedding. -/
 @[simps]
-def toDualProdHom : NonemptyInterval α ↪o αᵒᵈ × α
-    where
+def toDualProdHom : NonemptyInterval α ↪o αᵒᵈ × α where
   toFun := toDualProd
   inj' := toDualProd_injective
   map_rel_iff' _ _ := Iff.rfl
 #align nonempty_interval.to_dual_prod_hom NonemptyInterval.toDualProdHom
 
 /-- Turn an interval into an interval in the dual order. -/
-def dual : NonemptyInterval α ≃ NonemptyInterval αᵒᵈ
-    where
+def dual : NonemptyInterval α ≃ NonemptyInterval αᵒᵈ where
   toFun s := ⟨s.toProd.symm, s.fst_le_snd⟩
   invFun s := ⟨s.toProd.symm, s.fst_le_snd⟩
   left_inv s := ext _ _ <| Prod.swap_swap _
@@ -206,8 +204,7 @@ theorem dual_map₂ (f : α → β → γ) (h₀ h₁ s t) :
 
 variable [BoundedOrder α]
 
-instance : OrderTop (NonemptyInterval α)
-    where
+instance : OrderTop (NonemptyInterval α) where
   top := ⟨⟨⊥, ⊤⟩, bot_le⟩
   le_top a := ⟨bot_le, le_top⟩
 
@@ -230,8 +227,7 @@ def coeHom : NonemptyInterval α ↪o Set α :=
   OrderEmbedding.ofMapLEIff (fun s => Icc s.fst s.snd) fun s t => Icc_subset_Icc_iff s.fst_le_snd
 #align nonempty_interval.coe_hom NonemptyInterval.coeHom
 
-instance : SetLike (NonemptyInterval α) α
-    where
+instance : SetLike (NonemptyInterval α) α where
   coe s := Icc s.fst s.snd
   coe_injective' := coeHom.Injective
 
@@ -405,8 +401,7 @@ theorem map_map (g : β →o γ) (f : α →o β) (s : Interval α) : (s.map f).
 #align interval.map_map Interval.map_map
 
 @[simp]
-theorem dual_map (f : α →o β) (s : Interval α) : (s.map f).dual = s.dual.map f.dual :=
-  by
+theorem dual_map (f : α →o β) (s : Interval α) : (s.map f).dual = s.dual.map f.dual := by
   cases s
   · rfl
   · exact WithBot.map_comm rfl _
@@ -481,8 +476,7 @@ theorem coe_top [BoundedOrder α] : ((⊤ : Interval α) : Set α) = univ :=
 #align interval.coe_top Interval.coe_top
 
 @[simp, norm_cast]
-theorem coe_dual (s : Interval α) : (s.dual : Set αᵒᵈ) = ofDual ⁻¹' s :=
-  by
+theorem coe_dual (s : Interval α) : (s.dual : Set αᵒᵈ) = ofDual ⁻¹' s := by
   cases s
   · rfl
   exact s.coe_dual
@@ -550,8 +544,7 @@ instance : Lattice (Interval α) :=
     le_inf := fun s t c =>
       match s, t, c with
       | ⊥, t, c => fun _ _ => bot_le
-      | some s, t, c => fun hb hc =>
-        by
+      | some s, t, c => fun hb hc => by
         lift t to NonemptyInterval α using ne_bot_of_le_ne_bot WithBot.coe_ne_bot hb
         lift c to NonemptyInterval α using ne_bot_of_le_ne_bot WithBot.coe_ne_bot hc
         change _ ≤ dite _ _ _
@@ -561,8 +554,7 @@ instance : Lattice (Interval α) :=
         exact ⟨hb.1.trans <| s.fst_le_snd.trans hc.2, hc.1.trans <| s.fst_le_snd.trans hb.2⟩ }
 
 @[simp, norm_cast]
-theorem coe_inf (s t : Interval α) : (↑(s ⊓ t) : Set α) = s ∩ t :=
-  by
+theorem coe_inf (s t : Interval α) : (↑(s ⊓ t) : Set α) = s ∩ t := by
   cases s
   · rw [WithBot.none_eq_bot, bot_inf_eq]
     exact (empty_inter _).symm
@@ -644,8 +636,7 @@ noncomputable instance [@DecidableRel α (· ≤ ·)] : CompleteLattice (Interva
           else
             some
               ⟨⟨⨅ (s : NonemptyInterval α) (h : ↑s ∈ S), s.fst,
-                  ⨆ (s : NonemptyInterval α) (h : ↑s ∈ S), s.snd⟩,
-                by
+                  ⨆ (s : NonemptyInterval α) (h : ↑s ∈ S), s.snd⟩, by
                 obtain ⟨s, hs, ha⟩ := not_subset.1 h
                 lift s to NonemptyInterval α using ha
                 exact infᵢ₂_le_of_le s hs (le_supᵢ₂_of_le s hs s.fst_le_snd)⟩
@@ -698,8 +689,7 @@ noncomputable instance [@DecidableRel α (· ≤ ·)] : CompleteLattice (Interva
 
 @[simp, norm_cast]
 theorem coe_infₛ [@DecidableRel α (· ≤ ·)] (S : Set (Interval α)) :
-    ↑(infₛ S) = ⋂ s ∈ S, (s : Set α) :=
-  by
+    ↑(infₛ S) = ⋂ s ∈ S, (s : Set α) := by
   change coe (dite _ _ _) = _
   split_ifs
   · ext
