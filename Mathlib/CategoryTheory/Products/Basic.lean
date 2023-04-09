@@ -64,13 +64,6 @@ theorem prod_comp {P Q R : C} {S T U : D} (f : (P, S) ⟶ (Q, T)) (g : (Q, T) �
   rfl
 #align category_theory.prod_comp CategoryTheory.prod_comp
 
--- Porting note: this wasn't needed in mathlib3,
--- where `Prod.mk.inj_iff` was applied by `simp`.
-@[simp]
-theorem prod_mk_inj_iff {P Q R S : C} (f₁ f₂ : P ⟶ Q) (g₁ g₂ : R ⟶ S) :
-    ((f₁, g₁) : (P, R) ⟶ (Q, S)) = (f₂, g₂) ↔ f₁ = f₂ ∧ g₁ = g₂ :=
-  Prod.mk.inj_iff
-
 theorem isIso_prod_iff {P Q : C} {S T : D} {f : (P, S) ⟶ (Q, T)} :
     IsIso f ↔ IsIso f.1 ∧ IsIso f.2 := by
   constructor
