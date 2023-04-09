@@ -449,11 +449,12 @@ theorem LinearOrder.convexOn_of_lt (hs : Convex 𝕜 s)
       f (a • x + b • y) ≤ a • f x + b • f y) :
     ConvexOn 𝕜 s f := by
   refine' convexOn_iff_pairwise_pos.2 ⟨hs, fun x hx y hy hxy a b ha hb hab => _⟩
+  -- Porting note: without clearing the stray variables, `wlog` gives a bad term.
+  -- See https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/wlog.20.2316495
+  clear! α F ι
   wlog h : x < y
   · rw [add_comm (a • x), add_comm (a • f x)]
     rw [add_comm] at hab
-    -- `wlog` gives a bad term, which has picked up all the stray variables.
-    -- See https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/wlog.20.2316495
     refine' this hs hf y hy x hx hxy.symm b a hb ha hab (hxy.lt_or_lt.resolve_left h)
   exact hf hx hy h ha hb hab
 #align linear_order.convex_on_of_lt LinearOrder.convexOn_of_lt
@@ -489,6 +490,9 @@ theorem LinearOrder.strictConvexOn_of_lt (hs : Convex 𝕜 s)
                 ∀ ⦃a b : 𝕜⦄, 0 < a → 0 < b → a + b = 1 → f (a • x + b • y) < a • f x + b • f y) :
     StrictConvexOn 𝕜 s f := by
   refine' ⟨hs, fun x hx y hy hxy a b ha hb hab => _⟩
+  -- Porting note: without clearing the stray variables, `wlog` gives a bad term.
+  -- See https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/wlog.20.2316495
+  clear! α F ι
   wlog h : x < y
   · rw [add_comm (a • x), add_comm (a • f x)]
     rw [add_comm] at hab
@@ -1041,13 +1045,13 @@ theorem StrictConcaveOn.translate_right (hf : StrictConcaveOn 𝕜 s f) (c : E) 
 /-- Left translation preserves strict convexity. -/
 theorem StrictConvexOn.translate_left (hf : StrictConvexOn 𝕜 s f) (c : E) :
     StrictConvexOn 𝕜 ((fun z => c + z) ⁻¹' s) (f ∘ fun z => z + c) := by
-  simpa only [add_comm] using hf.translate_right _
+  simpa only [add_comm] using hf.translate_right c
 #align strict_convex_on.translate_left StrictConvexOn.translate_left
 
 /-- Left translation preserves strict concavity. -/
 theorem StrictConcaveOn.translate_left (hf : StrictConcaveOn 𝕜 s f) (c : E) :
     StrictConcaveOn 𝕜 ((fun z => c + z) ⁻¹' s) (f ∘ fun z => z + c) := by
-  simpa only [add_comm] using hf.translate_right _
+  simpa only [add_comm] using hf.translate_right c
 #align strict_concave_on.translate_left StrictConcaveOn.translate_left
 
 end AddCancelCommMonoid
