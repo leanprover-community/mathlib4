@@ -256,33 +256,31 @@ variable {D}
 theorem plusMap_toPlus : J.plusMap (J.toPlus P) = J.toPlus (J.plusObj P) := by
   ext X : 2
   refine' colimit.hom_ext (fun S => _)
-  dsimp [toPlus, plusObj, plusMap]
-  delta Cover.toMultiequalizer
-  simp only [ι_colimMap]
+  dsimp only [plusMap, toPlus]
   let e : S.unop ⟶ ⊤ := homOfLE (OrderTop.le_top _)
-  simp_rw [← colimit.w _ e.op, ← Category.assoc]
+  rw [ι_colimMap, ← colimit.w _ e.op, ← Category.assoc, ← Category.assoc]
   congr 1
   refine' Multiequalizer.hom_ext _ _ _ (fun I => _)
-  dsimp
-  simp only [diagramPullback_app, colimit.ι_pre, Multiequalizer.lift_ι, ι_colimMap_assoc,
-    Category.assoc, Functor.op, pullback_obj, diagram_obj, Cover.Arrow.map_Y,
-    Cover.Arrow.map_f, Functor.comp_obj, unop_op]
+  erw [Multiequalizer.lift_ι]
+  simp only [unop_op, op_unop, diagram_map, Category.assoc, limit.lift_π,
+    Multifork.ofι_π_app]
   let ee : (J.pullback (I.map e).f).obj S.unop ⟶ ⊤ := homOfLE (OrderTop.le_top _)
-  simp_rw [← colimit.w _ ee.op, ← Category.assoc]
+  erw [← colimit.w _ ee.op, ι_colimMap_assoc, colimit.ι_pre, diagramPullback_app,
+    ← Category.assoc, ← Category.assoc]
   congr 1
   refine' Multiequalizer.hom_ext _ _ _ (fun II => _)
-  dsimp
-  simp only [limit.lift_π, Multifork.ofι_π_app, Category.assoc]
-  erw [Multiequalizer.lift_ι, ι_colimMap_assoc]
-  dsimp [Multifork.ofι]
-  sorry
-  --convert Multiequalizer.condition (S.unop.index P)
-  --    ⟨_, _, _, II.f, 𝟙 _, I.f, II.f ≫ I.f, I.hf, Sieve.downwardClosed _ I.hf _, by simp⟩
-  --· cases I
-  --  rfl
-  --· dsimp [cover.index]
-  --  erw [P.map_id, category.comp_id]
-  --  rfl
+  convert (Multiequalizer.condition (S.unop.index P)
+      ⟨_, _, _, II.f, 𝟙 _, I.f, II.f ≫ I.f, I.hf,
+        Sieve.downward_closed _ I.hf _, by simp⟩) using 1
+  . dsimp [diagram]
+    cases I
+    simp only [Category.assoc, limit.lift_π, Multifork.ofι_pt, Multifork.ofι_π_app,
+      Cover.Arrow.map_Y, Cover.Arrow.map_f]
+    rfl
+  . erw [Multiequalizer.lift_ι]
+    dsimp [Cover.index]
+    simp only [Functor.map_id, Category.comp_id]
+    rfl
 #align category_theory.grothendieck_topology.plus_map_to_plus CategoryTheory.GrothendieckTopology.plusMap_toPlus
 
 theorem isIso_toPlus_of_isSheaf (hP : Presheaf.IsSheaf J P) : IsIso (J.toPlus P) := by
