@@ -1731,9 +1731,9 @@ theorem interₛ_apply {x : Class.{u}} {y : ZFSet.{u}} : (⋂₀ x) y ↔ ∀ z 
 #align Class.sInter_apply Class.interₛ_apply
 
 @[simp, norm_cast]
-theorem interₛ_coe {x : ZFSet.{u}} (h : x.Nonempty) : ⋂₀ (x : Class.{u}) = ↑(⋂₀ x : ZFSet.{u}) :=
-  Set.ext fun _ => interₛ_apply.trans (ZFSet.mem_interₛ h).symm
-#align Class.sInter_coe Class.interₛ_coe
+theorem coe_interₛ {x : ZFSet.{u}} (h : x.Nonempty) : ↑(⋂₀ x : ZFSet) = ⋂₀ (x : Class.{u}) :=
+  Set.ext fun _ => (ZFSet.mem_interₛ h).trans interₛ_apply.symm
+#align Class.sInter_coe Class.coe_interₛ
 
 theorem mem_of_mem_interₛ {x y z : Class} (hy : y ∈ ⋂₀ x) (hz : z ∈ x) : y ∈ z :=
   by
