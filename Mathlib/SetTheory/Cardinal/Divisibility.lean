@@ -61,7 +61,7 @@ theorem isUnit_iff : IsUnit a ↔ a = 1 := by
     exact zero_ne_one ht
 #align cardinal.is_unit_iff Cardinal.isUnit_iff
 
-noncomputable instance : Unique Cardinal.{u}ˣ where
+instance : Unique Cardinal.{u}ˣ where
   default := 1
   uniq a := Units.val_eq_one.mp <| isUnit_iff.mp a.isUnit
 
