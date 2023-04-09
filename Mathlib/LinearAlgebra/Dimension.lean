@@ -255,11 +255,11 @@ theorem rank_quotient_le (p : Submodule R M) : Module.rank R (M ⧸ p) ≤ Modul
 
 variable [Nontrivial R]
 
-theorem cardinal_lift_le_rank_of_linearIndependent.{m} {ι : Type w} {v : ι → M}
+theorem cardinal_lift_le_rank_of_linearIndependent {ι : Type w} {v : ι → M}
     (hv : LinearIndependent R v) :
-    Cardinal.lift.{max v m} (#ι) ≤ Cardinal.lift.{max w m} (Module.rank R M) := by
+    Cardinal.lift.{v} (#ι) ≤ Cardinal.lift.{w} (Module.rank R M) := by
   apply le_trans
-  · exact Cardinal.lift_mk_le.mpr ⟨(Equiv.ofInjective _ hv.injective).toEmbedding⟩
+  · exact Cardinal.lift_mk_le'.mpr ⟨(Equiv.ofInjective _ hv.injective).toEmbedding⟩
   · simp only [Cardinal.lift_le, Module.rank]
     apply le_trans
     swap
@@ -269,7 +269,7 @@ theorem cardinal_lift_le_rank_of_linearIndependent.{m} {ι : Type w} {v : ι →
 
 theorem cardinal_lift_le_rank_of_linearIndependent' {ι : Type w} {v : ι → M}
     (hv : LinearIndependent R v) : Cardinal.lift.{v} (#ι) ≤ Cardinal.lift.{w} (Module.rank R M) :=
-  cardinal_lift_le_rank_of_linearIndependent.{u, v, w, 0} hv
+  cardinal_lift_le_rank_of_linearIndependent hv
 #align cardinal_lift_le_rank_of_linear_independent' cardinal_lift_le_rank_of_linearIndependent'
 
 theorem cardinal_le_rank_of_linearIndependent {ι : Type v} {v : ι → M}
@@ -582,7 +582,7 @@ theorem mk_eq_mk_of_basis (v : Basis ι R M) (v' : Basis ι' R M) :
 /-- Given two bases indexed by `ι` and `ι'` of an `R`-module, where `R` satisfies the invariant
 basis number property, an equiv `ι ≃ ι' `. -/
 def Basis.indexEquiv (v : Basis ι R M) (v' : Basis ι' R M) : ι ≃ ι' :=
-  Nonempty.some (Cardinal.lift_mk_eq.1 (Cardinal.lift_umax_eq.2 (mk_eq_mk_of_basis v v')))
+  (Cardinal.lift_mk_eq'.1 <| mk_eq_mk_of_basis v v').some
 #align basis.index_equiv Basis.indexEquiv
 
 theorem mk_eq_mk_of_basis' {ι' : Type w} (v : Basis ι R M) (v' : Basis ι' R M) : (#ι) = (#ι') :=
@@ -1147,11 +1147,11 @@ theorem rank_add_rank_split (db : V₂ →ₗ[K] V) (eb : V₃ →ₗ[K] V) (cd 
   congr 1
   apply LinearEquiv.rank_eq
   refine' LinearEquiv.ofBijective _ ⟨_, _⟩
-  · refine' LinearMap.codRestrict _ (Prod cd (-ce)) _
+  · refine' LinearMap.codRestrict _ (prod cd (-ce)) _
     · intro c
       simp only [add_eq_zero_iff_eq_neg, LinearMap.prod_apply, mem_ker, Pi.prod, coprod_apply,
         neg_neg, map_neg, neg_apply]
-      exact LinearMap.ext_iff.1 Eq c
+      exact LinearMap.ext_iff.1 eq c
   · rw [← ker_eq_bot, ker_codRestrict, ker_prod, hgd, bot_inf_eq]
   · rw [← range_eq_top, eq_top_iff, range_codRestrict, ← map_le_iff_le_comap, Submodule.map_top,
       range_subtype]
@@ -1427,7 +1427,7 @@ theorem le_rank_iff_exists_linearIndependent {c : Cardinal} {f : V →ₗ[K] V'}
       LinearIndependent.of_comp f.range.subtype (by convert si)
     convert cardinal_le_rank_of_linearIndependent this.image
     rw [← Cardinal.lift_inj, ← hsc, Cardinal.mk_image_eq_of_injOn_lift]
-    exact inj_on_iff_injective.2 this.injective
+    exact injOn_iff_injective.2 this.injective
 #align linear_map.le_rank_iff_exists_linear_independent LinearMap.le_rank_iff_exists_linearIndependent
 
 set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
