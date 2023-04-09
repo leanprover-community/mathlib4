@@ -200,7 +200,8 @@ theorem classifier_isSheaf : Presieve.IsSheaf J₁ (Functor.closedSieves J₁) :
   refine' ⟨_, _⟩
   · rintro x ⟨M, hM⟩ ⟨N, hN⟩ hM₂ hN₂
     simp only [Functor.closedSieves_obj]
-    ext
+    ext Y
+    intro f
     dsimp only [Subtype.coe_mk]
     rw [← J₁.covers_iff_mem_of_closed hM, ← J₁.covers_iff_mem_of_closed hN]
     have q : ∀ ⦃Z : C⦄ (g : Z ⟶ X) (hg : S g), M.pullback g = N.pullback g := by
@@ -254,7 +255,7 @@ theorem le_topology_of_closedSieves_isSheaf {J₁ J₂ : GrothendieckTopology C}
     (h : Presieve.IsSheaf J₁ (Functor.closedSieves J₂)) : J₁ ≤ J₂ := fun X S hS => by
   rw [← J₂.close_eq_top_iff_mem]
   have : J₂.IsClosed (⊤ : Sieve X) := by
-    intro Y f hf
+    intro Y f _
     trivial
   suffices (⟨J₂.close S, J₂.close_isClosed S⟩ : Subtype _) = ⟨⊤, this⟩ by
     rw [Subtype.ext_iff] at this
