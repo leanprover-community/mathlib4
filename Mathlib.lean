@@ -1246,6 +1246,7 @@ import Mathlib.LinearAlgebra.Multilinear.Basic
 import Mathlib.LinearAlgebra.Multilinear.Basis
 import Mathlib.LinearAlgebra.Multilinear.TensorProduct
 import Mathlib.LinearAlgebra.Pi
+import Mathlib.LinearAlgebra.PiTensorProduct
 import Mathlib.LinearAlgebra.Prod
 import Mathlib.LinearAlgebra.Projection
 import Mathlib.LinearAlgebra.Quotient
