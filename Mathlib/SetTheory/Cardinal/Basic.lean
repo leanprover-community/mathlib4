@@ -697,6 +697,9 @@ instance : LinearOrderedCommMonoidWithZero Cardinal.{u} :=
     mul_le_mul_left := @mul_le_mul_left' _ _ _ _
     zero_le_one := zero_le _ }
 
+-- We repeat this instance to steer Lean away from unnecessarily using noncomputable instances.
+instance commMonoid : CommMonoid Cardinal.{u} := CommSemiring.toCommMonoid
+
 theorem zero_power_le (c : Cardinal.{u}) : ((0 : Cardinal.{u})^c) ≤ 1 := by
   by_cases h : c = 0
   · rw [h, power_zero]
