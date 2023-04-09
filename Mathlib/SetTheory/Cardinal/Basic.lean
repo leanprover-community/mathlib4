@@ -1245,6 +1245,16 @@ theorem lift_le_aleph0 {c : Cardinal.{u}} : lift.{v} c ≤ ℵ₀ ↔ c ≤ ℵ�
   rw [← lift_aleph0.{u,v}, lift_le]
 #align cardinal.lift_le_aleph_0 Cardinal.lift_le_aleph0
 
+@[simp] -- Porting note: -- not yet forward-ported from mathlib3#18746
+theorem aleph0_lt_lift {c : Cardinal.{u}} : ℵ₀ < lift.{v} c ↔ ℵ₀ < c := by
+  rw [← lift_aleph0.{u,v}, lift_lt]
+#align cardinal.aleph_0_lt_lift Cardinal.aleph0_lt_lift
+
+@[simp] -- Porting note: -- not yet forward-ported from mathlib3#18746
+theorem lift_lt_aleph0 {c : Cardinal.{u}} : lift.{v} c < ℵ₀ ↔ c < ℵ₀ := by
+  rw [← lift_aleph0.{u,v}, lift_lt]
+#align cardinal.lift_lt_aleph_0 Cardinal.lift_lt_aleph0
+
 /-! ### Properties about the cast from `ℕ` -/
 
 -- Porting note : simp can prove this
