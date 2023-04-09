@@ -27,8 +27,8 @@ open NNReal Topology
 
 open Filter
 
-/-- A `normed_add_torsor V P` is a torsor of an additive seminormed group
-action by a `seminormed_add_comm_group V` on points `P`. We bundle the pseudometric space
+/-- A `NormedAddTorsor V P` is a torsor of an additive seminormed group
+action by a `SeminormedAddCommGroup V` on points `P`. We bundle the pseudometric space
 structure and require the distance to be the same as results from the
 norm (which in fact implies the distance yields a pseudometric space, but
 bundling just the distance and using an instance for the pseudometric space
@@ -52,17 +52,17 @@ instance (priority := 100) NormedAddTorsor.to_isometricVAdd : IsometricVAdd V P 
     rw [NormedAddTorsor.dist_eq_norm', NormedAddTorsor.dist_eq_norm', vadd_vsub_vadd_cancel_left]⟩
 #align normed_add_torsor.to_has_isometric_vadd NormedAddTorsor.to_isometricVAdd
 
-/-- A `seminormed_add_comm_group` is a `normed_add_torsor` over itself. -/
+/-- A `SeminormedAddCommGroup` is a `NormedAddTorsor` over itself. -/
 instance (priority := 100) SeminormedAddCommGroup.toNormedAddTorsor : NormedAddTorsor V V
     where dist_eq_norm' := dist_eq_norm
 #align seminormed_add_comm_group.to_normed_add_torsor SeminormedAddCommGroup.toNormedAddTorsor
 
 -- Because of the add_torsor.nonempty instance.
-/-- A nonempty affine subspace of a `normed_add_torsor` is itself a `normed_add_torsor`. -/
+/-- A nonempty affine subspace of a `NormedAddTorsor` is itself a `NormedAddTorsor`. -/
 instance AffineSubspace.toNormedAddTorsor {R : Type _} [Ring R] [Module R V]
     (s : AffineSubspace R P) [Nonempty s] : NormedAddTorsor s.direction s :=
   { AffineSubspace.toAddTorsor s with
-    dist_eq_norm' := fun x y => NormedAddTorsor.dist_eq_norm' ↑x ↑y }
+    dist_eq_norm' := fun x y => NormedAddTorsor.dist_eq_norm' x.val y.val }
 #align affine_subspace.to_normed_add_torsor AffineSubspace.toNormedAddTorsor
 
 section
@@ -120,11 +120,11 @@ theorem dist_vsub_cancel_left (x y z : P) : dist (x -ᵥ y) (x -ᵥ z) = dist y 
 /-- Isometry between the tangent space `V` of a (semi)normed add torsor `P` and `P` given by
 subtraction from `x : P`. -/
 @[simps!]
-def IsometryEquiv.constVsub (x : P) : P ≃ᵢ V
+def IsometryEquiv.constVSub (x : P) : P ≃ᵢ V
     where
   toEquiv := Equiv.constVSub x
   isometry_toFun := Isometry.of_dist_eq fun _ _ => dist_vsub_cancel_left _ _ _
-#align isometry_equiv.const_vsub IsometryEquiv.constVsub
+#align isometry_equiv.const_vsub IsometryEquiv.constVSub
 
 @[simp]
 theorem dist_vsub_cancel_right (x y z : P) : dist (x -ᵥ z) (y -ᵥ z) = dist x y :=
@@ -133,7 +133,8 @@ theorem dist_vsub_cancel_right (x y z : P) : dist (x -ᵥ z) (y -ᵥ z) = dist x
 
 theorem dist_vadd_vadd_le (v v' : V) (p p' : P) :
     dist (v +ᵥ p) (v' +ᵥ p') ≤ dist v v' + dist p p' := by
-  simpa using dist_triangle (v +ᵥ p) (v' +ᵥ p) (v' +ᵥ p')
+  simp only [← dist_vadd v' p p', ← dist_vadd_cancel_right v v' p]
+  exact dist_triangle (v +ᵥ p) (v' +ᵥ p) (v' +ᵥ p')
 #align dist_vadd_vadd_le dist_vadd_vadd_le
 
 theorem dist_vsub_vsub_le (p₁ p₂ p₃ p₄ : P) :
@@ -175,6 +176,7 @@ def pseudoMetricSpaceOfNormedAddCommGroupOfAddTorsor (V P : Type _) [SeminormedA
     [AddTorsor V P] : PseudoMetricSpace P
     where
   dist x y := ‖(x -ᵥ y : V)‖
+  edist_dist := λ p p' => by simp only; rw [ENNReal.ofReal_eq_coe_nnreal]
   dist_self x := by simp
   dist_comm x y := by simp only [← neg_vsub_eq_vsub_rev y x, norm_neg]
   dist_triangle := by
