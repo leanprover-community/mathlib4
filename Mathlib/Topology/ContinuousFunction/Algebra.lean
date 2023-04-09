@@ -474,8 +474,11 @@ def continuousSubsemiring (α : Type _) (R : Type _) [TopologicalSpace α] [Topo
 /-- The subring of continuous maps `α → β`. -/
 def continuousSubring (α : Type _) (R : Type _) [TopologicalSpace α] [TopologicalSpace R] [Ring R]
     [TopologicalRing R] : Subring (α → R) :=
-  { continuousSubsemiring α R,
-    continuousAddSubgroup α R with }
+  {
+    continuousAddSubgroup α R with
+      mul_mem' := sorry
+      one_mem' := sorry
+     }
 #align continuous_subring continuousSubring
 
 end Subtype
@@ -550,7 +553,8 @@ protected def _root_.RingHom.compLeftContinuous (α : Type _) {β : Type _} {γ 
 @[simps]
 def coeFnRingHom {α : Type _} {β : Type _} [TopologicalSpace α] [TopologicalSpace β] [Semiring β]
     [TopologicalSemiring β] : C(α, β) →+* α → β :=
-  { (coeFnMonoidHom : C(α, β) →* _), (coeFnAddMonoidHom : C(α, β) →+ _) with toFun := coeFn }
+  { (coeFnMonoidHom : C(α, β) →* _),
+   (coeFnAddMonoidHom : C(α, β) →+ _) with }
 #align continuous_map.coe_fn_ring_hom ContinuousMap.coeFnRingHom
 
 end ContinuousMap
@@ -678,7 +682,6 @@ protected def _root_.ContinuousLinearMap.compLeftContinuous (α : Type _) [Topol
 @[simps]
 def coeFnLinearMap : C(α, M) →ₗ[R] α → M :=
   { (coeFnAddMonoidHom : C(α, M) →+ _) with
-    toFun := coeFn
     map_smul' := coe_smul }
 #align continuous_map.coe_fn_linear_map ContinuousMap.coeFnLinearMap
 
@@ -707,7 +710,7 @@ def continuousSubalgebra : Subalgebra R (α → A) :=
     continuousSubsemiring α
       A with
     carrier := { f : α → A | Continuous f }
-    algebraMap_mem' := fun r => (continuous_const : Continuous fun x : α => algebraMap R A r) }
+    algebraMap_mem' := fun r => (continuous_const : Continuous fun _ : α => algebraMap R A r) }
 #align continuous_subalgebra continuousSubalgebra
 
 end Subtype
@@ -721,7 +724,7 @@ variable {α : Type _} [TopologicalSpace α] {R : Type _} [CommSemiring R] {A : 
 /-- Continuous constant functions as a `ring_hom`. -/
 def ContinuousMap.c : R →+* C(α, A) where
   toFun := fun c : R => ⟨fun x : α => (algebraMap R A) c, continuous_const⟩
-  map_one' := by ext x <;> exact (algebraMap R A).map_one
+  map_one' := by ext _ <;> exact (algebraMap R A).map_one
   map_mul' c₁ c₂ := by ext x <;> exact (algebraMap R A).map_mul _ _
   map_zero' := by ext x <;> exact (algebraMap R A).map_zero
   map_add' c₁ c₂ := by ext x <;> exact (algebraMap R A).map_add _ _
@@ -782,8 +785,7 @@ def ContinuousMap.coeFnAlgHom : C(α, A) →ₐ[R] α → A :=
   {
     (ContinuousMap.coeFnRingHom :
       C(α, A) →+* _) with
-    toFun := coeFn
-    commutes' := fun r => rfl }
+    commutes' := fun _ => rfl }
 #align continuous_map.coe_fn_alg_hom ContinuousMap.coeFnAlgHom
 
 variable {R}
