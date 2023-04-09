@@ -159,7 +159,7 @@ theorem shiftFunctor_map_apply {β : Type _} [AddCommGroup β] (s : β)
 
 instance hasZeroMorphisms [HasZeroMorphisms C] (β : Type w) :
     HasZeroMorphisms.{max w v} (GradedObject β C) where
-    Zero X Y := { zero := fun b => 0 }
+  Zero X Y := { zero := fun b => 0 }
 #align category_theory.graded_object.has_zero_morphisms CategoryTheory.GradedObject.hasZeroMorphisms
 
 @[simp]
