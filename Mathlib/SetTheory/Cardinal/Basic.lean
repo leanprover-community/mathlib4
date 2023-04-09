@@ -249,7 +249,7 @@ instance : LE Cardinal.{u} :=
     Quotient.liftOn₂ q₁ q₂ (fun α β => Nonempty <| α ↪ β) fun _ _ _ _ ⟨e₁⟩ ⟨e₂⟩ =>
       propext ⟨fun ⟨e⟩ => ⟨e.congr e₁ e₂⟩, fun ⟨e⟩ => ⟨e.congr e₁.symm e₂.symm⟩⟩⟩
 
-instance linearOrder : LinearOrder Cardinal.{u} where
+instance partialOrder : PartialOrder Cardinal.{u} where
   le := (· ≤ ·)
   le_refl := by
     rintro ⟨α⟩
@@ -260,10 +260,13 @@ instance linearOrder : LinearOrder Cardinal.{u} where
   le_antisymm := by
     rintro ⟨α⟩ ⟨β⟩ ⟨e₁⟩ ⟨e₂⟩
     exact Quotient.sound (e₁.antisymm e₂)
-  le_total := by
-    rintro ⟨α⟩ ⟨β⟩
-    apply Embedding.total
-  decidable_le := Classical.decRel _
+
+instance linearOrder : LinearOrder Cardinal.{u} :=
+  { Cardinal.partialOrder with
+    le_total := by
+      rintro ⟨α⟩ ⟨β⟩
+      apply Embedding.total
+    decidable_le := Classical.decRel _ }
 
 theorem le_def (α β : Type u) : (#α) ≤ (#β) ↔ Nonempty (α ↪ β) :=
   Iff.rfl
@@ -540,6 +543,9 @@ instance commSemiring : CommSemiring Cardinal.{u} where
   npow_zero := @power_zero
   npow_succ n c := show (c ^ (n + 1)) = c * (c ^ n) by rw [power_add, power_one, mul_comm']
 
+-- Porting note: this ensures a computable instance.
+instance commMonoid : CommMonoid Cardinal.{u} := CommSemiring.toCommMonoid
+
 /-! Porting note: Deprecated section. Remove. -/
 section deprecated
 set_option linter.deprecated false
@@ -672,7 +678,7 @@ instance add_swap_covariantClass : CovariantClass Cardinal Cardinal (swap (· + 
 
 instance canonicallyOrderedCommSemiring : CanonicallyOrderedCommSemiring Cardinal.{u} :=
   { Cardinal.commSemiring,
-    Cardinal.linearOrder with
+    Cardinal.partialOrder with
     bot := 0
     bot_le := Cardinal.zero_le
     add_le_add_left := fun a b => add_le_add_left
@@ -697,9 +703,6 @@ instance : LinearOrderedCommMonoidWithZero Cardinal.{u} :=
     Cardinal.linearOrder with
     mul_le_mul_left := @mul_le_mul_left' _ _ _ _
     zero_le_one := zero_le _ }
-
--- We repeat this instance to steer Lean away from unnecessarily using noncomputable instances.
-instance commMonoid : CommMonoid Cardinal.{u} := CommSemiring.toCommMonoid
 
 theorem zero_power_le (c : Cardinal.{u}) : ((0 : Cardinal.{u})^c) ≤ 1 := by
   by_cases h : c = 0
