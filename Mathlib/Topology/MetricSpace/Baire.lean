@@ -264,10 +264,11 @@ theorem dense_interᵢ_of_Gδ [Encodable β] {f : β → Set α} (ho : ∀ s, Is
 set_option linter.uppercaseLean3 false in
 #align dense_Inter_of_Gδ dense_interᵢ_of_Gδ
 
+-- Porting note: In `ho` and `hd`, changed `∀ s ∈ S` to `∀ s (H : s ∈ S)`
 /-- Baire theorem: a countable intersection of dense Gδ sets is dense. Formulated here with
 an index set which is a countable set in any type. -/
-theorem dense_bInter_of_Gδ {S : Set β} {f : ∀ x ∈ S, Set α} (ho : ∀ s ∈ S, IsGδ (f s ‹_›))
-    (hS : S.Countable) (hd : ∀ s ∈ S, Dense (f s ‹_›)) : Dense (⋂ s ∈ S, f s ‹_›) := by
+theorem dense_bInter_of_Gδ {S : Set β} {f : ∀ x ∈ S, Set α} (ho : ∀ s (H : s ∈ S), IsGδ (f s H))
+    (hS : S.Countable) (hd : ∀ s (H : s ∈ S), Dense (f s H)) : Dense (⋂ s ∈ S, f s ‹_›) := by
   rw [binterᵢ_eq_interᵢ]
   haveI := hS.toEncodable
   exact dense_interᵢ_of_Gδ (fun s => ho s s.2) fun s => hd s s.2
@@ -296,11 +297,10 @@ theorem eventually_residual {p : α → Prop} :
     _ ↔ _ := by simp [and_assoc']
 #align eventually_residual eventually_residual
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:635:2: warning: expanding binder collection (t «expr ⊆ » s) -/
 /-- A set is residual (comeagre) if and only if it includes a dense `Gδ` set. -/
 theorem mem_residual {s : Set α} : s ∈ residual α ↔ ∃ (t : _)(_ : t ⊆ s), IsGδ t ∧ Dense t :=
-  (@eventually_residual α _ _ fun x => x ∈ s).trans <|
-    exists_congr fun t => by rw [exists_prop, and_comm' (t ⊆ s), subset_def, and_assoc']
+  (@eventually_residual α _ fun x => x ∈ s).trans <|
+    exists_congr fun t => by rw [exists_prop, and_comm (a := t ⊆ s), subset_def, and_assoc]
 #align mem_residual mem_residual
 
 theorem dense_of_mem_residual {s : Set α} (hs : s ∈ residual α) : Dense s :=
