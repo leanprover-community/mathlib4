@@ -133,7 +133,7 @@ instance (priority := 100) LinearLocallyFiniteOrder.isSuccArchimedean [LocallyFi
   exists_succ_iterate_of_le := by
     intro i j hij
     rw [le_iff_lt_or_eq] at hij
-    cases hij <;> rename_i hij
+    cases' hij with hij hij
     swap
     · refine' ⟨0, _⟩
       simpa only [Function.iterate_zero, id.def] using hij
@@ -268,9 +268,8 @@ theorem toZ_iterate_succ_of_not_isMax (n : ℕ) (hn : ¬IsMax ((succ^[n]) i0)) :
 
 theorem toZ_iterate_pred_of_not_isMin (n : ℕ) (hn : ¬IsMin ((pred^[n]) i0)) :
     toZ i0 ((pred^[n]) i0) = -n := by
-  cases n
+  cases' n with n n
   · simp only [Nat.zero_eq, Function.iterate_zero, id.def, toZ_of_eq, Nat.cast_zero, neg_zero]
-  rename_i n
   have : (pred^[n.succ]) i0 < i0 := by
     refine' lt_of_le_of_ne (pred_iterate_le _ _) fun h_pred_iterate_eq ↦ hn _
     have h_pred_eq_pred : (pred^[n.succ]) i0 = (pred^[0]) i0 := by

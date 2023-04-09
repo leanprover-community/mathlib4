@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 
 ! This file was ported from Lean 3 source module data.int.basic
-! leanprover-community/mathlib commit 2196ab363eb097c008d4497125e0dde23fb36db2
+! leanprover-community/mathlib commit 00d163e35035c3577c1c79fa53b68de17781ffc1
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -127,6 +127,16 @@ theorem coe_nat_nonneg (n : ℕ) : 0 ≤ (n : ℤ) := ofNat_le.2 (Nat.zero_le _)
 #align int.neg_of_nat_ne_zero Int.negSucc_ne_zero
 #align int.zero_ne_neg_of_nat Int.zero_ne_negSucc
 
+@[simp]
+theorem sign_coe_add_one (n : ℕ) : Int.sign (n + 1) = 1 :=
+  rfl
+#align int.sign_coe_add_one Int.sign_coe_add_one
+
+@[simp]
+theorem sign_negSucc (n : ℕ) : Int.sign -[n+1] = -1 :=
+  rfl
+#align int.sign_neg_succ_of_nat Int.sign_negSucc
+
 /-! ### succ and pred -/
 
 /-- Immediate successor of an integer: `succ n = n + 1` -/
@@ -187,6 +197,9 @@ theorem succ_neg_nat_succ (n : ℕ) : succ (-Nat.succ n) = -n := succ_neg_succ n
 #align int.induction_on Int.induction_on
 
 /-! ### nat abs -/
+
+theorem natAbs_surjective : natAbs.Surjective := fun n => ⟨n, natAbs_ofNat n⟩
+#align int.nat_abs_surjective Int.natAbs_surjective
 
 #align int.nat_abs_add_le Int.natAbs_add_le
 #align int.nat_abs_sub_le Int.natAbs_sub_le

@@ -12,7 +12,7 @@ import Mathlib.Lean.EnvExtension
 import Mathlib.Lean.Meta.Simp
 import Std.Lean.NameMapAttribute
 import Std.Data.Option.Basic
-import Std.Tactic.NormCast.Ext -- just to copy the attribute
+import Std.Tactic.CoeExt -- just to copy the attribute
 import Std.Tactic.Ext.Attr -- just to copy the attribute
 import Std.Tactic.Lint -- useful to lint this file and for for DiscrTree.elements
 import Mathlib.Tactic.Relation.Rfl -- just to copy the attribute
@@ -28,7 +28,7 @@ and definitions (but not inductive types and structures) from a multiplicative
 theory to an additive theory.
 -/
 
-open Lean Meta Elab Command Std Tactic.NormCast
+open Lean Meta Elab Command Std
 
 /-- The  `to_additive_ignore_args` attribute. -/
 syntax (name := to_additive_ignore_args) "to_additive_ignore_args" num* : attr
@@ -895,11 +895,13 @@ partial def applyAttributes (stx : Syntax) (rawAttrs : Array Syntax) (thisAttr s
   copyInstanceAttribute src tgt
   -- Warn users if the multiplicative version has an attribute
   if linter.existingAttributeWarning.get (← getOptions) then
-    warnAttr stx simpExtension (·.lemmaNames.contains <| .decl ·) thisAttr `simp src tgt
-    warnAttr stx normCastExt.up (·.lemmaNames.contains <| .decl ·) thisAttr `norm_cast src tgt
-    warnAttr stx normCastExt.down (·.lemmaNames.contains <| .decl ·) thisAttr `norm_cast src tgt
-    warnAttr stx normCastExt.squash (·.lemmaNames.contains <| .decl ·) thisAttr `norm_cast src tgt
-    warnAttr stx pushCastExt (·.lemmaNames.contains <| .decl ·) thisAttr `norm_cast src tgt
+    let appliedAttrs ← getAllSimpAttrs src
+    if appliedAttrs.size > 0 then
+      Linter.logLintIf linter.existingAttributeWarning stx <|
+        m!"The source declaration {src} was given the simp-attribute(s) {appliedAttrs} before {
+        ""}calling @[{thisAttr}]. The preferred method is to use {
+        ""}`@[{thisAttr} (attr := {appliedAttrs})]` to apply the attribute to both {
+        src} and the target declaration {tgt}."
     warnAttr stx Std.Tactic.Ext.extExtension (fun b n => (b.elements.any fun t => t.declName = n))
       thisAttr `ext src tgt
     warnAttr stx Mathlib.Tactic.reflExt (·.elements.contains ·) thisAttr `refl src tgt
@@ -909,6 +911,7 @@ partial def applyAttributes (stx : Syntax) (rawAttrs : Array Syntax) (thisAttr s
     warnParametricAttr stx Lean.Linter.deprecatedAttr thisAttr `deprecated src tgt
     -- the next line also warns for `@[to_additive, simps]`, because of the application times
     warnParametricAttr stx simpsAttr thisAttr `simps src tgt
+    warnExt stx Term.elabAsElim.ext (·.contains ·) thisAttr `elab_as_elim src tgt
   -- add attributes
   -- the following is similar to `Term.ApplyAttributesCore`, but we hijack the implementation of
   -- `simp`, `simps` and `to_additive`.

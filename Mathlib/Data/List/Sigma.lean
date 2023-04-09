@@ -62,7 +62,7 @@ theorem mem_keys_of_mem {s : Sigma β} {l : List (Sigma β)} : s ∈ l → s.1 �
 
 theorem exists_of_mem_keys {a} {l : List (Sigma β)} (h : a ∈ l.keys) :
     ∃ b : β a, Sigma.mk a b ∈ l :=
-  let ⟨⟨_, b'⟩, m, e⟩ := exists_of_mem_map' h
+  let ⟨⟨_, b'⟩, m, e⟩ := exists_of_mem_map h
   Eq.recOn e (Exists.intro b' m)
 #align list.exists_of_mem_keys List.exists_of_mem_keys
 

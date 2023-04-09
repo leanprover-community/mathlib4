@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex J. Best, Yaël Dillies
 
 ! This file was ported from Lean 3 source module algebra.order.hom.ring
-! leanprover-community/mathlib commit a2d2e18906e2b62627646b5d5be856e6a642062f
+! leanprover-community/mathlib commit 92ca63f0fb391a9ca5f22d2409a6080e786d99f7
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -14,6 +14,7 @@ import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Ring.Equiv
 import Mathlib.Tactic.ByContra
 import Mathlib.Tactic.SwapVar
+import Mathlib.Tactic.WLOG
 
 /-!
 # Ordered ring homomorphisms
@@ -570,19 +571,17 @@ instance OrderRingHom.subsingleton [LinearOrderedField α] [LinearOrderedField �
     Subsingleton (α →+*o β) :=
   ⟨fun f g => by
     ext x
-    by_contra' h
-    cases' Ne.lt_or_lt h with h h
-    on_goal 2 => swap_var f ↔ g
-    all_goals
-    -- porting note: the above three lines used to be:
-    -- wlog h : f x < g x using f g, g f
-    -- · exact Ne.lt_or_lt h
-      obtain ⟨q, hf, hg⟩ := exists_rat_btwn h
-      rw [← map_ratCast f] at hf
-      rw [← map_ratCast g] at hg
-      exact
-        (lt_asymm ((OrderHomClass.mono g).reflect_lt hg) <|
-            (OrderHomClass.mono f).reflect_lt hf).elim⟩
+    by_contra' h' : f x ≠ g x
+    wlog h : f x < g x generalizing α β with h₂
+    -- porting note: had to add the `generalizing` as there are random variables
+    -- `F γ δ` flying around in context.
+    · exact h₂ g f x (Ne.symm h') (h'.lt_or_lt.resolve_left h)
+    obtain ⟨q, hf, hg⟩ := exists_rat_btwn h
+    rw [← map_ratCast f] at hf
+    rw [← map_ratCast g] at hg
+    exact
+      (lt_asymm ((OrderHomClass.mono g).reflect_lt hg) <|
+          (OrderHomClass.mono f).reflect_lt hf).elim⟩
 #align order_ring_hom.subsingleton OrderRingHom.subsingleton
 
 /-- There is at most one ordered ring isomorphism between a linear ordered field and an archimedean

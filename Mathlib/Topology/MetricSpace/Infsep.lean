@@ -22,7 +22,7 @@ We also define the infimum separation as the cast of the extended infimum separa
 This is the infimum of the distance between distinct elements of the set when in a pseudometric
 space.
 
-All lemmas and definitions are in the `set` namespace to give access to dot notation.
+All lemmas and definitions are in the `Set` namespace to give access to dot notation.
 
 ## Main definitions
 * `Set.einfsep`: Extended infimum separation of a set.
@@ -577,4 +577,3 @@ end MetricSpace
 end Infsep
 
 end Set
-

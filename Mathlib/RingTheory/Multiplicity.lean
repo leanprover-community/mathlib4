@@ -291,8 +291,8 @@ theorem finite_nat_iff {a b : ℕ} : Finite a b ↔ a ≠ 1 ∧ 0 < b := by
         have ha : a ≠ 0 := fun ha => hb <| zero_dvd_iff.mp <| by rw [ha] at h; exact h 1
         Classical.by_contradiction fun ha1 : a ≠ 1 =>
           have ha_gt_one : 1 < a :=
-            lt_of_not_ge fun _ => 
-              match a with 
+            lt_of_not_ge fun _ =>
+              match a with
               | 0 => ha rfl
               | 1 => ha1 rfl
               | b+2 => by linarith
@@ -425,10 +425,10 @@ variable [Ring α] [DecidableRel ((· ∣ ·) : α → α → Prop)]
 protected theorem neg (a b : α) : multiplicity a (-b) = multiplicity a b :=
   Part.ext' (by simp only [multiplicity, PartENat.find, dvd_neg]) fun h₁ h₂ =>
     PartENat.natCast_inj.1 (by
-        rw [PartENat.natCast_get];
-          exact Eq.symm
-              (unique ((dvd_neg _ _).2 (pow_multiplicity_dvd _))
-                (mt (dvd_neg _ _).1 (is_greatest' _ (lt_succ_self _)))))
+      rw [PartENat.natCast_get]
+      exact Eq.symm
+        (unique ((dvd_neg _ _).2 (pow_multiplicity_dvd _))
+          (mt (dvd_neg _ _).1 (is_greatest' _ (lt_succ_self _)))))
 #align multiplicity.neg multiplicity.neg
 
 theorem Int.natAbs (a : ℕ) (b : ℤ) : multiplicity a b.natAbs = multiplicity (a : ℤ) b := by
@@ -452,7 +452,7 @@ theorem multiplicity_add_of_gt {p a b : α} (h : multiplicity p b < multiplicity
       apply Nat.lt_succ_self k
     · rw [pow_dvd_iff_le_multiplicity, Nat.cast_add, ← hk, Nat.cast_one]
       exact PartENat.add_one_le_of_lt h
-  · have := @min_le_multiplicity_add α _ _ p a b 
+  · have := @min_le_multiplicity_add α _ _ p a b
     rwa [← min_eq_right (le_of_lt h)]
 #align multiplicity.multiplicity_add_of_gt multiplicity.multiplicity_add_of_gt
 
@@ -510,7 +510,7 @@ theorem finite_mul_aux {p : α} (hp : Prime p) {a b : α}:
         ⟨s, mul_right_cancel₀ hp.1 (by
               rw [add_assoc, tsub_add_cancel_of_le (succ_le_of_lt hm0)]
               simp_all [mul_comm, mul_assoc, mul_left_comm, pow_add])⟩
-termination_by finite_mul_aux _ _ n m  => n+m 
+termination_by finite_mul_aux _ _ n m  => n+m
 #align multiplicity.finite_mul_aux multiplicity.finite_mul_aux
 
 theorem finite_mul {p a b : α} (hp : Prime p) : Finite p a → Finite p b → Finite p (a * b) :=
@@ -532,7 +532,7 @@ variable [DecidableRel ((· ∣ ·) : α → α → Prop)]
 @[simp]
 theorem multiplicity_self {a : α} (ha : ¬IsUnit a) (ha0 : a ≠ 0) : multiplicity a a = 1 := by
   rw [← Nat.cast_one]
-  exact eq_coe_iff.2 ⟨by simp, fun ⟨b, hb⟩ => ha (isUnit_iff_dvd_one.2 
+  exact eq_coe_iff.2 ⟨by simp, fun ⟨b, hb⟩ => ha (isUnit_iff_dvd_one.2
             ⟨b, mul_left_cancel₀ ha0 <| by simpa [_root_.pow_succ, mul_assoc] using hb⟩)⟩
 #align multiplicity.multiplicity_self multiplicity.multiplicity_self
 
@@ -601,13 +601,13 @@ theorem Finset.prod {β : Type _} {p : α} (hp : Prime p) (s : Finset β) (f : �
 
 -- Porting note: with protected could not use pow' k in the succ branch
 protected theorem pow' {p a : α} (hp : Prime p) (ha : Finite p a) :
-    ∀ {k : ℕ}, get (multiplicity p (a ^ k)) (finite_pow hp ha) = k * get (multiplicity p a) ha := 
-  by 
-  intro k 
+    ∀ {k : ℕ}, get (multiplicity p (a ^ k)) (finite_pow hp ha) = k * get (multiplicity p a) ha :=
+  by
+  intro k
   induction' k with k hk
   · simp [one_right hp.not_unit]
   · have : multiplicity p (a ^ (k + 1)) = multiplicity p (a * a ^ k) := by rw [_root_.pow_succ]
-    rw [succ_eq_add_one, get_eq_get_of_eq _ _ this, 
+    rw [succ_eq_add_one, get_eq_get_of_eq _ _ this,
       multiplicity.mul' hp, hk, add_mul, one_mul, add_comm]
 #align multiplicity.pow' multiplicity.pow'
 
@@ -635,7 +635,7 @@ section Valuation
 
 variable {R : Type _} [CommRing R] [IsDomain R] {p : R} [DecidableRel (Dvd.dvd : R → R → Prop)]
 
-/-- `multiplicity` of a prime inan integral domain as an additive valuation to `PartENat`. -/
+/-- `multiplicity` of a prime in an integral domain as an additive valuation to `PartENat`. -/
 noncomputable def addValuation (hp : Prime p) : AddValuation R PartENat :=
   AddValuation.of (multiplicity p) (multiplicity.zero _) (one_right hp.not_unit)
     (fun _ _ => min_le_multiplicity_add) fun _ _ => multiplicity.mul hp
@@ -666,4 +666,3 @@ theorem multiplicity_eq_zero_of_coprime {p a b : ℕ} (hp : p ≠ 1)
 #align multiplicity_eq_zero_of_coprime multiplicity_eq_zero_of_coprime
 
 end Nat
-

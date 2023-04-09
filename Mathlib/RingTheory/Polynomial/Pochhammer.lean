@@ -17,12 +17,12 @@ import Mathlib.Data.Polynomial.Eval
 We define and prove some basic relations about
 `pochhammer S n : S[X] := X * (X + 1) * ... * (X + n - 1)`
 which is also known as the rising factorial. A version of this definition
-that is focused on `nat` can be found in `data.nat.factorial` as `nat.asc_factorial`.
+that is focused on `Nat` can be found in `Data.Nat.Factorial` as `Nat.ascFactorial`.
 
 ## Implementation
 
 As with many other families of polynomials, even though the coefficients are always in `ℕ`,
-we define the polynomial with coefficients in any `[semiring S]`.
+we define the polynomial with coefficients in any `[Semiring S]`.
 
 ## TODO
 
@@ -77,8 +77,7 @@ end
 
 @[simp, norm_cast]
 theorem pochhammer_eval_cast (n k : ℕ) :
-    (((pochhammer ℕ n).eval k : ℕ) : S) = ((pochhammer S n).eval k : S):=
-  by
+    (((pochhammer ℕ n).eval k : ℕ) : S) = ((pochhammer S n).eval k : S) := by
   rw [← pochhammer_map (algebraMap ℕ S), eval_map, ← eq_natCast (algebraMap ℕ S), eval₂_at_nat_cast,
     Nat.cast_id, eq_natCast]
 #align pochhammer_eval_cast pochhammer_eval_cast
@@ -116,7 +115,7 @@ theorem pochhammer_succ_eval {S : Type _} [Semiring S] (n : ℕ) (k : S) :
     eval_C_mul, Nat.cast_comm, ← mul_add]
 #align pochhammer_succ_eval pochhammer_succ_eval
 
-theorem pochhammer_succ_comp_x_add_one (n : ℕ) :
+theorem pochhammer_succ_comp_X_add_one (n : ℕ) :
     (pochhammer S (n + 1)).comp (X + 1) =
       pochhammer S (n + 1) + (n + 1) • (pochhammer S n).comp (X + 1) := by
   suffices (pochhammer ℕ (n + 1)).comp (X + 1) =
@@ -128,28 +127,28 @@ theorem pochhammer_succ_comp_x_add_one (n : ℕ) :
     add_comm, ← add_assoc]
   ring
 set_option linter.uppercaseLean3 false in
-#align pochhammer_succ_comp_X_add_one pochhammer_succ_comp_x_add_one
+#align pochhammer_succ_comp_X_add_one pochhammer_succ_comp_X_add_one
 
-theorem Polynomial.mul_x_add_nat_cast_comp {p q : S[X]} {n : ℕ} :
+theorem Polynomial.mul_X_add_nat_cast_comp {p q : S[X]} {n : ℕ} :
     (p * (X + (n : S[X]))).comp q = p.comp q * (q + n) := by
   rw [mul_add, add_comp, mul_X_comp, ← Nat.cast_comm, nat_cast_mul_comp, Nat.cast_comm, mul_add]
 set_option linter.uppercaseLean3 false in
-#align polynomial.mul_X_add_nat_cast_comp Polynomial.mul_x_add_nat_cast_comp
+#align polynomial.mul_X_add_nat_cast_comp Polynomial.mul_X_add_nat_cast_comp
 
 theorem pochhammer_mul (n m : ℕ) :
     pochhammer S n * (pochhammer S m).comp (X + (n : S[X])) = pochhammer S (n + m) := by
   induction' m with m ih
   · simp
-  · rw [pochhammer_succ_right, Polynomial.mul_x_add_nat_cast_comp, ← mul_assoc, ih,
+  · rw [pochhammer_succ_right, Polynomial.mul_X_add_nat_cast_comp, ← mul_assoc, ih,
       Nat.succ_eq_add_one, ← add_assoc, pochhammer_succ_right, Nat.cast_add, add_assoc]
 #align pochhammer_mul pochhammer_mul
 
 theorem pochhammer_nat_eq_ascFactorial (n : ℕ):
     ∀ k, (pochhammer ℕ k).eval (n + 1) = n.ascFactorial k
-  | 0 => (by erw [eval_one]; rfl)
+  | 0 => by rw [pochhammer_zero, eval_one, Nat.ascFactorial_zero]
   | t + 1 => by
     rw [pochhammer_succ_right, eval_mul, pochhammer_nat_eq_ascFactorial n t]
-    suffices n.ascFactorial t * (n + 1 + t) = n.ascFactorial (t + 1) by simpa
+    simp only [eval_add, eval_X, eval_nat_cast, Nat.cast_id]
     rw [Nat.ascFactorial_succ, add_right_comm, mul_comm]
 #align pochhammer_nat_eq_asc_factorial pochhammer_nat_eq_ascFactorial
 

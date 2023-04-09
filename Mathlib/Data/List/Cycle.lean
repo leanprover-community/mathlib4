@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 
 ! This file was ported from Lean 3 source module data.list.cycle
-! leanprover-community/mathlib commit 008205aa645b3f194c1da47025c5f110c8406eab
+! leanprover-community/mathlib commit 728baa2f54e6062c5879a3e397ac6bac323e506f
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -744,6 +744,12 @@ theorem map_coe {β : Type _} (f : α → β) (l : List α) : map f ↑l = List.
 theorem map_eq_nil {β : Type _} (f : α → β) (s : Cycle α) : map f s = nil ↔ s = nil :=
   Quotient.inductionOn' s (by simp)
 #align cycle.map_eq_nil Cycle.map_eq_nil
+
+@[simp]
+theorem mem_map {β : Type _} {f : α → β} {b : β} {s : Cycle α} :
+    b ∈ s.map f ↔ ∃ a, a ∈ s ∧ f a = b :=
+  Quotient.inductionOn' s (by simp)
+#align cycle.mem_map Cycle.mem_map
 
 /-- The `Multiset` of lists that can make the cycle. -/
 def lists (s : Cycle α) : Multiset (List α) :=

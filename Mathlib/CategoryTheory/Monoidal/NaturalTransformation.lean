@@ -39,8 +39,6 @@ open MonoidalCategory
 variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory.{v₁} C] {D : Type u₂} [Category.{v₂} D]
   [MonoidalCategory.{v₂} D]
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- A monoidal natural transformation is a natural transformation between (lax) monoidal functors
 additionally satisfying:
 `F.μ X Y ≫ app (X ⊗ Y) = (app X ⊗ app Y) ≫ G.μ X Y`
@@ -82,8 +80,7 @@ def vcomp {F G H : LaxMonoidalFunctor C D} (α : MonoidalNatTrans F G) (β : Mon
   { NatTrans.vcomp α.toNatTrans β.toNatTrans with }
 #align category_theory.monoidal_nat_trans.vcomp CategoryTheory.MonoidalNatTrans.vcomp
 
-instance categoryLaxMonoidalFunctor : Category (LaxMonoidalFunctor C D)
-    where
+instance categoryLaxMonoidalFunctor : Category (LaxMonoidalFunctor C D) where
   Hom := MonoidalNatTrans
   id := id
   comp α β := vcomp α β
@@ -111,8 +108,7 @@ variable {E : Type u₃} [Category.{v₃} E] [MonoidalCategory.{v₃} E]
 @[simps]
 def hcomp {F G : LaxMonoidalFunctor C D} {H K : LaxMonoidalFunctor D E} (α : MonoidalNatTrans F G)
     (β : MonoidalNatTrans H K) : MonoidalNatTrans (F ⊗⋙ H) (G ⊗⋙ K) :=
-  { NatTrans.hcomp α.toNatTrans
-      β.toNatTrans with
+  { NatTrans.hcomp α.toNatTrans β.toNatTrans with
     unit := by
       dsimp; simp
       conv_lhs => rw [← K.toFunctor.map_comp, α.unit]
@@ -145,12 +141,11 @@ and the monoidal naturality in the forward direction. -/
 def ofComponents (app : ∀ X : C, F.obj X ≅ G.obj X)
     (naturality' : ∀ {X Y : C} (f : X ⟶ Y), F.map f ≫ (app Y).hom = (app X).hom ≫ G.map f)
     (unit' : F.ε ≫ (app (𝟙_ C)).hom = G.ε)
-    (tensor' : ∀ X Y, F.μ X Y ≫ (app (X ⊗ Y)).hom = ((app X).hom ⊗ (app Y).hom) ≫ G.μ X Y) : F ≅ G
-    where
+    (tensor' : ∀ X Y, F.μ X Y ≫ (app (X ⊗ Y)).hom = ((app X).hom ⊗ (app Y).hom) ≫ G.μ X Y) :
+    F ≅ G where
   hom := { app := fun X => (app X).hom }
   inv := {
-    (NatIso.ofComponents app
-        @naturality').inv with
+    (NatIso.ofComponents app @naturality').inv with
     app := fun X => (app X).inv
     unit := by
       dsimp

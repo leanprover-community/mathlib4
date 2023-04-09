@@ -2,6 +2,7 @@ import Mathlib.Init.Data.Nat.Notation
 import Mathlib.Tactic.Basic
 import Mathlib.Tactic.ApplyFun
 import Mathlib.Init.Function
+import Mathlib.Data.Fintype.Card
 -- import Mathlib.Data.Matrix.Basic
 
 open Function
@@ -152,3 +153,9 @@ example (a b : ℕ) (h : a = b) : True := by
   apply_fun (fun i => i + ?_) at h
   · trivial
   · exact 37
+
+-- Check that it can solve congruence (needs Subsingleton.elim for the fintype instances)
+example (α β : Type u) [Fintype α] [Fintype β] (h : α = β) : True := by
+  apply_fun Fintype.card at h
+  guard_hyp h : Fintype.card α = Fintype.card β
+  trivial

@@ -132,8 +132,8 @@ instance RestrictScalars.opModule [Module Sᵐᵒᵖ M] : Module Rᵐᵒᵖ (Res
 #align restrict_scalars.op_module RestrictScalars.opModule
 
 instance RestrictScalars.isCentralScalar [Module S M] [Module Sᵐᵒᵖ M] [IsCentralScalar S M] :
-    IsCentralScalar R (RestrictScalars R S M)
-    where op_smul_eq_smul r _x := (op_smul_eq_smul (algebraMap R S r) (_ : M) : _)
+    IsCentralScalar R (RestrictScalars R S M) where
+  op_smul_eq_smul r _x := (op_smul_eq_smul (algebraMap R S r) (_ : M) : _)
 #align restrict_scalars.is_central_scalar RestrictScalars.isCentralScalar
 
 /-- The `R`-algebra homomorphism from the original coefficient algebra `S` to endomorphisms
@@ -150,18 +150,18 @@ end
 
 variable [AddCommMonoid M]
 
-/-- `RestrictScalars.add_equiv` is the additive equivalence with the original module. -/
+/-- `RestrictScalars.addEquiv` is the additive equivalence with the original module. -/
 def RestrictScalars.addEquiv : RestrictScalars R S M ≃+ M :=
   AddEquiv.refl M
 #align restrict_scalars.add_equiv RestrictScalars.addEquiv
 
 variable [CommSemiring R] [Semiring S] [Algebra R S] [Module S M]
 
-theorem restrictScalars.smul_def (c : R) (x : RestrictScalars R S M) :
+theorem RestrictScalars.smul_def (c : R) (x : RestrictScalars R S M) :
     c • x = (RestrictScalars.addEquiv R S M).symm
       (algebraMap R S c • RestrictScalars.addEquiv R S M x) :=
   rfl
-#align restrict_scalars.smul_def restrictScalars.smul_def
+#align restrict_scalars.smul_def RestrictScalars.smul_def
 
 @[simp]
 theorem RestrictScalars.addEquiv_map_smul (c : R) (x : RestrictScalars R S M) :
