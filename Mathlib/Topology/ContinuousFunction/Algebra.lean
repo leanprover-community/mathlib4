@@ -355,14 +355,15 @@ variable (α)
 
 /-- Composition on the left by a (continuous) homomorphism of topological monoids, as a
 `monoid_hom`. Similar to `monoid_hom.comp_left`. -/
-@[to_additive (attr := simps)
-      "Composition on the left by a (continuous) homomorphism of topological `add_monoid`s,\nas an `add_monoid_hom`. Similar to `add_monoid_hom.comp_left`."]
-protected def MonoidHom.compLeftContinuous {γ : Type _} [Monoid β] [ContinuousMul β]
+--@[to_additive (attr := simps)
+--      "Composition on the left by a (continuous) homomorphism of topological `add_monoid`s,\nas an `add_monoid_hom`. Similar to `add_monoid_hom.comp_left`."]
+@[to_additive (attr := simps)]
+protected def _root_.MonoidHom.compLeftContinuous {γ : Type _} [Monoid β] [ContinuousMul β]
     [TopologicalSpace γ] [Monoid γ] [ContinuousMul γ] (g : β →* γ) (hg : Continuous g) :
     C(α, β) →* C(α, γ) where
   toFun f := (⟨g, hg⟩ : C(β, γ)).comp f
-  map_one' := ext fun x => g.map_one
-  map_mul' f₁ f₂ := ext fun x => g.map_mul _ _
+  map_one' := ext fun _ => g.map_one
+  map_mul' _ _ := ext fun _ => g.map_mul _ _
 #align monoid_hom.comp_left_continuous MonoidHom.compLeftContinuous
 #align add_monoid_hom.comp_left_continuous AddMonoidHom.compLeftContinuous
 
@@ -433,7 +434,7 @@ all `x ∈ α`. -/
 theorem hasSum_apply {γ : Type _} [LocallyCompactSpace α] [AddCommMonoid β] [ContinuousAdd β]
     {f : γ → C(α, β)} {g : C(α, β)} (hf : HasSum f g) (x : α) : HasSum (fun i : γ => f i x) (g x) :=
   by
-  let evₓ : AddMonoidHom C(α, β) β := (Pi.evalAddMonoidHom _ x).comp coe_fn_add_monoid_hom
+  let evₓ : AddMonoidHom C(α, β) β := (Pi.evalAddMonoidHom _ x).comp coeFnAddMonoidHom
   exact hf.map evₓ (ContinuousMap.continuous_eval_const' x)
 #align continuous_map.has_sum_apply ContinuousMap.hasSum_apply
 
@@ -473,7 +474,8 @@ def continuousSubsemiring (α : Type _) (R : Type _) [TopologicalSpace α] [Topo
 /-- The subring of continuous maps `α → β`. -/
 def continuousSubring (α : Type _) (R : Type _) [TopologicalSpace α] [TopologicalSpace R] [Ring R]
     [TopologicalRing R] : Subring (α → R) :=
-  { continuousSubsemiring α R, continuousAddSubgroup α R with }
+  { continuousSubsemiring α R,
+    continuousAddSubgroup α R with }
 #align continuous_subring continuousSubring
 
 end Subtype
@@ -515,30 +517,30 @@ instance {α : Type _} {β : Type _} [TopologicalSpace α] [TopologicalSpace β]
 
 instance {α : Type _} {β : Type _} [TopologicalSpace α] [TopologicalSpace β] [Ring β]
     [TopologicalRing β] : Ring C(α, β) :=
-  coe_injective.Ring _ coe_zero coe_one coe_add coe_mul coe_neg coe_sub coe_nsmul coe_zsmul coe_pow
+  coe_injective.ring _ coe_zero coe_one coe_add coe_mul coe_neg coe_sub coe_nsmul coe_zsmul coe_pow
     coe_nat_cast coe_int_cast
 
 instance {α : Type _} {β : Type _} [TopologicalSpace α] [TopologicalSpace β]
     [NonUnitalCommSemiring β] [TopologicalSemiring β] : NonUnitalCommSemiring C(α, β) :=
-  coe_injective.NonUnitalCommSemiring _ coe_zero coe_add coe_mul coe_nsmul
+  coe_injective.nonUnitalCommSemiring _ coe_zero coe_add coe_mul coe_nsmul
 
 instance {α : Type _} {β : Type _} [TopologicalSpace α] [TopologicalSpace β] [CommSemiring β]
     [TopologicalSemiring β] : CommSemiring C(α, β) :=
-  coe_injective.CommSemiring _ coe_zero coe_one coe_add coe_mul coe_nsmul coe_pow coe_nat_cast
+  coe_injective.commSemiring _ coe_zero coe_one coe_add coe_mul coe_nsmul coe_pow coe_nat_cast
 
 instance {α : Type _} {β : Type _} [TopologicalSpace α] [TopologicalSpace β] [NonUnitalCommRing β]
     [TopologicalRing β] : NonUnitalCommRing C(α, β) :=
-  coe_injective.NonUnitalCommRing _ coe_zero coe_add coe_mul coe_neg coe_sub coe_nsmul coe_zsmul
+  coe_injective.nonUnitalCommRing _ coe_zero coe_add coe_mul coe_neg coe_sub coe_nsmul coe_zsmul
 
 instance {α : Type _} {β : Type _} [TopologicalSpace α] [TopologicalSpace β] [CommRing β]
     [TopologicalRing β] : CommRing C(α, β) :=
-  coe_injective.CommRing _ coe_zero coe_one coe_add coe_mul coe_neg coe_sub coe_nsmul coe_zsmul
+  coe_injective.commRing _ coe_zero coe_one coe_add coe_mul coe_neg coe_sub coe_nsmul coe_zsmul
     coe_pow coe_nat_cast coe_int_cast
 
 /-- Composition on the left by a (continuous) homomorphism of topological semirings, as a
 `ring_hom`.  Similar to `ring_hom.comp_left`. -/
 @[simps]
-protected def RingHom.compLeftContinuous (α : Type _) {β : Type _} {γ : Type _} [TopologicalSpace α]
+protected def _root_.RingHom.compLeftContinuous (α : Type _) {β : Type _} {γ : Type _} [TopologicalSpace α]
     [TopologicalSpace β] [Semiring β] [TopologicalSemiring β] [TopologicalSpace γ] [Semiring γ]
     [TopologicalSemiring γ] (g : β →+* γ) (hg : Continuous g) : C(α, β) →+* C(α, γ) :=
   { g.toMonoidHom.compLeftContinuous α hg, g.toAddMonoidHom.compLeftContinuous α hg with }
@@ -595,7 +597,7 @@ variable {α β : Type _} [TopologicalSpace α] [TopologicalSpace β] {R R₁ : 
 
 @[to_additive ContinuousMap.hasVadd]
 instance [SMul R M] [ContinuousConstSMul R M] : SMul R C(α, M) :=
-  ⟨fun r f => ⟨r • f, f.Continuous.const_smul r⟩⟩
+  ⟨fun r f => ⟨SMul.smul r f, f.continuous.const_smul r⟩⟩
 
 @[to_additive]
 instance [LocallyCompactSpace α] [SMul R M] [ContinuousConstSMul R M] :
@@ -611,7 +613,8 @@ instance [LocallyCompactSpace α] [TopologicalSpace R] [SMul R M] [ContinuousSMu
       continuous_eval'.comp (continuous_snd.prod_map continuous_id)
     exact (continuous_fst.comp continuous_fst).smul h⟩
 
-@[simp, norm_cast, to_additive]
+--@[simp, norm_cast, to_additive]
+@[to_additive (attr := simp)]
 theorem coe_smul [SMul R M] [ContinuousConstSMul R M] (c : R) (f : C(α, M)) : ⇑(c • f) = c • f :=
   rfl
 #align continuous_map.coe_smul ContinuousMap.coe_smul
@@ -665,9 +668,9 @@ variable (R)
 /-- Composition on the left by a continuous linear map, as a `linear_map`.
 Similar to `linear_map.comp_left`. -/
 @[simps]
-protected def ContinuousLinearMap.compLeftContinuous (α : Type _) [TopologicalSpace α]
+protected def _root_.ContinuousLinearMap.compLeftContinuous (α : Type _) [TopologicalSpace α]
     (g : M →L[R] M₂) : C(α, M) →ₗ[R] C(α, M₂) :=
-  { g.toLinearMap.toAddMonoidHom.compLeftContinuous α g.Continuous with
+  { g.toLinearMap.toAddMonoidHom.compLeftContinuous α g.continuous with
     map_smul' := fun c f => ext fun x => g.map_smul' c _ }
 #align continuous_linear_map.comp_left_continuous ContinuousLinearMap.compLeftContinuous
 
@@ -800,7 +803,7 @@ theorem Subalgebra.separatesPoints_monotone :
 #align subalgebra.separates_points_monotone Subalgebra.separatesPoints_monotone
 
 @[simp]
-theorem algebraMap_apply (k : R) (a : α) : algebraMap R C(α, A) k a = k • 1 := by
+theorem algebraMap_apply (k : R) (a : α) : algebraMap R C(α, A) k a = SMul.smul k 1 := by
   rw [Algebra.algebraMap_eq_smul_one]
   rfl
 #align algebra_map_apply algebraMap_apply
