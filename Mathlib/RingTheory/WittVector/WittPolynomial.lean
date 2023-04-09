@@ -8,12 +8,12 @@ Authors: Johan Commelin, Robert Y. Lewis
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.CharP.Invertible
-import Mathbin.Data.Fintype.BigOperators
-import Mathbin.Data.MvPolynomial.Variables
-import Mathbin.Data.MvPolynomial.CommRing
-import Mathbin.Data.MvPolynomial.Expand
-import Mathbin.Data.Zmod.Basic
+import Mathlib.Algebra.CharP.Invertible
+import Mathlib.Data.Fintype.BigOperators
+import Mathlib.Data.MvPolynomial.Variables
+import Mathlib.Data.MvPolynomial.CommRing
+import Mathlib.Data.MvPolynomial.Expand
+import Mathlib.Data.ZMod.Basic
 
 /-!
 # Witt polynomials
@@ -85,8 +85,7 @@ noncomputable def wittPolynomial (n : ℕ) : MvPolynomial ℕ R :=
 #align witt_polynomial wittPolynomial
 
 theorem wittPolynomial_eq_sum_c_mul_x_pow (n : ℕ) :
-    wittPolynomial p R n = ∑ i in range (n + 1), C (p ^ i : R) * X i ^ p ^ (n - i) :=
-  by
+    wittPolynomial p R n = ∑ i in range (n + 1), C (p ^ i : R) * X i ^ p ^ (n - i) := by
   apply sum_congr rfl
   rintro i -
   rw [monomial_eq, Finsupp.prod_single_index]
@@ -117,8 +116,7 @@ section
 variable {R} {S : Type _} [CommRing S]
 
 @[simp]
-theorem map_wittPolynomial (f : R →+* S) (n : ℕ) : map f (W n) = W n :=
-  by
+theorem map_wittPolynomial (f : R →+* S) (n : ℕ) : map f (W n) = W n := by
   rw [wittPolynomial, RingHom.map_sum, wittPolynomial, sum_congr rfl]
   intro i hi
   rw [map_monomial, RingHom.map_pow, map_natCast]
@@ -128,8 +126,7 @@ variable (R)
 
 @[simp]
 theorem constantCoeff_wittPolynomial [hp : Fact p.Prime] (n : ℕ) :
-    constantCoeff (wittPolynomial p R n) = 0 :=
-  by
+    constantCoeff (wittPolynomial p R n) = 0 := by
   simp only [wittPolynomial, RingHom.map_sum, constant_coeff_monomial]
   rw [sum_eq_zero]
   rintro i hi
@@ -159,8 +156,7 @@ by expanding the `n`th Witt polynomial by `p`.
 -/
 @[simp]
 theorem wittPolynomial_zMod_self (n : ℕ) :
-    W_ (ZMod (p ^ (n + 1))) (n + 1) = expand p (W_ (ZMod (p ^ (n + 1))) n) :=
-  by
+    W_ (ZMod (p ^ (n + 1))) (n + 1) = expand p (W_ (ZMod (p ^ (n + 1))) n) := by
   simp only [wittPolynomial_eq_sum_c_mul_x_pow]
   rw [sum_range_succ, ← Nat.cast_pow, CharP.cast_eq_zero (ZMod (p ^ (n + 1))) (p ^ (n + 1)), C_0,
     MulZeroClass.zero_mul, add_zero, AlgHom.map_sum, sum_congr rfl]
@@ -177,10 +173,8 @@ variable [hp : NeZero p]
 
 include hp
 
-theorem wittPolynomial_vars [CharZero R] (n : ℕ) : (wittPolynomial p R n).vars = range (n + 1) :=
-  by
-  have : ∀ i, (monomial (Finsupp.single i (p ^ (n - i))) (p ^ i : R)).vars = {i} :=
-    by
+theorem wittPolynomial_vars [CharZero R] (n : ℕ) : (wittPolynomial p R n).vars = range (n + 1) := by
+  have : ∀ i, (monomial (Finsupp.single i (p ^ (n - i))) (p ^ i : R)).vars = {i} := by
     intro i
     refine' vars_monomial_single i (pow_ne_zero _ hp.1) _
     rw [← Nat.cast_pow, Nat.cast_ne_zero]
@@ -193,8 +187,7 @@ theorem wittPolynomial_vars [CharZero R] (n : ℕ) : (wittPolynomial p R n).vars
     rwa [mem_singleton]
 #align witt_polynomial_vars wittPolynomial_vars
 
-theorem wittPolynomial_vars_subset (n : ℕ) : (wittPolynomial p R n).vars ⊆ range (n + 1) :=
-  by
+theorem wittPolynomial_vars_subset (n : ℕ) : (wittPolynomial p R n).vars ⊆ range (n + 1) := by
   rw [← map_wittPolynomial p (Int.castRingHom R), ← wittPolynomial_vars p ℤ]
   apply vars_map
 #align witt_polynomial_vars_subset wittPolynomial_vars_subset
@@ -232,8 +225,7 @@ theorem xInTermsOfW_eq [Invertible (p : R)] {n : ℕ} :
 
 @[simp]
 theorem constantCoeff_xInTermsOfW [hp : Fact p.Prime] [Invertible (p : R)] (n : ℕ) :
-    constantCoeff (xInTermsOfW p R n) = 0 :=
-  by
+    constantCoeff (xInTermsOfW p R n) = 0 := by
   apply Nat.strong_induction_on n <;> clear n
   intro n IH
   rw [xInTermsOfW_eq, mul_comm, RingHom.map_mul, RingHom.map_sub, RingHom.map_sum, constant_coeff_C,
@@ -258,8 +250,7 @@ variable [hp : Fact p.Prime]
 include hp
 
 theorem xInTermsOfW_vars_aux (n : ℕ) :
-    n ∈ (xInTermsOfW p ℚ n).vars ∧ (xInTermsOfW p ℚ n).vars ⊆ range (n + 1) :=
-  by
+    n ∈ (xInTermsOfW p ℚ n).vars ∧ (xInTermsOfW p ℚ n).vars ⊆ range (n + 1) := by
   apply Nat.strong_induction_on n; clear n
   intro n ih
   rw [xInTermsOfW_eq, mul_comm, vars_C_mul, vars_sub_of_disjoint, vars_X, range_succ, insert_eq]
@@ -302,8 +293,7 @@ theorem xInTermsOfW_aux [Invertible (p : R)] (n : ℕ) :
 
 @[simp]
 theorem bind₁_xInTermsOfW_wittPolynomial [Invertible (p : R)] (k : ℕ) :
-    bind₁ (xInTermsOfW p R) (W_ R k) = X k :=
-  by
+    bind₁ (xInTermsOfW p R) (W_ R k) = X k := by
   rw [wittPolynomial_eq_sum_c_mul_x_pow, AlgHom.map_sum]
   simp only [AlgHom.map_pow, C_pow, AlgHom.map_mul, alg_hom_C]
   rw [sum_range_succ_comm, tsub_self, pow_zero, pow_one, bind₁_X_right, mul_comm, ← C_pow,
@@ -313,8 +303,7 @@ theorem bind₁_xInTermsOfW_wittPolynomial [Invertible (p : R)] (k : ℕ) :
 
 @[simp]
 theorem bind₁_wittPolynomial_xInTermsOfW [Invertible (p : R)] (n : ℕ) :
-    bind₁ (W_ R) (xInTermsOfW p R n) = X n :=
-  by
+    bind₁ (W_ R) (xInTermsOfW p R n) = X n := by
   apply Nat.strong_induction_on n
   clear n
   intro n H
