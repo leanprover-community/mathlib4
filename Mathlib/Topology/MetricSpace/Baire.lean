@@ -41,10 +41,10 @@ section BaireTheorem
 
 open EMetric ENNReal
 
-/-- The property `baire_space α` means that the topological space `α` has the Baire property:
+/-- The property `BaireSpace α` means that the topological space `α` has the Baire property:
 any countable intersection of open dense subsets is dense.
-Formulated here when the source space is ℕ (and subsumed below by `dense_Inter_of_open` working
-with any encodable source space).-/
+Formulated here when the source space is ℕ (and subsumed below by `dense_interᵢ_of_open` working
+with any encodable source space). -/
 class BaireSpace (α : Type _) [TopologicalSpace α] : Prop where
   baire_property : ∀ f : ℕ → Set α, (∀ n, IsOpen (f n)) → (∀ n, Dense (f n)) → Dense (⋂ n, f n)
 #align baire_space BaireSpace
@@ -62,7 +62,7 @@ instance (priority := 100) baire_category_theorem_emetric_complete [PseudoEMetri
     exact pow_ne_top two_ne_top
   /- Translate the density assumption into two functions `center` and `radius` associating
     to any n, x, δ, δpos a center and a positive radius such that
-    `closed_ball center radius` is included both in `f n` and in `closed_ball x δ`.
+    `closedBall center radius` is included both in `f n` and in `closedBall x δ`.
     We can also require `radius ≤ (1/2)^(n+1)`, to ensure we get a Cauchy sequence later. -/
   have : ∀ n x δ, δ ≠ 0 → ∃ y r, 0 < r ∧ r ≤ B (n + 1) ∧ closedBall y r ⊆ closedBall x δ ∩ f n :=
     by
@@ -95,8 +95,8 @@ instance (priority := 100) baire_category_theorem_emetric_complete [PseudoEMetri
   choose! center radius Hpos HB Hball using this
   refine' fun x => (mem_closure_iff_nhds_basis nhds_basis_closed_eball).2 fun ε εpos => _
   /- `ε` is positive. We have to find a point in the ball of radius `ε` around `x` belonging to all
-    `f n`. For this, we construct inductively a sequence `F n = (c n, r n)` such that the closed ball
-    `closed_ball (c n) (r n)` is included in the previous ball and in `f n`, and such that
+    `f n`. For this, we construct inductively a sequence `F n = (c n, r n)` such that the closed
+    ball `closedBall (c n) (r n)` is included in the previous ball and in `f n`, and such that
     `r n` is small enough to ensure that `c n` is a Cauchy sequence. Then `c n` converges to a
     limit which belongs to all the `f n`. -/
   let F : ℕ → α × ℝ≥0∞ := fun n =>
@@ -162,7 +162,7 @@ instance (priority := 100) baire_category_theorem_locally_compact [TopologicalSp
     with any open neighbourhood `U` is dense. Define recursively a decreasing sequence `K` of
     compact neighbourhoods: start with some compact neighbourhood inside `U`, then at each step,
     take its interior, intersect with `f n`, then choose a compact neighbourhood inside the
-    intersection.-/
+    intersection. -/
   apply dense_iff_inter_open.2
   intro U U_open U_nonempty
   rcases exists_positiveCompacts_subset U_open U_nonempty with ⟨K₀, hK₀⟩
@@ -175,7 +175,7 @@ instance (priority := 100) baire_category_theorem_locally_compact [TopologicalSp
   -- This is a decreasing sequence of positive compacts contained in suitable open sets `f n`.
   have hK_decreasing : ∀ n : ℕ, ((K (n + 1)).carrier) ⊆ (f n ∩ (K n).carrier) := fun n =>
     (hK_next n (K n)).trans <| inter_subset_inter_right _ interior_subset
-  -- Prove that ̀`⋂ n : ℕ, K n` is inside `U ∩ ⋂ n : ℕ, (f n)`.
+  -- Prove that ̀`⋂ n : ℕ, K n` is inside `U ∩ ⋂ n : ℕ, f n`.
   have hK_subset : (⋂ n, (K n).carrier : Set α) ⊆ U ∩ ⋂ n, f n := by
     intro x hx
     simp only [mem_interᵢ] at hx
@@ -184,7 +184,7 @@ instance (priority := 100) baire_category_theorem_locally_compact [TopologicalSp
     simp only [mem_interᵢ]
     exact fun n => (hK_decreasing n (hx (n + 1))).1
   /- Prove that `⋂ n : ℕ, K n` is not empty, as an intersection of a decreasing sequence
-    of nonempty compact subsets.-/
+    of nonempty compact subsets. -/
   have hK_nonempty : (⋂ n, (K n).carrier : Set α).Nonempty :=
     IsCompact.nonempty_interᵢ_of_sequence_nonempty_compact_closed _
       (fun n => (hK_decreasing n).trans (inter_subset_right _ _)) (fun n => (K n).nonempty)
