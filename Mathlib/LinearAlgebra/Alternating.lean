@@ -105,9 +105,9 @@ instance funLike : FunLike (AlternatingMap R M N ι) (ι → M) (fun _ => N) whe
     rcases g with ⟨⟨_, _, _⟩, _⟩
     congr
 
--- Porting note: The shortcut instance is removed in Lean4.
---  instance coeFun : CoeFun (AlternatingMap R M N ι) fun _ => (ι → M) → N :=
---   ⟨FunLike.coe⟩
+instance coeFun : CoeFun (AlternatingMap R M N ι) fun _ => (ι → M) → N :=
+  ⟨FunLike.coe⟩
+#align alternating_map.has_coe_to_fun AlternatingMap.coeFun
 
 initialize_simps_projections AlternatingMap (toFun → apply)
 
