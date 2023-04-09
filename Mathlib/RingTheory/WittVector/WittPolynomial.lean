@@ -324,9 +324,9 @@ theorem bind₁_wittPolynomial_xInTermsOfW [Invertible (p : R)] (n : ℕ) :
     show X n = (X n * C ((p : R) ^ n)) * C ((⅟p : R) ^ n) by
       rw [mul_assoc, ← C_mul, ← mul_pow, mul_invOf_self, one_pow, map_one, mul_one]]
   congr 1
-  simp only [wittPolynomial_eq_sum_c_mul_x_pow, sum_range_succ_comm, Nat.cast_pow,
-    tsub_self, pow_zero, pow_one]
-  rw [mul_comm (X n), add_sub_assoc, add_right_eq_self, sub_eq_zero, sum_congr rfl]
+  rw [wittPolynomial_eq_sum_c_mul_x_pow, sum_range_succ_comm, Nat.cast_pow,
+    tsub_self, pow_zero, pow_one, mul_comm (X n), add_sub_assoc, add_right_eq_self, sub_eq_zero]
+  apply sum_congr rfl
   intro i h
   rw [mem_range] at h
   rw [AlgHom.map_mul, AlgHom.map_pow, algHom_C, H i h]
