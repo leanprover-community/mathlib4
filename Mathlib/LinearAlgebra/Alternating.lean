@@ -103,7 +103,9 @@ instance funLike : FunLike (AlternatingMap R M N ι) (ι → M) (fun _ => N) whe
     rcases f with ⟨⟨_, _, _⟩, _⟩
     rcases g with ⟨⟨_, _, _⟩, _⟩
     congr
+#align alternating_map.fun_like AlternatingMap.funLike
 
+-- shortcut instance
 instance coeFun : CoeFun (AlternatingMap R M N ι) fun _ => (ι → M) → N :=
   ⟨FunLike.coe⟩
 #align alternating_map.has_coe_to_fun AlternatingMap.coeFun
@@ -115,7 +117,7 @@ theorem toFun_eq_coe : f.toFun = f :=
   rfl
 #align alternating_map.to_fun_eq_coe AlternatingMap.toFun_eq_coe
 
--- Porting note: New theorem.
+-- Porting note: changed statement to reflect new `mk` signature
 @[simp]
 theorem coe_mk (f : MultilinearMap R (fun _ : ι => M) N) (h) :
     ⇑(⟨f, h⟩ : AlternatingMap R M N ι) = f :=
