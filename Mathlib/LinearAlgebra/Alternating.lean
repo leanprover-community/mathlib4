@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Zhangir Azerbayev
 
 ! This file was ported from Lean 3 source module linear_algebra.alternating
-! leanprover-community/mathlib commit ce11c3c2a285bbe6937e26d9792fda4e51f3fe1a
+! leanprover-community/mathlib commit 284fdd2962e67d2932fa3a79ce19fcf92d38e228
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -103,8 +103,11 @@ instance funLike : FunLike (AlternatingMap R M N ι) (ι → M) (fun _ => N) whe
   coe_injective' := fun f g h ↦ by
     rcases f with ⟨⟨_, _, _⟩, _⟩
     rcases g with ⟨⟨_, _, _⟩, _⟩
-    cases h
-    rfl
+    congr
+
+-- Porting note: The shortcut instance is removed in Lean4.
+--  instance coeFun : CoeFun (AlternatingMap R M N ι) fun _ => (ι → M) → N :=
+--   ⟨FunLike.coe⟩
 
 initialize_simps_projections AlternatingMap (toFun → apply)
 
@@ -142,7 +145,7 @@ theorem coe_inj {f g : AlternatingMap R M N ι} : (f : (ι → M) → N) = g ↔
 
 @[ext]
 theorem ext {f f' : AlternatingMap R M N ι} (H : ∀ x, f x = f' x) : f = f' :=
-  coe_injective (funext H)
+  FunLike.ext _ _ H
 #align alternating_map.ext AlternatingMap.ext
 
 theorem ext_iff {f g : AlternatingMap R M N ι} : f = g ↔ ∀ x, f x = g x :=
