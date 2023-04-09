@@ -55,60 +55,42 @@ variable (𝕜) [SMul 𝕜 E] [SMul 𝕜 α] [SMul 𝕜 β] (s : Set E) (f : E �
 
 /-- Convexity of functions -/
 def ConvexOn : Prop :=
-  Convex 𝕜 s ∧
-    ∀ ⦃x⦄,
-      x ∈ s →
-        ∀ ⦃y⦄,
-          y ∈ s → ∀ ⦃a b : 𝕜⦄, 0 ≤ a → 0 ≤ b → a + b = 1 → f (a • x + b • y) ≤ a • f x + b • f y
+  Convex 𝕜 s ∧ ∀ ⦃x⦄, x ∈ s → ∀ ⦃y⦄, y ∈ s → ∀ ⦃a b : 𝕜⦄, 0 ≤ a → 0 ≤ b → a + b = 1 →
+    f (a • x + b • y) ≤ a • f x + b • f y
 #align convex_on ConvexOn
 
 /-- Concavity of functions -/
 def ConcaveOn : Prop :=
-  Convex 𝕜 s ∧
-    ∀ ⦃x⦄,
-      x ∈ s →
-        ∀ ⦃y⦄,
-          y ∈ s → ∀ ⦃a b : 𝕜⦄, 0 ≤ a → 0 ≤ b → a + b = 1 → a • f x + b • f y ≤ f (a • x + b • y)
+  Convex 𝕜 s ∧ ∀ ⦃x⦄, x ∈ s → ∀ ⦃y⦄, y ∈ s → ∀ ⦃a b : 𝕜⦄, 0 ≤ a → 0 ≤ b → a + b = 1 →
+    a • f x + b • f y ≤ f (a • x + b • y)
 #align concave_on ConcaveOn
 
 /-- Strict convexity of functions -/
 def StrictConvexOn : Prop :=
-  Convex 𝕜 s ∧
-    ∀ ⦃x⦄,
-      x ∈ s →
-        ∀ ⦃y⦄,
-          y ∈ s →
-            x ≠ y → ∀ ⦃a b : 𝕜⦄, 0 < a → 0 < b → a + b = 1 → f (a • x + b • y) < a • f x + b • f y
+  Convex 𝕜 s ∧ ∀ ⦃x⦄, x ∈ s → ∀ ⦃y⦄, y ∈ s → x ≠ y → ∀ ⦃a b : 𝕜⦄, 0 < a → 0 < b → a + b = 1 →
+    f (a • x + b • y) < a • f x + b • f y
 #align strict_convex_on StrictConvexOn
 
 /-- Strict concavity of functions -/
 def StrictConcaveOn : Prop :=
-  Convex 𝕜 s ∧
-    ∀ ⦃x⦄,
-      x ∈ s →
-        ∀ ⦃y⦄,
-          y ∈ s →
-            x ≠ y → ∀ ⦃a b : 𝕜⦄, 0 < a → 0 < b → a + b = 1 → a • f x + b • f y < f (a • x + b • y)
+  Convex 𝕜 s ∧ ∀ ⦃x⦄, x ∈ s → ∀ ⦃y⦄, y ∈ s → x ≠ y → ∀ ⦃a b : 𝕜⦄, 0 < a → 0 < b → a + b = 1 →
+    a • f x + b • f y < f (a • x + b • y)
 #align strict_concave_on StrictConcaveOn
 
 variable {𝕜 s f}
 
 open OrderDual (toDual ofDual)
 
-theorem ConvexOn.dual (hf : ConvexOn 𝕜 s f) : ConcaveOn 𝕜 s (toDual ∘ f) :=
-  hf
+theorem ConvexOn.dual (hf : ConvexOn 𝕜 s f) : ConcaveOn 𝕜 s (toDual ∘ f) := hf
 #align convex_on.dual ConvexOn.dual
 
-theorem ConcaveOn.dual (hf : ConcaveOn 𝕜 s f) : ConvexOn 𝕜 s (toDual ∘ f) :=
-  hf
+theorem ConcaveOn.dual (hf : ConcaveOn 𝕜 s f) : ConvexOn 𝕜 s (toDual ∘ f) := hf
 #align concave_on.dual ConcaveOn.dual
 
-theorem StrictConvexOn.dual (hf : StrictConvexOn 𝕜 s f) : StrictConcaveOn 𝕜 s (toDual ∘ f) :=
-  hf
+theorem StrictConvexOn.dual (hf : StrictConvexOn 𝕜 s f) : StrictConcaveOn 𝕜 s (toDual ∘ f) := hf
 #align strict_convex_on.dual StrictConvexOn.dual
 
-theorem StrictConcaveOn.dual (hf : StrictConcaveOn 𝕜 s f) : StrictConvexOn 𝕜 s (toDual ∘ f) :=
-  hf
+theorem StrictConcaveOn.dual (hf : StrictConcaveOn 𝕜 s f) : StrictConvexOn 𝕜 s (toDual ∘ f) := hf
 #align strict_concave_on.dual StrictConcaveOn.dual
 
 theorem convexOn_id {s : Set β} (hs : Convex 𝕜 s) : ConvexOn 𝕜 s _root_.id :=
@@ -357,12 +339,8 @@ theorem convexOn_iff_forall_pos {s : Set E} {f : E → β} :
 set_option synthInstance.etaExperiment true in -- lean4#2074
 theorem concaveOn_iff_forall_pos {s : Set E} {f : E → β} :
     ConcaveOn 𝕜 s f ↔
-      Convex 𝕜 s ∧
-        ∀ ⦃x⦄,
-          x ∈ s →
-            ∀ ⦃y⦄,
-              y ∈ s →
-                ∀ ⦃a b : 𝕜⦄, 0 < a → 0 < b → a + b = 1 → a • f x + b • f y ≤ f (a • x + b • y) :=
+      Convex 𝕜 s ∧ ∀ ⦃x⦄, x ∈ s → ∀ ⦃y⦄, y ∈ s → ∀ ⦃a b : 𝕜⦄, 0 < a → 0 < b → a + b = 1 →
+        a • f x + b • f y ≤ f (a • x + b • y) :=
   @convexOn_iff_forall_pos 𝕜 E βᵒᵈ _ _ _ _ _ _ _
 #align concave_on_iff_forall_pos concaveOn_iff_forall_pos
 
@@ -465,13 +443,8 @@ structures aren't necessarily compatible), in order to prove that it is concave 
 verify the inequality `a • f x + b • f y ≤ f (a • x + b • y)` for `x < y` and positive `a`, `b`. The
 main use case is `E = ℝ` however one can apply it, e.g., to `ℝ^n` with lexicographic order. -/
 theorem LinearOrder.concaveOn_of_lt (hs : Convex 𝕜 s)
-    (hf :
-      ∀ ⦃x⦄,
-        x ∈ s →
-          ∀ ⦃y⦄,
-            y ∈ s →
-              x < y →
-                ∀ ⦃a b : 𝕜⦄, 0 < a → 0 < b → a + b = 1 → a • f x + b • f y ≤ f (a • x + b • y)) :
+    (hf : ∀ ⦃x⦄, x ∈ s → ∀ ⦃y⦄, y ∈ s → x < y → ∀ ⦃a b : 𝕜⦄, 0 < a → 0 < b → a + b = 1 →
+      a • f x + b • f y ≤ f (a • x + b • y)) :
     ConcaveOn 𝕜 s f :=
   @LinearOrder.convexOn_of_lt _ _ βᵒᵈ _ _ _ _ _ _ s f hs hf
 #align linear_order.concave_on_of_lt LinearOrder.concaveOn_of_lt
@@ -481,13 +454,8 @@ structures aren't necessarily compatible), in order to prove that it is strictly
 to verify the inequality `f (a • x + b • y) < a • f x + b • f y` for `x < y` and positive `a`, `b`.
 The main use case is `E = 𝕜` however one can apply it, e.g., to `𝕜^n` with lexicographic order. -/
 theorem LinearOrder.strictConvexOn_of_lt (hs : Convex 𝕜 s)
-    (hf :
-      ∀ ⦃x⦄,
-        x ∈ s →
-          ∀ ⦃y⦄,
-            y ∈ s →
-              x < y →
-                ∀ ⦃a b : 𝕜⦄, 0 < a → 0 < b → a + b = 1 → f (a • x + b • y) < a • f x + b • f y) :
+    (hf : ∀ ⦃x⦄, x ∈ s → ∀ ⦃y⦄, y ∈ s → x < y → ∀ ⦃a b : 𝕜⦄, 0 < a → 0 < b → a + b = 1 →
+      f (a • x + b • y) < a • f x + b • f y) :
     StrictConvexOn 𝕜 s f := by
   refine' ⟨hs, fun x hx y hy hxy a b ha hb hab => _⟩
   -- Porting note: without clearing the stray variables, `wlog` gives a bad term.
@@ -506,13 +474,8 @@ structures aren't necessarily compatible), in order to prove that it is strictly
 to verify the inequality `a • f x + b • f y < f (a • x + b • y)` for `x < y` and positive `a`, `b`.
 The main use case is `E = 𝕜` however one can apply it, e.g., to `𝕜^n` with lexicographic order. -/
 theorem LinearOrder.strictConcaveOn_of_lt (hs : Convex 𝕜 s)
-    (hf :
-      ∀ ⦃x⦄,
-        x ∈ s →
-          ∀ ⦃y⦄,
-            y ∈ s →
-              x < y →
-                ∀ ⦃a b : 𝕜⦄, 0 < a → 0 < b → a + b = 1 → a • f x + b • f y < f (a • x + b • y)) :
+    (hf : ∀ ⦃x⦄, x ∈ s → ∀ ⦃y⦄, y ∈ s → x < y → ∀ ⦃a b : 𝕜⦄, 0 < a → 0 < b → a + b = 1 →
+      a • f x + b • f y < f (a • x + b • y)) :
     StrictConcaveOn 𝕜 s f :=
   @LinearOrder.strictConvexOn_of_lt _ _ βᵒᵈ _ _ _ _ _ _ _ _ hs hf
 #align linear_order.strict_concave_on_of_lt LinearOrder.strictConcaveOn_of_lt
@@ -531,8 +494,7 @@ theorem ConvexOn.comp_linearMap {f : F → β} {s : Set F} (hf : ConvexOn 𝕜 s
   ⟨hf.1.linear_preimage _, fun x hx y hy a b ha hb hab =>
     calc
       f (g (a • x + b • y)) = f (a • g x + b • g y) := by rw [g.map_add, g.map_smul, g.map_smul]
-      _ ≤ a • f (g x) + b • f (g y) := hf.2 hx hy ha hb hab
-      ⟩
+      _ ≤ a • f (g x) + b • f (g y) := hf.2 hx hy ha hb hab⟩
 #align convex_on.comp_linear_map ConvexOn.comp_linearMap
 
 /-- If `g` is concave on `s`, so is `(g ∘ f)` on `f ⁻¹' s` for a linear `f`. -/
@@ -559,8 +521,7 @@ theorem StrictConvexOn.add_convexOn (hf : StrictConvexOn 𝕜 s f) (hg : ConvexO
     calc
       f (a • x + b • y) + g (a • x + b • y) < a • f x + b • f y + (a • g x + b • g y) :=
         add_lt_add_of_lt_of_le (hf.2 hx hy hxy ha hb hab) (hg.2 hx hy ha.le hb.le hab)
-      _ = a • (f x + g x) + b • (f y + g y) := by rw [smul_add, smul_add, add_add_add_comm]
-      ⟩
+      _ = a • (f x + g x) + b • (f y + g y) := by rw [smul_add, smul_add, add_add_add_comm]⟩
 #align strict_convex_on.add_convex_on StrictConvexOn.add_convexOn
 
 theorem ConvexOn.add_strictConvexOn (hf : ConvexOn 𝕜 s f) (hg : StrictConvexOn 𝕜 s g) :
@@ -574,8 +535,7 @@ theorem StrictConvexOn.add (hf : StrictConvexOn 𝕜 s f) (hg : StrictConvexOn �
     calc
       f (a • x + b • y) + g (a • x + b • y) < a • f x + b • f y + (a • g x + b • g y) :=
         add_lt_add (hf.2 hx hy hxy ha hb hab) (hg.2 hx hy hxy ha hb hab)
-      _ = a • (f x + g x) + b • (f y + g y) := by rw [smul_add, smul_add, add_add_add_comm]
-      ⟩
+      _ = a • (f x + g x) + b • (f y + g y) := by rw [smul_add, smul_add, add_add_add_comm]⟩
 #align strict_convex_on.add StrictConvexOn.add
 
 theorem StrictConcaveOn.add_concaveOn (hf : StrictConcaveOn 𝕜 s f) (hg : ConcaveOn 𝕜 s g) :
@@ -607,8 +567,7 @@ theorem ConvexOn.convex_lt (hf : ConvexOn 𝕜 s f) (r : β) : Convex 𝕜 ({ x 
         _ < a • r + b • r :=
           (add_lt_add_of_lt_of_le (smul_lt_smul_of_pos hx.2 ha)
             (smul_le_smul_of_nonneg hy.2.le hb.le))
-        _ = r := Convex.combo_self hab _
-        ⟩
+        _ = r := Convex.combo_self hab _⟩
 #align convex_on.convex_lt ConvexOn.convex_lt
 
 set_option synthInstance.etaExperiment true in -- lean4#2074
@@ -659,14 +618,11 @@ variable [LinearOrderedAddCommMonoid β] [SMul 𝕜 E] [Module 𝕜 β] [Ordered
 /-- The pointwise maximum of convex functions is convex. -/
 theorem ConvexOn.sup (hf : ConvexOn 𝕜 s f) (hg : ConvexOn 𝕜 s g) : ConvexOn 𝕜 s (f ⊔ g) := by
   refine' ⟨hf.left, fun x hx y hy a b ha hb hab => sup_le _ _⟩
-  ·
-    calc
+  · calc
       f (a • x + b • y) ≤ a • f x + b • f y := hf.right hx hy ha hb hab
       _ ≤ a • (f x ⊔ g x) + b • (f y ⊔ g y) :=
         add_le_add (smul_le_smul_of_nonneg le_sup_left ha) (smul_le_smul_of_nonneg le_sup_left hb)
-
-  ·
-    calc
+  · calc
       g (a • x + b • y) ≤ a • g x + b • g y := hg.right hx hy ha hb hab
       _ ≤ a • (f x ⊔ g x) + b • (f y ⊔ g y) :=
         add_le_add (smul_le_smul_of_nonneg le_sup_right ha) (smul_le_smul_of_nonneg le_sup_right hb)
@@ -688,14 +644,12 @@ theorem StrictConvexOn.sup (hf : StrictConvexOn 𝕜 s f) (hg : StrictConvexOn �
         f (a • x + b • y) < a • f x + b • f y := hf.2 hx hy hxy ha hb hab
         _ ≤ a • (f x ⊔ g x) + b • (f y ⊔ g y) :=
           add_le_add (smul_le_smul_of_nonneg le_sup_left ha.le)
-            (smul_le_smul_of_nonneg le_sup_left hb.le)
-        )
+            (smul_le_smul_of_nonneg le_sup_left hb.le))
       (calc
         g (a • x + b • y) < a • g x + b • g y := hg.2 hx hy hxy ha hb hab
         _ ≤ a • (f x ⊔ g x) + b • (f y ⊔ g y) :=
           add_le_add (smul_le_smul_of_nonneg le_sup_right ha.le)
-            (smul_le_smul_of_nonneg le_sup_right hb.le)
-        )⟩
+            (smul_le_smul_of_nonneg le_sup_right hb.le))⟩
 #align strict_convex_on.sup StrictConvexOn.sup
 
 set_option synthInstance.etaExperiment true in -- lean4#2074
@@ -1032,8 +986,7 @@ theorem StrictConvexOn.translate_right (hf : StrictConvexOn 𝕜 s f) (c : E) :
     calc
       f (c + (a • x + b • y)) = f (a • (c + x) + b • (c + y)) := by
         rw [smul_add, smul_add, add_add_add_comm, Convex.combo_self hab]
-      _ < a • f (c + x) + b • f (c + y) := hf.2 hx hy ((add_right_injective c).ne hxy) ha hb hab
-      ⟩
+      _ < a • f (c + x) + b • f (c + y) := hf.2 hx hy ((add_right_injective c).ne hxy) ha hb hab⟩
 #align strict_convex_on.translate_right StrictConvexOn.translate_right
 
 /-- Right translation preserves strict concavity. -/
@@ -1075,8 +1028,7 @@ theorem ConvexOn.smul {c : 𝕜} (hc : 0 ≤ c) (hf : ConvexOn 𝕜 s f) : Conve
     calc
       c • f (a • x + b • y) ≤ c • (a • f x + b • f y) :=
         smul_le_smul_of_nonneg (hf.2 hx hy ha hb hab) hc
-      _ = a • c • f x + b • c • f y := by rw [smul_add, smul_comm c, smul_comm c]
-      ⟩
+      _ = a • c • f x + b • c • f y := by rw [smul_add, smul_comm c, smul_comm c]⟩
 #align convex_on.smul ConvexOn.smul
 
 set_option synthInstance.etaExperiment true in -- lean4#2074
@@ -1110,8 +1062,7 @@ theorem ConvexOn.comp_affineMap {f : F → β} (g : E →ᵃ[𝕜] F) {s : Set F
     calc
       (f ∘ g) (a • x + b • y) = f (g (a • x + b • y)) := rfl
       _ = f (a • g x + b • g y) := by rw [Convex.combo_affine_apply hab]
-      _ ≤ a • f (g x) + b • f (g y) := hf.2 hx hy ha hb hab
-      ⟩
+      _ ≤ a • f (g x) + b • f (g y) := hf.2 hx hy ha hb hab⟩
 #align convex_on.comp_affine_map ConvexOn.comp_affineMap
 
 /-- If a function is concave on `s`, it remains concave when precomposed by an affine map. -/
@@ -1140,78 +1091,40 @@ variable [SMul 𝕜 E] [SMul 𝕜 β] {s : Set E}
 
 theorem convexOn_iff_div {f : E → β} :
     ConvexOn 𝕜 s f ↔
-      Convex 𝕜 s ∧
-        ∀ ⦃x⦄,
-          x ∈ s →
-            ∀ ⦃y⦄,
-              y ∈ s →
-                ∀ ⦃a b : 𝕜⦄,
-                  0 ≤ a →
-                    0 ≤ b →
-                      0 < a + b →
-                        f ((a / (a + b)) • x + (b / (a + b)) • y) ≤
-                          (a / (a + b)) • f x + (b / (a + b)) • f y :=
-  and_congr Iff.rfl
-    ⟨by
-      intro h x hx y hy a b ha hb hab
-      apply h hx hy (div_nonneg ha hab.le) (div_nonneg hb hab.le)
-      rw [← add_div, div_self hab.ne'], by
-      intro h x hx y hy a b ha hb hab
-      simpa [hab, zero_lt_one] using h hx hy ha hb⟩
+      Convex 𝕜 s ∧ ∀ ⦃x⦄, x ∈ s → ∀ ⦃y⦄, y ∈ s → ∀ ⦃a b : 𝕜⦄, 0 ≤ a → 0 ≤ b → 0 < a + b →
+        f ((a / (a + b)) • x + (b / (a + b)) • y) ≤ (a / (a + b)) • f x + (b / (a + b)) • f y :=
+  and_congr Iff.rfl ⟨by
+    intro h x hx y hy a b ha hb hab
+    apply h hx hy (div_nonneg ha hab.le) (div_nonneg hb hab.le)
+    rw [← add_div, div_self hab.ne'], by
+    intro h x hx y hy a b ha hb hab
+    simpa [hab, zero_lt_one] using h hx hy ha hb⟩
 #align convex_on_iff_div convexOn_iff_div
 
 theorem concaveOn_iff_div {f : E → β} :
     ConcaveOn 𝕜 s f ↔
-      Convex 𝕜 s ∧
-        ∀ ⦃x⦄,
-          x ∈ s →
-            ∀ ⦃y⦄,
-              y ∈ s →
-                ∀ ⦃a b : 𝕜⦄,
-                  0 ≤ a →
-                    0 ≤ b →
-                      0 < a + b →
-                        (a / (a + b)) • f x + (b / (a + b)) • f y ≤
-                          f ((a / (a + b)) • x + (b / (a + b)) • y) :=
+      Convex 𝕜 s ∧ ∀ ⦃x⦄, x ∈ s → ∀ ⦃y⦄, y ∈ s → ∀ ⦃a b : 𝕜⦄, 0 ≤ a → 0 ≤ b → 0 < a + b →
+        (a / (a + b)) • f x + (b / (a + b)) • f y ≤ f ((a / (a + b)) • x + (b / (a + b)) • y) :=
   @convexOn_iff_div _ _ βᵒᵈ _ _ _ _ _ _ _
 #align concave_on_iff_div concaveOn_iff_div
 
 theorem strictConvexOn_iff_div {f : E → β} :
     StrictConvexOn 𝕜 s f ↔
-      Convex 𝕜 s ∧
-        ∀ ⦃x⦄,
-          x ∈ s →
-            ∀ ⦃y⦄,
-              y ∈ s →
-                x ≠ y →
-                  ∀ ⦃a b : 𝕜⦄,
-                    0 < a →
-                      0 < b →
-                        f ((a / (a + b)) • x + (b / (a + b)) • y) <
-                          (a / (a + b)) • f x + (b / (a + b)) • f y :=
-  and_congr Iff.rfl
-    ⟨by
-      intro h x hx y hy hxy a b ha hb
-      have hab := add_pos ha hb
-      apply h hx hy hxy (div_pos ha hab) (div_pos hb hab)
-      rw [← add_div, div_self hab.ne'], by
-      intro h x hx y hy hxy a b ha hb hab
-      simpa [hab, zero_lt_one] using h hx hy hxy ha hb⟩
+      Convex 𝕜 s ∧ ∀ ⦃x⦄, x ∈ s → ∀ ⦃y⦄, y ∈ s → x ≠ y → ∀ ⦃a b : 𝕜⦄, 0 < a → 0 < b →
+        f ((a / (a + b)) • x + (b / (a + b)) • y) < (a / (a + b)) • f x + (b / (a + b)) • f y :=
+  and_congr Iff.rfl ⟨by
+    intro h x hx y hy hxy a b ha hb
+    have hab := add_pos ha hb
+    apply h hx hy hxy (div_pos ha hab) (div_pos hb hab)
+    rw [← add_div, div_self hab.ne'], by
+    intro h x hx y hy hxy a b ha hb hab
+    simpa [hab, zero_lt_one] using h hx hy hxy ha hb⟩
 #align strict_convex_on_iff_div strictConvexOn_iff_div
 
 theorem strictConcaveOn_iff_div {f : E → β} :
     StrictConcaveOn 𝕜 s f ↔
-      Convex 𝕜 s ∧
-        ∀ ⦃x⦄,
-          x ∈ s →
-            ∀ ⦃y⦄,
-              y ∈ s →
-                x ≠ y →
-                  ∀ ⦃a b : 𝕜⦄,
-                    0 < a →
-                      0 < b →
-                        (a / (a + b)) • f x + (b / (a + b)) • f y <
-                          f ((a / (a + b)) • x + (b / (a + b)) • y) :=
+      Convex 𝕜 s ∧ ∀ ⦃x⦄, x ∈ s → ∀ ⦃y⦄, y ∈ s → x ≠ y → ∀ ⦃a b : 𝕜⦄, 0 < a → 0 < b →
+        (a / (a + b)) • f x + (b / (a + b)) • f y < f ((a / (a + b)) • x + (b / (a + b)) • y) :=
   @strictConvexOn_iff_div _ _ βᵒᵈ _ _ _ _ _ _ _
 #align strict_concave_on_iff_div strictConcaveOn_iff_div
 
