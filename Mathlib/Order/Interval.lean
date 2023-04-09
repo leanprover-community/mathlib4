@@ -15,13 +15,13 @@ import Mathlib.Data.SetLike.Basic
 /-!
 # Order intervals
 
-This file defines (nonempty) closed intervals in an order (see `set.Icc`). This is a prototype for
+This file defines (nonempty) closed intervals in an order (see `Set.Icc`). This is a prototype for
 interval arithmetic.
 
 ## Main declarations
 
-* `nonempty_interval`: Nonempty intervals. Pairs where the second element is greater than the first.
-* `interval`: Intervals. Either `∅` or a nonempty interval.
+* `NonemptyInterval`: Nonempty intervals. Pairs where the second element is greater than the first.
+* `Interval`: Intervals. Either `∅` or a nonempty interval.
 -/
 
 
@@ -32,7 +32,7 @@ variable {α β γ δ : Type _} {ι : Sort _} {κ : ι → Sort _}
 /-- The nonempty closed intervals in an order.
 
 We define intervals by the pair of endpoints `fst`, `snd`. To convert intervals to the set of
-elements between these endpoints, use the coercion `nonempty_interval α → set α`. -/
+elements between these endpoints, use the coercion `NonemptyInterval α → Set α`. -/
 @[ext]
 structure NonemptyInterval (α : Type _) [LE α] extends α × α where
   fst_le_snd : fst ≤ snd
@@ -299,7 +299,7 @@ end NonemptyInterval
 
 We represent intervals either as `⊥` or a nonempty interval given by its endpoints `fst`, `snd`.
 To convert intervals to the set of elements between these endpoints, use the coercion
-`interval α → set α`. -/
+`Interval α → Set α`. -/
 def Interval (α : Type _) [LE α] :=
   WithBot (NonemptyInterval α)deriving Inhabited, LE, OrderBot
 #align interval Interval
