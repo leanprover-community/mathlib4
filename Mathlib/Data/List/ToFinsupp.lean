@@ -8,7 +8,7 @@ Authors: Yakov Pechersky
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Finsupp.Basic
+import Mathlib.Data.Finsupp.Basic
 
 /-!
 
@@ -50,8 +50,7 @@ This is a computable version of the `finsupp.on_finset` construction.
 def toFinsupp : ℕ →₀ M where
   toFun i := getD l i 0
   support := (Finset.range l.length).filterₓ fun i => getD l i 0 ≠ 0
-  mem_support_toFun n :=
-    by
+  mem_support_toFun n := by
     simp only [Ne.def, Finset.mem_filter, Finset.mem_range, and_iff_right_iff_imp]
     contrapose!
     exact nthd_eq_default _ _
@@ -114,8 +113,7 @@ theorem toFinsupp_cons_apply_succ (x : M) (xs : List M) (n : ℕ)
 theorem toFinsupp_cons_eq_single_add_embDomain {R : Type _} [AddZeroClass R] (x : R) (xs : List R)
     [DecidablePred fun i => getD (x::xs) i 0 ≠ 0] [DecidablePred fun i => getD xs i 0 ≠ 0] :
     toFinsupp (x::xs) =
-      Finsupp.single 0 x + (toFinsupp xs).embDomain ⟨Nat.succ, Nat.succ_injective⟩ :=
-  by
+      Finsupp.single 0 x + (toFinsupp xs).embDomain ⟨Nat.succ, Nat.succ_injective⟩ := by
   ext (_ | i)
   · simp only [Nat.zero_eq, to_finsupp_cons_apply_zero, Finsupp.coe_add, Pi.add_apply,
       Finsupp.single_eq_same]
@@ -130,8 +128,7 @@ theorem toFinsupp_cons_eq_single_add_embDomain {R : Type _} [AddZeroClass R] (x 
 
 theorem toFinsupp_concat_eq_toFinsupp_add_single {R : Type _} [AddZeroClass R] (x : R) (xs : List R)
     [DecidablePred fun i => getD (xs ++ [x]) i 0 ≠ 0] [DecidablePred fun i => getD xs i 0 ≠ 0] :
-    toFinsupp (xs ++ [x]) = toFinsupp xs + Finsupp.single xs.length x :=
-  by
+    toFinsupp (xs ++ [x]) = toFinsupp xs + Finsupp.single xs.length x := by
   ext i
   simp only [Finsupp.coe_add, Pi.add_apply, Finsupp.single_apply]
   rcases lt_trichotomy xs.length i with (hi | rfl | hi)
@@ -147,8 +144,7 @@ theorem toFinsupp_concat_eq_toFinsupp_add_single {R : Type _} [AddZeroClass R] (
 
 theorem toFinsupp_eq_sum_map_enum_single {R : Type _} [AddMonoid R] (l : List R)
     [DecidablePred fun i => getD l i 0 ≠ 0] :
-    toFinsupp l = (l.enum.map fun nr : ℕ × R => Finsupp.single nr.1 nr.2).Sum :=
-  by
+    toFinsupp l = (l.enum.map fun nr : ℕ × R => Finsupp.single nr.1 nr.2).Sum := by
   induction' l using List.reverseRecOn with xs x IH
   · convert to_finsupp_nil
   · simp only [enum_append, map, enum_from_singleton, map_append, sum_append, sum_cons, sum_nil,
