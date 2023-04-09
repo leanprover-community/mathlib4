@@ -2726,9 +2726,10 @@ theorem diam_ball {r : ℝ} (h : 0 ≤ r) : diam (ball x r) ≤ 2 * r :=
 
 /-- If a family of complete sets with diameter tending to `0` is such that each finite intersection
 is nonempty, then the total intersection is also nonempty. -/
-theorem _root_.IsComplete.nonempty_interᵢ_of_nonempty_binterᵢ {s : ℕ → Set α} (h0 : IsComplete (s 0))
-    (hs : ∀ n, IsClosed (s n)) (h's : ∀ n, Bounded (s n)) (h : ∀ N, (⋂ n ≤ N, s n).Nonempty)
-    (h' : Tendsto (fun n => diam (s n)) atTop (𝓝 0)) : (⋂ n, s n).Nonempty := by
+theorem _root_.IsComplete.nonempty_interᵢ_of_nonempty_binterᵢ {s : ℕ → Set α}
+    (h0 : IsComplete (s 0)) (hs : ∀ n, IsClosed (s n)) (h's : ∀ n, Bounded (s n))
+    (h : ∀ N, (⋂ n ≤ N, s n).Nonempty) (h' : Tendsto (fun n => diam (s n)) atTop (𝓝 0)) :
+    (⋂ n, s n).Nonempty := by
   let u N := (h N).some
   have I : ∀ n N, n ≤ N → u N ∈ s n := by
     intro n N hn

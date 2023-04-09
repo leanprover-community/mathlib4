@@ -25,7 +25,7 @@ One can define a combinatorial distance on `Π (n : ℕ), E n`, as follows:
 
 * `PiNat.cylinder x n` is the set of points `y` with `x i = y i` for `i < n`.
 * `PiNat.firstDiff x y` is the first index at which `x i ≠ y i`.
-* `pi_nat.dist x y` is equal to `(1/2) ^ (first_diff x y)`. It defines a distance
+* `PiNat.dist x y` is equal to `(1/2) ^ (firstDiff x y)`. It defines a distance
   on `Π (n : ℕ), E n`, compatible with the topology when the `E n` have the discrete topology.
 * `PiNat.metricSpace`: the metric space structure, given by this distance. Not registered as an
   instance. This space is a complete metric space.
@@ -46,7 +46,7 @@ These results are used to construct continuous functions on `Π n, E n`:
 One can also put distances on `Π (i : ι), E i` when the spaces `E i` are metric spaces (not discrete
 in general), and `ι` is countable.
 
-* `pi_countable.dist` is the distance on `Π i, E i` given by
+* `PiCountable.dist` is the distance on `Π i, E i` given by
     `dist x y = ∑' i, min (1/2)^(encode i) (dist (x i) (y i))`.
 * `PiCountable.metricSpace` is the corresponding metric space structure, adjusted so that
   the uniformity is definitionally the product uniformity. Not registered as an instance.
@@ -65,15 +65,16 @@ variable {E : ℕ → Type _}
 
 namespace PiNat
 
-/-! ### The first_diff function -/
+/-! ### The firstDiff function -/
 
-/-- In a product space `Π n, E n`, then `first_diff x y` is the first index at which `x` and `y`
-differ. If `x = y`, then by convention we set `first_diff x x = 0`. -/
+/-- In a product space `Π n, E n`, then `firstDiff x y` is the first index at which `x` and `y`
+differ. If `x = y`, then by convention we set `firstDiff x x = 0`. -/
 irreducible_def firstDiff (x y : ∀ n, E n) : ℕ :=
   if h : x ≠ y then Nat.find (ne_iff.1 h) else 0
 #align pi_nat.first_diff PiNat.firstDiff
 
-theorem apply_firstDiff_ne {x y : ∀ n, E n} (h : x ≠ y) : x (firstDiff x y) ≠ y (firstDiff x y) := by
+theorem apply_firstDiff_ne {x y : ∀ n, E n} (h : x ≠ y) :
+    x (firstDiff x y) ≠ y (firstDiff x y) := by
   rw [firstDiff_def, dif_pos h]
   exact Nat.find_spec (ne_iff.1 h)
 #align pi_nat.apply_first_diff_ne PiNat.apply_firstDiff_ne
@@ -197,7 +198,7 @@ theorem update_mem_cylinder (x : ∀ n, E n) (n : ℕ) (y : E n) : update x n y 
 We define a distance function on `Π n, E n`, given by `dist x y = (1/2)^n` where `n` is the first
 index at which `x` and `y` differ. When each `E n` has the discrete topology, this distance will
 define the right topology on the product space. We do not record a global `Dist` instance nor
-a `MetricSpace`instance, as other distances may be used on these spaces, but we register them as
+a `MetricSpace` instance, as other distances may be used on these spaces, but we register them as
 local instances in this section.
 -/
 
@@ -347,7 +348,7 @@ where the distance is given by `dist x y = (1/2)^n`, where `n` is the smallest i
 Warning: this definition makes sure that the topology is defeq to the original product topology,
 but it does not take care of a possible uniformity. If the `E n` have a uniform structure, then
 there will be two non-defeq uniform structures on `Π n, E n`, the product one and the one coming
-from the metric structure. In this case, use `metric_space_of_discrete_uniformity` instead. -/
+from the metric structure. In this case, use `metricSpaceOfDiscreteUniformity` instead. -/
 protected def metricSpace : MetricSpace (∀ n, E n) :=
   MetricSpace.ofDistTopology dist PiNat.dist_self PiNat.dist_comm PiNat.dist_triangle
     isOpen_iff_dist PiNat.eq_of_dist_eq_zero
@@ -436,7 +437,7 @@ theorem exists_disjoint_cylinder {s : Set (∀ n, E n)} (hs : IsClosed s) {x : �
 #align pi_nat.exists_disjoint_cylinder PiNat.exists_disjoint_cylinder
 
 /-- Given a point `x` in a product space `Π (n : ℕ), E n`, and `s` a subset of this space, then
-`shortest_prefix_diff x s` if the smallest `n` for which there is no element of `s` having the same
+`shortestPrefixDiff x s` if the smallest `n` for which there is no element of `s` having the same
 prefix of length `n` as `x`. If there is no such `n`, then use `0` by convention. -/
 def shortestPrefixDiff {E : ℕ → Type _} (x : ∀ n, E n) (s : Set (∀ n, E n)) : ℕ :=
   if h : ∃ n, Disjoint s (cylinder x n) then Nat.find h else 0
@@ -461,7 +462,7 @@ theorem shortestPrefixDiff_pos {s : Set (∀ n, E n)} (hs : IsClosed s) (hne : s
 #align pi_nat.shortest_prefix_diff_pos PiNat.shortestPrefixDiff_pos
 
 /-- Given a point `x` in a product space `Π (n : ℕ), E n`, and `s` a subset of this space, then
-`longest_prefix x s` if the largest `n` for which there is an element of `s` having the same
+`longestPrefix x s` if the largest `n` for which there is an element of `s` having the same
 prefix of length `n` as `x`. If there is no such `n`, use `0` by convention. -/
 def longestPrefix {E : ℕ → Type _} (x : ∀ n, E n) (s : Set (∀ n, E n)) : ℕ :=
   shortestPrefixDiff x s - 1
@@ -532,8 +533,8 @@ theorem exists_lipschitz_retraction_of_isClosed {s : Set (∀ n, E n)} (hs : IsC
     ∃ f : (∀ n, E n) → ∀ n, E n, (∀ x ∈ s, f x = x) ∧ range f = s ∧ LipschitzWith 1 f := by
   /- The map `f` is defined as follows. For `x ∈ s`, let `f x = x`. Otherwise, consider the longest
     prefix `w` that `x` shares with an element of `s`, and let `f x = z_w` where `z_w` is an element
-    of `s` starting with `w`. All the desired properties are clear, except the fact that `f`
-    is `1`-Lipschitz: if two points `x, y` belong to a common cylinder of length `n`, one should show
+    of `s` starting with `w`. All the desired properties are clear, except the fact that `f` is
+    `1`-Lipschitz: if two points `x, y` belong to a common cylinder of length `n`, one should show
     that their images also belong to a common cylinder of length `n`. This is a case analysis:
     * if both `x, y ∈ s`, then this is clear.
     * if `x ∈ s` but `y ∉ s`, then the longest prefix `w` of `y` shared by an element of `s` is of
@@ -543,8 +544,7 @@ theorem exists_lipschitz_retraction_of_isClosed {s : Set (∀ n, E n)} (hs : IsC
     length is `< n`, then it is also the longest prefix of `y`, and we get `f x = f y = z_w`.
     Otherwise, `f x` remains in the same `n`-cylinder as `x`. Similarly for `y`. Finally, `f x` and
     `f y` are again in the same `n`-cylinder, as desired. -/
-  set f := fun x => if x ∈ s then x else (inter_cylinder_longestPrefix_nonempty hs hne x).some with
-    hf
+  set f := fun x => if x ∈ s then x else (inter_cylinder_longestPrefix_nonempty hs hne x).some
   have fs : ∀ x ∈ s, f x = x := fun x xs => by simp [xs]
   refine' ⟨f, fs, _, _⟩
   -- check that the range of `f` is `s`.
@@ -552,7 +552,7 @@ theorem exists_lipschitz_retraction_of_isClosed {s : Set (∀ n, E n)} (hs : IsC
     · rintro x ⟨y, rfl⟩
       by_cases hy : y ∈ s
       · rwa [fs y hy]
-      simpa [hf, if_neg hy] using (inter_cylinder_longestPrefix_nonempty hs hne y).choose_spec.1
+      simpa [if_neg hy] using (inter_cylinder_longestPrefix_nonempty hs hne y).choose_spec.1
     · intro x hx
       rw [← fs x hx]
       exact mem_range_self _
@@ -577,7 +577,7 @@ theorem exists_lipschitz_retraction_of_isClosed {s : Set (∀ n, E n)} (hs : IsC
       -- case where `y ∉ s`
       have A : (s ∩ cylinder y (longestPrefix y s)).Nonempty :=
         inter_cylinder_longestPrefix_nonempty hs hne y
-      have fy : f y = A.some := by simp_rw [hf, if_neg ys]
+      have fy : f y = A.some := by simp_rw [if_neg ys]
       have I : cylinder A.some (firstDiff x y) = cylinder y (firstDiff x y) := by
         rw [← mem_cylinder_iff_eq, firstDiff_comm]
         apply cylinder_anti y _ A.some_mem.2
@@ -589,7 +589,7 @@ theorem exists_lipschitz_retraction_of_isClosed {s : Set (∀ n, E n)} (hs : IsC
       -- case where `y ∈ s` (similar to the above)
       · have A : (s ∩ cylinder x (longestPrefix x s)).Nonempty :=
           inter_cylinder_longestPrefix_nonempty hs hne x
-        have fx : f x = A.some := by simp_rw [hf, if_neg xs]
+        have fx : f x = A.some := by simp_rw [if_neg xs]
         have I : cylinder A.some (firstDiff x y) = cylinder x (firstDiff x y) := by
           rw [← mem_cylinder_iff_eq]
           apply cylinder_anti x _ A.some_mem.2
@@ -599,10 +599,10 @@ theorem exists_lipschitz_retraction_of_isClosed {s : Set (∀ n, E n)} (hs : IsC
       -- case where `y ∉ s`
       · have Ax : (s ∩ cylinder x (longestPrefix x s)).Nonempty :=
           inter_cylinder_longestPrefix_nonempty hs hne x
-        have fx : f x = Ax.some := by simp_rw [hf, if_neg xs]
+        have fx : f x = Ax.some := by simp_rw [if_neg xs]
         have Ay : (s ∩ cylinder y (longestPrefix y s)).Nonempty :=
           inter_cylinder_longestPrefix_nonempty hs hne y
-        have fy : f y = Ay.some := by simp_rw [hf, if_neg ys]
+        have fy : f y = Ay.some := by simp_rw [if_neg ys]
         -- case where the common prefix to `x` and `s`, or `y` and `s`, is shorter than the
         -- common part to `x` and `y` -- then `f x = f y`.
         by_cases H : longestPrefix x s < firstDiff x y ∨ longestPrefix y s < firstDiff x y
@@ -654,16 +654,16 @@ open PiNat
 
 /-- Any nonempty complete second countable metric space is the continuous image of the
 fundamental space `ℕ → ℕ`. For a version of this theorem in the context of Polish spaces, see
-`exists_nat_nat_continuous_surjective_of_polish_space`. -/
+`exists_nat_nat_continuous_surjective_of_polishSpace`. -/
 theorem exists_nat_nat_continuous_surjective_of_completeSpace (α : Type _) [MetricSpace α]
     [CompleteSpace α] [SecondCountableTopology α] [Nonempty α] :
     ∃ f : (ℕ → ℕ) → α, Continuous f ∧ Surjective f := by
   /- First, we define a surjective map from a closed subset `s` of `ℕ → ℕ`. Then, we compose
     this map with a retraction of `ℕ → ℕ` onto `s` to obtain the desired map.
     Let us consider a dense sequence `u` in `α`. Then `s` is the set of sequences `xₙ` such that the
-    balls `closed_ball (u xₙ) (1/2^n)` have a nonempty intersection. This set is closed, and we define
-    `f x` there to be the unique point in the intersection. This function is continuous and surjective
-    by design. -/
+    balls `closedBall (u xₙ) (1/2^n)` have a nonempty intersection. This set is closed,
+    and we define `f x` there to be the unique point in the intersection.
+    This function is continuous and surjective by design. -/
   letI : MetricSpace (ℕ → ℕ) := PiNat.metricSpaceNatNat
   have I0 : (0 : ℝ) < 1 / 2 := by norm_num
   have I1 : (1 / 2 : ℝ) < 1 := by norm_num
@@ -872,4 +872,3 @@ protected def metricSpace : MetricSpace (∀ i, F i) where
 #align pi_countable.metric_space PiCountable.metricSpace
 
 end PiCountable
-
