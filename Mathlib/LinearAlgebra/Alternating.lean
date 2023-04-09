@@ -119,13 +119,9 @@ theorem toFun_eq_coe : f.toFun = f :=
 
 -- Porting note: changed statement to reflect new `mk` signature
 @[simp]
-theorem coe_mk (f : MultilinearMap R (fun _ : ι => M) N) (h) :
-    ⇑(⟨f, h⟩ : AlternatingMap R M N ι) = f :=
+theorem coe_mk (f : (ι → M) → N) (h₁ h₂ h₃) : ⇑(⟨⟨f, h₁, h₂⟩, h₃⟩ : AlternatingMap R M N ι) = f :=
   rfl
-
-theorem coe_mks (f : (ι → M) → N) (h₁ h₂ h₃) : ⇑(⟨⟨f, h₁, h₂⟩, h₃⟩ : AlternatingMap R M N ι) = f :=
-  rfl
-#align alternating_map.coe_mk AlternatingMap.coe_mks
+#align alternating_map.coe_mk AlternatingMap.coe_mk
 
 theorem congr_fun {f g : AlternatingMap R M N ι} (h : f = g) (x : ι → M) : f x = g x :=
   congr_arg (fun h : AlternatingMap R M N ι => h x) h
@@ -171,6 +167,7 @@ theorem coe_multilinearMap_injective :
 
 #noalign alternating_map.to_multilinear_map_eq_coe
 
+-- Porting note: changed statement to reflect new `mk` signature
 @[simp]
 theorem coe_multilinearMap_mk (f : (ι → M) → N) (h₁ h₂ h₃) :
     ((⟨⟨f, h₁, h₂⟩, h₃⟩ : AlternatingMap R M N ι) : MultilinearMap R (fun _ : ι => M) N) =
@@ -811,11 +808,11 @@ def alternatization : MultilinearMap R (fun _ : ι => M) N' →+ AlternatingMap 
   map_add' a b := by
     ext
     simp only [Finset.sum_add_distrib, smul_add, add_apply, domDomCongr_apply,
-      AlternatingMap.add_apply, AlternatingMap.coe_mks, smul_apply, sum_apply]
+      AlternatingMap.add_apply, AlternatingMap.coe_mk, smul_apply, sum_apply]
   map_zero' := by
     ext
     simp only [Finset.sum_const_zero, smul_zero, zero_apply, domDomCongr_apply,
-      AlternatingMap.zero_apply, AlternatingMap.coe_mks, smul_apply, sum_apply]
+      AlternatingMap.zero_apply, AlternatingMap.coe_mk, smul_apply, sum_apply]
 #align multilinear_map.alternatization MultilinearMap.alternatization
 
 theorem alternatization_def (m : MultilinearMap R (fun _ : ι => M) N') :
