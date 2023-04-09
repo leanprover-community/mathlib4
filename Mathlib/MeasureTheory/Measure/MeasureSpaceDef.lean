@@ -718,21 +718,21 @@ theorem aeMeasurable_congr (h : f =ᵐ[μ] g) : AeMeasurable f μ ↔ AeMeasurab
 #align ae_measurable_congr aeMeasurable_congr
 
 @[simp]
-theorem aeMeasurableConst {b : β} : AeMeasurable (fun _a : α => b) μ :=
+theorem aeMeasurable_const {b : β} : AeMeasurable (fun _a : α => b) μ :=
   measurable_const.aeMeasurable
-#align ae_measurable_const aeMeasurableConst
+#align ae_measurable_const aeMeasurable_const
 
-theorem aeMeasurableId : AeMeasurable id μ :=
+theorem aeMeasurable_id : AeMeasurable id μ :=
   measurable_id.aeMeasurable
-#align ae_measurable_id aeMeasurableId
+#align ae_measurable_id aeMeasurable_id
 
-theorem aeMeasurableId' : AeMeasurable (fun x => x) μ :=
+theorem aeMeasurable_id' : AeMeasurable (fun x => x) μ :=
   measurable_id.aeMeasurable
-#align ae_measurable_id' aeMeasurableId'
+#align ae_measurable_id' aeMeasurable_id'
 
-theorem Measurable.compAeMeasurable [MeasurableSpace δ] {f : α → δ} {g : δ → β} (hg : Measurable g)
+theorem Measurable.comp_aeMeasurable [MeasurableSpace δ] {f : α → δ} {g : δ → β} (hg : Measurable g)
     (hf : AeMeasurable f μ) : AeMeasurable (g ∘ f) μ :=
   ⟨g ∘ hf.mk f, hg.comp hf.measurable_mk, EventuallyEq.fun_comp hf.ae_eq_mk _⟩
-#align measurable.comp_ae_measurable Measurable.compAeMeasurable
+#align measurable.comp_ae_measurable Measurable.comp_aeMeasurable
 
 end
