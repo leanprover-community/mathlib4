@@ -356,7 +356,7 @@ theorem chainHeight_union_eq (s t : Set α) (H : ∀ a ∈ s, ∀ b ∈ t, a < b
 theorem wellFoundedGT_of_chainHeight_ne_top (s : Set α) (hs : s.chainHeight ≠ ⊤) :
     WellFoundedGT s := by
   -- Porting note: added
-  haveI : IsTrans { x // x ∈ s } fun x x_1 => ↑x < ↑x_1 := inferInstance
+  haveI : IsTrans { x // x ∈ s } (↑· < ↑·) := inferInstance
 
   obtain ⟨n, hn⟩ := WithTop.ne_top_iff_exists.1 hs
   refine' ⟨RelEmbedding.wellFounded_iff_no_descending_seq.2 ⟨fun f ↦ _⟩⟩
