@@ -794,7 +794,7 @@ The distance we use here is `dist x y = ∑' n, min (1/2)^(encode i) (dist (x n)
 protected def metricSpace : MetricSpace (∀ i, F i) where
   dist_self x := by simp [dist_eq_tsum]
   dist_comm x y := by simp [dist_eq_tsum, dist_comm]
-  dist_triangle x y z := by
+  dist_triangle x y z :=
     have I : ∀ i, min ((1 / 2) ^ encode i : ℝ) (dist (x i) (z i)) ≤
         min ((1 / 2) ^ encode i : ℝ) (dist (x i) (y i)) +
           min ((1 / 2) ^ encode i : ℝ) (dist (y i) (z i)) := fun i =>
@@ -806,7 +806,7 @@ protected def metricSpace : MetricSpace (∀ i, F i) where
               min ((1 / 2) ^ encode i : ℝ) (dist (y i) (z i))) := by
           convert congr_arg ((↑) : ℝ≥0 → ℝ)
             (min_add_distrib ((1 / 2 : ℝ≥0) ^ encode i) (nndist (x i) (y i))
-              (nndist (y i) (z i))) <;> simp
+              (nndist (y i) (z i)))
         _ ≤ min ((1 / 2) ^ encode i : ℝ) (dist (x i) (y i)) +
               min ((1 / 2) ^ encode i : ℝ) (dist (y i) (z i)) :=
           min_le_right _ _
@@ -814,8 +814,8 @@ protected def metricSpace : MetricSpace (∀ i, F i) where
           min ((1 / 2) ^ encode i : ℝ) (dist (y i) (z i)) :=
         tsum_le_tsum I (dist_summable x z) ((dist_summable x y).add (dist_summable y z))
       _ = dist x y + dist y z := tsum_add (dist_summable x y) (dist_summable y z)
-  eq_of_dist_eq_zero := by
-    intro x y hxy
+  edist_dist _ _ := by exact ENNReal.coe_nnreal_eq _
+  eq_of_dist_eq_zero hxy := by
     ext1 n
     rw [← dist_le_zero, ← hxy]
     apply dist_le_dist_pi_of_dist_lt
@@ -823,8 +823,6 @@ protected def metricSpace : MetricSpace (∀ i, F i) where
     simp
   toUniformSpace := Pi.uniformSpace _
   uniformity_dist := by
-    have I0 : (0 : ℝ) ≤ 1 / 2 := by norm_num
-    have I1 : (1 / 2 : ℝ) < 1 := by norm_num
     simp only [Pi.uniformity, comap_infᵢ, gt_iff_lt, preimage_setOf_eq, comap_principal,
       PseudoMetricSpace.uniformity_dist]
     apply le_antisymm
@@ -840,7 +838,7 @@ protected def metricSpace : MetricSpace (∀ i, F i) where
           { p : (∀ i : ι, F i) × ∀ i : ι, F i | dist (p.fst i) (p.snd i) < δ }
       · rintro ⟨i, hi⟩
         refine' mem_infᵢ_of_mem δ (mem_infᵢ_of_mem δpos _)
-        simp only [Prod.forall, imp_self, mem_principal]
+        simp only [Prod.forall, imp_self, mem_principal, Subset.rfl]
       · rintro ⟨x, y⟩ hxy
         simp only [mem_interᵢ, mem_setOf_eq, SetCoe.forall, Finset.mem_range, Finset.mem_coe] at hxy
         calc
@@ -850,11 +848,11 @@ protected def metricSpace : MetricSpace (∀ i, F i) where
             (sum_add_tsum_compl (dist_summable _ _)).symm
           _ ≤ (∑ i in K, dist (x i) (y i)) +
                 ∑' i : ↑((K : Set ι)ᶜ), ((1 / 2) ^ encode (i : ι) : ℝ) := by
-            refine' add_le_add (Finset.sum_le_sum fun i hi => min_le_right _ _) _
+            refine' add_le_add (Finset.sum_le_sum fun i _ => min_le_right _ _) _
             refine' tsum_le_tsum (fun i => min_le_left _ _) _ _
             · apply Summable.subtype (dist_summable x y) ((↑K : Set ι)ᶜ)
             · apply Summable.subtype summable_geometric_two_encode ((↑K : Set ι)ᶜ)
-          _ < (∑ i in K, δ) + ε / 2 := by
+          _ < (∑ _i in K, δ) + ε / 2 := by
             apply add_lt_add_of_le_of_lt _ hK
             refine Finset.sum_le_sum fun i hi => (hxy i ?_).le
             simpa using hi
