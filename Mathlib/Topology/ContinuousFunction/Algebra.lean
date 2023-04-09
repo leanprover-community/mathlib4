@@ -342,10 +342,10 @@ instance [LocallyCompactSpace α] [Mul β] [ContinuousMul β] : ContinuousMul C(
     exact h1.mul h2⟩
 
 /-- Coercion to a function as an `monoid_hom`. Similar to `monoid_hom.coe_fn`. -/
-@[to_additive "Coercion to a function as an `add_monoid_hom`. Similar to `add_monoid_hom.coe_fn`.",
-  simps]
+@[to_additive (attr := simps)
+  "Coercion to a function as an `add_monoid_hom`. Similar to `add_monoid_hom.coe_fn`." ]
 def coeFnMonoidHom [Monoid β] [ContinuousMul β] : C(α, β) →* α → β where
-  toFun := coeFn
+  toFun f := f
   map_one' := coe_one
   map_mul' := coe_mul
 #align continuous_map.coe_fn_monoid_hom ContinuousMap.coeFnMonoidHom
@@ -355,9 +355,8 @@ variable (α)
 
 /-- Composition on the left by a (continuous) homomorphism of topological monoids, as a
 `monoid_hom`. Similar to `monoid_hom.comp_left`. -/
-@[to_additive
-      "Composition on the left by a (continuous) homomorphism of topological `add_monoid`s,\nas an `add_monoid_hom`. Similar to `add_monoid_hom.comp_left`.",
-  simps]
+@[to_additive (attr := simps)
+      "Composition on the left by a (continuous) homomorphism of topological `add_monoid`s,\nas an `add_monoid_hom`. Similar to `add_monoid_hom.comp_left`."]
 protected def MonoidHom.compLeftContinuous {γ : Type _} [Monoid β] [ContinuousMul β]
     [TopologicalSpace γ] [Monoid γ] [ContinuousMul γ] (g : β →* γ) (hg : Continuous g) :
     C(α, β) →* C(α, γ) where
@@ -370,9 +369,8 @@ protected def MonoidHom.compLeftContinuous {γ : Type _} [Monoid β] [Continuous
 variable {α}
 
 /-- Composition on the right as a `monoid_hom`. Similar to `monoid_hom.comp_hom'`. -/
-@[to_additive
-      "Composition on the right as an `add_monoid_hom`. Similar to\n`add_monoid_hom.comp_hom'`.",
-  simps]
+@[to_additive (attr := simps)
+      "Composition on the right as an `add_monoid_hom`. Similar to\n`add_monoid_hom.comp_hom'`."]
 def compMonoidHom' {γ : Type _} [TopologicalSpace γ] [MulOneClass γ] [ContinuousMul γ]
     (g : C(α, β)) : C(β, γ) →* C(α, γ) where
   toFun f := f.comp g
@@ -383,7 +381,7 @@ def compMonoidHom' {γ : Type _} [TopologicalSpace γ] [MulOneClass γ] [Continu
 
 open BigOperators
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem coe_prod [CommMonoid β] [ContinuousMul β] {ι : Type _} (s : Finset ι) (f : ι → C(α, β)) :
     ⇑(∏ i in s, f i) = ∏ i in s, (f i : α → β) :=
   (coeFnMonoidHom : C(α, β) →* _).map_prod f s
@@ -398,11 +396,11 @@ theorem prod_apply [CommMonoid β] [ContinuousMul β] {ι : Type _} (s : Finset 
 
 @[to_additive]
 instance [Group β] [TopologicalGroup β] : Group C(α, β) :=
-  coe_injective.Group _ coe_one coe_mul coe_inv coe_div coe_pow coe_zpow
+  coe_injective.group _ coe_one coe_mul coe_inv coe_div coe_pow coe_zpow
 
 @[to_additive]
 instance [CommGroup β] [TopologicalGroup β] : CommGroup C(α, β) :=
-  coe_injective.CommGroup _ coe_one coe_mul coe_inv coe_div coe_pow coe_zpow
+  coe_injective.commGroup _ coe_one coe_mul coe_inv coe_div coe_pow coe_zpow
 
 @[to_additive]
 instance [CommGroup β] [TopologicalGroup β] : TopologicalGroup C(α, β) where
@@ -411,20 +409,21 @@ instance [CommGroup β] [TopologicalGroup β] : TopologicalGroup C(α, β) where
     have : UniformGroup β := comm_topologicalGroup_is_uniform
     rw [continuous_iff_continuousAt]
     rintro ⟨f, g⟩
-    rw [ContinuousAt, tendsto_iff_forall_compact_tendsto_uniformly_on, nhds_prod_eq]
+    rw [ContinuousAt, tendsto_iff_forall_compact_tendstoUniformlyOn
+, nhds_prod_eq]
     exact fun K hK =>
-      uniform_continuous_mul.comp_tendsto_uniformly_on
-        ((tendsto_iff_forall_compact_tendsto_uniformly_on.mp Filter.tendsto_id K hK).Prod
-          (tendsto_iff_forall_compact_tendsto_uniformly_on.mp Filter.tendsto_id K hK))
+      uniformContinuous_mul.comp_tendstoUniformlyOn
+        ((tendsto_iff_forall_compact_tendstoUniformlyOn.mp Filter.tendsto_id K hK).prod
+          (tendsto_iff_forall_compact_tendstoUniformlyOn.mp Filter.tendsto_id K hK))
   continuous_inv := by
     letI : UniformSpace β := TopologicalGroup.toUniformSpace β
     have : UniformGroup β := comm_topologicalGroup_is_uniform
     rw [continuous_iff_continuousAt]
     intro f
-    rw [ContinuousAt, tendsto_iff_forall_compact_tendsto_uniformly_on]
+    rw [ContinuousAt, tendsto_iff_forall_compact_tendstoUniformlyOn]
     exact fun K hK =>
-      uniform_continuous_inv.comp_tendsto_uniformly_on
-        (tendsto_iff_forall_compact_tendsto_uniformly_on.mp Filter.tendsto_id K hK)
+      uniformContinuous_inv.comp_tendstoUniformlyOn
+        (tendsto_iff_forall_compact_tendstoUniformlyOn.mp Filter.tendsto_id K hK)
 
 -- TODO: rewrite the next three lemmas for products and deduce sum case via `to_additive`, once
 -- definition of `tprod` is in place
@@ -440,13 +439,13 @@ theorem hasSum_apply {γ : Type _} [LocallyCompactSpace α] [AddCommMonoid β] [
 
 theorem summable_apply [LocallyCompactSpace α] [AddCommMonoid β] [ContinuousAdd β] {γ : Type _}
     {f : γ → C(α, β)} (hf : Summable f) (x : α) : Summable fun i : γ => f i x :=
-  (hasSum_apply hf.HasSum x).Summable
+  (hasSum_apply hf.hasSum x).summable
 #align continuous_map.summable_apply ContinuousMap.summable_apply
 
 theorem tsum_apply [LocallyCompactSpace α] [T2Space β] [AddCommMonoid β] [ContinuousAdd β]
     {γ : Type _} {f : γ → C(α, β)} (hf : Summable f) (x : α) :
     (∑' i : γ, f i x) = (∑' i : γ, f i) x :=
-  (hasSum_apply hf.HasSum x).tsum_eq
+  (hasSum_apply hf.hasSum x).tsum_eq
 #align continuous_map.tsum_apply ContinuousMap.tsum_apply
 
 end ContinuousMap
@@ -483,35 +482,35 @@ namespace ContinuousMap
 
 instance {α : Type _} {β : Type _} [TopologicalSpace α] [TopologicalSpace β]
     [NonUnitalNonAssocSemiring β] [TopologicalSemiring β] : NonUnitalNonAssocSemiring C(α, β) :=
-  coe_injective.NonUnitalNonAssocSemiring _ coe_zero coe_add coe_mul coe_nsmul
+  coe_injective.nonUnitalNonAssocSemiring _ coe_zero coe_add coe_mul coe_nsmul
 
 instance {α : Type _} {β : Type _} [TopologicalSpace α] [TopologicalSpace β] [NonUnitalSemiring β]
     [TopologicalSemiring β] : NonUnitalSemiring C(α, β) :=
-  coe_injective.NonUnitalSemiring _ coe_zero coe_add coe_mul coe_nsmul
+  coe_injective.nonUnitalSemiring _ coe_zero coe_add coe_mul coe_nsmul
 
 instance {α : Type _} {β : Type _} [TopologicalSpace α] [TopologicalSpace β] [AddMonoidWithOne β]
     [ContinuousAdd β] : AddMonoidWithOne C(α, β) :=
-  coe_injective.AddMonoidWithOne _ coe_zero coe_one coe_add coe_nsmul coe_nat_cast
+  coe_injective.addMonoidWithOne _ coe_zero coe_one coe_add coe_nsmul coe_nat_cast
 
 instance {α : Type _} {β : Type _} [TopologicalSpace α] [TopologicalSpace β] [NonAssocSemiring β]
     [TopologicalSemiring β] : NonAssocSemiring C(α, β) :=
-  coe_injective.NonAssocSemiring _ coe_zero coe_one coe_add coe_mul coe_nsmul coe_nat_cast
+  coe_injective.nonAssocSemiring _ coe_zero coe_one coe_add coe_mul coe_nsmul coe_nat_cast
 
 instance {α : Type _} {β : Type _} [TopologicalSpace α] [TopologicalSpace β] [Semiring β]
     [TopologicalSemiring β] : Semiring C(α, β) :=
-  coe_injective.Semiring _ coe_zero coe_one coe_add coe_mul coe_nsmul coe_pow coe_nat_cast
+  coe_injective.semiring _ coe_zero coe_one coe_add coe_mul coe_nsmul coe_pow coe_nat_cast
 
 instance {α : Type _} {β : Type _} [TopologicalSpace α] [TopologicalSpace β]
     [NonUnitalNonAssocRing β] [TopologicalRing β] : NonUnitalNonAssocRing C(α, β) :=
-  coe_injective.NonUnitalNonAssocRing _ coe_zero coe_add coe_mul coe_neg coe_sub coe_nsmul coe_zsmul
+  coe_injective.nonUnitalNonAssocRing _ coe_zero coe_add coe_mul coe_neg coe_sub coe_nsmul coe_zsmul
 
 instance {α : Type _} {β : Type _} [TopologicalSpace α] [TopologicalSpace β] [NonUnitalRing β]
     [TopologicalRing β] : NonUnitalRing C(α, β) :=
-  coe_injective.NonUnitalRing _ coe_zero coe_add coe_mul coe_neg coe_sub coe_nsmul coe_zsmul
+  coe_injective.nonUnitalRing _ coe_zero coe_add coe_mul coe_neg coe_sub coe_nsmul coe_zsmul
 
 instance {α : Type _} {β : Type _} [TopologicalSpace α] [TopologicalSpace β] [NonAssocRing β]
     [TopologicalRing β] : NonAssocRing C(α, β) :=
-  coe_injective.NonAssocRing _ coe_zero coe_one coe_add coe_mul coe_neg coe_sub coe_nsmul coe_zsmul
+  coe_injective.nonAssocRing _ coe_zero coe_one coe_add coe_mul coe_neg coe_sub coe_nsmul coe_zsmul
     coe_nat_cast coe_int_cast
 
 instance {α : Type _} {β : Type _} [TopologicalSpace α] [TopologicalSpace β] [Ring β]
