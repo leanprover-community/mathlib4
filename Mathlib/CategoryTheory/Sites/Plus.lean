@@ -8,7 +8,7 @@ Authors: Adam Topaz
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Sites.Sheaf
+import Mathlib.CategoryTheory.Sites.Sheaf
 
 /-!
 
@@ -44,8 +44,7 @@ variable (P : Cᵒᵖ ⥤ D)
 
 /-- The diagram whose colimit defines the values of `plus`. -/
 @[simps]
-def diagram (X : C) : (J.cover X)ᵒᵖ ⥤ D
-    where
+def diagram (X : C) : (J.cover X)ᵒᵖ ⥤ D where
   obj S := multiequalizer (S.unop.index P)
   map S T f :=
     Multiequalizer.lift _ _ (fun I => Multiequalizer.ι (S.unop.index P) (I.map f.unop)) fun I =>
@@ -61,8 +60,7 @@ def diagram (X : C) : (J.cover X)ᵒᵖ ⥤ D
 
 /-- A helper definition used to define the morphisms for `plus`. -/
 @[simps]
-def diagramPullback {X Y : C} (f : X ⟶ Y) : J.diagram P Y ⟶ (J.pullback f).op ⋙ J.diagram P X
-    where
+def diagramPullback {X Y : C} (f : X ⟶ Y) : J.diagram P Y ⟶ (J.pullback f).op ⋙ J.diagram P X where
   app S :=
     Multiequalizer.lift _ _ (fun I => Multiequalizer.ι (S.unop.index P) I.base) fun I =>
       Multiequalizer.condition (S.unop.index P) I.base
@@ -75,8 +73,7 @@ def diagramPullback {X Y : C} (f : X ⟶ Y) : J.diagram P Y ⟶ (J.pullback f).o
 /-- A natural transformation `P ⟶ Q` induces a natural transformation
 between diagrams whose colimits define the values of `plus`. -/
 @[simps]
-def diagramNatTrans {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) (X : C) : J.diagram P X ⟶ J.diagram Q X
-    where
+def diagramNatTrans {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) (X : C) : J.diagram P X ⟶ J.diagram Q X where
   app W :=
     Multiequalizer.lift _ _ (fun i => Multiequalizer.ι _ i ≫ η.app _)
       (by
@@ -109,8 +106,7 @@ theorem diagramNatTrans_zero [Preadditive D] (X : C) (P Q : Cᵒᵖ ⥤ D) :
 
 @[simp]
 theorem diagramNatTrans_comp {P Q R : Cᵒᵖ ⥤ D} (η : P ⟶ Q) (γ : Q ⟶ R) (X : C) :
-    J.diagramNatTrans (η ≫ γ) X = J.diagramNatTrans η X ≫ J.diagramNatTrans γ X :=
-  by
+    J.diagramNatTrans (η ≫ γ) X = J.diagramNatTrans η X ≫ J.diagramNatTrans γ X := by
   ext
   dsimp
   simp
@@ -120,8 +116,7 @@ variable (D)
 
 /-- `J.diagram P`, as a functor in `P`. -/
 @[simps]
-def diagramFunctor (X : C) : (Cᵒᵖ ⥤ D) ⥤ (J.cover X)ᵒᵖ ⥤ D
-    where
+def diagramFunctor (X : C) : (Cᵒᵖ ⥤ D) ⥤ (J.cover X)ᵒᵖ ⥤ D where
   obj P := J.diagram P X
   map P Q η := J.diagramNatTrans η X
   map_id' P := J.diagramNatTrans_id _ _
@@ -173,8 +168,7 @@ def plusObj : Cᵒᵖ ⥤ D where
 #align category_theory.grothendieck_topology.plus_obj CategoryTheory.GrothendieckTopology.plusObj
 
 /-- An auxiliary definition used in `plus` below. -/
-def plusMap {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) : J.plusObj P ⟶ J.plusObj Q
-    where
+def plusMap {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) : J.plusObj P ⟶ J.plusObj Q where
   app X := colimMap (J.diagramNatTrans η X.unop)
   naturality' := by
     intro X Y f
@@ -190,8 +184,7 @@ def plusMap {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) : J.plusObj P ⟶ J.plusObj Q
 #align category_theory.grothendieck_topology.plus_map CategoryTheory.GrothendieckTopology.plusMap
 
 @[simp]
-theorem plusMap_id (P : Cᵒᵖ ⥤ D) : J.plusMap (𝟙 P) = 𝟙 _ :=
-  by
+theorem plusMap_id (P : Cᵒᵖ ⥤ D) : J.plusMap (𝟙 P) = 𝟙 _ := by
   ext x : 2
   dsimp only [plus_map, plus_obj]
   rw [J.diagram_nat_trans_id, nat_trans.id_app]
@@ -201,16 +194,14 @@ theorem plusMap_id (P : Cᵒᵖ ⥤ D) : J.plusMap (𝟙 P) = 𝟙 _ :=
 #align category_theory.grothendieck_topology.plus_map_id CategoryTheory.GrothendieckTopology.plusMap_id
 
 @[simp]
-theorem plusMap_zero [Preadditive D] (P Q : Cᵒᵖ ⥤ D) : J.plusMap (0 : P ⟶ Q) = 0 :=
-  by
+theorem plusMap_zero [Preadditive D] (P Q : Cᵒᵖ ⥤ D) : J.plusMap (0 : P ⟶ Q) = 0 := by
   ext
   erw [comp_zero, colimit.ι_map, J.diagram_nat_trans_zero, zero_comp]
 #align category_theory.grothendieck_topology.plus_map_zero CategoryTheory.GrothendieckTopology.plusMap_zero
 
 @[simp]
 theorem plusMap_comp {P Q R : Cᵒᵖ ⥤ D} (η : P ⟶ Q) (γ : Q ⟶ R) :
-    J.plusMap (η ≫ γ) = J.plusMap η ≫ J.plusMap γ :=
-  by
+    J.plusMap (η ≫ γ) = J.plusMap η ≫ J.plusMap γ := by
   ext : 2
   dsimp only [plus_map]
   rw [J.diagram_nat_trans_comp]
@@ -223,8 +214,7 @@ variable (D)
 
 /-- The plus construction, a functor sending `P` to `J.plus_obj P`. -/
 @[simps]
-def plusFunctor : (Cᵒᵖ ⥤ D) ⥤ Cᵒᵖ ⥤ D
-    where
+def plusFunctor : (Cᵒᵖ ⥤ D) ⥤ Cᵒᵖ ⥤ D where
   obj P := J.plusObj P
   map P Q η := J.plusMap η
   map_id' _ := plusMap_id _ _
@@ -235,8 +225,7 @@ variable {D}
 
 /-- The canonical map from `P` to `J.plus.obj P`.
 See `to_plus` for a functorial version. -/
-def toPlus : P ⟶ J.plusObj P
-    where
+def toPlus : P ⟶ J.plusObj P where
   app X := Cover.toMultiequalizer (⊤ : J.cover X.unop) P ≫ colimit.ι (J.diagram P X.unop) (op ⊤)
   naturality' := by
     intro X Y f
@@ -272,8 +261,7 @@ variable (D)
 
 /-- The natural transformation from the identity functor to `plus`. -/
 @[simps]
-def toPlusNatTrans : 𝟭 (Cᵒᵖ ⥤ D) ⟶ J.plusFunctor D
-    where
+def toPlusNatTrans : 𝟭 (Cᵒᵖ ⥤ D) ⟶ J.plusFunctor D where
   app P := J.toPlus P
   naturality' _ _ _ := toPlus_naturality _ _
 #align category_theory.grothendieck_topology.to_plus_nat_trans CategoryTheory.GrothendieckTopology.toPlusNatTrans
@@ -282,8 +270,7 @@ variable {D}
 
 /-- `(P ⟶ P⁺)⁺ = P⁺ ⟶ P⁺⁺` -/
 @[simp]
-theorem plusMap_toPlus : J.plusMap (J.toPlus P) = J.toPlus (J.plusObj P) :=
-  by
+theorem plusMap_toPlus : J.plusMap (J.toPlus P) = J.toPlus (J.plusObj P) := by
   ext (X S)
   dsimp [to_plus, plus_obj, plus_map]
   delta cover.to_multiequalizer
@@ -312,8 +299,7 @@ theorem plusMap_toPlus : J.plusMap (J.toPlus P) = J.toPlus (J.plusObj P) :=
     rfl
 #align category_theory.grothendieck_topology.plus_map_to_plus CategoryTheory.GrothendieckTopology.plusMap_toPlus
 
-theorem isIso_toPlus_of_isSheaf (hP : Presheaf.IsSheaf J P) : IsIso (J.toPlus P) :=
-  by
+theorem isIso_toPlus_of_isSheaf (hP : Presheaf.IsSheaf J P) : IsIso (J.toPlus P) := by
   rw [presheaf.is_sheaf_iff_multiequalizer] at hP
   rsuffices : ∀ X, is_iso ((J.to_plus P).app X)
   · apply nat_iso.is_iso_of_is_iso_app
@@ -324,8 +310,7 @@ theorem isIso_toPlus_of_isSheaf (hP : Presheaf.IsSheaf J P) : IsIso (J.toPlus P)
   rsuffices : ∀ (S T : (J.cover X.unop)ᵒᵖ) (f : S ⟶ T), is_iso ((J.diagram P X.unop).map f)
   · apply is_iso_ι_of_is_initial (initial_op_of_terminal is_terminal_top)
   intro S T e
-  have : S.unop.to_multiequalizer P ≫ (J.diagram P X.unop).map e = T.unop.to_multiequalizer P :=
-    by
+  have : S.unop.to_multiequalizer P ≫ (J.diagram P X.unop).map e = T.unop.to_multiequalizer P := by
     ext
     dsimp
     simpa
@@ -363,8 +348,7 @@ theorem toPlus_plusLift {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) (hQ : Presheaf.IsSh
 #align category_theory.grothendieck_topology.to_plus_plus_lift CategoryTheory.GrothendieckTopology.toPlus_plusLift
 
 theorem plusLift_unique {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) (hQ : Presheaf.IsSheaf J Q)
-    (γ : J.plusObj P ⟶ Q) (hγ : J.toPlus P ≫ γ = η) : γ = J.plusLift η hQ :=
-  by
+    (γ : J.plusObj P ⟶ Q) (hγ : J.toPlus P ≫ γ = η) : γ = J.plusLift η hQ := by
   dsimp only [plus_lift]
   rw [iso.eq_comp_inv, ← hγ, plus_map_comp]
   dsimp
@@ -372,10 +356,8 @@ theorem plusLift_unique {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) (hQ : Presheaf.IsSh
 #align category_theory.grothendieck_topology.plus_lift_unique CategoryTheory.GrothendieckTopology.plusLift_unique
 
 theorem plus_hom_ext {P Q : Cᵒᵖ ⥤ D} (η γ : J.plusObj P ⟶ Q) (hQ : Presheaf.IsSheaf J Q)
-    (h : J.toPlus P ≫ η = J.toPlus P ≫ γ) : η = γ :=
-  by
-  have : γ = J.plus_lift (J.to_plus P ≫ γ) hQ :=
-    by
+    (h : J.toPlus P ≫ η = J.toPlus P ≫ γ) : η = γ := by
+  have : γ = J.plus_lift (J.to_plus P ≫ γ) hQ := by
     apply plus_lift_unique
     rfl
   rw [this]
@@ -393,8 +375,7 @@ theorem isoToPlus_inv (hP : Presheaf.IsSheaf J P) : (J.isoToPlus P hP).inv = J.p
 
 @[simp]
 theorem plusMap_plusLift {P Q R : Cᵒᵖ ⥤ D} (η : P ⟶ Q) (γ : Q ⟶ R) (hR : Presheaf.IsSheaf J R) :
-    J.plusMap η ≫ J.plusLift γ hR = J.plusLift (η ≫ γ) hR :=
-  by
+    J.plusMap η ≫ J.plusLift γ hR = J.plusLift (η ≫ γ) hR := by
   apply J.plus_lift_unique
   rw [← category.assoc, ← J.to_plus_naturality, category.assoc, J.to_plus_plus_lift]
 #align category_theory.grothendieck_topology.plus_map_plus_lift CategoryTheory.GrothendieckTopology.plusMap_plusLift
