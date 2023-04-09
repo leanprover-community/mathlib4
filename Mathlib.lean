@@ -285,6 +285,7 @@ import Mathlib.Analysis.Convex.Hull
 import Mathlib.Analysis.Convex.Segment
 import Mathlib.Analysis.Convex.Star
 import Mathlib.Analysis.Convex.Strict
+import Mathlib.Analysis.Hofer
 import Mathlib.Analysis.Normed.Field.Basic
 import Mathlib.Analysis.Normed.Field.InfiniteSum
 import Mathlib.Analysis.Normed.Field.UnitBall
@@ -294,6 +295,7 @@ import Mathlib.Analysis.Normed.Group.Completion
 import Mathlib.Analysis.Normed.Group.Hom
 import Mathlib.Analysis.Normed.Group.HomCompletion
 import Mathlib.Analysis.Normed.Group.InfiniteSum
+import Mathlib.Analysis.Normed.Group.Pointwise
 import Mathlib.Analysis.Normed.Group.Seminorm
 import Mathlib.Analysis.Normed.Order.Lattice
 import Mathlib.Analysis.NormedSpace.IndicatorFunction
@@ -302,6 +304,7 @@ import Mathlib.Analysis.NormedSpace.MStructure
 import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Analysis.Subadditive
 import Mathlib.CategoryTheory.Abelian.Basic
+import Mathlib.CategoryTheory.Abelian.FunctorCategory
 import Mathlib.CategoryTheory.Abelian.Images
 import Mathlib.CategoryTheory.Abelian.NonPreadditive
 import Mathlib.CategoryTheory.Adjunction.Basic
@@ -511,6 +514,8 @@ import Mathlib.CategoryTheory.Sums.Associator
 import Mathlib.CategoryTheory.Sums.Basic
 import Mathlib.CategoryTheory.Thin
 import Mathlib.CategoryTheory.Triangulated.Basic
+import Mathlib.CategoryTheory.Triangulated.Pretriangulated
+import Mathlib.CategoryTheory.Triangulated.Rotate
 import Mathlib.CategoryTheory.Types
 import Mathlib.CategoryTheory.Whiskering
 import Mathlib.CategoryTheory.Yoneda
@@ -674,6 +679,7 @@ import Mathlib.Data.Finset.Sigma
 import Mathlib.Data.Finset.Slice
 import Mathlib.Data.Finset.Sort
 import Mathlib.Data.Finset.Sum
+import Mathlib.Data.Finset.Sups
 import Mathlib.Data.Finset.Sym
 import Mathlib.Data.Finsupp.AList
 import Mathlib.Data.Finsupp.Antidiagonal
@@ -1121,6 +1127,7 @@ import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.GroupTheory.Perm.Basic
 import Mathlib.GroupTheory.Perm.Cycle.Basic
 import Mathlib.GroupTheory.Perm.Cycle.Type
+import Mathlib.GroupTheory.Perm.Fin
 import Mathlib.GroupTheory.Perm.List
 import Mathlib.GroupTheory.Perm.Option
 import Mathlib.GroupTheory.Perm.Sign

@@ -971,11 +971,11 @@ theorem ball_subset_thickening {x : X} {E : Set X} (hx : x ∈ E) (δ : ℝ) :
 
 /-- The (open) `δ`-thickening `Metric.thickening δ E` of a subset `E` in a metric space equals the
 union of balls of radius `δ` centered at points of `E`. -/
-theorem thickening_eq_bUnion_ball {δ : ℝ} {E : Set X} : thickening δ E = ⋃ x ∈ E, ball x δ := by
+theorem thickening_eq_bunionᵢ_ball {δ : ℝ} {E : Set X} : thickening δ E = ⋃ x ∈ E, ball x δ := by
   ext x
   simp only [mem_unionᵢ₂, exists_prop]
   exact mem_thickening_iff
-#align metric.thickening_eq_bUnion_ball Metric.thickening_eq_bUnion_ball
+#align metric.thickening_eq_bUnion_ball Metric.thickening_eq_bunionᵢ_ball
 
 protected theorem Bounded.thickening {δ : ℝ} {E : Set X} (h : Bounded E) :
     Bounded (thickening δ E) := by
@@ -1383,8 +1383,9 @@ theorem cthickening_subset_unionᵢ_closedBall_of_lt {α : Type _} [PseudoMetric
 over `x ∈ E`.
 
 See also `Metric.cthickening_eq_bunionᵢ_closedBall`. -/
-theorem _root_.IsCompact.cthickening_eq_bUnion_closedBall {α : Type _} [PseudoMetricSpace α] {δ : ℝ}
-    {E : Set α} (hE : IsCompact E) (hδ : 0 ≤ δ) : cthickening δ E = ⋃ x ∈ E, closedBall x δ := by
+theorem _root_.IsCompact.cthickening_eq_bunionᵢ_closedBall {α : Type _} [PseudoMetricSpace α]
+    {δ : ℝ} {E : Set α} (hE : IsCompact E) (hδ : 0 ≤ δ) :
+    cthickening δ E = ⋃ x ∈ E, closedBall x δ := by
   rcases eq_empty_or_nonempty E with (rfl | hne)
   · simp only [cthickening_empty, bunionᵢ_empty]
   refine Subset.antisymm (fun x hx ↦ ?_)
@@ -1395,7 +1396,7 @@ theorem _root_.IsCompact.cthickening_eq_bUnion_closedBall {α : Type _} [PseudoM
     rw [edist_dist] at D1
     exact (ENNReal.ofReal_le_ofReal_iff hδ).1 D1
   exact mem_bunionᵢ yE D2
-#align is_compact.cthickening_eq_bUnion_closed_ball IsCompact.cthickening_eq_bUnion_closedBall
+#align is_compact.cthickening_eq_bUnion_closed_ball IsCompact.cthickening_eq_bunionᵢ_closedBall
 
 theorem cthickening_eq_bunionᵢ_closedBall {α : Type _} [PseudoMetricSpace α] [ProperSpace α]
     (E : Set α) (hδ : 0 ≤ δ) : cthickening δ E = ⋃ x ∈ closure E, closedBall x δ := by
