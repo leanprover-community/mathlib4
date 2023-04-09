@@ -739,7 +739,7 @@ theorem linearIndependent_le_infinite_basis {ι : Type _} (b : Basis ι R M) [In
   by_contra h
   rw [not_le, ← Cardinal.mk_finset_of_infinite ι] at h
   let Φ := fun k : κ => (b.repr (v k)).support
-  obtain ⟨s, w : Infinite coe_sort (Φ ⁻¹' {s})⟩ := Cardinal.exists_infinite_fiber Φ h (by infer_instance)
+  obtain ⟨s, w : Infinite ↑(Φ ⁻¹' {s})⟩ := Cardinal.exists_infinite_fiber Φ h (by infer_instance)
   let v' := fun k : Φ ⁻¹' {s} => v k
   have i' : LinearIndependent R v' := i.comp _ Subtype.val_injective
   have w' : Fintype (Φ ⁻¹' {s}) := by
@@ -869,14 +869,14 @@ theorem Basis.finite_index_of_rank_lt_aleph0 {ι : Type _} {s : Set ι} (b : Bas
 #align basis.finite_index_of_rank_lt_aleph_0 Basis.finite_index_of_rank_lt_aleph0
 
 theorem rank_span {v : ι → M} (hv : LinearIndependent R v) :
-    Module.rank R coe_sort (span R (range v)) = (#range v) := by
+    Module.rank R ↑(span R (range v)) = (#range v) := by
   haveI := nontrivial_of_invariantBasisNumber R
   rw [← Cardinal.lift_inj, ← (Basis.span hv).mk_eq_rank,
     Cardinal.mk_range_eq_of_injective (@LinearIndependent.injective ι R M v _ _ _ _ hv)]
 #align rank_span rank_span
 
 theorem rank_span_set {s : Set M} (hs : LinearIndependent R (fun x => x : s → M)) :
-    Module.rank R coe_Sort (span R s) = (#s) := by
+    Module.rank R ↑(span R s) = (#s) := by
   rw [← @setOf_mem_eq _ s, ← Subtype.range_coe_subtype]
   exact rank_span hs
 #align rank_span_set rank_span_set
