@@ -76,7 +76,8 @@ def diagramNatTrans {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) (X : C) : J.diagram P X
 #align category_theory.grothendieck_topology.diagram_nat_trans CategoryTheory.GrothendieckTopology.diagramNatTrans
 
 @[simp]
-theorem diagramNatTrans_id (X : C) (P : Cᵒᵖ ⥤ D) : J.diagramNatTrans (𝟙 P) X = 𝟙 (J.diagram P X) := by
+theorem diagramNatTrans_id (X : C) (P : Cᵒᵖ ⥤ D) :
+    J.diagramNatTrans (𝟙 P) X = 𝟙 (J.diagram P X) := by
   ext : 2
   refine' Multiequalizer.hom_ext _ _ _ (fun i => _)
   dsimp
