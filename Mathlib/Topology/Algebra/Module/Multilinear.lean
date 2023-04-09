@@ -21,7 +21,7 @@ spaces are also topological spaces.
 
 ## Main definitions
 
-* `continuous_multilinear_map R M₁ M₂` is the space of continuous multilinear maps from
+* `ContinuousMultilinearMap R M₁ M₂` is the space of continuous multilinear maps from
   `Π(i : ι), M₁ i` to `M₂`. We show that it is an `R`-module.
 
 ## Implementation notes
@@ -53,10 +53,9 @@ definition. -/
 structure ContinuousMultilinearMap (R : Type u) {ι : Type v} (M₁ : ι → Type w₁) (M₂ : Type w₂)
   [Semiring R] [∀ i, AddCommMonoid (M₁ i)] [AddCommMonoid M₂] [∀ i, Module R (M₁ i)] [Module R M₂]
   [∀ i, TopologicalSpace (M₁ i)] [TopologicalSpace M₂] extends MultilinearMap R M₁ M₂ where
-  cont : Continuous to_fun
+  cont : Continuous toFun
 #align continuous_multilinear_map ContinuousMultilinearMap
 
--- mathport name: «expr [× ]→L[ ] »
 notation:25 M "[×" n "]→L[" R "] " M' => ContinuousMultilinearMap R (fun i : Fin n => M) M'
 
 namespace ContinuousMultilinearMap
@@ -74,13 +73,13 @@ theorem toMultilinearMap_injective :
     Function.Injective
       (ContinuousMultilinearMap.toMultilinearMap :
         ContinuousMultilinearMap R M₁ M₂ → MultilinearMap R M₁ M₂)
-  | ⟨f, hf⟩, ⟨g, hg⟩, rfl => rfl
+  | ⟨f, hf⟩, ⟨g, hg⟩, _ => by simp_all only
 #align continuous_multilinear_map.to_multilinear_map_injective ContinuousMultilinearMap.toMultilinearMap_injective
 
 instance continuousMapClass : ContinuousMapClass (ContinuousMultilinearMap R M₁ M₂) (∀ i, M₁ i) M₂
     where
   coe f := f.toFun
-  coe_injective' f g h := toMultilinearMap_injective <| MultilinearMap.coe_injective h
+  coe_injective' _ _ h := toMultilinearMap_injective <| MultilinearMap.coe_injective h
   map_continuous := ContinuousMultilinearMap.cont
 #align continuous_multilinear_map.continuous_map_class ContinuousMultilinearMap.continuousMapClass
 
@@ -94,7 +93,7 @@ def Simps.apply (L₁ : ContinuousMultilinearMap R M₁ M₂) (v : ∀ i, M₁ i
 #align continuous_multilinear_map.simps.apply ContinuousMultilinearMap.Simps.apply
 
 initialize_simps_projections ContinuousMultilinearMap (-toMultilinearMap,
-  to_multilinear_map_to_fun → apply)
+  toMultilinearMap_toFun → apply)
 
 @[continuity]
 theorem coe_continuous : Continuous (f : (∀ i, M₁ i) → M₂) :=
@@ -112,7 +111,7 @@ theorem ext {f f' : ContinuousMultilinearMap R M₁ M₂} (H : ∀ x, f x = f' x
 #align continuous_multilinear_map.ext ContinuousMultilinearMap.ext
 
 theorem ext_iff {f f' : ContinuousMultilinearMap R M₁ M₂} : f = f' ↔ ∀ x, f x = f' x := by
-  rw [← to_multilinear_map_injective.eq_iff, MultilinearMap.ext_iff] <;> rfl
+  rw [← toMultilinearMap_injective.eq_iff, MultilinearMap.ext_iff]; rfl
 #align continuous_multilinear_map.ext_iff ContinuousMultilinearMap.ext_iff
 
 @[simp]
@@ -174,15 +173,15 @@ theorem toMultilinearMap_smul (c : R') (f : ContinuousMultilinearMap A M₁ M₂
 #align continuous_multilinear_map.to_multilinear_map_smul ContinuousMultilinearMap.toMultilinearMap_smul
 
 instance [SMulCommClass R' R'' M₂] : SMulCommClass R' R'' (ContinuousMultilinearMap A M₁ M₂) :=
-  ⟨fun c₁ c₂ f => ext fun x => smul_comm _ _ _⟩
+  ⟨fun _ _ _ => ext fun _ => smul_comm _ _ _⟩
 
 instance [SMul R' R''] [IsScalarTower R' R'' M₂] :
     IsScalarTower R' R'' (ContinuousMultilinearMap A M₁ M₂) :=
-  ⟨fun c₁ c₂ f => ext fun x => smul_assoc _ _ _⟩
+  ⟨fun _ _ _ => ext fun _ => smul_assoc _ _ _⟩
 
 instance [DistribMulAction R'ᵐᵒᵖ M₂] [IsCentralScalar R' M₂] :
     IsCentralScalar R' (ContinuousMultilinearMap A M₁ M₂) :=
-  ⟨fun c₁ f => ext fun x => op_smul_eq_smul _ _⟩
+  ⟨fun _ _ => ext fun _ => op_smul_eq_smul _ _⟩
 
 instance : MulAction R' (ContinuousMultilinearMap A M₁ M₂) :=
   Function.Injective.mulAction toMultilinearMap toMultilinearMap_injective fun _ _ => rfl
@@ -208,10 +207,10 @@ theorem toMultilinearMap_add (f g : ContinuousMultilinearMap R M₁ M₂) :
 #align continuous_multilinear_map.to_multilinear_map_add ContinuousMultilinearMap.toMultilinearMap_add
 
 instance addCommMonoid : AddCommMonoid (ContinuousMultilinearMap R M₁ M₂) :=
-  toMultilinearMap_injective.AddCommMonoid _ rfl (fun _ _ => rfl) fun _ _ => rfl
+  toMultilinearMap_injective.addCommMonoid _ rfl (fun _ _ => rfl) fun _ _ => rfl
 #align continuous_multilinear_map.add_comm_monoid ContinuousMultilinearMap.addCommMonoid
 
-/-- Evaluation of a `continuous_multilinear_map` at a vector as an `add_monoid_hom`. -/
+/-- Evaluation of a `ContinuousMultilinearMap` at a vector as an `AddMonoidHom`. -/
 def applyAddHom (m : ∀ i, M₁ i) : ContinuousMultilinearMap R M₁ M₂ →+ M₂ :=
   ⟨fun f => f m, rfl, fun _ _ => rfl⟩
 #align continuous_multilinear_map.apply_add_hom ContinuousMultilinearMap.applyAddHom
@@ -224,7 +223,7 @@ theorem sum_apply {α : Type _} (f : α → ContinuousMultilinearMap R M₁ M₂
 
 end ContinuousAdd
 
-/-- If `f` is a continuous multilinear map, then `f.to_continuous_linear_map m i` is the continuous
+/-- If `f` is a continuous multilinear map, then `f.toContinuousLinearMap m i` is the continuous
 linear map obtained by fixing all coordinates but `i` equal to those of `m`, and varying the
 `i`-th coordinate. -/
 def toContinuousLinearMap [DecidableEq ι] (m : ∀ i, M₁ i) (i : ι) : M₁ i →L[R] M₂ :=
@@ -235,12 +234,12 @@ def toContinuousLinearMap [DecidableEq ι] (m : ∀ i, M₁ i) (i : ι) : M₁ i
 /-- The cartesian product of two continuous multilinear maps, as a continuous multilinear map. -/
 def prod (f : ContinuousMultilinearMap R M₁ M₂) (g : ContinuousMultilinearMap R M₁ M₃) :
     ContinuousMultilinearMap R M₁ (M₂ × M₃) :=
-  { f.toMultilinearMap.Prod g.toMultilinearMap with cont := f.cont.prod_mk g.cont }
+  { f.toMultilinearMap.prod g.toMultilinearMap with cont := f.cont.prod_mk g.cont }
 #align continuous_multilinear_map.prod ContinuousMultilinearMap.prod
 
 @[simp]
 theorem prod_apply (f : ContinuousMultilinearMap R M₁ M₂) (g : ContinuousMultilinearMap R M₁ M₃)
-    (m : ∀ i, M₁ i) : (f.Prod g) m = (f m, g m) :=
+    (m : ∀ i, M₁ i) : (f.prod g) m = (f m, g m) :=
   rfl
 #align continuous_multilinear_map.prod_apply ContinuousMultilinearMap.prod_apply
 
@@ -272,7 +271,7 @@ variable (R M₂)
 
 /-- The evaluation map from `ι → M₂` to `M₂` is multilinear at a given `i` when `ι` is subsingleton.
 -/
-@[simps toMultilinearMap apply]
+@[simps! toMultilinearMap apply]
 def ofSubsingleton [Subsingleton ι] (i' : ι) : ContinuousMultilinearMap R (fun _ : ι => M₂) M₂ where
   toMultilinearMap := MultilinearMap.ofSubsingleton R _ i'
   cont := continuous_apply _
@@ -281,7 +280,7 @@ def ofSubsingleton [Subsingleton ι] (i' : ι) : ContinuousMultilinearMap R (fun
 variable (M₁) {M₂}
 
 /-- The constant map is multilinear when `ι` is empty. -/
-@[simps toMultilinearMap apply]
+@[simps! toMultilinearMap apply]
 def constOfIsEmpty [IsEmpty ι] (m : M₂) : ContinuousMultilinearMap R M₁ M₂ where
   toMultilinearMap := MultilinearMap.constOfIsEmpty R _ m
   cont := continuous_const
@@ -291,7 +290,7 @@ end
 
 /-- If `g` is continuous multilinear and `f` is a collection of continuous linear maps,
 then `g (f₁ m₁, ..., fₙ mₙ)` is again a continuous multilinear map, that we call
-`g.comp_continuous_linear_map f`. -/
+`g.compContinuousLinearMap f`. -/
 def compContinuousLinearMap (g : ContinuousMultilinearMap R M₁' M₄)
     (f : ∀ i : ι, M₁ i →L[R] M₁' i) : ContinuousMultilinearMap R M₁ M₄ :=
   { g.toMultilinearMap.compLinearMap fun i => (f i).toLinearMap with
@@ -307,13 +306,13 @@ theorem compContinuousLinearMap_apply (g : ContinuousMultilinearMap R M₁' M₄
 
 /-- Composing a continuous multilinear map with a continuous linear map gives again a
 continuous multilinear map. -/
-def ContinuousLinearMap.compContinuousMultilinearMap (g : M₂ →L[R] M₃)
+def _root_.ContinuousLinearMap.compContinuousMultilinearMap (g : M₂ →L[R] M₃)
     (f : ContinuousMultilinearMap R M₁ M₂) : ContinuousMultilinearMap R M₁ M₃ :=
   { g.toLinearMap.compMultilinearMap f.toMultilinearMap with cont := g.cont.comp f.cont }
 #align continuous_linear_map.comp_continuous_multilinear_map ContinuousLinearMap.compContinuousMultilinearMap
 
 @[simp]
-theorem ContinuousLinearMap.compContinuousMultilinearMap_coe (g : M₂ →L[R] M₃)
+theorem _root_.ContinuousLinearMap.compContinuousMultilinearMap_coe (g : M₂ →L[R] M₃)
     (f : ContinuousMultilinearMap R M₁ M₂) :
     (g.compContinuousMultilinearMap f : (∀ i, M₁ i) → M₃) =
       (g : M₂ → M₃) ∘ (f : (∀ i, M₁ i) → M₂) := by
@@ -321,7 +320,7 @@ theorem ContinuousLinearMap.compContinuousMultilinearMap_coe (g : M₂ →L[R] M
   rfl
 #align continuous_linear_map.comp_continuous_multilinear_map_coe ContinuousLinearMap.compContinuousMultilinearMap_coe
 
-/-- `continuous_multilinear_map.pi` as an `equiv`. -/
+/-- `ContinuousMultilinearMap.pi` as an `Equiv`. -/
 @[simps]
 def piEquiv {ι' : Type _} {M' : ι' → Type _} [∀ i, AddCommMonoid (M' i)]
     [∀ i, TopologicalSpace (M' i)] [∀ i, Module R (M' i)] :
@@ -336,16 +335,16 @@ def piEquiv {ι' : Type _} {M' : ι' → Type _} [∀ i, AddCommMonoid (M' i)]
     rfl
 #align continuous_multilinear_map.pi_equiv ContinuousMultilinearMap.piEquiv
 
-/-- In the specific case of continuous multilinear maps on spaces indexed by `fin (n+1)`, where one
-can build an element of `Π(i : fin (n+1)), M i` using `cons`, one can express directly the
+/-- In the specific case of continuous multilinear maps on spaces indexed by `Fin (n+1)`, where one
+can build an element of `Π(i : Fin (n+1)), M i` using `cons`, one can express directly the
 additivity of a multilinear map along the first variable. -/
 theorem cons_add (f : ContinuousMultilinearMap R M M₂) (m : ∀ i : Fin n, M i.succ) (x y : M 0) :
     f (cons (x + y) m) = f (cons x m) + f (cons y m) :=
   f.toMultilinearMap.cons_add m x y
 #align continuous_multilinear_map.cons_add ContinuousMultilinearMap.cons_add
 
-/-- In the specific case of continuous multilinear maps on spaces indexed by `fin (n+1)`, where one
-can build an element of `Π(i : fin (n+1)), M i` using `cons`, one can express directly the
+/-- In the specific case of continuous multilinear maps on spaces indexed by `Fin (n+1)`, where one
+can build an element of `Π(i : Fin (n+1)), M i` using `cons`, one can express directly the
 multiplicativity of a multilinear map along the first variable. -/
 theorem cons_smul (f : ContinuousMultilinearMap R M M₂) (m : ∀ i : Fin n, M i.succ) (c : R)
     (x : M 0) : f (cons (c • x) m) = c • f (cons x m) :=
@@ -391,7 +390,9 @@ end ApplySum
 
 section RestrictScalar
 
-variable (R) {A : Type _} [Semiring A] [SMul R A] [∀ i : ι, Module A (M₁ i)] [Module A M₂]
+variable (R) {A : Type _}
+
+variable [Semiring A] [SMul R A] [∀ i : ι, Module A (M₁ i)] [Module A M₂]
   [∀ i, IsScalarTower R A (M₁ i)] [IsScalarTower R A M₂]
 
 /-- Reinterpret an `A`-multilinear map as an `R`-multilinear map, if `A` is an algebra over `R`
@@ -442,7 +443,7 @@ theorem sub_apply (m : ∀ i, M₁ i) : (f - f') m = f m - f' m :=
 #align continuous_multilinear_map.sub_apply ContinuousMultilinearMap.sub_apply
 
 instance : AddCommGroup (ContinuousMultilinearMap R M₁ M₂) :=
-  toMultilinearMap_injective.AddCommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
+  toMultilinearMap_injective.addCommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ _ => rfl
 
 end TopologicalAddGroup
@@ -495,7 +496,7 @@ instance : Module R' (ContinuousMultilinearMap A M₁ M₂) :=
   Function.Injective.module _ ⟨toMultilinearMap, toMultilinearMap_zero, toMultilinearMap_add⟩
     toMultilinearMap_injective fun _ _ => rfl
 
-/-- Linear map version of the map `to_multilinear_map` associating to a continuous multilinear map
+/-- Linear map version of the map `toMultilinearMap` associating to a continuous multilinear map
 the corresponding multilinear map. -/
 @[simps]
 def toMultilinearMapLinear : ContinuousMultilinearMap A M₁ M₂ →ₗ[R'] MultilinearMap A M₁ M₂ where
@@ -504,15 +505,15 @@ def toMultilinearMapLinear : ContinuousMultilinearMap A M₁ M₂ →ₗ[R'] Mul
   map_smul' := toMultilinearMap_smul
 #align continuous_multilinear_map.to_multilinear_map_linear ContinuousMultilinearMap.toMultilinearMapLinear
 
-/-- `continuous_multilinear_map.pi` as a `linear_equiv`. -/
+/-- `ContinuousMultilinearMap.pi` as a `LinearEquiv`. -/
 @[simps (config := { simpRhs := true })]
 def piLinearEquiv {ι' : Type _} {M' : ι' → Type _} [∀ i, AddCommMonoid (M' i)]
     [∀ i, TopologicalSpace (M' i)] [∀ i, ContinuousAdd (M' i)] [∀ i, Module R' (M' i)]
     [∀ i, Module A (M' i)] [∀ i, SMulCommClass A R' (M' i)] [∀ i, ContinuousConstSMul R' (M' i)] :
     (∀ i, ContinuousMultilinearMap A M₁ (M' i)) ≃ₗ[R'] ContinuousMultilinearMap A M₁ (∀ i, M' i) :=
   { piEquiv with
-    map_add' := fun x y => rfl
-    map_smul' := fun c x => rfl }
+    map_add' := fun _ _ => rfl
+    map_smul' := fun _ _ => rfl }
 #align continuous_multilinear_map.pi_linear_equiv ContinuousMultilinearMap.piLinearEquiv
 
 end Module
@@ -525,9 +526,9 @@ variable (R ι) (A : Type _) [Fintype ι] [CommSemiring R] [CommSemiring A] [Alg
 /-- The continuous multilinear map on `A^ι`, where `A` is a normed commutative algebra
 over `𝕜`, associating to `m` the product of all the `m i`.
 
-See also `continuous_multilinear_map.mk_pi_algebra_fin`. -/
-protected def mkPiAlgebra : ContinuousMultilinearMap R (fun i : ι => A) A where
-  cont := continuous_finset_prod _ fun i hi => continuous_apply _
+See also `ContinuousMultilinearMap.mkPiAlgebraFin`. -/
+protected def mkPiAlgebra : ContinuousMultilinearMap R (fun _ : ι => A) A where
+  cont := continuous_finset_prod _ fun _ _ => continuous_apply _
   toMultilinearMap := MultilinearMap.mkPiAlgebra R ι A
 #align continuous_multilinear_map.mk_pi_algebra ContinuousMultilinearMap.mkPiAlgebra
 
@@ -546,12 +547,12 @@ variable (R n) (A : Type _) [CommSemiring R] [Semiring A] [Algebra R A] [Topolog
 /-- The continuous multilinear map on `A^n`, where `A` is a normed algebra over `𝕜`, associating to
 `m` the product of all the `m i`.
 
-See also: `continuous_multilinear_map.mk_pi_algebra`. -/
+See also: `ContinuousMultilinearMap.mkPiAlgebra`. -/
 protected def mkPiAlgebraFin : A[×n]→L[R] A where
   cont := by
-    change Continuous fun m => (List.ofFn m).Prod
+    change Continuous fun m => (List.ofFn m).prod
     simp_rw [List.ofFn_eq_map]
-    exact continuous_list_prod _ fun i hi => continuous_apply _
+    exact continuous_list_prod _ fun i _ => continuous_apply _
   toMultilinearMap := MultilinearMap.mkPiAlgebraFin R n A
 #align continuous_multilinear_map.mk_pi_algebra_fin ContinuousMultilinearMap.mkPiAlgebraFin
 
@@ -559,7 +560,7 @@ variable {R n A}
 
 @[simp]
 theorem mkPiAlgebraFin_apply (m : Fin n → A) :
-    ContinuousMultilinearMap.mkPiAlgebraFin R n A m = (List.ofFn m).Prod :=
+    ContinuousMultilinearMap.mkPiAlgebraFin R n A m = (List.ofFn m).prod :=
   rfl
 #align continuous_multilinear_map.mk_pi_algebra_fin_apply ContinuousMultilinearMap.mkPiAlgebraFin_apply
 
@@ -571,15 +572,14 @@ variable [CommSemiring R] [∀ i, AddCommMonoid (M₁ i)] [AddCommMonoid M₂] [
   [Module R M₂] [TopologicalSpace R] [∀ i, TopologicalSpace (M₁ i)] [TopologicalSpace M₂]
   [ContinuousSMul R M₂] (f : ContinuousMultilinearMap R M₁ R) (z : M₂)
 
-/-- Given a continuous `R`-multilinear map `f` taking values in `R`, `f.smul_right z` is the
+/-- Given a continuous `R`-multilinear map `f` taking values in `R`, `f.smulRight z` is the
 continuous multilinear map sending `m` to `f m • z`. -/
-@[simps toMultilinearMap apply]
+@[simps! toMultilinearMap apply]
 def smulRight : ContinuousMultilinearMap R M₁ M₂ where
-  toMultilinearMap := f.toMultilinearMap.smul_right z
+  toMultilinearMap := f.toMultilinearMap.smulRight z
   cont := f.cont.smul continuous_const
 #align continuous_multilinear_map.smul_right ContinuousMultilinearMap.smulRight
 
 end SmulRight
 
 end ContinuousMultilinearMap
-
