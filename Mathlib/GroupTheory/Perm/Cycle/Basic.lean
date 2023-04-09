@@ -1926,7 +1926,6 @@ theorem _root_.Set.Countable.exists_cycleOn (hs : s.Countable) :
     simp
 #align set.countable.exists_cycle_on Set.Countable.exists_cycleOn
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem _root_.Set.prod_self_eq_unionᵢ_perm (hf : f.IsCycleOn s) :
     s ×ˢ s = ⋃ n : ℤ, (fun a => (a, (f ^ n) a)) '' s := by
   ext ⟨a, b⟩

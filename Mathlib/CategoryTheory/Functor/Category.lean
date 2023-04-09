@@ -139,7 +139,7 @@ open NatTrans
 
 namespace Functor
 
-/-- Flip the arguments of a bifunctor. See also `currying.lean`. -/
+/-- Flip the arguments of a bifunctor. See also `Currying.lean`. -/
 @[simps]
 protected def flip (F : C ⥤ D ⥤ E) : D ⥤ C ⥤ E where
   obj k :=
