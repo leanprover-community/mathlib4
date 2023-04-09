@@ -97,7 +97,6 @@ open Function
 
 section Coercions
 
--- Porting note: Replaced CoeFun with FunLike instance
 instance funLike : FunLike (AlternatingMap R M N ι) (ι → M) (fun _ => N) where
   coe f := f.toFun
   coe_injective' := fun f g h ↦ by
@@ -135,7 +134,7 @@ theorem congr_arg (f : AlternatingMap R M N ι) {x y : ι → M} (h : x = y) : f
 #align alternating_map.congr_arg AlternatingMap.congr_arg
 
 theorem coe_injective : Injective ((↑) : AlternatingMap R M N ι → (ι → M) → N) :=
-  FunLike.coe_injective'
+  FunLike.coe_injective
 #align alternating_map.coe_injective AlternatingMap.coe_injective
 
 @[norm_cast] -- @[simp] -- Porting note: simp can prove this
