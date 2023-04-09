@@ -50,8 +50,7 @@ variable [EMetricSpace α] [cs : CompleteSpace α] {K : ℝ≥0} {f : α → α}
 
 open EMetric Set
 
-theorem toLipschitzWith (hf : ContractingWith K f) : LipschitzWith K f :=
-  hf.2
+theorem toLipschitzWith (hf : ContractingWith K f) : LipschitzWith K f := hf.2
 #align contracting_with.to_lipschitz_with ContractingWith.toLipschitzWith
 
 theorem one_sub_K_pos' (hf : ContractingWith K f) : (0 : ℝ≥0∞) < 1 - K := by simp [hf.1]
@@ -162,7 +161,7 @@ theorem efixedPoint_eq_of_edist_lt_top (hf : ContractingWith K f) {x : α} (hx :
   refine' (hf.eq_or_edist_eq_top_of_fixedPoints _ _).elim id fun h' ↦ False.elim (ne_of_lt _ h')
     <;> try apply efixedPoint_isFixedPt
   change edistLtTopSetoid.Rel _ _
-  trans x;
+  trans x
   · apply Setoid.symm' -- Porting note: Originally `symm`
     exact hf.edist_efixedPoint_lt_top hx
   trans y
@@ -253,7 +252,7 @@ theorem efixedPoint_eq_of_edist_lt_top' (hf : ContractingWith K f) {s : Set α} 
   refine' (hf.eq_or_edist_eq_top_of_fixedPoints _ _).elim id fun h' ↦ False.elim (ne_of_lt _ h')
     <;> try apply efixedPoint_is_fixed_pt'
   change edistLtTopSetoid.Rel _ _
-  trans x;
+  trans x
   · apply Setoid.symm' -- Porting note: Originally `symm`
     apply edist_efixedPoint_lt_top'
   trans y
@@ -284,8 +283,7 @@ theorem dist_inequality (x y) : dist x y ≤ (dist x (f x) + dist y (f y)) / (1 
     _ ≤ dist x (f x) + dist y (f y) + K * dist x y := add_le_add_left (hf.dist_le_mul _ _) _
 #align contracting_with.dist_inequality ContractingWith.dist_inequality
 
-theorem dist_le_of_fixedPoint (x) {y} (hy : IsFixedPt f y) :
-    dist x y ≤ dist x (f x) / (1 - K) := by
+theorem dist_le_of_fixedPoint (x) {y} (hy : IsFixedPt f y) : dist x y ≤ dist x (f x) / (1 - K) := by
   simpa only [hy.eq, dist_self, add_zero] using hf.dist_inequality x y
 #align contracting_with.dist_le_of_fixed_point ContractingWith.dist_le_of_fixedPoint
 
@@ -304,13 +302,10 @@ theorem dist_fixedPoint_fixedPoint_of_dist_le' (g : α → α) {x y} (hx : IsFix
     _ ≤ C / (1 - K) := (div_le_div_right hf.one_sub_K_pos).2 (hfg y)
 #align contracting_with.dist_fixed_point_fixed_point_of_dist_le' ContractingWith.dist_fixedPoint_fixedPoint_of_dist_le'
 
---noncomputable section -- Porting note: Commented out, to fix an error with `end ContractingWith`.
-
 variable [Nonempty α] [CompleteSpace α]
 
 variable (f)
 
--- Porting note: Marked `fixedPoint` as noncomputable.
 /-- The unique fixed point of a contracting map in a nonempty complete metric space. -/
 noncomputable def fixedPoint : α :=
   efixedPoint f hf _ (edist_ne_top (Classical.choice ‹Nonempty α›) _)
