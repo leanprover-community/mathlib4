@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 
 ! This file was ported from Lean 3 source module set_theory.cardinal.basic
-! leanprover-community/mathlib commit 4c19a16e4b705bf135cf9a80ac18fcc99c438514
+! leanprover-community/mathlib commit ea050b44c0f9aba9d16a948c7cc7d2e7c8493567
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -259,6 +259,13 @@ instance partialOrder : PartialOrder Cardinal.{u} where
   le_antisymm := by
     rintro ⟨α⟩ ⟨β⟩ ⟨e₁⟩ ⟨e₂⟩
     exact Quotient.sound (e₁.antisymm e₂)
+
+instance linearOrder : LinearOrder Cardinal.{u} :=
+  { Cardinal.partialOrder with
+    le_total := by
+      rintro ⟨α⟩ ⟨β⟩
+      apply Embedding.total
+    decidable_le := Classical.decRel _ }
 
 theorem le_def (α β : Type u) : (#α) ≤ (#β) ↔ Nonempty (α ↪ β) :=
   Iff.rfl
@@ -535,6 +542,9 @@ instance commSemiring : CommSemiring Cardinal.{u} where
   npow_zero := @power_zero
   npow_succ n c := show (c ^ (n + 1)) = c * (c ^ n) by rw [power_add, power_one, mul_comm']
 
+-- Porting note: this ensures a computable instance.
+instance commMonoid : CommMonoid Cardinal.{u} := CommSemiring.toCommMonoid
+
 /-! Porting note: Deprecated section. Remove. -/
 section deprecated
 set_option linter.deprecated false
@@ -665,7 +675,7 @@ instance add_swap_covariantClass : CovariantClass Cardinal Cardinal (swap (· + 
   ⟨fun _ _ _ h => add_le_add' h le_rfl⟩
 #align cardinal.add_swap_covariant_class Cardinal.add_swap_covariantClass
 
-instance : CanonicallyOrderedCommSemiring Cardinal.{u} :=
+instance canonicallyOrderedCommSemiring : CanonicallyOrderedCommSemiring Cardinal.{u} :=
   { Cardinal.commSemiring,
     Cardinal.partialOrder with
     bot := 0
@@ -683,6 +693,15 @@ instance : CanonicallyOrderedCommSemiring Cardinal.{u} :=
       intro a b
       exact inductionOn₂ a b fun α β => by
         simpa only [mul_def, mk_eq_zero_iff, isEmpty_prod] using id }
+
+instance : CanonicallyLinearOrderedAddMonoid Cardinal.{u} :=
+  { Cardinal.canonicallyOrderedCommSemiring, Cardinal.linearOrder with }
+
+instance : LinearOrderedCommMonoidWithZero Cardinal.{u} :=
+  { Cardinal.commSemiring,
+    Cardinal.linearOrder with
+    mul_le_mul_left := @mul_le_mul_left' _ _ _ _
+    zero_le_one := zero_le _ }
 
 theorem zero_power_le (c : Cardinal.{u}) : ((0 : Cardinal.{u})^c) ≤ 1 := by
   by_cases h : c = 0
@@ -715,17 +734,7 @@ theorem cantor (a : Cardinal.{u}) : a < (2^a) :=
   exact cantor_injective f hf
 #align cardinal.cantor Cardinal.cantor
 
-instance : NoMaxOrder Cardinal.{u} :=
-  { Cardinal.partialOrder with exists_gt := fun a => ⟨_, cantor a⟩ }
-
-instance : CanonicallyLinearOrderedAddMonoid Cardinal.{u} :=
-  { (inferInstance : CanonicallyOrderedAddMonoid Cardinal),
-    -- Porting note: Needed to add .{u} below
-    Cardinal.partialOrder.{u} with
-    le_total := by
-      rintro ⟨α⟩ ⟨β⟩
-      apply Embedding.total
-    decidable_le := Classical.decRel _}
+instance : NoMaxOrder Cardinal.{u} where exists_gt a := ⟨_, cantor a⟩
 
 -- short-circuit type class inference
 instance : DistribLattice Cardinal.{u} := inferInstance
@@ -769,6 +778,7 @@ protected theorem lt_wf : @WellFounded Cardinal.{u} (· < ·) :=
 instance : WellFoundedRelation Cardinal.{u} :=
   ⟨(· < ·), Cardinal.lt_wf⟩
 
+-- Porting note: this no longer is automatically inferred.
 instance : WellFoundedLT Cardinal.{u} :=
   ⟨Cardinal.lt_wf⟩
 
