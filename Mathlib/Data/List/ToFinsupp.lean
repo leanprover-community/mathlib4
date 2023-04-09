@@ -16,14 +16,14 @@ import Mathlib.Data.Finsupp.Basic
 
 # Main definitions
 
-- `list.to_finsupp`: Interpret a list as a finitely supported function, where the indexing type
+- `List.toFinsupp`: Interpret a list as a finitely supported function, where the indexing type
 is `ℕ`, and the values are either the elements of the list (accessing by indexing) or `0` outside
 of the list.
 
 # Main theorems
 
-- `list.to_finsupp_eq_sum_map_enum_single`: A `l : list M` over `M` an `add_monoid`,
-when interpreted as a finitely supported function, is equal to the sum of `finsupp.single`
+- `List.toFinsupp_eq_sum_map_enum_single`: A `l : List M` over `M` an `AddMonoid`,
+when interpreted as a finitely supported function, is equal to the sum of `Finsupp.single`
 produced by mapping over `list.enum l`.
 
 ## Implementation details
@@ -39,11 +39,11 @@ namespace List
 
 variable {M : Type _} [Zero M] (l : List M) [DecidablePred (getD l · 0 ≠ 0)] (n : ℕ)
 
-/-- Indexing into a `l : list M`, as a finitely-supported function,
+/-- Indexing into a `l : List M`, as a finitely-supported function,
 where the support are all the indices within the length of the list
 that index to a non-zero value. Indices beyond the end of the list are sent to 0.
 
-This is a computable version of the `finsupp.on_finset` construction.
+This is a computable version of the `Finsupp.onFinset` construction.
 -/
 def toFinsupp : ℕ →₀ M where
   toFun i := getD l i 0
