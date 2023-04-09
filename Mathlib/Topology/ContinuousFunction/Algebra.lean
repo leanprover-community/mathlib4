@@ -301,35 +301,35 @@ variable {α β : Type _} [TopologicalSpace α] [TopologicalSpace β]
 
 @[to_additive]
 instance [Semigroup β] [ContinuousMul β] : Semigroup C(α, β) :=
-  coe_injective.Semigroup _ coe_mul
+  coe_injective.semigroup _ coe_mul
 
 @[to_additive]
 instance [CommSemigroup β] [ContinuousMul β] : CommSemigroup C(α, β) :=
-  coe_injective.CommSemigroup _ coe_mul
+  coe_injective.commSemigroup _ coe_mul
 
 @[to_additive]
 instance [MulOneClass β] [ContinuousMul β] : MulOneClass C(α, β) :=
-  coe_injective.MulOneClass _ coe_one coe_mul
+  coe_injective.mulOneClass _ coe_one coe_mul
 
 instance [MulZeroClass β] [ContinuousMul β] : MulZeroClass C(α, β) :=
-  coe_injective.MulZeroClass _ coe_zero coe_mul
+  coe_injective.mulZeroClass _ coe_zero coe_mul
 
 instance [SemigroupWithZero β] [ContinuousMul β] : SemigroupWithZero C(α, β) :=
-  coe_injective.SemigroupWithZero _ coe_zero coe_mul
+  coe_injective.semigroupWithZero _ coe_zero coe_mul
 
 @[to_additive]
 instance [Monoid β] [ContinuousMul β] : Monoid C(α, β) :=
-  coe_injective.Monoid _ coe_one coe_mul coe_pow
+  coe_injective.monoid _ coe_one coe_mul coe_pow
 
 instance [MonoidWithZero β] [ContinuousMul β] : MonoidWithZero C(α, β) :=
-  coe_injective.MonoidWithZero _ coe_zero coe_one coe_mul coe_pow
+  coe_injective.monoidWithZero _ coe_zero coe_one coe_mul coe_pow
 
 @[to_additive]
 instance [CommMonoid β] [ContinuousMul β] : CommMonoid C(α, β) :=
-  coe_injective.CommMonoid _ coe_one coe_mul coe_pow
+  coe_injective.commMonoid _ coe_one coe_mul coe_pow
 
 instance [CommMonoidWithZero β] [ContinuousMul β] : CommMonoidWithZero C(α, β) :=
-  coe_injective.CommMonoidWithZero _ coe_zero coe_one coe_mul coe_pow
+  coe_injective.commMonoidWithZero _ coe_zero coe_one coe_mul coe_pow
 
 @[to_additive]
 instance [LocallyCompactSpace α] [Mul β] [ContinuousMul β] : ContinuousMul C(α, β) :=
