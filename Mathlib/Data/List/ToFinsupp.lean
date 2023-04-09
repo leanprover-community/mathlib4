@@ -16,15 +16,15 @@ import Mathlib.Data.Finsupp.Basic
 
 ## Main definitions
 
-- `List.toFinsupp`: Interpret a list as a finitely supported function, where the indexing type
-is `ℕ`, and the values are either the elements of the list (accessing by indexing) or `0` outside
-of the list.
+- `List.toFinsupp`: Interpret a list as a finitely supported function, where the indexing type is
+  `ℕ`, and the values are either the elements of the list (accessing by indexing) or `0` outside of
+  the list.
 
 ## Main theorems
 
-- `List.toFinsupp_eq_sum_map_enum_single`: A `l : List M` over `M` an `AddMonoid`,
-when interpreted as a finitely supported function, is equal to the sum of `Finsupp.single`
-produced by mapping over `list.enum l`.
+- `List.toFinsupp_eq_sum_map_enum_single`: A `l : List M` over `M` an `AddMonoid`, when interpreted
+  as a finitely supported function, is equal to the sum of `Finsupp.single` produced by mapping over
+  `List.enum l`.
 
 ## Implementation details
 
