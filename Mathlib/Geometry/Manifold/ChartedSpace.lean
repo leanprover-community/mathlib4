@@ -668,8 +668,9 @@ instance (H : Type _) [TopologicalSpace H] (H' : Type _) [TopologicalSpace H'] :
     TopologicalSpace (ModelProd H H') :=
   instTopologicalSpaceProd
 
+-- Porting note: simpNF false positive
 -- Next lemma shows up often when dealing with derivatives, register it as simp.
-@[simp, mfld_simps]
+@[simp, mfld_simps, nolint simpNF]
 theorem modelProd_range_prod_id {H : Type _} {H' : Type _} {α : Type _} (f : H → α) :
     (range fun p : ModelProd H H' ↦ (f p.1, p.2)) = range f ×ˢ (univ : Set H') := by
   rw [prod_range_univ_eq]
