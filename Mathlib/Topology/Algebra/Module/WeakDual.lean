@@ -94,8 +94,8 @@ instance instModule [CommSemiring 𝕜] [AddCommMonoid E] [m : Module 𝕜 E] [A
 instance instAddCommGroup [CommSemiring 𝕜] [a : AddCommGroup E] [Module 𝕜 E] [AddCommMonoid F]
     [Module 𝕜 F] (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) : AddCommGroup (WeakBilin B) := a
 
-instance (priority := 100) instModule' [CommSemiring 𝕜] [CommSemiring 𝕝] [AddCommGroup E] [Module 𝕜 E]
-    [AddCommGroup F] [Module 𝕜 F] [m : Module 𝕝 E] (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) :
+instance (priority := 100) instModule' [CommSemiring 𝕜] [CommSemiring 𝕝] [AddCommGroup E]
+    [Module 𝕜 E] [AddCommGroup F] [Module 𝕜 F] [m : Module 𝕝 E] (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) :
     Module 𝕝 (WeakBilin B) := m
 #align weak_bilin.module' WeakBilin.instModule'
 
@@ -214,8 +214,9 @@ theorem topDualPairing_apply (v : E →L[𝕜] 𝕜) (x : E) : topDualPairing �
 
 /-- The weak star topology is the topology coarsest topology on `E →L[𝕜] 𝕜` such that all
 functionals `fun v => v x` are continuous. -/
-def WeakDual (𝕜 E : Type _) [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜] [ContinuousConstSMul 𝕜 𝕜]
-    [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E] := WeakBilin (topDualPairing 𝕜 E)
+def WeakDual (𝕜 E : Type _) [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜]
+    [ContinuousConstSMul 𝕜 𝕜] [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E] :=
+  WeakBilin (topDualPairing 𝕜 E)
 #align weak_dual WeakDual
 
 namespace WeakDual
@@ -296,8 +297,8 @@ instance instT2Space [T2Space 𝕜] : T2Space (WeakDual 𝕜 E) :=
 
 end WeakDual
 
-/-- The weak topology is the topology coarsest topology on `E` such that all
-functionals `fun x => v x` are continuous. -/
+/-- The weak topology is the topology coarsest topology on `E` such that all functionals
+`fun x => v x` are continuous. -/
 def WeakSpace (𝕜 E) [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜]
     [ContinuousConstSMul 𝕜 𝕜] [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E] :=
   WeakBilin (topDualPairing 𝕜 E).flip
