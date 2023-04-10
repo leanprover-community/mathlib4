@@ -32,43 +32,32 @@ variable (C : Type _) [Category C] [Preadditive C] [HasZeroObject C] [HasShift C
 
 namespace Triangulated
 
--- porting note: this structure was added because otherwise Lean4 would complain that
--- the definition of `Octahedron` contains free variables
-/-- in a pretriangulated category `C`, `i : OctahedronInput C` consists of two composable
-morphisms `u₁₂`, `u₂₃`, their composition `u₁₃`, and three distinguished triangles which
-provide "cones" for `u₁₂`, `u₂₃`, `u₁₃`. The octahedron axiom `Octahedron i` for this
-input `i` shall say that the these three cones fit into a suitable distinguished triangle. -/
-structure OctahedronInput where
-  {X₁ X₂ X₃ Z₁₂ Z₂₃ Z₁₃ : C}
-  {u₁₂ : X₁ ⟶ X₂}
-  {u₂₃ : X₂ ⟶ X₃}
-  {u₁₃ : X₁ ⟶ X₃}
-  (comm : u₁₂ ≫ u₂₃ = u₁₃)
-  {v₁₂ : X₂ ⟶ Z₁₂} {w₁₂ : Z₁₂ ⟶ X₁⟦(1 : ℤ)⟧}
-  (h₁₂ : Triangle.mk u₁₂ v₁₂ w₁₂ ∈ distTriang C)
-  {v₂₃ : X₃ ⟶ Z₂₃} {w₂₃ : Z₂₃ ⟶ X₂⟦(1 : ℤ)⟧}
-  (h₂₃ : Triangle.mk u₂₃ v₂₃ w₂₃ ∈ distTriang C)
-  {v₁₃ : X₃ ⟶ Z₁₃} {w₁₃ : Z₁₃ ⟶ X₁⟦(1 : ℤ)⟧}
-  (h₁₃ : Triangle.mk u₁₃ v₁₃ w₁₃ ∈ distTriang C)
-
 variable {C}
 
+-- Porting note: see https://github.com/leanprover/lean4/issues/2188
+set_option genInjectivity false in
 /-- An octahedron is a type of datum whose existence is asserted by
 the octahedron axiom (TR 4), see https://stacks.math.columbia.edu/tag/05QK -/
-structure Octahedron (i : OctahedronInput C) where
-  m₁ : i.Z₁₂ ⟶ i.Z₁₃
-  m₃ : i.Z₁₃ ⟶ i.Z₂₃
-  comm₁ : i.v₁₂ ≫ m₁ = i.u₂₃ ≫ i.v₁₃
-  comm₂ : m₁ ≫ i.w₁₃ = i.w₁₂
-  comm₃ : i.v₁₃ ≫ m₃ = i.v₂₃
-  comm₄ : i.w₁₃ ≫ i.u₁₂⟦1⟧' = m₃ ≫ i.w₂₃
-  mem : Triangle.mk m₁ m₃ (i.w₂₃ ≫ i.v₁₂⟦1⟧') ∈ distTriang C
+structure Octahedron
+  {X₁ X₂ X₃ Z₁₂ Z₂₃ Z₁₃ : C}
+  {u₁₂ : X₁ ⟶ X₂} {u₂₃ : X₂ ⟶ X₃} {u₁₃ : X₁ ⟶ X₃} (comm : u₁₂ ≫ u₂₃ = u₁₃)
+  {v₁₂ : X₂ ⟶ Z₁₂} {w₁₂ : Z₁₂ ⟶ X₁⟦(1 : ℤ)⟧} (h₁₂ : Triangle.mk u₁₂ v₁₂ w₁₂ ∈ distTriang C)
+  {v₂₃ : X₃ ⟶ Z₂₃} {w₂₃ : Z₂₃ ⟶ X₂⟦(1 : ℤ)⟧} (h₂₃ : Triangle.mk u₂₃ v₂₃ w₂₃ ∈ distTriang C)
+  {v₁₃ : X₃ ⟶ Z₁₃} {w₁₃ : Z₁₃ ⟶ X₁⟦(1 : ℤ)⟧} (h₁₃ : Triangle.mk u₁₃ v₁₃ w₁₃ ∈ distTriang C)
+ where
+  m₁ : Z₁₂ ⟶ Z₁₃
+  m₃ : Z₁₃ ⟶ Z₂₃
+  comm₁ : v₁₂ ≫ m₁ = u₂₃ ≫ v₁₃
+  comm₂ : m₁ ≫ w₁₃ = w₁₂
+  comm₃ : v₁₃ ≫ m₃ = v₂₃
+  comm₄ : w₁₃ ≫ u₁₂⟦1⟧' = m₃ ≫ w₂₃
+  mem : Triangle.mk m₁ m₃ (w₂₃ ≫ v₁₂⟦1⟧') ∈ distTriang C
+gen_injective_theorems% Octahedron
 #align category_theory.triangulated.octahedron CategoryTheory.Triangulated.Octahedron
 
 instance (X : C) :
-    Nonempty (Octahedron (OctahedronInput.mk (comp_id (𝟙 X)) (contractible_distinguished X)
-      (contractible_distinguished X)
-      (contractible_distinguished X))) := by
+    Nonempty (Octahedron (comp_id (𝟙 X)) (contractible_distinguished X)
+      (contractible_distinguished X) (contractible_distinguished X)) := by
   refine' ⟨⟨0, 0, _, _, _, _, isomorphic_distinguished _ (contractible_distinguished (0 : C)) _
     (Triangle.isoMk _ _ (by rfl) (by rfl) (by rfl) (by simp) (by simp) (by simp))⟩⟩
   all_goals apply Subsingleton.elim
@@ -77,24 +66,29 @@ namespace Octahedron
 
 attribute [reassoc] comm₁ comm₂ comm₃ comm₄
 
-variable {i : OctahedronInput C} (h : Octahedron i)
+variable {X₁ X₂ X₃ Z₁₂ Z₂₃ Z₁₃ : C}
+  {u₁₂ : X₁ ⟶ X₂} {u₂₃ : X₂ ⟶ X₃} {u₁₃ : X₁ ⟶ X₃} (comm : u₁₂ ≫ u₂₃ = u₁₃)
+  {v₁₂ : X₂ ⟶ Z₁₂} {w₁₂ : Z₁₂ ⟶ X₁⟦(1 : ℤ)⟧} {h₁₂ : Triangle.mk u₁₂ v₁₂ w₁₂ ∈ distTriang C}
+  {v₂₃ : X₃ ⟶ Z₂₃} {w₂₃ : Z₂₃ ⟶ X₂⟦(1 : ℤ)⟧} {h₂₃ : Triangle.mk u₂₃ v₂₃ w₂₃ ∈ distTriang C}
+  {v₁₃ : X₃ ⟶ Z₁₃} {w₁₃ : Z₁₃ ⟶ X₁⟦(1 : ℤ)⟧} {h₁₃ : Triangle.mk u₁₃ v₁₃ w₁₃ ∈ distTriang C}
+  (h : Octahedron comm h₁₂ h₂₃ h₁₃)
 
 /-- The triangle `Z₁₂ ⟶ Z₁₃ ⟶ Z₂₃ ⟶ Z₁₂⟦1⟧` given by an octahedron. -/
 @[simps!]
 def triangle : Triangle C :=
-  Triangle.mk h.m₁ h.m₃ (i.w₂₃ ≫ i.v₁₂⟦1⟧')
+  Triangle.mk h.m₁ h.m₃ (w₂₃ ≫ v₁₂⟦1⟧')
 #align category_theory.triangulated.octahedron.triangle CategoryTheory.Triangulated.Octahedron.triangle
 
 /-- The first morphism of triangles given by an octahedron. -/
 @[simps]
-def triangleMorphism₁ : Triangle.mk i.u₁₂ i.v₁₂ i.w₁₂ ⟶ Triangle.mk i.u₁₃ i.v₁₃ i.w₁₃
+def triangleMorphism₁ : Triangle.mk u₁₂ v₁₂ w₁₂ ⟶ Triangle.mk u₁₃ v₁₃ w₁₃
     where
-  hom₁ := 𝟙 i.X₁
-  hom₂ := i.u₂₃
+  hom₁ := 𝟙 X₁
+  hom₂ := u₂₃
   hom₃ := h.m₁
   comm₁ := by
     dsimp
-    rw [id_comp, i.comm]
+    rw [id_comp, comm]
   comm₂ := h.comm₁
   comm₃ := by
     dsimp
@@ -103,14 +97,14 @@ def triangleMorphism₁ : Triangle.mk i.u₁₂ i.v₁₂ i.w₁₂ ⟶ Triangle
 
 /-- The second morphism of triangles given an octahedron. -/
 @[simps]
-def triangleMorphism₂ : Triangle.mk i.u₁₃ i.v₁₃ i.w₁₃ ⟶ Triangle.mk i.u₂₃ i.v₂₃ i.w₂₃
+def triangleMorphism₂ : Triangle.mk u₁₃ v₁₃ w₁₃ ⟶ Triangle.mk u₂₃ v₂₃ w₂₃
     where
-  hom₁ := i.u₁₂
-  hom₂ := 𝟙 i.X₃
+  hom₁ := u₁₂
+  hom₂ := 𝟙 X₃
   hom₃ := h.m₃
   comm₁ := by
     dsimp
-    rw [comp_id, i.comm]
+    rw [comp_id, comm]
   comm₂ := by
     dsimp
     rw [id_comp, h.comm₃]
@@ -131,25 +125,37 @@ the octahedron axiom (TR 4), see https://stacks.math.columbia.edu/tag/05QK -/
 class IsTriangulated where
   /-- the octahedron axiom (TR 4) -/
   octahedron_axiom :
-    ∀ (i : OctahedronInput C), Nonempty (Octahedron i)
+    ∀ {X₁ X₂ X₃ Z₁₂ Z₂₃ Z₁₃ : C}
+      {u₁₂ : X₁ ⟶ X₂} {u₂₃ : X₂ ⟶ X₃} {u₁₃ : X₁ ⟶ X₃} (comm : u₁₂ ≫ u₂₃ = u₁₃)
+      {v₁₂ : X₂ ⟶ Z₁₂} {w₁₂ : Z₁₂ ⟶ X₁⟦(1 : ℤ)⟧} (h₁₂ : Triangle.mk u₁₂ v₁₂ w₁₂ ∈ distTriang C)
+      {v₂₃ : X₃ ⟶ Z₂₃} {w₂₃ : Z₂₃ ⟶ X₂⟦(1 : ℤ)⟧} (h₂₃ : Triangle.mk u₂₃ v₂₃ w₂₃ ∈ distTriang C)
+      {v₁₃ : X₃ ⟶ Z₁₃} {w₁₃ : Z₁₃ ⟶ X₁⟦(1 : ℤ)⟧} (h₁₃ : Triangle.mk u₁₃ v₁₃ w₁₃ ∈ distTriang C),
+      Nonempty (Octahedron comm h₁₂ h₂₃ h₁₃)
 #align category_theory.is_triangulated CategoryTheory.IsTriangulated
 
 namespace Triangulated
 
 variable {C}
 
+variable {X₁ X₂ X₃ Z₁₂ Z₂₃ Z₁₃ : C}
+  {u₁₂ : X₁ ⟶ X₂} {u₂₃ : X₂ ⟶ X₃} {u₁₃ : X₁ ⟶ X₃} (comm : u₁₂ ≫ u₂₃ = u₁₃)
+  {v₁₂ : X₂ ⟶ Z₁₂} {w₁₂ : Z₁₂ ⟶ X₁⟦(1 : ℤ)⟧} {h₁₂ : Triangle.mk u₁₂ v₁₂ w₁₂ ∈ distTriang C}
+  {v₂₃ : X₃ ⟶ Z₂₃} {w₂₃ : Z₂₃ ⟶ X₂⟦(1 : ℤ)⟧} {h₂₃ : Triangle.mk u₂₃ v₂₃ w₂₃ ∈ distTriang C}
+  {v₁₃ : X₃ ⟶ Z₁₃} {w₁₃ : Z₁₃ ⟶ X₁⟦(1 : ℤ)⟧} {h₁₃ : Triangle.mk u₁₃ v₁₃ w₁₃ ∈ distTriang C}
+  (h : Octahedron comm h₁₂ h₂₃ h₁₃)
+
 /-- A choice of octahedron given by the octahedron axiom. -/
-def someOctahedron' [IsTriangulated C] (i : OctahedronInput C) : Octahedron i :=
-  (IsTriangulated.octahedron_axiom i).some
+def someOctahedron' [IsTriangulated C] : Octahedron comm h₁₂ h₂₃ h₁₃ :=
+  (IsTriangulated.octahedron_axiom comm h₁₂ h₂₃ h₁₃).some
 
 /-- A choice of octahedron given by the octahedron axiom. -/
 def someOctahedron [IsTriangulated C]
-  {X₁ X₂ X₃ Z₁₂ Z₂₃ Z₁₃ : C} {u₁₂ : X₁ ⟶ X₂} {u₂₃ : X₂ ⟶ X₃} {u₁₃ : X₁ ⟶ X₃}
-  (comm : u₁₂ ≫ u₂₃ = u₁₃)
+  {X₁ X₂ X₃ Z₁₂ Z₂₃ Z₁₃ : C}
+  {u₁₂ : X₁ ⟶ X₂} {u₂₃ : X₂ ⟶ X₃} {u₁₃ : X₁ ⟶ X₃} (comm : u₁₂ ≫ u₂₃ = u₁₃)
   {v₁₂ : X₂ ⟶ Z₁₂} {w₁₂ : Z₁₂ ⟶ X₁⟦(1 : ℤ)⟧} (h₁₂ : Triangle.mk u₁₂ v₁₂ w₁₂ ∈ distTriang C)
   {v₂₃ : X₃ ⟶ Z₂₃} {w₂₃ : Z₂₃ ⟶ X₂⟦(1 : ℤ)⟧} (h₂₃ : Triangle.mk u₂₃ v₂₃ w₂₃ ∈ distTriang C)
   {v₁₃ : X₃ ⟶ Z₁₃} {w₁₃ : Z₁₃ ⟶ X₁⟦(1 : ℤ)⟧} (h₁₃ : Triangle.mk u₁₃ v₁₃ w₁₃ ∈ distTriang C) :
-    Octahedron (OctahedronInput.mk comm h₁₂ h₂₃ h₁₃) :=
+    Octahedron comm h₁₂ h₂₃ h₁₃ :=
   someOctahedron' _
 #align category_theory.triangulated.some_octahedron CategoryTheory.Triangulated.someOctahedron
 
