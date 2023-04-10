@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Kenny Lau, Johan Commelin, Mario Carneiro, Kevin Buzza
 Amelia Livingston, Yury Kudryashov
 
 ! This file was ported from Lean 3 source module group_theory.submonoid.membership
-! leanprover-community/mathlib commit 509de852e1de55e1efa8eacfa11df0823f26f226
+! leanprover-community/mathlib commit 2ec920d35348cb2d13ac0e1a2ad9df0fdf1a76b4
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -364,7 +364,7 @@ theorem closure_eq_mrange (s : Set M) : closure s = mrange (FreeMonoid.lift ((�
 @[to_additive]
 theorem closure_eq_image_prod (s : Set M) :
     (closure s : Set M) = List.prod '' { l : List M | ∀ x ∈ l, x ∈ s } := by
-  rw [closure_eq_mrange, coe_mrange, ← List.range_map_coe, ← Set.range_comp]
+  rw [closure_eq_mrange, coe_mrange, ← Set.range_list_map_coe, ← Set.range_comp]
   exact congrArg _ (funext <| FreeMonoid.lift_apply _)
 #align submonoid.closure_eq_image_prod Submonoid.closure_eq_image_prod
 #align add_submonoid.closure_eq_image_sum AddSubmonoid.closure_eq_image_sum

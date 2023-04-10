@@ -18,6 +18,14 @@ import Mathlib.Algebra.Order.Ring.WithTop
 
 In this file we define `ENat` (notation: `ℕ∞`) to be `WithTop ℕ` and prove some basic lemmas
 about this type.
+
+## Implementation details
+
+There are two natural coercions from `ℕ` to `WithTop ℕ = ENat`: `WithTop.some` and `Nat.cast`.  In
+Lean 3, this difference was hidden in typeclass instances. Since these instances were definitionally
+equal, we did not duplicate generic lemmas about `WithTop α` and `WithTop.some` coercion for `ENat`
+and `Nat.cast` coercion. If you need to apply a lemma about `WithTop`, you may either rewrite back
+and forth using `ENat.some_eq_coe`, or restate the lemma for `ENat`.
 -/
 
 /-- Extended natural numbers `ℕ∞ = WithTop ℕ`. -/
@@ -49,6 +57,10 @@ instance : CharZero ℕ∞ := inferInstanceAs (CharZero (WithTop ℕ))
 instance : IsWellOrder ℕ∞ (· < ·) where
 
 variable {m n : ℕ∞}
+
+/-- Lemmas about `WithTop` expect (and can output) `WithTop.some` but the normal form for coercion
+`ℕ → ℕ∞` is `Nat.cast`. -/
+@[simp] theorem some_eq_coe : (WithTop.some : ℕ → ℕ∞) = Nat.cast := rfl
 
 --Porting note: `simp` and `norm_cast` can prove it
 --@[simp, norm_cast]
