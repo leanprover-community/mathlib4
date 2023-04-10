@@ -8,8 +8,8 @@ Authors: Kalle Kytölä, Moritz Doll
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.Algebra.Module.Basic
-import Mathbin.LinearAlgebra.BilinearMap
+import Mathlib.Topology.Algebra.Module.Basic
+import Mathlib.LinearAlgebra.BilinearMap
 
 /-!
 # Weak dual topology
@@ -141,8 +141,7 @@ theorem tendsto_iff_forall_eval_tendsto {l : Filter α} {f : α → WeakBilin B}
 #align weak_bilin.tendsto_iff_forall_eval_tendsto WeakBilin.tendsto_iff_forall_eval_tendsto
 
 /-- Addition in `weak_space B` is continuous. -/
-instance [ContinuousAdd 𝕜] : ContinuousAdd (WeakBilin B) :=
-  by
+instance [ContinuousAdd 𝕜] : ContinuousAdd (WeakBilin B) := by
   refine' ⟨continuous_induced_rng.2 _⟩
   refine'
     cast (congr_arg _ _)
@@ -151,8 +150,7 @@ instance [ContinuousAdd 𝕜] : ContinuousAdd (WeakBilin B) :=
   simp only [Function.comp_apply, Pi.add_apply, map_add, LinearMap.add_apply]
 
 /-- Scalar multiplication by `𝕜` on `weak_bilin B` is continuous. -/
-instance [ContinuousSMul 𝕜 𝕜] : ContinuousSMul 𝕜 (WeakBilin B) :=
-  by
+instance [ContinuousSMul 𝕜 𝕜] : ContinuousSMul 𝕜 (WeakBilin B) := by
   refine' ⟨continuous_induced_rng.2 _⟩
   refine' cast (congr_arg _ _) (continuous_fst.smul ((coe_fn_continuous B).comp continuous_snd))
   ext
@@ -173,11 +171,9 @@ variable (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜)
 
 /-- `weak_space B` is a `topological_add_group`, meaning that addition and negation are
 continuous. -/
-instance [ContinuousAdd 𝕜] : TopologicalAddGroup (WeakBilin B)
-    where
+instance [ContinuousAdd 𝕜] : TopologicalAddGroup (WeakBilin B) where
   to_continuousAdd := by infer_instance
-  continuous_neg :=
-    by
+  continuous_neg := by
     refine' continuous_induced_rng.2 (continuous_pi_iff.mpr fun y => _)
     refine' cast (congr_arg _ _) (eval_continuous B (-y))
     ext
