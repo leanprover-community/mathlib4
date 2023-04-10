@@ -201,7 +201,7 @@ theorem extend_agrees {x : FamilyOfElements P R} (t : x.Compatible) {f : Y ⟶ X
   have h := (le_generate R Y hf).choose_spec
   unfold FamilyOfElements.sieveExtend
   rw [t h.choose (𝟙 _) _ hf _]
-  · simp;
+  · simp
   · rw [id_comp]
     exact h.choose_spec.choose_spec.2
 #align category_theory.presieve.extend_agrees CategoryTheory.Presieve.extend_agrees
@@ -845,7 +845,7 @@ def forkMap : P.obj (op X) ⟶ FirstObj P R :=
 
 /-!
 This section establishes the equivalence between the sheaf condition of Equation (3) [MM92] and
-the definition of `is_sheaf_for`.
+the definition of `IsSheafFor`.
 -/
 
 
@@ -1026,7 +1026,7 @@ structure SheafOfTypes (J : GrothendieckTopology C) : Type max u₁ v₁ (w + 1)
   val : Cᵒᵖ ⥤ Type w
   /-- the condition that the presheaf is a sheaf -/
   cond : Presieve.IsSheaf J val
-  set_option linter.uppercaseLean3 false in
+set_option linter.uppercaseLean3 false in
 #align category_theory.SheafOfTypes CategoryTheory.SheafOfTypes
 
 namespace SheafOfTypes
@@ -1038,7 +1038,7 @@ variable {J}
 structure Hom (X Y : SheafOfTypes J) where
   /-- a morphism between the underlying presheaves -/
   val : X.val ⟶ Y.val
-  set_option linter.uppercaseLean3 false in
+set_option linter.uppercaseLean3 false in
 #align category_theory.SheafOfTypes.hom CategoryTheory.SheafOfTypes.Hom
 
 @[simps]
