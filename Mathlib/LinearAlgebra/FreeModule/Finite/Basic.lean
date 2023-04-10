@@ -8,9 +8,9 @@ Authors: Riccardo Brasca
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.LinearAlgebra.Dimension
-import Mathbin.LinearAlgebra.FreeModule.Basic
-import Mathbin.RingTheory.Finiteness
+import Mathlib.LinearAlgebra.Dimension
+import Mathlib.LinearAlgebra.FreeModule.Basic
+import Mathlib.RingTheory.Finiteness
 
 /-!
 # Finite and free modules
@@ -39,8 +39,7 @@ variable [Ring R] [AddCommGroup M] [Module R M] [Module.Free R M]
 
 /-- If a free module is finite, then any basis is finite. -/
 noncomputable instance [Nontrivial R] [Module.Finite R M] :
-    Fintype (Module.Free.ChooseBasisIndex R M) :=
-  by
+    Fintype (Module.Free.ChooseBasisIndex R M) := by
   obtain ⟨h⟩ := id ‹Module.Finite R M›
   choose s hs using h
   exact basisFintypeOfFiniteSpans (↑s) hs (choose_basis _ _)
@@ -57,8 +56,7 @@ variable {R}
 
 /-- A free module with a basis indexed by a `fintype` is finite. -/
 theorem Module.Finite.of_basis {R M ι : Type _} [CommRing R] [AddCommGroup M] [Module R M]
-    [Finite ι] (b : Basis ι R M) : Module.Finite R M :=
-  by
+    [Finite ι] (b : Basis ι R M) : Module.Finite R M := by
   cases nonempty_fintype ι
   classical
     refine' ⟨⟨finset.univ.image b, _⟩⟩
@@ -66,8 +64,7 @@ theorem Module.Finite.of_basis {R M ι : Type _} [CommRing R] [AddCommGroup M] [
 #align module.finite.of_basis Module.Finite.of_basis
 
 instance Module.Finite.matrix {ι₁ ι₂ : Type _} [Finite ι₁] [Finite ι₂] :
-    Module.Finite R (Matrix ι₁ ι₂ R) :=
-  by
+    Module.Finite R (Matrix ι₁ ι₂ R) := by
   cases nonempty_fintype ι₁
   cases nonempty_fintype ι₂
   exact Module.Finite.of_basis (Pi.basis fun i => Pi.basisFun R _)
