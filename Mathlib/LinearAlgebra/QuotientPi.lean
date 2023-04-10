@@ -85,31 +85,55 @@ theorem quotientPiLift_mk (p : ∀ i, Submodule R (Ms i)) (f : ∀ i, Ms i →�
   rfl
 #align submodule.quotient_pi_lift_mk Submodule.quotientPiLift_mk
 
-set_option maxHeartbeats 100000000
+-- Porting note: split up the definition to avoid timeouts. Still slow.
+namespace quotientPi_aux
+
+variable [Fintype ι] [DecidableEq ι] (p : ∀ i, Submodule R (Ms i))
+
+def toFun : ((∀ i, Ms i) ⧸ pi Set.univ p) → ∀ i, Ms i ⧸ p i :=
+  quotientPiLift p (fun i => (p i).mkQ) fun i => (ker_mkQ (p i)).ge
+
+def invFun : (∀ i, Ms i ⧸ p i) → (∀ i, Ms i) ⧸ pi Set.univ p :=
+  piQuotientLift p (pi Set.univ p) single fun _ => le_comap_single_pi p
+
+theorem left_inv : Function.LeftInverse (invFun p) (toFun p) := fun x =>
+  Quotient.inductionOn' x fun x' => by
+    rw [Quotient.mk''_eq_mk x']
+    dsimp only [toFun, invFun]
+    rw [quotientPiLift_mk p, funext fun i => (mkQ_apply (p i) (x' i)), piQuotientLift_mk p,
+      lsum_single, id_apply]
+
+theorem right_inv : Function.RightInverse (invFun p) (toFun p) := by
+  dsimp only [toFun, invFun]
+  rw [Function.rightInverse_iff_comp, ← coe_comp, ← @id_coe R]
+  refine' congr_arg _ (pi_ext fun i x => Quotient.inductionOn' x fun x' => funext fun j => _)
+  rw [comp_apply, piQuotientLift_single, Quotient.mk''_eq_mk, mapQ_apply,
+    quotientPiLift_mk, id_apply]
+  by_cases hij : i = j <;> simp only [mkQ_apply, coe_single]
+  · subst hij
+    rw [Pi.single_eq_same, Pi.single_eq_same]
+  · rw [Pi.single_eq_of_ne (Ne.symm hij), Pi.single_eq_of_ne (Ne.symm hij), Quotient.mk_zero]
+
+theorem map_add (x y : ((i : ι) → Ms i) ⧸ pi Set.univ p) :
+    toFun p (x + y) = toFun p x + toFun p y :=
+  LinearMap.map_add (quotientPiLift p (fun i => (p i).mkQ) fun i => (ker_mkQ (p i)).ge) x y
+
+theorem map_smul (r : R) (x : ((i : ι) → Ms i) ⧸ pi Set.univ p) :
+    toFun p (r • x) = (RingHom.id R r) • toFun p x :=
+  LinearMap.map_smul (quotientPiLift p (fun i => (p i).mkQ) fun i => (ker_mkQ (p i)).ge) r x
+end quotientPi_aux
+
+open quotientPi_aux in
 /-- The quotient of a direct sum is the direct sum of quotients. -/
 @[simps]
 def quotientPi [Fintype ι] [DecidableEq ι] (p : ∀ i, Submodule R (Ms i)) :
-    ((∀ i, Ms i) ⧸ pi Set.univ p) ≃ₗ[R] ∀ i, Ms i ⧸ p i :=
-  {
-    quotientPiLift p (fun i => (p i).mkQ) fun i => by
-      simp with
-    toFun := quotientPiLift p (fun i => (p i).mkQ) fun i => by simp
-    invFun := piQuotientLift p (pi Set.univ p) single fun i => le_comap_single_pi p
-    left_inv := fun x =>
-      Quotient.inductionOn' x fun x' => by
-        simp_rw [Quotient.mk''_eq_mk, quotientPiLift_mk, mkQ_apply, piQuotientLift_mk,
-          lsum_single, id_apply]
-    right_inv := by
-      rw [Function.rightInverse_iff_comp, ← coe_comp, ← @id_coe R]
-      refine' congr_arg _ (pi_ext fun i x => Quotient.inductionOn' x fun x' => funext fun j => _)
-      rw [comp_apply, piQuotientLift_single, Quotient.mk''_eq_mk, mapQ_apply,
-        quotientPiLift_mk, id_apply]
-      by_cases hij : i = j <;> simp only [mkQ_apply, coe_single]
-      · subst hij
-        --Porting note: was simp only [Pi.single_eq_same]
-        repeat (rw [Pi.single_eq_same])
-      · simp only [Pi.single_eq_of_ne (Ne.symm hij), Quotient.mk_zero] }
+    ((∀ i, Ms i) ⧸ pi Set.univ p) ≃ₗ[R] ∀ i, Ms i ⧸ p i where
+  toFun := toFun p
+  invFun := invFun p
+  map_add' := map_add p
+  map_smul' := quotientPi_aux.map_smul p
+  left_inv := left_inv p
+  right_inv := right_inv p
 #align submodule.quotient_pi Submodule.quotientPi
 
 end Submodule
-
