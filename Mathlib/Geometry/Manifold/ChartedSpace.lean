@@ -338,9 +338,12 @@ def Pregroupoid.groupoid (PG : Pregroupoid H) : StructureGroupoid H where
       simp only [ee'.1, he.1]
     · have A := EqOnSource.symm' ee'
       apply PG.congr e'.symm.open_source A.2
-      convert he.2
-      rw [A.1]
-      rfl
+      -- Porting note: was
+      -- convert he.2
+      -- rw [A.1]
+      -- rfl
+      rw [A.1, symm_toLocalEquiv, LocalEquiv.symm_source]
+      exact he.2
 #align pregroupoid.groupoid Pregroupoid.groupoid
 
 theorem mem_groupoid_of_pregroupoid {PG : Pregroupoid H} {e : LocalHomeomorph H H} :
@@ -450,9 +453,14 @@ theorem closedUnderRestriction_iff_id_le (G : StructureGroupoid H) :
     rintro e ⟨s, hs, hes⟩
     refine' G.eq_on_source _ hes
     convert closed_under_restriction' G.id_mem hs
-    change s = _ ∩ _
-    rw [hs.interior_eq]
-    simp only [mfld_simps]
+    -- Porting note: was
+    -- change s = _ ∩ _
+    -- rw [hs.interior_eq]
+    -- simp only [mfld_simps]
+    ext
+    · rw [LocalHomeomorph.restr_apply, LocalHomeomorph.refl_apply, id, ofSet_apply, id_eq]
+    · simp [hs]
+    · simp [hs.interior_eq]
   · intro h
     constructor
     intro e he s hs
