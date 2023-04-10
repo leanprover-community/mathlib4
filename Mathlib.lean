@@ -282,6 +282,7 @@ import Mathlib.AlgebraicTopology.DoldKan.Compatibility
 import Mathlib.AlgebraicTopology.SimplexCategory
 import Mathlib.Analysis.Convex.Basic
 import Mathlib.Analysis.Convex.Extreme
+import Mathlib.Analysis.Convex.Function
 import Mathlib.Analysis.Convex.Hull
 import Mathlib.Analysis.Convex.Segment
 import Mathlib.Analysis.Convex.Star
