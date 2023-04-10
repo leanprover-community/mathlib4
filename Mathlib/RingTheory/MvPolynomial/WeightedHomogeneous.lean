@@ -46,7 +46,7 @@ components.
 
 noncomputable section
 
-open Classical BigOperators
+open BigOperators
 
 open Set Function Finset Finsupp AddMonoidAlgebra
 
@@ -54,7 +54,7 @@ variable {R M : Type _} [CommSemiring R]
 
 namespace MvPolynomial
 
-variable {σ : Type _}
+variable {σ : Type _} [DecidableEq σ]
 
 section AddCommMonoid
 

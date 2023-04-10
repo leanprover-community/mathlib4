@@ -70,7 +70,7 @@ end Multiset
 
 namespace MvPolynomial
 
-variable {σ : Type _} {R : Type _}
+variable {σ : Type _} {R : Type _} [DecidableEq σ]
 
 variable {τ : Type _} {S : Type _}
 
