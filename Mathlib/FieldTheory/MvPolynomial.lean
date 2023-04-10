@@ -8,10 +8,10 @@ Authors: Johannes Hölzl
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.MvPolynomial.CommRing
-import Mathbin.LinearAlgebra.Dimension
-import Mathbin.RingTheory.Ideal.Quotient
-import Mathbin.RingTheory.MvPolynomial.Basic
+import Mathlib.Data.MvPolynomial.CommRing
+import Mathlib.LinearAlgebra.Dimension
+import Mathlib.RingTheory.Ideal.Quotient
+import Mathlib.RingTheory.MvPolynomial.Basic
 
 /-!
 # Multivariate polynomials over fields
@@ -39,8 +39,7 @@ variable {σ : Type u} {K : Type v}
 variable (σ K) [Field K]
 
 theorem quotient_mk_comp_c_injective (I : Ideal (MvPolynomial σ K)) (hI : I ≠ ⊤) :
-    Function.Injective ((Ideal.Quotient.mk I).comp MvPolynomial.C) :=
-  by
+    Function.Injective ((Ideal.Quotient.mk I).comp MvPolynomial.C) := by
   refine' (injective_iff_map_eq_zero _).2 fun x hx => _
   rw [RingHom.comp_apply, Ideal.Quotient.eq_zero_iff_mem] at hx
   refine' by_contradiction fun hx0 => absurd (I.eq_top_iff_one.2 _) hI
