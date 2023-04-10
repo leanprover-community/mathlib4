@@ -32,13 +32,13 @@ import Mathlib.RingTheory.UniqueFactorizationDomain
 
 noncomputable section
 
-open Classical BigOperators Polynomial
+open BigOperators Polynomial
 
 open Finset
 
 universe u v w
 
-variable {R : Type u} {S : Type _}
+variable {R : Type u} {S : Type _} [DecidableEq R]
 
 namespace Polynomial
 
@@ -300,7 +300,7 @@ theorem support_restriction (p : R[X]) : support (restriction p) = support p := 
 #align polynomial.support_restriction Polynomial.support_restriction
 
 @[simp]
-theorem map_restriction {R : Type u} [CommRing R] (p : R[X]) :
+theorem map_restriction {R : Type u} [CommRing R] [DecidableEq R] (p : R[X]) :
     p.restriction.map (algebraMap _ _) = p :=
   ext fun n => by rw [coeff_map, Algebra.algebraMap_ofSubring_apply, coeff_restriction]
 #align polynomial.map_restriction Polynomial.map_restriction
@@ -317,7 +317,7 @@ theorem natDegree_restriction {p : R[X]} : (restriction p).natDegree = p.natDegr
 @[simp]
 theorem monic_restriction {p : R[X]} : Monic (restriction p) ↔ Monic p := by
   simp only [Monic, leadingCoeff, natDegree_restriction]
-  rw [← @coeff_restriction _ _ p]
+  rw [← @coeff_restriction _ _ _ p]
   exact
     ⟨fun H => by
       rw [H]
@@ -339,7 +339,7 @@ variable [Semiring S] {f : R →+* S} {x : S}
 theorem eval₂_restriction {p : R[X]} :
     eval₂ f x p =
       eval₂ (f.comp (Subring.subtype (Subring.closure (p.frange : Set R)))) x p.restriction := by
-  simp only [eval₂_eq_sum, sum, support_restriction, ← @coeff_restriction _ _ p]
+  simp only [eval₂_eq_sum, sum, support_restriction, ← @coeff_restriction _ _ _ p]
   rfl
 #align polynomial.eval₂_restriction Polynomial.eval₂_restriction
 
@@ -767,7 +767,7 @@ end CommRing
 
 end Ideal
 
-variable {σ : Type v} {M : Type w}
+variable {σ : Type v} {M : Type w} [DecidableEq σ]
 
 variable [CommRing R] [CommRing S] [AddCommGroup M] [Module R M]
 
@@ -796,7 +796,8 @@ namespace MvPolynomial
 
 /- Porting note: had to move the heavy inference outside the convert call to stop timeouts.
 Also, many @'s. etaExperiment caused more time outs-/
-private theorem prime_C_iff_of_fintype {R : Type u} (σ : Type v) {r : R} [CommRing R] [Fintype σ] :
+private theorem prime_C_iff_of_fintype {R : Type u} (σ : Type v) {r : R} [DecidableEq σ]
+    [CommRing R] [Fintype σ] :
     Prime (C r : MvPolynomial σ R) ↔ Prime r := by
   let f (d : ℕ) := (finSuccEquiv R d).symm.toMulEquiv
   let _coe' (d : ℕ) : CoeFun ((MvPolynomial (Fin d) R)[X] ≃* MvPolynomial (Fin (d + 1)) R)
@@ -825,16 +826,16 @@ theorem prime_C_iff : Prime (C r : MvPolynomial σ R) ↔ Prime r :=
         simp,
       fun h =>
       hr.2.1 <| by
-        rw [← constantCoeff_C _ r]
+        rw [← constantCoeff_C σ r]
         exact h.map _,
       fun a b hd => by
       obtain ⟨s, a', b', rfl, rfl⟩ := exists_finset_rename₂ a b
       rw [← algebraMap_eq] at hd
-      have := (@killCompl s σ R _ ((↑) : s → σ) Subtype.coe_injective).toRingHom.map_dvd hd
+      have := (@killCompl s σ R _ _ ((↑) : s → σ) Subtype.coe_injective).toRingHom.map_dvd hd
       have : algebraMap R _ r ∣ a' * b' := by convert this <;> simp
       rw [← rename_C ((↑) : s → σ)]
       let f := @AlgHom.toRingHom R (MvPolynomial s R)
-        (MvPolynomial σ R) _ _ _ _ _ (@rename _ _ R _ ((↑) : s → σ))
+        (MvPolynomial σ R) _ _ _ _ _ (@rename _ _ R _ _ ((↑) : s → σ))
       exact (((prime_C_iff_of_fintype s).2 hr).2.2 a' b' this).imp f.map_dvd f.map_dvd⟩⟩
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.prime_C_iff MvPolynomial.prime_C_iff
@@ -860,7 +861,7 @@ theorem prime_rename_iff (s : Set σ) {p : MvPolynomial s R} :
         dsimp
         erw [iterToSum_C_X, rename_X, rename_X]
         rfl
-    rw [← @prime_C_iff (MvPolynomial s R) (↥(sᶜ)) instCommRingMvPolynomialToCommSemiring p]
+    rw [← @prime_C_iff (MvPolynomial s R) (↥(sᶜ)) _ instCommRingMvPolynomialToCommSemiring p]
     rw [@MulEquiv.prime_iff (MvPolynomial (↑(sᶜ)) (MvPolynomial (↑s) R)) (MvPolynomial σ R) (_) (_)]
     rotate_left
     exact eqv.toMulEquiv
@@ -1142,13 +1143,14 @@ This fact is proven by transport of structure from the `MvPolynomial.noZeroDivis
 and then used to prove the general case without finiteness hypotheses.
 See `MvPolynomial.noZeroDivisors` for the general case. -/
 theorem noZeroDivisors_of_finite (R : Type u) (σ : Type v) [CommSemiring R] [Finite σ]
+    [DecidableEq σ]
     [NoZeroDivisors R] : NoZeroDivisors (MvPolynomial σ R) := by
   cases nonempty_fintype σ
   haveI := noZeroDivisors_fin R (Fintype.card σ)
   exact (renameEquiv R (Fintype.equivFin σ)).injective.noZeroDivisors _ (map_zero _) (map_mul _)
 #align mv_polynomial.no_zero_divisors_of_finite MvPolynomial.noZeroDivisors_of_finite
 
-instance {R : Type u} [CommSemiring R] [NoZeroDivisors R] {σ : Type v} :
+instance {R : Type u} [CommSemiring R] [NoZeroDivisors R] {σ : Type v} [DecidableEq σ] :
     NoZeroDivisors (MvPolynomial σ R) :=
   ⟨fun {p} {q} h => by
     obtain ⟨s, p, rfl⟩ := exists_finset_rename p
@@ -1169,7 +1171,7 @@ instance {R : Type u} [CommSemiring R] [NoZeroDivisors R] {σ : Type v} :
     all_goals simpa using congr_arg (rename Subtype.val) that⟩
 
 /-- The multivariate polynomial ring over an integral domain is an integral domain. -/
-instance {R : Type u} {σ : Type v} [CommRing R] [IsDomain R] :
+instance {R : Type u} {σ : Type v} [CommRing R] [IsDomain R] [DecidableEq σ] :
     IsDomain (MvPolynomial σ R) := by
   apply @NoZeroDivisors.to_isDomain (MvPolynomial σ R) _ ?_ _
   apply AddMonoidAlgebra.nontrivial
@@ -1234,7 +1236,7 @@ set_option linter.uppercaseLean3 false in
 #align mv_polynomial.mem_map_C_iff MvPolynomial.mem_map_C_iff
 
 attribute [-instance] Ring.toNonAssocRing in
-theorem ker_map (f : R →+* S) :
+theorem ker_map [DecidableEq S] (f : R →+* S) :
     RingHom.ker (map f : MvPolynomial σ R →+* MvPolynomial σ S) =
     Ideal.map (C : R →+* MvPolynomial σ R) (RingHom.ker f) := by
   ext
@@ -1253,7 +1255,9 @@ open UniqueFactorizationMonoid
 namespace Polynomial
 
 attribute [-instance] Ring.toSemiring in
-instance (priority := 100) uniqueFactorizationMonoid : UniqueFactorizationMonoid D[X] := by
+instance (priority := 100) uniqueFactorizationMonoid :
+    UniqueFactorizationMonoid D[X] := by
+  classical
   haveI : NormalizationMonoid D:= Inhabited.default
   haveI := toNormalizedGCDMonoid D
   exact ufm_of_gcd_of_wfDvdMonoid
@@ -1296,7 +1300,7 @@ instance (priority := 100) : UniqueFactorizationMonoid (MvPolynomial σ D) := by
     ⟨w.map (rename (↑)), fun b hb =>
       let ⟨b', hb', he⟩ := Multiset.mem_map.1 hb
       he ▸ (prime_rename_iff ↑s).2 (h b' hb'),
-      Units.map (@rename s σ D _ (↑)).toRingHom.toMonoidHom u, by
+      Units.map (@rename s σ D _ _ (↑)).toRingHom.toMonoidHom u, by
       erw [Multiset.prod_hom, ← map_mul, hw]⟩
 
 end MvPolynomial

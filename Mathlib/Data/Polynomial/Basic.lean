@@ -71,6 +71,10 @@ structure Polynomial (R : Type _) [Semiring R] where ofFinsupp ::
 -- mathport name: polynomial
 scoped[Polynomial] notation:9000 R "[X]" => Polynomial R
 
+instance (R : Type _) [Semiring R] : DecidableEq (Polynomial R) := by
+  classical
+  infer_instance
+
 open AddMonoidAlgebra
 open Finsupp hiding single
 open Function hiding Commute
