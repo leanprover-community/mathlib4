@@ -55,7 +55,7 @@ section Semigroup
 variable [Semigroup α] [HasDistribNeg α] {a b c : α}
 
 /-- An element `a` of a semigroup with a distributive negation divides the negation of an element
-+`b` iff `a` divides `b`. -/
+`b` iff `a` divides `b`. -/
 @[simp]
 theorem dvd_neg : a ∣ -b ↔ a ∣ b :=
 -- porting note: `simpa` doesn't close the goal with `rfl` anymore
@@ -63,7 +63,7 @@ theorem dvd_neg : a ∣ -b ↔ a ∣ b :=
 #align dvd_neg dvd_neg
 
 /-- The negation of an element `a` of a semigroup with a distributive negation divides another
-+element `b` iff `a` divides `b`. -/
+element `b` iff `a` divides `b`. -/
 @[simp]
 theorem neg_dvd : -a ∣ b ↔ a ∣ b :=
 -- porting note: `simpa` doesn't close the goal with `rfl` anymore
@@ -92,7 +92,7 @@ alias dvd_sub ← Dvd.dvd.sub
 #align has_dvd.dvd.sub Dvd.dvd.sub
 
 /-- If an element `a` divides another element `c` in a ring, `a` divides the sum of another element
-+`b` with `c` iff `a` divides `b`. -/
+`b` with `c` iff `a` divides `b`. -/
 theorem dvd_add_left (h : a ∣ c) : a ∣ b + c ↔ a ∣ b :=
   ⟨fun H => by simpa only [add_sub_cancel] using dvd_sub H h, fun h₂ => dvd_add h₂ h⟩
 #align dvd_add_left dvd_add_left

@@ -113,8 +113,7 @@ section CancelCommMonoidWithZero
 
 variable [CancelCommMonoidWithZero α] [Subsingleton αˣ] {a b : α}
 
-theorem dvd_antisymm : a ∣ b → b ∣ a → a = b :=
-  by
+theorem dvd_antisymm : a ∣ b → b ∣ a → a = b := by
   rintro ⟨c, rfl⟩ ⟨d, hcd⟩
   rw [mul_assoc, eq_comm, mul_right_eq_self₀, mul_eq_one] at hcd
   obtain ⟨rfl, -⟩ | rfl := hcd <;> simp
