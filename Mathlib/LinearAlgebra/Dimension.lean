@@ -640,8 +640,7 @@ theorem Basis.le_span {J : Set M} (v : Basis ι R M) (hJ : span R J = ⊤) : (#r
   · rw [← Cardinal.lift_le, Cardinal.mk_range_eq_of_injective v.injective, Cardinal.mk_fintype J]
     convert Cardinal.lift_le.{w, v}.2 (basis_le_span' v hJ)
     simp
-  · -- Porting note: `have` in this line is unnecessary.
-    let S : J → Set ι := fun j => ↑(v.repr j).support
+  · let S : J → Set ι := fun j => ↑(v.repr j).support
     let S' : J → Set M := fun j => v '' S j
     have hs : range v ⊆ ⋃ j, S' j := by
       intro b hb
