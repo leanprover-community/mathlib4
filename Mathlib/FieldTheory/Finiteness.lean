@@ -8,8 +8,8 @@ Authors: Chris Hughes
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.RingTheory.Finiteness
-import Mathbin.LinearAlgebra.Dimension
+import Mathlib.RingTheory.Finiteness
+import Mathlib.LinearAlgebra.Dimension
 
 /-!
 # A module over a division ring is noetherian if and only if it is finite.
@@ -30,8 +30,7 @@ variable {K : Type u} {V : Type v} [DivisionRing K] [AddCommGroup V] [Module K V
 /-- A module over a division ring is noetherian if and only if
 its dimension (as a cardinal) is strictly less than the first infinite cardinal `ℵ₀`.
 -/
-theorem iff_rank_lt_aleph0 : IsNoetherian K V ↔ Module.rank K V < ℵ₀ :=
-  by
+theorem iff_rank_lt_aleph0 : IsNoetherian K V ↔ Module.rank K V < ℵ₀ := by
   let b := Basis.ofVectorSpace K V
   rw [← b.mk_eq_rank'', lt_aleph_0_iff_set_finite]
   constructor
@@ -110,8 +109,7 @@ theorem range_finsetBasis [IsNoetherian K V] :
 variable {K V}
 
 /-- A module over a division ring is noetherian if and only if it is finitely generated. -/
-theorem iff_fg : IsNoetherian K V ↔ Module.Finite K V :=
-  by
+theorem iff_fg : IsNoetherian K V ↔ Module.Finite K V := by
   constructor
   · intro h
     exact
