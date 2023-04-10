@@ -37,7 +37,7 @@ namespace Triangulated
 /-- in a pretriangulated category `C`, `i : OctahedronInput C` consists of two composable
 morphisms `u₁₂`, `u₂₃`, their composition `u₁₃`, and three distinguished triangles which
 provide "cones" for `u₁₂`, `u₂₃`, `u₁₃`. The octahedron axiom `Octahedron i` for this
-input `i `shall say that the these three cones fit into a suitable distinguished triangle. -/
+input `i` shall say that the these three cones fit into a suitable distinguished triangle. -/
 structure OctahedronInput where
   {X₁ X₂ X₃ Z₁₂ Z₂₃ Z₁₃ : C}
   {u₁₂ : X₁ ⟶ X₂}
