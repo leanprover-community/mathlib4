@@ -152,7 +152,7 @@ theorem Cone.w {F : J ⥤ C} (c : Cone F) {j j' : J} (f : j ⟶ j') :
 * an object `c.pt` and
 * a natural transformation `c.ι : F ⟶ c.pt` from `F` to the constant `c.pt` functor.
 
-`Cocone F` is equivalent, via `cone.equiv` below, to `Σ X, F.cocones.obj X`.
+`Cocone F` is equivalent, via `Cone.equiv` below, to `Σ X, F.cocones.obj X`.
 -/
 structure Cocone (F : J ⥤ C) where
   /-- An object of `C` -/
@@ -283,7 +283,6 @@ end Cocone
 
 /-- A cone morphism between two cones for the same diagram is a morphism of the cone points which
 commutes with the cone legs. -/
-@[ext]
 structure ConeMorphism (A B : Cone F) where
   /-- A morphism between the two vertex objects of the cones -/
   Hom : A.pt ⟶ B.pt
@@ -305,6 +304,15 @@ instance Cone.category : Category (Cone F) where
   comp f g := { Hom := f.Hom ≫ g.Hom }
   id B := { Hom := 𝟙 B.pt }
 #align category_theory.limits.cone.category CategoryTheory.Limits.Cone.category
+
+-- Porting note: if we do not have `simps` automatically generate the lemma for simplifying
+-- the Hom field of a category, we need to write the `ext` lemma in terms of the categorical
+-- morphism, rather than the underlying structure.
+@[ext]
+theorem ConeMorphism.ext {c c' : Cone F} (f g : c ⟶ c') (w : f.Hom = g.Hom) : f = g := by
+  cases f
+  cases g
+  congr
 
 namespace Cones
 
@@ -479,7 +487,6 @@ end Cones
 
 /-- A cocone morphism between two cocones for the same diagram is a morphism of the cocone points
 which commutes with the cocone legs. -/
-@[ext]
 structure CoconeMorphism (A B : Cocone F) where
   /-- A morphism between the (co)vertex objects in `C` -/
   Hom : A.pt ⟶ B.pt
@@ -500,6 +507,15 @@ instance Cocone.category : Category (Cocone F) where
   comp f g := { Hom := f.Hom ≫ g.Hom }
   id B := { Hom := 𝟙 B.pt }
 #align category_theory.limits.cocone.category CategoryTheory.Limits.Cocone.category
+
+-- Porting note: if we do not have `simps` automatically generate the lemma for simplifying
+-- the Hom field of a category, we need to write the `ext` lemma in terms of the categorical
+-- morphism, rather than the underlying structure.
+@[ext]
+theorem CoconeMorphism.ext {c c' : Cocone F} (f g : c ⟶ c') (w : f.Hom = g.Hom) : f = g := by
+  cases f
+  cases g
+  congr
 
 namespace Cocones
 

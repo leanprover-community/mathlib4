@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro
 
 ! This file was ported from Lean 3 source module order.basic
-! leanprover-community/mathlib commit 1f0096e6caa61e9c849ec2adbd227e960e9dff58
+! leanprover-community/mathlib commit de87d5053a9fe5cbde723172c0fb7e27e7436473
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -404,11 +404,17 @@ theorem eq_or_gt_of_le [PartialOrder α] {a b : α} (h : a ≤ b) : b = a ∨ a 
   h.lt_or_eq.symm.imp Eq.symm id
 #align eq_or_gt_of_le eq_or_gt_of_le
 
+theorem gt_or_eq_of_le [PartialOrder α] {a b : α} (h : a ≤ b) : a < b ∨ b = a :=
+  (eq_or_gt_of_le h).symm
+#align gt_or_eq_of_le gt_or_eq_of_le
+
 alias Decidable.eq_or_lt_of_le ← LE.le.eq_or_lt_dec
 
 alias eq_or_lt_of_le ← LE.le.eq_or_lt
 
 alias eq_or_gt_of_le ← LE.le.eq_or_gt
+
+alias gt_or_eq_of_le ← LE.le.gt_or_eq
 
 -- Porting note: no `decidable_classical` linter
 -- attribute [nolint decidable_classical] LE.le.eq_or_lt_dec

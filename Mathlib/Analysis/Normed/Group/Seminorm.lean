@@ -32,7 +32,7 @@ is positive-semidefinite and subadditive. A norm further only maps zero to zero.
 
 ## Notes
 
-The corresponding hom classes are defined in `analysis.order.hom.basic` to be used by absolute
+The corresponding hom classes are defined in `Analysis.Order.Hom.Basic` to be used by absolute
 values.
 
 We do not define `NonarchAddGroupSeminorm` as an extension of `AddGroupSeminorm` to avoid
