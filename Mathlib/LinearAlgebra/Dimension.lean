@@ -1123,11 +1123,6 @@ variable [AddCommGroup V₃] [Module K V₃]
 
 open LinearMap
 
--- Porting note: this proof goes over the default maxHeartbeats.
--- Not seeing anything to do here except making an arbitrary split into subconstructions,
--- as this is on the critical path for porting we will live in the larger maxHeartbeats limit.
-set_option maxHeartbeats 270000 in
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 /-- This is mostly an auxiliary lemma for `Submodule.rank_sup_add_rank_inf_eq`. -/
 theorem rank_add_rank_split (db : V₂ →ₗ[K] V) (eb : V₃ →ₗ[K] V) (cd : V₁ →ₗ[K] V₂)
     (ce : V₁ →ₗ[K] V₃) (hde : ⊤ ≤ LinearMap.range db ⊔ LinearMap.range eb) (hgd : ker cd = ⊥)
@@ -1139,12 +1134,15 @@ theorem rank_add_rank_split (db : V₂ →ₗ[K] V) (eb : V₃ →ₗ[K] V) (cd 
     rw [← rank_prod', rank_eq_of_surjective _ hf]
   congr 1
   apply LinearEquiv.rank_eq
-  refine' LinearEquiv.ofBijective _ ⟨_, _⟩
-  · refine' LinearMap.codRestrict _ (prod cd (-ce)) _
+  -- Porting note: `L` was originally a place holder which is used at next `refine'`.
+  --               This is required to prevent timeout.
+  let L : V₁ →ₗ[K] ker (coprod db eb) := by
+    refine' LinearMap.codRestrict _ (prod cd (-ce)) _
     · intro c
       simp only [add_eq_zero_iff_eq_neg, LinearMap.prod_apply, mem_ker, Pi.prod, coprod_apply,
         neg_neg, map_neg, neg_apply]
       exact LinearMap.ext_iff.1 eq c
+  refine' LinearEquiv.ofBijective L ⟨_, _⟩
   · rw [← ker_eq_bot, ker_codRestrict, ker_prod, hgd, bot_inf_eq]
   · rw [← range_eq_top, eq_top_iff, range_codRestrict, ← map_le_iff_le_comap, Submodule.map_top,
       range_subtype]
