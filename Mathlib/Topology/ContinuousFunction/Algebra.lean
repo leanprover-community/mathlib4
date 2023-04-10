@@ -21,9 +21,6 @@ import Mathlib.Topology.Algebra.UniformGroup
 import Mathlib.Topology.ContinuousFunction.Ordered
 import Mathlib.Topology.UniformSpace.CompactConvergence
 
-
-set_option autoImplicit false -- **TODO** delete this later
-
 /-!
 # Algebraic structures over continuous functions
 
@@ -40,6 +37,7 @@ Note that, rather than using the derived algebraic structures on these subobject
 one should use `C(α, β)` with the appropriate instance of the structure.
 -/
 
+set_option autoImplicit false -- **TODO** delete this later
 
 --attribute [elab_without_expected_type] Continuous.comp
 
@@ -361,7 +359,8 @@ variable (α)
 /-- Composition on the left by a (continuous) homomorphism of topological monoids, as a
 `monoid_hom`. Similar to `monoid_hom.comp_left`. -/
 --@[to_additive (attr := simps)
---      "Composition on the left by a (continuous) homomorphism of topological `add_monoid`s,\nas an `add_monoid_hom`. Similar to `add_monoid_hom.comp_left`."]
+--    "Composition on the left by a (continuous) homomorphism of topological `add_monoid`s,\nas an
+-- `add_monoid_hom`. Similar to `add_monoid_hom.comp_left`."]
 @[to_additive (attr := simps)]
 protected def _root_.MonoidHom.compLeftContinuous {γ : Type _} [Monoid β] [ContinuousMul β]
     [TopologicalSpace γ] [Monoid γ] [ContinuousMul γ] (g : β →* γ) (hg : Continuous g) :
@@ -544,7 +543,8 @@ instance {α : Type _} {β : Type _} [TopologicalSpace α] [TopologicalSpace β]
 /-- Composition on the left by a (continuous) homomorphism of topological semirings, as a
 `ring_hom`.  Similar to `ring_hom.comp_left`. -/
 @[simps!]
-protected def _root_.RingHom.compLeftContinuous (α : Type _) {β : Type _} {γ : Type _} [TopologicalSpace α]
+protected def _root_.RingHom.compLeftContinuous (α : Type _) {β : Type _} {γ : Type _}
+    [TopologicalSpace α]
     [TopologicalSpace β] [Semiring β] [TopologicalSemiring β] [TopologicalSpace γ] [Semiring γ]
     [TopologicalSemiring γ] (g : β →+* γ) (hg : Continuous g) : C(α, β) →+* C(α, γ) :=
   { g.toMonoidHom.compLeftContinuous α hg, g.toAddMonoidHom.compLeftContinuous α hg with }
