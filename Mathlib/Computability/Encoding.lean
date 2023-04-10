@@ -177,8 +177,9 @@ def encodingNatΓ' : Encoding ℕ where
   decode x := some (decodeNat (List.map sectionΓ'Bool x))
   decode_encode x :=
     congr_arg _ <| by
-      -- Porting note: `rw` can't unify `g ∘ f` with `fun x => g (f x)`.
-      erw [List.map_map, List.map_id' leftInverse_section_inclusion, decode_encodeNat]
+      -- Porting note: `rw` can't unify `g ∘ f` with `fun x => g (f x)`, used `LeftInverse.id`
+      -- instead.
+      rw [List.map_map, leftInverse_section_inclusion.id, List.map_id, decode_encodeNat]
 #align computability.encoding_nat_Γ' Computability.encodingNatΓ'
 
 /-- A binary fin_encoding of ℕ in Γ'. -/
