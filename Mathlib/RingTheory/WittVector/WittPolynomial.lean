@@ -73,7 +73,7 @@ open BigOperators
 
 variable (p : ℕ)
 
-variable (R : Type _) [CommRing R]
+variable (R : Type _) [CommRing R] [DecidableEq R]
 
 /-- `wittPolynomial p R n` is the `n`-th Witt polynomial
 with respect to a prime `p` with coefficients in a commutative ring `R`.
@@ -258,33 +258,32 @@ variable [hp : Fact p.Prime]
 
 theorem xInTermsOfW_vars_aux (n : ℕ) :
     n ∈ (xInTermsOfW p ℚ n).vars ∧ (xInTermsOfW p ℚ n).vars ⊆ range (n + 1) := by
-  sorry
-  --apply Nat.strong_induction_on n; clear n
-  --intro n ih
-  --rw [xInTermsOfW_eq, mul_comm, vars_C_mul, vars_sub_of_disjoint, vars_X, range_succ, insert_eq]
-  --pick_goal 3; · apply nonzero_of_invertible
-  --on_goal
-  --  1 =>
-  --  simp only [true_and_iff, true_or_iff, eq_self_iff_true, mem_union, mem_singleton]
-  --  intro i
-  --  rw [mem_union, mem_union]
-  --  apply Or.imp id
-  --on_goal 2 => rw [vars_X, disjoint_singleton_left]
-  --all_goals
-  --  intro H
-  --  replace H := vars_sum_subset _ _ H
-  --  rw [mem_bUnion] at H
-  --  rcases H with ⟨j, hj, H⟩
-  --  rw [vars_C_mul] at H
-  --  swap
-  --  · apply pow_ne_zero
-  --    exact_mod_cast hp.1.NeZero
-  --  rw [mem_range] at hj
-  --  replace H := (ih j hj).2 (vars_pow _ _ H)
-  --  rw [mem_range] at H
-  --· rw [mem_range]
-  --  exact lt_of_lt_of_le H hj
-  --· exact lt_irrefl n (lt_of_lt_of_le H hj)
+  apply Nat.strongInductionOn n; clear n
+  intro n ih
+  rw [xInTermsOfW_eq, mul_comm, vars_C_mul _ (nonzero_of_invertible _),
+    vars_sub_of_disjoint, vars_X, range_succ, insert_eq]
+  on_goal 1 =>
+    simp only [true_and_iff, true_or_iff, eq_self_iff_true, mem_union, mem_singleton]
+    intro i
+    rw [mem_union, mem_union]
+    apply Or.imp id
+  on_goal 2 => rw [vars_X, disjoint_singleton_left]
+  all_goals
+    intro H
+    replace H := vars_sum_subset _ _ H
+    rw [mem_bunionᵢ] at H
+    rcases H with ⟨j, hj, H⟩
+    rw [vars_C_mul] at H
+    swap
+    . rw [Nat.cast_pow]
+      apply pow_ne_zero
+      exact_mod_cast hp.1.ne_zero
+    rw [mem_range] at hj
+    replace H := (ih j hj).2 (vars_pow _ _ H)
+    rw [mem_range] at H
+  . rw [mem_range]
+    linarith
+  . linarith
 set_option linter.uppercaseLean3 false in
 #align X_in_terms_of_W_vars_aux xInTermsOfW_vars_aux
 
