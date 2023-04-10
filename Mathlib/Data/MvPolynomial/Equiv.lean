@@ -47,17 +47,19 @@ equivalence, isomorphism, morphism, ring hom, hom
 
 noncomputable section
 
-open Classical BigOperators Polynomial
+open BigOperators Polynomial
 
 open Set Function Finsupp AddMonoidAlgebra
 
 universe u v w x
 
 variable {R : Type u} {S₁ : Type v} {S₂ : Type w} {S₃ : Type x}
+  [DecidableEq R] [DecidableEq S₁] [DecidableEq S₂]
 
 namespace MvPolynomial
 
 variable {σ : Type _} {a a' a₁ a₂ : R} {e : ℕ} {s : σ →₀ ℕ}
+  [DecidableEq σ]
 
 section Equiv
 
@@ -254,6 +256,7 @@ def mvPolynomialEquivMvPolynomial [CommSemiring S₃] (f : MvPolynomial S₁ R �
   map_add' := f.map_add
 #align mv_polynomial.mv_polynomial_equiv_mv_polynomial MvPolynomial.mvPolynomialEquivMvPolynomial
 
+set_option maxHeartbeats 400000 in
 /-- The ring isomorphism between multivariable polynomials in a sum of two types,
 and multivariable polynomials in one of the types,
 with coefficents in multivariable polynomials in the other type.
