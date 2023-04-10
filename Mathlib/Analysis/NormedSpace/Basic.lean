@@ -256,7 +256,18 @@ noncomputable def homeomorphUnitBall [NormedSpace ℝ E] : E ≃ₜ ball (0 : E)
     exact (this.smul continuous_id).subtype_mk _
     refine' Continuous.inv₀ _ fun x => Real.sqrt_ne_zero'.mpr (by positivity)
     continuity
-  -- Porting note: `continuity` can prove `continuous_invFun` by itself
+    -- exact (continuous_const.add (continuous_norm.pow 2)).sqrt
+  continuous_invFun := by
+    suffices ∀ y : ball (0 : E) 1, (1 - ‖(y : E)‖ ^ 2).sqrt ≠ 0 by
+      /- Porting note: used to be continuity; should be restored. Has trouble with
+      Continuous.comp' being too eager -/
+      apply Continuous.smul (Continuous.inv₀
+        (continuous_const.sub ?_).sqrt this) continuous_induced_dom
+      continuity
+      -- apply (continuous_norm.comp continuous_induced_dom).pow 2
+    intro y
+    rw [Real.sqrt_ne_zero']
+    nlinarith [norm_nonneg (y : E), (mem_ball_zero_iff.1 y.2 : ‖(y : E)‖ < 1)]
 #align homeomorph_unit_ball homeomorphUnitBall
 
 -- Porting note: simp can prove this; removed simp
