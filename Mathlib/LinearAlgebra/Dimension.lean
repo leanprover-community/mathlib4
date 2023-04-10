@@ -128,12 +128,12 @@ variable {M₁ : Type v} [AddCommGroup M₁] [Module R M₁]
 set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 theorem LinearMap.lift_rank_le_of_injective (f : M →ₗ[R] M') (i : Injective f) :
     Cardinal.lift.{v'} (Module.rank R M) ≤ Cardinal.lift.{v} (Module.rank R M') := by
-  dsimp [Module.rank]
+  simp [Module.rank_def]
   rw [Cardinal.lift_supᵢ (Cardinal.bddAbove_range.{v', v'} _),
     Cardinal.lift_supᵢ (Cardinal.bddAbove_range.{v, v} _)]
   apply csupᵢ_mono' (Cardinal.bddAbove_range.{v', v} _)
   rintro ⟨s, li⟩
-  refine' ⟨⟨f '' s, _⟩, cardinal.lift_mk_le'.mpr ⟨(Equiv.Set.image f s i).toEmbedding⟩⟩
+  refine' ⟨⟨f '' s, _⟩, Cardinal.lift_mk_le'.mpr ⟨(Equiv.Set.image f s i).toEmbedding⟩⟩
   exact (li.map' _ <| LinearMap.ker_eq_bot.mpr i).image
 #align linear_map.lift_rank_le_of_injective LinearMap.lift_rank_le_of_injective
 
@@ -146,7 +146,7 @@ theorem LinearMap.rank_le_of_injective (f : M →ₗ[R] M₁) (i : Injective f) 
 theorem rank_le {n : ℕ}
     (H : ∀ s : Finset M, (LinearIndependent R fun i : s => (i : M)) → s.card ≤ n) :
     Module.rank R M ≤ n := by
-  rw [Module.rank]
+  rw [Module.rank_def]
   apply csupᵢ_le'
   rintro ⟨s, li⟩
   exact linearIndependent_bounded_of_finset_linearIndependent_bounded H _ li
@@ -155,17 +155,17 @@ theorem rank_le {n : ℕ}
 set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 theorem lift_rank_range_le (f : M →ₗ[R] M') : Cardinal.lift.{v}
     (Module.rank R (LinearMap.range f)) ≤ Cardinal.lift.{v'} (Module.rank R M) := by
-  dsimp [Module.rank]
+  simp [Module.rank_def]
   rw [Cardinal.lift_supᵢ (Cardinal.bddAbove_range.{v', v'} _)]
   apply csupᵢ_le'
   rintro ⟨s, li⟩
   apply le_trans
   swap
-  apply cardinal.lift_le.mpr
-  refine' le_csupᵢ (Cardinal.bddAbove_range.{v, v} _) ⟨range_splitting f '' s, _⟩
-  · apply LinearIndependent.of_comp f.range_restrict
+  apply Cardinal.lift_le.mpr
+  refine' le_csupᵢ (Cardinal.bddAbove_range.{v, v} _) ⟨rangeSplitting f '' s, _⟩
+  · apply LinearIndependent.of_comp f.rangeRestrict
     convert li.comp (Equiv.Set.rangeSplittingImageEquiv f s) (Equiv.injective _) using 1
-  · exact (cardinal.lift_mk_eq'.mpr ⟨Equiv.Set.rangeSplittingImageEquiv f s⟩).ge
+  · exact (Cardinal.lift_mk_eq'.mpr ⟨Equiv.Set.rangeSplittingImageEquiv f s⟩).ge
 #align lift_rank_range_le lift_rank_range_le
 
 set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
@@ -260,7 +260,7 @@ theorem cardinal_lift_le_rank_of_linearIndependent {ι : Type w} {v : ι → M}
     Cardinal.lift.{v} (#ι) ≤ Cardinal.lift.{w} (Module.rank R M) := by
   apply le_trans
   · exact Cardinal.lift_mk_le'.mpr ⟨(Equiv.ofInjective _ hv.injective).toEmbedding⟩
-  · simp only [Cardinal.lift_le, Module.rank]
+  · simp only [Cardinal.lift_le, Module.rank_def]
     apply le_trans
     swap
     exact le_csupᵢ (Cardinal.bddAbove_range.{v, v} _) ⟨range v, hv.coe_range⟩
@@ -285,24 +285,24 @@ theorem cardinal_le_rank_of_linearIndependent' {s : Set M}
 variable (R M)
 
 @[simp]
-theorem rank_pUnit : Module.rank R PUnit = 0 := by
+theorem rank_punit : Module.rank R PUnit = 0 := by
   apply le_bot_iff.mp
-  rw [Module.rank]
+  rw [Module.rank_def]
   apply csupᵢ_le'
   rintro ⟨s, li⟩
   apply le_bot_iff.mpr
-  apply cardinal.mk_emptyc_iff.mpr
+  apply Cardinal.mk_emptyCollection_iff.mpr
   simp only [Subtype.coe_mk]
   by_contra h
   obtain ⟨a, ha⟩ := nonempty_iff_ne_empty.2 h
   simpa using LinearIndependent.ne_zero (⟨a, ha⟩ : s) li
-#align rank_punit rank_pUnit
+#align rank_punit rank_punit
 
 set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 @[simp]
 theorem rank_bot : Module.rank R (⊥ : Submodule R M) = 0 := by
   have : (⊥ : Submodule R M) ≃ₗ[R] PUnit := botEquivPUnit
-  rw [this.rank_eq, rank_pUnit]
+  rw [this.rank_eq, rank_punit]
 #align rank_bot rank_bot
 
 variable {R M}
@@ -352,7 +352,7 @@ def basisFintypeOfFiniteSpans (w : Set M) [Fintype w] (s : span R w = ⊤) {ι :
     use b.repr x
     simp only [and_true_iff, eq_self_iff_true, Finsupp.mem_supported]
     change (b.repr x).support ≤ S
-    convert Finset.le_sup (by simp : (⟨x, m⟩ : w) ∈ Finset.univ)
+    convert Finset.le_sup (α := Finset ι) (by simp : (⟨x, m⟩ : w) ∈ Finset.univ)
     rfl
   -- Thus this finite subset of the basis elements spans the entire module.
   have k : span R bS = ⊤ := eq_top_iff.2 (le_trans s.ge (span_le.2 h))
@@ -492,7 +492,7 @@ theorem rank_subsingleton [Subsingleton R] : Module.rank R M = 1 := by
   haveI := Module.subsingleton R M
   have : Nonempty { s : Set M // LinearIndependent R ((↑) : s → M) } :=
     ⟨⟨∅, linearIndependent_empty _ _⟩⟩
-  rw [Module.rank, csupᵢ_eq_of_forall_le_of_forall_lt_exists_gt]
+  rw [Module.rank_def, csupᵢ_eq_of_forall_le_of_forall_lt_exists_gt]
   · rintro ⟨s, hs⟩
     rw [Cardinal.mk_le_one_iff_set_subsingleton]
     apply subsingleton_of_subsingleton
@@ -510,7 +510,7 @@ theorem rank_pos [Nontrivial M] : 0 < Module.rank R M := by
   obtain ⟨x, hx⟩ := exists_ne (0 : M)
   suffices 1 ≤ Module.rank R M by exact zero_lt_one.trans_le this
   letI := Module.nontrivial R M
-  suffices LinearIndependent R fun y : ({x} : Set M) => ↑y by
+  suffices LinearIndependent R fun y : ({x} : Set M) => (y : M) by
     simpa using cardinal_le_rank_of_linearIndependent this
   exact linearIndependent_singleton hx
 #align rank_pos rank_pos
@@ -610,7 +610,7 @@ theorem Basis.le_span'' {ι : Type _} [Fintype ι] (b : Basis ι R M) {w : Set M
   -- by expressing a linear combination in `w` as a linear combination in `ι`.
   fapply card_le_of_surjective' R
   · exact b.repr.toLinearMap.comp (Finsupp.total w M R (↑))
-  · apply Surjective.comp
+  · apply Surjective.comp (g := b.repr.toLinearMap)
     apply LinearEquiv.surjective
     rw [← LinearMap.range_eq_top, Finsupp.range_total]
     simpa using s
@@ -640,7 +640,7 @@ theorem Basis.le_span {J : Set M} (v : Basis ι R M) (hJ : span R J = ⊤) : (#r
   · rw [← Cardinal.lift_le, Cardinal.mk_range_eq_of_injective v.injective, Cardinal.mk_fintype J]
     convert Cardinal.lift_le.{w, v}.2 (basis_le_span' v hJ)
     simp
-  · have := Cardinal.mk_range_eq_of_injective v.injective
+  · -- Porting note: `have` in this line is unnecessary.
     let S : J → Set ι := fun j => ↑(v.repr j).support
     let S' : J → Set M := fun j => v '' S j
     have hs : range v ⊆ ⋃ j, S' j := by
@@ -791,14 +791,14 @@ theorem maximal_linearIndependent_eq_infinite_basis {ι : Type _} (b : Basis ι 
 
 theorem Basis.mk_eq_rank'' {ι : Type v} (v : Basis ι R M) : (#ι) = Module.rank R M := by
   haveI := nontrivial_of_invariantBasisNumber R
-  rw [Module.rank]
+  rw [Module.rank_def]
   apply le_antisymm
   · trans
     swap
     apply le_csupᵢ (Cardinal.bddAbove_range.{v, v} _)
     exact
       ⟨Set.range v, by
-        convert v.reindex_range.linearIndependent
+        convert v.reindexRange.linearIndependent
         ext
         simp⟩
     exact (Cardinal.mk_range_eq v v.injective).ge
@@ -845,8 +845,8 @@ theorem Basis.mk_eq_rank (v : Basis ι R M) :
 #align basis.mk_eq_rank Basis.mk_eq_rank
 
 theorem Basis.mk_eq_rank'.{m} (v : Basis ι R M) :
-    Cardinal.lift.{max v m} (#ι) = Cardinal.lift.{max w m} (Module.rank R M) := by
-  simpa using v.mk_eq_rank
+    Cardinal.lift.{max v m} (#ι) = Cardinal.lift.{max w m} (Module.rank R M) :=
+  Cardinal.lift_umax_eq.{_, _, m}.mpr v.mk_eq_rank
 #align basis.mk_eq_rank' Basis.mk_eq_rank'
 
 /-- If a module has a finite dimension, all bases are indexed by a finite type. -/
@@ -912,7 +912,8 @@ theorem Ideal.rank_eq {R S : Type _} [CommRing R] [StrongRankCondition R] [Ring 
     le_antisymm
       (b.card_le_card_of_linearIndependent
         (c.linearIndependent.map' (Submodule.subtype I)
-          (LinearMap.ker_eq_bot.mpr Subtype.coe_injective)))
+          ((LinearMap.ker_eq_bot (f := (Submodule.subtype I : I →ₗ[R] S))).mpr
+            Subtype.coe_injective)))
       (c.card_le_card_of_linearIndependent this)
 #align ideal.rank_eq Ideal.rank_eq
 
@@ -953,12 +954,12 @@ open Cardinal
 set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 /-- Two vector spaces are isomorphic if they have the same dimension. -/
 theorem nonempty_linearEquiv_of_lift_rank_eq
-    (cond : Cardinal.lift.{v'} (Module.rank K V) = Cardinal.lift.{v} (Module.rank K V')) :
+    (cnd : Cardinal.lift.{v'} (Module.rank K V) = Cardinal.lift.{v} (Module.rank K V')) :
     Nonempty (V ≃ₗ[K] V') := by
-  obtain ⟨⟨_, B⟩⟩ := Module.Free.exists_basis K V
-  obtain ⟨⟨_, B'⟩⟩ := Module.Free.exists_basis K V'
+  obtain ⟨⟨_, B⟩⟩ := Module.Free.exists_basis (R := K) (M := V)
+  obtain ⟨⟨_, B'⟩⟩ := Module.Free.exists_basis (R := K) (M := V')
   have : Cardinal.lift.{v', v} (#_) = Cardinal.lift.{v, v'} (#_) := by
-    rw [B.mk_eq_rank'', cond, B'.mk_eq_rank'']
+    rw [B.mk_eq_rank'', cnd, B'.mk_eq_rank'']
   exact (Cardinal.lift_mk_eq.{v, v', 0}.1 this).map (B.equiv B')
 #align nonempty_linear_equiv_of_lift_rank_eq nonempty_linearEquiv_of_lift_rank_eq
 
@@ -1099,7 +1100,7 @@ theorem rank_span_le (s : Set V) : Module.rank K (span K s) ≤ (#s) := by
 
 theorem rank_span_of_finset (s : Finset V) : Module.rank K (span K (↑s : Set V)) < ℵ₀ :=
   calc
-    Module.rank K (span K (↑s : Set V)) ≤ (#(↑s : Set V)) := rank_span_le ↑s
+    Module.rank K (span K (↑s : Set V)) ≤ (#(↑s : Set V)) := rank_span_le (s : Set V)
     _ = s.card := by rw [Finset.coe_sort_coe, Cardinal.mk_coe_finset]
     _ < ℵ₀ := Cardinal.nat_lt_aleph0 _
 
@@ -1134,6 +1135,8 @@ variable [AddCommGroup V₃] [Module K V₃]
 
 open LinearMap
 
+#eval "TODO: Erase this."
+set_option maxHeartbeats 270000 in
 set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 /-- This is mostly an auxiliary lemma for `Submodule.rank_sup_add_rank_inf_eq`. -/
 theorem rank_add_rank_split (db : V₂ →ₗ[K] V) (eb : V₃ →ₗ[K] V) (cd : V₁ →ₗ[K] V₂)
@@ -1226,7 +1229,7 @@ theorem le_rank_iff_exists_linearIndependent {c : Cardinal} :
 
 theorem le_rank_iff_exists_linearIndependent_finset {n : ℕ} :
     ↑n ≤ Module.rank K V ↔
-      ∃ s : Finset V, s.card = n ∧ LinearIndependent K ((↑) : (s : Set V) → V) := by
+      ∃ s : Finset V, s.card = n ∧ LinearIndependent K ((↑) : ↥(s : Set V) → V) := by
   simp only [le_rank_iff_exists_linearIndependent, Cardinal.mk_set_eq_nat_iff_finset]
   constructor
   · rintro ⟨s, ⟨t, rfl, rfl⟩, si⟩
@@ -1309,12 +1312,12 @@ theorem rank_submodule_le_one_iff' (s : Submodule K V) : Module.rank K s ≤ 1 �
 
 theorem Submodule.rank_le_one_iff_isPrincipal (W : Submodule K V) :
     Module.rank K W ≤ 1 ↔ W.IsPrincipal := by
-  simp only [rank_le_one_iff, Submodule.isPrincipal_iff, le_antisymm_iff, le_span_singleton_iff,
+  simp only [rank_le_one_iff, Submodule.IsPrincipal_iff, le_antisymm_iff, le_span_singleton_iff,
     span_singleton_le_iff_mem]
   constructor
   · rintro ⟨⟨m, hm⟩, hm'⟩
     choose f hf using hm'
-    exact ⟨m, ⟨fun v hv => ⟨f ⟨v, hv⟩, congr_arg (↑) (hf ⟨v, hv⟩)⟩, hm⟩⟩
+    exact ⟨m, ⟨fun v hv => ⟨f ⟨v, hv⟩, congr_arg ((↑) : W → V) (hf ⟨v, hv⟩)⟩, hm⟩⟩
   · rintro ⟨a, ⟨h, ha⟩⟩
     choose f hf using h
     exact ⟨⟨a, ha⟩, fun v => ⟨f v.1 v.2, Subtype.ext (hf v.1 v.2)⟩⟩
@@ -1413,7 +1416,7 @@ theorem le_rank_iff_exists_linearIndependent {c : Cardinal} {f : V →ₗ[K] V'}
   rcases f.rangeRestrict.exists_rightInverse_of_surjective f.range_rangeRestrict with ⟨g, hg⟩
   have fg : LeftInverse f.rangeRestrict g := LinearMap.congr_fun hg
   refine' ⟨fun h => _, _⟩
-  · rcases le_rank_iff_exists_linearIndependent.1 h with ⟨s, rfl, si⟩
+  · rcases _root_.le_rank_iff_exists_linearIndependent.1 h with ⟨s, rfl, si⟩
     refine' ⟨g '' s, Cardinal.mk_image_eq_lift _ _ fg.injective, _⟩
     replace fg : ∀ x, f (g x) = x
     · intro x
