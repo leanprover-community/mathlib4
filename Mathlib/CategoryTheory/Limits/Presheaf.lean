@@ -126,7 +126,7 @@ theorem restrictYonedaHomEquiv_natural (P : Cᵒᵖ ⥤ Type u₁) (E₁ E₂ : 
     (t : IsColimit c) (k : c.pt ⟶ E₁) :
     restrictYonedaHomEquiv A P E₂ t (k ≫ g) =
       restrictYonedaHomEquiv A P E₁ t k ≫ (restrictedYoneda A).map g := by
-  ext (_ X p)
+  ext x X
   apply (assoc _ k g).symm
 #align category_theory.colimit_adj.restrict_yoneda_hom_equiv_natural CategoryTheory.ColimitAdj.restrictYonedaHomEquiv_natural
 
@@ -251,15 +251,14 @@ set_option linter.uppercaseLean3 false in
 @[simps!]
 noncomputable def extendAlongYonedaIsoKan :
     extendAlongYoneda A ≅ (lan yoneda : (_ ⥤ ℰ) ⥤ _).obj A :=
-  NatIso.ofComponents (extendAlongYonedaIsoKanApp A)
-    (by
-      intro X Y f; simp
-      rw [extendAlongYoneda_map]
-      erw [colimit.pre_pre (Lan.diagram (yoneda : C ⥤ _ ⥤ Type u₁) A Y) (CostructuredArrow.map f)]
-      erw [colimit.pre_pre (Lan.diagram (yoneda : C ⥤ _ ⥤ Type u₁) A Y)
-          (CategoryOfElements.costructuredArrowYonedaEquivalence Y).functor]
-      congr 1
-      apply CategoryOfElements.costructuredArrow_yoneda_equivalence_naturality)
+  NatIso.ofComponents (extendAlongYonedaIsoKanApp A) (by
+    intro X Y f; simp
+    rw [extendAlongYoneda_map]
+    erw [colimit.pre_pre (Lan.diagram (yoneda : C ⥤ _ ⥤ Type u₁) A Y) (CostructuredArrow.map f)]
+    erw [colimit.pre_pre (Lan.diagram (yoneda : C ⥤ _ ⥤ Type u₁) A Y)
+        (CategoryOfElements.costructuredArrowYonedaEquivalence Y).functor]
+    congr 1
+    apply CategoryOfElements.costructuredArrow_yoneda_equivalence_naturality)
 set_option linter.uppercaseLean3 false in
 #align category_theory.colimit_adj.extend_along_yoneda_iso_Kan CategoryTheory.ColimitAdj.extendAlongYonedaIsoKan
 
