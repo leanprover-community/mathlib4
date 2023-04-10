@@ -694,6 +694,10 @@ theorem toReal_nat (n : ℕ) : (n : ℝ≥0∞).toReal = n := by
   rw [← ENNReal.ofReal_coe_nat n, ENNReal.toReal_ofReal (Nat.cast_nonneg _)]
 #align ennreal.to_real_nat ENNReal.toReal_nat
 
+@[simp] theorem toReal_ofNat (n : ℕ) [n.AtLeastTwo] :
+    ENNReal.toReal (OfNat.ofNat n) = OfNat.ofNat n :=
+  toReal_nat n
+
 theorem le_coe_iff : a ≤ ↑r ↔ ∃ p : ℝ≥0, a = p ∧ p ≤ r := WithTop.le_coe_iff
 #align ennreal.le_coe_iff ENNReal.le_coe_iff
 
@@ -1940,6 +1944,12 @@ theorem toReal_mono (hb : b ≠ ∞) (h : a ≤ b) : a.toReal ≤ b.toReal :=
   (toReal_le_toReal (ne_top_of_le_ne_top hb h) hb).2 h
 #align ennreal.to_real_mono ENNReal.toReal_mono
 
+-- porting note: new lemma
+theorem toReal_mono' (h : a ≤ b) (ht : b = ∞ → a = ∞) : a.toReal ≤ b.toReal := by
+  rcases eq_or_ne a ∞ with rfl | ha
+  · exact toReal_nonneg
+  · exact toReal_mono (mt ht ha) h
+
 @[simp]
 theorem toReal_lt_toReal (ha : a ≠ ∞) (hb : b ≠ ∞) : a.toReal < b.toReal ↔ a < b := by
   lift a to ℝ≥0 using ha
@@ -1951,9 +1961,26 @@ theorem toReal_strict_mono (hb : b ≠ ∞) (h : a < b) : a.toReal < b.toReal :=
   (toReal_lt_toReal h.ne_top hb).2 h
 #align ennreal.to_real_strict_mono ENNReal.toReal_strict_mono
 
-theorem toNNReal_mono (hb : b ≠ ∞) (h : a ≤ b) : a.toNNReal ≤ b.toNNReal := by
-  simpa [← ENNReal.coe_le_coe, hb, ne_top_of_le_ne_top hb h]
+theorem toNNReal_mono (hb : b ≠ ∞) (h : a ≤ b) : a.toNNReal ≤ b.toNNReal :=
+  toReal_mono hb h
 #align ennreal.to_nnreal_mono ENNReal.toNNReal_mono
+
+-- porting note: new lemma
+/-- If `a ≤ b + c` and `a = ∞` whenever `b = ∞` or `c = ∞`, then
+`ENNReal.toReal a ≤ ENNReal.toReal b + ENNReal.toReal c`. This lemma is useful to transfer
+triangle-like inequalities from `ENNReal`s to `Real`s. -/
+theorem toReal_le_add' (hle : a ≤ b + c) (hb : b = ∞ → a = ∞) (hc : c = ∞ → a = ∞) :
+    a.toReal ≤ b.toReal + c.toReal := by
+  refine le_trans (toReal_mono' hle ?_) toReal_add_le
+  simpa only [add_eq_top, or_imp] using And.intro hb hc
+
+-- porting note: new lemma
+/-- If `a ≤ b + c`, `b ≠ ∞`, and `c ≠ ∞`, then
+`ENNReal.toReal a ≤ ENNReal.toReal b + ENNReal.toReal c`. This lemma is useful to transfer
+triangle-like inequalities from `ENNReal`s to `Real`s. -/
+theorem toReal_le_add (hle : a ≤ b + c) (hb : b ≠ ∞) (hc : c ≠ ∞) :
+    a.toReal ≤ b.toReal + c.toReal :=
+  toReal_le_add' hle (flip absurd hb) (flip absurd hc)
 
 @[simp]
 theorem toNNReal_le_toNNReal (ha : a ≠ ∞) (hb : b ≠ ∞) : a.toNNReal ≤ b.toNNReal ↔ a ≤ b :=
@@ -2345,7 +2372,7 @@ theorem mul_infᵢ_of_ne {ι} {f : ι → ℝ≥0∞} {x : ℝ≥0∞} (h0 : x �
     x * infᵢ f = ⨅ i, x * f i := by simpa only [mul_comm] using infᵢ_mul_of_ne h0 h
 #align ennreal.mul_infi_of_ne ENNReal.mul_infᵢ_of_ne
 
-/-! `supr_mul`, `mul_supr` and variants are in `topology.instances.ennreal`. -/
+/-! `supr_mul`, `mul_supr` and variants are in `Topology.Instances.ENNReal`. -/
 
 end infᵢ
 

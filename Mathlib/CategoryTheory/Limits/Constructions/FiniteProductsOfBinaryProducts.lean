@@ -153,7 +153,7 @@ noncomputable def preservesFinOfPreservesBinaryAndTerminal :
     refine' Fin.inductionOn j ?_ ?_
     · apply (Category.id_comp _).symm
     · rintro i _
-      dsimp [extendFan_π_app, Iso.refl_hom, Fan.mk_π]
+      dsimp [extendFan_π_app, Iso.refl_hom, Fan.mk_π_app]
       rw [Fin.cases_succ, Fin.cases_succ]
       change F.map _ ≫ _ = 𝟙 _ ≫ _
       simp only [id_comp, ← F.map_comp]
@@ -298,7 +298,7 @@ noncomputable def preservesFinOfPreservesBinaryAndInitial :
     refine' Fin.inductionOn j ?_ ?_
     · apply Category.comp_id
     · rintro i _
-      dsimp [extendCofan_ι_app, Iso.refl_hom, Cofan.mk_ι]
+      dsimp [extendCofan_ι_app, Iso.refl_hom, Cofan.mk_ι_app]
       rw [Fin.cases_succ, Fin.cases_succ, comp_id, ← F.map_comp]
 #align category_theory.preserves_fin_of_preserves_binary_and_initial CategoryTheory.preservesFinOfPreservesBinaryAndInitialₓ  -- Porting note: order of universes changed
 
