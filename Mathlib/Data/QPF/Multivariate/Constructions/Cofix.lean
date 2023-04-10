@@ -468,50 +468,58 @@ theorem Cofix.abs_repr {α} (x : Cofix F α) : Quot.mk _ (Cofix.repr x) = x := b
   rfl
 #align mvqpf.cofix.abs_repr MvQPF.Cofix.abs_repr
 
-section Tactic
+-- section Tactic
 
-/- ./././Mathport/Syntax/Translate/Tactic/Mathlib/Core.lean:38:34: unsupported: setup_tactic_parser -/
-open Tactic
+-- /- ./././Mathport/Syntax/Translate/Tactic/Mathlib/Core.lean:38:34: unsupported: setup_tactic_parser -/
+-- open Tactic
 
-/-- tactic for proof by bisimulation -/
-unsafe def mv_bisim (e : parse texpr) (ids : parse with_ident_list) : tactic Unit := do
-  let e ← to_expr e
-  let expr.pi n bi d b ←
-    retrieve do
-        generalize e
-        target
-  let q(@Eq $(t) $(l) $(r)) ← pure b
-  let x ← mk_local_def `n d
-  let v₀ ← mk_local_def `a t
-  let v₁ ← mk_local_def `b t
-  let x₀ ← mk_app `` Eq [v₀, l.instantiate_var x]
-  let x₁ ← mk_app `` Eq [v₁, r.instantiate_var x]
-  let xx ← mk_app `` And [x₀, x₁]
-  let ex ← lambdas [x] xx
-  let ex ← mk_app `` Exists [ex] >>= lambdas [v₀, v₁]
-  let R ← pose `R none ex
-  refine ``(Cofix.bisim₂ $(R) _ _ _ ⟨_, rfl, rfl⟩)
-  let f (a b : Name) : Name := if a = `_ then b else a
-  let ids := (ids ++ List.replicate 5 `_).zipWith f [`a, `b, `x, `Ha, `Hb]
-  let (ids₀, w :: ids₁) ← pure <| List.splitAt 2 ids
-  intro_lst ids₀
-  let h ← intro1
-  let [(_, [w, h], _)] ← cases_core h [w]
-  cases h ids₁
-  pure ()
-#align mvqpf.mv_bisim mvqpf.mv_bisim
+-- /-- tactic for proof by bisimulation -/
+-- unsafe def mv_bisim (e : parse texpr) (ids : parse with_ident_list) : tactic Unit := do
+--   let e ← to_expr e
+--   let expr.pi n bi d b ←
+--     retrieve do
+--         generalize e
+--         target
+--   let q(@Eq $(t) $(l) $(r)) ← pure b
+--   let x ← mk_local_def `n d
+--   let v₀ ← mk_local_def `a t
+--   let v₁ ← mk_local_def `b t
+--   let x₀ ← mk_app `` Eq [v₀, l.instantiate_var x]
+--   let x₁ ← mk_app `` Eq [v₁, r.instantiate_var x]
+--   let xx ← mk_app `` And [x₀, x₁]
+--   let ex ← lambdas [x] xx
+--   let ex ← mk_app `` Exists [ex] >>= lambdas [v₀, v₁]
+--   let R ← pose `R none ex
+--   refine ``(Cofix.bisim₂ $(R) _ _ _ ⟨_, rfl, rfl⟩)
+--   let f (a b : Name) : Name := if a = `_ then b else a
+--   let ids := (ids ++ List.replicate 5 `_).zipWith f [`a, `b, `x, `Ha, `Hb]
+--   let (ids₀, w :: ids₁) ← pure <| List.splitAt 2 ids
+--   intro_lst ids₀
+--   let h ← intro1
+--   let [(_, [w, h], _)] ← cases_core h [w]
+--   cases h ids₁
+--   pure ()
+-- #align mvqpf.mv_bisim mvqpf.mv_bisim
 
-run_cmd
-  add_interactive [`` mv_bisim]
+-- run_cmd
+--   add_interactive [`` mv_bisim]
 
-end Tactic
+-- end Tactic
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem corec_roll {α : TypeVec n} {X Y} {x₀ : X} (f : X → Y) (g : Y → F (α ::: X)) :
     Cofix.corec (g ∘ f) x₀ = Cofix.corec (MvFunctor.map (id ::: f) ∘ g) (f x₀) := by
-  mv_bisim x₀
-  rw [Ha, Hb, cofix.dest_corec, cofix.dest_corec]
+  -- Porting note: was `mv_bisim x₀`
+  let R : Cofix F α → Cofix F α → Prop := fun (a b : Cofix F α) =>
+    ∃ (x : X), a = Cofix.corec (g ∘ f) x ∧ b = Cofix.corec (map (id ::: f) ∘ g) (f x)
+  refine Cofix.bisim₂ R ?_
+    (Cofix.corec (g ∘ f) x₀)
+    (Cofix.corec (map (id ::: f) ∘ g) (f x₀))
+    (Exists.intro x₀ ⟨rfl, rfl⟩)
+  rintro a b ⟨x, Ha, Hb⟩
+
+  rw [Ha, Hb, Cofix.dest_corec, Cofix.dest_corec, Function.comp_apply, Function.comp_apply]
   rw [MvFunctor.map_map, ← appendFun_comp_id]
   refine' liftR_map_last _ _ _ _ _
   intro a; refine' ⟨a, rfl, rfl⟩
@@ -519,10 +527,19 @@ theorem corec_roll {α : TypeVec n} {X Y} {x₀ : X} (f : X → Y) (g : Y → F 
 
 theorem Cofix.dest_corec' {α : TypeVec n} {β : Type u} (g : β → F (α.append1 (Sum (Cofix F α) β)))
     (x : β) :
-    Cofix.dest (Cofix.corec' g x) = appendFun id (Sum.elim id (Cofix.corec' g)) <$$> g x := by
+    Cofix.dest (Cofix.corec' g x) = appendFun id (Sum.elim _root_.id (Cofix.corec' g)) <$$> g x :=
+  by
   rw [cofix.corec', cofix.dest_corec]; dsimp
   congr with (i | i) <;> rw [corec_roll] <;> dsimp [cofix.corec']
-  · mv_bisim i
+  · -- Porting note: was `mv_bisim i`
+    let R : Cofix F α → Cofix F α → Prop := fun (a b : Cofix F α) =>
+      ∃ (x : X), a = Cofix.corec (g ∘ f) x ∧ b = Cofix.corec (map (id ::: f) ∘ g) (f x)
+    refine Cofix.bisim₂ R ?_
+      (Cofix.corec (g ∘ f) x₀)
+      (Cofix.corec (map (id ::: f) ∘ g) (f x₀))
+      (Exists.intro x₀ ⟨rfl, rfl⟩)
+    rintro a b ⟨x, Ha, Hb⟩
+
     rw [Ha, Hb, cofix.dest_corec]
     dsimp [(· ∘ ·)]
     repeat' rw [MvFunctor.map_map, ← appendFun_comp_id]
