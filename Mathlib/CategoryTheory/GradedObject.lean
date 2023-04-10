@@ -157,16 +157,18 @@ theorem shiftFunctor_map_apply {β : Type _} [AddCommGroup β] (s : β)
   rfl
 #align category_theory.graded_object.shift_functor_map_apply CategoryTheory.GradedObject.shiftFunctor_map_apply
 
-instance hasZeroMorphisms [HasZeroMorphisms C] (β : Type w) :
-    HasZeroMorphisms.{max w v} (GradedObject β C) where
-  Zero X Y := { zero := fun b => 0 }
-#align category_theory.graded_object.has_zero_morphisms CategoryTheory.GradedObject.hasZeroMorphisms
+instance [HasZeroMorphisms C] (β : Type w) (X Y : GradedObject β C) :
+  Zero (X ⟶ Y) := ⟨fun _ => 0⟩
 
 @[simp]
 theorem zero_apply [HasZeroMorphisms C] (β : Type w) (X Y : GradedObject β C) (b : β) :
     (0 : X ⟶ Y) b = 0 :=
   rfl
 #align category_theory.graded_object.zero_apply CategoryTheory.GradedObject.zero_apply
+
+instance hasZeroMorphisms [HasZeroMorphisms C] (β : Type w) :
+    HasZeroMorphisms.{max w v} (GradedObject β C) where
+#align category_theory.graded_object.has_zero_morphisms CategoryTheory.GradedObject.hasZeroMorphisms
 
 section
 
