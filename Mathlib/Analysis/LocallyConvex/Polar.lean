@@ -8,9 +8,9 @@ Authors: Moritz Doll, Kalle Kytölä
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Normed.Field.Basic
-import Mathbin.LinearAlgebra.SesquilinearForm
-import Mathbin.Topology.Algebra.Module.WeakDual
+import Mathlib.Analysis.Normed.Field.Basic
+import Mathlib.LinearAlgebra.SesquilinearForm
+import Mathlib.Topology.Algebra.Module.WeakDual
 
 /-!
 # Polar set
@@ -73,8 +73,7 @@ theorem zero_mem_polar (s : Set E) : (0 : F) ∈ B.polar s := fun _ _ => by
   simp only [map_zero, norm_zero, zero_le_one]
 #align linear_map.zero_mem_polar LinearMap.zero_mem_polar
 
-theorem polar_eq_interᵢ {s : Set E} : B.polar s = ⋂ x ∈ s, { y : F | ‖B x y‖ ≤ 1 } :=
-  by
+theorem polar_eq_interᵢ {s : Set E} : B.polar s = ⋂ x ∈ s, { y : F | ‖B x y‖ ≤ 1 } := by
   ext
   simp only [polar_mem_iff, Set.mem_interᵢ, Set.mem_setOf_eq]
 #align linear_map.polar_eq_Inter LinearMap.polar_eq_interᵢ
@@ -107,22 +106,19 @@ theorem polar_empty : B.polar ∅ = Set.univ :=
 #align linear_map.polar_empty LinearMap.polar_empty
 
 @[simp]
-theorem polar_zero : B.polar ({0} : Set E) = Set.univ :=
-  by
+theorem polar_zero : B.polar ({0} : Set E) = Set.univ := by
   refine' set.eq_univ_iff_forall.mpr fun y x hx => _
   rw [set.mem_singleton_iff.mp hx, map_zero, LinearMap.zero_apply, norm_zero]
   exact zero_le_one
 #align linear_map.polar_zero LinearMap.polar_zero
 
-theorem subset_bipolar (s : Set E) : s ⊆ B.flip.polar (B.polar s) := fun x hx y hy =>
-  by
+theorem subset_bipolar (s : Set E) : s ⊆ B.flip.polar (B.polar s) := fun x hx y hy => by
   rw [B.flip_apply]
   exact hy x hx
 #align linear_map.subset_bipolar LinearMap.subset_bipolar
 
 @[simp]
-theorem tripolar_eq_polar (s : Set E) : B.polar (B.flip.polar (B.polar s)) = B.polar s :=
-  by
+theorem tripolar_eq_polar (s : Set E) : B.polar (B.flip.polar (B.polar s)) = B.polar s := by
   refine' (B.polar_antitone (B.subset_bipolar s)).antisymm _
   convert subset_bipolar B.flip (B.polar s)
   exact B.flip_flip.symm
@@ -146,8 +142,7 @@ variable [Module 𝕜 E] [Module 𝕜 F]
 
 variable (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜)
 
-theorem polar_univ (h : SeparatingRight B) : B.polar Set.univ = {(0 : F)} :=
-  by
+theorem polar_univ (h : SeparatingRight B) : B.polar Set.univ = {(0 : F)} := by
   rw [Set.eq_singleton_iff_unique_mem]
   refine' ⟨by simp only [zero_mem_polar], fun y hy => h _ fun x => _⟩
   refine' norm_le_zero_iff.mp (le_of_forall_le_of_dense fun ε hε => _)
