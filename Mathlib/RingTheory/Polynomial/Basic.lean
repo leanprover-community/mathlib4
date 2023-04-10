@@ -314,7 +314,7 @@ theorem natDegree_restriction {p : R[X]} : (restriction p).natDegree = p.natDegr
 @[simp]
 theorem monic_restriction {p : R[X]} : Monic (restriction p) ↔ Monic p := by
   simp only [Monic, leadingCoeff, natDegree_restriction]
-  rw [← @coeff_restriction _ _ p]
+  rw [← @coeff_restriction _ _ _ p]
   exact ⟨fun H => by rw [H, OneMemClass.coe_one], fun H => Subtype.coe_injective H⟩
 #align polynomial.monic_restriction Polynomial.monic_restriction
 
@@ -333,7 +333,7 @@ variable [Semiring S] {f : R →+* S} {x : S}
 theorem eval₂_restriction {p : R[X]} :
     eval₂ f x p =
       eval₂ (f.comp (Subring.subtype (Subring.closure (p.frange : Set R)))) x p.restriction := by
-  simp only [eval₂_eq_sum, sum, support_restriction, ← @coeff_restriction _ _ p, RingHom.comp_apply,
+  simp only [eval₂_eq_sum, sum, support_restriction, ← @coeff_restriction _ _ _ p, RingHom.comp_apply,
     Subring.coeSubtype]
 #align polynomial.eval₂_restriction Polynomial.eval₂_restriction
 
