@@ -401,10 +401,10 @@ abbrev shiftZero : X⟦(0 : A)⟧ ≅ X :=
   (shiftFunctorZero C A).app _
 #align category_theory.shift_zero CategoryTheory.shiftZero
 
-theorem shift_zero' : f⟦(0 : A)⟧' = (shiftZero A X).hom ≫ f ≫ (shiftZero A Y).inv := by
+theorem shiftZero' : f⟦(0 : A)⟧' = (shiftZero A X).hom ≫ f ≫ (shiftZero A Y).inv := by
   symm
   apply NatIso.naturality_2
-#align category_theory.shift_zero' CategoryTheory.shift_zero'
+#align category_theory.shift_zero' CategoryTheory.shiftZero'
 
 variable (C) {A}
 
@@ -603,17 +603,17 @@ theorem shiftComm_symm (i j : A) : (shiftComm X i j).symm = shiftComm X j i := b
 variable {X Y}
 
 /-- When shifts are indexed by an additive commutative monoid, then shifts commute. -/
-theorem shift_comm' (i j : A) :
+theorem shiftComm' (i j : A) :
     f⟦i⟧'⟦j⟧' = (shiftComm _ _ _).hom ≫ f⟦j⟧'⟦i⟧' ≫ (shiftComm _ _ _).hom := by
   erw [← shiftComm_symm Y i j, ← ((shiftFunctorComm C i j).hom.naturality_assoc f)]
   dsimp
   simp only [Iso.hom_inv_id_app, Functor.comp_obj, Category.comp_id]
-#align category_theory.shift_comm' CategoryTheory.shift_comm'
+#align category_theory.shift_comm' CategoryTheory.shiftComm'
 
 @[reassoc]
 theorem shiftComm_hom_comp (i j : A) :
     (shiftComm X i j).hom ≫ f⟦j⟧'⟦i⟧' = f⟦i⟧'⟦j⟧' ≫ (shiftComm Y i j).hom := by
-  rw [shift_comm', ← shiftComm_symm, Iso.symm_hom, Iso.inv_hom_id_assoc]
+  rw [shiftComm', ← shiftComm_symm, Iso.symm_hom, Iso.inv_hom_id_assoc]
 #align category_theory.shift_comm_hom_comp CategoryTheory.shiftComm_hom_comp
 
 lemma shiftFunctorZero_hom_app_shift (n : A) :
