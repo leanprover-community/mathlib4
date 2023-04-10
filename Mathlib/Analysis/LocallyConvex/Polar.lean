@@ -22,13 +22,13 @@ any bilinear form `B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜`, where `𝕜` is a no
 
 ## Main definitions
 
-* `linear_map.polar`: The polar of a bilinear form `B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜`.
+* `Linear_map.polar`: The polar of a bilinear form `B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜`.
 
 ## Main statements
 
-* `linear_map.polar_eq_Inter`: The polar as an intersection.
-* `linear_map.subset_bipolar`: The polar is a subset of the bipolar.
-* `linear_map.polar_weak_closed`: The polar is closed in the weak topology induced by `B.flip`.
+* `LinearMap.polar_eq_interᵢ`: The polar as an intersection.
+* `LinearMap.subset_bipolar`: The polar is a subset of the bipolar.
+* `LinearMap.polar_weak_closed`: The polar is closed in the weak topology induced by `B.flip`.
 
 ## References
 
@@ -51,6 +51,8 @@ section NormedRing
 variable [NormedCommRing 𝕜] [AddCommMonoid E] [AddCommMonoid F]
 
 variable [Module 𝕜 E] [Module 𝕜 F]
+
+set_option synthInstance.etaExperiment true -- Porting note: lean4#2074
 
 variable (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜)
 
@@ -79,10 +81,10 @@ theorem polar_eq_interᵢ {s : Set E} : B.polar s = ⋂ x ∈ s, { y : F | ‖B 
 #align linear_map.polar_eq_Inter LinearMap.polar_eq_interᵢ
 
 /-- The map `B.polar : set E → set F` forms an order-reversing Galois connection with
-`B.flip.polar : set F → set E`. We use `order_dual.to_dual` and `order_dual.of_dual` to express
+`B.flip.polar : set F → set E`. We use `OrderDual.toDual` and `OrderDual.ofDual` to express
 that `polar` is order-reversing. -/
 theorem polar_gc :
-    GaloisConnection (OrderDual.toDual ∘ B.polar) (B.flip.polar ∘ OrderDual.ofDual) := fun s t =>
+    GaloisConnection (OrderDual.toDual ∘ B.polar) (B.flip.polar ∘ OrderDual.ofDual) := fun _ _ =>
   ⟨fun h _ hx _ hy => h hy _ hx, fun h _ hx _ hy => h hy _ hx⟩
 #align linear_map.polar_gc LinearMap.polar_gc
 
@@ -107,8 +109,8 @@ theorem polar_empty : B.polar ∅ = Set.univ :=
 
 @[simp]
 theorem polar_zero : B.polar ({0} : Set E) = Set.univ := by
-  refine' set.eq_univ_iff_forall.mpr fun y x hx => _
-  rw [set.mem_singleton_iff.mp hx, map_zero, LinearMap.zero_apply, norm_zero]
+  refine' Set.eq_univ_iff_forall.mpr fun y x hx => _
+  rw [Set.mem_singleton_iff.mp hx, map_zero, LinearMap.zero_apply, norm_zero]
   exact zero_le_one
 #align linear_map.polar_zero LinearMap.polar_zero
 
@@ -118,16 +120,14 @@ theorem subset_bipolar (s : Set E) : s ⊆ B.flip.polar (B.polar s) := fun x hx 
 #align linear_map.subset_bipolar LinearMap.subset_bipolar
 
 @[simp]
-theorem tripolar_eq_polar (s : Set E) : B.polar (B.flip.polar (B.polar s)) = B.polar s := by
-  refine' (B.polar_antitone (B.subset_bipolar s)).antisymm _
-  convert subset_bipolar B.flip (B.polar s)
-  exact B.flip_flip.symm
+theorem tripolar_eq_polar (s : Set E) : B.polar (B.flip.polar (B.polar s)) = B.polar s :=
+  (B.polar_antitone (B.subset_bipolar s)).antisymm (subset_bipolar B.flip (B.polar s))
 #align linear_map.tripolar_eq_polar LinearMap.tripolar_eq_polar
 
 /-- The polar set is closed in the weak topology induced by `B.flip`. -/
-theorem polar_weak_closed (s : Set E) : is_closed[WeakBilin.topologicalSpace B.flip] (B.polar s) :=
-  by
-  rw [polar_eq_Inter]
+theorem polar_weak_closed (s : Set E) : IsClosed[WeakBilin.instTopologicalSpace B.flip]
+    (B.polar s) := by
+  rw [polar_eq_interᵢ]
   refine' isClosed_interᵢ fun x => isClosed_interᵢ fun _ => _
   exact isClosed_le (WeakBilin.eval_continuous B.flip x).norm continuous_const
 #align linear_map.polar_weak_closed LinearMap.polar_weak_closed
@@ -139,6 +139,8 @@ section NontriviallyNormedField
 variable [NontriviallyNormedField 𝕜] [AddCommMonoid E] [AddCommMonoid F]
 
 variable [Module 𝕜 E] [Module 𝕜 F]
+
+set_option synthInstance.etaExperiment true -- Porting note: lean4#2074
 
 variable (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜)
 
@@ -153,10 +155,9 @@ theorem polar_univ (h : SeparatingRight B) : B.polar Set.univ = {(0 : F)} := by
         mul_inv_cancel_left₀ hc.ne']
     _ ≤ ε * 1 := (mul_le_mul hcε.le (hy _ trivial) (norm_nonneg _) hε.le)
     _ = ε := mul_one _
-    
+
 #align linear_map.polar_univ LinearMap.polar_univ
 
 end NontriviallyNormedField
 
 end LinearMap
-
