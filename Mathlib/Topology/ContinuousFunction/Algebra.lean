@@ -293,6 +293,10 @@ def continuousSubgroup (α : Type _) (β : Type _) [TopologicalSpace α] [Topolo
 #align continuous_subgroup continuousSubgroup
 #align continuous_add_subgroup continuousAddSubgroup
 
+
+#check continuousSubgroup
+#check continuousAddSubgroup
+
 end Subtype
 
 namespace ContinuousMap
@@ -471,14 +475,23 @@ def continuousSubsemiring (α : Type _) (R : Type _) [TopologicalSpace α] [Topo
   { continuousAddSubmonoid α R, continuousSubmonoid α R with }
 #align continuous_subsemiring continuousSubsemiring
 
+
+example (R : Type _) [Ring R] [TopologicalSpace R] [TopologicalRing R] :
+  TopologicalSemiring R := TopologicalSemiring.mk
+
+example (R : Type _) [Ring R] [TopologicalSpace R] [TopologicalRing R] :
+  TopologicalAddGroup R := TopologicalRing.to_topologicalAddGroup
+
+variable (γ : Type _) [TopologicalSpace γ]
+variable (S : Type _) [TopologicalSpace S] [Ring S] [TopologicalRing S]
+
+#check continuousAddSubgroup γ S
+#check continuousSubsemiring γ S
+
 /-- The subring of continuous maps `α → β`. -/
 def continuousSubring (α : Type _) (R : Type _) [TopologicalSpace α] [TopologicalSpace R] [Ring R]
     [TopologicalRing R] : Subring (α → R) :=
-  {
-    continuousAddSubgroup α R with
-      mul_mem' := sorry
-      one_mem' := sorry
-     }
+  { continuousAddSubgroup α R, continuousSubsemiring α R with }
 #align continuous_subring continuousSubring
 
 end Subtype
@@ -586,7 +599,7 @@ variable [Module R M] [ContinuousConstSMul R M] [TopologicalAddGroup M]
 /-- The `R`-submodule of continuous maps `α → M`. -/
 def continuousSubmodule : Submodule R (α → M) :=
   {
-    continuousAddSubgroup α
+    continuousAddto_addSubgroup α
       M with
     carrier := { f : α → M | Continuous f }
     smul_mem' := fun c f hf => hf.const_smul c }
@@ -814,6 +827,12 @@ theorem algebraMap_apply (k : R) (a : α) : algebraMap R C(α, A) k a = SMul.smu
 
 variable {𝕜 : Type _} [TopologicalSpace 𝕜]
 
+variable (s : Set C(α, 𝕜)) (f : s) (x : α)
+
+#check (↑f x)
+
+
+
 /-- A set of continuous maps "separates points strongly"
 if for each pair of distinct points there is a function with specified values on them.
 
@@ -827,7 +846,7 @@ writing it this way avoids having to deal with casts inside the set.
 where the functions would be continuous functions vanishing at infinity.)
 -/
 def Set.SeparatesPointsStrongly (s : Set C(α, 𝕜)) : Prop :=
-  ∀ (v : α → 𝕜) (x y : α), ∃ f : s, (f x : 𝕜) = v x ∧ f y = v y
+  ∀ (v : α → 𝕜) (x y : α), ∃ f : s, (f.toFun x : 𝕜) = v x ∧ f y = v y
 #align set.separates_points_strongly Set.SeparatesPointsStrongly
 
 variable [Field 𝕜] [TopologicalRing 𝕜]
