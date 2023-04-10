@@ -211,6 +211,7 @@ import Mathlib.Algebra.Order.Pi
 import Mathlib.Algebra.Order.Pointwise
 import Mathlib.Algebra.Order.Positive.Field
 import Mathlib.Algebra.Order.Positive.Ring
+import Mathlib.Algebra.Order.Rearrangement
 import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.Algebra.Order.Ring.Canonical
 import Mathlib.Algebra.Order.Ring.CharZero

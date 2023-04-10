@@ -8,12 +8,12 @@ Authors: Mantas Bakšys
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.BigOperators.Basic
-import Mathbin.Algebra.Order.Module
-import Mathbin.Data.Prod.Lex
-import Mathbin.GroupTheory.Perm.Support
-import Mathbin.Order.Monotone.Monovary
-import Mathbin.Tactic.Abel
+import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Algebra.Order.Module
+import Mathlib.Data.Prod.Lex
+import Mathlib.GroupTheory.Perm.Support
+import Mathlib.Order.Monotone.Monovary
+import Mathlib.Tactic.Abel
 
 /-!
 # Rearrangement inequality
@@ -120,8 +120,7 @@ theorem MonovaryOn.sum_smul_comp_perm_eq_sum_smul_iff (hfg : MonovaryOn f g s)
       push_neg  at h
       obtain ⟨x, hx, y, hy, hgxy, hfxy⟩ := h
       set τ : perm ι := (swap x y).trans σ
-      have hτs : { x | τ x ≠ x } ⊆ s :=
-        by
+      have hτs : { x | τ x ≠ x } ⊆ s := by
         refine' (set_support_mul_subset σ <| swap x y).trans (Set.union_subset hσ fun z hz => _)
         obtain ⟨_, rfl | rfl⟩ := swap_apply_ne_self_iff.1 hz <;> assumption
       refine' ((hfg.sum_smul_comp_perm_le_sum_smul hτs).trans_lt' _).Ne
@@ -151,8 +150,7 @@ theorem MonovaryOn.sum_smul_comp_perm_lt_sum_smul_iff (hfg : MonovaryOn f g s)
 /-- **Rearrangement Inequality**: Pointwise scalar multiplication of `f` and `g` is maximized when
 `f` and `g` monovary together. Stated by permuting the entries of `f`. -/
 theorem MonovaryOn.sum_comp_perm_smul_le_sum_smul (hfg : MonovaryOn f g s)
-    (hσ : { x | σ x ≠ x } ⊆ s) : (∑ i in s, f (σ i) • g i) ≤ ∑ i in s, f i • g i :=
-  by
+    (hσ : { x | σ x ≠ x } ⊆ s) : (∑ i in s, f (σ i) • g i) ≤ ∑ i in s, f i • g i := by
   convert hfg.sum_smul_comp_perm_le_sum_smul
       (show { x | σ⁻¹ x ≠ x } ⊆ s by simp only [set_support_inv_eq, hσ]) using
     1
@@ -164,8 +162,7 @@ which monovary together, is unchanged by a permutation if and only if `f ∘ σ`
 together. Stated by permuting the entries of `f`. -/
 theorem MonovaryOn.sum_comp_perm_smul_eq_sum_smul_iff (hfg : MonovaryOn f g s)
     (hσ : { x | σ x ≠ x } ⊆ s) :
-    ((∑ i in s, f (σ i) • g i) = ∑ i in s, f i • g i) ↔ MonovaryOn (f ∘ σ) g s :=
-  by
+    ((∑ i in s, f (σ i) • g i) = ∑ i in s, f i • g i) ↔ MonovaryOn (f ∘ σ) g s := by
   have hσinv : { x | σ⁻¹ x ≠ x } ⊆ s := (set_support_inv_eq _).Subset.trans hσ
   refine'
     (Iff.trans _ <| hfg.sum_smul_comp_perm_eq_sum_smul_iff hσinv).trans ⟨fun h => _, fun h => _⟩
