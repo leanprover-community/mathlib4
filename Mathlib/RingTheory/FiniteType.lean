@@ -424,7 +424,7 @@ variable [AddCommMonoid M]
 /-- If a set `S` generates an additive monoid `M`, then the image of `M` generates, as algebra,
 `AddMonoidAlgebra R M`. -/
 theorem mvPolynomial_aeval_of_surjective_of_closure [CommSemiring R] {S : Set M}
-    (hS : closure S = ⊤) :
+    [DecidableEq S] (hS : closure S = ⊤) :
     Function.Surjective
       (MvPolynomial.aeval fun s : S => of' R M ↑s : MvPolynomial S R → AddMonoidAlgebra R M) := by
   intro f
@@ -451,6 +451,7 @@ variable (R M)
 type. -/
 instance finiteType_of_fg [CommRing R] [h : AddMonoid.Fg M] : FiniteType R (AddMonoidAlgebra R M) :=
   by
+  classical
   obtain ⟨S, hS⟩ := h.out
   exact (FiniteType.mvPolynomial R (S : Set M)).of_surjective
       (MvPolynomial.aeval fun s : (S : Set M) => of' R M ↑s)
@@ -580,7 +581,7 @@ variable [CommMonoid M]
 /-- If a set `S` generates a monoid `M`, then the image of `M` generates, as algebra,
 `MonoidAlgebra R M`. -/
 theorem mvPolynomial_aeval_of_surjective_of_closure [CommSemiring R] {S : Set M}
-    (hS : closure S = ⊤) :
+    [DecidableEq S] (hS : closure S = ⊤) :
     Function.Surjective
       (MvPolynomial.aeval fun s : S => of R M ↑s : MvPolynomial S R → MonoidAlgebra R M) := by
   intro f
