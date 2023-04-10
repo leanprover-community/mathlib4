@@ -17,13 +17,14 @@ import Mathlib.Data.Fintype.Card
 /-!
 # The category of finite types.
 
-We define the category of finite types, denoted `Fintype` as
-(bundled) types with a `fintype` instance.
+We define the category of finite types, denoted `FintypeCat` as
+(bundled) types with a `Fintype` instance.
 
-We also define `Fintype.skeleton`, the standard skeleton of `Fintype` whose objects are `fin n`
-for `n : ℕ`. We prove that the obvious inclusion functor `Fintype.skeleton ⥤ Fintype` is an
-equivalence of categories in `Fintype.skeleton.equivalence`.
-We prove that `Fintype.skeleton` is a skeleton of `Fintype` in `Fintype.is_skeleton`.
+We also define `FintypeCat.Skeleton`, the standard skeleton of `FintypeCat` whose objects
+are `Fin n` for `n : ℕ`. We prove that the obvious inclusion functor
+`FintypeCat.Skeleton ⥤ FintypeCat` is an equivalence of categories in
+`FintypeCat.Skeleton.equivalence`.
+We prove that `FintypeCat.Skeleton` is a skeleton of `FintypeCat` in `FintypeCat.isSkeleton`.
 -/
 
 
@@ -57,7 +58,7 @@ instance {X : FintypeCat} : Fintype X :=
 instance : Category FintypeCat :=
   InducedCategory.category Bundled.α
 
-/-- The fully faithful embedding of `Fintype` into the category of types. -/
+/-- The fully faithful embedding of `FintypeCat` into the category of types. -/
 @[simps!]
 def incl : FintypeCat ⥤ Type _ :=
   inducedFunctor _
@@ -90,8 +91,8 @@ lemma hom_ext {X Y : FintypeCat} (f g : X ⟶ Y) (h : ∀ x, f x = g x): f = g :
   funext
   apply h
 
--- See `equiv_equiv_iso` in the root namespace for the analogue in `Type`.
-/-- Equivalences between finite types are the same as isomorphisms in `Fintype`. -/
+-- See `equivEquivIso` in the root namespace for the analogue in `Type`.
+/-- Equivalences between finite types are the same as isomorphisms in `FintypeCat`. -/
 @[simps]
 def equivEquivIso {A B : FintypeCat} : A ≃ B ≃ (A ≅ B) where
   toFun e :=
@@ -110,10 +111,10 @@ set_option linter.uppercaseLean3 false in
 universe u
 
 /--
-The "standard" skeleton for `Fintype`. This is the full subcategory of `Fintype` spanned by objects
-of the form `ulift (fin n)` for `n : ℕ`. We parameterize the objects of `Fintype.skeleton`
-directly as `ulift ℕ`, as the type `ulift (fin m) ≃ ulift (fin n)` is
-nonempty if and only if `n = m`. Specifying universes, `skeleton : Type u` is a small
+The "standard" skeleton for `FintypeCat`. This is the full subcategory of `FintypeCat`
+spanned by objects of the form `ULift (Fin n)` for `n : ℕ`. We parameterize the objects
+of `Fintype.Skeleton` directly as `ULift ℕ`, as the type `ULift (Fin m) ≃ ULift (Fin n)`
+is nonempty if and only if `n = m`. Specifying universes, `Skeleton : Type u` is a small
 skeletal category equivalent to `Fintype.{u}`.
 -/
 def Skeleton : Type u :=
@@ -123,7 +124,7 @@ set_option linter.uppercaseLean3 false in
 
 namespace Skeleton
 
-/-- Given any natural number `n`, this creates the associated object of `Fintype.skeleton`. -/
+/-- Given any natural number `n`, this creates the associated object of `Fintype.Skeleton`. -/
 def mk : ℕ → Skeleton :=
   ULift.up
 set_option linter.uppercaseLean3 false in
@@ -132,7 +133,7 @@ set_option linter.uppercaseLean3 false in
 instance : Inhabited Skeleton :=
   ⟨mk 0⟩
 
-/-- Given any object of `Fintype.skeleton`, this returns the associated natural number. -/
+/-- Given any object of `Fintype.Skeleton`, this returns the associated natural number. -/
 def len : Skeleton → ℕ :=
   ULift.down
 set_option linter.uppercaseLean3 false in
@@ -172,7 +173,7 @@ theorem is_skeletal : Skeletal Skeleton.{u} := fun X Y ⟨h⟩ =>
 set_option linter.uppercaseLean3 false in
 #align Fintype.skeleton.is_skeletal FintypeCat.Skeleton.is_skeletal
 
-/-- The canonical fully faithful embedding of `Fintype.skeleton` into `Fintype`. -/
+/-- The canonical fully faithful embedding of `Fintype.Skeleton` into `FintypeCat`. -/
 def incl : Skeleton.{u} ⥤ FintypeCat.{u} where
   obj X := FintypeCat.of (ULift (Fin X.len))
   map f := f
@@ -194,7 +195,7 @@ instance : EssSurj incl :=
 noncomputable instance : IsEquivalence incl :=
   Equivalence.ofFullyFaithfullyEssSurj _
 
-/-- The equivalence between `Fintype.skeleton` and `Fintype`. -/
+/-- The equivalence between `Fintype.Skeleton` and `Fintype`. -/
 noncomputable def equivalence : Skeleton ≌ FintypeCat :=
   incl.asEquivalence
 set_option linter.uppercaseLean3 false in
@@ -209,7 +210,7 @@ set_option linter.uppercaseLean3 false in
 
 end Skeleton
 
-/-- `Fintype.skeleton` is a skeleton of `Fintype`. -/
+/-- `Fintype.Skeleton` is a skeleton of `Fintype`. -/
 noncomputable def isSkeleton : IsSkeletonOf FintypeCat Skeleton Skeleton.incl where
   skel := Skeleton.is_skeletal
   eqv := by infer_instance
