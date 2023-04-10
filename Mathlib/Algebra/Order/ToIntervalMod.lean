@@ -358,6 +358,7 @@ theorem toIcoDiv_neg (a : α) {b : α} (hb : 0 < b) (x : α) :
   suffices toIcoDiv a hb (-x) = -toIocDiv (-(a + b)) hb x by
     rwa [neg_add, ← sub_eq_add_neg, ← toIocDiv_add_right', toIocDiv_add_right] at this
   rw [← neg_eq_iff_eq_neg, eq_comm]
+  symm
   apply eq_toIocDiv_of_sub_zsmul_mem_Ioc
   obtain ⟨hc, ho⟩ := sub_toIcoDiv_zsmul_mem_Ico a hb (-x)
   rw [← neg_lt_neg_iff, neg_sub' (-x), neg_neg, ← neg_smul] at ho
@@ -704,12 +705,13 @@ theorem toIocMod_periodic (a : α) {b : α} (hb : 0 < b) : Function.Periodic (to
 /-- `toIcoMod` as an Equiv from the quotient. -/
 @[simps! symm_apply]
 def quotientAddGroup.equivIcoMod (a : α) {b : α} (hb : 0 < b) :
-    α ⧸ AddSubgroup.zmultiples b ≃ Set.Ico a (a + b)
-    where
+    α ⧸ AddSubgroup.zmultiples b ≃ Set.Ico a (a + b) where
   -- Porting note: Needed to insert `by apply` here
   toFun x :=
     ⟨(toIcoMod_periodic a hb).lift x, by
-      apply QuotientAddGroup.induction_on' x <| toIcoMod_mem_Ico a hb⟩
+      apply QuotientAddGroup.induction_on'
+        (C := fun x => (toIcoMod_periodic a hb).lift x ∈ Set.Ico a (a + b)) x <|
+          toIcoMod_mem_Ico a hb⟩
   invFun := (↑)
   right_inv x := Subtype.ext <| (toIcoMod_eq_self hb).mpr x.2
   left_inv x := by
@@ -732,7 +734,9 @@ def quotientAddGroup.equivIocMod (a : α) {b : α} (hb : 0 < b) :
     where
   toFun x :=
     ⟨(toIocMod_periodic a hb).lift x, by
-      apply QuotientAddGroup.induction_on' x <| toIocMod_mem_Ioc a hb⟩
+      apply QuotientAddGroup.induction_on'
+        (C := fun x => (toIocMod_periodic a hb).lift x ∈ Set.Ioc a (a + b)) x <|
+          toIocMod_mem_Ioc a hb⟩
   invFun := (↑)
   right_inv x := Subtype.ext <| (toIocMod_eq_self hb).mpr x.2
   left_inv x := by
@@ -815,3 +819,4 @@ theorem toIcoMod_zero_one (x : α) :
 #align to_Ico_mod_zero_one toIcoMod_zero_one
 
 end LinearOrderedField
+
