@@ -15,6 +15,7 @@ import Mathlib.Algebra.Star.StarAlgHom
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Topology.Algebra.Module.Basic
 import Mathlib.Topology.Algebra.InfiniteSum.Basic
+import Mathlib.Topology.Algebra.Ring.Basic
 import Mathlib.Topology.Algebra.Star
 import Mathlib.Topology.Algebra.UniformGroup
 import Mathlib.Topology.ContinuousFunction.Ordered
@@ -278,7 +279,7 @@ section Subtype
 /-- The `submonoid` of continuous maps `α → β`. -/
 @[to_additive "The `add_submonoid` of continuous maps `α → β`. "]
 def continuousSubmonoid (α : Type _) (β : Type _) [TopologicalSpace α] [TopologicalSpace β]
-    [Monoid β] [ContinuousMul β] : Submonoid (α → β) where
+    [MulOneClass β] [ContinuousMul β] : Submonoid (α → β) where
   carrier := { f : α → β | Continuous f }
   one_mem' := @continuous_const _ _ _ _ 1
   mul_mem' fc gc := fc.mul gc
@@ -471,22 +472,9 @@ section Subtype
 
 /-- The subsemiring of continuous maps `α → β`. -/
 def continuousSubsemiring (α : Type _) (R : Type _) [TopologicalSpace α] [TopologicalSpace R]
-    [Semiring R] [TopologicalSemiring R] : Subsemiring (α → R) :=
+    [NonAssocSemiring R] [TopologicalSemiring R] : Subsemiring (α → R) :=
   { continuousAddSubmonoid α R, continuousSubmonoid α R with }
 #align continuous_subsemiring continuousSubsemiring
-
-
-example (R : Type _) [Ring R] [TopologicalSpace R] [TopologicalRing R] :
-  TopologicalSemiring R := TopologicalSemiring.mk
-
-example (R : Type _) [Ring R] [TopologicalSpace R] [TopologicalRing R] :
-  TopologicalAddGroup R := TopologicalRing.to_topologicalAddGroup
-
-variable (γ : Type _) [TopologicalSpace γ]
-variable (S : Type _) [TopologicalSpace S] [Ring S] [TopologicalRing S]
-
-#check continuousAddSubgroup γ S
-#check continuousSubsemiring γ S
 
 /-- The subring of continuous maps `α → β`. -/
 def continuousSubring (α : Type _) (R : Type _) [TopologicalSpace α] [TopologicalSpace R] [Ring R]
@@ -527,9 +515,9 @@ instance {α : Type _} {β : Type _} [TopologicalSpace α] [TopologicalSpace β]
   coe_injective.nonUnitalRing _ coe_zero coe_add coe_mul coe_neg coe_sub coe_nsmul coe_zsmul
 
 instance {α : Type _} {β : Type _} [TopologicalSpace α] [TopologicalSpace β] [NonAssocRing β]
-    [TopologicalRing β] : NonAssocRing C(α, β) := sorry
-  --coe_injective.nonAssocRing _ coe_zero coe_one coe_add coe_mul coe_neg coe_sub coe_nsmul coe_zsmul
---    coe_nat_cast coe_int_cast
+    [TopologicalRing β] : NonAssocRing C(α, β) :=
+  coe_injective.nonAssocRing _ coe_zero coe_one coe_add coe_mul coe_neg coe_sub coe_nsmul coe_zsmul
+    coe_nat_cast coe_int_cast
 
 instance {α : Type _} {β : Type _} [TopologicalSpace α] [TopologicalSpace β] [Ring β]
     [TopologicalRing β] : Ring C(α, β) :=
