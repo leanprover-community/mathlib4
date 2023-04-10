@@ -101,18 +101,14 @@ instance : Coe (P →A[R] Q) C(P, Q) :=
   ⟨toContinuousMap⟩
 
 @[simp]
-theorem toAffineMap_eq_coe (f : P →A[R] Q) : f.toAffineMap = ↑f := rfl
-#align continuous_affine_map.to_affine_map_eq_coe ContinuousAffineMap.toAffineMap_eq_coe
-
-@[simp]
 theorem toContinuousMap_coe (f : P →A[R] Q) : f.toContinuousMap = ↑f := rfl
 #align continuous_affine_map.to_continuous_map_coe ContinuousAffineMap.toContinuousMap_coe
 
-@[simp, norm_cast]
+@[simp] -- Porting note: removed `norm_cast`
 theorem coe_to_affineMap (f : P →A[R] Q) : ((f : P →ᵃ[R] Q) : P → Q) = f := rfl
 #align continuous_affine_map.coe_to_affine_map ContinuousAffineMap.coe_to_affineMap
 
-@[simp, norm_cast]
+-- Porting note: removed `norm_cast` and `simp` since proof is  `simp only [ContinuousMap.coe_mk]`
 theorem coe_to_continuousMap (f : P →A[R] Q) : ((f : C(P, Q)) : P → Q) = f := rfl
 #align continuous_affine_map.coe_to_continuous_map ContinuousAffineMap.coe_to_continuousMap
 
@@ -122,7 +118,7 @@ theorem to_continuousMap_injective {f g : P →A[R] Q} (h : (f : C(P, Q)) = (g :
   exact ContinuousMap.congr_fun h a
 #align continuous_affine_map.to_continuous_map_injective ContinuousAffineMap.to_continuousMap_injective
 
-@[norm_cast]
+-- Porting note: removed `norm_cast`
 theorem coe_affineMap_mk (f : P →ᵃ[R] Q) (h) : ((⟨f, h⟩ : P →A[R] Q) : P →ᵃ[R] Q) = f := rfl
 #align continuous_affine_map.coe_affine_map_mk ContinuousAffineMap.coe_affineMap_mk
 
