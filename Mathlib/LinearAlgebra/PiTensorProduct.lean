@@ -14,42 +14,42 @@ import Mathlib.LinearAlgebra.Multilinear.TensorProduct
 /-!
 # Tensor product of an indexed family of modules over commutative semirings
 
-We define the tensor product of an indexed family `s : ι → Type*` of modules over commutative
-semirings. We denote this space by `⨂[R] i, s i` and define it as `free_add_monoid (R × Π i, s i)`
+We define the tensor product of an indexed family `s : ι → Type _` of modules over commutative
+semirings. We denote this space by `⨂[R] i, s i` and define it as `FreeAddMonoid (R × ∀ i, s i)`
 quotiented by the appropriate equivalence relation. The treatment follows very closely that of the
-binary tensor product in `linear_algebra/tensor_product.lean`.
+binary tensor product in `LinearAlgebra/TensorProduct.lean`.
 
 ## Main definitions
 
-* `pi_tensor_product R s` with `R` a commutative semiring and `s : ι → Type*` is the tensor product
+* `PiTensorProduct R s` with `R` a commutative semiring and `s : ι → Type _` is the tensor product
   of all the `s i`'s. This is denoted by `⨂[R] i, s i`.
-* `tprod R f` with `f : Π i, s i` is the tensor product of the vectors `f i` over all `i : ι`.
-  This is bundled as a multilinear map from `Π i, s i` to `⨂[R] i, s i`.
-* `lift_add_hom` constructs an `add_monoid_hom` from `(⨂[R] i, s i)` to some space `F` from a
-  function `φ : (R × Π i, s i) → F` with the appropriate properties.
-* `lift φ` with `φ : multilinear_map R s E` is the corresponding linear map
+* `tprod R f` with `f : ∀ i, s i` is the tensor product of the vectors `f i` over all `i : ι`.
+  This is bundled as a multilinear map from `∀ i, s i` to `⨂[R] i, s i`.
+* `liftAddHom` constructs an `AddMonoidHom` from `(⨂[R] i, s i)` to some space `F` from a
+  function `φ : (R × ∀ i, s i) → F` with the appropriate properties.
+* `lift φ` with `φ : MultilinearMap R s E` is the corresponding linear map
   `(⨂[R] i, s i) →ₗ[R] E`. This is bundled as a linear equivalence.
-* `pi_tensor_product.reindex e` re-indexes the components of `⨂[R] i : ι, M` along `e : ι ≃ ι₂`.
-* `pi_tensor_product.tmul_equiv` equivalence between a `tensor_product` of `pi_tensor_product`s and
-  a single `pi_tensor_product`.
+* `PiTensorProduct.reindex e` re-indexes the components of `⨂[R] i : ι, M` along `e : ι ≃ ι₂`.
+* `PiTensorProduct.tmulEquiv` equivalence between a `TensorProduct` of `PiTensorProduct`s and
+  a single `PiTensorProduct`.
 
 ## Notations
 
-* `⨂[R] i, s i` is defined as localized notation in locale `tensor_product`
-* `⨂ₜ[R] i, f i` with `f : Π i, f i` is defined globally as the tensor product of all the `f i`'s.
+* `⨂[R] i, s i` is defined as localized notation in locale `TensorProduct`.
+* `⨂ₜ[R] i, f i` with `f : ∀ i, f i` is defined globally as the tensor product of all the `f i`'s.
 
 ## Implementation notes
 
-* We define it via `free_add_monoid (R × Π i, s i)` with the `R` representing a "hidden" tensor
-  factor, rather than `free_add_monoid (Π i, s i)` to ensure that, if `ι` is an empty type,
+* We define it via `FreeAddMonoid (R × ∀ i, s i)` with the `R` representing a "hidden" tensor
+  factor, rather than `FreeAddMonoid (∀ i, s i)` to ensure that, if `ι` is an empty type,
   the space is isomorphic to the base ring `R`.
-* We have not restricted the index type `ι` to be a `fintype`, as nothing we do here strictly
+* We have not restricted the index type `ι` to be a `Fintype`, as nothing we do here strictly
   requires it. However, problems may arise in the case where `ι` is infinite; use at your own
   caution.
-* Instead of requiring `decidable_eq ι` as an argument to `pi_tensor_product` itself, we include it
+* Instead of requiring `DecidableEq ι` as an argument to `PiTensorProduct` itself, we include it
   as an argument in the constructors of the relation. A decidability isntance still has to come
-  from somewhere due to the use of `function.update`, but this hides it from the downstream user.
-  See the implementation notes for `multilinear_map` for an extended discussion of this choice.
+  from somewhere due to the use of `Function.update`, but this hides it from the downstream user.
+  See the implementation notes for `MultilinearMap` for an extended discussion of this choice.
 
 ## TODO
 
@@ -87,7 +87,7 @@ namespace PiTensorProduct
 
 variable (R) (s)
 
-/-- The relation on `free_add_monoid (R × Π i, s i)` that generates a congruence whose quotient is
+/-- The relation on `FreeAddMonoid (R × ∀ i, s i)` that generates a congruence whose quotient is
 the tensor product. -/
 inductive Eqv : FreeAddMonoid (R × ∀ i, s i) → FreeAddMonoid (R × ∀ i, s i) → Prop
   | of_zero : ∀ (r : R) (f : ∀ i, s i) (i : ι) (_ : f i = 0), Eqv (FreeAddMonoid.of (r, f)) 0
@@ -112,7 +112,7 @@ end PiTensorProduct
 
 variable (R) (s)
 
-/-- `pi_tensor_product R s` with `R` a commutative semiring and `s : ι → Type*` is the tensor
+/-- `PiTensorProduct R s` with `R` a commutative semiring and `s : ι → Type _` is the tensor
   product of all the `s i`'s. This is denoted by `⨂[R] i, s i`. -/
 def PiTensorProduct : Type _ :=
   (addConGen (PiTensorProduct.Eqv R s)).Quotient
@@ -121,8 +121,8 @@ def PiTensorProduct : Type _ :=
 variable {R}
 
 -- mathport name: pi_tensor_product
--- This enables the notation `⨂[R] i : ι, s i` for the pi tensor product, given `s : ι → Type*`.
---scoped[TensorProduct] -- Porting note: TODO Uncomment this.
+-- This enables the notation `⨂[R] i : ι, s i` for the pi tensor product, given `s : ι → Type _`.
+--scoped[TensorProduct] -- Porting note: `scoped` caused an error, so I commented it out.
 notation3:100"⨂["R"] "(...)", "r:(scoped f => PiTensorProduct R f) => r
 
 open TensorProduct
@@ -142,7 +142,7 @@ instance : Inhabited (⨂[R] i, s i) :=
 
 variable (R) {s}
 
-/-- `tprod_coeff R r f` with `r : R` and `f : Π i, s i` is the tensor product of the vectors `f i`
+/-- `tprodCoeff R r f` with `r : R` and `f : ∀ i, s i` is the tensor product of the vectors `f i`
 over all `i : ι`, multiplied by the coefficient `r`. Note that this is meant as an auxiliary
 definition for this file alone, and that one should use `tprod` defined below for most purposes. -/
 def tprodCoeff (r : R) (f : ∀ i, s i) : ⨂[R] i, s i :=
@@ -184,8 +184,8 @@ theorem smul_tprodCoeff [DecidableEq ι] (z : R) (f : ∀ i, s i) (i : ι) (r : 
   exact smul_tprodCoeff_aux z f i _
 #align pi_tensor_product.smul_tprod_coeff PiTensorProduct.smul_tprodCoeff
 
-/-- Construct an `add_monoid_hom` from `(⨂[R] i, s i)` to some space `F` from a function
-`φ : (R × Π i, s i) → F` with the appropriate properties. -/
+/-- Construct an `AddMonoidHom` from `(⨂[R] i, s i)` to some space `F` from a function
+`φ : (R × ∀ i, s i) → F` with the appropriate properties. -/
 def liftAddHom (φ : (R × ∀ i, s i) → F)
     (C0 : ∀ (r : R) (f : ∀ i, s i) (i : ι) (_ : f i = 0), φ (r, f) = 0)
     (C0' : ∀ f : ∀ i, s i, φ (0, f) = 0)
@@ -312,7 +312,7 @@ instance : IsScalarTower R R (⨂[R] i, s i) :=
 
 variable (R)
 
-/-- The canonical `multilinear_map R s (⨂[R] i, s i)`. -/
+/-- The canonical `MultilinearMap R s (⨂[R] i, s i)`. -/
 def tprod : MultilinearMap R s (⨂[R] i, s i) where
   toFun := tprodCoeff R 1
   map_add' {_ f} i x y := (add_tprodCoeff (1 : R) f i x y).symm
@@ -360,8 +360,8 @@ open MultilinearMap
 variable {s}
 
 /-- Auxiliary function to constructing a linear map `(⨂[R] i, s i) → E` given a
-`multilinear map R s E` with the property that its composition with the canonical
-`multilinear_map R s (⨂[R] i, s i)` is the given multilinear map. -/
+`MultilinearMap R s E` with the property that its composition with the canonical
+`MultilinearMap R s (⨂[R] i, s i)` is the given multilinear map. -/
 def liftAux (φ : MultilinearMap R s E) : (⨂[R] i, s i) →+ E :=
   liftAddHom (fun p : R × ∀ i, s i => p.1 • φ p.2)
     (fun z f i hf => by simp_rw [map_coord_zero φ i hf, smul_zero])
@@ -390,8 +390,8 @@ theorem liftAux.smul {φ : MultilinearMap R s E} (r : R) (x : ⨂[R] i, s i) :
     rw [smul_add, (liftAux φ).map_add, ihz, ihy, (liftAux φ).map_add, smul_add]
 #align pi_tensor_product.lift_aux.smul PiTensorProduct.liftAux.smul
 
-/-- Constructing a linear map `(⨂[R] i, s i) → E` given a `multilinear_map R s E` with the
-property that its composition with the canonical `multilinear_map R s E` is
+/-- Constructing a linear map `(⨂[R] i, s i) → E` given a `MultilinearMap R s E` with the
+property that its composition with the canonical `MultilinearMap R s E` is
 the given multilinear map `φ`. -/
 def lift : MultilinearMap R s E ≃ₗ[R] (⨂[R] i, s i) →ₗ[R] E where
   toFun φ := { liftAux φ with map_smul' := liftAux.smul }
@@ -547,7 +547,7 @@ theorem isEmptyEquiv_apply_tprod [IsEmpty ι] (f : ι → M) : isEmptyEquiv ι (
 
 variable {ι}
 
-/-- The tensor product over an single index is isomorphic to the module -/
+/-- The tensor product over an single index is isomorphic to the module. -/
 @[simps symm_apply]
 def subsingletonEquiv [Subsingleton ι] (i₀ : ι) : (⨂[R] i : ι, M) ≃ₗ[R] M where
   toFun := lift (MultilinearMap.ofSubsingleton R M i₀)
@@ -578,7 +578,7 @@ theorem subsingletonEquiv_apply_tprod [Subsingleton ι] (i : ι) (f : ι → M) 
 
 section Tmul
 
-/-- Collapse a `tensor_product` of `pi_tensor_product`s. -/
+/-- Collapse a `TensorProduct` of `PiTensorProduct`s. -/
 private def tmul : ((⨂[R] i : ι, M) ⊗[R] ⨂[R] i : ι₂, M) →ₗ[R] ⨂[R] i : Sum ι ι₂, M :=
   TensorProduct.lift
     { toFun := fun a =>
@@ -593,7 +593,7 @@ private theorem tmul_apply (a : ι → M) (b : ι₂ → M) :
   erw [TensorProduct.lift.tmul, PiTensorProduct.lift.tprod, PiTensorProduct.lift.tprod]
   rfl
 
-/-- Expand `pi_tensor_product` into a `tensor_product` of two factors. -/
+/-- Expand `PiTensorProduct` into a `TensorProduct` of two factors. -/
 private def tmulSymm : (⨂[R] _i : Sum ι ι₂, M) →ₗ[R] (⨂[R] _i : ι, M) ⊗[R] ⨂[R] _i : ι₂, M :=
   -- by using tactic mode, we avoid the need for a lot of `@`s and `_`s
     PiTensorProduct.lift <|
@@ -607,8 +607,8 @@ variable (R M)
 
 attribute [local ext] TensorProduct.ext
 
-/-- Equivalence between a `tensor_product` of `pi_tensor_product`s and a single
-`pi_tensor_product` indexed by a `sum` type.
+/-- Equivalence between a `TensorProduct` of `PiTensorProduct`s and a single
+`PiTensorProduct` indexed by a `Sum` type.
 
 For simplicity, this is defined only for homogeneously- (rather than dependently-) typed components.
 -/
@@ -657,7 +657,7 @@ variable {ι : Type _} {R : Type _} [CommRing R]
 
 variable {s : ι → Type _} [∀ i, AddCommGroup (s i)] [∀ i, Module R (s i)]
 
-/- Unlike for the binary tensor product, we require `R` to be a `comm_ring` here, otherwise
+/- Unlike for the binary tensor product, we require `R` to be a `CommRing` here, otherwise
 this is false in the case where `ι` is empty. -/
 instance : AddCommGroup (⨂[R] i, s i) :=
   Module.addCommMonoidToAddCommGroup R
