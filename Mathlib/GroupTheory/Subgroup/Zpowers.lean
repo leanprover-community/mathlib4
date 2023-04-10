@@ -36,6 +36,10 @@ theorem mem_zpowers (g : G) : g ∈ zpowers g :=
   ⟨1, zpow_one _⟩
 #align subgroup.mem_zpowers Subgroup.mem_zpowers
 
+theorem coe_zpowers (g : G) : ↑(zpowers g) = Set.range (g ^ · : ℤ → G) :=
+  rfl
+#align subgroup.coe_zpowers Subgroup.coe_zpowers
+
 theorem zpowers_eq_closure (g : G) : zpowers g = closure {g} := by
   ext
   exact mem_closure_singleton.symm
@@ -94,6 +98,8 @@ attribute [to_additive existing AddSubgroup.zmultiples] Subgroup.zpowers
 
 attribute [to_additive (attr := simp) AddSubgroup.mem_zmultiples] Subgroup.mem_zpowers
 #align add_subgroup.mem_zmultiples AddSubgroup.mem_zmultiples
+
+attribute [to_additive (attr := norm_cast) AddSubgroup.coe_zmultiples] Subgroup.coe_zpowers
 
 attribute [to_additive AddSubgroup.zmultiples_eq_closure] Subgroup.zpowers_eq_closure
 #align add_subgroup.zmultiples_eq_closure AddSubgroup.zmultiples_eq_closure
