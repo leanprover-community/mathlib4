@@ -373,12 +373,12 @@ def liftAux (φ : MultilinearMap R s E) : (⨂[R] i, s i) →+ E :=
 
 theorem liftAux_tprod (φ : MultilinearMap R s E) (f : ∀ i, s i) : liftAux φ (tprod R f) = φ f := by
   simp only [liftAux, liftAddHom, tprod, MultilinearMap.coe_mk, tprodCoeff,
-    FreeAddMonoid.lift_eval_of, one_smul, AddCon.lift_mk']
+    FreeAddMonoid.lift_eval_of, one_smul, AddCon.lift, AddCon.coe_mk', AddMonoidHom.coe_mk,
+    ZeroHom.coe_mk, AddCon.liftOn_coe]
 #align pi_tensor_product.lift_aux_tprod PiTensorProduct.liftAux_tprod
 
 theorem liftAux_tprodCoeff (φ : MultilinearMap R s E) (z : R) (f : ∀ i, s i) :
-    liftAux φ (tprodCoeff R z f) = z • φ f := by
-  simp [liftAux, liftAddHom, tprodCoeff, FreeAddMonoid.lift_eval_of]
+    liftAux φ (tprodCoeff R z f) = z • φ f := rfl
 #align pi_tensor_product.lift_aux_tprod_coeff PiTensorProduct.liftAux_tprodCoeff
 
 theorem liftAux.smul {φ : MultilinearMap R s E} (r : R) (x : ⨂[R] i, s i) :
