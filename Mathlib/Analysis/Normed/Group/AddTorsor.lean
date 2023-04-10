@@ -39,6 +39,7 @@ class NormedAddTorsor (V : outParam <| Type _) (P : Type _) [outParam <| Seminor
 #align normed_add_torsor NormedAddTorsor
 
 /-- Shortcut instance to help typeclass inference out. -/
+@[nolint dangerousInstance] -- Porting note: this was not needed in Lean 3
 instance (priority := 100) NormedAddTorsor.toAddTorsor' {V P : Type _} [NormedAddCommGroup V]
     [MetricSpace P] [NormedAddTorsor V P] : AddTorsor V P :=
   NormedAddTorsor.toAddTorsor
@@ -193,8 +194,9 @@ def metricSpaceOfNormedAddCommGroupOfAddTorsor (V P : Type _) [NormedAddCommGrou
     [AddTorsor V P] : MetricSpace P
     where
   dist x y := ‖(x -ᵥ y : V)‖
+  edist_dist := λ p p' => by simp only; rw [ENNReal.ofReal_eq_coe_nnreal]
   dist_self x := by simp
-  eq_of_dist_eq_zero x y h := by simpa using h
+  eq_of_dist_eq_zero h := by simpa using h
   dist_comm x y := by simp only [← neg_vsub_eq_vsub_rev y x, norm_neg]
   dist_triangle := by
     intro x y z
@@ -213,6 +215,10 @@ theorem LipschitzWith.vadd [PseudoEMetricSpace α] {f : α → V} {g : α → P}
     _ = (Kf + Kg) * edist x y := (add_mul _ _ _).symm
 
 #align lipschitz_with.vadd LipschitzWith.vadd
+
+-- Porting note: lean fails to find this instance
+@[nolint dangerousInstance]
+instance Function.instAddTorsor : AddTorsor (α → V) (α → P) := Pi.instAddTorsorForAllForAllAddGroup
 
 theorem LipschitzWith.vsub [PseudoEMetricSpace α] {f g : α → P} {Kf Kg : ℝ≥0}
     (hf : LipschitzWith Kf f) (hg : LipschitzWith Kg g) : LipschitzWith (Kf + Kg) (f -ᵥ g) :=
@@ -255,13 +261,15 @@ theorem Continuous.vsub {f g : α → P} (hf : Continuous f) (hg : Continuous g)
   continuous_vsub.comp (hf.prod_mk hg : _)
 #align continuous.vsub Continuous.vsub
 
-theorem ContinuousAt.vsub {f g : α → P} {x : α} (hf : ContinuousAt f x) (hg : ContinuousAt g x) :
+nonrec theorem ContinuousAt.vsub {f g : α → P} {x : α} (hf : ContinuousAt f x)
+  (hg : ContinuousAt g x) :
     ContinuousAt (f -ᵥ g) x :=
   hf.vsub hg
 #align continuous_at.vsub ContinuousAt.vsub
 
-theorem ContinuousWithinAt.vsub {f g : α → P} {x : α} {s : Set α} (hf : ContinuousWithinAt f s x)
-    (hg : ContinuousWithinAt g s x) : ContinuousWithinAt (f -ᵥ g) s x :=
+nonrec theorem ContinuousWithinAt.vsub {f g : α → P} {x : α} {s : Set α}
+  (hf : ContinuousWithinAt f s x) (hg : ContinuousWithinAt g s x) :
+    ContinuousWithinAt (f -ᵥ g) s x :=
   hf.vsub hg
 #align continuous_within_at.vsub ContinuousWithinAt.vsub
 
