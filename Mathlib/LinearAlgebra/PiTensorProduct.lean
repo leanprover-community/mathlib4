@@ -258,18 +258,18 @@ instance distribMulAction' : DistribMulAction R₁ (⨂[R] i, s i) where
   smul_zero r := AddMonoidHom.map_zero _
 #align pi_tensor_product.distrib_mul_action' PiTensorProduct.distribMulAction'
 
-instance smul_comm_class' [SMulCommClass R₁ R₂ R] : SMulCommClass R₁ R₂ (⨂[R] i, s i) :=
+instance smulCommClass' [SMulCommClass R₁ R₂ R] : SMulCommClass R₁ R₂ (⨂[R] i, s i) :=
   ⟨fun {r' r''} x ↦
     PiTensorProduct.induction_on' x (fun {xr xf} ↦ by simp only [smul_tprodCoeff', smul_comm])
       fun {z y} ihz ihy ↦ by simp_rw [PiTensorProduct.smul_add, ihz, ihy]⟩
-#align pi_tensor_product.smul_comm_class' PiTensorProduct.smul_comm_class'
+#align pi_tensor_product.smul_comm_class' PiTensorProduct.smulCommClass'
 
-instance is_scalar_tower' [SMul R₁ R₂] [IsScalarTower R₁ R₂ R] :
+instance isScalarTower' [SMul R₁ R₂] [IsScalarTower R₁ R₂ R] :
     IsScalarTower R₁ R₂ (⨂[R] i, s i) :=
   ⟨fun {r' r''} x ↦
     PiTensorProduct.induction_on' x (fun {xr xf} ↦ by simp only [smul_tprodCoeff', smul_assoc])
       fun {z y} ihz ihy ↦ by simp_rw [PiTensorProduct.smul_add, ihz, ihy]⟩
-#align pi_tensor_product.is_scalar_tower' PiTensorProduct.is_scalar_tower'
+#align pi_tensor_product.is_scalar_tower' PiTensorProduct.isScalarTower'
 
 end DistribMulAction
 
@@ -295,10 +295,10 @@ instance : Module R (⨂[R] i, s i) :=
   PiTensorProduct.module'
 
 instance : SMulCommClass R R (⨂[R] i, s i) :=
-  PiTensorProduct.smul_comm_class'
+  PiTensorProduct.smulCommClass'
 
 instance : IsScalarTower R R (⨂[R] i, s i) :=
-  PiTensorProduct.is_scalar_tower'
+  PiTensorProduct.isScalarTower'
 
 variable (R)
 
