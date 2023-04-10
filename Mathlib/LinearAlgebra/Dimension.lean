@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johannes Hölzl, Sander Dahmen, Scott Morrison
 
 ! This file was ported from Lean 3 source module linear_algebra.dimension
-! leanprover-community/mathlib commit 3a2039ad20626aebbece10cddb18ef010f7d912d
+! leanprover-community/mathlib commit 45ce3929e3bf9a086a216feea3b1ab6c14bf0e67
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
