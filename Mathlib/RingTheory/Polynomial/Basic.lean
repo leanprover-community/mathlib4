@@ -333,8 +333,8 @@ variable [Semiring S] {f : R →+* S} {x : S}
 theorem eval₂_restriction {p : R[X]} :
     eval₂ f x p =
       eval₂ (f.comp (Subring.subtype (Subring.closure (p.frange : Set R)))) x p.restriction := by
-  simp only [eval₂_eq_sum, sum, support_restriction, ← @coeff_restriction _ _ _ p, RingHom.comp_apply,
-    Subring.coeSubtype]
+  simp only [eval₂_eq_sum, sum, support_restriction, ← @coeff_restriction _ _ _ p,
+    RingHom.comp_apply, Subring.coeSubtype]
 #align polynomial.eval₂_restriction Polynomial.eval₂_restriction
 
 section ToSubring
