@@ -1346,9 +1346,13 @@ def rank (f : V →ₗ[K] V') : Cardinal :=
   Module.rank K (LinearMap.range f)
 #align linear_map.rank LinearMap.rank
 
-theorem rank_le_range (f : V →ₗ[K] V₁) : rank f ≤ Module.rank K V₁ :=
+theorem rank_le_range (f : V →ₗ[K] V') : rank f ≤ Module.rank K V' :=
   rank_submodule_le _
 #align linear_map.rank_le_range LinearMap.rank_le_range
+
+theorem rank_le_domain (f : V →ₗ[K] V₁) : rank f ≤ Module.rank K V :=
+  rank_range_le _
+#align linear_map.rank_le_domain LinearMap.rank_le_domain
 
 set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 @[simp]
@@ -1359,18 +1363,18 @@ theorem rank_zero [Nontrivial K] : rank (0 : V →ₗ[K] V') = 0 := by
 variable [AddCommGroup V''] [Module K V'']
 
 set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
-theorem rank_comp_le1 (g : V →ₗ[K] V') (f : V' →ₗ[K] V'') : rank (f.comp g) ≤ rank f := by
+theorem rank_comp_le_left (g : V →ₗ[K] V') (f : V' →ₗ[K] V'') : rank (f.comp g) ≤ rank f := by
   refine' rank_le_of_submodule _ _ _
   rw [LinearMap.range_comp]
   exact LinearMap.map_le_range
-#align linear_map.rank_comp_le1 LinearMap.rank_comp_le1
+#align linear_map.rank_comp_le_left LinearMap.rank_comp_le_left
 
 variable [AddCommGroup V'₁] [Module K V'₁]
 
 set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
-theorem rank_comp_le2 (g : V →ₗ[K] V') (f : V' →ₗ[K] V'₁) : rank (f.comp g) ≤ rank g := by
+theorem rank_comp_le_right (g : V →ₗ[K] V') (f : V' →ₗ[K] V'₁) : rank (f.comp g) ≤ rank g := by
   rw [rank, rank, LinearMap.range_comp]; exact rank_map_le _ _
-#align linear_map.rank_comp_le2 LinearMap.rank_comp_le2
+#align linear_map.rank_comp_le_right LinearMap.rank_comp_le_right
 
 end Ring
 
@@ -1379,11 +1383,6 @@ section DivisionRing
 variable [DivisionRing K] [AddCommGroup V] [Module K V] [AddCommGroup V₁] [Module K V₁]
 
 variable [AddCommGroup V'] [Module K V']
-
-theorem rank_le_domain (f : V →ₗ[K] V₁) : rank f ≤ Module.rank K V := by
-  rw [← rank_range_add_rank_ker f]
-  exact self_le_add_right _ _
-#align linear_map.rank_le_domain LinearMap.rank_le_domain
 
 set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 theorem rank_add_le (f g : V →ₗ[K] V') : rank (f + g) ≤ rank f + rank g :=
