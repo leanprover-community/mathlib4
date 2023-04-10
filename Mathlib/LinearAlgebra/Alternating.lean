@@ -119,9 +119,10 @@ theorem toFun_eq_coe : f.toFun = f :=
 
 -- Porting note: changed statement to reflect new `mk` signature
 @[simp]
-theorem coe_mk (f : (ι → M) → N) (h₁ h₂ h₃) : ⇑(⟨⟨f, h₁, h₂⟩, h₃⟩ : AlternatingMap R M N ι) = f :=
+theorem coe_mk (f : MultilinearMap R (fun _ : ι => M) N) (h) :
+    ⇑(⟨f, h⟩ : AlternatingMap R M N ι) = f :=
   rfl
-#align alternating_map.coe_mk AlternatingMap.coe_mk
+#align alternating_map.coe_mk AlternatingMap.coe_mkₓ
 
 theorem congr_fun {f g : AlternatingMap R M N ι} (h : f = g) (x : ι → M) : f x = g x :=
   congr_arg (fun h : AlternatingMap R M N ι => h x) h
@@ -167,12 +168,13 @@ theorem coe_multilinearMap_injective :
 
 #noalign alternating_map.to_multilinear_map_eq_coe
 
--- Porting note: changed statement to reflect new `mk` signature
-@[simp]
+-- Porting note: changed statement to reflect new `mk` signature.
+-- Porting note: removed `simp`
+-- @[simp]
 theorem coe_multilinearMap_mk (f : (ι → M) → N) (h₁ h₂ h₃) :
     ((⟨⟨f, h₁, h₂⟩, h₃⟩ : AlternatingMap R M N ι) : MultilinearMap R (fun _ : ι => M) N) =
       ⟨f, @h₁, @h₂⟩ :=
-  rfl
+  by simp
 #align alternating_map.coe_multilinear_map_mk AlternatingMap.coe_multilinearMap_mk
 
 end Coercions
@@ -807,12 +809,12 @@ def alternatization : MultilinearMap R (fun _ : ι => M) N' →+ AlternatingMap 
         alternization_map_eq_zero_of_eq_aux m v i j hij hvij }
   map_add' a b := by
     ext
-    simp only [Finset.sum_add_distrib, smul_add, add_apply, domDomCongr_apply,
-      AlternatingMap.add_apply, AlternatingMap.coe_mk, smul_apply, sum_apply]
+    simp only [mk_coe, AlternatingMap.coe_mk, sum_apply, smul_apply, domDomCongr_apply, add_apply,
+      smul_add, Finset.sum_add_distrib, AlternatingMap.add_apply]
   map_zero' := by
     ext
-    simp only [Finset.sum_const_zero, smul_zero, zero_apply, domDomCongr_apply,
-      AlternatingMap.zero_apply, AlternatingMap.coe_mk, smul_apply, sum_apply]
+    simp only [mk_coe, AlternatingMap.coe_mk, sum_apply, smul_apply, domDomCongr_apply,
+      zero_apply, smul_zero, Finset.sum_const_zero, AlternatingMap.zero_apply]
 #align multilinear_map.alternatization MultilinearMap.alternatization
 
 theorem alternatization_def (m : MultilinearMap R (fun _ : ι => M) N') :
