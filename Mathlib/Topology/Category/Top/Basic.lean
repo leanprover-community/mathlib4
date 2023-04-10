@@ -115,8 +115,7 @@ set_option linter.uppercaseLean3 false in
 
 /-- Any homeomorphisms induces an isomorphism in `Top`. -/
 @[simps]
-def isoOfHomeo {X Y : TopCat.{u}} (f : X ≃ₜ Y) : X ≅ Y
-    where
+def isoOfHomeo {X Y : TopCat.{u}} (f : X ≃ₜ Y) : X ≅ Y where
   hom := ⟨f, f.2⟩
   inv := ⟨f.symm, f.3⟩
 set_option linter.uppercaseLean3 false in
@@ -161,9 +160,9 @@ theorem openEmbedding_iff_isIso_comp {X Y Z : TopCat} (f : X ⟶ Y) (g : Y ⟶ Z
     OpenEmbedding (f ≫ g) ↔ OpenEmbedding g := by
   constructor
   · intro h
-    convert h.comp (TopCat.homeoOfIso (as_iso f).symm).openEmbedding
-    exact congr_arg _ (is_iso.inv_hom_id_assoc f g).symm
-  · exact fun h => h.comp (TopCat.homeoOfIso (as_iso f)).openEmbedding
+    convert h.comp (TopCat.homeoOfIso (asIso f).symm).openEmbedding
+    exact congr_arg _ (IsIso.inv_hom_id_assoc f g).symm
+  · exact fun h => h.comp (TopCat.homeoOfIso (asIso f)).openEmbedding
 set_option linter.uppercaseLean3 false in
 #align Top.open_embedding_iff_is_iso_comp TopCat.openEmbedding_iff_isIso_comp
 
