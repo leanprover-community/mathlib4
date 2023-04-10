@@ -8,10 +8,10 @@ Authors: Pim Spelier, Daan van Gent
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Fintype.Basic
-import Mathbin.Data.Num.Lemmas
-import Mathbin.SetTheory.Cardinal.Ordinal
-import Mathbin.Tactic.DeriveFintype
+import Mathlib.Data.Fintype.Basic
+import Mathlib.Data.Num.Lemmas
+import Mathlib.SetTheory.Cardinal.Ordinal
+import Mathlib.Tactic.DeriveFintype
 
 /-!
 # Encodings
@@ -43,8 +43,7 @@ structure Encoding (α : Type u) where
   decode_encode : ∀ x, decode (encode x) = some x
 #align computability.encoding Computability.Encoding
 
-theorem Encoding.encode_injective {α : Type u} (e : Encoding α) : Function.Injective e.encode :=
-  by
+theorem Encoding.encode_injective {α : Type u} (e : Encoding α) : Function.Injective e.encode := by
   refine' fun _ _ h => Option.some_injective _ _
   rw [← e.decode_encode, ← e.decode_encode, h]
 #align computability.encoding.encode_injective Computability.Encoding.encode_injective
@@ -132,8 +131,7 @@ theorem encodePosNum_nonempty (n : PosNum) : encodePosNum n ≠ [] :=
     List.cons_ne_nil _ _
 #align computability.encode_pos_num_nonempty Computability.encodePosNum_nonempty
 
-theorem decode_encodePosNum : ∀ n, decodePosNum (encodePosNum n) = n :=
-  by
+theorem decode_encodePosNum : ∀ n, decodePosNum (encodePosNum n) = n := by
   intro n
   induction' n with m hm m hm <;> unfold encode_pos_num decode_pos_num
   · rfl
@@ -142,8 +140,7 @@ theorem decode_encodePosNum : ∀ n, decodePosNum (encodePosNum n) = n :=
   · exact congr_arg PosNum.bit0 hm
 #align computability.decode_encode_pos_num Computability.decode_encodePosNum
 
-theorem decode_encodeNum : ∀ n, decodeNum (encodeNum n) = n :=
-  by
+theorem decode_encodeNum : ∀ n, decodeNum (encodeNum n) = n := by
   intro n
   cases n <;> unfold encode_num decode_num
   · rfl
@@ -152,8 +149,7 @@ theorem decode_encodeNum : ∀ n, decodeNum (encodeNum n) = n :=
   exact if_neg (encode_pos_num_nonempty n)
 #align computability.decode_encode_num Computability.decode_encodeNum
 
-theorem decode_encodeNat : ∀ n, decodeNat (encodeNat n) = n :=
-  by
+theorem decode_encodeNat : ∀ n, decodeNat (encodeNat n) = n := by
   intro n
   conv_rhs => rw [← Num.to_of_nat n]
   exact congr_arg coe (decode_encode_num ↑n)
@@ -228,8 +224,7 @@ theorem decode_encodeBool : ∀ b, decodeBool (encodeBool b) = b := fun b => Boo
 #align computability.decode_encode_bool Computability.decode_encodeBool
 
 /-- A fin_encoding of bool in bool. -/
-def finEncodingBoolBool : FinEncoding Bool
-    where
+def finEncodingBoolBool : FinEncoding Bool where
   Γ := Bool
   encode := encodeBool
   decode x := some (decodeBool x)
