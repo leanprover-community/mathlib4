@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 
 ! This file was ported from Lean 3 source module data.finset.n_ary
-! leanprover-community/mathlib commit 517cc149e0b515d2893baa376226ed10feb319c7
+! leanprover-community/mathlib commit 5e526d18cea33550268dcbbddcb822d5cde40654
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -97,7 +97,7 @@ theorem image_subset_image₂_left (hb : b ∈ t) : s.image (fun a => f a b) ⊆
   image_subset_iff.2 fun _ ha => mem_image₂_of_mem ha hb
 #align finset.image_subset_image₂_left Finset.image_subset_image₂_left
 
-theorem image_subset_image₂_right (ha : a ∈ s) : t.image (f a) ⊆ image₂ f s t :=
+theorem image_subset_image₂_right (ha : a ∈ s) : t.image (fun b => f a b) ⊆ image₂ f s t :=
   image_subset_iff.2 fun _ => mem_image₂_of_mem ha
 #align finset.image_subset_image₂_right Finset.image_subset_image₂_right
 
@@ -110,6 +110,14 @@ theorem forall_image₂_iff {p : γ → Prop} :
 theorem image₂_subset_iff : image₂ f s t ⊆ u ↔ ∀ x ∈ s, ∀ y ∈ t, f x y ∈ u :=
   forall_image₂_iff
 #align finset.image₂_subset_iff Finset.image₂_subset_iff
+
+theorem image₂_subset_iff_left : image₂ f s t ⊆ u ↔ ∀ a ∈ s, (t.image fun b => f a b) ⊆ u := by
+  simp_rw [image₂_subset_iff, image_subset_iff]
+#align finset.image₂_subset_iff_left Finset.image₂_subset_iff_left
+
+theorem image₂_subset_iff_right : image₂ f s t ⊆ u ↔ ∀ b ∈ t, (s.image fun a => f a b) ⊆ u := by
+  simp_rw [image₂_subset_iff, image_subset_iff, @forall₂_swap α]
+#align finset.image₂_subset_iff_right Finset.image₂_subset_iff_right
 
 @[simp]
 theorem image₂_nonempty_iff : (image₂ f s t).Nonempty ↔ s.Nonempty ∧ t.Nonempty :=
@@ -173,6 +181,22 @@ theorem image₂_union_right [DecidableEq β] : image₂ f s (t ∪ t') = image�
     push_cast
     exact image2_union_right
 #align finset.image₂_union_right Finset.image₂_union_right
+
+@[simp]
+theorem image₂_insert_left [DecidableEq α] :
+    image₂ f (insert a s) t = (t.image fun b => f a b) ∪ image₂ f s t :=
+  coe_injective <| by
+    push_cast
+    exact image2_insert_left
+#align finset.image₂_insert_left Finset.image₂_insert_left
+
+@[simp]
+theorem image₂_insert_right [DecidableEq β] :
+    image₂ f s (insert b t) = (s.image fun a => f a b) ∪ image₂ f s t :=
+  coe_injective <| by
+    push_cast
+    exact image2_insert_right
+#align finset.image₂_insert_right Finset.image₂_insert_right
 
 theorem image₂_inter_left [DecidableEq α] (hf : Injective2 f) :
     image₂ f (s ∩ s') t = image₂ f s t ∩ image₂ f s' t :=
@@ -312,13 +336,6 @@ theorem image₂_image_right (f : α → γ → δ) (g : β → γ) :
     exact image2_image_right _ _
 #align finset.image₂_image_right Finset.image₂_image_right
 
-theorem image₂_swap (f : α → β → γ) (s : Finset α) (t : Finset β) :
-    image₂ f s t = image₂ (fun a b => f b a) t s :=
-  coe_injective <| by
-    push_cast
-    exact image2_swap _ _ _
-#align finset.image₂_swap Finset.image₂_swap
-
 @[simp]
 theorem image₂_mk_eq_product [DecidableEq α] [DecidableEq β] (s : Finset α) (t : Finset β) :
     image₂ Prod.mk s t = s ×ᶠ t := by ext; simp [Prod.ext_iff]
@@ -334,6 +351,13 @@ theorem image₂_curry (f : α × β → γ) (s : Finset α) (t : Finset β) :
 theorem image_uncurry_product (f : α → β → γ) (s : Finset α) (t : Finset β) :
     (s ×ᶠ t).image (uncurry f) = image₂ f s t := by rw [← image₂_curry, curry_uncurry]
 #align finset.image_uncurry_product Finset.image_uncurry_product
+
+theorem image₂_swap (f : α → β → γ) (s : Finset α) (t : Finset β) :
+    image₂ f s t = image₂ (fun a b => f b a) t s :=
+  coe_injective <| by
+    push_cast
+    exact image2_swap _ _ _
+#align finset.image₂_swap Finset.image₂_swap
 
 @[simp]
 theorem image₂_left [DecidableEq α] (h : t.Nonempty) : image₂ (fun x _ => x) s t = s :=
@@ -501,6 +525,20 @@ theorem image₂_right_identity {f : γ → β → γ} {b : β} (h : ∀ a, f a 
 #align finset.image₂_right_identity Finset.image₂_right_identity
 
 variable [DecidableEq α] [DecidableEq β]
+
+theorem image₂_inter_union_subset_union :
+    image₂ f (s ∩ s') (t ∪ t') ⊆ image₂ f s t ∪ image₂ f s' t' :=
+  coe_subset.1 <| by
+    push_cast
+    exact Set.image2_inter_union_subset_union
+#align finset.image₂_inter_union_subset_union Finset.image₂_inter_union_subset_union
+
+theorem image₂_union_inter_subset_union :
+    image₂ f (s ∪ s') (t ∩ t') ⊆ image₂ f s t ∪ image₂ f s' t' :=
+  coe_subset.1 <| by
+    push_cast
+    exact Set.image2_union_inter_subset_union
+#align finset.image₂_union_inter_subset_union Finset.image₂_union_inter_subset_union
 
 theorem image₂_inter_union_subset {f : α → α → β} {s t : Finset α} (hf : ∀ a b, f a b = f b a) :
     image₂ f (s ∩ t) (s ∪ t) ⊆ image₂ f s t :=

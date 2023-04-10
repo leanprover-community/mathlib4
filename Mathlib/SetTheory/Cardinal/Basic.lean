@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 
 ! This file was ported from Lean 3 source module set_theory.cardinal.basic
-! leanprover-community/mathlib commit 4c19a16e4b705bf135cf9a80ac18fcc99c438514
+! leanprover-community/mathlib commit 9dba31df156d9d65b9d78db449542ca73d147c68
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -14,7 +14,7 @@ import Mathlib.Data.Nat.PartENat
 import Mathlib.Data.Set.Countable
 import Mathlib.Logic.Small.Basic
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
-import Mathlib.Order.SuccPred.Basic
+import Mathlib.Order.SuccPred.Limit
 import Mathlib.SetTheory.Cardinal.SchroederBernstein
 import Mathlib.Tactic.Positivity
 
@@ -32,6 +32,7 @@ We define cardinal numbers as a quotient of types under the equivalence relation
 * Multiplication `c₁ * c₂` is defined by `Cardinal.mul_def : #α * #β = #(α × β)`.
 * The order `c₁ ≤ c₂` is defined by `Cardinal.le_def α β : #α ≤ #β ↔ Nonempty (α ↪ β)`.
 * Exponentiation `c₁ ^ c₂` is defined by `Cardinal.power_def α β : #α ^ #β = #(β → α)`.
+* `Cardinal.isLimit c` means that `c` is a (weak) limit cardinal: `c ≠ 0 ∧ ∀ x < c, succ x < c`.
 * `Cardinal.aleph0` or `ℵ₀` is the cardinality of `ℕ`. This definition is universe polymorphic:
   `Cardinal.aleph0.{u} : Cardinal.{u}` (contrast with `ℕ : Type`, which lives in a specific
   universe). In some cases the universe level has to be given explicitly.
@@ -259,6 +260,13 @@ instance partialOrder : PartialOrder Cardinal.{u} where
   le_antisymm := by
     rintro ⟨α⟩ ⟨β⟩ ⟨e₁⟩ ⟨e₂⟩
     exact Quotient.sound (e₁.antisymm e₂)
+
+instance linearOrder : LinearOrder Cardinal.{u} :=
+  { Cardinal.partialOrder with
+    le_total := by
+      rintro ⟨α⟩ ⟨β⟩
+      apply Embedding.total
+    decidable_le := Classical.decRel _ }
 
 theorem le_def (α β : Type u) : (#α) ≤ (#β) ↔ Nonempty (α ↪ β) :=
   Iff.rfl
@@ -535,6 +543,9 @@ instance commSemiring : CommSemiring Cardinal.{u} where
   npow_zero := @power_zero
   npow_succ n c := show (c ^ (n + 1)) = c * (c ^ n) by rw [power_add, power_one, mul_comm']
 
+-- Porting note: this ensures a computable instance.
+instance commMonoid : CommMonoid Cardinal.{u} := CommSemiring.toCommMonoid
+
 /-! Porting note: Deprecated section. Remove. -/
 section deprecated
 set_option linter.deprecated false
@@ -665,7 +676,7 @@ instance add_swap_covariantClass : CovariantClass Cardinal Cardinal (swap (· + 
   ⟨fun _ _ _ h => add_le_add' h le_rfl⟩
 #align cardinal.add_swap_covariant_class Cardinal.add_swap_covariantClass
 
-instance : CanonicallyOrderedCommSemiring Cardinal.{u} :=
+instance canonicallyOrderedCommSemiring : CanonicallyOrderedCommSemiring Cardinal.{u} :=
   { Cardinal.commSemiring,
     Cardinal.partialOrder with
     bot := 0
@@ -683,6 +694,15 @@ instance : CanonicallyOrderedCommSemiring Cardinal.{u} :=
       intro a b
       exact inductionOn₂ a b fun α β => by
         simpa only [mul_def, mk_eq_zero_iff, isEmpty_prod] using id }
+
+instance : CanonicallyLinearOrderedAddMonoid Cardinal.{u} :=
+  { Cardinal.canonicallyOrderedCommSemiring, Cardinal.linearOrder with }
+
+instance : LinearOrderedCommMonoidWithZero Cardinal.{u} :=
+  { Cardinal.commSemiring,
+    Cardinal.linearOrder with
+    mul_le_mul_left := @mul_le_mul_left' _ _ _ _
+    zero_le_one := zero_le _ }
 
 theorem zero_power_le (c : Cardinal.{u}) : ((0 : Cardinal.{u})^c) ≤ 1 := by
   by_cases h : c = 0
@@ -715,17 +735,7 @@ theorem cantor (a : Cardinal.{u}) : a < (2^a) :=
   exact cantor_injective f hf
 #align cardinal.cantor Cardinal.cantor
 
-instance : NoMaxOrder Cardinal.{u} :=
-  { Cardinal.partialOrder with exists_gt := fun a => ⟨_, cantor a⟩ }
-
-instance : CanonicallyLinearOrderedAddMonoid Cardinal.{u} :=
-  { (inferInstance : CanonicallyOrderedAddMonoid Cardinal),
-    -- Porting note: Needed to add .{u} below
-    Cardinal.partialOrder.{u} with
-    le_total := by
-      rintro ⟨α⟩ ⟨β⟩
-      apply Embedding.total
-    decidable_le := Classical.decRel _}
+instance : NoMaxOrder Cardinal.{u} where exists_gt a := ⟨_, cantor a⟩
 
 -- short-circuit type class inference
 instance : DistribLattice Cardinal.{u} := inferInstance
@@ -769,6 +779,7 @@ protected theorem lt_wf : @WellFounded Cardinal.{u} (· < ·) :=
 instance : WellFoundedRelation Cardinal.{u} :=
   ⟨(· < ·), Cardinal.lt_wf⟩
 
+-- Porting note: this no longer is automatically inferred.
 instance : WellFoundedLT Cardinal.{u} :=
   ⟨Cardinal.lt_wf⟩
 
@@ -783,7 +794,7 @@ theorem infₛ_empty : infₛ (∅ : Set Cardinal.{u}) = 0 :=
   dif_neg Set.not_nonempty_empty
 #align cardinal.Inf_empty Cardinal.infₛ_empty
 
-/-- Note that the successor of `c` is not the same as `c + 1` except in the case of finite `c`.-/
+/-- Note that the successor of `c` is not the same as `c + 1` except in the case of finite `c`. -/
 instance : SuccOrder Cardinal :=
   SuccOrder.ofSuccLeIff (fun c => infₛ { c' | c < c' })
     -- Porting note: Needed to insert `by apply` in the next line
@@ -794,6 +805,14 @@ instance : SuccOrder Cardinal :=
 theorem succ_def (c : Cardinal) : succ c = infₛ { c' | c < c' } :=
   rfl
 #align cardinal.succ_def Cardinal.succ_def
+
+theorem succ_pos : ∀ c : Cardinal, 0 < succ c :=
+  bot_lt_succ
+#align cardinal.succ_pos Cardinal.succ_pos
+
+theorem succ_ne_zero (c : Cardinal) : succ c ≠ 0 :=
+  (succ_pos _).ne'
+#align cardinal.succ_ne_zero Cardinal.succ_ne_zero
 
 theorem add_one_le_succ (c : Cardinal.{u}) : c + 1 ≤ succ c := by
   -- Porting note: rewrote the next three lines to avoid defeq abuse.
@@ -811,13 +830,29 @@ theorem add_one_le_succ (c : Cardinal.{u}) : c + 1 ≤ succ c := by
 
 #align cardinal.add_one_le_succ Cardinal.add_one_le_succ
 
-theorem succ_pos : ∀ c : Cardinal, 0 < succ c :=
-  bot_lt_succ
-#align cardinal.succ_pos Cardinal.succ_pos
+/-- A cardinal is a limit if it is not zero or a successor cardinal. Note that `ℵ₀` is a limit
+  cardinal by this definition, but `0` isn't.
 
-theorem succ_ne_zero (c : Cardinal) : succ c ≠ 0 :=
-  (succ_pos _).ne'
-#align cardinal.succ_ne_zero Cardinal.succ_ne_zero
+  Use `is_succ_limit` if you want to include the `c = 0` case. -/
+def IsLimit (c : Cardinal) : Prop :=
+  c ≠ 0 ∧ IsSuccLimit c
+#align cardinal.is_limit Cardinal.IsLimit
+
+protected theorem IsLimit.ne_zero {c} (h : IsLimit c) : c ≠ 0 :=
+  h.1
+#align cardinal.is_limit.ne_zero Cardinal.IsLimit.ne_zero
+
+protected theorem IsLimit.isSuccLimit {c} (h : IsLimit c) : IsSuccLimit c :=
+  h.2
+#align cardinal.is_limit.is_succ_limit Cardinal.IsLimit.isSuccLimit
+
+theorem IsLimit.succ_lt {x c} (h : IsLimit c) : x < c → succ x < c :=
+  h.isSuccLimit.succ_lt
+#align cardinal.is_limit.succ_lt Cardinal.IsLimit.succ_lt
+
+theorem isSuccLimit_zero : IsSuccLimit (0 : Cardinal) :=
+  isSuccLimit_bot
+#align cardinal.is_succ_limit_zero Cardinal.isSuccLimit_zero
 
 /-- The indexed sum of cardinals is the cardinality of the
   indexed disjoint union, i.e. sigma type. -/
@@ -1245,6 +1280,16 @@ theorem lift_le_aleph0 {c : Cardinal.{u}} : lift.{v} c ≤ ℵ₀ ↔ c ≤ ℵ�
   rw [← lift_aleph0.{u,v}, lift_le]
 #align cardinal.lift_le_aleph_0 Cardinal.lift_le_aleph0
 
+@[simp]
+theorem aleph0_lt_lift {c : Cardinal.{u}} : ℵ₀ < lift.{v} c ↔ ℵ₀ < c := by
+  rw [← lift_aleph0.{u,v}, lift_lt]
+#align cardinal.aleph_0_lt_lift Cardinal.aleph0_lt_lift
+
+@[simp]
+theorem lift_lt_aleph0 {c : Cardinal.{u}} : lift.{v} c < ℵ₀ ↔ c < ℵ₀ := by
+  rw [← lift_aleph0.{u,v}, lift_lt]
+#align cardinal.lift_lt_aleph_0 Cardinal.lift_lt_aleph0
+
 /-! ### Properties about the cast from `ℕ` -/
 
 -- Porting note : simp can prove this
@@ -1266,6 +1311,26 @@ theorem nat_eq_lift_iff {n : ℕ} {a : Cardinal.{u}} :
     (n : Cardinal) = lift.{v} a ↔ (n : Cardinal) = a := by
   rw [← lift_natCast.{v,u} n, lift_inj]
 #align cardinal.nat_eq_lift_iff Cardinal.nat_eq_lift_iff
+
+@[simp]
+theorem lift_le_nat_iff {a : Cardinal.{u}} {n : ℕ} : lift.{v} a ≤ n ↔ a ≤ n := by
+  rw [← lift_natCast.{v,u}, lift_le]
+#align cardinal.lift_le_nat_iff Cardinal.lift_le_nat_iff
+
+@[simp]
+theorem nat_le_lift_iff {n : ℕ} {a : Cardinal.{u}} : n ≤ lift.{v} a ↔ n ≤ a := by
+  rw [← lift_natCast.{v,u}, lift_le]
+#align cardinal.nat_le_lift_iff Cardinal.nat_le_lift_iff
+
+@[simp]
+theorem lift_lt_nat_iff {a : Cardinal.{u}} {n : ℕ} : lift.{v} a < n ↔ a < n := by
+  rw [← lift_natCast.{v,u}, lift_lt]
+#align cardinal.lift_lt_nat_iff Cardinal.lift_lt_nat_iff
+
+@[simp]
+theorem nat_lt_lift_iff {n : ℕ} {a : Cardinal.{u}} : n < lift.{v} a ↔ n < a := by
+  rw [← lift_natCast.{v,u}, lift_lt]
+#align cardinal.nat_lt_lift_iff Cardinal.nat_lt_lift_iff
 
 theorem lift_mk_fin (n : ℕ) : lift (#Fin n) = n := by simp
 #align cardinal.lift_mk_fin Cardinal.lift_mk_fin
@@ -1392,6 +1457,27 @@ theorem aleph0_le {c : Cardinal} : ℵ₀ ≤ c ↔ ∀ n : ℕ, ↑n ≤ c :=
       rcases lt_aleph0.1 hn with ⟨n, rfl⟩
       exact (Nat.lt_succ_self _).not_le (natCast_le.1 (h (n + 1)))⟩
 #align cardinal.aleph_0_le Cardinal.aleph0_le
+
+theorem isSuccLimit_aleph0 : IsSuccLimit ℵ₀ :=
+  isSuccLimit_of_succ_lt fun a ha =>
+    by
+    rcases lt_aleph0.1 ha with ⟨n, rfl⟩
+    rw [← nat_succ]
+    apply nat_lt_aleph0
+#align cardinal.is_succ_limit_aleph_0 Cardinal.isSuccLimit_aleph0
+
+theorem isLimit_aleph0 : IsLimit ℵ₀ :=
+  ⟨aleph0_ne_zero, isSuccLimit_aleph0⟩
+#align cardinal.is_limit_aleph_0 Cardinal.isLimit_aleph0
+
+theorem IsLimit.aleph0_le {c : Cardinal} (h : IsLimit c) : ℵ₀ ≤ c :=
+  by
+  by_contra' h'
+  rcases lt_aleph0.1 h' with ⟨_ | n, rfl⟩
+  · exact h.ne_zero.irrefl
+  · rw [nat_succ] at h
+    exact not_isSuccLimit_succ _ h.isSuccLimit
+#align cardinal.is_limit.aleph_0_le Cardinal.IsLimit.aleph0_le
 
 @[simp]
 theorem range_natCast : range ((↑) : ℕ → Cardinal) = Iio ℵ₀ :=
@@ -1720,9 +1806,9 @@ theorem toNat_lift (c : Cardinal.{v}) : toNat (lift.{u, v} c) = toNat c :=
   apply natCast_injective
   cases' lt_or_ge c ℵ₀ with hc hc
   · rw [cast_toNat_of_lt_aleph0, ← lift_natCast.{u,v}, cast_toNat_of_lt_aleph0 hc]
-    rwa [← lift_aleph0.{v,u}, lift_lt]
+    rwa [lift_lt_aleph0]
   · rw [cast_toNat_of_aleph0_le, ← lift_natCast.{u,v}, cast_toNat_of_aleph0_le hc, lift_zero]
-    rwa [← lift_aleph0.{v,u}, lift_le]
+    rwa [aleph0_le_lift]
 #align cardinal.to_nat_lift Cardinal.toNat_lift
 
 theorem toNat_congr {β : Type v} (e : α ≃ β) : toNat (#α) = toNat (#β) := by
@@ -1767,12 +1853,8 @@ theorem toNat_add_of_lt_aleph0 {a : Cardinal.{u}} {b : Cardinal.{v}} (ha : a < �
     toNat (lift.{v, u} a + lift.{u, v} b) = toNat a + toNat b :=
   by
   apply Cardinal.natCast_injective
-  replace ha : lift.{v, u} a < ℵ₀ := by
-    rw [← lift_aleph0.{u,v}]
-    exact lift_lt.2 ha
-  replace hb : lift.{u, v} b < ℵ₀ := by
-    rw [← lift_aleph0.{v,u}]
-    exact lift_lt.2 hb
+  replace ha : lift.{v, u} a < ℵ₀ := by rwa [lift_lt_aleph0]
+  replace hb : lift.{u, v} b < ℵ₀ := by rwa [lift_lt_aleph0]
   rw [Nat.cast_add, ← toNat_lift.{v, u} a, ← toNat_lift.{u, v} b, cast_toNat_of_lt_aleph0 ha,
     cast_toNat_of_lt_aleph0 hb, cast_toNat_of_lt_aleph0 (add_lt_aleph0 ha hb)]
 #align cardinal.to_nat_add_of_lt_aleph_0 Cardinal.toNat_add_of_lt_aleph0

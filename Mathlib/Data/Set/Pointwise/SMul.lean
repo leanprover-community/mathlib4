@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Floris van Doorn
 
 ! This file was ported from Lean 3 source module data.set.pointwise.smul
-! leanprover-community/mathlib commit b685f506164f8d17a6404048bc4d696739c5d976
+! leanprover-community/mathlib commit 5e526d18cea33550268dcbbddcb822d5cde40654
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -40,7 +40,7 @@ Appropriate definitions and results are also transported to the additive theory 
 
 -/
 
-open Function
+open Function MulOpposite
 
 variable {F α β γ : Type _}
 
@@ -217,6 +217,18 @@ theorem smul_inter_subset : s • (t₁ ∩ t₂) ⊆ s • t₁ ∩ s • t₂ 
 #align set.vadd_inter_subset Set.vadd_inter_subset
 
 @[to_additive]
+theorem inter_smul_union_subset_union : (s₁ ∩ s₂) • (t₁ ∪ t₂) ⊆ s₁ • t₁ ∪ s₂ • t₂ :=
+  image2_inter_union_subset_union
+#align set.inter_smul_union_subset_union Set.inter_smul_union_subset_union
+#align set.inter_vadd_union_subset_union Set.inter_vadd_union_subset_union
+
+@[to_additive]
+theorem union_smul_inter_subset_union : (s₁ ∪ s₂) • (t₁ ∩ t₂) ⊆ s₁ • t₁ ∪ s₂ • t₂ :=
+  image2_union_inter_subset_union
+#align set.union_smul_inter_subset_union Set.union_smul_inter_subset_union
+#align set.union_vadd_inter_subset_union Set.union_vadd_inter_subset_union
+
+@[to_additive]
 theorem unionᵢ_smul_left_image : (⋃ a ∈ s, a • t) = s • t :=
   unionᵢ_image_left _
 #align set.Union_smul_left_image Set.unionᵢ_smul_left_image
@@ -279,6 +291,12 @@ theorem smul_interᵢ₂_subset (s : Set α) (t : ∀ i, κ i → Set β) :
   image2_interᵢ₂_subset_right _ _ _
 #align set.smul_Inter₂_subset Set.smul_interᵢ₂_subset
 #align set.vadd_Inter₂_subset Set.vadd_interᵢ₂_subset
+
+@[to_additive]
+theorem smul_set_subset_smul {s : Set α} : a ∈ s → a • t ⊆ s • t :=
+  image_subset_image2_right
+#align set.smul_set_subset_smul Set.smul_set_subset_smul
+#align set.vadd_set_subset_vadd Set.vadd_set_subset_vadd
 
 @[to_additive (attr := simp)]
 theorem unionᵢ_smul_set (s : Set α) (t : Set β) : (⋃ a ∈ s, a • t) = s • t :=
@@ -392,13 +410,37 @@ theorem Nonempty.smul_set : s.Nonempty → (a • s).Nonempty :=
 
 end SMulSet
 
-variable {s s₁ s₂ : Set α} {t t₁ t₂ : Set β} {a : α} {b : β}
+section Mul
+
+variable [Mul α] {s t u : Set α} {a : α}
+
+@[to_additive]
+theorem op_smul_set_subset_mul : a ∈ t → op a • s ⊆ s * t :=
+  image_subset_image2_left
+#align set.op_smul_set_subset_mul Set.op_smul_set_subset_mul
+#align set.op_vadd_set_subset_add Set.op_vadd_set_subset_add
 
 @[to_additive (attr := simp)]
-theorem unionᵢ_op_smul_set [Mul α] (s t : Set α) : (⋃ a ∈ t, MulOpposite.op a • s) = s * t :=
+theorem unionᵢ_op_smul_set (s t : Set α) : (⋃ a ∈ t, MulOpposite.op a • s) = s * t :=
   unionᵢ_image_right _
 #align set.bUnion_op_smul_set Set.unionᵢ_op_smul_set
 #align set.bUnion_op_vadd_set Set.unionᵢ_op_vadd_set
+
+@[to_additive]
+theorem mul_subset_iff_left : s * t ⊆ u ↔ ∀ a ∈ s, a • t ⊆ u :=
+  image2_subset_iff_left
+#align set.mul_subset_iff_left Set.mul_subset_iff_left
+#align set.add_subset_iff_left Set.add_subset_iff_left
+
+@[to_additive]
+theorem mul_subset_iff_right : s * t ⊆ u ↔ ∀ b ∈ t, op b • s ⊆ u :=
+  image2_subset_iff_right
+#align set.mul_subset_iff_right Set.mul_subset_iff_right
+#align set.add_subset_iff_right Set.add_subset_iff_right
+
+end Mul
+
+variable {s s₁ s₂ : Set α} {t t₁ t₂ : Set β} {a : α} {b : β}
 
 @[to_additive]
 theorem range_smul_range {ι κ : Type _} [SMul α β] (b : ι → α) (c : κ → β) :
@@ -654,6 +696,14 @@ theorem vsub_inter_subset : s -ᵥ t₁ ∩ t₂ ⊆ (s -ᵥ t₁) ∩ (s -ᵥ t
   image2_inter_subset_right
 #align set.vsub_inter_subset Set.vsub_inter_subset
 
+theorem inter_vsub_union_subset_union : s₁ ∩ s₂ -ᵥ (t₁ ∪ t₂) ⊆ s₁ -ᵥ t₁ ∪ (s₂ -ᵥ t₂) :=
+  image2_inter_union_subset_union
+#align set.inter_vsub_union_subset_union Set.inter_vsub_union_subset_union
+
+theorem union_vsub_inter_subset_union : s₁ ∪ s₂ -ᵥ t₁ ∩ t₂ ⊆ s₁ -ᵥ t₁ ∪ (s₂ -ᵥ t₂) :=
+  image2_union_inter_subset_union
+#align set.union_vsub_inter_subset_union Set.union_vsub_inter_subset_union
+
 theorem unionᵢ_vsub_left_image : (⋃ a ∈ s, (· -ᵥ ·) a '' t) = s -ᵥ t :=
   unionᵢ_image_left _
 #align set.Union_vsub_left_image Set.unionᵢ_vsub_left_image
@@ -715,6 +765,22 @@ theorem image_smul_distrib [MulOneClass α] [MulOneClass β] [MonoidHomClass F �
   image_comm <| map_mul _ _
 #align set.image_smul_distrib Set.image_smul_distrib
 #align set.image_vadd_distrib Set.image_vadd_distrib
+
+section SMul
+
+variable [SMul αᵐᵒᵖ β] [SMul β γ] [SMul α γ]
+
+-- TODO: replace hypothesis and conclusion with a typeclass
+@[to_additive]
+theorem op_smul_set_smul_eq_smul_smul_set (a : α) (s : Set β) (t : Set γ)
+    (h : ∀ (a : α) (b : β) (c : γ), (op a • b) • c = b • a • c) : (op a • s) • t = s • a • t :=
+  by
+  ext
+  simp [mem_smul, mem_smul_set, h]
+#align set.op_smul_set_smul_eq_smul_smul_set Set.op_smul_set_smul_eq_smul_smul_set
+#align set.op_vadd_set_vadd_eq_vadd_vadd_set Set.op_vadd_set_vadd_eq_vadd_vadd_set
+
+end SMul
 
 section SMulWithZero
 
@@ -778,6 +844,19 @@ theorem zero_mem_smul_set_iff (ha : a ≠ 0) : (0 : β) ∈ a • t ↔ (0 : β)
 #align set.zero_mem_smul_set_iff Set.zero_mem_smul_set_iff
 
 end SMulWithZero
+
+section Semigroup
+
+variable [Semigroup α]
+
+@[to_additive]
+theorem op_smul_set_mul_eq_mul_smul_set (a : α) (s : Set α) (t : Set α) :
+    op a • s * t = s * a • t :=
+  op_smul_set_smul_eq_smul_smul_set _ _ _ fun _ _ _ => mul_assoc _ _ _
+#align set.op_smul_set_mul_eq_mul_smul_set Set.op_smul_set_mul_eq_mul_smul_set
+#align set.op_vadd_set_add_eq_add_vadd_set Set.op_vadd_set_add_eq_add_vadd_set
+
+end Semigroup
 
 section LeftCancelSemigroup
 
