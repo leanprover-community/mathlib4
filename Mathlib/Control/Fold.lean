@@ -114,20 +114,15 @@ def Foldl (α : Type u) : Type u :=
   (End α)ᵐᵒᵖ
 #align monoid.foldl Monoid.Foldl
 
--- porting note: no docstring present in mathlib3
-@[nolint docBlame]
 def Foldl.mk (f : α → α) : Foldl α :=
   op f
 #align monoid.foldl.mk Monoid.Foldl.mk
 
--- porting note: no docstring present in mathlib3
-@[nolint docBlame]
 def Foldl.get (x : Foldl α) : α → α :=
   unop x
 #align monoid.foldl.get Monoid.Foldl.get
 
--- porting note: no docstring present in mathlib3
-@[simps, nolint docBlame]
+@[simps]
 def Foldl.ofFreeMonoid (f : β → α → β) : FreeMonoid α →* Monoid.Foldl β
     where
   toFun xs := op <| flip (List.foldl f) (FreeMonoid.toList xs)
@@ -136,26 +131,20 @@ def Foldl.ofFreeMonoid (f : β → α → β) : FreeMonoid α →* Monoid.Foldl 
     intros; simp only [FreeMonoid.toList_mul, flip, unop_op, List.foldl_append, op_inj]; rfl
 #align monoid.foldl.of_free_monoid Monoid.Foldl.ofFreeMonoid
 
--- porting note: no docstring present in mathlib3
-@[reducible, nolint docBlame]
+@[reducible]
 def Foldr (α : Type u) : Type u :=
   End α
 #align monoid.foldr Monoid.Foldr
 
--- porting note: no docstring present in mathlib3
-@[nolint docBlame]
 def Foldr.mk (f : α → α) : Foldr α :=
   f
 #align monoid.foldr.mk Monoid.Foldr.mk
 
--- porting note: no docstring present in mathlib3
-@[nolint docBlame]
 def Foldr.get (x : Foldr α) : α → α :=
   x
 #align monoid.foldr.get Monoid.Foldr.get
 
--- porting note: no docstring present in mathlib3
-@[simps, nolint docBlame]
+@[simps]
 def Foldr.ofFreeMonoid (f : α → β → β) : FreeMonoid α →* Monoid.Foldr β
     where
   toFun xs := flip (List.foldr f) (FreeMonoid.toList xs)
@@ -163,26 +152,20 @@ def Foldr.ofFreeMonoid (f : α → β → β) : FreeMonoid α →* Monoid.Foldr 
   map_mul' _ _ := funext fun _ => List.foldr_append _ _ _ _
 #align monoid.foldr.of_free_monoid Monoid.Foldr.ofFreeMonoid
 
--- porting note: no docstring present in mathlib3
-@[reducible, nolint docBlame]
+@[reducible]
 def foldlM (m : Type u → Type u) [Monad m] (α : Type u) : Type u :=
   MulOpposite <| End <| KleisliCat.mk m α
 #align monoid.mfoldl Monoid.foldlM
 
--- porting note: no docstring present in mathlib3
-@[nolint docBlame]
 def foldlM.mk (f : α → m α) : foldlM m α :=
   op f
 #align monoid.mfoldl.mk Monoid.foldlM.mk
 
--- porting note: no docstring present in mathlib3
-@[nolint docBlame]
 def foldlM.get (x : foldlM m α) : α → m α :=
   unop x
 #align monoid.mfoldl.get Monoid.foldlM.get
 
--- porting note: no docstring present in mathlib3
-@[simps, nolint docBlame]
+@[simps]
 def foldlM.ofFreeMonoid [LawfulMonad m] (f : β → α → m β) : FreeMonoid α →* Monoid.foldlM m β
     where
   toFun xs := op <| flip (List.foldlM f) (FreeMonoid.toList xs)
@@ -190,26 +173,20 @@ def foldlM.ofFreeMonoid [LawfulMonad m] (f : β → α → m β) : FreeMonoid α
   map_mul' := by intros; apply unop_injective; funext; apply List.foldlM_append
 #align monoid.mfoldl.of_free_monoid Monoid.foldlM.ofFreeMonoid
 
--- porting note: no docstring present in mathlib3
-@[reducible, nolint docBlame]
+@[reducible]
 def foldrM (m : Type u → Type u) [Monad m] (α : Type u) : Type u :=
   End <| KleisliCat.mk m α
 #align monoid.mfoldr Monoid.foldrM
 
--- porting note: no docstring present in mathlib3
-@[nolint docBlame]
 def foldrM.mk (f : α → m α) : foldrM m α :=
   f
 #align monoid.mfoldr.mk Monoid.foldrM.mk
 
--- porting note: no docstring present in mathlib3
-@[nolint docBlame]
 def foldrM.get (x : foldrM m α) : α → m α :=
   x
 #align monoid.mfoldr.get Monoid.foldrM.get
 
--- porting note: no docstring present in mathlib3
-@[simps, nolint docBlame]
+@[simps]
 def foldrM.ofFreeMonoid [LawfulMonad m] (f : α → β → m β) : FreeMonoid α →* Monoid.foldrM m β
     where
   toFun xs := flip (List.foldrM f) (FreeMonoid.toList xs)
@@ -227,20 +204,14 @@ section Defs
 
 variable {α β : Type u} {t : Type u → Type u} [Traversable t]
 
--- porting note: no docstring present in mathlib3
-@[nolint docBlame]
 def foldMap {α ω} [One ω] [Mul ω] (f : α → ω) : t α → ω :=
   traverse (Const.mk' ∘ f)
 #align traversable.fold_map Traversable.foldMap
 
--- porting note: no docstring present in mathlib3
-@[nolint docBlame]
 def foldl (f : α → β → α) (x : α) (xs : t β) : α :=
   (foldMap (Foldl.mk ∘ flip f) xs).get x
 #align traversable.foldl Traversable.foldl
 
--- porting note: no docstring present in mathlib3
-@[nolint docBlame]
 def foldr (f : α → β → β) (x : β) (xs : t α) : β :=
   (foldMap (Foldr.mk ∘ f) xs).get x
 #align traversable.foldr Traversable.foldr
@@ -265,22 +236,16 @@ def toList : t α → List α :=
   List.reverse ∘ foldl (flip List.cons) []
 #align traversable.to_list Traversable.toList
 
--- porting note: no docstring present in mathlib3
-@[nolint docBlame]
 def length (xs : t α) : ℕ :=
   down <| foldl (fun l _ => up <| l.down + 1) (up 0) xs
 #align traversable.length Traversable.length
 
 variable {m : Type u → Type u} [Monad m]
 
--- porting note: no docstring present in mathlib3
-@[nolint docBlame]
 def foldlm (f : α → β → m α) (x : α) (xs : t β) : m α :=
   (foldMap (foldlM.mk ∘ flip f) xs).get x
 #align traversable.mfoldl Traversable.foldlm
 
--- porting note: no docstring present in mathlib3
-@[nolint docBlame]
 def foldrm (f : α → β → m β) (x : β) (xs : t α) : m β :=
   (foldMap (foldrM.mk ∘ f) xs).get x
 #align traversable.mfoldr Traversable.foldrm
@@ -293,8 +258,6 @@ variable {α β γ : Type u}
 
 open Function hiding const
 
--- porting note: no docstring present in mathlib3
-@[nolint docBlame]
 def mapFold [Monoid α] [Monoid β] (f : α →* β) : ApplicativeTransformation (Const α) (Const β)
     where
   app _ := f
