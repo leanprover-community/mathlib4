@@ -388,5 +388,6 @@ end
 
 end ModuleCat
 
+@[nolint dangerousInstance]
 instance (M : Type u) [AddCommGroup M] [Module R M] : Coe (Submodule R M) (ModuleCat R) :=
   ⟨fun N => ModuleCat.of R N⟩
