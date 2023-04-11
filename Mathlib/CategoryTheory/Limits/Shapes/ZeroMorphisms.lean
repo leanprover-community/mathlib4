@@ -55,9 +55,9 @@ class HasZeroMorphisms where
   /-- Every morphism space has zero -/
   [Zero : ∀ X Y : C, Zero (X ⟶ Y)]
   /-- `f` composed with `0` is `0` -/
-  comp_zero : ∀ {X Y : C} (f : X ⟶ Y) (Z : C), f ≫ (0 : Y ⟶ Z) = (0 : X ⟶ Z) := by aesop
+  comp_zero : ∀ {X Y : C} (f : X ⟶ Y) (Z : C), f ≫ (0 : Y ⟶ Z) = (0 : X ⟶ Z) := by aesop_cat
   /-- `0` composed with `f` is `0` -/
-  zero_comp : ∀ (X : C) {Y Z : C} (f : Y ⟶ Z), (0 : X ⟶ Y) ≫ f = (0 : X ⟶ Z) := by aesop
+  zero_comp : ∀ (X : C) {Y Z : C} (f : Y ⟶ Z), (0 : X ⟶ Y) ≫ f = (0 : X ⟶ Z) := by aesop_cat
 #align category_theory.limits.has_zero_morphisms CategoryTheory.Limits.HasZeroMorphisms
 #align category_theory.limits.has_zero_morphisms.comp_zero' CategoryTheory.Limits.HasZeroMorphisms.comp_zero
 #align category_theory.limits.has_zero_morphisms.zero_comp' CategoryTheory.Limits.HasZeroMorphisms.zero_comp
@@ -508,7 +508,7 @@ open ZeroObject
 `X` and `Y` are isomorphic to the zero object.
 -/
 def isIsoZeroEquivIsoZero (X Y : C) : IsIso (0 : X ⟶ Y) ≃ (X ≅ 0) × (Y ≅ 0) := by
-  -- This is lame, because `prod` can't cope with `Prop`, so we can't use `equiv.prod_congr`.
+  -- This is lame, because `prod` can't cope with `Prop`, so we can't use `Equiv.prodCongr`.
   refine' (isIsoZeroEquiv X Y).trans _
   symm
   fconstructor
@@ -590,8 +590,7 @@ def monoFactorisationZero (X Y : C) : MonoFactorisation (0 : X ⟶ Y)  where
 
 /-- The factorisation through the zero object is an image factorisation.
 -/
-def imageFactorisationZero (X Y : C) : ImageFactorisation (0 : X ⟶ Y)
-    where
+def imageFactorisationZero (X Y : C) : ImageFactorisation (0 : X ⟶ Y) where
   F := monoFactorisationZero X Y
   isImage := { lift := fun F' => 0 }
 #align category_theory.limits.image_factorisation_zero CategoryTheory.Limits.imageFactorisationZero

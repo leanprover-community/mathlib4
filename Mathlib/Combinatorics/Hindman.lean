@@ -50,12 +50,12 @@ open Filter
 
 /-- Multiplication of ultrafilters given by `∀ᶠ m in U*V, p m ↔ ∀ᶠ m in U, ∀ᶠ m' in V, p (m*m')`. -/
 @[to_additive
-      "Addition of ultrafilters given by\n`∀ᶠ m in U+V, p m ↔ ∀ᶠ m in U, ∀ᶠ m' in V, p (m+m')`."]
-def Ultrafilter.hasMul {M} [Mul M] : Mul (Ultrafilter M) where mul U V := (· * ·) <$> U <*> V
-#align ultrafilter.has_mul Ultrafilter.hasMul
-#align ultrafilter.has_add Ultrafilter.hasAdd
+      "Addition of ultrafilters given by `∀ᶠ m in U+V, p m ↔ ∀ᶠ m in U, ∀ᶠ m' in V, p (m+m')`."]
+def Ultrafilter.mul {M} [Mul M] : Mul (Ultrafilter M) where mul U V := (· * ·) <$> U <*> V
+#align ultrafilter.has_mul Ultrafilter.mul
+#align ultrafilter.has_add Ultrafilter.add
 
-attribute [local instance] Ultrafilter.hasMul Ultrafilter.hasAdd
+attribute [local instance] Ultrafilter.mul Ultrafilter.add
 
 /- We could have taken this as the definition of `U * V`, but then we would have to prove that it
 defines an ultrafilter. -/
@@ -66,16 +66,16 @@ theorem Ultrafilter.eventually_mul {M} [Mul M] (U V : Ultrafilter M) (p : M → 
 #align ultrafilter.eventually_mul Ultrafilter.eventually_mul
 #align ultrafilter.eventually_add Ultrafilter.eventually_add
 
--- porting note: slow to typecheck
 /-- Semigroup structure on `Ultrafilter M` induced by a semigroup structure on `M`. -/
 @[to_additive
       "Additive semigroup structure on `Ultrafilter M` induced by an additive semigroup
       structure on `M`."]
 def Ultrafilter.semigroup {M} [Semigroup M] : Semigroup (Ultrafilter M) :=
-  { Ultrafilter.hasMul with
+  { Ultrafilter.mul with
     mul_assoc := fun U V W =>
       Ultrafilter.coe_inj.mp <|
-        Filter.ext' fun p => by simp only [Ultrafilter.eventually_mul, mul_assoc] }
+        -- porting note: `simp` was slow to typecheck, replaced by `simp_rw`
+        Filter.ext' fun p => by simp_rw [Ultrafilter.eventually_mul, mul_assoc] }
 #align ultrafilter.semigroup Ultrafilter.semigroup
 #align ultrafilter.add_semigroup Ultrafilter.addSemigroup
 
@@ -142,8 +142,8 @@ theorem exists_idempotent_ultrafilter_le_FP {M} [Semigroup M] (a : Stream' M) :
     ∃ U : Ultrafilter M, U * U = U ∧ ∀ᶠ m in U, m ∈ FP a := by
   let S : Set (Ultrafilter M) := ⋂ n, { U | ∀ᶠ m in U, m ∈ FP (a.drop n) }
   have h := exists_idempotent_in_compact_subsemigroup ?_ S ?_ ?_ ?_
-  rcases h with ⟨U, hU, U_idem⟩
-  · refine' ⟨U, U_idem, _⟩
+  · rcases h with ⟨U, hU, U_idem⟩
+    refine' ⟨U, U_idem, _⟩
     convert Set.mem_interᵢ.mp hU 0
   · exact Ultrafilter.continuous_mul_left
   · apply IsCompact.nonempty_interᵢ_of_sequence_nonempty_compact_closed
@@ -182,11 +182,7 @@ theorem exists_FP_of_large {M} [Semigroup M] (U : Ultrafilter M) (U_idem : U * U
   `U`-large, so we can repeat the argument starting from `s₁`, obtaining `a₁`, `s₂`, etc.
   This gives the desired infinite sequence. -/
   have exists_elem : ∀ {s : Set M} (_hs : s ∈ U), (s ∩ { m | ∀ᶠ m' in U, m * m' ∈ s }).Nonempty :=
-    fun {s} hs =>
-    Ultrafilter.nonempty_of_mem
-      (inter_mem hs <| by
-        rw [← U_idem] at hs
-        exact hs)
+    fun {s} hs => Ultrafilter.nonempty_of_mem (inter_mem hs <| by rwa [← U_idem] at hs)
   let elem : { s // s ∈ U } → M := fun p => (exists_elem p.property).some
   let succ : {s // s ∈ U} → {s // s ∈ U} := fun (p : {s // s ∈ U}) =>
         ⟨p.val ∩ {m : M | elem p * m ∈ p.val},
@@ -195,8 +191,7 @@ theorem exists_FP_of_large {M} [Semigroup M] (U : Ultrafilter M) (U_idem : U * U
               p.val.inter_subset_right {m : M | ∀ᶠ (m' : M) in ↑U, m * m' ∈ p.val}
                 (exists_elem p.property).some_mem)⟩
   use Stream'.corec elem succ (Subtype.mk s₀ sU)
-  suffices ∀ (a : Stream' M), ∀ m ∈ FP a, ∀ p, a = Stream'.corec elem succ p → m ∈ p.val
-    by
+  suffices ∀ (a : Stream' M), ∀ m ∈ FP a, ∀ p, a = Stream'.corec elem succ p → m ∈ p.val by
     intro m hm
     exact this _ m hm ⟨s₀, sU⟩ rfl
   clear sU s₀
@@ -250,7 +245,8 @@ set_option linter.uppercaseLean3 false in
 
 @[to_additive FS_iter_tail_sub_FS]
 theorem FP_drop_subset_FP {M} [Semigroup M] (a : Stream' M) (n : ℕ) : FP (a.drop n) ⊆ FP a := by
-  induction' n with n ih; · rfl
+  induction' n with n ih
+  · rfl
   rw [Nat.succ_eq_one_add, ← Stream'.drop_drop]
   exact _root_.trans (FP.tail _) ih
 set_option linter.uppercaseLean3 false in

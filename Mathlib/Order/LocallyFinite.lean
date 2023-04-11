@@ -448,8 +448,7 @@ instance (priority := 100) LocallyFiniteOrder.toLocallyFiniteOrderTop : LocallyF
   finsetIoi b := Ioc b ⊤
   finset_mem_Ici a x := by rw [mem_Icc, and_iff_left le_top]
   finset_mem_Ioi a x := by rw [mem_Ioc, and_iff_left le_top]
-#align locally_finite_order.to_locally_finite_order_top
-  Finset.LocallyFiniteOrder.toLocallyFiniteOrderTop
+#align locally_finite_order.to_locally_finite_order_top Finset.LocallyFiniteOrder.toLocallyFiniteOrderTop
 
 theorem Ici_eq_Icc (a : α) : Ici a = Icc a ⊤ :=
   rfl
@@ -472,8 +471,7 @@ instance (priority := 100) LocallyFiniteOrder.toLocallyFiniteOrderBot : LocallyF
   finsetIio := Ico ⊥
   finset_mem_Iic a x := by rw [mem_Icc, and_iff_right bot_le]
   finset_mem_Iio a x := by rw [mem_Ico, and_iff_right bot_le]
-#align finset.locally_finite_order.to_locally_finite_order_bot
-  Finset.LocallyFiniteOrder.toLocallyFiniteOrderBot
+#align finset.locally_finite_order.to_locally_finite_order_bot Finset.LocallyFiniteOrder.toLocallyFiniteOrderBot
 
 theorem Iic_eq_Icc : Iic = Icc (⊥ : α) :=
   rfl

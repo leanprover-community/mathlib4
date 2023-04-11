@@ -195,15 +195,18 @@ instance [Mul M] [Mul N] : MulEquivClass (M ≃* N) M N where
 
 variable [Mul M] [Mul N] [Mul P] [Mul Q]
 
--- Porting note: `to_equiv_eq_coe` no longer needed in Lean4
-#noalign mul_equiv.to_equiv_eq_coe
-#noalign add_equiv.to_equiv_eq_coe
+@[to_additive (attr := simp)]
+theorem toEquiv_eq_coe (f : M ≃* N) : f.toEquiv = f :=
+  rfl
+#align mul_equiv.to_equiv_eq_coe MulEquiv.toEquiv_eq_coe
+#align add_equiv.to_equiv_eq_coe AddEquiv.toEquiv_eq_coe
+
 -- Porting note: `to_fun_eq_coe` no longer needed in Lean4
 #noalign mul_equiv.to_fun_eq_coe
 #noalign add_equiv.to_fun_eq_coe
 
 @[to_additive (attr := simp)]
-theorem coe_toEquiv (f : M ≃* N) : (f.toEquiv : M → N) = f := rfl
+theorem coe_toEquiv (f : M ≃* N) : ⇑(f : M ≃ N) = f := rfl
 #align mul_equiv.coe_to_equiv MulEquiv.coe_toEquiv
 #align add_equiv.coe_to_equiv AddEquiv.coe_toEquiv
 
@@ -269,7 +272,7 @@ theorem invFun_eq_symm {f : M ≃* N} : f.invFun = f.symm := rfl
 #align add_equiv.neg_fun_eq_symm AddEquiv.invFun_eq_symm
 
 @[to_additive (attr := simp)]
-theorem coe_toEquiv_symm (f : M ≃* N) : (f.toEquiv.symm : N → M) = f.symm := rfl
+theorem coe_toEquiv_symm (f : M ≃* N) : ((f : M ≃ N).symm : N → M) = f.symm := rfl
 
 @[to_additive (attr := simp)]
 theorem equivLike_inv_eq_symm (f : M ≃* N) : EquivLike.inv f = f.symm := rfl
@@ -278,7 +281,7 @@ theorem equivLike_inv_eq_symm (f : M ≃* N) : EquivLike.inv f = f.symm := rfl
 -- in the whole file.
 
 /-- See Note [custom simps projection] -/
-@[to_additive "See Note custom simps projection"]
+@[to_additive "See Note [custom simps projection]"] -- this comment fixes the syntax highlighting "
 def Simps.symm_apply (e : M ≃* N) : N → M :=
   e.symm
 #align mul_equiv.simps.symm_apply MulEquiv.Simps.symm_apply
@@ -289,7 +292,7 @@ initialize_simps_projections AddEquiv (toFun → apply, invFun → symm_apply)
 initialize_simps_projections MulEquiv (toFun → apply, invFun → symm_apply)
 
 @[to_additive (attr := simp)]
-theorem toEquiv_symm (f : M ≃* N) : f.symm.toEquiv = f.toEquiv.symm := rfl
+theorem toEquiv_symm (f : M ≃* N) : (f.symm : N ≃ M) = (f : M ≃ N).symm := rfl
 #align mul_equiv.to_equiv_symm MulEquiv.toEquiv_symm
 #align add_equiv.to_equiv_symm AddEquiv.toEquiv_symm
 

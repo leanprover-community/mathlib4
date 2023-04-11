@@ -95,6 +95,7 @@ Then you should *not* repeat the `outParam` declaration so `SetLike` will supply
 This ensures your subclass will not have issues with synthesis of the `[Mul M]` parameter starting
 before the value of `M` is known.
 -/
+@[notation_class * carrier Simps.findCoercionArgs]
 class SetLike (A : Type _) (B : outParam <| Type _) where
   /-- The coercion from a term of a `SetLike` to its corresponding `Set`. -/
   protected coe : A → Set B

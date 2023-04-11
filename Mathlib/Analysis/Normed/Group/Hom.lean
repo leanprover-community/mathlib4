@@ -156,10 +156,7 @@ theorem coe_toAddMonoidHom : ⇑f.toAddMonoidHom = f :=
 
 theorem toAddMonoidHom_injective :
     Function.Injective (@NormedAddGroupHom.toAddMonoidHom V₁ V₂ _ _) := fun f g h =>
-  coe_inj <|
-    show ⇑f.toAddMonoidHom = g by
-      rw [h]
-      rfl
+  coe_inj <| by rw [←coe_toAddMonoidHom f, ←coe_toAddMonoidHom g, h]
 #align normed_add_group_hom.to_add_monoid_hom_injective NormedAddGroupHom.toAddMonoidHom_injective
 
 @[simp]
@@ -257,14 +254,13 @@ theorem le_opNorm_of_le {c : ℝ} {x} (h : ‖x‖ ≤ c) : ‖f x‖ ≤ ‖f�
   le_trans (f.le_opNorm x) (mul_le_mul_of_nonneg_left h f.opNorm_nonneg)
 #align normed_add_group_hom.le_op_norm_of_le NormedAddGroupHom.le_opNorm_of_le
 
-theorem le_of_op_norm_le {c : ℝ} (h : ‖f‖ ≤ c) (x : V₁) : ‖f x‖ ≤ c * ‖x‖ :=
+theorem le_of_opNorm_le {c : ℝ} (h : ‖f‖ ≤ c) (x : V₁) : ‖f x‖ ≤ c * ‖x‖ :=
   (f.le_opNorm x).trans (mul_le_mul_of_nonneg_right h (norm_nonneg x))
-#align normed_add_group_hom.le_of_op_norm_le NormedAddGroupHom.le_of_op_norm_le
+#align normed_add_group_hom.le_of_op_norm_le NormedAddGroupHom.le_of_opNorm_le
 
 /-- continuous linear maps are Lipschitz continuous. -/
 theorem lipschitz : LipschitzWith ⟨‖f‖, opNorm_nonneg f⟩ f :=
-  LipschitzWith.of_dist_le_mul fun x y =>
-    by
+  LipschitzWith.of_dist_le_mul fun x y => by
     rw [dist_eq_norm, dist_eq_norm, ← map_sub]
     apply le_opNorm
 #align normed_add_group_hom.lipschitz NormedAddGroupHom.lipschitz
@@ -481,8 +477,7 @@ theorem opNorm_neg (f : NormedAddGroupHom V₁ V₂) : ‖-f‖ = ‖f‖ := by
 instance sub : Sub (NormedAddGroupHom V₁ V₂) :=
   ⟨fun f g =>
     { f.toAddMonoidHom - g.toAddMonoidHom with
-      bound' :=
-        by
+      bound' := by
         simp only [AddMonoidHom.sub_apply, AddMonoidHom.toFun_eq_coe, sub_eq_add_neg]
         exact (f + -g).bound' }⟩
 
@@ -503,11 +498,11 @@ theorem sub_apply (f g : NormedAddGroupHom V₁ V₂) (v : V₁) :
 section SMul
 
 variable {R R' : Type _} [MonoidWithZero R] [DistribMulAction R V₂] [PseudoMetricSpace R]
-  [BoundedSmul R V₂] [MonoidWithZero R'] [DistribMulAction R' V₂] [PseudoMetricSpace R']
-  [BoundedSmul R' V₂]
+  [BoundedSMul R V₂] [MonoidWithZero R'] [DistribMulAction R' V₂] [PseudoMetricSpace R']
+  [BoundedSMul R' V₂]
 
-instance smul : SMul R (NormedAddGroupHom V₁ V₂)
-    where smul r f :=
+instance smul : SMul R (NormedAddGroupHom V₁ V₂) where
+  smul r f :=
     { toFun := r • ⇑f
       map_add' := (r • f.toAddMonoidHom).map_add'
       bound' :=
@@ -544,8 +539,8 @@ instance isCentralScalar [DistribMulAction Rᵐᵒᵖ V₂] [IsCentralScalar R V
 
 end SMul
 
-instance natSMul : SMul ℕ (NormedAddGroupHom V₁ V₂)
-    where smul n f :=
+instance nsmul : SMul ℕ (NormedAddGroupHom V₁ V₂) where
+  smul n f :=
     { toFun := n • ⇑f
       map_add' := (n • f.toAddMonoidHom).map_add'
       bound' :=
@@ -553,7 +548,7 @@ instance natSMul : SMul ℕ (NormedAddGroupHom V₁ V₂)
         ⟨n • b, fun v => by
           rw [Pi.smul_apply, nsmul_eq_mul, mul_assoc]
           exact (norm_nsmul_le _ _).trans (mul_le_mul_of_nonneg_left (hb _) (Nat.cast_nonneg _))⟩ }
-#align normed_add_group_hom.has_nat_scalar NormedAddGroupHom.natSMul
+#align normed_add_group_hom.has_nat_scalar NormedAddGroupHom.nsmul
 
 @[simp]
 theorem coe_nsmul (r : ℕ) (f : NormedAddGroupHom V₁ V₂) : ⇑(r • f) = r • ⇑f :=
@@ -565,7 +560,7 @@ theorem nsmul_apply (r : ℕ) (f : NormedAddGroupHom V₁ V₂) (v : V₁) : (r 
   rfl
 #align normed_add_group_hom.nsmul_apply NormedAddGroupHom.nsmul_apply
 
-instance intSMul : SMul ℤ (NormedAddGroupHom V₁ V₂) where
+instance zsmul : SMul ℤ (NormedAddGroupHom V₁ V₂) where
   smul z f :=
     { toFun := z • ⇑f
       map_add' := (z • f.toAddMonoidHom).map_add'
@@ -574,7 +569,7 @@ instance intSMul : SMul ℤ (NormedAddGroupHom V₁ V₂) where
         ⟨‖z‖ • b, fun v => by
           rw [Pi.smul_apply, smul_eq_mul, mul_assoc]
           exact (norm_zsmul_le _ _).trans (mul_le_mul_of_nonneg_left (hb _) <| norm_nonneg _)⟩ }
-#align normed_add_group_hom.has_int_scalar NormedAddGroupHom.intSMul
+#align normed_add_group_hom.has_int_scalar NormedAddGroupHom.zsmul
 
 @[simp]
 theorem coe_zsmul (r : ℤ) (f : NormedAddGroupHom V₁ V₂) : ⇑(r • f) = r • ⇑f :=
@@ -618,8 +613,7 @@ instance toNormedAddCommGroup {V₁ V₂ : Type _} [NormedAddCommGroup V₁] [No
 
 /-- Coercion of a `NormedAddGroupHom` is an `AddMonoidHom`. Similar to `AddMonoidHom.coeFn`.  -/
 @[simps]
-def coeAddHom : NormedAddGroupHom V₁ V₂ →+ V₁ → V₂
-    where
+def coeAddHom : NormedAddGroupHom V₁ V₂ →+ V₁ → V₂ where
   toFun := FunLike.coe
   map_zero' := coe_zero
   map_add' := coe_add
@@ -638,11 +632,11 @@ theorem sum_apply {ι : Type _} (s : Finset ι) (f : ι → NormedAddGroupHom V�
 /-! ### Module structure on normed group homs -/
 
 
-instance distribMulActoin {R : Type _} [MonoidWithZero R] [DistribMulAction R V₂]
-    [PseudoMetricSpace R] [BoundedSmul R V₂] : DistribMulAction R (NormedAddGroupHom V₁ V₂) :=
+instance distribMulAction {R : Type _} [MonoidWithZero R] [DistribMulAction R V₂]
+    [PseudoMetricSpace R] [BoundedSMul R V₂] : DistribMulAction R (NormedAddGroupHom V₁ V₂) :=
   Function.Injective.distribMulAction coeAddHom coe_injective coe_smul
 
-instance module {R : Type _} [Semiring R] [Module R V₂] [PseudoMetricSpace R] [BoundedSmul R V₂] :
+instance module {R : Type _} [Semiring R] [Module R V₂] [PseudoMetricSpace R] [BoundedSMul R V₂] :
     Module R (NormedAddGroupHom V₁ V₂) :=
   Function.Injective.module _ coeAddHom coe_injective coe_smul
 
@@ -726,14 +720,10 @@ variable {V W V₁ V₂ V₃ : Type _} [SeminormedAddCommGroup V] [SeminormedAdd
 
 /-- The inclusion of an `AddSubgroup`, as bounded group homomorphism. -/
 @[simps!]
-def incl (s : AddSubgroup V) : NormedAddGroupHom s V
-    where
+def incl (s : AddSubgroup V) : NormedAddGroupHom s V where
   toFun := (Subtype.val : s → V)
   map_add' v w := AddSubgroup.coe_add _ _ _
-  bound' :=
-    ⟨1, fun v => by
-      rw [one_mul]
-      rfl⟩
+  bound' := ⟨1, fun v => by rw [one_mul, AddSubgroup.coe_norm]⟩
 #align normed_add_group_hom.incl NormedAddGroupHom.incl
 
 theorem norm_incl {V' : AddSubgroup V} (x : V') : ‖incl _ x‖ = ‖x‖ :=
@@ -754,24 +744,15 @@ def ker : AddSubgroup V₁ :=
 #align normed_add_group_hom.ker NormedAddGroupHom.ker
 
 theorem mem_ker (v : V₁) : v ∈ f.ker ↔ f v = 0 := by
-  erw [f.toAddMonoidHom.mem_ker]
-  rfl
+  erw [f.toAddMonoidHom.mem_ker, coe_toAddMonoidHom]
 #align normed_add_group_hom.mem_ker NormedAddGroupHom.mem_ker
 
 /-- Given a normed group hom `f : V₁ → V₂` satisfying `g.comp f = 0` for some `g : V₂ → V₃`,
     the corestriction of `f` to the kernel of `g`. -/
 @[simps]
-def ker.lift (h : g.comp f = 0) : NormedAddGroupHom V₁ g.ker
-    where
-  toFun v :=
-    ⟨f v, by
-      erw [g.mem_ker]
-      show (g.comp f) v = 0
-      rw [h]
-      rfl⟩
-  map_add' v w := by
-    simp only [map_add]
-    rfl
+def ker.lift (h : g.comp f = 0) : NormedAddGroupHom V₁ g.ker where
+  toFun v := ⟨f v, by rw [g.mem_ker, ←comp_apply g f, h, zero_apply]⟩
+  map_add' v w := by simp only [map_add, AddSubmonoid.mk_add_mk]
   bound' := f.bound'
 #align normed_add_group_hom.ker.lift NormedAddGroupHom.ker.lift
 
@@ -849,7 +830,7 @@ theorem normNoninc_iff_norm_le_one : f.NormNoninc ↔ ‖f‖ ≤ 1 := by
   refine' ⟨fun h => _, fun h => fun v => _⟩
   · refine' opNorm_le_bound _ zero_le_one fun v => _
     simpa [one_mul] using h v
-  · simpa using le_of_op_norm_le f h v
+  · simpa using le_of_opNorm_le f h v
 #align normed_add_group_hom.norm_noninc.norm_noninc_iff_norm_le_one NormedAddGroupHom.NormNoninc.normNoninc_iff_norm_le_one
 
 theorem zero : (0 : NormedAddGroupHom V₁ V₂).NormNoninc := fun v => by simp

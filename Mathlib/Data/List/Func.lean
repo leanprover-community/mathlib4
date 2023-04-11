@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Seul Baek
 
 ! This file was ported from Lean 3 source module data.list.func
-! leanprover-community/mathlib commit aba57d4d3dae35460225919dcd82fe91355162f9
+! leanprover-community/mathlib commit d11893b411025250c8e61ff2f12ccbd7ee35ab15
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -382,14 +382,14 @@ theorem length_sub [Zero α] [Sub α] {xs ys : List α} :
 #align list.func.length_sub List.Func.length_sub
 
 @[simp]
-theorem nil_sub {α : Type} [AddGroup α] (as : List α) : sub [] as = neg as := by
+theorem nil_sub {α : Type _} [AddGroup α] (as : List α) : sub [] as = neg as := by
   rw [sub, @nil_pointwise _ _ _ ⟨0⟩ ⟨0⟩]
   congr with x
   exact zero_sub x
 #align list.func.nil_sub List.Func.nil_sub
 
 @[simp]
-theorem sub_nil {α : Type} [AddGroup α] (as : List α) : sub as [] = as := by
+theorem sub_nil {α : Type _} [AddGroup α] (as : List α) : sub as [] = as := by
   rw [sub, @pointwise_nil _ _ _ ⟨0⟩ ⟨0⟩]
   apply Eq.trans _ (map_id as)
   congr with x

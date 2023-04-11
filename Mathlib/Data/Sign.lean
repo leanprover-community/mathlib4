@@ -90,9 +90,10 @@ instance Le.decidableRel : DecidableRel Le := fun a b => by
 instance decidableEq : DecidableEq SignType := fun a b => by
   cases a <;> cases b <;> first | exact isTrue (by constructor)| exact isFalse (by rintro ⟨_⟩)
 
+private lemma mul_comm : ∀ (a b : SignType), a * b = b * a := by rintro ⟨⟩ ⟨⟩ <;> rfl
+private lemma mul_assoc : ∀ (a b c : SignType), (a * b) * c = a * (b * c) := by
+  rintro ⟨⟩ ⟨⟩ ⟨⟩ <;> rfl
 
-set_option maxHeartbeats 0
--- Porting note: This takes too long, likely fixed by lean4#2003
 /- We can define a `Field` instance on `SignType`, but it's not mathematically sensible,
 so we only define the `CommGroupWithZero`. -/
 instance : CommGroupWithZero SignType where
@@ -105,17 +106,23 @@ instance : CommGroupWithZero SignType where
   mul_one a := by cases a <;> rfl
   one_mul a := by cases a <;> rfl
   mul_inv_cancel a ha := by cases a <;> trivial
-  mul_comm a b := by cases a <;> cases b <;> rfl
-  mul_assoc a b c := by cases a <;> cases b <;> cases c <;> rfl
+  mul_comm := mul_comm
+  mul_assoc := mul_assoc
   exists_pair_ne := ⟨0, 1, by rintro ⟨_⟩⟩
   inv_zero := rfl
+
+private lemma le_antisymm (a b : SignType) (_ : a ≤ b) (_: b ≤ a) : a = b := by
+  cases a <;> cases b <;> trivial
+
+private lemma le_trans (a b c : SignType) (_ : a ≤ b) (_: b ≤ c) : a ≤ c := by
+  cases a <;> cases b <;> cases c <;> first | tauto | constructor
 
 instance : LinearOrder SignType where
   le := (· ≤ ·)
   le_refl a := by cases a <;> constructor
   le_total a b := by cases a <;> cases b <;> first | left; constructor | right; constructor
-  le_antisymm a b ha hb := by cases a <;> cases b <;> trivial
-  le_trans a b c hab hbc := by cases a <;> cases b <;> cases c <;> first | tauto | constructor
+  le_antisymm := le_antisymm
+  le_trans := le_trans
   decidable_le := Le.decidableRel
   decidable_eq := SignType.decidableEq
 

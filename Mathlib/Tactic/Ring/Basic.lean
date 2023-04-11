@@ -77,10 +77,6 @@ This feature wasn't needed yet, so it's not implemented yet.
 ring, semiring, exponent, power
 -/
 
--- TODO: move somewhere else
-instance : Ord ℚ where
-  compare x y := compareOfLessAndEq x y
-
 namespace Mathlib.Tactic
 namespace Ring
 open Mathlib.Meta Qq NormNum Lean.Meta AtomM
@@ -990,7 +986,7 @@ def Cache.nat : Cache sℕ := { rα := none, dα := none, czα := some q(inferIn
 /-- Checks whether `e` would be processed by `eval` as a ring expression,
 or otherwise if it is an atom or something simplifiable via `norm_num`.
 
-We use this in `ring_ng` to avoid rewriting atoms unnecessarily.
+We use this in `ring_nf` to avoid rewriting atoms unnecessarily.
 
 Returns:
 * `none` if `eval` would process `e` as an algebraic ring expression

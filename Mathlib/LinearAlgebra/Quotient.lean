@@ -342,7 +342,7 @@ variable {R₂ M₂ : Type _} [Ring R₂] [AddCommGroup M₂] [Module R₂ M₂]
 `submodule.mkQ` are equal.
 
 See note [partially-applied ext lemmas]. -/
-@[ext 1001] -- porting note: increase priority so this applies before `LinearMap.ext`
+@[ext 1100] -- porting note: increase priority so this applies before `LinearMap.ext`
 theorem linearMap_qext ⦃f g : M ⧸ p →ₛₗ[τ₁₂] M₂⦄ (h : f.comp p.mkQ = g.comp p.mkQ) : f = g :=
   LinearMap.ext fun x => Quotient.inductionOn' x <| (LinearMap.congr_fun h : _)
 #align submodule.linear_map_qext Submodule.linearMap_qext

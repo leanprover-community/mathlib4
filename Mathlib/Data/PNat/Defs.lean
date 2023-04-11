@@ -54,7 +54,7 @@ instance (n : ℕ) : OfNat ℕ+ (n+1) :=
 namespace PNat
 
 -- Note: similar to Subtype.coe_mk
--- Porting note: no `simp` due to eagerly elaborated coercions
+@[simp]
 theorem mk_coe (n h) : (PNat.val (⟨n, h⟩ : ℕ+) : ℕ) = n :=
   rfl
 #align pnat.mk_coe PNat.mk_coe
@@ -134,14 +134,12 @@ theorem mk_lt_mk (n k : ℕ) (hn : 0 < n) (hk : 0 < k) : (⟨n, hn⟩ : ℕ+) < 
   Iff.rfl
 #align pnat.mk_lt_mk PNat.mk_lt_mk
 
--- Porting note: no `norm_cast` due to eagerly elaborated coercions
--- Porting note: no `simp`  because simp can prove it
+@[simp, norm_cast]
 theorem coe_le_coe (n k : ℕ+) : (n : ℕ) ≤ k ↔ n ≤ k :=
   Iff.rfl
 #align pnat.coe_le_coe PNat.coe_le_coe
 
--- Porting note: no `norm_cast` due to eagerly elaborated coercions
--- Porting note: no `simp`  because simp can prove it
+@[simp, norm_cast]
 theorem coe_lt_coe (n k : ℕ+) : (n : ℕ) < k ↔ n < k :=
   Iff.rfl
 #align pnat.coe_lt_coe PNat.coe_lt_coe
@@ -196,13 +194,12 @@ theorem mk_one {h} : (⟨1, h⟩ : ℕ+) = (1 : ℕ+) :=
   rfl
 #align pnat.mk_one PNat.mk_one
 
--- Porting note: no `norm_cast` due to eagerly elaborated coercions
+@[simp, norm_cast]
 theorem one_coe : ((1 : ℕ+) : ℕ) = 1 :=
   rfl
 #align pnat.one_coe PNat.one_coe
 
--- Porting note: no `norm_cast` due to eagerly elaborated coercions
-@[simp]
+@[simp, norm_cast]
 theorem coe_eq_one_iff {m : ℕ+} : (m : ℕ) = 1 ↔ m = 1 :=
   Subtype.coe_injective.eq_iff' one_coe
 #align pnat.coe_eq_one_iff PNat.coe_eq_one_iff

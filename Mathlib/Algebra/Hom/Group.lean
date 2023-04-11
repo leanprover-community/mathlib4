@@ -6,7 +6,7 @@ Authors: Patrick Massot, Kevin Buzzard, Scott Morrison, Johan Commelin, Chris Hu
 Ported by: Winston Yin
 
 ! This file was ported from Lean 3 source module algebra.hom.group
-! leanprover-community/mathlib commit 8c53048add6ffacdda0b36c4917bfe37e209b0ba
+! leanprover-community/mathlib commit a148d797a1094ab554ad4183a4ad6f130358ef64
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -811,6 +811,20 @@ protected def OneHom.copy {_ : One M} {_ : One N} (f : OneHom M N) (f' : M → N
 #align one_hom.copy OneHom.copy
 #align zero_hom.copy ZeroHom.copy
 
+@[to_additive (attr := simp)]
+theorem OneHom.coe_copy {_ : One M} {_ : One N} (f : OneHom M N) (f' : M → N) (h : f' = f) :
+    (f.copy f' h) = f' :=
+  rfl
+#align one_hom.coe_copy OneHom.coe_copy
+#align zero_hom.coe_copy ZeroHom.coe_copy
+
+@[to_additive]
+theorem OneHom.coe_copy_eq {_ : One M} {_ : One N} (f : OneHom M N) (f' : M → N) (h : f' = f) :
+    f.copy f' h = f :=
+  FunLike.ext' h
+#align one_hom.coe_copy_eq OneHom.coe_copy_eq
+#align zero_hom.coe_copy_eq ZeroHom.coe_copy_eq
+
 /-- Copy of a `MulHom` with a new `toFun` equal to the old one. Useful to fix definitional
 equalities. -/
 @[to_additive
@@ -823,6 +837,20 @@ protected def MulHom.copy {_ : Mul M} {_ : Mul N} (f : M →ₙ* N) (f' : M → 
 #align mul_hom.copy MulHom.copy
 #align add_hom.copy AddHom.copy
 
+@[to_additive (attr := simp)]
+theorem MulHom.coe_copy {_ : Mul M} {_ : Mul N} (f : M →ₙ* N) (f' : M → N) (h : f' = f) :
+    (f.copy f' h) = f' :=
+  rfl
+#align mul_hom.coe_copy MulHom.coe_copy
+#align add_hom.coe_copy AddHom.coe_copy
+
+@[to_additive]
+theorem MulHom.coe_copy_eq {_ : Mul M} {_ : Mul N} (f : M →ₙ* N) (f' : M → N) (h : f' = f) :
+    f.copy f' h = f :=
+  FunLike.ext' h
+#align mul_hom.coe_copy_eq MulHom.coe_copy_eq
+#align add_hom.coe_copy_eq AddHom.coe_copy_eq
+
 /-- Copy of a `MonoidHom` with a new `toFun` equal to the old one. Useful to fix
 definitional equalities. -/
 @[to_additive
@@ -834,12 +862,37 @@ protected def MonoidHom.copy {_ : MulOneClass M} {_ : MulOneClass N} (f : M →*
 #align monoid_hom.copy MonoidHom.copy
 #align add_monoid_hom.copy AddMonoidHom.copy
 
+@[to_additive (attr := simp)]
+theorem MonoidHom.coe_copy {_ : MulOneClass M} {_ : MulOneClass N} (f : M →* N) (f' : M → N)
+    (h : f' = f) : (f.copy f' h) = f' :=
+  rfl
+#align monoid_hom.coe_copy MonoidHom.coe_copy
+#align add_monoid_hom.coe_copy AddMonoidHom.coe_copy
+
+@[to_additive]
+theorem MonoidHom.copy_eq {_ : MulOneClass M} {_ : MulOneClass N} (f : M →* N) (f' : M → N)
+    (h : f' = f) : f.copy f' h = f :=
+  FunLike.ext' h
+#align monoid_hom.copy_eq MonoidHom.copy_eq
+#align add_monoid_hom.copy_eq AddMonoidHom.copy_eq
+
 /-- Copy of a `MonoidHom` with a new `toFun` equal to the old one. Useful to fix
 definitional equalities. -/
 protected def MonoidWithZeroHom.copy {_ : MulZeroOneClass M} {_ : MulZeroOneClass N} (f : M →*₀ N)
   (f' : M → N) (h : f' = f) : M →* N :=
   { f.toZeroHom.copy f' h, f.toMonoidHom.copy f' h with }
 #align monoid_with_zero_hom.copy MonoidWithZeroHom.copy
+
+@[simp]
+theorem MonoidWithZeroHom.coe_copy {_ : MulZeroOneClass M} {_ : MulZeroOneClass N} (f : M →*₀ N)
+    (f' : M → N) (h : f' = f) : (f.copy f' h) = f' :=
+  rfl
+#align monoid_with_zero_hom.coe_copy MonoidWithZeroHom.coe_copy
+
+theorem MonoidWithZeroHom.copy_eq {_ : MulZeroOneClass M} {_ : MulZeroOneClass N} (f : M →*₀ N)
+    (f' : M → N) (h : f' = f) : f.copy f' h = f :=
+  FunLike.ext' h
+#align monoid_with_zero_hom.copy_eq MonoidWithZeroHom.copy_eq
 
 @[to_additive]
 protected theorem OneHom.map_one [One M] [One N] (f : OneHom M N) : f 1 = 1 :=

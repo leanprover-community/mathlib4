@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury G. Kudryashov, Scott Morrison
 
 ! This file was ported from Lean 3 source module algebra.monoid_algebra.basic
-! leanprover-community/mathlib commit 6623e6af705e97002a9054c1c05a980180276fc1
+! leanprover-community/mathlib commit 57e09a1296bfb4330ddf6624f1028ba186117d82
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -58,7 +58,7 @@ open Finset
 
 open Finsupp hiding single mapDomain
 
-universe u₁ u₂ u₃
+universe u₁ u₂ u₃ u₄
 
 variable (k : Type u₁) (G : Type u₂) {R : Type _}
 
@@ -563,6 +563,19 @@ theorem mul_single_one_apply [MulOneClass G] (f : MonoidAlgebra k G) (r : k) (x 
   f.mul_single_apply_aux fun a => by rw [mul_one]
 #align monoid_algebra.mul_single_one_apply MonoidAlgebra.mul_single_one_apply
 
+theorem mul_single_apply_of_not_exists_mul [Mul G] (r : k) {g g' : G} (x : MonoidAlgebra k G)
+    (h : ¬∃ d, g' = d * g) : (x * single g r) g' = 0 := by
+  classical
+    rw [mul_apply, Finsupp.sum_comm, Finsupp.sum_single_index]
+    swap
+    · simp_rw [Finsupp.sum, MulZeroClass.mul_zero, ite_self, Finset.sum_const_zero]
+    · apply Finset.sum_eq_zero
+      simp_rw [ite_eq_right_iff]
+      rintro g'' _hg'' rfl
+      exfalso
+      exact h ⟨_, rfl⟩
+#align monoid_algebra.mul_single_apply_of_not_exists_mul MonoidAlgebra.mul_single_apply_of_not_exists_mul
+
 theorem single_mul_apply_aux [Mul G] (f : MonoidAlgebra k G) {r : k} {x y z : G}
     (H : ∀ a, x * a = y ↔ a = z) : (single x r * f) y = r * f z := by
   classical exact
@@ -581,6 +594,19 @@ theorem single_one_mul_apply [MulOneClass G] (f : MonoidAlgebra k G) (r : k) (x 
     (single (1 : G) r * f) x = r * f x :=
   f.single_mul_apply_aux fun a => by rw [one_mul]
 #align monoid_algebra.single_one_mul_apply MonoidAlgebra.single_one_mul_apply
+
+theorem single_mul_apply_of_not_exists_mul [Mul G] (r : k) {g g' : G} (x : MonoidAlgebra k G)
+    (h : ¬∃ d, g' = g * d) : (single g r * x) g' = 0 := by
+  classical
+    rw [mul_apply, Finsupp.sum_single_index]
+    swap
+    · simp_rw [Finsupp.sum, MulZeroClass.zero_mul, ite_self, Finset.sum_const_zero]
+    · apply Finset.sum_eq_zero
+      simp_rw [ite_eq_right_iff]
+      rintro g'' _hg'' rfl
+      exfalso
+      exact h ⟨_, rfl⟩
+#align monoid_algebra.single_mul_apply_of_not_exists_mul MonoidAlgebra.single_mul_apply_of_not_exists_mul
 
 theorem liftNC_smul [MulOneClass G] {R : Type _} [Semiring R] (f : k →+* R) (g : G →* R) (c : k)
     (φ : MonoidAlgebra k G) : liftNC (f : k →+ R) g (c • φ) = f c * liftNC (f : k →+ R) g φ := by
@@ -971,7 +997,7 @@ section
 
 variable {k}
 
-variable [Monoid G] [CommSemiring k] {V W : Type u₃} [AddCommMonoid V] [Module k V]
+variable [Monoid G] [CommSemiring k] {V : Type u₃} {W : Type u₄} [AddCommMonoid V] [Module k V]
   [Module (MonoidAlgebra k G) V] [IsScalarTower k (MonoidAlgebra k G) V] [AddCommMonoid W]
   [Module k W] [Module (MonoidAlgebra k G) W] [IsScalarTower k (MonoidAlgebra k G) W]
   (f : V →ₗ[k] W)
@@ -1073,7 +1099,8 @@ protected noncomputable def opRingEquiv [Monoid G] :
   { opAddEquiv.symm.trans <|
       (Finsupp.mapRange.addEquiv (opAddEquiv : k ≃+ kᵐᵒᵖ)).trans <| Finsupp.domCongr opEquiv with
     map_mul' := by
-      rw [Equiv.toFun_as_coe, AddEquiv.coe_toEquiv, ← AddEquiv.coe_toAddMonoidHom]
+      rw [Equiv.toFun_as_coe, AddEquiv.toEquiv_eq_coe, AddEquiv.coe_toEquiv,
+        ← AddEquiv.coe_toAddMonoidHom]
       refine Iff.mpr (AddMonoidHom.map_mul_iff (R := (MonoidAlgebra k G)ᵐᵒᵖ)
         (S := MonoidAlgebra kᵐᵒᵖ Gᵐᵒᵖ) _) ?_
       -- Porting note: Was `ext`.
@@ -1610,6 +1637,11 @@ theorem mul_single_zero_apply [AddZeroClass G] (f : AddMonoidAlgebra k G) (r : k
   f.mul_single_apply_aux r _ _ _ fun a => by rw [add_zero]
 #align add_monoid_algebra.mul_single_zero_apply AddMonoidAlgebra.mul_single_zero_apply
 
+theorem mul_single_apply_of_not_exists_add [Add G] (r : k) {g g' : G} (x : AddMonoidAlgebra k G)
+    (h : ¬∃ d, g' = d + g) : (x * single g r) g' = 0 :=
+  @MonoidAlgebra.mul_single_apply_of_not_exists_mul k (Multiplicative G) _ _ _ _ _ _ h
+#align add_monoid_algebra.mul_single_apply_of_not_exists_add AddMonoidAlgebra.mul_single_apply_of_not_exists_add
+
 theorem single_mul_apply_aux [Add G] (f : AddMonoidAlgebra k G) (r : k) (x y z : G)
     (H : ∀ a, x + a = y ↔ a = z) : (single x r * f) y = r * f z :=
   @MonoidAlgebra.single_mul_apply_aux k (Multiplicative G) _ _ _ _ _ _ _ H
@@ -1619,6 +1651,11 @@ theorem single_zero_mul_apply [AddZeroClass G] (f : AddMonoidAlgebra k G) (r : k
     (single (0 : G) r * f) x = r * f x :=
   f.single_mul_apply_aux r _ _ _ fun a => by rw [zero_add]
 #align add_monoid_algebra.single_zero_mul_apply AddMonoidAlgebra.single_zero_mul_apply
+
+theorem single_mul_apply_of_not_exists_add [Add G] (r : k) {g g' : G} (x : AddMonoidAlgebra k G)
+    (h : ¬∃ d, g' = g + d) : (single g r * x) g' = 0 :=
+  @MonoidAlgebra.single_mul_apply_of_not_exists_mul k (Multiplicative G) _ _ _ _ _ _ h
+#align add_monoid_algebra.single_mul_apply_of_not_exists_add AddMonoidAlgebra.single_mul_apply_of_not_exists_add
 
 theorem mul_single_apply [AddGroup G] (f : AddMonoidAlgebra k G) (r : k) (x y : G) :
     (f * single x r) y = f (y - x) * r :=
@@ -1816,7 +1853,8 @@ protected noncomputable def opRingEquiv [AddCommMonoid G] :
   { MulOpposite.opAddEquiv.symm.trans
       (Finsupp.mapRange.addEquiv (MulOpposite.opAddEquiv : k ≃+ kᵐᵒᵖ)) with
     map_mul' := by
-      rw [Equiv.toFun_as_coe, AddEquiv.coe_toEquiv, ← AddEquiv.coe_toAddMonoidHom]
+      rw [Equiv.toFun_as_coe, AddEquiv.toEquiv_eq_coe, AddEquiv.coe_toEquiv,
+        ← AddEquiv.coe_toAddMonoidHom]
       refine Iff.mpr (AddMonoidHom.map_mul_iff (R := (AddMonoidAlgebra k G)ᵐᵒᵖ)
         (S := AddMonoidAlgebra kᵐᵒᵖ G) _) ?_
       -- Porting note: Was `ext`.

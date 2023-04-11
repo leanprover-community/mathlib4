@@ -520,13 +520,11 @@ theorem ne_one_of_norm_ne_zero : ‖a‖ ≠ 0 → a ≠ 1 :=
 #align ne_one_of_norm_ne_zero ne_one_of_norm_ne_zero
 #align ne_zero_of_norm_ne_zero ne_zero_of_norm_ne_zero
 
-@[nontriviality, to_additive norm_of_subsingleton]
+@[to_additive (attr := nontriviality) norm_of_subsingleton]
 theorem norm_of_subsingleton' [Subsingleton E] (a : E) : ‖a‖ = 0 := by
   rw [Subsingleton.elim a 1, norm_one']
 #align norm_of_subsingleton' norm_of_subsingleton'
 #align norm_of_subsingleton norm_of_subsingleton
-
-attribute [nontriviality] norm_of_subsingleton
 
 @[to_additive zero_lt_one_add_norm_sq]
 theorem zero_lt_one_add_norm_sq' (x : E) : 0 < 1 + ‖x‖ ^ 2 := by
@@ -1088,13 +1086,13 @@ theorem tendsto_norm_one : Tendsto (fun a : E => ‖a‖) (𝓝 1) (𝓝 0) := b
 #align tendsto_norm_one tendsto_norm_one
 #align tendsto_norm_zero tendsto_norm_zero
 
-@[continuity, to_additive continuous_norm]
+@[to_additive (attr := continuity) continuous_norm]
 theorem continuous_norm' : Continuous fun a : E => ‖a‖ := by
   simpa using continuous_id.dist (continuous_const : Continuous fun _a => (1 : E))
 #align continuous_norm' continuous_norm'
 #align continuous_norm continuous_norm
 
-@[continuity, to_additive continuous_nnnorm]
+@[to_additive (attr := continuity) continuous_nnnorm]
 theorem continuous_nnnorm' : Continuous fun a : E => ‖a‖₊ :=
   continuous_norm'.subtype_mk _
 #align continuous_nnnorm' continuous_nnnorm'

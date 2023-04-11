@@ -286,8 +286,8 @@ theorem mapRange.addEquiv_toAddMonoidHom (f : M ≃+ N) :
 
 @[simp]
 theorem mapRange.addEquiv_toEquiv (f : M ≃+ N) :
-    (mapRange.addEquiv f).toEquiv =
-      (mapRange.equiv f.toEquiv f.map_zero f.symm.map_zero : (α →₀ _) ≃ _) :=
+    ↑(mapRange.addEquiv f : (α →₀ _) ≃+ _) =
+      (mapRange.equiv (f : M ≃ N) f.map_zero f.symm.map_zero : (α →₀ _) ≃ _) :=
   Equiv.ext fun _ => rfl
 #align finsupp.map_range.add_equiv_to_equiv Finsupp.mapRange.addEquiv_toEquiv
 

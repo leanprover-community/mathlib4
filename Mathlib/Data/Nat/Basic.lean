@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 
 ! This file was ported from Lean 3 source module data.nat.basic
-! leanprover-community/mathlib commit 2609ad04e2b77aceb2200e273daf11cc65856fda
+! leanprover-community/mathlib commit bd835ef554f37ef9b804f0903089211f89cb370b
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -716,6 +716,7 @@ theorem div_add_mod' (m k : ℕ) : m / k * k + m % k = m := by
   exact div_add_mod _ _
 #align nat.div_add_mod' Nat.div_add_mod'
 
+/-- See also `Nat.divModEquiv` for a similar statement as an `Equiv`. -/
 protected theorem div_mod_unique {n k m d : ℕ} (h : 0 < k) :
     n / k = d ∧ n % k = m ↔ m + k * d = n ∧ m < k :=
   ⟨fun ⟨e₁, e₂⟩ => e₁ ▸ e₂ ▸ ⟨mod_add_div _ _, mod_lt _ h⟩, fun ⟨h₁, h₂⟩ =>

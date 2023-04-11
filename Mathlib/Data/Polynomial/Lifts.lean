@@ -79,12 +79,12 @@ theorem lifts_iff_coeff_lifts (p : S[X]) : p ∈ lifts f ↔ ∀ n : ℕ, p.coef
 #align polynomial.lifts_iff_coeff_lifts Polynomial.lifts_iff_coeff_lifts
 
 /-- If `(r : R)`, then `C (f r)` lifts. -/
-theorem c_mem_lifts (f : R →+* S) (r : R) : C (f r) ∈ lifts f :=
+theorem C_mem_lifts (f : R →+* S) (r : R) : C (f r) ∈ lifts f :=
   ⟨C r, by
     simp only [coe_mapRingHom, map_C, Set.mem_univ, Subsemiring.coe_top, eq_self_iff_true,
       and_self_iff]⟩
 set_option linter.uppercaseLean3 false in
-#align polynomial.C_mem_lifts Polynomial.c_mem_lifts
+#align polynomial.C_mem_lifts Polynomial.C_mem_lifts
 
 /-- If `(s : S)` is in the image of `f`, then `C s` lifts. -/
 theorem C'_mem_lifts {f : R →+* S} {s : S} (h : s ∈ Set.range f) : C s ∈ lifts f := by
@@ -96,20 +96,20 @@ set_option linter.uppercaseLean3 false in
 #align polynomial.C'_mem_lifts Polynomial.C'_mem_lifts
 
 /-- The polynomial `X` lifts. -/
-theorem x_mem_lifts (f : R →+* S) : (X : S[X]) ∈ lifts f :=
+theorem X_mem_lifts (f : R →+* S) : (X : S[X]) ∈ lifts f :=
   ⟨X, by
     simp only [coe_mapRingHom, Set.mem_univ, Subsemiring.coe_top, eq_self_iff_true, map_X,
       and_self_iff]⟩
 set_option linter.uppercaseLean3 false in
-#align polynomial.X_mem_lifts Polynomial.x_mem_lifts
+#align polynomial.X_mem_lifts Polynomial.X_mem_lifts
 
 /-- The polynomial `X ^ n` lifts. -/
-theorem x_pow_mem_lifts (f : R →+* S) (n : ℕ) : (X ^ n : S[X]) ∈ lifts f :=
+theorem X_pow_mem_lifts (f : R →+* S) (n : ℕ) : (X ^ n : S[X]) ∈ lifts f :=
   ⟨X ^ n, by
     simp only [coe_mapRingHom, map_pow, Set.mem_univ, Subsemiring.coe_top, eq_self_iff_true,
       map_X, and_self_iff]⟩
 set_option linter.uppercaseLean3 false in
-#align polynomial.X_pow_mem_lifts Polynomial.x_pow_mem_lifts
+#align polynomial.X_pow_mem_lifts Polynomial.X_pow_mem_lifts
 
 /-- If `p` lifts and `(r : R)` then `r * p` lifts. -/
 theorem base_mul_mem_lifts {p : S[X]} (r : R) (hp : p ∈ lifts f) : C (f r) * p ∈ lifts f := by
@@ -295,4 +295,3 @@ theorem smul_mem_lifts {p : S[X]} (r : R) (hp : p ∈ lifts (algebraMap R S)) :
 end Algebra
 
 end Polynomial
-

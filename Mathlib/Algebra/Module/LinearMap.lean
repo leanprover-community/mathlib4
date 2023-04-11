@@ -206,8 +206,7 @@ variable [Module R M] [Module R M₂] [Module S M₃]
 
 variable {σ : R →+* S}
 
-instance : SemilinearMapClass (M →ₛₗ[σ] M₃) σ M M₃
-    where
+instance : SemilinearMapClass (M →ₛₗ[σ] M₃) σ M M₃ where
   coe f := f.toFun
   coe_injective' f g h := by
     cases f
