@@ -40,7 +40,7 @@ evaluated during kernel reduction, so we will only require about `sqrt n` unfold
 def minFacAux (n : PosNum) : ℕ → PosNum → PosNum
   | 0, _ => n
   | fuel + 1, k =>
-    if h : n < k.bit1 * k.bit1 then n else if k.bit1 ∣ n then k.bit1 else min_fac_aux fuel k.succ
+    if n < k.bit1 * k.bit1 then n else if k.bit1 ∣ n then k.bit1 else minFacAux n fuel k.succ
 #align pos_num.min_fac_aux PosNum.minFacAux
 
 theorem minFacAux_to_nat {fuel : ℕ} {n k : PosNum} (h : Nat.sqrt n < fuel + k.bit1) :
@@ -131,4 +131,3 @@ instance decidablePrime : DecidablePred Num.Prime
 #align num.decidable_prime Num.decidablePrime
 
 end Num
-
