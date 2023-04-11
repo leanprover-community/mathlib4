@@ -8,8 +8,8 @@ Authors: Yury Kudryashov, Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.LinearAlgebra.Ray
-import Mathbin.Analysis.NormedSpace.Basic
+import Mathlib.LinearAlgebra.Ray
+import Mathlib.Analysis.NormedSpace.Basic
 
 /-!
 # Rays in a real normed vector space
@@ -32,15 +32,13 @@ variable {x y : E}
 /-- If `x` and `y` are on the same ray, then the triangle inequality becomes the equality: the norm
 of `x + y` is the sum of the norms of `x` and `y`. The converse is true for a strictly convex
 space. -/
-theorem norm_add (h : SameRay ℝ x y) : ‖x + y‖ = ‖x‖ + ‖y‖ :=
-  by
+theorem norm_add (h : SameRay ℝ x y) : ‖x + y‖ = ‖x‖ + ‖y‖ := by
   rcases h.exists_eq_smul with ⟨u, a, b, ha, hb, -, rfl, rfl⟩
   rw [← add_smul, norm_smul_of_nonneg (add_nonneg ha hb), norm_smul_of_nonneg ha,
     norm_smul_of_nonneg hb, add_mul]
 #align same_ray.norm_add SameRay.norm_add
 
-theorem norm_sub (h : SameRay ℝ x y) : ‖x - y‖ = |‖x‖ - ‖y‖| :=
-  by
+theorem norm_sub (h : SameRay ℝ x y) : ‖x - y‖ = |‖x‖ - ‖y‖| := by
   rcases h.exists_eq_smul with ⟨u, a, b, ha, hb, -, rfl, rfl⟩
   wlog hab : b ≤ a
   · rw [SameRay.sameRay_comm] at h
@@ -51,8 +49,7 @@ theorem norm_sub (h : SameRay ℝ x y) : ‖x - y‖ = |‖x‖ - ‖y‖| :=
     sub_mul, abs_of_nonneg (mul_nonneg hab (norm_nonneg _))]
 #align same_ray.norm_sub SameRay.norm_sub
 
-theorem norm_smul_eq (h : SameRay ℝ x y) : ‖x‖ • y = ‖y‖ • x :=
-  by
+theorem norm_smul_eq (h : SameRay ℝ x y) : ‖x‖ • y = ‖y‖ • x := by
   rcases h.exists_eq_smul with ⟨u, a, b, ha, hb, -, rfl, rfl⟩
   simp only [norm_smul_of_nonneg, *, mul_smul, smul_comm ‖u‖]
   apply smul_comm
@@ -62,8 +59,7 @@ end SameRay
 
 variable {x y : F}
 
-theorem norm_injOn_ray_left (hx : x ≠ 0) : { y | SameRay ℝ x y }.InjOn norm :=
-  by
+theorem norm_injOn_ray_left (hx : x ≠ 0) : { y | SameRay ℝ x y }.InjOn norm := by
   rintro y hy z hz h
   rcases hy.exists_nonneg_left hx with ⟨r, hr, rfl⟩
   rcases hz.exists_nonneg_left hx with ⟨s, hs, rfl⟩
@@ -95,16 +91,14 @@ alias sameRay_iff_inv_norm_smul_eq_of_ne ↔ SameRay.inv_norm_smul_eq _
 
 /-- Two vectors `x y` in a real normed space are on the ray if and only if one of them is zero or
 the unit vectors `‖x‖⁻¹ • x` and `‖y‖⁻¹ • y` are equal. -/
-theorem sameRay_iff_inv_norm_smul_eq : SameRay ℝ x y ↔ x = 0 ∨ y = 0 ∨ ‖x‖⁻¹ • x = ‖y‖⁻¹ • y :=
-  by
+theorem sameRay_iff_inv_norm_smul_eq : SameRay ℝ x y ↔ x = 0 ∨ y = 0 ∨ ‖x‖⁻¹ • x = ‖y‖⁻¹ • y := by
   rcases eq_or_ne x 0 with (rfl | hx); · simp [SameRay.zero_left]
   rcases eq_or_ne y 0 with (rfl | hy); · simp [SameRay.zero_right]
   simp only [sameRay_iff_inv_norm_smul_eq_of_ne hx hy, *, false_or_iff]
 #align same_ray_iff_inv_norm_smul_eq sameRay_iff_inv_norm_smul_eq
 
 /-- Two vectors of the same norm are on the same ray if and only if they are equal. -/
-theorem sameRay_iff_of_norm_eq (h : ‖x‖ = ‖y‖) : SameRay ℝ x y ↔ x = y :=
-  by
+theorem sameRay_iff_of_norm_eq (h : ‖x‖ = ‖y‖) : SameRay ℝ x y ↔ x = y := by
   obtain rfl | hy := eq_or_ne y 0
   · rw [norm_zero, norm_eq_zero] at h
     exact iff_of_true (SameRay.zero_right _) h
