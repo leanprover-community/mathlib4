@@ -27,10 +27,10 @@ of norm less than `1`.
 ## Main declarations
 
 For a module over a normed ring:
-* `absorbs`: A set `s` absorbs a set `t` if all large scalings of `s` contain `t`.
-* `absorbent`: A set `s` is absorbent if every point eventually belongs to all large scalings of
+* `Absorbs`: A set `s` absorbs a set `t` if all large scalings of `s` contain `t`.
+* `Absorbent`: A set `s` is absorbent if every point eventually belongs to all large scalings of
   `s`.
-* `balanced`: A set `s` is balanced if `a • s ⊆ s` for all `a` of norm less than `1`.
+* `Balanced`: A set `s` is balanced if `a • s ⊆ s` for all `a` of norm less than `1`.
 
 ## References
 
@@ -66,12 +66,12 @@ variable {𝕜} {s t u v A B : Set E}
 
 @[simp]
 theorem absorbs_empty {s : Set E} : Absorbs 𝕜 s (∅ : Set E) :=
-  ⟨1, one_pos, fun a ha => Set.empty_subset _⟩
+  ⟨1, one_pos, fun _a _ha => Set.empty_subset _⟩
 #align absorbs_empty absorbs_empty
 
 theorem Absorbs.mono (hs : Absorbs 𝕜 s u) (hst : s ⊆ t) (hvu : v ⊆ u) : Absorbs 𝕜 t v :=
   let ⟨r, hr, h⟩ := hs
-  ⟨r, hr, fun a ha => hvu.trans <| (h _ ha).trans <| smul_set_mono hst⟩
+  ⟨r, hr, fun _a ha => hvu.trans <| (h _ ha).trans <| smul_set_mono hst⟩
 #align absorbs.mono Absorbs.mono
 
 theorem Absorbs.mono_left (hs : Absorbs 𝕜 s u) (h : s ⊆ t) : Absorbs 𝕜 t u :=
@@ -84,7 +84,7 @@ theorem Absorbs.mono_right (hs : Absorbs 𝕜 s u) (h : v ⊆ u) : Absorbs 𝕜 
 
 theorem Absorbs.union (hu : Absorbs 𝕜 s u) (hv : Absorbs 𝕜 s v) : Absorbs 𝕜 s (u ∪ v) := by
   obtain ⟨a, ha, hu⟩ := hu
-  obtain ⟨b, hb, hv⟩ := hv
+  obtain ⟨b, _hb, hv⟩ := hv
   exact
     ⟨max a b, lt_max_of_lt_left ha, fun c hc =>
       union_subset (hu _ <| le_of_max_le_left hc) (hv _ <| le_of_max_le_right hc)⟩
@@ -99,13 +99,13 @@ theorem absorbs_union : Absorbs 𝕜 s (u ∪ v) ↔ Absorbs 𝕜 s u ∧ Absorb
 theorem absorbs_unionᵢ_finset {ι : Type _} {t : Finset ι} {f : ι → Set E} :
     Absorbs 𝕜 s (⋃ i ∈ t, f i) ↔ ∀ i ∈ t, Absorbs 𝕜 s (f i) := by
   classical
-    induction' t using Finset.induction_on with i t ht hi
+    induction' t using Finset.induction_on with i t _ht hi
     ·
       simp only [Finset.not_mem_empty, Set.unionᵢ_false, Set.unionᵢ_empty, absorbs_empty,
         IsEmpty.forall_iff, imp_true_iff]
     rw [Finset.set_bunionᵢ_insert, absorbs_union, hi]
     constructor <;> intro h
-    · refine' fun _ hi' => (finset.mem_insert.mp hi').elim _ (h.2 _)
+    · refine' fun _ hi' => (Finset.mem_insert.mp hi').elim _ (h.2 _)
       exact fun hi'' => by
         rw [hi'']
         exact h.1
@@ -130,7 +130,7 @@ variable {𝕜}
 
 theorem Absorbent.subset (hA : Absorbent 𝕜 A) (hAB : A ⊆ B) : Absorbent 𝕜 B := by
   refine' forall_imp (fun x => _) hA
-  exact Exists.imp fun r => And.imp_right <| forall₂_imp fun a ha hx => Set.smul_set_mono hAB hx
+  exact Exists.imp fun r => And.imp_right <| forall₂_imp fun a _ha hx => Set.smul_set_mono hAB hx
 #align absorbent.subset Absorbent.subset
 
 theorem absorbent_iff_forall_absorbs_singleton : Absorbent 𝕜 A ↔ ∀ x, Absorbs 𝕜 A {x} := by
@@ -143,16 +143,16 @@ theorem Absorbent.absorbs (hs : Absorbent 𝕜 s) {x : E} : Absorbs 𝕜 s {x} :
 
 theorem absorbent_iff_nonneg_lt :
     Absorbent 𝕜 A ↔ ∀ x, ∃ r, 0 ≤ r ∧ ∀ ⦃a : 𝕜⦄, r < ‖a‖ → x ∈ a • A :=
-  forall_congr' fun x =>
+  forall_congr' fun _x =>
     ⟨fun ⟨r, hr, hx⟩ => ⟨r, hr.le, fun a ha => hx a ha.le⟩, fun ⟨r, hr, hx⟩ =>
-      ⟨r + 1, add_pos_of_nonneg_of_pos hr zero_lt_one, fun a ha =>
+      ⟨r + 1, add_pos_of_nonneg_of_pos hr zero_lt_one, fun _a ha =>
         hx ((lt_add_of_pos_right r zero_lt_one).trans_le ha)⟩⟩
 #align absorbent_iff_nonneg_lt absorbent_iff_nonneg_lt
 
 theorem Absorbent.absorbs_finite {s : Set E} (hs : Absorbent 𝕜 s) {v : Set E} (hv : v.Finite) :
     Absorbs 𝕜 s v := by
   rw [← Set.bunionᵢ_of_singleton v]
-  exact hv.absorbs_Union.mpr fun _ _ => hs.absorbs
+  exact hv.absorbs_unionᵢ.mpr fun _ _ => hs.absorbs
 #align absorbent.absorbs_finite Absorbent.absorbs_finite
 
 variable (𝕜)
@@ -165,7 +165,7 @@ def Balanced (A : Set E) :=
 variable {𝕜}
 
 theorem balanced_iff_smul_mem : Balanced 𝕜 s ↔ ∀ ⦃a : 𝕜⦄, ‖a‖ ≤ 1 → ∀ ⦃x : E⦄, x ∈ s → a • x ∈ s :=
-  forall₂_congr fun a ha => smul_set_subset_iff
+  forall₂_congr fun _a _ha => smul_set_subset_iff
 #align balanced_iff_smul_mem balanced_iff_smul_mem
 
 alias balanced_iff_smul_mem ↔ Balanced.smul_mem _
@@ -176,32 +176,30 @@ theorem balanced_empty : Balanced 𝕜 (∅ : Set E) := fun _ _ => by rw [smul_s
 #align balanced_empty balanced_empty
 
 @[simp]
-theorem balanced_univ : Balanced 𝕜 (univ : Set E) := fun a ha => subset_univ _
+theorem balanced_univ : Balanced 𝕜 (univ : Set E) := fun _a _ha => subset_univ _
 #align balanced_univ balanced_univ
 
-theorem Balanced.union (hA : Balanced 𝕜 A) (hB : Balanced 𝕜 B) : Balanced 𝕜 (A ∪ B) := fun a ha =>
-  smul_set_union.Subset.trans <| union_subset_union (hA _ ha) <| hB _ ha
+theorem Balanced.union (hA : Balanced 𝕜 A) (hB : Balanced 𝕜 B) : Balanced 𝕜 (A ∪ B) := fun _a ha =>
+  smul_set_union.subset.trans <| union_subset_union (hA _ ha) <| hB _ ha
 #align balanced.union Balanced.union
 
-theorem Balanced.inter (hA : Balanced 𝕜 A) (hB : Balanced 𝕜 B) : Balanced 𝕜 (A ∩ B) := fun a ha =>
+theorem Balanced.inter (hA : Balanced 𝕜 A) (hB : Balanced 𝕜 B) : Balanced 𝕜 (A ∩ B) := fun _a ha =>
   smul_set_inter_subset.trans <| inter_subset_inter (hA _ ha) <| hB _ ha
 #align balanced.inter Balanced.inter
 
 theorem balanced_unionᵢ {f : ι → Set E} (h : ∀ i, Balanced 𝕜 (f i)) : Balanced 𝕜 (⋃ i, f i) :=
-  fun a ha => (smul_set_Union _ _).Subset.trans <| unionᵢ_mono fun _ => h _ _ ha
+  fun _a ha => (smul_set_Union _ _).subset.trans <| unionᵢ_mono fun _ => h _ _ ha
 #align balanced_Union balanced_unionᵢ
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 theorem balanced_Union₂ {f : ∀ i, κ i → Set E} (h : ∀ i j, Balanced 𝕜 (f i j)) :
     Balanced 𝕜 (⋃ (i) (j), f i j) :=
   balanced_unionᵢ fun _ => balanced_unionᵢ <| h _
 #align balanced_Union₂ balanced_Union₂
 
 theorem balanced_interᵢ {f : ι → Set E} (h : ∀ i, Balanced 𝕜 (f i)) : Balanced 𝕜 (⋂ i, f i) :=
-  fun a ha => (smul_set_interᵢ_subset _ _).trans <| interᵢ_mono fun _ => h _ _ ha
+  fun _a ha => (smul_set_interᵢ_subset _ _).trans <| interᵢ_mono fun _ => h _ _ ha
 #align balanced_Inter balanced_interᵢ
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 theorem balanced_Inter₂ {f : ∀ i, κ i → Set E} (h : ∀ i j, Balanced 𝕜 (f i j)) :
     Balanced 𝕜 (⋂ (i) (j), f i j) :=
   balanced_interᵢ fun _ => balanced_interᵢ <| h _
@@ -209,8 +207,8 @@ theorem balanced_Inter₂ {f : ∀ i, κ i → Set E} (h : ∀ i j, Balanced �
 
 variable [SMul 𝕝 E] [SMulCommClass 𝕜 𝕝 E]
 
-theorem Balanced.smul (a : 𝕝) (hs : Balanced 𝕜 s) : Balanced 𝕜 (a • s) := fun b hb =>
-  (smul_comm _ _ _).Subset.trans <| smul_set_mono <| hs _ hb
+theorem Balanced.smul (a : 𝕝) (hs : Balanced 𝕜 s) : Balanced 𝕜 (a • s) := fun _b hb =>
+  (smul_comm _ _ _).subset.trans <| smul_set_mono <| hs _ hb
 #align balanced.smul Balanced.smul
 
 end SMul
@@ -220,23 +218,23 @@ section Module
 variable [AddCommGroup E] [Module 𝕜 E] {s s₁ s₂ t t₁ t₂ : Set E}
 
 theorem Absorbs.neg : Absorbs 𝕜 s t → Absorbs 𝕜 (-s) (-t) :=
-  Exists.imp fun r =>
-    And.imp_right <| forall₂_imp fun _ _ h => (neg_subset_neg.2 h).trans (smul_set_neg _ _).Superset
+  Exists.imp fun _r =>
+    And.imp_right <| forall₂_imp fun _ _ h => (neg_subset_neg.2 h).trans (smul_set_neg _ _).superset
 #align absorbs.neg Absorbs.neg
 
 theorem Balanced.neg : Balanced 𝕜 s → Balanced 𝕜 (-s) :=
-  forall₂_imp fun _ _ h => (smul_set_neg _ _).Subset.trans <| neg_subset_neg.2 h
+  forall₂_imp fun _ _ h => (smul_set_neg _ _).subset.trans <| neg_subset_neg.2 h
 #align balanced.neg Balanced.neg
 
 theorem Absorbs.add : Absorbs 𝕜 s₁ t₁ → Absorbs 𝕜 s₂ t₂ → Absorbs 𝕜 (s₁ + s₂) (t₁ + t₂) :=
-  fun ⟨r₁, hr₁, h₁⟩ ⟨r₂, hr₂, h₂⟩ =>
-  ⟨max r₁ r₂, lt_max_of_lt_left hr₁, fun a ha =>
+  fun ⟨r₁, hr₁, h₁⟩ ⟨r₂, _hr₂, h₂⟩ =>
+  ⟨max r₁ r₂, lt_max_of_lt_left hr₁, fun _a ha =>
     (add_subset_add (h₁ _ <| le_of_max_le_left ha) <| h₂ _ <| le_of_max_le_right ha).trans
-      (smul_add _ _ _).Superset⟩
+      (smul_add _ _ _).superset⟩
 #align absorbs.add Absorbs.add
 
-theorem Balanced.add (hs : Balanced 𝕜 s) (ht : Balanced 𝕜 t) : Balanced 𝕜 (s + t) := fun a ha =>
-  (smul_add _ _ _).Subset.trans <| add_subset_add (hs _ ha) <| ht _ ha
+theorem Balanced.add (hs : Balanced 𝕜 s) (ht : Balanced 𝕜 t) : Balanced 𝕜 (s + t) := fun _a ha =>
+  (smul_add _ _ _).subset.trans <| add_subset_add (hs _ ha) <| ht _ ha
 #align balanced.add Balanced.add
 
 theorem Absorbs.sub (h₁ : Absorbs 𝕜 s₁ t₁) (h₂ : Absorbs 𝕜 s₂ t₂) : Absorbs 𝕜 (s₁ - s₂) (t₁ - t₂) :=
@@ -250,7 +248,7 @@ theorem Balanced.sub (hs : Balanced 𝕜 s) (ht : Balanced 𝕜 t) : Balanced �
   exact hs.add ht.neg
 #align balanced.sub Balanced.sub
 
-theorem balanced_zero : Balanced 𝕜 (0 : Set E) := fun a ha => (smul_zero _).Subset
+theorem balanced_zero : Balanced 𝕜 (0 : Set E) := fun _a _ha => (smul_zero _).subset
 #align balanced_zero balanced_zero
 
 end Module
@@ -268,8 +266,8 @@ theorem Balanced.smul_mono (hs : Balanced 𝕝 s) {a : 𝕝} {b : 𝕜} (h : ‖
   · rw [norm_zero] at h
     rw [norm_eq_zero.1 (h.antisymm <| norm_nonneg _)]
     obtain rfl | h := s.eq_empty_or_nonempty
-    · simp_rw [smul_set_empty]
-    · simp_rw [zero_smul_set h]
+    · simp_rw [smul_set_empty]; rfl
+    · simp_rw [zero_smul_set h]; rfl
   rintro _ ⟨x, hx, rfl⟩
   refine' ⟨b⁻¹ • a • x, _, smul_inv_smul₀ hb _⟩
   rw [← smul_assoc]
@@ -313,12 +311,13 @@ theorem Balanced.mem_smul_iff (hs : Balanced 𝕜 s) (h : ‖a‖ = ‖b‖) : a
 #align balanced.mem_smul_iff Balanced.mem_smul_iff
 
 theorem Balanced.neg_mem_iff (hs : Balanced 𝕜 s) : -x ∈ s ↔ x ∈ s := by
-  convert hs.mem_smul_iff (norm_neg 1) <;> simp only [neg_smul, one_smul]
+  convert hs.mem_smul_iff (x := x) (norm_neg 1) using 0;
+  simp only [neg_smul, one_smul 𝕜 x]
 #align balanced.neg_mem_iff Balanced.neg_mem_iff
 
 theorem Absorbs.inter (hs : Absorbs 𝕜 s u) (ht : Absorbs 𝕜 t u) : Absorbs 𝕜 (s ∩ t) u := by
   obtain ⟨a, ha, hs⟩ := hs
-  obtain ⟨b, hb, ht⟩ := ht
+  obtain ⟨b, _hb, ht⟩ := ht
   have h : 0 < max a b := lt_max_of_lt_left ha
   refine' ⟨max a b, lt_max_of_lt_left ha, fun c hc => _⟩
   rw [smul_set_inter₀ (norm_pos_iff.1 <| h.trans_le hc)]
@@ -345,7 +344,7 @@ theorem absorbent_nhds_zero (hA : A ∈ 𝓝 (0 : E)) : Absorbent 𝕜 A := by
   obtain ⟨w, hw₁, hw₂, hw₃⟩ := mem_nhds_iff.mp hA
   have hc : Continuous fun t : 𝕜 => t • x := continuous_id.smul continuous_const
   obtain ⟨r, hr₁, hr₂⟩ :=
-    metric.is_open_iff.mp (hw₂.preimage hc) 0 (by rwa [mem_preimage, zero_smul])
+    Metric.isOpen_iff.mp (hw₂.preimage hc) 0 (by rwa [mem_preimage, zero_smul])
   have hr₃ := inv_pos.mpr (half_pos hr₁)
   refine' ⟨(r / 2)⁻¹, hr₃, fun a ha₁ => _⟩
   have ha₂ : 0 < ‖a‖ := hr₃.trans_le ha₁
@@ -354,7 +353,7 @@ theorem absorbent_nhds_zero (hA : A ∈ 𝓝 (0 : E)) : Absorbent 𝕜 A := by
   calc
     ‖a‖⁻¹ ≤ r / 2 := (inv_le (half_pos hr₁) ha₂).mp ha₁
     _ < r := half_lt_self hr₁
-    
+
 #align absorbent_nhds_zero absorbent_nhds_zero
 
 /-- The union of `{0}` with the interior of a balanced set is balanced. -/
@@ -372,7 +371,7 @@ theorem balanced_zero_union_interior (hA : Balanced 𝕜 A) : Balanced 𝕜 ((0 
       calc
         a • interior A ⊆ interior (a • A) := (isOpenMap_smul₀ h).image_interior_subset A
         _ ⊆ interior A := interior_mono (hA _ ha)
-        
+
 #align balanced_zero_union_interior balanced_zero_union_interior
 
 /-- The interior of a balanced set is balanced if it contains the origin. -/
@@ -382,7 +381,7 @@ theorem Balanced.interior (hA : Balanced 𝕜 A) (h : (0 : E) ∈ interior A) :
   exact balanced_zero_union_interior hA
 #align balanced.interior Balanced.interior
 
-theorem Balanced.closure (hA : Balanced 𝕜 A) : Balanced 𝕜 (closure A) := fun a ha =>
+theorem Balanced.closure (hA : Balanced 𝕜 A) : Balanced 𝕜 (closure A) := fun _a ha =>
   (image_closure_subset_closure_image <| continuous_id.const_smul _).trans <|
     closure_mono <| hA _ ha
 #align balanced.closure Balanced.closure
@@ -434,4 +433,3 @@ theorem balanced_iff_neg_mem (hs : Convex ℝ s) : Balanced ℝ s ↔ ∀ ⦃x�
 #align balanced_iff_neg_mem balanced_iff_neg_mem
 
 end Real
-
