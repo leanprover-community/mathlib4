@@ -30,7 +30,7 @@ This file is meant to be lightweight (it is imported by much of the analysis lib
 before adding imports!
 -/
 
-
+set_option synthInstance.etaExperiment true -- Porting note: gets around lean4#2074
 open Metric ContinuousLinearMap
 
 open Set Real
@@ -152,8 +152,6 @@ section
 
 variable {σ₂₁ : 𝕜₂ →+* 𝕜} [RingHomInvPair σ σ₂₁] [RingHomInvPair σ₂₁ σ]
 
-include σ₂₁
-
 /-- Construct a continuous linear equivalence from a linear equivalence together with
 bounds in both directions. -/
 def LinearEquiv.toContinuousLinearEquivOfBounds (e : E ≃ₛₗ[σ] F) (C_to C_inv : ℝ)
@@ -175,8 +173,9 @@ variable {σ : 𝕜 →+* 𝕜₂} (f g : E →SL[σ] F) (x y z : E)
 
 theorem ContinuousLinearMap.uniformEmbedding_of_bound {K : ℝ≥0} (hf : ∀ x, ‖x‖ ≤ K * ‖f x‖) :
     UniformEmbedding f :=
-  (AddMonoidHomClass.antilipschitz_of_bound f hf).UniformEmbedding f.UniformContinuous
-#align continuous_linear_map.uniform_embedding_of_bound ContinuousLinearMap.uniformEmbedding_of_bound
+  (AddMonoidHomClass.antilipschitz_of_bound f hf).uniformEmbedding f.uniformContinuous
+#align continuous_linear_map.uniform_embedding_of_bound
+  ContinuousLinearMap.uniformEmbedding_of_bound
 
 end Normed
 
@@ -203,17 +202,14 @@ def ContinuousLinearMap.ofHomothety (f : E →ₛₗ[σ] F) (a : ℝ) (hf : ∀ 
 
 variable {σ₂₁ : 𝕜₂ →+* 𝕜} [RingHomInvPair σ σ₂₁] [RingHomInvPair σ₂₁ σ]
 
-include σ₂₁
-
 theorem ContinuousLinearEquiv.homothety_inverse (a : ℝ) (ha : 0 < a) (f : E ≃ₛₗ[σ] F) :
     (∀ x : E, ‖f x‖ = a * ‖x‖) → ∀ y : F, ‖f.symm y‖ = a⁻¹ * ‖y‖ := by
   intro hf y
   calc
-    ‖f.symm y‖ = a⁻¹ * (a * ‖f.symm y‖) := _
+    ‖f.symm y‖ = a⁻¹ * (a * ‖f.symm y‖) := by
+      rw [← mul_assoc, inv_mul_cancel (ne_of_lt ha).symm, one_mul]
     _ = a⁻¹ * ‖f (f.symm y)‖ := by rw [hf]
     _ = a⁻¹ * ‖y‖ := by simp
-    
-  rw [← mul_assoc, inv_mul_cancel (ne_of_lt ha).symm, one_mul]
 #align continuous_linear_equiv.homothety_inverse ContinuousLinearEquiv.homothety_inverse
 
 /-- A linear equivalence which is a homothety is a continuous linear equivalence. -/
@@ -249,19 +245,19 @@ def toSpanSingleton (x : E) : 𝕜 →L[𝕜] E :=
 #align continuous_linear_map.to_span_singleton ContinuousLinearMap.toSpanSingleton
 
 theorem toSpanSingleton_apply (x : E) (r : 𝕜) : toSpanSingleton 𝕜 x r = r • x := by
-  simp [to_span_singleton, of_homothety, LinearMap.toSpanSingleton]
+  simp [toSpanSingleton, ofHomothety, LinearMap.toSpanSingleton]
 #align continuous_linear_map.to_span_singleton_apply ContinuousLinearMap.toSpanSingleton_apply
 
 theorem toSpanSingleton_add (x y : E) :
     toSpanSingleton 𝕜 (x + y) = toSpanSingleton 𝕜 x + toSpanSingleton 𝕜 y := by
   ext1
-  simp [to_span_singleton_apply]
+  simp [toSpanSingleton_apply]
 #align continuous_linear_map.to_span_singleton_add ContinuousLinearMap.toSpanSingleton_add
 
 theorem toSpanSingleton_smul' (𝕜') [NormedField 𝕜'] [NormedSpace 𝕜' E] [SMulCommClass 𝕜 𝕜' E]
     (c : 𝕜') (x : E) : toSpanSingleton 𝕜 (c • x) = c • toSpanSingleton 𝕜 x := by
   ext1
-  rw [to_span_singleton_apply, smul_apply, to_span_singleton_apply, smul_comm]
+  rw [toSpanSingleton_apply, smul_apply, toSpanSingleton_apply, smul_comm]
 #align continuous_linear_map.to_span_singleton_smul' ContinuousLinearMap.toSpanSingleton_smul'
 
 theorem toSpanSingleton_smul (c : 𝕜) (x : E) :
@@ -336,4 +332,3 @@ theorem coord_self (x : E) (h : x ≠ 0) :
 end ContinuousLinearEquiv
 
 end Normed
-
