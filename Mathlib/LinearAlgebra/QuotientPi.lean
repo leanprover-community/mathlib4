@@ -19,9 +19,9 @@ and the direct sum of quotients of modules by submodules.
 
 # Main definitions
 
- * `submodule.pi_quotient_lift`: create a map out of the direct sum of quotients
- * `submodule.quotient_pi_lift`: create a map out of the quotient of a direct sum
- * `submodule.quotient_pi`: the quotient of a direct sum is the direct sum of quotients.
+ * `Submodule.piQuotientLift`: create a map out of the direct sum of quotients
+ * `Submodule.quotientPiLift`: create a map out of the quotient of a direct sum
+ * `Submodule.quotientPi`: the quotient of a direct sum is the direct sum of quotients.
 
 -/
 
@@ -90,9 +90,11 @@ namespace quotientPi_aux
 
 variable [Fintype ι] [DecidableEq ι] (p : ∀ i, Submodule R (Ms i))
 
+@[simp]
 def toFun : ((∀ i, Ms i) ⧸ pi Set.univ p) → ∀ i, Ms i ⧸ p i :=
   quotientPiLift p (fun i => (p i).mkQ) fun i => (ker_mkQ (p i)).ge
 
+@[simp]
 def invFun : (∀ i, Ms i ⧸ p i) → (∀ i, Ms i) ⧸ pi Set.univ p :=
   piQuotientLift p (pi Set.univ p) single fun _ => le_comap_single_pi p
 
@@ -121,11 +123,12 @@ theorem map_add (x y : ((i : ι) → Ms i) ⧸ pi Set.univ p) :
 theorem map_smul (r : R) (x : ((i : ι) → Ms i) ⧸ pi Set.univ p) :
     toFun p (r • x) = (RingHom.id R r) • toFun p x :=
   LinearMap.map_smul (quotientPiLift p (fun i => (p i).mkQ) fun i => (ker_mkQ (p i)).ge) r x
+
 end quotientPi_aux
 
 open quotientPi_aux in
 /-- The quotient of a direct sum is the direct sum of quotients. -/
-@[simps]
+@[simps!]
 def quotientPi [Fintype ι] [DecidableEq ι] (p : ∀ i, Submodule R (Ms i)) :
     ((∀ i, Ms i) ⧸ pi Set.univ p) ≃ₗ[R] ∀ i, Ms i ⧸ p i where
   toFun := toFun p
