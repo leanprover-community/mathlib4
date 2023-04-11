@@ -8,9 +8,9 @@ Authors: Mantas Bakšys, Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.BigOperators.Order
-import Mathbin.Algebra.Order.Rearrangement
-import Mathbin.GroupTheory.Perm.Cycle.Basic
+import Mathlib.Algebra.BigOperators.Order
+import Mathlib.Algebra.Order.Rearrangement
+import Mathlib.GroupTheory.Perm.Cycle.Basic
 
 /-!
 # Chebyshev's sum inequality
@@ -110,8 +110,7 @@ variable [LinearOrderedRing α] {s : Finset ι} {σ : Perm ι} {f g : ι → α}
 monotone/antitone), the product of their sum is less than the size of the set times their scalar
 product. -/
 theorem MonovaryOn.sum_mul_sum_le_card_mul_sum (hfg : MonovaryOn f g s) :
-    ((∑ i in s, f i) * ∑ i in s, g i) ≤ s.card * ∑ i in s, f i * g i :=
-  by
+    ((∑ i in s, f i) * ∑ i in s, g i) ≤ s.card * ∑ i in s, f i * g i := by
   rw [← nsmul_eq_mul]
   exact hfg.sum_smul_sum_le_card_smul_sum
 #align monovary_on.sum_mul_sum_le_card_mul_sum MonovaryOn.sum_mul_sum_le_card_mul_sum
@@ -120,16 +119,14 @@ theorem MonovaryOn.sum_mul_sum_le_card_mul_sum (hfg : MonovaryOn f g s) :
 other is antitone), the product of their sum is greater than the size of the set times their scalar
 product. -/
 theorem AntivaryOn.card_mul_sum_le_sum_mul_sum (hfg : AntivaryOn f g s) :
-    ((s.card : α) * ∑ i in s, f i * g i) ≤ (∑ i in s, f i) * ∑ i in s, g i :=
-  by
+    ((s.card : α) * ∑ i in s, f i * g i) ≤ (∑ i in s, f i) * ∑ i in s, g i := by
   rw [← nsmul_eq_mul]
   exact hfg.card_smul_sum_le_sum_smul_sum
 #align antivary_on.card_mul_sum_le_sum_mul_sum AntivaryOn.card_mul_sum_le_sum_mul_sum
 
 /-- Special case of **Chebyshev's Sum Inequality** or the **Cauchy-Schwarz Inequality**: The square
 of the sum is less than the size of the set times the sum of the squares. -/
-theorem sq_sum_le_card_mul_sum_sq : (∑ i in s, f i) ^ 2 ≤ s.card * ∑ i in s, f i ^ 2 :=
-  by
+theorem sq_sum_le_card_mul_sum_sq : (∑ i in s, f i) ^ 2 ≤ s.card * ∑ i in s, f i ^ 2 := by
   simp_rw [sq]
   exact (monovaryOn_self _ _).sum_mul_sum_le_card_mul_sum
 #align sq_sum_le_card_mul_sum_sq sq_sum_le_card_mul_sum_sq
@@ -157,8 +154,7 @@ end Mul
 variable [LinearOrderedField α] {s : Finset ι} {f : ι → α}
 
 theorem sum_div_card_sq_le_sum_sq_div_card :
-    ((∑ i in s, f i) / s.card) ^ 2 ≤ (∑ i in s, f i ^ 2) / s.card :=
-  by
+    ((∑ i in s, f i) / s.card) ^ 2 ≤ (∑ i in s, f i ^ 2) / s.card := by
   obtain rfl | hs := s.eq_empty_or_nonempty
   · simp
   rw [← card_pos, ← @Nat.cast_pos α] at hs
