@@ -972,7 +972,7 @@ Copies equation lemmas and attributes from `src` to `tgt`
 -/
 partial def copyMetaData (cfg : Config) (src tgt : Name) : CoreM (Array Name) := do
   if let some eqns := eqnsAttribute.find? (← getEnv) src then
-    unless (eqnsAttribute.find? (← getEnv) src).isSome do
+    unless (eqnsAttribute.find? (← getEnv) tgt).isSome do
       for eqn in eqns do _ ← addToAdditiveAttr eqn cfg
       eqnsAttribute.add tgt (eqns.map (findTranslation? (← getEnv) · |>.get!))
   else
