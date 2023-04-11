@@ -8,9 +8,9 @@ Authors: Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Num.Lemmas
-import Mathbin.Data.Nat.Prime
-import Mathbin.Tactic.Ring
+import Mathlib.Data.Num.Lemmas
+import Mathlib.Data.Nat.Prime
+import Mathlib.Tactic.Ring
 
 /-!
 # Primality for binary natural numbers
@@ -44,8 +44,7 @@ def minFacAux (n : PosNum) : ℕ → PosNum → PosNum
 #align pos_num.min_fac_aux PosNum.minFacAux
 
 theorem minFacAux_to_nat {fuel : ℕ} {n k : PosNum} (h : Nat.sqrt n < fuel + k.bit1) :
-    (minFacAux n fuel k : ℕ) = Nat.minFacAux n k.bit1 :=
-  by
+    (minFacAux n fuel k : ℕ) = Nat.minFacAux n k.bit1 := by
   induction' fuel with fuel ih generalizing k <;> rw [min_fac_aux, Nat.minFacAux]
   · rw [if_pos]
     rwa [zero_add, Nat.sqrt_lt] at h
@@ -64,8 +63,7 @@ def minFac : PosNum → PosNum
 #align pos_num.min_fac PosNum.minFac
 
 @[simp]
-theorem minFac_to_nat (n : PosNum) : (minFac n : ℕ) = Nat.minFac n :=
-  by
+theorem minFac_to_nat (n : PosNum) : (minFac n : ℕ) = Nat.minFac n := by
   cases n; · rfl
   · rw [min_fac, Nat.minFac_eq, if_neg]
     swap
