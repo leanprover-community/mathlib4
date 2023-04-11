@@ -63,7 +63,7 @@ theorem toNat_lt {n : ℕ} (v : Bitvec n) : v.toNat < 2 ^ n := by
       apply Nat.add_le_add_left
       cases head <;> simp only
     · rw [← left_distrib]
-      rw [(mul_comm _ 2)]
+      rw [mul_comm _ 2]
       apply Nat.mul_le_mul_left
       exact ih rfl
 #align bitvec.to_nat_lt Bitvec.toNat_lt
