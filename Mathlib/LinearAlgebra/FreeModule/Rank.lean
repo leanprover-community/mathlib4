@@ -109,19 +109,29 @@ variable [AddCommGroup N] [Module R N] [Module.Free R N]
 
 open Module.Free
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
+--Porting note: Extremely slow ~100s
+set_option maxHeartbeats 0
+set_option synthInstance.etaExperiment true  -- Porting note: gets around lean4#2074
 /-- The rank of `M ⊗[R] N` is `(Module.rank R M).lift * (Module.rank R N).lift`. -/
 @[simp]
 theorem rank_tensorProduct :
     Module.rank R (M ⊗[R] N) =
       Cardinal.lift.{w, v} (Module.rank R M) * Cardinal.lift.{v, w} (Module.rank R N) := by
-  let ιM := ChooseBasisIndex R M
-  let ιN := ChooseBasisIndex R N
-  have h₁ := LinearEquiv.lift_rank_eq (R := R) (M := M ⊗[R] N)
-    (M' := (ιM →₀ R) ⊗[R] (ιN →₀ R)) (TensorProduct.congr (repr R M) (repr R N))
-  let b : Basis (ιM × ιN) R (_ →₀ R) := Finsupp.basisSingleOne
-  rw [LinearEquiv.rank_eq (finsuppTensorFinsupp' R ιM ιN), ← b.mk_eq_rank, mk_prod] at h₁
-  rw [lift_inj.1 h₁, rank_eq_card_choose_basis_index R M, rank_eq_card_choose_basis_index R N]
+  let f := repr R M
+  let g := repr R N
+  have fg := @TensorProduct.congr (R := R) _ _ _ _ _
+    AddCommGroup.toAddCommMonoid AddCommGroup.toAddCommMonoid
+    AddCommGroup.toAddCommMonoid AddCommGroup.toAddCommMonoid _ _ _ _ f g
+  have h₁ := @LinearEquiv.lift_rank_eq.{u, max v w, max (max u v) w}
+     (R := R) (M := M ⊗[R] N)
+     (M' := (ChooseBasisIndex R M →₀ R) ⊗[R] (ChooseBasisIndex R N →₀ R)) _ _ _ _
+     (@instModuleTensorProductToSemiringAddCommMonoid _ _ _ _
+       AddCommGroup.toAddCommMonoid
+       AddCommGroup.toAddCommMonoid _ _) fg
+  let _b : Basis (ChooseBasisIndex R M × ChooseBasisIndex R N) R (_ →₀ R) := Finsupp.basisSingleOne
+  rw [LinearEquiv.rank_eq (finsuppTensorFinsupp' R (ChooseBasisIndex R M) (ChooseBasisIndex R N)),
+    ← _b.mk_eq_rank, mk_prod] at h₁
+  rw [lift_inj.1 h₁, rank_eq_card_chooseBasisIndex R M, rank_eq_card_chooseBasisIndex R N]
 #align rank_tensor_product rank_tensorProduct
 
 /-- If `M` and `N` lie in the same universe, the rank of `M ⊗[R] N` is
