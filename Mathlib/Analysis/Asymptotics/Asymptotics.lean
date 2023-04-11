@@ -18,7 +18,7 @@ import Mathlib.Topology.LocalHomeomorph
 
 We introduce these relations:
 
-* `is_O_with c l f g` : "f is big O of g along l with constant c";
+* `IsBigOWith c l f g` : "f is big O of g along l with constant c";
 * `f =O[l] g` : "f is big O of g along l";
 * `f =o[l] g` : "f is little o of g along l".
 
@@ -26,23 +26,23 @@ Here `l` is any filter on the domain of `f` and `g`, which are assumed to be the
 of `f` and `g` do not need to be the same; all that is needed that there is a norm associated with
 these types, and it is the norm that is compared asymptotically.
 
-The relation `is_O_with c` is introduced to factor out common algebraic arguments in the proofs of
-similar properties of `is_O` and `is_o`. Usually proofs outside of this file should use `is_O`
-instead.
+The relation `IsBigOWith c` is introduced to factor out common algebraic arguments in the proofs of
+similar properties of `IsBigO` and `IsLittleO`. Usually proofs outside of this file should use
+`IsBigO` instead.
 
 Often the ranges of `f` and `g` will be the real numbers, in which case the norm is the absolute
 value. In general, we have
 
   `f =O[l] g ↔ (λ x, ‖f x‖) =O[l] (λ x, ‖g x‖)`,
 
-and similarly for `is_o`. But our setup allows us to use the notions e.g. with functions
+and similarly for `IsLittleO`. But our setup allows us to use the notions e.g. with functions
 to the integers, rationals, complex numbers, or any normed vector space without mentioning the
 norm explicitly.
 
 If `f` and `g` are functions to a normed field like the reals or complex numbers and `g` is always
 nonzero, we have
 
-  `f =o[l] g ↔ tendsto (λ x, f x / (g x)) l (𝓝 0)`.
+  `f =o[l] g ↔ Tendsto (λ x, f x / (g x)) l (𝓝 0)`.
 
 In fact, the right-to-left direction holds without the hypothesis on `g`, and in the other direction
 it suffices to assume that `f` is zero wherever `g` is. (This generalization is useful in defining
@@ -83,15 +83,15 @@ section Defs
 /-! ### Definitions -/
 
 
-/-- This version of the Landau notation `is_O_with C l f g` where `f` and `g` are two functions on
+/-- This version of the Landau notation `IsBigOWith C l f g` where `f` and `g` are two functions on
 a type `α` and `l` is a filter on `α`, means that eventually for `l`, `‖f‖` is bounded by `C * ‖g‖`.
 In other words, `‖f‖ / ‖g‖` is eventually bounded by `C`, modulo division by zero issues that are
-avoided by this definition. Probably you want to use `is_O` instead of this relation. -/
+avoided by this definition. Probably you want to use `IsBigO` instead of this relation. -/
 irreducible_def IsBigOWith (c : ℝ) (l : Filter α) (f : α → E) (g : α → F) : Prop :=
   ∀ᶠ x in l, ‖f x‖ ≤ c * ‖g x‖
 #align asymptotics.is_O_with Asymptotics.IsBigOWith
 
-/-- Definition of `is_O_with`. We record it in a lemma as `is_O_with` is irreducible. -/
+/-- Definition of `IsBigOWith`. We record it in a lemma as `IsBigOWith` is irreducible. -/
 theorem isBigOWith_iff : IsBigOWith c l f g ↔ ∀ᶠ x in l, ‖f x‖ ≤ c * ‖g x‖ := by rw [IsBigOWith_def]
 #align asymptotics.is_O_with_iff Asymptotics.isBigOWith_iff
 
@@ -110,13 +110,13 @@ irreducible_def IsBigO (l : Filter α) (f : α → E) (g : α → F) : Prop :=
 @[inherit_doc]
 notation:100 f " =O[" l "] " g:100 => IsBigO l f g
 
-/-- Definition of `is_O` in terms of `is_O_with`. We record it in a lemma as `is_O` is
+/-- Definition of `IsBigO` in terms of `IsBigOWith`. We record it in a lemma as `IsBigO` is
 irreducible. -/
 theorem isBigO_iff_isBigOWith : f =O[l] g ↔ ∃ c : ℝ, IsBigOWith c l f g := by rw [IsBigO_def]
 #align asymptotics.is_O_iff_is_O_with Asymptotics.isBigO_iff_isBigOWith
 
-/-- Definition of `is_O` in terms of filters. We record it in a lemma as we will set
-`is_O` to be irreducible at the end of this file. -/
+/-- Definition of `IsBigO` in terms of filters. We record it in a lemma as we will set
+`IsBigO` to be irreducible at the end of this file. -/
 theorem isBigO_iff : f =O[l] g ↔ ∃ c : ℝ, ∀ᶠ x in l, ‖f x‖ ≤ c * ‖g x‖ := by
   simp only [IsBigO_def, IsBigOWith_def]
 #align asymptotics.is_O_iff Asymptotics.isBigO_iff
@@ -146,8 +146,8 @@ irreducible_def IsLittleO (l : Filter α) (f : α → E) (g : α → F) : Prop :
 @[inherit_doc]
 notation:100 f " =o[" l "] " g:100 => IsLittleO l f g
 
-/-- Definition of `is_o` in terms of `is_O_with`. We record it in a lemma as we will set
-`is_o` to be irreducible at the end of this file. -/
+/-- Definition of `IsLittleO` in terms of `IsBigOWith`. We record it in a lemma as we will set
+`IsLittleO` to be irreducible at the end of this file. -/
 theorem isLittleO_iff_forall_isBigOWith : f =o[l] g ↔ ∀ ⦃c : ℝ⦄, 0 < c → IsBigOWith c l f g := by
   rw [IsLittleO_def]
 #align asymptotics.is_o_iff_forall_is_O_with Asymptotics.isLittleO_iff_forall_isBigOWith
@@ -156,8 +156,8 @@ alias isLittleO_iff_forall_isBigOWith ↔ IsLittleO.forall_isBigOWith IsLittleO.
 #align asymptotics.is_o.forall_is_O_with Asymptotics.IsLittleO.forall_isBigOWith
 #align asymptotics.is_o.of_is_O_with Asymptotics.IsLittleO.of_isBigOWith
 
-/-- Definition of `is_o` in terms of filters. We record it in a lemma as we will set
-`is_o` to be irreducible at the end of this file. -/
+/-- Definition of `IsLittleO` in terms of filters. We record it in a lemma as we will set
+`IsLittleO` to be irreducible at the end of this file. -/
 theorem isLittleO_iff : f =o[l] g ↔ ∀ ⦃c : ℝ⦄, 0 < c → ∀ᶠ x in l, ‖f x‖ ≤ c * ‖g x‖ := by
   simp only [IsLittleO_def, IsBigOWith_def]
 #align asymptotics.is_o_iff Asymptotics.isLittleO_iff
@@ -224,7 +224,7 @@ theorem IsBigO.exists_nonneg (h : f =O[l] g') : ∃ (c : _) (_H : 0 ≤ c), IsBi
   hc.exists_nonneg
 #align asymptotics.is_O.exists_nonneg Asymptotics.IsBigO.exists_nonneg
 
-/-- `f = O(g)` if and only if `is_O_with c f g` for all sufficiently large `c`. -/
+/-- `f = O(g)` if and only if `IsBigOWith c f g` for all sufficiently large `c`. -/
 theorem isBigO_iff_eventually_isBigOWith : f =O[l] g' ↔ ∀ᶠ c in atTop, IsBigOWith c l f g' :=
   isBigO_iff_isBigOWith.trans
     ⟨fun ⟨c, hc⟩ => mem_atTop_sets.2 ⟨c, fun _c' hc' => hc.weaken hc'⟩, fun h => h.exists⟩
@@ -1127,7 +1127,9 @@ theorem IsLittleO.sub (h₁ : f₁ =o[l] g) (h₂ : f₂ =o[l] g) : (fun x => f�
 
 end add_sub
 
-/-! ### Lemmas about `is_O (f₁ - f₂) g l` / `is_o (f₁ - f₂) g l` treated as a binary relation -/
+/-!
+### Lemmas about `IsBigO (f₁ - f₂) g l` / `IsLittleO (f₁ - f₂) g l` treated as a binary relation
+-/
 
 
 section IsBigOOAsRel
@@ -1706,7 +1708,8 @@ theorem IsBigOWith.const_smul_left (h : IsBigOWith c l f' g) (c' : 𝕜) :
     IsBigOWith (‖c'‖ * c) l (fun x => c' • f' x) g :=
   IsBigOWith.of_norm_left <| by
     simpa only [norm_smul, _root_.norm_norm] using h.norm_left.const_mul_left ‖c'‖
-    -- porting note:
+    -- porting note: probably `Asymptotics.IsBigO.norm_norm` and `Asymptotics.IsLittleO.norm_norm`
+    -- should be protected.
 #align asymptotics.is_O_with.const_smul_left Asymptotics.IsBigOWith.const_smul_left
 
 theorem IsBigO.const_smul_left (h : f' =O[l] g) (c : 𝕜) : (c • f') =O[l] g :=
@@ -1901,7 +1904,7 @@ theorem isLittleO_const_id_atBot (c : E'') : (fun _x : ℝ => c) =o[atBot] id :=
 /-!
 ### Eventually (u / v) * v = u
 
-If `u` and `v` are linked by an `is_O_with` relation, then we
+If `u` and `v` are linked by an `IsBigOWith` relation, then we
 eventually have `(u / v) * v = u`, even if `v` vanishes.
 -/
 
@@ -1927,16 +1930,16 @@ theorem IsLittleO.eventually_mul_div_cancel (h : u =o[l] v) : u / v * v =ᶠ[l] 
 
 end EventuallyMulDivCancel
 
-/-! ### Equivalent definitions of the form `∃ φ, u =ᶠ[l] φ * v` in a `normed_field`. -/
+/-! ### Equivalent definitions of the form `∃ φ, u =ᶠ[l] φ * v` in a `NormedField`. -/
 
 
 section ExistsMulEq
 
 variable {u v : α → 𝕜}
 
-/-- If `‖φ‖` is eventually bounded by `c`, and `u =ᶠ[l] φ * v`, then we have `is_O_with c u v l`.
+/-- If `‖φ‖` is eventually bounded by `c`, and `u =ᶠ[l] φ * v`, then we have `IsBigOWith c u v l`.
     This does not require any assumptions on `c`, which is why we keep this version along with
-    `is_O_with_iff_exists_eq_mul`. -/
+    `IsBigOWith_iff_exists_eq_mul`. -/
 theorem isBigOWith_of_eq_mul (φ : α → 𝕜) (hφ : ∀ᶠ x in l, ‖φ x‖ ≤ c) (h : u =ᶠ[l] φ * v) :
     IsBigOWith c l u v := by
   simp only [IsBigOWith_def]
@@ -2184,7 +2187,7 @@ variable {α : Type _} {β : Type _} [TopologicalSpace α] [TopologicalSpace β]
 
 variable {E : Type _} [Norm E] {F : Type _} [Norm F]
 
-/-- Transfer `is_O_with` over a `local_homeomorph`. -/
+/-- Transfer `IsBigOWith` over a `LocalHomeomorph`. -/
 theorem isBigOWith_congr (e : LocalHomeomorph α β) {b : β} (hb : b ∈ e.target) {f : β → E}
     {g : β → F} {C : ℝ} : IsBigOWith C (𝓝 b) f g ↔ IsBigOWith C (𝓝 (e.symm b)) (f ∘ e) (g ∘ e) :=
   ⟨fun h =>
@@ -2198,7 +2201,7 @@ theorem isBigOWith_congr (e : LocalHomeomorph α β) {b : β} (hb : b ∈ e.targ
 set_option linter.uppercaseLean3 false in
 #align local_homeomorph.is_O_with_congr LocalHomeomorph.isBigOWith_congr
 
-/-- Transfer `is_O` over a `local_homeomorph`. -/
+/-- Transfer `IsBigO` over a `LocalHomeomorph`. -/
 theorem isBigO_congr (e : LocalHomeomorph α β) {b : β} (hb : b ∈ e.target) {f : β → E} {g : β → F} :
     f =O[𝓝 b] g ↔ (f ∘ e) =O[𝓝 (e.symm b)] (g ∘ e) := by
   simp only [IsBigO_def]
@@ -2206,7 +2209,7 @@ theorem isBigO_congr (e : LocalHomeomorph α β) {b : β} (hb : b ∈ e.target) 
 set_option linter.uppercaseLean3 false in
 #align local_homeomorph.is_O_congr LocalHomeomorph.isBigO_congr
 
-/-- Transfer `is_o` over a `local_homeomorph`. -/
+/-- Transfer `IsLittleO` over a `LocalHomeomorph`. -/
 theorem isLittleO_congr (e : LocalHomeomorph α β) {b : β} (hb : b ∈ e.target) {f : β → E}
     {g : β → F} : f =o[𝓝 b] g ↔ (f ∘ e) =o[𝓝 (e.symm b)] (g ∘ e) := by
   simp only [IsLittleO_def]
@@ -2224,14 +2227,14 @@ variable {E : Type _} [Norm E] {F : Type _} [Norm F]
 
 open Asymptotics
 
-/-- Transfer `is_O_with` over a `homeomorph`. -/
+/-- Transfer `IsBigOWith` over a `Homeomorph`. -/
 theorem isBigOWith_congr (e : α ≃ₜ β) {b : β} {f : β → E} {g : β → F} {C : ℝ} :
     IsBigOWith C (𝓝 b) f g ↔ IsBigOWith C (𝓝 (e.symm b)) (f ∘ e) (g ∘ e) :=
   e.toLocalHomeomorph.isBigOWith_congr trivial
 set_option linter.uppercaseLean3 false in
 #align homeomorph.is_O_with_congr Homeomorph.isBigOWith_congr
 
-/-- Transfer `is_O` over a `homeomorph`. -/
+/-- Transfer `IsBigO` over a `Homeomorph`. -/
 theorem isBigO_congr (e : α ≃ₜ β) {b : β} {f : β → E} {g : β → F} :
     f =O[𝓝 b] g ↔ (f ∘ e) =O[𝓝 (e.symm b)] (g ∘ e) := by
   simp only [IsBigO_def]
@@ -2239,7 +2242,7 @@ theorem isBigO_congr (e : α ≃ₜ β) {b : β} {f : β → E} {g : β → F} :
 set_option linter.uppercaseLean3 false in
 #align homeomorph.is_O_congr Homeomorph.isBigO_congr
 
-/-- Transfer `is_o` over a `homeomorph`. -/
+/-- Transfer `IsLittleO` over a `Homeomorph`. -/
 theorem isLittleO_congr (e : α ≃ₜ β) {b : β} {f : β → E} {g : β → F} :
     f =o[𝓝 b] g ↔ (f ∘ e) =o[𝓝 (e.symm b)] (g ∘ e) := by
   simp only [IsLittleO_def]
