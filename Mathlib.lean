@@ -291,6 +291,7 @@ import Mathlib.Analysis.Convex.Extreme
 import Mathlib.Analysis.Convex.Function
 import Mathlib.Analysis.Convex.Hull
 import Mathlib.Analysis.Convex.Segment
+import Mathlib.Analysis.Convex.Slope
 import Mathlib.Analysis.Convex.Star
 import Mathlib.Analysis.Convex.Strict
 import Mathlib.Analysis.Hofer
