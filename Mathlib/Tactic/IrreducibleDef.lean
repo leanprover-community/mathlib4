@@ -83,8 +83,10 @@ elab mods:declModifiers "irreducible_def" n_id:declId declSig:optDeclSig val:dec
     { scopes with name := scopes.name.appendAfter "_def" }
   let `(Parser.Command.declModifiersF|
       $[$doc:docComment]? $[$attrs:attributes]?
-      $[protected%$prot]? $[$nc:noncomputable]? $[$uns:unsafe]?) := mods
+      $[$vis]? $[$nc:noncomputable]? $[$uns:unsafe]?) := mods
     | throwError "unsupported modifiers {format mods}"
+  let prot := vis.filter (· matches `(Parser.Command.visibility| protected))
+  let priv := vis.filter (· matches `(Parser.Command.visibility| private))
   elabCommand <|<- `(stop_at_first_error
     $[$nc:noncomputable]? $[$uns]? def definition$[.{$us,*}]? $declSig:optDeclSig $val
     set_option genInjectivity false in -- generates awful simp lemmas
@@ -92,9 +94,10 @@ elab mods:declModifiers "irreducible_def" n_id:declId declSig:optDeclSig val:dec
       value : type_of% @definition.{$us',*}
       prop : Eq @value @(delta% @definition)
     $[$nc:noncomputable]? $[$uns]? opaque wrapped$[.{$us,*}]? : Wrapper.{$us',*} := ⟨_, rfl⟩
-    $[$doc:docComment]? $[$attrs]? $[$nc:noncomputable]? $[$uns]? def $n:ident$[.{$us,*}]? :=
+    $[$doc:docComment]? $[$attrs:attributes]? $[private%$priv]? $[$nc:noncomputable]? $[$uns]?
+    def $n:ident$[.{$us,*}]? :=
       value_proj @wrapped.{$us',*}
-    $[$uns:unsafe]? theorem $n_def:ident $[.{$us,*}]? :
+    $[private%$priv]? $[$uns:unsafe]? theorem $n_def:ident $[.{$us,*}]? :
         eta_helper Eq @$n.{$us',*} @(delta% @definition) := by
       intros
       simp only [$n:ident]

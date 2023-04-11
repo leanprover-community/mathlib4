@@ -26,7 +26,12 @@ namespace Foo
 protected irreducible_def foo : Nat := 42
 end Foo
 
+example : Foo.foo = 42 := by rw [Foo.foo]
+
 protected irreducible_def Bar.bar : Nat := 42
 
 protected noncomputable irreducible_def Nat.evenMoreArbitrary : Nat :=
   Classical.choice inferInstance
+
+private irreducible_def Real.zero := 42
+example : Real.zero = 42 := Real.zero_def
