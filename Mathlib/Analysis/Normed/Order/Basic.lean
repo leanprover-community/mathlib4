@@ -8,8 +8,8 @@ Authors: Anatole Dedecker, Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Order.Group.TypeTags
-import Mathbin.Analysis.NormedSpace.Basic
+import Mathlib.Algebra.Order.Group.TypeTags
+import Mathlib.Analysis.NormedSpace.Basic
 
 /-!
 # Ordered normed spaces
@@ -82,8 +82,7 @@ instance (priority := 100) NormedLinearOrderedGroup.toNormedOrderedGroup
 #align normed_linear_ordered_add_group.to_normed_ordered_add_group NormedLinearOrderedAddGroup.toNormedOrderedAddGroup
 
 instance (priority := 100) NormedLinearOrderedField.toNormedField (α : Type _)
-    [NormedLinearOrderedField α] : NormedField α
-    where
+    [NormedLinearOrderedField α] : NormedField α where
   dist_eq := NormedLinearOrderedField.dist_eq
   norm_mul' := NormedLinearOrderedField.norm_mul'
 #align normed_linear_ordered_field.to_normed_field NormedLinearOrderedField.toNormedField
