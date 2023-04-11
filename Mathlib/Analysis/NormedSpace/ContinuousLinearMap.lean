@@ -18,9 +18,9 @@ continuity and boundedness are equivalent conditions.  That is, for normed space
 and only if there exists a bound `C` such that for all `x`, `‖f x‖ ≤ C * ‖x‖`.
 
 We prove one direction in this file: `LinearMap.mkContinuous`, boundedness implies continuity. The
-other direction, `continuous_linear_map.bound`, is deferred to a later file, where the
+other direction, `ContinuousLinearMap.bound`, is deferred to a later file, where the
 strong operator topology on `E →SL[σ] F` is available, because it is natural to use
-`continuous_linear_map.bound` to define a norm `⨆ x, ‖f x‖ / ‖x‖` on `E →SL[σ] F` and to show that
+`ContinuousLinearMap.bound` to define a norm `⨆ x, ‖f x‖ / ‖x‖` on `E →SL[σ] F` and to show that
 this is compatible with the strong operator topology.
 
 This file also contains several corollaries of `LinearMap.mkContinuous`: other "easy"
