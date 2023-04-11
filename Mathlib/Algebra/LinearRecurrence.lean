@@ -76,7 +76,7 @@ def mkSol (init : Fin E.order → α) : ℕ → α
     if h : n < E.order then init ⟨n, h⟩
     else
       ∑ k : Fin E.order,
-        have : n - E.order + k < n := by
+        have _ : n - E.order + k < n := by
           rw [add_comm, ← add_tsub_assoc_of_le (not_lt.mp h), tsub_lt_iff_left]
           · exact add_lt_add_right k.is_lt n
           · convert add_le_add (zero_le (k : ℕ)) (not_lt.mp h)
