@@ -8,9 +8,9 @@ Authors: Yury Kudriashov, Malo Jaffré
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Convex.Function
-import Mathbin.Tactic.FieldSimp
-import Mathbin.Tactic.Linarith.Default
+import Mathlib.Analysis.Convex.Function
+import Mathlib.Tactic.FieldSimp
+import Mathlib.Tactic.Linarith.Default
 
 /-!
 # Slopes of convex functions
@@ -27,12 +27,10 @@ variable {𝕜 : Type _} [LinearOrderedField 𝕜] {s : Set 𝕜} {f : 𝕜 → 
 /-- If `f : 𝕜 → 𝕜` is convex, then for any three points `x < y < z` the slope of the secant line of
 `f` on `[x, y]` is less than the slope of the secant line of `f` on `[x, z]`. -/
 theorem ConvexOn.slope_mono_adjacent (hf : ConvexOn 𝕜 s f) {x y z : 𝕜} (hx : x ∈ s) (hz : z ∈ s)
-    (hxy : x < y) (hyz : y < z) : (f y - f x) / (y - x) ≤ (f z - f y) / (z - y) :=
-  by
+    (hxy : x < y) (hyz : y < z) : (f y - f x) / (y - x) ≤ (f z - f y) / (z - y) := by
   have hxz := hxy.trans hyz
   rw [← sub_pos] at hxy hxz hyz
-  suffices f y / (y - x) + f y / (z - y) ≤ f x / (y - x) + f z / (z - y)
-    by
+  suffices f y / (y - x) + f y / (z - y) ≤ f x / (y - x) + f z / (z - y) by
     ring_nf  at this⊢
     linarith
   set a := (z - y) / (z - x)
@@ -57,8 +55,7 @@ theorem ConvexOn.slope_mono_adjacent (hf : ConvexOn 𝕜 s f) {x y z : 𝕜} (hx
 /-- If `f : 𝕜 → 𝕜` is concave, then for any three points `x < y < z` the slope of the secant line of
 `f` on `[x, y]` is greater than the slope of the secant line of `f` on `[x, z]`. -/
 theorem ConcaveOn.slope_anti_adjacent (hf : ConcaveOn 𝕜 s f) {x y z : 𝕜} (hx : x ∈ s) (hz : z ∈ s)
-    (hxy : x < y) (hyz : y < z) : (f z - f y) / (z - y) ≤ (f y - f x) / (y - x) :=
-  by
+    (hxy : x < y) (hyz : y < z) : (f z - f y) / (z - y) ≤ (f y - f x) / (y - x) := by
   rw [← neg_le_neg_iff, ← neg_sub_neg (f x), ← neg_sub_neg (f y)]
   simp_rw [← Pi.neg_apply, ← neg_div, neg_sub]
   exact ConvexOn.slope_mono_adjacent hf.neg hx hz hxy hyz
@@ -69,13 +66,11 @@ secant line of `f` on `[x, y]` is strictly less than the slope of the secant lin
 `[x, z]`. -/
 theorem StrictConvexOn.slope_strict_mono_adjacent (hf : StrictConvexOn 𝕜 s f) {x y z : 𝕜}
     (hx : x ∈ s) (hz : z ∈ s) (hxy : x < y) (hyz : y < z) :
-    (f y - f x) / (y - x) < (f z - f y) / (z - y) :=
-  by
+    (f y - f x) / (y - x) < (f z - f y) / (z - y) := by
   have hxz := hxy.trans hyz
   have hxz' := hxz.ne
   rw [← sub_pos] at hxy hxz hyz
-  suffices f y / (y - x) + f y / (z - y) < f x / (y - x) + f z / (z - y)
-    by
+  suffices f y / (y - x) + f y / (z - y) < f x / (y - x) + f z / (z - y) by
     ring_nf  at this⊢
     linarith
   set a := (z - y) / (z - x)
@@ -100,8 +95,7 @@ theorem StrictConvexOn.slope_strict_mono_adjacent (hf : StrictConvexOn 𝕜 s f)
 secant line of `f` on `[x, y]` is strictly greater than the slope of the secant line of `f` on
 `[x, z]`. -/
 theorem StrictConcaveOn.slope_anti_adjacent (hf : StrictConcaveOn 𝕜 s f) {x y z : 𝕜} (hx : x ∈ s)
-    (hz : z ∈ s) (hxy : x < y) (hyz : y < z) : (f z - f y) / (z - y) < (f y - f x) / (y - x) :=
-  by
+    (hz : z ∈ s) (hxy : x < y) (hyz : y < z) : (f z - f y) / (z - y) < (f y - f x) / (y - x) := by
   rw [← neg_lt_neg_iff, ← neg_sub_neg (f x), ← neg_sub_neg (f y)]
   simp_rw [← Pi.neg_apply, ← neg_div, neg_sub]
   exact StrictConvexOn.slope_strict_mono_adjacent hf.neg hx hz hxy hyz
@@ -114,8 +108,7 @@ theorem convexOn_of_slope_mono_adjacent (hs : Convex 𝕜 s)
       ∀ {x y z : 𝕜},
         x ∈ s → z ∈ s → x < y → y < z → (f y - f x) / (y - x) ≤ (f z - f y) / (z - y)) :
     ConvexOn 𝕜 s f :=
-  LinearOrder.convexOn_of_lt hs fun x hx z hz hxz a b ha hb hab =>
-    by
+  LinearOrder.convexOn_of_lt hs fun x hx z hz hxz a b ha hb hab => by
     let y := a * x + b * z
     have hxy : x < y := by
       rw [← one_mul x, ← hab, add_mul]
@@ -126,13 +119,11 @@ theorem convexOn_of_slope_mono_adjacent (hs : Convex 𝕜 s)
     have : (f y - f x) * (z - y) ≤ (f z - f y) * (y - x) :=
       (div_le_div_iff (sub_pos.2 hxy) (sub_pos.2 hyz)).1 (hf hx hz hxy hyz)
     have hxz : 0 < z - x := sub_pos.2 (hxy.trans hyz)
-    have ha : (z - y) / (z - x) = a :=
-      by
+    have ha : (z - y) / (z - x) = a := by
       rw [eq_comm, ← sub_eq_iff_eq_add'] at hab
       simp_rw [div_eq_iff hxz.ne', y, ← hab]
       ring
-    have hb : (y - x) / (z - x) = b :=
-      by
+    have hb : (y - x) / (z - x) = b := by
       rw [eq_comm, ← sub_eq_iff_eq_add] at hab
       simp_rw [div_eq_iff hxz.ne', y, ← hab]
       ring
@@ -162,8 +153,7 @@ theorem strictConvexOn_of_slope_strict_mono_adjacent (hs : Convex 𝕜 s)
       ∀ {x y z : 𝕜},
         x ∈ s → z ∈ s → x < y → y < z → (f y - f x) / (y - x) < (f z - f y) / (z - y)) :
     StrictConvexOn 𝕜 s f :=
-  LinearOrder.strictConvexOn_of_lt hs fun x hx z hz hxz a b ha hb hab =>
-    by
+  LinearOrder.strictConvexOn_of_lt hs fun x hx z hz hxz a b ha hb hab => by
     let y := a * x + b * z
     have hxy : x < y := by
       rw [← one_mul x, ← hab, add_mul]
@@ -174,13 +164,11 @@ theorem strictConvexOn_of_slope_strict_mono_adjacent (hs : Convex 𝕜 s)
     have : (f y - f x) * (z - y) < (f z - f y) * (y - x) :=
       (div_lt_div_iff (sub_pos.2 hxy) (sub_pos.2 hyz)).1 (hf hx hz hxy hyz)
     have hxz : 0 < z - x := sub_pos.2 (hxy.trans hyz)
-    have ha : (z - y) / (z - x) = a :=
-      by
+    have ha : (z - y) / (z - x) = a := by
       rw [eq_comm, ← sub_eq_iff_eq_add'] at hab
       simp_rw [div_eq_iff hxz.ne', y, ← hab]
       ring
-    have hb : (y - x) / (z - x) = b :=
-      by
+    have hb : (y - x) / (z - x) = b := by
       rw [eq_comm, ← sub_eq_iff_eq_add] at hab
       simp_rw [div_eq_iff hxz.ne', y, ← hab]
       ring
@@ -253,11 +241,9 @@ theorem strictConcaveOn_iff_slope_strict_anti_adjacent :
 /-- If `f` is convex on a set `s` in a linearly ordered field, and `f x < f y` for two points
 `x < y` in `s`, then `f` is strictly monotone on `s ∩ [y, ∞)`. -/
 theorem ConvexOn.strict_mono_of_lt (hf : ConvexOn 𝕜 s f) {x y : 𝕜} (hx : x ∈ s) (hxy : x < y)
-    (hxy' : f x < f y) : StrictMonoOn f (s ∩ Set.Ici y) :=
-  by
+    (hxy' : f x < f y) : StrictMonoOn f (s ∩ Set.Ici y) := by
   intro u hu v hv huv
-  have step1 : ∀ {z : 𝕜}, z ∈ s ∩ Set.Ioi y → f y < f z :=
-    by
+  have step1 : ∀ {z : 𝕜}, z ∈ s ∩ Set.Ioi y → f y < f z := by
     refine' fun z hz => hf.lt_right_of_left_lt hx hz.1 _ hxy'
     rw [openSegment_eq_Ioo (hxy.trans hz.2)]
     exact ⟨hxy, hz.2⟩
