@@ -109,6 +109,7 @@ variable [AddCommGroup N] [Module R N] [Module.Free R N]
 
 open Module.Free
 
+set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 /-- The rank of `M ⊗[R] N` is `(Module.rank R M).lift * (Module.rank R N).lift`. -/
 @[simp]
 theorem rank_tensorProduct :
@@ -116,7 +117,8 @@ theorem rank_tensorProduct :
       Cardinal.lift.{w, v} (Module.rank R M) * Cardinal.lift.{v, w} (Module.rank R N) := by
   let ιM := ChooseBasisIndex R M
   let ιN := ChooseBasisIndex R N
-  have h₁ := LinearEquiv.lift_rank_eq (TensorProduct.congr (repr R M) (repr R N))
+  have h₁ := LinearEquiv.lift_rank_eq (R := R) (M := M ⊗[R] N)
+    (M' := (ιM →₀ R) ⊗[R] (ιN →₀ R)) (TensorProduct.congr (repr R M) (repr R N))
   let b : Basis (ιM × ιN) R (_ →₀ R) := Finsupp.basisSingleOne
   rw [LinearEquiv.rank_eq (finsuppTensorFinsupp' R ιM ιN), ← b.mk_eq_rank, mk_prod] at h₁
   rw [lift_inj.1 h₁, rank_eq_card_choose_basis_index R M, rank_eq_card_choose_basis_index R N]
