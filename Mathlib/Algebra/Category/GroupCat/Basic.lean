@@ -12,7 +12,7 @@ import Mathlib.Algebra.Category.MonCat.Basic
 import Mathlib.CategoryTheory.Endomorphism
 
 /-!
-# Category instances for group, add_group, comm_group, and add_comm_group.
+# Category instances for Group, AddGroup, CommGroup, and AddCommGroup.
 
 We introduce the bundled categories:
 * `GroupCat`
@@ -81,7 +81,7 @@ set_option linter.uppercaseLean3 false in
 set_option linter.uppercaseLean3 false in
 #align AddGroup.of_hom AddGroupCat.ofHom
 
-/-- Typecheck a `add_monoid_hom` as a morphism in `AddGroup`. -/
+/-- Typecheck a `AddMonoidHom` as a morphism in `AddGroup`. -/
 add_decl_doc AddGroupCat.ofHom
 
 -- porting note: this instance was not necessary in mathlib
@@ -373,9 +373,10 @@ lemma Hom.map_mul {X Y : CommGroupCat} (f : X ⟶ Y) (x y : X) : f (x * y) = f x
 lemma Hom.map_one {X Y : CommGroupCat} (f : X ⟶ Y) : f (1 : X) = 1 := by
   apply MonoidHom.map_one (show MonoidHom X Y from f)
 
+-- Porting note: is this still relevant?
 -- This example verifies an improvement possible in Lean 3.8.
--- Before that, to have `monoid_hom.map_map` usable by `simp` here,
--- we had to mark all the concrete category `has_coe_to_sort` instances reducible.
+-- Before that, to have `MonoidHom.map_map` usable by `simp` here,
+-- we had to mark all the concrete category `CoeSort` instances reducible.
 -- Now, it just works.
 @[to_additive]
 example {R S : CommGroupCat} (i : R ⟶ S) (r : R) (h : r = 1) : i r = 1 := by simp [h]
@@ -386,7 +387,7 @@ namespace AddCommGroupCat
 
 -- Note that because `ℤ : Type 0`, this forces `G : AddCommGroup.{0}`,
 -- so we write this explicitly to be clear.
--- TODO generalize this, requiring a `ulift_instances.lean` file
+-- TODO generalize this, requiring a `ULiftInstances.lean` file
 /-- Any element of an abelian group gives a unique morphism from `ℤ` sending
 `1` to that element. -/
 def asHom {G : AddCommGroupCat.{0}} (g : G) : AddCommGroupCat.of ℤ ⟶ G :=
@@ -442,8 +443,7 @@ add_decl_doc AddEquiv.toAddGroupCatIso
 /-- Build an isomorphism in the category `CommGroupCat` from a `MulEquiv`
 between `CommGroup`s. -/
 @[to_additive (attr := simps)]
-def MulEquiv.toCommGroupCatIso {X Y : CommGroupCat} (e : X ≃* Y) : X ≅ Y
-    where
+def MulEquiv.toCommGroupCatIso {X Y : CommGroupCat} (e : X ≃* Y) : X ≅ Y where
   hom := CommGroupCat.Hom.mk e.toMonoidHom
   inv := CommGroupCat.Hom.mk e.symm.toMonoidHom
 set_option linter.uppercaseLean3 false in
@@ -501,8 +501,7 @@ add_decl_doc addEquivIsoAddGroupIso
 /-- multiplicative equivalences between `comm_group`s are the same as (isomorphic to) isomorphisms
 in `CommGroup` -/
 @[to_additive]
-def mulEquivIsoCommGroupIso {X Y : CommGroupCat.{u}} : X ≃* Y ≅ X ≅ Y
-    where
+def mulEquivIsoCommGroupIso {X Y : CommGroupCat.{u}} : X ≃* Y ≅ X ≅ Y where
   hom e := e.toCommGroupCatIso
   inv i := i.commGroupIsoToMulEquiv
 set_option linter.uppercaseLean3 false in

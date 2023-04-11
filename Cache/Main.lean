@@ -54,14 +54,14 @@ def curlArgs : List String :=
 
 open Cache IO Hashing Requests in
 def main (args : List String) : IO Unit := do
-  if curlArgs.contains (args.headD "") && !(← validateCurl) then return
   let hashMemo ← getHashMemo
   let hashMap := hashMemo.hashMap
+  let goodCurl := !(curlArgs.contains (args.headD "") && !(← validateCurl))
   match args with
-  | ["get"] => getFiles hashMap false
-  | ["get!"] => getFiles hashMap true
-  | "get"  :: args => getFiles (← hashMemo.filterByFilePaths (toPaths args)) false
-  | "get!" :: args => getFiles (← hashMemo.filterByFilePaths (toPaths args)) true
+  | ["get"] => getFiles hashMap false goodCurl
+  | ["get!"] => getFiles hashMap true goodCurl
+  | "get"  :: args => getFiles (← hashMemo.filterByFilePaths (toPaths args)) false goodCurl
+  | "get!" :: args => getFiles (← hashMemo.filterByFilePaths (toPaths args)) true goodCurl
   | ["pack"] => discard $ packCache hashMap false
   | ["pack!"] => discard $ packCache hashMap true
   | ["unpack"] => unpackCache hashMap
