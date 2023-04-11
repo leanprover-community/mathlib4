@@ -10,6 +10,7 @@ Authors: Yury Kudryashov, Yaël Dillies
 -/
 import Mathlib.LinearAlgebra.Ray
 import Mathlib.Analysis.NormedSpace.Basic
+import Mathlib.Tactic.WLOG
 
 /-!
 # Rays in a real normed vector space
@@ -51,8 +52,8 @@ theorem norm_sub (h : SameRay ℝ x y) : ‖x - y‖ = |‖x‖ - ‖y‖| := by
 
 theorem norm_smul_eq (h : SameRay ℝ x y) : ‖x‖ • y = ‖y‖ • x := by
   rcases h.exists_eq_smul with ⟨u, a, b, ha, hb, -, rfl, rfl⟩
-  simp only [norm_smul_of_nonneg, *, mul_smul, smul_comm ‖u‖]
-  apply smul_comm
+  simp only [norm_smul_of_nonneg, *, mul_smul]
+  rw [smul_comm, smul_comm b, smul_comm a b u]
 #align same_ray.norm_smul_eq SameRay.norm_smul_eq
 
 end SameRay
@@ -106,7 +107,7 @@ theorem sameRay_iff_of_norm_eq (h : ‖x‖ = ‖y‖) : SameRay ℝ x y ↔ x =
 #align same_ray_iff_of_norm_eq sameRay_iff_of_norm_eq
 
 theorem not_sameRay_iff_of_norm_eq (h : ‖x‖ = ‖y‖) : ¬SameRay ℝ x y ↔ x ≠ y :=
-  (sameRay_iff_of_norm_eq h).Not
+  (sameRay_iff_of_norm_eq h).not
 #align not_same_ray_iff_of_norm_eq not_sameRay_iff_of_norm_eq
 
 /-- If two points on the same ray have the same norm, then they are equal. -/
@@ -118,4 +119,3 @@ theorem SameRay.eq_of_norm_eq (h : SameRay ℝ x y) (hn : ‖x‖ = ‖y‖) : x
 theorem SameRay.norm_eq_iff (h : SameRay ℝ x y) : ‖x‖ = ‖y‖ ↔ x = y :=
   ⟨h.eq_of_norm_eq, fun h => h ▸ rfl⟩
 #align same_ray.norm_eq_iff SameRay.norm_eq_iff
-
