@@ -8,8 +8,8 @@ Authors: Jean Lo, Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.NormedSpace.Basic
-import Mathbin.Topology.MetricSpace.HausdorffDistance
+import Mathlib.Analysis.NormedSpace.Basic
+import Mathlib.Topology.MetricSpace.HausdorffDistance
 
 /-!
 # Applications of the Hausdorff distance in normed spaces
@@ -87,8 +87,7 @@ and require `R > ‖c‖` for some `c : 𝕜` with norm `> 1`.
 -/
 theorem riesz_lemma_of_norm_lt {c : 𝕜} (hc : 1 < ‖c‖) {R : ℝ} (hR : ‖c‖ < R) {F : Subspace 𝕜 E}
     (hFc : IsClosed (F : Set E)) (hF : ∃ x : E, x ∉ F) :
-    ∃ x₀ : E, ‖x₀‖ ≤ R ∧ ∀ y ∈ F, 1 ≤ ‖x₀ - y‖ :=
-  by
+    ∃ x₀ : E, ‖x₀‖ ≤ R ∧ ∀ y ∈ F, 1 ≤ ‖x₀ - y‖ := by
   have Rpos : 0 < R := (norm_nonneg _).trans_lt hR
   have : ‖c‖ / R < 1 := by
     rw [div_lt_iff Rpos]
@@ -115,8 +114,7 @@ theorem riesz_lemma_of_norm_lt {c : 𝕜} (hc : 1 < ‖c‖) {R : ℝ} (hR : ‖
 #align riesz_lemma_of_norm_lt riesz_lemma_of_norm_lt
 
 theorem Metric.closedBall_infDist_compl_subset_closure {x : F} {s : Set F} (hx : x ∈ s) :
-    closedBall x (infDist x (sᶜ)) ⊆ closure s :=
-  by
+    closedBall x (infDist x (sᶜ)) ⊆ closure s := by
   cases' eq_or_ne (inf_dist x (sᶜ)) 0 with h₀ h₀
   · rw [h₀, closed_ball_zero']
     exact closure_mono (singleton_subset_iff.2 hx)
