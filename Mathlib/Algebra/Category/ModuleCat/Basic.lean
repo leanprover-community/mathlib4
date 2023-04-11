@@ -309,11 +309,11 @@ def toLinearEquiv {X Y : ModuleCat R} (i : X ≅ Y) : X ≃ₗ[R] Y where
   toFun := i.hom
   invFun := i.inv
   left_inv x := by
-    -- porting note: was `by simp`
+    -- porting note: was `by tidy`
     change (i.hom ≫ i.inv) x = x
     simp
   right_inv x := by
-    -- porting note: was `by simp`
+    -- porting note: was `by tidy`
     change (i.inv ≫ i.hom) x = x
     simp
   map_add' := by simp
