@@ -151,7 +151,7 @@ theorem finrank_fintype_fun_eq_card {ι : Type v} [Fintype ι] : finrank K (ι �
 #align finite_dimensional.finrank_fintype_fun_eq_card FiniteDimensional.finrank_fintype_fun_eq_card
 
 /-- The vector space of functions on `Fin n` has finrank equal to `n`. -/
-@[simp]
+-- @[simp] -- Porting note: simp already proves this
 theorem finrank_fin_fun {n : ℕ} : finrank K (Fin n → K) = n := by simp
 #align finite_dimensional.finrank_fin_fun FiniteDimensional.finrank_fin_fun
 
