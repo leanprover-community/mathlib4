@@ -525,12 +525,12 @@ theorem corec_roll {α : TypeVec n} {X Y} {x₀ : X} (f : X → Y) (g : Y → F 
   intro a; refine' ⟨a, rfl, rfl⟩
 #align mvqpf.corec_roll MvQPF.corec_roll
 
-theorem Cofix.dest_corec' {α : TypeVec n} {β : Type u} (g : β → F (α.append1 (Sum (Cofix F α) β)))
+theorem Cofix.dest_corec' {α : TypeVec.{u} n} {β : Type u} (g : β → F (α.append1 (Sum (Cofix F α) β)))
     (x : β) :
     Cofix.dest (Cofix.corec' g x) = appendFun id (Sum.elim _root_.id (Cofix.corec' g)) <$$> g x :=
   by
-  rw [cofix.corec', cofix.dest_corec]; dsimp
-  congr with (i | i) <;> rw [corec_roll] <;> dsimp [cofix.corec']
+  rw [Cofix.corec', Cofix.dest_corec]; dsimp
+  congr with (i | i) <;> rw [corec_roll] <;> dsimp [Cofix.corec']
   · -- Porting note: was `mv_bisim i`
     let R : Cofix F α → Cofix F α → Prop := fun (a b : Cofix F α) =>
       ∃ (x : X), a = Cofix.corec (g ∘ f) x ∧ b = Cofix.corec (map (id ::: f) ∘ g) (f x)
