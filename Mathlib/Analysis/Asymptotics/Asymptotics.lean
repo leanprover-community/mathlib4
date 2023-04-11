@@ -108,6 +108,7 @@ by this definition. -/
 #align asymptotics.is_O Asymptotics.IsO
 
 -- mathport name: «expr =O[ ] »
+@[inherit_doc]
 notation:100 f " =O[" l "] " g:100 => IsO l f g
 
 /-- Definition of `is_O` in terms of `is_O_with`. We record it in a lemma as `is_O` is
@@ -144,6 +145,7 @@ issues that are avoided by this definition. -/
 #align asymptotics.is_o Asymptotics.IsOCat
 
 -- mathport name: «expr =o[ ] »
+@[inherit_doc]
 notation:100 f " =o[" l "] " g:100 => IsOCat l f g
 
 /-- Definition of `is_o` in terms of `is_O_with`. We record it in a lemma as we will set
@@ -1834,7 +1836,7 @@ theorem isOCat_const_left {c : E''} :
   · simp only [hc, false_or_iff, isOCat_const_left_of_ne hc]; rfl
 #align asymptotics.is_o_const_left Asymptotics.isOCat_const_left
 
-@[simp]
+@[simp 1001] -- porting note: increase priority so that this triggers before `isOCat_const_left`
 theorem isOCat_const_const_iff [NeBot l] {d : E''} {c : F''} :
     ((fun _x => d) =o[l] fun _x => c) ↔ d = 0 := by
   have : ¬Tendsto (Function.const α ‖c‖) l atTop :=
