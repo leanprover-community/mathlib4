@@ -8,10 +8,10 @@ Authors: Eric Wieser
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.LinearAlgebra.Basis
-import Mathbin.Algebra.FreeAlgebra
-import Mathbin.LinearAlgebra.Dimension
-import Mathbin.LinearAlgebra.FinsuppVectorSpace
+import Mathlib.LinearAlgebra.Basis
+import Mathlib.Algebra.FreeAlgebra
+import Mathlib.LinearAlgebra.Dimension
+import Mathlib.LinearAlgebra.FinsuppVectorSpace
 
 /-!
 # Linear algebra properties of `free_algebra R X`
