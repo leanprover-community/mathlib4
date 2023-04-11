@@ -372,11 +372,8 @@ theorem _root_.Filter.EventuallyEq.trans_isO {f₁ f₂ : α → E} {g : α → 
   h.congr' hf.symm EventuallyEq.rfl
 #align filter.eventually_eq.trans_is_O Filter.EventuallyEq.trans_isO
 
-instance {f₁ f₂ : α → E} {g : α → F} : Trans (f₁ =ᶠ[l] f₂) (f₂ =O[l] g) (f₁ =O[l] g) where
-  trans := sorry
-
-
-#exit
+instance : @Trans (α → E) (α → E) (α → F) (· =ᶠ[l] ·) (· =O[l] ·) (· =O[l] ·) where
+  trans := Filter.EventuallyEq.trans_isO
 
 @[trans]
 theorem _root_.Filter.EventuallyEq.trans_isOCat {f₁ f₂ : α → E} {g : α → F} (hf : f₁ =ᶠ[l] f₂)
@@ -384,17 +381,26 @@ theorem _root_.Filter.EventuallyEq.trans_isOCat {f₁ f₂ : α → E} {g : α �
   h.congr' hf.symm EventuallyEq.rfl
 #align filter.eventually_eq.trans_is_o Filter.EventuallyEq.trans_isOCat
 
+instance : @Trans (α → E) (α → E) (α → F) (· =ᶠ[l] ·) (· =o[l] ·) (· =o[l] ·) where
+  trans := Filter.EventuallyEq.trans_isOCat
+
 @[trans]
 theorem IsO.trans_eventuallyEq {f : α → E} {g₁ g₂ : α → F} (h : f =O[l] g₁) (hg : g₁ =ᶠ[l] g₂) :
     f =O[l] g₂ :=
   h.congr' EventuallyEq.rfl hg
 #align asymptotics.is_O.trans_eventually_eq Asymptotics.IsO.trans_eventuallyEq
 
+instance : @Trans (α → E) (α → F) (α → F) (· =O[l] ·) (· =ᶠ[l] ·) (· =O[l] ·) where
+  trans := IsO.trans_eventuallyEq
+
 @[trans]
 theorem IsOCat.trans_eventuallyEq {f : α → E} {g₁ g₂ : α → F} (h : f =o[l] g₁) (hg : g₁ =ᶠ[l] g₂) :
     f =o[l] g₂ :=
   h.congr' EventuallyEq.rfl hg
 #align asymptotics.is_o.trans_eventually_eq Asymptotics.IsOCat.trans_eventuallyEq
+
+instance : @Trans (α → E) (α → F) (α → F) (· =o[l] ·) (· =ᶠ[l] ·) (· =o[l] ·) where
+  trans := IsOCat.trans_eventuallyEq
 
 end congr
 
@@ -464,6 +470,9 @@ theorem IsO.trans {f : α → E} {g : α → F'} {k : α → G} (hfg : f =O[l] g
   (hc.trans hc' cnonneg).isO
 #align asymptotics.is_O.trans Asymptotics.IsO.trans
 
+instance : @Trans (α → E) (α → F') (α → G) (· =O[l] ·) (· =O[l] ·) (· =O[l] ·) where
+  trans := IsO.trans
+
 theorem IsOCat.trans_isOWith (hfg : f =o[l] g) (hgk : IsOWith c l g k) (hc : 0 < c) : f =o[l] k :=
   by
   unfold IsOCat at *
@@ -478,6 +487,9 @@ theorem IsOCat.trans_isO {f : α → E} {g : α → F} {k : α → G'} (hfg : f 
   let ⟨_c, cpos, hc⟩ := hgk.exists_pos
   hfg.trans_isOWith hc cpos
 #align asymptotics.is_o.trans_is_O Asymptotics.IsOCat.trans_isO
+
+instance : @Trans (α → E) (α → F) (α → G') (· =o[l] ·) (· =O[l] ·) (· =o[l] ·) where
+  trans := IsOCat.trans_isO
 
 theorem IsOWith.trans_isOCat (hfg : IsOWith c l f g) (hgk : g =o[l] k) (hc : 0 < c) : f =o[l] k :=
   by
@@ -494,11 +506,17 @@ theorem IsO.trans_isOCat {f : α → E} {g : α → F'} {k : α → G} (hfg : f 
   hc.trans_isOCat hgk cpos
 #align asymptotics.is_O.trans_is_o Asymptotics.IsO.trans_isOCat
 
+instance : @Trans (α → E) (α → F') (α → G) (· =O[l] ·) (· =o[l] ·) (· =o[l] ·) where
+  trans := IsO.trans_isOCat
+
 @[trans]
 theorem IsOCat.trans {f : α → E} {g : α → F} {k : α → G} (hfg : f =o[l] g) (hgk : g =o[l] k) :
     f =o[l] k :=
   hfg.trans_isOWith hgk.isOWith one_pos
 #align asymptotics.is_o.trans Asymptotics.IsOCat.trans
+
+instance : @Trans (α → E) (α → F) (α → G) (· =o[l] ·) (· =o[l] ·) (· =o[l] ·) where
+  trans := IsOCat.trans
 
 theorem _root_.Filter.Eventually.trans_isO {f : α → E} {g : α → F'} {k : α → G}
     (hfg : ∀ᶠ x in l, ‖f x‖ ≤ ‖g x‖) (hgk : g =O[l] k) : f =O[l] k :=
@@ -1200,7 +1218,7 @@ theorem isOCat_zero_right_iff : (f'' =o[l] fun _x => (0 : F')) ↔ f'' =ᶠ[l] 0
 #align asymptotics.is_o_zero_right_iff Asymptotics.isOCat_zero_right_iff
 
 theorem isOWith_const_const (c : E) {c' : F''} (hc' : c' ≠ 0) (l : Filter α) :
-    IsOWith (‖c‖ / ‖c'‖) l (fun x : α => c) fun x => c' := by
+    IsOWith (‖c‖ / ‖c'‖) l (fun _x : α => c) fun _x => c' := by
   unfold IsOWith
   apply univ_mem'
   intro x
@@ -1661,7 +1679,7 @@ theorem IsOWith.const_smul_left (h : IsOWith c l f' g) (c' : 𝕜) :
 #align asymptotics.is_O_with.const_smul_left Asymptotics.IsOWith.const_smul_left
 
 theorem IsO.const_smul_left (h : f' =O[l] g) (c : 𝕜) : (c • f') =O[l] g :=
-  let ⟨b, hb⟩ := h.isOWith
+  let ⟨_b, hb⟩ := h.isOWith
   (hb.const_smul_left _).isO
 #align asymptotics.is_O.const_smul_left Asymptotics.IsO.const_smul_left
 
@@ -1707,31 +1725,31 @@ variable [NormedSpace 𝕜 E'] [NormedSpace 𝕜' F'] {k₁ : α → 𝕜} {k₂
 theorem IsOWith.smul (h₁ : IsOWith c l k₁ k₂) (h₂ : IsOWith c' l f' g') :
     IsOWith (c * c') l (fun x => k₁ x • f' x) fun x => k₂ x • g' x := by
   refine' ((h₁.norm_norm.mul h₂.norm_norm).congr rfl _ _).of_norm_norm <;>
-    · intros <;> simp only [norm_smul]
+    · intros; simp only [norm_smul]
 #align asymptotics.is_O_with.smul Asymptotics.IsOWith.smul
 
 theorem IsO.smul (h₁ : k₁ =O[l] k₂) (h₂ : f' =O[l] g') :
     (fun x => k₁ x • f' x) =O[l] fun x => k₂ x • g' x := by
   refine' ((h₁.norm_norm.mul h₂.norm_norm).congr _ _).of_norm_norm <;>
-    · intros <;> simp only [norm_smul]
+    · intros; simp only [norm_smul]
 #align asymptotics.is_O.smul Asymptotics.IsO.smul
 
 theorem IsO.smul_isOCat (h₁ : k₁ =O[l] k₂) (h₂ : f' =o[l] g') :
     (fun x => k₁ x • f' x) =o[l] fun x => k₂ x • g' x := by
   refine' ((h₁.norm_norm.mul_isOCat h₂.norm_norm).congr _ _).of_norm_norm <;>
-    · intros <;> simp only [norm_smul]
+    · intros; simp only [norm_smul]
 #align asymptotics.is_O.smul_is_o Asymptotics.IsO.smul_isOCat
 
 theorem IsOCat.smul_isO (h₁ : k₁ =o[l] k₂) (h₂ : f' =O[l] g') :
     (fun x => k₁ x • f' x) =o[l] fun x => k₂ x • g' x := by
   refine' ((h₁.norm_norm.mul_isO h₂.norm_norm).congr _ _).of_norm_norm <;>
-    · intros <;> simp only [norm_smul]
+    · intros; simp only [norm_smul]
 #align asymptotics.is_o.smul_is_O Asymptotics.IsOCat.smul_isO
 
 theorem IsOCat.smul (h₁ : k₁ =o[l] k₂) (h₂ : f' =o[l] g') :
     (fun x => k₁ x • f' x) =o[l] fun x => k₂ x • g' x := by
   refine' ((h₁.norm_norm.mul h₂.norm_norm).congr _ _).of_norm_norm <;>
-    · intros <;> simp only [norm_smul]
+    · intros; simp only [norm_smul]
 #align asymptotics.is_o.smul Asymptotics.IsOCat.smul
 
 end Smul
@@ -1772,13 +1790,10 @@ end Sum
 theorem IsOCat.tendsto_div_nhds_zero {f g : α → 𝕜} (h : f =o[l] g) :
     Tendsto (fun x => f x / g x) l (𝓝 0) :=
   (isOCat_one_iff 𝕜).mp <| by
-
-    /- calc
+    calc
       (fun x => f x / g x) =o[l] fun x => g x / g x := by
         simpa only [div_eq_mul_inv] using h.mul_isO (isO_refl _ _)
-      _ =O[l] fun x => (1 : 𝕜) := isO_of_le _ fun x => by simp [div_self_le_one] -/
-
-#exit
+      _ =O[l] fun _x => (1 : 𝕜) := isO_of_le _ fun x => by simp [div_self_le_one]
 #align asymptotics.is_o.tendsto_div_nhds_zero Asymptotics.IsOCat.tendsto_div_nhds_zero
 
 theorem IsOCat.tendsto_inv_smul_nhds_zero [NormedSpace 𝕜 E'] {f : α → E'} {g : α → 𝕜} {l : Filter α}
@@ -1791,7 +1806,7 @@ theorem isOCat_iff_tendsto' {f g : α → 𝕜} (hgf : ∀ᶠ x in l, g x = 0 �
     f =o[l] g ↔ Tendsto (fun x => f x / g x) l (𝓝 0) :=
   ⟨IsOCat.tendsto_div_nhds_zero, fun h =>
     (((isOCat_one_iff _).mpr h).mul_isO (isO_refl g l)).congr'
-      (hgf.mono fun x => div_mul_cancel_of_imp) (eventually_of_forall fun x => one_mul _)⟩
+      (hgf.mono fun _x => div_mul_cancel_of_imp) (eventually_of_forall fun _x => one_mul _)⟩
 #align asymptotics.is_o_iff_tendsto' Asymptotics.isOCat_iff_tendsto'
 
 theorem isOCat_iff_tendsto {f g : α → 𝕜} (hgf : ∀ x, g x = 0 → f x = 0) :
@@ -1799,51 +1814,52 @@ theorem isOCat_iff_tendsto {f g : α → 𝕜} (hgf : ∀ x, g x = 0 → f x = 0
   isOCat_iff_tendsto' (eventually_of_forall hgf)
 #align asymptotics.is_o_iff_tendsto Asymptotics.isOCat_iff_tendsto
 
-alias is_o_iff_tendsto' ↔ _ is_o_of_tendsto'
+alias isOCat_iff_tendsto' ↔ _ isOCat_of_tendsto'
 #align asymptotics.is_o_of_tendsto' Asymptotics.isOCat_of_tendsto'
 
-alias is_o_iff_tendsto ↔ _ is_o_of_tendsto
+alias isOCat_iff_tendsto ↔ _ isOCat_of_tendsto
 #align asymptotics.is_o_of_tendsto Asymptotics.isOCat_of_tendsto
 
 theorem isOCat_const_left_of_ne {c : E''} (hc : c ≠ 0) :
-    (fun x => c) =o[l] g ↔ Tendsto (fun x => ‖g x‖) l atTop := by
-  simp only [← is_o_one_left_iff ℝ]
-  exact ⟨(is_O_const_const (1 : ℝ) hc l).trans_isOCat, (is_O_const_one ℝ c l).trans_isOCat⟩
+    (fun _x => c) =o[l] g ↔ Tendsto (fun x => ‖g x‖) l atTop := by
+  simp only [← isOCat_one_left_iff ℝ]
+  exact ⟨(isO_const_const (1 : ℝ) hc l).trans_isOCat, (isO_const_one ℝ c l).trans_isOCat⟩
 #align asymptotics.is_o_const_left_of_ne Asymptotics.isOCat_const_left_of_ne
 
 @[simp]
 theorem isOCat_const_left {c : E''} :
-    (fun x => c) =o[l] g'' ↔ c = 0 ∨ Tendsto (norm ∘ g'') l atTop := by
+    (fun _x => c) =o[l] g'' ↔ c = 0 ∨ Tendsto (norm ∘ g'') l atTop := by
   rcases eq_or_ne c 0 with (rfl | hc)
-  · simp only [is_o_zero, eq_self_iff_true, true_or_iff]
-  · simp only [hc, false_or_iff, is_o_const_left_of_ne hc]
+  · simp only [isOCat_zero, eq_self_iff_true, true_or_iff]
+  · simp only [hc, false_or_iff, isOCat_const_left_of_ne hc]; rfl
 #align asymptotics.is_o_const_left Asymptotics.isOCat_const_left
 
 @[simp]
 theorem isOCat_const_const_iff [NeBot l] {d : E''} {c : F''} :
-    ((fun x => d) =o[l] fun x => c) ↔ d = 0 := by
+    ((fun _x => d) =o[l] fun _x => c) ↔ d = 0 := by
   have : ¬Tendsto (Function.const α ‖c‖) l atTop :=
     not_tendsto_atTop_of_tendsto_nhds tendsto_const_nhds
-  simp [Function.const, this]
+  simp only [isOCat_const_left, or_iff_left_iff_imp]
+  exact fun h => (this h).elim
 #align asymptotics.is_o_const_const_iff Asymptotics.isOCat_const_const_iff
 
 @[simp]
 theorem isOCat_pure {x} : f'' =o[pure x] g'' ↔ f'' x = 0 :=
   calc
-    f'' =o[pure x] g'' ↔ (fun y : α => f'' x) =o[pure x] fun _ => g'' x := isOCat_congr rfl rfl
+    f'' =o[pure x] g'' ↔ (fun _y : α => f'' x) =o[pure x] fun _ => g'' x := isOCat_congr rfl rfl
     _ ↔ f'' x = 0 := isOCat_const_const_iff
 
 #align asymptotics.is_o_pure Asymptotics.isOCat_pure
 
-theorem isOCat_const_id_comap_norm_atTop (c : F'') : (fun x : E'' => c) =o[comap norm atTop] id :=
+theorem isOCat_const_id_comap_norm_atTop (c : F'') : (fun _x : E'' => c) =o[comap norm atTop] id :=
   isOCat_const_left.2 <| Or.inr tendsto_comap
 #align asymptotics.is_o_const_id_comap_norm_at_top Asymptotics.isOCat_const_id_comap_norm_atTop
 
-theorem isOCat_const_id_atTop (c : E'') : (fun x : ℝ => c) =o[atTop] id :=
+theorem isOCat_const_id_atTop (c : E'') : (fun _x : ℝ => c) =o[atTop] id :=
   isOCat_const_left.2 <| Or.inr tendsto_abs_atTop_atTop
 #align asymptotics.is_o_const_id_at_top Asymptotics.isOCat_const_id_atTop
 
-theorem isOCat_const_id_atBot (c : E'') : (fun x : ℝ => c) =o[atBot] id :=
+theorem isOCat_const_id_atBot (c : E'') : (fun _x : ℝ => c) =o[atBot] id :=
   isOCat_const_left.2 <| Or.inr tendsto_abs_atBot_atTop
 #align asymptotics.is_o_const_id_at_bot Asymptotics.isOCat_const_id_atBot
 
@@ -1865,7 +1881,7 @@ theorem IsOWith.eventually_mul_div_cancel (h : IsOWith c l u v) : u / v * v =ᶠ
 
 /-- If `u = O(v)` along `l`, then `(u / v) * v = u` eventually at `l`. -/
 theorem IsO.eventually_mul_div_cancel (h : u =O[l] v) : u / v * v =ᶠ[l] u :=
-  let ⟨c, hc⟩ := h.IsOWith
+  let ⟨_c, hc⟩ := h.isOWith
   hc.eventually_mul_div_cancel
 #align asymptotics.is_O.eventually_mul_div_cancel Asymptotics.IsO.eventually_mul_div_cancel
 
@@ -1888,53 +1904,53 @@ variable {u v : α → 𝕜}
     `is_O_with_iff_exists_eq_mul`. -/
 theorem isOWith_of_eq_mul (φ : α → 𝕜) (hφ : ∀ᶠ x in l, ‖φ x‖ ≤ c) (h : u =ᶠ[l] φ * v) :
     IsOWith c l u v := by
-  unfold is_O_with
+  unfold IsOWith
   refine' h.symm.rw (fun x a => ‖a‖ ≤ c * ‖v x‖) (hφ.mono fun x hx => _)
   simp only [norm_mul, Pi.mul_apply]
   exact mul_le_mul_of_nonneg_right hx (norm_nonneg _)
 #align asymptotics.is_O_with_of_eq_mul Asymptotics.isOWith_of_eq_mul
 
 theorem isOWith_iff_exists_eq_mul (hc : 0 ≤ c) :
-    IsOWith c l u v ↔ ∃ (φ : α → 𝕜)(hφ : ∀ᶠ x in l, ‖φ x‖ ≤ c), u =ᶠ[l] φ * v := by
+    IsOWith c l u v ↔ ∃ (φ : α → 𝕜)(_hφ : ∀ᶠ x in l, ‖φ x‖ ≤ c), u =ᶠ[l] φ * v := by
   constructor
   · intro h
     use fun x => u x / v x
-    refine' ⟨eventually.mono h.bound fun y hy => _, h.eventually_mul_div_cancel.symm⟩
+    refine' ⟨Eventually.mono h.bound fun y hy => _, h.eventually_mul_div_cancel.symm⟩
     simpa using div_le_of_nonneg_of_le_mul (norm_nonneg _) hc hy
   · rintro ⟨φ, hφ, h⟩
-    exact is_O_with_of_eq_mul φ hφ h
+    exact isOWith_of_eq_mul φ hφ h
 #align asymptotics.is_O_with_iff_exists_eq_mul Asymptotics.isOWith_iff_exists_eq_mul
 
 theorem IsOWith.exists_eq_mul (h : IsOWith c l u v) (hc : 0 ≤ c) :
-    ∃ (φ : α → 𝕜)(hφ : ∀ᶠ x in l, ‖φ x‖ ≤ c), u =ᶠ[l] φ * v :=
+    ∃ (φ : α → 𝕜)(_hφ : ∀ᶠ x in l, ‖φ x‖ ≤ c), u =ᶠ[l] φ * v :=
   (isOWith_iff_exists_eq_mul hc).mp h
 #align asymptotics.is_O_with.exists_eq_mul Asymptotics.IsOWith.exists_eq_mul
 
 theorem isO_iff_exists_eq_mul :
-    u =O[l] v ↔ ∃ (φ : α → 𝕜)(hφ : l.IsBoundedUnder (· ≤ ·) (norm ∘ φ)), u =ᶠ[l] φ * v := by
+    u =O[l] v ↔ ∃ (φ : α → 𝕜)(_hφ : l.IsBoundedUnder (· ≤ ·) (norm ∘ φ)), u =ᶠ[l] φ * v := by
   constructor
   · rintro h
     rcases h.exists_nonneg with ⟨c, hnnc, hc⟩
     rcases hc.exists_eq_mul hnnc with ⟨φ, hφ, huvφ⟩
     exact ⟨φ, ⟨c, hφ⟩, huvφ⟩
   · rintro ⟨φ, ⟨c, hφ⟩, huvφ⟩
-    exact is_O_iff_is_O_with.2 ⟨c, is_O_with_of_eq_mul φ hφ huvφ⟩
+    exact isO_iff_isOWith.2 ⟨c, isOWith_of_eq_mul φ hφ huvφ⟩
 #align asymptotics.is_O_iff_exists_eq_mul Asymptotics.isO_iff_exists_eq_mul
 
-alias is_O_iff_exists_eq_mul ↔ is_O.exists_eq_mul _
+alias isO_iff_exists_eq_mul ↔ IsO.exists_eq_mul _
 #align asymptotics.is_O.exists_eq_mul Asymptotics.IsO.exists_eq_mul
 
 theorem isOCat_iff_exists_eq_mul :
-    u =o[l] v ↔ ∃ (φ : α → 𝕜)(hφ : Tendsto φ l (𝓝 0)), u =ᶠ[l] φ * v := by
+    u =o[l] v ↔ ∃ (φ : α → 𝕜)(_hφ : Tendsto φ l (𝓝 0)), u =ᶠ[l] φ * v := by
   constructor
   · exact fun h => ⟨fun x => u x / v x, h.tendsto_div_nhds_zero, h.eventually_mul_div_cancel.symm⟩
-  · unfold is_o
+  · unfold IsOCat
     rintro ⟨φ, hφ, huvφ⟩ c hpos
     rw [NormedAddCommGroup.tendsto_nhds_zero] at hφ
-    exact is_O_with_of_eq_mul _ ((hφ c hpos).mono fun x => le_of_lt) huvφ
+    exact isOWith_of_eq_mul _ ((hφ c hpos).mono fun x => le_of_lt) huvφ
 #align asymptotics.is_o_iff_exists_eq_mul Asymptotics.isOCat_iff_exists_eq_mul
 
-alias is_o_iff_exists_eq_mul ↔ is_o.exists_eq_mul _
+alias isOCat_iff_exists_eq_mul ↔ IsOCat.exists_eq_mul _
 #align asymptotics.is_o.exists_eq_mul Asymptotics.IsOCat.exists_eq_mul
 
 end ExistsMulEq
@@ -1953,10 +1969,10 @@ theorem div_isBoundedUnder_of_isO {α : Type _} {l : Filter α} {f g : α → �
 theorem isO_iff_div_isBoundedUnder {α : Type _} {l : Filter α} {f g : α → 𝕜}
     (hgf : ∀ᶠ x in l, g x = 0 → f x = 0) :
     f =O[l] g ↔ IsBoundedUnder (· ≤ ·) l fun x => ‖f x / g x‖ := by
-  refine' ⟨div_is_bounded_under_of_is_O, fun h => _⟩
+  refine' ⟨div_isBoundedUnder_of_isO, fun h => _⟩
   obtain ⟨c, hc⟩ := h
   simp only [eventually_map, norm_div] at hc
-  refine' is_O.of_bound c (hc.mp <| hgf.mono fun x hx₁ hx₂ => _)
+  refine' IsO.of_bound c (hc.mp <| hgf.mono fun x hx₁ hx₂ => _)
   by_cases hgx : g x = 0
   · simp [hx₁ hgx, hgx]
   · exact (div_le_iff (norm_pos_iff.2 hgx)).mp hx₂
@@ -1970,16 +1986,16 @@ theorem isO_of_div_tendsto_nhds {α : Type _} {l : Filter α} {f g : α → 𝕜
 theorem IsOCat.tendsto_zero_of_tendsto {α E 𝕜 : Type _} [NormedAddCommGroup E] [NormedField 𝕜]
     {u : α → E} {v : α → 𝕜} {l : Filter α} {y : 𝕜} (huv : u =o[l] v) (hv : Tendsto v l (𝓝 y)) :
     Tendsto u l (𝓝 0) := by
-  suffices h : u =o[l] fun x => (1 : 𝕜)
-  · rwa [is_o_one_iff] at h
-  exact huv.trans_is_O (hv.is_O_one 𝕜)
+  suffices h : u =o[l] fun _x => (1 : 𝕜)
+  · rwa [isOCat_one_iff] at h
+  exact huv.trans_isO (hv.isO_one 𝕜)
 #align asymptotics.is_o.tendsto_zero_of_tendsto Asymptotics.IsOCat.tendsto_zero_of_tendsto
 
 theorem isOCat_pow_pow {m n : ℕ} (h : m < n) : (fun x : 𝕜 => x ^ n) =o[𝓝 0] fun x => x ^ m := by
   rcases lt_iff_exists_add.1 h with ⟨p, hp0 : 0 < p, rfl⟩
   suffices (fun x : 𝕜 => x ^ m * x ^ p) =o[𝓝 0] fun x => x ^ m * 1 ^ p by
     simpa only [pow_add, one_pow, mul_one]
-  exact is_O.mul_is_o (is_O_refl _ _) (is_o.pow ((is_o_one_iff _).2 tendsto_id) hp0)
+  exact IsO.mul_isOCat (isO_refl _ _) (IsOCat.pow ((isOCat_one_iff _).2 tendsto_id) hp0)
 #align asymptotics.is_o_pow_pow Asymptotics.isOCat_pow_pow
 
 theorem isOCat_norm_pow_norm_pow {m n : ℕ} (h : m < n) :
@@ -1988,12 +2004,14 @@ theorem isOCat_norm_pow_norm_pow {m n : ℕ} (h : m < n) :
 #align asymptotics.is_o_norm_pow_norm_pow Asymptotics.isOCat_norm_pow_norm_pow
 
 theorem isOCat_pow_id {n : ℕ} (h : 1 < n) : (fun x : 𝕜 => x ^ n) =o[𝓝 0] fun x => x := by
-  convert is_o_pow_pow h
+  convert isOCat_pow_pow h (𝕜 := 𝕜)
   simp only [pow_one]
 #align asymptotics.is_o_pow_id Asymptotics.isOCat_pow_id
 
 theorem isOCat_norm_pow_id {n : ℕ} (h : 1 < n) : (fun x : E' => ‖x‖ ^ n) =o[𝓝 0] fun x => x := by
-  simpa only [pow_one, is_o_norm_right] using @is_o_norm_pow_norm_pow E' _ _ _ h
+  have := @isOCat_norm_pow_norm_pow E' _ _ _ h
+  simp only [pow_one] at this
+  exact isOCat_norm_right.mp this
 #align asymptotics.is_o_norm_pow_id Asymptotics.isOCat_norm_pow_id
 
 theorem IsO.eq_zero_of_norm_pow_within {f : E'' → F''} {s : Set E''} {x₀ : E''} {n : ℕ}
@@ -2009,24 +2027,24 @@ theorem IsO.eq_zero_of_norm_pow {f : E'' → F''} {x₀ : E''} {n : ℕ}
 
 theorem isOCat_pow_sub_pow_sub (x₀ : E') {n m : ℕ} (h : n < m) :
     (fun x => ‖x - x₀‖ ^ m) =o[𝓝 x₀] fun x => ‖x - x₀‖ ^ n :=
-  haveI : tendsto (fun x => ‖x - x₀‖) (𝓝 x₀) (𝓝 0) := by
+  haveI : Tendsto (fun x => ‖x - x₀‖) (𝓝 x₀) (𝓝 0) := by
     apply tendsto_norm_zero.comp
     rw [← sub_self x₀]
     exact tendsto_id.sub tendsto_const_nhds
-  (is_o_pow_pow h).comp_tendsto this
+  (isOCat_pow_pow h).comp_tendsto this
 #align asymptotics.is_o_pow_sub_pow_sub Asymptotics.isOCat_pow_sub_pow_sub
 
 theorem isOCat_pow_sub_sub (x₀ : E') {m : ℕ} (h : 1 < m) :
     (fun x => ‖x - x₀‖ ^ m) =o[𝓝 x₀] fun x => x - x₀ := by
-  simpa only [is_o_norm_right, pow_one] using is_o_pow_sub_pow_sub x₀ h
+  simpa only [isOCat_norm_right, pow_one] using isOCat_pow_sub_pow_sub x₀ h
 #align asymptotics.is_o_pow_sub_sub Asymptotics.isOCat_pow_sub_sub
 
 theorem IsOWith.right_le_sub_of_lt_1 {f₁ f₂ : α → E'} (h : IsOWith c l f₁ f₂) (hc : c < 1) :
     IsOWith (1 / (1 - c)) l f₂ fun x => f₂ x - f₁ x :=
   IsOWith.of_bound <|
     mem_of_superset h.bound fun x hx => by
-      simp only [mem_set_of_eq] at hx⊢
-      rw [mul_comm, one_div, ← div_eq_mul_inv, le_div_iff, mul_sub, mul_one, mul_comm]
+      simp only [mem_setOf_eq] at hx⊢
+      rw [mul_comm, one_div, ← div_eq_mul_inv, _root_.le_div_iff, mul_sub, mul_one, mul_comm]
       · exact le_trans (sub_le_sub_left hx _) (norm_sub_norm_le _ _)
       · exact sub_pos.2 hc
 #align asymptotics.is_O_with.right_le_sub_of_lt_1 Asymptotics.IsOWith.right_le_sub_of_lt_1
@@ -2038,11 +2056,11 @@ theorem IsOWith.right_le_add_of_lt_1 {f₁ f₂ : α → E'} (h : IsOWith c l f�
 #align asymptotics.is_O_with.right_le_add_of_lt_1 Asymptotics.IsOWith.right_le_add_of_lt_1
 
 theorem IsOCat.right_isO_sub {f₁ f₂ : α → E'} (h : f₁ =o[l] f₂) : f₂ =O[l] fun x => f₂ x - f₁ x :=
-  ((h.def' one_half_pos).right_le_sub_of_lt_1 one_half_lt_one).IsO
+  ((h.def' one_half_pos).right_le_sub_of_lt_1 one_half_lt_one).isO
 #align asymptotics.is_o.right_is_O_sub Asymptotics.IsOCat.right_isO_sub
 
 theorem IsOCat.right_isO_add {f₁ f₂ : α → E'} (h : f₁ =o[l] f₂) : f₂ =O[l] fun x => f₁ x + f₂ x :=
-  ((h.def' one_half_pos).right_le_add_of_lt_1 one_half_lt_one).IsO
+  ((h.def' one_half_pos).right_le_add_of_lt_1 one_half_lt_one).isO
 #align asymptotics.is_o.right_is_O_add Asymptotics.IsOCat.right_isO_add
 
 /-- If `f x = O(g x)` along `cofinite`, then there exists a positive constant `C` such that
@@ -2050,8 +2068,8 @@ theorem IsOCat.right_isO_add {f₁ f₂ : α → E'} (h : f₁ =o[l] f₂) : f�
 theorem bound_of_isO_cofinite (h : f =O[cofinite] g'') :
     ∃ C > 0, ∀ ⦃x⦄, g'' x ≠ 0 → ‖f x‖ ≤ C * ‖g'' x‖ := by
   rcases h.exists_pos with ⟨C, C₀, hC⟩
-  rw [is_O_with, eventually_cofinite] at hC
-  rcases(hC.to_finset.image fun x => ‖f x‖ / ‖g'' x‖).exists_le with ⟨C', hC'⟩
+  rw [IsOWith, eventually_cofinite] at hC
+  rcases (hC.toFinset.image fun x => ‖f x‖ / ‖g'' x‖).exists_le with ⟨C', hC'⟩
   have : ∀ x, C * ‖g'' x‖ < ‖f x‖ → ‖f x‖ / ‖g'' x‖ ≤ C' := by simpa using hC'
   refine' ⟨max C C', lt_max_iff.2 (Or.inl C₀), fun x h₀ => _⟩
   rw [max_mul_of_nonneg _ _ (norm_nonneg _), le_max_iff, or_iff_not_imp_left, not_le]
@@ -2061,7 +2079,7 @@ theorem bound_of_isO_cofinite (h : f =O[cofinite] g'') :
 theorem isO_cofinite_iff (h : ∀ x, g'' x = 0 → f'' x = 0) :
     f'' =O[cofinite] g'' ↔ ∃ C, ∀ x, ‖f'' x‖ ≤ C * ‖g'' x‖ :=
   ⟨fun h' =>
-    let ⟨C, C₀, hC⟩ := bound_of_isO_cofinite h'
+    let ⟨C, _C₀, hC⟩ := bound_of_isO_cofinite h'
     ⟨C, fun x => if hx : g'' x = 0 then by simp [h _ hx, hx] else hC hx⟩,
     fun h => (isO_top.2 h).mono le_top⟩
 #align asymptotics.is_O_cofinite_iff Asymptotics.isO_cofinite_iff
@@ -2073,11 +2091,11 @@ theorem bound_of_isO_nat_atTop {f : ℕ → E} {g'' : ℕ → E''} (h : f =O[atT
 
 theorem isO_nat_atTop_iff {f : ℕ → E''} {g : ℕ → F''} (h : ∀ x, g x = 0 → f x = 0) :
     f =O[atTop] g ↔ ∃ C, ∀ x, ‖f x‖ ≤ C * ‖g x‖ := by
-  rw [← Nat.cofinite_eq_atTop, is_O_cofinite_iff h]
+  rw [← Nat.cofinite_eq_atTop, isO_cofinite_iff h]
 #align asymptotics.is_O_nat_at_top_iff Asymptotics.isO_nat_atTop_iff
 
 theorem isO_one_nat_atTop_iff {f : ℕ → E''} :
-    f =O[atTop] (fun n => 1 : ℕ → ℝ) ↔ ∃ C, ∀ n, ‖f n‖ ≤ C :=
+    f =O[atTop] (fun _n => 1 : ℕ → ℝ) ↔ ∃ C, ∀ n, ‖f n‖ ≤ C :=
   Iff.trans (isO_nat_atTop_iff fun n h => (one_ne_zero h).elim) <| by simp only [norm_one, mul_one]
 #align asymptotics.is_O_one_nat_at_top_iff Asymptotics.isO_one_nat_atTop_iff
 
@@ -2085,20 +2103,20 @@ theorem isOWith_pi {ι : Type _} [Fintype ι] {E' : ι → Type _} [∀ i, Norme
     {f : α → ∀ i, E' i} {C : ℝ} (hC : 0 ≤ C) :
     IsOWith C l f g' ↔ ∀ i, IsOWith C l (fun x => f x i) g' := by
   have : ∀ x, 0 ≤ C * ‖g' x‖ := fun x => mul_nonneg hC (norm_nonneg _)
-  simp only [is_O_with_iff, pi_norm_le_iff_of_nonneg (this _), eventually_all]
+  simp only [isOWith_iff, pi_norm_le_iff_of_nonneg (this _), eventually_all]
 #align asymptotics.is_O_with_pi Asymptotics.isOWith_pi
 
 @[simp]
 theorem isO_pi {ι : Type _} [Fintype ι] {E' : ι → Type _} [∀ i, NormedAddCommGroup (E' i)]
     {f : α → ∀ i, E' i} : f =O[l] g' ↔ ∀ i, (fun x => f x i) =O[l] g' := by
-  simp only [is_O_iff_eventually_is_O_with, ← eventually_all]
-  exact eventually_congr (eventually_at_top.2 ⟨0, fun c => is_O_with_pi⟩)
+  simp only [isO_iff_eventually_isOWith, ← eventually_all]
+  exact eventually_congr (eventually_atTop.2 ⟨0, fun c => isOWith_pi⟩)
 #align asymptotics.is_O_pi Asymptotics.isO_pi
 
 @[simp]
 theorem isOCat_pi {ι : Type _} [Fintype ι] {E' : ι → Type _} [∀ i, NormedAddCommGroup (E' i)]
     {f : α → ∀ i, E' i} : f =o[l] g' ↔ ∀ i, (fun x => f x i) =o[l] g' := by
-  simp (config := { contextual := true }) only [is_o, is_O_with_pi, le_of_lt]
+  simp (config := { contextual := true }) only [IsOCat, isOWith_pi, le_of_lt]
   exact ⟨fun h i c hc => h hc i, fun h c hc i => h i hc⟩
 #align asymptotics.is_o_pi Asymptotics.isOCat_pi
 
@@ -2108,13 +2126,15 @@ open Asymptotics
 
 theorem summable_of_isO {ι E} [NormedAddCommGroup E] [CompleteSpace E] {f : ι → E} {g : ι → ℝ}
     (hg : Summable g) (h : f =O[cofinite] g) : Summable f :=
-  let ⟨C, hC⟩ := h.IsOWith
+  let ⟨C, hC⟩ := h.isOWith
   summable_of_norm_bounded_eventually (fun x => C * ‖g x‖) (hg.abs.mul_left _) hC.bound
+set_option linter.uppercaseLean3 false in
 #align summable_of_is_O summable_of_isO
 
 theorem summable_of_isO_nat {E} [NormedAddCommGroup E] [CompleteSpace E] {f : ℕ → E} {g : ℕ → ℝ}
     (hg : Summable g) (h : f =O[atTop] g) : Summable f :=
   summable_of_isO hg <| Nat.cofinite_eq_atTop.symm ▸ h
+set_option linter.uppercaseLean3 false in
 #align summable_of_is_O_nat summable_of_isO_nat
 
 namespace LocalHomeomorph
@@ -2128,26 +2148,29 @@ theorem isOWith_congr (e : LocalHomeomorph α β) {b : β} (hb : b ∈ e.target)
     {C : ℝ} : IsOWith C (𝓝 b) f g ↔ IsOWith C (𝓝 (e.symm b)) (f ∘ e) (g ∘ e) :=
   ⟨fun h =>
     h.comp_tendsto <| by
-      convert e.continuous_at (e.map_target hb)
-      exact (e.right_inv hb).symm,
+      have := e.continuousAt (e.map_target hb)
+      rwa [ContinuousAt, e.rightInvOn hb] at this,
     fun h =>
     (h.comp_tendsto (e.continuousAt_symm hb)).congr' rfl
       ((e.eventually_right_inverse hb).mono fun x hx => congr_arg f hx)
       ((e.eventually_right_inverse hb).mono fun x hx => congr_arg g hx)⟩
+set_option linter.uppercaseLean3 false in
 #align local_homeomorph.is_O_with_congr LocalHomeomorph.isOWith_congr
 
 /-- Transfer `is_O` over a `local_homeomorph`. -/
 theorem isO_congr (e : LocalHomeomorph α β) {b : β} (hb : b ∈ e.target) {f : β → E} {g : β → F} :
     f =O[𝓝 b] g ↔ (f ∘ e) =O[𝓝 (e.symm b)] (g ∘ e) := by
-  unfold is_O
-  exact exists_congr fun C => e.is_O_with_congr hb
+  unfold IsO
+  exact exists_congr fun C => e.isOWith_congr hb
+set_option linter.uppercaseLean3 false in
 #align local_homeomorph.is_O_congr LocalHomeomorph.isO_congr
 
 /-- Transfer `is_o` over a `local_homeomorph`. -/
 theorem isOCat_congr (e : LocalHomeomorph α β) {b : β} (hb : b ∈ e.target) {f : β → E} {g : β → F} :
     f =o[𝓝 b] g ↔ (f ∘ e) =o[𝓝 (e.symm b)] (g ∘ e) := by
-  unfold is_o
-  exact forall₂_congr fun c hc => e.is_O_with_congr hb
+  unfold IsOCat
+  exact forall₂_congr fun c _hc => e.isOWith_congr hb
+set_option linter.uppercaseLean3 false in
 #align local_homeomorph.is_o_congr LocalHomeomorph.isOCat_congr
 
 end LocalHomeomorph
@@ -2164,20 +2187,22 @@ open Asymptotics
 theorem isOWith_congr (e : α ≃ₜ β) {b : β} {f : β → E} {g : β → F} {C : ℝ} :
     IsOWith C (𝓝 b) f g ↔ IsOWith C (𝓝 (e.symm b)) (f ∘ e) (g ∘ e) :=
   e.toLocalHomeomorph.isOWith_congr trivial
+set_option linter.uppercaseLean3 false in
 #align homeomorph.is_O_with_congr Homeomorph.isOWith_congr
 
 /-- Transfer `is_O` over a `homeomorph`. -/
 theorem isO_congr (e : α ≃ₜ β) {b : β} {f : β → E} {g : β → F} :
     f =O[𝓝 b] g ↔ (f ∘ e) =O[𝓝 (e.symm b)] (g ∘ e) := by
-  unfold is_O
-  exact exists_congr fun C => e.is_O_with_congr
+  unfold IsO
+  exact exists_congr fun C => e.isOWith_congr
+set_option linter.uppercaseLean3 false in
 #align homeomorph.is_O_congr Homeomorph.isO_congr
 
 /-- Transfer `is_o` over a `homeomorph`. -/
 theorem isOCat_congr (e : α ≃ₜ β) {b : β} {f : β → E} {g : β → F} :
     f =o[𝓝 b] g ↔ (f ∘ e) =o[𝓝 (e.symm b)] (g ∘ e) := by
-  unfold is_o
-  exact forall₂_congr fun c hc => e.is_O_with_congr
+  unfold IsOCat
+  exact forall₂_congr fun c _hc => e.isOWith_congr
 #align homeomorph.is_o_congr Homeomorph.isOCat_congr
 
 end Homeomorph
