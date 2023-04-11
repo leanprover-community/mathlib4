@@ -40,12 +40,12 @@ section
 
 variable [ConcreteCategory.{max v u} D]
 
-attribute [local instance] concrete_category.has_coe_to_sort concrete_category.has_coe_to_fun
+attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.hasCoeToFun
 
+-- porting note: removed @[nolint has_nonempty_instance]
 /-- A concrete version of the multiequalizer, to be used below. -/
-@[nolint has_nonempty_instance]
-def Meq {X : C} (P : Cᵒᵖ ⥤ D) (S : J.cover X) :=
-  { x : ∀ I : S.arrow, P.obj (op I.y) //
+def Meq {X : C} (P : Cᵒᵖ ⥤ D) (S : J.Cover X) :=
+  { x : ∀ I : S.Arrow, P.obj (op I.Y) //
     ∀ I : S.Relation, P.map I.g₁.op (x I.fst) = P.map I.g₂.op (x I.snd) }
 #align category_theory.meq CategoryTheory.Meq
 
@@ -55,64 +55,64 @@ namespace Meq
 
 variable [ConcreteCategory.{max v u} D]
 
-attribute [local instance] concrete_category.has_coe_to_sort concrete_category.has_coe_to_fun
+attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.hasCoeToFun
 
-instance {X} (P : Cᵒᵖ ⥤ D) (S : J.cover X) :
-    CoeFun (Meq P S) fun x => ∀ I : S.arrow, P.obj (op I.y) :=
+instance {X} (P : Cᵒᵖ ⥤ D) (S : J.Cover X) :
+    CoeFun (Meq P S) fun _ => ∀ I : S.Arrow, P.obj (op I.Y) :=
   ⟨fun x => x.1⟩
 
 @[ext]
-theorem ext {X} {P : Cᵒᵖ ⥤ D} {S : J.cover X} (x y : Meq P S) (h : ∀ I : S.arrow, x I = y I) :
+theorem ext {X} {P : Cᵒᵖ ⥤ D} {S : J.Cover X} (x y : Meq P S) (h : ∀ I : S.Arrow, x I = y I) :
     x = y :=
   Subtype.ext <| funext <| h
 #align category_theory.meq.ext CategoryTheory.Meq.ext
 
-theorem condition {X} {P : Cᵒᵖ ⥤ D} {S : J.cover X} (x : Meq P S) (I : S.Relation) :
+theorem condition {X} {P : Cᵒᵖ ⥤ D} {S : J.Cover X} (x : Meq P S) (I : S.Relation) :
     P.map I.g₁.op (x ((S.index P).fstTo I)) = P.map I.g₂.op (x ((S.index P).sndTo I)) :=
   x.2 _
 #align category_theory.meq.condition CategoryTheory.Meq.condition
 
 /-- Refine a term of `meq P T` with respect to a refinement `S ⟶ T` of covers. -/
-def refine {X : C} {P : Cᵒᵖ ⥤ D} {S T : J.cover X} (x : Meq P T) (e : S ⟶ T) : Meq P S :=
-  ⟨fun I => x ⟨I.y, I.f, (leOfHom e) _ I.hf⟩, fun I =>
+def refine {X : C} {P : Cᵒᵖ ⥤ D} {S T : J.Cover X} (x : Meq P T) (e : S ⟶ T) : Meq P S :=
+  ⟨fun I => x ⟨I.Y, I.f, (leOfHom e) _ I.hf⟩, fun I =>
     x.condition
-      ⟨I.y₁, I.y₂, I.z, I.g₁, I.g₂, I.f₁, I.f₂, (leOfHom e) _ I.h₁, (leOfHom e) _ I.h₂, I.w⟩⟩
+      ⟨I.Y₁, I.Y₂, I.Z, I.g₁, I.g₂, I.f₁, I.f₂, (leOfHom e) _ I.h₁, (leOfHom e) _ I.h₂, I.w⟩⟩
 #align category_theory.meq.refine CategoryTheory.Meq.refine
 
 @[simp]
-theorem refine_apply {X : C} {P : Cᵒᵖ ⥤ D} {S T : J.cover X} (x : Meq P T) (e : S ⟶ T)
-    (I : S.arrow) : x.refine e I = x ⟨I.y, I.f, (leOfHom e) _ I.hf⟩ :=
+theorem refine_apply {X : C} {P : Cᵒᵖ ⥤ D} {S T : J.Cover X} (x : Meq P T) (e : S ⟶ T)
+    (I : S.Arrow) : x.refine e I = x ⟨I.Y, I.f, (leOfHom e) _ I.hf⟩ :=
   rfl
 #align category_theory.meq.refine_apply CategoryTheory.Meq.refine_apply
 
 /-- Pull back a term of `meq P S` with respect to a morphism `f : Y ⟶ X` in `C`. -/
-def pullback {Y X : C} {P : Cᵒᵖ ⥤ D} {S : J.cover X} (x : Meq P S) (f : Y ⟶ X) :
+def pullback {Y X : C} {P : Cᵒᵖ ⥤ D} {S : J.Cover X} (x : Meq P S) (f : Y ⟶ X) :
     Meq P ((J.pullback f).obj S) :=
   ⟨fun I => x ⟨_, I.f ≫ f, I.hf⟩, fun I =>
     x.condition
-      ⟨I.y₁, I.y₂, I.z, I.g₁, I.g₂, I.f₁ ≫ f, I.f₂ ≫ f, I.h₁, I.h₂, by simp [reassoc_of I.w]⟩⟩
+      ⟨I.Y₁, I.Y₂, I.Z, I.g₁, I.g₂, I.f₁ ≫ f, I.f₂ ≫ f, I.h₁, I.h₂, by simp [I.w_assoc]⟩⟩
 #align category_theory.meq.pullback CategoryTheory.Meq.pullback
 
 @[simp]
-theorem pullback_apply {Y X : C} {P : Cᵒᵖ ⥤ D} {S : J.cover X} (x : Meq P S) (f : Y ⟶ X)
-    (I : ((J.pullback f).obj S).arrow) : x.pullback f I = x ⟨_, I.f ≫ f, I.hf⟩ :=
+theorem pullback_apply {Y X : C} {P : Cᵒᵖ ⥤ D} {S : J.Cover X} (x : Meq P S) (f : Y ⟶ X)
+    (I : ((J.pullback f).obj S).Arrow) : x.pullback f I = x ⟨_, I.f ≫ f, I.hf⟩ :=
   rfl
 #align category_theory.meq.pullback_apply CategoryTheory.Meq.pullback_apply
 
 @[simp]
-theorem pullback_refine {Y X : C} {P : Cᵒᵖ ⥤ D} {S T : J.cover X} (h : S ⟶ T) (f : Y ⟶ X)
+theorem pullback_refine {Y X : C} {P : Cᵒᵖ ⥤ D} {S T : J.Cover X} (h : S ⟶ T) (f : Y ⟶ X)
     (x : Meq P T) : (x.pullback f).refine ((J.pullback f).map h) = (refine x h).pullback _ :=
   rfl
 #align category_theory.meq.pullback_refine CategoryTheory.Meq.pullback_refine
 
 /-- Make a term of `meq P S`. -/
-def mk {X : C} {P : Cᵒᵖ ⥤ D} (S : J.cover X) (x : P.obj (op X)) : Meq P S :=
+def mk {X : C} {P : Cᵒᵖ ⥤ D} (S : J.Cover X) (x : P.obj (op X)) : Meq P S :=
   ⟨fun I => P.map I.f.op x, fun I => by
     dsimp
     simp only [← comp_apply, ← P.map_comp, ← op_comp, I.w]⟩
 #align category_theory.meq.mk CategoryTheory.Meq.mk
 
-theorem mk_apply {X : C} {P : Cᵒᵖ ⥤ D} (S : J.cover X) (x : P.obj (op X)) (I : S.arrow) :
+theorem mk_apply {X : C} {P : Cᵒᵖ ⥤ D} (S : J.Cover X) (x : P.obj (op X)) (I : S.Arrow) :
     mk S x I = P.map I.f.op x :=
   rfl
 #align category_theory.meq.mk_apply CategoryTheory.Meq.mk_apply
@@ -120,23 +120,22 @@ theorem mk_apply {X : C} {P : Cᵒᵖ ⥤ D} (S : J.cover X) (x : P.obj (op X)) 
 variable [PreservesLimits (forget D)]
 
 /-- The equivalence between the type associated to `multiequalizer (S.index P)` and `meq P S`. -/
-noncomputable def equiv {X : C} (P : Cᵒᵖ ⥤ D) (S : J.cover X) [HasMultiequalizer (S.index P)] :
+noncomputable def equiv {X : C} (P : Cᵒᵖ ⥤ D) (S : J.Cover X) [HasMultiequalizer (S.index P)] :
     (multiequalizer (S.index P) : D) ≃ Meq P S :=
   Limits.Concrete.multiequalizerEquiv _
 #align category_theory.meq.equiv CategoryTheory.Meq.equiv
 
 @[simp]
-theorem equiv_apply {X : C} {P : Cᵒᵖ ⥤ D} {S : J.cover X} [HasMultiequalizer (S.index P)]
-    (x : multiequalizer (S.index P)) (I : S.arrow) :
+theorem equiv_apply {X : C} {P : Cᵒᵖ ⥤ D} {S : J.Cover X} [HasMultiequalizer (S.index P)]
+    (x : (multiequalizer (S.index P) : D)) (I : S.Arrow) :
     equiv P S x I = Multiequalizer.ι (S.index P) I x :=
   rfl
 #align category_theory.meq.equiv_apply CategoryTheory.Meq.equiv_apply
 
 @[simp]
-theorem equiv_symm_eq_apply {X : C} {P : Cᵒᵖ ⥤ D} {S : J.cover X} [HasMultiequalizer (S.index P)]
-    (x : Meq P S) (I : S.arrow) : Multiequalizer.ι (S.index P) I ((Meq.equiv P S).symm x) = x I :=
-  by
-  let z := (meq.equiv P S).symm x
+theorem equiv_symm_eq_apply {X : C} {P : Cᵒᵖ ⥤ D} {S : J.Cover X} [HasMultiequalizer (S.index P)]
+    (x : Meq P S) (I : S.Arrow) :
+    Multiequalizer.ι (S.index P) I ((Meq.equiv P S).symm x) = x I := by
   rw [← equiv_apply]
   simp
 #align category_theory.meq.equiv_symm_eq_apply CategoryTheory.Meq.equiv_symm_eq_apply
@@ -149,48 +148,49 @@ namespace Plus
 
 variable [ConcreteCategory.{max v u} D]
 
-attribute [local instance] concrete_category.has_coe_to_sort concrete_category.has_coe_to_fun
+attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.hasCoeToFun
 
 variable [PreservesLimits (forget D)]
 
-variable [∀ X : C, HasColimitsOfShape (J.cover X)ᵒᵖ D]
+variable [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ D]
 
-variable [∀ (P : Cᵒᵖ ⥤ D) (X : C) (S : J.cover X), HasMultiequalizer (S.index P)]
+variable [∀ (P : Cᵒᵖ ⥤ D) (X : C) (S : J.Cover X), HasMultiequalizer (S.index P)]
 
 noncomputable section
 
 /-- Make a term of `(J.plus_obj P).obj (op X)` from `x : meq P S`. -/
-def mk {X : C} {P : Cᵒᵖ ⥤ D} {S : J.cover X} (x : Meq P S) : (J.plusObj P).obj (op X) :=
+def mk {X : C} {P : Cᵒᵖ ⥤ D} {S : J.Cover X} (x : Meq P S) : (J.plusObj P).obj (op X) :=
   colimit.ι (J.diagram P X) (op S) ((Meq.equiv P S).symm x)
 #align category_theory.grothendieck_topology.plus.mk CategoryTheory.GrothendieckTopology.Plus.mk
 
-theorem res_mk_eq_mk_pullback {Y X : C} {P : Cᵒᵖ ⥤ D} {S : J.cover X} (x : Meq P S) (f : Y ⟶ X) :
+theorem res_mk_eq_mk_pullback {Y X : C} {P : Cᵒᵖ ⥤ D} {S : J.Cover X} (x : Meq P S) (f : Y ⟶ X) :
     (J.plusObj P).map f.op (mk x) = mk (x.pullback f) := by
-  dsimp [mk, plus_obj]
-  simp only [← comp_apply, colimit.ι_pre, ι_colim_map_assoc]
+  dsimp [mk, plusObj]
+  simp only [← comp_apply, colimit.ι_pre, ι_colimMap_assoc]
   simp_rw [comp_apply]
-  congr 1
-  apply_fun meq.equiv P _
+  apply congr_arg
+  apply (Meq.equiv P _).injective
   erw [Equiv.apply_symm_apply]
   ext i
-  simp only [diagram_pullback_app, meq.pullback_apply, meq.equiv_apply, ← comp_apply]
-  erw [multiequalizer.lift_ι, meq.equiv_symm_eq_apply]
+  simp only [diagramPullback_app, Meq.pullback_apply, Meq.equiv_apply, ← comp_apply]
+  erw [Multiequalizer.lift_ι, Meq.equiv_symm_eq_apply]
   cases i; rfl
 #align category_theory.grothendieck_topology.plus.res_mk_eq_mk_pullback CategoryTheory.GrothendieckTopology.Plus.res_mk_eq_mk_pullback
 
-theorem toPlus_mk {X : C} {P : Cᵒᵖ ⥤ D} (S : J.cover X) (x : P.obj (op X)) :
+theorem toPlus_mk {X : C} {P : Cᵒᵖ ⥤ D} (S : J.Cover X) (x : P.obj (op X)) :
     (J.toPlus P).app _ x = mk (Meq.mk S x) := by
-  dsimp [mk, to_plus]
-  let e : S ⟶ ⊤ := hom_of_le (OrderTop.le_top _)
+  dsimp [mk, toPlus]
+  let e : S ⟶ ⊤ := homOfLE (OrderTop.le_top _)
   rw [← colimit.w _ e.op]
-  delta cover.to_multiequalizer
+  delta Cover.toMultiequalizer
   simp only [comp_apply]
-  congr 1
+  apply congr_arg
   dsimp [diagram]
-  apply concrete.multiequalizer_ext
+  apply Concrete.multiequalizer_ext
   intro i
-  simpa only [← comp_apply, category.assoc, multiequalizer.lift_ι, category.comp_id,
-    meq.equiv_symm_eq_apply]
+  simp only [← comp_apply, Category.assoc, Multiequalizer.lift_ι, Category.comp_id,
+    Meq.equiv_symm_eq_apply]
+  rfl
 #align category_theory.grothendieck_topology.plus.to_plus_mk CategoryTheory.GrothendieckTopology.Plus.toPlus_mk
 
 theorem toPlus_apply {X : C} {P : Cᵒᵖ ⥤ D} (S : J.cover X) (x : Meq P S) (I : S.arrow) :
@@ -694,4 +694,3 @@ instance sheafification_reflective : IsIso (sheafificationAdjunction J D).counit
 #align category_theory.sheafification_reflective CategoryTheory.sheafification_reflective
 
 end CategoryTheory
-
