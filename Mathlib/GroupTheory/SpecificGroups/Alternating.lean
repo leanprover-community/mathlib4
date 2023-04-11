@@ -343,7 +343,8 @@ instance isSimpleGroup_five : IsSimpleGroup (alternatingGroup (Fin 5)) :=
         (by rw [card_fin])]
       refine' normalClosure_le_normal _
       rw [Set.singleton_subset_iff, SetLike.mem_coe]
-      have h := SetLike.mem_coe.1 (subset_normalClosure (Set.mem_singleton _))
+      have h := SetLike.mem_coe.1 (subset_normalClosure
+        (G := alternatingGroup (Fin 5)) (Set.mem_singleton ⟨g, gA⟩))
       exact mul_mem h h
     · -- The case `n = 4` leads to contradiction, as no element of $A_5$ includes a 4-cycle.
       have con := mem_alternatingGroup.1 gA
