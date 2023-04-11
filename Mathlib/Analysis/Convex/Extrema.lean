@@ -8,10 +8,10 @@ Authors: Frédéric Dupuis
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Convex.Function
-import Mathbin.Topology.Algebra.Affine
-import Mathbin.Topology.LocalExtr
-import Mathbin.Topology.MetricSpace.Basic
+import Mathlib.Analysis.Convex.Function
+import Mathlib.Topology.Algebra.Affine
+import Mathlib.Topology.LocalExtr
+import Mathlib.Topology.MetricSpace.Basic
 
 /-!
 # Minima and maxima of convex functions
@@ -55,8 +55,7 @@ theorem IsMinOn.of_isLocalMinOn_of_convexOn_Icc {f : ℝ → β} {a b : ℝ} (a_
 /-- A local minimum of a convex function is a global minimum, restricted to a set `s`.
 -/
 theorem IsMinOn.of_isLocalMinOn_of_convexOn {f : E → β} {a : E} (a_in_s : a ∈ s)
-    (h_localmin : IsLocalMinOn f s a) (h_conv : ConvexOn ℝ s f) : IsMinOn f s a :=
-  by
+    (h_localmin : IsLocalMinOn f s a) (h_conv : ConvexOn ℝ s f) : IsMinOn f s a := by
   intro x x_in_s
   let g : ℝ →ᵃ[ℝ] E := AffineMap.lineMap a x
   have hg0 : g 0 = a := AffineMap.lineMap_apply_zero a x
@@ -64,12 +63,10 @@ theorem IsMinOn.of_isLocalMinOn_of_convexOn {f : E → β} {a : E} (a_in_s : a �
   have hgc : Continuous g := AffineMap.lineMap_continuous
   have h_maps : maps_to g (Icc 0 1) s := by
     simpa only [maps_to', ← segment_eq_image_lineMap] using h_conv.1.segment_subset a_in_s x_in_s
-  have fg_local_min_on : IsLocalMinOn (f ∘ g) (Icc 0 1) 0 :=
-    by
+  have fg_local_min_on : IsLocalMinOn (f ∘ g) (Icc 0 1) 0 := by
     rw [← hg0] at h_localmin
     exact h_localmin.comp_continuous_on h_maps hgc.continuous_on (left_mem_Icc.2 zero_le_one)
-  have fg_min_on : IsMinOn (f ∘ g) (Icc 0 1 : Set ℝ) 0 :=
-    by
+  have fg_min_on : IsMinOn (f ∘ g) (Icc 0 1 : Set ℝ) 0 := by
     refine' IsMinOn.of_isLocalMinOn_of_convexOn_Icc one_pos fg_local_min_on _
     exact (h_conv.comp_affine_map g).Subset h_maps (convex_Icc 0 1)
   simpa only [hg0, hg1, comp_app, mem_set_of_eq] using fg_min_on (right_mem_Icc.2 zero_le_one)
