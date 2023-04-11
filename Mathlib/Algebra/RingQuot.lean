@@ -154,7 +154,7 @@ namespace RingQuot
 
 variable (r : R → R → Prop)
 
-private irreducible_def nat_cast (n : ℕ) : RingQuot r :=
+private irreducible_def natCast (n : ℕ) : RingQuot r :=
   ⟨Quot.mk _ n⟩
 
 private irreducible_def zero : RingQuot r :=
@@ -185,15 +185,18 @@ private irreducible_def npow (n : ℕ) : RingQuot r → RingQuot r
           induction' n with n ih
           · rw [pow_zero, pow_zero]
           · rw [pow_succ, pow_succ]
+            -- Porting note:
+            -- `simpa [mul_def] using congr_arg₂ (fun x y => mul r ⟨x⟩ ⟨y⟩) (Quot.sound h) ih`
+            -- mysteriously doesn't work
             have := congr_arg₂ (fun x y => mul r ⟨x⟩ ⟨y⟩) (Quot.sound h) ih
-            simp only [mul] at this
-            convert this
-            sorry) -- simpa only [mul] using congr_arg₂ (fun x y => mul r ⟨x⟩ ⟨y⟩) (Quot.sound h) ih)
+            dsimp only at this
+            simp [mul_def] at this
+            exact this)
         a⟩
 
 private irreducible_def smul [Algebra S R] (n : S) : RingQuot r → RingQuot r
   | ⟨a⟩ => ⟨Quot.map (fun a => n • a) (Rel.smul n) a⟩
-#exit
+
 instance : Zero (RingQuot r) :=
   ⟨zero r⟩
 
@@ -219,59 +222,59 @@ instance [Algebra S R] : SMul S (RingQuot r) :=
   ⟨smul r⟩
 
 theorem zero_quot : (⟨Quot.mk _ 0⟩ : RingQuot r) = 0 :=
-  show _ = zero r by rw [zero]
+  show _ = zero r by rw [zero_def]
 #align ring_quot.zero_quot RingQuot.zero_quot
 
 theorem one_quot : (⟨Quot.mk _ 1⟩ : RingQuot r) = 1 :=
-  show _ = one r by rw [one]
+  show _ = one r by rw [one_def]
 #align ring_quot.one_quot RingQuot.one_quot
 
 theorem add_quot {a b} : (⟨Quot.mk _ a⟩ + ⟨Quot.mk _ b⟩ : RingQuot r) = ⟨Quot.mk _ (a + b)⟩ := by
   show add r _ _ = _
-  rw [add]
+  rw [add_def]
   rfl
 #align ring_quot.add_quot RingQuot.add_quot
 
 theorem mul_quot {a b} : (⟨Quot.mk _ a⟩ * ⟨Quot.mk _ b⟩ : RingQuot r) = ⟨Quot.mk _ (a * b)⟩ := by
   show mul r _ _ = _
-  rw [mul]
+  rw [mul_def]
   rfl
 #align ring_quot.mul_quot RingQuot.mul_quot
 
 theorem pow_quot {a} {n : ℕ} : (⟨Quot.mk _ a⟩ ^ n : RingQuot r) = ⟨Quot.mk _ (a ^ n)⟩ := by
   show npow r _ _ = _
-  rw [npow]
+  rw [npow_def]
 #align ring_quot.pow_quot RingQuot.pow_quot
 
 theorem neg_quot {R : Type u₁} [Ring R] (r : R → R → Prop) {a} :
     (-⟨Quot.mk _ a⟩ : RingQuot r) = ⟨Quot.mk _ (-a)⟩ := by
   show neg r _ = _
-  rw [neg]
+  rw [neg_def]
   rfl
 #align ring_quot.neg_quot RingQuot.neg_quot
 
 theorem sub_quot {R : Type u₁} [Ring R] (r : R → R → Prop) {a b} :
     (⟨Quot.mk _ a⟩ - ⟨Quot.mk _ b⟩ : RingQuot r) = ⟨Quot.mk _ (a - b)⟩ := by
   show sub r _ _ = _
-  rw [sub]
+  rw [sub_def]
   rfl
 #align ring_quot.sub_quot RingQuot.sub_quot
 
 theorem smul_quot [Algebra S R] {n : S} {a : R} :
     (n • ⟨Quot.mk _ a⟩ : RingQuot r) = ⟨Quot.mk _ (n • a)⟩ := by
   show smul r _ _ = _
-  rw [smul]
+  rw [smul_def]
   rfl
 #align ring_quot.smul_quot RingQuot.smul_quot
 
-instance (r : R → R → Prop) : Semiring (RingQuot r) where
+instance Semiring (r : R → R → Prop) : Semiring (RingQuot r) where
   add := (· + ·)
   mul := (· * ·)
   zero := 0
   one := 1
   natCast := natCast r
-  natCast_zero := by simp [Nat.cast, nat_cast, ← zero_quot]
-  natCast_succ := by simp [Nat.cast, nat_cast, ← one_quot, add_quot]
+  natCast_zero := sorry --by simp [Nat.cast, natCast_def, ← zero_quot]
+  natCast_succ := sorry --by simp [Nat.cast, natCast_def, ← one_quot, add_quot]
   add_assoc := by
     rintro ⟨⟨⟩⟩ ⟨⟨⟩⟩ ⟨⟨⟩⟩
     simp [add_quot, add_assoc]
@@ -320,8 +323,8 @@ instance (r : R → R → Prop) : Semiring (RingQuot r) where
     rintro n ⟨⟨⟩⟩
     simp [smul_quot, add_quot, add_mul, add_comm]
 
-instance {R : Type u₁} [Ring R] (r : R → R → Prop) : Ring (RingQuot r) :=
-  { RingQuot.semiring r with
+instance Ring {R : Type u₁} [Ring R] (r : R → R → Prop) : Ring (RingQuot r) :=
+  { RingQuot.Semiring r with
     neg := Neg.neg
     add_left_neg := by
       rintro ⟨⟨⟩⟩
@@ -341,14 +344,14 @@ instance {R : Type u₁} [Ring R] (r : R → R → Prop) : Ring (RingQuot r) :=
       rintro n ⟨⟨⟩⟩
       simp [smul_quot, neg_quot, add_mul] }
 
-instance {R : Type u₁} [CommSemiring R] (r : R → R → Prop) : CommSemiring (RingQuot r) :=
-  { RingQuot.semiring r with
+instance CommSemiring {R : Type u₁} [CommSemiring R] (r : R → R → Prop) : CommSemiring (RingQuot r) :=
+  { RingQuot.Semiring r with
     mul_comm := by
       rintro ⟨⟨⟩⟩ ⟨⟨⟩⟩
       simp [mul_quot, mul_comm] }
 
 instance {R : Type u₁} [CommRing R] (r : R → R → Prop) : CommRing (RingQuot r) :=
-  { RingQuot.commSemiring r, RingQuot.ring r with }
+  { RingQuot.CommSemiring r, RingQuot.Ring r with }
 
 instance (r : R → R → Prop) : Inhabited (RingQuot r) :=
   ⟨0⟩
