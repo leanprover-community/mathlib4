@@ -8,7 +8,7 @@ Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.NormedSpace.Basic
+import Mathlib.Analysis.NormedSpace.Basic
 
 /-! # Constructions of continuous linear maps between (semi-)normed spaces
 
@@ -157,8 +157,7 @@ include σ₂₁
 /-- Construct a continuous linear equivalence from a linear equivalence together with
 bounds in both directions. -/
 def LinearEquiv.toContinuousLinearEquivOfBounds (e : E ≃ₛₗ[σ] F) (C_to C_inv : ℝ)
-    (h_to : ∀ x, ‖e x‖ ≤ C_to * ‖x‖) (h_inv : ∀ x : F, ‖e.symm x‖ ≤ C_inv * ‖x‖) : E ≃SL[σ] F
-    where
+    (h_to : ∀ x, ‖e x‖ ≤ C_to * ‖x‖) (h_inv : ∀ x : F, ‖e.symm x‖ ≤ C_inv * ‖x‖) : E ≃SL[σ] F where
   toLinearEquiv := e
   continuous_toFun := AddMonoidHomClass.continuous_of_bound e C_to h_to
   continuous_invFun := AddMonoidHomClass.continuous_of_bound e.symm C_inv h_inv
@@ -207,8 +206,7 @@ variable {σ₂₁ : 𝕜₂ →+* 𝕜} [RingHomInvPair σ σ₂₁] [RingHomIn
 include σ₂₁
 
 theorem ContinuousLinearEquiv.homothety_inverse (a : ℝ) (ha : 0 < a) (f : E ≃ₛₗ[σ] F) :
-    (∀ x : E, ‖f x‖ = a * ‖x‖) → ∀ y : F, ‖f.symm y‖ = a⁻¹ * ‖y‖ :=
-  by
+    (∀ x : E, ‖f x‖ = a * ‖x‖) → ∀ y : F, ‖f.symm y‖ = a⁻¹ * ‖y‖ := by
   intro hf y
   calc
     ‖f.symm y‖ = a⁻¹ * (a * ‖f.symm y‖) := _
@@ -239,8 +237,7 @@ namespace ContinuousLinearMap
 variable (𝕜)
 
 theorem toSpanSingleton_homothety (x : E) (c : 𝕜) :
-    ‖LinearMap.toSpanSingleton 𝕜 E x c‖ = ‖x‖ * ‖c‖ :=
-  by
+    ‖LinearMap.toSpanSingleton 𝕜 E x c‖ = ‖x‖ * ‖c‖ := by
   rw [mul_comm]
   exact norm_smul _ _
 #align continuous_linear_map.to_span_singleton_homothety ContinuousLinearMap.toSpanSingleton_homothety
@@ -256,15 +253,13 @@ theorem toSpanSingleton_apply (x : E) (r : 𝕜) : toSpanSingleton 𝕜 x r = r 
 #align continuous_linear_map.to_span_singleton_apply ContinuousLinearMap.toSpanSingleton_apply
 
 theorem toSpanSingleton_add (x y : E) :
-    toSpanSingleton 𝕜 (x + y) = toSpanSingleton 𝕜 x + toSpanSingleton 𝕜 y :=
-  by
+    toSpanSingleton 𝕜 (x + y) = toSpanSingleton 𝕜 x + toSpanSingleton 𝕜 y := by
   ext1
   simp [to_span_singleton_apply]
 #align continuous_linear_map.to_span_singleton_add ContinuousLinearMap.toSpanSingleton_add
 
 theorem toSpanSingleton_smul' (𝕜') [NormedField 𝕜'] [NormedSpace 𝕜' E] [SMulCommClass 𝕜 𝕜' E]
-    (c : 𝕜') (x : E) : toSpanSingleton 𝕜 (c • x) = c • toSpanSingleton 𝕜 x :=
-  by
+    (c : 𝕜') (x : E) : toSpanSingleton 𝕜 (c • x) = c • toSpanSingleton 𝕜 x := by
   ext1
   rw [to_span_singleton_apply, smul_apply, to_span_singleton_apply, smul_comm]
 #align continuous_linear_map.to_span_singleton_smul' ContinuousLinearMap.toSpanSingleton_smul'
