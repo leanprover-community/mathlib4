@@ -1,4 +1,5 @@
 import Mathlib.Tactic.IrreducibleDef
+import Mathlib.Util.WhatsNew
 
 /-- Add two natural numbers, but not during unification. -/
 irreducible_def frobnicate (a b : Nat) :=
@@ -10,8 +11,10 @@ example : frobnicate a 0 = a := by
 example : frobnicate a 0 = a :=
   frobnicate_def a 0
 
-irreducible_def justAsArbitrary [Inhabited α] : α :=
+irreducible_def justAsArbitrary (lemma := myLemma) [Inhabited α] : α :=
   default
+
+example : justAsArbitrary = 0 := myLemma
 
 irreducible_def withoutType := 42
 
