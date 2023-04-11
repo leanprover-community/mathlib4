@@ -244,10 +244,12 @@ theorem normalClosure_finRotate_five : normalClosure ({⟨finRotate 5,
       rw [Set.singleton_subset_iff, SetLike.mem_coe]
       have h :
         (⟨finRotate 5, finRotate_bit1_mem_alternatingGroup (n := 2)⟩ : alternatingGroup (Fin 5)) ∈
-          normalClosure _ :=
+          normalClosure s :=
         SetLike.mem_coe.1 (subset_normalClosure (Set.mem_singleton _))
-      exact mul_mem (Subgroup.normalClosure_normal.conj_mem _ h
-        ⟨Fin.cycleRange 2, Fin.isThreeCycle_cycleRange_two.mem_alternatingGroup⟩) (inv_mem h))
+      exact (mul_mem (Subgroup.normalClosure_normal.conj_mem _ h
+          ⟨Fin.cycleRange 2, Fin.isThreeCycle_cycleRange_two.mem_alternatingGroup⟩) (inv_mem h)
+      --Porting note : added `: _`
+          : _))
 #align alternating_group.normal_closure_fin_rotate_five alternatingGroup.normalClosure_finRotate_five
 
 /-- The normal closure of $(04)(13)$ within $A_5$ is the whole group. This will be
