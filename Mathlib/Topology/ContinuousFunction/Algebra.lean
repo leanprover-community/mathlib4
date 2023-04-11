@@ -585,10 +585,10 @@ variable [Module R M] [ContinuousConstSMul R M] [TopologicalAddGroup M]
 /-- The `R`-submodule of continuous maps `α → M`. -/
 def continuousSubmodule : Submodule R (α → M) :=
   {
-    continuousAddto_addSubgroup α
+    continuousAddSubgroup α
       M with
     carrier := { f : α → M | Continuous f }
-    smul_mem' := fun c f hf => hf.const_smul c }
+    smul_mem' := fun c _ hf => hf.const_smul c }
 #align continuous_submodule continuousSubmodule
 
 end Subtype
@@ -815,10 +815,6 @@ variable {𝕜 : Type _} [TopologicalSpace 𝕜]
 
 variable (s : Set C(α, 𝕜)) (f : s) (x : α)
 
-#check (↑f x)
-
-
-
 /-- A set of continuous maps "separates points strongly"
 if for each pair of distinct points there is a function with specified values on them.
 
@@ -847,10 +843,9 @@ theorem Subalgebra.SeparatesPoints.strongly {s : Subalgebra 𝕜 C(α, 𝕜)} (h
     (s : Set C(α, 𝕜)).SeparatesPointsStrongly := fun v x y => by
   by_cases n : x = y
   · subst n
-    use (v x • 1 : C(α, 𝕜))
+    use (SMul.smul (v x) 1 : C(α, 𝕜))
     · apply s.smul_mem
       apply s.one_mem
-    · simp [coeFn_coe_base']
   obtain ⟨f, ⟨f, ⟨m, rfl⟩⟩, w⟩ := h n
   replace w : f x - f y ≠ 0 := sub_ne_zero_of_ne w
   let a := v x
@@ -995,7 +990,7 @@ section Star
 
 variable [Star β] [ContinuousStar β]
 
-instance : Star C(α, β) where unit f := starContinuousMap.comp f
+instance : Star C(α, β) where star f := starContinuousMap.comp f
 
 @[simp]
 theorem coe_star (f : C(α, β)) : ⇑(star f) = star f :=
@@ -1010,13 +1005,13 @@ theorem star_apply (f : C(α, β)) (x : α) : star f x = star (f x) :=
 end Star
 
 instance [InvolutiveStar β] [ContinuousStar β] : InvolutiveStar C(α, β)
-    where star_involutive f := ext fun x => star_star _
+    where star_involutive _ := ext fun _ => star_star _
 
-instance [AddMonoid β] [ContinuousAdd β] [StarAddMonoid β] [ContinuousStar β] :
-    StarAddMonoid C(α, β) where star_add f g := ext fun x => star_add _ _
+instance starAddMonoid [AddMonoid β] [ContinuousAdd β] [StarAddMonoid β] [ContinuousStar β] :
+    StarAddMonoid C(α, β) where star_add _ _ := ext fun _ => star_add _ _
 
 instance [Semigroup β] [ContinuousMul β] [StarSemigroup β] [ContinuousStar β] :
-    StarSemigroup C(α, β) where star_mul f g := ext fun x => star_mul _ _
+    StarSemigroup C(α, β) where star_mul _ _ := ext fun _ => star_mul _ _
 
 instance [NonUnitalSemiring β] [TopologicalSemiring β] [StarRing β] [ContinuousStar β] :
     StarRing C(α, β) :=
@@ -1024,7 +1019,7 @@ instance [NonUnitalSemiring β] [TopologicalSemiring β] [StarRing β] [Continuo
 
 instance [Star R] [Star β] [SMul R β] [StarModule R β] [ContinuousStar β]
     [ContinuousConstSMul R β] : StarModule R C(α, β)
-    where star_smul k f := ext fun x => star_smul _ _
+    where star_smul _ _ := ext fun _ => star_smul _ _
 
 end StarStructure
 
@@ -1046,11 +1041,13 @@ def compStarAlgHom' (f : C(X, Y)) : C(Y, A) →⋆ₐ[𝕜] C(X, A) where
   toFun g := g.comp f
   map_one' := one_comp _
   map_mul' _ _ := rfl
-  map_zero' := zero_comp _
+  map_zero' := sorry -- zero_comp _
   map_add' _ _ := rfl
   commutes' _ := rfl
   map_star' _ := rfl
 #align continuous_map.comp_star_alg_hom' ContinuousMap.compStarAlgHom'
+
+#check compStarAlgHom'_apply
 
 /-- `continuous_map.comp_star_alg_hom'` sends the identity continuous map to the identity
 `star_alg_hom` -/
@@ -1079,7 +1076,7 @@ theorem periodic_tsum_comp_add_zsmul [LocallyCompactSpace X] [AddCommGroup X]
   by_cases h : Summable fun n : ℤ => f.comp (ContinuousMap.addRight (n • p))
   · convert congr_arg (fun f : C(X, Y) => f x) ((Equiv.addRight (1 : ℤ)).tsum_eq _) using 1
     simp_rw [← tsum_apply h, ← tsum_apply ((Equiv.addRight (1 : ℤ)).summable_iff.mpr h),
-      Equiv.coe_addRight, comp_apply, coe_add_right, add_one_zsmul, add_comm (_ • p) p, ← add_assoc]
+      Equiv.coe_addRight, comp_apply, coe_addRight, add_one_zsmul, add_comm (_ • p) p, ← add_assoc]
   · rw [tsum_eq_zero_of_not_summable h]
     simp only [coe_zero, Pi.zero_apply]
 #align continuous_map.periodic_tsum_comp_add_zsmul ContinuousMap.periodic_tsum_comp_add_zsmul
@@ -1109,10 +1106,10 @@ def compStarAlgEquiv' (f : X ≃ₜ Y) : C(Y, A) ≃⋆ₐ[𝕜] C(X, A) :=
     invFun := (f.symm : C(Y, X)).compStarAlgHom' 𝕜 A
     left_inv := fun g => by
       simp only [ContinuousMap.compStarAlgHom'_apply, ContinuousMap.comp_assoc,
-        to_continuous_map_comp_symm, ContinuousMap.comp_id]
+        toContinuousMap_comp_symm, ContinuousMap.comp_id]
     right_inv := fun g => by
       simp only [ContinuousMap.compStarAlgHom'_apply, ContinuousMap.comp_assoc,
-        symm_comp_to_continuous_map, ContinuousMap.comp_id]
+        symm_comp_toContinuousMap, ContinuousMap.comp_id]
     map_smul' := fun k a => map_smul (f.toContinuousMap.compStarAlgHom' 𝕜 A) k a }
 #align homeomorph.comp_star_alg_equiv' Homeomorph.compStarAlgEquiv'
 
