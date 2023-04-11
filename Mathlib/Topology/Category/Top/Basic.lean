@@ -61,19 +61,20 @@ set_option linter.uppercaseLean3 false in
 -- Porting note: cannot find a coercion to function otherwise
 attribute [local instance] ConcreteCategory.hasCoeToFun
 
-@[simp]
-theorem id_app (X : TopCat.{u}) (x : ↑X) : (𝟙 X : X ⟶  X) x = x :=
-  rfl
+-- Porting note: simp can prove this; removed simp
+theorem id_app (X : TopCat.{u}) (x : ↑X) : (𝟙 X : X ⟶  X) x = x := rfl
 set_option linter.uppercaseLean3 false in
 #align Top.id_app TopCat.id_app
 
-@[simp]
+-- Porting note: simp can prove this; removed simp
 theorem comp_app {X Y Z : TopCat.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
     (f ≫ g : X → Z) x = g (f x) := rfl
 set_option linter.uppercaseLean3 false in
 #align Top.comp_app TopCat.comp_app
 
+/-- Construct a bundled `Top` from the underlying type and the typeclass. -/
 def of (X : Type u) [TopologicalSpace X] : TopCat :=
+  -- Porting note: needed to call inferInstance
   ⟨X, inferInstance⟩
 set_option linter.uppercaseLean3 false in
 #align Top.of TopCat.of
@@ -154,16 +155,20 @@ theorem of_homeoOfIso {X Y : TopCat.{u}} (f : X ≅ Y) : isoOfHomeo (homeoOfIso 
 set_option linter.uppercaseLean3 false in
 #align Top.of_homeo_of_iso TopCat.of_homeoOfIso
 
-variable (X : TopCat)
-
-@[simp]
+-- Porting note: simpNF requested partially simped version below
 theorem openEmbedding_iff_comp_isIso {X Y Z : TopCat} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso g] :
-    OpenEmbedding (f ≫ g : X → Z) ↔ OpenEmbedding f :=
+    OpenEmbedding (f ≫ g) ↔ OpenEmbedding f :=
   (TopCat.homeoOfIso (asIso g)).openEmbedding.of_comp_iff f
 set_option linter.uppercaseLean3 false in
 #align Top.open_embedding_iff_comp_is_iso TopCat.openEmbedding_iff_comp_isIso
 
 @[simp]
+theorem openEmbedding_iff_comp_isIso' {X Y Z : TopCat} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso g] :
+    OpenEmbedding ((forget TopCat).map f ≫ (forget TopCat).map g) ↔ OpenEmbedding f := by
+  simp only [←forget_obj_eq_coe, ←Functor.map_comp]
+  exact openEmbedding_iff_comp_isIso f g
+
+-- Porting note: simpNF requested partially simped version below
 theorem openEmbedding_iff_isIso_comp {X Y Z : TopCat} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso f] :
     OpenEmbedding (f ≫ g) ↔ OpenEmbedding g := by
   constructor
@@ -174,4 +179,11 @@ theorem openEmbedding_iff_isIso_comp {X Y Z : TopCat} (f : X ⟶ Y) (g : Y ⟶ Z
 set_option linter.uppercaseLean3 false in
 #align Top.open_embedding_iff_is_iso_comp TopCat.openEmbedding_iff_isIso_comp
 
+@[simp]
+theorem openEmbedding_iff_isIso_comp' {X Y Z : TopCat} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso f] :
+    OpenEmbedding ((forget TopCat).map f ≫ (forget TopCat).map g) ↔ OpenEmbedding g := by
+  simp only [←forget_obj_eq_coe, ←Functor.map_comp]
+  exact openEmbedding_iff_isIso_comp f g
+
 end TopCat
+
