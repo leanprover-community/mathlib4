@@ -1093,7 +1093,7 @@ theorem isNoetherianRing_fin [IsNoetherianRing R] :
   | n + 1 =>
     @isNoetherianRing_of_ringEquiv (Polynomial (MvPolynomial (Fin n) R)) _ _ _
       (MvPolynomial.finSuccEquiv _ n).toRingEquiv.symm
-      (@Polynomial.isNoetherianRing (MvPolynomial (Fin n) R) _ isNoetherianRing_fin)
+      (@Polynomial.isNoetherianRing (MvPolynomial (Fin n) R) _ _ isNoetherianRing_fin)
 #align mv_polynomial.is_noetherian_ring_fin MvPolynomial.isNoetherianRing_fin
 
 /-- The multivariate polynomial ring in finitely many variables over a noetherian ring
@@ -1158,7 +1158,7 @@ instance {R : Type u} {σ : Type v} [CommRing R] [IsDomain R] [DecidableEq σ] :
   apply @NoZeroDivisors.to_isDomain (MvPolynomial σ R) _ ?_ _
   apply AddMonoidAlgebra.nontrivial
 
--- instance {R : Type u} {σ : Type v} [CommRing R] [IsDomain R] :
+-- instance {R : Type u} {σ : Type v} [CommRing R] [IsDomain R] [DecidableEq σ]:
 --     IsDomain (MvPolynomial σ R)[X] := inferInstance
 
 theorem map_mvPolynomial_eq_eval₂ {S : Type _} [CommRing S] [Finite σ] (ϕ : MvPolynomial σ R →+* S)
