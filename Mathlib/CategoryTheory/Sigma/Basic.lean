@@ -243,7 +243,7 @@ variable {I} {K : Type w₃}
 
 -- Porting note: Had to expand (G ∘ g) to (fun i => C (g i)) in lemma statement
 -- so that the suitable cateogry instances could be found
-/-- The functor `sigma.map` applied to a composition is a composition of functors. -/
+/-- The functor `Sigma.map` applied to a composition is a composition of functors. -/
 @[simps!]
 def mapComp (f : K → J) (g : J → I) : map (fun x => C (g x)) f ⋙ (map C g : _) ≅ map C (g ∘ f) :=
   (descUniq _ _) fun k =>

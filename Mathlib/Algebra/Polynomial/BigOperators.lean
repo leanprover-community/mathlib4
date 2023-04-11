@@ -259,11 +259,11 @@ theorem multiset_prod_X_sub_C_nextCoeff (t : Multiset R) :
 set_option linter.uppercaseLean3 false in
 #align polynomial.multiset_prod_X_sub_C_next_coeff Polynomial.multiset_prod_X_sub_C_nextCoeff
 
-theorem prod_x_sub_c_nextCoeff {s : Finset ι} (f : ι → R) :
+theorem prod_X_sub_C_nextCoeff {s : Finset ι} (f : ι → R) :
     nextCoeff (∏ i in s, (X - C (f i))) = -∑ i in s, f i := by
   simpa using multiset_prod_X_sub_C_nextCoeff (s.1.map f)
 set_option linter.uppercaseLean3 false in
-#align polynomial.prod_X_sub_C_next_coeff Polynomial.prod_x_sub_c_nextCoeff
+#align polynomial.prod_X_sub_C_next_coeff Polynomial.prod_X_sub_C_nextCoeff
 
 theorem multiset_prod_X_sub_C_coeff_card_pred (t : Multiset R) (ht : 0 < Multiset.card t) :
     (t.map fun x => X - C x).prod.coeff ((Multiset.card t) - 1) = -t.sum := by

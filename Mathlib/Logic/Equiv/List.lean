@@ -389,8 +389,8 @@ def raise'Finset (l : List ℕ) (n : ℕ) : Finset ℕ :=
   ⟨raise' l n, (raise'_sorted _ _).imp (@ne_of_lt _ _)⟩
 #align denumerable.raise'_finset Denumerable.raise'Finset
 
-/-- If `α` is denumerable, then so is `finset α`. Warning: this is *not* the same encoding as used
-in `finset.encodable`. -/
+/-- If `α` is denumerable, then so is `Finset α`. Warning: this is *not* the same encoding as used
+in `Finset.encodable`. -/
 instance finset : Denumerable (Finset α) :=
   mk'
     ⟨fun s : Finset α => encode <| lower' ((s.map (eqv α).toEmbedding).sort (· ≤ ·)) 0, fun n =>

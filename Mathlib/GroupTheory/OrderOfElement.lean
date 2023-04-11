@@ -781,7 +781,7 @@ theorem finEquivPowers_symm_apply [Finite G] (x : G) (n : ℕ) {hn : ∃ m : ℕ
 /-- The equivalence between `Submonoid.powers` of two elements `x, y` of the same order, mapping
   `x ^ i` to `y ^ i`. -/
 @[to_additive multiplesEquivMultiples
-  "The equivalence between `submonoid.multiples` of two elements `a, b` of the same additive order,
+  "The equivalence between `Submonoid.multiples` of two elements `a, b` of the same additive order,
   mapping `i • a` to `i • b`."]
 noncomputable def powersEquivPowers [Finite G] (h : orderOf x = orderOf y) :
     (Submonoid.powers x : Set G) ≃ (Submonoid.powers y : Set G) :=

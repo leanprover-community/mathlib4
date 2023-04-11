@@ -578,6 +578,10 @@ theorem apply_total (f : M →ₗ[R] M') (v) (l : α →₀ R) :
   apply Finsupp.induction_linear l <;> simp (config := { contextual := true })
 #align finsupp.apply_total Finsupp.apply_total
 
+theorem apply_total_id (f : M →ₗ[R] M') (l : M →₀ R) :
+    f (Finsupp.total M M R _root_.id l) = Finsupp.total M M' R f l :=
+  apply_total ..
+
 theorem total_unique [Unique α] (l : α →₀ R) (v) :
     Finsupp.total α M R v l = l default • v default := by rw [← total_single, ← unique_single l]
 #align finsupp.total_unique Finsupp.total_unique
