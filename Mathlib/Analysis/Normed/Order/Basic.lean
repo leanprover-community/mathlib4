@@ -29,6 +29,7 @@ variable {α : Type _}
 `OrderedAddCommGroup`. This class is necessary to avoid diamonds caused by both classes
 carrying their own group structure. -/
 class NormedOrderedAddGroup (α : Type _) extends OrderedAddCommGroup α, Norm α, MetricSpace α where
+  /-- The distance function is induced by the norm. -/
   dist_eq : ∀ x y, dist x y = ‖x - y‖ := by aesop
 #align normed_ordered_add_group NormedOrderedAddGroup
 
@@ -37,6 +38,7 @@ class NormedOrderedAddGroup (α : Type _) extends OrderedAddCommGroup α, Norm �
 carrying their own group structure. -/
 @[to_additive]
 class NormedOrderedGroup (α : Type _) extends OrderedCommGroup α, Norm α, MetricSpace α where
+  /-- The distance function is induced by the norm. -/
   dist_eq : ∀ x y, dist x y = ‖x / y‖ := by aesop
 #align normed_ordered_group NormedOrderedGroup
 
@@ -45,6 +47,7 @@ and a `LinearOrderedAddCommGroup`. This class is necessary to avoid diamonds cau
 classes carrying their own group structure. -/
 class NormedLinearOrderedAddGroup (α : Type _) extends LinearOrderedAddCommGroup α, Norm α,
   MetricSpace α where
+  /-- The distance function is induced by the norm. -/
   dist_eq : ∀ x y, dist x y = ‖x - y‖ := by aesop
 #align normed_linear_ordered_add_group NormedLinearOrderedAddGroup
 
@@ -54,6 +57,7 @@ carrying their own group structure. -/
 @[to_additive]
 class NormedLinearOrderedGroup (α : Type _) extends LinearOrderedCommGroup α, Norm α,
   MetricSpace α where
+  /-- The distance function is induced by the norm. -/
   dist_eq : ∀ x y, dist x y = ‖x / y‖ := by aesop
 #align normed_linear_ordered_group NormedLinearOrderedGroup
 
@@ -61,7 +65,9 @@ class NormedLinearOrderedGroup (α : Type _) extends LinearOrderedCommGroup α, 
     `LinearOrderedField`. This class is necessary to avoid diamonds. -/
 class NormedLinearOrderedField (α : Type _) extends LinearOrderedField α, Norm α,
   MetricSpace α where
+  /-- The distance function is induced by the norm. -/
   dist_eq : ∀ x y, dist x y = ‖x - y‖ := by aesop
+  /-- The norm is multiplicative. -/
   norm_mul' : ∀ x y : α, ‖x * y‖ = ‖x‖ * ‖y‖
 #align normed_linear_ordered_field NormedLinearOrderedField
 
