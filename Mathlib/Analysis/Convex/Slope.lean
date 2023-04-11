@@ -10,7 +10,7 @@ Authors: Yury Kudriashov, Malo Jaffré
 -/
 import Mathlib.Analysis.Convex.Function
 import Mathlib.Tactic.FieldSimp
-import Mathlib.Tactic.Linarith.Default
+import Mathlib.Tactic.Linarith
 
 /-!
 # Slopes of convex functions
@@ -56,9 +56,9 @@ theorem ConvexOn.slope_mono_adjacent (hf : ConvexOn 𝕜 s f) {x y z : 𝕜} (hx
 `f` on `[x, y]` is greater than the slope of the secant line of `f` on `[x, z]`. -/
 theorem ConcaveOn.slope_anti_adjacent (hf : ConcaveOn 𝕜 s f) {x y z : 𝕜} (hx : x ∈ s) (hz : z ∈ s)
     (hxy : x < y) (hyz : y < z) : (f z - f y) / (z - y) ≤ (f y - f x) / (y - x) := by
-  rw [← neg_le_neg_iff, ← neg_sub_neg (f x), ← neg_sub_neg (f y)]
-  simp_rw [← Pi.neg_apply, ← neg_div, neg_sub]
-  exact ConvexOn.slope_mono_adjacent hf.neg hx hz hxy hyz
+  have := neg_le_neg (ConvexOn.slope_mono_adjacent hf.neg hx hz hxy hyz)
+  simp only [Pi.neg_apply, ← neg_div, neg_sub', neg_neg] at this
+  exact this
 #align concave_on.slope_anti_adjacent ConcaveOn.slope_anti_adjacent
 
 /-- If `f : 𝕜 → 𝕜` is strictly convex, then for any three points `x < y < z` the slope of the
@@ -96,9 +96,9 @@ secant line of `f` on `[x, y]` is strictly greater than the slope of the secant 
 `[x, z]`. -/
 theorem StrictConcaveOn.slope_anti_adjacent (hf : StrictConcaveOn 𝕜 s f) {x y z : 𝕜} (hx : x ∈ s)
     (hz : z ∈ s) (hxy : x < y) (hyz : y < z) : (f z - f y) / (z - y) < (f y - f x) / (y - x) := by
-  rw [← neg_lt_neg_iff, ← neg_sub_neg (f x), ← neg_sub_neg (f y)]
-  simp_rw [← Pi.neg_apply, ← neg_div, neg_sub]
-  exact StrictConvexOn.slope_strict_mono_adjacent hf.neg hx hz hxy hyz
+  have := neg_lt_neg (StrictConvexOn.slope_strict_mono_adjacent hf.neg hx hz hxy hyz)
+  simp only [Pi.neg_apply, ← neg_div, neg_sub', neg_neg] at this
+  exact this
 #align strict_concave_on.slope_anti_adjacent StrictConcaveOn.slope_anti_adjacent
 
 /-- If for any three points `x < y < z`, the slope of the secant line of `f : 𝕜 → 𝕜` on `[x, y]` is
@@ -121,11 +121,11 @@ theorem convexOn_of_slope_mono_adjacent (hs : Convex 𝕜 s)
     have hxz : 0 < z - x := sub_pos.2 (hxy.trans hyz)
     have ha : (z - y) / (z - x) = a := by
       rw [eq_comm, ← sub_eq_iff_eq_add'] at hab
-      simp_rw [div_eq_iff hxz.ne', y, ← hab]
+      simp_rw [div_eq_iff hxz.ne', ← hab]
       ring
     have hb : (y - x) / (z - x) = b := by
       rw [eq_comm, ← sub_eq_iff_eq_add] at hab
-      simp_rw [div_eq_iff hxz.ne', y, ← hab]
+      simp_rw [div_eq_iff hxz.ne', ← hab]
       ring
     rwa [sub_mul, sub_mul, sub_le_iff_le_add', ← add_sub_assoc, le_sub_iff_add_le, ← mul_add,
       sub_add_sub_cancel, ← le_div_iff hxz, add_div, mul_div_assoc, mul_div_assoc, mul_comm (f x),
@@ -140,7 +140,7 @@ theorem concaveOn_of_slope_anti_adjacent (hs : Convex 𝕜 s)
         x ∈ s → z ∈ s → x < y → y < z → (f z - f y) / (z - y) ≤ (f y - f x) / (y - x)) :
     ConcaveOn 𝕜 s f := by
   rw [← neg_convexOn_iff]
-  refine' convexOn_of_slope_mono_adjacent hs fun x y z hx hz hxy hyz => _
+  refine' convexOn_of_slope_mono_adjacent hs fun hx hz hxy hyz => _
   rw [← neg_le_neg_iff]
   simp_rw [← neg_div, neg_sub, Pi.neg_apply, neg_sub_neg]
   exact hf hx hz hxy hyz
@@ -166,11 +166,11 @@ theorem strictConvexOn_of_slope_strict_mono_adjacent (hs : Convex 𝕜 s)
     have hxz : 0 < z - x := sub_pos.2 (hxy.trans hyz)
     have ha : (z - y) / (z - x) = a := by
       rw [eq_comm, ← sub_eq_iff_eq_add'] at hab
-      simp_rw [div_eq_iff hxz.ne', y, ← hab]
+      simp_rw [div_eq_iff hxz.ne', ← hab]
       ring
     have hb : (y - x) / (z - x) = b := by
       rw [eq_comm, ← sub_eq_iff_eq_add] at hab
-      simp_rw [div_eq_iff hxz.ne', y, ← hab]
+      simp_rw [div_eq_iff hxz.ne', ← hab]
       ring
     rwa [sub_mul, sub_mul, sub_lt_iff_lt_add', ← add_sub_assoc, lt_sub_iff_add_lt, ← mul_add,
       sub_add_sub_cancel, ← lt_div_iff hxz, add_div, mul_div_assoc, mul_div_assoc, mul_comm (f x),
@@ -186,7 +186,7 @@ theorem strictConcaveOn_of_slope_strict_anti_adjacent (hs : Convex 𝕜 s)
         x ∈ s → z ∈ s → x < y → y < z → (f z - f y) / (z - y) < (f y - f x) / (y - x)) :
     StrictConcaveOn 𝕜 s f := by
   rw [← neg_strictConvexOn_iff]
-  refine' strictConvexOn_of_slope_strict_mono_adjacent hs fun x y z hx hz hxy hyz => _
+  refine' strictConvexOn_of_slope_strict_mono_adjacent hs fun hx hz hxy hyz => _
   rw [← neg_lt_neg_iff]
   simp_rw [← neg_div, neg_sub, Pi.neg_apply, neg_sub_neg]
   exact hf hx hz hxy hyz
@@ -196,11 +196,10 @@ theorem strictConcaveOn_of_slope_strict_anti_adjacent (hs : Convex 𝕜 s)
 line of `f` on `[x, y]` is less than the slope of the secant line of `f` on `[x, z]`. -/
 theorem convexOn_iff_slope_mono_adjacent :
     ConvexOn 𝕜 s f ↔
-      Convex 𝕜 s ∧
-        ∀ ⦃x y z : 𝕜⦄,
+      Convex 𝕜 s ∧ ∀ ⦃x y z : 𝕜⦄,
           x ∈ s → z ∈ s → x < y → y < z → (f y - f x) / (y - x) ≤ (f z - f y) / (z - y) :=
-  ⟨fun h => ⟨h.1, fun x y z => h.slope_mono_adjacent⟩, fun h =>
-    convexOn_of_slope_mono_adjacent h.1 h.2⟩
+  ⟨fun h => ⟨h.1, fun _ _ _ => h.slope_mono_adjacent⟩, fun h =>
+    convexOn_of_slope_mono_adjacent h.1 (@fun _ _ _ hx hy => h.2 hx hy)⟩
 #align convex_on_iff_slope_mono_adjacent convexOn_iff_slope_mono_adjacent
 
 /-- A function `f : 𝕜 → 𝕜` is concave iff for any three points `x < y < z` the slope of the secant
@@ -210,8 +209,8 @@ theorem concaveOn_iff_slope_anti_adjacent :
       Convex 𝕜 s ∧
         ∀ ⦃x y z : 𝕜⦄,
           x ∈ s → z ∈ s → x < y → y < z → (f z - f y) / (z - y) ≤ (f y - f x) / (y - x) :=
-  ⟨fun h => ⟨h.1, fun x y z => h.slope_anti_adjacent⟩, fun h =>
-    concaveOn_of_slope_anti_adjacent h.1 h.2⟩
+  ⟨fun h => ⟨h.1, fun _ _ _ => h.slope_anti_adjacent⟩, fun h =>
+    concaveOn_of_slope_anti_adjacent h.1 (@fun _ _ _ hx hy => h.2 hx hy)⟩
 #align concave_on_iff_slope_anti_adjacent concaveOn_iff_slope_anti_adjacent
 
 /-- A function `f : 𝕜 → 𝕜` is strictly convex iff for any three points `x < y < z` the slope of
@@ -222,8 +221,8 @@ theorem strictConvexOn_iff_slope_strict_mono_adjacent :
       Convex 𝕜 s ∧
         ∀ ⦃x y z : 𝕜⦄,
           x ∈ s → z ∈ s → x < y → y < z → (f y - f x) / (y - x) < (f z - f y) / (z - y) :=
-  ⟨fun h => ⟨h.1, fun x y z => h.slope_strict_mono_adjacent⟩, fun h =>
-    strictConvexOn_of_slope_strict_mono_adjacent h.1 h.2⟩
+  ⟨fun h => ⟨h.1, fun _ _ _ => h.slope_strict_mono_adjacent⟩, fun h =>
+    strictConvexOn_of_slope_strict_mono_adjacent h.1 (@fun _ _ _ hx hy => h.2 hx hy)⟩
 #align strict_convex_on_iff_slope_strict_mono_adjacent strictConvexOn_iff_slope_strict_mono_adjacent
 
 /-- A function `f : 𝕜 → 𝕜` is strictly concave iff for any three points `x < y < z` the slope of
@@ -234,8 +233,8 @@ theorem strictConcaveOn_iff_slope_strict_anti_adjacent :
       Convex 𝕜 s ∧
         ∀ ⦃x y z : 𝕜⦄,
           x ∈ s → z ∈ s → x < y → y < z → (f z - f y) / (z - y) < (f y - f x) / (y - x) :=
-  ⟨fun h => ⟨h.1, fun x y z => h.slope_anti_adjacent⟩, fun h =>
-    strictConcaveOn_of_slope_strict_anti_adjacent h.1 h.2⟩
+  ⟨fun h => ⟨h.1, fun _ _ _ => h.slope_anti_adjacent⟩, fun h =>
+    strictConcaveOn_of_slope_strict_anti_adjacent h.1 (@fun _ _ _ hx hy => h.2 hx hy)⟩
 #align strict_concave_on_iff_slope_strict_anti_adjacent strictConcaveOn_iff_slope_strict_anti_adjacent
 
 /-- If `f` is convex on a set `s` in a linearly ordered field, and `f x < f y` for two points
@@ -244,7 +243,8 @@ theorem ConvexOn.strict_mono_of_lt (hf : ConvexOn 𝕜 s f) {x y : 𝕜} (hx : x
     (hxy' : f x < f y) : StrictMonoOn f (s ∩ Set.Ici y) := by
   intro u hu v hv huv
   have step1 : ∀ {z : 𝕜}, z ∈ s ∩ Set.Ioi y → f y < f z := by
-    refine' fun z hz => hf.lt_right_of_left_lt hx hz.1 _ hxy'
+    intros z hz
+    refine hf.lt_right_of_left_lt hx hz.1 ?_ hxy'
     rw [openSegment_eq_Ioo (hxy.trans hz.2)]
     exact ⟨hxy, hz.2⟩
   rcases eq_or_lt_of_le hu.2 with (rfl | hu2)
@@ -256,4 +256,3 @@ theorem ConvexOn.strict_mono_of_lt (hf : ConvexOn 𝕜 s f) {x y : 𝕜} (hx : x
     · rw [openSegment_eq_Ioo (hu2.trans huv)]
       exact ⟨hu2, huv⟩
 #align convex_on.strict_mono_of_lt ConvexOn.strict_mono_of_lt
-
