@@ -1244,4 +1244,3 @@ theorem OrderIso.liminf_apply {γ} [ConditionallyCompleteLattice β] [Conditiona
 #align order_iso.liminf_apply OrderIso.liminf_apply
 
 end Order
-#lint
