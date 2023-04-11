@@ -8,7 +8,7 @@ Authors: Reid Barton
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.Category.Top.Adjunctions
+import Mathlib.Topology.Category.Top.Adjunctions
 
 /-!
 # Epi- and monomorphisms in `Top`
@@ -27,10 +27,8 @@ open TopCat
 
 namespace TopCat
 
-theorem epi_iff_surjective {X Y : TopCat.{u}} (f : X ⟶ Y) : Epi f ↔ Function.Surjective f :=
-  by
-  suffices epi f ↔ epi ((forget TopCat).map f)
-    by
+theorem epi_iff_surjective {X Y : TopCat.{u}} (f : X ⟶ Y) : Epi f ↔ Function.Surjective f := by
+  suffices epi f ↔ epi ((forget TopCat).map f) by
     rw [this, CategoryTheory.epi_iff_surjective]
     rfl
   constructor
@@ -39,10 +37,8 @@ theorem epi_iff_surjective {X Y : TopCat.{u}} (f : X ⟶ Y) : Epi f ↔ Function
   · apply functor.epi_of_epi_map
 #align Top.epi_iff_surjective TopCat.epi_iff_surjective
 
-theorem mono_iff_injective {X Y : TopCat.{u}} (f : X ⟶ Y) : Mono f ↔ Function.Injective f :=
-  by
-  suffices mono f ↔ mono ((forget TopCat).map f)
-    by
+theorem mono_iff_injective {X Y : TopCat.{u}} (f : X ⟶ Y) : Mono f ↔ Function.Injective f := by
+  suffices mono f ↔ mono ((forget TopCat).map f) by
     rw [this, CategoryTheory.mono_iff_injective]
     rfl
   constructor
