@@ -59,7 +59,9 @@ set_option linter.uppercaseLean3 false in
 #align Top.topological_space_unbundled TopCat.topologicalSpaceUnbundled
 
 -- Porting note: cannot find a coercion to function otherwise
-attribute [local instance] ConcreteCategory.hasCoeToFun
+attribute [instance] ConcreteCategory.hasCoeToFun in
+instance (X Y : TopCat.{u}) : CoeFun (X ⟶ Y) fun _ => X → Y where
+  coe f := f
 
 -- Porting note: simp can prove this; removed simp
 theorem id_app (X : TopCat.{u}) (x : ↑X) : (𝟙 X : X ⟶  X) x = x := rfl
@@ -186,4 +188,3 @@ theorem openEmbedding_iff_isIso_comp' {X Y Z : TopCat} (f : X ⟶ Y) (g : Y ⟶ 
   exact openEmbedding_iff_isIso_comp f g
 
 end TopCat
-

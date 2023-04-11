@@ -25,9 +25,6 @@ open CategoryTheory
 
 open TopCat
 
--- Porting note: cannot coerce to function
-attribute [local instance] ConcreteCategory.hasCoeToFun
-
 namespace TopCat
 
 theorem epi_iff_surjective {X Y : TopCat.{u}} (f : X ⟶ Y) : Epi f ↔ Function.Surjective f := by
@@ -51,4 +48,3 @@ set_option linter.uppercaseLean3 false in
 #align Top.mono_iff_injective TopCat.mono_iff_injective
 
 end TopCat
-
