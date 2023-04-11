@@ -12,9 +12,9 @@ import Mathlib.LinearAlgebra.Dimension
 
 /-!
 
-# Extra results about `module.rank`
+# Extra results about `Module.rank`
 
-This file contains some extra results not in `linear_algebra.dimension`.
+This file contains some extra results not in `LinearAlgebra.Dimension`.
 
 -/
 
@@ -40,8 +40,8 @@ open Module.Free
 @[simp]
 theorem rank_finsupp (ι : Type w) :
     Module.rank R (ι →₀ M) = Cardinal.lift.{v} (#ι) * Cardinal.lift.{w} (Module.rank R M) := by
-  obtain ⟨⟨_, bs⟩⟩ := Module.Free.exists_basis R M
-  rw [← bs.mk_eq_rank'', ← (Finsupp.basis fun a : ι => bs).mk_eq_rank'', Cardinal.mk_sigma,
+  obtain ⟨⟨_, bs⟩⟩ := Module.Free.exists_basis (R := R) (M := M)
+  rw [← bs.mk_eq_rank'', ← (Finsupp.basis fun _ : ι => bs).mk_eq_rank'', Cardinal.mk_sigma,
     Cardinal.sum_const]
 #align rank_finsupp rank_finsupp
 
@@ -49,9 +49,10 @@ theorem rank_finsupp' (ι : Type v) : Module.rank R (ι →₀ M) = (#ι) * Modu
   simp [rank_finsupp]
 #align rank_finsupp' rank_finsupp'
 
+set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 /-- The rank of `(ι →₀ R)` is `(# ι).lift`. -/
 @[simp]
-theorem rank_finsupp_self (ι : Type w) : Module.rank R (ι →₀ R) = (#ι).lift := by
+theorem rank_finsupp_self (ι : Type w) : Module.rank R (ι →₀ R) = Cardinal.lift.{u} (#ι) := by
   simp [rank_finsupp]
 #align rank_finsupp_self rank_finsupp_self
 
@@ -64,15 +65,16 @@ theorem rank_finsupp_self' {ι : Type u} : Module.rank R (ι →₀ R) = (#ι) :
 theorem rank_directSum {ι : Type v} (M : ι → Type w) [∀ i : ι, AddCommGroup (M i)]
     [∀ i : ι, Module R (M i)] [∀ i : ι, Module.Free R (M i)] :
     Module.rank R (⨁ i, M i) = Cardinal.sum fun i => Module.rank R (M i) := by
-  let B i := choose_basis R (M i)
+  let B i := chooseBasis R (M i)
   let b : Basis _ R (⨁ i, M i) := Dfinsupp.basis fun i => B i
   simp [← b.mk_eq_rank'', fun i => (B i).mk_eq_rank'']
 #align rank_direct_sum rank_directSum
 
-/-- If `m` and `n` are `fintype`, the rank of `m × n` matrices is `(# m).lift * (# n).lift`. -/
+/-- If `m` and `n` are `Fintype`, the rank of `m × n` matrices is `(# m).lift * (# n).lift`. -/
 @[simp]
 theorem rank_matrix (m : Type v) (n : Type w) [Finite m] [Finite n] :
-    Module.rank R (Matrix m n R) = lift.{max v w u, v} (#m) * lift.{max v w u, w} (#n) := by
+    Module.rank R (Matrix m n R) =
+      Cardinal.lift.{max v w u, v} (#m) * Cardinal.lift.{max v w u, w} (#n) := by
   cases nonempty_fintype m
   cases nonempty_fintype n
   have h := (Matrix.stdBasis R m n).mk_eq_rank
@@ -80,16 +82,17 @@ theorem rank_matrix (m : Type v) (n : Type w) [Finite m] [Finite n] :
   simpa using h.symm
 #align rank_matrix rank_matrix
 
-/-- If `m` and `n` are `fintype` that lie in the same universe, the rank of `m × n` matrices is
+/-- If `m` and `n` are `Fintype` that lie in the same universe, the rank of `m × n` matrices is
   `(# n * # m).lift`. -/
-@[simp]
+@[simp high]
 theorem rank_matrix' (m n : Type v) [Finite m] [Finite n] :
-    Module.rank R (Matrix m n R) = ((#m) * (#n)).lift := by rw [rank_matrix, lift_mul, lift_umax]
+    Module.rank R (Matrix m n R) = Cardinal.lift.{u} ((#m) * (#n)) := by
+  rw [rank_matrix, lift_mul, lift_umax.{v, u}]
 #align rank_matrix' rank_matrix'
 
-/-- If `m` and `n` are `fintype` that lie in the same universe as `R`, the rank of `m × n` matrices
+/-- If `m` and `n` are `Fintype` that lie in the same universe as `R`, the rank of `m × n` matrices
   is `# m * # n`. -/
-@[simp]
+-- @[simp] -- Porting note: simp can prove this
 theorem rank_matrix'' (m n : Type u) [Finite m] [Finite n] :
     Module.rank R (Matrix m n R) = (#m) * (#n) := by simp
 #align rank_matrix'' rank_matrix''
@@ -106,12 +109,13 @@ variable [AddCommGroup N] [Module R N] [Module.Free R N]
 
 open Module.Free
 
-/-- The rank of `M ⊗[R] N` is `(module.rank R M).lift * (module.rank R N).lift`. -/
+/-- The rank of `M ⊗[R] N` is `(Module.rank R M).lift * (Module.rank R N).lift`. -/
 @[simp]
 theorem rank_tensorProduct :
-    Module.rank R (M ⊗[R] N) = lift.{w, v} (Module.rank R M) * lift.{v, w} (Module.rank R N) := by
-  let ιM := choose_basis_index R M
-  let ιN := choose_basis_index R N
+    Module.rank R (M ⊗[R] N) =
+      Cardinal.lift.{w, v} (Module.rank R M) * Cardinal.lift.{v, w} (Module.rank R N) := by
+  let ιM := ChooseBasisIndex R M
+  let ιN := ChooseBasisIndex R N
   have h₁ := LinearEquiv.lift_rank_eq (TensorProduct.congr (repr R M) (repr R N))
   let b : Basis (ιM × ιN) R (_ →₀ R) := Finsupp.basisSingleOne
   rw [LinearEquiv.rank_eq (finsuppTensorFinsupp' R ιM ιN), ← b.mk_eq_rank, mk_prod] at h₁
@@ -119,10 +123,9 @@ theorem rank_tensorProduct :
 #align rank_tensor_product rank_tensorProduct
 
 /-- If `M` and `N` lie in the same universe, the rank of `M ⊗[R] N` is
-  `(module.rank R M) * (module.rank R N)`. -/
+  `(Module.rank R M) * (Module.rank R N)`. -/
 theorem rank_tensor_product' (N : Type v) [AddCommGroup N] [Module R N] [Module.Free R N] :
     Module.rank R (M ⊗[R] N) = Module.rank R M * Module.rank R N := by simp
 #align rank_tensor_product' rank_tensor_product'
 
 end CommRing
-
