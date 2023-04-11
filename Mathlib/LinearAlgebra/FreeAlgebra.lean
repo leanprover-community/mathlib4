@@ -14,10 +14,10 @@ import Mathlib.LinearAlgebra.Dimension
 import Mathlib.LinearAlgebra.FinsuppVectorSpace
 
 /-!
-# Linear algebra properties of `free_algebra R X`
+# Linear algebra properties of `FreeAlgebra R X`
 
-This file provides a `free_monoid X` basis on the `free_algebra R X`, and uses it to show the
-dimension of the algebra is the cardinality of `list X`
+This file provides a `FreeMonoid X` basis on the `FreeAlgebra R X`, and uses it to show the
+dimension of the algebra is the cardinality of `List X`
 -/
 
 
@@ -25,7 +25,7 @@ universe u v
 
 namespace FreeAlgebra
 
-/-- The `free_monoid X` basis on the `free_algebra R X`,
+/-- The `FreeMonoid X` basis on the `FreeAlgebra R X`,
 mapping `[x₁, x₂, ..., xₙ]` to the "monomial" `1 • x₁ * x₂ * ⋯ * xₙ` -/
 -- @[simps]
 noncomputable def basisFreeMonoid (R : Type u) (X : Type v) [CommRing R] :
