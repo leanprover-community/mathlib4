@@ -39,6 +39,8 @@ one should use `C(α, β)` with the appropriate instance of the structure.
 
 set_option autoImplicit false -- **TODO** delete this later
 
+set_option synthInstance.etaExperiment true
+
 --attribute [elab_without_expected_type] Continuous.comp
 
 namespace ContinuousFunctions
@@ -291,10 +293,6 @@ def continuousSubgroup (α : Type _) (β : Type _) [TopologicalSpace α] [Topolo
   { continuousSubmonoid α β with inv_mem' := fun fc => Continuous.inv fc }
 #align continuous_subgroup continuousSubgroup
 #align continuous_add_subgroup continuousAddSubgroup
-
-
-#check continuousSubgroup
-#check continuousAddSubgroup
 
 end Subtype
 
@@ -834,7 +832,7 @@ writing it this way avoids having to deal with casts inside the set.
 where the functions would be continuous functions vanishing at infinity.)
 -/
 def Set.SeparatesPointsStrongly (s : Set C(α, 𝕜)) : Prop :=
-  ∀ (v : α → 𝕜) (x y : α), ∃ f : s, (f.toFun x : 𝕜) = v x ∧ f y = v y
+  ∀ (v : α → 𝕜) (x y : α), ∃ f : s, (f x : 𝕜) = v x ∧ f y = v y
 #align set.separates_points_strongly Set.SeparatesPointsStrongly
 
 variable [Field 𝕜] [TopologicalRing 𝕜]
@@ -944,11 +942,11 @@ variable {R : Type _} [LinearOrderedField R]
 -- Rather than stranding it at some intermediate location,
 -- it's here, immediately prior to the point of use.
 theorem min_eq_half_add_sub_abs_sub {x y : R} : min x y = 2⁻¹ * (x + y - |x - y|) := by
-  cases' le_total x y with h h <;> field_simp [h, abs_of_nonneg, abs_of_nonpos, mul_two] <;> abel
+  cases' le_total x y with h h; field_simp [h, abs_of_nonneg, abs_of_nonpos, mul_two] <;> abel
 #align min_eq_half_add_sub_abs_sub min_eq_half_add_sub_abs_sub
 
 theorem max_eq_half_add_add_abs_sub {x y : R} : max x y = 2⁻¹ * (x + y + |x - y|) := by
-  cases' le_total x y with h h <;> field_simp [h, abs_of_nonneg, abs_of_nonpos, mul_two] <;> abel
+  cases' le_total x y with h h; field_simp [h, abs_of_nonneg, abs_of_nonpos, mul_two] <;> abel
 #align max_eq_half_add_add_abs_sub max_eq_half_add_add_abs_sub
 
 end
