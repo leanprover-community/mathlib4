@@ -314,14 +314,17 @@ protected noncomputable def Set.finrank (s : Set V) : ℕ :=
 
 variable {K}
 
-set_option maxHeartbeats 10000000 in -- Porting note: XXX
-theorem finrank_span_le_card (s : Set V) [Fintype s] : finrank K (span K s) ≤ s.toFinset.card :=
-  finrank_le_of_rank_le (by simpa using rank_span_le s)
+--Porting note: lots of implicits need to be given explicitly here where they didn't before
+theorem finrank_span_le_card (s : Set V) [hs : Fintype s] :
+    @finrank K (span K s) _ _ (Submodule.module (span K s)) ≤  s.toFinset.card :=
+  finrank_le_of_rank_le (K := K)
+    (by simpa using rank_span_le (K := K) s)
 #align finrank_span_le_card finrank_span_le_card
 
 theorem finrank_span_finset_le_card (s : Finset V) : (s : Set V).finrank K ≤ s.card :=
   calc
-    (s : Set V).finrank K ≤ (s : Set V).toFinset.card := finrank_span_le_card s
+    --Porting note: (V := V) wasn't previously necessary
+    (s : Set V).finrank K ≤ (s : Set V).toFinset.card := finrank_span_le_card (V := V) s
     _ = s.card := by simp
 
 #align finrank_span_finset_le_card finrank_span_finset_le_card
