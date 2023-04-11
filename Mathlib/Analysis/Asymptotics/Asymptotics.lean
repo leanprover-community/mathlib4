@@ -107,7 +107,6 @@ irreducible_def Is𝓞 (l : Filter α) (f : α → E) (g : α → F) : Prop :=
   ∃ c : ℝ, Is𝓞With c l f g
 #align asymptotics.is_O Asymptotics.Is𝓞
 
--- mathport name: «expr =O[ ] »
 @[inherit_doc]
 notation:100 f " =O[" l "] " g:100 => Is𝓞 l f g
 
@@ -144,7 +143,6 @@ irreducible_def Is𝓸 (l : Filter α) (f : α → E) (g : α → F) : Prop :=
   ∀ ⦃c : ℝ⦄, 0 < c → Is𝓞With c l f g
 #align asymptotics.is_o Asymptotics.Is𝓸
 
--- mathport name: «expr =o[ ] »
 @[inherit_doc]
 notation:100 f " =o[" l "] " g:100 => Is𝓸 l f g
 
@@ -375,7 +373,7 @@ theorem _root_.Filter.EventuallyEq.trans_is𝓞 {f₁ f₂ : α → E} {g : α �
   h.congr' hf.symm EventuallyEq.rfl
 #align filter.eventually_eq.trans_is_O Filter.EventuallyEq.trans_is𝓞
 
-instance : @Trans (α → E) (α → E) (α → F) (· =ᶠ[l] ·) (· =O[l] ·) (· =O[l] ·) where
+instance transEventuallyEqIs𝓞 : @Trans (α → E) (α → E) (α → F) (· =ᶠ[l] ·) (· =O[l] ·) (· =O[l] ·) where
   trans := Filter.EventuallyEq.trans_is𝓞
 
 @[trans]
@@ -384,7 +382,7 @@ theorem _root_.Filter.EventuallyEq.trans_is𝓸 {f₁ f₂ : α → E} {g : α �
   h.congr' hf.symm EventuallyEq.rfl
 #align filter.eventually_eq.trans_is_o Filter.EventuallyEq.trans_is𝓸
 
-instance : @Trans (α → E) (α → E) (α → F) (· =ᶠ[l] ·) (· =o[l] ·) (· =o[l] ·) where
+instance transEventuallyEqIs𝓸 : @Trans (α → E) (α → E) (α → F) (· =ᶠ[l] ·) (· =o[l] ·) (· =o[l] ·) where
   trans := Filter.EventuallyEq.trans_is𝓸
 
 @[trans]
@@ -393,7 +391,7 @@ theorem Is𝓞.trans_eventuallyEq {f : α → E} {g₁ g₂ : α → F} (h : f =
   h.congr' EventuallyEq.rfl hg
 #align asymptotics.is_O.trans_eventually_eq Asymptotics.Is𝓞.trans_eventuallyEq
 
-instance : @Trans (α → E) (α → F) (α → F) (· =O[l] ·) (· =ᶠ[l] ·) (· =O[l] ·) where
+instance transIs𝓞EventuallyEq : @Trans (α → E) (α → F) (α → F) (· =O[l] ·) (· =ᶠ[l] ·) (· =O[l] ·) where
   trans := Is𝓞.trans_eventuallyEq
 
 @[trans]
@@ -402,7 +400,7 @@ theorem Is𝓸.trans_eventuallyEq {f : α → E} {g₁ g₂ : α → F} (h : f =
   h.congr' EventuallyEq.rfl hg
 #align asymptotics.is_o.trans_eventually_eq Asymptotics.Is𝓸.trans_eventuallyEq
 
-instance : @Trans (α → E) (α → F) (α → F) (· =o[l] ·) (· =ᶠ[l] ·) (· =o[l] ·) where
+instance transIs𝓸EventuallyEq : @Trans (α → E) (α → F) (α → F) (· =o[l] ·) (· =ᶠ[l] ·) (· =o[l] ·) where
   trans := Is𝓸.trans_eventuallyEq
 
 end congr
@@ -473,7 +471,7 @@ theorem Is𝓞.trans {f : α → E} {g : α → F'} {k : α → G} (hfg : f =O[l
   (hc.trans hc' cnonneg).is𝓞
 #align asymptotics.is_O.trans Asymptotics.Is𝓞.trans
 
-instance : @Trans (α → E) (α → F') (α → G) (· =O[l] ·) (· =O[l] ·) (· =O[l] ·) where
+instance transIs𝓞Is𝓞 : @Trans (α → E) (α → F') (α → G) (· =O[l] ·) (· =O[l] ·) (· =O[l] ·) where
   trans := Is𝓞.trans
 
 theorem Is𝓸.trans_is𝓞With (hfg : f =o[l] g) (hgk : Is𝓞With c l g k) (hc : 0 < c) : f =o[l] k :=
@@ -491,7 +489,7 @@ theorem Is𝓸.trans_is𝓞 {f : α → E} {g : α → F} {k : α → G'} (hfg :
   hfg.trans_is𝓞With hc cpos
 #align asymptotics.is_o.trans_is_O Asymptotics.Is𝓸.trans_is𝓞
 
-instance : @Trans (α → E) (α → F) (α → G') (· =o[l] ·) (· =O[l] ·) (· =o[l] ·) where
+instance transIs𝓸Is𝓞 : @Trans (α → E) (α → F) (α → G') (· =o[l] ·) (· =O[l] ·) (· =o[l] ·) where
   trans := Is𝓸.trans_is𝓞
 
 theorem Is𝓞With.trans_is𝓸 (hfg : Is𝓞With c l f g) (hgk : g =o[l] k) (hc : 0 < c) : f =o[l] k :=
@@ -509,7 +507,7 @@ theorem Is𝓞.trans_is𝓸 {f : α → E} {g : α → F'} {k : α → G} (hfg :
   hc.trans_is𝓸 hgk cpos
 #align asymptotics.is_O.trans_is_o Asymptotics.Is𝓞.trans_is𝓸
 
-instance : @Trans (α → E) (α → F') (α → G) (· =O[l] ·) (· =o[l] ·) (· =o[l] ·) where
+instance transIs𝓞Is𝓸 : @Trans (α → E) (α → F') (α → G) (· =O[l] ·) (· =o[l] ·) (· =o[l] ·) where
   trans := Is𝓞.trans_is𝓸
 
 @[trans]
@@ -518,7 +516,7 @@ theorem Is𝓸.trans {f : α → E} {g : α → F} {k : α → G} (hfg : f =o[l]
   hfg.trans_is𝓞With hgk.is𝓞With one_pos
 #align asymptotics.is_o.trans Asymptotics.Is𝓸.trans
 
-instance : @Trans (α → E) (α → F) (α → G) (· =o[l] ·) (· =o[l] ·) (· =o[l] ·) where
+instance transIs𝓸Is𝓸 : @Trans (α → E) (α → F) (α → G) (· =o[l] ·) (· =o[l] ·) (· =o[l] ·) where
   trans := Is𝓸.trans
 
 theorem _root_.Filter.Eventually.trans_is𝓞 {f : α → E} {g : α → F'} {k : α → G}
