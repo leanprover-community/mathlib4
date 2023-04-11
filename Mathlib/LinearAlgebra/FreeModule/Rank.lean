@@ -8,7 +8,7 @@ Authors: Riccardo Brasca
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.LinearAlgebra.Dimension
+import Mathlib.LinearAlgebra.Dimension
 
 /-!
 
@@ -39,8 +39,7 @@ open Module.Free
 
 @[simp]
 theorem rank_finsupp (ι : Type w) :
-    Module.rank R (ι →₀ M) = Cardinal.lift.{v} (#ι) * Cardinal.lift.{w} (Module.rank R M) :=
-  by
+    Module.rank R (ι →₀ M) = Cardinal.lift.{v} (#ι) * Cardinal.lift.{w} (Module.rank R M) := by
   obtain ⟨⟨_, bs⟩⟩ := Module.Free.exists_basis R M
   rw [← bs.mk_eq_rank'', ← (Finsupp.basis fun a : ι => bs).mk_eq_rank'', Cardinal.mk_sigma,
     Cardinal.sum_const]
@@ -64,8 +63,7 @@ theorem rank_finsupp_self' {ι : Type u} : Module.rank R (ι →₀ R) = (#ι) :
 @[simp]
 theorem rank_directSum {ι : Type v} (M : ι → Type w) [∀ i : ι, AddCommGroup (M i)]
     [∀ i : ι, Module R (M i)] [∀ i : ι, Module.Free R (M i)] :
-    Module.rank R (⨁ i, M i) = Cardinal.sum fun i => Module.rank R (M i) :=
-  by
+    Module.rank R (⨁ i, M i) = Cardinal.sum fun i => Module.rank R (M i) := by
   let B i := choose_basis R (M i)
   let b : Basis _ R (⨁ i, M i) := Dfinsupp.basis fun i => B i
   simp [← b.mk_eq_rank'', fun i => (B i).mk_eq_rank'']
@@ -74,8 +72,7 @@ theorem rank_directSum {ι : Type v} (M : ι → Type w) [∀ i : ι, AddCommGro
 /-- If `m` and `n` are `fintype`, the rank of `m × n` matrices is `(# m).lift * (# n).lift`. -/
 @[simp]
 theorem rank_matrix (m : Type v) (n : Type w) [Finite m] [Finite n] :
-    Module.rank R (Matrix m n R) = lift.{max v w u, v} (#m) * lift.{max v w u, w} (#n) :=
-  by
+    Module.rank R (Matrix m n R) = lift.{max v w u, v} (#m) * lift.{max v w u, w} (#n) := by
   cases nonempty_fintype m
   cases nonempty_fintype n
   have h := (Matrix.stdBasis R m n).mk_eq_rank
@@ -112,8 +109,7 @@ open Module.Free
 /-- The rank of `M ⊗[R] N` is `(module.rank R M).lift * (module.rank R N).lift`. -/
 @[simp]
 theorem rank_tensorProduct :
-    Module.rank R (M ⊗[R] N) = lift.{w, v} (Module.rank R M) * lift.{v, w} (Module.rank R N) :=
-  by
+    Module.rank R (M ⊗[R] N) = lift.{w, v} (Module.rank R M) * lift.{v, w} (Module.rank R N) := by
   let ιM := choose_basis_index R M
   let ιN := choose_basis_index R N
   have h₁ := LinearEquiv.lift_rank_eq (TensorProduct.congr (repr R M) (repr R N))
