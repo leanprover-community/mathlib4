@@ -27,18 +27,20 @@ namespace FreeAlgebra
 
 /-- The `free_monoid X` basis on the `free_algebra R X`,
 mapping `[x₁, x₂, ..., xₙ]` to the "monomial" `1 • x₁ * x₂ * ⋯ * xₙ` -/
-@[simps]
+-- @[simps]
 noncomputable def basisFreeMonoid (R : Type u) (X : Type v) [CommRing R] :
     Basis (FreeMonoid X) R (FreeAlgebra R X) :=
-  Finsupp.basisSingleOne.map
-    (equivMonoidAlgebraFreeMonoid.symm.toLinearEquiv : _ ≃ₗ[R] FreeAlgebra R X)
+  Finsupp.basisSingleOne.map (equivMonoidAlgebraFreeMonoid (R := R) (X := X)).symm.toLinearEquiv
+
 #align free_algebra.basis_free_monoid FreeAlgebra.basisFreeMonoid
 
 -- TODO: generalize to `X : Type v`
 theorem rank_eq {K : Type u} {X : Type max u v} [Field K] :
     Module.rank K (FreeAlgebra K X) = Cardinal.mk (List X) :=
-  (Cardinal.lift_inj.mp (basisFreeMonoid K X).mk_eq_rank).symm
+  -- Porting note: the type class inference was no longer automatic.
+  -- was: (Cardinal.lift_inj.mp (basisFreeMonoid K X).mk_eq_rank).symm
+  Cardinal.lift_inj.mp (@Basis.mk_eq_rank _ _ _ _ _ _ (inferInstance : Module K (FreeAlgebra K X))
+  (basisFreeMonoid K X)).symm
 #align free_algebra.rank_eq FreeAlgebra.rank_eq
 
 end FreeAlgebra
-
