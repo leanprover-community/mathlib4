@@ -155,7 +155,7 @@ theorem _root_.Polynomial.coeff_eq_esymm_roots_of_splits {F} [Field F] [Decidabl
   have H := Polynomial.coeff_eq_esymm_roots_of_card (splits_iff_card_roots.1 hsplit) h
   exact H
 #align polynomial.coeff_eq_esymm_roots_of_splits Polynomial.coeff_eq_esymm_roots_of_splits
-#exit
+
 end Ring
 
 end Multiset
@@ -173,6 +173,7 @@ theorem MvPolynomial.prod_C_add_X_eq_sum_esymm :
     (∏ i : σ, (Polynomial.X + Polynomial.C (MvPolynomial.X i))) =
       ∑ j in range (card σ + 1), Polynomial.C
         (MvPolynomial.esymm σ R j) * Polynomial.X ^ (card σ - j) := by
+  classical
   let s := Finset.univ.val.map fun i : σ => (MvPolynomial.X i : MvPolynomial σ R)
   have : Fintype.card σ = Multiset.card s := by
     rw [Multiset.card_map, ←Finset.card_univ, Finset.card_def]
@@ -185,6 +186,7 @@ set_option linter.uppercaseLean3 false in
 theorem MvPolynomial.prod_X_add_C_coeff (k : ℕ) (h : k ≤ card σ) :
     (∏ i : σ, (Polynomial.X + Polynomial.C (MvPolynomial.X i)) : Polynomial _).coeff k =
     MvPolynomial.esymm σ R (card σ - k) := by
+  classical
   let s := Finset.univ.val.map fun i => (MvPolynomial.X i : MvPolynomial σ R)
   have : Fintype.card σ = Multiset.card s := by
     rw [Multiset.card_map, ←Finset.card_univ, Finset.card_def]
