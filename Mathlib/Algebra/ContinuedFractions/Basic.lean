@@ -8,8 +8,8 @@ Authors: Kevin Kappelmann
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Seq.Seq
-import Mathbin.Algebra.Field.Defs
+import Mathlib.Data.Seq.Seq
+import Mathlib.Algebra.Field.Defs
 
 /-!
 # Basic Definitions/Theorems for Continued Fractions
@@ -233,8 +233,7 @@ instance : Inhabited (SimpleContinuedFraction α) :=
 
 /-- Lift a scf to a gcf using the inclusion map. -/
 instance hasCoeToGeneralizedContinuedFraction :
-    Coe (SimpleContinuedFraction α) (GeneralizedContinuedFraction α) :=
-  by
+    Coe (SimpleContinuedFraction α) (GeneralizedContinuedFraction α) := by
   unfold SimpleContinuedFraction
   infer_instance
 #align simple_continued_fraction.has_coe_to_generalized_continued_fraction SimpleContinuedFraction.hasCoeToGeneralizedContinuedFraction
