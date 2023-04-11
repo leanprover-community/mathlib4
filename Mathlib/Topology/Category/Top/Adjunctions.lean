@@ -8,8 +8,8 @@ Authors: Patrick Massot, Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.Category.Top.Basic
-import Mathbin.CategoryTheory.Adjunction.Basic
+import Mathlib.Topology.Category.Top.Basic
+import Mathlib.CategoryTheory.Adjunction.Basic
 
 /-!
 # Adjunctions regarding the category of topological spaces
