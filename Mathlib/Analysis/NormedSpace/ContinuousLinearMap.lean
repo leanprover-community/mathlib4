@@ -14,16 +14,16 @@ import Mathlib.Analysis.NormedSpace.Basic
 
 A fundamental fact about (semi-)linear maps between normed spaces over sensible fields is that
 continuity and boundedness are equivalent conditions.  That is, for normed spaces `E`, `F`, a
-`linear_map` `f : E →ₛₗ[σ] F` is the coercion of some `continuous_linear_map` `f' : E →SL[σ] F`, if
+`LinearMap` `f : E →ₛₗ[σ] F` is the coercion of some `ContinuousLinearMap` `f' : E →SL[σ] F`, if
 and only if there exists a bound `C` such that for all `x`, `‖f x‖ ≤ C * ‖x‖`.
 
-We prove one direction in this file: `linear_map.mk_continuous`, boundedness implies continuity. The
+We prove one direction in this file: `LinearMap.mkContinuous`, boundedness implies continuity. The
 other direction, `continuous_linear_map.bound`, is deferred to a later file, where the
 strong operator topology on `E →SL[σ] F` is available, because it is natural to use
 `continuous_linear_map.bound` to define a norm `⨆ x, ‖f x‖ / ‖x‖` on `E →SL[σ] F` and to show that
 this is compatible with the strong operator topology.
 
-This file also contains several corollaries of `linear_map.mk_continuous`: other "easy"
+This file also contains several corollaries of `LinearMap.mkContinuous`: other "easy"
 constructions of continuous linear maps between normed spaces.
 
 This file is meant to be lightweight (it is imported by much of the analysis library); think twice
@@ -70,7 +70,7 @@ def LinearMap.toContinuousLinearMap₁ (f : 𝕜 →ₗ[𝕜] E) : 𝕜 →L[�
 #align linear_map.to_continuous_linear_map₁ LinearMap.toContinuousLinearMap₁
 
 /-- Construct a continuous linear map from a linear map and the existence of a bound on this linear
-map. If you have an explicit bound, use `linear_map.mk_continuous` instead, as a norm estimate will
+map. If you have an explicit bound, use `LinearMap.mkContinuous` instead, as a norm estimate will
 follow automatically in `linear_map.mk_continuous_norm_le`. -/
 def LinearMap.mkContinuousOfExistsBound (h : ∃ C, ∀ x, ‖f x‖ ≤ C * ‖x‖) : E →SL[σ] F :=
   ⟨f,
