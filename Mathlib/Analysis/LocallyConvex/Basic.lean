@@ -8,9 +8,9 @@ Authors: Jean Lo, Bhavik Mehta, Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Convex.Basic
-import Mathbin.Analysis.Convex.Hull
-import Mathbin.Analysis.NormedSpace.Basic
+import Mathlib.Analysis.Convex.Basic
+import Mathlib.Analysis.Convex.Hull
+import Mathlib.Analysis.NormedSpace.Basic
 
 /-!
 # Local convexity
@@ -82,8 +82,7 @@ theorem Absorbs.mono_right (hs : Absorbs 𝕜 s u) (h : v ⊆ u) : Absorbs 𝕜 
   hs.mono Subset.rfl h
 #align absorbs.mono_right Absorbs.mono_right
 
-theorem Absorbs.union (hu : Absorbs 𝕜 s u) (hv : Absorbs 𝕜 s v) : Absorbs 𝕜 s (u ∪ v) :=
-  by
+theorem Absorbs.union (hu : Absorbs 𝕜 s u) (hv : Absorbs 𝕜 s v) : Absorbs 𝕜 s (u ∪ v) := by
   obtain ⟨a, ha, hu⟩ := hu
   obtain ⟨b, hb, hv⟩ := hv
   exact
@@ -114,8 +113,7 @@ theorem absorbs_unionᵢ_finset {ι : Type _} {t : Finset ι} {f : ι → Set E}
 #align absorbs_Union_finset absorbs_unionᵢ_finset
 
 theorem Set.Finite.absorbs_unionᵢ {ι : Type _} {s : Set E} {t : Set ι} {f : ι → Set E}
-    (hi : t.Finite) : Absorbs 𝕜 s (⋃ i ∈ t, f i) ↔ ∀ i ∈ t, Absorbs 𝕜 s (f i) :=
-  by
+    (hi : t.Finite) : Absorbs 𝕜 s (⋃ i ∈ t, f i) ↔ ∀ i ∈ t, Absorbs 𝕜 s (f i) := by
   lift t to Finset ι using hi
   simp only [Finset.mem_coe]
   exact absorbs_unionᵢ_finset
@@ -130,8 +128,7 @@ def Absorbent (A : Set E) :=
 
 variable {𝕜}
 
-theorem Absorbent.subset (hA : Absorbent 𝕜 A) (hAB : A ⊆ B) : Absorbent 𝕜 B :=
-  by
+theorem Absorbent.subset (hA : Absorbent 𝕜 A) (hAB : A ⊆ B) : Absorbent 𝕜 B := by
   refine' forall_imp (fun x => _) hA
   exact Exists.imp fun r => And.imp_right <| forall₂_imp fun a ha hx => Set.smul_set_mono hAB hx
 #align absorbent.subset Absorbent.subset
@@ -248,8 +245,7 @@ theorem Absorbs.sub (h₁ : Absorbs 𝕜 s₁ t₁) (h₂ : Absorbs 𝕜 s₂ t�
   exact h₁.add h₂.neg
 #align absorbs.sub Absorbs.sub
 
-theorem Balanced.sub (hs : Balanced 𝕜 s) (ht : Balanced 𝕜 t) : Balanced 𝕜 (s - t) :=
-  by
+theorem Balanced.sub (hs : Balanced 𝕜 s) (ht : Balanced 𝕜 t) : Balanced 𝕜 (s - t) := by
   simp_rw [sub_eq_add_neg]
   exact hs.add ht.neg
 #align balanced.sub Balanced.sub
@@ -267,8 +263,7 @@ variable [NormedField 𝕜] [NormedRing 𝕝] [NormedSpace 𝕜 𝕝] [AddCommGr
   [SMulWithZero 𝕝 E] [IsScalarTower 𝕜 𝕝 E] {s t u v A B : Set E} {x : E} {a b : 𝕜}
 
 /-- Scalar multiplication (by possibly different types) of a balanced set is monotone. -/
-theorem Balanced.smul_mono (hs : Balanced 𝕝 s) {a : 𝕝} {b : 𝕜} (h : ‖a‖ ≤ ‖b‖) : a • s ⊆ b • s :=
-  by
+theorem Balanced.smul_mono (hs : Balanced 𝕝 s) {a : 𝕝} {b : 𝕜} (h : ‖a‖ ≤ ‖b‖) : a • s ⊆ b • s := by
   obtain rfl | hb := eq_or_ne b 0
   · rw [norm_zero] at h
     rw [norm_eq_zero.1 (h.antisymm <| norm_nonneg _)]
@@ -284,8 +279,7 @@ theorem Balanced.smul_mono (hs : Balanced 𝕝 s) {a : 𝕝} {b : 𝕜} (h : ‖
 #align balanced.smul_mono Balanced.smul_mono
 
 /-- A balanced set absorbs itself. -/
-theorem Balanced.absorbs_self (hA : Balanced 𝕜 A) : Absorbs 𝕜 A A :=
-  by
+theorem Balanced.absorbs_self (hA : Balanced 𝕜 A) : Absorbs 𝕜 A A := by
   refine' ⟨1, zero_lt_one, fun a ha x hx => _⟩
   rw [mem_smul_set_iff_inv_smul_mem₀ (norm_pos_iff.1 <| zero_lt_one.trans_le ha)]
   refine' hA a⁻¹ _ (smul_mem_smul_set hx)
@@ -293,8 +287,7 @@ theorem Balanced.absorbs_self (hA : Balanced 𝕜 A) : Absorbs 𝕜 A A :=
   exact inv_le_one ha
 #align balanced.absorbs_self Balanced.absorbs_self
 
-theorem Balanced.subset_smul (hA : Balanced 𝕜 A) (ha : 1 ≤ ‖a‖) : A ⊆ a • A :=
-  by
+theorem Balanced.subset_smul (hA : Balanced 𝕜 A) (ha : 1 ≤ ‖a‖) : A ⊆ a • A := by
   refine' (subset_set_smul_iff₀ _).2 (hA a⁻¹ _)
   · rintro rfl
     rw [norm_zero] at ha
@@ -307,8 +300,7 @@ theorem Balanced.smul_eq (hA : Balanced 𝕜 A) (ha : ‖a‖ = 1) : a • A = A
   (hA _ ha.le).antisymm <| hA.subset_smul ha.ge
 #align balanced.smul_eq Balanced.smul_eq
 
-theorem Balanced.mem_smul_iff (hs : Balanced 𝕜 s) (h : ‖a‖ = ‖b‖) : a • x ∈ s ↔ b • x ∈ s :=
-  by
+theorem Balanced.mem_smul_iff (hs : Balanced 𝕜 s) (h : ‖a‖ = ‖b‖) : a • x ∈ s ↔ b • x ∈ s := by
   obtain rfl | hb := eq_or_ne b 0
   · rw [norm_zero, norm_eq_zero] at h
     rw [h]
@@ -324,8 +316,7 @@ theorem Balanced.neg_mem_iff (hs : Balanced 𝕜 s) : -x ∈ s ↔ x ∈ s := by
   convert hs.mem_smul_iff (norm_neg 1) <;> simp only [neg_smul, one_smul]
 #align balanced.neg_mem_iff Balanced.neg_mem_iff
 
-theorem Absorbs.inter (hs : Absorbs 𝕜 s u) (ht : Absorbs 𝕜 t u) : Absorbs 𝕜 (s ∩ t) u :=
-  by
+theorem Absorbs.inter (hs : Absorbs 𝕜 s u) (ht : Absorbs 𝕜 t u) : Absorbs 𝕜 (s ∩ t) u := by
   obtain ⟨a, ha, hs⟩ := hs
   obtain ⟨b, hb, ht⟩ := ht
   have h : 0 < max a b := lt_max_of_lt_left ha
@@ -340,8 +331,7 @@ theorem absorbs_inter : Absorbs 𝕜 (s ∩ t) u ↔ Absorbs 𝕜 s u ∧ Absorb
     h.1.inter h.2⟩
 #align absorbs_inter absorbs_inter
 
-theorem absorbent_univ : Absorbent 𝕜 (univ : Set E) :=
-  by
+theorem absorbent_univ : Absorbent 𝕜 (univ : Set E) := by
   refine' fun x => ⟨1, zero_lt_one, fun a ha => _⟩
   rw [smul_set_univ₀ (norm_pos_iff.1 <| zero_lt_one.trans_le ha)]
   exact trivial
@@ -350,8 +340,7 @@ theorem absorbent_univ : Absorbent 𝕜 (univ : Set E) :=
 variable [TopologicalSpace E] [ContinuousSMul 𝕜 E]
 
 /-- Every neighbourhood of the origin is absorbent. -/
-theorem absorbent_nhds_zero (hA : A ∈ 𝓝 (0 : E)) : Absorbent 𝕜 A :=
-  by
+theorem absorbent_nhds_zero (hA : A ∈ 𝓝 (0 : E)) : Absorbent 𝕜 A := by
   intro x
   obtain ⟨w, hw₁, hw₂, hw₃⟩ := mem_nhds_iff.mp hA
   have hc : Continuous fun t : 𝕜 => t • x := continuous_id.smul continuous_const
@@ -388,8 +377,7 @@ theorem balanced_zero_union_interior (hA : Balanced 𝕜 A) : Balanced 𝕜 ((0 
 
 /-- The interior of a balanced set is balanced if it contains the origin. -/
 theorem Balanced.interior (hA : Balanced 𝕜 A) (h : (0 : E) ∈ interior A) :
-    Balanced 𝕜 (interior A) :=
-  by
+    Balanced 𝕜 (interior A) := by
   rw [← union_eq_self_of_subset_left (singleton_subset_iff.2 h)]
   exact balanced_zero_union_interior hA
 #align balanced.interior Balanced.interior
@@ -405,8 +393,7 @@ section NontriviallyNormedField
 
 variable [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] {s : Set E}
 
-theorem absorbs_zero_iff : Absorbs 𝕜 s 0 ↔ (0 : E) ∈ s :=
-  by
+theorem absorbs_zero_iff : Absorbs 𝕜 s 0 ↔ (0 : E) ∈ s := by
   refine' ⟨_, fun h => ⟨1, zero_lt_one, fun a _ => zero_subset.2 <| zero_mem_smul_set h⟩⟩
   rintro ⟨r, hr, h⟩
   obtain ⟨a, ha⟩ := NormedSpace.exists_lt_norm 𝕜 𝕜 r
@@ -421,10 +408,8 @@ theorem Absorbent.zero_mem (hs : Absorbent 𝕜 s) : (0 : E) ∈ s :=
 
 variable [Module ℝ E] [SMulCommClass ℝ 𝕜 E]
 
-theorem balanced_convexHull_of_balanced (hs : Balanced 𝕜 s) : Balanced 𝕜 (convexHull ℝ s) :=
-  by
-  suffices Convex ℝ { x | ∀ a : 𝕜, ‖a‖ ≤ 1 → a • x ∈ convexHull ℝ s }
-    by
+theorem balanced_convexHull_of_balanced (hs : Balanced 𝕜 s) : Balanced 𝕜 (convexHull ℝ s) := by
+  suffices Convex ℝ { x | ∀ a : 𝕜, ‖a‖ ≤ 1 → a • x ∈ convexHull ℝ s } by
     rw [balanced_iff_smul_mem] at hs⊢
     refine' fun a ha x hx => convexHull_min _ this hx a ha
     exact fun y hy a ha => subset_convexHull ℝ s (hs ha hy)
@@ -439,8 +424,7 @@ section Real
 
 variable [AddCommGroup E] [Module ℝ E] {s : Set E}
 
-theorem balanced_iff_neg_mem (hs : Convex ℝ s) : Balanced ℝ s ↔ ∀ ⦃x⦄, x ∈ s → -x ∈ s :=
-  by
+theorem balanced_iff_neg_mem (hs : Convex ℝ s) : Balanced ℝ s ↔ ∀ ⦃x⦄, x ∈ s → -x ∈ s := by
   refine' ⟨fun h x => h.neg_mem_iff.2, fun h a ha => smul_set_subset_iff.2 fun x hx => _⟩
   rw [Real.norm_eq_abs, abs_le] at ha
   rw [show a = -((1 - a) / 2) + (a - -1) / 2 by ring, add_smul, neg_smul, ← smul_neg]
