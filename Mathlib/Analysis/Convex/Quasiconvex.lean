@@ -8,7 +8,7 @@ Authors: Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Convex.Function
+import Mathlib.Analysis.Convex.Function
 
 /-!
 # Quasiconvex and quasiconcave functions
@@ -155,8 +155,7 @@ theorem quasilinearOn_iff_mem_uIcc :
           x ∈ s →
             ∀ ⦃y⦄,
               y ∈ s →
-                ∀ ⦃a b : 𝕜⦄, 0 ≤ a → 0 ≤ b → a + b = 1 → f (a • x + b • y) ∈ uIcc (f x) (f y) :=
-  by
+                ∀ ⦃a b : 𝕜⦄, 0 ≤ a → 0 ≤ b → a + b = 1 → f (a • x + b • y) ∈ uIcc (f x) (f y) := by
   rw [QuasilinearOn, quasiconvexOn_iff_le_max, quasiconcaveOn_iff_min_le, and_and_and_comm,
     and_self_iff]
   apply and_congr_right'
@@ -164,8 +163,7 @@ theorem quasilinearOn_iff_mem_uIcc :
 #align quasilinear_on_iff_mem_uIcc quasilinearOn_iff_mem_uIcc
 
 theorem QuasiconvexOn.convex_lt (hf : QuasiconvexOn 𝕜 s f) (r : β) :
-    Convex 𝕜 ({ x ∈ s | f x < r }) :=
-  by
+    Convex 𝕜 ({ x ∈ s | f x < r }) := by
   refine' fun x hx y hy a b ha hb hab => _
   have h := hf _ ⟨hx.1, le_max_left _ _⟩ ⟨hy.1, le_max_right _ _⟩ ha hb hab
   exact ⟨h.1, h.2.trans_lt <| max_lt hx.2 hy.2⟩
@@ -258,8 +256,7 @@ section LinearOrderedField
 variable [LinearOrderedField 𝕜] [LinearOrderedAddCommMonoid β] {s : Set 𝕜} {f : 𝕜 → β}
 
 theorem QuasilinearOn.monotoneOn_or_antitoneOn (hf : QuasilinearOn 𝕜 s f) :
-    MonotoneOn f s ∨ AntitoneOn f s :=
-  by
+    MonotoneOn f s ∨ AntitoneOn f s := by
   simp_rw [monotone_on_or_antitone_on_iff_uIcc, ← segment_eq_uIcc]
   rintro a ha b hb c hc h
   refine' ⟨((hf.2 _).segment_subset _ _ h).2, ((hf.1 _).segment_subset _ _ h).2⟩ <;> simp [*]
