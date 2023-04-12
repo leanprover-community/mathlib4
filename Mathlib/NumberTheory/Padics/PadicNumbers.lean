@@ -713,11 +713,7 @@ theorem exi_rat_seq_conv_cauchy : IsCauSeq (padicNorm p) (limSeq f) := fun ε h�
     exact_mod_cast this
   · apply lt_of_le_of_lt
     · apply padicNormE.add_le
-    · have : (3 : ℚ) ≠ 0 := by norm_num
-      have : ε = ε / 3 + ε / 3 + ε / 3 := by
-        field_simp [this]
-        simp only [bit0, bit1, mul_add, mul_one]
-      rw [this]
+    · rw [←add_thirds ε]
       apply _root_.add_lt_add
       · suffices padicNormE (limSeq f j - f j + (f j - f (max N N2)) : ℚ_[p]) < ε / 3 + ε / 3 by
           simpa only [sub_add_sub_cancel]
