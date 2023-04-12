@@ -33,9 +33,7 @@ contracting map, fixed point, Banach fixed point theorem
 -/
 
 
-open NNReal Topology Classical ENNReal
-
-open Filter Function
+open NNReal Topology Classical ENNReal Filter Function
 
 variable {α : Type _}
 
@@ -203,11 +201,11 @@ theorem efixedPoint_mem' {s : Set α} (hsc : IsComplete s) (hsf : MapsTo f s s)
   (Classical.choose_spec <| hf.exists_fixedPoint' hsc hsf hxs hx).1
 #align contracting_with.efixed_point_mem' ContractingWith.efixedPoint_mem'
 
-theorem efixedPoint_is_fixed_pt' {s : Set α} (hsc : IsComplete s) (hsf : MapsTo f s s)
+theorem efixedPoint_isFixedPt' {s : Set α} (hsc : IsComplete s) (hsf : MapsTo f s s)
     (hf : ContractingWith K <| hsf.restrict f s s) {x : α} (hxs : x ∈ s) (hx : edist x (f x) ≠ ∞) :
     IsFixedPt f (efixedPoint' f hsc hsf hf x hxs hx) :=
   (Classical.choose_spec <| hf.exists_fixedPoint' hsc hsf hxs hx).2.1
-#align contracting_with.efixed_point_is_fixed_pt' ContractingWith.efixedPoint_is_fixed_pt'
+#align contracting_with.efixed_point_is_fixed_pt' ContractingWith.efixedPoint_isFixedPt'
 
 theorem tendsto_iterate_efixedPoint' {s : Set α} (hsc : IsComplete s) (hsf : MapsTo f s s)
     (hf : ContractingWith K <| hsf.restrict f s s) {x : α} (hxs : x ∈ s) (hx : edist x (f x) ≠ ∞) :
@@ -250,7 +248,7 @@ theorem efixedPoint_eq_of_edist_lt_top' (hf : ContractingWith K f) {s : Set α} 
     (hxy : edist x y ≠ ∞) :
     efixedPoint' f hsc hsf hfs x hxs hx = efixedPoint' f htc htf hft y hyt hy := by
   refine' (hf.eq_or_edist_eq_top_of_fixedPoints _ _).elim id fun h' ↦ False.elim (ne_of_lt _ h')
-    <;> try apply efixedPoint_is_fixed_pt'
+    <;> try apply efixedPoint_isFixedPt'
   change edistLtTopSetoid.Rel _ _
   trans x
   · apply Setoid.symm' -- Porting note: Originally `symm`

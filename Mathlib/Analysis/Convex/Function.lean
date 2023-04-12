@@ -19,7 +19,7 @@ inequality. The integral version can be found in `Analysis.Convex.Integral`.
 
 A function `f : E → β` is `ConvexOn` a set `s` if `s` is itself a convex set, and for any two
 points `x y ∈ s`, the segment joining `(x, f x)` to `(y, f y)` is above the graph of `f`.
-Equivalently, `Convex_on 𝕜 f s` means that the epigraph `{p : E × β | p.1 ∈ s ∧ f p.1 ≤ p.2}` is
+Equivalently, `ConvexOn 𝕜 f s` means that the epigraph `{p : E × β | p.1 ∈ s ∧ f p.1 ≤ p.2}` is
 a convex set.
 
 ## Main declarations
@@ -31,9 +31,7 @@ a convex set.
 -/
 
 
-open Finset LinearMap Set
-
-open BigOperators Classical Convex Pointwise
+open Finset LinearMap Set BigOperators Classical Convex Pointwise
 
 variable {𝕜 E F α β ι : Type _}
 
@@ -804,7 +802,7 @@ section Module
 
 variable [Module 𝕜 E] [Module 𝕜 β] [OrderedSMul 𝕜 β] {s : Set E} {f g : E → β}
 
-/- The following lemmas don't require `module 𝕜 E` if you add the hypothesis `x ≠ y`. At the time of
+/- The following lemmas don't require `Module 𝕜 E` if you add the hypothesis `x ≠ y`. At the time of
 the writing, we decided the resulting lemmas wouldn't be useful. Feel free to reintroduce them. -/
 theorem ConvexOn.lt_left_of_right_lt' (hf : ConvexOn 𝕜 s f) {x y : E} (hx : x ∈ s) (hy : y ∈ s)
     {a b : 𝕜} (ha : 0 < a) (hb : 0 < b) (hab : a + b = 1) (hfy : f y < f (a • x + b • y)) :
