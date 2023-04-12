@@ -24,27 +24,27 @@ restriction, intersection, is local, and so on.
 
 ## Main definitions
 
-* `local_invariant_prop G G' P` says that a property `P` of a triple `(g, s, x)` is local, and
+* `LocalInvariantProp G G' P` says that a property `P` of a triple `(g, s, x)` is local, and
   invariant under composition by elements of the groupoids `G` and `G'` of `H` and `H'`
   respectively.
-* `charted_space.lift_prop_within_at` (resp. `lift_prop_at`, `lift_prop_on` and `lift_prop`):
+* `ChartedSpace.LiftPropWithinAt` (resp. `LiftPropAt`, `LiftPropOn` and `LiftProp`):
   given a property `P` of `(g, s, x)` where `g : H → H'`, define the corresponding property
   for functions `M → M'` where `M` and `M'` are charted spaces modelled respectively on `H` and
   `H'`. We define these properties within a set at a point, or at a point, or on a set, or in the
   whole space. This lifting process (obtained by restricting to suitable chart domains) can always
   be done, but it only behaves well under locality and invariance assumptions.
 
-Given `hG : local_invariant_prop G G' P`, we deduce many properties of the lifted property on the
-charted spaces. For instance, `hG.lift_prop_within_at_inter` says that `P g s x` is equivalent to
+Given `hG : LocalInvariantProp G G' P`, we deduce many properties of the lifted property on the
+charted spaces. For instance, `hG.liftPropWithinAt_inter` says that `P g s x` is equivalent to
 `P g (s ∩ t) x` whenever `t` is a neighborhood of `x`.
 
 ## Implementation notes
 
 We do not use dot notation for properties of the lifted property. For instance, we have
-`hG.lift_prop_within_at_congr` saying that if `lift_prop_within_at P g s x` holds, and `g` and `g'`
-coincide on `s`, then `lift_prop_within_at P g' s x` holds. We can't call it
-`lift_prop_within_at.congr` as it is in the namespace associated to `local_invariant_prop`, not
-in the one for `lift_prop_within_at`.
+`hG.liftPropWithinAt_congr` saying that if `LiftPropWithinAt P g s x` holds, and `g` and `g'`
+coincide on `s`, then `LiftPropWithinAt P g' s x` holds. We can't call it
+`LiftPropWithinAt.congr` as it is in the namespace associated to `LocalInvariantProp`, not
+in the one for `LiftPropWithinAt`.
 -/
 
 
@@ -167,7 +167,7 @@ namespace ChartedSpace
 /-- Given a property of germs of functions and sets in the model space, then one defines
 a corresponding property in a charted space, by requiring that it holds at the preferred chart at
 this point. (When the property is local and invariant, it will in fact hold using any chart, see
-`lift_prop_within_at_indep_chart`). We require continuity in the lifted property, as otherwise one
+`liftPropWithinAt_indep_chart`). We require continuity in the lifted property, as otherwise one
 single chart might fail to capture the behavior of the function.
 -/
 def LiftPropWithinAt (P : (H → H') → Set H → H → Prop) (f : M → M') (s : Set M) (x : M) : Prop :=
@@ -246,7 +246,7 @@ namespace LocalInvariantProp
 
 variable (hG : G.LocalInvariantProp G' P)
 
-/-- `lift_prop_within_at P f s x` is equivalent to a definition where we restrict the set we are
+/-- `LiftPropWithinAt P f s x` is equivalent to a definition where we restrict the set we are
   considering to the domain of the charts at `x` and `f x`. -/
 theorem liftPropWithinAt_iff {f : M → M'} :
     LiftPropWithinAt P f s x ↔
@@ -322,7 +322,7 @@ theorem liftPropWithinAt_indep_chart [HasGroupoid M G] [HasGroupoid M' G']
       (chart_mem_maximalAtlas _ _) (mem_chart_source _) hf xf
 #align structure_groupoid.local_invariant_prop.lift_prop_within_at_indep_chart StructureGroupoid.LocalInvariantProp.liftPropWithinAt_indep_chart
 
-/-- A version of `lift_prop_within_at_indep_chart`, only for the source. -/
+/-- A version of `liftPropWithinAt_indep_chart`, only for the source. -/
 theorem liftPropWithinAt_indep_chart_source [HasGroupoid M G] (he : e ∈ G.maximalAtlas M)
     (xe : x ∈ e.source) :
     LiftPropWithinAt P g s x ↔ LiftPropWithinAt P (g ∘ e.symm) (e.symm ⁻¹' s) (e x) := by
@@ -335,7 +335,7 @@ theorem liftPropWithinAt_indep_chart_source [HasGroupoid M G] (he : e ∈ G.maxi
       (chart_mem_maximalAtlas G x) (mem_chart_source H x) he xe]
 #align structure_groupoid.local_invariant_prop.lift_prop_within_at_indep_chart_source StructureGroupoid.LocalInvariantProp.liftPropWithinAt_indep_chart_source
 
-/-- A version of `lift_prop_within_at_indep_chart`, only for the target. -/
+/-- A version of `liftPropWithinAt_indep_chart`, only for the target. -/
 theorem liftPropWithinAt_indep_chart_target [HasGroupoid M' G'] (hf : f ∈ G'.maximalAtlas M')
     (xf : g x ∈ f.source) :
     LiftPropWithinAt P g s x ↔ ContinuousWithinAt g s x ∧ LiftPropWithinAt P (f ∘ g) s x := by
@@ -347,8 +347,7 @@ theorem liftPropWithinAt_indep_chart_target [HasGroupoid M' G'] (hf : f ∈ G'.m
       (chart_mem_maximalAtlas _ _) (mem_chart_source _) hf xf hg
 #align structure_groupoid.local_invariant_prop.lift_prop_within_at_indep_chart_target StructureGroupoid.LocalInvariantProp.liftPropWithinAt_indep_chart_target
 
-/-- A version of `lift_prop_within_at_indep_chart`, that uses `lift_prop_within_at` on both sides.
--/
+/-- A version of `liftPropWithinAt_indep_chart`, that uses `LiftPropWithinAt` on both sides. -/
 theorem liftPropWithinAt_indep_chart' [HasGroupoid M G] [HasGroupoid M' G']
     (he : e ∈ G.maximalAtlas M) (xe : x ∈ e.source) (hf : f ∈ G'.maximalAtlas M')
     (xf : g x ∈ f.source) :
@@ -576,7 +575,7 @@ def IsLocalStructomorphWithinAt (f : H → H) (s : Set H) (x : H) : Prop :=
   x ∈ s → ∃ e : LocalHomeomorph H H, e ∈ G ∧ EqOn f e.toFun (s ∩ e.source) ∧ x ∈ e.source
 #align structure_groupoid.is_local_structomorph_within_at StructureGroupoid.IsLocalStructomorphWithinAt
 
-/-- For a groupoid `G` which is `closed_under_restriction`, being a local structomorphism is a local
+/-- For a groupoid `G` which is `ClosedUnderRestriction`, being a local structomorphism is a local
 invariant property. -/
 theorem isLocalStructomorphWithinAt_localInvariantProp [ClosedUnderRestriction G] :
     LocalInvariantProp G G (IsLocalStructomorphWithinAt G) :=
@@ -619,7 +618,7 @@ theorem isLocalStructomorphWithinAt_localInvariantProp [ClosedUnderRestriction G
       · simpa only [hex, hef ⟨hx, hex⟩, mfld_simps] using hfx }
 #align structure_groupoid.is_local_structomorph_within_at_local_invariant_prop StructureGroupoid.isLocalStructomorphWithinAt_localInvariantProp
 
-/-- A slight reformulation of `is_local_structomorph_within_at` when `f` is a local homeomorph.
+/-- A slight reformulation of `IsLocalStructomorphWithinAt` when `f` is a local homeomorph.
   This gives us an `e` that is defined on a subset of `f.source`. -/
 theorem _root_.LocalHomeomorph.isLocalStructomorphWithinAt_iff {G : StructureGroupoid H}
     [ClosedUnderRestriction G] (f : LocalHomeomorph H H) {s : Set H} {x : H}
@@ -643,7 +642,7 @@ theorem _root_.LocalHomeomorph.isLocalStructomorphWithinAt_iff {G : StructureGro
     exact ⟨e, he, hfe, hxe⟩
 #align local_homeomorph.is_local_structomorph_within_at_iff LocalHomeomorph.isLocalStructomorphWithinAt_iff
 
-/-- A slight reformulation of `is_local_structomorph_within_at` when `f` is a local homeomorph and
+/-- A slight reformulation of `IsLocalStructomorphWithinAt` when `f` is a local homeomorph and
   the set we're considering is a superset of `f.source`. -/
 theorem _root_.LocalHomeomorph.isLocalStructomorphWithinAt_iff' {G : StructureGroupoid H}
     [ClosedUnderRestriction G] (f : LocalHomeomorph H H) {s : Set H} {x : H} (hs : f.source ⊆ s)
@@ -658,7 +657,7 @@ theorem _root_.LocalHomeomorph.isLocalStructomorphWithinAt_iff' {G : StructureGr
   rw [inter_eq_right_iff_subset.mpr (h2e.trans hs)]
 #align local_homeomorph.is_local_structomorph_within_at_iff' LocalHomeomorph.isLocalStructomorphWithinAt_iff'
 
-/-- A slight reformulation of `is_local_structomorph_within_at` when `f` is a local homeomorph and
+/-- A slight reformulation of `IsLocalStructomorphWithinAt` when `f` is a local homeomorph and
   the set we're considering is `f.source`. -/
 theorem _root_.LocalHomeomorph.isLocalStructomorphWithinAt_source_iff {G : StructureGroupoid H}
     [ClosedUnderRestriction G] (f : LocalHomeomorph H H) {x : H} :
