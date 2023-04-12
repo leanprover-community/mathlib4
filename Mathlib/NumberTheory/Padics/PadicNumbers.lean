@@ -1148,11 +1148,12 @@ def addValuation : AddValuation ℚ_[p] (WithTop ℤ) :=
 #align padic.add_valuation Padic.addValuation
 
 @[simp]
-theorem addValuation.apply {x : ℚ_[p]} (hx : x ≠ 0) : x.addValuation = x.valuation := by
-  simp only [AddValuation, AddValuation.of_apply, addValuationDef, if_neg hx]
+theorem addValuation.apply {x : ℚ_[p]} (hx : x ≠ 0) :
+    Padic.addValuation x = (x.valuation : WithTop ℤ) := by
+  simp only [Padic.addValuation, AddValuation.of_apply, addValuationDef, if_neg hx]
 #align padic.add_valuation.apply Padic.addValuation.apply
 
-section NormLeIff
+section NormLEIff
 
 /-! ### Various characterizations of open unit balls -/
 
@@ -1182,6 +1183,6 @@ theorem norm_le_one_iff_val_nonneg (x : ℚ_[p]) : ‖x‖ ≤ 1 ↔ 0 ≤ x.val
     exact Nat.one_lt_cast.2 (Nat.Prime.one_lt' p).1
 #align padic.norm_le_one_iff_val_nonneg Padic.norm_le_one_iff_val_nonneg
 
-end NormLeIff
+end NormLEIff
 
 end Padic
