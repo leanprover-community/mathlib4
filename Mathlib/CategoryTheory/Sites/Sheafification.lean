@@ -72,7 +72,7 @@ theorem condition {X} {P : Cᵒᵖ ⥤ D} {S : J.Cover X} (x : Meq P S) (I : S.R
   x.2 _
 #align category_theory.meq.condition CategoryTheory.Meq.condition
 
-/-- Refine a term of `meq P T` with respect to a refinement `S ⟶ T` of covers. -/
+/-- Refine a term of `Meq P T` with respect to a refinement `S ⟶ T` of covers. -/
 def refine {X : C} {P : Cᵒᵖ ⥤ D} {S T : J.Cover X} (x : Meq P T) (e : S ⟶ T) : Meq P S :=
   ⟨fun I => x ⟨I.Y, I.f, (leOfHom e) _ I.hf⟩, fun I =>
     x.condition
@@ -85,7 +85,7 @@ theorem refine_apply {X : C} {P : Cᵒᵖ ⥤ D} {S T : J.Cover X} (x : Meq P T)
   rfl
 #align category_theory.meq.refine_apply CategoryTheory.Meq.refine_apply
 
-/-- Pull back a term of `meq P S` with respect to a morphism `f : Y ⟶ X` in `C`. -/
+/-- Pull back a term of `Meq P S` with respect to a morphism `f : Y ⟶ X` in `C`. -/
 def pullback {Y X : C} {P : Cᵒᵖ ⥤ D} {S : J.Cover X} (x : Meq P S) (f : Y ⟶ X) :
     Meq P ((J.pullback f).obj S) :=
   ⟨fun I => x ⟨_, I.f ≫ f, I.hf⟩, fun I =>
@@ -105,7 +105,7 @@ theorem pullback_refine {Y X : C} {P : Cᵒᵖ ⥤ D} {S T : J.Cover X} (h : S �
   rfl
 #align category_theory.meq.pullback_refine CategoryTheory.Meq.pullback_refine
 
-/-- Make a term of `meq P S`. -/
+/-- Make a term of `Meq P S`. -/
 def mk {X : C} {P : Cᵒᵖ ⥤ D} (S : J.Cover X) (x : P.obj (op X)) : Meq P S :=
   ⟨fun I => P.map I.f.op x, fun I => by
     dsimp
@@ -119,7 +119,7 @@ theorem mk_apply {X : C} {P : Cᵒᵖ ⥤ D} (S : J.Cover X) (x : P.obj (op X)) 
 
 variable [PreservesLimits (forget D)]
 
-/-- The equivalence between the type associated to `multiequalizer (S.index P)` and `meq P S`. -/
+/-- The equivalence between the type associated to `multiequalizer (S.index P)` and `Meq P S`. -/
 noncomputable def equiv {X : C} (P : Cᵒᵖ ⥤ D) (S : J.Cover X) [HasMultiequalizer (S.index P)] :
     (multiequalizer (S.index P) : D) ≃ Meq P S :=
   Limits.Concrete.multiequalizerEquiv _
@@ -158,7 +158,7 @@ variable [∀ (P : Cᵒᵖ ⥤ D) (X : C) (S : J.Cover X), HasMultiequalizer (S.
 
 noncomputable section
 
-/-- Make a term of `(J.plus_obj P).obj (op X)` from `x : meq P S`. -/
+/-- Make a term of `(J.plusObj P).obj (op X)` from `x : Meq P S`. -/
 def mk {X : C} {P : Cᵒᵖ ⥤ D} {S : J.Cover X} (x : Meq P S) : (J.plusObj P).obj (op X) :=
   colimit.ι (J.diagram P X) (op S) ((Meq.equiv P S).symm x)
 #align category_theory.grothendieck_topology.plus.mk CategoryTheory.GrothendieckTopology.Plus.mk
@@ -212,10 +212,9 @@ theorem toPlus_apply {X : C} {P : Cᵒᵖ ⥤ D} (S : J.Cover X) (x : Meq P S) (
     Meq.equiv_symm_eq_apply]
   let RR : S.Relation :=
     ⟨_, _, _, i.f, 𝟙 _, I.f, i.f ≫ I.f, I.hf, Sieve.downward_closed _ I.hf _, by simp⟩
-  cases I
   erw [x.condition RR]
-  --simpa [RR]
-  sorry
+  simp
+  rfl
 #align category_theory.grothendieck_topology.plus.to_plus_apply CategoryTheory.GrothendieckTopology.Plus.toPlus_apply
 
 theorem toPlus_eq_mk {X : C} {P : Cᵒᵖ ⥤ D} (x : P.obj (op X)) :
@@ -311,13 +310,13 @@ theorem sep {X : C} (P : Cᵒᵖ ⥤ D) (S : J.Cover X) (x y : (J.plusObj P).obj
   apply_fun fun e => e IW  at hh
   convert hh using 1
   · let Rx : Sx.Relation :=
-      ⟨I.Y, I.Y, I.Y, 𝟙 _, 𝟙 _, I.f, I.toMiddleHom ≫ I.fromMiddleHom, sorry, sorry, by
-        simp [I.middle_spec]⟩
+      ⟨I.Y, I.Y, I.Y, 𝟙 _, 𝟙 _, I.f, I.toMiddleHom ≫ I.fromMiddleHom, leOfHom ex _ I.hf,
+        by simpa only [I.middle_spec] using leOfHom ex _ I.hf, by simp [I.middle_spec]⟩
     have := x.condition Rx
     simpa using this
   · let Ry : Sy.Relation :=
-      ⟨I.Y, I.Y, I.Y, 𝟙 _, 𝟙 _, I.f, I.toMiddleHom ≫ I.fromMiddleHom, sorry, sorry, by
-        simp [I.middle_spec]⟩
+      ⟨I.Y, I.Y, I.Y, 𝟙 _, 𝟙 _, I.f, I.toMiddleHom ≫ I.fromMiddleHom, leOfHom ey _ I.hf,
+        by simpa only [I.middle_spec] using leOfHom ey _ I.hf, by simp [I.middle_spec]⟩
     have := y.condition Ry
     simpa using this
 #align category_theory.grothendieck_topology.plus.sep CategoryTheory.GrothendieckTopology.Plus.sep
@@ -344,49 +343,48 @@ theorem inj_of_sep (P : Cᵒᵖ ⥤ D)
   The separatedness condition is used to prove compatibility among these local sections of `P`. -/
 def meqOfSep (P : Cᵒᵖ ⥤ D)
     (hsep :
-      ∀ (X : C) (S : J.cover X) (x y : P.obj (op X)),
-        (∀ I : S.arrow, P.map I.f.op x = P.map I.f.op y) → x = y)
-    (X : C) (S : J.cover X) (s : Meq (J.plusObj P) S) (T : ∀ I : S.arrow, J.cover I.y)
-    (t : ∀ I : S.arrow, Meq P (T I)) (ht : ∀ I : S.arrow, s I = mk (t I)) : Meq P (S.bind T) where
+      ∀ (X : C) (S : J.Cover X) (x y : P.obj (op X)),
+        (∀ I : S.Arrow, P.map I.f.op x = P.map I.f.op y) → x = y)
+    (X : C) (S : J.Cover X) (s : Meq (J.plusObj P) S) (T : ∀ I : S.Arrow, J.Cover I.Y)
+    (t : ∀ I : S.Arrow, Meq P (T I)) (ht : ∀ I : S.Arrow, s I = mk (t I)) : Meq P (S.bind T) where
   val I := t I.fromMiddle I.toMiddle
   property := by
     intro II
     apply inj_of_sep P hsep
-    rw [← comp_apply, ← comp_apply, (J.to_plus P).naturality, (J.to_plus P).naturality, comp_apply,
+    rw [← comp_apply, ← comp_apply, (J.toPlus P).naturality, (J.toPlus P).naturality, comp_apply,
       comp_apply]
-    erw [to_plus_apply (T II.fst.from_middle) (t II.fst.from_middle) II.fst.to_middle,
-      to_plus_apply (T II.snd.from_middle) (t II.snd.from_middle) II.snd.to_middle, ← ht, ← ht, ←
-      comp_apply, ← comp_apply, ← (J.plus_obj P).map_comp, ← (J.plus_obj P).map_comp]
+    erw [toPlus_apply (T II.fst.fromMiddle) (t II.fst.fromMiddle) II.fst.toMiddle,
+      toPlus_apply (T II.snd.fromMiddle) (t II.snd.fromMiddle) II.snd.toMiddle, ← ht, ← ht, ←
+      comp_apply, ← comp_apply, ← (J.plusObj P).map_comp, ← (J.plusObj P).map_comp]
     rw [← op_comp, ← op_comp]
-    let IR : S.relation :=
-      ⟨_, _, _, II.g₁ ≫ II.fst.to_middle_hom, II.g₂ ≫ II.snd.to_middle_hom, II.fst.from_middle_hom,
-        II.snd.from_middle_hom, II.fst.from_middle_condition, II.snd.from_middle_condition, _⟩
-    swap;
-    · simp only [category.assoc, II.fst.middle_spec, II.snd.middle_spec]
-      apply II.w
+    let IR : S.Relation :=
+      ⟨_, _, _, II.g₁ ≫ II.fst.toMiddleHom, II.g₂ ≫ II.snd.toMiddleHom, II.fst.fromMiddleHom,
+        II.snd.fromMiddleHom, II.fst.from_middle_condition, II.snd.from_middle_condition, by
+          simpa only [Category.assoc, II.fst.middle_spec, II.snd.middle_spec] using II.w⟩
     exact s.condition IR
 #align category_theory.grothendieck_topology.plus.meq_of_sep CategoryTheory.GrothendieckTopology.Plus.meqOfSep
 
 theorem exists_of_sep (P : Cᵒᵖ ⥤ D)
     (hsep :
-      ∀ (X : C) (S : J.cover X) (x y : P.obj (op X)),
-        (∀ I : S.arrow, P.map I.f.op x = P.map I.f.op y) → x = y)
-    (X : C) (S : J.cover X) (s : Meq (J.plusObj P) S) :
+      ∀ (X : C) (S : J.Cover X) (x y : P.obj (op X)),
+        (∀ I : S.Arrow, P.map I.f.op x = P.map I.f.op y) → x = y)
+    (X : C) (S : J.Cover X) (s : Meq (J.plusObj P) S) :
     ∃ t : (J.plusObj P).obj (op X), Meq.mk S t = s := by
-  have inj : ∀ X : C, Function.Injective ((J.to_plus P).app (op X)) := inj_of_sep _ hsep
+  have inj : ∀ X : C, Function.Injective ((J.toPlus P).app (op X)) := inj_of_sep _ hsep
   -- Choose representatives for the given local sections.
   choose T t ht using fun I => exists_rep (s I)
   -- Construct a large cover over which we will define a representative that will
   -- provide the gluing of the given local sections.
-  let B : J.cover X := S.bind T
-  choose Z e1 e2 he2 he1 hee using fun I : B.arrow => I.hf
+  let B : J.Cover X := S.bind T
+  choose Z e1 e2 he2 _ _ using fun I : B.Arrow => I.hf
   -- Construct a compatible system of local sections over this large cover, using the chosen
   -- representatives of our local sections.
   -- The compatilibity here follows from the separatedness assumption.
-  let w : meq P B := meq_of_sep P hsep X S s T t ht
+  let w : Meq P B := meqOfSep P hsep X S s T t ht
   -- The associated gluing will be the candidate section.
   use mk w
   ext I
+  dsimp [Meq.mk]
   erw [ht, res_mk_eq_mk_pullback]
   -- Use the separatedness of `P⁺` to prove that this is indeed a gluing of our
   -- original local sections.
@@ -397,32 +395,26 @@ theorem exists_of_sep (P : Cᵒᵖ ⥤ D)
   -- convenient sufficiently large cover...
   use (J.pullback II.f).obj (T I)
   let e0 : (J.pullback II.f).obj (T I) ⟶ (J.pullback II.f).obj ((J.pullback I.f).obj B) :=
-    hom_of_le
+    homOfLE
       (by
         intro Y f hf
-        apply sieve.le_pullback_bind _ _ _ I.hf
+        apply Sieve.le_pullback_bind _ _ _ I.hf
         · cases I
           exact hf)
   use e0, 𝟙 _
   ext IV
-  dsimp only [meq.refine_apply, meq.pullback_apply, w]
-  let IA : B.arrow := ⟨_, (IV.f ≫ II.f) ≫ I.f, _⟩
-  swap
-  · refine' ⟨I.Y, _, _, I.hf, _, rfl⟩
-    apply sieve.downward_closed
-    convert II.hf
-    cases I
-    rfl
-  let IB : S.arrow := IA.from_middle
-  let IC : (T IB).arrow := IA.to_middle
-  let ID : (T I).arrow := ⟨IV.Y, IV.f ≫ II.f, sieve.downward_closed (T I) II.hf IV.f⟩
+  --dsimp only [Meq.refine_apply, Meq.pullback_apply, w]
+  let IA : B.Arrow := ⟨_, (IV.f ≫ II.f) ≫ I.f,
+    ⟨I.Y, _, _, I.hf, Sieve.downward_closed _ II.hf _, rfl⟩⟩
+  let IB : S.Arrow := IA.fromMiddle
+  let IC : (T IB).Arrow := IA.toMiddle
+  let ID : (T I).Arrow := ⟨IV.Y, IV.f ≫ II.f, Sieve.downward_closed (T I).sieve II.hf IV.f⟩
   change t IB IC = t I ID
   apply inj IV.Y
-  erw [to_plus_apply (T I) (t I) ID, to_plus_apply (T IB) (t IB) IC, ← ht, ← ht]
+  erw [toPlus_apply (T I) (t I) ID, toPlus_apply (T IB) (t IB) IC, ← ht, ← ht]
   -- Conclude by constructing the relation showing equality...
-  let IR : S.relation := ⟨_, _, IV.Y, IC.f, ID.f, IB.f, I.f, _, I.hf, IA.middle_spec⟩
-  convert s.condition IR
-  cases I; rfl
+  let IR : S.Relation := ⟨_, _, IV.Y, IC.f, ID.f, IB.f, I.f, IB.hf, I.hf, IA.middle_spec⟩
+  exact s.condition IR
 #align category_theory.grothendieck_topology.plus.exists_of_sep CategoryTheory.GrothendieckTopology.Plus.exists_of_sep
 
 variable [ReflectsIsomorphisms (forget D)]
@@ -430,32 +422,28 @@ variable [ReflectsIsomorphisms (forget D)]
 /-- If `P` is separated, then `P⁺` is a sheaf. -/
 theorem isSheaf_of_sep (P : Cᵒᵖ ⥤ D)
     (hsep :
-      ∀ (X : C) (S : J.cover X) (x y : P.obj (op X)),
-        (∀ I : S.arrow, P.map I.f.op x = P.map I.f.op y) → x = y) :
+      ∀ (X : C) (S : J.Cover X) (x y : P.obj (op X)),
+        (∀ I : S.Arrow, P.map I.f.op x = P.map I.f.op y) → x = y) :
     Presheaf.IsSheaf J (J.plusObj P) := by
-  rw [presheaf.is_sheaf_iff_multiequalizer]
+  rw [Presheaf.isSheaf_iff_multiequalizer]
   intro X S
-  apply is_iso_of_reflects_iso _ (forget D)
-  rw [is_iso_iff_bijective]
+  apply @isIso_of_reflects_iso _ _ _ _ _ _ _ (forget D) ?_
+  rw [isIso_iff_bijective]
   constructor
   · intro x y h
     apply sep P S _ _
     intro I
-    apply_fun meq.equiv _ _  at h
+    apply_fun Meq.equiv _ _  at h
     apply_fun fun e => e I  at h
-    convert h
-    · erw [meq.equiv_apply, ← comp_apply, multiequalizer.lift_ι]
-    · erw [meq.equiv_apply, ← comp_apply, multiequalizer.lift_ι]
+    convert h <;> erw [Meq.equiv_apply, ← comp_apply, Multiequalizer.lift_ι]
   · rintro (x : (multiequalizer (S.index _) : D))
-    obtain ⟨t, ht⟩ := exists_of_sep P hsep X S (meq.equiv _ _ x)
+    obtain ⟨t, ht⟩ := exists_of_sep P hsep X S (Meq.equiv _ _ x)
     use t
-    apply_fun meq.equiv _ _
-    swap
-    · infer_instance
+    apply (Meq.equiv _ _).injective
     rw [← ht]
     ext i
     dsimp
-    rw [← comp_apply, multiequalizer.lift_ι]
+    rw [← comp_apply, Multiequalizer.lift_ι]
     rfl
 #align category_theory.grothendieck_topology.plus.is_sheaf_of_sep CategoryTheory.GrothendieckTopology.Plus.isSheaf_of_sep
 
@@ -463,51 +451,53 @@ variable (J)
 
 /-- `P⁺⁺` is always a sheaf. -/
 theorem isSheaf_plus_plus (P : Cᵒᵖ ⥤ D) : Presheaf.IsSheaf J (J.plusObj (J.plusObj P)) := by
-  apply is_sheaf_of_sep
+  apply isSheaf_of_sep
   intro X S x y
   apply sep
 #align category_theory.grothendieck_topology.plus.is_sheaf_plus_plus CategoryTheory.GrothendieckTopology.Plus.isSheaf_plus_plus
+
+end
 
 end Plus
 
 variable (J)
 
-variable [∀ (P : Cᵒᵖ ⥤ D) (X : C) (S : J.cover X), HasMultiequalizer (S.index P)]
-  [∀ X : C, HasColimitsOfShape (J.cover X)ᵒᵖ D]
+variable [∀ (P : Cᵒᵖ ⥤ D) (X : C) (S : J.Cover X), HasMultiequalizer (S.index P)]
+  [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ D]
 
 /-- The sheafification of a presheaf `P`.
 *NOTE:* Additional hypotheses are needed to obtain a proof that this is a sheaf! -/
-def sheafify (P : Cᵒᵖ ⥤ D) : Cᵒᵖ ⥤ D :=
+noncomputable def sheafify (P : Cᵒᵖ ⥤ D) : Cᵒᵖ ⥤ D :=
   J.plusObj (J.plusObj P)
 #align category_theory.grothendieck_topology.sheafify CategoryTheory.GrothendieckTopology.sheafify
 
 /-- The canonical map from `P` to its sheafification. -/
-def toSheafify (P : Cᵒᵖ ⥤ D) : P ⟶ J.sheafify P :=
+noncomputable def toSheafify (P : Cᵒᵖ ⥤ D) : P ⟶ J.sheafify P :=
   J.toPlus P ≫ J.plusMap (J.toPlus P)
 #align category_theory.grothendieck_topology.to_sheafify CategoryTheory.GrothendieckTopology.toSheafify
 
 /-- The canonical map on sheafifications induced by a morphism. -/
-def sheafifyMap {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) : J.sheafify P ⟶ J.sheafify Q :=
+noncomputable def sheafifyMap {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) : J.sheafify P ⟶ J.sheafify Q :=
   J.plusMap <| J.plusMap η
 #align category_theory.grothendieck_topology.sheafify_map CategoryTheory.GrothendieckTopology.sheafifyMap
 
 @[simp]
 theorem sheafifyMap_id (P : Cᵒᵖ ⥤ D) : J.sheafifyMap (𝟙 P) = 𝟙 (J.sheafify P) := by
-  dsimp [sheafify_map, sheafify]
+  dsimp [sheafifyMap, sheafify]
   simp
 #align category_theory.grothendieck_topology.sheafify_map_id CategoryTheory.GrothendieckTopology.sheafifyMap_id
 
 @[simp]
 theorem sheafifyMap_comp {P Q R : Cᵒᵖ ⥤ D} (η : P ⟶ Q) (γ : Q ⟶ R) :
     J.sheafifyMap (η ≫ γ) = J.sheafifyMap η ≫ J.sheafifyMap γ := by
-  dsimp [sheafify_map, sheafify]
+  dsimp [sheafifyMap, sheafify]
   simp
 #align category_theory.grothendieck_topology.sheafify_map_comp CategoryTheory.GrothendieckTopology.sheafifyMap_comp
 
-@[simp, reassoc.1]
+@[reassoc (attr := simp)]
 theorem toSheafify_naturality {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) :
     η ≫ J.toSheafify _ = J.toSheafify _ ≫ J.sheafifyMap η := by
-  dsimp [sheafify_map, sheafify, to_sheafify]
+  dsimp [sheafifyMap, sheafify, toSheafify]
   simp
 #align category_theory.grothendieck_topology.to_sheafify_naturality CategoryTheory.GrothendieckTopology.toSheafify_naturality
 
@@ -515,7 +505,7 @@ variable (D)
 
 /-- The sheafification of a presheaf `P`, as a functor.
 *NOTE:* Additional hypotheses are needed to obtain a proof that this is a sheaf! -/
-def sheafification : (Cᵒᵖ ⥤ D) ⥤ Cᵒᵖ ⥤ D :=
+noncomputable def sheafification : (Cᵒᵖ ⥤ D) ⥤ Cᵒᵖ ⥤ D :=
   J.plusFunctor D ⋙ J.plusFunctor D
 #align category_theory.grothendieck_topology.sheafification CategoryTheory.GrothendieckTopology.sheafification
 
@@ -532,7 +522,7 @@ theorem sheafification_map {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) :
 
 /-- The canonical map from `P` to its sheafification, as a natural transformation.
 *Note:* We only show this is a sheaf under additional hypotheses on `D`. -/
-def toSheafification : 𝟭 _ ⟶ sheafification J D :=
+noncomputable def toSheafification : 𝟭 _ ⟶ sheafification J D :=
   J.toPlusNatTrans D ≫ whiskerRight (J.toPlusNatTrans D) (J.plusFunctor D)
 #align category_theory.grothendieck_topology.to_sheafification CategoryTheory.GrothendieckTopology.toSheafification
 
@@ -544,67 +534,68 @@ theorem toSheafification_app (P : Cᵒᵖ ⥤ D) : (J.toSheafification D).app P 
 variable {D}
 
 theorem isIso_toSheafify {P : Cᵒᵖ ⥤ D} (hP : Presheaf.IsSheaf J P) : IsIso (J.toSheafify P) := by
-  dsimp [to_sheafify]
-  haveI : is_iso (J.to_plus P) := by apply is_iso_to_plus_of_is_sheaf J P hP
-  haveI : is_iso ((J.plus_functor D).map (J.to_plus P)) := by apply functor.map_is_iso
-  exact @is_iso.comp_is_iso _ _ _ _ _ (J.to_plus P) ((J.plus_functor D).map (J.to_plus P)) _ _
+  dsimp [toSheafify]
+  haveI := isIso_toPlus_of_isSheaf J P hP
+  change (IsIso (toPlus J P ≫ (J.plusFunctor D).map (toPlus J P)))
+  infer_instance
 #align category_theory.grothendieck_topology.is_iso_to_sheafify CategoryTheory.GrothendieckTopology.isIso_toSheafify
 
 /-- If `P` is a sheaf, then `P` is isomorphic to `J.sheafify P`. -/
-def isoSheafify {P : Cᵒᵖ ⥤ D} (hP : Presheaf.IsSheaf J P) : P ≅ J.sheafify P :=
-  letI := is_iso_to_sheafify J hP
-  as_iso (J.to_sheafify P)
+noncomputable def isoSheafify {P : Cᵒᵖ ⥤ D} (hP : Presheaf.IsSheaf J P) : P ≅ J.sheafify P :=
+  letI := isIso_toSheafify J hP
+  asIso (J.toSheafify P)
 #align category_theory.grothendieck_topology.iso_sheafify CategoryTheory.GrothendieckTopology.isoSheafify
 
 @[simp]
 theorem isoSheafify_hom {P : Cᵒᵖ ⥤ D} (hP : Presheaf.IsSheaf J P) :
-    (J.isoSheafify hP).Hom = J.toSheafify P :=
+    (J.isoSheafify hP).hom = J.toSheafify P :=
   rfl
 #align category_theory.grothendieck_topology.iso_sheafify_hom CategoryTheory.GrothendieckTopology.isoSheafify_hom
 
 /-- Given a sheaf `Q` and a morphism `P ⟶ Q`, construct a morphism from
-`J.sheafifcation P` to `Q`. -/
-def sheafifyLift {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) (hQ : Presheaf.IsSheaf J Q) : J.sheafify P ⟶ Q :=
+`J.sheafify P` to `Q`. -/
+noncomputable def sheafifyLift {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) (hQ : Presheaf.IsSheaf J Q) :
+    J.sheafify P ⟶ Q :=
   J.plusLift (J.plusLift η hQ) hQ
 #align category_theory.grothendieck_topology.sheafify_lift CategoryTheory.GrothendieckTopology.sheafifyLift
 
-@[simp, reassoc.1]
+@[reassoc (attr := simp)]
 theorem toSheafify_sheafifyLift {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) (hQ : Presheaf.IsSheaf J Q) :
     J.toSheafify P ≫ sheafifyLift J η hQ = η := by
-  dsimp only [sheafify_lift, to_sheafify]
+  dsimp only [sheafifyLift, toSheafify]
   simp
 #align category_theory.grothendieck_topology.to_sheafify_sheafify_lift CategoryTheory.GrothendieckTopology.toSheafify_sheafifyLift
 
 theorem sheafifyLift_unique {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) (hQ : Presheaf.IsSheaf J Q)
     (γ : J.sheafify P ⟶ Q) : J.toSheafify P ≫ γ = η → γ = sheafifyLift J η hQ := by
   intro h
-  apply plus_lift_unique
-  apply plus_lift_unique
-  rw [← category.assoc, ← plus_map_to_plus]
+  apply plusLift_unique
+  apply plusLift_unique
+  rw [← Category.assoc, ← plusMap_toPlus]
   exact h
 #align category_theory.grothendieck_topology.sheafify_lift_unique CategoryTheory.GrothendieckTopology.sheafifyLift_unique
 
 @[simp]
 theorem isoSheafify_inv {P : Cᵒᵖ ⥤ D} (hP : Presheaf.IsSheaf J P) :
     (J.isoSheafify hP).inv = J.sheafifyLift (𝟙 _) hP := by
-  apply J.sheafify_lift_unique
-  simp [iso.comp_inv_eq]
+  apply J.sheafifyLift_unique
+  simp [Iso.comp_inv_eq]
 #align category_theory.grothendieck_topology.iso_sheafify_inv CategoryTheory.GrothendieckTopology.isoSheafify_inv
 
 theorem sheafify_hom_ext {P Q : Cᵒᵖ ⥤ D} (η γ : J.sheafify P ⟶ Q) (hQ : Presheaf.IsSheaf J Q)
     (h : J.toSheafify P ≫ η = J.toSheafify P ≫ γ) : η = γ := by
   apply J.plus_hom_ext _ _ hQ
   apply J.plus_hom_ext _ _ hQ
-  rw [← category.assoc, ← category.assoc, ← plus_map_to_plus]
+  rw [← Category.assoc, ← Category.assoc, ← plusMap_toPlus]
   exact h
 #align category_theory.grothendieck_topology.sheafify_hom_ext CategoryTheory.GrothendieckTopology.sheafify_hom_ext
 
-@[simp, reassoc.1]
+@[reassoc (attr := simp)]
 theorem sheafifyMap_sheafifyLift {P Q R : Cᵒᵖ ⥤ D} (η : P ⟶ Q) (γ : Q ⟶ R)
     (hR : Presheaf.IsSheaf J R) :
     J.sheafifyMap η ≫ J.sheafifyLift γ hR = J.sheafifyLift (η ≫ γ) hR := by
-  apply J.sheafify_lift_unique
-  rw [← category.assoc, ← J.to_sheafify_naturality, category.assoc, to_sheafify_sheafify_lift]
+  apply J.sheafifyLift_unique
+  rw [← Category.assoc, ← J.toSheafify_naturality, Category.assoc, toSheafify_sheafifyLift]
 #align category_theory.grothendieck_topology.sheafify_map_sheafify_lift CategoryTheory.GrothendieckTopology.sheafifyMap_sheafifyLift
 
 end GrothendieckTopology
@@ -612,9 +603,9 @@ end GrothendieckTopology
 variable (J)
 
 variable [ConcreteCategory.{max v u} D] [PreservesLimits (forget D)]
-  [∀ (P : Cᵒᵖ ⥤ D) (X : C) (S : J.cover X), HasMultiequalizer (S.index P)]
-  [∀ X : C, HasColimitsOfShape (J.cover X)ᵒᵖ D]
-  [∀ X : C, PreservesColimitsOfShape (J.cover X)ᵒᵖ (forget D)] [ReflectsIsomorphisms (forget D)]
+  [∀ (P : Cᵒᵖ ⥤ D) (X : C) (S : J.Cover X), HasMultiequalizer (S.index P)]
+  [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ D]
+  [∀ X : C, PreservesColimitsOfShape (J.Cover X)ᵒᵖ (forget D)] [ReflectsIsomorphisms (forget D)]
 
 theorem GrothendieckTopology.sheafify_isSheaf (P : Cᵒᵖ ⥤ D) : Presheaf.IsSheaf J (J.sheafify P) :=
   GrothendieckTopology.Plus.isSheaf_plus_plus _ _
@@ -624,23 +615,26 @@ variable (D)
 
 /-- The sheafification functor, as a functor taking values in `Sheaf`. -/
 @[simps]
-def presheafToSheaf : (Cᵒᵖ ⥤ D) ⥤ Sheaf J D where
+noncomputable def presheafToSheaf : (Cᵒᵖ ⥤ D) ⥤ Sheaf J D where
   obj P := ⟨J.sheafify P, J.sheafify_isSheaf P⟩
-  map P Q η := ⟨J.sheafifyMap η⟩
-  map_id' P := Sheaf.Hom.ext _ _ <| J.sheafifyMap_id _
-  map_comp' P Q R f g := Sheaf.Hom.ext _ _ <| J.sheafifyMap_comp _ _
+  map η := ⟨J.sheafifyMap η⟩
+  map_id _ := Sheaf.Hom.ext _ _ <| J.sheafifyMap_id _
+  map_comp _ _ := Sheaf.Hom.ext _ _ <| J.sheafifyMap_comp _ _
+set_option linter.uppercaseLean3 false in
 #align category_theory.presheaf_to_Sheaf CategoryTheory.presheafToSheaf
 
 instance presheafToSheaf_preservesZeroMorphisms [Preadditive D] :
-    (presheafToSheaf J D).PreservesZeroMorphisms
-    where map_zero' F G := by
-    ext
-    erw [colimit.ι_map, comp_zero, J.plus_map_zero, J.diagram_nat_trans_zero, zero_comp]
+    (presheafToSheaf J D).PreservesZeroMorphisms where
+  map_zero F G := by
+    ext : 3
+    refine' colimit.hom_ext (fun j => _)
+    erw [colimit.ι_map, comp_zero, J.plusMap_zero, J.diagramNatTrans_zero, zero_comp]
+set_option linter.uppercaseLean3 false in
 #align category_theory.presheaf_to_Sheaf_preserves_zero_morphisms CategoryTheory.presheafToSheaf_preservesZeroMorphisms
 
 /-- The sheafification functor is left adjoint to the forgetful functor. -/
-@[simps unit_app counit_app_val]
-def sheafificationAdjunction : presheafToSheaf J D ⊣ sheafToPresheaf J D :=
+@[simps! unit_app counit_app_val]
+noncomputable def sheafificationAdjunction : presheafToSheaf J D ⊣ sheafToPresheaf J D :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun P Q =>
         { toFun := fun e => J.toSheafify P ≫ e.val
@@ -649,14 +643,15 @@ def sheafificationAdjunction : presheafToSheaf J D ⊣ sheafToPresheaf J D :=
           right_inv := fun e => J.toSheafify_sheafifyLift _ _ }
       homEquiv_naturality_left_symm := by
         intro P Q R η γ; ext1; dsimp; symm
-        apply J.sheafify_map_sheafify_lift
-      homEquiv_naturality_right := fun P Q R η γ => by
+        apply J.sheafifyMap_sheafifyLift
+      homEquiv_naturality_right := fun η γ => by
         dsimp
-        rw [category.assoc] }
+        rw [Category.assoc] }
 #align category_theory.sheafification_adjunction CategoryTheory.sheafificationAdjunction
 
-instance sheafToPresheafIsRightAdjoint : IsRightAdjoint (sheafToPresheaf J D) :=
+noncomputable instance sheafToPresheafIsRightAdjoint : IsRightAdjoint (sheafToPresheaf J D) :=
   ⟨_, sheafificationAdjunction J D⟩
+set_option linter.uppercaseLean3 false in
 #align category_theory.Sheaf_to_presheaf_is_right_adjoint CategoryTheory.sheafToPresheafIsRightAdjoint
 
 instance presheaf_mono_of_mono {F G : Sheaf J D} (f : F ⟶ G) [Mono f] : Mono f.1 :=
@@ -664,26 +659,23 @@ instance presheaf_mono_of_mono {F G : Sheaf J D} (f : F ⟶ G) [Mono f] : Mono f
 #align category_theory.presheaf_mono_of_mono CategoryTheory.presheaf_mono_of_mono
 
 theorem Sheaf.Hom.mono_iff_presheaf_mono {F G : Sheaf J D} (f : F ⟶ G) : Mono f ↔ Mono f.1 :=
-  ⟨fun m => by
-    skip
-    infer_instance, fun m => by
-    skip
-    exact Sheaf.hom.mono_of_presheaf_mono J D f⟩
+  ⟨fun m => by infer_instance, fun m => by exact Sheaf.Hom.mono_of_presheaf_mono J D f⟩
+set_option linter.uppercaseLean3 false in
 #align category_theory.Sheaf.hom.mono_iff_presheaf_mono CategoryTheory.Sheaf.Hom.mono_iff_presheaf_mono
 
 variable {J D}
 
 /-- A sheaf `P` is isomorphic to its own sheafification. -/
 @[simps]
-def sheafificationIso (P : Sheaf J D) : P ≅ (presheafToSheaf J D).obj P.val where
-  Hom := ⟨(J.isoSheafify P.2).Hom⟩
+noncomputable def sheafificationIso (P : Sheaf J D) : P ≅ (presheafToSheaf J D).obj P.val where
+  hom := ⟨(J.isoSheafify P.2).hom⟩
   inv := ⟨(J.isoSheafify P.2).inv⟩
-  hom_inv_id' := by
+  hom_inv_id := by
     ext1
-    apply (J.iso_sheafify P.2).hom_inv_id
-  inv_hom_id' := by
+    apply (J.isoSheafify P.2).hom_inv_id
+  inv_hom_id := by
     ext1
-    apply (J.iso_sheafify P.2).inv_hom_id
+    apply (J.isoSheafify P.2).inv_hom_id
 #align category_theory.sheafification_iso CategoryTheory.sheafificationIso
 
 instance isIso_sheafificationAdjunction_counit (P : Sheaf J D) :
