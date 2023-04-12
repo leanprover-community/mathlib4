@@ -18,283 +18,287 @@ open Function
 universe u v w
 
 /-
-coinductive wseq (α : Type u) : Type u
-| nil : wseq α
-| cons : α → wseq α → wseq α
-| think : wseq α → wseq α
+coinductive WSeq (α : Type u) : Type u
+| nil : WSeq α
+| cons : α → WSeq α → WSeq α
+| think : WSeq α → WSeq α
 -/
 /-- Weak sequences.
 
-  While the `seq` structure allows for lists which may not be finite,
+  While the `Seq` structure allows for lists which may not be finite,
   a weak sequence also allows the computation of each element to
   involve an indeterminate amount of computation, including possibly
-  an infinite loop. This is represented as a regular `seq` interspersed
+  an infinite loop. This is represented as a regular `Seq` interspersed
   with `none` elements to indicate that computation is ongoing.
 
   This model is appropriate for Haskell style lazy lists, and is closed
   under most interesting computation patterns on infinite lists,
   but conversely it is difficult to extract elements from it. -/
-def Wseq (α) :=
+def WSeq (α) :=
   Seq (Option α)
-#align stream.wseq Stream'.Wseq
+#align stream.wseq Stream'.WSeq
 
-namespace Wseq
+namespace WSeq
 
 variable {α : Type u} {β : Type v} {γ : Type w}
 
 /-- Turn a sequence into a weak sequence -/
-def ofSeq : Seq α → Wseq α :=
+@[coe]
+def ofSeq : Seq α → WSeq α :=
   (· <$> ·) some
-#align stream.wseq.of_seq Stream'.Wseq.ofSeq
+#align stream.wseq.of_seq Stream'.WSeq.ofSeq
 
 /-- Turn a list into a weak sequence -/
-def ofList (l : List α) : Wseq α :=
+@[coe]
+def ofList (l : List α) : WSeq α :=
   ofSeq l
-#align stream.wseq.of_list Stream'.Wseq.ofList
+#align stream.wseq.of_list Stream'.WSeq.ofList
 
 /-- Turn a stream into a weak sequence -/
-def ofStream (l : Stream' α) : Wseq α :=
+@[coe]
+def ofStream (l : Stream' α) : WSeq α :=
   ofSeq l
-#align stream.wseq.of_stream Stream'.Wseq.ofStream
+#align stream.wseq.of_stream Stream'.WSeq.ofStream
 
-instance coeSeq : Coe (Seq α) (Wseq α) :=
+instance coeSeq : Coe (Seq α) (WSeq α) :=
   ⟨ofSeq⟩
-#align stream.wseq.coe_seq Stream'.Wseq.coeSeq
+#align stream.wseq.coe_seq Stream'.WSeq.coeSeq
 
-instance coeList : Coe (List α) (Wseq α) :=
+instance coeList : Coe (List α) (WSeq α) :=
   ⟨ofList⟩
-#align stream.wseq.coe_list Stream'.Wseq.coeList
+#align stream.wseq.coe_list Stream'.WSeq.coeList
 
-instance coeStream : Coe (Stream' α) (Wseq α) :=
+instance coeStream : Coe (Stream' α) (WSeq α) :=
   ⟨ofStream⟩
-#align stream.wseq.coe_stream Stream'.Wseq.coeStream
+#align stream.wseq.coe_stream Stream'.WSeq.coeStream
 
 /-- The empty weak sequence -/
-def nil : Wseq α :=
+def nil : WSeq α :=
   Seq.nil
-#align stream.wseq.nil Stream'.Wseq.nil
+#align stream.wseq.nil Stream'.WSeq.nil
 
-instance : Inhabited (Wseq α) :=
+instance inhabited : Inhabited (WSeq α) :=
   ⟨nil⟩
+#align stream.wseq.inhabited Stream'.WSeq.inhabited
 
 /-- Prepend an element to a weak sequence -/
-def cons (a : α) : Wseq α → Wseq α :=
+def cons (a : α) : WSeq α → WSeq α :=
   Seq.cons (some a)
-#align stream.wseq.cons Stream'.Wseq.cons
+#align stream.wseq.cons Stream'.WSeq.cons
 
 /-- Compute for one tick, without producing any elements -/
-def think : Wseq α → Wseq α :=
+def think : WSeq α → WSeq α :=
   Seq.cons none
-#align stream.wseq.think Stream'.Wseq.think
+#align stream.wseq.think Stream'.WSeq.think
 
 /-- Destruct a weak sequence, to (eventually possibly) produce either
   `none` for `nil` or `some (a, s)` if an element is produced. -/
-def destruct : Wseq α → Computation (Option (α × Wseq α)) :=
+def destruct : WSeq α → Computation (Option (α × WSeq α)) :=
   Computation.corec fun s =>
     match Seq.destruct s with
     | none => Sum.inl none
     | some (none, s') => Sum.inr s'
     | some (some a, s') => Sum.inl (some (a, s'))
-#align stream.wseq.destruct Stream'.Wseq.destruct
+#align stream.wseq.destruct Stream'.WSeq.destruct
 
-/-- Recursion principle for weak sequences, compare with `list.rec_on`. -/
-def recOn {C : Wseq α → Sort v} (s : Wseq α) (h1 : C nil) (h2 : ∀ x s, C (cons x s))
+/-- Recursion principle for weak sequences, compare with `List.recOn`. -/
+def recOn {C : WSeq α → Sort v} (s : WSeq α) (h1 : C nil) (h2 : ∀ x s, C (cons x s))
     (h3 : ∀ s, C (think s)) : C s :=
   Seq.recOn s h1 fun o => Option.recOn o h3 h2
-#align stream.wseq.rec_on Stream'.Wseq.recOn
+#align stream.wseq.rec_on Stream'.WSeq.recOn
 
 /-- membership for weak sequences-/
-protected def Mem (a : α) (s : Wseq α) :=
+protected def Mem (a : α) (s : WSeq α) :=
   Seq.Mem (some a) s
-#align stream.wseq.mem Stream'.Wseq.Mem
+#align stream.wseq.mem Stream'.WSeq.Mem
 
-instance : Membership α (Wseq α) :=
-  ⟨Wseq.Mem⟩
+instance membership : Membership α (WSeq α) :=
+  ⟨WSeq.Mem⟩
+#align stream.wseq.has_mem Stream'.WSeq.membership
 
 theorem not_mem_nil (a : α) : a ∉ @nil α :=
-  Seq.not_mem_nil a
-#align stream.wseq.not_mem_nil Stream'.Wseq.not_mem_nil
+  Seq.not_mem_nil (some a)
+#align stream.wseq.not_mem_nil Stream'.WSeq.not_mem_nil
 
 /-- Get the head of a weak sequence. This involves a possibly
   infinite computation. -/
-def head (s : Wseq α) : Computation (Option α) :=
-  Computation.map ((· <$> ·) Prod.fst) (destruct s)
-#align stream.wseq.head Stream'.Wseq.head
+def head (s : WSeq α) : Computation (Option α) :=
+  Computation.map (Prod.fst <$> ·) (destruct s)
+#align stream.wseq.head Stream'.WSeq.head
 
 /-- Encode a computation yielding a weak sequence into additional
   `think` constructors in a weak sequence -/
-def flatten : Computation (Wseq α) → Wseq α :=
+def flatten : Computation (WSeq α) → WSeq α :=
   Seq.corec fun c =>
     match Computation.destruct c with
-    | Sum.inl s => Seq.omap return (Seq.destruct s)
+    | Sum.inl s => Seq.omap (return ·) (Seq.destruct s)
     | Sum.inr c' => some (none, c')
-#align stream.wseq.flatten Stream'.Wseq.flatten
+#align stream.wseq.flatten Stream'.WSeq.flatten
 
-/-- Get the tail of a weak sequence. This doesn't need a `computation`
+/-- Get the tail of a weak sequence. This doesn't need a `Computation`
   wrapper, unlike `head`, because `flatten` allows us to hide this
   in the construction of the weak sequence itself. -/
-def tail (s : Wseq α) : Wseq α :=
+def tail (s : WSeq α) : WSeq α :=
   flatten <| (fun o => Option.recOn o nil Prod.snd) <$> destruct s
-#align stream.wseq.tail Stream'.Wseq.tail
+#align stream.wseq.tail Stream'.WSeq.tail
 
 /-- drop the first `n` elements from `s`. -/
-def drop (s : Wseq α) : ℕ → Wseq α
+def drop (s : WSeq α) : ℕ → WSeq α
   | 0 => s
-  | n + 1 => tail (drop n)
-#align stream.wseq.drop Stream'.Wseq.drop
+  | n + 1 => tail (drop s n)
+#align stream.wseq.drop Stream'.WSeq.drop
 
 attribute [simp] drop
 
 /-- Get the nth element of `s`. -/
-def nth (s : Wseq α) (n : ℕ) : Computation (Option α) :=
+def nth (s : WSeq α) (n : ℕ) : Computation (Option α) :=
   head (drop s n)
-#align stream.wseq.nth Stream'.Wseq.nth
+#align stream.wseq.nth Stream'.WSeq.nth
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- Convert `s` to a list (if it is finite and completes in finite time). -/
-def toList (s : Wseq α) : Computation (List α) :=
-  @Computation.corec (List α) (List α × Wseq α)
+def toList (s : WSeq α) : Computation (List α) :=
+  @Computation.corec (List α) (List α × WSeq α)
     (fun ⟨l, s⟩ =>
       match Seq.destruct s with
       | none => Sum.inl l.reverse
       | some (none, s') => Sum.inr (l, s')
       | some (some a, s') => Sum.inr (a::l, s'))
     ([], s)
-#align stream.wseq.to_list Stream'.Wseq.toList
+#align stream.wseq.to_list Stream'.WSeq.toList
 
 /-- Get the length of `s` (if it is finite and completes in finite time). -/
-def length (s : Wseq α) : Computation ℕ :=
-  @Computation.corec ℕ (ℕ × Wseq α)
+def length (s : WSeq α) : Computation ℕ :=
+  @Computation.corec ℕ (ℕ × WSeq α)
     (fun ⟨n, s⟩ =>
       match Seq.destruct s with
       | none => Sum.inl n
       | some (none, s') => Sum.inr (n, s')
-      | some (some a, s') => Sum.inr (n + 1, s'))
+      | some (some _, s') => Sum.inr (n + 1, s'))
     (0, s)
-#align stream.wseq.length Stream'.Wseq.length
+#align stream.wseq.length Stream'.WSeq.length
 
-/-- A weak sequence is finite if `to_list s` terminates. Equivalently,
+/-- A weak sequence is finite if `toList s` terminates. Equivalently,
   it is a finite number of `think` and `cons` applied to `nil`. -/
-class IsFinite (s : Wseq α) : Prop where
+class IsFinite (s : WSeq α) : Prop where
   out : (toList s).Terminates
-#align stream.wseq.is_finite Stream'.Wseq.IsFinite
+#align stream.wseq.is_finite Stream'.WSeq.IsFinite
 
-instance toList_terminates (s : Wseq α) [h : IsFinite s] : (toList s).Terminates :=
+instance toList_terminates (s : WSeq α) [h : IsFinite s] : (toList s).Terminates :=
   h.out
-#align stream.wseq.to_list_terminates Stream'.Wseq.toList_terminates
+#align stream.wseq.to_list_terminates Stream'.WSeq.toList_terminates
 
 /-- Get the list corresponding to a finite weak sequence. -/
-def get (s : Wseq α) [IsFinite s] : List α :=
+def get (s : WSeq α) [IsFinite s] : List α :=
   (toList s).get
-#align stream.wseq.get Stream'.Wseq.get
+#align stream.wseq.get Stream'.WSeq.get
 
 /-- A weak sequence is *productive* if it never stalls forever - there are
  always a finite number of `think`s between `cons` constructors.
  The sequence itself is allowed to be infinite though. -/
-class Productive (s : Wseq α) : Prop where
+class Productive (s : WSeq α) : Prop where
   nth_terminates : ∀ n, (nth s n).Terminates
-#align stream.wseq.productive Stream'.Wseq.Productive
+#align stream.wseq.productive Stream'.WSeq.Productive
 
-theorem productive_iff (s : Wseq α) : Productive s ↔ ∀ n, (nth s n).Terminates :=
+theorem productive_iff (s : WSeq α) : Productive s ↔ ∀ n, (nth s n).Terminates :=
   ⟨fun h => h.1, fun h => ⟨h⟩⟩
-#align stream.wseq.productive_iff Stream'.Wseq.productive_iff
+#align stream.wseq.productive_iff Stream'.WSeq.productive_iff
 
-instance nth_terminates (s : Wseq α) [h : Productive s] : ∀ n, (nth s n).Terminates :=
+instance nth_terminates (s : WSeq α) [h : Productive s] : ∀ n, (nth s n).Terminates :=
   h.nth_terminates
-#align stream.wseq.nth_terminates Stream'.Wseq.nth_terminates
+#align stream.wseq.nth_terminates Stream'.WSeq.nth_terminates
 
-instance head_terminates (s : Wseq α) [Productive s] : (head s).Terminates :=
+instance head_terminates (s : WSeq α) [Productive s] : (head s).Terminates :=
   s.nth_terminates 0
-#align stream.wseq.head_terminates Stream'.Wseq.head_terminates
+#align stream.wseq.head_terminates Stream'.WSeq.head_terminates
 
 /-- Replace the `n`th element of `s` with `a`. -/
-def updateNth (s : Wseq α) (n : ℕ) (a : α) : Wseq α :=
-  @Seq.corec (Option α) (ℕ × Wseq α)
+def updateNth (s : WSeq α) (n : ℕ) (a : α) : WSeq α :=
+  @Seq.corec (Option α) (ℕ × WSeq α)
     (fun ⟨n, s⟩ =>
       match Seq.destruct s, n with
-      | none, n => none
+      | none, _ => none
       | some (none, s'), n => some (none, n, s')
       | some (some a', s'), 0 => some (some a', 0, s')
-      | some (some a', s'), 1 => some (some a, 0, s')
+      | some (some _, s'), 1 => some (some a, 0, s')
       | some (some a', s'), n + 2 => some (some a', n + 1, s'))
     (n + 1, s)
-#align stream.wseq.update_nth Stream'.Wseq.updateNth
+#align stream.wseq.update_nth Stream'.WSeq.updateNth
 
 /-- Remove the `n`th element of `s`. -/
-def removeNth (s : Wseq α) (n : ℕ) : Wseq α :=
-  @Seq.corec (Option α) (ℕ × Wseq α)
+def removeNth (s : WSeq α) (n : ℕ) : WSeq α :=
+  @Seq.corec (Option α) (ℕ × WSeq α)
     (fun ⟨n, s⟩ =>
       match Seq.destruct s, n with
-      | none, n => none
+      | none, _ => none
       | some (none, s'), n => some (none, n, s')
       | some (some a', s'), 0 => some (some a', 0, s')
-      | some (some a', s'), 1 => some (none, 0, s')
+      | some (some _, s'), 1 => some (none, 0, s')
       | some (some a', s'), n + 2 => some (some a', n + 1, s'))
     (n + 1, s)
-#align stream.wseq.remove_nth Stream'.Wseq.removeNth
+#align stream.wseq.remove_nth Stream'.WSeq.removeNth
 
 /-- Map the elements of `s` over `f`, removing any values that yield `none`. -/
-def filterMap (f : α → Option β) : Wseq α → Wseq β :=
+def filterMap (f : α → Option β) : WSeq α → WSeq β :=
   Seq.corec fun s =>
     match Seq.destruct s with
     | none => none
     | some (none, s') => some (none, s')
     | some (some a, s') => some (f a, s')
-#align stream.wseq.filter_map Stream'.Wseq.filterMap
+#align stream.wseq.filter_map Stream'.WSeq.filterMap
 
 /-- Select the elements of `s` that satisfy `p`. -/
-def filter (p : α → Prop) [DecidablePred p] : Wseq α → Wseq α :=
+def filter (p : α → Prop) [DecidablePred p] : WSeq α → WSeq α :=
   filterMap fun a => if p a then some a else none
-#align stream.wseq.filter Stream'.Wseq.filter
+#align stream.wseq.filter Stream'.WSeq.filter
 
 -- example of infinite list manipulations
 /-- Get the first element of `s` satisfying `p`. -/
-def find (p : α → Prop) [DecidablePred p] (s : Wseq α) : Computation (Option α) :=
+def find (p : α → Prop) [DecidablePred p] (s : WSeq α) : Computation (Option α) :=
   head <| filter p s
-#align stream.wseq.find Stream'.Wseq.find
+#align stream.wseq.find Stream'.WSeq.find
 
 /-- Zip a function over two weak sequences -/
-def zipWith (f : α → β → γ) (s1 : Wseq α) (s2 : Wseq β) : Wseq γ :=
-  @Seq.corec (Option γ) (Wseq α × Wseq β)
+def zipWith (f : α → β → γ) (s1 : WSeq α) (s2 : WSeq β) : WSeq γ :=
+  @Seq.corec (Option γ) (WSeq α × WSeq β)
     (fun ⟨s1, s2⟩ =>
       match Seq.destruct s1, Seq.destruct s2 with
       | some (none, s1'), some (none, s2') => some (none, s1', s2')
-      | some (some a1, s1'), some (none, s2') => some (none, s1, s2')
-      | some (none, s1'), some (some a2, s2') => some (none, s1', s2)
+      | some (some _, _), some (none, s2') => some (none, s1, s2')
+      | some (none, s1'), some (some _, _) => some (none, s1', s2)
       | some (some a1, s1'), some (some a2, s2') => some (some (f a1 a2), s1', s2')
       | _, _ => none)
     (s1, s2)
-#align stream.wseq.zip_with Stream'.Wseq.zipWith
+#align stream.wseq.zip_with Stream'.WSeq.zipWith
 
 /-- Zip two weak sequences into a single sequence of pairs -/
-def zip : Wseq α → Wseq β → Wseq (α × β) :=
+def zip : WSeq α → WSeq β → WSeq (α × β) :=
   zipWith Prod.mk
-#align stream.wseq.zip Stream'.Wseq.zip
+#align stream.wseq.zip Stream'.WSeq.zip
 
 /-- Get the list of indexes of elements of `s` satisfying `p` -/
-def findIndexes (p : α → Prop) [DecidablePred p] (s : Wseq α) : Wseq ℕ :=
-  (zip s (Stream'.nats : Wseq ℕ)).filterMap fun ⟨a, n⟩ => if p a then some n else none
-#align stream.wseq.find_indexes Stream'.Wseq.findIndexes
+def findIndexes (p : α → Prop) [DecidablePred p] (s : WSeq α) : WSeq ℕ :=
+  (zip s (Stream'.nats : WSeq ℕ)).filterMap fun ⟨a, n⟩ => if p a then some n else none
+#align stream.wseq.find_indexes Stream'.WSeq.findIndexes
 
 /-- Get the index of the first element of `s` satisfying `p` -/
-def findIndex (p : α → Prop) [DecidablePred p] (s : Wseq α) : Computation ℕ :=
+def findIndex (p : α → Prop) [DecidablePred p] (s : WSeq α) : Computation ℕ :=
   (fun o => Option.getD o 0) <$> head (findIndexes p s)
-#align stream.wseq.find_index Stream'.Wseq.findIndex
+#align stream.wseq.find_index Stream'.WSeq.findIndex
 
 /-- Get the index of the first occurrence of `a` in `s` -/
-def indexOf [DecidableEq α] (a : α) : Wseq α → Computation ℕ :=
+def indexOf [DecidableEq α] (a : α) : WSeq α → Computation ℕ :=
   findIndex (Eq a)
-#align stream.wseq.index_of Stream'.Wseq.indexOf
+#align stream.wseq.index_of Stream'.WSeq.indexOf
 
 /-- Get the indexes of occurrences of `a` in `s` -/
-def indexesOf [DecidableEq α] (a : α) : Wseq α → Wseq ℕ :=
+def indexesOf [DecidableEq α] (a : α) : WSeq α → WSeq ℕ :=
   findIndexes (Eq a)
-#align stream.wseq.indexes_of Stream'.Wseq.indexesOf
+#align stream.wseq.indexes_of Stream'.WSeq.indexesOf
 
 /-- `union s1 s2` is a weak sequence which interleaves `s1` and `s2` in
   some order (nondeterministically). -/
-def union (s1 s2 : Wseq α) : Wseq α :=
-  @Seq.corec (Option α) (Wseq α × Wseq α)
+def union (s1 s2 : WSeq α) : WSeq α :=
+  @Seq.corec (Option α) (WSeq α × WSeq α)
     (fun ⟨s1, s2⟩ =>
       match Seq.destruct s1, Seq.destruct s2 with
       | none, none => none
@@ -305,74 +309,73 @@ def union (s1 s2 : Wseq α) : Wseq α :=
       | some (none, s1'), some (some a2, s2') => some (some a2, s1', s2')
       | some (some a1, s1'), some (some a2, s2') => some (some a1, cons a2 s1', s2'))
     (s1, s2)
-#align stream.wseq.union Stream'.Wseq.union
+#align stream.wseq.union Stream'.WSeq.union
 
-/-- Returns `tt` if `s` is `nil` and `ff` if `s` has an element -/
-def isEmpty (s : Wseq α) : Computation Bool :=
+/-- Returns `true` if `s` is `nil` and `false` if `s` has an element -/
+def isEmpty (s : WSeq α) : Computation Bool :=
   Computation.map Option.isNone <| head s
-#align stream.wseq.is_empty Stream'.Wseq.isEmpty
+#align stream.wseq.is_empty Stream'.WSeq.isEmpty
 
 /-- Calculate one step of computation -/
-def compute (s : Wseq α) : Wseq α :=
+def compute (s : WSeq α) : WSeq α :=
   match Seq.destruct s with
   | some (none, s') => s'
   | _ => s
-#align stream.wseq.compute Stream'.Wseq.compute
+#align stream.wseq.compute Stream'.WSeq.compute
 
 /-- Get the first `n` elements of a weak sequence -/
-def take (s : Wseq α) (n : ℕ) : Wseq α :=
-  @Seq.corec (Option α) (ℕ × Wseq α)
+def take (s : WSeq α) (n : ℕ) : WSeq α :=
+  @Seq.corec (Option α) (ℕ × WSeq α)
     (fun ⟨n, s⟩ =>
       match n, Seq.destruct s with
       | 0, _ => none
-      | m + 1, none => none
+      | _ + 1, none => none
       | m + 1, some (none, s') => some (none, m + 1, s')
       | m + 1, some (some a, s') => some (some a, m, s'))
     (n, s)
-#align stream.wseq.take Stream'.Wseq.take
+#align stream.wseq.take Stream'.WSeq.take
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- Split the sequence at position `n` into a finite initial segment
   and the weak sequence tail -/
-def splitAt (s : Wseq α) (n : ℕ) : Computation (List α × Wseq α) :=
-  @Computation.corec (List α × Wseq α) (ℕ × List α × Wseq α)
+def splitAt (s : WSeq α) (n : ℕ) : Computation (List α × WSeq α) :=
+  @Computation.corec (List α × WSeq α) (ℕ × List α × WSeq α)
     (fun ⟨n, l, s⟩ =>
       match n, Seq.destruct s with
       | 0, _ => Sum.inl (l.reverse, s)
-      | m + 1, none => Sum.inl (l.reverse, s)
-      | m + 1, some (none, s') => Sum.inr (n, l, s')
+      | _ + 1, none => Sum.inl (l.reverse, s)
+      | _ + 1, some (none, s') => Sum.inr (n, l, s')
       | m + 1, some (some a, s') => Sum.inr (m, a::l, s'))
     (n, [], s)
-#align stream.wseq.split_at Stream'.Wseq.splitAt
+#align stream.wseq.split_at Stream'.WSeq.splitAt
 
-/-- Returns `tt` if any element of `s` satisfies `p` -/
-def any (s : Wseq α) (p : α → Bool) : Computation Bool :=
+/-- Returns `true` if any element of `s` satisfies `p` -/
+def any (s : WSeq α) (p : α → Bool) : Computation Bool :=
   Computation.corec
-    (fun s : Wseq α =>
+    (fun s : WSeq α =>
       match Seq.destruct s with
       | none => Sum.inl false
       | some (none, s') => Sum.inr s'
       | some (some a, s') => if p a then Sum.inl true else Sum.inr s')
     s
-#align stream.wseq.any Stream'.Wseq.any
+#align stream.wseq.any Stream'.WSeq.any
 
-/-- Returns `tt` if every element of `s` satisfies `p` -/
-def all (s : Wseq α) (p : α → Bool) : Computation Bool :=
+/-- Returns `true` if every element of `s` satisfies `p` -/
+def all (s : WSeq α) (p : α → Bool) : Computation Bool :=
   Computation.corec
-    (fun s : Wseq α =>
+    (fun s : WSeq α =>
       match Seq.destruct s with
       | none => Sum.inl true
       | some (none, s') => Sum.inr s'
       | some (some a, s') => if p a then Sum.inr s' else Sum.inl false)
     s
-#align stream.wseq.all Stream'.Wseq.all
+#align stream.wseq.all Stream'.WSeq.all
 
 /-- Apply a function to the elements of the sequence to produce a sequence
   of partial results. (There is no `scanr` because this would require
   working from the end of the sequence, which may not exist.) -/
-def scanl (f : α → β → α) (a : α) (s : Wseq β) : Wseq α :=
+def scanl (f : α → β → α) (a : α) (s : WSeq β) : WSeq α :=
   cons a <|
-    @Seq.corec (Option α) (α × Wseq β)
+    @Seq.corec (Option α) (α × WSeq β)
       (fun ⟨a, s⟩ =>
         match Seq.destruct s with
         | none => none
@@ -381,184 +384,182 @@ def scanl (f : α → β → α) (a : α) (s : Wseq β) : Wseq α :=
           let a' := f a b
           some (some a', a', s'))
       (a, s)
-#align stream.wseq.scanl Stream'.Wseq.scanl
+#align stream.wseq.scanl Stream'.WSeq.scanl
 
 /-- Get the weak sequence of initial segments of the input sequence -/
-def inits (s : Wseq α) : Wseq (List α) :=
+def inits (s : WSeq α) : WSeq (List α) :=
   cons [] <|
-    @Seq.corec (Option (List α)) (Dlist α × Wseq α)
+    @Seq.corec (Option (List α)) (Std.DList α × WSeq α)
       (fun ⟨l, s⟩ =>
         match Seq.destruct s with
         | none => none
         | some (none, s') => some (none, l, s')
         | some (some a, s') =>
-          let l' := l.concat a
+          let l' := l.push a
           some (some l'.toList, l', s'))
-      (Dlist.empty, s)
-#align stream.wseq.inits Stream'.Wseq.inits
+      (Std.DList.empty, s)
+#align stream.wseq.inits Stream'.WSeq.inits
 
 /-- Like take, but does not wait for a result. Calculates `n` steps of
   computation and returns the sequence computed so far -/
-def collect (s : Wseq α) (n : ℕ) : List α :=
+def collect (s : WSeq α) (n : ℕ) : List α :=
   (Seq.take n s).filterMap id
-#align stream.wseq.collect Stream'.Wseq.collect
+#align stream.wseq.collect Stream'.WSeq.collect
 
-/-- Append two weak sequences. As with `seq.append`, this may not use
+/-- Append two weak sequences. As with `Seq.append`, this may not use
   the second sequence if the first one takes forever to compute -/
-def append : Wseq α → Wseq α → Wseq α :=
+def append : WSeq α → WSeq α → WSeq α :=
   Seq.append
-#align stream.wseq.append Stream'.Wseq.append
+#align stream.wseq.append Stream'.WSeq.append
 
 /-- Map a function over a weak sequence -/
-def map (f : α → β) : Wseq α → Wseq β :=
+def map (f : α → β) : WSeq α → WSeq β :=
   Seq.map (Option.map f)
-#align stream.wseq.map Stream'.Wseq.map
+#align stream.wseq.map Stream'.WSeq.map
 
 /-- Flatten a sequence of weak sequences. (Note that this allows
-  empty sequences, unlike `seq.join`.) -/
-def join (S : Wseq (Wseq α)) : Wseq α :=
+  empty sequences, unlike `Seq.join`.) -/
+def join (S : WSeq (WSeq α)) : WSeq α :=
   Seq.join
-    ((fun o : Option (Wseq α) =>
+    ((fun o : Option (WSeq α) =>
         match o with
         | none => Seq1.ret none
         | some s => (none, s)) <$>
       S)
-#align stream.wseq.join Stream'.Wseq.join
+#align stream.wseq.join Stream'.WSeq.join
 
 /-- Monadic bind operator for weak sequences -/
-def bind (s : Wseq α) (f : α → Wseq β) : Wseq β :=
+def bind (s : WSeq α) (f : α → WSeq β) : WSeq β :=
   join (map f s)
-#align stream.wseq.bind Stream'.Wseq.bind
+#align stream.wseq.bind Stream'.WSeq.bind
 
 /-- lift a relation to a relation over weak sequences -/
 @[simp]
-def LiftRelO (R : α → β → Prop) (C : Wseq α → Wseq β → Prop) :
-    Option (α × Wseq α) → Option (β × Wseq β) → Prop
+def LiftRelO (R : α → β → Prop) (C : WSeq α → WSeq β → Prop) :
+    Option (α × WSeq α) → Option (β × WSeq β) → Prop
   | none, none => True
   | some (a, s), some (b, t) => R a b ∧ C s t
   | _, _ => False
-#align stream.wseq.lift_rel_o Stream'.Wseq.LiftRelO
+#align stream.wseq.lift_rel_o Stream'.WSeq.LiftRelO
 
-theorem LiftRelO.imp {R S : α → β → Prop} {C D : Wseq α → Wseq β → Prop} (H1 : ∀ a b, R a b → S a b)
+theorem LiftRelO.imp {R S : α → β → Prop} {C D : WSeq α → WSeq β → Prop} (H1 : ∀ a b, R a b → S a b)
     (H2 : ∀ s t, C s t → D s t) : ∀ {o p}, LiftRelO R C o p → LiftRelO S D o p
-  | none, none, h => trivial
-  | some (a, s), some (b, t), h => And.imp (H1 _ _) (H2 _ _) h
+  | none, none, _ => trivial
+  | some (_, _), some (_, _), h => And.imp (H1 _ _) (H2 _ _) h
   | none, some _, h => False.elim h
   | some (_, _), none, h => False.elim h
-#align stream.wseq.lift_rel_o.imp Stream'.Wseq.LiftRelO.imp
+#align stream.wseq.lift_rel_o.imp Stream'.WSeq.LiftRelO.imp
 
-theorem LiftRelO.imp_right (R : α → β → Prop) {C D : Wseq α → Wseq β → Prop}
+theorem LiftRelO.imp_right (R : α → β → Prop) {C D : WSeq α → WSeq β → Prop}
     (H : ∀ s t, C s t → D s t) {o p} : LiftRelO R C o p → LiftRelO R D o p :=
   LiftRelO.imp (fun _ _ => id) H
-#align stream.wseq.lift_rel_o.imp_right Stream'.Wseq.LiftRelO.imp_right
+#align stream.wseq.lift_rel_o.imp_right Stream'.WSeq.LiftRelO.imp_right
 
 /-- Definitino of bisimilarity for weak sequences-/
 @[simp]
-def BisimO (R : Wseq α → Wseq α → Prop) : Option (α × Wseq α) → Option (α × Wseq α) → Prop :=
+def BisimO (R : WSeq α → WSeq α → Prop) : Option (α × WSeq α) → Option (α × WSeq α) → Prop :=
   LiftRelO (· = ·) R
-#align stream.wseq.bisim_o Stream'.Wseq.BisimO
+#align stream.wseq.bisim_o Stream'.WSeq.BisimO
 
-theorem BisimO.imp {R S : Wseq α → Wseq α → Prop} (H : ∀ s t, R s t → S s t) {o p} :
+theorem BisimO.imp {R S : WSeq α → WSeq α → Prop} (H : ∀ s t, R s t → S s t) {o p} :
     BisimO R o p → BisimO S o p :=
   LiftRelO.imp_right _ H
-#align stream.wseq.bisim_o.imp Stream'.Wseq.BisimO.imp
+#align stream.wseq.bisim_o.imp Stream'.WSeq.BisimO.imp
 
-/-- Two weak sequences are `lift_rel R` related if they are either both empty,
+/-- Two weak sequences are `LiftRel R` related if they are either both empty,
   or they are both nonempty and the heads are `R` related and the tails are
-  `lift_rel R` related. (This is a coinductive definition.) -/
-def LiftRel (R : α → β → Prop) (s : Wseq α) (t : Wseq β) : Prop :=
-  ∃ C : Wseq α → Wseq β → Prop,
+  `LiftRel R` related. (This is a coinductive definition.) -/
+def LiftRel (R : α → β → Prop) (s : WSeq α) (t : WSeq β) : Prop :=
+  ∃ C : WSeq α → WSeq β → Prop,
     C s t ∧ ∀ {s t}, C s t → Computation.LiftRel (LiftRelO R C) (destruct s) (destruct t)
-#align stream.wseq.lift_rel Stream'.Wseq.LiftRel
+#align stream.wseq.lift_rel Stream'.WSeq.LiftRel
 
 /-- If two sequences are equivalent, then they have the same values and
   the same computational behavior (i.e. if one loops forever then so does
   the other), although they may differ in the number of `think`s needed to
   arrive at the answer. -/
-def Equiv : Wseq α → Wseq α → Prop :=
+def Equiv : WSeq α → WSeq α → Prop :=
   LiftRel (· = ·)
-#align stream.wseq.equiv Stream'.Wseq.Equiv
+#align stream.wseq.equiv Stream'.WSeq.Equiv
 
-theorem liftRel_destruct {R : α → β → Prop} {s : Wseq α} {t : Wseq β} :
+theorem liftRel_destruct {R : α → β → Prop} {s : WSeq α} {t : WSeq β} :
     LiftRel R s t → Computation.LiftRel (LiftRelO R (LiftRel R)) (destruct s) (destruct t)
   | ⟨R, h1, h2⟩ => by
-    refine' Computation.LiftRel.imp _ _ _ (h2 h1) <;> apply lift_rel_o.imp_right <;>
-      exact fun s' t' h' => ⟨R, h', @h2⟩
-#align stream.wseq.lift_rel_destruct Stream'.Wseq.liftRel_destruct
+    refine' Computation.LiftRel.imp _ _ _ (h2 h1)
+    apply LiftRelO.imp_right
+    exact fun s' t' h' => ⟨R, h', @h2⟩
+#align stream.wseq.lift_rel_destruct Stream'.WSeq.liftRel_destruct
 
-theorem liftRel_destruct_iff {R : α → β → Prop} {s : Wseq α} {t : Wseq β} :
+theorem liftRel_destruct_iff {R : α → β → Prop} {s : WSeq α} {t : WSeq β} :
     LiftRel R s t ↔ Computation.LiftRel (LiftRelO R (LiftRel R)) (destruct s) (destruct t) :=
   ⟨liftRel_destruct, fun h =>
     ⟨fun s t =>
       LiftRel R s t ∨ Computation.LiftRel (LiftRelO R (LiftRel R)) (destruct s) (destruct t),
-      Or.inr h, fun s t h => by
-      have h : Computation.LiftRel (lift_rel_o R (lift_rel R)) (destruct s) (destruct t) := by
+      Or.inr h, fun {s t} h => by
+      have h : Computation.LiftRel (LiftRelO R (LiftRel R)) (destruct s) (destruct t) := by
         cases' h with h h
-        exact lift_rel_destruct h
+        exact liftRel_destruct h
         assumption
       apply Computation.LiftRel.imp _ _ _ h
       intro a b
-      apply lift_rel_o.imp_right
+      apply LiftRelO.imp_right
       intro s t
       apply Or.inl⟩⟩
-#align stream.wseq.lift_rel_destruct_iff Stream'.Wseq.liftRel_destruct_iff
+#align stream.wseq.lift_rel_destruct_iff Stream'.WSeq.liftRel_destruct_iff
 
 -- mathport name: equiv
 infixl:50 " ~ " => Equiv
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:228:8: unsupported: ambiguous notation -/
-theorem destruct_congr {s t : Wseq α} :
+theorem destruct_congr {s t : WSeq α} :
     s ~ t → Computation.LiftRel (BisimO (· ~ ·)) (destruct s) (destruct t) :=
   liftRel_destruct
-#align stream.wseq.destruct_congr Stream'.Wseq.destruct_congr
+#align stream.wseq.destruct_congr Stream'.WSeq.destruct_congr
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:228:8: unsupported: ambiguous notation -/
-theorem destruct_congr_iff {s t : Wseq α} :
+theorem destruct_congr_iff {s t : WSeq α} :
     s ~ t ↔ Computation.LiftRel (BisimO (· ~ ·)) (destruct s) (destruct t) :=
   liftRel_destruct_iff
-#align stream.wseq.destruct_congr_iff Stream'.Wseq.destruct_congr_iff
+#align stream.wseq.destruct_congr_iff Stream'.WSeq.destruct_congr_iff
 
 theorem LiftRel.refl (R : α → α → Prop) (H : Reflexive R) : Reflexive (LiftRel R) := fun s => by
-  refine' ⟨(· = ·), rfl, fun s t (h : s = t) => _⟩
+  refine' ⟨(· = ·), rfl, fun {s t} (h : s = t) => _⟩
   rw [← h]; apply Computation.LiftRel.refl
-  intro a; cases' a with a; simp; cases a <;> simp; apply H
-#align stream.wseq.lift_rel.refl Stream'.Wseq.LiftRel.refl
+  intro a; cases' a with a; simp; cases a; simp; apply H
+#align stream.wseq.lift_rel.refl Stream'.WSeq.LiftRel.refl
 
 theorem LiftRelO.swap (R : α → β → Prop) (C) : swap (LiftRelO R C) = LiftRelO (swap R) (swap C) :=
   by
-  funext x y <;> cases' x with x <;> [skip, cases x] <;>
+  funext x y; cases' x with x <;> [skip, cases x] <;>
     · cases' y with y <;> [skip, cases y] <;> rfl
-#align stream.wseq.lift_rel_o.swap Stream'.Wseq.LiftRelO.swap
+#align stream.wseq.lift_rel_o.swap Stream'.WSeq.LiftRelO.swap
 
 theorem LiftRel.swap_lem {R : α → β → Prop} {s1 s2} (h : LiftRel R s1 s2) :
     LiftRel (swap R) s2 s1 := by
-  refine' ⟨swap (lift_rel R), h, fun s t (h : lift_rel R t s) => _⟩
-  rw [← lift_rel_o.swap, Computation.LiftRel.swap]
-  apply lift_rel_destruct h
-#align stream.wseq.lift_rel.swap_lem Stream'.Wseq.LiftRel.swap_lem
+  refine' ⟨swap (LiftRel R), h, fun {s t} (h : LiftRel R t s) => _⟩
+  rw [← LiftRelO.swap, Computation.LiftRel.swap]
+  apply liftRel_destruct h
+#align stream.wseq.lift_rel.swap_lem Stream'.WSeq.LiftRel.swap_lem
 
 theorem LiftRel.swap (R : α → β → Prop) : swap (LiftRel R) = LiftRel (swap R) :=
-  funext fun x => funext fun y => propext ⟨LiftRel.swap_lem, LiftRel.swap_lem⟩
-#align stream.wseq.lift_rel.swap Stream'.Wseq.LiftRel.swap
+  funext fun _ => funext fun _ => propext ⟨LiftRel.swap_lem, LiftRel.swap_lem⟩
+#align stream.wseq.lift_rel.swap Stream'.WSeq.LiftRel.swap
 
 theorem LiftRel.symm (R : α → α → Prop) (H : Symmetric R) : Symmetric (LiftRel R) :=
-  fun s1 s2 (h : swap (LiftRel R) s2 s1) => by
-  rwa [lift_rel.swap,
-    show swap R = R from funext fun a => funext fun b => propext <| by constructor <;> apply H] at h
-#align stream.wseq.lift_rel.symm Stream'.Wseq.LiftRel.symm
+  fun s1 s2 (h : Function.swap (LiftRel R) s2 s1) => by
+  rwa [LiftRel.swap,
+    show Function.swap R = R from funext fun a =>
+      funext fun b => propext <| by constructor <;> apply H] at h
+#align stream.wseq.lift_rel.symm Stream'.WSeq.LiftRel.symm
 
 theorem LiftRel.trans (R : α → α → Prop) (H : Transitive R) : Transitive (LiftRel R) :=
   fun s t u h1 h2 => by
-  refine' ⟨fun s u => ∃ t, lift_rel R s t ∧ lift_rel R t u, ⟨t, h1, h2⟩, fun s u h => _⟩
+  refine' ⟨fun s u => ∃ t, LiftRel R s t ∧ LiftRel R t u, ⟨t, h1, h2⟩, fun {s u} h => _⟩
   rcases h with ⟨t, h1, h2⟩
-  have h1 := lift_rel_destruct h1
-  have h2 := lift_rel_destruct h2
+  have h1 := liftRel_destruct h1
+  have h2 := liftRel_destruct h2
   refine'
     Computation.liftRel_def.2
       ⟨(Computation.terminates_of_LiftRel h1).trans (Computation.terminates_of_LiftRel h2),
-        fun a c ha hc => _⟩
+        fun {a c} ha hc => _⟩
   rcases h1.left ha with ⟨b, hb, t1⟩
   have t2 := Computation.rel_of_LiftRel h2 hb hc
   cases' a with a <;> cases' c with c
@@ -579,249 +580,255 @@ theorem LiftRel.trans (R : α → α → Prop) (H : Transitive R) : Transitive (
     cases' t1 with ab st
     cases' t2 with bc tu
     exact ⟨H ab bc, t, st, tu⟩
-#align stream.wseq.lift_rel.trans Stream'.Wseq.LiftRel.trans
+#align stream.wseq.lift_rel.trans Stream'.WSeq.LiftRel.trans
 
 theorem LiftRel.equiv (R : α → α → Prop) : Equivalence R → Equivalence (LiftRel R)
-  | ⟨refl, symm, trans⟩ => ⟨LiftRel.refl R refl, LiftRel.symm R symm, LiftRel.trans R trans⟩
-#align stream.wseq.lift_rel.equiv Stream'.Wseq.LiftRel.equiv
+  | ⟨refl, symm, trans⟩ => ⟨LiftRel.refl R refl, @(LiftRel.symm R @symm), @(LiftRel.trans R @trans)⟩
+#align stream.wseq.lift_rel.equiv Stream'.WSeq.LiftRel.equiv
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[refl]
-theorem Equiv.refl : ∀ s : Wseq α, s ~ s :=
+theorem Equiv.refl : ∀ s : WSeq α, s ~ s :=
   LiftRel.refl (· = ·) Eq.refl
-#align stream.wseq.equiv.refl Stream'.Wseq.Equiv.refl
+#align stream.wseq.equiv.refl Stream'.WSeq.Equiv.refl
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[symm]
-theorem Equiv.symm : ∀ {s t : Wseq α}, s ~ t → t ~ s :=
-  LiftRel.symm (· = ·) (@Eq.symm _)
-#align stream.wseq.equiv.symm Stream'.Wseq.Equiv.symm
+theorem Equiv.symm : ∀ {s t : WSeq α}, s ~ t → t ~ s :=
+  @(LiftRel.symm (· = ·) (@Eq.symm _))
+#align stream.wseq.equiv.symm Stream'.WSeq.Equiv.symm
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[trans]
-theorem Equiv.trans : ∀ {s t u : Wseq α}, s ~ t → t ~ u → s ~ u :=
-  LiftRel.trans (· = ·) (@Eq.trans _)
-#align stream.wseq.equiv.trans Stream'.Wseq.Equiv.trans
+theorem Equiv.trans : ∀ {s t u : WSeq α}, s ~ t → t ~ u → s ~ u :=
+  @(LiftRel.trans (· = ·) (@Eq.trans _))
+#align stream.wseq.equiv.trans Stream'.WSeq.Equiv.trans
 
 theorem Equiv.equivalence : Equivalence (@Equiv α) :=
   ⟨@Equiv.refl _, @Equiv.symm _, @Equiv.trans _⟩
-#align stream.wseq.equiv.equivalence Stream'.Wseq.Equiv.equivalence
+#align stream.wseq.equiv.equivalence Stream'.WSeq.Equiv.equivalence
 
 open Computation
 
--- mathport name: exprreturn
-local notation "return" => Computation.pure
+-- Porting note: In Lean4, `return` is a built-in notation, so this command doesn't work,
+--                         so, `return`s are replaced with `Computation.pure`.
+-- local notation "return" => Computation.pure
 
 @[simp]
-theorem destruct_nil : destruct (nil : Wseq α) = return none :=
+theorem destruct_nil : destruct (nil : WSeq α) = Computation.pure none :=
   Computation.destruct_eq_pure rfl
-#align stream.wseq.destruct_nil Stream'.Wseq.destruct_nil
+#align stream.wseq.destruct_nil Stream'.WSeq.destruct_nil
 
 @[simp]
-theorem destruct_cons (a : α) (s) : destruct (cons a s) = return (some (a, s)) :=
+theorem destruct_cons (a : α) (s) : destruct (cons a s) = Computation.pure (some (a, s)) :=
   Computation.destruct_eq_pure <| by simp [destruct, cons, Computation.rmap]
-#align stream.wseq.destruct_cons Stream'.Wseq.destruct_cons
+#align stream.wseq.destruct_cons Stream'.WSeq.destruct_cons
 
 @[simp]
-theorem destruct_think (s : Wseq α) : destruct (think s) = (destruct s).think :=
+theorem destruct_think (s : WSeq α) : destruct (think s) = (destruct s).think :=
   Computation.destruct_eq_think <| by simp [destruct, think, Computation.rmap]
-#align stream.wseq.destruct_think Stream'.Wseq.destruct_think
+#align stream.wseq.destruct_think Stream'.WSeq.destruct_think
 
 @[simp]
-theorem seq_destruct_nil : Seq.destruct (nil : Wseq α) = none :=
+theorem seq_destruct_nil : Seq.destruct (nil : WSeq α) = none :=
   Seq.destruct_nil
-#align stream.wseq.seq_destruct_nil Stream'.Wseq.seq_destruct_nil
+#align stream.wseq.seq_destruct_nil Stream'.WSeq.seq_destruct_nil
 
 @[simp]
 theorem seq_destruct_cons (a : α) (s) : Seq.destruct (cons a s) = some (some a, s) :=
   Seq.destruct_cons _ _
-#align stream.wseq.seq_destruct_cons Stream'.Wseq.seq_destruct_cons
+#align stream.wseq.seq_destruct_cons Stream'.WSeq.seq_destruct_cons
 
 @[simp]
-theorem seq_destruct_think (s : Wseq α) : Seq.destruct (think s) = some (none, s) :=
+theorem seq_destruct_think (s : WSeq α) : Seq.destruct (think s) = some (none, s) :=
   Seq.destruct_cons _ _
-#align stream.wseq.seq_destruct_think Stream'.Wseq.seq_destruct_think
+#align stream.wseq.seq_destruct_think Stream'.WSeq.seq_destruct_think
 
 @[simp]
-theorem head_nil : head (nil : Wseq α) = return none := by simp [head] <;> rfl
-#align stream.wseq.head_nil Stream'.Wseq.head_nil
+theorem head_nil : head (nil : WSeq α) = Computation.pure none := by simp [head]
+#align stream.wseq.head_nil Stream'.WSeq.head_nil
 
 @[simp]
-theorem head_cons (a : α) (s) : head (cons a s) = return (some a) := by simp [head] <;> rfl
-#align stream.wseq.head_cons Stream'.Wseq.head_cons
+theorem head_cons (a : α) (s) : head (cons a s) = Computation.pure (some a) := by simp [head]
+#align stream.wseq.head_cons Stream'.WSeq.head_cons
 
 @[simp]
-theorem head_think (s : Wseq α) : head (think s) = (head s).think := by simp [head] <;> rfl
-#align stream.wseq.head_think Stream'.Wseq.head_think
+theorem head_think (s : WSeq α) : head (think s) = (head s).think := by simp [head]
+#align stream.wseq.head_think Stream'.WSeq.head_think
 
 @[simp]
-theorem flatten_ret (s : Wseq α) : flatten (return s) = s := by
-  refine' seq.eq_of_bisim (fun s1 s2 => flatten (return s2) = s1) _ rfl
+theorem flatten_ret (s : WSeq α) : flatten (Computation.pure s) = s := by
+  refine' Seq.eq_of_bisim (fun s1 s2 => flatten (Computation.pure s2) = s1) _ rfl
   intro s' s h; rw [← h]; simp [flatten]
-  cases seq.destruct s; · simp
-  · cases' val with o s'
+  cases Seq.destruct s with
+  | none => simp
+  | some val =>
+    cases' val with o s'
     simp
-#align stream.wseq.flatten_ret Stream'.Wseq.flatten_ret
+#align stream.wseq.flatten_ret Stream'.WSeq.flatten_ret
 
 @[simp]
-theorem flatten_think (c : Computation (Wseq α)) : flatten c.think = think (flatten c) :=
+theorem flatten_think (c : Computation (WSeq α)) : flatten c.think = think (flatten c) :=
   Seq.destruct_eq_cons <| by simp [flatten, think]
-#align stream.wseq.flatten_think Stream'.Wseq.flatten_think
+#align stream.wseq.flatten_think Stream'.WSeq.flatten_think
 
 @[simp]
-theorem destruct_flatten (c : Computation (Wseq α)) : destruct (flatten c) = c >>= destruct := by
+theorem destruct_flatten (c : Computation (WSeq α)) : destruct (flatten c) = c >>= destruct := by
   refine'
     Computation.eq_of_bisim
       (fun c1 c2 => c1 = c2 ∨ ∃ c, c1 = destruct (flatten c) ∧ c2 = Computation.bind c destruct) _
       (Or.inr ⟨c, rfl, rfl⟩)
-  intro c1 c2 h;
+  intro c1 c2 h
   exact
     match c1, c2, h with
-    | _, _, Or.inl <| Eq.refl c => by cases c.destruct <;> simp
+    | c, _, Or.inl rfl => by cases c.destruct <;> simp
     | _, _, Or.inr ⟨c, rfl, rfl⟩ => by
-      apply c.rec_on (fun a => _) fun c' => _ <;> repeat' simp
+      induction' c using Computation.recOn with a c' <;> simp
       · cases (destruct a).destruct <;> simp
       · exact Or.inr ⟨c', rfl, rfl⟩
-#align stream.wseq.destruct_flatten Stream'.Wseq.destruct_flatten
+#align stream.wseq.destruct_flatten Stream'.WSeq.destruct_flatten
 
-theorem head_terminates_iff (s : Wseq α) : Terminates (head s) ↔ Terminates (destruct s) :=
+theorem head_terminates_iff (s : WSeq α) : Terminates (head s) ↔ Terminates (destruct s) :=
   terminates_map_iff _ (destruct s)
-#align stream.wseq.head_terminates_iff Stream'.Wseq.head_terminates_iff
+#align stream.wseq.head_terminates_iff Stream'.WSeq.head_terminates_iff
 
 @[simp]
-theorem tail_nil : tail (nil : Wseq α) = nil := by simp [tail]
-#align stream.wseq.tail_nil Stream'.Wseq.tail_nil
+theorem tail_nil : tail (nil : WSeq α) = nil := by simp [tail]
+#align stream.wseq.tail_nil Stream'.WSeq.tail_nil
 
 @[simp]
 theorem tail_cons (a : α) (s) : tail (cons a s) = s := by simp [tail]
-#align stream.wseq.tail_cons Stream'.Wseq.tail_cons
+#align stream.wseq.tail_cons Stream'.WSeq.tail_cons
 
 @[simp]
-theorem tail_think (s : Wseq α) : tail (think s) = (tail s).think := by simp [tail]
-#align stream.wseq.tail_think Stream'.Wseq.tail_think
+theorem tail_think (s : WSeq α) : tail (think s) = (tail s).think := by simp [tail]
+#align stream.wseq.tail_think Stream'.WSeq.tail_think
 
 @[simp]
-theorem dropn_nil (n) : drop (nil : Wseq α) n = nil := by induction n <;> simp [*, drop]
-#align stream.wseq.dropn_nil Stream'.Wseq.dropn_nil
+theorem dropn_nil (n) : drop (nil : WSeq α) n = nil := by induction n <;> simp [*, drop]
+#align stream.wseq.dropn_nil Stream'.WSeq.dropn_nil
 
 @[simp]
 theorem dropn_cons (a : α) (s) (n) : drop (cons a s) (n + 1) = drop s n := by
-  induction n <;> simp [*, drop]
-#align stream.wseq.dropn_cons Stream'.Wseq.dropn_cons
+  induction n with
+  | zero => simp
+  | succ n n_ih =>
+    -- Porting note: Was `simp [*, drop]`.
+    rw [drop, n_ih]
+    simp
+#align stream.wseq.dropn_cons Stream'.WSeq.dropn_cons
 
 @[simp]
-theorem dropn_think (s : Wseq α) (n) : drop (think s) n = (drop s n).think := by
+theorem dropn_think (s : WSeq α) (n) : drop (think s) n = (drop s n).think := by
   induction n <;> simp [*, drop]
-#align stream.wseq.dropn_think Stream'.Wseq.dropn_think
+#align stream.wseq.dropn_think Stream'.WSeq.dropn_think
 
-theorem dropn_add (s : Wseq α) (m) : ∀ n, drop s (m + n) = drop (drop s m) n
+theorem dropn_add (s : WSeq α) (m) : ∀ n, drop s (m + n) = drop (drop s m) n
   | 0 => rfl
-  | n + 1 => congr_arg tail (dropn_add n)
-#align stream.wseq.dropn_add Stream'.Wseq.dropn_add
+  | n + 1 => congr_arg tail (dropn_add s m n)
+#align stream.wseq.dropn_add Stream'.WSeq.dropn_add
 
-theorem dropn_tail (s : Wseq α) (n) : drop (tail s) n = drop s (n + 1) := by
-  rw [add_comm] <;> symm <;> apply dropn_add
-#align stream.wseq.dropn_tail Stream'.Wseq.dropn_tail
+theorem dropn_tail (s : WSeq α) (n) : drop (tail s) n = drop s (n + 1) := by
+  rw [add_comm]
+  symm
+  apply dropn_add
+#align stream.wseq.dropn_tail Stream'.WSeq.dropn_tail
 
-theorem nth_add (s : Wseq α) (m n) : nth s (m + n) = nth (drop s m) n :=
+theorem nth_add (s : WSeq α) (m n) : nth s (m + n) = nth (drop s m) n :=
   congr_arg head (dropn_add _ _ _)
-#align stream.wseq.nth_add Stream'.Wseq.nth_add
+#align stream.wseq.nth_add Stream'.WSeq.nth_add
 
-theorem nth_tail (s : Wseq α) (n) : nth (tail s) n = nth s (n + 1) :=
+theorem nth_tail (s : WSeq α) (n) : nth (tail s) n = nth s (n + 1) :=
   congr_arg head (dropn_tail _ _)
-#align stream.wseq.nth_tail Stream'.Wseq.nth_tail
+#align stream.wseq.nth_tail Stream'.WSeq.nth_tail
 
 @[simp]
-theorem join_nil : join nil = (nil : Wseq α) :=
+theorem join_nil : join nil = (nil : WSeq α) :=
   Seq.join_nil
-#align stream.wseq.join_nil Stream'.Wseq.join_nil
+#align stream.wseq.join_nil Stream'.WSeq.join_nil
 
 @[simp]
-theorem join_think (S : Wseq (Wseq α)) : join (think S) = think (join S) := by
+theorem join_think (S : WSeq (WSeq α)) : join (think S) = think (join S) := by
   simp [think, join]
-  unfold Functor.map
-  simp [join, seq1.ret]
-#align stream.wseq.join_think Stream'.Wseq.join_think
+  dsimp only [(· <$> ·)]
+  simp [join, Seq1.ret]
+#align stream.wseq.join_think Stream'.WSeq.join_think
 
 @[simp]
-theorem join_cons (s : Wseq α) (S) : join (cons s S) = think (append s (join S)) := by
+theorem join_cons (s : WSeq α) (S) : join (cons s S) = think (append s (join S)) := by
   simp [think, join]
-  unfold Functor.map
+  dsimp only [(· <$> ·)]
   simp [join, cons, append]
-#align stream.wseq.join_cons Stream'.Wseq.join_cons
+#align stream.wseq.join_cons Stream'.WSeq.join_cons
 
 @[simp]
-theorem nil_append (s : Wseq α) : append nil s = s :=
+theorem nil_append (s : WSeq α) : append nil s = s :=
   Seq.nil_append _
-#align stream.wseq.nil_append Stream'.Wseq.nil_append
+#align stream.wseq.nil_append Stream'.WSeq.nil_append
 
 @[simp]
 theorem cons_append (a : α) (s t) : append (cons a s) t = cons a (append s t) :=
   Seq.cons_append _ _ _
-#align stream.wseq.cons_append Stream'.Wseq.cons_append
+#align stream.wseq.cons_append Stream'.WSeq.cons_append
 
 @[simp]
-theorem think_append (s t : Wseq α) : append (think s) t = think (append s t) :=
+theorem think_append (s t : WSeq α) : append (think s) t = think (append s t) :=
   Seq.cons_append _ _ _
-#align stream.wseq.think_append Stream'.Wseq.think_append
+#align stream.wseq.think_append Stream'.WSeq.think_append
 
 @[simp]
-theorem append_nil (s : Wseq α) : append s nil = s :=
+theorem append_nil (s : WSeq α) : append s nil = s :=
   Seq.append_nil _
-#align stream.wseq.append_nil Stream'.Wseq.append_nil
+#align stream.wseq.append_nil Stream'.WSeq.append_nil
 
 @[simp]
-theorem append_assoc (s t u : Wseq α) : append (append s t) u = append s (append t u) :=
+theorem append_assoc (s t u : WSeq α) : append (append s t) u = append s (append t u) :=
   Seq.append_assoc _ _ _
-#align stream.wseq.append_assoc Stream'.Wseq.append_assoc
+#align stream.wseq.append_assoc Stream'.WSeq.append_assoc
 
 /-- auxilary defintion of tail over weak sequences-/
 @[simp]
-def tail.aux : Option (α × Wseq α) → Computation (Option (α × Wseq α))
-  | none => return none
-  | some (a, s) => destruct s
-#align stream.wseq.tail.aux Stream'.Wseq.tail.aux
+def tail.aux : Option (α × WSeq α) → Computation (Option (α × WSeq α))
+  | none => Computation.pure none
+  | some (_, s) => destruct s
+#align stream.wseq.tail.aux Stream'.WSeq.tail.aux
 
-theorem destruct_tail (s : Wseq α) : destruct (tail s) = destruct s >>= tail.aux := by
-  simp [tail]; rw [← bind_pure_comp_eq_map, LawfulMonad.bind_assoc]
+theorem destruct_tail (s : WSeq α) : destruct (tail s) = destruct s >>= tail.aux := by
+  simp [tail]; rw [← bind_pure_comp, LawfulMonad.bind_assoc]
   apply congr_arg; ext1 (_ | ⟨a, s⟩) <;> apply (@pure_bind Computation _ _ _ _ _ _).trans _ <;> simp
-#align stream.wseq.destruct_tail Stream'.Wseq.destruct_tail
+#align stream.wseq.destruct_tail Stream'.WSeq.destruct_tail
 
 /-- auxilary defintion of drop over weak sequences-/
 @[simp]
-def drop.aux : ℕ → Option (α × Wseq α) → Computation (Option (α × Wseq α))
-  | 0 => return
+def drop.aux : ℕ → Option (α × WSeq α) → Computation (Option (α × WSeq α))
+  | 0 => Computation.pure
   | n + 1 => fun a => tail.aux a >>= drop.aux n
-#align stream.wseq.drop.aux Stream'.Wseq.drop.aux
+#align stream.wseq.drop.aux Stream'.WSeq.drop.aux
 
-theorem drop.aux_none : ∀ n, @drop.aux α n none = return none
+theorem drop.aux_none : ∀ n, @drop.aux α n none = Computation.pure none
   | 0 => rfl
   | n + 1 =>
-    show Computation.bind (return none) (drop.aux n) = return none by rw [ret_bind, drop.aux_none]
-#align stream.wseq.drop.aux_none Stream'.Wseq.drop.aux_none
+    show Computation.bind (Computation.pure none) (drop.aux n) = Computation.pure none by
+      rw [ret_bind, drop.aux_none n]
+#align stream.wseq.drop.aux_none Stream'.WSeq.drop.aux_none
 
-theorem destruct_dropn : ∀ (s : Wseq α) (n), destruct (drop s n) = destruct s >>= drop.aux n
+theorem destruct_dropn : ∀ (s : WSeq α) (n), destruct (drop s n) = destruct s >>= drop.aux n
   | s, 0 => (bind_pure' _).symm
   | s, n + 1 => by
-    rw [← dropn_tail, destruct_dropn _ n, destruct_tail, LawfulMonad.bind_assoc] <;> rfl
-#align stream.wseq.destruct_dropn Stream'.Wseq.destruct_dropn
+    rw [← dropn_tail, destruct_dropn _ n, destruct_tail, LawfulMonad.bind_assoc]
+    rfl
+#align stream.wseq.destruct_dropn Stream'.WSeq.destruct_dropn
 
-theorem head_terminates_of_head_tail_terminates (s : Wseq α) [T : Terminates (head (tail s))] :
+theorem head_terminates_of_head_tail_terminates (s : WSeq α) [T : Terminates (head (tail s))] :
     Terminates (head s) :=
   (head_terminates_iff _).2 <| by
-    rcases(head_terminates_iff _).1 T with ⟨⟨a, h⟩⟩
+    rcases (head_terminates_iff _).1 T with ⟨⟨a, h⟩⟩
     simp [tail] at h
-    rcases exists_of_mem_bind h with ⟨s', h1, h2⟩
+    rcases exists_of_mem_bind h with ⟨s', h1, _⟩
     unfold Functor.map at h1
     exact
-      let ⟨t, h3, h4⟩ := Computation.exists_of_mem_map h1
+      let ⟨t, h3, _⟩ := Computation.exists_of_mem_map h1
       Computation.terminates_of_mem h3
-#align stream.wseq.head_terminates_of_head_tail_terminates Stream'.Wseq.head_terminates_of_head_tail_terminates
+#align stream.wseq.head_terminates_of_head_tail_terminates Stream'.WSeq.head_terminates_of_head_tail_terminates
 
-theorem destruct_some_of_destruct_tail_some {s : Wseq α} {a} (h : some a ∈ destruct (tail s)) :
+theorem destruct_some_of_destruct_tail_some {s : WSeq α} {a} (h : some a ∈ destruct (tail s)) :
     ∃ a', some a' ∈ destruct s := by
   unfold tail Functor.map at h; simp at h
   rcases exists_of_mem_bind h with ⟨t, tm, td⟩; clear h
@@ -830,63 +837,63 @@ theorem destruct_some_of_destruct_tail_some {s : Wseq α} {a} (h : some a ∈ de
   · have := mem_unique td (ret_mem _)
     contradiction
   · exact ⟨_, ht'⟩
-#align stream.wseq.destruct_some_of_destruct_tail_some Stream'.Wseq.destruct_some_of_destruct_tail_some
+#align stream.wseq.destruct_some_of_destruct_tail_some Stream'.WSeq.destruct_some_of_destruct_tail_some
 
-theorem head_some_of_head_tail_some {s : Wseq α} {a} (h : some a ∈ head (tail s)) :
+theorem head_some_of_head_tail_some {s : WSeq α} {a} (h : some a ∈ head (tail s)) :
     ∃ a', some a' ∈ head s := by
   unfold head at h
   rcases Computation.exists_of_mem_map h with ⟨o, md, e⟩; clear h
-  cases' o with o <;> injection e with h'; clear e h'
+  cases' o with o <;> [injection e, injection e with h']; clear h'
   cases' destruct_some_of_destruct_tail_some md with a am
-  exact ⟨_, Computation.mem_map ((· <$> ·) (@Prod.fst α (wseq α))) am⟩
-#align stream.wseq.head_some_of_head_tail_some Stream'.Wseq.head_some_of_head_tail_some
+  exact ⟨_, Computation.mem_map (@Prod.fst α (WSeq α) <$> ·) am⟩
+#align stream.wseq.head_some_of_head_tail_some Stream'.WSeq.head_some_of_head_tail_some
 
-theorem head_some_of_nth_some {s : Wseq α} {a n} (h : some a ∈ nth s n) : ∃ a', some a' ∈ head s :=
-  by
-  revert a; induction' n with n IH <;> intros
-  exacts[⟨_, h⟩,
+theorem head_some_of_nth_some {s : WSeq α} {a n} (h : some a ∈ nth s n) :
+    ∃ a', some a' ∈ head s := by
+  revert a; induction' n with n IH <;> intro a h
+  exacts [⟨_, h⟩,
     let ⟨a', h'⟩ := head_some_of_head_tail_some h
     IH h']
-#align stream.wseq.head_some_of_nth_some Stream'.Wseq.head_some_of_nth_some
+#align stream.wseq.head_some_of_nth_some Stream'.WSeq.head_some_of_nth_some
 
-instance productive_tail (s : Wseq α) [Productive s] : Productive (tail s) :=
-  ⟨fun n => by rw [nth_tail] <;> infer_instance⟩
-#align stream.wseq.productive_tail Stream'.Wseq.productive_tail
+instance productive_tail (s : WSeq α) [Productive s] : Productive (tail s) :=
+  ⟨fun n => by rw [nth_tail]; infer_instance⟩
+#align stream.wseq.productive_tail Stream'.WSeq.productive_tail
 
-instance productive_dropn (s : Wseq α) [Productive s] (n) : Productive (drop s n) :=
-  ⟨fun m => by rw [← nth_add] <;> infer_instance⟩
-#align stream.wseq.productive_dropn Stream'.Wseq.productive_dropn
+instance productive_dropn (s : WSeq α) [Productive s] (n) : Productive (drop s n) :=
+  ⟨fun m => by rw [← nth_add]; infer_instance⟩
+#align stream.wseq.productive_dropn Stream'.WSeq.productive_dropn
 
 /-- Given a productive weak sequence, we can collapse all the `think`s to
   produce a sequence. -/
-def toSeq (s : Wseq α) [Productive s] : Seq α :=
-  ⟨fun n => (nth s n).get, fun n h => by
+def toSeq (s : WSeq α) [Productive s] : Seq α :=
+  ⟨fun n => (nth s n).get, fun {n} h => by
     cases e : Computation.get (nth s (n + 1)); · assumption
     have := mem_of_get_eq _ e
     simp [nth] at this h; cases' head_some_of_head_tail_some this with a' h'
     have := mem_unique h' (@mem_of_get_eq _ _ _ _ h)
     contradiction⟩
-#align stream.wseq.to_seq Stream'.Wseq.toSeq
+#align stream.wseq.to_seq Stream'.WSeq.toSeq
 
-theorem nth_terminates_le {s : Wseq α} {m n} (h : m ≤ n) :
+theorem nth_terminates_le {s : WSeq α} {m n} (h : m ≤ n) :
     Terminates (nth s n) → Terminates (nth s m) := by
-  induction' h with m' h IH <;> [exact id,
+  induction' h with m' _ IH <;> [exact id,
     exact fun T => IH (@head_terminates_of_head_tail_terminates _ _ T)]
-#align stream.wseq.nth_terminates_le Stream'.Wseq.nth_terminates_le
+#align stream.wseq.nth_terminates_le Stream'.WSeq.nth_terminates_le
 
-theorem head_terminates_of_nth_terminates {s : Wseq α} {n} :
+theorem head_terminates_of_nth_terminates {s : WSeq α} {n} :
     Terminates (nth s n) → Terminates (head s) :=
   nth_terminates_le (Nat.zero_le n)
-#align stream.wseq.head_terminates_of_nth_terminates Stream'.Wseq.head_terminates_of_nth_terminates
+#align stream.wseq.head_terminates_of_nth_terminates Stream'.WSeq.head_terminates_of_nth_terminates
 
-theorem destruct_terminates_of_nth_terminates {s : Wseq α} {n} (T : Terminates (nth s n)) :
+theorem destruct_terminates_of_nth_terminates {s : WSeq α} {n} (T : Terminates (nth s n)) :
     Terminates (destruct s) :=
   (head_terminates_iff _).1 <| head_terminates_of_nth_terminates T
-#align stream.wseq.destruct_terminates_of_nth_terminates Stream'.Wseq.destruct_terminates_of_nth_terminates
+#align stream.wseq.destruct_terminates_of_nth_terminates Stream'.WSeq.destruct_terminates_of_nth_terminates
 
-theorem mem_rec_on {C : Wseq α → Prop} {a s} (M : a ∈ s) (h1 : ∀ b s', a = b ∨ C s' → C (cons b s'))
+theorem mem_rec_on {C : WSeq α → Prop} {a s} (M : a ∈ s) (h1 : ∀ b s', a = b ∨ C s' → C (cons b s'))
     (h2 : ∀ s, C s → C (think s)) : C s := by
-  apply seq.mem_rec_on M
+  apply Seq.mem_rec_on M
   intro o s' h; cases' o with b
   · apply h2
     cases h
@@ -896,11 +903,10 @@ theorem mem_rec_on {C : Wseq α → Prop} {a s} (M : a ∈ s) (h1 : ∀ b s', a 
     apply Or.imp_left _ h
     intro h
     injection h
-#align stream.wseq.mem_rec_on Stream'.Wseq.mem_rec_on
+#align stream.wseq.mem_rec_on Stream'.WSeq.mem_rec_on
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[simp]
-theorem mem_think (s : Wseq α) (a) : a ∈ think s ↔ a ∈ s := by
+theorem mem_think (s : WSeq α) (a) : a ∈ think s ↔ a ∈ s := by
   cases' s with f al
   change (some (some a) ∈ some none::f) ↔ some (some a) ∈ f
   constructor <;> intro h
@@ -908,21 +914,21 @@ theorem mem_think (s : Wseq α) (a) : a ∈ think s ↔ a ∈ s := by
     intro
     injections
   · apply Stream'.mem_cons_of_mem _ h
-#align stream.wseq.mem_think Stream'.Wseq.mem_think
+#align stream.wseq.mem_think Stream'.WSeq.mem_think
 
-theorem eq_or_mem_iff_mem {s : Wseq α} {a a' s'} :
+theorem eq_or_mem_iff_mem {s : WSeq α} {a a' s'} :
     some (a', s') ∈ destruct s → (a ∈ s ↔ a = a' ∨ a ∈ s') := by
   generalize e : destruct s = c; intro h
-  revert s;
-  apply Computation.memRecOn h _ fun c IH => _ <;> intro s <;>
-            apply s.rec_on _ (fun x s => _) fun s => _ <;>
-          intro m <;>
-        have := congr_arg Computation.destruct m <;>
-      simp at this <;>
-    cases' this with i1 i2
+  revert s
+  apply Computation.memRecOn h <;> [skip, intro c IH] <;> intro s <;>
+    induction' s using WSeq.recOn with x s s <;>
+    intro m <;>
+    have := congr_arg Computation.destruct m <;>
+    simp at this <;>
+    [cases' this with i1 i2, skip]
   · rw [i1, i2]
     cases' s' with f al
-    unfold cons Membership.Mem wseq.mem seq.mem seq.cons
+    dsimp only [cons, (· ∈ ·), WSeq.Mem, Seq.Mem, Seq.cons]
     simp
     have h_a_eq_a' : a = a' ↔ some (some a) = some (some a') := by simp
     rw [h_a_eq_a']
@@ -933,26 +939,25 @@ theorem eq_or_mem_iff_mem {s : Wseq α} {a a' s'} :
       · exact Stream'.mem_cons_of_mem _ m
   · simp
     exact IH this
-#align stream.wseq.eq_or_mem_iff_mem Stream'.Wseq.eq_or_mem_iff_mem
+#align stream.wseq.eq_or_mem_iff_mem Stream'.WSeq.eq_or_mem_iff_mem
 
 @[simp]
-theorem mem_cons_iff (s : Wseq α) (b) {a} : a ∈ cons b s ↔ a = b ∨ a ∈ s :=
+theorem mem_cons_iff (s : WSeq α) (b) {a} : a ∈ cons b s ↔ a = b ∨ a ∈ s :=
   eq_or_mem_iff_mem <| by simp [ret_mem]
-#align stream.wseq.mem_cons_iff Stream'.Wseq.mem_cons_iff
+#align stream.wseq.mem_cons_iff Stream'.WSeq.mem_cons_iff
 
-theorem mem_cons_of_mem {s : Wseq α} (b) {a} (h : a ∈ s) : a ∈ cons b s :=
+theorem mem_cons_of_mem {s : WSeq α} (b) {a} (h : a ∈ s) : a ∈ cons b s :=
   (mem_cons_iff _ _).2 (Or.inr h)
-#align stream.wseq.mem_cons_of_mem Stream'.Wseq.mem_cons_of_mem
+#align stream.wseq.mem_cons_of_mem Stream'.WSeq.mem_cons_of_mem
 
-theorem mem_cons (s : Wseq α) (a) : a ∈ cons a s :=
+theorem mem_cons (s : WSeq α) (a) : a ∈ cons a s :=
   (mem_cons_iff _ _).2 (Or.inl rfl)
-#align stream.wseq.mem_cons Stream'.Wseq.mem_cons
+#align stream.wseq.mem_cons Stream'.WSeq.mem_cons
 
-theorem mem_of_mem_tail {s : Wseq α} {a} : a ∈ tail s → a ∈ s := by
+theorem mem_of_mem_tail {s : WSeq α} {a} : a ∈ tail s → a ∈ s := by
   intro h; have := h; cases' h with n e; revert s; simp [Stream'.nth]
-  induction' n with n IH <;> intro s <;> apply s.rec_on _ (fun x s => _) fun s => _ <;>
-        repeat' simp <;>
-      intro m e <;>
+  induction' n with n IH <;> intro s <;> induction' s using WSeq.recOn with x s s <;>
+    simp <;> intro m e <;>
     injections
   · exact Or.inr m
   · exact Or.inr m
@@ -960,25 +965,28 @@ theorem mem_of_mem_tail {s : Wseq α} {a} : a ∈ tail s → a ∈ s := by
     rw [e]
     cases tail s
     rfl
-#align stream.wseq.mem_of_mem_tail Stream'.Wseq.mem_of_mem_tail
+#align stream.wseq.mem_of_mem_tail Stream'.WSeq.mem_of_mem_tail
 
-theorem mem_of_mem_dropn {s : Wseq α} {a} : ∀ {n}, a ∈ drop s n → a ∈ s
+theorem mem_of_mem_dropn {s : WSeq α} {a} : ∀ {n}, a ∈ drop s n → a ∈ s
   | 0, h => h
-  | n + 1, h => @mem_of_mem_dropn n (mem_of_mem_tail h)
-#align stream.wseq.mem_of_mem_dropn Stream'.Wseq.mem_of_mem_dropn
+  | n + 1, h => @mem_of_mem_dropn s a n (mem_of_mem_tail h)
+#align stream.wseq.mem_of_mem_dropn Stream'.WSeq.mem_of_mem_dropn
 
-theorem nth_mem {s : Wseq α} {a n} : some a ∈ nth s n → a ∈ s := by
+theorem nth_mem {s : WSeq α} {a n} : some a ∈ nth s n → a ∈ s := by
   revert s; induction' n with n IH <;> intro s h
-  · rcases Computation.exists_of_mem_map h with ⟨o, h1, h2⟩
-    cases' o with o <;> injection h2 with h'
+  · -- Porting note: This line is required to infer metavariables in
+    --               `Computation.exists_of_mem_map`.
+    dsimp only [nth, head] at h
+    rcases Computation.exists_of_mem_map h with ⟨o, h1, h2⟩
+    cases' o with o <;> [injection h2, injection h2 with h']
     cases' o with a' s'
     exact (eq_or_mem_iff_mem h1).2 (Or.inl h'.symm)
   · have := @IH (tail s)
     rw [nth_tail] at this
     exact mem_of_mem_tail (this h)
-#align stream.wseq.nth_mem Stream'.Wseq.nth_mem
+#align stream.wseq.nth_mem Stream'.WSeq.nth_mem
 
-theorem exists_nth_of_mem {s : Wseq α} {a} (h : a ∈ s) : ∃ n, some a ∈ nth s n := by
+theorem exists_nth_of_mem {s : WSeq α} {a} (h : a ∈ s) : ∃ n, some a ∈ nth s n := by
   apply mem_rec_on h
   · intro a' s' h
     cases' h with h h
@@ -988,38 +996,39 @@ theorem exists_nth_of_mem {s : Wseq α} {a} (h : a ∈ s) : ∃ n, some a ∈ nt
       apply ret_mem
     · cases' h with n h
       exists n + 1
-      simp [nth]
+      -- Porting note: Was `simp [nth]`.
+      simp only [nth, dropn_cons]
       exact h
   · intro s' h
     cases' h with n h
     exists n
     simp [nth]
     apply think_mem h
-#align stream.wseq.exists_nth_of_mem Stream'.Wseq.exists_nth_of_mem
+#align stream.wseq.exists_nth_of_mem Stream'.WSeq.exists_nth_of_mem
 
-theorem exists_dropn_of_mem {s : Wseq α} {a} (h : a ∈ s) :
+theorem exists_dropn_of_mem {s : WSeq α} {a} (h : a ∈ s) :
     ∃ n s', some (a, s') ∈ destruct (drop s n) :=
   let ⟨n, h⟩ := exists_nth_of_mem h
   ⟨n, by
-    rcases(head_terminates_iff _).1 ⟨⟨_, h⟩⟩ with ⟨⟨o, om⟩⟩
+    rcases (head_terminates_iff _).1 ⟨⟨_, h⟩⟩ with ⟨⟨o, om⟩⟩
     have := Computation.mem_unique (Computation.mem_map _ om) h
-    cases' o with o <;> injection this with i
+    cases' o with o <;> [injection this, injection this with i]
     cases' o with a' s'; dsimp at i
     rw [i] at om; exact ⟨_, om⟩⟩
-#align stream.wseq.exists_dropn_of_mem Stream'.Wseq.exists_dropn_of_mem
+#align stream.wseq.exists_dropn_of_mem Stream'.WSeq.exists_dropn_of_mem
 
 theorem liftRel_dropn_destruct {R : α → β → Prop} {s t} (H : LiftRel R s t) :
     ∀ n, Computation.LiftRel (LiftRelO R (LiftRel R)) (destruct (drop s n)) (destruct (drop t n))
   | 0 => liftRel_destruct H
   | n + 1 => by
     simp [destruct_tail]
-    apply lift_rel_bind
-    apply lift_rel_dropn_destruct n
-    exact fun a b o =>
+    apply liftRel_bind
+    apply liftRel_dropn_destruct H n
+    exact fun {a b} o =>
       match a, b, o with
       | none, none, _ => by simp
       | some (a, s), some (b, t), ⟨h1, h2⟩ => by simp [tail.aux] <;> apply lift_rel_destruct h2
-#align stream.wseq.lift_rel_dropn_destruct Stream'.Wseq.liftRel_dropn_destruct
+#align stream.wseq.lift_rel_dropn_destruct Stream'.WSeq.liftRel_dropn_destruct
 
 theorem exists_of_liftRel_left {R : α → β → Prop} {s t} (H : LiftRel R s t) {a} (h : a ∈ s) :
     ∃ b, b ∈ t ∧ R a b :=
@@ -1027,72 +1036,70 @@ theorem exists_of_liftRel_left {R : α → β → Prop} {s t} (H : LiftRel R s t
   let ⟨some (_, s'), sd, rfl⟩ := Computation.exists_of_mem_map h
   let ⟨some (b, t'), td, ⟨ab, _⟩⟩ := (liftRel_dropn_destruct H n).left sd
   ⟨b, nth_mem (Computation.mem_map ((· <$> ·) Prod.fst.{v, v}) td), ab⟩
-#align stream.wseq.exists_of_lift_rel_left Stream'.Wseq.exists_of_liftRel_left
+#align stream.wseq.exists_of_lift_rel_left Stream'.WSeq.exists_of_liftRel_left
 
 theorem exists_of_liftRel_right {R : α → β → Prop} {s t} (H : LiftRel R s t) {b} (h : b ∈ t) :
     ∃ a, a ∈ s ∧ R a b := by rw [← lift_rel.swap] at H <;> exact exists_of_lift_rel_left H h
-#align stream.wseq.exists_of_lift_rel_right Stream'.Wseq.exists_of_liftRel_right
+#align stream.wseq.exists_of_lift_rel_right Stream'.WSeq.exists_of_liftRel_right
 
-theorem head_terminates_of_mem {s : Wseq α} {a} (h : a ∈ s) : Terminates (head s) :=
+theorem head_terminates_of_mem {s : WSeq α} {a} (h : a ∈ s) : Terminates (head s) :=
   let ⟨n, h⟩ := exists_nth_of_mem h
   head_terminates_of_nth_terminates ⟨⟨_, h⟩⟩
-#align stream.wseq.head_terminates_of_mem Stream'.Wseq.head_terminates_of_mem
+#align stream.wseq.head_terminates_of_mem Stream'.WSeq.head_terminates_of_mem
 
-theorem of_mem_append {s₁ s₂ : Wseq α} {a : α} : a ∈ append s₁ s₂ → a ∈ s₁ ∨ a ∈ s₂ :=
+theorem of_mem_append {s₁ s₂ : WSeq α} {a : α} : a ∈ append s₁ s₂ → a ∈ s₁ ∨ a ∈ s₂ :=
   Seq.of_mem_append
-#align stream.wseq.of_mem_append Stream'.Wseq.of_mem_append
+#align stream.wseq.of_mem_append Stream'.WSeq.of_mem_append
 
-theorem mem_append_left {s₁ s₂ : Wseq α} {a : α} : a ∈ s₁ → a ∈ append s₁ s₂ :=
+theorem mem_append_left {s₁ s₂ : WSeq α} {a : α} : a ∈ s₁ → a ∈ append s₁ s₂ :=
   Seq.mem_append_left
-#align stream.wseq.mem_append_left Stream'.Wseq.mem_append_left
+#align stream.wseq.mem_append_left Stream'.WSeq.mem_append_left
 
-theorem exists_of_mem_map {f} {b : β} : ∀ {s : Wseq α}, b ∈ map f s → ∃ a, a ∈ s ∧ f a = b
+theorem exists_of_mem_map {f} {b : β} : ∀ {s : WSeq α}, b ∈ map f s → ∃ a, a ∈ s ∧ f a = b
   | ⟨g, al⟩, h => by
     let ⟨o, om, oe⟩ := Seq.exists_of_mem_map h
     cases' o with a <;> injection oe with h' <;> exact ⟨a, om, h'⟩
-#align stream.wseq.exists_of_mem_map Stream'.Wseq.exists_of_mem_map
+#align stream.wseq.exists_of_mem_map Stream'.WSeq.exists_of_mem_map
 
 @[simp]
-theorem liftRel_nil (R : α → β → Prop) : LiftRel R nil nil := by rw [lift_rel_destruct_iff] <;> simp
-#align stream.wseq.lift_rel_nil Stream'.Wseq.liftRel_nil
+theorem liftRel_nil (R : α → β → Prop) : LiftRel R nil nil := by rw [liftRel_destruct_iff] <;> simp
+#align stream.wseq.lift_rel_nil Stream'.WSeq.liftRel_nil
 
 @[simp]
 theorem liftRel_cons (R : α → β → Prop) (a b s t) :
     LiftRel R (cons a s) (cons b t) ↔ R a b ∧ LiftRel R s t := by
-  rw [lift_rel_destruct_iff] <;> simp
-#align stream.wseq.lift_rel_cons Stream'.Wseq.liftRel_cons
+  rw [liftRel_destruct_iff] <;> simp
+#align stream.wseq.lift_rel_cons Stream'.WSeq.liftRel_cons
 
 @[simp]
 theorem liftRel_think_left (R : α → β → Prop) (s t) : LiftRel R (think s) t ↔ LiftRel R s t := by
-  rw [lift_rel_destruct_iff, lift_rel_destruct_iff] <;> simp
-#align stream.wseq.lift_rel_think_left Stream'.Wseq.liftRel_think_left
+  rw [liftRel_destruct_iff, liftRel_destruct_iff]; simp
+#align stream.wseq.lift_rel_think_left Stream'.WSeq.liftRel_think_left
 
 @[simp]
 theorem liftRel_think_right (R : α → β → Prop) (s t) : LiftRel R s (think t) ↔ LiftRel R s t := by
-  rw [lift_rel_destruct_iff, lift_rel_destruct_iff] <;> simp
-#align stream.wseq.lift_rel_think_right Stream'.Wseq.liftRel_think_right
+  rw [liftRel_destruct_iff, liftRel_destruct_iff]; simp
+#align stream.wseq.lift_rel_think_right Stream'.WSeq.liftRel_think_right
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-theorem cons_congr {s t : Wseq α} (a : α) (h : s ~ t) : cons a s ~ cons a t := by
+theorem cons_congr {s t : WSeq α} (a : α) (h : s ~ t) : cons a s ~ cons a t := by
   unfold Equiv <;> simp <;> exact h
-#align stream.wseq.cons_congr Stream'.Wseq.cons_congr
+#align stream.wseq.cons_congr Stream'.WSeq.cons_congr
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-theorem think_equiv (s : Wseq α) : think s ~ s := by unfold Equiv <;> simp <;> apply Equiv.refl
-#align stream.wseq.think_equiv Stream'.Wseq.think_equiv
+theorem think_equiv (s : WSeq α) : think s ~ s := by unfold Equiv <;> simp <;> apply Equiv.refl
+#align stream.wseq.think_equiv Stream'.WSeq.think_equiv
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-theorem think_congr {s t : Wseq α} (h : s ~ t) : think s ~ think t := by
+theorem think_congr {s t : WSeq α} (h : s ~ t) : think s ~ think t := by
   unfold Equiv <;> simp <;> exact h
-#align stream.wseq.think_congr Stream'.Wseq.think_congr
+#align stream.wseq.think_congr Stream'.WSeq.think_congr
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-theorem head_congr : ∀ {s t : Wseq α}, s ~ t → head s ~ head t := by
-  suffices ∀ {s t : Wseq α}, s ~ t → ∀ {o}, o ∈ head s → o ∈ head t from fun s t h o =>
+theorem head_congr : ∀ {s t : WSeq α}, s ~ t → head s ~ head t := by
+  suffices ∀ {s t : WSeq α}, s ~ t → ∀ {o}, o ∈ head s → o ∈ head t from fun s t h o =>
     ⟨this h, this h.symm⟩
   intro s t h o ho
   rcases@Computation.exists_of_mem_map _ _ _ _ (destruct s) ho with ⟨ds, dsm, dse⟩
@@ -1109,17 +1116,17 @@ theorem head_congr : ∀ {s t : Wseq α}, s ~ t → head s ~ head t := by
     cases' b with b t'
     rw [dst.left]
     exact @Computation.mem_map _ _ (@Functor.map _ _ (α × wseq α) _ Prod.fst) _ (destruct t) dtm
-#align stream.wseq.head_congr Stream'.Wseq.head_congr
+#align stream.wseq.head_congr Stream'.WSeq.head_congr
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-theorem flatten_equiv {c : Computation (Wseq α)} {s} (h : s ∈ c) : flatten c ~ s := by
+theorem flatten_equiv {c : Computation (WSeq α)} {s} (h : s ∈ c) : flatten c ~ s := by
   apply Computation.memRecOn h; · simp
   · intro s'
     apply Equiv.trans
     simp [think_equiv]
-#align stream.wseq.flatten_equiv Stream'.Wseq.flatten_equiv
+#align stream.wseq.flatten_equiv Stream'.WSeq.flatten_equiv
 
-theorem liftRel_flatten {R : α → β → Prop} {c1 : Computation (Wseq α)} {c2 : Computation (Wseq β)}
+theorem liftRel_flatten {R : α → β → Prop} {c1 : Computation (WSeq α)} {c2 : Computation (WSeq β)}
     (h : c1.LiftRel (LiftRel R) c2) : LiftRel R (flatten c1) (flatten c2) :=
   let S s t := ∃ c1 c2, s = flatten c1 ∧ t = flatten c2 ∧ Computation.LiftRel (LiftRel R) c1 c2
   ⟨S, ⟨c1, c2, rfl, rfl, h⟩, fun s t h =>
@@ -1128,18 +1135,18 @@ theorem liftRel_flatten {R : α → β → Prop} {c1 : Computation (Wseq α)} {c
       simp; apply lift_rel_bind _ _ h
       intro a b ab; apply Computation.LiftRel.imp _ _ _ (lift_rel_destruct ab)
       intro a b; apply lift_rel_o.imp_right
-      intro s t h; refine' ⟨return s, return t, _, _, _⟩ <;> simp [h]⟩
-#align stream.wseq.lift_rel_flatten Stream'.Wseq.liftRel_flatten
+      intro s t h; refine' ⟨Computation.pure s, Computation.pure t, _, _, _⟩ <;> simp [h]⟩
+#align stream.wseq.lift_rel_flatten Stream'.WSeq.liftRel_flatten
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-theorem flatten_congr {c1 c2 : Computation (Wseq α)} :
+theorem flatten_congr {c1 c2 : Computation (WSeq α)} :
     Computation.LiftRel Equiv c1 c2 → flatten c1 ~ flatten c2 :=
   liftRel_flatten
-#align stream.wseq.flatten_congr Stream'.Wseq.flatten_congr
+#align stream.wseq.flatten_congr Stream'.WSeq.flatten_congr
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-theorem tail_congr {s t : Wseq α} (h : s ~ t) : tail s ~ tail t := by
+theorem tail_congr {s t : WSeq α} (h : s ~ t) : tail s ~ tail t := by
   apply flatten_congr
   unfold Functor.map; rw [← bind_ret, ← bind_ret]
   apply lift_rel_bind _ _ (destruct_congr h)
@@ -1152,39 +1159,39 @@ theorem tail_congr {s t : Wseq α} (h : s ~ t) : tail s ~ tail t := by
   · cases' a with a s'
     cases' b with b t'
     exact h.right
-#align stream.wseq.tail_congr Stream'.Wseq.tail_congr
+#align stream.wseq.tail_congr Stream'.WSeq.tail_congr
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-theorem dropn_congr {s t : Wseq α} (h : s ~ t) (n) : drop s n ~ drop t n := by
+theorem dropn_congr {s t : WSeq α} (h : s ~ t) (n) : drop s n ~ drop t n := by
   induction n <;> simp [*, tail_congr]
-#align stream.wseq.dropn_congr Stream'.Wseq.dropn_congr
+#align stream.wseq.dropn_congr Stream'.WSeq.dropn_congr
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-theorem nth_congr {s t : Wseq α} (h : s ~ t) (n) : nth s n ~ nth t n :=
+theorem nth_congr {s t : WSeq α} (h : s ~ t) (n) : nth s n ~ nth t n :=
   head_congr (dropn_congr h _)
-#align stream.wseq.nth_congr Stream'.Wseq.nth_congr
+#align stream.wseq.nth_congr Stream'.WSeq.nth_congr
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-theorem mem_congr {s t : Wseq α} (h : s ~ t) (a) : a ∈ s ↔ a ∈ t :=
-  suffices ∀ {s t : Wseq α}, s ~ t → a ∈ s → a ∈ t from ⟨this h, this h.symm⟩
+theorem mem_congr {s t : WSeq α} (h : s ~ t) (a) : a ∈ s ↔ a ∈ t :=
+  suffices ∀ {s t : WSeq α}, s ~ t → a ∈ s → a ∈ t from ⟨this h, this h.symm⟩
   fun s t h as =>
   let ⟨n, hn⟩ := exists_nth_of_mem as
   nth_mem ((nth_congr h _ _).1 hn)
-#align stream.wseq.mem_congr Stream'.Wseq.mem_congr
+#align stream.wseq.mem_congr Stream'.WSeq.mem_congr
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-theorem productive_congr {s t : Wseq α} (h : s ~ t) : Productive s ↔ Productive t := by
+theorem productive_congr {s t : WSeq α} (h : s ~ t) : Productive s ↔ Productive t := by
   simp only [productive_iff] <;> exact forall_congr' fun n => terminates_congr <| nth_congr h _
-#align stream.wseq.productive_congr Stream'.Wseq.productive_congr
+#align stream.wseq.productive_congr Stream'.WSeq.productive_congr
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-theorem Equiv.ext {s t : Wseq α} (h : ∀ n, nth s n ~ nth t n) : s ~ t :=
+theorem Equiv.ext {s t : WSeq α} (h : ∀ n, nth s n ~ nth t n) : s ~ t :=
   ⟨fun s t => ∀ n, nth s n ~ nth t n, h, fun s t h => by
     refine' lift_rel_def.2 ⟨_, _⟩
     · rw [← head_terminates_iff, ← head_terminates_iff]
@@ -1205,10 +1212,10 @@ theorem Equiv.ext {s t : Wseq α} (h : ∀ n, nth s n ~ nth t n) : s ~ t :=
               (nth_congr (flatten_equiv (Computation.mem_map _ mb)) n))
         rw [nth_tail, nth_tail]
         apply h⟩
-#align stream.wseq.equiv.ext Stream'.Wseq.Equiv.ext
+#align stream.wseq.equiv.ext Stream'.WSeq.Equiv.ext
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-theorem length_eq_map (s : Wseq α) : length s = Computation.map List.length (toList s) := by
+theorem length_eq_map (s : WSeq α) : length s = Computation.map List.length (toList s) := by
   refine'
     Computation.eq_of_bisim
       (fun c1 c2 =>
@@ -1220,42 +1227,42 @@ theorem length_eq_map (s : Wseq α) : length s = Computation.map List.length (to
   apply s.rec_on _ (fun a s => _) fun s => _ <;> repeat' simp [to_list, nil, cons, think, length]
   · refine' ⟨a::l, s, _, _⟩ <;> simp
   · refine' ⟨l, s, _, _⟩ <;> simp
-#align stream.wseq.length_eq_map Stream'.Wseq.length_eq_map
+#align stream.wseq.length_eq_map Stream'.WSeq.length_eq_map
 
 @[simp]
-theorem ofList_nil : ofList [] = (nil : Wseq α) :=
+theorem ofList_nil : ofList [] = (nil : WSeq α) :=
   rfl
-#align stream.wseq.of_list_nil Stream'.Wseq.ofList_nil
+#align stream.wseq.of_list_nil Stream'.WSeq.ofList_nil
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[simp]
 theorem ofList_cons (a : α) (l) : ofList (a::l) = cons a (ofList l) :=
   show Seq.map some (Seq.ofList (a::l)) = Seq.cons (some a) (Seq.map some (Seq.ofList l)) by simp
-#align stream.wseq.of_list_cons Stream'.Wseq.ofList_cons
+#align stream.wseq.of_list_cons Stream'.WSeq.ofList_cons
 
 @[simp]
-theorem to_list'_nil (l : List α) : Computation.corec ToList._match2 (l, nil) = return l.reverse :=
+theorem to_list'_nil (l : List α) : Computation.corec ToList._match2 (l, nil) = Computation.pure l.reverse :=
   destruct_eq_pure rfl
-#align stream.wseq.to_list'_nil Stream'.Wseq.to_list'_nil
+#align stream.wseq.to_list'_nil Stream'.WSeq.to_list'_nil
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[simp]
-theorem to_list'_cons (l : List α) (s : Wseq α) (a : α) :
+theorem to_list'_cons (l : List α) (s : WSeq α) (a : α) :
     Computation.corec ToList._match2 (l, cons a s) =
       (Computation.corec ToList._match2 (a::l, s)).think :=
   destruct_eq_think <| by simp [to_list, cons]
-#align stream.wseq.to_list'_cons Stream'.Wseq.to_list'_cons
+#align stream.wseq.to_list'_cons Stream'.WSeq.to_list'_cons
 
 @[simp]
-theorem to_list'_think (l : List α) (s : Wseq α) :
+theorem to_list'_think (l : List α) (s : WSeq α) :
     Computation.corec ToList._match2 (l, think s) =
       (Computation.corec ToList._match2 (l, s)).think :=
   destruct_eq_think <| by simp [to_list, think]
-#align stream.wseq.to_list'_think Stream'.Wseq.to_list'_think
+#align stream.wseq.to_list'_think Stream'.WSeq.to_list'_think
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-theorem to_list'_map (l : List α) (s : Wseq α) :
+theorem to_list'_map (l : List α) (s : WSeq α) :
     Computation.corec ToList._match2 (l, s) = (· ++ ·) l.reverse <$> toList s := by
   refine'
     Computation.eq_of_bisim
@@ -1268,111 +1275,111 @@ theorem to_list'_map (l : List α) (s : Wseq α) :
   apply s.rec_on _ (fun a s => _) fun s => _ <;> repeat' simp [to_list, nil, cons, think, length]
   · refine' ⟨a::l', s, _, _⟩ <;> simp
   · refine' ⟨l', s, _, _⟩ <;> simp
-#align stream.wseq.to_list'_map Stream'.Wseq.to_list'_map
+#align stream.wseq.to_list'_map Stream'.WSeq.to_list'_map
 
 @[simp]
 theorem toList_cons (a : α) (s) : toList (cons a s) = (List.cons a <$> toList s).think :=
   destruct_eq_think <| by unfold to_list <;> simp <;> rw [to_list'_map] <;> simp <;> rfl
-#align stream.wseq.to_list_cons Stream'.Wseq.toList_cons
+#align stream.wseq.to_list_cons Stream'.WSeq.toList_cons
 
 @[simp]
-theorem toList_nil : toList (nil : Wseq α) = return [] :=
+theorem toList_nil : toList (nil : WSeq α) = Computation.pure [] :=
   destruct_eq_pure rfl
-#align stream.wseq.to_list_nil Stream'.Wseq.toList_nil
+#align stream.wseq.to_list_nil Stream'.WSeq.toList_nil
 
 theorem toList_ofList (l : List α) : l ∈ toList (ofList l) := by
   induction' l with a l IH <;> simp [ret_mem] <;> exact think_mem (Computation.mem_map _ IH)
-#align stream.wseq.to_list_of_list Stream'.Wseq.toList_ofList
+#align stream.wseq.to_list_of_list Stream'.WSeq.toList_ofList
 
 @[simp]
 theorem destruct_ofSeq (s : Seq α) :
-    destruct (ofSeq s) = return (s.headI.map fun a => (a, ofSeq s.tail)) :=
+    destruct (ofSeq s) = Computation.pure (s.headI.map fun a => (a, ofSeq s.tail)) :=
   destruct_eq_pure <| by
     simp [of_seq, head, destruct, seq.destruct, seq.head]
     rw [show seq.nth (some <$> s) 0 = some <$> seq.nth s 0 by apply seq.map_nth]
     cases' seq.nth s 0 with a; · rfl
     unfold Functor.map
     simp [destruct]
-#align stream.wseq.destruct_of_seq Stream'.Wseq.destruct_ofSeq
+#align stream.wseq.destruct_of_seq Stream'.WSeq.destruct_ofSeq
 
 @[simp]
-theorem head_ofSeq (s : Seq α) : head (ofSeq s) = return s.headI := by
+theorem head_ofSeq (s : Seq α) : head (ofSeq s) = Computation.pure s.headI := by
   simp [head] <;> cases seq.head s <;> rfl
-#align stream.wseq.head_of_seq Stream'.Wseq.head_ofSeq
+#align stream.wseq.head_of_seq Stream'.WSeq.head_ofSeq
 
 @[simp]
 theorem tail_ofSeq (s : Seq α) : tail (ofSeq s) = ofSeq s.tail := by
   simp [tail]; apply s.rec_on _ fun x s => _ <;> simp [of_seq]; · rfl
   rw [seq.head_cons, seq.tail_cons]; rfl
-#align stream.wseq.tail_of_seq Stream'.Wseq.tail_ofSeq
+#align stream.wseq.tail_of_seq Stream'.WSeq.tail_ofSeq
 
 @[simp]
 theorem dropn_ofSeq (s : Seq α) : ∀ n, drop (ofSeq s) n = ofSeq (s.drop n)
   | 0 => rfl
   | n + 1 => by dsimp [drop] <;> rw [dropn_of_seq, tail_of_seq]
-#align stream.wseq.dropn_of_seq Stream'.Wseq.dropn_ofSeq
+#align stream.wseq.dropn_of_seq Stream'.WSeq.dropn_ofSeq
 
-theorem nth_ofSeq (s : Seq α) (n) : nth (ofSeq s) n = return (Seq.get? s n) := by
+theorem nth_ofSeq (s : Seq α) (n) : nth (ofSeq s) n = Computation.pure (Seq.get? s n) := by
   dsimp [nth] <;> rw [dropn_of_seq, head_of_seq, seq.head_dropn]
-#align stream.wseq.nth_of_seq Stream'.Wseq.nth_ofSeq
+#align stream.wseq.nth_of_seq Stream'.WSeq.nth_ofSeq
 
 instance productive_ofSeq (s : Seq α) : Productive (ofSeq s) :=
   ⟨fun n => by rw [nth_of_seq] <;> infer_instance⟩
-#align stream.wseq.productive_of_seq Stream'.Wseq.productive_ofSeq
+#align stream.wseq.productive_of_seq Stream'.WSeq.productive_ofSeq
 
 theorem toSeq_ofSeq (s : Seq α) : toSeq (ofSeq s) = s := by
   apply Subtype.eq; funext n
   dsimp [to_seq]; apply get_eq_of_mem
   rw [nth_of_seq]; apply ret_mem
-#align stream.wseq.to_seq_of_seq Stream'.Wseq.toSeq_ofSeq
+#align stream.wseq.to_seq_of_seq Stream'.WSeq.toSeq_ofSeq
 
 /-- The monadic `return a` is a singleton list containing `a`. -/
-def ret (a : α) : Wseq α :=
+def ret (a : α) : WSeq α :=
   ofList [a]
-#align stream.wseq.ret Stream'.Wseq.ret
+#align stream.wseq.ret Stream'.WSeq.ret
 
 @[simp]
 theorem map_nil (f : α → β) : map f nil = nil :=
   rfl
-#align stream.wseq.map_nil Stream'.Wseq.map_nil
+#align stream.wseq.map_nil Stream'.WSeq.map_nil
 
 @[simp]
 theorem map_cons (f : α → β) (a s) : map f (cons a s) = cons (f a) (map f s) :=
   Seq.map_cons _ _ _
-#align stream.wseq.map_cons Stream'.Wseq.map_cons
+#align stream.wseq.map_cons Stream'.WSeq.map_cons
 
 @[simp]
 theorem map_think (f : α → β) (s) : map f (think s) = think (map f s) :=
   Seq.map_cons _ _ _
-#align stream.wseq.map_think Stream'.Wseq.map_think
+#align stream.wseq.map_think Stream'.WSeq.map_think
 
 @[simp]
-theorem map_id (s : Wseq α) : map id s = s := by simp [map]
-#align stream.wseq.map_id Stream'.Wseq.map_id
+theorem map_id (s : WSeq α) : map id s = s := by simp [map]
+#align stream.wseq.map_id Stream'.WSeq.map_id
 
 @[simp]
 theorem map_ret (f : α → β) (a) : map f (ret a) = ret (f a) := by simp [ret]
-#align stream.wseq.map_ret Stream'.Wseq.map_ret
+#align stream.wseq.map_ret Stream'.WSeq.map_ret
 
 @[simp]
 theorem map_append (f : α → β) (s t) : map f (append s t) = append (map f s) (map f t) :=
   Seq.map_append _ _ _
-#align stream.wseq.map_append Stream'.Wseq.map_append
+#align stream.wseq.map_append Stream'.WSeq.map_append
 
-theorem map_comp (f : α → β) (g : β → γ) (s : Wseq α) : map (g ∘ f) s = map g (map f s) := by
+theorem map_comp (f : α → β) (g : β → γ) (s : WSeq α) : map (g ∘ f) s = map g (map f s) := by
   dsimp [map]; rw [← seq.map_comp]
   apply congr_fun; apply congr_arg
   ext ⟨⟩ <;> rfl
-#align stream.wseq.map_comp Stream'.Wseq.map_comp
+#align stream.wseq.map_comp Stream'.WSeq.map_comp
 
-theorem mem_map (f : α → β) {a : α} {s : Wseq α} : a ∈ s → f a ∈ map f s :=
+theorem mem_map (f : α → β) {a : α} {s : WSeq α} : a ∈ s → f a ∈ map f s :=
   Seq.mem_map (Option.map f)
-#align stream.wseq.mem_map Stream'.Wseq.mem_map
+#align stream.wseq.mem_map Stream'.WSeq.mem_map
 
 -- The converse is not true without additional assumptions
-theorem exists_of_mem_join {a : α} : ∀ {S : Wseq (Wseq α)}, a ∈ join S → ∃ s, s ∈ S ∧ a ∈ s := by
+theorem exists_of_mem_join {a : α} : ∀ {S : WSeq (WSeq α)}, a ∈ join S → ∃ s, s ∈ S ∧ a ∈ s := by
   suffices
-    ∀ ss : Wseq α,
+    ∀ ss : WSeq α,
       a ∈ ss → ∀ s S, append s (join S) = ss → a ∈ append s (join S) → a ∈ s ∨ ∃ s, s ∈ S ∧ a ∈ s
     from fun S h => (this _ h nil S (by simp) (by simp [h])).resolve_left (not_mem_nil _)
   intro ss h; apply mem_rec_on h (fun b ss o => _) fun ss IH => _ <;> intro s S
@@ -1401,16 +1408,16 @@ theorem exists_of_mem_join {a : α} : ∀ {S : Wseq (Wseq α)}, a ∈ join S →
       exact ⟨s, by simp [sS], as⟩
     · simp at m IH⊢
       apply IH _ _ rfl m
-#align stream.wseq.exists_of_mem_join Stream'.Wseq.exists_of_mem_join
+#align stream.wseq.exists_of_mem_join Stream'.WSeq.exists_of_mem_join
 
-theorem exists_of_mem_bind {s : Wseq α} {f : α → Wseq β} {b} (h : b ∈ bind s f) :
+theorem exists_of_mem_bind {s : WSeq α} {f : α → WSeq β} {b} (h : b ∈ bind s f) :
     ∃ a ∈ s, b ∈ f a :=
   let ⟨t, tm, bt⟩ := exists_of_mem_join h
   let ⟨a, as, e⟩ := exists_of_mem_map tm
   ⟨a, as, by rwa [e]⟩
-#align stream.wseq.exists_of_mem_bind Stream'.Wseq.exists_of_mem_bind
+#align stream.wseq.exists_of_mem_bind Stream'.WSeq.exists_of_mem_bind
 
-theorem destruct_map (f : α → β) (s : Wseq α) :
+theorem destruct_map (f : α → β) (s : WSeq α) :
     destruct (map f s) = Computation.map (Option.map (Prod.map f (map f))) (destruct s) := by
   apply
     Computation.eq_of_bisim fun c1 c2 =>
@@ -1423,9 +1430,9 @@ theorem destruct_map (f : α → β) (s : Wseq α) :
     apply s.rec_on _ (fun a s => _) fun s => _ <;> simp
     exact ⟨s, rfl, rfl⟩
   · exact ⟨s, rfl, rfl⟩
-#align stream.wseq.destruct_map Stream'.Wseq.destruct_map
+#align stream.wseq.destruct_map Stream'.WSeq.destruct_map
 
-theorem liftRel_map {δ} (R : α → β → Prop) (S : γ → δ → Prop) {s1 : Wseq α} {s2 : Wseq β}
+theorem liftRel_map {δ} (R : α → β → Prop) (S : γ → δ → Prop) {s1 : WSeq α} {s2 : WSeq β}
     {f1 : α → γ} {f2 : β → δ} (h1 : LiftRel R s1 s2) (h2 : ∀ {a b}, R a b → S (f1 a) (f2 b)) :
     LiftRel S (map f1 s1) (map f2 s2) :=
   ⟨fun s1 s2 => ∃ s t, s1 = map f1 s ∧ s2 = map f2 t ∧ LiftRel R s t, ⟨s1, s2, rfl, rfl, h1⟩,
@@ -1440,22 +1447,22 @@ theorem liftRel_map {δ} (R : α → β → Prop) (S : γ → δ → Prop) {s1 :
       · cases' a with a s <;> cases' b with b t
         cases' h with r h
         exact ⟨h2 r, s, rfl, t, rfl, h⟩⟩
-#align stream.wseq.lift_rel_map Stream'.Wseq.liftRel_map
+#align stream.wseq.lift_rel_map Stream'.WSeq.liftRel_map
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-theorem map_congr (f : α → β) {s t : Wseq α} (h : s ~ t) : map f s ~ map f t :=
+theorem map_congr (f : α → β) {s t : WSeq α} (h : s ~ t) : map f s ~ map f t :=
   liftRel_map _ _ h fun _ _ => congr_arg _
-#align stream.wseq.map_congr Stream'.Wseq.map_congr
+#align stream.wseq.map_congr Stream'.WSeq.map_congr
 
 /-- auxilary defintion of `destruct_append` over weak sequences-/
 @[simp]
-def DestructAppend.aux (t : Wseq α) : Option (α × Wseq α) → Computation (Option (α × Wseq α))
+def DestructAppend.aux (t : WSeq α) : Option (α × WSeq α) → Computation (Option (α × WSeq α))
   | none => destruct t
-  | some (a, s) => return (some (a, append s t))
-#align stream.wseq.destruct_append.aux Stream'.Wseq.DestructAppend.aux
+  | some (a, s) => Computation.pure (some (a, append s t))
+#align stream.wseq.destruct_append.aux Stream'.WSeq.DestructAppend.aux
 
-theorem destruct_append (s t : Wseq α) :
+theorem destruct_append (s t : WSeq α) :
     destruct (append s t) = (destruct s).bind (DestructAppend.aux t) := by
   apply
     Computation.eq_of_bisim
@@ -1467,16 +1474,16 @@ theorem destruct_append (s t : Wseq α) :
   · apply t.rec_on _ (fun b t => _) fun t => _ <;> simp
     · refine' ⟨nil, t, _, _⟩ <;> simp
   · exact ⟨s, t, rfl, rfl⟩
-#align stream.wseq.destruct_append Stream'.Wseq.destruct_append
+#align stream.wseq.destruct_append Stream'.WSeq.destruct_append
 
 /-- auxilary defintion of `destruct_join` over weak sequences-/
 @[simp]
-def DestructJoin.aux : Option (Wseq α × Wseq (Wseq α)) → Computation (Option (α × Wseq α))
-  | none => return none
+def DestructJoin.aux : Option (WSeq α × WSeq (WSeq α)) → Computation (Option (α × WSeq α))
+  | none => Computation.pure none
   | some (s, S) => (destruct (append s (join S))).think
-#align stream.wseq.destruct_join.aux Stream'.Wseq.DestructJoin.aux
+#align stream.wseq.destruct_join.aux Stream'.WSeq.DestructJoin.aux
 
-theorem destruct_join (S : Wseq (Wseq α)) :
+theorem destruct_join (S : WSeq (WSeq α)) :
     destruct (join S) = (destruct S).bind DestructJoin.aux := by
   apply
     Computation.eq_of_bisim
@@ -1490,9 +1497,9 @@ theorem destruct_join (S : Wseq (Wseq α)) :
     | _, _, Or.inr ⟨S, rfl, rfl⟩ => by
       apply S.rec_on _ (fun s S => _) fun S => _ <;> simp
       · refine' Or.inr ⟨S, rfl, rfl⟩
-#align stream.wseq.destruct_join Stream'.Wseq.destruct_join
+#align stream.wseq.destruct_join Stream'.WSeq.destruct_join
 
-theorem liftRel_append (R : α → β → Prop) {s1 s2 : Wseq α} {t1 t2 : Wseq β} (h1 : LiftRel R s1 t1)
+theorem liftRel_append (R : α → β → Prop) {s1 s2 : WSeq α} {t1 t2 : WSeq β} (h1 : LiftRel R s1 t1)
     (h2 : LiftRel R s2 t2) : LiftRel R (append s1 s2) (append t1 t2) :=
   ⟨fun s t => LiftRel R s t ∨ ∃ s1 t1, s = append s1 s2 ∧ t = append t1 t2 ∧ LiftRel R s1 t1,
     Or.inr ⟨s1, t1, rfl, rfl, h1⟩, fun s t h =>
@@ -1518,9 +1525,9 @@ theorem liftRel_append (R : α → β → Prop) {s1 s2 : Wseq α} {t1 t2 : Wseq 
         cases' h with r h
         simp
         exact ⟨r, Or.inr ⟨s, rfl, t, rfl, h⟩⟩⟩
-#align stream.wseq.lift_rel_append Stream'.Wseq.liftRel_append
+#align stream.wseq.lift_rel_append Stream'.WSeq.liftRel_append
 
-theorem LiftRelJoin.lem (R : α → β → Prop) {S T} {U : Wseq α → Wseq β → Prop}
+theorem LiftRelJoin.lem (R : α → β → Prop) {S T} {U : WSeq α → WSeq β → Prop}
     (ST : LiftRel (LiftRel R) S T)
     (HU :
       ∀ s1 s2,
@@ -1570,9 +1577,9 @@ theorem LiftRelJoin.lem (R : α → β → Prop) {S T} {U : Wseq α → Wseq β 
               apply ret_mem
             rw [eq_of_ret_mem rs5.mem]
             exact ⟨ab, HU _ _ ⟨s', t', S', T', rfl, rfl, st', ST'⟩⟩
-#align stream.wseq.lift_rel_join.lem Stream'.Wseq.LiftRelJoin.lem
+#align stream.wseq.lift_rel_join.lem Stream'.WSeq.LiftRelJoin.lem
 
-theorem liftRel_join (R : α → β → Prop) {S : Wseq (Wseq α)} {T : Wseq (Wseq β)}
+theorem liftRel_join (R : α → β → Prop) {S : WSeq (WSeq α)} {T : WSeq (WSeq β)}
     (h : LiftRel (LiftRel R) S T) : LiftRel R (join S) (join T) :=
   ⟨fun s1 s2 =>
     ∃ s t S T,
@@ -1596,35 +1603,35 @@ theorem liftRel_join (R : α → β → Prop) {S : Wseq (Wseq α)} {T : Wseq (Ws
           · rw [← lift_rel.swap R, ← lift_rel.swap (lift_rel R)]
             exact fun s1 s2 ⟨s, t, S, T, h1, h2, st, ST⟩ => ⟨t, s, T, S, h2, h1, st, ST⟩
           · exact mb⟩
-#align stream.wseq.lift_rel_join Stream'.Wseq.liftRel_join
+#align stream.wseq.lift_rel_join Stream'.WSeq.liftRel_join
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-theorem join_congr {S T : Wseq (Wseq α)} (h : LiftRel Equiv S T) : join S ~ join T :=
+theorem join_congr {S T : WSeq (WSeq α)} (h : LiftRel Equiv S T) : join S ~ join T :=
   liftRel_join _ h
-#align stream.wseq.join_congr Stream'.Wseq.join_congr
+#align stream.wseq.join_congr Stream'.WSeq.join_congr
 
-theorem liftRel_bind {δ} (R : α → β → Prop) (S : γ → δ → Prop) {s1 : Wseq α} {s2 : Wseq β}
-    {f1 : α → Wseq γ} {f2 : β → Wseq δ} (h1 : LiftRel R s1 s2)
+theorem liftRel_bind {δ} (R : α → β → Prop) (S : γ → δ → Prop) {s1 : WSeq α} {s2 : WSeq β}
+    {f1 : α → WSeq γ} {f2 : β → WSeq δ} (h1 : LiftRel R s1 s2)
     (h2 : ∀ {a b}, R a b → LiftRel S (f1 a) (f2 b)) : LiftRel S (bind s1 f1) (bind s2 f2) :=
   liftRel_join _ (liftRel_map _ _ h1 @h2)
-#align stream.wseq.lift_rel_bind Stream'.Wseq.liftRel_bind
+#align stream.wseq.lift_rel_bind Stream'.WSeq.liftRel_bind
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-theorem bind_congr {s1 s2 : Wseq α} {f1 f2 : α → Wseq β} (h1 : s1 ~ s2) (h2 : ∀ a, f1 a ~ f2 a) :
+theorem bind_congr {s1 s2 : WSeq α} {f1 f2 : α → WSeq β} (h1 : s1 ~ s2) (h2 : ∀ a, f1 a ~ f2 a) :
     bind s1 f1 ~ bind s2 f2 :=
   liftRel_bind _ _ h1 fun a b h => by rw [h] <;> apply h2
-#align stream.wseq.bind_congr Stream'.Wseq.bind_congr
+#align stream.wseq.bind_congr Stream'.WSeq.bind_congr
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[simp]
-theorem join_ret (s : Wseq α) : join (ret s) ~ s := by simp [ret] <;> apply think_equiv
-#align stream.wseq.join_ret Stream'.Wseq.join_ret
+theorem join_ret (s : WSeq α) : join (ret s) ~ s := by simp [ret] <;> apply think_equiv
+#align stream.wseq.join_ret Stream'.WSeq.join_ret
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[simp]
-theorem join_map_ret (s : Wseq α) : join (map ret s) ~ s := by
+theorem join_map_ret (s : WSeq α) : join (map ret s) ~ s := by
   refine' ⟨fun s1 s2 => join (map ret s2) = s1, rfl, _⟩
   intro s' s h; rw [← h]
   apply lift_rel_rec fun c1 c2 => ∃ s, c1 = destruct (join (map ret s)) ∧ c2 = destruct s
@@ -1640,11 +1647,11 @@ theorem join_map_ret (s : Wseq α) : join (map ret s) ~ s := by
           fun s => ⟨s, rfl, rfl⟩
         apply s.rec_on _ (fun a s => _) fun s => _ <;> simp [ret, ret_mem, this, Option.exists]
   · exact ⟨s, rfl, rfl⟩
-#align stream.wseq.join_map_ret Stream'.Wseq.join_map_ret
+#align stream.wseq.join_map_ret Stream'.WSeq.join_map_ret
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[simp]
-theorem join_append (S T : Wseq (Wseq α)) : join (append S T) ~ append (join S) (join T) := by
+theorem join_append (S T : WSeq (WSeq α)) : join (append S T) ~ append (join S) (join T) := by
   refine'
     ⟨fun s1 s2 =>
       ∃ s S T, s1 = append s (join (append S T)) ∧ s2 = append s (append (join S) (join T)),
@@ -1673,19 +1680,19 @@ theorem join_append (S T : Wseq (Wseq α)) : join (append S T) ~ append (join S)
         · refine' ⟨nil, S, T, _, _⟩ <;> simp
       · exact ⟨s, S, T, rfl, rfl⟩
       · exact ⟨s, S, T, rfl, rfl⟩
-#align stream.wseq.join_append Stream'.Wseq.join_append
+#align stream.wseq.join_append Stream'.WSeq.join_append
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[simp]
 theorem bind_ret (f : α → β) (s) : bind s (ret ∘ f) ~ map f s := by
   dsimp [bind]; change fun x => ret (f x) with ret ∘ f
   rw [map_comp]; apply join_map_ret
-#align stream.wseq.bind_ret Stream'.Wseq.bind_ret
+#align stream.wseq.bind_ret Stream'.WSeq.bind_ret
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[simp]
-theorem ret_bind (a : α) (f : α → Wseq β) : bind (ret a) f ~ f a := by simp [bind]
-#align stream.wseq.ret_bind Stream'.Wseq.ret_bind
+theorem ret_bind (a : α) (f : α → WSeq β) : bind (ret a) f ~ f a := by simp [bind]
+#align stream.wseq.ret_bind Stream'.WSeq.ret_bind
 
 @[simp]
 theorem map_join (f : α → β) (S) : map f (join S) = join (map (map f) S) := by
@@ -1703,11 +1710,11 @@ theorem map_join (f : α → β) (S) : map f (join S) = join (map (map f) S) := 
         · exact ⟨_, _, rfl, rfl⟩
         · exact ⟨_, _, rfl, rfl⟩
   · refine' ⟨nil, S, _, _⟩ <;> simp
-#align stream.wseq.map_join Stream'.Wseq.map_join
+#align stream.wseq.map_join Stream'.WSeq.map_join
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[simp]
-theorem join_join (SS : Wseq (Wseq (Wseq α))) : join (join SS) ~ join (map join SS) := by
+theorem join_join (SS : WSeq (WSeq (WSeq α))) : join (join SS) ~ join (map join SS) := by
   refine'
     ⟨fun s1 s2 =>
       ∃ s S SS,
@@ -1738,17 +1745,17 @@ theorem join_join (SS : Wseq (Wseq (Wseq α))) : join (join SS) ~ join (map join
         · refine' ⟨nil, S, SS, _, _⟩ <;> simp
       · exact ⟨s, S, SS, rfl, rfl⟩
       · exact ⟨s, S, SS, rfl, rfl⟩
-#align stream.wseq.join_join Stream'.Wseq.join_join
+#align stream.wseq.join_join Stream'.WSeq.join_join
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[simp]
-theorem bind_assoc (s : Wseq α) (f : α → Wseq β) (g : β → Wseq γ) :
+theorem bind_assoc (s : WSeq α) (f : α → WSeq β) (g : β → WSeq γ) :
     bind (bind s f) g ~ bind s fun x : α => bind (f x) g := by
   simp [bind]; rw [← map_comp f (map g), map_comp (map g ∘ f) join]
   apply join_join
-#align stream.wseq.bind_assoc Stream'.Wseq.bind_assoc
+#align stream.wseq.bind_assoc Stream'.WSeq.bind_assoc
 
-instance : Monad Wseq where
+instance : Monad WSeq where
   map := @map
   pure := @ret
   bind := @bind
@@ -1767,7 +1774,6 @@ instance : is_lawful_monad wseq :=
   pure_bind := @ret_bind,
   bind_assoc := @bind_assoc }
 -/
-end Wseq
+end WSeq
 
 end Stream'
-
