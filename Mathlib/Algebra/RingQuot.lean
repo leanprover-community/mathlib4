@@ -390,7 +390,7 @@ theorem mkRingHom_surjective (r : R → R → Prop) : Function.Surjective (mkRin
   simp
 #align ring_quot.mk_ring_hom_surjective RingQuot.mkRingHom_surjective
 
-@[ext]
+@[ext 1100]
 theorem ringQuot_ext {T : Type u₄} [Semiring T] {r : R → R → Prop} (f g : RingQuot r →+* T)
     (w : f.comp (mkRingHom r) = g.comp (mkRingHom r)) : f = g := by
   ext x
@@ -481,9 +481,9 @@ def ringQuotToIdealQuotient (r : B → B → Prop) : RingQuot r →+* B ⧸ Idea
 
 @[simp]
 theorem ringQuotToIdealQuotient_apply (r : B → B → Prop) (x : B) :
-    ringQuotToIdealQuotient r (mkRingHom r x) = Ideal.Quotient.mk _ x := /- by
+    ringQuotToIdealQuotient r (mkRingHom r x) = Ideal.Quotient.mk (Ideal.ofRel r) x := by
   simp_rw [ringQuotToIdealQuotient, lift_def, mkRingHom_def]
-  rfl -/sorry
+  rfl
 #align ring_quot.ring_quot_to_ideal_quotient_apply RingQuot.ringQuotToIdealQuotient_apply
 
 /-- The universal ring homomorphism from `B ⧸ ideal.of_rel r` to `ring_quot r`. -/
@@ -508,22 +508,23 @@ theorem idealQuotientToRingQuot_apply (r : B → B → Prop) (x : B) :
   rfl
 #align ring_quot.ideal_quotient_to_ring_quot_apply RingQuot.idealQuotientToRingQuot_apply
 
+
 /-- The ring equivalence between `ring_quot r` and `(ideal.of_rel r).quotient`
 -/
 def ringQuotEquivIdealQuotient (r : B → B → Prop) : RingQuot r ≃+* B ⧸ Ideal.ofRel r :=
   RingEquiv.ofHomInv (ringQuotToIdealQuotient r) (idealQuotientToRingQuot r)
-    (/- by
-      ext
+    (by
+      ext x
       simp_rw [ringQuotToIdealQuotient, lift_def, mkRingHom_def]
-      dsimp
+      change mkRingHom r x = _
       rw [mkRingHom_def]
-      rfl -/sorry)
-    (/- by
-      ext
-      simp_rw [ringQuotToIdealQuotient, lift, mkRingHom]
-      dsimp
+      rfl)
+    (by
+      ext x
+      simp_rw [ringQuotToIdealQuotient, lift_def, mkRingHom_def]
+      change Quot.lift _ _ ((mkRingHom r) x).toQuot = _
       rw [mkRingHom_def]
-      rfl -/sorry)
+      rfl)
 #align ring_quot.ring_quot_equiv_ideal_quotient RingQuot.ringQuotEquivIdealQuotient
 
 end CommRing
