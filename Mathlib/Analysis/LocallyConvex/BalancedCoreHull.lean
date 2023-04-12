@@ -8,7 +8,7 @@ Authors: Moritz Doll
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.LocallyConvex.Basic
+import Mathlib.Analysis.LocallyConvex.Basic
 
 /-!
 # Balanced Core and Balanced Hull
@@ -88,8 +88,7 @@ theorem mem_balancedCore_iff : x ∈ balancedCore 𝕜 s ↔ ∃ t, Balanced �
 #align mem_balanced_core_iff mem_balancedCore_iff
 
 theorem smul_balancedCore_subset (s : Set E) {a : 𝕜} (ha : ‖a‖ ≤ 1) :
-    a • balancedCore 𝕜 s ⊆ balancedCore 𝕜 s :=
-  by
+    a • balancedCore 𝕜 s ⊆ balancedCore 𝕜 s := by
   rintro x ⟨y, hy, rfl⟩
   rw [mem_balancedCore_iff] at hy
   rcases hy with ⟨t, ht1, ht2, hy⟩
@@ -149,8 +148,7 @@ theorem subset_balancedHull [NormOneClass 𝕜] {s : Set E} : s ⊆ balancedHull
 
 variable {𝕜}
 
-theorem balancedHull.balanced (s : Set E) : Balanced 𝕜 (balancedHull 𝕜 s) :=
-  by
+theorem balancedHull.balanced (s : Set E) : Balanced 𝕜 (balancedHull 𝕜 s) := by
   intro a ha
   simp_rw [balancedHull, smul_set_Union₂, subset_def, mem_Union₂]
   rintro x ⟨r, hr, hx⟩
@@ -167,8 +165,7 @@ section NormedField
 variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] {s t : Set E}
 
 @[simp]
-theorem balancedCoreAux_empty : balancedCoreAux 𝕜 (∅ : Set E) = ∅ :=
-  by
+theorem balancedCoreAux_empty : balancedCoreAux 𝕜 (∅ : Set E) = ∅ := by
   simp_rw [balancedCoreAux, Inter₂_eq_empty_iff, smul_set_empty]
   exact fun _ => ⟨1, norm_one.ge, not_mem_empty _⟩
 #align balanced_core_aux_empty balancedCoreAux_empty
@@ -178,8 +175,7 @@ theorem balancedCoreAux_subset (s : Set E) : balancedCoreAux 𝕜 s ⊆ s := fun
 #align balanced_core_aux_subset balancedCoreAux_subset
 
 theorem balancedCoreAux_balanced (h0 : (0 : E) ∈ balancedCoreAux 𝕜 s) :
-    Balanced 𝕜 (balancedCoreAux 𝕜 s) :=
-  by
+    Balanced 𝕜 (balancedCoreAux 𝕜 s) := by
   rintro a ha x ⟨y, hy, rfl⟩
   obtain rfl | h := eq_or_ne a 0
   · rwa [zero_smul]
@@ -192,8 +188,7 @@ theorem balancedCoreAux_balanced (h0 : (0 : E) ∈ balancedCoreAux 𝕜 s) :
   rwa [smul_assoc, mem_inv_smul_set_iff₀ h] at h'
 #align balanced_core_aux_balanced balancedCoreAux_balanced
 
-theorem balancedCoreAux_maximal (h : t ⊆ s) (ht : Balanced 𝕜 t) : t ⊆ balancedCoreAux 𝕜 s :=
-  by
+theorem balancedCoreAux_maximal (h : t ⊆ s) (ht : Balanced 𝕜 t) : t ⊆ balancedCoreAux 𝕜 s := by
   refine' fun x hx => mem_balancedCoreAux_iff.2 fun r hr => _
   rw [mem_smul_set_iff_inv_smul_mem₀ (norm_pos_iff.mp <| zero_lt_one.trans_le hr)]
   refine' h (ht.smul_mem _ hx)
@@ -206,8 +201,7 @@ theorem balancedCore_subset_balancedCoreAux : balancedCore 𝕜 s ⊆ balancedCo
 #align balanced_core_subset_balanced_core_aux balancedCore_subset_balancedCoreAux
 
 theorem balancedCore_eq_interᵢ (hs : (0 : E) ∈ s) :
-    balancedCore 𝕜 s = ⋂ (r : 𝕜) (hr : 1 ≤ ‖r‖), r • s :=
-  by
+    balancedCore 𝕜 s = ⋂ (r : 𝕜) (hr : 1 ≤ ‖r‖), r • s := by
   refine' balanced_core_subset_balanced_core_aux.antisymm _
   refine' (balancedCoreAux_balanced _).subset_core_of_subset (balancedCoreAux_subset s)
   exact balancedCore_subset_balancedCoreAux (balancedCore_zero_mem hs)
@@ -235,8 +229,7 @@ section Topology
 variable [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
   [ContinuousSMul 𝕜 E] {U : Set E}
 
-protected theorem IsClosed.balancedCore (hU : IsClosed U) : IsClosed (balancedCore 𝕜 U) :=
-  by
+protected theorem IsClosed.balancedCore (hU : IsClosed U) : IsClosed (balancedCore 𝕜 U) := by
   by_cases h : (0 : E) ∈ U
   · rw [balancedCore_eq_interᵢ h]
     refine' isClosed_interᵢ fun a => _
@@ -249,8 +242,7 @@ protected theorem IsClosed.balancedCore (hU : IsClosed U) : IsClosed (balancedCo
   exact balanced_core_nonempty_iff.mp (Set.nonempty_iff_ne_empty.2 h)
 #align is_closed.balanced_core IsClosed.balancedCore
 
-theorem balancedCore_mem_nhds_zero (hU : U ∈ 𝓝 (0 : E)) : balancedCore 𝕜 U ∈ 𝓝 (0 : E) :=
-  by
+theorem balancedCore_mem_nhds_zero (hU : U ∈ 𝓝 (0 : E)) : balancedCore 𝕜 U ∈ 𝓝 (0 : E) := by
   -- Getting neighborhoods of the origin for `0 : 𝕜` and `0 : E`
   obtain ⟨r, V, hr, hV, hrVU⟩ :
     ∃ (r : ℝ)(V : Set E), 0 < r ∧ V ∈ 𝓝 (0 : E) ∧ ∀ (c : 𝕜) (y : E), ‖c‖ < r → y ∈ V → c • y ∈ U :=
@@ -281,8 +273,7 @@ theorem nhds_basis_balanced :
 #align nhds_basis_balanced nhds_basis_balanced
 
 theorem nhds_basis_closed_balanced [RegularSpace E] :
-    (𝓝 (0 : E)).HasBasis (fun s : Set E => s ∈ 𝓝 (0 : E) ∧ IsClosed s ∧ Balanced 𝕜 s) id :=
-  by
+    (𝓝 (0 : E)).HasBasis (fun s : Set E => s ∈ 𝓝 (0 : E) ∧ IsClosed s ∧ Balanced 𝕜 s) id := by
   refine'
     (closed_nhds_basis 0).to_hasBasis (fun s hs => _) fun s hs => ⟨s, ⟨hs.1, hs.2.1⟩, rfl.subset⟩
   refine' ⟨balancedCore 𝕜 s, ⟨balancedCore_mem_nhds_zero hs.1, _⟩, balancedCore_subset s⟩
