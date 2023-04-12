@@ -769,6 +769,8 @@ instance metricSpace : MetricSpace ℚ_[p] where
     apply eq_of_sub_eq_zero
     apply padicNormE.eq_zero.1
     exact_mod_cast h
+  -- Porting note: added because autoparam was not ported
+  edist_dist := by intros; exact (ENNReal.ofReal_eq_coe_nnreal _).symm
 
 instance : Norm ℚ_[p] :=
   ⟨fun x ↦ padicNormE x⟩
@@ -843,12 +845,12 @@ theorem norm_p_lt_one : ‖(p : ℚ_[p])‖ < 1 := by
 #align padic_norm_e.norm_p_lt_one padicNormE.norm_p_lt_one
 
 @[simp]
-theorem norm_p_zpow (n : ℤ) : ‖(p ^ n : ℚ_[p])‖ = p ^ (-n) := by
+theorem norm_p_zpow (n : ℤ) : ‖(p : ℚ_[p]) ^ n‖ = (p : ℝ) ^ (-n) := by
   rw [norm_zpow, norm_p, zpow_neg, inv_zpow]
 #align padic_norm_e.norm_p_zpow padicNormE.norm_p_zpow
 
 @[simp]
-theorem norm_p_pow (n : ℕ) : ‖(p ^ n : ℚ_[p])‖ = p ^ (-n : ℤ) := by
+theorem norm_p_pow (n : ℕ) : ‖(p : ℚ_[p]) ^ n‖ = (p : ℝ) ^ (-n : ℤ) := by
   rw [← norm_p_zpow, zpow_ofNat]
 #align padic_norm_e.norm_p_pow padicNormE.norm_p_pow
 
