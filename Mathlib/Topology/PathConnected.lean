@@ -694,22 +694,12 @@ theorem truncate_continuous_family {X : Type _} [TopologicalSpace X] {a b : X} (
       (continuous_fst.comp continuous_snd))
 #align path.truncate_continuous_family Path.truncate_continuous_family
 
-/-
-  porting note: I'm not sure this would work with the new continuity because it doesn't leave side
-  goals.
-
-  TODO : When `continuity` gets quicker, change the proof back to :
-    `begin`
-      `simp only [CoeFun.coe, coe_fn, Path.truncate],`
-      `continuity,`
-      `exact continuous_subtype_val`
-    `end` -/
 @[continuity]
 theorem truncate_const_continuous_family {X : Type _} [TopologicalSpace X] {a b : X} (γ : Path a b)
     (t : ℝ) : Continuous ↿(γ.truncate t) := by
-  have key : Continuous (fun x => (t, x) : ℝ × I → ℝ × ℝ × I) :=
-    continuous_const.prod_mk continuous_id
-  convert γ.truncate_continuous_family.comp key
+  have key : Continuous (fun x => (t, x) : ℝ × I → ℝ × ℝ × I) := by continuity
+    --continuous_const.prod_mk continuous_id
+  exact γ.truncate_continuous_family.comp key
 #align path.truncate_const_continuous_family Path.truncate_const_continuous_family
 
 @[simp]
