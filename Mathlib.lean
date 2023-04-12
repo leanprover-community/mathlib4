@@ -1242,6 +1242,8 @@ import Mathlib.Lean.LocalContext
 import Mathlib.Lean.Message
 import Mathlib.Lean.Meta
 import Mathlib.Lean.Meta.Simp
+import Mathlib.Lean.Name
+import Mathlib.Lean.SMap
 import Mathlib.LinearAlgebra.AffineSpace.AffineEquiv
 import Mathlib.LinearAlgebra.AffineSpace.AffineMap
 import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace
@@ -1839,6 +1841,7 @@ import Mathlib.Util.AssertNoSorry
 import Mathlib.Util.AtomM
 import Mathlib.Util.Export
 import Mathlib.Util.IncludeStr
+import Mathlib.Util.LongNames
 import Mathlib.Util.MemoFix
 import Mathlib.Util.Syntax
 import Mathlib.Util.SynthesizeUsing
