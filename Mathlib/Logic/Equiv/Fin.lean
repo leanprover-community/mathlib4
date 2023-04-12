@@ -528,18 +528,18 @@ def Int.divModEquiv (n : ℕ) [NeZero n] : ℤ ≃ ℤ × Fin n where
 #align int.div_mod_equiv Int.divModEquiv
 
 /-- Promote a `Fin n` into a larger `Fin m`, as a subtype where the underlying
-values are retained. This is the `OrderIso` version of `Fin.castLe`. -/
+values are retained. This is the `OrderIso` version of `Fin.castLE`. -/
 @[simps apply symm_apply]
-def Fin.castLeOrderIso {n m : ℕ} (h : n ≤ m) : Fin n ≃o { i : Fin m // (i : ℕ) < n }
+def Fin.castLEOrderIso {n m : ℕ} (h : n ≤ m) : Fin n ≃o { i : Fin m // (i : ℕ) < n }
     where
-  toFun i := ⟨Fin.castLe h i, by simp⟩
+  toFun i := ⟨Fin.castLE h i, by simp⟩
   invFun i := ⟨i, i.prop⟩
   left_inv _ := by simp
   right_inv _ := by simp
   map_rel_iff' := by simp
-#align fin.cast_le_order_iso Fin.castLeOrderIso
-#align fin.cast_le_order_iso_apply Fin.castLeOrderIso_apply
-#align fin.cast_le_order_iso_symm_apply Fin.castLeOrderIso_symm_apply
+#align fin.cast_le_order_iso Fin.castLEOrderIso
+#align fin.cast_le_order_iso_apply Fin.castLEOrderIso_apply
+#align fin.cast_le_order_iso_symm_apply Fin.castLEOrderIso_symm_apply
 
 /-- `Fin 0` is a subsingleton. -/
 instance subsingleton_fin_zero : Subsingleton (Fin 0) :=

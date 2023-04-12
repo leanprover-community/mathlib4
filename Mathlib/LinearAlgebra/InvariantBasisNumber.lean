@@ -102,7 +102,7 @@ theorem strongRankCondition_iff_succ :
     exact Nat.not_succ_le_self n (le_of_fin_injective R f hf)
   · by_contra H
     exact
-      h m (f.comp (Function.ExtendByZero.linearMap R (Fin.castLe (not_le.1 H))))
+      h m (f.comp (Function.ExtendByZero.linearMap R (Fin.castLE (not_le.1 H))))
         (hf.comp (Function.extend_injective (RelEmbedding.injective _) _))
 #align strong_rank_condition_iff_succ strongRankCondition_iff_succ
 
