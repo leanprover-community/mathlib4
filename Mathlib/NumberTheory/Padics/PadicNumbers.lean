@@ -663,14 +663,15 @@ theorem rat_dense' (q : ℚ_[p]) {ε : ℚ} (hε : 0 < ε) : ∃ r : ℚ, padicN
     let ⟨N, hN⟩ := this
     ⟨q' N, by
       dsimp [padicNormE]
-      change PadicSeq.norm (q' - const _ (q' N)) < ε
+      -- Porting note: `change` → `convert_to` and `PadicSeq p` type annotation
+      convert_to PadicSeq.norm (q' - const _ (q' N) : PadicSeq p) < ε
       cases' Decidable.em (q' - const (padicNorm p) (q' N) ≈ 0) with heq hne'
-      · simpa only [HEq, PadicSeq.norm, dif_pos]
+      · simpa only [heq, PadicSeq.norm, dif_pos]
       · simp only [PadicSeq.norm, dif_neg hne']
         change padicNorm p (q' _ - q' _) < ε
-        have := stationaryPoint_spec hne'
         cases' Decidable.em (stationaryPoint hne' ≤ N) with hle hle
-        · have := Eq.symm (this le_rfl hle)
+        · -- Porting note: inlined `stationaryPoint_spec` invocation.
+          have := (stationaryPoint_spec hne' le_rfl hle).symm
           simp only [const_apply, sub_apply, padicNorm.zero, sub_self] at this
           simpa only [this]
         · exact hN _ (lt_of_not_ge hle).le _ le_rfl⟩
