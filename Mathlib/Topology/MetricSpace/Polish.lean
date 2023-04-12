@@ -197,7 +197,7 @@ theorem exists_polishSpace_forall_le {ι : Type _} [Countable ι] [t : Topologic
   letI : ∀ n : ι, TopologicalSpace (AuxCopy α n) := fun n => m n
   haveI : ∀ n : ι, PolishSpace (AuxCopy α n) := fun n => h'm n
   letI T : TopologicalSpace (∀ n : ι, AuxCopy α n) := inferInstance
-  let f : α → ∀ n : ι, AuxCopy α n := fun x n => x
+  let f : α → ∀ n : ι, AuxCopy α n := fun x _ => x
   -- show that the induced topology is finer than all the `m n`.
   have T_le_m : ∀ n, T.induced f ≤ m n := fun n ↦ by
     rw [induced_to_pi]
@@ -209,28 +209,24 @@ theorem exists_polishSpace_forall_le {ι : Type _} [Countable ι] [t : Topologic
     ext x
     constructor
     · rintro ⟨y, rfl⟩
-      exact mem_Inter.2 fun n => by simp only [mem_set_of_eq]
-    · intro hx
-      refine' ⟨x default, _⟩
+      exact mem_interᵢ.2 fun n => by simp only [mem_setOf_eq]
+    · refine fun hx ↦ ⟨x default, ?_⟩
       ext1 n
       symm
-      exact (mem_Inter.1 hx n : _)
+      exact mem_interᵢ.1 hx n
   have f_closed : IsClosed (range f) := by
     rw [A]
-    apply isClosed_interᵢ fun n => _
-    have C : ∀ i : ι, Continuous fun x : ∀ n, aux_copy α n => (id (x i) : α) := by
-      intro i
-      apply Continuous.comp _ (continuous_apply i)
-      apply continuous_def.2 fun s hs => _
-      exact hm i s hs
+    refine isClosed_interᵢ fun n => ?_
+    have C : ∀ i : ι, Continuous fun x : ∀ n, AuxCopy α n => (id (x i) : α) := fun i ↦
+      have : Continuous (show AuxCopy α i → α from id) := continuous_id_of_le (hm i)
+      this.comp (continuous_apply i)
     apply isClosed_eq (C n) (C default)
-  have K : @_root_.embedding _ _ (T.induced f) T f := by
-    apply Function.Injective.embedding_induced
-    intro x y hxy
+  have K : @_root_.Embedding _ _ (T.induced f) T f := by
+    refine Function.Injective.embedding_induced fun x y hxy ↦ ?_
     have : f x default = f y default := by rw [hxy]
     exact this
   have L : @ClosedEmbedding _ _ (T.induced f) T f := by
-    constructor
+    refine @ClosedEmbedding.mk _ _ (T.induced f) T f ?_ ?_
     · exact K
     · exact f_closed
   exact @ClosedEmbedding.polishSpace _ _ (T.induced f) T (by infer_instance) _ L
