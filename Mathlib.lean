@@ -1027,6 +1027,7 @@ import Mathlib.Data.Rel
 import Mathlib.Data.Semiquot
 import Mathlib.Data.Seq.Computation
 import Mathlib.Data.Seq.Seq
+import Mathlib.Data.Seq.Wseq
 import Mathlib.Data.Set.Accumulate
 import Mathlib.Data.Set.Basic
 import Mathlib.Data.Set.BoolIndicator
