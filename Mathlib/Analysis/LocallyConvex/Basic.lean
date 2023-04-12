@@ -191,7 +191,7 @@ theorem balanced_unionᵢ {f : ι → Set E} (h : ∀ i, Balanced 𝕜 (f i)) : 
   fun _a ha => (smul_set_Union _ _).subset.trans <| unionᵢ_mono fun _ => h _ _ ha
 #align balanced_Union balanced_unionᵢ
 
-theorem balanced_Union₂ {f : ∀ i, κ i → Set E} (h : ∀ i j, Balanced 𝕜 (f i j)) :
+theorem balanced_unionᵢ₂ {f : ∀ i, κ i → Set E} (h : ∀ i j, Balanced 𝕜 (f i j)) :
     Balanced 𝕜 (⋃ (i) (j), f i j) :=
   balanced_unionᵢ fun _ => balanced_unionᵢ <| h _
 #align balanced_Union₂ balanced_Union₂
@@ -200,7 +200,7 @@ theorem balanced_interᵢ {f : ι → Set E} (h : ∀ i, Balanced 𝕜 (f i)) : 
   fun _a ha => (smul_set_interᵢ_subset _ _).trans <| interᵢ_mono fun _ => h _ _ ha
 #align balanced_Inter balanced_interᵢ
 
-theorem balanced_Inter₂ {f : ∀ i, κ i → Set E} (h : ∀ i j, Balanced 𝕜 (f i j)) :
+theorem balanced_interᵢ₂ {f : ∀ i, κ i → Set E} (h : ∀ i j, Balanced 𝕜 (f i j)) :
     Balanced 𝕜 (⋂ (i) (j), f i j) :=
   balanced_interᵢ fun _ => balanced_interᵢ <| h _
 #align balanced_Inter₂ balanced_Inter₂
