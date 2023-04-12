@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 
 ! This file was ported from Lean 3 source module data.int.basic
-! leanprover-community/mathlib commit 728baa2f54e6062c5879a3e397ac6bac323e506f
+! leanprover-community/mathlib commit 00d163e35035c3577c1c79fa53b68de17781ffc1
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -197,6 +197,9 @@ theorem succ_neg_nat_succ (n : ℕ) : succ (-Nat.succ n) = -n := succ_neg_succ n
 #align int.induction_on Int.induction_on
 
 /-! ### nat abs -/
+
+theorem natAbs_surjective : natAbs.Surjective := fun n => ⟨n, natAbs_ofNat n⟩
+#align int.nat_abs_surjective Int.natAbs_surjective
 
 #align int.nat_abs_add_le Int.natAbs_add_le
 #align int.nat_abs_sub_le Int.natAbs_sub_le

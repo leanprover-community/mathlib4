@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Yaël Dillies
 
 ! This file was ported from Lean 3 source module group_theory.perm.cycle.basic
-! leanprover-community/mathlib commit 92ca63f0fb391a9ca5f22d2409a6080e786d99f7
+! leanprover-community/mathlib commit e8638a0fcaf73e4500469f368ef9494e495099b3
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -888,7 +888,7 @@ theorem IsCycleOn.zpow_apply_eq {s : Finset α} (hf : f.IsCycleOn s) (ha : a ∈
   | Int.ofNat n => (hf.pow_apply_eq ha).trans Int.coe_nat_dvd.symm
   | Int.negSucc n => by
     rw [zpow_negSucc, ← inv_pow]
-    exact (hf.inv.pow_apply_eq ha).trans ((dvd_neg _ _).trans Int.coe_nat_dvd).symm
+    exact (hf.inv.pow_apply_eq ha).trans (dvd_neg.trans Int.coe_nat_dvd).symm
 #align equiv.perm.is_cycle_on.zpow_apply_eq Equiv.Perm.IsCycleOn.zpow_apply_eq
 
 theorem IsCycleOn.pow_apply_eq_pow_apply {s : Finset α} (hf : f.IsCycleOn s) (ha : a ∈ s)
@@ -1926,7 +1926,6 @@ theorem _root_.Set.Countable.exists_cycleOn (hs : s.Countable) :
     simp
 #align set.countable.exists_cycle_on Set.Countable.exists_cycleOn
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem _root_.Set.prod_self_eq_unionᵢ_perm (hf : f.IsCycleOn s) :
     s ×ˢ s = ⋃ n : ℤ, (fun a => (a, (f ^ n) a)) '' s := by
   ext ⟨a, b⟩

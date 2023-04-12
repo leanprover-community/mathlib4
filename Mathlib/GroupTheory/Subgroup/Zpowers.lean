@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 
 ! This file was ported from Lean 3 source module group_theory.subgroup.zpowers
-! leanprover-community/mathlib commit f93c11933efbc3c2f0299e47b8ff83e9b539cbf6
+! leanprover-community/mathlib commit e655e4ea5c6d02854696f97494997ba4c31be802
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -36,6 +36,10 @@ theorem mem_zpowers (g : G) : g ∈ zpowers g :=
   ⟨1, zpow_one _⟩
 #align subgroup.mem_zpowers Subgroup.mem_zpowers
 
+theorem coe_zpowers (g : G) : ↑(zpowers g) = Set.range (g ^ · : ℤ → G) :=
+  rfl
+#align subgroup.coe_zpowers Subgroup.coe_zpowers
+
 theorem zpowers_eq_closure (g : G) : zpowers g = closure {g} := by
   ext
   exact mem_closure_singleton.symm
@@ -44,11 +48,6 @@ theorem zpowers_eq_closure (g : G) : zpowers g = closure {g} := by
 theorem range_zpowersHom (g : G) : (zpowersHom G g).range = zpowers g :=
   rfl
 #align subgroup.range_zpowers_hom Subgroup.range_zpowersHom
-
-theorem zpowers_subset {a : G} {K : Subgroup G} (h : a ∈ K) : zpowers a ≤ K := fun x hx =>
-  match x, hx with
-  | _, ⟨i, rfl⟩ => K.zpow_mem h i
-#align subgroup.zpowers_subset Subgroup.zpowers_subset
 
 theorem mem_zpowers_iff {g h : G} : h ∈ zpowers g ↔ ∃ k : ℤ, g ^ k = h :=
   Iff.rfl
@@ -100,14 +99,13 @@ attribute [to_additive existing AddSubgroup.zmultiples] Subgroup.zpowers
 attribute [to_additive (attr := simp) AddSubgroup.mem_zmultiples] Subgroup.mem_zpowers
 #align add_subgroup.mem_zmultiples AddSubgroup.mem_zmultiples
 
+attribute [to_additive (attr := norm_cast) AddSubgroup.coe_zmultiples] Subgroup.coe_zpowers
+
 attribute [to_additive AddSubgroup.zmultiples_eq_closure] Subgroup.zpowers_eq_closure
 #align add_subgroup.zmultiples_eq_closure AddSubgroup.zmultiples_eq_closure
 
 attribute [to_additive existing (attr := simp) AddSubgroup.range_zmultiplesHom]
   Subgroup.range_zpowersHom
-
-attribute [to_additive AddSubgroup.zmultiples_subset] Subgroup.zpowers_subset
-#align add_subgroup.zmultiples_subset AddSubgroup.zmultiples_subset
 
 attribute [to_additive AddSubgroup.mem_zmultiples_iff] Subgroup.mem_zpowers_iff
 #align add_subgroup.mem_zmultiples_iff AddSubgroup.mem_zmultiples_iff
@@ -187,6 +185,8 @@ theorem ofAdd_image_zmultiples_eq_zpowers_ofAdd {x : A} :
 
 namespace Subgroup
 
+variable {s : Set G} {g : G}
+
 @[to_additive zmultiples_isCommutative]
 instance zpowers_isCommutative (g : G) : (zpowers g).IsCommutative :=
   ⟨⟨fun ⟨_, _, h₁⟩ ⟨_, _, h₂⟩ => by
@@ -201,10 +201,24 @@ theorem zpowers_le {g : G} {H : Subgroup G} : zpowers g ≤ H ↔ g ∈ H := by
 #align subgroup.zpowers_le Subgroup.zpowers_le
 #align add_subgroup.zmultiples_le AddSubgroup.zmultiples_le
 
+alias zpowers_le ↔ _ zpowers_le_of_mem
+#align subgroup.zpowers_le_of_mem Subgroup.zpowers_le_of_mem
+
+alias AddSubgroup.zmultiples_le ↔ _ _root_.AddSubgroup.zmultiples_le_of_mem
+#align add_subgroup.zmultiples_le_of_mem AddSubgroup.zmultiples_le_of_mem
+
+attribute [to_additive existing zmultiples_le_of_mem] zpowers_le_of_mem
+
 @[to_additive (attr := simp) zmultiples_eq_bot]
 theorem zpowers_eq_bot {g : G} : zpowers g = ⊥ ↔ g = 1 := by rw [eq_bot_iff, zpowers_le, mem_bot]
 #align subgroup.zpowers_eq_bot Subgroup.zpowers_eq_bot
 #align add_subgroup.zmultiples_eq_bot AddSubgroup.zmultiples_eq_bot
+
+@[to_additive zmultiples_ne_bot]
+theorem zpowers_ne_bot : zpowers g ≠ ⊥ ↔ g ≠ 1 :=
+  zpowers_eq_bot.not
+#align subgroup.zpowers_ne_bot Subgroup.zpowers_ne_bot
+#align add_subgroup.zmultiples_ne_bot AddSubgroup.zmultiples_ne_bot
 
 @[to_additive (attr := simp) zmultiples_zero_eq_bot]
 theorem zpowers_one_eq_bot : Subgroup.zpowers (1 : G) = ⊥ :=

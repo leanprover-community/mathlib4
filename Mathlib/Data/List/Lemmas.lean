@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky, Yury Kudryashov
 
 ! This file was ported from Lean 3 source module data.list.lemmas
-! leanprover-community/mathlib commit 975c8c329887c50db6f3556a5f382292ee152ff9
+! leanprover-community/mathlib commit 2ec920d35348cb2d13ac0e1a2ad9df0fdf1a76b4
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -22,30 +22,6 @@ open List
 variable {α β γ : Type _}
 
 namespace List
-
-theorem range_map (f : α → β) : Set.range (map f) = { l | ∀ x ∈ l, x ∈ Set.range f } := by
-  refine'
-    Set.Subset.antisymm
-      (Set.range_subset_iff.2 fun l => forall_mem_map_iff.2 fun y _ => Set.mem_range_self _)
-      fun l hl => _
-  induction' l with a l ihl; · exact ⟨[], rfl⟩
-  rcases ihl fun x hx => hl x <| subset_cons _ _ hx with ⟨l, rfl⟩
-  rcases hl a (mem_cons_self _ _) with ⟨a, rfl⟩
-  exact ⟨a :: l, map_cons _ _ _⟩
-#align list.range_map List.range_map
-
-theorem range_map_coe (s : Set α) : Set.range (map ((↑) : s → α)) = { l | ∀ x ∈ l, x ∈ s } := by
-  rw [range_map, Subtype.range_coe]
-#align list.range_map_coe List.range_map_coe
-
-/-- If each element of a list can be lifted to some type, then the whole list can be
-lifted to this type. -/
-instance canLift (c) (p) [CanLift α β c p] :
-    CanLift (List α) (List β) (List.map c) fun l => ∀ x ∈ l, p x where
-  prf l H := by
-    rw [← Set.mem_range, range_map]
-    exact fun a ha => CanLift.prf a (H a ha)
-#align list.can_lift List.canLift
 
 theorem injOn_insertNth_index_of_not_mem (l : List α) (x : α) (hx : x ∉ l) :
     Set.InjOn (fun k => insertNth k x l) { n | n ≤ l.length } := by

@@ -1282,8 +1282,7 @@ def PseudoEMetricSpace.toPseudoMetricSpaceOfDist {α : Type u} [e : PseudoEMetri
   dist_comm x y := by simp [h, edist_comm]
   dist_triangle x y z := by
     simp only [h]
-    exact (ENNReal.toReal_mono (ENNReal.add_ne_top.2 ⟨edist_ne_top _ _, edist_ne_top _ _⟩)
-      (edist_triangle _ _ _)).trans ENNReal.toReal_add_le
+    exact ENNReal.toReal_le_add (edist_triangle _ _ _) (edist_ne_top _ _) (edist_ne_top _ _)
   edist := edist
   edist_dist _ _ := by simp only [h, ENNReal.ofReal_toReal (edist_ne_top _ _)]
   toUniformSpace := e.toUniformSpace
@@ -2648,6 +2647,9 @@ theorem Bounded.ediam_ne_top (h : Bounded s) : EMetric.diam s ≠ ⊤ :=
   bounded_iff_ediam_ne_top.1 h
 #align metric.bounded.ediam_ne_top Metric.Bounded.ediam_ne_top
 
+theorem ediam_eq_top_iff_unbounded : EMetric.diam s = ⊤ ↔ ¬Bounded s :=
+  bounded_iff_ediam_ne_top.not_left.symm
+
 theorem ediam_univ_eq_top_iff_noncompact [ProperSpace α] :
     EMetric.diam (univ : Set α) = ∞ ↔ NoncompactSpace α := by
   rw [← not_compactSpace_iff, compactSpace_iff_bounded_univ, bounded_iff_ediam_ne_top,
@@ -2670,8 +2672,7 @@ theorem dist_le_diam_of_mem (h : Bounded s) (hx : x ∈ s) (hy : y ∈ s) : dist
   dist_le_diam_of_mem' h.ediam_ne_top hx hy
 #align metric.dist_le_diam_of_mem Metric.dist_le_diam_of_mem
 
-theorem ediam_of_unbounded (h : ¬Bounded s) : EMetric.diam s = ∞ := by
-  rwa [bounded_iff_ediam_ne_top, Classical.not_not] at h
+theorem ediam_of_unbounded (h : ¬Bounded s) : EMetric.diam s = ∞ := ediam_eq_top_iff_unbounded.2 h
 #align metric.ediam_of_unbounded Metric.ediam_of_unbounded
 
 /-- An unbounded set has zero diameter. If you would prefer to get the value ∞, use `EMetric.diam`.
@@ -2690,15 +2691,12 @@ any two points in each of the sets. This lemma is true without any side conditio
 obviously true if `s ∪ t` is unbounded. -/
 theorem diam_union {t : Set α} (xs : x ∈ s) (yt : y ∈ t) :
     diam (s ∪ t) ≤ diam s + dist x y + diam t := by
-  by_cases H : Bounded (s ∪ t)
-  · have hs : Bounded s := H.mono (subset_union_left _ _)
-    have ht : Bounded t := H.mono (subset_union_right _ _)
-    rw [bounded_iff_ediam_ne_top] at H hs ht
-    rw [dist_edist, diam, diam, diam, ← ENNReal.toReal_add, ← ENNReal.toReal_add,
-      ENNReal.toReal_le_toReal] <;> apply_rules [ENNReal.add_ne_top.2, And.intro, edist_ne_top]
-    exact EMetric.diam_union xs yt
-  · rw [diam_eq_zero_of_unbounded H]
-    apply_rules [add_nonneg, diam_nonneg, dist_nonneg]
+  simp only [diam, dist_edist]
+  refine (ENNReal.toReal_le_add' (EMetric.diam_union xs yt) ?_ ?_).trans
+    (add_le_add_right ENNReal.toReal_add_le _)
+  · simp only [ENNReal.add_eq_top, edist_ne_top, or_false]
+    exact fun h ↦ top_unique <| h ▸ EMetric.diam_mono (subset_union_left _ _)
+  · exact fun h ↦ top_unique <| h ▸ EMetric.diam_mono (subset_union_right _ _)
 #align metric.diam_union Metric.diam_union
 
 /-- If two sets intersect, the diameter of the union is bounded by the sum of the diameters. -/
@@ -2728,9 +2726,10 @@ theorem diam_ball {r : ℝ} (h : 0 ≤ r) : diam (ball x r) ≤ 2 * r :=
 
 /-- If a family of complete sets with diameter tending to `0` is such that each finite intersection
 is nonempty, then the total intersection is also nonempty. -/
-theorem _root_.IsComplete.nonempty_interᵢ_of_nonempty_bInter {s : ℕ → Set α} (h0 : IsComplete (s 0))
-    (hs : ∀ n, IsClosed (s n)) (h's : ∀ n, Bounded (s n)) (h : ∀ N, (⋂ n ≤ N, s n).Nonempty)
-    (h' : Tendsto (fun n => diam (s n)) atTop (𝓝 0)) : (⋂ n, s n).Nonempty := by
+theorem _root_.IsComplete.nonempty_interᵢ_of_nonempty_binterᵢ {s : ℕ → Set α}
+    (h0 : IsComplete (s 0)) (hs : ∀ n, IsClosed (s n)) (h's : ∀ n, Bounded (s n))
+    (h : ∀ N, (⋂ n ≤ N, s n).Nonempty) (h' : Tendsto (fun n => diam (s n)) atTop (𝓝 0)) :
+    (⋂ n, s n).Nonempty := by
   let u N := (h N).some
   have I : ∀ n N, n ≤ N → u N ∈ s n := by
     intro n N hn
@@ -2748,15 +2747,15 @@ theorem _root_.IsComplete.nonempty_interᵢ_of_nonempty_bInter {s : ℕ → Set 
   apply (hs n).mem_of_tendsto xlim
   filter_upwards [Ici_mem_atTop n]with p hp
   exact I n p hp
-#align is_complete.nonempty_Inter_of_nonempty_bInter IsComplete.nonempty_interᵢ_of_nonempty_bInter
+#align is_complete.nonempty_Inter_of_nonempty_bInter IsComplete.nonempty_interᵢ_of_nonempty_binterᵢ
 
 /-- In a complete space, if a family of closed sets with diameter tending to `0` is such that each
 finite intersection is nonempty, then the total intersection is also nonempty. -/
-theorem nonempty_interᵢ_of_nonempty_bInter [CompleteSpace α] {s : ℕ → Set α}
+theorem nonempty_interᵢ_of_nonempty_binterᵢ [CompleteSpace α] {s : ℕ → Set α}
     (hs : ∀ n, IsClosed (s n)) (h's : ∀ n, Bounded (s n)) (h : ∀ N, (⋂ n ≤ N, s n).Nonempty)
     (h' : Tendsto (fun n => diam (s n)) atTop (𝓝 0)) : (⋂ n, s n).Nonempty :=
-  (hs 0).isComplete.nonempty_interᵢ_of_nonempty_bInter hs h's h h'
-#align metric.nonempty_Inter_of_nonempty_bInter Metric.nonempty_interᵢ_of_nonempty_bInter
+  (hs 0).isComplete.nonempty_interᵢ_of_nonempty_binterᵢ hs h's h h'
+#align metric.nonempty_Inter_of_nonempty_bInter Metric.nonempty_interᵢ_of_nonempty_binterᵢ
 
 end Diam
 
