@@ -207,6 +207,9 @@ def opUnopIso (F : C ⥤ D) : F.op.unop ≅ F :=
 #align category_theory.functor.op_unop_iso CategoryTheory.Functor.opUnopIso
 
 /-- The isomorphism between `F.unop.op` and `F`. -/
+-- Porting note: we have specified the simps fields directly here to avoid having
+-- simps generating `_unop` lemmas. It would be nice to automatically avoid this.
+-- See discussion at https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/simps
 @[simps! hom_app inv_app]
 def unopOpIso (F : Cᵒᵖ ⥤ Dᵒᵖ) : F.unop.op ≅ F :=
   NatIso.ofComponents (fun X => Iso.refl _) (by aesop_cat)
