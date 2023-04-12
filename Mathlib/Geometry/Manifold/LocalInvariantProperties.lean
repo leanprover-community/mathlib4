@@ -318,13 +318,12 @@ theorem liftPropWithinAt_indep_chart [HasGroupoid M G] [HasGroupoid M' G']
 theorem liftPropWithinAt_indep_chart_source [HasGroupoid M G] (he : e ∈ G.maximalAtlas M)
     (xe : x ∈ e.source) :
     LiftPropWithinAt P g s x ↔ LiftPropWithinAt P (g ∘ e.symm) (e.symm ⁻¹' s) (e x) := by
-  have := e.symm.continuousWithinAt_iff_continuousWithinAt_comp_right xe
-  rw [e.symm_symm] at this
-  rw [liftPropWithinAt_self_source, LiftPropWithinAt, ← this]
-  simp_rw [Function.comp_apply, e.left_inv xe]
+  rw [liftPropWithinAt_self_source, LiftPropWithinAt,
+    e.symm.continuousWithinAt_iff_continuousWithinAt_comp_right xe, e.symm_symm]
   refine' and_congr Iff.rfl _
-  rw [hG.liftPropWithinAt_indep_chart_source_aux (chartAt H' (g x) ∘ g)
-      (chart_mem_maximalAtlas G x) (mem_chart_source H x) he xe]
+  rw [Function.comp_apply, e.left_inv xe, ← Function.comp.assoc,
+    hG.liftPropWithinAt_indep_chart_source_aux (chartAt (g x) ∘ g) (chart_mem_maximalAtlas G x)
+      (mem_chart_source x) he xe, Function.comp.assoc]
 #align structure_groupoid.local_invariant_prop.lift_prop_within_at_indep_chart_source StructureGroupoid.LocalInvariantProp.liftPropWithinAt_indep_chart_source
 
 /-- A version of `liftPropWithinAt_indep_chart`, only for the target. -/
