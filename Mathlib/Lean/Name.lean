@@ -7,6 +7,13 @@ import Std.Data.HashMap
 import Mathlib.Lean.SMap
 import Mathlib.Lean.Expr.Basic
 
+/-!
+# Additional functions on `Lean.Name`.
+
+We provide `Name.getModule : Name → CoreM (Option Name)`,
+and `allNames` and `allNamesByModule`.
+-/
+
 open Lean Meta Elab
 
 private def isBlackListed (declName : Name) : CoreM Bool := do
