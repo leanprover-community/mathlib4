@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 
 ! This file was ported from Lean 3 source module set_theory.cardinal.basic
-! leanprover-community/mathlib commit e05ead7993520a432bec94ac504842d90707ad63
+! leanprover-community/mathlib commit 9bb28972724354ac0574e2b318be896ec252025f
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -698,11 +698,19 @@ instance canonicallyOrderedCommSemiring : CanonicallyOrderedCommSemiring Cardina
 instance : CanonicallyLinearOrderedAddMonoid Cardinal.{u} :=
   { Cardinal.canonicallyOrderedCommSemiring, Cardinal.linearOrder with }
 
+-- Computable instance to prevent a non-computable one being found via the one above
+instance : CanonicallyOrderedAddMonoid Cardinal.{u} :=
+{ Cardinal.canonicallyOrderedCommSemiring with }
+
 instance : LinearOrderedCommMonoidWithZero Cardinal.{u} :=
   { Cardinal.commSemiring,
     Cardinal.linearOrder with
     mul_le_mul_left := @mul_le_mul_left' _ _ _ _
     zero_le_one := zero_le _ }
+
+-- Computable instance to prevent a non-computable one being found via the one above
+instance : CommMonoidWithZero Cardinal.{u} :=
+{ Cardinal.canonicallyOrderedCommSemiring with }
 
 theorem zero_power_le (c : Cardinal.{u}) : ((0 : Cardinal.{u})^c) ≤ 1 := by
   by_cases h : c = 0
