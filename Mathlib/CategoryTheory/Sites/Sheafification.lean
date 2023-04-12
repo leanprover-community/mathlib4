@@ -193,128 +193,130 @@ theorem toPlus_mk {X : C} {P : Cᵒᵖ ⥤ D} (S : J.Cover X) (x : P.obj (op X))
   rfl
 #align category_theory.grothendieck_topology.plus.to_plus_mk CategoryTheory.GrothendieckTopology.Plus.toPlus_mk
 
-theorem toPlus_apply {X : C} {P : Cᵒᵖ ⥤ D} (S : J.cover X) (x : Meq P S) (I : S.arrow) :
+theorem toPlus_apply {X : C} {P : Cᵒᵖ ⥤ D} (S : J.Cover X) (x : Meq P S) (I : S.Arrow) :
     (J.toPlus P).app _ (x I) = (J.plusObj P).map I.f.op (mk x) := by
-  dsimp only [to_plus, plus_obj]
-  delta cover.to_multiequalizer
+  dsimp only [toPlus, plusObj]
+  delta Cover.toMultiequalizer
   dsimp [mk]
-  simp only [← comp_apply, colimit.ι_pre, ι_colim_map_assoc]
+  simp only [← comp_apply, colimit.ι_pre, ι_colimMap_assoc]
   simp only [comp_apply]
-  dsimp only [functor.op]
-  let e : (J.pullback I.f).obj (unop (op S)) ⟶ ⊤ := hom_of_le (OrderTop.le_top _)
+  dsimp only [Functor.op]
+  let e : (J.pullback I.f).obj (unop (op S)) ⟶ ⊤ := homOfLE (OrderTop.le_top _)
   rw [← colimit.w _ e.op]
   simp only [comp_apply]
-  congr 1
-  apply concrete.multiequalizer_ext
+  apply congr_arg
+  apply Concrete.multiequalizer_ext
   intro i
   dsimp [diagram]
-  simp only [← comp_apply, category.assoc, multiequalizer.lift_ι, category.comp_id,
-    meq.equiv_symm_eq_apply]
-  let RR : S.relation :=
-    ⟨_, _, _, i.f, 𝟙 _, I.f, i.f ≫ I.f, I.hf, sieve.downward_closed _ I.hf _, by simp⟩
+  simp only [← comp_apply, Category.assoc, Multiequalizer.lift_ι, Category.comp_id,
+    Meq.equiv_symm_eq_apply]
+  let RR : S.Relation :=
+    ⟨_, _, _, i.f, 𝟙 _, I.f, i.f ≫ I.f, I.hf, Sieve.downward_closed _ I.hf _, by simp⟩
   cases I
   erw [x.condition RR]
-  simpa [RR]
+  --simpa [RR]
+  sorry
 #align category_theory.grothendieck_topology.plus.to_plus_apply CategoryTheory.GrothendieckTopology.Plus.toPlus_apply
 
 theorem toPlus_eq_mk {X : C} {P : Cᵒᵖ ⥤ D} (x : P.obj (op X)) :
     (J.toPlus P).app _ x = mk (Meq.mk ⊤ x) := by
-  dsimp [mk, to_plus]
-  delta cover.to_multiequalizer
+  dsimp [mk, toPlus]
+  delta Cover.toMultiequalizer
   simp only [comp_apply]
-  congr 1
-  apply_fun meq.equiv P ⊤
+  apply congr_arg
+  apply (Meq.equiv P ⊤).injective
   ext i
-  simpa
+  simp
+  rfl
 #align category_theory.grothendieck_topology.plus.to_plus_eq_mk CategoryTheory.GrothendieckTopology.Plus.toPlus_eq_mk
 
-variable [∀ X : C, PreservesColimitsOfShape (J.cover X)ᵒᵖ (forget D)]
+variable [∀ X : C, PreservesColimitsOfShape (J.Cover X)ᵒᵖ (forget D)]
 
 theorem exists_rep {X : C} {P : Cᵒᵖ ⥤ D} (x : (J.plusObj P).obj (op X)) :
-    ∃ (S : J.cover X)(y : Meq P S), x = mk y := by
-  obtain ⟨S, y, h⟩ := concrete.colimit_exists_rep (J.diagram P X) x
-  use S.unop, meq.equiv _ _ y
+    ∃ (S : J.Cover X)(y : Meq P S), x = mk y := by
+  obtain ⟨S, y, h⟩ := Concrete.colimit_exists_rep (J.diagram P X) x
+  use S.unop, Meq.equiv _ _ y
   rw [← h]
   dsimp [mk]
   simp
 #align category_theory.grothendieck_topology.plus.exists_rep CategoryTheory.GrothendieckTopology.Plus.exists_rep
 
-theorem eq_mk_iff_exists {X : C} {P : Cᵒᵖ ⥤ D} {S T : J.cover X} (x : Meq P S) (y : Meq P T) :
-    mk x = mk y ↔ ∃ (W : J.cover X)(h1 : W ⟶ S)(h2 : W ⟶ T), x.refine h1 = y.refine h2 := by
+theorem eq_mk_iff_exists {X : C} {P : Cᵒᵖ ⥤ D} {S T : J.Cover X} (x : Meq P S) (y : Meq P T) :
+    mk x = mk y ↔ ∃ (W : J.Cover X)(h1 : W ⟶ S)(h2 : W ⟶ T), x.refine h1 = y.refine h2 := by
   constructor
   · intro h
-    obtain ⟨W, h1, h2, hh⟩ := concrete.colimit_exists_of_rep_eq _ _ _ h
+    obtain ⟨W, h1, h2, hh⟩ := Concrete.colimit_exists_of_rep_eq _ _ _ h
     use W.unop, h1.unop, h2.unop
     ext I
-    apply_fun multiequalizer.ι (W.unop.index P) I  at hh
+    apply_fun Multiequalizer.ι (W.unop.index P) I  at hh
     convert hh
     all_goals
       dsimp [diagram]
-      simp only [← comp_apply, multiequalizer.lift_ι, category.comp_id, meq.equiv_symm_eq_apply]
+      simp only [← comp_apply, Multiequalizer.lift_ι, Category.comp_id, Meq.equiv_symm_eq_apply]
       cases I; rfl
   · rintro ⟨S, h1, h2, e⟩
-    apply concrete.colimit_rep_eq_of_exists
+    apply Concrete.colimit_rep_eq_of_exists
     use op S, h1.op, h2.op
-    apply concrete.multiequalizer_ext
+    apply Concrete.multiequalizer_ext
     intro i
     apply_fun fun ee => ee i  at e
     convert e
     all_goals
       dsimp [diagram]
-      simp only [← comp_apply, multiequalizer.lift_ι, meq.equiv_symm_eq_apply]
+      simp only [← comp_apply, Multiequalizer.lift_ι, Meq.equiv_symm_eq_apply]
       cases i; rfl
 #align category_theory.grothendieck_topology.plus.eq_mk_iff_exists CategoryTheory.GrothendieckTopology.Plus.eq_mk_iff_exists
 
 /-- `P⁺` is always separated. -/
-theorem sep {X : C} (P : Cᵒᵖ ⥤ D) (S : J.cover X) (x y : (J.plusObj P).obj (op X))
-    (h : ∀ I : S.arrow, (J.plusObj P).map I.f.op x = (J.plusObj P).map I.f.op y) : x = y := by
+theorem sep {X : C} (P : Cᵒᵖ ⥤ D) (S : J.Cover X) (x y : (J.plusObj P).obj (op X))
+    (h : ∀ I : S.Arrow, (J.plusObj P).map I.f.op x = (J.plusObj P).map I.f.op y) : x = y := by
   -- First, we choose representatives for x and y.
   obtain ⟨Sx, x, rfl⟩ := exists_rep x
   obtain ⟨Sy, y, rfl⟩ := exists_rep y
   simp only [res_mk_eq_mk_pullback] at h
   -- Next, using our assumption,
   -- choose covers over which the pullbacks of these representatives become equal.
-  choose W h1 h2 hh using fun I : S.arrow => (eq_mk_iff_exists _ _).mp (h I)
+  choose W h1 h2 hh using fun I : S.Arrow => (eq_mk_iff_exists _ _).mp (h I)
   -- To prove equality, it suffices to prove that there exists a cover over which
   -- the representatives become equal.
   rw [eq_mk_iff_exists]
   -- Construct the cover over which the representatives become equal by combining the various
   -- covers chosen above.
-  let B : J.cover X := S.bind W
+  let B : J.Cover X := S.bind W
   use B
   -- Prove that this cover refines the two covers over which our representatives are defined
   -- and use these proofs.
   let ex : B ⟶ Sx :=
-    hom_of_le
+    homOfLE
       (by
         rintro Y f ⟨Z, e1, e2, he2, he1, hee⟩
         rw [← hee]
-        apply le_of_hom (h1 ⟨_, _, he2⟩)
+        apply leOfHom (h1 ⟨_, _, he2⟩)
         exact he1)
   let ey : B ⟶ Sy :=
-    hom_of_le
+    homOfLE
       (by
         rintro Y f ⟨Z, e1, e2, he2, he1, hee⟩
         rw [← hee]
-        apply le_of_hom (h2 ⟨_, _, he2⟩)
+        apply leOfHom (h2 ⟨_, _, he2⟩)
         exact he1)
   use ex, ey
   -- Now prove that indeed the representatives become equal over `B`.
   -- This will follow by using the fact that our representatives become
   -- equal over the chosen covers.
   ext1 I
-  let IS : S.arrow := I.from_middle
+  let IS : S.Arrow := I.fromMiddle
   specialize hh IS
-  let IW : (W IS).arrow := I.to_middle
+  let IW : (W IS).Arrow := I.toMiddle
   apply_fun fun e => e IW  at hh
-  convert hh
-  · let Rx : Sx.relation :=
-      ⟨I.Y, I.Y, I.Y, 𝟙 _, 𝟙 _, I.f, I.to_middle_hom ≫ I.from_middle_hom, _, _, by
+  convert hh using 1
+  · let Rx : Sx.Relation :=
+      ⟨I.Y, I.Y, I.Y, 𝟙 _, 𝟙 _, I.f, I.toMiddleHom ≫ I.fromMiddleHom, sorry, sorry, by
         simp [I.middle_spec]⟩
     have := x.condition Rx
     simpa using this
-  · let Ry : Sy.relation :=
-      ⟨I.Y, I.Y, I.Y, 𝟙 _, 𝟙 _, I.f, I.to_middle_hom ≫ I.from_middle_hom, _, _, by
+  · let Ry : Sy.Relation :=
+      ⟨I.Y, I.Y, I.Y, 𝟙 _, 𝟙 _, I.f, I.toMiddleHom ≫ I.fromMiddleHom, sorry, sorry, by
         simp [I.middle_spec]⟩
     have := y.condition Ry
     simpa using this
@@ -322,11 +324,11 @@ theorem sep {X : C} (P : Cᵒᵖ ⥤ D) (S : J.cover X) (x y : (J.plusObj P).obj
 
 theorem inj_of_sep (P : Cᵒᵖ ⥤ D)
     (hsep :
-      ∀ (X : C) (S : J.cover X) (x y : P.obj (op X)),
-        (∀ I : S.arrow, P.map I.f.op x = P.map I.f.op y) → x = y)
+      ∀ (X : C) (S : J.Cover X) (x y : P.obj (op X)),
+        (∀ I : S.Arrow, P.map I.f.op x = P.map I.f.op y) → x = y)
     (X : C) : Function.Injective ((J.toPlus P).app (op X)) := by
   intro x y h
-  simp only [to_plus_eq_mk] at h
+  simp only [toPlus_eq_mk] at h
   rw [eq_mk_iff_exists] at h
   obtain ⟨W, h1, h2, hh⟩ := h
   apply hsep X W
