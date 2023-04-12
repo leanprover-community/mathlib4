@@ -385,8 +385,8 @@ namespace Int
 
 theorem zmultiples_natAbs (a : ℤ) :
     AddSubgroup.zmultiples (a.natAbs : ℤ) = AddSubgroup.zmultiples a :=
-  le_antisymm (AddSubgroup.zmultiples_subset (mem_zmultiples_iff.mpr (dvd_natAbs.mpr (dvd_refl a))))
-    (AddSubgroup.zmultiples_subset (mem_zmultiples_iff.mpr (natAbs_dvd.mpr (dvd_refl a))))
+  le_antisymm (AddSubgroup.zmultiples_le_of_mem (mem_zmultiples_iff.mpr (dvd_natAbs.mpr dvd_rfl)))
+    (AddSubgroup.zmultiples_le_of_mem (mem_zmultiples_iff.mpr (natAbs_dvd.mpr dvd_rfl)))
 #align int.zmultiples_nat_abs Int.zmultiples_natAbs
 
 theorem span_natAbs (a : ℤ) : Ideal.span ({(a.natAbs : ℤ)} : Set ℤ) = Ideal.span {a} := by
