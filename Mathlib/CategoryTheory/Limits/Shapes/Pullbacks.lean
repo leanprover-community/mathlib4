@@ -2687,17 +2687,13 @@ theorem hasPushouts_of_hasColimit_span
 #align category_theory.limits.has_pushouts_of_has_colimit_span CategoryTheory.Limits.hasPushouts_of_hasColimit_span
 
 /-- The duality equivalence `WalkingSpanᵒᵖ ≌ WalkingCospan` -/
--- See porting note on `unopOpIso` in `Mathlib.CategoryTheory.Opposites`.
-@[simps! functor_obj functor_map inverse_obj inverse_map unitIso_hom_app unitIso_inv_app
-  counitIso_hom_app counitIso_inv_app]
+@[simps!p]
 def walkingSpanOpEquiv : WalkingSpanᵒᵖ ≌ WalkingCospan :=
   widePushoutShapeOpEquiv _
 #align category_theory.limits.walking_span_op_equiv CategoryTheory.Limits.walkingSpanOpEquiv
 
 /-- The duality equivalence `WalkingCospanᵒᵖ ≌ WalkingSpan` -/
--- See porting note on `unopOpIso` in `Mathlib.CategoryTheory.Opposites`.
-@[simps! functor_obj functor_map inverse_obj inverse_map unitIso_hom_app unitIso_inv_app
-  counitIso_hom_app counitIso_inv_app]
+@[simps!]
 def walkingCospanOpEquiv : WalkingCospanᵒᵖ ≌ WalkingSpan :=
   widePullbackShapeOpEquiv _
 #align category_theory.limits.walking_cospan_op_equiv CategoryTheory.Limits.walkingCospanOpEquiv
