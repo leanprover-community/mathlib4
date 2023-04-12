@@ -895,14 +895,13 @@ theorem norm_rat_le_one : ∀ {q : ℚ} (hq : ¬p ∣ q.den), ‖(q : ℚ_[p])�
       have hnz' : (⟨n, d, hn, hd⟩ : ℚ) ≠ 0 := mt Rat.zero_iff_num_zero.1 hnz
       rw [padicNormE.eq_padicNorm]
       norm_cast
+      -- Porting note: `Nat.cast_zero` instead of another `norm_cast` call
       rw [padicNorm.eq_zpow_of_nonzero hnz', padicValRat, neg_sub,
-        padicValNat.eq_zero_of_not_dvd hq]
-      norm_cast
-      rw [zero_sub, zpow_neg, zpow_ofNat]
+        padicValNat.eq_zero_of_not_dvd hq, Nat.cast_zero, zero_sub, zpow_neg, zpow_ofNat]
       apply inv_le_one
       · norm_cast
         apply one_le_pow
-        exact hp.1.Pos
+        exact hp.1.pos
 #align padic_norm_e.norm_rat_le_one padicNormE.norm_rat_le_one
 
 theorem norm_int_le_one (z : ℤ) : ‖(z : ℚ_[p])‖ ≤ 1 :=
@@ -944,8 +943,9 @@ theorem norm_int_lt_one_iff_dvd (k : ℤ) : ‖(k : ℚ_[p])‖ < 1 ↔ ↑p ∣
       exact_mod_cast hp.1.one_lt
 #align padic_norm_e.norm_int_lt_one_iff_dvd padicNormE.norm_int_lt_one_iff_dvd
 
-theorem norm_int_le_pow_iff_dvd (k : ℤ) (n : ℕ) : ‖(k : ℚ_[p])‖ ≤ ↑p ^ (-n : ℤ) ↔ ↑(p ^ n) ∣ k := by
-  have : (p : ℝ) ^ (-n : ℤ) = ↑(p ^ (-n : ℤ) : ℚ) := by simp
+theorem norm_int_le_pow_iff_dvd (k : ℤ) (n : ℕ) :
+    ‖(k : ℚ_[p])‖ ≤ (p : ℝ) ^ (-n : ℤ) ↔ (p ^ n : ℤ) ∣ k := by
+  have : (p : ℝ) ^ (-n : ℤ) = (p : ℚ) ^ (-n : ℤ) := by simp
   rw [show (k : ℚ_[p]) = ((k : ℚ) : ℚ_[p]) by norm_cast, eq_padicNorm, this]
   norm_cast
   rw [← padicNorm.dvd_iff_norm_le]
@@ -1047,16 +1047,17 @@ theorem valuation_one : valuation (1 : ℚ_[p]) = 0 := by
 #align padic.valuation_one Padic.valuation_one
 
 theorem norm_eq_pow_val {x : ℚ_[p]} : x ≠ 0 → ‖x‖ = (p : ℝ) ^ (-x.valuation) := by
-  apply Quotient.inductionOn' x; clear x
-  intro f hf
+  refine Quotient.inductionOn' x fun f hf => ?_
   change (PadicSeq.norm _ : ℝ) = (p : ℝ) ^ (-PadicSeq.valuation _)
   rw [PadicSeq.norm_eq_pow_val]
   change ↑((p : ℚ) ^ (-PadicSeq.valuation f)) = (p : ℝ) ^ (-PadicSeq.valuation f)
   · rw [Rat.cast_zpow, Rat.cast_coe_nat]
   · apply CauSeq.not_limZero_of_not_congr_zero
-    contrapose! hf
+    -- Porting note: was `contrapose! hf`
+    intro hf'
+    apply hf
     apply Quotient.sound
-    simpa using hf
+    simpa using hf'
 #align padic.norm_eq_pow_val Padic.norm_eq_pow_val
 
 @[simp]
