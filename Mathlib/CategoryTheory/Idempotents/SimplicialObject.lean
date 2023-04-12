@@ -8,8 +8,8 @@ Authors: Joël Riou
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.AlgebraicTopology.SimplicialObject
-import Mathbin.CategoryTheory.Idempotents.FunctorCategories
+import Mathlib.AlgebraicTopology.SimplicialObject
+import Mathlib.CategoryTheory.Idempotents.FunctorCategories
 
 /-!
 
