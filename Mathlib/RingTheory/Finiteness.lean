@@ -596,7 +596,8 @@ theorem of_surjective [hM : Finite R M] (f : M →ₗ[R] N) (hf : Surjective f) 
 
 /-- The range of a linear map from a finite module is finite. -/
 instance range [Finite R M] (f : M →ₗ[R] N) : Finite R (LinearMap.range f) :=
-  of_surjective f.rangeRestrict <| fun ⟨_, y, hy⟩ => ⟨y, Subtype.ext hy⟩
+  of_surjective f.rangeRestrict fun ⟨_, y, hy⟩ => ⟨y, Subtype.ext hy⟩
+#align module.finite.range Module.Finite.range
 
 variable (R)
 
