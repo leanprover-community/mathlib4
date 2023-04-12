@@ -1268,6 +1268,7 @@ import Mathlib.LinearAlgebra.Dfinsupp
 import Mathlib.LinearAlgebra.Dimension
 import Mathlib.LinearAlgebra.DirectSum.Finsupp
 import Mathlib.LinearAlgebra.DirectSum.TensorProduct
+import Mathlib.LinearAlgebra.Finrank
 import Mathlib.LinearAlgebra.Finsupp
 import Mathlib.LinearAlgebra.FinsuppVectorSpace
 import Mathlib.LinearAlgebra.FreeAlgebra
