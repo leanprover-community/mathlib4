@@ -525,7 +525,7 @@ set_option linter.uppercaseLean3 false in
 #align laurent_polynomial.degree_C LaurentPolynomial.degree_C
 
 theorem degree_C_ite (a : R) : (C a).degree = ite (a = 0) ⊥ 0 := by
-  split_ifs with h h <;> simp only [h, map_zero, degree_zero, degree_C, Ne.def, not_false_iff]
+  split_ifs with h <;> simp only [h, map_zero, degree_zero, degree_C, Ne.def, not_false_iff]
 set_option linter.uppercaseLean3 false in
 #align laurent_polynomial.degree_C_ite LaurentPolynomial.degree_C_ite
 
@@ -557,8 +557,8 @@ end Degrees
 instance : Module R[X] R[T;T⁻¹] :=
   Module.compHom _ Polynomial.toLaurent
 
-instance (R : Type _) [Semiring R] : IsScalarTower R[X] R[X] R[T;T⁻¹]
-    where smul_assoc x y z := by simp only [SMul.smul, SMul.comp.smul, map_mul, mul_assoc]
+instance (R : Type _) [Semiring R] : IsScalarTower R[X] R[X] R[T;T⁻¹] where
+  smul_assoc x y z := by simp only [(· • ·), SMul.smul, SMul.comp.smul, map_mul, mul_assoc]
 
 end Semiring
 
