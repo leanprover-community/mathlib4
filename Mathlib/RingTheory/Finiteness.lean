@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 
 ! This file was ported from Lean 3 source module ring_theory.finiteness
-! leanprover-community/mathlib commit f5edf4694f7c478cbca7a2451bddbd221fc7f869
+! leanprover-community/mathlib commit 039ef89bef6e58b32b62898dd48e9d1a4312bb65
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -593,6 +593,11 @@ theorem of_surjective [hM : Finite R M] (f : M →ₗ[R] N) (hf : Surjective f) 
     rw [← LinearMap.range_eq_top.2 hf, ← Submodule.map_top]
     exact hM.1.map f⟩
 #align module.finite.of_surjective Module.Finite.of_surjective
+
+/-- The range of a linear map from a finite module is finite. -/
+instance range [Finite R M] (f : M →ₗ[R] N) : Finite R (LinearMap.range f) :=
+  of_surjective f.rangeRestrict fun ⟨_, y, hy⟩ => ⟨y, Subtype.ext hy⟩
+#align module.finite.range Module.Finite.range
 
 variable (R)
 
