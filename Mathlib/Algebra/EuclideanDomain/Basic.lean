@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Louis Carlin, Mario Carneiro
 
 ! This file was ported from Lean 3 source module algebra.euclidean_domain.basic
-! leanprover-community/mathlib commit 655994e298904d7e5bbd1e18c95defd7b543eb94
+! leanprover-community/mathlib commit e8638a0fcaf73e4500469f368ef9494e495099b3
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -68,7 +68,7 @@ theorem mod_self (a : R) : a % a = 0 :=
 #align euclidean_domain.mod_self EuclideanDomain.mod_self
 
 theorem dvd_mod_iff {a b c : R} (h : c ∣ b) : c ∣ a % b ↔ c ∣ a := by
-  rw [dvd_add_iff_right (h.mul_right _), div_add_mod]
+  rw [← dvd_add_right (h.mul_right _), div_add_mod]
 #align euclidean_domain.dvd_mod_iff EuclideanDomain.dvd_mod_iff
 
 @[simp]
