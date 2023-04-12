@@ -852,14 +852,10 @@ open IsLocalization
 
 section
 
-instance [Subsingleton R] : Unique (Localization M) :=
-  ⟨⟨1⟩, by
-    intro a; refine Localization.induction_on a ?_; intro a;
-    refine Localization.induction_on default ?_
-    intro b;
-    congr
-    exact Subsingleton.elim _ _
-    exact Subsingleton.elim _ _⟩
+instance [Subsingleton R] : Unique (Localization M) where
+  uniq a := show a = mk 1 1 from
+    Localization.induction_on a fun _ => by
+      congr <;> apply Subsingleton.elim
 
 /-- Addition in a ring localization is defined as `⟨a, b⟩ + ⟨c, d⟩ = ⟨b * c + d * a, b * d⟩`.
 
