@@ -284,7 +284,7 @@ instance (priority := 100) isStrictTotalOrder_of_isStrictTotalOrder [IsStrictTot
 set_option linter.uppercaseLean3 false in
 #align has_well_founded.R WellFoundedRelation.rel
 
-instance WellFoundedRelation.IsWellFounded [h : WellFoundedRelation α] :
+instance WellFoundedRelation.isWellFounded [h : WellFoundedRelation α] :
     IsWellFounded α WellFoundedRelation.rel :=
   { h with }
 
