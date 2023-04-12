@@ -281,6 +281,7 @@ instance leftOp_faithful {F : C ⥤ Dᵒᵖ} [Faithful F] : Faithful F.leftOp
 #align category_theory.functor.left_op_faithful CategoryTheory.Functor.leftOp_faithful
 
 /-- The isomorphism between `F.leftOp.rightOp` and `F`. -/
+-- See porting note on `unopOpIso` in `Mathlib.CategoryTheory.Opposites`.
 @[simps! hom_app inv_app]
 def leftOpRightOpIso (F : C ⥤ Dᵒᵖ) : F.leftOp.rightOp ≅ F :=
   NatIso.ofComponents (fun X => Iso.refl _) (by aesop_cat)
