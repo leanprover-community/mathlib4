@@ -109,7 +109,6 @@ instance OrderDual.normedLinearOrderedGroup [NormedLinearOrderedGroup α] :
 instance Additive.normedOrderedAddGroup [NormedOrderedGroup α] :
     NormedOrderedAddGroup (Additive α) :=
   { Additive.normedAddCommGroup, Additive.orderedAddCommGroup with }
-    --add_le_add_left := fun a b hab c => add_le_add_left  }
 
 instance Multiplicative.normedOrderedGroup [NormedOrderedAddGroup α] :
     NormedOrderedGroup (Multiplicative α) :=

@@ -258,7 +258,7 @@ end
   We construct the isomorphism in two steps:
   1. We construct the ring `R^n/I^n`, show that it is an `R/I`-module and show that there is an
      isomorphism of `R/I`-modules `R^n/I^n ≃ (R/I)^n`. This isomorphism is called
-    `Ideal.piQuotEquiv` and is located in the file `ring_theory/ideals.lean`.
+    `Ideal.piQuotEquiv` and is located in the file `RingTheory/Ideals.lean`.
   2. We construct an isomorphism of `R/I`-modules `R^n/I^n ≃ R^m/I^m` using the isomorphism
      `R^n ≃ R^m`.
 -/
