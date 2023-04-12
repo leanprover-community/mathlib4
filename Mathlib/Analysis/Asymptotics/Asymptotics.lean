@@ -33,7 +33,7 @@ similar properties of `IsBigO` and `IsLittleO`. Usually proofs outside of this f
 Often the ranges of `f` and `g` will be the real numbers, in which case the norm is the absolute
 value. In general, we have
 
-  `f =O[l] g ↔ (λ x, ‖f x‖) =O[l] (λ x, ‖g x‖)`,
+  `f =O[l] g ↔ (fun x ↦ ‖f x‖) =O[l] (fun x ↦ ‖g x‖)`,
 
 and similarly for `IsLittleO`. But our setup allows us to use the notions e.g. with functions
 to the integers, rationals, complex numbers, or any normed vector space without mentioning the
@@ -42,7 +42,7 @@ norm explicitly.
 If `f` and `g` are functions to a normed field like the reals or complex numbers and `g` is always
 nonzero, we have
 
-  `f =o[l] g ↔ Tendsto (λ x, f x / (g x)) l (𝓝 0)`.
+  `f =o[l] g ↔ Tendsto (fun x ↦ f x / (g x)) l (𝓝 0)`.
 
 In fact, the right-to-left direction holds without the hypothesis on `g`, and in the other direction
 it suffices to assume that `f` is zero wherever `g` is. (This generalization is useful in defining
@@ -115,8 +115,7 @@ irreducible. -/
 theorem isBigO_iff_isBigOWith : f =O[l] g ↔ ∃ c : ℝ, IsBigOWith c l f g := by rw [IsBigO_def]
 #align asymptotics.is_O_iff_is_O_with Asymptotics.isBigO_iff_isBigOWith
 
-/-- Definition of `IsBigO` in terms of filters. We record it in a lemma as we will set
-`IsBigO` to be irreducible at the end of this file. -/
+/-- Definition of `IsBigO` in terms of filters. -/
 theorem isBigO_iff : f =O[l] g ↔ ∃ c : ℝ, ∀ᶠ x in l, ‖f x‖ ≤ c * ‖g x‖ := by
   simp only [IsBigO_def, IsBigOWith_def]
 #align asymptotics.is_O_iff Asymptotics.isBigO_iff
@@ -146,8 +145,7 @@ irreducible_def IsLittleO (l : Filter α) (f : α → E) (g : α → F) : Prop :
 @[inherit_doc]
 notation:100 f " =o[" l "] " g:100 => IsLittleO l f g
 
-/-- Definition of `IsLittleO` in terms of `IsBigOWith`. We record it in a lemma as we will set
-`IsLittleO` to be irreducible at the end of this file. -/
+/-- Definition of `IsLittleO` in terms of `IsBigOWith`. -/
 theorem isLittleO_iff_forall_isBigOWith : f =o[l] g ↔ ∀ ⦃c : ℝ⦄, 0 < c → IsBigOWith c l f g := by
   rw [IsLittleO_def]
 #align asymptotics.is_o_iff_forall_is_O_with Asymptotics.isLittleO_iff_forall_isBigOWith
@@ -156,8 +154,7 @@ alias isLittleO_iff_forall_isBigOWith ↔ IsLittleO.forall_isBigOWith IsLittleO.
 #align asymptotics.is_o.forall_is_O_with Asymptotics.IsLittleO.forall_isBigOWith
 #align asymptotics.is_o.of_is_O_with Asymptotics.IsLittleO.of_isBigOWith
 
-/-- Definition of `IsLittleO` in terms of filters. We record it in a lemma as we will set
-`IsLittleO` to be irreducible at the end of this file. -/
+/-- Definition of `IsLittleO` in terms of filters. -/
 theorem isLittleO_iff : f =o[l] g ↔ ∀ ⦃c : ℝ⦄, 0 < c → ∀ᶠ x in l, ‖f x‖ ≤ c * ‖g x‖ := by
   simp only [IsLittleO_def, IsBigOWith_def]
 #align asymptotics.is_o_iff Asymptotics.isLittleO_iff
