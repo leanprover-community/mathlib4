@@ -23,7 +23,7 @@ coefficients come from the semiring `R` and the variable `T` commutes with every
 
 Since we are going to convert back and forth between polynomials and Laurent polynomials, we
 decided to maintain some distinction by using the symbol `T`, rather than `X`, as the variable for
-Laurent polynomials
+Laurent polynomials.
 
 ## Notation
 The symbol `R[T;T⁻¹]` stands for `LaurentPolynomial R`.  We also define
@@ -54,9 +54,9 @@ Lots is missing!
 -- (Riccardo) add inclusion into Laurent series.
 -- (Riccardo) giving a morphism (as `R`-alg, so in the commutative case)
   from `R[T,T⁻¹]` to `S` is the same as choosing a unit of `S`.
--- A "better" definition of `Trunc` would be as an `R`-linear map.  This works:
+-- A "better" definition of `trunc` would be as an `R`-linear map.  This works:
 --  ```
---  def Trunc : R[T;T⁻¹] →[R] R[X] :=
+--  def trunc : R[T;T⁻¹] →[R] R[X] :=
 --  begin
 --    refine (_ : AddMonoidAlgebra R ℕ →[R] R[X]).comp _,
 --    { exact ⟨(toFinsuppIso R).symm, by simp⟩ },
@@ -325,9 +325,9 @@ theorem T_mul (n : ℤ) (f : R[T;T⁻¹]) : T n * f = f * T n :=
 set_option linter.uppercaseLean3 false in
 #align laurent_polynomial.T_mul LaurentPolynomial.T_mul
 
-/-- `Trunc : R[T;T⁻¹] →+ R[X]` maps a Laurent polynomial `f` to the polynomial whose terms of
+/-- `trunc : R[T;T⁻¹] →+ R[X]` maps a Laurent polynomial `f` to the polynomial whose terms of
 nonnegative degree coincide with the ones of `f`.  The terms of negative degree of `f` "vanish".
-`Trunc` is a left-inverse to `Polynomial.toLaurent`. -/
+`trunc` is a left-inverse to `Polynomial.toLaurent`. -/
 def trunc : R[T;T⁻¹] →+ R[X] :=
   (toFinsuppIso R).symm.toAddMonoidHom.comp <| comapDomain.addMonoidHom fun _ _ => Int.ofNat.inj
 #align laurent_polynomial.trunc LaurentPolynomial.trunc
