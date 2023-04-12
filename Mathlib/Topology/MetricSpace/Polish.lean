@@ -241,6 +241,11 @@ To prove this fact, one needs to construct another metric, giving rise to the sa
 for which the open subset is complete. This is not obvious, as for instance `(0,1) ⊆ ℝ` is not
 complete for the usual metric of `ℝ`: one should build a new metric that blows up close to the
 boundary.
+
+Porting note: definitions and lemmas in this section now take `(s : Opens α)` instead of
+`{s : Set α} (hs : IsOpen s)` so that we can turn various definitions and lemmas into instances.
+Also, some lemmas used to assume `Set.Nonempty (sᶜ)` in Lean 3. In fact, this assumption is not
+needed, so it was dropped.
 -/
 
 namespace TopologicalSpace.Opens
@@ -251,22 +256,25 @@ variable [MetricSpace α] {s : Opens α}
 for which it will be complete. -/
 -- porting note: was @[nolint has_nonempty_instance]
 def CompleteCopy {α : Type _} [MetricSpace α] (s : Opens α) : Type _ := s
-#align polish_space.complete_copy TopologicalSpace.Opens.CompleteCopy
+#align polish_space.complete_copy TopologicalSpace.Opens.CompleteCopyₓ
 
 namespace CompleteCopy
 
 /-- A distance on an open subset `s` of a metric space, designed to make it complete.  It is given
 by `dist' x y = dist x y + |1 / dist x sᶜ - 1 / dist y sᶜ|`, where the second term blows up close to
 the boundary to ensure that Cauchy sequences for `dist'` remain well inside `s`. -/
-instance : Dist (CompleteCopy s) where
+instance instDist : Dist (CompleteCopy s) where
   dist x y := dist x.1 y.1 + abs (1 / infDist x.1 (sᶜ) - 1 / infDist y.1 (sᶜ))
+#align polish_space.has_dist_complete_copy TopologicalSpace.Opens.CompleteCopy.instDistₓ
 
 theorem dist_eq (x y : CompleteCopy s) :
     dist x y = dist x.1 y.1 + abs (1 / infDist x.1 (sᶜ) - 1 / infDist y.1 (sᶜ)) :=
   rfl
+#align polish_space.dist_complete_copy_eq TopologicalSpace.Opens.CompleteCopy.dist_eqₓ
 
 theorem dist_val_le_dist (x y : CompleteCopy s) : dist x.1 y.1 ≤ dist x y :=
   (le_add_iff_nonneg_right _).2 (abs_nonneg _)
+#align polish_space.dist_le_dist_complete_copy TopologicalSpace.Opens.CompleteCopy.dist_val_le_distₓ
 
 instance : TopologicalSpace (CompleteCopy s) := inferInstanceAs (TopologicalSpace s)
 instance : T0Space (CompleteCopy s) := inferInstanceAs (T0Space s)
@@ -274,8 +282,11 @@ instance : T0Space (CompleteCopy s) := inferInstanceAs (T0Space s)
 /-- A metric space structure on a subset `s` of a metric space, designed to make it complete
 if `s` is open. It is given by `dist' x y = dist x y + |1 / dist x sᶜ - 1 / dist y sᶜ|`, where the
 second term blows up close to the boundary to ensure that Cauchy sequences for `dist'` remain well
-inside `s`. -/
-instance : MetricSpace (CompleteCopy s) := by
+inside `s`.
+
+Porting note: the definition changed to ensure that the `TopologicalSpace` structure on
+`TopologicalSpace.Opens.CompleteCopy s` is definitionally equal to the original one. -/
+instance instMetricSpace : MetricSpace (CompleteCopy s) := by
   refine @MetricSpace.ofT0PseudoMetricSpace (CompleteCopy s)
     (.ofDistTopology dist (fun _ ↦ ?_) (fun _ _ ↦ ?_) (fun x y z ↦ ?_) fun t ↦ ?_) _
   · simp only [dist_eq, dist_self, one_div, sub_self, abs_zero, add_zero]
@@ -300,8 +311,12 @@ instance : MetricSpace (CompleteCopy s) := by
         exact x.2
       simp only [dist_self, sub_self, abs_zero, zero_add] at this
       exact mem_of_superset (this <| gt_mem_nhds ε0) hε
+#align polish_space.complete_copy_metric_space TopologicalSpace.Opens.CompleteCopy.instMetricSpaceₓ
 
-instance [CompleteSpace α] : CompleteSpace (CompleteCopy s) := by
+-- Porting note: no longer needed because the topologies are defeq
+#noalign polish_space.complete_copy_id_homeo
+
+instance instCompleteSpace [CompleteSpace α] : CompleteSpace (CompleteCopy s) := by
   refine Metric.complete_of_convergent_controlled_sequences ((1 / 2) ^ ·) (by simp) fun u hu ↦ ?_
   have A : CauchySeq fun n => (u n).1
   · refine cauchySeq_of_le_tendsto_0 (fun n : ℕ => (1 / 2) ^ n) (fun n m N hNn hNm => ?_) ?_
@@ -330,6 +345,7 @@ instance [CompleteSpace α] : CompleteSpace (CompleteCopy s) := by
       ((continuous_infDist_pt (sᶜ : Set α)).tendsto x).comp xlim
     ge_of_tendsto' this I
   exact absurd (Hmem.2 <| lt_of_lt_of_le (div_pos one_pos Cpos) I') xs
+#align polish_space.complete_space_complete_copy TopologicalSpace.Opens.CompleteCopy.instCompleteSpaceₓ
 
 /-- An open subset of a Polish space is also Polish. -/
 theorem _root_.IsOpen.polishSpace {α : Type _} [TopologicalSpace α] [PolishSpace α] {s : Set α}
