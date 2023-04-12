@@ -15,8 +15,8 @@ import Mathlib.CategoryTheory.Idempotents.FunctorCategories
 
 # Idempotent completeness of categories of simplicial objects
 
-In this file, we provide an instance expressing that `simplicial_object C`
-and `cosimplicial_object C` are idempotent complete categories when the
+In this file, we provide an instance expressing that `SimplicialObject C`
+and `CosimplicialObject C` are idempotent complete categories when the
 category `C` is.
 
 -/
@@ -37,4 +37,3 @@ instance : IsIdempotentComplete (CosimplicialObject C) :=
 end Idempotents
 
 end CategoryTheory
-
