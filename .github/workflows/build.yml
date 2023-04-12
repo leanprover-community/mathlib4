@@ -64,9 +64,13 @@ jobs:
 
       - uses: actions/checkout@v2
 
-      - name: update Mathlib.lean
+      - name: update Mathlib/All.lean
         run: |
-          find Mathlib -name "*.lean" | LC_ALL=C sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > Mathlib.lean
+          find Mathlib -name "*.lean" ! -path "Mathlib/Extras/*" ! -path "Mathlib/All.lean" ! -path "Mathlib/Extras.lean" | LC_ALL=C sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > Mathlib/All.lean
+
+      - name: update Mathlib/Extras.lean
+        run: |
+          find Mathlib/Extras -name "*.lean" | LC_ALL=C sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > Mathlib/Extras.lean
 
       - name: check that all files are imported
         run: git diff --exit-code

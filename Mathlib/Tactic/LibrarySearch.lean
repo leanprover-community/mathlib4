@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner, Scott Morrison
 -/
 import Std.Tactic.TryThis
+import Mathlib.Util.Pickle
 import Mathlib.Lean.Expr.Basic
 import Mathlib.Tactic.Cache
 import Mathlib.Tactic.Core
@@ -69,8 +70,8 @@ inductive DeclMod
 | none | symm | mp | mpr
 deriving DecidableEq
 
-initialize librarySearchLemmas : DeclCache (DiscrTree (Name × DeclMod) true) ←
-  DeclCache.mk "librarySearch: init cache" {} fun name constInfo lemmas => do
+def buildDiscrTree (name : Name) (constInfo : ConstantInfo)
+  (lemmas : DiscrTree (Name × DeclMod) true) : MetaM (DiscrTree (Name × DeclMod) true) := do
     if constInfo.isUnsafe then return lemmas
     if ← isBlackListed name then return lemmas
     withNewMCtxDepth do withReducible do
@@ -86,6 +87,17 @@ initialize librarySearchLemmas : DeclCache (DiscrTree (Name × DeclMod) true) �
         let keys_mpr ← DiscrTree.mkPath lhs
         pure <| (lemmas.insertIfSpecific keys_mp (name, .mp)).insertIfSpecific keys_mpr (name, .mpr)
       | _ => pure lemmas
+
+open System (FilePath)
+
+def cachePath : FilePath := "build" / "extra" / "Mathlib" / "Extras" / "LibrarySearch.extra"
+
+initialize librarySearchLemmas : DeclCache (DiscrTree (Name × DeclMod) true) ← do
+  if (← cachePath.pathExists) then
+    return (← Cache.mk ((·.1) <$> (unpickle (DiscrTree (Name × DeclMod) true) cachePath)),
+      buildDiscrTree)
+  else
+    DeclCache.mk "librarySearch: init cache" {} buildDiscrTree
 
 /-- Shortcut for calling `solveByElim`. -/
 def solveByElim (goals : List MVarId) (required : List Expr) (depth) := do

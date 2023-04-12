@@ -31,6 +31,10 @@ def LIBDIR : FilePath :=
 def IRDIR : FilePath :=
   "build" / "ir"
 
+/-- Target directory for extra files -/
+def EXTRADIR : FilePath :=
+  "build" / "extra"
+
 /-- Target directory for caching -/
 initialize CACHEDIR : FilePath ← do
   match ← IO.getEnv "XDG_CACHE_HOME" with
@@ -153,6 +157,7 @@ def mkBuildPaths (path : FilePath) : IO $ Array FilePath := do
     packageDir / LIBDIR / path.withExtension "olean",
     packageDir / LIBDIR / path.withExtension "ilean",
     packageDir / LIBDIR / path.withExtension "trace",
+    packageDir / EXTRADIR / path.withExtension "extra",
     packageDir / IRDIR  / path.withExtension "c",
     packageDir / IRDIR  / path.withExtension "c.trace"]
 

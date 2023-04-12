@@ -1541,8 +1541,8 @@ import Mathlib.SetTheory.Ordinal.FixedPoint
 import Mathlib.SetTheory.Ordinal.NaturalOps
 import Mathlib.SetTheory.Ordinal.Principal
 import Mathlib.SetTheory.Ordinal.Topology
-import Mathlib.SetTheory.ZFC.Basic
-import Mathlib.SetTheory.ZFC.Ordinal
+import Mathlib.SetTheory.Zfc.Basic
+import Mathlib.SetTheory.Zfc.Ordinal
 import Mathlib.Tactic
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.Alias
@@ -1837,6 +1837,7 @@ import Mathlib.Util.AtomM
 import Mathlib.Util.Export
 import Mathlib.Util.IncludeStr
 import Mathlib.Util.MemoFix
+import Mathlib.Util.Pickle
 import Mathlib.Util.Syntax
 import Mathlib.Util.SynthesizeUsing
 import Mathlib.Util.Tactic
