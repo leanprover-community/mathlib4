@@ -35,23 +35,13 @@ def allNames (p : Name → Bool) : CoreM (Array Name) := do
       return names
 
 /--
-Find the module a name was declared in.
--/
-def Lean.Name.getModule (n : Name) : CoreM (Option Name) := do
-  let env ← getEnv
-  let modules := env.header.moduleNames
-  match env.const2ModIdx[n] with
-  | none => pure none
-  | some (idx : Nat) => pure modules[idx]?
-
-/--
 Retrieve all names in the environment satisfying a predicate,
 gathered together into a `HashMap` according to the module they are defined in.
 -/
 def allNamesByModule (p : Name → Bool) : CoreM (Std.HashMap Name (Array Name)) := do
   (← getEnv).constants.foldM (init := Std.HashMap.empty) fun names n _ => do
     if p n && !(← isBlackListed n) then
-      let some m ← n.getModule | return names
+      let some m ← findModuleOf? n | return names
       -- TODO use `Std.HashMap.modify` when we bump Std4 (or `alter` if that is written).
       match names.find? m with
       | some others => return names.insert m (others.push n)
