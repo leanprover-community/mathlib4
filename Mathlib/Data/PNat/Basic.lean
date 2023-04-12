@@ -29,7 +29,7 @@ deriving instance AddLeftCancelSemigroup, AddRightCancelSemigroup, AddCommSemigr
 namespace PNat
 
 -- Porting note: this instance is no longer automatically inferred in Lean 4.
-instance : WellFoundedLT ℕ+ := WellFoundedRelation.IsWellFounded
+instance : WellFoundedLT ℕ+ := WellFoundedRelation.isWellFounded
 instance : IsWellOrder ℕ+ (· < ·) where
 
 @[simp]
