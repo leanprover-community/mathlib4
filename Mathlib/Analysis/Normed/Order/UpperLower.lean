@@ -8,10 +8,10 @@ Authors: Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Order.Field.Pi
-import Mathbin.Analysis.Normed.Group.Pointwise
-import Mathbin.Analysis.Normed.Order.Basic
-import Mathbin.Topology.Algebra.Order.UpperLower
+import Mathlib.Algebra.Order.Field.Pi
+import Mathlib.Analysis.Normed.Group.Pointwise
+import Mathlib.Analysis.Normed.Order.Basic
+import Mathlib.Topology.Algebra.Order.UpperLower
 
 /-!
 # Upper/lower/order-connected sets in normed groups
@@ -51,8 +51,7 @@ protected theorem IsLowerSet.thickening' (hs : IsLowerSet s) (ε : ℝ) :
 
 @[to_additive IsUpperSet.cthickening]
 protected theorem IsUpperSet.cthickening' (hs : IsUpperSet s) (ε : ℝ) :
-    IsUpperSet (cthickening ε s) :=
-  by
+    IsUpperSet (cthickening ε s) := by
   rw [cthickening_eq_Inter_thickening'']
   exact isUpperSet_interᵢ₂ fun δ hδ => hs.thickening' _
 #align is_upper_set.cthickening' IsUpperSet.cthickening'
@@ -60,8 +59,7 @@ protected theorem IsUpperSet.cthickening' (hs : IsUpperSet s) (ε : ℝ) :
 
 @[to_additive IsLowerSet.cthickening]
 protected theorem IsLowerSet.cthickening' (hs : IsLowerSet s) (ε : ℝ) :
-    IsLowerSet (cthickening ε s) :=
-  by
+    IsLowerSet (cthickening ε s) := by
   rw [cthickening_eq_Inter_thickening'']
   exact isLowerSet_interᵢ₂ fun δ hδ => hs.thickening' _
 #align is_lower_set.cthickening' IsLowerSet.cthickening'
@@ -77,14 +75,12 @@ section Finite
 variable [Finite ι] {s : Set (ι → ℝ)} {x y : ι → ℝ} {δ : ℝ}
 
 theorem IsUpperSet.mem_interior_of_forall_lt (hs : IsUpperSet s) (hx : x ∈ closure s)
-    (h : ∀ i, x i < y i) : y ∈ interior s :=
-  by
+    (h : ∀ i, x i < y i) : y ∈ interior s := by
   cases nonempty_fintype ι
   obtain ⟨ε, hε, hxy⟩ := Pi.exists_forall_pos_add_lt h
   obtain ⟨z, hz, hxz⟩ := Metric.mem_closure_iff.1 hx _ hε
   rw [dist_pi_lt_iff hε] at hxz
-  have hyz : ∀ i, z i < y i :=
-    by
+  have hyz : ∀ i, z i < y i := by
     refine' fun i => (hxy _).trans_le' (sub_le_iff_le_add'.1 <| (le_abs_self _).trans _)
     rw [← Real.norm_eq_abs, ← dist_eq_norm']
     exact (hxz _).le
@@ -97,14 +93,12 @@ theorem IsUpperSet.mem_interior_of_forall_lt (hs : IsUpperSet s) (hx : x ∈ clo
 #align is_upper_set.mem_interior_of_forall_lt IsUpperSet.mem_interior_of_forall_lt
 
 theorem IsLowerSet.mem_interior_of_forall_lt (hs : IsLowerSet s) (hx : x ∈ closure s)
-    (h : ∀ i, y i < x i) : y ∈ interior s :=
-  by
+    (h : ∀ i, y i < x i) : y ∈ interior s := by
   cases nonempty_fintype ι
   obtain ⟨ε, hε, hxy⟩ := Pi.exists_forall_pos_add_lt h
   obtain ⟨z, hz, hxz⟩ := Metric.mem_closure_iff.1 hx _ hε
   rw [dist_pi_lt_iff hε] at hxz
-  have hyz : ∀ i, y i < z i :=
-    by
+  have hyz : ∀ i, y i < z i := by
     refine' fun i =>
       (lt_sub_iff_add_lt.2 <| hxy _).trans_le (sub_le_comm.1 <| (le_abs_self _).trans _)
     rw [← Real.norm_eq_abs, ← dist_eq_norm]
@@ -124,8 +118,7 @@ section Fintype
 variable [Fintype ι] {s : Set (ι → ℝ)} {x y : ι → ℝ} {δ : ℝ}
 
 theorem IsUpperSet.exists_subset_ball (hs : IsUpperSet s) (hx : x ∈ closure s) (hδ : 0 < δ) :
-    ∃ y, closedBall y (δ / 4) ⊆ closedBall x δ ∧ closedBall y (δ / 4) ⊆ interior s :=
-  by
+    ∃ y, closedBall y (δ / 4) ⊆ closedBall x δ ∧ closedBall y (δ / 4) ⊆ interior s := by
   refine' ⟨x + const _ (3 / 4 * δ), closed_ball_subset_closed_ball' _, _⟩
   · rw [dist_self_add_left]
     refine' (add_le_add_left (pi_norm_const_le <| 3 / 4 * δ) _).trans_eq _
@@ -143,8 +136,7 @@ theorem IsUpperSet.exists_subset_ball (hs : IsUpperSet s) (hx : x ∈ closure s)
 #align is_upper_set.exists_subset_ball IsUpperSet.exists_subset_ball
 
 theorem IsLowerSet.exists_subset_ball (hs : IsLowerSet s) (hx : x ∈ closure s) (hδ : 0 < δ) :
-    ∃ y, closedBall y (δ / 4) ⊆ closedBall x δ ∧ closedBall y (δ / 4) ⊆ interior s :=
-  by
+    ∃ y, closedBall y (δ / 4) ⊆ closedBall x δ ∧ closedBall y (δ / 4) ⊆ interior s := by
   refine' ⟨x - const _ (3 / 4 * δ), closed_ball_subset_closed_ball' _, _⟩
   · rw [dist_self_sub_left]
     refine' (add_le_add_left (pi_norm_const_le <| 3 / 4 * δ) _).trans_eq _
