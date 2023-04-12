@@ -23,14 +23,14 @@ In this file, we establish the basic properties of Polish spaces.
 
 ## Main definitions and results
 
-* `polish_space α` is a mixin typeclass on a topological space, requiring that the topology is
+* `PolishSpace α` is a mixin typeclass on a topological space, requiring that the topology is
   second-countable and compatible with a complete metric. To endow the space with such a metric,
-  use in a proof `letI := upgrade_polish_space α`.
+  use in a proof `letI := upgradePolishSpace α`.
   We register an instance from complete second-countable metric spaces to Polish spaces, not the
   other way around.
 * We register that countable products and sums of Polish spaces are Polish.
-* `is_closed.polish_space`: a closed subset of a Polish space is Polish.
-* `is_open.polish_space`: an open subset of a Polish space is Polish.
+* `IsClosed.polishSpace`: a closed subset of a Polish space is Polish.
+* `IsOpen.polishSpace`: an open subset of a Polish space is Polish.
 * `exists_nat_nat_continuous_surjective`: any nonempty Polish space is the continuous image
   of the fundamental Polish space `ℕ → ℕ`.
 
@@ -63,7 +63,7 @@ with a metric for which it is complete.
 We register an instance from complete second countable metric space to polish space, and not the
 other way around as this is the most common use case.
 
-To endow a Polish space with a complete metric space structure, do `letI := upgrade_polish_space α`.
+To endow a Polish space with a complete metric space structure, do `letI := upgradePolishSpace α`.
 -/
 class PolishSpace (α : Type _) [h : TopologicalSpace α] : Prop where
   secondCountableTopology : SecondCountableTopology α
@@ -72,7 +72,7 @@ class PolishSpace (α : Type _) [h : TopologicalSpace α] : Prop where
 #align polish_space PolishSpace
 
 /-- A convenience class, for a Polish space endowed with a complete metric. No instance of this
-class should be registered: It should be used as `letI := upgrade_polish_space α` to endow a Polish
+class should be registered: It should be used as `letI := upgradePolishSpace α` to endow a Polish
 space with a complete metric. -/
 class UpgradedPolishSpace (α : Type _) extends MetricSpace α, SecondCountableTopology α,
   CompleteSpace α
@@ -96,7 +96,7 @@ theorem complete_polishSpaceMetric (α : Type _) [ht : TopologicalSpace α] [h :
 #align complete_polish_space_metric complete_polishSpaceMetric
 
 /-- This definition endows a Polish space with a complete metric. Use it as:
-`letI := upgrade_polish_space α`. -/
+`letI := upgradePolishSpace α`. -/
 def upgradePolishSpace (α : Type _) [TopologicalSpace α] [PolishSpace α] :
     UpgradedPolishSpace α :=
   letI := polishSpaceMetric α
@@ -120,7 +120,8 @@ instance pi_countable {ι : Type _} [Countable ι] {E : ι → Type _} [∀ i, T
   infer_instance
 #align polish_space.pi_countable PolishSpace.pi_countable
 
-/-- Without this instance, `polish_space (ℕ → ℕ)` is not found by typeclass inference. -/
+/-- Without this instance, Lean 3 was unable to find `PolishSpace (ℕ → ℕ)` by typeclass inference.
+Porting note: TODO: test with Lean 4. -/
 instance nat_fun [TopologicalSpace α] [PolishSpace α] : PolishSpace (ℕ → α) := inferInstance
 #align polish_space.nat_fun PolishSpace.nat_fun
 
