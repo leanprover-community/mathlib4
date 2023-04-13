@@ -442,6 +442,7 @@ import Mathlib.CategoryTheory.Limits.KanExtension
 import Mathlib.CategoryTheory.Limits.Lattice
 import Mathlib.CategoryTheory.Limits.MonoCoprod
 import Mathlib.CategoryTheory.Limits.Opposites
+import Mathlib.CategoryTheory.Limits.Over
 import Mathlib.CategoryTheory.Limits.Pi
 import Mathlib.CategoryTheory.Limits.Preserves.Basic
 import Mathlib.CategoryTheory.Limits.Preserves.Filtered
