@@ -11,6 +11,8 @@ Authors: Anne Baanen
 import Mathlib.Data.Fin.Tuple.Basic
 import Mathlib.Data.List.Range
 import Mathlib.GroupTheory.GroupAction.Pi
+import Mathlib.Tactic.ToExpr
+import Qq
 
 /-!
 # Matrix and vector notation
@@ -199,31 +201,31 @@ theorem cons_fin_one (x : α) (u : Fin 0 → α) : vecCons x u = fun _ => x :=
   funext (cons_val_fin_one x u)
 #align matrix.cons_fin_one Matrix.cons_fin_one
 
--- Porting note: the next two decls are commented out. TODO(eric-wieser)
 
--- /- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:76:14:
---  unsupported tactic `reflect_name #[] -/
--- /- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:76:14:
---  unsupported tactic `reflect_name #[] -/
--- unsafe instance _root_.pi_fin.reflect [reflected_univ.{u}] [reflected _ α] [has_reflect α] :
---     ∀ {n}, has_reflect (Fin n → α)
---   | 0, v =>
---     (Subsingleton.elim vecEmpty v).rec
---       ((by
---             trace
---               "./././Mathport/Syntax/Translate/Tactic/Builtin.lean:76:14:
---                unsupported tactic `reflect_name #[]" :
---             reflected _ @vecEmpty.{u}).subst
---         q(α))
---   | n + 1, v =>
---     (cons_head_tail v).rec <|
---       (by
---             trace
---               "./././Mathport/Syntax/Translate/Tactic/Builtin.lean:76:14:
---                unsupported tactic `reflect_name #[]" :
---             reflected _ @vecCons.{u}).subst₄
---         q(α) q(n) q(_) (_root_.pi_fin.reflect _)
--- #align pi_fin.reflect pi_fin.reflect
+open Lean in
+open Qq in
+protected instance _root_.PiFin.toExpr [ToLevel.{u}]
+  [ToExpr α] :
+    ∀ n, ToExpr (Fin n → α)
+  | 0 =>
+    let lu := toLevel.{u}
+    let eα : Q(Type $lu) := toTypeExpr α
+    { toTypeExpr := q(Fin 0 → $eα)
+      toExpr := fun v => q(@vecEmpty $eα)}
+  | n + 1 =>
+    let lu := toLevel.{u}
+    let eα : Q(Type $lu) := toTypeExpr α
+    let en : Q(ℕ) := ToExpr.toExpr (n)
+    let enp1 : Q(ℕ) := ToExpr.toExpr (n + 1)
+    { toTypeExpr := q(Fin $enp1 → $eα)
+      toExpr := fun v =>
+        let inst := PiFin.toExpr n
+        let eh : Q($eα) := ToExpr.toExpr (vecHead v)
+        let et : Q(Fin $en → $eα) := ToExpr.toExpr (vecTail v)
+        q(vecCons $eh $et)}
+#align pi_fin.reflect PiFin.toExpr
+
+-- Porting note: the next decl is commented out. TODO(eric-wieser)
 
 -- /-- Convert a vector of pexprs to the pexpr constructing that vector.-/
 -- unsafe def _root_.pi_fin.to_pexpr : ∀ {n}, (Fin n → pexpr) → pexpr
