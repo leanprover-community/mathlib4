@@ -11,6 +11,7 @@ Authors: Anne Baanen, Eric Wieser
 import Mathlib.Data.Matrix.Basic
 import Mathlib.Data.Fin.VecNotation
 import Mathlib.Tactic.FinCases
+import Mathlib.Tactic.ToExpr
 import Mathlib.Algebra.BigOperators.Fin
 import Qq
 
@@ -45,15 +46,6 @@ with `of ![![...]]`.
 
 Examples of usage can be found in the `test/matrix.lean` file.
 -/
-
--- TODO: remove once #3215 is bors'd
-class ToLevel.{u} where
-  /-- A `Level` that represents the universe level `u`. -/
-  toLevel : Level
-  /-- The universe itself. This is only here to avoid the "unused universe parameter" error. -/
-  univ : Type u := Sort u
-export ToLevel (toLevel)
-
 
 namespace Matrix
 
