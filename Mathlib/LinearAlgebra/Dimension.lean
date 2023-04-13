@@ -730,8 +730,9 @@ theorem linearIndependent_le_span {ι : Type _} (v : ι → M) (i : LinearIndepe
 
 /-- A version of `linearIndependent_le_span` for `Finset`. -/
 theorem linearIndependent_le_span_finset {ι : Type _} (v : ι → M) (i : LinearIndependent R v)
-    (w : Finset M) (s : span R (w : Set M) = ⊤) : (#ι) ≤ Fintype.card w := by
+    (w : Finset M) (s : span R (w : Set M) = ⊤) : (#ι) ≤ w.card := by
   simpa only [Finset.coe_sort_coe, Fintype.card_coe] using linearIndependent_le_span v i w s
+#align linear_independent_le_span_finset linearIndependent_le_span_finset
 
 /-- An auxiliary lemma for `linearIndependent_le_basis`:
 we handle the case where the basis `b` is infinite.
