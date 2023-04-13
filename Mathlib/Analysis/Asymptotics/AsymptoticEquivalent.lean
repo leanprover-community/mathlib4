@@ -199,15 +199,15 @@ section NormedField
 variable {α β : Type _} [NormedField β] {t u v w : α → β} {l : Filter α}
 
 theorem isEquivalent_iff_exists_eq_mul :
-    u ~[l] v ↔ ∃ (φ : α → β)(hφ : Tendsto φ l (𝓝 1)), u =ᶠ[l] φ * v := by
+    u ~[l] v ↔ ∃ (φ : α → β) (_ : Tendsto φ l (𝓝 1)), u =ᶠ[l] φ * v := by
   rw [IsEquivalent, isLittleO_iff_exists_eq_mul]
-  constructor <;> rintro ⟨φ, hφ, h⟩ <;> [use φ + 1, use φ - 1] <;> constructor
+  constructor <;> rintro ⟨φ, hφ, h⟩ <;> [refine' ⟨φ + 1, _, _⟩, refine' ⟨φ - 1, _, _⟩]
   · conv in 𝓝 _ => rw [← zero_add (1 : β)]
     exact hφ.add tendsto_const_nhds
-  · convert h.add (eventually_eq.refl l v) <;> ext <;> simp [add_mul]
+  · convert h.add (EventuallyEq.refl l v) <;> simp [add_mul]
   · conv in 𝓝 _ => rw [← sub_self (1 : β)]
     exact hφ.sub tendsto_const_nhds
-  · convert h.sub (eventually_eq.refl l v) <;> ext <;> simp [sub_mul]
+  · convert h.sub (EventuallyEq.refl l v); simp [sub_mul]
 #align asymptotics.is_equivalent_iff_exists_eq_mul Asymptotics.isEquivalent_iff_exists_eq_mul
 
 theorem IsEquivalent.exists_eq_mul (huv : u ~[l] v) :
