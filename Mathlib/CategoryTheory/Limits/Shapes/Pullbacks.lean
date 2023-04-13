@@ -2687,7 +2687,7 @@ theorem hasPushouts_of_hasColimit_span
 #align category_theory.limits.has_pushouts_of_has_colimit_span CategoryTheory.Limits.hasPushouts_of_hasColimit_span
 
 /-- The duality equivalence `WalkingSpanᵒᵖ ≌ WalkingCospan` -/
-@[simps!p]
+@[simps!]
 def walkingSpanOpEquiv : WalkingSpanᵒᵖ ≌ WalkingCospan :=
   widePushoutShapeOpEquiv _
 #align category_theory.limits.walking_span_op_equiv CategoryTheory.Limits.walkingSpanOpEquiv
