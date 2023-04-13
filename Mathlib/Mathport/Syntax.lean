@@ -354,3 +354,9 @@ namespace Command
 /- E -/ syntax (name := assertNoInstance) "assert_no_instance " term : command
 
 end Command
+
+namespace Term
+
+/- M -/ syntax (name := matrixNotation) "!![" sepBy(term,*, "; ") "]" : term
+
+end Term
