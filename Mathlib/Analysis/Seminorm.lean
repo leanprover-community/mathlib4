@@ -8,10 +8,10 @@ Authors: Jean Lo, Yaël Dillies, Moritz Doll
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Real.Pointwise
-import Mathbin.Analysis.Convex.Function
-import Mathbin.Analysis.LocallyConvex.Basic
-import Mathbin.Analysis.Normed.Group.AddTorsor
+import Mathlib.Data.Real.Pointwise
+import Mathlib.Analysis.Convex.Function
+import Mathlib.Analysis.LocallyConvex.Basic
+import Mathlib.Analysis.Normed.Group.AddTorsor
 
 /-!
 # Seminorms
@@ -86,8 +86,7 @@ and an inequality for the scalar multiplication. -/
 def Seminorm.ofSmulLe [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] (f : E → ℝ) (map_zero : f 0 = 0)
     (add_le : ∀ x y, f (x + y) ≤ f x + f y) (smul_le : ∀ (r : 𝕜) (x), f (r • x) ≤ ‖r‖ * f x) :
     Seminorm 𝕜 E :=
-  Seminorm.of f add_le fun r x =>
-    by
+  Seminorm.of f add_le fun r x => by
     refine' le_antisymm (smul_le r x) _
     by_cases r = 0
     · simp [h, map_zero]
@@ -115,8 +114,7 @@ section SMul
 
 variable [SMul 𝕜 E]
 
-instance seminormClass : SeminormClass (Seminorm 𝕜 E) 𝕜 E
-    where
+instance seminormClass : SeminormClass (Seminorm 𝕜 E) 𝕜 E where
   coe f := f.toFun
   coe_injective' f g h := by cases f <;> cases g <;> congr
   map_zero f := f.map_zero'
@@ -157,8 +155,7 @@ instance [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] : SMul R (S
     where smul r p :=
     { r • p.toAddGroupSeminorm with
       toFun := fun x => r • p x
-      smul' := fun _ _ =>
-        by
+      smul' := fun _ _ => by
         simp only [← smul_one_smul ℝ≥0 r (_ : ℝ), NNReal.smul_def, smul_eq_mul]
         rw [map_smul_eq_mul, mul_left_comm] }
 
@@ -371,8 +368,7 @@ theorem smul_le_smul {p q : Seminorm 𝕜 E} {a b : ℝ≥0} (hpq : p ≤ q) (ha
 #align seminorm.smul_le_smul Seminorm.smul_le_smul
 
 theorem finset_sup_apply (p : ι → Seminorm 𝕜 E) (s : Finset ι) (x : E) :
-    s.sup p x = ↑(s.sup fun i => ⟨p i x, map_nonneg (p i) x⟩ : ℝ≥0) :=
-  by
+    s.sup p x = ↑(s.sup fun i => ⟨p i x, map_nonneg (p i) x⟩ : ℝ≥0) := by
   induction' s using Finset.cons_induction_on with a s ha ih
   ·
     rw [Finset.sup_empty, Finset.sup_empty, coe_bot, _root_.bot_eq_zero, Pi.zero_apply,
@@ -391,16 +387,14 @@ theorem finset_sup_le_sum (p : ι → Seminorm 𝕜 E) (s : Finset ι) : s.sup p
 #align seminorm.finset_sup_le_sum Seminorm.finset_sup_le_sum
 
 theorem finset_sup_apply_le {p : ι → Seminorm 𝕜 E} {s : Finset ι} {x : E} {a : ℝ} (ha : 0 ≤ a)
-    (h : ∀ i, i ∈ s → p i x ≤ a) : s.sup p x ≤ a :=
-  by
+    (h : ∀ i, i ∈ s → p i x ≤ a) : s.sup p x ≤ a := by
   lift a to ℝ≥0 using ha
   rw [finset_sup_apply, NNReal.coe_le_coe]
   exact Finset.sup_le h
 #align seminorm.finset_sup_apply_le Seminorm.finset_sup_apply_le
 
 theorem finset_sup_apply_lt {p : ι → Seminorm 𝕜 E} {s : Finset ι} {x : E} {a : ℝ} (ha : 0 < a)
-    (h : ∀ i, i ∈ s → p i x < a) : s.sup p x < a :=
-  by
+    (h : ∀ i, i ∈ s → p i x < a) : s.sup p x < a := by
   lift a to ℝ≥0 using ha.le
   rw [finset_sup_apply, NNReal.coe_lt_coe, Finset.sup_lt_iff]
   · exact h
@@ -575,8 +569,7 @@ protected theorem coe_supᵢ_eq {ι : Type _} {p : ι → Seminorm 𝕜 E} (hp :
 #align seminorm.coe_supr_eq Seminorm.coe_supᵢ_eq
 
 private theorem seminorm.is_lub_Sup (s : Set (Seminorm 𝕜 E)) (hs₁ : BddAbove s) (hs₂ : s.Nonempty) :
-    IsLUB s (supₛ s) :=
-  by
+    IsLUB s (supₛ s) := by
   refine' ⟨fun p hp x => _, fun p hp x => _⟩ <;> haveI : Nonempty ↥s := hs₂.coe_sort <;>
     rw [Seminorm.coe_supₛ_eq hs₁, supᵢ_apply]
   · rcases hs₁ with ⟨q, hq⟩
@@ -665,8 +658,7 @@ theorem closedBall_eq_bInter_ball (x r) : closedBall p x r = ⋂ ρ > r, ball p 
 #align seminorm.closed_ball_eq_bInter_ball Seminorm.closedBall_eq_bInter_ball
 
 @[simp]
-theorem ball_zero' (x : E) (hr : 0 < r) : ball (0 : Seminorm 𝕜 E) x r = Set.univ :=
-  by
+theorem ball_zero' (x : E) (hr : 0 < r) : ball (0 : Seminorm 𝕜 E) x r = Set.univ := by
   rw [Set.eq_univ_iff_forall, ball]
   simp [hr]
 #align seminorm.ball_zero' Seminorm.ball_zero'
@@ -684,8 +676,7 @@ theorem ball_smul (p : Seminorm 𝕜 E) {c : NNReal} (hc : 0 < c) (r : ℝ) (x :
 #align seminorm.ball_smul Seminorm.ball_smul
 
 theorem closedBall_smul (p : Seminorm 𝕜 E) {c : NNReal} (hc : 0 < c) (r : ℝ) (x : E) :
-    (c • p).closedBall x r = p.closedBall x (r / c) :=
-  by
+    (c • p).closedBall x r = p.closedBall x (r / c) := by
   ext
   rw [mem_closed_ball, mem_closed_ball, smul_apply, NNReal.smul_def, smul_eq_mul, mul_comm,
     le_div_iff (nnreal.coe_pos.mpr hc)]
@@ -702,16 +693,14 @@ theorem closedBall_sup (p : Seminorm 𝕜 E) (q : Seminorm 𝕜 E) (e : E) (r : 
 #align seminorm.closed_ball_sup Seminorm.closedBall_sup
 
 theorem ball_finset_sup' (p : ι → Seminorm 𝕜 E) (s : Finset ι) (H : s.Nonempty) (e : E) (r : ℝ) :
-    ball (s.sup' H p) e r = s.inf' H fun i => ball (p i) e r :=
-  by
+    ball (s.sup' H p) e r = s.inf' H fun i => ball (p i) e r := by
   induction' H using Finset.Nonempty.cons_induction with a a s ha hs ih
   · classical simp
   · rw [Finset.sup'_cons hs, Finset.inf'_cons hs, ball_sup, inf_eq_inter, ih]
 #align seminorm.ball_finset_sup' Seminorm.ball_finset_sup'
 
 theorem closedBall_finset_sup' (p : ι → Seminorm 𝕜 E) (s : Finset ι) (H : s.Nonempty) (e : E)
-    (r : ℝ) : closedBall (s.sup' H p) e r = s.inf' H fun i => closedBall (p i) e r :=
-  by
+    (r : ℝ) : closedBall (s.sup' H p) e r = s.inf' H fun i => closedBall (p i) e r := by
   induction' H using Finset.Nonempty.cons_induction with a a s ha hs ih
   · classical simp
   · rw [Finset.sup'_cons hs, Finset.inf'_cons hs, closed_ball_sup, inf_eq_inter, ih]
@@ -734,16 +723,14 @@ theorem closedBall_antitone {p q : Seminorm 𝕜 E} (h : q ≤ p) :
 #align seminorm.closed_ball_antitone Seminorm.closedBall_antitone
 
 theorem ball_add_ball_subset (p : Seminorm 𝕜 E) (r₁ r₂ : ℝ) (x₁ x₂ : E) :
-    p.ball (x₁ : E) r₁ + p.ball (x₂ : E) r₂ ⊆ p.ball (x₁ + x₂) (r₁ + r₂) :=
-  by
+    p.ball (x₁ : E) r₁ + p.ball (x₂ : E) r₂ ⊆ p.ball (x₁ + x₂) (r₁ + r₂) := by
   rintro x ⟨y₁, y₂, hy₁, hy₂, rfl⟩
   rw [mem_ball, add_sub_add_comm]
   exact (map_add_le_add p _ _).trans_lt (add_lt_add hy₁ hy₂)
 #align seminorm.ball_add_ball_subset Seminorm.ball_add_ball_subset
 
 theorem closedBall_add_closedBall_subset (p : Seminorm 𝕜 E) (r₁ r₂ : ℝ) (x₁ x₂ : E) :
-    p.closedBall (x₁ : E) r₁ + p.closedBall (x₂ : E) r₂ ⊆ p.closedBall (x₁ + x₂) (r₁ + r₂) :=
-  by
+    p.closedBall (x₁ : E) r₁ + p.closedBall (x₂ : E) r₂ ⊆ p.closedBall (x₁ + x₂) (r₁ + r₂) := by
   rintro x ⟨y₁, y₂, hy₁, hy₂, rfl⟩
   rw [mem_closed_ball, add_sub_add_comm]
   exact (map_add_le_add p _ _).trans (add_le_add hy₁ hy₂)
@@ -776,29 +763,25 @@ variable [SeminormedRing 𝕜₂] [AddCommGroup E₂] [Module 𝕜₂ E₂]
 variable {σ₁₂ : 𝕜 →+* 𝕜₂} [RingHomIsometric σ₁₂]
 
 theorem ball_comp (p : Seminorm 𝕜₂ E₂) (f : E →ₛₗ[σ₁₂] E₂) (x : E) (r : ℝ) :
-    (p.comp f).ball x r = f ⁻¹' p.ball (f x) r :=
-  by
+    (p.comp f).ball x r = f ⁻¹' p.ball (f x) r := by
   ext
   simp_rw [ball, mem_preimage, comp_apply, Set.mem_setOf_eq, map_sub]
 #align seminorm.ball_comp Seminorm.ball_comp
 
 theorem closedBall_comp (p : Seminorm 𝕜₂ E₂) (f : E →ₛₗ[σ₁₂] E₂) (x : E) (r : ℝ) :
-    (p.comp f).closedBall x r = f ⁻¹' p.closedBall (f x) r :=
-  by
+    (p.comp f).closedBall x r = f ⁻¹' p.closedBall (f x) r := by
   ext
   simp_rw [closed_ball, mem_preimage, comp_apply, Set.mem_setOf_eq, map_sub]
 #align seminorm.closed_ball_comp Seminorm.closedBall_comp
 
 variable (p : Seminorm 𝕜 E)
 
-theorem preimage_metric_ball {r : ℝ} : p ⁻¹' Metric.ball 0 r = { x | p x < r } :=
-  by
+theorem preimage_metric_ball {r : ℝ} : p ⁻¹' Metric.ball 0 r = { x | p x < r } := by
   ext x
   simp only [mem_set_of, mem_preimage, mem_ball_zero_iff, Real.norm_of_nonneg (map_nonneg p _)]
 #align seminorm.preimage_metric_ball Seminorm.preimage_metric_ball
 
-theorem preimage_metric_closedBall {r : ℝ} : p ⁻¹' Metric.closedBall 0 r = { x | p x ≤ r } :=
-  by
+theorem preimage_metric_closedBall {r : ℝ} : p ⁻¹' Metric.closedBall 0 r = { x | p x ≤ r } := by
   ext x
   simp only [mem_set_of, mem_preimage, mem_closedBall_zero_iff,
     Real.norm_of_nonneg (map_nonneg p _)]
@@ -825,8 +808,7 @@ theorem closedBall_bot {r : ℝ} (x : E) (hr : 0 < r) :
 #align seminorm.closed_ball_bot Seminorm.closedBall_bot
 
 /-- Seminorm-balls at the origin are balanced. -/
-theorem balanced_ball_zero (r : ℝ) : Balanced 𝕜 (ball p 0 r) :=
-  by
+theorem balanced_ball_zero (r : ℝ) : Balanced 𝕜 (ball p 0 r) := by
   rintro a ha x ⟨y, hy, hx⟩
   rw [mem_ball_zero, ← hx, map_smul_eq_mul]
   calc
@@ -836,8 +818,7 @@ theorem balanced_ball_zero (r : ℝ) : Balanced 𝕜 (ball p 0 r) :=
 #align seminorm.balanced_ball_zero Seminorm.balanced_ball_zero
 
 /-- Closed seminorm-balls at the origin are balanced. -/
-theorem balanced_closedBall_zero (r : ℝ) : Balanced 𝕜 (closedBall p 0 r) :=
-  by
+theorem balanced_closedBall_zero (r : ℝ) : Balanced 𝕜 (closedBall p 0 r) := by
   rintro a ha x ⟨y, hy, hx⟩
   rw [mem_closed_ball_zero, ← hx, map_smul_eq_mul]
   calc
@@ -847,38 +828,33 @@ theorem balanced_closedBall_zero (r : ℝ) : Balanced 𝕜 (closedBall p 0 r) :=
 #align seminorm.balanced_closed_ball_zero Seminorm.balanced_closedBall_zero
 
 theorem ball_finset_sup_eq_interᵢ (p : ι → Seminorm 𝕜 E) (s : Finset ι) (x : E) {r : ℝ}
-    (hr : 0 < r) : ball (s.sup p) x r = ⋂ i ∈ s, ball (p i) x r :=
-  by
+    (hr : 0 < r) : ball (s.sup p) x r = ⋂ i ∈ s, ball (p i) x r := by
   lift r to NNReal using hr.le
   simp_rw [ball, Inter_set_of, finset_sup_apply, NNReal.coe_lt_coe,
     Finset.sup_lt_iff (show ⊥ < r from hr), ← NNReal.coe_lt_coe, Subtype.coe_mk]
 #align seminorm.ball_finset_sup_eq_Inter Seminorm.ball_finset_sup_eq_interᵢ
 
 theorem closedBall_finset_sup_eq_interᵢ (p : ι → Seminorm 𝕜 E) (s : Finset ι) (x : E) {r : ℝ}
-    (hr : 0 ≤ r) : closedBall (s.sup p) x r = ⋂ i ∈ s, closedBall (p i) x r :=
-  by
+    (hr : 0 ≤ r) : closedBall (s.sup p) x r = ⋂ i ∈ s, closedBall (p i) x r := by
   lift r to NNReal using hr
   simp_rw [closed_ball, Inter_set_of, finset_sup_apply, NNReal.coe_le_coe, Finset.sup_le_iff, ←
     NNReal.coe_le_coe, Subtype.coe_mk]
 #align seminorm.closed_ball_finset_sup_eq_Inter Seminorm.closedBall_finset_sup_eq_interᵢ
 
 theorem ball_finset_sup (p : ι → Seminorm 𝕜 E) (s : Finset ι) (x : E) {r : ℝ} (hr : 0 < r) :
-    ball (s.sup p) x r = s.inf fun i => ball (p i) x r :=
-  by
+    ball (s.sup p) x r = s.inf fun i => ball (p i) x r := by
   rw [Finset.inf_eq_infᵢ]
   exact ball_finset_sup_eq_Inter _ _ _ hr
 #align seminorm.ball_finset_sup Seminorm.ball_finset_sup
 
 theorem closedBall_finset_sup (p : ι → Seminorm 𝕜 E) (s : Finset ι) (x : E) {r : ℝ} (hr : 0 ≤ r) :
-    closedBall (s.sup p) x r = s.inf fun i => closedBall (p i) x r :=
-  by
+    closedBall (s.sup p) x r = s.inf fun i => closedBall (p i) x r := by
   rw [Finset.inf_eq_infᵢ]
   exact closed_ball_finset_sup_eq_Inter _ _ _ hr
 #align seminorm.closed_ball_finset_sup Seminorm.closedBall_finset_sup
 
 theorem ball_smul_ball (p : Seminorm 𝕜 E) (r₁ r₂ : ℝ) :
-    Metric.ball (0 : 𝕜) r₁ • p.ball 0 r₂ ⊆ p.ball 0 (r₁ * r₂) :=
-  by
+    Metric.ball (0 : 𝕜) r₁ • p.ball 0 r₂ ⊆ p.ball 0 (r₁ * r₂) := by
   rw [Set.subset_def]
   intro x hx
   rw [Set.mem_smul] at hx
@@ -889,8 +865,7 @@ theorem ball_smul_ball (p : Seminorm 𝕜 E) (r₁ r₂ : ℝ) :
 #align seminorm.ball_smul_ball Seminorm.ball_smul_ball
 
 theorem closedBall_smul_closedBall (p : Seminorm 𝕜 E) (r₁ r₂ : ℝ) :
-    Metric.closedBall (0 : 𝕜) r₁ • p.closedBall 0 r₂ ⊆ p.closedBall 0 (r₁ * r₂) :=
-  by
+    Metric.closedBall (0 : 𝕜) r₁ • p.closedBall 0 r₂ ⊆ p.closedBall 0 (r₁ * r₂) := by
   rw [Set.subset_def]
   intro x hx
   rw [Set.mem_smul] at hx
@@ -901,8 +876,7 @@ theorem closedBall_smul_closedBall (p : Seminorm 𝕜 E) (r₁ r₂ : ℝ) :
 #align seminorm.closed_ball_smul_closed_ball Seminorm.closedBall_smul_closedBall
 
 @[simp]
-theorem ball_eq_emptyset (p : Seminorm 𝕜 E) {x : E} {r : ℝ} (hr : r ≤ 0) : p.ball x r = ∅ :=
-  by
+theorem ball_eq_emptyset (p : Seminorm 𝕜 E) {x : E} {r : ℝ} (hr : r ≤ 0) : p.ball x r = ∅ := by
   ext
   rw [Seminorm.mem_ball, Set.mem_empty_iff_false, iff_false_iff, not_lt]
   exact hr.trans (map_nonneg p _)
@@ -928,8 +902,7 @@ variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] (p : Seminorm 𝕜 
   {r : ℝ} {x : E}
 
 theorem ball_norm_mul_subset {p : Seminorm 𝕜 E} {k : 𝕜} {r : ℝ} :
-    p.ball 0 (‖k‖ * r) ⊆ k • p.ball 0 r :=
-  by
+    p.ball 0 (‖k‖ * r) ⊆ k • p.ball 0 r := by
   rcases eq_or_ne k 0 with (rfl | hk)
   · rw [norm_zero, MulZeroClass.zero_mul, ball_eq_emptyset _ le_rfl]
     exact empty_subset _
@@ -951,8 +924,7 @@ theorem smul_ball_zero {p : Seminorm 𝕜 E} {k : 𝕜} {r : ℝ} (hk : k ≠ 0)
 #align seminorm.smul_ball_zero Seminorm.smul_ball_zero
 
 theorem smul_closedBall_subset {p : Seminorm 𝕜 E} {k : 𝕜} {r : ℝ} :
-    k • p.closedBall 0 r ⊆ p.closedBall 0 (‖k‖ * r) :=
-  by
+    k • p.closedBall 0 r ⊆ p.closedBall 0 (‖k‖ * r) := by
   rintro x ⟨y, hy, h⟩
   rw [Seminorm.mem_closedBall_zero, ← h, map_smul_eq_mul]
   rw [Seminorm.mem_closedBall_zero] at hy
@@ -960,8 +932,7 @@ theorem smul_closedBall_subset {p : Seminorm 𝕜 E} {k : 𝕜} {r : ℝ} :
 #align seminorm.smul_closed_ball_subset Seminorm.smul_closedBall_subset
 
 theorem smul_closedBall_zero {p : Seminorm 𝕜 E} {k : 𝕜} {r : ℝ} (hk : 0 < ‖k‖) :
-    k • p.closedBall 0 r = p.closedBall 0 (‖k‖ * r) :=
-  by
+    k • p.closedBall 0 r = p.closedBall 0 (‖k‖ * r) := by
   refine' subset_antisymm smul_closed_ball_subset _
   intro x
   rw [Set.mem_smul_set, Seminorm.mem_closedBall_zero]
@@ -973,8 +944,7 @@ theorem smul_closedBall_zero {p : Seminorm 𝕜 E} {k : 𝕜} {r : ℝ} (hk : 0 
 #align seminorm.smul_closed_ball_zero Seminorm.smul_closedBall_zero
 
 theorem ball_zero_absorbs_ball_zero (p : Seminorm 𝕜 E) {r₁ r₂ : ℝ} (hr₁ : 0 < r₁) :
-    Absorbs 𝕜 (p.ball 0 r₁) (p.ball 0 r₂) :=
-  by
+    Absorbs 𝕜 (p.ball 0 r₁) (p.ball 0 r₂) := by
   rcases exists_pos_lt_mul hr₁ r₂ with ⟨r, hr₀, hr⟩
   refine' ⟨r, hr₀, fun a ha x hx => _⟩
   rw [smul_ball_zero (norm_pos_iff.1 <| hr₀.trans_le ha), p.mem_ball_zero]
@@ -995,16 +965,14 @@ protected theorem absorbent_closedBall_zero (hr : 0 < r) : Absorbent 𝕜 (close
 #align seminorm.absorbent_closed_ball_zero Seminorm.absorbent_closedBall_zero
 
 /-- Seminorm-balls containing the origin are absorbent. -/
-protected theorem absorbent_ball (hpr : p x < r) : Absorbent 𝕜 (ball p x r) :=
-  by
+protected theorem absorbent_ball (hpr : p x < r) : Absorbent 𝕜 (ball p x r) := by
   refine' (p.absorbent_ball_zero <| sub_pos.2 hpr).Subset fun y hy => _
   rw [p.mem_ball_zero] at hy
   exact p.mem_ball.2 ((map_sub_le_add p _ _).trans_lt <| add_lt_of_lt_sub_right hy)
 #align seminorm.absorbent_ball Seminorm.absorbent_ball
 
 /-- Seminorm-balls containing the origin are absorbent. -/
-protected theorem absorbent_closedBall (hpr : p x < r) : Absorbent 𝕜 (closedBall p x r) :=
-  by
+protected theorem absorbent_closedBall (hpr : p x < r) : Absorbent 𝕜 (closedBall p x r) := by
   refine' (p.absorbent_closed_ball_zero <| sub_pos.2 hpr).Subset fun y hy => _
   rw [p.mem_closed_ball_zero] at hy
   exact p.mem_closed_ball.2 ((map_sub_le_add p _ _).trans <| add_le_of_le_sub_right hy)
@@ -1015,8 +983,7 @@ theorem symmetric_ball_zero (r : ℝ) (hx : x ∈ ball p 0 r) : -x ∈ ball p 0 
 #align seminorm.symmetric_ball_zero Seminorm.symmetric_ball_zero
 
 @[simp]
-theorem neg_ball (p : Seminorm 𝕜 E) (r : ℝ) (x : E) : -ball p x r = ball p (-x) r :=
-  by
+theorem neg_ball (p : Seminorm 𝕜 E) (r : ℝ) (x : E) : -ball p x r = ball p (-x) r := by
   ext
   rw [mem_neg, mem_ball, mem_ball, ← neg_add', sub_neg_eq_add, map_neg_eq_map]
 #align seminorm.neg_ball Seminorm.neg_ball
@@ -1040,8 +1007,7 @@ section SMul
 variable [SMul ℝ E] [IsScalarTower ℝ 𝕜 E] (p : Seminorm 𝕜 E)
 
 /-- A seminorm is convex. Also see `convex_on_norm`. -/
-protected theorem convexOn : ConvexOn ℝ univ p :=
-  by
+protected theorem convexOn : ConvexOn ℝ univ p := by
   refine' ⟨convex_univ, fun x _ y _ a b ha hb hab => _⟩
   calc
     p (a • x + b • y) ≤ p (a • x) + p (b • y) := map_add_le_add p _ _
@@ -1060,8 +1026,7 @@ section Module
 variable [Module ℝ E] [IsScalarTower ℝ 𝕜 E] (p : Seminorm 𝕜 E) (x : E) (r : ℝ)
 
 /-- Seminorm-balls are convex. -/
-theorem convex_ball : Convex ℝ (ball p x r) :=
-  by
+theorem convex_ball : Convex ℝ (ball p x r) := by
   convert(p.convex_on.translate_left (-x)).convex_lt r
   ext y
   rw [preimage_univ, sep_univ, p.mem_ball, sub_eq_add_neg]
@@ -1069,8 +1034,7 @@ theorem convex_ball : Convex ℝ (ball p x r) :=
 #align seminorm.convex_ball Seminorm.convex_ball
 
 /-- Closed seminorm-balls are convex. -/
-theorem convex_closedBall : Convex ℝ (closedBall p x r) :=
-  by
+theorem convex_closedBall : Convex ℝ (closedBall p x r) := by
   rw [closed_ball_eq_bInter_ball]
   exact convex_interᵢ₂ fun _ _ => convex_ball _ _ _
 #align seminorm.convex_closed_ball Seminorm.convex_closedBall
@@ -1119,8 +1083,7 @@ variable [NontriviallyNormedField 𝕜] [SeminormedRing 𝕝] [AddCommGroup E] [
 variable [Module 𝕝 E]
 
 theorem continuousAt_zero' [TopologicalSpace E] [ContinuousConstSMul 𝕜 E] {p : Seminorm 𝕜 E} {r : ℝ}
-    (hr : 0 < r) (hp : p.closedBall 0 r ∈ (𝓝 0 : Filter E)) : ContinuousAt p 0 :=
-  by
+    (hr : 0 < r) (hp : p.closedBall 0 r ∈ (𝓝 0 : Filter E)) : ContinuousAt p 0 := by
   refine' metric.nhds_basis_closed_ball.tendsto_right_iff.mpr _
   intro ε hε
   rw [map_zero]
@@ -1140,8 +1103,7 @@ theorem continuousAt_zero [TopologicalSpace E] [ContinuousConstSMul 𝕜 E] {p :
 #align seminorm.continuous_at_zero Seminorm.continuousAt_zero
 
 protected theorem uniformContinuous_of_continuousAt_zero [UniformSpace E] [UniformAddGroup E]
-    {p : Seminorm 𝕝 E} (hp : ContinuousAt p 0) : UniformContinuous p :=
-  by
+    {p : Seminorm 𝕝 E} (hp : ContinuousAt p 0) : UniformContinuous p := by
   have hp : Filter.Tendsto p (𝓝 0) (𝓝 0) := map_zero p ▸ hp
   rw [UniformContinuous, uniformity_eq_comap_nhds_zero_swapped,
     Metric.uniformity_eq_comap_nhds_zero, Filter.tendsto_comap_iff]
@@ -1151,8 +1113,7 @@ protected theorem uniformContinuous_of_continuousAt_zero [UniformSpace E] [Unifo
 #align seminorm.uniform_continuous_of_continuous_at_zero Seminorm.uniformContinuous_of_continuousAt_zero
 
 protected theorem continuous_of_continuousAt_zero [TopologicalSpace E] [TopologicalAddGroup E]
-    {p : Seminorm 𝕝 E} (hp : ContinuousAt p 0) : Continuous p :=
-  by
+    {p : Seminorm 𝕝 E} (hp : ContinuousAt p 0) : Continuous p := by
   letI := TopologicalAddGroup.toUniformSpace E
   haveI : UniformAddGroup E := comm_topologicalAddGroup_is_uniform
   exact (Seminorm.uniformContinuous_of_continuousAt_zero hp).Continuous
@@ -1182,8 +1143,7 @@ protected theorem continuous' [TopologicalSpace E] [TopologicalAddGroup E] [Cont
 #align seminorm.continuous' Seminorm.continuous'
 
 theorem continuous_of_le [TopologicalSpace E] [TopologicalAddGroup E] [ContinuousConstSMul 𝕜 E]
-    {p q : Seminorm 𝕜 E} (hq : Continuous q) (hpq : p ≤ q) : Continuous p :=
-  by
+    {p q : Seminorm 𝕜 E} (hq : Continuous q) (hpq : p ≤ q) : Continuous p := by
   refine'
     Seminorm.continuous one_pos
       (Filter.mem_of_superset (IsOpen.mem_nhds _ <| q.mem_ball_self zero_lt_one)
@@ -1214,8 +1174,7 @@ theorem coe_normSeminorm : ⇑(normSeminorm 𝕜 E) = norm :=
 #align coe_norm_seminorm coe_normSeminorm
 
 @[simp]
-theorem ball_normSeminorm : (normSeminorm 𝕜 E).ball = Metric.ball :=
-  by
+theorem ball_normSeminorm : (normSeminorm 𝕜 E).ball = Metric.ball := by
   ext (x r y)
   simp only [Seminorm.mem_ball, Metric.mem_ball, coe_normSeminorm, dist_eq_norm]
 #align ball_norm_seminorm ball_normSeminorm
@@ -1223,22 +1182,19 @@ theorem ball_normSeminorm : (normSeminorm 𝕜 E).ball = Metric.ball :=
 variable {𝕜 E} {x : E}
 
 /-- Balls at the origin are absorbent. -/
-theorem absorbent_ball_zero (hr : 0 < r) : Absorbent 𝕜 (Metric.ball (0 : E) r) :=
-  by
+theorem absorbent_ball_zero (hr : 0 < r) : Absorbent 𝕜 (Metric.ball (0 : E) r) := by
   rw [← ball_normSeminorm 𝕜]
   exact (normSeminorm _ _).absorbent_ball_zero hr
 #align absorbent_ball_zero absorbent_ball_zero
 
 /-- Balls containing the origin are absorbent. -/
-theorem absorbent_ball (hx : ‖x‖ < r) : Absorbent 𝕜 (Metric.ball x r) :=
-  by
+theorem absorbent_ball (hx : ‖x‖ < r) : Absorbent 𝕜 (Metric.ball x r) := by
   rw [← ball_normSeminorm 𝕜]
   exact (normSeminorm _ _).absorbent_ball hx
 #align absorbent_ball absorbent_ball
 
 /-- Balls at the origin are balanced. -/
-theorem balanced_ball_zero : Balanced 𝕜 (Metric.ball (0 : E) r) :=
-  by
+theorem balanced_ball_zero : Balanced 𝕜 (Metric.ball (0 : E) r) := by
   rw [← ball_normSeminorm 𝕜]
   exact (normSeminorm _ _).balanced_ball_zero r
 #align balanced_ball_zero balanced_ball_zero
