@@ -19,7 +19,7 @@ import Mathlib.GroupTheory.Subsemigroup.Centralizer
 # Bundled non-unital subsemirings
 
 We define bundled non-unital subsemirings and some standard constructions:
-`CompleteLattice` structure, `Subtype` and `inclusion` ring homomorphisms, non-unital subsemiring
+`CompleteLattice` structure, `subtype` and `inclusion` ring homomorphisms, non-unital subsemiring
 `map`, `comap` and range (`srange`) of a `NonUnitalRingHom` etc.
 -/
 
