@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro, Simon Hudon
 
 ! This file was ported from Lean 3 source module data.typevec
-! leanprover-community/mathlib commit 39af7d3bf61a98e928812dbc3e16f4ea8b795ca3
+! leanprover-community/mathlib commit 4fcbc82dc2257986c03e113f87bc5ce021243a44
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
