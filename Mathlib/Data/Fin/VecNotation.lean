@@ -204,25 +204,18 @@ theorem cons_fin_one (x : α) (u : Fin 0 → α) : vecCons x u = fun _ => x :=
 
 open Lean in
 open Qq in
-protected instance _root_.PiFin.toExpr [ToLevel.{u}]
-  [ToExpr α] :
-    ∀ n, ToExpr (Fin n → α)
-  | 0 =>
-    let lu := toLevel.{u}
-    let eα : Q(Type $lu) := toTypeExpr α
-    { toTypeExpr := q(Fin 0 → $eα)
-      toExpr := fun v => q(@vecEmpty $eα)}
+protected instance _root_.PiFin.toExpr [ToLevel.{u}] [ToExpr α] (n : ℕ) : ToExpr (Fin n → α) :=
+  have lu := toLevel.{u}
+  have eα : Q(Type $lu) := toTypeExpr α
+  have toTypeExpr := q(Fin $n → $eα)
+  match n with
+  | 0 => { toTypeExpr, toExpr := fun _ => q(@vecEmpty $eα) }
   | n + 1 =>
-    let lu := toLevel.{u}
-    let eα : Q(Type $lu) := toTypeExpr α
-    let en : Q(ℕ) := ToExpr.toExpr (n)
-    let enp1 : Q(ℕ) := ToExpr.toExpr (n + 1)
-    { toTypeExpr := q(Fin $enp1 → $eα)
-      toExpr := fun v =>
-        let inst := PiFin.toExpr n
-        let eh : Q($eα) := ToExpr.toExpr (vecHead v)
-        let et : Q(Fin $en → $eα) := ToExpr.toExpr (vecTail v)
-        q(vecCons $eh $et)}
+    { toTypeExpr, toExpr := fun v =>
+      have := PiFin.toExpr n
+      have eh : Q($eα) := toExpr (vecHead v)
+      have et : Q(Fin $n → $eα) := toExpr (vecTail v)
+      q(vecCons $eh $et) }
 #align pi_fin.reflect PiFin.toExpr
 
 -- Porting note: the next decl is commented out. TODO(eric-wieser)
