@@ -106,11 +106,13 @@ def mapPullbackAdj {A B : C} (f : A ⟶ B) : Over.map f ⊣ pullback f :=
             dsimp
             simp
           right_inv := fun Y => by
-            ext; dsimp
-            simp only [pullback.lift_fst]
-            dsimp
-            rw [pullback.lift_snd, ← Over.w Y]
-            rfl } }
+            apply OverMorphism.ext
+            apply pullback.hom_ext
+            . dsimp
+              simp only [limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app]
+            . dsimp
+              simp only [limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app, ← Over.w Y ]
+              rfl } }
 #align category_theory.over.map_pullback_adj CategoryTheory.Over.mapPullbackAdj
 
 /-- pullback (𝟙 A) : over A ⥤ over A is the identity functor. -/
