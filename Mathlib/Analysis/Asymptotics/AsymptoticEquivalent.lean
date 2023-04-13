@@ -84,7 +84,7 @@ variable {u v w : α → β} {l : Filter α}
 theorem IsEquivalent.isLittleO (h : u ~[l] v) : (u - v) =o[l] v := h
 #align asymptotics.is_equivalent.is_o Asymptotics.IsEquivalent.isLittleO
 
-theorem IsEquivalent.isBigO (h : u ~[l] v) : u =O[l] v :=
+nonrec theorem IsEquivalent.isBigO (h : u ~[l] v) : u =O[l] v :=
   (IsBigO.congr_of_sub h.isBigO.symm).mp (isBigO_refl _ _)
 set_option linter.uppercaseLean3 false in
 #align asymptotics.is_equivalent.is_O Asymptotics.IsEquivalent.isBigO
@@ -136,16 +136,13 @@ set_option linter.uppercaseLean3 false in
 
 theorem isEquivalent_const_iff_tendsto {c : β} (h : c ≠ 0) :
     u ~[l] const _ c ↔ Tendsto u l (𝓝 c) := by
-  rw [IsEquivalent, isLittleO_const_iff h]
-  constructor <;> intro h <;>
-          [·
-            have := h.sub tendsto_const_nhds
-            rw [zero_sub (-c)] at this,
-          · have := h.sub tendsto_const_nhds
-            rw [← sub_self c]] <;>
-        convert this <;>
-      try ext <;>
-    simp
+  simp_rw [IsEquivalent, const, isLittleO_const_iff h]
+  constructor <;> intro h
+  · have := h.sub (tendsto_const_nhds (a := -c))
+    simp only [Pi.sub_apply, sub_neg_eq_add, sub_add_cancel, zero_add] at this
+    exact this
+  · have := h.sub (tendsto_const_nhds (a := c))
+    rwa [sub_self] at this
 #align asymptotics.is_equivalent_const_iff_tendsto Asymptotics.isEquivalent_const_iff_tendsto
 
 theorem IsEquivalent.tendsto_const {c : β} (hu : u ~[l] const _ c) : Tendsto u l (𝓝 c) := by
