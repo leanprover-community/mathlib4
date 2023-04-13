@@ -4,11 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 
 ! This file was ported from Lean 3 source module data.nat.order.lemmas
-! leanprover-community/mathlib commit 2258b40dacd2942571c8ce136215350c702dc78f
+! leanprover-community/mathlib commit e8638a0fcaf73e4500469f368ef9494e495099b3
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Nat.Order.Basic
+import Mathlib.Data.Nat.Units
 import Mathlib.Data.Set.Basic
 import Mathlib.Algebra.Ring.Divisibility
 import Mathlib.Algebra.GroupWithZero.Divisibility
@@ -25,7 +26,7 @@ please feel free to reorganize these two files.
 
 universe u v
 
-variable {m n k : ℕ}
+variable {a b m n k : ℕ}
 
 namespace Nat
 
@@ -204,6 +205,13 @@ theorem eq_zero_of_dvd_of_lt {a b : ℕ} (w : a ∣ b) (h : b < a) : b = 0 :=
   Nat.eq_zero_of_dvd_of_div_eq_zero w
     ((Nat.div_eq_zero_iff (lt_of_le_of_lt (zero_le b) h)).mpr h)
 #align nat.eq_zero_of_dvd_of_lt Nat.eq_zero_of_dvd_of_lt
+
+theorem le_of_lt_add_of_dvd (h : a < b + n) : n ∣ a → n ∣ b → a ≤ b := by
+  rintro ⟨a, rfl⟩ ⟨b, rfl⟩
+  -- porting note: Needed to give an explicit argument to `mul_add_one`
+  rw [← mul_add_one n] at h
+  exact mul_le_mul_left' (lt_succ_iff.1 <| lt_of_mul_lt_mul_left h bot_le) _
+#align nat.le_of_lt_add_of_dvd Nat.le_of_lt_add_of_dvd
 
 @[simp]
 theorem mod_div_self (m n : ℕ) : m % n / n = 0 := by

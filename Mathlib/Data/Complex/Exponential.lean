@@ -1571,7 +1571,7 @@ theorem one_le_exp_iff {x : ℝ} : 1 ≤ exp x ↔ 0 ≤ x :=
   exp_zero ▸ exp_le_exp
 #align real.one_le_exp_iff Real.one_le_exp_iff
 
-/-- `real.cosh` is always positive -/
+/-- `Real.cosh` is always positive -/
 theorem cosh_pos (x : ℝ) : 0 < Real.cosh x :=
   (cosh_eq x).symm ▸ half_pos (add_pos (exp_pos x) (exp_pos (-x)))
 #align real.cosh_pos Real.cosh_pos
