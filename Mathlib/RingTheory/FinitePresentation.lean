@@ -75,22 +75,27 @@ theorem of_finiteType [IsNoetherianRing R] : FiniteType R A ↔ FinitePresentati
   obtain ⟨n, f, hf⟩ := Algebra.FiniteType.iff_quotient_mvPolynomial''.1 h
   refine' ⟨n, f, hf, _⟩
   have hnoet : IsNoetherianRing (MvPolynomial (Fin n) R) := by infer_instance
-  replace hnoet := (isNoetherianRing_iff.1 hnoet).noetherian
-  exact hnoet f.to_ring_hom.ker
+  -- Porting note: rewrote code to help typeclass inference
+  rw [isNoetherianRing_iff] at hnoet
+  letI : Module (MvPolynomial (Fin n) R) (MvPolynomial (Fin n) R) := Semiring.toModule
+  have := hnoet.noetherian (RingHom.ker f.toRingHom)
+  convert this
 #align algebra.finite_presentation.of_finite_type Algebra.FinitePresentation.of_finiteType
 
+set_option synthInstance.etaExperiment true in
 /-- If `e : A ≃ₐ[R] B` and `A` is finitely presented, then so is `B`. -/
 theorem equiv (hfp : FinitePresentation R A) (e : A ≃ₐ[R] B) : FinitePresentation R B := by
   obtain ⟨n, f, hf⟩ := hfp
   use n, AlgHom.comp (↑e) f
   constructor
-  · exact Function.Surjective.comp e.surjective hf.1
-  suffices hker : (AlgHom.comp (↑e) f).toRingHom.ker = f.toRingHom.ker
+  · rw [AlgHom.coe_comp]
+    exact Function.Surjective.comp e.surjective hf.1
+  suffices hker : (RingHom.ker (AlgHom.comp (e : A →ₐ[R] B) f).toRingHom) = RingHom.ker f.toRingHom
   · rw [hker]
     exact hf.2
-  · have hco : (AlgHom.comp (↑e) f).toRingHom = RingHom.comp (↑e.to_ring_equiv) f.to_ring_hom := by
-      have h : (AlgHom.comp (↑e) f).toRingHom = e.to_alg_hom.to_ring_hom.comp f.to_ring_hom := rfl
-      have h1 : ↑e.to_ring_equiv = e.to_alg_hom.toRingHom := rfl
+  · have hco : (AlgHom.comp (e : A →ₐ[R] B) f).toRingHom = RingHom.comp (e.toRingEquiv : A ≃+* B) f.toRingHom := by
+      have h : (AlgHom.comp (e : A →ₐ[R] B) f).toRingHom = e.toAlgHom.toRingHom.comp f.toRingHom := rfl
+      have h1 : ↑e.toRingEquiv = e.toAlgHom.toRingHom := rfl
       rw [h, h1]
     rw [RingHom.ker_eq_comap_bot, hco, ← Ideal.comap_comap, ← RingHom.ker_eq_comap_bot,
       RingHom.ker_coe_equiv (AlgEquiv.toRingEquiv e), RingHom.ker_eq_comap_bot]
@@ -143,7 +148,7 @@ theorem iff :
       ∃ (n : _)(I : Ideal (MvPolynomial (Fin n) R))(e : (_ ⧸ I) ≃ₐ[R] A), I.FG := by
   constructor
   · rintro ⟨n, f, hf⟩
-    exact ⟨n, f.toRingHom.ker, Ideal.quotientKerAlgEquivOfSurjective hf.1, hf.2⟩
+    exact ⟨n, RingHom.ker f.toRingHom, Ideal.quotientKerAlgEquivOfSurjective hf.1, hf.2⟩
   · rintro ⟨n, I, e, hfg⟩
     exact Equiv ((finite_presentation.mv_polynomial R _).Quotient hfg) e
 #align algebra.finite_presentation.iff Algebra.FinitePresentation.iff
