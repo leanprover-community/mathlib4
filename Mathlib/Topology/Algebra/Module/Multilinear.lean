@@ -211,8 +211,10 @@ instance addCommMonoid : AddCommMonoid (ContinuousMultilinearMap R M₁ M₂) :=
 #align continuous_multilinear_map.add_comm_monoid ContinuousMultilinearMap.addCommMonoid
 
 /-- Evaluation of a `ContinuousMultilinearMap` at a vector as an `AddMonoidHom`. -/
-def applyAddHom (m : ∀ i, M₁ i) : ContinuousMultilinearMap R M₁ M₂ →+ M₂ :=
-  ⟨fun f => f m, rfl, fun _ _ => rfl⟩
+def applyAddHom (m : ∀ i, M₁ i) : ContinuousMultilinearMap R M₁ M₂ →+ M₂ where
+  toFun f := f m
+  map_zero' := rfl
+  map_add' _ _ := rfl
 #align continuous_multilinear_map.apply_add_hom ContinuousMultilinearMap.applyAddHom
 
 @[simp]
@@ -479,7 +481,10 @@ variable {R' R'' A : Type _} [Monoid R'] [Monoid R''] [Semiring A] [∀ i, AddCo
 
 instance [ContinuousAdd M₂] : DistribMulAction R' (ContinuousMultilinearMap A M₁ M₂) :=
   Function.Injective.distribMulAction
-    ⟨toMultilinearMap, toMultilinearMap_zero, toMultilinearMap_add⟩ toMultilinearMap_injective
+    { toFun := toMultilinearMap,
+      map_zero' := toMultilinearMap_zero,
+      map_add' := toMultilinearMap_add }
+    toMultilinearMap_injective
     fun _ _ => rfl
 
 end DistribMulAction
@@ -493,7 +498,10 @@ variable {R' A : Type _} [Semiring R'] [Semiring A] [∀ i, AddCommMonoid (M₁ 
 /-- The space of continuous multilinear maps over an algebra over `R` is a module over `R`, for the
 pointwise addition and scalar multiplication. -/
 instance : Module R' (ContinuousMultilinearMap A M₁ M₂) :=
-  Function.Injective.module _ ⟨toMultilinearMap, toMultilinearMap_zero, toMultilinearMap_add⟩
+  Function.Injective.module _
+    { toFun := toMultilinearMap,
+      map_zero' := toMultilinearMap_zero,
+      map_add' := toMultilinearMap_add }
     toMultilinearMap_injective fun _ _ => rfl
 
 /-- Linear map version of the map `toMultilinearMap` associating to a continuous multilinear map
