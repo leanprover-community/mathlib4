@@ -38,3 +38,6 @@ protected noncomputable irreducible_def Nat.evenMoreArbitrary : Nat :=
 
 private irreducible_def Real.zero := 42
 example : Real.zero = 42 := Real.zero_def
+
+irreducible_def y : Nat := let x := 42; x
+example : y = 42 := @y_def

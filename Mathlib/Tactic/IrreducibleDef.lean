@@ -46,7 +46,7 @@ local elab "eta_helper " t:term : term => do
   let some (_, lhs, rhs) := t.eq? | throwError "not an equation: {t}"
   synthesizeSyntheticMVars
   let rhs ← instantiateMVars rhs
-  lambdaLetTelescope rhs fun xs rhs ↦ do
+  lambdaTelescope rhs fun xs rhs ↦ do
     let lhs := (mkAppN lhs xs).headBeta
     mkForallFVars xs <|← mkEq lhs rhs
 
@@ -60,7 +60,7 @@ Executes the commands,
 and stops after the first error.
 In short, S-A-F-E.
 -/
-local syntax "stop_at_first_error" command* : command
+local syntax "stop_at_first_error" (ppLine command)* : command
 open Command in elab_rules : command
   | `(stop_at_first_error $[$cmds]*) => do
     for cmd in cmds do
