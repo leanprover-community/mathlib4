@@ -709,6 +709,11 @@ instance : LinearOrderedCommMonoidWithZero Cardinal.{u} :=
 instance : CommMonoidWithZero Cardinal.{u} :=
   { Cardinal.canonicallyOrderedCommSemiring with }
 
+-- porting note: new
+-- Computable instance to prevent a non-computable one being found via the one above
+instance : CommMonoid Cardinal.{u} :=
+  { Cardinal.canonicallyOrderedCommSemiring with }
+
 theorem zero_power_le (c : Cardinal.{u}) : ((0 : Cardinal.{u})^c) ≤ 1 := by
   by_cases h : c = 0
   · rw [h, power_zero]
