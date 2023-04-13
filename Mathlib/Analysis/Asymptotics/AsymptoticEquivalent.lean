@@ -257,14 +257,15 @@ theorem IsEquivalent.smul {α E 𝕜 : Type _} [NormedField 𝕜] [NormedAddComm
   rw [IsBigOWith] at hCuv
   simp only [Metric.tendsto_nhds, dist_eq_norm] at hφ
   intro c hc
-  specialize hφ (c / 2 / C) (div_pos (by linarith) hC)
-  specialize huv (show 0 < c / 2 by linarith)
+  specialize hφ (c / 2 / C) (div_pos (div_pos hc zero_lt_two) hC)
+  specialize huv (div_pos hc zero_lt_two)
   refine' hφ.mp (huv.mp <| hCuv.mono fun x hCuvx huvx hφx ↦ _)
   have key :=
     calc
       ‖φ x - 1‖ * ‖u x‖ ≤ c / 2 / C * ‖u x‖ :=
         mul_le_mul_of_nonneg_right hφx.le (norm_nonneg <| u x)
-      _ ≤ c / 2 / C * (C * ‖v x‖) := (mul_le_mul_of_nonneg_left hCuvx (div_pos (by linarith) hC).le)
+      _ ≤ c / 2 / C * (C * ‖v x‖) :=
+        (mul_le_mul_of_nonneg_left hCuvx (div_pos (div_pos hc zero_lt_two) hC).le)
       _ = c / 2 * ‖v x‖ := by
         field_simp [hC.ne.symm]
         ring
