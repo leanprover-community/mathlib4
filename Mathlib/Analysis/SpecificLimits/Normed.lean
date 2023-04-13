@@ -463,7 +463,7 @@ theorem NormedRing.summable_geometric_of_norm_lt_1 (x : R) (h : ‖x‖ < 1) :
   exact eventually_norm_pow_le x
 #align normed_ring.summable_geometric_of_norm_lt_1 NormedRing.summable_geometric_of_norm_lt_1
 
-/-- Bound for the sum of a geometric series in a normed ring.  This formula does not assume that the
+/-- Bound for the sum of a geometric series in a normed ring. This formula does not assume that the
 normed ring satisfies the axiom `‖1‖ = 1`. -/
 theorem NormedRing.tsum_geometric_of_norm_lt_1 (x : R) (h : ‖x‖ < 1) :
     ‖∑' n : ℕ, x ^ n‖ ≤ ‖(1 : R)‖ - 1 + (1 - ‖x‖)⁻¹ := by
@@ -509,8 +509,9 @@ theorem summable_of_ratio_norm_eventually_le {α : Type _} [SeminormedAddCommGro
     rw [← @summable_nat_add_iff α _ _ _ _ N]
     refine' summable_of_norm_bounded (fun n ↦ ‖f N‖ * r ^ n)
       (Summable.mul_left _ <| summable_geometric_of_lt_1 hr₀ hr₁) fun n ↦ _
+    simp only
     conv_rhs => rw [mul_comm, ← zero_add N]
-    refine' le_geom hr₀ n fun i _ ↦ _
+    refine' le_geom (u := fun n ↦ ‖f (n + N)‖) hr₀ n fun i _ ↦ _
     convert hN (i + N) (N.le_add_left i) using 3
     ac_rfl
   · push_neg at hr₀
