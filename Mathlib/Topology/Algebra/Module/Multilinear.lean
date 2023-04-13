@@ -14,7 +14,7 @@ import Mathlib.LinearAlgebra.Multilinear.Basic
 /-!
 # Continuous multilinear maps
 
-We define continuous multilinear maps as maps from `Π(i : ι), M₁ i` to `M₂` which are multilinear
+We define continuous multilinear maps as maps from `(i : ι) → M₁ i` to `M₂` which are multilinear
 and continuous, by extending the space of multilinear maps with a continuity assumption.
 Here, `M₁ i` and `M₂` are modules over a ring `R`, and `ι` is an arbitrary type, and all these
 spaces are also topological spaces.
@@ -22,7 +22,7 @@ spaces are also topological spaces.
 ## Main definitions
 
 * `ContinuousMultilinearMap R M₁ M₂` is the space of continuous multilinear maps from
-  `Π(i : ι), M₁ i` to `M₂`. We show that it is an `R`-module.
+  `(i : ι) → M₁ i` to `M₂`. We show that it is an `R`-module.
 
 ## Implementation notes
 
@@ -46,7 +46,7 @@ universe u v w w₁ w₁' w₂ w₃ w₄
 variable {R : Type u} {ι : Type v} {n : ℕ} {M : Fin n.succ → Type w} {M₁ : ι → Type w₁}
   {M₁' : ι → Type w₁'} {M₂ : Type w₂} {M₃ : Type w₃} {M₄ : Type w₄}
 
-/-- Continuous multilinear maps over the ring `R`, from `Πi, M₁ i` to `M₂` where `M₁ i` and `M₂`
+/-- Continuous multilinear maps over the ring `R`, from `∀ i, M₁ i` to `M₂` where `M₁ i` and `M₂`
 are modules over `R` with a topological structure. In applications, there will be compatibility
 conditions between the algebraic and the topological structures, but this is not needed for the
 definition. -/
@@ -246,7 +246,7 @@ theorem prod_apply (f : ContinuousMultilinearMap R M₁ M₂) (g : ContinuousMul
 #align continuous_multilinear_map.prod_apply ContinuousMultilinearMap.prod_apply
 
 /-- Combine a family of continuous multilinear maps with the same domain and codomains `M' i` into a
-continuous multilinear map taking values in the space of functions `Π i, M' i`. -/
+continuous multilinear map taking values in the space of functions `∀ i, M' i`. -/
 def pi {ι' : Type _} {M' : ι' → Type _} [∀ i, AddCommMonoid (M' i)] [∀ i, TopologicalSpace (M' i)]
     [∀ i, Module R (M' i)] (f : ∀ i, ContinuousMultilinearMap R M₁ (M' i)) :
     ContinuousMultilinearMap R M₁ (∀ i, M' i) where
@@ -338,7 +338,7 @@ def piEquiv {ι' : Type _} {M' : ι' → Type _} [∀ i, AddCommMonoid (M' i)]
 #align continuous_multilinear_map.pi_equiv ContinuousMultilinearMap.piEquiv
 
 /-- In the specific case of continuous multilinear maps on spaces indexed by `Fin (n+1)`, where one
-can build an element of `Π(i : Fin (n+1)), M i` using `cons`, one can express directly the
+can build an element of `(i : Fin (n+1)) → M i` using `cons`, one can express directly the
 additivity of a multilinear map along the first variable. -/
 theorem cons_add (f : ContinuousMultilinearMap R M M₂) (m : ∀ i : Fin n, M i.succ) (x y : M 0) :
     f (cons (x + y) m) = f (cons x m) + f (cons y m) :=
@@ -346,7 +346,7 @@ theorem cons_add (f : ContinuousMultilinearMap R M M₂) (m : ∀ i : Fin n, M i
 #align continuous_multilinear_map.cons_add ContinuousMultilinearMap.cons_add
 
 /-- In the specific case of continuous multilinear maps on spaces indexed by `Fin (n+1)`, where one
-can build an element of `Π(i : Fin (n+1)), M i` using `cons`, one can express directly the
+can build an element of `(i : Fin (n+1)) → M i` using `cons`, one can express directly the
 multiplicativity of a multilinear map along the first variable. -/
 theorem cons_smul (f : ContinuousMultilinearMap R M M₂) (m : ∀ i : Fin n, M i.succ) (c : R)
     (x : M 0) : f (cons (c • x) m) = c • f (cons x m) :=
