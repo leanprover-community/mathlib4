@@ -241,10 +241,10 @@ theorem natDegree_pow (hp : p.Monic) (n : ℕ) : (p ^ n).natDegree = n * p.natDe
 end Monic
 
 @[simp]
-theorem natDegree_pow_X_add_c [Nontrivial R] (n : ℕ) (r : R) : ((X + C r) ^ n).natDegree = n := by
+theorem natDegree_pow_X_add_C [Nontrivial R] (n : ℕ) (r : R) : ((X + C r) ^ n).natDegree = n := by
   rw [(monic_X_add_C r).natDegree_pow, natDegree_X_add_C, mul_one]
 set_option linter.uppercaseLean3 false in
-#align polynomial.nat_degree_pow_X_add_C Polynomial.natDegree_pow_X_add_c
+#align polynomial.nat_degree_pow_X_add_C Polynomial.natDegree_pow_X_add_C
 
 theorem Monic.eq_one_of_isUnit (hm : Monic p) (hpu : IsUnit p) : p = 1 := by
   nontriviality R
