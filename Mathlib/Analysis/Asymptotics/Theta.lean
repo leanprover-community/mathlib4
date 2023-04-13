@@ -8,7 +8,7 @@ Authors: Yury G. Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Asymptotics.Asymptotics
+import Mathlib.Analysis.Asymptotics.Asymptotics
 
 /-!
 # Asymptotic equivalence up to a constant
@@ -222,8 +222,7 @@ theorem IsTheta.pow {f : α → 𝕜} {g : α → 𝕜'} (h : f =Θ[l] g) (n : �
 #align asymptotics.is_Theta.pow Asymptotics.IsTheta.pow
 
 theorem IsTheta.zpow {f : α → 𝕜} {g : α → 𝕜'} (h : f =Θ[l] g) (n : ℤ) :
-    (fun x => f x ^ n) =Θ[l] fun x => g x ^ n :=
-  by
+    (fun x => f x ^ n) =Θ[l] fun x => g x ^ n := by
   cases n
   · simpa only [zpow_ofNat] using h.pow _
   · simpa only [zpow_negSucc] using (h.pow _).inv
