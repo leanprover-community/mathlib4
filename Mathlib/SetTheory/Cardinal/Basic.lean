@@ -543,9 +543,6 @@ instance commSemiring : CommSemiring Cardinal.{u} where
   npow_zero := @power_zero
   npow_succ n c := show (c ^ (n + 1)) = c * (c ^ n) by rw [power_add, power_one, mul_comm']
 
--- Porting note: this ensures a computable instance.
-instance commMonoid : CommMonoid Cardinal.{u} := CommSemiring.toCommMonoid
-
 /-! Porting note: Deprecated section. Remove. -/
 section deprecated
 set_option linter.deprecated false
