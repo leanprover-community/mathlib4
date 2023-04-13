@@ -8,10 +8,10 @@ Authors: Devon Tuma
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Asymptotics.Asymptotics
-import Mathbin.Analysis.Normed.Order.Basic
-import Mathbin.Data.Polynomial.Eval
-import Mathbin.Topology.Algebra.Order.LiminfLimsup
+import Mathlib.Analysis.Asymptotics.Asymptotics
+import Mathlib.Analysis.Normed.Order.Basic
+import Mathlib.Data.Polynomial.Eval
+import Mathlib.Topology.Algebra.Order.LiminfLimsup
 
 /-!
 # Super-Polynomial Function Decay
@@ -117,8 +117,7 @@ theorem SuperpolynomialDecay.mul_param (hf : SuperpolynomialDecay l k f) :
 #align asymptotics.superpolynomial_decay.mul_param Asymptotics.SuperpolynomialDecay.mul_param
 
 theorem SuperpolynomialDecay.param_pow_mul (hf : SuperpolynomialDecay l k f) (n : ℕ) :
-    SuperpolynomialDecay l k (k ^ n * f) :=
-  by
+    SuperpolynomialDecay l k (k ^ n * f) := by
   induction' n with n hn
   · simpa only [one_mul, pow_zero] using hf
   · simpa only [pow_succ, mul_assoc] using hn.param_mul
@@ -179,8 +178,7 @@ theorem superpolynomialDecay_iff_superpolynomialDecay_abs :
 variable {l k f}
 
 theorem SuperpolynomialDecay.trans_eventually_abs_le (hf : SuperpolynomialDecay l k f)
-    (hfg : abs ∘ g ≤ᶠ[l] abs ∘ f) : SuperpolynomialDecay l k g :=
-  by
+    (hfg : abs ∘ g ≤ᶠ[l] abs ∘ f) : SuperpolynomialDecay l k g := by
   rw [superpolynomial_decay_iff_abs_tendsto_zero] at hf⊢
   refine' fun z =>
     tendsto_of_tendsto_of_tendsto_of_le_of_le' tendsto_const_nhds (hf z)
@@ -245,8 +243,7 @@ theorem superpolynomialDecay_iff_abs_isBoundedUnder (hk : Tendsto k l atTop) :
 #align asymptotics.superpolynomial_decay_iff_abs_is_bounded_under Asymptotics.superpolynomialDecay_iff_abs_isBoundedUnder
 
 theorem superpolynomialDecay_iff_zpow_tendsto_zero (hk : Tendsto k l atTop) :
-    SuperpolynomialDecay l k f ↔ ∀ z : ℤ, Tendsto (fun a : α => k a ^ z * f a) l (𝓝 0) :=
-  by
+    SuperpolynomialDecay l k f ↔ ∀ z : ℤ, Tendsto (fun a : α => k a ^ z * f a) l (𝓝 0) := by
   refine' ⟨fun h z => _, fun h n => by simpa only [zpow_ofNat] using h (n : ℤ)⟩
   by_cases hz : 0 ≤ z
   · lift z to ℕ using hz
@@ -298,8 +295,7 @@ theorem superpolynomialDecay_mul_param_iff (hk : Tendsto k l atTop) :
 #align asymptotics.superpolynomial_decay_mul_param_iff Asymptotics.superpolynomialDecay_mul_param_iff
 
 theorem superpolynomialDecay_param_pow_mul_iff (hk : Tendsto k l atTop) (n : ℕ) :
-    SuperpolynomialDecay l k (k ^ n * f) ↔ SuperpolynomialDecay l k f :=
-  by
+    SuperpolynomialDecay l k (k ^ n * f) ↔ SuperpolynomialDecay l k f := by
   induction' n with n hn
   · simp
   ·
@@ -338,8 +334,7 @@ variable {l k}
 variable [OrderTopology β]
 
 theorem superpolynomialDecay_iff_isBigO (hk : Tendsto k l atTop) :
-    SuperpolynomialDecay l k f ↔ ∀ z : ℤ, f =O[l] fun a : α => k a ^ z :=
-  by
+    SuperpolynomialDecay l k f ↔ ∀ z : ℤ, f =O[l] fun a : α => k a ^ z := by
   refine' (superpolynomial_decay_iff_zpow_tendsto_zero f hk).trans _
   have hk0 : ∀ᶠ x in l, k x ≠ 0 := hk.eventually_ne_at_top 0
   refine' ⟨fun h z => _, fun h z => _⟩
@@ -357,8 +352,7 @@ theorem superpolynomialDecay_iff_isBigO (hk : Tendsto k l atTop) :
 #align asymptotics.superpolynomial_decay_iff_is_O Asymptotics.superpolynomialDecay_iff_isBigO
 
 theorem superpolynomialDecay_iff_isLittleO (hk : Tendsto k l atTop) :
-    SuperpolynomialDecay l k f ↔ ∀ z : ℤ, f =o[l] fun a : α => k a ^ z :=
-  by
+    SuperpolynomialDecay l k f ↔ ∀ z : ℤ, f =o[l] fun a : α => k a ^ z := by
   refine' ⟨fun h z => _, fun h => (superpolynomial_decay_iff_is_O f hk).2 fun z => (h z).IsBigO⟩
   have hk0 : ∀ᶠ x in l, k x ≠ 0 := hk.eventually_ne_at_top 0
   have : (fun x : α => (1 : β)) =o[l] k :=
