@@ -82,8 +82,6 @@ set_option linter.uppercaseLean3 false in
 instance (X : TopCat) : TopologicalSpace X :=
   X.str
 
--- instance (X : Type u) [TopologicalSpace X] :
-
 -- Porting note: cannot see through forget
 instance (X : TopCat) : TopologicalSpace <| (forget TopCat).obj X := by
   change TopologicalSpace X
@@ -186,4 +184,3 @@ theorem openEmbedding_iff_isIso_comp' {X Y Z : TopCat} (f : X ⟶ Y) (g : Y ⟶ 
   exact openEmbedding_iff_isIso_comp f g
 
 end TopCat
-

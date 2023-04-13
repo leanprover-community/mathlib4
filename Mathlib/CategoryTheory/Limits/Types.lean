@@ -26,9 +26,7 @@ and that these agree with the range of a function.
 
 universe v u
 
-open CategoryTheory
-
-open CategoryTheory.Limits
+open CategoryTheory CategoryTheory.Limits
 
 namespace CategoryTheory.Limits.Types
 
@@ -37,8 +35,7 @@ variable {J : Type v} [SmallCategory J]
 /-- (internal implementation) the limit cone of a functor,
 implemented as flat sections of a pi type
 -/
-def limitCone (F : J ⥤ Type max v u) : Cone F
-    where
+def limitCone (F : J ⥤ Type max v u) : Cone F where
   pt := F.sections
   π :=
     { app := fun j u => u.val j
@@ -65,8 +62,8 @@ def limitConeIsLimit (F : J ⥤ Type max v u) : IsLimit (limitCone.{v, u} F) whe
 
 See <https://stacks.math.columbia.edu/tag/002U>.
 -/
-instance hasLimitsOfSize : HasLimitsOfSize.{v} (Type max v u)
-    where has_limits_of_shape _ := --J 𝒥 :=
+instance hasLimitsOfSize : HasLimitsOfSize.{v} (Type max v u) where
+  has_limits_of_shape _ := --J 𝒥 :=
     { has_limit := fun F =>
         HasLimit.mk
           { cone := limitCone.{v, u} F
@@ -99,7 +96,7 @@ theorem isLimitEquivSections_apply {F : J ⥤ Type max v u} {c : Cone F} (t : Is
 theorem isLimitEquivSections_symm_apply {F : J ⥤ Type max v u} {c : Cone F} (t : IsLimit c)
     (x : F.sections) (j : J) :
     c.π.app j ((isLimitEquivSections.{v, u} t).symm x) = (x : ∀ j, F.obj j) j := by
-  obtain ⟨x, rfl⟩ :=(isLimitEquivSections.{v, u} t).surjective x
+  obtain ⟨x, rfl⟩ := (isLimitEquivSections.{v, u} t).surjective x
   simp
 #align category_theory.limits.types.is_limit_equiv_sections_symm_apply CategoryTheory.Limits.Types.isLimitEquivSections_symm_apply
 
@@ -246,7 +243,7 @@ theorem Limit.map_π_apply' {F G : J ⥤ Type v} (α : F ⟶ G) (j : J)
 
 /--
 The relation defining the quotient type which implements the colimit of a functor `F : J ⥤ Type u`.
-See `category_theory.limits.types.quot`.
+See `CategoryTheory.Limits.Types.Quot`.
 -/
 def Quot.Rel (F : J ⥤ Type max v u) : (Σ j, F.obj j) → (Σ j, F.obj j) → Prop := fun p p' =>
   ∃ f : p.1 ⟶ p'.1, p'.2 = F.map f p.2
@@ -264,8 +261,7 @@ def Quot (F : J ⥤ Type max v u) : Type max v u :=
 /-- (internal implementation) the colimit cocone of a functor,
 implemented as a quotient of a sigma type
 -/
-def colimitCocone (F : J ⥤ Type max v u) : Cocone F
-    where
+def colimitCocone (F : J ⥤ Type max v u) : Cocone F where
   pt := Quot.{v, u} F
   ι :=
     { app := fun j x => Quot.mk _ ⟨j, x⟩
@@ -291,10 +287,9 @@ def colimitCoconeIsColimit (F : J ⥤ Type max v u) : IsColimit (colimitCocone.{
 
 See <https://stacks.math.columbia.edu/tag/002U>.
 -/
-instance hasColimitsOfSize : HasColimitsOfSize.{v} (Type max v u)
-    where has_colimits_of_shape _ :=
-    {
-      has_colimit := fun F =>
+instance hasColimitsOfSize : HasColimitsOfSize.{v} (Type max v u) where
+  has_colimits_of_shape _ :=
+    { has_colimit := fun F =>
         HasColimit.mk
           { cocone := colimitCocone.{v, u} F
             isColimit := colimitCoconeIsColimit F } }
@@ -573,16 +568,14 @@ theorem Image.lift_fac (F' : MonoFactorisation f) : Image.lift F' ≫ F'.m = Ima
 end
 
 /-- the factorisation of any morphism in Type through a mono. -/
-def monoFactorisation : MonoFactorisation f
-    where
+def monoFactorisation : MonoFactorisation f where
   I := Image f
   m := Image.ι f
   e := Set.rangeFactorization f
 #align category_theory.limits.types.mono_factorisation CategoryTheory.Limits.Types.monoFactorisation
 
 /-- the factorisation through a mono has the universal property of the image. -/
-noncomputable def isImage : IsImage (monoFactorisation f)
-    where
+noncomputable def isImage : IsImage (monoFactorisation f) where
   lift := Image.lift
   lift_fac := Image.lift_fac
 #align category_theory.limits.types.is_image CategoryTheory.Limits.Types.isImage
@@ -590,7 +583,8 @@ noncomputable def isImage : IsImage (monoFactorisation f)
 instance : HasImage f :=
   HasImage.mk ⟨_, isImage f⟩
 
-instance : HasImages (Type u) where has_image := by infer_instance
+instance : HasImages (Type u) where
+  has_image := by infer_instance
 
 instance : HasImageMaps (Type u) where
   has_image_map {f g} st :=
