@@ -79,23 +79,26 @@ section self
 variable [Fintype n]
 
 @[simp]
-theorem dot_product_self_eq_zero [LinearOrderedRing R] {v : n → R} : dotProduct v v = 0 ↔ v = 0 :=
-  (Finset.sum_eq_zero_iff_of_nonneg <| fun i _ => mul_self_nonneg (v i)).trans <| by
+theorem dotProduct_self_eq_zero [LinearOrderedRing R] {v : n → R} : dotProduct v v = 0 ↔ v = 0 :=
+  (Finset.sum_eq_zero_iff_of_nonneg fun i _ => mul_self_nonneg (v i)).trans <| by
     simp [Function.funext_iff]
+#align matrix.dot_product_self_eq_zero Matrix.dotProduct_self_eq_zero
 
-/-- Note that this applies to `ℂ` via `Complex.StrictOrderedCommRing`. -/
+/-- Note that this applies to `ℂ` via `Complex.strictOrderedCommRing`. -/
 @[simp]
-theorem dot_product_star_self_eq_zero [StrictOrderedRing R] [StarOrderedRing R] [NoZeroDivisors R]
+theorem dotProduct_star_self_eq_zero [StrictOrderedRing R] [StarOrderedRing R] [NoZeroDivisors R]
     {v : n → R} : dotProduct (star v) v = 0 ↔ v = 0 :=
-  (Finset.sum_eq_zero_iff_of_nonneg <| fun i _ => @star_mul_self_nonneg _ _ _ _ (v i)).trans <| by
+  (Finset.sum_eq_zero_iff_of_nonneg fun i _ => @star_mul_self_nonneg _ _ _ _ (v i)).trans <| by
     simp [Function.funext_iff, mul_eq_zero]
+#align matrix.dot_product_star_self_eq_zero Matrix.dotProduct_star_self_eq_zero
 
-/-- Note that this applies to `ℂ` via `Complex.StrictOrderedCommRing`. -/
+/-- Note that this applies to `ℂ` via `Complex.strictOrderedCommRing`. -/
 @[simp]
-theorem dot_product_self_star_eq_zero [StrictOrderedRing R] [StarOrderedRing R] [NoZeroDivisors R]
+theorem dotProduct_self_star_eq_zero [StrictOrderedRing R] [StarOrderedRing R] [NoZeroDivisors R]
     {v : n → R} : dotProduct v (star v) = 0 ↔ v = 0 :=
-  (Finset.sum_eq_zero_iff_of_nonneg <| fun i _ => @star_mul_self_nonneg' _ _ _ _ (v i)).trans <| by
+  (Finset.sum_eq_zero_iff_of_nonneg fun i _ => @star_mul_self_nonneg' _ _ _ _ (v i)).trans <| by
     simp [Function.funext_iff, mul_eq_zero]
+#align matrix.dot_product_self_star_eq_zero Matrix.dotProduct_self_star_eq_zero
 
 end self
 
