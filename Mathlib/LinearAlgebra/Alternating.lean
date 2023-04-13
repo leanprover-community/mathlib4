@@ -914,7 +914,7 @@ def domCoprod.summand (a : AlternatingMap R' Mᵢ N₁ ιa) (b : AlternatingMap 
     replace h := inv_mul_eq_iff_eq_mul.mp h.symm
     have : Equiv.Perm.sign (σ₁ * Perm.sumCongrHom _ _ (sl, sr))
       = Equiv.Perm.sign σ₁ * (Equiv.Perm.sign sl * Equiv.Perm.sign sr) := by simp
-    rw [h, this, mul_smul, mul_smul, smul_left_cancel_iff, ← TensorProduct.tmul_smul,
+    erw [h, this, mul_smul, mul_smul, smul_left_cancel_iff, ← TensorProduct.tmul_smul,
       TensorProduct.smul_tmul']
     simp only [Sum.map_inr, Perm.sumCongrHom_apply, Perm.sumCongr_apply, Sum.map_inl,
       Function.comp_apply, Perm.coe_mul]
