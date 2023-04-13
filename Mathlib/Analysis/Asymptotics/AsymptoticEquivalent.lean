@@ -14,47 +14,47 @@ import Mathlib.Analysis.Normed.Order.Basic
 /-!
 # Asymptotic equivalence
 
-In this file, we define the relation `is_equivalent l u v`, which means that `u-v` is little o of
+In this file, we define the relation `IsEquivalent l u v`, which means that `u-v` is little o of
 `v` along the filter `l`.
 
-Unlike `is_[oO]` relations, this one requires `u` and `v` to have the same codomain `β`. While the
-definition only requires `β` to be a `normed_add_comm_group`, most interesting properties require it
-to be a `normed_field`.
+Unlike `Is(Little|Big)O` relations, this one requires `u` and `v` to have the same codomain `β`.
+While the definition only requires `β` to be a `NormedAddCommGroup`, most interesting properties
+require it to be a `NormedField`.
 
 ## Notations
 
-We introduce the notation `u ~[l] v := is_equivalent l u v`, which you can use by opening the
-`asymptotics` locale.
+We introduce the notation `u ~[l] v := IsEquivalent l u v`, which you can use by opening the
+`Asymptotics` locale.
 
 ## Main results
 
-If `β` is a `normed_add_comm_group` :
+If `β` is a `NormedAddCommGroup` :
 
 - `_ ~[l] _` is an equivalence relation
 - Equivalent statements for `u ~[l] const _ c` :
-  - If `c ≠ 0`, this is true iff `tendsto u l (𝓝 c)` (see `is_equivalent_const_iff_tendsto`)
-  - For `c = 0`, this is true iff `u =ᶠ[l] 0` (see `is_equivalent_zero_iff_eventually_zero`)
+  - If `c ≠ 0`, this is true iff `Tendsto u l (𝓝 c)` (see `isEquivalent_const_iff_tendsto`)
+  - For `c = 0`, this is true iff `u =ᶠ[l] 0` (see `isEquivalent_zero_iff_eventually_zero`)
 
-If `β` is a `normed_field` :
+If `β` is a `NormedField` :
 
-- Alternative characterization of the relation (see `is_equivalent_iff_exists_eq_mul`) :
+- Alternative characterization of the relation (see `isEquivalent_iff_exists_eq_mul`) :
 
-  `u ~[l] v ↔ ∃ (φ : α → β) (hφ : tendsto φ l (𝓝 1)), u =ᶠ[l] φ * v`
+  `u ~[l] v ↔ ∃ (φ : α → β) (hφ : Tendsto φ l (𝓝 1)), u =ᶠ[l] φ * v`
 
-- Provided some non-vanishing hypothesis, this can be seen as `u ~[l] v ↔ tendsto (u/v) l (𝓝 1)`
-  (see `is_equivalent_iff_tendsto_one`)
-- For any constant `c`, `u ~[l] v` implies `tendsto u l (𝓝 c) ↔ tendsto v l (𝓝 c)`
-  (see `is_equivalent.tendsto_nhds_iff`)
-- `*` and `/` are compatible with `_ ~[l] _` (see `is_equivalent.mul` and `is_equivalent.div`)
+- Provided some non-vanishing hypothesis, this can be seen as `u ~[l] v ↔ Tendsto (u/v) l (𝓝 1)`
+  (see `isEquivalent_iff_tendsto_one`)
+- For any constant `c`, `u ~[l] v` implies `Tendsto u l (𝓝 c) ↔ Tendsto v l (𝓝 c)`
+  (see `IsEquivalent.tendsto_nhds_iff`)
+- `*` and `/` are compatible with `_ ~[l] _` (see `IsEquivalent.mul` and `IsEquivalent.div`)
 
-If `β` is a `normed_linear_ordered_field` :
+If `β` is a `NormedLinearOrderedField` :
 
-- If `u ~[l] v`, we have `tendsto u l at_top ↔ tendsto v l at_top`
-  (see `is_equivalent.tendsto_at_top_iff`)
+- If `u ~[l] v`, we have `Tendsto u l atTop ↔ Tendsto v l atTop`
+  (see `IsEquivalent.tendsto_atTop_iff`)
 
 ## Implementation Notes
 
-Note that `is_equivalent` takes the parameters `(l : filter α) (u v : α → β)` in that order.
+Note that `IsEquivalent` takes the parameters `(l : Filter α) (u v : α → β)` in that order.
 This is to enable `calc` support, as `calc` requires that the last two explicit arguments are `u v`.
 
 -/
@@ -71,12 +71,11 @@ section NormedAddCommGroup
 variable {α β : Type _} [NormedAddCommGroup β]
 
 /-- Two functions `u` and `v` are said to be asymptotically equivalent along a filter `l` when
-    `u x - v x = o(v x)` as x converges along `l`. -/
+    `u x - v x = o(v x)` as `x` converges along `l`. -/
 def IsEquivalent (l : Filter α) (u v : α → β) :=
   (u - v) =o[l] v
 #align asymptotics.is_equivalent Asymptotics.IsEquivalent
 
--- mathport name: asymptotics.is_equivalent
 scoped notation:50 u " ~[" l:50 "] " v:50 => Asymptotics.IsEquivalent l u v
 
 variable {u v w : α → β} {l : Filter α}
