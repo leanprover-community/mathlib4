@@ -234,7 +234,9 @@ theorem factor_orderIso_map_one_eq_bot {m : Associates M} {n : Associates N}
     (d ⟨1, one_dvd m⟩ : Associates N) = 1 := by
   letI : OrderBot { l : Associates M // l ≤ m } := Subtype.orderBot bot_le
   letI : OrderBot { l : Associates N // l ≤ n } := Subtype.orderBot bot_le
-  simp [← Associates.bot_eq_one]
+  simp only [← Associates.bot_eq_one, Subtype.mk_bot, bot_le, Subtype.coe_eq_bot_iff]
+  letI : BotHomClass ({ l // l ≤ m } ≃o { l // l ≤ n }) _ _ := OrderIsoClass.toBotHomClass
+  exact map_bot d
 #align factor_order_iso_map_one_eq_bot factor_orderIso_map_one_eq_bot
 
 theorem coe_factor_orderIso_map_eq_one_iff {m u : Associates M} {n : Associates N} (hu' : u ≤ m)
