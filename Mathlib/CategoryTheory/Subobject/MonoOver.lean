@@ -75,6 +75,7 @@ def forget (X : C) : MonoOver X ⥤ Over X :=
   fullSubcategoryInclusion _
 #align category_theory.mono_over.forget CategoryTheory.MonoOver.forget
 
+@[nolint dangerousInstance]
 instance : Coe (MonoOver X) C where coe Y := Y.obj.left
 
 @[simp]
