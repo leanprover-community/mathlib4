@@ -73,7 +73,7 @@ theorem toMultilinearMap_injective :
     Function.Injective
       (ContinuousMultilinearMap.toMultilinearMap :
         ContinuousMultilinearMap R M₁ M₂ → MultilinearMap R M₁ M₂)
-  | ⟨f, hf⟩, ⟨g, hg⟩, _ => by simp_all only
+  | ⟨f, hf⟩, ⟨g, hg⟩, h => by subst h; rfl
 #align continuous_multilinear_map.to_multilinear_map_injective ContinuousMultilinearMap.toMultilinearMap_injective
 
 instance continuousMapClass : ContinuousMapClass (ContinuousMultilinearMap R M₁ M₂) (∀ i, M₁ i) M₂
@@ -392,9 +392,8 @@ end ApplySum
 
 section RestrictScalar
 
-variable (R) {A : Type _}
-
-variable [Semiring A] [SMul R A] [∀ i : ι, Module A (M₁ i)] [Module A M₂]
+variable (R)
+variable {A : Type _} [Semiring A] [SMul R A] [∀ i : ι, Module A (M₁ i)] [Module A M₂]
   [∀ i, IsScalarTower R A (M₁ i)] [IsScalarTower R A M₂]
 
 /-- Reinterpret an `A`-multilinear map as an `R`-multilinear map, if `A` is an algebra over `R`
