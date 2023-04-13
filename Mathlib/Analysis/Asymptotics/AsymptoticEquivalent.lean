@@ -8,8 +8,8 @@ Authors: Anatole Dedecker
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Asymptotics.Asymptotics
-import Mathbin.Analysis.Normed.Order.Basic
+import Mathlib.Analysis.Asymptotics.Asymptotics
+import Mathlib.Analysis.Normed.Order.Basic
 
 /-!
 # Asymptotic equivalence
@@ -89,16 +89,14 @@ theorem IsEquivalent.isBigO (h : u ~[l] v) : u =O[l] v :=
   (IsBigO.congr_of_sub h.IsBigO.symm).mp (isBigO_refl _ _)
 #align asymptotics.is_equivalent.is_O Asymptotics.IsEquivalent.isBigO
 
-theorem IsEquivalent.isBigO_symm (h : u ~[l] v) : v =O[l] u :=
-  by
+theorem IsEquivalent.isBigO_symm (h : u ~[l] v) : v =O[l] u := by
   convert h.is_o.right_is_O_add
   ext
   simp
 #align asymptotics.is_equivalent.is_O_symm Asymptotics.IsEquivalent.isBigO_symm
 
 @[refl]
-theorem IsEquivalent.refl : u ~[l] u :=
-  by
+theorem IsEquivalent.refl : u ~[l] u := by
   rw [is_equivalent, sub_self]
   exact is_o_zero _ _
 #align asymptotics.is_equivalent.refl Asymptotics.IsEquivalent.refl
@@ -124,14 +122,12 @@ theorem IsEquivalent.congr_right {u v w : α → β} {l : Filter α} (huv : u ~[
   (huv.symm.congr_left hvw).symm
 #align asymptotics.is_equivalent.congr_right Asymptotics.IsEquivalent.congr_right
 
-theorem isEquivalent_zero_iff_eventually_zero : u ~[l] 0 ↔ u =ᶠ[l] 0 :=
-  by
+theorem isEquivalent_zero_iff_eventually_zero : u ~[l] 0 ↔ u =ᶠ[l] 0 := by
   rw [is_equivalent, sub_zero]
   exact is_o_zero_right_iff
 #align asymptotics.is_equivalent_zero_iff_eventually_zero Asymptotics.isEquivalent_zero_iff_eventually_zero
 
-theorem isEquivalent_zero_iff_isBigO_zero : u ~[l] 0 ↔ u =O[l] (0 : α → β) :=
-  by
+theorem isEquivalent_zero_iff_isBigO_zero : u ~[l] 0 ↔ u =O[l] (0 : α → β) := by
   refine' ⟨is_equivalent.is_O, fun h => _⟩
   rw [is_equivalent_zero_iff_eventually_zero, eventually_eq_iff_exists_mem]
   exact ⟨{ x : α | u x = 0 }, is_O_zero_right_iff.mp h, fun x hx => hx⟩
@@ -151,8 +147,7 @@ theorem isEquivalent_const_iff_tendsto {c : β} (h : c ≠ 0) : u ~[l] const _ c
     simp
 #align asymptotics.is_equivalent_const_iff_tendsto Asymptotics.isEquivalent_const_iff_tendsto
 
-theorem IsEquivalent.tendsto_const {c : β} (hu : u ~[l] const _ c) : Tendsto u l (𝓝 c) :=
-  by
+theorem IsEquivalent.tendsto_const {c : β} (hu : u ~[l] const _ c) : Tendsto u l (𝓝 c) := by
   rcases em <| c = 0 with ⟨rfl, h⟩
   · exact (tendsto_congr' <| is_equivalent_zero_iff_eventually_zero.mp hu).mpr tendsto_const_nhds
   · exact (is_equivalent_const_iff_tendsto h).mp hu
@@ -189,8 +184,7 @@ theorem IsLittleO.isEquivalent (huv : (u - v) =o[l] v) : u ~[l] v :=
   huv
 #align asymptotics.is_o.is_equivalent Asymptotics.IsLittleO.isEquivalent
 
-theorem IsEquivalent.neg (huv : u ~[l] v) : (fun x => -u x) ~[l] fun x => -v x :=
-  by
+theorem IsEquivalent.neg (huv : u ~[l] v) : (fun x => -u x) ~[l] fun x => -v x := by
   rw [is_equivalent]
   convert huv.is_o.neg_left.neg_right
   ext
@@ -206,8 +200,7 @@ section NormedField
 variable {α β : Type _} [NormedField β] {t u v w : α → β} {l : Filter α}
 
 theorem isEquivalent_iff_exists_eq_mul :
-    u ~[l] v ↔ ∃ (φ : α → β)(hφ : Tendsto φ l (𝓝 1)), u =ᶠ[l] φ * v :=
-  by
+    u ~[l] v ↔ ∃ (φ : α → β)(hφ : Tendsto φ l (𝓝 1)), u =ᶠ[l] φ * v := by
   rw [is_equivalent, is_o_iff_exists_eq_mul]
   constructor <;> rintro ⟨φ, hφ, h⟩ <;> [use φ + 1, use φ - 1] <;> constructor
   · conv in 𝓝 _ => rw [← zero_add (1 : β)]
@@ -224,8 +217,7 @@ theorem IsEquivalent.exists_eq_mul (huv : u ~[l] v) :
 #align asymptotics.is_equivalent.exists_eq_mul Asymptotics.IsEquivalent.exists_eq_mul
 
 theorem isEquivalent_of_tendsto_one (hz : ∀ᶠ x in l, v x = 0 → u x = 0)
-    (huv : Tendsto (u / v) l (𝓝 1)) : u ~[l] v :=
-  by
+    (huv : Tendsto (u / v) l (𝓝 1)) : u ~[l] v := by
   rw [is_equivalent_iff_exists_eq_mul]
   refine' ⟨u / v, huv, hz.mono fun x hz' => (div_mul_cancel_of_imp hz').symm⟩
 #align asymptotics.is_equivalent_of_tendsto_one Asymptotics.isEquivalent_of_tendsto_one
@@ -256,12 +248,10 @@ section Smul
 
 theorem IsEquivalent.smul {α E 𝕜 : Type _} [NormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
     {a b : α → 𝕜} {u v : α → E} {l : Filter α} (hab : a ~[l] b) (huv : u ~[l] v) :
-    (fun x => a x • u x) ~[l] fun x => b x • v x :=
-  by
+    (fun x => a x • u x) ~[l] fun x => b x • v x := by
   rcases hab.exists_eq_mul with ⟨φ, hφ, habφ⟩
   have :
-    ((fun x : α => a x • u x) - fun x : α => b x • v x) =ᶠ[l] fun x => b x • (φ x • u x - v x) :=
-    by
+    ((fun x : α => a x • u x) - fun x : α => b x • v x) =ᶠ[l] fun x => b x • (φ x • u x - v x) := by
     convert(habφ.comp₂ (· • ·) <| eventually_eq.refl _ u).sub
         (eventually_eq.refl _ fun x => b x • v x)
     ext
@@ -306,8 +296,7 @@ theorem IsEquivalent.mul (htu : t ~[l] u) (hvw : v ~[l] w) : t * v ~[l] u * w :=
   htu.smul hvw
 #align asymptotics.is_equivalent.mul Asymptotics.IsEquivalent.mul
 
-theorem IsEquivalent.inv (huv : u ~[l] v) : (fun x => (u x)⁻¹) ~[l] fun x => (v x)⁻¹ :=
-  by
+theorem IsEquivalent.inv (huv : u ~[l] v) : (fun x => (u x)⁻¹) ~[l] fun x => (v x)⁻¹ := by
   rw [is_equivalent_iff_exists_eq_mul] at *
   rcases huv with ⟨φ, hφ, h⟩
   rw [← inv_one]
@@ -340,8 +329,7 @@ theorem IsEquivalent.tendsto_atTop_iff [OrderTopology β] (huv : u ~[l] v) :
 #align asymptotics.is_equivalent.tendsto_at_top_iff Asymptotics.IsEquivalent.tendsto_atTop_iff
 
 theorem IsEquivalent.tendsto_atBot [OrderTopology β] (huv : u ~[l] v) (hu : Tendsto u l atBot) :
-    Tendsto v l atBot :=
-  by
+    Tendsto v l atBot := by
   convert tendsto_neg_at_top_at_bot.comp
       (huv.neg.tendsto_at_top <| tendsto_neg_at_bot_at_top.comp hu)
   ext
