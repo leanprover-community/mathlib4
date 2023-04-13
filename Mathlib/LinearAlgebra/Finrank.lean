@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Anne Baanen
 
 ! This file was ported from Lean 3 source module linear_algebra.finrank
-! leanprover-community/mathlib commit 8535b76e601f11868af3e612fbecb730998a5631
+! leanprover-community/mathlib commit 347636a7a80595d55bedf6e6fbd996a3c39da69a
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/

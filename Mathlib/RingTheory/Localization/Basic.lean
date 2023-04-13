@@ -886,7 +886,7 @@ instance : Add (Localization M) :=
 theorem add_mk (a b c d) : (mk a b : Localization M) + mk c d =
     mk ((b : R) * c + (d : R) * a) (b * d) := by
   show Localization.add (mk a b) (mk c d) = mk _ _
-  simp [Localization.add]
+  simp [Localization.add_def]
 #align localization.add_mk Localization.add_mk
 
 theorem add_mk_self (a b c) : (mk a b : Localization M) + mk c b = mk (a + c) b := by
@@ -1115,7 +1115,8 @@ instance : Neg (Localization M) :=
 
 theorem neg_mk (a b) : -(mk a b : Localization M) = mk (-a) b := by
   show Localization.neg (mk a b) = mk (-a) b
-  rw [Localization.neg, liftOn_mk]
+  rw [Localization.neg_def]
+  apply liftOn_mk
 #align localization.neg_mk Localization.neg_mk
 
 instance : CommRing (Localization M) :=
