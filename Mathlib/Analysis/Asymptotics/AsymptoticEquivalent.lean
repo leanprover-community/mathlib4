@@ -81,17 +81,18 @@ scoped notation:50 u " ~[" l:50 "] " v:50 => Asymptotics.IsEquivalent l u v
 
 variable {u v w : α → β} {l : Filter α}
 
-theorem IsEquivalent.isLittleO (h : u ~[l] v) : (u - v) =o[l] v :=
-  h
+theorem IsEquivalent.isLittleO (h : u ~[l] v) : (u - v) =o[l] v := h
 #align asymptotics.is_equivalent.is_o Asymptotics.IsEquivalent.isLittleO
 
 theorem IsEquivalent.isBigO (h : u ~[l] v) : u =O[l] v :=
   (IsBigO.congr_of_sub h.isBigO.symm).mp (isBigO_refl _ _)
+set_option linter.uppercaseLean3 false in
 #align asymptotics.is_equivalent.is_O Asymptotics.IsEquivalent.isBigO
 
 theorem IsEquivalent.isBigO_symm (h : u ~[l] v) : v =O[l] u := by
   convert h.isLittleO.right_isBigO_add
   simp
+set_option linter.uppercaseLean3 false in
 #align asymptotics.is_equivalent.is_O_symm Asymptotics.IsEquivalent.isBigO_symm
 
 @[refl]
@@ -127,13 +128,14 @@ theorem isEquivalent_zero_iff_eventually_zero : u ~[l] 0 ↔ u =ᶠ[l] 0 := by
 #align asymptotics.is_equivalent_zero_iff_eventually_zero Asymptotics.isEquivalent_zero_iff_eventually_zero
 
 theorem isEquivalent_zero_iff_isBigO_zero : u ~[l] 0 ↔ u =O[l] (0 : α → β) := by
-  refine' ⟨IsEquivalent.isBigO, fun h => _⟩
+  refine' ⟨IsEquivalent.isBigO, fun h ↦ _⟩
   rw [isEquivalent_zero_iff_eventually_zero, eventuallyEq_iff_exists_mem]
-  exact ⟨{ x : α | u x = 0 }, isBigO_zero_right_iff.mp h, fun x hx => hx⟩
+  exact ⟨{ x : α | u x = 0 }, isBigO_zero_right_iff.mp h, fun x hx ↦ hx⟩
+set_option linter.uppercaseLean3 false in
 #align asymptotics.is_equivalent_zero_iff_is_O_zero Asymptotics.isEquivalent_zero_iff_isBigO_zero
 
-theorem isEquivalent_const_iff_tendsto {c : β} (h : c ≠ 0) : u ~[l] const _ c ↔ Tendsto u l (𝓝 c) :=
-  by
+theorem isEquivalent_const_iff_tendsto {c : β} (h : c ≠ 0) :
+    u ~[l] const _ c ↔ Tendsto u l (𝓝 c) := by
   rw [IsEquivalent, isLittleO_const_iff h]
   constructor <;> intro h <;>
           [·
@@ -179,11 +181,10 @@ theorem IsLittleO.add_isEquivalent (hu : u =o[l] w) (hv : v ~[l] w) : u + v ~[l]
   add_comm v u ▸ hv.add_isLittleO hu
 #align asymptotics.is_o.add_is_equivalent Asymptotics.IsLittleO.add_isEquivalent
 
-theorem IsLittleO.isEquivalent (huv : (u - v) =o[l] v) : u ~[l] v :=
-  huv
+theorem IsLittleO.isEquivalent (huv : (u - v) =o[l] v) : u ~[l] v := huv
 #align asymptotics.is_o.is_equivalent Asymptotics.IsLittleO.isEquivalent
 
-theorem IsEquivalent.neg (huv : u ~[l] v) : (fun x => -u x) ~[l] fun x => -v x := by
+theorem IsEquivalent.neg (huv : u ~[l] v) : (fun x ↦ -u x) ~[l] fun x ↦ -v x := by
   rw [IsEquivalent]
   convert huv.isLittleO.neg_left.neg_right
   simp [neg_add_eq_sub]
@@ -217,7 +218,7 @@ theorem IsEquivalent.exists_eq_mul (huv : u ~[l] v) :
 theorem isEquivalent_of_tendsto_one (hz : ∀ᶠ x in l, v x = 0 → u x = 0)
     (huv : Tendsto (u / v) l (𝓝 1)) : u ~[l] v := by
   rw [isEquivalent_iff_exists_eq_mul]
-  refine' ⟨u / v, huv, hz.mono fun x hz' => (div_mul_cancel_of_imp hz').symm⟩
+  refine' ⟨u / v, huv, hz.mono fun x hz' ↦ (div_mul_cancel_of_imp hz').symm⟩
 #align asymptotics.is_equivalent_of_tendsto_one Asymptotics.isEquivalent_of_tendsto_one
 
 theorem isEquivalent_of_tendsto_one' (hz : ∀ x, v x = 0 → u x = 0) (huv : Tendsto (u / v) l (𝓝 1)) :
@@ -231,12 +232,12 @@ theorem isEquivalent_iff_tendsto_one (hz : ∀ᶠ x in l, v x ≠ 0) :
   · intro hequiv
     have := hequiv.isLittleO.tendsto_div_nhds_zero
     simp only [Pi.sub_apply, sub_div] at this
-    have key : Tendsto (fun x => v x / v x) l (𝓝 1) :=
-      (tendsto_congr' <| hz.mono fun x hnz => @div_self _ _ (v x) hnz).mpr tendsto_const_nhds
+    have key : Tendsto (fun x ↦ v x / v x) l (𝓝 1) :=
+      (tendsto_congr' <| hz.mono fun x hnz ↦ @div_self _ _ (v x) hnz).mpr tendsto_const_nhds
     convert this.add key
     · simp
     · norm_num
-  · exact isEquivalent_of_tendsto_one (hz.mono fun x hnvz hz => (hnvz hz).elim)
+  · exact isEquivalent_of_tendsto_one (hz.mono fun x hnvz hz ↦ (hnvz hz).elim)
 #align asymptotics.is_equivalent_iff_tendsto_one Asymptotics.isEquivalent_iff_tendsto_one
 
 end NormedField
@@ -245,12 +246,12 @@ section Smul
 
 theorem IsEquivalent.smul {α E 𝕜 : Type _} [NormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
     {a b : α → 𝕜} {u v : α → E} {l : Filter α} (hab : a ~[l] b) (huv : u ~[l] v) :
-    (fun x => a x • u x) ~[l] fun x => b x • v x := by
+    (fun x ↦ a x • u x) ~[l] fun x ↦ b x • v x := by
   rcases hab.exists_eq_mul with ⟨φ, hφ, habφ⟩
   have :
-    ((fun x : α => a x • u x) - fun x : α => b x • v x) =ᶠ[l] fun x => b x • (φ x • u x - v x) := by
+      ((fun x : α ↦ a x • u x) - fun x : α ↦ b x • v x) =ᶠ[l] fun x ↦ b x • (φ x • u x - v x) := by
     convert (habφ.comp₂ (· • ·) <| EventuallyEq.refl _ u).sub
-        (EventuallyEq.refl _ fun x => b x • v x)
+      (EventuallyEq.refl _ fun x ↦ b x • v x)
     ext
     rw [Pi.mul_apply, mul_comm, mul_smul, ← smul_sub]
   refine' (isLittleO_congr this.symm <| EventuallyEq.rfl).mp ((isBigO_refl b l).smul_isLittleO _)
@@ -262,7 +263,7 @@ theorem IsEquivalent.smul {α E 𝕜 : Type _} [NormedField 𝕜] [NormedAddComm
   intro c hc
   specialize hφ (c / 2 / C) (div_pos (by linarith) hC)
   specialize huv (show 0 < c / 2 by linarith)
-  refine' hφ.mp (huv.mp <| hCuv.mono fun x hCuvx huvx hφx => _)
+  refine' hφ.mp (huv.mp <| hCuv.mono fun x hCuvx huvx hφx ↦ _)
   have key :=
     calc
       ‖φ x - 1‖ * ‖u x‖ ≤ c / 2 / C * ‖u x‖ :=
@@ -272,7 +273,7 @@ theorem IsEquivalent.smul {α E 𝕜 : Type _} [NormedField 𝕜] [NormedAddComm
         field_simp [hC.ne.symm]
         ring
   calc
-    ‖((fun x : α => φ x • u x) - v) x‖ = ‖(φ x - 1) • u x + (u x - v x)‖ := by
+    ‖((fun x : α ↦ φ x • u x) - v) x‖ = ‖(φ x - 1) • u x + (u x - v x)‖ := by
       simp [sub_smul, sub_add]
     _ ≤ ‖(φ x - 1) • u x‖ + ‖u x - v x‖ := (norm_add_le _ _)
     _ = ‖φ x - 1‖ * ‖u x‖ + ‖u x - v x‖ := by rw [norm_smul]
@@ -291,17 +292,17 @@ theorem IsEquivalent.mul (htu : t ~[l] u) (hvw : v ~[l] w) : t * v ~[l] u * w :=
   htu.smul hvw
 #align asymptotics.is_equivalent.mul Asymptotics.IsEquivalent.mul
 
-theorem IsEquivalent.inv (huv : u ~[l] v) : (fun x => (u x)⁻¹) ~[l] fun x => (v x)⁻¹ := by
+theorem IsEquivalent.inv (huv : u ~[l] v) : (fun x ↦ (u x)⁻¹) ~[l] fun x ↦ (v x)⁻¹ := by
   rw [isEquivalent_iff_exists_eq_mul] at *
   rcases huv with ⟨φ, hφ, h⟩
   rw [← inv_one]
-  refine' ⟨fun x => (φ x)⁻¹, Tendsto.inv₀ hφ (by norm_num), _⟩
+  refine' ⟨fun x ↦ (φ x)⁻¹, Tendsto.inv₀ hφ (by norm_num), _⟩
   convert h.inv
   simp [mul_comm]
 #align asymptotics.is_equivalent.inv Asymptotics.IsEquivalent.inv
 
 theorem IsEquivalent.div (htu : t ~[l] u) (hvw : v ~[l] w) :
-    (fun x => t x / v x) ~[l] fun x => u x / w x := by
+    (fun x ↦ t x / v x) ~[l] fun x ↦ u x / w x := by
   simpa only [div_eq_mul_inv] using htu.mul hvw.inv
 #align asymptotics.is_equivalent.div Asymptotics.IsEquivalent.div
 
