@@ -8,9 +8,9 @@ Authors: Bhavik Mehta, Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Limits.Over
-import Mathbin.CategoryTheory.Limits.Shapes.Images
-import Mathbin.CategoryTheory.Adjunction.Reflective
+import Mathlib.CategoryTheory.Limits.Over
+import Mathlib.CategoryTheory.Limits.Shapes.Images
+import Mathlib.CategoryTheory.Adjunction.Reflective
 
 /-!
 # Monomorphisms over a fixed object
@@ -62,8 +62,7 @@ namespace MonoOver
 
 /-- Construct a `mono_over X`. -/
 @[simps]
-def mk' {X A : C} (f : A ⟶ X) [hf : Mono f] : MonoOver X
-    where
+def mk' {X A : C} (f : A ⟶ X) [hf : Mono f] : MonoOver X where
   obj := Over.mk f
   property := hf
 #align category_theory.mono_over.mk' CategoryTheory.MonoOver.mk'
@@ -189,8 +188,7 @@ theorem lift_obj_arrow {Y : D} (F : Over Y ⥤ Over X)
 /-- Monomorphisms over an object `f : over A` in an over category
 are equivalent to monomorphisms over the source of `f`.
 -/
-def slice {A : C} {f : Over A} (h₁ h₂) : MonoOver f ≌ MonoOver f.left
-    where
+def slice {A : C} {f : Over A} (h₁ h₂) : MonoOver f ≌ MonoOver f.left where
   Functor := MonoOver.lift f.iteratedSliceEquiv.Functor h₁
   inverse := MonoOver.lift f.iteratedSliceEquiv.inverse h₂
   unitIso :=
@@ -284,8 +282,7 @@ instance faithful_map (f : X ⟶ Y) [Mono f] : Faithful (map f) where
 /-- Isomorphic objects have equivalent `mono_over` categories.
 -/
 @[simps]
-def mapIso {A B : C} (e : A ≅ B) : MonoOver A ≌ MonoOver B
-    where
+def mapIso {A B : C} (e : A ≅ B) : MonoOver A ≌ MonoOver B where
   Functor := map e.Hom
   inverse := map e.inv
   unitIso := ((mapComp _ _).symm ≪≫ eqToIso (by simp) ≪≫ mapId).symm
@@ -299,8 +296,7 @@ variable (X)
 /-- An equivalence of categories `e` between `C` and `D` induces an equivalence between
     `mono_over X` and `mono_over (e.functor.obj X)` whenever `X` is an object of `C`. -/
 @[simps]
-def congr (e : C ≌ D) : MonoOver X ≌ MonoOver (e.Functor.obj X)
-    where
+def congr (e : C ≌ D) : MonoOver X ≌ MonoOver (e.Functor.obj X) where
   Functor :=
     lift (Over.post e.Functor) fun f => by
       dsimp
@@ -379,8 +375,7 @@ def imageForgetAdj : image ⊣ forget X :=
   Adjunction.mkOfHomEquiv
     {
       homEquiv := fun f g =>
-        { toFun := fun k =>
-            by
+        { toFun := fun k => by
             apply over.hom_mk (factor_thru_image f.hom ≫ k.left) _
             change (factor_thru_image f.hom ≫ k.left) ≫ _ = f.hom
             rw [assoc, over.w k]
