@@ -62,8 +62,8 @@ end GCDMonoid
 
 namespace EuclideanDomain
 
-/-- Create a `GCDMonoid` whose `gcd_monoid.gcd` matches `EuclideanDomain.gcd`. -/
-def gcdMonoid (R) [EuclideanDomain R] [DecidableEq R] : GCDMonoid R where
+/-- Create a `GCDMonoid` whose `GCDMonoid.gcd` matches `EuclideanDomain.gcd`. -/
+def gcdMonoid (R) [EuclideanDomain R] : GCDMonoid R where
   gcd := gcd
   lcm := lcm
   gcd_dvd_left := gcd_dvd_left

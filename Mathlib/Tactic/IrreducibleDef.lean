@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner
 -/
 import Lean
+import Mathlib.Tactic.Eqns
 
 /-!
 # Irreducible definitions
@@ -71,24 +72,37 @@ Introduces an irreducible definition.
 a constant `foo : Nat` as well as
 a theorem `foo_def : foo = 42`.
 -/
-macro mods:declModifiers "irreducible_def" n_id:declId declSig:optDeclSig val:declVal :
+elab mods:declModifiers "irreducible_def" n_id:declId declSig:optDeclSig val:declVal :
     command => do
   let (n, us) ← match n_id with
     | `(Parser.Command.declId| $n:ident $[.{$us,*}]?) => pure (n, us)
-    | _ => Macro.throwUnsupported
+    | _ => throwUnsupportedSyntax
   let us' := us.getD { elemsAndSeps := #[] }
   let n_def := mkIdent <| (·.review) <|
     let scopes := extractMacroScopes n.getId
     { scopes with name := scopes.name.appendAfter "_def" }
-  `(stop_at_first_error
-    def definition$[.{$us,*}]? $declSig:optDeclSig $val
+  let `(Parser.Command.declModifiersF|
+      $[$doc:docComment]? $[$attrs:attributes]?
+      $[$vis]? $[$nc:noncomputable]? $[$uns:unsafe]?) := mods
+    | throwError "unsupported modifiers {format mods}"
+  let prot := vis.filter (· matches `(Parser.Command.visibility| protected))
+  let priv := vis.filter (· matches `(Parser.Command.visibility| private))
+  elabCommand <|<- `(stop_at_first_error
+    $[$nc:noncomputable]? $[$uns]? def definition$[.{$us,*}]? $declSig:optDeclSig $val
     set_option genInjectivity false in -- generates awful simp lemmas
-    structure Wrapper$[.{$us,*}]? where
+    $[$uns:unsafe]? structure Wrapper$[.{$us,*}]? where
       value : type_of% @definition.{$us',*}
       prop : Eq @value @(delta% @definition)
-    opaque wrapped$[.{$us,*}]? : Wrapper.{$us',*} := ⟨_, rfl⟩
-    $mods:declModifiers def $n:ident$[.{$us,*}]? := value_proj @wrapped.{$us',*}
-    theorem $n_def:ident $[.{$us,*}]? : eta_helper Eq @$n.{$us',*} @(delta% @definition) := by
+    $[$nc:noncomputable]? $[$uns]? opaque wrapped$[.{$us,*}]? : Wrapper.{$us',*} := ⟨_, rfl⟩
+    $[$doc:docComment]? $[$attrs:attributes]? $[private%$priv]? $[$nc:noncomputable]? $[$uns]?
+    def $n:ident$[.{$us,*}]? :=
+      value_proj @wrapped.{$us',*}
+    $[private%$priv]? $[$uns:unsafe]? theorem $n_def:ident $[.{$us,*}]? :
+        eta_helper Eq @$n.{$us',*} @(delta% @definition) := by
       intros
       simp only [$n:ident]
-      rw [wrapped.prop])
+      rw [wrapped.prop]
+    attribute [irreducible] $n
+    attribute [eqns $n_def] $n)
+  if prot.isSome then
+    modifyEnv (addProtected · ((← getCurrNamespace) ++ n.getId))
