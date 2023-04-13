@@ -455,8 +455,7 @@ theorem infₛ_toAddSubmonoid (s : Set (NonUnitalSubsemiring R)) :
 
 /-- Non-unital subsemirings of a non-unital semiring form a complete lattice. -/
 instance : CompleteLattice (NonUnitalSubsemiring R) :=
-  {
-    completeLatticeOfInf (NonUnitalSubsemiring R)
+  { completeLatticeOfInf (NonUnitalSubsemiring R)
       fun _ => IsGLB.of_image SetLike.coe_subset_coe isGLB_binfᵢ with
     bot := ⊥
     bot_le := fun s _ hx => (mem_bot.mp hx).symm ▸ zero_mem s
@@ -761,7 +760,6 @@ theorem comap_top (f : F) : comap f (⊤ : NonUnitalSubsemiring S) = (⊤ : NonU
   (gc_map_comap f).u_top
 #align non_unital_subsemiring.comap_top NonUnitalSubsemiring.comap_top
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- Given `NonUnitalSubsemiring`s `s`, `t` of semirings `R`, `S` respectively, `s.prod t` is
 `s × t` as a non-unital subsemiring of `R × S`. -/
 def prod (s : NonUnitalSubsemiring R) (t : NonUnitalSubsemiring S) : NonUnitalSubsemiring (R × S) :=
@@ -769,7 +767,6 @@ def prod (s : NonUnitalSubsemiring R) (t : NonUnitalSubsemiring S) : NonUnitalSu
     carrier := (s : Set R) ×ˢ (t : Set S) }
 #align non_unital_subsemiring.prod NonUnitalSubsemiring.prod
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[norm_cast]
 theorem coe_prod (s : NonUnitalSubsemiring R) (t : NonUnitalSubsemiring S) :
     (s.prod t : Set (R × S)) = (s : Set R) ×ˢ (t : Set S) :=
@@ -970,8 +967,7 @@ variable {F : Type _} [NonUnitalRingHomClass F R S]
 /-- Makes the identity isomorphism from a proof two non-unital subsemirings of a multiplicative
 monoid are equal. -/
 def nonUnitalSubsemiringCongr (h : s = t) : s ≃+* t :=
-  {
-    Equiv.setCongr <| congr_arg _ h with
+  { Equiv.setCongr <| congr_arg _ h with
     map_mul' := fun _ _ => rfl
     map_add' := fun _ _ => rfl }
 #align ring_equiv.non_unital_subsemiring_congr RingEquiv.nonUnitalSubsemiringCongr
