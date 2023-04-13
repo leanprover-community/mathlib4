@@ -12,6 +12,7 @@ import Mathlib.Data.Matrix.Basic
 import Mathlib.Data.Fin.VecNotation
 import Mathlib.Tactic.FinCases
 import Mathlib.Algebra.BigOperators.Fin
+import Qq
 
 /-!
 # Matrix and vector notation
@@ -45,34 +46,46 @@ with `of ![![...]]`.
 Examples of usage can be found in the `test/matrix.lean` file.
 -/
 
+-- TODO: remove once #3215 is bors'd
+class ToLevel.{u} where
+  /-- A `Level` that represents the universe level `u`. -/
+  toLevel : Level
+  /-- The universe itself. This is only here to avoid the "unused universe parameter" error. -/
+  univ : Type u := Sort u
+export ToLevel (toLevel)
+
 
 namespace Matrix
 
-universe u
+universe u uₘ uₙ uₒ
 
-variable {α : Type u} {o n m : ℕ} {m' n' o' : Type _}
+variable {α : Type u} {o n m : ℕ} {m' : Type uₘ} {n' : Type uₙ} {o' : Type uₒ}
 
 open Matrix
 
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:73:14: unsupported tactic `reflect_name #[] -/
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:73:14: unsupported tactic `reflect_name #[] -/
-/-- Matrices can be reflected whenever their entries can. We insert an `@id (matrix m' n' α)` to
+section toExpr
+open Lean
+open Qq
+
+/-- Matrices can be reflected whenever their entries can. We insert a `matrix.of` to
 prevent immediate decay to a function. -/
-unsafe instance matrix.reflect [reflected_univ.{u}] [reflected_univ.{u_1}] [reflected_univ.{u_2}]
-    [reflected _ α] [reflected _ m'] [reflected _ n'] [h : has_reflect (m' → n' → α)] :
-    has_reflect (Matrix m' n' α) := fun m =>
-  (by
-          trace
-            "./././Mathport/Syntax/Translate/Tactic/Builtin.lean:73:14: unsupported tactic `reflect_name #[]" :
-          reflected _ @id.{max u_1 u_2 u + 1}).subst₂
-      ((by
-            trace
-              "./././Mathport/Syntax/Translate/Tactic/Builtin.lean:73:14: unsupported tactic `reflect_name #[]" :
-            reflected _ @Matrix.{u_1, u_2, u}).subst₃
-        q(_) q(_) q(_)) <| by
-    dsimp only [Matrix]
-    exact h m
-#align matrix.matrix.reflect matrix.matrix.reflect
+protected instance toExpr [ToLevel.{u}] [ToLevel.{uₘ}] [ToLevel.{uₙ}]
+    [Lean.ToExpr α] [Lean.ToExpr m'] [Lean.ToExpr n'] [Lean.ToExpr (m' → n' → α)] :
+    Lean.ToExpr (Matrix m' n' α) where
+  toTypeExpr :=
+    let eα : Q(Type $(toLevel.{u})) := toTypeExpr α
+    let em' : Q(Type $(toLevel.{uₘ})) := toTypeExpr m'
+    let en' : Q(Type $(toLevel.{uₙ})) := toTypeExpr n'
+    q(Matrix $eα $em' $en')
+  toExpr M :=
+    let eα : Q(Type $(toLevel.{u})) := toTypeExpr α
+    let em' : Q(Type $(toLevel.{uₘ})) := toTypeExpr m'
+    let en' : Q(Type $(toLevel.{uₙ})) := toTypeExpr n'
+    let eM : Q($em' → $en' → $eα) := toExpr (show m' → n' → α from M)
+    q(Matrix.of $eM) -- TODO: what does this error mean?
+#align matrix.matrix.reflect Matrix.toExpr
+
+end toExpr
 
 section Parser
 
