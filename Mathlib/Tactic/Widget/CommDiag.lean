@@ -6,8 +6,9 @@ Authors: Wojciech Nawrocki
 
 import Mathlib.CategoryTheory.Category.Basic
 
-import WidgetKit.Presentation.Goal
-import WidgetKit.Component.PenroseDiagram
+import ProofWidgets.Component.Panel
+import ProofWidgets.Component.SelectionPanel
+import ProofWidgets.Component.PenroseDiagram
 
 /-! This module defines tactic/meta infrastructure for displaying commutative diagrams in the
 infoview. -/
@@ -32,8 +33,10 @@ Otherwise return `none`. -/
 
 namespace Mathlib.Tactic.Widget
 open Lean Meta
-open WidgetKit
+open ProofWidgets
 open CategoryTheory
+
+/-! ## Metaprogramming utilities for breaking down category theory expressions -/
 
 /-- Given a Hom type `α ⟶ β`, return `(α, β)`. Otherwise `none`. -/
 def homType? (e : Expr) : Option (Expr × Expr) := do
@@ -48,18 +51,22 @@ def homComp? (f : Expr) : Option (Expr × Expr) := do
 /-- Expressions to display as labels in a diagram. -/
 abbrev ExprEmbeds := Array (String × Expr)
 
+/-! ## Widget for general commutative diagrams -/
+
 open scoped Jsx in
 /-- Construct a commutative diagram from a Penrose `sub`stance program and expressions `embeds` to
 display as labels in the diagram. -/
-def mkCommDiag (sub : String) (embeds : ExprEmbeds) : MetaM EncodableHtml := do
+def mkCommDiag (sub : String) (embeds : ExprEmbeds) : MetaM Html := do
   let embeds ← embeds.mapM fun (s, h) =>
-      return (s, EncodableHtml.ofHtml <InteractiveCode fmt={← Widget.ppExprTagged h} />)
-  return EncodableHtml.ofHtml
+      return (s, Html.ofTHtml <InteractiveCode fmt={← Widget.ppExprTagged h} />)
+  return Html.ofTHtml
     <PenroseDiagram
       embeds={embeds}
       dsl={include_str ".."/".."/".."/"widget"/"src"/"penrose"/"commutative.dsl"}
       sty={include_str ".."/".."/".."/"widget"/"src"/"penrose"/"commutativeOpt.sty"}
       sub={sub} />
+
+/-! ## Commutative triangles -/
 
 /--
 Triangle with `homs = [f,g,h]` and `objs = [A,B,C]`
@@ -70,30 +77,9 @@ A f B
 ``` -/
 def subTriangle := include_str ".."/".."/".."/"widget"/"src"/"penrose"/"triangle.sub"
 
-/--
-Square with `homs = [f,g,h,i]` and `objs = [A,B,C,D]`
-```
-A f B
-i   g
-D h C
-``` -/
-def subSquare := include_str ".."/".."/".."/"widget"/"src"/"penrose"/"square.sub"
-
-/-- Given a commutative square `f ≫ g = i ≫ h`, return a square diagram. Otherwise `none`. -/
-def commSquareM? (e : Expr) : MetaM (Option EncodableHtml) := do
-  let e ← instantiateMVars e
-  let some (_, lhs, rhs) := e.eq? | return none
-  let some (f, g) := homComp? lhs | return none
-  let some (i, h) := homComp? rhs | return none
-  let some (A, B) := homType? (← inferType f) | return none
-  let some (D, C) := homType? (← inferType g) | return none
-  some <$> mkCommDiag subSquare
-    #[("A", A), ("B", B), ("C", C), ("D", D),
-      ("f", f), ("g", g), ("h", h), ("i", i)]
-
 /-- Given a commutative triangle `f ≫ g = h` or `e ≡ h = f ≫ g`, return a triangle diagram.
 Otherwise `none`. -/
-def commTriangleM? (e : Expr) : MetaM (Option EncodableHtml) := do
+def commTriangleM? (e : Expr) : MetaM (Option Html) := do
   let e ← instantiateMVars e
   let some (_, lhs, rhs) := e.eq? | return none
   if let some (f, g) := homComp? lhs then
@@ -109,25 +95,48 @@ def commTriangleM? (e : Expr) : MetaM (Option EncodableHtml) := do
     #[("A", A), ("B", B), ("C", C),
       ("f", f), ("g", g), ("h", lhs)]
 
-open Jsx in
-/-- Present an expression as a commutative diagram. -/
 @[expr_presenter]
-def commutativeDiagramPresenter : ExprPresenter where
-  userName := "Commutative diagram"
-  isApplicable type := do
-    if let some _ ← commSquareM? type then
-      return true
-    if let some _ ← commTriangleM? type then
-      return true
-    return false
+def commutativeTrianglePresenter : ExprPresenter where
+  userName := "Commutative triangle"
+  layoutKind := .block
+  present type := do
+    if let some d ← commTriangleM? type then
+      return d
+    throwError "Not a commutative triangle."
+
+/-! ## Commutative squares -/
+
+/--
+Square with `homs = [f,g,h,i]` and `objs = [A,B,C,D]`
+```
+A f B
+i   g
+D h C
+``` -/
+def subSquare := include_str ".."/".."/".."/"widget"/"src"/"penrose"/"square.sub"
+
+/-- Given a commutative square `f ≫ g = i ≫ h`, return a square diagram. Otherwise `none`. -/
+def commSquareM? (e : Expr) : MetaM (Option Html) := do
+  let e ← instantiateMVars e
+  let some (_, lhs, rhs) := e.eq? | return none
+  let some (f, g) := homComp? lhs | return none
+  let some (i, h) := homComp? rhs | return none
+  let some (A, B) := homType? (← inferType f) | return none
+  let some (D, C) := homType? (← inferType g) | return none
+  some <$> mkCommDiag subSquare
+    #[("A", A), ("B", B), ("C", C), ("D", D),
+      ("f", f), ("g", g), ("h", h), ("i", i)]
+
+@[expr_presenter]
+def commutativeSquarePresenter : ExprPresenter where
+  userName := "Commutative square"
+  layoutKind := .block
   present type := do
     if let some d ← commSquareM? type then
-      return some d
-    if let some d ← commTriangleM? type then
-      return some d
-    return none
+      return d
+    throwError "Not a commutative square."
 
-/-! Example diagrams -/
+/-! ## Example diagrams -/
 
 /-- Local instance to make examples work. -/
 local instance : Category (Type u) where
@@ -139,13 +148,13 @@ local instance : Category (Type u) where
   assoc _ _ _ := rfl
 
 example {f g : Nat ⟶ Bool}: f = g → (f ≫ 𝟙 Bool) = (g ≫ 𝟙 Bool) := by
-  withSelectionDisplay
+  withPanelWidgets [SelectionPanel]
     intro h
     exact h
 
 example {fButActuallyTheNameIsReallyLong g : Nat ⟶ Bool}: fButActuallyTheNameIsReallyLong = g →
     fButActuallyTheNameIsReallyLong = (g ≫ 𝟙 Bool) := by
-  withSelectionDisplay
+  withPanelWidgets [SelectionPanel]
     intro h
     conv =>
       rhs
@@ -156,7 +165,7 @@ example {fButActuallyTheNameIsReallyLong g : Nat ⟶ Bool}: fButActuallyTheNameI
 example {X Y Z : Type} {f g : X ⟶ Y} {k : Y ⟶ Y} {f' : Y ⟶ Z} {i : X ⟶ Z}
     (h': g ≫ f' = i) :
     (f ≫ k) = g → ((f ≫ k) ≫ f') = (g ≫ 𝟙 Y ≫ f') := by
-  withSelectionDisplay
+  withPanelWidgets [SelectionPanel]
     intro h
     rw [
       h,
@@ -165,4 +174,11 @@ example {X Y Z : Type} {f g : X ⟶ Y} {k : Y ⟶ Y} {f' : Y ⟶ Z} {i : X ⟶ Z
       Category.comp_id g, h'
     ]
 
-end Mathlib.Tactic.Widget
+example {X Y Z : Type} {f i : X ⟶ Y}
+    {g j : Y ⟶ Z} {h : X ⟶ Z} :
+    h = f ≫ g →
+    i ≫ j = h →
+    f ≫ g = i ≫ j := by
+  withPanelWidgets [SelectionPanel]
+    intro h₁ h₂
+    rw [← h₁, h₂]
