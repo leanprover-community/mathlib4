@@ -24,9 +24,7 @@ about these definitions.
 
 variable {α : Type _} {β : Type _} {γ : Type _} {ι : Type _}
 
-open Filter Metric Function Set
-
-open Topology BigOperators NNReal ENNReal uniformity Pointwise
+open Filter Metric Function Set Topology BigOperators NNReal ENNReal uniformity Pointwise
 
 section SeminormedAddCommGroup
 
@@ -57,7 +55,7 @@ variable [NormedField α] [SeminormedAddCommGroup β]
 
 -- note: while these are currently strictly weaker than the versions without `le`, they will cease
 -- to be if we eventually generalize `NormedSpace` from `NormedField α` to `NormedRing α`.
-section Le
+section LE
 
 theorem norm_smul_le [NormedSpace α β] (r : α) (x : β) : ‖r • x‖ ≤ ‖r‖ * ‖x‖ :=
   NormedSpace.norm_smul_le _ _
@@ -76,7 +74,7 @@ theorem nndist_smul_le [NormedSpace α β] (s : α) (x y : β) :
   dist_smul_le s x y
 #align nndist_smul_le nndist_smul_le
 
-end Le
+end LE
 
 -- see Note [lower instance priority]
 instance (priority := 100) NormedSpace.boundedSMul [NormedSpace α β] : BoundedSMul α β where
@@ -99,7 +97,6 @@ theorem norm_smul [NormedSpace α β] (s : α) (x : β) : ‖s • x‖ = ‖s�
       ‖s‖ * ‖x‖ = ‖s‖ * ‖s⁻¹ • s • x‖ := by rw [inv_smul_smul₀ h]
       _ ≤ ‖s‖ * (‖s⁻¹‖ * ‖s • x‖) := (mul_le_mul_of_nonneg_left (norm_smul_le _ _) (norm_nonneg _))
       _ = ‖s • x‖ := by rw [norm_inv, ← mul_assoc, mul_inv_cancel (mt norm_eq_zero.1 h), one_mul]
-
 #align norm_smul norm_smul
 
 theorem norm_zsmul (α) [NormedField α] [NormedSpace α β] (n : ℤ) (x : β) :
@@ -174,15 +171,13 @@ theorem closure_ball [NormedSpace ℝ E] (x : E) {r : ℝ} (hr : r ≠ 0) :
     rw [mem_ball, dist_eq_norm, add_sub_cancel, norm_smul, Real.norm_eq_abs, abs_of_nonneg hc0,
       mul_comm, ← mul_one r]
     rw [mem_closedBall, dist_eq_norm] at hy
-    replace hr : 0 < r
-    exact ((norm_nonneg _).trans hy).lt_of_ne hr.symm
+    replace hr : 0 < r := ((norm_nonneg _).trans hy).lt_of_ne hr.symm
     apply mul_lt_mul' <;> assumption
 #align closure_ball closure_ball
 
 theorem frontier_ball [NormedSpace ℝ E] (x : E) {r : ℝ} (hr : r ≠ 0) :
     frontier (ball x r) = sphere x r := by
-  rw [frontier, closure_ball x hr, isOpen_ball.interior_eq]
-  ext x; exact (@eq_iff_le_not_lt ℝ _ _ _).symm
+  rw [frontier, closure_ball x hr, isOpen_ball.interior_eq, closedBall_diff_ball]
 #align frontier_ball frontier_ball
 
 theorem interior_closedBall [NormedSpace ℝ E] (x : E) {r : ℝ} (hr : r ≠ 0) :
@@ -353,13 +348,13 @@ See note [reducible non-instances] -/
 def NormedSpace.induced {F : Type _} (α β γ : Type _) [NormedField α] [AddCommGroup β] [Module α β]
     [SeminormedAddCommGroup γ] [NormedSpace α γ] [LinearMapClass F α β γ] (f : F) :
     @NormedSpace α β _ (SeminormedAddCommGroup.induced β γ f) := by
-    -- Porting note: trouble inferring SeminormedAddCommGroup β and Module α β
-    -- unfolding the induced semi-norm is fiddly
-    refine @NormedSpace.mk (α := α) (β := β) _ ?_ ?_ ?_
-    · infer_instance
-    · intro a b
-      change ‖(⇑f) (a • b)‖ ≤ ‖a‖ * ‖(⇑f) b‖
-      exact (map_smul f a b).symm ▸ norm_smul_le a (f b)
+  -- Porting note: trouble inferring SeminormedAddCommGroup β and Module α β
+  -- unfolding the induced semi-norm is fiddly
+  refine @NormedSpace.mk (α := α) (β := β) _ ?_ ?_ ?_
+  · infer_instance
+  · intro a b
+    change ‖(⇑f) (a • b)‖ ≤ ‖a‖ * ‖(⇑f) b‖
+    exact (map_smul f a b).symm ▸ norm_smul_le a (f b)
 #align normed_space.induced NormedSpace.induced
 
 section NormedAddCommGroup
@@ -543,14 +538,14 @@ theorem nnnorm_algebraMap (x : 𝕜) : ‖algebraMap 𝕜 𝕜' x‖₊ = ‖x�
 #align nnnorm_algebra_map nnnorm_algebraMap
 
 @[simp]
-theorem norm_algebra_map' [NormOneClass 𝕜'] (x : 𝕜) : ‖algebraMap 𝕜 𝕜' x‖ = ‖x‖ := by
+theorem norm_algebraMap' [NormOneClass 𝕜'] (x : 𝕜) : ‖algebraMap 𝕜 𝕜' x‖ = ‖x‖ := by
   rw [norm_algebraMap, norm_one, mul_one]
-#align norm_algebra_map' norm_algebra_map'
+#align norm_algebra_map' norm_algebraMap'
 
 @[simp]
-theorem nnnorm_algebra_map' [NormOneClass 𝕜'] (x : 𝕜) : ‖algebraMap 𝕜 𝕜' x‖₊ = ‖x‖₊ :=
-  Subtype.ext <| norm_algebra_map' _ _
-#align nnnorm_algebra_map' nnnorm_algebra_map'
+theorem nnnorm_algebraMap' [NormOneClass 𝕜'] (x : 𝕜) : ‖algebraMap 𝕜 𝕜' x‖₊ = ‖x‖₊ :=
+  Subtype.ext <| norm_algebraMap' _ _
+#align nnnorm_algebra_map' nnnorm_algebraMap'
 
 section NNReal
 
@@ -558,7 +553,7 @@ variable [NormOneClass 𝕜'] [NormedAlgebra ℝ 𝕜']
 
 @[simp]
 theorem norm_algebraMap_nNReal (x : ℝ≥0) : ‖algebraMap ℝ≥0 𝕜' x‖ = x :=
-  (norm_algebra_map' 𝕜' (x : ℝ)).symm ▸ Real.norm_of_nonneg x.prop
+  (norm_algebraMap' 𝕜' (x : ℝ)).symm ▸ Real.norm_of_nonneg x.prop
 #align norm_algebra_map_nnreal norm_algebraMap_nNReal
 
 @[simp]
@@ -573,7 +568,7 @@ variable (𝕜)
 /-- In a normed algebra, the inclusion of the base field in the extended field is an isometry. -/
 theorem algebraMap_isometry [NormOneClass 𝕜'] : Isometry (algebraMap 𝕜 𝕜') := by
   refine' Isometry.of_dist_eq fun x y => _
-  rw [dist_eq_norm, dist_eq_norm, ← RingHom.map_sub, norm_algebra_map']
+  rw [dist_eq_norm, dist_eq_norm, ← RingHom.map_sub, norm_algebraMap']
 #align algebra_map_isometry algebraMap_isometry
 
 instance NormedAlgebra.id : NormedAlgebra 𝕜 𝕜 :=
@@ -667,7 +662,7 @@ instance {𝕜 : Type _} {𝕜' : Type _} {E : Type _} [I : NormedAddCommGroup E
 instance RestrictScalars.normedSpace : NormedSpace 𝕜 (RestrictScalars 𝕜 𝕜' E) :=
   { RestrictScalars.module 𝕜 𝕜' E with
     norm_smul_le := fun c x =>
-      (norm_smul_le (algebraMap 𝕜 𝕜' c) (_ : E)).trans_eq <| by rw [norm_algebra_map'] }
+      (norm_smul_le (algebraMap 𝕜 𝕜' c) (_ : E)).trans_eq <| by rw [norm_algebraMap'] }
 
 -- If you think you need this, consider instead reproducing `RestrictScalars.lsmul`
 -- appropriately modified here.

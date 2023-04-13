@@ -439,7 +439,7 @@ theorem Commute.minimalPeriod_of_comp_dvd_mul {g : α → α} (h : Function.Comm
 theorem Commute.minimalPeriod_of_comp_eq_mul_of_coprime {g : α → α} (h : Function.Commute f g)
     (hco : coprime (minimalPeriod f x) (minimalPeriod g x)) :
     minimalPeriod (f ∘ g) x = minimalPeriod f x * minimalPeriod g x := by
-  apply dvd_antisymm h.minimalPeriod_of_comp_dvd_mul
+  apply h.minimalPeriod_of_comp_dvd_mul.antisymm
   suffices :
     ∀ {f g : α → α},
       Commute f g →
