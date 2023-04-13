@@ -348,7 +348,7 @@ theorem summable_pow_mul_geometric_of_norm_lt_1 {R : Type _} [NormedRing R] [Com
   summable_of_summable_norm <| summable_norm_pow_mul_geometric_of_norm_lt_1 _ hr
 #align summable_pow_mul_geometric_of_norm_lt_1 summable_pow_mul_geometric_of_norm_lt_1
 
-/-- If `‖r‖ < 1`, then `∑' n : ℕ, n * r ^ n = r / (1 - r) ^ 2`, `has_sum` version. -/
+/-- If `‖r‖ < 1`, then `∑' n : ℕ, n * r ^ n = r / (1 - r) ^ 2`, `HasSum` version. -/
 theorem hasSum_coe_mul_geometric_of_norm_lt_1 {𝕜 : Type _} [NormedField 𝕜] [CompleteSpace 𝕜] {r : 𝕜}
     (hr : ‖r‖ < 1) : HasSum (fun n => n * r ^ n : ℕ → 𝕜) (r / (1 - r) ^ 2) := by
   have A : Summable (fun n => (n : 𝕜) * r ^ n : ℕ → 𝕜) := by
@@ -622,7 +622,7 @@ theorem norm_sum_neg_one_pow_le (n : ℕ) : ‖∑ i in range n, (-1 : ℝ) ^ i�
 #align norm_sum_neg_one_pow_le norm_sum_neg_one_pow_le
 
 /-- The **alternating series test** for monotone sequences.
-See also `tendsto_alternating_series_of_monotone_tendsto_zero`. -/
+See also `Monotone.tendsto_alternating_series_of_tendsto_zero`. -/
 theorem Monotone.cauchySeq_alternating_series_of_tendsto_zero (hfa : Monotone f)
     (hf0 : Tendsto f atTop (𝓝 0)) : CauchySeq fun n => ∑ i in range (n + 1), (-1) ^ i * f i := by
   simp_rw [mul_comm]
@@ -637,7 +637,7 @@ theorem Monotone.tendsto_alternating_series_of_tendsto_zero (hfa : Monotone f)
 #align monotone.tendsto_alternating_series_of_tendsto_zero Monotone.tendsto_alternating_series_of_tendsto_zero
 
 /-- The **alternating series test** for antitone sequences.
-See also `tendsto_alternating_series_of_antitone_tendsto_zero`. -/
+See also `Antitone.tendsto_alternating_series_of_tendsto_zero`. -/
 theorem Antitone.cauchySeq_alternating_series_of_tendsto_zero (hfa : Antitone f)
     (hf0 : Tendsto f atTop (𝓝 0)) : CauchySeq fun n => ∑ i in range (n + 1), (-1) ^ i * f i := by
   simp_rw [mul_comm]
@@ -667,15 +667,15 @@ theorem Real.summable_pow_div_factorial (x : ℝ) : Summable (fun n => x ^ n / n
   have B : ‖x‖ / (⌊‖x‖⌋₊ + 1) < 1 := (div_lt_one A).2 (Nat.lt_floor_add_one _)
   -- Then we apply the ratio test. The estimate works for `n ≥ ⌊‖x‖⌋₊`.
   suffices : ∀ n ≥ ⌊‖x‖⌋₊, ‖x ^ (n + 1) / (n + 1)!‖ ≤ ‖x‖ / (⌊‖x‖⌋₊ + 1) * ‖x ^ n / ↑n !‖
-  exact summable_of_ratio_norm_eventually_le B (eventually_at_top.2 ⟨⌊‖x‖⌋₊, this⟩)
+  exact summable_of_ratio_norm_eventually_le B (eventually_atTop.2 ⟨⌊‖x‖⌋₊, this⟩)
   -- Finally, we prove the upper estimate
   intro n hn
   calc
-    ‖x ^ (n + 1) / (n + 1)!‖ = ‖x‖ / (n + 1) * ‖x ^ n / n !‖ := by
-      rw [pow_succ, Nat.factorial_succ, Nat.cast_mul, ← div_mul_div_comm, norm_mul, norm_div,
-        Real.norm_coe_nat, Nat.cast_succ]
-    _ ≤ ‖x‖ / (⌊‖x‖⌋₊ + 1) * ‖x ^ n / n !‖ := by
-      mono* with 0 ≤ ‖x ^ n / n !‖, 0 ≤ ‖x‖ <;> apply norm_nonneg
+    ‖x ^ (n + 1) / (n + 1)!‖ = ‖x‖ / (n + 1) * ‖x ^ n / (n !)‖ := by
+      rw [_root_.pow_succ, Nat.factorial_succ, Nat.cast_mul, ← _root_.div_mul_div_comm, norm_mul,
+        norm_div, Real.norm_coe_nat, Nat.cast_succ]
+    _ ≤ ‖x‖ / (⌊‖x‖⌋₊ + 1) * ‖x ^ n / (n !)‖ := by
+      mono* with 0 ≤ ‖x ^ n / (n !)‖, 0 ≤ ‖x‖ <;> apply norm_nonneg
 #align real.summable_pow_div_factorial Real.summable_pow_div_factorial
 
 theorem Real.tendsto_pow_div_factorial_atTop (x : ℝ) :
