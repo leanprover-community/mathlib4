@@ -288,6 +288,7 @@ import Mathlib.AlgebraicTopology.SimplexCategory
 import Mathlib.AlgebraicTopology.SimplicialObject
 import Mathlib.Analysis.Asymptotics.Asymptotics
 import Mathlib.Analysis.Asymptotics.SuperpolynomialDecay
+import Mathlib.Analysis.Asymptotics.Theta
 import Mathlib.Analysis.Convex.Basic
 import Mathlib.Analysis.Convex.Extrema
 import Mathlib.Analysis.Convex.Extreme
