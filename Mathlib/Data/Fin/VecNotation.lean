@@ -201,26 +201,24 @@ theorem cons_fin_one (x : α) (u : Fin 0 → α) : vecCons x u = fun _ => x :=
   funext (cons_val_fin_one x u)
 #align matrix.cons_fin_one Matrix.cons_fin_one
 
-
 open Lean in
 open Qq in
-protected instance _root_.PiFin.toExpr [ToLevel.{u}]
-  [ToExpr α] :
+protected instance _root_.PiFin.toExpr [ToLevel.{u}] [ToExpr α] :
     ∀ n, ToExpr (Fin n → α)
   | 0 =>
     let lu := toLevel.{u}
     let eα : Q(Type $lu) := toTypeExpr α
     { toTypeExpr := q(Fin 0 → $eα)
-      toExpr := fun v => q(@vecEmpty $eα)}
+      toExpr := fun _ => q(@vecEmpty $eα)}
   | n + 1 =>
     let lu := toLevel.{u}
-    let eα : Q(Type $lu) := toTypeExpr α
-    let en : Q(ℕ) := ToExpr.toExpr (n)
-    let enp1 : Q(ℕ) := ToExpr.toExpr (n + 1)
+    have eα : Q(Type $lu) := toTypeExpr α
+    have en : Q(ℕ) := ToExpr.toExpr (n)
+    have enp1 : Q(ℕ) := ToExpr.toExpr (n + 1)
     { toTypeExpr := q(Fin $enp1 → $eα)
       toExpr := fun v =>
-        let inst := PiFin.toExpr n
-        let eh : Q($eα) := ToExpr.toExpr (vecHead v)
+        let _ := PiFin.toExpr n
+        let eh : Q($(eα)) := ToExpr.toExpr (vecHead v)
         let et : Q(Fin $en → $eα) := ToExpr.toExpr (vecTail v)
         q(vecCons $eh $et)}
 #align pi_fin.reflect PiFin.toExpr
