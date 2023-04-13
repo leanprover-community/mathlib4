@@ -121,4 +121,3 @@ instance Additive.normedLinearOrderedAddGroup [NormedLinearOrderedGroup α] :
 instance Multiplicative.normedlinearOrderedGroup [NormedLinearOrderedAddGroup α] :
     NormedLinearOrderedGroup (Multiplicative α) :=
   { Multiplicative.normedCommGroup, Multiplicative.linearOrderedCommGroup with }
-  
