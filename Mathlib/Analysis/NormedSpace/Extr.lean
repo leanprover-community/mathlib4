@@ -8,8 +8,8 @@ Authors: Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.NormedSpace.Ray
-import Mathbin.Topology.LocalExtr
+import Mathlib.Analysis.NormedSpace.Ray
+import Mathlib.Topology.LocalExtr
 
 /-!
 # (Local) maximums in a normed space
