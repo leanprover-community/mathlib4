@@ -8,10 +8,10 @@ Authors: Anne Baanen, Eric Wieser
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Matrix.Basic
-import Mathbin.Data.Fin.VecNotation
-import Mathbin.Tactic.FinCases
-import Mathbin.Algebra.BigOperators.Fin
+import Mathlib.Data.Matrix.Basic
+import Mathlib.Data.Fin.VecNotation
+import Mathlib.Tactic.FinCases
+import Mathlib.Algebra.BigOperators.Fin
 
 /-!
 # Matrix and vector notation
@@ -69,8 +69,7 @@ unsafe instance matrix.reflect [reflected_univ.{u}] [reflected_univ.{u_1}] [refl
             trace
               "./././Mathport/Syntax/Translate/Tactic/Builtin.lean:73:14: unsupported tactic `reflect_name #[]" :
             reflected _ @Matrix.{u_1, u_2, u}).subst₃
-        q(_) q(_) q(_)) <|
-    by
+        q(_) q(_) q(_)) <| by
     dsimp only [Matrix]
     exact h m
 #align matrix.matrix.reflect matrix.matrix.reflect
@@ -160,8 +159,7 @@ theorem head_val' (B : Fin m.succ → n' → α) (j : n') : (vecHead fun i => B 
 
 @[simp]
 theorem tail_val' (B : Fin m.succ → n' → α) (j : n') :
-    (vecTail fun i => B i j) = fun i => vecTail B i j :=
-  by
+    (vecTail fun i => B i j) = fun i => vecTail B i j := by
   ext
   simp [vec_tail]
 #align matrix.tail_val' Matrix.tail_val'
@@ -202,22 +200,19 @@ theorem col_empty (v : Fin 0 → α) : col v = vecEmpty :=
 #align matrix.col_empty Matrix.col_empty
 
 @[simp]
-theorem col_cons (x : α) (u : Fin m → α) : col (vecCons x u) = vecCons (fun _ => x) (col u) :=
-  by
+theorem col_cons (x : α) (u : Fin m → α) : col (vecCons x u) = vecCons (fun _ => x) (col u) := by
   ext (i j)
   refine' Fin.cases _ _ i <;> simp [vec_head, vec_tail]
 #align matrix.col_cons Matrix.col_cons
 
 @[simp]
-theorem row_empty : row (vecEmpty : Fin 0 → α) = fun _ => vecEmpty :=
-  by
+theorem row_empty : row (vecEmpty : Fin 0 → α) = fun _ => vecEmpty := by
   ext
   rfl
 #align matrix.row_empty Matrix.row_empty
 
 @[simp]
-theorem row_cons (x : α) (u : Fin m → α) : row (vecCons x u) = fun _ => vecCons x u :=
-  by
+theorem row_cons (x : α) (u : Fin m → α) : row (vecCons x u) = fun _ => vecCons x u := by
   ext
   rfl
 #align matrix.row_cons Matrix.row_cons
@@ -238,8 +233,7 @@ theorem transpose_empty_cols (A : Matrix (Fin 0) m' α) : Aᵀ = of fun i => ![]
 
 @[simp]
 theorem cons_transpose (v : n' → α) (A : Matrix (Fin m) n' α) :
-    (of (vecCons v A))ᵀ = of fun i => vecCons (v i) (Aᵀ i) :=
-  by
+    (of (vecCons v A))ᵀ = of fun i => vecCons (v i) (Aᵀ i) := by
   ext (i j)
   refine' Fin.cases _ _ j <;> simp
 #align matrix.cons_transpose Matrix.cons_transpose
@@ -251,8 +245,7 @@ theorem head_transpose (A : Matrix m' (Fin n.succ) α) :
 #align matrix.head_transpose Matrix.head_transpose
 
 @[simp]
-theorem tail_transpose (A : Matrix m' (Fin n.succ) α) : vecTail (of.symm Aᵀ) = (vecTail ∘ A)ᵀ :=
-  by
+theorem tail_transpose (A : Matrix m' (Fin n.succ) α) : vecTail (of.symm Aᵀ) = (vecTail ∘ A)ᵀ := by
   ext (i j)
   rfl
 #align matrix.tail_transpose Matrix.tail_transpose
@@ -286,8 +279,7 @@ theorem mul_val_succ [Fintype n'] (A : Matrix (Fin m.succ) n' α) (B : Matrix n'
 
 @[simp]
 theorem cons_mul [Fintype n'] (v : n' → α) (A : Fin m → n' → α) (B : Matrix n' o' α) :
-    of (vecCons v A) ⬝ B = of (vecCons (vecMul v B) (of.symm (of A ⬝ B))) :=
-  by
+    of (vecCons v A) ⬝ B = of (vecCons (vecMul v B) (of.symm (of A ⬝ B))) := by
   ext (i j)
   refine' Fin.cases _ _ i
   · rfl
@@ -312,16 +304,14 @@ theorem vecMul_empty [Fintype n'] (v : n' → α) (B : Matrix n' (Fin 0) α) : v
 
 @[simp]
 theorem cons_vecMul (x : α) (v : Fin n → α) (B : Fin n.succ → o' → α) :
-    vecMul (vecCons x v) (of B) = x • vecHead B + vecMul v (of <| vecTail B) :=
-  by
+    vecMul (vecCons x v) (of B) = x • vecHead B + vecMul v (of <| vecTail B) := by
   ext i
   simp [vec_mul]
 #align matrix.cons_vec_mul Matrix.cons_vecMul
 
 @[simp]
 theorem vecMul_cons (v : Fin n.succ → α) (w : o' → α) (B : Fin n → o' → α) :
-    vecMul v (of <| vecCons w B) = vecHead v • w + vecMul (vecTail v) (of B) :=
-  by
+    vecMul v (of <| vecCons w B) = vecHead v • w + vecMul (vecTail v) (of B) := by
   ext i
   simp [vec_mul]
 #align matrix.vec_mul_cons Matrix.vecMul_cons
@@ -349,16 +339,14 @@ theorem mulVec_empty (A : Matrix m' (Fin 0) α) (v : Fin 0 → α) : mulVec A v 
 
 @[simp]
 theorem cons_mulVec [Fintype n'] (v : n' → α) (A : Fin m → n' → α) (w : n' → α) :
-    mulVec (of <| vecCons v A) w = vecCons (dotProduct v w) (mulVec (of A) w) :=
-  by
+    mulVec (of <| vecCons v A) w = vecCons (dotProduct v w) (mulVec (of A) w) := by
   ext i
   refine' Fin.cases _ _ i <;> simp [mul_vec]
 #align matrix.cons_mul_vec Matrix.cons_mulVec
 
 @[simp]
 theorem mulVec_cons {α} [CommSemiring α] (A : m' → Fin n.succ → α) (x : α) (v : Fin n → α) :
-    mulVec (of A) (vecCons x v) = x • vecHead ∘ A + mulVec (of (vecTail ∘ A)) v :=
-  by
+    mulVec (of A) (vecCons x v) = x • vecHead ∘ A + mulVec (of (vecTail ∘ A)) v := by
   ext i
   simp [mul_vec, mul_comm]
 #align matrix.mul_vec_cons Matrix.mulVec_cons
@@ -381,16 +369,14 @@ theorem vecMulVec_empty (v : m' → α) (w : Fin 0 → α) : vecMulVec v w = fun
 
 @[simp]
 theorem cons_vecMulVec (x : α) (v : Fin m → α) (w : n' → α) :
-    vecMulVec (vecCons x v) w = vecCons (x • w) (vecMulVec v w) :=
-  by
+    vecMulVec (vecCons x v) w = vecCons (x • w) (vecMulVec v w) := by
   ext i
   refine' Fin.cases _ _ i <;> simp [vec_mul_vec]
 #align matrix.cons_vec_mul_vec Matrix.cons_vecMulVec
 
 @[simp]
 theorem vecMulVec_cons (v : m' → α) (x : α) (w : Fin n → α) :
-    vecMulVec v (vecCons x w) = fun i => v i • vecCons x w :=
-  by
+    vecMulVec v (vecCons x w) = fun i => v i • vecCons x w := by
   ext (i j)
   rw [vec_mul_vec_apply, Pi.smul_apply, smul_eq_mul]
 #align matrix.vec_mul_vec_cons Matrix.vecMulVec_cons
@@ -408,8 +394,7 @@ theorem smul_mat_empty {m' : Type _} (x : α) (A : Fin 0 → m' → α) : x • 
 
 @[simp]
 theorem smul_mat_cons (x : α) (v : n' → α) (A : Fin m → n' → α) :
-    x • vecCons v A = vecCons (x • v) (x • A) :=
-  by
+    x • vecCons v A = vecCons (x • v) (x • A) := by
   ext i
   refine' Fin.cases _ _ i <;> simp
 #align matrix.smul_mat_cons Matrix.smul_mat_cons
@@ -426,8 +411,7 @@ theorem submatrix_empty (A : Matrix m' n' α) (row : Fin 0 → m') (col : o' →
 
 @[simp]
 theorem submatrix_cons_row (A : Matrix m' n' α) (i : m') (row : Fin m → m') (col : o' → n') :
-    submatrix A (vecCons i row) col = vecCons (fun j => A i (col j)) (submatrix A row col) :=
-  by
+    submatrix A (vecCons i row) col = vecCons (fun j => A i (col j)) (submatrix A row col) := by
   ext (i j)
   refine' Fin.cases _ _ i <;> simp [submatrix]
 #align matrix.submatrix_cons_row Matrix.submatrix_cons_row
