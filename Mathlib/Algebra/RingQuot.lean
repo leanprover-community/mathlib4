@@ -534,14 +534,14 @@ section StarRing
 variable [StarRing R] (hr : ∀ a b, r a b → r (star a) (star b))
 
 theorem Rel.star ⦃a b : R⦄ (h : Rel r a b) : Rel r (star a) (star b) := by
-  /- induction h
-  · exact Rel.of (hr _ _ h_h)
-  · rw [star_add, star_add]
-    exact Rel.add_left h_ih
-  · rw [star_mul, star_mul]
-    exact Rel.mul_right h_ih
-  · rw [star_mul, star_mul]
-    exact Rel.mul_left h_ih -/sorry
+  induction h with
+  | of h                 => exact Rel.of (hr _ _ h)
+  | @add_left _ _ _ _ h  => rw [star_add, star_add]
+                            exact Rel.add_left h
+  | @mul_left _ _ _ _ h  => rw [star_mul, star_mul]
+                            exact Rel.mul_right h
+  | @mul_right _ _ _ _ h => rw [star_mul, star_mul]
+                            exact Rel.mul_left h
 #align ring_quot.rel.star RingQuot.Rel.star
 
 private irreducible_def star' : RingQuot r → RingQuot r
@@ -600,7 +600,7 @@ theorem mkAlgHom_surjective (s : A → A → Prop) : Function.Surjective (mkAlgH
   use a
   rfl
 #align ring_quot.mk_alg_hom_surjective RingQuot.mkAlgHom_surjective
-
+#exit
 variable {B : Type u₄} [Semiring B] [Algebra S B]
 
 @[ext]
