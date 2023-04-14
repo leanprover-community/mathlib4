@@ -6,6 +6,7 @@ Ported by: E.W.Ayers
 -/
 import Mathlib.Init.Data.Nat.Notation
 import Mathlib.Data.String.Defs
+import Mathlib.Data.Array.Defs
 import Mathlib.Data.KVMap
 import Mathlib.Lean.Expr.ReplaceRec
 import Mathlib.Lean.EnvExtension
@@ -41,8 +42,10 @@ syntax (name := to_additive_reorder) "to_additive_reorder" num* : attr
 syntax (name := to_additive_change_numeral) "to_additive_change_numeral" num* : attr
 /-- An `attr := ...` option for `to_additive`. -/
 syntax toAdditiveAttrOption := &"attr" ":=" Parser.Term.attrInstance,*
+/-- A numeral or a pipe -/
+syntax numOrPipe := "|" <|> num
 /-- An `reorder := ...` option for `to_additive`. -/
-syntax toAdditiveReorderOption := &"reorder" ":=" num+
+syntax toAdditiveReorderOption := &"reorder" ":=" numOrPipe+
 /-- Options to `to_additive`. -/
 syntax toAdditiveParenthesizedOption := "(" toAdditiveAttrOption <|> toAdditiveReorderOption ")"
 /-- Options to `to_additive`. -/
@@ -148,16 +151,11 @@ initialize ignoreArgsAttr : NameMapExtension (List Nat) ←
           | _ => throwUnsupportedSyntax
         return ids.toList }
 
-/--
+ /--
 An attribute that stores all the declarations that needs their arguments reordered when
-applying `@[to_additive]`. Currently, we only support swapping consecutive arguments.
-The list of the natural numbers contains the positions of the first of the two arguments
-to be swapped.
-If the first two arguments are swapped, the first two universe variables are also swapped.
-Example: `@[to_additive_reorder 1 4]` swaps the first two arguments and the arguments in
-positions 4 and 5.
+applying `@[to_additive]`. It is applied by the `(reorder := ...)` syntax of `to_additive`.
 -/
-initialize reorderAttr : NameMapExtension (List Nat) ←
+initialize reorderAttr : NameMapExtension (List $ List Nat) ←
   registerNameMapAttribute {
     name := `to_additive_reorder
     descr :=
@@ -171,7 +169,7 @@ initialize reorderAttr : NameMapExtension (List Nat) ←
         m!"Using this attribute is deprecated. Use `@[to_additive (reorder := <num>)]` {""
         }instead.\nThat will also generate the additive version with the arguments swapped, {""
         }so you are probably able to remove the manually written additive declaration."
-      pure <| Array.toList <| ids.map (·.1.isNatLit?.get!)
+      pure <| Array.toList <| ids.map ([·.1.isNatLit?.get!])
     | _, _ => throwUnsupportedSyntax }
 
 /--
@@ -260,7 +258,7 @@ structure Config : Type where
   `@[to_additive]` will check whether the given name can be auto-generated. -/
   allowAutoName : Bool := false
   /-- The arguments that should be reordered by `to_additive` -/
-  reorder : List Nat := []
+  reorder : List (List Nat) := []
   /-- The attributes which we want to give to both the multiplicative and additive versions.
   For certain attributes (such as `simp` and `simps`) this will also add generated lemmas to the
   translation dictionary. -/
@@ -339,14 +337,14 @@ e.g. `g x₁ x₂ x₃ ... xₙ` becomes `g x₂ x₁ x₃ ... xₙ` if `reorder
 -/
 def applyReplacementFun (e : Expr) : MetaM Expr := do
   let env ← getEnv
-  let reorderFn : Name → List ℕ := fun nm ↦ (reorderAttr.find? env nm |>.getD [])
+  let reorderFn : Name → List (List ℕ) := fun nm ↦ (reorderAttr.find? env nm |>.getD [])
   let isRelevant : Name → ℕ → Bool := fun nm i ↦ i == (relevantArgAttr.find? env nm).getD 0
   return aux
       (findTranslation? <| ← getEnv) reorderFn (ignoreArgsAttr.find? env)
       (changeNumeralAttr.find? env) isRelevant (← getBoolOption `trace.to_additive_detail) e
 where /-- Implementation of `applyReplacementFun`. -/
   aux (findTranslation? : Name → Option Name)
-    (reorderFn : Name → List ℕ) (ignore : Name → Option (List ℕ))
+    (reorderFn : Name → List (List ℕ)) (ignore : Name → Option (List ℕ))
     (changeNumeral? : Name → Option (List Nat)) (isRelevant : Name → ℕ → Bool) (trace : Bool) :
     Expr → Expr :=
   Lean.Expr.replaceRec fun r e ↦ Id.run do
@@ -357,7 +355,7 @@ where /-- Implementation of `applyReplacementFun`. -/
       let n₁ := n₀.mapPrefix findTranslation?
       if trace && n₀ != n₁ then
         dbg_trace s!"changing {n₀} to {n₁}"
-      let ls : List Level := if 1 ∈ reorderFn n₀ then ls.swapFirstTwo else ls
+      let ls : List Level := if 1 ∈ (reorderFn n₀).join then ls.swapFirstTwo else ls
       return some <| Lean.mkConst n₁ ls
     | .app g x => do
       let gf := g.getAppFn
@@ -365,52 +363,49 @@ where /-- Implementation of `applyReplacementFun`. -/
         if trace then
           dbg_trace s!"applyReplacementFun: Variables applied to numerals are not changed {g.app x}"
         return some <| g.app x
-      if let some nm := gf.constName? then
-        let gArgs := g.getAppArgs
-        -- e = `(nm y₁ .. yₙ x)
-        /- Test if arguments should be reordered. -/
-        if h : gArgs.size > 0 then
-          let c1 : Bool := gArgs.size ∈ reorderFn nm
-          let c2 := additiveTest findTranslation? ignore gArgs[0]
-          if c1 && c2 then
-            -- interchange `x` and the last argument of `g`
-            let x := r x
-            let gf := r g.appFn!
-            let ga := r g.appArg!
-            let e₂ := mkApp2 gf x ga
+      let gArgs := g.getAppArgs
+      let mut gAllArgs := gArgs.push x
+      let (gfAdditive, gAllArgsAdditive) ←
+        if let some nm := gf.constName? then
+          -- e = `(nm y₁ .. yₙ x)
+          /- Test if arguments should be reordered. -/
+          let reorder := reorderFn nm
+          if reorder.length > 0 && gArgs.size > 0 &&
+            additiveTest findTranslation? ignore gAllArgs[0]! then
+            gAllArgs := gAllArgs.permute! reorder
             if trace then
-              dbg_trace s!"reordering {nm}: {x} ↔ {ga}\nBefore: {e}\nAfter: {e₂}"
-            return some e₂
-        /- Test if the head should not be replaced. -/
-        let c1 := isRelevant nm gArgs.size
-        let c2 := gf.isConst
-        let c3 := additiveTest findTranslation? ignore x
-        if trace && c1 && c2 && c3 then
-          dbg_trace s!"{x} doesn't contain a fixed type, so we will change {nm}"
-        if c1 && c2 && not c3 then
-          if trace then
-            dbg_trace s!"{x} contains a fixed type, so {nm} is not changed"
-          let x ← r x
-          let args ← gArgs.mapM r
-          return some $ mkApp (mkAppN gf args) x
-        /- Do not replace numerals in specific types. -/
-        let gAllArgs := gArgs.push x
-        let firstArg := gAllArgs[0]
-        if let some changedArgNrs := changeNumeral? nm then
-          if additiveTest findTranslation? ignore firstArg then
-            if trace then
-              dbg_trace s!"applyReplacementFun: We change the numerals in {g.app x}. {
-                ""}However, we will still recurse into all the non-numeral arguments."
-            -- In this case, we still update all arguments of `g` that are not numerals,
-            -- since all other arguments can contain subexpressions like
-            -- `(fun x ↦ ℕ) (1 : G)`, and we have to update the `(1 : G)` to `(0 : G)`
-            let newArgs ← gAllArgs.mapIdx fun argNr arg ↦
-              if changedArgNrs.contains argNr then
-                r <| changeNumeral arg
-              else
-                r arg
-            return some <| mkAppN gf newArgs
-      return e.updateApp! (← r g) (← r x)
+              dbg_trace s!"reordering tjhe arguments of {nm} using the cyclic permutations {reorder}"
+          /- Test if the head should not be replaced. -/
+          let gfAdditive ←
+            if isRelevant nm gArgs.size && gf.isConst &&
+              not (additiveTest findTranslation? ignore x) then
+              if trace then
+                dbg_trace s!"{x} contains a fixed type, so {nm} is not changed"
+              gf
+            else
+              r gf
+              -- let x ← r x
+              -- let args ← gArgs.mapM r
+              -- return some $ mkApp (mkAppN gf args) x
+          /- Do not replace numerals in specific types. -/
+          let firstArg := gAllArgs[0]!
+          if let some changedArgNrs := changeNumeral? nm then
+            if additiveTest findTranslation? ignore firstArg then
+              if trace then
+                dbg_trace s!"applyReplacementFun: We change the numerals in {g.app x}. {
+                  ""}However, we will still recurse into all the non-numeral arguments."
+              -- In this case, we still update all arguments of `g` that are not numerals,
+              -- since all other arguments can contain subexpressions like
+              -- `(fun x ↦ ℕ) (1 : G)`, and we have to update the `(1 : G)` to `(0 : G)`
+              gAllArgs := gAllArgs.mapIdx fun argNr arg ↦
+                if changedArgNrs.contains argNr then
+                  changeNumeral arg
+                else
+                  arg
+          pure <| (gfAdditive, ← gAllArgs.mapM r)
+        else
+          pure (← r gf, ← gAllArgs.mapM r)
+      return some <| mkAppN gfAdditive gAllArgsAdditive
     | .proj n₀ idx e => do
       let n₁ := n₀.mapPrefix findTranslation?
       if trace then
@@ -428,7 +423,7 @@ def etaExpandN (n : Nat) (e : Expr): MetaM Expr := do
 `reorder.find n`. -/
 def expand (e : Expr) : MetaM Expr := do
   let env ← getEnv
-  let reorderFn : Name → List ℕ := fun nm ↦ (reorderAttr.find? env nm |>.getD [])
+  let reorderFn : Name → List (List ℕ) := fun nm ↦ (reorderAttr.find? env nm |>.getD [])
   let e₂ ← Lean.Meta.transform (input := e) (post := fun e => return .done e) <| fun e ↦ do
     let e0 := e.getAppFn
     let es := e.getAppArgs
@@ -437,7 +432,7 @@ def expand (e : Expr) : MetaM Expr := do
     if reorder.isEmpty then
       -- no need to expand if nothing needs reordering
       return .continue
-    let needed_n := reorder.foldr Nat.max 0 + 1
+    let needed_n := reorder.foldr (·.foldl Nat.max ·) 0
     -- the second disjunct is a temporary fix to avoid infinite loops.
     -- We may need to use `replaceRec` or something similar to not change the head of an application
     if needed_n ≤ es.size || es.size == 0 then
@@ -453,38 +448,25 @@ def expand (e : Expr) : MetaM Expr := do
   return e₂
 
 /-- Reorder pi-binders. See doc of `reorderAttr` for the interpretation of the argument -/
-def reorderForall (src : Expr) (reorder : List Nat := []) : MetaM Expr := do
+def reorderForall (src : Expr) (reorder : List (List Nat) := []) : MetaM Expr := do
   if reorder == [] then
     return src
   forallTelescope src fun xs e => do
-    let xs ← reorder.foldrM (init := xs) fun i xs =>
-      if h : i < xs.size then
-        pure <| xs.swap ⟨i - 1, Nat.lt_of_le_of_lt i.pred_le h⟩ ⟨i, h⟩
-      else
-        throwError "the declaration does not have enough arguments to reorder the given arguments: {
-          xs.size} ≤ {i}"
-    mkForallFVars xs e
+    mkForallFVars (xs.permute! reorder) e
 
 /-- Reorder lambda-binders. See doc of `reorderAttr` for the interpretation of the argument -/
-def reorderLambda (src : Expr) (reorder : List Nat := []) : MetaM Expr := do
+def reorderLambda (src : Expr) (reorder : List (List Nat) := []) : MetaM Expr := do
   if reorder == [] then
     return src
   lambdaTelescope src fun xs e => do
-    let xs ← reorder.foldrM (init := xs) fun i xs =>
-      if h : i < xs.size then
-        pure <| xs.swap ⟨i - 1, Nat.lt_of_le_of_lt i.pred_le h⟩ ⟨i, h⟩
-      else
-        throwError "the declaration does not have enough arguments to reorder the given arguments. {
-          xs.size} ≤ {i}.\nIf this is a field projection, make sure to use `@[to_additive]` on {""
-          }the field first."
-    mkLambdaFVars xs e
+    mkLambdaFVars (xs.permute! reorder) e
 
 /-- Run applyReplacementFun on the given `srcDecl` to make a new declaration with name `tgt` -/
 def updateDecl
-  (tgt : Name) (srcDecl : ConstantInfo) (reorder : List Nat := [])
+  (tgt : Name) (srcDecl : ConstantInfo) (reorder : List (List Nat) := [])
   : MetaM ConstantInfo := do
   let mut decl := srcDecl.updateName tgt
-  if 1 ∈ reorder then
+  if 1 ∈ reorder.join then
     decl := decl.updateLevelParams decl.levelParams.swapFirstTwo
   decl := decl.updateType <| ← applyReplacementFun <| ← reorderForall (← expand decl.type) reorder
   if let some v := decl.value? then
@@ -877,15 +859,25 @@ def elabToAdditive : Syntax → CoreM Config
     let mut attrs : Array Syntax := #[]
     let mut reorder := []
     let mut existing := some false
+    let mut numList := []
     for stx in opts do
       match stx with
       | `(toAdditiveOption| (attr := $[$stxs],*)) =>
         attrs := attrs ++ stxs
-      | `(toAdditiveOption| (reorder := $[$reorders:num]*)) =>
-        reorder := reorder ++ reorders.toList.map (·.raw.isNatLit?.get!)
+      | `(toAdditiveOption| (reorder := $[$reorders:numOrPipe]*)) =>
+        for stx in reorders do
+          match stx with
+          | `(numOrPipe| |) =>
+            reorder := numList.reverse :: reorder
+            numList := []
+          | `(numOrPipe| $id:num) => numList := id.raw.isNatLit?.get! :: numList
+          | _ => throwUnsupportedSyntax
+        reorder := numList.reverse :: reorder
+        numList := []
       | `(toAdditiveOption| existing) =>
         existing := some true
       | _ => throwUnsupportedSyntax
+    reorder := reorder.reverse
     trace[to_additive_detail] "attributes: {attrs}; reorder arguments: {reorder}"
     return { trace := trace.isSome
              tgt := match tgt with | some tgt => tgt.getId | none => Name.anonymous
