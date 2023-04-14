@@ -287,8 +287,12 @@ import Mathlib.Algebra.Tropical.Lattice
 import Mathlib.AlgebraicTopology.DoldKan.Compatibility
 import Mathlib.AlgebraicTopology.SimplexCategory
 import Mathlib.AlgebraicTopology.SimplicialObject
+import Mathlib.AlgebraicTopology.SplitSimplicialObject
 import Mathlib.Analysis.Asymptotics.Asymptotics
+import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
+import Mathlib.Analysis.Asymptotics.SuperpolynomialDecay
 import Mathlib.Analysis.Asymptotics.Theta
+import Mathlib.Analysis.BoxIntegral.Box.Basic
 import Mathlib.Analysis.Convex.Basic
 import Mathlib.Analysis.Convex.Extrema
 import Mathlib.Analysis.Convex.Extreme
@@ -1282,6 +1286,7 @@ import Mathlib.LinearAlgebra.FinsuppVectorSpace
 import Mathlib.LinearAlgebra.FreeAlgebra
 import Mathlib.LinearAlgebra.FreeModule.Basic
 import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
+import Mathlib.LinearAlgebra.FreeModule.Rank
 import Mathlib.LinearAlgebra.GeneralLinearGroup
 import Mathlib.LinearAlgebra.InvariantBasisNumber
 import Mathlib.LinearAlgebra.Isomorphisms
@@ -1419,6 +1424,7 @@ import Mathlib.Order.Filter.Pointwise
 import Mathlib.Order.Filter.Prod
 import Mathlib.Order.Filter.SmallSets
 import Mathlib.Order.Filter.Ultrafilter
+import Mathlib.Order.Filter.ZeroAndBoundedAtFilter
 import Mathlib.Order.FixedPoints
 import Mathlib.Order.GaloisConnection
 import Mathlib.Order.GameAdd
@@ -1587,6 +1593,7 @@ import Mathlib.Tactic.Contrapose
 import Mathlib.Tactic.Conv
 import Mathlib.Tactic.Convert
 import Mathlib.Tactic.Core
+import Mathlib.Tactic.DeriveToExpr
 import Mathlib.Tactic.Elementwise
 import Mathlib.Tactic.Eqns
 import Mathlib.Tactic.Existsi
@@ -1673,6 +1680,8 @@ import Mathlib.Tactic.SwapVar
 import Mathlib.Tactic.TFAE
 import Mathlib.Tactic.Tauto
 import Mathlib.Tactic.ToAdditive
+import Mathlib.Tactic.ToExpr
+import Mathlib.Tactic.ToLevel
 import Mathlib.Tactic.Trace
 import Mathlib.Tactic.TypeCheck
 import Mathlib.Tactic.UnsetOption

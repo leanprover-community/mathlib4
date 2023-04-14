@@ -64,11 +64,6 @@ def Summable (f : β → α) : Prop :=
   ∃ a, HasSum f a
 #align summable Summable
 
--- Porting note: `irreducible_def` produces a structure.
---               When a structure is defined, an injectivity theorem of the constructor is
---               generated, which has `simp` attr, but this get a `simpNF` linter.
---               So, this option is required.
-set_option genInjectivity false in
 /-- `∑' i, f i` is the sum of `f` it exists, or 0 otherwise -/
 irreducible_def tsum {β} (f : β → α) :=
   if h : Summable f then Classical.choose h else 0
