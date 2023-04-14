@@ -253,9 +253,9 @@ set_option linter.uppercaseLean3 false in
 #align laurent_polynomial.invertible_T LaurentPolynomial.invertibleT
 
 @[simp]
-theorem invOf_t (n : ℤ) : ⅟ (T n : R[T;T⁻¹]) = T (-n) := rfl
+theorem invOf_T (n : ℤ) : ⅟ (T n : R[T;T⁻¹]) = T (-n) := rfl
 set_option linter.uppercaseLean3 false in
-#align laurent_polynomial.inv_of_T LaurentPolynomial.invOf_t
+#align laurent_polynomial.inv_of_T LaurentPolynomial.invOf_T
 
 theorem isUnit_T (n : ℤ) : IsUnit (T n : R[T;T⁻¹]) :=
   isUnit_of_invertible _
