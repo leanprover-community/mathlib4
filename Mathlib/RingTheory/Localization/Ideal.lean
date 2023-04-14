@@ -101,8 +101,11 @@ embedded in the ordering of ideals of `R`. -/
 def orderEmbedding : Ideal S ↪o Ideal R where
   toFun J := Ideal.comap (algebraMap R S) J
   inj' := Function.LeftInverse.injective (map_comap M S)
-  map_rel_iff' J₁ J₂ :=
-    ⟨fun hJ => (map_comap M S) J₁ ▸ (map_comap M S) J₂ ▸ Ideal.map_mono hJ, Ideal.comap_mono⟩
+  map_rel_iff' := by
+    rintro J₁ J₂
+    constructor
+    exact (fun hJ => (map_comap M S) J₁ ▸ (map_comap M S) J₂ ▸ Ideal.map_mono hJ)
+    exact (fun hJ => Ideal.comap_mono hJ)
 #align is_localization.order_embedding IsLocalization.orderEmbedding
 
 /-- If `R` is a ring, then prime ideals in the localization at `M`
@@ -154,10 +157,11 @@ def orderIsoOfPrime :
   invFun p := ⟨Ideal.map (algebraMap R S) p.1, isPrime_of_isPrime_disjoint M S p.1 p.2.1 p.2.2⟩
   left_inv J := Subtype.eq (map_comap M S J)
   right_inv I := Subtype.eq (comap_map_of_isPrime_disjoint M S I.1 I.2.1 I.2.2)
-  map_rel_iff' I I' :=
-    ⟨fun h =>
-      show I.val ≤ I'.val from map_comap M S I.val ▸ map_comap M S I'.val ▸ Ideal.map_mono h,
-      fun h x hx => h hx⟩
+  map_rel_iff' := by
+    rintro I I'
+    constructor
+    exact (fun h => show I.val ≤ I'.val from map_comap M S I.val ▸ map_comap M S I'.val ▸ Ideal.map_mono h)
+    exact (fun h x hx => h hx)
 #align is_localization.order_iso_of_prime IsLocalization.orderIsoOfPrime
 
 end CommSemiring
