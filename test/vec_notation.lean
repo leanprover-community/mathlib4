@@ -3,19 +3,21 @@ import Mathlib.Data.Fin.VecNotation
 /-! These tests are testing `PiFin.toExpr` and fail with
 `local attribute [-instance] PiFin.toExpr` -/
 
+open Lean
 open Lean.Meta
+open Qq
 
 #eval do
   let x : Fin 0 → ℕ := ![]
-  isDefEq `(x) `(![] : Fin 0 → ℕ)
+  let .true ← isDefEq (toExpr x) q((![] : Fin 0 → ℕ)) | failure
 
 #eval do
   let x := ![1, 2, 3]
-  isDefEq `(x) `(![1, 2, 3])
+  let .true ← isDefEq (toExpr x) q(![1, 2, 3]) | failure
 
 #eval do
   let x := ![![1, 2], ![3, 4]]
-  isDefEq `(x) `(![![1, 2], ![3, 4]])
+  let .true ← isDefEq (toExpr x) q(![![1, 2], ![3, 4]]) | failure
 
 /-! These tests are testing `PiFin.repr` -/
 
