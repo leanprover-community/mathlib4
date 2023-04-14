@@ -766,7 +766,7 @@ theorem cof_univ : cof univ.{u, v} = Cardinal.univ.{u, v} :=
       refine' le_of_forall_lt fun c h => _
       rcases lt_univ'.1 h with ⟨c, rfl⟩
       rcases @cof_eq Ordinal.{u} (· < ·) _ with ⟨S, H, Se⟩
-      rw [univ, ← lift_cof, ← Cardinal.lift_lift.{u, u + 1, v}, Cardinal.lift_lt, ← Se]
+      rw [univ, ← lift_cof, ← Cardinal.lift_lift.{u+1, v, u}, Cardinal.lift_lt, ← Se]
       refine' lt_of_not_ge fun h => _
       cases' Cardinal.lift_down h with a e
       refine' Quotient.inductionOn a (fun α e => _) e

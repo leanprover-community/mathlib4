@@ -287,10 +287,13 @@ import Mathlib.Algebra.Tropical.Lattice
 import Mathlib.AlgebraicTopology.DoldKan.Compatibility
 import Mathlib.AlgebraicTopology.SimplexCategory
 import Mathlib.AlgebraicTopology.SimplicialObject
+import Mathlib.AlgebraicTopology.SplitSimplicialObject
 import Mathlib.AlgebraicTopology.TopologicalSimplex
 import Mathlib.Analysis.Asymptotics.Asymptotics
 import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
+import Mathlib.Analysis.Asymptotics.SuperpolynomialDecay
 import Mathlib.Analysis.Asymptotics.Theta
+import Mathlib.Analysis.BoxIntegral.Box.Basic
 import Mathlib.Analysis.Convex.Basic
 import Mathlib.Analysis.Convex.Extrema
 import Mathlib.Analysis.Convex.Extreme
@@ -444,6 +447,7 @@ import Mathlib.CategoryTheory.Limits.KanExtension
 import Mathlib.CategoryTheory.Limits.Lattice
 import Mathlib.CategoryTheory.Limits.MonoCoprod
 import Mathlib.CategoryTheory.Limits.Opposites
+import Mathlib.CategoryTheory.Limits.Over
 import Mathlib.CategoryTheory.Limits.Pi
 import Mathlib.CategoryTheory.Limits.Preserves.Basic
 import Mathlib.CategoryTheory.Limits.Preserves.Filtered
@@ -1282,6 +1286,7 @@ import Mathlib.LinearAlgebra.FinsuppVectorSpace
 import Mathlib.LinearAlgebra.FreeAlgebra
 import Mathlib.LinearAlgebra.FreeModule.Basic
 import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
+import Mathlib.LinearAlgebra.FreeModule.Rank
 import Mathlib.LinearAlgebra.GeneralLinearGroup
 import Mathlib.LinearAlgebra.InvariantBasisNumber
 import Mathlib.LinearAlgebra.Isomorphisms
@@ -1419,6 +1424,7 @@ import Mathlib.Order.Filter.Pointwise
 import Mathlib.Order.Filter.Prod
 import Mathlib.Order.Filter.SmallSets
 import Mathlib.Order.Filter.Ultrafilter
+import Mathlib.Order.Filter.ZeroAndBoundedAtFilter
 import Mathlib.Order.FixedPoints
 import Mathlib.Order.GaloisConnection
 import Mathlib.Order.GameAdd
