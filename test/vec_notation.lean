@@ -1,3 +1,7 @@
+/-
+Manually ported from
+https://github.com/leanprover-community/mathlib/blob/fee91d74414e681a8b72cb7160e6b5ef0ec2cc0b/test/vec_notation.lean
+-/
 import Mathlib.Data.Fin.VecNotation
 
 /-! These tests are testing `PiFin.toExpr` and fail with
