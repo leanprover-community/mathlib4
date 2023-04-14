@@ -97,8 +97,12 @@ theorem lower_ne_upper (i) : I.lower i ≠ I.upper i :=
 instance : Membership (ι → ℝ) (Box ι) :=
   ⟨fun x I ↦ ∀ i, x i ∈ Ioc (I.lower i) (I.upper i)⟩
 
+-- Porting note: added
+@[coe]
+def toSet (I : Box ι) : Set (ι → ℝ) := { x | x ∈ I }
+
 instance : CoeTC (Box ι) (Set <| ι → ℝ) :=
-  ⟨fun I ↦ { x | x ∈ I }⟩
+  ⟨toSet⟩
 
 @[simp]
 theorem mem_mk {l u x : ι → ℝ} {H} : x ∈ mk l u H ↔ ∀ i, x i ∈ Ioc (l i) (u i) := Iff.rfl
@@ -261,9 +265,12 @@ instance : SemilatticeSup (Box ι) :=
 In this section we define coercion from `WithBot (Box ι)` to `Set (ι → ℝ)` by sending `⊥` to `∅`.
 -/
 
+-- Porting note: added
+@[coe]
+def withBotToSet (o : WithBot (Box ι)) : Set (ι → ℝ) := o.elim ∅ (↑)
 
 instance withBotCoe : CoeTC (WithBot (Box ι)) (Set (ι → ℝ)) :=
-  ⟨fun o ↦ o.elim ∅ (↑)⟩
+  ⟨withBotToSet⟩
 #align box_integral.box.with_bot_coe BoxIntegral.Box.withBotCoe
 
 @[simp, norm_cast]
@@ -344,7 +351,7 @@ theorem coe_inf (I J : WithBot (Box ι)) : (↑(I ⊓ J) : Set (ι → ℝ)) = (
   induction J using WithBot.recBotCoe;
   · change ∅ = _
     simp
-  change ↑(mk' _ _) = _
+  change ((mk' _ _ : WithBot (Box ι)) : Set (ι → ℝ)) = _
   simp only [coe_eq_pi, ← pi_inter_distrib, Ioc_inter_Ioc, Pi.sup_apply, Pi.inf_apply, coe_mk',
     coe_coe]
 #align box_integral.box.coe_inf BoxIntegral.Box.coe_inf
