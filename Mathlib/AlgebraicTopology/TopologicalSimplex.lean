@@ -8,9 +8,9 @@ Authors: Johan Commelin, Adam Topaz
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.AlgebraicTopology.SimplexCategory
-import Mathbin.Topology.Category.Top.Basic
-import Mathbin.Topology.Instances.Nnreal
+import Mathlib.AlgebraicTopology.SimplexCategory
+import Mathlib.Topology.Category.Top.Basic
+import Mathlib.Topology.Instances.NNReal
 
 /-!
 # Topological simplices
@@ -46,8 +46,7 @@ theorem toTopObj.ext {x : SimplexCategory} (f g : x.toTopObj) : (f : x → ℝ�
 
 /-- A morphism in `simplex_category` induces a map on the associated topological spaces. -/
 def toTopMap {x y : SimplexCategory} (f : x ⟶ y) : x.toTopObj → y.toTopObj := fun g =>
-  ⟨fun i => ∑ j in Finset.univ.filterₓ fun k => f k = i, g j,
-    by
+  ⟨fun i => ∑ j in Finset.univ.filterₓ fun k => f k = i, g j, by
     simp only [[anonymous], Finset.sum_congr, to_Top_obj, Set.mem_setOf]
     rw [← Finset.sum_bunionᵢ]
     convert g.2
@@ -80,8 +79,7 @@ theorem continuous_toTopMap {x y : SimplexCategory} (f : x ⟶ y) : Continuous (
 
 /-- The functor associating the topological `n`-simplex to `[n] : simplex_category`. -/
 @[simps]
-def toTop : SimplexCategory ⥤ TopCat
-    where
+def toTop : SimplexCategory ⥤ TopCat where
   obj x := TopCat.of x.toTopObj
   map x y f := ⟨toTopMap f⟩
   map_id' := by
