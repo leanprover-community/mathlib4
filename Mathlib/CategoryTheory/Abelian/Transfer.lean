@@ -90,8 +90,8 @@ def cokernelIso {X Y : C} (f : X ⟶ Y) : G.obj (cokernel (F.map f)) ≅ cokerne
   calc
     G.obj (cokernel (F.map f)) ≅ cokernel (G.map (F.map f)) :=
       (asIso (cokernelComparison _ G)).symm
-    _ ≅ cokernel (_ ≫ f ≫ _) := cokernelIsoOfEq (NatIso.naturality_2 i f).symm
-    _ ≅ cokernel (f ≫ _) := cokernelEpiComp _ _
+    _ ≅ cokernel (i.hom.app X ≫ f ≫ i.inv.app Y) := cokernelIsoOfEq (NatIso.naturality_2 i f).symm
+    _ ≅ cokernel (f ≫ i.inv.app Y) := cokernelEpiComp _ _
     _ ≅ cokernel f := cokernelCompIsIso _ _
 #align category_theory.abelian_of_adjunction.cokernel_iso CategoryTheory.AbelianOfAdjunction.cokernelIso
 
