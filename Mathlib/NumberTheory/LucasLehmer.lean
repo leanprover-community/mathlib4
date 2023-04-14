@@ -18,16 +18,14 @@ import Mathlib.Tactic.IntervalCases
 /-!
 # The Lucas-Lehmer test for Mersenne primes.
 
-We define `lucas_lehmer_residue : Π p : ℕ, zmod (2^p - 1)`, and
-prove `lucas_lehmer_residue p = 0 → prime (mersenne p)`.
+We define `lucasLehmerResidue : Π p : ℕ, zmod (2^p - 1)`, and
+prove `lucasLehmerResidue p = 0 → prime (mersenne p)`.
 
-We construct a tactic `lucas_lehmer.run_test`, which iteratively certifies the arithmetic
+Porting note: the tactics have not been ported yet.
+
+We construct a tactic `LucasLehmer.run_test`, which iteratively certifies the arithmetic
 required to calculate the residue, and enables us to prove
 
-```
-example : prime (mersenne 127) :=
-lucas_lehmer_sufficiency _ (by norm_num) (by lucas_lehmer.run_test)
-```
 
 ## TODO
 
