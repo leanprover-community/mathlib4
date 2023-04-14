@@ -8,9 +8,9 @@ Authors: Paul A. Reichert
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Convex.Basic
-import Mathbin.Analysis.NormedSpace.Basic
-import Mathbin.Topology.MetricSpace.HausdorffDistance
+import Mathlib.Analysis.Convex.Basic
+import Mathlib.Analysis.NormedSpace.Basic
+import Mathlib.Topology.MetricSpace.HausdorffDistance
 
 /-!
 # Convex bodies
@@ -57,8 +57,7 @@ section TVS
 
 variable [TopologicalSpace V] [AddCommGroup V] [Module ℝ V]
 
-instance : SetLike (ConvexBody V) V
-    where
+instance : SetLike (ConvexBody V) V where
   coe := ConvexBody.carrier
   coe_injective' K L h := by
     cases K
@@ -91,8 +90,7 @@ section ContinuousAdd
 
 variable [ContinuousAdd V]
 
-instance : AddMonoid (ConvexBody V)
-    where
+instance : AddMonoid (ConvexBody V) where
   -- we cannot write K + L to avoid reducibility issues with the set.has_add instance
   add K L :=
     ⟨Set.image2 (· + ·) K L, K.Convex.add L.Convex, K.IsCompact.add L.IsCompact,
@@ -141,8 +139,7 @@ theorem coe_smul (c : ℝ) (K : ConvexBody V) : (↑(c • K) : Set V) = c • (
 
 variable [ContinuousAdd V]
 
-instance : DistribMulAction ℝ (ConvexBody V)
-    where
+instance : DistribMulAction ℝ (ConvexBody V) where
   toSMul := ConvexBody.hasSmul
   one_smul K := by
     ext
@@ -164,8 +161,7 @@ theorem coe_smul' (c : ℝ≥0) (K : ConvexBody V) : (↑(c • K) : Set V) = c 
 
 /-- The convex bodies in a fixed space $V$ form a module over the nonnegative reals.
 -/
-instance : Module ℝ≥0 (ConvexBody V)
-    where
+instance : Module ℝ≥0 (ConvexBody V) where
   add_smul c d K := by
     ext1
     simp only [coe_smul, coe_add]
@@ -191,8 +187,7 @@ theorem hausdorffEdist_ne_top {K L : ConvexBody V} : EMetric.hausdorffEdist (K :
 
 /-- Convex bodies in a fixed seminormed space $V$ form a pseudo-metric space under the Hausdorff
 metric. -/
-noncomputable instance : PseudoMetricSpace (ConvexBody V)
-    where
+noncomputable instance : PseudoMetricSpace (ConvexBody V) where
   dist K L := Metric.hausdorffDist (K : Set V) L
   dist_self _ := Metric.hausdorffDist_self_zero
   dist_comm _ _ := Metric.hausdorffDist_comm
@@ -204,8 +199,7 @@ theorem hausdorffDist_coe : Metric.hausdorffDist (K : Set V) L = dist K L :=
 #align convex_body.Hausdorff_dist_coe ConvexBody.hausdorffDist_coe
 
 @[simp, norm_cast]
-theorem hausdorffEdist_coe : EMetric.hausdorffEdist (K : Set V) L = edist K L :=
-  by
+theorem hausdorffEdist_coe : EMetric.hausdorffEdist (K : Set V) L = edist K L := by
   rw [edist_dist]
   exact (ENNReal.ofReal_toReal Hausdorff_edist_ne_top).symm
 #align convex_body.Hausdorff_edist_coe ConvexBody.hausdorffEdist_coe
