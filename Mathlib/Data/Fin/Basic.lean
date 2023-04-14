@@ -52,7 +52,7 @@ This file expands on the development in the core library.
 * `Fin.valEmbedding` : coercion to natural numbers as an `Embedding`;
 * `Fin.valOrderEmbedding` : coercion to natural numbers as an `OrderEmbedding`;
 * `Fin.succEmbedding` : `Fin.succ` as an `OrderEmbedding`;
-* `Fin.castLe h` : embed `Fin n` into `Fin m`, `h : n ≤ m`;
+* `Fin.castLE h` : embed `Fin n` into `Fin m`, `h : n ≤ m`;
 * `Fin.cast` : order isomorphism between `Fin n` and `Fin m` provided that `n = m`,
   see also `Equiv.finCongr`;
 * `Fin.castAdd m` : embed `Fin n` into `Fin (n+m)`;
@@ -1009,58 +1009,58 @@ theorem castLT_mk (i n m : ℕ) (hn : i < n) (hm : i < m) : castLT ⟨i, hn⟩ h
   rfl
 #align fin.cast_lt_mk Fin.castLT_mk
 
-/-- `castLe h i` embeds `i` into a larger `Fin` type.  -/
-def castLe (h : n ≤ m) : Fin n ↪o Fin m :=
+/-- `castLE h i` embeds `i` into a larger `Fin` type.  -/
+def castLE (h : n ≤ m) : Fin n ↪o Fin m :=
   (OrderEmbedding.ofStrictMono fun a => castLT a (lt_of_lt_of_le a.2 h)) fun _ _ h => h
-#align fin.cast_le Fin.castLe
+#align fin.cast_le Fin.castLE
 
 @[simp]
-theorem coe_castLe (h : n ≤ m) (i : Fin n) : (castLe h i : ℕ) = i :=
+theorem coe_castLE (h : n ≤ m) (i : Fin n) : (castLE h i : ℕ) = i :=
   rfl
-#align fin.coe_cast_le Fin.coe_castLe
+#align fin.coe_cast_le Fin.coe_castLE
 
 @[simp]
-theorem castLe_mk (i n m : ℕ) (hn : i < n) (h : n ≤ m) :
-    castLe h ⟨i, hn⟩ = ⟨i, lt_of_lt_of_le hn h⟩ :=
+theorem castLE_mk (i n m : ℕ) (hn : i < n) (h : n ≤ m) :
+    castLE h ⟨i, hn⟩ = ⟨i, lt_of_lt_of_le hn h⟩ :=
   rfl
-#align fin.cast_le_mk Fin.castLe_mk
+#align fin.cast_le_mk Fin.castLE_mk
 
 @[simp]
-theorem castLe_zero {n m : ℕ} (h : n.succ ≤ m.succ) : castLe h 0 = 0 := by simp [eq_iff_veq]
-#align fin.cast_le_zero Fin.castLe_zero
+theorem castLE_zero {n m : ℕ} (h : n.succ ≤ m.succ) : castLE h 0 = 0 := by simp [eq_iff_veq]
+#align fin.cast_le_zero Fin.castLE_zero
 
 @[simp]
-theorem range_castLe {n k : ℕ} (h : n ≤ k) : Set.range (castLe h) = { i : Fin k | (i : ℕ) < n } :=
+theorem range_castLE {n k : ℕ} (h : n ≤ k) : Set.range (castLE h) = { i : Fin k | (i : ℕ) < n } :=
   Set.ext fun x => ⟨fun ⟨y, hy⟩ => hy ▸ y.2, fun hx => ⟨⟨x, hx⟩, Fin.ext rfl⟩⟩
-#align fin.range_cast_le Fin.range_castLe
+#align fin.range_cast_le Fin.range_castLE
 
 @[simp]
-theorem coe_of_injective_castLe_symm {n k : ℕ} (h : n ≤ k) (i : Fin k) (hi) :
-    ((Equiv.ofInjective _ (castLe h).injective).symm ⟨i, hi⟩ : ℕ) = i := by
-  rw [← coe_castLe]
+theorem coe_of_injective_castLE_symm {n k : ℕ} (h : n ≤ k) (i : Fin k) (hi) :
+    ((Equiv.ofInjective _ (castLE h).injective).symm ⟨i, hi⟩ : ℕ) = i := by
+  rw [← coe_castLE]
   exact congr_arg Fin.val (Equiv.apply_ofInjective_symm _ _)
-#align fin.coe_of_injective_cast_le_symm Fin.coe_of_injective_castLe_symm
+#align fin.coe_of_injective_cast_le_symm Fin.coe_of_injective_castLE_symm
 
 @[simp]
-theorem castLe_succ {m n : ℕ} (h : m + 1 ≤ n + 1) (i : Fin m) :
-    castLe h i.succ = (castLe (Nat.succ_le_succ_iff.mp h) i).succ := by simp [Fin.eq_iff_veq]
-#align fin.cast_le_succ Fin.castLe_succ
+theorem castLE_succ {m n : ℕ} (h : m + 1 ≤ n + 1) (i : Fin m) :
+    castLE h i.succ = (castLE (Nat.succ_le_succ_iff.mp h) i).succ := by simp [Fin.eq_iff_veq]
+#align fin.cast_le_succ Fin.castLE_succ
 
 @[simp]
-theorem castLe_castLe {k m n} (km : k ≤ m) (mn : m ≤ n) (i : Fin k) :
-    Fin.castLe mn (Fin.castLe km i) = Fin.castLe (km.trans mn) i :=
-  Fin.ext (by simp only [coe_castLe])
-#align fin.cast_le_cast_le Fin.castLe_castLe
+theorem castLE_castLE {k m n} (km : k ≤ m) (mn : m ≤ n) (i : Fin k) :
+    Fin.castLE mn (Fin.castLE km i) = Fin.castLE (km.trans mn) i :=
+  Fin.ext (by simp only [coe_castLE])
+#align fin.cast_le_cast_le Fin.castLE_castLE
 
 @[simp]
-theorem castLe_comp_castLe {k m n} (km : k ≤ m) (mn : m ≤ n) :
-    Fin.castLe mn ∘ Fin.castLe km = Fin.castLe (km.trans mn) :=
-  funext (castLe_castLe km mn)
-#align fin.cast_le_comp_cast_le Fin.castLe_comp_castLe
+theorem castLE_comp_castLE {k m n} (km : k ≤ m) (mn : m ≤ n) :
+    Fin.castLE mn ∘ Fin.castLE km = Fin.castLE (km.trans mn) :=
+  funext (castLE_castLE km mn)
+#align fin.cast_le_comp_cast_le Fin.castLE_comp_castLE
 
 /-- `cast eq i` embeds `i` into a equal `Fin` type, see also `Equiv.finCongr`. -/
 def cast (eq : n = m) : Fin n ≃o Fin m where
-  toEquiv := ⟨castLe eq.le, castLe eq.symm.le, fun _ => eq_of_veq rfl, fun _ => eq_of_veq rfl⟩
+  toEquiv := ⟨castLE eq.le, castLE eq.symm.le, fun _ => eq_of_veq rfl, fun _ => eq_of_veq rfl⟩
   map_rel_iff' := Iff.rfl
 #align fin.cast Fin.cast
 
@@ -1102,10 +1102,10 @@ theorem cast_refl (h : n = n := rfl) : cast h = OrderIso.refl (Fin n) := by
   simp
 #align fin.cast_refl Fin.cast_refl
 
-theorem castLe_of_eq {m n : ℕ} (h : m = n) {h' : m ≤ n} :
-    (castLe h' : Fin m → Fin n) = Fin.cast h :=
+theorem castLE_of_eq {m n : ℕ} (h : m = n) {h' : m ≤ n} :
+    (castLE h' : Fin m → Fin n) = Fin.cast h :=
   funext fun _ => by ext; simp
-#align fin.cast_le_of_eq Fin.castLe_of_eq
+#align fin.cast_le_of_eq Fin.castLE_of_eq
 
 /-- While in many cases `Fin.cast` is better than `Equiv.cast`/`cast`, sometimes we want to apply
 a generic theorem about `cast`. -/
@@ -1124,7 +1124,7 @@ theorem cast_eq_cast (h : n = m) : (cast h : Fin n → Fin m) = cast (h ▸ rfl)
 
 /-- `castAdd m i` embeds `i : Fin n` in `Fin (n+m)`. See also `Fin.natAdd` and `Fin.addNat`. -/
 def castAdd (m) : Fin n ↪o Fin (n + m) :=
-  castLe <| Nat.le_add_right n m
+  castLE <| Nat.le_add_right n m
 #align fin.cast_add Fin.castAdd
 
 @[simp]
@@ -1321,7 +1321,7 @@ theorem lt_succ {a : Fin n} : castSucc a < a.succ := by
 @[simp]
 theorem range_castSucc {n : ℕ} : Set.range (castSucc : Fin n → Fin n.succ) =
     ({ i | (i : ℕ) < n } : Set (Fin n.succ)) :=
-  range_castLe le_self_add
+  range_castLE le_self_add
 #align fin.range_cast_succ Fin.range_castSucc
 
 theorem exists_castSucc_eq {n : ℕ} {i : Fin (n + 1)} : (∃ j, castSucc j = i) ↔ i ≠ last n :=
