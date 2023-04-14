@@ -43,7 +43,7 @@ syntax (name := to_additive_change_numeral) "to_additive_change_numeral" num* : 
 /-- An `attr := ...` option for `to_additive`. -/
 syntax toAdditiveAttrOption := &"attr" ":=" Parser.Term.attrInstance,*
 /-- A numeral or a pipe -/
-syntax numOrPipe := "|" <|> num
+syntax numOrPipe := &"|" <|> num
 /-- An `reorder := ...` option for `to_additive`. -/
 syntax toAdditiveReorderOption := &"reorder" ":=" numOrPipe+
 /-- Options to `to_additive`. -/
@@ -870,7 +870,7 @@ def elabToAdditive : Syntax → CoreM Config
           | `(numOrPipe| |) =>
             reorder := numList.reverse :: reorder
             numList := []
-          | `(numOrPipe| $id:num) => numList := id.raw.isNatLit?.get! :: numList
+          | `(numOrPipe| $id:num) => numList := (id.raw.isNatLit?.get! - 1) :: numList
           | _ => throwUnsupportedSyntax
         reorder := numList.reverse :: reorder
         numList := []

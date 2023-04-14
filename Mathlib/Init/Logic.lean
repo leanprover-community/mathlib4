@@ -135,8 +135,6 @@ alias not_not_not ↔ not_of_not_not_not _
 
 #align and_iff_left and_iff_leftₓ -- reorder implicits
 
-variable (p)
-
 -- FIXME: remove _iff and add _eq for the lean 4 core versions
 theorem and_true_iff : p ∧ True ↔ p := iff_of_eq (and_true _)
 #align and_true and_true_iff
@@ -272,7 +270,10 @@ theorem exists_unique_congr {p q : α → Prop} (h : ∀ a, p a ↔ q a) : (∃!
 theorem decide_True' (h : Decidable True) : decide True = true := by simp
 #align to_bool_true_eq_tt decide_True'
 
-theorem decide_False' (h : Decidable False) : decide False = false := by simp
+theorem decide_False' (h : Decidable False) : decide False = false := by
+  cases h with
+  | isFalse h => rfl
+  | isTrue h => exact h.elim
 #align to_bool_false_eq_ff decide_False'
 
 namespace Decidable
