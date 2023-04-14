@@ -148,12 +148,12 @@ theorem toSubsemigroup_injective :
   | _, _, h => ext (SetLike.ext_iff.mp h : _)
 #align non_unital_subsemiring.to_subsemigroup_injective NonUnitalSubsemiring.toSubsemigroup_injective
 
--- Porting note: removed @[mono]
+@[mono]
 theorem toSubsemigroup_strictMono :
     StrictMono (toSubsemigroup : NonUnitalSubsemiring R → Subsemigroup R) := fun _ _ => id
 #align non_unital_subsemiring.to_subsemigroup_strict_mono NonUnitalSubsemiring.toSubsemigroup_strictMono
 
--- Porting note: removed @[mono]
+@[mono]
 theorem toSubsemigroup_mono : Monotone (toSubsemigroup : NonUnitalSubsemiring R → Subsemigroup R) :=
   toSubsemigroup_strictMono.monotone
 #align non_unital_subsemiring.to_subsemigroup_mono NonUnitalSubsemiring.toSubsemigroup_mono
@@ -163,12 +163,12 @@ theorem toAddSubmonoid_injective :
   | _, _, h => ext (SetLike.ext_iff.mp h : _)
 #align non_unital_subsemiring.to_add_submonoid_injective NonUnitalSubsemiring.toAddSubmonoid_injective
 
--- Porting note: removed @[mono]
+@[mono]
 theorem toAddSubmonoid_strictMono :
     StrictMono (toAddSubmonoid : NonUnitalSubsemiring R → AddSubmonoid R) := fun _ _ => id
 #align non_unital_subsemiring.to_add_submonoid_strict_mono NonUnitalSubsemiring.toAddSubmonoid_strictMono
 
--- Porting note: removed @[mono]
+@[mono]
 theorem toAddSubmonoid_mono : Monotone (toAddSubmonoid : NonUnitalSubsemiring R → AddSubmonoid R) :=
   toAddSubmonoid_strictMono.monotone
 #align non_unital_subsemiring.to_add_submonoid_mono NonUnitalSubsemiring.toAddSubmonoid_mono
