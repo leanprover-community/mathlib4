@@ -112,15 +112,16 @@ def comp : ∀ {X Y Z : WithTerminal C}, Hom X Y → Hom Y Z → Hom X Z
 instance : Category.{v} (WithTerminal C) where
   Hom X Y := Hom X Y
   id X := id _
-  comp := @fun X Y Z f g => comp f g
+  comp f g := comp f g
 
 /-- The inclusion from `C` into `with_terminal C`. -/
 def incl : C ⥤ WithTerminal C where
   obj := of
-  map := @fun X Y f => f
+  map f := f
 #align category_theory.with_terminal.incl CategoryTheory.WithTerminal.incl
 
-instance : Full (incl : C ⥤ _) where preimage := @fun X Y f => f
+instance : Full (incl : C ⥤ _) where
+  preimage f := f
 
 instance : Faithful (incl : C ⥤ _) where
 
@@ -130,7 +131,7 @@ def map {D : Type _} [Category D] (F : C ⥤ D) : WithTerminal C ⥤ WithTermina
     match X with
     | of x => of <| F.obj x
     | star => star
-  map := @fun X Y f =>
+  map {X Y} f :=
     match X, Y, f with
     | of x, of y, f => F.map f
     | of x, star, PUnit.unit => PUnit.unit
@@ -157,7 +158,7 @@ def lift {D : Type _} [Category D] {Z : D} (F : C ⥤ D) (M : ∀ x : C, F.obj x
     match X with
     | of x => F.obj x
     | star => Z
-  map := @fun X Y f =>
+  map {X Y} f :=
     match X, Y, f with
     | of x, of y, f => F.map f
     | of x, star, PUnit.unit => M x
@@ -296,15 +297,16 @@ def comp : ∀ {X Y Z : WithInitial C}, Hom X Y → Hom Y Z → Hom X Z
 instance : Category.{v} (WithInitial C) where
   Hom X Y := Hom X Y
   id X := id _
-  comp := @fun X Y Z f g => comp f g
+  comp f g := comp f g
 
 /-- The inclusion of `C` into `with_initial C`. -/
 def incl : C ⥤ WithInitial C where
   obj := of
-  map := @fun X Y f => f
+  map f := f
 #align category_theory.with_initial.incl CategoryTheory.WithInitial.incl
 
-instance : Full (incl : C ⥤ _) where preimage := @fun X Y f => f
+instance : Full (incl : C ⥤ _) where
+  preimage f := f
 
 instance : Faithful (incl : C ⥤ _) where
 
@@ -314,7 +316,7 @@ def map {D : Type _} [Category D] (F : C ⥤ D) : WithInitial C ⥤ WithInitial 
     match X with
     | of x => of <| F.obj x
     | star => star
-  map := @fun X Y f =>
+  map {X Y} f :=
     match X, Y, f with
     | of x, of y, f => F.map f
     | star, of x, PUnit.unit => PUnit.unit
@@ -342,7 +344,7 @@ def lift {D : Type _} [Category D] {Z : D} (F : C ⥤ D) (M : ∀ x : C, Z ⟶ F
     match X with
     | of x => F.obj x
     | star => Z
-  map := @fun X Y f =>
+  map {X Y} f :=
     match X, Y, f with
     | of x, of y, f => F.map f
     | star, of x, PUnit.unit => M _
