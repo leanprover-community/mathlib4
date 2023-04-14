@@ -79,7 +79,7 @@ theorem hasCokernels : HasCokernels C :=
 
 variable [Limits.HasCokernels C]
 
-/-- Auxiliary construction for `coimage_iso_image` -/
+/-- Auxiliary construction for `coimageIsoImage` -/
 def cokernelIso {X Y : C} (f : X ⟶ Y) : G.obj (cokernel (F.map f)) ≅ cokernel f := by
   -- We have to write an explicit `PreservesColimits` type here,
   -- as `leftAdjointPreservesColimits` has universe variables.
@@ -91,13 +91,13 @@ def cokernelIso {X Y : C} (f : X ⟶ Y) : G.obj (cokernel (F.map f)) ≅ cokerne
     G.obj (cokernel (F.map f)) ≅ cokernel (G.map (F.map f)) :=
       (asIso (cokernelComparison _ G)).symm
     _ ≅ cokernel (i.hom.app X ≫ f ≫ i.inv.app Y) := cokernelIsoOfEq (NatIso.naturality_2 i f).symm
-    _ ≅ cokernel (f ≫ i.inv.app Y) := cokernelEpiComp _ _
-    _ ≅ cokernel f := cokernelCompIsIso _ _
+    _ ≅ cokernel (f ≫ i.inv.app Y) := cokernelEpiComp (i.hom.app X) (f ≫ i.inv.app Y)
+    _ ≅ cokernel f := cokernelCompIsIso f (i.inv.app Y)
 #align category_theory.abelian_of_adjunction.cokernel_iso CategoryTheory.AbelianOfAdjunction.cokernelIso
 
 variable [Limits.HasKernels C] [PreservesFiniteLimits G]
 
-/-- Auxiliary construction for `coimage_iso_image` -/
+/-- Auxiliary construction for `coimageIsoImage` -/
 def coimageIsoImageAux {X Y : C} (f : X ⟶ Y) :
     kernel (G.map (cokernel.π (F.map f))) ≅ kernel (cokernel.π f) := by
   haveI : PreservesColimits G := adj.leftAdjointPreservesColimits
