@@ -93,29 +93,32 @@ def toTop : SimplexCategory ⥤ TopCat where
   obj x := TopCat.of x.toTopObj
   map f := ⟨toTopMap f, by continuity⟩
   map_id := by
-    intro x
-    ext1
+    intro Δ
+    ext f
+    apply toTopObj.ext
+    funext i
+    change (Finset.univ.filter fun k => k = i).sum _ = _
+    simp [Finset.sum_filter]
+  map_comp := fun f g => by
+    ext h
+    apply toTopObj.ext
+    funext i
     dsimp
-    sorry
-    --ext (f i) : 3
-    --change (Finset.univ.filter fun k => k = i).Sum _ = _
-    --simp [Finset.sum_filter]
-  map_comp := by
-    sorry
-    --intro x y z f g
-    --ext (h i) : 3
-    --dsimp
-    --erw [← Finset.sum_bunionᵢ]
-    --apply Finset.sum_congr
-    --· exact Finset.ext fun j => ⟨fun hj => by simpa using hj, fun hj => by simpa using hj⟩
-    --· tauto
-    --· intro j hj k hk h
-    --  rw [Function.onFun, disjoint_iff_inf_le]
-    --  intro e he
-    --  apply h
-    --  simp only [true_and_iff, Finset.inf_eq_inter, Finset.mem_univ, Finset.mem_filter,
-    --    Finset.mem_inter] at he
-    --  rw [← he.1, ← he.2]
+    simp only [TopCat.comp_app]
+    simp only [TopCat.hom_apply, coe_toTopMap]
+    erw [← Finset.sum_bunionᵢ]
+    . apply Finset.sum_congr
+      . exact Finset.ext (fun j => ⟨fun hj => by simpa using hj, fun hj => by simpa using hj⟩)
+      . tauto
+    . intro j _ k _ h
+      rw [Function.onFun, disjoint_iff_inf_le]
+      intro e he
+      simp only [Finset.bot_eq_empty, Finset.not_mem_empty]
+      apply h
+      simp only [CategoryTheory.forget_obj_eq_coe, Finset.mem_univ, forall_true_left,
+        ge_iff_le, Finset.le_eq_subset, Finset.inf_eq_inter, Finset.mem_inter,
+        Finset.mem_filter, true_and] at he
+      rw [← he.1, he.2]
 set_option linter.uppercaseLean3 false in
 #align simplex_category.to_Top SimplexCategory.toTop
 
