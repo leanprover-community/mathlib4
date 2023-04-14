@@ -260,7 +260,8 @@ theorem orderOf_pow_dvd (n : ℕ) : orderOf (x ^ n) ∣ orderOf x := by
 #align add_order_of_smul_dvd addOrderOf_smul_dvd
 
 @[to_additive]
-theorem pow_injective_of_lt_orderOf (x : G) (hn : n < orderOf x) (hm : m < orderOf x) (eq : x ^ n = x ^ m) :
+theorem pow_injective_of_lt_orderOf (x : G) (hn : n < orderOf x) (hm : m < orderOf x)
+    (eq : x ^ n = x ^ m) :
     n = m :=
   eq_of_lt_minimalPeriod_of_iterate_eq hn hm (by simpa only [mul_left_iterate, mul_one] )
 #align pow_injective_of_lt_order_of pow_injective_of_lt_orderOf
