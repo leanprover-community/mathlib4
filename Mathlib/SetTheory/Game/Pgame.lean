@@ -711,9 +711,9 @@ def Equiv (x y : Pgame) : Prop :=
 scoped infixl:0 " ≈ " => Pgame.Equiv
 
 instance : IsEquiv _ Pgame.Equiv where
-  refl x := ⟨le_rfl, le_rfl⟩
-  trans := fun x y z ⟨xy, yx⟩ ⟨yz, zy⟩ => ⟨xy.trans yz, zy.trans yx⟩
-  symm x y := And.symm
+  refl _ := ⟨le_rfl, le_rfl⟩
+  trans := fun _ _ _ ⟨xy, yx⟩ ⟨yz, zy⟩ => ⟨xy.trans yz, zy.trans yx⟩
+  symm _ _ := And.symm
 
 theorem Equiv.le {x y : Pgame} (h : x ≈ y) : x ≤ y :=
   h.1
@@ -850,11 +850,11 @@ theorem lf_or_equiv_or_gf (x y : Pgame) : x ⧏ y ∨ (x ≈ y) ∨ y ⧏ x := b
 #align pgame.lf_or_equiv_or_gf Pgame.lf_or_equiv_or_gf
 
 theorem equiv_congr_left {y₁ y₂ : Pgame} : (y₁ ≈ y₂) ↔ ∀ x₁, (x₁ ≈ y₁) ↔ (x₁ ≈ y₂) :=
-  ⟨fun h x₁ => ⟨fun h' => h'.trans h, fun h' => h'.trans h.symm⟩, fun h => (h y₁).1 <| equiv_rfl⟩
+  ⟨fun h _ => ⟨fun h' => h'.trans h, fun h' => h'.trans h.symm⟩, fun h => (h y₁).1 <| equiv_rfl⟩
 #align pgame.equiv_congr_left Pgame.equiv_congr_left
 
 theorem equiv_congr_right {x₁ x₂ : Pgame} : (x₁ ≈ x₂) ↔ ∀ y₁, (x₁ ≈ y₁) ↔ (x₂ ≈ y₁) :=
-  ⟨fun h y₁ => ⟨fun h' => h.symm.trans h', fun h' => h.trans h'⟩, fun h => (h x₂).2 <| equiv_rfl⟩
+  ⟨fun h _ => ⟨fun h' => h.symm.trans h', fun h' => h.trans h'⟩, fun h => (h x₂).2 <| equiv_rfl⟩
 #align pgame.equiv_congr_right Pgame.equiv_congr_right
 
 theorem equiv_of_mk_equiv {x y : Pgame} (L : x.LeftMoves ≃ y.LeftMoves)
@@ -1191,7 +1191,7 @@ theorem neg_ofLists (L R : List Pgame) :
     · intro a a' ha
       congr 2
       have :
-        ∀ {m n} (h₁ : m = n) {b : ULift (Fin m)} {c : ULift (Fin n)} (h₂ : HEq b c),
+        ∀ {m n} (_ : m = n) {b : ULift (Fin m)} {c : ULift (Fin n)} (_ : HEq b c),
           (b.down : ℕ) = ↑c.down := by
         rintro m n rfl b c
         simp only [heq_eq_eq]
@@ -1732,7 +1732,7 @@ instance covariantClass_swap_add_lt : CovariantClass Pgame Pgame (swap (· + ·)
 #align pgame.covariant_class_swap_add_lt Pgame.covariantClass_swap_add_lt
 
 instance covariantClass_add_lt : CovariantClass Pgame Pgame (· + ·) (· < ·) :=
-  ⟨fun x y z h => ⟨add_le_add_left h.1 x, add_lf_add_left h.2 x⟩⟩
+  ⟨fun x _ _ h => ⟨add_le_add_left h.1 x, add_lf_add_left h.2 x⟩⟩
 #align pgame.covariant_class_add_lt Pgame.covariantClass_add_lt
 
 theorem add_lf_add_of_lf_of_le {w x y z : Pgame} (hwx : w ⧏ x) (hyz : y ≤ z) : w + y ⧏ x + z :=
