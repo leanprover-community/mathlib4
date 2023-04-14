@@ -65,16 +65,16 @@ protected instance toExpr [ToLevel.{u}] [ToLevel.{uₘ}] [ToLevel.{uₙ}]
     [Lean.ToExpr α] [Lean.ToExpr m'] [Lean.ToExpr n'] [Lean.ToExpr (m' → n' → α)] :
     Lean.ToExpr (Matrix m' n' α) where
   toTypeExpr :=
-    let eα : Q(Type $(toLevel.{u})) := toTypeExpr α
-    let em' : Q(Type $(toLevel.{uₘ})) := toTypeExpr m'
-    let en' : Q(Type $(toLevel.{uₙ})) := toTypeExpr n'
+    have eα : Q(Type $(toLevel.{u})) := toTypeExpr α
+    have em' : Q(Type $(toLevel.{uₘ})) := toTypeExpr m'
+    have en' : Q(Type $(toLevel.{uₙ})) := toTypeExpr n'
     q(Matrix $eα $em' $en')
   toExpr M :=
-    let eα : Q(Type $(toLevel.{u})) := toTypeExpr α
-    let em' : Q(Type $(toLevel.{uₘ})) := toTypeExpr m'
-    let en' : Q(Type $(toLevel.{uₙ})) := toTypeExpr n'
-    let eM : Q($em' → $en' → $eα) := toExpr (show m' → n' → α from M)
-    q(Matrix.of $eM) -- TODO: what does this error mean?
+    have eα : Q(Type $(toLevel.{u})) := toTypeExpr α
+    have em' : Q(Type $(toLevel.{uₘ})) := toTypeExpr m'
+    have en' : Q(Type $(toLevel.{uₙ})) := toTypeExpr n'
+    have eM : Q($em' → $en' → $eα) := toExpr (show m' → n' → α from M)
+    q(Matrix.of $eM)
 #align matrix.matrix.reflect Matrix.toExpr
 
 end toExpr
