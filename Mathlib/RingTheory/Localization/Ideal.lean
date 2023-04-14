@@ -41,8 +41,8 @@ private def map_ideal (I : Ideal R) : Ideal S where
   zero_mem' := ⟨⟨0, 1⟩, by simp⟩
   add_mem' := by
     rintro a b ⟨a', ha⟩ ⟨b', hb⟩
-    use ⟨a'.2 * b'.1 + b'.2 * a'.1, I.add_mem (I.mul_mem_left _ b'.1.2) (I.mul_mem_left _ a'.1.2)⟩
-    use a'.2 * b'.2
+    let Z : { x // x ∈ I } := ⟨(a'.2 : R) * (b'.1 : R) + (b'.2 : R) * (a'.1 : R), I.add_mem (I.mul_mem_left _ b'.1.2) (I.mul_mem_left _ a'.1.2)⟩
+    use ⟨Z, a'.2 * b'.2⟩
     simp only [RingHom.map_add, Submodule.coe_mk, Submonoid.coe_mul, RingHom.map_mul]
     rw [add_mul, ← mul_assoc a, ha, mul_comm (algebraMap R S a'.2) (algebraMap R S b'.2), ←
       mul_assoc b, hb]
@@ -50,8 +50,8 @@ private def map_ideal (I : Ideal R) : Ideal S where
   smul_mem' := by
     rintro c x ⟨x', hx⟩
     obtain ⟨c', hc⟩ := IsLocalization.surj M c
-    use ⟨c'.1 * x'.1, I.mul_mem_left c'.1 x'.1.2⟩
-    use c'.2 * x'.2
+    let Z : { x // x ∈ I } := ⟨c'.1 * x'.1, I.mul_mem_left c'.1 x'.1.2⟩
+    use ⟨Z, c'.2 * x'.2⟩
     simp only [← hx, ← hc, smul_eq_mul, Submodule.coe_mk, Submonoid.coe_mul, RingHom.map_mul]
     ring
 #align is_localization.map_ideal is_localization.map_ideal
@@ -63,7 +63,9 @@ theorem mem_map_algebraMap_iff {I : Ideal R} {z} :
   · change _ → z ∈ map_ideal M S I
     refine' fun h => Ideal.mem_infₛ.1 h fun z hz => _
     obtain ⟨y, hy⟩ := hz
-    use ⟨⟨⟨y, hy.left⟩, 1⟩, by simp [hy.right]⟩
+    let Z : { x // x ∈ I } := ⟨y, hy.left⟩
+    use ⟨Z, 1⟩
+    simp [hy.right]
   · rintro ⟨⟨a, s⟩, h⟩
     rw [← Ideal.unit_mul_mem_iff_mem _ (map_units S s), mul_comm]
     exact h.symm ▸ Ideal.mem_map_of_mem _ a.2
