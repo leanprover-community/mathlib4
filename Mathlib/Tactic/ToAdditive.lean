@@ -338,25 +338,28 @@ e.g. `g x₁ x₂ x₃ ... xₙ` becomes `g x₂ x₁ x₃ ... xₙ` if `reorder
 def applyReplacementFun (e : Expr) : MetaM Expr := do
   let env ← getEnv
   let reorderFn : Name → List (List ℕ) := fun nm ↦ (reorderAttr.find? env nm |>.getD [])
-  let isRelevant : Name → ℕ → Bool := fun nm i ↦ i == (relevantArgAttr.find? env nm).getD 0
+  let relevantArg : Name → ℕ := fun nm ↦ (relevantArgAttr.find? env nm).getD 0
   return aux
       (findTranslation? <| ← getEnv) reorderFn (ignoreArgsAttr.find? env)
-      (changeNumeralAttr.find? env) isRelevant (← getBoolOption `trace.to_additive_detail) e
+      (changeNumeralAttr.find? env) relevantArg (← getBoolOption `trace.to_additive_detail) e
 where /-- Implementation of `applyReplacementFun`. -/
   aux (findTranslation? : Name → Option Name)
     (reorderFn : Name → List (List ℕ)) (ignore : Name → Option (List ℕ))
-    (changeNumeral? : Name → Option (List Nat)) (isRelevant : Name → ℕ → Bool) (trace : Bool) :
+    (changeNumeral? : Name → Option (List Nat)) (relevantArg : Name → ℕ) (trace : Bool) :
     Expr → Expr :=
   Lean.Expr.replaceRec fun r e ↦ Id.run do
     if trace then
       dbg_trace s!"replacing at {e}"
     match e with
-    | .const n₀ ls => do
+    | .const n₀ ls₀ => do
       let n₁ := n₀.mapPrefix findTranslation?
-      if trace && n₀ != n₁ then
-        dbg_trace s!"changing {n₀} to {n₁}"
-      let ls : List Level := if 1 ∈ (reorderFn n₀).join then ls.swapFirstTwo else ls
-      return some <| Lean.mkConst n₁ ls
+      let ls₁ : List Level := if 0 ∈ (reorderFn n₀).join then ls₀.swapFirstTwo else ls₀
+      if trace then
+        if n₀ != n₁ then
+          dbg_trace s!"changing {n₀} to {n₁}"
+        if 0 ∈ (reorderFn n₀).join then
+          dbg_trace s!"reordering the universe variables from {ls₀} to {ls₁}"
+      return some <| Lean.mkConst n₁ ls₁
     | .app g x => do
       let gf := g.getAppFn
       if gf.isBVar && x.isLit then
@@ -368,31 +371,30 @@ where /-- Implementation of `applyReplacementFun`. -/
       let (gfAdditive, gAllArgsAdditive) ←
         if let some nm := gf.constName? then
           -- e = `(nm y₁ .. yₙ x)
-          /- Test if arguments should be reordered. -/
-          let reorder := reorderFn nm
-          if reorder.length > 0 && gArgs.size > 0 &&
-            additiveTest findTranslation? ignore gAllArgs[0]! then
-            gAllArgs := gAllArgs.permute! reorder
-            if trace then
-              dbg_trace s!"reordering tjhe arguments of {nm} using the cyclic permutations {reorder}"
           /- Test if the head should not be replaced. -/
-          let gfAdditive ←
-            if isRelevant nm gArgs.size && gf.isConst &&
-              not (additiveTest findTranslation? ignore x) then
+          let relevantArgId := relevantArg nm
+          let gfAdditive :=
+            if relevantArgId < gAllArgs.size && gf.isConst &&
+              not (additiveTest findTranslation? ignore gAllArgs[relevantArgId]!) then Id.run <| do
               if trace then
-                dbg_trace s!"{x} contains a fixed type, so {nm} is not changed"
+                dbg_trace
+                  s!"{gAllArgs[relevantArgId]!} contains a fixed type, so {nm} is not changed"
               gf
             else
               r gf
-              -- let x ← r x
-              -- let args ← gArgs.mapM r
-              -- return some $ mkApp (mkAppN gf args) x
+          /- Test if arguments should be reordered. -/
+          let reorder := reorderFn nm
+          if !reorder.isEmpty && relevantArgId < gAllArgs.size &&
+            additiveTest findTranslation? ignore gAllArgs[relevantArgId]! then
+            gAllArgs := gAllArgs.permute! reorder
+            if trace then
+              dbg_trace s!"reordering the arguments of {nm} using the cyclic permutations {reorder}"
           /- Do not replace numerals in specific types. -/
           let firstArg := gAllArgs[0]!
           if let some changedArgNrs := changeNumeral? nm then
             if additiveTest findTranslation? ignore firstArg then
               if trace then
-                dbg_trace s!"applyReplacementFun: We change the numerals in {g.app x}. {
+                dbg_trace s!"applyReplacementFun: We change the numerals in this expression. {
                   ""}However, we will still recurse into all the non-numeral arguments."
               -- In this case, we still update all arguments of `g` that are not numerals,
               -- since all other arguments can contain subexpressions like
@@ -432,7 +434,7 @@ def expand (e : Expr) : MetaM Expr := do
     if reorder.isEmpty then
       -- no need to expand if nothing needs reordering
       return .continue
-    let needed_n := reorder.foldr (·.foldl Nat.max ·) 0
+    let needed_n := reorder.join.foldr Nat.max 0 + 1
     -- the second disjunct is a temporary fix to avoid infinite loops.
     -- We may need to use `replaceRec` or something similar to not change the head of an application
     if needed_n ≤ es.size || es.size == 0 then
@@ -466,7 +468,7 @@ def updateDecl
   (tgt : Name) (srcDecl : ConstantInfo) (reorder : List (List Nat) := [])
   : MetaM ConstantInfo := do
   let mut decl := srcDecl.updateName tgt
-  if 1 ∈ reorder.join then
+  if 0 ∈ reorder.join then
     decl := decl.updateLevelParams decl.levelParams.swapFirstTwo
   decl := decl.updateType <| ← applyReplacementFun <| ← reorderForall (← expand decl.type) reorder
   if let some v := decl.value? then
