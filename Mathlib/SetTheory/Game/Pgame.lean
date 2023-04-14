@@ -364,8 +364,8 @@ instance isEmpty_one_rightMoves : IsEmpty (RightMoves 1) :=
 If `0 ≤ x`, then Left can win `x` as the second player. -/
 instance le : LE Pgame :=
   ⟨Sym2.GameAdd.fix wf_isOption fun x y le =>
-      (∀ i, ¬le y (x.moveLeft i) (Sym2.GameAdd.snd_fst <| IsOption.move_left i)) ∧
-        ∀ j, ¬le (y.moveRight j) x (Sym2.GameAdd.fst_snd <| IsOption.move_right j)⟩
+      (∀ i, ¬le y (x.moveLeft i) (Sym2.GameAdd.snd_fst <| IsOption.moveLeft i)) ∧
+        ∀ j, ¬le (y.moveRight j) x (Sym2.GameAdd.fst_snd <| IsOption.moveRight j)⟩
 
 /-- The less or fuzzy relation on pre-games.
 
@@ -401,7 +401,8 @@ The ordering here is chosen so that `and.left` refer to moves by Left, and `and.
 moves by Right. -/
 theorem le_iff_forall_lf {x y : Pgame} : x ≤ y ↔ (∀ i, x.moveLeft i ⧏ y) ∧ ∀ j, x ⧏ y.moveRight j :=
   by
-  unfold LE.le
+  unfold LE.le le
+  simp only
   rw [Sym2.GameAdd.fix_eq]
   rfl
 #align pgame.le_iff_forall_lf Pgame.le_iff_forall_lf
@@ -536,11 +537,17 @@ theorem lf_of_le_of_lf {x y z : Pgame} (h₁ : x ≤ y) (h₂ : y ⧏ z) : x ⧏
   exact fun h₃ => h₂ (h₃.trans h₁)
 #align pgame.lf_of_le_of_lf Pgame.lf_of_le_of_lf
 
+-- Porting note: added
+instance : Trans (· ≤ ·) (· ⧏ ·) (· ⧏ ·) := ⟨lf_of_le_of_lf⟩
+
 @[trans]
 theorem lf_of_lf_of_le {x y z : Pgame} (h₁ : x ⧏ y) (h₂ : y ≤ z) : x ⧏ z := by
   rw [← Pgame.not_le] at h₁⊢
   exact fun h₃ => h₁ (h₂.trans h₃)
 #align pgame.lf_of_lf_of_le Pgame.lf_of_lf_of_le
+
+-- Porting note: added
+instance : Trans (· ⧏ ·) (· ≤ ·) (· ⧏ ·) := ⟨lf_of_lf_of_le⟩
 
 alias lf_of_le_of_lf ← _root_.LE.le.trans_lf
 #align has_le.le.trans_lf LE.le.trans_lf
@@ -706,7 +713,7 @@ def Equiv (x y : Pgame) : Prop :=
 @[inherit_doc]
 scoped infixl:0 " ≈ " => Pgame.Equiv
 
-instance : IsEquiv _ (· ≈ ·) where
+instance : IsEquiv _ Pgame.Equiv where
   refl x := ⟨le_rfl, le_rfl⟩
   trans := fun x y z ⟨xy, yx⟩ ⟨yz, zy⟩ => ⟨xy.trans yz, zy.trans yx⟩
   symm x y := And.symm
@@ -720,115 +727,115 @@ theorem Equiv.ge {x y : Pgame} (h : x ≈ y) : y ≤ x :=
 #align pgame.equiv.ge Pgame.Equiv.ge
 
 @[refl, simp]
-theorem equiv_rfl {x} : x ≈ x :=
+theorem equiv_rfl {x : Pgame} : x ≈ x :=
   refl x
 #align pgame.equiv_rfl Pgame.equiv_rfl
 
-theorem equiv_refl (x) : x ≈ x :=
+theorem equiv_refl (x : Pgame) : x ≈ x :=
   refl x
 #align pgame.equiv_refl Pgame.equiv_refl
 
 @[symm]
-protected theorem Equiv.symm {x y} : (x ≈ y) → (y ≈ x) :=
+protected theorem Equiv.symm {x y : Pgame} : (x ≈ y) → (y ≈ x) :=
   symm
 #align pgame.equiv.symm Pgame.Equiv.symm
 
 @[trans]
-protected theorem Equiv.trans {x y z} : (x ≈ y) → (y ≈ z) → (x ≈ z) :=
-  trans
+protected theorem Equiv.trans {x y z : Pgame} : (x ≈ y) → (y ≈ z) → (x ≈ z) :=
+  _root_.trans
 #align pgame.equiv.trans Pgame.Equiv.trans
 
-protected theorem equiv_comm {x y} : (x ≈ y) ↔ (y ≈ x) :=
+protected theorem equiv_comm {x y : Pgame} : (x ≈ y) ↔ (y ≈ x) :=
   comm
 #align pgame.equiv_comm Pgame.equiv_comm
 
-theorem equiv_of_eq {x y} (h : x = y) : x ≈ y := by subst h
+theorem equiv_of_eq {x y : Pgame} (h : x = y) : x ≈ y := by subst h; rfl
 #align pgame.equiv_of_eq Pgame.equiv_of_eq
 
 @[trans]
-theorem le_of_le_of_equiv {x y z} (h₁ : x ≤ y) (h₂ : y ≈ z) : x ≤ z :=
+theorem le_of_le_of_equiv {x y z : Pgame} (h₁ : x ≤ y) (h₂ : y ≈ z) : x ≤ z :=
   h₁.trans h₂.1
 #align pgame.le_of_le_of_equiv Pgame.le_of_le_of_equiv
 
 @[trans]
-theorem le_of_equiv_of_le {x y z} (h₁ : x ≈ y) : y ≤ z → x ≤ z :=
+theorem le_of_equiv_of_le {x y z : Pgame} (h₁ : x ≈ y) : y ≤ z → x ≤ z :=
   h₁.1.trans
 #align pgame.le_of_equiv_of_le Pgame.le_of_equiv_of_le
 
-theorem Lf.not_equiv {x y} (h : x ⧏ y) : ¬(x ≈ y) := fun h' => h.not_ge h'.2
+theorem Lf.not_equiv {x y : Pgame} (h : x ⧏ y) : ¬(x ≈ y) := fun h' => h.not_ge h'.2
 #align pgame.lf.not_equiv Pgame.Lf.not_equiv
 
-theorem Lf.not_equiv' {x y} (h : x ⧏ y) : ¬(y ≈ x) := fun h' => h.not_ge h'.1
+theorem Lf.not_equiv' {x y : Pgame} (h : x ⧏ y) : ¬(y ≈ x) := fun h' => h.not_ge h'.1
 #align pgame.lf.not_equiv' Pgame.Lf.not_equiv'
 
-theorem Lf.not_gt {x y} (h : x ⧏ y) : ¬y < x := fun h' => h.not_ge h'.le
+theorem Lf.not_gt {x y : Pgame} (h : x ⧏ y) : ¬y < x := fun h' => h.not_ge h'.le
 #align pgame.lf.not_gt Pgame.Lf.not_gt
 
-theorem le_congr_imp {x₁ y₁ x₂ y₂} (hx : x₁ ≈ x₂) (hy : y₁ ≈ y₂) (h : x₁ ≤ y₁) : x₂ ≤ y₂ :=
+theorem le_congr_imp {x₁ y₁ x₂ y₂ : Pgame} (hx : x₁ ≈ x₂) (hy : y₁ ≈ y₂) (h : x₁ ≤ y₁) : x₂ ≤ y₂ :=
   hx.2.trans (h.trans hy.1)
 #align pgame.le_congr_imp Pgame.le_congr_imp
 
-theorem le_congr {x₁ y₁ x₂ y₂} (hx : x₁ ≈ x₂) (hy : y₁ ≈ y₂) : x₁ ≤ y₁ ↔ x₂ ≤ y₂ :=
+theorem le_congr {x₁ y₁ x₂ y₂ : Pgame} (hx : x₁ ≈ x₂) (hy : y₁ ≈ y₂) : x₁ ≤ y₁ ↔ x₂ ≤ y₂ :=
   ⟨le_congr_imp hx hy, le_congr_imp hx.symm hy.symm⟩
 #align pgame.le_congr Pgame.le_congr
 
-theorem le_congr_left {x₁ x₂ y} (hx : x₁ ≈ x₂) : x₁ ≤ y ↔ x₂ ≤ y :=
+theorem le_congr_left {x₁ x₂ y : Pgame} (hx : x₁ ≈ x₂) : x₁ ≤ y ↔ x₂ ≤ y :=
   le_congr hx equiv_rfl
 #align pgame.le_congr_left Pgame.le_congr_left
 
-theorem le_congr_right {x y₁ y₂} (hy : y₁ ≈ y₂) : x ≤ y₁ ↔ x ≤ y₂ :=
+theorem le_congr_right {x y₁ y₂ : Pgame} (hy : y₁ ≈ y₂) : x ≤ y₁ ↔ x ≤ y₂ :=
   le_congr equiv_rfl hy
 #align pgame.le_congr_right Pgame.le_congr_right
 
-theorem lf_congr {x₁ y₁ x₂ y₂} (hx : x₁ ≈ x₂) (hy : y₁ ≈ y₂) : x₁ ⧏ y₁ ↔ x₂ ⧏ y₂ :=
+theorem lf_congr {x₁ y₁ x₂ y₂ : Pgame} (hx : x₁ ≈ x₂) (hy : y₁ ≈ y₂) : x₁ ⧏ y₁ ↔ x₂ ⧏ y₂ :=
   Pgame.not_le.symm.trans <| (not_congr (le_congr hy hx)).trans Pgame.not_le
 #align pgame.lf_congr Pgame.lf_congr
 
-theorem lf_congr_imp {x₁ y₁ x₂ y₂} (hx : x₁ ≈ x₂) (hy : y₁ ≈ y₂) : x₁ ⧏ y₁ → x₂ ⧏ y₂ :=
+theorem lf_congr_imp {x₁ y₁ x₂ y₂ : Pgame} (hx : x₁ ≈ x₂) (hy : y₁ ≈ y₂) : x₁ ⧏ y₁ → x₂ ⧏ y₂ :=
   (lf_congr hx hy).1
 #align pgame.lf_congr_imp Pgame.lf_congr_imp
 
-theorem lf_congr_left {x₁ x₂ y} (hx : x₁ ≈ x₂) : x₁ ⧏ y ↔ x₂ ⧏ y :=
+theorem lf_congr_left {x₁ x₂ y : Pgame} (hx : x₁ ≈ x₂) : x₁ ⧏ y ↔ x₂ ⧏ y :=
   lf_congr hx equiv_rfl
 #align pgame.lf_congr_left Pgame.lf_congr_left
 
-theorem lf_congr_right {x y₁ y₂} (hy : y₁ ≈ y₂) : x ⧏ y₁ ↔ x ⧏ y₂ :=
+theorem lf_congr_right {x y₁ y₂ : Pgame} (hy : y₁ ≈ y₂) : x ⧏ y₁ ↔ x ⧏ y₂ :=
   lf_congr equiv_rfl hy
 #align pgame.lf_congr_right Pgame.lf_congr_right
 
 @[trans]
-theorem lf_of_lf_of_equiv {x y z} (h₁ : x ⧏ y) (h₂ : y ≈ z) : x ⧏ z :=
+theorem lf_of_lf_of_equiv {x y z : Pgame} (h₁ : x ⧏ y) (h₂ : y ≈ z) : x ⧏ z :=
   lf_congr_imp equiv_rfl h₂ h₁
 #align pgame.lf_of_lf_of_equiv Pgame.lf_of_lf_of_equiv
 
 @[trans]
-theorem lf_of_equiv_of_lf {x y z} (h₁ : x ≈ y) : y ⧏ z → x ⧏ z :=
+theorem lf_of_equiv_of_lf {x y z : Pgame} (h₁ : x ≈ y) : y ⧏ z → x ⧏ z :=
   lf_congr_imp h₁.symm equiv_rfl
 #align pgame.lf_of_equiv_of_lf Pgame.lf_of_equiv_of_lf
 
 @[trans]
-theorem lt_of_lt_of_equiv {x y z} (h₁ : x < y) (h₂ : y ≈ z) : x < z :=
+theorem lt_of_lt_of_equiv {x y z : Pgame} (h₁ : x < y) (h₂ : y ≈ z) : x < z :=
   h₁.trans_le h₂.1
 #align pgame.lt_of_lt_of_equiv Pgame.lt_of_lt_of_equiv
 
 @[trans]
-theorem lt_of_equiv_of_lt {x y z} (h₁ : x ≈ y) : y < z → x < z :=
+theorem lt_of_equiv_of_lt {x y z : Pgame} (h₁ : x ≈ y) : y < z → x < z :=
   h₁.1.trans_lt
 #align pgame.lt_of_equiv_of_lt Pgame.lt_of_equiv_of_lt
 
-theorem lt_congr_imp {x₁ y₁ x₂ y₂} (hx : x₁ ≈ x₂) (hy : y₁ ≈ y₂) (h : x₁ < y₁) : x₂ < y₂ :=
+theorem lt_congr_imp {x₁ y₁ x₂ y₂ : Pgame} (hx : x₁ ≈ x₂) (hy : y₁ ≈ y₂) (h : x₁ < y₁) : x₂ < y₂ :=
   hx.2.trans_lt (h.trans_le hy.1)
 #align pgame.lt_congr_imp Pgame.lt_congr_imp
 
-theorem lt_congr {x₁ y₁ x₂ y₂} (hx : x₁ ≈ x₂) (hy : y₁ ≈ y₂) : x₁ < y₁ ↔ x₂ < y₂ :=
+theorem lt_congr {x₁ y₁ x₂ y₂ : Pgame} (hx : x₁ ≈ x₂) (hy : y₁ ≈ y₂) : x₁ < y₁ ↔ x₂ < y₂ :=
   ⟨lt_congr_imp hx hy, lt_congr_imp hx.symm hy.symm⟩
 #align pgame.lt_congr Pgame.lt_congr
 
-theorem lt_congr_left {x₁ x₂ y} (hx : x₁ ≈ x₂) : x₁ < y ↔ x₂ < y :=
+theorem lt_congr_left {x₁ x₂ y : Pgame} (hx : x₁ ≈ x₂) : x₁ < y ↔ x₂ < y :=
   lt_congr hx equiv_rfl
 #align pgame.lt_congr_left Pgame.lt_congr_left
 
-theorem lt_congr_right {x y₁ y₂} (hy : y₁ ≈ y₂) : x < y₁ ↔ x < y₂ :=
+theorem lt_congr_right {x y₁ y₂ : Pgame} (hy : y₁ ≈ y₂) : x < y₁ ↔ x < y₂ :=
   lt_congr equiv_rfl hy
 #align pgame.lt_congr_right Pgame.lt_congr_right
 
@@ -845,11 +852,11 @@ theorem lf_or_equiv_or_gf (x y : Pgame) : x ⧏ y ∨ (x ≈ y) ∨ y ⧏ x := b
     · exact Or.inl h'.symm
 #align pgame.lf_or_equiv_or_gf Pgame.lf_or_equiv_or_gf
 
-theorem equiv_congr_left {y₁ y₂} : (y₁ ≈ y₂) ↔ ∀ x₁, (x₁ ≈ y₁) ↔ (x₁ ≈ y₂) :=
+theorem equiv_congr_left {y₁ y₂ : Pgame} : (y₁ ≈ y₂) ↔ ∀ x₁, (x₁ ≈ y₁) ↔ (x₁ ≈ y₂) :=
   ⟨fun h x₁ => ⟨fun h' => h'.trans h, fun h' => h'.trans h.symm⟩, fun h => (h y₁).1 <| equiv_rfl⟩
 #align pgame.equiv_congr_left Pgame.equiv_congr_left
 
-theorem equiv_congr_right {x₁ x₂} : (x₁ ≈ x₂) ↔ ∀ y₁, (x₁ ≈ y₁) ↔ (x₂ ≈ y₁) :=
+theorem equiv_congr_right {x₁ x₂ : Pgame} : (x₁ ≈ x₂) ↔ ∀ y₁, (x₁ ≈ y₁) ↔ (x₂ ≈ y₁) :=
   ⟨fun h y₁ => ⟨fun h' => h.symm.trans h', fun h' => h.trans h'⟩, fun h => (h x₂).2 <| equiv_rfl⟩
 #align pgame.equiv_congr_right Pgame.equiv_congr_right
 
@@ -933,21 +940,21 @@ theorem fuzzy_congr_imp {x₁ y₁ x₂ y₂ : Pgame} (hx : x₁ ≈ x₂) (hy :
   (fuzzy_congr hx hy).1
 #align pgame.fuzzy_congr_imp Pgame.fuzzy_congr_imp
 
-theorem fuzzy_congr_left {x₁ x₂ y} (hx : x₁ ≈ x₂) : x₁ ‖ y ↔ x₂ ‖ y :=
+theorem fuzzy_congr_left {x₁ x₂ y : Pgame} (hx : x₁ ≈ x₂) : x₁ ‖ y ↔ x₂ ‖ y :=
   fuzzy_congr hx equiv_rfl
 #align pgame.fuzzy_congr_left Pgame.fuzzy_congr_left
 
-theorem fuzzy_congr_right {x y₁ y₂} (hy : y₁ ≈ y₂) : x ‖ y₁ ↔ x ‖ y₂ :=
+theorem fuzzy_congr_right {x y₁ y₂ : Pgame} (hy : y₁ ≈ y₂) : x ‖ y₁ ↔ x ‖ y₂ :=
   fuzzy_congr equiv_rfl hy
 #align pgame.fuzzy_congr_right Pgame.fuzzy_congr_right
 
 @[trans]
-theorem fuzzy_of_fuzzy_of_equiv {x y z} (h₁ : x ‖ y) (h₂ : y ≈ z) : x ‖ z :=
+theorem fuzzy_of_fuzzy_of_equiv {x y z : Pgame} (h₁ : x ‖ y) (h₂ : y ≈ z) : x ‖ z :=
   (fuzzy_congr_right h₂).1 h₁
 #align pgame.fuzzy_of_fuzzy_of_equiv Pgame.fuzzy_of_fuzzy_of_equiv
 
 @[trans]
-theorem fuzzy_of_equiv_of_fuzzy {x y z} (h₁ : x ≈ y) (h₂ : y ‖ z) : x ‖ z :=
+theorem fuzzy_of_equiv_of_fuzzy {x y z : Pgame} (h₁ : x ≈ y) (h₂ : y ‖ z) : x ‖ z :=
   (fuzzy_congr_left h₁).2 h₂
 #align pgame.fuzzy_of_equiv_of_fuzzy Pgame.fuzzy_of_equiv_of_fuzzy
 
@@ -1172,10 +1179,12 @@ instance : NegZeroClass Pgame :=
       dsimp [Zero.zero, Neg.neg, neg]
       congr <;> funext i <;> cases i }
 
+set_option linter.deprecated false in
 @[simp]
 theorem neg_ofLists (L R : List Pgame) :
     -ofLists L R = ofLists (R.map fun x => -x) (L.map fun x => -x) := by
-  simp only [ofLists, neg_def, List.length_map, List.get_map, eq_self_iff_true, true_and_iff]
+  simp only [ofLists, neg_def, List.length_map, List.nthLe_map', eq_self_iff_true, true_and,
+    mk.injEq]
   constructor
   all_goals
     apply hfunext
@@ -1185,7 +1194,9 @@ theorem neg_ofLists (L R : List Pgame) :
       have :
         ∀ {m n} (h₁ : m = n) {b : ULift (Fin m)} {c : ULift (Fin n)} (h₂ : HEq b c),
           (b.down : ℕ) = ↑c.down := by
-        rintro m n rfl b c rfl
+        rintro m n rfl b c
+        simp only [heq_eq_eq]
+        rintro rfl
         rfl
       exact this (List.length_map _ _).symm ha
 #align pgame.neg_of_lists Pgame.neg_ofLists
@@ -1830,7 +1841,8 @@ theorem star_fuzzy_zero : star ‖ 0 :=
   ⟨by
     rw [lf_zero]
     use default
-    rintro ⟨⟩, by
+    rintro ⟨⟩,
+   by
     rw [zero_lf]
     use default
     rintro ⟨⟩⟩
@@ -1850,7 +1862,7 @@ instance : ZeroLEOneClass Pgame :=
 
 @[simp]
 theorem zero_lf_one : (0 : Pgame) ⧏ 1 :=
-  Pgame.zero_lt_one.Lf
+  Pgame.zero_lt_one.lf
 #align pgame.zero_lf_one Pgame.zero_lf_one
 
 end Pgame
