@@ -91,9 +91,8 @@ export SpectralMapClass (map_spectral)
 attribute [simp] map_spectral
 
 -- See note [lower instance priority]
--- porting note: `TopologicalSpace` params marked as implicit to address dangerous instances lint
-instance (priority := 100) SpectralMapClass.toContinuousMapClass {_ : TopologicalSpace α}
-    {_ : TopologicalSpace β} [SpectralMapClass F α β] : ContinuousMapClass F α β :=
+instance (priority := 100) SpectralMapClass.toContinuousMapClass [TopologicalSpace α]
+    [TopologicalSpace β] [SpectralMapClass F α β] : ContinuousMapClass F α β :=
   { ‹SpectralMapClass F α β› with map_continuous := fun f => (map_spectral f).continuous }
 #align spectral_map_class.to_continuous_map_class SpectralMapClass.toContinuousMapClass
 
