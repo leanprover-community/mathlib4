@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 
 ! This file was ported from Lean 3 source module linear_algebra.free_module.rank
-! leanprover-community/mathlib commit 5aa3c1de9f3c642eac76e11071c852766f220fd0
+! leanprover-community/mathlib commit 465d4301d8da5945ef1dc1b29fb34c2f2b315ac4
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
