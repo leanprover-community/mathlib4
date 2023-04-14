@@ -947,9 +947,9 @@ theorem StructureGroupoid.compatible_of_mem_maximalAtlas {e e' : LocalHomeomorph
     (e.symm ≫ₕ f) ≫ₕ f.symm ≫ₕ e' = e.symm ≫ₕ (f ≫ₕ f.symm) ≫ₕ e' := by simp only [trans_assoc]
     _ ≈ e.symm ≫ₕ ofSet f.source f.open_source ≫ₕ e' :=
       EqOnSource.trans' (refl _) (EqOnSource.trans' (trans_self_symm _) (refl _))
-    _ ≈ (e.symm ≫ₕ ofSet f.source f.open_source) ≫ₕ e' := by rw [trans_assoc]; apply refl
+    _ ≈ (e.symm ≫ₕ ofSet f.source f.open_source) ≫ₕ e' := by rw [trans_assoc]
     _ ≈ e.symm.restr s ≫ₕ e' := by rw [trans_of_set']; apply refl
-    _ ≈ (e.symm ≫ₕ e').restr s := by rw [restr_trans]; apply refl
+    _ ≈ (e.symm ≫ₕ e').restr s := by rw [restr_trans]
   exact G.eq_on_source C (Setoid.symm D)
 #align structure_groupoid.compatible_of_mem_maximal_atlas StructureGroupoid.compatible_of_mem_maximalAtlas
 
@@ -1156,8 +1156,8 @@ def Structomorph.trans (e : Structomorph G M M') (e' : Structomorph G M' M'') :
             (EqOnSource.trans' (trans_self_symm g) (_root_.refl _)))
         _ ≈ ((c.symm ≫ₕ f₁) ≫ₕ ofSet g.source g.open_source) ≫ₕ f₂ ≫ₕ c' :=
           by simp only [trans_assoc, _root_.refl]
-        _ ≈ (c.symm ≫ₕ f₁).restr s ≫ₕ f₂ ≫ₕ c' := by rw [trans_of_set']; apply _root_.refl
-        _ ≈ ((c.symm ≫ₕ f₁) ≫ₕ f₂ ≫ₕ c').restr s := by rw [restr_trans]; apply _root_.refl
+        _ ≈ (c.symm ≫ₕ f₁).restr s ≫ₕ f₂ ≫ₕ c' := by rw [trans_of_set']
+        _ ≈ ((c.symm ≫ₕ f₁) ≫ₕ f₂ ≫ₕ c').restr s := by rw [restr_trans]
         _ ≈ (c.symm ≫ₕ (f₁ ≫ₕ f₂) ≫ₕ c').restr s :=
           by simp only [EqOnSource.restr, trans_assoc, _root_.refl]
         _ ≈ F₂ := by simp only [feq, _root_.refl]
