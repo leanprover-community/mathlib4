@@ -15,12 +15,12 @@ import Mathlib.Topology.MetricSpace.HausdorffDistance
 /-!
 # Convex bodies
 
-This file contains the definition of the type `convex_body V`
+This file contains the definition of the type `ConvexBody V`
 consisting of
 convex, compact, nonempty subsets of a real topological vector space `V`.
 
-`convex_body V` is a module over the nonnegative reals (`nnreal`) and a pseudo-metric space.
-If `V` is a normed space, `convex_body V` is a metric space.
+`ConvexBody V` is a module over the nonnegative reals (`NNReal`) and a pseudo-metric space.
+If `V` is a normed space, `ConvexBody V` is a metric space.
 
 ## TODO
 
