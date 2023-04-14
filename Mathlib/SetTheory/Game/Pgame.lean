@@ -213,11 +213,11 @@ theorem ofLists_moveRight' {L R : List Pgame} (i : (ofLists L R).RightMoves) :
 /-- A variant of `Pgame.recOn` expressed in terms of `Pgame.moveLeft` and `Pgame.moveRight`.
 
 Both this and `Pgame.recOn` describe Conway induction on games. -/
--- Porting note: Code generator does not support `Pgame.recOn`
+-- Porting note: marked noncomputable
 @[elab_as_elim]
-def moveRecOn {C : Pgame → Sort _} (x : Pgame)
+noncomputable def moveRecOn {C : Pgame → Sort _} (x : Pgame)
     (IH : ∀ y : Pgame, (∀ i, C (y.moveLeft i)) → (∀ j, C (y.moveRight j)) → C y) : C x :=
-  sorry --match x with | mk yl yr yL yR => IH (mk yl yr yL yR)
+  x.recOn <| fun yl yr yL yR => IH (mk yl yr yL yR)
 #align pgame.move_rec_on Pgame.moveRecOn
 
 /-- `IsOption x y` means that `x` is either a left or right option for `y`. -/
@@ -237,16 +237,13 @@ theorem IsOption.mk_right {xl xr : Type u} (xL : xl → Pgame) (xR : xr → Pgam
   @IsOption.moveRight (mk _ _ _ _) i
 #align pgame.is_option.mk_right Pgame.IsOption.mk_right
 
--- Porting note: This uses `moveRecOn`
-theorem wf_isOption : WellFounded IsOption := sorry
-/-
+theorem wf_isOption : WellFounded IsOption :=
   ⟨fun x =>
     moveRecOn x fun x IHl IHr =>
       Acc.intro x fun y h => by
         induction' h with _ i _ j
         · exact IHl i
         · exact IHr j⟩
--/
 #align pgame.wf_is_option Pgame.wf_isOption
 
 /-- `Subsequent x y` says that `x` can be obtained by playing some nonempty sequence of moves from
@@ -504,9 +501,9 @@ instance : Preorder Pgame :=
       induction' y with yl yr yL yR IHyl IHyr generalizing z
       induction' z with zl zr zL zR IHzl IHzr
       exact
-        ⟨le_trans_aux (fun i => (IHxl i).2.1) fun j => (IHzr j).2.2,
-          le_trans_aux (fun i => (IHyl i).2.2) fun j => (IHxr j).1,
-          le_trans_aux (fun i => (IHzl i).1) fun j => (IHyr j).2.1⟩
+        ⟨le_trans_aux (fun {i} => (IHxl i).2.1) fun {j} => (IHzr j).2.2,
+          le_trans_aux (fun {i} => (IHyl i).2.2) fun {j} => (IHxr j).1,
+          le_trans_aux (fun {i} => (IHzl i).1) fun {j} => (IHyr j).2.1⟩
     lt := fun x y => x ≤ y ∧ x ⧏ y }
 
 theorem lt_iff_le_and_lf {x y : Pgame} : x < y ↔ x ≤ y ∧ x ⧏ y :=
@@ -1068,7 +1065,8 @@ def moveRightSymm :
 /-- The identity relabelling. -/
 @[refl]
 def refl : ∀ x : Pgame, x ≡r x
-  | x => ⟨Equiv.refl _, Equiv.refl _, fun i => refl _, fun j => refl _⟩decreasing_by pgame_wf_tac
+  | x => ⟨Equiv.refl _, Equiv.refl _, fun i => refl _, fun j => refl _⟩
+  decreasing_by pgame_wf_tac
 #align pgame.relabelling.refl Pgame.Relabelling.refl
 
 instance (x : Pgame) : Inhabited (x ≡r x) :=
@@ -1084,8 +1082,8 @@ theorem le : ∀ {x y : Pgame} (r : x ≡r y), x ≤ y
   | x, y, r =>
     le_def.2
       ⟨fun i => Or.inl ⟨_, (r.moveLeft i).le⟩, fun j =>
-        Or.inr ⟨_, (r.moveRightSymm j).le⟩⟩decreasing_by
-  pgame_wf_tac
+        Or.inr ⟨_, (r.moveRightSymm j).le⟩⟩
+  decreasing_by pgame_wf_tac
 #align pgame.relabelling.le Pgame.Relabelling.le
 
 theorem ge {x y : Pgame} (r : x ≡r y) : y ≤ x :=
@@ -1148,7 +1146,8 @@ theorem relabel_moveRight {x : Pgame} {xl' xr'} (el : xl' ≃ x.LeftMoves) (er :
 /-- The game obtained by relabelling the next moves is a relabelling of the original game. -/
 def relabelRelabelling {x : Pgame} {xl' xr'} (el : xl' ≃ x.LeftMoves) (er : xr' ≃ x.RightMoves) :
     x ≡r relabel el er :=
-  Relabelling.mk' el er (fun i => by simp) fun j => by simp
+  -- Porting note: needed to add `rfl`
+  Relabelling.mk' el er (fun i => by simp; rfl) (fun j => by simp; rfl)
 #align pgame.relabel_relabelling Pgame.relabelRelabelling
 
 /-! ### Negation -/
@@ -1292,7 +1291,8 @@ private theorem neg_le_lf_neg_iff : ∀ {x y : Pgame.{u}}, (-y ≤ -x ↔ x ≤ 
     · rw [and_comm]
       apply and_congr <;> exact forall_congr' fun _ => neg_le_lf_neg_iff.2
     · rw [or_comm]
-      apply or_congr <;> exact exists_congr fun _ => neg_le_lf_neg_iff.1decreasing_by pgame_wf_tac
+      apply or_congr <;> exact exists_congr fun _ => neg_le_lf_neg_iff.1
+  decreasing_by pgame_wf_tac
 
 @[simp]
 theorem neg_le_neg_iff {x y : Pgame} : -y ≤ -x ↔ x ≤ y :=
@@ -1570,10 +1570,11 @@ def Relabelling.addCongr : ∀ {w x y z : Pgame.{u}}, w ≡r x → y ≡r z → 
     · exact (hL₁ i).addCongr Hyz
     · exact Hwx.addCongr (hL₂ j)
     · exact (hR₁ i).addCongr Hyz
-    · exact Hwx.addCongr (hR₂ j) decreasing_by pgame_wf_tac
+    · exact Hwx.addCongr (hR₂ j)
+  decreasing_by pgame_wf_tac
 #align pgame.relabelling.add_congr Pgame.Relabelling.addCongr
 
-instance : Sub Pgame :=
+noncomputable instance : Sub Pgame :=
   ⟨fun x y => x + -y⟩
 
 @[simp]
@@ -1593,9 +1594,9 @@ def negAddRelabelling : ∀ x y : Pgame, -(x + y) ≡r -x + -y
     refine' ⟨Equiv.refl _, Equiv.refl _, _, _⟩
     all_goals
       exact fun j =>
-        Sum.casesOn j (fun j => neg_add_relabelling _ _) fun j =>
-          neg_add_relabelling ⟨xl, xr, xL, xR⟩ _ decreasing_by
-  pgame_wf_tac
+        Sum.casesOn j (fun j => negAddRelabelling _ _) fun j =>
+          negAddRelabelling ⟨xl, xr, xL, xR⟩ _
+  decreasing_by pgame_wf_tac
 #align pgame.neg_add_relabelling Pgame.negAddRelabelling
 
 theorem neg_add_le {x y : Pgame} : -(x + y) ≤ -x + -y :=
@@ -1607,8 +1608,8 @@ def addCommRelabelling : ∀ x y : Pgame.{u}, x + y ≡r y + x
   | mk xl xr xL xR, mk yl yr yL yR => by
     refine' ⟨Equiv.sumComm _ _, Equiv.sumComm _ _, _, _⟩ <;> rintro (_ | _) <;>
       · dsimp [leftMoves_add, rightMoves_add]
-        apply addCommRelabelling decreasing_by
-  pgame_wf_tac
+        apply addCommRelabelling
+  decreasing_by pgame_wf_tac
 #align pgame.add_comm_relabelling Pgame.addCommRelabelling
 
 theorem add_comm_le {x y : Pgame} : x + y ≤ y + x :=
@@ -1627,8 +1628,8 @@ def addAssocRelabelling : ∀ x y z : Pgame.{u}, x + y + z ≡r x + (y + z)
       first |rintro (⟨i | i⟩ | i)|rintro (j | ⟨j | j⟩)
       · apply addAssocRelabelling
       · apply addAssocRelabelling ⟨xl, xr, xL, xR⟩
-      · apply addAssocRelabelling ⟨xl, xr, xL, xR⟩ ⟨yl, yr, yL, yR⟩ decreasing_by
-  pgame_wf_tac
+      · apply addAssocRelabelling ⟨xl, xr, xL, xR⟩ ⟨yl, yr, yL, yR⟩
+  decreasing_by pgame_wf_tac
 #align pgame.add_assoc_relabelling Pgame.addAssocRelabelling
 
 theorem add_assoc_equiv {x y z : Pgame} : x + y + z ≈ x + (y + z) :=
@@ -1671,7 +1672,7 @@ theorem add_right_neg_equiv (x : Pgame) : x + -x ≈ 0 :=
   ⟨add_right_neg_le_zero x, zero_le_add_right_neg x⟩
 #align pgame.add_right_neg_equiv Pgame.add_right_neg_equiv
 
-theorem sub_self_equiv : ∀ x, x - x ≈ 0 :=
+theorem sub_self_equiv : ∀ (x : Pgame), x - x ≈ 0 :=
   add_right_neg_equiv
 #align pgame.sub_self_equiv Pgame.sub_self_equiv
 
@@ -1694,9 +1695,8 @@ private theorem add_le_add_right' : ∀ {x y z : Pgame} (h : x ≤ y), x + z ≤
         apply add_moveLeft_inl
       · exact Or.inr ⟨toRightMovesAdd (Sum.inl j'), add_le_add_right' jh⟩
     · exact
-        Or.inr ⟨@toRightMovesAdd _ ⟨_, _, _, _⟩ (Sum.inr i), add_le_add_right' h⟩ decreasing_by
-  pgame_wf_tac
-#align pgame.add_le_add_right' pgame.add_le_add_right'
+        Or.inr ⟨@toRightMovesAdd _ ⟨_, _, _, _⟩ (Sum.inr i), add_le_add_right' h⟩
+  decreasing_by pgame_wf_tac
 
 instance covariantClass_swap_add_le : CovariantClass Pgame Pgame (swap (· + ·)) (· ≤ ·) :=
   ⟨fun _ _ _ => add_le_add_right'⟩
