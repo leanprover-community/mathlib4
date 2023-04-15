@@ -126,12 +126,12 @@ theorem cons_val' (v : n' → α) (B : Fin m → n' → α) (i j) :
     vecCons v B i j = vecCons (v j) (fun i => B i j) i := by refine' Fin.cases _ _ i <;> simp
 #align matrix.cons_val' Matrix.cons_val'
 
-@[simp]
+@[simp, nolint simpNF] -- Porting note: LHS does not simplify.
 theorem head_val' (B : Fin m.succ → n' → α) (j : n') : (vecHead fun i => B i j) = vecHead B j :=
   rfl
 #align matrix.head_val' Matrix.head_val'
 
-@[simp]
+@[simp, nolint simpNF] -- Porting note: LHS does not simplify.
 theorem tail_val' (B : Fin m.succ → n' → α) (j : n') :
     (vecTail fun i => B i j) = fun i => vecTail B i j := by
   ext
@@ -159,7 +159,7 @@ theorem dotProduct_cons (v : Fin n.succ → α) (x : α) (w : Fin n → α) :
   simp [dotProduct, Fin.sum_univ_succ, vecHead, vecTail]
 #align matrix.dot_product_cons Matrix.dotProduct_cons
 
-@[simp]
+-- @[simp] -- Porting note: simp can prove this
 theorem cons_dotProduct_cons (x : α) (v : Fin n → α) (y : α) (w : Fin n → α) :
     dotProduct (vecCons x v) (vecCons y w) = x * y + dotProduct v w := by simp
 #align matrix.cons_dot_product_cons Matrix.cons_dotProduct_cons
@@ -290,7 +290,7 @@ theorem vecMul_cons (v : Fin n.succ → α) (w : o' → α) (B : Fin n → o' �
   simp [vecMul]
 #align matrix.vec_mul_cons Matrix.vecMul_cons
 
-@[simp]
+-- @[simp] -- Porting note: simp can prove this
 theorem cons_vecMul_cons (x : α) (v : Fin n → α) (w : o' → α) (B : Fin n → o' → α) :
     vecMul (vecCons x v) (of <| vecCons w B) = x • w + vecMul v (of B) := by simp
 #align matrix.cons_vec_mul_cons Matrix.cons_vecMul_cons
@@ -361,12 +361,12 @@ section Smul
 
 variable [Semiring α]
 
-@[simp]
+-- @[simp] -- Porting note: simp can prove this
 theorem smul_mat_empty {m' : Type _} (x : α) (A : Fin 0 → m' → α) : x • A = ![] :=
   empty_eq _
 #align matrix.smul_mat_empty Matrix.smul_mat_empty
 
-@[simp]
+-- @[simp] -- Porting note: simp can prove this
 theorem smul_mat_cons (x : α) (v : n' → α) (A : Fin m → n' → α) :
     x • vecCons v A = vecCons (x • v) (x • A) := by
   ext i
