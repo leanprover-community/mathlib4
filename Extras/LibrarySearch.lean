@@ -3,9 +3,7 @@ Copyright (c) 2023 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
--- FIXME change this back when I have internet
--- import Mathlib
-import Mathlib.Algebra.Hom.GroupInstances
+import Mathlib
 import Mathlib.Tactic.LibrarySearch
 import Mathlib.Control.Basic
 
