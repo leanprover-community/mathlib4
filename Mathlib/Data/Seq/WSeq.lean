@@ -11,6 +11,13 @@ Authors: Mario Carneiro
 import Mathlib.Data.List.Basic
 import Mathlib.Data.Seq.Seq
 
+/-!
+# Partially defined possibly infinite lists
+
+This file provides a `WSeq α` type representing partially defined possibly infinite lists
+(referred here as weak sequences).
+-/
+
 namespace Stream'
 
 open Function
@@ -37,6 +44,13 @@ coinductive WSeq (α : Type u) : Type u
 def WSeq (α) :=
   Seq (Option α)
 #align stream.wseq Stream'.WSeq
+
+/-
+coinductive WSeq (α : Type u) : Type u
+| nil : WSeq α
+| cons : α → WSeq α → WSeq α
+| think : WSeq α → WSeq α
+-/
 
 namespace WSeq
 
