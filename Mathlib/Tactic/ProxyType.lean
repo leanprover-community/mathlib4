@@ -240,13 +240,8 @@ def elabProxyEquiv (type : Term) (expectedType? : Option Expr) :
     unless ← isDefEq expectedType equivType do
       throwError
         "Could not unify expected type{indentExpr expectedType}\nwith{indentExpr equivType}"
-  let mut type ← instantiateMVars type
-  if type.hasExprMVar then
-    Term.synthesizeSyntheticMVars
-    type ← instantiateMVars type
-    if type.hasExprMVar then
-      throwError "Provided type {type} has metavariables"
-  type ← whnf type
+  let type ← Term.tryPostponeIfHasMVars type "In proxy_equiv% elaborator"
+  let type ← whnf type
   let .const declName _ := type.getAppFn
     | throwError "{type} is not a constant or constant application"
   return (type, ← getConstInfoInduct declName)
