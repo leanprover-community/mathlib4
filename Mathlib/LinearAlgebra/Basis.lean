@@ -1265,9 +1265,7 @@ theorem coord_unitsSmul (e : Basis ι R₂ M) (w : ι → R₂ˣ) (i : ι) :
       simp [Basis.unitsSmul, ← mul_smul]
     simp only [Basis.coord_apply, LinearMap.smul_apply, Basis.repr_self, Units.smul_def,
       SMulHomClass.map_smul, Finsupp.single_apply]
-    split_ifs with h
-    · simp [h]
-    · simp
+    split_ifs with h <;> simp [h]
 #align basis.coord_units_smul Basis.coord_unitsSmul
 
 -- Porting note: TODO: workaround for lean4#2074

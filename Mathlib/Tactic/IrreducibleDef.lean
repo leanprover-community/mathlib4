@@ -5,6 +5,7 @@ Authors: Gabriel Ebner
 -/
 import Lean
 import Mathlib.Tactic.Eqns
+import Mathlib.Data.Subtype
 
 /-!
 # Irreducible definitions
@@ -45,26 +46,28 @@ local elab "eta_helper " t:term : term => do
   let some (_, lhs, rhs) := t.eq? | throwError "not an equation: {t}"
   synthesizeSyntheticMVars
   let rhs ← instantiateMVars rhs
-  lambdaLetTelescope rhs fun xs rhs ↦ do
+  lambdaTelescope rhs fun xs rhs ↦ do
     let lhs := (mkAppN lhs xs).headBeta
     mkForallFVars xs <|← mkEq lhs rhs
 
-/-- `value_proj x` elabs to `@x.value` -/
-local elab "value_proj " e:term : term => do
-  let e ← elabTerm e none
-  mkProjection e `value
+/-- `val_proj x` elabs to the *primitive projection* `@x.val`.  -/
+local elab "val_proj " e:term : term => do
+  let e ← elabTerm (← `(($e : Subtype _))) none
+  return mkProj ``Subtype 0 e
 
 /--
 Executes the commands,
 and stops after the first error.
 In short, S-A-F-E.
 -/
-local syntax "stop_at_first_error" command* : command
+local syntax "stop_at_first_error" (ppLine command)* : command
 open Command in elab_rules : command
   | `(stop_at_first_error $[$cmds]*) => do
     for cmd in cmds do
       elabCommand cmd.raw
       if (← get).messages.hasErrors then break
+
+syntax irredDefLemma := atomic("(" "lemma" " := ") ident ")"
 
 /--
 Introduces an irreducible definition.
@@ -72,37 +75,40 @@ Introduces an irreducible definition.
 a constant `foo : Nat` as well as
 a theorem `foo_def : foo = 42`.
 -/
-elab mods:declModifiers "irreducible_def" n_id:declId declSig:optDeclSig val:declVal :
+elab mods:declModifiers "irreducible_def" n_id:declId n_def:(irredDefLemma)?
+    declSig:optDeclSig val:declVal :
     command => do
   let (n, us) ← match n_id with
     | `(Parser.Command.declId| $n:ident $[.{$us,*}]?) => pure (n, us)
     | _ => throwUnsupportedSyntax
   let us' := us.getD { elemsAndSeps := #[] }
-  let n_def := mkIdent <| (·.review) <|
-    let scopes := extractMacroScopes n.getId
-    { scopes with name := scopes.name.appendAfter "_def" }
+  let n_def ← match n_def.getD ⟨mkNullNode⟩ with
+    | `(irredDefLemma| (lemma := $id)) => pure id
+    | _ => pure <| mkIdent <| (·.review) <|
+      let scopes := extractMacroScopes n.getId
+      { scopes with name := scopes.name.appendAfter "_def" }
   let `(Parser.Command.declModifiersF|
-      $[$doc:docComment]? $[$attrs:attributes]?
+      $[$doc:docComment]? $[@[$attrs,*]]?
       $[$vis]? $[$nc:noncomputable]? $[$uns:unsafe]?) := mods
     | throwError "unsupported modifiers {format mods}"
+  let attrs := attrs.getD {}
   let prot := vis.filter (· matches `(Parser.Command.visibility| protected))
   let priv := vis.filter (· matches `(Parser.Command.visibility| private))
   elabCommand <|<- `(stop_at_first_error
     $[$nc:noncomputable]? $[$uns]? def definition$[.{$us,*}]? $declSig:optDeclSig $val
-    set_option genInjectivity false in -- generates awful simp lemmas
-    $[$uns:unsafe]? structure Wrapper$[.{$us,*}]? where
-      value : type_of% @definition.{$us',*}
-      prop : Eq @value @(delta% @definition)
-    $[$nc:noncomputable]? $[$uns]? opaque wrapped$[.{$us,*}]? : Wrapper.{$us',*} := ⟨_, rfl⟩
-    $[$doc:docComment]? $[$attrs:attributes]? $[private%$priv]? $[$nc:noncomputable]? $[$uns]?
+    $[$nc:noncomputable]? $[$uns]? opaque wrapped$[.{$us,*}]? : Subtype (Eq @definition.{$us',*}) :=
+      ⟨_, rfl⟩
+    $[$doc:docComment]? $[private%$priv]? $[$nc:noncomputable]? $[$uns]?
     def $n:ident$[.{$us,*}]? :=
-      value_proj @wrapped.{$us',*}
+      val_proj @wrapped.{$us',*}
     $[private%$priv]? $[$uns:unsafe]? theorem $n_def:ident $[.{$us,*}]? :
         eta_helper Eq @$n.{$us',*} @(delta% @definition) := by
       intros
-      simp only [$n:ident]
-      rw [wrapped.prop]
-    attribute [irreducible] $n
-    attribute [eqns $n_def] $n)
+      delta $n:ident
+      rw [show wrapped = ⟨@definition.{$us',*}, rfl⟩ from Subtype.ext wrapped.2.symm]
+      rfl
+    attribute [irreducible] $n definition
+    attribute [eqns $n_def] $n
+    attribute [$attrs:attrInstance,*] $n)
   if prot.isSome then
     modifyEnv (addProtected · ((← getCurrNamespace) ++ n.getId))
