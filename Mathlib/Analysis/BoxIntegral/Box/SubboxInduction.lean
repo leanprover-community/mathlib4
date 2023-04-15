@@ -8,8 +8,8 @@ Authors: Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.BoxIntegral.Box.Basic
-import Mathbin.Analysis.SpecificLimits.Basic
+import Mathlib.Analysis.BoxIntegral.Box.Basic
+import Mathlib.Analysis.SpecificLimits.Basic
 
 /-!
 # Induction on subboxes
@@ -47,8 +47,7 @@ variable {ι : Type _} {I J : Box ι}
 /-- For a box `I`, the hyperplanes passing through its center split `I` into `2 ^ card ι` boxes.
 `box_integral.box.split_center_box I s` is one of these boxes. See also
 `box_integral.partition.split_center` for the corresponding `box_integral.partition`. -/
-def splitCenterBox (I : Box ι) (s : Set ι) : Box ι
-    where
+def splitCenterBox (I : Box ι) (s : Set ι) : Box ι where
   lower := s.piecewise (fun i => (I.lower i + I.upper i) / 2) I.lower
   upper := s.piecewise I.upper fun i => (I.lower i + I.upper i) / 2
   lower_lt_upper i := by
@@ -57,8 +56,7 @@ def splitCenterBox (I : Box ι) (s : Set ι) : Box ι
 #align box_integral.box.split_center_box BoxIntegral.Box.splitCenterBox
 
 theorem mem_splitCenterBox {s : Set ι} {y : ι → ℝ} :
-    y ∈ I.splitCenterBox s ↔ y ∈ I ∧ ∀ i, (I.lower i + I.upper i) / 2 < y i ↔ i ∈ s :=
-  by
+    y ∈ I.splitCenterBox s ↔ y ∈ I ∧ ∀ i, (I.lower i + I.upper i) / 2 < y i ↔ i ∈ s := by
   simp only [split_center_box, mem_def, ← forall_and]
   refine' forall_congr' fun i => _
   dsimp only [Set.piecewise]
@@ -74,8 +72,7 @@ theorem splitCenterBox_le (I : Box ι) (s : Set ι) : I.splitCenterBox s ≤ I :
 #align box_integral.box.split_center_box_le BoxIntegral.Box.splitCenterBox_le
 
 theorem disjoint_splitCenterBox (I : Box ι) {s t : Set ι} (h : s ≠ t) :
-    Disjoint (I.splitCenterBox s : Set (ι → ℝ)) (I.splitCenterBox t) :=
-  by
+    Disjoint (I.splitCenterBox s : Set (ι → ℝ)) (I.splitCenterBox t) := by
   rw [disjoint_iff_inf_le]
   rintro y ⟨hs, ht⟩; apply h
   ext i
@@ -100,8 +97,7 @@ def splitCenterBoxEmb (I : Box ι) : Set ι ↪ Box ι :=
 #align box_integral.box.split_center_box_emb BoxIntegral.Box.splitCenterBoxEmb
 
 @[simp]
-theorem unionᵢ_coe_splitCenterBox (I : Box ι) : (⋃ s, (I.splitCenterBox s : Set (ι → ℝ))) = I :=
-  by
+theorem unionᵢ_coe_splitCenterBox (I : Box ι) : (⋃ s, (I.splitCenterBox s : Set (ι → ℝ))) = I := by
   ext x
   simp
 #align box_integral.box.Union_coe_split_center_box BoxIntegral.Box.unionᵢ_coe_splitCenterBox
@@ -152,8 +148,7 @@ theorem subbox_induction_on' {p : Box ι → Prop} (I : Box ι)
   have hJle : ∀ m, J m ≤ I := fun m => hJmono (zero_le m)
   have hJp : ∀ m, ¬p (J m) := fun m =>
     Nat.recOn m hpI fun m => by simpa only [J_succ] using hs (J m) (hJle m)
-  have hJsub : ∀ m i, (J m).upper i - (J m).lower i = (I.upper i - I.lower i) / 2 ^ m :=
-    by
+  have hJsub : ∀ m i, (J m).upper i - (J m).lower i = (I.upper i - I.lower i) / 2 ^ m := by
     intro m i
     induction' m with m ihm
     · simp [J]
@@ -172,8 +167,7 @@ theorem subbox_induction_on' {p : Box ι → Prop} (I : Box ι)
   have hJu_mem : ∀ m, (J m).upper ∈ I.Icc := fun m => le_iff_Icc.1 (hJle m) (J m).upper_mem_icc
   have hJlz : tendsto (fun m => (J m).lower) at_top (𝓝 z) :=
     tendsto_atTop_csupᵢ (antitone_lower.comp hJmono) ⟨I.upper, fun x ⟨m, hm⟩ => hm ▸ (hJl_mem m).2⟩
-  have hJuz : tendsto (fun m => (J m).upper) at_top (𝓝 z) :=
-    by
+  have hJuz : tendsto (fun m => (J m).upper) at_top (𝓝 z) := by
     suffices tendsto (fun m => (J m).upper - (J m).lower) at_top (𝓝 0) by simpa using hJlz.add this
     refine' tendsto_pi_nhds.2 fun i => _
     simpa [hJsub] using tendsto_const_nhds.div_at_top (tendsto_pow_atTop_atTop_of_one_lt one_lt_two)
