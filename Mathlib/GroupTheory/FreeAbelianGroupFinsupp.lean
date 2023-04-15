@@ -38,12 +38,12 @@ variable {X : Type _}
 
 /-- The group homomorphism `FreeAbelianGroup X →+ (X →₀ ℤ)`. -/
 def FreeAbelianGroup.toFinsupp : FreeAbelianGroup X →+ X →₀ ℤ :=
-  FreeAbelianGroup.lift fun x ↦ Finsupp.single x (1 : ℤ)
+  FreeAbelianGroup.lift fun x => Finsupp.single x (1 : ℤ)
 #align free_abelian_group.to_finsupp FreeAbelianGroup.toFinsupp
 
 /-- The group homomorphism `(X →₀ ℤ) →+ FreeAbelianGroup X`. -/
 def Finsupp.toFreeAbelianGroup : (X →₀ ℤ) →+ FreeAbelianGroup X :=
-  Finsupp.liftAddHom fun x ↦ (smulAddHom ℤ (FreeAbelianGroup X)).flip (FreeAbelianGroup.of x)
+  Finsupp.liftAddHom fun x => (smulAddHom ℤ (FreeAbelianGroup X)).flip (FreeAbelianGroup.of x)
 #align finsupp.to_free_abelian_group Finsupp.toFreeAbelianGroup
 
 open Finsupp FreeAbelianGroup
@@ -60,7 +60,12 @@ theorem Finsupp.toFreeAbelianGroup_comp_singleAddHom (x : X) :
 @[simp]
 theorem FreeAbelianGroup.toFinsupp_comp_toFreeAbelianGroup :
     toFinsupp.comp toFreeAbelianGroup = AddMonoidHom.id (X →₀ ℤ) := by
-  ext (x y); simp only [AddMonoidHom.id_comp]
+  apply addHom_ext'
+  intro x
+  apply AddMonoidHom.ext_int
+  apply ext
+  intro y
+  simp only [AddMonoidHom.id_comp]
   rw [AddMonoidHom.comp_assoc, Finsupp.toFreeAbelianGroup_comp_singleAddHom]
   simp only [toFinsupp, AddMonoidHom.coe_comp, Finsupp.singleAddHom_apply, Function.comp_apply,
     one_smul, lift.of, AddMonoidHom.flip_apply, smulAddHom_apply, AddMonoidHom.id_apply]
@@ -69,8 +74,8 @@ theorem FreeAbelianGroup.toFinsupp_comp_toFreeAbelianGroup :
 @[simp]
 theorem Finsupp.toFreeAbelianGroup_comp_toFinsupp :
     toFreeAbelianGroup.comp toFinsupp = AddMonoidHom.id (FreeAbelianGroup X) := by
-  -- Porting note: originally `ext`
-  apply lift.ext; intro x
+  apply lift.ext
+  intros x
   rw [toFreeAbelianGroup, toFinsupp, AddMonoidHom.comp_apply, lift.of,
     liftAddHom_apply_single, AddMonoidHom.flip_apply, smulAddHom_apply, one_smul,
     AddMonoidHom.id_apply]
@@ -100,7 +105,7 @@ theorem toFinsupp_toFreeAbelianGroup (f : X →₀ ℤ) :
 variable (X)
 
 /-- The additive equivalence between `FreeAbelianGroup X` and `(X →₀ ℤ)`. -/
-@[simps]
+@[simps!]
 def equivFinsupp : FreeAbelianGroup X ≃+ (X →₀ ℤ) where
   toFun := toFinsupp
   invFun := toFreeAbelianGroup
