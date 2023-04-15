@@ -23,7 +23,7 @@ An exposed subset of `A` is a subset of `A` that is the set of all maximal point
 This allows for better functoriality of the definition (the intersection of two exposed subsets is
 exposed, faces of a polytope form a bounded lattice).
 This is an analytic notion of "being on the side of". It is stronger than being extreme (see
-`is_exposed.is_extreme`), but weaker (for exposed points) than being a vertex.
+`IsExposed.isExtreme`), but weaker (for exposed points) than being a vertex.
 
 An exposed set of `A` is sometimes called a "face of `A`", but we decided to reserve this
 terminology to the more specific notion of a face of a polytope (sometimes hopefully soon out
@@ -31,9 +31,9 @@ on mathlib!).
 
 ## Main declarations
 
-* `is_exposed 𝕜 A B`: States that `B` is an exposed set of `A` (in the literature, `A` is often
+* `IsExposed 𝕜 A B`: States that `B` is an exposed set of `A` (in the literature, `A` is often
   implicit).
-* `is_exposed.is_extreme`: An exposed set is also extreme.
+* `IsExposed.isExtreme`: An exposed set is also extreme.
 
 ## References
 
@@ -59,7 +59,7 @@ variable (𝕜 : Type _) {E : Type _} [TopologicalSpace 𝕜] [Semiring 𝕜] [P
   [TopologicalSpace E] [Module 𝕜 E] {A B : Set E}
 
 /-- A set `B` is exposed with respect to `A` iff it maximizes some functional over `A` (and contains
-all points maximizing it). Written `is_exposed 𝕜 A B`. -/
+all points maximizing it). Written `IsExposed 𝕜 A B`. -/
 def IsExposed (A B : Set E) : Prop :=
   B.Nonempty → ∃ l : E →L[𝕜] 𝕜, B = { x ∈ A | ∀ y ∈ A, l y ≤ l x }
 #align is_exposed IsExposed
@@ -71,16 +71,17 @@ section OrderedRing
 variable {𝕜 : Type _} {E : Type _} [TopologicalSpace 𝕜] [OrderedRing 𝕜] [AddCommMonoid E]
   [TopologicalSpace E] [Module 𝕜 E] {l : E →L[𝕜] 𝕜} {A B C : Set E} {X : Finset E} {x : E}
 
+set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 /-- A useful way to build exposed sets from intersecting `A` with halfspaces (modelled by an
 inequality with a functional). -/
 def ContinuousLinearMap.toExposed (l : E →L[𝕜] 𝕜) (A : Set E) : Set E :=
   { x ∈ A | ∀ y ∈ A, l y ≤ l x }
 #align continuous_linear_map.to_exposed ContinuousLinearMap.toExposed
 
-theorem ContinuousLinearMap.toExposed.isExposed : IsExposed 𝕜 A (l.toExposed A) := fun h => ⟨l, rfl⟩
+theorem ContinuousLinearMap.toExposed.isExposed : IsExposed 𝕜 A (l.toExposed A) := fun _ => ⟨l, rfl⟩
 #align continuous_linear_map.to_exposed.is_exposed ContinuousLinearMap.toExposed.isExposed
 
-theorem isExposed_empty : IsExposed 𝕜 A ∅ := fun ⟨x, hx⟩ => by
+theorem isExposed_empty : IsExposed 𝕜 A ∅ := fun ⟨_, hx⟩ => by
   exfalso
   exact hx
 #align is_exposed_empty isExposed_empty
@@ -94,27 +95,26 @@ protected theorem subset (hAB : IsExposed 𝕜 A B) : B ⊆ A := by
 #align is_exposed.subset IsExposed.subset
 
 @[refl]
-protected theorem refl (A : Set E) : IsExposed 𝕜 A A := fun ⟨w, hw⟩ =>
-  ⟨0, Subset.antisymm (fun x hx => ⟨hx, fun y hy => le_refl 0⟩) fun x hx => hx.1⟩
+protected theorem refl (A : Set E) : IsExposed 𝕜 A A := fun ⟨_, _⟩ =>
+  ⟨0, Subset.antisymm (fun _ hx => ⟨hx, fun _ _ => le_refl 0⟩) fun _ hx => hx.1⟩
 #align is_exposed.refl IsExposed.refl
 
 protected theorem antisymm (hB : IsExposed 𝕜 A B) (hA : IsExposed 𝕜 B A) : A = B :=
-  hA.Subset.antisymm hB.Subset
+  hA.subset.antisymm hB.subset
 #align is_exposed.antisymm IsExposed.antisymm
 
-/- `is_exposed` is *not* transitive: Consider a (topologically) open cube with vertices
+/- `IsExposed` is *not* transitive: Consider a (topologically) open cube with vertices
 `A₀₀₀, ..., A₁₁₁` and add to it the triangle `A₀₀₀A₀₀₁A₀₁₀`. Then `A₀₀₁A₀₁₀` is an exposed subset
 of `A₀₀₀A₀₀₁A₀₁₀` which is an exposed subset of the cube, but `A₀₀₁A₀₁₀` is not itself an exposed
 subset of the cube. -/
 protected theorem mono (hC : IsExposed 𝕜 A C) (hBA : B ⊆ A) (hCB : C ⊆ B) : IsExposed 𝕜 B C := by
   rintro ⟨w, hw⟩
   obtain ⟨l, rfl⟩ := hC ⟨w, hw⟩
-  exact
-    ⟨l,
-      subset.antisymm (fun x hx => ⟨hCB hx, fun y hy => hx.2 y (hBA hy)⟩) fun x hx =>
-        ⟨hBA hx.1, fun y hy => (hw.2 y hy).trans (hx.2 w (hCB hw))⟩⟩
+  exact ⟨l, Subset.antisymm (fun x hx => ⟨hCB hx, fun y hy => hx.2 y (hBA hy)⟩) fun x hx =>
+    ⟨hBA hx.1, fun y hy => (hw.2 y hy).trans (hx.2 w (hCB hw))⟩⟩
 #align is_exposed.mono IsExposed.mono
 
+set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 /-- If `B` is a nonempty exposed subset of `A`, then `B` is the intersection of `A` with some closed
 halfspace. The converse is *not* true. It would require that the corresponding open halfspace
 doesn't intersect `A`. -/
@@ -122,12 +122,11 @@ theorem eq_inter_halfspace' {A B : Set E} (hAB : IsExposed 𝕜 A B) (hB : B.Non
     ∃ l : E →L[𝕜] 𝕜, ∃ a, B = { x ∈ A | a ≤ l x } := by
   obtain ⟨l, rfl⟩ := hAB hB
   obtain ⟨w, hw⟩ := hB
-  exact
-    ⟨l, l w,
-      subset.antisymm (fun x hx => ⟨hx.1, hx.2 w hw.1⟩) fun x hx =>
-        ⟨hx.1, fun y hy => (hw.2 y hy).trans hx.2⟩⟩
+  exact ⟨l, l w, Subset.antisymm (fun x hx => ⟨hx.1, hx.2 w hw.1⟩) fun x hx =>
+    ⟨hx.1, fun y hy => (hw.2 y hy).trans hx.2⟩⟩
 #align is_exposed.eq_inter_halfspace' IsExposed.eq_inter_halfspace'
 
+set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 /-- For nontrivial `𝕜`, if `B` is an exposed subset of `A`, then `B` is the intersection of `A` with
 some closed halfspace. The converse is *not* true. It would require that the corresponding open
 halfspace doesn't intersect `A`. -/
@@ -148,30 +147,28 @@ protected theorem inter [ContinuousAdd 𝕜] {A B C : Set E} (hB : IsExposed �
   rintro ⟨w, hwB, hwC⟩
   obtain ⟨l₁, rfl⟩ := hB ⟨w, hwB⟩
   obtain ⟨l₂, rfl⟩ := hC ⟨w, hwC⟩
-  refine' ⟨l₁ + l₂, subset.antisymm _ _⟩
+  refine' ⟨l₁ + l₂, Subset.antisymm _ _⟩
   · rintro x ⟨⟨hxA, hxB⟩, ⟨-, hxC⟩⟩
     exact ⟨hxA, fun z hz => add_le_add (hxB z hz) (hxC z hz)⟩
   rintro x ⟨hxA, hx⟩
   refine' ⟨⟨hxA, fun y hy => _⟩, hxA, fun y hy => _⟩
-  ·
-    exact
+  · exact
       (add_le_add_iff_right (l₂ x)).1 ((add_le_add (hwB.2 y hy) (hwC.2 x hxA)).trans (hx w hwB.1))
-  ·
-    exact
+  · exact
       (add_le_add_iff_left (l₁ x)).1 (le_trans (add_le_add (hwB.2 x hxA) (hwC.2 y hy)) (hx w hwB.1))
 #align is_exposed.inter IsExposed.inter
 
 theorem interₛ [ContinuousAdd 𝕜] {F : Finset (Set E)} (hF : F.Nonempty)
     (hAF : ∀ B ∈ F, IsExposed 𝕜 A B) : IsExposed 𝕜 A (⋂₀ F) := by
-  revert hF F
-  refine' Finset.induction _ _
+  revert hF
+  induction F using Finset.induction
   · rintro h
     exfalso
-    exact not_nonempty_empty h
+    exact Finset.not_nonempty_empty h
   rintro C F _ hF _ hCF
-  rw [Finset.coe_insert, sInter_insert]
+  rw [Finset.coe_insert, interₛ_insert]
   obtain rfl | hFnemp := F.eq_empty_or_nonempty
-  · rw [Finset.coe_empty, sInter_empty, inter_univ]
+  · rw [Finset.coe_empty, interₛ_empty, inter_univ]
     exact hCF C (Finset.mem_singleton_self C)
   exact
     (hCF C (Finset.mem_insert_self C F)).inter
@@ -181,10 +178,8 @@ theorem interₛ [ContinuousAdd 𝕜] {F : Finset (Set E)} (hF : F.Nonempty)
 theorem inter_left (hC : IsExposed 𝕜 A C) (hCB : C ⊆ B) : IsExposed 𝕜 (A ∩ B) C := by
   rintro ⟨w, hw⟩
   obtain ⟨l, rfl⟩ := hC ⟨w, hw⟩
-  exact
-    ⟨l,
-      subset.antisymm (fun x hx => ⟨⟨hx.1, hCB hx⟩, fun y hy => hx.2 y hy.1⟩)
-        fun x ⟨⟨hxC, _⟩, hx⟩ => ⟨hxC, fun y hy => (hw.2 y hy).trans (hx w ⟨hC.subset hw, hCB hw⟩)⟩⟩
+  exact ⟨l, Subset.antisymm (fun x hx => ⟨⟨hx.1, hCB hx⟩, fun y hy => hx.2 y hy.1⟩)
+    fun x ⟨⟨hxC, _⟩, hx⟩ => ⟨hxC, fun y hy => (hw.2 y hy).trans (hx w ⟨hC.subset hw, hCB hw⟩)⟩⟩
 #align is_exposed.inter_left IsExposed.inter_left
 
 theorem inter_right (hC : IsExposed 𝕜 B C) (hCA : C ⊆ A) : IsExposed 𝕜 (A ∩ B) C := by
@@ -197,18 +192,19 @@ protected theorem isClosed [OrderClosedTopology 𝕜] {A B : Set E} (hAB : IsExp
   obtain rfl | hB := B.eq_empty_or_nonempty
   · simp
   obtain ⟨l, a, rfl⟩ := hAB.eq_inter_halfspace' hB
-  exact hA.is_closed_le continuousOn_const l.continuous.continuous_on
+  exact hA.isClosed_le continuousOn_const l.continuous.continuousOn
 #align is_exposed.is_closed IsExposed.isClosed
 
 protected theorem isCompact [OrderClosedTopology 𝕜] [T2Space E] {A B : Set E}
     (hAB : IsExposed 𝕜 A B) (hA : IsCompact A) : IsCompact B :=
-  isCompact_of_isClosed_subset hA (hAB.IsClosed hA.IsClosed) hAB.Subset
+  isCompact_of_isClosed_subset hA (hAB.isClosed hA.isClosed) hAB.subset
 #align is_exposed.is_compact IsExposed.isCompact
 
 end IsExposed
 
 variable (𝕜)
 
+set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 /-- A point is exposed with respect to `A` iff there exists an hyperplane whose intersection with
 `A` is exactly that point. -/
 def Set.exposedPoints (A : Set E) : Set E :=
@@ -217,12 +213,13 @@ def Set.exposedPoints (A : Set E) : Set E :=
 
 variable {𝕜}
 
+set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 theorem exposed_point_def :
     x ∈ A.exposedPoints 𝕜 ↔ x ∈ A ∧ ∃ l : E →L[𝕜] 𝕜, ∀ y ∈ A, l y ≤ l x ∧ (l x ≤ l y → y = x) :=
   Iff.rfl
 #align exposed_point_def exposed_point_def
 
-theorem exposedPoints_subset : A.exposedPoints 𝕜 ⊆ A := fun x hx => hx.1
+theorem exposedPoints_subset : A.exposedPoints 𝕜 ⊆ A := fun _ hx => hx.1
 #align exposed_points_subset exposedPoints_subset
 
 @[simp]
@@ -232,7 +229,7 @@ theorem exposedPoints_empty : (∅ : Set E).exposedPoints 𝕜 = ∅ :=
 
 /-- Exposed points exactly correspond to exposed singletons. -/
 theorem mem_exposedPoints_iff_exposed_singleton : x ∈ A.exposedPoints 𝕜 ↔ IsExposed 𝕜 A {x} := by
-  use fun ⟨hxA, l, hl⟩ h =>
+  use fun ⟨hxA, l, hl⟩ _ =>
     ⟨l,
       Eq.symm <|
         eq_singleton_iff_unique_mem.2
@@ -260,14 +257,15 @@ protected theorem convex (hAB : IsExposed 𝕜 A B) (hA : Convex 𝕜 A) : Conve
   obtain ⟨l, rfl⟩ := hAB hB
   exact fun x₁ hx₁ x₂ hx₂ a b ha hb hab =>
     ⟨hA hx₁.1 hx₂.1 ha hb hab, fun y hy =>
-      ((l.to_linear_map.concave_on convex_univ).convex_ge _ ⟨mem_univ _, hx₁.2 y hy⟩
+      ((l.toLinearMap.concaveOn convex_univ).convex_ge _ ⟨mem_univ _, hx₁.2 y hy⟩
           ⟨mem_univ _, hx₂.2 y hy⟩ ha hb hab).2⟩
 #align is_exposed.convex IsExposed.convex
 
+set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 protected theorem isExtreme (hAB : IsExposed 𝕜 A B) : IsExtreme 𝕜 A B := by
   refine' ⟨hAB.subset, fun x₁ hx₁A x₂ hx₂A x hxB hx => _⟩
   obtain ⟨l, rfl⟩ := hAB ⟨x, hxB⟩
-  have hl : ConvexOn 𝕜 univ l := l.to_linear_map.convex_on convex_univ
+  have hl : ConvexOn 𝕜 univ l := l.toLinearMap.convexOn convex_univ
   have hlx₁ := hxB.2 x₁ hx₁A
   have hlx₂ := hxB.2 x₂ hx₂A
   refine' ⟨⟨hx₁A, fun y hy => _⟩, ⟨hx₂A, fun y hy => _⟩⟩
@@ -280,9 +278,8 @@ protected theorem isExtreme (hAB : IsExposed 𝕜 A B) : IsExtreme 𝕜 A B := b
 
 end IsExposed
 
-theorem exposedPoints_subset_extremePoints : A.exposedPoints 𝕜 ⊆ A.extremePoints 𝕜 := fun x hx =>
-  mem_extremePoints_iff_extreme_singleton.2 (mem_exposedPoints_iff_exposed_singleton.1 hx).IsExtreme
+theorem exposedPoints_subset_extremePoints : A.exposedPoints 𝕜 ⊆ A.extremePoints 𝕜 := fun _ hx =>
+  mem_extremePoints_iff_extreme_singleton.2 (mem_exposedPoints_iff_exposed_singleton.1 hx).isExtreme
 #align exposed_points_subset_extreme_points exposedPoints_subset_extremePoints
 
 end LinearOrderedRing
-
