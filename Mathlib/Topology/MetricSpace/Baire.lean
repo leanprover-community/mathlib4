@@ -283,19 +283,20 @@ set_option linter.uppercaseLean3 false in
 theorem eventually_residual {p : α → Prop} :
     (∀ᶠ x in residual α, p x) ↔ ∃ t : Set α, IsGδ t ∧ Dense t ∧ ∀ x ∈ t, p x :=
   calc
-    (∀ᶠ x in residual α, p x) ↔ ∀ᶠ x in ⨅ (t : Set α) (ht : IsGδ t ∧ Dense t), 𝓟 t, p x := by
+    (∀ᶠ x in residual α, p x) ↔ ∀ᶠ x in ⨅ (t : Set α) (_ht : IsGδ t ∧ Dense t), 𝓟 t, p x := by
       simp only [residual, infᵢ_and]
-    _ ↔ ∃ (t : Set α) (ht : IsGδ t ∧ Dense t), ∀ᶠ x in 𝓟 t, p x :=
-      (mem_binfᵢ_of_directed
-        (fun t₁ h₁ t₂ h₂ ↦
-          ⟨t₁ ∩ t₂, ⟨h₁.1.inter h₂.1, Dense.inter_of_Gδ h₁.1 h₂.1 h₁.2 h₂.2⟩, by simp⟩)
-        ⟨univ, isGδ_univ, dense_univ⟩)
-    _ ↔ _ := by simp [and_assoc']
+    _ ↔ ∃ (t : Set α) (_ : IsGδ t ∧ Dense t), ∀ᶠ x in 𝓟 t, p x := by
+      simp only [exists_prop]
+      apply mem_binfᵢ_of_directed
+      · intro t₁ h₁ t₂ h₂
+        exact ⟨t₁ ∩ t₂, ⟨h₁.1.inter h₂.1, Dense.inter_of_Gδ h₁.1 h₂.1 h₁.2 h₂.2⟩, by simp⟩
+      · exact ⟨univ, isGδ_univ, dense_univ⟩
+    _ ↔ _ := by simp [and_assoc]
 #align eventually_residual eventually_residual
 
 /-- A set is residual (comeagre) if and only if it includes a dense `Gδ` set. -/
 theorem mem_residual {s : Set α} : s ∈ residual α ↔ ∃ (t : _) (_ : t ⊆ s), IsGδ t ∧ Dense t :=
-  (@eventually_residual α _ fun x ↦ x ∈ s).trans <|
+  (eventually_residual (p := fun x ↦ x ∈ s)).trans <|
     exists_congr fun t ↦ by rw [exists_prop, and_comm (a := t ⊆ s), subset_def, and_assoc]
 #align mem_residual mem_residual
 
