@@ -440,8 +440,8 @@ elab_rules : tactic |
   let use := parseUsing use
   let cfg ← elabConfig (mkOptionalNode cfg)
   let cfg := { cfg with
-    maxDepth := 1
-    failAtMaxDepth := false }
+    backtracking := false
+    maxDepth := 1 }
   replaceMainGoal (← solveByElim.processSyntax cfg o.isSome star add remove use [← getMainGoal])
 
 /--
