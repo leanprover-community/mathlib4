@@ -8,7 +8,7 @@ Authors: Bhavik Mehta, Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Subobject.Lattice
+import Mathlib.CategoryTheory.Subobject.Lattice
 
 /-!
 # Specific subobjects
@@ -111,8 +111,7 @@ theorem kernelSubobject_arrow' :
 #align category_theory.limits.kernel_subobject_arrow' CategoryTheory.Limits.kernelSubobject_arrow'
 
 @[simp, reassoc.1, elementwise]
-theorem kernelSubobject_arrow_comp : (kernelSubobject f).arrow ≫ f = 0 :=
-  by
+theorem kernelSubobject_arrow_comp : (kernelSubobject f).arrow ≫ f = 0 := by
   rw [← kernel_subobject_arrow]
   simp only [category.assoc, kernel.condition, comp_zero]
 #align category_theory.limits.kernel_subobject_arrow_comp CategoryTheory.Limits.kernelSubobject_arrow_comp
@@ -137,8 +136,7 @@ def factorThruKernelSubobject {W : C} (h : W ⟶ X) (w : h ≫ f = 0) : W ⟶ ke
 
 @[simp]
 theorem factorThruKernelSubobject_comp_arrow {W : C} (h : W ⟶ X) (w : h ≫ f = 0) :
-    factorThruKernelSubobject f h w ≫ (kernelSubobject f).arrow = h :=
-  by
+    factorThruKernelSubobject f h w ≫ (kernelSubobject f).arrow = h := by
   dsimp [factor_thru_kernel_subobject]
   simp
 #align category_theory.limits.factor_thru_kernel_subobject_comp_arrow CategoryTheory.Limits.factorThruKernelSubobject_comp_arrow
@@ -167,8 +165,7 @@ theorem kernelSubobjectMap_arrow (sq : Arrow.mk f ⟶ Arrow.mk f') :
 #align category_theory.limits.kernel_subobject_map_arrow CategoryTheory.Limits.kernelSubobjectMap_arrow
 
 @[simp]
-theorem kernelSubobjectMap_id : kernelSubobjectMap (𝟙 (Arrow.mk f)) = 𝟙 _ :=
-  by
+theorem kernelSubobjectMap_id : kernelSubobjectMap (𝟙 (Arrow.mk f)) = 𝟙 _ := by
   ext
   simp
   dsimp
@@ -179,8 +176,7 @@ theorem kernelSubobjectMap_id : kernelSubobjectMap (𝟙 (Arrow.mk f)) = 𝟙 _ 
 @[simp]
 theorem kernelSubobjectMap_comp {X'' Y'' : C} {f'' : X'' ⟶ Y''} [HasKernel f'']
     (sq : Arrow.mk f ⟶ Arrow.mk f') (sq' : Arrow.mk f' ⟶ Arrow.mk f'') :
-    kernelSubobjectMap (sq ≫ sq') = kernelSubobjectMap sq ≫ kernelSubobjectMap sq' :=
-  by
+    kernelSubobjectMap (sq ≫ sq') = kernelSubobjectMap sq ≫ kernelSubobjectMap sq' := by
   ext
   simp
 #align category_theory.limits.kernel_subobject_map_comp CategoryTheory.Limits.kernelSubobjectMap_comp
@@ -250,8 +246,7 @@ theorem kernelSubobject_comp_mono (f : X ⟶ Y) [HasKernel f] {Z : C} (h : Y ⟶
 #align category_theory.limits.kernel_subobject_comp_mono CategoryTheory.Limits.kernelSubobject_comp_mono
 
 instance kernelSubobject_comp_mono_isIso (f : X ⟶ Y) [HasKernel f] {Z : C} (h : Y ⟶ Z) [Mono h] :
-    IsIso (Subobject.ofLe _ _ (kernelSubobject_comp_le f h)) :=
-  by
+    IsIso (Subobject.ofLe _ _ (kernelSubobject_comp_le f h)) := by
   rw [of_le_mk_le_mk_of_comm (kernel_comp_mono f h).inv]
   · infer_instance
   · simp
@@ -260,8 +255,7 @@ instance kernelSubobject_comp_mono_isIso (f : X ⟶ Y) [HasKernel f] {Z : C} (h 
 /-- Taking cokernels is an order-reversing map from the subobjects of `X` to the quotient objects
     of `X`. -/
 @[simps]
-def cokernelOrderHom [HasCokernels C] (X : C) : Subobject X →o (Subobject (op X))ᵒᵈ
-    where
+def cokernelOrderHom [HasCokernels C] (X : C) : Subobject X →o (Subobject (op X))ᵒᵈ where
   toFun :=
     Subobject.lift (fun A f hf => Subobject.mk (cokernel.π f).op)
       (by
@@ -287,8 +281,7 @@ def cokernelOrderHom [HasCokernels C] (X : C) : Subobject X →o (Subobject (op 
 /-- Taking kernels is an order-reversing map from the quotient objects of `X` to the subobjects of
     `X`. -/
 @[simps]
-def kernelOrderHom [HasKernels C] (X : C) : (Subobject (op X))ᵒᵈ →o Subobject X
-    where
+def kernelOrderHom [HasKernels C] (X : C) : (Subobject (op X))ᵒᵈ →o Subobject X where
   toFun :=
     Subobject.lift (fun A f hf => Subobject.mk (kernel.ι f.unop))
       (by
@@ -342,8 +335,7 @@ def factorThruImageSubobject : X ⟶ imageSubobject f :=
   factorThruImage f ≫ (imageSubobjectIso f).inv
 #align category_theory.limits.factor_thru_image_subobject CategoryTheory.Limits.factorThruImageSubobject
 
-instance [HasEqualizers C] : Epi (factorThruImageSubobject f) :=
-  by
+instance [HasEqualizers C] : Epi (factorThruImageSubobject f) := by
   dsimp [factor_thru_image_subobject]
   apply epi_comp
 
@@ -364,16 +356,14 @@ theorem imageSubobject_factors_comp_self {W : C} (k : W ⟶ X) : (imageSubobject
 
 @[simp]
 theorem factorThruImageSubobject_comp_self {W : C} (k : W ⟶ X) (h) :
-    (imageSubobject f).factorThru (k ≫ f) h = k ≫ factorThruImageSubobject f :=
-  by
+    (imageSubobject f).factorThru (k ≫ f) h = k ≫ factorThruImageSubobject f := by
   ext
   simp
 #align category_theory.limits.factor_thru_image_subobject_comp_self CategoryTheory.Limits.factorThruImageSubobject_comp_self
 
 @[simp]
 theorem factorThruImageSubobject_comp_self_assoc {W W' : C} (k : W ⟶ W') (k' : W' ⟶ X) (h) :
-    (imageSubobject f).factorThru (k ≫ k' ≫ f) h = k ≫ k' ≫ factorThruImageSubobject f :=
-  by
+    (imageSubobject f).factorThru (k ≫ k' ≫ f) h = k ≫ k' ≫ factorThruImageSubobject f := by
   ext
   simp
 #align category_theory.limits.factor_thru_image_subobject_comp_self_assoc CategoryTheory.Limits.factorThruImageSubobject_comp_self_assoc
@@ -391,8 +381,7 @@ open ZeroObject
 variable [HasZeroMorphisms C] [HasZeroObject C]
 
 @[simp]
-theorem imageSubobject_zero_arrow : (imageSubobject (0 : X ⟶ Y)).arrow = 0 :=
-  by
+theorem imageSubobject_zero_arrow : (imageSubobject (0 : X ⟶ Y)).arrow = 0 := by
   rw [← image_subobject_arrow]
   simp
 #align category_theory.limits.image_subobject_zero_arrow CategoryTheory.Limits.imageSubobject_zero_arrow
@@ -416,8 +405,7 @@ In general this does not imply that `image_subobject (h ≫ f) = image_subobject
 although it will when the ambient category is abelian.
  -/
 instance imageSubobject_comp_le_epi_of_epi {X' : C} (h : X' ⟶ X) [Epi h] (f : X ⟶ Y) [HasImage f]
-    [HasImage (h ≫ f)] : Epi (Subobject.ofLe _ _ (imageSubobject_comp_le h f)) :=
-  by
+    [HasImage (h ≫ f)] : Epi (Subobject.ofLe _ _ (imageSubobject_comp_le h f)) := by
   rw [of_le_mk_le_mk_of_comm (image.pre_comp h f)]
   · infer_instance
   · simp
@@ -489,8 +477,7 @@ def imageSubobjectMap {W X Y Z : C} {f : W ⟶ X} [HasImage f] {g : Y ⟶ Z} [Ha
 @[simp, reassoc.1]
 theorem imageSubobjectMap_arrow {W X Y Z : C} {f : W ⟶ X} [HasImage f] {g : Y ⟶ Z} [HasImage g]
     (sq : Arrow.mk f ⟶ Arrow.mk g) [HasImageMap sq] :
-    imageSubobjectMap sq ≫ (imageSubobject g).arrow = (imageSubobject f).arrow ≫ sq.right :=
-  by
+    imageSubobjectMap sq ≫ (imageSubobject g).arrow = (imageSubobject f).arrow ≫ sq.right := by
   simp only [image_subobject_map, category.assoc, image_subobject_arrow']
   erw [image.map_ι, ← category.assoc, image_subobject_arrow]
 #align category_theory.limits.image_subobject_map_arrow CategoryTheory.Limits.imageSubobjectMap_arrow
