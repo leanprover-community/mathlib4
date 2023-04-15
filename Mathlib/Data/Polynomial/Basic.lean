@@ -1233,7 +1233,7 @@ protected instance repr [Repr R] [DecidableEq R] : Repr R[X] :=
                 | 1 => if coeff p 1 = 1 then "X" else "C " ++ reprArg (coeff p 1) ++ " * X"
                 | n =>
                   if coeff p n = 1 then "X ^ " ++ Nat.repr n
-                  else "C " ++ reprArg (coeff p 1) ++ " * X ^ " ++ Nat.repr n)
+                  else "C " ++ reprArg (coeff p n) ++ " * X ^ " ++ Nat.repr n)
               (p.support.sort (· ≤ ·)))
             (" +" ++ Lean.Format.line)))
         prec⟩
