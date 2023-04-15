@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Paul van Wamelen
 
 ! This file was ported from Lean 3 source module number_theory.pythagorean_triples
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
+! leanprover-community/mathlib commit e8638a0fcaf73e4500469f368ef9494e495099b3
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -138,9 +138,9 @@ theorem even_odd_of_coprime (hc : Int.gcd x y = 1) :
   -- x even, y even
   · exfalso
     apply Nat.not_coprime_of_dvd_of_dvd (by decide : 1 < 2) _ _ hc
-    · apply Int.dvd_natAbs_of_ofNat_dvd
+    · apply Int.coe_nat_dvd_left.1
       apply Int.dvd_of_emod_eq_zero hx
-    · apply Int.dvd_natAbs_of_ofNat_dvd
+    · apply Int.coe_nat_dvd_left.1
       apply Int.dvd_of_emod_eq_zero hy
   -- x even, y odd
   · left
@@ -381,8 +381,7 @@ private theorem coprime_sq_sub_mul_of_even_odd {m n : ℤ} (h : Int.gcd m n = 1)
     apply (or_self_iff _).mp
     apply Int.Prime.dvd_mul' hp
     rw [(by ring : n * n = -(m ^ 2 - n ^ 2) + m * m)]
-    apply dvd_add (dvd_neg_of_dvd hp1)
-    exact dvd_mul_of_dvd_left (Int.coe_nat_dvd_left.mpr hpm) m
+    exact hp1.neg_right.add ((Int.coe_nat_dvd_left.2 hpm).mul_right _)
   rw [Int.gcd_comm] at hnp
   apply mt (Int.dvd_gcd (Int.coe_nat_dvd_left.mpr hpn)) hnp
   apply (or_self_iff _).mp
