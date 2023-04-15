@@ -133,8 +133,8 @@ theorem dist_vsub_cancel_right (x y z : P) : dist (x -ᵥ z) (y -ᵥ z) = dist x
 
 theorem dist_vadd_vadd_le (v v' : V) (p p' : P) :
     dist (v +ᵥ p) (v' +ᵥ p') ≤ dist v v' + dist p p' := by
-  simp only [← dist_vadd v' p p', ← dist_vadd_cancel_right v v' p]
-  exact dist_triangle (v +ᵥ p) (v' +ᵥ p) (v' +ᵥ p')
+  -- porting note: added `()` and lemma name to help simp find a `@[simp]` lemma
+  simpa [(dist_vadd_cancel_right)] using dist_triangle (v +ᵥ p) (v' +ᵥ p) (v' +ᵥ p')
 #align dist_vadd_vadd_le dist_vadd_vadd_le
 
 theorem dist_vsub_vsub_le (p₁ p₂ p₃ p₄ : P) :
@@ -145,28 +145,28 @@ theorem dist_vsub_vsub_le (p₁ p₂ p₃ p₄ : P) :
 
 theorem nndist_vadd_vadd_le (v v' : V) (p p' : P) :
     nndist (v +ᵥ p) (v' +ᵥ p') ≤ nndist v v' + nndist p p' := by
-  simp only [← NNReal.coe_le_coe, NNReal.coe_add, ← dist_nndist]
-  exact dist_vadd_vadd_le v v' p p'
+  -- porting note: added `()` to help simp find a `@[simp]` lemma
+  simp only [← NNReal.coe_le_coe, NNReal.coe_add, ← dist_nndist, (dist_vadd_vadd_le)]
 #align nndist_vadd_vadd_le nndist_vadd_vadd_le
 
 theorem nndist_vsub_vsub_le (p₁ p₂ p₃ p₄ : P) :
     nndist (p₁ -ᵥ p₂) (p₃ -ᵥ p₄) ≤ nndist p₁ p₃ + nndist p₂ p₄ := by
-  simp only [← NNReal.coe_le_coe, NNReal.coe_add, ← dist_nndist]
-  exact dist_vsub_vsub_le p₁ p₂ p₃ p₄
+  -- porting note: added `()` to help simp find a `@[simp]` lemma
+  simp only [← NNReal.coe_le_coe, NNReal.coe_add, ← dist_nndist, (dist_vsub_vsub_le)]
 #align nndist_vsub_vsub_le nndist_vsub_vsub_le
 
 theorem edist_vadd_vadd_le (v v' : V) (p p' : P) :
     edist (v +ᵥ p) (v' +ᵥ p') ≤ edist v v' + edist p p' := by
   simp only [edist_nndist]
-  norm_cast
-  exact dist_vadd_vadd_le v v' p p'
+  norm_cast  -- porting note: was apply_mod_cast
+  apply dist_vadd_vadd_le
 #align edist_vadd_vadd_le edist_vadd_vadd_le
 
 theorem edist_vsub_vsub_le (p₁ p₂ p₃ p₄ : P) :
     edist (p₁ -ᵥ p₂) (p₃ -ᵥ p₄) ≤ edist p₁ p₃ + edist p₂ p₄ := by
   simp only [edist_nndist]
-  norm_cast
-  exact dist_vsub_vsub_le p₁ p₂ p₃ p₄
+  norm_cast  -- porting note: was apply_mod_cast
+  apply dist_vsub_vsub_le
 #align edist_vsub_vsub_le edist_vsub_vsub_le
 
 /-- The pseudodistance defines a pseudometric space structure on the torsor. This
