@@ -69,8 +69,7 @@ theorem FreeAbelianGroup.toFinsupp_comp_toFreeAbelianGroup :
 @[simp]
 theorem Finsupp.toFreeAbelianGroup_comp_toFinsupp :
     toFreeAbelianGroup.comp toFinsupp = AddMonoidHom.id (FreeAbelianGroup X) := by
-  apply lift.ext
-  intros x
+  ext
   rw [toFreeAbelianGroup, toFinsupp, AddMonoidHom.comp_apply, lift.of,
     liftAddHom_apply_single, AddMonoidHom.flip_apply, smulAddHom_apply, one_smul,
     AddMonoidHom.id_apply]
