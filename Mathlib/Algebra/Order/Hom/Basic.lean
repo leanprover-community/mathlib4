@@ -21,24 +21,24 @@ This file defines hom classes for common properties at the intersection of order
 ## Typeclasses
 
 Basic typeclasses
-* `nonneg_hom_class`: Homs are nonnegative: `∀ f a, 0 ≤ f a`
-* `subadditive_hom_class`: Homs are subadditive: `∀ f a b, f (a + b) ≤ f a + f b`
-* `submultiplicative_hom_class`: Homs are submultiplicative: `∀ f a b, f (a * b) ≤ f a * f b`
-* `mul_le_add_hom_class`: `∀ f a b, f (a * b) ≤ f a + f b`
-* `nonarchimedean_hom_class`: `∀ a b, f (a + b) ≤ max (f a) (f b)`
+* `NonnegHomClass`: Homs are nonnegative: `∀ f a, 0 ≤ f a`
+* `SubadditiveHomClass`: Homs are subadditive: `∀ f a b, f (a + b) ≤ f a + f b`
+* `SubmultiplicativeHomClass`: Homs are submultiplicative: `∀ f a b, f (a * b) ≤ f a * f b`
+* `MulLEAddHomClass`: `∀ f a b, f (a * b) ≤ f a + f b`
+* `NonarchimedeanHomClass`: `∀ a b, f (a + b) ≤ max (f a) (f b)`
 
 Group norms
-* `add_group_seminorm_class`: Homs are nonnegative, subadditive, even and preserve zero.
-* `group_seminorm_class`: Homs are nonnegative, respect `f (a * b) ≤ f a + f b`, `f a⁻¹ = f a` and
+* `AddGroupSeminormClass`: Homs are nonnegative, subadditive, even and preserve zero.
+* `GroupSeminormClass`: Homs are nonnegative, respect `f (a * b) ≤ f a + f b`, `f a⁻¹ = f a` and
   preserve zero.
-* `add_group_norm_class`: Homs are seminorms such that `f x = 0 → x = 0` for all `x`.
-* `group_norm_class`: Homs are seminorms such that `f x = 0 → x = 1` for all `x`.
+* `AddGroupNormClass`: Homs are seminorms such that `f x = 0 → x = 0` for all `x`.
+* `GroupNormClass`: Homs are seminorms such that `f x = 0 → x = 1` for all `x`.
 
 Ring norms
-* `ring_seminorm_class`: Homs are submultiplicative group norms.
-* `ring_norm_class`: Homs are ring seminorms that are also additive group norms.
-* `mul_ring_seminorm_class`: Homs are ring seminorms that are multiplicative.
-* `mul_ring_norm_class`: Homs are ring norms that are multiplicative.
+* `RingSeminormClass`: Homs are submultiplicative group norms.
+* `RingNormClass`: Homs are ring seminorms that are also additive group norms.
+* `MulRingSeminormClass`: Homs are ring seminorms that are multiplicative.
+* `MulRingNormClass`: Homs are ring norms that are multiplicative.
 
 ## Notes
 
@@ -53,10 +53,10 @@ Finitary versions of the current lemmas.
 
 
 library_note "out-param inheritance"/--
-Diamond inheritance cannot depend on `out_param`s in the following circumstances:
+Diamond inheritance cannot depend on `outParam`s in the following circumstances:
  * there are three classes `top`, `middle`, `bottom`
- * all of these classes have a parameter `(α : out_param _)`
- * all of these classes have an instance parameter `[root α]` that depends on this `out_param`
+ * all of these classes have a parameter `(α : outParam _)`
+ * all of these classes have an instance parameter `[root α]` that depends on this `outParam`
  * the `root` class has two child classes: `left` and `right`, these are siblings in the hierarchy
  * the instance `bottom.to_middle` takes a `[left α]` parameter
  * the instance `middle.to_top` takes a `[right α]` parameter
@@ -81,33 +81,33 @@ variable {ι F α β γ δ : Type _}
 /-! ### Basics -/
 
 
-/-- `nonneg_hom_class F α β` states that `F` is a type of nonnegative morphisms. -/
+/-- `NonnegHomClass F α β` states that `F` is a type of nonnegative morphisms. -/
 class NonnegHomClass (F : Type _) (α β : outParam <| Type _) [Zero β] [LE β] extends
   FunLike F α fun _ => β where
   map_nonneg (f : F) : ∀ a, 0 ≤ f a
 #align nonneg_hom_class NonnegHomClass
 
-/-- `subadditive_hom_class F α β` states that `F` is a type of subadditive morphisms. -/
+/-- `SubadditiveHomClass F α β` states that `F` is a type of subadditive morphisms. -/
 class SubadditiveHomClass (F : Type _) (α β : outParam <| Type _) [Add α] [Add β] [LE β] extends
   FunLike F α fun _ => β where
   map_add_le_add (f : F) : ∀ a b, f (a + b) ≤ f a + f b
 #align subadditive_hom_class SubadditiveHomClass
 
-/-- `submultiplicative_hom_class F α β` states that `F` is a type of submultiplicative morphisms. -/
+/-- `SubmultiplicativeHomClass F α β` states that `F` is a type of submultiplicative morphisms. -/
 @[to_additive existing SubadditiveHomClass]
 class SubmultiplicativeHomClass (F : Type _) (α β : outParam <| Type _) [Mul α] [Mul β]
   [LE β] extends FunLike F α fun _ => β where
   map_mul_le_mul (f : F) : ∀ a b, f (a * b) ≤ f a * f b
 #align submultiplicative_hom_class SubmultiplicativeHomClass
 
-/-- `mul_le_add_hom_class F α β` states that `F` is a type of subadditive morphisms. -/
+/-- `MulLEAddHomClass F α β` states that `F` is a type of subadditive morphisms. -/
 @[to_additive existing SubadditiveHomClass]
 class MulLEAddHomClass (F : Type _) (α β : outParam <| Type _) [Mul α] [Add β] [LE β] extends
   FunLike F α fun _ => β where
   map_mul_le_add (f : F) : ∀ a b, f (a * b) ≤ f a + f b
 #align mul_le_add_hom_class MulLEAddHomClass
 
-/-- `nonarchimedean_hom_class F α β` states that `F` is a type of non-archimedean morphisms. -/
+/-- `NonarchimedeanHomClass F α β` states that `F` is a type of non-archimedean morphisms. -/
 class NonarchimedeanHomClass (F : Type _) (α β : outParam <| Type _) [Add α] [LinearOrder β] extends
   FunLike F α fun _ => β where
   map_add_le_max (f : F) : ∀ a b, f (a + b) ≤ max (f a) (f b)
@@ -154,19 +154,19 @@ theorem le_map_div_add_map_div [Group α] [AddCommSemigroup β] [LE β] [MulLEAd
 /-! ### Group (semi)norms -/
 
 
-/-- `add_group_seminorm_class F α` states that `F` is a type of `β`-valued seminorms on the additive
+/-- `AddGroupSeminormClass F α` states that `F` is a type of `β`-valued seminorms on the additive
 group `α`.
 
-You should extend this class when you extend `add_group_seminorm`. -/
+You should extend this class when you extend `AddGroupSeminorm`. -/
 class AddGroupSeminormClass (F : Type _) (α β : outParam <| Type _) [AddGroup α]
   [OrderedAddCommMonoid β] extends SubadditiveHomClass F α β where
   map_zero (f : F) : f 0 = 0
   map_neg_eq_map (f : F) (a : α) : f (-a) = f a
 #align add_group_seminorm_class AddGroupSeminormClass
 
-/-- `group_seminorm_class F α` states that `F` is a type of `β`-valued seminorms on the group `α`.
+/-- `GroupSeminormClass F α` states that `F` is a type of `β`-valued seminorms on the group `α`.
 
-You should extend this class when you extend `group_seminorm`. -/
+You should extend this class when you extend `GroupSeminorm`. -/
 @[to_additive existing]
 class GroupSeminormClass (F : Type _) (α β : outParam <| Type _) [Group α]
   [OrderedAddCommMonoid β] extends MulLEAddHomClass F α β where
@@ -174,18 +174,18 @@ class GroupSeminormClass (F : Type _) (α β : outParam <| Type _) [Group α]
   map_inv_eq_map (f : F) (a : α) : f a⁻¹ = f a
 #align group_seminorm_class GroupSeminormClass
 
-/-- `add_group_norm_class F α` states that `F` is a type of `β`-valued norms on the additive group
+/-- `AddGroupNormClass F α` states that `F` is a type of `β`-valued norms on the additive group
 `α`.
 
-You should extend this class when you extend `add_group_norm`. -/
+You should extend this class when you extend `AddGroupNorm`. -/
 class AddGroupNormClass (F : Type _) (α β : outParam <| Type _) [AddGroup α]
   [OrderedAddCommMonoid β] extends AddGroupSeminormClass F α β where
   eq_zero_of_map_eq_zero (f : F) {a : α} : f a = 0 → a = 0
 #align add_group_norm_class AddGroupNormClass
 
-/-- `group_norm_class F α` states that `F` is a type of `β`-valued norms on the group `α`.
+/-- `GroupNormClass F α` states that `F` is a type of `β`-valued norms on the group `α`.
 
-You should extend this class when you extend `group_norm`. -/
+You should extend this class when you extend `GroupNorm`. -/
 @[to_additive existing]
 class GroupNormClass (F : Type _) (α β : outParam <| Type _) [Group α]
   [OrderedAddCommMonoid β] extends GroupSeminormClass F α β where
@@ -294,21 +294,21 @@ theorem map_pos_of_ne_one [Group α] [LinearOrderedAddCommMonoid β] [GroupNormC
 /-! ### Ring (semi)norms -/
 
 
-/-- `ring_seminorm_class F α` states that `F` is a type of `β`-valued seminorms on the ring `α`.
+/-- `RingSeminormClass F α` states that `F` is a type of `β`-valued seminorms on the ring `α`.
 
 You should extend this class when you extend `ring_seminorm`. -/
 class RingSeminormClass (F : Type _) (α β : outParam <| Type _) [NonUnitalNonAssocRing α]
   [OrderedSemiring β] extends AddGroupSeminormClass F α β, SubmultiplicativeHomClass F α β
 #align ring_seminorm_class RingSeminormClass
 
-/-- `ring_norm_class F α` states that `F` is a type of `β`-valued norms on the ring `α`.
+/-- `RingNormClass F α` states that `F` is a type of `β`-valued norms on the ring `α`.
 
 You should extend this class when you extend `ring_norm`. -/
 class RingNormClass (F : Type _) (α β : outParam <| Type _) [NonUnitalNonAssocRing α]
   [OrderedSemiring β] extends RingSeminormClass F α β, AddGroupNormClass F α β
 #align ring_norm_class RingNormClass
 
-/-- `mul_ring_seminorm_class F α` states that `F` is a type of `β`-valued multiplicative seminorms
+/-- `MulRingSeminormClass F α` states that `F` is a type of `β`-valued multiplicative seminorms
 on the ring `α`.
 
 You should extend this class when you extend `mul_ring_seminorm`. -/
@@ -316,7 +316,7 @@ class MulRingSeminormClass (F : Type _) (α β : outParam <| Type _) [NonAssocRi
   [OrderedSemiring β] extends AddGroupSeminormClass F α β, MonoidWithZeroHomClass F α β
 #align mul_ring_seminorm_class MulRingSeminormClass
 
-/-- `mul_ring_norm_class F α` states that `F` is a type of `β`-valued multiplicative norms on the
+/-- `MulRingNormClass F α` states that `F` is a type of `β`-valued multiplicative norms on the
 ring `α`.
 
 You should extend this class when you extend `mul_ring_norm`. -/
