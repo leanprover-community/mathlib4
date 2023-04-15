@@ -14,19 +14,19 @@ import Mathlib.CategoryTheory.EssentiallySmall
 /-!
 # Well-powered categories
 
-A category `(C : Type u) [category.{v} C]` is `[well_powered C]` if
-for every `X : C`, we have `small.{v} (subobject X)`.
+A category `(C : Type u) [Category.{v} C]` is `[WellPowered C]` if
+for every `X : C`, we have `Small.{v} (Subobject X)`.
 
-(Note that in this situtation `subobject X : Type (max u v)`,
+(Note that in this situtation `Subobject X : Type (max u v)`,
 so this is a nontrivial condition for large categories,
 but automatic for small categories.)
 
-This is equivalent to the category `mono_over X` being `essentially_small.{v}` for all `X : C`.
+This is equivalent to the category `MonoOver X` being `EssentiallySmall.{v}` for all `X : C`.
 
 When a category is well-powered, you can obtain nonconstructive witnesses as
-`shrink (subobject X) : Type v`
+`Shrink (Subobject X) : Type v`
 and
-`equiv_shrink (subobject X) : subobject X ≃ shrink (subobject X)`.
+`equivShrink (Subobject X) : Subobject X ≃ Shrink (subobject X)`.
 -/
 
 
@@ -37,10 +37,10 @@ namespace CategoryTheory
 variable (C : Type u₁) [Category.{v} C]
 
 /--
-A category (with morphisms in `Type v`) is well-powered if `subobject X` is `v`-small for every `X`.
+A category (with morphisms in `Type v`) is well-powered if `Subobject X` is `v`-small for every `X`.
 
-We show in `well_powered_of_mono_over_essentially_small` and `mono_over_essentially_small`
-that this is the case if and only if `mono_over X` is `v`-essentially small for every `X`.
+We show in `wellPowered_of_essentiallySmall_monoOver` and `essentiallySmall_monoOver`
+that this is the case if and only if `MonoOver X` is `v`-essentially small for every `X`.
 -/
 class WellPowered : Prop where
   subobject_small : ∀ X : C, Small.{v} (Subobject X) := by infer_instance
@@ -88,10 +88,9 @@ theorem wellPowered_of_equiv (e : C ≌ D) [WellPowered C] : WellPowered D :=
 /-- Being well-powered is preserved by equivalences, as long as the two categories involved have
     their morphisms in the same universe. -/
 theorem wellPowered_congr (e : C ≌ D) : WellPowered C ↔ WellPowered D :=
-  ⟨fun i => well_powered_of_equiv e, fun i => well_powered_of_equiv e.symm⟩
+  ⟨fun _ => wellPowered_of_equiv e, fun _ => wellPowered_of_equiv e.symm⟩
 #align category_theory.well_powered_congr CategoryTheory.wellPowered_congr
 
 end Equivalence
 
 end CategoryTheory
-
