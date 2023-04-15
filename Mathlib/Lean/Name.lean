@@ -10,8 +10,7 @@ import Mathlib.Lean.Expr.Basic
 /-!
 # Additional functions on `Lean.Name`.
 
-We provide `Name.getModule : Name → CoreM (Option Name)`,
-and `allNames` and `allNamesByModule`.
+We provide `allNames` and `allNamesByModule`.
 -/
 
 open Lean Meta Elab
