@@ -8,8 +8,8 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Subobject.Basic
-import Mathbin.CategoryTheory.EssentiallySmall
+import Mathlib.CategoryTheory.Subobject.Basic
+import Mathlib.CategoryTheory.EssentiallySmall
 
 /-!
 # Well-powered categories
