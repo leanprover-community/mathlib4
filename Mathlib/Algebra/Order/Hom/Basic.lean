@@ -91,7 +91,7 @@ class SubadditiveHomClass (F : Type _) (α β : outParam <| Type _) [Add α] [Ad
 #align subadditive_hom_class SubadditiveHomClass
 
 /-- `SubmultiplicativeHomClass F α β` states that `F` is a type of submultiplicative morphisms. -/
-@[to_additive existing SubadditiveHomClass]
+@[to_additive SubadditiveHomClass]
 class SubmultiplicativeHomClass (F : Type _) (α β : outParam <| Type _) [Mul α] [Mul β]
   [LE β] extends FunLike F α fun _ => β where
   /-- the image of a product is less or equal than the product of the images. -/
@@ -99,7 +99,7 @@ class SubmultiplicativeHomClass (F : Type _) (α β : outParam <| Type _) [Mul �
 #align submultiplicative_hom_class SubmultiplicativeHomClass
 
 /-- `MulLEAddHomClass F α β` states that `F` is a type of subadditive morphisms. -/
-@[to_additive existing SubadditiveHomClass]
+@[to_additive SubadditiveHomClass]
 class MulLEAddHomClass (F : Type _) (α β : outParam <| Type _) [Mul α] [Add β] [LE β] extends
   FunLike F α fun _ => β where
   /-- the image of a product is less or equal than the sum of the images. -/
@@ -169,7 +169,7 @@ class AddGroupSeminormClass (F : Type _) (α β : outParam <| Type _) [AddGroup 
 /-- `GroupSeminormClass F α` states that `F` is a type of `β`-valued seminorms on the group `α`.
 
 You should extend this class when you extend `GroupSeminorm`. -/
-@[to_additive existing]
+@[to_additive]
 class GroupSeminormClass (F : Type _) (α β : outParam <| Type _) [Group α]
   [OrderedAddCommMonoid β] extends MulLEAddHomClass F α β where
   /-- The image of one is zero. -/
@@ -191,7 +191,7 @@ class AddGroupNormClass (F : Type _) (α β : outParam <| Type _) [AddGroup α]
 /-- `GroupNormClass F α` states that `F` is a type of `β`-valued norms on the group `α`.
 
 You should extend this class when you extend `GroupNorm`. -/
-@[to_additive existing]
+@[to_additive]
 class GroupNormClass (F : Type _) (α β : outParam <| Type _) [Group α]
   [OrderedAddCommMonoid β] extends GroupSeminormClass F α β where
   /-- The argument is one if its image under the map is zero. -/
@@ -206,16 +206,13 @@ export AddGroupNormClass (eq_zero_of_map_eq_zero)
 
 export GroupNormClass (eq_one_of_map_eq_zero)
 
-attribute [simp] map_one_eq_zero -- porting note: `to_additive` translation already exists
+attribute [simp] map_one_eq_zero
 
 attribute [simp] map_neg_eq_map
 
-attribute [simp] map_inv_eq_map -- porting note: `to_additive` translation already exists
+attribute [simp] map_inv_eq_map
 
 attribute [to_additive] GroupSeminormClass.toMulLEAddHomClass
-
--- porting note: `to_additive` translation already exists
--- attribute [to_additive] GroupNormClass.toGroupSeminormClass
 
 -- See note [lower instance priority]
 instance (priority := 100) AddGroupSeminormClass.toZeroHomClass [AddGroup α]
