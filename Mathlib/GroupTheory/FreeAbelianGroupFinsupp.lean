@@ -8,12 +8,12 @@ Authors: Johan Commelin
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Hom.Equiv.TypeTags
-import Mathbin.Algebra.Module.Equiv
-import Mathbin.Data.Finsupp.Defs
-import Mathbin.GroupTheory.FreeAbelianGroup
-import Mathbin.GroupTheory.IsFreeGroup
-import Mathbin.LinearAlgebra.Dimension
+import Mathlib.Algebra.Hom.Equiv.TypeTags
+import Mathlib.Algebra.Module.Equiv
+import Mathlib.Data.Finsupp.Defs
+import Mathlib.GroupTheory.FreeAbelianGroup
+import Mathlib.GroupTheory.IsFreeGroup
+import Mathlib.LinearAlgebra.Dimension
 
 /-!
 # Isomorphism between `free_abelian_group X` and `X →₀ ℤ`
@@ -51,8 +51,7 @@ open Finsupp FreeAbelianGroup
 @[simp]
 theorem Finsupp.toFreeAbelianGroup_comp_singleAddHom (x : X) :
     Finsupp.toFreeAbelianGroup.comp (Finsupp.singleAddHom x) =
-      (smulAddHom ℤ (FreeAbelianGroup X)).flip (of x) :=
-  by
+      (smulAddHom ℤ (FreeAbelianGroup X)).flip (of x) := by
   ext
   simp only [AddMonoidHom.coe_comp, Finsupp.singleAddHom_apply, Function.comp_apply, one_smul,
     to_free_abelian_group, Finsupp.liftAddHom_apply_single]
@@ -60,8 +59,7 @@ theorem Finsupp.toFreeAbelianGroup_comp_singleAddHom (x : X) :
 
 @[simp]
 theorem FreeAbelianGroup.toFinsupp_comp_toFreeAbelianGroup :
-    toFinsupp.comp toFreeAbelianGroup = AddMonoidHom.id (X →₀ ℤ) :=
-  by
+    toFinsupp.comp toFreeAbelianGroup = AddMonoidHom.id (X →₀ ℤ) := by
   ext (x y); simp only [AddMonoidHom.id_comp]
   rw [AddMonoidHom.comp_assoc, Finsupp.toFreeAbelianGroup_comp_singleAddHom]
   simp only [to_finsupp, AddMonoidHom.coe_comp, Finsupp.singleAddHom_apply, Function.comp_apply,
@@ -70,8 +68,7 @@ theorem FreeAbelianGroup.toFinsupp_comp_toFreeAbelianGroup :
 
 @[simp]
 theorem Finsupp.toFreeAbelianGroup_comp_toFinsupp :
-    toFreeAbelianGroup.comp toFinsupp = AddMonoidHom.id (FreeAbelianGroup X) :=
-  by
+    toFreeAbelianGroup.comp toFinsupp = AddMonoidHom.id (FreeAbelianGroup X) := by
   ext
   rw [to_free_abelian_group, to_finsupp, AddMonoidHom.comp_apply, lift.of,
     lift_add_hom_apply_single, AddMonoidHom.flip_apply, smulAddHom_apply, one_smul,
@@ -104,8 +101,7 @@ variable (X)
 
 /-- The additive equivalence between `free_abelian_group X` and `(X →₀ ℤ)`. -/
 @[simps]
-def equivFinsupp : FreeAbelianGroup X ≃+ (X →₀ ℤ)
-    where
+def equivFinsupp : FreeAbelianGroup X ≃+ (X →₀ ℤ) where
   toFun := toFinsupp
   invFun := toFreeAbelianGroup
   left_inv := toFreeAbelianGroup_toFinsupp
@@ -158,14 +154,12 @@ def support (a : FreeAbelianGroup X) : Finset X :=
   a.toFinsupp.support
 #align free_abelian_group.support FreeAbelianGroup.support
 
-theorem mem_support_iff (x : X) (a : FreeAbelianGroup X) : x ∈ a.support ↔ coeff x a ≠ 0 :=
-  by
+theorem mem_support_iff (x : X) (a : FreeAbelianGroup X) : x ∈ a.support ↔ coeff x a ≠ 0 := by
   rw [support, Finsupp.mem_support_iff]
   exact Iff.rfl
 #align free_abelian_group.mem_support_iff FreeAbelianGroup.mem_support_iff
 
-theorem not_mem_support_iff (x : X) (a : FreeAbelianGroup X) : x ∉ a.support ↔ coeff x a = 0 :=
-  by
+theorem not_mem_support_iff (x : X) (a : FreeAbelianGroup X) : x ∉ a.support ↔ coeff x a = 0 := by
   rw [support, Finsupp.not_mem_support_iff]
   exact Iff.rfl
 #align free_abelian_group.not_mem_support_iff FreeAbelianGroup.not_mem_support_iff
@@ -202,8 +196,7 @@ theorem support_nsmul (k : ℕ) (h : k ≠ 0) (a : FreeAbelianGroup X) : support
 
 open Classical
 
-theorem support_add (a b : FreeAbelianGroup X) : support (a + b) ⊆ a.support ∪ b.support :=
-  by
+theorem support_add (a b : FreeAbelianGroup X) : support (a + b) ⊆ a.support ∪ b.support := by
   simp only [support, AddMonoidHom.map_add]
   apply Finsupp.support_add
 #align free_abelian_group.support_add FreeAbelianGroup.support_add
