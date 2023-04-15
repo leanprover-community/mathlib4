@@ -707,22 +707,26 @@ noncomputable def Set.BijOn.equiv {α : Type _} {β : Type _} {s : Set α} {t : 
   Equiv.ofBijective _ h.bijective
 #align set.bij_on.equiv Set.BijOn.equiv
 
-/-- The composition of an updated function with an equiv on a subset can be expressed as an
+/-- The composition of an updated function with an equiv on a subtype can be expressed as an
 updated function. -/
-theorem dite_comp_equiv_update {α : Type _} {β : Sort _} {γ : Sort _} {s : Set α} (e : β ≃ s)
+-- porting note: replace `s : set α` and `: s` with `p : α → Prop` and `: Subtype p`, since the
+-- former now unfolds syntactically to a less general case of the latter.
+theorem dite_comp_equiv_update {α : Type _} {β : Sort _} {γ : Sort _} {p : α → Prop}
+    (e : β ≃ Subtype p)
     (v : β → γ) (w : α → γ) (j : β) (x : γ) [DecidableEq β] [DecidableEq α]
-    [∀ j, Decidable (j ∈ s)] :
-    (fun i : α => if h : i ∈ s then (Function.update v j x) (e.symm ⟨i, h⟩) else w i) =
-      Function.update (fun i : α => if h : i ∈ s then v (e.symm ⟨i, h⟩) else w i) (e j) x := by
+    [∀ j, Decidable (p j)] :
+    (fun i : α => if h : p i then (Function.update v j x) (e.symm ⟨i, h⟩) else w i) =
+      Function.update (fun i : α => if h : p i then v (e.symm ⟨i, h⟩) else w i) (e j) x := by
   ext i
-  by_cases h : i ∈ s
+  by_cases h : p i
   · rw [dif_pos h, Function.update_apply_equiv_apply, Equiv.symm_symm,
       Function.update_apply, Function.update_apply, dif_pos h]
-    have h_coe : (⟨i, h⟩ : s) = e j ↔ i = e j := Subtype.ext_iff.trans (by rw [Subtype.coe_mk])
+    have h_coe : (⟨i, h⟩ : Subtype p) = e j ↔ i = e j :=
+      Subtype.ext_iff.trans (by rw [Subtype.coe_mk])
     simp [h_coe]
   · have : i ≠ e j := by
       contrapose! h
-      have : (e j : α) ∈ s := (e j).2
+      have : p (e j : α) := (e j).2
       rwa [← h] at this
     simp [h, this]
-#align dite_comp_equiv_update dite_comp_equiv_update
+#align dite_comp_equiv_update dite_comp_equiv_updateₓ

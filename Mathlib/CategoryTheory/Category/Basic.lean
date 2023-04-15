@@ -5,7 +5,7 @@ Authors: Stephen Morgan, Scott Morrison, Johannes Hölzl, Reid Barton
 Ported by: Scott Morrison
 
 ! This file was ported from Lean 3 source module category_theory.category.basic
-! leanprover-community/mathlib commit 8350c34a64b9bc3fc64335df8006bffcadc7baa6
+! leanprover-community/mathlib commit 2efd2423f8d25fa57cf7a179f5d8652ab4d0df44
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -108,6 +108,8 @@ class CategoryStruct (obj : Type u) extends Quiver.{v + 1} obj : Type max u (v +
   comp : ∀ {X Y Z : obj}, (X ⟶ Y) → (Y ⟶ Z) → (X ⟶ Z)
 #align category_theory.category_struct CategoryTheory.CategoryStruct
 
+initialize_simps_projections CategoryStruct (-toQuiver_Hom)
+
 /-- Notation for the identity morphism in a category. -/
 notation "𝟙" => CategoryStruct.id  -- type as \b1
 
@@ -184,7 +186,7 @@ section
 
 variable {C : Type u} [Category.{v} C] {X Y Z : C}
 
-initialize_simps_projections Category
+initialize_simps_projections Category (-Hom)
 
 /-- postcompose an equation between morphisms by another morphism -/
 theorem eq_whisker {f g : X ⟶ Y} (w : f = g) (h : Y ⟶ Z) : f ≫ h = g ≫ h := by rw [w]

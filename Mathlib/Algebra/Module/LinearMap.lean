@@ -155,14 +155,13 @@ abbrev LinearMapClass (F : Type _) (R M M₂ : outParam (Type _)) [Semiring R] [
 namespace SemilinearMapClass
 
 variable (F : Type _)
-variable {_ : Semiring R} {_ : Semiring S}
-variable {_ : AddCommMonoid M} {_ : AddCommMonoid M₁} {_ : AddCommMonoid M₂} {_ : AddCommMonoid M₃}
-variable {_ : AddCommMonoid N₁} {_ : AddCommMonoid N₂} {_ : AddCommMonoid N₃}
-variable {_ : Module R M} {_ : Module R M₂} {_ : Module S M₃}
+variable [Semiring R] [Semiring S]
+variable [AddCommMonoid M] [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃]
+variable [AddCommMonoid N₁] [AddCommMonoid N₂] [AddCommMonoid N₃]
+variable [Module R M] [Module R M₂] [Module S M₃]
 variable {σ : R →+* S}
 
 -- Porting note: the `dangerousInstance` linter has become smarter about `outParam`s
--- @[nolint dangerousInstance] -- `σ` is an `outParam` so it's not dangerous
 instance (priority := 100) addMonoidHomClass [SemilinearMapClass F σ M M₃] :
     AddMonoidHomClass F M M₃ :=
   { SemilinearMapClass.toAddHomClass with
@@ -172,10 +171,6 @@ instance (priority := 100) addMonoidHomClass [SemilinearMapClass F σ M M₃] :
         rw [← zero_smul R (0 : M), map_smulₛₗ]
         simp }
 
--- The `Semiring` should be an instance parameter but depends on outParams.
--- If Lean 4 gets better support for instance params depending on outParams,
--- we should be able to remove this nolint.
-@[nolint dangerousInstance]
 instance (priority := 100) distribMulActionHomClass [LinearMapClass F R M M₂] :
     DistribMulActionHomClass F R M M₂ :=
   { SemilinearMapClass.addMonoidHomClass F with

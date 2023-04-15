@@ -11,6 +11,8 @@ Authors: Anne Baanen
 import Mathlib.Data.Fin.Tuple.Basic
 import Mathlib.Data.List.Range
 import Mathlib.GroupTheory.GroupAction.Pi
+import Mathlib.Tactic.ToExpr
+import Qq
 
 /-!
 # Matrix and vector notation
@@ -199,31 +201,23 @@ theorem cons_fin_one (x : α) (u : Fin 0 → α) : vecCons x u = fun _ => x :=
   funext (cons_val_fin_one x u)
 #align matrix.cons_fin_one Matrix.cons_fin_one
 
--- Porting note: the next two decls are commented out. TODO(eric-wieser)
+open Lean in
+open Qq in
+protected instance _root_.PiFin.toExpr [ToLevel.{u}] [ToExpr α] (n : ℕ) : ToExpr (Fin n → α) :=
+  have lu := toLevel.{u}
+  have eα : Q(Type $lu) := toTypeExpr α
+  have toTypeExpr := q(Fin $n → $eα)
+  match n with
+  | 0 => { toTypeExpr, toExpr := fun _ => q(@vecEmpty $eα) }
+  | n + 1 =>
+    { toTypeExpr, toExpr := fun v =>
+      have := PiFin.toExpr n
+      have eh : Q($eα) := toExpr (vecHead v)
+      have et : Q(Fin $n → $eα) := toExpr (vecTail v)
+      q(vecCons $eh $et) }
+#align pi_fin.reflect PiFin.toExpr
 
--- /- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:76:14:
---  unsupported tactic `reflect_name #[] -/
--- /- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:76:14:
---  unsupported tactic `reflect_name #[] -/
--- unsafe instance _root_.pi_fin.reflect [reflected_univ.{u}] [reflected _ α] [has_reflect α] :
---     ∀ {n}, has_reflect (Fin n → α)
---   | 0, v =>
---     (Subsingleton.elim vecEmpty v).rec
---       ((by
---             trace
---               "./././Mathport/Syntax/Translate/Tactic/Builtin.lean:76:14:
---                unsupported tactic `reflect_name #[]" :
---             reflected _ @vecEmpty.{u}).subst
---         q(α))
---   | n + 1, v =>
---     (cons_head_tail v).rec <|
---       (by
---             trace
---               "./././Mathport/Syntax/Translate/Tactic/Builtin.lean:76:14:
---                unsupported tactic `reflect_name #[]" :
---             reflected _ @vecCons.{u}).subst₄
---         q(α) q(n) q(_) (_root_.pi_fin.reflect _)
--- #align pi_fin.reflect pi_fin.reflect
+-- Porting note: the next decl is commented out. TODO(eric-wieser)
 
 -- /-- Convert a vector of pexprs to the pexpr constructing that vector.-/
 -- unsafe def _root_.pi_fin.to_pexpr : ∀ {n}, (Fin n → pexpr) → pexpr
