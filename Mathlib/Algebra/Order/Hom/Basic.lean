@@ -13,9 +13,6 @@ import Mathlib.Algebra.GroupPower.Order
 /-!
 # Algebraic order homomorphism classes
 
-> THIS FILE IS SYNCHRONIZED WITH MATHLIB4.
-> Any changes to this file require a corresponding PR to mathlib4.
-
 This file defines hom classes for common properties at the intersection of order theory and algebra.
 
 ## Typeclasses
@@ -43,7 +40,7 @@ Ring norms
 ## Notes
 
 Typeclasses for seminorms are defined here while types of seminorms are defined in
-`analysis.normed.group.seminorm` and `analysis.normed.ring.seminorm` because absolute values are
+`Analysis.Normed.Group.Seminorm` and `Analysis.Normed.Ring.Seminorm` because absolute values are
 multiplicative ring norms but outside of this use we only consider real-valued seminorms.
 
 ## TODO
@@ -54,32 +51,30 @@ Finitary versions of the current lemmas.
 
 library_note "out-param inheritance"/--
 Diamond inheritance cannot depend on `outParam`s in the following circumstances:
- * there are three classes `top`, `middle`, `bottom`
+ * there are three classes `Top`, `Middle`, `Bottom`
  * all of these classes have a parameter `(α : outParam _)`
- * all of these classes have an instance parameter `[root α]` that depends on this `outParam`
- * the `root` class has two child classes: `left` and `right`, these are siblings in the hierarchy
- * the instance `bottom.to_middle` takes a `[left α]` parameter
- * the instance `middle.to_top` takes a `[right α]` parameter
- * there is a `leaf` class that inherits from both `left` and `right`.
-In that case, given instances `bottom α` and `leaf α`, Lean cannot synthesize a `top α` instance,
-even though the hypotheses of the instances `bottom.to_middle` and `middle.to_top` are satisfied.
+ * all of these classes have an instance parameter `[Root α]` that depends on this `outParam`
+ * the `Root` class has two child classes: `Left` and `Right`, these are siblings in the hierarchy
+ * the instance `Bottom.toMiddle` takes a `[Left α]` parameter
+ * the instance `Middle.toTop` takes a `[Right α]` parameter
+ * there is a `Leaf` class that inherits from both `Left` and `Right`.
+In that case, given instances `Bottom α` and `Leaf α`, Lean cannot synthesize a `Top α` instance,
+even though the hypotheses of the instances `Bottom.toMiddle` and `Middle.toTop` are satisfied.
 
 There are two workarounds:
-* You could replace the bundled inheritance implemented by the instance `middle.to_top` with
-  unbundled inheritance implemented by adding a `[top α]` parameter to the `middle` class. This is
+* You could replace the bundled inheritance implemented by the instance `Middle.toTop` with
+  unbundled inheritance implemented by adding a `[Top α]` parameter to the `Middle` class. This is
   the preferred option since it is also more compatible with Lean 4, at the cost of being more work
   to implement and more verbose to use.
-* You could weaken the `bottom.to_middle` instance by making it depend on a subclass of
-  `middle.to_top`'s parameter, in this example replacing `[left α]` with `[leaf α]`.
+* You could weaken the `Bottom.toMiddle` instance by making it depend on a subclass of
+  `Middle.toTop`'s parameter, in this example replacing `[Left α]` with `[Leaf α]`.
 -/
-
 
 open Function
 
 variable {ι F α β γ δ : Type _}
 
 /-! ### Basics -/
-
 
 /-- `NonnegHomClass F α β` states that `F` is a type of nonnegative morphisms. -/
 class NonnegHomClass (F : Type _) (α β : outParam <| Type _) [Zero β] [LE β] extends
