@@ -6,6 +6,9 @@ import Mathlib.Data.Matrix.Notation
 -- import linear_algebra.Matrix.determinant
 import Mathlib.GroupTheory.Perm.Fin
 -- import Mathlib.Tactic.NormSwap
+import Qq
+
+open Qq
 
 -- todo: uncomment above imports when they are ported
 
@@ -18,27 +21,28 @@ open Matrix
 /-! Test that the dimensions are inferred correctly, even for empty matrices -/
 section dimensions
 
-set_option pp.universes true
-set_option pp.all true
+-- set_option pp.universes true
+-- set_option pp.all true
 
-meta def get_dims (e : pexpr) : tactic (Expr × Expr) :=
+open Lean in
+def getDims (e : Lean.TSyntax `term) : Lean.MetaM (Q(Nat) × Q(Nat)) :=
 do
-  elem_t ← tactic.mk_meta_var (expr.sort level.zero.succ),
-  e ← tactic.to_expr ``(%%e : matrix _ _ %%elem_t) tt ff,
-  t ← tactic.infer_type e,
-  `(Matrix.{0 0 0} (Fin %%m) (Fin %%n) %%elem_t) ← tactic.infer_type e,
+  let elem_t ← mkFreshExprMVarQ q(Type)
+  let e ← Lean.Elab.Term.elabTerm e (some q(Matrix _ _ $elem_t)) true false
+  let t ← Lean.Meta.inferType e
+  let ~q(Matrix (Fin $m) (Fin $n) $elem_t) ← t | failure
   return (m, n)
 
 -- we test equality of expressions here to ensure that we have `2` and not `1.succ` in the type
-run_cmd do let d ← get_dims ``(!![]);        guard $ d = (`(0), `(0))
-run_cmd do let d ← get_dims ``(!![;]);       guard $ d = (`(1), `(0))
-run_cmd do let d ← get_dims ``(!![;;]),      guard $ d = (`(2), `(0))
-run_cmd do let d ← get_dims ``(!![,]);       guard $ d = (`(0), `(1))
-run_cmd do let d ← get_dims ``(!![,,]);      guard $ d = (`(0), `(2))
-run_cmd do let d ← get_dims ``(!![1]);       guard $ d = (`(1), `(1))
-run_cmd do let d ← get_dims ``(!![1,]);      guard $ d = (`(1), `(1))
-run_cmd do let d ← get_dims ``(!![1;]);      guard $ d = (`(1), `(1))
-run_cmd do let d ← get_dims ``(!![1,2;3,4]); guard $ d = (`(2), `(2))
+run_cmd do let d ← getDims ``(!![]);        guard $ d = (q(0), q(0))
+run_cmd do let d ← getDims ``(!![;]);       guard $ d = (q(1), q(0))
+run_cmd do let d ← getDims ``(!![;;]);      guard $ d = (q(2), q(0))
+run_cmd do let d ← getDims ``(!![,]);       guard $ d = (q(0), q(1))
+run_cmd do let d ← getDims ``(!![,,]);      guard $ d = (q(0), q(2))
+run_cmd do let d ← getDims ``(!![1]);       guard $ d = (q(1), q(1))
+run_cmd do let d ← getDims ``(!![1,]);      guard $ d = (q(1), q(1))
+run_cmd do let d ← getDims ``(!![1;]);      guard $ d = (q(1), q(1))
+run_cmd do let d ← getDims ``(!![1,2;3,4]); guard $ d = (q(2), q(2))
 
 end dimensions
 
