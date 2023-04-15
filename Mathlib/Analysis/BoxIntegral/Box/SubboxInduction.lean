@@ -14,8 +14,8 @@ import Mathlib.Analysis.SpecificLimits.Basic
 /-!
 # Induction on subboxes
 
-In this file we prove the following induction principle for `box_integral.box`, see
-`box_integral.box.subbox_induction_on`. Let `p` be a predicate on `box_integral.box ι`, let `I` be a
+In this file we prove the following induction principle for `BoxIntegral.Box`, see
+`BoxIntegral.Box.subbox_induction_on`. Let `p` be a predicate on `BoxIntegral.Box ι`, let `I` be a
 box. Suppose that the following two properties hold true.
 
 * Consider a smaller box `J ≤ I`. The hyperplanes passing through the center of `J` split it into
@@ -45,8 +45,8 @@ namespace Box
 variable {ι : Type _} {I J : Box ι}
 
 /-- For a box `I`, the hyperplanes passing through its center split `I` into `2 ^ card ι` boxes.
-`box_integral.box.split_center_box I s` is one of these boxes. See also
-`box_integral.partition.split_center` for the corresponding `box_integral.partition`. -/
+`BoxIntegral.Box.splitCenterBox I s` is one of these boxes. See also
+`BoxIntegral.Partition.splitCenter` for the corresponding `BoxIntegral.Partition`. -/
 def splitCenterBox (I : Box ι) (s : Set ι) : Box ι where
   lower := s.piecewise (fun i ↦ (I.lower i + I.upper i) / 2) I.lower
   upper := s.piecewise I.upper fun i ↦ (I.lower i + I.upper i) / 2
@@ -90,7 +90,7 @@ theorem exists_mem_splitCenterBox {I : Box ι} {x : ι → ℝ} : (∃ s, x ∈ 
     ⟨{ i | (I.lower i + I.upper i) / 2 < x i }, mem_splitCenterBox.2 ⟨hx, fun _ ↦ Iff.rfl⟩⟩⟩
 #align box_integral.box.exists_mem_split_center_box BoxIntegral.Box.exists_mem_splitCenterBox
 
-/-- `box_integral.box.split_center_box` bundled as a `function.embedding`. -/
+/-- `BoxIntegral.Box.splitCenterBox` bundled as a `Function.Embedding`. -/
 @[simps]
 def splitCenterBoxEmb (I : Box ι) : Set ι ↪ Box ι :=
   ⟨splitCenterBox I, injective_splitCenterBox I⟩
@@ -108,7 +108,7 @@ theorem upper_sub_lower_splitCenterBox (I : Box ι) (s : Set ι) (i : ι) :
   by_cases i ∈ s <;> field_simp [splitCenterBox] <;> field_simp [mul_two, two_mul]
 #align box_integral.box.upper_sub_lower_split_center_box BoxIntegral.Box.upper_sub_lower_splitCenterBox
 
-/-- Let `p` be a predicate on `box ι`, let `I` be a box. Suppose that the following two properties
+/-- Let `p` be a predicate on `Box ι`, let `I` be a box. Suppose that the following two properties
 hold true.
 
 * `H_ind` : Consider a smaller box `J ≤ I`. The hyperplanes passing through the center of `J` split
@@ -118,8 +118,8 @@ hold true.
   `I.Icc` such that for every box `J ≤ I` such that `z ∈ J.Icc ⊆ U`, if `J` is homothetic to `I`
   with a coefficient of the form `1 / 2 ^ m`, then `p` is true on `J`.
 
-Then `p I` is true. See also `box_integral.box.subbox_induction_on` for a version using
-`box_integral.prepartition.split_center` instead of `box_integral.box.split_center_box`.
+Then `p I` is true. See also `BoxIntegral.Box.subbox_induction_on` for a version using
+`BoxIntegral.Prepartition.splitCenter` instead of `BoxIntegral.Box.splitCenterBox`.
 
 The proof still works if we assume `H_ind` only for subboxes `J ≤ I` that are homothetic to `I` with
 a coefficient of the form `2⁻ᵐ` but we do not need this generalization yet. -/
