@@ -1223,19 +1223,22 @@ variable [Semiring R]
 open Classical
 
 protected instance repr [Repr R] : Repr R[X] :=
-  ⟨fun p _ =>
-    if p = 0 then "0"
+  ⟨fun p prec =>
+    if p.support = ∅ then "0"
     else
-      (p.support.sort (· ≤ ·)).foldr
-        (fun n a =>
-          (a ++ if a = "" then "" else " + ") ++
-            if n = 0 then "C (" ++ repr (coeff p n) ++ ")"
-            else
-              if n = 1 then if coeff p n = 1 then "X" else "C (" ++ repr (coeff p n) ++ ") * X"
-              else
-                if coeff p n = 1 then "X ^ " ++ repr n
-                else "C (" ++ repr (coeff p n) ++ ") * X ^ " ++ repr n)
-        ""⟩
+      Repr.addAppParen
+        (Lean.Format.fill
+          (Lean.Format.joinSep
+            (List.map
+              (fun
+                | 0 => "C " ++ reprArg (coeff p 0)
+                | 1 => if coeff p 1 = 1 then "X" else "C " ++ reprArg (coeff p 1) ++ " * X"
+                | n =>
+                  if coeff p n = 1 then "X ^ " ++ Nat.repr n
+                  else "C " ++ reprArg (coeff p 1) ++ " * X ^ " ++ Nat.repr n)
+              (p.support.sort (· ≤ ·)))
+            (" +" ++ Lean.Format.line)))
+        prec⟩
 #align polynomial.has_repr Polynomial.repr
 
 end repr
