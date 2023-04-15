@@ -9,7 +9,7 @@ Authors: Patrick Massot, Scott Morrison, Mario Carneiro, Andrew Yang
 ! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Category.Top.EpiMono
-import Mathlib.CategoryTheory.Category.Ulift
+import Mathlib.CategoryTheory.Category.ULift
 import Mathlib.CategoryTheory.Limits.ConcreteCategory
 import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 
@@ -52,6 +52,7 @@ def limitCone (F : J ⥤ TopCat.{max v u}) : Cone F where
         { toFun := fun u => u.val j
           continuous_toFun :=
             show Continuous ((fun u : ∀ j : J, F.obj j => u j) ∘ Subtype.val) by continuity } }
+set_option linter.uppercaseLean3 false in
 #align Top.limit_cone TopCat.limitCone
 
 /-- A choice of limit cone for a functor `F : J ⥤ Top` whose topology is defined as an
