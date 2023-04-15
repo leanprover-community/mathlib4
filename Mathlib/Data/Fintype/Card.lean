@@ -42,7 +42,7 @@ See `Infinite.of_injective` and `Infinite.of_surjective`.
 ## Instances
 
 We provide `Infinite` instances for
-* specific types: `ℕ`, `ℤ`
+* specific types: `ℕ`, `ℤ`, `String`
 * type constructors: `Multiset α`, `List α`
 
 -/
@@ -549,6 +549,8 @@ theorem card_ne_zero [Nonempty α] : card α ≠ 0 :=
   _root_.ne_of_gt card_pos
 #align fintype.card_ne_zero Fintype.card_ne_zero
 
+instance [Nonempty α] : NeZero (card α) := ⟨card_ne_zero⟩
+
 theorem card_le_one_iff : card α ≤ 1 ↔ ∀ a b : α, a = b :=
   let n := card α
   have hn : n = card α := rfl
@@ -791,7 +793,7 @@ def truncOfCardLe [Fintype α] [Fintype β] [DecidableEq α] [DecidableEq β]
     (h : Fintype.card α ≤ Fintype.card β) : Trunc (α ↪ β) :=
   (Fintype.truncEquivFin α).bind fun ea =>
     (Fintype.truncEquivFin β).map fun eb =>
-      ea.toEmbedding.trans ((Fin.castLe h).toEmbedding.trans eb.symm.toEmbedding)
+      ea.toEmbedding.trans ((Fin.castLE h).toEmbedding.trans eb.symm.toEmbedding)
 #align function.embedding.trunc_of_card_le Function.Embedding.truncOfCardLe
 
 theorem nonempty_of_card_le [Fintype α] [Fintype β] (h : Fintype.card α ≤ Fintype.card β) :
@@ -1036,6 +1038,12 @@ instance [Nonempty α] : Infinite (Multiset α) :=
 
 instance [Nonempty α] : Infinite (List α) :=
   Infinite.of_surjective ((↑) : List α → Multiset α) (surjective_quot_mk _)
+
+instance String.infinite : Infinite String :=
+  Infinite.of_injective (String.mk) <| by
+    intro _ _ h
+    cases h with
+    | refl => rfl
 
 instance Infinite.set [Infinite α] : Infinite (Set α) :=
   Infinite.of_injective singleton Set.singleton_injective

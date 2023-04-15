@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Johan Commelin, Patrick Massot
 
 ! This file was ported from Lean 3 source module ring_theory.valuation.basic
-! leanprover-community/mathlib commit da420a8c6dd5bdfb85c4ced85c34388f633bc6ff
+! leanprover-community/mathlib commit 2196ab363eb097c008d4497125e0dde23fb36db2
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -142,7 +142,7 @@ theorem toFun_eq_coe (v : Valuation R Γ₀) : v.toFun = v := by rfl
 #align valuation.to_fun_eq_coe Valuation.toFun_eq_coe
 
 @[simp] --Porting note: requested by simpNF as toFun_eq_coe LHS simplifies
-theorem toMonoidWithZeroHom_coe_eq_coe (v : Valuation R Γ₀) : (v.toMonoidWithZeroHom : R → Γ₀) = v 
+theorem toMonoidWithZeroHom_coe_eq_coe (v : Valuation R Γ₀) : (v.toMonoidWithZeroHom : R → Γ₀) = v
     := by rfl
 
 @[ext]
@@ -179,7 +179,7 @@ theorem map_add : ∀ x y, v (x + y) ≤ max (v x) (v y) :=
 @[simp]
 theorem map_add' : ∀ x y, v (x + y) ≤ v x ∨ v (x + y) ≤ v y := by
   intro x y
-  rw [← le_max_iff, ← ge_iff_le]  
+  rw [← le_max_iff, ← ge_iff_le]
   apply map_add
 
 theorem map_add_le {x y g} (hx : v x ≤ g) (hy : v y ≤ g) : v (x + y) ≤ g :=
@@ -511,14 +511,14 @@ theorem IsEquiv_iff_val_lt_one [LinearOrderedCommGroupWithZero Γ₀]
       | inl h_2 => simpa [hh, lt_self_iff_false] using h.2 h_2
       | inr h_2 =>
           rw [← inv_one, ←inv_eq_iff_eq_inv, ← map_inv₀] at hh
-          exact hh.symm.le.not_lt (h.2 ((one_lt_val_iff v' hx).1 h_2))
+          exact hh.not_lt (h.2 ((one_lt_val_iff v' hx).1 h_2))
     · intro hh
       by_contra h_1
       cases ne_iff_lt_or_gt.1 h_1 with
       | inl h_2 => simpa [hh, lt_self_iff_false] using h.1 h_2
       | inr h_2 =>
         rw [← inv_one, ← inv_eq_iff_eq_inv, ← map_inv₀] at hh
-        exact hh.symm.le.not_lt (h.1 ((one_lt_val_iff v hx).1 h_2))
+        exact hh.not_lt (h.1 ((one_lt_val_iff v hx).1 h_2))
 #align valuation.is_equiv_iff_val_lt_one Valuation.IsEquiv_iff_val_lt_one
 
 theorem IsEquiv_iff_val_sub_one_lt_one [LinearOrderedCommGroupWithZero Γ₀]
@@ -601,8 +601,8 @@ theorem map_add_supp (a : R) {s : R} (h : s ∈ supp v) : v (a + s) = v a := by
 #align valuation.map_add_supp Valuation.map_add_supp
 
 theorem comap_supp {S : Type _} [CommRing S] (f : S →+* R) :
-    -- Porting note: telling Lean where this instance is 
-    supp (v.comap f) = 
+    -- Porting note: telling Lean where this instance is
+    supp (v.comap f) =
       (@Ideal.comap S R (S →+* R) _ _ RingHom.instRingHomClassRingHom f v.supp : Ideal S) :=
   Ideal.ext fun x => by
     simp only [mem_supp_iff, Ideal.mem_comap, mem_supp_iff]
@@ -773,7 +773,7 @@ theorem comap_id : v.comap (RingHom.id R) = v :=
 
 theorem comap_comp {S₁ : Type _} {S₂ : Type _} [Ring S₁] [Ring S₂] (f : S₁ →+* S₂) (g : S₂ →+* R) :
     v.comap (g.comp f) = (v.comap g).comap f :=
-  Valuation.comap_comp v f g 
+  Valuation.comap_comp v f g
 #align add_valuation.comap_comp AddValuation.comap_comp
 
 /-- A `≤`-preserving, `⊤`-preserving group homomorphism `Γ₀ → Γ'₀` induces a map
@@ -781,7 +781,7 @@ theorem comap_comp {S₁ : Type _} {S₂ : Type _} [Ring S₁] [Ring S₂] (f : 
 -/
 def map (f : Γ₀ →+ Γ'₀) (ht : f ⊤ = ⊤) (hf : Monotone f) (v : AddValuation R Γ₀) :
     AddValuation R Γ'₀ :=
-  @Valuation.map R (Multiplicative Γ₀ᵒᵈ) (Multiplicative Γ'₀ᵒᵈ) _ _ _  
+  @Valuation.map R (Multiplicative Γ₀ᵒᵈ) (Multiplicative Γ'₀ᵒᵈ) _ _ _
     { toFun := f
       map_mul' := f.map_add
       map_one' := f.map_zero
@@ -924,4 +924,3 @@ scoped[DiscreteValuation] notation "ℕₘ₀" => WithZero (Multiplicative ℕ)
 scoped[DiscreteValuation] notation "ℤₘ₀" => WithZero (Multiplicative ℤ)
 
 end ValuationNotation
-

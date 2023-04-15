@@ -1361,10 +1361,9 @@ theorem Icc_union_Ici' (h₁ : c ≤ b) : Icc a b ∪ Ici c = Ici (min a c) := b
 theorem Icc_union_Ici (h : c ≤ max a b) : Icc a b ∪ Ici c = Ici (min a c) := by
   cases' le_or_lt a b with hab hab <;> simp [hab] at h
   · exact Icc_union_Ici' h
-  · cases h
+  · cases' h with h h
     · simp [*]
-    · rename_i h
-      have hca : c ≤ a := h.trans hab.le
+    · have hca : c ≤ a := h.trans hab.le
       simp [*]
 #align set.Icc_union_Ici Set.Icc_union_Ici
 
@@ -1480,9 +1479,8 @@ theorem Iic_union_Icc' (h₁ : c ≤ b) : Iic b ∪ Icc c d = Iic (max b d) := b
 theorem Iic_union_Icc (h : min c d ≤ b) : Iic b ∪ Icc c d = Iic (max b d) := by
   cases' le_or_lt c d with hcd hcd <;> simp [hcd] at h
   · exact Iic_union_Icc' h
-  · cases h
-    · rename_i h
-      have hdb : d ≤ b := hcd.le.trans h
+  · cases' h with h h
+    · have hdb : d ≤ b := hcd.le.trans h
       simp [*]
     · simp [*]
 #align set.Iic_union_Icc Set.Iic_union_Icc

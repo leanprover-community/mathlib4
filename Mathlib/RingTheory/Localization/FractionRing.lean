@@ -41,15 +41,14 @@ variable [Algebra R S] {P : Type _} [CommRing P]
 
 variable {A : Type _} [CommRing A] [IsDomain A] (K : Type _)
 
--- TODO: should this extend `algebra` instead of assuming it?
+-- TODO: should this extend `Algebra` instead of assuming it?
 /-- `IsFractionRing R K` states `K` is the field of fractions of an integral domain `R`. -/
 abbrev IsFractionRing [CommRing K] [Algebra R K] :=
   IsLocalization (nonZeroDivisors R) K
 #align is_fraction_ring IsFractionRing
 
-/-- The cast from `int` to `rat` as a `FractionRing`. -/
-instance Rat.isFractionRing : IsFractionRing ℤ ℚ
-    where
+/-- The cast from `Int` to `Rat` as a `FractionRing`. -/
+instance Rat.isFractionRing : IsFractionRing ℤ ℚ where
   map_units' := by
     rintro ⟨x, hx⟩
     rw [mem_nonZeroDivisors_iff_ne_zero] at hx
@@ -81,7 +80,7 @@ section CommRing
 variable [CommRing K] [Algebra R K] [IsFractionRing R K] [Algebra A K] [IsFractionRing A K]
 
 theorem to_map_eq_zero_iff {x : R} : algebraMap R K x = 0 ↔ x = 0 :=
-  IsLocalization.to_map_eq_zero_iff _ (le_of_eq rfl)
+  IsLocalization.to_map_eq_zero_iff _ le_rfl
 #align is_fraction_ring.to_map_eq_zero_iff IsFractionRing.to_map_eq_zero_iff
 
 variable (R K)
@@ -108,17 +107,14 @@ protected theorem to_map_ne_zero_of_mem_nonZeroDivisors [Nontrivial R] {x : R}
 
 variable (A)
 
-/-- A `comm_ring` `K` which is the localization of an integral domain `R` at `R - {0}` is an
+/-- A `CommRing` `K` which is the localization of an integral domain `R` at `R - {0}` is an
 integral domain. -/
 protected theorem isDomain : IsDomain K :=
   isDomain_of_le_nonZeroDivisors _ (le_refl (nonZeroDivisors A))
 #align is_fraction_ring.is_domain IsFractionRing.isDomain
 
-attribute [local instance] Classical.decEq
-
 /-- The inverse of an element in the field of fractions of an integral domain. -/
--- Porting note: Had to replace `irreducible_def` with the `@[irreducible]` attribute.
-@[irreducible] protected noncomputable def inv (z : K) : K :=
+protected noncomputable irreducible_def inv (z : K) : K := open Classical in
   if h : z = 0 then 0
   else
     mk' K ↑(sec (nonZeroDivisors A) z).2
@@ -139,12 +135,11 @@ protected theorem mul_inv_cancel (x : K) (hx : x ≠ 0) : x * IsFractionRing.inv
   exact (mk'_sec _ x).symm
 #align is_fraction_ring.mul_inv_cancel IsFractionRing.mul_inv_cancel
 
-/-- A `comm_ring` `K` which is the localization of an integral domain `R` at `R - {0}` is a field.
+/-- A `CommRing` `K` which is the localization of an integral domain `R` at `R - {0}` is a field.
 See note [reducible non-instances]. -/
 @[reducible]
 noncomputable def toField : Field K :=
-  { IsFractionRing.isDomain A,
-    show CommRing K by infer_instance with
+  { IsFractionRing.isDomain A, inferInstanceAs (CommRing K) with
     inv := IsFractionRing.inv A
     mul_inv_cancel := IsFractionRing.mul_inv_cancel A
     inv_zero := by
@@ -334,8 +329,7 @@ noncomputable def algEquiv (K : Type _) [Field K] [Algebra A K] [IsFractionRing 
   Localization.algEquiv (nonZeroDivisors A) K
 #align fraction_ring.alg_equiv FractionRing.algEquiv
 
-instance [Algebra R A] [NoZeroSMulDivisors R A] : NoZeroSMulDivisors R (FractionRing A) :=
-  by
+instance [Algebra R A] [NoZeroSMulDivisors R A] : NoZeroSMulDivisors R (FractionRing A) := by
   apply NoZeroSMulDivisors.of_algebraMap_injective
   rw [IsScalarTower.algebraMap_eq R A]
   apply Function.Injective.comp (NoZeroSMulDivisors.algebraMap_injective A (FractionRing A))

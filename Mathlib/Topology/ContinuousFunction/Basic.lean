@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri
 
 ! This file was ported from Lean 3 source module topology.continuous_function.basic
-! leanprover-community/mathlib commit 6efec6bb9fcaed3cf1baaddb2eaadd8a2a06679c
+! leanprover-community/mathlib commit 55d771df074d0dd020139ee1cd4b95521422df9f
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -365,17 +365,12 @@ variable {ι : Type _} (S : ι → Set α) (φ : ∀ i : ι, C(S i, β))
 /-- A family `φ i` of continuous maps `C(S i, β)`, where the domains `S i` contain a neighbourhood
 of each point in `α` and the functions `φ i` agree pairwise on intersections, can be glued to
 construct a continuous map in `C(α, β)`. -/
-noncomputable def liftCover : C(α, β) := by
-  have H : (⋃ i, S i) = Set.univ := by
-    rw [Set.eq_univ_iff_forall]
-    intro x
-    rw [Set.mem_unionᵢ]
-    obtain ⟨i, hi⟩ := hS x
-    exact ⟨i, mem_of_mem_nhds hi⟩
-  refine' ⟨Set.liftCover S (fun i => φ i) hφ H, continuous_subtype_nhds_cover hS _⟩
-  intro i
-  convert (φ i).continuous
-  apply Set.liftCover_coe
+noncomputable def liftCover : C(α, β) :=
+  haveI H : (⋃ i, S i) = Set.univ :=
+    Set.unionᵢ_eq_univ_iff.2 fun x ↦ (hS x).imp fun _  ↦ mem_of_mem_nhds
+  mk (Set.liftCover S (fun i ↦ φ i) hφ H) <| continuous_of_cover_nhds hS fun i ↦ by
+    rw [continuousOn_iff_continuous_restrict]
+    simpa only [Set.restrict, Set.liftCover_coe] using (φ i).continuous
 #align continuous_map.lift_cover ContinuousMap.liftCover
 
 variable {S φ hφ hS}

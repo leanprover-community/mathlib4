@@ -32,7 +32,7 @@ namespace Linarith
 open Lean Elab Tactic Meta
 open Qq
 
-/-- Processor thaat recursively replaces `P ∧ Q` hypotheses with the pair `P` and `Q`. -/
+/-- Processor that recursively replaces `P ∧ Q` hypotheses with the pair `P` and `Q`. -/
 partial def splitConjunctions : Preprocessor :=
 { name := "split conjunctions",
   transform := aux }

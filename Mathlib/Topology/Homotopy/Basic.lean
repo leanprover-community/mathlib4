@@ -89,8 +89,8 @@ section
 `f₁`.
 
 You should extend this class when you extend `ContinuousMap.Homotopy`. -/
-class HomotopyLike (F : Type _) (f₀ f₁ : outParam <| C(X, Y)) extends
-  ContinuousMapClass F (I × X) Y where
+class HomotopyLike {X Y : outParam (Type _)} [TopologicalSpace X] [TopologicalSpace Y]
+    (F : Type _) (f₀ f₁ : outParam <| C(X, Y)) extends ContinuousMapClass F (I × X) Y where
   /-- value of the homotopy at 0 -/
   map_zero_left (f : F) : ∀ x, f (0, x) = f₀ x
   /-- value of the homotopy at 1 -/
@@ -98,9 +98,6 @@ class HomotopyLike (F : Type _) (f₀ f₁ : outParam <| C(X, Y)) extends
 #align continuous_map.homotopy_like ContinuousMap.HomotopyLike
 
 end
-
--- `f₀` and `f₁` are `outParam` so this is not dangerous
-attribute [nolint dangerousInstance] HomotopyLike.toContinuousMapClass
 
 namespace Homotopy
 
