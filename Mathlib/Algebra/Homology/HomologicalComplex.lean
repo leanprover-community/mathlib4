@@ -214,6 +214,7 @@ instance : Category (HomologicalComplex V c) where
 
 end
 
+-- porting note: added because `Hom.ext` is not triggered automatically
 @[ext]
 lemma hom_ext {C D : HomologicalComplex V c} (f g : C ⟶ D)
     (h : ∀ i, f.f i = g.f i) : f = g := by
@@ -382,7 +383,7 @@ def xNextIso {i j : ι} (r : c.Rel i j) : C.xNext i ≅ C.X j :=
 set_option linter.uppercaseLean3 false in
 #align homological_complex.X_next_iso HomologicalComplex.xNextIso
 
-/-- If there is no `j` so `c.rel i j`, then `C.X_next i` is isomorphic to `C.X i`. -/
+/-- If there is no `j` so `c.Rel i j`, then `C.xNext i` is isomorphic to `C.X i`. -/
 def xNextIsoSelf {i : ι} (h : ¬c.Rel i (c.next i)) : C.xNext i ≅ C.X i :=
   eqToIso <|
     congr_arg C.X
@@ -792,19 +793,19 @@ variable (P Q : ChainComplex V ℕ) (zero : P.X 0 ⟶ Q.X 0) (one : P.X 1 ⟶ Q.
           f' ≫ Q.d (n + 1) n = P.d (n + 1) n ≫ f),
       Σ'f'' : P.X (n + 2) ⟶ Q.X (n + 2), f'' ≫ Q.d (n + 2) (n + 1) = P.d (n + 2) (n + 1) ≫ p.2.1)
 
-/-- An auxiliary construction for `mk_hom`.
+/-- An auxiliary construction for `mkHom`.
 
 Here we build by induction a family of commutative squares,
 but don't require at the type level that these successive commutative squares actually agree.
 They do in fact agree, and we then capture that at the type level (i.e. by constructing a chain map)
-in `mk_hom`.
+in `mkHom`.
 -/
 def mkHomAux :
     ∀ n,
-      Σ'(f : P.pt n ⟶ Q.pt n)(f' : P.pt (n + 1) ⟶ Q.pt (n + 1)),
+      Σ'(f : P.X n ⟶ Q.X n)(f' : P.X (n + 1) ⟶ Q.X (n + 1)),
         f' ≫ Q.d (n + 1) n = P.d (n + 1) n ≫ f
   | 0 => ⟨zero, one, one_zero_comm⟩
-  | n + 1 => ⟨(mk_hom_aux n).2.1, (succ n (mk_hom_aux n)).1, (succ n (mk_hom_aux n)).2⟩
+  | n + 1 => ⟨(mkHomAux n).2.1, (succ n (mkHomAux n)).1, (succ n (mkHomAux n)).2⟩
 #align chain_complex.mk_hom_aux ChainComplex.mkHomAux
 
 /-- A constructor for chain maps between `ℕ`-indexed chain complexes,
@@ -820,7 +821,7 @@ def mkHom : P ⟶ Q where
   f n := (mkHomAux P Q zero one one_zero_comm succ n).1
   comm' n m := by
     rintro (rfl : m + 1 = n)
-    exact (mk_hom_aux P Q zero one one_zero_comm succ m).2.2
+    exact (mkHomAux P Q zero one one_zero_comm succ m).2.2
 #align chain_complex.mk_hom ChainComplex.mkHom
 
 @[simp]
@@ -840,7 +841,7 @@ theorem mkHom_f_succ_succ (n : ℕ) :
           ⟨(mkHom P Q zero one one_zero_comm succ).f n,
             (mkHom P Q zero one one_zero_comm succ).f (n + 1),
             (mkHom P Q zero one one_zero_comm succ).comm (n + 1) n⟩).1 := by
-  dsimp [mk_hom, mk_hom_aux]
+  dsimp [mkHom, mkHomAux]
   induction n <;> congr
 #align chain_complex.mk_hom_f_succ_succ ChainComplex.mkHom_f_succ_succ
 
@@ -858,12 +859,14 @@ variable {V} {α : Type _} [AddRightCancelSemigroup α] [One α] [DecidableEq α
 -/
 def of (X : α → V) (d : ∀ n, X n ⟶ X (n + 1)) (sq : ∀ n, d n ≫ d (n + 1) = 0) :
     CochainComplex V α :=
-  { pt
-    d := fun i j => if h : i + 1 = j then d _ ≫ eqToHom (by subst h) else 0
-    shape' := fun i j w => by
+  { X := X
+    d := fun i j => if h : i + 1 = j then d _ ≫ eqToHom (by rw [h]) else 0
+    shape := fun i j w => by
+      dsimp
       rw [dif_neg]
       exact w
     d_comp_d' := fun i j k => by
+      dsimp
       split_ifs with h h' h'
       · substs h h'
         simp [sq]
@@ -873,14 +876,15 @@ def of (X : α → V) (d : ∀ n, X n ⟶ X (n + 1)) (sq : ∀ n, d n ≫ d (n +
 variable (X : α → V) (d : ∀ n, X n ⟶ X (n + 1)) (sq : ∀ n, d n ≫ d (n + 1) = 0)
 
 @[simp]
-theorem of_x (n : α) : (of X d sq).pt n = X n :=
+theorem of_x (n : α) : (of X d sq).X n = X n :=
   rfl
+set_option linter.uppercaseLean3 false in
 #align cochain_complex.of_X CochainComplex.of_x
 
 @[simp]
 theorem of_d (j : α) : (of X d sq).d j (j + 1) = d j := by
   dsimp [of]
-  rw [if_pos rfl, category.comp_id]
+  rw [if_pos rfl, Category.comp_id]
 #align cochain_complex.of_d CochainComplex.of_d
 
 theorem of_d_ne {i j : α} (h : i + 1 ≠ j) : (of X d sq).d i j = 0 := by
@@ -898,7 +902,7 @@ variable (X : α → V) (d_X : ∀ n, X n ⟶ X (n + 1)) (sq_X : ∀ n, d_X n �
   (d_Y : ∀ n, Y n ⟶ Y (n + 1)) (sq_Y : ∀ n, d_Y n ≫ d_Y (n + 1) = 0)
 
 /--
-A constructor for chain maps between `α`-indexed cochain complexes built using `cochain_complex.of`,
+A constructor for chain maps between `α`-indexed cochain complexes built using `CochainComplex.of`,
 from a dependently typed collection of morphisms.
 -/
 @[simps]
@@ -917,13 +921,13 @@ end OfHom
 
 section Mk
 
+-- porting note: removed @[nolint has_nonempty_instance]
 /-- Auxiliary structure for setting up the recursion in `mk`.
 This is purely an implementation detail: for some reason just using the dependent 6-tuple directly
-results in `mk_aux` taking much longer (well over the `-T100000` limit) to elaborate.
+results in `mkAux` taking much longer (well over the `-T100000` limit) to elaborate.
 -/
-@[nolint has_nonempty_instance]
 structure MkStruct where
-  (x₀ x₁ x₂ : V)
+  (X₀ X₁ X₂ : V)
   d₀ : X₀ ⟶ X₁
   d₁ : X₁ ⟶ X₂
   s : d₀ ≫ d₁ = 0
@@ -933,7 +937,7 @@ variable {V}
 
 /-- Flatten to a tuple. -/
 def MkStruct.flat (t : MkStruct V) : Σ'(X₀ X₁ X₂ : V)(d₀ : X₀ ⟶ X₁)(d₁ : X₁ ⟶ X₂), d₀ ≫ d₁ = 0 :=
-  ⟨t.x₀, t.x₁, t.x₂, t.d₀, t.d₁, t.s⟩
+  ⟨t.X₀, t.X₁, t.X₂, t.d₀, t.d₁, t.s⟩
 #align cochain_complex.mk_struct.flat CochainComplex.MkStruct.flat
 
 variable (X₀ X₁ X₂ : V) (d₀ : X₀ ⟶ X₁) (d₁ : X₁ ⟶ X₂) (s : d₀ ≫ d₁ = 0)
@@ -942,11 +946,11 @@ variable (X₀ X₁ X₂ : V) (d₀ : X₀ ⟶ X₁) (d₁ : X₁ ⟶ X₂) (s :
       Σ'(X₃ : V)(d₂ : t.2.2.1 ⟶ X₃), t.2.2.2.2.1 ≫ d₂ = 0)
 
 /-- Auxiliary definition for `mk`. -/
-def mkAux : ∀ n : ℕ, MkStruct V
+def mkAux : ∀ _ : ℕ, MkStruct V
   | 0 => ⟨X₀, X₁, X₂, d₀, d₁, s⟩
   | n + 1 =>
-    let p := mk_aux n
-    ⟨p.x₁, p.x₂, (succ p.flat).1, p.d₁, (succ p.flat).2.1, (succ p.flat).2.2⟩
+    let p := mkAux n
+    ⟨p.X₁, p.X₂, (succ p.flat).1, p.d₁, (succ p.flat).2.1, (succ p.flat).2.2⟩
 #align cochain_complex.mk_aux CochainComplex.mkAux
 
 /-- A inductive constructor for `ℕ`-indexed cochain complexes.
@@ -958,35 +962,38 @@ and returns the next object, its differential, and the fact it composes appropia
 See also `mk'`, which only sees the previous differential in the inductive step.
 -/
 def mk : CochainComplex V ℕ :=
-  of (fun n => (mkAux X₀ X₁ X₂ d₀ d₁ s succ n).x₀) (fun n => (mkAux X₀ X₁ X₂ d₀ d₁ s succ n).d₀)
+  of (fun n => (mkAux X₀ X₁ X₂ d₀ d₁ s succ n).X₀) (fun n => (mkAux X₀ X₁ X₂ d₀ d₁ s succ n).d₀)
     fun n => (mkAux X₀ X₁ X₂ d₀ d₁ s succ n).s
 #align cochain_complex.mk CochainComplex.mk
 
 @[simp]
-theorem mk_x_0 : (mk X₀ X₁ X₂ d₀ d₁ s succ).pt 0 = X₀ :=
+theorem mk_X_0 : (mk X₀ X₁ X₂ d₀ d₁ s succ).X 0 = X₀ :=
   rfl
-#align cochain_complex.mk_X_0 CochainComplex.mk_x_0
+set_option linter.uppercaseLean3 false in
+#align cochain_complex.mk_X_0 CochainComplex.mk_X_0
 
 @[simp]
-theorem mk_x_1 : (mk X₀ X₁ X₂ d₀ d₁ s succ).pt 1 = X₁ :=
+theorem mk_X_1 : (mk X₀ X₁ X₂ d₀ d₁ s succ).X 1 = X₁ :=
   rfl
-#align cochain_complex.mk_X_1 CochainComplex.mk_x_1
+set_option linter.uppercaseLean3 false in
+#align cochain_complex.mk_X_1 CochainComplex.mk_X_1
 
 @[simp]
-theorem mk_x_2 : (mk X₀ X₁ X₂ d₀ d₁ s succ).pt 2 = X₂ :=
+theorem mk_X_2 : (mk X₀ X₁ X₂ d₀ d₁ s succ).X 2 = X₂ :=
   rfl
-#align cochain_complex.mk_X_2 CochainComplex.mk_x_2
+set_option linter.uppercaseLean3 false in
+#align cochain_complex.mk_X_2 CochainComplex.mk_X_2
 
 @[simp]
 theorem mk_d_1_0 : (mk X₀ X₁ X₂ d₀ d₁ s succ).d 0 1 = d₀ := by
   change ite (1 = 0 + 1) (d₀ ≫ 𝟙 X₁) 0 = d₀
-  rw [if_pos rfl, category.comp_id]
+  rw [if_pos rfl, Category.comp_id]
 #align cochain_complex.mk_d_1_0 CochainComplex.mk_d_1_0
 
 @[simp]
 theorem mk_d_2_0 : (mk X₀ X₁ X₂ d₀ d₁ s succ).d 1 2 = d₁ := by
   change ite (2 = 1 + 1) (d₁ ≫ 𝟙 X₂) 0 = d₁
-  rw [if_pos rfl, category.comp_id]
+  rw [if_pos rfl, Category.comp_id]
 #align cochain_complex.mk_d_2_0 CochainComplex.mk_d_2_0
 
 -- TODO simp lemmas for the inductive steps? It's not entirely clear that they are needed.
@@ -1006,19 +1013,21 @@ def mk' (X₀ X₁ : V) (d : X₀ ⟶ X₁)
 variable (succ' : ∀ t : ΣX₀ X₁ : V, X₀ ⟶ X₁, Σ'(X₂ : V)(d : t.2.1 ⟶ X₂), t.2.2 ≫ d = 0)
 
 @[simp]
-theorem mk'_x_0 : (mk' X₀ X₁ d₀ succ').pt 0 = X₀ :=
+theorem mk'_X_0 : (mk' X₀ X₁ d₀ succ').X 0 = X₀ :=
   rfl
-#align cochain_complex.mk'_X_0 CochainComplex.mk'_x_0
+set_option linter.uppercaseLean3 false in
+#align cochain_complex.mk'_X_0 CochainComplex.mk'_X_0
 
 @[simp]
-theorem mk'_x_1 : (mk' X₀ X₁ d₀ succ').pt 1 = X₁ :=
+theorem mk'_X_1 : (mk' X₀ X₁ d₀ succ').X 1 = X₁ :=
   rfl
-#align cochain_complex.mk'_X_1 CochainComplex.mk'_x_1
+set_option linter.uppercaseLean3 false in
+#align cochain_complex.mk'_X_1 CochainComplex.mk'_X_1
 
 @[simp]
 theorem mk'_d_1_0 : (mk' X₀ X₁ d₀ succ').d 0 1 = d₀ := by
   change ite (1 = 0 + 1) (d₀ ≫ 𝟙 X₁) 0 = d₀
-  rw [if_pos rfl, category.comp_id]
+  rw [if_pos rfl, Category.comp_id]
 #align cochain_complex.mk'_d_1_0 CochainComplex.mk'_d_1_0
 
 -- TODO simp lemmas for the inductive steps? It's not entirely clear that they are needed.
@@ -1026,28 +1035,26 @@ end Mk
 
 section MkHom
 
-variable {V} (P Q : CochainComplex V ℕ) (zero : P.pt 0 ⟶ Q.pt 0) (one : P.pt 1 ⟶ Q.pt 1)
+variable {V}
+variable (P Q : CochainComplex V ℕ) (zero : P.X 0 ⟶ Q.X 0) (one : P.X 1 ⟶ Q.X 1)
   (one_zero_comm : zero ≫ Q.d 0 1 = P.d 0 1 ≫ one)
-  (succ :
-    ∀ (n : ℕ)
-      (p :
-        Σ'(f : P.pt n ⟶ Q.pt n)(f' : P.pt (n + 1) ⟶ Q.pt (n + 1)),
+  (succ : ∀ (n : ℕ) (p : Σ'(f : P.X n ⟶ Q.X n)(f' : P.X (n + 1) ⟶ Q.X (n + 1)),
           f ≫ Q.d n (n + 1) = P.d n (n + 1) ≫ f'),
-      Σ'f'' : P.pt (n + 2) ⟶ Q.pt (n + 2), p.2.1 ≫ Q.d (n + 1) (n + 2) = P.d (n + 1) (n + 2) ≫ f'')
+      Σ'f'' : P.X (n + 2) ⟶ Q.X (n + 2), p.2.1 ≫ Q.d (n + 1) (n + 2) = P.d (n + 1) (n + 2) ≫ f'')
 
-/-- An auxiliary construction for `mk_hom`.
+/-- An auxiliary construction for `mkHom`.
 
 Here we build by induction a family of commutative squares,
 but don't require at the type level that these successive commutative squares actually agree.
 They do in fact agree, and we then capture that at the type level (i.e. by constructing a chain map)
-in `mk_hom`.
+in `mkHom`.
 -/
 def mkHomAux :
     ∀ n,
-      Σ'(f : P.pt n ⟶ Q.pt n)(f' : P.pt (n + 1) ⟶ Q.pt (n + 1)),
+      Σ'(f : P.X n ⟶ Q.X n)(f' : P.X (n + 1) ⟶ Q.X (n + 1)),
         f ≫ Q.d n (n + 1) = P.d n (n + 1) ≫ f'
   | 0 => ⟨zero, one, one_zero_comm⟩
-  | n + 1 => ⟨(mk_hom_aux n).2.1, (succ n (mk_hom_aux n)).1, (succ n (mk_hom_aux n)).2⟩
+  | n + 1 => ⟨(mkHomAux n).2.1, (succ n (mkHomAux n)).1, (succ n (mkHomAux n)).2⟩
 #align cochain_complex.mk_hom_aux CochainComplex.mkHomAux
 
 /-- A constructor for chain maps between `ℕ`-indexed cochain complexes,
@@ -1063,7 +1070,7 @@ def mkHom : P ⟶ Q where
   f n := (mkHomAux P Q zero one one_zero_comm succ n).1
   comm' n m := by
     rintro (rfl : n + 1 = m)
-    exact (mk_hom_aux P Q zero one one_zero_comm succ n).2.2
+    exact (mkHomAux P Q zero one one_zero_comm succ n).2.2
 #align cochain_complex.mk_hom CochainComplex.mkHom
 
 @[simp]
@@ -1083,7 +1090,7 @@ theorem mkHom_f_succ_succ (n : ℕ) :
           ⟨(mkHom P Q zero one one_zero_comm succ).f n,
             (mkHom P Q zero one one_zero_comm succ).f (n + 1),
             (mkHom P Q zero one one_zero_comm succ).comm n (n + 1)⟩).1 := by
-  dsimp [mk_hom, mk_hom_aux]
+  dsimp [mkHom, mkHomAux]
   induction n <;> congr
 #align cochain_complex.mk_hom_f_succ_succ CochainComplex.mkHom_f_succ_succ
 
