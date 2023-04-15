@@ -18,17 +18,17 @@ import Qq
 /-!
 # Matrix and vector notation
 
-This file includes `simp` lemmas for applying operations in `data.matrix.basic` to values built out
-of the matrix notation `![a, b] = vec_cons a (vec_cons b vec_empty)` defined in
-`data.fin.vec_notation`.
+This file includes `simp` lemmas for applying operations in `Data.Matrix.Basic` to values built out
+of the matrix notation `![a, b] = vecCons a (vecCons b vecEmpty)` defined in
+`Data.Fin.VecNotation`.
 
-This also provides the new notation `!![a, b; c, d] = matrix.of ![![a, b], ![c, d]]`.
-This notation also works for empty matrices; `!![,,,] : matrix (fin 0) (fin 3)` and
-`!![;;;] : matrix (fin 3) (fin 0)`.
+This also provides the new notation `!![a, b; c, d] = Matrix.of ![![a, b], ![c, d]]`.
+This notation also works for empty matrices; `!![,,,] : Matrix (Fin 0) (Fin 3)` and
+`!![;;;] : Matrix (Fin 3) (Fin 0)`.
 
 ## Implementation notes
 
-The `simp` lemmas require that one of the arguments is of the form `vec_cons _ _`.
+The `simp` lemmas require that one of the arguments is of the form `vecCons _ _`.
 This ensures `simp` works with entries only when (some) entries are already given.
 In other words, this notation will only appear in the output of `simp` if it
 already appears in the input.
@@ -36,10 +36,8 @@ already appears in the input.
 ## Notations
 
 This file provide notation `!![a, b; c, d]` for matrices, which corresponds to
-`matrix.of ![![a, b], ![c, d]]`.
-A parser for `a, b; c, d`-style strings is provided as `matrix.entry_parser`, while
-`matrix.notation` provides the hook for the `!!` notation.
-Note that in lean 3 the pretty-printer will not show `!!` notation, instead showing the version
+`Matrix.of ![![a, b], ![c, d]]`.
+Note that in lean 4 the pretty-printer will not show `!!` notation, instead showing the version
 with `of ![![...]]`.
 
 ## Examples
@@ -107,7 +105,7 @@ end Parser
 
 variable (a b : ℕ)
 
-/-- Use `![...]` notation for displaying a `fin`-indexed matrix, for example:
+/-- Use `![...]` notation for displaying a `Fin`-indexed matrix, for example:
 
 ```
 #eval !![1, 2; 3, 4] + !![3, 4; 5, 6]  -- !![4, 6; 8, 10]
@@ -399,95 +397,63 @@ section One
 
 variable [Zero α] [One α]
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:207:4: warning: unsupported notation `«expr!![ » -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:387:14: unsupported user notation matrix.notation -/
-theorem one_fin_two :
-    (1 : Matrix (Fin 2) (Fin 2) α) =
-      «expr!![ »
-        "./././Mathport/Syntax/Translate/Expr.lean:387:14: unsupported user notation matrix.notation" :=
-  by
+theorem one_fin_two : (1 : Matrix (Fin 2) (Fin 2) α) = !![1, 0; 0, 1] := by
   ext (i j)
   fin_cases i <;> fin_cases j <;> rfl
 #align matrix.one_fin_two Matrix.one_fin_two
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:207:4: warning: unsupported notation `«expr!![ » -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:387:14: unsupported user notation matrix.notation -/
-theorem one_fin_three :
-    (1 : Matrix (Fin 3) (Fin 3) α) =
-      «expr!![ »
-        "./././Mathport/Syntax/Translate/Expr.lean:387:14: unsupported user notation matrix.notation" :=
-  by
+theorem one_fin_three : (1 : Matrix (Fin 3) (Fin 3) α) = !![1, 0, 0; 0, 1, 0; 0, 0, 1] := by
   ext (i j)
   fin_cases i <;> fin_cases j <;> rfl
 #align matrix.one_fin_three Matrix.one_fin_three
 
 end One
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:207:4: warning: unsupported notation `«expr!![ » -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:387:14: unsupported user notation matrix.notation -/
-theorem eta_fin_two (A : Matrix (Fin 2) (Fin 2) α) :
-    A =
-      «expr!![ »
-        "./././Mathport/Syntax/Translate/Expr.lean:387:14: unsupported user notation matrix.notation" :=
-  by
+theorem eta_fin_two (A : Matrix (Fin 2) (Fin 2) α) : A = !![A 0 0, A 0 1; A 1 0, A 1 1] := by
   ext (i j)
   fin_cases i <;> fin_cases j <;> rfl
 #align matrix.eta_fin_two Matrix.eta_fin_two
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:207:4: warning: unsupported notation `«expr!![ » -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:387:14: unsupported user notation matrix.notation -/
 theorem eta_fin_three (A : Matrix (Fin 3) (Fin 3) α) :
-    A =
-      «expr!![ »
-        "./././Mathport/Syntax/Translate/Expr.lean:387:14: unsupported user notation matrix.notation" :=
-  by
+    A = !![A 0 0, A 0 1, A 0 2;
+           A 1 0, A 1 1, A 1 2;
+           A 2 0, A 2 1, A 2 2] := by
   ext (i j)
   fin_cases i <;> fin_cases j <;> rfl
 #align matrix.eta_fin_three Matrix.eta_fin_three
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:207:4: warning: unsupported notation `«expr!![ » -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:387:14: unsupported user notation matrix.notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:207:4: warning: unsupported notation `«expr!![ » -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:387:14: unsupported user notation matrix.notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:207:4: warning: unsupported notation `«expr!![ » -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:387:14: unsupported user notation matrix.notation -/
 theorem mul_fin_two [AddCommMonoid α] [Mul α] (a₁₁ a₁₂ a₂₁ a₂₂ b₁₁ b₁₂ b₂₁ b₂₂ : α) :
-    «expr!![ »
-          "./././Mathport/Syntax/Translate/Expr.lean:387:14: unsupported user notation matrix.notation" ⬝
-        «expr!![ »
-          "./././Mathport/Syntax/Translate/Expr.lean:387:14: unsupported user notation matrix.notation" =
-      «expr!![ »
-        "./././Mathport/Syntax/Translate/Expr.lean:387:14: unsupported user notation matrix.notation" :=
-  by
+    !![a₁₁, a₁₂;
+       a₂₁, a₂₂] ⬝ !![b₁₁, b₁₂;
+                      b₂₁, b₂₂] = !![a₁₁ * b₁₁ + a₁₂ * b₂₁, a₁₁ * b₁₂ + a₁₂ * b₂₂;
+                                     a₂₁ * b₁₁ + a₂₂ * b₂₁, a₂₁ * b₁₂ + a₂₂ * b₂₂] := by
   ext (i j)
   fin_cases i <;> fin_cases j <;> simp [Matrix.mul, dotProduct, Fin.sum_univ_succ]
 #align matrix.mul_fin_two Matrix.mul_fin_two
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:207:4: warning: unsupported notation `«expr!![ » -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:387:14: unsupported user notation matrix.notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:207:4: warning: unsupported notation `«expr!![ » -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:387:14: unsupported user notation matrix.notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:207:4: warning: unsupported notation `«expr!![ » -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:387:14: unsupported user notation matrix.notation -/
 theorem mul_fin_three [AddCommMonoid α] [Mul α]
     (a₁₁ a₁₂ a₁₃ a₂₁ a₂₂ a₂₃ a₃₁ a₃₂ a₃₃ b₁₁ b₁₂ b₁₃ b₂₁ b₂₂ b₂₃ b₃₁ b₃₂ b₃₃ : α) :
-    «expr!![ »
-          "./././Mathport/Syntax/Translate/Expr.lean:387:14: unsupported user notation matrix.notation" ⬝
-        «expr!![ »
-          "./././Mathport/Syntax/Translate/Expr.lean:387:14: unsupported user notation matrix.notation" =
-      «expr!![ »
-        "./././Mathport/Syntax/Translate/Expr.lean:387:14: unsupported user notation matrix.notation" :=
-  by
+    !![a₁₁, a₁₂, a₁₃;
+       a₂₁, a₂₂, a₂₃;
+       a₃₁, a₃₂, a₃₃] ⬝ !![b₁₁, b₁₂, b₁₃;
+                           b₂₁, b₂₂, b₂₃;
+                           b₃₁, b₃₂, b₃₃] =
+    !![a₁₁*b₁₁ + a₁₂*b₂₁ + a₁₃*b₃₁, a₁₁*b₁₂ + a₁₂*b₂₂ + a₁₃*b₃₂, a₁₁*b₁₃ + a₁₂*b₂₃ + a₁₃*b₃₃;
+       a₂₁*b₁₁ + a₂₂*b₂₁ + a₂₃*b₃₁, a₂₁*b₁₂ + a₂₂*b₂₂ + a₂₃*b₃₂, a₂₁*b₁₃ + a₂₂*b₂₃ + a₂₃*b₃₃;
+       a₃₁*b₁₁ + a₃₂*b₂₁ + a₃₃*b₃₁, a₃₁*b₁₂ + a₃₂*b₂₂ + a₃₃*b₃₂, a₃₁*b₁₃ + a₃₂*b₂₃ + a₃₃*b₃₃] := by
   ext (i j)
   fin_cases i <;> fin_cases j <;> simp [Matrix.mul, dotProduct, Fin.sum_univ_succ, ← add_assoc]
 #align matrix.mul_fin_three Matrix.mul_fin_three
 
 theorem vec2_eq {a₀ a₁ b₀ b₁ : α} (h₀ : a₀ = b₀) (h₁ : a₁ = b₁) : ![a₀, a₁] = ![b₀, b₁] := by
   subst_vars
+  rfl
 #align matrix.vec2_eq Matrix.vec2_eq
 
 theorem vec3_eq {a₀ a₁ a₂ b₀ b₁ b₂ : α} (h₀ : a₀ = b₀) (h₁ : a₁ = b₁) (h₂ : a₂ = b₂) :
-    ![a₀, a₁, a₂] = ![b₀, b₁, b₂] := by subst_vars
+    ![a₀, a₁, a₂] = ![b₀, b₁, b₂] := by
+  subst_vars
+  rfl
 #align matrix.vec3_eq Matrix.vec3_eq
 
 theorem vec2_add [Add α] (a₀ a₁ b₀ b₁ : α) : ![a₀, a₁] + ![b₀, b₁] = ![a₀ + b₀, a₁ + b₁] := by
@@ -499,8 +465,8 @@ theorem vec3_add [Add α] (a₀ a₁ a₂ b₀ b₁ b₂ : α) :
   rw [cons_add_cons, cons_add_cons, cons_add_cons, empty_add_empty]
 #align matrix.vec3_add Matrix.vec3_add
 
-theorem smul_vec2 {R : Type _} [SMul R α] (x : R) (a₀ a₁ : α) : x • ![a₀, a₁] = ![x • a₀, x • a₁] :=
-  by rw [smul_cons, smul_cons, smul_empty]
+theorem smul_vec2 {R : Type _} [SMul R α] (x : R) (a₀ a₁ : α) :
+    x • ![a₀, a₁] = ![x • a₀, x • a₁] := by rw [smul_cons, smul_cons, smul_empty]
 #align matrix.smul_vec2 Matrix.smul_vec2
 
 theorem smul_vec3 {R : Type _} [SMul R α] (x : R) (a₀ a₁ a₂ : α) :
