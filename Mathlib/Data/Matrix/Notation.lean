@@ -111,14 +111,15 @@ variable (a b : ℕ)
 #eval !![1, 2; 3, 4] + !![3, 4; 5, 6]  -- !![4, 6; 8, 10]
 ```
 -/
-instance [Repr α] : Repr (Matrix (Fin m) (Fin n) α) where
+instance repr [Repr α] : Repr (Matrix (Fin m) (Fin n) α) where
   reprPrec f _p :=
     (Std.Format.bracket "!![" · "]") <|
       (Std.Format.joinSep · (";" ++ Std.Format.line)) <|
         (List.finRange m).map fun i =>
           Std.Format.fill <|  -- wrap line in a single place rather than all at once
             (Std.Format.joinSep · ("," ++ Std.Format.line)) <|
-            (List.finRange n).map fun j => repr (f i j)
+            (List.finRange n).map fun j => _root_.repr (f i j)
+#align matrix.has_repr Matrix.repr
 
 @[simp]
 theorem cons_val' (v : n' → α) (B : Fin m → n' → α) (i j) :
