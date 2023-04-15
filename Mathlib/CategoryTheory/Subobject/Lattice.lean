@@ -471,7 +471,8 @@ theorem inf_eq_map_pullback {A : C} (f₁ : MonoOver A) (f₂ : Subobject A) :
   inf_eq_map_pullback' f₁ f₂
 #align category_theory.subobject.inf_eq_map_pullback CategoryTheory.Subobject.inf_eq_map_pullback
 
-theorem prod_eq_inf {A : C} {f₁ f₂ : Subobject A} [HasBinaryProduct f₁ f₂] : (f₁ ⨯ f₂) = f₁ ⊓ f₂ := by
+theorem prod_eq_inf {A : C} {f₁ f₂ : Subobject A} [HasBinaryProduct f₁ f₂] :
+    (f₁ ⨯ f₂) = f₁ ⊓ f₂ := by
   apply le_antisymm
   . refine' le_inf _ _ _ (Limits.prod.fst.le) (Limits.prod.snd.le)
   . apply leOfHom
