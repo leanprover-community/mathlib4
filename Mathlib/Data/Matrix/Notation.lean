@@ -80,25 +80,26 @@ end toExpr
 section Parser
 open Lean Elab Term Macro TSyntax
 
-syntax "!![" sepBy1(sepBy1(term, ","), ";") "]" : term
+syntax "!![" sepBy1(sepBy1(term, ",", ", ", allowTrailingSep),
+              ";", "; ", allowTrailingSep) "]" : term
 syntax "!![" ";"+ "]" : term
 syntax "!![" ","+ "]" : term
 syntax "!![" "]" : term
 
-private def _root_.Nat.toSyntax (n : ℕ) : Term := ⟨.node .none `num #[.atom .none (toString n)]⟩
-
 macro_rules
-  | `(!![$[$[$columns],*];*]) => do
-    let rowVecs ← columns.mapM fun column : Array Term => do
-      unless column.size = columns[0]!.size do
+  | `(!![$[$[$rows],*];*]) => do
+    let m := rows.size
+    let n := rows[0]!.size
+    let rowVecs ← rows.mapM fun row : Array Term => do
+      unless row.size = n do
         Macro.throwError "Rows must be of equal length"
-      `(![$column,*])
-    `(@Matrix.of (Fin $(columns.size.toSyntax)) (Fin $(columns[0]!.size.toSyntax)) _ ![$rowVecs,*])
+      `(![$row,*])
+    `(@Matrix.of (Fin $(quote m)) (Fin $(quote n)) _ ![$rowVecs,*])
   | `(!![$[;%$semicolons]*]) => do
     let emptyVec ← `(![])
     let emptyVecs := semicolons.map (fun _ => emptyVec)
-    `(@Matrix.of (Fin $(semicolons.size.toSyntax)) (Fin 0) _ ![$emptyVecs,*])
-  | `(!![$[,%$commas]*]) => `(@Matrix.of (Fin 0) (Fin $(commas.size.toSyntax)) _ ![])
+    `(@Matrix.of (Fin $(quote semicolons.size)) (Fin 0) _ ![$emptyVecs,*])
+  | `(!![$[,%$commas]*]) => `(@Matrix.of (Fin 0) (Fin $(quote commas.size)) _ ![])
   | `(!![]) => `(@Matrix.of (Fin 0) (Fin 0) _ ![])
 
 end Parser

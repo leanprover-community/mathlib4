@@ -24,25 +24,35 @@ section dimensions
 -- set_option pp.universes true
 -- set_option pp.all true
 
-open Lean in
-def getDims (e : Lean.TSyntax `term) : Lean.MetaM (Q(Nat) × Q(Nat)) :=
-do
-  let elem_t ← mkFreshExprMVarQ q(Type)
-  let e ← Lean.Elab.Term.elabTerm e (some q(Matrix _ _ $elem_t)) true false
-  let t ← Lean.Meta.inferType e
-  let ~q(Matrix (Fin $m) (Fin $n) $elem_t) ← t | failure
-  return (m, n)
+open Lean Meta Elab in
+def getDims (me : TermElabM Term) : TermElabM (Q(Nat) × Q(Nat)) := do
+  let e ← me
+  let elem_t ← mkFreshExprMVar (mkSort levelOne)
+  let m ← mkFreshExprMVar (mkConst ``Nat)
+  let n ← mkFreshExprMVar (mkConst ``Nat)
+  let matrix_t := mkAppN (mkConst ``Matrix [levelZero, levelZero, levelZero])
+                    #[mkApp (mkConst ``Fin) m, mkApp (mkConst ``Fin) n, elem_t]
+  let _ ← Elab.Term.elabTerm e (some matrix_t)
+  Elab.Term.synthesizeSyntheticMVarsUsingDefault
+  let m ← instantiateMVars m
+  let n ← instantiateMVars n
+  if m.hasMVar || n.hasMVar then
+    throwError "indices have metavariables"
+  return (← instantiateMVars m, ← instantiateMVars n)
+
+open Lean Elab in
+def run (x : TermElabM α) : Command.CommandElabM α := Command.liftTermElabM x
 
 -- we test equality of expressions here to ensure that we have `2` and not `1.succ` in the type
-run_cmd do let d ← getDims ``(!![]);        guard $ d = (q(0), q(0))
-run_cmd do let d ← getDims ``(!![;]);       guard $ d = (q(1), q(0))
-run_cmd do let d ← getDims ``(!![;;]);      guard $ d = (q(2), q(0))
-run_cmd do let d ← getDims ``(!![,]);       guard $ d = (q(0), q(1))
-run_cmd do let d ← getDims ``(!![,,]);      guard $ d = (q(0), q(2))
-run_cmd do let d ← getDims ``(!![1]);       guard $ d = (q(1), q(1))
-run_cmd do let d ← getDims ``(!![1,]);      guard $ d = (q(1), q(1))
-run_cmd do let d ← getDims ``(!![1;]);      guard $ d = (q(1), q(1))
-run_cmd do let d ← getDims ``(!![1,2;3,4]); guard $ d = (q(2), q(2))
+run_cmd run do let d ← getDims ``(!![]);        guard $ d == (q(0), q(0))
+run_cmd run do let d ← getDims ``(!![;]);       guard $ d == (q(1), q(0))
+run_cmd run do let d ← getDims ``(!![;;]);      guard $ d == (q(2), q(0))
+run_cmd run do let d ← getDims ``(!![,]);       guard $ d == (q(0), q(1))
+run_cmd run do let d ← getDims ``(!![,,]);      guard $ d == (q(0), q(2))
+run_cmd run do let d ← getDims ``(!![1]);       guard $ d == (q(1), q(1))
+run_cmd run do let d ← getDims ``(!![1,]);      guard $ d == (q(1), q(1))
+run_cmd run do let d ← getDims ``(!![1;]);      guard $ d == (q(1), q(1))
+run_cmd run do let d ← getDims ``(!![1,2;3,4]); guard $ d == (q(2), q(2))
 
 end dimensions
 
