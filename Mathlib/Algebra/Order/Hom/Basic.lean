@@ -200,15 +200,16 @@ export AddGroupNormClass (eq_zero_of_map_eq_zero)
 
 export GroupNormClass (eq_one_of_map_eq_zero)
 
-attribute [simp, to_additive map_zero] map_one_eq_zero
+attribute [simp] map_one_eq_zero -- porting note: `to_additive` translation already exists
 
 attribute [simp] map_neg_eq_map
 
-attribute [simp, to_additive] map_inv_eq_map
+attribute [simp] map_inv_eq_map -- porting note: `to_additive` translation already exists
 
-attribute [to_additive] GroupSeminormClass.toMulLeAddHomClass
+attribute [to_additive] GroupSeminormClass.toMulLEAddHomClass
 
-attribute [to_additive] GroupNormClass.toGroupSeminormClass
+-- porting note: `to_additive` translation already exists
+-- attribute [to_additive] GroupNormClass.toGroupSeminormClass
 
 -- See note [lower instance priority]
 instance (priority := 100) AddGroupSeminormClass.toZeroHomClass [AddGroup α]
