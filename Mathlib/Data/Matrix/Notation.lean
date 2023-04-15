@@ -80,59 +80,28 @@ protected instance toExpr [ToLevel.{u}] [ToLevel.{uₘ}] [ToLevel.{uₙ}]
 end toExpr
 
 section Parser
+open Lean Elab Term Macro TSyntax
 
-open Lean
+syntax "!![" sepBy1(sepBy1(term, ","), ";") "]" : term
+syntax "!![" ";"+ "]" : term
+syntax "!![" ","+ "]" : term
+syntax "!![" "]" : term
 
-open Lean.Parser
+private def _root_.Nat.toSyntax (n : ℕ) : Term := ⟨.node .none `num #[.atom .none (toString n)]⟩
 
-open Interactive
-
-open Interactive.Types
-
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/-- Parse the entries of a matrix -/
-unsafe def entry_parser {α : Type} (p : parser α) : parser (Σm n, Fin m → Fin n → α) := do
-  let-- a list of lists if the matrix has at least one row, or the number of columns if the matrix has
-  -- zero rows.
-  p :
-    parser (Sum (List (List α)) ℕ) :=-- empty rows
-        Sum.inl <$>
-        ((pure [] <* tk ";").repeat_at_least 1 <|>
-          (sep_by_trailing (tk ";") <| sep_by_trailing (tk ",") p)) <|>
-      Sum.inr <$> List.length <$> many (tk ",")
-  let which
-    ←-- empty columns
-      p
-  match which with
-    | Sum.inl l => do
-      let h::tl ← pure l
-      let n := h
-      let l : List (Vector α n) ←
-        l fun row =>
-            if h : row = n then pure (⟨row, h⟩ : Vector α n)
-            else interaction_monad.fail "Rows must be of equal length"
-      pure ⟨l, n, fun i j => (l _ i).get? j⟩
-    | Sum.inr n => pure ⟨0, n, finZeroElim⟩
-#align matrix.entry_parser matrix.entry_parser
-
--- Lean can't find this instance without some help. We only need it available in `Type 0`, and it is
--- a massive amount of effort to make it universe-polymorphic.
-@[instance]
-unsafe def sigma_sigma_fin_matrix_has_reflect {α : Type} [has_reflect α] [reflected _ α] :
-    has_reflect (Σm n : ℕ, Fin m → Fin n → α) :=
-  @sigma.reflect.{0, 0} _ _ ℕ (fun m => Σn, Fin m → Fin n → α) _ _ _ fun i =>
-    @sigma.reflect.{0, 0} _ _ ℕ _ _ _ _ fun j => inferInstance
-#align matrix.sigma_sigma_fin_matrix_has_reflect matrix.sigma_sigma_fin_matrix_has_reflect
-
-/-- `!![a, b; c, d]` notation for matrices indexed by `fin m` and `fin n`. See the module docstring
-for details. -/
-@[user_notation]
-unsafe def notation (_ : parse <| tk "!![")
-    (val : parse (entry_parser (parser.pexpr 1) <* tk "]")) : parser pexpr := do
-  let ⟨m, n, entries⟩ := val
-  let entry_vals := pi_fin.to_pexpr (pi_fin.to_pexpr ∘ entries)
-  pure (``(@Matrix.of (Fin $(q(m))) (Fin $(q(n))) _).app entry_vals)
-#align matrix.notation matrix.notation
+macro_rules
+  | `(!![$[$[$columns],*];*]) => do
+    let rowVecs ← columns.mapM fun column : Array Term => do
+      unless column.size = columns[0]!.size do
+        Macro.throwError "Rows must be of equal length"
+      `(![$column,*])
+    `(@Matrix.of (Fin $(columns.size.toSyntax)) (Fin $(columns[0]!.size.toSyntax)) _ ![$rowVecs,*])
+  | `(!![$[;%$semicolons]*]) => do
+    let emptyVec ← `(![])
+    let emptyVecs := semicolons.map (fun _ => emptyVec)
+    `(@Matrix.of (Fin $(semicolons.size.toSyntax)) (Fin 0) _ ![$emptyVecs,*])
+  | `(!![$[,%$commas]*]) => `(@Matrix.of (Fin 0) (Fin $(commas.size.toSyntax)) _ ![])
+  | `(!![]) => `(@Matrix.of (Fin 0) (Fin 0) _ ![])
 
 end Parser
 
