@@ -16,7 +16,7 @@ import Mathlib.LinearAlgebra.Basis
 # (Semi-)linear isometries
 
 In this file we define `LinearIsometry σ₁₂ E E₂` (notation: `E →ₛₗᵢ[σ₁₂] E₂`) to be a semilinear
-isometric embedding of `E` into `E₂` and `linear_isometry_equiv` (notation: `E ≃ₛₗᵢ[σ₁₂] E₂`) to be
+isometric embedding of `E` into `E₂` and `LinearIsometryEquiv` (notation: `E ≃ₛₗᵢ[σ₁₂] E₂`) to be
 a semilinear isometric equivalence between `E` and `E₂`.  The notation for the associated purely
 linear concepts is `E →ₗᵢ[R] E₂`, `E ≃ₗᵢ[R] E₂`, and `E →ₗᵢ⋆[R] E₂`, `E ≃ₗᵢ⋆[R] E₂` for
 the star-linear versions.
@@ -24,7 +24,7 @@ the star-linear versions.
 We also prove some trivial lemmas and provide convenience constructors.
 
 Since a lot of elementary properties don't require `‖x‖ = 0 → x = 0` we start setting up the
-theory for `seminormed_add_comm_group` and we specialize to `normed_add_comm_group` when needed.
+theory for `SeminormedAddCommGroup` and we specialize to `NormedAddCommGroup` when needed.
 -/
 
 
@@ -50,13 +50,10 @@ structure LinearIsometry (σ₁₂ : R →+* R₂) (E E₂ : Type _) [Seminormed
   norm_map' : ∀ x, ‖toLinearMap x‖ = ‖x‖
 #align linear_isometry LinearIsometry
 
--- mathport name: «expr →ₛₗᵢ[ ] »
 notation:25 E " →ₛₗᵢ[" σ₁₂:25 "] " E₂:0 => LinearIsometry σ₁₂ E E₂
 
--- mathport name: «expr →ₗᵢ[ ] »
 notation:25 E " →ₗᵢ[" R:25 "] " E₂:0 => LinearIsometry (RingHom.id R) E E₂
 
--- mathport name: «expr →ₗᵢ⋆[ ] »
 notation:25 E " →ₗᵢ⋆[" R:25 "] " E₂:0 => LinearIsometry (starRingEnd R) E E₂
 
 /-- `SemilinearIsometryClass F σ E E₂` asserts `F` is a type of bundled `σ`-semilinear isometries
@@ -77,7 +74,7 @@ class SemilinearIsometryClass (𝓕 : Type _) {R R₂ : outParam (Type _)} [Semi
 /-- `LinearIsometryClass F R E E₂` asserts `F` is a type of bundled `R`-linear isometries
 `M → M₂`.
 
-This is an abbreviation for `semilinear_isometry_class F (ring_hom.id R) E E₂`.
+This is an abbreviation for `SemilinearIsometryClass F (RingHom.id R) E E₂`.
 -/
 abbrev LinearIsometryClass (𝓕 : Type _) (R E E₂ : outParam (Type _)) [Semiring R]
     [SeminormedAddCommGroup E] [SeminormedAddCommGroup E₂] [Module R E] [Module R E₂] :=
@@ -155,7 +152,7 @@ instance : SemilinearIsometryClass (E →ₛₗᵢ[σ₁₂] E₂) σ₁₂ E E�
   map_smulₛₗ f := map_smulₛₗ f.toLinearMap
   norm_map f := f.norm_map'
 
-/-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_to_fun`
+/-- Helper instance for when there's too many metavariables to apply `FunLike.has_coe_to_fun`
 directly.
 -/
 instance : CoeFun (E →ₛₗᵢ[σ₁₂] E₂) fun _ => E → E₂ :=
@@ -184,7 +181,7 @@ def Simps.apply (σ₁₂ : R →+* R₂) (E E₂ : Type _) [SeminormedAddCommGr
   h
 #align linear_isometry.simps.apply LinearIsometry.Simps.apply
 
-initialize_simps_projections LinearIsometry (to_linear_map_to_fun → apply)
+initialize_simps_projections LinearIsometry (toLinearMap_toFun → apply)
 
 @[ext]
 theorem ext {f g : E →ₛₗᵢ[σ₁₂] E₂} (h : ∀ x, f x = g x) : f = g :=
@@ -242,18 +239,18 @@ theorem nnnorm_map (x : E) : ‖f x‖₊ = ‖x‖₊ :=
 #align linear_isometry.nnnorm_map LinearIsometry.nnnorm_map
 
 protected theorem isometry : Isometry f :=
-  AddMonoidHomClass.isometry_of_norm _ (norm_map _)
+  AddMonoidHomClass.isometry_of_norm f.toLinearMap (norm_map _)
 #align linear_isometry.isometry LinearIsometry.isometry
 
 @[simp]
 theorem isComplete_image_iff [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] (f : 𝓕) {s : Set E} :
     IsComplete (f '' s) ↔ IsComplete s :=
-  isComplete_image_iff (SemilinearIsometryClass.isometry f).UniformInducing
+  isComplete_image_iff (SemilinearIsometryClass.isometry f).uniformInducing
 #align linear_isometry.is_complete_image_iff LinearIsometry.isComplete_image_iff
 
 theorem isComplete_map_iff [RingHomSurjective σ₁₂] {p : Submodule R E} :
     IsComplete (p.map f.toLinearMap : Set E₂) ↔ IsComplete (p : Set E) :=
-  f.isComplete_image_iff
+  isComplete_image_iff f
 #align linear_isometry.is_complete_map_iff LinearIsometry.isComplete_map_iff
 
 theorem isComplete_map_iff' [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] (f : 𝓕) [RingHomSurjective σ₁₂]
@@ -273,12 +270,12 @@ instance completeSpace_map' [RingHomSurjective σ₁₂] (p : Submodule R E) [Co
 
 @[simp]
 theorem dist_map (x y : E) : dist (f x) (f y) = dist x y :=
-  f.Isometry.dist_eq x y
+  f.isometry.dist_eq x y
 #align linear_isometry.dist_map LinearIsometry.dist_map
 
 @[simp]
 theorem edist_map (x y : E) : edist (f x) (f y) = edist x y :=
-  f.Isometry.edist_eq x y
+  f.isometry.edist_eq x y
 #align linear_isometry.edist_map LinearIsometry.edist_map
 
 protected theorem injective : Injective f₁ :=
@@ -287,48 +284,48 @@ protected theorem injective : Injective f₁ :=
 
 @[simp]
 theorem map_eq_iff {x y : F} : f₁ x = f₁ y ↔ x = y :=
-  f₁.Injective.eq_iff
+  f₁.injective.eq_iff
 #align linear_isometry.map_eq_iff LinearIsometry.map_eq_iff
 
 theorem map_ne {x y : F} (h : x ≠ y) : f₁ x ≠ f₁ y :=
-  f₁.Injective.Ne h
+  f₁.injective.ne h
 #align linear_isometry.map_ne LinearIsometry.map_ne
 
 protected theorem lipschitz : LipschitzWith 1 f :=
-  f.Isometry.lipschitz
+  f.isometry.lipschitz
 #align linear_isometry.lipschitz LinearIsometry.lipschitz
 
 protected theorem antilipschitz : AntilipschitzWith 1 f :=
-  f.Isometry.antilipschitz
+  f.isometry.antilipschitz
 #align linear_isometry.antilipschitz LinearIsometry.antilipschitz
 
 @[continuity]
 protected theorem continuous : Continuous f :=
-  f.Isometry.Continuous
+  f.isometry.continuous
 #align linear_isometry.continuous LinearIsometry.continuous
 
 @[simp]
 theorem preimage_ball (x : E) (r : ℝ) : f ⁻¹' Metric.ball (f x) r = Metric.ball x r :=
-  f.Isometry.preimage_ball x r
+  f.isometry.preimage_ball x r
 #align linear_isometry.preimage_ball LinearIsometry.preimage_ball
 
 @[simp]
 theorem preimage_sphere (x : E) (r : ℝ) : f ⁻¹' Metric.sphere (f x) r = Metric.sphere x r :=
-  f.Isometry.preimage_sphere x r
+  f.isometry.preimage_sphere x r
 #align linear_isometry.preimage_sphere LinearIsometry.preimage_sphere
 
 @[simp]
 theorem preimage_closedBall (x : E) (r : ℝ) :
     f ⁻¹' Metric.closedBall (f x) r = Metric.closedBall x r :=
-  f.Isometry.preimage_closedBall x r
+  f.isometry.preimage_closedBall x r
 #align linear_isometry.preimage_closed_ball LinearIsometry.preimage_closedBall
 
 theorem ediam_image (s : Set E) : EMetric.diam (f '' s) = EMetric.diam s :=
-  f.Isometry.ediam_image s
+  f.isometry.ediam_image s
 #align linear_isometry.ediam_image LinearIsometry.ediam_image
 
 theorem ediam_range : EMetric.diam (range f) = EMetric.diam (univ : Set E) :=
-  f.Isometry.ediam_range
+  f.isometry.ediam_range
 #align linear_isometry.ediam_range LinearIsometry.ediam_range
 
 theorem diam_image (s : Set E) : Metric.diam (f '' s) = Metric.diam s :=
@@ -341,11 +338,11 @@ theorem diam_range : Metric.diam (range f) = Metric.diam (univ : Set E) :=
 
 /-- Interpret a linear isometry as a continuous linear map. -/
 def toContinuousLinearMap : E →SL[σ₁₂] E₂ :=
-  ⟨f.toLinearMap, f.Continuous⟩
+  ⟨f.toLinearMap, f.continuous⟩
 #align linear_isometry.to_continuous_linear_map LinearIsometry.toContinuousLinearMap
 
 theorem toContinuousLinearMap_injective :
-    Function.Injective (toContinuousLinearMap : _ → E →SL[σ₁₂] E₂) := fun x y h =>
+    Function.Injective (toContinuousLinearMap : _ → E →SL[σ₁₂] E₂) := fun x _ h =>
   coe_injective (congr_arg _ h : ⇑x.toContinuousLinearMap = _)
 #align linear_isometry.to_continuous_linear_map_injective LinearIsometry.toContinuousLinearMap_injective
 
@@ -363,12 +360,12 @@ theorem coe_toContinuousLinearMap : ⇑f.toContinuousLinearMap = f :=
 @[simp]
 theorem comp_continuous_iff {α : Type _} [TopologicalSpace α] {g : α → E} :
     Continuous (f ∘ g) ↔ Continuous g :=
-  f.Isometry.comp_continuous_iff
+  f.isometry.comp_continuous_iff
 #align linear_isometry.comp_continuous_iff LinearIsometry.comp_continuous_iff
 
 /-- The identity linear isometry. -/
 def id : E →ₗᵢ[R] E :=
-  ⟨LinearMap.id, fun x => rfl⟩
+  ⟨LinearMap.id, fun _ => rfl⟩
 #align linear_isometry.id LinearIsometry.id
 
 @[simp]
@@ -396,36 +393,28 @@ instance : Inhabited (E →ₗᵢ[R] E) :=
 
 /-- Composition of linear isometries. -/
 def comp (g : E₂ →ₛₗᵢ[σ₂₃] E₃) (f : E →ₛₗᵢ[σ₁₂] E₂) : E →ₛₗᵢ[σ₁₃] E₃ :=
-  ⟨g.toLinearMap.comp f.toLinearMap, fun x => (norm_map g _).trans (norm_map f _)⟩
+  ⟨g.toLinearMap.comp f.toLinearMap, fun _ => (norm_map g _).trans (norm_map f _)⟩
 #align linear_isometry.comp LinearIsometry.comp
-
-include σ₁₃
 
 @[simp]
 theorem coe_comp (g : E₂ →ₛₗᵢ[σ₂₃] E₃) (f : E →ₛₗᵢ[σ₁₂] E₂) : ⇑(g.comp f) = g ∘ f :=
   rfl
 #align linear_isometry.coe_comp LinearIsometry.coe_comp
 
-omit σ₁₃
-
 @[simp]
 theorem id_comp : (id : E₂ →ₗᵢ[R₂] E₂).comp f = f :=
-  ext fun x => rfl
+  ext fun _ => rfl
 #align linear_isometry.id_comp LinearIsometry.id_comp
 
 @[simp]
 theorem comp_id : f.comp id = f :=
-  ext fun x => rfl
+  ext fun _ => rfl
 #align linear_isometry.comp_id LinearIsometry.comp_id
-
-include σ₁₃ σ₂₄ σ₁₄
 
 theorem comp_assoc (f : E₃ →ₛₗᵢ[σ₃₄] E₄) (g : E₂ →ₛₗᵢ[σ₂₃] E₃) (h : E →ₛₗᵢ[σ₁₂] E₂) :
     (f.comp g).comp h = f.comp (g.comp h) :=
   rfl
 #align linear_isometry.comp_assoc LinearIsometry.comp_assoc
-
-omit σ₁₃ σ₂₄ σ₁₄
 
 instance : Monoid (E →ₗᵢ[R] E) where
   one := id
@@ -454,7 +443,7 @@ theorem mul_def (f g : E →ₗᵢ[R] E) : (f * g : E →ₗᵢ[R] E) = f.comp g
 
 end LinearIsometry
 
-/-- Construct a `linear_isometry` from a `linear_map` satisfying `isometry`. -/
+/-- Construct a `LinearIsometry` from a `LinearMap` satisfying `Isometry`. -/
 def LinearMap.toLinearIsometry (f : E →ₛₗ[σ₁₂] E₂) (hf : Isometry f) : E →ₛₗᵢ[σ₁₂] E₂ :=
   { f with
     norm_map' := by
@@ -466,18 +455,18 @@ namespace Submodule
 
 variable {R' : Type _} [Ring R'] [Module R' E] (p : Submodule R' E)
 
-/-- `submodule.subtype` as a `linear_isometry`. -/
+/-- `Submodule.subtype` as a `LinearIsometry`. -/
 def subtypeₗᵢ : p →ₗᵢ[R'] E :=
-  ⟨p.Subtype, fun x => rfl⟩
+  ⟨p.subtype, fun _ => rfl⟩
 #align submodule.subtypeₗᵢ Submodule.subtypeₗᵢ
 
 @[simp]
-theorem coe_subtypeₗᵢ : ⇑p.subtypeₗᵢ = p.Subtype :=
+theorem coe_subtypeₗᵢ : ⇑p.subtypeₗᵢ = p.subtype :=
   rfl
 #align submodule.coe_subtypeₗᵢ Submodule.coe_subtypeₗᵢ
 
 @[simp]
-theorem subtypeₗᵢ_toLinearMap : p.subtypeₗᵢ.toLinearMap = p.Subtype :=
+theorem subtypeₗᵢ_toLinearMap : p.subtypeₗᵢ.toLinearMap = p.subtype :=
   rfl
 #align submodule.subtypeₗᵢ_to_linear_map Submodule.subtypeₗᵢ_toLinearMap
 
@@ -492,22 +481,19 @@ end Submodule
 structure LinearIsometryEquiv (σ₁₂ : R →+* R₂) {σ₂₁ : R₂ →+* R} [RingHomInvPair σ₁₂ σ₂₁]
   [RingHomInvPair σ₂₁ σ₁₂] (E E₂ : Type _) [SeminormedAddCommGroup E] [SeminormedAddCommGroup E₂]
   [Module R E] [Module R₂ E₂] extends E ≃ₛₗ[σ₁₂] E₂ where
-  norm_map' : ∀ x, ‖to_linear_equiv x‖ = ‖x‖
+  norm_map' : ∀ x, ‖toLinearEquiv x‖ = ‖x‖
 #align linear_isometry_equiv LinearIsometryEquiv
 
--- mathport name: «expr ≃ₛₗᵢ[ ] »
 notation:25 E " ≃ₛₗᵢ[" σ₁₂:25 "] " E₂:0 => LinearIsometryEquiv σ₁₂ E E₂
 
--- mathport name: «expr ≃ₗᵢ[ ] »
 notation:25 E " ≃ₗᵢ[" R:25 "] " E₂:0 => LinearIsometryEquiv (RingHom.id R) E E₂
 
--- mathport name: «expr ≃ₗᵢ⋆[ ] »
 notation:25 E " ≃ₗᵢ⋆[" R:25 "] " E₂:0 => LinearIsometryEquiv (starRingEnd R) E E₂
 
-/-- `semilinear_isometry_equiv_class F σ E E₂` asserts `F` is a type of bundled `σ`-semilinear
+/-- `SemilinearIsometryEquivClass F σ E E₂` asserts `F` is a type of bundled `σ`-semilinear
 isometric equivs `E → E₂`.
 
-See also `linear_isometry_equiv_class F R E E₂` for the case where `σ` is the identity map on `R`.
+See also `LinearIsometryEquivClass F R E E₂` for the case where `σ` is the identity map on `R`.
 
 A map `f` between an `R`-module and an `S`-module over a ring homomorphism `σ : R →+* S`
 is semilinear if it satisfies the two properties `f (x + y) = f x + f y` and
@@ -520,10 +506,10 @@ class SemilinearIsometryEquivClass (𝓕 : Type _) {R R₂ : outParam (Type _)} 
   norm_map : ∀ (f : 𝓕) (x : E), ‖f x‖ = ‖x‖
 #align semilinear_isometry_equiv_class SemilinearIsometryEquivClass
 
-/-- `linear_isometry_equiv_class F R E E₂` asserts `F` is a type of bundled `R`-linear isometries
+/-- `LinearIsometryEquivClass F R E E₂` asserts `F` is a type of bundled `R`-linear isometries
 `M → M₂`.
 
-This is an abbreviation for `semilinear_isometry_equiv_class F (ring_hom.id R) E E₂`.
+This is an abbreviation for `SemilinearIsometryEquivClass F (RingHom.id R) E E₂`.
 -/
 abbrev LinearIsometryEquivClass (𝓕 : Type _) (R E E₂ : outParam (Type _)) [Semiring R]
     [SeminormedAddCommGroup E] [SeminormedAddCommGroup E₂] [Module R E] [Module R E₂] :=
@@ -534,17 +520,12 @@ namespace SemilinearIsometryEquivClass
 
 variable (𝓕)
 
-include σ₂₁
-
 -- `σ₂₁` becomes a metavariable, but it's OK since it's an outparam
-@[nolint dangerous_instance]
 instance (priority := 100) [s : SemilinearIsometryEquivClass 𝓕 σ₁₂ E E₂] :
     SemilinearIsometryClass 𝓕 σ₁₂ E E₂ :=
   { s with
-    coe := (coe : 𝓕 → E → E₂)
+    coe := ((↑) : 𝓕 → E → E₂)
     coe_injective' := @FunLike.coe_injective 𝓕 _ _ _ }
-
-omit σ₂₁
 
 end SemilinearIsometryEquivClass
 
@@ -552,10 +533,8 @@ namespace LinearIsometryEquiv
 
 variable (e : E ≃ₛₗᵢ[σ₁₂] E₂)
 
-include σ₂₁
-
 theorem toLinearEquiv_injective : Injective (toLinearEquiv : (E ≃ₛₗᵢ[σ₁₂] E₂) → E ≃ₛₗ[σ₁₂] E₂)
-  | ⟨e, _⟩, ⟨_, _⟩, rfl => rfl
+  | ⟨_, _⟩, ⟨_, _⟩, rfl => rfl
 #align linear_isometry_equiv.to_linear_equiv_injective LinearIsometryEquiv.toLinearEquiv_injective
 
 @[simp]
@@ -578,7 +557,7 @@ instance : SemilinearIsometryEquivClass (E ≃ₛₗᵢ[σ₁₂] E₂) σ₁₂
   map_smulₛₗ e := map_smulₛₗ e.toLinearEquiv
   norm_map e := e.norm_map'
 
-/-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_to_fun`
+/-- Helper instance for when there's too many metavariables to apply `FunLike.hasCoeToFun`
 directly.
 -/
 instance : CoeFun (E ≃ₛₗᵢ[σ₁₂] E₂) fun _ => E → E₂ :=
@@ -611,7 +590,7 @@ protected theorem congr_fun {f g : E ≃ₛₗᵢ[σ₁₂] E₂} (h : f = g) (x
   h ▸ rfl
 #align linear_isometry_equiv.congr_fun LinearIsometryEquiv.congr_fun
 
-/-- Construct a `linear_isometry_equiv` from a `linear_equiv` and two inequalities:
+/-- Construct a `LinearIsometryEquiv` from a `LinearEquiv` and two inequalities:
 `∀ x, ‖e x‖ ≤ ‖x‖` and `∀ y, ‖e.symm y‖ ≤ ‖y‖`. -/
 def ofBounds (e : E ≃ₛₗ[σ₁₂] E₂) (h₁ : ∀ x, ‖e x‖ ≤ ‖x‖) (h₂ : ∀ y, ‖e.symm y‖ ≤ ‖y‖) :
     E ≃ₛₗᵢ[σ₁₂] E₂ :=
@@ -623,7 +602,7 @@ theorem norm_map (x : E) : ‖e x‖ = ‖x‖ :=
   e.norm_map' x
 #align linear_isometry_equiv.norm_map LinearIsometryEquiv.norm_map
 
-/-- Reinterpret a `linear_isometry_equiv` as a `linear_isometry`. -/
+/-- Reinterpret a `LinearIsometryEquiv` as a `LinearIsometry`. -/
 def toLinearIsometry : E →ₛₗᵢ[σ₁₂] E₂ :=
   ⟨e.1, e.2⟩
 #align linear_isometry_equiv.to_linear_isometry LinearIsometryEquiv.toLinearIsometry
@@ -644,12 +623,12 @@ theorem coe_toLinearIsometry : ⇑e.toLinearIsometry = e :=
 #align linear_isometry_equiv.coe_to_linear_isometry LinearIsometryEquiv.coe_toLinearIsometry
 
 protected theorem isometry : Isometry e :=
-  e.toLinearIsometry.Isometry
+  e.toLinearIsometry.isometry
 #align linear_isometry_equiv.isometry LinearIsometryEquiv.isometry
 
-/-- Reinterpret a `linear_isometry_equiv` as an `isometry_equiv`. -/
+/-- Reinterpret a `LinearIsometryEquiv` as an `IsometryEquiv`. -/
 def toIsometryEquiv : E ≃ᵢ E₂ :=
-  ⟨e.toLinearEquiv.toEquiv, e.Isometry⟩
+  ⟨e.toLinearEquiv.toEquiv, e.isometry⟩
 #align linear_isometry_equiv.to_isometry_equiv LinearIsometryEquiv.toIsometryEquiv
 
 theorem toIsometryEquiv_injective :
@@ -669,11 +648,11 @@ theorem coe_toIsometryEquiv : ⇑e.toIsometryEquiv = e :=
 #align linear_isometry_equiv.coe_to_isometry_equiv LinearIsometryEquiv.coe_toIsometryEquiv
 
 theorem range_eq_univ (e : E ≃ₛₗᵢ[σ₁₂] E₂) : Set.range e = Set.univ := by
-  rw [← coe_to_isometry_equiv]
+  rw [← coe_toIsometryEquiv]
   exact IsometryEquiv.range_eq_univ _
 #align linear_isometry_equiv.range_eq_univ LinearIsometryEquiv.range_eq_univ
 
-/-- Reinterpret a `linear_isometry_equiv` as an `homeomorph`. -/
+/-- Reinterpret a `LinearIsometryEquiv` as an `Homeomorph`. -/
 def toHomeomorph : E ≃ₜ E₂ :=
   e.toIsometryEquiv.toHomeomorph
 #align linear_isometry_equiv.to_homeomorph LinearIsometryEquiv.toHomeomorph
@@ -693,22 +672,22 @@ theorem coe_toHomeomorph : ⇑e.toHomeomorph = e :=
 #align linear_isometry_equiv.coe_to_homeomorph LinearIsometryEquiv.coe_toHomeomorph
 
 protected theorem continuous : Continuous e :=
-  e.Isometry.Continuous
+  e.isometry.continuous
 #align linear_isometry_equiv.continuous LinearIsometryEquiv.continuous
 
 protected theorem continuousAt {x} : ContinuousAt e x :=
-  e.Continuous.ContinuousAt
+  e.continuous.continuousAt
 #align linear_isometry_equiv.continuous_at LinearIsometryEquiv.continuousAt
 
 protected theorem continuousOn {s} : ContinuousOn e s :=
-  e.Continuous.ContinuousOn
+  e.continuous.continuousOn
 #align linear_isometry_equiv.continuous_on LinearIsometryEquiv.continuousOn
 
 protected theorem continuousWithinAt {s x} : ContinuousWithinAt e s x :=
-  e.Continuous.ContinuousWithinAt
+  e.continuous.continuousWithinAt
 #align linear_isometry_equiv.continuous_within_at LinearIsometryEquiv.continuousWithinAt
 
-/-- Interpret a `linear_isometry_equiv` as a continuous linear equiv. -/
+/-- Interpret a `LinearIsometryEquiv` as a `ContinuousLinearEquiv`. -/
 def toContinuousLinearEquiv : E ≃SL[σ₁₂] E₂ :=
   { e.toLinearIsometry.toContinuousLinearMap, e.toHomeomorph with }
 #align linear_isometry_equiv.to_continuous_linear_equiv LinearIsometryEquiv.toContinuousLinearEquiv
@@ -729,18 +708,16 @@ theorem coe_toContinuousLinearEquiv : ⇑e.toContinuousLinearEquiv = e :=
   rfl
 #align linear_isometry_equiv.coe_to_continuous_linear_equiv LinearIsometryEquiv.coe_toContinuousLinearEquiv
 
-omit σ₂₁
-
 variable (R E)
 
-/-- Identity map as a `linear_isometry_equiv`. -/
+/-- Identity map as a `LinearIsometryEquiv`. -/
 def refl : E ≃ₗᵢ[R] E :=
-  ⟨LinearEquiv.refl R E, fun x => rfl⟩
+  ⟨LinearEquiv.refl R E, fun _ => rfl⟩
 #align linear_isometry_equiv.refl LinearIsometryEquiv.refl
 
 /-- Linear isometry equiv between a space and its lift to another universe. -/
 def ulift : ULift E ≃ₗᵢ[R] E :=
-  { ContinuousLinearEquiv.ulift with norm_map' := fun x => rfl }
+  { ContinuousLinearEquiv.ulift with norm_map' := fun _ => rfl }
 #align linear_isometry_equiv.ulift LinearIsometryEquiv.ulift
 
 variable {R E}
@@ -753,7 +730,7 @@ theorem coe_refl : ⇑(refl R E) = id :=
   rfl
 #align linear_isometry_equiv.coe_refl LinearIsometryEquiv.coe_refl
 
-/-- The inverse `linear_isometry_equiv`. -/
+/-- The inverse `LinearIsometryEquiv`. -/
 def symm : E₂ ≃ₛₗᵢ[σ₂₁] E :=
   ⟨e.toLinearEquiv.symm, fun x =>
     (e.norm_map _).symm.trans <| congr_arg norm <| e.toLinearEquiv.apply_symm_apply x⟩
@@ -776,7 +753,7 @@ theorem map_eq_zero_iff {x : E} : e x = 0 ↔ x = 0 :=
 
 @[simp]
 theorem symm_symm : e.symm.symm = e :=
-  ext fun x => rfl
+  ext fun _ => rfl
 #align linear_isometry_equiv.symm_symm LinearIsometryEquiv.symm_symm
 
 @[simp]
@@ -809,17 +786,13 @@ def Simps.symmApply (σ₁₂ : R →+* R₂) {σ₂₁ : R₂ →+* R} [RingHom
   h.symm
 #align linear_isometry_equiv.simps.symm_apply LinearIsometryEquiv.Simps.symmApply
 
-initialize_simps_projections LinearIsometryEquiv (to_linear_equiv_to_fun → apply,
-  to_linear_equiv_inv_fun → symm_apply)
+initialize_simps_projections LinearIsometryEquiv (toLinearEquiv_toFun → apply,
+  toLinearEquiv_invFun → symmApply)
 
-include σ₃₁ σ₃₂
-
-/-- Composition of `linear_isometry_equiv`s as a `linear_isometry_equiv`. -/
+/-- Composition of `LinearIsometryEquiv`s as a `LinearIsometryEquiv`. -/
 def trans (e' : E₂ ≃ₛₗᵢ[σ₂₃] E₃) : E ≃ₛₗᵢ[σ₁₃] E₃ :=
-  ⟨e.toLinearEquiv.trans e'.toLinearEquiv, fun x => (e'.norm_map _).trans (e.norm_map _)⟩
+  ⟨e.toLinearEquiv.trans e'.toLinearEquiv, fun _ => (e'.norm_map _).trans (e.norm_map _)⟩
 #align linear_isometry_equiv.trans LinearIsometryEquiv.trans
-
-include σ₁₃ σ₂₁
 
 @[simp]
 theorem coe_trans (e₁ : E ≃ₛₗᵢ[σ₁₂] E₂) (e₂ : E₂ ≃ₛₗᵢ[σ₂₃] E₃) : ⇑(e₁.trans e₂) = e₂ ∘ e₁ :=
@@ -838,16 +811,14 @@ theorem toLinearEquiv_trans (e' : E₂ ≃ₛₗᵢ[σ₂₃] E₃) :
   rfl
 #align linear_isometry_equiv.to_linear_equiv_trans LinearIsometryEquiv.toLinearEquiv_trans
 
-omit σ₁₃ σ₂₁ σ₃₁ σ₃₂
-
 @[simp]
 theorem trans_refl : e.trans (refl R₂ E₂) = e :=
-  ext fun x => rfl
+  ext fun _ => rfl
 #align linear_isometry_equiv.trans_refl LinearIsometryEquiv.trans_refl
 
 @[simp]
 theorem refl_trans : (refl R E).trans e = e :=
-  ext fun x => rfl
+  ext fun _ => rfl
 #align linear_isometry_equiv.refl_trans LinearIsometryEquiv.refl_trans
 
 @[simp]
@@ -870,8 +841,6 @@ theorem self_comp_symm : e ∘ e.symm = id :=
   e.symm.symm_comp_self
 #align linear_isometry_equiv.self_comp_symm LinearIsometryEquiv.self_comp_symm
 
-include σ₁₃ σ₂₁ σ₃₂ σ₃₁
-
 @[simp]
 theorem symm_trans (e₁ : E ≃ₛₗᵢ[σ₁₂] E₂) (e₂ : E₂ ≃ₛₗᵢ[σ₂₃] E₃) :
     (e₁.trans e₂).symm = e₂.symm.trans e₁.symm :=
@@ -883,14 +852,10 @@ theorem coe_symm_trans (e₁ : E ≃ₛₗᵢ[σ₁₂] E₂) (e₂ : E₂ ≃�
   rfl
 #align linear_isometry_equiv.coe_symm_trans LinearIsometryEquiv.coe_symm_trans
 
-include σ₁₄ σ₄₁ σ₄₂ σ₄₃ σ₂₄
-
 theorem trans_assoc (eEE₂ : E ≃ₛₗᵢ[σ₁₂] E₂) (eE₂E₃ : E₂ ≃ₛₗᵢ[σ₂₃] E₃) (eE₃E₄ : E₃ ≃ₛₗᵢ[σ₃₄] E₄) :
     eEE₂.trans (eE₂E₃.trans eE₃E₄) = (eEE₂.trans eE₂E₃).trans eE₃E₄ :=
   rfl
 #align linear_isometry_equiv.trans_assoc LinearIsometryEquiv.trans_assoc
-
-omit σ₂₁ σ₃₁ σ₄₁ σ₃₂ σ₄₂ σ₄₃ σ₁₃ σ₂₄ σ₁₄
 
 instance : Group (E ≃ₗᵢ[R] E) where
   mul e₁ e₂ := e₂.trans e₁
@@ -929,12 +894,12 @@ theorem inv_def (e : E ≃ₗᵢ[R] E) : (e⁻¹ : E ≃ₗᵢ[R] E) = e.symm :=
 #align linear_isometry_equiv.inv_def LinearIsometryEquiv.inv_def
 
 /-! Lemmas about mixing the group structure with definitions. Because we have multiple ways to
-express `linear_isometry_equiv.refl`, `linear_isometry_equiv.symm`, and
-`linear_isometry_equiv.trans`, we want simp lemmas for every combination.
+express `LinearIsometryEquiv.refl`, `LinearIsometryEquiv.symm`, and
+`LinearIsometryEquiv.trans`, we want simp lemmas for every combination.
 The assumption made here is that if you're using the group structure, you want to preserve it
 after simp.
 
-This copies the approach used by the lemmas near `equiv.perm.trans_one`. -/
+This copies the approach used by the lemmas near `Equiv.Perm.trans_one`. -/
 
 
 @[simp]
@@ -957,11 +922,9 @@ theorem mul_refl (e : E ≃ₗᵢ[R] E) : e * refl _ _ = e :=
   refl_trans _
 #align linear_isometry_equiv.mul_refl LinearIsometryEquiv.mul_refl
 
-include σ₂₁
-
-/-- Reinterpret a `linear_isometry_equiv` as a `continuous_linear_equiv`. -/
+/-- Reinterpret a `LinearIsometryEquiv` as a `ContinuousLinearEquiv`. -/
 instance : CoeTC (E ≃ₛₗᵢ[σ₁₂] E₂) (E ≃SL[σ₁₂] E₂) :=
-  ⟨fun e => ⟨e.toLinearEquiv, e.Continuous, e.toIsometryEquiv.symm.Continuous⟩⟩
+  ⟨fun e => ⟨e.toLinearEquiv, e.continuous, e.toIsometryEquiv.symm.continuous⟩⟩
 
 instance : CoeTC (E ≃ₛₗᵢ[σ₁₂] E₂) (E →SL[σ₁₂] E₂) :=
   ⟨fun e => ↑(e : E ≃SL[σ₁₂] E₂)⟩
@@ -980,8 +943,6 @@ theorem coe_coe' : ((e : E ≃SL[σ₁₂] E₂) : E →SL[σ₁₂] E₂) = e :
 theorem coe_coe'' : ⇑(e : E →SL[σ₁₂] E₂) = e :=
   rfl
 #align linear_isometry_equiv.coe_coe'' LinearIsometryEquiv.coe_coe''
-
-omit σ₂₁
 
 @[simp]
 theorem map_zero : e 0 = 0 :=
@@ -1024,32 +985,32 @@ theorem edist_map (x y : E) : edist (e x) (e y) = edist x y :=
 #align linear_isometry_equiv.edist_map LinearIsometryEquiv.edist_map
 
 protected theorem bijective : Bijective e :=
-  e.1.Bijective
+  e.1.bijective
 #align linear_isometry_equiv.bijective LinearIsometryEquiv.bijective
 
 protected theorem injective : Injective e :=
-  e.1.Injective
+  e.1.injective
 #align linear_isometry_equiv.injective LinearIsometryEquiv.injective
 
 protected theorem surjective : Surjective e :=
-  e.1.Surjective
+  e.1.surjective
 #align linear_isometry_equiv.surjective LinearIsometryEquiv.surjective
 
 @[simp]
 theorem map_eq_iff {x y : E} : e x = e y ↔ x = y :=
-  e.Injective.eq_iff
+  e.injective.eq_iff
 #align linear_isometry_equiv.map_eq_iff LinearIsometryEquiv.map_eq_iff
 
 theorem map_ne {x y : E} (h : x ≠ y) : e x ≠ e y :=
-  e.Injective.Ne h
+  e.injective.ne h
 #align linear_isometry_equiv.map_ne LinearIsometryEquiv.map_ne
 
 protected theorem lipschitz : LipschitzWith 1 e :=
-  e.Isometry.lipschitz
+  e.isometry.lipschitz
 #align linear_isometry_equiv.lipschitz LinearIsometryEquiv.lipschitz
 
 protected theorem antilipschitz : AntilipschitzWith 1 e :=
-  e.Isometry.antilipschitz
+  e.isometry.antilipschitz
 #align linear_isometry_equiv.antilipschitz LinearIsometryEquiv.antilipschitz
 
 theorem image_eq_preimage (s : Set E) : e '' s = e.symm ⁻¹' s :=
@@ -1058,12 +1019,12 @@ theorem image_eq_preimage (s : Set E) : e '' s = e.symm ⁻¹' s :=
 
 @[simp]
 theorem ediam_image (s : Set E) : EMetric.diam (e '' s) = EMetric.diam s :=
-  e.Isometry.ediam_image s
+  e.isometry.ediam_image s
 #align linear_isometry_equiv.ediam_image LinearIsometryEquiv.ediam_image
 
 @[simp]
 theorem diam_image (s : Set E) : Metric.diam (e '' s) = Metric.diam s :=
-  e.Isometry.diam_image s
+  e.isometry.diam_image s
 #align linear_isometry_equiv.diam_image LinearIsometryEquiv.diam_image
 
 @[simp]
@@ -1101,12 +1062,12 @@ variable {α : Type _} [TopologicalSpace α]
 
 @[simp]
 theorem comp_continuousOn_iff {f : α → E} {s : Set α} : ContinuousOn (e ∘ f) s ↔ ContinuousOn f s :=
-  e.Isometry.comp_continuousOn_iff
+  e.isometry.comp_continuousOn_iff
 #align linear_isometry_equiv.comp_continuous_on_iff LinearIsometryEquiv.comp_continuousOn_iff
 
 @[simp]
 theorem comp_continuous_iff {f : α → E} : Continuous (e ∘ f) ↔ Continuous f :=
-  e.Isometry.comp_continuous_iff
+  e.isometry.comp_continuous_iff
 #align linear_isometry_equiv.comp_continuous_iff LinearIsometryEquiv.comp_continuous_iff
 
 instance completeSpace_map (p : Submodule R E) [CompleteSpace p] :
@@ -1114,12 +1075,10 @@ instance completeSpace_map (p : Submodule R E) [CompleteSpace p] :
   e.toLinearIsometry.completeSpace_map' p
 #align linear_isometry_equiv.complete_space_map LinearIsometryEquiv.completeSpace_map
 
-include σ₂₁
-
 /-- Construct a linear isometry equiv from a surjective linear isometry. -/
 noncomputable def ofSurjective (f : F →ₛₗᵢ[σ₁₂] E₂) (hfr : Function.Surjective f) :
     F ≃ₛₗᵢ[σ₁₂] E₂ :=
-  { LinearEquiv.ofBijective f.toLinearMap ⟨f.Injective, hfr⟩ with norm_map' := f.norm_map }
+  { LinearEquiv.ofBijective f.toLinearMap ⟨f.injective, hfr⟩ with norm_map' := f.norm_map }
 #align linear_isometry_equiv.of_surjective LinearIsometryEquiv.ofSurjective
 
 @[simp]
@@ -1149,8 +1108,6 @@ theorem coe_ofLinearIsometry_symm (f : E →ₛₗᵢ[σ₁₂] E₂) (g : E₂ 
     ((ofLinearIsometry f g h₁ h₂).symm : E₂ → E) = (g : E₂ → E) :=
   rfl
 #align linear_isometry_equiv.coe_of_linear_isometry_symm LinearIsometryEquiv.coe_ofLinearIsometry_symm
-
-omit σ₂₁
 
 variable (R)
 
@@ -1197,27 +1154,33 @@ theorem coe_prodAssoc_symm [Module R E₂] [Module R E₃] :
   rfl
 #align linear_isometry_equiv.coe_prod_assoc_symm LinearIsometryEquiv.coe_prodAssoc_symm
 
-/-- If `p` is a submodule that is equal to `⊤`, then `linear_isometry_equiv.of_top p hp` is the
+set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
+/-- If `p` is a submodule that is equal to `⊤`, then `LinearIsometryEquiv.ofTop p hp` is the
 "identity" equivalence between `p` and `E`. -/
-@[simps toLinearEquiv apply symm_apply_coe]
+@[simps! toLinearEquiv apply symm_apply_coe]
 def ofTop {R : Type _} [Ring R] [Module R E] (p : Submodule R E) (hp : p = ⊤) : p ≃ₗᵢ[R] E :=
   { p.subtypeₗᵢ with toLinearEquiv := LinearEquiv.ofTop p hp }
 #align linear_isometry_equiv.of_top LinearIsometryEquiv.ofTop
 
-variable {R E E₂ E₃} {R' : Type _} [Ring R'] [Module R' E] (p q : Submodule R' E)
+variable {R E E₂ E₃} {R' : Type _} [Ring R']
 
-/-- `linear_equiv.of_eq` as a `linear_isometry_equiv`. -/
+variable [Module R' E] (p q : Submodule R' E)
+
+set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
+/-- `LinearEquiv.ofEq` as a `LinearIsometryEquiv`. -/
 def ofEq (hpq : p = q) : p ≃ₗᵢ[R'] q :=
-  { LinearEquiv.ofEq p q hpq with norm_map' := fun x => rfl }
+  { LinearEquiv.ofEq p q hpq with norm_map' := fun _ => rfl }
 #align linear_isometry_equiv.of_eq LinearIsometryEquiv.ofEq
 
 variable {p q}
 
+set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 @[simp]
 theorem coe_ofEq_apply (h : p = q) (x : p) : (ofEq p q h x : E) = x :=
   rfl
 #align linear_isometry_equiv.coe_of_eq_apply LinearIsometryEquiv.coe_ofEq_apply
 
+set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 @[simp]
 theorem ofEq_symm (h : p = q) : (ofEq p q h).symm = ofEq q p h.symm :=
   rfl
@@ -1235,20 +1198,17 @@ theorem Basis.ext_linearIsometry {ι : Type _} (b : Basis ι R E) {f₁ f₂ : E
   LinearIsometry.toLinearMap_injective <| b.ext h
 #align basis.ext_linear_isometry Basis.ext_linearIsometry
 
-include σ₂₁
-
 /-- Two linear isometric equivalences are equal if they are equal on basis vectors. -/
 theorem Basis.ext_linearIsometryEquiv {ι : Type _} (b : Basis ι R E) {f₁ f₂ : E ≃ₛₗᵢ[σ₁₂] E₂}
     (h : ∀ i, f₁ (b i) = f₂ (b i)) : f₁ = f₂ :=
   LinearIsometryEquiv.toLinearEquiv_injective <| b.ext' h
 #align basis.ext_linear_isometry_equiv Basis.ext_linearIsometryEquiv
 
-omit σ₂₁
-
-/-- Reinterpret a `linear_isometry` as a `linear_isometry_equiv` to the range. -/
-@[simps toLinearEquiv apply_coe]
+set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
+/-- Reinterpret a `LinearIsometry` as a `LinearIsometryEquiv` to the range. -/
+@[simps! toLinearEquiv apply_coe]
 noncomputable def LinearIsometry.equivRange {R S : Type _} [Semiring R] [Ring S] [Module S E]
     [Module R F] {σ₁₂ : R →+* S} {σ₂₁ : S →+* R} [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂]
-    (f : F →ₛₗᵢ[σ₁₂] E) : F ≃ₛₗᵢ[σ₁₂] f.toLinearMap.range :=
-  { f with toLinearEquiv := LinearEquiv.ofInjective f.toLinearMap f.Injective }
+    (f : F →ₛₗᵢ[σ₁₂] E) : F ≃ₛₗᵢ[σ₁₂] (LinearMap.range f.toLinearMap) :=
+  { f with toLinearEquiv := LinearEquiv.ofInjective f.toLinearMap f.injective }
 #align linear_isometry.equiv_range LinearIsometry.equivRange
