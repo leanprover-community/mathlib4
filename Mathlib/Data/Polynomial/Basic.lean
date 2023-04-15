@@ -1220,9 +1220,7 @@ section repr
 
 variable [Semiring R]
 
-open Classical
-
-protected instance repr [Repr R] : Repr R[X] :=
+protected instance repr [Repr R] [DecidableEq R] : Repr R[X] :=
   ⟨fun p prec =>
     if p.support = ∅ then "0"
     else
