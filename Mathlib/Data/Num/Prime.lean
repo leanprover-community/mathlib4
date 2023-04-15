@@ -48,7 +48,7 @@ theorem minFacAux_to_nat {fuel : ℕ} {n k : PosNum} (h : Nat.sqrt n < fuel + k.
   induction' fuel with fuel ih generalizing k <;> rw [minFacAux, Nat.minFacAux]
   · rw [if_pos]
     rwa [zero_add, Nat.sqrt_lt] at h
-  rw [←  Mul_to_nat]; simp only [cast_lt, dvd_to_nat, ite_cast]
+  rw [← mul_to_nat]; simp only [cast_lt, dvd_to_nat, ite_cast]
   congr 2
   rw [ih] <;> [congr , convert Nat.lt_succ_of_lt h using 1] <;>
     simp only [_root_.bit1, _root_.bit0, cast_bit1, cast_succ, Nat.succ_eq_add_one, add_assoc,
@@ -93,7 +93,7 @@ instance decidablePrime : DecidablePred PosNum.Prime
     decidable_of_iff' (n = 1)
       (by
         refine' Nat.prime_def_minFac.trans ((and_iff_right _).trans <| eq_comm.trans _)
-        · exact bit0_le_bit0.2 (to_nat_pos _)
+        ·exact bit0_le_bit0.2 (to_nat_pos _)
         rw [← minFac_to_nat, to_nat_inj]
         exact ⟨bit0.inj, congr_arg _⟩)
   | bit1 n =>
