@@ -8,11 +8,11 @@ Authors: Bhavik Mehta, Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Subobject.MonoOver
-import Mathbin.CategoryTheory.Skeletal
-import Mathbin.CategoryTheory.ConcreteCategory.Basic
-import Mathbin.Tactic.ApplyFun
-import Mathbin.Tactic.Elementwise
+import Mathlib.CategoryTheory.Subobject.MonoOver
+import Mathlib.CategoryTheory.Skeletal
+import Mathlib.CategoryTheory.ConcreteCategory.Basic
+import Mathlib.Tactic.ApplyFun
+import Mathlib.Tactic.Elementwise
 
 /-!
 # Subobjects
@@ -114,8 +114,7 @@ section
 attribute [local ext] CategoryTheory.Comma
 
 protected theorem ind {X : C} (p : Subobject X → Prop)
-    (h : ∀ ⦃A : C⦄ (f : A ⟶ X) [Mono f], p (subobject.mk f)) (P : Subobject X) : p P :=
-  by
+    (h : ∀ ⦃A : C⦄ (f : A ⟶ X) [Mono f], p (subobject.mk f)) (P : Subobject X) : p P := by
   apply Quotient.inductionOn'
   intro a
   convert h a.arrow
@@ -206,8 +205,7 @@ instance arrow_mono {X : C} (Y : Subobject X) : Mono Y.arrow :=
 
 @[simp]
 theorem arrow_congr {A : C} (X Y : Subobject A) (h : X = Y) :
-    eqToHom (congr_arg (fun X : Subobject A => (X : C)) h) ≫ Y.arrow = X.arrow :=
-  by
+    eqToHom (congr_arg (fun X : Subobject A => (X : C)) h) ≫ Y.arrow = X.arrow := by
   induction h
   simp
 #align category_theory.subobject.arrow_congr CategoryTheory.Subobject.arrow_congr
@@ -255,8 +253,7 @@ theorem mk_le_mk_of_comm {B A₁ A₂ : C} {f₁ : A₁ ⟶ B} {f₂ : A₂ ⟶ 
 
 @[simp]
 theorem mk_arrow (P : Subobject X) : mk P.arrow = P :=
-  Quotient.inductionOn' P fun Q =>
-    by
+  Quotient.inductionOn' P fun Q => by
     obtain ⟨e⟩ := @Quotient.mk_out' _ (is_isomorphic_setoid _) Q
     refine' Quotient.sound' ⟨mono_over.iso_mk _ _ ≪≫ e⟩ <;> tidy
 #align category_theory.subobject.mk_arrow CategoryTheory.Subobject.mk_arrow
@@ -320,8 +317,7 @@ theorem ofLe_arrow {B : C} {X Y : Subobject B} (h : X ≤ Y) : ofLe X Y h ≫ Y.
   underlying_arrow _
 #align category_theory.subobject.of_le_arrow CategoryTheory.Subobject.ofLe_arrow
 
-instance {B : C} (X Y : Subobject B) (h : X ≤ Y) : Mono (ofLe X Y h) :=
-  by
+instance {B : C} (X Y : Subobject B) (h : X ≤ Y) : Mono (ofLe X Y h) := by
   fconstructor
   intro Z f g w
   replace w := w =≫ Y.arrow
@@ -330,8 +326,7 @@ instance {B : C} (X Y : Subobject B) (h : X ≤ Y) : Mono (ofLe X Y h) :=
 
 theorem ofLe_mk_le_mk_of_comm {B A₁ A₂ : C} {f₁ : A₁ ⟶ B} {f₂ : A₂ ⟶ B} [Mono f₁] [Mono f₂]
     (g : A₁ ⟶ A₂) (w : g ≫ f₂ = f₁) :
-    ofLe _ _ (mk_le_mk_of_comm g w) = (underlyingIso _).Hom ≫ g ≫ (underlyingIso _).inv :=
-  by
+    ofLe _ _ (mk_le_mk_of_comm g w) = (underlyingIso _).Hom ≫ g ≫ (underlyingIso _).inv := by
   ext
   simp [w]
 #align category_theory.subobject.of_le_mk_le_mk_of_comm CategoryTheory.Subobject.ofLe_mk_le_mk_of_comm
@@ -420,15 +415,13 @@ theorem ofMkLeMk_comp_ofMkLeMk {B A₁ A₂ A₃ : C} (f : A₁ ⟶ B) [Mono f] 
 #align category_theory.subobject.of_mk_le_mk_comp_of_mk_le_mk CategoryTheory.Subobject.ofMkLeMk_comp_ofMkLeMk
 
 @[simp]
-theorem ofLe_refl {B : C} (X : Subobject B) : ofLe X X le_rfl = 𝟙 _ :=
-  by
+theorem ofLe_refl {B : C} (X : Subobject B) : ofLe X X le_rfl = 𝟙 _ := by
   apply (cancel_mono X.arrow).mp
   simp
 #align category_theory.subobject.of_le_refl CategoryTheory.Subobject.ofLe_refl
 
 @[simp]
-theorem ofMkLeMk_refl {B A₁ : C} (f : A₁ ⟶ B) [Mono f] : ofMkLeMk f f le_rfl = 𝟙 _ :=
-  by
+theorem ofMkLeMk_refl {B A₁ : C} (f : A₁ ⟶ B) [Mono f] : ofMkLeMk f f le_rfl = 𝟙 _ := by
   apply (cancel_mono f).mp
   simp
 #align category_theory.subobject.of_mk_le_mk_refl CategoryTheory.Subobject.ofMkLeMk_refl
@@ -437,24 +430,21 @@ theorem ofMkLeMk_refl {B A₁ : C} (f : A₁ ⟶ B) [Mono f] : ofMkLeMk f f le_r
 /-- An equality of subobjects gives an isomorphism of the corresponding objects.
 (One could use `underlying.map_iso (eq_to_iso h))` here, but this is more readable.) -/
 @[simps]
-def isoOfEq {B : C} (X Y : Subobject B) (h : X = Y) : (X : C) ≅ (Y : C)
-    where
+def isoOfEq {B : C} (X Y : Subobject B) (h : X = Y) : (X : C) ≅ (Y : C) where
   Hom := ofLe _ _ h.le
   inv := ofLe _ _ h.ge
 #align category_theory.subobject.iso_of_eq CategoryTheory.Subobject.isoOfEq
 
 /-- An equality of subobjects gives an isomorphism of the corresponding objects. -/
 @[simps]
-def isoOfEqMk {B A : C} (X : Subobject B) (f : A ⟶ B) [Mono f] (h : X = mk f) : (X : C) ≅ A
-    where
+def isoOfEqMk {B A : C} (X : Subobject B) (f : A ⟶ B) [Mono f] (h : X = mk f) : (X : C) ≅ A where
   Hom := ofLeMk X f h.le
   inv := ofMkLe f X h.ge
 #align category_theory.subobject.iso_of_eq_mk CategoryTheory.Subobject.isoOfEqMk
 
 /-- An equality of subobjects gives an isomorphism of the corresponding objects. -/
 @[simps]
-def isoOfMkEq {B A : C} (f : A ⟶ B) [Mono f] (X : Subobject B) (h : mk f = X) : A ≅ (X : C)
-    where
+def isoOfMkEq {B A : C} (f : A ⟶ B) [Mono f] (X : Subobject B) (h : mk f = X) : A ≅ (X : C) where
   Hom := ofMkLe f X h.le
   inv := ofLeMk X f h.ge
 #align category_theory.subobject.iso_of_mk_eq CategoryTheory.Subobject.isoOfMkEq
@@ -507,8 +497,7 @@ def lowerAdjunction {A : C} {B : D} {L : MonoOver A ⥤ MonoOver B} {R : MonoOve
 /-- An equivalence between `mono_over A` and `mono_over B` gives an equivalence
 between `subobject A` and `subobject B`. -/
 @[simps]
-def lowerEquivalence {A : C} {B : D} (e : MonoOver A ≌ MonoOver B) : Subobject A ≌ Subobject B
-    where
+def lowerEquivalence {A : C} {B : D} (e : MonoOver A ≌ MonoOver B) : Subobject A ≌ Subobject B where
   Functor := lower e.Functor
   inverse := lower e.inverse
   unitIso := by
@@ -533,8 +522,7 @@ def pullback (f : X ⟶ Y) : Subobject Y ⥤ Subobject X :=
   lower (MonoOver.pullback f)
 #align category_theory.subobject.pullback CategoryTheory.Subobject.pullback
 
-theorem pullback_id (x : Subobject X) : (pullback (𝟙 X)).obj x = x :=
-  by
+theorem pullback_id (x : Subobject X) : (pullback (𝟙 X)).obj x = x := by
   apply Quotient.inductionOn' x
   intro f
   apply Quotient.sound
@@ -542,8 +530,7 @@ theorem pullback_id (x : Subobject X) : (pullback (𝟙 X)).obj x = x :=
 #align category_theory.subobject.pullback_id CategoryTheory.Subobject.pullback_id
 
 theorem pullback_comp (f : X ⟶ Y) (g : Y ⟶ Z) (x : Subobject Z) :
-    (pullback (f ≫ g)).obj x = (pullback f).obj ((pullback g).obj x) :=
-  by
+    (pullback (f ≫ g)).obj x = (pullback f).obj ((pullback g).obj x) := by
   apply Quotient.inductionOn' x
   intro t
   apply Quotient.sound
@@ -563,8 +550,7 @@ def map (f : X ⟶ Y) [Mono f] : Subobject X ⥤ Subobject Y :=
   lower (MonoOver.map f)
 #align category_theory.subobject.map CategoryTheory.Subobject.map
 
-theorem map_id (x : Subobject X) : (map (𝟙 X)).obj x = x :=
-  by
+theorem map_id (x : Subobject X) : (map (𝟙 X)).obj x = x := by
   apply Quotient.inductionOn' x
   intro f
   apply Quotient.sound
@@ -572,8 +558,7 @@ theorem map_id (x : Subobject X) : (map (𝟙 X)).obj x = x :=
 #align category_theory.subobject.map_id CategoryTheory.Subobject.map_id
 
 theorem map_comp (f : X ⟶ Y) (g : Y ⟶ Z) [Mono f] [Mono g] (x : Subobject X) :
-    (map (f ≫ g)).obj x = (map g).obj ((map f).obj x) :=
-  by
+    (map (f ≫ g)).obj x = (map g).obj ((map f).obj x) := by
   apply Quotient.inductionOn' x
   intro t
   apply Quotient.sound
@@ -589,8 +574,7 @@ def mapIso {A B : C} (e : A ≅ B) : Subobject A ≌ Subobject B :=
 -- whose left hand side is not in simp normal form.
 /-- In fact, there's a type level bijection between the subobjects of isomorphic objects,
 which preserves the order. -/
-def mapIsoToOrderIso (e : X ≅ Y) : Subobject X ≃o Subobject Y
-    where
+def mapIsoToOrderIso (e : X ≅ Y) : Subobject X ≃o Subobject Y where
   toFun := (map e.Hom).obj
   invFun := (map e.inv).obj
   left_inv g := by simp_rw [← map_comp, e.hom_inv_id, map_id]
@@ -636,8 +620,7 @@ theorem pullback_map_self [HasPullbacks C] (f : X ⟶ Y) [Mono f] (g : Subobject
 
 theorem map_pullback [HasPullbacks C] {X Y Z W : C} {f : X ⟶ Y} {g : X ⟶ Z} {h : Y ⟶ W} {k : Z ⟶ W}
     [Mono h] [Mono g] (comm : f ≫ h = g ≫ k) (t : IsLimit (PullbackCone.mk f g comm))
-    (p : Subobject Y) : (map g).obj ((pullback f).obj p) = (pullback k).obj ((map h).obj p) :=
-  by
+    (p : Subobject Y) : (map g).obj ((pullback f).obj p) = (pullback k).obj ((map h).obj p) := by
   revert p
   apply Quotient.ind'
   intro a
