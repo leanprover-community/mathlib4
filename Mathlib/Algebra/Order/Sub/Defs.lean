@@ -55,7 +55,8 @@ In other words, `a - b` is the least `c` such that `a ≤ b + c`.
 This is satisfied both by the subtraction in additive ordered groups and by truncated subtraction
 in canonically ordered monoids on many specific types.
 -/
-class OrderedSub (α : Type _) [LE α] [Add α] [Sub α] where
+-- porting note: changed to be a `Prop`
+class OrderedSub (α : Type _) [LE α] [Add α] [Sub α] : Prop where
   /-- `a - b` provides a lower bound on `c` such that `a ≤ c + b`. -/
   tsub_le_iff_right : ∀ a b c : α, a - b ≤ c ↔ a ≤ c + b
 #align has_ordered_sub OrderedSub
