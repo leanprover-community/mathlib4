@@ -8,12 +8,12 @@ Authors: Mario Carneiro, Anne Baanen
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.GroupWithZero.Units.Lemmas
-import Mathbin.Algebra.Order.Field.Defs
-import Mathbin.Algebra.Order.Hom.Basic
-import Mathbin.Algebra.Order.Ring.Abs
-import Mathbin.Algebra.Ring.Commute
-import Mathbin.Algebra.Ring.Regular
+import Mathlib.Algebra.GroupWithZero.Units.Lemmas
+import Mathlib.Algebra.Order.Field.Defs
+import Mathlib.Algebra.Order.Hom.Basic
+import Mathlib.Algebra.Order.Ring.Abs
+import Mathlib.Algebra.Ring.Commute
+import Mathlib.Algebra.Ring.Regular
 
 /-!
 # Absolute values
@@ -59,8 +59,7 @@ lean 3 declaration is
 but is expected to have type
   forall {R : Type.{u1}} {S : Type.{u2}} [_inst_1 : Semiring.{u1} R] [_inst_2 : OrderedSemiring.{u2} S], ZeroHomClass.{max u2 u1, u1, u2} (AbsoluteValue.{u1, u2} R S _inst_1 _inst_2) R S (MonoidWithZero.toZero.{u1} R (Semiring.toMonoidWithZero.{u1} R _inst_1)) (MonoidWithZero.toZero.{u2} S (Semiring.toMonoidWithZero.{u2} S (OrderedSemiring.toSemiring.{u2} S _inst_2)))
 Case conversion may be inaccurate. Consider using '#align absolute_value.zero_hom_class AbsoluteValue.zeroHomClassₓ'. -/
-instance zeroHomClass : ZeroHomClass (AbsoluteValue R S) R S
-    where
+instance zeroHomClass : ZeroHomClass (AbsoluteValue R S) R S where
   coe f := f.toFun
   coe_injective' f g h := by
     obtain ⟨⟨_, _⟩, _⟩ := f
@@ -394,8 +393,7 @@ but is expected to have type
   forall {R : Type.{u1}} {S : Type.{u2}} [_inst_1 : Ring.{u1} R] [_inst_2 : OrderedCommRing.{u2} S] (abv : AbsoluteValue.{u1, u2} R S (Ring.toSemiring.{u1} R _inst_1) (OrderedCommSemiring.toOrderedSemiring.{u2} S (OrderedCommRing.toOrderedCommSemiring.{u2} S _inst_2))) [_inst_3 : NoZeroDivisors.{u2} S (NonUnitalNonAssocRing.toMul.{u2} S (NonAssocRing.toNonUnitalNonAssocRing.{u2} S (Ring.toNonAssocRing.{u2} S (OrderedRing.toRing.{u2} S (OrderedCommRing.toOrderedRing.{u2} S _inst_2))))) (CommMonoidWithZero.toZero.{u2} S (CommSemiring.toCommMonoidWithZero.{u2} S (OrderedCommSemiring.toCommSemiring.{u2} S (OrderedCommRing.toOrderedCommSemiring.{u2} S _inst_2))))] (a : R), Eq.{succ u2} ((fun (x._@.Mathlib.Algebra.Order.Hom.Basic._hyg.99 : R) => S) (Neg.neg.{u1} R (Ring.toNeg.{u1} R _inst_1) a)) (FunLike.coe.{max (succ u1) (succ u2), succ u1, succ u2} (AbsoluteValue.{u1, u2} R S (Ring.toSemiring.{u1} R _inst_1) (OrderedCommSemiring.toOrderedSemiring.{u2} S (OrderedCommRing.toOrderedCommSemiring.{u2} S _inst_2))) R (fun (f : R) => (fun (x._@.Mathlib.Algebra.Order.Hom.Basic._hyg.99 : R) => S) f) (SubadditiveHomClass.toFunLike.{max u1 u2, u1, u2} (AbsoluteValue.{u1, u2} R S (Ring.toSemiring.{u1} R _inst_1) (OrderedCommSemiring.toOrderedSemiring.{u2} S (OrderedCommRing.toOrderedCommSemiring.{u2} S _inst_2))) R S (Distrib.toAdd.{u1} R (NonUnitalNonAssocSemiring.toDistrib.{u1} R (NonAssocSemiring.toNonUnitalNonAssocSemiring.{u1} R (Semiring.toNonAssocSemiring.{u1} R (Ring.toSemiring.{u1} R _inst_1))))) (Distrib.toAdd.{u2} S (NonUnitalNonAssocSemiring.toDistrib.{u2} S (NonAssocSemiring.toNonUnitalNonAssocSemiring.{u2} S (Semiring.toNonAssocSemiring.{u2} S (OrderedSemiring.toSemiring.{u2} S (OrderedCommSemiring.toOrderedSemiring.{u2} S (OrderedCommRing.toOrderedCommSemiring.{u2} S _inst_2))))))) (Preorder.toLE.{u2} S (PartialOrder.toPreorder.{u2} S (OrderedSemiring.toPartialOrder.{u2} S (OrderedCommSemiring.toOrderedSemiring.{u2} S (OrderedCommRing.toOrderedCommSemiring.{u2} S _inst_2))))) (AbsoluteValue.subadditiveHomClass.{u1, u2} R S (Ring.toSemiring.{u1} R _inst_1) (OrderedCommSemiring.toOrderedSemiring.{u2} S (OrderedCommRing.toOrderedCommSemiring.{u2} S _inst_2)))) abv (Neg.neg.{u1} R (Ring.toNeg.{u1} R _inst_1) a)) (FunLike.coe.{max (succ u1) (succ u2), succ u1, succ u2} (AbsoluteValue.{u1, u2} R S (Ring.toSemiring.{u1} R _inst_1) (OrderedCommSemiring.toOrderedSemiring.{u2} S (OrderedCommRing.toOrderedCommSemiring.{u2} S _inst_2))) R (fun (f : R) => (fun (x._@.Mathlib.Algebra.Order.Hom.Basic._hyg.99 : R) => S) f) (SubadditiveHomClass.toFunLike.{max u1 u2, u1, u2} (AbsoluteValue.{u1, u2} R S (Ring.toSemiring.{u1} R _inst_1) (OrderedCommSemiring.toOrderedSemiring.{u2} S (OrderedCommRing.toOrderedCommSemiring.{u2} S _inst_2))) R S (Distrib.toAdd.{u1} R (NonUnitalNonAssocSemiring.toDistrib.{u1} R (NonAssocSemiring.toNonUnitalNonAssocSemiring.{u1} R (Semiring.toNonAssocSemiring.{u1} R (Ring.toSemiring.{u1} R _inst_1))))) (Distrib.toAdd.{u2} S (NonUnitalNonAssocSemiring.toDistrib.{u2} S (NonAssocSemiring.toNonUnitalNonAssocSemiring.{u2} S (Semiring.toNonAssocSemiring.{u2} S (OrderedSemiring.toSemiring.{u2} S (OrderedCommSemiring.toOrderedSemiring.{u2} S (OrderedCommRing.toOrderedCommSemiring.{u2} S _inst_2))))))) (Preorder.toLE.{u2} S (PartialOrder.toPreorder.{u2} S (OrderedSemiring.toPartialOrder.{u2} S (OrderedCommSemiring.toOrderedSemiring.{u2} S (OrderedCommRing.toOrderedCommSemiring.{u2} S _inst_2))))) (AbsoluteValue.subadditiveHomClass.{u1, u2} R S (Ring.toSemiring.{u1} R _inst_1) (OrderedCommSemiring.toOrderedSemiring.{u2} S (OrderedCommRing.toOrderedCommSemiring.{u2} S _inst_2)))) abv a)
 Case conversion may be inaccurate. Consider using '#align absolute_value.map_neg AbsoluteValue.map_negₓ'. -/
 @[simp]
-protected theorem map_neg (a : R) : abv (-a) = abv a :=
-  by
+protected theorem map_neg (a : R) : abv (-a) = abv a := by
   by_cases ha : a = 0; · simp [ha]
   refine'
     (mul_self_eq_mul_self_iff.mp (by rw [← abv.map_mul, neg_mul_neg, abv.map_mul])).resolve_right _
@@ -492,8 +490,7 @@ but is expected to have type
   forall {S : Type.{u1}} [_inst_1 : OrderedSemiring.{u1} S] {R : Type.{u2}} [_inst_2 : Semiring.{u2} R] (abv : AbsoluteValue.{u2, u1} R S _inst_2 _inst_1), IsAbsoluteValue.{u1, u2} S _inst_1 R _inst_2 (FunLike.coe.{max (succ u1) (succ u2), succ u2, succ u1} (AbsoluteValue.{u2, u1} R S _inst_2 _inst_1) R (fun (f : R) => (fun (x._@.Mathlib.Algebra.Order.Hom.Basic._hyg.99 : R) => S) f) (SubadditiveHomClass.toFunLike.{max u1 u2, u2, u1} (AbsoluteValue.{u2, u1} R S _inst_2 _inst_1) R S (Distrib.toAdd.{u2} R (NonUnitalNonAssocSemiring.toDistrib.{u2} R (NonAssocSemiring.toNonUnitalNonAssocSemiring.{u2} R (Semiring.toNonAssocSemiring.{u2} R _inst_2)))) (Distrib.toAdd.{u1} S (NonUnitalNonAssocSemiring.toDistrib.{u1} S (NonAssocSemiring.toNonUnitalNonAssocSemiring.{u1} S (Semiring.toNonAssocSemiring.{u1} S (OrderedSemiring.toSemiring.{u1} S _inst_1))))) (Preorder.toLE.{u1} S (PartialOrder.toPreorder.{u1} S (OrderedSemiring.toPartialOrder.{u1} S _inst_1))) (AbsoluteValue.subadditiveHomClass.{u2, u1} R S _inst_2 _inst_1)) abv)
 Case conversion may be inaccurate. Consider using '#align absolute_value.is_absolute_value AbsoluteValue.isAbsoluteValueₓ'. -/
 /-- A bundled absolute value is an absolute value. -/
-instance AbsoluteValue.isAbsoluteValue (abv : AbsoluteValue R S) : IsAbsoluteValue abv
-    where
+instance AbsoluteValue.isAbsoluteValue (abv : AbsoluteValue R S) : IsAbsoluteValue abv where
   abv_nonneg := abv.NonNeg
   abv_eq_zero _ := abv.eq_zero
   abv_add := abv.add_le
