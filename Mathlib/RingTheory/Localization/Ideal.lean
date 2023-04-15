@@ -119,7 +119,7 @@ theorem isPrime_iff_isPrime_disjoint (J : Ideal S) :
   constructor
   · refine' fun h =>
       ⟨⟨_, _⟩,
-        set.disjoint_left.mpr fun m hm1 hm2 =>
+        Set.disjoint_left.mpr fun m hm1 hm2 =>
           h.ne_top (Ideal.eq_top_of_isUnit_mem _ hm2 (map_units S ⟨m, hm1⟩))⟩
     · refine' fun hJ => h.ne_top _
       rw [eq_top_iff, ← (OrderEmbedding M S).le_iff_le]
@@ -214,9 +214,8 @@ open nonZeroDivisors
 theorem bot_lt_comap_prime [IsDomain R] (hM : M ≤ R⁰) (p : Ideal S) [hpp : p.IsPrime]
     (hp0 : p ≠ ⊥) : ⊥ < Ideal.comap (algebraMap R S) p := by
   haveI : IsDomain S := isDomain_of_le_nonZeroDivisors _ hM
-  convert(orderIsoOfPrime M S).lt_iff_lt.mpr
-      (show (⟨⊥, Ideal.bot_prime⟩ : { p : Ideal S // p.IsPrime }) < ⟨p, hpp⟩ from hp0.bot_lt)
-  exact (Ideal.comap_bot_of_injective (algebraMap R S) (IsLocalization.injective _ hM)).symm
+  rw [← Ideal.comap_bot_of_injective (algebraMap R S) (IsLocalization.injective _ hM)]
+  convert (orderIsoOfPrime M S).lt_iff_lt.mpr (show (⟨⊥, Ideal.bot_prime⟩ : { p : Ideal S // p.IsPrime }) < ⟨p, hpp⟩ from hp0.bot_lt)
 #align is_localization.bot_lt_comap_prime IsLocalization.bot_lt_comap_prime
 
 end CommRing
