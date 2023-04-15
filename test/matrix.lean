@@ -38,7 +38,7 @@ def getDims (me : TermElabM Term) : TermElabM (Q(Nat) × Q(Nat)) := do
   let n ← instantiateMVars n
   if m.hasMVar || n.hasMVar then
     throwError "indices have metavariables"
-  return (← instantiateMVars m, ← instantiateMVars n)
+  return (m, n)
 
 open Lean Elab in
 def run (x : TermElabM α) : Command.CommandElabM α := Command.liftTermElabM x
