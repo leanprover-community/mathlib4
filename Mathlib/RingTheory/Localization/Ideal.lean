@@ -122,13 +122,13 @@ theorem isPrime_iff_isPrime_disjoint (J : Ideal S) :
         Set.disjoint_left.mpr fun m hm1 hm2 =>
           h.ne_top (Ideal.eq_top_of_isUnit_mem _ hm2 (map_units S ⟨m, hm1⟩))⟩
     · refine' fun hJ => h.ne_top _
-      rw [eq_top_iff, ← (OrderEmbedding M S).le_iff_le]
+      rw [eq_top_iff, ← (orderEmbedding M S).le_iff_le]
       exact le_of_eq hJ.symm
     · intro x y hxy
       rw [Ideal.mem_comap, RingHom.map_mul] at hxy
       exact h.mem_or_mem hxy
   · refine' fun h => ⟨fun hJ => h.left.ne_top (eq_top_iff.2 _), _⟩
-    · rwa [eq_top_iff, ← (OrderEmbedding M S).le_iff_le] at hJ
+    · rwa [eq_top_iff, ← (orderEmbedding M S).le_iff_le] at hJ
     · intro x y hxy
       obtain ⟨a, s, ha⟩ := mk'_surjective M x
       obtain ⟨b, t, hb⟩ := mk'_surjective M y
