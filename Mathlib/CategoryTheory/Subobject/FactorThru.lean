@@ -8,8 +8,8 @@ Authors: Bhavik Mehta, Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Subobject.Basic
-import Mathbin.CategoryTheory.Preadditive.Basic
+import Mathlib.CategoryTheory.Subobject.Basic
+import Mathlib.CategoryTheory.Preadditive.Basic
 
 /-!
 # Factoring through subobjects
@@ -129,16 +129,14 @@ theorem factorThru_arrow {X Y : C} (P : Subobject Y) (f : X ⟶ Y) (h : Factors 
 #align category_theory.subobject.factor_thru_arrow CategoryTheory.Subobject.factorThru_arrow
 
 @[simp]
-theorem factorThru_self {X : C} (P : Subobject X) (h) : P.factorThru P.arrow h = 𝟙 P :=
-  by
+theorem factorThru_self {X : C} (P : Subobject X) (h) : P.factorThru P.arrow h = 𝟙 P := by
   ext
   simp
 #align category_theory.subobject.factor_thru_self CategoryTheory.Subobject.factorThru_self
 
 @[simp]
 theorem factorThru_mk_self (f : X ⟶ Y) [Mono f] :
-    (mk f).factorThru f (mk_factors_self f) = (underlyingIso f).inv :=
-  by
+    (mk f).factorThru f (mk_factors_self f) = (underlyingIso f).inv := by
   ext
   simp
 #align category_theory.subobject.factor_thru_mk_self CategoryTheory.Subobject.factorThru_mk_self
@@ -152,8 +150,7 @@ theorem factorThru_comp_arrow {X Y : C} {P : Subobject Y} (f : X ⟶ P) (h) :
 
 @[simp]
 theorem factorThru_eq_zero [HasZeroMorphisms C] {X Y : C} {P : Subobject Y} {f : X ⟶ Y}
-    {h : Factors P f} : P.factorThru f h = 0 ↔ f = 0 :=
-  by
+    {h : Factors P f} : P.factorThru f h = 0 ↔ f = 0 := by
   fconstructor
   · intro w
     replace w := w =≫ P.arrow
@@ -164,8 +161,7 @@ theorem factorThru_eq_zero [HasZeroMorphisms C] {X Y : C} {P : Subobject Y} {f :
 #align category_theory.subobject.factor_thru_eq_zero CategoryTheory.Subobject.factorThru_eq_zero
 
 theorem factorThru_right {X Y Z : C} {P : Subobject Z} (f : X ⟶ Y) (g : Y ⟶ Z) (h : P.Factors g) :
-    f ≫ P.factorThru g h = P.factorThru (f ≫ g) (factors_of_factors_right f h) :=
-  by
+    f ≫ P.factorThru g h = P.factorThru (f ≫ g) (factors_of_factors_right f h) := by
   apply (cancel_mono P.arrow).mp
   simp
 #align category_theory.subobject.factor_thru_right CategoryTheory.Subobject.factorThru_right
@@ -179,8 +175,7 @@ theorem factorThru_zero [HasZeroMorphisms C] {X Y : C} {P : Subobject Y}
 -- `rw factor_thru_le h`, obtaining a subgoal `P.factors f`.
 -- (While the reverse direction looks plausible as a simp lemma, it seems to be unproductive.)
 theorem factorThru_ofLe {Y Z : C} {P Q : Subobject Y} {f : Z ⟶ Y} (h : P ≤ Q) (w : P.Factors f) :
-    Q.factorThru f (factors_of_le f h w) = P.factorThru f w ≫ ofLe P Q h :=
-  by
+    Q.factorThru f (factors_of_le f h w) = P.factorThru f w ≫ ofLe P Q h := by
   ext
   simp
 #align category_theory.subobject.factor_thru_of_le CategoryTheory.Subobject.factorThru_ofLe
@@ -198,8 +193,7 @@ theorem factors_add {X Y : C} {P : Subobject Y} (f g : X ⟶ Y) (wf : P.Factors 
 -- However you can `rw` by it to assert that `f` and `g` factor through `P` separately.
 theorem factorThru_add {X Y : C} {P : Subobject Y} (f g : X ⟶ Y) (w : P.Factors (f + g))
     (wf : P.Factors f) (wg : P.Factors g) :
-    P.factorThru (f + g) w = P.factorThru f wf + P.factorThru g wg :=
-  by
+    P.factorThru (f + g) w = P.factorThru f wf + P.factorThru g wg := by
   ext
   simp
 #align category_theory.subobject.factor_thru_add CategoryTheory.Subobject.factorThru_add
@@ -213,8 +207,7 @@ theorem factors_left_of_factors_add {X Y : C} {P : Subobject Y} (f g : X ⟶ Y)
 theorem factorThru_add_sub_factorThru_right {X Y : C} {P : Subobject Y} (f g : X ⟶ Y)
     (w : P.Factors (f + g)) (wg : P.Factors g) :
     P.factorThru (f + g) w - P.factorThru g wg =
-      P.factorThru f (factors_left_of_factors_add f g w wg) :=
-  by
+      P.factorThru f (factors_left_of_factors_add f g w wg) := by
   ext
   simp
 #align category_theory.subobject.factor_thru_add_sub_factor_thru_right CategoryTheory.Subobject.factorThru_add_sub_factorThru_right
@@ -228,8 +221,7 @@ theorem factors_right_of_factors_add {X Y : C} {P : Subobject Y} (f g : X ⟶ Y)
 theorem factorThru_add_sub_factorThru_left {X Y : C} {P : Subobject Y} (f g : X ⟶ Y)
     (w : P.Factors (f + g)) (wf : P.Factors f) :
     P.factorThru (f + g) w - P.factorThru f wf =
-      P.factorThru g (factors_right_of_factors_add f g w wf) :=
-  by
+      P.factorThru g (factors_right_of_factors_add f g w wf) := by
   ext
   simp
 #align category_theory.subobject.factor_thru_add_sub_factor_thru_left CategoryTheory.Subobject.factorThru_add_sub_factorThru_left
