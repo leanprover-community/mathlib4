@@ -44,20 +44,9 @@ jobs:
 
       - uses: actions/checkout@v2
 
-      # `Mathlib.lean` imports `Mathlib/All.lean` and `Mathlib/Extras.lean`.
-
-      # `Mathlib/All.lean` imports everything *except* the `Extras/` directory,
-      # `Extras.lean`, and `All.lean` itself.
-      # This allows us to do some "post-processing" tasks in `Extras/`,
-      # importing all the rest of the content of mathlib.
-      - name: update Mathlib/All.lean
+      - name: update Mathlib.lean
         run: |
-          find Mathlib -name "*.lean" ! -path "Mathlib/Extras/*" ! -path "Mathlib/All.lean" ! -path "Mathlib/Extras.lean" | LC_ALL=C sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > Mathlib/All.lean
-
-      # `Mathlib/Extras.lean` imports everything in the `Extras/` directory.
-      - name: update Mathlib/Extras.lean
-        run: |
-          find Mathlib/Extras -name "*.lean" | LC_ALL=C sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > Mathlib/Extras.lean
+          find Mathlib -name "*.lean" | LC_ALL=C sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > Mathlib.lean
 
       - name: check that all files are imported
         run: git diff --exit-code
@@ -91,6 +80,9 @@ jobs:
 
       - name: build mathlib
         run: env LEAN_ABORT_ON_PANIC=1 lake build
+
+      - name: build library_search cache
+        run: lake env lean Extras/LibrarySearch.lean
 
       - name: upload cache
         if: always()

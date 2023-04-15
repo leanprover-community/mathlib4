@@ -90,10 +90,11 @@ def buildDiscrTree (name : Name) (constInfo : ConstantInfo)
 
 open System (FilePath)
 
-def cachePath : FilePath := "build" / "extra" / "Mathlib" / "Extras" / "LibrarySearch.extra"
+def cachePath : FilePath := "build" / "lib" / "Extras" / "LibrarySearch.extra"
 
 initialize librarySearchLemmas : DeclCache (DiscrTree (Name × DeclMod) true) ← do
-  if (← cachePath.pathExists) then
+  let useCache ← cachePath.pathExists
+  if useCache then
     return (← Cache.mk ((·.1) <$> (unpickle (DiscrTree (Name × DeclMod) true) cachePath)),
       buildDiscrTree)
   else
