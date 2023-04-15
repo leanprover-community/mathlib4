@@ -1,5 +1,6 @@
 
 import Mathlib.Util.Frontend
+import Mathlib.Order.Height
 
 open Lean System
 
@@ -35,17 +36,17 @@ def findTacticNodes (t : InfoTree) : List (TacticInfo × ContextInfo) :=
   | (.ofTacticInfo i, some ctx) => (i, ctx)
   | _ => none
 
-/--
-Finds all tactic invocations in an `InfoTree`, reporting
-* the `ContextInfo` at that point,
-* the `Syntax` of the tactic
-* the `List MVarId` of goals before and after the tactic
-* and the start and end positions of the tactic in the file.
--/
-def tactics (t : InfoTree) :
-    List (ContextInfo × Syntax × List MVarId × List MVarId × Position × Position) :=
-  t.findTacticNodes.map fun ⟨i, ctx⟩ =>
-    ({ ctx with mctx := i.mctxBefore }, i.stx, i.goalsBefore, i.goalsAfter, stxRange ctx.fileMap i.stx)
+-- /--
+-- Finds all tactic invocations in an `InfoTree`, reporting
+-- * the `ContextInfo` at that point,
+-- * the `Syntax` of the tactic
+-- * the `List MVarId` of goals before and after the tactic
+-- * and the start and end positions of the tactic in the file.
+-- -/
+-- def tactics (t : InfoTree) :
+--     List (ContextInfo × Syntax × List MVarId × List MVarId × Position × Position) :=
+--   t.findTacticNodes.map fun ⟨i, ctx⟩ =>
+--     ({ ctx with mctx := i.mctxBefore }, i.stx, i.goalsBefore, i.goalsAfter, stxRange ctx.fileMap i.stx)
 
 /-- Discard any enclosing `InfoTree.context` layers. -/
 def consumeContext : InfoTree → InfoTree
@@ -75,22 +76,34 @@ def elabDecl? (t : InfoTree) : Option (Name × InfoTree) :=
 
 end Lean.Elab.InfoTree
 
+open Lean Elab
+
 def moduleSource (mod : Name) : IO String := do
   IO.FS.readFile (modToFilePath "." mod "lean")
 
-def compileModule (mod : Name) : IO (Environment × List Message × List Elab.InfoTree) := do
+def compileModule (mod : Name) : IO (Environment × List Message × List InfoTree) := do
   Lean.Elab.IO.processInput (← moduleSource mod) none {}
 
-def moduleInfoTrees (mod : Name) : IO (List Elab.InfoTree) := do
+def moduleInfoTrees (mod : Name) : IO (List InfoTree) := do
   let (_env, _msgs, trees) ← compileModule mod
   return trees
 
 
 /-- Compiles the source file for the named module,
 and returns a list containing the name and generated info tree for each declaration. -/
-def moduleDeclInfoTrees (mod : Name) : IO (List (Name × Elab.InfoTree)) := do
+def moduleDeclInfoTrees (mod : Name) : IO (List (Name × InfoTree)) := do
   let trees ← moduleInfoTrees mod
-  return trees.filterMap Elab.InfoTree.elabDecl?
+  return trees.filterMap InfoTree.elabDecl?
+
+def declInfoTree (decl : Name) : MetaM InfoTree := do
+  match ← findModuleOf? decl with
+  | none => throwError s!"Could not determine the module {decl} was declared in."
+  | some m =>
+      let r ← moduleDeclInfoTrees m
+      -- match r.find? fun p => p.1 = decl with
+      match r.head? with
+      | none => throwError s!"Did not find InfoTree for {decl} in {m}!"
+      | some (_, t) => return t
 
 open Lean.Elab
 
@@ -103,9 +116,27 @@ def foo2 (mod : Name) : IO (List Format) := do
   let trees ← moduleDeclInfoTrees mod
   trees.mapM fun (n, t) => do return format (n, ← t.format)
 
+def fs : Syntax → Bool
+-- | `(term| by $_tac) => false
+| Syntax.node _ `Lean.Parser.Term.byTactic _ => false
+| Syntax.node _ `Lean.Parser.Tactic.tacticSeq _ => false
+| Syntax.node _ `Lean.Parser.Tactic.tacticSeq1Indented _ => false
+| Syntax.node _ `Lean.Parser.Tactic.«tactic_<;>_» _ => false
+| Syntax.node _ `Lean.Parser.Tactic.paren _ => false
+| Syntax.atom _ _ => false
+| _ => true
+
 def tactics (mod : Name) : IO (List (Name × Format)) := do
   let trees ← moduleDeclInfoTrees mod
-  let r : List (Name × List Syntax) := trees.map fun (n, t) => (n, t.findTacticNodes.map (fun p => p.1.stx))
+  let r : List (Name × List Syntax) := trees.map fun (n, t) => (n, t.findTacticNodes.map (fun p => p.1.stx) |>.filter fs)
   return r.map fun p => (p.1, format p.2)
 
+def tactics2 (decl : Name) : MetaM (List Format) := do
+  let tree ← declInfoTree decl
+  let r : List Syntax := tree.findTacticNodes.map (fun p => p.1.stx) |>.filter fs
+  return r.map format
+
 #eval tactics `Mathlib.Order.Height
+
+
+-- #eval tactics2 `Set.exists_chain_of_le_chainHeight
