@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 
 ! This file was ported from Lean 3 source module algebra.order.sub.defs
-! leanprover-community/mathlib commit 70d50ecfd4900dd6d328da39ab7ebd516abe4025
+! leanprover-community/mathlib commit de29c328903507bb7aff506af9135f4bdaf1849c
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
