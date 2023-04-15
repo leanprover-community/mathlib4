@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Mario Carneiro
 
 ! This file was ported from Lean 3 source module data.list.defs
-! leanprover-community/mathlib commit 1fc36cc9c8264e6e81253f88be7fb2cb6c92d76a
+! leanprover-community/mathlib commit d2d8742b0c21426362a9dacebc6005db895ca963
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -70,7 +70,10 @@ instance [DecidableEq α] : SDiff (List α) :=
 #align list.split_on List.splitOn
 #align list.concat List.concat
 #align list.head' List.head?
-#align list.to_array List.toArray
+
+-- mathlib3 `array` is not ported.
+#noalign list.to_array
+
 #align list.nthd List.getD
 -- porting notes: see
 -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/List.2Ehead/near/313204716
