@@ -106,8 +106,7 @@ theorem dist_vadd_right (v : V) (x : P) : dist x (v +ᵥ x) = ‖v‖ := by rw [
 /-- Isometry between the tangent space `V` of a (semi)normed add torsor `P` and `P` given by
 addition/subtraction of `x : P`. -/
 @[simps!]
-def IsometryEquiv.vaddConst (x : P) : V ≃ᵢ P
-    where
+def IsometryEquiv.vaddConst (x : P) : V ≃ᵢ P where
   toEquiv := Equiv.vaddConst x
   isometry_toFun := Isometry.of_dist_eq fun _ _ => dist_vadd_cancel_right _ _ _
 #align isometry_equiv.vadd_const IsometryEquiv.vaddConst
@@ -120,8 +119,7 @@ theorem dist_vsub_cancel_left (x y z : P) : dist (x -ᵥ y) (x -ᵥ z) = dist y 
 /-- Isometry between the tangent space `V` of a (semi)normed add torsor `P` and `P` given by
 subtraction from `x : P`. -/
 @[simps!]
-def IsometryEquiv.constVSub (x : P) : P ≃ᵢ V
-    where
+def IsometryEquiv.constVSub (x : P) : P ≃ᵢ V where
   toEquiv := Equiv.constVSub x
   isometry_toFun := Isometry.of_dist_eq fun _ _ => dist_vsub_cancel_left _ _ _
 #align isometry_equiv.const_vsub IsometryEquiv.constVSub
@@ -173,11 +171,10 @@ theorem edist_vsub_vsub_le (p₁ p₂ p₃ p₄ : P) :
 is not an instance because it depends on `V` to define a `metric_space
 P`. -/
 def pseudoMetricSpaceOfNormedAddCommGroupOfAddTorsor (V P : Type _) [SeminormedAddCommGroup V]
-    [AddTorsor V P] : PseudoMetricSpace P
-    where
+    [AddTorsor V P] : PseudoMetricSpace P where
   dist x y := ‖(x -ᵥ y : V)‖
   -- porting note: `edist_dist` is no longer an `autoParam`
-  edist_dist := λ p p' => by simp only [←ENNReal.ofReal_eq_coe_nnreal]
+  edist_dist := fun p p' => by simp only [←ENNReal.ofReal_eq_coe_nnreal]
   dist_self x := by simp
   dist_comm x y := by simp only [← neg_vsub_eq_vsub_rev y x, norm_neg]
   dist_triangle := by
@@ -191,10 +188,9 @@ def pseudoMetricSpaceOfNormedAddCommGroupOfAddTorsor (V P : Type _) [SeminormedA
 is not an instance because it depends on `V` to define a `metric_space
 P`. -/
 def metricSpaceOfNormedAddCommGroupOfAddTorsor (V P : Type _) [NormedAddCommGroup V]
-    [AddTorsor V P] : MetricSpace P
-    where
+    [AddTorsor V P] : MetricSpace P where
   dist x y := ‖(x -ᵥ y : V)‖
-  edist_dist := λ p p' => by simp only; rw [ENNReal.ofReal_eq_coe_nnreal]
+  edist_dist := fun p p' => by simp only; rw [ENNReal.ofReal_eq_coe_nnreal]
   dist_self x := by simp
   eq_of_dist_eq_zero h := by simpa using h
   dist_comm x y := by simp only [← neg_vsub_eq_vsub_rev y x, norm_neg]
@@ -213,11 +209,7 @@ theorem LipschitzWith.vadd [PseudoEMetricSpace α] {f : α → V} {g : α → P}
       edist_vadd_vadd_le _ _ _ _
     _ ≤ Kf * edist x y + Kg * edist x y := (add_le_add (hf x y) (hg x y))
     _ = (Kf + Kg) * edist x y := (add_mul _ _ _).symm
-
 #align lipschitz_with.vadd LipschitzWith.vadd
-
--- Porting note: lean fails to find this instance
-instance Function.instAddTorsor : AddTorsor (α → V) (α → P) := Pi.instAddTorsorForAllForAllAddGroup
 
 theorem LipschitzWith.vsub [PseudoEMetricSpace α] {f g : α → P} {Kf Kg : ℝ≥0}
     (hf : LipschitzWith Kf f) (hg : LipschitzWith Kg g) : LipschitzWith (Kf + Kg) (f -ᵥ g) :=
@@ -227,7 +219,6 @@ theorem LipschitzWith.vsub [PseudoEMetricSpace α] {f g : α → P} {Kf Kg : ℝ
       edist_vsub_vsub_le _ _ _ _
     _ ≤ Kf * edist x y + Kg * edist x y := (add_le_add (hf x y) (hg x y))
     _ = (Kf + Kg) * edist x y := (add_mul _ _ _).symm
-
 #align lipschitz_with.vsub LipschitzWith.vsub
 
 theorem uniformContinuous_vadd : UniformContinuous fun x : V × P => x.1 +ᵥ x.2 :=
