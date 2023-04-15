@@ -494,8 +494,7 @@ theorem liftPropAt_symm_of_mem_maximalAtlas [HasGroupoid M G] {x : H}
     (hG : G.LocalInvariantProp G Q) (hQ : ∀ y, Q id univ y) (he : e ∈ maximalAtlas M G)
     (hx : x ∈ e.target) : LiftPropAt Q e.symm x := by
   suffices h : Q (e ∘ e.symm) univ x
-  · have : e.symm ⁻¹' e.source ∩ e.target = e.target := by mfld_set_tac
-    have : e.symm x ∈ e.source := by simp only [hx, mfld_simps]
+  · have : e.symm x ∈ e.source := by simp only [hx, mfld_simps]
     rw [LiftPropAt, hG.liftPropWithinAt_indep_chart G.id_mem_maximalAtlas (mem_univ _) he this]
     refine' ⟨(e.symm.continuousAt hx).continuousWithinAt, _⟩
     simp only [h, mfld_simps]
