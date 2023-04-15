@@ -545,6 +545,7 @@ import Mathlib.CategoryTheory.Sites.Spaces
 import Mathlib.CategoryTheory.Skeletal
 import Mathlib.CategoryTheory.StructuredArrow
 import Mathlib.CategoryTheory.Subobject.Basic
+import Mathlib.CategoryTheory.Subobject.FactorThru
 import Mathlib.CategoryTheory.Subobject.Lattice
 import Mathlib.CategoryTheory.Subobject.MonoOver
 import Mathlib.CategoryTheory.Subobject.WellPowered
