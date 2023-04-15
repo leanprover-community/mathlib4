@@ -14,8 +14,8 @@ import Mathlib.CategoryTheory.Preadditive.Basic
 /-!
 # Factoring through subobjects
 
-The predicate `h : P.factors f`, for `P : subobject Y` and `f : X ⟶ Y`
-asserts the existence of some `P.factor_thru f : X ⟶ (P : C)` making the obvious diagram commute.
+The predicate `h : P.Factors f`, for `P : Subobject Y` and `f : X ⟶ Y`
+asserts the existence of some `P.factorThru f : X ⟶ (P : C)` making the obvious diagram commute.
 
 -/
 
@@ -34,9 +34,9 @@ namespace CategoryTheory
 
 namespace MonoOver
 
-/-- When `f : X ⟶ Y` and `P : mono_over Y`,
-`P.factors f` expresses that there exists a factorisation of `f` through `P`.
-Given `h : P.factors f`, you can recover the morphism as `P.factor_thru f h`.
+/-- When `f : X ⟶ Y` and `P : MonoOver Y`,
+`P.Factors f` expresses that there exists a factorisation of `f` through `P`.
+Given `h : P.Factors f`, you can recover the morphism as `P.factorThru f h`.
 -/
 def Factors {X Y : C} (P : MonoOver Y) (f : X ⟶ Y) : Prop :=
   ∃ g : X ⟶ (P : C), g ≫ P.arrow = f
@@ -44,12 +44,12 @@ def Factors {X Y : C} (P : MonoOver Y) (f : X ⟶ Y) : Prop :=
 
 theorem factors_congr {X : C} {f g : MonoOver X} {Y : C} (h : Y ⟶ X) (e : f ≅ g) :
     f.Factors h ↔ g.Factors h :=
-  ⟨fun ⟨u, hu⟩ => ⟨u ≫ ((MonoOver.forget _).map e.Hom).left, by simp [hu]⟩, fun ⟨u, hu⟩ =>
+  ⟨fun ⟨u, hu⟩ => ⟨u ≫ ((MonoOver.forget _).map e.hom).left, by simp [hu]⟩, fun ⟨u, hu⟩ =>
     ⟨u ≫ ((MonoOver.forget _).map e.inv).left, by simp [hu]⟩⟩
 #align category_theory.mono_over.factors_congr CategoryTheory.MonoOver.factors_congr
 
-/-- `P.factor_thru f h` provides a factorisation of `f : X ⟶ Y` through some `P : mono_over Y`,
-given the evidence `h : P.factors f` that such a factorisation exists. -/
+/-- `P.factorThru f h` provides a factorisation of `f : X ⟶ Y` through some `P : MonoOver Y`,
+given the evidence `h : P.Factors f` that such a factorisation exists. -/
 def factorThru {X Y : C} (P : MonoOver Y) (f : X ⟶ Y) (h : Factors P f) : X ⟶ (P : C) :=
   Classical.choose h
 #align category_theory.mono_over.factor_thru CategoryTheory.MonoOver.factorThru
@@ -58,9 +58,9 @@ end MonoOver
 
 namespace Subobject
 
-/-- When `f : X ⟶ Y` and `P : subobject Y`,
-`P.factors f` expresses that there exists a factorisation of `f` through `P`.
-Given `h : P.factors f`, you can recover the morphism as `P.factor_thru f h`.
+/-- When `f : X ⟶ Y` and `P : Subobject Y`,
+`P.Factors f` expresses that there exists a factorisation of `f` through `P`.
+Given `h : P.Factors f`, you can recover the morphism as `P.factorThru f h`.
 -/
 def Factors {X Y : C} (P : Subobject Y) (f : X ⟶ Y) : Prop :=
   Quotient.liftOn' P (fun P => P.Factors f)
@@ -69,9 +69,9 @@ def Factors {X Y : C} (P : Subobject Y) (f : X ⟶ Y) : Prop :=
       apply propext
       constructor
       · rintro ⟨i, w⟩
-        exact ⟨i ≫ h.hom.left, by erw [category.assoc, over.w h.hom, w]⟩
+        exact ⟨i ≫ h.hom.left, by erw [Category.assoc, Over.w h.hom, w]⟩
       · rintro ⟨i, w⟩
-        exact ⟨i ≫ h.inv.left, by erw [category.assoc, over.w h.inv, w]⟩)
+        exact ⟨i ≫ h.inv.left, by erw [Category.assoc, Over.w h.inv, w]⟩)
 #align category_theory.subobject.factors CategoryTheory.Subobject.Factors
 
 @[simp]
@@ -86,11 +86,11 @@ theorem mk_factors_self (f : X ⟶ Y) [Mono f] : (mk f).Factors f :=
 
 theorem factors_iff {X Y : C} (P : Subobject Y) (f : X ⟶ Y) :
     P.Factors f ↔ (representative.obj P).Factors f :=
-  Quot.inductionOn P fun a => MonoOver.factors_congr _ (representativeIso _).symm
+  Quot.inductionOn P fun _ => MonoOver.factors_congr _ (representativeIso _).symm
 #align category_theory.subobject.factors_iff CategoryTheory.Subobject.factors_iff
 
 theorem factors_self {X : C} (P : Subobject X) : P.Factors P.arrow :=
-  (factors_iff _ _).mpr ⟨𝟙 P, by simp⟩
+  (factors_iff _ _).mpr ⟨𝟙 (P : C), by simp⟩
 #align category_theory.subobject.factors_self CategoryTheory.Subobject.factors_self
 
 theorem factors_comp_arrow {X Y : C} {P : Subobject Y} (f : X ⟶ P) : P.Factors (f ≫ P.arrow) :=
@@ -99,10 +99,8 @@ theorem factors_comp_arrow {X Y : C} {P : Subobject Y} (f : X ⟶ P) : P.Factors
 
 theorem factors_of_factors_right {X Y Z : C} {P : Subobject Z} (f : X ⟶ Y) {g : Y ⟶ Z}
     (h : P.Factors g) : P.Factors (f ≫ g) := by
-  revert P
-  refine' Quotient.ind' _
-  intro P
-  rintro ⟨g, rfl⟩
+  induction' P using Quotient.ind' with P
+  obtain ⟨g, rfl⟩ := h
   exact ⟨f ≫ g, by simp⟩
 #align category_theory.subobject.factors_of_factors_right CategoryTheory.Subobject.factors_of_factors_right
 
@@ -113,23 +111,23 @@ theorem factors_zero [HasZeroMorphisms C] {X Y : C} {P : Subobject Y} : P.Factor
 theorem factors_of_le {Y Z : C} {P Q : Subobject Y} (f : Z ⟶ Y) (h : P ≤ Q) :
     P.Factors f → Q.Factors f := by
   simp only [factors_iff]
-  exact fun ⟨u, hu⟩ => ⟨u ≫ of_le _ _ h, by simp [← hu]⟩
+  exact fun ⟨u, hu⟩ => ⟨u ≫ ofLe _ _ h, by simp [← hu]⟩
 #align category_theory.subobject.factors_of_le CategoryTheory.Subobject.factors_of_le
 
-/-- `P.factor_thru f h` provides a factorisation of `f : X ⟶ Y` through some `P : subobject Y`,
-given the evidence `h : P.factors f` that such a factorisation exists. -/
+/-- `P.factorThru f h` provides a factorisation of `f : X ⟶ Y` through some `P : Subobject Y`,
+given the evidence `h : P.Factors f` that such a factorisation exists. -/
 def factorThru {X Y : C} (P : Subobject Y) (f : X ⟶ Y) (h : Factors P f) : X ⟶ P :=
   Classical.choose ((factors_iff _ _).mp h)
 #align category_theory.subobject.factor_thru CategoryTheory.Subobject.factorThru
 
-@[simp, reassoc.1]
+@[reassoc (attr := simp)]
 theorem factorThru_arrow {X Y : C} (P : Subobject Y) (f : X ⟶ Y) (h : Factors P f) :
     P.factorThru f h ≫ P.arrow = f :=
   Classical.choose_spec ((factors_iff _ _).mp h)
 #align category_theory.subobject.factor_thru_arrow CategoryTheory.Subobject.factorThru_arrow
 
 @[simp]
-theorem factorThru_self {X : C} (P : Subobject X) (h) : P.factorThru P.arrow h = 𝟙 P := by
+theorem factorThru_self {X : C} (P : Subobject X) (h) : P.factorThru P.arrow h = 𝟙 (P : C) := by
   ext
   simp
 #align category_theory.subobject.factor_thru_self CategoryTheory.Subobject.factorThru_self
@@ -172,7 +170,7 @@ theorem factorThru_zero [HasZeroMorphisms C] {X Y : C} {P : Subobject Y}
 #align category_theory.subobject.factor_thru_zero CategoryTheory.Subobject.factorThru_zero
 
 -- `h` is an explicit argument here so we can use
--- `rw factor_thru_le h`, obtaining a subgoal `P.factors f`.
+-- `rw factorThru_ofLe h`, obtaining a subgoal `P.Factors f`.
 -- (While the reverse direction looks plausible as a simp lemma, it seems to be unproductive.)
 theorem factorThru_ofLe {Y Z : C} {P Q : Subobject Y} {f : Z ⟶ Y} (h : P ≤ Q) (w : P.Factors f) :
     Q.factorThru f (factors_of_le f h w) = P.factorThru f w ≫ ofLe P Q h := by
@@ -231,4 +229,3 @@ end Preadditive
 end Subobject
 
 end CategoryTheory
-
