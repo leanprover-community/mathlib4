@@ -659,6 +659,7 @@ variable {H₁ : Type _} [TopologicalSpace H₁] {H₂ : Type _} [TopologicalSpa
 theorem HasGroupoid.comp
     (H : ∀ e ∈ G₂, LiftPropOn (IsLocalStructomorphWithinAt G₁) (e : H₂ → H₂) e.source) :
     @HasGroupoid H₁ _ H₃ _ (ChartedSpace.comp H₁ H₂ H₃) G₁ :=
+  let _ := ChartedSpace.comp H₁ H₂ H₃ -- Porting note: need this to synthesize `ChartedSpace H₁ H₃`
   { compatible := by
       rintro _ _ ⟨e, f, he, hf, rfl⟩ ⟨e', f', he', hf', rfl⟩
       apply G₁.locality
@@ -667,10 +668,9 @@ theorem HasGroupoid.comp
       have hxs : x ∈ f.symm ⁻¹' (e.symm ≫ₕ e').source := by simp only [hx, mfld_simps]
       have hxs' : x ∈ f.target ∩ f.symm ⁻¹' ((e.symm ≫ₕ e').source ∩ e.symm ≫ₕ e' ⁻¹' f'.source) :=
         by simp only [hx, mfld_simps]
-      obtain ⟨φ, hφG₁, hφ, hφ_dom⟩ :=
-        local_invariant_prop.liftPropOn_indep_chart
-          (is_local_structomorph_within_at_local_invariant_prop G₁) (G₁.subset_maximalAtlas hf)
-          (G₁.subset_maximalAtlas hf') (H _ (G₂.compatible he he')) hxs' hxs
+      obtain ⟨φ, hφG₁, hφ, hφ_dom⟩ := LocalInvariantProp.liftPropOn_indep_chart
+        (isLocalStructomorphWithinAt_localInvariantProp G₁) (G₁.subset_maximalAtlas hf)
+        (G₁.subset_maximalAtlas hf') (H _ (G₂.compatible he he')) hxs' hxs
       simp_rw [← LocalHomeomorph.coe_trans, LocalHomeomorph.trans_assoc] at hφ
       simp_rw [LocalHomeomorph.trans_symm_eq_symm_trans_symm, LocalHomeomorph.trans_assoc]
       have hs : IsOpen (f.symm ≫ₕ e.symm ≫ₕ e' ≫ₕ f').source :=
@@ -679,7 +679,7 @@ theorem HasGroupoid.comp
       · simp only [hx, hφ_dom, mfld_simps]
       · refine' G₁.eq_on_source (closed_under_restriction' hφG₁ hs) _
         rw [LocalHomeomorph.restr_source_inter]
-        refine' (hφ.mono _).restr_eqOn_source
+        refine' LocalHomeomorph.Set.EqOn.restr_eqOn_source (hφ.mono _)
         mfld_set_tac }
 #align structure_groupoid.has_groupoid.comp StructureGroupoid.HasGroupoid.comp
 
