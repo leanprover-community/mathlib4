@@ -39,7 +39,6 @@ class NormedAddTorsor (V : outParam <| Type _) (P : Type _) [outParam <| Seminor
 #align normed_add_torsor NormedAddTorsor
 
 /-- Shortcut instance to help typeclass inference out. -/
-@[nolint dangerousInstance] -- Porting note: this was not needed in Lean 3
 instance (priority := 100) NormedAddTorsor.toAddTorsor' {V P : Type _} [NormedAddCommGroup V]
     [MetricSpace P] [NormedAddTorsor V P] : AddTorsor V P :=
   NormedAddTorsor.toAddTorsor
@@ -217,7 +216,6 @@ theorem LipschitzWith.vadd [PseudoEMetricSpace α] {f : α → V} {g : α → P}
 #align lipschitz_with.vadd LipschitzWith.vadd
 
 -- Porting note: lean fails to find this instance
-@[nolint dangerousInstance]
 instance Function.instAddTorsor : AddTorsor (α → V) (α → P) := Pi.instAddTorsorForAllForAllAddGroup
 
 theorem LipschitzWith.vsub [PseudoEMetricSpace α] {f g : α → P} {Kf Kg : ℝ≥0}
