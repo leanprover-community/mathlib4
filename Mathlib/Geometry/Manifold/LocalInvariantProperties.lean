@@ -635,8 +635,8 @@ theorem _root_.LocalHomeomorph.isLocalStructomorphWithinAt_iff' {G : StructureGr
     G.IsLocalStructomorphWithinAt (⇑f) s x ↔
       x ∈ s → ∃ e : LocalHomeomorph H H,
       e ∈ G ∧ e.source ⊆ f.source ∧ EqOn f (⇑e) e.source ∧ x ∈ e.source := by
-  simp_rw [f.isLocalStructomorphWithinAt_iff hx]
-  refine' imp_congr_right fun hx ↦ exists_congr fun e ↦ and_congr_right fun he ↦ _
+  rw [f.isLocalStructomorphWithinAt_iff hx]
+  refine' imp_congr_right fun _ ↦ exists_congr fun e ↦ and_congr_right fun _ ↦ _
   refine' and_congr_right fun h2e ↦ _
   rw [inter_eq_right_iff_subset.mpr (h2e.trans hs)]
 #align local_homeomorph.is_local_structomorph_within_at_iff' LocalHomeomorph.isLocalStructomorphWithinAt_iff'
