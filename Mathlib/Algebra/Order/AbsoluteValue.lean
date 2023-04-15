@@ -29,15 +29,19 @@ This file defines a bundled type of absolute values `AbsoluteValue R S`.
  * `AbsoluteValue.abs` is the "standard" absolute value on `S`, mapping negative `x` to `-x`.
  * `AbsoluteValue.toMonoidWithZeroHom`: absolute values mapping to a
    linear ordered field preserve `0`, `*` and `1`
- * `IsAbsoluteValue`: a type class stating that `f : β → α` satisfies the axioms of an abs val
+ * `IsAbsoluteValue`: a type class stating that `f : β → α` satisfies the axioms of an absolute
+   value
 -/
 
 
 /-- `AbsoluteValue R S` is the type of absolute values on `R` mapping to `S`:
 the maps that preserve `*`, are nonnegative, positive definite and satisfy the triangle equality. -/
 structure AbsoluteValue (R S : Type _) [Semiring R] [OrderedSemiring S] extends R →ₙ* S where
+  /-- The absolute value is nonnegative -/
   nonneg' : ∀ x, 0 ≤ toFun x
+  /-- The absolute value is positive definitive -/
   eq_zero' : ∀ x, toFun x = 0 ↔ x = 0
+  /-- The absolute value satisfies the triangle inequality -/
   add_le' : ∀ x y, toFun (x + y) ≤ toFun x + toFun y
 #align absolute_value AbsoluteValue
 
@@ -282,10 +286,9 @@ end LinearOrderedCommRing
 
 end AbsoluteValue
 
-/- ./././Mathport/Syntax/Translate/Command.lean:388:30: infer kinds are unsupported in Lean 4: #[`abv_nonneg] [] -/
-/- ./././Mathport/Syntax/Translate/Command.lean:388:30: infer kinds are unsupported in Lean 4: #[`abv_eq_zero] [] -/
-/- ./././Mathport/Syntax/Translate/Command.lean:388:30: infer kinds are unsupported in Lean 4: #[`abv_add] [] -/
-/- ./././Mathport/Syntax/Translate/Command.lean:388:30: infer kinds are unsupported in Lean 4: #[`abv_mul] [] -/
+-- Porting note: Removed [] in fields, see
+-- leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Infer.20kinds.20are.20unsupported
+
 /-- A function `f` is an absolute value if it is nonnegative, zero only at 0, additive, and
 multiplicative.
 
