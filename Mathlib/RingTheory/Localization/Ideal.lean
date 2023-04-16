@@ -32,11 +32,11 @@ variable {R : Type _} [CommSemiring R] (M : Submonoid R) (S : Type _) [CommSemir
 
 variable [Algebra R S] [IsLocalization M S]
 
-/-- Explicit characterization of the ideal given by `ideal.map (algebra_map R S) I`.
+/-- Explicit characterization of the ideal given by `Ideal.map (algebraMap R S) I`.
 In practice, this ideal differs only in that the carrier set is defined explicitly.
-This definition is only meant to be used in proving `mem_map_algebra_map_iff`,
+This definition is only meant to be used in proving `mem_map_algebraMap_iff`,
 and any proof that needs to refer to the explicit carrier set should use that theorem. -/
-private def map_ideal (I : Ideal R) : Ideal S where
+private def MapIdeal (I : Ideal R) : Ideal S where
   carrier := { z : S | ∃ x : I × M, z * algebraMap R S x.2 = algebraMap R S x.1 }
   zero_mem' := ⟨⟨0, 1⟩, by simp⟩
   add_mem' := by
@@ -61,7 +61,7 @@ theorem mem_map_algebraMap_iff {I : Ideal R} {z} :
     z ∈ Ideal.map (algebraMap R S) I ↔ ∃ x : I × M, z * algebraMap R S x.2 = algebraMap R S x.1 :=
   by
   constructor
-  · change _ → z ∈ map_ideal M S I
+  · change _ → z ∈ MapIdeal M S I
     refine' fun h => Ideal.mem_infₛ.1 h fun z hz => _
     obtain ⟨y, hy⟩ := hz
     let Z : { x // x ∈ I } := ⟨y, hy.left⟩
@@ -76,10 +76,7 @@ theorem map_comap (J : Ideal S) : Ideal.map (algebraMap R S) (Ideal.comap (algeb
   le_antisymm (Ideal.map_le_iff_le_comap.2 le_rfl) fun x hJ => by
     obtain ⟨r, s, hx⟩ := mk'_surjective M x
     rw [← hx] at hJ⊢
-    exact
-      Ideal.mul_mem_right _ _
-        (Ideal.mem_map_of_mem _
-          (show (algebraMap R S) r ∈ J from
+    exact Ideal.mul_mem_right _ _ (Ideal.mem_map_of_mem _ (show (algebraMap R S) r ∈ J from
             mk'_spec S r s ▸ J.mul_mem_right ((algebraMap R S) s) hJ))
 #align is_localization.map_comap IsLocalization.map_comap
 
