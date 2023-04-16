@@ -216,6 +216,8 @@ noncomputable def isExtensionAlongYoneda :
         (colimitOfDiagramTerminal (terminalOpOfInitial (isInitial _)) _))
     (by
       intro X Y f
+      -- porting note: this is slightly different to the `change` in mathlib3 which
+      -- didn't work
       change (colimit.desc _ _ ≫ _) = colimit.desc _ _ ≫ _
       apply colimit.hom_ext
       intro j
@@ -394,7 +396,7 @@ noncomputable def natIsoOfNatIsoOnRepresentables (L₁ L₂ : (Cᵒᵖ ⥤ Type 
       dsimp
       rw [← L₁.map_comp, coconeOfRepresentable_naturality]
       rfl
-    rw [reassoc_of% this, IsColimit.ι_map_assoc, IsColimit.ι_map]
+    erw [reassoc_of% this, IsColimit.ι_map_assoc, IsColimit.ι_map]
     dsimp
     rw [← L₂.map_comp, coconeOfRepresentable_naturality]
     rfl
