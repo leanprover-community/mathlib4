@@ -129,7 +129,7 @@ theorem restrictYonedaHomEquiv_natural (P : Cᵒᵖ ⥤ Type u₁) (E₁ E₂ : 
       restrictYonedaHomEquiv A P E₁ t k ≫ (restrictedYoneda A).map g := by
   ext x
   funext X
-  -- porting note: these last two lines were `ext x X` in mathlib3
+  -- porting note: those last two lines were `ext x X` in mathlib3
   apply (assoc _ _ _).symm
 #align category_theory.colimit_adj.restrict_yoneda_hom_equiv_natural CategoryTheory.ColimitAdj.restrictYonedaHomEquiv_natural
 
@@ -154,11 +154,12 @@ theorem extendAlongYoneda_obj (P : Cᵒᵖ ⥤ Type u₁) :
 theorem extendAlongYoneda_map {X Y : Cᵒᵖ ⥤ Type u₁} (f : X ⟶ Y) :
     (extendAlongYoneda A).map f =
       colimit.pre ((CategoryOfElements.π Y).leftOp ⋙ A) (CategoryOfElements.map f).op := by
+  -- the next line was `ext J` in mathlib3
   refine CategoryTheory.Limits.colimit.hom_ext (fun J => ?_)
   erw [colimit.ι_pre ((CategoryOfElements.π Y).leftOp ⋙ A) (CategoryOfElements.map f).op]
   dsimp only [extendAlongYoneda, restrictYonedaHomEquiv, IsColimit.homIso,
     IsColimit.homIso, uliftTrivial]
-  /- the `simpa` which finishes the proof in mathlib3 is:
+  /- the `simpa` which finishes the proof in mathlib3 (translated into mathlib4 naming) is:
 
   simp only [Functor.map_id, comp_id, colimit.cocone_ι, FunctorToTypes.comp, id.def, colimit.isColimit_desc, Cocone.extend_ι,
   Cocone.extensions_app, Adjunction.leftAdjointOfEquiv_map, Iso.symm_mk, Iso.toEquiv_comp, Equiv.coe_trans,
@@ -343,6 +344,7 @@ theorem coconeOfRepresentable_ι_app (P : Cᵒᵖ ⥤ Type u₁) (j : P.Elements
 theorem coconeOfRepresentable_naturality {P₁ P₂ : Cᵒᵖ ⥤ Type u₁} (α : P₁ ⟶ P₂) (j : P₁.Elementsᵒᵖ) :
     (coconeOfRepresentable P₁).ι.app j ≫ α =
       (coconeOfRepresentable P₂).ι.app ((CategoryOfElements.map α).op.obj j) := by
+  -- The next few lines were `ext T f` in mathlib3
   refine NatTrans.ext (((coconeOfRepresentable P₁).ι.app j ≫ α))
     (((coconeOfRepresentable P₂).ι.app ((Functor.op (CategoryOfElements.map α)).obj j))) ?_
   ext T
@@ -357,6 +359,10 @@ The result of [MM92], Chapter I, Section 5, Corollary 3.
 -/
 noncomputable def colimitOfRepresentable (P : Cᵒᵖ ⥤ Type u₁) :
     IsColimit (coconeOfRepresentable P) := by
+  -- porting note:
+  -- the `suffices` was not necessary in mathlib3; the function being `apply`ed has an
+  -- `IsIso` input in square brackets; lean 3 was happy to give the user the input as a goal but
+  -- lean 4 complains that typeclass inference can't find it.
   suffices IsIso (IsColimit.desc (colimit.isColimit (functorToRepresentables P))
     (coconeOfRepresentable P)) by
     apply IsColimit.ofPointIso (colimit.isColimit (functorToRepresentables P))
