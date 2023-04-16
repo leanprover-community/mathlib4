@@ -15,26 +15,26 @@ import Mathlib.Tactic.Ring
 /-!
 # Primality for binary natural numbers
 
-This file defines versions of `nat.min_fac` and `nat.prime` for `num` and `pos_num`. As with other
-`num` definitions, they are not intended for general use (`nat` should be used instead of `num` in
+This file defines versions of `Nat.minFac` and `Nat.Prime` for `Num` and `PosNum`. As with other
+`Num` definitions, they are not intended for general use (`Nat` should be used instead of `Num` in
 most cases) but they can be used in contexts where kernel computation is required, such as proofs
 by `rfl` and `dec_trivial`, as well as in `#reduce`.
 
-The default decidable instance for `nat.prime` is optimized for VM evaluation, so it should be
+The default decidable instance for `Nat.Prime` is optimized for VM evaluation, so it should be
 preferred within `#eval` or in tactic execution, while for proofs the `norm_num` tactic can be used
 to construct primality and non-primality proofs more efficiently than kernel computation.
 
 Nevertheless, sometimes proof by computational reflection requires natural number computations, and
-`num` implements algorithms directly on binary natural numbers for this purpose.
+`Num` implements algorithms directly on binary natural numbers for this purpose.
 -/
 
 
 namespace PosNum
 
-/-- Auxiliary function for computing the smallest prime factor of a `pos_num`. Unlike
-`nat.min_fac_aux`, we use a natural number `fuel` variable that is set to an upper bound on the
+/-- Auxiliary function for computing the smallest prime factor of a `PosNum`. Unlike
+`Nat.minFacAux`, we use a natural number `fuel` variable that is set to an upper bound on the
 number of iterations. It is initialized to the number `n` we are determining primality for. Even
-though this is exponential in the input (since it is a `nat`, not a `num`), it will get lazily
+though this is exponential in the input (since it is a `Nat`, not a `Num`), it will get lazily
 evaluated during kernel reduction, so we will only require about `sqrt n` unfoldings, for the
 `sqrt n` iterations of the loop. -/
 def minFacAux (n : PosNum) : ℕ → PosNum → PosNum
@@ -84,7 +84,7 @@ theorem minFac_to_nat (n : PosNum) : (minFac n : ℕ) = Nat.minFac n := by
 
 #align pos_num.min_fac_to_nat PosNum.minFac_to_nat
 
-/-- Primality predicate for a `pos_num`. -/
+/-- Primality predicate for a `PosNum`. -/
 @[simp]
 def Prime (n : PosNum) : Prop :=
   Nat.Prime n
@@ -123,7 +123,7 @@ theorem minFac_to_nat : ∀ n : Num, (minFac n : ℕ) = Nat.minFac n
   | pos _ => PosNum.minFac_to_nat _
 #align num.min_fac_to_nat Num.minFac_to_nat
 
-/-- Primality predicate for a `num`. -/
+/-- Primality predicate for a `Num`. -/
 @[simp]
 def Prime (n : Num) : Prop :=
   Nat.Prime n
