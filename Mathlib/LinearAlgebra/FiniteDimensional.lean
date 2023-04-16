@@ -179,7 +179,7 @@ instance finiteDimensional_submodule [FiniteDimensional K V] (S : Submodule K V)
   exact
     iff_fg.1
       (IsNoetherian.iff_rank_lt_aleph0.2
-        (lt_of_le_of_lt (rank_submodule_le _) (rank_lt_aleph_0 K V)))
+        (lt_of_le_of_lt (rank_submodule_le _) (rank_lt_aleph0 K V)))
   infer_instance
 #align finite_dimensional.finite_dimensional_submodule FiniteDimensional.finiteDimensional_submodule
 
@@ -419,7 +419,7 @@ theorem _root_.CompleteLattice.Independent.subtype_ne_bot_le_finrank_aux [Finite
 
 /-- If `p` is an independent family of subspaces of a finite-dimensional space `V`, then the
 number of nontrivial subspaces in the family `p` is finite. -/
-noncomputable def CompleteLattice.Independent.fintypeNeBotOfFiniteDimensional
+noncomputable def _root_.CompleteLattice.Independent.fintypeNeBotOfFiniteDimensional
     [FiniteDimensional K V] {ι : Type w} {p : ι → Submodule K V}
     (hp : CompleteLattice.Independent p) : Fintype { i : ι // p i ≠ ⊥ } := by
   suffices (#{ i // p i ≠ ⊥ }) < (ℵ₀ : Cardinal.{w}) by
@@ -434,8 +434,9 @@ number of nontrivial subspaces in the family `p` is bounded above by the dimensi
 
 Note that the `Fintype` hypothesis required here can be provided by
 `CompleteLattice.Independent.fintypeNeBotOfFiniteDimensional`. -/
-theorem CompleteLattice.Independent.subtype_ne_bot_le_finrank [FiniteDimensional K V] {ι : Type w}
-    {p : ι → Submodule K V} (hp : CompleteLattice.Independent p) [Fintype { i // p i ≠ ⊥ }] :
+theorem _root_.CompleteLattice.Independent.subtype_ne_bot_le_finrank [FiniteDimensional K V]
+    {ι : Type w} {p : ι → Submodule K V} (hp : CompleteLattice.Independent p)
+    [Fintype { i // p i ≠ ⊥ }] :
     Fintype.card { i // p i ≠ ⊥ } ≤ finrank K V := by simpa using hp.subtype_ne_bot_le_finrank_aux
 #align complete_lattice.independent.subtype_ne_bot_le_finrank CompleteLattice.Independent.subtype_ne_bot_le_finrank
 
@@ -497,8 +498,8 @@ theorem exists_nontrivial_relation_sum_zero_of_rank_succ_lt_card [FiniteDimensio
   let shift : V ↪ V := ⟨fun x => x - x₀, sub_left_injective⟩
   let t' := (t.erase x₀).map shift
   have h' : finrank K V < t'.card := by
-    simp only [t', card_map, Finset.card_erase_of_mem m]
-    exact nat.lt_pred_iff.mpr h
+    simp only [card_map, Finset.card_erase_of_mem m]
+    exact Nat.lt_pred_iff.mpr h
   -- to obtain a function `g`.
   obtain ⟨g, gsum, x₁, x₁_mem, nz⟩ := exists_nontrivial_relation_of_rank_lt_card h'
   -- Then obtain `f` by translating back by `x₀`,
@@ -515,20 +516,18 @@ theorem exists_nontrivial_relation_sum_zero_of_rank_succ_lt_card [FiniteDimensio
     -- ∑ (x : V) in t', g x • x = 0.
     simp only [f]
     conv_lhs =>
-      apply_congr
-      skip
+      congr
       rw [ite_smul]
     rw [Finset.sum_ite]
     conv =>
       congr
       congr
-      apply_congr
+      congr
       simp [filter_eq', m]
     conv =>
       congr
       congr
-      skip
-      apply_congr
+      congr
       simp [filter_ne']
     rw [sum_singleton, neg_smul, add_comm, ← sub_eq_add_neg, sum_smul, ← sum_sub_distrib]
     simp only [← smul_sub]
@@ -545,12 +544,10 @@ theorem exists_nontrivial_relation_sum_zero_of_rank_succ_lt_card [FiniteDimensio
     rw [if_pos rfl]
     conv_lhs =>
       congr
-      skip
-      apply_congr
-      skip
+      congr
       rw [if_neg (show x ≠ x₀ from (mem_erase.mp H).1)]
     exact neg_add_self _
-  · show ∃ (x : V)(H : x ∈ t), f x ≠ 0
+  · show ∃ (x : V) (H : x ∈ t), f x ≠ 0
     -- We can use x₁ + x₀.
     refine' ⟨x₁ + x₀, _, _⟩
     · rw [Finset.mem_map] at x₁_mem
