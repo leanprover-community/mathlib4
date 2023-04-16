@@ -146,10 +146,9 @@ variable {K V}
 /-- If a vector space has a finite basis, then it is finite-dimensional. -/
 theorem of_fintype_basis {ι : Type w} [Finite ι] (h : Basis ι K V) : FiniteDimensional K V := by
   cases nonempty_fintype ι
-  exact
-    ⟨⟨Finset.univ.image h, by
-        convert h.span_eq
-        simp⟩⟩
+  exact ⟨⟨Finset.univ.image h, by
+    convert h.span_eq
+    simp⟩⟩
 #align finite_dimensional.of_fintype_basis FiniteDimensional.of_fintype_basis
 
 /-- If a vector space is `FiniteDimensional`, all bases are indexed by a finite type -/
@@ -844,10 +843,8 @@ variable [DivisionRing K] [AddCommGroup V] [Module K V] {V₂ : Type v'} [AddCom
 theorem eq_of_le_of_finrank_le {S₁ S₂ : Submodule K V} [FiniteDimensional K S₂] (hle : S₁ ≤ S₂)
     (hd : finrank K S₂ ≤ finrank K S₁) : S₁ = S₂ := by
   rw [← LinearEquiv.finrank_eq (Submodule.comapSubtypeEquivOfLe hle)] at hd
-  exact
-    le_antisymm hle
-      (Submodule.comap_subtype_eq_top.1
-        (eq_top_of_finrank_eq (le_antisymm (comap (Submodule.subtype S₂) S₁).finrank_le hd)))
+  exact le_antisymm hle (Submodule.comap_subtype_eq_top.1
+    (eq_top_of_finrank_eq (le_antisymm (comap (Submodule.subtype S₂) S₁).finrank_le hd)))
 #align finite_dimensional.eq_of_le_of_finrank_le FiniteDimensional.eq_of_le_of_finrank_le
 
 /-- If a submodule is less than or equal to a finite-dimensional
@@ -1024,11 +1021,9 @@ theorem isUnit_iff_ker_eq_bot [FiniteDimensional K V] (f : V →ₗ[K] V) :
     exact LinearMap.ker_eq_bot_of_inverse u.inv_mul
   · intro h_inj
     rw [ker_eq_bot] at h_inj
-    exact
-      ⟨⟨f, (LinearEquiv.ofInjectiveEndo f h_inj).symm.toLinearMap,
-          LinearEquiv.ofInjectiveEndo_right_inv f h_inj,
-          LinearEquiv.ofInjectiveEndo_left_inv f h_inj⟩,
-        rfl⟩
+    exact ⟨⟨f, (LinearEquiv.ofInjectiveEndo f h_inj).symm.toLinearMap,
+      LinearEquiv.ofInjectiveEndo_right_inv f h_inj, LinearEquiv.ofInjectiveEndo_left_inv f h_inj⟩,
+      rfl⟩
 #align linear_map.is_unit_iff_ker_eq_bot LinearMap.isUnit_iff_ker_eq_bot
 
 set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
@@ -1297,8 +1292,8 @@ theorem finrank_eq_one_iff (ι : Type _) [Unique ι] : finrank K V = 1 ↔ Nonem
 
 /-- A module has dimension 1 iff there is some nonzero `v : V` so every vector is a multiple of `v`.
 -/
-theorem finrank_eq_one_iff' : finrank K V = 1 ↔ ∃ (v : V)(n : v ≠ 0), ∀ w : V, ∃ c : K, c • v = w :=
-  by
+theorem finrank_eq_one_iff' : finrank K V = 1 ↔ ∃ (v : V) (n : v ≠ 0),
+    ∀ w : V, ∃ c : K, c • v = w := by
   convert finrank_eq_one_iff PUnit
   simp only [exists_prop, eq_iff_iff, Ne.def]
   convert(Basis.basis_singleton_iff PUnit).symm
@@ -1453,8 +1448,8 @@ theorem Subalgebra.isSimpleOrder_of_finrank (hr : finrank F E = 2) :
     eq_bot_or_eq_top := by
       intro S
       haveI : FiniteDimensional F E := finiteDimensional_of_finrank_eq_succ hr
-      haveI : FiniteDimensional F S := FiniteDimensional.finiteDimensional_submodule (Subalgebra.toSubmodule S)
-      have : finrank F S ≤ 2 := hr ▸ S.to_submodule.finrank_le
+      haveI : FiniteDimensional F S := FiniteDimensional.finiteDimensional_submodule S.toSubmodule
+      have : finrank F S ≤ 2 := hr ▸ S.toSubmodule.finrank_le
       have : 0 < finrank F S := finrank_pos_iff.mpr inferInstance
       interval_cases
       · left
