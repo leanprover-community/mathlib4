@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 
 ! This file was ported from Lean 3 source module set_theory.cardinal.basic
-! leanprover-community/mathlib commit e05ead7993520a432bec94ac504842d90707ad63
+! leanprover-community/mathlib commit 9bb28972724354ac0574e2b318be896ec252025f
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -238,7 +238,7 @@ theorem lift_uzero (a : Cardinal.{u}) : lift.{0} a = a :=
 #align cardinal.lift_uzero Cardinal.lift_uzero
 
 @[simp]
-theorem lift_lift (a : Cardinal) : lift.{w} (lift.{v} a) = lift.{max v w} a :=
+theorem lift_lift.{u_1} (a : Cardinal.{u_1}) : lift.{w} (lift.{v} a) = lift.{max v w} a :=
   inductionOn a fun _ => (Equiv.ulift.trans <| Equiv.ulift.trans Equiv.ulift.symm).cardinal_eq
 #align cardinal.lift_lift Cardinal.lift_lift
 
@@ -543,9 +543,6 @@ instance commSemiring : CommSemiring Cardinal.{u} where
   npow_zero := @power_zero
   npow_succ n c := show (c ^ (n + 1)) = c * (c ^ n) by rw [power_add, power_one, mul_comm']
 
--- Porting note: this ensures a computable instance.
-instance commMonoid : CommMonoid Cardinal.{u} := CommSemiring.toCommMonoid
-
 /-! Porting note: Deprecated section. Remove. -/
 section deprecated
 set_option linter.deprecated false
@@ -698,11 +695,24 @@ instance canonicallyOrderedCommSemiring : CanonicallyOrderedCommSemiring Cardina
 instance : CanonicallyLinearOrderedAddMonoid Cardinal.{u} :=
   { Cardinal.canonicallyOrderedCommSemiring, Cardinal.linearOrder with }
 
+-- Computable instance to prevent a non-computable one being found via the one above
+instance : CanonicallyOrderedAddMonoid Cardinal.{u} :=
+  { Cardinal.canonicallyOrderedCommSemiring with }
+
 instance : LinearOrderedCommMonoidWithZero Cardinal.{u} :=
   { Cardinal.commSemiring,
     Cardinal.linearOrder with
     mul_le_mul_left := @mul_le_mul_left' _ _ _ _
     zero_le_one := zero_le _ }
+
+-- Computable instance to prevent a non-computable one being found via the one above
+instance : CommMonoidWithZero Cardinal.{u} :=
+  { Cardinal.canonicallyOrderedCommSemiring with }
+
+-- porting note: new
+-- Computable instance to prevent a non-computable one being found via the one above
+instance : CommMonoid Cardinal.{u} :=
+  { Cardinal.canonicallyOrderedCommSemiring with }
 
 theorem zero_power_le (c : Cardinal.{u}) : ((0 : Cardinal.{u})^c) ≤ 1 := by
   by_cases h : c = 0
@@ -1151,7 +1161,7 @@ theorem lift_succ (a) : lift.{v,u} (succ a) = succ (lift.{v,u} a) :=
 @[simp, nolint simpNF]
 theorem lift_umax_eq {a : Cardinal.{u}} {b : Cardinal.{v}} :
     lift.{max v w} a = lift.{max u w} b ↔ lift.{v} a = lift.{u} b := by
-  rw [← lift_lift.{u,v,w}, ← lift_lift.{v,u,w}, lift_inj]
+  rw [← lift_lift.{v, w, u}, ← lift_lift.{u, w, v}, lift_inj]
 #align cardinal.lift_umax_eq Cardinal.lift_umax_eq
 
 -- Porting note: Inserted .{u,v} below

@@ -474,8 +474,8 @@ class StrongHomClass (L : outParam Language) (F : Type _) (M N : outParam <| Typ
 #align first_order.language.strong_hom_class FirstOrder.Language.StrongHomClass
 
 --Porting note: using implicit brackets for `Structure` arguments
-instance (priority := 100) StrongHomClass.homClass {F M N} {_ : L.Structure M}
-    {_ : L.Structure N} [FunLike F M fun _ => N] [StrongHomClass L F M N] : HomClass L F M N where
+instance (priority := 100) StrongHomClass.homClass [L.Structure M]
+    [L.Structure N] [FunLike F M fun _ => N] [StrongHomClass L F M N] : HomClass L F M N where
   map_fun := StrongHomClass.map_fun
   map_rel φ _ R x := (StrongHomClass.map_rel φ R x).2
 #align first_order.language.strong_hom_class.hom_class FirstOrder.Language.StrongHomClass.homClass
