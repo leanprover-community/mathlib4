@@ -172,6 +172,8 @@ variable {R : Type _} [CommRing R] (M : Submonoid R) (S : Type _) [CommRing S]
 
 variable [Algebra R S] [IsLocalization M S]
 
+set_option maxHeartbeats 400000 in
+
 /-- `quotient_map` applied to maximal ideals of a localization is `surjective`.
   The quotient by a maximal ideal is a field, so inverses to elements already exist,
   and the localization necessarily maps the equivalence class of the inverse in the localization -/
@@ -193,9 +195,8 @@ theorem surjective_quotientMap_of_maximal_of_localization {I : Ideal S} [I.IsPri
     obtain ⟨rn, rfl⟩ := Ideal.Quotient.mk_surjective n
     refine' ⟨(Ideal.Quotient.mk J) (r * rn), _⟩
     -- The rest of the proof is essentially just algebraic manipulations to prove the equality
-    rw [← RingHom.map_mul] at hn
     replace hn := congr_arg (Ideal.quotientMap I (algebraMap R S) le_rfl) hn
-    simp only [RingHom.map_one, Ideal.quotientMap_mk, RingHom.map_mul] at hn
+    rw [RingHom.map_one, RingHom.map_mul] at hn
     rw [Ideal.quotientMap_mk, ← sub_eq_zero, ← RingHom.map_sub, Ideal.Quotient.eq_zero_iff_mem, ←
       Ideal.Quotient.eq_zero_iff_mem, RingHom.map_sub, sub_eq_zero, mk'_eq_mul_mk'_one]
     simp only [mul_eq_mul_left_iff, RingHom.map_mul]
@@ -206,7 +207,8 @@ theorem surjective_quotientMap_of_maximal_of_localization {I : Ideal S} [I.IsPri
             hM
               (Ideal.Quotient.eq_zero_iff_mem.2
                 (Ideal.mem_comap.2 (Ideal.Quotient.eq_zero_iff_mem.1 hn))))
-          (trans hn (by rw [← RingHom.map_mul, ← mk'_eq_mul_mk'_one, mk'_self, RingHom.map_one])))
+          (_root_.trans hn (by rw [← RingHom.map_mul, ← mk'_eq_mul_mk'_one, mk'_self,
+            RingHom.map_one])))
 #align is_localization.surjective_quotient_map_of_maximal_of_localization IsLocalization.surjective_quotientMap_of_maximal_of_localization
 
 open nonZeroDivisors
