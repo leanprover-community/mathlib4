@@ -264,20 +264,18 @@ theorem isSupported_of {p} {s : Set α} : IsSupported (of p) s ↔ p ∈ s :=
   rwa [Polynomial.coeff_C, if_neg (one_ne_zero : 1 ≠ 0), Polynomial.coeff_X, if_pos rfl] at this
 #align free_comm_ring.is_supported_of FreeCommRing.isSupported_of
 
+-- Porting note: Changed `(Subtype.val : s → α)` to `(↑)` in the type
 theorem map_subtype_val_restriction {x} (s : Set α) [DecidablePred (· ∈ s)]
-    (hxs : IsSupported x s) : map (Subtype.val : s → α) (restriction s x) = x := by
+    (hxs : IsSupported x s) : map (↑) (restriction s x) = x := by
   refine' Subring.InClosure.recOn hxs _ _ _ _
   · rw [RingHom.map_one]
     rfl
   · rw [map_neg, map_one]
     rfl
-  . sorry
-  . sorry
-  -- rest of the proof times out
-  -- · rintro _ ⟨p, hps, rfl⟩ n ih
-  --   rw [RingHom.map_mul, restriction_of, dif_pos hps, RingHom.map_mul, map_of, ih]
-  -- · intro x y ihx ihy
-  --   rw [RingHom.map_add, RingHom.map_add, ihx, ihy]
+  · rintro _ ⟨p, hps, rfl⟩ n ih
+    rw [RingHom.map_mul, restriction_of, dif_pos hps, RingHom.map_mul, map_of, ih]
+  · intro x y ihx ihy
+    rw [RingHom.map_add, RingHom.map_add, ihx, ihy]
 #align free_comm_ring.map_subtype_val_restriction FreeCommRing.map_subtype_val_restriction
 
 theorem exists_finite_support (x : FreeCommRing α) : ∃ s : Set α, Set.Finite s ∧ IsSupported x s :=
