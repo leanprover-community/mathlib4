@@ -8,7 +8,7 @@ Authors: Simon Hudon
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Control.Bitraversable.Basic
+import Mathlib.Control.Bitraversable.Basic
 
 /-!
 # Bitraversable Lemmas
