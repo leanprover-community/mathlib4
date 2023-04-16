@@ -8,9 +8,9 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Homology.HomologicalComplex
-import Mathbin.AlgebraicTopology.SimplicialObject
-import Mathbin.CategoryTheory.Abelian.Basic
+import Mathlib.Algebra.Homology.HomologicalComplex
+import Mathlib.AlgebraicTopology.SimplicialObject
+import Mathlib.CategoryTheory.Abelian.Basic
 
 /-!
 ## Moore complex
@@ -71,8 +71,7 @@ def objX : ∀ n : ℕ, Subobject (X.obj (op (SimplexCategory.mk n)))
 @[simp]
 def objD : ∀ n : ℕ, (objX X (n + 1) : C) ⟶ (objX X n : C)
   | 0 => Subobject.arrow _ ≫ X.δ (0 : Fin 2) ≫ inv (⊤ : Subobject _).arrow
-  | n + 1 =>
-    by
+  | n + 1 => by
     -- The differential is `subobject.arrow _ ≫ X.δ (0 : fin (n+3))`,
     -- factored through the intersection of the kernels.
     refine' factor_thru _ (arrow _ ≫ X.δ (0 : Fin (n + 3))) _
@@ -95,8 +94,7 @@ def objD : ∀ n : ℕ, (objX X (n + 1) : C) ⟶ (objX X n : C)
     exact kernel_subobject_arrow_comp _
 #align algebraic_topology.normalized_Moore_complex.obj_d AlgebraicTopology.NormalizedMooreComplex.objD
 
-theorem d_squared (n : ℕ) : objD X (n + 1) ≫ objD X n = 0 :=
-  by
+theorem d_squared (n : ℕ) : objD X (n + 1) ≫ objD X n = 0 := by
   -- It's a pity we need to do a case split here;
     -- after the first simp the proofs are almost identical
     cases n <;>
@@ -165,8 +163,7 @@ The differentials are induced from `X.δ 0`,
 which maps each of these intersections of kernels to the next.
 -/
 @[simps]
-def normalizedMooreComplex : SimplicialObject C ⥤ ChainComplex C ℕ
-    where
+def normalizedMooreComplex : SimplicialObject C ⥤ ChainComplex C ℕ where
   obj := obj
   map X Y f := map f
   map_id' X := by
