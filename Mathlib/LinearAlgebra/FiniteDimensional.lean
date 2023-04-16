@@ -262,6 +262,7 @@ noncomputable def finBasisOfFinrankEq [FiniteDimensional K V] {n : ℕ} (hn : fi
 
 variable {K V}
 
+set_option synthInstance.etaExperiment true in
 /-- A module with dimension 1 has a basis with one element. -/
 noncomputable def basisUnique (ι : Type _) [Unique ι] (h : finrank K V = 1) : Basis ι K V :=
   haveI := finiteDimensional_of_finrank (_root_.zero_lt_one.trans_le h.symm.le)
@@ -359,9 +360,9 @@ theorem eq_top_of_finrank_eq [FiniteDimensional K V] {S : Submodule K V}
     @LinearIndependent.image_subtype _ _ _ _ _ _ _ _ _ (Submodule.subtype S)
       (by simpa using bS.linearIndependent) (by simp)
   set b := Basis.extend this with b_eq
-  letI : Fintype (this.extend _) :=
+  letI i1 : Fintype (this.extend _) :=
     (finite_of_linearIndependent (by simpa using b.linearIndependent)).fintype
-  letI : Fintype ((↑) '' Basis.ofVectorSpaceIndex K S) := (finite_of_linearIndependent this).fintype
+  letI i2 : Fintype ((↑) '' Basis.ofVectorSpaceIndex K S) := (finite_of_linearIndependent this).fintype
   letI : Fintype (Basis.ofVectorSpaceIndex K S) :=
     (finite_of_linearIndependent (by simpa using bS.linearIndependent)).Fintype
   have : coe '' Basis.ofVectorSpaceIndex K S = this.extend (Set.subset_univ _) :=
@@ -379,6 +380,7 @@ theorem eq_top_of_finrank_eq [FiniteDimensional K V] {S : Submodule K V}
 
 variable (K)
 
+set_option synthInstance.etaExperiment true in
 instance finiteDimensional_self : FiniteDimensional K K := by infer_instance
 #align finite_dimensional.finite_dimensional_self FiniteDimensional.finiteDimensional_self
 
@@ -1246,7 +1248,7 @@ noncomputable def setBasisOfLinearIndependentOfCardEqFinrank {s : Set V} [Nonemp
 @[simp]
 theorem coe_setBasisOfLinearIndependentOfCardEqFinrank {s : Set V} [Nonempty s] [Fintype s]
     (lin_ind : LinearIndependent K ((↑) : s → V)) (card_eq : s.toFinset.card = finrank K V) :
-    ⇑(setBasisOfLinearIndependentOfCardEqFinrank lin_ind card_eq) = coe :=
+    ⇑(setBasisOfLinearIndependentOfCardEqFinrank lin_ind card_eq) = (↑) :=
   Basis.coe_mk _ _
 #align coe_set_basis_of_linear_independent_of_card_eq_finrank coe_setBasisOfLinearIndependentOfCardEqFinrank
 
@@ -1263,11 +1265,12 @@ section finrank_eq_one
 -/
 theorem finrank_eq_one_iff_of_nonzero (v : V) (nz : v ≠ 0) :
     finrank K V = 1 ↔ span K ({v} : Set V) = ⊤ :=
-  ⟨fun h => by simpa using (basisSingleton PUnit h v nz).span_eq, fun s =>
+  -- porting note: need explicit universe on PUnit
+  ⟨fun h => by simpa using (basisSingleton PUnit.{u+1} h v nz).span_eq, fun s =>
     finrank_eq_card_basis
       (Basis.mk (linearIndependent_singleton nz)
         (by
-          convert s
+          convert s.ge  -- porting note: added `.ge` to make things easier for `convert`
           simp))⟩
 #align finrank_eq_one_iff_of_nonzero finrank_eq_one_iff_of_nonzero
 
@@ -1292,14 +1295,10 @@ theorem finrank_eq_one_iff (ι : Type _) [Unique ι] : finrank K V = 1 ↔ Nonem
 
 /-- A module has dimension 1 iff there is some nonzero `v : V` so every vector is a multiple of `v`.
 -/
-theorem finrank_eq_one_iff' : finrank K V = 1 ↔ ∃ (v : V) (n : v ≠ 0),
+theorem finrank_eq_one_iff' : finrank K V = 1 ↔ ∃ (v : V) (_n : v ≠ 0),
     ∀ w : V, ∃ c : K, c • v = w := by
-  convert finrank_eq_one_iff PUnit
-  simp only [exists_prop, eq_iff_iff, Ne.def]
-  convert(Basis.basis_singleton_iff PUnit).symm
-  funext v
-  simp
-  infer_instance; infer_instance
+  -- porting note: was a messy `convert` proof
+  rw [finrank_eq_one_iff PUnit.{u+1}, Basis.basis_singleton_iff PUnit]
 #align finrank_eq_one_iff' finrank_eq_one_iff'
 
 -- Not sure why this aren't found automatically.
@@ -1319,7 +1318,7 @@ theorem finrank_le_one_iff [FiniteDimensional K V] :
     · replace h' := zero_lt_iff.mpr h'
       have : finrank K V = 1 := by linarith
       obtain ⟨v, -, p⟩ := finrank_eq_one_iff'.mp this
-      use ⟨v, p⟩
+      exact ⟨v, p⟩ -- porting note: was `use`
   · rintro ⟨v, p⟩
     exact finrank_le_one v p
 #align finrank_le_one_iff finrank_le_one_iff
@@ -1369,9 +1368,10 @@ open Module
 
 variable {F E : Type _} [Field F] [Ring E] [Algebra F E]
 
+set_option synthInstance.etaExperiment true in
 /-- A `Subalgebra` is `FiniteDimensional` iff it is `FiniteDimensional` as a submodule. -/
 theorem Subalgebra.finiteDimensional_toSubmodule {S : Subalgebra F E} :
-    FiniteDimensional F S.toSubmodule ↔ FiniteDimensional F S :=
+    FiniteDimensional F (Subalgebra.toSubmodule S) ↔ FiniteDimensional F S :=
   Iff.rfl
 #align subalgebra.finite_dimensional_to_submodule Subalgebra.finiteDimensional_toSubmodule
 
