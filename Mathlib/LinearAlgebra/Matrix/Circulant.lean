@@ -68,7 +68,7 @@ theorem circulant_injective [AddGroup n] : Injective (circulant : (n → α) →
 
 theorem Fin.circulant_injective : ∀ n, Injective fun v : Fin n → α => circulant v
   | 0 => by decide
-  | n + 1 => circulant_injective
+  | n + 1 => circulant_injective _
 #align matrix.fin.circulant_injective Matrix.Fin.circulant_injective
 
 @[simp]
@@ -82,11 +82,11 @@ theorem Fin.circulant_inj {n} {v w : Fin n → α} : circulant v = circulant w �
 #align matrix.fin.circulant_inj Matrix.Fin.circulant_inj
 
 theorem transpose_circulant [AddGroup n] (v : n → α) : (circulant v)ᵀ = circulant fun i => v (-i) :=
-  by ext <;> simp
+  by ext; simp
 #align matrix.transpose_circulant Matrix.transpose_circulant
 
 theorem conjTranspose_circulant [Star α] [AddGroup n] (v : n → α) :
-    (circulant v)ᴴ = circulant (star fun i => v (-i)) := by ext <;> simp
+    (circulant v)ᴴ = circulant (star fun i => v (-i)) := by ext ; simp
 #align matrix.conj_transpose_circulant Matrix.conjTranspose_circulant
 
 theorem Fin.transpose_circulant : ∀ {n} (v : Fin n → α), (circulant v)ᵀ = circulant fun i => v (-i)
@@ -129,7 +129,7 @@ theorem circulant_sub [Sub α] [Sub n] (v w : n → α) :
 theorem circulant_mul [Semiring α] [Fintype n] [AddGroup n] (v w : n → α) :
     circulant v ⬝ circulant w = circulant (mulVec (circulant v) w) := by
   ext (i j)
-  simp only [mul_apply, mul_vec, circulant_apply, dot_product]
+  simp only [mul_apply, mulVec, circulant_apply, dotProduct]
   refine' Fintype.sum_equiv (Equiv.subRight j) _ _ _
   intro x
   simp only [Equiv.subRight_apply, sub_sub_sub_cancel_right]
@@ -148,10 +148,9 @@ theorem circulant_mul_comm [CommSemigroup α] [AddCommMonoid α] [Fintype n] [Ad
   simp only [mul_apply, circulant_apply, mul_comm]
   refine' Fintype.sum_equiv ((Equiv.subLeft i).trans (Equiv.addRight j)) _ _ _
   intro x
+  simp [mul_comm]
   congr 2
-  · simp
-  · simp only [Equiv.coe_addRight, Function.comp_apply, Equiv.coe_trans, Equiv.subLeft_apply]
-    abel
+  abel
 #align matrix.circulant_mul_comm Matrix.circulant_mul_comm
 
 theorem Fin.circulant_mul_comm [CommSemigroup α] [AddCommMonoid α] :
@@ -182,13 +181,12 @@ theorem circulant_single (n) [Semiring α] [DecidableEq n] [AddGroup n] [Fintype
 /-- Note we use `↑i = 0` instead of `i = 0` as `fin 0` has no `0`.
 This means that we cannot state this with `pi.single` as we did with `matrix.circulant_single`. -/
 theorem Fin.circulant_ite (α) [Zero α] [One α] :
-    ∀ n, circulant (fun i => ite (↑i = 0) 1 0 : Fin n → α) = 1
+    ∀ n, circulant (fun i => ite (i.1 = 0) 1 0 : Fin n → α) = 1
   | 0 => by decide
   | n + 1 => by
     rw [← circulant_single_one]
     congr with j
-    simp only [Pi.single_apply, Fin.ext_iff]
-    congr
+    simp [Pi.single_apply, Fin.ext_iff]
 #align matrix.fin.circulant_ite Matrix.Fin.circulant_ite
 
 /-- A circulant of `v` is symmetric iff `v` equals its reverse. -/
@@ -196,8 +194,9 @@ theorem circulant_isSymm_iff [AddGroup n] {v : n → α} : (circulant v).IsSymm 
   by rw [IsSymm, transpose_circulant, circulant_inj, funext_iff]
 #align matrix.circulant_is_symm_iff Matrix.circulant_isSymm_iff
 
-theorem Fin.circulant_isSymm_iff : ∀ {n} {v : Fin n → α}, (circulant v).IsSymm ↔ ∀ i, v (-i) = v i
-  | 0 => fun v => by simp [is_symm.ext_iff, IsEmpty.forall_iff]
+theorem Fin.circulant_isSymm_iff :
+    ∀ {n} {v : Fin n → α}, (circulant v).IsSymm ↔ ∀ i, v (-i) = v i
+  | 0 =>  fun v => by simp [IsSymm.ext_iff, IsEmpty.forall_iff]
   | n + 1 => fun v => circulant_isSymm_iff
 #align matrix.fin.circulant_is_symm_iff Matrix.Fin.circulant_isSymm_iff
 
@@ -213,4 +212,3 @@ theorem Fin.circulant_isSymm_apply {n} {v : Fin n → α} (h : (circulant v).IsS
 #align matrix.fin.circulant_is_symm_apply Matrix.Fin.circulant_isSymm_apply
 
 end Matrix
-
