@@ -244,7 +244,7 @@ unsafe def squash (t : m (ListM m α)) : ListM m α :=
 #align tactic.mllist.squash ListM.squash
 
 /-- Lift a list of monadic values inside the monadic to a monadic list, ignoring failures. -/
-unsafe def squish [Monad m] [Alternative m] (L : m (List (m α))) : ListM m α :=
+unsafe def ofListM' [Monad m] [Alternative m] (L : m (List (m α))) : ListM m α :=
   .squash (.ofListM <$> L)
 
 /-- Enumerate the elements of a monadic lazy list, starting at a specified offset. -/

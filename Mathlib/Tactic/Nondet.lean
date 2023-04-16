@@ -69,7 +69,7 @@ unsafe instance : MonadLift m (Nondet m) where
   monadLift := monadLift
 
 /--
-Lift a lift of monadic values to a nondeterministic value.
+Lift a list of monadic values to a nondeterministic value.
 We ensure that each monadic value is evaluated with the same backtrackable state.
 -/
 unsafe def ofListM [Alternative m] (L : List (m α)) : Nondet m α :=
@@ -86,7 +86,11 @@ where aux (s : σ) : List (m α) → Nondet m α
 Squash a monadic nondeterministic value to a nondeterministic value.
 -/
 unsafe def squash (L : m (Nondet m α)) : Nondet m α := ListM.squash L
-unsafe def squish [Alternative m] (L : m (List (m α))) : Nondet m α := .squash (.ofListM <$> L)
+
+/--
+Lift a list of monadic values in the monad to a nondeterministic value.
+-/
+unsafe def ofListM' [Alternative m] (L : m (List (m α))) : Nondet m α := .squash (.ofListM <$> L)
 
 /-- If `L` is empty, return a default value `M`,
 otherwise bind a function `f` over each alternative. -/
