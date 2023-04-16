@@ -27,7 +27,7 @@ theorem transpose_const {m n} (c : ℕ) :
   rw [transpose]
 ```
 -/
-open Lean
+open Lean Elab
 
 syntax (name := eqns) "eqns" ident* : attr
 
@@ -37,7 +37,7 @@ initialize eqnsAttribute : NameMapExtension (Array Name) ←
     descr := "Overrides the equation lemmas for a declation to the provided list"
     add   :=  fun
     | _, `(attr| eqns $[$names]*) =>
-      pure <| names.map (fun n => n.getId)
+      names.mapM resolveGlobalConstNoOverloadWithInfo
     | _, _ => Lean.Elab.throwUnsupportedSyntax }
 
 initialize Lean.Meta.registerGetEqnsFn (fun name => do
