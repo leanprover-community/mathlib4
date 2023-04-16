@@ -71,10 +71,12 @@ theorem minFac_to_nat (n : PosNum) : (minFac n : ℕ) = Nat.minFac n := by
     rw [minFacAux_to_nat]
     · rfl
     simp only [cast_one, cast_bit1]
-    rw [Nat.sqrt_lt]
-    convert lt_add_of_pos_right _ (by decide : (0 : ℕ) < (n + 4) * n + 8)
     unfold _root_.bit1 _root_.bit0
-    ring_nf
+    rw [Nat.sqrt_lt]
+    calc
+      (n : ℕ) + (n : ℕ) + 1 ≤ (n : ℕ) + (n : ℕ) + (n : ℕ) := by simp
+      _ = (n : ℕ) * (1 + 1 + 1) := by simp only [mul_add, mul_one]
+      _ < _ := by simp [mul_lt_mul]
   · rw [minFac, Nat.minFac_eq, if_pos]
     · rfl
     simp
