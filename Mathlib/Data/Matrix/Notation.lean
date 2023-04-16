@@ -80,11 +80,11 @@ end toExpr
 section Parser
 open Lean Elab Term Macro TSyntax
 
-syntax "!![" sepBy1(sepBy1(term, ",", ", ", allowTrailingSep),
+syntax (name := matrixPosPos) "!![" sepBy1(sepBy1(term, ",", ", ", allowTrailingSep),
               ";", "; ", allowTrailingSep) "]" : term
-syntax "!![" ";"+ "]" : term
-syntax "!![" ","+ "]" : term
-syntax "!![" "]" : term
+syntax (name := matrixPosZero) "!![" ";"+ "]" : term
+syntax (name := matrixZeroPos) "!![" ","+ "]" : term
+syntax (name := matrixZeroZero) "!![" "]" : term
 
 macro_rules
   | `(!![$[$[$rows],*];*]) => do

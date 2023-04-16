@@ -67,10 +67,7 @@ def vecCons {n : ℕ} (h : α) (t : Fin n → α) : Fin n.succ → α :=
 #align matrix.vec_cons Matrix.vecCons
 
 /-- Construct a vector `Fin n → α` using `Matrix.vecEmpty` and `Matrix.vecCons`. -/
-syntax "![" term,+ "]" : term
-
-/-- Construct a vector `Fin n → α` using `Matrix.vecEmpty` and `Matrix.vecCons`. -/
-syntax "![" "]" : term
+syntax (name := vecNotation) "![" term,* "]" : term
 
 macro_rules
   | `(![$term:term, $terms:term,*]) => `(vecCons $term ![$terms,*])
@@ -80,7 +77,8 @@ macro_rules
 /-- Unexpander for the `![x, y, ...]` notation. -/
 @[app_unexpander vecCons]
 def vecConsUnexpander : Lean.PrettyPrinter.Unexpander
-  | `($_ $term ![$terms,*]) => `(![$term, $terms,*])
+  | `($_ $term ![$term2, $terms,*]) => `(![$term, $term2, $terms,*])
+  | `($_ $term ![$term2]) => `(![$term, $term2])
   | `($_ $term ![]) => `(![$term])
   | _ => throw ()
 
