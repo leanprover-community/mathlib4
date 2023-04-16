@@ -8,7 +8,7 @@ Authors: Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Order.Category.Lat
+import Mathlib.Order.Category.Lat
 
 /-!
 # The category of distributive lattices
@@ -63,8 +63,7 @@ instance hasForgetToLat : HasForget₂ DistLat LatCat :=
 /-- Constructs an equivalence between distributive lattices from an order isomorphism between them.
 -/
 @[simps]
-def Iso.mk {α β : DistLat.{u}} (e : α ≃o β) : α ≅ β
-    where
+def Iso.mk {α β : DistLat.{u}} (e : α ≃o β) : α ≅ β where
   Hom := e
   inv := e.symm
   hom_inv_id' := by
