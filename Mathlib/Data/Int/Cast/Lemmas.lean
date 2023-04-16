@@ -5,7 +5,7 @@ Authors: Mario Carneiro
 Ported by: Scott Morrison
 
 ! This file was ported from Lean 3 source module data.int.cast.lemmas
-! leanprover-community/mathlib commit 7a89b1aed52bcacbcc4a8ad515e72c5c07268940
+! leanprover-community/mathlib commit acebd8d49928f6ed8920e502a6c90674e75bd441
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -367,22 +367,6 @@ theorem Sum.elim_intCast_intCast {α β γ : Type _} [IntCast γ] (n : ℤ) :
     Sum.elim (n : α → γ) (n : β → γ) = n :=
   @Sum.elim_lam_const_lam_const α β γ n
 #align sum.elim_int_cast_int_cast Sum.elim_intCast_intCast
-
-namespace MulOpposite
-
-variable [AddGroupWithOne α]
-
-@[simp, norm_cast]
-theorem op_intCast (z : ℤ) : op (z : α) = z :=
-  rfl
-#align mul_opposite.op_int_cast MulOpposite.op_intCast
-
-@[simp, norm_cast]
-theorem unop_intCast (n : ℤ) : unop (n : αᵐᵒᵖ) = n :=
-  rfl
-#align mul_opposite.unop_int_cast MulOpposite.unop_intCast
-
-end MulOpposite
 
 /-! ### Order dual -/
 

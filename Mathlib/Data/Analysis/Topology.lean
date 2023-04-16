@@ -4,12 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 
 ! This file was ported from Lean 3 source module data.analysis.topology
-! leanprover-community/mathlib commit 28aa996fc6fb4317f0083c4e6daf79878d81be33
+! leanprover-community/mathlib commit 55d771df074d0dd020139ee1cd4b95521422df9f
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Analysis.Filter
 import Mathlib.Topology.Bases
+import Mathlib.Topology.LocallyFinite
 
 /-!
 # Computational realization of topological spaces (experimental)
@@ -148,7 +149,7 @@ theorem isClosed_iff [TopologicalSpace α] (F : Realizer α) {s : Set α} :
       forall_congr' fun a ↦
         show (a ∉ s → ∃ b : F.σ, a ∈ F.F b ∧ ∀ z ∈ F.F b, z ∉ s) ↔ _ by
           haveI := Classical.propDecidable ; rw [not_imp_comm] ;
-            simp [not_exists, not_and, not_forall, and_comm]; trivial
+            simp [not_exists, not_and, not_forall, and_comm]
 #align ctop.realizer.is_closed_iff Ctop.Realizer.isClosed_iff
 
 theorem mem_interior_iff [TopologicalSpace α] (F : Realizer α) {s : Set α} {a : α} :

@@ -9,6 +9,7 @@ Authors: Leonardo de Moura, Jeremy Avigad, Minchao Wu, Mario Carneiro
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Multiset.FinsetOps
+import Mathlib.Data.Set.Lattice
 
 /-!
 # Finite sets
@@ -1184,16 +1185,16 @@ theorem ssubset_insert (h : a ∉ s) : s ⊂ insert a s :=
 #align finset.ssubset_insert Finset.ssubset_insert
 
 @[elab_as_elim]
-theorem cons_induction {α : Type _} {p : Finset α → Prop} (h₁ : p ∅)
-    (h₂ : ∀ ⦃a : α⦄ {s : Finset α} (h : a ∉ s), p s → p (cons a s h)) : ∀ s, p s
-  | ⟨s, nd⟩ =>
-    Multiset.induction_on s (fun _ => h₁)
-      (fun a s IH nd => by
-        cases' nodup_cons.1 nd with m nd'
-        rw [← (eq_of_veq _ : cons a (Finset.mk s _) m = ⟨a ::ₘ s, nd⟩)]
-        · exact h₂ m (IH nd')
-        · rw [cons_val])
-      nd
+theorem cons_induction {α : Type _} {p : Finset α → Prop} (empty : p ∅)
+    (cons : ∀ ⦃a : α⦄ {s : Finset α} (h : a ∉ s), p s → p (cons a s h)) : ∀ s, p s
+  | ⟨s, nd⟩ => by
+    induction s using Multiset.induction with
+    | empty => exact empty
+    | @cons a s IH =>
+      cases' nodup_cons.1 nd with m nd'
+      rw [← (eq_of_veq _ : Finset.cons a ⟨s, _⟩ m = ⟨a ::ₘ s, nd⟩)]
+      · exact cons m (IH nd')
+      · rw [cons_val]
 #align finset.cons_induction Finset.cons_induction
 
 @[elab_as_elim]
@@ -1203,9 +1204,9 @@ theorem cons_induction_on {α : Type _} {p : Finset α → Prop} (s : Finset α)
 #align finset.cons_induction_on Finset.cons_induction_on
 
 @[elab_as_elim]
-protected theorem induction {α : Type _} {p : Finset α → Prop} [DecidableEq α] (h₁ : p ∅)
-    (h₂ : ∀ ⦃a : α⦄ {s : Finset α}, a ∉ s → p s → p (insert a s)) : ∀ s, p s :=
-  cons_induction h₁ fun a s ha => (s.cons_eq_insert a ha).symm ▸ h₂ ha
+protected theorem induction {α : Type _} {p : Finset α → Prop} [DecidableEq α] (empty : p ∅)
+    (insert : ∀ ⦃a : α⦄ {s : Finset α}, a ∉ s → p s → p (insert a s)) : ∀ s, p s :=
+  cons_induction empty fun a s ha => (s.cons_eq_insert a ha).symm ▸ insert ha
 #align finset.induction Finset.induction
 
 /-- To prove a proposition about an arbitrary `Finset α`,
@@ -2511,6 +2512,14 @@ instance decidableDforallFinset {p : ∀ a ∈ s, Prop} [_hp : ∀ (a) (h : a �
 -- in lean4 it seems this is not the case.
 instance decidableSubsetFinset [DecidableEq α] {s t : Finset α} : Decidable (s ⊆ t) :=
   decidableDforallFinset
+
+-- porting notes: In lean3, the above was picked up when decidability of s ⊂ t was needed
+-- in lean4 it seems this is not the case.
+instance decidableSSubsetFinset [DecidableEq α] {s t : Finset α} : Decidable (s ⊂ t) := by
+  rw [ssubset_iff_subset_ne]
+  have h₁ : Decidable (s ⊆ t) := decidableSubsetFinset
+  have h₂ : Decidable (s ≠ t) := instDecidableNot
+  exact instDecidableAnd
 
 /-- decidable equality for functions whose domain is bounded by finsets -/
 instance decidableEqPiFinset {β : α → Type _} [_h : ∀ a, DecidableEq (β a)] :

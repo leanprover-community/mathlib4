@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kevin Buzzard
 
 ! This file was ported from Lean 3 source module ring_theory.noetherian
-! leanprover-community/mathlib commit da420a8c6dd5bdfb85c4ced85c34388f633bc6ff
+! leanprover-community/mathlib commit 210657c4ea4a4a7b234392f70a3a2a83346dfa90
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -323,21 +323,16 @@ theorem isNoetherian_iff_fg_wellFounded :
     constructor
     intro N
     obtain ⟨⟨N₀, h₁⟩, e : N₀ ≤ N, h₂⟩ :=
-      WellFounded.wellFounded_iff_has_max'.mp H { N' : α | N'.1 ≤ N }
-        ⟨⟨⊥, Submodule.fg_bot⟩, @bot_le _ _ _ N⟩
+      WellFounded.has_min H { N' : α | N'.1 ≤ N } ⟨⟨⊥, Submodule.fg_bot⟩, @bot_le _ _ _ N⟩
     convert h₁
     refine' (e.antisymm _).symm
     by_contra h₃
     obtain ⟨x, hx₁ : x ∈ N, hx₂ : x ∉ N₀⟩ := Set.not_subset.mp h₃
     apply hx₂
-    have := h₂ ⟨(R ∙ x) ⊔ N₀, ?_⟩ ?_ ?_
-    · injection this with eq
-      rw [← eq]
-      exact (le_sup_left : (R ∙ x) ≤ (R ∙ x) ⊔ N₀) (Submodule.mem_span_singleton_self _)
-    · exact Submodule.Fg.sup ⟨{x}, by rw [Finset.coe_singleton]⟩ h₁
-    · exact sup_le ((Submodule.span_singleton_le_iff_mem _ _).mpr hx₁) e
-    · show N₀ ≤ (R ∙ x) ⊔ N₀
-      exact le_sup_right
+    rw [eq_of_le_of_not_lt (le_sup_right : N₀ ≤ _) (h₂
+      ⟨_, Submodule.Fg.sup ⟨{x}, by rw [Finset.coe_singleton]⟩ h₁⟩ <|
+      sup_le ((Submodule.span_singleton_le_iff_mem _ _).mpr hx₁) e)]
+    exact (le_sup_left : (R ∙ x) ≤ _) (Submodule.mem_span_singleton_self _)
 #align is_noetherian_iff_fg_well_founded isNoetherian_iff_fg_wellFounded
 
 variable (R M)
@@ -352,9 +347,8 @@ variable {R M}
 /-- A module is Noetherian iff every nonempty set of submodules has a maximal submodule among them.
 -/
 theorem set_has_maximal_iff_noetherian :
-    (∀ a : Set <| Submodule R M, a.Nonempty → ∃ M' ∈ a, ∀ I ∈ a, M' ≤ I → I = M') ↔
-      IsNoetherian R M :=
-  by rw [isNoetherian_iff_wellFounded, WellFounded.wellFounded_iff_has_max']
+    (∀ a : Set <| Submodule R M, a.Nonempty → ∃ M' ∈ a, ∀ I ∈ a, ¬M' < I) ↔ IsNoetherian R M := by
+  rw [isNoetherian_iff_wellFounded, WellFounded.wellFounded_iff_has_min]
 #align set_has_maximal_iff_noetherian set_has_maximal_iff_noetherian
 
 /-- A module is Noetherian iff every increasing chain of submodules stabilizes. -/

@@ -198,14 +198,10 @@ structure OplaxFunctor (B : Type u₁) [Bicategory.{w₁, v₁} B] (C : Type u�
 #align category_theory.oplax_functor CategoryTheory.OplaxFunctor
 #align category_theory.oplax_functor.map_id CategoryTheory.OplaxFunctor.mapId
 #align category_theory.oplax_functor.map_comp CategoryTheory.OplaxFunctor.mapComp
-#align category_theory.oplax_functor.map_comp_naturality_left'
-  CategoryTheory.OplaxFunctor.mapComp_naturality_left
-#align category_theory.oplax_functor.map_comp_naturality_left
-  CategoryTheory.OplaxFunctor.mapComp_naturality_left
-#align category_theory.oplax_functor.map_comp_naturality_right'
-  CategoryTheory.OplaxFunctor.mapComp_naturality_right
-#align category_theory.oplax_functor.map_comp_naturality_right
-  CategoryTheory.OplaxFunctor.mapComp_naturality_right
+#align category_theory.oplax_functor.map_comp_naturality_left' CategoryTheory.OplaxFunctor.mapComp_naturality_left
+#align category_theory.oplax_functor.map_comp_naturality_left CategoryTheory.OplaxFunctor.mapComp_naturality_left
+#align category_theory.oplax_functor.map_comp_naturality_right' CategoryTheory.OplaxFunctor.mapComp_naturality_right
+#align category_theory.oplax_functor.map_comp_naturality_right CategoryTheory.OplaxFunctor.mapComp_naturality_right
 #align category_theory.oplax_functor.map₂_id' CategoryTheory.OplaxFunctor.map₂_id
 #align category_theory.oplax_functor.map₂_comp' CategoryTheory.OplaxFunctor.map₂_comp
 #align category_theory.oplax_functor.map₂_associator' CategoryTheory.OplaxFunctor.map₂_associator
@@ -438,8 +434,7 @@ attribute [nolint docBlame] CategoryTheory.Pseudofunctor.mapId
 
 instance hasCoeToPrelaxFunctor : Coe (Pseudofunctor B C) (PrelaxFunctor B C) :=
   ⟨toPrelaxFunctor⟩
-#align category_theory.pseudofunctor.has_coe_to_prelax_functor
-  CategoryTheory.Pseudofunctor.hasCoeToPrelaxFunctor
+#align category_theory.pseudofunctor.has_coe_to_prelax_functor CategoryTheory.Pseudofunctor.hasCoeToPrelaxFunctor
 
 variable (F : Pseudofunctor B C)
 

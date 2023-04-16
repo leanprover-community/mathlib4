@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 
 ! This file was ported from Lean 3 source module algebra.big_operators.basic
-! leanprover-community/mathlib commit 6c5f73fd6f6cc83122788a80a27cdd54663609f4
+! leanprover-community/mathlib commit c227d107bbada5d0d9d20287e3282c0a7f1651a0
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -17,7 +17,7 @@ import Mathlib.Data.Finset.Sum
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.Finset.Sigma
 import Mathlib.Data.Multiset.Powerset
-import Mathlib.Data.Set.Pairwise
+import Mathlib.Data.Set.Pairwise.Basic
 import Mathlib.Tactic.ScopedNS
 
 /-!

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Floris van Doorn, Violeta Hernández Palacios
 
 ! This file was ported from Lean 3 source module set_theory.ordinal.exponential
-! leanprover-community/mathlib commit 8ee653c07a9ddb27ae466d045a3f0c2151b076cf
+! leanprover-community/mathlib commit b67044ba53af18680e1dd246861d9584e968495d
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -13,7 +13,7 @@ import Mathlib.SetTheory.Ordinal.Arithmetic
 /-! # Ordinal exponential
 
 In this file we define the power function and the logarithm function on ordinals. The two are
-related by the lemma `Ordinal.opow_le_iff_le_log : (b^c) ≤ x ↔ c ≤ log b x` for nontrivial inputs 
+related by the lemma `Ordinal.opow_le_iff_le_log : (b^c) ≤ x ↔ c ≤ log b x` for nontrivial inputs
 `b`, `c`.
 -/
 
@@ -211,9 +211,8 @@ theorem opow_add (a b c : Ordinal) : a^(b + c) = (a^b) * (a^c) := by
 theorem opow_one_add (a b : Ordinal) : a^(1 + b) = a * (a^b) := by rw [opow_add, opow_one]
 #align ordinal.opow_one_add Ordinal.opow_one_add
 
-theorem opow_dvd_opow (a) {b c : Ordinal} (h : b ≤ c) : (a^b) ∣ (a^c) := by
-  rw [← Ordinal.add_sub_cancel_of_le h, opow_add]
-  apply dvd_mul_right
+theorem opow_dvd_opow (a) {b c : Ordinal} (h : b ≤ c) : (a^b) ∣ (a^c) :=
+  ⟨a^(c - b), by rw [← opow_add, Ordinal.add_sub_cancel_of_le h]⟩
 #align ordinal.opow_dvd_opow Ordinal.opow_dvd_opow
 
 theorem opow_dvd_opow_iff {a b c : Ordinal} (a1 : 1 < a) : (a^b) ∣ (a^c) ↔ b ≤ c :=
@@ -428,6 +427,14 @@ theorem log_opow {b : Ordinal} (hb : 1 < b) (x : Ordinal) : log b (b^x) = x := b
     using 1
   rw [add_zero, mul_one]
 #align ordinal.log_opow Ordinal.log_opow
+
+theorem div_opow_log_pos (b : Ordinal) {o : Ordinal} (ho : o ≠ 0) : 0 < o / (b^log b o) :=
+  by
+  rcases eq_zero_or_pos b with (rfl | hb)
+  · simpa using Ordinal.pos_iff_ne_zero.2 ho
+  · rw [div_pos (opow_ne_zero _ hb.ne')]
+    exact opow_log_le_self b ho
+#align ordinal.div_opow_log_pos Ordinal.div_opow_log_pos
 
 theorem div_opow_log_lt {b : Ordinal} (o : Ordinal) (hb : 1 < b) : o / (b^log b o) < b := by
   rw [div_lt (opow_pos _ (zero_lt_one.trans hb)).ne', ← opow_succ]

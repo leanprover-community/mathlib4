@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 
 ! This file was ported from Lean 3 source module number_theory.zsqrtd.basic
-! leanprover-community/mathlib commit 7ec294687917cbc5c73620b4414ae9b5dd9ae1b4
+! leanprover-community/mathlib commit e8638a0fcaf73e4500469f368ef9494e495099b3
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -279,9 +279,17 @@ theorem coe_nat_re (n : ℕ) : (n : ℤ√d).re = n :=
 #align zsqrtd.coe_nat_re Zsqrtd.coe_nat_re
 
 @[simp]
+theorem ofNat_re (n : ℕ) [n.AtLeastTwo] : (OfNat.ofNat n : ℤ√d).re = n :=
+  rfl
+
+@[simp]
 theorem coe_nat_im (n : ℕ) : (n : ℤ√d).im = 0 :=
   rfl
 #align zsqrtd.coe_nat_im Zsqrtd.coe_nat_im
+
+@[simp]
+theorem ofNat_im (n : ℕ) [n.AtLeastTwo] : (OfNat.ofNat n : ℤ√d).im = 0 :=
+  rfl
 
 theorem coe_nat_val (n : ℕ) : (n : ℤ√d) = ⟨n, 0⟩ :=
   rfl
@@ -588,7 +596,7 @@ theorem norm_eq_one_iff {x : ℤ√d} : x.norm.natAbs = 1 ↔ IsUnit x :=
     let ⟨y, hy⟩ := isUnit_iff_dvd_one.1 h
     have := congr_arg (Int.natAbs ∘ norm) hy
     rw [Function.comp_apply, Function.comp_apply, norm_mul, Int.natAbs_mul, norm_one,
-      Int.natAbs_one, eq_comm, Nat.mul_eq_one_iff] at this
+      Int.natAbs_one, eq_comm, mul_eq_one] at this
     exact this.1⟩
 #align zsqrtd.norm_eq_one_iff Zsqrtd.norm_eq_one_iff
 

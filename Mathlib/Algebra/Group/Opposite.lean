@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 
 ! This file was ported from Lean 3 source module algebra.group.opposite
-! leanprover-community/mathlib commit 655994e298904d7e5bbd1e18c95defd7b543eb94
+! leanprover-community/mathlib commit 76de8ae01554c3b37d66544866659ff174e66e1f
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -29,6 +29,13 @@ namespace MulOpposite
 ### Additive structures on `αᵐᵒᵖ`
 -/
 
+@[to_additive]
+instance natCast [NatCast α] : NatCast αᵐᵒᵖ :=
+  ⟨fun n => op n⟩
+
+@[to_additive]
+instance intCast [IntCast α] : IntCast αᵐᵒᵖ :=
+  ⟨fun n => op n⟩
 
 instance addSemigroup [AddSemigroup α] : AddSemigroup αᵐᵒᵖ :=
   unop_injective.addSemigroup _ fun _ _ => rfl
@@ -48,14 +55,16 @@ instance addZeroClass [AddZeroClass α] : AddZeroClass αᵐᵒᵖ :=
 instance addMonoid [AddMonoid α] : AddMonoid αᵐᵒᵖ :=
   unop_injective.addMonoid _ (by exact rfl) (fun _ _ => rfl) fun _ _ => rfl
 
-instance addMonoidWithOne [AddMonoidWithOne α] : AddMonoidWithOne αᵐᵒᵖ :=
-  { MulOpposite.addMonoid α, MulOpposite.one α with
-    natCast := fun n => op n,
-    natCast_zero := show op ((0 : ℕ) : α) = 0 by simp,
-    natCast_succ := show ∀ n, op ((n + 1 : ℕ) : α) = op ((n : ℕ) : α) + 1 by simp }
-
 instance addCommMonoid [AddCommMonoid α] : AddCommMonoid αᵐᵒᵖ :=
-  unop_injective.addCommMonoid _ (by exact rfl) (fun _ _ => rfl) fun _ _ => rfl
+  unop_injective.addCommMonoid _ rfl (fun _ _ => rfl) fun _ _ => rfl
+
+instance addMonoidWithOne [AddMonoidWithOne α] : AddMonoidWithOne αᵐᵒᵖ :=
+  { MulOpposite.addMonoid α, MulOpposite.one α, MulOpposite.natCast _ with
+    natCast_zero := show op ((0 : ℕ) : α) = 0 by rw [Nat.cast_zero, op_zero]
+    natCast_succ := show ∀ n, op ((n + 1 : ℕ) : α) = op ↑(n : ℕ) + 1 by simp }
+
+instance addCommMonoidWithOne [AddCommMonoidWithOne α] : AddCommMonoidWithOne αᵐᵒᵖ :=
+  { MulOpposite.addMonoidWithOne α, MulOpposite.addCommMonoid α with }
 
 instance subNegMonoid [SubNegMonoid α] : SubNegMonoid αᵐᵒᵖ :=
   unop_injective.subNegMonoid _ (by exact rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
@@ -65,6 +74,10 @@ instance addGroup [AddGroup α] : AddGroup αᵐᵒᵖ :=
   unop_injective.addGroup _ (by exact rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
   (fun _ _ => rfl) fun _ _ => rfl
 
+instance addCommGroup [AddCommGroup α] : AddCommGroup αᵐᵒᵖ :=
+  unop_injective.addCommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
+    (fun _ _ => rfl) fun _ _ => rfl
+
 instance addGroupWithOne [AddGroupWithOne α] : AddGroupWithOne αᵐᵒᵖ :=
   { MulOpposite.addMonoidWithOne α, MulOpposite.addGroup α with
     intCast := fun n => op n,
@@ -72,9 +85,8 @@ instance addGroupWithOne [AddGroupWithOne α] : AddGroupWithOne αᵐᵒᵖ :=
     intCast_negSucc := fun n =>
       show op _ = op (-unop (op ((n + 1 : ℕ) : α))) by simp }
 
-instance addCommGroup [AddCommGroup α] : AddCommGroup αᵐᵒᵖ :=
-  unop_injective.addCommGroup _ (by exact rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) fun _ _ => rfl
+instance addCommGroupWithOne [AddCommGroupWithOne α] : AddCommGroupWithOne αᵐᵒᵖ :=
+  { MulOpposite.addGroupWithOne α, MulOpposite.addCommGroup α with }
 
 /-!
 ### Multiplicative structures on `αᵐᵒᵖ`
@@ -166,6 +178,29 @@ instance commGroup [CommGroup α] : CommGroup αᵐᵒᵖ :=
   { MulOpposite.group α, MulOpposite.commMonoid α with }
 
 variable {α}
+@[to_additive (attr := simp, norm_cast)]
+theorem op_natCast [NatCast α] (n : ℕ) : op (n : α) = n :=
+  rfl
+#align mul_opposite.op_nat_cast MulOpposite.op_natCast
+#align add_opposite.op_nat_cast AddOpposite.op_natCast
+
+@[to_additive (attr := simp, norm_cast)]
+theorem op_intCast [IntCast α] (n : ℤ) : op (n : α) = n :=
+  rfl
+#align mul_opposite.op_int_cast MulOpposite.op_intCast
+#align add_opposite.op_int_cast AddOpposite.op_intCast
+
+@[to_additive (attr := simp, norm_cast)]
+theorem unop_natCast [NatCast α] (n : ℕ) : unop (n : αᵐᵒᵖ) = n :=
+  rfl
+#align mul_opposite.unop_nat_cast MulOpposite.unop_natCast
+#align add_opposite.unop_nat_cast AddOpposite.unop_natCast
+
+@[to_additive (attr := simp, norm_cast)]
+theorem unop_intCast [IntCast α] (n : ℤ) : unop (n : αᵐᵒᵖ) = n :=
+  rfl
+#align mul_opposite.unop_int_cast MulOpposite.unop_intCast
+#align add_opposite.unop_int_cast AddOpposite.unop_intCast
 
 @[to_additive (attr := simp)]
 theorem unop_div [DivInvMonoid α] (x y : αᵐᵒᵖ) : unop (x / y) = (unop y)⁻¹ * unop x :=
@@ -299,6 +334,17 @@ instance group [Group α] : Group αᵃᵒᵖ :=
 instance commGroup [CommGroup α] : CommGroup αᵃᵒᵖ :=
   unop_injective.commGroup _ (by exact rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ _ => rfl
+
+-- NOTE: `addMonoidWithOne α → addMonoidWithOne αᵃᵒᵖ` does not hold
+instance addCommMonoidWithOne [AddCommMonoidWithOne α] : AddCommMonoidWithOne αᵃᵒᵖ :=
+  { AddOpposite.addCommMonoid α, AddOpposite.one, AddOpposite.natCast α with
+    natCast_zero := show op ((0 : ℕ) : α) = 0 by rw [Nat.cast_zero, op_zero]
+    natCast_succ := show ∀ n, op ((n + 1 : ℕ) : α) = op ↑(n : ℕ) + 1 by simp [add_comm] }
+
+instance addCommGroupWithOne [AddCommGroupWithOne α] : AddCommGroupWithOne αᵃᵒᵖ :=
+  { AddOpposite.addCommMonoidWithOne α, AddOpposite.addCommGroup α, AddOpposite.intCast α with
+    intCast_ofNat := λ _ ↦ congr_arg op $ Int.cast_ofNat _
+    intCast_negSucc := λ _ ↦ congr_arg op $ Int.cast_negSucc _ }
 
 variable {α}
 

@@ -227,14 +227,14 @@ theorem finSuccEquiv'_last_apply_castSucc (i : Fin n) :
   rw [← Fin.succAbove_last, finSuccEquiv'_succAbove]
 
 theorem finSuccEquiv'_last_apply {i : Fin (n + 1)} (h : i ≠ Fin.last n) :
-    finSuccEquiv' (Fin.last n) i = Fin.castLt i (Fin.val_lt_last h) := by
+    finSuccEquiv' (Fin.last n) i = Fin.castLT i (Fin.val_lt_last h) := by
   rcases Fin.exists_castSucc_eq.2 h with ⟨i, rfl⟩
   rw [finSuccEquiv'_last_apply_castSucc]
   rfl
 #align fin_succ_equiv'_last_apply finSuccEquiv'_last_apply
 
 theorem finSuccEquiv'_ne_last_apply {i j : Fin (n + 1)} (hi : i ≠ Fin.last n) (hj : j ≠ i) :
-    finSuccEquiv' i j = (i.castLt (Fin.val_lt_last hi)).predAbove j := by
+    finSuccEquiv' i j = (i.castLT (Fin.val_lt_last hi)).predAbove j := by
   rcases Fin.exists_succAbove_eq hj with ⟨j, rfl⟩
   rcases Fin.exists_castSucc_eq.2 hi with ⟨i, rfl⟩
   simp
@@ -252,14 +252,14 @@ theorem finSuccAboveEquiv_apply (p : Fin (n + 1)) (i : Fin n) :
 #align fin_succ_above_equiv_apply finSuccAboveEquiv_apply
 
 theorem finSuccAboveEquiv_symm_apply_last (x : { x : Fin (n + 1) // x ≠ Fin.last n }) :
-    (finSuccAboveEquiv (Fin.last n)).symm x = Fin.castLt x.1 (Fin.val_lt_last x.2) := by
+    (finSuccAboveEquiv (Fin.last n)).symm x = Fin.castLT x.1 (Fin.val_lt_last x.2) := by
   rw [← Option.some_inj]
   simpa [finSuccAboveEquiv, OrderIso.symm] using finSuccEquiv'_last_apply x.property
 #align fin_succ_above_equiv_symm_apply_last finSuccAboveEquiv_symm_apply_last
 
 theorem finSuccAboveEquiv_symm_apply_ne_last {p : Fin (n + 1)} (h : p ≠ Fin.last n)
     (x : { x : Fin (n + 1) // x ≠ p }) :
-    (finSuccAboveEquiv p).symm x = (p.castLt (Fin.val_lt_last h)).predAbove x := by
+    (finSuccAboveEquiv p).symm x = (p.castLT (Fin.val_lt_last h)).predAbove x := by
   rw [← Option.some_inj]
   simpa [finSuccAboveEquiv, OrderIso.symm] using finSuccEquiv'_ne_last_apply h x.property
 #align fin_succ_above_equiv_symm_apply_ne_last finSuccAboveEquiv_symm_apply_ne_last
@@ -528,18 +528,18 @@ def Int.divModEquiv (n : ℕ) [NeZero n] : ℤ ≃ ℤ × Fin n where
 #align int.div_mod_equiv Int.divModEquiv
 
 /-- Promote a `Fin n` into a larger `Fin m`, as a subtype where the underlying
-values are retained. This is the `OrderIso` version of `Fin.castLe`. -/
+values are retained. This is the `OrderIso` version of `Fin.castLE`. -/
 @[simps apply symm_apply]
-def Fin.castLeOrderIso {n m : ℕ} (h : n ≤ m) : Fin n ≃o { i : Fin m // (i : ℕ) < n }
+def Fin.castLEOrderIso {n m : ℕ} (h : n ≤ m) : Fin n ≃o { i : Fin m // (i : ℕ) < n }
     where
-  toFun i := ⟨Fin.castLe h i, by simp⟩
+  toFun i := ⟨Fin.castLE h i, by simp⟩
   invFun i := ⟨i, i.prop⟩
   left_inv _ := by simp
   right_inv _ := by simp
   map_rel_iff' := by simp
-#align fin.cast_le_order_iso Fin.castLeOrderIso
-#align fin.cast_le_order_iso_apply Fin.castLeOrderIso_apply
-#align fin.cast_le_order_iso_symm_apply Fin.castLeOrderIso_symm_apply
+#align fin.cast_le_order_iso Fin.castLEOrderIso
+#align fin.cast_le_order_iso_apply Fin.castLEOrderIso_apply
+#align fin.cast_le_order_iso_symm_apply Fin.castLEOrderIso_symm_apply
 
 /-- `Fin 0` is a subsingleton. -/
 instance subsingleton_fin_zero : Subsingleton (Fin 0) :=

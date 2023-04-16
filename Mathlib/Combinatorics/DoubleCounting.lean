@@ -84,8 +84,7 @@ theorem sum_card_bipartiteAbove_eq_sum_card_bipartiteBelow [∀ a b, Decidable (
     (∑ a in s, (t.bipartiteAbove r a).card) = ∑ b in t, (s.bipartiteBelow r b).card := by
   simp_rw [card_eq_sum_ones, bipartiteAbove, bipartiteBelow, sum_filter]
   exact sum_comm
-#align finset.sum_card_bipartite_above_eq_sum_card_bipartite_below
-  Finset.sum_card_bipartiteAbove_eq_sum_card_bipartiteBelow
+#align finset.sum_card_bipartite_above_eq_sum_card_bipartite_below Finset.sum_card_bipartiteAbove_eq_sum_card_bipartiteBelow
 
 /-- Double counting argument. Considering `r` as a bipartite graph, the LHS is a lower bound on the
 number of edges while the RHS is an upper bound. -/

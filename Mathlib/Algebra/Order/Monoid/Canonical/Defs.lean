@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 
 ! This file was ported from Lean 3 source module algebra.order.monoid.canonical.defs
-! leanprover-community/mathlib commit 70d50ecfd4900dd6d328da39ab7ebd516abe4025
+! leanprover-community/mathlib commit e8638a0fcaf73e4500469f368ef9494e495099b3
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -190,6 +190,18 @@ theorem le_of_mul_le_right : a * b ≤ c → b ≤ c :=
 #align le_of_add_le_right le_of_add_le_right
 
 @[to_additive]
+theorem le_mul_of_le_left : a ≤ b → a ≤ b * c :=
+  le_self_mul.trans'
+#align le_mul_of_le_left le_mul_of_le_left
+#align le_add_of_le_left le_add_of_le_left
+
+@[to_additive]
+theorem le_mul_of_le_right : a ≤ c → a ≤ b * c :=
+  le_mul_self.trans'
+#align le_mul_of_le_right le_mul_of_le_right
+#align le_add_of_le_right le_add_of_le_right
+
+@[to_additive]
 theorem le_iff_exists_mul : a ≤ b ↔ ∃ c, b = a * c :=
   ⟨exists_mul_of_le, by
     rintro ⟨c, rfl⟩
@@ -215,6 +227,8 @@ theorem bot_eq_one : (⊥ : α) = 1 :=
 #align bot_eq_one bot_eq_one
 #align bot_eq_zero bot_eq_zero
 
+--TODO: This is a special case of `mul_eq_one`. We need the instance
+-- `CanonicallyOrderedMonoid α → Unique αˣ`
 @[to_additive (attr := simp)]
 theorem mul_eq_one_iff : a * b = 1 ↔ a = 1 ∧ b = 1 :=
   mul_eq_one_iff' (one_le _) (one_le _)
