@@ -60,10 +60,10 @@ variable [AddCommGroup N] [Module R N] [Module.Finite R N]
 
 /-- The rank of a finite module is finite. -/
 theorem rank_lt_aleph0 : Module.rank R M < ℵ₀ := by
-  clear! N
   simp only [Module.rank_def]
   letI := nontrivial_of_invariantBasisNumber R
-  obtain ⟨S, hS⟩ := Module.finite_def.mp ‹_›
+  -- porting note: can't use `‹_›` as that pulls the unused `N` into the context
+  obtain ⟨S, hS⟩ := Module.finite_def.mp ‹Module.Finite R M›
   refine' (csupᵢ_le' fun i => _).trans_lt (nat_lt_aleph0 S.card)
   exact linearIndependent_le_span_finset _ i.prop S hS
 #align finite_dimensional.rank_lt_aleph_0 FiniteDimensional.rank_lt_aleph0
