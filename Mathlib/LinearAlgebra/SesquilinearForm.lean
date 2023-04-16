@@ -522,7 +522,7 @@ theorem IsAdjointPair.sub (h : IsAdjointPair B B' f g) (h' : IsAdjointPair B B' 
 
 theorem IsAdjointPair.smul (c : R) (h : IsAdjointPair B B' f g) :
     IsAdjointPair B B' (c • f) (c • g) := fun _ _ ↦ by
-  simp only [smul_apply, map_smul, smul_eq_mul, h _ _]
+  simp [h _]
 #align linear_map.is_adjoint_pair.smul LinearMap.IsAdjointPair.smul
 
 end AddCommGroup
