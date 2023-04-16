@@ -44,71 +44,58 @@ example (C : Cat) (X Y : C.O) (f : C.H X Y) : C.c f (C.i Y) = f := by
 --   repeat { rw [h1] }
 --   repeat { rw [h2] }
 
+axiom foo : [1] = [2]
+
+example : [[1], [1], [1]] = [[1], [2], [1]] := by
+  nth_rw 2 [foo]
+
+axiom foo' : [6] = [7]
+axiom bar' : [[5],[5]] = [[6],[6]]
+
+example : [[7],[6]] = [[5],[5]] := by
+  nth_rewrite 1 [foo']
+  nth_rewrite 1 [bar']
+  nth_rewrite 1 [←foo']
+  nth_rewrite 1 [←foo']
+  rfl
+
 -- Porting note:
--- The remaining tests haven't been ported from Lean3 yet because we don't have an implementation
--- of `nth_rewrite_lhs`.
+-- The next two tests fail because the `nth_rewrite` we have in mathlib4
+-- is just a syntactic wrapper around the `Occurrences` argument
+-- for the internal rewriting functions,
+-- and not actually a port of the mathlib3 tactic.
+-- Thus is suffers from the exact same problem:
+-- when a lemma matches in several different ways,
+-- we cannot rewrite via the later ones because of stuck metavariables.
 
--- -- The next two examples fail when using the kabstract backend.
-
--- axiom foo : [1] = [2]
-
--- example : [[1], [1], [1]] = [[1], [2], [1]] := by
---   nth_rewrite_lhs 2 [foo]
-
--- axiom foo' : [6] = [7]
--- axiom bar' : [[5],[5]] = [[6],[6]]
-
--- example : [[7],[6]] = [[5],[5]] :=
--- begin
---   nth_rewrite_lhs 0 foo',
---   nth_rewrite_rhs 0 bar',
---   nth_rewrite_lhs 0 ←foo',
---   nth_rewrite_lhs 0 ←foo',
--- end
+-- example (a b c : ℕ) : c + a + b = a + c + b := by
+--   nth_rewrite 4 [add_comm]
 
 -- axiom wowzer : (3, 3) = (5, 2)
 -- axiom kachow (n : ℕ) : (4, n) = (5, n)
 -- axiom pchew (n : ℕ) : (n, 5) = (5, n)
 -- axiom smash (n m : ℕ) : (n, m) = (1, 1)
 
--- example : [(3, 3), (5, 9), (5, 9)] = [(4, 5), (3, 6), (1, 1)] :=
--- begin
---   nth_rewrite_lhs 0 wowzer,
---   nth_rewrite_lhs 2 ←pchew,
---   nth_rewrite_rhs 0 pchew,
+-- example : [(3, 3), (5, 9), (5, 9)] = [(4, 5), (3, 6), (1, 1)] := by
+--   nth_rewrite 1 [wowzer]
+--   nth_rewrite 3 [←pchew]
+--   nth_rewrite 1 [pchew]
 
---   nth_rewrite_rhs 0 smash,
---   nth_rewrite_rhs 1 smash,
---   nth_rewrite_rhs 2 smash,
---   nth_rewrite_lhs 0 smash,
---   nth_rewrite_lhs 1 smash,
---   nth_rewrite_lhs 2 smash,
--- end
+--   nth_rewrite 1 [smash]
+--   nth_rewrite 2 [smash]
+--   nth_rewrite 3 [smash]
+--   nth_rewrite 4 [smash]
+--   nth_rewrite 5 [smash]
+--   nth_rewrite 6 [smash]
 
--- example (a b c : ℕ) : c + a + b = a + c + b :=
--- begin
---   nth_rewrite_rhs 1 add_comm,
--- end
--- -- With the `kabstract` backend, we only find one rewrite, even though there are obviously two.
--- -- The problem is that `(a + b) + c` matches directly, so the WHOLE THING gets replaced with a
--- -- metavariable, per the `kabstract` strategy. This is devastating to the search, since we cannot
--- -- see inside this metavariable.
+example (x y : Prop) (h₁ : x ↔ y) (h₂ : x ↔ x ∧ x) : x ∧ x ↔ x := by
+  nth_rewrite 3 [h₁] at h₂
+  nth_rewrite 1 [← h₁] at h₂
+  nth_rewrite 3 [h₂]
+  rfl
 
--- -- I still think it's fixable. Because all applications have an order, I'm pretty sure we can't
--- -- miss any rewrites if we also look inside every thing we chunk-up into a metavariable as well.
--- -- In almost every case this will bring up no results (with the exception of situations like this
--- -- one), so there should be essentially no change in complexity.
-
--- example (x y : Prop) (h₁ : x ↔ y) (h₂ : x ↔ x ∧ x) : x ∧ x ↔ x :=
--- begin
---   nth_rewrite_rhs 1 [h₁] at h₂,
---   nth_rewrite_rhs 0 [← h₁] at h₂,
---   nth_rewrite_rhs 0 h₂,
--- end
-
--- example (x y : ℕ) (h₁ : x = y) (h₂ : x = x + x) : x + x = x :=
--- begin
---   nth_rewrite_rhs 1 [h₁] at h₂,
---   nth_rewrite_rhs 0 [← h₁] at h₂,
---   nth_rewrite_rhs 0 h₂,
--- end
+example (x y : ℕ) (h₁ : x = y) (h₂ : x = x + x) : x + x = x := by
+  nth_rewrite 3 [h₁] at h₂
+  nth_rewrite 1 [← h₁] at h₂
+  nth_rewrite 3 [h₂]
+  rfl
