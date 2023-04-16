@@ -76,8 +76,11 @@ theorem map_comap (J : Ideal S) : Ideal.map (algebraMap R S) (Ideal.comap (algeb
   le_antisymm (Ideal.map_le_iff_le_comap.2 le_rfl) fun x hJ => by
     obtain ⟨r, s, hx⟩ := mk'_surjective M x
     rw [← hx] at hJ⊢
-    exact Ideal.mul_mem_right _ _ (Ideal.mem_map_of_mem _ (show (algebraMap R S) r ∈ J from
-      mk'_spec S r s ▸ J.mul_mem_right ((algebraMap R S) s) hJ))
+    exact
+      Ideal.mul_mem_right _ _
+        (Ideal.mem_map_of_mem _
+          (show (algebraMap R S) r ∈ J from
+            mk'_spec S r s ▸ J.mul_mem_right ((algebraMap R S) s) hJ))
 #align is_localization.map_comap IsLocalization.map_comap
 
 theorem comap_map_of_isPrime_disjoint (I : Ideal R) (hI : I.IsPrime) (hM : Disjoint (M : Set R) I) :
@@ -111,11 +114,14 @@ correspond to prime ideals in the original ring `R` that are disjoint from `M`.
 This lemma gives the particular case for an ideal and its comap,
 see `le_rel_iso_of_prime` for the more general relation isomorphism -/
 theorem isPrime_iff_isPrime_disjoint (J : Ideal S) :
-    J.IsPrime ↔ (Ideal.comap (algebraMap R S) J).IsPrime ∧
-      Disjoint (M : Set R) ↑(Ideal.comap (algebraMap R S) J) := by
+    J.IsPrime ↔
+      (Ideal.comap (algebraMap R S) J).IsPrime ∧
+        Disjoint (M : Set R) ↑(Ideal.comap (algebraMap R S) J) := by
   constructor
-  · refine' fun h => ⟨⟨_, _⟩, Set.disjoint_left.mpr fun m hm1 hm2 =>
-      h.ne_top (Ideal.eq_top_of_isUnit_mem _ hm2 (map_units S ⟨m, hm1⟩))⟩
+  · refine' fun h =>
+      ⟨⟨_, _⟩,
+        Set.disjoint_left.mpr fun m hm1 hm2 =>
+          h.ne_top (Ideal.eq_top_of_isUnit_mem _ hm2 (map_units S ⟨m, hm1⟩))⟩
     · refine' fun hJ => h.ne_top _
       rw [eq_top_iff, ← (orderEmbedding M S).le_iff_le]
       exact le_of_eq hJ.symm
@@ -196,10 +202,15 @@ theorem surjective_quotientMap_of_maximal_of_localization {I : Ideal S} [I.IsPri
     rw [Ideal.quotientMap_mk, ← sub_eq_zero, ← RingHom.map_sub, Ideal.Quotient.eq_zero_iff_mem,
       ← Ideal.Quotient.eq_zero_iff_mem, RingHom.map_sub, sub_eq_zero, mk'_eq_mul_mk'_one]
     simp only [mul_eq_mul_left_iff, RingHom.map_mul]
-    exact Or.inl (mul_left_cancel₀ (fun hn => hM (Ideal.Quotient.eq_zero_iff_mem.2
-      (Ideal.mem_comap.2 (Ideal.Quotient.eq_zero_iff_mem.1 hn))))
-        (_root_.trans hn (by rw [← RingHom.map_mul, ← mk'_eq_mul_mk'_one, mk'_self,
-          RingHom.map_one])))
+    exact
+      Or.inl
+        (mul_left_cancel₀
+          (fun hn =>
+            hM
+              (Ideal.Quotient.eq_zero_iff_mem.2
+                (Ideal.mem_comap.2 (Ideal.Quotient.eq_zero_iff_mem.1 hn))))
+          (_root_.trans hn (by rw [← RingHom.map_mul, ← mk'_eq_mul_mk'_one, mk'_self,
+            RingHom.map_one])))
 #align is_localization.surjective_quotient_map_of_maximal_of_localization
 IsLocalization.surjective_quotientMap_of_maximal_of_localization
 
