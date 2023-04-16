@@ -199,7 +199,8 @@ def homology.desc {D : V} (k : (kernelSubobject g : V) ⟶ D) (p : imageToKernel
   cokernel.desc _ k p
 #align homology.desc homology.desc
 
-@[reassoc (attr := simp), elementwise (attr := simp)]
+-- porting note: removed elementwise attribute which does not seem to be helpful here
+@[reassoc (attr := simp)]
 theorem homology.π_desc {D : V} (k : (kernelSubobject g : V) ⟶ D)
     (p : imageToKernel f g w ≫ k = 0) : homology.π f g w ≫ homology.desc f g w k p = k := by
   simp [homology.π, homology.desc]
