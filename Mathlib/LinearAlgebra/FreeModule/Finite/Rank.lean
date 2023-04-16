@@ -100,7 +100,8 @@ theorem finrank_finsupp {ι : Type v} [Fintype ι] : finrank R (ι →₀ R) = c
 #align finite_dimensional.finrank_finsupp FiniteDimensional.finrank_finsupp
 
 /-- The finrank of `(ι → R)` is `Fintype.card ι`. -/
-theorem finrank_pi {ι : Type v} [Fintype ι] : finrank R (ι → R) = card ι := by simp [finrank]
+theorem finrank_pi {ι : Type v} [Fintype ι] : finrank R (ι → R) = card ι := by
+  simp only [finrank_fintype_fun_eq_card] -- Porting note: was `simp [finrank]`
 #align finite_dimensional.finrank_pi FiniteDimensional.finrank_pi
 
 /-- The finrank of the direct sum is the sum of the finranks. -/
