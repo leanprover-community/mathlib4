@@ -80,11 +80,9 @@ end toExpr
 section Parser
 open Lean Elab Term Macro TSyntax
 
-syntax (name := matrixPosPos) "!![" sepBy1(sepBy1(term, ",", ", ", allowTrailingSep),
-              ";", "; ", allowTrailingSep) "]" : term
-syntax (name := matrixPosZero) "!![" ";"+ "]" : term
-syntax (name := matrixZeroPos) "!![" ","+ "]" : term
-syntax (name := matrixZeroZero) "!![" "]" : term
+syntax (name := matrixNotation) "!![" sepBy1(term,+,?, ";", "; ", allowTrailingSep) "]" : term
+syntax (name := matrixNotationRx0) "!![" ";"* "]" : term
+syntax (name := matrixNotation0xC) "!![" ","+ "]" : term
 
 macro_rules
   | `(!![$[$[$rows],*];*]) => do
@@ -100,7 +98,6 @@ macro_rules
     let emptyVecs := semicolons.map (fun _ => emptyVec)
     `(@Matrix.of (Fin $(quote semicolons.size)) (Fin 0) _ ![$emptyVecs,*])
   | `(!![$[,%$commas]*]) => `(@Matrix.of (Fin 0) (Fin $(quote commas.size)) _ ![])
-  | `(!![]) => `(@Matrix.of (Fin 0) (Fin 0) _ ![])
 
 end Parser
 
