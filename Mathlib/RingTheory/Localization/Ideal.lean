@@ -77,7 +77,7 @@ theorem map_comap (J : Ideal S) : Ideal.map (algebraMap R S) (Ideal.comap (algeb
     obtain ⟨r, s, hx⟩ := mk'_surjective M x
     rw [← hx] at hJ⊢
     exact Ideal.mul_mem_right _ _ (Ideal.mem_map_of_mem _ (show (algebraMap R S) r ∈ J from
-            mk'_spec S r s ▸ J.mul_mem_right ((algebraMap R S) s) hJ))
+      mk'_spec S r s ▸ J.mul_mem_right ((algebraMap R S) s) hJ))
 #align is_localization.map_comap IsLocalization.map_comap
 
 theorem comap_map_of_isPrime_disjoint (I : Ideal R) (hI : I.IsPrime) (hM : Disjoint (M : Set R) I) :
