@@ -36,7 +36,7 @@ variable [Algebra R S] [IsLocalization M S]
 In practice, this ideal differs only in that the carrier set is defined explicitly.
 This definition is only meant to be used in proving `mem_map_algebraMap_iff`,
 and any proof that needs to refer to the explicit carrier set should use that theorem. -/
-private def MapIdeal (I : Ideal R) : Ideal S where
+private def map_ideal (I : Ideal R) : Ideal S where
   carrier := { z : S | ∃ x : I × M, z * algebraMap R S x.2 = algebraMap R S x.1 }
   zero_mem' := ⟨⟨0, 1⟩, by simp⟩
   add_mem' := by
@@ -61,7 +61,7 @@ theorem mem_map_algebraMap_iff {I : Ideal R} {z} :
     z ∈ Ideal.map (algebraMap R S) I ↔ ∃ x : I × M, z * algebraMap R S x.2 = algebraMap R S x.1 :=
   by
   constructor
-  · change _ → z ∈ MapIdeal M S I
+  · change _ → z ∈ map_ideal M S I
     refine' fun h => Ideal.mem_infₛ.1 h fun z hz => _
     obtain ⟨y, hy⟩ := hz
     let Z : { x // x ∈ I } := ⟨y, hy.left⟩
