@@ -8,7 +8,7 @@ Authors: Adam Topaz
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Sites.Sheaf
+import Mathlib.CategoryTheory.Sites.Sheaf
 
 /-!
 
@@ -121,8 +121,7 @@ end GrothendieckTopology.Cover
 variable [∀ (X : C) (S : J.cover X) (P : Cᵒᵖ ⥤ A), PreservesLimit (S.index P).multicospan F]
 
 theorem Presheaf.IsSheaf.comp {P : Cᵒᵖ ⥤ A} (hP : Presheaf.IsSheaf J P) :
-    Presheaf.IsSheaf J (P ⋙ F) :=
-  by
+    Presheaf.IsSheaf J (P ⋙ F) := by
   rw [presheaf.is_sheaf_iff_multifork] at hP⊢
   intro X S
   obtain ⟨h⟩ := hP X S
@@ -136,8 +135,7 @@ variable (J)
 /-- Composing a sheaf with a functor preserving the appropriate limits yields a functor
 between sheaf categories. -/
 @[simps]
-def sheafCompose : Sheaf J A ⥤ Sheaf J B
-    where
+def sheafCompose : Sheaf J A ⥤ Sheaf J B where
   obj G := ⟨G.val ⋙ F, Presheaf.IsSheaf.comp _ G.2⟩
   map G H η := ⟨whiskerRight η.val _⟩
   map_id' G := Sheaf.Hom.ext _ _ <| whiskerRight_id _
