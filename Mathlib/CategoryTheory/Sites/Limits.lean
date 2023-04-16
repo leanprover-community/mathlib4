@@ -8,8 +8,8 @@ Authors: Adam Topaz
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Limits.Creates
-import Mathbin.CategoryTheory.Sites.Sheafification
+import Mathlib.CategoryTheory.Limits.Creates
+import Mathlib.CategoryTheory.Sites.Sheafification
 
 /-!
 
@@ -64,8 +64,7 @@ See `is_limit_multifork_of_is_limit` for more on how this definition is used.
 -/
 def multiforkEvaluationCone (F : K ⥤ Sheaf J D) (E : Cone (F ⋙ sheafToPresheaf J D)) (X : C)
     (W : J.cover X) (S : Multifork (W.index E.pt)) :
-    Cone (F ⋙ sheafToPresheaf J D ⋙ (evaluation Cᵒᵖ D).obj (op X))
-    where
+    Cone (F ⋙ sheafToPresheaf J D ⋙ (evaluation Cᵒᵖ D).obj (op X)) where
   pt := S.pt
   π :=
     { app := fun k =>
@@ -140,8 +139,7 @@ then the limit presheaf is again a sheaf.
 This is used to show that the forgetful functor from sheaves to presheaves creates limits.
 -/
 theorem isSheaf_of_isLimit (F : K ⥤ Sheaf J D) (E : Cone (F ⋙ sheafToPresheaf J D))
-    (hE : IsLimit E) : Presheaf.IsSheaf J E.pt :=
-  by
+    (hE : IsLimit E) : Presheaf.IsSheaf J E.pt := by
   rw [presheaf.is_sheaf_iff_multifork]
   intro X S
   exact ⟨is_limit_multifork_of_is_limit _ _ hE _ _⟩
@@ -209,8 +207,7 @@ variable [ReflectsIsomorphisms (forget D)]
 over a functor which factors through sheaves.
 In `is_colimit_sheafify_cocone`, we show that this is a colimit cocone when `E` is a colimit. -/
 @[simps]
-def sheafifyCocone {F : K ⥤ Sheaf J D} (E : Cocone (F ⋙ sheafToPresheaf J D)) : Cocone F
-    where
+def sheafifyCocone {F : K ⥤ Sheaf J D} (E : Cocone (F ⋙ sheafToPresheaf J D)) : Cocone F where
   pt := ⟨J.sheafify E.pt, GrothendieckTopology.Plus.isSheaf_plus_plus _ _⟩
   ι :=
     { app := fun k => ⟨E.ι.app k ≫ J.toSheafify E.pt⟩
@@ -224,8 +221,7 @@ def sheafifyCocone {F : K ⥤ Sheaf J D} (E : Cocone (F ⋙ sheafToPresheaf J D)
 then `sheafify_cocone E` is a colimit cocone. -/
 @[simps]
 def isColimitSheafifyCocone {F : K ⥤ Sheaf J D} (E : Cocone (F ⋙ sheafToPresheaf J D))
-    (hE : IsColimit E) : IsColimit (sheafify_cocone E)
-    where
+    (hE : IsColimit E) : IsColimit (sheafify_cocone E) where
   desc S := ⟨J.sheafifyLift (hE.desc ((sheafToPresheaf J D).mapCocone S)) S.pt.2⟩
   fac := by
     intro S j
