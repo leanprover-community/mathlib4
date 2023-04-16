@@ -104,35 +104,39 @@ def isLimitMultiforkOfIsLimit (F : K ⥤ Sheaf J D) (E : Cone (F ⋙ sheafToPres
   Multifork.IsLimit.mk _
     (fun S =>
       (isLimitOfPreserves ((evaluation Cᵒᵖ D).obj (op X)) hE).lift <|
-        multiforkEvaluationCone.{_,v, u} F E X W S)
+        -- porting note: Lean 3 didn't need the explicit universe
+        multiforkEvaluationCone.{_, _, u} F E X W S)
     (by
       intro S i
       apply (isLimitOfPreserves ((evaluation Cᵒᵖ D).obj (op i.Y)) hE).hom_ext
       intro k
-      dsimp [multifork.of_ι]
-      erw [category.assoc, (E.π.app k).naturality]
+      dsimp [Multifork.ofι]
+      erw [Category.assoc, (E.π.app k).naturality]
       dsimp
-      rw [← category.assoc]
-      erw [(is_limit_of_preserves ((evaluation Cᵒᵖ D).obj (op X)) hE).fac
-          (multifork_evaluation_cone F E X W S)]
-      dsimp [multifork_evaluation_cone, presheaf.is_limit_of_is_sheaf]
-      erw [presheaf.is_sheaf.amalgamate_map]
+      rw [← Category.assoc]
+      erw [(isLimitOfPreserves ((evaluation Cᵒᵖ D).obj (op X)) hE).fac
+          (multiforkEvaluationCone F E X W S)]
+      dsimp [multiforkEvaluationCone, Presheaf.isLimitOfIsSheaf]
+      erw [Presheaf.IsSheaf.amalgamate_map]
       rfl)
     (by
       intro S m hm
       apply (isLimitOfPreserves ((evaluation Cᵒᵖ D).obj (op X)) hE).hom_ext
       intro k
       dsimp
-      erw [(is_limit_of_preserves ((evaluation Cᵒᵖ D).obj (op X)) hE).fac]
-      apply presheaf.is_sheaf.hom_ext (F.obj k).2 W
+      erw [(isLimitOfPreserves ((evaluation Cᵒᵖ D).obj (op X)) hE).fac]
+      apply Presheaf.IsSheaf.hom_ext (F.obj k).2 W
       intro i
-      erw [presheaf.is_sheaf.amalgamate_map]
-      dsimp [multifork.of_ι]
+      -- porting note: was `erw [Presheaf.IsSheaf.amalgamate_map]`
+      -- and the `sorry`d goal was not created (which makes me hope it's easy!)
+      erw [Presheaf.IsSheaf.amalgamate_map (F.obj k).cond _ _ sorry]
+      dsimp [Multifork.ofι]
       change _ = S.ι i ≫ _
-      erw [← hm, category.assoc, ← (E.π.app k).naturality, category.assoc]
+      erw [← hm, Category.assoc, ← (E.π.app k).naturality, Category.assoc]
       rfl)
 set_option linter.uppercaseLean3 false in
-#align category_theory.Sheaf.is_limit_multifork_of_is_limit CategoryTheory.Sheaf.isLimitMultiforkOfIsLimit
+#align category_theory.Sheaf.is_limit_multifork_of_is_limit
+  CategoryTheory.Sheaf.isLimitMultiforkOfIsLimit
 
 /-- If `E` is a cone which is a limit on the level of presheaves,
 then the limit presheaf is again a sheaf.
@@ -143,14 +147,18 @@ theorem isSheaf_of_isLimit (F : K ⥤ Sheaf J D) (E : Cone (F ⋙ sheafToPreshea
     (hE : IsLimit E) : Presheaf.IsSheaf J E.pt := by
   rw [Presheaf.isSheaf_iff_multifork]
   intro X S
-  exact ⟨isLimitMultiforkOfIsLimit _ _ hE _ _⟩
+  -- porting note: the explicit universes weren't necessary in mathlib3
+  exact ⟨isLimitMultiforkOfIsLimit.{_, _, u} _ _ hE _ _⟩
 set_option linter.uppercaseLean3 false in
 #align category_theory.Sheaf.is_sheaf_of_is_limit CategoryTheory.Sheaf.isSheaf_of_isLimit
 
-instance (F : K ⥤ Sheaf J D) : CreatesLimit F (sheafToPresheaf J D) :=
+-- porting note: I had to name this instance explicitly because I need to use it
+-- in the instance just below this one
+instance instCreatesLimitSheafToPresheaf (F : K ⥤ Sheaf J D) :
+    CreatesLimit F (sheafToPresheaf J D) :=
   createsLimitOfReflectsIso fun E hE =>
     { liftedCone :=
-        ⟨⟨E.pt, isSheaf_of_isLimit _ _ hE⟩,
+        ⟨⟨E.pt, isSheaf_of_isLimit.{_, _, u} _ _ hE⟩,
           ⟨fun t => ⟨E.π.app _⟩, fun u v e => Sheaf.Hom.ext _ _ <| E.π.naturality _⟩⟩
       validLift :=
         Cones.ext (eqToIso rfl) fun j => by
@@ -167,20 +175,40 @@ instance (F : K ⥤ Sheaf J D) : CreatesLimit F (sheafToPresheaf J D) :=
               hE.uniq ((sheafToPresheaf J D).mapCone S) m.val fun j =>
                 congr_arg Hom.val (hm j) } }
 
-instance : CreatesLimitsOfShape K (sheafToPresheaf J D) where
+-- porting note: typeclass inference could solve this in Lean 3 but it gets tripped up
+-- by universe issues in Lean 4.
+-- porting note: I had to name this instance because I need to explicitly invoke it in the next
+-- instance. I suspect that this instance will not trigger as much as in Lean 3 because
+-- of these universe issues.
+instance instCreatesLimitOfShapeSheafToPresheaf : CreatesLimitsOfShape K (sheafToPresheaf J D) where
+  CreatesLimit := instCreatesLimitSheafToPresheaf.{_, _, u} _
 
 instance : HasLimitsOfShape K (Sheaf J D) :=
+  let _ : CreatesLimitsOfShape K (sheafToPresheaf J D) :=
+    instCreatesLimitOfShapeSheafToPresheaf.{_, _, u}
   hasLimitsOfShape_of_hasLimitsOfShape_createsLimitsOfShape (sheafToPresheaf J D)
 
 end
 
-instance [HasLimits D] : CreatesLimits (sheafToPresheaf J D) where
+-- porting note: the instance did not need to be explicitly given in mathlib3;
+-- lean 4 can't figure out the universes
+-- porting note: I had to name this instance because I need to explicitly invoke it in the next
+-- instance. I suspect that this instance will not trigger as much as in Lean 3 because
+-- of these universe issues.
+instance instCreatesLimitsheafToPresheaf [HasLimits D] : CreatesLimits (sheafToPresheaf J D) where
+  CreatesLimitsOfShape := instCreatesLimitOfShapeSheafToPresheaf.{_, _, u}
 
+-- porting note: the `CreatesLimits` instance did not need to be explicitly given in mathlib3;
+-- lean 4 can't figure out the universes. I suspect that this instance will not trigger as much
+-- as in Lean 3 because of these universe issues.
 instance [HasLimits D] : HasLimits (Sheaf J D) :=
+  let _ : CreatesLimits (sheafToPresheaf J D) := instCreatesLimitsheafToPresheaf.{_, _, u}
   has_limits_of_has_limits_creates_limits (sheafToPresheaf J D)
 
--- porting note: this is the end of `noncomputable section`, which the autoporter has
--- translated `noncomputable theory` to
+-- porting note: this is the end of `noncomputable section`, which was the autoporter's
+-- translation of `noncomputable theory`. But `noncomputable theory` within a section
+-- doesn't restrict `noncomputable` to a section in mathlib3 so I've had to add
+-- some other `noncomputable`s later
 end
 
 end Limits
@@ -208,11 +236,15 @@ variable [∀ X : C, PreservesColimitsOfShape (J.Cover X)ᵒᵖ (forget D)]
 
 variable [ReflectsIsomorphisms (forget D)]
 
+-- porting note: I added `noncomputable`. The mathlib3 version of this file has
+-- `noncomputable theory` in a section, and it's been translated to `noncomputable section`
+-- but `noncomputable theory` isn't bound by sections.
 /-- Construct a cocone by sheafifying a cocone point of a cocone `E` of presheaves
 over a functor which factors through sheaves.
 In `is_colimit_sheafify_cocone`, we show that this is a colimit cocone when `E` is a colimit. -/
 @[simps]
-def sheafifyCocone {F : K ⥤ Sheaf J D} (E : Cocone (F ⋙ sheafToPresheaf J D)) : Cocone F where
+noncomputable def sheafifyCocone {F : K ⥤ Sheaf J D}
+    (E : Cocone (F ⋙ sheafToPresheaf J D)) : Cocone F where
   pt := ⟨J.sheafify E.pt, GrothendieckTopology.Plus.isSheaf_plus_plus _ _⟩
   ι :=
     { app := fun k => ⟨E.ι.app k ≫ J.toSheafify E.pt⟩
@@ -220,37 +252,47 @@ def sheafifyCocone {F : K ⥤ Sheaf J D} (E : Cocone (F ⋙ sheafToPresheaf J D)
         ext1
         dsimp
         erw [Category.comp_id, ← Category.assoc, E.w f] }
+set_option linter.uppercaseLean3 false in
 #align category_theory.Sheaf.sheafify_cocone CategoryTheory.Sheaf.sheafifyCocone
 
 /-- If `E` is a colimit cocone of presheaves, over a diagram factoring through sheaves,
 then `sheafify_cocone E` is a colimit cocone. -/
 @[simps]
-def isColimitSheafifyCocone {F : K ⥤ Sheaf J D} (E : Cocone (F ⋙ sheafToPresheaf J D))
-    (hE : IsColimit E) : IsColimit (sheafifyCocone E) where
+noncomputable def isColimitSheafifyCocone {F : K ⥤ Sheaf J D}
+    (E : Cocone (F ⋙ sheafToPresheaf J D))
+    (hE : IsColimit E) : IsColimit (sheafifyCocone.{_, _, u} E) where
   desc S := ⟨J.sheafifyLift (hE.desc ((sheafToPresheaf J D).mapCocone S)) S.pt.2⟩
   fac := by
     intro S j
     ext1
-    dsimp [sheafify_cocone]
-    erw [category.assoc, J.to_sheafify_sheafify_lift, hE.fac]
+    dsimp [sheafifyCocone]
+    erw [Category.assoc, J.toSheafify_sheafifyLift, hE.fac]
     rfl
   uniq := by
     intro S m hm
     ext1
-    apply J.sheafify_lift_unique
-    apply hE.uniq ((Sheaf_to_presheaf J D).mapCocone S)
+    apply J.sheafifyLift_unique
+    apply hE.uniq ((sheafToPresheaf J D).mapCocone S)
     intro j
     dsimp
-    simpa only [← category.assoc, ← hm]
+    -- porting note: in mathlib3 this was `simpa only ...`; IIRC `simpa` does try `refl`
+    simp only [← Category.assoc, ← hm]
+    rfl
+set_option linter.uppercaseLean3 false in
 #align category_theory.Sheaf.is_colimit_sheafify_cocone CategoryTheory.Sheaf.isColimitSheafifyCocone
 
-instance [HasColimitsOfShape K D] : HasColimitsOfShape K (Sheaf J D) :=
-  ⟨fun F =>
-    HasColimit.mk
-      ⟨sheafifyCocone (colimit.cocone _), isColimitSheafifyCocone _ (colimit.isColimit _)⟩⟩
+instance instHasColimitsOfShapeSheaf [HasColimitsOfShape K D] : HasColimitsOfShape K (Sheaf J D) :=
+  ⟨fun _ => HasColimit.mk
+    ⟨sheafifyCocone.{_, _, u} (colimit.cocone _), isColimitSheafifyCocone _ (colimit.isColimit _)⟩⟩
 
-instance [HasColimits D] : HasColimits (Sheaf J D) :=
-  ⟨inferInstance⟩
+-- porting note: typeclass inference used to do this and now it doesn't because of universe
+-- issues.
+instance [HasColimits D] : HasColimits (Sheaf J D) := ⟨by
+  intro K _
+  exact instHasColimitsOfShapeSheaf.{_, _, u}⟩
+
+-- porting note: instance above won't fire because of universe issues.
+-- example [HasColimits D] : HasColimits (Sheaf J D) := inferInstance -- doesn't actually work
 
 end Colimits
 
