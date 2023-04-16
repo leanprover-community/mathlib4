@@ -939,7 +939,8 @@ theorem exists_eq_add_translationNumber (hf : Continuous f) : ∃ x, f x = x + �
   exact intermediate_value_univ₂ hf (continuous_id.add continuous_const) ha hb
 #align circle_deg1_lift.exists_eq_add_translation_number CircleDeg1Lift.exists_eq_add_translationNumber
 
-theorem translationNumber_eq_int_iff (hf : Continuous f) {m : ℤ} : τ f = m ↔ ∃ x : ℝ, f x = x + m := by
+theorem translationNumber_eq_int_iff (hf : Continuous f) {m : ℤ} :
+    τ f = m ↔ ∃ x : ℝ, f x = x + m := by
   constructor
   · intro h
     simp only [← h]
