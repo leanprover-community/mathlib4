@@ -838,8 +838,6 @@ import Mathlib.Data.List.TFAE
 import Mathlib.Data.List.ToFinsupp
 import Mathlib.Data.List.Zip
 import Mathlib.Data.ListM.Basic
-import Mathlib.Data.ListM.BestFirst
-import Mathlib.Data.ListM.DepthFirst
 import Mathlib.Data.Matrix.Basic
 import Mathlib.Data.Matrix.Basis
 import Mathlib.Data.Matrix.Block
