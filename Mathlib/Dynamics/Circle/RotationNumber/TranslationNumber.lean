@@ -12,6 +12,7 @@ import Mathlib.Algebra.Hom.Iterate
 import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Order.Iterate
 import Mathlib.Order.SemiconjSup
+import Mathlib.Tactic.Monotonicity
 import Mathlib.Topology.Algebra.Order.MonotoneContinuity
 
 /-!
@@ -121,21 +122,15 @@ circle homeomorphism, rotation number
 -/
 
 
-open Filter Set
-
+open Filter Set Int Topology Classical
 open Function hiding Commute
-
-open Int Topology Classical
 
 /-!
 ### Definition and monoid structure
 -/
 
-
 /-- A lift of a monotone degree one map `S¹ → S¹`. -/
-structure CircleDeg1Lift : Type where
-  toFun : ℝ → ℝ
-  monotone' : Monotone toFun
+structure CircleDeg1Lift extends ℝ →o ℝ : Type where
   map_add_one' : ∀ x, toFun (x + 1) = toFun x + 1
 #align circle_deg1_lift CircleDeg1Lift
 
@@ -143,21 +138,20 @@ namespace CircleDeg1Lift
 
 instance : OrderHomClass CircleDeg1Lift ℝ ℝ where
   coe f := f.toFun
-  coe_injective' | ⟨_, _, _⟩, ⟨_, _, _⟩, rfl => rfl
+  coe_injective' | ⟨⟨_, _⟩, _⟩, ⟨⟨_, _⟩, _⟩, rfl => rfl
   map_rel f _ _ h := f.monotone' h
 
-@[simp] theorem coe_mk (f h₁ h₂) : ⇑(mk f h₁ h₂) = f := rfl
+@[simp] theorem coe_mk (f h) : ⇑(mk f h) = f := rfl
 #align circle_deg1_lift.coe_mk CircleDeg1Lift.coe_mk
 
 variable (f g : CircleDeg1Lift)
 
-protected theorem monotone : Monotone f :=
-  f.monotone'
+@[simp] theorem coe_toOrderHom : ⇑f.toOrderHom = f := rfl
+
+protected theorem monotone : Monotone f := f.monotone'
 #align circle_deg1_lift.monotone CircleDeg1Lift.monotone
 
-@[mono]
-theorem mono {x y} (h : x ≤ y) : f x ≤ f y :=
-  f.monotone h
+@[mono] theorem mono {x y} (h : x ≤ y) : f x ≤ f y := f.monotone h
 #align circle_deg1_lift.mono CircleDeg1Lift.mono
 
 theorem strictMono_iff_injective : StrictMono f ↔ Injective f :=
@@ -186,10 +180,9 @@ theorem ext_iff {f g : CircleDeg1Lift} : f = g ↔ ∀ x, f x = g x :=
 
 instance : Monoid CircleDeg1Lift where
   mul f g :=
-    { toFun := f ∘ g
-      monotone' := f.monotone.comp g.monotone
+    { toOrderHom := f.1.comp g.1
       map_add_one' := fun x => by simp [map_add_one] }
-  one := ⟨id, monotone_id, fun _ => rfl⟩
+  one := ⟨.id, fun _ => rfl⟩
   mul_one f := rfl
   one_mul f := rfl
   mul_assoc f₁ f₂ f₃ := FunLike.coe_injective rfl
@@ -295,7 +288,7 @@ theorem commute_iff_commute {f g : CircleDeg1Lift} : Commute f g ↔ Function.Co
 `translation (multiplicative.of_add x)`. -/
 def translate : Multiplicative ℝ →* CircleDeg1Liftˣ := MonoidHom.toHomUnits <|
   { toFun := fun x =>
-      ⟨fun y => Multiplicative.toAdd x + y, fun _ _ h => add_le_add_left h _, fun _ =>
+      ⟨⟨fun y => Multiplicative.toAdd x + y, fun _ _ h => add_le_add_left h _⟩, fun _ =>
         (add_assoc _ _ _).symm⟩
     map_one' := ext <| zero_add
     map_mul' := fun _ _ => ext <| add_assoc _ _ }
@@ -644,6 +637,8 @@ def translationNumber : ℝ :=
   limUnder atTop f.transnumAuxSeq
 #align circle_deg1_lift.translation_number CircleDeg1Lift.translationNumber
 
+end
+
 -- mathport name: exprτ
 -- TODO: choose two different symbols for `circle_deg1_lift.translation_number` and the future
 -- `circle_mono_homeo.rotation_number`, then make them `localized notation`s
@@ -697,23 +692,20 @@ theorem dist_map_zero_translationNumber_le : dist (f 0) (τ f) ≤ 1 :=
 theorem tendsto_translationNumber_of_dist_bounded_aux (x : ℕ → ℝ) (C : ℝ)
     (H : ∀ n : ℕ, dist ((f ^ n) 0) (x n) ≤ C) :
     Tendsto (fun n : ℕ => x (2 ^ n) / 2 ^ n) atTop (𝓝 <| τ f) := by
-  refine' f.tendsto_translation_number_aux.congr_dist (squeeze_zero (fun _ => dist_nonneg) _ _)
+  refine' f.tendsto_translationNumber_aux.congr_dist (squeeze_zero (fun _ => dist_nonneg) _ _)
   · exact fun n => C / 2 ^ n
   · intro n
     have : 0 < (2 ^ n : ℝ) := pow_pos zero_lt_two _
-    convert(div_le_div_right this).2 (H (2 ^ n))
-    rw [transnum_aux_seq, Real.dist_eq, ← sub_div, abs_div, abs_of_pos this, Real.dist_eq]
-  ·
-    exact
-      MulZeroClass.mul_zero C ▸
-        tendsto_const_nhds.mul
-          (tendsto_inv_at_top_zero.comp <| tendsto_pow_atTop_atTop_of_one_lt one_lt_two)
+    convert (div_le_div_right this).2 (H (2 ^ n)) using 1
+    rw [transnumAuxSeq, Real.dist_eq, ← sub_div, abs_div, abs_of_pos this, Real.dist_eq]
+  · exact mul_zero C ▸ tendsto_const_nhds.mul <| tendsto_inv_atTop_zero.comp <|
+      tendsto_pow_atTop_atTop_of_one_lt one_lt_two
 #align circle_deg1_lift.tendsto_translation_number_of_dist_bounded_aux CircleDeg1Lift.tendsto_translationNumber_of_dist_bounded_aux
 
 theorem translationNumber_eq_of_dist_bounded {f g : CircleDeg1Lift} (C : ℝ)
     (H : ∀ n : ℕ, dist ((f ^ n) 0) ((g ^ n) 0) ≤ C) : τ f = τ g :=
-  Eq.symm <|
-    g.translationNumber_eq_of_tendsto_aux <| f.tendsto_translationNumber_of_dist_bounded_aux _ C H
+  Eq.symm <| g.translationNumber_eq_of_tendsto_aux <|
+    f.tendsto_translationNumber_of_dist_bounded_aux _ C H
 #align circle_deg1_lift.translation_number_eq_of_dist_bounded CircleDeg1Lift.translationNumber_eq_of_dist_bounded
 
 @[simp]
@@ -734,13 +726,11 @@ theorem translationNumber_eq_of_semiconj {f g₁ g₂ : CircleDeg1Lift}
 
 theorem translationNumber_mul_of_commute {f g : CircleDeg1Lift} (h : Commute f g) :
     τ (f * g) = τ f + τ g := by
-  have :
-    tendsto (fun n : ℕ => (fun k => (f ^ k) 0 + (g ^ k) 0) (2 ^ n) / 2 ^ n) at_top
-      (𝓝 <| τ f + τ g) :=
-    (f.tendsto_translation_number_aux.add g.tendsto_translation_number_aux).congr fun n =>
-      (add_div ((f ^ 2 ^ n) 0) ((g ^ 2 ^ n) 0) ((2 : ℝ) ^ n)).symm
-  refine'
-    tendsto_nhds_unique ((f * g).tendsto_translationNumber_of_dist_bounded_aux _ 1 fun n => _) this
+  refine tendsto_nhds_unique ?_
+    (f.tendsto_translationNumber_aux.add g.tendsto_translationNumber_aux)
+  simp only [transnumAuxSeq, ← add_div]
+  refine (f * g).tendsto_translationNumber_of_dist_bounded_aux
+    (fun n ↦ (f ^ n) 0 + (g ^ n) 0) 1 fun n ↦ ?_
   rw [h.mul_pow, dist_comm]
   exact le_of_lt ((f ^ n).dist_map_map_zero_lt (g ^ n))
 #align circle_deg1_lift.translation_number_mul_of_commute CircleDeg1Lift.translationNumber_mul_of_commute
@@ -748,23 +738,21 @@ theorem translationNumber_mul_of_commute {f g : CircleDeg1Lift} (h : Commute f g
 @[simp]
 theorem translationNumber_units_inv (f : CircleDeg1Liftˣ) : τ ↑f⁻¹ = -τ f :=
   eq_neg_iff_add_eq_zero.2 <| by
-    simp [← translation_number_mul_of_commute (Commute.refl _).units_inv_left]
+    simp [← translationNumber_mul_of_commute (Commute.refl _).units_inv_left]
 #align circle_deg1_lift.translation_number_units_inv CircleDeg1Lift.translationNumber_units_inv
 
 @[simp]
 theorem translationNumber_pow : ∀ n : ℕ, τ (f ^ n) = n * τ f
   | 0 => by simp
   | n + 1 => by
-    rw [pow_succ', translation_number_mul_of_commute (Commute.pow_self f n),
-      translation_number_pow n, Nat.cast_add_one, add_mul, one_mul]
+    rw [pow_succ', translationNumber_mul_of_commute (Commute.pow_self f n),
+      translationNumber_pow n, Nat.cast_add_one, add_mul, one_mul]
 #align circle_deg1_lift.translation_number_pow CircleDeg1Lift.translationNumber_pow
 
 @[simp]
 theorem translationNumber_zpow (f : CircleDeg1Liftˣ) : ∀ n : ℤ, τ (f ^ n : Units _) = n * τ f
-  | (n : ℕ) => by simp [translation_number_pow f n]
-  | -[n+1] => by
-    simp
-    ring
+  | (n : ℕ) => by simp [translationNumber_pow f n]
+  | -[n+1] => by simp; ring
 #align circle_deg1_lift.translation_number_zpow CircleDeg1Lift.translationNumber_zpow
 
 @[simp]
@@ -785,16 +773,16 @@ theorem dist_pow_map_zero_mul_translationNumber_le (n : ℕ) :
 #align circle_deg1_lift.dist_pow_map_zero_mul_translation_number_le CircleDeg1Lift.dist_pow_map_zero_mul_translationNumber_le
 
 theorem tendsto_translation_number₀' :
-    Tendsto (fun n : ℕ => (f ^ (n + 1)) 0 / (n + 1)) atTop (𝓝 <| τ f) := by
+    Tendsto (fun n : ℕ => (f ^ (n + 1) : CircleDeg1Lift) 0 / ((n : ℝ) + 1)) atTop (𝓝 <| τ f) := by
   refine'
     tendsto_iff_dist_tendsto_zero.2 <|
       squeeze_zero (fun _ => dist_nonneg) (fun n => _)
-        ((tendsto_const_div_atTop_nhds_0_nat 1).comp (tendsto_add_at_top_nat 1))
+        ((tendsto_const_div_atTop_nhds_0_nat 1).comp (tendsto_add_atTop_nat 1))
   dsimp
   have : (0 : ℝ) < n + 1 := n.cast_add_one_pos
   rw [Real.dist_eq, div_sub' _ _ _ (ne_of_gt this), abs_div, ← Real.dist_eq, abs_of_pos this,
     Nat.cast_add_one, div_le_div_right this, ← Nat.cast_add_one]
-  apply dist_pow_map_zero_mul_translation_number_le
+  apply dist_pow_map_zero_mul_translationNumber_le
 #align circle_deg1_lift.tendsto_translation_number₀' CircleDeg1Lift.tendsto_translation_number₀'
 
 theorem tendsto_translation_number₀ : Tendsto (fun n : ℕ => (f ^ n) 0 / n) atTop (𝓝 <| τ f) :=
@@ -805,15 +793,14 @@ theorem tendsto_translation_number₀ : Tendsto (fun n : ℕ => (f ^ n) 0 / n) a
 In particular, this limit does not depend on `x`. -/
 theorem tendsto_translationNumber (x : ℝ) :
     Tendsto (fun n : ℕ => ((f ^ n) x - x) / n) atTop (𝓝 <| τ f) := by
-  rw [← translation_number_conj_eq' (translate <| Multiplicative.ofAdd x)]
-  convert tendsto_translation_number₀ _
-  ext n
+  rw [← translationNumber_conj_eq' (translate <| Multiplicative.ofAdd x)]
+  refine (tendsto_translation_number₀ _).congr fun n ↦ ?_
   simp [sub_eq_neg_add, Units.conj_pow']
 #align circle_deg1_lift.tendsto_translation_number CircleDeg1Lift.tendsto_translationNumber
 
 theorem tendsto_translation_number' (x : ℝ) :
-    Tendsto (fun n : ℕ => ((f ^ (n + 1)) x - x) / (n + 1)) atTop (𝓝 <| τ f) := by
-  exact_mod_cast (tendsto_add_at_top_iff_nat 1).2 (f.tendsto_translation_number x)
+    Tendsto (fun n : ℕ => ((f ^ (n + 1) : CircleDeg1Lift) x - x) / (n + 1)) atTop (𝓝 <| τ f) := by
+  exact_mod_cast (tendsto_add_atTop_iff_nat 1).2 (f.tendsto_translationNumber x)
 #align circle_deg1_lift.tendsto_translation_number' CircleDeg1Lift.tendsto_translation_number'
 
 theorem translationNumber_mono : Monotone τ := fun f g h =>
@@ -823,7 +810,8 @@ theorem translationNumber_mono : Monotone τ := fun f g h =>
 
 theorem translationNumber_translate (x : ℝ) : τ (translate <| Multiplicative.ofAdd x) = x :=
   translationNumber_eq_of_tendsto₀' _ <| by
-    simp [Nat.cast_add_one_ne_zero, mul_div_cancel_left, tendsto_const_nhds]
+    simp only [translate_iterate, translate_apply, add_zero, Nat.cast_succ,
+      mul_div_cancel_left (G₀ := ℝ) _ (Nat.cast_add_one_ne_zero _), tendsto_const_nhds]
 #align circle_deg1_lift.translation_number_translate CircleDeg1Lift.translationNumber_translate
 
 theorem translationNumber_le_of_le_add {z : ℝ} (hz : ∀ x, f x ≤ x + z) : τ f ≤ z :=
@@ -836,10 +824,8 @@ theorem le_translationNumber_of_add_le {z : ℝ} (hz : ∀ x, x + z ≤ f x) : z
 
 theorem translationNumber_le_of_le_add_int {x : ℝ} {m : ℤ} (h : f x ≤ x + m) : τ f ≤ m :=
   le_of_tendsto' (f.tendsto_translation_number' x) fun n =>
-    (div_le_iff' (n.cast_add_one_pos : (0 : ℝ) < _)).mpr <|
-      sub_le_iff_le_add'.2 <|
-        (coe_pow f (n + 1)).symm ▸
-          @Nat.cast_add_one ℝ _ n ▸ f.iterate_le_of_map_le_add_int h (n + 1)
+    (div_le_iff' (n.cast_add_one_pos : (0 : ℝ) < _)).mpr <| sub_le_iff_le_add'.2 <|
+      (coe_pow f (n + 1)).symm ▸ @Nat.cast_add_one ℝ _ n ▸ f.iterate_le_of_map_le_add_int h (n + 1)
 #align circle_deg1_lift.translation_number_le_of_le_add_int CircleDeg1Lift.translationNumber_le_of_le_add_int
 
 theorem translationNumber_le_of_le_add_nat {x : ℝ} {m : ℕ} (h : f x ≤ x + m) : τ f ≤ m :=
@@ -848,9 +834,8 @@ theorem translationNumber_le_of_le_add_nat {x : ℝ} {m : ℕ} (h : f x ≤ x + 
 
 theorem le_translationNumber_of_add_int_le {x : ℝ} {m : ℤ} (h : x + m ≤ f x) : ↑m ≤ τ f :=
   ge_of_tendsto' (f.tendsto_translation_number' x) fun n =>
-    (le_div_iff (n.cast_add_one_pos : (0 : ℝ) < _)).mpr <|
-      le_sub_iff_add_le'.2 <| by
-        simp only [coe_pow, mul_comm (m : ℝ), ← Nat.cast_add_one, f.le_iterate_of_add_int_le_map h]
+    (le_div_iff (n.cast_add_one_pos : (0 : ℝ) < _)).mpr <| le_sub_iff_add_le'.2 <| by
+      simp only [coe_pow, mul_comm (m : ℝ), ← Nat.cast_add_one, f.le_iterate_of_add_int_le_map h]
 #align circle_deg1_lift.le_translation_number_of_add_int_le CircleDeg1Lift.le_translationNumber_of_add_int_le
 
 theorem le_translationNumber_of_add_nat_le {x : ℝ} {m : ℕ} (h : x + m ≤ f x) : ↑m ≤ τ f :=
@@ -883,7 +868,7 @@ theorem map_lt_of_translationNumber_lt_nat {n : ℕ} (h : τ f < n) (x : ℝ) : 
 theorem map_lt_add_floor_translationNumber_add_one (x : ℝ) : f x < x + ⌊τ f⌋ + 1 := by
   rw [add_assoc]
   norm_cast
-  refine' map_lt_of_translation_number_lt_int _ _ _
+  refine' map_lt_of_translationNumber_lt_int _ _ _
   push_cast
   exact lt_floor_add_one _
 #align circle_deg1_lift.map_lt_add_floor_translation_number_add_one CircleDeg1Lift.map_lt_add_floor_translationNumber_add_one
@@ -891,10 +876,8 @@ theorem map_lt_add_floor_translationNumber_add_one (x : ℝ) : f x < x + ⌊τ f
 theorem map_lt_add_translationNumber_add_one (x : ℝ) : f x < x + τ f + 1 :=
   calc
     f x < x + ⌊τ f⌋ + 1 := f.map_lt_add_floor_translationNumber_add_one x
-    _ ≤ x + τ f + 1 := by
-      mono*
-      exact floor_le (τ f)
-    
+    _ ≤ x + τ f + 1 := add_le_add_right (add_le_add_left (floor_le _) _) _
+    -- porting note: this ^ used to be `by mono; apply floor_le`
 #align circle_deg1_lift.map_lt_add_translation_number_add_one CircleDeg1Lift.map_lt_add_translationNumber_add_one
 
 theorem lt_map_of_int_lt_translationNumber {n : ℤ} (h : ↑n < τ f) (x : ℝ) : x + n < f x :=
@@ -911,7 +894,7 @@ a rational rotation number. -/
 theorem translationNumber_of_map_pow_eq_add_int {x : ℝ} {n : ℕ} {m : ℤ} (h : (f ^ n) x = x + m)
     (hn : 0 < n) : τ f = m / n := by
   have := (f ^ n).translationNumber_of_eq_add_int h
-  rwa [translation_number_pow, mul_comm, ← eq_div_iff] at this
+  rwa [translationNumber_pow, mul_comm, ← eq_div_iff] at this
   exact Nat.cast_ne_zero.2 (ne_of_gt hn)
 #align circle_deg1_lift.translation_number_of_map_pow_eq_add_int CircleDeg1Lift.translationNumber_of_map_pow_eq_add_int
 
@@ -924,22 +907,22 @@ theorem forall_map_sub_of_Icc (P : ℝ → Prop) (h : ∀ x ∈ Icc (0 : ℝ) 1,
 
 theorem translationNumber_lt_of_forall_lt_add (hf : Continuous f) {z : ℝ} (hz : ∀ x, f x < x + z) :
     τ f < z := by
-  obtain ⟨x, xmem, hx⟩ : ∃ x ∈ Icc (0 : ℝ) 1, ∀ y ∈ Icc (0 : ℝ) 1, f y - y ≤ f x - x
-  exact
-    is_compact_Icc.exists_forall_ge (nonempty_Icc.2 zero_le_one) (hf.sub continuous_id).ContinuousOn
+  obtain ⟨x, -, hx⟩ : ∃ x ∈ Icc (0 : ℝ) 1, ∀ y ∈ Icc (0 : ℝ) 1, f y - y ≤ f x - x :=
+    isCompact_Icc.exists_forall_ge (nonempty_Icc.2 zero_le_one)
+      (hf.sub continuous_id).continuousOn
   refine' lt_of_le_of_lt _ (sub_lt_iff_lt_add'.2 <| hz x)
-  apply translation_number_le_of_le_add
+  apply translationNumber_le_of_le_add
   simp only [← sub_le_iff_le_add']
   exact f.forall_map_sub_of_Icc (fun a => a ≤ f x - x) hx
 #align circle_deg1_lift.translation_number_lt_of_forall_lt_add CircleDeg1Lift.translationNumber_lt_of_forall_lt_add
 
 theorem lt_translationNumber_of_forall_add_lt (hf : Continuous f) {z : ℝ} (hz : ∀ x, x + z < f x) :
     z < τ f := by
-  obtain ⟨x, xmem, hx⟩ : ∃ x ∈ Icc (0 : ℝ) 1, ∀ y ∈ Icc (0 : ℝ) 1, f x - x ≤ f y - y
-  exact
-    is_compact_Icc.exists_forall_le (nonempty_Icc.2 zero_le_one) (hf.sub continuous_id).ContinuousOn
+  obtain ⟨x, -, hx⟩ : ∃ x ∈ Icc (0 : ℝ) 1, ∀ y ∈ Icc (0 : ℝ) 1, f x - x ≤ f y - y
+  exact isCompact_Icc.exists_forall_le (nonempty_Icc.2 zero_le_one)
+    (hf.sub continuous_id).continuousOn
   refine' lt_of_lt_of_le (lt_sub_iff_add_lt'.2 <| hz x) _
-  apply le_translation_number_of_add_le
+  apply le_translationNumber_of_add_le
   simp only [← le_sub_iff_add_le']
   exact f.forall_map_sub_of_Icc _ hx
 #align circle_deg1_lift.lt_translation_number_of_forall_add_lt CircleDeg1Lift.lt_translationNumber_of_forall_add_lt
@@ -947,29 +930,32 @@ theorem lt_translationNumber_of_forall_add_lt (hf : Continuous f) {z : ℝ} (hz 
 /-- If `f` is a continuous monotone map `ℝ → ℝ`, `f (x + 1) = f x + 1`, then there exists `x`
 such that `f x = x + τ f`. -/
 theorem exists_eq_add_translationNumber (hf : Continuous f) : ∃ x, f x = x + τ f := by
-  obtain ⟨a, ha⟩ : ∃ x, f x ≤ x + f.translation_number := by
+  obtain ⟨a, ha⟩ : ∃ x, f x ≤ x + τ f := by
     by_contra' H
-    exact lt_irrefl _ (f.lt_translation_number_of_forall_add_lt hf H)
+    exact lt_irrefl _ (f.lt_translationNumber_of_forall_add_lt hf H)
   obtain ⟨b, hb⟩ : ∃ x, x + τ f ≤ f x := by
     by_contra' H
-    exact lt_irrefl _ (f.translation_number_lt_of_forall_lt_add hf H)
+    exact lt_irrefl _ (f.translationNumber_lt_of_forall_lt_add hf H)
   exact intermediate_value_univ₂ hf (continuous_id.add continuous_const) ha hb
 #align circle_deg1_lift.exists_eq_add_translation_number CircleDeg1Lift.exists_eq_add_translationNumber
 
-theorem translationNumber_eq_int_iff (hf : Continuous f) {m : ℤ} : τ f = m ↔ ∃ x, f x = x + m := by
-  refine' ⟨fun h => h ▸ f.exists_eq_add_translation_number hf, _⟩
-  rintro ⟨x, hx⟩
-  exact f.translation_number_of_eq_add_int hx
+theorem translationNumber_eq_int_iff (hf : Continuous f) {m : ℤ} : τ f = m ↔ ∃ x : ℝ, f x = x + m := by
+  constructor
+  · intro h
+    simp only [← h]
+    exact f.exists_eq_add_translationNumber hf
+  · rintro ⟨x, hx⟩
+    exact f.translationNumber_of_eq_add_int hx
 #align circle_deg1_lift.translation_number_eq_int_iff CircleDeg1Lift.translationNumber_eq_int_iff
 
-theorem continuous_pow (hf : Continuous f) (n : ℕ) : Continuous ⇑(f ^ n : CircleDeg1Lift) := by
+theorem continuous_pow (hf : Continuous f) (n : ℕ) : Continuous (f ^ n : CircleDeg1Lift) := by
   rw [coe_pow]
   exact hf.iterate n
 #align circle_deg1_lift.continuous_pow CircleDeg1Lift.continuous_pow
 
 theorem translationNumber_eq_rat_iff (hf : Continuous f) {m : ℤ} {n : ℕ} (hn : 0 < n) :
     τ f = m / n ↔ ∃ x, (f ^ n) x = x + m := by
-  rw [eq_div_iff, mul_comm, ← translation_number_pow] <;> [skip, exact ne_of_gt (Nat.cast_pos.2 hn)]
+  rw [eq_div_iff, mul_comm, ← translationNumber_pow] <;> [skip, exact ne_of_gt (Nat.cast_pos.2 hn)]
   exact (f ^ n).translationNumber_eq_int_iff (f.continuous_pow hf n)
 #align circle_deg1_lift.translation_number_eq_rat_iff CircleDeg1Lift.translationNumber_eq_rat_iff
 
@@ -989,33 +975,28 @@ theorem semiconj_of_group_action_of_forall_translationNumber_eq {G : Type _} [Gr
     refine' fun x => ⟨x + 2, _⟩
     rintro _ ⟨g, rfl⟩
     have : τ (f₂ g⁻¹) = -τ (f₂ g) := by
-      rw [← MonoidHom.coe_toHomUnits, MonoidHom.map_inv, translation_number_units_inv,
+      rw [← MonoidHom.coe_toHomUnits, MonoidHom.map_inv, translationNumber_units_inv,
         MonoidHom.coe_toHomUnits]
     calc
       f₂ g⁻¹ (f₁ g x) ≤ f₂ g⁻¹ (x + τ (f₁ g) + 1) :=
-        mono _ (map_lt_add_translation_number_add_one _ _).le
+        mono _ (map_lt_add_translationNumber_add_one _ _).le
       _ = f₂ g⁻¹ (x + τ (f₂ g)) + 1 := by rw [h, map_add_one]
-      _ ≤ x + τ (f₂ g) + τ (f₂ g⁻¹) + 1 + 1 := by
-        mono
-        exact (map_lt_add_translation_number_add_one _ _).le
-      _ = x + 2 := by simp [this, bit0, add_assoc]
-      
+      _ ≤ x + τ (f₂ g) + τ (f₂ g⁻¹) + 1 + 1 :=
+        add_le_add_right (map_lt_add_translationNumber_add_one _ _).le _
+      _ = x + 2 := by simp [this, add_assoc, one_add_one_eq_two]
   -- We have a theorem about actions by `order_iso`, so we introduce auxiliary maps
   -- to `ℝ ≃o ℝ`.
-  set F₁ := to_order_iso.comp f₁.to_hom_units
-  set F₂ := to_order_iso.comp f₂.to_hom_units
+  set F₁ := toOrderIso.comp f₁.toHomUnits
+  set F₂ := toOrderIso.comp f₂.toHomUnits
   have hF₁ : ∀ g, ⇑(F₁ g) = f₁ g := fun _ => rfl
   have hF₂ : ∀ g, ⇑(F₂ g) = f₂ g := fun _ => rfl
-  simp only [← hF₁, ← hF₂]
   -- Now we apply `cSup_div_semiconj` and go back to `f₁` and `f₂`.
-    refine' ⟨⟨_, fun x y hxy => _, fun x => _⟩, cSup_div_semiconj F₂ F₁ fun x => _⟩ <;>
-    simp only [hF₁, hF₂, ← MonoidHom.map_inv, coe_mk]
-  · refine' csupᵢ_mono (this y) fun g => _
-    exact mono _ (mono _ hxy)
+  refine' ⟨⟨⟨_, fun x y hxy => _⟩, fun x => _⟩, csupₛ_div_semiconj F₂ F₁ fun x => _⟩ <;>
+    simp only [hF₁, hF₂, ← map_inv, coe_mk]
+  · exact csupᵢ_mono (this y) fun g => mono _ (mono _ hxy)
   · simp only [map_add_one]
-    exact
-      (Monotone.map_csupr_of_continuousAt (continuous_at_id.add continuousAt_const)
-          (monotone_id.add_const (1 : ℝ)) (this x)).symm
+    exact (Monotone.map_csupr_of_continuousAt (continuousAt_id.add continuousAt_const)
+      (monotone_id.add_const (1 : ℝ)) (this x)).symm
   · exact this x
 #align circle_deg1_lift.semiconj_of_group_action_of_forall_translation_number_eq CircleDeg1Lift.semiconj_of_group_action_of_forall_translationNumber_eq
 
@@ -1024,14 +1005,12 @@ semiconjugate by a `circle_deg1_lift`. This version uses arguments `f₁ f₂ : 
 to assume that `f₁` and `f₂` are homeomorphisms. -/
 theorem units_semiconj_of_translationNumber_eq {f₁ f₂ : CircleDeg1Liftˣ} (h : τ f₁ = τ f₂) :
     ∃ F : CircleDeg1Lift, Semiconj F f₁ f₂ :=
-  haveI :
-    ∀ n : Multiplicative ℤ,
+  have : ∀ n : Multiplicative ℤ,
       τ ((Units.coeHom _).comp (zpowersHom _ f₁) n) =
-        τ ((Units.coeHom _).comp (zpowersHom _ f₂) n) := by
-    intro n
+        τ ((Units.coeHom _).comp (zpowersHom _ f₂) n) := fun n ↦ by
     simp [h]
-  (semiconj_of_group_action_of_forall_translation_number_eq _ _ this).imp fun F hF =>
-    hF (Multiplicative.ofAdd 1)
+  (semiconj_of_group_action_of_forall_translationNumber_eq _ _ this).imp fun F hF => by
+    simpa using hF (Multiplicative.ofAdd 1)
 #align circle_deg1_lift.units_semiconj_of_translation_number_eq CircleDeg1Lift.units_semiconj_of_translationNumber_eq
 
 /-- If two lifts of circle homeomorphisms have the same translation number, then they are
@@ -1040,7 +1019,7 @@ to assume that `f₁` and `f₂` are homeomorphisms. -/
 theorem semiconj_of_isUnit_of_translationNumber_eq {f₁ f₂ : CircleDeg1Lift} (h₁ : IsUnit f₁)
     (h₂ : IsUnit f₂) (h : τ f₁ = τ f₂) : ∃ F : CircleDeg1Lift, Semiconj F f₁ f₂ := by
   rcases h₁, h₂ with ⟨⟨f₁, rfl⟩, ⟨f₂, rfl⟩⟩
-  exact units_semiconj_of_translation_number_eq h
+  exact units_semiconj_of_translationNumber_eq h
 #align circle_deg1_lift.semiconj_of_is_unit_of_translation_number_eq CircleDeg1Lift.semiconj_of_isUnit_of_translationNumber_eq
 
 /-- If two lifts of circle homeomorphisms have the same translation number, then they are
@@ -1053,4 +1032,3 @@ theorem semiconj_of_bijective_of_translationNumber_eq {f₁ f₂ : CircleDeg1Lif
 #align circle_deg1_lift.semiconj_of_bijective_of_translation_number_eq CircleDeg1Lift.semiconj_of_bijective_of_translationNumber_eq
 
 end CircleDeg1Lift
-
