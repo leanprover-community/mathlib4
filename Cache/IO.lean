@@ -70,7 +70,8 @@ def getPackageDirs : IO PackageDirs := return .ofList [
   ("Mathlib", if ← isMathlibRoot then "." else mathlibDepPath),
   ("Aesop", LAKEPACKAGESDIR / "aesop"),
   ("Std", LAKEPACKAGESDIR / "std"),
-  ("Qq", LAKEPACKAGESDIR / "Qq")
+  ("Qq", LAKEPACKAGESDIR / "Qq"),
+  ("Extras", ".")
 ]
 
 initialize pkgDirs : PackageDirs ← getPackageDirs
