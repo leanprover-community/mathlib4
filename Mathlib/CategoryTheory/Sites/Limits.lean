@@ -281,6 +281,9 @@ noncomputable def isColimitSheafifyCocone {F : K ⥤ Sheaf J D}
 set_option linter.uppercaseLean3 false in
 #align category_theory.Sheaf.is_colimit_sheafify_cocone CategoryTheory.Sheaf.isColimitSheafifyCocone
 
+-- porting note: I had to name this instance because I need to explicitly
+-- use it in the next instance; in Lean 3 the typeclass inference
+-- system could handle the universe problems.
 instance instHasColimitsOfShapeSheaf [HasColimitsOfShape K D] : HasColimitsOfShape K (Sheaf J D) :=
   ⟨fun _ => HasColimit.mk
     ⟨sheafifyCocone.{_, _, u} (colimit.cocone _), isColimitSheafifyCocone _ (colimit.isColimit _)⟩⟩
