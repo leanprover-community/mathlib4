@@ -241,7 +241,8 @@ set_option synthInstance.etaExperiment true in -- Porting note: gets around lean
 noncomputable def _root_.Basis.unique {ι : Type _} (b : Basis ι K K) : Unique ι := by
   have A : Cardinal.mk ι = ↑(FiniteDimensional.finrank K K) :=
     (FiniteDimensional.finrank_eq_card_basis' b).symm
-  simp only [Cardinal.eq_one_iff_unique, FiniteDimensional.finrank_self, algebraMap.coe_one] at A
+  -- porting note: replace `algebra_map.coe_one` with `Nat.cast_one`
+  simp only [Cardinal.eq_one_iff_unique, FiniteDimensional.finrank_self, Nat.cast_one] at A
   exact Nonempty.some ((unique_iff_subsingleton_and_nonempty _).2 A)
 #align basis.unique Basis.unique
 
@@ -281,7 +282,7 @@ theorem cardinal_mk_le_finrank_of_linearIndependent [FiniteDimensional K V] {ι 
     (h : LinearIndependent K b) : (#ι) ≤ finrank K V := by
   rw [← lift_le.{_, max v w}]
   simpa [← finrank_eq_rank', -finrank_eq_rank] using
-    cardinal_lift_le_rank_of_linearIndependent.{_, _, _, max v w} h
+    cardinal_lift_le_rank_of_linearIndependent h
 #align finite_dimensional.cardinal_mk_le_finrank_of_linear_independent FiniteDimensional.cardinal_mk_le_finrank_of_linearIndependent
 
 theorem fintype_card_le_finrank_of_linearIndependent [FiniteDimensional K V] {ι : Type _}
@@ -360,17 +361,18 @@ theorem eq_top_of_finrank_eq [FiniteDimensional K V] {S : Submodule K V}
     @LinearIndependent.image_subtype _ _ _ _ _ _ _ _ _ (Submodule.subtype S)
       (by simpa using bS.linearIndependent) (by simp)
   set b := Basis.extend this with b_eq
+  -- porting note: `letI` now uses `this` so we need to give different names
   letI i1 : Fintype (this.extend _) :=
     (finite_of_linearIndependent (by simpa using b.linearIndependent)).fintype
-  letI i2 : Fintype ((↑) '' Basis.ofVectorSpaceIndex K S) := (finite_of_linearIndependent this).fintype
-  letI : Fintype (Basis.ofVectorSpaceIndex K S) :=
-    (finite_of_linearIndependent (by simpa using bS.linearIndependent)).Fintype
-  have : coe '' Basis.ofVectorSpaceIndex K S = this.extend (Set.subset_univ _) :=
+  letI i2 : Fintype (((↑) : S → V) '' Basis.ofVectorSpaceIndex K S) :=
+    (finite_of_linearIndependent this).fintype
+  letI i3 : Fintype (Basis.ofVectorSpaceIndex K S) :=
+    (finite_of_linearIndependent (by simpa using bS.linearIndependent)).fintype
+  have : (↑) '' Basis.ofVectorSpaceIndex K S = this.extend (Set.subset_univ _) :=
     Set.eq_of_subset_of_card_le (this.subset_extend _)
       (by
         rw [Set.card_image_of_injective _ Subtype.coe_injective, ← finrank_eq_card_basis bS, ←
-            finrank_eq_card_basis b, h] <;>
-          infer_instance)
+            finrank_eq_card_basis b, h])
   rw [← b.span_eq, b_eq, Basis.coe_extend, Subtype.range_coe, ← this, ← Submodule.coeSubtype,
     span_image]
   have := bS.span_eq
@@ -766,7 +768,7 @@ space. -/
 theorem finrank_lt [FiniteDimensional K V] {s : Submodule K V} (h : s < ⊤) :
     finrank K s < finrank K V := by
   rw [← s.finrank_quotient_add_finrank, add_comm]
-  exact Nat.lt_add_of_zero_lt_left _ _ (finrank_pos_iff.mpr (quotient.nontrivial_of_lt_top _ h))
+  exact Nat.lt_add_of_pos_right (finrank_pos_iff.mpr (Quotient.nontrivial_of_lt_top _ h))
 #align submodule.finrank_lt Submodule.finrank_lt
 
 /-- The sum of the dimensions of s + t and s ∩ t is the sum of the dimensions of s and t -/
