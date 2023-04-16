@@ -60,7 +60,8 @@ theorem subobject_ofLe_as_imageToKernel (w : f ≫ g = 0) (h) :
   rfl
 #align subobject_of_le_as_image_to_kernel subobject_ofLe_as_imageToKernel
 
-@[reassoc (attr := simp), elementwise (attr := simp)]
+-- porting note: removed elementwise attribute which does not seem to be helpful here
+@[reassoc (attr := simp)]
 theorem imageToKernel_arrow (w : f ≫ g = 0) :
     imageToKernel f g w ≫ (kernelSubobject g).arrow = (imageSubobject f).arrow := by
   simp [imageToKernel]
