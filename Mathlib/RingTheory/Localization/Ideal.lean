@@ -41,7 +41,8 @@ private def map_ideal (I : Ideal R) : Ideal S where
   zero_mem' := ⟨⟨0, 1⟩, by simp⟩
   add_mem' := by
     rintro a b ⟨a', ha⟩ ⟨b', hb⟩
-    let Z : { x // x ∈ I } := ⟨(a'.2 : R) * (b'.1 : R) + (b'.2 : R) * (a'.1 : R), I.add_mem (I.mul_mem_left _ b'.1.2) (I.mul_mem_left _ a'.1.2)⟩
+    let Z : { x // x ∈ I } := ⟨(a'.2 : R) * (b'.1 : R) + (b'.2 : R) * (a'.1 : R),
+      I.add_mem (I.mul_mem_left _ b'.1.2) (I.mul_mem_left _ a'.1.2)⟩
     use ⟨Z, a'.2 * b'.2⟩
     simp only [RingHom.map_add, Submodule.coe_mk, Submonoid.coe_mul, RingHom.map_mul]
     rw [add_mul, ← mul_assoc a, ha, mul_comm (algebraMap R S a'.2) (algebraMap R S b'.2), ←
@@ -160,7 +161,8 @@ def orderIsoOfPrime :
   map_rel_iff' := by
     rintro I I'
     constructor
-    exact (fun h => show I.val ≤ I'.val from map_comap M S I.val ▸ map_comap M S I'.val ▸ Ideal.map_mono h)
+    exact (fun h => show I.val ≤ I'.val from map_comap M S I.val ▸
+      map_comap M S I'.val ▸ Ideal.map_mono h)
     exact (fun h x hx => h hx)
 #align is_localization.order_iso_of_prime IsLocalization.orderIsoOfPrime
 
@@ -217,7 +219,8 @@ theorem bot_lt_comap_prime [IsDomain R] (hM : M ≤ R⁰) (p : Ideal S) [hpp : p
     (hp0 : p ≠ ⊥) : ⊥ < Ideal.comap (algebraMap R S) p := by
   haveI : IsDomain S := isDomain_of_le_nonZeroDivisors _ hM
   rw [← Ideal.comap_bot_of_injective (algebraMap R S) (IsLocalization.injective _ hM)]
-  convert (orderIsoOfPrime M S).lt_iff_lt.mpr (show (⟨⊥, Ideal.bot_prime⟩ : { p : Ideal S // p.IsPrime }) < ⟨p, hpp⟩ from hp0.bot_lt)
+  convert (orderIsoOfPrime M S).lt_iff_lt.mpr (show (⟨⊥, Ideal.bot_prime⟩ :
+    { p : Ideal S // p.IsPrime }) < ⟨p, hpp⟩ from hp0.bot_lt)
 #align is_localization.bot_lt_comap_prime IsLocalization.bot_lt_comap_prime
 
 end CommRing
