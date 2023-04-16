@@ -44,7 +44,7 @@ variable (C : Type u₁) [Category.{v₁} C] (D : Type u₂) [Category.{v₂} D]
 
 See <https://stacks.math.columbia.edu/tag/001K>.
 -/
-@[simps (config := { notRecursive := [] })]
+@[simps (config := { notRecursive := [] }) Hom id_fst id_snd comp_fst comp_snd]
 instance prod : Category.{max v₁ v₂} (C × D)
     where
   Hom X Y := (X.1 ⟶ Y.1) × (X.2 ⟶ Y.2)

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Luke Kershaw
 
 ! This file was ported from Lean 3 source module category_theory.triangulated.rotate
-! leanprover-community/mathlib commit 19786714ebe478f40b503acb4705fb058ba47303
+! leanprover-community/mathlib commit 94d4e70e97c36c896cb70fb42821acfed040de60
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/

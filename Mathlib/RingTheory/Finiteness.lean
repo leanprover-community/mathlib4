@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 
 ! This file was ported from Lean 3 source module ring_theory.finiteness
-! leanprover-community/mathlib commit f5edf4694f7c478cbca7a2451bddbd221fc7f869
+! leanprover-community/mathlib commit e95e4f92c8f8da3c7f693c3ec948bcf9b6683f51
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -150,7 +150,7 @@ theorem fg_bot : (⊥ : Submodule R M).Fg :=
   ⟨∅, by rw [Finset.coe_empty, span_empty]⟩
 #align submodule.fg_bot Submodule.fg_bot
 
-theorem _root_.Subalgebra.fg_bot_toSubmodule {R A : Type _} [CommSemiring R] [Semiring A] 
+theorem _root_.Subalgebra.fg_bot_toSubmodule {R A : Type _} [CommSemiring R] [Semiring A]
     [Algebra R A] : (⊥ : Subalgebra R A).toSubmodule.Fg :=
   ⟨{1}, by simp [Algebra.toSubmodule_bot]⟩
 #align subalgebra.fg_bot_to_submodule Subalgebra.fg_bot_toSubmodule
@@ -194,14 +194,14 @@ theorem fg_finset_sup {ι : Type _} (s : Finset ι) (N : ι → Submodule R M) (
   Finset.sup_induction fg_bot (fun _ ha _ hb => ha.sup hb) h
 #align submodule.fg_finset_sup Submodule.fg_finset_sup
 
-theorem fg_bsupr {ι : Type _} (s : Finset ι) (N : ι → Submodule R M) (h : ∀ i ∈ s, (N i).Fg) :
+theorem fg_bsupᵢ {ι : Type _} (s : Finset ι) (N : ι → Submodule R M) (h : ∀ i ∈ s, (N i).Fg) :
     (⨆ i ∈ s, N i).Fg := by simpa only [Finset.sup_eq_supᵢ] using fg_finset_sup s N h
-#align submodule.fg_bsupr Submodule.fg_bsupr
+#align submodule.fg_bsupr Submodule.fg_bsupᵢ
 
 theorem fg_supᵢ {ι : Type _} [Finite ι] (N : ι → Submodule R M) (h : ∀ i, (N i).Fg) : (supᵢ N).Fg :=
   by
   cases nonempty_fintype ι
-  simpa using fg_bsupr Finset.univ N fun i _ => h i
+  simpa using fg_bsupᵢ Finset.univ N fun i _ => h i
 #align submodule.fg_supr Submodule.fg_supᵢ
 
 variable {P : Type _} [AddCommMonoid P] [Module R P]
@@ -226,13 +226,13 @@ theorem fg_of_fg_map_injective (f : M →ₗ[R] P) (hf : Function.Injective f) {
       rw [← LinearMap.range_coe, ← span_le, ht, ← map_top]
       exact map_mono le_top⟩
 #align submodule.fg_of_fg_map_injective Submodule.fg_of_fg_map_injective
-/- Porting note: Lean not finding this instance is source of the majority of troubles here. 
+/- Porting note: Lean not finding this instance is source of the majority of troubles here.
 Perhaps it should get its own name -/
 alias LinearMap.instSemilinearMapClassLinearMap ← instSLMC
 
 -- Porting note: With etaExperiment, we don't need the @s in the following statement.
 theorem fg_of_fg_map {R M P : Type _} [Ring R] [AddCommGroup M] [Module R M] [AddCommGroup P]
-    [Module R P] (f : M →ₗ[R] P) 
+    [Module R P] (f : M →ₗ[R] P)
     (hf : @LinearMap.ker R R M P _ _ _ _ _ _ (RingHom.id _) _ instSLMC f = ⊥) {N : Submodule R M}
     (hfn : (@map R R M P _ _ _ _ _ _ (RingHom.id _) _ _ instSLMC f N).Fg) : N.Fg :=
   fg_of_fg_map_injective f (LinearMap.ker_eq_bot.1 hf) hfn
@@ -276,7 +276,7 @@ abbrev asFun [AddCommGroup N] [Module R N] (f : M →ₗ[R] N) : M → N :=
 /-- If 0 → M' → M → M'' → 0 is exact and M' and M'' are
 finitely generated then so is M. -/
 theorem fg_of_fg_map_of_fg_inf_ker {R M P : Type _} [Ring R] [AddCommGroup M] [Module R M]
-    [AddCommGroup P] [Module R P] (f : M →ₗ[R] P) {s : Submodule R M} 
+    [AddCommGroup P] [Module R P] (f : M →ₗ[R] P) {s : Submodule R M}
     -- Porting note: Lean having trouble both unifying for SLMC and then synthesizing once unified
     -- With etaExperiment, we don't need the @s in the following statement.
     (hs1 : (@map R R M P _ _ _ _ _ _ (RingHom.id _) _ _ instSLMC f s).Fg)
@@ -345,7 +345,7 @@ theorem fg_of_fg_map_of_fg_inf_ker {R M P : Type _} [Ring R] [AddCommGroup M] [M
       exact s.smul_mem _ (hg y (hl1 hy)).1
     · exact zero_smul _
     · exact fun _ _ _ => add_smul _ _ _
-  · dsimp [asFun] at hl2 
+  · dsimp [asFun] at hl2
     rw [LinearMap.mem_ker, f.map_sub, ← hl2]
     rw [Finsupp.total_apply, Finsupp.total_apply, Finsupp.lmapDomain_apply]
     rw [Finsupp.sum_mapDomain_index, Finsupp.sum, Finsupp.sum, f.map_sum]
@@ -373,13 +373,13 @@ theorem fg_induction (R M : Type _) [Semiring R] [AddCommMonoid M] [Module R M]
 /-- The kernel of the composition of two linear maps is finitely generated if both kernels are and
 the first morphism is surjective. -/
 theorem fg_ker_comp {R M N P : Type _} [Ring R] [AddCommGroup M] [Module R M] [AddCommGroup N]
-    [Module R N] [AddCommGroup P] [Module R P] (f : M →ₗ[R] N) (g : N →ₗ[R] P) 
+    [Module R N] [AddCommGroup P] [Module R P] (f : M →ₗ[R] N) (g : N →ₗ[R] P)
     -- Porting note: more help both unifying and finding instSLMC
     -- With etaExperiment, we don't need the @s in the following statement.
     (hf1 : (@LinearMap.ker R R M N _ _ _ _ _ _ (RingHom.id _) _ instSLMC f).Fg)
-    (hf2 : (@LinearMap.ker R R N P _ _ _ _ _ _ (RingHom.id _) _ instSLMC g).Fg) 
-    (hsur : Function.Surjective <| asFun f) : 
-    (@LinearMap.comp R R R M N P _ _ _ _ _ _ _ _ _ 
+    (hf2 : (@LinearMap.ker R R N P _ _ _ _ _ _ (RingHom.id _) _ instSLMC g).Fg)
+    (hsur : Function.Surjective <| asFun f) :
+    (@LinearMap.comp R R R M N P _ _ _ _ _ _ _ _ _
       (RingHom.id _) (RingHom.id _) (RingHom.id _) _ g f).ker.Fg := by
   rw [LinearMap.ker_comp]
   apply fg_of_fg_map_of_fg_inf_ker f
@@ -496,14 +496,14 @@ variable {R : Type _} {M : Type _} [Semiring R] [AddCommMonoid M] [Module R M]
 
 /-- An ideal of `R` is finitely generated if it is the span of a finite subset of `R`.
 
-This is defeq to `submodule.fg`, but unfolds more nicely. -/
+This is defeq to `Submodule.Fg`, but unfolds more nicely. -/
 def Fg (I : Ideal R) : Prop :=
   ∃ S : Finset R, Ideal.span ↑S = I
 #align ideal.fg Ideal.Fg
 
 /-- The image of a finitely generated ideal is finitely generated.
 
-This is the `ideal` version of `submodule.fg.map`. -/
+This is the `ideal` version of `Submodule.Fg.map`. -/
 theorem Fg.map {R S : Type _} [Semiring R] [Semiring S] {I : Ideal R} (h : I.Fg) (f : R →+* S) :
     (I.map f).Fg := by
   classical
@@ -540,7 +540,7 @@ theorem exists_radical_pow_le_of_fg {R : Type _} [CommSemiring R] (I : Ideal R) 
     refine' fun i _ => Ideal.mul_le_right.trans _
     obtain h | h := le_or_lt n i
     · apply Ideal.mul_le_right.trans ((Ideal.pow_le_pow h).trans hn)
-    · apply Ideal.mul_le_left.trans 
+    · apply Ideal.mul_le_left.trans
       refine' (Ideal.pow_le_pow _).trans hm
       rw [add_comm, Nat.add_sub_assoc h.le]
       apply Nat.le_add_right
@@ -552,7 +552,7 @@ section ModuleAndAlgebra
 
 variable (R A B M N : Type _)
 
-/-- A module over a semiring is `finite` if it is finitely generated as a module. -/
+/-- A module over a semiring is `Finite` if it is finitely generated as a module. -/
 class Module.Finite [Semiring R] [AddCommMonoid M] [Module R M] : Prop where
   out : (⊤ : Submodule R M).Fg
 #align module.finite Module.Finite
@@ -593,6 +593,17 @@ theorem of_surjective [hM : Finite R M] (f : M →ₗ[R] N) (hf : Surjective f) 
     rw [← LinearMap.range_eq_top.2 hf, ← Submodule.map_top]
     exact hM.1.map f⟩
 #align module.finite.of_surjective Module.Finite.of_surjective
+
+/-- The range of a linear map from a finite module is finite. -/
+instance range [Finite R M] (f : M →ₗ[R] N) : Finite R (LinearMap.range f) :=
+  of_surjective f.rangeRestrict fun ⟨_, y, hy⟩ => ⟨y, Subtype.ext hy⟩
+#align module.finite.range Module.Finite.range
+
+/-- Pushforwards of finite submodules are finite. -/
+instance map (p : Submodule R M) [Finite R p] (f : M →ₗ[R] N) : Finite R (p.map f) :=
+  of_surjective (f.restrict fun _ => Submodule.mem_map_of_mem) fun ⟨_, _, hy, hy'⟩ =>
+    ⟨⟨_, hy⟩, Subtype.ext hy'⟩
+#align module.finite.map Module.Finite.map
 
 variable (R)
 
@@ -652,9 +663,9 @@ end Finite
 end Module
 
 /-- Porting note: reminding Lean about this instance for Module.Finite.base_change -/
-local instance [CommSemiring R] [Semiring A] [Algebra R A] [AddCommMonoid M] [Module R M] : 
-  Module A (TensorProduct R A M) := 
-  haveI : SMulCommClass R A A := IsScalarTower.to_smulCommClass 
+local instance [CommSemiring R] [Semiring A] [Algebra R A] [AddCommMonoid M] [Module R M] :
+  Module A (TensorProduct R A M) :=
+  haveI : SMulCommClass R A A := IsScalarTower.to_smulCommClass
   TensorProduct.leftModule
 
 instance Module.Finite.base_change [CommSemiring R] [Semiring A] [Algebra R A] [AddCommMonoid M]
@@ -677,7 +688,7 @@ instance Module.Finite.base_change [CommSemiring R] [Semiring A] [Algebra R A] [
 
 instance Module.Finite.tensorProduct [CommSemiring R] [AddCommMonoid M] [Module R M]
     [AddCommMonoid N] [Module R N] [hM : Module.Finite R M] [hN : Module.Finite R N] :
-    Module.Finite R (TensorProduct R M N) where 
+    Module.Finite R (TensorProduct R M N) where
   out := (TensorProduct.map₂_mk_top_top_eq_top R M N).subst (hM.out.map₂ _ hN.out)
 #align module.finite.tensor_product Module.Finite.tensorProduct
 
@@ -687,7 +698,7 @@ namespace RingHom
 
 variable {A B C : Type _} [CommRing A] [CommRing B] [CommRing C]
 
-/-- A ring morphism `A →+* B` is `finite` if `B` is finitely generated as `A`-module. -/
+/-- A ring morphism `A →+* B` is `Finite` if `B` is finitely generated as `A`-module. -/
 def Finite (f : A →+* B) : Prop :=
   letI : Algebra A B := f.toAlgebra
   Module.Finite A B
@@ -769,4 +780,3 @@ theorem of_comp_finite {f : A →ₐ[R] B} {g : B →ₐ[R] C} (h : (g.comp f).F
 end Finite
 
 end AlgHom
-
