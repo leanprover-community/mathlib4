@@ -169,7 +169,7 @@ theorem odd_pow {n : ℕ} : Odd (m ^ n) ↔ Odd m ∨ n = 0 := by
   rw [← not_iff_not, ← Int.even_iff_not_odd, not_or, ← Int.even_iff_not_odd, Int.even_pow]
 
 theorem odd_pow' {n : ℕ} (h : n ≠ 0) : Odd (m ^ n) ↔ Odd m := by
-  rw [← not_iff_not, ← Int.even_iff_not_odd, ← Int.even_iff_not_odd, Int.even_pow' h]
+  odd_pow.trans <| or_iff_left h
 
 @[parity_simps]
 theorem odd_add : Odd (m + n) ↔ (Odd m ↔ Even n) := by
