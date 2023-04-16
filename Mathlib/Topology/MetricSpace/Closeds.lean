@@ -49,7 +49,7 @@ instance Closeds.emetricSpace : EMetricSpace (Closeds α) where
   edist_self s := hausdorffEdist_self
   edist_comm s t := hausdorffEdist_comm
   edist_triangle s t u := hausdorffEdist_triangle
-  eq_of_edist_eq_zero := @fun s t h =>
+  eq_of_edist_eq_zero {s t} h :=
     Closeds.ext <| (hausdorffEdist_zero_iff_eq_of_closed s.closed t.closed).1 h
 #align emetric.closeds.emetric_space EMetric.Closeds.emetricSpace
 
@@ -88,7 +88,7 @@ theorem isClosed_subsets_of_isClosed (hs : IsClosed s) :
   rwa [hs.closure_eq] at this
 #align emetric.is_closed_subsets_of_is_closed EMetric.isClosed_subsets_of_isClosed
 
-/-- By definition, the edistance on `closeds α` is given by the Hausdorff edistance -/
+/-- By definition, the edistance on `Closeds α` is given by the Hausdorff edistance -/
 theorem Closeds.edist_eq {s t : Closeds α} : edist s t = hausdorffEdist (s : Set α) t :=
   rfl
 #align emetric.closeds.edist_eq EMetric.Closeds.edist_eq
@@ -104,7 +104,7 @@ instance Closeds.completeSpace [CompleteSpace α] : CompleteSpace (Closeds α) :
   have B_pos : ∀ n, (0 : ℝ≥0∞) < B n := by simp [ENNReal.pow_pos]
   have B_ne_top : ∀ n, B n ≠ ⊤ := by simp [ENNReal.pow_ne_top]
   /- Consider a sequence of closed sets `s n` with `edist (s n) (s (n+1)) < B n`.
-    We will show that it converges. The limit set is t0 = ⋂n, closure (⋃m≥n, s m).
+    We will show that it converges. The limit set is `t0 = ⋂n, closure (⋃m≥n, s m)`.
     We will have to show that a point in `s n` is close to a point in `t0`, and a point
     in `t0` is close to a point in `s n`. The completeness then follows from a
     standard criterion. -/
@@ -222,7 +222,7 @@ instance Closeds.compactSpace [CompactSpace α] : CompactSpace (Closeds α) :=
         exact ⟨y, ⟨ys, ⟨x, hx, this⟩⟩, le_of_lt dy⟩
       · rintro x ⟨_, ⟨y, yu, hy⟩⟩
         exact ⟨y, yu, le_of_lt hy⟩
-    -- introduce the set F of all subsets of `s` (seen as members of `closeds α`).
+    -- introduce the set F of all subsets of `s` (seen as members of `Closeds α`).
     let F := { f : Closeds α | (f : Set α) ⊆ s }
     refine' ⟨F, _, fun u _ => _⟩
     -- `F` is finite
@@ -250,10 +250,9 @@ instance NonemptyCompacts.emetricSpace : EMetricSpace (NonemptyCompacts α) wher
   edist_self s := hausdorffEdist_self
   edist_comm s t := hausdorffEdist_comm
   edist_triangle s t u := hausdorffEdist_triangle
-  eq_of_edist_eq_zero := @fun s t h =>
-    NonemptyCompacts.ext <| by
-      have : closure (s : Set α) = closure t := hausdorffEdist_zero_iff_closure_eq_closure.1 h
-      rwa [s.isCompact.isClosed.closure_eq, t.isCompact.isClosed.closure_eq] at this
+  eq_of_edist_eq_zero {s t} h := NonemptyCompacts.ext <| by
+    have : closure (s : Set α) = closure t := hausdorffEdist_zero_iff_closure_eq_closure.1 h
+    rwa [s.isCompact.isClosed.closure_eq, t.isCompact.isClosed.closure_eq] at this
 #align emetric.nonempty_compacts.emetric_space EMetric.NonemptyCompacts.emetricSpace
 
 /-- `NonemptyCompacts.toCloseds` is a uniform embedding (as it is an isometry) -/
@@ -360,7 +359,6 @@ instance NonemptyCompacts.secondCountableTopology [SecondCountableTopology α] :
           edist x (F z) ≤ edist x z + edist z (F z) := edist_triangle _ _ _
           _ < δ / 2 + δ / 2 := (ENNReal.add_lt_add Dxz (Fspec z).2)
           _ = δ := ENNReal.add_halves _
-
       -- keep only the points in `b` that are close to point in `t`, yielding a new set `c`
       let c := { y ∈ b | ∃ x ∈ t, edist x y < δ }
       have : c.Finite := ‹b.Finite›.subset fun x hx => hx.1
@@ -377,7 +375,6 @@ instance NonemptyCompacts.secondCountableTopology [SecondCountableTopology α] :
           calc
             edist y x = edist x y := edist_comm _ _
             _ ≤ δ := le_of_lt Dyx
-
         exact ⟨x, xt, this⟩
       -- it follows that their Hausdorff distance is small
       have : hausdorffEdist (t : Set α) c ≤ δ := hausdorffEdist_le_of_mem_edist tc ct
@@ -432,8 +429,8 @@ theorem lipschitz_infDist_set (x : α) : LipschitzWith 1 fun s : NonemptyCompact
 theorem lipschitz_infDist : LipschitzWith 2 fun p : α × NonemptyCompacts α => infDist p.1 p.2 := by
   -- Porting note: Changed tactic from `exact` to `convert`, because Lean had trouble with 2 = 1 + 1
   convert @LipschitzWith.uncurry α (NonemptyCompacts α) ℝ _ _ _
-      (fun (x : α) (s : NonemptyCompacts α) => infDist x s) 1 1
-      (fun s => lipschitz_infDist_pt ↑s) lipschitz_infDist_set
+    (fun (x : α) (s : NonemptyCompacts α) => infDist x s) 1 1
+    (fun s => lipschitz_infDist_pt ↑s) lipschitz_infDist_set
   norm_cast
 #align metric.lipschitz_inf_dist Metric.lipschitz_infDist
 
