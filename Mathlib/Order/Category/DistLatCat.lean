@@ -8,7 +8,7 @@ Authors: Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Order.Category.Lat
+import Mathlib.Order.Category.LatCat
 
 /-!
 # The category of distributive lattices
@@ -95,4 +95,3 @@ theorem distLat_dual_comp_forget_to_latCat :
     DistLat.dual ⋙ forget₂ DistLat LatCat = forget₂ DistLat LatCat ⋙ LatCat.dual :=
   rfl
 #align DistLat_dual_comp_forget_to_Lat distLat_dual_comp_forget_to_latCat
-
