@@ -382,24 +382,28 @@ noncomputable def leftHomologyData [HasLeftHomology S] :
 
 variable {S}
 
-lemma HasLeftHomology.mk' (h : S.LeftHomologyData) : HasLeftHomology S :=
+namespace HasLeftHomology
+
+lemma mk' (h : S.LeftHomologyData) : HasLeftHomology S :=
 ⟨Nonempty.intro h⟩
 
-instance hasLeftHomology_of_ker_of_coker
+instance of_ker_of_coker
     [HasKernel S.g] [HasCokernel (kernel.lift S.g S.f S.zero)] :
   S.HasLeftHomology := HasLeftHomology.mk' (LeftHomologyData.of_ker_of_coker S)
 
-instance hasLeftHomology_of_has_cokernel {X Y : C} (f : X ⟶ Y) (Z : C) [HasCokernel f] :
+instance of_hasCokernel {X Y : C} (f : X ⟶ Y) (Z : C) [HasCokernel f] :
     (ShortComplex.mk f (0 : Y ⟶ Z) comp_zero).HasLeftHomology :=
   HasLeftHomology.mk' (LeftHomologyData.of_hasCokernel _ rfl)
 
-instance hasLeftHomology_of_has_kernel {Y Z : C} (g : Y ⟶ Z) (X : C) [HasKernel g] :
+instance of_hasKernel {Y Z : C} (g : Y ⟶ Z) (X : C) [HasKernel g] :
     (ShortComplex.mk (0 : X ⟶ Y) g zero_comp).HasLeftHomology :=
   HasLeftHomology.mk' (LeftHomologyData.of_hasKernel _ rfl)
 
-instance hasLeftHomology_of_zeros (X Y Z : C) :
+instance of_zeros (X Y Z : C) :
     (ShortComplex.mk (0 : X ⟶ Y) (0 : Y ⟶ Z) zero_comp).HasLeftHomology :=
   HasLeftHomology.mk' (LeftHomologyData.of_zeros _ rfl rfl)
+
+end HasLeftHomology
 
 section
 
