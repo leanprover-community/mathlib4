@@ -175,11 +175,11 @@ theorem of_finite_basis {ι : Type w} {s : Set ι} (h : Basis s K V) (hs : Set.F
 /-- A subspace of a finite-dimensional space is also finite-dimensional. -/
 instance finiteDimensional_submodule [FiniteDimensional K V] (S : Submodule K V) :
     FiniteDimensional K S := by
-  letI : IsNoetherian K V := iff_fg.2 _
+  letI : IsNoetherian K V := iff_fg.2 ?_
   exact
     iff_fg.1
       (IsNoetherian.iff_rank_lt_aleph0.2
-        (lt_of_le_of_lt (rank_submodule_le _) (rank_lt_aleph_0 K V)))
+        (lt_of_le_of_lt (rank_submodule_le _) (rank_lt_aleph0 K V)))
   infer_instance
 #align finite_dimensional.finite_dimensional_submodule FiniteDimensional.finiteDimensional_submodule
 
