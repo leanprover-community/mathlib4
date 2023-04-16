@@ -100,7 +100,7 @@ instance : CoeFun (RingSeminorm R) fun _ => R → ℝ :=
   FunLike.hasCoeToFun
 
 @[simp]
-theorem toFun_eq_coe (p : RingSeminorm R) : p.toFun = p :=
+theorem toFun_eq_coe (p : RingSeminorm R) : (p.toAddGroupSeminorm : R → ℝ) = p :=
   rfl
 #align ring_seminorm.to_fun_eq_coe RingSeminorm.toFun_eq_coe
 
@@ -199,10 +199,10 @@ instance ringNormClass : RingNormClass (RingNorm R) R ℝ where
 instance : CoeFun (RingNorm R) fun _ => R → ℝ :=
   ⟨fun p => p.toFun⟩
 
-@[simp]
-theorem toFun_eq_coe (p : RingNorm R) : p.toFun = p :=
-  rfl
-#align ring_norm.to_fun_eq_coe RingNorm.toFun_eq_coe
+-- Porting note: This is a syntactic tautology in Lean 4
+-- @[simp]
+-- theorem toFun_eq_coe (p : RingNorm R) : p.toFun = p := rfl
+#noalign ring_norm.to_fun_eq_coe
 
 @[ext]
 theorem ext {p q : RingNorm R} : (∀ x, p x = q x) → p = q :=
@@ -250,7 +250,7 @@ instance : CoeFun (MulRingSeminorm R) fun _ => R → ℝ :=
   FunLike.hasCoeToFun
 
 @[simp]
-theorem toFun_eq_coe (p : MulRingSeminorm R) : p.toFun = p :=
+theorem toFun_eq_coe (p : MulRingSeminorm R) : (p.toAddGroupSeminorm : R → ℝ) = p :=
   rfl
 #align mul_ring_seminorm.to_fun_eq_coe MulRingSeminorm.toFun_eq_coe
 
@@ -307,10 +307,10 @@ instance mulRingNormClass : MulRingNormClass (MulRingNorm R) R ℝ where
 instance : CoeFun (MulRingNorm R) fun _ => R → ℝ :=
   ⟨fun p => p.toFun⟩
 
-@[simp]
-theorem toFun_eq_coe (p : MulRingNorm R) : p.toFun = p :=
-  rfl
-#align mul_ring_norm.to_fun_eq_coe MulRingNorm.toFun_eq_coe
+-- Porting note: This is a syntactic tautology in Lean 4
+-- @[simp]
+-- theorem toFun_eq_coe (p : MulRingNorm R) : p.toFun = p := rfl
+#noalign mul_ring_norm.to_fun_eq_coe
 
 @[ext]
 theorem ext {p q : MulRingNorm R} : (∀ x, p x = q x) → p = q :=
@@ -349,7 +349,8 @@ def RingSeminorm.toRingNorm {K : Type _} [Field K] (f : RingSeminorm K) (hnt : f
         exact
           le_antisymm
             (le_trans (map_mul_le_mul f _ _)
-              (by rw [← RingSeminorm.toFun_eq_coe, hx, MulZeroClass.zero_mul]))
+              (by rw [← RingSeminorm.toFun_eq_coe, ← AddGroupSeminorm.toFun_eq_coe, hx,
+                MulZeroClass.zero_mul]))
             (map_nonneg f _)
       exact hc hc0 }
 #align ring_seminorm.to_ring_norm RingSeminorm.toRingNorm
