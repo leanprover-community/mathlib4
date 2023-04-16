@@ -97,15 +97,15 @@ the previous paragraph kicks in.
 
 noncomputable section
 
-open quotientAddGroup Metric Set
+open QuotientAddGroup Metric Set
 
 open Topology NNReal
 
 variable {M N : Type _} [SeminormedAddCommGroup M] [SeminormedAddCommGroup N]
 
 /-- The definition of the norm on the quotient by an additive subgroup. -/
-noncomputable instance normOnQuotient (S : AddSubgroup M) : Norm (M ⧸ S)
-    where norm x := infₛ (norm '' { m | mk' S m = x })
+noncomputable instance normOnQuotient (S : AddSubgroup M) : Norm (M ⧸ S) where
+  norm x := infₛ (norm '' { m | mk' S m = x })
 #align norm_on_quotient normOnQuotient
 
 theorem AddSubgroup.quotient_norm_eq {S : AddSubgroup M} (x : M ⧸ S) :
@@ -116,42 +116,29 @@ theorem AddSubgroup.quotient_norm_eq {S : AddSubgroup M} (x : M ⧸ S) :
 theorem image_norm_nonempty {S : AddSubgroup M} :
     ∀ x : M ⧸ S, (norm '' { m | mk' S m = x }).Nonempty := by
   rintro ⟨m⟩
-  rw [Set.nonempty_image_iff]
-  use m
-  change mk' S m = _
-  rfl
+  exact .image _ ⟨m, rfl⟩
 #align image_norm_nonempty image_norm_nonempty
 
 theorem bddBelow_image_norm (s : Set M) : BddBelow (norm '' s) := by
   use 0
-  rintro _ ⟨x, hx, rfl⟩
+  rintro _ ⟨x, -, rfl⟩
   apply norm_nonneg
 #align bdd_below_image_norm bddBelow_image_norm
 
 /-- The norm on the quotient satisfies `‖-x‖ = ‖x‖`. -/
 theorem quotient_norm_neg {S : AddSubgroup M} (x : M ⧸ S) : ‖-x‖ = ‖x‖ := by
-  suffices norm '' { m | mk' S m = x } = norm '' { m | mk' S m = -x } by simp only [this, norm]
-  ext r
-  constructor
-  · rintro ⟨m, rfl : mk' S m = x, rfl⟩
-    rw [← norm_neg]
-    exact ⟨-m, by simp only [(mk' S).map_neg, Set.mem_setOf_eq], rfl⟩
-  · rintro ⟨m, hm : mk' S m = -x, rfl⟩
-    exact ⟨-m, by simpa using neg_eq_iff_eq_neg.mpr ((mk'_apply _ _).symm.trans hm)⟩
+  simp only [AddSubgroup.quotient_norm_eq]
+  congr 1 with r
+  constructor <;> { rintro ⟨m, hm, rfl⟩; use -m; simpa [neg_eq_iff_eq_neg] using hm }
 #align quotient_norm_neg quotient_norm_neg
 
 theorem quotient_norm_sub_rev {S : AddSubgroup M} (x y : M ⧸ S) : ‖x - y‖ = ‖y - x‖ := by
-  rw [show x - y = -(y - x) by abel, quotient_norm_neg]
+  rw [← neg_sub, quotient_norm_neg]
 #align quotient_norm_sub_rev quotient_norm_sub_rev
 
 /-- The norm of the projection is smaller or equal to the norm of the original element. -/
-theorem quotient_norm_mk_le (S : AddSubgroup M) (m : M) : ‖mk' S m‖ ≤ ‖m‖ := by
-  apply cinfₛ_le
-  use 0
-  · rintro _ ⟨n, h, rfl⟩
-    apply norm_nonneg
-  · apply Set.mem_image_of_mem
-    rw [Set.mem_setOf_eq]
+theorem quotient_norm_mk_le (S : AddSubgroup M) (m : M) : ‖mk' S m‖ ≤ ‖m‖ :=
+  cinfₛ_le (bddBelow_image_norm _) <| Set.mem_image_of_mem _ rfl
 #align quotient_norm_mk_le quotient_norm_mk_le
 
 /-- The norm of the projection is smaller or equal to the norm of the original element. -/
@@ -162,7 +149,7 @@ theorem quotient_norm_mk_le' (S : AddSubgroup M) (m : M) : ‖(m : M ⧸ S)‖ �
 /-- The norm of the image under the natural morphism to the quotient. -/
 theorem quotient_norm_mk_eq (S : AddSubgroup M) (m : M) :
     ‖mk' S m‖ = infₛ ((fun x => ‖m + x‖) '' S) := by
-  change Inf _ = _
+  change infₛ _ = _
   congr 1
   ext r
   simp_rw [coe_mk', eq_iff_sub_mem]
@@ -180,7 +167,7 @@ theorem quotient_norm_nonneg (S : AddSubgroup M) : ∀ x : M ⧸ S, 0 ≤ ‖x�
   rintro ⟨m⟩
   change 0 ≤ ‖mk' S m‖
   apply le_cinfₛ (image_norm_nonempty _)
-  rintro _ ⟨n, h, rfl⟩
+  rintro _ ⟨n, -, rfl⟩
   apply norm_nonneg
 #align quotient_norm_nonneg quotient_norm_nonneg
 
@@ -200,7 +187,7 @@ theorem quotient_norm_eq_zero_iff (S : AddSubgroup M) (m : M) :
       (∀ ε > (0 : ℝ), ∃ r ∈ (fun x => ‖m + x‖) '' (S : Set M), r < ε) ↔
           ∀ ε > 0, ∃ x ∈ S, ‖m + x‖ < ε :=
         by simp [Set.bex_image_iff]
-      _ ↔ ∀ ε > 0, ∃ x ∈ S, ‖m + -x‖ < ε := _
+      _ ↔ ∀ ε > 0, ∃ x ∈ S, ‖m + -x‖ < ε := ?_
       _ ↔ ∀ ε > 0, ∃ x ∈ S, x ∈ Metric.ball m ε := by
         simp [dist_eq_norm, ← sub_eq_add_neg, norm_sub_rev]
       _ ↔ m ∈ closure ↑S := by simp [Metric.mem_closure_iff, dist_comm]
@@ -269,7 +256,7 @@ theorem quotient_nhd_basis (S : AddSubgroup M) :
     · intro U_in
       rw [← (mk' S).map_zero] at U_in
       have := preimage_nhds_coinduced U_in
-      rcases metric.mem_nhds_iff.mp this with ⟨ε, ε_pos, H⟩
+      rcases Metric.mem_nhds_iff.mp this with ⟨ε, ε_pos, H⟩
       use ε / 2, half_pos ε_pos
       intro x x_in
       dsimp at x_in
@@ -290,7 +277,7 @@ theorem quotient_nhd_basis (S : AddSubgroup M) :
         erw [QuotientAddGroup.preimage_image_mk]
         apply isOpen_unionᵢ
         rintro ⟨s, s_in⟩
-        exact (continuous_add_right s).isOpen_preimage _ is_open_ball
+        exact (continuous_add_right s).isOpen_preimage _ isOpen_ball
       · exact ⟨(0 : M), mem_ball_self ε_pos, (mk' S).map_zero⟩⟩
 #align quotient_nhd_basis quotient_nhd_basis
 
