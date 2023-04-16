@@ -4,19 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Lean.Meta.Basic
-import Mathlib.Data.ListM.Basic
 import Mathlib.Tactic.Nondet
-import Mathlib.Control.Basic
 
 /-!
-# `backtracking`
+# `backtrack`
 
 A meta-tactic for running backtracking search, given a non-deterministic tactic
-`alternatives : MVarId → MetaM (List (MetaM (List MVarId)))`.
-
-Here the outermost list gives us alternative solutions to the input goal.
-The innermost list is then the new subgoals generated in that solution.
-The additional `MetaM` allows for deferring computation.
+`alternatives : MVarId → Nondet MetaM (List MVarId)`.
 
 `backtrack alternatives goals` will recursively try to solve all goals in `goals`,
 and the subgoals generated, backtracking as necessary.
@@ -26,9 +20,6 @@ A customisable `suspend` hook in `BacktrackConfig` allows suspend a goal (or sub
 so that it will be returned instead of processed further.
 Other hooks `proc` and `discharge` (described in `BacktrackConfig`) allow running other
 tactics before `alternatives`, or if all search branches from a given goal fail.
-
-See also `nondeterministic`, an alternative implementation of the same idea,
-but with simpler flow control, and no trace messages.
 
 Currently only `solveByElim` is implemented in terms of `backtrack`.
 -/

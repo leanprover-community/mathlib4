@@ -3,7 +3,7 @@ Copyright (c) 2021 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, David Renshaw
 -/
-import Mathlib.Tactic.Backtracking
+import Mathlib.Tactic.Backtrack
 import Lean.Meta.Tactic.Apply
 import Mathlib.Lean.LocalContext
 import Mathlib.Tactic.Relation.Symm
