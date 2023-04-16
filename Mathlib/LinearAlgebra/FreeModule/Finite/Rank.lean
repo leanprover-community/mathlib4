@@ -8,9 +8,9 @@ Authors: Riccardo Brasca
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.LinearAlgebra.Finrank
-import Mathbin.LinearAlgebra.FreeModule.Rank
-import Mathbin.LinearAlgebra.FreeModule.Finite.Basic
+import Mathlib.LinearAlgebra.Finrank
+import Mathlib.LinearAlgebra.FreeModule.Rank
+import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 
 /-!
 
@@ -59,8 +59,7 @@ variable [AddCommGroup M] [Module R M] [Module.Finite R M]
 variable [AddCommGroup N] [Module R N] [Module.Finite R N]
 
 /-- The rank of a finite module is finite. -/
-theorem rank_lt_aleph0 : Module.rank R M < ℵ₀ :=
-  by
+theorem rank_lt_aleph0 : Module.rank R M < ℵ₀ := by
   dsimp only [Module.rank]
   letI := nontrivial_of_invariantBasisNumber R
   obtain ⟨S, hS⟩ := module.finite_def.mp ‹_›
@@ -88,8 +87,7 @@ variable [AddCommGroup N] [Module R N] [Module.Free R N] [Module.Finite R N]
 theorem finrank_eq_card_chooseBasisIndex :
     finrank R M =
       @card (ChooseBasisIndex R M)
-        (@ChooseBasisIndex.fintype R M _ _ _ _ (nontrivial_of_invariantBasisNumber R) _) :=
-  by
+        (@ChooseBasisIndex.fintype R M _ _ _ _ (nontrivial_of_invariantBasisNumber R) _) := by
   letI := nontrivial_of_invariantBasisNumber R
   simp [finrank, rank_eq_card_choose_basis_index]
 #align finite_dimensional.finrank_eq_card_choose_basis_index FiniteDimensional.finrank_eq_card_chooseBasisIndex
@@ -108,8 +106,7 @@ theorem finrank_pi {ι : Type v} [Fintype ι] : finrank R (ι → R) = card ι :
 @[simp]
 theorem finrank_directSum {ι : Type v} [Fintype ι] (M : ι → Type w) [∀ i : ι, AddCommGroup (M i)]
     [∀ i : ι, Module R (M i)] [∀ i : ι, Module.Free R (M i)] [∀ i : ι, Module.Finite R (M i)] :
-    finrank R (⨁ i, M i) = ∑ i, finrank R (M i) :=
-  by
+    finrank R (⨁ i, M i) = ∑ i, finrank R (M i) := by
   letI := nontrivial_of_invariantBasisNumber R
   simp only [finrank, fun i => rank_eq_card_choose_basis_index R (M i), rank_directSum, ← mk_sigma,
     mk_to_nat_eq_card, card_sigma]
@@ -125,8 +122,7 @@ theorem finrank_prod : finrank R (M × N) = finrank R M + finrank R N := by
 /-- The finrank of a finite product is the sum of the finranks. -/
 theorem finrank_pi_fintype {ι : Type v} [Fintype ι] {M : ι → Type w} [∀ i : ι, AddCommGroup (M i)]
     [∀ i : ι, Module R (M i)] [∀ i : ι, Module.Free R (M i)] [∀ i : ι, Module.Finite R (M i)] :
-    finrank R (∀ i, M i) = ∑ i, finrank R (M i) :=
-  by
+    finrank R (∀ i, M i) = ∑ i, finrank R (M i) := by
   letI := nontrivial_of_invariantBasisNumber R
   simp only [finrank, fun i => rank_eq_card_choose_basis_index R (M i), rank_pi, ← mk_sigma,
     mk_to_nat_eq_card, card_sigma]
