@@ -104,7 +104,7 @@ def isLimitMultiforkOfIsLimit (F : K ⥤ Sheaf J D) (E : Cone (F ⋙ sheafToPres
   Multifork.IsLimit.mk _
     (fun S =>
       (isLimitOfPreserves ((evaluation Cᵒᵖ D).obj (op X)) hE).lift <|
-        multiforkEvaluationCone F E X W S)
+        multiforkEvaluationCone.{_,v, u} F E X W S)
     (by
       intro S i
       apply (isLimitOfPreserves ((evaluation Cᵒᵖ D).obj (op i.Y)) hE).hom_ext
