@@ -160,19 +160,15 @@ protected theorem inter [ContinuousAdd 𝕜] {A B C : Set E} (hB : IsExposed �
 
 theorem interₛ [ContinuousAdd 𝕜] {F : Finset (Set E)} (hF : F.Nonempty)
     (hAF : ∀ B ∈ F, IsExposed 𝕜 A B) : IsExposed 𝕜 A (⋂₀ F) := by
-  revert hF
-  induction F using Finset.induction
-  · rintro h
-    exfalso
-    exact Finset.not_nonempty_empty h
-  rintro C F _ hF _ hCF
-  rw [Finset.coe_insert, interₛ_insert]
-  obtain rfl | hFnemp := F.eq_empty_or_nonempty
-  · rw [Finset.coe_empty, interₛ_empty, inter_univ]
-    exact hCF C (Finset.mem_singleton_self C)
-  exact
-    (hCF C (Finset.mem_insert_self C F)).inter
-      (hF hFnemp fun B hB => hCF B (Finset.mem_insert_of_mem hB))
+  induction F using Finset.induction with
+  | empty => exfalso; exact Finset.not_nonempty_empty hF
+  | @insert C F _ hF' =>
+    rw [Finset.coe_insert, interₛ_insert]
+    obtain rfl | hFnemp := F.eq_empty_or_nonempty
+    · rw [Finset.coe_empty, interₛ_empty, inter_univ]
+      exact hAF C (Finset.mem_singleton_self C)
+    · exact (hAF C (Finset.mem_insert_self C F)).inter
+        (hF' hFnemp fun B hB => hAF B (Finset.mem_insert_of_mem hB))
 #align is_exposed.sInter IsExposed.interₛ
 
 theorem inter_left (hC : IsExposed 𝕜 A C) (hCB : C ⊆ B) : IsExposed 𝕜 (A ∩ B) C := by
