@@ -158,8 +158,8 @@ def ofNat (n : ℕ) : PosNum :=
   ofNatSucc (Nat.pred n)
 #align pos_num.of_nat PosNum.ofNat
 
-instance : OfNat PosNum (n+1) where
-  ofNat:=ofNat (n+1)
+instance : OfNat PosNum (n + 1) where
+  ofNat := ofNat (n + 1)
 
 open Ordering
 

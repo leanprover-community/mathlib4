@@ -43,13 +43,14 @@ def minFacAux (n : PosNum) : ℕ → PosNum → PosNum
     if n < k.bit1 * k.bit1 then n else if k.bit1 ∣ n then k.bit1 else minFacAux n fuel k.succ
 #align pos_num.min_fac_aux PosNum.minFacAux
 
-set_option linter.deprecated false in -- Porting note: for `_root_.bit0` and `_root_.bit1`
+set_option linter.deprecated false in
 theorem minFacAux_to_nat {fuel : ℕ} {n k : PosNum} (h : Nat.sqrt n < fuel + k.bit1) :
     (minFacAux n fuel k : ℕ) = Nat.minFacAux n k.bit1 := by
   induction' fuel with fuel ih generalizing k <;> rw [minFacAux, Nat.minFacAux]
   · rw [Nat.zero_add, Nat.sqrt_lt] at h
     simp only [h, dite_true]
-  simp_rw [← mul_to_nat]; simp only [cast_lt, dvd_to_nat]
+  simp_rw [← mul_to_nat]
+  simp only [cast_lt, dvd_to_nat]
   split_ifs <;> try rfl
   rw [ih] <;> [congr , convert Nat.lt_succ_of_lt h using 1] <;>
     simp only [_root_.bit1, _root_.bit0, cast_bit1, cast_succ, Nat.succ_eq_add_one, add_assoc,
@@ -65,7 +66,8 @@ def minFac : PosNum → PosNum
 
 @[simp]
 theorem minFac_to_nat (n : PosNum) : (minFac n : ℕ) = Nat.minFac n := by
-  cases' n with n; · rfl
+  cases' n with n
+  · rfl
   · rw [minFac, Nat.minFac_eq, if_neg]
     swap
     · simp
@@ -81,7 +83,6 @@ theorem minFac_to_nat (n : PosNum) : (minFac n : ℕ) = Nat.minFac n := by
   · rw [minFac, Nat.minFac_eq, if_pos]
     · rfl
     simp
-
 #align pos_num.min_fac_to_nat PosNum.minFac_to_nat
 
 /-- Primality predicate for a `PosNum`. -/
