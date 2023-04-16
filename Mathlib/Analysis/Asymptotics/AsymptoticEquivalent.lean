@@ -244,10 +244,10 @@ theorem IsEquivalent.smul {α E 𝕜 : Type _} [NormedField 𝕜] [NormedAddComm
     {a b : α → 𝕜} {u v : α → E} {l : Filter α} (hab : a ~[l] b) (huv : u ~[l] v) :
     (fun x ↦ a x • u x) ~[l] fun x ↦ b x • v x := by
   rcases hab.exists_eq_mul with ⟨φ, hφ, habφ⟩
-  have :
-      ((fun x : α ↦ a x • u x) - fun x : α ↦ b x • v x) =ᶠ[l] fun x ↦ b x • (φ x • u x - v x) := by
+  have : ((fun x ↦ a x • u x) - (fun x ↦ b x • v x)) =ᶠ[l] fun x ↦ b x • (φ x • u x - v x) := by
+    -- Porting note: `convert` has become too strong, so we need to specify `using 1`.
     convert (habφ.comp₂ (· • ·) <| EventuallyEq.refl _ u).sub
-      (EventuallyEq.refl _ fun x ↦ b x • v x)
+      (EventuallyEq.refl _ fun x ↦ b x • v x) using 1
     ext
     rw [Pi.mul_apply, mul_comm, mul_smul, ← smul_sub]
   refine' (isLittleO_congr this.symm <| EventuallyEq.rfl).mp ((isBigO_refl b l).smul_isLittleO _)
