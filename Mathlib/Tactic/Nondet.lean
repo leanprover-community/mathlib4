@@ -11,6 +11,14 @@ import Mathlib.Data.ListM.Basic
 We represent nondeterministic values in a type `α` as `ListM m (σ × α)`,
 i.e. as a monadic lazy list of possible values, each equipped with the backtrackable state
 required to run further computations in the ambient monad.
+
+We define the type synonym `Nondet m α` for this, as we need to equip it with a different
+`Monad` instance (that backtracks state appropriately in `bind`) than the default provided
+for `ListM`.
+
+Similarly, various monadic functions need to be redefined (e.g. `mapM` and `filterMapM`),
+and to avoid confusion resulting from using the `ListM` API,
+we eventually mark `Nondet` as irreducible.
 -/
 
 open Lean
