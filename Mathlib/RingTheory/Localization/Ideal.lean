@@ -111,14 +111,11 @@ correspond to prime ideals in the original ring `R` that are disjoint from `M`.
 This lemma gives the particular case for an ideal and its comap,
 see `le_rel_iso_of_prime` for the more general relation isomorphism -/
 theorem isPrime_iff_isPrime_disjoint (J : Ideal S) :
-    J.IsPrime ↔
-      (Ideal.comap (algebraMap R S) J).IsPrime ∧
-        Disjoint (M : Set R) ↑(Ideal.comap (algebraMap R S) J) := by
+    J.IsPrime ↔ (Ideal.comap (algebraMap R S) J).IsPrime ∧
+      Disjoint (M : Set R) ↑(Ideal.comap (algebraMap R S) J) := by
   constructor
-  · refine' fun h =>
-      ⟨⟨_, _⟩,
-        Set.disjoint_left.mpr fun m hm1 hm2 =>
-          h.ne_top (Ideal.eq_top_of_isUnit_mem _ hm2 (map_units S ⟨m, hm1⟩))⟩
+  · refine' fun h => ⟨⟨_, _⟩, Set.disjoint_left.mpr fun m hm1 hm2 =>
+      h.ne_top (Ideal.eq_top_of_isUnit_mem _ hm2 (map_units S ⟨m, hm1⟩))⟩
     · refine' fun hJ => h.ne_top _
       rw [eq_top_iff, ← (orderEmbedding M S).le_iff_le]
       exact le_of_eq hJ.symm
@@ -173,7 +170,7 @@ variable [Algebra R S] [IsLocalization M S]
 
 set_option maxHeartbeats 400000 in
 
-/-- `quotient_map` applied to maximal ideals of a localization is `surjective`.
+/-- `quotientMap` applied to maximal ideals of a localization is `Surjective`.
   The quotient by a maximal ideal is a field, so inverses to elements already exist,
   and the localization necessarily maps the equivalence class of the inverse in the localization -/
 theorem surjective_quotientMap_of_maximal_of_localization {I : Ideal S} [I.IsPrime] {J : Ideal R}
@@ -196,19 +193,15 @@ theorem surjective_quotientMap_of_maximal_of_localization {I : Ideal S} [I.IsPri
     -- The rest of the proof is essentially just algebraic manipulations to prove the equality
     replace hn := congr_arg (Ideal.quotientMap I (algebraMap R S) le_rfl) hn
     rw [RingHom.map_one, RingHom.map_mul] at hn
-    rw [Ideal.quotientMap_mk, ← sub_eq_zero, ← RingHom.map_sub, Ideal.Quotient.eq_zero_iff_mem, ←
-      Ideal.Quotient.eq_zero_iff_mem, RingHom.map_sub, sub_eq_zero, mk'_eq_mul_mk'_one]
+    rw [Ideal.quotientMap_mk, ← sub_eq_zero, ← RingHom.map_sub, Ideal.Quotient.eq_zero_iff_mem,
+      ← Ideal.Quotient.eq_zero_iff_mem, RingHom.map_sub, sub_eq_zero, mk'_eq_mul_mk'_one]
     simp only [mul_eq_mul_left_iff, RingHom.map_mul]
-    exact
-      Or.inl
-        (mul_left_cancel₀
-          (fun hn =>
-            hM
-              (Ideal.Quotient.eq_zero_iff_mem.2
-                (Ideal.mem_comap.2 (Ideal.Quotient.eq_zero_iff_mem.1 hn))))
-          (_root_.trans hn (by rw [← RingHom.map_mul, ← mk'_eq_mul_mk'_one, mk'_self,
-            RingHom.map_one])))
-#align is_localization.surjective_quotient_map_of_maximal_of_localization IsLocalization.surjective_quotientMap_of_maximal_of_localization
+    exact Or.inl (mul_left_cancel₀ (fun hn => hM (Ideal.Quotient.eq_zero_iff_mem.2
+      (Ideal.mem_comap.2 (Ideal.Quotient.eq_zero_iff_mem.1 hn))))
+        (_root_.trans hn (by rw [← RingHom.map_mul, ← mk'_eq_mul_mk'_one, mk'_self,
+          RingHom.map_one])))
+#align is_localization.surjective_quotient_map_of_maximal_of_localization
+IsLocalization.surjective_quotientMap_of_maximal_of_localization
 
 open nonZeroDivisors
 
