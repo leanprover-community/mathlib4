@@ -15,6 +15,7 @@ import Mathlib.CategoryTheory.Limits.FunctorCategory
 import Mathlib.CategoryTheory.Limits.KanExtension
 import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 import Mathlib.CategoryTheory.Limits.Types
+set_option autoImplicit false
 
 /-!
 # Colimit of representables
@@ -126,8 +127,10 @@ theorem restrictYonedaHomEquiv_natural (P : Cᵒᵖ ⥤ Type u₁) (E₁ E₂ : 
     (t : IsColimit c) (k : c.pt ⟶ E₁) :
     restrictYonedaHomEquiv A P E₂ t (k ≫ g) =
       restrictYonedaHomEquiv A P E₁ t k ≫ (restrictedYoneda A).map g := by
-  ext x X
-  apply (assoc _ k g).symm
+  ext x
+  funext X
+  -- porting note: these last two lines were `ext x X` in mathlib3
+  apply (assoc _ _ _).symm
 #align category_theory.colimit_adj.restrict_yoneda_hom_equiv_natural CategoryTheory.ColimitAdj.restrictYonedaHomEquiv_natural
 
 variable [HasColimits ℰ]
@@ -151,11 +154,22 @@ theorem extendAlongYoneda_obj (P : Cᵒᵖ ⥤ Type u₁) :
 theorem extendAlongYoneda_map {X Y : Cᵒᵖ ⥤ Type u₁} (f : X ⟶ Y) :
     (extendAlongYoneda A).map f =
       colimit.pre ((CategoryOfElements.π Y).leftOp ⋙ A) (CategoryOfElements.map f).op := by
-  ext J
-  simp [colimit.ι_pre ((CategoryOfElements.π Y).leftOp ⋙ A) (CategoryOfElements.map f).op]
+  refine CategoryTheory.Limits.colimit.hom_ext (fun J => ?_)
+  erw [colimit.ι_pre ((CategoryOfElements.π Y).leftOp ⋙ A) (CategoryOfElements.map f).op]
   dsimp only [extendAlongYoneda, restrictYonedaHomEquiv, IsColimit.homIso,
     IsColimit.homIso, uliftTrivial]
+  /- the `simpa` which finishes the proof in mathlib3 is:
+
+  simp only [Functor.map_id, comp_id, colimit.cocone_ι, FunctorToTypes.comp, id.def, colimit.isColimit_desc, Cocone.extend_ι,
+  Cocone.extensions_app, Adjunction.leftAdjointOfEquiv_map, Iso.symm_mk, Iso.toEquiv_comp, Equiv.coe_trans,
+  Equiv.coe_fn_mk, Iso.toEquiv_fun, Equiv.symm_trans_apply, Equiv.coe_fn_symm_mk, Iso.toEquiv_symm_fun,
+  colimit.ι_desc]
+  rfl
+
+  Note in particular, it's not `simp, assumption`, it's `simp, refl`.
+  -/
   simpa
+
 #align category_theory.colimit_adj.extend_along_yoneda_map CategoryTheory.ColimitAdj.extendAlongYoneda_map
 
 /-- Show `extendAlongYoneda` is left adjoint to `restrictedYoneda`.
@@ -201,7 +215,7 @@ noncomputable def isExtensionAlongYoneda :
         (colimitOfDiagramTerminal (terminalOpOfInitial (isInitial _)) _))
     (by
       intro X Y f
-      change colimit.desc _ ⟨_, _⟩ ≫ colimit.desc _ _ = colimit.desc _ _ ≫ _
+      change (colimit.desc _ _ ≫ _) = colimit.desc _ _ ≫ _
       apply colimit.hom_ext
       intro j
       rw [colimit.ι_desc_assoc, colimit.ι_desc_assoc]
@@ -263,7 +277,6 @@ set_option linter.uppercaseLean3 false in
 #align category_theory.colimit_adj.extend_along_yoneda_iso_Kan CategoryTheory.ColimitAdj.extendAlongYonedaIsoKan
 
 /-- extending `F ⋙ yoneda` along the yoneda embedding is isomorphic to `Lan F.op`. -/
-@[simps!]
 noncomputable def extendOfCompYonedaIsoLan {D : Type u₁} [SmallCategory D] (F : C ⥤ D) :
     extendAlongYoneda (F ⋙ yoneda) ≅ lan F.op :=
   Adjunction.natIsoOfRightAdjointNatIso (yonedaAdjunction (F ⋙ yoneda))
@@ -271,6 +284,9 @@ noncomputable def extendOfCompYonedaIsoLan {D : Type u₁} [SmallCategory D] (F 
     (isoWhiskerRight curriedYonedaLemma' ((whiskeringLeft Cᵒᵖ Dᵒᵖ (Type u₁)).obj F.op : _))
 set_option linter.uppercaseLean3 false in
 #align category_theory.colimit_adj.extend_of_comp_yoneda_iso_Lan CategoryTheory.ColimitAdj.extendOfCompYonedaIsoLan
+
+-- porting note: attaching `[simps!]` directly to the declaration causes a timeout.
+attribute [simps!] extendOfCompYonedaIsoLan
 
 end ColimitAdj
 
@@ -327,7 +343,10 @@ theorem coconeOfRepresentable_ι_app (P : Cᵒᵖ ⥤ Type u₁) (j : P.Elements
 theorem coconeOfRepresentable_naturality {P₁ P₂ : Cᵒᵖ ⥤ Type u₁} (α : P₁ ⟶ P₂) (j : P₁.Elementsᵒᵖ) :
     (coconeOfRepresentable P₁).ι.app j ≫ α =
       (coconeOfRepresentable P₂).ι.app ((CategoryOfElements.map α).op.obj j) := by
-  ext (T f)
+  refine NatTrans.ext (((coconeOfRepresentable P₁).ι.app j ≫ α))
+    (((coconeOfRepresentable P₂).ι.app ((Functor.op (CategoryOfElements.map α)).obj j))) ?_
+  ext T
+  funext f
   simpa [coconeOfRepresentable_ι_app] using FunctorToTypes.naturality _ _ α f.op _
 #align category_theory.cocone_of_representable_naturality CategoryTheory.coconeOfRepresentable_naturality
 
@@ -336,9 +355,12 @@ that is, we have exhibited an arbitrary presheaf `P` as a colimit of representab
 
 The result of [MM92], Chapter I, Section 5, Corollary 3.
 -/
-def colimitOfRepresentable (P : Cᵒᵖ ⥤ Type u₁) : IsColimit (coconeOfRepresentable P) := by
-  apply IsColimit.ofPointIso (colimit.isColimit (functorToRepresentables P))
-  change Isiso (colimit.desc _ (cocone.extend _ _))
+noncomputable def colimitOfRepresentable (P : Cᵒᵖ ⥤ Type u₁) :
+    IsColimit (coconeOfRepresentable P) := by
+  suffices IsIso (IsColimit.desc (colimit.isColimit (functorToRepresentables P))
+    (coconeOfRepresentable P)) by
+    apply IsColimit.ofPointIso (colimit.isColimit (functorToRepresentables P))
+  change IsIso (colimit.desc _ (Cocone.extend _ _))
   rw [colimit.desc_extend, colimit.desc_cocone]
   infer_instance
 #align category_theory.colimit_of_representable CategoryTheory.colimitOfRepresentable
