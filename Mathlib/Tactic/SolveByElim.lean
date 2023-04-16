@@ -31,10 +31,10 @@ we can perform backtracking search based on applying a list of lemmas.
 ``applyTactics (trace := `name)`` will construct trace nodes for ``name` indicating which
 calls to `apply` succeeded or failed.
 -/
-def applyTactics (cfg : ApplyConfig := {}) (transparency : TransparencyMode := .default)
+unsafe def applyTactics (cfg : ApplyConfig := {}) (transparency : TransparencyMode := .default)
     (lemmas : List Expr) :
-    MVarId → MetaM (List (MetaM (List MVarId))) :=
-  fun g => pure <|
+    MVarId → Nondet MetaM (List MVarId) :=
+  fun g => Nondet.ofListM <|
     lemmas.map fun e =>
       withTraceNode `Meta.Tactic.solveByElim (return m!"{·.emoji} trying to apply: {e}") do
         let goals ← withTransparency transparency (g.apply e cfg)
@@ -150,10 +150,10 @@ def elabContextLemmas (g : MVarId) (lemmas : List (TermElabM Expr)) (ctx : TermE
   g.withContext (Elab.Term.TermElabM.run' do pure ((← lemmas.mapM id) ++ (← ctx)))
 
 /-- Returns the list of tactics corresponding to applying the available lemmas to the goal. -/
-def applyLemmas (cfg : Config) (lemmas : List (TermElabM Expr)) (ctx : TermElabM (List Expr))
-    (g : MVarId) : MetaM (List (MetaM (List MVarId))) := do
-let es ← elabContextLemmas g lemmas ctx
-applyTactics cfg.toApplyConfig cfg.transparency es g
+unsafe def applyLemmas (cfg : Config) (lemmas : List (TermElabM Expr)) (ctx : TermElabM (List Expr))
+    (g : MVarId) : Nondet MetaM (List MVarId) := Nondet.squash do
+  let es ← elabContextLemmas g lemmas ctx
+  return applyTactics cfg.toApplyConfig cfg.transparency es g
 
 /--
 Solve a collection of goals by repeatedly applying lemmas, backtracking as necessary.
@@ -172,7 +172,7 @@ and so the returned list is always empty.
 Custom wrappers (e.g. `apply_assumption` and `apply_rules`) may modify this behaviour.
 -/
 def solveByElim (cfg : Config) (lemmas : List (TermElabM Expr)) (ctx : TermElabM (List Expr))
-    (goals : List MVarId) : MetaM (List MVarId) := do
+    (goals : List MVarId) : MetaM (List MVarId) := unsafe do
   -- We handle `cfg.symm` by saturating hypotheses of all goals using `symm`.
   -- Implementation note:
   -- (We used to apply `symm` all throughout the `solve_by_elim` stage.)

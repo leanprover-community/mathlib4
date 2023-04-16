@@ -4,6 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Lean.Meta.Basic
+import Mathlib.Data.ListM.Basic
+import Mathlib.Tactic.Nondet
+import Mathlib.Control.Basic
 
 /-!
 # `backtracking`
@@ -44,9 +47,9 @@ Given any tactic that takes a goal, and returns a sequence of alternative outcom
 (each outcome consisting of a list of new subgoals),
 we can perform backtracking search by repeatedly applying the tactic.
 -/
-def firstContinuation (results : MVarId → MetaM (List (MetaM (List MVarId))))
+unsafe def firstContinuation (results : MVarId → Nondet MetaM (List MVarId))
     (cont : List MVarId → MetaM α) (g : MVarId) : MetaM α := do
-  (← results g).firstM fun r => do cont (← r)
+  (results g).firstM fun r => try? do cont r
 
 end Lean.MVarId
 
@@ -97,8 +100,8 @@ while the innermost list is the subgoals generated in that outcome.
 
 Further flow control options are available via the `Config` argument.
 -/
-def backtrack (cfg : BacktrackConfig := {}) (trace : Name := .anonymous)
-    (alternatives : MVarId → MetaM (List (MetaM (List MVarId))))
+unsafe def backtrack (cfg : BacktrackConfig := {}) (trace : Name := .anonymous)
+    (alternatives : MVarId → Nondet MetaM (List MVarId))
     (goals : List MVarId) : MetaM (List MVarId) := do
 run cfg.maxDepth goals []
   where
@@ -155,6 +158,5 @@ run cfg.maxDepth goals []
           | some l => (withTraceNode trace
               (fun _ => return m!"⏬ discharger generated new subgoals") do
             run n (l ++ gs) acc)
-  termination_by run n curr acc => (n, curr)
 
 end Mathlib.Tactic
