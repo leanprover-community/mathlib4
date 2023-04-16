@@ -862,7 +862,7 @@ instance [Subsingleton R] : Unique (Localization M) where
 Should not be confused with `addLocalization.add`, which is defined as
 `⟨a, b⟩ + ⟨c, d⟩ = ⟨a + c, b + d⟩`.
 -/
-protected def add (z w : Localization M) : Localization M :=
+protected irreducible_def add (z w : Localization M) : Localization M :=
   Localization.liftOn₂ z w (fun a b c d => mk ((b : R) * c + d * a) (b * d))
     @fun a a' b b' c c' d d' h1 h2 =>
     mk_eq_mk_iff.2
@@ -886,11 +886,8 @@ instance : Add (Localization M) :=
 theorem add_mk (a b c d) : (mk a b : Localization M) + mk c d =
     mk ((b : R) * c + (d : R) * a) (b * d) := by
   show Localization.add (mk a b) (mk c d) = mk _ _
-  simp [Localization.add]
+  simp [Localization.add_def]
 #align localization.add_mk Localization.add_mk
-
---Porting note: `Localization.add` was an `irreducible_def`, but then I couldn't prove `add_mk`
-attribute [irreducible] Localization.add
 
 theorem add_mk_self (a b c) : (mk a b : Localization M) + mk c b = mk (a + c) b := by
   rw [add_mk, mk_eq_mk_iff, r_eq_r']
@@ -1102,7 +1099,7 @@ variable [Algebra R S] {P : Type _} [CommRing P]
 namespace Localization
 
 /-- Negation in a ring localization is defined as `-⟨a, b⟩ = ⟨-a, b⟩`. -/
-protected def neg (z : Localization M) : Localization M :=
+protected irreducible_def neg (z : Localization M) : Localization M :=
   Localization.liftOn z (fun a b => mk (-a) b) @fun a b c d h =>
     mk_eq_mk_iff.2
       (by
@@ -1118,11 +1115,9 @@ instance : Neg (Localization M) :=
 
 theorem neg_mk (a b) : -(mk a b : Localization M) = mk (-a) b := by
   show Localization.neg (mk a b) = mk (-a) b
+  rw [Localization.neg_def]
   apply liftOn_mk
 #align localization.neg_mk Localization.neg_mk
-
---Porting note: `Localization.neg` was an `irreducible_def`, but then I couldn't prove `neg_mk`
-attribute [irreducible] Localization.neg
 
 instance : CommRing (Localization M) :=
   { inferInstanceAs (CommSemiring (Localization M)) with
