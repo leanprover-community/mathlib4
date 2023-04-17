@@ -996,22 +996,22 @@ set_option linter.uppercaseLean3 false in
 end LEquiv
 
 scoped[FirstOrder] infixl:88 " =' " => FirstOrder.Language.Term.bdEqual
-
 -- input \~- or \simeq
-scoped[FirstOrder] infixr:62 " ⟹ " => FirstOrder.Language.BoundedFormula.imp
 
+scoped[FirstOrder] infixr:62 " ⟹ " => FirstOrder.Language.BoundedFormula.imp
 -- input \==>
+
 scoped[FirstOrder] prefix:110 "∀'" => FirstOrder.Language.BoundedFormula.all
 
 scoped[FirstOrder] prefix:arg "∼" => FirstOrder.Language.BoundedFormula.not
-
 -- input \~, the ASCII character ~ has too low precedence
+
 scoped[FirstOrder] infixl:61 " ⇔ " => FirstOrder.Language.BoundedFormula.iff
-
 -- input \<=>
-scoped[FirstOrder] prefix:110 "∃'" => FirstOrder.Language.BoundedFormula.ex
 
+scoped[FirstOrder] prefix:110 "∃'" => FirstOrder.Language.BoundedFormula.ex
 -- input \ex
+
 namespace Formula
 
 /-- Relabels a formula's variables along a particular function. -/
