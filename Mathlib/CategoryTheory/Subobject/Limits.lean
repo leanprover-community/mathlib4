@@ -238,8 +238,8 @@ theorem kernelSubobject_comp_mono (f : X ⟶ Y) [HasKernel f] {Z : C} (h : Y ⟶
 #align category_theory.limits.kernel_subobject_comp_mono CategoryTheory.Limits.kernelSubobject_comp_mono
 
 instance kernelSubobject_comp_mono_isIso (f : X ⟶ Y) [HasKernel f] {Z : C} (h : Y ⟶ Z) [Mono h] :
-    IsIso (Subobject.ofLe _ _ (kernelSubobject_comp_le f h)) := by
-  rw [ofLe_mk_le_mk_of_comm (kernelCompMono f h).inv]
+    IsIso (Subobject.ofLE _ _ (kernelSubobject_comp_le f h)) := by
+  rw [ofLE_mk_le_mk_of_comm (kernelCompMono f h).inv]
   · infer_instance
   · simp
 #align category_theory.limits.kernel_subobject_comp_mono_is_iso CategoryTheory.Limits.kernelSubobject_comp_mono_isIso
@@ -263,7 +263,7 @@ def cokernelOrderHom [HasCokernels C] (X : C) : Subobject X →o (Subobject (op 
       intro A B f g hf hg h
       dsimp only [Subobject.lift_mk]
       refine' Subobject.mk_le_mk_of_comm (cokernel.desc f (cokernel.π g) _).op _
-      · rw [← Subobject.ofMkLeMk_comp h, Category.assoc, cokernel.condition, comp_zero]
+      · rw [← Subobject.ofMkLEMk_comp h, Category.assoc, cokernel.condition, comp_zero]
       · exact Quiver.Hom.unop_inj (cokernel.π_desc _ _ _)
 #align category_theory.limits.cokernel_order_hom CategoryTheory.Limits.cokernelOrderHom
 
@@ -287,7 +287,7 @@ def kernelOrderHom [HasKernels C] (X : C) : (Subobject (op X))ᵒᵈ →o Subobj
       intro A B f g hf hg h
       dsimp only [Subobject.lift_mk]
       refine' Subobject.mk_le_mk_of_comm (kernel.lift g.unop (kernel.ι f.unop) _) _
-      · rw [← Subobject.ofMkLeMk_comp h, unop_comp, kernel.condition_assoc, zero_comp]
+      · rw [← Subobject.ofMkLEMk_comp h, unop_comp, kernel.condition_assoc, zero_comp]
       · exact Quiver.Hom.op_inj (by simp)
 #align category_theory.limits.kernel_order_hom CategoryTheory.Limits.kernelOrderHom
 
@@ -393,8 +393,8 @@ In general this does not imply that `imageSubobject (h ≫ f) = imageSubobject f
 although it will when the ambient category is abelian.
  -/
 instance imageSubobject_comp_le_epi_of_epi {X' : C} (h : X' ⟶ X) [Epi h] (f : X ⟶ Y) [HasImage f]
-    [HasImage (h ≫ f)] : Epi (Subobject.ofLe _ _ (imageSubobject_comp_le h f)) := by
-  rw [ofLe_mk_le_mk_of_comm (image.preComp h f)]
+    [HasImage (h ≫ f)] : Epi (Subobject.ofLE _ _ (imageSubobject_comp_le h f)) := by
+  rw [ofLE_mk_le_mk_of_comm (image.preComp h f)]
   · infer_instance
   · simp
 #align category_theory.limits.image_subobject_comp_le_epi_of_epi CategoryTheory.Limits.imageSubobject_comp_le_epi_of_epi
