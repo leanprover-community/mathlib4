@@ -919,7 +919,7 @@ variable (R)
 
 @[simp]
 theorem rank_self : Module.rank R R = 1 := by
-  rw [← Cardinal.lift_inj, ← (Basis.singleton PUnit R).mk_eq_rank, Cardinal.mk_pUnit]
+  rw [← Cardinal.lift_inj, ← (Basis.singleton PUnit R).mk_eq_rank, Cardinal.mk_punit]
 #align rank_self rank_self
 
 end StrongRankCondition
