@@ -60,11 +60,11 @@ and for `ContinuousMap.homotopic` and `ContinuousMap.homotopic_rel`, we also def
 
 noncomputable section
 
-universe u v w
+universe u v w x
 
-variable {F : Type _} {X : Type u} {Y : Type v} {Z : Type w}
+variable {F : Type _} {X : Type u} {Y : Type v} {Z : Type w} {Z' : Type x}
 
-variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
+variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z] [TopologicalSpace Z']
 
 open unitInterval
 
@@ -105,8 +105,7 @@ section
 
 variable {f₀ f₁ : C(X, Y)}
 
-instance : HomotopyLike (Homotopy f₀ f₁) f₀ f₁
-    where
+instance : HomotopyLike (Homotopy f₀ f₁) f₀ f₁ where
   coe f := f.toFun
   coe_injective' f g h := by
     obtain ⟨⟨_, _⟩, _⟩ := f
@@ -238,8 +237,7 @@ theorem symm_symm {f₀ f₁ : C(X, Y)} (F : Homotopy f₀ f₁) : F.symm.symm =
 Given `Homotopy f₀ f₁` and `Homotopy f₁ f₂`, we can define a `Homotopy f₀ f₂` by putting the first
 homotopy on `[0, 1/2]` and the second on `[1/2, 1]`.
 -/
-def trans {f₀ f₁ f₂ : C(X, Y)} (F : Homotopy f₀ f₁) (G : Homotopy f₁ f₂) : Homotopy f₀ f₂
-    where
+def trans {f₀ f₁ f₂ : C(X, Y)} (F : Homotopy f₀ f₁) (G : Homotopy f₁ f₂) : Homotopy f₀ f₂ where
   toFun x := if (x.1 : ℝ) ≤ 1 / 2 then F.extend (2 * x.1) x.2 else G.extend (2 * x.1 - 1) x.2
   continuous_toFun :=
     by
@@ -296,8 +294,8 @@ theorem symm_trans {f₀ f₁ f₂ : C(X, Y)} (F : Homotopy f₀ f₁) (G : Homo
 /-- Casting a `Homotopy f₀ f₁` to a `Homotopy g₀ g₁` where `f₀ = g₀` and `f₁ = g₁`.
 -/
 @[simps]
-def cast {f₀ f₁ g₀ g₁ : C(X, Y)} (F : Homotopy f₀ f₁) (h₀ : f₀ = g₀) (h₁ : f₁ = g₁) : Homotopy g₀ g₁
-    where
+def cast {f₀ f₁ g₀ g₁ : C(X, Y)} (F : Homotopy f₀ f₁) (h₀ : f₀ = g₀) (h₁ : f₁ = g₁) :
+    Homotopy g₀ g₁ where
   toFun := F
   map_zero_left := by simp [← h₀]
   map_one_left := by simp [← h₁]
@@ -308,12 +306,43 @@ def cast {f₀ f₁ g₀ g₁ : C(X, Y)} (F : Homotopy f₀ f₁) (h₀ : f₀ =
 -/
 @[simps]
 def hcomp {f₀ f₁ : C(X, Y)} {g₀ g₁ : C(Y, Z)} (F : Homotopy f₀ f₁) (G : Homotopy g₀ g₁) :
-    Homotopy (g₀.comp f₀) (g₁.comp f₁)
-    where
+    Homotopy (g₀.comp f₀) (g₁.comp f₁) where
   toFun x := G (x.1, F x)
   map_zero_left := by simp
   map_one_left := by simp
 #align continuous_map.homotopy.hcomp ContinuousMap.Homotopy.hcomp
+
+/-- Let `F` be a homotopy between `f₀ : C(X, Y)` and `f₁ : C(X, Y)`. Let `G` be a homotopy between
+`g₀ : C(X, Z)` and `g₁ : C(X, Z)`. Then `F.prodMk G` is the homotopy between `f₀.prodMk g₀` and
+`f₁.prodMk g₁` that sends `p` to `(F p, G p)`. -/
+nonrec def prodMk {f₀ f₁ : C(X, Y)} {g₀ g₁ : C(X, Z)} (F : Homotopy f₀ f₁) (G : Homotopy g₀ g₁) :
+    Homotopy (f₀.prodMk g₀) (f₁.prodMk g₁) where
+  toContinuousMap := F.prodMk G
+  map_zero_left _ := Prod.ext (F.map_zero_left _) (G.map_zero_left _)
+  map_one_left _ := Prod.ext (F.map_one_left _) (G.map_one_left _)
+
+/-- Let `F` be a homotopy between `f₀ : C(X, Y)` and `f₁ : C(X, Y)`. Let `G` be a homotopy between
+`g₀ : C(Z, Z')` and `g₁ : C(Z, Z')`. Then `F.prodMap G` is the homotopy between `f₀.prodMap g₀` and
+`f₁.prodMap g₁` that sends `(t, x, z)` to `(F (t, x), G (t, z))`. -/
+def prodMap {f₀ f₁ : C(X, Y)} {g₀ g₁ : C(Z, Z')} (F : Homotopy f₀ f₁) (G : Homotopy g₀ g₁) :
+    Homotopy (f₀.prodMap g₀) (f₁.prodMap g₁) :=
+  .prodMk (.hcomp (.refl .fst) F) (.hcomp (.refl .snd) G)
+
+/-- Given a family of homotopies `F i` between `f₀ i : C(X, Y i)` and `f₁ i : C(X, Y i)`, returns a
+homotopy between `ContinuousMap.pi f₀` and `ContinuousMap.pi f₁`. -/
+protected def pi {Y : ι → Type _} [∀ i, TopologicalSpace (Y i)] {f₀ f₁ : ∀ i, C(X, Y i)}
+    (F : ∀ i, Homotopy (f₀ i) (f₁ i)) :
+    Homotopy (.pi f₀) (.pi f₁) where
+  toContinuousMap := .pi fun i ↦ F i
+  map_zero_left x := funext fun i ↦ (F i).map_zero_left x
+  map_one_left x := funext fun i ↦ (F i).map_one_left x
+
+/-- Given a family of homotopies `F i` between `f₀ i : C(X i, Y i)` and `f₁ i : C(X i, Y i)`,
+returns a homotopy between `ContinuousMap.piMap f₀` and `ContinuousMap.piMap f₁`. -/
+protected def piMap {X Y : ι → Type _} [∀ i, TopologicalSpace (X i)] [∀ i, TopologicalSpace (Y i)]
+    {f₀ f₁ : ∀ i, C(X i, Y i)} (F : ∀ i, Homotopy (f₀ i) (f₁ i)) :
+    Homotopy (.piMap f₀) (.piMap f₁) :=
+  .pi fun i ↦ .hcomp (.refl <| .eval i) (F i)
 
 end Homotopy
 
@@ -349,6 +378,28 @@ theorem hcomp {f₀ f₁ : C(X, Y)} {g₀ g₁ : C(Y, Z)} (h₀ : Homotopic f₀
 theorem equivalence : Equivalence (@Homotopic X Y _ _) :=
   ⟨refl, by apply symm, by apply trans⟩
 #align continuous_map.homotopic.equivalence ContinuousMap.Homotopic.equivalence
+
+nonrec theorem prodMk {f₀ f₁ : C(X, Y)} {g₀ g₁ : C(X, Z)} :
+    Homotopic f₀ f₁ → Homotopic g₀ g₁ → Homotopic (f₀.prodMk g₀) (f₁.prodMk g₁)
+  | ⟨F⟩, ⟨G⟩ => ⟨F.prodMk G⟩
+
+nonrec theorem prodMap {f₀ f₁ : C(X, Y)} {g₀ g₁ : C(Z, Z')} :
+    Homotopic f₀ f₁ → Homotopic g₀ g₁ → Homotopic (f₀.prodMap g₀) (f₁.prodMap g₁)
+  | ⟨F⟩, ⟨G⟩ => ⟨F.prodMap G⟩
+
+/-- If each `f₀ i : C(X, Y i)` is homotopic to `f₁ i : C(X, Y i)`, then `ContinuousMap.pi f₀` is
+homotopic to `ContinuousMap.pi f₁`. -/
+protected theorem pi {Y : ι → Type _} [∀ i, TopologicalSpace (Y i)] {f₀ f₁ : ∀ i, C(X, Y i)}
+    (F : ∀ i, Homotopic (f₀ i) (f₁ i)) :
+    Homotopic (.pi f₀) (.pi f₁) :=
+  ⟨.pi fun i ↦ (F i).some⟩
+
+/-- If each `f₀ i : C(X, Y i)` is homotopic to `f₁ i : C(X, Y i)`, then `ContinuousMap.pi f₀` is
+homotopic to `ContinuousMap.pi f₁`. -/
+protected theorem piMap {X Y : ι → Type _} [∀ i, TopologicalSpace (X i)]
+    [∀ i, TopologicalSpace (Y i)] {f₀ f₁ : ∀ i, C(X i, Y i)} (F : ∀ i, Homotopic (f₀ i) (f₁ i)) :
+    Homotopic (.piMap f₀) (.piMap f₁) :=
+  .pi fun i ↦ .hcomp (.refl <| .eval i) (F i)
 
 end Homotopic
 
