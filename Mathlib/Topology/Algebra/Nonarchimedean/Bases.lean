@@ -248,45 +248,59 @@ namespace SubmodulesBasis
 
 variable [TopologicalSpace R] [Nonempty ι] {B : ι → Submodule R M} (hB : SubmodulesBasis B)
 
-include hB
-
 /-- The image of a submodules basis is a module filter basis. -/
 def toModuleFilterBasis : ModuleFilterBasis R M where
   sets := { U | ∃ i, U = B i }
-  Nonempty := by
+  nonempty := by
     inhabit ι
     exact ⟨B default, default, rfl⟩
   inter_sets := by
     rintro _ _ ⟨i, rfl⟩ ⟨j, rfl⟩
     cases' hB.inter i j with k hk
-    use B k, k, rfl, hk
+    use B k
+    constructor
+    · use k
+    · exact hk
   zero' := by
     rintro _ ⟨i, rfl⟩
     exact (B i).zero_mem
   add' := by
     rintro _ ⟨i, rfl⟩
-    use B i, i, rfl
-    rintro x ⟨y, z, y_in, z_in, rfl⟩
-    exact (B i).add_mem y_in z_in
+    use B i
+    constructor
+    · use i
+    · rintro x ⟨y, z, y_in, z_in, rfl⟩
+      exact (B i).add_mem y_in z_in
   neg' := by
     rintro _ ⟨i, rfl⟩
-    use B i, i, rfl
-    intro x x_in
-    exact (B i).neg_mem x_in
+    use B i
+    constructor
+    · use i
+    · intro x x_in
+      exact (B i).neg_mem x_in
   conj' := by
     rintro x₀ _ ⟨i, rfl⟩
-    use B i, i, rfl
-    simp
+    use B i
+    constructor
+    · use  i
+    · simp
   smul' := by
     rintro _ ⟨i, rfl⟩
-    use univ, univ_mem, B i, i, rfl
-    rintro _ ⟨a, m, -, hm, rfl⟩
-    exact (B i).smul_mem _ hm
+    use univ
+    constructor
+    · exact univ_mem
+    · use B i
+      constructor
+      · use i
+      · rintro _ ⟨a, m, -, hm, rfl⟩
+        exact (B i).smul_mem _ hm
   smul_left' := by
     rintro x₀ _ ⟨i, rfl⟩
-    use B i, i, rfl
-    intro m
-    exact (B i).smul_mem _
+    use B i
+    constructor
+    · use i
+    · intro m
+      exact (B i).smul_mem _
   smul_right' := by
     rintro m₀ _ ⟨i, rfl⟩
     exact hB.smul m₀ i
@@ -301,7 +315,7 @@ def topology : TopologicalSpace M :=
 topology. -/
 def openAddSubgroup (i : ι) : @OpenAddSubgroup M _ hB.topology :=
   { (B i).toAddSubgroup with
-    is_open' := by
+    isOpen' := by
       letI := hB.topology
       rw [isOpen_iff_mem_nhds]
       intro a a_in
@@ -317,8 +331,8 @@ theorem nonarchimedean (hB : SubmodulesBasis B) : @NonarchimedeanAddGroup M _ hB
   constructor
   intro U hU
   obtain ⟨-, ⟨i, rfl⟩, hi : (B i : Set M) ⊆ U⟩ :=
-    hB.to_module_filter_basis.to_add_group_filter_basis.nhds_zero_has_basis.mem_iff.mp hU
-  exact ⟨hB.open_add_subgroup i, hi⟩
+    hB.toModuleFilterBasis.toAddGroupFilterBasis.nhds_zero_hasBasis.mem_iff.mp hU
+  exact ⟨hB.openAddSubgroup i, hi⟩
 #align submodules_basis.nonarchimedean SubmodulesBasis.nonarchimedean
 
 library_note "nonarchimedean non instances"/--
@@ -367,7 +381,7 @@ theorem RingFilterBasis.submodulesBasisIsBasis (BR : RingFilterBasis R) {B : ι 
       letI := BR.topology
       intro m i
       rcases hB.smul m i with ⟨V, V_in, hV⟩
-      exact mem_of_superset (BR.to_add_group_filter_basis.mem_nhds_zero V_in) hV }
+      exact mem_of_superset (BR.toAddGroupFilterBasis.mem_nhds_zero V_in) hV }
 #align ring_filter_basis.submodules_basis_is_basis RingFilterBasis.submodulesBasisIsBasis
 
 /-- The module filter basis associated to a ring filter basis and a compatible submodule basis.
