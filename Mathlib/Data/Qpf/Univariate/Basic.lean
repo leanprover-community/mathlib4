@@ -8,7 +8,7 @@ Authors: Jeremy Avigad
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Pfunctor.Univariate.M
+import Mathlib.Data.PFunctor.Univariate.M
 
 /-!
 
@@ -72,8 +72,7 @@ Show that every qpf is a lawful functor.
 Note: every functor has a field, `map_const`, and is_lawful_functor has the defining
 characterization. We can only propagate the assumption.
 -/
-theorem id_map {α : Type _} (x : F α) : id <$> x = x :=
-  by
+theorem id_map {α : Type _} (x : F α) : id <$> x = x := by
   rw [← abs_repr x]
   cases' repr x with a f
   rw [← abs_map]
@@ -104,8 +103,7 @@ section
 open Functor
 
 theorem liftp_iff {α : Type u} (p : α → Prop) (x : F α) :
-    Liftp p x ↔ ∃ a f, x = abs ⟨a, f⟩ ∧ ∀ i, p (f i) :=
-  by
+    Liftp p x ↔ ∃ a f, x = abs ⟨a, f⟩ ∧ ∀ i, p (f i) := by
   constructor
   · rintro ⟨y, hy⟩
     cases' h : repr y with a f
@@ -121,8 +119,7 @@ theorem liftp_iff {α : Type u} (p : α → Prop) (x : F α) :
 #align qpf.liftp_iff Qpf.liftp_iff
 
 theorem liftp_iff' {α : Type u} (p : α → Prop) (x : F α) :
-    Liftp p x ↔ ∃ u : q.p.Obj α, abs u = x ∧ ∀ i, p (u.snd i) :=
-  by
+    Liftp p x ↔ ∃ u : q.p.Obj α, abs u = x ∧ ∀ i, p (u.snd i) := by
   constructor
   · rintro ⟨y, hy⟩
     cases' h : repr y with a f
@@ -139,8 +136,7 @@ theorem liftp_iff' {α : Type u} (p : α → Prop) (x : F α) :
 #align qpf.liftp_iff' Qpf.liftp_iff'
 
 theorem liftr_iff {α : Type u} (r : α → α → Prop) (x y : F α) :
-    Liftr r x y ↔ ∃ a f₀ f₁, x = abs ⟨a, f₀⟩ ∧ y = abs ⟨a, f₁⟩ ∧ ∀ i, r (f₀ i) (f₁ i) :=
-  by
+    Liftr r x y ↔ ∃ a f₀ f₁, x = abs ⟨a, f₀⟩ ∧ y = abs ⟨a, f₁⟩ ∧ ∀ i, r (f₀ i) (f₁ i) := by
   constructor
   · rintro ⟨u, xeq, yeq⟩
     cases' h : repr u with a f
@@ -201,8 +197,7 @@ theorem recF_eq_of_wequiv {α : Type u} (u : F α → α) (x y : q.p.W) :
   case trans x y z e₁ e₂ ih₁ ih₂ => exact Eq.trans ih₁ ih₂
 #align qpf.recF_eq_of_Wequiv Qpf.recF_eq_of_wequiv
 
-theorem Wequiv.abs' (x y : q.p.W) (h : abs x.dest = abs y.dest) : Wequiv x y :=
-  by
+theorem Wequiv.abs' (x y : q.p.W) (h : abs x.dest = abs y.dest) : Wequiv x y := by
   cases x
   cases y
   apply Wequiv.abs
@@ -213,8 +208,7 @@ theorem Wequiv.refl (x : q.p.W) : Wequiv x x := by
   cases' x with a f <;> exact Wequiv.abs a f a f rfl
 #align qpf.Wequiv.refl Qpf.Wequiv.refl
 
-theorem Wequiv.symm (x y : q.p.W) : Wequiv x y → Wequiv y x :=
-  by
+theorem Wequiv.symm (x y : q.p.W) : Wequiv x y → Wequiv y x := by
   cases' x with a f; cases' y with b g
   intro h; induction h
   case ind a f f' h ih => exact Wequiv.ind _ _ _ ih
@@ -227,8 +221,7 @@ def wrepr : q.p.W → q.p.W :=
   recF (PFunctor.W.mk ∘ repr)
 #align qpf.Wrepr Qpf.wrepr
 
-theorem wrepr_equiv (x : q.p.W) : Wequiv (wrepr x) x :=
-  by
+theorem wrepr_equiv (x : q.p.W) : Wequiv (wrepr x) x := by
   induction' x with a f ih
   apply Wequiv.trans
   · change Wequiv (Wrepr ⟨a, f⟩) (PFunctor.W.mk (Wrepr <$> ⟨a, f⟩))
@@ -274,8 +267,7 @@ def Fix.dest : Fix F → F (Fix F) :=
 #align qpf.fix.dest Qpf.Fix.dest
 
 theorem Fix.rec_eq {α : Type _} (g : F α → α) (x : F (Fix F)) :
-    Fix.rec g (Fix.mk x) = g (Fix.rec g <$> x) :=
-  by
+    Fix.rec g (Fix.mk x) = g (Fix.rec g <$> x) := by
   have : recF g ∘ fixToW = Fix.rec g := by
     apply funext
     apply Quotient.ind
@@ -293,10 +285,8 @@ theorem Fix.rec_eq {α : Type _} (g : F α → α) (x : F (Fix F)) :
 #align qpf.fix.rec_eq Qpf.Fix.rec_eq
 
 theorem Fix.ind_aux (a : q.p.A) (f : q.p.B a → q.p.W) :
-    Fix.mk (abs ⟨a, fun x => ⟦f x⟧⟩) = ⟦⟨a, f⟩⟧ :=
-  by
-  have : Fix.mk (abs ⟨a, fun x => ⟦f x⟧⟩) = ⟦wrepr ⟨a, f⟩⟧ :=
-    by
+    Fix.mk (abs ⟨a, fun x => ⟦f x⟧⟩) = ⟦⟨a, f⟩⟧ := by
+  have : Fix.mk (abs ⟨a, fun x => ⟦f x⟧⟩) = ⟦wrepr ⟨a, f⟩⟧ := by
     apply Quot.sound; apply Wequiv.abs'
     rw [PFunctor.W.dest_mk, abs_map, abs_repr, ← abs_map, PFunctor.map_eq]
     conv =>
@@ -322,16 +312,14 @@ theorem Fix.ind_rec {α : Type u} (g₁ g₂ : Fix F → α)
 #align qpf.fix.ind_rec Qpf.Fix.ind_rec
 
 theorem Fix.rec_unique {α : Type u} (g : F α → α) (h : Fix F → α)
-    (hyp : ∀ x, h (Fix.mk x) = g (h <$> x)) : Fix.rec g = h :=
-  by
+    (hyp : ∀ x, h (Fix.mk x) = g (h <$> x)) : Fix.rec g = h := by
   ext x
   apply fix.ind_rec
   intro x hyp'
   rw [hyp, ← hyp', fix.rec_eq]
 #align qpf.fix.rec_unique Qpf.Fix.rec_unique
 
-theorem Fix.mk_dest (x : Fix F) : Fix.mk (Fix.dest x) = x :=
-  by
+theorem Fix.mk_dest (x : Fix F) : Fix.mk (Fix.dest x) = x := by
   change (fix.mk ∘ fix.dest) x = id x
   apply fix.ind_rec
   intro x; dsimp
@@ -339,8 +327,7 @@ theorem Fix.mk_dest (x : Fix F) : Fix.mk (Fix.dest x) = x :=
   intro h; rw [h]
 #align qpf.fix.mk_dest Qpf.Fix.mk_dest
 
-theorem Fix.dest_mk (x : F (Fix F)) : Fix.dest (Fix.mk x) = x :=
-  by
+theorem Fix.dest_mk (x : F (Fix F)) : Fix.dest (Fix.mk x) = x := by
   unfold fix.dest; rw [fix.rec_eq, ← fix.dest, ← comp_map]
   conv =>
     rhs
@@ -348,8 +335,7 @@ theorem Fix.dest_mk (x : F (Fix F)) : Fix.dest (Fix.mk x) = x :=
   congr with x; apply fix.mk_dest
 #align qpf.fix.dest_mk Qpf.Fix.dest_mk
 
-theorem Fix.ind (p : Fix F → Prop) (h : ∀ x : F (Fix F), Liftp p x → p (Fix.mk x)) : ∀ x, p x :=
-  by
+theorem Fix.ind (p : Fix F → Prop) (h : ∀ x : F (Fix F), Liftp p x → p (Fix.mk x)) : ∀ x, p x := by
   apply Quot.ind
   intro x
   induction' x with a f ih
@@ -423,8 +409,7 @@ def Cofix.dest : Cofix F → F (Cofix F) :=
 #align qpf.cofix.dest Qpf.Cofix.dest
 
 theorem Cofix.dest_corec {α : Type u} (g : α → F α) (x : α) :
-    Cofix.dest (Cofix.corec g x) = Cofix.corec g <$> g x :=
-  by
+    Cofix.dest (Cofix.corec g x) = Cofix.corec g <$> g x := by
   conv =>
     lhs
     rw [cofix.dest, cofix.corec];
@@ -450,8 +435,7 @@ private theorem cofix.bisim_aux (r : Cofix F → Cofix F → Prop) (h' : ∀ x, 
       Quot.mk r <$> Quot.mk Mcongr <$> abs (PFunctor.M.dest a) =
         Quot.mk r <$> Quot.mk Mcongr <$> abs (PFunctor.M.dest b) :=
       h _ _ r'ab
-    have h₁ : ∀ u v : q.P.M, Mcongr u v → Quot.mk r' u = Quot.mk r' v :=
-      by
+    have h₁ : ∀ u v : q.P.M, Mcongr u v → Quot.mk r' u = Quot.mk r' v := by
       intro u v cuv
       apply Quot.sound
       dsimp [r']
@@ -491,8 +475,7 @@ theorem Cofix.bisim_rel (r : Cofix F → Cofix F → Prop)
 #align qpf.cofix.bisim_rel Qpf.Cofix.bisim_rel
 
 theorem Cofix.bisim (r : Cofix F → Cofix F → Prop)
-    (h : ∀ x y, r x y → Liftr r (Cofix.dest x) (Cofix.dest y)) : ∀ x y, r x y → x = y :=
-  by
+    (h : ∀ x y, r x y → Liftr r (Cofix.dest x) (Cofix.dest y)) : ∀ x y, r x y → x = y := by
   apply cofix.bisim_rel
   intro x y rxy
   rcases(liftr_iff r _ _).mp (h x y rxy) with ⟨a, f₀, f₁, dxeq, dyeq, h'⟩
@@ -512,8 +495,7 @@ theorem Cofix.bisim' {α : Type _} (Q : α → Prop) (u v : α → Cofix F)
     ∀ x, Q x → u x = v x := fun x Qx =>
   let R := fun w z : Cofix F => ∃ x', Q x' ∧ w = u x' ∧ z = v x'
   Cofix.bisim R
-    (fun x y ⟨x', Qx', xeq, yeq⟩ =>
-      by
+    (fun x y ⟨x', Qx', xeq, yeq⟩ => by
       rcases h x' Qx' with ⟨a, f, f', ux'eq, vx'eq, h'⟩
       rw [liftr_iff]
       refine' ⟨a, f, f', xeq.symm ▸ ux'eq, yeq.symm ▸ vx'eq, h'⟩)
@@ -534,8 +516,7 @@ variable {F₁ : Type u → Type u} [Functor F₁] [q₁ : Qpf F₁]
 include q₂ q₁
 
 /-- composition of qpfs gives another qpf  -/
-def comp : Qpf (Functor.Comp F₂ F₁)
-    where
+def comp : Qpf (Functor.Comp F₂ F₁) where
   p := PFunctor.comp q₂.p q₁.p
   abs α := by
     dsimp [Functor.Comp]
@@ -603,8 +584,7 @@ functor G α, `G` is a qpf. We can consider `G` a quotient on `F` where
 elements `x y : F α` are in the same equivalence class if
 `FG_abs x = FG_abs y`  -/
 def quotientQpf (FG_abs_repr : ∀ {α} (x : G α), FG_abs (FG_repr x) = x)
-    (FG_abs_map : ∀ {α β} (f : α → β) (x : F α), FG_abs (f <$> x) = f <$> FG_abs x) : Qpf G
-    where
+    (FG_abs_map : ∀ {α β} (f : α → β) (x : F α), FG_abs (f <$> x) = f <$> FG_abs x) : Qpf G where
   p := q.p
   abs {α} p := FG_abs (abs p)
   repr {α} x := repr (FG_repr x)
@@ -628,12 +608,10 @@ open Functor (Liftp Liftr supp)
 open Set
 
 theorem mem_supp {α : Type u} (x : F α) (u : α) :
-    u ∈ supp x ↔ ∀ a f, abs ⟨a, f⟩ = x → u ∈ f '' univ :=
-  by
+    u ∈ supp x ↔ ∀ a f, abs ⟨a, f⟩ = x → u ∈ f '' univ := by
   rw [supp]; dsimp; constructor
   · intro h a f haf
-    have : liftp (fun u => u ∈ f '' univ) x :=
-      by
+    have : liftp (fun u => u ∈ f '' univ) x := by
       rw [liftp_iff]
       refine' ⟨a, f, haf.symm, fun i => mem_image_of_mem _ (mem_univ _)⟩
     exact h this
@@ -649,8 +627,7 @@ theorem supp_eq {α : Type u} (x : F α) : supp x = { u | ∀ a f, abs ⟨a, f�
 
 theorem has_good_supp_iff {α : Type u} (x : F α) :
     (∀ p, Liftp p x ↔ ∀ u ∈ supp x, p u) ↔
-      ∃ a f, abs ⟨a, f⟩ = x ∧ ∀ a' f', abs ⟨a', f'⟩ = x → f '' univ ⊆ f' '' univ :=
-  by
+      ∃ a f, abs ⟨a, f⟩ = x ∧ ∀ a' f', abs ⟨a', f'⟩ = x → f '' univ ⊆ f' '' univ := by
   constructor
   · intro h
     have : liftp (supp x) x := by rw [h] <;> intro u <;> exact id
@@ -705,8 +682,7 @@ theorem supp_eq_of_isUniform (h : q.IsUniform) {α : Type u} (a : q.p.A) (f : q.
 #align qpf.supp_eq_of_is_uniform Qpf.supp_eq_of_isUniform
 
 theorem liftp_iff_of_isUniform (h : q.IsUniform) {α : Type u} (x : F α) (p : α → Prop) :
-    Liftp p x ↔ ∀ u ∈ supp x, p u :=
-  by
+    Liftp p x ↔ ∀ u ∈ supp x, p u := by
   rw [liftp_iff, ← abs_repr x]
   cases' repr x with a f; constructor
   · rintro ⟨a', f', abseq, hf⟩ u
@@ -726,8 +702,7 @@ theorem supp_map (h : q.IsUniform) {α β : Type u} (g : α → β) (x : F α) :
   rw [supp_eq_of_is_uniform h, supp_eq_of_is_uniform h, image_comp]
 #align qpf.supp_map Qpf.supp_map
 
-theorem suppPreservation_iff_uniform : q.SuppPreservation ↔ q.IsUniform :=
-  by
+theorem suppPreservation_iff_uniform : q.SuppPreservation ↔ q.IsUniform := by
   constructor
   · intro h α a a' f f' h'
     rw [← PFunctor.supp_eq, ← PFunctor.supp_eq, ← h, h', h]
@@ -735,8 +710,7 @@ theorem suppPreservation_iff_uniform : q.SuppPreservation ↔ q.IsUniform :=
     rwa [supp_eq_of_is_uniform, PFunctor.supp_eq]
 #align qpf.supp_preservation_iff_uniform Qpf.suppPreservation_iff_uniform
 
-theorem suppPreservation_iff_liftpPreservation : q.SuppPreservation ↔ q.LiftpPreservation :=
-  by
+theorem suppPreservation_iff_liftpPreservation : q.SuppPreservation ↔ q.LiftpPreservation := by
   constructor <;> intro h
   · rintro α p ⟨a, f⟩
     have h' := h
