@@ -33,7 +33,7 @@ is required afterward, typically via a tactic block.
 ```lean
 example (h : P → R) : TFAE [P, Q, R] := by
   tfae_have 1 → 3
-  { exact h }
+  · exact h
   ...
 ```
 The resulting context now includes `tfae_1_to_3 : P → R`.
@@ -49,11 +49,11 @@ the goal.
 ```lean
 example : TFAE [P, Q, R] := by
   tfae_have 1 → 2
-  { /- proof of P → Q -/ }
+  · /- proof of P → Q -/
   tfae_have 2 → 1
-  { /- proof of Q → P -/ }
+  · /- proof of Q → P -/
   tfae_have 2 ↔ 3
-  { /- proof of Q ↔ R -/ }
+  · /- proof of Q ↔ R -/
   tfae_finish
 ```
 -/

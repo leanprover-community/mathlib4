@@ -29,7 +29,7 @@ This file defines first-order terms, formulas, sentences, and theories in a styl
 `FirstOrder.Language.BoundedFormula.relabel`, and `FirstOrder.Language.Formula.relabel`.
 * Given an operation on terms and an operation on relations,
   `FirstOrder.Language.BoundedFormula.mapTermRel` gives an operation on formulas.
-* `FirstOrder.Language.BoundedFormula.castLe` adds more `Fin`-indexed variables.
+* `FirstOrder.Language.BoundedFormula.castLE` adds more `Fin`-indexed variables.
 * `FirstOrder.Language.BoundedFormula.liftAt` raises the indexes of the `Fin`-indexed variables
 above a particular index.
 * `FirstOrder.Language.Term.subst` and `FirstOrder.Language.BoundedFormula.subst` substitute
@@ -261,7 +261,6 @@ def subst : L.Term α → (α → L.Term β) → L.Term β
 
 end Term
 
--- mathport name: language.term.var
 scoped[FirstOrder] prefix:arg "&" => FirstOrder.Language.Term.var ∘ Sum.inr
 
 namespace LHom
@@ -438,46 +437,46 @@ def freeVarFinset [DecidableEq α] : ∀ {n}, L.BoundedFormula α n → Finset �
 --Porting note: universes in different order
 /-- Casts `L.bounded_formula α m` as `L.bounded_formula α n`, where `m ≤ n`. -/
 @[simp]
-def castLe : ∀ {m n : ℕ} (_h : m ≤ n), L.BoundedFormula α m → L.BoundedFormula α n
+def castLE : ∀ {m n : ℕ} (_h : m ≤ n), L.BoundedFormula α m → L.BoundedFormula α n
   | _m, _n, _h, falsum => falsum
   | _m, _n, h, equal t₁ t₂ =>
-    equal (t₁.relabel (Sum.map id (Fin.castLe h))) (t₂.relabel (Sum.map id (Fin.castLe h)))
-  | _m, _n, h, Rel R ts => Rel R (Term.relabel (Sum.map id (Fin.castLe h)) ∘ ts)
-  | _m, _n, h, imp f₁ f₂ => (f₁.castLe h).imp (f₂.castLe h)
-  | _m, _n, h, all f => (f.castLe (add_le_add_right h 1)).all
-#align first_order.language.bounded_formula.cast_le FirstOrder.Language.BoundedFormula.castLe
+    equal (t₁.relabel (Sum.map id (Fin.castLE h))) (t₂.relabel (Sum.map id (Fin.castLE h)))
+  | _m, _n, h, Rel R ts => Rel R (Term.relabel (Sum.map id (Fin.castLE h)) ∘ ts)
+  | _m, _n, h, imp f₁ f₂ => (f₁.castLE h).imp (f₂.castLE h)
+  | _m, _n, h, all f => (f.castLE (add_le_add_right h 1)).all
+#align first_order.language.bounded_formula.cast_le FirstOrder.Language.BoundedFormula.castLE
 
 @[simp]
-theorem castLe_rfl {n} (h : n ≤ n) (φ : L.BoundedFormula α n) : φ.castLe h = φ := by
+theorem castLE_rfl {n} (h : n ≤ n) (φ : L.BoundedFormula α n) : φ.castLE h = φ := by
   induction' φ with _ _ _ _ _ _ _ _ _ _ _ ih1 ih2 _ _ ih3
   · rfl
-  · simp [Fin.castLe_of_eq]
-  · simp [Fin.castLe_of_eq]
-  · simp [Fin.castLe_of_eq, ih1, ih2]
-  · simp [Fin.castLe_of_eq, ih3]
-#align first_order.language.bounded_formula.cast_le_rfl FirstOrder.Language.BoundedFormula.castLe_rfl
+  · simp [Fin.castLE_of_eq]
+  · simp [Fin.castLE_of_eq]
+  · simp [Fin.castLE_of_eq, ih1, ih2]
+  · simp [Fin.castLE_of_eq, ih3]
+#align first_order.language.bounded_formula.cast_le_rfl FirstOrder.Language.BoundedFormula.castLE_rfl
 
 @[simp]
-theorem castLe_castLe {k m n} (km : k ≤ m) (mn : m ≤ n) (φ : L.BoundedFormula α k) :
-    (φ.castLe km).castLe mn = φ.castLe (km.trans mn) := by
+theorem castLE_castLE {k m n} (km : k ≤ m) (mn : m ≤ n) (φ : L.BoundedFormula α k) :
+    (φ.castLE km).castLE mn = φ.castLE (km.trans mn) := by
   revert m n
   induction' φ with _ _ _ _ _ _ _ _ _ _ _ ih1 ih2 _ _ ih3 <;> intro m n km mn
   · rfl
   · simp
-  · simp only [castLe, eq_self_iff_true, heq_iff_eq, true_and_iff]
+  · simp only [castLE, eq_self_iff_true, heq_iff_eq, true_and_iff]
     rw [← Function.comp.assoc, Term.relabel_comp_relabel]
     simp
   · simp [ih1, ih2]
-  · simp only [castLe, ih3]
-#align first_order.language.bounded_formula.cast_le_cast_le FirstOrder.Language.BoundedFormula.castLe_castLe
+  · simp only [castLE, ih3]
+#align first_order.language.bounded_formula.cast_le_cast_le FirstOrder.Language.BoundedFormula.castLE_castLE
 
 @[simp]
-theorem castLe_comp_castLe {k m n} (km : k ≤ m) (mn : m ≤ n) :
-    (BoundedFormula.castLe mn ∘ BoundedFormula.castLe km :
+theorem castLE_comp_castLE {k m n} (km : k ≤ m) (mn : m ≤ n) :
+    (BoundedFormula.castLE mn ∘ BoundedFormula.castLE km :
         L.BoundedFormula α k → L.BoundedFormula α n) =
-      BoundedFormula.castLe (km.trans mn) :=
-  funext (castLe_castLe km mn)
-#align first_order.language.bounded_formula.cast_le_comp_cast_le FirstOrder.Language.BoundedFormula.castLe_comp_castLe
+      BoundedFormula.castLE (km.trans mn) :=
+  funext (castLE_castLE km mn)
+#align first_order.language.bounded_formula.cast_le_comp_cast_le FirstOrder.Language.BoundedFormula.castLE_comp_castLE
 
 --Porting note: universes in different order
 /-- Restricts a bounded formula to only use a particular set of free variables. -/
@@ -527,7 +526,7 @@ def mapTermRel {g : ℕ → ℕ} (ft : ∀ n, L.Term (Sum α (Fin n)) → L'.Ter
 def liftAt : ∀ {n : ℕ} (n' _m : ℕ), L.BoundedFormula α n → L.BoundedFormula α (n + n') :=
   fun {n} n' m φ =>
   φ.mapTermRel (fun k t => t.liftAt n' m) (fun _ => id) fun _ =>
-    castLe (by rw [add_assoc, add_comm 1, add_assoc])
+    castLE (by rw [add_assoc, add_comm 1, add_assoc])
 #align first_order.language.bounded_formula.lift_at FirstOrder.Language.BoundedFormula.liftAt
 
 @[simp]
@@ -594,7 +593,7 @@ theorem relabelAux_sum_inl (k : ℕ) :
 /-- Relabels a bounded formula's variables along a particular function. -/
 def relabel (g : α → Sum β (Fin n)) {k} (φ : L.BoundedFormula α k) : L.BoundedFormula β (n + k) :=
   φ.mapTermRel (fun _ t => t.relabel (relabelAux g _)) (fun _ => id) fun _ =>
-    castLe (ge_of_eq (add_assoc _ _ _))
+    castLE (ge_of_eq (add_assoc _ _ _))
 #align first_order.language.bounded_formula.relabel FirstOrder.Language.BoundedFormula.relabel
 
 /-- Relabels a bounded formula's free variables along a bijection. -/
@@ -639,14 +638,14 @@ theorem relabel_ex (g : α → Sum β (Fin n)) {k} (φ : L.BoundedFormula α (k 
 
 @[simp]
 theorem relabel_sum_inl (φ : L.BoundedFormula α n) :
-    (φ.relabel Sum.inl : L.BoundedFormula α (0 + n)) = φ.castLe (ge_of_eq (zero_add n)) := by
+    (φ.relabel Sum.inl : L.BoundedFormula α (0 + n)) = φ.castLE (ge_of_eq (zero_add n)) := by
   simp only [relabel, relabelAux_sum_inl]
   induction' φ with _ _ _ _ _ _ _ _ _ _ _ ih1 ih2 _ _ ih3
   · rfl
-  · simp [Fin.natAdd_zero, castLe_of_eq, mapTermRel]
-  · simp [Fin.natAdd_zero, castLe_of_eq, mapTermRel]; rfl
+  · simp [Fin.natAdd_zero, castLE_of_eq, mapTermRel]
+  · simp [Fin.natAdd_zero, castLE_of_eq, mapTermRel]; rfl
   · simp [mapTermRel, ih1, ih2]
-  · simp [mapTermRel, ih3, castLe]
+  · simp [mapTermRel, ih3, castLE]
 #align first_order.language.bounded_formula.relabel_sum_inl FirstOrder.Language.BoundedFormula.relabel_sum_inl
 
 /-- Substitutes the variables in a given formula with terms. -/
@@ -703,9 +702,9 @@ theorem IsAtomic.liftAt {k m : ℕ} (h : IsAtomic φ) : (φ.liftAt k m).IsAtomic
   IsAtomic.recOn h (fun _ _ => IsAtomic.equal _ _) fun _ _ => IsAtomic.Rel _ _
 #align first_order.language.bounded_formula.is_atomic.lift_at FirstOrder.Language.BoundedFormula.IsAtomic.liftAt
 
-theorem IsAtomic.castLe {h : l ≤ n} (hφ : IsAtomic φ) : (φ.castLe h).IsAtomic :=
+theorem IsAtomic.castLE {h : l ≤ n} (hφ : IsAtomic φ) : (φ.castLE h).IsAtomic :=
   IsAtomic.recOn hφ (fun _ _ => IsAtomic.equal _ _) fun _ _ => IsAtomic.Rel _ _
-#align first_order.language.bounded_formula.is_atomic.cast_le FirstOrder.Language.BoundedFormula.IsAtomic.castLe
+#align first_order.language.bounded_formula.is_atomic.cast_le FirstOrder.Language.BoundedFormula.IsAtomic.castLE
 
 /-- A quantifier-free formula is a formula defined without quantifiers. These are all equivalent
 to boolean combinations of atomic formulas. -/
@@ -736,9 +735,9 @@ theorem IsQF.liftAt {k m : ℕ} (h : IsQF φ) : (φ.liftAt k m).IsQF :=
   IsQF.recOn h isQF_bot (fun ih => ih.liftAt.isQF) fun _ _ ih1 ih2 => ih1.imp ih2
 #align first_order.language.bounded_formula.is_qf.lift_at FirstOrder.Language.BoundedFormula.IsQF.liftAt
 
-theorem IsQF.castLe {h : l ≤ n} (hφ : IsQF φ) : (φ.castLe h).IsQF :=
-  IsQF.recOn hφ isQF_bot (fun ih => ih.castLe.isQF) fun _ _ ih1 ih2 => ih1.imp ih2
-#align first_order.language.bounded_formula.is_qf.cast_le FirstOrder.Language.BoundedFormula.IsQF.castLe
+theorem IsQF.castLE {h : l ≤ n} (hφ : IsQF φ) : (φ.castLE h).IsQF :=
+  IsQF.recOn hφ isQF_bot (fun ih => ih.castLE.isQF) fun _ _ ih1 ih2 => ih1.imp ih2
+#align first_order.language.bounded_formula.is_qf.cast_le FirstOrder.Language.BoundedFormula.IsQF.castLE
 
 theorem not_all_isQF (φ : L.BoundedFormula α (n + 1)) : ¬φ.all.IsQF := fun con => by
   cases' con with _ con
@@ -781,16 +780,16 @@ theorem IsPrenex.relabel {m : ℕ} {φ : L.BoundedFormula α m} (h : φ.IsPrenex
     fun _ h => by simp [h.ex]
 #align first_order.language.bounded_formula.is_prenex.relabel FirstOrder.Language.BoundedFormula.IsPrenex.relabel
 
-theorem IsPrenex.castLe (hφ : IsPrenex φ) : ∀ {n} {h : l ≤ n}, (φ.castLe h).IsPrenex :=
-  IsPrenex.recOn (motive := @fun l φ _ => ∀ (n : ℕ) (h : l ≤ n), (φ.castLe h).IsPrenex) hφ
-    (@fun _ _ ih _ _ => ih.castLe.isPrenex)
+theorem IsPrenex.castLE (hφ : IsPrenex φ) : ∀ {n} {h : l ≤ n}, (φ.castLE h).IsPrenex :=
+  IsPrenex.recOn (motive := @fun l φ _ => ∀ (n : ℕ) (h : l ≤ n), (φ.castLE h).IsPrenex) hφ
+    (@fun _ _ ih _ _ => ih.castLE.isPrenex)
     (@fun _ _ _ ih _ _ => (ih _ _).all)
     (@fun _ _ _ ih _ _ => (ih _ _).ex) _ _
-#align first_order.language.bounded_formula.is_prenex.cast_le FirstOrder.Language.BoundedFormula.IsPrenex.castLe
+#align first_order.language.bounded_formula.is_prenex.cast_le FirstOrder.Language.BoundedFormula.IsPrenex.castLE
 
 theorem IsPrenex.liftAt {k m : ℕ} (h : IsPrenex φ) : (φ.liftAt k m).IsPrenex :=
-  IsPrenex.recOn h (fun ih => ih.liftAt.isPrenex) (fun _ ih => ih.castLe.all)
-    fun _ ih => ih.castLe.ex
+  IsPrenex.recOn h (fun ih => ih.liftAt.isPrenex) (fun _ ih => ih.castLE.all)
+    fun _ ih => ih.castLE.ex
 #align first_order.language.bounded_formula.is_prenex.lift_at FirstOrder.Language.BoundedFormula.IsPrenex.liftAt
 
 --Porting note: universes in different order
@@ -996,25 +995,19 @@ set_option linter.uppercaseLean3 false in
 
 end LEquiv
 
--- mathport name: term.bd_equal
 scoped[FirstOrder] infixl:88 " =' " => FirstOrder.Language.Term.bdEqual
 
--- mathport name: bounded_formula.imp
 -- input \~- or \simeq
 scoped[FirstOrder] infixr:62 " ⟹ " => FirstOrder.Language.BoundedFormula.imp
 
--- mathport name: bounded_formula.all
 -- input \==>
 scoped[FirstOrder] prefix:110 "∀'" => FirstOrder.Language.BoundedFormula.all
 
--- mathport name: bounded_formula.not
 scoped[FirstOrder] prefix:arg "∼" => FirstOrder.Language.BoundedFormula.not
 
--- mathport name: bounded_formula.iff
 -- input \~, the ASCII character ~ has too low precedence
 scoped[FirstOrder] infixl:61 " ⇔ " => FirstOrder.Language.BoundedFormula.iff
 
--- mathport name: bounded_formula.ex
 -- input \<=>
 scoped[FirstOrder] prefix:110 "∃'" => FirstOrder.Language.BoundedFormula.ex
 

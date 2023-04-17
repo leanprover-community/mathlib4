@@ -69,9 +69,7 @@ set_option linter.uppercaseLean3 false in
 theorem mirror_natDegree : p.mirror.natDegree = p.natDegree := by
   by_cases hp : p = 0
   · rw [hp, mirror_zero]
-  --Porting note: below two lines were `nontriviality R` in Lean3
-  have : p.leadingCoeff ≠ 0 := by simpa
-  let _ : Nontrivial R := nontrivial_of_ne _ _ this
+  nontriviality R
   rw [mirror, natDegree_mul', reverse_natDegree, natDegree_X_pow,
     tsub_add_cancel_of_le p.natTrailingDegree_le_natDegree]
   rwa [leadingCoeff_X_pow, mul_one, reverse_leadingCoeff, Ne, trailingCoeff_eq_zero]
@@ -80,8 +78,7 @@ theorem mirror_natDegree : p.mirror.natDegree = p.natDegree := by
 theorem mirror_natTrailingDegree : p.mirror.natTrailingDegree = p.natTrailingDegree := by
   by_cases hp : p = 0
   · rw [hp, mirror_zero]
-  ·
-    rw [mirror, natTrailingDegree_mul_X_pow ((mt reverse_eq_zero.mp) hp),
+  · rw [mirror, natTrailingDegree_mul_X_pow ((mt reverse_eq_zero.mp) hp),
       reverse_natTrailingDegree, zero_add]
 #align polynomial.mirror_nat_trailing_degree Polynomial.mirror_natTrailingDegree
 
@@ -103,7 +100,7 @@ theorem coeff_mirror (n : ℕ) :
   exact coeff_eq_zero_of_lt_natTrailingDegree (by rwa [mirror_natTrailingDegree])
 #align polynomial.coeff_mirror Polynomial.coeff_mirror
 
---TODO: Extract `finset.sum_range_rev_at` lemma.
+--TODO: Extract `Finset.sum_range_rev_at` lemma.
 theorem mirror_eval_one : p.mirror.eval 1 = p.eval 1 := by
   simp_rw [eval_eq_sum_range, one_pow, mul_one, mirror_natDegree]
   refine' Finset.sum_bij_ne_zero _ _ _ _ _
