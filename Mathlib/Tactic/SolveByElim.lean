@@ -200,7 +200,7 @@ def solveByElim (cfg : Config) (lemmas : List (TermElabM Expr)) (ctx : TermElabM
   let run := if cfg.backtracking then
     backtrack cfg `Meta.Tactic.solveByElim (applyLemmas cfg lemmas ctx)
   else
-    repeat' (maxIters := cfg.maxDepth) (applyFirstLemma cfg lemmas ctx)
+    repeat1' (maxIters := cfg.maxDepth) (applyFirstLemma cfg lemmas ctx)
   -- Implementation note: as with `cfg.symm`, this is different from the mathlib3 approach,
   -- for (not as bad) performance reasons.
   match cfg.exfalso, goals with
