@@ -559,6 +559,7 @@ import Mathlib.CategoryTheory.StructuredArrow
 import Mathlib.CategoryTheory.Subobject.Basic
 import Mathlib.CategoryTheory.Subobject.FactorThru
 import Mathlib.CategoryTheory.Subobject.MonoOver
+import Mathlib.CategoryTheory.Subobject.WellPowered
 import Mathlib.CategoryTheory.Sums.Associator
 import Mathlib.CategoryTheory.Sums.Basic
 import Mathlib.CategoryTheory.Thin
