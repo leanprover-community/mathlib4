@@ -180,12 +180,13 @@ theorem hasBasis_nhds (a : A) :
 /-- Given a subgroups basis, the basis elements as open additive subgroups in the associated
 topology. -/
 def openAddSubgroup (i : ι) : @OpenAddSubgroup A _ hB.topology :=
+  let _ := hB.topology -- Porting note: failed to synthesize instance `TopologicalSpace A`
   { B i with
     isOpen' := by
       letI := hB.topology
       rw [isOpen_iff_mem_nhds]
       intro a a_in
-      rw [(hB.has_basis_nhds a).mem_iff]
+      rw [(hB.hasBasis_nhds a).mem_iff]
       use i, trivial
       rintro b b_in
       simpa using (B i).add_mem a_in b_in }
@@ -204,6 +205,9 @@ end RingSubgroupsBasis
 
 variable {ι R A : Type _} [CommRing R] [CommRing A] [Algebra R A]
 
+-- Porting note: failed to synthesize instance `Module R A`
+set_option synthInstance.etaExperiment true
+
 /-- A family of submodules in a commutative `R`-algebra `A` is a submodules basis if it satisfies
 some axioms ensuring there is a topology on `A` which is compatible with the ring structure and
 admits this family as a basis of neighborhoods of zero. -/
@@ -221,7 +225,7 @@ theorem toRing_subgroups_basis (hB : SubmodulesRingBasis B) :
     RingSubgroupsBasis fun i => (B i).toAddSubgroup := by
   apply RingSubgroupsBasis.of_comm (fun i => (B i).toAddSubgroup) hB.inter hB.mul
   intro a i
-  rcases hB.left_mul a i with ⟨j, hj⟩
+  rcases hB.leftMul a i with ⟨j, hj⟩
   use j
   rintro b (b_in : b ∈ B j)
   exact hj ⟨b, b_in, rfl⟩
@@ -314,15 +318,18 @@ def topology : TopologicalSpace M :=
 /-- Given a submodules basis, the basis elements as open additive subgroups in the associated
 topology. -/
 def openAddSubgroup (i : ι) : @OpenAddSubgroup M _ hB.topology :=
+  let _ := hB.topology -- Porting note: failed to synthesize instance `TopologicalSpace A`
   { (B i).toAddSubgroup with
     isOpen' := by
       letI := hB.topology
       rw [isOpen_iff_mem_nhds]
       intro a a_in
-      rw [(hB.to_module_filter_basis.to_add_group_filter_basis.nhds_has_basis a).mem_iff]
-      use B i, i, rfl
-      rintro - ⟨b, b_in, rfl⟩
-      exact (B i).add_mem a_in b_in }
+      rw [(hB.toModuleFilterBasis.toAddGroupFilterBasis.nhds_hasBasis a).mem_iff]
+      use B i
+      constructor
+      · use i
+      · rintro - ⟨b, b_in, rfl⟩
+        exact (B i).add_mem a_in b_in }
 #align submodules_basis.open_add_subgroup SubmodulesBasis.openAddSubgroup
 
 -- see Note [nonarchimedean non instances]
@@ -375,7 +382,8 @@ structure RingFilterBasis.SubmodulesBasis (BR : RingFilterBasis R) (B : ι → S
 #align ring_filter_basis.submodules_basis RingFilterBasis.SubmodulesBasis
 
 theorem RingFilterBasis.submodulesBasisIsBasis (BR : RingFilterBasis R) {B : ι → Submodule R M}
-    (hB : BR.SubmodulesBasis B) : @SubmodulesBasis ι R _ M _ _ BR.topology B :=
+    (hB : BR.SubmodulesBasis B) : @_root_.SubmodulesBasis ι R _ M _ _ BR.topology B :=
+  let _ := BR.topology -- Porting note: failed to synthesize instance `TopologicalSpace R`
   { inter := hB.inter
     smul := by
       letI := BR.topology
