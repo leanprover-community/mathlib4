@@ -94,7 +94,7 @@ theorem realize_liftAt {n n' m : ℕ} {t : L.Term (Sum α (Fin n))} {v : Sum α 
   realize_relabel
 #align first_order.language.term.realize_lift_at FirstOrder.Language.Term.realize_liftAt
 
-@[simp]
+-- @[simp] Porting note: simp can prove  it
 theorem realize_constants {c : L.Constants} {v : α → M} : c.term.realize v = c :=
   funMap_eq_coe_constants
 #align first_order.language.term.realize_constants FirstOrder.Language.Term.realize_constants
@@ -176,9 +176,6 @@ theorem realize_varsToConstants [L[[α]].Structure M] [(lhomWithConstants L α).
   · cases' ab with a b
     --Porting note: both cases were `simp [Language.con]
     . simp [Language.con, realize, constantMap]
-      congr
-      ext i
-      rcases i with ⟨_, ⟨⟩⟩
     . simp [realize, constantMap]
   · simp only [realize, constantsOn, mk₂_Functions, ih]
     --Porting note: below lemma does not work with simp for some reason
@@ -350,9 +347,9 @@ theorem realize_iff : (φ.iff ψ).Realize v xs ↔ (φ.Realize v xs ↔ ψ.Reali
 #align first_order.language.bounded_formula.realize_iff FirstOrder.Language.BoundedFormula.realize_iff
 
 theorem realize_castLe_of_eq {m n : ℕ} (h : m = n) {h' : m ≤ n} {φ : L.BoundedFormula α m}
-    {v : α → M} {xs : Fin n → M} : (φ.castLe h').Realize v xs ↔ φ.Realize v (xs ∘ Fin.cast h) := by
+    {v : α → M} {xs : Fin n → M} : (φ.castLE h').Realize v xs ↔ φ.Realize v (xs ∘ Fin.cast h) := by
   subst h
-  simp only [castLe_rfl, cast_refl, OrderIso.coe_refl, Function.comp.right_id]
+  simp only [castLE_rfl, cast_refl, OrderIso.coe_refl, Function.comp.right_id]
 #align first_order.language.bounded_formula.realize_cast_le_of_eq FirstOrder.Language.BoundedFormula.realize_castLe_of_eq
 
 theorem realize_mapTermRel_id [L'.Structure M]
@@ -381,7 +378,7 @@ theorem realize_mapTermRel_add_castLe [L'.Structure M] {k : ℕ}
         (ft n t).realize (Sum.elim v' xs') = t.realize (Sum.elim (v xs') (xs' ∘ Fin.natAdd _)))
     (h2 : ∀ (n) (R : L.Relations n) (x : Fin n → M), rel_map (fr n R) x = rel_map R x)
     (hv : ∀ (n) (xs : Fin (k + n) → M) (x : M), @v (n + 1) (snoc xs x : Fin _ → M) = v xs) :
-    (φ.mapTermRel ft fr fun n => castLe (add_assoc _ _ _).symm.le).Realize v' xs ↔
+    (φ.mapTermRel ft fr fun n => castLE (add_assoc _ _ _).symm.le).Realize v' xs ↔
       φ.Realize (v xs) (xs ∘ Fin.natAdd _) := by
   induction' φ with _ _ _ _ _ _ _ _ _ _ _ ih1 ih2 _ _ ih
   · rfl
