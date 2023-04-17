@@ -280,7 +280,7 @@ theorem map_smul (f : M →ₗ[R] M') (p : R[X]) (q : PolynomialModule R M) :
 -- porting note: it was originally @[simps (config := lemmasOnly)]
 
 /-- Evaluate a polynomial `p : PolynomialModule R M` at `r : R`. -/
-@[simps!]
+@[simps! (config := .lemmasOnly)]
 def eval (r : R) : PolynomialModule R M →ₗ[R] M where
   toFun p := p.sum fun i m => r ^ i • m
   map_add' x y := Finsupp.sum_add_index' (fun _ => smul_zero _) fun _ _ _ => smul_add _ _ _
@@ -340,20 +340,14 @@ theorem eval_map' (f : M →ₗ[R] M) (q : PolynomialModule R M) (r : R) :
 
 -- Porting note: Synthesized `RingHomCompTriple (RingHom.id R) (RingHom.id R) (RingHom.id R)`
 --               in a very ugly way.
+
 /-- `comp p q` is the composition of `p : R[X]` and `q : M[X]` as `q(p(x))`.  -/
+@[simps!]
 noncomputable def comp (p : R[X]) : PolynomialModule R M →ₗ[R] PolynomialModule R M :=
   @LinearMap.comp _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
     (@RingHomInvPair.triples _ _ _ _ _ _ RingHomInvPair.ids)
     ((eval p).restrictScalars R) (map R[X] (lsingle R 0))
 #align polynomial_module.comp PolynomialModule.comp
-
-set_option synthInstance.etaExperiment true in
-/-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
-because it is a composition of multiple projections. -/
--- Porting note: I am not sure if there is a good way to intialise this as a simp lemma.
-theorem comp_apply (p : R[X]) (α : PolynomialModule R M) :
-  comp p α = (eval p) ((map R[X] (lsingle R 0)) α) := LinearMap.comp_apply _ _ α
-#align polynomial_module.comp_apply PolynomialModule.comp_apply
 
 set_option synthInstance.etaExperiment true in
 theorem comp_single (p : R[X]) (i : ℕ) (m : M) : comp p (single R i m) = p ^ i • single R 0 m := by
