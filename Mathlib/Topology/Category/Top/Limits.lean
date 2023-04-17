@@ -29,7 +29,7 @@ open CategoryTheory.Limits
 
 open Opposite
 
-universe u v w
+universe v u w
 
 noncomputable section
 
@@ -37,14 +37,13 @@ namespace TopCat
 
 variable {J : Type v} [SmallCategory J]
 
--- mathport name: exprforget
 local notation "forget" => forget TopCat
 
 /-- A choice of limit cone for a functor `F : J ⥤ Top`.
 Generally you should just use `limit.cone F`, unless you need the actual definition
 (which is in terms of `types.limit_cone`).
 -/
-def limitCone (F : J ⥤ TopCat.{max v u}) : Cone F where
+def limitCone (F : J ⥤ TopCat) : Cone F where
   pt := TopCat.of { u : ∀ j : J, F.obj j | ∀ {i j : J} (f : i ⟶ j), F.map f (u i) = u j }
   π :=
     {
@@ -62,38 +61,41 @@ Generally you should just use `limit.cone F`, unless you need the actual definit
 -/
 def limitConeInfi (F : J ⥤ TopCat.{max v u}) : Cone F where
   pt :=
-    ⟨(Types.limitCone (F ⋙ forget)).pt,
-      ⨅ j, (F.obj j).str.induced ((Types.limitCone (F ⋙ forget)).π.app j)⟩
-  π :=
-    { app := fun j =>
-        ⟨(Types.limitCone (F ⋙ forget)).π.app j, continuous_iff_le_induced.mpr (infᵢ_le _ _)⟩
-      naturality' := fun j j' f =>
-        ContinuousMap.coe_injective ((Types.limitCone (F ⋙ forget)).π.naturality f) }
+    ⟨(Types.limitCone.{v,u} (F ⋙ forget)).pt,
+      ⨅ j, (F.obj j).str.induced ((Types.limitCone.{v,u} (F ⋙ forget)).π.app j)⟩
+  π := sorry
+  -- π :=
+  --   { app := fun j =>
+  --       ⟨(Types.limitCone.{v,u} (F ⋙ forget)).π.app j, continuous_iff_le_induced.mpr (infᵢ_le _ _)⟩
+  --     naturality := fun f =>
+  --       ContinuousMap.coe_injective ((Types.limitCone.{v,u} (F ⋙ forget)).π.naturality f) }
+set_option linter.uppercaseLean3 false in
 #align Top.limit_cone_infi TopCat.limitConeInfi
 
 /-- The chosen cone `Top.limit_cone F` for a functor `F : J ⥤ Top` is a limit cone.
 Generally you should just use `limit.is_limit F`, unless you need the actual definition
 (which is in terms of `types.limit_cone_is_limit`).
 -/
-def limitConeIsLimit (F : J ⥤ TopCat.{max v u}) : IsLimit (limitCone F) where
+def limitConeIsLimit (F : J ⥤ TopCat.{max v u}) : IsLimit (limitCone.{v,u} F) where
   lift S :=
-    {
-      toFun := fun x =>
-        ⟨fun j => S.π.app _ x, fun i j f => by
+    { toFun := fun x =>
+        ⟨fun j => S.π.app _ x, fun f => by
           dsimp
           erw [← S.w f]
-          rfl⟩ }
+          rfl⟩
+      continuous_toFun := sorry }
   uniq S m h := by
     ext : 3
-    simpa [← h]
+    simp [← h]
+    sorry
 #align Top.limit_cone_is_limit TopCat.limitConeIsLimit
 
 /-- The chosen cone `Top.limit_cone_infi F` for a functor `F : J ⥤ Top` is a limit cone.
 Generally you should just use `limit.is_limit F`, unless you need the actual definition
 (which is in terms of `types.limit_cone_is_limit`).
 -/
-def limitConeInfiIsLimit (F : J ⥤ TopCat.{max v u}) : IsLimit (limitConeInfi F) := by
-  refine' is_limit.of_faithful forget (types.limit_cone_is_limit _) (fun s => ⟨_, _⟩) fun s => rfl
+def limitConeInfiIsLimit (F : J ⥤ TopCat.{max v u}) : IsLimit (limitConeInfi.{v,u} F) := by
+  refine' IsLimit.of_faithful forget (Types.limitCone_isLimit _) (fun s => ⟨_, _⟩) fun s => rfl
   exact
     continuous_iff_coinduced_le.mpr
       (le_infᵢ fun j =>
