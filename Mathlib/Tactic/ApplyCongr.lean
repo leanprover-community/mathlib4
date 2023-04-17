@@ -73,14 +73,10 @@ def Lean.Elab.Tactic.applyCongr (q : Option Expr) : TacticM Unit := do
       let congrTheorems ←
         (fun congrTheoremMap => congrTheoremMap.get lhsFun) <$> getSimpCongrTheorems
       congrTheorems.mapM (fun congrTheorem => mkConstWithLevelParams congrTheorem.theoremName)
-  logInfo congrTheoremExprs
-  -- TODO: Implement this.
-  -- -- For every lemma:
-  -- congr_lemmas.any_of (fun n =>
-  --   -- Call tactic.eapply
-  --   seq' (tactic.eapply n >> tactic.skip)
-  --   -- and then call `intros` on each resulting goal, and require that afterwards it's an equation.
-  --       (tactic.intros >> (do `(_ = _) ← target, tactic.skip)))
+  -- For every lemma:
+  liftMetaTactic <| fun mainGoal => congrTheoremExprs.firstM (fun congrTheoremExpr => do
+    let newGoals ← mainGoal.apply congrTheoremExpr
+    newGoals.mapM fun newGoal => Prod.snd <$> newGoal.intros)
 
 syntax (name := Lean.Parser.Tactic.applyCongr) "apply_congr" (ppSpace (colGt term))? : conv
 
