@@ -59,7 +59,7 @@ theorem isPeriodicPt_mul_iff_pow_eq_one (x : G) : IsPeriodicPt ((· * ·) x) n 1
 
 /-- `IsOfFinOrder` is a predicate on an element `x` of a monoid to be of finite order, i.e. there
 exists `n ≥ 1` such that `x ^ n = 1`.-/
-@[to_additive "`isOfFinAddOrder` is a predicate on an element `a` of an
+@[to_additive "`IsOfFinAddOrder` is a predicate on an element `a` of an
 additive monoid to be of finite order, i.e. there exists `n ≥ 1` such that `n • a = 0`."]
 def IsOfFinOrder (x : G) : Prop :=
   (1 : G) ∈ periodicPts ((· * ·) x)
