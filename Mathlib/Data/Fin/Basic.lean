@@ -14,6 +14,7 @@ import Mathlib.Order.RelIso.Basic
 import Mathlib.Data.Nat.Order.Basic
 import Mathlib.Order.Hom.Set
 import Mathlib.Tactic.Set
+import Qq
 
 /-!
 # The finite type with `n` elements
@@ -2542,5 +2543,16 @@ protected theorem zero_mul [NeZero n] (k : Fin n) : (0 : Fin n) * k = 0 := by
 #align fin.zero_mul Fin.zero_mul
 
 end Mul
+
+open Qq in
+unsafe instance toExpr (n : ℕ) : Lean.ToExpr (Fin n) where
+  toTypeExpr := q(Fin $n)
+  toExpr := match n with
+    | 0 => finZeroElim
+    | n'@(n + 1) => fun i =>
+      let i' : Q(ℕ) := Lean.ToExpr.toExpr (i : ℕ)
+      let _n_eq : ($n + 1) =Q $n' := ⟨⟩
+      q((haveI : NeZero $n' := @NeZero.succ $n; OfNat.ofNat $i' : Fin $(n')))
+#align fin.reflect Fin.toExprₓ
 
 end Fin
