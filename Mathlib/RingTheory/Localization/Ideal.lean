@@ -171,6 +171,7 @@ variable {R : Type _} [CommRing R] (M : Submonoid R) (S : Type _) [CommRing S]
 variable [Algebra R S] [IsLocalization M S]
 
 set_option maxHeartbeats 400000 in
+-- Porting note: `set_option maxHeartbeats 400000 in` was added to avoid a timeout at line 203
 
 /-- `quotient_map` applied to maximal ideals of a localization is `surjective`.
   The quotient by a maximal ideal is a field, so inverses to elements already exist,
@@ -207,7 +208,8 @@ theorem surjective_quotientMap_of_maximal_of_localization {I : Ideal S} [I.IsPri
                 (Ideal.mem_comap.2 (Ideal.Quotient.eq_zero_iff_mem.1 hn))))
           (_root_.trans hn (by rw [← RingHom.map_mul, ← mk'_eq_mul_mk'_one, mk'_self,
             RingHom.map_one])))
-#align is_localization.surjective_quotient_map_of_maximal_of_localization IsLocalization.surjective_quotientMap_of_maximal_of_localization
+#align is_localization.surjective_quotient_map_of_maximal_of_localization
+IsLocalization.surjective_quotientMap_of_maximal_of_localization
 
 open nonZeroDivisors
 
