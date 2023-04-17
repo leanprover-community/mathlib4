@@ -318,8 +318,8 @@ theorem Fix.ind_rec {α : Type u} (g₁ g₂ : Fix F → α)
   change g₁ ⟦⟨a, f⟩⟧ = g₂ ⟦⟨a, f⟩⟧
   rw [← Fix.ind_aux a f]; apply h
   rw [← abs_map, ← abs_map, PFunctor.map_eq, PFunctor.map_eq]
-  dsimp [Function.comp]
-  congr with x; apply ih
+  congr with x
+  apply ih
 #align qpf.fix.ind_rec Qpf.Fix.ind_rec
 
 theorem Fix.rec_unique {α : Type u} (g : F α → α) (h : Fix F → α)
@@ -333,9 +333,10 @@ theorem Fix.rec_unique {α : Type u} (g : F α → α) (h : Fix F → α)
 theorem Fix.mk_dest (x : Fix F) : Fix.mk (Fix.dest x) = x := by
   change (Fix.mk ∘ Fix.dest) x = id x
   apply Fix.ind_rec (mk ∘ dest) id
-  intro x; dsimp
-  rw [Fix.dest, Fix.rec_eq, id_map, comp_map]
-  intro h; rw [h]
+  intro x
+  rw [Function.comp_apply, id_eq, Fix.dest, Fix.rec_eq, id_map, comp_map]
+  intro h
+  rw [h]
 #align qpf.fix.mk_dest Qpf.Fix.mk_dest
 
 theorem Fix.dest_mk (x : F (Fix F)) : Fix.dest (Fix.mk x) = x := by
@@ -559,9 +560,7 @@ def comp : Qpf (Functor.Comp F₂ F₁) where
     congr
     rw [PFunctor.map_eq]
     dsimp [Function.comp]
-    simp [abs_map]
-    constructor
-    rfl
+    congr
     ext x
     rw [← abs_map]
     rfl
