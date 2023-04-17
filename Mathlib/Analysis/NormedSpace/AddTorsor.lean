@@ -8,11 +8,11 @@ Authors: Joseph Myers, Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.NormedSpace.Basic
-import Mathbin.Analysis.Normed.Group.AddTorsor
-import Mathbin.LinearAlgebra.AffineSpace.MidpointZero
-import Mathbin.LinearAlgebra.AffineSpace.AffineSubspace
-import Mathbin.Topology.Instances.RealVectorSpace
+import Mathlib.Analysis.NormedSpace.Basic
+import Mathlib.Analysis.Normed.Group.AddTorsor
+import Mathlib.LinearAlgebra.AffineSpace.MidpointZero
+import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace
+import Mathlib.Topology.Instances.RealVectorSpace
 
 /-!
 # Torsors of normed space actions.
@@ -37,8 +37,7 @@ variable {𝕜 : Type _} [NormedField 𝕜] [NormedSpace 𝕜 V] [NormedSpace �
 open AffineMap
 
 theorem AffineSubspace.isClosed_direction_iff (s : AffineSubspace 𝕜 Q) :
-    IsClosed (s.direction : Set W) ↔ IsClosed (s : Set Q) :=
-  by
+    IsClosed (s.direction : Set W) ↔ IsClosed (s : Set Q) := by
   rcases s.eq_bot_or_nonempty with (rfl | ⟨x, hx⟩); · simp [isClosed_singleton]
   rw [← (IsometryEquiv.vaddConst x).toHomeomorph.symm.isClosed_image,
     AffineSubspace.coe_direction_eq_vsub_set_right hx]
@@ -60,8 +59,7 @@ theorem dist_homothety_center (p₁ p₂ : P) (c : 𝕜) :
 
 @[simp]
 theorem dist_lineMap_lineMap (p₁ p₂ : P) (c₁ c₂ : 𝕜) :
-    dist (lineMap p₁ p₂ c₁) (lineMap p₁ p₂ c₂) = dist c₁ c₂ * dist p₁ p₂ :=
-  by
+    dist (lineMap p₁ p₂ c₁) (lineMap p₁ p₂ c₂) = dist c₁ c₂ * dist p₁ p₂ := by
   rw [dist_comm p₁ p₂]
   simp only [line_map_apply, dist_eq_norm_vsub, vadd_vsub_vadd_cancel_right, ← sub_smul, norm_smul,
     vsub_eq_sub]
@@ -128,8 +126,7 @@ theorem dist_right_midpoint (p₁ p₂ : P) : dist p₂ (midpoint 𝕜 p₁ p₂
 #align dist_right_midpoint dist_right_midpoint
 
 theorem dist_midpoint_midpoint_le' (p₁ p₂ p₃ p₄ : P) :
-    dist (midpoint 𝕜 p₁ p₂) (midpoint 𝕜 p₃ p₄) ≤ (dist p₁ p₃ + dist p₂ p₄) / ‖(2 : 𝕜)‖ :=
-  by
+    dist (midpoint 𝕜 p₁ p₂) (midpoint 𝕜 p₃ p₄) ≤ (dist p₁ p₃ + dist p₂ p₄) / ‖(2 : 𝕜)‖ := by
   rw [dist_eq_norm_vsub V, dist_eq_norm_vsub V, dist_eq_norm_vsub V, midpoint_vsub_midpoint] <;>
     try infer_instance
   rw [midpoint_eq_smul_add, norm_smul, invOf_eq_inv, norm_inv, ← div_eq_inv_mul]
@@ -152,8 +149,7 @@ theorem antilipschitzWith_lineMap {p₁ p₂ : Q} (h : p₁ ≠ p₂) :
 variable (𝕜)
 
 theorem eventually_homothety_mem_of_mem_interior (x : Q) {s : Set Q} {y : Q} (hy : y ∈ interior s) :
-    ∀ᶠ δ in 𝓝 (1 : 𝕜), homothety x δ y ∈ s :=
-  by
+    ∀ᶠ δ in 𝓝 (1 : 𝕜), homothety x δ y ∈ s := by
   rw [(NormedAddCommGroup.nhds_basis_norm_lt (1 : 𝕜)).eventually_iff]
   cases' eq_or_ne y x with h h
   · use 1
@@ -167,10 +163,8 @@ theorem eventually_homothety_mem_of_mem_interior (x : Q) {s : Set Q} {y : Q} (hy
 #align eventually_homothety_mem_of_mem_interior eventually_homothety_mem_of_mem_interior
 
 theorem eventually_homothety_image_subset_of_finite_subset_interior (x : Q) {s : Set Q} {t : Set Q}
-    (ht : t.Finite) (h : t ⊆ interior s) : ∀ᶠ δ in 𝓝 (1 : 𝕜), homothety x δ '' t ⊆ s :=
-  by
-  suffices ∀ y ∈ t, ∀ᶠ δ in 𝓝 (1 : 𝕜), homothety x δ y ∈ s
-    by
+    (ht : t.Finite) (h : t ⊆ interior s) : ∀ᶠ δ in 𝓝 (1 : 𝕜), homothety x δ '' t ⊆ s := by
+  suffices ∀ y ∈ t, ∀ᶠ δ in 𝓝 (1 : 𝕜), homothety x δ y ∈ s by
     simp_rw [Set.image_subset_iff]
     exact (Filter.eventually_all_finite ht).mpr this
   intro y hy
@@ -196,8 +190,7 @@ def AffineMap.ofMapMidpoint (f : P → Q) (h : ∀ x y, f (midpoint ℝ x y) = m
     (↑((AddMonoidHom.ofMapMidpoint ℝ ℝ
             ((AffineEquiv.vaddConst ℝ (f <| Classical.arbitrary P)).symm ∘
               f ∘ AffineEquiv.vaddConst ℝ (Classical.arbitrary P))
-            (by simp) fun x y => by simp [h]).toRealLinearMap <|
-        by
+            (by simp) fun x y => by simp [h]).toRealLinearMap <| by
         apply_rules [Continuous.vadd, Continuous.vsub, continuous_const, hfc.comp, continuous_id] ))
     (Classical.arbitrary P) fun p => by simp
 #align affine_map.of_map_midpoint AffineMap.ofMapMidpoint
