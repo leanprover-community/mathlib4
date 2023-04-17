@@ -23,12 +23,12 @@ We assume the following:
 
 We define:
 
-`q`   : `qpf` data, representing `F` as a quotient of `P`
+`q`   : `Qpf` data, representing `F` as a quotient of `P`
 
 The main goal is to construct:
 
-`fix`   : the initial algebra with structure map `F fix → fix`.
-`cofix` : the final coalgebra with structure map `cofix → F cofix`
+`Fix`   : the initial algebra with structure map `F Fix → Fix`.
+`Cofix` : the final coalgebra with structure map `Cofix → F Cofix`
 
 We also show that the composition of qpfs is a qpf, and that the quotient of a qpf
 is a qpf.
@@ -37,7 +37,8 @@ The present theory focuses on the univariate case for qpfs
 
 ## References
 
-* [Jeremy Avigad, Mario M. Carneiro and Simon Hudon, *Data Types as Quotients of Polynomial Functors*][avigad-carneiro-hudon2019]
+* [Jeremy Avigad, Mario M. Carneiro and Simon Hudon, *Data Types as Quotients of Polynomial
+  Functors*][avigad-carneiro-hudon2019]
 
 -/
 
@@ -67,7 +68,7 @@ open Functor (Liftp Liftr)
 /-
 Show that every qpf is a lawful functor.
 
-Note: every functor has a field, `map_const`, and is_lawful_functor has the defining
+Note: every functor has a field, `map_const`, and `lawfulFunctor` has the defining
 characterization. We can only propagate the assumption.
 -/
 theorem id_map {α : Type _} (x : F α) : id <$> x = x := by
@@ -190,7 +191,7 @@ inductive Wequiv : q.P.W → q.P.W → Prop
 set_option linter.uppercaseLean3 false in
 #align qpf.Wequiv Qpf.Wequiv
 
-/-- recF is insensitive to the representation -/
+/-- `recF` is insensitive to the representation -/
 theorem recF_eq_of_Wequiv {α : Type u} (u : F α → α) (x y : q.P.W) :
     Wequiv x y → recF u x = recF u y := by
   intro h
@@ -242,8 +243,7 @@ theorem Wrepr_equiv (x : q.P.W) : Wequiv (Wrepr x) x := by
 set_option linter.uppercaseLean3 false in
 #align qpf.Wrepr_equiv Qpf.Wrepr_equiv
 
-/-- Define the fixed point as the quotient of trees under the equivalence relation `Wequiv`.
--/
+/-- Define the fixed point as the quotient of trees under the equivalence relation `Wequiv`. -/
 def Wsetoid : Setoid q.P.W :=
   ⟨Wequiv, @Wequiv.refl _ _ _, @Wequiv.symm _ _ _, @Wequiv.trans _ _ _⟩
 set_option linter.uppercaseLean3 false in
@@ -383,12 +383,12 @@ set_option linter.uppercaseLean3 false in
 #align qpf.corecF_eq Qpf.corecF_eq
 
 -- Equivalence
-/-- A pre-congruence on q.P.M *viewed as an F-coalgebra*. Not necessarily symmetric. -/
+/-- A pre-congruence on `q.P.M` *viewed as an F-coalgebra*. Not necessarily symmetric. -/
 def IsPrecongr (r : q.P.M → q.P.M → Prop) : Prop :=
   ∀ ⦃x y⦄, r x y → abs (Quot.mk r <$> PFunctor.M.dest x) = abs (Quot.mk r <$> PFunctor.M.dest y)
 #align qpf.is_precongr Qpf.IsPrecongr
 
-/-- The maximal congruence on q.P.M -/
+/-- The maximal congruence on `q.P.M`. -/
 def Mcongr : q.P.M → q.P.M → Prop := fun x y => ∃ r, IsPrecongr r ∧ r x y
 set_option linter.uppercaseLean3 false in
 #align qpf.Mcongr Qpf.Mcongr
@@ -401,12 +401,12 @@ def Cofix (F : Type u → Type u) [Functor F] [q : Qpf F] :=
 instance [Inhabited q.P.A] : Inhabited (Cofix F) :=
   ⟨Quot.mk _ default⟩
 
-/-- corecursor for type defined by `cofix` -/
+/-- corecursor for type defined by `Cofix` -/
 def Cofix.corec {α : Type _} (g : α → F α) (x : α) : Cofix F :=
   Quot.mk _ (corecF g x)
 #align qpf.cofix.corec Qpf.Cofix.corec
 
-/-- destructor for type defined by `cofix` -/
+/-- destructor for type defined by `Cofix` -/
 def Cofix.dest : Cofix F → F (Cofix F) :=
   Quot.lift (fun x => Quot.mk Mcongr <$> abs (PFunctor.M.dest x))
     (by
@@ -523,7 +523,7 @@ variable {F₂ : Type u → Type u} [Functor F₂] [q₂ : Qpf F₂]
 
 variable {F₁ : Type u → Type u} [Functor F₁] [q₁ : Qpf F₁]
 
-/-- composition of qpfs gives another qpf  -/
+/-- composition of qpfs gives another qpf -/
 def comp : Qpf (Functor.Comp F₂ F₁) where
   P := PFunctor.comp q₂.P q₁.P
   abs {α} := by
@@ -583,10 +583,10 @@ variable {FG_abs : ∀ {α}, F α → G α}
 
 variable {FG_repr : ∀ {α}, G α → F α}
 
-/-- Given a qpf `F` and a well-behaved surjection `FG_abs` from F α to
-functor G α, `G` is a qpf. We can consider `G` a quotient on `F` where
+/-- Given a qpf `F` and a well-behaved surjection `FG_abs` from `F α` to
+functor `G α`, `G` is a qpf. We can consider `G` a quotient on `F` where
 elements `x y : F α` are in the same equivalence class if
-`FG_abs x = FG_abs y`  -/
+`FG_abs x = FG_abs y`. -/
 def quotientQpf (FG_abs_repr : ∀ {α} (x : G α), FG_abs (FG_repr x) = x)
     (FG_abs_map : ∀ {α β} (f : α → β) (x : F α), FG_abs (f <$> x) = f <$> FG_abs x) : Qpf G where
   P := q.P
@@ -662,7 +662,7 @@ def IsUniform : Prop :=
     abs ⟨a, f⟩ = abs ⟨a', f'⟩ → f '' univ = f' '' univ
 #align qpf.is_uniform Qpf.IsUniform
 
-/-- does `abs` preserve `liftp`? -/
+/-- does `abs` preserve `Liftp`? -/
 def LiftpPreservation : Prop :=
   ∀ ⦃α⦄ (p : α → Prop) (x : q.P.Obj α), Liftp p (abs x) ↔ Liftp p x
 #align qpf.liftp_preservation Qpf.LiftpPreservation
