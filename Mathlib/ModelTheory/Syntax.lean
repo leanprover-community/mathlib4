@@ -261,7 +261,6 @@ def subst : L.Term α → (α → L.Term β) → L.Term β
 
 end Term
 
--- mathport name: language.term.var
 scoped[FirstOrder] prefix:arg "&" => FirstOrder.Language.Term.var ∘ Sum.inr
 
 namespace LHom
@@ -996,25 +995,19 @@ set_option linter.uppercaseLean3 false in
 
 end LEquiv
 
--- mathport name: term.bd_equal
 scoped[FirstOrder] infixl:88 " =' " => FirstOrder.Language.Term.bdEqual
 
--- mathport name: bounded_formula.imp
 -- input \~- or \simeq
 scoped[FirstOrder] infixr:62 " ⟹ " => FirstOrder.Language.BoundedFormula.imp
 
--- mathport name: bounded_formula.all
 -- input \==>
 scoped[FirstOrder] prefix:110 "∀'" => FirstOrder.Language.BoundedFormula.all
 
--- mathport name: bounded_formula.not
 scoped[FirstOrder] prefix:arg "∼" => FirstOrder.Language.BoundedFormula.not
 
--- mathport name: bounded_formula.iff
 -- input \~, the ASCII character ~ has too low precedence
 scoped[FirstOrder] infixl:61 " ⇔ " => FirstOrder.Language.BoundedFormula.iff
 
--- mathport name: bounded_formula.ex
 -- input \<=>
 scoped[FirstOrder] prefix:110 "∃'" => FirstOrder.Language.BoundedFormula.ex
 
