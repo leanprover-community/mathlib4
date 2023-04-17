@@ -8,9 +8,9 @@ Authors: Patrick Massot
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.Algebra.Nonarchimedean.Basic
-import Mathbin.Topology.Algebra.FilterBasis
-import Mathbin.Algebra.Module.Submodule.Pointwise
+import Mathlib.Topology.Algebra.Nonarchimedean.Basic
+import Mathlib.Topology.Algebra.FilterBasis
+import Mathlib.Algebra.Module.Submodule.Pointwise
 
 /-!
 # Neighborhood bases for non-archimedean rings and modules
@@ -174,8 +174,7 @@ def openAddSubgroup (i : ι) : @OpenAddSubgroup A _ hB.topology :=
 #align ring_subgroups_basis.open_add_subgroup RingSubgroupsBasis.openAddSubgroup
 
 -- see Note [nonarchimedean non instances]
-theorem nonarchimedean : @NonarchimedeanRing A _ hB.topology :=
-  by
+theorem nonarchimedean : @NonarchimedeanRing A _ hB.topology := by
   letI := hB.topology
   constructor
   intro U hU
@@ -201,8 +200,7 @@ namespace SubmodulesRingBasis
 variable {B : ι → Submodule R A} (hB : SubmodulesRingBasis B)
 
 theorem toRing_subgroups_basis (hB : SubmodulesRingBasis B) :
-    RingSubgroupsBasis fun i => (B i).toAddSubgroup :=
-  by
+    RingSubgroupsBasis fun i => (B i).toAddSubgroup := by
   apply RingSubgroupsBasis.of_comm (fun i => (B i).toAddSubgroup) hB.inter hB.mul
   intro a i
   rcases hB.left_mul a i with ⟨j, hj⟩
@@ -235,8 +233,7 @@ variable [TopologicalSpace R] [Nonempty ι] {B : ι → Submodule R M} (hB : Sub
 include hB
 
 /-- The image of a submodules basis is a module filter basis. -/
-def toModuleFilterBasis : ModuleFilterBasis R M
-    where
+def toModuleFilterBasis : ModuleFilterBasis R M where
   sets := { U | ∃ i, U = B i }
   Nonempty := by
     inhabit ι
@@ -297,8 +294,7 @@ def openAddSubgroup (i : ι) : @OpenAddSubgroup M _ hB.topology :=
 #align submodules_basis.open_add_subgroup SubmodulesBasis.openAddSubgroup
 
 -- see Note [nonarchimedean non instances]
-theorem nonarchimedean (hB : SubmodulesBasis B) : @NonarchimedeanAddGroup M _ hB.topology :=
-  by
+theorem nonarchimedean (hB : SubmodulesBasis B) : @NonarchimedeanAddGroup M _ hB.topology := by
   letI := hB.topology
   constructor
   intro U hU
