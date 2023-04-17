@@ -8,9 +8,9 @@ Authors: Yakov Pechersky
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.List.Cycle
-import Mathbin.GroupTheory.Perm.Cycle.Type
-import Mathbin.GroupTheory.Perm.List
+import Mathlib.Data.List.Cycle
+import Mathlib.GroupTheory.Perm.Cycle.Type
+import Mathlib.GroupTheory.Perm.List
 
 /-!
 
@@ -59,8 +59,7 @@ namespace List
 variable [DecidableEq α] {l l' : List α}
 
 theorem formPerm_disjoint_iff (hl : Nodup l) (hl' : Nodup l') (hn : 2 ≤ l.length)
-    (hn' : 2 ≤ l'.length) : Perm.Disjoint (formPerm l) (formPerm l') ↔ l.Disjoint l' :=
-  by
+    (hn' : 2 ≤ l'.length) : Perm.Disjoint (formPerm l) (formPerm l') ↔ l.Disjoint l' := by
   rw [disjoint_iff_eq_or_eq, List.Disjoint]
   constructor
   · rintro h x hx hx'
@@ -76,8 +75,7 @@ theorem formPerm_disjoint_iff (hl : Nodup l) (hl' : Nodup l') (hn : 2 ≤ l.leng
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-theorem isCycle_formPerm (hl : Nodup l) (hn : 2 ≤ l.length) : IsCycle (formPerm l) :=
-  by
+theorem isCycle_formPerm (hl : Nodup l) (hn : 2 ≤ l.length) : IsCycle (formPerm l) := by
   cases' l with x l
   · norm_num at hn
   induction' l with y l IH generalizing x
@@ -109,8 +107,7 @@ theorem cycleOf_formPerm (hl : Nodup l) (hn : 2 ≤ l.length) (x) :
 #align list.cycle_of_form_perm List.cycleOf_formPerm
 
 theorem cycleType_formPerm (hl : Nodup l) (hn : 2 ≤ l.length) :
-    cycleType l.attach.formPerm = {l.length} :=
-  by
+    cycleType l.attach.formPerm = {l.length} := by
   rw [← length_attach] at hn
   rw [← nodup_attach] at hl
   rw [cycle_type_eq [l.attach.form_perm]]
@@ -125,8 +122,7 @@ theorem cycleType_formPerm (hl : Nodup l) (hn : 2 ≤ l.length) :
 #align list.cycle_type_form_perm List.cycleType_formPerm
 
 theorem formPerm_apply_mem_eq_next (hl : Nodup l) (x : α) (hx : x ∈ l) :
-    formPerm l x = next l x hx :=
-  by
+    formPerm l x = next l x hx := by
   obtain ⟨k, hk, rfl⟩ := nth_le_of_mem hx
   rw [next_nth_le _ hl, form_perm_apply_nth_le _ hl]
 #align list.form_perm_apply_mem_eq_next List.formPerm_apply_mem_eq_next
@@ -141,8 +137,7 @@ variable [DecidableEq α] (s s' : Cycle α)
 where each element in the list is permuted to the next one, defined as `form_perm`.
 -/
 def formPerm : ∀ (s : Cycle α) (h : Nodup s), Equiv.Perm α := fun s =>
-  Quot.hrecOn s (fun l h => formPerm l) fun l₁ l₂ (h : l₁ ~r l₂) =>
-    by
+  Quot.hrecOn s (fun l h => formPerm l) fun l₁ l₂ (h : l₁ ~r l₂) => by
     ext
     · exact h.nodup_iff
     · intro h₁ h₂ _
@@ -154,8 +149,7 @@ theorem formPerm_coe (l : List α) (hl : l.Nodup) : formPerm (l : Cycle α) hl =
   rfl
 #align cycle.form_perm_coe Cycle.formPerm_coe
 
-theorem formPerm_subsingleton (s : Cycle α) (h : Subsingleton s) : formPerm s h.Nodup = 1 :=
-  by
+theorem formPerm_subsingleton (s : Cycle α) (h : Subsingleton s) : formPerm s h.Nodup = 1 := by
   induction s using Quot.inductionOn
   simp only [form_perm_coe, mk_eq_coe]
   simp only [length_subsingleton_iff, length_coe, mk_eq_coe] at h
@@ -172,8 +166,7 @@ theorem isCycle_formPerm (s : Cycle α) (h : Nodup s) (hn : Nontrivial s) : IsCy
 #align cycle.is_cycle_form_perm Cycle.isCycle_formPerm
 
 theorem support_formPerm [Fintype α] (s : Cycle α) (h : Nodup s) (hn : Nontrivial s) :
-    support (formPerm s h) = s.toFinset :=
-  by
+    support (formPerm s h) = s.toFinset := by
   induction s using Quot.inductionOn
   refine' support_form_perm_of_nodup s h _
   rintro _ rfl
@@ -187,23 +180,20 @@ theorem formPerm_eq_self_of_not_mem (s : Cycle α) (h : Nodup s) (x : α) (hx : 
 #align cycle.form_perm_eq_self_of_not_mem Cycle.formPerm_eq_self_of_not_mem
 
 theorem formPerm_apply_mem_eq_next (s : Cycle α) (h : Nodup s) (x : α) (hx : x ∈ s) :
-    formPerm s h x = next s h x hx :=
-  by
+    formPerm s h x = next s h x hx := by
   induction s using Quot.inductionOn
   simpa using List.formPerm_apply_mem_eq_next h _ _
 #align cycle.form_perm_apply_mem_eq_next Cycle.formPerm_apply_mem_eq_next
 
 theorem formPerm_reverse (s : Cycle α) (h : Nodup s) :
-    formPerm s.reverse (nodup_reverse_iff.mpr h) = (formPerm s h)⁻¹ :=
-  by
+    formPerm s.reverse (nodup_reverse_iff.mpr h) = (formPerm s h)⁻¹ := by
   induction s using Quot.inductionOn
   simpa using form_perm_reverse _ h
 #align cycle.form_perm_reverse Cycle.formPerm_reverse
 
 theorem formPerm_eq_formPerm_iff {α : Type _} [DecidableEq α] {s s' : Cycle α} {hs : s.Nodup}
     {hs' : s'.Nodup} :
-    s.formPerm hs = s'.formPerm hs' ↔ s = s' ∨ s.Subsingleton ∧ s'.Subsingleton :=
-  by
+    s.formPerm hs = s'.formPerm hs' ↔ s = s' ∨ s.Subsingleton ∧ s'.Subsingleton := by
   rw [Cycle.length_subsingleton_iff, Cycle.length_subsingleton_iff]
   revert s s'
   intro s s'
@@ -239,8 +229,7 @@ theorem toList_eq_nil_iff {p : Perm α} {x} : toList p x = [] ↔ x ∉ p.suppor
 theorem length_toList : length (toList p x) = (cycleOf p x).support.card := by simp [to_list]
 #align equiv.perm.length_to_list Equiv.Perm.length_toList
 
-theorem toList_ne_singleton (y : α) : toList p x ≠ [y] :=
-  by
+theorem toList_ne_singleton (y : α) : toList p x ≠ [y] := by
   intro H
   simpa [card_support_ne_one] using congr_arg length H
 #align equiv.perm.to_list_ne_singleton Equiv.Perm.toList_ne_singleton
@@ -263,8 +252,7 @@ theorem toList_nthLe_zero (h : x ∈ p.support) :
 
 variable {p} {x}
 
-theorem mem_toList_iff {y : α} : y ∈ toList p x ↔ SameCycle p x y ∧ x ∈ p.support :=
-  by
+theorem mem_toList_iff {y : α} : y ∈ toList p x ↔ SameCycle p x y ∧ x ∈ p.support := by
   simp only [to_list, mem_range, mem_map]
   constructor
   · rintro ⟨n, hx, rfl⟩
@@ -276,8 +264,7 @@ theorem mem_toList_iff {y : α} : y ∈ toList p x ↔ SameCycle p x y ∧ x ∈
     simpa using h.exists_pow_eq_of_mem_support hx
 #align equiv.perm.mem_to_list_iff Equiv.Perm.mem_toList_iff
 
-theorem nodup_toList (p : Perm α) (x : α) : Nodup (toList p x) :=
-  by
+theorem nodup_toList (p : Perm α) (x : α) : Nodup (toList p x) := by
   by_cases hx : p x = x
   · rw [← not_mem_support, ← to_list_eq_nil_iff] at hx
     simp [hx]
@@ -323,8 +310,7 @@ theorem next_toList_eq_apply (p : Perm α) (x y : α) (hy : y ∈ toList p x) :
 #align equiv.perm.next_to_list_eq_apply Equiv.Perm.next_toList_eq_apply
 
 theorem toList_pow_apply_eq_rotate (p : Perm α) (x : α) (k : ℕ) :
-    p.toList ((p ^ k) x) = (p.toList x).rotate k :=
-  by
+    p.toList ((p ^ k) x) = (p.toList x).rotate k := by
   apply ext_le
   · simp only [length_to_list, cycle_of_self_apply_pow, length_rotate]
   · intro n hn hn'
@@ -344,8 +330,7 @@ theorem SameCycle.toList_isRotated {f : Perm α} {x y : α} (h : SameCycle f x y
     rwa [← h.mem_support_iff]
 #align equiv.perm.same_cycle.to_list_is_rotated Equiv.Perm.SameCycle.toList_isRotated
 
-theorem pow_apply_mem_toList_iff_mem_support {n : ℕ} : (p ^ n) x ∈ p.toList x ↔ x ∈ p.support :=
-  by
+theorem pow_apply_mem_toList_iff_mem_support {n : ℕ} : (p ^ n) x ∈ p.toList x ↔ x ∈ p.support := by
   rw [mem_to_list_iff, and_iff_right_iff_imp]
   refine' fun _ => same_cycle.symm _
   rw [same_cycle_pow_left]
@@ -358,11 +343,9 @@ theorem toList_formPerm_singleton (x y : α) : toList (formPerm [x]) y = [] := b
 #align equiv.perm.to_list_form_perm_singleton Equiv.Perm.toList_formPerm_singleton
 
 theorem toList_formPerm_nontrivial (l : List α) (hl : 2 ≤ l.length) (hn : Nodup l) :
-    toList (formPerm l) (l.nthLe 0 (zero_lt_two.trans_le hl)) = l :=
-  by
+    toList (formPerm l) (l.nthLe 0 (zero_lt_two.trans_le hl)) = l := by
   have hc : l.form_perm.is_cycle := List.isCycle_formPerm hn hl
-  have hs : l.form_perm.support = l.to_finset :=
-    by
+  have hs : l.form_perm.support = l.to_finset := by
     refine' support_form_perm_of_nodup _ hn _
     rintro _ rfl
     simpa [Nat.succ_le_succ_iff] using hl
@@ -373,8 +356,7 @@ theorem toList_formPerm_nontrivial (l : List α) (hl : 2 ≤ l.length) (hn : Nod
 #align equiv.perm.to_list_form_perm_nontrivial Equiv.Perm.toList_formPerm_nontrivial
 
 theorem toList_formPerm_isRotated_self (l : List α) (hl : 2 ≤ l.length) (hn : Nodup l) (x : α)
-    (hx : x ∈ l) : toList (formPerm l) x ~r l :=
-  by
+    (hx : x ∈ l) : toList (formPerm l) x ~r l := by
   obtain ⟨k, hk, rfl⟩ := nth_le_of_mem hx
   have hr : l ~r l.rotate k := ⟨k, rfl⟩
   rw [form_perm_eq_of_is_rotated hn hr]
@@ -386,8 +368,7 @@ theorem toList_formPerm_isRotated_self (l : List α) (hl : 2 ≤ l.length) (hn :
   · simpa using hn
 #align equiv.perm.to_list_form_perm_is_rotated_self Equiv.Perm.toList_formPerm_isRotated_self
 
-theorem formPerm_toList (f : Perm α) (x : α) : formPerm (toList f x) = f.cycleOf x :=
-  by
+theorem formPerm_toList (f : Perm α) (x : α) : formPerm (toList f x) = f.cycleOf x := by
   by_cases hx : f x = x
   ·
     rw [(cycle_of_eq_one_iff f).mpr hx, to_list_eq_nil_iff.mpr (not_mem_support.mpr hx),
@@ -420,21 +401,18 @@ def toCycle (f : Perm α) (hf : IsCycle f) : Cycle α :=
 #align equiv.perm.to_cycle Equiv.Perm.toCycle
 
 theorem toCycle_eq_toList (f : Perm α) (hf : IsCycle f) (x : α) (hx : f x ≠ x) :
-    toCycle f hf = toList f x :=
-  by
+    toCycle f hf = toList f x := by
   have key : (Finset.univ : Finset α).val = x ::ₘ finset.univ.val.erase x := by simp
   rw [to_cycle, key]
   simp [hx]
 #align equiv.perm.to_cycle_eq_to_list Equiv.Perm.toCycle_eq_toList
 
-theorem nodup_toCycle (f : Perm α) (hf : IsCycle f) : (toCycle f hf).Nodup :=
-  by
+theorem nodup_toCycle (f : Perm α) (hf : IsCycle f) : (toCycle f hf).Nodup := by
   obtain ⟨x, hx, -⟩ := id hf
   simpa [to_cycle_eq_to_list f hf x hx] using nodup_to_list _ _
 #align equiv.perm.nodup_to_cycle Equiv.Perm.nodup_toCycle
 
-theorem nontrivial_toCycle (f : Perm α) (hf : IsCycle f) : (toCycle f hf).Nontrivial :=
-  by
+theorem nontrivial_toCycle (f : Perm α) (hf : IsCycle f) : (toCycle f hf).Nontrivial := by
   obtain ⟨x, hx, -⟩ := id hf
   simp [to_cycle_eq_to_list f hf x hx, hx, Cycle.nontrivial_coe_nodup_iff (nodup_to_list _ _)]
 #align equiv.perm.nontrivial_to_cycle Equiv.Perm.nontrivial_toCycle
@@ -443,8 +421,7 @@ theorem nontrivial_toCycle (f : Perm α) (hf : IsCycle f) : (toCycle f hf).Nontr
 that corresponds to repeated application of `f`.
 The forward direction is implemented by `equiv.perm.to_cycle`.
 -/
-def isoCycle : { f : Perm α // IsCycle f } ≃ { s : Cycle α // s.Nodup ∧ s.Nontrivial }
-    where
+def isoCycle : { f : Perm α // IsCycle f } ≃ { s : Cycle α // s.Nodup ∧ s.Nontrivial } where
   toFun f := ⟨toCycle (f : Perm α) f.Prop, nodup_toCycle f f.Prop, nontrivial_toCycle _ f.Prop⟩
   invFun s := ⟨(s : Cycle α).formPerm s.Prop.left, (s : Cycle α).isCycle_formPerm _ s.Prop.right⟩
   left_inv f := by
@@ -473,8 +450,7 @@ section Finite
 variable [Finite α] [DecidableEq α]
 
 theorem IsCycle.existsUnique_cycle {f : Perm α} (hf : IsCycle f) :
-    ∃! s : Cycle α, ∃ h : s.Nodup, s.formPerm h = f :=
-  by
+    ∃! s : Cycle α, ∃ h : s.Nodup, s.formPerm h = f := by
   cases nonempty_fintype α
   obtain ⟨x, hx, hy⟩ := id hf
   refine' ⟨f.to_list x, ⟨nodup_to_list f x, _⟩, _⟩
@@ -492,8 +468,7 @@ theorem IsCycle.existsUnique_cycle {f : Perm α} (hf : IsCycle f) :
 #align equiv.perm.is_cycle.exists_unique_cycle Equiv.Perm.IsCycle.existsUnique_cycle
 
 theorem IsCycle.existsUnique_cycle_subtype {f : Perm α} (hf : IsCycle f) :
-    ∃! s : { s : Cycle α // s.Nodup }, (s : Cycle α).formPerm s.Prop = f :=
-  by
+    ∃! s : { s : Cycle α // s.Nodup }, (s : Cycle α).formPerm s.Prop = f := by
   obtain ⟨s, ⟨hs, rfl⟩, hs'⟩ := hf.exists_unique_cycle
   refine' ⟨⟨s, hs⟩, rfl, _⟩
   rintro ⟨t, ht⟩ ht'
@@ -501,8 +476,7 @@ theorem IsCycle.existsUnique_cycle_subtype {f : Perm α} (hf : IsCycle f) :
 #align equiv.perm.is_cycle.exists_unique_cycle_subtype Equiv.Perm.IsCycle.existsUnique_cycle_subtype
 
 theorem IsCycle.existsUnique_cycle_nontrivial_subtype {f : Perm α} (hf : IsCycle f) :
-    ∃! s : { s : Cycle α // s.Nodup ∧ s.Nontrivial }, (s : Cycle α).formPerm s.Prop.left = f :=
-  by
+    ∃! s : { s : Cycle α // s.Nodup ∧ s.Nontrivial }, (s : Cycle α).formPerm s.Prop.left = f := by
   obtain ⟨⟨s, hn⟩, hs, hs'⟩ := hf.exists_unique_cycle_subtype
   refine' ⟨⟨s, hn, _⟩, _, _⟩
   · rw [hn.nontrivial_iff]
@@ -523,8 +497,7 @@ variable [Fintype α] [DecidableEq α]
 that corresponds to repeated application of `f`.
 The forward direction is implemented by finding this `cycle α` using `fintype.choose`.
 -/
-def isoCycle' : { f : Perm α // IsCycle f } ≃ { s : Cycle α // s.Nodup ∧ s.Nontrivial }
-    where
+def isoCycle' : { f : Perm α // IsCycle f } ≃ { s : Cycle α // s.Nodup ∧ s.Nontrivial } where
   toFun f := Fintype.choose _ f.Prop.existsUnique_cycle_nontrivial_subtype
   invFun s := ⟨(s : Cycle α).formPerm s.Prop.left, (s : Cycle α).isCycle_formPerm _ s.Prop.right⟩
   left_inv f := by
