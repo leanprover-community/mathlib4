@@ -61,18 +61,15 @@ open Qq
 prevent immediate decay to a function. -/
 protected instance toExpr [ToLevel.{u}] [ToLevel.{uₘ}] [ToLevel.{uₙ}]
     [Lean.ToExpr α] [Lean.ToExpr m'] [Lean.ToExpr n'] [Lean.ToExpr (m' → n' → α)] :
-    Lean.ToExpr (Matrix m' n' α) where
-  toTypeExpr :=
-    have eα : Q(Type $(toLevel.{u})) := toTypeExpr α
-    have em' : Q(Type $(toLevel.{uₘ})) := toTypeExpr m'
-    have en' : Q(Type $(toLevel.{uₙ})) := toTypeExpr n'
+    Lean.ToExpr (Matrix m' n' α) :=
+  have eα : Q(Type $(toLevel.{u})) := toTypeExpr α
+  have em' : Q(Type $(toLevel.{uₘ})) := toTypeExpr m'
+  have en' : Q(Type $(toLevel.{uₙ})) := toTypeExpr n'
+  { toTypeExpr :=
     q(Matrix $eα $em' $en')
-  toExpr M :=
-    have eα : Q(Type $(toLevel.{u})) := toTypeExpr α
-    have em' : Q(Type $(toLevel.{uₘ})) := toTypeExpr m'
-    have en' : Q(Type $(toLevel.{uₙ})) := toTypeExpr n'
-    have eM : Q($em' → $en' → $eα) := toExpr (show m' → n' → α from M)
-    q(Matrix.of $eM)
+    toExpr := fun M =>
+      have eM : Q($em' → $en' → $eα) := toExpr (show m' → n' → α from M)
+      q(Matrix.of $eM) }
 #align matrix.matrix.reflect Matrix.toExpr
 
 end toExpr
