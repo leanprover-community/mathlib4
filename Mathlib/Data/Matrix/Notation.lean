@@ -88,7 +88,8 @@ macro_rules
     let rowVecs ← rows.mapM fun row : Array Term => do
       unless row.size = n do
         Macro.throwErrorAt (mkNullNode row)
-          s!"Rows must be of equal length; this row has {row.size} items, the previous rows have {n}"
+          s!"Rows must be of equal length; this row has {row.size} items, the previous rows {"
+          "}have {n}"
       `(![$row,*])
     `(@Matrix.of (Fin $(quote m)) (Fin $(quote n)) _ ![$rowVecs,*])
   | `(!![$[;%$semicolons]*]) => do
