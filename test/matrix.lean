@@ -24,43 +24,67 @@ section dimensions
 -- set_option pp.universes true
 -- set_option pp.all true
 
-open Lean Meta Elab in
-def getDims (me : TermElabM Term) : TermElabM (Q(Nat) × Q(Nat)) := do
-  let e ← me
+section elaborators
+open Lean Meta Elab Command
+
+/-- `dims% e` elaborates `e` as a Matrix and returns its dimensions as a `Nat × Nat`. -/
+elab "dims% " e:term : term => do
   let elem_t ← mkFreshExprMVar (mkSort levelOne)
   let m ← mkFreshExprMVar (mkConst ``Nat)
   let n ← mkFreshExprMVar (mkConst ``Nat)
   let matrix_t := mkAppN (mkConst ``Matrix [levelZero, levelZero, levelZero])
                     #[mkApp (mkConst ``Fin) m, mkApp (mkConst ``Fin) n, elem_t]
-  let _ ← Elab.Term.elabTerm e (some matrix_t)
-  Elab.Term.synthesizeSyntheticMVarsUsingDefault
+  let _ ← Term.elabTermEnsuringType e (some matrix_t)
   let m ← instantiateMVars m
   let n ← instantiateMVars n
-  if m.hasMVar || n.hasMVar then
-    throwError "indices have metavariables"
-  return (m, n)
+  mkAppM ``Prod.mk #[m, n]
 
-open Lean Elab in
-def run (x : TermElabM α) : Command.CommandElabM α := Command.liftTermElabM x
+/-- `#guard e1 is e2` elaborates `e1` and `e2` and checks they are `BEq`. -/
+elab "#guard " e1:term " is " e2:term : command => liftTermElabM do
+  let ty ← mkFreshExprMVar none
+  let e1 ← Term.elabTerm e1 ty
+  let e2 ← Term.elabTermEnsuringType e2 ty
+  Elab.Term.synthesizeSyntheticMVarsUsingDefault
+  let e1 ← instantiateMVars e1
+  let e2 ← instantiateMVars e2
+  if e1.hasMVar then
+    throwError "expression{indentExpr e1}\nhas metavariables"
+  if e2.hasMVar then
+    throwError "expression{indentExpr e2}\nhas metavariables"
+  unless e1 == e2 do
+    throwError "expression{indentExpr e1}\nis not identically{indentExpr e2}"
+
+/-- `#guard e` elaborates `e` as a boolean and checks that it evaluates to `true`. -/
+elab "#guard " e:term : command => liftTermElabM do
+  let e ← Term.elabTermEnsuringType e (mkConst ``Bool)
+  Elab.Term.synthesizeSyntheticMVarsUsingDefault
+  let e ← instantiateMVars e
+  if e.hasMVar then
+    throwError "expression{indentExpr e}\nhas metavariables"
+  let v ← unsafe (evalExpr Bool (mkConst ``Bool) e)
+  unless v do
+    throwError "expression{indentExpr e}\ndid not evaluate to `true`"
+
+end elaborators
 
 -- we test equality of expressions here to ensure that we have `2` and not `1.succ` in the type
-run_cmd run do let d ← getDims `(!![]);        guard $ d == (q(0), q(0))
-run_cmd run do let d ← getDims `(!![;]);       guard $ d == (q(1), q(0))
-run_cmd run do let d ← getDims `(!![;;]);      guard $ d == (q(2), q(0))
-run_cmd run do let d ← getDims `(!![,]);       guard $ d == (q(0), q(1))
-run_cmd run do let d ← getDims `(!![,,]);      guard $ d == (q(0), q(2))
-run_cmd run do let d ← getDims `(!![1]);       guard $ d == (q(1), q(1))
-run_cmd run do let d ← getDims `(!![1,]);      guard $ d == (q(1), q(1))
-run_cmd run do let d ← getDims `(!![1;]);      guard $ d == (q(1), q(1))
-run_cmd run do let d ← getDims `(!![1,2;3,4]); guard $ d == (q(2), q(2))
+#guard dims% !![]        is (0, 0)
+#guard dims% !![;]       is (1, 0)
+#guard dims% !![;;]      is (2, 0)
+#guard dims% !![,]       is (0, 1)
+#guard dims% !![,,]      is (0, 2)
+#guard dims% !![1]       is (1, 1)
+#guard dims% !![1,]      is (1, 1)
+#guard dims% !![1;]      is (1, 1)
+#guard dims% !![1,2;3,4] is (2, 2)
 
 end dimensions
 
-run_cmd run do guard $ (!![1;2])       = of ![![1], ![2]]
-run_cmd run do guard $ (!![1,3])       = of ![![1,3]]
-run_cmd run do guard $ (!![1,2;3,4])   = of ![![1,2], ![3,4]]
-run_cmd run do guard $ (!![1,2;3,4;])  = of ![![1,2], ![3,4]]
-run_cmd run do guard $ (!![1,2,;3,4,]) = of ![![1,2], ![3,4]]
+#guard !![1;2]       = of ![![1], ![2]]
+#guard !![1,3]       = of ![![1,3]]
+#guard !![1,2;3,4]   = of ![![1,2], ![3,4]]
+#guard !![1,2;3,4;]  = of ![![1,2], ![3,4]]
+#guard !![1,2,;3,4,] = of ![![1,2], ![3,4]]
 
 example {a a' b b' c c' d d' : α} :
   !![a, b; c, d] + !![a', b'; c', d'] = !![a + a', b + b'; c + c', d + d'] :=
