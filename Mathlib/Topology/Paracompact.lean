@@ -116,7 +116,6 @@ theorem precise_refinement_set [ParacompactSpace X] {s : Set X} (hs : IsClosed s
     exact Subset.trans (subset_compl_comm.1 <| vu Option.none) vc
 #align precise_refinement_set precise_refinement_set
 
--- porting note: new lemma
 theorem ClosedEmbedding.paracompactSpace [ParacompactSpace Y] {e : X → Y} (he : ClosedEmbedding e) :
     ParacompactSpace X where
   locallyFinite_refinement α s ho hu := by
@@ -129,7 +128,6 @@ theorem ClosedEmbedding.paracompactSpace [ParacompactSpace Y] {e : X → Y} (he 
       hVf.preimage_continuous he.continuous, fun a ↦ ⟨a, preimage_mono (hVU a)⟩⟩
     simpa only [range_subset_iff, mem_unionᵢ, unionᵢ_eq_univ_iff] using heV
 
--- porting note: new lemma
 theorem Homeomorph.paracompactSpace_iff (e : X ≃ₜ Y) : ParacompactSpace X ↔ ParacompactSpace Y :=
   ⟨fun _ ↦ e.symm.closedEmbedding.paracompactSpace, fun _ ↦ e.closedEmbedding.paracompactSpace⟩
 
