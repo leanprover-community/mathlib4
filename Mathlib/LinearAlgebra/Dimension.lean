@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johannes Hölzl, Sander Dahmen, Scott Morrison
 
 ! This file was ported from Lean 3 source module linear_algebra.dimension
-! leanprover-community/mathlib commit b5b5dd5a47b5744260e2c9185013075ce9dadccd
+! leanprover-community/mathlib commit 47a5f8186becdbc826190ced4312f8199f9db6a5
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -919,7 +919,7 @@ variable (R)
 
 @[simp]
 theorem rank_self : Module.rank R R = 1 := by
-  rw [← Cardinal.lift_inj, ← (Basis.singleton PUnit R).mk_eq_rank, Cardinal.mk_pUnit]
+  rw [← Cardinal.lift_inj, ← (Basis.singleton PUnit R).mk_eq_rank, Cardinal.mk_punit]
 #align rank_self rank_self
 
 end StrongRankCondition
@@ -1364,12 +1364,35 @@ theorem rank_comp_le_left (g : V →ₗ[K] V') (f : V' →ₗ[K] V'') : rank (f.
   exact LinearMap.map_le_range
 #align linear_map.rank_comp_le_left LinearMap.rank_comp_le_left
 
+set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
+theorem lift_rank_comp_le_right (g : V →ₗ[K] V') (f : V' →ₗ[K] V'') :
+    Cardinal.lift.{v'} (rank (f.comp g)) ≤ Cardinal.lift.{v''} (rank g) := by
+  rw [rank, rank, LinearMap.range_comp]; exact lift_rank_map_le _ _
+#align linear_map.lift_rank_comp_le_right LinearMap.lift_rank_comp_le_right
+
+set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
+/-- The rank of the composition of two maps is less than the minimum of their ranks. -/
+theorem lift_rank_comp_le (g : V →ₗ[K] V') (f : V' →ₗ[K] V'') :
+    Cardinal.lift.{v'} (rank (f.comp g)) ≤
+      min (Cardinal.lift.{v'} (rank f)) (Cardinal.lift.{v''} (rank g)) :=
+  le_min (Cardinal.lift_le.mpr <| rank_comp_le_left _ _) (lift_rank_comp_le_right _ _)
+#align linear_map.lift_rank_comp_le LinearMap.lift_rank_comp_le
+
 variable [AddCommGroup V'₁] [Module K V'₁]
 
 set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 theorem rank_comp_le_right (g : V →ₗ[K] V') (f : V' →ₗ[K] V'₁) : rank (f.comp g) ≤ rank g := by
-  rw [rank, rank, LinearMap.range_comp]; exact rank_map_le _ _
+  simpa only [Cardinal.lift_id] using lift_rank_comp_le_right g f
 #align linear_map.rank_comp_le_right LinearMap.rank_comp_le_right
+
+set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
+/-- The rank of the composition of two maps is less than the minimum of their ranks.
+
+See `lift_rank_comp_le` for the universe-polymorphic version. -/
+theorem rank_comp_le (g : V →ₗ[K] V') (f : V' →ₗ[K] V'₁) :
+    rank (f.comp g) ≤ min (rank f) (rank g) := by
+  simpa only [Cardinal.lift_id] using lift_rank_comp_le g f
+#align linear_map.rank_comp_le LinearMap.rank_comp_le
 
 end Ring
 
