@@ -111,7 +111,7 @@ theorem factors_zero [HasZeroMorphisms C] {X Y : C} {P : Subobject Y} : P.Factor
 theorem factors_of_le {Y Z : C} {P Q : Subobject Y} (f : Z ⟶ Y) (h : P ≤ Q) :
     P.Factors f → Q.Factors f := by
   simp only [factors_iff]
-  exact fun ⟨u, hu⟩ => ⟨u ≫ ofLe _ _ h, by simp [← hu]⟩
+  exact fun ⟨u, hu⟩ => ⟨u ≫ ofLE _ _ h, by simp [← hu]⟩
 #align category_theory.subobject.factors_of_le CategoryTheory.Subobject.factors_of_le
 
 /-- `P.factorThru f h` provides a factorisation of `f : X ⟶ Y` through some `P : Subobject Y`,
@@ -173,7 +173,7 @@ theorem factorThru_zero [HasZeroMorphisms C] {X Y : C} {P : Subobject Y}
 -- `rw factorThru_ofLe h`, obtaining a subgoal `P.Factors f`.
 -- (While the reverse direction looks plausible as a simp lemma, it seems to be unproductive.)
 theorem factorThru_ofLe {Y Z : C} {P Q : Subobject Y} {f : Z ⟶ Y} (h : P ≤ Q) (w : P.Factors f) :
-    Q.factorThru f (factors_of_le f h w) = P.factorThru f w ≫ ofLe P Q h := by
+    Q.factorThru f (factors_of_le f h w) = P.factorThru f w ≫ ofLE P Q h := by
   ext
   simp
 #align category_theory.subobject.factor_thru_of_le CategoryTheory.Subobject.factorThru_ofLe
