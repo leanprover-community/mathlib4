@@ -193,11 +193,11 @@ set_option linter.uppercaseLean3 false in
 /-- recF is insensitive to the representation -/
 theorem recF_eq_of_Wequiv {α : Type u} (u : F α → α) (x y : q.P.W) :
     Wequiv x y → recF u x = recF u y := by
-  cases' x with a f; cases' y with b g
-  intro h; induction h
-  case ind a f f' h ih => simp only [recF_eq', PFunctor.map_eq, Function.comp, ih]
+  intro h
+  induction h
+  case ind a f f' _ ih => simp only [recF_eq', PFunctor.map_eq, Function.comp, ih]
   case abs a f a' f' h => simp only [recF_eq', abs_map, h]
-  case trans x y z e₁ e₂ ih₁ ih₂ => exact Eq.trans ih₁ ih₂
+  case trans x y z _ _ ih₁ ih₂ => exact Eq.trans ih₁ ih₂
 set_option linter.uppercaseLean3 false in
 #align qpf.recF_eq_of_Wequiv Qpf.recF_eq_of_Wequiv
 
@@ -216,11 +216,11 @@ set_option linter.uppercaseLean3 false in
 #align qpf.Wequiv.refl Qpf.Wequiv.refl
 
 theorem Wequiv.symm (x y : q.P.W) : Wequiv x y → Wequiv y x := by
-  cases' x with a f; cases' y with b g
-  intro h; induction h
-  case ind a f f' h ih => exact Wequiv.ind _ _ _ ih
+  intro h
+  induction h
+  case ind a f f' _ ih => exact Wequiv.ind _ _ _ ih
   case abs a f a' f' h => exact Wequiv.abs _ _ _ _ h.symm
-  case trans x y z e₁ e₂ ih₁ ih₂ => exact Qpf.Wequiv.trans _ _ _ ih₂ ih₁
+  case trans x y z _ _ ih₁ ih₂ => exact Qpf.Wequiv.trans _ _ _ ih₂ ih₁
 set_option linter.uppercaseLean3 false in
 #align qpf.Wequiv.symm Qpf.Wequiv.symm
 
