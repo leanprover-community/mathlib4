@@ -214,9 +214,13 @@ theorem row_apply (v : n → α) (i j) : row v i j = v j :=
 #align matrix.row_apply Matrix.row_apply
 
 instance inhabited [Inhabited α] : Inhabited (Matrix m n α) :=
+  -- Porting note: this instance was called `Pi.inhabited` in lean3-core, which is much
+  -- nicer than the name `instInhabitedForAll_1` it got in lean4-core...
   instInhabitedForAll_1 _
--- Porting note: this instance was called `Pi.inhabited` in lean3-core, which is much
--- nicer than the name `instInhabitedForAll_1` it got in lean4-core...
+
+-- porting note: new, Lean3 found this automatically
+instance decidableEq [DecidableEq α] [Fintype m] [Fintype n] : DecidableEq (Matrix m n α) :=
+  Fintype.decidablePiFintype
 
 instance add [Add α] : Add (Matrix m n α) :=
   Pi.instAdd
