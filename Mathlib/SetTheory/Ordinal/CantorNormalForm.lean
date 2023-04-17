@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 
 ! This file was ported from Lean 3 source module set_theory.ordinal.cantor_normal_form
-! leanprover-community/mathlib commit f1e061e3caef3022f0daa99d670ecf2c30e0b5c6
+! leanprover-community/mathlib commit 991ff3b5269848f6dd942ae8e9dd3c946035dc8b
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
