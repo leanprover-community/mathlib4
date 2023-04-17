@@ -37,8 +37,8 @@ already appears in the input.
 
 This file provide notation `!![a, b; c, d]` for matrices, which corresponds to
 `Matrix.of ![![a, b], ![c, d]]`.
-Note that in lean 4 the pretty-printer will not show `!!` notation, instead showing the version
-with `of ![![...]]`.
+TODO: until we implement a `Lean.PrettyPrinter.Unexpander` for `Matrix.of`, the pretty-printer will
+not show `!!` notation, instead showing the version with `of ![![...]]`.
 
 ## Examples
 
@@ -80,8 +80,6 @@ open Lean Elab Term Macro TSyntax
 syntax (name := matrixNotation) "!![" sepBy1(term,+,?, ";", "; ", allowTrailingSep) "]" : term
 syntax (name := matrixNotationRx0) "!![" ";"* "]" : term
 syntax (name := matrixNotation0xC) "!![" ","+ "]" : term
-
-#check mkNullNode
 
 macro_rules
   | `(!![$[$[$rows],*];*]) => do
