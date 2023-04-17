@@ -556,53 +556,20 @@ Warning: in general the right and left uniformities do not coincide and so one d
 `UniformAddGroup` structure. Two important special cases where they _do_ coincide are for
 commutative additive groups (see `comm_topologicalAddGroup_is_uniform`) and for compact
 additive groups (see `topologicalAddGroup_is_uniform_of_compactSpace`)."]
-def TopologicalGroup.toUniformSpace : UniformSpace G
-    where
+def TopologicalGroup.toUniformSpace : UniformSpace G where
   uniformity := comap (fun p : G × G => p.2 / p.1) (𝓝 1)
-  refl := by
-    refine' map_le_iff_le_comap.1 (le_trans _ (pure_le_nhds 1));
-      simp (config := { contextual := true }) [Set.subset_def]
+  refl :=  (Tendsto.mono_right (by simp) (pure_le_nhds _)).le_comap
   symm :=
-    by
-    suffices
-      Tendsto (fun p : G × G => (p.2 / p.1)⁻¹) (comap (fun p : G × G => p.2 / p.1) (𝓝 1)) (𝓝 1⁻¹)
-      by simpa [tendsto_comap_iff]
-    exact tendsto_id.inv.comp tendsto_comap
-  comp := by
-    intro D H
-    rw [mem_lift'_sets]
-    · rcases H with ⟨U, U_nhds, U_sub⟩
-      rcases exists_nhds_one_split U_nhds with ⟨V, ⟨V_nhds, V_sum⟩⟩
-      exists (fun p : G × G => p.2 / p.1) ⁻¹' V
-      have H :
-        (fun p : G × G => p.2 / p.1) ⁻¹' V ∈ comap (fun p : G × G => p.2 / p.1) (𝓝 (1 : G)) := by
-        exists V, V_nhds
-      exists H
-      have comp_rel_sub :
-        compRel ((fun p : G × G => p.2 / p.1) ⁻¹' V) ((fun p => p.2 / p.1) ⁻¹' V) ⊆
-          (fun p : G × G => p.2 / p.1) ⁻¹' U :=
-        by
-        intro p p_comp_rel
-        rcases p_comp_rel with ⟨z, ⟨Hz1, Hz2⟩⟩
-        simpa using V_sum _ Hz2 _ Hz1
-      exact Set.Subset.trans comp_rel_sub U_sub
-    · exact monotone_id.compRel monotone_id
-  isOpen_uniformity := by
-    intro S
-    let S' x := { p : G × G | p.1 = x → p.2 ∈ S }
-    show IsOpen S ↔ ∀ x : G, x ∈ S → S' x ∈ comap (fun p : G × G => p.2 / p.1) (𝓝 (1 : G))
-    rw [isOpen_iff_mem_nhds]
-    refine' forall₂_congr fun a ha => _
-    rw [← nhds_translation_div, mem_comap, mem_comap]
-    refine exists_congr fun t => (and_congr_right fun _ => ?_)
-    -- Porting note: was
-    --refine' exists₂_congr fun t ht => _
-    show (fun y : G => y / a) ⁻¹' t ⊆ S ↔ (fun p : G × G => p.snd / p.fst) ⁻¹' t ⊆ S' a
-    constructor
-    · rintro h ⟨x, y⟩ hx rfl
-      exact h hx
-    · rintro h x hx
-      exact @h (a, x) hx rfl
+    have : Tendsto (fun p : G × G ↦ (p.2 / p.1)⁻¹) (comap (fun p : G × G ↦ p.2 / p.1) (𝓝 1))
+      (𝓝 1⁻¹) := tendsto_id.inv.comp tendsto_comap
+    by simpa [tendsto_comap_iff]
+  comp := Tendsto.le_comap <| fun U H ↦ by
+    rcases exists_nhds_one_split H with ⟨V, V_nhds, V_mul⟩
+    refine mem_map.2 (mem_of_superset (mem_lift' <| preimage_mem_comap V_nhds) ?_)
+    rintro ⟨x, y⟩ ⟨z, hz₁, hz₂⟩
+    simpa using V_mul _ hz₂ _ hz₁
+  isOpen_uniformity S := by
+    simp only [isOpen_iff_mem_nhds, ← mem_comap_prod_mk, comap_comap, (· ∘ ·), nhds_translation_div]
 #align topological_group.to_uniform_space TopologicalGroup.toUniformSpace
 #align topological_add_group.to_uniform_space TopologicalAddGroup.toUniformSpace
 
