@@ -8,7 +8,7 @@ Authors: Yury G. Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.NormedSpace.Basic
+import Mathlib.Analysis.NormedSpace.Basic
 
 /-!
 # Extended norm
@@ -126,8 +126,7 @@ theorem map_sub_le (x y : V) : e (x - y) ≤ e x + e y :=
     
 #align enorm.map_sub_le Enorm.map_sub_le
 
-instance : PartialOrder (Enorm 𝕜 V)
-    where
+instance : PartialOrder (Enorm 𝕜 V) where
   le e₁ e₂ := ∀ x, e₁ x ≤ e₂ x
   le_refl e x := le_rfl
   le_trans e₁ e₂ e₃ h₁₂ h₂₃ x := le_trans (h₁₂ x) (h₂₃ x)
@@ -137,12 +136,10 @@ instance : PartialOrder (Enorm 𝕜 V)
 noncomputable instance : Top (Enorm 𝕜 V) :=
   ⟨{  toFun := fun x => if x = 0 then 0 else ⊤
       eq_zero' := fun x => by split_ifs <;> simp [*]
-      map_add_le' := fun x y =>
-        by
+      map_add_le' := fun x y => by
         split_ifs with hxy hx hy hy hx hy hy <;> try simp [*]
         simpa [hx, hy] using hxy
-      map_smul_le' := fun c x =>
-        by
+      map_smul_le' := fun c x => by
         split_ifs with hcx hx hx <;> simp only [smul_eq_zero, not_or] at hcx
         · simp only [MulZeroClass.mul_zero, le_refl]
         · have : c = 0 := by tauto
@@ -157,8 +154,7 @@ theorem top_map {x : V} (hx : x ≠ 0) : (⊤ : Enorm 𝕜 V) x = ⊤ :=
   if_neg hx
 #align enorm.top_map Enorm.top_map
 
-noncomputable instance : OrderTop (Enorm 𝕜 V)
-    where
+noncomputable instance : OrderTop (Enorm 𝕜 V) where
   top := ⊤
   le_top e x := if h : x = 0 then by simp [h] else by simp [top_map h]
 
@@ -202,8 +198,7 @@ def emetricSpace : EMetricSpace V where
 #align enorm.emetric_space Enorm.emetricSpace
 
 /-- The subspace of vectors with finite enorm. -/
-def finiteSubspace : Subspace 𝕜 V
-    where
+def finiteSubspace : Subspace 𝕜 V where
   carrier := { x | e x < ⊤ }
   zero_mem' := by simp
   add_mem' x y hx hy := lt_of_le_of_lt (e.map_add_le x y) (ENNReal.add_lt_top.2 ⟨hx, hy⟩)
@@ -216,8 +211,7 @@ def finiteSubspace : Subspace 𝕜 V
 
 /-- Metric space structure on `e.finite_subspace`. We use `emetric_space.to_metric_space`
 to ensure that this definition agrees with `e.emetric_space`. -/
-instance : MetricSpace e.finiteSubspace :=
-  by
+instance : MetricSpace e.finiteSubspace := by
   letI := e.emetric_space
   refine' EMetricSpace.toMetricSpace fun x y => _
   change e (x - y) ≠ ⊤

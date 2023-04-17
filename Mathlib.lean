@@ -324,6 +324,7 @@ import Mathlib.Analysis.Normed.Order.Lattice
 import Mathlib.Analysis.Normed.Order.UpperLower
 import Mathlib.Analysis.NormedSpace.Basic
 import Mathlib.Analysis.NormedSpace.ContinuousLinearMap
+import Mathlib.Analysis.NormedSpace.Enorm
 import Mathlib.Analysis.NormedSpace.Extr
 import Mathlib.Analysis.NormedSpace.IndicatorFunction
 import Mathlib.Analysis.NormedSpace.Int
