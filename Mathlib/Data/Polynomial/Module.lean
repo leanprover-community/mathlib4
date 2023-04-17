@@ -15,8 +15,8 @@ import Mathlib.RingTheory.FiniteType
 
 In this file, we define the polynomial module for an `R`-module `M`, i.e. the `R[X]`-module `M[X]`.
 
-This is defined as an type alias `polynomial_module R M := ℕ →₀ M`, since there might be different
-module structures on `ℕ →₀ M` of interest. See the docstring of `polynomial_module` for details.
+This is defined as an type alias `PolynomialModule R M := ℕ →₀ M`, since there might be different
+module structures on `ℕ →₀ M` of interest. See the docstring of `PolynomialModule` for details.
 
 -/
 
@@ -35,17 +35,17 @@ open Polynomial BigOperators
 /-- The `R[X]`-module `M[X]` for an `R`-module `M`.
 This is isomorphic (as an `R`-module) to `M[X]` when `M` is a ring.
 
-We require all the module instances `module S (polynomial_module R M)` to factor through `R` except
-`module R[X] (polynomial_module R M)`.
+We require all the module instances `Module S (PolynomialModule R M)` to factor through `R` except
+`Module R[X] (PolynomialModule R M)`.
 In this constraint, we have the following instances for example :
-- `R` acts on `polynomial_module R R[X]`
-- `R[X]` acts on `polynomial_module R R[X]` as `R[Y]` acting on `R[X][Y]`
-- `R` acts on `polynomial_module R[X] R[X]`
-- `R[X]` acts on `polynomial_module R[X] R[X]` as `R[X]` acting on `R[X][Y]`
-- `R[X][X]` acts on `polynomial_module R[X] R[X]` as `R[X][Y]` acting on itself
+- `R` acts on `PolynomialModule R R[X]`
+- `R[X]` acts on `PolynomialModule R R[X]` as `R[Y]` acting on `R[X][Y]`
+- `R` acts on `PolynomialModule R[X] R[X]`
+- `R[X]` acts on `PolynomialModule R[X] R[X]` as `R[X]` acting on `R[X][Y]`
+- `R[X][X]` acts on `PolynomialModule R[X] R[X]` as `R[X][Y]` acting on itself
 
 This is also the reason why `R` is included in the alias, or else there will be two different
-instances of `module R[X] (polynomial_module R[X])`.
+instances of `Module R[X] (PolynomialModule R[X])`.
 
 See https://leanprover.zulipchat.com/#narrow/stream/144837-PR-reviews/topic/.2315065.20polynomial.20modules
 for the full discussion.
@@ -71,7 +71,7 @@ variable {S : Type _} [CommSemiring S] [Algebra S R] [Module S M] [IsScalarTower
 
 namespace PolynomialModule
 
-/-- This is required to have the `is_scalar_tower S R M` instance to avoid diamonds. -/
+/-- This is required to have the `IsScalarTower S R M` instance to avoid diamonds. -/
 --@[nolint unused_arguments]
 -- porting note: commenting out nolint unused_arguments
 noncomputable instance : Module S (PolynomialModule R M) :=
@@ -89,7 +89,7 @@ theorem zero_apply (i : ℕ) : (0 : PolynomialModule R M) i = 0 :=
 theorem add_apply (g₁ g₂ : PolynomialModule R M) (a : ℕ) : (g₁ + g₂) a = g₁ a + g₂ a :=
   Finsupp.add_apply g₁ g₂ a
 
-/-- The monomial `m * x ^ i`. This is defeq to `finsupp.single_add_hom`, and is redefined here
+/-- The monomial `m * x ^ i`. This is defeq to `Finsupp.singleAddHom`, and is redefined here
 so that it has the desired type signature.  -/
 noncomputable def single (i : ℕ) : M →+ PolynomialModule R M :=
   Finsupp.singleAddHom i
@@ -99,7 +99,7 @@ theorem single_apply (i : ℕ) (m : M) (n : ℕ) : single R i m n = ite (i = n) 
   Finsupp.single_apply
 #align polynomial_module.single_apply PolynomialModule.single_apply
 
-/-- `polynomial_module.single` as a linear map. -/
+/-- `PolynomialModule.single` as a linear map. -/
 noncomputable def lsingle (i : ℕ) : M →ₗ[R] PolynomialModule R M :=
   Finsupp.lsingle i
 #align polynomial_module.lsingle PolynomialModule.lsingle
@@ -206,7 +206,7 @@ theorem smul_apply (f : R[X]) (g : PolynomialModule R M) (n : ℕ) :
 #align polynomial_module.smul_apply PolynomialModule.smul_apply
 
 
-/-- `polynomial_module R R` is isomorphic to `R[X]` as an `R[X]` module. -/
+/-- `PolynomialModule R R` is isomorphic to `R[X]` as an `R[X]` module. -/
 noncomputable def equivPolynomialSelf : PolynomialModule R R ≃ₗ[R[X]] R[X] :=
   { (Polynomial.toFinsuppIso R).symm with
     map_smul' := fun r x => by
@@ -244,7 +244,7 @@ noncomputable def equivPolynomialSelf : PolynomialModule R R ≃ₗ[R[X]] R[X] :
 #align polynomial_module.equiv_polynomial_self PolynomialModule.equivPolynomialSelf
 
 set_option synthInstance.etaExperiment true in
-/-- `polynomial_module R S` is isomorphic to `S[X]` as an `R` module. -/
+/-- `PolynomialModule R S` is isomorphic to `S[X]` as an `R` module. -/
 noncomputable def equivPolynomial {S : Type _} [CommRing S] [Algebra R S] :
     PolynomialModule R S ≃ₗ[R] S[X] :=
   { (Polynomial.toFinsuppIso S).symm with map_smul' := fun _ _ => rfl }
@@ -281,7 +281,7 @@ theorem map_smul (f : M →ₗ[R] M') (p : R[X]) (q : PolynomialModule R M) :
 
 -- porting note: it was originally @[simps (config := lemmasOnly)]
 
-/-- Evaluate a polynomial `p : polynomial_module R M` at `r : R`. -/
+/-- Evaluate a polynomial `p : PolynomialModule R M` at `r : R`. -/
 @[simps!]
 def eval (r : R) : PolynomialModule R M →ₗ[R] M where
   toFun p := p.sum fun i m => r ^ i • m
