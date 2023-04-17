@@ -93,8 +93,6 @@ section
 --Porting note: was parameter in Lean3
 variable {a : ℕ} (a1 : 1 < a)
 
---include a1
-
 private def d (_a1 : 1 < a) :=
   a * a - 1
 
@@ -169,8 +167,6 @@ def yz (n : ℕ) : ℤ :=
 #align pell.yz Pell.yz
 
 section
-
---omit a1
 
 /-- The element `a` such that `d = a ^ 2 - 1`, considered as an integer.-/
 def az (a : ℕ) : ℤ :=
@@ -573,8 +569,6 @@ theorem yn_modEq_two : ∀ n, yn a1 n ≡ n [MOD 2]
 #align pell.yn_modeq_two Pell.yn_modEq_two
 
 section
-
---omit a1
 
 theorem x_sub_y_dvd_pow_lem (y2 y1 y0 yn1 yn0 xn1 xn0 ay a2 : ℤ) :
     (a2 * yn1 - yn0) * ay + y2 - (a2 * xn1 - xn0) =
