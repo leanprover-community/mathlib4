@@ -451,7 +451,7 @@ variable (k)
 
 /-- The map `v ↦ v +ᵥ b` as an affine equivalence between a module `V` and an affine space `P` with
 tangent space `V`. -/
-@[simps! linear apply]
+@[simps! linear apply symmApply]
 def vaddConst (b : P₁) : V₁ ≃ᵃ[k] P₁ where
   toEquiv := Equiv.vaddConst b
   linear := LinearEquiv.refl _ _
