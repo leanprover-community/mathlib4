@@ -151,9 +151,9 @@ def mkDir (path : FilePath) : IO Unit := do
 Given a path to a Lean file, concatenates the paths to its build files.
 Each build file also has a `Bool` indicating whether that file is required for caching to proceed.
 -/
-def mkBuildPaths (path : FilePath) : IO $ List (FilePath × Bool) := do
+def mkBuildPaths (path : FilePath) : IO $ Array (FilePath × Bool) := do
   let packageDir ← getPackageDir path
-  return [
+  return #[
     (packageDir / LIBDIR / path.withExtension "olean", true),
     (packageDir / LIBDIR / path.withExtension "ilean", true),
     (packageDir / LIBDIR / path.withExtension "trace", true),
@@ -162,7 +162,7 @@ def mkBuildPaths (path : FilePath) : IO $ List (FilePath × Bool) := do
     (packageDir / LIBDIR / path.withExtension "extra", false)]
 
 /-- Check that all required build files exist. -/
-def allExist (paths : List (FilePath × Bool)) : IO Bool := do
+def allExist (paths : Array (FilePath × Bool)) : IO Bool := do
   for (path, required) in paths do
     if required && !(← path.pathExists) then return false
   pure true
