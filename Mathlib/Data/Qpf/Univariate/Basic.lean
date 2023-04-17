@@ -165,17 +165,20 @@ of trees.
 /-- does recursion on `q.P.W` using `g : F α → α` rather than `g : P α → α` -/
 def recF {α : Type _} (g : F α → α) : q.P.W → α
   | ⟨a, f⟩ => g (abs ⟨a, fun x => recF g (f x)⟩)
+set_option linter.uppercaseLean3 false in
 #align qpf.recF Qpf.recF
 
 theorem recF_eq {α : Type _} (g : F α → α) (x : q.P.W) :
     recF g x = g (abs (recF g <$> x.dest)) := by
   cases x
   rfl
+set_option linter.uppercaseLean3 false in
 #align qpf.recF_eq Qpf.recF_eq
 
 theorem recF_eq' {α : Type _} (g : F α → α) (a : q.P.A) (f : q.P.B a → q.P.W) :
     recF g ⟨a, f⟩ = g (abs (recF g <$> ⟨a, f⟩)) :=
   rfl
+set_option linter.uppercaseLean3 false in
 #align qpf.recF_eq' Qpf.recF_eq'
 
 /-- two trees are equivalent if their F-abstractions are -/
@@ -185,6 +188,7 @@ inductive Wequiv : q.P.W → q.P.W → Prop
   abs (a : q.P.A) (f : q.P.B a → q.P.W) (a' : q.P.A) (f' : q.P.B a' → q.P.W) :
     abs ⟨a, f⟩ = abs ⟨a', f'⟩ → Wequiv ⟨a, f⟩ ⟨a', f'⟩
   | trans (u v w : q.P.W) : Wequiv u v → Wequiv v w → Wequiv u w
+set_option linter.uppercaseLean3 false in
 #align qpf.Wequiv Qpf.Wequiv
 
 /-- recF is insensitive to the representation -/
@@ -195,6 +199,7 @@ theorem recF_eq_of_Wequiv {α : Type u} (u : F α → α) (x y : q.P.W) :
   case ind a f f' h ih => simp only [recF_eq', PFunctor.map_eq, Function.comp, ih]
   case abs a f a' f' h => simp only [recF_eq', abs_map, h]
   case trans x y z e₁ e₂ ih₁ ih₂ => exact Eq.trans ih₁ ih₂
+set_option linter.uppercaseLean3 false in
 #align qpf.recF_eq_of_Wequiv Qpf.recF_eq_of_Wequiv
 
 theorem Wequiv.abs' (x y : q.P.W) (h : Qpf.abs x.dest = Qpf.abs y.dest) : Wequiv x y := by
@@ -202,11 +207,13 @@ theorem Wequiv.abs' (x y : q.P.W) (h : Qpf.abs x.dest = Qpf.abs y.dest) : Wequiv
   cases y
   apply Wequiv.abs
   apply h
+set_option linter.uppercaseLean3 false in
 #align qpf.Wequiv.abs' Qpf.Wequiv.abs'
 
 theorem Wequiv.refl (x : q.P.W) : Wequiv x x := by
   cases' x with a f
   exact Wequiv.abs a f a f rfl
+set_option linter.uppercaseLean3 false in
 #align qpf.Wequiv.refl Qpf.Wequiv.refl
 
 theorem Wequiv.symm (x y : q.P.W) : Wequiv x y → Wequiv y x := by
@@ -215,11 +222,13 @@ theorem Wequiv.symm (x y : q.P.W) : Wequiv x y → Wequiv y x := by
   case ind a f f' h ih => exact Wequiv.ind _ _ _ ih
   case abs a f a' f' h => exact Wequiv.abs _ _ _ _ h.symm
   case trans x y z e₁ e₂ ih₁ ih₂ => exact Qpf.Wequiv.trans _ _ _ ih₂ ih₁
+set_option linter.uppercaseLean3 false in
 #align qpf.Wequiv.symm Qpf.Wequiv.symm
 
 /-- maps every element of the W type to a canonical representative -/
 def Wrepr : q.P.W → q.P.W :=
   recF (PFunctor.W.mk ∘ repr)
+set_option linter.uppercaseLean3 false in
 #align qpf.Wrepr Qpf.Wrepr
 
 theorem Wrepr_equiv (x : q.P.W) : Wequiv (Wrepr x) x := by
@@ -231,12 +240,14 @@ theorem Wrepr_equiv (x : q.P.W) : Wequiv (Wrepr x) x := by
     rw [this, PFunctor.W.dest_mk, abs_repr]
     rfl
   apply Wequiv.ind; exact ih
+set_option linter.uppercaseLean3 false in
 #align qpf.Wrepr_equiv Qpf.Wrepr_equiv
 
 /-- Define the fixed point as the quotient of trees under the equivalence relation `Wequiv`.
 -/
 def Wsetoid : Setoid q.P.W :=
   ⟨Wequiv, @Wequiv.refl _ _ _, @Wequiv.symm _ _ _, @Wequiv.trans _ _ _⟩
+set_option linter.uppercaseLean3 false in
 #align qpf.W_setoid Qpf.Wsetoid
 
 attribute [local instance] Wsetoid
@@ -255,6 +266,7 @@ def Fix.rec {α : Type _} (g : F α → α) : Fix F → α :=
 /-- access the underlying W-type of a fixpoint data type -/
 def fixToW : Fix F → q.P.W :=
   Quotient.lift Wrepr (recF_eq_of_Wequiv fun x => @PFunctor.W.mk q.P (repr x))
+set_option linter.uppercaseLean3 false in
 #align qpf.fix_to_W Qpf.fixToW
 
 /-- constructor of a type defined by a qpf -/
@@ -362,10 +374,12 @@ open Functor (Liftp Liftr)
 /-- does recursion on `q.P.M` using `g : α → F α` rather than `g : α → P α` -/
 def corecF {α : Type _} (g : α → F α) : α → q.P.M :=
   PFunctor.M.corec fun x => repr (g x)
+set_option linter.uppercaseLean3 false in
 #align qpf.corecF Qpf.corecF
 
 theorem corecF_eq {α : Type _} (g : α → F α) (x : α) :
     PFunctor.M.dest (corecF g x) = corecF g <$> repr (g x) := by rw [corecF, PFunctor.M.dest_corec]
+set_option linter.uppercaseLean3 false in
 #align qpf.corecF_eq Qpf.corecF_eq
 
 -- Equivalence
@@ -376,6 +390,7 @@ def IsPrecongr (r : q.P.M → q.P.M → Prop) : Prop :=
 
 /-- The maximal congruence on q.P.M -/
 def Mcongr : q.P.M → q.P.M → Prop := fun x y => ∃ r, IsPrecongr r ∧ r x y
+set_option linter.uppercaseLean3 false in
 #align qpf.Mcongr Qpf.Mcongr
 
 /-- coinductive type defined as the final coalgebra of a qpf -/
