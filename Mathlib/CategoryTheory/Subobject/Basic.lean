@@ -36,7 +36,7 @@ These are all easy consequences of the earlier development
 of the corresponding functors for `MonoOver`.
 
 The subobjects of `X` form a preorder making them into a category. We have `X ≤ Y` if and only if
-`X.arrow` factors through `Y.arrow`: see `ofLe`/`ofLeMk`/`ofMkLe`/`ofMkLeMk` and
+`X.arrow` factors through `Y.arrow`: see `ofLE`/`ofLEMk`/`ofMkLE`/`ofMkLEMk` and
 `le_of_comm`. Similarly, to show that two subobjects are equal, we can supply an isomorphism between
 the underlying objects that commutes with the arrows (`eq_of_comm`).
 
@@ -312,184 +312,184 @@ theorem mk_eq_mk_of_comm {B A₁ A₂ : C} (f : A₁ ⟶ B) (g : A₂ ⟶ B) [Mo
   eq_mk_of_comm _ ((underlyingIso f).trans i) <| by simp [w]
 #align category_theory.subobject.mk_eq_mk_of_comm CategoryTheory.Subobject.mk_eq_mk_of_comm
 
--- We make `X` and `Y` explicit arguments here so that when `ofLe` appears in goal statements
+-- We make `X` and `Y` explicit arguments here so that when `ofLE` appears in goal statements
 -- it is possible to see its source and target
 -- (`h` will just display as `_`, because it is in `Prop`).
 /-- An inequality of subobjects is witnessed by some morphism between the corresponding objects. -/
-def ofLe {B : C} (X Y : Subobject B) (h : X ≤ Y) : (X : C) ⟶ (Y : C) :=
+def ofLE {B : C} (X Y : Subobject B) (h : X ≤ Y) : (X : C) ⟶ (Y : C) :=
   underlying.map <| h.hom
-#align category_theory.subobject.of_le CategoryTheory.Subobject.ofLe
+#align category_theory.subobject.of_le CategoryTheory.Subobject.ofLE
 
 @[reassoc (attr := simp)]
-theorem ofLe_arrow {B : C} {X Y : Subobject B} (h : X ≤ Y) : ofLe X Y h ≫ Y.arrow = X.arrow :=
+theorem ofLE_arrow {B : C} {X Y : Subobject B} (h : X ≤ Y) : ofLE X Y h ≫ Y.arrow = X.arrow :=
   underlying_arrow _
-#align category_theory.subobject.of_le_arrow CategoryTheory.Subobject.ofLe_arrow
+#align category_theory.subobject.of_le_arrow CategoryTheory.Subobject.ofLE_arrow
 
-instance {B : C} (X Y : Subobject B) (h : X ≤ Y) : Mono (ofLe X Y h) := by
+instance {B : C} (X Y : Subobject B) (h : X ≤ Y) : Mono (ofLE X Y h) := by
   fconstructor
   intro Z f g w
   replace w := w =≫ Y.arrow
   ext
   simpa using w
 
-theorem ofLe_mk_le_mk_of_comm {B A₁ A₂ : C} {f₁ : A₁ ⟶ B} {f₂ : A₂ ⟶ B} [Mono f₁] [Mono f₂]
+theorem ofLE_mk_le_mk_of_comm {B A₁ A₂ : C} {f₁ : A₁ ⟶ B} {f₂ : A₂ ⟶ B} [Mono f₁] [Mono f₂]
     (g : A₁ ⟶ A₂) (w : g ≫ f₂ = f₁) :
-    ofLe _ _ (mk_le_mk_of_comm g w) = (underlyingIso _).hom ≫ g ≫ (underlyingIso _).inv := by
+    ofLE _ _ (mk_le_mk_of_comm g w) = (underlyingIso _).hom ≫ g ≫ (underlyingIso _).inv := by
   ext
   simp [w]
-#align category_theory.subobject.of_le_mk_le_mk_of_comm CategoryTheory.Subobject.ofLe_mk_le_mk_of_comm
+#align category_theory.subobject.of_le_mk_le_mk_of_comm CategoryTheory.Subobject.ofLE_mk_le_mk_of_comm
 
 /-- An inequality of subobjects is witnessed by some morphism between the corresponding objects. -/
-def ofLeMk {B A : C} (X : Subobject B) (f : A ⟶ B) [Mono f] (h : X ≤ mk f) : (X : C) ⟶ A :=
-  ofLe X (mk f) h ≫ (underlyingIso f).hom
-#align category_theory.subobject.of_le_mk CategoryTheory.Subobject.ofLeMk
+def ofLEMk {B A : C} (X : Subobject B) (f : A ⟶ B) [Mono f] (h : X ≤ mk f) : (X : C) ⟶ A :=
+  ofLE X (mk f) h ≫ (underlyingIso f).hom
+#align category_theory.subobject.of_le_mk CategoryTheory.Subobject.ofLEMk
 
 instance {B A : C} (X : Subobject B) (f : A ⟶ B) [Mono f] (h : X ≤ mk f) :
-    Mono (ofLeMk X f h) := by
-  dsimp only [ofLeMk]
+    Mono (ofLEMk X f h) := by
+  dsimp only [ofLEMk]
   infer_instance
 
 @[simp]
-theorem ofLeMk_comp {B A : C} {X : Subobject B} {f : A ⟶ B} [Mono f] (h : X ≤ mk f) :
-    ofLeMk X f h ≫ f = X.arrow := by simp [ofLeMk]
-#align category_theory.subobject.of_le_mk_comp CategoryTheory.Subobject.ofLeMk_comp
+theorem ofLEMk_comp {B A : C} {X : Subobject B} {f : A ⟶ B} [Mono f] (h : X ≤ mk f) :
+    ofLEMk X f h ≫ f = X.arrow := by simp [ofLEMk]
+#align category_theory.subobject.of_le_mk_comp CategoryTheory.Subobject.ofLEMk_comp
 
 /-- An inequality of subobjects is witnessed by some morphism between the corresponding objects. -/
-def ofMkLe {B A : C} (f : A ⟶ B) [Mono f] (X : Subobject B) (h : mk f ≤ X) : A ⟶ (X : C) :=
-  (underlyingIso f).inv ≫ ofLe (mk f) X h
-#align category_theory.subobject.of_mk_le CategoryTheory.Subobject.ofMkLe
+def ofMkLE {B A : C} (f : A ⟶ B) [Mono f] (X : Subobject B) (h : mk f ≤ X) : A ⟶ (X : C) :=
+  (underlyingIso f).inv ≫ ofLE (mk f) X h
+#align category_theory.subobject.of_mk_le CategoryTheory.Subobject.ofMkLE
 
 instance {B A : C} (f : A ⟶ B) [Mono f] (X : Subobject B) (h : mk f ≤ X) :
-    Mono (ofMkLe f X h) := by
-  dsimp only [ofMkLe]
+    Mono (ofMkLE f X h) := by
+  dsimp only [ofMkLE]
   infer_instance
 
 @[simp]
-theorem ofMkLe_arrow {B A : C} {f : A ⟶ B} [Mono f] {X : Subobject B} (h : mk f ≤ X) :
-    ofMkLe f X h ≫ X.arrow = f := by simp [ofMkLe]
-#align category_theory.subobject.of_mk_le_arrow CategoryTheory.Subobject.ofMkLe_arrow
+theorem ofMkLE_arrow {B A : C} {f : A ⟶ B} [Mono f] {X : Subobject B} (h : mk f ≤ X) :
+    ofMkLE f X h ≫ X.arrow = f := by simp [ofMkLE]
+#align category_theory.subobject.of_mk_le_arrow CategoryTheory.Subobject.ofMkLE_arrow
 
 /-- An inequality of subobjects is witnessed by some morphism between the corresponding objects. -/
-def ofMkLeMk {B A₁ A₂ : C} (f : A₁ ⟶ B) (g : A₂ ⟶ B) [Mono f] [Mono g] (h : mk f ≤ mk g) :
+def ofMkLEMk {B A₁ A₂ : C} (f : A₁ ⟶ B) (g : A₂ ⟶ B) [Mono f] [Mono g] (h : mk f ≤ mk g) :
     A₁ ⟶ A₂ :=
-  (underlyingIso f).inv ≫ ofLe (mk f) (mk g) h ≫ (underlyingIso g).hom
-#align category_theory.subobject.of_mk_le_mk CategoryTheory.Subobject.ofMkLeMk
+  (underlyingIso f).inv ≫ ofLE (mk f) (mk g) h ≫ (underlyingIso g).hom
+#align category_theory.subobject.of_mk_le_mk CategoryTheory.Subobject.ofMkLEMk
 
 instance {B A₁ A₂ : C} (f : A₁ ⟶ B) (g : A₂ ⟶ B) [Mono f] [Mono g] (h : mk f ≤ mk g) :
-    Mono (ofMkLeMk f g h) := by
-  dsimp only [ofMkLeMk]
+    Mono (ofMkLEMk f g h) := by
+  dsimp only [ofMkLEMk]
   infer_instance
 
 @[simp]
-theorem ofMkLeMk_comp {B A₁ A₂ : C} {f : A₁ ⟶ B} {g : A₂ ⟶ B} [Mono f] [Mono g] (h : mk f ≤ mk g) :
-    ofMkLeMk f g h ≫ g = f := by simp [ofMkLeMk]
-#align category_theory.subobject.of_mk_le_mk_comp CategoryTheory.Subobject.ofMkLeMk_comp
+theorem ofMkLEMk_comp {B A₁ A₂ : C} {f : A₁ ⟶ B} {g : A₂ ⟶ B} [Mono f] [Mono g] (h : mk f ≤ mk g) :
+    ofMkLEMk f g h ≫ g = f := by simp [ofMkLEMk]
+#align category_theory.subobject.of_mk_le_mk_comp CategoryTheory.Subobject.ofMkLEMk_comp
 
 @[reassoc (attr := simp)]
-theorem ofLe_comp_ofLe {B : C} (X Y Z : Subobject B) (h₁ : X ≤ Y) (h₂ : Y ≤ Z) :
-    ofLe X Y h₁ ≫ ofLe Y Z h₂ = ofLe X Z (h₁.trans h₂) := by
-  simp only [ofLe, ← Functor.map_comp underlying]
+theorem ofLE_comp_ofLE {B : C} (X Y Z : Subobject B) (h₁ : X ≤ Y) (h₂ : Y ≤ Z) :
+    ofLE X Y h₁ ≫ ofLE Y Z h₂ = ofLE X Z (h₁.trans h₂) := by
+  simp only [ofLE, ← Functor.map_comp underlying]
   congr 1
-#align category_theory.subobject.of_le_comp_of_le CategoryTheory.Subobject.ofLe_comp_ofLe
+#align category_theory.subobject.of_le_comp_of_le CategoryTheory.Subobject.ofLE_comp_ofLE
 
 @[reassoc (attr := simp)]
-theorem ofLe_comp_ofLeMk {B A : C} (X Y : Subobject B) (f : A ⟶ B) [Mono f] (h₁ : X ≤ Y)
-    (h₂ : Y ≤ mk f) : ofLe X Y h₁ ≫ ofLeMk Y f h₂ = ofLeMk X f (h₁.trans h₂) := by
-  simp only [ofMkLe, ofLeMk, ofLe, ← Functor.map_comp_assoc underlying]
+theorem ofLE_comp_ofLEMk {B A : C} (X Y : Subobject B) (f : A ⟶ B) [Mono f] (h₁ : X ≤ Y)
+    (h₂ : Y ≤ mk f) : ofLE X Y h₁ ≫ ofLEMk Y f h₂ = ofLEMk X f (h₁.trans h₂) := by
+  simp only [ofMkLE, ofLEMk, ofLE, ← Functor.map_comp_assoc underlying]
   congr 1
-#align category_theory.subobject.of_le_comp_of_le_mk CategoryTheory.Subobject.ofLe_comp_ofLeMk
+#align category_theory.subobject.of_le_comp_of_le_mk CategoryTheory.Subobject.ofLE_comp_ofLEMk
 
 @[reassoc (attr := simp)]
-theorem ofLeMk_comp_ofMkLe {B A : C} (X : Subobject B) (f : A ⟶ B) [Mono f] (Y : Subobject B)
-    (h₁ : X ≤ mk f) (h₂ : mk f ≤ Y) : ofLeMk X f h₁ ≫ ofMkLe f Y h₂ = ofLe X Y (h₁.trans h₂) := by
-  simp only [ofMkLe, ofLeMk, ofLe, ← Functor.map_comp underlying, assoc, Iso.hom_inv_id_assoc]
+theorem ofLEMk_comp_ofMkLE {B A : C} (X : Subobject B) (f : A ⟶ B) [Mono f] (Y : Subobject B)
+    (h₁ : X ≤ mk f) (h₂ : mk f ≤ Y) : ofLEMk X f h₁ ≫ ofMkLE f Y h₂ = ofLE X Y (h₁.trans h₂) := by
+  simp only [ofMkLE, ofLEMk, ofLE, ← Functor.map_comp underlying, assoc, Iso.hom_inv_id_assoc]
   congr 1
-#align category_theory.subobject.of_le_mk_comp_of_mk_le CategoryTheory.Subobject.ofLeMk_comp_ofMkLe
+#align category_theory.subobject.of_le_mk_comp_of_mk_le CategoryTheory.Subobject.ofLEMk_comp_ofMkLE
 
 @[reassoc (attr := simp)]
-theorem ofLeMk_comp_ofMkLeMk {B A₁ A₂ : C} (X : Subobject B) (f : A₁ ⟶ B) [Mono f] (g : A₂ ⟶ B)
+theorem ofLEMk_comp_ofMkLEMk {B A₁ A₂ : C} (X : Subobject B) (f : A₁ ⟶ B) [Mono f] (g : A₂ ⟶ B)
     [Mono g] (h₁ : X ≤ mk f) (h₂ : mk f ≤ mk g) :
-    ofLeMk X f h₁ ≫ ofMkLeMk f g h₂ = ofLeMk X g (h₁.trans h₂) := by
-  simp only [ofMkLe, ofLeMk, ofLe, ofMkLeMk, ← Functor.map_comp_assoc underlying,
+    ofLEMk X f h₁ ≫ ofMkLEMk f g h₂ = ofLEMk X g (h₁.trans h₂) := by
+  simp only [ofMkLE, ofLEMk, ofLE, ofMkLEMk, ← Functor.map_comp_assoc underlying,
     assoc, Iso.hom_inv_id_assoc]
   congr 1
-#align category_theory.subobject.of_le_mk_comp_of_mk_le_mk CategoryTheory.Subobject.ofLeMk_comp_ofMkLeMk
+#align category_theory.subobject.of_le_mk_comp_of_mk_le_mk CategoryTheory.Subobject.ofLEMk_comp_ofMkLEMk
 
 @[reassoc (attr := simp)]
-theorem ofMkLe_comp_ofLe {B A₁ : C} (f : A₁ ⟶ B) [Mono f] (X Y : Subobject B) (h₁ : mk f ≤ X)
-    (h₂ : X ≤ Y) : ofMkLe f X h₁ ≫ ofLe X Y h₂ = ofMkLe f Y (h₁.trans h₂) := by
-  simp only [ofMkLe, ofLeMk, ofLe, ofMkLeMk, ← Functor.map_comp underlying,
+theorem ofMkLE_comp_ofLE {B A₁ : C} (f : A₁ ⟶ B) [Mono f] (X Y : Subobject B) (h₁ : mk f ≤ X)
+    (h₂ : X ≤ Y) : ofMkLE f X h₁ ≫ ofLE X Y h₂ = ofMkLE f Y (h₁.trans h₂) := by
+  simp only [ofMkLE, ofLEMk, ofLE, ofMkLEMk, ← Functor.map_comp underlying,
     assoc]
   congr 1
-#align category_theory.subobject.of_mk_le_comp_of_le CategoryTheory.Subobject.ofMkLe_comp_ofLe
+#align category_theory.subobject.of_mk_le_comp_of_le CategoryTheory.Subobject.ofMkLE_comp_ofLE
 
 @[reassoc (attr := simp)]
-theorem ofMkLe_comp_ofLeMk {B A₁ A₂ : C} (f : A₁ ⟶ B) [Mono f] (X : Subobject B) (g : A₂ ⟶ B)
+theorem ofMkLE_comp_ofLEMk {B A₁ A₂ : C} (f : A₁ ⟶ B) [Mono f] (X : Subobject B) (g : A₂ ⟶ B)
     [Mono g] (h₁ : mk f ≤ X) (h₂ : X ≤ mk g) :
-    ofMkLe f X h₁ ≫ ofLeMk X g h₂ = ofMkLeMk f g (h₁.trans h₂) := by
-  simp only [ofMkLe, ofLeMk, ofLe, ofMkLeMk, ← Functor.map_comp_assoc underlying, assoc]
+    ofMkLE f X h₁ ≫ ofLEMk X g h₂ = ofMkLEMk f g (h₁.trans h₂) := by
+  simp only [ofMkLE, ofLEMk, ofLE, ofMkLEMk, ← Functor.map_comp_assoc underlying, assoc]
   congr 1
-#align category_theory.subobject.of_mk_le_comp_of_le_mk CategoryTheory.Subobject.ofMkLe_comp_ofLeMk
+#align category_theory.subobject.of_mk_le_comp_of_le_mk CategoryTheory.Subobject.ofMkLE_comp_ofLEMk
 
 @[reassoc (attr := simp)]
-theorem ofMkLeMk_comp_ofMkLe {B A₁ A₂ : C} (f : A₁ ⟶ B) [Mono f] (g : A₂ ⟶ B) [Mono g]
+theorem ofMkLEMk_comp_ofMkLE {B A₁ A₂ : C} (f : A₁ ⟶ B) [Mono f] (g : A₂ ⟶ B) [Mono g]
     (X : Subobject B) (h₁ : mk f ≤ mk g) (h₂ : mk g ≤ X) :
-    ofMkLeMk f g h₁ ≫ ofMkLe g X h₂ = ofMkLe f X (h₁.trans h₂) := by
-  simp only [ofMkLe, ofLeMk, ofLe, ofMkLeMk, ← Functor.map_comp underlying,
+    ofMkLEMk f g h₁ ≫ ofMkLE g X h₂ = ofMkLE f X (h₁.trans h₂) := by
+  simp only [ofMkLE, ofLEMk, ofLE, ofMkLEMk, ← Functor.map_comp underlying,
     assoc, Iso.hom_inv_id_assoc]
   congr 1
-#align category_theory.subobject.of_mk_le_mk_comp_of_mk_le CategoryTheory.Subobject.ofMkLeMk_comp_ofMkLe
+#align category_theory.subobject.of_mk_le_mk_comp_of_mk_le CategoryTheory.Subobject.ofMkLEMk_comp_ofMkLE
 
 @[reassoc (attr := simp)]
-theorem ofMkLeMk_comp_ofMkLeMk {B A₁ A₂ A₃ : C} (f : A₁ ⟶ B) [Mono f] (g : A₂ ⟶ B) [Mono g]
+theorem ofMkLEMk_comp_ofMkLEMk {B A₁ A₂ A₃ : C} (f : A₁ ⟶ B) [Mono f] (g : A₂ ⟶ B) [Mono g]
     (h : A₃ ⟶ B) [Mono h] (h₁ : mk f ≤ mk g) (h₂ : mk g ≤ mk h) :
-    ofMkLeMk f g h₁ ≫ ofMkLeMk g h h₂ = ofMkLeMk f h (h₁.trans h₂) := by
-  simp only [ofMkLe, ofLeMk, ofLe, ofMkLeMk, ← Functor.map_comp_assoc underlying, assoc,
+    ofMkLEMk f g h₁ ≫ ofMkLEMk g h h₂ = ofMkLEMk f h (h₁.trans h₂) := by
+  simp only [ofMkLE, ofLEMk, ofLE, ofMkLEMk, ← Functor.map_comp_assoc underlying, assoc,
     Iso.hom_inv_id_assoc]
   congr 1
-#align category_theory.subobject.of_mk_le_mk_comp_of_mk_le_mk CategoryTheory.Subobject.ofMkLeMk_comp_ofMkLeMk
+#align category_theory.subobject.of_mk_le_mk_comp_of_mk_le_mk CategoryTheory.Subobject.ofMkLEMk_comp_ofMkLEMk
 
 @[simp]
-theorem ofLe_refl {B : C} (X : Subobject B) : ofLe X X le_rfl = 𝟙 _ := by
+theorem ofLE_refl {B : C} (X : Subobject B) : ofLE X X le_rfl = 𝟙 _ := by
   apply (cancel_mono X.arrow).mp
   simp
-#align category_theory.subobject.of_le_refl CategoryTheory.Subobject.ofLe_refl
+#align category_theory.subobject.of_le_refl CategoryTheory.Subobject.ofLE_refl
 
 @[simp]
-theorem ofMkLeMk_refl {B A₁ : C} (f : A₁ ⟶ B) [Mono f] : ofMkLeMk f f le_rfl = 𝟙 _ := by
+theorem ofMkLEMk_refl {B A₁ : C} (f : A₁ ⟶ B) [Mono f] : ofMkLEMk f f le_rfl = 𝟙 _ := by
   apply (cancel_mono f).mp
   simp
-#align category_theory.subobject.of_mk_le_mk_refl CategoryTheory.Subobject.ofMkLeMk_refl
+#align category_theory.subobject.of_mk_le_mk_refl CategoryTheory.Subobject.ofMkLEMk_refl
 
--- As with `ofLe`, we have `X` and `Y` as explicit arguments for readability.
+-- As with `ofLE`, we have `X` and `Y` as explicit arguments for readability.
 /-- An equality of subobjects gives an isomorphism of the corresponding objects.
 (One could use `underlying.mapIso (eqToIso h))` here, but this is more readable.) -/
 @[simps]
 def isoOfEq {B : C} (X Y : Subobject B) (h : X = Y) : (X : C) ≅ (Y : C) where
-  hom := ofLe _ _ h.le
-  inv := ofLe _ _ h.ge
+  hom := ofLE _ _ h.le
+  inv := ofLE _ _ h.ge
 #align category_theory.subobject.iso_of_eq CategoryTheory.Subobject.isoOfEq
 
 /-- An equality of subobjects gives an isomorphism of the corresponding objects. -/
 @[simps]
 def isoOfEqMk {B A : C} (X : Subobject B) (f : A ⟶ B) [Mono f] (h : X = mk f) : (X : C) ≅ A where
-  hom := ofLeMk X f h.le
-  inv := ofMkLe f X h.ge
+  hom := ofLEMk X f h.le
+  inv := ofMkLE f X h.ge
 #align category_theory.subobject.iso_of_eq_mk CategoryTheory.Subobject.isoOfEqMk
 
 /-- An equality of subobjects gives an isomorphism of the corresponding objects. -/
 @[simps]
 def isoOfMkEq {B A : C} (f : A ⟶ B) [Mono f] (X : Subobject B) (h : mk f = X) : A ≅ (X : C) where
-  hom := ofMkLe f X h.le
-  inv := ofLeMk X f h.ge
+  hom := ofMkLE f X h.le
+  inv := ofLEMk X f h.ge
 #align category_theory.subobject.iso_of_mk_eq CategoryTheory.Subobject.isoOfMkEq
 
 /-- An equality of subobjects gives an isomorphism of the corresponding objects. -/
 @[simps]
 def isoOfMkEqMk {B A₁ A₂ : C} (f : A₁ ⟶ B) (g : A₂ ⟶ B) [Mono f] [Mono g] (h : mk f = mk g) :
     A₁ ≅ A₂ where
-  hom := ofMkLeMk f g h.le
-  inv := ofMkLeMk g f h.ge
+  hom := ofMkLEMk f g h.le
+  inv := ofMkLEMk g f h.ge
 #align category_theory.subobject.iso_of_mk_eq_mk CategoryTheory.Subobject.isoOfMkEqMk
 
 end Subobject
