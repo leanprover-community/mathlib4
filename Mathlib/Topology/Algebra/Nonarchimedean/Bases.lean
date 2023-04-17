@@ -28,9 +28,7 @@ family as a basis of neighborhoods of zero. In particular the given subgroups be
 A special case of this construction is given by `SubmodulesBasis` where the subgroups are
 sub-modules in a commutative algebra. This important example gives rises to the adic topology
 (studied in its own file).
-
 -/
-
 
 open Set Filter Function Lattice AddGroupWithZeroNhd
 
@@ -40,10 +38,17 @@ open Topology Filter Pointwise
 axioms ensuring there is a topology on `A` which is compatible with the ring structure and
 admits this family as a basis of neighborhoods of zero. -/
 structure RingSubgroupsBasis {A ι : Type _} [Ring A] (B : ι → AddSubgroup A) : Prop where
+  /-- Condition for `B` to be a filter basis on `A`. -/
   inter : ∀ i j, ∃ k, B k ≤ B i ⊓ B j
+  /-- For each set `B` in the submodule basis on `A`, there is another basis element `B'` such
+   that the set-theoretic product `B' * B'` is in `B`. -/
   mul : ∀ i, ∃ j, (B j : Set A) * B j ⊆ B i
-  leftMul : ∀ x : A, ∀ i, ∃ j, (B j : Set A) ⊆ (fun y : A => x * y) ⁻¹' B i
-  rightMul : ∀ x : A, ∀ i, ∃ j, (B j : Set A) ⊆ (fun y : A => y * x) ⁻¹' B i
+  /-- For any element `x : A` and any set `B` in the submodule basis on `A`,
+    there is another basis element `B'` such that `B' * x` is in `B`. -/
+  leftMul : ∀ x : A, ∀ i, ∃ j, (B j : Set A) ⊆ (x * ·) ⁻¹' B i
+  /-- For any element `x : A` and any set `B` in the submodule basis on `A`,
+    there is another basis element `B'` such that `x * B'` is in `B`. -/
+  rightMul : ∀ x : A, ∀ i, ∃ j, (B j : Set A) ⊆ (· * x) ⁻¹' B i
 #align ring_subgroups_basis RingSubgroupsBasis
 
 namespace RingSubgroupsBasis
@@ -212,8 +217,13 @@ set_option synthInstance.etaExperiment true
 some axioms ensuring there is a topology on `A` which is compatible with the ring structure and
 admits this family as a basis of neighborhoods of zero. -/
 structure SubmodulesRingBasis (B : ι → Submodule R A) : Prop where
+  /-- Condition for `B` to be a filter basis on `A`. -/
   inter : ∀ i j, ∃ k, B k ≤ B i ⊓ B j
+  /-- For any element `a : A` and any set `B` in the submodule basis on `A`,
+    there is another basis element `B'` such that `a • B'` is in `B`. -/
   leftMul : ∀ (a : A) (i), ∃ j, a • B j ≤ B i
+  /-- For each set `B` in the submodule basis on `A`, there is another basis element `B'` such
+    that the set-theoretic product `B' * B'` is in `B`. -/
   mul : ∀ i, ∃ j, (B j : Set A) * B j ⊆ B i
 #align submodules_ring_basis SubmodulesRingBasis
 
@@ -244,7 +254,10 @@ variable {M : Type _} [AddCommGroup M] [Module R M]
 some axioms ensuring there is a topology on `M` which is compatible with the module structure and
 admits this family as a basis of neighborhoods of zero. -/
 structure SubmodulesBasis [TopologicalSpace R] (B : ι → Submodule R M) : Prop where
+  /-- Condition for `B` to be a filter basis on `M`. -/
   inter : ∀ i j, ∃ k, B k ≤ B i ⊓ B j
+  /-- For any element `m : M` and any set `B` in the basis, `a • m` lies in `B` for all
+    `a` sufficiently close to `0`. -/
   smul : ∀ (m : M) (i : ι), ∀ᶠ a in 𝓝 (0 : R), a • m ∈ B i
 #align submodules_basis SubmodulesBasis
 
@@ -354,7 +367,7 @@ end SubmodulesBasis
 section
 
 /-
-In this section, we check that, in a `R`-algebra `A` over a ring equipped with a topology,
+In this section, we check that in a `R`-algebra `A` over a ring equipped with a topology,
 a basis of `R`-submodules which is compatible with the topology on `R` is also a submodule basis
 in the sense of `R`-modules (forgetting about the ring structure on `A`) and those two points of
 view definitionaly gives the same topology on `A`.
@@ -376,9 +389,12 @@ end
 on a family of submodules of a `R`-module `M`. This compatibility condition allows to get
 a topological module structure. -/
 structure RingFilterBasis.SubmodulesBasis (BR : RingFilterBasis R) (B : ι → Submodule R M) :
-  Prop where
+    Prop where
+  /-- Condition for `B` to be a filter basis on `M`. -/
   inter : ∀ i j, ∃ k, B k ≤ B i ⊓ B j
-  smul : ∀ (m : M) (i : ι), ∃ U ∈ BR, U ⊆ (fun a => a • m) ⁻¹' B i
+  /-- For any element `m : M` and any set `B i` in the submodule basis on `M`,
+    there is a `U` in the ring filter basis on `R` such that `U ⬝ m` is in `B i`. -/
+  smul : ∀ (m : M) (i : ι), ∃ U ∈ BR, U ⊆ (· • m) ⁻¹' B i
 #align ring_filter_basis.submodules_basis RingFilterBasis.SubmodulesBasis
 
 theorem RingFilterBasis.submodulesBasisIsBasis (BR : RingFilterBasis R) {B : ι → Submodule R M}
