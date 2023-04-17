@@ -214,12 +214,11 @@ instance inhabited : Inhabited (Localization S) := Con.Quotient.inhabited
 #align add_localization.inhabited addLocalization.inhabited
 
 /-- Multiplication in a `Localization` is defined as `⟨a, b⟩ * ⟨c, d⟩ = ⟨a * c, b * d⟩`. -/
--- Porting note: replaced irreducible_def by @[irreducible] to prevent an error with protected
-@[to_additive (attr := irreducible)
-    "Addition in an `addLocalization` is defined as `⟨a, b⟩ + ⟨c, d⟩ = ⟨a + c, b + d⟩`.
+@[to_additive "Addition in an `addLocalization` is defined as `⟨a, b⟩ + ⟨c, d⟩ = ⟨a + c, b + d⟩`.
 Should not be confused with the ring localization counterpart `Localization.add`, which maps
 `⟨a, b⟩ + ⟨c, d⟩` to `⟨d * a + b * c, b * d⟩`."]
-protected def mul : Localization S → Localization S → Localization S := (r S).commMonoid.mul
+protected irreducible_def mul : Localization S → Localization S → Localization S :=
+  (r S).commMonoid.mul
 #align localization.mul Localization.mul
 #align add_localization.add addLocalization.add
 
@@ -227,13 +226,11 @@ protected def mul : Localization S → Localization S → Localization S := (r S
 instance : Mul (Localization S) := ⟨Localization.mul S⟩
 
 /-- The identity element of a `Localization` is defined as `⟨1, 1⟩`. -/
-@[to_additive (attr := irreducible)
-    "The identity element of an `addLocalization` is defined as `⟨0, 0⟩`.
+@[to_additive "The identity element of an `addLocalization` is defined as `⟨0, 0⟩`.
 
 Should not be confused with the ring localization counterpart `Localization.zero`,
 which is defined as `⟨0, 1⟩`."]
--- Porting note: replaced irreducible_def by @[irreducible] to prevent an error with protected
-protected def one : Localization S := (r S).commMonoid.one
+protected irreducible_def one : Localization S := (r S).commMonoid.one
 #align localization.one Localization.one
 #align add_localization.zero addLocalization.zero
 
@@ -245,14 +242,12 @@ instance : One (Localization S) := ⟨Localization.one S⟩
 This is a separate `irreducible` def to ensure the elaborator doesn't waste its time
 trying to unify some huge recursive definition with itself, but unfolded one step less.
 -/
-@[to_additive (attr := irreducible)
-    "Multiplication with a natural in an `AddLocalization` is defined as
+@[to_additive "Multiplication with a natural in an `AddLocalization` is defined as
 `n • ⟨a, b⟩ = ⟨n • a, n • b⟩`.
 
 This is a separate `irreducible` def to ensure the elaborator doesn't waste its time
 trying to unify some huge recursive definition with itself, but unfolded one step less."]
--- Porting note: replaced irreducible_def by @[irreducible] to prevent an error with protected
-protected def npow : ℕ → Localization S → Localization S := (r S).commMonoid.npow
+protected irreducible_def npow : ℕ → Localization S → Localization S := (r S).commMonoid.npow
 #align localization.npow Localization.npow
 #align add_localization.nsmul addLocalization.nsmul
 
@@ -261,18 +256,18 @@ instance : CommMonoid (Localization S) where
   mul := (· * ·)
   one := 1
   mul_assoc x y z := show (x.mul S y).mul S z = x.mul S (y.mul S z) by
-    delta Localization.mul; apply (r S).commMonoid.mul_assoc
+    rw [Localization.mul]; apply (r S).commMonoid.mul_assoc
   mul_comm x y := show x.mul S y = y.mul S x by
-    delta Localization.mul; apply (r S).commMonoid.mul_comm
+    rw [Localization.mul]; apply (r S).commMonoid.mul_comm
   mul_one x := show x.mul S (.one S) = x by
-    delta Localization.mul Localization.one; apply (r S).commMonoid.mul_one
+    rw [Localization.mul, Localization.one]; apply (r S).commMonoid.mul_one
   one_mul x := show (Localization.one S).mul S x = x by
-    delta Localization.mul Localization.one; apply (r S).commMonoid.one_mul
+    rw [Localization.mul, Localization.one]; apply (r S).commMonoid.one_mul
   npow := Localization.npow S
   npow_zero x := show Localization.npow S 0 x = .one S by
-    delta Localization.npow Localization.one; apply (r S).commMonoid.npow_zero
+    rw [Localization.npow, Localization.one]; apply (r S).commMonoid.npow_zero
   npow_succ n x := show .npow S n.succ x = x.mul S (.npow S n x) by
-    delta Localization.npow Localization.mul; apply (r S).commMonoid.npow_succ
+    rw [Localization.npow, Localization.mul]; apply (r S).commMonoid.npow_succ
 
 variable {S}
 
