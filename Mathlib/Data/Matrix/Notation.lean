@@ -81,13 +81,16 @@ syntax (name := matrixNotation) "!![" sepBy1(term,+,?, ";", "; ", allowTrailingS
 syntax (name := matrixNotationRx0) "!![" ";"* "]" : term
 syntax (name := matrixNotation0xC) "!![" ","+ "]" : term
 
+#check mkNullNode
+
 macro_rules
   | `(!![$[$[$rows],*];*]) => do
     let m := rows.size
     let n := rows[0]!.size
     let rowVecs ← rows.mapM fun row : Array Term => do
       unless row.size = n do
-        Macro.throwError "Rows must be of equal length"
+        Macro.throwErrorAt (mkNullNode row)
+          s!"Rows must be of equal length; this row has {row.size} items, the previous rows have {n}"
       `(![$row,*])
     `(@Matrix.of (Fin $(quote m)) (Fin $(quote n)) _ ![$rowVecs,*])
   | `(!![$[;%$semicolons]*]) => do
