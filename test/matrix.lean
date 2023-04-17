@@ -30,10 +30,10 @@ open Lean Meta Elab Command
 
 /-- `dims% e` elaborates `e` as a Matrix and returns its dimensions as a `Nat × Nat`. -/
 elab "dims% " e:term : term => do
-  let elem_t ← mkFreshExprMVar (mkSort levelOne)
+  let elem_t ← mkFreshTypeMVar
   let m ← mkFreshExprMVar (mkConst ``Nat)
   let n ← mkFreshExprMVar (mkConst ``Nat)
-  let matrix_t := mkAppN (mkConst ``Matrix [levelZero, levelZero, levelZero])
+  let matrix_t := mkAppN (← mkConstWithFreshMVarLevels ``Matrix)
                     #[mkApp (mkConst ``Fin) m, mkApp (mkConst ``Fin) n, elem_t]
   let _ ← Term.elabTermEnsuringType e (some matrix_t)
   let m ← instantiateMVars m
@@ -55,7 +55,7 @@ elab_rules (kind := guardExprCmd) : command
     let some mk := Std.Tactic.GuardExpr.equal.toMatchKind eq | throwUnsupportedSyntax
     let r ← Term.elabTerm r none
     let p ← Term.elabTerm p none
-    Elab.Term.synthesizeSyntheticMVarsUsingDefault
+    Term.synthesizeSyntheticMVarsUsingDefault
     let r ← instantiateMVars r
     let p ← instantiateMVars p
     unless ← mk.isEq r p do
@@ -64,7 +64,7 @@ elab_rules (kind := guardExprCmd) : command
 /-- `#guard e` checks that the expression `e` evaluates to `true`. -/
 elab "#guard " e:term : command => liftTermElabM do
   let e ← Term.elabTermEnsuringType e (mkConst ``Bool)
-  Elab.Term.synthesizeSyntheticMVarsUsingDefault
+  Term.synthesizeSyntheticMVarsUsingDefault
   let e ← instantiateMVars e
   if e.hasMVar then
     throwError "expression{indentExpr e}\nhas metavariables"
@@ -86,6 +86,27 @@ end elaborators
 #guard_expr dims% !![1,2;3,4] =ₛ (2, 2)
 
 end dimensions
+
+section safety
+open Lean Meta Elab Command
+
+def mkMatrix (rows : Array (Array Term)) : Term := Unhygienic.run `(!![$[$[$rows],*];*])
+
+def mkColumnVector (elems : Array Term) : Term := Unhygienic.run `(!![$[$elems];*])
+
+-- Check that the `!![$[$[$rows],*];*]` case can deal with empty arrays even though it uses sepBy1
+run_cmd liftTermElabM do
+  let e ← Term.elabTerm (mkMatrix #[]) q(Matrix (Fin 0) (Fin 0) Nat)
+  Term.synthesizeSyntheticMVarsUsingDefault
+  let e ← instantiateMVars e
+  guard <| e == q(!![] : Matrix (Fin 0) (Fin 0) Nat)
+
+  let e ← Term.elabTerm (mkColumnVector #[]) q(Matrix (Fin 0) (Fin 0) Nat)
+  Term.synthesizeSyntheticMVarsUsingDefault
+  let e ← instantiateMVars e
+  guard <| e == q(!![] : Matrix (Fin 0) (Fin 0) Nat)
+
+end safety
 
 #guard !![1;2]       = of ![![1], ![2]]
 #guard !![1,3]       = of ![![1,3]]

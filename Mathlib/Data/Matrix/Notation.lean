@@ -84,7 +84,7 @@ syntax (name := matrixNotation0xC) "!![" ","+ "]" : term
 macro_rules
   | `(!![$[$[$rows],*];*]) => do
     let m := rows.size
-    let n := rows[0]!.size
+    let n := if h : 0 < m then rows[0].size else 0
     let rowVecs ← rows.mapM fun row : Array Term => do
       unless row.size = n do
         Macro.throwErrorAt (mkNullNode row)
