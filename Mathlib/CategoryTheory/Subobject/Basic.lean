@@ -63,7 +63,7 @@ if it looks preferable.)
 ### Relation to pseudoelements
 
 There is a separate development of pseudoelements in `CategoryTheory.Abelian.Pseudoelements`,
-as a quotient (but not by isomorphism) of `Pver X`.
+as a quotient (but not by isomorphism) of `Over X`.
 
 When a morphism `f` has an image, the image represents the same pseudoelement.
 In a category with images `Pseudoelements X` could be constructed as a quotient of `MonoOver X`.
