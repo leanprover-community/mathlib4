@@ -111,7 +111,7 @@ theorem liftp_iff {α : Type u} (p : α → Prop) (x : F α) :
       rfl
     intro i
     apply (f i).property
-  rintro ⟨a, f, h₀, h₁⟩; dsimp at *
+  rintro ⟨a, f, h₀, h₁⟩
   use abs ⟨a, fun i => ⟨f i, h₁ i⟩⟩
   rw [← abs_map, h₀]; rfl
 #align qpf.liftp_iff Qpf.liftp_iff
@@ -149,7 +149,7 @@ theorem liftr_iff {α : Type u} (r : α → α → Prop) (x y : F α) :
     exact (f i).property
   rintro ⟨a, f₀, f₁, xeq, yeq, h⟩
   use abs ⟨a, fun i => ⟨(f₀ i, f₁ i), h i⟩⟩
-  dsimp; constructor
+  constructor
   · rw [xeq, ← abs_map]
     rfl
   rw [yeq, ← abs_map]; rfl
@@ -184,9 +184,8 @@ set_option linter.uppercaseLean3 false in
 /-- two trees are equivalent if their F-abstractions are -/
 inductive Wequiv : q.P.W → q.P.W → Prop
   | ind (a : q.P.A) (f f' : q.P.B a → q.P.W) : (∀ x, Wequiv (f x) (f' x)) → Wequiv ⟨a, f⟩ ⟨a, f'⟩
-  |
-  abs (a : q.P.A) (f : q.P.B a → q.P.W) (a' : q.P.A) (f' : q.P.B a' → q.P.W) :
-    abs ⟨a, f⟩ = abs ⟨a', f'⟩ → Wequiv ⟨a, f⟩ ⟨a', f'⟩
+  | abs (a : q.P.A) (f : q.P.B a → q.P.W) (a' : q.P.A) (f' : q.P.B a' → q.P.W) :
+      abs ⟨a, f⟩ = abs ⟨a', f'⟩ → Wequiv ⟨a, f⟩ ⟨a', f'⟩
   | trans (u v w : q.P.W) : Wequiv u v → Wequiv v w → Wequiv u w
 set_option linter.uppercaseLean3 false in
 #align qpf.Wequiv Qpf.Wequiv
@@ -311,8 +310,8 @@ theorem Fix.ind_aux (a : q.P.A) (f : q.P.B a → q.P.W) :
 #align qpf.fix.ind_aux Qpf.Fix.ind_aux
 
 theorem Fix.ind_rec {α : Type u} (g₁ g₂ : Fix F → α)
-    (h : ∀ x : F (Fix F), g₁ <$> x = g₂ <$> x → g₁ (Fix.mk x) = g₂ (Fix.mk x)) : ∀ x, g₁ x = g₂ x :=
-  by
+    (h : ∀ x : F (Fix F), g₁ <$> x = g₂ <$> x → g₁ (Fix.mk x) = g₂ (Fix.mk x)) :
+    ∀ x, g₁ x = g₂ x := by
   apply Quot.ind
   intro x
   induction' x with a f ih
@@ -333,7 +332,7 @@ theorem Fix.rec_unique {α : Type u} (g : F α → α) (h : Fix F → α)
 
 theorem Fix.mk_dest (x : Fix F) : Fix.mk (Fix.dest x) = x := by
   change (Fix.mk ∘ Fix.dest) x = id x
-  apply Fix.ind_rec
+  apply Fix.ind_rec (mk ∘ dest) id
   intro x; dsimp
   rw [Fix.dest, Fix.rec_eq, id_map, comp_map]
   intro h; rw [h]
@@ -491,7 +490,7 @@ theorem Cofix.bisim (r : Cofix F → Cofix F → Prop)
     (h : ∀ x y, r x y → Liftr r (Cofix.dest x) (Cofix.dest y)) : ∀ x y, r x y → x = y := by
   apply Cofix.bisim_rel
   intro x y rxy
-  rcases(liftr_iff r _ _).mp (h x y rxy) with ⟨a, f₀, f₁, dxeq, dyeq, h'⟩
+  rcases (liftr_iff r _ _).mp (h x y rxy) with ⟨a, f₀, f₁, dxeq, dyeq, h'⟩
   rw [dxeq, dyeq, ← abs_map, ← abs_map, PFunctor.map_eq, PFunctor.map_eq]
   congr 2 with i
   apply Quot.sound
@@ -499,12 +498,8 @@ theorem Cofix.bisim (r : Cofix F → Cofix F → Prop)
 #align qpf.cofix.bisim Qpf.Cofix.bisim
 
 theorem Cofix.bisim' {α : Type _} (Q : α → Prop) (u v : α → Cofix F)
-    (h :
-      ∀ x,
-        Q x →
-          ∃ a f f',
-            Cofix.dest (u x) = abs ⟨a, f⟩ ∧
-              Cofix.dest (v x) = abs ⟨a, f'⟩ ∧ ∀ i, ∃ x', Q x' ∧ f i = u x' ∧ f' i = v x') :
+    (h : ∀ x, Q x → ∃ a f f', Cofix.dest (u x) = abs ⟨a, f⟩ ∧ Cofix.dest (v x) = abs ⟨a, f'⟩ ∧
+      ∀ i, ∃ x', Q x' ∧ f i = u x' ∧ f' i = v x') :
     ∀ x, Q x → u x = v x := fun x Qx =>
   let R := fun w z : Cofix F => ∃ x', Q x' ∧ w = u x' ∧ z = v x'
   Cofix.bisim R
@@ -528,49 +523,47 @@ variable {F₁ : Type u → Type u} [Functor F₁] [q₁ : Qpf F₁]
 
 /-- composition of qpfs gives another qpf  -/
 def comp : Qpf (Functor.Comp F₂ F₁) where
-  p := PFunctor.comp q₂.p q₁.p
-  abs α := by
+  P := PFunctor.comp q₂.P q₁.P
+  abs {α} := by
     dsimp [Functor.Comp]
     intro p
     exact abs ⟨p.1.1, fun x => abs ⟨p.1.2 x, fun y => p.2 ⟨x, y⟩⟩⟩
-  repr α := by
+  repr {α} := by
     dsimp [Functor.Comp]
     intro y
     refine' ⟨⟨(repr y).1, fun u => (repr ((repr y).2 u)).1⟩, _⟩
     dsimp [PFunctor.comp]
     intro x
     exact (repr ((repr y).2 x.1)).snd x.2
-  abs_repr α := by
-    abstract
-      dsimp [Functor.Comp]
-      intro x
-      conv =>
-        rhs
-        rw [← abs_repr x]
-      cases' h : repr x with a f
-      dsimp
-      congr with x
-      cases' h' : repr (f x) with b g
-      dsimp; rw [← h', abs_repr]
-  abs_map α β f := by
-    abstract
-      dsimp [Functor.Comp, PFunctor.comp]
-      intro p
-      cases' p with a g; dsimp
-      cases' a with b h; dsimp
-      symm
-      trans
-      symm
-      apply abs_map
-      congr
-      rw [PFunctor.map_eq]
-      dsimp [Function.comp]
-      simp [abs_map]
-      constructor
-      rfl
-      ext x
-      rw [← abs_map]
-      rfl
+  abs_repr {α} := by
+    dsimp [Functor.Comp]
+    intro x
+    conv =>
+      rhs
+      rw [← abs_repr x]
+    cases' h : repr x with a f
+    dsimp
+    congr with x
+    cases' h' : repr (f x) with b g
+    dsimp; rw [← h', abs_repr]
+  abs_map {α β} f := by
+    dsimp [Functor.Comp, PFunctor.comp]
+    intro p
+    cases' p with a g; dsimp
+    cases' a with b h; dsimp
+    symm
+    trans
+    symm
+    apply abs_map
+    congr
+    rw [PFunctor.map_eq]
+    dsimp [Function.comp]
+    simp [abs_map]
+    constructor
+    rfl
+    ext x
+    rw [← abs_map]
+    rfl
 #align qpf.comp Qpf.comp
 
 end Qpf
@@ -599,8 +592,8 @@ def quotientQpf (FG_abs_repr : ∀ {α} (x : G α), FG_abs (FG_repr x) = x)
   P := q.P
   abs {α} p := FG_abs (abs p)
   repr {α} x := repr (FG_repr x)
-  abs_repr {α} x := by rw [abs_repr, FG_abs_repr]
-  abs_map {α β} f x := by rw [abs_map, FG_abs_map]
+  abs_repr {α} x := by simp only; rw [abs_repr, FG_abs_repr]
+  abs_map {α β} f x := by simp only; rw [abs_map, FG_abs_map]
 #align qpf.quotient_qpf Qpf.quotientQpf
 
 end Qpf
@@ -651,7 +644,7 @@ theorem has_good_supp_iff {α : Type u} (x : F α) :
     exact (mem_supp x u).mp this _ _ h''
   rintro ⟨a, f, xeq, h⟩ p; rw [liftp_iff]; constructor
   · rintro ⟨a', f', xeq', h'⟩ u usuppx
-    rcases(mem_supp x u).mp usuppx a' f' xeq'.symm with ⟨i, _, f'ieq⟩
+    rcases (mem_supp x u).mp usuppx a' f' xeq'.symm with ⟨i, _, f'ieq⟩
     rw [← f'ieq]
     apply h'
   intro h'
