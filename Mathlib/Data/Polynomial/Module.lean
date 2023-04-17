@@ -50,8 +50,7 @@ instances of `Module R[X] (PolynomialModule R[X])`.
 See https://leanprover.zulipchat.com/#narrow/stream/144837-PR-reviews/topic/.2315065.20polynomial.20modules
 for the full discussion.
 -/
--- porting note: commenting out nolint unused_arguments
---@[nolint unused_arguments]
+@[nolint unusedArguments]
 def PolynomialModule (R M : Type _) [CommRing R] [AddCommGroup M] [Module R M] := ℕ →₀ M
 
 #align polynomial_module PolynomialModule
@@ -72,8 +71,7 @@ variable {S : Type _} [CommSemiring S] [Algebra S R] [Module S M] [IsScalarTower
 namespace PolynomialModule
 
 /-- This is required to have the `IsScalarTower S R M` instance to avoid diamonds. -/
---@[nolint unused_arguments]
--- porting note: commenting out nolint unused_arguments
+@[nolint unusedArguments]
 noncomputable instance : Module S (PolynomialModule R M) :=
   Finsupp.module ℕ M
 
