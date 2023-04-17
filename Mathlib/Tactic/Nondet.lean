@@ -32,6 +32,7 @@ with the possible alternatives stored in a monadic lazy list.
 Along with each `a : α` we store the backtrackable state, and ensure that monadic operations
 on alternatives run with the appropriate state.
 -/
+@[nolint unusedArguments]
 unsafe def Nondet (m : Type → Type) [MonadBacktrack σ m] (α : Type) : Type := ListM m (σ × α)
 
 namespace Nondet
