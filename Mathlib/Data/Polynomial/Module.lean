@@ -29,9 +29,6 @@ open Polynomial BigOperators
 
 
 
--- porting note: commenting out include
---include R
-
 /-- The `R[X]`-module `M[X]` for an `R`-module `M`.
 This is isomorphic (as an `R`-module) to `M[X]` when `M` is a ring.
 
@@ -60,9 +57,6 @@ variable (R M : Type _) [CommRing R] [AddCommGroup M] [Module R M] (I : Ideal R)
 --porting note: stated instead of deriving
 noncomputable instance : Inhabited (PolynomialModule R M) := Finsupp.inhabited
 noncomputable instance : AddCommGroup (PolynomialModule R M) := Finsupp.addCommGroup
-
--- porting note: commenting out omit
--- omit R
 
 variable {M}
 
