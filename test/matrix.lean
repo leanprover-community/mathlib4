@@ -7,6 +7,7 @@ import Mathlib.Data.Matrix.Notation
 import Mathlib.GroupTheory.Perm.Fin
 -- import Mathlib.Tactic.NormSwap
 import Qq
+import Std.Tactic.GuardExpr
 
 open Qq
 
@@ -39,22 +40,28 @@ elab "dims% " e:term : term => do
   let n ← instantiateMVars n
   mkAppM ``Prod.mk #[m, n]
 
-/-- `#guard e1 is e2` elaborates `e1` and `e2` and checks they are `BEq`. -/
-elab "#guard " e1:term " is " e2:term : command => liftTermElabM do
-  let ty ← mkFreshExprMVar none
-  let e1 ← Term.elabTerm e1 ty
-  let e2 ← Term.elabTermEnsuringType e2 ty
-  Elab.Term.synthesizeSyntheticMVarsUsingDefault
-  let e1 ← instantiateMVars e1
-  let e2 ← instantiateMVars e2
-  if e1.hasMVar then
-    throwError "expression{indentExpr e1}\nhas metavariables"
-  if e2.hasMVar then
-    throwError "expression{indentExpr e2}\nhas metavariables"
-  unless e1 == e2 do
-    throwError "expression{indentExpr e1}\nis not identically{indentExpr e2}"
+/-- Check equality of two expressions.
+* `#guard_expr e = e'` checks that `e` and `e'` are defeq at reducible transparency.
+* `#guard_expr e =~ e'` checks that `e` and `e'` are defeq at default transparency.
+* `#guard_expr e =ₛ e'` checks that `e` and `e'` are syntactically equal.
+* `#guard_expr e =ₐ e'` checks that `e` and `e'` are alpha-equivalent.
 
-/-- `#guard e` elaborates `e` as a boolean and checks that it evaluates to `true`. -/
+This is similar to the `guard_expr` tactic but also uses default instances and instantiates
+metavariables. -/
+syntax (name := guardExprCmd) "#guard_expr " term:51 Std.Tactic.GuardExpr.equal term : command
+
+elab_rules (kind := guardExprCmd) : command
+  | `(command| #guard_expr $r $eq:equal $p) => liftTermElabM do
+    let some mk := Std.Tactic.GuardExpr.equal.toMatchKind eq | throwUnsupportedSyntax
+    let r ← Term.elabTerm r none
+    let p ← Term.elabTerm p none
+    Elab.Term.synthesizeSyntheticMVarsUsingDefault
+    let r ← instantiateMVars r
+    let p ← instantiateMVars p
+    unless ← mk.isEq r p do
+      throwError "expression{indentExpr r}\nis not {eq} to{indentExpr p}"
+
+/-- `#guard e` checks that the expression `e` evaluates to `true`. -/
 elab "#guard " e:term : command => liftTermElabM do
   let e ← Term.elabTermEnsuringType e (mkConst ``Bool)
   Elab.Term.synthesizeSyntheticMVarsUsingDefault
@@ -68,15 +75,15 @@ elab "#guard " e:term : command => liftTermElabM do
 end elaborators
 
 -- we test equality of expressions here to ensure that we have `2` and not `1.succ` in the type
-#guard dims% !![]        is (0, 0)
-#guard dims% !![;]       is (1, 0)
-#guard dims% !![;;]      is (2, 0)
-#guard dims% !![,]       is (0, 1)
-#guard dims% !![,,]      is (0, 2)
-#guard dims% !![1]       is (1, 1)
-#guard dims% !![1,]      is (1, 1)
-#guard dims% !![1;]      is (1, 1)
-#guard dims% !![1,2;3,4] is (2, 2)
+#guard_expr dims% !![]        =ₛ (0, 0)
+#guard_expr dims% !![;]       =ₛ (1, 0)
+#guard_expr dims% !![;;]      =ₛ (2, 0)
+#guard_expr dims% !![,]       =ₛ (0, 1)
+#guard_expr dims% !![,,]      =ₛ (0, 2)
+#guard_expr dims% !![1]       =ₛ (1, 1)
+#guard_expr dims% !![1,]      =ₛ (1, 1)
+#guard_expr dims% !![1;]      =ₛ (1, 1)
+#guard_expr dims% !![1,2;3,4] =ₛ (2, 2)
 
 end dimensions
 
