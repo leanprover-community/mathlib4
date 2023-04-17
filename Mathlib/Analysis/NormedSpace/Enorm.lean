@@ -13,16 +13,16 @@ import Mathlib.Analysis.NormedSpace.Basic
 /-!
 # Extended norm
 
-In this file we define a structure `enorm 𝕜 V` representing an extended norm (i.e., a norm that can
+In this file we define a structure `Enorm 𝕜 V` representing an extended norm (i.e., a norm that can
 take the value `∞`) on a vector space `V` over a normed field `𝕜`. We do not use `class` for
-an `enorm` because the same space can have more than one extended norm. For example, the space of
+an `Enorm` because the same space can have more than one extended norm. For example, the space of
 measurable functions `f : α → ℝ` has a family of `L_p` extended norms.
 
 We prove some basic inequalities, then define
 
-* `emetric_space` structure on `V` corresponding to `e : enorm 𝕜 V`;
-* the subspace of vectors with finite norm, called `e.finite_subspace`;
-* a `normed_space` structure on this space.
+* `EMetricSpace` structure on `V` corresponding to `e : Enorm 𝕜 V`;
+* the subspace of vectors with finite norm, called `e.finiteSubspace`;
+* a `NormedSpace` structure on this space.
 
 The last definition is an instance because the type involves `e`.
 
@@ -130,7 +130,7 @@ instance partialOrder : PartialOrder (Enorm 𝕜 V) where
   le_trans e₁ e₂ e₃ h₁₂ h₂₃ x := le_trans (h₁₂ x) (h₂₃ x)
   le_antisymm e₁ e₂ h₁₂ h₂₁ := ext fun x => le_antisymm (h₁₂ x) (h₂₁ x)
 
-/-- The `enorm` sending each non-zero vector to infinity. -/
+/-- The `Enorm` sending each non-zero vector to infinity. -/
 noncomputable instance : Top (Enorm 𝕜 V) :=
   ⟨{  toFun := fun x => if x = 0 then 0 else ⊤
       eq_zero' := fun x => by simp only; split_ifs <;> simp [*]
@@ -183,7 +183,7 @@ theorem max_map (e₁ e₂ : Enorm 𝕜 V) (x : V) : (e₁ ⊔ e₂) x = max (e�
   rfl
 #align enorm.max_map Enorm.max_map
 
-/-- Structure of an `emetric_space` defined by an extended norm. -/
+/-- Structure of an `EMetricSpace` defined by an extended norm. -/
 @[reducible]
 def emetricSpace : EMetricSpace V where
   edist x y := e (x - y)
@@ -207,8 +207,8 @@ def finiteSubspace : Subspace 𝕜 V where
       _ < ⊤ := ENNReal.mul_lt_top ENNReal.coe_ne_top hx.ne
 #align enorm.finite_subspace Enorm.finiteSubspace
 
-/-- Metric space structure on `e.finite_subspace`. We use `emetric_space.to_metric_space`
-to ensure that this definition agrees with `e.emetric_space`. -/
+/-- Metric space structure on `e.finiteSubspace`. We use `EMetricSpace.toMetricSpace`
+to ensure that this definition agrees with `e.emetricSpace`. -/
 instance metricSpace : MetricSpace e.finiteSubspace := by
   letI := e.emetricSpace
   refine' EMetricSpace.toMetricSpace fun x y => _
@@ -223,8 +223,8 @@ theorem finite_edist_eq (x y : e.finiteSubspace) : edist x y = e (x - y) :=
   rfl
 #align enorm.finite_edist_eq Enorm.finite_edist_eq
 
-/-- Normed group instance on `e.finite_subspace`. -/
-instance : NormedAddCommGroup e.finiteSubspace :=
+/-- Normed group instance on `e.finiteSubspace`. -/
+instance normedAddCommGroup : NormedAddCommGroup e.finiteSubspace :=
   { e.metricSpace,
     Submodule.addCommGroup _ with
     norm := fun x => (e x).toReal
@@ -234,8 +234,8 @@ theorem finite_norm_eq (x : e.finiteSubspace) : ‖x‖ = (e x).toReal :=
   rfl
 #align enorm.finite_norm_eq Enorm.finite_norm_eq
 
-/-- Normed space instance on `e.finite_subspace`. -/
-instance : NormedSpace 𝕜 e.finiteSubspace where
+/-- Normed space instance on `e.finiteSubspace`. -/
+instance normedSpace : NormedSpace 𝕜 e.finiteSubspace where
   norm_smul_le c x := le_of_eq <| by simp [finite_norm_eq, ENNReal.toReal_mul]
 
 end Enorm
