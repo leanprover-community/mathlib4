@@ -343,12 +343,19 @@ theorem eval_map' (f : M →ₗ[R] M) (q : PolynomialModule R M) (r : R) :
 -- Porting note: Synthesized `RingHomCompTriple (RingHom.id R) (RingHom.id R) (RingHom.id R)`
 --               in a very ugly way.
 /-- `comp p q` is the composition of `p : R[X]` and `q : M[X]` as `q(p(x))`.  -/
-@[simps!]
 noncomputable def comp (p : R[X]) : PolynomialModule R M →ₗ[R] PolynomialModule R M :=
   @LinearMap.comp _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
     (@RingHomInvPair.triples _ _ _ _ _ _ RingHomInvPair.ids)
     ((eval p).restrictScalars R) (map R[X] (lsingle R 0))
 #align polynomial_module.comp PolynomialModule.comp
+
+set_option synthInstance.etaExperiment true in
+/-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
+because it is a composition of multiple projections. -/
+-- Porting note: I am not sure if there is a good way to intialise this as a simp lemma.
+theorem comp_apply (p : R[X]) (α : PolynomialModule R M) :
+  comp p α = (eval p) ((map R[X] (lsingle R 0)) α) := LinearMap.comp_apply _ _ α
+#align polynomial_module.comp_apply PolynomialModule.comp_apply
 
 set_option synthInstance.etaExperiment true in
 theorem comp_single (p : R[X]) (i : ℕ) (m : M) : comp p (single R i m) = p ^ i • single R 0 m := by
@@ -357,18 +364,20 @@ theorem comp_single (p : R[X]) (i : ℕ) (m : M) : comp p (single R i m) = p ^ i
   rfl
 #align polynomial_module.comp_single PolynomialModule.comp_single
 
+set_option synthInstance.etaExperiment true in
 theorem comp_eval (p : R[X]) (q : PolynomialModule R M) (r : R) :
     eval r (comp p q) = eval (p.eval r) q := by
   rw [← LinearMap.comp_apply]
   apply induction_linear q
-  · rw [map_zero, map_zero]
+  · simp_rw [map_zero]
   · intro _ _ e₁ e₂
-    rw [map_add, map_add, e₁, e₂]
+    simp_rw [map_add, e₁, e₂]
   · intro i m
     rw [LinearMap.comp_apply, comp_single, eval_single, eval_smul, eval_single, pow_zero, one_smul,
       Polynomial.eval_pow]
 #align polynomial_module.comp_eval PolynomialModule.comp_eval
 
+set_option synthInstance.etaExperiment true in
 theorem comp_smul (p p' : R[X]) (q : PolynomialModule R M) :
     comp p (p' • q) = p'.comp p • comp p q := by
   rw [comp_apply, map_smul, eval_smul, Polynomial.comp, Polynomial.eval_map, comp_apply]
