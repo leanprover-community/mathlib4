@@ -430,19 +430,20 @@ theorem Cofix.dest_corec {α : Type u} (g : α → F α) (x : α) :
   rw [corecF_eq, abs_map, abs_repr, ← comp_map]; rfl
 #align qpf.cofix.dest_corec Qpf.Cofix.dest_corec
 
-private theorem cofix.bisim_aux (r : Cofix F → Cofix F → Prop) (h' : ∀ x, r x x)
+-- Porting note: Needed to add `(motive := _)` to get `Quot.inductionOn` to work
+private theorem Cofix.bisim_aux (r : Cofix F → Cofix F → Prop) (h' : ∀ x, r x x)
     (h : ∀ x y, r x y → Quot.mk r <$> Cofix.dest x = Quot.mk r <$> Cofix.dest y) :
     ∀ x y, r x y → x = y := by
   intro x
-  apply Quot.inductionOn x
+  apply Quot.inductionOn (motive := _) x
   clear x
   intro x y
-  apply Quot.inductionOn y
+  apply Quot.inductionOn (motive := _) y
   clear y
   intro y rxy
   apply Quot.sound
   let r' x y := r (Quot.mk _ x) (Quot.mk _ y)
-  have : is_precongr r' := by
+  have : IsPrecongr r' := by
     intro a b r'ab
     have h₀ :
       Quot.mk r <$> Quot.mk Mcongr <$> abs (PFunctor.M.dest a) =
@@ -451,14 +452,14 @@ private theorem cofix.bisim_aux (r : Cofix F → Cofix F → Prop) (h' : ∀ x, 
     have h₁ : ∀ u v : q.P.M, Mcongr u v → Quot.mk r' u = Quot.mk r' v := by
       intro u v cuv
       apply Quot.sound
-      dsimp [r']
+      simp only
       rw [Quot.sound cuv]
       apply h'
     let f : Quot r → Quot r' :=
       Quot.lift (Quot.lift (Quot.mk r') h₁)
         (by
-          intro c; apply Quot.inductionOn c; clear c
-          intro c d; apply Quot.inductionOn d; clear d
+          intro c; apply Quot.inductionOn (motive := _) c; clear c
+          intro c d; apply Quot.inductionOn (motive := _) d; clear d
           intro d rcd; apply Quot.sound; apply rcd)
     have : f ∘ Quot.mk r ∘ Quot.mk Mcongr = Quot.mk r' := rfl
     rw [← this, PFunctor.comp_map _ _ f, PFunctor.comp_map _ _ (Quot.mk r), abs_map, abs_map,
@@ -471,7 +472,7 @@ theorem Cofix.bisim_rel (r : Cofix F → Cofix F → Prop)
     ∀ x y, r x y → x = y := by
   let r' (x y) := x = y ∨ r x y
   intro x y rxy
-  apply cofix.bisim_aux r'
+  apply Cofix.bisim_aux r'
   · intro x
     left
     rfl
