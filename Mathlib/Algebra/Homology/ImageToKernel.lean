@@ -46,7 +46,7 @@ theorem image_le_kernel (w : f ≫ g = 0) : imageSubobject f ≤ kernelSubobject
 /-- The canonical morphism `imageSubobject f ⟶ kernelSubobject g` when `f ≫ g = 0`.
 -/
 def imageToKernel (w : f ≫ g = 0) : (imageSubobject f : V) ⟶ (kernelSubobject g : V) :=
-  Subobject.ofLe _ _ (image_le_kernel _ _ w)
+  Subobject.ofLE _ _ (image_le_kernel _ _ w)
 #align image_to_kernel imageToKernel
 
 instance (w : f ≫ g = 0) : Mono (imageToKernel f g w) := by
@@ -55,10 +55,10 @@ instance (w : f ≫ g = 0) : Mono (imageToKernel f g w) := by
 
 /-- Prefer `imageToKernel`. -/
 @[simp]
-theorem subobject_ofLe_as_imageToKernel (w : f ≫ g = 0) (h) :
-    Subobject.ofLe (imageSubobject f) (kernelSubobject g) h = imageToKernel f g w :=
+theorem subobject_ofLE_as_imageToKernel (w : f ≫ g = 0) (h) :
+    Subobject.ofLE (imageSubobject f) (kernelSubobject g) h = imageToKernel f g w :=
   rfl
-#align subobject_of_le_as_image_to_kernel subobject_ofLe_as_imageToKernel
+#align subobject_of_le_as_image_to_kernel subobject_ofLE_as_imageToKernel
 
 -- porting note: removed elementwise attribute which does not seem to be helpful here
 @[reassoc (attr := simp)]
@@ -101,14 +101,14 @@ variable [HasKernels V] [HasImages V]
 
 theorem imageToKernel_comp_right {D : V} (h : C ⟶ D) (w : f ≫ g = 0) :
     imageToKernel f (g ≫ h) (by simp [reassoc_of% w]) =
-      imageToKernel f g w ≫ Subobject.ofLe _ _ (kernelSubobject_comp_le g h) := by
+      imageToKernel f g w ≫ Subobject.ofLE _ _ (kernelSubobject_comp_le g h) := by
   ext
   simp
 #align image_to_kernel_comp_right imageToKernel_comp_right
 
 theorem imageToKernel_comp_left {Z : V} (h : Z ⟶ A) (w : f ≫ g = 0) :
     imageToKernel (h ≫ f) g (by simp [w]) =
-      Subobject.ofLe _ _ (imageSubobject_comp_le h f) ≫ imageToKernel f g w := by
+      Subobject.ofLE _ _ (imageSubobject_comp_le h f) ≫ imageToKernel f g w := by
   ext
   simp
 #align image_to_kernel_comp_left imageToKernel_comp_left
@@ -125,7 +125,7 @@ theorem imageToKernel_comp_mono {D : V} (h : C ⟶ D) [Mono h] (w) :
 @[simp]
 theorem imageToKernel_epi_comp {Z : V} (h : Z ⟶ A) [Epi h] (w) :
     imageToKernel (h ≫ f) g w =
-      Subobject.ofLe _ _ (imageSubobject_comp_le h f) ≫
+      Subobject.ofLE _ _ (imageSubobject_comp_le h f) ≫
         imageToKernel f g ((cancel_epi h).mp (by simpa using w : h ≫ f ≫ g = h ≫ 0)) := by
   ext
   simp
