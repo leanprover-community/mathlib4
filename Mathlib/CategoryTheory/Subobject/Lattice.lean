@@ -260,7 +260,7 @@ theorem top_factors {A B : C} (f : A ⟶ B) : (⊤ : Subobject B).Factors f :=
 
 theorem isIso_iff_mk_eq_top {X Y : C} (f : X ⟶ Y) [Mono f] : IsIso f ↔ mk f = ⊤ :=
   ⟨fun _ => mk_eq_mk_of_comm _ _ (asIso f) (Category.comp_id _), fun h => by
-    rw [← ofMkLeMk_comp h.le, Category.comp_id]
+    rw [← ofMkLEMk_comp h.le, Category.comp_id]
     exact IsIso.of_iso (isoOfMkEqMk _ _ h)⟩
 #align category_theory.subobject.is_iso_iff_mk_eq_top CategoryTheory.Subobject.isIso_iff_mk_eq_top
 
@@ -425,11 +425,11 @@ theorem inf_factors {A B : C} {X Y : Subobject B} (f : A ⟶ B) :
 #align category_theory.subobject.inf_factors CategoryTheory.Subobject.inf_factors
 
 theorem inf_arrow_factors_left {B : C} (X Y : Subobject B) : X.Factors (X ⊓ Y).arrow :=
-  (factors_iff _ _).mpr ⟨ofLe (X ⊓ Y) X (inf_le_left X Y), by simp⟩
+  (factors_iff _ _).mpr ⟨ofLE (X ⊓ Y) X (inf_le_left X Y), by simp⟩
 #align category_theory.subobject.inf_arrow_factors_left CategoryTheory.Subobject.inf_arrow_factors_left
 
 theorem inf_arrow_factors_right {B : C} (X Y : Subobject B) : Y.Factors (X ⊓ Y).arrow :=
-  (factors_iff _ _).mpr ⟨ofLe (X ⊓ Y) Y (inf_le_right X Y), by simp⟩
+  (factors_iff _ _).mpr ⟨ofLE (X ⊓ Y) Y (inf_le_right X Y), by simp⟩
 #align category_theory.subobject.inf_arrow_factors_right CategoryTheory.Subobject.inf_arrow_factors_right
 
 @[simp]
@@ -512,7 +512,7 @@ section SemilatticeSup
 
 variable [HasImages C] [HasBinaryCoproducts C]
 
-/-- The functorial supremum on `mono_over A` descends to an supremum on `subobject A`. -/
+/-- The functorial supremum on `MonoOver A` descends to an supremum on `Subobject A`. -/
 def sup {A : C} : Subobject A ⥤ Subobject A ⥤ Subobject A :=
   ThinSkeleton.map₂ MonoOver.sup
 #align category_theory.subobject.sup CategoryTheory.Subobject.sup
@@ -755,7 +755,7 @@ def subobjectOrderIso {X : C} (Y : Subobject X) : Subobject (Y : C) ≃o Set.Iic
   toFun Z :=
     ⟨Subobject.mk (Z.arrow ≫ Y.arrow),
       Set.mem_Iic.mpr (le_of_comm ((underlyingIso _).hom ≫ Z.arrow) (by simp))⟩
-  invFun Z := Subobject.mk (ofLe _ _ Z.2)
+  invFun Z := Subobject.mk (ofLE _ _ Z.2)
   left_inv Z := mk_eq_of_comm _ (underlyingIso _) (by aesop_cat)
   right_inv Z := Subtype.ext (mk_eq_of_comm _ (underlyingIso _) (by
           dsimp
@@ -764,11 +764,11 @@ def subobjectOrderIso {X : C} (Y : Subobject X) : Subobject (Y : C) ≃o Set.Iic
     dsimp
     constructor
     . intro h
-      exact le_of_comm (((underlyingIso _).inv ≫ ofLe _ _ (Subtype.mk_le_mk.mp h) ≫
+      exact le_of_comm (((underlyingIso _).inv ≫ ofLE _ _ (Subtype.mk_le_mk.mp h) ≫
         (underlyingIso _).hom)) (by aesop_cat)
     . intro h
       exact Subtype.mk_le_mk.mpr (le_of_comm
-        ((underlyingIso _).hom ≫ ofLe _ _ h ≫ (underlyingIso _).inv) (by simp))
+        ((underlyingIso _).hom ≫ ofLE _ _ h ≫ (underlyingIso _).inv) (by simp))
 #align category_theory.subobject.subobject_order_iso CategoryTheory.Subobject.subobjectOrderIso
 
 end SubobjectSubobject
