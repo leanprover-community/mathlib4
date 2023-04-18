@@ -16,7 +16,7 @@ import Mathlib.RingTheory.Valuation.Basic
 # The topology on a valued ring
 
 In this file, we define the non archimedean topology induced by a valuation on a ring.
-The main definition is a `valued` type class which equips a ring with a valuation taking
+The main definition is a `Valued` type class which equips a ring with a valuation taking
 values in a group with zero. Other instances are then deduced from this.
 -/
 
@@ -84,13 +84,13 @@ theorem subgroups_basis : RingSubgroupsBasis fun γ : Γ₀ˣ => (v.ltAddSubgrou
 
 end Valuation
 
-/-- A valued ring is a ring that comes equipped with a distinguished valuation. The class `valued`
+/-- A valued ring is a ring that comes equipped with a distinguished valuation. The class `Valued`
 is designed for the situation that there is a canonical valuation on the ring.
 
 TODO: show that there always exists an equivalent valuation taking values in a type belonging to
 the same universe as the ring.
 
-See Note [forgetful inheritance] for why we extend `uniform_space`, `uniform_add_group`. -/
+See Note [forgetful inheritance] for why we extend `UniformSpace`, `UniformAddGroup`. -/
 class Valued (R : Type u) [Ring R] (Γ₀ : outParam (Type v))
   [LinearOrderedCommGroupWithZero Γ₀] extends UniformSpace R, UniformAddGroup R where
   v : Valuation R Γ₀
@@ -102,8 +102,7 @@ class Valued (R : Type u) [Ring R] (Γ₀ : outParam (Type v))
 
 namespace Valued
 
-/-- Alternative `valued` constructor for use when there is no preferred `uniform_space`
-structure. -/
+/-- Alternative `Valued` constructor for use when there is no preferred `UniformSpace` structure. -/
 def mk' (v : Valuation R Γ₀) : Valued R Γ₀ :=
   { v
     toUniformSpace := @TopologicalAddGroup.toUniformSpace R _ v.subgroups_basis.topology _
@@ -159,10 +158,8 @@ theorem loc_const {x : R} (h : (v x : Γ₀) ≠ 0) : { y : R | v y = v x } ∈ 
 instance (priority := 100) : TopologicalRing R :=
   (toUniformSpace_eq R Γ₀).symm ▸ v.subgroups_basis.toRingFilterBasis.isTopologicalRing
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:635:2: warning: expanding binder collection (x y «expr ∈ » M) -/
-theorem cauchy_iff {F : Filter R} :
-    Cauchy F ↔
-      F.NeBot ∧ ∀ γ : Γ₀ˣ, ∃ M ∈ F, ∀ (x) (_ : x ∈ M) (y) (_ : y ∈ M), (v (y - x) : Γ₀) < γ := by
+theorem cauchy_iff {F : Filter R} : Cauchy F ↔
+    F.NeBot ∧ ∀ γ : Γ₀ˣ, ∃ M ∈ F, ∀ (x) (_ : x ∈ M) (y) (_ : y ∈ M), (v (y - x) : Γ₀) < γ := by
   rw [toUniformSpace_eq, AddGroupFilterBasis.cauchy_iff]
   apply and_congr Iff.rfl
   simp_rw [Valued.v.subgroups_basis.mem_addGroupFilterBasis_iff]
