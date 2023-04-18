@@ -1790,6 +1790,7 @@ import Mathlib.Topology.Algebra.UniformFilterBasis
 import Mathlib.Topology.Algebra.UniformGroup
 import Mathlib.Topology.Algebra.UniformMulAction
 import Mathlib.Topology.Algebra.UniformRing
+import Mathlib.Topology.Algebra.Valuation
 import Mathlib.Topology.Algebra.WithZeroTopology
 import Mathlib.Topology.Bases
 import Mathlib.Topology.Basic
