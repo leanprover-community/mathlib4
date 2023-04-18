@@ -64,7 +64,7 @@ variable {ι : Type _} (b : Basis ι R M)
 
 open Submodule.IsPrincipal Submodule
 
--- Porting note : ADD ME
+-- Porting note : TODO
 set_option synthInstance.etaExperiment true in
 theorem eq_bot_of_generator_maximal_map_eq_zero (b : Basis ι R M) {N : Submodule R M}
     {ϕ : M →ₗ[R] R} (hϕ : ∀ ψ : M →ₗ[R] R, ¬N.map ϕ < N.map ψ) [(N.map ϕ).IsPrincipal]
@@ -306,7 +306,8 @@ theorem Submodule.nonempty_basis_of_pid {ι : Type _} [Finite ι] (b : Basis ι 
     (N : Submodule R M) : ∃ n : ℕ, Nonempty (Basis (Fin n) R N) := by
   haveI := Classical.decEq M
   cases nonempty_fintype ι
-  refine' Submodule.inductionOnRank b (fun N ↦ ∃ n : ℕ, Nonempty (Basis (Fin n) R N)) _ N
+-- Porting note: Lean needs to know exactly the induction hypothesis
+  refine inductionOnRank b (fun N ↦ ∃ n : ℕ, Nonempty (Basis (Fin n) R N)) ?_ N
   intro N ih
   let b' := (b.reindex (Fintype.equivFin ι)).map (LinearEquiv.ofTop _ rfl).symm
   by_cases N_bot : N = ⊥
@@ -343,9 +344,9 @@ if `R` is a principal ideal domain.
 See also the stronger version `Submodule.smithNormalFormOfLe`.
 -/
 noncomputable def Submodule.basisOfPidOfLe {ι : Type _} [Finite ι] {N O : Submodule R M}
-    (hNO : N ≤ O) (b : Basis ι R O) : Σn : ℕ, Basis (Fin n) R N := sorry
---  let ⟨n, bN'⟩ := Submodule.basisOfPid b (N.comap O.Subtype)
---  ⟨n, bN'.map (Submodule.comapSubtypeEquivOfLe hNO)⟩
+    (hNO : N ≤ O) (b : Basis ι R O) : Σn : ℕ, Basis (Fin n) R N :=
+  let ⟨n, bN'⟩ := Submodule.basisOfPid b (N.comap O.subtype)
+  ⟨n, bN'.map (Submodule.comapSubtypeEquivOfLe hNO)⟩
 #align submodule.basis_of_pid_of_le Submodule.basisOfPidOfLe
 
 /-- A submodule inside the span of a linear independent family is a free `R`-module of finite rank,
@@ -356,8 +357,8 @@ noncomputable def Submodule.basisOfPidOfLeSpan {ι : Type _} [Finite ι] {b : ι
   Submodule.basisOfPidOfLe le (Basis.span hb)
 #align submodule.basis_of_pid_of_le_span Submodule.basisOfPidOfLeSpan
 
-variable {M}
-
+-- Porting note: TODO
+set_option synthInstance.etaExperiment true in
 -- Porting note: Mathport warning: expanding binder collection (i «expr ∉ » I)
 /-- A finite type torsion free module over a PID admits a basis. -/
 noncomputable def Module.basisOfFiniteTypeTorsionFree [Fintype ι] {s : ι → M}
@@ -367,10 +368,10 @@ noncomputable def Module.basisOfFiniteTypeTorsionFree [Fintype ι] {s : ι → M
     have := exists_maximal_independent R s
     let I : Set ι := this.choose
     obtain
-      ⟨indepI : LinearIndependent R (s ∘ coe : I → M), hI :
+      ⟨indepI : LinearIndependent R (s ∘ (fun x => x) : I → M), hI :
         ∀ (i) (_ : i ∉ I), ∃ a : R, a ≠ 0 ∧ a • s i ∈ span R (s '' I)⟩ :=
       this.choose_spec
-    let N := span R (range <| (s ∘ coe : I → M))
+    let N := span R (range <| (s ∘ (fun x => x) : I → M))
     -- same as `span R (s '' I)` but more convenient
     let sI : I → N := fun i ↦ ⟨s i.1, subset_span (mem_range_self i)⟩
     -- `s` restricted to `I`
@@ -392,9 +393,9 @@ noncomputable def Module.basisOfFiniteTypeTorsionFree [Fintype ι] {s : ι → M
       simpa using ha
     -- `M ≃ A • M` because `M` is torsion free and `A ≠ 0`
     let φ : M →ₗ[R] M := LinearMap.lsmul R M A
-    have : φ.ker = ⊥ := LinearMap.ker_lsmul hA
-    let ψ : M ≃ₗ[R] φ.range := LinearEquiv.ofInjective φ (linear_map.ker_eq_bot.mp this)
-    have : φ.range ≤ N := by
+    have : LinearMap.ker φ = ⊥ := @LinearMap.ker_lsmul R M _ _ _ _ _ hA
+    let ψ := LinearEquiv.ofInjective φ (LinearMap.ker_eq_bot.mp this)
+    have : LinearMap.range φ ≤ N := by
       -- as announced, `A • M ⊆ N`
       suffices ∀ i, φ (s i) ∈ N by
         rw [LinearMap.range_eq_map, ← hs, φ.map_span_le]
@@ -407,13 +408,13 @@ noncomputable def Module.basisOfFiniteTypeTorsionFree [Fintype ι] {s : ι → M
         _ ∈ N := N.smul_mem _ (ha' i)
 
     -- Since a submodule of a free `R`-module is free, we get that `A • M` is free
-    obtain ⟨n, b : Basis (Fin n) R φ.range⟩ := Submodule.basisOfPidOfLe this sI_basis
+    obtain ⟨n, b : Basis (Fin n) R (LinearMap.range φ)⟩ := Submodule.basisOfPidOfLe this sI_basis
     -- hence `M` is free.
     exact ⟨n, b.map ψ.symm⟩
 #align module.basis_of_finite_type_torsion_free Module.basisOfFiniteTypeTorsionFree
 
-theorem Module.free_of_finite_type_torsion_free [Finite ι] {s : ι → M} (hs : span R (range s) = ⊤)
-    [NoZeroSMulDivisors R M] : Module.Free R M := by
+theorem Module.free_of_finite_type_torsion_free [_root_.Finite ι] {s : ι → M}
+    (hs : span R (range s) = ⊤) [NoZeroSMulDivisors R M] : Module.Free R M := by
   cases nonempty_fintype ι
   obtain ⟨n, b⟩ : Σn, Basis (Fin n) R M := Module.basisOfFiniteTypeTorsionFree hs
   exact Module.Free.of_basis b
@@ -436,7 +437,7 @@ section SmithNormal
 /-- A Smith normal form basis for a submodule `N` of a module `M` consists of
 bases for `M` and `N` such that the inclusion map `N → M` can be written as a
 (rectangular) matrix with `a` along the diagonal: in Smith normal form. -/
-@[nolint has_nonempty_instance]
+-- Porting note: @[nolint has_nonempty_instance]
 structure Basis.SmithNormalForm (N : Submodule R M) (ι : Type _) (n : ℕ) where
   bM : Basis ι R M
   bN : Basis (Fin n) R N
@@ -460,7 +461,15 @@ theorem Submodule.exists_smith_normal_form_of_le [Finite ι] (b : Basis ι R M) 
       ∀ i, (bN i : M) = a i • bO (Fin.castLE hno i) := by
   cases nonempty_fintype ι
   revert N
-  refine' inductionOnRank b _ _ O
+
+-- Porting note: Lean needs to know exactly the induction hypothesis
+--  refine inductionOnRank b (fun N ↦ ∃ n : ℕ, Nonempty (Basis (Fin n) R N)) ?_ N
+  let P : Submodule R M → Prop := fun O =>
+    ∀ N : Submodule R M, N ≤ O →  ∃ (n o : ℕ)(hno : n ≤ o)(bO : Basis (Fin o) R O)
+    (bN : Basis (Fin n) R N)(a : Fin n → R), ∀ i, (bN i : M) = a i • bO (Fin.castLE hno i)
+  refine inductionOnRank b P ?_ O
+--  refine' inductionOnRank b _ _ O
+
   intro M ih N N_le_M
   obtain ⟨m, b'M⟩ := M.basis_of_pid b
   by_cases N_bot : N = ⊥
