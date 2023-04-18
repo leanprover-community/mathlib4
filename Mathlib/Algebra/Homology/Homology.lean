@@ -47,7 +47,7 @@ section Cycles
 variable [HasKernels V]
 
 /-- The cycles at index `i`, as a subobject. -/
-abbrev cycles (i : ι) : Subobject (C.pt i) :=
+abbrev cycles (i : ι) : Subobject (C.X i) :=
   kernelSubobject (C.dFrom i)
 #align homological_complex.cycles HomologicalComplex.cycles
 
@@ -65,8 +65,8 @@ def cyclesIsoKernel {i j : ι} (r : c.Rel i j) : (C.cycles i : V) ≅ kernel (C.
 
 theorem cycles_eq_top {i} (h : ¬c.Rel i (c.next i)) : C.cycles i = ⊤ := by
   rw [eq_top_iff]
-  apply le_kernel_subobject
-  rw [C.d_from_eq_zero h, comp_zero]
+  apply le_kernelSubobject
+  rw [C.dFrom_eq_zero h, comp_zero]
 #align homological_complex.cycles_eq_top HomologicalComplex.cycles_eq_top
 
 end Cycles
@@ -76,7 +76,7 @@ section Boundaries
 variable [HasImages V]
 
 /-- The boundaries at index `i`, as a subobject. -/
-abbrev boundaries (C : HomologicalComplex V c) (j : ι) : Subobject (C.pt j) :=
+abbrev boundaries (C : HomologicalComplex V c) (j : ι) : Subobject (C.X j) :=
   imageSubobject (C.dTo j)
 #align homological_complex.boundaries HomologicalComplex.boundaries
 
@@ -95,8 +95,8 @@ def boundariesIsoImage [HasEqualizers V] {i j : ι} (r : c.Rel i j) :
 
 theorem boundaries_eq_bot [HasZeroObject V] {j} (h : ¬c.Rel (c.prev j) j) : C.boundaries j = ⊥ := by
   rw [eq_bot_iff]
-  refine' image_subobject_le _ 0 _
-  rw [C.d_to_eq_zero h, zero_comp]
+  refine' imageSubobject_le _ 0 _
+  rw [C.dTo_eq_zero h, zero_comp]
 #align homological_complex.boundaries_eq_bot HomologicalComplex.boundaries_eq_bot
 
 end Boundaries
@@ -119,7 +119,7 @@ abbrev boundariesToCycles (C : HomologicalComplex V c) (i : ι) :
 /-- Prefer `boundaries_to_cycles`. -/
 @[simp]
 theorem image_to_kernel_as_boundariesToCycles (C : HomologicalComplex V c) (i : ι) (h) :
-    (C.boundaries i).of_le (C.cycles i) h = C.boundariesToCycles i :=
+    (C.boundaries i).ofLE (C.cycles i) h = C.boundariesToCycles i :=
   rfl
 #align homological_complex.image_to_kernel_as_boundaries_to_cycles HomologicalComplex.image_to_kernel_as_boundariesToCycles
 
@@ -128,18 +128,19 @@ variable [HasCokernels V]
 /-- The homology of a complex at index `i`.
 -/
 abbrev homology (C : HomologicalComplex V c) (i : ι) : V :=
-  homology (C.dTo i) (C.dFrom i) (C.dTo_comp_dFrom i)
+  _root_.homology (C.dTo i) (C.dFrom i) (C.dTo_comp_dFrom i)
 #align homological_complex.homology HomologicalComplex.homology
 
 /-- The `j`th homology of a homological complex (as kernel of 'the differential from `Cⱼ`' modulo
 the image of 'the differential to `Cⱼ`') is isomorphic to the kernel of `d : Cⱼ → Cₖ` modulo
 the image of `d : Cᵢ → Cⱼ` when `rel i j` and `rel j k`. -/
 def homologyIso (C : HomologicalComplex V c) {i j k : ι} (hij : c.Rel i j) (hjk : c.Rel j k) :
-    C.homology j ≅ homology (C.d i j) (C.d j k) (C.d_comp_d i j k) :=
+    C.homology j ≅ _root_.homology (C.d i j) (C.d j k) (C.d_comp_d i j k) :=
   homology.mapIso _ _
-    (Arrow.isoMk (C.xPrevIso hij) (Iso.refl _) <| by dsimp <;> rw [C.d_to_eq hij, category.comp_id])
+    (Arrow.isoMk (C.xPrevIso hij) (Iso.refl _) <| by dsimp; rw [C.dTo_eq hij, Category.comp_id])
     (Arrow.isoMk (Iso.refl _) (C.xNextIso hjk) <| by
-      dsimp <;> rw [C.d_from_comp_X_next_iso hjk, category.id_comp])
+      dsimp
+      rw [C.dFrom_comp_xNextIso hjk, Category.id_comp])
     rfl
 #align homological_complex.homology_iso HomologicalComplex.homologyIso
 
@@ -152,11 +153,11 @@ def ChainComplex.homologyZeroIso [HasKernels V] [HasImages V] [HasCokernels V]
     (C : ChainComplex V ℕ) [Epi (factorThruImage (C.d 1 0))] : C.homology 0 ≅ cokernel (C.d 1 0) :=
   (homology.mapIso _ _
         (Arrow.isoMk (C.xPrevIso rfl) (Iso.refl _) <| by
-            rw [C.d_to_eq rfl] <;> exact (category.comp_id _).symm :
-          Arrow.mk (C.dTo 0) ≅ Arrow.mk (C.d 1 0))
+            rw [C.dTo_eq rfl]
+            exact (Category.comp_id _).symm : Arrow.mk (C.dTo 0) ≅ Arrow.mk (C.d 1 0))
         (Arrow.isoMk (Iso.refl _) (Iso.refl _) <| by
-            simp [C.d_from_eq_zero fun h : _ = _ =>
-                one_ne_zero <| by rwa [ChainComplex.next_nat_zero] at h] :
+            simp [C.dFrom_eq_zero fun h : _ = _ =>
+                one_ne_zero <| by rwa [ChainComplex.next_nat_zero, Nat.zero_add] at h] :
           Arrow.mk (C.dFrom 0) ≅ Arrow.mk 0)
         rfl).trans <|
     homologyOfZeroRight _
@@ -166,12 +167,12 @@ def ChainComplex.homologyZeroIso [HasKernels V] [HasImages V] [HasCokernels V]
 def CochainComplex.homologyZeroIso [HasZeroObject V] [HasKernels V] [HasImages V] [HasCokernels V]
     (C : CochainComplex V ℕ) : C.homology 0 ≅ kernel (C.d 0 1) :=
   (homology.mapIso _ _
-          (Arrow.isoMk (C.xPrevIsoSelf (by rw [CochainComplex.prev_nat_zero] <;> exact one_ne_zero))
+          (Arrow.isoMk (C.xPrevIsoSelf (by rw [CochainComplex.prev_nat_zero]; exact one_ne_zero))
               (Iso.refl _) (by simp) :
             Arrow.mk (C.dTo 0) ≅ Arrow.mk 0)
           (Arrow.isoMk (Iso.refl _) (C.xNextIso rfl) (by simp) :
             Arrow.mk (C.dFrom 0) ≅ Arrow.mk (C.d 0 1)) <|
-        by simpa).trans <|
+        by simp).trans <|
     homologyOfZeroLeft _
 #align cochain_complex.homology_zero_iso CochainComplex.homologyZeroIso
 
@@ -225,7 +226,7 @@ theorem cyclesMap_id (i : ι) : cyclesMap (𝟙 C₁) i = 𝟙 _ := by
 theorem cyclesMap_comp (f : C₁ ⟶ C₂) (g : C₂ ⟶ C₃) (i : ι) :
     cyclesMap (f ≫ g) i = cyclesMap f i ≫ cyclesMap g i := by
   dsimp only [cyclesMap]
-  simp [subobject.factor_thru_right]
+  simp [Subobject.factorThru_right]
 #align cycles_map_comp cyclesMap_comp
 
 variable (V c)
@@ -234,7 +235,7 @@ variable (V c)
 @[simps]
 def cyclesFunctor (i : ι) : HomologicalComplex V c ⥤ V where
   obj C := C.cycles i
-  map C₁ C₂ f := cyclesMap f i
+  map {C₁ C₂} f := cyclesMap f i
 #align cycles_functor cyclesFunctor
 
 end
@@ -260,7 +261,7 @@ variable (V c)
 @[simps]
 def boundariesFunctor (i : ι) : HomologicalComplex V c ⥤ V where
   obj C := C.boundaries i
-  map C₁ C₂ f := imageSubobjectMap (f.sqTo i)
+  map {C₁ C₂} f := imageSubobjectMap (f.sqTo i)
 #align boundaries_functor boundariesFunctor
 
 end
@@ -287,7 +288,7 @@ variable (V c)
 @[simps]
 def boundariesToCyclesNatTrans (i : ι) : boundariesFunctor V c i ⟶ cyclesFunctor V c i where
   app C := C.boundariesToCycles i
-  naturality' C₁ C₂ f := boundariesToCycles_naturality f i
+  naturality _ _ f := boundariesToCycles_naturality f i
 #align boundaries_to_cycles_nat_trans boundariesToCyclesNatTrans
 
 /-- The `i`-th homology, as a functor to `V`. -/
@@ -297,31 +298,30 @@ def homologyFunctor [HasCokernels V] (i : ι) : HomologicalComplex V c ⥤ V whe
   -- `cokernel (boundaries_to_cycles_nat_trans V c i)`
   -- here, but universe implementation details get in the way...
   obj C := C.homology i
-  map C₁ C₂ f := homology.map _ _ (f.sqTo i) (f.sqFrom i) rfl
-  map_id' := by
+  map {C₁ C₂} f := homology.map _ _ (f.sqTo i) (f.sqFrom i) rfl
+  map_id := by
     intros ; ext1
-    simp only [homology.π_map, kernel_subobject_map_id, hom.sq_from_id, category.id_comp,
-      category.comp_id]
-  map_comp' := by
+    simp only [homology.π_map, kernelSubobjectMap_id, Hom.sqFrom_id, Category.id_comp,
+      Category.comp_id]
+  map_comp := by
     intros ; ext1
-    simp only [hom.sq_from_comp, kernel_subobject_map_comp, homology.π_map_assoc, homology.π_map,
-      category.assoc]
+    simp only [Hom.sqFrom_comp, kernelSubobjectMap_comp, homology.π_map_assoc, homology.π_map,
+      Category.assoc]
 #align homology_functor homologyFunctor
 
 /-- The homology functor from `ι`-indexed complexes to `ι`-graded objects in `V`. -/
 @[simps]
 def gradedHomologyFunctor [HasCokernels V] : HomologicalComplex V c ⥤ GradedObject ι V where
   obj C i := C.homology i
-  map C C' f i := (homologyFunctor V c i).map f
-  map_id' := by
+  map {C C'} f i := (homologyFunctor V c i).map f
+  map_id := by
     intros ; ext
-    simp only [pi.id_apply, homology.π_map, homologyFunctor_map, kernel_subobject_map_id,
-      hom.sq_from_id, category.id_comp, category.comp_id]
-  map_comp' := by
+    simp only [Pi.id_apply, homology.π_map, homologyFunctor_map, kernelSubobjectMap_id,
+      Hom.sqFrom_id, Category.id_comp, Category.comp_id]
+  map_comp := by
     intros ; ext
-    simp only [hom.sq_from_comp, kernel_subobject_map_comp, homology.π_map_assoc, pi.comp_apply,
-      homology.π_map, homologyFunctor_map, category.assoc]
+    simp only [Hom.sqFrom_comp, kernelSubobjectMap_comp, homology.π_map_assoc, Pi.comp_apply,
+      homology.π_map, homologyFunctor_map, Category.assoc]
 #align graded_homology_functor gradedHomologyFunctor
 
 end
-
