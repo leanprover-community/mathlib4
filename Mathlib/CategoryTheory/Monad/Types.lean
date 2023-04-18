@@ -8,10 +8,10 @@ Authors: Johannes Hölzl, Bhavik Mehta
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Monad.Basic
-import Mathbin.CategoryTheory.Monad.Kleisli
-import Mathbin.CategoryTheory.Category.Kleisli
-import Mathbin.CategoryTheory.Types
+import Mathlib.CategoryTheory.Monad.Basic
+import Mathlib.CategoryTheory.Monad.Kleisli
+import Mathlib.CategoryTheory.Category.Kleisli
+import Mathlib.CategoryTheory.Types
 
 /-!
 
@@ -33,8 +33,7 @@ variable (m : Type u → Type u) [Monad m] [LawfulMonad m]
 /-- A lawful `control.monad` gives a category theory `monad` on the category of types.
 -/
 @[simps]
-def ofTypeMonad : Monad (Type u)
-    where
+def ofTypeMonad : Monad (Type u) where
   toFunctor := ofTypeFunctor m
   η' := ⟨@pure m _, fun α β f => (LawfulApplicative.map_comp_pure f).symm⟩
   μ' := ⟨@joinM m _, fun α β (f : α → β) => funext fun a => joinM_map_map f a⟩
@@ -47,8 +46,7 @@ def ofTypeMonad : Monad (Type u)
 category-theoretic version, provided the monad is lawful.
 -/
 @[simps]
-def eq : KleisliCat m ≌ Kleisli (of_type_monad m)
-    where
+def eq : KleisliCat m ≌ Kleisli (of_type_monad m) where
   Functor :=
     { obj := fun X => X
       map := fun X Y f => f
