@@ -172,7 +172,7 @@ theorem approx_le_one (c : CU X) (n : ℕ) (x : X) : c.approx n x ≤ 1 := by
 #align urysohns.CU.approx_le_one Urysohns.CU.approx_le_one
 
 theorem bddAbove_range_approx (c : CU X) (x : X) : BddAbove (range fun n => c.approx n x) :=
-  ⟨1, fun y ⟨n, hn⟩ => hn ▸ c.approx_le_one n x⟩
+  ⟨1, fun _y ⟨n, hn⟩ => hn ▸ c.approx_le_one n x⟩
 #align urysohns.CU.bdd_above_range_approx Urysohns.CU.bddAbove_range_approx
 
 theorem approx_le_approx_of_u_sub_c {c₁ c₂ : CU X} (h : c₁.U ⊆ c₂.C) (n₁ n₂ : ℕ) (x : X) :
@@ -227,7 +227,7 @@ protected noncomputable def lim (c : CU X) (x : X) : ℝ :=
 
 theorem tendsto_approx_atTop (c : CU X) (x : X) :
     Tendsto (fun n => c.approx n x) atTop (𝓝 <| c.lim x) :=
-  tendsto_atTop_csupᵢ (c.approx_mono x) ⟨1, fun x ⟨n, hn⟩ => hn ▸ c.approx_le_one _ _⟩
+  tendsto_atTop_csupᵢ (c.approx_mono x) ⟨1, fun _x ⟨_n, hn⟩ => hn ▸ c.approx_le_one _ _⟩
 #align urysohns.CU.tendsto_approx_at_top Urysohns.CU.tendsto_approx_atTop
 
 theorem lim_of_mem_c (c : CU X) (x : X) (h : x ∈ c.C) : c.lim x = 0 := by
@@ -254,7 +254,7 @@ theorem lim_nonneg (c : CU X) (x : X) : 0 ≤ c.lim x :=
 #align urysohns.CU.lim_nonneg Urysohns.CU.lim_nonneg
 
 theorem lim_le_one (c : CU X) (x : X) : c.lim x ≤ 1 :=
-  csupᵢ_le fun n => c.approx_le_one _ _
+  csupᵢ_le fun _n => c.approx_le_one _ _
 #align urysohns.CU.lim_le_one Urysohns.CU.lim_le_one
 
 theorem lim_mem_Icc (c : CU X) (x : X) : c.lim x ∈ Icc (0 : ℝ) 1 :=
