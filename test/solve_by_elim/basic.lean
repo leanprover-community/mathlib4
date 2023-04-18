@@ -10,8 +10,6 @@ import Mathlib.Tactic.Constructor
 import Mathlib.Tactic.PermuteGoals
 import Mathlib.Tactic.SolveByElim
 
-set_option trace.Meta.Tactic.solveByElim true
-
 example (h : Nat) : Nat := by solve_by_elim
 example {α β : Type} (f : α → β) (a : α) : β := by solve_by_elim
 example {α β : Type} (f : α → α → β) (a : α) : β := by solve_by_elim
