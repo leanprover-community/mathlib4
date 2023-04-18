@@ -8,7 +8,7 @@ Authors: Johan Commelin
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Homology.HomologicalComplex
+import Mathlib.Algebra.Homology.HomologicalComplex
 
 /-!
 # Complexes in functor categories
@@ -37,8 +37,7 @@ variable {ι : Type _} {c : ComplexShape ι}
 /-- A complex of functors gives a functor to complexes. -/
 @[simps obj map]
 def asFunctor {T : Type _} [Category T] (C : HomologicalComplex (T ⥤ V) c) :
-    T ⥤ HomologicalComplex V c
-    where
+    T ⥤ HomologicalComplex V c where
   obj t :=
     { pt := fun i => (C.pt i).obj t
       d := fun i j => (C.d i j).app t
@@ -67,8 +66,7 @@ def asFunctor {T : Type _} [Category T] (C : HomologicalComplex (T ⥤ V) c) :
 /-- The functorial version of `homological_complex.as_functor`. -/
 @[simps]
 def complexOfFunctorsToFunctorToComplex {T : Type _} [Category T] :
-    HomologicalComplex (T ⥤ V) c ⥤ T ⥤ HomologicalComplex V c
-    where
+    HomologicalComplex (T ⥤ V) c ⥤ T ⥤ HomologicalComplex V c where
   obj C := C.asFunctor
   map C D f :=
     { app := fun t =>
