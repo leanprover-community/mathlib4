@@ -11,7 +11,7 @@ import Std.Tactic.GuardExpr
 
 open Qq
 
--- todo: uncomment above imports when they are ported
+-- TODO: uncomment above imports when they are ported
 
 variables {α β : Type} [Semiring α] [Ring β]
 
