@@ -114,6 +114,7 @@ elab_rules : tactic |
     let proposals ← propose (← proposeLemmas.get) type required
     if proposals.isEmpty then
       throwError "propose could not find any lemmas using the given hypotheses"
+    -- TODO we should have `proposals` return a lazy list, to avoid unnecessary computation here.
     for p in proposals.toList.take 10 do
       addHaveSuggestion tk (← inferType p.2) p.2
     if lucky.isSome then
