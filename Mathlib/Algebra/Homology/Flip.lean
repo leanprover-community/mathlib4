@@ -8,7 +8,7 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Homology.HomologicalComplex
+import Mathlib.Algebra.Homology.HomologicalComplex
 
 /-!
 # Flip a complex of complexes
@@ -37,8 +37,7 @@ exchanging the horizontal and vertical directions.
 -/
 @[simps]
 def flipObj (C : HomologicalComplex (HomologicalComplex V c) c') :
-    HomologicalComplex (HomologicalComplex V c') c
-    where
+    HomologicalComplex (HomologicalComplex V c') c where
   pt i :=
     { pt := fun j => (C.pt j).pt i
       d := fun j j' => (C.d j j').f i

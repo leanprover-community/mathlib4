@@ -131,6 +131,7 @@ import Mathlib.Algebra.Hom.NonUnitalAlg
 import Mathlib.Algebra.Hom.Ring
 import Mathlib.Algebra.Hom.Units
 import Mathlib.Algebra.Homology.ComplexShape
+import Mathlib.Algebra.Homology.Flip
 import Mathlib.Algebra.Homology.HomologicalComplex
 import Mathlib.Algebra.Homology.ImageToKernel
 import Mathlib.Algebra.IndicatorFunction
