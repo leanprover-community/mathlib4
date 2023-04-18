@@ -30,7 +30,7 @@ theorem mk_complex : (#ℂ) = 𝔠 := by
 
 /-- The cardinality of the complex numbers, as a set. -/
 -- @[simp] -- Porting note: simp can prove this
-theorem mk_univ_complex : (#(Set.univ : Set ℂ)) = 𝔠 := by simp
+theorem mk_univ_complex : (#(Set.univ : Set ℂ)) = 𝔠 := by rw [mk_univ, mk_complex]
 #align mk_univ_complex mk_univ_complex
 
 /-- The complex numbers are not countable. -/
