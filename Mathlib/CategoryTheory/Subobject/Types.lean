@@ -14,11 +14,11 @@ import Mathlib.CategoryTheory.Types
 /-!
 # `Type u` is well-powered
 
-By building a categorical equivalence `mono_over α ≌ set α` for any `α : Type u`,
-we deduce that `subobject α ≃o set α` and that `Type u` is well-powered.
+By building a categorical equivalence `MonoOver α ≌ Set α` for any `α : Type u`,
+we deduce that `Subobject α ≃o Set α` and that `Type u` is well-powered.
 
 One would hope that for a particular concrete category `C` (`AddCommGroup`, etc)
-it's viable to prove `[well_powered C]` without explicitly aligning `subobject X`
+it's viable to prove `[WellPowered C]` without explicitly aligning `Subobject X`
 with the "hand-rolled" definition of subobjects.
 
 This may be possible using Lawvere theories,
@@ -32,47 +32,45 @@ open CategoryTheory
 
 open CategoryTheory.Subobject
 
-open CategoryTheory.Type
-
 theorem subtype_val_mono {α : Type u} (s : Set α) : Mono (↾(Subtype.val : s → α)) :=
   (mono_iff_injective _).mpr Subtype.val_injective
 #align subtype_val_mono subtype_val_mono
 
 attribute [local instance] subtype_val_mono
 
-/-- The category of `mono_over α`, for `α : Type u`, is equivalent to the partial order `set α`.
+/-- The category of `MonoOver α`, for `α : Type u`, is equivalent to the partial order `Set α`.
 -/
 @[simps]
 noncomputable def Types.monoOverEquivalenceSet (α : Type u) : MonoOver α ≌ Set α where
-  Functor :=
-    { obj := fun f => Set.range f.1.Hom
-      map := fun f g t =>
+  functor :=
+    { obj := fun f => Set.range f.1.hom
+      map := fun {f g} t =>
         homOfLE
           (by
             rintro a ⟨x, rfl⟩
             exact ⟨t.1 x, congr_fun t.w x⟩) }
   inverse :=
     { obj := fun s => MonoOver.mk' (Subtype.val : s → α)
-      map := fun s t b =>
+      map := fun {s t} b =>
         MonoOver.homMk (fun w => ⟨w.1, Set.mem_of_mem_of_subset w.2 b.le⟩)
           (by
-            ext
+            funext
             simp) }
   unitIso :=
     NatIso.ofComponents
       (fun f =>
-        MonoOver.isoMk (Equiv.ofInjective f.1.Hom ((mono_iff_injective _).mp f.2)).toIso (by tidy))
-      (by tidy)
-  counitIso := NatIso.ofComponents (fun s => eqToIso Subtype.range_val) (by tidy)
+        MonoOver.isoMk (Equiv.ofInjective f.1.hom ((mono_iff_injective _).mp f.2)).toIso
+          (by aesop_cat))
+      (by aesop_cat)
+  counitIso := NatIso.ofComponents (fun s => eqToIso Subtype.range_val) (by aesop_cat)
 #align types.mono_over_equivalence_set Types.monoOverEquivalenceSet
 
 instance : WellPowered (Type u) :=
   wellPowered_of_essentiallySmall_monoOver fun α =>
     EssentiallySmall.mk' (Types.monoOverEquivalenceSet α)
 
-/-- For `α : Type u`, `subobject α` is order isomorphic to `set α`.
+/-- For `α : Type u`, `Subobject α` is order isomorphic to `Set α`.
 -/
 noncomputable def Types.subobjectEquivSet (α : Type u) : Subobject α ≃o Set α :=
   (Types.monoOverEquivalenceSet α).thinSkeletonOrderIso
 #align types.subobject_equiv_set Types.subobjectEquivSet
-
