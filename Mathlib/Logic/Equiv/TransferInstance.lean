@@ -311,11 +311,8 @@ protected def nonUnitalSemiring [NonUnitalSemiring β] : NonUnitalSemiring α :=
 protected def addMonoidWithOne [AddMonoidWithOne β] : AddMonoidWithOne α :=
   { e.addMonoid, e.One with
     natCast := fun n => e.symm n
-    natCast_zero := show e.symm _ = _ by simp [zero_def]
-    natCast_succ := fun n => show e.symm _ = e.symm (e (e.symm _) + _) by
-      simp only [Nat.cast_add, Nat.cast_one, apply_symm_apply]
-      have : e 1 = 1 := Iff.mpr (apply_eq_iff_eq_symm_apply _) rfl
-      rw [this] }
+    natCast_zero := e.injective (by simp [zero_def])
+    natCast_succ := fun n => e.injective (by simp [add_def, one_def]) }
 #align equiv.add_monoid_with_one Equiv.addMonoidWithOne
 
 /-- Transfer `AddGroupWithOne` across an `Equiv` -/
