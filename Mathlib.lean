@@ -637,6 +637,7 @@ import Mathlib.Computability.Language
 import Mathlib.Computability.NFA
 import Mathlib.Computability.Primrec
 import Mathlib.Computability.RegularExpressions
+import Mathlib.Computability.TMComputable
 import Mathlib.Computability.TuringMachine
 import Mathlib.Control.Applicative
 import Mathlib.Control.Basic
