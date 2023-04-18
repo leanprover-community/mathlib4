@@ -167,7 +167,8 @@ theorem approx_le_one (c : CU X) (n : ℕ) (x : X) : c.approx n x ≤ 1 := by
   induction' n with n ihn generalizing c
   · exact indicator_apply_le' (fun _ => le_rfl) fun _ => zero_le_one
   · simp only [approx, midpoint_eq_smul_add, invOf_eq_inv, smul_eq_mul, ← div_eq_inv_mul]
-    refine' Iff.mpr (div_le_one zero_lt_two) (add_le_add _ _) <;> apply ihn
+    -- Porting note: using one_add_one_eq_two since it was not inferring 1 + 1 = (2 : ℝ)
+    refine' Iff.mpr (div_le_one zero_lt_two) (by rw [← one_add_one_eq_two]; apply add_le_add _ _ <;> apply ihn)
 #align urysohns.CU.approx_le_one Urysohns.CU.approx_le_one
 
 theorem bddAbove_range_approx (c : CU X) (x : X) : BddAbove (range fun n => c.approx n x) :=
