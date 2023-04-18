@@ -1543,6 +1543,7 @@ import Mathlib.RingTheory.Ideal.QuotientOperations
 import Mathlib.RingTheory.Int.Basic
 import Mathlib.RingTheory.Localization.Basic
 import Mathlib.RingTheory.Localization.FractionRing
+import Mathlib.RingTheory.Localization.Ideal
 import Mathlib.RingTheory.Localization.Integer
 import Mathlib.RingTheory.Localization.Module
 import Mathlib.RingTheory.Localization.NumDen
@@ -1835,6 +1836,7 @@ import Mathlib.Topology.MetricSpace.Algebra
 import Mathlib.Topology.MetricSpace.Antilipschitz
 import Mathlib.Topology.MetricSpace.Baire
 import Mathlib.Topology.MetricSpace.Basic
+import Mathlib.Topology.MetricSpace.CantorScheme
 import Mathlib.Topology.MetricSpace.CauSeqFilter
 import Mathlib.Topology.MetricSpace.Closeds
 import Mathlib.Topology.MetricSpace.Completion
