@@ -30,11 +30,11 @@ numbers on `[0, 1]`. There are many technical difficulties with formalizing this
 needs to formalize the "dyadic induction", then prove that the resulting family of open sets is
 monotone). So, we formalize a slightly different proof.
 
-Let `urysohns.CU` be the type of pairs `(C, U)` of a closed set `C`and an open set `U` such that
+Let `Urysohns.CU` be the type of pairs `(C, U)` of a closed set `C`and an open set `U` such that
 `C ⊆ U`. Since `X` is a normal topological space, for each `c : CU X` there exists an open set `u`
 such that `c.C ⊆ u ∧ closure u ⊆ c.U`. We define `c.left` and `c.right` to be `(c.C, u)` and
 `(closure u, c.U)`, respectively. Then we define a family of functions
-`urysohns.CU.approx (c : urysohns.CU X) (n : ℕ) : X → ℝ` by recursion on `n`:
+`Urysohns.CU.approx (c : Urysohns.CU X) (n : ℕ) : X → ℝ` by recursion on `n`:
 
 * `c.approx 0` is the indicator of `c.Uᶜ`;
 * `c.approx (n + 1) x = (c.left.approx n x + c.right.approx n x) / 2`.
@@ -42,8 +42,8 @@ such that `c.C ⊆ u ∧ closure u ⊆ c.U`. We define `c.left` and `c.right` to
 For each `x` this is a monotone family of functions that are equal to zero on `c.C` and are equal to
 one outside of `c.U`. We also have `c.approx n x ∈ [0, 1]` for all `c`, `n`, and `x`.
 
-Let `urysohns.CU.lim c` be the supremum (or equivalently, the limit) of `c.approx n`. Then
-properties of `urysohns.CU.approx` immediately imply that
+Let `Urysohns.CU.lim c` be the supremum (or equivalently, the limit) of `c.approx n`. Then
+properties of `Urysohns.CU.approx` immediately imply that
 
 * `c.lim x ∈ [0, 1]` for all `x`;
 * `c.lim` equals zero on `c.C` and equals one outside of `c.U`;
@@ -261,7 +261,7 @@ theorem lim_mem_Icc (c : CU X) (x : X) : c.lim x ∈ Icc (0 : ℝ) 1 :=
   ⟨c.lim_nonneg x, c.lim_le_one x⟩
 #align urysohns.CU.lim_mem_Icc Urysohns.CU.lim_mem_Icc
 
-/-- Continuity of `urysohns.CU.lim`. See module docstring for a sketch of the proofs. -/
+/-- Continuity of `Urysohns.CU.lim`. See module docstring for a sketch of the proofs. -/
 theorem continuous_lim (c : CU X) : Continuous c.lim := by
   obtain ⟨h0, h1234, h1⟩ : 0 < (2⁻¹ : ℝ) ∧ (2⁻¹ : ℝ) < 3 / 4 ∧ (3 / 4 : ℝ) < 1 := by norm_num
   refine'
