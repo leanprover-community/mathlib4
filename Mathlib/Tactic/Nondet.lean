@@ -84,6 +84,13 @@ where aux (s : σ) : List (m α) → Nondet m α
       pure (← r.mapM fun r => do pure (← saveState, r), aux s t)
 
 /--
+Lift a list of values to a nondeterministic value.
+(The backtrackable state in each will be identical:
+whatever the state was when we first read from the result.)
+-/
+unsafe def ofList [Alternative m] (L : List α) : Nondet m α := ofListM (L.map pure)
+
+/--
 Squash a monadic nondeterministic value to a nondeterministic value.
 -/
 unsafe def squash (L : m (Nondet m α)) : Nondet m α := ListM.squash L
@@ -117,6 +124,7 @@ unsafe def mapM (f : α → m β) (L : Nondet m α) : Nondet m β :=
 unsafe def map (f : α → β) (L : Nondet m α) : Nondet m β :=
   L.mapM fun a => pure (f a)
 
+/-- Filter a nondeterministic value using a monadic predicate. -/
 unsafe def filterM (p : α → m (ULift Bool)) (L : Nondet m α) : Nondet m α :=
   ListM.cons do match ← ListM.uncons L with
   | none => return (none, ListM.nil)
@@ -125,9 +133,23 @@ unsafe def filterM (p : α → m (ULift Bool)) (L : Nondet m α) : Nondet m α :
       let r := (← p x).down
       return (if r then some (← saveState , x) else none, filterM p xs)
 
-/-- Filter a `ListM`. -/
+/-- Filter a nondeterministic value. -/
 unsafe def filter (p : α → Bool) (L : Nondet m α) : Nondet m α :=
   L.filterM fun a => pure <| .up (p a)
+
+/-- Filter and map a nondeterministic value using a monadic function which may return `none`. -/
+unsafe def filterMapM (f : α → m (Option β)) (L : Nondet m α) : Nondet m β :=
+  ListM.cons do match ← ListM.uncons L with
+  | none => return (none, ListM.nil)
+  | some ((s, x), xs) => do
+      restoreState s
+      match ← f x with
+      | some b => return (some (← saveState, b), filterMapM f xs)
+      | none => return (none, filterMapM f xs)
+
+/-- Filter and map a nondeterministic value. -/
+unsafe def filterMap (f : α → Option β) (L : Nondet m α) : Nondet m β :=
+  L.filterMapM fun a => pure <| (f a)
 
 /--
 Find the first alternative in a nondeterministic value, as a monadic value.
@@ -140,6 +162,17 @@ where the function succeeds.
 -/
 unsafe def firstM [Alternative m] (L : Nondet m α) (f : α → m (Option β)) : m β :=
   ListM.firstM L (fun (s, a) => do restoreState s; f a)
+
+/--
+Convert a non-deterministic value into a lazy list, keeping the backtrackable state.
+Be careful that monadic operations on the `ListM` will not respect this state!
+-/
+unsafe def toListM' (L : Nondet m α) : ListM m (σ × α) := L
+
+/--
+Convert a non-deterministic value into a lazy list, by discarding the backtrackable state.
+-/
+unsafe def toListM (L : Nondet m α) : ListM m α := ListM.map (fun (_, a) => a) L
 
 end Nondet
 
