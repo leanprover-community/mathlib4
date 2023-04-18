@@ -9,6 +9,8 @@ import Mathlib.Lean.Meta.DiscrTree
 import Mathlib.Tactic.Cache
 import Mathlib.Tactic.Core
 import Mathlib.Tactic.SolveByElim
+import Mathlib.Data.ListM.Heartbeats
+import Mathlib.Control.Basic
 
 /-!
 # Library search
@@ -72,6 +74,46 @@ def solveByElim (goals : List MVarId) (required : List Expr) (depth) := do
   _ ← SolveByElim.solveByElim.processSyntax cfg false false [] [] #[] goals
 
 /--
+Try applying the given lemma (with symmetry modifer) to the goal,
+then try to close subsequent goals using `solveByElim`.
+If `solveByElim` succeeds, we return `[]` as the list of new subgoals,
+otherwise the full list of subgoals.
+
+We do not allow the `MetavarContext` to be modified.
+Instead, if the lemma application succeeds we collect the resulting `MetavarContext`
+and return it explicitly.
+-/
+def librarySearchLemma (lem : Name) (mod : DeclMod) (required : List Expr) (solveByElimDepth := 6)
+    (goal : MVarId) : MetaM (MetavarContext × List MVarId) :=
+  withTraceNode `Tactic.librarySearch (return m!"{·.emoji} trying {lem}") do
+  withoutModifyingState do
+    let lem ← mkConstWithFreshMVarLevels lem
+    let lem ← match mod with
+    | .none => pure lem
+    | .symm => mapForallTelescope (fun e => mkAppM ``Eq.symm #[e]) lem
+    | .mp => mapForallTelescope (fun e => mkAppM ``Iff.mp #[e]) lem
+    | .mpr => mapForallTelescope (fun e => mkAppM ``Iff.mpr #[e]) lem
+    let newGoals ← goal.apply lem
+    try
+      solveByElim newGoals required solveByElimDepth
+      pure (← getMCtx, [])
+    catch _ =>
+      pure (← getMCtx, newGoals)
+
+/--
+Returns a lazy list of the results of applying a library lemma,
+then calling `solveByElim` on the resulting goals.
+-/
+unsafe def librarySearchCore (goal : MVarId) (lemmas : DiscrTree (Name × DeclMod) s)
+    (required : List Expr) (solveByElimDepth := 6) : ListM MetaM (MetavarContext × List MVarId) :=
+  .squash do
+    let ty ← goal.getType
+    withTraceNode `Tactic.librarySearch (return m!"{·.emoji} {ty}") do
+      let lemmas := ListM.ofList ((← lemmas.getMatch ty).toList)
+      return lemmas.filterMapM fun (lem, mod) =>
+        try? <| librarySearchLemma lem mod required solveByElimDepth goal
+
+/--
 Try to solve the goal either by:
 * calling `solveByElim`
 * or applying a library lemma then calling `solveByElim` on the resulting goals.
@@ -88,53 +130,29 @@ unless the goal was completely solved.)
 this is not currently tracked.)
 -/
 def librarySearch (goal : MVarId) (lemmas : DiscrTree (Name × DeclMod) s) (required : List Expr)
-    (solveByElimDepth := 6) : MetaM <| Option (Array <| MetavarContext × List MVarId) := do
+    (solveByElimDepth := 6) : MetaM (Option (Array (MetavarContext × List MVarId))) := do
   profileitM Exception "librarySearch" (← getOptions) do
-  let ty ← goal.getType
-  withTraceNode `Tactic.librarySearch (return m!"{exceptOptionEmoji ·} {ty}") do
-
-  let mut suggestions := #[]
-
-  let state0 ← get
-
-  try
+  (do
     solveByElim [goal] required solveByElimDepth
-    return none
-  catch _ =>
-    set state0
+    return none) <|>
+  unsafe (do
+    let results ← librarySearchCore goal lemmas required solveByElimDepth
+      -- Don't use too many heartbeats.
+      |>.whileAtLeastHeartbeatsPercent 10
+      -- Stop if we find something that closes the goal
+      |>.takeUpToFirst (·.2.isEmpty)
+      |>.asArray
+    match results.find? (·.2.isEmpty) with
+    | none => return results
+    | some (ctx, _) => do
+      setMCtx ctx
+      return none)
 
-  for (lem, mod) in ← lemmas.getMatch ty do
-    trace[Tactic.librarySearch] "{lem}"
-    let result ← withTraceNode `Tactic.librarySearch (return m!"{exceptOptionEmoji ·} trying {lem}")
-      try
-        let lem ← mkConstWithFreshMVarLevels lem
-        let lem ← match mod with
-        | .none => pure lem
-        | .symm => mapForallTelescope (fun e => mkAppM ``Eq.symm #[e]) lem
-        | .mp => mapForallTelescope (fun e => mkAppM ``Iff.mp #[e]) lem
-        | .mpr => mapForallTelescope (fun e => mkAppM ``Iff.mpr #[e]) lem
-        let newGoals ← goal.apply lem
-        (try
-          for newGoal in newGoals do
-            trace[Tactic.librarySearch] "proving {← addMessageContextFull (mkMVar newGoal)}"
-          solveByElim newGoals required solveByElimDepth
-          pure $ some $ Sum.inr ()
-        catch _ =>
-          let res := some $ Sum.inl (← getMCtx, newGoals)
-          set state0
-          return res)
-    catch _ =>
-      set state0
-      pure none
-    match result with
-    | none => pure ()
-    | some (Sum.inr ()) => return none
-    | some (Sum.inl suggestion) => suggestions := suggestions.push suggestion
-
-  pure $ some suggestions
-
-def lines (ls : List MessageData) :=
-  MessageData.joinSep ls (MessageData.ofFormat Format.line)
+/-- Log a message if it looks like we ran out of time. -/
+def reportOutOfHeartbeats (stx : Syntax) : MetaM Unit := do
+  if (← heartbeatsPercent) ≥ 90 then
+    logInfoAt stx ("`library_search` stopped because it was running out of time.\n" ++
+      "You may get better results using `set_option maxHeartbeats 0`.")
 
 open Lean.Parser.Tactic
 
@@ -156,6 +174,7 @@ elab_rules : tactic | `(tactic| library_search%$tk $[using $[$required:term],*]?
   goal.withContext do
     let required := (← (required.getD #[]).mapM getFVarId).toList.map .fvar
     if let some suggestions ← librarySearch goal (← librarySearchLemmas.get) required then
+      reportOutOfHeartbeats tk
       for suggestion in suggestions do
         withMCtx suggestion.1 do
           addExactSuggestion tk (← instantiateMVars (mkMVar mvar)).headBeta
@@ -169,6 +188,7 @@ elab tk:"library_search%" : term <= expectedType => do
   let (_, introdGoal) ← goal.mvarId!.intros
   introdGoal.withContext do
     if let some suggestions ← librarySearch introdGoal (← librarySearchLemmas.get) [] then
+      reportOutOfHeartbeats tk
       for suggestion in suggestions do
         withMCtx suggestion.1 do
           addTermSuggestion tk (← instantiateMVars goal).headBeta
