@@ -704,21 +704,21 @@ noncomputable instance completeLattice [@DecidableRel α (· ≤ ·)] :
             exact WithBot.coe_le_coe.2 ⟨le_supᵢ₂ s ha, infᵢ₂_le s ha⟩
           · exact bot_le
         le_infₛ := fun S s ha => by
-          cases s
-          · exact bot_le
-          dsimp only -- Porting note: added
-          split_ifs with h
-          · exact
-              WithBot.some_le_some.2
-                ⟨supᵢ₂_le fun t hb => (WithBot.coe_le_coe.1 <| ha _ hb).1,
-                  le_infᵢ₂ fun t hb => (WithBot.coe_le_coe.1 <| ha _ hb).2⟩
-          rw [not_and_or, Classical.not_not] at h
-          rcases h with h | h
-          · exact ha _ h
-          cases
-            h fun t hb c hc =>
-              (WithBot.coe_le_coe.1 <| ha _ hb).1.trans <|
-                s.fst_le_snd.trans (WithBot.coe_le_coe.1 <| ha _ hc).2 }
+          cases s with
+          | none => exact bot_le
+          | some s =>
+            dsimp only -- Porting note: added
+            split_ifs with h
+            · exact
+                WithBot.some_le_some.2
+                  ⟨supᵢ₂_le fun t hb => (WithBot.coe_le_coe.1 <| ha _ hb).1,
+                    le_infᵢ₂ fun t hb => (WithBot.coe_le_coe.1 <| ha _ hb).2⟩
+            rw [not_and_or, Classical.not_not] at h
+            rcases h with h | h
+            · exact ha _ h
+            cases h fun t hb c hc =>
+                (WithBot.coe_le_coe.1 <| ha _ hb).1.trans <|
+                  s.fst_le_snd.trans (WithBot.coe_le_coe.1 <| ha _ hc).2 }
 
 @[simp, norm_cast]
 theorem coe_infₛ [@DecidableRel α (· ≤ ·)] (S : Set (Interval α)) :
