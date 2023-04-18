@@ -320,8 +320,8 @@ theorem Perfect.exists_nat_bool_injection [CompleteSpace α] :
   refine' ⟨fun x => (inducedMap D).2 ⟨x, hdom⟩, _, _, _⟩
   · rintro y ⟨x, rfl⟩
     exact map_mem ⟨_, hdom⟩ 0
-  · continuity
-    exact hdiam.map_continuous
+  · apply hdiam.map_continuous.comp
+    continuity
   intro x y hxy
   simpa only [← Subtype.val_inj] using hdisj'.map_injective hxy
 #align perfect.exists_nat_bool_injection Perfect.exists_nat_bool_injection
