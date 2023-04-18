@@ -52,7 +52,7 @@ theorem totient_eq_card_coprime (n : ℕ) : φ n = ((range n).filter n.coprime).
   rfl
 #align nat.totient_eq_card_coprime Nat.totient_eq_card_coprime
 
-/-- A characterisation of `nat.totient` that avoids `finset`. -/
+/-- A characterisation of `Nat.totient` that avoids `Finset`. -/
 theorem totient_eq_card_lt_and_coprime (n : ℕ) : φ n = Nat.card { m | m < n ∧ n.coprime m } := by
   let e : { m | m < n ∧ n.coprime m } ≃ Finset.filter n.coprime (Finset.range n) :=
     { toFun := fun m => ⟨m, by simpa only [Finset.mem_filter, Finset.mem_range] using m.property⟩
@@ -248,19 +248,19 @@ theorem totient_eq_iff_prime {p : ℕ} (hp : 0 < p) : p.totient = p - 1 ↔ p.Pr
   rwa [succ_le_iff, pos_iff_ne_zero]
 #align nat.totient_eq_iff_prime Nat.totient_eq_iff_prime
 
-theorem card_units_zMod_lt_sub_one {p : ℕ} (hp : 1 < p) [Fintype (ZMod p)ˣ] :
+theorem card_units_zmod_lt_sub_one {p : ℕ} (hp : 1 < p) [Fintype (ZMod p)ˣ] :
     Fintype.card (ZMod p)ˣ ≤ p - 1 := by
   haveI : NeZero p := ⟨(pos_of_gt hp).ne'⟩
   rw [ZMod.card_units_eq_totient p]
   exact Nat.le_pred_of_lt (Nat.totient_lt p hp)
-#align nat.card_units_zmod_lt_sub_one Nat.card_units_zMod_lt_sub_one
+#align nat.card_units_zmod_lt_sub_one Nat.card_units_zmod_lt_sub_one
 
 theorem prime_iff_card_units (p : ℕ) [Fintype (ZMod p)ˣ] :
     p.Prime ↔ Fintype.card (ZMod p)ˣ = p - 1 := by
   cases' eq_zero_or_neZero p with hp hp
   · subst hp
     simp only [ZMod, not_prime_zero, false_iff_iff, zero_tsub]
-    -- the substI created an non-defeq but subsingleton instance diamond; resolve it
+    -- the subst created an non-defeq but subsingleton instance diamond; resolve it
     suffices Fintype.card ℤˣ ≠ 0 by convert this
     simp
   rw [ZMod.card_units_eq_totient, Nat.totient_eq_iff_prime <| NeZero.pos p]

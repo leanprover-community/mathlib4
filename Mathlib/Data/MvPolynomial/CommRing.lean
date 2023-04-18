@@ -24,7 +24,7 @@ As in other polynomial files, we typically use the notation:
 
 + `σ : Type*` (indexing the variables)
 
-+ `R : Type*` `[CommRing R]` (the coefficients)
++ `R : Type _` `[CommRing R]` (the coefficients)
 
 + `s : σ →₀ ℕ`, a function from `σ` to `ℕ` which is zero away from a finite set.
 This will give rise to a monomial in `MvPolynomial σ R` which mathematicians might call `X^s`
@@ -40,11 +40,7 @@ This will give rise to a monomial in `MvPolynomial σ R` which mathematicians mi
 
 noncomputable section
 
-open Classical BigOperators
-
-open Set Function Finsupp AddMonoidAlgebra
-
-open BigOperators
+open Classical BigOperators Set Function Finsupp AddMonoidAlgebra
 
 universe u v
 
@@ -161,9 +157,9 @@ theorem eval₂Hom_X {R : Type u} (c : ℤ →+* S) (f : MvPolynomial R ℤ →+
     (fun p q hp hq => by
       rw [eval₂_add, hp, hq]
       exact (f.map_add _ _).symm)
-    fun p n hp => by
-    rw [eval₂_mul, eval₂_X, hp]
-    exact (f.map_mul _ _).symm
+    (fun p n hp => by
+      rw [eval₂_mul, eval₂_X, hp]
+      exact (f.map_mul _ _).symm)
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.eval₂_hom_X MvPolynomial.eval₂Hom_X
 
@@ -186,8 +182,7 @@ theorem degreeOf_sub_lt {x : σ} {f g : MvPolynomial σ R} {k : ℕ} (h : 0 < k)
     degreeOf x (f - g) < k := by
   rw [degreeOf_lt_iff h]
   intro m hm
-  by_contra hc
-  simp only [not_lt] at hc
+  by_contra' hc
   have h := support_sub σ f g hm
   simp only [mem_support_iff, Ne.def, coeff_sub, sub_eq_zero] at hm
   cases' Finset.mem_union.1 h with cf cg

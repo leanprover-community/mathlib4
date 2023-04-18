@@ -1184,8 +1184,6 @@ theorem ssubset_insert (h : a ∉ s) : s ⊂ insert a s :=
   ssubset_iff.mpr ⟨a, h, Subset.rfl⟩
 #align finset.ssubset_insert Finset.ssubset_insert
 
-#check Finset.mk
-
 @[elab_as_elim]
 theorem cons_induction {α : Type _} {p : Finset α → Prop} (empty : p ∅)
     (cons : ∀ ⦃a : α⦄ {s : Finset α} (h : a ∉ s), p s → p (cons a s h)) : ∀ s, p s
@@ -2514,6 +2512,14 @@ instance decidableDforallFinset {p : ∀ a ∈ s, Prop} [_hp : ∀ (a) (h : a �
 -- in lean4 it seems this is not the case.
 instance decidableSubsetFinset [DecidableEq α] {s t : Finset α} : Decidable (s ⊆ t) :=
   decidableDforallFinset
+
+-- porting notes: In lean3, the above was picked up when decidability of s ⊂ t was needed
+-- in lean4 it seems this is not the case.
+instance decidableSSubsetFinset [DecidableEq α] {s t : Finset α} : Decidable (s ⊂ t) := by
+  rw [ssubset_iff_subset_ne]
+  have h₁ : Decidable (s ⊆ t) := decidableSubsetFinset
+  have h₂ : Decidable (s ≠ t) := instDecidableNot
+  exact instDecidableAnd
 
 /-- decidable equality for functions whose domain is bounded by finsets -/
 instance decidableEqPiFinset {β : α → Type _} [_h : ∀ a, DecidableEq (β a)] :
