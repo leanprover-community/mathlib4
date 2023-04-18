@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Felix Weilacher
 
 ! This file was ported from Lean 3 source module topology.perfect
-! leanprover-community/mathlib commit 4c19a16e4b705bf135cf9a80ac18fcc99c438514
+! leanprover-community/mathlib commit 49b7f94aab3a3bdca1f9f34c5d818afb253b3993
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
