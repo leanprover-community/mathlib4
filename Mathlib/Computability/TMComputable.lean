@@ -75,7 +75,7 @@ def Stmt : Type :=
   Turing.TM2.Stmt tm.Γ tm.Λ tm.σ
 #align turing.fin_tm2.stmt Turing.FinTM2.Stmt
 
--- Porting note: The handler couldn't derive this.
+-- Porting note: The `deriving Inhabited` handler couldn't derive this.
 instance inhabitedStmt : Inhabited (Stmt tm) :=
   inferInstanceAs (Inhabited (Turing.TM2.Stmt tm.Γ tm.Λ tm.σ))
 #align turing.fin_tm2.stmt.inhabited Turing.FinTM2.inhabitedStmt
