@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 
 ! This file was ported from Lean 3 source module data.finset.lattice
-! leanprover-community/mathlib commit 1c857a1f6798cb054be942199463c2cf904cb937
+! leanprover-community/mathlib commit a968611b6a772cf7bdf61146e6d62fc882c92372
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
