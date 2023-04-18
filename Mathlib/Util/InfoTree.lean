@@ -45,8 +45,8 @@ def substantive (t : TacticInvocation) : Bool :=
   | _ => true
 
 inductive Kind
-| refl (ty : Expr)
-| rw (symm : Bool) (t : Term)
+| refl --(ty : Expr)
+| rw --(symm : Bool) (t : Term)
 -- | exact
 -- | apply
 -- | refine
@@ -61,13 +61,14 @@ open Meta
 def runMetaM (t : TacticInvocation) (x : MVarId → MetaM α) : MVarId → IO α :=
   fun g => t.ctx.runMetaM {} <| Meta.withMCtx t.info.mctxBefore <| g.withContext <| do x g
 
-def kind (t : TacticInvocation) : IO Kind :=
+def kind (t : TacticInvocation) : Kind :=
   match t.name with
   | some `Lean.Parser.Tactic.refl =>
-    .refl <$> t.runMetaM (fun g => g.getType) t.info.goalsBefore.head!
+     .refl --<$> t.runMetaM (fun g => do instantiateMVars (← g.getType)) t.info.goalsBefore.head!
   -- | some `Lean.Parser.Tactic.rwRule =>
   --   return .rw sorry sorry
-  | _ => pure .other
+  | _ =>  .other
+
 
 end Lean.Elab.TacticInvocation
 
@@ -194,7 +195,9 @@ def tacticsInDecl (mod? : Option Name) (decl : Name) : MetaM (List TacticInvocat
   let tree ← declInfoTree mod? decl
   return tree.tactics
 
-def reflInDecl (mod? : Option Name) (decl : Name) : MetaM (List Expr) := do
-  (← tacticsInDecl mod? decl).filterMapM fun t => do match ← t.kind with
-  | .refl ty => return some ty
+open Meta
+
+def reflInDecl (mod? : Option Name) (decl : Name) : MetaM (List Format) := do
+  (← tacticsInDecl mod? decl).filterMapM fun t => do match t.kind with
+  | .refl => t.runMetaM (fun g => do ppExpr (← g.getType)) t.info.goalsBefore.head!
   | _ => return none
