@@ -78,7 +78,7 @@ instance [IsEmpty α] : IsEmpty (NonemptyInterval α) :=
 instance [Subsingleton α] : Subsingleton (NonemptyInterval α) :=
   toDualProd_injective.subsingleton
 
-instance : LE (NonemptyInterval α) :=
+instance le : LE (NonemptyInterval α) :=
   ⟨fun s t => t.fst ≤ s.fst ∧ s.snd ≤ t.snd⟩
 
 theorem le_def : s ≤ t ↔ t.fst ≤ s.fst ∧ s.snd ≤ t.snd :=
@@ -121,7 +121,7 @@ variable [Preorder α] [Preorder β] [Preorder γ] [Preorder δ] {s : NonemptyIn
 instance : Preorder (NonemptyInterval α) :=
   Preorder.lift toDualProd
 
-instance : CoeTC (NonemptyInterval α) (Set α) :=
+instance : Coe (NonemptyInterval α) (Set α) :=
   ⟨fun s => Icc s.fst s.snd⟩
 
 instance (priority := 100) : Membership α (NonemptyInterval α) :=
@@ -242,31 +242,33 @@ instance : SetLike (NonemptyInterval α) α where
   coe s := Icc s.fst s.snd
   coe_injective' := coeHom.injective
 
-@[simp] --Porting note: remove `norm_cast` attribute
+@[simp, norm_cast]
 theorem coe_subset_coe : (s : Set α) ⊆ t ↔ (s : NonemptyInterval α) ≤ t :=
   (@coeHom α _).le_iff_le
 #align nonempty_interval.coe_subset_coe NonemptyInterval.coe_subset_coe
 
-@[simp] --Porting note: remove `norm_cast` attribute
+@[simp, norm_cast]
 theorem coe_ssubset_coe : (s : Set α) ⊂ t ↔ s < t :=
   (@coeHom α _).lt_iff_lt
 #align nonempty_interval.coe_ssubset_coe NonemptyInterval.coe_ssubset_coe
 
+-- Porting note: Did I port this correctly?
 @[simp]
-theorem coe_coeHom : (coeHom : NonemptyInterval α → Set α) = coe :=
+theorem coe_coeHom : (coeHom : NonemptyInterval α → Set α) = Coe.coe :=
   rfl
 #align nonempty_interval.coe_coe_hom NonemptyInterval.coe_coeHom
 
-@[simp] --Porting note: remove `norm_cast` attribute
+@[simp, norm_cast]
 theorem coe_pure (a : α) : (pure a : Set α) = {a} :=
   Icc_self _
 #align nonempty_interval.coe_pure NonemptyInterval.coe_pure
 
 @[simp]
-theorem mem_pure : b ∈ pure a ↔ b = a := by rw [← SetLike.mem_coe, coe_pure, mem_singleton_iff]
+theorem mem_pure : b ∈ pure a ↔ b = a := by
+  rw [← SetLike.mem_coe, coe_pure, mem_singleton_iff]
 #align nonempty_interval.mem_pure NonemptyInterval.mem_pure
 
-@[simp] --Porting note: remove `norm_cast` attribute
+@[simp, norm_cast]
 theorem coe_top [BoundedOrder α] : ((⊤ : NonemptyInterval α) : Set α) = univ :=
   Icc_bot_top
 #align nonempty_interval.coe_top NonemptyInterval.coe_top
@@ -326,14 +328,14 @@ instance : Inhabited (Interval α) := WithBot.inhabited
 instance : LE (Interval α) := WithBot.le
 instance : OrderBot (Interval α) := WithBot.orderBot
 
-instance : CoeTC (NonemptyInterval α) (Interval α) :=
-  WithBot.hasCoeT
+instance : Coe (NonemptyInterval α) (Interval α) :=
+  WithBot.coe
 
-instance canLift : CanLift (Interval α) (NonemptyInterval α) coe fun r => r ≠ ⊥ :=
+instance canLift : CanLift (Interval α) (NonemptyInterval α) (↑) fun r => r ≠ ⊥ :=
   WithBot.canLift
 #align interval.can_lift Interval.canLift
 
-theorem coe_injective : Injective (coe : NonemptyInterval α → Interval α) :=
+theorem coe_injective : Injective ((↑) : NonemptyInterval α → Interval α) :=
   WithBot.coe_injective
 #align interval.coe_injective Interval.coe_injective
 
@@ -461,6 +463,13 @@ instance : SetLike (Interval α) α where
   coe := coeHom
   coe_injective' := coeHom.injective
 
+-- Porting note: Somehow `Interval` unfolds to `(WithBot (NonemptyInterval α))`
+-- and lean cannot find the instance `#synth Coe (Interval α) (Set α)`.
+-- Added this instance as a workaround.
+instance : SetLike (WithBot (NonemptyInterval α)) α where
+  coe := coeHom
+  coe_injective' := coeHom.injective
+
 @[simp, norm_cast]
 theorem coe_subset_coe : (s : Set α) ⊆ t ↔ s ≤ t :=
   (@coeHom α _).le_iff_le
@@ -493,9 +502,9 @@ theorem coe_top [BoundedOrder α] : ((⊤ : Interval α) : Set α) = univ :=
 
 @[simp, norm_cast]
 theorem coe_dual (s : Interval α) : (dual s : Set αᵒᵈ) = ofDual ⁻¹' s := by
-  cases s
-  · rfl
-  exact s.coe_dual
+  cases s with
+  | none => rfl
+  | some s₀ => exact NonemptyInterval.coe_dual s₀
 #align interval.coe_dual Interval.coe_dual
 
 theorem subset_coe_map (f : α →o β) : ∀ s : Interval α, f '' s ⊆ s.map f
@@ -564,20 +573,22 @@ instance lattice : Lattice (Interval α) :=
         lift t to NonemptyInterval α using ne_bot_of_le_ne_bot WithBot.coe_ne_bot hb
         lift c to NonemptyInterval α using ne_bot_of_le_ne_bot WithBot.coe_ne_bot hc
         change _ ≤ dite _ _ _
-        simp only [WithBot.some_eq_coe, WithBot.coe_le_coe] at hb hc⊢
+        -- Porting note: was `simp only` but that fails to use the second lemma.
+        rw [WithBot.some_eq_coe, WithBot.coe_le_coe] at hb hc
+        simp only [WithBot.some_eq_coe, WithBot.coe_le_coe] -- at hb hc ⊢
         rw [dif_pos, WithBot.coe_le_coe]
         exact ⟨sup_le hb.1 hc.1, le_inf hb.2 hc.2⟩
         exact ⟨hb.1.trans <| s.fst_le_snd.trans hc.2, hc.1.trans <| s.fst_le_snd.trans hb.2⟩ }
 
 @[simp, norm_cast]
-theorem coe_inf (s t : Interval α) : (↑(s ⊓ t) : Set α) = s ∩ t := by
+theorem coe_inf (s t : Interval α) : (↑(s ⊓ t) : Set α) = ↑s ∩ ↑t := by
   cases s
   · rw [WithBot.none_eq_bot, bot_inf_eq]
     exact (empty_inter _).symm
   cases t
   · rw [WithBot.none_eq_bot, inf_bot_eq]
     exact (inter_empty _).symm
-  refine' (_ : coe (dite _ _ _) = _).trans Icc_inter_Icc.symm
+  refine' (_ : Coe.coe (dite _ _ _) = _).trans Icc_inter_Icc.symm
   split_ifs
   · rfl
   ·
@@ -593,7 +604,7 @@ end Decidable
 @[simp, norm_cast]
 theorem disjoint_coe (s t : Interval α) : Disjoint (s : Set α) t ↔ Disjoint s t := by
   classical
-    rw [disjoint_iff_inf_le, disjoint_iff_inf_le, le_eq_subset, ← coe_subset_coe, coe_inf]
+    rw [disjoint_iff_inf_le, disjoint_iff_inf_le, ← coe_subset_coe, coe_inf]
     rfl
 #align interval.disjoint_coe Interval.disjoint_coe
 
@@ -631,7 +642,8 @@ theorem mem_coe_interval [PartialOrder α] {s : NonemptyInterval α} {x : α} :
 #align nonempty_interval.mem_coe_interval NonemptyInterval.mem_coe_interval
 
 @[simp, norm_cast]
-theorem coe_sup_interval [Lattice α] (s t : NonemptyInterval α) : (↑(s ⊔ t) : Interval α) = s ⊔ t :=
+theorem coe_sup_interval [Lattice α] (s t : NonemptyInterval α) :
+    (↑(s ⊔ t) : Interval α) = ↑s ⊔ ↑t :=
   rfl
 #align nonempty_interval.coe_sup_interval NonemptyInterval.coe_sup_interval
 
@@ -643,9 +655,10 @@ section CompleteLattice
 
 variable [CompleteLattice α]
 
-noncomputable instance complete_lattice [@DecidableRel α (· ≤ ·)] :
+noncomputable instance completeLattice [@DecidableRel α (· ≤ ·)] :
     CompleteLattice (Interval α) := by
-  classical exact
+  classical
+  exact
       { Interval.lattice,
         Interval.boundedOrder with
         supₛ := fun S =>
@@ -657,14 +670,16 @@ noncomputable instance complete_lattice [@DecidableRel α (· ≤ ·)] :
                 obtain ⟨s, hs, ha⟩ := not_subset.1 h
                 lift s to NonemptyInterval α using ha
                 exact infᵢ₂_le_of_le s hs (le_supᵢ₂_of_le s hs s.fst_le_snd)⟩
-        le_sup := fun s s ha => by
-          split_ifs
+        le_supₛ := fun s s ha => by
+          dsimp only -- Porting note: added
+          split_ifs with h
           · exact (h ha).le
           cases s
           · exact bot_le
           · exact WithBot.some_le_some.2 ⟨infᵢ₂_le _ ha, le_supᵢ₂_of_le _ ha le_rfl⟩
-        sup_le := fun s s ha => by
-          split_ifs
+        supₛ_le := fun s s ha => by
+          dsimp only -- Porting note: added
+          split_ifs with h
           · exact bot_le
           obtain ⟨b, hs, hb⟩ := not_subset.1 h
           lift s to NonemptyInterval α using ne_bot_of_le_ne_bot hb (ha _ hs)
@@ -682,22 +697,23 @@ noncomputable instance complete_lattice [@DecidableRel α (· ≤ ·)] :
                   ⨅ (s : NonemptyInterval α) (h : ↑s ∈ S), s.snd⟩,
                 supᵢ₂_le fun s hs => le_infᵢ₂ <| h.2 hs⟩
           else ⊥
-        inf_le := fun s s ha => by
-          split_ifs
+        infₛ_le := fun s s ha => by
+          dsimp only -- Porting note: added
+          split_ifs with h
           · lift s to NonemptyInterval α using ne_of_mem_of_not_mem ha h.1
             exact WithBot.coe_le_coe.2 ⟨le_supᵢ₂ s ha, infᵢ₂_le s ha⟩
           · exact bot_le
-        le_inf := fun S s ha => by
+        le_infₛ := fun S s ha => by
           cases s
           · exact bot_le
-          split_ifs
-          ·
-            exact
+          dsimp only -- Porting note: added
+          split_ifs with h
+          · exact
               WithBot.some_le_some.2
                 ⟨supᵢ₂_le fun t hb => (WithBot.coe_le_coe.1 <| ha _ hb).1,
                   le_infᵢ₂ fun t hb => (WithBot.coe_le_coe.1 <| ha _ hb).2⟩
           rw [not_and_or, Classical.not_not] at h
-          cases h
+          rcases h with h | h
           · exact ha _ h
           cases
             h fun t hb c hc =>
