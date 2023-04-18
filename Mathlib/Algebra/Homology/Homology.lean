@@ -310,14 +310,18 @@ def homologyFunctor [HasCokernels V] (i : ι) : HomologicalComplex V c ⥤ V whe
 def gradedHomologyFunctor [HasCokernels V] : HomologicalComplex V c ⥤ GradedObject ι V where
   obj C i := C.homology i
   map {C C'} f i := (homologyFunctor V c i).map f
-  map_id := by
-    intros ; ext
-    simp only [Pi.id_apply, homology.π_map, homologyFunctor_map, kernelSubobjectMap_id,
-      Hom.sqFrom_id, Category.id_comp, Category.comp_id]
-  map_comp := by
-    intros ; ext
-    simp only [Hom.sqFrom_comp, kernelSubobjectMap_comp, homology.π_map_assoc, Pi.comp_apply,
-      homology.π_map, homologyFunctor_map, Category.assoc]
+  map_id _ := by
+    ext
+    simp only [GradedObject.categoryOfGradedObjects_id]
+    ext
+    simp only [homology.π_map, homologyFunctor_map, kernelSubobjectMap_id, Hom.sqFrom_id,
+      Category.id_comp, Category.comp_id]
+  map_comp _ _ := by
+    ext
+    simp only [GradedObject.categoryOfGradedObjects_comp]
+    ext
+    simp only [Hom.sqFrom_comp, kernelSubobjectMap_comp, homology.π_map_assoc, homology.π_map,
+      homologyFunctor_map, Category.assoc]
 #align graded_homology_functor gradedHomologyFunctor
 
 end
