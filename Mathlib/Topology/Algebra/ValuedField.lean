@@ -8,9 +8,9 @@ Authors: Patrick Massot
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.Algebra.Valuation
-import Mathbin.Topology.Algebra.WithZeroTopology
-import Mathbin.Topology.Algebra.UniformField
+import Mathlib.Topology.Algebra.Valuation
+import Mathlib.Topology.Algebra.WithZeroTopology
+import Mathlib.Topology.Algebra.UniformField
 
 /-!
 # Valued fields and their completions
@@ -52,8 +52,7 @@ variable (v : Valuation K Γ₀)
 -- and the fact that a valued field is completable
 -- [BouAC, VI.5.1 Lemme 1]
 theorem Valuation.inversion_estimate {x y : K} {γ : Γ₀ˣ} (y_ne : y ≠ 0)
-    (h : v (x - y) < min (γ * (v y * v y)) (v y)) : v (x⁻¹ - y⁻¹) < γ :=
-  by
+    (h : v (x - y) < min (γ * (v y * v y)) (v y)) : v (x⁻¹ - y⁻¹) < γ := by
   have hyp1 : v (x - y) < γ * (v y * v y) := lt_of_lt_of_le h (min_le_left _ _)
   have hyp1' : v (x - y) * (v y * v y)⁻¹ < γ := mul_inv_lt_of_lt_mul₀ hyp1
   have hyp2 : v (x - y) < v y := lt_of_lt_of_le h (min_le_right _ _)
@@ -102,8 +101,7 @@ instance (priority := 100) Valued.topologicalDivisionRing [Valued K Γ₀] :
 #align valued.topological_division_ring Valued.topologicalDivisionRing
 
 /-- A valued division ring is separated. -/
-instance (priority := 100) ValuedRing.separated [Valued K Γ₀] : SeparatedSpace K :=
-  by
+instance (priority := 100) ValuedRing.separated [Valued K Γ₀] : SeparatedSpace K := by
   rw [separated_iff_t2]
   apply TopologicalAddGroup.t2Space_of_zero_sep
   intro x x_ne
@@ -120,8 +118,7 @@ open WithZeroTopology
 
 open Valued
 
-theorem Valued.continuous_valuation [Valued K Γ₀] : Continuous (v : K → Γ₀) :=
-  by
+theorem Valued.continuous_valuation [Valued K Γ₀] : Continuous (v : K → Γ₀) := by
   rw [continuous_iff_continuousAt]
   intro x
   rcases eq_or_ne x 0 with (rfl | h)
@@ -156,8 +153,7 @@ instance (priority := 100) completable : CompletableTopField K :=
   { ValuedRing.separated with
     nice := by
       rintro F hF h0
-      have : ∃ γ₀ : Γ₀ˣ, ∃ M ∈ F, ∀ x ∈ M, (γ₀ : Γ₀) ≤ v x :=
-        by
+      have : ∃ γ₀ : Γ₀ˣ, ∃ M ∈ F, ∀ x ∈ M, (γ₀ : Γ₀) ≤ v x := by
         rcases filter.inf_eq_bot_iff.mp h0 with ⟨U, U_in, M, M_in, H⟩
         rcases valued.mem_nhds_zero.mp U_in with ⟨γ₀, hU⟩
         exists γ₀, M, M_in
@@ -211,16 +207,14 @@ noncomputable def extension : hat K → Γ₀ :=
 #align valued.extension Valued.extension
 
 /- ./././Mathport/Syntax/Translate/Basic.lean:635:2: warning: expanding binder collection (x y «expr ∈ » V') -/
-theorem continuous_extension : Continuous (Valued.extension : hat K → Γ₀) :=
-  by
+theorem continuous_extension : Continuous (Valued.extension : hat K → Γ₀) := by
   refine' completion.dense_inducing_coe.continuous_extend _
   intro x₀
   rcases eq_or_ne x₀ 0 with (rfl | h)
   · refine' ⟨0, _⟩
     erw [← completion.dense_inducing_coe.to_inducing.nhds_eq_comap]
     exact valued.continuous_valuation.tendsto' 0 0 (map_zero v)
-  · have preimage_one : v ⁻¹' {(1 : Γ₀)} ∈ 𝓝 (1 : K) :=
-      by
+  · have preimage_one : v ⁻¹' {(1 : Γ₀)} ∈ 𝓝 (1 : K) := by
       have : (v (1 : K) : Γ₀) ≠ 0 := by
         rw [Valuation.map_one]
         exact zero_ne_one.symm
@@ -232,8 +226,7 @@ theorem continuous_extension : Continuous (Valued.extension : hat K → Γ₀) :
     have :
       ∃ V' ∈ 𝓝 (1 : hat K), (0 : hat K) ∉ V' ∧ ∀ (x) (_ : x ∈ V') (y) (_ : y ∈ V'), x * y⁻¹ ∈ V :=
       by
-      have : tendsto (fun p : hat K × hat K => p.1 * p.2⁻¹) ((𝓝 1).Prod (𝓝 1)) (𝓝 1) :=
-        by
+      have : tendsto (fun p : hat K × hat K => p.1 * p.2⁻¹) ((𝓝 1).Prod (𝓝 1)) (𝓝 1) := by
         rw [← nhds_prod_eq]
         conv =>
           congr
@@ -255,22 +248,18 @@ theorem continuous_extension : Continuous (Valued.extension : hat K → Γ₀) :
       · rintro x ⟨hx, _⟩ y ⟨hy, _⟩
         apply hU <;> assumption
     rcases this with ⟨V', V'_in, zeroV', hV'⟩
-    have nhds_right : (fun x => x * x₀) '' V' ∈ 𝓝 x₀ :=
-      by
-      have l : Function.LeftInverse (fun x : hat K => x * x₀⁻¹) fun x : hat K => x * x₀ :=
-        by
+    have nhds_right : (fun x => x * x₀) '' V' ∈ 𝓝 x₀ := by
+      have l : Function.LeftInverse (fun x : hat K => x * x₀⁻¹) fun x : hat K => x * x₀ := by
         intro x
         simp only [mul_assoc, mul_inv_cancel h, mul_one]
-      have r : Function.RightInverse (fun x : hat K => x * x₀⁻¹) fun x : hat K => x * x₀ :=
-        by
+      have r : Function.RightInverse (fun x : hat K => x * x₀⁻¹) fun x : hat K => x * x₀ := by
         intro x
         simp only [mul_assoc, inv_mul_cancel h, mul_one]
       have c : Continuous fun x : hat K => x * x₀⁻¹ := continuous_id.mul continuous_const
       rw [image_eq_preimage_of_inverse l r]
       rw [← mul_inv_cancel h] at V'_in
       exact c.continuous_at V'_in
-    have : ∃ z₀ : K, ∃ y₀ ∈ V', coe z₀ = y₀ * x₀ ∧ z₀ ≠ 0 :=
-      by
+    have : ∃ z₀ : K, ∃ y₀ ∈ V', coe z₀ = y₀ * x₀ ∧ z₀ ≠ 0 := by
       rcases completion.dense_range_coe.mem_nhds nhds_right with ⟨z₀, y₀, y₀_in, H : y₀ * x₀ = z₀⟩
       refine' ⟨z₀, y₀, y₀_in, ⟨H.symm, _⟩⟩
       rintro rfl
@@ -295,16 +284,14 @@ theorem continuous_extension : Continuous (Valued.extension : hat K → Γ₀) :
 #align valued.continuous_extension Valued.continuous_extension
 
 @[simp, norm_cast]
-theorem extension_extends (x : K) : extension (x : hat K) = v x :=
-  by
+theorem extension_extends (x : K) : extension (x : hat K) = v x := by
   refine' completion.dense_inducing_coe.extend_eq_of_tendsto _
   rw [← completion.dense_inducing_coe.nhds_eq_comap]
   exact valued.continuous_valuation.continuous_at
 #align valued.extension_extends Valued.extension_extends
 
 /-- the extension of a valuation on a division ring to its completion. -/
-noncomputable def extensionValuation : Valuation (hat K) Γ₀
-    where
+noncomputable def extensionValuation : Valuation (hat K) Γ₀ where
   toFun := Valued.extension
   map_zero' := by
     rw [← v.map_zero, ← Valued.extension_extends (0 : K)]
@@ -343,8 +330,7 @@ theorem closure_coe_completion_v_lt {γ : Γ₀ˣ} :
   by
   ext x
   let γ₀ := extension_valuation x
-  suffices γ₀ ≠ 0 → (x ∈ closure (coe '' { x : K | v x < (γ : Γ₀) }) ↔ γ₀ < (γ : Γ₀))
-    by
+  suffices γ₀ ≠ 0 → (x ∈ closure (coe '' { x : K | v x < (γ : Γ₀) }) ↔ γ₀ < (γ : Γ₀)) by
     cases eq_or_ne γ₀ 0
     · simp only [h, (Valuation.zero_iff _).mp h, mem_set_of_eq, Valuation.map_zero, Units.zero_lt,
         iff_true_iff]
@@ -368,14 +354,11 @@ theorem closure_coe_completion_v_lt {γ : Γ₀ˣ} :
     exact ⟨⟨y, ⟨y, hx, rfl⟩⟩, hy₂⟩
 #align valued.closure_coe_completion_v_lt Valued.closure_coe_completion_v_lt
 
-noncomputable instance valuedCompletion : Valued (hat K) Γ₀
-    where
+noncomputable instance valuedCompletion : Valued (hat K) Γ₀ where
   V := extensionValuation
-  is_topological_valuation s :=
-    by
+  is_topological_valuation s := by
     suffices
-      has_basis (𝓝 (0 : hat K)) (fun _ => True) fun γ : Γ₀ˣ => { x | extension_valuation x < γ }
-      by
+      has_basis (𝓝 (0 : hat K)) (fun _ => True) fun γ : Γ₀ˣ => { x | extension_valuation x < γ } by
       rw [this.mem_iff]
       exact exists_congr fun γ => by simp
     simp_rw [← closure_coe_completion_v_lt]
