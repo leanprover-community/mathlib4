@@ -204,6 +204,7 @@ abbrev cyclesMap (f : C₁ ⟶ C₂) (i : ι) : (C₁.cycles i : V) ⟶ (C₂.cy
   Subobject.factorThru _ ((C₁.cycles i).arrow ≫ f.f i) (kernelSubobject_factors _ _ (by simp))
 #align cycles_map cyclesMap
 
+-- Porting note: Originally `@[simp, reassoc.1, elementwise]`
 @[reassoc (attr := simp), elementwise (attr := simp)]
 theorem cyclesMap_arrow (f : C₁ ⟶ C₂) (i : ι) :
     cyclesMap f i ≫ (C₂.cycles i).arrow = (C₁.cycles i).arrow ≫ f.f i := by simp
@@ -267,6 +268,7 @@ variable [HasEqualizers V] [HasImages V] [HasImageMaps V]
 
 variable {C₁ C₂ : HomologicalComplex V c} (f : C₁ ⟶ C₂)
 
+-- Porting note: Originally `@[simp, reassoc.1]`
 @[reassoc (attr := simp)]
 theorem boundariesToCycles_naturality (i : ι) :
     boundariesMap f i ≫ C₂.boundariesToCycles i = C₁.boundariesToCycles i ≫ cyclesMap f i := by
@@ -291,12 +293,14 @@ def homologyFunctor [HasCokernels V] (i : ι) : HomologicalComplex V c ⥤ V whe
   -- here, but universe implementation details get in the way...
   obj C := C.homology i
   map {C₁ C₂} f := homology.map _ _ (f.sqTo i) (f.sqFrom i) rfl
-  map_id := by
-    intros ; ext1
+  map_id _ := by
+    simp only
+    ext1
     simp only [homology.π_map, kernelSubobjectMap_id, Hom.sqFrom_id, Category.id_comp,
       Category.comp_id]
-  map_comp := by
-    intros ; ext1
+  map_comp _ _ := by
+    simp only
+    ext1
     simp only [Hom.sqFrom_comp, kernelSubobjectMap_comp, homology.π_map_assoc, homology.π_map,
       Category.assoc]
 #align homology_functor homologyFunctor
