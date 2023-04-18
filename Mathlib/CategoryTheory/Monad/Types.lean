@@ -10,8 +10,9 @@ Authors: Johannes Hölzl, Bhavik Mehta
 -/
 import Mathlib.CategoryTheory.Monad.Basic
 import Mathlib.CategoryTheory.Monad.Kleisli
-import Mathlib.CategoryTheory.Category.Kleisli
+import Mathlib.CategoryTheory.Category.KleisliCat
 import Mathlib.CategoryTheory.Types
+import Mathlib.Control.Basic -- Porting note: Needed for joinM_map_map
 
 /-!
 
@@ -28,51 +29,64 @@ section
 
 universe u
 
-variable (m : Type u → Type u) [Monad m] [LawfulMonad m]
+variable (m : Type u → Type u) [_root_.Monad m] [LawfulMonad m]
+
+-- Porting note: Used `apply ...` instead of the direct term
+-- in a few proofs below to avoid introducing typeclass instances inline.
 
 /-- A lawful `control.monad` gives a category theory `monad` on the category of types.
 -/
-@[simps]
+@[simps!]
 def ofTypeMonad : Monad (Type u) where
   toFunctor := ofTypeFunctor m
-  η' := ⟨@pure m _, fun α β f => (LawfulApplicative.map_comp_pure f).symm⟩
-  μ' := ⟨@joinM m _, fun α β (f : α → β) => funext fun a => joinM_map_map f a⟩
-  assoc' α := funext fun a => joinM_map_joinM a
-  left_unit' α := funext fun a => joinM_pure a
-  right_unit' α := funext fun a => joinM_map_pure a
+  η' := ⟨@pure m _, fun α β f => funext fun x => (LawfulApplicative.map_pure f x).symm⟩
+  μ' := ⟨@joinM m _, fun α β (f : α → β) => funext fun a => by apply joinM_map_map⟩
+  assoc' α := funext fun a => by apply joinM_map_joinM
+  left_unit' α := funext fun a => by apply joinM_pure
+  right_unit' α := funext fun a => by apply joinM_map_pure
 #align category_theory.of_type_monad CategoryTheory.ofTypeMonad
 
 /-- The `Kleisli` category of a `control.monad` is equivalent to the `kleisli` category of its
 category-theoretic version, provided the monad is lawful.
 -/
 @[simps]
-def eq : KleisliCat m ≌ Kleisli (of_type_monad m) where
-  Functor :=
+def eq : KleisliCat m ≌ Kleisli (ofTypeMonad m) where
+  functor :=
     { obj := fun X => X
-      map := fun X Y f => f
-      map_id' := fun X => rfl
-      map_comp' := fun X Y Z f g => by
-        unfold_projs
-        ext
-        dsimp
-        simp [joinM, seq_bind_eq] }
+      map := fun f => f
+      map_id := fun X => rfl
+      map_comp := fun f g => by
+        --unfold_projs
+        funext t
+        -- Porting note: missing tactic `unfold_projs`, using `change` instead.
+        change _ = joinM (g <$> (f t))
+        simp only [joinM, seq_bind_eq, Function.comp.left_id]
+        rfl }
   inverse :=
     { obj := fun X => X
-      map := fun X Y f => f
-      map_id' := fun X => rfl
-      map_comp' := fun X Y Z f g => by
-        unfold_projs
-        ext
+      map := fun f => f
+      map_id := fun X => rfl
+      map_comp := fun f g => by
+        --unfold_projs
+        --Porting note: Need these instances for some lemmas below.
+        --Should they be added as actual instances elsewhere?
+        letI : _root_.Monad (ofTypeMonad m).obj :=
+          show _root_.Monad m from inferInstance
+        letI : LawfulMonad (ofTypeMonad m).obj :=
+          show LawfulMonad m from inferInstance
+        funext t
         dsimp
-        simp [joinM, seq_bind_eq] }
+        -- Porting note: missing tactic `unfold_projs`, using `change` instead.
+        change joinM (g <$> (f t)) = _
+        simp only [joinM, seq_bind_eq, Function.comp.left_id]
+        rfl }
   unitIso := by
-    refine' nat_iso.of_components (fun X => iso.refl X) fun X Y f => _
+    refine' NatIso.ofComponents (fun X => Iso.refl X) fun f => _
     change f >=> pure = pure >=> f
     simp [functor_norm]
-  counitIso := NatIso.ofComponents (fun X => Iso.refl X) fun X Y f => by tidy
+  counitIso := NatIso.ofComponents (fun X => Iso.refl X) fun f => by aesop_cat
 #align category_theory.eq CategoryTheory.eq
 
 end
 
 end CategoryTheory
-
