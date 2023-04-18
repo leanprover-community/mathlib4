@@ -64,16 +64,13 @@ def tsnd {α α'} (f : α → F α') : t β α → F (t β α') :=
 
 variable [IsLawfulBitraversable t] [LawfulApplicative F] [LawfulApplicative G]
 
--- Porting note: Added this instance to get rid of errors.
-private instance : Monad id := Id.instMonadId
-
 @[higher_order tfst_id]
-theorem id_tfst : ∀ {α β} (x : t α β), tfst id.mk x = id.mk x :=
+theorem id_tfst : ∀ {α β} (x : t α β), tfst (F := Id) pure x = pure x :=
   id_bitraverse
 #align bitraversable.id_tfst Bitraversable.id_tfst
 
 @[higher_order tsnd_id]
-theorem id_tsnd : ∀ {α β} (x : t α β), tsnd id.mk x = id.mk x :=
+theorem id_tsnd : ∀ {α β} (x : t α β), tsnd (F := Id) pure x = pure x :=
   id_bitraverse
 #align bitraversable.id_tsnd Bitraversable.id_tsnd
 
@@ -117,13 +114,13 @@ open Function
 
 @[higher_order]
 theorem tfst_eq_fst_id {α α' β} (f : α → α') (x : t α β) :
-    tfst (id.mk ∘ f) x = id.mk (fst f x) := by
+    tfst (F := Id) (pure ∘ f) x = pure (fst f x) := by
   apply bitraverse_eq_bimap_id
 #align bitraversable.tfst_eq_fst_id Bitraversable.tfst_eq_fst_id
 
 @[higher_order]
 theorem tsnd_eq_snd_id {α β β'} (f : β → β') (x : t α β) :
-    tsnd (id.mk ∘ f) x = id.mk (snd f x) := by
+    tsnd (F := Id) (pure ∘ f) x = pure (snd f x) := by
   apply bitraverse_eq_bimap_id
 #align bitraversable.tsnd_eq_snd_id Bitraversable.tsnd_eq_snd_id
 
