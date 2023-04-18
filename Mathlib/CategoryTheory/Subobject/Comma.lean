@@ -8,9 +8,9 @@ Authors: Markus Himmel
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Subobject.WellPowered
-import Mathbin.CategoryTheory.Limits.Preserves.Finite
-import Mathbin.CategoryTheory.Limits.Shapes.FiniteLimits
+import Mathlib.CategoryTheory.Subobject.WellPowered
+import Mathlib.CategoryTheory.Limits.Preserves.Finite
+import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
 
 /-!
 # Subobjects in the category of structured arrows
@@ -51,8 +51,7 @@ variable {S : D} {T : C ⥤ D}
 /-- Every subobject of a structured arrow can be projected to a subobject of the underlying
     object. -/
 def projectSubobject [HasLimits C] [PreservesLimits T] {A : StructuredArrow S T} :
-    Subobject A → Subobject A.right :=
-  by
+    Subobject A → Subobject A.right := by
   refine' subobject.lift (fun P f hf => subobject.mk f.right) _
   intro P Q f g hf hg i hi
   refine' subobject.mk_eq_mk_of_comm _ _ ((proj S T).mapIso i) _
@@ -68,8 +67,7 @@ theorem projectSubobject_mk [HasLimits C] [PreservesLimits T] {A P : StructuredA
 theorem projectSubobject_factors [HasLimits C] [PreservesLimits T] {A : StructuredArrow S T} :
     ∀ P : Subobject A, ∃ q, q ≫ T.map (projectSubobject P).arrow = A.Hom :=
   Subobject.ind _ fun P f hf =>
-    ⟨P.Hom ≫ T.map (Subobject.underlyingIso _).inv,
-      by
+    ⟨P.Hom ≫ T.map (Subobject.underlyingIso _).inv, by
       dsimp
       simp [← T.map_comp]⟩
 #align category_theory.structured_arrow.project_subobject_factors CategoryTheory.StructuredArrow.projectSubobject_factors
@@ -113,8 +111,7 @@ theorem lift_projectSubobject [HasLimits C] [PreservesLimits T] {A : StructuredA
     through the image of `P` under `T`. -/
 @[simps]
 def subobjectEquiv [HasLimits C] [PreservesLimits T] (A : StructuredArrow S T) :
-    Subobject A ≃o { P : Subobject A.right // ∃ q, q ≫ T.map P.arrow = A.Hom }
-    where
+    Subobject A ≃o { P : Subobject A.right // ∃ q, q ≫ T.map P.arrow = A.Hom } where
   toFun P := ⟨projectSubobject P, projectSubobject_factors P⟩
   invFun P := liftSubobject P.val P.Prop.choose_spec
   left_inv P := lift_projectSubobject _ _
@@ -149,8 +146,7 @@ variable {S : C ⥤ D} {T : D}
 /-- Every quotient of a costructured arrow can be projected to a quotient of the underlying
     object. -/
 def projectQuotient [HasColimits C] [PreservesColimits S] {A : CostructuredArrow S T} :
-    Subobject (op A) → Subobject (op A.left) :=
-  by
+    Subobject (op A) → Subobject (op A.left) := by
   refine' subobject.lift (fun P f hf => subobject.mk f.unop.left.op) _
   intro P Q f g hf hg i hi
   refine' subobject.mk_eq_mk_of_comm _ _ ((proj S T).mapIso i.unop).op (Quiver.Hom.unop_inj _)
@@ -168,8 +164,7 @@ theorem projectQuotient_mk [HasColimits C] [PreservesColimits S] {A : Costructur
 theorem projectQuotient_factors [HasColimits C] [PreservesColimits S] {A : CostructuredArrow S T} :
     ∀ P : Subobject (op A), ∃ q, S.map (projectQuotient P).arrow.unop ≫ q = A.Hom :=
   Subobject.ind _ fun P f hf =>
-    ⟨S.map (Subobject.underlyingIso _).unop.inv ≫ P.unop.Hom,
-      by
+    ⟨S.map (Subobject.underlyingIso _).unop.inv ≫ P.unop.Hom, by
       dsimp
       rw [← category.assoc, ← S.map_comp, ← unop_comp]
       simp⟩
@@ -189,8 +184,7 @@ def liftQuotient {A : CostructuredArrow S T} (P : Subobject (op A.left)) {q}
 theorem unop_left_comp_underlyingIso_hom_unop {A : CostructuredArrow S T}
     {P : (CostructuredArrow S T)ᵒᵖ} (f : P ⟶ op A) [Mono f.unop.left.op] :
     f.unop.left ≫ (Subobject.underlyingIso f.unop.left.op).Hom.unop =
-      (Subobject.mk f.unop.left.op).arrow.unop :=
-  by
+      (Subobject.mk f.unop.left.op).arrow.unop := by
   conv_lhs =>
     congr
     rw [← Quiver.Hom.unop_op f.unop.left]
@@ -223,8 +217,7 @@ theorem lift_projectQuotient [HasColimits C] [PreservesColimits S] {A : Costruct
 theorem unop_left_comp_ofMkLEMk_unop {A : CostructuredArrow S T} {P Q : (CostructuredArrow S T)ᵒᵖ}
     {f : P ⟶ op A} {g : Q ⟶ op A} [Mono f.unop.left.op] [Mono g.unop.left.op]
     (h : Subobject.mk f.unop.left.op ≤ Subobject.mk g.unop.left.op) :
-    g.unop.left ≫ (Subobject.ofMkLEMk f.unop.left.op g.unop.left.op h).unop = f.unop.left :=
-  by
+    g.unop.left ≫ (Subobject.ofMkLEMk f.unop.left.op g.unop.left.op h).unop = f.unop.left := by
   conv_lhs =>
     congr
     rw [← Quiver.Hom.unop_op g.unop.left]
@@ -236,8 +229,7 @@ theorem unop_left_comp_ofMkLEMk_unop {A : CostructuredArrow S T} {P Q : (Costruc
     explicitly describe the quotients of `A` as the quotients `P` of `B` in `C` for which `A.hom`
     factors through the image of `P` under `S`. -/
 def quotientEquiv [HasColimits C] [PreservesColimits S] (A : CostructuredArrow S T) :
-    Subobject (op A) ≃o { P : Subobject (op A.left) // ∃ q, S.map P.arrow.unop ≫ q = A.Hom }
-    where
+    Subobject (op A) ≃o { P : Subobject (op A.left) // ∃ q, S.map P.arrow.unop ≫ q = A.Hom } where
   toFun P := ⟨projectQuotient P, projectQuotient_factors P⟩
   invFun P := liftQuotient P.val P.Prop.choose_spec
   left_inv P := lift_projectQuotient _ _
