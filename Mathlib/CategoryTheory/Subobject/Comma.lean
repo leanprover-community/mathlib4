@@ -15,24 +15,25 @@ import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
 /-!
 # Subobjects in the category of structured arrows
 
-We compute the subobjects of an object `A` in the category `structured_arrow S T` for `T : C ⥤ D`
-and `S : D` as a subtype of the subobjects of `A.right`. We deduce that `structured_arrow S T` is
+We compute the subobjects of an object `A` in the category `StructuredArrow S T` for `T : C ⥤ D`
+and `S : D` as a subtype of the subobjects of `A.right`. We deduce that `StructuredArrow S T` is
 well-powered if `C` is.
 
 ## Main declarations
-* `structured_arrow.equiv_subtype`: the order-equivalence between `subobject A` and a subtype of
-  `subobject A.right`.
+* `StructuredArrow.equivSubtype`: the order-equivalence between `Subobject A` and a subtype of
+  `Subobject A.right`.
 
 ## Implementation notes
 Our computation requires that `C` has all limits and `T` preserves all limits. Furthermore, we
 require that the morphisms of `C` and `D` are in the same universe. It is possible that both of
 these requirements can be relaxed by refining the results about limits in comma categories.
 
-We also provide the dual results. As usual, we use `subobject (op A)` for the quotient objects of
+We also provide the dual results. As usual, we use `Subobject (op A)` for the quotient objects of
 `A`.
 
 -/
-
+-- porting note: the main declaration `StructuredArrow.equivSubtype` as claimed above is not there,
+-- perhaps either `subobjectEquiv` or `quotientEquiv` is meant?!
 
 noncomputable section
 
@@ -92,18 +93,8 @@ theorem lift_projectSubobject [HasLimits C] [PreservesLimits T] {A : StructuredA
       fapply Subobject.mk_eq_mk_of_comm
       · fapply isoMk
         · exact Subobject.underlyingIso _
-        ·
-          exact
-            (cancel_mono (T.map f.right)).1
-              (by
-                dsimp
-                simpa [← T.map_comp] using hq)
-      ·
-        exact
-          ext _ _
-            (by
-              dsimp
-              simp))
+        · exact (cancel_mono (T.map f.right)).1 (by dsimp; simpa [← T.map_comp] using hq)
+      · exact ext _ _ (by dsimp; simp))
 #align category_theory.structured_arrow.lift_project_subobject CategoryTheory.StructuredArrow.lift_projectSubobject
 
 /-- If `A : S → T.obj B` is a structured arrow for `S : D` and `T : C ⥤ D`, then we can explicitly
@@ -117,19 +108,21 @@ def subobjectEquiv [HasLimits C] [PreservesLimits T] (A : StructuredArrow S T) :
   left_inv P := lift_projectSubobject _ _
   right_inv P := Subtype.ext (by simp only [liftSubobject, homMk_right, projectSubobject_mk,
       Subobject.mk_arrow, Subtype.coe_eta])
-  map_rel_iff' :=
-    Subobject.ind₂ _
+  map_rel_iff' := Subobject.ind₂
+       (@fun a b => StructuredArrow.projectSubobject a ≤ StructuredArrow.projectSubobject b ↔ a ≤ b )
     (by
-        intro P Q f g hf hg
-        refine' ⟨fun h => Subobject.mk_le_mk_of_comm _ (ext _ _ _), fun h => _⟩
-        · refine' homMk (Subobject.ofMkLEMk _ _ h) ((cancel_mono (T.map g.right)).1 _)
-          simp [← T.map_comp]
-        · simp only [MonoOver.mk'_arrow, Subobject.ofMkLEMk_comp, Comma.comp_right, homMk_right]
-        · refine' Subobject.mk_le_mk_of_comm (Subobject.ofMkLEMk _ _ h).right _
-          exact congr_arg comma_morphism.right (subobject.of_mk_le_mk_comp h))
+      intro P Q f g hf hg
+      simp
+      refine ⟨fun h => Subobject.mk_le_mk_of_comm _ _, fun h => _⟩
+      · refine' homMk (Subobject.ofMkLEMk _ _ h) ((cancel_mono (T.map g.right)).1 _)
+        simp [← T.map_comp]
+      · simp only [MonoOver.mk'_arrow, Subobject.ofMkLEMk_comp, Comma.comp_right, homMk_right]
+      · refine' Subobject.mk_le_mk_of_comm (Subobject.ofMkLEMk _ _ h).right _
+        exact congr_arg comma_morphism.right (subobject.of_mk_le_mk_comp h)
+      simp)
 #align category_theory.structured_arrow.subobject_equiv CategoryTheory.StructuredArrow.subobjectEquiv
 
-/-- If `C` is well-powered and complete and `T` preserves limits, then `structured_arrow S T` is
+/-- If `C` is well-powered and complete and `T` preserves limits, then `StructuredArrow S T` is
     well-powered. -/
 instance wellPowered_structuredArrow [WellPowered C] [HasLimits C] [PreservesLimits T] :
     WellPowered (StructuredArrow S T)
@@ -234,27 +227,27 @@ def quotientEquiv [HasColimits C] [PreservesColimits S] (A : CostructuredArrow S
   left_inv P := lift_projectQuotient _ _
   right_inv P := Subtype.ext (by simp only [liftQuotient, Quiver.Hom.unop_op, homMk_left,
       Quiver.Hom.op_unop, projectQuotient_mk, Subobject.mk_arrow])
-  map_rel_iff' :=
-    Subobject.ind₂ _
-      (by
-        intro P Q f g hf hg
-        refine'
-          ⟨fun h => Subobject.mk_le_mk_of_comm _ (Quiver.Hom.unop_inj (ext _ _ _)), fun h => _⟩
-        · refine'
-            (homMk (Subobject.ofMkLEMk _ _ h).unop ((cancel_epi (S.map g.unop.left)).1 _)).op
-          dsimp only [mono_over.mk'_arrow]
-          rw [← category.assoc, ← S.map_comp, unop_left_comp_ofMkLEMk_unop]
-          dsimp
-          simp
-        · exact unop_left_comp_ofMkLEMk_unop _
-        · refine' Subobject.mk_le_mk_of_comm (Subobject.ofMkLEMk _ _ h).unop.left.op _
-          refine' Quiver.Hom.unop_inj _
-          have := congr_arg Quiver.Hom.unop (subobject.of_mk_le_mk_comp h)
-          simpa [-subobject.of_mk_le_mk_comp] using congr_arg comma_morphism.left this)
+  map_rel_iff' := Subobject.ind₂
+        (fun a b => StructuredArrow.projectSubobject a ≤ StructuredArrow.projectSubobject b ↔ a ≤ b)
+    ( by
+      intro P Q f g hf hg
+      refine'
+        ⟨fun h => Subobject.mk_le_mk_of_comm _ (Quiver.Hom.unop_inj (StructuredArrow.ext _ _ _)), fun h => _⟩
+      · refine'
+          (homMk (Subobject.ofMkLEMk _ _ h).unop ((cancel_epi (S.map g.unop.left)).1 _)).op
+        dsimp only [mono_over.mk'_arrow]
+        rw [← category.assoc, ← S.map_comp, unop_left_comp_ofMkLEMk_unop]
+        dsimp
+        simp
+      · exact unop_left_comp_ofMkLEMk_unop _
+      · refine' Subobject.mk_le_mk_of_comm (Subobject.ofMkLEMk _ _ h).unop.left.op _
+        refine' Quiver.Hom.unop_inj _
+        have := congr_arg Quiver.Hom.unop (subobject.of_mk_le_mk_comp h)
+        simpa [-subobject.of_mk_le_mk_comp] using congr_arg comma_morphism.left this)
 #align category_theory.costructured_arrow.quotient_equiv CategoryTheory.CostructuredArrow.quotientEquiv
 
 /-- If `C` is well-copowered and cocomplete and `S` preserves colimits, then
-    `costructured_arrow S T` is well-copowered. -/
+    `CostructuredArrow S T` is well-copowered. -/
 instance well_copowered_costructuredArrow [WellPowered Cᵒᵖ] [HasColimits C] [PreservesColimits S] :
     WellPowered (CostructuredArrow S T)ᵒᵖ
     where subobject_small X := small_map (quotientEquiv (unop X)).toEquiv
