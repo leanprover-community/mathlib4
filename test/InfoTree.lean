@@ -2,7 +2,9 @@ import Mathlib.Util.InfoTree
 
 open Lean Meta
 
-#eval declInfoTrees `Mathlib.Data.Subtype
+#eval moduleInfoTrees' `Mathlib.Data.Subtype
+
+#eval moduleDeclInfoTrees' `Mathlib.Data.Subtype
 
 #eval allTacticsInModule' `Mathlib.Data.Subtype
 
