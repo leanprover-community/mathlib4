@@ -121,7 +121,7 @@ theorem coe_mk (f : P1 → P2) (linear add) : ((mk f linear add : P1 →ᵃ[k] P
   rfl
 #align affine_map.coe_mk AffineMap.coe_mk
 
-/-- `to_fun` is the same as the result of coercing to a function. -/
+/-- `toFun` is the same as the result of coercing to a function. -/
 @[simp]
 theorem toFun_eq_coe (f : P1 →ᵃ[k] P2) : f.toFun = ⇑f :=
   rfl
@@ -171,7 +171,9 @@ variable (k P1)
 def const (p : P2) : P1 →ᵃ[k] P2 where
   toFun := Function.const P1 p
   linear := 0
-  map_vadd' _ _ := by simp
+  map_vadd' _ _ :=
+    letI : AddAction V2 P2 := inferInstance
+    by simp
 #align affine_map.const AffineMap.const
 
 @[simp]
@@ -321,6 +323,7 @@ instance : AffineSpace (P1 →ᵃ[k] V2) (P1 →ᵃ[k] P2) where
   vadd f g :=
     ⟨fun p => f p +ᵥ g p, f.linear + g.linear,
       -- porting note: `simp` needs lemmas to be expressions
+      letI : AddAction V2 P2 := inferInstance
       fun p v => by simp [vadd_vadd, add_right_comm, (map_vadd)]⟩
   zero_vadd f := ext fun p => zero_vadd _ (f p)
   add_vadd f₁ f₂ f₃ := ext fun p => add_vadd (f₁ p) (f₂ p) (f₃ p)
@@ -554,6 +557,7 @@ theorem lineMap_linear (p₀ p₁ : P1) :
 #align affine_map.line_map_linear AffineMap.lineMap_linear
 
 theorem lineMap_same_apply (p : P1) (c : k) : lineMap p p c = p := by
+  letI : AddAction V1 P1 := inferInstance
   -- porting note: `simp` needs lemmas to be expressions
   simp [(lineMap_apply), (vsub_self)]
 #align affine_map.line_map_same_apply AffineMap.lineMap_same_apply
@@ -565,6 +569,7 @@ theorem lineMap_same (p : P1) : lineMap p p = const k k p :=
 
 @[simp]
 theorem lineMap_apply_zero (p₀ p₁ : P1) : lineMap p₀ p₁ (0 : k) = p₀ := by
+  letI : AddAction V1 P1 := inferInstance
   -- porting note: `simp` needs lemmas to be expressions
   simp [(lineMap_apply)]
 #align affine_map.line_map_apply_zero AffineMap.lineMap_apply_zero

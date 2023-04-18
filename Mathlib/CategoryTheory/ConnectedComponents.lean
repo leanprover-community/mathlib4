@@ -12,7 +12,6 @@ import Mathlib.Data.List.Chain
 import Mathlib.CategoryTheory.IsConnected
 import Mathlib.CategoryTheory.Sigma.Basic
 import Mathlib.CategoryTheory.FullSubcategory
-import Mathlib.Tactic.LibrarySearch
 
 /-!
 # Connected components of a category
