@@ -114,7 +114,7 @@ abbrev boundariesToCycles (C : HomologicalComplex V c) (i : ι) :
 #align homological_complex.boundaries_to_cycles HomologicalComplex.boundariesToCycles
 
 /-- Prefer `boundariesToCycles`. -/
-@[simp]
+@[simp 1100]
 theorem imageToKernel_as_boundariesToCycles (C : HomologicalComplex V c) (i : ι) (h) :
     (C.boundaries i).ofLE (C.cycles i) h = C.boundariesToCycles i := rfl
 #align homological_complex.image_to_kernel_as_boundaries_to_cycles HomologicalComplex.imageToKernel_as_boundariesToCycles
@@ -205,7 +205,7 @@ abbrev cyclesMap (f : C₁ ⟶ C₂) (i : ι) : (C₁.cycles i : V) ⟶ (C₂.cy
 #align cycles_map cyclesMap
 
 -- Porting note: Originally `@[simp, reassoc.1, elementwise]`
-@[reassoc (attr := simp), elementwise (attr := simp)]
+@[reassoc (attr := simp 1100), elementwise (attr := simp)]
 theorem cyclesMap_arrow (f : C₁ ⟶ C₂) (i : ι) :
     cyclesMap f i ≫ (C₂.cycles i).arrow = (C₁.cycles i).arrow ≫ f.f i := by simp
 #align cycles_map_arrow cyclesMap_arrow
