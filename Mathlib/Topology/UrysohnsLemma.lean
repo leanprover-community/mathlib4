@@ -89,6 +89,7 @@ structure CU (X : Type _) [TopologicalSpace X] where
   protected closed_c : IsClosed C
   protected open_u : IsOpen U
   protected subset : C ⊆ U
+set_option linter.uppercaseLean3 false in
 #align urysohns.CU Urysohns.CU
 
 instance : Inhabited (CU X) :=
@@ -107,6 +108,7 @@ def left (c : CU X) : CU X where
   closed_c := c.closed_c
   open_u := (normal_exists_closure_subset c.closed_c c.open_u c.subset).choose_spec.1
   subset := (normal_exists_closure_subset c.closed_c c.open_u c.subset).choose_spec.2.1
+set_option linter.uppercaseLean3 false in
 #align urysohns.CU.left Urysohns.CU.left
 
 /-- Due to `normal_exists_closure_subset`, for each `c : CU X` there exists an open set `u`
@@ -118,18 +120,22 @@ def right (c : CU X) : CU X where
   closed_c := isClosed_closure
   open_u := c.open_u
   subset := (normal_exists_closure_subset c.closed_c c.open_u c.subset).choose_spec.2.2
+set_option linter.uppercaseLean3 false in
 #align urysohns.CU.right Urysohns.CU.right
 
 theorem left_u_subset_right_c (c : CU X) : c.left.U ⊆ c.right.C :=
   subset_closure
+set_option linter.uppercaseLean3 false in
 #align urysohns.CU.left_U_subset_right_C Urysohns.CU.left_u_subset_right_c
 
 theorem left_u_subset (c : CU X) : c.left.U ⊆ c.U :=
   Subset.trans c.left_u_subset_right_c c.right.subset
+set_option linter.uppercaseLean3 false in
 #align urysohns.CU.left_U_subset Urysohns.CU.left_u_subset
 
 theorem subset_right_c (c : CU X) : c.C ⊆ c.right.C :=
   Subset.trans c.left.subset c.left_u_subset_right_c
+set_option linter.uppercaseLean3 false in
 #align urysohns.CU.subset_right_C Urysohns.CU.subset_right_c
 
 /-- `n`-th approximation to a continuous function `f : X → ℝ` such that `f = 0` on `c.C` and `f = 1`
@@ -137,6 +143,7 @@ outside of `c.U`. -/
 noncomputable def approx : ℕ → CU X → X → ℝ
   | 0, c, x => indicator (c.Uᶜ) 1 x
   | n + 1, c, x => midpoint ℝ (approx n c.left x) (approx n c.right x)
+set_option linter.uppercaseLean3 false in
 #align urysohns.CU.approx Urysohns.CU.approx
 
 theorem approx_of_mem_c (c : CU X) (n : ℕ) {x : X} (hx : x ∈ c.C) : c.approx n x = 0 := by
@@ -146,6 +153,7 @@ theorem approx_of_mem_c (c : CU X) (n : ℕ) {x : X} (hx : x ∈ c.C) : c.approx
   · simp only [approx]
     rw [ihn, ihn, midpoint_self]
     exacts [c.subset_right_c hx, hx]
+set_option linter.uppercaseLean3 false in
 #align urysohns.CU.approx_of_mem_C Urysohns.CU.approx_of_mem_c
 
 theorem approx_of_nmem_u (c : CU X) (n : ℕ) {x : X} (hx : x ∈ c.Uᶜ) : c.approx n x = 1 := by
@@ -154,6 +162,7 @@ theorem approx_of_nmem_u (c : CU X) (n : ℕ) {x : X} (hx : x ∈ c.Uᶜ) : c.ap
   · simp only [approx]
     rw [ihn, ihn, midpoint_self]
     exacts[hx, fun hU => hx <| c.left_u_subset hU]
+set_option linter.uppercaseLean3 false in
 #align urysohns.CU.approx_of_nmem_U Urysohns.CU.approx_of_nmem_u
 
 theorem approx_nonneg (c : CU X) (n : ℕ) (x : X) : 0 ≤ c.approx n x := by
@@ -161,6 +170,7 @@ theorem approx_nonneg (c : CU X) (n : ℕ) (x : X) : 0 ≤ c.approx n x := by
   · exact indicator_nonneg (fun _ _ => zero_le_one) _
   · simp only [approx, midpoint_eq_smul_add, invOf_eq_inv]
     refine' mul_nonneg (inv_nonneg.2 zero_le_two) (add_nonneg _ _) <;> apply ihn
+set_option linter.uppercaseLean3 false in
 #align urysohns.CU.approx_nonneg Urysohns.CU.approx_nonneg
 
 theorem approx_le_one (c : CU X) (n : ℕ) (x : X) : c.approx n x ≤ 1 := by
@@ -169,10 +179,12 @@ theorem approx_le_one (c : CU X) (n : ℕ) (x : X) : c.approx n x ≤ 1 := by
   · simp only [approx, midpoint_eq_smul_add, invOf_eq_inv, smul_eq_mul, ← div_eq_inv_mul]
     -- Porting note: using one_add_one_eq_two since it was not inferring 1 + 1 = (2 : ℝ)
     refine' Iff.mpr (div_le_one zero_lt_two) (by rw [← one_add_one_eq_two]; apply add_le_add _ _ <;> apply ihn)
+set_option linter.uppercaseLean3 false in
 #align urysohns.CU.approx_le_one Urysohns.CU.approx_le_one
 
 theorem bddAbove_range_approx (c : CU X) (x : X) : BddAbove (range fun n => c.approx n x) :=
   ⟨1, fun _y ⟨n, hn⟩ => hn ▸ c.approx_le_one n x⟩
+set_option linter.uppercaseLean3 false in
 #align urysohns.CU.bdd_above_range_approx Urysohns.CU.bddAbove_range_approx
 
 theorem approx_le_approx_of_u_sub_c {c₁ c₂ : CU X} (h : c₁.U ⊆ c₂.C) (n₁ n₂ : ℕ) (x : X) :
@@ -188,6 +200,7 @@ theorem approx_le_approx_of_u_sub_c {c₁ c₂ : CU X} (h : c₁.U ⊆ c₂.C) (
       approx n₂ c₂ x ≤ 1 := approx_le_one _ _ _
       _ = approx n₁ c₁ x := (approx_of_nmem_u _ _ hx).symm
 
+set_option linter.uppercaseLean3 false in
 #align urysohns.CU.approx_le_approx_of_U_sub_C Urysohns.CU.approx_le_approx_of_u_sub_c
 
 theorem approx_mem_Icc_right_left (c : CU X) (n : ℕ) (x : X) :
@@ -202,6 +215,7 @@ theorem approx_mem_Icc_right_left (c : CU X) (n : ℕ) (x : X) :
     refine' ⟨midpoint_le_midpoint _ (ihn _).1, midpoint_le_midpoint (ihn _).2 _⟩ <;>
       apply approx_le_approx_of_u_sub_c
     exacts[subset_closure, subset_closure]
+set_option linter.uppercaseLean3 false in
 #align urysohns.CU.approx_mem_Icc_right_left Urysohns.CU.approx_mem_Icc_right_left
 
 theorem approx_le_succ (c : CU X) (n : ℕ) (x : X) : c.approx n x ≤ c.approx (n + 1) x := by
@@ -210,10 +224,12 @@ theorem approx_le_succ (c : CU X) (n : ℕ) (x : X) : c.approx n x ≤ c.approx 
     exact (approx_mem_Icc_right_left c 0 x).2
   · rw [approx, approx]
     exact midpoint_le_midpoint (ihn _) (ihn _)
+set_option linter.uppercaseLean3 false in
 #align urysohns.CU.approx_le_succ Urysohns.CU.approx_le_succ
 
 theorem approx_mono (c : CU X) (x : X) : Monotone fun n => c.approx n x :=
   monotone_nat_of_le_succ fun n => c.approx_le_succ n x
+set_option linter.uppercaseLean3 false in
 #align urysohns.CU.approx_mono Urysohns.CU.approx_mono
 
 /-- A continuous function `f : X → ℝ` such that
@@ -223,19 +239,23 @@ theorem approx_mono (c : CU X) (x : X) : Monotone fun n => c.approx n x :=
 -/
 protected noncomputable def lim (c : CU X) (x : X) : ℝ :=
   ⨆ n, c.approx n x
+set_option linter.uppercaseLean3 false in
 #align urysohns.CU.lim Urysohns.CU.lim
 
 theorem tendsto_approx_atTop (c : CU X) (x : X) :
     Tendsto (fun n => c.approx n x) atTop (𝓝 <| c.lim x) :=
   tendsto_atTop_csupᵢ (c.approx_mono x) ⟨1, fun _x ⟨_n, hn⟩ => hn ▸ c.approx_le_one _ _⟩
+set_option linter.uppercaseLean3 false in
 #align urysohns.CU.tendsto_approx_at_top Urysohns.CU.tendsto_approx_atTop
 
 theorem lim_of_mem_c (c : CU X) (x : X) (h : x ∈ c.C) : c.lim x = 0 := by
   simp only [CU.lim, approx_of_mem_c, h, csupᵢ_const]
+set_option linter.uppercaseLean3 false in
 #align urysohns.CU.lim_of_mem_C Urysohns.CU.lim_of_mem_c
 
 theorem lim_of_nmem_u (c : CU X) (x : X) (h : x ∉ c.U) : c.lim x = 1 := by
   simp only [CU.lim, approx_of_nmem_u c _ h, csupᵢ_const]
+set_option linter.uppercaseLean3 false in
 #align urysohns.CU.lim_of_nmem_U Urysohns.CU.lim_of_nmem_u
 
 theorem lim_eq_midpoint (c : CU X) (x : X) : c.lim x = midpoint ℝ (c.left.lim x) (c.right.lim x) :=
@@ -243,22 +263,27 @@ theorem lim_eq_midpoint (c : CU X) (x : X) : c.lim x = midpoint ℝ (c.left.lim 
   refine' tendsto_nhds_unique (c.tendsto_approx_atTop x) ((tendsto_add_atTop_iff_nat 1).1 _)
   simp only [approx]
   exact (c.left.tendsto_approx_atTop x).midpoint (c.right.tendsto_approx_atTop x)
+set_option linter.uppercaseLean3 false in
 #align urysohns.CU.lim_eq_midpoint Urysohns.CU.lim_eq_midpoint
 
 theorem approx_le_lim (c : CU X) (x : X) (n : ℕ) : c.approx n x ≤ c.lim x :=
   le_csupᵢ (c.bddAbove_range_approx x) _
+set_option linter.uppercaseLean3 false in
 #align urysohns.CU.approx_le_lim Urysohns.CU.approx_le_lim
 
 theorem lim_nonneg (c : CU X) (x : X) : 0 ≤ c.lim x :=
   (c.approx_nonneg 0 x).trans (c.approx_le_lim x 0)
+set_option linter.uppercaseLean3 false in
 #align urysohns.CU.lim_nonneg Urysohns.CU.lim_nonneg
 
 theorem lim_le_one (c : CU X) (x : X) : c.lim x ≤ 1 :=
   csupᵢ_le fun _n => c.approx_le_one _ _
+set_option linter.uppercaseLean3 false in
 #align urysohns.CU.lim_le_one Urysohns.CU.lim_le_one
 
 theorem lim_mem_Icc (c : CU X) (x : X) : c.lim x ∈ Icc (0 : ℝ) 1 :=
   ⟨c.lim_nonneg x, c.lim_le_one x⟩
+set_option linter.uppercaseLean3 false in
 #align urysohns.CU.lim_mem_Icc Urysohns.CU.lim_mem_Icc
 
 /-- Continuity of `Urysohns.CU.lim`. See module docstring for a sketch of the proofs. -/
@@ -303,6 +328,7 @@ theorem continuous_lim (c : CU X) : Continuous c.lim := by
       generalize (3 / 4 : ℝ) ^ n = r
       field_simp [two_ne_zero' ℝ]
       ring
+set_option linter.uppercaseLean3 false in
 #align urysohns.CU.continuous_lim Urysohns.CU.continuous_lim
 
 end CU
