@@ -25,16 +25,14 @@ variable (C : Type _) [Category C] [Preadditive C]
 
 instance : Preadditive Cᵒᵖ where
   homGroup X Y := Equiv.addCommGroup (opEquiv X Y)
-  add_comp X Y Z f f' g :=
-    congr_arg Quiver.Hom.op (Preadditive.comp_add _ _ _ g.unop f.unop f'.unop)
-  comp_add X Y Z f g g' :=
-    congr_arg Quiver.Hom.op (Preadditive.add_comp _ _ _ g.unop g'.unop f.unop)
+  add_comp _ _ _ f f' g := Quiver.Hom.unop_inj (Preadditive.comp_add _ _ _ g.unop f.unop f'.unop)
+  comp_add _ _ _ f g g' := Quiver.Hom.unop_inj (Preadditive.add_comp _ _ _ g.unop g'.unop f.unop)
 
 instance moduleEndLeft {X : Cᵒᵖ} {Y : C} : Module (End X) (unop X ⟶ Y) where
-  smul_add r f g := Preadditive.comp_add _ _ _ _ _ _
-  smul_zero r := Limits.comp_zero
-  add_smul r s f := Preadditive.add_comp _ _ _ _ _ _
-  zero_smul f := Limits.zero_comp
+  smul_add _ _ _ := Preadditive.comp_add _ _ _ _ _ _
+  smul_zero _ := Limits.comp_zero
+  add_smul _ _ _ := Preadditive.add_comp _ _ _ _ _ _
+  zero_smul _ := Limits.zero_comp
 #align category_theory.module_End_left CategoryTheory.moduleEndLeft
 
 @[simp]
@@ -80,26 +78,26 @@ theorem op_neg {X Y : C} (f : X ⟶ Y) : (-f).op = -f.op :=
 variable {C}
 
 /-- `unop` induces morphisms of monoids on hom groups of a preadditive category -/
-@[simps]
+@[simps!]
 def unopHom (X Y : Cᵒᵖ) : (X ⟶ Y) →+ (Opposite.unop Y ⟶ Opposite.unop X) :=
   AddMonoidHom.mk' (fun f => f.unop) fun f g => unop_add _ f g
 #align category_theory.unop_hom CategoryTheory.unopHom
 
 @[simp]
 theorem unop_sum (X Y : Cᵒᵖ) {ι : Type _} (s : Finset ι) (f : ι → (X ⟶ Y)) :
-    (s.Sum f).unop = s.Sum fun i => (f i).unop :=
+    (s.sum f).unop = s.sum fun i => (f i).unop :=
   (unopHom X Y).map_sum _ _
 #align category_theory.unop_sum CategoryTheory.unop_sum
 
 /-- `op` induces morphisms of monoids on hom groups of a preadditive category -/
-@[simps]
+@[simps!]
 def opHom (X Y : C) : (X ⟶ Y) →+ (Opposite.op Y ⟶ Opposite.op X) :=
   AddMonoidHom.mk' (fun f => f.op) fun f g => op_add _ f g
 #align category_theory.op_hom CategoryTheory.opHom
 
 @[simp]
 theorem op_sum (X Y : C) {ι : Type _} (s : Finset ι) (f : ι → (X ⟶ Y)) :
-    (s.Sum f).op = s.Sum fun i => (f i).op :=
+    (s.sum f).op = s.sum fun i => (f i).op :=
   (opHom X Y).map_sum _ _
 #align category_theory.op_sum CategoryTheory.op_sum
 
@@ -118,4 +116,3 @@ instance Functor.unop_additive (F : Cᵒᵖ ⥤ Dᵒᵖ) [F.Additive] : F.unop.A
 #align category_theory.functor.unop_additive CategoryTheory.Functor.unop_additive
 
 end CategoryTheory
-
