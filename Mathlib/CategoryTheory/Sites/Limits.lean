@@ -125,7 +125,8 @@ def isLimitMultiforkOfIsLimit (F : K ⥤ Sheaf J D) (E : Cone (F ⋙ sheafToPres
       erw [(isLimitOfPreserves ((evaluation Cᵒᵖ D).obj (op X)) hE).fac]
       apply Presheaf.IsSheaf.hom_ext (F.obj k).2 W
       intro i
-      erw [Presheaf.IsSheaf.amalgamate_map]
+      dsimp only [multiforkEvaluationCone, Presheaf.isLimitOfIsSheaf]
+      rw [(F.obj k).cond.amalgamate_map]
       dsimp [Multifork.ofι]
       change _ = S.ι i ≫ _
       erw [← hm, Category.assoc, ← (E.π.app k).naturality, Category.assoc]
