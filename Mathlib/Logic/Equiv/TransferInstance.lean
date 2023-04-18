@@ -52,7 +52,9 @@ protected def One [One β] : One α :=
 #align equiv.has_zero Equiv.Zero
 
 @[to_additive]
-theorem one_def [One β] : @One.one _ (Equiv.One e) = e.symm 1 :=
+theorem one_def [One β] :
+    letI := e.One
+    1 = e.symm 1 :=
   rfl
 #align equiv.one_def Equiv.one_def
 #align equiv.zero_def Equiv.zero_def
@@ -65,8 +67,11 @@ protected def Mul [Mul β] : Mul α :=
 #align equiv.has_add Equiv.Add
 
 @[to_additive]
-theorem mul_def [Mul β] (x y : α) : @Mul.mul _ (Equiv.Mul e) x y = e.symm (e x * e y) :=
-  rfl
+theorem mul_def [Mul β] (x y : α) :
+  letI := Equiv.Mul e
+  x * y = e.symm (e x * e y) := rfl
+--theorem mul_def [Mul β] (x y : α) : @Mul.mul _ (Equiv.Mul e) x y = e.symm (e x * e y) :=
+--  rfl
 #align equiv.mul_def Equiv.mul_def
 #align equiv.add_def Equiv.add_def
 
@@ -103,8 +108,11 @@ protected def SMul (R : Type _) [SMul R β] : SMul R α :=
 #align equiv.has_smul Equiv.SMul
 
 theorem smul_def {R : Type _} [SMul R β] (r : R) (x : α) :
-    @SMul.smul _ _ (e.SMul R) r x = e.symm (r • e x) :=
+    letI := e.SMul R
+    r • x = e.symm (r • e x) :=
   rfl
+--    @SMul.smul _ _ (e.SMul R) r x = e.symm (r • e x) :=
+--  rfl
 #align equiv.smul_def Equiv.smul_def
 
 /-- Transfer `Pow` across an `Equiv` -/
@@ -132,8 +140,7 @@ def mulEquiv (e : α ≃ β) [Mul β] :
     { e with
       map_mul' := fun x y => by
         apply e.symm.injective
-        simp only [toFun_as_coe_apply, symm_apply_apply]
-        rfl }
+        simp only [toFun_as_coe_apply, symm_apply_apply, mul_def] }
 #align equiv.mul_equiv Equiv.mulEquiv
 #align equiv.add_equiv Equiv.addEquiv
 
@@ -305,7 +312,7 @@ protected def nonUnitalSemiring [NonUnitalSemiring β] : NonUnitalSemiring α :=
 protected def addMonoidWithOne [AddMonoidWithOne β] : AddMonoidWithOne α :=
   { e.addMonoid, e.One with
     natCast := fun n => e.symm n
-    natCast_zero := show e.symm _ = _ by simp [zero_def]; rfl
+    natCast_zero := show e.symm _ = _ by simp [zero_def]
     natCast_succ := fun n => show e.symm _ = e.symm (e (e.symm _) + _) by
       simp only [Nat.cast_add, Nat.cast_one, apply_symm_apply]
       have : e 1 = 1 := Iff.mpr (apply_eq_iff_eq_symm_apply _) rfl
@@ -514,7 +521,7 @@ protected def module (e : α ≃ β) [AddCommMonoid β] :
   intros
   exact
     ({ Equiv.distribMulAction R e with
-        zero_smul := by simp [zero_def, smul_def]
+        zero_smul := by simp [smul_def, zero_smul, zero_def]
         add_smul := by simp [add_def, smul_def, add_smul] } :
       Module R α)
 #align equiv.module Equiv.module
