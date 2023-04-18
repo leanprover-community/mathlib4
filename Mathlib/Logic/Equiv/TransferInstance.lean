@@ -11,7 +11,6 @@ Authors: Johannes Hölzl
 import Mathlib.Algebra.Algebra.Equiv
 import Mathlib.Algebra.Field.Basic
 import Mathlib.Logic.Equiv.Defs
-import Mathlib.Tactic.LibrarySearch
 
 /-!
 # Transfer algebraic structures across `Equiv`s
