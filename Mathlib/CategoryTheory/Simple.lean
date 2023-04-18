@@ -8,11 +8,11 @@ Authors: Markus Himmel, Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Limits.Shapes.ZeroMorphisms
-import Mathbin.CategoryTheory.Limits.Shapes.Kernels
-import Mathbin.CategoryTheory.Abelian.Basic
-import Mathbin.CategoryTheory.Subobject.Lattice
-import Mathbin.Order.Atoms
+import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
+import Mathlib.CategoryTheory.Limits.Shapes.Kernels
+import Mathlib.CategoryTheory.Abelian.Basic
+import Mathlib.CategoryTheory.Subobject.Lattice
+import Mathlib.Order.Atoms
 
 /-!
 # Simple objects
@@ -74,8 +74,7 @@ theorem Simple.of_iso {X Y : C} [Simple Y] (i : X ≅ Y) : Simple X :=
         subst w
         simpa using j
       · intro h
-        have j : is_iso (f ≫ i.hom) :=
-          by
+        have j : is_iso (f ≫ i.hom) := by
           apply is_iso_of_mono_of_nonzero
           intro w
           apply h
@@ -197,8 +196,7 @@ variable [Preadditive C] [HasBinaryBiproducts C]
 
 -- There are another three potential variations of this lemma,
 -- but as any one suffices to prove `indecomposable_of_simple` we will not give them all.
-theorem Biprod.isIso_inl_iff_isZero (X Y : C) : IsIso (biprod.inl : X ⟶ X ⊞ Y) ↔ IsZero Y :=
-  by
+theorem Biprod.isIso_inl_iff_isZero (X Y : C) : IsIso (biprod.inl : X ⟶ X ⊞ Y) ↔ IsZero Y := by
   rw [biprod.is_iso_inl_iff_id_eq_fst_comp_inl, ← biprod.total, add_right_eq_self]
   constructor
   · intro h
@@ -211,8 +209,7 @@ theorem Biprod.isIso_inl_iff_isZero (X Y : C) : IsIso (biprod.inl : X ⟶ X ⊞ 
 
 /-- Any simple object in a preadditive category is indecomposable. -/
 theorem indecomposable_of_simple (X : C) [Simple X] : Indecomposable X :=
-  ⟨Simple.not_isZero X, fun Y Z i =>
-    by
+  ⟨Simple.not_isZero X, fun Y Z i => by
     refine' or_iff_not_imp_left.mpr fun h => _
     rw [is_zero.iff_is_split_mono_eq_zero (biprod.inl : Y ⟶ Y ⊞ Z)] at h
     change biprod.inl ≠ 0 at h
@@ -236,8 +233,7 @@ instance {X : C} [Simple X] : Nontrivial (Subobject X) :=
   nontrivial_of_not_isZero (Simple.not_isZero X)
 
 instance {X : C} [Simple X] : IsSimpleOrder (Subobject X)
-    where eq_bot_or_eq_top :=
-    by
+    where eq_bot_or_eq_top := by
     rintro ⟨⟨⟨Y : C, ⟨⟨⟩⟩, f : Y ⟶ X⟩, m : mono f⟩⟩; skip
     change mk f = ⊥ ∨ mk f = ⊤
     by_cases h : f = 0
@@ -245,8 +241,7 @@ instance {X : C} [Simple X] : IsSimpleOrder (Subobject X)
     · refine' Or.inr ((is_iso_iff_mk_eq_top _).mp ((simple.mono_is_iso_iff_nonzero f).mpr h))
 
 /-- If `X` has subobject lattice `{⊥, ⊤}`, then `X` is simple. -/
-theorem simple_of_isSimpleOrder_subobject (X : C) [IsSimpleOrder (Subobject X)] : Simple X :=
-  by
+theorem simple_of_isSimpleOrder_subobject (X : C) [IsSimpleOrder (Subobject X)] : Simple X := by
   constructor; intros ; constructor
   · intro i
     rw [subobject.is_iso_iff_mk_eq_top] at i
