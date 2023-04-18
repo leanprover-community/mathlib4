@@ -65,11 +65,8 @@ namespace AlgHomClass
 variable {R : Type _} {A : Type _} {B : Type _} [CommSemiring R] [Semiring A] [Semiring B]
   [Algebra R A] [Algebra R B]
 
--- Porting note: marked `{}` rather than `[]` to prevent dangerous instances
 -- see Note [lower instance priority]
-instance (priority := 100) linearMapClass {_ : CommSemiring R} {_ : Semiring A} {_ : Semiring B}
-    {_ : Algebra R A} {_ : Algebra R B} {F : Type _} [AlgHomClass F R A B] :
-    LinearMapClass F R A B :=
+instance (priority := 100) linearMapClass [AlgHomClass F R A B] : LinearMapClass F R A B :=
   { ‹AlgHomClass F R A B› with
     map_smulₛₗ := fun f r x => by
       simp only [Algebra.smul_def, map_mul, commutes, RingHom.id_apply] }

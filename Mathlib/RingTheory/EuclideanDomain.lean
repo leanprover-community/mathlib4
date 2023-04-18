@@ -64,7 +64,7 @@ end GCDMonoid
 
 namespace EuclideanDomain
 
-/-- Create a `GCDMonoid` whose `gcd_monoid.gcd` matches `EuclideanDomain.gcd`. -/
+/-- Create a `GCDMonoid` whose `GCDMonoid.gcd` matches `EuclideanDomain.gcd`. -/
 def gcdMonoid (R) [EuclideanDomain R] : GCDMonoid R where
   gcd := gcd
   lcm := lcm
@@ -86,7 +86,7 @@ theorem span_gcd {α} [EuclideanDomain α] (x y : α) :
 
 theorem gcd_isUnit_iff {α} [EuclideanDomain α] {x y : α} : IsUnit (gcd x y) ↔ IsCoprime x y :=
   letI := EuclideanDomain.gcdMonoid α
-  _root_.gcd_isUnit_iff x y 
+  _root_.gcd_isUnit_iff x y
 #align euclidean_domain.gcd_is_unit_iff EuclideanDomain.gcd_isUnit_iff
 
 -- this should be proved for UFDs surely?
@@ -104,4 +104,3 @@ theorem dvd_or_coprime {α} [EuclideanDomain α] (x y : α) (h : Irreducible x) 
 #align euclidean_domain.dvd_or_coprime EuclideanDomain.dvd_or_coprime
 
 end EuclideanDomain
-

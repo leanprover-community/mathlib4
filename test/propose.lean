@@ -15,6 +15,8 @@ example (K L M : List α) (w : L.Disjoint M) (m : K ⊆ L) : True := by
   propose using w, m
   -- have : List.Disjoint K M := List.disjoint_of_subset_left m w
   propose! using w, m
+  guard_hyp List.disjoint_of_subset_left : List.Disjoint K M :=
+    _root_.List.disjoint_of_subset_left m w
   fail_if_success
     have : M.Disjoint L := by assumption
   have : K.Disjoint M := by assumption
@@ -30,6 +32,7 @@ example (p : Nat × String) : True := by
 
 example (K L M : List α) (w : L.Disjoint M) (m : a ∈ L) : True := by
   propose! using w
+  guard_hyp List.disjoint_symm : List.Disjoint M L := _root_.List.disjoint_symm w
   have : a ∉ M := by assumption
   trivial
 
@@ -44,7 +47,9 @@ theorem dvd_of_dvd_pow (hp : Prime p) {a : α} {n : ℕ} (h : p ∣ a ^ n) : p �
     -- have := not_unit hp
     -- `propose!` successfully guesses them both:
     propose! using h
+    guard_hyp isUnit_of_dvd_one : IsUnit p := _root_.isUnit_of_dvd_one h
     propose! using hp
+    guard_hyp Prime.not_unit : ¬IsUnit p := not_unit hp
     contradiction
   rw [pow_succ] at h
   cases' dvd_or_dvd hp h with dvd_a dvd_pow

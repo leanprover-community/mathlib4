@@ -107,10 +107,16 @@ def mainGoalProc (cfg : Config := {}) (proc : MVarId → MetaM (List MVarId)) : 
     catch _ => cfg.proc orig goals }
 
 /-- Create or modify a `Config` which calls `intro` on each goal before applying lemmas. -/
+-- Because `SolveByElim` works on each goal in sequence, even though
+-- `mainGoalProc` only applies this operation on the main goal,
+-- it is applied to every goal before lemmas are applied.
 def intros (cfg : Config := {}) : Config :=
   cfg.mainGoalProc fun g => do pure [(← g.intro1P).2]
 
 /-- Attempt typeclass inference on each goal, before applying lemmas. -/
+-- Because `SolveByElim` works on each goal in sequence, even though
+-- `mainGoalProc` only applies this operation on the main goal,
+-- it is applied to every goal before lemmas are applied.
 def synthInstance (cfg : Config := {}) : Config :=
   cfg.mainGoalProc fun g => do g.synthInstance; pure []
 

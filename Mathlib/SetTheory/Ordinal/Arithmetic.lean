@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Floris van Doorn, Violeta Hernández Palacios
 
 ! This file was ported from Lean 3 source module set_theory.ordinal.arithmetic
-! leanprover-community/mathlib commit b67044ba53af18680e1dd246861d9584e968495d
+! leanprover-community/mathlib commit e08a42b2dd544cf11eba72e5fc7bf199d4349925
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -2386,7 +2386,7 @@ theorem ord_aleph0 : ord.{u} ℵ₀ = ω :=
     le_of_forall_lt fun o h =>
       by
       rcases Ordinal.lt_lift_iff.1 h with ⟨o, rfl, h'⟩
-      rw [lt_ord, ← lift_card, ← lift_aleph0.{0, u}, lift_lt, ← typein_enum (· < ·) h']
+      rw [lt_ord, ← lift_card, lift_lt_aleph0, ← typein_enum (· < ·) h']
       exact lt_aleph0_iff_fintype.2 ⟨Set.fintypeLTNat _⟩
 #align cardinal.ord_aleph_0 Cardinal.ord_aleph0
 
