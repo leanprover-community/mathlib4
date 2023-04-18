@@ -125,6 +125,13 @@ unsafe def force (L : ListM m α) : m (List α) := do
   | some (x, xs) => (x :: ·) <$> force xs
 #align tactic.mllist.force ListM.force
 
+/-- Extract an array inside the monad from a `ListM`. -/
+unsafe def asArray (L : ListM m α) : m (Array α) := do
+  let mut r := #[]
+  for a in L do
+    r := r.push a
+  return r
+
 /-- Gives the monadic lazy list consisting all of folds of a function on a given initial element.
 Thus `[a₀, a₁, ...].foldsM f b` will give `[b, ← f b a₀, ← f (← f b a₀) a₁, ...]`. -/
 unsafe def foldsM (f : β → α → m β) (init : β) (L : ListM m α) : ListM m β :=
@@ -205,13 +212,13 @@ unsafe def filterMap (f : α → Option β) : ListM m α → ListM m β :=
 #align tactic.mllist.filter_map ListM.filterMap
 
 /-- Take the initial segment of the lazy list, until the function `f` first returns `false`. -/
-unsafe def takeWhileM [Alternative m] (f : α → m (ULift Bool)) (L : ListM m α) : ListM m α :=
+unsafe def takeWhileM (f : α → m (ULift Bool)) (L : ListM m α) : ListM m α :=
   cons do match ← uncons L with
   | none => return (none, empty)
   | some (x, xs) => return if (← f x).down then (some x, xs.takeWhileM f) else (none, empty)
 
 /-- Take the initial segment of the lazy list, until the function `f` first returns `false`. -/
-unsafe def takeWhile [Alternative m] (f : α → Bool) : ListM m α → ListM m α :=
+unsafe def takeWhile (f : α → Bool) : ListM m α → ListM m α :=
   takeWhileM fun a => pure (.up (f a))
 
 /-- Concatenate two monadic lazy lists. -/
