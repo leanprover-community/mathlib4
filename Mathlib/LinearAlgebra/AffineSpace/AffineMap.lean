@@ -121,7 +121,7 @@ theorem coe_mk (f : P1 → P2) (linear add) : ((mk f linear add : P1 →ᵃ[k] P
   rfl
 #align affine_map.coe_mk AffineMap.coe_mk
 
-/-- `to_fun` is the same as the result of coercing to a function. -/
+/-- `toFun` is the same as the result of coercing to a function. -/
 @[simp]
 theorem toFun_eq_coe (f : P1 →ᵃ[k] P2) : f.toFun = ⇑f :=
   rfl
