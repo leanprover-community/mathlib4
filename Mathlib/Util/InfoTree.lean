@@ -44,8 +44,6 @@ def substantive (t : TacticInvocation) : Bool :=
   | some `Lean.Parser.Tactic.paren => false
   | _ => true
 
-#print Lean.Parser.Tactic.rwRule
-
 inductive Kind
 | refl (ty : Expr)
 | rw (symm : Bool) (t : Term)
@@ -60,10 +58,13 @@ deriving BEq
 
 open Meta
 
+def runMetaM (t : TacticInvocation) (x : MVarId → MetaM α) : MVarId → IO α :=
+  fun g => t.ctx.runMetaM {} <| Meta.withMCtx t.info.mctxBefore <| g.withContext <| do x g
+
 def kind (t : TacticInvocation) : IO Kind :=
   match t.name with
   | some `Lean.Parser.Tactic.refl =>
-    .refl <$> t.ctx.runMetaM {} t.info.goalsBefore.head!.getType
+    .refl <$> t.runMetaM (fun g => g.getType) t.info.goalsBefore.head!
   -- | some `Lean.Parser.Tactic.rwRule =>
   --   return .rw sorry sorry
   | _ => pure .other
