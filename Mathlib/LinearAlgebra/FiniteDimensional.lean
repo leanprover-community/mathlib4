@@ -520,18 +520,20 @@ theorem exists_nontrivial_relation_sum_zero_of_rank_succ_lt_card [FiniteDimensio
     -- ∑ (x : V) in t', g x • x = 0.
     simp only [f]
     conv_lhs =>
-      congr
+      apply_congr
+      skip
       rw [ite_smul]
     rw [Finset.sum_ite]
     conv =>
       congr
       congr
-      congr
+      apply_congr
       simp [filter_eq', m]
     conv =>
       congr
       congr
-      congr
+      skip
+      apply_congr
       simp [filter_ne']
     rw [sum_singleton, neg_smul, add_comm, ← sub_eq_add_neg, sum_smul, ← sum_sub_distrib]
     simp only [← smul_sub]
@@ -548,7 +550,9 @@ theorem exists_nontrivial_relation_sum_zero_of_rank_succ_lt_card [FiniteDimensio
     rw [if_pos rfl]
     conv_lhs =>
       congr
-      congr
+      skip
+      apply_congr
+      skip
       rw [if_neg (show x ≠ x₀ from (mem_erase.mp H).1)]
     exact neg_add_self _
   · show ∃ (x : V) (H : x ∈ t), f x ≠ 0
