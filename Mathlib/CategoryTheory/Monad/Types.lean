@@ -12,11 +12,11 @@ import Mathlib.CategoryTheory.Monad.Basic
 import Mathlib.CategoryTheory.Monad.Kleisli
 import Mathlib.CategoryTheory.Category.KleisliCat
 import Mathlib.CategoryTheory.Types
-import Mathlib.Control.Basic -- Porting note: Needed for joinM_map_map
+import Mathlib.Control.Basic -- Porting note: Needed for `joinM_map_map`, etc.
 
 /-!
 
-# Convert from `monad` (i.e. Lean's `Type`-based monads) to `category_theory.monad`
+# Convert from `Monad` (i.e. Lean's `Type`-based monads) to `CategoryTheory.Monad`
 
 This allows us to use these monads in category theory.
 
@@ -34,7 +34,7 @@ variable (m : Type u → Type u) [_root_.Monad m] [LawfulMonad m]
 -- Porting note: Used `apply ...` instead of the direct term
 -- in a few proofs below to avoid introducing typeclass instances inline.
 
-/-- A lawful `control.monad` gives a category theory `monad` on the category of types.
+/-- A lawful `Control.Monad` gives a category theory `Monad` on the category of types.
 -/
 @[simps!]
 def ofTypeMonad : Monad (Type u) where
@@ -46,7 +46,7 @@ def ofTypeMonad : Monad (Type u) where
   right_unit' α := funext fun a => by apply joinM_map_pure
 #align category_theory.of_type_monad CategoryTheory.ofTypeMonad
 
-/-- The `Kleisli` category of a `control.monad` is equivalent to the `kleisli` category of its
+/-- The `Kleisli` category of a `Control.Monad` is equivalent to the `Kleisli` category of its
 category-theoretic version, provided the monad is lawful.
 -/
 @[simps]
