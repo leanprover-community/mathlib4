@@ -8,8 +8,8 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Subobject.WellPowered
-import Mathbin.CategoryTheory.Types
+import Mathlib.CategoryTheory.Subobject.WellPowered
+import Mathlib.CategoryTheory.Types
 
 /-!
 # `Type u` is well-powered
@@ -43,8 +43,7 @@ attribute [local instance] subtype_val_mono
 /-- The category of `mono_over α`, for `α : Type u`, is equivalent to the partial order `set α`.
 -/
 @[simps]
-noncomputable def Types.monoOverEquivalenceSet (α : Type u) : MonoOver α ≌ Set α
-    where
+noncomputable def Types.monoOverEquivalenceSet (α : Type u) : MonoOver α ≌ Set α where
   Functor :=
     { obj := fun f => Set.range f.1.Hom
       map := fun f g t =>
