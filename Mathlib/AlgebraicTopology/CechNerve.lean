@@ -20,15 +20,15 @@ import Mathlib.CategoryTheory.Arrow
 This file provides a definition of the Čech nerve associated to an arrow, provided
 the base category has the correct wide pullbacks.
 
-Several variants are provided, given `f : arrow C`:
-1. `f.cech_nerve` is the Čech nerve, considered as a simplicial object in `C`.
-2. `f.augmented_cech_nerve` is the augmented Čech nerve, considered as an
+Several variants are provided, given `f : Arrow C`:
+1. `f.cechNerve` is the Čech nerve, considered as a simplicial object in `C`.
+2. `f.augmentedCechNerve` is the augmented Čech nerve, considered as an
   augmented simplicial object in `C`.
-3. `simplicial_object.cech_nerve` and `simplicial_object.augmented_cech_nerve` are
+3. `SimplicialObject.cechNerve` and `SimplicialObject.augmentedCechNerve` are
   functorial versions of 1 resp. 2.
 
 We end the file with a description of the Čech nerve of an arrow `X ⟶ ⊤_ C` to a terminal
-object, when `C` has finite products. We call this `cech_nerve_terminal_from`. When `C` is
+object, when `C` has finite products. We call this `cechNerveTerminalFrom`. When `C` is
 `G`-Set this gives us `EG` (the universal cover of the classifying space of `G`) as a simplicial
 `G`-set, which is useful for group cohomology.
 -/
@@ -96,14 +96,14 @@ namespace SimplicialObject
 variable
   [∀ (n : ℕ) (f : Arrow C), HasWidePullback f.right (fun _ : Fin (n + 1) => f.left) fun _ => f.hom]
 
-/-- The Čech nerve construction, as a functor from `arrow C`. -/
+/-- The Čech nerve construction, as a functor from `Arrow C`. -/
 @[simps]
 def cechNerve : Arrow C ⥤ SimplicialObject C where
   obj f := f.cechNerve
   map F := Arrow.mapCechNerve F
 #align category_theory.simplicial_object.cech_nerve CategoryTheory.SimplicialObject.cechNerve
 
-/-- The augmented Čech nerve construction, as a functor from `arrow C`. -/
+/-- The augmented Čech nerve construction, as a functor from `Arrow C`. -/
 @[simps!]
 def augmentedCechNerve : Arrow C ⥤ SimplicialObject.Augmented C where
   obj f := f.augmentedCechNerve
@@ -179,7 +179,7 @@ def cechNerveEquiv (X : SimplicialObject.Augmented C) (F : Arrow C) :
     . rfl
 #align category_theory.simplicial_object.cech_nerve_equiv CategoryTheory.SimplicialObject.cechNerveEquiv
 
-/-- The augmented Čech nerve construction is right adjoint to the `to_arrow` functor. -/
+/-- The augmented Čech nerve construction is right adjoint to the `toArrow` functor. -/
 abbrev cechNerveAdjunction : (Augmented.toArrow : _ ⥤ Arrow C) ⊣ augmentedCechNerve :=
   Adjunction.mkOfHomEquiv
     { homEquiv := cechNerveEquiv
@@ -246,14 +246,14 @@ namespace CosimplicialObject
 variable
   [∀ (n : ℕ) (f : Arrow C), HasWidePushout f.left (fun _ : Fin (n + 1) => f.right) fun _ => f.hom]
 
-/-- The Čech conerve construction, as a functor from `arrow C`. -/
+/-- The Čech conerve construction, as a functor from `Arrow C`. -/
 @[simps]
 def cechConerve : Arrow C ⥤ CosimplicialObject C where
   obj f := f.cechConerve
   map F := Arrow.mapCechConerve F
 #align category_theory.cosimplicial_object.cech_conerve CategoryTheory.CosimplicialObject.cechConerve
 
-/-- The augmented Čech conerve construction, as a functor from `arrow C`. -/
+/-- The augmented Čech conerve construction, as a functor from `Arrow C`. -/
 @[simps]
 def augmentedCechConerve : Arrow C ⥤ CosimplicialObject.Augmented C where
   obj f := f.augmentedCechConerve
@@ -338,107 +338,110 @@ def cechConerveEquiv (F : Arrow C) (X : CosimplicialObject.Augmented C) :
       linarith
 #align category_theory.cosimplicial_object.cech_conerve_equiv CategoryTheory.CosimplicialObject.cechConerveEquiv
 
-/-- The augmented Čech conerve construction is left adjoint to the `to_arrow` functor. -/
+/-- The augmented Čech conerve construction is left adjoint to the `toArrow` functor. -/
 abbrev cechConerveAdjunction : augmentedCechConerve ⊣ (Augmented.toArrow : _ ⥤ Arrow C) :=
-  Adjunction.mkOfHomEquiv
-    { homEquiv := cechConerveEquiv
-      homEquiv_naturality_left_symm := by aesop_cat
-      homEquiv_naturality_right := by aesop_cat }
+  Adjunction.mkOfHomEquiv { homEquiv := cechConerveEquiv }
 #align category_theory.cosimplicial_object.cech_conerve_adjunction CategoryTheory.CosimplicialObject.cechConerveAdjunction
 
 end CosimplicialObject
 
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:73:14: unsupported tactic `discrete_cases #[] -/
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:73:14: unsupported tactic `discrete_cases #[] -/
 /-- Given an object `X : C`, the natural simplicial object sending `[n]` to `Xⁿ⁺¹`. -/
 def cechNerveTerminalFrom {C : Type u} [Category.{v} C] [HasFiniteProducts C] (X : C) :
     SimplicialObject C where
-  obj n := ∏ fun i : Fin (n.unop.len + 1) => X
-  map m n f := Limits.Pi.lift fun i => Limits.Pi.π _ (f.unop.toOrderHom i)
-  map_id' f :=
-    limit.hom_ext fun j => by
-      trace
-          "./././Mathport/Syntax/Translate/Tactic/Builtin.lean:73:14: unsupported tactic `discrete_cases #[]" <;>
-        simpa only [limit.lift_π, category.id_comp]
-  map_comp' m n o f g :=
-    limit.hom_ext fun j => by
-      trace
-          "./././Mathport/Syntax/Translate/Tactic/Builtin.lean:73:14: unsupported tactic `discrete_cases #[]" <;>
-        simpa only [category.assoc, limit.lift_π, fan.mk_π_app]
+  obj n := ∏ fun _ : Fin (n.unop.len + 1) => X
+  map f := Limits.Pi.lift fun i => Limits.Pi.π _ (f.unop.toOrderHom i)
 #align category_theory.cech_nerve_terminal_from CategoryTheory.cechNerveTerminalFrom
 
 namespace CechNerveTerminalFrom
 
 variable [HasTerminal C] (ι : Type w)
 
-/-- The diagram `option ι ⥤ C` sending `none` to the terminal object and `some j` to `X`. -/
+/-- The diagram `Option ι ⥤ C` sending `none` to the terminal object and `some j` to `X`. -/
 def wideCospan (X : C) : WidePullbackShape ι ⥤ C :=
-  WidePullbackShape.wideCospan (terminal C) (fun i : ι => X) fun i => terminal.from X
-#align category_theory.cech_nerve_terminal_from.wide_cospan CategoryTheory.cechNerveTerminalFrom.wideCospan
+  WidePullbackShape.wideCospan (terminal C) (fun _ : ι => X) fun _ => terminal.from X
+#align category_theory.cech_nerve_terminal_from.wide_cospan CategoryTheory.CechNerveTerminalFrom.wideCospan
 
 instance uniqueToWideCospanNone (X Y : C) : Unique (Y ⟶ (wideCospan ι X).obj none) := by
-  unfold wide_cospan <;> dsimp <;> infer_instance
-#align category_theory.cech_nerve_terminal_from.unique_to_wide_cospan_none CategoryTheory.cechNerveTerminalFrom.uniqueToWideCospanNone
+  dsimp [wideCospan]
+  infer_instance
+#align category_theory.cech_nerve_terminal_from.unique_to_wide_cospan_none CategoryTheory.CechNerveTerminalFrom.uniqueToWideCospanNone
 
 variable [HasFiniteProducts C]
 
-/-- The product `Xᶥ` is the vertex of a limit cone on `wide_cospan ι X`. -/
-def wideCospan.limitCone [Fintype ι] (X : C) : LimitCone (wideCospan ι X) where
-  Cone :=
-    { pt := ∏ fun i : ι => X
+/-- The product `Xᶥ` is the vertex of a limit cone on `wideCospan ι X`. -/
+def wideCospan.limitCone [Finite ι] (X : C) : LimitCone (wideCospan ι X) where
+  cone :=
+    { pt := ∏ fun _ : ι => X
       π :=
         { app := fun X => Option.casesOn X (terminal.from _) fun i => limit.π _ ⟨i⟩
-          naturality' := fun i j f => by
+          naturality := fun i j f => by
             cases f
             · cases i
               all_goals dsimp; simp
             · dsimp
               simp only [terminal.comp_from]
               exact Subsingleton.elim _ _ } }
-  IsLimit :=
+  isLimit :=
     { lift := fun s => Limits.Pi.lift fun j => s.π.app (some j)
       fac := fun s j => Option.casesOn j (Subsingleton.elim _ _) fun j => limit.lift_π _ _
       uniq := fun s f h => by
-        ext j
-        dsimp only [limits.pi.lift]
+        dsimp
+        ext ⟨j⟩
+        dsimp only [Limits.Pi.lift]
         rw [limit.lift_π]
         dsimp
-        rw [← h (some j.as)]
-        congr
-        ext
-        rfl }
-#align category_theory.cech_nerve_terminal_from.wide_cospan.limit_cone CategoryTheory.cechNerveTerminalFrom.wideCospan.limitCone
+        rw [← h (some j)] }
+#align category_theory.cech_nerve_terminal_from.wide_cospan.limit_cone CategoryTheory.CechNerveTerminalFrom.wideCospan.limitCone
 
 instance hasWidePullback [Finite ι] (X : C) :
     HasWidePullback (Arrow.mk (terminal.from X)).right
-      (fun i : ι => (Arrow.mk (terminal.from X)).left) fun i => (Arrow.mk (terminal.from X)).Hom :=
-  by
+      (fun _ : ι => (Arrow.mk (terminal.from X)).left)
+      (fun _ => (Arrow.mk (terminal.from X)).hom) := by
   cases nonempty_fintype ι
-  exact ⟨⟨wide_cospan.limit_cone ι X⟩⟩
-#align category_theory.cech_nerve_terminal_from.has_wide_pullback CategoryTheory.cechNerveTerminalFrom.hasWidePullback
+  exact ⟨⟨wideCospan.limitCone ι X⟩⟩
+#align category_theory.cech_nerve_terminal_from.has_wide_pullback CategoryTheory.CechNerveTerminalFrom.hasWidePullback
+
+-- porting note: added to make the following definitions work
+instance hasWidePullback' [Finite ι] (X : C) :
+    HasWidePullback (⊤_ C)
+      (fun _ : ι => X)
+      (fun _ => terminal.from X) :=
+  hasWidePullback _ _
+
+-- porting note: added to make the following definitions work
+instance hasLimit_wideCospan [Finite ι] (X : C) : HasLimit (wideCospan ι X) := hasWidePullback _ _
+
+-- porting note: added to ease the definition of `iso`
+/-- the isomorphism to the product induced by the limit cone `wideCospan ι X` -/
+def wideCospan.limitIsoPi [Finite ι] (X : C) :
+    limit (wideCospan ι X) ≅ ∏ fun _ : ι => X :=
+  (IsLimit.conePointUniqueUpToIso (limit.isLimit _)
+    (wideCospan.limitCone ι X).2)
+
+-- porting note: added to ease the definition of `iso`
+@[reassoc (attr := simp)]
+lemma wideCospan.limitIsoPi_inv_comp_pi [Finite ι] (X : C) (j : ι) :
+    (wideCospan.limitIsoPi ι X).inv ≫ WidePullback.π _ j = Pi.π _ j :=
+  IsLimit.conePointUniqueUpToIso_inv_comp _ _ _
+
+@[reassoc (attr := simp)]
+lemma wideCospan.limitIsoPi_hom_comp_pi [Finite ι] (X : C) (j : ι) :
+    (wideCospan.limitIsoPi ι X).hom ≫ Pi.π _ j = WidePullback.π _ j := by
+  rw [← wideCospan.limitIsoPi_inv_comp_pi, Iso.hom_inv_id_assoc]
 
 /-- Given an object `X : C`, the Čech nerve of the hom to the terminal object `X ⟶ ⊤_ C` is
 naturally isomorphic to a simplicial object sending `[n]` to `Xⁿ⁺¹` (when `C` is `G-Set`, this is
 `EG`, the universal cover of the classifying space of `G`. -/
 def iso (X : C) : (Arrow.mk (terminal.from X)).cechNerve ≅ cechNerveTerminalFrom X :=
-  Iso.symm
-    (NatIso.ofComponents
-      (fun m =>
-        ((limit.isLimit _).conePointUniqueUpToIso
-            (wideCospan.limitCone (Fin (m.unop.len + 1)) X).2).symm)
-      fun m n f =>
-      WidePullback.hom_ext _ _ _
-        (by
-          intro j
-          simp only [category.assoc]
-          dsimp only [cech_nerve_terminal_from, wide_pullback.π, pi.lift]
-          erw [wide_pullback.lift_π,
-            limit.cone_point_unique_up_to_iso_inv_comp (wide_cospan.limit_cone _ _).2,
-            (limit.is_limit _).conePointUniqueUpToIso_inv_comp (wide_cospan.limit_cone _ _).2,
-            limit.lift_π]
-          rfl)
-        (@Subsingleton.elim _ (@Unique.subsingleton _ (Limits.uniqueToTerminal _)) _ _))
-#align category_theory.cech_nerve_terminal_from.iso CategoryTheory.cechNerveTerminalFrom.iso
+  NatIso.ofComponents (fun m => wideCospan.limitIsoPi _ _) (fun {m n} f => by
+    dsimp only [cechNerveTerminalFrom, Arrow.cechNerve]
+    ext ⟨j⟩
+    simp only [Category.assoc, limit.lift_π, Fan.mk_π_app]
+    erw [wideCospan.limitIsoPi_hom_comp_pi,
+      wideCospan.limitIsoPi_hom_comp_pi, limit.lift_π]
+    rfl)
+
+#align category_theory.cech_nerve_terminal_from.iso CategoryTheory.CechNerveTerminalFrom.iso
 
 end CechNerveTerminalFrom
 
