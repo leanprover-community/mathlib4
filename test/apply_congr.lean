@@ -10,4 +10,4 @@ example (f g : ℤ → ℤ) (S : Finset ℤ) (h : ∀ m ∈ S, f m = g m) :
     -- so we get to rewrite `f x`, in the presence of the crucial `H : x ∈ S` hypothesis.
     apply_congr
     · skip
-    · simp [h, H]
+    · simp [*]

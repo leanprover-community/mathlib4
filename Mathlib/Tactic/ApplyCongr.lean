@@ -5,6 +5,7 @@ Authors: Lucas Allen, Scott Morrison
 -/
 
 import Mathlib.Tactic.Conv
+import Std.Tactic.OpenPrivate
 
 /-!
 ## Introduce the `apply_congr` conv mode tactic.
@@ -17,6 +18,7 @@ rewriting inside the operand of a `Finset.sum`.
 
 open Lean Expr Parser.Tactic Elab Command Elab.Tactic Meta Conv
 
+open private mkFun from Lean.Meta.AppBuilder in
 /--
 Apply a congruence lemma inside `conv` mode.
 
@@ -54,7 +56,7 @@ example (f g : ℤ → ℤ) (S : Finset ℤ) (h : ∀ m ∈ S, f m = g m) :
     -- so we get to rewrite `f x`, in the presence of the crucial `H : x ∈ S` hypothesis.
     apply_congr
     · skip
-    · simp [h, H]
+    · simp [*]
 ```
 
 In the above example, when the `apply_congr` tactic is called it gives the hypothesis `H : x ∈ S`
@@ -72,10 +74,10 @@ def Lean.Elab.Tactic.applyCongr (q : Option Expr) : TacticM Unit := do
     | none =>
       let congrTheorems ←
         (fun congrTheoremMap => congrTheoremMap.get lhsFun) <$> getSimpCongrTheorems
-      congrTheorems.mapM (fun congrTheorem => mkConstWithLevelParams congrTheorem.theoremName)
+      congrTheorems.mapM (fun congrTheorem => liftM <| Prod.fst <$> mkFun congrTheorem.theoremName)
   -- For every lemma:
   liftMetaTactic <| fun mainGoal => congrTheoremExprs.firstM (fun congrTheoremExpr => do
-    let newGoals ← mainGoal.apply congrTheoremExpr
+    let newGoals ← mainGoal.apply congrTheoremExpr { newGoals := .nonDependentOnly }
     newGoals.mapM fun newGoal => Prod.snd <$> newGoal.intros)
 
 syntax (name := Lean.Parser.Tactic.applyCongr) "apply_congr" (ppSpace (colGt term))? : conv
