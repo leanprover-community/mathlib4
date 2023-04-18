@@ -15,13 +15,13 @@ import Mathlib.CategoryTheory.GradedObject
 /-!
 # The homology of a complex
 
-Given `C : homological_complex V c`, we have `C.cycles i` and `C.boundaries i`,
+Given `C : HomologicalComplex V c`, we have `C.cycles i` and `C.boundaries i`,
 both defined as subobjects of `C.X i`.
 
 We show these are functorial with respect to chain maps,
-as `C.cycles_map f i` and `C.boundaries_map f i`.
+as `C.cyclesMap f i` and `C.boundariesMap f i`.
 
-As a consequence we construct `homology_functor i : homological_complex V c ⥤ V`,
+As a consequence we construct `homologyFunctor i : HomologicalComplex V c ⥤ V`,
 computing the `i`-th homology.
 -/
 
@@ -57,8 +57,7 @@ theorem cycles_eq_kernelSubobject {i j : ι} (r : c.Rel i j) :
 #align homological_complex.cycles_eq_kernel_subobject HomologicalComplex.cycles_eq_kernelSubobject
 
 /-- The underlying object of `C.cycles i` is isomorphic to `kernel (C.d i j)`,
-for any `j` such that `rel i j`.
--/
+for any `j` such that `Rel i j`. -/
 def cyclesIsoKernel {i j : ι} (r : c.Rel i j) : (C.cycles i : V) ≅ kernel (C.d i j) :=
   Subobject.isoOfEq _ _ (C.cycles_eq_kernelSubobject r) ≪≫ kernelSubobjectIso (C.d i j)
 #align homological_complex.cycles_iso_kernel HomologicalComplex.cyclesIsoKernel
@@ -86,8 +85,7 @@ theorem boundaries_eq_imageSubobject [HasEqualizers V] {i j : ι} (r : c.Rel i j
 #align homological_complex.boundaries_eq_image_subobject HomologicalComplex.boundaries_eq_imageSubobject
 
 /-- The underlying object of `C.boundaries j` is isomorphic to `image (C.d i j)`,
-for any `i` such that `rel i j`.
--/
+for any `i` such that `Rel i j`. -/
 def boundariesIsoImage [HasEqualizers V] {i j : ι} (r : c.Rel i j) :
     (C.boundaries j : V) ≅ image (C.d i j) :=
   Subobject.isoOfEq _ _ (C.boundaries_eq_imageSubobject r) ≪≫ imageSubobjectIso (C.d i j)
@@ -109,31 +107,28 @@ theorem boundaries_le_cycles (C : HomologicalComplex V c) (i : ι) : C.boundarie
   image_le_kernel _ _ (C.dTo_comp_dFrom i)
 #align homological_complex.boundaries_le_cycles HomologicalComplex.boundaries_le_cycles
 
-/-- The canonical map from `boundaries i` to `cycles i`.
--/
+/-- The canonical map from `boundaries i` to `cycles i`. -/
 abbrev boundariesToCycles (C : HomologicalComplex V c) (i : ι) :
     (C.boundaries i : V) ⟶ (C.cycles i : V) :=
   imageToKernel _ _ (C.dTo_comp_dFrom i)
 #align homological_complex.boundaries_to_cycles HomologicalComplex.boundariesToCycles
 
-/-- Prefer `boundaries_to_cycles`. -/
+/-- Prefer `boundariesToCycles`. -/
 @[simp]
 theorem image_to_kernel_as_boundariesToCycles (C : HomologicalComplex V c) (i : ι) (h) :
-    (C.boundaries i).ofLE (C.cycles i) h = C.boundariesToCycles i :=
-  rfl
+    (C.boundaries i).ofLE (C.cycles i) h = C.boundariesToCycles i := rfl
 #align homological_complex.image_to_kernel_as_boundaries_to_cycles HomologicalComplex.image_to_kernel_as_boundariesToCycles
 
 variable [HasCokernels V]
 
-/-- The homology of a complex at index `i`.
--/
+/-- The homology of a complex at index `i`. -/
 abbrev homology (C : HomologicalComplex V c) (i : ι) : V :=
   _root_.homology (C.dTo i) (C.dFrom i) (C.dTo_comp_dFrom i)
 #align homological_complex.homology HomologicalComplex.homology
 
 /-- The `j`th homology of a homological complex (as kernel of 'the differential from `Cⱼ`' modulo
 the image of 'the differential to `Cⱼ`') is isomorphic to the kernel of `d : Cⱼ → Cₖ` modulo
-the image of `d : Cᵢ → Cⱼ` when `rel i j` and `rel j k`. -/
+the image of `d : Cᵢ → Cⱼ` when `Rel i j` and `Rel j k`. -/
 def homologyIso (C : HomologicalComplex V c) {i j k : ι} (hij : c.Rel i j) (hjk : c.Rel j k) :
     C.homology j ≅ _root_.homology (C.d i j) (C.d j k) (C.d_comp_d i j k) :=
   homology.mapIso _ _
@@ -152,14 +147,14 @@ end HomologicalComplex
 def ChainComplex.homologyZeroIso [HasKernels V] [HasImages V] [HasCokernels V]
     (C : ChainComplex V ℕ) [Epi (factorThruImage (C.d 1 0))] : C.homology 0 ≅ cokernel (C.d 1 0) :=
   (homology.mapIso _ _
-        (Arrow.isoMk (C.xPrevIso rfl) (Iso.refl _) <| by
-            rw [C.dTo_eq rfl]
-            exact (Category.comp_id _).symm : Arrow.mk (C.dTo 0) ≅ Arrow.mk (C.d 1 0))
-        (Arrow.isoMk (Iso.refl _) (Iso.refl _) <| by
-            simp [C.dFrom_eq_zero fun h : _ = _ =>
-                one_ne_zero <| by rwa [ChainComplex.next_nat_zero, Nat.zero_add] at h] :
-          Arrow.mk (C.dFrom 0) ≅ Arrow.mk 0)
-        rfl).trans <|
+      (Arrow.isoMk (C.xPrevIso rfl) (Iso.refl _) <| by
+        rw [C.dTo_eq rfl]
+        exact (Category.comp_id _).symm : Arrow.mk (C.dTo 0) ≅ Arrow.mk (C.d 1 0))
+      (Arrow.isoMk (Iso.refl _) (Iso.refl _) <| by
+        simp [C.dFrom_eq_zero fun h : _ = _ =>
+          one_ne_zero <| by rwa [ChainComplex.next_nat_zero, Nat.zero_add] at h] :
+        Arrow.mk (C.dFrom 0) ≅ Arrow.mk 0)
+      rfl).trans <|
     homologyOfZeroRight _
 #align chain_complex.homology_zero_iso ChainComplex.homologyZeroIso
 
@@ -167,12 +162,11 @@ def ChainComplex.homologyZeroIso [HasKernels V] [HasImages V] [HasCokernels V]
 def CochainComplex.homologyZeroIso [HasZeroObject V] [HasKernels V] [HasImages V] [HasCokernels V]
     (C : CochainComplex V ℕ) : C.homology 0 ≅ kernel (C.d 0 1) :=
   (homology.mapIso _ _
-          (Arrow.isoMk (C.xPrevIsoSelf (by rw [CochainComplex.prev_nat_zero]; exact one_ne_zero))
-              (Iso.refl _) (by simp) :
-            Arrow.mk (C.dTo 0) ≅ Arrow.mk 0)
-          (Arrow.isoMk (Iso.refl _) (C.xNextIso rfl) (by simp) :
-            Arrow.mk (C.dFrom 0) ≅ Arrow.mk (C.d 0 1)) <|
-        by simp).trans <|
+      (Arrow.isoMk (C.xPrevIsoSelf (by rw [CochainComplex.prev_nat_zero]; exact one_ne_zero))
+          (Iso.refl _) (by simp) : Arrow.mk (C.dTo 0) ≅ Arrow.mk 0)
+      (Arrow.isoMk (Iso.refl _) (C.xNextIso rfl) (by simp) :
+        Arrow.mk (C.dFrom 0) ≅ Arrow.mk (C.d 0 1)) <|
+      by simp).trans <|
     homologyOfZeroLeft _
 #align cochain_complex.homology_zero_iso CochainComplex.homologyZeroIso
 
@@ -205,8 +199,7 @@ variable [HasKernels V]
 
 variable {C₁ C₂ C₃ : HomologicalComplex V c} (f : C₁ ⟶ C₂)
 
-/-- The morphism between cycles induced by a chain map.
--/
+/-- The morphism between cycles induced by a chain map. -/
 abbrev cyclesMap (f : C₁ ⟶ C₂) (i : ι) : (C₁.cycles i : V) ⟶ (C₂.cycles i : V) :=
   Subobject.factorThru _ ((C₁.cycles i).arrow ≫ f.f i) (kernelSubobject_factors _ _ (by simp))
 #align cycles_map cyclesMap
@@ -249,8 +242,7 @@ variable [HasImages V] [HasImageMaps V]
 
 variable {C₁ C₂ C₃ : HomologicalComplex V c} (f : C₁ ⟶ C₂)
 
-/-- The morphism between boundaries induced by a chain map.
--/
+/-- The morphism between boundaries induced by a chain map. -/
 abbrev boundariesMap (f : C₁ ⟶ C₂) (i : ι) : (C₁.boundaries i : V) ⟶ (C₂.boundaries i : V) :=
   imageSubobjectMap (f.sqTo i)
 #align boundaries_map boundariesMap
@@ -268,7 +260,7 @@ end
 
 section
 
-/-! The `boundaries_to_cycles` morphisms are natural. -/
+/-! The `boundariesToCycles` morphisms are natural. -/
 
 
 variable [HasEqualizers V] [HasImages V] [HasImageMaps V]
@@ -295,7 +287,7 @@ def boundariesToCyclesNatTrans (i : ι) : boundariesFunctor V c i ⟶ cyclesFunc
 @[simps]
 def homologyFunctor [HasCokernels V] (i : ι) : HomologicalComplex V c ⥤ V where
   -- It would be nice if we could just write
-  -- `cokernel (boundaries_to_cycles_nat_trans V c i)`
+  -- `cokernel (boundariesToCyclesNatTrans V c i)`
   -- here, but universe implementation details get in the way...
   obj C := C.homology i
   map {C₁ C₂} f := homology.map _ _ (f.sqTo i) (f.sqFrom i) rfl
