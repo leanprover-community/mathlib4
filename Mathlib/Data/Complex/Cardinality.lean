@@ -8,8 +8,8 @@ Authors: Violeta Hernández Palacios
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Complex.Basic
-import Mathbin.Data.Real.Cardinality
+import Mathlib.Data.Complex.Basic
+import Mathlib.Data.Real.Cardinality
 
 /-!
 # The cardinality of the complex numbers
@@ -34,8 +34,7 @@ theorem mk_univ_complex : (#(Set.univ : Set ℂ)) = 𝔠 := by rw [mk_univ, mk_c
 #align mk_univ_complex mk_univ_complex
 
 /-- The complex numbers are not countable. -/
-theorem not_countable_complex : ¬(Set.univ : Set ℂ).Countable :=
-  by
+theorem not_countable_complex : ¬(Set.univ : Set ℂ).Countable := by
   rw [← le_aleph_0_iff_set_countable, not_le, mk_univ_complex]
   apply cantor
 #align not_countable_complex not_countable_complex
