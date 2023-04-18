@@ -15,23 +15,23 @@ import Mathlib.Topology.MetricSpace.PiNat
 
 In topology, and especially descriptive set theory, one often constructs functions `(ℕ → β) → α`,
 where α is some topological space and β is a discrete space, as an appropriate limit of some map
-`list β → set α`. We call the latter type of map a "`β`-scheme on `α`".
+`List β → Set α`. We call the latter type of map a "`β`-scheme on `α`".
 
 This file develops the basic, abstract theory of these schemes and the functions they induce.
 
 ## Main Definitions
 
-* `cantor_scheme.induced_map A` : The aforementioned "limit" of a scheme `A : list β → set α`.
+* `CantorScheme.inducedMap A` : The aforementioned "limit" of a scheme `A : List β → Set α`.
   This is a partial function from `ℕ → β` to `a`,
-  implemented here as an object of type `Σ s : set (ℕ → β), s → α`.
-  That is, `(induced_map A).1` is the domain and `(induced_map A).2` is the function.
+  implemented here as an object of type `Σ s : Set (ℕ → β), s → α`.
+  That is, `(inducedMap A).1` is the domain and `(inducedMap A).2` is the function.
 
 ## Implementation Notes
 
 We consider end-appending to be the fundamental way to build lists (say on `β`) inductively,
 as this interacts better with the topology on `ℕ → β`.
-As a result, functions like `list.nth` or `stream.take` do not have their intended meaning
-in this file. See instead `pi_nat.res`.
+As a result, functions like `List.get?` or `Stream'.take` do not have their intended meaning
+in this file. See instead `PiNat.res`.
 
 ## References
 
@@ -62,24 +62,20 @@ noncomputable def inducedMap : Σs : Set (ℕ → β), s → α :=
 
 section Topology
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- A scheme is antitone if each set contains its children. -/
 protected def Antitone : Prop :=
-  ∀ l : List β, ∀ a : β, A (a::l) ⊆ A l
+  ∀ l : List β, ∀ a : β, A (a :: l) ⊆ A l
 #align cantor_scheme.antitone CantorScheme.Antitone
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- A useful strengthening of being antitone is to require that each set contains
 the closure of each of its children. -/
 def ClosureAntitone [TopologicalSpace α] : Prop :=
-  ∀ l : List β, ∀ a : β, closure (A (a::l)) ⊆ A l
+  ∀ l : List β, ∀ a : β, closure (A (a :: l)) ⊆ A l
 #align cantor_scheme.closure_antitone CantorScheme.ClosureAntitone
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- A scheme is disjoint if the children of each set of pairwise disjoint. -/
 protected def Disjoint : Prop :=
-  ∀ l : List β, Pairwise fun a b => Disjoint (A (a::l)) (A (b::l))
+  ∀ l : List β, Pairwise fun a b => Disjoint (A (a :: l)) (A (b :: l))
 #align cantor_scheme.disjoint CantorScheme.Disjoint
 
 variable {A}
@@ -88,7 +84,7 @@ variable {A}
 its image under this map is in each set along the corresponding branch. -/
 theorem map_mem (x : (inducedMap A).1) (n : ℕ) : (inducedMap A).2 x ∈ A (res x n) := by
   have := x.property.some_mem
-  rw [mem_Inter] at this
+  rw [mem_interᵢ] at this
   exact this n
 #align cantor_scheme.map_mem CantorScheme.map_mem
 
@@ -97,8 +93,8 @@ protected theorem ClosureAntitone.antitone [TopologicalSpace α] (hA : ClosureAn
 #align cantor_scheme.closure_antitone.antitone CantorScheme.ClosureAntitone.antitone
 
 protected theorem Antitone.closureAntitone [TopologicalSpace α] (hanti : CantorScheme.Antitone A)
-    (hclosed : ∀ l, IsClosed (A l)) : ClosureAntitone A := fun l a =>
-  (hclosed _).closure_eq.Subset.trans (hanti _ _)
+    (hclosed : ∀ l, IsClosed (A l)) : ClosureAntitone A := fun _ _ =>
+  (hclosed _).closure_eq.subset.trans (hanti _ _)
 #align cantor_scheme.antitone.closure_antitone CantorScheme.Antitone.closureAntitone
 
 /-- A scheme where the children of each set are pairwise disjoint induces an injective map. -/
@@ -108,13 +104,13 @@ theorem Disjoint.map_injective (hA : CantorScheme.Disjoint A) : Injective (induc
   dsimp
   ext n : 1
   induction' n with n ih; · simp
-  simp only [res_succ]
+  simp only [res_succ, cons.injEq]
   refine' ⟨_, ih⟩
   contrapose hA
-  simp only [CantorScheme.Disjoint, _root_.pairwise, Ne.def, not_forall, exists_prop]
+  simp only [CantorScheme.Disjoint, _root_.Pairwise, Ne.def, not_forall, exists_prop]
   refine' ⟨res x n, _, _, hA, _⟩
   rw [not_disjoint_iff]
-  refine' ⟨([anonymous] A).2 ⟨x, hx⟩, _, _⟩
+  refine' ⟨(inducedMap A).2 ⟨x, hx⟩, _, _⟩
   · rw [← res_succ]
     apply map_mem
   rw [hxy, ih, ← res_succ]
@@ -127,8 +123,6 @@ section Metric
 
 variable [PseudoMetricSpace α]
 
-variable (A)
-
 /-- A scheme on a metric space has vanishing diameter if diameter approaches 0 along each branch. -/
 def VanishingDiam : Prop :=
   ∀ x : ℕ → β, Tendsto (fun n : ℕ => EMetric.diam (A (res x n))) atTop (𝓝 0)
@@ -136,7 +130,6 @@ def VanishingDiam : Prop :=
 
 variable {A}
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:635:2: warning: expanding binder collection (y z «expr ∈ » A (res[pi_nat.res] x n)) -/
 theorem VanishingDiam.dist_lt (hA : VanishingDiam A) (ε : ℝ) (ε_pos : 0 < ε) (x : ℕ → β) :
     ∃ n : ℕ, ∀ (y) (_ : y ∈ A (res x n)) (z) (_ : z ∈ A (res x n)), dist y z < ε := by
   specialize hA x
@@ -145,7 +138,7 @@ theorem VanishingDiam.dist_lt (hA : VanishingDiam A) (ε : ℝ) (ε_pos : 0 < ε
     hA (ENNReal.ofReal (ε / 2))
       (by
         simp only [gt_iff_lt, ENNReal.ofReal_pos]
-        linarith) with
+        exact half_pos ε_pos) with -- Porting note: was `linarith`
     n hn
   use n
   intro y hy z hz
@@ -153,7 +146,7 @@ theorem VanishingDiam.dist_lt (hA : VanishingDiam A) (ε : ℝ) (ε_pos : 0 < ε
   apply lt_of_le_of_lt (EMetric.edist_le_diam_of_mem hy hz)
   apply lt_of_le_of_lt (hn _ (le_refl _))
   rw [ENNReal.ofReal_lt_ofReal_iff ε_pos]
-  linarith
+  exact half_lt_self ε_pos -- Porting note: was `linarith`
 #align cantor_scheme.vanishing_diam.dist_lt CantorScheme.VanishingDiam.dist_lt
 
 /-- A scheme with vanishing diameter along each branch induces a continuous map. -/
@@ -163,15 +156,15 @@ theorem VanishingDiam.map_continuous [TopologicalSpace β] [DiscreteTopology β]
   rintro ⟨x, hx⟩ ε ε_pos
   cases' hA.dist_lt _ ε_pos x with n hn
   rw [_root_.eventually_nhds_iff]
-  refine' ⟨coe ⁻¹' cylinder x n, _, _, by simp⟩
+  refine' ⟨(↑)⁻¹' cylinder x n, _, _, by simp⟩
   · rintro ⟨y, hy⟩ hyx
-    rw [mem_preimage, Subtype.coe_mk, cylinder_eq_res, mem_set_of] at hyx
+    rw [mem_preimage, Subtype.coe_mk, cylinder_eq_res, mem_setOf] at hyx
     apply hn
     · rw [← hyx]
       apply map_mem
     apply map_mem
-  apply continuous_subtype_coe.is_open_preimage
-  apply is_open_cylinder
+  apply continuous_subtype_val.isOpen_preimage
+  apply isOpen_cylinder
 #align cantor_scheme.vanishing_diam.map_continuous CantorScheme.VanishingDiam.map_continuous
 
 /-- A scheme on a complete space with vanishing diameter
@@ -198,15 +191,14 @@ theorem ClosureAntitone.map_of_vanishingDiam [CompleteSpace α] (hdiam : Vanishi
     apply hn <;> apply umem <;> assumption
   cases' cauchySeq_tendsto_of_complete this with y hy
   use y
-  rw [mem_Inter]
+  rw [mem_interᵢ]
   intro n
   apply hanti _ (x n)
   apply mem_closure_of_tendsto hy
-  rw [eventually_at_top]
+  rw [eventually_atTop]
   exact ⟨n.succ, umem _⟩
 #align cantor_scheme.closure_antitone.map_of_vanishing_diam CantorScheme.ClosureAntitone.map_of_vanishingDiam
 
 end Metric
 
 end CantorScheme
-
