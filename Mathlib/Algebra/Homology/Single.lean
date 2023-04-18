@@ -8,7 +8,7 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Homology.Homology
+import Mathlib.Algebra.Homology.Homology
 
 /-!
 # Chain complexes supported in a single degree
@@ -50,8 +50,7 @@ which has better definitional properties,
 if you are working with `ℕ`-indexed complexes.
 -/
 @[simps]
-def single (j : ι) : V ⥤ HomologicalComplex V c
-    where
+def single (j : ι) : V ⥤ HomologicalComplex V c where
   obj A :=
     { pt := fun i => if i = j then A else 0
       d := fun i j => 0 }
@@ -111,8 +110,7 @@ instance (j : ι) : Faithful (single V c j)
       eq_to_hom_refl, category.comp_id] at this
     exact this
 
-instance (j : ι) : Full (single V c j)
-    where
+instance (j : ι) : Full (single V c j) where
   preimage X Y f := eqToHom (by simp) ≫ f.f j ≫ eqToHom (by simp)
   witness' X Y f := by
     ext i
@@ -138,8 +136,7 @@ as chain complexes supported in degree 0.
 
 This is naturally isomorphic to `single V _ 0`, but has better definitional properties.
 -/
-def single₀ : V ⥤ ChainComplex V ℕ
-    where
+def single₀ : V ⥤ ChainComplex V ℕ where
   obj X :=
     { pt := fun n =>
         match n with
@@ -184,15 +181,13 @@ theorem single₀_obj_x_d (X : V) (i j : ℕ) : ((single₀ V).obj X).d i j = 0 
 #align chain_complex.single₀_obj_X_d ChainComplex.single₀_obj_x_d
 
 @[simp]
-theorem single₀_obj_x_dTo (X : V) (j : ℕ) : ((single₀ V).obj X).dTo j = 0 :=
-  by
+theorem single₀_obj_x_dTo (X : V) (j : ℕ) : ((single₀ V).obj X).dTo j = 0 := by
   rw [d_to_eq ((single₀ V).obj X) rfl]
   simp
 #align chain_complex.single₀_obj_X_d_to ChainComplex.single₀_obj_x_dTo
 
 @[simp]
-theorem single₀_obj_x_dFrom (X : V) (i : ℕ) : ((single₀ V).obj X).dFrom i = 0 :=
-  by
+theorem single₀_obj_x_dFrom (X : V) (i : ℕ) : ((single₀ V).obj X).dFrom i = 0 := by
   cases i
   · rw [d_from_eq_zero]
     simp
@@ -247,8 +242,7 @@ are the same as morphisms `f : C.X 0 ⟶ X` such that `C.d 1 0 ≫ f = 0`.
 -/
 @[simps]
 def toSingle₀Equiv (C : ChainComplex V ℕ) (X : V) :
-    (C ⟶ (single₀ V).obj X) ≃ { f : C.pt 0 ⟶ X // C.d 1 0 ≫ f = 0 }
-    where
+    (C ⟶ (single₀ V).obj X) ≃ { f : C.pt 0 ⟶ X // C.d 1 0 ≫ f = 0 } where
   toFun f :=
     ⟨f.f 0, by
       rw [← f.comm 1 0]
@@ -258,8 +252,7 @@ def toSingle₀Equiv (C : ChainComplex V ℕ) (X : V) :
         match i with
         | 0 => f.1
         | n + 1 => 0
-      comm' := fun i j h =>
-        by
+      comm' := fun i j h => by
         rcases i with (_ | _ | i) <;> cases j <;> unfold_aux <;>
           simp only [comp_zero, zero_comp, single₀_obj_X_d]
         · rw [C.shape, zero_comp]
@@ -288,8 +281,7 @@ theorem to_single₀_ext {C : ChainComplex V ℕ} {X : V} (f g : C ⟶ (single�
 to a `ℕ`-indexed chain complex `C` are the same as morphisms `f : X → C.X`.
 -/
 @[simps]
-def fromSingle₀Equiv (C : ChainComplex V ℕ) (X : V) : ((single₀ V).obj X ⟶ C) ≃ (X ⟶ C.pt 0)
-    where
+def fromSingle₀Equiv (C : ChainComplex V ℕ) (X : V) : ((single₀ V).obj X ⟶ C) ≃ (X ⟶ C.pt 0) where
   toFun f := f.f 0
   invFun f :=
     { f := fun i =>
@@ -347,8 +339,7 @@ as cochain complexes supported in degree 0.
 
 This is naturally isomorphic to `single V _ 0`, but has better definitional properties.
 -/
-def single₀ : V ⥤ CochainComplex V ℕ
-    where
+def single₀ : V ⥤ CochainComplex V ℕ where
   obj X :=
     { pt := fun n =>
         match n with
@@ -393,15 +384,13 @@ theorem single₀_obj_x_d (X : V) (i j : ℕ) : ((single₀ V).obj X).d i j = 0 
 #align cochain_complex.single₀_obj_X_d CochainComplex.single₀_obj_x_d
 
 @[simp]
-theorem single₀_obj_x_dFrom (X : V) (j : ℕ) : ((single₀ V).obj X).dFrom j = 0 :=
-  by
+theorem single₀_obj_x_dFrom (X : V) (j : ℕ) : ((single₀ V).obj X).dFrom j = 0 := by
   rw [d_from_eq ((single₀ V).obj X) rfl]
   simp
 #align cochain_complex.single₀_obj_X_d_from CochainComplex.single₀_obj_x_dFrom
 
 @[simp]
-theorem single₀_obj_x_dTo (X : V) (i : ℕ) : ((single₀ V).obj X).dTo i = 0 :=
-  by
+theorem single₀_obj_x_dTo (X : V) (i : ℕ) : ((single₀ V).obj X).dTo i = 0 := by
   cases i
   · rw [d_to_eq_zero]
     simp
@@ -455,8 +444,7 @@ to a `ℕ`-indexed cochain complex `C`
 are the same as morphisms `f : X ⟶ C.X 0` such that `f ≫ C.d 0 1 = 0`.
 -/
 def fromSingle₀Equiv (C : CochainComplex V ℕ) (X : V) :
-    ((single₀ V).obj X ⟶ C) ≃ { f : X ⟶ C.pt 0 // f ≫ C.d 0 1 = 0 }
-    where
+    ((single₀ V).obj X ⟶ C) ≃ { f : X ⟶ C.pt 0 // f ≫ C.d 0 1 = 0 } where
   toFun f :=
     ⟨f.f 0, by
       rw [f.comm 0 1]
@@ -466,8 +454,7 @@ def fromSingle₀Equiv (C : CochainComplex V ℕ) (X : V) :
         match i with
         | 0 => f.1
         | n + 1 => 0
-      comm' := fun i j h =>
-        by
+      comm' := fun i j h => by
         rcases j with (_ | _ | j) <;> cases i <;> unfold_aux <;>
           simp only [comp_zero, zero_comp, single₀_obj_X_d]
         · convert comp_zero
