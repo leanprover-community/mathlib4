@@ -5,6 +5,7 @@ Authors: Gabriel Ebner, Scott Morrison
 -/
 import Std.Tactic.TryThis
 import Mathlib.Lean.Expr.Basic
+import Mathlib.Lean.Meta.DiscrTree
 import Mathlib.Tactic.Cache
 import Mathlib.Tactic.Core
 import Mathlib.Tactic.SolveByElim
@@ -26,37 +27,11 @@ example : Nat := by library_search
 ```
 -/
 
-namespace Lean.Meta.DiscrTree
-
-/--
-Inserts a new key into a discrimination tree,
-but only if it is not of the form `#[*]` or `#[=, *, *, *]`.
--/
-def insertIfSpecific {α : Type} {s : Bool} [BEq α] (d : DiscrTree α s)
-    (keys : Array (DiscrTree.Key s)) (v : α) : DiscrTree α s :=
-  if keys == #[Key.star] || keys == #[Key.const `Eq 3, Key.star, Key.star, Key.star] then
-    d
-  else
-    d.insertCore keys v
-
-end Lean.Meta.DiscrTree
-
 namespace Mathlib.Tactic.LibrarySearch
 
 open Lean Meta Std.Tactic.TryThis
 
 initialize registerTraceClass `Tactic.librarySearch
-
--- from Lean.Server.Completion
-private def isBlackListed (declName : Name) : MetaM Bool := do
-  if declName == ``sorryAx then return true
-  if declName matches .str _ "inj" then return true
-  if declName matches .str _ "noConfusionType" then return true
-  let env ← getEnv
-  pure $ declName.isInternal'
-   || isAuxRecursor env declName
-   || isNoConfusion env declName
-  <||> isRec declName <||> isMatcher declName
 
 /--
 A "modifier" for a declaration.
@@ -74,7 +49,7 @@ deriving DecidableEq
 initialize librarySearchLemmas : DeclCache (DiscrTree (Name × DeclMod) true) ←
   DeclCache.mk "librarySearch: init cache" {} fun name constInfo lemmas => do
     if constInfo.isUnsafe then return lemmas
-    if ← isBlackListed name then return lemmas
+    if ← name.isBlackListed then return lemmas
     withNewMCtxDepth do withReducible do
       let (_, _, type) ← forallMetaTelescopeReducing constInfo.type
       let keys ← DiscrTree.mkPath type
