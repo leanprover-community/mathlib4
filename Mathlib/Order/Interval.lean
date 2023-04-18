@@ -170,7 +170,7 @@ instance [Nontrivial α] : Nontrivial (NonemptyInterval α) :=
   pure_injective.nontrivial
 
 /-- Pushforward of nonempty intervals. -/
-@[simps]
+@[simps!]
 def map (f : α →o β) (a : NonemptyInterval α) : NonemptyInterval β :=
   ⟨a.toProd.map f f, f.mono a.fst_le_snd⟩
 #align nonempty_interval.map NonemptyInterval.map
@@ -235,7 +235,7 @@ instance : PartialOrder (NonemptyInterval α) :=
 
 /-- Consider a nonempty interval `[a, b]` as the set `[a, b]`. -/
 def coeHom : NonemptyInterval α ↪o Set α :=
-  OrderEmbedding.ofMapLEIff (fun s => Icc s.fst s.snd) fun s t => Icc_subset_Icc_iff s.fst_le_snd
+  OrderEmbedding.ofMapLEIff (fun s => Icc s.fst s.snd) fun s _ => Icc_subset_Icc_iff s.fst_le_snd
 #align nonempty_interval.coe_hom NonemptyInterval.coeHom
 
 instance : SetLike (NonemptyInterval α) α where
@@ -453,10 +453,10 @@ def coeHom : Interval α ↪o Set α :=
       | some s => s)
     fun s t =>
     match s, t with
-    | ⊥, t => iff_of_true bot_le bot_le
+    | ⊥, _ => iff_of_true bot_le bot_le
     | some s, ⊥ =>
       iff_of_false (fun h => s.coe_nonempty.ne_empty <| le_bot_iff.1 h) (WithBot.not_coe_le_bot _)
-    | some s, some t => (@NonemptyInterval.coeHom α _).le_iff_le.trans WithBot.some_le_some.symm
+    | some _, some _ => (@NonemptyInterval.coeHom α _).le_iff_le.trans WithBot.some_le_some.symm
 #align interval.coe_hom Interval.coeHom
 
 instance : SetLike (Interval α) α where
