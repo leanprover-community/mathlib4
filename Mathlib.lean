@@ -859,6 +859,7 @@ import Mathlib.Data.List.TFAE
 import Mathlib.Data.List.ToFinsupp
 import Mathlib.Data.List.Zip
 import Mathlib.Data.ListM
+import Mathlib.Data.ListM.Heartbeats
 import Mathlib.Data.Matrix.Basic
 import Mathlib.Data.Matrix.Basis
 import Mathlib.Data.Matrix.Block
@@ -1273,6 +1274,7 @@ import Mathlib.Init.Propext
 import Mathlib.Init.Quot
 import Mathlib.Init.Set
 import Mathlib.Init.ZeroOne
+import Mathlib.Lean.CoreM
 import Mathlib.Lean.EnvExtension
 import Mathlib.Lean.Exception
 import Mathlib.Lean.Expr
