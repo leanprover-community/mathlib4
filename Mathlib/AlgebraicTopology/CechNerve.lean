@@ -8,10 +8,10 @@ Authors: Adam Topaz
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.AlgebraicTopology.SimplicialObject
-import Mathbin.CategoryTheory.Limits.Shapes.WidePullbacks
-import Mathbin.CategoryTheory.Limits.Shapes.FiniteProducts
-import Mathbin.CategoryTheory.Arrow
+import Mathlib.AlgebraicTopology.SimplicialObject
+import Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
+import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
+import Mathlib.CategoryTheory.Arrow
 
 /-!
 
@@ -52,8 +52,7 @@ variable [∀ n : ℕ, HasWidePullback.{0} f.right (fun i : Fin (n + 1) => f.lef
 
 /-- The Čech nerve associated to an arrow. -/
 @[simps]
-def cechNerve : SimplicialObject C
-    where
+def cechNerve : SimplicialObject C where
   obj n := widePullback.{0} f.right (fun i : Fin (n.unop.len + 1) => f.left) fun i => f.Hom
   map m n g :=
     WidePullback.lift (WidePullback.base _)
@@ -73,8 +72,7 @@ def cechNerve : SimplicialObject C
 def mapCechNerve {f g : Arrow C}
     [∀ n : ℕ, HasWidePullback f.right (fun i : Fin (n + 1) => f.left) fun i => f.Hom]
     [∀ n : ℕ, HasWidePullback g.right (fun i : Fin (n + 1) => g.left) fun i => g.Hom] (F : f ⟶ g) :
-    f.cechNerve ⟶ g.cechNerve
-    where
+    f.cechNerve ⟶ g.cechNerve where
   app n :=
     WidePullback.lift (WidePullback.base _ ≫ F.right) (fun i => WidePullback.π _ i ≫ F.left)
       fun j => by simp
@@ -86,8 +84,7 @@ def mapCechNerve {f g : Arrow C}
 
 /-- The augmented Čech nerve associated to an arrow. -/
 @[simps]
-def augmentedCechNerve : SimplicialObject.Augmented C
-    where
+def augmentedCechNerve : SimplicialObject.Augmented C where
   left := f.cechNerve
   right := f.right
   Hom :=
@@ -102,8 +99,7 @@ def augmentedCechNerve : SimplicialObject.Augmented C
 def mapAugmentedCechNerve {f g : Arrow C}
     [∀ n : ℕ, HasWidePullback f.right (fun i : Fin (n + 1) => f.left) fun i => f.Hom]
     [∀ n : ℕ, HasWidePullback g.right (fun i : Fin (n + 1) => g.left) fun i => g.Hom] (F : f ⟶ g) :
-    f.augmentedCechNerve ⟶ g.augmentedCechNerve
-    where
+    f.augmentedCechNerve ⟶ g.augmentedCechNerve where
   left := mapCechNerve F
   right := F.right
   w' := by
@@ -122,8 +118,7 @@ variable
 
 /-- The Čech nerve construction, as a functor from `arrow C`. -/
 @[simps]
-def cechNerve : Arrow C ⥤ SimplicialObject C
-    where
+def cechNerve : Arrow C ⥤ SimplicialObject C where
   obj f := f.cechNerve
   map f g F := Arrow.mapCechNerve F
   map_id' i := by
@@ -138,8 +133,7 @@ def cechNerve : Arrow C ⥤ SimplicialObject C
 
 /-- The augmented Čech nerve construction, as a functor from `arrow C`. -/
 @[simps]
-def augmentedCechNerve : Arrow C ⥤ SimplicialObject.Augmented C
-    where
+def augmentedCechNerve : Arrow C ⥤ SimplicialObject.Augmented C where
   obj f := f.augmentedCechNerve
   map f g F := Arrow.mapAugmentedCechNerve F
   map_id' x := by
@@ -157,8 +151,7 @@ def augmentedCechNerve : Arrow C ⥤ SimplicialObject.Augmented C
 /-- A helper function used in defining the Čech adjunction. -/
 @[simps]
 def equivalenceRightToLeft (X : SimplicialObject.Augmented C) (F : Arrow C)
-    (G : X ⟶ F.augmentedCechNerve) : Augmented.toArrow.obj X ⟶ F
-    where
+    (G : X ⟶ F.augmentedCechNerve) : Augmented.toArrow.obj X ⟶ F where
   left := G.left.app _ ≫ WidePullback.π (fun i => F.Hom) 0
   right := G.right
   w' := by
@@ -170,13 +163,11 @@ def equivalenceRightToLeft (X : SimplicialObject.Augmented C) (F : Arrow C)
 /-- A helper function used in defining the Čech adjunction. -/
 @[simps]
 def equivalenceLeftToRight (X : SimplicialObject.Augmented C) (F : Arrow C)
-    (G : Augmented.toArrow.obj X ⟶ F) : X ⟶ F.augmentedCechNerve
-    where
+    (G : Augmented.toArrow.obj X ⟶ F) : X ⟶ F.augmentedCechNerve where
   left :=
     { app := fun x =>
         Limits.WidePullback.lift (X.Hom.app _ ≫ G.right)
-          (fun i => X.left.map (SimplexCategory.const x.unop i).op ≫ G.left) fun i =>
-          by
+          (fun i => X.left.map (SimplexCategory.const x.unop i).op ≫ G.left) fun i => by
           dsimp
           erw [category.assoc, arrow.w, augmented.to_arrow_obj_hom, nat_trans.naturality_assoc,
             functor.const_obj_map, category.id_comp]
@@ -201,8 +192,7 @@ def equivalenceLeftToRight (X : SimplicialObject.Augmented C) (F : Arrow C)
 /-- A helper function used in defining the Čech adjunction. -/
 @[simps]
 def cechNerveEquiv (X : SimplicialObject.Augmented C) (F : Arrow C) :
-    (Augmented.toArrow.obj X ⟶ F) ≃ (X ⟶ F.augmentedCechNerve)
-    where
+    (Augmented.toArrow.obj X ⟶ F) ≃ (X ⟶ F.augmentedCechNerve) where
   toFun := equivalenceLeftToRight _ _
   invFun := equivalenceRightToLeft _ _
   left_inv := by
@@ -241,13 +231,11 @@ def cechNerveEquiv (X : SimplicialObject.Augmented C) (F : Arrow C) :
 abbrev cechNerveAdjunction : (Augmented.toArrow : _ ⥤ Arrow C) ⊣ augmentedCechNerve :=
   Adjunction.mkOfHomEquiv
     { homEquiv := cechNerveEquiv
-      homEquiv_naturality_left_symm := fun x y f g h =>
-        by
+      homEquiv_naturality_left_symm := fun x y f g h => by
         ext
         · simp
         · simp
-      homEquiv_naturality_right := fun x y f g h =>
-        by
+      homEquiv_naturality_right := fun x y f g h => by
         ext
         · simp
         · simp
@@ -266,8 +254,7 @@ variable [∀ n : ℕ, HasWidePushout f.left (fun i : Fin (n + 1) => f.right) fu
 
 /-- The Čech conerve associated to an arrow. -/
 @[simps]
-def cechConerve : CosimplicialObject C
-    where
+def cechConerve : CosimplicialObject C where
   obj n := widePushout f.left (fun i : Fin (n.len + 1) => f.right) fun i => f.Hom
   map m n g :=
     WidePushout.desc (WidePushout.head _)
@@ -288,8 +275,7 @@ def cechConerve : CosimplicialObject C
 def mapCechConerve {f g : Arrow C}
     [∀ n : ℕ, HasWidePushout f.left (fun i : Fin (n + 1) => f.right) fun i => f.Hom]
     [∀ n : ℕ, HasWidePushout g.left (fun i : Fin (n + 1) => g.right) fun i => g.Hom] (F : f ⟶ g) :
-    f.cechConerve ⟶ g.cechConerve
-    where
+    f.cechConerve ⟶ g.cechConerve where
   app n :=
     WidePushout.desc (F.left ≫ WidePushout.head _) (fun i => F.right ≫ WidePushout.ι _ i) fun i =>
       by rw [← arrow.w_assoc F, wide_pushout.arrow_ι fun i => g.hom]
@@ -301,8 +287,7 @@ def mapCechConerve {f g : Arrow C}
 
 /-- The augmented Čech conerve associated to an arrow. -/
 @[simps]
-def augmentedCechConerve : CosimplicialObject.Augmented C
-    where
+def augmentedCechConerve : CosimplicialObject.Augmented C where
   left := f.left
   right := f.cechConerve
   Hom :=
@@ -317,8 +302,7 @@ def augmentedCechConerve : CosimplicialObject.Augmented C
 def mapAugmentedCechConerve {f g : Arrow C}
     [∀ n : ℕ, HasWidePushout f.left (fun i : Fin (n + 1) => f.right) fun i => f.Hom]
     [∀ n : ℕ, HasWidePushout g.left (fun i : Fin (n + 1) => g.right) fun i => g.Hom] (F : f ⟶ g) :
-    f.augmentedCechConerve ⟶ g.augmentedCechConerve
-    where
+    f.augmentedCechConerve ⟶ g.augmentedCechConerve where
   left := F.left
   right := mapCechConerve F
   w' := by
@@ -337,8 +321,7 @@ variable
 
 /-- The Čech conerve construction, as a functor from `arrow C`. -/
 @[simps]
-def cechConerve : Arrow C ⥤ CosimplicialObject C
-    where
+def cechConerve : Arrow C ⥤ CosimplicialObject C where
   obj f := f.cechConerve
   map f g F := Arrow.mapCechConerve F
   map_id' i := by
@@ -355,8 +338,7 @@ def cechConerve : Arrow C ⥤ CosimplicialObject C
 
 /-- The augmented Čech conerve construction, as a functor from `arrow C`. -/
 @[simps]
-def augmentedCechConerve : Arrow C ⥤ CosimplicialObject.Augmented C
-    where
+def augmentedCechConerve : Arrow C ⥤ CosimplicialObject.Augmented C where
   obj f := f.augmentedCechConerve
   map f g F := Arrow.mapAugmentedCechConerve F
   map_id' f := by
@@ -376,8 +358,7 @@ def augmentedCechConerve : Arrow C ⥤ CosimplicialObject.Augmented C
 /-- A helper function used in defining the Čech conerve adjunction. -/
 @[simps]
 def equivalenceLeftToRight (F : Arrow C) (X : CosimplicialObject.Augmented C)
-    (G : F.augmentedCechConerve ⟶ X) : F ⟶ Augmented.toArrow.obj X
-    where
+    (G : F.augmentedCechConerve ⟶ X) : F ⟶ Augmented.toArrow.obj X where
   left := G.left
   right := (WidePushout.ι (fun i => F.Hom) 0 ≫ G.right.app (SimplexCategory.mk 0) : _)
   w' := by
@@ -390,8 +371,7 @@ def equivalenceLeftToRight (F : Arrow C) (X : CosimplicialObject.Augmented C)
 /-- A helper function used in defining the Čech conerve adjunction. -/
 @[simps]
 def equivalenceRightToLeft (F : Arrow C) (X : CosimplicialObject.Augmented C)
-    (G : F ⟶ Augmented.toArrow.obj X) : F.augmentedCechConerve ⟶ X
-    where
+    (G : F ⟶ Augmented.toArrow.obj X) : F.augmentedCechConerve ⟶ X where
   left := G.left
   right :=
     { app := fun x =>
@@ -423,8 +403,7 @@ def equivalenceRightToLeft (F : Arrow C) (X : CosimplicialObject.Augmented C)
 /-- A helper function used in defining the Čech conerve adjunction. -/
 @[simps]
 def cechConerveEquiv (F : Arrow C) (X : CosimplicialObject.Augmented C) :
-    (F.augmentedCechConerve ⟶ X) ≃ (F ⟶ Augmented.toArrow.obj X)
-    where
+    (F.augmentedCechConerve ⟶ X) ≃ (F ⟶ Augmented.toArrow.obj X) where
   toFun := equivalenceLeftToRight _ _
   invFun := equivalenceRightToLeft _ _
   left_inv := by
@@ -461,14 +440,12 @@ def cechConerveEquiv (F : Arrow C) (X : CosimplicialObject.Augmented C) :
 abbrev cechConerveAdjunction : augmentedCechConerve ⊣ (Augmented.toArrow : _ ⥤ Arrow C) :=
   Adjunction.mkOfHomEquiv
     { homEquiv := cechConerveEquiv
-      homEquiv_naturality_left_symm := fun x y f g h =>
-        by
+      homEquiv_naturality_left_symm := fun x y f g h => by
         ext
         · rfl
         · simp
         · simp
-      homEquiv_naturality_right := fun x y f g h =>
-        by
+      homEquiv_naturality_right := fun x y f g h => by
         ext
         · simp
         · simp }
@@ -511,8 +488,7 @@ instance uniqueToWideCospanNone (X Y : C) : Unique (Y ⟶ (wideCospan ι X).obj 
 variable [HasFiniteProducts C]
 
 /-- The product `Xᶥ` is the vertex of a limit cone on `wide_cospan ι X`. -/
-def wideCospan.limitCone [Fintype ι] (X : C) : LimitCone (wideCospan ι X)
-    where
+def wideCospan.limitCone [Fintype ι] (X : C) : LimitCone (wideCospan ι X) where
   Cone :=
     { pt := ∏ fun i : ι => X
       π :=
