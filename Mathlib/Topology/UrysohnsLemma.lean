@@ -141,13 +141,14 @@ noncomputable def approx : ℕ → CU X → X → ℝ
 
 theorem approx_of_mem_c (c : CU X) (n : ℕ) {x : X} (hx : x ∈ c.C) : c.approx n x = 0 := by
   induction' n with n ihn generalizing c
-  · exact indicator_of_not_mem (fun hU => hU <| c.subset hx) _
+  -- Porting note: lean4 + mathlib4 seem to treat x ∉ s and x ∈ sᶜ differently
+  · exact indicator_of_not_mem (fun (hU : x ∈ c.Uᶜ) => hU <| c.subset hx) _
   · simp only [approx]
     rw [ihn, ihn, midpoint_self]
     exacts [c.subset_right_c hx, hx]
 #align urysohns.CU.approx_of_mem_C Urysohns.CU.approx_of_mem_c
 
-theorem approx_of_nmem_u (c : CU X) (n : ℕ) {x : X} (hx : x ∉ c.U) : c.approx n x = 1 := by
+theorem approx_of_nmem_u (c : CU X) (n : ℕ) {x : X} (hx : x ∈ c.Uᶜ) : c.approx n x = 1 := by
   induction' n with n ihn generalizing c
   · exact indicator_of_mem hx _
   · simp only [approx]
