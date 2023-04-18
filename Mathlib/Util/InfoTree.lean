@@ -69,6 +69,8 @@ def kind (t : TacticInvocation) : Kind :=
   --   return .rw sorry sorry
   | _ =>  .other
 
+def formatMainGoal (t : TacticInvocation) : IO Format :=
+  t.runMetaM (fun g => do ppExpr (← g.getType)) t.info.goalsBefore.head!
 
 end Lean.Elab.TacticInvocation
 
@@ -199,5 +201,5 @@ open Meta
 
 def reflInDecl (mod? : Option Name) (decl : Name) : MetaM (List Format) := do
   (← tacticsInDecl mod? decl).filterMapM fun t => do match t.kind with
-  | .refl => t.runMetaM (fun g => do ppExpr (← g.getType)) t.info.goalsBefore.head!
+  | .refl => t.formatMainGoal
   | _ => return none
