@@ -8,7 +8,7 @@ Authors: Felix Weilacher
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.MetricSpace.PiNat
+import Mathlib.Topology.MetricSpace.PiNat
 
 /-!
 # (Topological) Schemes and their induced maps
@@ -86,8 +86,7 @@ variable {A}
 
 /-- If `x` is in the domain of the induced map of a scheme `A`,
 its image under this map is in each set along the corresponding branch. -/
-theorem map_mem (x : (inducedMap A).1) (n : ℕ) : (inducedMap A).2 x ∈ A (res x n) :=
-  by
+theorem map_mem (x : (inducedMap A).1) (n : ℕ) : (inducedMap A).2 x ∈ A (res x n) := by
   have := x.property.some_mem
   rw [mem_Inter] at this
   exact this n
@@ -103,8 +102,7 @@ protected theorem Antitone.closureAntitone [TopologicalSpace α] (hanti : Cantor
 #align cantor_scheme.antitone.closure_antitone CantorScheme.Antitone.closureAntitone
 
 /-- A scheme where the children of each set are pairwise disjoint induces an injective map. -/
-theorem Disjoint.map_injective (hA : CantorScheme.Disjoint A) : Injective (inducedMap A).2 :=
-  by
+theorem Disjoint.map_injective (hA : CantorScheme.Disjoint A) : Injective (inducedMap A).2 := by
   rintro ⟨x, hx⟩ ⟨y, hy⟩ hxy
   refine' Subtype.coe_injective (res_injective _)
   dsimp
@@ -140,8 +138,7 @@ variable {A}
 
 /- ./././Mathport/Syntax/Translate/Basic.lean:635:2: warning: expanding binder collection (y z «expr ∈ » A (res[pi_nat.res] x n)) -/
 theorem VanishingDiam.dist_lt (hA : VanishingDiam A) (ε : ℝ) (ε_pos : 0 < ε) (x : ℕ → β) :
-    ∃ n : ℕ, ∀ (y) (_ : y ∈ A (res x n)) (z) (_ : z ∈ A (res x n)), dist y z < ε :=
-  by
+    ∃ n : ℕ, ∀ (y) (_ : y ∈ A (res x n)) (z) (_ : z ∈ A (res x n)), dist y z < ε := by
   specialize hA x
   rw [ENNReal.tendsto_atTop_zero] at hA
   cases'
@@ -161,8 +158,7 @@ theorem VanishingDiam.dist_lt (hA : VanishingDiam A) (ε : ℝ) (ε_pos : 0 < ε
 
 /-- A scheme with vanishing diameter along each branch induces a continuous map. -/
 theorem VanishingDiam.map_continuous [TopologicalSpace β] [DiscreteTopology β]
-    (hA : VanishingDiam A) : Continuous (inducedMap A).2 :=
-  by
+    (hA : VanishingDiam A) : Continuous (inducedMap A).2 := by
   rw [Metric.continuous_iff']
   rintro ⟨x, hx⟩ ε ε_pos
   cases' hA.dist_lt _ ε_pos x with n hn
@@ -182,15 +178,12 @@ theorem VanishingDiam.map_continuous [TopologicalSpace β] [DiscreteTopology β]
 such that each set contains the closure of its children
 induces a total map. -/
 theorem ClosureAntitone.map_of_vanishingDiam [CompleteSpace α] (hdiam : VanishingDiam A)
-    (hanti : ClosureAntitone A) (hnonempty : ∀ l, (A l).Nonempty) : (inducedMap A).1 = univ :=
-  by
+    (hanti : ClosureAntitone A) (hnonempty : ∀ l, (A l).Nonempty) : (inducedMap A).1 = univ := by
   rw [eq_univ_iff_forall]
   intro x
   choose u hu using fun n => hnonempty (res x n)
-  have umem : ∀ n m : ℕ, n ≤ m → u m ∈ A (res x n) :=
-    by
-    have : Antitone fun n : ℕ => A (res x n) :=
-      by
+  have umem : ∀ n m : ℕ, n ≤ m → u m ∈ A (res x n) := by
+    have : Antitone fun n : ℕ => A (res x n) := by
       refine' antitone_nat_of_succ_le _
       intro n
       apply hanti.antitone
