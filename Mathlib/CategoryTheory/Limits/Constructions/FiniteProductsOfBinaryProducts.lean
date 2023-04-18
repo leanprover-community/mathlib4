@@ -153,7 +153,7 @@ noncomputable def preservesFinOfPreservesBinaryAndTerminal :
     refine' Fin.inductionOn j ?_ ?_
     · apply (Category.id_comp _).symm
     · rintro i _
-      dsimp [extendFan_π_app, Iso.refl_hom, Fan.mk_π]
+      dsimp [extendFan_π_app, Iso.refl_hom, Fan.mk_π_app]
       rw [Fin.cases_succ, Fin.cases_succ]
       change F.map _ ≫ _ = 𝟙 _ ≫ _
       simp only [id_comp, ← F.map_comp]
@@ -240,21 +240,21 @@ If `C` has an initial object and binary coproducts, then it has a coproduct for 
 This is a helper lemma for `hasCofiniteProductsOfHasBinaryAndTerminal`, which is more general
 than this.
 -/
-private theorem has_coproduct_fin : ∀ (n : ℕ) (f : Fin n → C), HasCoproduct f
+private theorem hasCoproduct_fin : ∀ (n : ℕ) (f : Fin n → C), HasCoproduct f
   | 0 => fun f =>
     by
     letI : HasColimitsOfShape (Discrete (Fin 0)) C :=
       hasColimitsOfShape_of_equivalence (Discrete.equivalence.{0} finZeroEquiv'.symm)
     infer_instance
   | n + 1 => fun f => by
-    haveI := has_coproduct_fin n
+    haveI := hasCoproduct_fin n
     apply
       HasColimit.mk ⟨_, extendCofanIsColimit f (colimit.isColimit _) (colimit.isColimit _)⟩
 
 /-- If `C` has an initial object and binary coproducts, then it has finite coproducts. -/
 theorem hasFiniteCoproducts_of_has_binary_and_initial : HasFiniteCoproducts C := by
   refine' ⟨fun n => ⟨fun K => _⟩⟩
-  letI := has_coproduct_fin n fun n => K.obj ⟨n⟩
+  letI := hasCoproduct_fin n fun n => K.obj ⟨n⟩
   let that : K ≅ Discrete.functor fun n => K.obj ⟨n⟩ := Discrete.natIso fun ⟨i⟩ => Iso.refl _
   apply @hasColimitOfIso _ _ _ _ _ _ this that
 #align category_theory.has_finite_coproducts_of_has_binary_and_initial CategoryTheory.hasFiniteCoproducts_of_has_binary_and_initial
@@ -298,7 +298,7 @@ noncomputable def preservesFinOfPreservesBinaryAndInitial :
     refine' Fin.inductionOn j ?_ ?_
     · apply Category.comp_id
     · rintro i _
-      dsimp [extendCofan_ι_app, Iso.refl_hom, Cofan.mk_ι]
+      dsimp [extendCofan_ι_app, Iso.refl_hom, Cofan.mk_ι_app]
       rw [Fin.cases_succ, Fin.cases_succ, comp_id, ← F.map_comp]
 #align category_theory.preserves_fin_of_preserves_binary_and_initial CategoryTheory.preservesFinOfPreservesBinaryAndInitialₓ  -- Porting note: order of universes changed
 

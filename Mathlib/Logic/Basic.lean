@@ -487,8 +487,11 @@ end Propositional
 
 /-! ### Declarations about equality -/
 
-alias ne_of_mem_of_not_mem ← Membership.Mem.ne_of_not_mem
-alias ne_of_mem_of_not_mem' ← Membership.Mem.ne_of_not_mem'
+alias ne_of_mem_of_not_mem ← Membership.mem.ne_of_not_mem
+alias ne_of_mem_of_not_mem' ← Membership.mem.ne_of_not_mem'
+
+#align has_mem.mem.ne_of_not_mem Membership.mem.ne_of_not_mem
+#align has_mem.mem.ne_of_not_mem' Membership.mem.ne_of_not_mem'
 
 section Equality
 

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 
 ! This file was ported from Lean 3 source module topology.order.basic
-! leanprover-community/mathlib commit b363547b3113d350d053abdf2884e9850a56b205
+! leanprover-community/mathlib commit c985ae9840e06836a71db38de372f20acb49b790
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -2346,8 +2346,8 @@ theorem frontier_Iio [NoMinOrder α] {a : α} : frontier (Iio a) = {a} :=
 #align frontier_Iio frontier_Iio
 
 @[simp]
-theorem frontier_Icc [NoMinOrder α] [NoMaxOrder α] {a b : α} (h : a < b) :
-    frontier (Icc a b) = {a, b} := by simp [frontier, le_of_lt h, Icc_diff_Ioo_same]
+theorem frontier_Icc [NoMinOrder α] [NoMaxOrder α] {a b : α} (h : a ≤ b) :
+    frontier (Icc a b) = {a, b} := by simp [frontier, h, Icc_diff_Ioo_same]
 #align frontier_Icc frontier_Icc
 
 @[simp]

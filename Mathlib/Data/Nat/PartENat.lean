@@ -754,15 +754,11 @@ noncomputable def withTopAddEquiv : PartENat ≃+ ℕ∞ :=
 
 end WithTopEquiv
 
--- Porting note: `Nat.lt_wfRel` changed in core,
--- the last line of the mathlib3 proof was:
--- `exact InvImage.wf _ (WithTop.wellFounded_lt Nat.lt_wfRel)`
 theorem lt_wf : @WellFounded PartENat (· < ·) := by
   classical
     change WellFounded fun a b : PartENat => a < b
     simp_rw [← withTopEquiv_lt]
-    refine InvImage.wf _ (WithTop.wellFounded_lt ?_)
-    exact IsWellFounded.fix.proof_1 fun y x => y < x
+    exact InvImage.wf _ (WithTop.wellFounded_lt Nat.lt_wfRel.wf)
 #align part_enat.lt_wf PartENat.lt_wf
 
 instance : WellFoundedLT PartENat :=

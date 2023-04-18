@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 
 ! This file was ported from Lean 3 source module logic.equiv.list
-! leanprover-community/mathlib commit 1126441d6bccf98c81214a0780c73d499f6721fe
+! leanprover-community/mathlib commit d11893b411025250c8e61ff2f12ccbd7ee35ab15
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -33,7 +33,7 @@ variable [Encodable α]
 /-- Explicit encoding function for `List α` -/
 def encodeList : List α → ℕ
   | [] => 0
-  | a :: l => succ (mkpair (encode a) (encodeList l))
+  | a :: l => succ (pair (encode a) (encodeList l))
 #align encodable.encode_list Encodable.encodeList
 
 /-- Explicit decoding function for `List α` -/
@@ -46,11 +46,11 @@ def decodeList : ℕ → Option (List α)
       (· :: ·) <$> decode (α := α) v₁ <*> decodeList v₂
 #align encodable.decode_list Encodable.decodeList
 
-/-- If `α` is encodable, then so is `List α`. This uses the `mkpair` and `unpair` functions from
+/-- If `α` is encodable, then so is `List α`. This uses the `pair` and `unpair` functions from
 `Data.Nat.Pairing`. -/
 instance _root_.List.encodable : Encodable (List α) :=
   ⟨encodeList, decodeList, fun l => by
-    induction' l with a l IH <;> simp [encodeList, decodeList, unpair_mkpair, encodek, *]⟩
+    induction' l with a l IH <;> simp [encodeList, decodeList, unpair_pair, encodek, *]⟩
 #align list.encodable List.encodable
 
 instance _root_.List.countable {α : Type _} [Countable α] : Countable (List α) := by
@@ -65,7 +65,7 @@ theorem encode_list_nil : encode (@nil α) = 0 :=
 
 @[simp]
 theorem encode_list_cons (a : α) (l : List α) :
-    encode (a :: l) = succ (mkpair (encode a) (encode l)) :=
+    encode (a :: l) = succ (pair (encode a) (encode l)) :=
   rfl
 #align encodable.encode_list_cons Encodable.encode_list_cons
 
@@ -85,7 +85,7 @@ theorem decode_list_succ (v : ℕ) :
 
 theorem length_le_encode : ∀ l : List α, length l ≤ encode l
   | [] => Nat.zero_le _
-  | _ :: l => succ_le_succ <| (length_le_encode l).trans (right_le_mkpair _ _)
+  | _ :: l => succ_le_succ <| (length_le_encode l).trans (right_le_pair _ _)
 #align encodable.length_le_encode Encodable.length_le_encode
 
 end List
@@ -260,7 +260,7 @@ theorem denumerable_list_aux : ∀ n : ℕ, ∃ a ∈ @decodeList α _ n, encode
       ⟨a, h₁, h₂⟩
     rw [Option.mem_def] at h₁
     use ofNat α v₁ :: a
-    simp [decodeList, e, h₂, h₁, encodeList, mkpair_unpair' e]
+    simp [decodeList, e, h₂, h₁, encodeList, pair_unpair' e]
 #align denumerable.denumerable_list_aux Denumerable.denumerable_list_aux
 
 /-- If `α` is denumerable, then so is `List α`. -/
@@ -389,8 +389,8 @@ def raise'Finset (l : List ℕ) (n : ℕ) : Finset ℕ :=
   ⟨raise' l n, (raise'_sorted _ _).imp (@ne_of_lt _ _)⟩
 #align denumerable.raise'_finset Denumerable.raise'Finset
 
-/-- If `α` is denumerable, then so is `finset α`. Warning: this is *not* the same encoding as used
-in `finset.encodable`. -/
+/-- If `α` is denumerable, then so is `Finset α`. Warning: this is *not* the same encoding as used
+in `Finset.encodable`. -/
 instance finset : Denumerable (Finset α) :=
   mk'
     ⟨fun s : Finset α => encode <| lower' ((s.map (eqv α).toEmbedding).sort (· ≤ ·)) 0, fun n =>
@@ -423,7 +423,7 @@ def listNatEquivNat : List ℕ ≃ ℕ :=
 #align equiv.list_nat_equiv_nat Equiv.listNatEquivNat
 
 /-- If `α` is equivalent to `ℕ`, then `List α` is equivalent to `α`. -/
-def listEquivSelfOfEquivNat {α : Type} (e : α ≃ ℕ) : List α ≃ α :=
+def listEquivSelfOfEquivNat {α : Type _} (e : α ≃ ℕ) : List α ≃ α :=
   calc
     List α ≃ List ℕ := listEquivOfEquiv e
     _ ≃ ℕ := listNatEquivNat

@@ -204,7 +204,7 @@ theorem prod_univ_add {M : Type _} [CommMonoid M] {a b : ℕ} (f : Fin (a + b) �
 @[to_additive]
 theorem prod_trunc {M : Type _} [CommMonoid M] {a b : ℕ} (f : Fin (a + b) → M)
     (hf : ∀ j : Fin b, f (natAdd a j) = 1) :
-    (∏ i : Fin (a + b), f i) = ∏ i : Fin a, f (castLe (Nat.le.intro rfl) i) := by
+    (∏ i : Fin (a + b), f i) = ∏ i : Fin a, f (castLE (Nat.le.intro rfl) i) := by
   rw [prod_univ_add, Fintype.prod_eq_one _ hf, mul_one]
   rfl
 #align fin.prod_trunc Fin.prod_trunc
@@ -252,7 +252,7 @@ theorem partialProd_left_inv {G : Type _} [Group G] (f : Fin (n + 1) → G) :
 #align fin.partial_sum_left_neg Fin.partialSum_left_neg
 
 -- Porting note:
--- 1) Changed `i` in statement to `(Fin.castLt i (Nat.lt_succ_of_lt i.2))` because of
+-- 1) Changed `i` in statement to `(Fin.castLT i (Nat.lt_succ_of_lt i.2))` because of
 --    coercion issues. Might need to be fixed later.
 -- 2) The current proof is really bad! It should be redone once `assoc_rw` is
 --    implemented and `rw` knows that `i.succ = i + 1`.
@@ -268,7 +268,7 @@ theorem partialProd_left_inv {G : Type _} [Group G] (f : Fin (n + 1) → G) :
 --     assoc_rw [hi, inv_mul_cancel_left]
 @[to_additive]
 theorem partialProd_right_inv {G : Type _} [Group G] (g : G) (f : Fin n → G) (i : Fin n) :
-    ((g • partialProd f) (Fin.castLt i (Nat.lt_succ_of_lt i.2)))⁻¹ *
+    ((g • partialProd f) (Fin.castLT i (Nat.lt_succ_of_lt i.2)))⁻¹ *
     (g • partialProd f) i.succ = f i := by
   rcases i with ⟨i, hn⟩
   induction i with

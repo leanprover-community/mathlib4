@@ -651,7 +651,7 @@ theorem algHom_ext {φ ψ : Unitization R A →ₐ[S] B} (h : ∀ a : A, φ a = 
 #align unitization.alg_hom_ext Unitization.algHom_ext
 
 /-- See note [partially-applied ext lemmas] -/
-@[ext 1001]
+@[ext 1100]
 theorem algHom_ext' {φ ψ : Unitization R A →ₐ[R] C}
     (h :
       φ.toNonUnitalAlgHom.comp (inrNonUnitalAlgHom R A) =

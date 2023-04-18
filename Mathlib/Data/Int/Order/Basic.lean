@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 
 ! This file was ported from Lean 3 source module data.int.order.basic
-! leanprover-community/mathlib commit b86832321b586c6ac23ef8cdef6a7a27e42b13bd
+! leanprover-community/mathlib commit e8638a0fcaf73e4500469f368ef9494e495099b3
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -89,6 +89,13 @@ theorem coe_nat_ne_zero_iff_pos {n : ℕ} : (n : ℤ) ≠ 0 ↔ 0 < n :=
 
 @[norm_cast] lemma abs_coe_nat (n : ℕ) : |(n : ℤ)| = n := abs_of_nonneg (coe_nat_nonneg n)
 #align int.abs_coe_nat Int.abs_coe_nat
+
+theorem sign_add_eq_of_sign_eq : ∀ {m n : ℤ}, m.sign = n.sign → (m + n).sign = n.sign := by
+  have : (1 : ℤ) ≠ -1 := by decide
+  rintro ((_ | m) | m) ((_ | n) | n) <;> simp [this, this.symm]
+  rw [Int.sign_eq_one_iff_pos]
+  apply Int.add_pos <;> · exact zero_lt_one.trans_le (le_add_of_nonneg_left <| coe_nat_nonneg _)
+#align int.sign_add_eq_of_sign_eq Int.sign_add_eq_of_sign_eq
 
 /-! ### succ and pred -/
 
@@ -272,6 +279,8 @@ theorem add_emod_eq_add_mod_right {m n k : ℤ} (i : ℤ) (H : m % n = k % n) :
 
 #align int.sub_mod Int.sub_emod
 
+-- porting note: this should be a doc comment, but the lemma isn't here any more!
+/- See also `Int.divModEquiv` for a similar statement as an `Equiv`. -/
 #align int.div_mod_unique Int.ediv_emod_unique
 
 attribute [local simp] Int.zero_emod

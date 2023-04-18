@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Chris Hughes, Mario Carneiro, Anne Baanen
 
 ! This file was ported from Lean 3 source module ring_theory.ideal.quotient
-! leanprover-community/mathlib commit bd9851ca476957ea4549eb19b40e7b5ade9428cc
+! leanprover-community/mathlib commit e064a7bf82ad94c3c17b5128bbd860d1ec34874e
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -25,11 +25,11 @@ See `Algebra.RingQuot` for quotients of non-commutative rings.
 
 ## Main definitions
 
- - `ideal.quotient`: the quotient of a commutative ring `R` by an ideal `I : ideal R`
+ - `Ideal.Quotient`: the quotient of a commutative ring `R` by an ideal `I : Ideal R`
 
 ## Main results
 
- - `ideal.quotient_inf_ring_equiv_pi_quotient`: the **Chinese Remainder Theorem**
+ - `Ideal.quotientInfRingEquivPiQuotient`: the **Chinese Remainder Theorem**
 -/
 
 
@@ -46,14 +46,14 @@ variable {S : Type v}
 -- Porting note: we need η for TC
 set_option synthInstance.etaExperiment true
 
--- Note that at present `ideal` means a left-ideal,
+-- Note that at present `Ideal` means a left-ideal,
 -- so this quotient is only useful in a commutative ring.
 -- We should develop quotients by two-sided ideals as well.
 /-- The quotient `R/I` of a ring `R` by an ideal `I`.
 
 The ideal quotient of `I` is defined to equal the quotient of `I` as an `R`-submodule of `R`.
 This definition is marked `reducible` so that typeclass instances can be shared between
-`ideal.quotient I` and `submodule.quotient I`.
+`Ideal.Quotient I` and `Submodule.Quotient I`.
 -/
 @[reducible]
 instance : HasQuotient R (Ideal R) :=
@@ -63,21 +63,19 @@ namespace Quotient
 
 variable {I} {x y : R}
 
-instance hasOne (I : Ideal R) : One (R ⧸ I) :=
+instance one (I : Ideal R) : One (R ⧸ I) :=
   ⟨Submodule.Quotient.mk 1⟩
-#align ideal.quotient.has_one Ideal.Quotient.hasOne
+#align ideal.quotient.has_one Ideal.Quotient.one
 
-/-- On `ideal`s, `submodule.quotient_rel` is a ring congruence. -/
+/-- On `Ideal`s, `Submodule.quotientRel` is a ring congruence. -/
 protected def ringCon (I : Ideal R) : RingCon R :=
   { QuotientAddGroup.con I.toAddSubgroup with
-    mul' := fun {a₁ b₁ a₂ b₂} h₁ h₂ =>
-      by
+    mul' := fun {a₁ b₁ a₂ b₂} h₁ h₂ => by
       rw [Submodule.quotientRel_r_def] at h₁ h₂⊢
       have F := I.add_mem (I.mul_mem_left a₂ h₁) (I.mul_mem_right b₁ h₂)
       have : a₁ * a₂ - b₁ * b₂ = a₂ * (a₁ - b₁) + (a₂ - b₂) * b₁ := by
         rw [mul_sub, sub_mul, sub_add_sub_cancel, mul_comm, mul_comm b₁]
-      rw [← this] at F
-      convert F }
+      rwa [← this] at F }
 #align ideal.quotient.ring_con Ideal.Quotient.ringCon
 
 instance commRing (I : Ideal R) : CommRing (R ⧸ I) :=
@@ -94,8 +92,8 @@ def mk (I : Ideal R) : R →+* R ⧸ I where
   map_add' _ _ := rfl
 #align ideal.quotient.mk Ideal.Quotient.mk
 
-/- Two `ring_homs`s from the quotient by an ideal are equal if their
-compositions with `ideal.quotient.mk'` are equal.
+/-- Two `RingHom`s from the quotient by an ideal are equal if their
+compositions with `Ideal.Quotient.mk'` are equal.
 
 See note [partially-applied ext lemmas]. -/
 @[ext]
@@ -188,11 +186,9 @@ theorem exists_inv {I : Ideal R} [hI : I.IsMaximal] :
   rcases hI.exists_inv (mt eq_zero_iff_mem.2 h) with ⟨b, c, hc, abc⟩
   rw [mul_comm] at abc
   refine' ⟨mk _ b, Quot.sound _⟩
-  --quot.sound hb
+  simp only [Submodule.quotientRel_r_def]
   rw [← eq_sub_iff_add_eq'] at abc
-  rw [abc, ← neg_mem_iff (G := R) (H := I), neg_sub] at hc
-  rw [Submodule.quotientRel_r_def]
-  convert hc
+  rwa [abc, ← neg_mem_iff (G := R) (H := I), neg_sub] at hc
 #align ideal.quotient.exists_inv Ideal.Quotient.exists_inv
 
 open Classical
@@ -203,8 +199,7 @@ See note [reducible non-instances]. -/
 @[reducible]
 protected noncomputable def field (I : Ideal R) [hI : I.IsMaximal] : Field (R ⧸ I) :=
   { Quotient.commRing I,
-    Quotient.isDomain
-      I with
+    Quotient.isDomain I with
     inv := fun a => if ha : a = 0 then 0 else Classical.choose (exists_inv ha)
     mul_inv_cancel := fun a (ha : a ≠ 0) =>
       show a * dite _ _ _ = _ by rw [dif_neg ha]; exact Classical.choose_spec (exists_inv ha)
@@ -237,9 +232,7 @@ variable [CommRing S]
 /-- Given a ring homomorphism `f : R →+* S` sending all elements of an ideal to zero,
 lift it to the quotient by this ideal. -/
 def lift (I : Ideal R) (f : R →+* S) (H : ∀ a : R, a ∈ I → f a = 0) : R ⧸ I →+* S :=
-  {
-    QuotientAddGroup.lift I.toAddSubgroup f.toAddMonoidHom
-      H with
+  { QuotientAddGroup.lift I.toAddSubgroup f.toAddMonoidHom H with
     map_one' := f.map_one
     map_zero' := f.map_zero
     map_add' := fun a₁ a₂ => Quotient.inductionOn₂' a₁ a₂ f.map_add
@@ -262,7 +255,7 @@ theorem lift_surjective_of_surjective (I : Ideal R) {f : R →+* S} (H : ∀ a :
 
 /-- The ring homomorphism from the quotient by a smaller ideal to the quotient by a larger ideal.
 
-This is the `ideal.quotient` version of `quot.factor` -/
+This is the `Ideal.Quotient` version of `Quot.Factor` -/
 def factor (S T : Ideal R) (H : S ≤ T) : R ⧸ S →+* R ⧸ T :=
   Ideal.Quotient.lift S (mk T) fun _ hx => eq_zero_iff_mem.2 (H hx)
 #align ideal.quotient.factor Ideal.Quotient.factor
@@ -282,7 +275,7 @@ end Quotient
 
 /-- Quotienting by equal ideals gives equivalent rings.
 
-See also `submodule.quot_equiv_of_eq`.
+See also `Submodule.quotEquivOfEq` and `Ideal.quotientEquivAlgOfEq`.
 -/
 def quotEquivOfEq {R : Type _} [CommRing R] {I J : Ideal R} (h : I = J) : R ⧸ I ≃+* R ⧸ J :=
   { Submodule.quotEquivOfEq I J h with
@@ -415,7 +408,7 @@ theorem exists_sub_one_mem_and_mem (s : Finset ι) {f : ι → Ideal R}
       apply hgi
     · intro j hjs hji
       rw [← Quotient.eq_zero_iff_mem, map_prod]
-      -- Porting note: Added the below line to help instance inferrence
+      -- Porting note: Added the below line to help instance inference
       letI : CommMonoidWithZero (R ⧸ f j) := CommSemiring.toCommMonoidWithZero
       refine' Finset.prod_eq_zero (Finset.mem_erase_of_ne_of_mem hji hjs) _
       rw [Quotient.eq_zero_iff_mem]
@@ -448,8 +441,7 @@ theorem exists_sub_mem [Finite ι] {f : ι → Ideal R} (hf : ∀ i j, i ≠ j �
 /-- The homomorphism from `R/(⋂ i, f i)` to `∏ i, (R / f i)` featured in the Chinese
   Remainder Theorem. It is bijective if the ideals `f i` are comaximal. -/
 def quotientInfToPiQuotient (f : ι → Ideal R) : (R ⧸ ⨅ i, f i) →+* ∀ i, R ⧸ f i :=
-  Quotient.lift (⨅ i, f i) (Pi.ringHom fun i : ι => (Quotient.mk (f i) : _)) fun r hr =>
-    by
+  Quotient.lift (⨅ i, f i) (Pi.ringHom fun i : ι => (Quotient.mk (f i) : _)) fun r hr => by
     rw [Submodule.mem_infᵢ] at hr
     ext i
     exact Quotient.eq_zero_iff_mem.2 (hr i)

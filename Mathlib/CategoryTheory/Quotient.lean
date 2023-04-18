@@ -121,7 +121,7 @@ def functor : C ⥤ Quotient r where
   map := @fun _ _ f ↦ Quot.mk _ f
 #align category_theory.quotient.functor CategoryTheory.Quotient.functor
 
-noncomputable instance : Full (functor r) where preimage := @fun X Y f ↦ Quot.out f
+noncomputable instance fullFunctor : Full (functor r) where preimage := @fun X Y f ↦ Quot.out f
 
 instance : EssSurj (functor r)
     where mem_essImage Y :=

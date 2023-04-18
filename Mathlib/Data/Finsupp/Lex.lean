@@ -48,7 +48,7 @@ theorem lex_def {r : α → α → Prop} {s : N → N → Prop} {a b : α →₀
 #align finsupp.lex_def Finsupp.lex_def
 
 theorem lex_eq_invImage_dfinsupp_lex (r : α → α → Prop) (s : N → N → Prop) :
-    Finsupp.Lex r s = InvImage (Dfinsupp.Lex r s) toDfinsupp :=
+    Finsupp.Lex r s = InvImage (Dfinsupp.Lex r fun _ ↦ s) toDfinsupp :=
   rfl
 #align finsupp.lex_eq_inv_image_dfinsupp_lex Finsupp.lex_eq_invImage_dfinsupp_lex
 

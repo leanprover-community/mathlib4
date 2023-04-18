@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Floris van Doorn, Violeta Hernández Palacios
 
 ! This file was ported from Lean 3 source module set_theory.cardinal.cofinality
-! leanprover-community/mathlib commit bb168510ef455e9280a152e7f31673cabd3d7496
+! leanprover-community/mathlib commit 7c2ce0c2da15516b4e65d0c9e254bb6dc93abd1f
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -21,7 +21,6 @@ This file contains the definition of cofinality of an ordinal number and regular
 * `Ordinal.cof o` is the cofinality of the ordinal `o`.
   If `o` is the order type of the relation `<` on `α`, then `o.cof` is the smallest cardinality of a
   subset `s` of α that is *cofinal* in `α`, i.e. `∀ x : α, ∃ y ∈ s, ¬ y < x`.
-* `Cardinal.IsLimit c` means that `c` is a (weak) limit cardinal: `c ≠ 0 ∧ ∀ x < c, succ x < c`.
 * `Cardinal.IsStrongLimit c` means that `c` is a strong limit cardinal:
   `c ≠ 0 ∧ ∀ x < c, 2 ^ x < c`.
 * `Cardinal.IsRegular c` means that `c` is a regular cardinal: `ℵ₀ ≤ c ∧ c.ord.cof = c`.
@@ -767,7 +766,7 @@ theorem cof_univ : cof univ.{u, v} = Cardinal.univ.{u, v} :=
       refine' le_of_forall_lt fun c h => _
       rcases lt_univ'.1 h with ⟨c, rfl⟩
       rcases @cof_eq Ordinal.{u} (· < ·) _ with ⟨S, H, Se⟩
-      rw [univ, ← lift_cof, ← Cardinal.lift_lift.{u, u + 1, v}, Cardinal.lift_lt, ← Se]
+      rw [univ, ← lift_cof, ← Cardinal.lift_lift.{u+1, v, u}, Cardinal.lift_lt, ← Se]
       refine' lt_of_not_ge fun h => _
       cases' Cardinal.lift_down h with a e
       refine' Quotient.inductionOn a (fun α e => _) e
@@ -860,27 +859,6 @@ open Ordinal
 -- mathport name: cardinal.pow
 --local infixr:0 "^" => @HPow.hPow Cardinal Cardinal Cardinal instHPow
 
-/-- A cardinal is a limit if it is not zero or a successor
-  cardinal. Note that `ℵ₀` is a limit cardinal by this definition. -/
-def IsLimit (c : Cardinal) : Prop :=
-  c ≠ 0 ∧ ∀ x < c, succ x < c
-#align cardinal.is_limit Cardinal.IsLimit
-
-theorem IsLimit.ne_zero {c} (h : IsLimit c) : c ≠ 0 :=
-  h.1
-#align cardinal.is_limit.ne_zero Cardinal.IsLimit.ne_zero
-
-theorem IsLimit.succ_lt {x c} (h : IsLimit c) : x < c → succ x < c :=
-  h.2 x
-#align cardinal.is_limit.succ_lt Cardinal.IsLimit.succ_lt
-
-theorem IsLimit.aleph0_le {c} (h : IsLimit c) : ℵ₀ ≤ c := by
-  by_contra' h'
-  rcases lt_aleph0.1 h' with ⟨_ | n, rfl⟩
-  · exact h.1.irrefl
-  · simpa using h.2 n
-#align cardinal.is_limit.aleph_0_le Cardinal.IsLimit.aleph0_le
-
 /-- A cardinal is a strong limit if it is not zero and it is
   closed under powersets. Note that `ℵ₀` is a strong limit by this definition. -/
 def IsStrongLimit (c : Cardinal) : Prop :=
@@ -901,24 +879,24 @@ theorem isStrongLimit_aleph0 : IsStrongLimit ℵ₀ :=
     exact_mod_cast nat_lt_aleph0 (2 ^ n)⟩
 #align cardinal.is_strong_limit_aleph_0 Cardinal.isStrongLimit_aleph0
 
+protected theorem IsStrongLimit.isSuccLimit {c} (H : IsStrongLimit c) : IsSuccLimit c :=
+  isSuccLimit_of_succ_lt fun x h => (succ_le_of_lt <| cantor x).trans_lt (H.two_power_lt h)
+#align cardinal.is_strong_limit.is_succ_limit Cardinal.IsStrongLimit.isSuccLimit
+
 theorem IsStrongLimit.isLimit {c} (H : IsStrongLimit c) : IsLimit c :=
-  ⟨H.1, fun x h => (succ_le_of_lt <| cantor x).trans_lt (H.2 _ h)⟩
+  ⟨H.ne_zero, H.isSuccLimit⟩
 #align cardinal.is_strong_limit.is_limit Cardinal.IsStrongLimit.isLimit
 
-theorem isLimit_aleph0 : IsLimit ℵ₀ :=
-  isStrongLimit_aleph0.isLimit
-#align cardinal.is_limit_aleph_0 Cardinal.isLimit_aleph0
-
-theorem isStrongLimit_beth {o : Ordinal} (H : ∀ a < o, succ a < o) : IsStrongLimit (beth o) := by
+theorem isStrongLimit_beth {o : Ordinal} (H : IsSuccLimit o) : IsStrongLimit (beth o) := by
   rcases eq_or_ne o 0 with (rfl | h)
   · rw [beth_zero]
     exact isStrongLimit_aleph0
   · refine' ⟨beth_ne_zero o, fun a ha => _⟩
-    rw [beth_limit ⟨h, H⟩] at ha
+    rw [beth_limit ⟨h, isSuccLimit_iff_succ_lt.1 H⟩] at ha
     rcases exists_lt_of_lt_csupᵢ' ha with ⟨⟨i, hi⟩, ha⟩
     have := power_le_power_left two_ne_zero ha.le
     rw [← beth_succ] at this
-    exact this.trans_lt (beth_lt.2 (H i hi))
+    exact this.trans_lt (beth_lt.2 (H.succ_lt hi))
 #align cardinal.is_strong_limit_beth Cardinal.isStrongLimit_beth
 
 theorem mk_bounded_subset {α : Type _} (h : ∀ x < #α, (2^x) < (#α)) {r : α → α → Prop}

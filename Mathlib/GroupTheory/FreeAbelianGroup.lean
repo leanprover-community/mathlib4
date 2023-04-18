@@ -120,7 +120,7 @@ protected theorem unique (g : FreeAbelianGroup α →+ β) (hg : ∀ x, g (of x)
 #align free_abelian_group.lift.unique FreeAbelianGroup.lift.unique
 
 /-- See note [partially-applied ext lemmas]. -/
-@[ext]
+@[ext high]
 protected theorem ext (g h : FreeAbelianGroup α →+ β) (H : ∀ x, g (of x) = h (of x)) : g = h :=
   lift.symm.injective <| funext H
 #align free_abelian_group.lift.ext FreeAbelianGroup.lift.ext
