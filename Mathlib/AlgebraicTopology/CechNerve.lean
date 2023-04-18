@@ -31,6 +31,7 @@ We end the file with a description of the Čech nerve of an arrow `X ⟶ ⊤_ C`
 object, when `C` has finite products. We call this `cechNerveTerminalFrom`. When `C` is
 `G`-Set this gives us `EG` (the universal cover of the classifying space of `G`) as a simplicial
 `G`-set, which is useful for group cohomology.
+
 -/
 
 
