@@ -85,12 +85,11 @@ set_option linter.uppercaseLean3 false
 
 /-- An auxiliary type for the proof of Urysohn's lemma: a pair of a closed set `C` and its
 open neighborhood `U`. -/
--- @[protect_proj] -- Porting note: not yet implemented
 structure CU (X : Type _) [TopologicalSpace X] where
-  (C U : Set X)
-  closed_C : IsClosed C
-  open_U : IsOpen U
-  Subset : C ⊆ U
+  protected (C U : Set X)
+  protected closed_C : IsClosed C
+  protected open_U : IsOpen U
+  protected Subset : C ⊆ U
 #align urysohns.CU Urysohns.CU
 
 instance : Inhabited (CU X) :=
