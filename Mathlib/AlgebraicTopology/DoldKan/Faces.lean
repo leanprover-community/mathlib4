@@ -9,7 +9,6 @@ Authors: Joël Riou
 ! if you have ported upstream changes.
 -/
 import Mathlib.AlgebraicTopology.DoldKan.Homotopies
---import Mathlib.Tactic.RingExp
 
 /-!
 
