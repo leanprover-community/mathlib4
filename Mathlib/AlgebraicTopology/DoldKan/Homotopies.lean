@@ -15,28 +15,26 @@ import Mathlib.AlgebraicTopology.DoldKan.Notations
 
 # Construction of homotopies for the Dold-Kan correspondence
 
-TODO (@joelriou) continue adding the various files referenced below
-
 (The general strategy of proof of the Dold-Kan correspondence is explained
-in `equivalence.lean`.)
+in `Equivalence.lean`.)
 
-The purpose of the files `homotopies.lean`, `faces.lean`, `projections.lean`
-and `p_infty.lean` is to construct an idempotent endomorphism
+The purpose of the files `Homotopies.lean`, `Faces.lean`, `Projections.lean`
+and `PInfty.lean` is to construct an idempotent endomorphism
 `P_infty : K[X] ⟶ K[X]` of the alternating face map complex
-for each `X : simplicial_object C` when `C` is a preadditive category.
+for each `X : SimplicialObject C` when `C` is a preadditive category.
 In the case `C` is abelian, this `P_infty` shall be the projection on the
 normalized Moore subcomplex of `K[X]` associated to the decomposition of the
 complex `K[X]` as a direct sum of this normalized subcomplex and of the
 degenerate subcomplex.
 
-In `p_infty.lean`, this endomorphism `P_infty` shall be obtained by
+In `P_infty.lean`, this endomorphism `P_infty` shall be obtained by
 passing to the limit idempotent endomorphisms `P q` for all `(q : ℕ)`.
 These endomorphisms `P q` are defined by induction. The idea is to
 start from the identity endomorphism `P 0` of `K[X]` and to ensure by
 induction that the `q` higher face maps (except $d_0$) vanish on the
 image of `P q`. Then, in a certain degree `n`, the image of `P q` for
 a big enough `q` will be contained in the normalized subcomplex. This
-construction is done in `projections.lean`.
+construction is done in `Projections.lean`.
 
 It would be easy to define the `P q` degreewise (similarly as it is done
 in *Simplicial Homotopy Theory* by Goerrs-Jardine p. 149), but then we would
@@ -50,10 +48,10 @@ shall basically be obtained by altering the identity endomorphism by adding
 null homotopic maps, so that we get for free that they are morphisms
 of chain complexes and that they are homotopic to the identity. The most
 technical verifications that are needed about the null homotopic maps `Hσ`
-are obtained in `faces.lean`.
+are obtained in `Faces.lean`.
 
-In this file `homotopies.lean`, we define the null homotopic maps
-`Hσ q : K[X] ⟶ K[X]`, show that they are natural (see `nat_trans_Hσ`) and
+In this file `Homotopies.lean`, we define the null homotopic maps
+`Hσ q : K[X] ⟶ K[X]`, show that they are natural (see `natTransHσ`) and
 compatible the application of additive functors (see `map_Hσ`).
 
 ## References
@@ -227,4 +225,3 @@ theorem map_hσ {D : Type _} [Category D] [Preadditive D] (G : C ⥤ D) [G.Addit
 end DoldKan
 
 end AlgebraicTopology
-
