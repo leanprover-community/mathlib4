@@ -8,8 +8,8 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.LinearAlgebra.Pi
-import Mathbin.Algebra.Category.Module.Basic
+import Mathlib.LinearAlgebra.Pi
+import Mathlib.Algebra.Category.Module.Basic
 
 /-!
 # The concrete products in the category of modules are products in the categorical sense.
@@ -34,8 +34,7 @@ def productCone : Fan Z :=
 #align Module.product_cone ModuleCat.productCone
 
 /-- The concrete product cone is limiting. -/
-def productConeIsLimit : IsLimit (productCone Z)
-    where
+def productConeIsLimit : IsLimit (productCone Z) where
   lift s := (LinearMap.pi fun j => s.π.app ⟨j⟩ : s.pt →ₗ[R] ∀ i : ι, Z i)
   fac s j := by
     cases j
