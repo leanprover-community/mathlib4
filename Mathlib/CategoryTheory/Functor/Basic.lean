@@ -12,5 +12,11 @@ Ported by: Scott Morrison
 import Mathlib.CategoryTheory.Functor.Defs
 import Mathlib.Tactic.Reassoc
 
+/-!
+
+TODO
+
+-/
+
 attribute [reassoc] CategoryTheory.Functor.map_comp
 #align category_theory.functor.map_comp_assoc CategoryTheory.Functor.map_comp_assoc
