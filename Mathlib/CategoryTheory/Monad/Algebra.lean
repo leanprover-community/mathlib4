@@ -238,21 +238,22 @@ Given a monad morphism from `T₂` to `T₁`, we get a functor from the algebras
 @[simps]
 def algebraFunctorOfMonadHom {T₁ T₂ : Monad C} (h : T₂ ⟶ T₁) : Algebra T₁ ⥤ Algebra T₂ where
   obj A :=
-    { a := A.a
-      a := h.app A.a ≫ A.a
-      unit' := by
+    { A := A.A
+      a := h.app A.A ≫ A.a
+      unit := by
         dsimp
         simp [A.unit]
-      assoc' := by
+      assoc := by
         dsimp
         simp [A.assoc] }
-  map A₁ A₂ f := { f := f.f }
+  map f := { f := f.f }
 #align category_theory.monad.algebra_functor_of_monad_hom CategoryTheory.Monad.algebraFunctorOfMonadHom
 
 /--
 The identity monad morphism induces the identity functor from the category of algebras to itself.
 -/
-@[simps (config := { rhsMd := semireducible })]
+-- Porting note: `semireducible -> default`
+@[simps (config := { rhsMd := .default })]
 def algebraFunctorOfMonadHomId {T₁ : Monad C} : algebraFunctorOfMonadHom (𝟙 T₁) ≅ 𝟭 _ :=
   NatIso.ofComponents
     (fun X =>
@@ -260,7 +261,7 @@ def algebraFunctorOfMonadHomId {T₁ : Monad C} : algebraFunctorOfMonadHom (𝟙
         (by
           dsimp
           simp))
-    fun X Y f => by
+    fun f => by
     ext
     dsimp
     simp
@@ -268,7 +269,7 @@ def algebraFunctorOfMonadHomId {T₁ : Monad C} : algebraFunctorOfMonadHom (𝟙
 
 /-- A composition of monad morphisms gives the composition of corresponding functors.
 -/
-@[simps (config := { rhsMd := semireducible })]
+@[simps (config := { rhsMd := .default })]
 def algebraFunctorOfMonadHomComp {T₁ T₂ T₃ : Monad C} (f : T₁ ⟶ T₂) (g : T₂ ⟶ T₃) :
     algebraFunctorOfMonadHom (f ≫ g) ≅ algebraFunctorOfMonadHom g ⋙ algebraFunctorOfMonadHom f :=
   NatIso.ofComponents
@@ -277,7 +278,7 @@ def algebraFunctorOfMonadHomComp {T₁ T₂ T₃ : Monad C} (f : T₁ ⟶ T₂) 
         (by
           dsimp
           simp))
-    fun X Y f => by
+    fun f => by
     ext
     dsimp
     simp
@@ -288,7 +289,7 @@ are isomorphic.
 We define it like this as opposed to using `eq_to_iso` so that the components are nicer to prove
 lemmas about.
 -/
-@[simps (config := { rhsMd := semireducible })]
+@[simps (config := { rhsMd := .default })]
 def algebraFunctorOfMonadHomEq {T₁ T₂ : Monad C} {f g : T₁ ⟶ T₂} (h : f = g) :
     algebraFunctorOfMonadHom f ≅ algebraFunctorOfMonadHom g :=
   NatIso.ofComponents
@@ -297,7 +298,7 @@ def algebraFunctorOfMonadHomEq {T₁ T₂ : Monad C} {f g : T₁ ⟶ T₂} (h : 
         (by
           dsimp
           simp [h]))
-    fun X Y f => by
+    fun f => by
     ext
     dsimp
     simp
@@ -308,8 +309,8 @@ categories over `C`, that is, we have `algebra_equiv_of_iso_monads h ⋙ forget 
 -/
 @[simps]
 def algebraEquivOfIsoMonads {T₁ T₂ : Monad C} (h : T₁ ≅ T₂) : Algebra T₁ ≌ Algebra T₂ where
-  Functor := algebraFunctorOfMonadHom h.inv
-  inverse := algebraFunctorOfMonadHom h.Hom
+  functor := algebraFunctorOfMonadHom h.inv
+  inverse := algebraFunctorOfMonadHom h.hom
   unitIso :=
     algebraFunctorOfMonadHomId.symm ≪≫
       algebraFunctorOfMonadHomEq (by simp) ≪≫ algebraFunctorOfMonadHomComp _ _
@@ -329,39 +330,44 @@ end Monad
 namespace Comonad
 
 /-- An Eilenberg-Moore coalgebra for a comonad `T`. -/
-@[nolint has_nonempty_instance]
+-- Porting note: no need to nolint here.
+--@[nolint has_nonempty_instance]
 structure Coalgebra (G : Comonad C) : Type max u₁ v₁ where
-  a : C
+  A : C
   a : A ⟶ (G : C ⥤ C).obj A
-  counit' : a ≫ G.ε.app A = 𝟙 A := by obviously
-  coassoc' : a ≫ G.δ.app A = a ≫ G.map a := by obviously
+  counit : a ≫ G.ε.app A = 𝟙 A := by aesop_cat
+  coassoc : a ≫ G.δ.app A = a ≫ G.map a := by aesop_cat
 #align category_theory.comonad.coalgebra CategoryTheory.Comonad.Coalgebra
 
-restate_axiom coalgebra.counit'
+-- Porting note: no need to restate axioms in lean4.
 
-restate_axiom coalgebra.coassoc'
+--restate_axiom coalgebra.counit'
 
-attribute [reassoc.1] coalgebra.counit coalgebra.coassoc
+--restate_axiom coalgebra.coassoc'
+
+attribute [reassoc] Coalgebra.counit Coalgebra.coassoc
 
 namespace Coalgebra
 
 variable {G : Comonad C}
 
 /-- A morphism of Eilenberg-Moore coalgebras for the comonad `G`. -/
-@[ext, nolint has_nonempty_instance]
+--@[ext, nolint has_nonempty_instance]
+@[ext]
 structure Hom (A B : Coalgebra G) where
-  f : A.a ⟶ B.a
-  h' : A.a ≫ (G : C ⥤ C).map f = f ≫ B.a := by obviously
+  f : A.A ⟶ B.A
+  h : A.a ≫ (G : C ⥤ C).map f = f ≫ B.a := by aesop_cat
 #align category_theory.comonad.coalgebra.hom CategoryTheory.Comonad.Coalgebra.Hom
 
-restate_axiom hom.h'
+-- Porting note: no need to restate axioms in lean4.
+--restate_axiom hom.h
 
-attribute [simp, reassoc.1] hom.h
+attribute [reassoc (attr := simp)] Hom.h
 
 namespace Hom
 
 /-- The identity homomorphism for an Eilenberg–Moore coalgebra. -/
-def id (A : Coalgebra G) : Hom A A where f := 𝟙 A.a
+def id (A : Coalgebra G) : Hom A A where f := 𝟙 A.A
 #align category_theory.comonad.coalgebra.hom.id CategoryTheory.Comonad.Coalgebra.Hom.id
 
 /-- Composition of Eilenberg–Moore coalgebra homomorphisms. -/
@@ -376,6 +382,10 @@ instance : CategoryStruct (Coalgebra G) where
   id := Hom.id
   comp := @Hom.comp _ _ _
 
+-- Porting note: Adding ext lemma to help automation below.
+@[ext]
+lemma Hom.ext' (X Y : Coalgebra G) (f g : X ⟶ Y) (h : f.f = g.f) : f = g := Hom.ext _ _ h
+
 @[simp]
 theorem comp_eq_comp {A A' A'' : Coalgebra G} (f : A ⟶ A') (g : A' ⟶ A'') :
     Coalgebra.Hom.comp f g = f ≫ g :=
@@ -388,7 +398,7 @@ theorem id_eq_id (A : Coalgebra G) : Coalgebra.Hom.id A = 𝟙 A :=
 #align category_theory.comonad.coalgebra.id_eq_id CategoryTheory.Comonad.Coalgebra.id_eq_id
 
 @[simp]
-theorem id_f (A : Coalgebra G) : (𝟙 A : A ⟶ A).f = 𝟙 A.a :=
+theorem id_f (A : Coalgebra G) : (𝟙 A : A ⟶ A).f = 𝟙 A.A :=
   rfl
 #align category_theory.comonad.coalgebra.id_f CategoryTheory.Comonad.Coalgebra.id_f
 
@@ -399,6 +409,7 @@ theorem comp_f {A A' A'' : Coalgebra G} (f : A ⟶ A') (g : A' ⟶ A'') : (f ≫
 
 /-- The category of Eilenberg-Moore coalgebras for a comonad. -/
 instance eilenbergMoore : Category (Coalgebra G) where
+set_option linter.uppercaseLean3 false in
 #align category_theory.comonad.coalgebra.EilenbergMoore CategoryTheory.Comonad.Coalgebra.eilenbergMoore
 
 /--
@@ -406,13 +417,13 @@ To construct an isomorphism of coalgebras, it suffices to give an isomorphism of
 commutes with the structure morphisms.
 -/
 @[simps]
-def isoMk {A B : Coalgebra G} (h : A.a ≅ B.a) (w : A.a ≫ (G : C ⥤ C).map h.Hom = h.Hom ≫ B.a) :
+def isoMk {A B : Coalgebra G} (h : A.A ≅ B.A) (w : A.a ≫ (G : C ⥤ C).map h.hom = h.hom ≫ B.a) :
     A ≅ B where
-  Hom := { f := h.Hom }
+  hom := { f := h.hom }
   inv :=
     { f := h.inv
-      h' := by
-        rw [h.eq_inv_comp, ← reassoc_of w, ← functor.map_comp]
+      h := by
+        rw [h.eq_inv_comp, ← reassoc_of% w, ← Functor.map_comp]
         simp }
 #align category_theory.comonad.coalgebra.iso_mk CategoryTheory.Comonad.Coalgebra.isoMk
 
@@ -424,8 +435,8 @@ variable (G : Comonad C)
 structure. -/
 @[simps]
 def forget : Coalgebra G ⥤ C where
-  obj A := A.a
-  map A B f := f.f
+  obj A := A.A
+  map f := f.f
 #align category_theory.comonad.forget CategoryTheory.Comonad.forget
 
 /-- The cofree functor from the Eilenberg-Moore category, constructing a coalgebra for any
@@ -433,12 +444,12 @@ object. -/
 @[simps]
 def cofree : C ⥤ Coalgebra G where
   obj X :=
-    { a := G.obj X
+    { A := G.obj X
       a := G.δ.app X
-      coassoc' := (G.coassoc _).symm }
-  map X Y f :=
+      coassoc := (G.coassoc _).symm }
+  map f :=
     { f := G.map f
-      h' := (G.δ.naturality _).symm }
+      h := (G.δ.naturality _).symm }
 #align category_theory.comonad.cofree CategoryTheory.Comonad.cofree
 
 -- The other two `simps` projection lemmas can be derived from these two, so `simp_nf` complains if
@@ -446,23 +457,23 @@ def cofree : C ⥤ Coalgebra G where
 /-- The adjunction between the cofree and forgetful constructions for Eilenberg-Moore coalgebras
 for a comonad.
 -/
-@[simps Unit counit]
+@[simps! unit counit]
 def adj : G.forget ⊣ G.cofree :=
   Adjunction.mkOfHomEquiv
     {
       homEquiv := fun X Y =>
         { toFun := fun f =>
             { f := X.a ≫ G.map f
-              h' := by
+              h := by
                 dsimp
-                simp [← coalgebra.coassoc_assoc] }
+                simp [← Coalgebra.coassoc_assoc] }
           invFun := fun g => g.f ≫ G.ε.app Y
           left_inv := fun f => by
             dsimp
-            rw [category.assoc, G.ε.naturality, functor.id_map, X.counit_assoc]
+            rw [Category.assoc, G.ε.naturality, Functor.id_map, X.counit_assoc]
           right_inv := fun g => by
             ext1; dsimp
-            rw [functor.map_comp, g.h_assoc, cofree_obj_a, comonad.right_counit]
+            rw [Functor.map_comp, g.h_assoc, cofree_obj_a, Comonad.right_counit]
             apply comp_id } }
 #align category_theory.comonad.adj CategoryTheory.Comonad.adj
 
@@ -470,14 +481,14 @@ def adj : G.forget ⊣ G.cofree :=
 -/
 theorem coalgebra_iso_of_iso {A B : Coalgebra G} (f : A ⟶ B) [IsIso f.f] : IsIso f :=
   ⟨⟨{   f := inv f.f
-        h' := by
-          rw [is_iso.eq_inv_comp f.f, ← f.h_assoc]
+        h := by
+          rw [IsIso.eq_inv_comp f.f, ← f.h_assoc]
           simp },
-      by tidy⟩⟩
+      by aesop_cat⟩⟩
 #align category_theory.comonad.coalgebra_iso_of_iso CategoryTheory.Comonad.coalgebra_iso_of_iso
 
 instance forget_reflects_iso : ReflectsIsomorphisms G.forget
-    where reflects A B := coalgebra_iso_of_iso G
+    where reflects {_ _} f := fun [IsIso f.f] => coalgebra_iso_of_iso G f
 #align category_theory.comonad.forget_reflects_iso CategoryTheory.Comonad.forget_reflects_iso
 
 instance forget_faithful : Faithful (forget G) where
