@@ -8,12 +8,12 @@ Authors: Joël Riou, Adam Topaz, Johan Commelin
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Homology.Additive
-import Mathbin.AlgebraicTopology.MooreComplex
-import Mathbin.Algebra.BigOperators.Fin
-import Mathbin.CategoryTheory.Preadditive.Opposite
-import Mathbin.CategoryTheory.Idempotents.FunctorCategories
-import Mathbin.Tactic.EquivRw
+import Mathlib.Algebra.Homology.Additive
+import Mathlib.AlgebraicTopology.MooreComplex
+import Mathlib.Algebra.BigOperators.Fin
+import Mathlib.CategoryTheory.Preadditive.Opposite
+import Mathlib.CategoryTheory.Idempotents.FunctorCategories
+import Mathlib.Tactic.EquivRw
 
 /-!
 
@@ -75,8 +75,7 @@ def objD (n : ℕ) : X _[n + 1] ⟶ X _[n] :=
 
 /-- ## The chain complex relation `d ≫ d`
 -/
-theorem d_squared (n : ℕ) : objD X (n + 1) ≫ objD X n = 0 :=
-  by
+theorem d_squared (n : ℕ) : objD X (n + 1) ≫ objD X n = 0 := by
   -- we start by expanding d ≫ d as a double sum
   dsimp
   rw [comp_sum]
@@ -159,8 +158,7 @@ variable {X} {Y}
 
 /-- The alternating face map complex, on morphisms -/
 def map (f : X ⟶ Y) : obj X ⟶ obj Y :=
-  ChainComplex.ofHom _ _ _ _ _ _ (fun n => f.app (op [n])) fun n =>
-    by
+  ChainComplex.ofHom _ _ _ _ _ _ (fun n => f.app (op [n])) fun n => by
     dsimp
     rw [comp_sum, sum_comp]
     apply Finset.sum_congr rfl fun x h => _
@@ -180,8 +178,7 @@ end AlternatingFaceMapComplex
 variable (C : Type _) [Category C] [Preadditive C]
 
 /-- The alternating face map complex, as a functor -/
-def alternatingFaceMapComplex : SimplicialObject C ⥤ ChainComplex C ℕ
-    where
+def alternatingFaceMapComplex : SimplicialObject C ⥤ ChainComplex C ℕ where
   obj := AlternatingFaceMapComplex.obj
   map X Y f := AlternatingFaceMapComplex.map f
 #align algebraic_topology.alternating_face_map_complex AlgebraicTopology.alternatingFaceMapComplex
@@ -209,8 +206,7 @@ theorem alternatingFaceMapComplex_map_f {X Y : SimplicialObject C} (f : X ⟶ Y)
 theorem map_alternatingFaceMapComplex {D : Type _} [Category D] [Preadditive D] (F : C ⥤ D)
     [F.Additive] :
     alternatingFaceMapComplex C ⋙ F.mapHomologicalComplex _ =
-      (SimplicialObject.whiskering C D).obj F ⋙ alternatingFaceMapComplex D :=
-  by
+      (SimplicialObject.whiskering C D).obj F ⋙ alternatingFaceMapComplex D := by
   apply CategoryTheory.Functor.ext
   · intro X Y f
     ext n
@@ -230,8 +226,7 @@ theorem map_alternatingFaceMapComplex {D : Type _} [Category D] [Preadditive D] 
 
 theorem karoubi_alternating_face_map_complex_d (P : Karoubi (SimplicialObject C)) (n : ℕ) :
     ((AlternatingFaceMapComplex.obj (KaroubiFunctorCategoryEmbedding.obj P)).d (n + 1) n).f =
-      P.p.app (op [n + 1]) ≫ (AlternatingFaceMapComplex.obj P.pt).d (n + 1) n :=
-  by
+      P.p.app (op [n + 1]) ≫ (AlternatingFaceMapComplex.obj P.pt).d (n + 1) n := by
   dsimp
   simpa only [alternating_face_map_complex.obj_d_eq, karoubi.sum_hom, preadditive.comp_sum,
     karoubi.zsmul_hom, preadditive.comp_zsmul]
@@ -244,8 +239,7 @@ complex attached to an augmented simplicial object. -/
 @[simps]
 def ε [Limits.HasZeroObject C] :
     SimplicialObject.Augmented.drop ⋙ AlgebraicTopology.alternatingFaceMapComplex C ⟶
-      SimplicialObject.Augmented.point ⋙ ChainComplex.single₀ C
-    where
+      SimplicialObject.Augmented.point ⋙ ChainComplex.single₀ C where
   app X := by
     equiv_rw ChainComplex.toSingle₀Equiv _ _
     refine' ⟨X.hom.app (op [0]), _⟩
@@ -270,8 +264,7 @@ variable {A : Type _} [Category A] [Abelian A]
 /-- The inclusion map of the Moore complex in the alternating face map complex -/
 def inclusionOfMooreComplexMap (X : SimplicialObject A) :
     (normalizedMooreComplex A).obj X ⟶ (alternatingFaceMapComplex A).obj X :=
-  ChainComplex.ofHom _ _ _ _ _ _ (fun n => (NormalizedMooreComplex.objX X n).arrow) fun n =>
-    by
+  ChainComplex.ofHom _ _ _ _ _ _ (fun n => (NormalizedMooreComplex.objX X n).arrow) fun n => by
     /- we have to show the compatibility of the differentials on the alternating
              face map complex with those defined on the normalized Moore complex:
              we first get rid of the terms of the alternating sum that are obviously
@@ -282,13 +275,11 @@ def inclusionOfMooreComplexMap (X : SimplicialObject A) :
       (normalized_Moore_complex.obj_X X (n + 1)).arrow ≫ ((-1 : ℤ) ^ (j : ℕ) • X.δ j)
     have def_t :
       ∀ j : Fin (n + 2),
-        t j = (normalized_Moore_complex.obj_X X (n + 1)).arrow ≫ ((-1 : ℤ) ^ (j : ℕ) • X.δ j) :=
-      by
+        t j = (normalized_Moore_complex.obj_X X (n + 1)).arrow ≫ ((-1 : ℤ) ^ (j : ℕ) • X.δ j) := by
       intro j
       rfl
     rw [Fin.sum_univ_succ t]
-    have null : ∀ j : Fin (n + 1), t j.succ = 0 :=
-      by
+    have null : ∀ j : Fin (n + 1), t j.succ = 0 := by
       intro j
       rw [def_t, comp_zsmul, ← zsmul_zero ((-1 : ℤ) ^ (j.succ : ℕ))]
       apply congr_arg
@@ -355,8 +346,7 @@ variable {X} {Y}
 /-- The alternating face map complex, on morphisms -/
 @[simp]
 def map (f : X ⟶ Y) : obj X ⟶ obj Y :=
-  CochainComplex.ofHom _ _ _ _ _ _ (fun n => f.app [n]) fun n =>
-    by
+  CochainComplex.ofHom _ _ _ _ _ _ (fun n => f.app [n]) fun n => by
     dsimp
     rw [comp_sum, sum_comp]
     apply Finset.sum_congr rfl fun x h => _
@@ -372,8 +362,7 @@ variable (C)
 
 /-- The alternating coface map complex, as a functor -/
 @[simps]
-def alternatingCofaceMapComplex : CosimplicialObject C ⥤ CochainComplex C ℕ
-    where
+def alternatingCofaceMapComplex : CosimplicialObject C ⥤ CochainComplex C ℕ where
   obj := AlternatingCofaceMapComplex.obj
   map X Y f := AlternatingCofaceMapComplex.map f
 #align algebraic_topology.alternating_coface_map_complex AlgebraicTopology.alternatingCofaceMapComplex
