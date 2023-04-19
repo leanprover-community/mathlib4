@@ -178,13 +178,13 @@ instance (priority := 100) completable : CompletableTopField K :=
         simp only [mem_setOf_eq]
         specialize H₁ x x_in₁ y y_in₁
         replace x_in₀ := H₀ x x_in₀
-        replace y_in₀ := H₀ y y_in₀
+        replace  := H₀ y y_in₀
         clear H₀
         apply Valuation.inversion_estimate
         · have : (v x : Γ₀) ≠ 0 := by
             intro h
             rw [h] at x_in₀
-            simpa using x_in₀
+            simp at x_in₀
           exact (Valuation.ne_zero_iff _).mp this
         · refine' lt_of_lt_of_le H₁ _
           rw [Units.min_val]
@@ -259,7 +259,7 @@ theorem continuous_extension : Continuous (Valued.extension : hat K → Γ₀) :
       rw [image_eq_preimage_of_inverse l r]
       rw [← mul_inv_cancel h] at V'_in
       exact c.continuousAt V'_in
-    have : ∃ z₀ : K, ∃ y₀ ∈ V', coe z₀ = y₀ * x₀ ∧ z₀ ≠ 0 := by
+    have : ∃ z₀ : K, ∃ y₀ ∈ V', Coe z₀ = y₀ * x₀ ∧ z₀ ≠ 0 := by
       rcases Completion.denseRange_coe.mem_nhds nhds_right with ⟨z₀, y₀, y₀_in, H : y₀ * x₀ = z₀⟩
       refine' ⟨z₀, y₀, y₀_in, ⟨H.symm, _⟩⟩
       rintro rfl
@@ -272,9 +272,8 @@ theorem continuous_extension : Continuous (Valued.extension : hat K → Γ₀) :
     rcases x_in with ⟨y, y_in, rfl⟩
     have : (v (a * z₀⁻¹) : Γ₀) = 1 := by
       apply hV
-      have : ((z₀⁻¹ : K) : hat K) = z₀⁻¹ := map_inv₀ (Completion.coe_ring_hom : K →+* hat K) z₀
-      rw [Completion.coe_mul, this, ha, hz₀, mul_inv, mul_comm y₀⁻¹, ← mul_assoc, mul_assoc y,
-        mul_inv_cancel h, mul_one]
+      have : ((z₀⁻¹ : K) : hat K) = z₀⁻¹ := map_inv₀ (Completion.coeRingHom : K →+* hat K) z₀
+      rw [Completion.coe_mul, this, ha, hz₀, mul_inv, mul_comm y₀⁻¹, ← mul_assoc, mul_assoc y, mul_inv_cancel h, mul_one]
       solve_by_elim
     calc
       v a = v (a * z₀⁻¹ * z₀) := by rw [mul_assoc, inv_mul_cancel z₀_ne, mul_one]
@@ -287,7 +286,7 @@ theorem continuous_extension : Continuous (Valued.extension : hat K → Γ₀) :
 theorem extension_extends (x : K) : extension (x : hat K) = v x := by
   refine' Completion.denseInducing_coe.extend_eq_of_tendsto _
   rw [← Completion.denseInducing_coe.nhds_eq_comap]
-  exact Valued.continuousValuation.continuous_at
+  exact Valued.continuous_valuation.continuousAt
 #align valued.extension_extends Valued.extension_extends
 
 /-- the extension of a valuation on a division ring to its completion. -/
@@ -297,6 +296,7 @@ noncomputable def extensionValuation : Valuation (hat K) Γ₀ where
     rw [← v.map_zero, ← Valued.extension_extends (0 : K)]
     rfl
   map_one' := by
+    simp
     rw [← Completion.coe_one, Valued.extension_extends (1 : K)]
     exact Valuation.map_one _
   map_mul' x y := by
@@ -339,7 +339,7 @@ theorem closure_coe_completion_v_lt {γ : Γ₀ˣ} :
     · exact this h
   intro h
   have hγ₀ : extension ⁻¹' {γ₀} ∈ 𝓝 x :=
-    ContinuousExtension.continuousAt.preimage_mem_nhds
+    continuous_extension.continuousAt.preimage_mem_nhds
       (WithZeroTopology.singleton_mem_nhds_of_ne_zero h)
   rw [mem_closure_iff_nhds']
   refine' ⟨fun hx => _, fun hx s hs => _⟩
@@ -362,7 +362,7 @@ noncomputable instance valuedCompletion : Valued (hat K) Γ₀ where
       rw [this.mem_iff]
       exact exists_congr fun γ => by simp
     simp_rw [← closure_coe_completion_v_lt]
-    exact (HasBasis.NhdsZero K Γ₀).hasBasis_of_denseInducing completion.dense_inducing_coe
+    exact (hasBasis_nhds_zero K Γ₀).hasBasis_of_denseInducing Completion.denseInducing_coe
 #align valued.valued_completion Valued.valuedCompletion
 
 @[simp, norm_cast]
