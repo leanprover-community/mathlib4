@@ -8,9 +8,9 @@ Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baan
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.RingTheory.Localization.FractionRing
-import Mathbin.RingTheory.Localization.Ideal
-import Mathbin.RingTheory.PrincipalIdealDomain
+import Mathlib.RingTheory.Localization.FractionRing
+import Mathlib.RingTheory.Localization.Ideal
+import Mathlib.RingTheory.PrincipalIdealDomain
 
 /-!
 # Submodules in localizations of commutative rings
@@ -77,8 +77,7 @@ theorem coeSubmodule_fg (hS : Function.Injective (algebraMap R S)) (I : Ideal R)
 
 @[simp]
 theorem coeSubmodule_span (s : Set R) :
-    coeSubmodule S (Ideal.span s) = Submodule.span R (algebraMap R S '' s) :=
-  by
+    coeSubmodule S (Ideal.span s) = Submodule.span R (algebraMap R S '' s) := by
   rw [IsLocalization.coeSubmodule, Ideal.span, Submodule.map_span]
   rfl
 #align is_localization.coe_submodule_span IsLocalization.coeSubmodule_span
@@ -101,8 +100,7 @@ section
 
 include M
 
-theorem isNoetherianRing (h : IsNoetherianRing R) : IsNoetherianRing S :=
-  by
+theorem isNoetherianRing (h : IsNoetherianRing R) : IsNoetherianRing S := by
   rw [isNoetherianRing_iff, isNoetherian_iff_wellFounded] at h⊢
   exact OrderEmbedding.wellFounded (IsLocalization.orderEmbedding M S).dual h
 #align is_localization.is_noetherian_ring IsLocalization.isNoetherianRing
@@ -131,8 +129,7 @@ theorem coeSubmodule_injective (h : M ≤ nonZeroDivisors R) :
 #align is_localization.coe_submodule_injective IsLocalization.coeSubmodule_injective
 
 theorem coeSubmodule_isPrincipal {I : Ideal R} (h : M ≤ nonZeroDivisors R) :
-    (coeSubmodule S I).IsPrincipal ↔ I.IsPrincipal :=
-  by
+    (coeSubmodule S I).IsPrincipal ↔ I.IsPrincipal := by
   constructor <;> rintro ⟨⟨x, hx⟩⟩
   · have x_mem : x ∈ coe_submodule S I := hx.symm ▸ Submodule.mem_span_singleton_self x
     obtain ⟨x, x_mem, rfl⟩ := (mem_coe_submodule _ _).mp x_mem
@@ -146,8 +143,7 @@ variable {S} (M)
 
 theorem mem_span_iff {N : Type _} [AddCommGroup N] [Module R N] [Module S N] [IsScalarTower R S N]
     {x : N} {a : Set N} :
-    x ∈ Submodule.span S a ↔ ∃ y ∈ Submodule.span R a, ∃ z : M, x = mk' S 1 z • y :=
-  by
+    x ∈ Submodule.span S a ↔ ∃ y ∈ Submodule.span R a, ∃ z : M, x = mk' S 1 z • y := by
   constructor; intro h
   · refine' Submodule.span_induction h _ _ _ _
     · rintro x hx
@@ -174,8 +170,7 @@ theorem mem_span_iff {N : Type _} [AddCommGroup N] [Module R N] [Module S N] [Is
 #align is_localization.mem_span_iff IsLocalization.mem_span_iff
 
 theorem mem_span_map {x : S} {a : Set R} :
-    x ∈ Ideal.span (algebraMap R S '' a) ↔ ∃ y ∈ Ideal.span a, ∃ z : M, x = mk' S y z :=
-  by
+    x ∈ Ideal.span (algebraMap R S '' a) ↔ ∃ y ∈ Ideal.span a, ∃ z : M, x = mk' S y z := by
   refine' (mem_span_iff M).trans _
   constructor
   · rw [← coe_submodule_span]
