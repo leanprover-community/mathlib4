@@ -17,7 +17,7 @@ import Mathlib.RingTheory.PrincipalIdealDomain
 
 ## Implementation notes
 
-See `src/ring_theory/localization/basic.lean` for a design overview.
+See `RingTheory/Localization/Basic.lean` for a design overview.
 
 ## Tags
 localization, ring localization, commutative ring localization, characteristic predicate,
@@ -29,12 +29,11 @@ variable {R : Type _} [CommRing R] (M : Submonoid R) (S : Type _) [CommRing S]
 
 variable [Algebra R S] {P : Type _} [CommRing P]
 
-set_option synthInstance.etaExperiment true -- Porting note: without this nothing works!
-
 namespace IsLocalization
 
--- This was previously a `has_coe` instance, but if `S = R` then this will loop.
--- It could be a `has_coe_t` instance, but we keep it explicit here to avoid slowing down
+set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
+-- This was previously a `hasCoe` instance, but if `S = R` then this will loop.
+-- It could be a `hasCoeT` instance, but we keep it explicit here to avoid slowing down
 -- the rest of the library.
 /-- Map from ideals of `R` to submodules of `S` induced by `f`. -/
 def coeSubmodule (I : Ideal R) : Submodule R S :=
@@ -46,26 +45,31 @@ theorem mem_coeSubmodule (I : Ideal R) {x : S} :
   Iff.rfl
 #align is_localization.mem_coe_submodule IsLocalization.mem_coeSubmodule
 
+set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 theorem coeSubmodule_mono {I J : Ideal R} (h : I ≤ J) : coeSubmodule S I ≤ coeSubmodule S J :=
   Submodule.map_mono h
 #align is_localization.coe_submodule_mono IsLocalization.coeSubmodule_mono
 
+set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 @[simp]
 theorem coeSubmodule_bot : coeSubmodule S (⊥ : Ideal R) = ⊥ := by
   rw [coeSubmodule, Submodule.map_bot]
 #align is_localization.coe_submodule_bot IsLocalization.coeSubmodule_bot
 
+set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 @[simp]
 theorem coeSubmodule_top : coeSubmodule S (⊤ : Ideal R) = 1 := by
   rw [coeSubmodule, Submodule.map_top, Submodule.one_eq_range]
 #align is_localization.coe_submodule_top IsLocalization.coeSubmodule_top
 
+set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 @[simp]
 theorem coeSubmodule_sup (I J : Ideal R) :
     coeSubmodule S (I ⊔ J) = coeSubmodule S I ⊔ coeSubmodule S J :=
   Submodule.map_sup _ _ _
 #align is_localization.coe_submodule_sup IsLocalization.coeSubmodule_sup
 
+set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 @[simp]
 theorem coeSubmodule_mul (I J : Ideal R) :
     coeSubmodule S (I * J) = coeSubmodule S I * coeSubmodule S J :=
@@ -84,7 +88,7 @@ theorem coeSubmodule_span (s : Set R) :
   rfl
 #align is_localization.coe_submodule_span IsLocalization.coeSubmodule_span
 
--- Porting note: removed `simp` attribute due to `simp can prove this` linter warning
+-- @[simp] -- Porting note: simp can prove this
 theorem coeSubmodule_span_singleton (x : R) :
     coeSubmodule S (Ideal.span {x}) = Submodule.span R {(algebraMap R S) x} := by
   rw [coeSubmodule_span, Set.image_singleton]
@@ -109,6 +113,7 @@ end
 
 variable {S M}
 
+set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 @[mono]
 theorem coeSubmodule_le_coeSubmodule (h : M ≤ nonZeroDivisors R) {I J : Ideal R} :
     coeSubmodule S I ≤ coeSubmodule S J ↔ I ≤ J :=
@@ -124,17 +129,15 @@ theorem coeSubmodule_strictMono (h : M ≤ nonZeroDivisors R) :
 variable (S)
 
 theorem coeSubmodule_injective (h : M ≤ nonZeroDivisors R) :
-    Function.Injective (coeSubmodule S : Ideal R → Submodule R S) := by
-  apply injective_of_le_imp_le
-  intro x y hxy
-  exact (coeSubmodule_le_coeSubmodule h).mp hxy
+    Function.Injective (coeSubmodule S : Ideal R → Submodule R S) :=
+  injective_of_le_imp_le _ fun hl => (coeSubmodule_le_coeSubmodule h).mp hl
 #align is_localization.coe_submodule_injective IsLocalization.coeSubmodule_injective
 
 theorem coeSubmodule_isPrincipal {I : Ideal R} (h : M ≤ nonZeroDivisors R) :
     (coeSubmodule S I).IsPrincipal ↔ I.IsPrincipal := by
   constructor <;> rintro ⟨⟨x, hx⟩⟩
   · have x_mem : x ∈ coeSubmodule S I := hx.symm ▸ Submodule.mem_span_singleton_self x
-    obtain ⟨x, -, rfl⟩ := (mem_coeSubmodule _ _).mp x_mem
+    obtain ⟨x, _, rfl⟩ := (mem_coeSubmodule _ _).mp x_mem
     refine' ⟨⟨x, coeSubmodule_injective S h _⟩⟩
     rw [Ideal.submodule_span_eq, hx, coeSubmodule_span_singleton]
   · refine' ⟨⟨algebraMap R S x, _⟩⟩
@@ -202,16 +205,13 @@ theorem coeSubmodule_le_coeSubmodule {I J : Ideal R} :
 
 @[mono]
 theorem coeSubmodule_strictMono : StrictMono (coeSubmodule K : Ideal R → Submodule R K) :=
-  strictMono_of_le_iff_le fun _ _ => (coeSubmodule_le_coeSubmodule).symm
+  strictMono_of_le_iff_le fun _ _ => coeSubmodule_le_coeSubmodule.symm
 #align is_fraction_ring.coe_submodule_strict_mono IsFractionRing.coeSubmodule_strictMono
 
 variable (R K)
 
-theorem coeSubmodule_injective :
-    Function.Injective (coeSubmodule K : Ideal R → Submodule R K) := by
-  apply injective_of_le_imp_le
-  intro I J hIJ
-  rwa [coeSubmodule_le_coeSubmodule] at hIJ
+theorem coeSubmodule_injective : Function.Injective (coeSubmodule K : Ideal R → Submodule R K) :=
+  injective_of_le_imp_le _ fun hl => coeSubmodule_le_coeSubmodule.mp hl
 #align is_fraction_ring.coe_submodule_injective IsFractionRing.coeSubmodule_injective
 
 @[simp]
