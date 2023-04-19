@@ -220,7 +220,7 @@ theorem NatTrans.mapHomologicalComplex_comp (c : ComplexShape ι) {F G H : V ⥤
   by aesop_cat
 #align category_theory.nat_trans.map_homological_complex_comp CategoryTheory.NatTrans.mapHomologicalComplex_comp
 
-@[reassoc (attr := simp)]
+@[reassoc (attr := simp 1100)]
 theorem NatTrans.mapHomologicalComplex_naturality {c : ComplexShape ι} {F G : V ⥤ W} [F.Additive]
     [G.Additive] (α : F ⟶ G) {C D : HomologicalComplex V c} (f : C ⟶ D) :
     (F.mapHomologicalComplex c).map f ≫ (NatTrans.mapHomologicalComplex α c).app D =
@@ -404,47 +404,36 @@ def single₀MapHomologicalComplex (F : V ⥤ W) [F.Additive] :
     single₀ V ⋙ F.mapHomologicalComplex _ ≅ F ⋙ single₀ W :=
   NatIso.ofComponents
     (fun X =>
-      { Hom :=
-          {
-            f := fun i =>
+      { hom :=
+          { f := fun i =>
               match i with
               | 0 => 𝟙 _
-              | i + 1 => F.mapZeroObject.Hom }
+              | i + 1 => F.mapZeroObject.hom }
         inv :=
-          {
-            f := fun i =>
+          { f := fun i =>
               match i with
               | 0 => 𝟙 _
               | i + 1 => F.mapZeroObject.inv }
-        hom_inv_id' := by
-          ext (_ | i)
-          · unfold_aux
-            simp
-          · unfold_aux
-            dsimp
-            simp only [comp_f, id_f, zero_comp]
-            exact (zero_of_source_iso_zero _ F.map_zero_object).symm
-        inv_hom_id' := by
-          ext (_ | i) <;>
-            · unfold_aux
-              dsimp
-              simp })
-    fun X Y f => by
-    ext (_ | i) <;>
-      · unfold_aux
-        dsimp
-        simp
+        hom_inv_id := by
+          ext (_|_)
+          . simp
+          . exact IsZero.eq_of_src (IsZero.of_iso (isZero_zero _) F.mapZeroObject) _ _
+        inv_hom_id := by
+          ext (_|_)
+          . simp
+          . exact IsZero.eq_of_src (isZero_zero _) _ _ })
+    fun f => by ext (_|_) <;> simp
 #align cochain_complex.single₀_map_homological_complex CochainComplex.single₀MapHomologicalComplex
 
 @[simp]
 theorem single₀MapHomologicalComplex_hom_app_zero (F : V ⥤ W) [F.Additive] (X : V) :
-    ((single₀MapHomologicalComplex F).Hom.app X).f 0 = 𝟙 _ :=
+    ((single₀MapHomologicalComplex F).hom.app X).f 0 = 𝟙 _ :=
   rfl
 #align cochain_complex.single₀_map_homological_complex_hom_app_zero CochainComplex.single₀MapHomologicalComplex_hom_app_zero
 
 @[simp]
 theorem single₀MapHomologicalComplex_hom_app_succ (F : V ⥤ W) [F.Additive] (X : V) (n : ℕ) :
-    ((single₀MapHomologicalComplex F).Hom.app X).f (n + 1) = 0 :=
+    ((single₀MapHomologicalComplex F).hom.app X).f (n + 1) = 0 :=
   rfl
 #align cochain_complex.single₀_map_homological_complex_hom_app_succ CochainComplex.single₀MapHomologicalComplex_hom_app_succ
 
