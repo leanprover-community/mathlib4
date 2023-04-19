@@ -41,17 +41,19 @@ namespace Monad
 /-- An Eilenberg-Moore algebra for a monad `T`.
     cf Definition 5.2.3 in [Riehl][riehl2017]. -/
 structure Algebra (T : Monad C) : Type max u₁ v₁ where
-  a : C
+  A : C
   a : (T : C ⥤ C).obj A ⟶ A
-  unit' : T.η.app A ≫ a = 𝟙 A := by obviously
-  assoc' : T.μ.app A ≫ a = (T : C ⥤ C).map a ≫ a := by obviously
+  unit : T.η.app A ≫ a = 𝟙 A := by aesop_cat
+  assoc : T.μ.app A ≫ a = (T : C ⥤ C).map a ≫ a := by aesop_cat
 #align category_theory.monad.algebra CategoryTheory.Monad.Algebra
 
-restate_axiom algebra.unit'
+-- Porting note: no need to restate axioms in lean4.
 
-restate_axiom algebra.assoc'
+--restate_axiom algebra.unit'
 
-attribute [reassoc.1] algebra.unit algebra.assoc
+--restate_axiom algebra.assoc'
+
+attribute [reassoc] Algebra.unit Algebra.assoc
 
 namespace Algebra
 
@@ -60,18 +62,19 @@ variable {T : Monad C}
 /-- A morphism of Eilenberg–Moore algebras for the monad `T`. -/
 @[ext]
 structure Hom (A B : Algebra T) where
-  f : A.a ⟶ B.a
-  h' : (T : C ⥤ C).map f ≫ B.a = A.a ≫ f := by obviously
+  f : A.A ⟶ B.A
+  h : (T : C ⥤ C).map f ≫ B.a = A.a ≫ f := by aesop_cat
 #align category_theory.monad.algebra.hom CategoryTheory.Monad.Algebra.Hom
 
-restate_axiom hom.h'
+--restate_axiom hom.h
 
-attribute [simp, reassoc.1] hom.h
+-- Porting note: no need to restate axioms in lean4.
+attribute [reassoc (attr := simp)] Hom.h
 
 namespace Hom
 
 /-- The identity homomorphism for an Eilenberg–Moore algebra. -/
-def id (A : Algebra T) : Hom A A where f := 𝟙 A.a
+def id (A : Algebra T) : Hom A A where f := 𝟙 A.A
 #align category_theory.monad.algebra.hom.id CategoryTheory.Monad.Algebra.Hom.id
 
 instance (A : Algebra T) : Inhabited (Hom A A) :=
@@ -88,6 +91,10 @@ instance : CategoryStruct (Algebra T) where
   id := Hom.id
   comp := @Hom.comp _ _ _
 
+-- Porting note: Adding this ext lemma to help automation below.
+@[ext]
+lemma Hom.ext' (X Y : Algebra T) (f g : X ⟶ Y) (h : f.f = g.f) : f = g := Hom.ext _ _ h
+
 @[simp]
 theorem comp_eq_comp {A A' A'' : Algebra T} (f : A ⟶ A') (g : A' ⟶ A'') :
     Algebra.Hom.comp f g = f ≫ g :=
@@ -100,7 +107,7 @@ theorem id_eq_id (A : Algebra T) : Algebra.Hom.id A = 𝟙 A :=
 #align category_theory.monad.algebra.id_eq_id CategoryTheory.Monad.Algebra.id_eq_id
 
 @[simp]
-theorem id_f (A : Algebra T) : (𝟙 A : A ⟶ A).f = 𝟙 A.a :=
+theorem id_f (A : Algebra T) : (𝟙 A : A ⟶ A).f = 𝟙 A.A :=
   rfl
 #align category_theory.monad.algebra.id_f CategoryTheory.Monad.Algebra.id_f
 
@@ -112,6 +119,7 @@ theorem comp_f {A A' A'' : Algebra T} (f : A ⟶ A') (g : A' ⟶ A'') : (f ≫ g
 /-- The category of Eilenberg-Moore algebras for a monad.
     cf Definition 5.2.4 in [Riehl][riehl2017]. -/
 instance eilenbergMoore : Category (Algebra T) where
+set_option linter.uppercaseLean3 false in
 #align category_theory.monad.algebra.EilenbergMoore CategoryTheory.Monad.Algebra.eilenbergMoore
 
 /--
@@ -119,13 +127,13 @@ To construct an isomorphism of algebras, it suffices to give an isomorphism of t
 commutes with the structure morphisms.
 -/
 @[simps]
-def isoMk {A B : Algebra T} (h : A.a ≅ B.a) (w : (T : C ⥤ C).map h.Hom ≫ B.a = A.a ≫ h.Hom) : A ≅ B
-    where
-  Hom := { f := h.Hom }
+def isoMk {A B : Algebra T} (h : A.A ≅ B.A) (w : (T : C ⥤ C).map h.hom ≫ B.a = A.a ≫ h.hom) :
+    A ≅ B  where
+  hom := { f := h.hom }
   inv :=
     { f := h.inv
-      h' := by
-        rw [h.eq_comp_inv, category.assoc, ← w, ← functor.map_comp_assoc]
+      h := by
+        rw [h.eq_comp_inv, Category.assoc, ← w, ← Functor.map_comp_assoc]
         simp }
 #align category_theory.monad.algebra.iso_mk CategoryTheory.Monad.Algebra.isoMk
 
@@ -136,20 +144,20 @@ variable (T : Monad C)
 /-- The forgetful functor from the Eilenberg-Moore category, forgetting the algebraic structure. -/
 @[simps]
 def forget : Algebra T ⥤ C where
-  obj A := A.a
-  map A B f := f.f
+  obj A := A.A
+  map f := f.f
 #align category_theory.monad.forget CategoryTheory.Monad.forget
 
 /-- The free functor from the Eilenberg-Moore category, constructing an algebra for any object. -/
 @[simps]
 def free : C ⥤ Algebra T where
   obj X :=
-    { a := T.obj X
+    { A := T.obj X
       a := T.μ.app X
-      assoc' := (T.and_assoc _).symm }
-  map X Y f :=
+      assoc := (T.assoc _).symm }
+  map f :=
     { f := T.map f
-      h' := T.μ.naturality _ }
+      h := T.μ.naturality _ }
 #align category_theory.monad.free CategoryTheory.Monad.free
 
 instance [Inhabited C] : Inhabited (Algebra T) :=
@@ -502,4 +510,3 @@ theorem ofLeftAdjoint_forget : Adjunction.ofLeftAdjoint G.forget = G.adj :=
 end Comonad
 
 end CategoryTheory
-
