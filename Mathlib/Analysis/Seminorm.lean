@@ -248,7 +248,7 @@ theorem smul_sup [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] (r 
     r • (p ⊔ q) = r • p ⊔ r • q :=
   have real.smul_max : ∀ x y : ℝ, r • max x y = max (r • x) (r • y) := fun x y => by
     simpa only [← smul_eq_mul, ← NNReal.smul_def, smul_one_smul ℝ≥0 r (_ : ℝ)] using
-      mul_max_of_nonneg x y (r • (1 : ℝ≥0) : ℝ≥0).prop
+      mul_max_of_nonneg x y (r • (1 : ℝ≥0) : ℝ≥0).coe_nonneg
   ext fun x => real.smul_max _ _
 #align seminorm.smul_sup Seminorm.smul_sup
 
