@@ -27,19 +27,8 @@ on two technical lemmas `HigherFacesVanish.comp_Hσ_eq` and
 -/
 
 
-open Nat
-
-open CategoryTheory
-
-open CategoryTheory.Limits
-
-open CategoryTheory.Category
-
-open CategoryTheory.Preadditive
-
-open CategoryTheory.SimplicialObject
-
-open Simplicial DoldKan
+open CategoryTheory CategoryTheory.Limits CategoryTheory.Category
+  CategoryTheory.Preadditive CategoryTheory.SimplicialObject Simplicial
 
 namespace AlgebraicTopology
 
@@ -54,7 +43,7 @@ when the compositions `φ ≫ X.δ j` are `0` for `j ≥ max 1 (n+2-q)`. When `q
 it basically means that the composition `φ ≫ X.δ j` are `0` for the `q` highest
 possible values of a nonzero `j`. Otherwise, when `q ≥ n+2`, all the compositions
 `φ ≫ X.δ j` for nonzero `j` vanish. See also the lemma `comp_P_eq_self_iff` in
-`projections.lean` which states that `HigherFacesVanish q φ` is equivalent to
+`Projections.lean` which states that `HigherFacesVanish q φ` is equivalent to
 the identity `φ ≫ (P q).f (n+1) = φ`. -/
 def HigherFacesVanish {Y : C} {n : ℕ} (q : ℕ) (φ : Y ⟶ X _[n + 1]) : Prop :=
   ∀ j : Fin (n + 1), n + 1 ≤ (j : ℕ) + q → φ ≫ X.δ j.succ = 0
@@ -114,7 +103,7 @@ theorem comp_Hσ_eq {Y : C} {n a q : ℕ} {φ : Y ⟶ X _[n + 1]} (v : HigherFac
       dsimp [Fin.cast] at h
       linarith
     . dsimp [Fin.cast, Fin.pred]
-      rw [pred_eq_sub_one, succ_add_sub_one]
+      rw [Nat.pred_eq_sub_one, Nat.succ_add_sub_one]
       linarith
   simp only [assoc]
   conv_lhs =>
@@ -160,8 +149,8 @@ theorem comp_Hσ_eq_zero {Y : C} {n q : ℕ} {φ : Y ⟶ X _[n + 1]} (v : Higher
   by_cases hqn' : n + 1 < q
   · rw [hσ'_eq_zero hqn' (c_mk (n + 2) (n + 1) rfl), zero_comp, comp_zero]
   · simp only [hσ'_eq (show n + 1 = 0 + q by linarith) (c_mk (n + 2) (n + 1) rfl), pow_zero,
-      Fin.mk_zero, one_zsmul, eq_to_hom_refl, comp_id, comp_sum,
-      alternating_face_map_complex.obj_d_eq]
+      Fin.mk_zero, one_zsmul, eqToHom_refl, comp_id, comp_sum,
+      AlternatingFaceMapComplex.obj_d_eq]
     rw [← Fin.sum_congr' _ (show 2 + (n + 1) = n + 1 + 2 by linarith), Fin.sum_trunc]
     · simp only [Fin.sum_univ_castSucc, Fin.sum_univ_zero, zero_add, Fin.last, Fin.castLE_mk,
         Fin.cast_mk, Fin.castSucc_mk]
@@ -169,21 +158,21 @@ theorem comp_Hσ_eq_zero {Y : C} {n q : ℕ} {φ : Y ⟶ X _[n + 1]} (v : Higher
         neg_smul, comp_neg]
       erw [δ_comp_σ_self, δ_comp_σ_succ, add_right_neg]
     · intro j
+      dsimp [Fin.cast, Fin.castLE, Fin.castLT]
       rw [comp_zsmul, comp_zsmul, δ_comp_σ_of_gt', v.comp_δ_eq_zero_assoc, zero_comp, zsmul_zero]
-      · intro h
-        rw [Fin.pred_eq_iff_eq_succ, Fin.ext_iff] at h
-        dsimp at h
+      . simp only [Fin.lt_iff_val_lt_val]
+        dsimp [Fin.succ]
         linarith
-      · dsimp
-        simp only [Fin.cast_natAdd, Fin.coe_pred, Fin.coe_addNat, add_succ_sub_one]
+      . intro h
+        simp only [Fin.pred, Fin.ext_iff, Nat.pred_eq_sub_one, Nat.succ_add_sub_one, Fin.val_zero,
+          add_eq_zero, false_and] at h
+      . simp only [Fin.pred, Nat.pred_eq_sub_one, Nat.succ_add_sub_one]
         linarith
-      · rw [Fin.lt_iff_val_lt_val]
-        dsimp
-        linarith
-#align algebraic_topology.dold_kan.higher_faces_vanish.comp_Hσ_eq_zero AlgebraicTopology.DoldKan.HigherFacesVanish.comp_hσ_eq_zero
+set_option linter.uppercaseLean3 false in
+#align algebraic_topology.dold_kan.higher_faces_vanish.comp_Hσ_eq_zero AlgebraicTopology.DoldKan.HigherFacesVanish.comp_Hσ_eq_zero
 
 theorem induction {Y : C} {n q : ℕ} {φ : Y ⟶ X _[n + 1]} (v : HigherFacesVanish q φ) :
-    HigherFacesVanish (q + 1) (φ ≫ (𝟙 _ + hσ q).f (n + 1)) := by
+    HigherFacesVanish (q + 1) (φ ≫ (𝟙 _ + Hσ q).f (n + 1)) := by
   intro j hj₁
   dsimp
   simp only [comp_add, add_comp, comp_id]
@@ -195,28 +184,26 @@ theorem induction {Y : C} {n q : ℕ} {φ : Y ⟶ X _[n + 1]} (v : HigherFacesVa
   rw [v.comp_Hσ_eq (show n = a + q by linarith), neg_comp, add_neg_eq_zero, assoc, assoc]
   cases' n with m hm
   -- the boundary case n=0
-  ·
-    simpa only [Nat.eq_zero_of_add_eq_zero_left ha, Fin.eq_zero j, Fin.mk_zero, Fin.mk_one,
+  · simp only [Nat.eq_zero_of_add_eq_zero_left ha, Fin.eq_zero j, Fin.mk_zero, Fin.mk_one,
       δ_comp_σ_succ, comp_id]
+    rfl
   -- in the other case, we need to write n as m+1
   -- then, we first consider the particular case j = a
   by_cases hj₂ : a = (j : ℕ)
   · simp only [hj₂, Fin.eta, δ_comp_σ_succ, comp_id]
-    congr
-    ext
-    simp only [Fin.val_succ, Fin.val_mk]
+    rfl
   -- now, we assume j ≠ a (i.e. a < j)
   have haj : a < j := (Ne.le_iff_lt hj₂).mp (by linarith)
   have hj₃ := j.is_lt
   have ham : a ≤ m := by
-    by_contra
+    by_contra h
     rw [not_le, ← Nat.succ_le_iff] at h
     linarith
   rw [X.δ_comp_σ_of_gt', j.pred_succ]
   swap
   · rw [Fin.lt_iff_val_lt_val]
     simpa only [Fin.val_mk, Fin.val_succ, add_lt_add_iff_right] using haj
-  obtain ham' | ham'' := ham.lt_or_eq
+  obtain _ | ham'' := ham.lt_or_eq
   · -- case where `a<m`
     rw [← X.δ_comp_δ''_assoc]
     swap
@@ -229,7 +216,7 @@ theorem induction {Y : C} {n q : ℕ} {φ : Y ⟶ X _[n + 1]} (v : HigherFacesVa
     swap
     · ext
       dsimp
-      have hq : q = 1 := by rw [← add_left_inj a, ha, ham'', add_comm]
+      have : q = 1 := by rw [← add_left_inj a, ha, ham'', add_comm]
       linarith
     simp only [← assoc, v j (by linarith), zero_comp]
 #align algebraic_topology.dold_kan.higher_faces_vanish.induction AlgebraicTopology.DoldKan.HigherFacesVanish.induction
