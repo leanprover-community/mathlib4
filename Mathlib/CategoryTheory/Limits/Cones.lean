@@ -942,7 +942,7 @@ def coconeEquivalenceOpConeOp : Cocone F ≌ (Cone F.op)ᵒᵖ where
   counitIso :=
     NatIso.ofComponents
       (fun c => by
-        induction c using Opposite.rec
+        induction c using Opposite.rec'
         dsimp
         apply Iso.op
         exact
@@ -970,13 +970,7 @@ end
 section
 
 variable {F : J ⥤ Cᵒᵖ}
-/- Porting note: removed a few simps configs
-`@[simps (config :=
-      { rhsMd := semireducible
-        simpRhs := true })]`
-and replace with `@[simps]`-/
--- Here and below we only automatically generate the `@[simp]` lemma for the `X` field,
--- as we can write a simpler `rfl` lemma for the components of the natural transformation by hand.
+
 /-- Change a cocone on `F.leftOp : Jᵒᵖ ⥤ C` to a cocone on `F : J ⥤ Cᵒᵖ`. -/
 @[simps!]
 def coneOfCoconeLeftOp (c : Cocone F.leftOp) : Cone F where

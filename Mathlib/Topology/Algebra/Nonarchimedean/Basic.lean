@@ -33,7 +33,7 @@ group is nonarchimedean.
 
 open Pointwise
 
-/-- An topological additive group is nonarchimedean if every neighborhood of 0
+/-- A topological additive group is nonarchimedean if every neighborhood of 0
   contains an open subgroup. -/
 class NonarchimedeanAddGroup (G : Type _) [AddGroup G] [TopologicalSpace G] extends
   TopologicalAddGroup G : Prop where
@@ -47,7 +47,7 @@ class NonarchimedeanGroup (G : Type _) [Group G] [TopologicalSpace G] extends To
   is_nonarchimedean : ∀ U ∈ nhds (1 : G), ∃ V : OpenSubgroup G, (V : Set G) ⊆ U
 #align nonarchimedean_group NonarchimedeanGroup
 
-/-- An topological ring is nonarchimedean if its underlying topological additive
+/-- A topological ring is nonarchimedean if its underlying topological additive
   group is nonarchimedean. -/
 class NonarchimedeanRing (R : Type _) [Ring R] [TopologicalSpace R] extends TopologicalRing R :
   Prop where
