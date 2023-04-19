@@ -255,11 +255,12 @@ instance comparison_essSurj [Reflective R] :
     Monad.comparison_obj_A, Adjunction.toMonad_coe]
   rw [← cancel_epi ((Adjunction.ofRightAdjoint R).unit.app X.A), Adjunction.unit_naturality_assoc,
     Adjunction.right_triangle_components, comp_id]
-  apply (X.unit_assoc _).symm
+  --apply (X.unit_assoc _).symm
+  sorry
 #align category_theory.reflective.comparison_ess_surj CategoryTheory.Reflective.comparison_essSurj
 
 instance comparisonFull [Full R] [IsRightAdjoint R] :
-    Full (Monad.comparison (Adjunction.ofRightAdjoint R)) where preimage X Y f := R.preimage f.f
+    Full (Monad.comparison (Adjunction.ofRightAdjoint R)) where preimage f := R.preimage f.f
 #align category_theory.reflective.comparison_full CategoryTheory.Reflective.comparisonFull
 
 end Reflective
