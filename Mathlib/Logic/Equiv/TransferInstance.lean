@@ -67,10 +67,9 @@ protected def Mul [Mul β] : Mul α :=
 
 @[to_additive]
 theorem mul_def [Mul β] (x y : α) :
-  letI := Equiv.Mul e
-  x * y = e.symm (e x * e y) := rfl
---theorem mul_def [Mul β] (x y : α) : @Mul.mul _ (Equiv.Mul e) x y = e.symm (e x * e y) :=
---  rfl
+    letI := Equiv.Mul e
+    x * y = e.symm (e x * e y) :=
+  rfl
 #align equiv.mul_def Equiv.mul_def
 #align equiv.add_def Equiv.add_def
 
@@ -82,7 +81,9 @@ protected def Div [Div β] : Div α :=
 #align equiv.has_sub Equiv.Sub
 
 @[to_additive]
-theorem div_def [Div β] (x y : α) : @Div.div _ (Equiv.Div e) x y = e.symm (e x / e y) :=
+theorem div_def [Div β] (x y : α) :
+    letI := Equiv.Div e
+    x / y = e.symm (e x / e y) :=
   rfl
 #align equiv.div_def Equiv.div_def
 #align equiv.sub_def Equiv.sub_def
@@ -110,8 +111,6 @@ theorem smul_def {R : Type _} [SMul R β] (r : R) (x : α) :
     letI := e.SMul R
     r • x = e.symm (r • e x) :=
   rfl
---    @SMul.smul _ _ (e.SMul R) r x = e.symm (r • e x) :=
---  rfl
 #align equiv.smul_def Equiv.smul_def
 
 /-- Transfer `Pow` across an `Equiv` -/
@@ -121,7 +120,8 @@ protected def Pow (N : Type _) [Pow β N] : Pow α N :=
 #align equiv.has_pow Equiv.Pow
 
 theorem pow_def {N : Type _} [Pow β N] (n : N) (x : α) :
-    @Pow.pow _ _ (e.Pow N) x n = e.symm (e x ^ n) :=
+    letI := e.Pow N
+    x ^ n = e.symm (e x ^ n) :=
   rfl
 #align equiv.pow_def Equiv.pow_def
 
