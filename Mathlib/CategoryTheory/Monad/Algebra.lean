@@ -167,7 +167,7 @@ instance [Inhabited C] : Inhabited (Algebra T) :=
 -- those are added too
 /-- The adjunction between the free and forgetful constructions for Eilenberg-Moore algebras for
   a monad. cf Lemma 5.2.8 of [Riehl][riehl2017]. -/
-@[simps Unit counit]
+@[simps! unit counit]
 def adj : T.free ⊣ T.forget :=
   Adjunction.mkOfHomEquiv
     {
@@ -175,7 +175,7 @@ def adj : T.free ⊣ T.forget :=
         { toFun := fun f => T.η.app X ≫ f.f
           invFun := fun f =>
             { f := T.map f ≫ Y.a
-              h' := by
+              h := by
                 dsimp
                 simp [← Y.assoc, ← T.μ.naturality_assoc] }
           left_inv := fun f => by
@@ -183,23 +183,24 @@ def adj : T.free ⊣ T.forget :=
             dsimp
             simp
           right_inv := fun f => by
-            dsimp only [forget_obj, monad_to_functor_eq_coe]
+            dsimp only [forget_obj]
             rw [← T.η.naturality_assoc, Y.unit]
-            apply category.comp_id } }
+            apply Category.comp_id } }
 #align category_theory.monad.adj CategoryTheory.Monad.adj
 
 /-- Given an algebra morphism whose carrier part is an isomorphism, we get an algebra isomorphism.
 -/
 theorem algebra_iso_of_iso {A B : Algebra T} (f : A ⟶ B) [IsIso f.f] : IsIso f :=
   ⟨⟨{   f := inv f.f
-        h' := by
-          rw [is_iso.eq_comp_inv f.f, category.assoc, ← f.h]
+        h := by
+          rw [IsIso.eq_comp_inv f.f, Category.assoc, ← f.h]
           simp },
-      by tidy⟩⟩
+      by aesop_cat⟩⟩
 #align category_theory.monad.algebra_iso_of_iso CategoryTheory.Monad.algebra_iso_of_iso
 
 instance forget_reflects_iso : ReflectsIsomorphisms T.forget
-    where reflects A B := algebra_iso_of_iso T
+    -- Porting note: Is this the right approach to introduce instances?
+    where reflects {_ _} f := fun [IsIso f.f] => algebra_iso_of_iso T f
 #align category_theory.monad.forget_reflects_iso CategoryTheory.Monad.forget_reflects_iso
 
 instance forget_faithful : Faithful T.forget where
