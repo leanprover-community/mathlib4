@@ -408,12 +408,12 @@ def single₀MapHomologicalComplex (F : V ⥤ W) [F.Additive] :
           { f := fun i =>
               match i with
               | 0 => 𝟙 _
-              | i + 1 => F.mapZeroObject.hom }
+              | _ + 1 => F.mapZeroObject.hom }
         inv :=
           { f := fun i =>
               match i with
               | 0 => 𝟙 _
-              | i + 1 => F.mapZeroObject.inv }
+              | _ + 1 => F.mapZeroObject.inv }
         hom_inv_id := by
           ext (_|_)
           . simp
