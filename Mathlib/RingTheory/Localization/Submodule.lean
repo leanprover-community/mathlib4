@@ -84,7 +84,7 @@ theorem coeSubmodule_span (s : Set R) :
   rfl
 #align is_localization.coe_submodule_span IsLocalization.coeSubmodule_span
 
-@[simp]
+-- Porting note: removed `simp` attribute due to `simp can prove this` linter warning
 theorem coeSubmodule_span_singleton (x : R) :
     coeSubmodule S (Ideal.span {x}) = Submodule.span R {(algebraMap R S) x} := by
   rw [coeSubmodule_span, Set.image_singleton]
