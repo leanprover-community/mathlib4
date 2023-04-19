@@ -197,10 +197,18 @@ elab tk:"library_search%" : term <= expectedType => do
       addTermSuggestion tk (← instantiateMVars goal).headBeta
       instantiateMVars goal
 
-syntax (name := observe) "observe" (ident)? ":" term (" using " (colGt term),+)? : tactic
+/-- `observe hp : p` asserts the proposition `p`, and tries to prove it using `library_search`.
+If no proof is found, the tactic fails.
+In other words, this tactic is equivalent to `have hp : p := by library_search`.
+
+If `hp` is omitted, then the placeholder `this` is used.
+
+The variant `observe? hp : p` will emit a trace message of the form `have hp : p := proof_term`.
+This may be particularly useful to speed up proofs. -/
+syntax (name := observe) "observe" "?"? (ident)? ":" term (" using " (colGt term),+)? : tactic
 
 open Elab.Tactic Elab Tactic in
-elab_rules : tactic | `(tactic| observe%$tk $[$n?:ident]? : $t:term $[using $[$required:term],*]?) => do
+elab_rules : tactic | `(tactic| observe%$tk $[?%$trace]? $[$n?:ident]? : $t:term $[using $[$required:term],*]?) => do
   let mainGoal ← getMainGoal
   let name : Name := match n? with
     | none   => `this
@@ -213,7 +221,14 @@ elab_rules : tactic | `(tactic| observe%$tk $[$n?:ident]? : $t:term $[using $[$r
       throwError "observe did not find a solution"
     else
       let v := (← instantiateMVars (mkMVar goal)).headBeta
-      -- TODO we should be allowed to pass an identifier to `addHaveSuggestion`.
-      addHaveSuggestion tk type v
+      if trace.isSome then
+        -- TODO we should be allowed to pass an identifier to `addHaveSuggestion`.
+        addHaveSuggestion tk type v
       let (_, newGoal) ← (← getMainGoal).let name v
       replaceMainGoal [newGoal]
+
+@[inherit_doc observe] macro "observe?" h:(ident)? ":" t:term : tactic =>
+  `(tactic| observe ? $[$h]? : $t)
+
+@[inherit_doc observe] macro "observe?" h:(ident)? ":" t:term " using " terms:(colGt term),+ : tactic =>
+  `(tactic| observe ? $[$h]? : $t using $[$terms],*)
