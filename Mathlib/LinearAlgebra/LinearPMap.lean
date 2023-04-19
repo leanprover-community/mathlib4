@@ -977,7 +977,7 @@ theorem inverse_domain : (inverse hf).domain = LinearMap.range f.toFun := by
 
 theorem inverse_range : LinearMap.range (inverse hf).toFun = f.domain := by
   rw [inverse, Submodule.toLinearPMap_range, ← graph_map_fst_eq_domain,
-    ← LinearEquiv.fst_comp_prodComm, Submodule.map_comp]
+    ← LinearEquiv.snd_comp_prodComm, Submodule.map_comp]
   rfl
 
 theorem mem_inverse_graph (x : f.domain) : (f x, (x : E)) ∈ (inverse hf).graph := by
