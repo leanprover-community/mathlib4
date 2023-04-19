@@ -188,8 +188,7 @@ instance [Inhabited C] : Inhabited (Algebra T) :=
 @[simps! unit counit]
 def adj : T.free ⊣ T.forget :=
   Adjunction.mkOfHomEquiv
-    {
-      homEquiv := fun X Y =>
+    { homEquiv := fun X Y =>
         { toFun := fun f => T.η.app X ≫ f.f
           invFun := fun f =>
             { f := T.map f ≫ Y.a
@@ -497,8 +496,7 @@ for a comonad.
 @[simps! unit counit]
 def adj : G.forget ⊣ G.cofree :=
   Adjunction.mkOfHomEquiv
-    {
-      homEquiv := fun X Y =>
+    { homEquiv := fun X Y =>
         { toFun := fun f =>
             { f := X.a ≫ G.map f
               h := by
