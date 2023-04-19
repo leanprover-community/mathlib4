@@ -201,12 +201,13 @@ syntax (name := observe) "observe" (ident)? ":" term (" using " (colGt term),+)?
 
 open Elab.Tactic Elab Tactic in
 elab_rules : tactic | `(tactic| observe%$tk $[$n?:ident]? : $t:term $[using $[$required:term],*]?) => do
+  let mainGoal ← getMainGoal
   let name : Name := match n? with
     | none   => `this
     | some n => n.getId
-  let type ← elabTermWithHoles t none (← getMainTag) true <&> (·.1)
-  let .mvar goal ← mkFreshExprMVar type | failure
-  goal.withContext do
+  mainGoal.withContext do
+    let type ← elabTermWithHoles t none (← getMainTag) true <&> (·.1)
+    let .mvar goal ← mkFreshExprMVar type | failure
     if let some _ ← librarySearch goal (← librarySearchLemmas.get) [] then
       reportOutOfHeartbeats tk
       throwError "observe did not find a solution"
