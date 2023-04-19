@@ -538,8 +538,8 @@ instance lattice : Lattice (Interval α) :=
     Interval.semilatticeSup with
     inf := fun s t =>
       match s, t with
-      | ⊥, t => ⊥
-      | s, ⊥ => ⊥
+      | ⊥, _ => ⊥
+      | _, ⊥ => ⊥
       | some s, some t =>
         if h : s.fst ≤ t.snd ∧ t.fst ≤ s.snd then
           some
@@ -549,7 +549,7 @@ instance lattice : Lattice (Interval α) :=
     inf_le_left := fun s t =>
       match s, t with
       | ⊥, ⊥ => bot_le
-      | ⊥, some t => bot_le
+      | ⊥, some _ => bot_le
       | some s, ⊥ => bot_le
       | some s, some t => by
         change dite _ _ _ ≤ _
@@ -560,7 +560,7 @@ instance lattice : Lattice (Interval α) :=
       match s, t with
       | ⊥, ⊥ => bot_le
       | ⊥, some t => bot_le
-      | some s, ⊥ => bot_le
+      | some _, ⊥ => bot_le
       | some s, some t => by
         change dite _ _ _ ≤ _
         split_ifs
@@ -578,7 +578,17 @@ instance lattice : Lattice (Interval α) :=
         simp only [WithBot.some_eq_coe, WithBot.coe_le_coe] -- at hb hc ⊢
         rw [dif_pos, WithBot.coe_le_coe]
         exact ⟨sup_le hb.1 hc.1, le_inf hb.2 hc.2⟩
-        exact ⟨hb.1.trans <| s.fst_le_snd.trans hc.2, hc.1.trans <| s.fst_le_snd.trans hb.2⟩ }
+        -- Porting note: had to add the next 6 lines including the changes because
+        -- it seems that lean cannot automatically turn `NonemptyInterval.toDualProd s`
+        -- into `s.toProd` anymore.
+        rcases hb with ⟨hb₁, hb₂⟩
+        rcases hc with ⟨hc₁, hc₂⟩
+        change t.toProd.fst ≤ s.toProd.fst at hb₁
+        change s.toProd.snd ≤ t.toProd.snd at hb₂
+        change c.toProd.fst ≤ s.toProd.fst at hc₁
+        change s.toProd.snd ≤ c.toProd.snd at hc₂
+        -- Porting note: originially it just had `hb.1` etc. in this next line
+        exact ⟨hb₁.trans <| s.fst_le_snd.trans hc₂, hc₁.trans <| s.fst_le_snd.trans hb₂⟩ }
 
 @[simp, norm_cast]
 theorem coe_inf (s t : Interval α) : (↑(s ⊓ t) : Set α) = ↑s ∩ ↑t := by
@@ -676,7 +686,14 @@ noncomputable instance completeLattice [@DecidableRel α (· ≤ ·)] :
           · exact (h ha).le
           cases s
           · exact bot_le
-          · exact WithBot.some_le_some.2 ⟨infᵢ₂_le _ ha, le_supᵢ₂_of_le _ ha le_rfl⟩
+          · -- Porting note: This case was
+            -- `exact WithBot.some_le_some.2 ⟨infᵢ₂_le _ ha, le_supᵢ₂_of_le _ ha le_rfl⟩`
+            -- but there seems to be a defEq-problem at `infᵢ₂_le` that lean cannot resolve yet.
+            apply WithBot.some_le_some.2
+            constructor
+            · apply infᵢ₂_le
+              exact ha
+            · exact le_supᵢ₂_of_le _ ha le_rfl
         supₛ_le := fun s s ha => by
           dsimp only -- Porting note: added
           split_ifs with h
@@ -697,11 +714,14 @@ noncomputable instance completeLattice [@DecidableRel α (· ≤ ·)] :
                   ⨅ (s : NonemptyInterval α) (h : ↑s ∈ S), s.snd⟩,
                 supᵢ₂_le fun s hs => le_infᵢ₂ <| h.2 hs⟩
           else ⊥
-        infₛ_le := fun s s ha => by
+        infₛ_le := fun s₁ s ha => by
           dsimp only -- Porting note: added
           split_ifs with h
           · lift s to NonemptyInterval α using ne_of_mem_of_not_mem ha h.1
-            exact WithBot.coe_le_coe.2 ⟨le_supᵢ₂ s ha, infᵢ₂_le s ha⟩
+            -- Porting note: Lean failed to figure out the function `f` by itself,
+            -- so I added it through manually
+            let f := fun (s : NonemptyInterval α) (ha : ↑s ∈ s₁) => s.toProd.fst
+            exact WithBot.coe_le_coe.2 ⟨le_supᵢ₂ (f := f) s ha, infᵢ₂_le s ha⟩
           · exact bot_le
         le_infₛ := fun S s ha => by
           cases s with
