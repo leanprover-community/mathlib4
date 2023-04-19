@@ -208,7 +208,8 @@ This may be particularly useful to speed up proofs. -/
 syntax (name := observe) "observe" "?"? (ident)? ":" term (" using " (colGt term),+)? : tactic
 
 open Elab.Tactic Elab Tactic in
-elab_rules : tactic | `(tactic| observe%$tk $[?%$trace]? $[$n?:ident]? : $t:term $[using $[$required:term],*]?) => do
+elab_rules : tactic |
+  `(tactic| observe%$tk $[?%$trace]? $[$n?:ident]? : $t:term $[using $[$required:term],*]?) => do
   let mainGoal ← getMainGoal
   let name : Name := match n? with
     | none   => `this
@@ -230,5 +231,6 @@ elab_rules : tactic | `(tactic| observe%$tk $[?%$trace]? $[$n?:ident]? : $t:term
 @[inherit_doc observe] macro "observe?" h:(ident)? ":" t:term : tactic =>
   `(tactic| observe ? $[$h]? : $t)
 
-@[inherit_doc observe] macro "observe?" h:(ident)? ":" t:term " using " terms:(colGt term),+ : tactic =>
+@[inherit_doc observe]
+macro "observe?" h:(ident)? ":" t:term " using " terms:(colGt term),+ : tactic =>
   `(tactic| observe ? $[$h]? : $t using $[$terms],*)
