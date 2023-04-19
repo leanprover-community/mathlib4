@@ -94,14 +94,14 @@ protected def rec {F : ∀ _ : SimplexCategory, Sort _} (h : ∀ n : ℕ, F [n])
 #align simplex_category.rec SimplexCategory.rec
 
 -- porting note: removed @[nolint has_nonempty_instance]
-/-- Morphisms in the simplex_category. -/
+/-- Morphisms in the `SimplexCategory`. -/
 protected def Hom (a b : SimplexCategory) :=
   Fin (a.len + 1) →o Fin (b.len + 1)
 #align simplex_category.hom SimplexCategory.Hom
 
 namespace Hom
 
-/-- Make a moprhism in `SimplexCategory` from a monotone map of fin's. -/
+/-- Make a moprhism in `SimplexCategory` from a monotone map of `Fin`'s. -/
 def mk {a b : SimplexCategory} (f : Fin (a.len + 1) →o Fin (b.len + 1)) : SimplexCategory.Hom a b :=
   f
 #align simplex_category.hom.mk SimplexCategory.Hom.mk
@@ -640,7 +640,7 @@ theorem eq_σ_comp_of_not_injective {n : ℕ} {Δ' : SimplexCategory} (θ : mk (
   -- and then, `θ x = θ (x+1)`
   have hθ₂ : ∃ x y : Fin (n + 2), (Hom.toOrderHom θ) x = (Hom.toOrderHom θ) y ∧ x < y := by
     rcases hθ with ⟨x, y, ⟨h₁, h₂⟩⟩
-    by_cases x < y
+    by_cases h : x < y
     · exact ⟨x, y, ⟨h₁, h⟩⟩
     · refine' ⟨y, x, ⟨h₁.symm, _⟩⟩
       cases' lt_or_eq_of_le (not_lt.mp h) with h' h'
