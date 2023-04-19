@@ -96,7 +96,9 @@ protected def Inv [Inv β] : Inv α :=
 #align equiv.has_neg Equiv.Neg
 
 @[to_additive]
-theorem inv_def [Inv β] (x : α) : @Inv.inv _ (Equiv.Inv e) x = e.symm (e x)⁻¹ :=
+theorem inv_def [Inv β] (x : α) :
+    letI := Equiv.Inv e
+    x⁻¹ = e.symm (e x)⁻¹ :=
   rfl
 #align equiv.inv_def Equiv.inv_def
 #align equiv.neg_def Equiv.neg_def
@@ -139,7 +141,7 @@ def mulEquiv (e : α ≃ β) [Mul β] :
     { e with
       map_mul' := fun x y => by
         apply e.symm.injective
-        simp only [toFun_as_coe_apply, symm_apply_apply, mul_def] }
+        simp [mul_def] }
 #align equiv.mul_equiv Equiv.mulEquiv
 #align equiv.add_equiv Equiv.addEquiv
 
@@ -170,12 +172,10 @@ def ringEquiv (e : α ≃ β) [Add β] [Mul β] : by
     { e with
       map_add' := fun x y => by
         apply e.symm.injective
-        simp only [toFun_as_coe_apply, symm_apply_apply]
-        rfl
+        simp [add_def]
       map_mul' := fun x y => by
         apply e.symm.injective
-        simp only [toFun_as_coe_apply, symm_apply_apply]
-        rfl }
+        simp [mul_def] }
 #align equiv.ring_equiv Equiv.ringEquiv
 
 @[simp]

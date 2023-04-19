@@ -28,6 +28,8 @@ theorem not_ne_eq (x y : α) : (¬ (x ≠ y)) = (x = y) := ne_eq x y ▸ not_not
 variable {β : Type u} [LinearOrder β]
 theorem not_le_eq (a b : β) : (¬ (a ≤ b)) = (b < a) := propext not_le
 theorem not_lt_eq (a b : β) : (¬ (a < b)) = (b ≤ a) := propext not_lt
+theorem not_ge_eq (a b : β) : (¬ (a ≥ b)) = (a < b) := propext not_le
+theorem not_gt_eq (a b : β) : (¬ (a > b)) = (a ≤ b) := propext not_lt
 
 /-- Make `push_neg` use `not_and_distrib` rather than the default `not_and`. -/
 register_option push_neg.use_distrib : Bool :=
@@ -63,6 +65,16 @@ def transformNegationStep (e : Expr) : SimpM (Option Simp.Step) := do
       let linOrd ← synthInstance? (← mkAppM ``LinearOrder #[ty])
       match linOrd with
       | some _ => return mkSimpStep (← mkAppM ``LE.le #[e₂, e₁]) (← mkAppM ``not_lt_eq #[e₁, e₂])
+      | none => return none
+  | (``GE.ge, #[ty, _inst, e₁, e₂]) =>
+      let linOrd ← synthInstance? (← mkAppM ``LinearOrder #[ty])
+      match linOrd with
+      | some _ => return mkSimpStep (← mkAppM ``LT.lt #[e₁, e₂]) (← mkAppM ``not_ge_eq #[e₁, e₂])
+      | none => return none
+  | (``GT.gt, #[ty, _inst, e₁, e₂]) =>
+      let linOrd ← synthInstance? (← mkAppM ``LinearOrder #[ty])
+      match linOrd with
+      | some _ => return mkSimpStep (← mkAppM ``LE.le #[e₁, e₂]) (← mkAppM ``not_gt_eq #[e₁, e₂])
       | none => return none
   | (``Exists, #[_, .lam n typ bo bi]) =>
       return mkSimpStep (.forallE n typ (mkNot bo) bi)
