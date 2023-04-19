@@ -31,7 +31,7 @@ section ClosedBall
 
 instance mulActionClosedBallBall : MulAction (closedBall (0 : 𝕜) 1) (ball (0 : E) r) where
   smul c x :=
-    ⟨(c : 𝕜) • x,
+    ⟨(c : 𝕜) • ↑x,
       mem_ball_zero_iff.2 <| by
         simpa only [norm_smul, one_mul] using
           mul_lt_mul' (mem_closedBall_zero_iff.1 c.2) (mem_ball_zero_iff.1 x.2) (norm_nonneg _)
@@ -47,7 +47,7 @@ instance continuousSMul_closedBall_ball : ContinuousSMul (closedBall (0 : 𝕜) 
 instance mulActionClosedBallClosedBall : MulAction (closedBall (0 : 𝕜) 1) (closedBall (0 : E) r)
     where
   smul c x :=
-    ⟨(c : 𝕜) • x,
+    ⟨(c : 𝕜) • ↑x,
       mem_closedBall_zero_iff.2 <| by
         simpa only [norm_smul, one_mul] using
           mul_le_mul (mem_closedBall_zero_iff.1 c.2) (mem_closedBall_zero_iff.1 x.2) (norm_nonneg _)
@@ -67,8 +67,8 @@ section Sphere
 
 instance mulActionSphereBall : MulAction (sphere (0 : 𝕜) 1) (ball (0 : E) r) where
   smul c x := inclusion sphere_subset_closedBall c • x
-  one_smul x := Subtype.ext <| one_smul _ _
-  mul_smul c₁ c₂ x := Subtype.ext <| mul_smul _ _ _
+  one_smul _ := Subtype.ext <| one_smul _ _
+  mul_smul _ _ _ := Subtype.ext <| mul_smul _ _ _
 #align mul_action_sphere_ball mulActionSphereBall
 
 instance continuousSMul_sphere_ball : ContinuousSMul (sphere (0 : 𝕜) 1) (ball (0 : E) r) :=
@@ -77,8 +77,8 @@ instance continuousSMul_sphere_ball : ContinuousSMul (sphere (0 : 𝕜) 1) (ball
 
 instance mulActionSphereClosedBall : MulAction (sphere (0 : 𝕜) 1) (closedBall (0 : E) r) where
   smul c x := inclusion sphere_subset_closedBall c • x
-  one_smul x := Subtype.ext <| one_smul _ _
-  mul_smul c₁ c₂ x := Subtype.ext <| mul_smul _ _ _
+  one_smul _ := Subtype.ext <| one_smul _ _
+  mul_smul _ _ _ := Subtype.ext <| mul_smul _ _ _
 #align mul_action_sphere_closed_ball mulActionSphereClosedBall
 
 instance continuousSMul_sphere_closedBall :
@@ -88,7 +88,7 @@ instance continuousSMul_sphere_closedBall :
 
 instance mulActionSphereSphere : MulAction (sphere (0 : 𝕜) 1) (sphere (0 : E) r) where
   smul c x :=
-    ⟨(c : 𝕜) • x,
+    ⟨(c : 𝕜) • ↑x,
       mem_sphere_zero_iff_norm.2 <| by
         rw [norm_smul, mem_sphere_zero_iff_norm.1 c.coe_prop, mem_sphere_zero_iff_norm.1 x.coe_prop,
           one_mul]⟩
@@ -199,17 +199,14 @@ instance sMulCommClass_sphere_sphere_sphere :
 
 end SMulCommClass
 
-variable (𝕜) [CharZero 𝕜]
+variable (𝕜)
+
+variable [CharZero 𝕜]
 
 theorem ne_neg_of_mem_sphere {r : ℝ} (hr : r ≠ 0) (x : sphere (0 : E) r) : x ≠ -x := fun h =>
-  ne_zero_of_mem_sphere hr x
-    ((self_eq_neg 𝕜 _).mp
-      (by
-        conv_lhs => rw [h]
-        simp))
+  ne_zero_of_mem_sphere hr x ((self_eq_neg 𝕜 _).mp (by conv_lhs => rw [h]))
 #align ne_neg_of_mem_sphere ne_neg_of_mem_sphere
 
 theorem ne_neg_of_mem_unit_sphere (x : sphere (0 : E) 1) : x ≠ -x :=
   ne_neg_of_mem_sphere 𝕜 one_ne_zero x
 #align ne_neg_of_mem_unit_sphere ne_neg_of_mem_unit_sphere
-
