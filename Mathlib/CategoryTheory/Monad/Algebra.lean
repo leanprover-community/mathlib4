@@ -51,6 +51,14 @@ structure Algebra (T : Monad C) : Type max u₁ v₁ where
   assoc : T.μ.app A ≫ a = (T : C ⥤ C).map a ≫ a := by aesop_cat
 #align category_theory.monad.algebra CategoryTheory.Monad.Algebra
 
+-- Porting note: Manually adding aligns.
+set_option linter.uppercaseLean3 false in
+#align category_theory.monad.algebra.A CategoryTheory.Monad.Algebra.A
+
+#align category_theory.monad.algebra.a CategoryTheory.Monad.Algebra.a
+#align category_theory.monad.algebra.unit CategoryTheory.Monad.Algebra.unit
+#align category_theory.monad.algebra.assoc CategoryTheory.Monad.Algebra.assoc
+
 -- Porting note: no need to restate axioms in lean4.
 
 --restate_axiom algebra.unit'
@@ -71,6 +79,10 @@ structure Hom (A B : Algebra T) where
   /-- Compatibility with the structure morphism, for a morphism of algebras. -/
   h : (T : C ⥤ C).map f ≫ B.a = A.a ≫ f := by aesop_cat
 #align category_theory.monad.algebra.hom CategoryTheory.Monad.Algebra.Hom
+
+-- Porting note: Manually adding aligns.
+#align category_theory.monad.algebra.hom.f CategoryTheory.Monad.Algebra.Hom.f
+#align category_theory.monad.algebra.hom.h CategoryTheory.Monad.Algebra.Hom.h
 
 -- Porting note: no need to restate axioms in lean4.
 --restate_axiom hom.h
@@ -349,6 +361,15 @@ structure Coalgebra (G : Comonad C) : Type max u₁ v₁ where
   coassoc : a ≫ G.δ.app A = a ≫ G.map a := by aesop_cat
 #align category_theory.comonad.coalgebra CategoryTheory.Comonad.Coalgebra
 
+-- Porting note: manually adding aligns.
+set_option linter.uppercaseLean3 false in
+#align category_theory.comonad.coalgebra.A CategoryTheory.Comonad.Coalgebra.A
+
+#align category_theory.comonad.coalgebra.a CategoryTheory.Comonad.Coalgebra.a
+#align category_theory.comonad.coalgebra.counit CategoryTheory.Comonad.Coalgebra.counit
+#align category_theory.comonad.coalgebra.coassoc CategoryTheory.Comonad.Coalgebra.coassoc
+
+
 -- Porting note: no need to restate axioms in lean4.
 
 --restate_axiom coalgebra.counit'
@@ -370,6 +391,10 @@ structure Hom (A B : Coalgebra G) where
   /-- Compatibility with the structure morphism, for a morphism of coalgebras. -/
   h : A.a ≫ (G : C ⥤ C).map f = f ≫ B.a := by aesop_cat
 #align category_theory.comonad.coalgebra.hom CategoryTheory.Comonad.Coalgebra.Hom
+
+-- Porting note: Manually adding aligns.
+#align category_theory.comonad.coalgebra.hom.f CategoryTheory.Comonad.Coalgebra.Hom.f
+#align category_theory.comonad.coalgebra.hom.h CategoryTheory.Comonad.Coalgebra.Hom.h
 
 -- Porting note: no need to restate axioms in lean4.
 --restate_axiom hom.h
