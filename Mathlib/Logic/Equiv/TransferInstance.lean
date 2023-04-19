@@ -141,7 +141,7 @@ def mulEquiv (e : α ≃ β) [Mul β] :
     { e with
       map_mul' := fun x y => by
         apply e.symm.injective
-        simp only [toFun_as_coe_apply, symm_apply_apply, mul_def] }
+        simp [mul_def] }
 #align equiv.mul_equiv Equiv.mulEquiv
 #align equiv.add_equiv Equiv.addEquiv
 
@@ -172,12 +172,10 @@ def ringEquiv (e : α ≃ β) [Add β] [Mul β] : by
     { e with
       map_add' := fun x y => by
         apply e.symm.injective
-        simp only [toFun_as_coe_apply, symm_apply_apply]
-        rfl
+        simp [add_def]
       map_mul' := fun x y => by
         apply e.symm.injective
-        simp only [toFun_as_coe_apply, symm_apply_apply]
-        rfl }
+        simp [mul_def] }
 #align equiv.ring_equiv Equiv.ringEquiv
 
 @[simp]
