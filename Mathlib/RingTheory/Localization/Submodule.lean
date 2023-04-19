@@ -29,7 +29,7 @@ variable {R : Type _} [CommRing R] (M : Submonoid R) (S : Type _) [CommRing S]
 
 variable [Algebra R S] {P : Type _} [CommRing P]
 
-set_option synthInstance.etaExperiment true
+set_option synthInstance.etaExperiment true -- Porting note: without this nothing works!
 
 namespace IsLocalization
 
