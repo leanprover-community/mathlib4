@@ -96,7 +96,9 @@ protected def Inv [Inv β] : Inv α :=
 #align equiv.has_neg Equiv.Neg
 
 @[to_additive]
-theorem inv_def [Inv β] (x : α) : @Inv.inv _ (Equiv.Inv e) x = e.symm (e x)⁻¹ :=
+theorem inv_def [Inv β] (x : α) :
+    letI := Equiv.Inv e
+    x⁻¹ = e.symm (e x)⁻¹ :=
   rfl
 #align equiv.inv_def Equiv.inv_def
 #align equiv.neg_def Equiv.neg_def
