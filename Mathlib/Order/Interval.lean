@@ -98,7 +98,7 @@ theorem le_def : s ≤ t ↔ t.fst ≤ s.fst ∧ s.snd ≤ t.snd :=
   Iff.rfl
 #align nonempty_interval.le_def NonemptyInterval.le_def
 
-/-- `to_dual_prod` as an order embedding. -/
+/-- `toDualProd` as an order embedding. -/
 @[simps]
 def toDualProdHom : NonemptyInterval α ↪o αᵒᵈ × α where
   toFun := toDualProd
@@ -251,7 +251,7 @@ def coeHom : NonemptyInterval α ↪o Set α :=
   OrderEmbedding.ofMapLEIff (fun s => Icc s.fst s.snd) fun s _ => Icc_subset_Icc_iff s.fst_le_snd
 #align nonempty_interval.coe_hom NonemptyInterval.coeHom
 
-instance : SetLike (NonemptyInterval α) α where
+instance setLike : SetLike (NonemptyInterval α) α where
   coe s := Icc s.fst s.snd
   coe_injective' := coeHom.injective
 
@@ -266,8 +266,10 @@ theorem coe_ssubset_coe : (s : Set α) ⊂ t ↔ s < t :=
 #align nonempty_interval.coe_ssubset_coe NonemptyInterval.coe_ssubset_coe
 
 -- Porting note: Did I port this correctly?
+-- lean3 statement was `(coe_hom : nonempty_interval α → set α) = coe`
+-- is it even needed?
 @[simp]
-theorem coe_coeHom : (coeHom : NonemptyInterval α → Set α) = Coe.coe :=
+theorem coe_coeHom : (coeHom : NonemptyInterval α → Set α) = setLike.coe :=
   rfl
 #align nonempty_interval.coe_coe_hom NonemptyInterval.coe_coeHom
 
@@ -326,6 +328,7 @@ end NonemptyInterval
 We represent intervals either as `⊥` or a nonempty interval given by its endpoints `fst`, `snd`.
 To convert intervals to the set of elements between these endpoints, use the coercion
 `Interval α → Set α`. -/
+@[reducible] -- Porting note: added reducible, it seems to help with coersions
 def Interval (α : Type _) [LE α] :=
   WithBot (NonemptyInterval α) -- deriving Inhabited, LE, OrderBot
 #align interval Interval
@@ -472,14 +475,7 @@ def coeHom : Interval α ↪o Set α :=
     | some _, some _ => (@NonemptyInterval.coeHom α _).le_iff_le.trans WithBot.some_le_some.symm
 #align interval.coe_hom Interval.coeHom
 
-instance : SetLike (Interval α) α where
-  coe := coeHom
-  coe_injective' := coeHom.injective
-
--- Porting note: Somehow `Interval` unfolds to `(WithBot (NonemptyInterval α))`
--- and lean cannot find the instance `#synth Coe (Interval α) (Set α)`.
--- Added this instance as a workaround.
-instance : SetLike (WithBot (NonemptyInterval α)) α where
+instance setLike : SetLike (Interval α) α where
   coe := coeHom
   coe_injective' := coeHom.injective
 
@@ -605,21 +601,25 @@ instance lattice : Lattice (Interval α) :=
 
 @[simp, norm_cast]
 theorem coe_inf (s t : Interval α) : (↑(s ⊓ t) : Set α) = ↑s ∩ ↑t := by
-  cases s
-  · rw [WithBot.none_eq_bot, bot_inf_eq]
+  cases s with
+  | none =>
+    rw [WithBot.none_eq_bot, bot_inf_eq]
     exact (empty_inter _).symm
-  cases t
-  · rw [WithBot.none_eq_bot, inf_bot_eq]
-    exact (inter_empty _).symm
-  refine' (_ : Coe.coe (dite _ _ _) = _).trans Icc_inter_Icc.symm
-  split_ifs
-  · rfl
-  ·
-    exact
-      (Icc_eq_empty fun H =>
-          h
-            ⟨le_sup_left.trans <| H.trans inf_le_right,
-              le_sup_right.trans <| H.trans inf_le_left⟩).symm
+  | some s =>
+    cases t with
+    | none =>
+      rw [WithBot.none_eq_bot, inf_bot_eq]
+      exact (inter_empty _).symm
+    | some t =>
+      refine' (_ : setLike.coe (dite
+        -- Porting note: Needed to fill this first `_` explicitely.
+        (s.toProd.fst ≤ t.toProd.snd ∧ t.toProd.fst ≤ s.toProd.snd)
+        _ _) = _).trans Icc_inter_Icc.symm
+      split_ifs with h
+      · rfl
+      · exact (Icc_eq_empty fun H =>
+          h ⟨le_sup_left.trans <| H.trans inf_le_right,
+          le_sup_right.trans <| H.trans inf_le_left⟩).symm
 #align interval.coe_inf Interval.coe_inf
 
 end Decidable
