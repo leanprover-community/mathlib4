@@ -530,12 +530,12 @@ def mkInductiveAux₂ :
     ⟨(P.xNextIso rfl).hom ≫ I.1, I.2.1 ≫ (Q.xPrevIso rfl).inv, by simpa using I.2.2⟩
 #align homotopy.mk_inductive_aux₂ Homotopy.mkInductiveAux₂
 
-theorem mk_inductive_aux₃ (i j : ℕ) (h : i + 1 = j) :
+theorem mkInductiveAux₃ (i j : ℕ) (h : i + 1 = j) :
     (mkInductiveAux₂ e zero comm_zero one comm_one succ i).2.1 ≫ (Q.xPrevIso h).hom =
       (P.xNextIso h).inv ≫ (mkInductiveAux₂ e zero comm_zero one comm_one succ j).1 := by
   subst j
   rcases i with (_ | _ | i) <;> simp [mkInductiveAux₂]
-#align homotopy.mk_inductive_aux₃ Homotopy.mk_inductive_aux₃
+#align homotopy.mk_inductive_aux₃ Homotopy.mkInductiveAux₃
 
 /-- A constructor for a `Homotopy e 0`, for `e` a chain map between `ℕ`-indexed chain complexes,
 working by induction.
@@ -553,28 +553,22 @@ def mkInductive : Homotopy e 0 where
     else 0
   zero i j w := by dsimp ; rw [dif_neg] ; exact w
   comm i := by
-    sorry
-    --dsimp; simp only [add_zero]
-    --convert(mk_inductive_aux₂ e zero comm_zero one comm_one succ i).2.2
-    --· cases i
-    --  · dsimp [fromNext]
-    --    rw [dif_neg]
-    --    simp only [ChainComplex.next_nat_zero, Nat.one_ne_zero, not_false_iff]
-    --  · dsimp [fromNext]
-    --    rw [dif_pos]
-    --    swap
-    --    · simp only [ChainComplex.next_nat_succ]
-    --    have aux : (ComplexShape.down ℕ).next i.succ = i := ChainComplex.next_nat_succ i
-    --    rw [mk_inductive_aux₃ e zero comm_zero one comm_one succ ((ComplexShape.down ℕ).next i.succ)
-    --        (i + 1) (by rw [aux])]
-    --    dsimp [X_next_iso]
-    --    erw [category.id_comp]
-    --· dsimp [toPrev]
-    --  rw [dif_pos]
-    --  swap
-    --  · simp only [ChainComplex.prev]
-    --  dsimp [X_prev_iso]
-    --  erw [category.comp_id]
+    dsimp
+    simp only [add_zero]
+    refine' (mkInductiveAux₂ e zero comm_zero one comm_one succ i).2.2.trans _
+    congr
+    . cases i
+      . dsimp [fromNext, mkInductiveAux₂]
+        rw [dif_neg]
+        simp only
+      . dsimp [fromNext]
+        simp only [ChainComplex.next_nat_succ, dite_true]
+        rw [mkInductiveAux₃ e zero comm_zero one comm_one succ]
+        dsimp [xNextIso]
+        rw [Category.id_comp]
+    . dsimp [toPrev]
+      erw [dif_pos, Category.comp_id]
+      simp only [ChainComplex.prev]
 #align homotopy.mk_inductive Homotopy.mkInductive
 
 end
@@ -582,7 +576,7 @@ end
 end MkInductive
 
 /-!
-`homotopy.mk_coinductive` allows us to build a homotopy of cochain complexes inductively,
+`Homotopy.mkCoinductive` allows us to build a homotopy of cochain complexes inductively,
 so that as we construct each component, we have available the previous two components,
 and the fact that they satisfy the homotopy condition.
 -/
@@ -660,12 +654,12 @@ def mkCoinductiveAux₂ :
     ⟨I.1 ≫ (Q.xPrevIso rfl).inv, (P.xNextIso rfl).hom ≫ I.2.1, by simpa using I.2.2⟩
 #align homotopy.mk_coinductive_aux₂ Homotopy.mkCoinductiveAux₂
 
-theorem mk_coinductive_aux₃ (i j : ℕ) (h : i + 1 = j) :
+theorem mkCoinductiveAux₃ (i j : ℕ) (h : i + 1 = j) :
     (P.xNextIso h).inv ≫ (mkCoinductiveAux₂ e zero comm_zero one comm_one succ i).2.1 =
       (mkCoinductiveAux₂ e zero comm_zero one comm_one succ j).1 ≫ (Q.xPrevIso h).hom := by
   subst j
   rcases i with (_ | _ | i) <;> simp [mkCoinductiveAux₂]
-#align homotopy.mk_coinductive_aux₃ Homotopy.mk_coinductive_aux₃
+#align homotopy.mk_coinductive_aux₃ Homotopy.mkCoinductiveAux₃
 
 /-- A constructor for a `Homotopy e 0`, for `e` a chain map between `ℕ`-indexed cochain complexes,
 working by induction.
@@ -683,29 +677,23 @@ def mkCoinductive : Homotopy e 0 where
     else 0
   zero i j w := by dsimp ; rw [dif_neg] ; exact w
   comm i := by
-    sorry
-    --dsimp
-    --rw [add_zero, add_comm]
-    --convert(mk_coinductive_aux₂ e zero comm_zero one comm_one succ i).2.2 using 2
-    --· cases i
-    --  · dsimp [toPrev]
-    --    rw [dif_neg]
-    --    simp only [CochainComplex.prev_nat_zero, Nat.one_ne_zero, not_false_iff]
-    --  · dsimp [toPrev]
-    --    rw [dif_pos]
-    --    swap
-    --    · simp only [CochainComplex.prev_nat_succ]
-    --    have aux : (ComplexShape.up ℕ).prev i.succ = i := CochainComplex.prev_nat_succ i
-    --    rw [mk_coinductive_aux₃ e zero comm_zero one comm_one succ ((ComplexShape.up ℕ).prev i.succ)
-    --        (i + 1) (by rw [aux])]
-    --    dsimp [X_prev_iso]
-    --    erw [category.comp_id]
-    --· dsimp [fromNext]
-    --  rw [dif_pos]
-    --  swap
-    --  · simp only [CochainComplex.next]
-    --  dsimp [X_next_iso]
-    --  erw [category.id_comp]
+    dsimp
+    simp only [add_zero]
+    rw [add_comm]
+    refine' (mkCoinductiveAux₂ e zero comm_zero one comm_one succ i).2.2.trans _
+    congr
+    . cases i
+      . dsimp [toPrev, mkCoinductiveAux₂]
+        rw [dif_neg]
+        simp only
+      . dsimp [toPrev]
+        simp only [CochainComplex.prev_nat_succ, dite_true]
+        rw [mkCoinductiveAux₃ e zero comm_zero one comm_one succ]
+        dsimp [xPrevIso]
+        rw [Category.comp_id]
+    . dsimp [fromNext]
+      erw [dif_pos, Category.id_comp]
+      simp only [CochainComplex.next]
 #align homotopy.mk_coinductive Homotopy.mkCoinductive
 
 end
