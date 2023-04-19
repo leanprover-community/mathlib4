@@ -3,7 +3,7 @@ Copyright (c) 2021 Gabriel Ebner. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner, Scott Morrison
 -/
-import Std.Tactic.TryThis
+import Mathlib.Tactic.TryThis
 import Mathlib.Lean.Expr.Basic
 import Mathlib.Lean.Meta.DiscrTree
 import Mathlib.Tactic.Cache
@@ -196,3 +196,23 @@ elab tk:"library_search%" : term <= expectedType => do
     else
       addTermSuggestion tk (← instantiateMVars goal).headBeta
       instantiateMVars goal
+
+syntax (name := observe) "observe" (ident)? ":" term (" using " (colGt term),+)? : tactic
+
+open Elab.Tactic Elab Tactic in
+elab_rules : tactic | `(tactic| observe%$tk $[$n?:ident]? : $t:term $[using $[$required:term],*]?) => do
+  let name : Name := match n? with
+    | none   => `this
+    | some n => n.getId
+  let type ← elabTermWithHoles t none (← getMainTag) true <&> (·.1)
+  let .mvar goal ← mkFreshExprMVar type | failure
+  goal.withContext do
+    if let some _ ← librarySearch goal (← librarySearchLemmas.get) [] then
+      reportOutOfHeartbeats tk
+      throwError "observe did not find a solution"
+    else
+      let v := (← instantiateMVars (mkMVar goal)).headBeta
+      -- TODO we should be allowed to pass an identifier to `addHaveSuggestion`.
+      addHaveSuggestion tk type v
+      let (_, newGoal) ← (← getMainGoal).let name v
+      replaceMainGoal [newGoal]
