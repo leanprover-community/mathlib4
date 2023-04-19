@@ -8,8 +8,8 @@ Authors: Yury Kudryashov, Heather Macbeth
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Normed.Field.UnitBall
-import Mathbin.Analysis.NormedSpace.Basic
+import Mathlib.Analysis.Normed.Field.UnitBall
+import Mathlib.Analysis.NormedSpace.Basic
 
 /-!
 # Multiplicative actions of/on balls and spheres
@@ -29,8 +29,7 @@ variable {𝕜 𝕜' E : Type _} [NormedField 𝕜] [NormedField 𝕜'] [Seminor
 
 section ClosedBall
 
-instance mulActionClosedBallBall : MulAction (closedBall (0 : 𝕜) 1) (ball (0 : E) r)
-    where
+instance mulActionClosedBallBall : MulAction (closedBall (0 : 𝕜) 1) (ball (0 : E) r) where
   smul c x :=
     ⟨(c : 𝕜) • x,
       mem_ball_zero_iff.2 <| by
@@ -66,8 +65,7 @@ end ClosedBall
 
 section Sphere
 
-instance mulActionSphereBall : MulAction (sphere (0 : 𝕜) 1) (ball (0 : E) r)
-    where
+instance mulActionSphereBall : MulAction (sphere (0 : 𝕜) 1) (ball (0 : E) r) where
   smul c x := inclusion sphere_subset_closedBall c • x
   one_smul x := Subtype.ext <| one_smul _ _
   mul_smul c₁ c₂ x := Subtype.ext <| mul_smul _ _ _
@@ -77,8 +75,7 @@ instance continuousSMul_sphere_ball : ContinuousSMul (sphere (0 : 𝕜) 1) (ball
   ⟨(continuous_subtype_val.fst'.smul continuous_subtype_val.snd').subtype_mk _⟩
 #align has_continuous_smul_sphere_ball continuousSMul_sphere_ball
 
-instance mulActionSphereClosedBall : MulAction (sphere (0 : 𝕜) 1) (closedBall (0 : E) r)
-    where
+instance mulActionSphereClosedBall : MulAction (sphere (0 : 𝕜) 1) (closedBall (0 : E) r) where
   smul c x := inclusion sphere_subset_closedBall c • x
   one_smul x := Subtype.ext <| one_smul _ _
   mul_smul c₁ c₂ x := Subtype.ext <| mul_smul _ _ _
@@ -89,8 +86,7 @@ instance continuousSMul_sphere_closedBall :
   ⟨(continuous_subtype_val.fst'.smul continuous_subtype_val.snd').subtype_mk _⟩
 #align has_continuous_smul_sphere_closed_ball continuousSMul_sphere_closedBall
 
-instance mulActionSphereSphere : MulAction (sphere (0 : 𝕜) 1) (sphere (0 : E) r)
-    where
+instance mulActionSphereSphere : MulAction (sphere (0 : 𝕜) 1) (sphere (0 : E) r) where
   smul c x :=
     ⟨(c : 𝕜) • x,
       mem_sphere_zero_iff_norm.2 <| by
