@@ -3,16 +3,12 @@ Copyright (c) 2023 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.Data.ListM.Basic
-import Mathlib.Lean.CoreM
-import Mathlib.Lean.Expr.Basic
-import Mathlib.Lean.Meta
-import Mathlib.Lean.Meta.Basic
+import Mathlib.Data.ListM.Heartbeats
 import Mathlib.Lean.Meta.DiscrTree
 import Mathlib.Tactic.Cache
-import Mathlib.Tactic.Core
 import Mathlib.Tactic.SolveByElim
 import Mathlib.Tactic.TryThis
+import Mathlib.Control.Basic
 
 /-!
 # The `rewrites` tactic.
@@ -69,6 +65,7 @@ structure RewriteResult where
   weight : Nat
   result : Meta.RewriteResult
   /-- Can the new goal in `result` be closed by `with_reducible rfl`? -/
+  -- This is an `Option` so that it can be computed lazily.
   refl? : Option Bool
 
 /-- Update a `RewriteResult` by filling in the `refl?` field if it is currently `none`,
@@ -81,15 +78,6 @@ def RewriteResult.computeRefl (r : RewriteResult) : MetaM RewriteResult := do
     pure { r with refl? := some true }
   catch _ =>
     pure { r with refl? := some false }
-
-/-- Take an initial segment of a `MetaM` lazy list,
-using at most `percent` of the remaining allowed heartbeats. -/
-unsafe def _root_.ListM.whileAtLeastHeartbeatsPercent (L : ListM MetaM α) (percent : Nat) :
-    ListM MetaM α :=
-ListM.squash do
-  let initialHeartbeats ← getRemainingHeartbeats
-  pure <| L.takeWhileM fun _ => do
-    return .up <| (← getRemainingHeartbeats) * 100 / initialHeartbeats > percent
 
 /--
 Find lemmas which can rewrite the goal.
@@ -109,7 +97,8 @@ unsafe def rewritesCore (lemmas : DiscrTree (Name × Bool × Nat) s) (goal : MVa
   let candidates := ListM.ofList candidates.toList
   pure <| candidates.filterMapM fun ⟨lem, symm, weight⟩ => do
     trace[Tactic.rewrites] "considering {if symm then "←" else ""}{lem}"
-    let result ← goal.rewrite type (← mkConstWithFreshMVarLevels lem) symm
+    let some result ← try? <| goal.rewrite type (← mkConstWithFreshMVarLevels lem) symm
+      | return none
     return if result.mvarIds.isEmpty then
       some ⟨lem, symm, weight, result, none⟩
     else
@@ -118,7 +107,7 @@ unsafe def rewritesCore (lemmas : DiscrTree (Name × Bool × Nat) s) (goal : MVa
 
 /-- Find lemmas which can rewrite the goal. -/
 def rewrites (lemmas : DiscrTree (Name × Bool × Nat) s) (goal : MVarId)
-    (max : Nat := 10) (leavePercentHeartbeats : Nat := 25) : MetaM (List RewriteResult) :=
+    (max : Nat := 10) (leavePercentHeartbeats : Nat := 10) : MetaM (List RewriteResult) :=
 unsafe rewritesCore lemmas goal
   -- Don't use too many heartbeats.
   |>.whileAtLeastHeartbeatsPercent leavePercentHeartbeats
@@ -136,6 +125,7 @@ open Lean.Parser.Tactic
 `rewrites` should not be left in proofs; it is a search tool, like `library_search`.
 
 Suggestions are printed as `rw [h]` or `rw [←h]`.
+`rewrites!` is the "I'm feeling lucky" mode, and will run the first rewrite it finds.
 -/
 syntax (name := rewrites') "rewrites" "!"? : tactic
 
@@ -145,6 +135,7 @@ elab_rules : tactic |
   let goal ← getMainGoal
   goal.withContext do
     let results ← rewrites (← rewriteLemmas.get) goal
+    reportOutOfHeartbeats `rewrites tk
     if results.isEmpty then
       throwError "rewrites could not find any lemmas which can rewrite the goal"
     for r in results do
