@@ -8,8 +8,8 @@ Authors: Scott Morrison, Bhavik Mehta
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Adjunction.Reflective
-import Mathbin.CategoryTheory.Monad.Algebra
+import Mathlib.CategoryTheory.Adjunction.Reflective
+import Mathlib.CategoryTheory.Monad.Algebra
 
 /-!
 # Adjunctions and monads
@@ -64,8 +64,7 @@ def toMonad (h : L ⊣ R) : Monad C where
 the category `D`.
 -/
 @[simps]
-def toComonad (h : L ⊣ R) : Comonad D
-    where
+def toComonad (h : L ⊣ R) : Comonad D where
   toFunctor := R ⋙ L
   ε' := h.counit
   δ' := whiskerRight (whiskerLeft R h.Unit) L
@@ -112,8 +111,7 @@ We later show that this is full when `R` is full, faithful when `R` is faithful,
 and essentially surjective when `R` is reflective.
 -/
 @[simps]
-def Monad.comparison (h : L ⊣ R) : D ⥤ h.toMonad.Algebra
-    where
+def Monad.comparison (h : L ⊣ R) : D ⥤ h.toMonad.Algebra where
   obj X :=
     { a := R.obj X
       a := R.map (h.counit.app X)
@@ -131,8 +129,7 @@ def Monad.comparison (h : L ⊣ R) : D ⥤ h.toMonad.Algebra
 /-- The underlying object of `(monad.comparison R).obj X` is just `R.obj X`.
 -/
 @[simps]
-def Monad.comparisonForget (h : L ⊣ R) : Monad.comparison h ⋙ h.toMonad.forget ≅ R
-    where
+def Monad.comparisonForget (h : L ⊣ R) : Monad.comparison h ⋙ h.toMonad.forget ≅ R where
   Hom := { app := fun X => 𝟙 _ }
   inv := { app := fun X => 𝟙 _ }
 #align category_theory.monad.comparison_forget CategoryTheory.Monad.comparisonForget
@@ -160,8 +157,7 @@ sending objects `X : C` to Eilenberg-Moore coalgebras for `L ⋙ R` with underly
 `L.obj X`.
 -/
 @[simps]
-def Comonad.comparison (h : L ⊣ R) : C ⥤ h.toComonad.Coalgebra
-    where
+def Comonad.comparison (h : L ⊣ R) : C ⥤ h.toComonad.Coalgebra where
   obj X :=
     { a := L.obj X
       a := L.map (h.Unit.app X)
@@ -181,8 +177,7 @@ def Comonad.comparison (h : L ⊣ R) : C ⥤ h.toComonad.Coalgebra
 -/
 @[simps]
 def Comonad.comparisonForget {L : C ⥤ D} {R : D ⥤ C} (h : L ⊣ R) :
-    Comonad.comparison h ⋙ h.toComonad.forget ≅ L
-    where
+    Comonad.comparison h ⋙ h.toComonad.forget ≅ L where
   Hom := { app := fun X => 𝟙 _ }
   inv := { app := fun X => 𝟙 _ }
 #align category_theory.comonad.comparison_forget CategoryTheory.Comonad.comparisonForget
@@ -228,8 +223,7 @@ noncomputable instance (G : Comonad C) : ComonadicLeftAdjoint G.forget :=
   ⟨(Equivalence.ofFullyFaithfullyEssSurj _ : IsEquivalence (Comonad.comparison G.adj))⟩
 
 -- TODO: This holds more generally for idempotent adjunctions, not just reflective adjunctions.
-instance μ_iso_of_reflective [Reflective R] : IsIso (Adjunction.ofRightAdjoint R).toMonad.μ :=
-  by
+instance μ_iso_of_reflective [Reflective R] : IsIso (Adjunction.ofRightAdjoint R).toMonad.μ := by
   dsimp
   infer_instance
 #align category_theory.μ_iso_of_reflective CategoryTheory.μ_iso_of_reflective
@@ -252,8 +246,7 @@ instance [Reflective R] (X : (Adjunction.ofRightAdjoint R).toMonad.Algebra) :
         simp⟩⟩⟩
 
 instance comparison_essSurj [Reflective R] :
-    EssSurj (Monad.comparison (Adjunction.ofRightAdjoint R)) :=
-  by
+    EssSurj (Monad.comparison (Adjunction.ofRightAdjoint R)) := by
   refine' ⟨fun X => ⟨(left_adjoint R).obj X.a, ⟨_⟩⟩⟩
   symm
   refine' monad.algebra.iso_mk _ _
