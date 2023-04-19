@@ -9,7 +9,7 @@ Authors: Scott Morrison
 ! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.Pi
-import Mathlib.Algebra.Category.Module.Basic
+import Mathlib.Algebra.Category.ModuleCat.Basic
 
 /-!
 # The concrete products in the category of modules are products in the categorical sense.
@@ -26,7 +26,9 @@ namespace ModuleCat
 
 variable {R : Type u} [Ring R]
 
-variable {ι : Type v} (Z : ι → ModuleCat.{max v w} R)
+variable {ι : Type v} (Z : ι → ModuleCat.{v} R)
+
+set_option linter.uppercaseLean3 false
 
 /-- The product cone induced by the concrete product. -/
 def productCone : Fan Z :=
@@ -38,17 +40,18 @@ def productConeIsLimit : IsLimit (productCone Z) where
   lift s := (LinearMap.pi fun j => s.π.app ⟨j⟩ : s.pt →ₗ[R] ∀ i : ι, Z i)
   fac s j := by
     cases j
-    tidy
+    aesop
   uniq s m w := by
-    ext (x i)
+    ext x
+    funext i
     exact LinearMap.congr_fun (w ⟨i⟩) x
 #align Module.product_cone_is_limit ModuleCat.productConeIsLimit
 
--- While we could use this to construct a `has_products (Module R)` instance,
--- we already have `has_limits (Module R)` in `algebra.category.Module.limits`.
+-- While we could use this to construct a `HasProducts (ModuleCat R)` instance,
+-- we already have `HasLimits (ModuleCat R)` in `Algebra.Category.ModuleCat.Limits`.
 variable [HasProduct Z]
 
-/-- The categorical product of a family of objects in `Module`
+/-- The categorical product of a family of objects in `ModuleCat`
 agrees with the usual module-theoretical product.
 -/
 noncomputable def piIsoPi : ∏ Z ≅ ModuleCat.of R (∀ i, Z i) :=
@@ -69,4 +72,3 @@ theorem piIsoPi_hom_ker_subtype (i : ι) :
 #align Module.pi_iso_pi_hom_ker_subtype ModuleCat.piIsoPi_hom_ker_subtype
 
 end ModuleCat
-
