@@ -8,9 +8,9 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Homology.Homology
-import Mathbin.Algebra.Homology.Single
-import Mathbin.CategoryTheory.Preadditive.AdditiveFunctor
+import Mathlib.Algebra.Homology.Homology
+import Mathlib.Algebra.Homology.Single
+import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 
 /-!
 # Homology is an additive functor
@@ -143,8 +143,7 @@ This is sometimes called the "prolongation".
 -/
 @[simps]
 def Functor.mapHomologicalComplex (F : V ⥤ W) [F.Additive] (c : ComplexShape ι) :
-    HomologicalComplex V c ⥤ HomologicalComplex W c
-    where
+    HomologicalComplex V c ⥤ HomologicalComplex W c where
   obj C :=
     { pt := fun i => F.obj (C.pt i)
       d := fun i j => F.map (C.d i j)
@@ -219,8 +218,7 @@ between those functors applied to homological complexes.
 -/
 @[simps]
 def NatIso.mapHomologicalComplex {F G : V ⥤ W} [F.Additive] [G.Additive] (α : F ≅ G)
-    (c : ComplexShape ι) : F.mapHomologicalComplex c ≅ G.mapHomologicalComplex c
-    where
+    (c : ComplexShape ι) : F.mapHomologicalComplex c ≅ G.mapHomologicalComplex c where
   Hom := α.Hom.mapHomologicalComplex c
   inv := α.inv.mapHomologicalComplex c
   hom_inv_id' := by simpa only [← nat_trans.map_homological_complex_comp, α.hom_inv_id]
@@ -232,8 +230,7 @@ of homological complex.
 -/
 @[simps]
 def Equivalence.mapHomologicalComplex (e : V ≌ W) [e.Functor.Additive] (c : ComplexShape ι) :
-    HomologicalComplex V c ≌ HomologicalComplex W c
-    where
+    HomologicalComplex V c ≌ HomologicalComplex W c where
   Functor := e.Functor.mapHomologicalComplex c
   inverse := e.inverse.mapHomologicalComplex c
   unitIso :=
@@ -253,8 +250,7 @@ theorem map_chain_complex_of (F : V ⥤ W) [F.Additive] (X : α → V) (d : ∀ 
     (sq : ∀ n, d (n + 1) ≫ d n = 0) :
     (F.mapHomologicalComplex _).obj (ChainComplex.of X d sq) =
       ChainComplex.of (fun n => F.obj (X n)) (fun n => F.map (d n)) fun n => by
-        rw [← F.map_comp, sq n, functor.map_zero] :=
-  by
+        rw [← F.map_comp, sq n, functor.map_zero] := by
   refine' HomologicalComplex.ext rfl _
   rintro i j (rfl : j + 1 = i)
   simp only [CategoryTheory.Functor.mapHomologicalComplex_obj_d, of_d, eq_to_hom_refl, comp_id,
