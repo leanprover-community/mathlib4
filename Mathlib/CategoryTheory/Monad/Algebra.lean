@@ -8,9 +8,9 @@ Authors: Scott Morrison, Bhavik Mehta
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Monad.Basic
-import Mathbin.CategoryTheory.Adjunction.Basic
-import Mathbin.CategoryTheory.Functor.EpiMono
+import Mathlib.CategoryTheory.Monad.Basic
+import Mathlib.CategoryTheory.Adjunction.Basic
+import Mathlib.CategoryTheory.Functor.EpiMono
 
 /-!
 # Eilenberg-Moore (co)algebras for a (co)monad
@@ -142,8 +142,7 @@ def forget : Algebra T ⥤ C where
 
 /-- The free functor from the Eilenberg-Moore category, constructing an algebra for any object. -/
 @[simps]
-def free : C ⥤ Algebra T
-    where
+def free : C ⥤ Algebra T where
   obj X :=
     { a := T.obj X
       a := T.μ.app X
@@ -175,8 +174,7 @@ def adj : T.free ⊣ T.forget :=
             ext
             dsimp
             simp
-          right_inv := fun f =>
-            by
+          right_inv := fun f => by
             dsimp only [forget_obj, monad_to_functor_eq_coe]
             rw [← T.η.naturality_assoc, Y.unit]
             apply category.comp_id } }
@@ -229,8 +227,7 @@ Given a monad morphism from `T₂` to `T₁`, we get a functor from the algebras
 `T₂`.
 -/
 @[simps]
-def algebraFunctorOfMonadHom {T₁ T₂ : Monad C} (h : T₂ ⟶ T₁) : Algebra T₁ ⥤ Algebra T₂
-    where
+def algebraFunctorOfMonadHom {T₁ T₂ : Monad C} (h : T₂ ⟶ T₁) : Algebra T₁ ⥤ Algebra T₂ where
   obj A :=
     { a := A.a
       a := h.app A.a ≫ A.a
@@ -301,8 +298,7 @@ def algebraFunctorOfMonadHomEq {T₁ T₂ : Monad C} {f g : T₁ ⟶ T₂} (h : 
 categories over `C`, that is, we have `algebra_equiv_of_iso_monads h ⋙ forget = forget`.
 -/
 @[simps]
-def algebraEquivOfIsoMonads {T₁ T₂ : Monad C} (h : T₁ ≅ T₂) : Algebra T₁ ≌ Algebra T₂
-    where
+def algebraEquivOfIsoMonads {T₁ T₂ : Monad C} (h : T₁ ≅ T₂) : Algebra T₁ ≌ Algebra T₂ where
   Functor := algebraFunctorOfMonadHom h.inv
   inverse := algebraFunctorOfMonadHom h.Hom
   unitIso :=
@@ -426,8 +422,7 @@ def forget : Coalgebra G ⥤ C where
 /-- The cofree functor from the Eilenberg-Moore category, constructing a coalgebra for any
 object. -/
 @[simps]
-def cofree : C ⥤ Coalgebra G
-    where
+def cofree : C ⥤ Coalgebra G where
   obj X :=
     { a := G.obj X
       a := G.δ.app X
