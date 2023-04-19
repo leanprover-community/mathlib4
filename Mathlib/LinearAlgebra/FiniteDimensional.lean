@@ -1194,11 +1194,12 @@ end Span
 
 section Basis
 
+set_option pp.explicit true in
 theorem span_eq_top_of_linearIndependent_of_card_eq_finrank {ι : Type _} [hι : Nonempty ι]
     [Fintype ι] {b : ι → V} (lin_ind : LinearIndependent K b)
     (card_eq : Fintype.card ι = finrank K V) : span K (Set.range b) = ⊤ := by
   by_cases fin : FiniteDimensional K V
-  · have fin : FiniteDimensional _ _ := fin -- porting note: fails without this line
+  · replace fin : FiniteDimensional _ _ := fin -- porting note: fails without this line
     by_contra ne_top
     have lt_top : span K (Set.range b) < ⊤ := lt_of_le_of_ne le_top ne_top
     exact ne_of_lt (Submodule.finrank_lt lt_top)
