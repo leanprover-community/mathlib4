@@ -712,10 +712,10 @@ See `toEnvelGroup.map`.
 -/
 def toEnvelGroup.mapAux {R : Type _} [Rack R] {G : Type _} [Group G] (f : R →◃ Quandle.Conj G) :
     PreEnvelGroup R → G
-  | unit => 1
-  | incl x => f x
-  | mul a b => toEnvelGroup.mapAux f a * toEnvelGroup.mapAux f b
-  | inv a => (toEnvelGroup.mapAux f a)⁻¹
+  | .unit => 1
+  | .incl x => f x
+  | .mul a b => toEnvelGroup.mapAux f a * toEnvelGroup.mapAux f b
+  | .inv a => (toEnvelGroup.mapAux f a)⁻¹
 #align rack.to_envel_group.map_aux Rack.toEnvelGroup.mapAux
 
 namespace toEnvelGroup.mapAux

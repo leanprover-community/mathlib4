@@ -265,8 +265,8 @@ variable {N : Type _} [Group N] [TopologicalSpace N]
 
 /-- The preimage of an `OpenSubgroup` along a continuous `Monoid` homomorphism
   is an `OpenSubgroup`. -/
-@[to_additive "The preimage of an `open_add_subgroup` along a continuous `add_monoid` homomorphism
-is an `open_add_subgroup`."]
+@[to_additive "The preimage of an `OpenAddSubgroup` along a continuous `AddMonoid` homomorphism
+is an `OpenAddSubgroup`."]
 def comap (f : G →* N) (hf : Continuous f) (H : OpenSubgroup N) : OpenSubgroup G :=
   ⟨.comap f H, H.isOpen.preimage hf⟩
 #align open_subgroup.comap OpenSubgroup.comap
@@ -391,4 +391,3 @@ theorem isOpen_of_open_subideal {U I : Ideal R} (h : U ≤ I) (hU : IsOpen (U : 
 #align ideal.is_open_of_open_subideal Ideal.isOpen_of_open_subideal
 
 end Ideal
-

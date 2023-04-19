@@ -404,15 +404,10 @@ theorem piUnionᵢInter_singleton_left (s : ι → Set α) (S : Set ι) :
   simp_rw [piUnionᵢInter, Set.mem_singleton_iff, exists_prop, Set.mem_setOf_eq]
   refine' ⟨fun h => _, fun ⟨t, htS, h_eq⟩ => ⟨t, htS, s, fun _ _ => rfl, h_eq⟩⟩
   obtain ⟨t, htS, f, hft_eq, rfl⟩ := h
-  -- Porting note: Here was `congr'`.
-  refine' ⟨t, htS, Set.interᵢ_congr fun i => Set.ext fun x => _⟩
-  simp_rw [Set.mem_interᵢ]
-  exact
-    ⟨fun h hit => by
-      rw [← hft_eq i hit]
-      exact h hit, fun h hit => by
-      rw [hft_eq i hit]
-      exact h hit⟩
+  refine' ⟨t, htS, _⟩
+  congr! 3
+  apply hft_eq
+  assumption
 #align pi_Union_Inter_singleton_left piUnionᵢInter_singleton_left
 
 theorem generateFrom_piUnionᵢInter_singleton_left (s : ι → Set α) (S : Set ι) :

@@ -519,8 +519,6 @@ def decidableDvdMonic (p : R[X]) (hq : Monic q) : Decidable (q ∣ p) :=
   decidable_of_iff (p %ₘ q = 0) (dvd_iff_modByMonic_eq_zero hq)
 #align polynomial.decidable_dvd_monic Polynomial.decidableDvdMonic
 
-open Classical
-
 theorem multiplicity_X_sub_C_finite (a : R) (h0 : p ≠ 0) : multiplicity.Finite (X - C a) p := by
   haveI := Nontrivial.of_polynomial_ne h0
   refine' multiplicity_finite_of_degree_pos_of_monic _ (monic_X_sub_C _) h0
@@ -529,6 +527,8 @@ theorem multiplicity_X_sub_C_finite (a : R) (h0 : p ≠ 0) : multiplicity.Finite
 set_option linter.uppercaseLean3 false in
 #align polynomial.multiplicity_X_sub_C_finite Polynomial.multiplicity_X_sub_C_finite
 
+/- Porting note: stripping out classical for decidability instance parameter might 
+make for better ergnomics -/
 /-- The largest power of `X - C a` which divides `p`.
 This is computable via the divisibility algorithm `Polynomial.decidableDvdMonic`. -/
 def rootMultiplicity (a : R) (p : R[X]) : ℕ :=
@@ -538,6 +538,16 @@ def rootMultiplicity (a : R) (p : R[X]) : ℕ :=
       @Not.decidable _ (decidableDvdMonic p ((monic_X_sub_C a).pow (n + 1)))
     Nat.find (multiplicity_X_sub_C_finite a h0)
 #align polynomial.root_multiplicity Polynomial.rootMultiplicity
+
+/- Porting note: added the following due to diamand with decidableProp and 
+decidableDvdMonic see also [Zulip]
+(https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/
+non-defeq.20aliased.20instance) -/
+theorem rootMultiplicity_eq_nat_find_of_nonzero {p : R[X]} (p0 : p ≠ 0) {a : R} :
+    rootMultiplicity a p = Nat.find (multiplicity_X_sub_C_finite a p0) := by
+  dsimp [rootMultiplicity]
+  rw [dif_neg p0]
+  convert rfl 
 
 theorem rootMultiplicity_eq_multiplicity (p : R[X]) (a : R) :
     rootMultiplicity a p =

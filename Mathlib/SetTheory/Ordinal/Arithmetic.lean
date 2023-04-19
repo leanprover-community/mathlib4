@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Floris van Doorn, Violeta Hernández Palacios
 
 ! This file was ported from Lean 3 source module set_theory.ordinal.arithmetic
-! leanprover-community/mathlib commit 8da9e30545433fdd8fe55a0d3da208e5d9263f03
+! leanprover-community/mathlib commit e08a42b2dd544cf11eba72e5fc7bf199d4349925
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -606,6 +606,7 @@ theorem sub_sub (a b c : Ordinal) : a - b - c = a - (b + c) :=
   eq_of_forall_ge_iff fun d => by rw [sub_le, sub_le, sub_le, add_assoc]
 #align ordinal.sub_sub Ordinal.sub_sub
 
+@[simp]
 theorem add_sub_add_cancel (a b c : Ordinal) : a + b - (a + c) = b - c := by
   rw [← sub_sub, add_sub_cancel]
 #align ordinal.add_sub_add_cancel Ordinal.add_sub_add_cancel
@@ -1031,6 +1032,10 @@ theorem mod_def (a b : Ordinal) : a % b = a - b * (a / b) :=
   rfl
 #align ordinal.mod_def Ordinal.mod_def
 
+theorem mod_le (a b : Ordinal) : a % b ≤ a :=
+  sub_le_self a _
+#align ordinal.mod_le Ordinal.mod_le
+
 @[simp]
 theorem mod_zero (a : Ordinal) : a % 0 = a := by simp only [mod_def, div_zero, zero_mul, sub_zero]
 #align ordinal.mod_zero Ordinal.mod_zero
@@ -1075,6 +1080,30 @@ theorem mod_eq_zero_of_dvd {a b : Ordinal} (H : b ∣ a) : a % b = 0 := by
 theorem dvd_iff_mod_eq_zero {a b : Ordinal} : b ∣ a ↔ a % b = 0 :=
   ⟨mod_eq_zero_of_dvd, dvd_of_mod_eq_zero⟩
 #align ordinal.dvd_iff_mod_eq_zero Ordinal.dvd_iff_mod_eq_zero
+
+@[simp]
+theorem mul_add_mod_self (x y z : Ordinal) : (x * y + z) % x = z % x :=  by
+  rcases eq_or_ne x 0 with rfl | hx
+  · simp
+  · rwa [mod_def, mul_add_div, mul_add, ← sub_sub, add_sub_cancel, mod_def]
+#align ordinal.mul_add_mod_self Ordinal.mul_add_mod_self
+
+@[simp]
+theorem mul_mod (x y : Ordinal) : x * y % x = 0 := by
+  simpa using mul_add_mod_self x y 0
+#align ordinal.mul_mod Ordinal.mul_mod
+
+theorem mod_mod_of_dvd (a : Ordinal) {b c : Ordinal} (h : c ∣ b) : a % b % c = a % c := by
+  nth_rw 2 [← div_add_mod a b]
+  rcases h with ⟨d, rfl⟩
+  rw [mul_assoc, mul_add_mod_self]
+
+#align ordinal.mod_mod_of_dvd Ordinal.mod_mod_of_dvd
+
+@[simp]
+theorem mod_mod (a b : Ordinal) : a % b % b = a % b :=
+  mod_mod_of_dvd a dvd_rfl
+#align ordinal.mod_mod Ordinal.mod_mod
 
 /-! ### Families of ordinals
 
@@ -1457,8 +1486,8 @@ theorem bsup_eq_sup {ι : Type u} (f : ι → Ordinal.{max u v}) :
 theorem bsup_congr {o₁ o₂ : Ordinal.{u}} (f : ∀ a < o₁, Ordinal.{max u v}) (ho : o₁ = o₂) :
     bsup.{_, v} o₁ f = bsup.{_, v} o₂ fun a h => f a (h.trans_eq ho.symm) := by
   subst ho
-  -- Porting note: `congr` is required.
-  congr
+  -- Porting note: `rfl` is required.
+  rfl
 #align ordinal.bsup_congr Ordinal.bsup_congr
 
 theorem bsup_le_iff {o f a} : bsup.{u, v} o f ≤ a ↔ ∀ i h, f i h ≤ a :=
@@ -1774,8 +1803,8 @@ theorem blsub_eq_lsub {ι : Type u} (f : ι → Ordinal.{max u v}) :
 theorem blsub_congr {o₁ o₂ : Ordinal.{u}} (f : ∀ a < o₁, Ordinal.{max u v}) (ho : o₁ = o₂) :
     blsub.{_, v} o₁ f = blsub.{_, v} o₂ fun a h => f a (h.trans_eq ho.symm) := by
   subst ho
-  -- Porting note: `congr` is required.
-  congr
+  -- Porting note: `rfl` is required.
+  rfl
 #align ordinal.blsub_congr Ordinal.blsub_congr
 
 theorem blsub_le_iff {o : Ordinal.{u}} {f : ∀ a < o, Ordinal.{max u v}} {a} :
@@ -2032,9 +2061,8 @@ theorem mex_lt_ord_succ_mk {ι : Type u} (f : ι → Ordinal.{u}) :
       fun a => Classical.choose_spec (H a)
     apply_fun f  at h'
     rwa [Hf, Hf, typein_inj] at h'
-  -- Porting note: `convert` & `rw` → `have` & `rwa`
-  have hg' := Cardinal.mk_le_of_injective hg
-  rwa [Cardinal.mk_ord_out (succ (#ι))] at hg'
+  convert Cardinal.mk_le_of_injective hg
+  rw [Cardinal.mk_ord_out (succ (#ι))]
 #align ordinal.mex_lt_ord_succ_mk Ordinal.mex_lt_ord_succ_mk
 
 /-- The minimum excluded ordinal of a family of ordinals indexed by the set of ordinals less than
@@ -2358,7 +2386,7 @@ theorem ord_aleph0 : ord.{u} ℵ₀ = ω :=
     le_of_forall_lt fun o h =>
       by
       rcases Ordinal.lt_lift_iff.1 h with ⟨o, rfl, h'⟩
-      rw [lt_ord, ← lift_card, ← lift_aleph0.{0, u}, lift_lt, ← typein_enum (· < ·) h']
+      rw [lt_ord, ← lift_card, lift_lt_aleph0, ← typein_enum (· < ·) h']
       exact lt_aleph0_iff_fintype.2 ⟨Set.fintypeLTNat _⟩
 #align cardinal.ord_aleph_0 Cardinal.ord_aleph0
 

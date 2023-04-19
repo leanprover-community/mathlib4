@@ -33,7 +33,7 @@ Given a commutative semiring `R`, and a type `X`, we construct the free unital, 
 3. `hom_ext` is a variant of `lift_unique` in the form of an extensionality theorem.
 4. `lift_comp_ι` is a combination of `ι_comp_lift` and `lift_unique`. It states that the lift
   of the composition of an algebra morphism with `ι` is the algebra morphism itself.
-5. `equiv_monoid_algebra_free_monoid : FreeAlgebra R X ≃ₐ[R] MonoidAlgebra R (FreeMonoid X)`
+5. `equivMonoidAlgebraFreeMonoid : FreeAlgebra R X ≃ₐ[R] MonoidAlgebra R (FreeMonoid X)`
 6. An inductive principle `induction`.
 
 ## Implementation details
@@ -110,9 +110,13 @@ attribute [local instance] Pre.hasCoeGenerator Pre.hasCoeSemiring Pre.hasMul Pre
 /-- Given a function from `X` to an `R`-algebra `A`, `lift_fun` provides a lift of `f` to a function
 from `Pre R X` to `A`. This is mainly used in the construction of `FreeAlgebra.lift`.
 -/
--- Porting note: added noncomputable for recOn to work
-noncomputable def liftFun {A : Type _} [Semiring A] [Algebra R A] (f : X → A) :
-  Pre R X → A := fun t ↦ Pre.recOn t f (algebraMap _ _) (fun _ _ ↦ (· + ·)) (fun _ _ ↦ (· * ·))
+-- Porting note: recOn was replaced to preserve computability, see lean4#2049
+def liftFun {A : Type _} [Semiring A] [Algebra R A] (f : X → A) :
+    Pre R X → A
+  | .of t => f t
+  | .add a b => liftFun f a + liftFun f b
+  | .mul a b => liftFun f a * liftFun f b
+  | .of_scalar c => algebraMap _ _ c
 #align free_algebra.lift_fun FreeAlgebra.liftFun
 
 /-- An inductively defined relation on `Pre R X` used to force the initial algebra structure on
@@ -158,8 +162,7 @@ namespace FreeAlgebra
 attribute [local instance] Pre.hasCoeGenerator Pre.hasCoeSemiring Pre.hasMul Pre.hasAdd
   Pre.hasZero Pre.hasOne Pre.hasSmul
 
-instance : Semiring (FreeAlgebra R X)
-    where
+instance : Semiring (FreeAlgebra R X) where
   add := Quot.map₂ (· + ·) (fun _ _ _ ↦ Rel.add_compat_right) fun _ _ _ ↦ Rel.add_compat_left
   add_assoc := by
     rintro ⟨⟩ ⟨⟩ ⟨⟩
@@ -202,11 +205,10 @@ instance : Semiring (FreeAlgebra R X)
 instance : Inhabited (FreeAlgebra R X) :=
   ⟨0⟩
 
-instance : SMul R (FreeAlgebra R X)
-    where smul r := Quot.map ((· * ·) ↑r) fun _ _ ↦ Rel.mul_compat_right
+instance : SMul R (FreeAlgebra R X) where
+  smul r := Quot.map ((· * ·) ↑r) fun _ _ ↦ Rel.mul_compat_right
 
-instance : Algebra R (FreeAlgebra R X)
-    where
+instance : Algebra R (FreeAlgebra R X) where
   toFun r := Quot.mk _ r
   map_one' := rfl
   map_mul' _ _ := Quot.sound Rel.mul_scalar
@@ -234,9 +236,7 @@ theorem quot_mk_eq_ι (m : X) : Quot.mk (FreeAlgebra.Rel R X) m = ι R m := by r
 variable {A : Type _} [Semiring A] [Algebra R A]
 
 /-- Internal definition used to define `lift` -/
--- Porting note: add noncomputable since liftFun is also noncomputable
-private noncomputable def liftAux (f : X → A) : FreeAlgebra R X →ₐ[R] A
-    where
+private def liftAux (f : X → A) : FreeAlgebra R X →ₐ[R] A where
   toFun a :=
     Quot.liftOn a (liftFun _ _ f) fun a b h ↦
       by
@@ -291,9 +291,8 @@ private noncomputable def liftAux (f : X → A) : FreeAlgebra R X →ₐ[R] A
 /-- Given a function `f : X → A` where `A` is an `R`-algebra, `lift R f` is the unique lift
 of `f` to a morphism of `R`-algebras `FreeAlgebra R X → A`.
 -/
--- Porting note: add noncomputable since liftFun is also noncomputable and changed
--- irreducible_def to def since it does not work with noncomputable
-noncomputable def lift : (X → A) ≃ (FreeAlgebra R X →ₐ[R] A) :=
+@[irreducible]
+def lift : (X → A) ≃ (FreeAlgebra R X →ₐ[R] A) :=
   { toFun := liftAux R
     invFun := fun F ↦ F ∘ ι R
     left_inv := fun f ↦ by
@@ -312,7 +311,7 @@ noncomputable def lift : (X → A) ≃ (FreeAlgebra R X →ₐ[R] A) :=
         rw [AlgHom.commutes F _]
       case add a b ha hb =>
         -- Porting note: it is necessary to declare fa and fb explicitely otherwise Lean refuses
-        -- to consider Quot.mk (Rel R X) * as element of FreeAlgebra R X
+        -- to consider `Quot.mk (Rel R X) ·` as element of FreeAlgebra R X
         let fa : FreeAlgebra R X := Quot.mk (Rel R X) a
         let fb : FreeAlgebra R X := Quot.mk (Rel R X) b
         change liftAux R (F ∘ ι R) (fa + fb) = F (fa + fb)
@@ -410,8 +409,7 @@ instance [Nontrivial R] : Nontrivial (FreeAlgebra R X) :=
 section
 
 /-- The left-inverse of `algebraMap`. -/
--- Porting note: add noncomputable since liftFun is also noncomputable
-noncomputable def algebraMapInv : FreeAlgebra R X →ₐ[R] R :=
+def algebraMapInv : FreeAlgebra R X →ₐ[R] R :=
   lift R (0 : X → R)
 #align free_algebra.algebra_map_inv FreeAlgebra.algebraMapInv
 
