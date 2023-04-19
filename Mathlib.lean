@@ -295,6 +295,7 @@ import Mathlib.Algebra.Tropical.Basic
 import Mathlib.Algebra.Tropical.BigOperators
 import Mathlib.Algebra.Tropical.Lattice
 import Mathlib.AlgebraicTopology.AlternatingFaceMapComplex
+import Mathlib.AlgebraicTopology.CechNerve
 import Mathlib.AlgebraicTopology.DoldKan.Compatibility
 import Mathlib.AlgebraicTopology.DoldKan.Faces
 import Mathlib.AlgebraicTopology.DoldKan.Homotopies
@@ -526,6 +527,7 @@ import Mathlib.CategoryTheory.Linear.LinearFunctor
 import Mathlib.CategoryTheory.Localization.Construction
 import Mathlib.CategoryTheory.Localization.Opposite
 import Mathlib.CategoryTheory.Localization.Predicate
+import Mathlib.CategoryTheory.Monad.Algebra
 import Mathlib.CategoryTheory.Monad.Basic
 import Mathlib.CategoryTheory.Monad.Kleisli
 import Mathlib.CategoryTheory.Monad.Types
@@ -563,6 +565,7 @@ import Mathlib.CategoryTheory.Shift.Basic
 import Mathlib.CategoryTheory.Sigma.Basic
 import Mathlib.CategoryTheory.SingleObj
 import Mathlib.CategoryTheory.Sites.Grothendieck
+import Mathlib.CategoryTheory.Sites.Limits
 import Mathlib.CategoryTheory.Sites.Plus
 import Mathlib.CategoryTheory.Sites.Pretopology
 import Mathlib.CategoryTheory.Sites.Sheaf

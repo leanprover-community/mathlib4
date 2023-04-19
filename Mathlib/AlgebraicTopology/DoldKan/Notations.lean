@@ -21,8 +21,6 @@ as `N[X]` for the normalized subcomplex in the case `C` is an abelian category.
 -/
 
 
--- mathport name: alternating_face_map_complex
 scoped[DoldKan] notation "K[" X "]" => AlgebraicTopology.AlternatingFaceMapComplex.obj X
 
--- mathport name: normalized_Moore_complex
 scoped[DoldKan] notation "N[" X "]" => AlgebraicTopology.NormalizedMooreComplex.obj X
