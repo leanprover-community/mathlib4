@@ -14,8 +14,8 @@ import Mathlib.AlgebraicTopology.AlternatingFaceMapComplex
 
 # Notations for the Dold-Kan equivalence
 
-This file defines the notation `K[X] : chain_complex C ℕ` for the alternating face
-map complex of `(X : simplicial_object C)` where `C` is a preadditive category, as well
+This file defines the notation `K[X] : ChainComplex C ℕ` for the alternating face
+map complex of `(X : SimplicialObject C)` where `C` is a preadditive category, as well
 as `N[X]` for the normalized subcomplex in the case `C` is an abelian category.
 
 -/
@@ -26,4 +26,3 @@ scoped[DoldKan] notation "K[" X "]" => AlgebraicTopology.AlternatingFaceMapCompl
 
 -- mathport name: normalized_Moore_complex
 scoped[DoldKan] notation "N[" X "]" => AlgebraicTopology.NormalizedMooreComplex.obj X
-
