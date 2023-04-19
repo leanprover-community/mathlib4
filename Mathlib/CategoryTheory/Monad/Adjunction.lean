@@ -16,16 +16,16 @@ import Mathlib.CategoryTheory.Monad.Algebra
 
 We develop the basic relationship between adjunctions and monads.
 
-Given an adjunction `h : L ⊣ R`, we have `h.to_monad : monad C` and `h.to_comonad : comonad D`.
+Given an adjunction `h : L ⊣ R`, we have `h.toMonad : Monad C` and `h.toComonad : Comonad D`.
 We then have
-`monad.comparison (h : L ⊣ R) : D ⥤ h.to_monad.algebra`
+`Monad.comparison (h : L ⊣ R) : D ⥤ h.toMonad.algebra`
 sending `Y : D` to the Eilenberg-Moore algebra for `L ⋙ R` with underlying object `R.obj X`,
-and dually `comonad.comparison`.
+and dually `Comonad.comparison`.
 
-We say `R : D ⥤ C` is `monadic_right_adjoint`, if it is a right adjoint and its `monad.comparison`
-is an equivalence of categories. (Similarly for `monadic_left_adjoint`.)
+We say `R : D ⥤ C` is `MonadicRightAdjoint`, if it is a right adjoint and its `Monad.comparison`
+is an equivalence of categories. (Similarly for `ComonadicLeftAdjoint`.)
 
-Finally we prove that reflective functors are `monadic_right_adjoint`.
+Finally we prove that reflective functors are `MonadicRightAdjoint`.
 -/
 
 
@@ -106,7 +106,7 @@ def adjToComonadIso (G : Comonad C) : G.adj.toComonad ≅ G :=
 
 end Adjunction
 
-/-- Gven any adjunction `L ⊣ R`, there is a comparison functor `category_theory.monad.comparison R`
+/-- Gven any adjunction `L ⊣ R`, there is a comparison functor `CategoryTheory.Monad.comparison R`
 sending objects `Y : D` to Eilenberg-Moore algebras for `L ⋙ R` with underlying object `R.obj X`.
 
 We later show that this is full when `R` is full, faithful when `R` is faithful,
@@ -127,7 +127,7 @@ def Monad.comparison (h : L ⊣ R) : D ⥤ h.toMonad.Algebra where
         rw [← R.map_comp, Adjunction.counit_naturality, R.map_comp] }
 #align category_theory.monad.comparison CategoryTheory.Monad.comparison
 
-/-- The underlying object of `(monad.comparison R).obj X` is just `R.obj X`.
+/-- The underlying object of `(Monad.comparison R).obj X` is just `R.obj X`.
 -/
 @[simps]
 def Monad.comparisonForget (h : L ⊣ R) : Monad.comparison h ⋙ h.toMonad.forget ≅ R where
@@ -153,7 +153,7 @@ instance (T : Monad C) : EssSurj (Monad.comparison T.adj)
         assoc := by simpa using X.assoc }, ⟨Monad.Algebra.isoMk (Iso.refl _) (by simp)⟩⟩
 
 /--
-Gven any adjunction `L ⊣ R`, there is a comparison functor `category_theory.comonad.comparison L`
+Gven any adjunction `L ⊣ R`, there is a comparison functor `CategoryTheory.Comonad.comparison L`
 sending objects `X : C` to Eilenberg-Moore coalgebras for `L ⋙ R` with underlying object
 `L.obj X`.
 -/
@@ -173,7 +173,7 @@ def Comonad.comparison (h : L ⊣ R) : C ⥤ h.toComonad.Coalgebra where
         simp }
 #align category_theory.comonad.comparison CategoryTheory.Comonad.comparison
 
-/-- The underlying object of `(comonad.comparison L).obj X` is just `L.obj X`.
+/-- The underlying object of `(Comonad.comparison L).obj X` is just `L.obj X`.
 -/
 @[simps]
 def Comonad.comparisonForget {L : C ⥤ D} {R : D ⥤ C} (h : L ⊣ R) :
@@ -201,7 +201,7 @@ instance (G : Comonad C) : EssSurj (Comonad.comparison G.adj)
         counit := by simpa using X.counit
         coassoc := by simpa using X.coassoc }, ⟨Comonad.Coalgebra.isoMk (Iso.refl _) (by simp)⟩⟩
 
-/-- A right adjoint functor `R : D ⥤ C` is *monadic* if the comparison functor `monad.comparison R`
+/-- A right adjoint functor `R : D ⥤ C` is *monadic* if the comparison functor `Monad.comparison R`
 from `D` to the category of Eilenberg-Moore algebras for the adjunction is an equivalence.
 -/
 class MonadicRightAdjoint (R : D ⥤ C) extends IsRightAdjoint R where
@@ -209,7 +209,7 @@ class MonadicRightAdjoint (R : D ⥤ C) extends IsRightAdjoint R where
 #align category_theory.monadic_right_adjoint CategoryTheory.MonadicRightAdjoint
 
 /--
-A left adjoint functor `L : C ⥤ D` is *comonadic* if the comparison functor `comonad.comparison L`
+A left adjoint functor `L : C ⥤ D` is *comonadic* if the comparison functor `Comonad.comparison L`
 from `C` to the category of Eilenberg-Moore algebras for the adjunction is an equivalence.
 -/
 class ComonadicLeftAdjoint (L : C ⥤ D) extends IsLeftAdjoint L where
