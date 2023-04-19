@@ -131,6 +131,7 @@ import Mathlib.Algebra.Hom.Iterate
 import Mathlib.Algebra.Hom.NonUnitalAlg
 import Mathlib.Algebra.Hom.Ring
 import Mathlib.Algebra.Hom.Units
+import Mathlib.Algebra.Homology.Additive
 import Mathlib.Algebra.Homology.ComplexShape
 import Mathlib.Algebra.Homology.Exact
 import Mathlib.Algebra.Homology.Flip
