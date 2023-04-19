@@ -12,6 +12,7 @@ import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.FieldTheory.Finiteness
 import Mathlib.LinearAlgebra.FreeModule.Finite.Rank
 import Mathlib.Tactic.IntervalCases
+import Mathlib.Tactic.ApplyCongr
 
 /-!
 # Finite dimensional vector spaces
