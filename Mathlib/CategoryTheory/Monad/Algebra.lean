@@ -72,9 +72,9 @@ structure Hom (A B : Algebra T) where
   h : (T : C ⥤ C).map f ≫ B.a = A.a ≫ f := by aesop_cat
 #align category_theory.monad.algebra.hom CategoryTheory.Monad.Algebra.Hom
 
+-- Porting note: no need to restate axioms in lean4.
 --restate_axiom hom.h
 
--- Porting note: no need to restate axioms in lean4.
 attribute [reassoc (attr := simp)] Hom.h
 
 namespace Hom
@@ -292,7 +292,7 @@ def algebraFunctorOfMonadHomComp {T₁ T₂ T₃ : Monad C} (f : T₁ ⟶ T₂) 
 
 /-- If `f` and `g` are two equal morphisms of monads, then the functors of algebras induced by them
 are isomorphic.
-We define it like this as opposed to using `eq_to_iso` so that the components are nicer to prove
+We define it like this as opposed to using `eqToIso` so that the components are nicer to prove
 lemmas about.
 -/
 @[simps (config := { rhsMd := .default })]
@@ -311,7 +311,7 @@ def algebraFunctorOfMonadHomEq {T₁ T₂ : Monad C} {f g : T₁ ⟶ T₂} (h : 
 #align category_theory.monad.algebra_functor_of_monad_hom_eq CategoryTheory.Monad.algebraFunctorOfMonadHomEq
 
 /-- Isomorphic monads give equivalent categories of algebras. Furthermore, they are equivalent as
-categories over `C`, that is, we have `algebra_equiv_of_iso_monads h ⋙ forget = forget`.
+categories over `C`, that is, we have `algebraEquivOfIsoMonads h ⋙ forget = forget`.
 -/
 @[simps]
 def algebraEquivOfIsoMonads {T₁ T₂ : Monad C} (h : T₁ ≅ T₂) : Algebra T₁ ≌ Algebra T₂ where
@@ -500,6 +500,7 @@ theorem coalgebra_iso_of_iso {A B : Coalgebra G} (f : A ⟶ B) [IsIso f.f] : IsI
 #align category_theory.comonad.coalgebra_iso_of_iso CategoryTheory.Comonad.coalgebra_iso_of_iso
 
 instance forget_reflects_iso : ReflectsIsomorphisms G.forget
+    -- Porting note: Is this the right approach to introduce instances?
     where reflects {_ _} f := fun [IsIso f.f] => coalgebra_iso_of_iso G f
 #align category_theory.comonad.forget_reflects_iso CategoryTheory.Comonad.forget_reflects_iso
 
