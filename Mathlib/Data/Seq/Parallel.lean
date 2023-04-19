@@ -15,72 +15,69 @@ honor sequence equivalence (irrelevance of computation time).)
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Data.Seq.Wseq
+import Mathlib.Data.Seq.WSeq
 
 universe u v
 
 namespace Computation
+open Stream'
 
-/- ./././Mathport/Syntax/Translate/Command.lean:224:11: unsupported: unusual advanced open style -/
-/- ./././Mathport/Syntax/Translate/Command.lean:224:11: unsupported: unusual advanced open style -/
 variable {α : Type u} {β : Type v}
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-def Parallel.aux2 : List (Computation α) → Sum α (List (Computation α)) :=
+def parallel.aux2 : List (Computation α) → Sum α (List (Computation α)) :=
   List.foldr
     (fun c o =>
       match o with
       | Sum.inl a => Sum.inl a
-      | Sum.inr ls => rmap (fun c' => c'::ls) (destruct c))
+      | Sum.inr ls => rmap (fun c' => c' :: ls) (destruct c))
     (Sum.inr [])
-#align computation.parallel.aux2 Computation.Parallel.aux2
+#align computation.parallel.aux2 Computation.parallel.aux2
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-def Parallel.aux1 :
-    List (Computation α) × Wseq (Computation α) →
-      Sum α (List (Computation α) × Wseq (Computation α))
+def parallel.aux1 :
+    List (Computation α) × WSeq (Computation α) →
+      Sum α (List (Computation α) × WSeq (Computation α))
   | (l, S) =>
     rmap
       (fun l' =>
         match Seq.destruct S with
         | none => (l', Seq.nil)
         | some (none, S') => (l', S')
-        | some (some c, S') => (c::l', S'))
-      (Parallel.aux2 l)
-#align computation.parallel.aux1 Computation.Parallel.aux1
+        | some (some c, S') => (c :: l', S'))
+      (parallel.aux2 l)
+#align computation.parallel.aux1 Computation.parallel.aux1
 
 /-- Parallel computation of an infinite stream of computations,
   taking the first result -/
-def parallel (S : Wseq (Computation α)) : Computation α :=
-  corec Parallel.aux1 ([], S)
+def parallel (S : WSeq (Computation α)) : Computation α :=
+  corec parallel.aux1 ([], S)
 #align computation.parallel Computation.parallel
 
 theorem TerminatesParallel.aux :
     ∀ {l : List (Computation α)} {S c},
-      c ∈ l → Terminates c → Terminates (corec Parallel.aux1 (l, S)) := by
+      c ∈ l → Terminates c → Terminates (corec parallel.aux1 (l, S)) := by
   have lem1 :
-    ∀ l S, (∃ a : α, parallel.aux2 l = Sum.inl a) → terminates (corec parallel.aux1 (l, S)) := by
+    ∀ l S, (∃ a : α, parallel.aux2 l = Sum.inl a) → Terminates (corec parallel.aux1 (l, S)) := by
     intro l S e
     cases' e with a e
     have : corec parallel.aux1 (l, S) = return a := by
-      apply destruct_eq_ret
+      apply destruct_eq_pure
       simp [parallel.aux1]
       rw [e]
-      simp [rmap]
     rw [this]
-    infer_instance
   intro l S c m T
   revert l S
-  apply @terminates_rec_on _ _ c T _ _
+  apply @terminatesRecOn _ _ c T _ _
   · intro a l S m
     apply lem1
-    induction' l with c l IH generalizing m <;> simp at m
-    · contradiction
+    induction' l with c l IH <;> simp at m
     cases' m with e m
     · rw [← e]
       simp [parallel.aux2]
-      cases' List.foldr parallel.aux2._match_1 (Sum.inr List.nil) l with a' ls
-      exacts[⟨a', rfl⟩, ⟨a, rfl⟩]
+      cases' List.foldr (fun c o =>
+        match o with
+        | Sum.inl a => Sum.inl a
+        | Sum.inr ls => rmap (fun c' => c' :: ls) (destruct c)) (Sum.inr List.nil) l with a' ls
+      exacts [⟨a', rfl⟩, ⟨a, rfl⟩]
     · cases' IH m with a' e
       simp [parallel.aux2]
       simp [parallel.aux2] at e
@@ -88,16 +85,23 @@ theorem TerminatesParallel.aux :
       exact ⟨a', rfl⟩
   · intro s IH l S m
     have H1 : ∀ l', parallel.aux2 l = Sum.inr l' → s ∈ l' := by
-      induction' l with c l IH' generalizing m <;> intro l' e' <;> simp at m
-      · contradiction
+      induction' l with c l IH' <;> intro l' e' <;> simp at m
       cases' m with e m <;> simp [parallel.aux2] at e'
       · rw [← e] at e'
-        cases' List.foldr parallel.aux2._match_1 (Sum.inr List.nil) l with a' ls <;>
-          injection e' with e'
+        -- Porting note: `revert e'` & `intro e'` are required.
+        revert e'
+        cases' List.foldr (fun c o =>
+            match o with
+            | Sum.inl a => Sum.inl a
+            | Sum.inr ls => rmap (fun c' => c' :: ls) (destruct c))
+          (Sum.inr []) l with a' ls <;> intro e' <;> [injection e', injection e' with e']
         rw [← e']
         simp
-      · induction' e : List.foldr parallel.aux2._match_1 (Sum.inr List.nil) l with a' ls <;>
-          rw [e] at e'
+      · induction' e : List.foldr (fun c o =>
+            match o with
+            | Sum.inl a => Sum.inl a
+            | Sum.inr ls => rmap (fun c' => c' :: ls) (destruct c))
+          (Sum.inr List.nil) l with a' ls <;> erw [e] at e'
         · contradiction
         have := IH' m _ e
         simp [parallel.aux2] at e'
@@ -118,11 +122,11 @@ theorem TerminatesParallel.aux :
         simp [this]
 #align computation.terminates_parallel.aux Computation.TerminatesParallel.aux
 
-theorem terminates_parallel {S : Wseq (Computation α)} {c} (h : c ∈ S) [T : Terminates c] :
+theorem terminates_parallel {S : WSeq (Computation α)} {c} (h : c ∈ S) [T : Terminates c] :
     Terminates (parallel S) := by
   suffices
     ∀ (n) (l : List (Computation α)) (S c),
-      c ∈ l ∨ some (some c) = Seq.get? S n → Terminates c → Terminates (corec Parallel.aux1 (l, S))
+      c ∈ l ∨ some (some c) = Seq.get? S n → Terminates c → Terminates (corec parallel.aux1 (l, S))
     from
     let ⟨n, h⟩ := h
     this n [] S c (Or.inr h) T
@@ -188,13 +192,13 @@ theorem terminates_parallel {S : Wseq (Computation α)} {c} (h : c ∈ S) [T : T
         cases' o with c <;> simp [parallel.aux1, TT]
 #align computation.terminates_parallel Computation.terminates_parallel
 
-theorem exists_of_mem_parallel {S : Wseq (Computation α)} {a} (h : a ∈ parallel S) :
+theorem exists_of_mem_parallel {S : WSeq (Computation α)} {a} (h : a ∈ parallel S) :
     ∃ c ∈ S, a ∈ c := by
   suffices
     ∀ C,
       a ∈ C →
         ∀ (l : List (Computation α)) (S),
-          corec Parallel.aux1 (l, S) = C → ∃ c, (c ∈ l ∨ c ∈ S) ∧ a ∈ c
+          corec parallel.aux1 (l, S) = C → ∃ c, (c ∈ l ∨ c ∈ S) ∧ a ∈ c
     from
     let ⟨c, h1, h2⟩ := this _ h [] S rfl
     ⟨c, h1.resolve_left id, h2⟩
@@ -295,16 +299,16 @@ theorem map_parallel (f : α → β) (S) : map f (parallel S) = parallel (S.map 
         exact ⟨_, _, rfl, rfl⟩
 #align computation.map_parallel Computation.map_parallel
 
-theorem parallel_empty (S : Wseq (Computation α)) (h : S.headI ~> none) : parallel S = empty _ :=
+theorem parallel_empty (S : WSeq (Computation α)) (h : S.headI ~> none) : parallel S = empty _ :=
   eq_empty_of_not_terminates fun ⟨⟨a, m⟩⟩ => by
     let ⟨c, cs, ac⟩ := exists_of_mem_parallel m
-    let ⟨n, nm⟩ := Wseq.exists_nth_of_mem cs
-    let ⟨c', h'⟩ := Wseq.head_some_of_nth_some nm
+    let ⟨n, nm⟩ := WSeq.exists_nth_of_mem cs
+    let ⟨c', h'⟩ := WSeq.head_some_of_nth_some nm
     injection h h'
 #align computation.parallel_empty Computation.parallel_empty
 
 -- The reason this isn't trivial from exists_of_mem_parallel is because it eliminates to Sort
-def parallelRec {S : Wseq (Computation α)} (C : α → Sort v) (H : ∀ s ∈ S, ∀ a ∈ s, C a) {a}
+def parallelRec {S : WSeq (Computation α)} (C : α → Sort v) (H : ∀ s ∈ S, ∀ a ∈ s, C a) {a}
     (h : a ∈ parallel S) : C a := by
   let T : wseq (Computation (α × Computation α)) := S.map fun c => c.map fun a => (a, c)
   have : S = T.map (map fun c => c.1) := by
@@ -338,31 +342,31 @@ def parallelRec {S : Wseq (Computation α)} (C : α → Sort v) (H : ∀ s ∈ S
   apply H _ cs _ ac
 #align computation.parallel_rec Computation.parallelRec
 
-theorem parallel_promises {S : Wseq (Computation α)} {a} (H : ∀ s ∈ S, s ~> a) : parallel S ~> a :=
+theorem parallel_promises {S : WSeq (Computation α)} {a} (H : ∀ s ∈ S, s ~> a) : parallel S ~> a :=
   fun a' ma' =>
   let ⟨c, cs, ac⟩ := exists_of_mem_parallel ma'
   H _ cs ac
 #align computation.parallel_promises Computation.parallel_promises
 
-theorem mem_parallel {S : Wseq (Computation α)} {a} (H : ∀ s ∈ S, s ~> a) {c} (cs : c ∈ S)
+theorem mem_parallel {S : WSeq (Computation α)} {a} (H : ∀ s ∈ S, s ~> a) {c} (cs : c ∈ S)
     (ac : a ∈ c) : a ∈ parallel S := by
   haveI := terminates_of_mem ac <;> haveI := terminates_parallel cs <;>
     exact mem_of_promises _ (parallel_promises H)
 #align computation.mem_parallel Computation.mem_parallel
 
-theorem parallel_congr_lem {S T : Wseq (Computation α)} {a} (H : S.LiftRel Equiv T) :
+theorem parallel_congr_lem {S T : WSeq (Computation α)} {a} (H : S.LiftRel Equiv T) :
     (∀ s ∈ S, s ~> a) ↔ ∀ t ∈ T, t ~> a :=
   ⟨fun h1 t tT =>
-    let ⟨s, sS, se⟩ := Wseq.exists_of_liftRel_right H tT
+    let ⟨s, sS, se⟩ := WSeq.exists_of_liftRel_right H tT
     (promises_congr se _).1 (h1 _ sS),
     fun h2 s sS =>
-    let ⟨t, tT, se⟩ := Wseq.exists_of_liftRel_left H sS
+    let ⟨t, tT, se⟩ := WSeq.exists_of_liftRel_left H sS
     (promises_congr se _).2 (h2 _ tT)⟩
 #align computation.parallel_congr_lem Computation.parallel_congr_lem
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 -- The parallel operation is only deterministic when all computation paths lead to the same value
-theorem parallel_congr_left {S T : Wseq (Computation α)} {a} (h1 : ∀ s ∈ S, s ~> a)
+theorem parallel_congr_left {S T : WSeq (Computation α)} {a} (h1 : ∀ s ∈ S, s ~> a)
     (H : S.LiftRel Equiv T) : parallel S ~ parallel T :=
   let h2 := (parallel_congr_lem H).1 h1
   fun a' =>
@@ -383,10 +387,9 @@ theorem parallel_congr_left {S T : Wseq (Computation α)} {a} (h1 : ∀ s ∈ S,
 #align computation.parallel_congr_left Computation.parallel_congr_left
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-theorem parallel_congr_right {S T : Wseq (Computation α)} {a} (h2 : ∀ t ∈ T, t ~> a)
+theorem parallel_congr_right {S T : WSeq (Computation α)} {a} (h2 : ∀ t ∈ T, t ~> a)
     (H : S.LiftRel Equiv T) : parallel S ~ parallel T :=
   parallel_congr_left ((parallel_congr_lem H).2 h2) H
 #align computation.parallel_congr_right Computation.parallel_congr_right
 
 end Computation
-
