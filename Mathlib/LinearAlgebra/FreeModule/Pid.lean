@@ -463,12 +463,11 @@ theorem Submodule.exists_smith_normal_form_of_le [Finite ι] (b : Basis ι R M) 
   revert N
 
 -- Porting note: Lean needs to know exactly the induction hypothesis
---  refine inductionOnRank b (fun N ↦ ∃ n : ℕ, Nonempty (Basis (Fin n) R N)) ?_ N
   let P : Submodule R M → Prop := fun O =>
     ∀ N : Submodule R M, N ≤ O →  ∃ (n o : ℕ)(hno : n ≤ o)(bO : Basis (Fin o) R O)
     (bN : Basis (Fin n) R N)(a : Fin n → R), ∀ i, (bN i : M) = a i • bO (Fin.castLE hno i)
   refine inductionOnRank b P ?_ O
---  refine' inductionOnRank b _ _ O
+
 
   intro M ih N N_le_M
   obtain ⟨m, b'M⟩ := M.basis_of_pid b
