@@ -41,9 +41,13 @@ namespace Monad
 /-- An Eilenberg-Moore algebra for a monad `T`.
     cf Definition 5.2.3 in [Riehl][riehl2017]. -/
 structure Algebra (T : Monad C) : Type max u₁ v₁ where
+  /-- The underlying object associated to an algebra. -/
   A : C
+  /-- The structure morphism associated to an algebra. -/
   a : (T : C ⥤ C).obj A ⟶ A
+  /-- The unit axiom associated to an algebra. -/
   unit : T.η.app A ≫ a = 𝟙 A := by aesop_cat
+  /-- The associativity axiom associated to an algebra. -/
   assoc : T.μ.app A ≫ a = (T : C ⥤ C).map a ≫ a := by aesop_cat
 #align category_theory.monad.algebra CategoryTheory.Monad.Algebra
 
@@ -62,7 +66,9 @@ variable {T : Monad C}
 /-- A morphism of Eilenberg–Moore algebras for the monad `T`. -/
 @[ext]
 structure Hom (A B : Algebra T) where
+  /-- The underlying morphism associated to a morphism of algebras. -/
   f : A.A ⟶ B.A
+  /-- Compatibility with the structure morphism, for a morphism of algebras. -/
   h : (T : C ⥤ C).map f ≫ B.a = A.a ≫ f := by aesop_cat
 #align category_theory.monad.algebra.hom CategoryTheory.Monad.Algebra.Hom
 
@@ -333,9 +339,13 @@ namespace Comonad
 -- Porting note: no need to nolint here.
 --@[nolint has_nonempty_instance]
 structure Coalgebra (G : Comonad C) : Type max u₁ v₁ where
+  /-- The underlying object associated to a coalgebra. -/
   A : C
+  /-- The structure morphism associated to a coalgebra. -/
   a : A ⟶ (G : C ⥤ C).obj A
+  /-- The counit axiom associated to a coalgebra. -/
   counit : a ≫ G.ε.app A = 𝟙 A := by aesop_cat
+  /-- The coassociativity axiom associated to a coalgebra. -/
   coassoc : a ≫ G.δ.app A = a ≫ G.map a := by aesop_cat
 #align category_theory.comonad.coalgebra CategoryTheory.Comonad.Coalgebra
 
@@ -355,7 +365,9 @@ variable {G : Comonad C}
 --@[ext, nolint has_nonempty_instance]
 @[ext]
 structure Hom (A B : Coalgebra G) where
+  /-- The underlying morphism associated to a morphism of coalgebras. -/
   f : A.A ⟶ B.A
+  /-- Compatibility with the structure morphism, for a morphism of coalgebras. -/
   h : A.a ≫ (G : C ⥤ C).map f = f ≫ B.a := by aesop_cat
 #align category_theory.comonad.coalgebra.hom CategoryTheory.Comonad.Coalgebra.Hom
 
