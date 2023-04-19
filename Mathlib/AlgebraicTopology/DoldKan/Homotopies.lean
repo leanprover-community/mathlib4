@@ -8,8 +8,8 @@ Authors: Joël Riou
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Homology.Homotopy
-import Mathbin.AlgebraicTopology.DoldKan.Notations
+import Mathlib.Algebra.Homology.Homotopy
+import Mathlib.AlgebraicTopology.DoldKan.Notations
 
 /-!
 
@@ -102,8 +102,7 @@ theorem c_mk (i j : ℕ) (h : j + 1 = i) : c.Rel i j :=
 #align algebraic_topology.dold_kan.c_mk AlgebraicTopology.DoldKan.c_mk
 
 /-- This lemma is meant to be used with `null_homotopic_map'_f_of_not_rel_left` -/
-theorem cs_down_0_not_rel_left (j : ℕ) : ¬c.Rel 0 j :=
-  by
+theorem cs_down_0_not_rel_left (j : ℕ) : ¬c.Rel 0 j := by
   intro hj
   dsimp at hj
   apply Nat.not_succ_le_zero j
@@ -122,8 +121,7 @@ def hσ' (q : ℕ) : ∀ n m, c.Rel m n → (K[X].pt n ⟶ K[X].pt m) := fun n m
 #align algebraic_topology.dold_kan.hσ' AlgebraicTopology.DoldKan.hσ'
 
 theorem hσ'_eq_zero {q n m : ℕ} (hnq : n < q) (hnm : c.Rel m n) :
-    (hσ' q n m hnm : X _[n] ⟶ X _[m]) = 0 :=
-  by
+    (hσ' q n m hnm : X _[n] ⟶ X _[m]) = 0 := by
   simp only [hσ', hσ]
   split_ifs
   exact zero_comp
@@ -132,8 +130,7 @@ theorem hσ'_eq_zero {q n m : ℕ} (hnq : n < q) (hnm : c.Rel m n) :
 theorem hσ'_eq {q n a m : ℕ} (ha : n = a + q) (hnm : c.Rel m n) :
     (hσ' q n m hnm : X _[n] ⟶ X _[m]) =
       ((-1 : ℤ) ^ a • X.σ ⟨a, Nat.lt_succ_iff.mpr (Nat.le.intro (Eq.symm ha))⟩) ≫
-        eqToHom (by congr ) :=
-  by
+        eqToHom (by congr ) := by
   simp only [hσ', hσ]
   split_ifs
   · exfalso
@@ -166,8 +163,7 @@ def homotopyHσToZero (q : ℕ) : Homotopy (hσ q : K[X] ⟶ K[X]) 0 :=
 #align algebraic_topology.dold_kan.homotopy_Hσ_to_zero AlgebraicTopology.DoldKan.homotopyHσToZero
 
 /-- In degree `0`, the null homotopic map `Hσ` is zero. -/
-theorem hσ_eq_zero (q : ℕ) : (hσ q : K[X] ⟶ K[X]).f 0 = 0 :=
-  by
+theorem hσ_eq_zero (q : ℕ) : (hσ q : K[X] ⟶ K[X]).f 0 = 0 := by
   unfold Hσ
   rw [null_homotopic_map'_f_of_not_rel_left (c_mk 1 0 rfl) cs_down_0_not_rel_left]
   cases q
@@ -182,8 +178,7 @@ theorem hσ_eq_zero (q : ℕ) : (hσ q : K[X] ⟶ K[X]).f 0 = 0 :=
 
 /-- The maps `hσ' q n m hnm` are natural on the simplicial object -/
 theorem hσ'_naturality (q : ℕ) (n m : ℕ) (hnm : c.Rel m n) {X Y : SimplicialObject C} (f : X ⟶ Y) :
-    f.app (op [n]) ≫ hσ' q n m hnm = hσ' q n m hnm ≫ f.app (op [m]) :=
-  by
+    f.app (op [n]) ≫ hσ' q n m hnm = hσ' q n m hnm ≫ f.app (op [m]) := by
   have h : n + 1 = m := hnm
   subst h
   simp only [hσ', eq_to_hom_refl, comp_id]
@@ -196,8 +191,7 @@ theorem hσ'_naturality (q : ℕ) (n m : ℕ) (hnm : c.Rel m n) {X Y : Simplicia
 #align algebraic_topology.dold_kan.hσ'_naturality AlgebraicTopology.DoldKan.hσ'_naturality
 
 /-- For each q, `Hσ q` is a natural transformation. -/
-def natTransHσ (q : ℕ) : alternatingFaceMapComplex C ⟶ alternatingFaceMapComplex C
-    where
+def natTransHσ (q : ℕ) : alternatingFaceMapComplex C ⟶ alternatingFaceMapComplex C where
   app X := hσ q
   naturality' X Y f := by
     unfold Hσ
@@ -211,8 +205,7 @@ def natTransHσ (q : ℕ) : alternatingFaceMapComplex C ⟶ alternatingFaceMapCo
 theorem map_hσ' {D : Type _} [Category D] [Preadditive D] (G : C ⥤ D) [G.Additive]
     (X : SimplicialObject C) (q n m : ℕ) (hnm : c.Rel m n) :
     (hσ' q n m hnm : K[((whiskering _ _).obj G).obj X].pt n ⟶ _) =
-      G.map (hσ' q n m hnm : K[X].pt n ⟶ _) :=
-  by
+      G.map (hσ' q n m hnm : K[X].pt n ⟶ _) := by
   unfold hσ' hσ
   split_ifs
   · simp only [functor.map_zero, zero_comp]
@@ -222,8 +215,7 @@ theorem map_hσ' {D : Type _} [Category D] [Preadditive D] (G : C ⥤ D) [G.Addi
 /-- The null homotopic maps `Hσ` are compatible with the application of additive functors. -/
 theorem map_hσ {D : Type _} [Category D] [Preadditive D] (G : C ⥤ D) [G.Additive]
     (X : SimplicialObject C) (q n : ℕ) :
-    (hσ q : K[((whiskering C D).obj G).obj X] ⟶ _).f n = G.map ((hσ q : K[X] ⟶ _).f n) :=
-  by
+    (hσ q : K[((whiskering C D).obj G).obj X] ⟶ _).f n = G.map ((hσ q : K[X] ⟶ _).f n) := by
   unfold Hσ
   have eq := HomologicalComplex.congr_hom (map_null_homotopic_map' G (hσ' q)) n
   simp only [functor.map_homological_complex_map_f, ← map_hσ'] at eq
