@@ -44,9 +44,9 @@ namespace Matrix
 variable {l m n : ℕ} {α β : Type _}
 
 /-- `∀` with better defeq for `∀ x : matrix (fin m) (fin n) α, P x`. -/
-def Forall : ∀ {m n} (P : Matrix (Fin m) (Fin n) α → Prop), Prop
-  | 0, n, P => P (of ![])
-  | m + 1, n, P => FinVec.Forall fun r => forall fun A => P (of (Matrix.vecCons r A))
+def Forall : ∀ {m n} (_ : Matrix (Fin m) (Fin n) α → Prop), Prop
+  | 0, _, P => P (of ![])
+  | _ + 1, _, P => FinVec.Forall fun r => Forall fun A => P (of (Matrix.vecCons r A))
 #align matrix.forall Matrix.Forall
 
 /-- This can be use to prove
@@ -57,9 +57,9 @@ example (P : matrix (fin 2) (fin 3) α → Prop) :
 ```
 -/
 theorem forall_iff : ∀ {m n} (P : Matrix (Fin m) (Fin n) α → Prop), Forall P ↔ ∀ x, P x
-  | 0, n, P => Iff.symm Fin.forall_fin_zero_pi
+  | 0, n, P => Iff.symm  Fin.forall_fin_zero_pi
   | m + 1, n, P => by
-    simp only [forall, FinVec.forall_iff, forall_iff]
+    simp only [Forall, FinVec.forall_iff, forall_iff]
     exact Iff.symm Fin.forall_fin_succ_pi
 #align matrix.forall_iff Matrix.forall_iff
 
@@ -68,9 +68,9 @@ example (P : Matrix (Fin 2) (Fin 3) α → Prop) :
   (forall_iff _).symm
 
 /-- `∃` with better defeq for `∃ x : matrix (fin m) (fin n) α, P x`. -/
-def Exists : ∀ {m n} (P : Matrix (Fin m) (Fin n) α → Prop), Prop
-  | 0, n, P => P (of ![])
-  | m + 1, n, P => FinVec.Exists fun r => exists fun A => P (of (Matrix.vecCons r A))
+def Exists : ∀ {m n} (_ : Matrix (Fin m) (Fin n) α → Prop), Prop
+  | 0, _, P => P (of ![])
+  | _ + 1, _, P => FinVec.Exists fun r => Exists fun A => P (of (Matrix.vecCons r A))
 #align matrix.exists Matrix.Exists
 
 /-- This can be use to prove
@@ -83,7 +83,7 @@ example (P : matrix (fin 2) (fin 3) α → Prop) :
 theorem exists_iff : ∀ {m n} (P : Matrix (Fin m) (Fin n) α → Prop), Exists P ↔ ∃ x, P x
   | 0, n, P => Iff.symm Fin.exists_fin_zero_pi
   | m + 1, n, P => by
-    simp only [exists, FinVec.exists_iff, exists_iff]
+    simp only [Exists, FinVec.exists_iff, exists_iff]
     exact Iff.symm Fin.exists_fin_succ_pi
 #align matrix.exists_iff Matrix.exists_iff
 
@@ -93,8 +93,8 @@ example (P : Matrix (Fin 2) (Fin 3) α → Prop) :
 
 /-- `matrix.tranpose` with better defeq for `fin` -/
 def transposeᵣ : ∀ {m n}, Matrix (Fin m) (Fin n) α → Matrix (Fin n) (Fin m) α
-  | _, 0, A => of ![]
-  | m, n + 1, A =>
+  | _, 0, _ => of ![]
+  | _, _ + 1, A =>
     of <| vecCons (FinVec.map (fun v : Fin _ → α => v 0) A) (transposeᵣ (A.submatrix id Fin.succ))
 #align matrix.transposeᵣ Matrix.transposeᵣ
 
@@ -111,7 +111,7 @@ theorem transposeᵣ_eq : ∀ {m n} (A : Matrix (Fin m) (Fin n) α), transpose�
       simp_rw [transposeᵣ, transposeᵣ_eq]
       refine' i.cases _ fun i => _
       · dsimp
-        rw [FinVec.map_eq]
+        rw [FinVec.map_eq, Function.comp_apply]
       · simp only [of_apply, Matrix.cons_val_succ]
         rfl
 #align matrix.transposeᵣ_eq Matrix.transposeᵣ_eq
@@ -134,7 +134,8 @@ example (a b c d : α) [has_mul α] [add_comm_monoid α] :
 @[simp]
 theorem dotProductᵣ_eq [Mul α] [AddCommMonoid α] {m} (a b : Fin m → α) :
     dotProductᵣ a b = dotProduct a b := by
-  simp_rw [dot_productᵣ, dot_product, FinVec.sum_eq, FinVec.seq_eq, FinVec.map_eq]
+  simp_rw [dotProductᵣ, dotProduct, FinVec.sum_eq, FinVec.seq_eq, FinVec.map_eq,
+      Function.comp_apply]
 #align matrix.dot_productᵣ_eq Matrix.dotProductᵣ_eq
 
 example (a b c d : α) [Mul α] [AddCommMonoid α] : dotProduct ![a, b] ![c, d] = a * c + b * d :=
@@ -186,7 +187,7 @@ example [non_unital_non_assoc_semiring α] (a₁₁ a₁₂ a₂₁ a₂₂ b₁
 @[simp]
 theorem mulVecᵣ_eq [NonUnitalNonAssocSemiring α] (A : Matrix (Fin l) (Fin m) α) (v : Fin m → α) :
     mulVecᵣ A v = A.mulVec v := by
-  simp [mul_vecᵣ, Function.comp]
+  simp [mulVecᵣ, Function.comp]
   rfl
 #align matrix.mul_vecᵣ_eq Matrix.mulVecᵣ_eq
 
@@ -210,7 +211,7 @@ example [non_unital_non_assoc_semiring α] (a₁₁ a₁₂ a₂₁ a₂₂ b₁
 @[simp]
 theorem vecMulᵣ_eq [NonUnitalNonAssocSemiring α] (v : Fin l → α) (A : Matrix (Fin l) (Fin m) α) :
     vecMulᵣ v A = vecMul v A := by
-  simp [vec_mulᵣ, Function.comp]
+  simp [vecMulᵣ, Function.comp]
   rfl
 #align matrix.vec_mulᵣ_eq Matrix.vecMulᵣ_eq
 
@@ -232,11 +233,10 @@ example (A : matrix (fin 2) (fin 2) α) :
 ```
 -/
 theorem etaExpand_eq {m n} (A : Matrix (Fin m) (Fin n) α) : etaExpand A = A := by
-  simp_rw [eta_expand, FinVec.etaExpand_eq, Matrix.of, Equiv.refl_apply]
+  simp_rw [etaExpand, FinVec.etaExpand_eq, Matrix.of, Equiv.refl_apply]
 #align matrix.eta_expand_eq Matrix.etaExpand_eq
 
 example (A : Matrix (Fin 2) (Fin 2) α) : A = !![A 0 0, A 0 1; A 1 0, A 1 1] :=
   (etaExpand_eq _).symm
 
 end Matrix
-
