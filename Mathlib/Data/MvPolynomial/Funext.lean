@@ -10,6 +10,7 @@ Authors: Johan Commelin
 -/
 import Mathlib.Data.Polynomial.RingDivision
 import Mathlib.Data.MvPolynomial.Rename
+import Mathlib.Data.MvPolynomial.Polynomial
 import Mathlib.RingTheory.Polynomial.Basic
 import Mathlib.Tactic.LibrarySearch
 
@@ -26,51 +27,7 @@ if they are equal upon evaluating them on an arbitrary assignment of the variabl
 
 -/
 
--- TODO this needs a home
-local macro "refine " e:term : conv => `(conv| tactic => refine $e)
-
 namespace MvPolynomial
-
--- TODO move
-theorem eval_eval₂ [CommSemiring R] [CommSemiring S]
-    (f : R →+* Polynomial S) (g : σ → Polynomial S) (p : MvPolynomial σ R) :
-    Polynomial.eval x (eval₂ f g p) =
-      eval₂ ((Polynomial.evalRingHom x).comp f) (fun s => Polynomial.eval x (g s)) p := by
-  apply induction_on p
-  · simp
-  · intro p q hp hq
-    simp [hp, hq]
-  · intro p n hp
-    simp [hp]
-
--- TODO move
-theorem eval_eval₂' [CommSemiring R] [CommSemiring S]
-    (f : R →+* MvPolynomial τ S) (g : σ → MvPolynomial τ S) (p : MvPolynomial σ R) :
-    eval x (eval₂ f g p) = eval₂ ((eval x).comp f) (fun s => eval x (g s)) p := by
-  apply induction_on p
-  · simp
-  · intro p q hp hq
-    simp [hp, hq]
-  · intro p n hp
-    simp [hp]
-
--- TODO move
-@[simp]
-theorem eval₂_id [CommSemiring R] (p : MvPolynomial σ R) : eval₂ (RingHom.id _) g p = eval g p :=
-  rfl
-
--- TODO move
-theorem eval_eval_finSuccEquiv
-    [CommSemiring R] (f : MvPolynomial (Fin (n + 1)) R) (q : MvPolynomial (Fin n) R) :
-    (eval x) (Polynomial.eval q (finSuccEquiv R n f)) = eval (Fin.cases (eval x q) x) f := by
-  simp only [finSuccEquiv_apply, coe_eval₂Hom, eval_eval₂, eval_eval₂']
-  conv in RingHom.comp _ _ =>
-  { refine @RingHom.ext _ _ _ _ _ (RingHom.id _) fun r => ?_
-    simp }
-  simp only [eval₂_id]
-  congr
-  funext i
-  refine Fin.cases (by simp) (by simp) i
 
 variable {R : Type _} [CommRing R] [IsDomain R] [Infinite R]
 
@@ -85,7 +42,7 @@ private theorem funext_fin {n : ℕ} {p : MvPolynomial (Fin n) R}
     refine Polynomial.funext fun q => ?_
     rw [Polynomial.eval_zero]
     apply ih fun x => ?_
-    calc _ = _ := eval_eval_finSuccEquiv p _
+    calc _ = _ := eval_polynomial_eval_finSuccEquiv p _
          _ = 0 := h _
 
 /-- Two multivariate polynomials over an infinite integral domain are equal
