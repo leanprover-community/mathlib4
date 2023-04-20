@@ -204,7 +204,6 @@ theorem transferNatTransSelf_comp (f g) :
   simp only [id_comp, comp_id]
   rw [← adj₃.unit_naturality_assoc, ← R₃.map_comp, g.naturality_assoc, L₂.map_comp, assoc,
     adj₂.counit_naturality, adj₂.left_triangle_components_assoc, assoc]
-  simp
 #align category_theory.transfer_nat_trans_self_comp CategoryTheory.transferNatTransSelf_comp
 
 theorem transferNatTransSelf_adjunction_id {L R : C ⥤ C} (adj : L ⊣ R) (f : 𝟭 C ⟶ L) (X : C) :

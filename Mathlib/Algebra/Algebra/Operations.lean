@@ -175,7 +175,7 @@ theorem mul_le : M * N ≤ P ↔ ∀ m ∈ M, ∀ n ∈ N, m * n ∈ P :=
 theorem mul_toAddSubmonoid (M N : Submodule R A) :
     (M * N).toAddSubmonoid = M.toAddSubmonoid * N.toAddSubmonoid := by
   dsimp [HMul.hMul, Mul.mul]  --porting note: added `hMul`
-  simp_rw [← LinearMap.mulLeft_toAddMonoid_hom R, LinearMap.mulLeft, ← map_toAddSubmonoid _ N,
+  simp_rw [← LinearMap.mulLeft_toAddMonoidHom R, LinearMap.mulLeft, ← map_toAddSubmonoid _ N,
     map₂]
   rw [supᵢ_toAddSubmonoid]
   rfl
