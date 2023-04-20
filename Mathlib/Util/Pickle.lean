@@ -33,5 +33,5 @@ unsafe def withUnpickle [Monad m] [MonadLiftT IO m] {α β : Type}
     (path : FilePath) (f : α → m β) : m β := do
   let (x, region) ← unpickle α path
   let r ← f x
-  unsafe region.free
+  region.free
   pure r
