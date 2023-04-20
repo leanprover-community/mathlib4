@@ -688,7 +688,9 @@ def Matrix.toLinOfInv [DecidableEq m] {M : Matrix m n R} {M' : Matrix n m R} (hM
     toFun := Matrix.toLin v₁ v₂ M
     invFun := Matrix.toLin v₂ v₁ M'
     left_inv := fun x => by rw [← Matrix.toLin_mul_apply, hM'M, Matrix.toLin_one, id_apply]
-    right_inv := fun x => by rw [← Matrix.toLin_mul_apply, hMM', Matrix.toLin_one, id_apply] }
+    right_inv := fun x => by
+      simp only
+      rw [← Matrix.toLin_mul_apply, hMM', Matrix.toLin_one, id_apply] }
 #align matrix.to_lin_of_inv Matrix.toLinOfInv
 
 /-- Given a basis of a module `M₁` over a commutative ring `R`, we get an algebra
@@ -751,7 +753,7 @@ theorem LinearMap.toMatrixAlgEquiv_transpose_apply' (f : M₁ →ₗ[R] M₁) (j
 theorem Matrix.toLinAlgEquiv_apply (M : Matrix n n R) (v : M₁) :
     Matrix.toLinAlgEquiv v₁ M v = ∑ j, M.mulVec (v₁.repr v) j • v₁ j :=
   show v₁.equivFun.symm (Matrix.toLinAlgEquiv' M (v₁.repr v)) = _ by
-    rw [Matrix.toLinAlgEquiv'_apply, v₁.equiv_fun_symm_apply]
+    rw [Matrix.toLinAlgEquiv'_apply, v₁.equivFun_symm_apply]
 #align matrix.to_lin_alg_equiv_apply Matrix.toLinAlgEquiv_apply
 
 @[simp]
@@ -765,7 +767,7 @@ theorem LinearMap.toMatrixAlgEquiv_id : LinearMap.toMatrixAlgEquiv v₁ id = 1 :
 #align linear_map.to_matrix_alg_equiv_id LinearMap.toMatrixAlgEquiv_id
 
 @[simp]
-theorem Matrix.toLinAlgEquiv_one : Matrix.toLinAlgEquiv v₁ 1 = id := by
+theorem Matrix.toLinAlgEquiv_one : Matrix.toLinAlgEquiv v₁ 1 = LinearMap.id := by
   rw [← LinearMap.toMatrixAlgEquiv_id v₁, Matrix.toLinAlgEquiv_toMatrixAlgEquiv]
 #align matrix.to_lin_alg_equiv_one Matrix.toLinAlgEquiv_one
 
@@ -784,8 +786,7 @@ theorem LinearMap.toMatrixAlgEquiv_comp (f g : M₁ →ₗ[R] M₁) :
 theorem LinearMap.toMatrixAlgEquiv_mul (f g : M₁ →ₗ[R] M₁) :
     LinearMap.toMatrixAlgEquiv v₁ (f * g) =
       LinearMap.toMatrixAlgEquiv v₁ f ⬝ LinearMap.toMatrixAlgEquiv v₁ g := by
-  rw [show @Mul.mul (M₁ →ₗ[R] M₁) _ = LinearMap.comp from rfl,
-    LinearMap.toMatrixAlgEquiv_comp v₁ f g]
+  rw [LinearMap.mul_eq_comp, LinearMap.toMatrixAlgEquiv_comp v₁ f g]
 #align linear_map.to_matrix_alg_equiv_mul LinearMap.toMatrixAlgEquiv_mul
 
 theorem Matrix.toLinAlgEquiv_mul (A B : Matrix n n R) :
@@ -803,7 +804,7 @@ theorem Matrix.toLin_finTwoProd_apply (a b c d : R) (x : R × R) :
 
 theorem Matrix.toLin_finTwoProd (a b c d : R) :
     Matrix.toLin (Basis.finTwoProd R) (Basis.finTwoProd R) !![a, b; c, d] =
-      (a • LinearMap.fst R R R + b • LinearMap.snd R R R).Prod
+      (a • LinearMap.fst R R R + b • LinearMap.snd R R R).prod
         (c • LinearMap.fst R R R + d • LinearMap.snd R R R) :=
   LinearMap.ext <| Matrix.toLin_finTwoProd_apply _ _ _ _
 #align matrix.to_lin_fin_two_prod Matrix.toLin_finTwoProd
