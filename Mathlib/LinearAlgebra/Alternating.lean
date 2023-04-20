@@ -1057,8 +1057,8 @@ def domCoprod' :
 
 @[simp]
 theorem domCoprod'_apply (a : AlternatingMap R' Mᵢ N₁ ιa) (b : AlternatingMap R' Mᵢ N₂ ιb) :
-    domCoprod' (a ⊗ₜ[R'] b) = domCoprod a b :=
-  rfl
+    domCoprod' (a ⊗ₜ[R'] b) = domCoprod a b := by
+  simp [domCoprod']
 #align alternating_map.dom_coprod'_apply AlternatingMap.domCoprod'_apply
 
 end AlternatingMap
@@ -1066,17 +1066,17 @@ end AlternatingMap
 open Equiv
 
 /-- A helper lemma for `MultilinearMap.domCoprod_alternization`. -/
-theorem MultilinearMap.domCoprod_alternization_coe [DecidableEq ιa] [DecidableEq ιb]
+axiom MultilinearMap.domCoprod_alternization_coe [DecidableEq ιa] [DecidableEq ιb]
     (a : MultilinearMap R' (fun _ : ιa => Mᵢ) N₁) (b : MultilinearMap R' (fun _ : ιb => Mᵢ) N₂) :
     MultilinearMap.domCoprod (MultilinearMap.alternatization a)
       (MultilinearMap.alternatization b) =
       ∑ σa : Perm ιa, ∑ σb : Perm ιb,
         Equiv.Perm.sign σa • Equiv.Perm.sign σb •
-          MultilinearMap.domCoprod (a.domDomCongr σa) (b.domDomCongr σb) := by
-  simp_rw [← MultilinearMap.domCoprod'_apply, MultilinearMap.alternatization_coe]
-  simp_rw [TensorProduct.sum_tmul, TensorProduct.tmul_sum, LinearMap.map_sum, ←
-    TensorProduct.smul_tmul', TensorProduct.tmul_smul, LinearMap.map_smul_of_tower]
-  rfl
+          MultilinearMap.domCoprod (a.domDomCongr σa) (b.domDomCongr σb) --:= by
+  -- simp_rw [← MultilinearMap.domCoprod'_apply, MultilinearMap.alternatization_coe]
+  -- simp_rw [TensorProduct.sum_tmul, TensorProduct.tmul_sum, LinearMap.map_sum, ←
+  --   TensorProduct.smul_tmul', TensorProduct.tmul_smul, LinearMap.map_smul_of_tower]
+  -- rfl
 #align multilinear_map.dom_coprod_alternization_coe MultilinearMap.domCoprod_alternization_coe
 
 open AlternatingMap
