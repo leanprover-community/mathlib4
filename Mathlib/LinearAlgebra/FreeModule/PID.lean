@@ -22,7 +22,7 @@ This file proves a submodule of a free `R`-module of finite rank is also
 a free `R`-module of finite rank, if `R` is a principal ideal domain (PID),
 i.e. we have instances `[IsDomain R] [IsPrincipalIdealRing R]`.
 We express "free `R`-module of finite rank" as a module `M` which has a basis
-`b : ι → R`, where `ι` is a `FintypeCat`.
+`b : ι → R`, where `ι` is a `Fintype`.
 We call the cardinality of `ι` the rank of `M` in this file;
 it would be equal to `finrank R M` if `R` is a field and `M` is a vector space.
 
@@ -168,7 +168,7 @@ but must also feed in a basis for `M` using `basis_of_pid` to keep the induction
 theorem Submodule.basis_of_pid_aux [Finite ι] {O : Type _} [AddCommGroup O] [Module R O]
     (M N : Submodule R O) (b'M : Basis ι R M) (N_bot : N ≠ ⊥) (N_le_M : N ≤ M) :
     ∃ y ∈ M,
-      ∃ (a : R)(_hay : a • y ∈ N),
+      ∃ (a : R)(_ : a • y ∈ N),
         ∃ M' ≤ M,
           ∃ N' ≤ N,
             ∃ (_N'_le_M' : N' ≤ M')(_y_ortho_M' :
@@ -339,7 +339,7 @@ theorem Submodule.basisOfPid_bot {ι : Type _} [Finite ι] (b : Basis ι R M) :
 /-- A submodule inside a free `R`-submodule of finite rank is also a free `R`-module of finite rank,
 if `R` is a principal ideal domain.
 
-See also the stronger version `Submodule.smithNormalFormOfLe`.
+See also the stronger version `Submodule.smithNormalFormOfLE`.
 -/
 noncomputable def Submodule.basisOfPidOfLe {ι : Type _} [Finite ι] {N O : Submodule R M}
     (hNO : N ≤ O) (b : Basis ι R O) : Σn : ℕ, Basis (Fin n) R N :=
@@ -356,7 +356,6 @@ noncomputable def Submodule.basisOfPidOfLeSpan {ι : Type _} [Finite ι] {b : ι
 #align submodule.basis_of_pid_of_le_span Submodule.basisOfPidOfLeSpan
 
 set_option synthInstance.etaExperiment true in -- Porting note: added
--- Porting note: Mathport warning: expanding binder collection (i «expr ∉ » I)
 /-- A finite type torsion free module over a PID admits a basis. -/
 noncomputable def Module.basisOfFiniteTypeTorsionFree [Fintype ι] {s : ι → M}
     (hs : span R (range s) = ⊤) [NoZeroSMulDivisors R M] : Σn : ℕ, Basis (Fin n) R M := by
@@ -452,7 +451,7 @@ structure Basis.SmithNormalForm (N : Submodule R M) (ι : Type _) (n : ℕ) wher
 and we can find a basis for `M` and `N` such that the inclusion map is a diagonal matrix
 in Smith normal form.
 
-See `Submodule.smithNormalFormOfLe` for a version of this theorem that returns
+See `Submodule.smithNormalFormOfLE` for a version of this theorem that returns
 a `Basis.SmithNormalForm`.
 
 This is a strengthening of `Submodule.basisOfPidOfLe`.
@@ -470,7 +469,7 @@ theorem Submodule.exists_smith_normal_form_of_le [Finite ι] (b : Basis ι R M) 
   by_cases N_bot : N = ⊥
   · subst N_bot
     exact ⟨0, m, Nat.zero_le _, b'M, Basis.empty _, finZeroElim, finZeroElim⟩
-  obtain ⟨y, hy, a, _hay, M', M'_le_M, N', _N'_le_N, N'_le_M', y_ortho, _ay_ortho, h⟩ :=
+  obtain ⟨y, hy, a, _, M', M'_le_M, N', _, N'_le_M', y_ortho, _, h⟩ :=
     Submodule.basis_of_pid_aux M0 N b'M N_bot N_le_M0
 
   obtain ⟨n', m', hn'm', bM', bN', as', has'⟩ := ih M' M'_le_M y hy y_ortho N' N'_le_M'
@@ -491,7 +490,7 @@ need to map `N` into a submodule of `O`.
 
 This is a strengthening of `Submodule.basisOfPidOfLe`.
 -/
-noncomputable def Submodule.smithNormalFormOfLe [Finite ι] (b : Basis ι R M) (N O : Submodule R M)
+noncomputable def Submodule.smithNormalFormOfLE [Finite ι] (b : Basis ι R M) (N O : Submodule R M)
     (N_le_O : N ≤ O) : Σo n : ℕ, Basis.SmithNormalForm (N.comap O.subtype) (Fin o) n := by
   choose n o hno bO bN a snf using N.exists_smith_normal_form_of_le b O N_le_O
   refine'
@@ -500,7 +499,7 @@ noncomputable def Submodule.smithNormalFormOfLe [Finite ι] (b : Basis ι R M) (
   ext
   simp only [snf, Basis.map_apply, Submodule.comapSubtypeEquivOfLe_symm_apply,
     Submodule.coe_smul_of_tower]
-#align submodule.smith_normal_form_of_le Submodule.smithNormalFormOfLe
+#align submodule.smith_normal_form_of_le Submodule.smithNormalFormOfLE
 
 /-- If `M` is finite free over a PID `R`, then any submodule `N` is free
 and we can find a basis for `M` and `N` such that the inclusion map is a diagonal matrix
@@ -513,7 +512,7 @@ an ideal is the same as the dimension of the whole ring.
 -/
 noncomputable def Submodule.smithNormalForm [Finite ι] (b : Basis ι R M) (N : Submodule R M) :
     Σn : ℕ, Basis.SmithNormalForm N ι n :=
-  let ⟨m, n, bM, bN, f, a, snf⟩ := N.smithNormalFormOfLe b ⊤ le_top
+  let ⟨m, n, bM, bN, f, a, snf⟩ := N.smithNormalFormOfLE b ⊤ le_top
   let bM' := bM.map (LinearEquiv.ofTop _ rfl)
   let e := bM'.indexEquiv b
   ⟨n, bM'.reindex e, bN.map (comapSubtypeEquivOfLe le_top), f.trans e.toEmbedding, a, fun i ↦ by
