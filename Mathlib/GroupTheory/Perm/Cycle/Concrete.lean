@@ -161,13 +161,14 @@ theorem formPerm_subsingleton (s : Cycle α) (h : Subsingleton s) : formPerm s h
 
 theorem isCycle_formPerm (s : Cycle α) (h : Nodup s) (hn : Nontrivial s) :
     IsCycle (formPerm s h) := by
-  induction s using Quot.inductionOn
+  induction s using Quot.inductionOn; simp
+  --apply List.isCycle_formPerm
   exact List.isCycle_formPerm h (length_nontrivial hn)
 #align cycle.is_cycle_form_perm Cycle.isCycle_formPerm
 
 theorem support_formPerm [Fintype α] (s : Cycle α) (h : Nodup s) (hn : Nontrivial s) :
     support (formPerm s h) = s.toFinset := by
-  induction' s using Quot.inductionOn with s
+  induction' s using Quot.inductionOn with s; simp
   refine' support_formPerm_of_nodup s h _
   rintro _ rfl
   simpa [Nat.succ_le_succ_iff] using length_nontrivial hn
@@ -323,9 +324,11 @@ theorem toList_pow_apply_eq_rotate (p : Perm α) (x : α) (k : ℕ) :
 theorem SameCycle.toList_isRotated {f : Perm α} {x y : α} (h : SameCycle f x y) :
     toList f x ~r toList f y := by
   by_cases hx : x ∈ f.support
-  · obtain ⟨_ | k, hk, hy⟩ := h.exists_pow_eq_of_mem_support hx
-    · simp only [coe_one, id.def, pow_zero] at hy
+  · obtain ⟨_ | k, _, hy⟩ := h.exists_pow_eq_of_mem_support hx
+    · simp only [coe_one, id.def, pow_zero, Nat.zero_eq] at hy
       simp [hy]
+      exists 0
+      simp only [rotate_zero]
     use k.succ
     rw [← toList_pow_apply_eq_rotate, hy]
   · rw [toList_eq_nil_iff.mpr hx, isRotated_nil_iff', eq_comm, toList_eq_nil_iff]
