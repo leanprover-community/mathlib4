@@ -60,9 +60,8 @@ instance : ReflectsIsomorphisms (N₁ : SimplicialObject C ⥤ Karoubi (ChainCom
       simp only [id_comp, comp_id] at h₁₀ h₂₀
       tauto
     · haveI := hn
-      use φ {
-            a := PInfty.f (n + 1) ≫ (inv (N₁.map f)).f.f (n + 1)
-            b := fun i => inv (f.app (op [n])) ≫ X.σ i }
+      use φ { a := PInfty.f (n + 1) ≫ (inv (N₁.map f)).f.f (n + 1)
+              b := fun i => inv (f.app (op [n])) ≫ X.σ i }
       simp only [MorphComponents.id, ← id_φ, ← preComp_φ, preComp, ← postComp_φ, postComp,
         PInfty_f_naturality_assoc, IsIso.hom_inv_id_assoc, assoc, IsIso.inv_hom_id_assoc,
         SimplicialObject.σ_naturality, h₁, h₂, h₃]⟩
@@ -76,7 +75,7 @@ theorem compatibility_N₂_N₁_karoubi :
   · refine' HomologicalComplex.ext _ _
     · ext n
       · dsimp
-        simp only [karoubi_pInfty_f, comp_id, PInfty_f_naturality, id_comp, eqToHom_refl]
+        simp only [karoubi_PInfty_f, comp_id, PInfty_f_naturality, id_comp, eqToHom_refl]
       . rfl
     · rintro _ n (rfl : n + 1 = _)
       ext
@@ -84,11 +83,11 @@ theorem compatibility_N₂_N₁_karoubi :
       dsimp [N₂, karoubiChainComplexEquivalence,
         KaroubiHomologicalComplexEquivalence.Functor.obj] at h ⊢
       simp only [assoc, Karoubi.eqToHom_f, eqToHom_refl, comp_id,
-        karoubi_alternating_face_map_complex_d, karoubi_pInfty_f,
+        karoubi_alternatingFaceMapComplex_d, karoubi_PInfty_f,
         ← HomologicalComplex.Hom.comm_assoc, ← h, app_idem_assoc]
   · ext n
     dsimp [KaroubiKaroubi.inverse, Functor.mapHomologicalComplex]
-    simp only [karoubi_pInfty_f, HomologicalComplex.eqToHom_f, Karoubi.eqToHom_f,
+    simp only [karoubi_PInfty_f, HomologicalComplex.eqToHom_f, Karoubi.eqToHom_f,
       assoc, comp_id, PInfty_f_naturality, app_p_comp,
       karoubiChainComplexEquivalence_functor_obj_X_p, N₂_obj_p_f, eqToHom_refl,
       PInfty_f_naturality_assoc, app_comp_p, PInfty_f_idem_assoc]
@@ -111,12 +110,12 @@ instance : ReflectsIsomorphisms (N₂ : Karoubi (SimplicialObject C) ⥤ Karoubi
       (ComplexShape.down ℕ)
     let F := F₁ ⋙ F₂ ⋙ F₃ ⋙ F₄
     -- porting note: we have to help Lean4 find the `ReflectsIsomorphisms` instances
+    -- could this be fixed by setting better instance priorities?
     haveI : ReflectsIsomorphisms F₁ := reflectsIsomorphisms_of_full_and_faithful _
     haveI : ReflectsIsomorphisms F₂ := by infer_instance
     haveI : ReflectsIsomorphisms F₃ := reflectsIsomorphisms_of_full_and_faithful _
     haveI : ReflectsIsomorphisms ((KaroubiKaroubi.equivalence C).inverse) :=
       reflectsIsomorphisms_of_full_and_faithful _
-    haveI : ReflectsIsomorphisms F₄ := Functor.mapHomologicalComplex_reflects_iso _ _
     have : IsIso (F.map f) := by
       simp only
       rw [← compatibility_N₂_N₁_karoubi, Functor.comp_map]
