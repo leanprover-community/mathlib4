@@ -1885,6 +1885,7 @@ import Mathlib.Topology.MetricSpace.Isometry
 import Mathlib.Topology.MetricSpace.Lipschitz
 import Mathlib.Topology.MetricSpace.MetricSeparated
 import Mathlib.Topology.MetricSpace.PiNat
+import Mathlib.Topology.MetricSpace.Polish
 import Mathlib.Topology.MetricSpace.ShrinkingLemma
 import Mathlib.Topology.NhdsSet
 import Mathlib.Topology.NoetherianSpace
