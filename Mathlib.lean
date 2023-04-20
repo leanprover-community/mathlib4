@@ -138,6 +138,7 @@ import Mathlib.Algebra.Homology.Flip
 import Mathlib.Algebra.Homology.Functor
 import Mathlib.Algebra.Homology.HomologicalComplex
 import Mathlib.Algebra.Homology.Homology
+import Mathlib.Algebra.Homology.Homotopy
 import Mathlib.Algebra.Homology.ImageToKernel
 import Mathlib.Algebra.Homology.Single
 import Mathlib.Algebra.IndicatorFunction
@@ -1884,6 +1885,7 @@ import Mathlib.Topology.MetricSpace.Isometry
 import Mathlib.Topology.MetricSpace.Lipschitz
 import Mathlib.Topology.MetricSpace.MetricSeparated
 import Mathlib.Topology.MetricSpace.PiNat
+import Mathlib.Topology.MetricSpace.Polish
 import Mathlib.Topology.MetricSpace.ShrinkingLemma
 import Mathlib.Topology.NhdsSet
 import Mathlib.Topology.NoetherianSpace
