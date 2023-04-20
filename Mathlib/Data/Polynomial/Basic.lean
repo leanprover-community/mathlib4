@@ -1221,10 +1221,10 @@ section repr
 variable [Semiring R]
 
 protected instance repr [Repr R] [DecidableEq R] : Repr R[X] :=
-  ⟨fun p prec =>
+  ⟨fun p _ =>
     if p.support = ∅ then "0"
     else
-      Repr.addAppParen
+      Lean.Format.paren
         (Lean.Format.fill
           (Lean.Format.joinSep
             (List.map
@@ -1235,9 +1235,23 @@ protected instance repr [Repr R] [DecidableEq R] : Repr R[X] :=
                   if coeff p n = 1 then "X ^ " ++ Nat.repr n
                   else "C " ++ reprArg (coeff p n) ++ " * X ^ " ++ Nat.repr n)
               (p.support.sort (· ≤ ·)))
-            (" +" ++ Lean.Format.line)))
-        prec⟩
+            (" +" ++ Lean.Format.line)))⟩
 #align polynomial.has_repr Polynomial.repr
+
+example : reprStr
+    (⟨⟨{}, Pi.single 0 0,
+      by intro; simp [Pi.single, Function.update_apply]⟩⟩ : ℕ[X]) =
+    "0" := by native_decide
+
+example : reprStr
+    (⟨⟨{1}, Pi.single 1 37,
+      by intro; simp [Pi.single, Function.update_apply]⟩⟩ : ℕ[X]) =
+    "(C 37 * X)" := by native_decide
+
+example : reprStr
+    (⟨⟨{0, 2}, Pi.single 0 57 + Pi.single 2 22,
+      by intro; simp [Pi.single, Function.update_apply]; tauto⟩⟩ : ℕ[X]) =
+    "(C 57 + C 22 * X ^ 2)" := by native_decide
 
 end repr
 
