@@ -29,5 +29,5 @@ lean_lib Cache where
 lean_exe cache where
   root := `Cache.Main
 
-lean_lib Extras where
-  roots := #[`Extras]
+lean_lib MathlibExtras where
+  roots := #[`MathlibExtras]

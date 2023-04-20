@@ -427,7 +427,7 @@ theorem imageSubobjectCompIso_inv_arrow (f : X ⟶ Y) [HasImage f] {Y' : C} (h :
 
 end
 
-theorem imageSubobject_mono (f : X ⟶ Y) [Mono f] : imageSubobject f = mk f :=
+theorem imageSubobject_mono (f : X ⟶ Y) [Mono f] : imageSubobject f = Subobject.mk f :=
   eq_of_comm (imageSubobjectIso f ≪≫ imageMonoIsoSource f ≪≫ (underlyingIso f).symm) (by simp)
 #align category_theory.limits.image_subobject_mono CategoryTheory.Limits.imageSubobject_mono
 
