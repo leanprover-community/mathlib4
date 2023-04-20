@@ -32,8 +32,8 @@ We prove the adjugate behaves like `det A • A⁻¹`.
 
 ## Main definitions
 
- * `matrix.cramer A b`: the vector output by Cramer's rule on `A` and `b`.
- * `matrix.adjugate A`: the adjugate (or classical adjoint) of the matrix `A`.
+ * `Matrix.cramer A b`: the vector output by Cramer's rule on `A` and `b`.
+ * `Matrix.adjugate A`: the adjugate (or classical adjoint) of the matrix `A`.
 
 ## References
 
@@ -505,7 +505,7 @@ theorem det_smul_adjugate_adjugate (A : Matrix n n α) :
 
 -- Porting note: rewrites are slow.
 set_option maxHeartbeats 300000 in
-/-- Note that this is not true for `fintype.card n = 1` since `1 - 2 = 0` and not `-1`. -/
+/-- Note that this is not true for `Fintype.card n = 1` since `1 - 2 = 0` and not `-1`. -/
 theorem adjugate_adjugate (A : Matrix n n α) (h : Fintype.card n ≠ 1) :
     adjugate (adjugate A) = det A ^ (Fintype.card n - 2) • A := by
   -- get rid of the `- 2`
@@ -530,7 +530,7 @@ theorem adjugate_adjugate (A : Matrix n n α) (h : Fintype.card n ≠ 1) :
   rw [smul_smul, ← pow_succ, h_card', det_smul_adjugate_adjugate]
 #align matrix.adjugate_adjugate Matrix.adjugate_adjugate
 
-/-- A weaker version of `matrix.adjugate_adjugate` that uses `nontrivial`. -/
+/-- A weaker version of `Matrix.adjugate_adjugate` that uses `Nontrivial`. -/
 theorem adjugate_adjugate' (A : Matrix n n α) [Nontrivial n] :
     adjugate (adjugate A) = det A ^ (Fintype.card n - 2) • A :=
   adjugate_adjugate _ <| Fintype.one_lt_card.ne'
