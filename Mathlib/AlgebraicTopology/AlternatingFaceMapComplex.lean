@@ -221,7 +221,7 @@ theorem karoubi_alternatingFaceMapComplex_d (P : Karoubi (SimplicialObject C)) (
   simp only [AlternatingFaceMapComplex.obj_d_eq, Karoubi.sum_hom, Preadditive.comp_sum,
     Karoubi.zsmul_hom, Preadditive.comp_zsmul]
   rfl
-#align algebraic_topology.karoubi_alternating_face_map_complex_d AlgebraicTopology.karoubi_alternating_face_map_complex_d
+#align algebraic_topology.karoubi_alternating_face_map_complex_d AlgebraicTopology.karoubi_alternatingFaceMapComplex_d
 
 namespace AlternatingFaceMapComplex
 

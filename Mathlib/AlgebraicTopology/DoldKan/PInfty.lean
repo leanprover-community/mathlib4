@@ -239,7 +239,7 @@ theorem karoubi_PInfty_f {Y : Karoubi (SimplicialObject C)} (n : ℕ) :
   dsimp at eq
   rw [← eq, app_idem_assoc Y (op [n])]
 set_option linter.uppercaseLean3 false in
-#align algebraic_topology.dold_kan.karoubi_P_infty_f AlgebraicTopology.DoldKan.karoubi_pInfty_f
+#align algebraic_topology.dold_kan.karoubi_P_infty_f AlgebraicTopology.DoldKan.karoubi_PInfty_f
 
 end DoldKan
 
