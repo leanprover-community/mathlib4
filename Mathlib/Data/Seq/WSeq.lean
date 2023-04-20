@@ -162,8 +162,6 @@ def drop (s : WSeq α) : ℕ → WSeq α
   | n + 1 => tail (drop s n)
 #align stream.wseq.drop Stream'.WSeq.drop
 
-attribute [simp] drop
-
 /-- Get the nth element of `s`. -/
 def get? (s : WSeq α) (n : ℕ) : Computation (Option α) :=
   head (drop s n)
@@ -523,7 +521,6 @@ theorem liftRel_destruct_iff {R : α → β → Prop} {s : WSeq α} {t : WSeq β
 #align stream.wseq.lift_rel_destruct_iff Stream'.WSeq.liftRel_destruct_iff
 
 -- Porting note: To avoid ambiguous notation, `~` became `~ʷ`.
--- mathport name: equiv
 infixl:50 " ~ʷ " => Equiv
 
 theorem destruct_congr {s t : WSeq α} :
@@ -623,10 +620,6 @@ theorem Equiv.equivalence : Equivalence (@Equiv α) :=
 
 open Computation
 
--- Porting note: In Lean4, `return` is a built-in notation, so this command doesn't work,
---                         so, `return`s are replaced with `Computation.pure`.
--- local notation "return" => Computation.pure
-
 @[simp]
 theorem destruct_nil : destruct (nil : WSeq α) = Computation.pure none :=
   Computation.destruct_eq_pure rfl
@@ -721,15 +714,13 @@ theorem tail_think (s : WSeq α) : tail (think s) = (tail s).think := by simp [t
 theorem dropn_nil (n) : drop (nil : WSeq α) n = nil := by induction n <;> simp [*, drop]
 #align stream.wseq.dropn_nil Stream'.WSeq.dropn_nil
 
--- Porting note: `drop` is unfolded earlier than this even if this has high priority.
-@[simp, nolint simpNF]
+@[simp]
 theorem dropn_cons (a : α) (s) (n) : drop (cons a s) (n + 1) = drop s n := by
   induction n with
-  | zero => simp
+  | zero => simp [drop]
   | succ n n_ih =>
     -- Porting note: Was `simp [*, drop]`.
-    rw [drop, n_ih]
-    simp
+    simp [drop, ←n_ih]
 #align stream.wseq.dropn_cons Stream'.WSeq.dropn_cons
 
 @[simp]
@@ -1008,14 +999,13 @@ theorem exists_get?_of_mem {s : WSeq α} {a} (h : a ∈ s) : ∃ n, some a ∈ g
   · intro a' s' h
     cases' h with h h
     · exists 0
-      simp [get?]
+      simp only [get?, drop, head_cons]
       rw [h]
       apply ret_mem
     · cases' h with n h
       exists n + 1
       -- Porting note: Was `simp [get?]`.
-      simp only [get?, dropn_cons]
-      exact h
+      simpa [get?]
   · intro s' h
     cases' h with n h
     exists n
@@ -1038,7 +1028,7 @@ theorem liftRel_dropn_destruct {R : α → β → Prop} {s t} (H : LiftRel R s t
     ∀ n, Computation.LiftRel (LiftRelO R (LiftRel R)) (destruct (drop s n)) (destruct (drop t n))
   | 0 => liftRel_destruct H
   | n + 1 => by
-    simp [destruct_tail]
+    simp [destruct_tail, drop]
     apply liftRel_bind
     apply liftRel_dropn_destruct H n
     exact fun {a b} o =>
@@ -1187,7 +1177,7 @@ theorem tail_congr {s t : WSeq α} (h : s ~ʷ t) : tail s ~ʷ tail t := by
 #align stream.wseq.tail_congr Stream'.WSeq.tail_congr
 
 theorem dropn_congr {s t : WSeq α} (h : s ~ʷ t) (n) : drop s n ~ʷ drop t n := by
-  induction n <;> simp [*, tail_congr]
+  induction n <;> simp [*, tail_congr, drop]
 #align stream.wseq.dropn_congr Stream'.WSeq.dropn_congr
 
 theorem get?_congr {s t : WSeq α} (h : s ~ʷ t) (n) : get? s n ~ get? t n :=
@@ -1367,7 +1357,7 @@ theorem tail_ofSeq (s : Seq α) : tail (ofSeq s) = ofSeq s.tail := by
 theorem dropn_ofSeq (s : Seq α) : ∀ n, drop (ofSeq s) n = ofSeq (s.drop n)
   | 0 => rfl
   | n + 1 => by
-    dsimp [drop]
+    simp only [drop, Nat.add_eq, add_zero, Seq.drop]
     rw [dropn_ofSeq s n, tail_ofSeq]
 #align stream.wseq.dropn_of_seq Stream'.WSeq.dropn_ofSeq
 

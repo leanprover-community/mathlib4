@@ -18,7 +18,7 @@ import Mathlib.Tactic.Ring
 This file defines versions of `Nat.minFac` and `Nat.Prime` for `Num` and `PosNum`. As with other
 `Num` definitions, they are not intended for general use (`Nat` should be used instead of `Num` in
 most cases) but they can be used in contexts where kernel computation is required, such as proofs
-by `rfl` and `dec_trivial`, as well as in `#reduce`.
+by `rfl` and `decide`, as well as in `#reduce`.
 
 The default decidable instance for `Nat.Prime` is optimized for VM evaluation, so it should be
 preferred within `#eval` or in tactic execution, while for proofs the `norm_num` tactic can be used
