@@ -22,12 +22,12 @@ import Mathlib.LinearAlgebra.Pi
 /-!
 # Determinant of a matrix
 
-This file defines the determinant of a matrix, `matrix.det`, and its essential properties.
+This file defines the determinant of a matrix, `Matrix.det`, and its essential properties.
 
 ## Main definitions
 
- - `matrix.det`: the determinant of a square matrix, as a sum over permutations
- - `matrix.det_row_alternating`: the determinant, as an `alternating_map` in the rows of the matrix
+ - `Matrix.det`: the determinant of a square matrix, as a sum over permutations
+ - `Matrix.detRowAlternating`: the determinant, as an `AlternatingMap` in the rows of the matrix
 
 ## Main results
 
@@ -59,7 +59,7 @@ variable {R : Type v} [CommRing R]
 -- mathport name: «exprε »
 local notation "ε " σ:arg => ((sign σ : ℤ) : R)
 
-/-- `det` is an `alternating_map` in the rows of the matrix. -/
+/-- `det` is an `AlternatingMap` in the rows of the matrix. -/
 def detRowAlternating : AlternatingMap R (n → R) R n :=
   MultilinearMap.alternatization ((MultilinearMap.mkPiAlgebra R n R).compLinearMap LinearMap.proj)
 #align matrix.det_row_alternating Matrix.detRowAlternating
@@ -115,7 +115,7 @@ theorem det_eq_one_of_card_eq_zero {A : Matrix n n R} (h : Fintype.card n = 0) :
 #align matrix.det_eq_one_of_card_eq_zero Matrix.det_eq_one_of_card_eq_zero
 
 /-- If `n` has only one element, the determinant of an `n` by `n` matrix is just that element.
-Although `unique` implies `decidable_eq` and `fintype`, the instances might
+Although `Unique` implies `DecidableEq` and `Fintype`, the instances might
 not be syntactically equal. Thus, we need to fill in the args explicitly. -/
 @[simp]
 theorem det_unique {n : Type _} [Unique n] [DecidableEq n] [Fintype n] (A : Matrix n n R) :
@@ -260,7 +260,7 @@ theorem det_submatrix_equiv_self (e : n ≃ m) (A : Matrix m m R) : det (A.subma
 /-- Reindexing both indices along the same equivalence preserves the determinant.
 
 For the `simp` version of this lemma, see `det_submatrix_equiv_self`; this one is unsuitable because
-`matrix.reindex_apply` unfolds `reindex` first.
+`Matrix.reindex_apply` unfolds `reindex` first.
 -/
 theorem det_reindex_self (e : m ≃ n) (A : Matrix m m R) : det (reindex e e A) = det A :=
   det_submatrix_equiv_self e.symm A
@@ -292,7 +292,7 @@ theorem det_neg (A : Matrix n n R) : det (-A) = (-1) ^ Fintype.card n * det A :=
   rw [← det_smul, neg_one_smul]
 #align matrix.det_neg Matrix.det_neg
 
-/-- A variant of `matrix.det_neg` with scalar multiplication by `units ℤ` instead of multiplication
+/-- A variant of `Matrix.det_neg` with scalar multiplication by `Units ℤ` instead of multiplication
 by `R`. -/
 theorem det_neg_eq_smul (A : Matrix n n R) : det (-A) = (-1 : Units ℤ) ^ Fintype.card n • det A :=
   by rw [← det_smul_of_tower, Units.neg_smul, one_smul]
@@ -590,7 +590,7 @@ theorem det_blockDiagonal {o : Type _} [Fintype o] [DecidableEq o] (M : o → Ma
     ∀ {σ : Equiv.Perm (n × o)}, σ ∈ preserving_snd ↔ ∀ x, (σ x).snd = x.snd := fun {σ} =>
     Finset.mem_filter.trans ⟨fun h => h.2, fun h => ⟨Finset.mem_univ _, h⟩⟩
   rw [← Finset.sum_subset (Finset.subset_univ preserving_snd) _]
-  -- And that these are in bijection with `o → equiv.perm m`.
+  -- And that these are in bijection with `o → Equiv.Perm m`.
   rw [(Finset.sum_bij
         (fun (σ : ∀ k : o, k ∈ Finset.univ → Equiv.Perm n) _ =>
           prodCongrLeft fun k => σ k (Finset.mem_univ k))
@@ -725,8 +725,8 @@ theorem det_succ_column_zero {n : ℕ} (A : Matrix (Fin n.succ) (Fin n.succ) R) 
       Equiv.Perm.decomposeFin.symm_sign, Equiv.swap_self, if_true, id.def, eq_self_iff_true,
       Equiv.Perm.decomposeFin_symm_apply_succ, Fin.succAbove_zero, Equiv.coe_refl, pow_zero,
       mul_smul_comm, of_apply]
-  -- `univ_perm_fin_succ` gives a different embedding of `perm (fin n)` into
-  -- `perm (fin n.succ)` than the determinant of the submatrix we want,
+  -- `univ_perm_fin_succ` gives a different embedding of `perm (Fin n)` into
+  -- `perm (Fin n.succ)` than the determinant of the submatrix we want,
   -- permute `A` so that we get the correct one.
   have : (-1 : R) ^ (i : ℕ) = (Perm.sign i.cycleRange) := by simp [Fin.sign_cycleRange]
   rw [Fin.val_succ, pow_succ, this, mul_assoc, mul_assoc, mul_left_comm (ε _), ←
