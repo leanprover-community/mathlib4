@@ -145,6 +145,8 @@ noncomputable def extendAlongYoneda : (Cᵒᵖ ⥤ Type u₁) ⥤ ℰ :=
     fun P E E' g => restrictYonedaHomEquiv_natural A P E E' g _
 #align category_theory.colimit_adj.extend_along_yoneda CategoryTheory.ColimitAdj.extendAlongYoneda
 
+-- porting note: these are not necessary for this PR but should
+-- presumably go somewhere
 @[simp]
 theorem extendAlongYoneda_obj (P : Cᵒᵖ ⥤ Type u₁) :
     (extendAlongYoneda A).obj P = colimit ((CategoryOfElements.π P).leftOp ⋙ A) :=
@@ -186,12 +188,10 @@ theorem extendAlongYoneda_obj (P : Cᵒᵖ ⥤ Type u₁) :
   | `($_ $F $(X)*)  => set_option hygiene false in `($(F).homIso $(X)*)
   | _                 => throw ()
 
-set_option pp.proofs.withType false
-
 theorem extendAlongYoneda_map {X Y : Cᵒᵖ ⥤ Type u₁} (f : X ⟶ Y) :
     (extendAlongYoneda A).map f =
       colimit.pre ((CategoryOfElements.π Y).leftOp ⋙ A) (CategoryOfElements.map f).op := by
-  -- the next line was `ext J` in mathlib3
+  -- porting note: the next line was `ext J` in mathlib3
   refine CategoryTheory.Limits.colimit.hom_ext (fun J => ?_)
   erw [colimit.ι_pre ((CategoryOfElements.π Y).leftOp ⋙ A) (CategoryOfElements.map f).op]
   dsimp only [extendAlongYoneda]
@@ -199,6 +199,8 @@ theorem extendAlongYoneda_map {X Y : Cᵒᵖ ⥤ Type u₁} (f : X ⟶ Y) :
   dsimp only [IsColimit.homIso']
   dsimp only [IsColimit.homIso]
   dsimp only [uliftTrivial]
+  -- todo : tidy. I think it's a non-confluent simp set which has caused this mess.
+  -- In mathlib3 it was just `simp, refl`
   simp only [Adjunction.leftAdjointOfEquiv_map]
   simp only [Iso.symm_mk]
   simp only [Iso.toEquiv_comp]
