@@ -102,7 +102,7 @@ jobs:
         run: env LEAN_ABORT_ON_PANIC=1 lake build
 
       - name: build library_search cache
-        run: lake env lean Extras/LibrarySearch.lean
+        run: lake env lean MathlibExtras/LibrarySearch.lean
 
       - name: upload cache
         if: always()
