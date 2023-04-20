@@ -71,34 +71,49 @@ inductive DeclMod
 deriving DecidableEq
 
 def buildDiscrTree (name : Name) (constInfo : ConstantInfo)
-  (lemmas : DiscrTree (Name × DeclMod) true) : MetaM (DiscrTree (Name × DeclMod) true) := do
-    if constInfo.isUnsafe then return lemmas
-    if ← isBlackListed name then return lemmas
-    withNewMCtxDepth do withReducible do
-      let (_, _, type) ← forallMetaTelescopeReducing constInfo.type
-      let keys ← DiscrTree.mkPath type
-      let lemmas := lemmas.insertIfSpecific keys (name, .none)
-      match type.getAppFnArgs with
-      | (``Eq, #[_, lhs, rhs]) => do
-        let keys_symm ← DiscrTree.mkPath (← mkEq rhs lhs)
-        pure (lemmas.insertIfSpecific keys_symm (name, .symm))
-      | (``Iff, #[lhs, rhs]) => do
-        let keys_mp ← DiscrTree.mkPath rhs
-        let keys_mpr ← DiscrTree.mkPath lhs
-        pure <| (lemmas.insertIfSpecific keys_mp (name, .mp)).insertIfSpecific keys_mpr (name, .mpr)
-      | _ => pure lemmas
+    (lemmas : DiscrTree (Name × DeclMod) true) : MetaM (DiscrTree (Name × DeclMod) true) := do
+  if constInfo.isUnsafe then return lemmas
+  if ← isBlackListed name then return lemmas
+  withNewMCtxDepth do withReducible do
+    let (_, _, type) ← forallMetaTelescopeReducing constInfo.type
+    let keys ← DiscrTree.mkPath type
+    let lemmas := lemmas.insertIfSpecific keys (name, .none)
+    match type.getAppFnArgs with
+    | (``Eq, #[_, lhs, rhs]) => do
+      let keys_symm ← DiscrTree.mkPath (← mkEq rhs lhs)
+      pure (lemmas.insertIfSpecific keys_symm (name, .symm))
+    | (``Iff, #[lhs, rhs]) => do
+      let keys_mp ← DiscrTree.mkPath rhs
+      let keys_mpr ← DiscrTree.mkPath lhs
+      pure <| (lemmas.insertIfSpecific keys_mp (name, .mp)).insertIfSpecific keys_mpr (name, .mpr)
+    | _ => pure lemmas
 
 open System (FilePath)
 
 def cachePath : FilePath := "build" / "lib" / "Extras" / "LibrarySearch.extra"
 
-initialize librarySearchLemmas : DeclCache (DiscrTree (Name × DeclMod) true) ← do
+/--
+A structure that holds the cached discrimination tree,
+and possibly a pointer to a memory region, if we unpickled the tree from disk.
+-/
+structure CachedData where
+  pointer? : Option CompactedRegion
+  cache : DeclCache (DiscrTree (Name × DeclMod) true)
+
+noncomputable instance : Inhabited CachedData := ⟨none, Classical.choice inferInstance⟩
+
+initialize cachedData : CachedData ← unsafe do
   let useCache ← cachePath.pathExists
   if useCache then
-    return (← Cache.mk ((·.1) <$> (unpickle (DiscrTree (Name × DeclMod) true) cachePath)),
-      buildDiscrTree)
+    let (d, r) ← unpickle (DiscrTree (Name × DeclMod) true) cachePath
+    return ⟨r, (← Cache.mk (pure d), buildDiscrTree)⟩
   else
-    DeclCache.mk "librarySearch: init cache" {} buildDiscrTree
+    return ⟨none, ← DeclCache.mk "librarySearch: init cache" {} buildDiscrTree⟩
+
+/--
+Retrieve the current current of lemmas.
+-/
+def librarySearchLemmas : DeclCache (DiscrTree (Name × DeclMod) true) := cachedData.cache
 
 /-- Shortcut for calling `solveByElim`. -/
 def solveByElim (goals : List MVarId) (required : List Expr) (depth) := do

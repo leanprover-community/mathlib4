@@ -24,12 +24,12 @@ def pickle {α : Type} (path : FilePath) (x : α) (key : Name := by exact decl_n
 /--
 Load an object from disk. Better to use `withUnpickle`, which frees memory.
 -/
-def unpickle (α : Type) (path : FilePath) : IO (α × CompactedRegion) := unsafe do
+unsafe def unpickle (α : Type) (path : FilePath) : IO (α × CompactedRegion) := do
   let (x, region) ← readModuleData path
   pure (unsafeCast x, region)
 
 /-- Load an object from disk and run some continuation on it, freeing memory afterwards. -/
-def withUnpickle [Monad m] [MonadLiftT IO m] {α β : Type}
+unsafe def withUnpickle [Monad m] [MonadLiftT IO m] {α β : Type}
     (path : FilePath) (f : α → m β) : m β := do
   let (x, region) ← unpickle α path
   let r ← f x
