@@ -922,8 +922,10 @@ import Mathlib.Data.MvPolynomial.Counit
 import Mathlib.Data.MvPolynomial.Division
 import Mathlib.Data.MvPolynomial.Equiv
 import Mathlib.Data.MvPolynomial.Expand
+import Mathlib.Data.MvPolynomial.Funext
 import Mathlib.Data.MvPolynomial.Invertible
 import Mathlib.Data.MvPolynomial.Monad
+import Mathlib.Data.MvPolynomial.Polynomial
 import Mathlib.Data.MvPolynomial.Rename
 import Mathlib.Data.MvPolynomial.Supported
 import Mathlib.Data.MvPolynomial.Variables
