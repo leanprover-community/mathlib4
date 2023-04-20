@@ -64,8 +64,7 @@ variable {ι : Type _} (b : Basis ι R M)
 
 open Submodule.IsPrincipal Submodule
 
--- Porting note : TODO
-set_option synthInstance.etaExperiment true in
+set_option synthInstance.etaExperiment true in -- Porting note : added
 theorem eq_bot_of_generator_maximal_map_eq_zero (b : Basis ι R M) {N : Submodule R M}
     {ϕ : M →ₗ[R] R} (hϕ : ∀ ψ : M →ₗ[R] R, ¬N.map ϕ < N.map ψ) [(N.map ϕ).IsPrincipal]
     (hgen : generator (N.map ϕ) = (0 : R)) : N = ⊥ := by
@@ -120,8 +119,7 @@ variable {M : Type _} [AddCommGroup M] [Module R M] {b : ι → M}
 
 open Submodule.IsPrincipal
 
--- Porting note : TODO
-set_option synthInstance.etaExperiment true in
+set_option synthInstance.etaExperiment true in -- Porting note : added
 theorem generator_maximal_submoduleImage_dvd {N O : Submodule R M} (hNO : N ≤ O) {ϕ : O →ₗ[R] R}
     (hϕ : ∀ ψ : O →ₗ[R] R, ¬ϕ.submoduleImage N < ψ.submoduleImage N)
     [(ϕ.submoduleImage N).IsPrincipal] (y : M) (yN : y ∈ N)
@@ -307,7 +305,6 @@ theorem Submodule.nonempty_basis_of_pid {ι : Type _} [Finite ι] (b : Basis ι 
   haveI := Classical.decEq M
   cases nonempty_fintype ι
   induction' N using inductionOnRank with N ih
--- Porting note: TODO -- improve this proof
   exact b
   let b' := (b.reindex (Fintype.equivFin ι)).map (LinearEquiv.ofTop _ rfl).symm
   by_cases N_bot : N = ⊥
@@ -358,8 +355,7 @@ noncomputable def Submodule.basisOfPidOfLeSpan {ι : Type _} [Finite ι] {b : ι
   Submodule.basisOfPidOfLe le (Basis.span hb)
 #align submodule.basis_of_pid_of_le_span Submodule.basisOfPidOfLeSpan
 
--- Porting note: TODO
-set_option synthInstance.etaExperiment true in
+set_option synthInstance.etaExperiment true in -- Porting note: added
 -- Porting note: Mathport warning: expanding binder collection (i «expr ∉ » I)
 /-- A finite type torsion free module over a PID admits a basis. -/
 noncomputable def Module.basisOfFiniteTypeTorsionFree [Fintype ι] {s : ι → M}
@@ -440,10 +436,15 @@ bases for `M` and `N` such that the inclusion map `N → M` can be written as a
 (rectangular) matrix with `a` along the diagonal: in Smith normal form. -/
 -- Porting note: @[nolint has_nonempty_instance]
 structure Basis.SmithNormalForm (N : Submodule R M) (ι : Type _) (n : ℕ) where
+  /-- The basis of M. -/
   bM : Basis ι R M
+  /-- The basis of N. -/
   bN : Basis (Fin n) R N
+  /-- The mapping between the vectors of the bases. -/
   f : Fin n ↪ ι
+  /-- The (diagonal) entries of the matrix. -/
   a : Fin n → R
+  /-- The SNF relation between the vectors of the bases. -/
   snf : ∀ i, (bN i : M) = a i • bM (f i)
 #align basis.smith_normal_form Basis.SmithNormalForm
 
