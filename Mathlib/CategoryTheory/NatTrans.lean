@@ -10,6 +10,7 @@ Ported by: Scott Morrison
 ! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Functor.Basic
+import Mathlib.Tactic.Reassoc
 
 /-!
 # Natural transformations
