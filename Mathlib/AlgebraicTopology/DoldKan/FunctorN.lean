@@ -8,7 +8,7 @@ Authors: Joël Riou
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.AlgebraicTopology.DoldKan.PInfty
+import Mathlib.AlgebraicTopology.DoldKan.PInfty
 
 /-!
 
@@ -55,8 +55,7 @@ variable {C : Type _} [Category C] [Preadditive C]
 /-- The functor `simplicial_object C ⥤ karoubi (chain_complex C ℕ)` which maps
 `X` to the formal direct factor of `K[X]` defined by `P_infty`. -/
 @[simps]
-def n₁ : SimplicialObject C ⥤ Karoubi (ChainComplex C ℕ)
-    where
+def n₁ : SimplicialObject C ⥤ Karoubi (ChainComplex C ℕ) where
   obj X :=
     { pt := AlternatingFaceMapComplex.obj X
       p := pInfty
