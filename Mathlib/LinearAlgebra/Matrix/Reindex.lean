@@ -31,9 +31,7 @@ matrix, reindex
 
 namespace Matrix
 
-open Equiv
-
-open Matrix
+open Equiv Matrix
 
 variable {l m n o : Type _} {l' m' n' o' : Type _} {m'' n'' : Type _}
 
