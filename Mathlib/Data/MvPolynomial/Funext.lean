@@ -12,7 +12,6 @@ import Mathlib.Data.Polynomial.RingDivision
 import Mathlib.Data.MvPolynomial.Rename
 import Mathlib.Data.MvPolynomial.Polynomial
 import Mathlib.RingTheory.Polynomial.Basic
-import Mathlib.Tactic.LibrarySearch
 
 /-!
 ## Function extensionality for multivariate polynomials
