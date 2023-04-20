@@ -22,6 +22,8 @@ including a version of the Cantor-Bendixson Theorem.
 
 * `Perfect C`: A set `C` is perfect, meaning it is closed and every point of it
   is an accumulation point of itself.
+* `Set.scheme β α`: A `β`-scheme on `α`, a collection of subsets of `α` indexed by `List β`.
+  Used to construct maps `(β → ℕ) → α` as limiting objects.
 
 ## Main Statements
 
@@ -31,7 +33,7 @@ including a version of the Cantor-Bendixson Theorem.
 * `exists_countable_union_perfect_of_isClosed`: One version of the **Cantor-Bendixson Theorem**:
   A closed set in a second countable space can be written as the union of a countable set and a
   perfect set.
-* `Perfect.exists_nat_bool_injection`: A perfect nonempty set in a complete metric space
+* `exists_nat_bool_injection`: A perfect nonempty set in a complete metric space
   admits an embedding from the Cantor space.
 
 ## Implementation Notes
@@ -230,10 +232,8 @@ variable {α : Type _} [MetricSpace α] {C : Set α} (hC : Perfect C) {ε : ℝ�
 
 private theorem Perfect.small_diam_aux (ε_pos : 0 < ε) {x : α} (xC : x ∈ C) :
     let D := closure (EMetric.ball x (ε / 2) ∩ C)
-    Perfect D ∧ D.Nonempty ∧ D ⊆ C ∧ EMetric.diam D ≤ ε :=
-  by
-  have : x ∈ EMetric.ball x (ε / 2) :=
-    by
+    Perfect D ∧ D.Nonempty ∧ D ⊆ C ∧ EMetric.diam D ≤ ε := by
+  have : x ∈ EMetric.ball x (ε / 2) := by
     apply EMetric.mem_ball_self
     rw [ENNReal.div_pos_iff]
     exact ⟨ne_of_gt ε_pos, by norm_num⟩
@@ -248,13 +248,11 @@ private theorem Perfect.small_diam_aux (ε_pos : 0 < ε) {x : α} (xC : x ∈ C)
 
 variable (hnonempty : C.Nonempty)
 
-/-- A refinement of `perfect.splitting` for metric spaces, where we also control
+/-- A refinement of `Perfect.splitting` for metric spaces, where we also control
 the diameter of the new perfect sets. -/
 theorem Perfect.small_diam_splitting (ε_pos : 0 < ε) :
-    ∃ C₀ C₁ : Set α,
-      (Perfect C₀ ∧ C₀.Nonempty ∧ C₀ ⊆ C ∧ EMetric.diam C₀ ≤ ε) ∧
-        (Perfect C₁ ∧ C₁.Nonempty ∧ C₁ ⊆ C ∧ EMetric.diam C₁ ≤ ε) ∧ Disjoint C₀ C₁ :=
-  by
+    ∃ C₀ C₁ : Set α, (Perfect C₀ ∧ C₀.Nonempty ∧ C₀ ⊆ C ∧ EMetric.diam C₀ ≤ ε) ∧
+    (Perfect C₁ ∧ C₁.Nonempty ∧ C₁ ⊆ C ∧ EMetric.diam C₁ ≤ ε) ∧ Disjoint C₀ C₁ := by
   rcases hC.splitting hnonempty with ⟨D₀, D₁, ⟨perf0, non0, sub0⟩, ⟨perf1, non1, sub1⟩, hdisj⟩
   cases' non0 with x₀ hx₀
   cases' non1 with x₁ hx₁
@@ -269,10 +267,9 @@ theorem Perfect.small_diam_splitting (ε_pos : 0 < ε) :
 open CantorScheme
 
 /-- Any nonempty perfect set in a complete metric space admits a continuous injection
-from the cantor space, `ℕ → bool`. -/
+from the Cantor space, `ℕ → Bool`. -/
 theorem Perfect.exists_nat_bool_injection [CompleteSpace α] :
-    ∃ f : (ℕ → Bool) → α, range f ⊆ C ∧ Continuous f ∧ Injective f :=
-  by
+    ∃ f : (ℕ → Bool) → α, range f ⊆ C ∧ Continuous f ∧ Injective f := by
   obtain ⟨u, -, upos', hu⟩ := exists_seq_strictAnti_tendsto' (zero_lt_one' ℝ≥0∞)
   have upos := fun n => (upos' n).1
   let P := Subtype fun E : Set α => Perfect E ∧ E.Nonempty
@@ -287,8 +284,7 @@ theorem Perfect.exists_nat_bool_injection [CompleteSpace α] :
     use C1 ih.property.1 ih.property.2 (upos l.length.succ)
     exact ⟨(h1 _ _ _).1, (h1 _ _ _).2.1⟩
   let D : List Bool → Set α := fun l => (DP l).val
-  have hanti : ClosureAntitone D :=
-    by
+  have hanti : ClosureAntitone D := by
     refine' Antitone.closureAntitone _ fun l => (DP l).property.1.closed
     intro l a
     cases a
@@ -308,8 +304,7 @@ theorem Perfect.exists_nat_bool_injection [CompleteSpace α] :
       rw [PiNat.res_length]
     convert(h1 _ _ _).2.2.2
     rw [PiNat.res_length]
-  have hdisj' : CantorScheme.Disjoint D :=
-    by
+  have hdisj' : CantorScheme.Disjoint D := by
     rintro l (a | a) (b | b) hab <;> try contradiction
     · exact hdisj _ _ _
     exact (hdisj _ _ _).symm
