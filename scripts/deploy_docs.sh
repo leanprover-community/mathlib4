@@ -43,6 +43,7 @@ cp -r "workaround/build/doc" mathlib4_docs/docs
 ssh_key=$PWD/deploy_key
 echo "$MATHLIB4_DOCS_KEY" > $ssh_key
 chmod 600 $ssh_key
+mkdir -p ~/.ssh; ssh-keyscan github.com >~/.ssh/known_hosts
 ssh -i $ssh_key git@github.com || true # check ssh access
 cd mathlib4_docs/docs
 git remote set-url origin "git@github.com:leanprover-community/mathlib4_docs.git"
