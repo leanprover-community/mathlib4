@@ -79,13 +79,12 @@ def restrictedYonedaYoneda : restrictedYoneda (yoneda : C ⥤ Cᵒᵖ ⥤ Type u
       NatIso.ofComponents (fun X => yonedaSectionsSmall X.unop _) @ fun X Y f =>
         funext fun x => by
           dsimp
-          have : x.app (Opposite.unop X) (CategoryStruct.id (Opposite.unop (Opposite.unop X))) =
+          have : x.app X (CategoryStruct.id (Opposite.unop X)) =
               (x.app X (𝟙 (Opposite.unop X)))
                := by rfl
           rw [this]
           rw [← FunctorToTypes.naturality _ _ x f (𝟙 _)]
-          simp only [id_comp, Functor.op_obj, Opposite.unop_op, yoneda_obj_map, comp_id]
-          rfl)
+          simp only [id_comp, Functor.op_obj, Opposite.unop_op, yoneda_obj_map, comp_id])
     @fun _ _ _ => rfl
 #align category_theory.colimit_adj.restricted_yoneda_yoneda CategoryTheory.ColimitAdj.restrictedYonedaYoneda
 
@@ -190,7 +189,8 @@ theorem extendAlongYoneda_obj (P : Cᵒᵖ ⥤ Type u₁) :
 theorem extendAlongYoneda_map {X Y : Cᵒᵖ ⥤ Type u₁} (f : X ⟶ Y) :
     (extendAlongYoneda A).map f =
       colimit.pre ((CategoryOfElements.π Y).leftOp ⋙ A) (CategoryOfElements.map f).op := by
-  -- porting note: the next line was `ext J` in mathlib3
+  -- Porting note:
+  -- the next line was `ext J` in mathlib3
   refine CategoryTheory.Limits.colimit.hom_ext (fun J => ?_)
   erw [colimit.ι_pre ((CategoryOfElements.π Y).leftOp ⋙ A) (CategoryOfElements.map f).op]
   dsimp only [extendAlongYoneda]
