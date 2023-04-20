@@ -22,11 +22,11 @@ open Lean
   let x := ((ListM.fix F 10).force).run []
   guard $ x = some ([10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0], [1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
 
-example : ((ListM.fix F 10).takeAsList 4).run [] = some ([10, 9, 8, 7], [7, 8, 9, 10]) := by
+example : ((ListM.fix F 10).takeAsList 4).run [] = some ([10, 9, 8, 7], [8, 9, 10]) := by
   native_decide
 example :
     (((ListM.fix F 10).map fun n => n*n).takeAsList 3).run [] =
-      some ([100, 81, 64], [8, 9, 10]) := by
+      some ([100, 81, 64], [9, 10]) := by
   native_decide
 
 def l1 : ListM S Nat := ListM.ofList [0,1,2]

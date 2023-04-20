@@ -22,31 +22,34 @@ variable (m : Type u → Type u)
 private structure ListMApi where
   listM : Type u → Type u
   nil : listM α
-  cons : m (Option α × listM α) → listM α
+  cons' : α → listM α → listM α
+  squash : m (listM α) → listM α
   uncons : [Monad m] → listM α → m (Option (α × listM α))
 
 instance : Nonempty (ListMApi m) := .intro {
   listM := fun _ => PUnit
   nil := ⟨⟩
-  cons := fun _ => ⟨⟩
+  cons' := fun _ _ => ⟨⟩
+  squash := fun _ => ⟨⟩
   uncons := fun _ => pure none
 }
 
 private unsafe inductive ListMImpl (α : Type u) : Type u
   | nil : ListMImpl α
-  | cons : m (Option α × ListMImpl α) → ListMImpl α
+  | cons' : α → ListMImpl α → ListMImpl α
+  | squash : m (ListMImpl α) → ListMImpl α
 
 private unsafe def unconsImpl [Monad m] :
     ListMImpl m α → m (Option (α × ListMImpl m α))
   | .nil => pure none
-  | .cons l => do match ← l with
-    | (none, xs) => unconsImpl xs
-    | (some x, xs) => return (x, xs)
+  | .squash t => t >>= unconsImpl
+  | .cons' x xs => return (x, xs)
 
 @[inline] private unsafe def listMApiImpl : ListMApi.{u} m where
   listM := ListMImpl m
   nil := .nil
-  cons := .cons
+  cons' := .cons'
+  squash := .squash
   uncons := unconsImpl m
 
 @[implemented_by listMApiImpl]
@@ -65,10 +68,23 @@ variable {α β : Type u} {m : Type u → Type u}
 @[inline] def nil : ListM m α := (listMApi m).nil
 
 /--
+Constructs a `ListM` from head and tail.
+-/
+@[inline] def cons' : α → ListM m α → ListM m α := (listMApi m).cons'
+
+/-- Lift a monadic lazy list inside the monad to a monadic lazy list. -/
+def squash : m (ListM m α) → ListM m α := (listMApi m).squash
+#align tactic.mllist.squash ListM.squash
+
+/--
 Constructs a `ListM` by providing a monadic value computing both the head and tail of the list.
 The head is an `Option`, when `none` it is skipped and the list is only the tail.
 -/
-@[inline] def cons : m (Option α × ListM m α) → ListM m α := (listMApi m).cons
+@[inline] -- inline because the compiler can usually optimize away the intermediate Option
+def cons [Monad m] : m (Option α × ListM m α) → ListM m α :=
+  fun x => squash do match ← x with
+    | (none, xs) => pure xs
+    | (some x, xs) => return cons' x xs
 
 /-- Deconstruct a `ListM`, returning inside the monad an optional pair `α × ListM m α`
 representing the head and tail of the list. -/
@@ -95,22 +111,22 @@ instance [Monad m] [MonadLiftT m n] : ForIn n (ListM m α) α where
   forIn := ListM.forIn
 
 /-- Construct a `ListM` recursively. -/
-partial def fix [Alternative m] (f : α → m α) : α → ListM m α
-  | x => cons <| (fun a => (some x, fix f a)) <$> f x <|> pure (some x, nil)
+partial def fix [Monad m] [Alternative m] (f : α → m α) (x : α) : ListM m α :=
+  cons' x <| squash <| (fix f <$> f x) <|> pure nil
 #align tactic.mllist.fix ListM.fix
 
 variable [Monad m]
 
 /-- Construct a `ListM` by iteration. (`m` must be a stateful monad for this to be useful.) -/
 partial def iterate (f : m α) : ListM m α :=
-  cons do pure (← f, iterate f)
+  squash do return cons' (← f) (iterate f)
 
 /-- Repeatedly apply a function `f : α → m (α × List β)` to an initial `a : α`,
 accumulating the elements of the resulting `List β` as a single monadic lazy list.
 
 (This variant allows starting with a specified `List β` of elements, as well. )-/
 partial def fixl_with [Alternative m] (f : α → m (α × List β)) : α → List β → ListM m β
-  | s, b :: rest => cons <| pure (some b, fixl_with f s rest)
+  | s, b :: rest => cons' b (fixl_with f s rest)
   | s, [] => cons <| (do
     let (s', l) ← f s
     match l with
@@ -133,7 +149,7 @@ def isEmpty (xs : ListM m α) : m (ULift Bool) :=
 /-- Convert a `List` to a `ListM`. -/
 def ofList : List α → ListM m α
   | [] => nil
-  | h :: t => cons (pure (h, ofList t))
+  | h :: t => cons' h (ofList t)
 #align tactic.mllist.of_list ListM.ofList
 
 /-- The empty `ListM`. -/
@@ -159,11 +175,6 @@ def asArray (L : ListM m α) : m (Array α) := do
     r := r.push a
   return r
 
-/-- Lift a monadic lazy list inside the monad to a monadic lazy list. -/
-def squash (t : m (ListM m α)) : ListM m α :=
-  cons do return (none, ← t)
-#align tactic.mllist.squash ListM.squash
-
 /--
 Performs a case distinction on a `ListM` when the motive is a `ListM` as well.
 (We need to be in a monadic context to distinguish a nil from a cons.)
@@ -177,7 +188,9 @@ def cases' (xs : ListM m α) (hnil : ListM m β) (hcons : α → ListM m α → 
 /-- Gives the monadic lazy list consisting all of folds of a function on a given initial element.
 Thus `[a₀, a₁, ...].foldsM f b` will give `[b, ← f b a₀, ← f (← f b a₀) a₁, ...]`. -/
 partial def foldsM (f : β → α → m β) (init : β) (L : ListM m α) : ListM m β :=
-  cons <| pure (init, L.cases' {} (fun x xs => squash do return foldsM f (← f init x) xs))
+  cons' init <| squash do match ← L.uncons with
+    | none => return {}
+    | some (x, xs) => return foldsM f (← f init x) xs
 
 /-- Gives the monadic lazy list consisting all of folds of a function on a given initial element.
 Thus `[a₀, a₁, ...].foldsM f b` will give `[b, f b a₀, f (f b a₀) a₁, ...]`. -/
@@ -238,7 +251,7 @@ def filterMap (f : α → Option β) : ListM m α → ListM m β :=
 /-- Take the initial segment of the lazy list, until the function `f` first returns `false`. -/
 partial def takeWhileM (f : α → m (ULift Bool)) (L : ListM m α) : ListM m α :=
   L.cases' {} fun x xs => cons do
-    return if (← f x).down then (none, {}) else (some x, xs.takeWhileM f)
+    return if !(← f x).down then (none, {}) else (some x, xs.takeWhileM f)
 
 /-- Take the initial segment of the lazy list, until the function `f` first returns `false`. -/
 def takeWhile (f : α → Bool) : ListM m α → ListM m α :=
@@ -246,7 +259,7 @@ def takeWhile (f : α → Bool) : ListM m α → ListM m α :=
 
 /-- Concatenate two monadic lazy lists. -/
 partial def append (xs ys : ListM m α) : ListM m α :=
-  xs.cases' ys fun x xs => cons do pure (x, append xs ys)
+  xs.cases' ys fun x xs => cons' x (append xs ys)
 #align tactic.mllist.append ListM.append
 
 /-- Join a monadic lazy list of monadic lazy lists into a single monadic lazy list. -/
@@ -256,7 +269,7 @@ partial def join (xs : ListM m (ListM m α)) : ListM m α :=
 
 /-- Enumerate the elements of a monadic lazy list, starting at a specified offset. -/
 partial def enum_from (n : Nat) (xs : ListM m α) : ListM m (Nat × α) :=
-  xs.cases' {} fun x xs => cons do pure (some (n, x), xs.enum_from (n+1))
+  xs.cases' {} fun x xs => cons' (n, x) (xs.enum_from (n+1))
 #align tactic.mllist.enum_from ListM.enum_from
 
 /-- Enumerate the elements of a monadic lazy list. -/
@@ -265,7 +278,7 @@ def enum : ListM m α → ListM m (Nat × α) :=
 #align tactic.mllist.enum ListM.enum
 
 /-- The infinite monadic lazy list of natural numbers.-/
-def range {m : Type → Type} [Alternative m] : ListM m Nat :=
+def range {m : Type → Type} [Monad m] [Alternative m] : ListM m Nat :=
   ListM.fix (fun n => pure (n + 1)) 0
 #align tactic.mllist.range ListM.range
 
@@ -278,7 +291,7 @@ def concat : ListM m α → α → ListM m α
 partial def zip (L : ListM m α) (M : ListM m β) : ListM m (α × β) :=
   L.cases' {} fun a L =>
   M.cases' {} fun b M =>
-  cons <| pure ((a, b), L.zip M)
+  cons' (a, b) (L.zip M)
 
 /-- Apply a function returning a monadic lazy list to each element of a monadic lazy list,
 joining the results. -/
@@ -293,15 +306,15 @@ def monadLift (x : m α) : ListM m α :=
 
 /-- Lift the monad of a lazy list. -/
 partial def liftM [Monad n] [MonadLift m n] (L : ListM m α) : ListM n α :=
-  squash do match ← (uncons L : m _) with
-    | none => pure empty
-    | some (a, L') => pure <| cons do pure (a, L'.liftM)
+  squash do return match ← (uncons L : m _) with
+    | none => {}
+    | some (a, L') => cons' a L'.liftM
 
 /-- Given a lazy list in a state monad, run it on some initial state, recording the states. -/
 partial def runState (L : ListM (StateT.{u} σ m) α) (s : σ) : ListM m (α × σ) :=
-  squash do match ← StateT.run (uncons L) s with
-    | (none, _) => pure empty
-    | (some (a, L'), s') => pure <| cons do pure (some (a, s'), L'.runState s')
+  squash do return match ← (uncons L).run s with
+    | (none, _) => {}
+    | (some (a, L'), s') => cons' (a, s') (L'.runState s')
 
 /-- Given a lazy list in a state monad, run it on some initial state. -/
 def runState' (L : ListM (StateT.{u} σ m) α) (s : σ) : ListM m α :=
