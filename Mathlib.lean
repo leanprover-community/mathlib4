@@ -532,6 +532,7 @@ import Mathlib.CategoryTheory.Linear.LinearFunctor
 import Mathlib.CategoryTheory.Localization.Construction
 import Mathlib.CategoryTheory.Localization.Opposite
 import Mathlib.CategoryTheory.Localization.Predicate
+import Mathlib.CategoryTheory.Monad.Adjunction
 import Mathlib.CategoryTheory.Monad.Algebra
 import Mathlib.CategoryTheory.Monad.Basic
 import Mathlib.CategoryTheory.Monad.Kleisli
@@ -557,6 +558,7 @@ import Mathlib.CategoryTheory.Pi.Basic
 import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 import Mathlib.CategoryTheory.Preadditive.Basic
 import Mathlib.CategoryTheory.Preadditive.Biproducts
+import Mathlib.CategoryTheory.Preadditive.EilenbergMoore
 import Mathlib.CategoryTheory.Preadditive.FunctorCategory
 import Mathlib.CategoryTheory.Preadditive.LeftExact
 import Mathlib.CategoryTheory.Preadditive.OfBiproducts
@@ -897,6 +899,7 @@ import Mathlib.Data.Matrix.DualNumber
 import Mathlib.Data.Matrix.Hadamard
 import Mathlib.Data.Matrix.Notation
 import Mathlib.Data.Matrix.PEquiv
+import Mathlib.Data.Matrix.Reflection
 import Mathlib.Data.Multiset.Antidiagonal
 import Mathlib.Data.Multiset.Basic
 import Mathlib.Data.Multiset.Bind
@@ -924,8 +927,10 @@ import Mathlib.Data.MvPolynomial.Counit
 import Mathlib.Data.MvPolynomial.Division
 import Mathlib.Data.MvPolynomial.Equiv
 import Mathlib.Data.MvPolynomial.Expand
+import Mathlib.Data.MvPolynomial.Funext
 import Mathlib.Data.MvPolynomial.Invertible
 import Mathlib.Data.MvPolynomial.Monad
+import Mathlib.Data.MvPolynomial.Polynomial
 import Mathlib.Data.MvPolynomial.Rename
 import Mathlib.Data.MvPolynomial.Supported
 import Mathlib.Data.MvPolynomial.Variables
@@ -1080,7 +1085,9 @@ import Mathlib.Data.Real.Sqrt
 import Mathlib.Data.Rel
 import Mathlib.Data.Semiquot
 import Mathlib.Data.Seq.Computation
+import Mathlib.Data.Seq.Parallel
 import Mathlib.Data.Seq.Seq
+import Mathlib.Data.Seq.WSeq
 import Mathlib.Data.Set.Accumulate
 import Mathlib.Data.Set.Basic
 import Mathlib.Data.Set.BoolIndicator
@@ -1347,14 +1354,18 @@ import Mathlib.LinearAlgebra.FreeAlgebra
 import Mathlib.LinearAlgebra.FreeModule.Basic
 import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 import Mathlib.LinearAlgebra.FreeModule.Finite.Rank
+import Mathlib.LinearAlgebra.FreeModule.PID
 import Mathlib.LinearAlgebra.FreeModule.Rank
 import Mathlib.LinearAlgebra.GeneralLinearGroup
 import Mathlib.LinearAlgebra.InvariantBasisNumber
 import Mathlib.LinearAlgebra.Isomorphisms
 import Mathlib.LinearAlgebra.LinearIndependent
 import Mathlib.LinearAlgebra.LinearPMap
+import Mathlib.LinearAlgebra.Matrix.Determinant
 import Mathlib.LinearAlgebra.Matrix.DotProduct
+import Mathlib.LinearAlgebra.Matrix.MvPolynomial
 import Mathlib.LinearAlgebra.Matrix.Orthogonal
+import Mathlib.LinearAlgebra.Matrix.Reindex
 import Mathlib.LinearAlgebra.Matrix.Symmetric
 import Mathlib.LinearAlgebra.Matrix.Trace
 import Mathlib.LinearAlgebra.Multilinear.Basic
@@ -1559,6 +1570,7 @@ import Mathlib.RingTheory.Adjoin.Basic
 import Mathlib.RingTheory.Adjoin.Fg
 import Mathlib.RingTheory.Adjoin.Tower
 import Mathlib.RingTheory.AlgebraTower
+import Mathlib.RingTheory.ChainOfDivisors
 import Mathlib.RingTheory.Congruence
 import Mathlib.RingTheory.Coprime.Basic
 import Mathlib.RingTheory.Coprime.Ideal

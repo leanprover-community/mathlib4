@@ -742,6 +742,20 @@ theorem mem_graph_iff (f : E →ₗ.[R] F) {x : E × F} :
 theorem mem_graph (f : E →ₗ.[R] F) (x : domain f) : ((x : E), f x) ∈ f.graph := by simp
 #align linear_pmap.mem_graph LinearPMap.mem_graph
 
+theorem graph_map_fst_eq_domain (f : E →ₗ.[R] F) : f.graph.map (LinearMap.fst R E F) = f.domain :=
+  by
+  ext x
+  simp only [Submodule.mem_map, mem_graph_iff, Subtype.exists, exists_and_left, exists_eq_left,
+    LinearMap.fst_apply, Prod.exists, exists_and_right, exists_eq_right]
+  constructor <;> intro h
+  · rcases h with ⟨x, hx, _⟩
+    exact hx
+  · use f ⟨x, h⟩
+    simp only [h, exists_prop]
+
+theorem graph_map_snd_eq_range (f : E →ₗ.[R] F) :
+    f.graph.map (LinearMap.snd R E F) = LinearMap.range f.toFun := by ext; simp
+
 variable {M : Type _} [Monoid M] [DistribMulAction M F] [SMulCommClass R M F] (y : M)
 
 /-- The graph of `z • f` as a pushforward. -/
@@ -962,6 +976,10 @@ noncomputable def toLinearPMap (g : Submodule R (E × F))
         exact (existsUnique_from_graph @hg hsmul).unique hav hav' }
 #align submodule.to_linear_pmap Submodule.toLinearPMap
 
+theorem toLinearPMap_domain (g : Submodule R (E × F))
+    (hg : ∀ (x : E × F) (_hx : x ∈ g) (_hx' : x.fst = 0), x.snd = 0) :
+    (g.toLinearPMap hg).domain = g.map (LinearMap.fst R E F) := rfl
+
 theorem mem_graph_toLinearPMap (g : Submodule R (E × F))
     (hg : ∀ (x : E × F) (_hx : x ∈ g) (_hx' : x.fst = 0), x.snd = 0)
     (x : g.map (LinearMap.fst R E F)) : (x.val, g.toLinearPMap hg x) ∈ g :=
@@ -988,6 +1006,62 @@ theorem toLinearPMap_graph_eq (g : Submodule R (E × F))
   exact (existsUnique_from_graph @hg hx_fst).unique (valFromGraph_mem hg hx_fst) hx
 #align submodule.to_linear_pmap_graph_eq Submodule.toLinearPMap_graph_eq
 
+theorem toLinearPMap_range (g : Submodule R (E × F))
+    (hg : ∀ (x : E × F) (_hx : x ∈ g) (_hx' : x.fst = 0), x.snd = 0) :
+    LinearMap.range (g.toLinearPMap hg).toFun = g.map (LinearMap.snd R E F) := by
+  rw [← LinearPMap.graph_map_snd_eq_range, toLinearPMap_graph_eq]
+
 end SubmoduleToLinearPMap
 
 end Submodule
+
+namespace LinearPMap
+
+section inverse
+
+variable {f : E →ₗ.[R] F} (hf : LinearMap.ker f.toFun = ⊥)
+
+/-- The inverse of a `LinearPMap`. -/
+noncomputable def inverse : F →ₗ.[R] E :=
+  (f.graph.map (LinearEquiv.prodComm R E F)).toLinearPMap
+  (fun v hv hv' => by
+    simp only [Submodule.mem_map, mem_graph_iff, Subtype.exists, exists_and_left, exists_eq_left,
+      LinearEquiv.prodComm_apply, Prod.exists, Prod.swap_prod_mk] at hv
+    rcases hv with ⟨a, b, ⟨ha, h1⟩, ⟨h2, h3⟩⟩
+    simp only at hv' ⊢
+    rw [hv'] at h1
+    rw [LinearMap.ker_eq_bot'] at hf
+    specialize hf ⟨a, ha⟩ h1
+    simp only [Submodule.mk_eq_zero] at hf
+    exact hf )
+
+theorem inverse_graph : (inverse hf).graph = f.graph.map (LinearEquiv.prodComm R E F) := by
+  rw [inverse, Submodule.toLinearPMap_graph_eq]
+
+theorem inverse_domain : (inverse hf).domain = LinearMap.range f.toFun := by
+  rw [inverse, Submodule.toLinearPMap_domain, ← graph_map_snd_eq_range,
+    ← LinearEquiv.fst_comp_prodComm, Submodule.map_comp]
+  rfl
+
+theorem inverse_range : LinearMap.range (inverse hf).toFun = f.domain := by
+  rw [inverse, Submodule.toLinearPMap_range, ← graph_map_fst_eq_domain,
+    ← LinearEquiv.snd_comp_prodComm, Submodule.map_comp]
+  rfl
+
+theorem mem_inverse_graph (x : f.domain) : (f x, (x : E)) ∈ (inverse hf).graph := by
+  simp only [inverse_graph, Submodule.mem_map, mem_graph_iff, Subtype.exists, exists_and_left,
+    exists_eq_left, LinearEquiv.prodComm_apply, Prod.exists, Prod.swap_prod_mk, Prod.mk.injEq]
+  exact ⟨(x : E), f x, ⟨x.2, Eq.refl _⟩, Eq.refl _, Eq.refl _⟩
+
+theorem inverse_apply_eq {y : (inverse hf).domain} {x : f.domain} (hxy : f x = y) :
+    (inverse hf) y = x := by
+  have := mem_inverse_graph hf x
+  simp only [mem_graph_iff, Subtype.exists, exists_and_left, exists_eq_left] at this
+  rcases this with ⟨hx, h⟩
+  rw [← h]
+  congr
+  simp only [hxy, Subtype.coe_eta]
+
+end inverse
+
+end LinearPMap
