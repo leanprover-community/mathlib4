@@ -306,25 +306,26 @@ theorem norm_normedMk_le (S : AddSubgroup M) : ‖S.normedMk‖ ≤ 1 :=
   NormedAddGroupHom.opNorm_le_bound _ zero_le_one fun m => by simp [quotient_norm_mk_le']
 #align add_subgroup.norm_normed_mk_le AddSubgroup.norm_normedMk_le
 
+theorem _root_.QuotientAddGroup.norm_lift_apply_le {S : AddSubgroup M} (f : NormedAddGroupHom M N)
+    (hf : ∀ x ∈ S, f x = 0) (x : M ⧸ S) : ‖lift S f.toAddMonoidHom hf x‖ ≤ ‖f‖ * ‖x‖ := by
+  cases (norm_nonneg f).eq_or_gt with
+  | inl h =>
+    rcases mk_surjective x with ⟨x, rfl⟩
+    simpa [h] using le_opNorm f x
+  | inr h =>
+    rw [← not_lt, ← _root_.lt_div_iff' h, norm_lt_iff]
+    rintro ⟨x, rfl, hx⟩
+    exact ((lt_div_iff' h).1 hx).not_le (le_opNorm f x)
+
 /-- The operator norm of the projection is `1` if the subspace is not dense. -/
 theorem norm_normedMk (S : AddSubgroup M) (h : (S.topologicalClosure : Set M) ≠ univ) :
     ‖S.normedMk‖ = 1 := by
-  refine (norm_normedMk_le S).antisymm (not_lt.1 fun hlt ↦ ?_)
-  obtain ⟨x, hx⟩ : ∃ x : M ⧸ S, 0 < ‖x‖
-  · rcases (Set.nonempty_compl.2 h) with ⟨x, hx⟩
-    exact ⟨x, (norm_nonneg _).lt_of_ne' <| mt (quotient_norm_eq_zero_iff S x).1 hx⟩
-  obtain ⟨r, hr₁, hr⟩ : ∃ r, 1 < r ∧ ‖normedMk S‖ * r ≤ 1
-  · have : ContinuousWithinAt (‖normedMk S‖ * ·) (Ioi 1) 1 :=
-      (continuous_const.mul continuous_id).continuousWithinAt
-    refine (eventually_mem_nhdsWithin.and (eventually_le_of_tendsto_lt ?_ this)).exists
-    simpa
-  rcases norm_lt_iff.1 (lt_mul_of_one_lt_right hx hr₁) with ⟨y, rfl, hy⟩
-  refine hy.not_le ?_
-  calc
-    ‖normedMk S y‖ * r ≤ (‖normedMk S‖ * ‖y‖) * r :=
-      mul_le_mul_of_nonneg_right (le_opNorm _ _) (zero_le_one.trans hr₁.le)
-    _ = ‖y‖ * (‖normedMk S‖ * r) := by ac_rfl
-    _ ≤ ‖y‖ := mul_le_of_le_one_right (norm_nonneg _) hr
+  refine le_antisymm (norm_normedMk_le S) ?_
+  obtain ⟨x, hx⟩ : ∃ x : M, 0 < ‖(x : M ⧸ S)‖
+  · refine (Set.nonempty_compl.2 h).imp fun x hx ↦ ?_
+    exact (norm_nonneg _).lt_of_ne' <| mt (quotient_norm_eq_zero_iff S x).1 hx
+  refine (le_mul_iff_one_le_left hx).1 ?_
+  exact norm_lift_apply_le S.normedMk (fun x ↦ (eq_zero_iff x).2) x
 #align add_subgroup.norm_normed_mk AddSubgroup.norm_normedMk
 
 /-- The operator norm of the projection is `0` if the subspace is dense. -/
@@ -354,16 +355,7 @@ structure IsQuotient (f : NormedAddGroupHom M N) : Prop where
 noncomputable def lift {N : Type _} [SeminormedAddCommGroup N] (S : AddSubgroup M)
     (f : NormedAddGroupHom M N) (hf : ∀ s ∈ S, f s = 0) : NormedAddGroupHom (M ⧸ S) N :=
   { QuotientAddGroup.lift S f.toAddMonoidHom hf with
-    bound' := by
-      obtain ⟨c : ℝ, hcpos : (0 : ℝ) < c, hc : ∀ x, ‖f x‖ ≤ c * ‖x‖⟩ := f.bound
-      refine' ⟨c, fun mbar => le_of_forall_pos_le_add fun ε hε => _⟩
-      obtain ⟨m : M, rfl : mk' S m = mbar, hmnorm : ‖m‖ < ‖mk' S m‖ + ε / c⟩ :=
-        norm_mk_lt mbar (div_pos hε hcpos)
-      calc
-        ‖f m‖ ≤ c * ‖m‖ := hc m
-        _ ≤ c * (‖mk' S m‖ + ε / c) := ((mul_lt_mul_left hcpos).mpr hmnorm).le
-        _ = c * ‖mk' S m‖ + ε := by rw [mul_add, mul_div_cancel' _ hcpos.ne.symm]
-         }
+    bound' := ⟨‖f‖, norm_lift_apply_le f hf⟩ }
 #align normed_add_group_hom.lift NormedAddGroupHom.lift
 
 theorem lift_mk {N : Type _} [SeminormedAddCommGroup N] (S : AddSubgroup M)
@@ -409,33 +401,17 @@ theorem IsQuotient.norm_le {f : NormedAddGroupHom M N} (hquot : IsQuotient f) (m
   · exact ⟨0, f.ker.zero_mem, by simp⟩
 #align normed_add_group_hom.is_quotient.norm_le NormedAddGroupHom.IsQuotient.norm_le
 
+-- porting note: new lemma
+theorem norm_lift_le {N : Type _} [SeminormedAddCommGroup N] (S : AddSubgroup M)
+    (f : NormedAddGroupHom M N) (hf : ∀ s ∈ S, f s = 0) :
+    ‖lift S f hf‖ ≤ ‖f‖ :=
+  opNorm_le_bound _ (norm_nonneg f) (norm_lift_apply_le f hf)
+
+-- porting note: todo: deprecate?
 theorem lift_norm_le {N : Type _} [SeminormedAddCommGroup N] (S : AddSubgroup M)
     (f : NormedAddGroupHom M N) (hf : ∀ s ∈ S, f s = 0) {c : ℝ≥0} (fb : ‖f‖ ≤ c) :
-    ‖lift S f hf‖ ≤ c := by
-  apply opNorm_le_bound _ c.coe_nonneg
-  intro x
-  by_cases hc : c = 0
-  · simp only [hc, NNReal.coe_zero, MulZeroClass.zero_mul] at fb⊢
-    obtain ⟨x, rfl⟩ := surjective_quot_mk _ x
-    show ‖f x‖ ≤ 0
-    calc
-      ‖f x‖ ≤ 0 * ‖x‖ := f.le_of_opNorm_le fb x
-      _ = 0 := MulZeroClass.zero_mul _
-  · replace hc : 0 < c := pos_iff_ne_zero.mpr hc
-    apply le_of_forall_pos_le_add
-    intro ε hε
-    have aux : 0 < ε / c := div_pos hε hc
-    obtain ⟨x, rfl, Hx⟩ : ∃ x', S.normed_mk x' = x ∧ ‖x'‖ < ‖x‖ + ε / c :=
-      (is_quotient_quotient _).norm_lift aux _
-    rw [lift_mk]
-    calc
-      ‖f x‖ ≤ c * ‖x‖ := f.le_of_op_norm_le fb x
-      _ ≤ c * (‖S.normed_mk x‖ + ε / c) := ((mul_le_mul_left _).mpr Hx.le)
-      _ = c * _ + ε := _
-      
-    · exact_mod_cast hc
-    · rw [mul_add, mul_div_cancel']
-      exact_mod_cast hc.ne'
+    ‖lift S f hf‖ ≤ c :=
+  (norm_lift_le S f hf).trans fb
 #align normed_add_group_hom.lift_norm_le NormedAddGroupHom.lift_norm_le
 
 theorem lift_normNoninc {N : Type _} [SeminormedAddCommGroup N] (S : AddSubgroup M)
@@ -480,7 +456,7 @@ instance Submodule.Quotient.completeSpace [CompleteSpace M] : CompleteSpace (M �
 
 /-- For any `x : M ⧸ S` and any `0 < ε`, there is `m : M` such that `submodule.quotient.mk m = x`
 and `‖m‖ < ‖x‖ + ε`. -/
-theorem Submodule.Quotient.norm_mk_lt {S : Submodule R M} (x : M ⧸ S) {ε : ℝ} (hε : 0 < ε) :
+nonrec theorem Submodule.Quotient.norm_mk_lt {S : Submodule R M} (x : M ⧸ S) {ε : ℝ} (hε : 0 < ε) :
     ∃ m : M, Submodule.Quotient.mk m = x ∧ ‖m‖ < ‖x‖ + ε :=
   norm_mk_lt x hε
 #align submodule.quotient.norm_mk_lt Submodule.Quotient.norm_mk_lt
