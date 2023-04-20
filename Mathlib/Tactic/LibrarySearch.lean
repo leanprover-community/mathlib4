@@ -67,7 +67,7 @@ def buildDiscrTree (name : Name) (constInfo : ConstantInfo)
 
 open System (FilePath)
 
-def cachePath : FilePath := "build" / "lib" / "Extras" / "LibrarySearch.extra"
+def cachePath : FilePath := "build" / "lib" / "MathlibExtras" / "LibrarySearch.extra"
 
 /--
 A structure that holds the cached discrimination tree,
