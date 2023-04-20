@@ -21,4 +21,4 @@ open Mathlib.Tactic.LibrarySearch
 run_cmd liftTermElabM do
   _ ← cachePath.parent.mapM fun p => IO.FS.createDirAll p
   if ← cachePath.pathExists then IO.FS.removeFile cachePath
-  pickle cachePath (← librarySearchLemmas.get)
+  pickle cachePath (← librarySearchLemmas.get) `LibrarySearch
