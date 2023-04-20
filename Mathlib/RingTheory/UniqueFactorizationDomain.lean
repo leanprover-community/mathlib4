@@ -1024,6 +1024,22 @@ theorem count_normalizedFactors_eq' {p x : R} (hp : p = 0 ∨ Irreducible p) (hn
   · exact count_normalizedFactors_eq hp hnorm hle hlt
 #align unique_factorization_monoid.count_normalized_factors_eq' UniqueFactorizationMonoid.count_normalizedFactors_eq'
 
+
+theorem max_powerFactor {a₀ : R} (h : a₀ ≠ 0) (hx : Irreducible x) [Nontrivial R] :
+  ∃ n : ℕ, ∃ a : R, ¬ x ∣ a ∧ a₀ = x ^ n * a := by
+  let n := (normalizedFactors a₀).count (normalize x)
+  obtain ⟨a, ha1, ha2⟩ := (@exists_eq_pow_mul_and_not_dvd R _ _ x a₀
+    (ne_top_iff_finite.mp (PartENat.ne_top_iff.mpr _)))
+  simp_rw [← (multiplicity_eq_count_normalizedFactors hx h).symm] at ha1
+  use n
+  use a
+  use ha2
+  rw [ha1]
+  rfl
+  use n
+  exact (multiplicity_eq_count_normalizedFactors hx h)
+
+
 end multiplicity
 
 section Multiplicative
