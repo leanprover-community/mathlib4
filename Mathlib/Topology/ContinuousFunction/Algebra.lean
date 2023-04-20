@@ -937,11 +937,21 @@ variable {R : Type _} [LinearOrderedField R]
 -- Rather than stranding it at some intermediate location,
 -- it's here, immediately prior to the point of use.
 theorem min_eq_half_add_sub_abs_sub {x y : R} : min x y = 2⁻¹ * (x + y - |x - y|) := by
-  cases' le_total x y with h h; field_simp [h, abs_of_nonneg, abs_of_nonpos, mul_two] <;> abel
+  cases' le_total x y with h h; field_simp [h, abs_of_nonneg, abs_of_nonpos, mul_two]
+  -- Porting note: was: `<;> abel`.
+  . rw [← add_sub, add_right_inj, ← sub_add, sub_self, zero_add]
+  . rw [min_eq_right h, abs_of_nonneg (by simp [sub_nonneg_of_le, h]), ← sub_add, add_comm x y,
+      ← add_sub, sub_self, add_zero, ← two_mul, inv_mul_cancel_left₀]
+    simp
 #align min_eq_half_add_sub_abs_sub min_eq_half_add_sub_abs_sub
 
 theorem max_eq_half_add_add_abs_sub {x y : R} : max x y = 2⁻¹ * (x + y + |x - y|) := by
-  cases' le_total x y with h h; field_simp [h, abs_of_nonneg, abs_of_nonpos, mul_two] <;> abel
+  cases' le_total x y with h h; field_simp [h, abs_of_nonneg, abs_of_nonpos, mul_two]
+  -- Porting note: was: `<;> abel`.
+  . rw [add_sub, add_comm (x + y) y, ← add_sub, add_comm x y, ← add_sub, sub_self, add_zero]
+  . rw [max_eq_left h, abs_of_nonneg (by simp [sub_nonneg_of_le, h]), add_sub, add_comm _ x,
+      ← add_sub, ← add_sub, sub_self, add_zero, ← two_mul, inv_mul_cancel_left₀]
+    simp
 #align max_eq_half_add_add_abs_sub max_eq_half_add_add_abs_sub
 
 end
