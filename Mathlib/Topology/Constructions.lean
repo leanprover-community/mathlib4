@@ -4,12 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 
 ! This file was ported from Lean 3 source module topology.constructions
-! leanprover-community/mathlib commit 0c1f285a9f6e608ae2bdffa3f993eafb01eba829
+! leanprover-community/mathlib commit 55d771df074d0dd020139ee1cd4b95521422df9f
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Maps
-import Mathlib.Topology.LocallyFinite
 import Mathlib.Order.Filter.Pi
 
 /-!
@@ -1069,24 +1068,6 @@ theorem tendsto_subtype_rng {β : Type _} {p : α → Prop} {b : Filter β} {f :
   | ⟨a, ha⟩ => by rw [nhds_subtype_eq_comap, tendsto_comap_iff]; rfl
 #align tendsto_subtype_rng tendsto_subtype_rng
 
--- porting note: todo: see https://github.com/leanprover-community/mathlib/pull/18321
-theorem continuous_subtype_nhds_cover {ι : Sort _} {f : α → β} {c : ι → α → Prop}
-    (c_cover : ∀ x : α, ∃ i, { x | c i x } ∈ 𝓝 x)
-    (f_cont : ∀ i, Continuous fun x : Subtype (c i) => f x) : Continuous f :=
-  continuous_iff_continuousAt.mpr fun x => by
-    rcases c_cover x with ⟨i, c_sets⟩
-    lift x to Subtype (c i) using mem_of_mem_nhds c_sets
-    refine' (inducing_subtype_val.continuousAt_iff' _).1 (f_cont i).continuousAt
-    rwa [Subtype.range_coe]
-#align continuous_subtype_nhds_cover continuous_subtype_nhds_cover
-
-/- porting note: todo: see https://github.com/leanprover-community/mathlib/pull/18321
-
-I failed to quickly fix the proof. This is a leaf lemma, and it is going to be replaced by a lemma
-formulated using `ContinuousOn`.
--/
-#noalign continuous_subtype_is_closed_cover
-
 theorem closure_subtype {x : { a // p a }} {s : Set { a // p a }} :
     x ∈ closure s ↔ (x : α) ∈ closure (((↑) : _ → α) '' s) :=
   closure_induced
@@ -1414,19 +1395,21 @@ theorem pi_generateFrom_eq_finite {π : ι → Type _} {g : ∀ a, Set (Set (π 
     by_cases a ∈ i <;> simp [*]
 #align pi_generate_from_eq_finite pi_generateFrom_eq_finite
 
+-- porting note: new lemma
+theorem induced_to_pi {X : Type _} (f : X → ∀ i, π i) :
+    induced f Pi.topologicalSpace = ⨅ i, induced (f · i) inferInstance := by
+  erw [induced_infᵢ]
+  simp only [induced_compose]
+  rfl
+
 /-- Suppose `π i` is a family of topological spaces indexed by `i : ι`, and `X` is a type
 endowed with a family of maps `f i : X → π i` for every `i : ι`, hence inducing a
 map `g : X → Π i, π i`. This lemma shows that infimum of the topologies on `X` induced by
 the `f i` as `i : ι` varies is simply the topology on `X` induced by `g : X → Π i, π i`
 where `Π i, π i` is endowed with the usual product topology. -/
 theorem inducing_infᵢ_to_pi {X : Type _} (f : ∀ i, X → π i) :
-    @Inducing X (∀ i, π i) (⨅ i, induced (f i) inferInstance) _ fun x i => f i x := by
-  letI := ⨅ i, induced (f i) inferInstance
-  constructor
-  erw [induced_infᵢ]
-  congr 1
-  funext
-  erw [induced_compose]; rfl
+    @Inducing X (∀ i, π i) (⨅ i, induced (f i) inferInstance) _ fun x i => f i x :=
+  letI := ⨅ i, induced (f i) inferInstance; ⟨(induced_to_pi _).symm⟩
 #align inducing_infi_to_pi inducing_infᵢ_to_pi
 
 variable [Finite ι] [∀ i, DiscreteTopology (π i)]

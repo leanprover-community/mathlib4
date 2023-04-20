@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Paul van Wamelen
 
 ! This file was ported from Lean 3 source module number_theory.pythagorean_triples
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
+! leanprover-community/mathlib commit e8638a0fcaf73e4500469f368ef9494e495099b3
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -30,15 +30,15 @@ the bulk of the proof below.
 -/
 
 
-theorem sq_ne_two_fin_zMod_four (z : ZMod 4) : z * z ≠ 2 := by
+theorem sq_ne_two_fin_zmod_four (z : ZMod 4) : z * z ≠ 2 := by
   change Fin 4 at z
   fin_cases z <;> norm_num [Fin.ext_iff, Fin.val_bit0, Fin.val_bit1]
-#align sq_ne_two_fin_zmod_four sq_ne_two_fin_zMod_four
+#align sq_ne_two_fin_zmod_four sq_ne_two_fin_zmod_four
 
 theorem Int.sq_ne_two_mod_four (z : ℤ) : z * z % 4 ≠ 2 := by
   suffices ¬z * z % (4 : ℕ) = 2 % (4 : ℕ) by exact this
   rw [← ZMod.int_cast_eq_int_cast_iff']
-  simpa using sq_ne_two_fin_zMod_four _
+  simpa using sq_ne_two_fin_zmod_four _
 #align int.sq_ne_two_mod_four Int.sq_ne_two_mod_four
 
 noncomputable section
@@ -135,21 +135,21 @@ theorem even_odd_of_coprime (hc : Int.gcd x y = 1) :
     x % 2 = 0 ∧ y % 2 = 1 ∨ x % 2 = 1 ∧ y % 2 = 0 := by
   cases' Int.emod_two_eq_zero_or_one x with hx hx <;>
     cases' Int.emod_two_eq_zero_or_one y with hy hy
-  · -- x even, y even
-    exfalso
+  -- x even, y even
+  · exfalso
     apply Nat.not_coprime_of_dvd_of_dvd (by decide : 1 < 2) _ _ hc
-    · apply Int.dvd_natAbs_of_ofNat_dvd
+    · apply Int.coe_nat_dvd_left.1
       apply Int.dvd_of_emod_eq_zero hx
-    · apply Int.dvd_natAbs_of_ofNat_dvd
+    · apply Int.coe_nat_dvd_left.1
       apply Int.dvd_of_emod_eq_zero hy
+  -- x even, y odd
   · left
     exact ⟨hx, hy⟩
-  -- x even, y odd
+  -- x odd, y even
   · right
     exact ⟨hx, hy⟩
-  -- x odd, y even
-  · -- x odd, y odd
-    exfalso
+  -- x odd, y odd
+  · exfalso
     obtain ⟨x0, y0, rfl, rfl⟩ : ∃ x0 y0, x = x0 * 2 + 1 ∧ y = y0 * 2 + 1 := by
       cases' exists_eq_mul_left_of_dvd (Int.dvd_sub_of_emod_eq hx) with x0 hx2
       cases' exists_eq_mul_left_of_dvd (Int.dvd_sub_of_emod_eq hy) with y0 hy2
@@ -314,17 +314,17 @@ def circleEquivGen (hk : ∀ x : K, 1 + x ^ 2 ≠ 0) :
 #align circle_equiv_gen circleEquivGen
 
 @[simp]
-theorem circle_equiv_apply (hk : ∀ x : K, 1 + x ^ 2 ≠ 0) (x : K) :
+theorem circleEquivGen_apply (hk : ∀ x : K, 1 + x ^ 2 ≠ 0) (x : K) :
     (circleEquivGen hk x : K × K) = ⟨2 * x / (1 + x ^ 2), (1 - x ^ 2) / (1 + x ^ 2)⟩ :=
   rfl
-#align circle_equiv_apply circle_equiv_apply
+#align circle_equiv_apply circleEquivGen_apply
 
 @[simp]
-theorem circle_equiv_symm_apply (hk : ∀ x : K, 1 + x ^ 2 ≠ 0)
+theorem circleEquivGen_symm_apply (hk : ∀ x : K, 1 + x ^ 2 ≠ 0)
     (v : { p : K × K // p.1 ^ 2 + p.2 ^ 2 = 1 ∧ p.2 ≠ -1 }) :
     (circleEquivGen hk).symm v = (v : K × K).1 / ((v : K × K).2 + 1) :=
   rfl
-#align circle_equiv_symm_apply circle_equiv_symm_apply
+#align circle_equiv_symm_apply circleEquivGen_symm_apply
 
 end circleEquivGen
 
@@ -381,8 +381,7 @@ private theorem coprime_sq_sub_mul_of_even_odd {m n : ℤ} (h : Int.gcd m n = 1)
     apply (or_self_iff _).mp
     apply Int.Prime.dvd_mul' hp
     rw [(by ring : n * n = -(m ^ 2 - n ^ 2) + m * m)]
-    apply dvd_add (dvd_neg_of_dvd hp1)
-    exact dvd_mul_of_dvd_left (Int.coe_nat_dvd_left.mpr hpm) m
+    exact hp1.neg_right.add ((Int.coe_nat_dvd_left.2 hpm).mul_right _)
   rw [Int.gcd_comm] at hnp
   apply mt (Int.dvd_gcd (Int.coe_nat_dvd_left.mpr hpn)) hnp
   apply (or_self_iff _).mp

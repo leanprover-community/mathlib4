@@ -274,7 +274,7 @@ instance Pi.nonUnitalSeminormedRing {π : ι → Type _} [Fintype ι]
 #align pi.non_unital_semi_normed_ring Pi.nonUnitalSeminormedRing
 
 instance MulOpposite.nonUnitalSeminormedRing : NonUnitalSeminormedRing αᵐᵒᵖ :=
-  { MulOpposite.seminormedAddCommGroup, MulOpposite.instNonUnitalRingMulOpposite α with
+  { MulOpposite.seminormedAddCommGroup, MulOpposite.nonUnitalRing α with
     norm_mul :=
       MulOpposite.rec' fun x =>
         MulOpposite.rec' fun y => (norm_mul_le y x).trans_eq (mul_comm _ _) }
@@ -286,11 +286,12 @@ section SeminormedRing
 
 variable [SeminormedRing α]
 
+set_option synthInstance.etaExperiment true in
 /-- A subalgebra of a seminormed ring is also a seminormed ring, with the restriction of the norm.
 
 See note [implicit instance arguments]. -/
-instance Subalgebra.seminormedRing {𝕜 : Type _} {_ : CommRing 𝕜} {E : Type _} [SeminormedRing E]
-    {_ : Algebra 𝕜 E} (s : Subalgebra 𝕜 E) : SeminormedRing s :=
+instance Subalgebra.seminormedRing {𝕜 : Type _} [CommRing 𝕜] {E : Type _} [SeminormedRing E]
+    [Algebra 𝕜 E] (s : Subalgebra 𝕜 E) : SeminormedRing s :=
   { s.toSubmodule.seminormedAddCommGroup, s.toRing with
     norm_mul := fun a b => norm_mul_le a.1 b.1 }
 #align subalgebra.semi_normed_ring Subalgebra.seminormedRing
@@ -298,8 +299,8 @@ instance Subalgebra.seminormedRing {𝕜 : Type _} {_ : CommRing 𝕜} {E : Type
 /-- A subalgebra of a normed ring is also a normed ring, with the restriction of the norm.
 
 See note [implicit instance arguments]. -/
-instance Subalgebra.normedRing {𝕜 : Type _} {_ : CommRing 𝕜} {E : Type _} [NormedRing E]
-    {_ : Algebra 𝕜 E} (s : Subalgebra 𝕜 E) : NormedRing s :=
+instance Subalgebra.normedRing {𝕜 : Type _} [CommRing 𝕜] {E : Type _} [NormedRing E]
+    [Algebra 𝕜 E] (s : Subalgebra 𝕜 E) : NormedRing s :=
   { s.seminormedRing with
     eq_of_dist_eq_zero := eq_of_dist_eq_zero }
 #align subalgebra.normed_ring Subalgebra.normedRing
@@ -404,7 +405,7 @@ instance Pi.seminormedRing {π : ι → Type _} [Fintype ι] [∀ i, SeminormedR
 #align pi.semi_normed_ring Pi.seminormedRing
 
 instance MulOpposite.seminormedRing : SeminormedRing αᵐᵒᵖ :=
-  { MulOpposite.nonUnitalSeminormedRing, MulOpposite.instRingMulOpposite α with }
+  { MulOpposite.nonUnitalSeminormedRing, MulOpposite.ring α with }
 #align mul_opposite.semi_normed_ring MulOpposite.seminormedRing
 
 end SeminormedRing

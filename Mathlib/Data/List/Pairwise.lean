@@ -182,7 +182,7 @@ theorem pairwise_middle (s : Symmetric R) {a : α} {l₁ l₂ : List α} :
     ∀ {l : List β}, Pairwise R (map f l) ↔ Pairwise (fun a b : β => R (f a) (f b)) l
   | [] => by simp only [map, Pairwise.nil]
   | b :: l => by
-    simp only [map, pairwise_cons, mem_map', forall_exists_index, and_imp,
+    simp only [map, pairwise_cons, mem_map, forall_exists_index, and_imp,
       forall_apply_eq_imp_iff₂, pairwise_map]
 #align list.pairwise_map List.pairwise_map'
 
@@ -267,7 +267,7 @@ theorem pairwise_join {L : List (List α)} :
 theorem pairwise_bind {R : β → β → Prop} {l : List α} {f : α → List β} :
     List.Pairwise R (l.bind f) ↔
       (∀ a ∈ l, Pairwise R (f a)) ∧ Pairwise (fun a₁ a₂ => ∀ x ∈ f a₁, ∀ y ∈ f a₂, R x y) l :=
-  by simp [List.bind, List.pairwise_join, List.mem_map', List.pairwise_map]
+  by simp [List.bind, List.pairwise_join, List.mem_map, List.pairwise_map]
 #align list.pairwise_bind List.pairwise_bind
 
 #align list.pairwise_reverse List.pairwise_reverse

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Jens Wagemaker
 
 ! This file was ported from Lean 3 source module data.polynomial.degree.lemmas
-! leanprover-community/mathlib commit 302eab4f46abb63de520828de78c04cb0f9b5836
+! leanprover-community/mathlib commit 728baa2f54e6062c5879a3e397ac6bac323e506f
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -134,24 +134,24 @@ set_option linter.uppercaseLean3 false in
 /-- Although not explicitly stated, the assumptions of lemma `nat_degree_mul_C_eq_of_mul_ne_zero`
 force the polynomial `p` to be non-zero, via `p.leading_coeff ≠ 0`.
 -/
-theorem natDegree_mul_c_eq_of_mul_ne_zero (h : p.leadingCoeff * a ≠ 0) :
+theorem natDegree_mul_C_eq_of_mul_ne_zero (h : p.leadingCoeff * a ≠ 0) :
     (p * C a).natDegree = p.natDegree := by
   refine' eq_natDegree_of_le_mem_support (natDegree_mul_C_le p a) _
   refine' mem_support_iff.mpr _
   rwa [coeff_mul_C]
 set_option linter.uppercaseLean3 false in
-#align polynomial.nat_degree_mul_C_eq_of_mul_ne_zero Polynomial.natDegree_mul_c_eq_of_mul_ne_zero
+#align polynomial.nat_degree_mul_C_eq_of_mul_ne_zero Polynomial.natDegree_mul_C_eq_of_mul_ne_zero
 
 /-- Although not explicitly stated, the assumptions of lemma `nat_degree_C_mul_eq_of_mul_ne_zero`
 force the polynomial `p` to be non-zero, via `p.leading_coeff ≠ 0`.
 -/
-theorem natDegree_c_mul_eq_of_mul_ne_zero (h : a * p.leadingCoeff ≠ 0) :
+theorem natDegree_C_mul_eq_of_mul_ne_zero (h : a * p.leadingCoeff ≠ 0) :
     (C a * p).natDegree = p.natDegree := by
   refine' eq_natDegree_of_le_mem_support (natDegree_C_mul_le a p) _
   refine' mem_support_iff.mpr _
   rwa [coeff_C_mul]
 set_option linter.uppercaseLean3 false in
-#align polynomial.nat_degree_C_mul_eq_of_mul_ne_zero Polynomial.natDegree_c_mul_eq_of_mul_ne_zero
+#align polynomial.nat_degree_C_mul_eq_of_mul_ne_zero Polynomial.natDegree_C_mul_eq_of_mul_ne_zero
 
 theorem natDegree_add_coeff_mul (f g : R[X]) :
     (f * g).coeff (f.natDegree + g.natDegree) = f.coeff f.natDegree * g.coeff g.natDegree := by
@@ -345,8 +345,7 @@ set_option linter.uppercaseLean3 false in
 
 theorem natDegree_comp : natDegree (p.comp q) = natDegree p * natDegree q := by
   by_cases q0 : q.natDegree = 0
-  ·
-    rw [degree_le_zero_iff.mp (natDegree_eq_zero_iff_degree_le_zero.mp q0), comp_C, natDegree_C,
+  · rw [degree_le_zero_iff.mp (natDegree_eq_zero_iff_degree_le_zero.mp q0), comp_C, natDegree_C,
       natDegree_C, mul_zero]
   · by_cases p0 : p = 0
     · simp only [p0, zero_comp, natDegree_zero, zero_mul]
@@ -354,6 +353,14 @@ theorem natDegree_comp : natDegree (p.comp q) = natDegree p * natDegree q := by
     simp only [coeff_comp_degree_mul_degree q0, p0, mul_eq_zero, leadingCoeff_eq_zero, or_self_iff,
       ne_zero_of_natDegree_gt (Nat.pos_of_ne_zero q0), pow_ne_zero, Ne.def, not_false_iff]
 #align polynomial.nat_degree_comp Polynomial.natDegree_comp
+
+@[simp]
+theorem natDegree_iterate_comp (k : ℕ) :
+    ((p.comp^[k]) q).natDegree = p.natDegree ^ k * q.natDegree := by
+  induction' k with k IH
+  · simp
+  · rw [Function.iterate_succ_apply', natDegree_comp, IH, pow_succ, mul_assoc]
+#align polynomial.nat_degree_iterate_comp Polynomial.natDegree_iterate_comp
 
 theorem leadingCoeff_comp (hq : natDegree q ≠ 0) :
     leadingCoeff (p.comp q) = leadingCoeff p * leadingCoeff q ^ natDegree p := by

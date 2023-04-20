@@ -765,7 +765,7 @@ theorem colimit.isColimit_desc {F : J ⥤ C} [HasColimit F] (c : Cocone F) :
 /-- We have lots of lemmas describing how to simplify `colimit.ι F j ≫ _`,
 and combined with `colimit.ext` we rely on these lemmas for many calculations.
 
-However, since `category.assoc` is a `@[simp]` lemma, often expressions are
+However, since `Category.assoc` is a `@[simp]` lemma, often expressions are
 right associated, and it's hard to apply these lemmas about `colimit.ι`.
 
 We thus use `reassoc` to define additional `@[simp]` lemmas, with an arbitrary extra morphism.
@@ -1167,7 +1167,7 @@ is natural in `F`.
 -/
 def colimCoyoneda : colim.op ⋙ coyoneda ⋙ (whiskeringRight _ _ _).obj uliftFunctor.{u₁}
     ≅ CategoryTheory.cocones J C :=
-  NatIso.ofComponents (fun F => NatIso.ofComponents (fun W => colimit.homIso (unop F) (op W))
+  NatIso.ofComponents (fun F => NatIso.ofComponents (fun W => colimit.homIso (unop F) W)
     <| by intros ; funext ; aesop_cat) <| by intros ; ext ; funext ; aesop_cat
 #align category_theory.limits.colim_coyoneda CategoryTheory.Limits.colimCoyoneda
 
