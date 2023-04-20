@@ -121,7 +121,7 @@ instance (M : Type u) [AddCommGroup M] [Module R M] [Module S M] [IsScalarTower 
     IsScalarTower S R (PolynomialModule R M) :=
   Finsupp.isScalarTower _ _
 
-instance is_scalar_tower' (M : Type u) [AddCommGroup M] [Module R M] [Module S M]
+instance isScalarTower' (M : Type u) [AddCommGroup M] [Module R M] [Module S M]
     [IsScalarTower S R M] : IsScalarTower S R[X] (PolynomialModule R M) := by
   haveI : IsScalarTower R R[X] (PolynomialModule R M) := modulePolynomialOfEndo.isScalarTower _
   constructor
