@@ -127,7 +127,7 @@ instance isScalarTower' (M : Type u) [AddCommGroup M] [Module R M] [Module S M]
   constructor
   intro x y z
   rw [← @IsScalarTower.algebraMap_smul S R, ← @IsScalarTower.algebraMap_smul S R, smul_assoc]
-#align polynomial_module.is_scalar_tower' PolynomialModule.is_scalar_tower'
+#align polynomial_module.isScalarTower' PolynomialModule.is_scalar_tower'
 
 set_option synthInstance.etaExperiment true in
 @[simp]
