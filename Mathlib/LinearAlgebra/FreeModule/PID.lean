@@ -341,18 +341,18 @@ if `R` is a principal ideal domain.
 
 See also the stronger version `Submodule.smithNormalFormOfLE`.
 -/
-noncomputable def Submodule.basisOfPidOfLe {ι : Type _} [Finite ι] {N O : Submodule R M}
+noncomputable def Submodule.basisOfPidOfLE {ι : Type _} [Finite ι] {N O : Submodule R M}
     (hNO : N ≤ O) (b : Basis ι R O) : Σn : ℕ, Basis (Fin n) R N :=
   let ⟨n, bN'⟩ := Submodule.basisOfPid b (N.comap O.subtype)
   ⟨n, bN'.map (Submodule.comapSubtypeEquivOfLe hNO)⟩
-#align submodule.basis_of_pid_of_le Submodule.basisOfPidOfLe
+#align submodule.basis_of_pid_of_le Submodule.basisOfPidOfLE
 
 /-- A submodule inside the span of a linear independent family is a free `R`-module of finite rank,
 if `R` is a principal ideal domain. -/
 noncomputable def Submodule.basisOfPidOfLeSpan {ι : Type _} [Finite ι] {b : ι → M}
     (hb : LinearIndependent R b) {N : Submodule R M} (le : N ≤ Submodule.span R (Set.range b)) :
     Σn : ℕ, Basis (Fin n) R N :=
-  Submodule.basisOfPidOfLe le (Basis.span hb)
+  Submodule.basisOfPidOfLE le (Basis.span hb)
 #align submodule.basis_of_pid_of_le_span Submodule.basisOfPidOfLeSpan
 
 set_option synthInstance.etaExperiment true in -- Porting note: added
@@ -404,7 +404,7 @@ noncomputable def Module.basisOfFiniteTypeTorsionFree [Fintype ι] {s : ι → M
         _ ∈ N := N.smul_mem _ (ha' i)
 
     -- Since a submodule of a free `R`-module is free, we get that `A • M` is free
-    obtain ⟨n, b : Basis (Fin n) R (LinearMap.range φ)⟩ := Submodule.basisOfPidOfLe this sI_basis
+    obtain ⟨n, b : Basis (Fin n) R (LinearMap.range φ)⟩ := Submodule.basisOfPidOfLE this sI_basis
     -- hence `M` is free.
     exact ⟨n, b.map ψ.symm⟩
 #align module.basis_of_finite_type_torsion_free Module.basisOfFiniteTypeTorsionFree
@@ -454,7 +454,7 @@ in Smith normal form.
 See `Submodule.smithNormalFormOfLE` for a version of this theorem that returns
 a `Basis.SmithNormalForm`.
 
-This is a strengthening of `Submodule.basisOfPidOfLe`.
+This is a strengthening of `Submodule.basisOfPidOfLE`.
 -/
 theorem Submodule.exists_smith_normal_form_of_le [Finite ι] (b : Basis ι R M) (N O : Submodule R M)
     (N_le_O : N ≤ O) :
@@ -498,7 +498,7 @@ noncomputable def Submodule.smithNormalFormOfLE [Finite ι] (b : Basis ι R M) (
       fun i ↦ _⟩
   ext
   simp only [snf, Basis.map_apply, Submodule.comapSubtypeEquivOfLe_symm_apply,
-    Submodule.coe_smul_of_tower]
+    Submodule.coe_smul_of_tower, RelEmbedding.coe_toEmbedding]
 #align submodule.smith_normal_form_of_le Submodule.smithNormalFormOfLE
 
 /-- If `M` is finite free over a PID `R`, then any submodule `N` is free
