@@ -8,9 +8,9 @@ Authors: Yakov Pechersky
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Polynomial.BigOperators
-import Mathbin.Data.Polynomial.Degree.Lemmas
-import Mathbin.LinearAlgebra.Matrix.Determinant
+import Mathlib.Algebra.Polynomial.BigOperators
+import Mathlib.Data.Polynomial.Degree.Lemmas
+import Mathlib.LinearAlgebra.Matrix.Determinant
 
 /-!
 # Matrices of polynomials and polynomials of matrices
@@ -38,8 +38,7 @@ open Polynomial Matrix Equiv.Perm
 namespace Polynomial
 
 theorem natDegree_det_x_add_c_le (A B : Matrix n n α) :
-    natDegree (det ((X : α[X]) • A.map C + B.map C)) ≤ Fintype.card n :=
-  by
+    natDegree (det ((X : α[X]) • A.map C + B.map C)) ≤ Fintype.card n := by
   rw [det_apply]
   refine' (nat_degree_sum_le _ _).trans _
   refine' Multiset.max_nat_le_of_forall_le _ _ _
@@ -48,8 +47,7 @@ theorem natDegree_det_x_add_c_le (A B : Matrix n n α) :
   intro g
   calc
     nat_degree (SignType.sign g • ∏ i : n, (X • A.map C + B.map C) (g i) i) ≤
-        nat_degree (∏ i : n, (X • A.map C + B.map C) (g i) i) :=
-      by
+        nat_degree (∏ i : n, (X • A.map C + B.map C) (g i) i) := by
       cases' Int.units_eq_one_or (SignType.sign g) with sg sg
       · rw [sg, one_smul]
       · rw [sg, Units.neg_smul, one_smul, nat_degree_neg]
@@ -72,8 +70,7 @@ theorem natDegree_det_x_add_c_le (A B : Matrix n n α) :
 #align polynomial.nat_degree_det_X_add_C_le Polynomial.natDegree_det_x_add_c_le
 
 theorem coeff_det_x_add_c_zero (A B : Matrix n n α) :
-    coeff (det ((X : α[X]) • A.map C + B.map C)) 0 = det B :=
-  by
+    coeff (det ((X : α[X]) • A.map C + B.map C)) 0 = det B := by
   rw [det_apply, finset_sum_coeff, det_apply]
   refine' Finset.sum_congr rfl _
   intro g hg
@@ -84,8 +81,7 @@ theorem coeff_det_x_add_c_zero (A B : Matrix n n α) :
 #align polynomial.coeff_det_X_add_C_zero Polynomial.coeff_det_x_add_c_zero
 
 theorem coeff_det_x_add_c_card (A B : Matrix n n α) :
-    coeff (det ((X : α[X]) • A.map C + B.map C)) (Fintype.card n) = det A :=
-  by
+    coeff (det ((X : α[X]) • A.map C + B.map C)) (Fintype.card n) = det A := by
   rw [det_apply, det_apply, finset_sum_coeff]
   refine' Finset.sum_congr rfl _
   simp only [Algebra.id.smul_eq_mul, Finset.mem_univ, RingHom.mapMatrix_apply, forall_true_left,
@@ -103,8 +99,7 @@ theorem coeff_det_x_add_c_card (A B : Matrix n n α) :
 #align polynomial.coeff_det_X_add_C_card Polynomial.coeff_det_x_add_c_card
 
 theorem leadingCoeff_det_x_one_add_c (A : Matrix n n α) :
-    leadingCoeff (det ((X : α[X]) • (1 : Matrix n n α[X]) + A.map C)) = 1 :=
-  by
+    leadingCoeff (det ((X : α[X]) • (1 : Matrix n n α[X]) + A.map C)) = 1 := by
   cases subsingleton_or_nontrivial α
   · simp
   rw [← @det_one n, ← coeff_det_X_add_C_card _ A, leading_coeff]
