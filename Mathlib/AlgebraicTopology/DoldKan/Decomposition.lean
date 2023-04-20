@@ -55,8 +55,8 @@ theorem decomposition_Q (n q : ℕ) :
       ∑ i : Fin (n + 1) in Finset.filter (fun i : Fin (n + 1) => (i : ℕ) < q) Finset.univ,
         (P i).f (n + 1) ≫ X.δ i.rev.succ ≫ X.σ (Fin.rev i) := by
   induction' q with q hq
-  · simp only [Nat.zero_eq, Q_zero, HomologicalComplex.zero_f_apply, Nat.not_lt_zero, Finset.filter_False,
-      Finset.sum_empty]
+  · simp only [Nat.zero_eq, Q_zero, HomologicalComplex.zero_f_apply, Nat.not_lt_zero,
+      Finset.filter_False, Finset.sum_empty]
   · by_cases hqn : q + 1 ≤ n + 1
     swap
     · rw [Q_is_eventually_constant (show n + 1 ≤ q by linarith), hq]
