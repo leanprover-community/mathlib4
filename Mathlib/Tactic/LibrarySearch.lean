@@ -210,7 +210,6 @@ syntax (name := observe) "observe" "?"? (ident)? ":" term (" using " (colGt term
 open Elab.Tactic Elab Tactic in
 elab_rules : tactic |
   `(tactic| observe%$tk $[?%$trace]? $[$n?:ident]? : $t:term $[using $[$required:term],*]?) => do
-  let mainGoal ← getMainGoal
   let name : Name := match n? with
     | none   => `this
     | some n => n.getId
