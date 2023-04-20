@@ -15,9 +15,9 @@ import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 /-!
 # Limits and colimits in the category of algebras
 
-This file shows that the forgetful functor `forget T : algebra T ⥤ C` for a monad `T : C ⥤ C`
+This file shows that the forgetful functor `forget T : Algebra T ⥤ C` for a monad `T : C ⥤ C`
 creates limits and creates any colimits which `T` preserves.
-This is used to show that `algebra T` has any limits which `C` has, and any colimits which `C` has
+This is used to show that `Algebra T` has any limits which `C` has, and any colimits which `C` has
 and `T` preserves.
 This is generalised to the case of a monadic functor `D ⥤ C`.
 
@@ -79,7 +79,7 @@ def conePoint : Algebra T where
       rfl
 #align category_theory.monad.forget_creates_limits.cone_point CategoryTheory.Monad.ForgetCreatesLimits.conePoint
 
-/-- (Impl) Construct the lifted cone in `algebra T` which will be limiting. -/
+/-- (Impl) Construct the lifted cone in `Algebra T` which will be limiting. -/
 @[simps]
 def liftedCone : Cone D where
   pt := conePoint D c t
@@ -205,7 +205,7 @@ def coconePoint : Algebra T where
     apply (D.obj j).assoc_assoc _
 #align category_theory.monad.forget_creates_colimits.cocone_point CategoryTheory.Monad.ForgetCreatesColimits.coconePoint
 
-/-- (Impl) Construct the lifted cocone in `algebra T` which will be colimiting. -/
+/-- (Impl) Construct the lifted cocone in `Algebra T` which will be colimiting. -/
 @[simps]
 def liftedCocone : Cocone D where
   pt := coconePoint c t
