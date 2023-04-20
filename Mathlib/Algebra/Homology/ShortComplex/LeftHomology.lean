@@ -485,6 +485,8 @@ instance : Subsingleton (LeftHomologyMapData φ h₁ h₂) :=
     cases ψ₂
     congr⟩
 
+attribute [-simp] mk.injEq
+
 instance : Inhabited (LeftHomologyMapData φ h₁ h₂) := ⟨by
   let φK : h₁.K ⟶ h₂.K := h₂.lift_K (h₁.i ≫ φ.τ₂)
     (by rw [assoc, φ.comm₂₃, h₁.wi_assoc, zero_comp])
@@ -752,7 +754,7 @@ noncomputable def leftHomology_map_iso (e : S₁ ≅ S₂) [S₁.HasLeftHomology
   hom_inv_id := by rw [← leftHomology_map_comp, e.hom_inv_id, leftHomology_map_id]
   inv_hom_id := by rw [← leftHomology_map_comp, e.inv_hom_id, leftHomology_map_id]
 
-instance is_iso_left_homology_map_of_iso (φ : S₁ ⟶ S₂) [IsIso φ] [S₁.HasLeftHomology]
+instance isIso_leftHomologyMap_of_iso (φ : S₁ ⟶ S₂) [IsIso φ] [S₁.HasLeftHomology]
     [S₂.HasLeftHomology] :
     IsIso (leftHomology_map φ) :=
   (inferInstance : IsIso (leftHomology_map_iso (asIso φ)).hom)
@@ -765,7 +767,7 @@ noncomputable def cycles_map_iso (e : S₁ ≅ S₂) [S₁.HasLeftHomology]
   hom_inv_id := by rw [← cycles_map_comp, e.hom_inv_id, cycles_map_id]
   inv_hom_id := by rw [← cycles_map_comp, e.inv_hom_id, cycles_map_id]
 
-instance is_iso_cycles_map_of_iso (φ : S₁ ⟶ S₂) [IsIso φ] [S₁.HasLeftHomology]
+instance isIso_cycles_map_of_iso (φ : S₁ ⟶ S₂) [IsIso φ] [S₁.HasLeftHomology]
     [S₂.HasLeftHomology] : IsIso (cycles_map φ) :=
   (inferInstance : IsIso (cycles_map_iso (asIso φ)).hom)
 
@@ -820,7 +822,7 @@ variable (C)
 
 /-- We shall say that a category with left homology is a category for which
 all short complexes have left homology. -/
-abbrev _root_.CategoryWithLeftHomology : Prop :=
+abbrev _root_.CategoryTheory.CategoryWithLeftHomology : Prop :=
   ∀ (S : ShortComplex C), S.HasLeftHomology
 
 @[simps]

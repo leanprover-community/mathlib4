@@ -264,6 +264,12 @@ def op_equiv : (ShortComplex C)ᵒᵖ ≌ ShortComplex Cᵒᵖ where
   unitIso := Iso.refl _
   counitIso := Iso.refl _
 
+variable {C}
+
+abbrev unop_op (S : ShortComplex Cᵒᵖ) : S.unop.op ≅ S := (op_equiv C).counitIso.app S
+abbrev op_unop (S : ShortComplex C) : S.op.unop ≅ S :=
+  Iso.unop ((op_equiv C).unitIso.app (Opposite.op S))
+
 end ShortComplex
 
 end CategoryTheory
