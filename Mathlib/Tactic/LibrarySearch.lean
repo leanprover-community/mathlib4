@@ -76,8 +76,7 @@ and possibly a pointer to a memory region, if we unpickled the tree from disk.
 structure CachedData where
   pointer? : Option CompactedRegion
   cache : DeclCache (DiscrTree (Name × DeclMod) true)
-
-noncomputable instance : Inhabited CachedData := ⟨none, Classical.choice inferInstance⟩
+deriving Nonempty
 
 initialize cachedData : CachedData ← unsafe do
   let useCache ← cachePath.pathExists
