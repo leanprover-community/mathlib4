@@ -23,7 +23,6 @@ preadditive. Dually, if `U` is an additive comonad on `C` then `Coalgebra U` is 
 
 universe v₁ u₁
 
--- morphism levels before object levels. See note [category_theory universes].
 namespace CategoryTheory
 
 variable (C : Type u₁) [Category.{v₁} C] [Preadditive C] (T : Monad C)
