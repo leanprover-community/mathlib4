@@ -150,6 +150,43 @@ theorem extendAlongYoneda_obj (P : Cᵒᵖ ⥤ Type u₁) :
   rfl
 #align category_theory.colimit_adj.extend_along_yoneda_obj CategoryTheory.ColimitAdj.extendAlongYoneda_obj
 
+@[app_unexpander Functor.leftOp] def
+  unexpandFunctorleftOp : Lean.PrettyPrinter.Unexpander
+  | `($_ $F $(X)*)  => set_option hygiene false in `($(F).leftOp $(X)*)
+  | _                 => throw ()
+
+@[app_unexpander Functor.map] def
+  unexpandFunctorMap : Lean.PrettyPrinter.Unexpander
+  | `($_ $F $(X)*)  => set_option hygiene false in `($(F).map $(X)*)
+  | _                 => throw ()
+
+@[app_unexpander Iso.toEquiv] def
+  unexpandIsotoEquiv : Lean.PrettyPrinter.Unexpander
+  | `($_ $F $(X)*)  => set_option hygiene false in `($(F).toEquiv $(X)*)
+  | _                 => throw ()
+
+@[app_unexpander Iso.symm] def
+  unexpandIsosymm : Lean.PrettyPrinter.Unexpander
+  | `($_ $F $(X)*)  => set_option hygiene false in `($(F).symm $(X)*)
+  | _                 => throw ()
+
+@[app_unexpander Equiv.trans] def
+  unexpandEquivtrans : Lean.PrettyPrinter.Unexpander
+  | `($_ $F $(X)*)  => set_option hygiene false in `($(F).trans $(X)*)
+  | _                 => throw ()
+
+@[app_unexpander IsColimit.homIso'] def
+  unexpandIsColimithomIso' : Lean.PrettyPrinter.Unexpander
+  | `($_ $F $(X)*)  => set_option hygiene false in `($(F).homIso' $(X)*)
+  | _                 => throw ()
+
+@[app_unexpander IsColimit.homIso] def
+  unexpandIsColimithomIso : Lean.PrettyPrinter.Unexpander
+  | `($_ $F $(X)*)  => set_option hygiene false in `($(F).homIso $(X)*)
+  | _                 => throw ()
+
+set_option pp.proofs.withType false
+
 theorem extendAlongYoneda_map {X Y : Cᵒᵖ ⥤ Type u₁} (f : X ⟶ Y) :
     (extendAlongYoneda A).map f =
       colimit.pre ((CategoryOfElements.π Y).leftOp ⋙ A) (CategoryOfElements.map f).op := by
@@ -157,19 +194,32 @@ theorem extendAlongYoneda_map {X Y : Cᵒᵖ ⥤ Type u₁} (f : X ⟶ Y) :
   -- the next line was `ext J` in mathlib3
   refine CategoryTheory.Limits.colimit.hom_ext (fun J => ?_)
   erw [colimit.ι_pre ((CategoryOfElements.π Y).leftOp ⋙ A) (CategoryOfElements.map f).op]
-  dsimp only [extendAlongYoneda, restrictYonedaHomEquiv, IsColimit.homIso,
-    IsColimit.homIso, uliftTrivial]
-  /- the `simpa` which finishes the proof in mathlib3 (translated into mathlib4 naming) is:
-
-  simp only [Functor.map_id, comp_id, colimit.cocone_ι, FunctorToTypes.comp, id.def, colimit.isColimit_desc, Cocone.extend_ι,
-  Cocone.extensions_app, Adjunction.leftAdjointOfEquiv_map, Iso.symm_mk, Iso.toEquiv_comp, Equiv.coe_trans,
-  Equiv.coe_fn_mk, Iso.toEquiv_fun, Equiv.symm_trans_apply, Equiv.coe_fn_symm_mk, Iso.toEquiv_symm_fun,
-  colimit.ι_desc]
+  dsimp only [extendAlongYoneda]
+  dsimp only [restrictYonedaHomEquiv]
+  dsimp only [IsColimit.homIso']
+  dsimp only [IsColimit.homIso]
+  dsimp only [uliftTrivial]
+  simp only [Adjunction.leftAdjointOfEquiv_map]
+  simp only [Iso.symm_mk]
+  simp only [Iso.toEquiv_comp]
+  simp only [Equiv.coe_trans]
+  simp only [Equiv.coe_fn_mk]
+  simp only [Iso.toEquiv_fun]
+  simp only [Equiv.symm_trans_apply]
+  simp only [Equiv.coe_fn_symm_mk]
+  simp only [Iso.toEquiv_symm_fun]
+  simp only [id.def]
+  simp only [colimit.isColimit_desc]
+  simp only [colimit.ι_desc]
+  simp only [FunctorToTypes.comp]
+  simp only [Cocone.extend_ι]
+  simp only [Cocone.extensions_app]
+  simp only [Functor.map_id]
+  simp only [Category.comp_id]
+  simp only [colimit.cocone_ι]
+  simp
   rfl
 
-  Note in particular, it's not `simp, assumption`, it's `simp, refl`.
-  -/
-  simpa
 
 #align category_theory.colimit_adj.extend_along_yoneda_map CategoryTheory.ColimitAdj.extendAlongYoneda_map
 
