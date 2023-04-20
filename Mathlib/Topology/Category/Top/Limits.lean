@@ -50,11 +50,15 @@ def limitCone (F : J ⥤ TopCat) : Cone F where
   π :=
     { app := fun j =>
         { toFun := fun u => u.val j
-          continuous_toFun :=
-            show Continuous ((fun u : ∀ j : J, F.obj j => u j) ∘ Subtype.val) by
-              dsimp [Function.comp]
-              continuity }
-      naturality := sorry}
+          -- Porting note: `continuity` from the original mathlib3 proof failed here.
+          continuous_toFun := Continuous.comp (continuous_apply _) (continuous_subtype_val) }
+      naturality := fun X Y f => by
+        -- Automation fails in various ways in this proof. Why?!
+        dsimp
+        rw [Category.id_comp]
+        apply ContinuousMap.ext
+        intro a
+        exact (a.2 f).symm }
 #align Top.limit_cone TopCat.limitCone
 
 /-- A choice of limit cone for a functor `F : J ⥤ Top` whose topology is defined as an
@@ -85,11 +89,17 @@ def limitConeIsLimit (F : J ⥤ TopCat) : IsLimit (limitCone.{v,u} F) where
           dsimp
           erw [← S.w f]
           rfl⟩
-      continuous_toFun := sorry }
+      continuous_toFun :=
+        Continuous.subtype_mk (continuous_pi <| fun j => (S.π.app j).2) fun x i j f => by
+          dsimp
+          rw [← S.w f]
+          rfl }
+  --fac := sorry
   uniq S m h := by
-    ext : 3
-    simp [← h]
-    sorry
+    apply ContinuousMap.ext ; intros a ; apply Subtype.ext ; funext j
+    dsimp
+    rw [← h]
+    rfl
 #align Top.limit_cone_is_limit TopCat.limitConeIsLimit
 
 /-- The chosen cone `Top.limit_cone_infi F` for a functor `F : J ⥤ Top` is a limit cone.
@@ -1143,4 +1153,3 @@ theorem nonempty_limitCone_of_compact_t2_cofiltered_system [IsCofilteredOrEmpty 
 end TopologicalKonig
 
 end TopCat
-
