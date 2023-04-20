@@ -306,9 +306,9 @@ theorem Submodule.nonempty_basis_of_pid {ι : Type _} [Finite ι] (b : Basis ι 
     (N : Submodule R M) : ∃ n : ℕ, Nonempty (Basis (Fin n) R N) := by
   haveI := Classical.decEq M
   cases nonempty_fintype ι
--- Porting note: Lean needs to know exactly the induction hypothesis
-  refine inductionOnRank b (fun N ↦ ∃ n : ℕ, Nonempty (Basis (Fin n) R N)) ?_ N
-  intro N ih
+  induction' N using inductionOnRank with N ih
+-- Porting note: TODO -- improve this proof
+  exact b
   let b' := (b.reindex (Fintype.equivFin ι)).map (LinearEquiv.ofTop _ rfl).symm
   by_cases N_bot : N = ⊥
   · subst N_bot
@@ -318,6 +318,7 @@ theorem Submodule.nonempty_basis_of_pid {ι : Type _} [Finite ι] (b : Basis ι 
   obtain ⟨n', ⟨bN'⟩⟩ := ih N' N'_le_N _ hay ay_ortho
   obtain ⟨bN, hbN⟩ := h' n' bN'
   exact ⟨n' + 1, ⟨bN⟩⟩
+  infer_instance
 #align submodule.nonempty_basis_of_pid Submodule.nonempty_basis_of_pid
 
 /-- A submodule of a free `R`-module of finite rank is also a free `R`-module of finite rank,
@@ -461,26 +462,23 @@ theorem Submodule.exists_smith_normal_form_of_le [Finite ι] (b : Basis ι R M) 
       ∀ i, (bN i : M) = a i • bO (Fin.castLE hno i) := by
   cases nonempty_fintype ι
   revert N
-
--- Porting note: Lean needs to know exactly the induction hypothesis
-  let P : Submodule R M → Prop := fun O =>
-    ∀ N : Submodule R M, N ≤ O →  ∃ (n o : ℕ)(hno : n ≤ o)(bO : Basis (Fin o) R O)
-    (bN : Basis (Fin n) R N)(a : Fin n → R), ∀ i, (bN i : M) = a i • bO (Fin.castLE hno i)
-  refine inductionOnRank b P ?_ O
-
-
-  intro M ih N N_le_M
-  obtain ⟨m, b'M⟩ := M.basis_of_pid b
+  induction' O using inductionOnRank with M0 ih
+  exact b
+  intro N N_le_M0
+  obtain ⟨m, b'M⟩ := M0.basisOfPid b
   by_cases N_bot : N = ⊥
   · subst N_bot
     exact ⟨0, m, Nat.zero_le _, b'M, Basis.empty _, finZeroElim, finZeroElim⟩
   obtain ⟨y, hy, a, hay, M', M'_le_M, N', N'_le_N, N'_le_M', y_ortho, ay_ortho, h⟩ :=
-    Submodule.basis_of_pid_aux M N b'M N_bot N_le_M
+    Submodule.basis_of_pid_aux M0 N b'M N_bot N_le_M0
+
   obtain ⟨n', m', hn'm', bM', bN', as', has'⟩ := ih M' M'_le_M y hy y_ortho N' N'_le_M'
   obtain ⟨bN, h'⟩ := h n' bN'
   obtain ⟨hmn, bM, h''⟩ := h' m' hn'm' bM'
   obtain ⟨as, has⟩ := h'' as' has'
   exact ⟨_, _, hmn, bM, bN, as, has⟩
+-- Porting note: Lean generates a goal Fintype ι for some reason
+  infer_instance
 #align submodule.exists_smith_normal_form_of_le Submodule.exists_smith_normal_form_of_le
 
 /-- If `M` is finite free over a PID `R`, then any submodule `N` is free
@@ -493,14 +491,14 @@ need to map `N` into a submodule of `O`.
 This is a strengthening of `Submodule.basisOfPidOfLe`.
 -/
 noncomputable def Submodule.smithNormalFormOfLe [Finite ι] (b : Basis ι R M) (N O : Submodule R M)
-    (N_le_O : N ≤ O) : Σo n : ℕ, Basis.SmithNormalForm (N.comap O.Subtype) (Fin o) n := by
+    (N_le_O : N ≤ O) : Σo n : ℕ, Basis.SmithNormalForm (N.comap O.subtype) (Fin o) n := by
   choose n o hno bO bN a snf using N.exists_smith_normal_form_of_le b O N_le_O
   refine'
-    ⟨o, n, bO, bN.map (comap_subtype_equiv_of_le N_le_O).symm, (Fin.castLE hno).toEmbedding, a,
+    ⟨o, n, bO, bN.map (comapSubtypeEquivOfLe N_le_O).symm, (Fin.castLE hno).toEmbedding, a,
       fun i ↦ _⟩
   ext
   simp only [snf, Basis.map_apply, Submodule.comapSubtypeEquivOfLe_symm_apply,
-    Submodule.coe_smul_of_tower, RelEmbedding.coeFn_toEmbedding]
+    Submodule.coe_smul_of_tower]
 #align submodule.smith_normal_form_of_le Submodule.smithNormalFormOfLe
 
 /-- If `M` is finite free over a PID `R`, then any submodule `N` is free
@@ -519,7 +517,7 @@ noncomputable def Submodule.smithNormalForm [Finite ι] (b : Basis ι R M) (N : 
   let e := bM'.indexEquiv b
   ⟨n, bM'.reindex e, bN.map (comapSubtypeEquivOfLe le_top), f.trans e.toEmbedding, a, fun i ↦ by
     simp only [snf, Basis.map_apply, LinearEquiv.ofTop_apply, Submodule.coe_smul_of_tower,
-      Submodule.comapSubtypeEquivOfLe_apply_coe, coe_coe, Basis.reindex_apply,
+      Submodule.comapSubtypeEquivOfLe_apply_coe, Basis.reindex_apply,
       Equiv.toEmbedding_apply, Function.Embedding.trans_apply, Equiv.symm_apply_apply]⟩
 #align submodule.smith_normal_form Submodule.smithNormalForm
 
@@ -539,11 +537,12 @@ This is a strengthening of `Submodule.basisOfPid`.
 -/
 noncomputable def Ideal.smithNormalForm [Fintype ι] (b : Basis ι R S) (I : Ideal S) (hI : I ≠ ⊥) :
     Basis.SmithNormalForm (I.restrictScalars R) ι (Fintype.card ι) :=
-  let ⟨n, bS, bI, f, a, snf⟩ := (I.restrictScalars R).SmithNormalForm b
-  have eq := Ideal.rank_eq bS hI (bI.map ((restrictScalarsEquiv R S S I).restrictScalars _))
-  let e : Fin n ≃ Fin (Fintype.card ι) := Fintype.equivOfCardEq (by rw [Eq, Fintype.card_fin])
+  let ⟨n, bS, bI, f, a, snf⟩ := (I.restrictScalars R).smithNormalForm b
+  have eq := Ideal.rank_eq bS hI (bI.map ((restrictScalarsEquiv R S S I).restrictScalars R))
+  let e : Fin n ≃ Fin (Fintype.card ι) := Fintype.equivOfCardEq (by rw [eq, Fintype.card_fin])
   ⟨bS, bI.reindex e, e.symm.toEmbedding.trans f, a ∘ e.symm, fun i ↦ by
-    simp only [snf, Basis.coe_reindex, Function.Embedding.trans_apply, Equiv.toEmbedding_apply]⟩
+    simp only [snf, Basis.coe_reindex, Function.Embedding.trans_apply, Equiv.toEmbedding_apply,
+      (·∘·)]⟩
 #align ideal.smith_normal_form Ideal.smithNormalForm
 
 variable [Finite ι]
@@ -563,15 +562,15 @@ theorem Ideal.exists_smith_normal_form (b : Basis ι R S) (I : Ideal S) (hI : I 
     ∃ (b' : Basis ι R S)(a : ι → R)(ab' : Basis ι R I), ∀ i, (ab' i : S) = a i • b' i := by
   cases nonempty_fintype ι <;>
     exact
-      let ⟨bS, bI, f, a, snf⟩ := I.smith_normal_form b hI
+      let ⟨bS, bI, f, a, snf⟩ := I.smithNormalForm b hI
       let e : Fin (Fintype.card ι) ≃ ι :=
         Equiv.ofBijective f
-          ((Fintype.bijective_iff_injective_and_card f).mpr ⟨f.Injective, Fintype.card_fin _⟩)
+          ((Fintype.bijective_iff_injective_and_card f).mpr ⟨f.injective, Fintype.card_fin _⟩)
       have fe : ∀ i, f (e.symm i) = i := e.apply_symm_apply
-      ⟨bS, a ∘ e.symm, (bI.reindex e).map ((restrict_scalars_equiv _ _ _ _).restrictScalars R),
+      ⟨bS, a ∘ e.symm, (bI.reindex e).map ((restrictScalarsEquiv R S _ _).restrictScalars R),
         fun i ↦ by
-        simp only [snf, fe, Basis.map_apply, LinearEquiv.restrictScalars_apply,
-          Submodule.restrictScalarsEquiv_apply, Basis.coe_reindex]⟩
+          simp only [snf, fe, Basis.map_apply, LinearEquiv.restrictScalars_apply R,
+            Submodule.restrictScalarsEquiv_apply, Basis.coe_reindex, (·∘·)]⟩
 #align ideal.exists_smith_normal_form Ideal.exists_smith_normal_form
 
 /-- If `S` a finite-dimensional ring extension of a PID `R` which is free as an `R`-module,
@@ -583,7 +582,7 @@ see `Ideal.smithCoeffs` for the entries of the diagonal matrix
 and `Ideal.selfBasis_def` for the proof that the inclusion map forms a square diagonal matrix.
 -/
 noncomputable def Ideal.ringBasis (b : Basis ι R S) (I : Ideal S) (hI : I ≠ ⊥) : Basis ι R S :=
-  (Ideal.exists_smith_normal_form b I hI).some
+  (Ideal.exists_smith_normal_form b I hI).choose
 #align ideal.ring_basis Ideal.ringBasis
 
 /-- If `S` a finite-dimensional ring extension of a PID `R` which is free as an `R`-module,
@@ -595,7 +594,7 @@ see `Ideal.smithCoeffs` for the entries of the diagonal matrix
 and `Ideal.selfBasis_def` for the proof that the inclusion map forms a square diagonal matrix.
 -/
 noncomputable def Ideal.selfBasis (b : Basis ι R S) (I : Ideal S) (hI : I ≠ ⊥) : Basis ι R I :=
-  (Ideal.exists_smith_normal_form b I hI).choose_spec.choose_spec.some
+  (Ideal.exists_smith_normal_form b I hI).choose_spec.choose_spec.choose
 #align ideal.self_basis Ideal.selfBasis
 
 /-- If `S` a finite-dimensional ring extension of a PID `R` which is free as an `R`-module,
@@ -607,7 +606,7 @@ see `Ideal.selfBasis` for the basis on `I`,
 and `Ideal.selfBasis_def` for the proof that the inclusion map forms a square diagonal matrix.
 -/
 noncomputable def Ideal.smithCoeffs (b : Basis ι R S) (I : Ideal S) (hI : I ≠ ⊥) : ι → R :=
-  (Ideal.exists_smith_normal_form b I hI).choose_spec.some
+  (Ideal.exists_smith_normal_form b I hI).choose_spec.choose
 #align ideal.smith_coeffs Ideal.smithCoeffs
 
 /-- If `S` a finite-dimensional ring extension of a PID `R` which is free as an `R`-module,
