@@ -14,35 +14,20 @@ import Mathlib.CategoryTheory.Idempotents.FunctorExtension
 
 /-!
 
-# Construction of the projection `P_infty` for the Dold-Kan correspondence
+# Construction of the projection `PInfty` for the Dold-Kan correspondence
 
-TODO (@joelriou) continue adding the various files referenced below
-
-In this file, we construct the projection `P_infty : K[X] ⟶ K[X]` by passing
-to the limit the projections `P q` defined in `projections.lean`. This
+In this file, we construct the projection `PInfty : K[X] ⟶ K[X]` by passing
+to the limit the projections `P q` defined in `Projections.lean`. This
 projection is a critical tool in this formalisation of the Dold-Kan correspondence,
-because in the case of abelian categories, `P_infty` corresponds to the
+because in the case of abelian categories, `PInfty` corresponds to the
 projection on the normalized Moore subcomplex, with kernel the degenerate subcomplex.
-(See `equivalence.lean` for the general strategy of proof.)
+(See `Equivalence.lean` for the general strategy of proof.)
 
 -/
 
 
-open CategoryTheory
-
-open CategoryTheory.Category
-
-open CategoryTheory.Preadditive
-
-open CategoryTheory.SimplicialObject
-
-open CategoryTheory.Idempotents
-
-open Opposite
-
-open Simplicial DoldKan
-
-noncomputable section
+open CategoryTheory CategoryTheory.Category CategoryTheory.Preadditive
+  CategoryTheory.SimplicialObject CategoryTheory.Idempotents Opposite Simplicial DoldKan
 
 namespace AlgebraicTopology
 
@@ -50,50 +35,57 @@ namespace DoldKan
 
 variable {C : Type _} [Category C] [Preadditive C] {X : SimplicialObject C}
 
-theorem p_is_eventually_constant {q n : ℕ} (hqn : n ≤ q) :
-    ((p (q + 1)).f n : X _[n] ⟶ _) = (p q).f n := by
-  cases n
-  · simp only [P_f_0_eq]
-  · unfold P
-    simp only [add_right_eq_self, comp_add, HomologicalComplex.comp_f,
+theorem P_is_eventually_constant {q n : ℕ} (hqn : n ≤ q) :
+    ((P (q + 1)).f n : X _[n] ⟶ _) = (P q).f n := by
+  rcases n with (_|n)
+  · simp only [Nat.zero_eq, P_f_0_eq]
+  · simp only [P_succ, add_right_eq_self, comp_add, HomologicalComplex.comp_f,
       HomologicalComplex.add_f_apply, comp_id]
-    exact (higher_faces_vanish.of_P q n).comp_hσ_eq_zero (nat.succ_le_iff.mp hqn)
-#align algebraic_topology.dold_kan.P_is_eventually_constant AlgebraicTopology.DoldKan.p_is_eventually_constant
+    exact (HigherFacesVanish.of_P q n).comp_Hσ_eq_zero (Nat.succ_le_iff.mp hqn)
+set_option linter.uppercaseLean3 false in
+#align algebraic_topology.dold_kan.P_is_eventually_constant AlgebraicTopology.DoldKan.P_is_eventually_constant
 
-theorem q_is_eventually_constant {q n : ℕ} (hqn : n ≤ q) :
-    ((q (q + 1)).f n : X _[n] ⟶ _) = (q q).f n := by
+theorem Q_is_eventually_constant {q n : ℕ} (hqn : n ≤ q) :
+    ((Q (q + 1)).f n : X _[n] ⟶ _) = (Q q).f n := by
   simp only [Q, HomologicalComplex.sub_f_apply, P_is_eventually_constant hqn]
-#align algebraic_topology.dold_kan.Q_is_eventually_constant AlgebraicTopology.DoldKan.q_is_eventually_constant
+set_option linter.uppercaseLean3 false in
+#align algebraic_topology.dold_kan.Q_is_eventually_constant AlgebraicTopology.DoldKan.Q_is_eventually_constant
 
-/-- The endomorphism `P_infty : K[X] ⟶ K[X]` obtained from the `P q` by passing to the limit. -/
-def pInfty : K[X] ⟶ K[X] :=
-  ChainComplex.ofHom _ _ _ _ _ _ (fun n => ((p n).f n : X _[n] ⟶ _)) fun n => by
+/-- The endomorphism `PInfty : K[X] ⟶ K[X]` obtained from the `P q` by passing to the limit. -/
+noncomputable def PInfty : K[X] ⟶ K[X] :=
+  ChainComplex.ofHom _ _ _ _ _ _ (fun n => ((P n).f n : X _[n] ⟶ _)) fun n => by
     simpa only [← P_is_eventually_constant (show n ≤ n by rfl),
-      alternating_face_map_complex.obj_d_eq] using (P (n + 1)).comm (n + 1) n
-#align algebraic_topology.dold_kan.P_infty AlgebraicTopology.DoldKan.pInfty
+      AlternatingFaceMapComplex.obj_d_eq] using (P (n + 1) : K[X] ⟶ _).comm (n + 1) n
+set_option linter.uppercaseLean3 false in
+#align algebraic_topology.dold_kan.P_infty AlgebraicTopology.DoldKan.PInfty
 
-/-- The endomorphism `Q_infty : K[X] ⟶ K[X]` obtained from the `Q q` by passing to the limit. -/
-def qInfty : K[X] ⟶ K[X] :=
-  𝟙 _ - pInfty
-#align algebraic_topology.dold_kan.Q_infty AlgebraicTopology.DoldKan.qInfty
-
-@[simp]
-theorem pInfty_f_0 : (pInfty.f 0 : X _[0] ⟶ X _[0]) = 𝟙 _ :=
-  rfl
-#align algebraic_topology.dold_kan.P_infty_f_0 AlgebraicTopology.DoldKan.pInfty_f_0
-
-theorem pInfty_f (n : ℕ) : (pInfty.f n : X _[n] ⟶ X _[n]) = (p n).f n :=
-  rfl
-#align algebraic_topology.dold_kan.P_infty_f AlgebraicTopology.DoldKan.pInfty_f
+/-- The endomorphism `QInfty : K[X] ⟶ K[X]` obtained from the `Q q` by passing to the limit. -/
+noncomputable def QInfty : K[X] ⟶ K[X] :=
+  𝟙 _ - PInfty
+set_option linter.uppercaseLean3 false in
+#align algebraic_topology.dold_kan.Q_infty AlgebraicTopology.DoldKan.QInfty
 
 @[simp]
-theorem qInfty_f_0 : (qInfty.f 0 : X _[0] ⟶ X _[0]) = 0 := by
-  dsimp [Q_infty]
+theorem PInfty_f_0 : (PInfty.f 0 : X _[0] ⟶ X _[0]) = 𝟙 _ :=
+  rfl
+set_option linter.uppercaseLean3 false in
+#align algebraic_topology.dold_kan.P_infty_f_0 AlgebraicTopology.DoldKan.PInfty_f_0
+
+theorem PInfty_f (n : ℕ) : (PInfty.f n : X _[n] ⟶ X _[n]) = (P n).f n :=
+  rfl
+set_option linter.uppercaseLean3 false in
+#align algebraic_topology.dold_kan.P_infty_f AlgebraicTopology.DoldKan.PInfty_f
+
+@[simp]
+theorem QInfty_f_0 : (QInfty.f 0 : X _[0] ⟶ X _[0]) = 0 := by
+  dsimp [QInfty]
   simp only [sub_self]
-#align algebraic_topology.dold_kan.Q_infty_f_0 AlgebraicTopology.DoldKan.qInfty_f_0
+set_option linter.uppercaseLean3 false in
+#align algebraic_topology.dold_kan.Q_infty_f_0 AlgebraicTopology.DoldKan.QInfty_f_0
 
-theorem qInfty_f (n : ℕ) : (qInfty.f n : X _[n] ⟶ X _[n]) = (q n).f n :=
+theorem qInfty_f (n : ℕ) : (QInfty.f n : X _[n] ⟶ X _[n]) = (Q n).f n :=
   rfl
+set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.Q_infty_f AlgebraicTopology.DoldKan.qInfty_f
 
 @[simp, reassoc.1]
@@ -237,4 +229,3 @@ theorem karoubi_pInfty_f {Y : Karoubi (SimplicialObject C)} (n : ℕ) :
 end DoldKan
 
 end AlgebraicTopology
-
