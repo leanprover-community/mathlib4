@@ -79,7 +79,7 @@ theorem reindexLinearEquiv_trans (e₁ : m ≃ m') (e₂ : n ≃ n') (e₁' : m'
 theorem reindexLinearEquiv_comp (e₁ : m ≃ m') (e₂ : n ≃ n') (e₁' : m' ≃ m'') (e₂' : n' ≃ n'') :
     reindexLinearEquiv R A e₁' e₂' ∘ reindexLinearEquiv R A e₁ e₂ =
       reindexLinearEquiv R A (e₁.trans e₁') (e₂.trans e₂') := by
-  rw [← reindex_linear_equiv_trans]
+  rw [← reindexLinearEquiv_trans]
   rfl
 #align matrix.reindex_linear_equiv_comp Matrix.reindexLinearEquiv_comp
 
@@ -129,7 +129,8 @@ def reindexAlgEquiv (e : m ≃ n) : Matrix m m R ≃ₐ[R] Matrix n n R :=
   { reindexLinearEquiv R R e e with
     toFun := reindex e e
     map_mul' := fun a b => (reindexLinearEquiv_mul R R e e e a b).symm
-    commutes' := fun r => by simp [algebraMap, Algebra.toRingHom, submatrix_smul] }
+    -- Porting note: `submatrix_smul` needed help
+    commutes' := fun r => by simp [algebraMap, Algebra.toRingHom, submatrix_smul _ 1] }
 #align matrix.reindex_alg_equiv Matrix.reindexAlgEquiv
 
 @[simp]
@@ -174,4 +175,3 @@ theorem det_reindexAlgEquiv [CommRing R] [Fintype m] [DecidableEq m] [Fintype n]
 #align matrix.det_reindex_alg_equiv Matrix.det_reindexAlgEquiv
 
 end Matrix
-
