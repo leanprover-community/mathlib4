@@ -8,9 +8,9 @@ Authors: Eric Wieser
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.LinearAlgebra.Matrix.Determinant
-import Mathbin.Data.MvPolynomial.Basic
-import Mathbin.Data.MvPolynomial.CommRing
+import Mathlib.LinearAlgebra.Matrix.Determinant
+import Mathlib.Data.MvPolynomial.Basic
+import Mathlib.Data.MvPolynomial.CommRing
 
 /-!
 # Matrices of multivariate polynomials
