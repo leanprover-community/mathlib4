@@ -159,7 +159,6 @@ theorem iff_quotient_mvPolynomial'' :
   constructor
   · rw [iff_quotient_mvPolynomial']
     rintro ⟨ι, hfintype, ⟨f, hsur⟩⟩
-    skip
     have equiv := MvPolynomial.renameEquiv R (Fintype.equivFin ι)
     exact ⟨Fintype.card ι, AlgHom.comp f equiv.symm.toAlgHom, by simpa using hsur⟩
   · rintro ⟨n, ⟨f, hsur⟩⟩

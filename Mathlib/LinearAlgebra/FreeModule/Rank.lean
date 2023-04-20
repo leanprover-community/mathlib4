@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 
 ! This file was ported from Lean 3 source module linear_algebra.free_module.rank
-! leanprover-community/mathlib commit 5aa3c1de9f3c642eac76e11071c852766f220fd0
+! leanprover-community/mathlib commit 465d4301d8da5945ef1dc1b29fb34c2f2b315ac4
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -109,35 +109,20 @@ variable [AddCommGroup N] [Module R N] [Module.Free R N]
 
 open Module.Free
 
---Porting note: Extremely slow ~100s
-set_option maxHeartbeats 0
-set_option synthInstance.etaExperiment true  -- Porting note: gets around lean4#2074
 /-- The rank of `M ⊗[R] N` is `(Module.rank R M).lift * (Module.rank R N).lift`. -/
 @[simp]
 theorem rank_tensorProduct :
     Module.rank R (M ⊗[R] N) =
       Cardinal.lift.{w, v} (Module.rank R M) * Cardinal.lift.{v, w} (Module.rank R N) := by
-  let f := repr R M
-  let g := repr R N
-  have fg := @TensorProduct.congr (R := R) _ _ _ _ _
-    AddCommGroup.toAddCommMonoid AddCommGroup.toAddCommMonoid
-    AddCommGroup.toAddCommMonoid AddCommGroup.toAddCommMonoid _ _ _ _ f g
-  have h₁ := @LinearEquiv.lift_rank_eq.{u, max v w, max (max u v) w}
-     (R := R) (M := M ⊗[R] N)
-     (M' := (ChooseBasisIndex R M →₀ R) ⊗[R] (ChooseBasisIndex R N →₀ R)) _ _ _ _
-     (@instModuleTensorProductToSemiringAddCommMonoid _ _ _ _
-       AddCommGroup.toAddCommMonoid
-       AddCommGroup.toAddCommMonoid _ _) fg
-  let _b : Basis (ChooseBasisIndex R M × ChooseBasisIndex R N) R (_ →₀ R) := Finsupp.basisSingleOne
-  rw [LinearEquiv.rank_eq (finsuppTensorFinsupp' R (ChooseBasisIndex R M) (ChooseBasisIndex R N)),
-    ← _b.mk_eq_rank, mk_prod] at h₁
-  rw [lift_inj.1 h₁, rank_eq_card_chooseBasisIndex R M, rank_eq_card_chooseBasisIndex R N]
+  obtain ⟨⟨_, bM⟩⟩ := Module.Free.exists_basis (R := R) (M := M)
+  obtain ⟨⟨_, bN⟩⟩ := Module.Free.exists_basis (R := R) (M := N)
+  rw [← bM.mk_eq_rank'', ← bN.mk_eq_rank'', ← (bM.tensorProduct bN).mk_eq_rank'', Cardinal.mk_prod]
 #align rank_tensor_product rank_tensorProduct
 
 /-- If `M` and `N` lie in the same universe, the rank of `M ⊗[R] N` is
   `(Module.rank R M) * (Module.rank R N)`. -/
-theorem rank_tensor_product' (N : Type v) [AddCommGroup N] [Module R N] [Module.Free R N] :
+theorem rank_tensorProduct' (N : Type v) [AddCommGroup N] [Module R N] [Module.Free R N] :
     Module.rank R (M ⊗[R] N) = Module.rank R M * Module.rank R N := by simp
-#align rank_tensor_product' rank_tensor_product'
+#align rank_tensor_product' rank_tensorProduct'
 
 end CommRing
