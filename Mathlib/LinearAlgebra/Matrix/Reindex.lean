@@ -13,14 +13,14 @@ import Mathlib.LinearAlgebra.Matrix.Determinant
 /-!
 # Changing the index type of a matrix
 
-This file concerns the map `matrix.reindex`, mapping a `m` by `n` matrix
+This file concerns the map `Matrix.reindex`, mapping a `m` by `n` matrix
 to an `m'` by `n'` matrix, as long as `m ≃ m'` and `n ≃ n'`.
 
 ## Main definitions
 
-* `matrix.reindex_linear_equiv R A`: `matrix.reindex` is an `R`-linear equivalence between
+* `Matrix.reindexLinearEquiv R A`: `Matrix.reindex` is an `R`-linear equivalence between
   `A`-matrices.
-* `matrix.reindex_alg_equiv R`: `matrix.reindex` is an `R`-algebra equivalence between `R`-matrices.
+* `Matrix.reindexAlgEquiv R`: `Matrix.reindex` is an `R`-algebra equivalence between `R`-matrices.
 
 ## Tags
 
@@ -44,7 +44,7 @@ section AddCommMonoid
 variable [Semiring R] [AddCommMonoid A] [Module R A]
 
 /-- The natural map that reindexes a matrix's rows and columns with equivalent types,
-`matrix.reindex`, is a linear equivalence. -/
+`Matrix.reindex`, is a linear equivalence. -/
 def reindexLinearEquiv (eₘ : m ≃ m') (eₙ : n ≃ n') : Matrix m n A ≃ₗ[R] Matrix m' n' A :=
   { reindex eₘ eₙ with
     map_add' := fun _ _ => rfl
@@ -123,7 +123,7 @@ section Algebra
 variable [CommSemiring R] [Fintype n] [Fintype m] [DecidableEq m] [DecidableEq n]
 
 /-- For square matrices with coefficients in commutative semirings, the natural map that reindexes
-a matrix's rows and columns with equivalent types, `matrix.reindex`, is an equivalence of algebras.
+a matrix's rows and columns with equivalent types, `Matrix.reindex`, is an equivalence of algebras.
 -/
 def reindexAlgEquiv (e : m ≃ n) : Matrix m m R ≃ₐ[R] Matrix n n R :=
   { reindexLinearEquiv R R e e with
