@@ -21,7 +21,7 @@ that tries to find a lemma which makes use of each of the local hypotheses `a, b
 The variant `propose : t using a, b, c` restricts to lemmas with type `t` (which may contain `_`).
 
 Note that in either variant `propose` does not look at the current goal at all.
-It is a relevant of `library_search` but for *forward reasoning* (i.e. looking at the hypotheses)
+It is a relative of `library_search` but for *forward reasoning* (i.e. looking at the hypotheses)
 rather than backward reasoning.
 
 ```
