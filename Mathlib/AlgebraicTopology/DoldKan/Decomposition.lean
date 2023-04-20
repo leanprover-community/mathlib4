@@ -33,9 +33,8 @@ reflects isomorphisms.
 -/
 
 
-open CategoryTheory CategoryTheory.Category CategoryTheory.Preadditive Opposite
-
-open BigOperators Simplicial
+open CategoryTheory CategoryTheory.Category CategoryTheory.Preadditive
+  Opposite BigOperators Simplicial
 
 noncomputable section
 
@@ -61,27 +60,26 @@ theorem decomposition_Q (n q : ℕ) :
   · by_cases hqn : q + 1 ≤ n + 1
     swap
     · rw [Q_is_eventually_constant (show n + 1 ≤ q by linarith), hq]
-      sorry
-      --congr
-      --ext
-      --have hx := x.is_lt
-      --simp only [Nat.succ_eq_add_one]
-      --constructor <;> intro h <;> linarith
+      congr 1
+      ext ⟨x, hx⟩
+      simp only [Nat.succ_eq_add_one, Finset.mem_filter, Finset.mem_univ, true_and]
+      constructor <;> intro <;> linarith
     · cases' Nat.le.dest (Nat.succ_le_succ_iff.mp hqn) with a ha
       rw [Q_succ, HomologicalComplex.sub_f_apply, HomologicalComplex.comp_f, hq]
       symm
       conv_rhs => rw [sub_eq_add_neg, add_comm]
       let q' : Fin (n + 1) := ⟨q, Nat.succ_le_iff.mp hqn⟩
-      sorry
-      --convert @Finset.sum_insert _ _ _ _ _ _ _ (_ : q' ∉ _)
-      --· ext i
-      --  simp only [Finset.mem_insert, Finset.mem_filter, Finset.mem_univ, true_and_iff,
-      --    Nat.lt_succ_iff_lt_or_eq, Fin.ext_iff]
-      --  tauto
-      --· have hnaq' : n = a + q := by linarith
-      --  simpa only [Fin.val_mk, (higher_faces_vanish.of_P q n).comp_hσ_eq hnaq', q'.rev_eq hnaq',
-      --    neg_neg]
-      --· simp only [Finset.mem_filter, Fin.val_mk, lt_self_iff_false, and_false_iff, not_false_iff]
+      rw [← @Finset.add_sum_erase _ _ _ _ _ _ q' (by simp)]
+      congr
+      · have hnaq' : n = a + q := by linarith
+        simp only [Fin.val_mk, (HigherFacesVanish.of_P q n).comp_Hσ_eq hnaq',
+          q'.rev_eq hnaq', neg_neg]
+        rfl
+      . ext ⟨i, hi⟩
+        simp only [Nat.succ_eq_add_one, Nat.lt_succ_iff_lt_or_eq, Finset.mem_univ,
+          forall_true_left, Finset.mem_filter, lt_self_iff_false, or_true, and_self, not_true,
+          Finset.mem_erase, ne_eq, Fin.mk.injEq, true_and]
+        aesop
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.decomposition_Q AlgebraicTopology.DoldKan.decomposition_Q
 
