@@ -40,12 +40,14 @@ lake build Mathlib:docs Std:docs
 cd ..
 rm -rf mathlib4_docs/docs/
 cp -r "workaround/build/doc" mathlib4_docs/docs
-echo "$MATHLIB4_DOCS_KEY" > id_ed25519
-chmod 600 id_ed25519
+ssh_key=$PWD/deploy_key
+echo "$MATHLIB4_DOCS_KEY" > $ssh_key
+chmod 600 $ssh_key
+ssh -i $ssh_key git@github.com || true # check ssh access
 cd mathlib4_docs/docs
 git remote set-url origin "git@github.com:leanprover-community/mathlib4_docs.git"
 git add -A .
 git checkout --orphan master2
 git commit -m "automatic update to mathlib4 $mathlib_short_git_hash using doc-gen4 $doc_gen_short_git_hash"
-GIT_SSH_COMMAND='ssh -i ../id_ed25519' git push -f origin HEAD:master
-rm ../id_ed25519
+GIT_SSH_COMMAND="ssh -i $ssh_key" git push -f origin HEAD:master
+rm $ssh_key

@@ -16,6 +16,7 @@ jobs:
           rm -rf *
           rm -rf $HOME/.elan
           rm -rf $HOME/.cache/mathlib
+          rm -rf $HOME/.ssh
 
       - name: Checkout repo
         uses: actions/checkout@v3
@@ -43,8 +44,7 @@ jobs:
       - name: clean up
         if: always()
         run: |
+          cd ..
           rm -rf *
           rm -rf $HOME/.elan
           rm -rf $HOME/.cache/mathlib
-          rm -rf ../workaround
-          rm -rf ../mathlib4_docs
