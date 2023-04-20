@@ -95,8 +95,8 @@ theorem mulLeftRight_apply (a b x : A) : mulLeftRight R (a, b) x = a * x * b :=
 #align linear_map.mul_left_right_apply LinearMap.mulLeftRight_apply
 
 @[simp]
-theorem mul'_apply {a b : A} : mul' R A (a ⊗ₜ b) = a * b :=
-  rfl
+theorem mul'_apply {a b : A} : mul' R A (a ⊗ₜ b) = a * b := by
+  simp [mul']
 #align linear_map.mul'_apply LinearMap.mul'_apply
 
 @[simp]
