@@ -349,11 +349,11 @@ noncomputable def Submodule.basisOfPidOfLE {ι : Type _} [Finite ι] {N O : Subm
 
 /-- A submodule inside the span of a linear independent family is a free `R`-module of finite rank,
 if `R` is a principal ideal domain. -/
-noncomputable def Submodule.basisOfPidOfLeSpan {ι : Type _} [Finite ι] {b : ι → M}
+noncomputable def Submodule.basisOfPidOfLESpan {ι : Type _} [Finite ι] {b : ι → M}
     (hb : LinearIndependent R b) {N : Submodule R M} (le : N ≤ Submodule.span R (Set.range b)) :
     Σn : ℕ, Basis (Fin n) R N :=
   Submodule.basisOfPidOfLE le (Basis.span hb)
-#align submodule.basis_of_pid_of_le_span Submodule.basisOfPidOfLeSpan
+#align submodule.basis_of_pid_of_le_span Submodule.basisOfPidOfLESpan
 
 set_option synthInstance.etaExperiment true in -- Porting note: added
 /-- A finite type torsion free module over a PID admits a basis. -/
