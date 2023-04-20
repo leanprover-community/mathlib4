@@ -83,8 +83,8 @@ def domCoprod' :
 
 @[simp]
 theorem domCoprod'_apply (a : MultilinearMap R (fun _ : ι₁ => N) N₁)
-    (b : MultilinearMap R (fun _ : ι₂ => N) N₂) : domCoprod' (a ⊗ₜ[R] b) = domCoprod a b :=
-  rfl
+    (b : MultilinearMap R (fun _ : ι₂ => N) N₂) : domCoprod' (a ⊗ₜ[R] b) = domCoprod a b := by
+  simp [domCoprod']
 #align multilinear_map.dom_coprod'_apply MultilinearMap.domCoprod'_apply
 
 /-- When passed an `Equiv.sumCongr`, `MultilinearMap.domDomCongr` distributes over
