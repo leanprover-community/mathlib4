@@ -214,8 +214,8 @@ elab_rules : tactic |
   let name : Name := match n? with
     | none   => `this
     | some n => n.getId
-  mainGoal.withContext do
-    let type ← elabTermWithHoles t none (← getMainTag) true <&> (·.1)
+  withMainContext do
+    let (type, _) ← elabTermWithHoles t none (← getMainTag) true
     let .mvar goal ← mkFreshExprMVar type | failure
     if let some _ ← librarySearch goal (← librarySearchLemmas.get) [] then
       reportOutOfHeartbeats tk
@@ -225,7 +225,7 @@ elab_rules : tactic |
       if trace.isSome then
         -- TODO we should be allowed to pass an identifier to `addHaveSuggestion`.
         addHaveSuggestion tk type v
-      let (_, newGoal) ← (← getMainGoal).let name v
+      let (_, newGoal) ← (← getMainGoal).note name v
       replaceMainGoal [newGoal]
 
 @[inherit_doc observe] macro "observe?" h:(ident)? ":" t:term : tactic =>
