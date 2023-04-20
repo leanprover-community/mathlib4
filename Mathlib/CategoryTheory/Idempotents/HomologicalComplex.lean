@@ -8,8 +8,8 @@ Authors: Joël Riou
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Homology.Additive
-import Mathbin.CategoryTheory.Idempotents.Karoubi
+import Mathlib.Algebra.Homology.Additive
+import Mathlib.CategoryTheory.Idempotents.Karoubi
 
 /-!
 # Idempotent completeness and homological complexes
@@ -73,8 +73,7 @@ namespace Functor
 /-- The functor `karoubi (homological_complex C c) ⥤ homological_complex (karoubi C) c`,
 on objects. -/
 @[simps]
-def obj (P : Karoubi (HomologicalComplex C c)) : HomologicalComplex (Karoubi C) c
-    where
+def obj (P : Karoubi (HomologicalComplex C c)) : HomologicalComplex (Karoubi C) c where
   pt n :=
     ⟨P.pt.pt n, P.p.f n, by
       simpa only [HomologicalComplex.comp_f] using HomologicalComplex.congr_hom P.idem n⟩
@@ -97,8 +96,7 @@ end Functor
 
 /-- The functor `karoubi (homological_complex C c) ⥤ homological_complex (karoubi C) c`. -/
 @[simps]
-def functor : Karoubi (HomologicalComplex C c) ⥤ HomologicalComplex (Karoubi C) c
-    where
+def functor : Karoubi (HomologicalComplex C c) ⥤ HomologicalComplex (Karoubi C) c where
   obj := Functor.obj
   map P Q f := Functor.map f
 #align category_theory.idempotents.karoubi_homological_complex_equivalence.functor CategoryTheory.Idempotents.KaroubiHomologicalComplexEquivalence.functor
@@ -108,8 +106,7 @@ namespace Inverse
 /-- The functor `homological_complex (karoubi C) c ⥤ karoubi (homological_complex C c)`,
 on objects -/
 @[simps]
-def obj (K : HomologicalComplex (Karoubi C) c) : Karoubi (HomologicalComplex C c)
-    where
+def obj (K : HomologicalComplex (Karoubi C) c) : Karoubi (HomologicalComplex C c) where
   pt :=
     { pt := fun n => (K.pt n).pt
       d := fun i j => (K.d i j).f
@@ -125,8 +122,7 @@ def obj (K : HomologicalComplex (Karoubi C) c) : Karoubi (HomologicalComplex C c
 /-- The functor `homological_complex (karoubi C) c ⥤ karoubi (homological_complex C c)`,
 on morphisms -/
 @[simps]
-def map {K L : HomologicalComplex (Karoubi C) c} (f : K ⟶ L) : obj K ⟶ obj L
-    where
+def map {K L : HomologicalComplex (Karoubi C) c} (f : K ⟶ L) : obj K ⟶ obj L where
   f :=
     { f := fun n => (f.f n).f
       comm' := fun i j hij => by simpa only [comp_f] using hom_ext.mp (f.comm' i j hij) }
@@ -137,8 +133,7 @@ end Inverse
 
 /-- The functor `homological_complex (karoubi C) c ⥤ karoubi (homological_complex C c)`. -/
 @[simps]
-def inverse : HomologicalComplex (Karoubi C) c ⥤ Karoubi (HomologicalComplex C c)
-    where
+def inverse : HomologicalComplex (Karoubi C) c ⥤ Karoubi (HomologicalComplex C c) where
   obj := Inverse.obj
   map K L f := Inverse.map f
 #align category_theory.idempotents.karoubi_homological_complex_equivalence.inverse CategoryTheory.Idempotents.KaroubiHomologicalComplexEquivalence.inverse
@@ -153,8 +148,7 @@ def counitIso : inverse ⋙ functor ≅ 𝟭 (HomologicalComplex (Karoubi C) c) 
 /-- The unit isomorphism of the equivalence
 `karoubi (homological_complex C c) ≌ homological_complex (karoubi C) c`. -/
 @[simps]
-def unitIso : 𝟭 (Karoubi (HomologicalComplex C c)) ≅ functor ⋙ inverse
-    where
+def unitIso : 𝟭 (Karoubi (HomologicalComplex C c)) ≅ functor ⋙ inverse where
   Hom :=
     { app := fun P =>
         { f :=
@@ -206,8 +200,7 @@ variable (C) (c)
 /-- The equivalence `karoubi (homological_complex C c) ≌ homological_complex (karoubi C) c`. -/
 @[simps]
 def karoubiHomologicalComplexEquivalence :
-    Karoubi (HomologicalComplex C c) ≌ HomologicalComplex (Karoubi C) c
-    where
+    Karoubi (HomologicalComplex C c) ≌ HomologicalComplex (Karoubi C) c where
   Functor := KaroubiHomologicalComplexEquivalence.functor
   inverse := KaroubiHomologicalComplexEquivalence.inverse
   unitIso := KaroubiHomologicalComplexEquivalence.unitIso
@@ -229,8 +222,7 @@ def karoubiCochainComplexEquivalence :
   karoubiHomologicalComplexEquivalence C (ComplexShape.up α)
 #align category_theory.idempotents.karoubi_cochain_complex_equivalence CategoryTheory.Idempotents.karoubiCochainComplexEquivalence
 
-instance [IsIdempotentComplete C] : IsIdempotentComplete (HomologicalComplex C c) :=
-  by
+instance [IsIdempotentComplete C] : IsIdempotentComplete (HomologicalComplex C c) := by
   rw [is_idempotent_complete_iff_of_equivalence
       ((to_karoubi_equivalence C).mapHomologicalComplex c),
     ← is_idempotent_complete_iff_of_equivalence (karoubi_homological_complex_equivalence C c)]
