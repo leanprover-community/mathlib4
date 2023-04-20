@@ -13,7 +13,7 @@ example (ha : a > 0) (w : b ∣ c) : a * b ∣ a * c := by library_search
 
 example (x y : Nat) : True := by
   observe h : x + y = y + x
-  guard_hyp h := Nat.add_comm x y
+  guard_hyp h : x + y = y + x
   trivial
 
 example : Int := by library_search
