@@ -8,9 +8,9 @@ Authors: Joël Riou
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.AlgebraicTopology.DoldKan.Projections
-import Mathbin.CategoryTheory.Idempotents.FunctorCategories
-import Mathbin.CategoryTheory.Idempotents.FunctorExtension
+import Mathlib.AlgebraicTopology.DoldKan.Projections
+import Mathlib.CategoryTheory.Idempotents.FunctorCategories
+import Mathlib.CategoryTheory.Idempotents.FunctorExtension
 
 /-!
 
@@ -51,8 +51,7 @@ namespace DoldKan
 variable {C : Type _} [Category C] [Preadditive C] {X : SimplicialObject C}
 
 theorem p_is_eventually_constant {q n : ℕ} (hqn : n ≤ q) :
-    ((p (q + 1)).f n : X _[n] ⟶ _) = (p q).f n :=
-  by
+    ((p (q + 1)).f n : X _[n] ⟶ _) = (p q).f n := by
   cases n
   · simp only [P_f_0_eq]
   · unfold P
@@ -88,8 +87,7 @@ theorem pInfty_f (n : ℕ) : (pInfty.f n : X _[n] ⟶ X _[n]) = (p n).f n :=
 #align algebraic_topology.dold_kan.P_infty_f AlgebraicTopology.DoldKan.pInfty_f
 
 @[simp]
-theorem qInfty_f_0 : (qInfty.f 0 : X _[0] ⟶ X _[0]) = 0 :=
-  by
+theorem qInfty_f_0 : (qInfty.f 0 : X _[0] ⟶ X _[0]) = 0 := by
   dsimp [Q_infty]
   simp only [sub_self]
 #align algebraic_topology.dold_kan.Q_infty_f_0 AlgebraicTopology.DoldKan.qInfty_f_0
@@ -116,8 +114,7 @@ theorem pInfty_f_idem (n : ℕ) : (pInfty.f n : X _[n] ⟶ _) ≫ pInfty.f n = p
 #align algebraic_topology.dold_kan.P_infty_f_idem AlgebraicTopology.DoldKan.pInfty_f_idem
 
 @[simp, reassoc.1]
-theorem pInfty_idem : (pInfty : K[X] ⟶ _) ≫ pInfty = pInfty :=
-  by
+theorem pInfty_idem : (pInfty : K[X] ⟶ _) ≫ pInfty = pInfty := by
   ext n
   exact P_infty_f_idem n
 #align algebraic_topology.dold_kan.P_infty_idem AlgebraicTopology.DoldKan.pInfty_idem
@@ -128,45 +125,39 @@ theorem qInfty_f_idem (n : ℕ) : (qInfty.f n : X _[n] ⟶ _) ≫ qInfty.f n = q
 #align algebraic_topology.dold_kan.Q_infty_f_idem AlgebraicTopology.DoldKan.qInfty_f_idem
 
 @[simp, reassoc.1]
-theorem qInfty_idem : (qInfty : K[X] ⟶ _) ≫ qInfty = qInfty :=
-  by
+theorem qInfty_idem : (qInfty : K[X] ⟶ _) ≫ qInfty = qInfty := by
   ext n
   exact Q_infty_f_idem n
 #align algebraic_topology.dold_kan.Q_infty_idem AlgebraicTopology.DoldKan.qInfty_idem
 
 @[simp, reassoc.1]
-theorem pInfty_f_comp_qInfty_f (n : ℕ) : (pInfty.f n : X _[n] ⟶ _) ≫ qInfty.f n = 0 :=
-  by
+theorem pInfty_f_comp_qInfty_f (n : ℕ) : (pInfty.f n : X _[n] ⟶ _) ≫ qInfty.f n = 0 := by
   dsimp only [Q_infty]
   simp only [HomologicalComplex.sub_f_apply, HomologicalComplex.id_f, comp_sub, comp_id,
     P_infty_f_idem, sub_self]
 #align algebraic_topology.dold_kan.P_infty_f_comp_Q_infty_f AlgebraicTopology.DoldKan.pInfty_f_comp_qInfty_f
 
 @[simp, reassoc.1]
-theorem pInfty_comp_qInfty : (pInfty : K[X] ⟶ _) ≫ qInfty = 0 :=
-  by
+theorem pInfty_comp_qInfty : (pInfty : K[X] ⟶ _) ≫ qInfty = 0 := by
   ext n
   apply P_infty_f_comp_Q_infty_f
 #align algebraic_topology.dold_kan.P_infty_comp_Q_infty AlgebraicTopology.DoldKan.pInfty_comp_qInfty
 
 @[simp, reassoc.1]
-theorem qInfty_f_comp_pInfty_f (n : ℕ) : (qInfty.f n : X _[n] ⟶ _) ≫ pInfty.f n = 0 :=
-  by
+theorem qInfty_f_comp_pInfty_f (n : ℕ) : (qInfty.f n : X _[n] ⟶ _) ≫ pInfty.f n = 0 := by
   dsimp only [Q_infty]
   simp only [HomologicalComplex.sub_f_apply, HomologicalComplex.id_f, sub_comp, id_comp,
     P_infty_f_idem, sub_self]
 #align algebraic_topology.dold_kan.Q_infty_f_comp_P_infty_f AlgebraicTopology.DoldKan.qInfty_f_comp_pInfty_f
 
 @[simp, reassoc.1]
-theorem qInfty_comp_pInfty : (qInfty : K[X] ⟶ _) ≫ pInfty = 0 :=
-  by
+theorem qInfty_comp_pInfty : (qInfty : K[X] ⟶ _) ≫ pInfty = 0 := by
   ext n
   apply Q_infty_f_comp_P_infty_f
 #align algebraic_topology.dold_kan.Q_infty_comp_P_infty AlgebraicTopology.DoldKan.qInfty_comp_pInfty
 
 @[simp]
-theorem pInfty_add_qInfty : (pInfty : K[X] ⟶ _) + qInfty = 𝟙 _ :=
-  by
+theorem pInfty_add_qInfty : (pInfty : K[X] ⟶ _) + qInfty = 𝟙 _ := by
   dsimp only [Q_infty]
   simp only [add_sub_cancel'_right]
 #align algebraic_topology.dold_kan.P_infty_add_Q_infty AlgebraicTopology.DoldKan.pInfty_add_qInfty
@@ -180,8 +171,7 @@ variable (C)
 /-- `P_infty` induces a natural transformation, i.e. an endomorphism of
 the functor `alternating_face_map_complex C`. -/
 @[simps]
-def natTransPInfty : alternatingFaceMapComplex C ⟶ alternatingFaceMapComplex C
-    where
+def natTransPInfty : alternatingFaceMapComplex C ⟶ alternatingFaceMapComplex C where
   app _ := pInfty
   naturality' X Y f := by
     ext n
@@ -209,8 +199,7 @@ computes `P_infty` for the associated object in `simplicial_object (karoubi C)`
 in terms of `P_infty` for `Y.X : simplicial_object C` and `Y.p`. -/
 theorem karoubi_pInfty_f {Y : Karoubi (SimplicialObject C)} (n : ℕ) :
     ((pInfty : K[(karoubiFunctorCategoryEmbedding _ _).obj Y] ⟶ _).f n).f =
-      Y.p.app (op [n]) ≫ (pInfty : K[Y.pt] ⟶ _).f n :=
-  by
+      Y.p.app (op [n]) ≫ (pInfty : K[Y.pt] ⟶ _).f n := by
   -- We introduce P_infty endomorphisms P₁, P₂, P₃, P₄ on various objects Y₁, Y₂, Y₃, Y₄.
   let Y₁ := (karoubi_functor_category_embedding _ _).obj Y
   let Y₂ := Y.X
@@ -224,8 +213,7 @@ theorem karoubi_pInfty_f {Y : Karoubi (SimplicialObject C)} (n : ℕ) :
   change (P₁.f n).f = Y.p.app (op [n]) ≫ P₂.f n
   -- The proof proceeds by obtaining relations h₃₂, h₄₃, h₁₄.
   have h₃₂ : (P₃.f n).f = P₂.f n := karoubi.hom_ext.mp (map_P_infty_f (to_karoubi C) Y₂ n)
-  have h₄₃ : P₄.f n = P₃.f n :=
-    by
+  have h₄₃ : P₄.f n = P₃.f n := by
     have h := functor.congr_obj (to_karoubi_comp_karoubi_functor_category_embedding _ _) Y₂
     simp only [← nat_trans_P_infty_f_app]
     congr
