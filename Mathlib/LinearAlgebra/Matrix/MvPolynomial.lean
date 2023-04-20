@@ -24,6 +24,7 @@ unique variable.
 matrix determinant, multivariate polynomial
 -/
 
+set_option linter.uppercaseLean3 false
 
 variable {m n R S : Type _}
 
@@ -43,7 +44,7 @@ theorem mvPolynomialX_apply [CommSemiring R] (i j) :
   rfl
 #align matrix.mv_polynomial_X_apply Matrix.mvPolynomialX_apply
 
-variable {m n R S}
+variable {m n R}
 
 /-- Any matrix `A` can be expressed as the evaluation of `matrix.mv_polynomial_X`.
 
@@ -71,16 +72,15 @@ theorem mvPolynomialX_mapMatrix_aeval [Fintype m] [DecidableEq m] [CommSemiring 
   mvPolynomialX_map_eval₂ _ A
 #align matrix.mv_polynomial_X_map_matrix_aeval Matrix.mvPolynomialX_mapMatrix_aeval
 
-variable (m R)
+variable (m)
 
 /-- In a nontrivial ring, `matrix.mv_polynomial_X m m R` has non-zero determinant. -/
 theorem det_mvPolynomialX_ne_zero [DecidableEq m] [Fintype m] [CommRing R] [Nontrivial R] :
     det (mvPolynomialX m m R) ≠ 0 := by
   intro h_det
-  have := congr_arg Matrix.det (mv_polynomial_X_map_matrix_eval (1 : Matrix m m R))
+  have := congr_arg Matrix.det (mvPolynomialX_mapMatrix_eval (1 : Matrix m m R))
   rw [det_one, ← RingHom.map_det, h_det, RingHom.map_zero] at this
   exact zero_ne_one this
 #align matrix.det_mv_polynomial_X_ne_zero Matrix.det_mvPolynomialX_ne_zero
 
 end Matrix
-
