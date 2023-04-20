@@ -927,6 +927,9 @@ theorem coe_infₛ {s : Set ℝ≥0} : s.Nonempty → (↑(infₛ s) : ℝ≥0�
   WithTop.coe_infₛ
 #align ennreal.coe_Inf ENNReal.coe_infₛ
 
+theorem coe_infᵢ {ι} [Nonempty ι] (f : ι → ℝ≥0) : (↑(infᵢ f) : ℝ≥0∞) = ⨅ i, ↑(f i) :=
+  WithTop.coe_infᵢ f
+
 theorem coe_mem_upperBounds {s : Set ℝ≥0} :
     ↑r ∈ upperBounds (some '' s) ↔ r ∈ upperBounds s := by
   simp (config := { contextual := true }) [upperBounds, ball_image_iff, -mem_image, *]
@@ -2297,6 +2300,15 @@ end Real
 section infᵢ
 
 variable {ι : Sort _} {f g : ι → ℝ≥0∞}
+
+theorem toNNReal_infᵢ (hf : ∀ i, f i ≠ ∞) : (infᵢ f).toNNReal = ⨅ i, (f i).toNNReal := by
+  cases isEmpty_or_nonempty ι
+  · rw [infᵢ_of_empty, top_toNNReal, NNReal.infᵢ_empty]
+  · lift f to ι → ℝ≥0 using hf
+    simp only [← coe_infᵢ, toNNReal_coe]
+
+theorem toReal_infᵢ (hf : ∀ i, f i ≠ ∞) : (infᵢ f).toReal = ⨅ i, (f i).toReal := by
+  simp only [ENNReal.toReal, toNNReal_infᵢ hf, NNReal.coe_infᵢ]
 
 theorem infᵢ_add : infᵢ f + a = ⨅ i, f i + a :=
   le_antisymm (le_infᵢ fun _ => add_le_add (infᵢ_le _ _) <| le_rfl)
