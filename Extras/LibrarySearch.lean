@@ -18,9 +18,7 @@ open Lean Elab Command
 open System (FilePath)
 open Mathlib.Tactic.LibrarySearch
 
-elab "#library_search_cache" : command => liftTermElabM do
+run_cmd liftTermElabM do
   _ ← cachePath.parent.mapM fun p => IO.FS.createDirAll p
   if ← cachePath.pathExists then IO.FS.removeFile cachePath
   pickle cachePath (← librarySearchLemmas.get)
-
-#library_search_cache
