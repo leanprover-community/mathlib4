@@ -48,6 +48,13 @@ theorem units_coe_mul_self (u : ℤˣ) : (u * u : ℤ) = 1 := by
   rw [← Units.val_mul, units_mul_self, Units.val_one]
 #align int.units_coe_mul_self Int.units_coe_mul_self
 
+theorem eq_one_or_neg_one_of_isUnit {a : ℤ} (h : IsUnit a) : a = 1 ∨ a = -1 := by
+  rwa [isUnit_iff_abs_eq, abs_eq] at h; decide
+
+theorem units_eq_one_or_neg_one (u : ℤˣ) : u = 1 ∨ u = -1 := by
+  cases eq_one_or_neg_one_of_isUnit u.isUnit <;>
+  simp [Units.ext_iff, *]
+
 @[simp]
 theorem neg_one_pow_ne_zero {n : ℕ} : (-1 : ℤ) ^ n ≠ 0 :=
   pow_ne_zero _ (abs_pos.mp (by simp))
