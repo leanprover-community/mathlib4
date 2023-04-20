@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 
 ! This file was ported from Lean 3 source module ring_theory.finiteness
-! leanprover-community/mathlib commit 039ef89bef6e58b32b62898dd48e9d1a4312bb65
+! leanprover-community/mathlib commit e95e4f92c8f8da3c7f693c3ec948bcf9b6683f51
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -598,6 +598,12 @@ theorem of_surjective [hM : Finite R M] (f : M →ₗ[R] N) (hf : Surjective f) 
 instance range [Finite R M] (f : M →ₗ[R] N) : Finite R (LinearMap.range f) :=
   of_surjective f.rangeRestrict fun ⟨_, y, hy⟩ => ⟨y, Subtype.ext hy⟩
 #align module.finite.range Module.Finite.range
+
+/-- Pushforwards of finite submodules are finite. -/
+instance map (p : Submodule R M) [Finite R p] (f : M →ₗ[R] N) : Finite R (p.map f) :=
+  of_surjective (f.restrict fun _ => Submodule.mem_map_of_mem) fun ⟨_, _, hy, hy'⟩ =>
+    ⟨⟨_, hy⟩, Subtype.ext hy'⟩
+#align module.finite.map Module.Finite.map
 
 variable (R)
 

@@ -135,7 +135,7 @@ def diagramMap : ∀ {o₁ o₂ : Pairwise ι} (_ : o₁ ⟶ o₂), diagramObj U
 
 -- Porting note: the fields map_id and map_comp were filled by hand, as generating them by `aesop`
 -- causes a PANIC.
-/-- Given a function `U : ι → α` for `[semilattice_inf α]`, we obtain a functor `pairwise ι ⥤ α`,
+/-- Given a function `U : ι → α` for `[SemilatticeInf α]`, we obtain a functor `pairwise ι ⥤ α`,
 sending `single i` to `U i` and `pair i j` to `U i ⊓ U j`,
 and the morphisms to the obvious inequalities.
 -/
@@ -173,15 +173,15 @@ def cocone : Cocone (diagram U) where
     { app := coconeιApp U }
 #align category_theory.pairwise.cocone CategoryTheory.Pairwise.cocone
 
-/-- Given a function `U : ι → α` for `[complete_lattice α]`,
-`infi U` provides a limit cone over `diagram U`.
+/-- Given a function `U : ι → α` for `[CompleteLattice α]`,
+`infᵢ U` provides a limit cone over `diagram U`.
 -/
 def coconeIsColimit : IsColimit (cocone U) where
-    desc s := homOfLE
-      (by
-        apply CompleteSemilatticeSup.supₛ_le
-        rintro _ ⟨j, rfl⟩
-        exact (s.ι.app (single j)).le)
+  desc s := homOfLE
+    (by
+      apply CompleteSemilatticeSup.supₛ_le
+      rintro _ ⟨j, rfl⟩
+      exact (s.ι.app (single j)).le)
 #align category_theory.pairwise.cocone_is_colimit CategoryTheory.Pairwise.coconeIsColimit
 
 end

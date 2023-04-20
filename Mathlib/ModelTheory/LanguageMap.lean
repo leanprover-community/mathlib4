@@ -62,7 +62,7 @@ variable {L L'}
 
 namespace LHom
 
-/-- Defines a map between languages defined with `language.mk₂`. -/
+/-- Defines a map between languages defined with `Language.mk₂`. -/
 protected def mk₂ {c f₁ f₂ : Type u} {r₁ r₂ : Type v} (φ₀ : c → L'.Constants)
     (φ₁ : f₁ → L'.Functions 1) (φ₂ : f₂ → L'.Functions 2) (φ₁' : r₁ → L'.Relations 1)
     (φ₂' : r₂ → L'.Relations 2) : Language.mk₂ c f₁ f₂ r₁ r₂ →ᴸ L' :=

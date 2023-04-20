@@ -22,9 +22,7 @@ in order to avoid importing `LinearAlgebra.BilinearMap` and
 -/
 
 
-open TensorProduct
-
-open Module
+open TensorProduct Module
 
 namespace LinearMap
 
@@ -63,14 +61,14 @@ def mulLeftRight (ab : A × A) : A →ₗ[R] A :=
 #align linear_map.mul_left_right LinearMap.mulLeftRight
 
 @[simp]
-theorem mulLeft_toAddMonoid_hom (a : A) : (mulLeft R a : A →+ A) = AddMonoidHom.mulLeft a :=
+theorem mulLeft_toAddMonoidHom (a : A) : (mulLeft R a : A →+ A) = AddMonoidHom.mulLeft a :=
   rfl
-#align linear_map.mul_left_to_add_monoid_hom LinearMap.mulLeft_toAddMonoid_hom
+#align linear_map.mul_left_to_add_monoid_hom LinearMap.mulLeft_toAddMonoidHom
 
 @[simp]
-theorem mulRight_toAddMonoid_hom (a : A) : (mulRight R a : A →+ A) = AddMonoidHom.mulRight a :=
+theorem mulRight_toAddMonoidHom (a : A) : (mulRight R a : A →+ A) = AddMonoidHom.mulRight a :=
   rfl
-#align linear_map.mul_right_to_add_monoid_hom LinearMap.mulRight_toAddMonoid_hom
+#align linear_map.mul_right_to_add_monoid_hom LinearMap.mulRight_toAddMonoidHom
 
 variable {R}
 
@@ -165,8 +163,7 @@ the algebra.
 
 A weaker version of this for non-unital algebras exists as `NonUnitalAlgHom.mul`. -/
 def Algebra.lmul : A →ₐ[R] End R A :=
-  { LinearMap.mul R
-      A with
+  { LinearMap.mul R A with
     map_one' := by
       ext a
       exact one_mul a

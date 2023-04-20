@@ -39,7 +39,7 @@ theorem Ioi_zero_eq_map : Ioi (0 : Fin n.succ) = univ.map (Fin.succEmbedding _).
     · rintro ⟨⟨⟩⟩
     · intro j _
       use j
-      simp only [val_succEmbedding, and_self]
+      simp only [val_succEmbedding, and_self, RelEmbedding.coe_toEmbedding]
   · rintro ⟨i, _, rfl⟩
     exact succ_pos _
 #align fin.Ioi_zero_eq_map Fin.Ioi_zero_eq_map
