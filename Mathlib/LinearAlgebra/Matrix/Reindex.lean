@@ -8,7 +8,7 @@ Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.LinearAlgebra.Matrix.Determinant
+import Mathlib.LinearAlgebra.Matrix.Determinant
 
 /-!
 # Changing the index type of a matrix
@@ -71,16 +71,14 @@ theorem reindexLinearEquiv_refl_refl :
 
 theorem reindexLinearEquiv_trans (e₁ : m ≃ m') (e₂ : n ≃ n') (e₁' : m' ≃ m'') (e₂' : n' ≃ n'') :
     (reindexLinearEquiv R A e₁ e₂).trans (reindexLinearEquiv R A e₁' e₂') =
-      (reindexLinearEquiv R A (e₁.trans e₁') (e₂.trans e₂') : _ ≃ₗ[R] _) :=
-  by
+      (reindexLinearEquiv R A (e₁.trans e₁') (e₂.trans e₂') : _ ≃ₗ[R] _) := by
   ext
   rfl
 #align matrix.reindex_linear_equiv_trans Matrix.reindexLinearEquiv_trans
 
 theorem reindexLinearEquiv_comp (e₁ : m ≃ m') (e₂ : n ≃ n') (e₁' : m' ≃ m'') (e₂' : n' ≃ n'') :
     reindexLinearEquiv R A e₁' e₂' ∘ reindexLinearEquiv R A e₁ e₂ =
-      reindexLinearEquiv R A (e₁.trans e₁') (e₂.trans e₂') :=
-  by
+      reindexLinearEquiv R A (e₁.trans e₁') (e₂.trans e₂') := by
   rw [← reindex_linear_equiv_trans]
   rfl
 #align matrix.reindex_linear_equiv_comp Matrix.reindexLinearEquiv_comp
