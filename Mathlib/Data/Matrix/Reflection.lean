@@ -13,13 +13,13 @@ import Mathlib.Data.Matrix.Basic
 import Mathlib.Data.Fin.Tuple.Reflection
 
 /-!
-# Lemmas for concrete matrices `matrix (fin m) (fin n) α`
+# Lemmas for concrete matrices `Matrix (Fin m) (Fin n) α`
 
 This file contains alternative definitions of common operators on matrices that expand
 definitionally to the expected expression when evaluated on `!![]` notation.
 
 This allows "proof by reflection", where we prove `A = !![A 0 0, A 0 1;  A 1 0, A 1 1]` by defining
-`matrix.eta_expand A` to be equal to the RHS definitionally, and then prove that
+`Matrix.etaExpand A` to be equal to the RHS definitionally, and then prove that
 `A = eta_expand A`.
 
 The definitions in this file should normally not be used directly; the intent is for the
@@ -27,12 +27,12 @@ corresponding `*_eq` lemmas to be used in a place where they are definitionally 
 
 ## Main definitionss
 
-* `matrix.transposeᵣ`
-* `matrix.dot_productᵣ`
-* `matrix.mulᵣ`
-* `matrix.mul_vecᵣ`
-* `matrix.vec_mulᵣ`
-* `matrix.eta_expand`
+* `Matrix.transposeᵣ`
+* `Matrix.dotProductᵣ`
+* `Matrix.mulᵣ`
+* `Matrix.mulVecᵣ`
+* `Matrix.vecMulᵣ`
+* `Matrix.etaExpand`
 
 -/
 
@@ -43,7 +43,7 @@ namespace Matrix
 
 variable {l m n : ℕ} {α β : Type _}
 
-/-- `∀` with better defeq for `∀ x : matrix (fin m) (fin n) α, P x`. -/
+/-- `∀` with better defeq for `∀ x : Matrix (Fin m) (Fin n) α, P x`. -/
 def Forall : ∀ {m n} (_ : Matrix (Fin m) (Fin n) α → Prop), Prop
   | 0, _, P => P (of ![])
   | _ + 1, _, P => FinVec.Forall fun r => Forall fun A => P (of (Matrix.vecCons r A))
@@ -51,7 +51,7 @@ def Forall : ∀ {m n} (_ : Matrix (Fin m) (Fin n) α → Prop), Prop
 
 /-- This can be use to prove
 ```lean
-example (P : matrix (fin 2) (fin 3) α → Prop) :
+example (P : Matrix (Fin 2) (Fin 3) α → Prop) :
   (∀ x, P x) ↔ ∀ a b c d e f, P !![a, b, c; d, e, f] :=
 (forall_iff _).symm
 ```
@@ -67,7 +67,7 @@ example (P : Matrix (Fin 2) (Fin 3) α → Prop) :
     (∀ x, P x) ↔ ∀ a b c d e f, P !![a, b, c; d, e, f] :=
   (forall_iff _).symm
 
-/-- `∃` with better defeq for `∃ x : matrix (fin m) (fin n) α, P x`. -/
+/-- `∃` with better defeq for `∃ x : Matrix (Fin m) (Fin n) α, P x`. -/
 def Exists : ∀ {m n} (_ : Matrix (Fin m) (Fin n) α → Prop), Prop
   | 0, _, P => P (of ![])
   | _ + 1, _, P => FinVec.Exists fun r => Exists fun A => P (of (Matrix.vecCons r A))
@@ -75,7 +75,7 @@ def Exists : ∀ {m n} (_ : Matrix (Fin m) (Fin n) α → Prop), Prop
 
 /-- This can be use to prove
 ```lean
-example (P : matrix (fin 2) (fin 3) α → Prop) :
+example (P : Matrix (Fin 2) (Fin 3) α → Prop) :
   (∃ x, P x) ↔ ∃ a b c d e f, P !![a, b, c; d, e, f] :=
 (exists_iff _).symm
 ```
@@ -91,7 +91,7 @@ example (P : Matrix (Fin 2) (Fin 3) α → Prop) :
     (∃ x, P x) ↔ ∃ a b c d e f, P !![a, b, c; d, e, f] :=
   (exists_iff _).symm
 
-/-- `matrix.tranpose` with better defeq for `fin` -/
+/-- `matrix.tranpose` with better defeq for `Fin` -/
 def transposeᵣ : ∀ {m n}, Matrix (Fin m) (Fin n) α → Matrix (Fin n) (Fin m) α
   | _, 0, _ => of ![]
   | _, _ + 1, A =>
@@ -119,14 +119,14 @@ theorem transposeᵣ_eq : ∀ {m n} (A : Matrix (Fin m) (Fin n) α), transpose�
 example (a b c d : α) : transpose !![a, b; c, d] = !![a, c; b, d] :=
   (transposeᵣ_eq _).symm
 
-/-- `matrix.dot_product` with better defeq for `fin` -/
+/-- `Matrix.dotProduct` with better defeq for `Fin` -/
 def dotProductᵣ [Mul α] [Add α] [Zero α] {m} (a b : Fin m → α) : α :=
   FinVec.sum <| FinVec.seq (FinVec.map (· * ·) a) b
 #align matrix.dot_productᵣ Matrix.dotProductᵣ
 
 /-- This can be used to prove
 ```lean
-example (a b c d : α) [has_mul α] [add_comm_monoid α] :
+example (a b c d : α) [Mul α] [AddCommMonoid α] :
   dot_product ![a, b] ![c, d] = a * c + b * d :=
 (dot_productᵣ_eq _ _).symm
 ```
@@ -141,7 +141,7 @@ theorem dotProductᵣ_eq [Mul α] [AddCommMonoid α] {m} (a b : Fin m → α) :
 example (a b c d : α) [Mul α] [AddCommMonoid α] : dotProduct ![a, b] ![c, d] = a * c + b * d :=
   (dotProductᵣ_eq _ _).symm
 
-/-- `matrix.mul` with better defeq for `fin` -/
+/-- `Matrix.mul` with better defeq for `Fin` -/
 def mulᵣ [Mul α] [Add α] [Zero α] (A : Matrix (Fin l) (Fin m) α) (B : Matrix (Fin m) (Fin n) α) :
     Matrix (Fin l) (Fin n) α :=
   of <| FinVec.map (fun v₁ => FinVec.map (fun v₂ => dotProductᵣ v₁ v₂) Bᵀ) A
@@ -149,7 +149,7 @@ def mulᵣ [Mul α] [Add α] [Zero α] (A : Matrix (Fin l) (Fin m) α) (B : Matr
 
 /-- This can be used to prove
 ```lean
-example [add_comm_monoid α] [has_mul α] (a₁₁ a₁₂ a₂₁ a₂₂ b₁₁ b₁₂ b₂₁ b₂₂ : α) :
+example [AddCommMonoid α] [Mul α] (a₁₁ a₁₂ a₂₁ a₂₂ b₁₁ b₁₂ b₂₁ b₂₂ : α) :
   !![a₁₁, a₁₂;
      a₂₁, a₂₂] ⬝ !![b₁₁, b₁₂;
                     b₂₁, b₂₂] =
@@ -171,14 +171,14 @@ example [AddCommMonoid α] [Mul α] (a₁₁ a₁₂ a₂₁ a₂₂ b₁₁ b�
         a₂₁ * b₁₁ + a₂₂ * b₂₁, a₂₁ * b₁₂ + a₂₂ * b₂₂] :=
   (mulᵣ_eq _ _).symm
 
-/-- `matrix.mul_vec` with better defeq for `fin` -/
+/-- `Matrix.mulVec` with better defeq for `Fin` -/
 def mulVecᵣ [Mul α] [Add α] [Zero α] (A : Matrix (Fin l) (Fin m) α) (v : Fin m → α) : Fin l → α :=
   FinVec.map (fun a => dotProductᵣ a v) A
 #align matrix.mul_vecᵣ Matrix.mulVecᵣ
 
 /-- This can be used to prove
 ```lean
-example [non_unital_non_assoc_semiring α] (a₁₁ a₁₂ a₂₁ a₂₂ b₁ b₂ : α) :
+example [NonUnitalNonAssocSemiring α] (a₁₁ a₁₂ a₂₁ a₂₂ b₁ b₂ : α) :
   !![a₁₁, a₁₂;
      a₂₁, a₂₂].mul_vec ![b₁, b₂] = ![a₁₁*b₁ + a₁₂*b₂, a₂₁*b₁ + a₂₂*b₂] :=
 (mul_vecᵣ_eq _ _).symm
@@ -195,14 +195,14 @@ example [NonUnitalNonAssocSemiring α] (a₁₁ a₁₂ a₂₁ a₂₂ b₁ b�
     !![a₁₁, a₁₂; a₂₁, a₂₂].mulVec ![b₁, b₂] = ![a₁₁ * b₁ + a₁₂ * b₂, a₂₁ * b₁ + a₂₂ * b₂] :=
   (mulVecᵣ_eq _ _).symm
 
-/-- `matrix.vec_mul` with better defeq for `fin` -/
+/-- `Matrix.vecMul` with better defeq for `Fin` -/
 def vecMulᵣ [Mul α] [Add α] [Zero α] (v : Fin l → α) (A : Matrix (Fin l) (Fin m) α) : Fin m → α :=
   FinVec.map (fun a => dotProductᵣ v a) Aᵀ
 #align matrix.vec_mulᵣ Matrix.vecMulᵣ
 
 /-- This can be used to prove
 ```lean
-example [non_unital_non_assoc_semiring α] (a₁₁ a₁₂ a₂₁ a₂₂ b₁ b₂ : α) :
+example [NonUnitalNonAssocSemiring α] (a₁₁ a₁₂ a₂₁ a₂₂ b₁ b₂ : α) :
   vec_mul ![b₁, b₂] !![a₁₁, a₁₂;
                        a₂₁, a₂₂] = ![b₁*a₁₁ + b₂*a₂₁, b₁*a₁₂ + b₂*a₂₂] :=
 (vec_mulᵣ_eq _ _).symm
@@ -226,7 +226,7 @@ def etaExpand {m n} (A : Matrix (Fin m) (Fin n) α) : Matrix (Fin m) (Fin n) α 
 
 /-- This can be used to prove
 ```lean
-example (A : matrix (fin 2) (fin 2) α) :
+example (A : Matrix (Fin 2) (Fin 2) α) :
   A = !![A 0 0, A 0 1;
          A 1 0, A 1 1] :=
 (eta_expand_eq _).symm
