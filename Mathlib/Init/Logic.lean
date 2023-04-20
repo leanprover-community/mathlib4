@@ -539,15 +539,64 @@ theorem right_comm : Commutative f → Associative f → RightCommutative f :=
 
 end Binary
 
+namespace Acc
+
+universe v u
+variable {α : Sort u} {r : α → α → Prop}
+
+@[elab_as_elim]
+unsafe def recU {motive : (a : α) → Acc r a → Sort v}
+    (intro : (x : α) → (h : ∀ (y : α), r y x → Acc r y) →
+     ((y : α) → (hr : r y x) → motive y (h y hr)) → motive x (intro x h))
+    {a : α} (t : Acc r a) : motive a t :=
+  intro a lcProof (fun _ _ => recU intro lcProof)
+
+@[implemented_by recU, elab_as_elim]
+def recC {motive : (a : α) → Acc r a → Sort v}
+    (intro : (x : α) → (h : ∀ (y : α), r y x → Acc r y) →
+     ((y : α) → (hr : r y x) → motive y (h y hr)) → motive x (intro x h))
+    {a : α} (t : Acc r a) : motive a t := rec intro t
+
+@[csimp]
+theorem rec_eq_recC : @Acc.rec = @Acc.recC := rfl
+
+abbrev ndrecC {C : α → Sort v}
+    (m : (x : α) → ((y : α) → r y x → Acc r y) → ((y : α) → (a : r y x) → C y) → C x)
+    {a : α} (n : Acc r a) : C a :=
+  n.recC m
+
+@[csimp]
+theorem ndrec_eq_ndrecC : @Acc.ndrec = @Acc.ndrecC := rfl
+
+abbrev ndrecOnC {C : α → Sort v}
+    {a : α} (n : Acc r a)
+    (m : (x : α) → ((y : α) → r y x → Acc r y) → ((y : α) → (a : r y x) → C y) → C x) : C a :=
+  n.recC m
+
+@[csimp]
+theorem ndrecOn_eq_ndrecOnC : @Acc.ndrecOn = @Acc.ndrecOnC := rfl
+
+end Acc
+
 namespace WellFounded
 
-variable {α : Sort u} {C : α → Sort v} {r : α → α → Prop}
+universe u v
+variable {α : Sort u}
 
-unsafe def fix'.impl (hwf : WellFounded r) (F : ∀ x, (∀ y, r y x → C y) → C x) (x : α) : C x :=
-  F x fun y _ ↦ impl hwf F y
+def fixFC {r : α → α → Prop}
+    {C : α → Sort v} (F : ∀ x, (∀ y, r y x → C y) → C x) (x : α) (a : Acc r x) : C x := by
+  induction a with
+  | intro x₁ _ ih => exact F x₁ ih
 
-@[implemented_by fix'.impl]
-def fix' (hwf : WellFounded r) (F : ∀ x, (∀ y, r y x → C y) → C x) (x : α) : C x := hwf.fix F x
+@[csimp]
+theorem fixF_eq_fixFC : @WellFounded.fixF = @WellFounded.fixFC := rfl
+
+def fixC {C : α → Sort v} {r : α → α → Prop} (hwf : WellFounded r)
+    (F : ∀ x, (∀ y, r y x → C y) → C x) (x : α) : C x :=
+  fixF F x (apply hwf x)
+
+@[csimp]
+theorem fix_eq_fixC : @WellFounded.fix = @WellFounded.fixC := rfl
 
 end WellFounded
 
