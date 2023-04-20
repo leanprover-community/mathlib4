@@ -54,10 +54,10 @@ def γ : D ⋙ T.forget ⋙ ↑T ⟶ D ⋙ T.forget where app j := (D.obj j).a
 #align category_theory.monad.forget_creates_limits.γ CategoryTheory.Monad.ForgetCreatesLimits.γ
 
 /-- (Impl) This new cone is used to construct the algebra structure -/
-@[simps π_app]
+@[simps! π_app]
 def newCone : Cone (D ⋙ forget T) where
   pt := T.obj c.pt
-  π := (Functor.constComp _ _ ↑T).inv ≫ whiskerRight c.π T ≫ γ D
+  π := (Functor.constComp _ _ (T : C ⥤ C)).inv ≫ whiskerRight c.π (T : C ⥤ C) ≫ γ D
 #align category_theory.monad.forget_creates_limits.new_cone CategoryTheory.Monad.ForgetCreatesLimits.newCone
 
 /-- The algebra structure which will be the apex of the new limit cone for `D`. -/
@@ -65,17 +65,17 @@ def newCone : Cone (D ⋙ forget T) where
 def conePoint : Algebra T where
   A := c.pt
   a := t.lift (newCone D c)
-  unit' :=
+  unit :=
     t.hom_ext fun j => by
-      rw [category.assoc, t.fac, new_cone_π_app, ← T.η.naturality_assoc, functor.id_map,
-        (D.obj j).Unit]
+      rw [Category.assoc, t.fac, newCone_π_app, ← T.η.naturality_assoc, Functor.id_map,
+        (D.obj j).unit]
       dsimp; simp
   -- See library note [dsimp, simp]
-  assoc' :=
+  assoc :=
     t.hom_ext fun j => by
-      rw [category.assoc, category.assoc, t.fac (new_cone D c), new_cone_π_app, ←
-        functor.map_comp_assoc, t.fac (new_cone D c), new_cone_π_app, ← T.μ.naturality_assoc,
-        (D.obj j).and_assoc, functor.map_comp, category.assoc]
+      rw [Category.assoc, Category.assoc, t.fac (newCone D c), newCone_π_app, ←
+        Functor.map_comp_assoc, t.fac (newCone D c), newCone_π_app, ← T.μ.naturality_assoc,
+        (D.obj j).assoc, Functor.map_comp, Category.assoc]
       rfl
 #align category_theory.monad.forget_creates_limits.cone_point CategoryTheory.Monad.ForgetCreatesLimits.conePoint
 
@@ -85,7 +85,7 @@ def liftedCone : Cone D where
   pt := conePoint D c t
   π :=
     { app := fun j => { f := c.π.app j }
-      naturality' := fun X Y f => by
+      naturality := fun X Y f => by
         ext1
         dsimp
         erw [c.w f]
@@ -97,17 +97,17 @@ def liftedCone : Cone D where
 def liftedConeIsLimit : IsLimit (liftedCone D c t) where
   lift s :=
     { f := t.lift ((forget T).mapCone s)
-      h' :=
+      h :=
         t.hom_ext fun j => by
           dsimp
-          rw [category.assoc, category.assoc, t.fac, new_cone_π_app, ← functor.map_comp_assoc,
-            t.fac, functor.map_cone_π_app]
+          rw [Category.assoc, Category.assoc, t.fac, newCone_π_app, ← Functor.map_comp_assoc,
+            t.fac, Functor.mapCone_π_app]
           apply (s.π.app j).h }
   uniq s m J := by
     ext1
     apply t.hom_ext
     intro j
-    simpa [t.fac ((forget T).mapCone s) j] using congr_arg algebra.hom.f (J j)
+    simpa [t.fac ((forget T).mapCone s) j] using congr_arg Algebra.Hom.f (J j)
 #align category_theory.monad.forget_creates_limits.lifted_cone_is_limit CategoryTheory.Monad.ForgetCreatesLimits.liftedConeIsLimit
 
 end ForgetCreatesLimits
@@ -402,4 +402,3 @@ noncomputable def leftAdjointPreservesTerminalOfReflective (R : D ⥤ C) [Reflec
 end
 
 end CategoryTheory
-
