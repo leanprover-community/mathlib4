@@ -405,6 +405,7 @@ import Mathlib.CategoryTheory.Core
 import Mathlib.CategoryTheory.DiscreteCategory
 import Mathlib.CategoryTheory.Elements
 import Mathlib.CategoryTheory.Elementwise
+import Mathlib.CategoryTheory.Endofunctor.Algebra
 import Mathlib.CategoryTheory.Endomorphism
 import Mathlib.CategoryTheory.EpiMono
 import Mathlib.CategoryTheory.EqToHom

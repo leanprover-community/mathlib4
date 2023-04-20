@@ -8,8 +8,8 @@ Authors: Scott Morrison, Bhavik Mehta, Johan Commelin, Reid Barton, Rob Lewis, J
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Functor.ReflectsIsomorphisms
-import Mathbin.CategoryTheory.Limits.Shapes.Terminal
+import Mathlib.CategoryTheory.Functor.ReflectsIsomorphisms
+import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 
 /-!
 
@@ -87,8 +87,7 @@ def comp (f : Hom A₀ A₁) (g : Hom A₁ A₂) : Hom A₀ A₂ where f := f.1 
 
 end Hom
 
-instance (F : C ⥤ C) : CategoryStruct (Algebra F)
-    where
+instance (F : C ⥤ C) : CategoryStruct (Algebra F) where
   Hom := Hom
   id := Hom.id
   comp := @Hom.comp _ _ _
@@ -122,8 +121,7 @@ instance (F : C ⥤ C) : Category (Algebra F) where
 commutes with the structure morphisms.
 -/
 @[simps]
-def isoMk (h : A₀.1 ≅ A₁.1) (w : F.map h.Hom ≫ A₁.str = A₀.str ≫ h.Hom) : A₀ ≅ A₁
-    where
+def isoMk (h : A₀.1 ≅ A₁.1) (w : F.map h.Hom ≫ A₁.str = A₀.str ≫ h.Hom) : A₀ ≅ A₁ where
   Hom := { f := h.Hom }
   inv :=
     { f := h.inv
@@ -168,8 +166,7 @@ theorem mono_of_mono {X Y : Algebra F} (f : X ⟶ Y) [h : Mono f.1] : Mono f :=
 algebras of `F` to algebras of `G`.
 -/
 @[simps]
-def functorOfNatTrans {F G : C ⥤ C} (α : G ⟶ F) : Algebra F ⥤ Algebra G
-    where
+def functorOfNatTrans {F G : C ⥤ C} (α : G ⟶ F) : Algebra F ⥤ Algebra G where
   obj A :=
     { a := A.1
       str := α.app A.1 ≫ A.str }
@@ -233,8 +230,7 @@ Furthermore, they are equivalent as categories over `C`, that is,
 we have `equiv_of_nat_iso h ⋙ forget = forget`.
 -/
 @[simps]
-def equivOfNatIso {F G : C ⥤ C} (α : F ≅ G) : Algebra F ≌ Algebra G
-    where
+def equivOfNatIso {F G : C ⥤ C} (α : F ≅ G) : Algebra F ≌ Algebra G where
   Functor := functorOfNatTrans α.inv
   inverse := functorOfNatTrans α.Hom
   unitIso := functorOfNatTransId.symm ≪≫ functorOfNatTransEq (by simp) ≪≫ functorOfNatTransComp _ _
@@ -260,8 +256,7 @@ theorem left_inv : strInv h ≫ A.str = 𝟙 _ :=
   congr_arg Hom.f (left_inv' h)
 #align category_theory.endofunctor.algebra.initial.left_inv CategoryTheory.Endofunctor.Algebra.Initial.left_inv
 
-theorem right_inv : A.str ≫ strInv h = 𝟙 _ :=
-  by
+theorem right_inv : A.str ≫ strInv h = 𝟙 _ := by
   rw [str_inv, ← (h.to ⟨F.obj A.1, F.map A.str⟩).h, ← F.map_id, ← F.map_comp]
   congr
   exact left_inv h
@@ -328,8 +323,7 @@ def comp (f : Hom V₀ V₁) (g : Hom V₁ V₂) : Hom V₀ V₂ where f := f.1 
 
 end Hom
 
-instance (F : C ⥤ C) : CategoryStruct (Coalgebra F)
-    where
+instance (F : C ⥤ C) : CategoryStruct (Coalgebra F) where
   Hom := Hom
   id := Hom.id
   comp := @Hom.comp _ _ _
@@ -363,8 +357,7 @@ instance (F : C ⥤ C) : Category (Coalgebra F) where
 commutes with the structure morphisms.
 -/
 @[simps]
-def isoMk (h : V₀.1 ≅ V₁.1) (w : V₀.str ≫ F.map h.Hom = h.Hom ≫ V₁.str) : V₀ ≅ V₁
-    where
+def isoMk (h : V₀.1 ≅ V₁.1) (w : V₀.str ≫ F.map h.Hom = h.Hom ≫ V₁.str) : V₀ ≅ V₁ where
   Hom := { f := h.Hom }
   inv :=
     { f := h.inv
@@ -375,8 +368,7 @@ def isoMk (h : V₀.1 ≅ V₁.1) (w : V₀.str ≫ F.map h.Hom = h.Hom ≫ V₁
 
 /-- The forgetful functor from the category of coalgebras, forgetting the coalgebraic structure. -/
 @[simps]
-def forget (F : C ⥤ C) : Coalgebra F ⥤ C
-    where
+def forget (F : C ⥤ C) : Coalgebra F ⥤ C where
   obj A := A.1
   map A B f := f.1
 #align category_theory.endofunctor.coalgebra.forget CategoryTheory.Endofunctor.Coalgebra.forget
@@ -410,8 +402,7 @@ theorem mono_of_mono {X Y : Coalgebra F} (f : X ⟶ Y) [h : Mono f.1] : Mono f :
 coalgebras of `F` to coalgebras of `G`.
 -/
 @[simps]
-def functorOfNatTrans {F G : C ⥤ C} (α : F ⟶ G) : Coalgebra F ⥤ Coalgebra G
-    where
+def functorOfNatTrans {F G : C ⥤ C} (α : F ⟶ G) : Coalgebra F ⥤ Coalgebra G where
   obj V :=
     { V := V.1
       str := V.str ≫ α.app V.1 }
@@ -476,8 +467,7 @@ Furthermore, they are equivalent as categories over `C`, that is,
 we have `equiv_of_nat_iso h ⋙ forget = forget`.
 -/
 @[simps]
-def equivOfNatIso {F G : C ⥤ C} (α : F ≅ G) : Coalgebra F ≌ Coalgebra G
-    where
+def equivOfNatIso {F G : C ⥤ C} (α : F ≅ G) : Coalgebra F ≌ Coalgebra G where
   Functor := functorOfNatTrans α.Hom
   inverse := functorOfNatTrans α.inv
   unitIso := functorOfNatTransId.symm ≪≫ functorOfNatTransEq (by simp) ≪≫ functorOfNatTransComp _ _
@@ -505,8 +495,7 @@ theorem Coalgebra.homEquiv_naturality_str_symm (adj : F ⊣ G) (V₁ V₂ : Coal
 
 /-- Given an adjunction `F ⊣ G`, the functor that associates to an algebra over `F` a
 coalgebra over `G` defined via adjunction applied to the structure map. -/
-def Algebra.toCoalgebraOf (adj : F ⊣ G) : Algebra F ⥤ Coalgebra G
-    where
+def Algebra.toCoalgebraOf (adj : F ⊣ G) : Algebra F ⥤ Coalgebra G where
   obj A :=
     { V := A.1
       str := (adj.homEquiv A.1 A.1).toFun A.2 }
@@ -517,8 +506,7 @@ def Algebra.toCoalgebraOf (adj : F ⊣ G) : Algebra F ⥤ Coalgebra G
 
 /-- Given an adjunction `F ⊣ G`, the functor that associates to a coalgebra over `G` an algebra over
 `F` defined via adjunction applied to the structure map. -/
-def Coalgebra.toAlgebraOf (adj : F ⊣ G) : Coalgebra G ⥤ Algebra F
-    where
+def Coalgebra.toAlgebraOf (adj : F ⊣ G) : Coalgebra G ⥤ Algebra F where
   obj V :=
     { a := V.1
       str := (adj.homEquiv V.1 V.1).invFun V.2 }
@@ -530,8 +518,7 @@ def Coalgebra.toAlgebraOf (adj : F ⊣ G) : Coalgebra G ⥤ Algebra F
 /-- Given an adjunction, assigning to an algebra over the left adjoint a coalgebra over its right
 adjoint and going back is isomorphic to the identity functor. -/
 def AlgCoalgEquiv.unitIso (adj : F ⊣ G) :
-    𝟭 (Algebra F) ≅ Algebra.toCoalgebraOf adj ⋙ Coalgebra.toAlgebraOf adj
-    where
+    𝟭 (Algebra F) ≅ Algebra.toCoalgebraOf adj ⋙ Coalgebra.toAlgebraOf adj where
   Hom :=
     { app := fun A =>
         { f := 𝟙 A.1
@@ -565,8 +552,7 @@ def AlgCoalgEquiv.unitIso (adj : F ⊣ G) :
 /-- Given an adjunction, assigning to a coalgebra over the right adjoint an algebra over the left
 adjoint and going back is isomorphic to the identity functor. -/
 def AlgCoalgEquiv.counitIso (adj : F ⊣ G) :
-    Coalgebra.toAlgebraOf adj ⋙ Algebra.toCoalgebraOf adj ≅ 𝟭 (Coalgebra G)
-    where
+    Coalgebra.toAlgebraOf adj ⋙ Algebra.toCoalgebraOf adj ≅ 𝟭 (Coalgebra G) where
   Hom :=
     { app := fun V =>
         { f := 𝟙 V.1
@@ -601,8 +587,7 @@ def AlgCoalgEquiv.counitIso (adj : F ⊣ G) :
 
 /-- If `F` is left adjoint to `G`, then the category of algebras over `F` is equivalent to the
 category of coalgebras over `G`. -/
-def algebraCoalgebraEquiv (adj : F ⊣ G) : Algebra F ≌ Coalgebra G
-    where
+def algebraCoalgebraEquiv (adj : F ⊣ G) : Algebra F ≌ Coalgebra G where
   Functor := Algebra.toCoalgebraOf adj
   inverse := Coalgebra.toAlgebraOf adj
   unitIso := AlgCoalgEquiv.unitIso adj
