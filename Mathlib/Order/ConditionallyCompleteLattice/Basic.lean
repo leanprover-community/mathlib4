@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 
 ! This file was ported from Lean 3 source module order.conditionally_complete_lattice.basic
-! leanprover-community/mathlib commit 207cfac9fcd06138865b5d04f7091e46d9320432
+! leanprover-community/mathlib commit 29cb56a7b35f72758b05a30490e1f10bd62c35c1
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -61,6 +61,26 @@ noncomputable instance {α : Type _} [SupSet α] : SupSet (WithBot α) :=
 noncomputable instance {α : Type _} [Preorder α] [InfSet α] : InfSet (WithBot α) :=
   ⟨(@instSupSetWithTop αᵒᵈ _).supₛ⟩
 
+theorem WithTop.supₛ_eq [Preorder α] [SupSet α] {s : Set (WithTop α)} (hs : ⊤ ∉ s)
+    (hs' : BddAbove ((↑) ⁻¹' s : Set α)) : supₛ s = ↑(supₛ ((↑) ⁻¹' s) : α) :=
+  (if_neg hs).trans $ if_pos hs'
+#align with_top.Sup_eq WithTop.supₛ_eq
+
+theorem WithTop.infₛ_eq [InfSet α] {s : Set (WithTop α)} (hs : ¬s ⊆ {⊤}) :
+    infₛ s = ↑(infₛ ((↑) ⁻¹' s) : α) :=
+  if_neg hs
+#align with_top.Inf_eq WithTop.infₛ_eq
+
+theorem WithBot.infₛ_eq [Preorder α] [InfSet α] {s : Set (WithBot α)} (hs : ⊥ ∉ s)
+    (hs' : BddBelow ((↑) ⁻¹' s : Set α)) : infₛ s = ↑(infₛ ((↑) ⁻¹' s) : α) :=
+  (if_neg hs).trans $ if_pos hs'
+#align with_bot.Inf_eq WithBot.infₛ_eq
+
+theorem WithBot.supₛ_eq [SupSet α] {s : Set (WithBot α)} (hs : ¬s ⊆ {⊥}) :
+    supₛ s = ↑(supₛ ((↑) ⁻¹' s) : α) :=
+  if_neg hs
+#align with_bot.Sup_eq WithBot.supₛ_eq
+
 @[simp]
 theorem WithTop.infₛ_empty {α : Type _} [InfSet α] : infₛ (∅ : Set (WithTop α)) = ⊤ :=
   if_pos <| Set.empty_subset _
@@ -75,8 +95,8 @@ theorem WithTop.coe_infₛ' [InfSet α] {s : Set α} (hs : s.Nonempty) :
     ↑(infₛ s) = (infₛ ((fun (a : α) ↦ ↑a) '' s) : WithTop α) := by
   obtain ⟨x, hx⟩ := hs
   change _ = ite _ _ _
-  split_ifs
-  · rename_i h; cases h (mem_image_of_mem _ hx)
+  split_ifs with h
+  · cases h (mem_image_of_mem _ hx)
   · rw [preimage_image_eq]
     exact Option.some_injective _
 #align with_top.coe_Inf' WithTop.coe_infₛ'
@@ -1460,22 +1480,22 @@ noncomputable instance WithTop.WithBot.completeLattice {α : Type _}
   { instInfSetWithTop, instSupSetWithTop, WithTop.boundedOrder, WithTop.lattice with
     le_supₛ := fun S a haS => (WithTop.isLUB_supₛ' ⟨a, haS⟩).1 haS
     supₛ_le := fun S a ha => by
-      cases' S.eq_empty_or_nonempty with h
+      cases' S.eq_empty_or_nonempty with h h
       · show ite _ _ _ ≤ a
         split_ifs with h₁ h₂
         · rw [h] at h₁
           cases h₁
-        · convert @bot_le (WithTop (WithBot α)) _ _ a
-          convert @WithBot.supₛ_empty α _
-          rw [h]
-          rfl
+        · convert @bot_le _ _ _ a
+          -- porting note: previous proof relied on convert unfolding
+          -- the definition of ⊥
+          apply congr_arg
+          simp only [h, preimage_empty, WithBot.supₛ_empty]
         · exfalso
           apply h₂
           use ⊥
           rw [h]
           rintro b ⟨⟩
-      · rename_i h
-        refine' (WithTop.isLUB_supₛ' h).2 ha
+      · refine' (WithTop.isLUB_supₛ' h).2 ha
     infₛ_le := fun S a haS =>
       show ite _ _ _ ≤ a by
         split_ifs with h₁

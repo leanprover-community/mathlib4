@@ -297,7 +297,7 @@ theorem rel_filter {p : α → Bool} {q : β → Bool}
   | _, _, Forall₂.nil => Forall₂.nil
   | a :: as, b :: bs, Forall₂.cons h₁ h₂ => by
     dsimp [LiftFun] at hpq
-    by_cases p a
+    by_cases h : p a
     · have : q b := by rwa [← hpq h₁]
       simp only [filter_cons_of_pos _ h, filter_cons_of_pos _ this, forall₂_cons, h₁, true_and_iff,
         rel_filter hpq h₂]

@@ -612,7 +612,7 @@ theorem supᵢ_toAddSubmonoid {ι : Sort _} (p : ι → Submodule R M) :
   · exact AddSubmonoid.subset_closure hx
   · exact AddSubmonoid.zero_mem _
   · exact AddSubmonoid.add_mem _ hx hy
-  · apply AddSubmonoid.closure_induction hx
+  · refine AddSubmonoid.closure_induction hx ?_ ?_ ?_
     · rintro x ⟨_, ⟨i, rfl⟩, hix : x ∈ p i⟩
       apply AddSubmonoid.subset_closure (Set.mem_unionᵢ.mpr ⟨i, _⟩)
       exact smul_mem _ r hix
@@ -631,7 +631,7 @@ theorem supᵢ_induction {ι : Sort _} (p : ι → Submodule R M) {C : M → Pro
     (hx : x ∈ ⨆ i, p i) (hp : ∀ (i), ∀ x ∈ p i, C x) (h0 : C 0)
     (hadd : ∀ x y, C x → C y → C (x + y)) : C x := by
   rw [← mem_toAddSubmonoid, supᵢ_toAddSubmonoid] at hx
-  exact AddSubmonoid.supᵢ_induction _ hx hp h0 hadd
+  exact AddSubmonoid.supᵢ_induction (x := x) _ hx hp h0 hadd
 #align submodule.supr_induction Submodule.supᵢ_induction
 
 /-- A dependent version of `submodule.supᵢ_induction`. -/

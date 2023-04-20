@@ -94,7 +94,7 @@ attribute [mfld_simps]
 
 /-- Common `@[simps]` configuration options used for manifold-related declarations. -/
 def mfld_cfg : Simps.Config where
-  attrs := [`simp, `mfld_simps]
+  attrs := [`mfld_simps]
   fullyApplied := false
 #align mfld_cfg mfld_cfg
 

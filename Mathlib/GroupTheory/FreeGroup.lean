@@ -995,14 +995,19 @@ def freeGroupUnitEquivInt : FreeGroup Unit ≃ ℤ
   invFun x := of () ^ x
   left_inv := by
     rintro ⟨L⟩
-    simp [MonoidHom.Simps.apply]
+    simp only [quot_mk_eq_mk, map.mk, sum_mk, List.map_map]
     exact List.recOn L
      (by rfl)
      (fun ⟨⟨⟩, b⟩ tl ih => by
         cases b <;> simp [zpow_add] at ih⊢ <;> rw [ih] <;> rfl)
   right_inv x :=
-    Int.induction_on x (by simp) (fun i ih => by simp at ih; simp [zpow_add, ih]) fun i ih => by
-      simp at ih; simp [zpow_add, ih, sub_eq_add_neg]
+    Int.induction_on x (by simp)
+      (fun i ih => by
+        simp only [zpow_coe_nat, map_pow, map.of] at ih
+        simp [zpow_add, ih])
+      (fun i ih => by
+        simp only [zpow_neg, zpow_coe_nat, map_inv, map_pow, map.of, sum.map_inv, neg_inj] at ih
+        simp [zpow_add, ih, sub_eq_add_neg])
 #align free_group.free_group_unit_equiv_int FreeGroup.freeGroupUnitEquivInt
 
 section Category
@@ -1015,7 +1020,7 @@ instance : Monad FreeGroup.{u} where
   map {_α} {_β} {f} := map f
   bind {_α} {_β} {x} {f} := lift f x
 
-@[elab_as_elim, to_additive]
+@[to_additive (attr := elab_as_elim)]
 protected theorem induction_on {C : FreeGroup α → Prop} (z : FreeGroup α) (C1 : C 1)
     (Cp : ∀ x, C <| pure x) (Ci : ∀ x, C (pure x) → C (pure x)⁻¹)
     (Cm : ∀ x y, C x → C y → C (x * y)) : C z :=

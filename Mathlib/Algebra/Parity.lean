@@ -29,7 +29,7 @@ Odd elements are not unified with a multiplicative notion.
 * TODO: Try to generalize further the typeclass assumptions on `IsSquare/even`.
   For instance, in some cases, there are `Semiring` assumptions that I (DT) am not convinced are
   necessary.
-* TODO: Consider moving the definition and lemmas about `odd` to a separate file.
+* TODO: Consider moving the definition and lemmas about `Odd` to a separate file.
 * TODO: The "old" definition of `Even a` asked for the existence of an element `c` such that
   `a = 2 * c`.  For this reason, several fixes introduce an extra `two_mul` or `← two_mul`.
   It might be the case that by making a careful choice of `simp` lemma, this can be avoided.
@@ -219,7 +219,7 @@ theorem Even.isSquare_zpow [Group α] {n : ℤ} : Even n → ∀ a : α, IsSquar
 #align even.is_square_zpow Even.isSquare_zpow
 #align even.zsmul' Even.zsmul'
 
--- `odd.tsub` requires `CanonicallyLinearOrderedSemiring`, which we don't have
+-- `Odd.tsub` requires `CanonicallyLinearOrderedSemiring`, which we don't have
 theorem Even.tsub [CanonicallyLinearOrderedAddMonoid α] [Sub α] [OrderedSub α]
     [ContravariantClass α α (· + ·) (· ≤ ·)] {m n : α} (hm : Even m) (hn : Even n) :
     Even (m - n) := by

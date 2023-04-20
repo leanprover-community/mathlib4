@@ -41,10 +41,10 @@ triangles.
 See <https://stacks.math.columbia.edu/tag/001G>.
 -/
 def Over (X : T) :=
-  CostructuredArrow (𝟭 T) X 
+  CostructuredArrow (𝟭 T) X
 #align category_theory.over CategoryTheory.Over
 
-instance (X : T) : Category (Over X) := commaCategory 
+instance (X : T) : Category (Over X) := commaCategory
 
 -- Satisfying the inhabited linter
 instance Over.inhabited [Inhabited T] : Inhabited (Over (default : T))
@@ -61,14 +61,14 @@ variable {X : T}
 @[ext]
 theorem OverMorphism.ext {X : T} {U V : Over X} {f g : U ⟶ V} (h : f.left = g.left) : f = g := by
   let ⟨_,b,_⟩ := f
-  let ⟨_,e,_⟩ := g 
+  let ⟨_,e,_⟩ := g
   congr
   simp only [eq_iff_true_of_subsingleton]
 
 #align category_theory.over.over_morphism.ext CategoryTheory.Over.OverMorphism.ext
 
--- @[simp] : Porting note : simp can prove this 
-theorem over_right (U : Over X) : U.right = ⟨⟨⟩⟩ := by simp only 
+-- @[simp] : Porting note : simp can prove this
+theorem over_right (U : Over X) : U.right = ⟨⟨⟩⟩ := by simp only
 #align category_theory.over.over_right CategoryTheory.Over.over_right
 
 @[simp]
@@ -93,7 +93,7 @@ def mk {X Y : T} (f : Y ⟶ X) : Over X :=
 
 /-- We can set up a coercion from arrows with codomain `X` to `over X`. This most likely should not
     be a global instance, but it is sometimes useful. -/
-def coeFromHom {X Y : T} : Coe (Y ⟶ X) (Over X) where coe := mk
+def coeFromHom {X Y : T} : CoeOut (Y ⟶ X) (Over X) where coe := mk
 #align category_theory.over.coe_from_hom CategoryTheory.Over.coeFromHom
 
 section
@@ -199,9 +199,9 @@ def mapComp {Y Z : T} (f : X ⟶ Y) (g : Y ⟶ Z) : map (f ≫ g) ≅ map f ⋙ 
 
 end
 
-instance forget_reflects_iso : ReflectsIsomorphisms (forget X) where 
-  reflects {Y Z} f t := by 
-    let g :Z ⟶  Y := Over.homMk (inv ((forget X).map f)) 
+instance forget_reflects_iso : ReflectsIsomorphisms (forget X) where
+  reflects {Y Z} f t := by
+    let g :Z ⟶  Y := Over.homMk (inv ((forget X).map f))
       ((asIso ((forget X).map f)).inv_comp_eq.2 (Over.w f).symm)
     dsimp [forget] at t
     refine ⟨⟨g, ⟨?_,?_⟩⟩⟩
@@ -275,7 +275,7 @@ def iteratedSliceEquiv : Over f ≌ Over f.left
   functor := iteratedSliceForward f
   inverse := iteratedSliceBackward f
   unitIso :=
-    NatIso.ofComponents (fun g => Over.isoMk (Over.isoMk (Iso.refl _) 
+    NatIso.ofComponents (fun g => Over.isoMk (Over.isoMk (Iso.refl _)
       (by aesop_cat)) (by aesop_cat)) fun g => by ext; dsimp; simp
   counitIso :=
     NatIso.ofComponents (fun g => Over.isoMk (Iso.refl _) (by aesop_cat)) fun g =>
@@ -303,7 +303,7 @@ variable {D : Type u₂} [Category.{v₂} D]
 def post (F : T ⥤ D) : Over X ⥤ Over (F.obj X)
     where
   obj Y := mk <| F.map Y.hom
-  map f := Over.homMk (F.map f.left) (by aesop_cat; erw [← F.map_comp, w])
+  map f := Over.homMk (F.map f.left) (by aesop_cat_nonterminal; erw [← F.map_comp, w])
 #align category_theory.over.post CategoryTheory.Over.post
 
 end
@@ -332,13 +332,13 @@ variable {X : T}
 
 @[ext]
 theorem UnderMorphism.ext {X : T} {U V : Under X} {f g : U ⟶ V} (h : f.right = g.right) : f = g :=
-  by 
+  by
   let ⟨_,b,_⟩ := f; let ⟨_,e,_⟩ := g
   congr; simp only [eq_iff_true_of_subsingleton]
 #align category_theory.under.under_morphism.ext CategoryTheory.Under.UnderMorphism.ext
 
 -- @[simp] Porting note: simp can prove this
-theorem under_left (U : Under X) : U.left = ⟨⟨⟩⟩ := by simp only 
+theorem under_left (U : Under X) : U.left = ⟨⟨⟩⟩ := by simp only
 #align category_theory.under.under_left CategoryTheory.Under.under_left
 
 @[simp]
@@ -454,9 +454,9 @@ def mapComp {Y Z : T} (f : X ⟶ Y) (g : Y ⟶ Z) : map (f ≫ g) ≅ map g ⋙ 
 
 end
 
-instance forget_reflects_iso : ReflectsIsomorphisms (forget X) where 
-  reflects {Y Z} f t := by 
-    let g : Z ⟶  Y := Under.homMk (inv ((Under.forget X).map f)) 
+instance forget_reflects_iso : ReflectsIsomorphisms (forget X) where
+  reflects {Y Z} f t := by
+    let g : Z ⟶  Y := Under.homMk (inv ((Under.forget X).map f))
       ((IsIso.comp_inv_eq _).2 (Under.w f).symm)
     dsimp [forget] at t
     refine ⟨⟨g, ⟨?_,?_⟩⟩⟩
@@ -495,7 +495,7 @@ The converse of `CategoryTheory.under.epi_of_epi_right`.
 instance epi_right_of_epi {f g : Under X} (k : f ⟶ g) [Epi k] : Epi k.right := by
   refine' ⟨fun { Y : T } l m a => _⟩
   let l' : g ⟶ mk (g.hom ≫ m) := homMk l (by
-    dsimp; rw [← Under.w k, Category.assoc, a, Category.assoc]) 
+    dsimp; rw [← Under.w k, Category.assoc, a, Category.assoc])
   -- Porting note: add type ascription here to `homMk m`
   suffices l' = (homMk m  : g ⟶  mk (g.hom ≫ m)) by apply congrArg CommaMorphism.right this
   rw [← cancel_epi k]; ext; apply a
@@ -509,7 +509,7 @@ variable {D : Type u₂} [Category.{v₂} D]
 @[simps]
 def post {X : T} (F : T ⥤ D) : Under X ⥤ Under (F.obj X) where
   obj Y := mk <| F.map Y.hom
-  map f := Under.homMk (F.map f.right) (by aesop_cat; erw [← F.map_comp, w])
+  map f := Under.homMk (F.map f.right) (by aesop_cat_nonterminal; erw [← F.map_comp, w])
 #align category_theory.under.post CategoryTheory.Under.post
 
 end
@@ -517,4 +517,3 @@ end
 end Under
 
 end CategoryTheory
-

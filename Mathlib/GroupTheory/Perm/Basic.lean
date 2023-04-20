@@ -341,6 +341,14 @@ theorem extendDomain_eq_one_iff {e : Perm α} {f : α ≃ Subtype p} : e.extendD
   (injective_iff_map_eq_one' (extendDomainHom f)).mp (extendDomainHom_injective f) e
 #align equiv.perm.extend_domain_eq_one_iff Equiv.Perm.extendDomain_eq_one_iff
 
+@[simp]
+lemma extendDomain_pow (n : ℕ) : (e ^ n).extendDomain f = e.extendDomain f ^ n :=
+map_pow (extendDomainHom f) _ _
+
+@[simp]
+lemma extendDomain_zpow (n : ℤ) : (e ^ n).extendDomain f = e.extendDomain f ^ n :=
+map_zpow (extendDomainHom f) _ _
+
 end ExtendDomain
 
 section Subtype

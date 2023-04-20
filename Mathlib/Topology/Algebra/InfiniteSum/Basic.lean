@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 
 ! This file was ported from Lean 3 source module topology.algebra.infinite_sum.basic
-! leanprover-community/mathlib commit 32253a1a1071173b33dc7d6a218cf722c6feb514
+! leanprover-community/mathlib commit 3b1890e71632be9e3b2086ab512c3259a7e9a3ef
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -64,11 +64,6 @@ def Summable (f : β → α) : Prop :=
   ∃ a, HasSum f a
 #align summable Summable
 
--- Porting note: `irreducible_def` produces a structure.
---               When a structure is defined, an injectivity theorem of the constructor is
---               generated, which has `simp` attr, but this get a `simpNF` linter.
---               So, this option is required.
-set_option genInjectivity false in
 /-- `∑' i, f i` is the sum of `f` it exists, or 0 otherwise -/
 irreducible_def tsum {β} (f : β → α) :=
   if h : Summable f then Classical.choose h else 0
@@ -136,7 +131,7 @@ theorem hasSum_iff_hasSum {g : γ → α}
 #align has_sum_iff_has_sum hasSum_iff_hasSum
 
 theorem Function.Injective.hasSum_iff {g : γ → β} (hg : Injective g)
-    (hf : ∀ (x) (_ : x ∉ Set.range g), f x = 0) : HasSum (f ∘ g) a ↔ HasSum f a := by
+    (hf : ∀ x, x ∉ Set.range g → f x = 0) : HasSum (f ∘ g) a ↔ HasSum f a := by
   simp only [HasSum, Tendsto, comp_apply, hg.map_atTop_finset_sum_eq hf]
 #align function.injective.has_sum_iff Function.Injective.hasSum_iff
 
@@ -144,6 +139,15 @@ theorem Function.Injective.summable_iff {g : γ → β} (hg : Injective g)
     (hf : ∀ (x) (_ : x ∉ Set.range g), f x = 0) : Summable (f ∘ g) ↔ Summable f :=
   exists_congr fun _ => hg.hasSum_iff hf
 #align function.injective.summable_iff Function.Injective.summable_iff
+
+@[simp] theorem hasSum_extend_zero {g : β → γ} (hg : Injective g) :
+    HasSum (extend g f 0) a ↔ HasSum f a := by
+  rw [← hg.hasSum_iff, extend_comp hg]
+  exact extend_apply' _ _
+
+@[simp] theorem summable_extend_zero {g : β → γ} (hg : Injective g) :
+    Summable (extend g f 0) ↔ Summable f :=
+  exists_congr fun _ => hasSum_extend_zero hg
 
 theorem hasSum_subtype_iff_of_support_subset {s : Set β} (hf : support f ⊆ s) :
     HasSum (f ∘ (↑) : s → α) a ↔ HasSum f a :=
@@ -937,7 +941,6 @@ We show the formula `(∑ i in range k, f i) + (∑' i, f (i + k)) = (∑' i, f 
 `sum_add_tsum_nat_add`, as well as several results relating sums on `ℕ` and `ℤ`.
 -/
 
-
 section Nat
 
 theorem hasSum_nat_add_iff {f : ℕ → α} (k : ℕ) {a : α} :
@@ -958,16 +961,31 @@ theorem hasSum_nat_add_iff' {f : ℕ → α} (k : ℕ) {a : α} :
   simp [hasSum_nat_add_iff]
 #align has_sum_nat_add_iff' hasSum_nat_add_iff'
 
+theorem HasSum.sum_range_add [AddCommMonoid M] [TopologicalSpace M] [ContinuousAdd M] {f : ℕ → M}
+    {k : ℕ} {a : M} (h : HasSum (fun n ↦ f (n + k)) a) : HasSum f ((∑ i in range k, f i) + a) := by
+  refine ((range k).hasSum f).add_compl ?_
+  rwa [← (notMemRangeEquiv k).symm.hasSum_iff]
+
+theorem sum_add_tsum_nat_add' [AddCommMonoid M] [TopologicalSpace M] [ContinuousAdd M] [T2Space M]
+    {f : ℕ → M} {k : ℕ} (h : Summable (fun n => f (n + k))) :
+    ((∑ i in range k, f i) + ∑' i, f (i + k)) = ∑' i, f i :=
+  h.hasSum.sum_range_add.tsum_eq.symm
+
 theorem sum_add_tsum_nat_add [T2Space α] {f : ℕ → α} (k : ℕ) (h : Summable f) :
-    ((∑ i in range k, f i) + ∑' i, f (i + k)) = ∑' i, f i := by
-  simpa only [add_comm] using
-    ((hasSum_nat_add_iff k).1 ((summable_nat_add_iff k).2 h).hasSum).unique h.hasSum
+    ((∑ i in range k, f i) + ∑' i, f (i + k)) = ∑' i, f i :=
+  sum_add_tsum_nat_add' <| (summable_nat_add_iff k).2 h
 #align sum_add_tsum_nat_add sum_add_tsum_nat_add
 
-theorem tsum_eq_zero_add [T2Space α] {f : ℕ → α} (hf : Summable f) :
+theorem tsum_eq_zero_add' [AddCommMonoid M] [TopologicalSpace M] [ContinuousAdd M] [T2Space M]
+    {f : ℕ → M} (hf : Summable (fun n => f (n + 1))) :
     (∑' b, f b) = f 0 + ∑' b, f (b + 1) := by
-  simpa only [sum_range_one] using (sum_add_tsum_nat_add 1 hf).symm
+  simpa only [sum_range_one] using (sum_add_tsum_nat_add' hf).symm
+
+theorem tsum_eq_zero_add [T2Space α] {f : ℕ → α} (hf : Summable f) :
+    (∑' b, f b) = f 0 + ∑' b, f (b + 1) :=
+  tsum_eq_zero_add' <| (summable_nat_add_iff 1).2 hf
 #align tsum_eq_zero_add tsum_eq_zero_add
+
 /-- For `f : ℕ → α`, then `∑' k, f (k + i)` tends to zero. This does not require a summability
 assumption on `f`, as otherwise all sums are zero. -/
 theorem tendsto_sum_nat_add [T2Space α] (f : ℕ → α) :
@@ -1109,8 +1127,6 @@ theorem cauchySeq_finset_iff_vanishing :
     exact hde _ (h _ Finset.sdiff_disjoint) _ (h _ Finset.sdiff_disjoint)
 #align cauchy_seq_finset_iff_vanishing cauchySeq_finset_iff_vanishing
 
-attribute [local instance] TopologicalAddGroup.t3Space
-
 /-- The sum over the complement of a finset tends to `0` when the finset grows to cover the whole
 space. This does not need a summability assumption, as otherwise all sums are zero. -/
 theorem tendsto_tsum_compl_atTop_zero (f : β → α) :
@@ -1197,20 +1213,30 @@ theorem Summable.prod_factor {f : β × γ → α} (h : Summable f) (b : β) :
   h.comp_injective fun _ _ h => (Prod.ext_iff.1 h).2
 #align summable.prod_factor Summable.prod_factor
 
-theorem tsum_sigma [T1Space α] {γ : β → Type _} {f : (Σb : β, γ b) → α} (ha : Summable f) :
+section LocInstances
+
+-- enable inferring a T3-topological space from a topological group
+attribute [local instance] TopologicalAddGroup.t3Space
+
+-- disable getting a T0-space from a T1-space as this causes loops
+attribute [-instance] T1Space.t0Space
+
+theorem tsum_sigma [T0Space α] {γ : β → Type _} {f : (Σb : β, γ b) → α} (ha : Summable f) :
     (∑' p, f p) = ∑' (b) (c), f ⟨b, c⟩ :=
   tsum_sigma' (fun b => ha.sigma_factor b) ha
 #align tsum_sigma tsum_sigma
 
-theorem tsum_prod [T1Space α] {f : β × γ → α} (h : Summable f) :
+theorem tsum_prod [T0Space α] {f : β × γ → α} (h : Summable f) :
     (∑' p, f p) = ∑' (b) (c), f ⟨b, c⟩ :=
   tsum_prod' h h.prod_factor
 #align tsum_prod tsum_prod
 
-theorem tsum_comm [T1Space α] {f : β → γ → α} (h : Summable (Function.uncurry f)) :
+theorem tsum_comm [T0Space α] {f : β → γ → α} (h : Summable (Function.uncurry f)) :
     (∑' (c) (b), f b c) = ∑' (b) (c), f b c :=
   tsum_comm' h h.prod_factor h.prod_symm.prod_factor
 #align tsum_comm tsum_comm
+
+end LocInstances
 
 theorem tsum_subtype_add_tsum_subtype_compl [T2Space α] {f : β → α} (hf : Summable f) (s : Set β) :
     ((∑' x : s, f x) + ∑' x : ↑(sᶜ), f x) = ∑' x, f x :=

@@ -150,6 +150,11 @@ example {x} (h : 1 = x) : foo20 = x := by simp; guard_target = 1 = x; exact h
 example {x} (h : 1 = x) : bar20 = x := by simp; guard_target = 1 = x; exact h
 example {x} (h : 1 = x) : baz20 = x := by simp; guard_target = 1 = x; exact h
 
+@[to_additive bar21]
+def foo21 {N} {A} [Pow A N] (a : A) (n : N) : A := a ^ n
+
+run_cmd liftCoreM <| MetaM.run' <| guard <| relevantArgAttr.find? (← getEnv) `Test.foo21 == some 1
+
 /- test the eta-expansion applied on `foo6`. -/
 run_cmd do
   let c ← getConstInfo `Test.foo6
@@ -174,6 +179,14 @@ run_cmd do
   unless findTranslation? (← getEnv) `Test.MulInd.one == some `Test.AddInd.zero do throwError "1"
   unless findTranslation? (← getEnv) `Test.MulInd.basic == none do throwError "2"
   unless findTranslation? (← getEnv) `Test.MulInd == some `Test.AddInd do throwError "3"
+
+@[to_additive addFixedNumeralTest]
+def fixedNumeralTest {α} [One α] :=
+@OfNat.ofNat ((fun _ => ℕ) (1 : α)) 1 _
+
+@[to_additive addFixedNumeralTest2]
+def fixedNumeralTest2 {α} [One α] :=
+@OfNat.ofNat ((fun _ => ℕ) (1 : α)) 1 (@One.toOfNat1 ((fun _ => ℕ) (1 : α)) _)
 
 /-! Test the namespace bug (#8733). This code should *not* generate a lemma
   `add_some_def.in_namespace`. -/

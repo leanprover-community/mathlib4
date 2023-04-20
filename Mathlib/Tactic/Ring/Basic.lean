@@ -77,10 +77,6 @@ This feature wasn't needed yet, so it's not implemented yet.
 ring, semiring, exponent, power
 -/
 
--- TODO: move somewhere else
-instance : Ord ℚ where
-  compare x y := compareOfLessAndEq x y
-
 namespace Mathlib.Tactic
 namespace Ring
 open Mathlib.Meta Qq NormNum Lean.Meta AtomM
@@ -850,12 +846,12 @@ theorem cast_rat {R} [DivisionRing R] {a : R} : IsRat a n d → a = Rat.rawCast 
 * `e = Rat.rawCast n d + 0` if `norm_num` returns `IsRat e n d`
 -/
 def evalCast : NormNum.Result e → Option (Result (ExSum sα) e)
-  | .isNat _sα (.lit (.natVal 0)) (p : Expr) => clear% _sα
-    let p : Q(IsNat $e (nat_lit 0)) := p
-    pure ⟨_, .zero, (q(cast_zero $p) : Expr)⟩
-  | .isNat _sα lit (p : Expr) => clear% _sα
-    let p : Q(IsNat $e $lit) := p
-    pure ⟨_, (ExProd.mkNat sα lit.natLit!).2.toSum, (q(cast_pos $p) : Expr)⟩
+  | .isNat _ (.lit (.natVal 0)) p => do
+    assumeInstancesCommute
+    pure ⟨_, .zero, q(cast_zero $p)⟩
+  | .isNat _ lit p => do
+    assumeInstancesCommute
+    pure ⟨_, (ExProd.mkNat sα lit.natLit!).2.toSum, (q(cast_pos $p) :)⟩
   | .isNegNat rα lit p =>
     pure ⟨_, (ExProd.mkNegNat _ rα lit.natLit!).2.toSum, (q(cast_neg $p) : Expr)⟩
   | .isRat dα q n d p =>
@@ -987,6 +983,35 @@ theorem div_congr {R} [DivisionRing R] {a a' b b' c : R} (_ : a = a') (_ : b = b
 /-- A precomputed `Cache` for `ℕ`. -/
 def Cache.nat : Cache sℕ := { rα := none, dα := none, czα := some q(inferInstance) }
 
+/-- Checks whether `e` would be processed by `eval` as a ring expression,
+or otherwise if it is an atom or something simplifiable via `norm_num`.
+
+We use this in `ring_nf` to avoid rewriting atoms unnecessarily.
+
+Returns:
+* `none` if `eval` would process `e` as an algebraic ring expression
+* `some none` if `eval` would treat `e` as an atom.
+* `some (some r)` if `eval` would not process `e` as an algebraic ring expression,
+  but `NormNum.derive` can nevertheless simplify `e`, with result `r`.
+-/
+-- Note this is not the same as whether the result of `eval` is an atom. (e.g. consider `x + 0`.)
+def isAtomOrDerivable {u} {α : Q(Type u)} (sα : Q(CommSemiring $α))
+    (c : Cache sα) (e : Q($α)) : AtomM (Option (Option (Result (ExSum sα) e))) := do
+  let els := try
+      pure <| some (evalCast sα (← derive e))
+    catch _ => pure (some none)
+  let .const n _ := (← withReducible <| whnf e).getAppFn | els
+  match n, c.rα, c.dα with
+  | ``HAdd.hAdd, _, _ | ``Add.add, _, _
+  | ``HMul.hMul, _, _ | ``Mul.mul, _, _
+  | ``HSMul.hSMul, _, _
+  | ``HPow.hPow, _, _ | ``Pow.pow, _, _
+  | ``Neg.neg, some _, _
+  | ``HSub.hSub, some _, _ | ``Sub.sub, some _, _
+  | ``Inv.inv, _, some _
+  | ``HDiv.hDiv, _, some _ | ``Div.div, _, some _ => pure none
+  | _, _, _ => els
+
 /--
 Evaluates expression `e` of type `α` into a normalized representation as a polynomial.
 This is the main driver of `ring`, which calls out to `evalAdd`, `evalMul` etc.
@@ -1065,7 +1090,7 @@ initialize ringCleanupRef : IO.Ref (Expr → MetaM Expr) ← IO.mkRef pure
 
 /-- Frontend of `ring1`: attempt to close a goal `g`, assuming it is an equation of semirings. -/
 def proveEq (g : MVarId) : AtomM Unit := do
-  let some (α, e₁, e₂) := (← instantiateMVars (← g.getType)).eq?
+  let some (α, e₁, e₂) := (← whnfR <|← instantiateMVars <|← g.getType).eq?
     | throwError "ring failed: not an equality"
   let .sort (.succ u) ← whnf (← inferType α) | throwError "not a type{indentExpr α}"
   have α : Q(Type u) := α

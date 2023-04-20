@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 
 ! This file was ported from Lean 3 source module group_theory.subgroup.basic
-! leanprover-community/mathlib commit c10e724be91096453ee3db13862b9fb9a992fef2
+! leanprover-community/mathlib commit 6b60020790e39e77bfd633ba3d5562ff82e52c79
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -133,6 +133,10 @@ theorem inv_mem_iff {S G} [InvolutiveInv G] {_ : SetLike S G} [InvMemClass S G] 
   ⟨fun h => inv_inv x ▸ inv_mem h, inv_mem⟩
 #align inv_mem_iff inv_mem_iff
 #align neg_mem_iff neg_mem_iff
+
+@[simp] theorem abs_mem_iff {S G} [InvolutiveNeg G] [LinearOrder G] {_ : SetLike S G}
+    [NegMemClass S G] {H : S} {x : G} : |x| ∈ H ↔ x ∈ H := by
+  cases abs_choice x <;> simp [*]
 
 variable {M S : Type _} [DivInvMonoid M] [SetLike S M] [hSM : SubgroupClass S M] {H K : S}
 
@@ -282,13 +286,13 @@ instance (priority := 75) toLinearOrderedCommGroup {G : Type _} [LinearOrderedCo
 /-- The natural group hom from a subgroup of group `G` to `G`. -/
 @[to_additive (attr := coe)
   "The natural group hom from an additive subgroup of `AddGroup` `G` to `G`."]
-def subtype : H →* G :=
+protected def subtype : H →* G :=
   ⟨⟨((↑) : H → G), rfl⟩, fun _ _ => rfl⟩
 #align subgroup_class.subtype SubgroupClass.subtype
 #align add_subgroup_class.subtype AddSubgroupClass.subtype
 
 @[to_additive (attr := simp)]
-theorem coeSubtype : (subtype H : H → G) = ((↑) : H → G) := by
+theorem coeSubtype : (SubgroupClass.subtype H : H → G) = ((↑) : H → G) := by
   rfl
 #align subgroup_class.coe_subtype SubgroupClass.coeSubtype
 #align add_subgroup_class.coe_subtype AddSubgroupClass.coeSubtype
@@ -350,7 +354,7 @@ theorem coe_inclusion {H K : S} {h : H ≤ K} (a : H) : (inclusion h a : G) = a 
 
 @[to_additive (attr := simp)]
 theorem subtype_comp_inclusion {H K : S} (hH : H ≤ K) :
-    (subtype K).comp (inclusion hH) = subtype H := by
+    (SubgroupClass.subtype K).comp (inclusion hH) = SubgroupClass.subtype H := by
   ext
   simp only [MonoidHom.comp_apply, coeSubtype, coe_inclusion]
 #align subgroup_class.subtype_comp_inclusion SubgroupClass.subtype_comp_inclusion
@@ -431,17 +435,7 @@ theorem mk_le_mk {s t : Set G} (h_one) (h_mul) (h_inv) (h_one') (h_mul') (h_inv'
 #align subgroup.mk_le_mk Subgroup.mk_le_mk
 #align add_subgroup.mk_le_mk AddSubgroup.mk_le_mk
 
-/-- See Note [custom simps projection] -/
---@[to_additive "See Note [custom simps projection]"]
--- Porting note: temporarily removed brackets to not confuse syntax highlighting
-@[to_additive "See Note custom simps projection "]
-def Simps.coe (S : Subgroup G) : Set G :=
-  S
-#align subgroup.simps.coe Subgroup.Simps.coe
-#align add_subgroup.simps.coe AddSubgroup.Simps.coe
-
 initialize_simps_projections Subgroup (carrier → coe)
-
 initialize_simps_projections AddSubgroup (carrier → coe)
 
 @[to_additive (attr := simp)]
@@ -796,7 +790,7 @@ instance toLinearOrderedCommGroup {G : Type _} [LinearOrderedCommGroup G] (H : S
 
 /-- The natural group hom from a subgroup of group `G` to `G`. -/
 @[to_additive "The natural group hom from an `AddSubgroup` of `AddGroup` `G` to `G`."]
-def subtype : H →* G :=
+protected def subtype : H →* G :=
   ⟨⟨((↑) : H → G), rfl⟩, fun _ _ => rfl⟩
 #align subgroup.subtype Subgroup.subtype
 #align add_subgroup.subtype AddSubgroup.subtype
@@ -808,7 +802,7 @@ theorem coeSubtype : ⇑ H.subtype = ((↑) : H → G) :=
 #align add_subgroup.coe_subtype AddSubgroup.coeSubtype
 
 @[to_additive]
-theorem subtype_injective : Function.Injective (subtype H) :=
+theorem subtype_injective : Function.Injective (Subgroup.subtype H) :=
   Subtype.coe_injective
 #align subgroup.subtype_injective Subgroup.subtype_injective
 #align add_subgroup.subtype_injective AddSubgroup.subtype_injective
@@ -1144,8 +1138,7 @@ theorem closure_eq_of_le (h₁ : k ⊆ K) (h₂ : K ≤ closure k) : closure k =
 /-- An induction principle for closure membership. If `p` holds for `1` and all elements of `k`, and
 is preserved under multiplication and inverse, then `p` holds for all elements of the closure
 of `k`. -/
-@[elab_as_elim,
-  to_additive
+@[to_additive (attr := elab_as_elim)
       "An induction principle for additive closure membership. If `p`
       holds for `0` and all elements of `k`, and is preserved under addition and inverses, then `p`
       holds for all elements of the additive closure of `k`."]
@@ -1156,7 +1149,7 @@ theorem closure_induction {p : G → Prop} {x} (h : x ∈ closure k) (Hk : ∀ x
 #align add_subgroup.closure_induction AddSubgroup.closure_induction
 
 /-- A dependent version of `Subgroup.closure_induction`.  -/
-@[elab_as_elim, to_additive "A dependent version of `AddSubgroup.closure_induction`. "]
+@[to_additive (attr := elab_as_elim) "A dependent version of `AddSubgroup.closure_induction`. "]
 theorem closure_induction' {p : ∀ x, x ∈ closure k → Prop}
     (Hs : ∀ (x) (h : x ∈ k), p x (subset_closure h)) (H1 : p 1 (one_mem _))
     (Hmul : ∀ x hx y hy, p x hx → p y hy → p (x * y) (mul_mem hx hy))
@@ -1169,8 +1162,7 @@ theorem closure_induction' {p : ∀ x, x ∈ closure k → Prop}
 #align add_subgroup.closure_induction' AddSubgroup.closure_induction'
 
 /-- An induction principle for closure membership for predicates with two arguments. -/
-@[elab_as_elim,
-  to_additive
+@[to_additive (attr := elab_as_elim)
       "An induction principle for additive closure membership, for
       predicates with two arguments."]
 theorem closure_induction₂ {p : G → G → Prop} {x} {y : G} (hx : x ∈ closure k) (hy : y ∈ closure k)

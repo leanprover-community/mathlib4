@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 
 ! This file was ported from Lean 3 source module data.set.semiring
-! leanprover-community/mathlib commit 27b54c47c3137250a521aa64e9f1db90be5f6a26
+! leanprover-community/mathlib commit 62e8311c791f02c47451bf14aa2501048e7c2f33
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/

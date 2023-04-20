@@ -111,7 +111,7 @@ instance infinite : Infinite (ZMod 0) :=
 theorem card (n : ℕ) [Fintype (ZMod n)] : Fintype.card (ZMod n) = n := by
   cases n with
   | zero => exact (not_finite (ZMod 0)).elim
-  | succ n => convert Fintype.card_fin (n + 1)
+  | succ n => convert Fintype.card_fin (n + 1) using 2
 #align zmod.card ZMod.card
 
 /- We define each field by cases, to ensure that the eta-expanded `ZMod.commRing` is defeq to the

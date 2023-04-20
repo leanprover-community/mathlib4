@@ -15,7 +15,7 @@ import Mathlib.CategoryTheory.Limits.Preserves.Basic
 
 If `G` preserves limits, and `C` and `D` have limits, then for any diagram `F : J ⥤ C` we have a
 canonical isomorphism `preservesLimitsIso : G.obj (Limit F) ≅ Limit (F ⋙ G)`.
-We also show that we can commute `IsLimit.lift` of a preserved limit with `functor.map_cone`:
+We also show that we can commute `IsLimit.lift` of a preserved limit with `Functor.mapCone`:
 `(PreservesLimit.preserves t).lift (G.mapCone c₂) = G.map (t.lift c₂)`.
 
 The duals of these are also given. For functors which preserve (co)limits of specific shapes, see
@@ -47,8 +47,8 @@ variable [PreservesLimit F G]
 
 @[simp]
 theorem preserves_lift_mapCone (c₁ c₂ : Cone F) (t : IsLimit c₁) :
-    (PreservesLimit.preserves t).lift (Functor.mapCone G c₂) = G.map (t.lift c₂) :=
-  ((PreservesLimit.preserves t).uniq (Functor.mapCone G c₂) _ (by simp [← G.map_comp])).symm
+    (PreservesLimit.preserves t).lift (G.mapCone c₂) = G.map (t.lift c₂) :=
+  ((PreservesLimit.preserves t).uniq (G.mapCone c₂) _ (by simp [← G.map_comp])).symm
 #align category_theory.preserves_lift_map_cone CategoryTheory.preserves_lift_mapCone
 
 variable [HasLimit F] [HasLimit (F ⋙ G)]
@@ -74,8 +74,8 @@ theorem preservesLimitsIso_inv_π (j) :
 
 @[reassoc (attr := simp)]
 theorem lift_comp_preservesLimitsIso_hom (t : Cone F) :
-    G.map (limit.lift _ t) ≫ (preservesLimitIso G F).hom = 
-    limit.lift (F ⋙ G) (Functor.mapCone G _) := by
+    G.map (limit.lift _ t) ≫ (preservesLimitIso G F).hom =
+    limit.lift (F ⋙ G) (G.mapCone _) := by
   ext
   simp [← G.map_comp]
 #align category_theory.lift_comp_preserves_limits_iso_hom CategoryTheory.lift_comp_preservesLimitsIso_hom
@@ -103,8 +103,8 @@ variable [PreservesColimit F G]
 
 @[simp]
 theorem preserves_desc_mapCocone (c₁ c₂ : Cocone F) (t : IsColimit c₁) :
-    (PreservesColimit.preserves t).desc (Functor.mapCocone G _) = G.map (t.desc c₂) := 
-  ((PreservesColimit.preserves t).uniq (Functor.mapCocone G _) _ (by simp [← G.map_comp])).symm
+    (PreservesColimit.preserves t).desc (G.mapCocone _) = G.map (t.desc c₂) :=
+  ((PreservesColimit.preserves t).uniq (G.mapCocone _) _ (by simp [← G.map_comp])).symm
 #align category_theory.preserves_desc_map_cocone CategoryTheory.preserves_desc_mapCocone
 
 variable [HasColimit F] [HasColimit (F ⋙ G)]
@@ -131,8 +131,8 @@ theorem ι_preservesColimitsIso_hom (j : J) :
 
 @[reassoc (attr := simp)]
 theorem preservesColimitsIso_inv_comp_desc (t : Cocone F) :
-    (preservesColimitIso G F).inv ≫ G.map (colimit.desc _ t) = 
-    colimit.desc _ (Functor.mapCocone G t) := by
+    (preservesColimitIso G F).inv ≫ G.map (colimit.desc _ t) =
+    colimit.desc _ (G.mapCocone t) := by
   ext
   simp [← G.map_comp]
 #align category_theory.preserves_colimits_iso_inv_comp_desc CategoryTheory.preservesColimitsIso_inv_comp_desc
@@ -158,4 +158,3 @@ def preservesColimitNatIso : colim ⋙ G ≅ (whiskeringRight J C D).obj G ⋙ c
 end
 
 end CategoryTheory
-

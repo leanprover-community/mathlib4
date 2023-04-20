@@ -486,13 +486,23 @@ theorem extraction_forall_of_eventually' {P : ℕ → ℕ → Prop} (h : ∀ n, 
   extraction_forall_of_eventually (by simp [eventually_atTop, h])
 #align filter.extraction_forall_of_eventually' Filter.extraction_forall_of_eventually'
 
+theorem Eventually.atTop_of_arithmetic {p : ℕ → Prop} {n : ℕ} (hn : n ≠ 0)
+    (hp : ∀ k < n, ∀ᶠ a in atTop, p (n * a + k)) : ∀ᶠ a in atTop, p a := by
+  simp only [eventually_atTop] at hp ⊢
+  choose! N hN using hp
+  refine ⟨(Finset.range n).sup (n * N ·), fun b hb => ?_⟩
+  rw [← Nat.div_add_mod b n]
+  have hlt := Nat.mod_lt b hn.bot_lt
+  refine hN _ hlt _ ?_
+  rw [ge_iff_le, Nat.le_div_iff_mul_le hn.bot_lt, mul_comm]
+  exact (Finset.le_sup (f := (n * N ·)) (Finset.mem_range.2 hlt)).trans hb
+
 theorem exists_le_of_tendsto_atTop [SemilatticeSup α] [Preorder β] {u : α → β}
     (h : Tendsto u atTop atTop) (a : α) (b : β) : ∃ a' ≥ a, b ≤ u a' := by
-  haveI : Nonempty α := ⟨a⟩
+  have : Nonempty α := ⟨a⟩
   have : ∀ᶠ x in atTop, a ≤ x ∧ b ≤ u x :=
     (eventually_ge_atTop a).and (h.eventually <| eventually_ge_atTop b)
-  rcases this.exists with ⟨a', ha, hb⟩
-  exact ⟨a', ha, hb⟩
+  exact this.exists
 #align filter.exists_le_of_tendsto_at_top Filter.exists_le_of_tendsto_atTop
 
 -- @[nolint ge_or_gt] -- Porting note: restore attribute

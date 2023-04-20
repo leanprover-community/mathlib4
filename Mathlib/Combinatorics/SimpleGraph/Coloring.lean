@@ -12,7 +12,6 @@ import Mathlib.Combinatorics.SimpleGraph.Clique
 import Mathlib.Data.Nat.Lattice
 import Mathlib.Data.Setoid.Partition
 import Mathlib.Order.Antichain
-import Mathlib.Tactic.LibrarySearch -- porting notes: TODO REMOVE
 
 /-!
 # Graph Coloring

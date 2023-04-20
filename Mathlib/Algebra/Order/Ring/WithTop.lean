@@ -2,8 +2,9 @@
 Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro
+
 ! This file was ported from Lean 3 source module algebra.order.ring.with_top
-! leanprover-community/mathlib commit afdb4fa3b32d41106a4a09b371ce549ad7958abd
+! leanprover-community/mathlib commit 0111834459f5d7400215223ea95ae38a1265a907
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -20,9 +21,6 @@ The main results of this section are `WithTop.canonicallyOrderedCommSemiring` an
 variable {α : Type _}
 
 namespace WithTop
-
-instance [Nonempty α] : Nontrivial (WithTop α) :=
-  Option.nontrivial
 
 variable [DecidableEq α]
 
@@ -220,9 +218,6 @@ protected def _root_.RingHom.withTopMap {R S : Type _} [CanonicallyOrderedCommSe
 end WithTop
 
 namespace WithBot
-
-instance [Nonempty α] : Nontrivial (WithBot α) :=
-  Option.nontrivial
 
 variable [DecidableEq α]
 

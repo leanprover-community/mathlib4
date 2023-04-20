@@ -5,7 +5,7 @@ Authors: Stephen Morgan, Scott Morrison, Johannes Hölzl, Reid Barton
 Ported by: Scott Morrison
 
 ! This file was ported from Lean 3 source module category_theory.category.basic
-! leanprover-community/mathlib commit 8350c34a64b9bc3fc64335df8006bffcadc7baa6
+! leanprover-community/mathlib commit 2efd2423f8d25fa57cf7a179f5d8652ab4d0df44
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -108,6 +108,8 @@ class CategoryStruct (obj : Type u) extends Quiver.{v + 1} obj : Type max u (v +
   comp : ∀ {X Y Z : obj}, (X ⟶ Y) → (Y ⟶ Z) → (X ⟶ Z)
 #align category_theory.category_struct CategoryTheory.CategoryStruct
 
+initialize_simps_projections CategoryStruct (-toQuiver_Hom)
+
 /-- Notation for the identity morphism in a category. -/
 notation "𝟙" => CategoryStruct.id  -- type as \b1
 
@@ -115,13 +117,26 @@ notation "𝟙" => CategoryStruct.id  -- type as \b1
 infixr:80 " ≫ " => CategoryStruct.comp -- type as \gg
 
 /--
-A thin wrapper for `aesop`,
-which adds the `CategoryTheory` rule set,
-and allows `aesop` look through semireducible definitions when calling `intros`. -/
+A thin wrapper for `aesop` which adds the `CategoryTheory` rule set and
+allows `aesop` to look through semireducible definitions when calling `intros`.
+This tactic fails when it is unable to solve the goal, making it suitable for
+use in auto-params.
+-/
 macro (name := aesop_cat) "aesop_cat" c:Aesop.tactic_clause*: tactic =>
+`(tactic|
+  aesop $c* (options := { introsTransparency? := some .default, terminal := true })
+  (rule_sets [$(Lean.mkIdent `CategoryTheory):ident]))
+
+/--
+A variant of `aesop_cat` which does not fail when it is unable to solve the
+goal. Use this only for exploration! Nonterminal `aesop` is even worse than
+nonterminal `simp`.
+-/
+macro (name := aesop_cat_nonterminal) "aesop_cat_nonterminal" c:Aesop.tactic_clause*: tactic =>
   `(tactic|
-    aesop $c* (options := { introsTransparency? := some .default, warnOnNonterminal := false }) 
+    aesop $c* (options := { introsTransparency? := some .default, warnOnNonterminal := false })
     (rule_sets [$(Lean.mkIdent `CategoryTheory):ident]))
+
 
 -- We turn on `ext` inside `aesop_cat`.
 attribute [aesop safe tactic (rule_sets [CategoryTheory])] Std.Tactic.Ext.extCore'
@@ -171,7 +186,7 @@ section
 
 variable {C : Type u} [Category.{v} C] {X Y Z : C}
 
-initialize_simps_projections Category
+initialize_simps_projections Category (-Hom)
 
 /-- postcompose an equation between morphisms by another morphism -/
 theorem eq_whisker {f g : X ⟶ Y} (w : f = g) (h : Y ⟶ Z) : f ≫ h = g ≫ h := by rw [w]
@@ -259,7 +274,7 @@ class Epi (f : X ⟶ Y) : Prop where
 See <https://stacks.math.columbia.edu/tag/003B>.
 -/
 class Mono (f : X ⟶ Y) : Prop where
-  /-- A morphism `f` is an epimorphism if it can be cancelled when postcomposed. -/
+  /-- A morphism `f` is an monomorphism if it can be cancelled when postcomposed. -/
   right_cancellation : ∀ {Z : C} (g h : Z ⟶ X), g ≫ f = h ≫ f → g = h
 #align category_theory.mono CategoryTheory.Mono
 

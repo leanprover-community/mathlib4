@@ -76,7 +76,7 @@ will be filled in by default. There is a default value for the uniformity, that 
 in cases of interest, for instance when instantiating a `PseudoEMetricSpace` structure
 on a product.
 
-Continuity of `edist` is proved in `topology.instances.ennreal`
+Continuity of `edist` is proved in `Topology.Instances.ENNReal`
 -/
 class PseudoEMetricSpace (α : Type u) extends EDist α : Type u where
   edist_self : ∀ x : α, edist x x = 0
@@ -805,6 +805,23 @@ theorem subset_countable_closure_of_almost_dense_set (s : Set α)
     edist x (f n⁻¹ y) ≤ (n : ℝ≥0∞)⁻¹ * 2 := hf _ _ ⟨hyx, hx⟩
     _ < ε := ENNReal.mul_lt_of_lt_div hn
 #align emetric.subset_countable_closure_of_almost_dense_set EMetric.subset_countable_closure_of_almost_dense_set
+
+open TopologicalSpace in
+/-- If a set `s` is separable, then the corresponding subtype is separable in a (pseudo extended)
+metric space.  This is not obvious, as the countable set whose closure covers `s` does not need in
+general to be contained in `s`. -/
+theorem _root_.TopologicalSpace.IsSeparable.separableSpace {s : Set α} (hs : IsSeparable s) :
+    SeparableSpace s := by
+  have : ∀ ε > 0, ∃ t : Set α, t.Countable ∧ s ⊆ ⋃ x ∈ t, closedBall x ε := fun ε ε0 => by
+    rcases hs with ⟨t, htc, hst⟩
+    refine ⟨t, htc, hst.trans fun x hx => ?_⟩
+    rcases mem_closure_iff.1 hx ε ε0 with ⟨y, hyt, hxy⟩
+    exact mem_unionᵢ₂.2 ⟨y, hyt, mem_closedBall.2 hxy.le⟩
+  rcases subset_countable_closure_of_almost_dense_set _ this with ⟨t, hts, htc, hst⟩
+  lift t to Set s using hts
+  refine ⟨⟨t, countable_of_injective_of_countable_image (Subtype.coe_injective.injOn _) htc, ?_⟩⟩
+  rwa [inducing_subtype_val.dense_iff, Subtype.forall]
+#align topological_space.is_separable.separable_space TopologicalSpace.IsSeparable.separableSpace
 
 -- porting note: todo: generalize to metrizable spaces
 /-- A compact set in a pseudo emetric space is separable, i.e., it is a subset of the closure of a

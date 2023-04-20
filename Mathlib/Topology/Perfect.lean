@@ -183,7 +183,7 @@ theorem exists_countable_union_perfect_of_isClosed [SecondCountableTopology α]
       have hU_cnt : (U ∩ C).Countable := by
         apply @Countable.mono _ _ (E ∩ D ∪ V ∩ C)
         · rintro y ⟨yU, yC⟩
-          by_cases y ∈ V
+          by_cases h : y ∈ V
           · exact mem_union_right _ (mem_inter h yC)
           · exact mem_union_left _ (mem_inter (hU yU) ⟨yC, h⟩)
         exact Countable.union h Vct

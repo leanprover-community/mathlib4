@@ -91,7 +91,7 @@ instance Rel.setoid (α : Type u) : Setoid (α × α) :=
 
 @[simp]
 theorem rel_iff {x y z w : α} : (x, y) ≈ (z, w) ↔ x = z ∧ y = w ∨ x = w ∧ y = z :=
-  by aesop (rule_sets [Sym2]) (add norm unfold [HasEquiv.Equiv, Setoid.r])
+  show Rel _ _ _ ↔ _ by aesop (rule_sets [Sym2])
 #align sym2.rel_iff Sym2.rel_iff
 
 end Sym2
@@ -668,8 +668,11 @@ theorem relBool_spec [DecidableEq α] (x y : α × α) : ↥(relBool x y) ↔ Re
 
 /-- Given `[DecidableEq α]` and `[Fintype α]`, the following instance gives `Fintype (Sym2 α)`.
 -/
-instance (α : Type _) [DecidableEq α] : DecidableRel (Sym2.Rel α) := fun x y =>
+instance instRelDecidable (α : Type _) [DecidableEq α] : DecidableRel (Sym2.Rel α) := fun x y =>
   decidable_of_bool (relBool x y) (relBool_spec x y)
+-- Porting note: add this other version needed for Data.Finset.Sym
+instance instRelDecidable' (α : Type _) [DecidableEq α] :
+  DecidableRel (· ≈ · : α × α → α × α → Prop) := instRelDecidable _
 
 -- porting note: extra definitions and lemmas for proving decidable equality in `Sym2`
 /-- An algorithm for deciding equality in `Sym2 α`. -/
@@ -681,10 +684,6 @@ def eqBool [DecidableEq α] : Sym2 α → Sym2 α → Bool :=
 @[aesop norm unfold (rule_sets [Sym2])]
 theorem eqBool_spec [DecidableEq α] (a b : Sym2 α) : (eqBool a b) ↔ (a = b) :=
   Sym2.inductionOn₂ a b <| by aesop (rule_sets [Sym2])
-
--- porting note: `filter_image_quotient_mk''_isDiag` needs this instance
-instance (α : Type _) [DecidableEq α] : DecidableEq (Sym2 α) :=
-  fun a b => decidable_of_bool (eqBool a b) (eqBool_spec a b)
 
 
 
@@ -747,8 +746,8 @@ theorem other_invol' [DecidableEq α] {a : α} {z : Sym2 α} (ha : a ∈ z) (hb 
 theorem other_invol {a : α} {z : Sym2 α} (ha : a ∈ z) (hb : Mem.other ha ∈ z) : Mem.other hb = a :=
   by classical
     rw [other_eq_other'] at hb⊢
-    convert other_invol' ha hb
-    rw [other_eq_other']
+    convert other_invol' ha hb using 2
+    apply other_eq_other'
 #align sym2.other_invol Sym2.other_invol
 
 -- porting note: updating `×ˢ` to the new notation `×ᶠ`
@@ -756,8 +755,7 @@ theorem filter_image_quotient_mk''_isDiag [DecidableEq α] (s : Finset α) :
     ((s ×ᶠ s).image Quotient.mk'').filter IsDiag = s.diag.image Quotient.mk'' :=
   by
   ext z
-  induction z using Sym2.inductionOn
-  rename_i x y
+  induction' z using Sym2.inductionOn
   simp only [mem_image, mem_diag, exists_prop, mem_filter, Prod.exists, mem_product]
   constructor
   · rintro ⟨⟨a, b, ⟨ha, hb⟩, (h : Quotient.mk _ _ = _)⟩, hab⟩
