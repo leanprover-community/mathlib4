@@ -215,7 +215,6 @@ theorem induction {Y : C} {n q : ℕ} {φ : Y ⟶ X _[n + 1]} (v : HigherFacesVa
     swap
     · ext
       dsimp
-      have : q = 1 := by rw [← add_left_inj a, ha, ham'', add_comm]
       linarith
     simp only [← assoc, v j (by linarith), zero_comp]
 #align algebraic_topology.dold_kan.higher_faces_vanish.induction AlgebraicTopology.DoldKan.HigherFacesVanish.induction
