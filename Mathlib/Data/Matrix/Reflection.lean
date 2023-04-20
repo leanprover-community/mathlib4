@@ -8,9 +8,9 @@ Authors: Eric Wieser
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Matrix.Notation
-import Mathbin.Data.Matrix.Basic
-import Mathbin.Data.Fin.Tuple.Reflection
+import Mathlib.Data.Matrix.Notation
+import Mathlib.Data.Matrix.Basic
+import Mathlib.Data.Fin.Tuple.Reflection
 
 /-!
 # Lemmas for concrete matrices `matrix (fin m) (fin n) α`
@@ -159,8 +159,7 @@ example [add_comm_monoid α] [has_mul α] (a₁₁ a₁₂ a₂₁ a₂₂ b₁�
 -/
 @[simp]
 theorem mulᵣ_eq [Mul α] [AddCommMonoid α] (A : Matrix (Fin l) (Fin m) α)
-    (B : Matrix (Fin m) (Fin n) α) : mulᵣ A B = A.mul B :=
-  by
+    (B : Matrix (Fin m) (Fin n) α) : mulᵣ A B = A.mul B := by
   simp [mulᵣ, Function.comp, Matrix.mul, Matrix.transpose]
   rfl
 #align matrix.mulᵣ_eq Matrix.mulᵣ_eq
