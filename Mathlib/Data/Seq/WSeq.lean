@@ -622,10 +622,6 @@ theorem Equiv.equivalence : Equivalence (@Equiv α) :=
 
 open Computation
 
--- Porting note: In Lean4, `return` is a built-in notation, so this command doesn't work,
---                         so, `return`s are replaced with `Computation.pure`.
--- local notation "return" => Computation.pure
-
 @[simp]
 theorem destruct_nil : destruct (nil : WSeq α) = Computation.pure none :=
   Computation.destruct_eq_pure rfl
