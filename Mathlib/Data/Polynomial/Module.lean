@@ -271,8 +271,6 @@ theorem map_smul (f : M →ₗ[R] M') (p : R[X]) (q : PolynomialModule R M) :
       f.map_smul, algebraMap_smul]
 #align polynomial_module.map_smul PolynomialModule.map_smul
 
--- porting note: it was originally @[simps (config := lemmasOnly)]
-
 /-- Evaluate a polynomial `p : PolynomialModule R M` at `r : R`. -/
 @[simps! (config := .lemmasOnly)]
 def eval (r : R) : PolynomialModule R M →ₗ[R] M where
