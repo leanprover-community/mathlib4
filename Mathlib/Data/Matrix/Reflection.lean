@@ -166,7 +166,7 @@ theorem mulᵣ_eq [Mul α] [AddCommMonoid α] (A : Matrix (Fin l) (Fin m) α)
 #align matrix.mulᵣ_eq Matrix.mulᵣ_eq
 
 example [AddCommMonoid α] [Mul α] (a₁₁ a₁₂ a₂₁ a₂₂ b₁₁ b₁₂ b₂₁ b₂₂ : α) :
-    !![a₁₁, a₁₂; a₂₁, a₂₂].mul !![b₁₁, b₁₂; b₂₁, b₂₂] =
+    !![a₁₁, a₁₂; a₂₁, a₂₂] ⬝ !![b₁₁, b₁₂; b₂₁, b₂₂] =
       !![a₁₁ * b₁₁ + a₁₂ * b₂₁, a₁₁ * b₁₂ + a₁₂ * b₂₂;
         a₂₁ * b₁₁ + a₂₂ * b₂₁, a₂₁ * b₁₂ + a₂₂ * b₂₂] :=
   (mulᵣ_eq _ _).symm
@@ -180,8 +180,8 @@ def mulVecᵣ [Mul α] [Add α] [Zero α] (A : Matrix (Fin l) (Fin m) α) (v : F
 ```lean
 example [NonUnitalNonAssocSemiring α] (a₁₁ a₁₂ a₂₁ a₂₂ b₁ b₂ : α) :
   !![a₁₁, a₁₂;
-     a₂₁, a₂₂].mul_vec ![b₁, b₂] = ![a₁₁*b₁ + a₁₂*b₂, a₂₁*b₁ + a₂₂*b₂] :=
-(mul_vecᵣ_eq _ _).symm
+     a₂₁, a₂₂].mulVec ![b₁, b₂] = ![a₁₁*b₁ + a₁₂*b₂, a₂₁*b₁ + a₂₂*b₂] :=
+(mulVecᵣ_eq _ _).symm
 ```
 -/
 @[simp]
@@ -203,9 +203,9 @@ def vecMulᵣ [Mul α] [Add α] [Zero α] (v : Fin l → α) (A : Matrix (Fin l)
 /-- This can be used to prove
 ```lean
 example [NonUnitalNonAssocSemiring α] (a₁₁ a₁₂ a₂₁ a₂₂ b₁ b₂ : α) :
-  vec_mul ![b₁, b₂] !![a₁₁, a₁₂;
+  vecMul ![b₁, b₂] !![a₁₁, a₁₂;
                        a₂₁, a₂₂] = ![b₁*a₁₁ + b₂*a₂₁, b₁*a₁₂ + b₂*a₂₂] :=
-(vec_mulᵣ_eq _ _).symm
+(vecMulᵣ_eq _ _).symm
 ```
 -/
 @[simp]
@@ -229,7 +229,7 @@ def etaExpand {m n} (A : Matrix (Fin m) (Fin n) α) : Matrix (Fin m) (Fin n) α 
 example (A : Matrix (Fin 2) (Fin 2) α) :
   A = !![A 0 0, A 0 1;
          A 1 0, A 1 1] :=
-(eta_expand_eq _).symm
+(etaExpand_eq _).symm
 ```
 -/
 theorem etaExpand_eq {m n} (A : Matrix (Fin m) (Fin n) α) : etaExpand A = A := by
