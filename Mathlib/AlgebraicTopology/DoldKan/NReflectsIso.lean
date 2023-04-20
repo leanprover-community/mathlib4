@@ -8,10 +8,10 @@ Authors: Joël Riou
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.AlgebraicTopology.DoldKan.FunctorN
-import Mathbin.AlgebraicTopology.DoldKan.Decomposition
-import Mathbin.CategoryTheory.Idempotents.HomologicalComplex
-import Mathbin.CategoryTheory.Idempotents.KaroubiKaroubi
+import Mathlib.AlgebraicTopology.DoldKan.FunctorN
+import Mathlib.AlgebraicTopology.DoldKan.Decomposition
+import Mathlib.CategoryTheory.Idempotents.HomologicalComplex
+import Mathlib.CategoryTheory.Idempotents.KaroubiKaroubi
 
 /-!
 
@@ -47,8 +47,7 @@ instance : ReflectsIsomorphisms (n₁ : SimplicialObject C ⥤ Karoubi (ChainCom
   ⟨fun X Y f => by
     intro
     -- restating the result in a way that allows induction on the degree n
-    suffices ∀ n : ℕ, is_iso (f.app (op [n]))
-      by
+    suffices ∀ n : ℕ, is_iso (f.app (op [n])) by
       haveI : ∀ Δ : SimplexCategoryᵒᵖ, is_iso (f.app Δ) := fun Δ => this Δ.unop.len
       apply nat_iso.is_iso_of_is_iso_app
     -- restating the assumption in a more practical form
@@ -83,8 +82,7 @@ theorem compatibility_n₂_n₁_karoubi :
       karoubiFunctorCategoryEmbedding SimplexCategoryᵒᵖ C ⋙
         n₁ ⋙
           (karoubiChainComplexEquivalence (Karoubi C) ℕ).Functor ⋙
-            Functor.mapHomologicalComplex (KaroubiKaroubi.equivalence C).inverse _ :=
-  by
+            Functor.mapHomologicalComplex (KaroubiKaroubi.equivalence C).inverse _ := by
   refine' CategoryTheory.Functor.ext (fun P => _) fun P Q f => _
   · refine' HomologicalComplex.ext _ _
     · ext n
