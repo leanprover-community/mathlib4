@@ -183,7 +183,7 @@ theorem element_of_chain_eq_pow_second_of_chain {q r : Associates M} {n : ℕ} (
     · simp only [← Nat.succ_le_iff, Nat.succ_eq_add_one, ← this]
       apply card_subset_divisors_le_length_of_chain (@h₂) H'
     simp only [Finset.mem_image]
-    rintro r ⟨a, _ha, rfl⟩
+    rintro r ⟨a, _, rfl⟩
     refine' dvd_trans _ hr
     use c 1 ^ (i - (a : ℕ))
     rw [pow_mul_pow_sub (c 1)]
