@@ -982,7 +982,7 @@ theorem exists_finite_iff_finset {p : Set α → Prop} :
 theorem Finite.finite_subsets {α : Type u} {a : Set α} (h : a.Finite) : { b | b ⊆ a }.Finite :=
   ⟨Fintype.ofFinset ((Finset.powerset h.toFinset).map Finset.coeEmb.1) fun s => by
       simpa [← @exists_finite_iff_finset α fun t => t ⊆ a ∧ t = s, Finite.subset_toFinset, ←
-        and_assoc] using h.subset⟩
+        and_assoc, Finset.coeEmb] using h.subset⟩
 #align set.finite.finite_subsets Set.Finite.finite_subsets
 
 /-- Finite product of finite sets is finite -/
