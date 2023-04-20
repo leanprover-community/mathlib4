@@ -683,6 +683,7 @@ import Mathlib.Data.Analysis.Topology
 import Mathlib.Data.Array.Basic
 import Mathlib.Data.Array.Defs
 import Mathlib.Data.BinaryHeap
+import Mathlib.Data.Bitvec.Basic
 import Mathlib.Data.Bitvec.Core
 import Mathlib.Data.Bool.AllAny
 import Mathlib.Data.Bool.Basic
