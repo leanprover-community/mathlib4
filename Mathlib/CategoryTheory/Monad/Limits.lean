@@ -312,34 +312,26 @@ noncomputable def monadicCreatesColimitOfPreservesColimit (R : D ⥤ C) (K : J �
       CreatesColimit K R := by
   -- Porting note: It would be nice to have a variant of apply which introduces goals for missing
   -- instances.
-  let A := Monad.comparison (Adjunction.ofRightAdjoint R)
-  let B := Monad.forget (Adjunction.toMonad (Adjunction.ofRightAdjoint R))
-  let e := (Monad.comparisonForget (Adjunction.ofRightAdjoint R))
-  suffices : CreatesColimit K (A ⋙ B)
-  apply createsColimitOfNatIso e
-  suffices : CreatesColimit K A × CreatesColimit (K ⋙ A) B
-  cases this
-  apply CategoryTheory.compCreatesColimit _ _
-  refine' ⟨_,_⟩
-  dsimp
-  infer_instance
+  letI A := Monad.comparison (Adjunction.ofRightAdjoint R)
+  letI B := Monad.forget (Adjunction.toMonad (Adjunction.ofRightAdjoint R))
   let i : (K ⋙ Monad.comparison (Adjunction.ofRightAdjoint R)) ⋙ Monad.forget _ ≅ K ⋙ R :=
     Functor.associator _ _ _ ≪≫
       isoWhiskerLeft K (Monad.comparisonForget (Adjunction.ofRightAdjoint R))
-  suffices : PreservesColimit ((K ⋙ A) ⋙ Monad.forget
+  letI : PreservesColimit ((K ⋙ A) ⋙ Monad.forget
     (Adjunction.toMonad (Adjunction.ofRightAdjoint R)))
-      (Adjunction.toMonad (Adjunction.ofRightAdjoint R)).toFunctor ×
-    PreservesColimit
+      (Adjunction.toMonad (Adjunction.ofRightAdjoint R)).toFunctor := by
+    dsimp
+    refine' preservesColimitOfIsoDiagram _ i.symm
+  letI : PreservesColimit
     (((K ⋙ A) ⋙ Monad.forget (Adjunction.toMonad (Adjunction.ofRightAdjoint R))) ⋙
       (Adjunction.toMonad (Adjunction.ofRightAdjoint R)).toFunctor)
-    (Adjunction.toMonad (Adjunction.ofRightAdjoint R)).toFunctor
-  cases this
-  apply CategoryTheory.Monad.forgetCreatesColimit _
-  refine' ⟨_,_⟩
-  · dsimp
-    refine' preservesColimitOfIsoDiagram _ i.symm
-  · dsimp
+      (Adjunction.toMonad (Adjunction.ofRightAdjoint R)).toFunctor := by
+    dsimp
     refine' preservesColimitOfIsoDiagram _ (isoWhiskerRight i (leftAdjoint R ⋙ R)).symm
+  letI : CreatesColimit (K ⋙ A) B := CategoryTheory.Monad.forgetCreatesColimit _
+  letI : CreatesColimit K (A ⋙ B) := CategoryTheory.compCreatesColimit _ _
+  let e := (Monad.comparisonForget (Adjunction.ofRightAdjoint R))
+  apply createsColimitOfNatIso e
 #align category_theory.monadic_creates_colimit_of_preserves_colimit CategoryTheory.monadicCreatesColimitOfPreservesColimit
 
 /-- A monadic functor creates any colimits of shapes it preserves. -/
