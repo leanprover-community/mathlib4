@@ -8,7 +8,7 @@ Authors: Joël Riou
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.AlgebraicTopology.DoldKan.PInfty
+import Mathlib.AlgebraicTopology.DoldKan.PInfty
 
 /-!
 
@@ -54,8 +54,7 @@ the $y_i$ are in degree $n$. -/
 theorem decomposition_q (n q : ℕ) :
     ((q q).f (n + 1) : X _[n + 1] ⟶ X _[n + 1]) =
       ∑ i : Fin (n + 1) in Finset.filter (fun i : Fin (n + 1) => (i : ℕ) < q) Finset.univ,
-        (p i).f (n + 1) ≫ X.δ i.rev.succ ≫ X.σ i.rev :=
-  by
+        (p i).f (n + 1) ≫ X.δ i.rev.succ ≫ X.σ i.rev := by
   induction' q with q hq
   ·
     simp only [Q_eq_zero, HomologicalComplex.zero_f_apply, Nat.not_lt_zero, Finset.filter_False,
@@ -111,15 +110,13 @@ variable (X n)
 /-- the canonical `morph_components` whose associated morphism is the identity
 (see `F_id`) thanks to `decomposition_Q n (n+1)` -/
 @[simps]
-def id : MorphComponents X n (X _[n + 1])
-    where
+def id : MorphComponents X n (X _[n + 1]) where
   a := pInfty.f (n + 1)
   b i := X.σ i
 #align algebraic_topology.dold_kan.morph_components.id AlgebraicTopology.DoldKan.MorphComponents.id
 
 @[simp]
-theorem id_φ : (id X n).φ = 𝟙 _ :=
-  by
+theorem id_φ : (id X n).φ = 𝟙 _ := by
   simp only [← P_add_Q_f (n + 1) (n + 1), φ]
   congr 1
   · simp only [id, P_infty_f, P_f_idem]
@@ -138,23 +135,20 @@ def postComp : MorphComponents X n Z' where
 #align algebraic_topology.dold_kan.morph_components.post_comp AlgebraicTopology.DoldKan.MorphComponents.postComp
 
 @[simp]
-theorem postComp_φ : (f.postComp h).φ = f.φ ≫ h :=
-  by
+theorem postComp_φ : (f.postComp h).φ = f.φ ≫ h := by
   unfold φ post_comp
   simp only [add_comp, sum_comp, assoc]
 #align algebraic_topology.dold_kan.morph_components.post_comp_φ AlgebraicTopology.DoldKan.MorphComponents.postComp_φ
 
 /-- A `morph_components` can be precomposed with a morphism of simplicial objects. -/
 @[simps]
-def preComp : MorphComponents X' n Z
-    where
+def preComp : MorphComponents X' n Z where
   a := g.app (op [n + 1]) ≫ f.a
   b i := g.app (op [n]) ≫ f.b i
 #align algebraic_topology.dold_kan.morph_components.pre_comp AlgebraicTopology.DoldKan.MorphComponents.preComp
 
 @[simp]
-theorem preComp_φ : (f.preComp g).φ = g.app (op [n + 1]) ≫ f.φ :=
-  by
+theorem preComp_φ : (f.preComp g).φ = g.app (op [n + 1]) ≫ f.φ := by
   unfold φ pre_comp
   simp only [P_infty_f, comp_add]
   congr 1
