@@ -342,8 +342,8 @@ theorem _root_.AlgHom.map_det [Algebra R S] {T : Type z} [CommRing T] [Algebra R
   f.toRingHom.map_det _
 #align alg_hom.map_det AlgHom.map_det
 
-theorem _root_.AlgEquiv.map_det [Algebra R S] {T : Type z} [CommRing T] [Algebra R T] (f : S ≃ₐ[R] T)
-    (M : Matrix n n S) : f M.det = Matrix.det (f.mapMatrix M) :=
+theorem _root_.AlgEquiv.map_det [Algebra R S] {T : Type z} [CommRing T] [Algebra R T]
+    (f : S ≃ₐ[R] T) (M : Matrix n n S) : f M.det = Matrix.det (f.mapMatrix M) :=
   f.toAlgHom.map_det _
 #align alg_equiv.map_det AlgEquiv.map_det
 
@@ -744,7 +744,8 @@ theorem det_succ_column_zero {n : ℕ} (A : Matrix (Fin n.succ) (Fin n.succ) R) 
     _ =
         -1 *
           (A (Fin.succ i) 0 *
-            (Perm.sign σ : ℤ) • ∏ i', A ((Fin.succ i).succAbove (Fin.cycleRange i (σ i'))) i'.succ) := by
+            (Perm.sign σ : ℤ) •
+              ∏ i', A ((Fin.succ i).succAbove (Fin.cycleRange i (σ i'))) i'.succ) := by
       simp [mul_assoc, mul_comm, _root_.neg_mul, one_mul, zsmul_eq_mul, neg_inj, neg_smul,
         Fin.succAbove_cycleRange, mul_left_comm]
 #align matrix.det_succ_column_zero Matrix.det_succ_column_zero
