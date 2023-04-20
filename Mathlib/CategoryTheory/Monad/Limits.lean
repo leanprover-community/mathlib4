@@ -114,14 +114,13 @@ end ForgetCreatesLimits
 
 -- Theorem 5.6.5 from [Riehl][riehl2017]
 /-- The forgetful functor from the Eilenberg-Moore category creates limits. -/
-noncomputable instance forgetCreatesLimits : CreatesLimitsOfSize (forget T)
-    where CreatesLimitsOfShape J 𝒥 :=
-    {
-      CreatesLimit := fun D =>
-        creates_limit_of_reflects_iso fun c t =>
-          { liftedCone := forget_creates_limits.lifted_cone D c t
-            validLift := cones.ext (iso.refl _) fun j => (id_comp _).symm
-            makesLimit := forget_creates_limits.lifted_cone_is_limit _ _ _ } }
+noncomputable instance forgetCreatesLimits : CreatesLimitsOfSize (forget T) where
+  CreatesLimitsOfShape := {
+    CreatesLimit := fun {D} =>
+      createsLimitOfReflectsIso fun c t =>
+        { liftedCone := ForgetCreatesLimits.liftedCone D c t
+          validLift := Cones.ext (Iso.refl _) fun _ => (id_comp _).symm
+          makesLimit := ForgetCreatesLimits.liftedConeIsLimit _ _ _ } }
 #align category_theory.monad.forget_creates_limits CategoryTheory.Monad.forgetCreatesLimits
 
 /-- `D ⋙ forget T` has a limit, then `D` has a limit. -/
@@ -157,7 +156,7 @@ A cocone for the diagram `(D ⋙ forget T) ⋙ T` found by composing the natural
 with the colimiting cocone for `D ⋙ forget T`.
 -/
 @[simps]
-def newCocone : Cocone ((D ⋙ forget T) ⋙ ↑T) where
+def newCocone : Cocone ((D ⋙ forget T) ⋙ (T : C ⥤ C)) where
   pt := c.pt
   ι := γ ≫ c.ι
 #align category_theory.monad.forget_creates_colimits.new_cocone CategoryTheory.Monad.ForgetCreatesColimits.newCocone
@@ -190,19 +189,19 @@ our `commuting` lemma.
 def coconePoint : Algebra T where
   A := c.pt
   a := lambda c t
-  unit' := by
+  unit := by
     apply t.hom_ext
     intro j
-    rw [show c.ι.app j ≫ T.η.app c.X ≫ _ = T.η.app (D.obj j).A ≫ _ ≫ _ from
+    rw [show c.ι.app j ≫ T.η.app c.pt ≫ _ = T.η.app (D.obj j).A ≫ _ ≫ _ from
         T.η.naturality_assoc _ _,
-      commuting, algebra.unit_assoc (D.obj j)]
+      commuting, Algebra.unit_assoc (D.obj j)]
     dsimp; simp
   -- See library note [dsimp, simp]
-  assoc' := by
-    refine' (is_colimit_of_preserves _ (is_colimit_of_preserves _ t)).hom_ext fun j => _
-    rw [functor.map_cocone_ι_app, functor.map_cocone_ι_app,
+  assoc := by
+    refine' (isColimitOfPreserves _ (isColimitOfPreserves _ t)).hom_ext fun j => _
+    rw [Functor.mapCocone_ι_app, Functor.mapCocone_ι_app,
       show (T : C ⥤ C).map ((T : C ⥤ C).map _) ≫ _ ≫ _ = _ from T.μ.naturality_assoc _ _, ←
-      functor.map_comp_assoc, commuting, functor.map_comp, category.assoc, commuting]
+      Functor.map_comp_assoc, commuting, Functor.map_comp, Category.assoc, commuting]
     apply (D.obj j).assoc_assoc _
 #align category_theory.monad.forget_creates_colimits.cocone_point CategoryTheory.Monad.ForgetCreatesColimits.coconePoint
 
@@ -213,8 +212,8 @@ def liftedCocone : Cocone D where
   ι :=
     { app := fun j =>
         { f := c.ι.app j
-          h' := commuting _ _ _ }
-      naturality' := fun A B f => by
+          h := commuting _ _ _ }
+      naturality := fun A B f => by
         ext1
         dsimp
         rw [comp_id]
@@ -226,16 +225,16 @@ def liftedCocone : Cocone D where
 def liftedCoconeIsColimit : IsColimit (liftedCocone c t) where
   desc s :=
     { f := t.desc ((forget T).mapCocone s)
-      h' :=
+      h :=
         (isColimitOfPreserves (T : C ⥤ C) t).hom_ext fun j => by
           dsimp
-          rw [← functor.map_comp_assoc, ← category.assoc, t.fac, commuting, category.assoc, t.fac]
-          apply algebra.hom.h }
+          rw [← Functor.map_comp_assoc, ← Category.assoc, t.fac, commuting, Category.assoc, t.fac]
+          apply Algebra.Hom.h }
   uniq s m J := by
     ext1
     apply t.hom_ext
     intro j
-    simpa using congr_arg algebra.hom.f (J j)
+    simpa using congr_arg Algebra.Hom.f (J j)
 #align category_theory.monad.forget_creates_colimits.lifted_cocone_is_colimit CategoryTheory.Monad.ForgetCreatesColimits.liftedCoconeIsColimit
 
 end ForgetCreatesColimits
@@ -255,21 +254,21 @@ noncomputable instance forgetCreatesColimit (D : J ⥤ Algebra T)
           ι :=
             { app := fun j =>
                 { f := c.ι.app j
-                  h' := commuting _ _ _ }
-              naturality' := fun A B f => by
+                  h := commuting _ _ _ }
+              naturality := fun A B f => by
                 ext1
                 dsimp
                 erw [comp_id, c.w] } }
-      validLift := Cocones.ext (Iso.refl _) (by tidy)
+      validLift := Cocones.ext (Iso.refl _) (by aesop_cat)
       makesColimit := liftedCoconeIsColimit _ _ }
 #align category_theory.monad.forget_creates_colimit CategoryTheory.Monad.forgetCreatesColimit
 
 noncomputable instance forgetCreatesColimitsOfShape [PreservesColimitsOfShape J (T : C ⥤ C)] :
-    CreatesColimitsOfShape J (forget T) where CreatesColimit K := by infer_instance
+    CreatesColimitsOfShape J (forget T) where CreatesColimit := by infer_instance
 #align category_theory.monad.forget_creates_colimits_of_shape CategoryTheory.Monad.forgetCreatesColimitsOfShape
 
 noncomputable instance forgetCreatesColimits [PreservesColimitsOfSize.{v, u} (T : C ⥤ C)] :
-    CreatesColimitsOfSize.{v, u} (forget T) where CreatesColimitsOfShape J 𝒥₁ := by infer_instance
+    CreatesColimitsOfSize.{v, u} (forget T) where CreatesColimitsOfShape := by infer_instance
 #align category_theory.monad.forget_creates_colimits CategoryTheory.Monad.forgetCreatesColimits
 
 /-- For `D : J ⥤ algebra T`, `D ⋙ forget T` has a colimit, then `D` has a colimit provided colimits
@@ -310,8 +309,9 @@ which the monad itself preserves.
 noncomputable def monadicCreatesColimitOfPreservesColimit (R : D ⥤ C) (K : J ⥤ D)
     [MonadicRightAdjoint R] [PreservesColimit (K ⋙ R) (leftAdjoint R ⋙ R)]
     [PreservesColimit ((K ⋙ R) ⋙ leftAdjoint R ⋙ R) (leftAdjoint R ⋙ R)] : CreatesColimit K R := by
-  apply creates_colimit_of_nat_iso (monad.comparison_forget (adjunction.of_right_adjoint R))
+  apply createsColimitOfNatIso (Monad.comparisonForget (Adjunction.ofRightAdjoint R))
   apply CategoryTheory.compCreatesColimit _ _
+  dsimp
   infer_instance
   let i : (K ⋙ monad.comparison (adjunction.of_right_adjoint R)) ⋙ monad.forget _ ≅ K ⋙ R :=
     functor.associator _ _ _ ≪≫
