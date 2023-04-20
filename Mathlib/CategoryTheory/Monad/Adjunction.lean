@@ -253,10 +253,11 @@ instance comparison_essSurj [Reflective R] :
   · exact asIso ((Adjunction.ofRightAdjoint R).unit.app X.A)
   dsimp only [Functor.comp_map, Monad.comparison_obj_a, asIso_hom, Functor.comp_obj,
     Monad.comparison_obj_A, Adjunction.toMonad_coe]
-  rw [← cancel_epi ((Adjunction.ofRightAdjoint R).unit.app X.A), Adjunction.unit_naturality_assoc,
+  rw [← cancel_epi ((Adjunction.ofRightAdjoint R).unit.app X.A)]
+  dsimp only [Functor.id_obj, Functor.comp_obj]
+  rw [Adjunction.unit_naturality_assoc,
     Adjunction.right_triangle_components, comp_id]
-  --apply (X.unit_assoc _).symm
-  sorry
+  apply (X.unit_assoc _).symm
 #align category_theory.reflective.comparison_ess_surj CategoryTheory.Reflective.comparison_essSurj
 
 instance comparisonFull [Full R] [IsRightAdjoint R] :
