@@ -368,7 +368,7 @@ theorem _root_.RingHom.map_adjugate {R S : Type _} [CommRing R] [CommRing S] (f 
   ext (i k)
   have : Pi.single i (1 : S) = f ∘ Pi.single i 1 := by
     rw [← f.map_one]
-    exact Pi.single_op (fun i => f) (fun i => f.map_zero) i (1 : R)
+    exact Pi.single_op (fun _ => f) (fun _ => f.map_zero) i (1 : R)
   rw [adjugate_apply, RingHom.mapMatrix_apply, map_apply, RingHom.mapMatrix_apply, this, ←
     map_updateRow, ← RingHom.mapMatrix_apply, ← RingHom.map_det, ← adjugate_apply]
 #align ring_hom.map_adjugate RingHom.map_adjugate
@@ -439,7 +439,7 @@ theorem isRegular_of_isLeftRegular_det {A : Matrix n n α} (hA : IsLeftRegular A
   constructor
   · intro B C h
     refine' hA.matrix _
-    simp only
+    simp only at h ⊢
     rw [← Matrix.one_mul B, ← Matrix.one_mul C, ← Matrix.smul_mul, ← Matrix.smul_mul, ←
       adjugate_mul, Matrix.mul_assoc, Matrix.mul_assoc, ← mul_eq_mul A, h, mul_eq_mul]
   · intro B C h
