@@ -8,9 +8,9 @@ Authors: Julian Kuelshammer
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Preadditive.Basic
-import Mathbin.CategoryTheory.Monad.Algebra
-import Mathbin.CategoryTheory.Preadditive.AdditiveFunctor
+import Mathlib.CategoryTheory.Preadditive.Basic
+import Mathlib.CategoryTheory.Monad.Algebra
+import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 
 /-!
 # Preadditive structure on algebras over a monad
@@ -33,8 +33,7 @@ open CategoryTheory.Limits Preadditive
 
 /-- The category of algebras over an additive monad on a preadditive category is preadditive. -/
 @[simps]
-instance Monad.algebraPreadditive : Preadditive (Monad.Algebra T)
-    where
+instance Monad.algebraPreadditive : Preadditive (Monad.Algebra T) where
   homGroup F G :=
     { add := fun α β =>
         { f := α.f + β.f
@@ -117,8 +116,7 @@ variable (U : Comonad C) [Functor.Additive (U : C ⥤ C)]
 
 /-- The category of coalgebras over an additive comonad on a preadditive category is preadditive. -/
 @[simps]
-instance Comonad.coalgebraPreadditive : Preadditive (Comonad.Coalgebra U)
-    where
+instance Comonad.coalgebraPreadditive : Preadditive (Comonad.Coalgebra U) where
   homGroup F G :=
     { add := fun α β =>
         { f := α.f + β.f
