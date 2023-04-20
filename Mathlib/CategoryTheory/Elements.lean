@@ -258,7 +258,8 @@ theorem to_fromCostructuredArrow_eq (F : Cᵒᵖ ⥤ Type v) :
     simp [CostructuredArrow.eqToHom_left]
 #align category_theory.category_of_elements.to_from_costructured_arrow_eq CategoryTheory.CategoryOfElements.to_fromCostructuredArrow_eq
 
--- /-- The equivalence `F.Elementsᵒᵖ ≅ (yoneda, F)` given by yoneda lemma. -/
+/-- The equivalence `F.Elementsᵒᵖ ≅ (yoneda, F)` given by yoneda lemma. -/
+@[simps! functor_obj functor_map inverse_obj inverse_map unitIso_inv counitIso_hom counitIso_inv]
 def costructuredArrowYonedaEquivalence (F : Cᵒᵖ ⥤ Type v) :
     F.Elementsᵒᵖ ≌ CostructuredArrow yoneda F :=
   Equivalence.mk (toCostructuredArrow F) (fromCostructuredArrow F).rightOp
@@ -266,11 +267,9 @@ def costructuredArrowYonedaEquivalence (F : Cᵒᵖ ⥤ Type v) :
 #align category_theory.category_of_elements.costructured_arrow_yoneda_equivalence CategoryTheory.CategoryOfElements.costructuredArrowYonedaEquivalence
 
 -- Porting note:
--- Both the elaboration of `costructuredArrowYonedaEquivalence` and adding its `@[simps]`
--- attribute are slow.
--- We separate them out to avoid needing to increase the maxHeartbeats.
-attribute [simps! functor_obj functor_map inverse_obj inverse_map unitIso_hom
-  unitIso_inv counitIso_hom counitIso_inv] costructuredArrowYonedaEquivalence
+-- Running `@[simps! unitIso_hom]` is mysteriously slow.
+-- We separate it out to avoid needing to increase the maxHeartbeats.
+attribute [simps! unitIso_hom] costructuredArrowYonedaEquivalence
 
 /-- The equivalence `(-.Elements)ᵒᵖ ≅ (yoneda, -)` of is actually a natural isomorphism of functors.
 -/
