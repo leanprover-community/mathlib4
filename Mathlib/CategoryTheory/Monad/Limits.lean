@@ -8,9 +8,9 @@ Authors: Scott Morrison, Bhavik Mehta
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Monad.Adjunction
-import Mathbin.CategoryTheory.Adjunction.Limits
-import Mathbin.CategoryTheory.Limits.Shapes.Terminal
+import Mathlib.CategoryTheory.Monad.Adjunction
+import Mathlib.CategoryTheory.Adjunction.Limits
+import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 
 /-!
 # Limits and colimits in the category of algebras
@@ -66,15 +66,13 @@ def conePoint : Algebra T where
   A := c.pt
   a := t.lift (newCone D c)
   unit' :=
-    t.hom_ext fun j =>
-      by
+    t.hom_ext fun j => by
       rw [category.assoc, t.fac, new_cone_π_app, ← T.η.naturality_assoc, functor.id_map,
         (D.obj j).Unit]
       dsimp; simp
   -- See library note [dsimp, simp]
   assoc' :=
-    t.hom_ext fun j =>
-      by
+    t.hom_ext fun j => by
       rw [category.assoc, category.assoc, t.fac (new_cone D c), new_cone_π_app, ←
         functor.map_comp_assoc, t.fac (new_cone D c), new_cone_π_app, ← T.μ.naturality_assoc,
         (D.obj j).and_assoc, functor.map_comp, category.assoc]
@@ -96,8 +94,7 @@ def liftedCone : Cone D where
 
 /-- (Impl) Prove that the lifted cone is limiting. -/
 @[simps]
-def liftedConeIsLimit : IsLimit (liftedCone D c t)
-    where
+def liftedConeIsLimit : IsLimit (liftedCone D c t) where
   lift s :=
     { f := t.lift ((forget T).mapCone s)
       h' :=
@@ -160,8 +157,7 @@ A cocone for the diagram `(D ⋙ forget T) ⋙ T` found by composing the natural
 with the colimiting cocone for `D ⋙ forget T`.
 -/
 @[simps]
-def newCocone : Cocone ((D ⋙ forget T) ⋙ ↑T)
-    where
+def newCocone : Cocone ((D ⋙ forget T) ⋙ ↑T) where
   pt := c.pt
   ι := γ ≫ c.ι
 #align category_theory.monad.forget_creates_colimits.new_cocone CategoryTheory.Monad.ForgetCreatesColimits.newCocone
@@ -202,8 +198,7 @@ def coconePoint : Algebra T where
       commuting, algebra.unit_assoc (D.obj j)]
     dsimp; simp
   -- See library note [dsimp, simp]
-  assoc' :=
-    by
+  assoc' := by
     refine' (is_colimit_of_preserves _ (is_colimit_of_preserves _ t)).hom_ext fun j => _
     rw [functor.map_cocone_ι_app, functor.map_cocone_ι_app,
       show (T : C ⥤ C).map ((T : C ⥤ C).map _) ≫ _ ≫ _ = _ from T.μ.naturality_assoc _ _, ←
@@ -228,13 +223,11 @@ def liftedCocone : Cocone D where
 
 /-- (Impl) Prove that the lifted cocone is colimiting. -/
 @[simps]
-def liftedCoconeIsColimit : IsColimit (liftedCocone c t)
-    where
+def liftedCoconeIsColimit : IsColimit (liftedCocone c t) where
   desc s :=
     { f := t.desc ((forget T).mapCocone s)
       h' :=
-        (isColimitOfPreserves (T : C ⥤ C) t).hom_ext fun j =>
-          by
+        (isColimitOfPreserves (T : C ⥤ C) t).hom_ext fun j => by
           dsimp
           rw [← functor.map_comp_assoc, ← category.assoc, t.fac, commuting, category.assoc, t.fac]
           apply algebra.hom.h }
@@ -316,8 +309,7 @@ which the monad itself preserves.
 -/
 noncomputable def monadicCreatesColimitOfPreservesColimit (R : D ⥤ C) (K : J ⥤ D)
     [MonadicRightAdjoint R] [PreservesColimit (K ⋙ R) (leftAdjoint R ⋙ R)]
-    [PreservesColimit ((K ⋙ R) ⋙ leftAdjoint R ⋙ R) (leftAdjoint R ⋙ R)] : CreatesColimit K R :=
-  by
+    [PreservesColimit ((K ⋙ R) ⋙ leftAdjoint R ⋙ R) (leftAdjoint R ⋙ R)] : CreatesColimit K R := by
   apply creates_colimit_of_nat_iso (monad.comparison_forget (adjunction.of_right_adjoint R))
   apply CategoryTheory.compCreatesColimit _ _
   infer_instance
@@ -334,8 +326,7 @@ noncomputable def monadicCreatesColimitOfPreservesColimit (R : D ⥤ C) (K : J �
 /-- A monadic functor creates any colimits of shapes it preserves. -/
 noncomputable def monadicCreatesColimitsOfShapeOfPreservesColimitsOfShape (R : D ⥤ C)
     [MonadicRightAdjoint R] [PreservesColimitsOfShape J R] : CreatesColimitsOfShape J R :=
-  haveI : preserves_colimits_of_shape J (left_adjoint R ⋙ R) :=
-    by
+  haveI : preserves_colimits_of_shape J (left_adjoint R ⋙ R) := by
     apply CategoryTheory.Limits.compPreservesColimitsOfShape _ _
     apply (adjunction.left_adjoint_preserves_colimits (adjunction.of_right_adjoint R)).1
     infer_instance
@@ -373,8 +364,7 @@ theorem has_limits_of_reflective (R : D ⥤ C) [HasLimitsOfSize.{v, u} C] [Refle
 theorem hasColimitsOfShape_of_reflective (R : D ⥤ C) [Reflective R] [HasColimitsOfShape J C] :
     HasColimitsOfShape J D :=
   {
-    HasColimit := fun F =>
-      by
+    HasColimit := fun F => by
       let c := (left_adjoint R).mapCocone (colimit.cocone (F ⋙ R))
       letI : preserves_colimits_of_shape J _ :=
         (adjunction.of_right_adjoint R).leftAdjointPreservesColimits.1
