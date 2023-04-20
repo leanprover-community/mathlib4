@@ -22,7 +22,7 @@ This file proves a submodule of a free `R`-module of finite rank is also
 a free `R`-module of finite rank, if `R` is a principal ideal domain (PID),
 i.e. we have instances `[IsDomain R] [IsPrincipalIdealRing R]`.
 We express "free `R`-module of finite rank" as a module `M` which has a basis
-`b : ι → R`, where `ι` is a `Fintype`.
+`b : ι → R`, where `ι` is a `FintypeCat`.
 We call the cardinality of `ι` the rank of `M` in this file;
 it would be equal to `finrank R M` if `R` is a field and `M` is a vector space.
 
@@ -170,18 +170,18 @@ but must also feed in a basis for `M` using `basis_of_pid` to keep the induction
 theorem Submodule.basis_of_pid_aux [Finite ι] {O : Type _} [AddCommGroup O] [Module R O]
     (M N : Submodule R O) (b'M : Basis ι R M) (N_bot : N ≠ ⊥) (N_le_M : N ≤ M) :
     ∃ y ∈ M,
-      ∃ (a : R)(hay : a • y ∈ N),
+      ∃ (a : R)(_hay : a • y ∈ N),
         ∃ M' ≤ M,
           ∃ N' ≤ N,
-            ∃ (N'_le_M' : N' ≤ M')(y_ortho_M' :
-              ∀ (c : R) (z : O), z ∈ M' → c • y + z = 0 → c = 0)(ay_ortho_N' :
+            ∃ (_N'_le_M' : N' ≤ M')(_y_ortho_M' :
+              ∀ (c : R) (z : O), z ∈ M' → c • y + z = 0 → c = 0)(_ay_ortho_N' :
               ∀ (c : R) (z : O), z ∈ N' → c • a • y + z = 0 → c = 0),
               ∀ (n') (bN' : Basis (Fin n') R N'),
                 ∃ bN : Basis (Fin (n' + 1)) R N,
                   ∀ (m') (hn'm' : n' ≤ m') (bM' : Basis (Fin m') R M'),
                     ∃ (hnm : n' + 1 ≤ m' + 1)(bM : Basis (Fin (m' + 1)) R M),
                       ∀ (as : Fin n' → R)
-                        (h : ∀ i : Fin n', (bN' i : O) = as i • (bM' (Fin.castLE hn'm' i) : O)),
+                        (_h : ∀ i : Fin n', (bN' i : O) = as i • (bM' (Fin.castLE hn'm' i) : O)),
                         ∃ as' : Fin (n' + 1) → R,
                           ∀ i : Fin (n' + 1), (bN i : O) = as' i • (bM (Fin.castLE hnm i) : O) := by
   -- Let `ϕ` be a maximal projection of `M` onto `R`, in the sense that there is
@@ -205,7 +205,7 @@ theorem Submodule.basis_of_pid_aux [Finite ι] {O : Type _} [AddCommGroup O] [Mo
     contradiction
   -- We claim that `ϕ⁻¹ a = y` can be taken as basis element of `N`.
   obtain ⟨y, yN, ϕy_eq⟩ := (LinearMap.mem_submoduleImage_of_le N_le_M).mp a_mem
-  have ϕy_ne_zero : ϕ ⟨y, N_le_M yN⟩ ≠ 0 := fun h ↦ a_zero (ϕy_eq.symm.trans h)
+  have _ϕy_ne_zero : ϕ ⟨y, N_le_M yN⟩ ≠ 0 := fun h ↦ a_zero (ϕy_eq.symm.trans h)
   -- Write `y` as `a • y'` for some `y'`.
   have hdvd : ∀ i, a ∣ b'M.coord i ⟨y, N_le_M yN⟩ := fun i ↦
     generator_maximal_submoduleImage_dvd N_le_M ϕ_max y yN ϕy_eq (b'M.coord i)
@@ -316,7 +316,7 @@ theorem Submodule.nonempty_basis_of_pid {ι : Type _} [Finite ι] (b : Basis ι 
   obtain ⟨y, -, a, hay, M', -, N', N'_le_N, -, -, ay_ortho, h'⟩ :=
     Submodule.basis_of_pid_aux ⊤ N b' N_bot le_top
   obtain ⟨n', ⟨bN'⟩⟩ := ih N' N'_le_N _ hay ay_ortho
-  obtain ⟨bN, hbN⟩ := h' n' bN'
+  obtain ⟨bN, _hbN⟩ := h' n' bN'
   exact ⟨n' + 1, ⟨bN⟩⟩
   infer_instance
 #align submodule.nonempty_basis_of_pid Submodule.nonempty_basis_of_pid
@@ -374,7 +374,7 @@ noncomputable def Module.basisOfFiniteTypeTorsionFree [Fintype ι] {s : ι → M
       this.choose_spec
     let N := span R (range <| (s ∘ (fun x => x) : I → M))
     -- same as `span R (s '' I)` but more convenient
-    let sI : I → N := fun i ↦ ⟨s i.1, subset_span (mem_range_self i)⟩
+    let _sI : I → N := fun i ↦ ⟨s i.1, subset_span (mem_range_self i)⟩
     -- `s` restricted to `I`
     let sI_basis : Basis I R N
     -- `s` restricted to `I` is a basis of `N`
@@ -469,7 +469,7 @@ theorem Submodule.exists_smith_normal_form_of_le [Finite ι] (b : Basis ι R M) 
   by_cases N_bot : N = ⊥
   · subst N_bot
     exact ⟨0, m, Nat.zero_le _, b'M, Basis.empty _, finZeroElim, finZeroElim⟩
-  obtain ⟨y, hy, a, hay, M', M'_le_M, N', N'_le_N, N'_le_M', y_ortho, ay_ortho, h⟩ :=
+  obtain ⟨y, hy, a, _hay, M', M'_le_M, N', _N'_le_N, N'_le_M', y_ortho, _ay_ortho, h⟩ :=
     Submodule.basis_of_pid_aux M0 N b'M N_bot N_le_M0
 
   obtain ⟨n', m', hn'm', bM', bN', as', has'⟩ := ih M' M'_le_M y hy y_ortho N' N'_le_M'
@@ -560,7 +560,7 @@ choices of values for this existential quantifier.
 -/
 theorem Ideal.exists_smith_normal_form (b : Basis ι R S) (I : Ideal S) (hI : I ≠ ⊥) :
     ∃ (b' : Basis ι R S)(a : ι → R)(ab' : Basis ι R I), ∀ i, (ab' i : S) = a i • b' i := by
-  cases nonempty_fintype ι <;>
+  cases nonempty_fintype ι;
     exact
       let ⟨bS, bI, f, a, snf⟩ := I.smithNormalForm b hI
       let e : Fin (Fintype.card ι) ≃ ι :=
