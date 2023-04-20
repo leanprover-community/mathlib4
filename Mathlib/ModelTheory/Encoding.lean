@@ -59,7 +59,6 @@ def listEncode : L.Term α → List (Sum α (Σi, L.Functions i))
     Sum.inr (⟨_, f⟩ : Σi, L.Functions i)::(List.finRange _).bind fun i => (ts i).listEncode
 #align first_order.language.term.list_encode FirstOrder.Language.Term.listEncode
 
-set_option compiler.extract_closed false in -- https://github.com/leanprover/lean4/issues/1965
 /-- Decodes a list of variables and function symbols as a list of terms. -/
 def listDecode : List (Sum α (Σi, L.Functions i)) → List (Option (L.Term α))
   | [] => []

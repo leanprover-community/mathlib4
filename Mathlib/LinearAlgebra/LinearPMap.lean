@@ -214,15 +214,6 @@ theorem snd_apply (p : Submodule R E) (p' : Submodule R F) (x : p.prod p') :
   rfl
 #align linear_pmap.snd_apply LinearPMap.snd_apply
 
-instance neg : Neg (E →ₗ.[R] F) :=
-  ⟨fun f => ⟨f.domain, -f.toFun⟩⟩
-#align linear_pmap.has_neg LinearPMap.neg
-
-@[simp]
-theorem neg_apply (f : E →ₗ.[R] F) (x) : (-f) x = -f x :=
-  rfl
-#align linear_pmap.neg_apply LinearPMap.neg_apply
-
 instance le : LE (E →ₗ.[R] F) :=
   ⟨fun f g => f.domain ≤ g.domain ∧ ∀ ⦃x : f.domain⦄ ⦃y : g.domain⦄ (_h : (x : E) = y), f x = g y⟩
 #align linear_pmap.has_le LinearPMap.le
@@ -396,6 +387,21 @@ theorem sup_h_of_disjoint (f g : E →ₗ.[R] F) (h : Disjoint f.domain g.domain
   simp [*]
 #align linear_pmap.sup_h_of_disjoint LinearPMap.sup_h_of_disjoint
 
+/-! ### Algebraic operations -/
+
+
+section zero
+
+instance instZero : Zero (E →ₗ.[R] F) := ⟨⊤, 0⟩
+
+@[simp]
+theorem zero_domain : (0 : E →ₗ.[R] F).domain = ⊤ := rfl
+
+@[simp]
+theorem zero_apply (x : (⊤ : Submodule R E)) : (0 : E →ₗ.[R] F) x = 0 := rfl
+
+end zero
+
 section Smul
 
 variable {M N : Type _} [Monoid M] [DistribMulAction M F] [SMulCommClass R M F]
@@ -437,6 +443,68 @@ instance mulAction : MulAction M (E →ₗ.[R] F) where
 #align linear_pmap.mul_action LinearPMap.mulAction
 
 end Smul
+
+instance neg : Neg (E →ₗ.[R] F) :=
+  ⟨fun f => ⟨f.domain, -f.toFun⟩⟩
+#align linear_pmap.has_neg LinearPMap.neg
+
+@[simp]
+theorem neg_domain (f : E →ₗ.[R] F) : (-f).domain = f.domain := rfl
+
+@[simp]
+theorem neg_apply (f : E →ₗ.[R] F) (x) : (-f) x = -f x :=
+  rfl
+#align linear_pmap.neg_apply LinearPMap.neg_apply
+
+instance instInvolutiveNeg : InvolutiveNeg (E →ₗ.[R] F) :=
+  ⟨fun f => by
+    ext x
+    · rfl
+    · intros y hxy
+      simp only [neg_apply, neg_neg]
+      cases x
+      congr⟩
+
+section Add
+
+instance add : Add (E →ₗ.[R] F) :=
+  ⟨fun f g =>
+    { domain := f.domain ⊓ g.domain
+      toFun := f.toFun.comp (ofLe (inf_le_left : f.domain ⊓ g.domain ≤ _))
+        + g.toFun.comp (ofLe (inf_le_right : f.domain ⊓ g.domain ≤ _)) }⟩
+
+theorem add_domain (f g : E →ₗ.[R] F) : (f + g).domain = f.domain ⊓ g.domain := rfl
+
+theorem add_apply (f g : E →ₗ.[R] F) (x : (f.domain ⊓ g.domain : Submodule R E)) :
+    (f + g) x = f ⟨x, x.prop.1⟩ + g ⟨x, x.prop.2⟩ := rfl
+
+instance instAddSemigroup : AddSemigroup (E →ₗ.[R] F) :=
+  ⟨fun f g h => by
+    ext x
+    · simp only [add_domain, inf_assoc]
+    · intro y hxy
+      simp only [add_apply, hxy, add_assoc]⟩
+
+instance instAddCommSemigroup : AddCommSemigroup (E →ₗ.[R] F) :=
+  ⟨fun f g => by
+    ext x
+    · simp only [add_domain, inf_comm]
+    · intro y hxy
+      simp only [add_apply, hxy, add_comm]⟩
+
+instance instAddZeroClass : AddZeroClass (E →ₗ.[R] F) :=
+  ⟨fun f => by
+    ext x
+    · simp [add_domain]
+    · intro y hxy
+      simp only [add_apply, hxy, zero_apply, zero_add],
+  fun f => by
+    ext x
+    · simp [add_domain]
+    · intro y hxy
+      simp only [add_apply, hxy, zero_apply, add_zero]⟩
+
+end Add
 
 section Vadd
 
