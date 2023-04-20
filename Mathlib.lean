@@ -297,6 +297,7 @@ import Mathlib.Algebra.Tropical.Lattice
 import Mathlib.AlgebraicTopology.AlternatingFaceMapComplex
 import Mathlib.AlgebraicTopology.CechNerve
 import Mathlib.AlgebraicTopology.DoldKan.Compatibility
+import Mathlib.AlgebraicTopology.DoldKan.Homotopies
 import Mathlib.AlgebraicTopology.DoldKan.Notations
 import Mathlib.AlgebraicTopology.MooreComplex
 import Mathlib.AlgebraicTopology.SimplexCategory
