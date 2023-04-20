@@ -45,6 +45,9 @@ cramer, cramer's rule, adjugate
 -/
 
 
+-- Porting note: needed to make `cramer` function application work
+set_option synthInstance.etaExperiment true
+
 namespace Matrix
 
 universe u v w
@@ -53,9 +56,7 @@ variable {m : Type u} {n : Type v} {α : Type w}
 
 variable [DecidableEq n] [Fintype n] [DecidableEq m] [Fintype m] [CommRing α]
 
-open Matrix BigOperators Polynomial
-
-open Equiv Equiv.Perm Finset
+open Matrix BigOperators Polynomial Equiv Equiv.Perm Finset
 
 section Cramer
 
@@ -130,7 +131,8 @@ theorem cramer_row_self (i : n) (h : ∀ j, b j = A j i) : A.cramer b = Pi.singl
 
 @[simp]
 theorem cramer_one : cramer (1 : Matrix n n α) = 1 := by
-  ext (i j)
+  -- Porting note: was `ext i j`
+  refine LinearMap.pi_ext' (fun (i : n) => LinearMap.ext_ring (funext (fun (j : n) => ?_)))
   convert congr_fun (cramer_row_self (1 : Matrix n n α) (Pi.single i 1) i _) j
   · simp
   · intro j
@@ -139,7 +141,7 @@ theorem cramer_one : cramer (1 : Matrix n n α) = 1 := by
 
 theorem cramer_smul (r : α) (A : Matrix n n α) :
     cramer (r • A) = r ^ (Fintype.card n - 1) • cramer A :=
-  LinearMap.ext fun b => funext fun _ => det_updateColumn_smul' _ _ _ _
+  LinearMap.ext fun _ => funext fun _ => det_updateColumn_smul' _ _ _ _
 #align matrix.cramer_smul Matrix.cramer_smul
 
 @[simp]
@@ -168,8 +170,10 @@ theorem sum_cramer_apply {β} (s : Finset β) (f : n → β → α) (i : n) :
     (∑ x in s, cramer A (fun j => f j x) i) = (∑ x in s, cramer A fun j => f j x) i :=
       (Finset.sum_apply i s _).symm
     _ = cramer A (fun j : n => ∑ x in s, f j x) i := by
-      rw [sum_cramer, cramer_apply]
+      rw [sum_cramer, cramer_apply, cramer_apply]
+      simp only [updateColumn]
       congr with j
+      congr
       apply Finset.sum_apply
 
 #align matrix.sum_cramer_apply Matrix.sum_cramer_apply
@@ -178,7 +182,7 @@ theorem cramer_submatrix_equiv (A : Matrix m m α) (e : n ≃ m) (b : n → α) 
     cramer (A.submatrix e e) b = cramer A (b ∘ e.symm) ∘ e := by
   ext i
   simp_rw [Function.comp_apply, cramer_apply, updateColumn_submatrix_equiv,
-    det_submatrix_equiv_self e]
+    det_submatrix_equiv_self e, Function.comp]
 #align matrix.cramer_submatrix_equiv Matrix.cramer_submatrix_equiv
 
 theorem cramer_reindex (e : m ≃ n) (A : Matrix m m α) (b : n → α) :
@@ -228,7 +232,8 @@ theorem adjugate_transpose (A : Matrix n n α) : (adjugate A)ᵀ = adjugate Aᵀ
   congr 1
   by_cases i = σ j
   · -- Everything except `(i , j)` (= `(σ j , j)`) is given by A, and the rest is a single `1`.
-      congr <;> ext j'
+    congr
+    ext j'
     subst h
     have : σ j' = σ j ↔ j' = j := σ.injective.eq_iff
     rw [updateRow_apply, updateColumn_apply]
@@ -254,7 +259,9 @@ theorem adjugate_submatrix_equiv_self (e : n ≃ m) (A : Matrix m m α) :
   ext (i j)
   rw [adjugate_apply, submatrix_apply, adjugate_apply, ← det_submatrix_equiv_self e,
     updateRow_submatrix_equiv]
-  congr
+  -- Porting note: added
+  suffices (fun j => Pi.single i 1 (e.symm j)) = Pi.single (e i) 1 by
+    erw [this]
   exact Function.update_comp_equiv _ e.symm _ _
 #align matrix.adjugate_submatrix_equiv_self Matrix.adjugate_submatrix_equiv_self
 
@@ -275,7 +282,7 @@ theorem cramer_eq_adjugate_mulVec (A : Matrix n n α) (b : n → α) :
     simp [Pi.single_apply, eq_comm]
   nth_rw 1 [this]
   ext k
-  simp [mul_vec, dot_product, mul_comm]
+  simp [mulVec, dotProduct, mul_comm]
 #align matrix.cramer_eq_adjugate_mul_vec Matrix.cramer_eq_adjugate_mulVec
 
 theorem mul_adjugate_apply (A : Matrix n n α) (i j k) :
