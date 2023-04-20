@@ -8,9 +8,9 @@ Authors: Bhavik Mehta
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Over
-import Mathbin.CategoryTheory.Monad.Algebra
-import Mathbin.CategoryTheory.Limits.Shapes.BinaryProducts
+import Mathlib.CategoryTheory.Over
+import Mathlib.CategoryTheory.Monad.Algebra
+import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 
 /-!
 # Algebras for the coproduct monad
@@ -55,8 +55,7 @@ def prodComonad : Comonad C where
 category.
 -/
 @[simps]
-def coalgebraToOver : Coalgebra (prodComonad X) ⥤ Over X
-    where
+def coalgebraToOver : Coalgebra (prodComonad X) ⥤ Over X where
   obj A := Over.mk (A.a ≫ Limits.prod.fst)
   map A₁ A₂ f :=
     Over.homMk f.f
@@ -70,8 +69,7 @@ def coalgebraToOver : Coalgebra (prodComonad X) ⥤ Over X
 category.
 -/
 @[simps]
-def overToCoalgebra : Over X ⥤ Coalgebra (prodComonad X)
-    where
+def overToCoalgebra : Over X ⥤ Coalgebra (prodComonad X) where
   obj f :=
     { A := f.left
       a := prod.lift f.Hom (𝟙 _) }
@@ -80,8 +78,7 @@ def overToCoalgebra : Over X ⥤ Coalgebra (prodComonad X)
 
 /-- The equivalence from coalgebras for the product comonad to the over category. -/
 @[simps]
-def coalgebraEquivOver : Coalgebra (prodComonad X) ≌ Over X
-    where
+def coalgebraEquivOver : Coalgebra (prodComonad X) ≌ Over X where
   Functor := coalgebraToOver X
   inverse := overToCoalgebra X
   unitIso :=
@@ -121,8 +118,7 @@ def coprodMonad : Monad C where
 category.
 -/
 @[simps]
-def algebraToUnder : Monad.Algebra (coprodMonad X) ⥤ Under X
-    where
+def algebraToUnder : Monad.Algebra (coprodMonad X) ⥤ Under X where
   obj A := Under.mk (coprod.inl ≫ A.a)
   map A₁ A₂ f :=
     Under.homMk f.f
@@ -136,8 +132,7 @@ def algebraToUnder : Monad.Algebra (coprodMonad X) ⥤ Under X
 category.
 -/
 @[simps]
-def underToAlgebra : Under X ⥤ Monad.Algebra (coprodMonad X)
-    where
+def underToAlgebra : Under X ⥤ Monad.Algebra (coprodMonad X) where
   obj f :=
     { A := f.right
       a := coprod.desc f.Hom (𝟙 _) }
@@ -147,8 +142,7 @@ def underToAlgebra : Under X ⥤ Monad.Algebra (coprodMonad X)
 /-- The equivalence from algebras for the coproduct monad to the under category.
 -/
 @[simps]
-def algebraEquivUnder : Monad.Algebra (coprodMonad X) ≌ Under X
-    where
+def algebraEquivUnder : Monad.Algebra (coprodMonad X) ≌ Under X where
   Functor := algebraToUnder X
   inverse := underToAlgebra X
   unitIso :=
