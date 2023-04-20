@@ -204,7 +204,7 @@ set_option linter.uppercaseLean3 false in
 /-- Given an object `Y : Karoubi (SimplicialObject C)`, this lemma
 computes `PInfty` for the associated object in `SimplicialObject (Karoubi C)`
 in terms of `PInfty` for `Y.X : SimplicialObject C` and `Y.p`. -/
-theorem karoubi_pInfty_f {Y : Karoubi (SimplicialObject C)} (n : ℕ) :
+theorem karoubi_PInfty_f {Y : Karoubi (SimplicialObject C)} (n : ℕ) :
     ((PInfty : K[(karoubiFunctorCategoryEmbedding _ _).obj Y] ⟶ _).f n).f =
       Y.p.app (op [n]) ≫ (PInfty : K[Y.X] ⟶ _).f n := by
   -- We introduce P_infty endomorphisms P₁, P₂, P₃, P₄ on various objects Y₁, Y₂, Y₃, Y₄.
