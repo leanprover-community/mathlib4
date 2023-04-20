@@ -74,8 +74,8 @@ variable (R)
 
 /-- The tensor product of two modules `M` and `N` over the same commutative semiring `R`.
 The localized notations are `M ⊗ N` and `M ⊗[R] N`, accessed by `open scoped TensorProduct`. -/
-def TensorProduct : Type _ :=
-  (addConGen (TensorProduct.Eqv R M N)).Quotient
+structure TensorProduct : Type _ :=
+  (toQuotient : (addConGen (TensorProduct.Eqv R M N)).Quotient)
 #align tensor_product TensorProduct
 
 variable {R}
@@ -89,19 +89,63 @@ namespace TensorProduct
 
 section Module
 
+variable {M N}
+irreducible_def equivQuotient : (addConGen (TensorProduct.Eqv R M N)).Quotient ≃ M ⊗[R] N :=
+  { toFun := fun x => ⟨x⟩,
+    invFun := fun x => x.toQuotient,
+    left_inv := fun _ => rfl
+    right_inv := fun _ => rfl }
+
+irreducible_def zeroAux : M ⊗[R] N :=
+  equivQuotient 0
+
+instance : Zero (M ⊗[R] N) :=
+  ⟨zeroAux⟩
+
+private theorem zero_def : (0 : M ⊗[R] N) = equivQuotient 0 := by
+  rw [← zeroAux_def]; rfl
+
+irreducible_def addAux : M ⊗[R] N → M ⊗[R] N → M ⊗[R] N :=
+  fun x y => equivQuotient (equivQuotient.symm x + equivQuotient.symm y)
+
+instance : Add (M ⊗[R] N) :=
+  ⟨addAux⟩
+
+private theorem add_def (x y : M ⊗[R] N) :
+    x + y = equivQuotient (equivQuotient.symm x + equivQuotient.symm y) := by
+  rw [← addAux_def]; rfl
+
+irreducible_def smulAux : ℕ → M ⊗[R] N → M ⊗[R] N :=
+  fun n x => equivQuotient (n • equivQuotient.symm x)
+
+instance : SMul ℕ (M ⊗[R] N) :=
+  ⟨smulAux⟩
+
+private theorem smul_def (n : ℕ) (x : M ⊗[R] N) :
+    n • x = equivQuotient (n • equivQuotient.symm x) := by
+  rw [← smulAux_def]; rfl
+
+variable (M N)
 -- porting note: This is added as a local instance for `SMul.aux`.
 -- For some reason type-class inference in Lean 3 unfolded this definition.
 def addMonoid : AddMonoid (M ⊗[R] N) :=
-  { (addConGen (TensorProduct.Eqv R M N)).addMonoid with }
+  (equivQuotient (R := R)).symm.injective.addMonoid _
+    (by simp [zero_def])
+    (by simp [add_def])
+    (by simp [smul_def])
 
 instance addZeroClass : AddZeroClass (M ⊗[R] N) :=
-  { TensorProduct.addMonoid M N with }
+  (equivQuotient (R := R)).symm.injective.addZeroClass _
+    (by simp [zero_def]) (by simp [add_def])
 
 instance addCommSemigroup : AddCommSemigroup (M ⊗[R] N) :=
   { TensorProduct.addMonoid M N with
-    add_comm := fun x y =>
-      AddCon.induction_on₂ x y fun _ _ =>
-        Quotient.sound' <| AddConGen.Rel.of _ _ <| Eqv.add_comm _ _ }
+    add_comm := fun x y => by
+      simp only [add_def]
+      induction (equivQuotient.symm x),
+        (equivQuotient.symm y) using AddCon.induction_on₂
+      simp only [EmbeddingLike.apply_eq_iff_eq]
+      exact Quotient.sound' <| AddConGen.Rel.of _ _ <| Eqv.add_comm _ _ }
 
 instance : Inhabited (M ⊗[R] N) :=
   ⟨0⟩
@@ -111,7 +155,7 @@ variable (R) {M N}
 /-- The canonical function `M → N → M ⊗ N`. The localized notations are `m ⊗ₜ n` and `m ⊗ₜ[R] n`,
 accessed by `open scoped TensorProduct`. -/
 def tmul (m : M) (n : N) : M ⊗[R] N :=
-  AddCon.mk' _ <| FreeAddMonoid.of (m, n)
+  equivQuotient <| AddCon.mk' _ <| FreeAddMonoid.of (m, n)
 #align tensor_product.tmul TensorProduct.tmul
 
 variable {R}
