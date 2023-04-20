@@ -222,7 +222,7 @@ elab_rules : tactic |
     else
       let v := (← instantiateMVars (mkMVar goal)).headBeta
       if trace.isSome then
-        -- TODO we should be allowed to pass an identifier to `addHaveSuggestion`.
+        -- TODO: we should be allowed to pass an identifier to `addHaveSuggestion`.
         addHaveSuggestion tk type v
       let (_, newGoal) ← (← getMainGoal).note name v
       replaceMainGoal [newGoal]
