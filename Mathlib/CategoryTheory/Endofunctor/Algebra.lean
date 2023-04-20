@@ -8,7 +8,6 @@ Authors: Scott Morrison, Bhavik Mehta, Johan Commelin, Reid Barton, Rob Lewis, J
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.CategoryTheory.Functor.ReflectsIsomorphisms
 import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 
 /-!
@@ -65,12 +64,14 @@ F f |          | f
 @[ext]
 structure Hom (A₀ A₁ : Algebra F) where
   f : A₀.1 ⟶ A₁.1
-  h' : F.map f ≫ A₁.str = A₀.str ≫ f := by obviously
+  h : F.map f ≫ A₁.str = A₀.str ≫ f := by aesop_cat -- porting note: was `obviously`
 #align category_theory.endofunctor.algebra.hom CategoryTheory.Endofunctor.Algebra.Hom
 
-restate_axiom hom.h'
+-- Porting note: No need to restate axiom
+-- restate_axiom Hom.h'
 
-attribute [simp, reassoc.1] hom.h
+-- Porting note: Originally `[simp, reassoc.1]`
+attribute [reassoc (attr:=simp)] Hom.h
 
 namespace Hom
 
@@ -102,12 +103,13 @@ theorem id_f : (𝟙 _ : A ⟶ A).1 = 𝟙 A.1 :=
   rfl
 #align category_theory.endofunctor.algebra.id_f CategoryTheory.Endofunctor.Algebra.id_f
 
-variable {A₀ A₁ A₂} (f : A₀ ⟶ A₁) (g : A₁ ⟶ A₂)
+variable (f : A₀ ⟶ A₁) (g : A₁ ⟶ A₂)
 
 @[simp]
 theorem comp_eq_comp : Algebra.Hom.comp f g = f ≫ g :=
   rfl
-#align category_theory.endofunctor.algebra.comp_eq_comp CategoryTheory.Endofunctor.Algebra.comp_eq_comp
+#align category_theory.endofunctor.algebra.comp_eq_comp
+       CategoryTheory.Endofunctor.Algebra.comp_eq_comp
 
 @[simp]
 theorem comp_f : (f ≫ g).1 = f.1 ≫ g.1 :=
@@ -115,20 +117,27 @@ theorem comp_f : (f ≫ g).1 = f.1 ≫ g.1 :=
 #align category_theory.endofunctor.algebra.comp_f CategoryTheory.Endofunctor.Algebra.comp_f
 
 /-- Algebras of an endofunctor `F` form a category -/
-instance (F : C ⥤ C) : Category (Algebra F) where
+instance (F : C ⥤ C) : Category (Algebra F)
 
 /-- To construct an isomorphism of algebras, it suffices to give an isomorphism of the As which
 commutes with the structure morphisms.
 -/
 @[simps]
-def isoMk (h : A₀.1 ≅ A₁.1) (w : F.map h.Hom ≫ A₁.str = A₀.str ≫ h.Hom) : A₀ ≅ A₁ where
-  Hom := { f := h.Hom }
+def isoMk (h : A₀.1 ≅ A₁.1) (w : F.map h.hom ≫ A₁.str = A₀.str ≫ h.hom) : A₀ ≅ A₁ where
+  hom := { f := h.hom }
   inv :=
     { f := h.inv
-      h' := by
-        rw [h.eq_comp_inv, category.assoc, ← w, ← functor.map_comp_assoc]
+      h := by
+        rw [h.eq_comp_inv, Category.assoc, ← w, ← Functor.map_comp_assoc]
         simp }
+  -- Porting note: These were auto-solved; added them explicitly here for experimentation
+  hom_inv_id := by
+    aesop_cat
+  inv_hom_id := by
+    aesop_cat
 #align category_theory.endofunctor.algebra.iso_mk CategoryTheory.Endofunctor.Algebra.isoMk
+
+#exit
 
 /-- The forgetful functor from the category of algebras, forgetting the algebraic structure. -/
 @[simps]
@@ -602,4 +611,3 @@ end Adjunction
 end Endofunctor
 
 end CategoryTheory
-
