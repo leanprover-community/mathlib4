@@ -50,7 +50,7 @@ namespace Set
 
 section Lattice
 
-variable [Lattice α] {a a₁ a₂ b b₁ b₂ c x : α}
+variable [Lattice α] [Lattice β] {a a₁ a₂ b b₁ b₂ c x : α}
 
 /-- `uIcc a b` is the set of elements lying between `a` and `b`, with `a` and `b` included.
 Note that we define it more generally in a lattice as `Set.Icc (a ⊓ b) (a ⊔ b)`. In a product type,
@@ -142,6 +142,18 @@ lemma bdd_below_bdd_above_iff_subset_uIcc (s : Set α) :
   bddBelow_bddAbove_iff_subset_Icc.trans
     ⟨fun ⟨a, b, h⟩ => ⟨a, b, fun _ hx => Icc_subset_uIcc (h hx)⟩, fun ⟨_, _, h⟩ => ⟨_, _, h⟩⟩
 #align set.bdd_below_bdd_above_iff_subset_uIcc Set.bdd_below_bdd_above_iff_subset_uIcc
+
+section Prod
+
+@[simp]
+theorem uIcc_prod_uIcc (a₁ a₂ : α) (b₁ b₂ : β) : [[a₁, a₂]] ×ˢ [[b₁, b₂]] = [[(a₁, b₁), (a₂, b₂)]] :=
+  Icc_prod_Icc _ _ _ _
+#align set.uIcc_prod_uIcc Set.uIcc_prod_uIcc
+
+theorem uIcc_prod_eq (a b : α × β) : [[a, b]] = [[a.1, b.1]] ×ˢ [[a.2, b.2]] := by simp
+#align set.uIcc_prod_eq Set.uIcc_prod_eq
+
+end Prod
 
 end Lattice
 
