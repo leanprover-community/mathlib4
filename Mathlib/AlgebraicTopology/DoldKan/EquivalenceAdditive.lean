@@ -12,16 +12,16 @@ import Mathlib.AlgebraicTopology.DoldKan.NCompGamma
 
 /-! The Dold-Kan equivalence for additive categories.
 
-This file defines `preadditive.dold_kan.equivalence` which is the equivalence
-of categories `karoubi (simplicial_object C) ≌ karoubi (chain_complex C ℕ)`.
+This file defines `Preadditive.DoldKan.equivalence` which is the equivalence
+of categories `Karoubi (SimplicialObject C) ≌ Karoubi (ChainComplex C ℕ)`.
 
 -/
 
 
 noncomputable section
 
-open
-  CategoryTheory CategoryTheory.Category CategoryTheory.Limits CategoryTheory.Idempotents AlgebraicTopology.DoldKan
+open CategoryTheory CategoryTheory.Category CategoryTheory.Limits
+  CategoryTheory.Idempotents AlgebraicTopology.DoldKan
 
 variable {C : Type _} [Category C] [Preadditive C]
 
@@ -33,35 +33,38 @@ namespace DoldKan
 
 /-- The functor `karoubi (simplicial_object C) ⥤ karoubi (chain_complex C ℕ)` of
 the Dold-Kan equivalence for additive categories. -/
-@[simps]
-def n : Karoubi (SimplicialObject C) ⥤ Karoubi (ChainComplex C ℕ) :=
+@[simp]
+def N : Karoubi (SimplicialObject C) ⥤ Karoubi (ChainComplex C ℕ) :=
   N₂
-#align category_theory.preadditive.dold_kan.N CategoryTheory.Preadditive.DoldKan.n
+set_option linter.uppercaseLean3 false in
+#align category_theory.preadditive.dold_kan.N CategoryTheory.Preadditive.DoldKan.N
 
 variable [HasFiniteCoproducts C]
 
-/-- The inverse functor `karoubi (chain_complex C ℕ) ⥤ karoubi (simplicial_object C)` of
+/-- The inverse functor `Karoubi (ChainComplex C ℕ) ⥤ Karoubi (SimplicialObject C)` of
 the Dold-Kan equivalence for additive categories. -/
-@[simps]
+@[simp]
 def Γ : Karoubi (ChainComplex C ℕ) ⥤ Karoubi (SimplicialObject C) :=
   Γ₂
 #align category_theory.preadditive.dold_kan.Γ CategoryTheory.Preadditive.DoldKan.Γ
 
-/-- The Dold-Kan equivalence `karoubi (simplicial_object C) ≌ karoubi (chain_complex C ℕ)`
+/-- The Dold-Kan equivalence `Karoubi (SimplicialObject C) ≌ Karoubi (ChainComplex C ℕ)`
 for additive categories. -/
-@[simps]
+@[simps functor inverse unitIso counitIso]
 def equivalence : Karoubi (SimplicialObject C) ≌ Karoubi (ChainComplex C ℕ) where
-  Functor := n
+  functor := N
   inverse := Γ
   unitIso := Γ₂N₂
-  counitIso := n₂Γ₂
-  functor_unitIso_comp' P := by
-    let α := N.map_iso (Γ₂N₂.app P)
-    let β := N₂Γ₂.app (N.obj P)
-    symm
-    change 𝟙 _ = α.hom ≫ β.hom
-    rw [← iso.inv_comp_eq, comp_id, ← comp_id β.hom, ← iso.inv_comp_eq]
-    exact AlgebraicTopology.DoldKan.identity_n₂_objectwise P
+  counitIso := N₂Γ₂
+  functor_unitIso_comp P := by
+    -- porting note: the proof had to be tweaked to avoid timeouts
+    suffices N₂Γ₂.inv.app (N₂.obj P) = N₂.map (Γ₂N₂.hom.app P) by
+      dsimp only [N]
+      erw [← this, ← N₂Γ₂.inv_hom_id_app (N₂.obj P)]
+    rw [← cancel_mono (N₂.map (Γ₂N₂.natTrans.app P)),
+      AlgebraicTopology.DoldKan.identity_N₂_objectwise P, ← N₂.map_comp]
+    simp only [Γ₂N₂, Iso.symm, asIso, ← NatTrans.comp_app,
+      IsIso.inv_hom_id, NatTrans.id_app, Functor.id_obj, N₂.map_id]
 #align category_theory.preadditive.dold_kan.equivalence CategoryTheory.Preadditive.DoldKan.equivalence
 
 end DoldKan
@@ -69,4 +72,3 @@ end DoldKan
 end Preadditive
 
 end CategoryTheory
-
