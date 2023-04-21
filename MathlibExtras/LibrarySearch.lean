@@ -18,6 +18,6 @@ open Lean.Elab.Command
 open Mathlib.Tactic.LibrarySearch
 
 run_cmd liftTermElabM do
-  let path ← Option.get! <$> cachePath
+  let path ← cachePath
   _ ← path.parent.mapM fun p => IO.FS.createDirAll p
   pickle path (← (← buildDiscrTree).get) `LibrarySearch
