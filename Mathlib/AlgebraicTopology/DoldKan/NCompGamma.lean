@@ -203,6 +203,7 @@ set_option linter.uppercaseLean3 false in
 
 end Γ₂N₂
 
+set_option maxHeartbeats 400000 in
 theorem compatibility_Γ₂N₁_Γ₂N₂_natTrans (X : SimplicialObject C) :
     Γ₂N₁.natTrans.app X =
       (compatibility_Γ₂N₁_Γ₂N₂.app X).inv ≫
