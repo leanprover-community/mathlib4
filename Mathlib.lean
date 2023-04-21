@@ -303,6 +303,7 @@ import Mathlib.AlgebraicTopology.DoldKan.Decomposition
 import Mathlib.AlgebraicTopology.DoldKan.Faces
 import Mathlib.AlgebraicTopology.DoldKan.FunctorN
 import Mathlib.AlgebraicTopology.DoldKan.Homotopies
+import Mathlib.AlgebraicTopology.DoldKan.NReflectsIso
 import Mathlib.AlgebraicTopology.DoldKan.Notations
 import Mathlib.AlgebraicTopology.DoldKan.PInfty
 import Mathlib.AlgebraicTopology.DoldKan.Projections
