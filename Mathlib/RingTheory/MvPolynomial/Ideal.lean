@@ -8,8 +8,8 @@ Authors: Eric Wieser
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.MonoidAlgebra.Ideal
-import Mathbin.Data.MvPolynomial.Division
+import Mathlib.Algebra.MonoidAlgebra.Ideal
+import Mathlib.Data.MvPolynomial.Division
 
 /-!
 # Lemmas about ideals of `mv_polynomial`
@@ -33,8 +33,7 @@ variable [CommSemiring R]
 the generators. Note that `si ≤ xi` is analogous to saying that the monomial corresponding to `si`
 divides the monomial corresponding to `xi`. -/
 theorem mem_ideal_span_monomial_image {x : MvPolynomial σ R} {s : Set (σ →₀ ℕ)} :
-    x ∈ Ideal.span ((fun s => monomial s (1 : R)) '' s) ↔ ∀ xi ∈ x.support, ∃ si ∈ s, si ≤ xi :=
-  by
+    x ∈ Ideal.span ((fun s => monomial s (1 : R)) '' s) ↔ ∀ xi ∈ x.support, ∃ si ∈ s, si ≤ xi := by
   refine' add_monoid_algebra.mem_ideal_span_of'_image.trans _
   simp_rw [le_iff_exists_add, add_comm]
   rfl
@@ -42,8 +41,7 @@ theorem mem_ideal_span_monomial_image {x : MvPolynomial σ R} {s : Set (σ →�
 
 theorem mem_ideal_span_monomial_image_iff_dvd {x : MvPolynomial σ R} {s : Set (σ →₀ ℕ)} :
     x ∈ Ideal.span ((fun s => monomial s (1 : R)) '' s) ↔
-      ∀ xi ∈ x.support, ∃ si ∈ s, monomial si 1 ∣ monomial xi (x.coeff xi) :=
-  by
+      ∀ xi ∈ x.support, ∃ si ∈ s, monomial si 1 ∣ monomial xi (x.coeff xi) := by
   refine' mem_ideal_span_monomial_image.trans (forall₂_congr fun xi hxi => _)
   simp_rw [monomial_dvd_monomial, one_dvd, and_true_iff, mem_support_iff.mp hxi, false_or_iff]
 #align mv_polynomial.mem_ideal_span_monomial_image_iff_dvd MvPolynomial.mem_ideal_span_monomial_image_iff_dvd
@@ -52,8 +50,7 @@ theorem mem_ideal_span_monomial_image_iff_dvd {x : MvPolynomial σ R} {s : Set (
 has a component in `s`. -/
 theorem mem_ideal_span_x_image {x : MvPolynomial σ R} {s : Set σ} :
     x ∈ Ideal.span (MvPolynomial.X '' s : Set (MvPolynomial σ R)) ↔
-      ∀ m ∈ x.support, ∃ i ∈ s, (m : σ →₀ ℕ) i ≠ 0 :=
-  by
+      ∀ m ∈ x.support, ∃ i ∈ s, (m : σ →₀ ℕ) i ≠ 0 := by
   have := @mem_ideal_span_monomial_image σ R _ _ ((fun i => Finsupp.single i 1) '' s)
   rw [Set.image_image] at this
   refine' this.trans _
