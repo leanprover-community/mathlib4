@@ -14,11 +14,10 @@ After importing of mathlib, we build a `library_search` cache and pickle it to d
 This file will be distributed via our Azure storage.
 -/
 
-open Lean Elab Command
-open System (FilePath)
+open Lean.Elab.Command
 open Mathlib.Tactic.LibrarySearch
 
 run_cmd liftTermElabM do
-  _ ← cachePath.parent.mapM fun p => IO.FS.createDirAll p
-  if ← cachePath.pathExists then IO.FS.removeFile cachePath
-  pickle cachePath (← librarySearchLemmas.get) `LibrarySearch
+  let path ← cachePath
+  _ ← path.parent.mapM fun p => IO.FS.createDirAll p
+  pickle path (← (← buildDiscrTree).get) `LibrarySearch

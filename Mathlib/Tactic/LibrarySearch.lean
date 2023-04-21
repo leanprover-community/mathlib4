@@ -47,7 +47,8 @@ inductive DeclMod
 | none | symm | mp | mpr
 deriving DecidableEq
 
-def buildDiscrTree (name : Name) (constInfo : ConstantInfo)
+/-- Insert a lemma into the discrimination tree. -/
+def addLemma (name : Name) (constInfo : ConstantInfo)
     (lemmas : DiscrTree (Name × DeclMod) true) : MetaM (DiscrTree (Name × DeclMod) true) := do
   if constInfo.isUnsafe then return lemmas
   if ← name.isBlackListed then return lemmas
@@ -65,9 +66,14 @@ def buildDiscrTree (name : Name) (constInfo : ConstantInfo)
       pure <| (lemmas.insertIfSpecific keys_mp (name, .mp)).insertIfSpecific keys_mpr (name, .mpr)
     | _ => pure lemmas
 
+/-- Construct the discrimination tree of all lemmas. -/
+def buildDiscrTree : IO (DeclCache (DiscrTree (Name × DeclMod) true)) :=
+  DeclCache.mk "librarySearch: init cache" {} addLemma
+
 open System (FilePath)
 
-def cachePath : FilePath := "build" / "lib" / "MathlibExtras" / "LibrarySearch.extra"
+def cachePath : IO FilePath :=
+  return (← findOLean `MathlibExtras.LibrarySearch).withExtension "extra"
 
 /--
 A structure that holds the cached discrimination tree,
@@ -79,12 +85,12 @@ structure CachedData where
 deriving Nonempty
 
 initialize cachedData : CachedData ← unsafe do
-  let useCache ← cachePath.pathExists
-  if useCache then
-    let (d, r) ← unpickle (DiscrTree (Name × DeclMod) true) cachePath
-    return ⟨r, (← Cache.mk (pure d), buildDiscrTree)⟩
+  let path ← cachePath
+  if (← path.pathExists) then
+    let (d, r) ← unpickle (DiscrTree (Name × DeclMod) true) path
+    return ⟨r, (← Cache.mk (pure d), addLemma)⟩
   else
-    return ⟨none, ← DeclCache.mk "librarySearch: init cache" {} buildDiscrTree⟩
+    return ⟨none, ← buildDiscrTree⟩
 
 /--
 Retrieve the current current of lemmas.
