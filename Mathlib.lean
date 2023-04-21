@@ -305,6 +305,7 @@ import Mathlib.AlgebraicTopology.DoldKan.Homotopies
 import Mathlib.AlgebraicTopology.DoldKan.Notations
 import Mathlib.AlgebraicTopology.DoldKan.PInfty
 import Mathlib.AlgebraicTopology.DoldKan.Projections
+import Mathlib.AlgebraicTopology.DoldKan.SplitSimplicialObject
 import Mathlib.AlgebraicTopology.MooreComplex
 import Mathlib.AlgebraicTopology.SimplexCategory
 import Mathlib.AlgebraicTopology.SimplicialObject

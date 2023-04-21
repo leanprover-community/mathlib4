@@ -8,9 +8,9 @@ Authors: Joël Riou
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.AlgebraicTopology.SplitSimplicialObject
-import Mathbin.AlgebraicTopology.DoldKan.Degeneracies
-import Mathbin.AlgebraicTopology.DoldKan.FunctorN
+import Mathlib.AlgebraicTopology.SplitSimplicialObject
+import Mathlib.AlgebraicTopology.DoldKan.Degeneracies
+import Mathlib.AlgebraicTopology.DoldKan.FunctorN
 
 /-!
 
@@ -39,8 +39,7 @@ variable {C : Type _} [Category C] [HasFiniteCoproducts C] {X : SimplicialObject
 /-- The projection on a summand of the coproduct decomposition given
 by a splitting of a simplicial object. -/
 def πSummand [HasZeroMorphisms C] {Δ : SimplexCategoryᵒᵖ} (A : IndexSet Δ) :
-    X.obj Δ ⟶ s.n A.1.unop.len :=
-  by
+    X.obj Δ ⟶ s.n A.1.unop.len := by
   refine' (s.iso Δ).inv ≫ sigma.desc fun B => _
   by_cases B = A
   ·
@@ -54,8 +53,7 @@ def πSummand [HasZeroMorphisms C] {Δ : SimplexCategoryᵒᵖ} (A : IndexSet Δ
 
 @[simp, reassoc.1]
 theorem ι_πSummand_eq_id [HasZeroMorphisms C] {Δ : SimplexCategoryᵒᵖ} (A : IndexSet Δ) :
-    s.ιSummand A ≫ s.πSummand A = 𝟙 _ :=
-  by
+    s.ιSummand A ≫ s.πSummand A = 𝟙 _ := by
   dsimp [ι_summand, π_summand]
   simp only [summand, assoc, is_iso.hom_inv_id_assoc]
   erw [colimit.ι_desc, cofan.mk_ι_app]
@@ -65,8 +63,7 @@ theorem ι_πSummand_eq_id [HasZeroMorphisms C] {Δ : SimplexCategoryᵒᵖ} (A 
 
 @[simp, reassoc.1]
 theorem ι_πSummand_eq_zero [HasZeroMorphisms C] {Δ : SimplexCategoryᵒᵖ} (A B : IndexSet Δ)
-    (h : B ≠ A) : s.ιSummand A ≫ s.πSummand B = 0 :=
-  by
+    (h : B ≠ A) : s.ιSummand A ≫ s.πSummand B = 0 := by
   dsimp [ι_summand, π_summand]
   simp only [summand, assoc, is_iso.hom_inv_id_assoc]
   erw [colimit.ι_desc, cofan.mk_ι_app]
@@ -77,8 +74,7 @@ theorem ι_πSummand_eq_zero [HasZeroMorphisms C] {Δ : SimplexCategoryᵒᵖ} (
 variable [Preadditive C]
 
 theorem decomposition_id (Δ : SimplexCategoryᵒᵖ) :
-    𝟙 (X.obj Δ) = ∑ A : IndexSet Δ, s.πSummand A ≫ s.ιSummand A :=
-  by
+    𝟙 (X.obj Δ) = ∑ A : IndexSet Δ, s.πSummand A ≫ s.ιSummand A := by
   apply s.hom_ext'
   intro A
   rw [comp_id, comp_sum, Finset.sum_eq_single A, ι_π_summand_eq_id_assoc]
@@ -89,8 +85,7 @@ theorem decomposition_id (Δ : SimplexCategoryᵒᵖ) :
 
 @[simp, reassoc.1]
 theorem σ_comp_πSummand_id_eq_zero {n : ℕ} (i : Fin (n + 1)) :
-    X.σ i ≫ s.πSummand (IndexSet.id (op [n + 1])) = 0 :=
-  by
+    X.σ i ≫ s.πSummand (IndexSet.id (op [n + 1])) = 0 := by
   apply s.hom_ext'
   intro A
   dsimp only [simplicial_object.σ]
@@ -108,15 +103,13 @@ then `P_infty` vanishes on all the summands of `X _[n]` which do
 not correspond to the identity of `[n]`. -/
 theorem ιSummand_comp_pInfty_eq_zero {X : SimplicialObject C} (s : SimplicialObject.Splitting X)
     {n : ℕ} (A : SimplicialObject.Splitting.IndexSet (op [n])) (hA : ¬A.EqId) :
-    s.ιSummand A ≫ PInfty.f n = 0 :=
-  by
+    s.ιSummand A ≫ PInfty.f n = 0 := by
   rw [SimplicialObject.Splitting.IndexSet.eqId_iff_mono] at hA
   rw [SimplicialObject.Splitting.ιSummand_eq, assoc, degeneracy_comp_P_infty X n A.e hA, comp_zero]
 #align simplicial_object.splitting.ι_summand_comp_P_infty_eq_zero SimplicialObject.Splitting.ιSummand_comp_pInfty_eq_zero
 
 theorem comp_pInfty_eq_zero_iff {Z : C} {n : ℕ} (f : Z ⟶ X _[n]) :
-    f ≫ PInfty.f n = 0 ↔ f ≫ s.πSummand (IndexSet.id (op [n])) = 0 :=
-  by
+    f ≫ PInfty.f n = 0 ↔ f ≫ s.πSummand (IndexSet.id (op [n])) = 0 := by
   constructor
   · intro h
     cases n
@@ -143,8 +136,7 @@ theorem comp_pInfty_eq_zero_iff {Z : C} {n : ℕ} (f : Z ⟶ X _[n]) :
 
 @[simp, reassoc.1]
 theorem pInfty_comp_πSummand_id (n : ℕ) :
-    PInfty.f n ≫ s.πSummand (IndexSet.id (op [n])) = s.πSummand (IndexSet.id (op [n])) :=
-  by
+    PInfty.f n ≫ s.πSummand (IndexSet.id (op [n])) = s.πSummand (IndexSet.id (op [n])) := by
   conv_rhs => rw [← id_comp (s.π_summand _)]
   symm
   rw [← sub_eq_zero, ← sub_comp, ← comp_P_infty_eq_zero_iff, sub_comp, id_comp, P_infty_f_idem,
@@ -154,8 +146,7 @@ theorem pInfty_comp_πSummand_id (n : ℕ) :
 @[simp, reassoc.1]
 theorem πSummand_comp_ιSummand_comp_pInfty_eq_pInfty (n : ℕ) :
     s.πSummand (IndexSet.id (op [n])) ≫ s.ιSummand (IndexSet.id (op [n])) ≫ PInfty.f n =
-      PInfty.f n :=
-  by
+      PInfty.f n := by
   conv_rhs => rw [← id_comp (P_infty.f n)]
   erw [s.decomposition_id, preadditive.sum_comp]
   rw [Fintype.sum_eq_single (index_set.id (op [n])), assoc]
@@ -171,8 +162,7 @@ def d (i j : ℕ) : s.n i ⟶ s.n j :=
 #align simplicial_object.splitting.d SimplicialObject.Splitting.d
 
 theorem ιSummand_comp_d_comp_πSummand_eq_zero (j k : ℕ) (A : IndexSet (op [j])) (hA : ¬A.EqId) :
-    s.ιSummand A ≫ K[X].d j k ≫ s.πSummand (IndexSet.id (op [k])) = 0 :=
-  by
+    s.ιSummand A ≫ K[X].d j k ≫ s.πSummand (IndexSet.id (op [k])) = 0 := by
   rw [A.eq_id_iff_mono] at hA
   rw [← assoc, ← s.comp_P_infty_eq_zero_iff, assoc, ← P_infty.comm j k, s.ι_summand_eq, assoc,
     degeneracy_comp_P_infty_assoc X j A.e hA, zero_comp, comp_zero]
@@ -206,8 +196,7 @@ def nondegComplex : ChainComplex C ℕ where
 becomes isomorphic to the normalized Moore complex `N₁.obj X` defined as a formal direct
 factor in the category `karoubi (chain_complex C ℕ)`. -/
 @[simps]
-def toKaroubiNondegComplexIsoN₁ : (toKaroubi _).obj s.nondegComplex ≅ N₁.obj X
-    where
+def toKaroubiNondegComplexIsoN₁ : (toKaroubi _).obj s.nondegComplex ≅ N₁.obj X where
   Hom :=
     { f :=
         { f := fun n => s.ιSummand (IndexSet.id (op [n])) ≫ PInfty.f n
@@ -253,8 +242,7 @@ variable {C : Type _} [Category C] [Preadditive C] [HasFiniteCoproducts C]
 /-- The functor which sends a split simplicial object in a preadditive category to
 the chain complex which consists of nondegenerate simplices. -/
 @[simps]
-def nondegComplexFunctor : Split C ⥤ ChainComplex C ℕ
-    where
+def nondegComplexFunctor : Split C ⥤ ChainComplex C ℕ where
   obj S := S.s.nondegComplex
   map S₁ S₂ Φ :=
     { f := Φ.f
@@ -272,8 +260,7 @@ def nondegComplexFunctor : Split C ⥤ ChainComplex C ℕ
         · dsimp at h
           subst h
           simpa only [splitting.ι_π_summand_eq_id, comp_id, splitting.ι_π_summand_eq_id_assoc]
-        · have h' : splitting.index_set.id (op [j]) ≠ A :=
-            by
+        · have h' : splitting.index_set.id (op [j]) ≠ A := by
             symm
             exact h
           rw [S₁.s.ι_π_summand_eq_zero_assoc _ _ h', S₂.s.ι_π_summand_eq_zero _ _ h', zero_comp,
@@ -286,8 +273,7 @@ defined as a formal direct factor of the alternating face map complex. -/
 @[simps]
 def toKaroubiNondegComplexFunctorIsoN₁ :
     nondegComplexFunctor ⋙ toKaroubi (ChainComplex C ℕ) ≅ forget C ⋙ DoldKan.N₁ :=
-  NatIso.ofComponents (fun S => S.s.toKaroubiNondegComplexIsoN₁) fun S₁ S₂ Φ =>
-    by
+  NatIso.ofComponents (fun S => S.s.toKaroubiNondegComplexIsoN₁) fun S₁ S₂ Φ => by
     ext n
     dsimp
     simp only [karoubi.comp_f, to_karoubi_map_f, HomologicalComplex.comp_f,
