@@ -296,34 +296,28 @@ variable [AddCommGroup F] [AddCommGroup G]
 
 variable [Module 𝕜 E] [Module 𝕜₂ E₂] [Module 𝕜₃ E₃] [Module 𝕜 F] [Module 𝕜 G]
 
+-- Porting note: even though this instance is found immediately by typeclass search,
+-- it seems to be needed below!?
+noncomputable instance : SMul ℝ≥0 ℝ := inferInstance
+
 variable [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ]
 
 -- FIXME things start going wrong here:
 
 -- This is failing, because we are not finding the right instances!
 -- example (f : E →ₛₗ[σ₁₂] E₂) : E → E₂ := f
-
--- instance : SemilinearMapClass (E →ₛₗ[σ₁₂] E₂) σ₁₂ E E₂ := inferInstance -- Doesn't work?
-instance : SemilinearMapClass (E →ₛₗ[σ₁₂] E₂) σ₁₂ E E₂ := LinearMap.semilinearMapClass -- But this does!
--- instance : AddHomClass (E →ₛₗ[σ₁₂] E₂) E E₂ := inferInstance -- doesn't work?
-instance : AddHomClass (E →ₛₗ[σ₁₂] E₂) E E₂ := LinearMap.semilinearMapClass.toAddHomClass
--- instance funLike : FunLike (E →ₛₗ[σ₁₂] E₂) E (fun _ => E₂) := inferInstance -- doesn't work!
-instance funLike : FunLike (E →ₛₗ[σ₁₂] E₂) E (fun _ => E₂) := LinearMap.semilinearMapClass.toAddHomClass.toFunLike
--- instance : CoeFun (E →ₛₗ[σ₁₂] E₂) fun _ ↦ ∀ (_ : E), E₂ := inferInstance -- doesn't work!
-instance : CoeFun (E →ₛₗ[σ₁₂] E₂) fun _ ↦ ∀ (_ : E), E₂ := ⟨funLike.coe⟩
-
--- This finally works:
+-- However `etaExperiment` saves the day:
+set_option synthInstance.etaExperiment true
 example (f : E →ₛₗ[σ₁₂] E₂) : E → E₂ := f
 
 /-- Composition of a seminorm with a linear map is a seminorm. -/
 def comp (p : Seminorm 𝕜₂ E₂) (f : E →ₛₗ[σ₁₂] E₂) : Seminorm 𝕜 E :=
   { p.toAddGroupSeminorm.comp f.toAddMonoidHom with
     toFun := fun x => p (f x)
-    -- FIXME Surely we should not be seeing `AddGroupSeminorm.toFun` in the goal here.
-    smul' := fun _ _ => by rw [map_smulₛₗ, map_smul_eq_mul, RingHomIsometric.is_iso] }
+    -- Porting note: the `simp only` below used to be part of the `rw`.
+    -- I'm not sure why this change was needed, and am worried by it!
+    smul' := fun _ _ => by simp only [map_smulₛₗ]; rw [map_smul_eq_mul, RingHomIsometric.is_iso] }
 #align seminorm.comp Seminorm.comp
-
-#exit
 
 theorem coe_comp (p : Seminorm 𝕜₂ E₂) (f : E →ₛₗ[σ₁₂] E₂) : ⇑(p.comp f) = p ∘ f :=
   rfl
@@ -374,12 +368,15 @@ theorem comp_mono {p q : Seminorm 𝕜₂ E₂} (f : E →ₛₗ[σ₁₂] E₂)
 
 /-- The composition as an `AddMonoidHom`. -/
 @[simps]
-def pullback (f : E →ₛₗ[σ₁₂] E₂) : Seminorm 𝕜₂ E₂ →+ Seminorm 𝕜 E :=
-  ⟨fun p => p.comp f, zero_comp f, fun p q => add_comp p q f⟩
+def pullback (f : E →ₛₗ[σ₁₂] E₂) : Seminorm 𝕜₂ E₂ →+ Seminorm 𝕜 E where
+  toFun := fun p => p.comp f
+  map_zero' := zero_comp f
+  map_add' := fun p q => add_comp p q f
 #align seminorm.pullback Seminorm.pullback
 
-instance : OrderBot (Seminorm 𝕜 E) :=
-  ⟨0, map_nonneg⟩
+instance : OrderBot (Seminorm 𝕜 E) where
+  bot := 0
+  bot_le := map_nonneg
 
 @[simp]
 theorem coe_bot : ⇑(⊥ : Seminorm 𝕜 E) = 0 :=
@@ -390,8 +387,8 @@ theorem bot_eq_zero : (⊥ : Seminorm 𝕜 E) = 0 :=
   rfl
 #align seminorm.bot_eq_zero Seminorm.bot_eq_zero
 
-theorem smul_le_smul {p q : Seminorm 𝕜 E} {a b : ℝ≥0} (hpq : p ≤ q) (hab : a ≤ b) : a • p ≤ b • q :=
-  by
+theorem smul_le_smul {p q : Seminorm 𝕜 E} {a b : ℝ≥0} (hpq : p ≤ q) (hab : a ≤ b) :
+    a • p ≤ b • q := by
   simp_rw [le_def, coe_smul]
   intro x
   simp_rw [Pi.smul_apply, NNReal.smul_def, smul_eq_mul]
