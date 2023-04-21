@@ -14,6 +14,10 @@ package mathlib where
 lean_lib Mathlib where
   moreLeanArgs := moreLeanArgs
 
+lean_lib Mathlib.Mathport.Rename where
+  moreLeanArgs := moreLeanArgs
+  precompileModules := true
+
 @[default_target]
 lean_exe runLinter where
   root := `scripts.runLinter
