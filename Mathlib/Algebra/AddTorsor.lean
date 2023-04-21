@@ -285,12 +285,9 @@ end comm
 
 namespace Prod
 
-variable {G : Type _} {P : Type _} {G' : Type _} {P' : Type _} [AddGroup G] [AddGroup G']
-  [AddTorsor G P] [AddTorsor G' P']
+variable {G : Type _} [AddGroup G] [AddGroup G'] [AddTorsor G P] [AddTorsor G' P']
 
--- Porting note: the `{_ : ...}` instance terms make this instance not dangerous
-instance {G : Type _} {P : Type _} {G' : Type _} {P' : Type _} {_ : AddGroup G} {_ : AddGroup G'}
-    [AddTorsor G P] [AddTorsor G' P'] : AddTorsor (G × G') (P × P') where
+instance : AddTorsor (G × G') (P × P') where
   vadd v p := (v.1 +ᵥ p.1, v.2 +ᵥ p.2)
   zero_vadd _ := Prod.ext (zero_vadd _ _) (zero_vadd _ _)
   add_vadd _ _ _ := Prod.ext (add_vadd _ _ _) (add_vadd _ _ _)

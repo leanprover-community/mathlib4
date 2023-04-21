@@ -97,6 +97,20 @@ def isInternal' (declName : Name) : Bool :=
   | .str _ s => "match_".isPrefixOf s || "proof_".isPrefixOf s || "eq_".isPrefixOf s
   | _        => true
 
+
+open Meta
+
+-- from Lean.Server.Completion
+def isBlackListed (declName : Name) : MetaM Bool := do
+  if declName == ``sorryAx then return true
+  if declName matches .str _ "inj" then return true
+  if declName matches .str _ "noConfusionType" then return true
+  let env ← getEnv
+  pure $ declName.isInternal'
+   || isAuxRecursor env declName
+   || isNoConfusion env declName
+  <||> isRec declName <||> isMatcher declName
+
 end Name
 
 

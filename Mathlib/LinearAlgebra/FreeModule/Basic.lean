@@ -49,7 +49,7 @@ class Module.Free : Prop where
 universe.
 
 Note that if `M` does not fit in `w`, the reverse direction of this implication is still true as
-`module.free.of_basis`. -/
+`Module.Free.of_basis`. -/
 theorem Module.free_def [Small.{w,v} M] :
     Module.Free R M ↔ ∃ I : Type w, Nonempty (Basis I R M) :=
   -- Porting note: this is required or Lean cannot solve universe constraints
@@ -82,30 +82,30 @@ variable [Semiring R] [AddCommMonoid M] [Module R M] [Module.Free R M]
 
 variable [AddCommMonoid N] [Module R N]
 
-/-- If `module.free R M` then `choose_basis_index R M` is the `ι` which indexes the basis
+/-- If `Module.Free R M` then `ChooseBasisIndex R M` is the `ι` which indexes the basis
   `ι → M`. -/
 def ChooseBasisIndex :=
   (exists_basis (R := R) (M := M)).some.1
 #align module.free.choose_basis_index Module.Free.ChooseBasisIndex
 
-/-- If `module.free R M` then `choose_basis : ι → M` is the basis.
-Here `ι = choose_basis_index R M`. -/
+/-- If `Module.Free R M` then `chooseBasis : ι → M` is the basis.
+Here `ι = ChooseBasisIndex R M`. -/
 noncomputable def chooseBasis : Basis (ChooseBasisIndex R M) R M :=
   (exists_basis (R := R) (M := M)).some.2
 #align module.free.choose_basis Module.Free.chooseBasis
 
-/-- The isomorphism `M ≃ₗ[R] (choose_basis_index R M →₀ R)`. -/
+/-- The isomorphism `M ≃ₗ[R] (ChooseBasisIndex R M →₀ R)`. -/
 noncomputable def repr : M ≃ₗ[R] ChooseBasisIndex R M →₀ R :=
   (chooseBasis R M).repr
 #align module.free.repr Module.Free.repr
 
-/-- The universal property of free modules: giving a functon `(choose_basis_index R M) → N`, for `N`
+/-- The universal property of free modules: giving a functon `(ChooseBasisIndex R M) → N`, for `N`
 an `R`-module, is the same as giving an `R`-linear map `M →ₗ[R] N`.
 
-This definition is parameterized over an extra `semiring S`,
-such that `smul_comm_class R S M'` holds.
+This definition is parameterized over an extra `Semiring S`,
+such that `SMulCommClass R S M'` holds.
 If `R` is commutative, you can set `S := R`; if `R` is not commutative,
-you can recover an `add_equiv` by setting `S := ℕ`.
+you can recover an `AddEquiv` by setting `S := ℕ`.
 See library note [bundled maps over different rings]. -/
 noncomputable def constr {S : Type z} [Semiring S] [Module S N] [SMulCommClass R S N] :
     (ChooseBasisIndex R M → N) ≃ₗ[S] M →ₗ[R] N :=
@@ -126,7 +126,7 @@ theorem of_equiv (e : M ≃ₗ[R] N) : Module.Free R N :=
   of_basis <| (chooseBasis R M).map e
 #align module.free.of_equiv Module.Free.of_equiv
 
-/-- A variation of `of_equiv`: the assumption `module.free R P` here is explicit rather than an
+/-- A variation of `of_equiv`: the assumption `Module.Free R P` here is explicit rather than an
 instance. -/
 theorem of_equiv' {P : Type v} [AddCommMonoid P] [Module R P] (_ : Module.Free R P)
     (e : P ≃ₗ[R] N) : Module.Free R N :=
@@ -135,7 +135,7 @@ theorem of_equiv' {P : Type v} [AddCommMonoid P] [Module R P] (_ : Module.Free R
 
 variable (R M N)
 
-/-- The module structure provided by `semiring.to_module` is free. -/
+/-- The module structure provided by `Semiring.toModule` is free. -/
 instance self : Module.Free R R :=
   of_basis (Basis.singleton Unit R)
 #align module.free.self Module.Free.self
@@ -216,4 +216,3 @@ instance (priority := 100) of_divisionRing : Module.Free R M :=
 end DivisionRing
 
 end Module.Free
-
