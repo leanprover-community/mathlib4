@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou
 
 ! This file was ported from Lean 3 source module data.set.intervals.unordered_interval
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
+! leanprover-community/mathlib commit 4020ddee5b4580a409bfda7d2f42726ce86ae674
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
