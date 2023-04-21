@@ -193,32 +193,18 @@ theorem extendAlongYoneda_map {X Y : Cᵒᵖ ⥤ Type u₁} (f : X ⟶ Y) :
   -- the next line was `ext J` in mathlib3
   refine CategoryTheory.Limits.colimit.hom_ext (fun J => ?_)
   erw [colimit.ι_pre ((CategoryOfElements.π Y).leftOp ⋙ A) (CategoryOfElements.map f).op]
-  dsimp only [extendAlongYoneda]
-  dsimp only [restrictYonedaHomEquiv]
-  dsimp only [IsColimit.homIso']
-  dsimp only [IsColimit.homIso]
-  dsimp only [uliftTrivial]
-  -- todo : tidy. I think it's a non-confluent simp set which has caused this mess.
-  -- In mathlib3 it was just `simp, refl`
-  simp only [Adjunction.leftAdjointOfEquiv_map]
-  simp only [Iso.symm_mk]
-  simp only [Iso.toEquiv_comp]
-  simp only [Equiv.coe_trans]
-  simp only [Equiv.coe_fn_mk]
-  simp only [Iso.toEquiv_fun]
-  simp only [Equiv.symm_trans_apply]
-  simp only [Equiv.coe_fn_symm_mk]
-  simp only [Iso.toEquiv_symm_fun]
-  simp only [id.def]
-  simp only [colimit.isColimit_desc]
-  simp only [colimit.ι_desc]
-  simp only [FunctorToTypes.comp]
-  simp only [Cocone.extend_ι]
-  simp only [Cocone.extensions_app]
-  simp only [Functor.map_id]
-  simp only [Category.comp_id]
-  simp only [colimit.cocone_ι]
-  simp
+  dsimp only [extendAlongYoneda, restrictYonedaHomEquiv, IsColimit.homIso', IsColimit.homIso,
+    uliftTrivial]
+  -- porting note: in mathlib3 the rest of the proof was `simp, refl`; this is squeezed
+  -- and appropriately reordered, presumably because of a non-confluence issue.
+  simp only [Adjunction.leftAdjointOfEquiv_map, Iso.symm_mk, Iso.toEquiv_comp, Equiv.coe_trans,
+    Equiv.coe_fn_mk, Iso.toEquiv_fun, Equiv.symm_trans_apply, Equiv.coe_fn_symm_mk,
+    Iso.toEquiv_symm_fun, id.def, colimit.isColimit_desc, colimit.ι_desc, FunctorToTypes.comp,
+    Cocone.extend_ι, Cocone.extensions_app, Functor.map_id, Category.comp_id, colimit.cocone_ι]
+  simp only [Functor.comp_obj, Functor.leftOp_obj, CategoryOfElements.π_obj, colimit.cocone_x,
+    Functor.comp_map, Functor.leftOp_map, CategoryOfElements.π_map, Opposite.unop_op,
+    Adjunction.leftAdjointOfEquiv_obj, Function.comp_apply, Functor.map_id, comp_id,
+    colimit.cocone_ι, Functor.op_obj]
   rfl
 
 
