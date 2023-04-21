@@ -235,7 +235,6 @@ def piFanIsLimit {ι : Type v} (α : ι → TopCat) : IsLimit (piFan α) where
   fac s j := rfl
 #align Top.pi_fan_is_limit TopCat.piFanIsLimit
 
-set_option pp.universes true
 /-- The product is homeomorphic to the product of the underlying spaces,
 equipped with the product topology.
 -/
