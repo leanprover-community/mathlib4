@@ -63,19 +63,19 @@ section Cramer
 /-!
   ### `cramer` section
 
-  Introduce the linear map `cramer` with values defined by `cramer_map`.
-  After defining `cramer_map` and showing it is linear,
+  Introduce the linear map `cramer` with values defined by `cramerMap`.
+  After defining `cramerMap` and showing it is linear,
   we will restrict our proofs to using `cramer`.
 -/
 
 
 variable (A : Matrix n n α) (b : n → α)
 
-/-- `cramer_map A b i` is the determinant of the matrix `A` with column `i` replaced with `b`,
-  and thus `cramer_map A b` is the vector output by Cramer's rule on `A` and `b`.
+/-- `cramerMap A b i` is the determinant of the matrix `A` with column `i` replaced with `b`,
+  and thus `cramerMap A b` is the vector output by Cramer's rule on `A` and `b`.
 
-  If `A ⬝ x = b` has a unique solution in `x`, `cramer_map A` sends the vector `b` to `A.det • x`.
-  Otherwise, the outcome of `cramer_map` is well-defined but not necessarily useful.
+  If `A ⬝ x = b` has a unique solution in `x`, `cramerMap A` sends the vector `b` to `A.det • x`.
+  Otherwise, the outcome of `cramerMap` is well-defined but not necessarily useful.
 -/
 def cramerMap (i : n) : α :=
   (A.updateColumn i b).det
