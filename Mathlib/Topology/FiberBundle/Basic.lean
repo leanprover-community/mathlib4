@@ -170,12 +170,12 @@ Fiber bundle, topological bundle, structure group
 -/
 
 
-variable {ι : Type _} {B : Type _} {F : Type _}
+variable {ι B F X : Type _} [TopologicalSpace X]
 
 open TopologicalSpace Filter Set Bundle Topology
 
 attribute [mfld_simps]
-  TotalSpace.proj totalSpaceMk coe_fst coe_snd coe_snd_map_apply coe_snd_map_smul TotalSpace.mk_cast
+  totalSpaceMk coe_fst coe_snd coe_snd_map_apply coe_snd_map_smul TotalSpace.mk_cast
 
 /-! ### General definition of fiber bundles -/
 
@@ -281,6 +281,53 @@ theorem totalSpaceMk_closedEmbedding [T1Space B] (x : B) : ClosedEmbedding (@tot
   ⟨totalSpaceMk_embedding F E x, by
     rw [range_sigmaMk]
     exact isClosed_singleton.preimage <| continuous_proj F E⟩
+
+variable {E F}
+
+@[simp, mfld_simps]
+theorem mem_trivializationAt_proj_source {x : TotalSpace E} :
+    x ∈ (trivializationAt F E x.proj).source :=
+  (Trivialization.mem_source _).mpr <| mem_baseSet_trivializationAt F E x.proj
+#align fiber_bundle.mem_trivialization_at_proj_source FiberBundle.mem_trivializationAt_proj_source
+
+@[simp, mfld_simps]
+theorem trivializationAt_proj_fst {x : TotalSpace E} :
+    ((trivializationAt F E x.proj) x).1 = x.proj :=
+  Trivialization.coe_fst' _ <| mem_baseSet_trivializationAt F E x.proj
+#align fiber_bundle.trivialization_at_proj_fst FiberBundle.trivializationAt_proj_fst
+
+variable (F)
+
+open Trivialization
+
+/-- Characterization of continuous functions (at a point, within a set) into a fiber bundle. -/
+theorem continuousWithinAt_totalSpace (f : X → TotalSpace E) {s : Set X} {x₀ : X} :
+    ContinuousWithinAt f s x₀ ↔
+      ContinuousWithinAt (fun x => (f x).proj) s x₀ ∧
+        ContinuousWithinAt (fun x => ((trivializationAt F E (f x₀).proj) (f x)).2) s x₀ := by
+  refine' (and_iff_right_iff_imp.2 fun hf => _).symm.trans (and_congr_right fun hf => _)
+  · refine' (continuous_proj F E).ContinuousWithinAt.comp hf (maps_to_image f s)
+  have h1 : (fun x => (f x).proj) ⁻¹' (trivialization_at F E (f x₀).proj).baseSet ∈ 𝓝[s] x₀ :=
+    hf.preimage_mem_nhds_within ((open_base_set _).mem_nhds (mem_base_set_trivialization_at F E _))
+  have h2 : ContinuousWithinAt (fun x => (trivialization_at F E (f x₀).proj (f x)).1) s x₀ := by
+    refine'
+      hf.congr_of_eventually_eq (eventually_of_mem h1 fun x hx => _) trivialization_at_proj_fst
+    rw [coe_fst']
+    exact hx
+  rw [(trivialization_at F E (f x₀).proj).continuousWithinAt_iff_continuousWithinAt_comp_left]
+  · simp_rw [continuousWithinAt_prod_iff, Function.comp, Trivialization.coe_coe, h2, true_and_iff]
+  · apply mem_trivialization_at_proj_source
+  · rwa [source_eq, preimage_preimage]
+#align fiber_bundle.continuous_within_at_total_space FiberBundle.continuousWithinAt_totalSpace
+
+/-- Characterization of continuous functions (at a point) into a fiber bundle. -/
+theorem continuousAt_totalSpace (f : X → TotalSpace E) {x₀ : X} :
+    ContinuousAt f x₀ ↔
+      ContinuousAt (fun x => (f x).proj) x₀ ∧
+        ContinuousAt (fun x => ((trivializationAt F E (f x₀).proj) (f x)).2) x₀ := by
+  simp_rw [← continuousWithinAt_univ]
+  exact continuous_within_at_total_space F f
+#align fiber_bundle.continuous_at_total_space FiberBundle.continuousAt_totalSpace
 
 end FiberBundle
 
