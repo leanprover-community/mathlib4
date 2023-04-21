@@ -153,8 +153,7 @@ def mkBuildPaths (path : FilePath) : IO $ Array FilePath := do
     packageDir / LIBDIR / path.withExtension "olean",
     packageDir / LIBDIR / path.withExtension "ilean",
     packageDir / LIBDIR / path.withExtension "trace",
-    packageDir / IRDIR  / path.withExtension "c",
-    packageDir / IRDIR  / path.withExtension "c.trace"]
+    packageDir / IRDIR  / path.withExtension "c"]
 
 def allExist (paths : Array FilePath) : IO Bool := do
   for path in paths do
