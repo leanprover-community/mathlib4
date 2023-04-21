@@ -63,9 +63,8 @@ def equivalence : Karoubi (SimplicialObject C) ≌ Karoubi (ChainComplex C ℕ) 
       erw [← this, ← N₂Γ₂.inv_hom_id_app (N₂.obj P)]
     rw [← cancel_mono (N₂.map (Γ₂N₂.natTrans.app P)),
       AlgebraicTopology.DoldKan.identity_N₂_objectwise P, ← N₂.map_comp]
-    simp only [← Γ₂N₂_inv, ← NatTrans.comp_app, Iso.hom_inv_id, NatTrans.id_app, Functor.id_obj, N₂.map_id]
-    --simp only [Γ₂N₂, Iso.symm, asIso, ← NatTrans.comp_app,
-    --  IsIso.inv_hom_id, NatTrans.id_app, Functor.id_obj, N₂.map_id]
+    simp only [← Γ₂N₂_inv, ← NatTrans.comp_app, Iso.hom_inv_id, NatTrans.id_app,
+      Functor.id_obj, N₂.map_id]
 #align category_theory.preadditive.dold_kan.equivalence CategoryTheory.Preadditive.DoldKan.equivalence
 
 end DoldKan
