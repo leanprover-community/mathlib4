@@ -32,7 +32,7 @@ namespace DoldKan
 variable {C : Type _} [Category C] [Preadditive C] [HasFiniteCoproducts C]
 
 /-- The isomorphism  `(Γ₀.splitting K).nondegComplex ≅ K` for all `K : ChainComplex C ℕ`. -/
-@[simps]
+@[simps!]
 def Γ₀NondegComplexIso (K : ChainComplex C ℕ) : (Γ₀.splitting K).nondegComplex ≅ K :=
   HomologicalComplex.Hom.isoOfComponents (fun n => Iso.refl _)
     (by
@@ -137,17 +137,26 @@ set_option linter.uppercaseLean3 false in
 
 /-- The counit isomorphism of the Dold-Kan equivalence for additive categories. -/
 def N₂Γ₂ : Γ₂ ⋙ N₂ ≅ 𝟭 (Karoubi (ChainComplex C ℕ)) :=
-  ((whiskeringLeft _ _ _).obj
-    (toKaroubi (ChainComplex C ℕ))).preimageIso (N₂Γ₂ToKaroubiIso ≪≫ N₁Γ₀)
+  ((whiskeringLeft _ _ _).obj (toKaroubi (ChainComplex C ℕ))).preimageIso
+      (N₂Γ₂ToKaroubiIso ≪≫ N₁Γ₀)
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.N₂Γ₂ AlgebraicTopology.DoldKan.N₂Γ₂
 
+-- porting note: added to ease the proof of `N₂Γ₂_compatible_with_N₁Γ₀`
+lemma whiskerLeft_toKaroubi_N₂Γ₂_hom :
+    whiskerLeft (toKaroubi (ChainComplex C ℕ)) N₂Γ₂.hom = N₂Γ₂ToKaroubiIso.hom ≫ N₁Γ₀.hom := by
+  let e : _ ≅ toKaroubi (ChainComplex C ℕ) ⋙ 𝟭 _ := N₂Γ₂ToKaroubiIso ≪≫ N₁Γ₀
+  have h := ((whiskeringLeft _ _ (Karoubi (ChainComplex C ℕ))).obj
+    (toKaroubi (ChainComplex C ℕ))).image_preimage e.hom
+  dsimp only [whiskeringLeft, N₂Γ₂, Functor.preimageIso] at h ⊢
+  exact h
+
 theorem N₂Γ₂_compatible_with_N₁Γ₀ (K : ChainComplex C ℕ) :
-    N₂Γ₂.hom.app ((toKaroubi _).obj K) = N₂Γ₂ToKaroubiIso.hom.app K ≫ N₁Γ₀.hom.app K :=
-  sorry
-  --congr_app (((whiskeringLeft _ _ (Karoubi (ChainComplex C ℕ))).obj
-  --        (toKaroubi (ChainComplex C ℕ))).image_preimage
-  --    (N₂Γ₂ToKaroubiIso.hom ≫ N₁Γ₀.hom : _ ⟶ toKaroubi _ ⋙ 𝟭 _)) K
+    N₂Γ₂.hom.app ((toKaroubi _).obj K) = N₂Γ₂ToKaroubiIso.hom.app K ≫ N₁Γ₀.hom.app K := by
+  have h := congr_app whiskerLeft_toKaroubi_N₂Γ₂_hom K
+  simp only [whiskerLeft, NatTrans.comp_app] at h
+  -- porting note: `exact h` causes a timeout
+  rw [h]
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.N₂Γ₂_compatible_with_N₁Γ₀ AlgebraicTopology.DoldKan.N₂Γ₂_compatible_with_N₁Γ₀
 
