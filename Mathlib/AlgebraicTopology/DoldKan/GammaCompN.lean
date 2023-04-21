@@ -164,17 +164,16 @@ set_option linter.uppercaseLean3 false in
 theorem N₂Γ₂_inv_app_f_f (X : Karoubi (ChainComplex C ℕ)) (n : ℕ) :
     (N₂Γ₂.inv.app X).f.f n =
       X.p.f n ≫ (Γ₀.splitting X.X).ιSummand (Splitting.IndexSet.id (op [n])) := by
-  sorry
-  --dsimp only [N₂Γ₂, functor.preimage_iso, iso.trans]
-  --simp only [whiskering_left_obj_preimage_app, N₂Γ₂_to_karoubi_iso_inv, functor.id_map,
-  --  nat_trans.comp_app, eq_to_hom_app, functor.comp_map, assoc, karoubi.comp_f, karoubi.eq_to_hom_f,
-  --  eq_to_hom_refl, comp_id, karoubi.comp_p_assoc, N₂_map_f_f, HomologicalComplex.comp_f,
-  --  N₁Γ₀_inv_app_f_f, P_infty_on_Γ₀_splitting_summand_eq_self_assoc,
-  --  splitting.to_karoubi_nondeg_complex_iso_N₁_hom_f_f, Γ₂_map_f_app, karoubi.decomp_id_p_f]
-  --dsimp [to_karoubi]
-  --rw [splitting.ι_desc]
-  --dsimp [splitting.index_set.id]
-  --rw [karoubi.homological_complex.p_idem_assoc]
+  simp only [N₂Γ₂, Functor.preimageIso, Iso.trans,
+    whiskeringLeft_obj_preimage_app, N₂Γ₂ToKaroubiIso_inv, assoc,
+    Functor.id_map, NatTrans.comp_app, eqToHom_app, Karoubi.comp_f,
+    Karoubi.eqToHom_f, Karoubi.decompId_p_f, HomologicalComplex.comp_f,
+    N₁Γ₀_inv_app_f_f, Splitting.toKaroubiNondegComplexIsoN₁_hom_f_f,
+    Functor.comp_map, Functor.comp_obj, Karoubi.decompId_i_f,
+    eqToHom_refl, comp_id, N₂_map_f_f, Γ₂_map_f_app, N₁_obj_p,
+    PInfty_on_Γ₀_splitting_summand_eq_self_assoc, toKaroubi_obj_X,
+    Splitting.ι_desc, Splitting.IndexSet.id_fst, SimplexCategory.len_mk, unop_op,
+    Karoubi.HomologicalComplex.p_idem_assoc]
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.N₂Γ₂_inv_app_f_f AlgebraicTopology.DoldKan.N₂Γ₂_inv_app_f_f
 
