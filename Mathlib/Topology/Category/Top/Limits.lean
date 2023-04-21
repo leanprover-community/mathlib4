@@ -70,7 +70,6 @@ def limitConeInfi (F : J ⥤ TopCat) : Cone F where
   pt :=
     ⟨(Types.limitCone.{v,u} (F ⋙ forget)).pt,
       ⨅ j, (F.obj j).str.induced ((Types.limitCone.{v,u} (F ⋙ forget)).π.app j)⟩
-  -- π := sorry
   π :=
     { app := fun j =>
         ⟨(Types.limitCone.{v,u} (F ⋙ forget)).π.app j, continuous_iff_le_induced.mpr (infᵢ_le _ _)⟩
@@ -94,7 +93,6 @@ def limitConeIsLimit (F : J ⥤ TopCat) : IsLimit (limitCone.{v,u} F) where
           dsimp
           rw [← S.w f]
           rfl }
-  --fac := sorry
   uniq S m h := by
     apply ContinuousMap.ext ; intros a ; apply Subtype.ext ; funext j
     dsimp
@@ -106,13 +104,21 @@ def limitConeIsLimit (F : J ⥤ TopCat) : IsLimit (limitCone.{v,u} F) where
 Generally you should just use `limit.is_limit F`, unless you need the actual definition
 (which is in terms of `types.limit_cone_is_limit`).
 -/
-def limitConeInfiIsLimit (F : J ⥤ TopCat) : IsLimit (limitConeInfi F) := by
-  refine' IsLimit.ofFaithful forget (Types.limitConeIsLimit.{v,u} _) (fun s => ⟨_, _⟩) fun s => rfl
-  exact
+def limitConeInfiIsLimit (F : J ⥤ TopCat) : IsLimit (limitConeInfi.{u,v} F) := by
+  refine IsLimit.ofFaithful forget (Types.limitConeIsLimit.{v,u} (F ⋙ forget))
+    -- Porting note: previously could infer all ?_ except continuity
+    (fun s => ⟨fun v => ⟨ fun j => (Functor.mapCone forget s).π.app j v, ?_⟩, ?_⟩) fun s => ?_
+  · dsimp [Functor.sections]
+    intro _ _ f
+    rw [←comp_apply, ←s.π.naturality]
+    dsimp
+    rw [Category.id_comp]
+  · exact
     continuous_iff_coinduced_le.mpr
       (le_infᵢ fun j =>
         coinduced_le_iff_le_induced.mp <|
           (continuous_iff_coinduced_le.mp (s.π.app j).continuous : _))
+  · rfl
 #align Top.limit_cone_infi_is_limit TopCat.limitConeInfiIsLimit
 
 instance topCat_hasLimitsOfSize : HasLimitsOfSize.{v} TopCat.{max v u}
@@ -128,15 +134,15 @@ instance topCat_hasLimits : HasLimits TopCat.{u} :=
 #align Top.Top_has_limits TopCat.topCat_hasLimits
 
 instance forgetPreservesLimitsOfSize :
-    PreservesLimitsOfSize.{v, v} (forget : TopCat.{max v u} ⥤ Type max v u) where
-  preservesLimitsOfShape {J} :=
+    PreservesLimitsOfSize.{v, v} forget where
+  preservesLimitsOfShape {_} :=
     { preservesLimit := fun {F} =>
         preservesLimitOfPreservesLimitCone (limitConeIsLimit.{v,v} F)
           (Types.limitConeIsLimit.{v,v} (F ⋙ forget)) }
 #align Top.forget_preserves_limits_of_size TopCat.forgetPreservesLimitsOfSize
 
-instance forgetPreservesLimits : PreservesLimits (forget : TopCat.{u} ⥤ Type u) :=
-  TopCat.forgetPreservesLimitsOfSize.{u, u}
+instance forgetPreservesLimits : PreservesLimits forget :=
+  TopCat.forgetPreservesLimitsOfSize.{u}
 #align Top.forget_preserves_limits TopCat.forgetPreservesLimits
 
 /-- A choice of colimit cocone for a functor `F : J ⥤ Top`.
