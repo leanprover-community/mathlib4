@@ -4,9 +4,9 @@
  [{"git":
    {"url": "https://github.com/EdAyers/ProofWidgets4",
     "subDir?": null,
-    "rev": "c57cc40fcc58ff1ac2a2b52cf34c39d90ba0b11e",
-    "name": "ProofWidget",
-    "inputRev?": "v0.0.3"}},
+    "rev": "66caee900bcd4103f9e8e7950cf02a062c91adec",
+    "name": "proofwidgets",
+    "inputRev?": "v0.0.6"}},
   {"git":
    {"url": "https://github.com/gebner/quote4",
     "subDir?": null,
