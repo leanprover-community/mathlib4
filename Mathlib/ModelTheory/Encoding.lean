@@ -59,7 +59,6 @@ def listEncode : L.Term α → List (Sum α (Σi, L.Functions i))
     Sum.inr (⟨_, f⟩ : Σi, L.Functions i)::(List.finRange _).bind fun i => (ts i).listEncode
 #align first_order.language.term.list_encode FirstOrder.Language.Term.listEncode
 
-set_option compiler.extract_closed false in -- https://github.com/leanprover/lean4/issues/1965
 /-- Decodes a list of variables and function symbols as a list of terms. -/
 def listDecode : List (Sum α (Σi, L.Functions i)) → List (Option (L.Term α))
   | [] => []
@@ -181,7 +180,7 @@ def listEncode : ∀ {n : ℕ},
     L.BoundedFormula α n → List (Sum (Σk, L.Term (Sum α (Fin k))) (Sum (Σn, L.Relations n) ℕ))
   | n, falsum => [Sum.inr (Sum.inr (n + 2))]
   | _, equal t₁ t₂ => [Sum.inl ⟨_, t₁⟩, Sum.inl ⟨_, t₂⟩]
-  | n, Rel R ts => [Sum.inr (Sum.inl ⟨_, R⟩), Sum.inr (Sum.inr n)] ++
+  | n, rel R ts => [Sum.inr (Sum.inl ⟨_, R⟩), Sum.inr (Sum.inr n)] ++
       (List.finRange _).map fun i => Sum.inl ⟨n, ts i⟩
   | _, imp φ₁ φ₂ => (Sum.inr (Sum.inr 0)::φ₁.listEncode) ++ φ₂.listEncode
   | _, all φ => Sum.inr (Sum.inr 1)::φ.listEncode
@@ -214,7 +213,7 @@ def listDecode : ∀ l : List (Sum (Σk, L.Term (Sum α (Fin k))) (Sum (Σn, L.R
   | Sum.inr (Sum.inl ⟨n, R⟩)::Sum.inr (Sum.inr k)::l =>
     ⟨if h : ∀ i : Fin n, ((l.map Sum.getLeft).get? i).join.isSome then
         if h' : ∀ i, (Option.get _ (h i)).1 = k then
-          ⟨k, BoundedFormula.Rel R fun i => Eq.mp (by rw [h' i]) (Option.get _ (h i)).2⟩
+          ⟨k, BoundedFormula.rel R fun i => Eq.mp (by rw [h' i]) (Option.get _ (h i)).2⟩
         else default
       else default,
       l.drop n, le_max_of_le_right (le_add_left (le_add_left (List.drop_sizeOf_le _ _)))⟩
@@ -255,7 +254,7 @@ theorem listDecode_encode_list (l : List (Σn, L.BoundedFormula α n)) :
       · simp only [eq_self_iff_true, heq_iff_eq, and_self_iff]
     · rw [listEncode, cons_append, cons_append, singleton_append, cons_append, listDecode]
       · have h : ∀ i : Fin φ_l, ((List.map Sum.getLeft (List.map (fun i : Fin φ_l =>
-          Sum.inl (⟨(⟨φ_n, Rel φ_R ts⟩ : Σn, L.BoundedFormula α n).fst, ts i⟩ :
+          Sum.inl (⟨(⟨φ_n, rel φ_R ts⟩ : Σn, L.BoundedFormula α n).fst, ts i⟩ :
             Σn, L.Term (Sum α (Fin n)))) (finRange φ_l) ++ l)).get? ↑i).join = some ⟨_, ts i⟩ := by
           intro i
           simp only [Option.join, map_append, map_map, Option.bind_eq_some, id.def, exists_eq_right,
@@ -273,7 +272,7 @@ theorem listDecode_encode_list (l : List (Σn, L.BoundedFormula α n)) :
         · intro i
           obtain ⟨h1, h2⟩ := Option.eq_some_iff_get_eq.1 (h i)
           rw [h2]
-        simp only [Sigma.mk.inj_iff, heq_eq_eq, Rel.injEq, true_and]
+        simp only [Sigma.mk.inj_iff, heq_eq_eq, rel.injEq, true_and]
         refine' ⟨funext fun i => _, _⟩
         · obtain ⟨h1, h2⟩ := Option.eq_some_iff_get_eq.1 (h i)
           rw [eq_mp_eq_cast, cast_eq_iff_heq]
