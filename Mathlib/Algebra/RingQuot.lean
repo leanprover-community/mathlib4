@@ -89,58 +89,60 @@ def ringCon (r : R → R → Prop) : RingCon R where
   r := EqvGen (Rel r)
   iseqv := EqvGen.is_equivalence _
   add' {a b c d} hab hcd := by
-    induction' hab with a' b' hab e a' b' _ hab_ih c' d' e _ _ ihcd' ihde' generalizing c d
-    · refine' (EqvGen.rel _ _ hab.add_left).trans _ _ _ _
-      induction' hcd with c' d' hcd f c' d' _hcd' habcd' c' d' f' _hcd' _hdf' hbcd' hbcf'
-      · exact EqvGen.rel _ _ hcd.add_right
-      · exact EqvGen.refl _
-      · exact habcd'.symm _ _
-      · exact hbcd'.trans _ _ _ hbcf'
-    · induction' hcd with c' d' hcd f c' d' _hcd' habcd' c' d' f' _hcd' _hdf' hbcd' hbcf'
-      · exact EqvGen.rel _ _ hcd.add_right
-      · exact EqvGen.refl _
-      · exact EqvGen.symm _ _ habcd'
-      · exact hbcd'.trans _ _ _ hbcf'
-    · exact (hab_ih hcd.symm).symm
-    · exact (ihcd' hcd).trans _ _ _ (ihde' <| EqvGen.refl _)
+    induction hab generalizing c d with
+    | rel _ _ hab =>
+      refine' (EqvGen.rel _ _ hab.add_left).trans _ _ _ _
+      induction hcd with
+      | rel _ _ hcd => exact EqvGen.rel _ _ hcd.add_right
+      | refl => exact EqvGen.refl _
+      | symm _ _ _ h => exact h.symm _ _
+      | trans _ _ _ _ _ h h' => exact h.trans _ _ _ h'
+    | refl => induction hcd with
+      | rel _ _ hcd => exact EqvGen.rel _ _ hcd.add_right
+      | refl => exact EqvGen.refl _
+      | symm _ _ _ h => exact h.symm _ _
+      | trans _ _ _ _ _ h h' => exact h.trans _ _ _ h'
+    | symm x y _ hxy => exact (hxy hcd.symm).symm
+    | trans x y z _ _ h h' => exact (h hcd).trans _ _ _ (h' <| EqvGen.refl _)
   mul' {a b c d} hab hcd := by
-    induction' hab with a' b' hab e a' b' _ ihhab c' d' e _ _ ihcd' ihde' generalizing c d
-    · refine' (EqvGen.rel _ _ hab.mul_left).trans _ _ _ _
-      induction' hcd with c' d' hcd f c' d' _ habcd' c' d' f' _ _ hbcd' hbcf'
-      · exact EqvGen.rel _ _ hcd.mul_right
-      · exact EqvGen.refl _
-      · exact habcd'.symm _ _
-      · exact hbcd'.trans _ _ _ hbcf'
-    · induction' hcd with c' d' hcd f c' d' _ habcd' c' d' f' _ _ hbcd' hbcf'
-      · exact EqvGen.rel _ _ hcd.mul_right
-      · exact EqvGen.refl _
-      · exact EqvGen.symm _ _ habcd'
-      · exact hbcd'.trans _ _ _ hbcf'
-    · exact (ihhab <| hcd.symm _ _).symm _ _
-    · exact (ihcd' hcd).trans _ _ _ (ihde' <| EqvGen.refl _)
+    induction hab generalizing c d with
+    | rel _ _ hab =>
+      refine' (EqvGen.rel _ _ hab.mul_left).trans _ _ _ _
+      induction hcd with
+      | rel _ _ hcd => exact EqvGen.rel _ _ hcd.mul_right
+      | refl => exact EqvGen.refl _
+      | symm _ _ _ h => exact h.symm _ _
+      | trans _ _ _ _ _ h h' => exact h.trans _ _ _ h'
+    | refl => induction hcd with
+      | rel _ _ hcd => exact EqvGen.rel _ _ hcd.mul_right
+      | refl => exact EqvGen.refl _
+      | symm _ _ _ h => exact h.symm _ _
+      | trans _ _ _ _ _ h h' => exact h.trans _ _ _ h'
+    | symm x y _ hxy => exact (hxy hcd.symm).symm
+    | trans x y z _ _ h h' => exact (h hcd).trans _ _ _ (h' <| EqvGen.refl _)
 #align ring_quot.ring_con RingQuot.ringCon
 
 theorem eqvGen_rel_eq (r : R → R → Prop) : EqvGen (Rel r) = RingConGen.Rel r := by
-  ext (x₁ x₂)
+  ext x₁ x₂
   constructor
   · intro h
-    induction' h with x₃ x₄ h₃₄
-    · induction' h₃₄ with h₃₄_ih dfg h₃₄ x₃ x₄ x₅ _ h₃₄_ih _ _ _ _ h₃₄_ih _ _ _ _ h₃₄_ih
-      · exact RingConGen.Rel.of _ _ ‹_›
-      · exact h₃₄_ih.add (RingConGen.Rel.refl _)
-      · exact h₃₄_ih.mul (RingConGen.Rel.refl _)
-      · exact (RingConGen.Rel.refl _).mul h₃₄_ih
-    · exact RingConGen.Rel.refl _
-    · exact RingConGen.Rel.symm ‹_›
-    · exact RingConGen.Rel.trans ‹_› ‹_›
+    induction h with
+    | rel _ _ h => induction h with
+      | of => exact RingConGen.Rel.of _ _ ‹_›
+      | add_left _ h => exact h.add (RingConGen.Rel.refl _)
+      | mul_left _ h => exact h.mul (RingConGen.Rel.refl _)
+      | mul_right _ h => exact (RingConGen.Rel.refl _).mul h
+    | refl => exact RingConGen.Rel.refl _
+    | symm => exact RingConGen.Rel.symm ‹_›
+    | trans => exact RingConGen.Rel.trans ‹_› ‹_›
   · intro h
-    induction h
-    · exact EqvGen.rel _ _ (Rel.of ‹_›)
-    · exact (RingQuot.ringCon r).refl _
-    · exact (RingQuot.ringCon r).symm ‹_›
-    · exact (RingQuot.ringCon r).trans ‹_› ‹_›
-    · exact (RingQuot.ringCon r).add ‹_› ‹_›
-    · exact (RingQuot.ringCon r).mul ‹_› ‹_›
+    induction h with
+    | of => exact EqvGen.rel _ _ (Rel.of ‹_›)
+    | refl => exact (RingQuot.ringCon r).refl _
+    | symm => exact (RingQuot.ringCon r).symm ‹_›
+    | trans => exact (RingQuot.ringCon r).trans ‹_› ‹_›
+    | add => exact (RingQuot.ringCon r).add ‹_› ‹_›
+    | mul => exact (RingQuot.ringCon r).mul ‹_› ‹_›
 #align ring_quot.eqv_gen_rel_eq RingQuot.eqvGen_rel_eq
 
 end RingQuot
@@ -182,9 +184,10 @@ private irreducible_def npow (n : ℕ) : RingQuot r → RingQuot r
         (fun a b (h : Rel r a b) => by
           -- note we can't define a `rel.pow` as `rel` isn't reflexive so `rel r 1 1` isn't true
           dsimp only
-          induction' n with n ih
-          · rw [pow_zero, pow_zero]
-          · rw [pow_succ, pow_succ]
+          induction n with
+          | zero => rw [pow_zero, pow_zero]
+          | succ n ih =>
+            rw [pow_succ, pow_succ]
             -- Porting note:
             -- `simpa [mul_def] using congr_arg₂ (fun x y => mul r ⟨x⟩ ⟨y⟩) (Quot.sound h) ih`
             -- mysteriously doesn't work
@@ -420,11 +423,11 @@ irreducible_def preLift {r : R → R → Prop} { f : R →+* T } (h : ∀ ⦃x y
       Quot.lift f
         (by
           rintro _ _ r
-          induction r
-          case of _ _ r => exact h r
-          case add_left _ _ _ _ r' => rw [map_add, map_add, r']
-          case mul_left _ _ _ _ r' => rw [map_mul, map_mul, r']
-          case mul_right _ _ _ _ r' => rw [map_mul, map_mul, r'])
+          induction r with
+          | of r => exact h r
+          | add_left _ r' => rw [map_add, map_add, r']
+          | mul_left _ r' => rw [map_mul, map_mul, r']
+          | mul_right _ r' => rw [map_mul, map_mul, r'])
         x.toQuot
     map_zero' := by simp only [← zero_quot, f.map_zero]
     map_add' := by
@@ -554,13 +557,13 @@ variable [StarRing R] (hr : ∀ a b, r a b → r (star a) (star b))
 
 theorem Rel.star ⦃a b : R⦄ (h : Rel r a b) : Rel r (star a) (star b) := by
   induction h with
-  | of h                 => exact Rel.of (hr _ _ h)
-  | @add_left _ _ _ _ h  => rw [star_add, star_add]
-                            exact Rel.add_left h
-  | @mul_left _ _ _ _ h  => rw [star_mul, star_mul]
-                            exact Rel.mul_right h
-  | @mul_right _ _ _ _ h => rw [star_mul, star_mul]
-                            exact Rel.mul_left h
+  | of h          => exact Rel.of (hr _ _ h)
+  | add_left _ h  => rw [star_add, star_add]
+                     exact Rel.add_left h
+  | mul_left _ h  => rw [star_mul, star_mul]
+                     exact Rel.mul_right h
+  | mul_right _ h => rw [star_mul, star_mul]
+                     exact Rel.mul_left h
 #align ring_quot.rel.star RingQuot.Rel.star
 
 private irreducible_def star' : RingQuot r → RingQuot r
@@ -636,11 +639,11 @@ irreducible_def preLiftAlgHom {s : A → A → Prop} { f : A →ₐ[S] B }
           Quot.lift f
             (by
               rintro _ _ r
-              induction r
-              case of _ _ r => exact h r
-              case add_left _ _ _ _ r' => simp only [map_add, r']
-              case mul_left _ _ _ _ r' => simp only [map_mul, r']
-              case mul_right _ _ _ _ r' => simp only [map_mul, r'])
+              induction r with
+              | of r => exact h r
+              | add_left _ r' => simp only [map_add, r']
+              | mul_left _ r' => simp only [map_mul, r']
+              | mul_right _ r' => simp only [map_mul, r'])
             x.toQuot
   map_zero' := by simp only [← zero_quot, f.map_zero]
   map_add' := by
