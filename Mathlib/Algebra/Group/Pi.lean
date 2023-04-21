@@ -501,22 +501,22 @@ theorem Pi.single_mul [∀ i, MulZeroClass <| f i] (i : I) (x y : f i) :
 
 theorem Pi.single_mul_left_apply [∀ i, MulZeroClass <| f i] (a : f i) :
     Pi.single i (a * x i) j = Pi.single i a j * x j :=
-  (Pi.apply_single (fun i => (· * x i)) (fun i => MulZeroClass.zero_mul _) _ _ _).symm
+  (Pi.apply_single (fun i => (· * x i)) (fun _ => MulZeroClass.zero_mul _) _ _ _).symm
 #align pi.single_mul_left_apply Pi.single_mul_left_apply
 
 theorem Pi.single_mul_right_apply [∀ i, MulZeroClass <| f i] (a : f i) :
     Pi.single i (x i * a) j = x j * Pi.single i a j :=
-  (Pi.apply_single (fun i => (· * ·) (x i)) (fun i => MulZeroClass.mul_zero _) _ _ _).symm
+  (Pi.apply_single (fun i => (· * ·) (x i)) (fun _ => MulZeroClass.mul_zero _) _ _ _).symm
 #align pi.single_mul_right_apply Pi.single_mul_right_apply
 
 theorem Pi.single_mul_left [∀ i, MulZeroClass <| f i] (a : f i) :
     Pi.single i (a * x i) = Pi.single i a * x :=
-  funext fun j => Pi.single_mul_left_apply _ _ _ _
+  funext fun _ => Pi.single_mul_left_apply _ _ _ _
 #align pi.single_mul_left Pi.single_mul_left
 
 theorem Pi.single_mul_right [∀ i, MulZeroClass <| f i] (a : f i) :
     Pi.single i (x i * a) = x * Pi.single i a :=
-  funext fun j => Pi.single_mul_right_apply _ _ _ _
+  funext fun _ => Pi.single_mul_right_apply _ _ _ _
 #align pi.single_mul_right Pi.single_mul_right
 
 /-- The injection into a pi group at different indices commutes.
