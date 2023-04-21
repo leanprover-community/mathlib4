@@ -469,6 +469,8 @@ instance Submodule.Quotient.normedSpace (𝕜 : Type _) [NormedField 𝕜] [Norm
     [IsScalarTower 𝕜 R M] : NormedSpace 𝕜 (M ⧸ S) :=
   { Submodule.Quotient.module' S with
     norm_smul_le := fun k x =>
+      -- porting note: this is `QuotientAddGroup.norm_lift_apply_le` for `f : M → M ⧸ S` given by
+      -- `x ↦ mk (k • x)`; todo: add scalar multiplication as `NormedAddGroupHom`, use it here
       le_of_forall_pos_le_add fun ε hε => by
         have := (nhds_basis_ball.tendsto_iff nhds_basis_ball).mp
           ((@Real.uniformContinuous_const_mul ‖k‖).continuous.tendsto ‖x‖) ε hε
@@ -487,31 +489,34 @@ section Ideal
 
 variable {R : Type _} [SeminormedCommRing R] (I : Ideal R)
 
+set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 nonrec theorem Ideal.Quotient.norm_mk_lt {I : Ideal R} (x : R ⧸ I) {ε : ℝ} (hε : 0 < ε) :
     ∃ r : R, Ideal.Quotient.mk I r = x ∧ ‖r‖ < ‖x‖ + ε :=
   norm_mk_lt x hε
 #align ideal.quotient.norm_mk_lt Ideal.Quotient.norm_mk_lt
 
+set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 theorem Ideal.Quotient.norm_mk_le (r : R) : ‖Ideal.Quotient.mk I r‖ ≤ ‖r‖ :=
   quotient_norm_mk_le I.toAddSubgroup r
 #align ideal.quotient.norm_mk_le Ideal.Quotient.norm_mk_le
 
-instance Ideal.Quotient.semiNormedCommRing : SeminormedCommRing (R ⧸ I) :=
-  { Submodule.Quotient.seminormedAddCommGroup I with
-    mul_comm := mul_comm
-    norm_mul := fun x y => le_of_forall_pos_le_add fun ε hε => by
-      have := ((nhds_basis_ball.prod_nhds nhds_basis_ball).tendsto_iffₓ nhds_basis_ball).mp
-        (real.continuous_mul.tendsto (‖x‖, ‖y‖)) ε hε
-      simp only [Set.mem_prod, mem_ball, and_imp, Prod.forall, exists_prop, Prod.exists] at this
-      rcases this with ⟨ε₁, ε₂, ⟨h₁, h₂⟩, h⟩
-      obtain ⟨⟨a, rfl, ha⟩, ⟨b, rfl, hb⟩⟩ := Ideal.Quotient.norm_mk_lt x h₁,
-        Ideal.Quotient.norm_mk_lt y h₂
-      simp only [dist, abs_sub_lt_iff] at h
-      specialize h ‖a‖ ‖b‖ ⟨by linarith, by linarith [Ideal.Quotient.norm_mk_le I a]⟩
-        ⟨by linarith, by linarith [Ideal.Quotient.norm_mk_le I b]⟩
-      calc
-        _ ≤ ‖a‖ * ‖b‖ := (Ideal.Quotient.norm_mk_le I (a * b)).trans (norm_mul_le a b)
-        _ ≤ _ := (sub_lt_iff_lt_add'.mp h.1).le }
+set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
+instance Ideal.Quotient.semiNormedCommRing : SeminormedCommRing (R ⧸ I) where
+  dist_eq := dist_eq_norm
+  mul_comm := _root_.mul_comm
+  norm_mul x y := le_of_forall_pos_le_add fun ε hε => by
+    have := ((nhds_basis_ball.prod_nhds nhds_basis_ball).tendsto_iff nhds_basis_ball).mp
+      (continuous_mul.tendsto (‖x‖, ‖y‖)) ε hε
+    simp only [Set.mem_prod, mem_ball, and_imp, Prod.forall, exists_prop, Prod.exists] at this
+    rcases this with ⟨ε₁, ε₂, ⟨h₁, h₂⟩, h⟩
+    obtain ⟨⟨a, rfl, ha⟩, ⟨b, rfl, hb⟩⟩ := Ideal.Quotient.norm_mk_lt x h₁,
+      Ideal.Quotient.norm_mk_lt y h₂
+    simp only [dist, abs_sub_lt_iff] at h
+    specialize h ‖a‖ ‖b‖ ⟨by linarith, by linarith [Ideal.Quotient.norm_mk_le I a]⟩
+      ⟨by linarith, by linarith [Ideal.Quotient.norm_mk_le I b]⟩
+    calc
+      _ ≤ ‖a‖ * ‖b‖ := (Ideal.Quotient.norm_mk_le I (a * b)).trans (norm_mul_le a b)
+      _ ≤ _ := (sub_lt_iff_lt_add'.mp h.1).le
 #align ideal.quotient.semi_normed_comm_ring Ideal.Quotient.semiNormedCommRing
 
 instance Ideal.Quotient.normedCommRing [IsClosed (I : Set R)] : NormedCommRing (R ⧸ I) :=
