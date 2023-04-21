@@ -6,7 +6,7 @@ Authors: Wojciech Nawrocki, Scott Morrison
 import ProofWidgets.Component.Basic
 import Mathlib.Tactic.GPT.Sagredo.Dialog
 
--- This requires `npm install react-markdown blob` (probably many others)
+-- This requires `npm install react-markdown`
 -- Then in `./widget`, `npm run build`.
 
 namespace Mathlib.Tactic.GPT.Sagredo.Widget
