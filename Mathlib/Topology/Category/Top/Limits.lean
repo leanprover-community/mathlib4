@@ -238,9 +238,9 @@ def piFanIsLimit {ι : Type v} (α : ι → TopCat) : IsLimit (piFan α) where
 /-- The product is homeomorphic to the product of the underlying spaces,
 equipped with the product topology.
 -/
-def piIsoPi {ι : Type v} (α : ι → TopCat.{max v u}) :
+def piIsoPi {ι : Type v} (α : ι → TopCat) :
   ∏ α ≅ TopCat.of (∀ i, α i) :=
-  sorry --(limit.isLimit _).conePointUniqueUpToIso (piFanIsLimit α)
+  (limit.isLimit _).conePointUniqueUpToIso (piFanIsLimit α)
 #align Top.pi_iso_pi TopCat.piIsoPi
 
 @[reassoc (attr := simp)]
@@ -451,12 +451,12 @@ variable {X Y Z : TopCat.{u}}
 
 /-- The first projection from the pullback. -/
 abbrev pullbackFst (f : X ⟶ Z) (g : Y ⟶ Z) : TopCat.of { p : X × Y // f p.1 = g p.2 } ⟶ X :=
-  ⟨Prod.fst ∘ Subtype.val⟩
+  ⟨Prod.fst ∘ Subtype.val, by apply Continuous.comp <;> continuity⟩
 #align Top.pullback_fst TopCat.pullbackFst
 
 /-- The second projection from the pullback. -/
 abbrev pullbackSnd (f : X ⟶ Z) (g : Y ⟶ Z) : TopCat.of { p : X × Y // f p.1 = g p.2 } ⟶ Y :=
-  ⟨Prod.snd ∘ Subtype.val⟩
+  ⟨Prod.snd ∘ Subtype.val, by apply Continuous.comp <;> continuity⟩
 #align Top.pullback_snd TopCat.pullbackSnd
 
 /-- The explicit pullback cone of `X, Y` given by `{ p : X × Y // f p.1 = g p.2 }`. -/
@@ -476,18 +476,19 @@ def pullbackConeIsLimit (f : X ⟶ Z) (g : Y ⟶ Z) : IsLimit (pullbackCone f g)
       exact
         {
           toFun := fun x =>
-            ⟨⟨s.fst x, s.snd x⟩, by simpa using concrete_category.congr_hom s.condition x⟩ }
+            ⟨⟨s.fst x, s.snd x⟩, by simpa using ConcreteCategory.congr_hom s.condition x⟩
+          continuous_toFun := sorry }
       refine' ⟨_, _, _⟩
       · ext
-        delta pullback_cone
+        delta pullbackCone
         simp
       · ext
-        delta pullback_cone
+        delta pullbackCone
         simp
       · intro m h₁ h₂
         ext x
-        · simpa using concrete_category.congr_hom h₁ x
-        · simpa using concrete_category.congr_hom h₂ x)
+        · simpa using ConcreteCategory.congr_hom h₁ x
+        · simpa using ConcreteCategory.congr_hom h₂ x)
 #align Top.pullback_cone_is_limit TopCat.pullbackConeIsLimit
 
 /-- The pullback of two maps can be identified as a subspace of `X × Y`. -/
@@ -499,7 +500,7 @@ def pullbackIsoProdSubtype (f : X ⟶ Z) (g : Y ⟶ Z) :
 @[reassoc (attr := simp)]
 theorem pullbackIsoProdSubtype_inv_fst (f : X ⟶ Z) (g : Y ⟶ Z) :
     (pullbackIsoProdSubtype f g).inv ≫ pullback.fst = pullbackFst f g := by
-  simpa [pullbackIsoProdSubtype]
+  simp [pullbackCone, pullbackIsoProdSubtype]
 #align Top.pullback_iso_prod_subtype_inv_fst TopCat.pullbackIsoProdSubtype_inv_fst
 
 @[simp]
@@ -512,7 +513,7 @@ theorem pullbackIsoProdSubtype_inv_fst_apply (f : X ⟶ Z) (g : Y ⟶ Z)
 @[reassoc (attr := simp)]
 theorem pullbackIsoProdSubtype_inv_snd (f : X ⟶ Z) (g : Y ⟶ Z) :
     (pullbackIsoProdSubtype f g).inv ≫ pullback.snd = pullbackSnd f g := by
-  simpa [pullbackIsoProdSubtype]
+  simp [pullbackCone, pullbackIsoProdSubtype]
 #align Top.pullback_iso_prod_subtype_inv_snd TopCat.pullbackIsoProdSubtype_inv_snd
 
 @[simp]
@@ -532,20 +533,22 @@ theorem pullbackIsoProdSubtype_hom_snd (f : X ⟶ Z) (g : Y ⟶ Z) :
   rw [← Iso.eq_inv_comp, pullbackIsoProdSubtype_inv_snd]
 #align Top.pullback_iso_prod_subtype_hom_snd TopCat.pullbackIsoProdSubtype_hom_snd
 
+-- Porting note: why do I need to tell Lean to coerce pullback to a type
 @[simp]
-theorem pullbackIsoProdSubtype_hom_apply {f : X ⟶ Z} {g : Y ⟶ Z} (x : pullback f g) :
+theorem pullbackIsoProdSubtype_hom_apply {f : X ⟶ Z} {g : Y ⟶ Z}
+    (x : ConcreteCategory.Forget.obj (pullback f g)) :
     (pullbackIsoProdSubtype f g).hom x =
       ⟨⟨(pullback.fst : pullback f g ⟶ _) x, (pullback.snd : pullback f g ⟶ _) x⟩, by
         simpa using ConcreteCategory.congr_hom pullback.condition x⟩ := by
-  ext
-  exacts[concrete_category.congr_hom (pullback_iso_prod_subtype_hom_fst f g) x,
-    concrete_category.congr_hom (pullback_iso_prod_subtype_hom_snd f g) x]
+  apply Subtype.ext; apply Prod.ext
+  exacts[ConcreteCategory.congr_hom (pullbackIsoProdSubtype_hom_fst f g) x,
+    ConcreteCategory.congr_hom (pullbackIsoProdSubtype_hom_snd f g) x]
 #align Top.pullback_iso_prod_subtype_hom_apply TopCat.pullbackIsoProdSubtype_hom_apply
 
 theorem pullback_topology {X Y Z : TopCat.{u}} (f : X ⟶ Z) (g : Y ⟶ Z) :
     (pullback f g).topologicalSpace =
-      induced (pullback.fst : pullback f g ⟶ _) X.TopologicalSpace ⊓
-        induced (pullback.snd : pullback f g ⟶ _) Y.TopologicalSpace := by
+      induced (pullback.fst : pullback f g ⟶ _) X.topologicalSpace ⊓
+        induced (pullback.snd : pullback f g ⟶ _) Y.topologicalSpace := by
   let homeo := homeoOfIso (pullbackIsoProdSubtype f g)
   refine' homeo.inducing.induced.trans _
   change induced homeo (induced _ (_ ⊓ _)) = _
@@ -1101,9 +1104,6 @@ def partialSections {J : Type u} [SmallCategory J] (F : J ⥤ TopCat.{u}) {G : F
 
 theorem partialSections.nonempty [IsCofilteredOrEmpty J] [h : ∀ j : J, Nonempty (F.obj j)]
     {G : Finset J} (H : Finset (FiniteDiagramArrow G)) : (partialSections F H).Nonempty := by
-  classical
-    cases isEmpty_or_nonempty J
-    · exact ⟨isEmptyElim, fun j => IsEmpty.elim' inferInstance j.1⟩
     haveI : IsCofiltered J := ⟨⟩
     use fun j : J =>
       if hj : j ∈ G then F.map (IsCofiltered.inf_to G H hj) (h (IsCofiltered.inf G H)).some
