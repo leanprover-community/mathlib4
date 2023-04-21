@@ -25,8 +25,8 @@ directed iff each pair of elements has a shared upper bound.
 * `DirectedOn r s`: Predicate stating that the set `s` is `r`-directed.
 * `IsDirected α r`: Prop-valued mixin stating that `α` is `r`-directed. Follows the style of the
   unbundled relation classes such as `IsTotal`.
-* `scott_continuous`: Predicate stating that a function between preorders preserves
-  `is_lub` on directed sets.
+* `ScottContinuous`: Predicate stating that a function between preorders preserves `IsLUB` on
+  directed sets.
 
 ## References
 * [Gierz et al, *A Compendium of Continuous Lattices*][GierzEtAl1980]
@@ -330,14 +330,14 @@ section ScottContinuous
 
 variable [Preorder α] {a : α}
 
-/-- A function between preorders is said to be Scott continuous if it preserves `is_lub` on directed
+/-- A function between preorders is said to be Scott continuous if it preserves `IsLUB` on directed
 sets. It can be shown that a function is Scott continuous if and only if it is continuous wrt the
 Scott topology.
 
 The dual notion
 
 ```lean
-∀ ⦃d : set α⦄, d.nonempty → directed_on (≥) d → ∀ ⦃a⦄, is_glb d a → is_glb (f '' d) (f a)
+∀ ⦃d : Set α⦄, d.Nonempty → DirectedOn (· ≥ ·) d → ∀ ⦃a⦄, IsGLB d a → IsGLB (f '' d) (f a)
 ```
 
 does not appear to play a significant role in the literature, so is omitted here.
