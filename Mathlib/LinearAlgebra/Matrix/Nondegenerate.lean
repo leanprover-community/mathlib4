@@ -17,7 +17,7 @@ import Mathlib.LinearAlgebra.Matrix.Adjugate
 
 ## Main definitions
 
-* `matrix.nondegenerate A`: the proposition that when interpreted as a bilinear form, the matrix `A`
+* `Matrix.Nondegenerate A`: the proposition that when interpreted as a bilinear form, the matrix `A`
   is nondegenerate.
 
 -/
@@ -46,9 +46,10 @@ theorem Nondegenerate.exists_not_ortho_of_ne_zero {M : Matrix m m R} (hM : Nonde
 
 variable [CommRing A] [IsDomain A]
 
+set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 /-- If `M` has a nonzero determinant, then `M` as a bilinear form on `n → A` is nondegenerate.
 
-See also `bilin_form.nondegenerate_of_det_ne_zero'` and `bilin_form.nondegenerate_of_det_ne_zero`.
+See also `BilinForm.nondegenerateOfDetNeZero'` and `BilinForm.nondegenerateOfDetNeZero`.
 -/
 theorem nondegenerate_of_det_ne_zero [DecidableEq m] {M : Matrix m m A} (hM : M.det ≠ 0) :
     Nondegenerate M := by
@@ -57,7 +58,7 @@ theorem nondegenerate_of_det_ne_zero [DecidableEq m] {M : Matrix m m A} (hM : M.
   specialize hv (M.cramer (Pi.single i 1))
   refine' (mul_eq_zero.mp _).resolve_right hM
   convert hv
-  simp only [mul_vec_cramer M (Pi.single i 1), dot_product, Pi.smul_apply, smul_eq_mul]
+  simp only [mulVec_cramer M (Pi.single i 1), dotProduct, Pi.smul_apply, smul_eq_mul]
   rw [Finset.sum_eq_single i, Pi.single_eq_same, mul_one]
   · intro j _ hj
     simp [hj]
@@ -69,7 +70,7 @@ theorem nondegenerate_of_det_ne_zero [DecidableEq m] {M : Matrix m m A} (hM : M.
 theorem eq_zero_of_vecMul_eq_zero [DecidableEq m] {M : Matrix m m A} (hM : M.det ≠ 0) {v : m → A}
     (hv : M.vecMul v = 0) : v = 0 :=
   (nondegenerate_of_det_ne_zero hM).eq_zero_of_ortho fun w => by
-    rw [dot_product_mul_vec, hv, zero_dot_product]
+    rw [dotProduct_mulVec, hv, zero_dotProduct]
 #align matrix.eq_zero_of_vec_mul_eq_zero Matrix.eq_zero_of_vecMul_eq_zero
 
 theorem eq_zero_of_mulVec_eq_zero [DecidableEq m] {M : Matrix m m A} (hM : M.det ≠ 0) {v : m → A}
@@ -78,4 +79,3 @@ theorem eq_zero_of_mulVec_eq_zero [DecidableEq m] {M : Matrix m m A} (hM : M.det
 #align matrix.eq_zero_of_mul_vec_eq_zero Matrix.eq_zero_of_mulVec_eq_zero
 
 end Matrix
-
