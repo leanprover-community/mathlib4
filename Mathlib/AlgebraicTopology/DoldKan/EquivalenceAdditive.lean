@@ -8,7 +8,7 @@ Authors: Joël Riou
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.AlgebraicTopology.DoldKan.NCompGamma
+import Mathlib.AlgebraicTopology.DoldKan.NCompGamma
 
 /-! The Dold-Kan equivalence for additive categories.
 
@@ -50,8 +50,7 @@ def Γ : Karoubi (ChainComplex C ℕ) ⥤ Karoubi (SimplicialObject C) :=
 /-- The Dold-Kan equivalence `karoubi (simplicial_object C) ≌ karoubi (chain_complex C ℕ)`
 for additive categories. -/
 @[simps]
-def equivalence : Karoubi (SimplicialObject C) ≌ Karoubi (ChainComplex C ℕ)
-    where
+def equivalence : Karoubi (SimplicialObject C) ≌ Karoubi (ChainComplex C ℕ) where
   Functor := n
   inverse := Γ
   unitIso := Γ₂N₂
