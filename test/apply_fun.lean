@@ -43,6 +43,10 @@ example (n m : ℕ) (f : ℕ → ℕ) (h : f n ≠ f m) : n ≠ m := by
   apply_fun f
   exact h
 
+example (n m : ℕ) (f : ℕ ≃ ℕ) (h : f n ≠ f m) : n ≠ m := by
+  apply_fun f
+  exact h
+
 example (n m : ℕ) (f : ℕ → ℕ) (w : Function.Injective f) (h : f n = f m) : n = m := by
   apply_fun f
   assumption
@@ -53,6 +57,18 @@ example (n m : ℕ) (f : ℕ → ℕ) (w : Function.Injective f) (h : f n = f m)
 
 example (n m : ℕ) (f : ℕ → ℕ) (w : Function.Injective f ∧ true) (h : f n = f m) : n = m := by
   apply_fun f using w.1
+  assumption
+
+example (f : ℕ ≃ ℕ) (h : f x = f y) : x = y := by
+  apply_fun f
+  assumption
+
+example (f : ℕ ≃ ℕ) (h : f x = f y) : x = y := by
+  apply_fun f using f.injective
+  assumption
+
+example {x y : ℕ} (h : Equiv.refl ℕ x = Equiv.refl ℕ y) : x = y := by
+  apply_fun Equiv.refl ℕ
   assumption
 
 example (a b : List α) (P : a = b) : True := by
