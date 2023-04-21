@@ -224,24 +224,24 @@ def piFan {ι : Type v} (α : ι → TopCat.{max v u}) : Fan α :=
 def piFanIsLimit {ι : Type v} (α : ι → TopCat) : IsLimit (piFan α) where
   lift S :=
     { toFun := fun s i => S.π.app ⟨i⟩ s
-      continuous_toFun := sorry }
+      continuous_toFun := continuous_pi (fun i => (S.π.app ⟨i⟩).2) }
   uniq := by
     intro S m h
     apply ContinuousMap.ext; intro x
     funext i
     dsimp
-    simp [← h ⟨i⟩]
-    sorry
-  fac s j := by
-    cases j
-    aesop_cat
+    rw [ContinuousMap.coe_mk, ← h ⟨i⟩]
+    rfl
+  fac s j := rfl
 #align Top.pi_fan_is_limit TopCat.piFanIsLimit
 
+set_option pp.universes true
 /-- The product is homeomorphic to the product of the underlying spaces,
 equipped with the product topology.
 -/
-def piIsoPi {ι : Type v} (α : ι → TopCat.{max v u}) : ∏ α ≅ TopCat.of (∀ i, α i) :=
-  (limit.isLimit _).conePointUniqueUpToIso (piFanIsLimit α)
+def piIsoPi {ι : Type v} (α : ι → TopCat.{max v u}) :
+  ∏ α ≅ TopCat.of (∀ i, α i) :=
+  sorry --(limit.isLimit _).conePointUniqueUpToIso (piFanIsLimit α)
 #align Top.pi_iso_pi TopCat.piIsoPi
 
 @[reassoc (attr := simp)]
