@@ -279,14 +279,14 @@ instance : IsIso (Γ₂N₁.natTrans : (N₁ : SimplicialObject C ⥤ _) ⋙ _ �
   apply NatIso.isIso_of_isIso_app
 
 /-- The unit isomorphism of the Dold-Kan equivalence. -/
-@[simp]
+@[simps! inv]
 def Γ₂N₂ : 𝟭 _ ≅ (N₂ : Karoubi (SimplicialObject C) ⥤ _) ⋙ Γ₂ :=
   (asIso Γ₂N₂.natTrans).symm
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.Γ₂N₂ AlgebraicTopology.DoldKan.Γ₂N₂
 
 /-- The natural isomorphism `toKaroubi (SimplicialObject C) ≅ N₁ ⋙ Γ₂`. -/
-@[simps!]
+@[simps! inv]
 def Γ₂N₁ : toKaroubi _ ≅ (N₁ : SimplicialObject C ⥤ _) ⋙ Γ₂ :=
   (asIso Γ₂N₁.natTrans).symm
 set_option linter.uppercaseLean3 false in
