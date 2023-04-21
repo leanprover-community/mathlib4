@@ -44,7 +44,6 @@ jobs:
       - name: clean up
         if: always()
         run: |
-          cd ..
-          rm -rf *
+          rm -rf workaround mathlib4_docs deploy_key
           rm -rf $HOME/.elan
           rm -rf $HOME/.cache/mathlib
