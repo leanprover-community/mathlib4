@@ -72,8 +72,10 @@ def buildDiscrTree : IO (DeclCache (DiscrTree (Name × DeclMod) true)) :=
 
 open System (FilePath)
 
-def cachePath : IO FilePath :=
-  return (← findOLean `MathlibExtras.LibrarySearch).withExtension "extra"
+def cachePath : IO (Option FilePath) :=
+  try
+    return some <| (← findOLean `MathlibExtras.LibrarySearch).withExtension "extra"
+  catch _ => return none
 
 /--
 A structure that holds the cached discrimination tree,
@@ -85,12 +87,14 @@ structure CachedData where
 deriving Nonempty
 
 initialize cachedData : CachedData ← unsafe do
-  let path ← cachePath
-  if (← path.pathExists) then
-    let (d, r) ← unpickle (DiscrTree (Name × DeclMod) true) path
-    return ⟨r, (← Cache.mk (pure d), addLemma)⟩
-  else
-    return ⟨none, ← buildDiscrTree⟩
+  match ← cachePath with
+  | none => return ⟨none, ← buildDiscrTree⟩
+  | some path => do
+      if (← path.pathExists) then
+        let (d, r) ← unpickle (DiscrTree (Name × DeclMod) true) path
+        return ⟨r, (← Cache.mk (pure d), addLemma)⟩
+      else
+        return ⟨none, ← buildDiscrTree⟩
 
 /--
 Retrieve the current current of lemmas.
