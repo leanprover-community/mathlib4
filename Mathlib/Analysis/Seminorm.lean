@@ -298,12 +298,32 @@ variable [Module 𝕜 E] [Module 𝕜₂ E₂] [Module 𝕜₃ E₃] [Module �
 
 variable [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ]
 
+-- FIXME things start going wrong here:
+
+-- This is failing, because we are not finding the right instances!
+-- example (f : E →ₛₗ[σ₁₂] E₂) : E → E₂ := f
+
+-- instance : SemilinearMapClass (E →ₛₗ[σ₁₂] E₂) σ₁₂ E E₂ := inferInstance -- Doesn't work?
+instance : SemilinearMapClass (E →ₛₗ[σ₁₂] E₂) σ₁₂ E E₂ := LinearMap.semilinearMapClass -- But this does!
+-- instance : AddHomClass (E →ₛₗ[σ₁₂] E₂) E E₂ := inferInstance -- doesn't work?
+instance : AddHomClass (E →ₛₗ[σ₁₂] E₂) E E₂ := LinearMap.semilinearMapClass.toAddHomClass
+-- instance funLike : FunLike (E →ₛₗ[σ₁₂] E₂) E (fun _ => E₂) := inferInstance -- doesn't work!
+instance funLike : FunLike (E →ₛₗ[σ₁₂] E₂) E (fun _ => E₂) := LinearMap.semilinearMapClass.toAddHomClass.toFunLike
+-- instance : CoeFun (E →ₛₗ[σ₁₂] E₂) fun _ ↦ ∀ (_ : E), E₂ := inferInstance -- doesn't work!
+instance : CoeFun (E →ₛₗ[σ₁₂] E₂) fun _ ↦ ∀ (_ : E), E₂ := ⟨funLike.coe⟩
+
+-- This finally works:
+example (f : E →ₛₗ[σ₁₂] E₂) : E → E₂ := f
+
 /-- Composition of a seminorm with a linear map is a seminorm. -/
 def comp (p : Seminorm 𝕜₂ E₂) (f : E →ₛₗ[σ₁₂] E₂) : Seminorm 𝕜 E :=
   { p.toAddGroupSeminorm.comp f.toAddMonoidHom with
     toFun := fun x => p (f x)
+    -- FIXME Surely we should not be seeing `AddGroupSeminorm.toFun` in the goal here.
     smul' := fun _ _ => by rw [map_smulₛₗ, map_smul_eq_mul, RingHomIsometric.is_iso] }
 #align seminorm.comp Seminorm.comp
+
+#exit
 
 theorem coe_comp (p : Seminorm 𝕜₂ E₂) (f : E →ₛₗ[σ₁₂] E₂) : ⇑(p.comp f) = p ∘ f :=
   rfl
