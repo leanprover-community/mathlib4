@@ -11,7 +11,7 @@ Authors: Johannes Hölzl
 import Mathlib.Data.Set.Image
 import Mathlib.Order.Lattice
 import Mathlib.Order.Max
-import Mathbin.Order.Bounds.Basic
+import Mathlib.Order.Bounds.Basic
 
 /-!
 # Directed indexed families and sets
@@ -234,7 +234,7 @@ theorem DirectedOn.insert (h : Reflexive r) (a : α) {s : Set α} (hd : Directed
 #align directed_on.insert DirectedOn.insert
 
 theorem directedOn_singleton (h : Reflexive r) (a : α) : DirectedOn r ({a} : Set α) :=
-  fun x hx y hy => ⟨x, hx, h _, hx.symm ▸ hy.symm ▸ h _⟩
+  fun x hx _ hy => ⟨x, hx, h _, hx.symm ▸ hy.symm ▸ h _⟩
 #align directed_on_singleton directedOn_singleton
 
 theorem directedOn_pair (h : Reflexive r) {a b : α} (hab : a ≼ b) : DirectedOn r ({a, b} : Set α) :=
@@ -354,7 +354,7 @@ protected theorem ScottContinuous.monotone [Preorder β] {f : α → β} (h : Sc
     · exact Set.insert_nonempty _ _
     · exact directedOn_pair le_refl hab
     · rw [IsLUB, upperBounds_insert, upperBounds_singleton,
-        Set.inter_eq_self_of_subset_right (set.Ici_subset_Ici.mpr hab)]
+        Set.inter_eq_self_of_subset_right (Set.Ici_subset_Ici.mpr hab)]
       exact isLeast_Ici
   apply e1.1
   rw [Set.image_pair]
