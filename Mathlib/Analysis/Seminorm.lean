@@ -516,16 +516,11 @@ noncomputable instance : Lattice (Seminorm 𝕜 E) :=
     le_inf := fun a b c hab hac x =>
       le_cinfᵢ fun u => (le_map_add_map_sub a _ _).trans <| add_le_add (hab _) (hac _) }
 
--- FIXME maybe we need this in the next theorem (it can't be found with `etaExperiment`)
--- ... or perhaps not.
-noncomputable instance mulAction_nnreal_real : MulAction ℝ≥0 ℝ := inferInstance
-
-set_option synthInstance.etaExperiment true in
 theorem smul_inf [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] (r : R) (p q : Seminorm 𝕜 E) :
     r • (p ⊓ q) = r • p ⊓ r • q := by
   ext
   simp_rw [smul_apply, inf_apply, smul_apply, ← smul_one_smul ℝ≥0 r (_ : ℝ), NNReal.smul_def,
-    smul_eq_mul, Real.mul_infᵢ_of_nonneg (Subtype.prop _), mul_add]
+    smul_eq_mul, Real.mul_infᵢ_of_nonneg (NNReal.coe_nonneg _), mul_add]
 #align seminorm.smul_inf Seminorm.smul_inf
 
 section Classical
@@ -584,7 +579,7 @@ noncomputable instance : SupSet (Seminorm 𝕜 E) where
     else ⊥
 
 protected theorem coe_supₛ_eq' {s : Set <| Seminorm 𝕜 E}
-    (hs : BddAbove ((↑) '' s : Set (E → ℝ))) : ↑(supₛ s) = ⨆ p : s, p :=
+    (hs : BddAbove ((↑) '' s : Set (E → ℝ))) : ↑(supₛ s) = ⨆ p : s, ((p : Seminorm 𝕜 E) : E → ℝ) :=
   congr_arg _ (dif_pos hs)
 #align seminorm.coe_Sup_eq' Seminorm.coe_supₛ_eq'
 
@@ -592,6 +587,7 @@ protected theorem bddAbove_iff {s : Set <| Seminorm 𝕜 E} :
     BddAbove s ↔ BddAbove ((↑) '' s : Set (E → ℝ)) :=
   ⟨fun ⟨q, hq⟩ => ⟨q, ball_image_of_ball fun p hp => hq hp⟩, fun H =>
     ⟨supₛ s, fun p hp x => by
+      dsimp
       rw [Seminorm.coe_supₛ_eq' H, supᵢ_apply]
       rcases H with ⟨q, hq⟩
       exact
@@ -599,19 +595,20 @@ protected theorem bddAbove_iff {s : Set <| Seminorm 𝕜 E} :
 #align seminorm.bdd_above_iff Seminorm.bddAbove_iff
 
 protected theorem coe_supₛ_eq {s : Set <| Seminorm 𝕜 E} (hs : BddAbove s) :
-    ↑(supₛ s) = ⨆ p : s, p :=
+    ↑(supₛ s) = ⨆ p : s, ((p : Seminorm 𝕜 E) : E → ℝ) :=
   Seminorm.coe_supₛ_eq' (Seminorm.bddAbove_iff.mp hs)
 #align seminorm.coe_Sup_eq Seminorm.coe_supₛ_eq
 
 protected theorem coe_supᵢ_eq {ι : Type _} {p : ι → Seminorm 𝕜 E} (hp : BddAbove (range p)) :
-    ↑(⨆ i, p i) = ⨆ i, p i := by
-  rw [← supₛ_range, Seminorm.coe_supₛ_eq hp] <;> exact supᵢ_range' (coeFn : Seminorm 𝕜 E → E → ℝ) p
+    ↑(⨆ i, p i) = ⨆ i, ((p i : Seminorm 𝕜 E) : E → ℝ) := by
+  rw [← supₛ_range, Seminorm.coe_supₛ_eq hp]
+  exact supᵢ_range' (fun p : Seminorm 𝕜 E => (p : E → ℝ)) p
 #align seminorm.coe_supr_eq Seminorm.coe_supᵢ_eq
 
 private theorem Seminorm.isLUB_supₛ (s : Set (Seminorm 𝕜 E)) (hs₁ : BddAbove s) (hs₂ : s.Nonempty) :
     IsLUB s (supₛ s) := by
   refine' ⟨fun p hp x => _, fun p hp x => _⟩ <;> haveI : Nonempty ↑s := hs₂.coe_sort <;>
-    rw [Seminorm.coe_supₛ_eq hs₁, supᵢ_apply]
+    dsimp <;> rw [Seminorm.coe_supₛ_eq hs₁, supᵢ_apply]
   · rcases hs₁ with ⟨q, hq⟩
     exact le_csupᵢ ⟨q x, forall_range_iff.mpr fun i : s => hq i.2 x⟩ ⟨p, hp⟩
   · exact csupᵢ_le fun q => hp q.2 x
