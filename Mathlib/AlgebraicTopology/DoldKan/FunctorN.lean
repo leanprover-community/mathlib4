@@ -67,6 +67,10 @@ def N₂ : Karoubi (SimplicialObject C) ⥤ Karoubi (ChainComplex C ℕ) :=
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.N₂ AlgebraicTopology.DoldKan.N₂
 
+-- porting note: added to ease the port of `AlgebraicTopology.DoldKan.NCompGamma`
+lemma compatibility_N₁_N₂ : toKaroubi (SimplicialObject C) ⋙ N₂ = N₁ :=
+  Functor.congr_obj (functorExtension₁_comp_whiskeringLeft_toKaroubi _ _) N₁
+
 end DoldKan
 
 end AlgebraicTopology
