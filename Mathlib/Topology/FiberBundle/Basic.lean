@@ -306,17 +306,16 @@ theorem continuousWithinAt_totalSpace (f : X → TotalSpace E) {s : Set X} {x₀
       ContinuousWithinAt (fun x => (f x).proj) s x₀ ∧
         ContinuousWithinAt (fun x => ((trivializationAt F E (f x₀).proj) (f x)).2) s x₀ := by
   refine' (and_iff_right_iff_imp.2 fun hf => _).symm.trans (and_congr_right fun hf => _)
-  · refine' (continuous_proj F E).ContinuousWithinAt.comp hf (maps_to_image f s)
-  have h1 : (fun x => (f x).proj) ⁻¹' (trivialization_at F E (f x₀).proj).baseSet ∈ 𝓝[s] x₀ :=
-    hf.preimage_mem_nhds_within ((open_base_set _).mem_nhds (mem_base_set_trivialization_at F E _))
-  have h2 : ContinuousWithinAt (fun x => (trivialization_at F E (f x₀).proj (f x)).1) s x₀ := by
+  · refine' (continuous_proj F E).continuousWithinAt.comp hf (mapsTo_image f s)
+  have h1 : (fun x => (f x).proj) ⁻¹' (trivializationAt F E (f x₀).proj).baseSet ∈ 𝓝[s] x₀ :=
+    hf.preimage_mem_nhdsWithin ((open_baseSet _).mem_nhds (mem_baseSet_trivializationAt F E _))
+  have h2 : ContinuousWithinAt (fun x => (trivializationAt F E (f x₀).proj (f x)).1) s x₀ := by
     refine'
-      hf.congr_of_eventually_eq (eventually_of_mem h1 fun x hx => _) trivialization_at_proj_fst
-    rw [coe_fst']
-    exact hx
-  rw [(trivialization_at F E (f x₀).proj).continuousWithinAt_iff_continuousWithinAt_comp_left]
+      hf.congr_of_eventuallyEq (eventually_of_mem h1 fun x hx => _) trivializationAt_proj_fst
+    simp_rw [coe_fst' _ hx]
+  rw [(trivializationAt F E (f x₀).proj).continuousWithinAt_iff_continuousWithinAt_comp_left]
   · simp_rw [continuousWithinAt_prod_iff, Function.comp, Trivialization.coe_coe, h2, true_and_iff]
-  · apply mem_trivialization_at_proj_source
+  · apply mem_trivializationAt_proj_source
   · rwa [source_eq, preimage_preimage]
 #align fiber_bundle.continuous_within_at_total_space FiberBundle.continuousWithinAt_totalSpace
 
@@ -326,7 +325,7 @@ theorem continuousAt_totalSpace (f : X → TotalSpace E) {x₀ : X} :
       ContinuousAt (fun x => (f x).proj) x₀ ∧
         ContinuousAt (fun x => ((trivializationAt F E (f x₀).proj) (f x)).2) x₀ := by
   simp_rw [← continuousWithinAt_univ]
-  exact continuous_within_at_total_space F f
+  exact continuousWithinAt_totalSpace F f
 #align fiber_bundle.continuous_at_total_space FiberBundle.continuousAt_totalSpace
 
 end FiberBundle
