@@ -2,7 +2,7 @@ import Mathlib.Data.Polynomial.Basic
 
 open Polynomial
 
-def p0: ℕ[X] :=
+def p0 : ℕ[X] :=
   ⟨⟨{}, Pi.single 0 0, by intro; simp [Pi.single, Function.update_apply]⟩⟩
 example : reprStr p0 = "0" := by native_decide
 example : reprStr (Option.some p0) = "some 0" := by native_decide
