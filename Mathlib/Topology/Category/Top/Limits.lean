@@ -109,7 +109,7 @@ def limitConeInfiIsLimit (F : J ⥤ TopCat) : IsLimit (limitConeInfi.{u,v} F) :=
     -- Porting note: previously could infer all ?_ except continuity
     (fun s => ⟨fun v => ⟨ fun j => (Functor.mapCone forget s).π.app j v, ?_⟩, ?_⟩) fun s => ?_
   · dsimp [Functor.sections]
-    intro _ _ f
+    intro _ _ _
     rw [←comp_apply, ←s.π.naturality]
     dsimp
     rw [Category.id_comp]
@@ -155,8 +155,10 @@ def colimitCocone (F : J ⥤ TopCat.{max v u}) : Cocone F where
       ⨆ j, (F.obj j).str.coinduced ((Types.colimitCocone (F ⋙ forget)).ι.app j)⟩
   ι :=
     { app := fun j =>
-        ⟨(Types.colimitCocone (F ⋙ forget)).ι.app j, continuous_iff_coinduced_le.mpr (le_supᵢ _ j)⟩
-      naturality := fun j j' f =>
+        ⟨(Types.colimitCocone (F ⋙ forget)).ι.app j, continuous_iff_coinduced_le.mpr <|
+          -- Porting note: didn't need function before
+          le_supᵢ (fun j => coinduced ((Types.colimitCocone (F ⋙ forget)).ι.app j) (F.obj j).str) j⟩
+      naturality := fun _ _ f =>
         ContinuousMap.coe_injective ((Types.colimitCocone (F ⋙ forget)).ι.naturality f) }
 #align Top.colimit_cocone TopCat.colimitCocone
 
@@ -165,20 +167,29 @@ Generally you should just use `colimit.is_colimit F`, unless you need the actual
 (which is in terms of `types.colimit_cocone_is_colimit`).
 -/
 def colimitCoconeIsColimit (F : J ⥤ TopCat) : IsColimit (colimitCocone F) := by
-  refine'
-    IsColimit.ofFaithful forget (Types.colimitCoconeIsColimit _) (fun s => ⟨_, _⟩) fun s => rfl
-  exact
+  refine
+    IsColimit.ofFaithful forget (Types.colimitCoconeIsColimit _) (fun s =>
+    -- Porting note: it appears notation for forget breaks dot notation (also above)
+    -- Porting note: previously function was inferred
+      ⟨Quot.lift (fun p => (Functor.mapCocone forget s).ι.app p.fst p.snd) ?_, ?_⟩) fun s => ?_
+  · intro _ _ ⟨_,h⟩
+    dsimp
+    rw [h, Functor.comp_map, ← comp_apply, s.ι.naturality]
+    dsimp
+    rw [Category.comp_id]
+  · exact
     continuous_iff_le_induced.mpr
       (supᵢ_le fun j =>
         coinduced_le_iff_le_induced.mp <|
-          (continuous_iff_coinduced_le.mp (s.ι.app j).Continuous : _))
+          (continuous_iff_coinduced_le.mp (s.ι.app j).continuous : _))
+  · rfl
 #align Top.colimit_cocone_is_colimit TopCat.colimitCoconeIsColimit
 
-instance topCat_hasColimitsOfSize : HasColimitsOfSize.{v} TopCat.{max v u} where
+instance topCat_hasColimitsOfSize : HasColimitsOfSize.{v,v} TopCat where
   has_colimits_of_shape _ :=
     { has_colimit := fun F =>
         HasColimit.mk
-          { cocone := colimitCocone.{v,u} F
+          { cocone := colimitCocone F
             isColimit := colimitCoconeIsColimit F } }
 #align Top.Top_has_colimits_of_size TopCat.topCat_hasColimitsOfSize
 
@@ -187,11 +198,11 @@ instance topCat_hasColimits : HasColimits TopCat.{u} :=
 #align Top.Top_has_colimits TopCat.topCat_hasColimits
 
 instance forgetPreservesColimitsOfSize :
-    PreservesColimitsOfSize.{v, v} (forget : TopCat.{max v u} ⥤ Type max v u) where
+    PreservesColimitsOfSize.{v, v} forget where
   preservesColimitsOfShape :=
-    { preservesColimit := fun F =>
-        preservesColimit_of_preservesColimitCocone (colimit_cocone_is_colimit F)
-          (Types.colimit_cocone_is_colimit (F ⋙ forget)) }
+    { preservesColimit := fun {F} =>
+        preservesColimitOfPreservesColimitCocone (colimitCoconeIsColimit F)
+          (Types.colimitCoconeIsColimit (F ⋙ forget)) }
 #align Top.forget_preserves_colimits_of_size TopCat.forgetPreservesColimitsOfSize
 
 instance forgetPreservesColimits : PreservesColimits (forget : TopCat.{u} ⥤ Type u) :=
@@ -199,23 +210,28 @@ instance forgetPreservesColimits : PreservesColimits (forget : TopCat.{u} ⥤ Ty
 #align Top.forget_preserves_colimits TopCat.forgetPreservesColimits
 
 /-- The projection from the product as a bundled continous map. -/
-abbrev piπ {ι : Type v} (α : ι → TopCat.{max v u}) (i : ι) : TopCat.of (∀ i, α i) ⟶ α i :=
+abbrev piπ {ι : Type v} (α : ι → TopCat) (i : ι) : TopCat.of (∀ i, α i) ⟶ α i :=
   ⟨fun f => f i, continuous_apply i⟩
 #align Top.pi_π TopCat.piπ
 
 /-- The explicit fan of a family of topological spaces given by the pi type. -/
-@[simps pt π_app]
-def piFan {ι : Type v} (α : ι → TopCat.{max v u}) : Fan.{v,max v u} α :=
-  Fan.mk (TopCat.of (∀ i, α i)) (piπ α)
+@[simps! pt π_app]
+def piFan {ι : Type v} (α : ι → TopCat.{max v u}) : Fan α :=
+  Fan.mk (TopCat.of (∀ i, α i)) (piπ.{v,u} α)
 #align Top.pi_fan TopCat.piFan
 
 /-- The constructed fan is indeed a limit -/
-def piFanIsLimit {ι : Type v} (α : ι → TopCat.{max v u}) : IsLimit (piFan α) where
-  lift S := { toFun := fun s i => S.π.app ⟨i⟩ s }
+def piFanIsLimit {ι : Type v} (α : ι → TopCat) : IsLimit (piFan α) where
+  lift S :=
+    { toFun := fun s i => S.π.app ⟨i⟩ s
+      continuous_toFun := sorry }
   uniq := by
     intro S m h
-    ext (x i)
+    apply ContinuousMap.ext; intro x
+    funext i
+    dsimp
     simp [← h ⟨i⟩]
+    sorry
   fac s j := by
     cases j
     aesop_cat
