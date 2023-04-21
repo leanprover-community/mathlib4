@@ -9,7 +9,6 @@ Authors: Scott Morrison, Reid Barton
 ! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Functor.FullyFaithful
-import Std.Tactic.Lint.Basic
 
 /-!
 # Induced categories and full subcategories

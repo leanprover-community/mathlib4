@@ -4,3 +4,4 @@ chatgpt.*.json
 /lake-packages
 /.cache
 node_modules/
+.DS_Store

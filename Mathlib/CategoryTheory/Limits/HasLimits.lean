@@ -1167,7 +1167,7 @@ is natural in `F`.
 -/
 def colimCoyoneda : colim.op ⋙ coyoneda ⋙ (whiskeringRight _ _ _).obj uliftFunctor.{u₁}
     ≅ CategoryTheory.cocones J C :=
-  NatIso.ofComponents (fun F => NatIso.ofComponents (fun W => colimit.homIso (unop F) (op W))
+  NatIso.ofComponents (fun F => NatIso.ofComponents (fun W => colimit.homIso (unop F) W)
     <| by intros ; funext ; aesop_cat) <| by intros ; ext ; funext ; aesop_cat
 #align category_theory.limits.colim_coyoneda CategoryTheory.Limits.colimCoyoneda
 

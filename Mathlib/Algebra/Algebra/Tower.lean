@@ -131,8 +131,8 @@ theorem coe_toAlgHom : ↑(toAlgHom R S A) = algebraMap S A :=
 #align is_scalar_tower.coe_to_alg_hom IsScalarTower.coe_toAlgHom
 
 @[simp]
-theorem coe_to_alg_hom' : (toAlgHom R S A : S → A) = algebraMap S A := rfl
-#align is_scalar_tower.coe_to_alg_hom' IsScalarTower.coe_to_alg_hom'
+theorem coe_toAlgHom' : (toAlgHom R S A : S → A) = algebraMap S A := rfl
+#align is_scalar_tower.coe_to_alg_hom' IsScalarTower.coe_toAlgHom'
 
 variable {R S A B}
 
@@ -198,8 +198,8 @@ theorem coe_restrictScalars (f : A →ₐ[S] B) : (f.restrictScalars R : A →+*
 #align alg_hom.coe_restrict_scalars AlgHom.coe_restrictScalars
 
 @[simp]
-theorem coe_restrict_scalars' (f : A →ₐ[S] B) : (restrictScalars R f : A → B) = f := rfl
-#align alg_hom.coe_restrict_scalars' AlgHom.coe_restrict_scalars'
+theorem coe_restrictScalars' (f : A →ₐ[S] B) : (restrictScalars R f : A → B) = f := rfl
+#align alg_hom.coe_restrict_scalars' AlgHom.coe_restrictScalars'
 
 theorem restrictScalars_injective :
     Function.Injective (restrictScalars R : (A →ₐ[S] B) → A →ₐ[R] B) := fun _ _ h =>
@@ -226,8 +226,8 @@ theorem coe_restrictScalars (f : A ≃ₐ[S] B) : (f.restrictScalars R : A ≃+*
 #align alg_equiv.coe_restrict_scalars AlgEquiv.coe_restrictScalars
 
 @[simp]
-theorem coe_restrict_scalars' (f : A ≃ₐ[S] B) : (restrictScalars R f : A → B) = f := rfl
-#align alg_equiv.coe_restrict_scalars' AlgEquiv.coe_restrict_scalars'
+theorem coe_restrictScalars' (f : A ≃ₐ[S] B) : (restrictScalars R f : A → B) = f := rfl
+#align alg_equiv.coe_restrict_scalars' AlgEquiv.coe_restrictScalars'
 
 theorem restrictScalars_injective :
     Function.Injective (restrictScalars R : (A ≃ₐ[S] B) → A ≃ₐ[R] B) := fun _ _ h =>
