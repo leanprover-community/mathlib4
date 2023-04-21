@@ -117,9 +117,9 @@ theorem affineIndependent_iff_linearIndependent_vsub (p : ι → P) (i1 : ι) :
         exact neg_add_self _
       have hs2 : s2.weightedVSub p f = (0 : V) := by
         set f2 : ι → V := fun x => f x • (p x -ᵥ p i1) with hf2def
-        set g2 : { x // x ≠ i1 } → V := fun x => g x • (p x -ᵥ p i1) with hg2def
+        set g2 : { x // x ≠ i1 } → V := fun x => g x • (p x -ᵥ p i1)
         have hf2g2 : ∀ x : { x // x ≠ i1 }, f2 x = g2 x := by
-          simp only [hf2def, hg2def]
+          simp only [hf2def]
           refine' fun x => _
           rw [hfg]
         rw [Finset.weightedVSub_eq_weightedVSubOfPoint_of_sum_eq_zero s2 f p hf (p i1),
@@ -655,8 +655,7 @@ theorem AffineIndependent.affineIndependent_of_not_mem_span {p : ι → P} {i : 
         simp_rw [Finset.sum_subtype_eq_sum_filter]
         rw [← s.sum_filter_add_sum_filter_not (· ≠ i)] at hwm
         simp_rw [Classical.not_not] at hwm
-        -- Porting note: this `erw` used to be part of the `simp_rw`.
-        -- I'm not sure why we needed to pull it out.
+        -- Porting note: this `erw` used to be part of the `simp_rw`
         erw [Finset.filter_eq'] at hwm
         simp_rw [if_pos his.1, Finset.sum_singleton, hwmi, ← sub_eq_add_neg, sub_eq_zero] at hwm
         exact hwm
@@ -862,7 +861,7 @@ theorem face_eq_mkOfPoint {n : ℕ} (s : Simplex k P n) (i : Fin (n + 1)) :
     s.face (Finset.card_singleton i) = mkOfPoint k (s.points i) := by
   ext
   simp only [Affine.Simplex.mkOfPoint_points, Affine.Simplex.face_points]
-  -- Porting note: `simp` can't use the next lemma, not sure why!?
+  -- Porting note: `simp` can't use the next lemma
   rw [Finset.orderEmbOfFin_singleton]
 #align affine.simplex.face_eq_mk_of_point Affine.Simplex.face_eq_mkOfPoint
 
