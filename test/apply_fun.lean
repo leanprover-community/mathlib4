@@ -7,6 +7,13 @@ import Mathlib.Data.Fintype.Card
 
 open Function
 
+example (f : ℕ → ℕ) (h : f x = f y) : x = y := by
+  apply_fun f
+  · guard_target = f x = f y
+    assumption
+  · guard_target = Injective f
+    sorry
+
 example (X Y Z : Type) (f : X → Y) (g : Y → Z) (H : Injective $ g ∘ f) : Injective f := by
   intros x x' h
   apply_fun g at h

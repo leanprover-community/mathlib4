@@ -23,7 +23,7 @@ open Lean Parser Tactic Elab Tactic Meta
 initialize registerTraceClass `apply_fun
 
 /-- Apply a function to a hypothesis. -/
-def applyFunHyp (f : TSyntax `term) (using? : Option Expr) (h : FVarId) (g : MVarId) :
+def applyFunHyp (f : Term) (using? : Option Expr) (h : FVarId) (g : MVarId) :
     TacticM (List MVarId) := do
   let d ← h.getDecl
   let (prf, newGoals) ← match (← whnfR (← instantiateMVars d.type)).getAppFnArgs with
@@ -61,22 +61,43 @@ def applyFunHyp (f : TSyntax `term) (using? : Option Expr) (h : FVarId) (g : MVa
   return g :: newGoals
 
 /-- Failure message for `applyFunTarget`. -/
-def applyFunTargetFailure (f : Expr) : MetaM (List MVarId) := do
+def applyFunTargetFailure (f : Term) : MetaM (List MVarId) := do
   throwError "`apply_fun` could not apply `{f}` to the main goal."
 
-/-- Coerce `f` to be a function, if needed. -/
-def ensureFun (f : Expr) : TacticM Expr := do
-  let ma ← mkFreshTypeMVar
-  let mb ← mkFreshTypeMVar
-  let ty := Expr.forallE `a ma mb .default
-  runTermElab <| Term.ensureHasType ty f
+/-- Given a metavariable `ginj` of type `Injective f`, try to prove it. -/
+def proveInjective (ginj : Expr) (using? : Option Expr) : MetaM Bool := do
+  -- Try the `using` clause
+  if let some u := using? then
+    if ← isDefEq ginj u then
+      ginj.mvarId!.assign u
+      return true
+    else
+      let err ← mkHasTypeButIsExpectedMsg (← inferType u) (← inferType ginj)
+      throwError "Using clause {err}"
+  -- Try an assumption
+  try ginj.mvarId!.assumption; return true catch _ => pure ()
+  -- Try using that this is an equivalence
+  let ok ← observing? do
+    let [] ← ginj.mvarId!.apply (← mkConstWithFreshMVarLevels ``Equiv.injective) | failure
+  if ok.isSome then return true
+  return false
 
 /-- Apply a function to the main goal. -/
-def applyFunTarget (f : Expr) (using? : Option Expr) (g : MVarId) : TacticM (List MVarId) := do
+def applyFunTarget (f : Term) (using? : Option Expr) (g : MVarId) : TacticM (List MVarId) := do
+  -- handle applying a two-argument theorem whose first argument is f
+  let handle (thm : Name) : TacticM (List MVarId) := do
+    let ng ← mkFreshExprMVar none
+    let pf ← withoutRecover <| runTermElab do
+      let pf ← Term.elabTermEnsuringType (← ``($(mkIdent thm) $f $(← Term.exprToSyntax ng)))
+                  (← g.getType)
+      Term.synthesizeSyntheticMVarsUsingDefault
+      return pf
+    g.assign pf
+    return [ng.mvarId!]
   match (← g.getType).getAppFnArgs with
-  | (``Ne, #[_, _, _]) => g.apply (← mkAppM ``ne_of_apply_ne #[← ensureFun f])
+  | (``Ne, #[_, _, _]) => handle ``ne_of_apply_ne
   | (``Not, #[p]) => match p.getAppFnArgs with
-    | (``Eq, #[_, _, _]) => g.apply (← mkAppM ``ne_of_apply_ne #[← ensureFun f])
+    | (``Eq, #[_, _, _]) => handle ``ne_of_apply_ne
     | _ => applyFunTargetFailure f
   -- TODO Once `Order.Hom.Basic` has been ported, verify these work.
   -- | (``LE.le, _) => g.apply (← mkAppM ``OrderIso.le_iff_le #[f])
@@ -84,27 +105,20 @@ def applyFunTarget (f : Expr) (using? : Option Expr) (g : MVarId) : TacticM (Lis
   -- | (``LT.lt, _) => g.apply (← mkAppM ``OrderIso.lt_iff_lt #[f])
   -- | (``GT.gt, _) => g.apply (← mkAppM ``OrderIso.lt_iff_lt #[f])
   | (``Eq, #[_, _, _]) => do
-    let ng ← mkFreshExprMVar (← mkAppM ``Function.Injective #[← ensureFun f])
-    let res ← g.apply ng
-    -- Now need to get an injectivity proof to finish `ng`.
-    -- Try the `using` clause
-    if let some u := using? then
-      if ← isDefEq ng u then
-        ng.mvarId!.assign u
-        return res
-      else
-        let err ← mkHasTypeButIsExpectedMsg (← inferType ng) (← inferType u)
-        throwError "Using clause {err}"
-    -- Try an assumption
-    try ng.mvarId!.assumption; return res catch _ => pure ()
-    -- Try using that this is an equivalence
-    let ok ← observing? do
-      let [] ← ng.mvarId!.apply (← mkConstWithFreshMVarLevels ``Equiv.injective)
-        | failure
-      return
-    if ok.isSome then return res
-    -- Everything failed, add it as a new goal.
-    return res.concat ng.mvarId!
+    -- g' is the `f lhs = f rhs` goal, ginj is the `Injective f` goal.
+    let (g', ginj) ← withoutRecover <| runTermElab do
+      let finj ← Term.elabTerm (← ``(Function.Injective $f)) none
+      let ginj ← mkFreshExprMVar finj
+      let g' ← mkFreshExprMVar none
+      let pf ← Term.elabAppArgs ginj #[] #[.expr g'] (← g.getType) false false
+      let pf ← Term.ensureHasType (← g.getType) pf
+      Term.synthesizeSyntheticMVarsUsingDefault
+      g.assign pf
+      return (g', ginj)
+    if ← proveInjective ginj using? then
+      return [g'.mvarId!]
+    else
+      return [g'.mvarId!, ginj.mvarId!]
   | _ => applyFunTargetFailure f
 
 /--
@@ -144,6 +158,5 @@ elab_rules : tactic | `(tactic| apply_fun $f $[$loc]? $[using $P]?) => do
   withLocation (expandOptLocation (Lean.mkOptionalNode loc))
     (atLocal := fun h ↦ do replaceMainGoal <| ← applyFunHyp f P h (← getMainGoal))
     (atTarget := withMainContext do
-      let f ← elabTermForApply f
       replaceMainGoal <| ← applyFunTarget f P (← getMainGoal))
     (failed := fun _ ↦ throwError "apply_fun failed")
