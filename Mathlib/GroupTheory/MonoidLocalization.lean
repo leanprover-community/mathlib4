@@ -1598,7 +1598,6 @@ namespace Localization
 
 variable (S)
 
-set_option profiler true
 /-- Natural homomorphism sending `x : M`, `M` a `CommMonoid`, to the equivalence class of
 `(x, 1)` in the Localization of `M` at a Submonoid. -/
 @[to_additive
