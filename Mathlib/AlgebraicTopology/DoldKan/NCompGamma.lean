@@ -170,11 +170,17 @@ end Γ₂N₁
 
 -- porting note: removed @[simps] attribute because it was creating timeouts
 /-- The compatibility isomorphism relating `N₂ ⋙ Γ₂` and `N₁ ⋙ Γ₂`. -/
-@[simp]
 def compatibility_Γ₂N₁_Γ₂N₂ : toKaroubi (SimplicialObject C) ⋙ N₂ ⋙ Γ₂ ≅ N₁ ⋙ Γ₂ :=
   eqToIso (by rw [← Functor.assoc, compatibility_N₁_N₂])
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.compatibility_Γ₂N₁_Γ₂N₂ AlgebraicTopology.DoldKan.compatibility_Γ₂N₁_Γ₂N₂
+
+-- porting note: no @[simp] attribute because this would trigger a timeout
+lemma compatibility_Γ₂N₁_Γ₂N₂_hom_app (X : SimplicialObject C) :
+    compatibility_Γ₂N₁_Γ₂N₂.hom.app X =
+      eqToHom (by rw [← Functor.assoc, compatibility_N₁_N₂]) := by
+  dsimp only [compatibility_Γ₂N₁_Γ₂N₂, CategoryTheory.eqToIso]
+  apply eqToHom_app
 
 namespace Γ₂N₂
 
@@ -212,34 +218,47 @@ theorem compatibility_Γ₂N₁_Γ₂N₂_natTrans (X : SimplicialObject C) :
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.compatibility_Γ₂N₁_Γ₂N₂_nat_trans AlgebraicTopology.DoldKan.compatibility_Γ₂N₁_Γ₂N₂_natTrans
 
+-- porting note: the two following auxiliary lemmas `identity_N₂_objectwise_aux₁` and
+-- `identity_N₂_objectwise_aux₂` have been added to prevent timeouts in `identity_N₂_objectwise`
+theorem identity_N₂_objectwise_aux₁ (P : Karoubi (SimplicialObject C)) (n : ℕ) :
+  (N₂Γ₂.inv.app (N₂.obj P)).f.f n = PInfty.f n ≫ P.p.app (op [n]) ≫
+      (Γ₀.splitting (N₂.obj P).X).ιSummand (Splitting.IndexSet.id (op [n])) := by
+  simp only [N₂Γ₂_inv_app_f_f, N₂_obj_p_f, assoc]
+
+-- THIS SHOULD BE CLEANED UP BEFORE MERGING
+theorem identity_N₂_objectwise_aux₂ (P : Karoubi (SimplicialObject C)) (n : ℕ) :
+  (Γ₀.splitting (N₂.obj P).X).ιSummand (Splitting.IndexSet.id (op [n])) ≫
+      (N₂.map (Γ₂N₂.natTrans.app P)).f.f n = PInfty.f n ≫ P.p.app (op [n]) := by
+  dsimp [N₂]
+  simp only [assoc, Γ₂N₂.natTrans_app_f_app, Functor.comp_map, NatTrans.comp_app,
+    Karoubi.comp_f, compatibility_Γ₂N₁_Γ₂N₂_hom_app, eqToHom_refl, Karoubi.eqToHom_f,
+    PInfty_on_Γ₀_splitting_summand_eq_self_assoc, Functor.comp_obj]
+  rw [NatTrans.comp_app, NatTrans.comp_app, NatTrans.comp_app, NatTrans.comp_app]
+  rw [NatTrans.id_app, id_comp,
+    Γ₂_map_f_app, Γ₂_obj_p_app, Γ₂N₁.natTrans_app_f_app]
+  erw [Splitting.ι_desc_assoc, assoc, assoc, Splitting.ι_desc_assoc, assoc]
+  simp only [Splitting.IndexSet.id_fst, unop_op, len_mk]
+  erw [N₂_obj_p_f]
+  rw [Karoubi.decompId_i_f]
+  rw [Karoubi.decompId_p_f]
+  erw [NatTrans.id_app, comp_id]
+  erw [PInfty_f_naturality_assoc]
+  erw [PInfty_f_idem_assoc]
+  erw [Splitting.ι_desc_assoc]
+  dsimp only [Splitting.IndexSet.e]
+  simp only [Splitting.IndexSet.id_snd_coe]
+  erw [P.X.map_id]
+  simp only [AlternatingFaceMapComplex.obj_X, unop_op, Splitting.IndexSet.id_fst, len_mk,
+    toKaroubi_obj_X, comp_id, PInfty_f_naturality_assoc, app_idem,
+    PInfty_f_idem_assoc]
+
 theorem identity_N₂_objectwise (P : Karoubi (SimplicialObject C)) :
   (N₂Γ₂.inv.app (N₂.obj P) : N₂.obj P ⟶ N₂.obj (Γ₂.obj (N₂.obj P))) ≫ N₂.map (Γ₂N₂.natTrans.app P) =
     𝟙 (N₂.obj P) := by
-  sorry
-  --ext n
-  --have eq₁ :
-  --  (N₂Γ₂.inv.app (N₂.obj P)).f.f n =
-  --    PInfty.f n ≫
-  --      P.p.app (op [n]) ≫
-  --        (Γ₀.splitting (N₂.obj P).pt).ιSummand (splitting.index_set.id (op [n])) :=
-  --  by simp only [N₂Γ₂_inv_app_f_f, N₂_obj_p_f, assoc]
-  --have eq₂ :
-  --  (Γ₀.splitting (N₂.obj P).pt).ιSummand (splitting.index_set.id (op [n])) ≫
-  --      (N₂.map (Γ₂N₂.nat_trans.app P)).f.f n =
-  --    P_infty.f n ≫ P.p.app (op [n]) := by
-  --  dsimp [N₂]
-  --  simp only [Γ₂N₂.nat_trans_app_f_app, P_infty_on_Γ₀_splitting_summand_eq_self_assoc,
-  --    functor.comp_map, compatibility_Γ₂N₁_Γ₂N₂_hom, nat_trans.comp_app, eq_to_hom_app, assoc,
-  --    karoubi.comp_f, karoubi.eq_to_hom_f, eq_to_hom_refl, comp_id, karoubi.decomp_id_p_f,
-  --    karoubi.comp_p_assoc, Γ₂_map_f_app, N₂_map_f_f, karoubi.decomp_id_i_f,
-  --    Γ₂N₁.nat_trans_app_f_app]
-  --  erw [splitting.ι_desc_assoc, assoc, assoc, splitting.ι_desc_assoc]
-  --  dsimp [splitting.index_set.id, splitting.index_set.e]
-  --  simp only [assoc, nat_trans.naturality, P_infty_f_naturality_assoc, app_idem_assoc,
-  --    P_infty_f_idem_assoc]
-  --  erw [P.X.map_id, comp_id]
-  --simp only [karoubi.comp_f, HomologicalComplex.comp_f, karoubi.id_eq, N₂_obj_p_f, assoc, eq₁, eq₂,
-  --  P_infty_f_naturality_assoc, app_idem, P_infty_f_idem_assoc]
+  ext n
+  simp only [Karoubi.comp_f, HomologicalComplex.comp_f, Karoubi.id_eq, N₂_obj_p_f, assoc,
+    identity_N₂_objectwise_aux₁, identity_N₂_objectwise_aux₂,
+    PInfty_f_naturality_assoc, app_idem, PInfty_f_idem_assoc]
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.identity_N₂_objectwise AlgebraicTopology.DoldKan.identity_N₂_objectwise
 
