@@ -12,6 +12,7 @@ import Mathlib.Data.Real.Pointwise
 import Mathlib.Analysis.Convex.Function
 import Mathlib.Analysis.LocallyConvex.Basic
 import Mathlib.Analysis.Normed.Group.AddTorsor
+import Mathlib.Tactic.LibrarySearch
 
 /-!
 # Seminorms
@@ -155,7 +156,7 @@ instance : Inhabited (Seminorm 𝕜 E) :=
 variable (p : Seminorm 𝕜 E) (c : 𝕜) (x y : E) (r : ℝ)
 
 /-- Any action on `ℝ` which factors through `ℝ≥0` applies to a seminorm. -/
-instance [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] : SMul R (Seminorm 𝕜 E)
+instance smul [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] : SMul R (Seminorm 𝕜 E)
     where smul r p :=
     { r • p.toAddGroupSeminorm with
       toFun := fun x => r • p x
@@ -236,7 +237,7 @@ instance : Sup (Seminorm 𝕜 E) where
           (mul_max_of_nonneg _ _ <| norm_nonneg x).symm }
 
 @[simp]
-theorem coe_sup (p q : Seminorm 𝕜 E) : ⇑(p ⊔ q) = p ⊔ q :=
+theorem coe_sup (p q : Seminorm 𝕜 E) : ⇑(p ⊔ q) = (p : E → ℝ) ⊔ (q : E → ℝ) :=
   rfl
 #align seminorm.coe_sup Seminorm.coe_sup
 
@@ -298,7 +299,9 @@ variable [Module 𝕜 E] [Module 𝕜₂ E₂] [Module 𝕜₃ E₃] [Module �
 
 -- Porting note: even though this instance is found immediately by typeclass search,
 -- it seems to be needed below!?
-noncomputable instance : SMul ℝ≥0 ℝ := inferInstance
+noncomputable instance smul_nnreal_real : SMul ℝ≥0 ℝ := inferInstance
+-- I think we need this later, but it isn't available after turning on etaExperiment...
+noncomputable instance smul_nnreal_nnreal  : SMul ℝ≥0 ℝ≥0 := inferInstance
 
 variable [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ]
 
@@ -307,9 +310,10 @@ variable [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ]
 -- This is failing, because we are not finding the right instances!
 -- example (f : E →ₛₗ[σ₁₂] E₂) : E → E₂ := f
 -- However `etaExperiment` saves the day:
-set_option synthInstance.etaExperiment true
+set_option synthInstance.etaExperiment true in
 example (f : E →ₛₗ[σ₁₂] E₂) : E → E₂ := f
 
+set_option synthInstance.etaExperiment true in
 /-- Composition of a seminorm with a linear map is a seminorm. -/
 def comp (p : Seminorm 𝕜₂ E₂) (f : E →ₛₗ[σ₁₂] E₂) : Seminorm 𝕜 E :=
   { p.toAddGroupSeminorm.comp f.toAddMonoidHom with
@@ -319,20 +323,24 @@ def comp (p : Seminorm 𝕜₂ E₂) (f : E →ₛₗ[σ₁₂] E₂) : Seminorm
     smul' := fun _ _ => by simp only [map_smulₛₗ]; rw [map_smul_eq_mul, RingHomIsometric.is_iso] }
 #align seminorm.comp Seminorm.comp
 
+set_option synthInstance.etaExperiment true in
 theorem coe_comp (p : Seminorm 𝕜₂ E₂) (f : E →ₛₗ[σ₁₂] E₂) : ⇑(p.comp f) = p ∘ f :=
   rfl
 #align seminorm.coe_comp Seminorm.coe_comp
 
+set_option synthInstance.etaExperiment true in
 @[simp]
 theorem comp_apply (p : Seminorm 𝕜₂ E₂) (f : E →ₛₗ[σ₁₂] E₂) (x : E) : (p.comp f) x = p (f x) :=
   rfl
 #align seminorm.comp_apply Seminorm.comp_apply
 
+set_option synthInstance.etaExperiment true in
 @[simp]
 theorem comp_id (p : Seminorm 𝕜 E) : p.comp LinearMap.id = p :=
   ext fun _ => rfl
 #align seminorm.comp_id Seminorm.comp_id
 
+set_option synthInstance.etaExperiment true in
 @[simp]
 theorem comp_zero (p : Seminorm 𝕜₂ E₂) : p.comp (0 : E →ₛₗ[σ₁₂] E₂) = 0 :=
   ext fun _ => map_zero p
@@ -343,6 +351,7 @@ theorem zero_comp (f : E →ₛₗ[σ₁₂] E₂) : (0 : Seminorm 𝕜₂ E₂)
   ext fun _ => rfl
 #align seminorm.zero_comp Seminorm.zero_comp
 
+set_option synthInstance.etaExperiment true in
 theorem comp_comp [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] (p : Seminorm 𝕜₃ E₃) (g : E₂ →ₛₗ[σ₂₃] E₃)
     (f : E →ₛₗ[σ₁₂] E₂) : p.comp (g.comp f) = (p.comp g).comp f :=
   ext fun _ => rfl
@@ -353,6 +362,7 @@ theorem add_comp (p q : Seminorm 𝕜₂ E₂) (f : E →ₛₗ[σ₁₂] E₂) 
   ext fun _ => rfl
 #align seminorm.add_comp Seminorm.add_comp
 
+set_option synthInstance.etaExperiment true in
 theorem comp_add_le (p : Seminorm 𝕜₂ E₂) (f g : E →ₛₗ[σ₁₂] E₂) :
     p.comp (f + g) ≤ p.comp f + p.comp g := fun _ => map_add_le_add p _ _
 #align seminorm.comp_add_le Seminorm.comp_add_le
@@ -401,7 +411,7 @@ theorem finset_sup_apply (p : ι → Seminorm 𝕜 E) (s : Finset ι) (x : E) :
   · rw [Finset.sup_empty, Finset.sup_empty, coe_bot, _root_.bot_eq_zero, Pi.zero_apply]
     norm_cast
   · rw [Finset.sup_cons, Finset.sup_cons, coe_sup, sup_eq_max, Pi.sup_apply, sup_eq_max,
-      NNReal.coe_max, Subtype.coe_mk, ih]
+      NNReal.coe_max, coe_mk, ih]
 #align seminorm.finset_sup_apply Seminorm.finset_sup_apply
 
 theorem finset_sup_le_sum (p : ι → Seminorm 𝕜 E) (s : Finset ι) : s.sup p ≤ ∑ i in s, p i := by
@@ -443,6 +453,8 @@ variable {σ₁₂ : 𝕜 →+* 𝕜₂} [RingHomIsometric σ₁₂]
 
 variable [AddCommGroup E] [AddCommGroup E₂] [Module 𝕜 E] [Module 𝕜₂ E₂]
 
+-- FIXME this lemma doesn't typecheck either with or without etaExperiment.
+set_option synthInstance.etaExperiment true in
 theorem comp_smul (p : Seminorm 𝕜₂ E₂) (f : E →ₛₗ[σ₁₂] E₂) (c : 𝕜₂) :
     p.comp (c • f) = ‖c‖₊ • p.comp f :=
   ext fun _ => by
@@ -504,6 +516,11 @@ noncomputable instance : Lattice (Seminorm 𝕜 E) :=
     le_inf := fun a b c hab hac x =>
       le_cinfᵢ fun u => (le_map_add_map_sub a _ _).trans <| add_le_add (hab _) (hac _) }
 
+-- FIXME maybe we need this in the next theorem (it can't be found with `etaExperiment`)
+-- ... or perhaps not.
+noncomputable instance mulAction_nnreal_real : MulAction ℝ≥0 ℝ := inferInstance
+
+set_option synthInstance.etaExperiment true in
 theorem smul_inf [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] (r : R) (p q : Seminorm 𝕜 E) :
     r • (p ⊓ q) = r • p ⊓ r • q := by
   ext
@@ -672,7 +689,8 @@ theorem closedBall_zero_eq : closedBall p 0 r = { y : E | p y ≤ r } :=
   Set.ext fun _ => p.mem_closedBall_zero
 #align seminorm.closed_ball_zero_eq Seminorm.closedBall_zero_eq
 
-theorem ball_subset_closedBall (x r) : ball p x r ⊆ closedBall p x r := fun y (hy : _ < _) => hy.le
+theorem ball_subset_closedBall (x r) : ball p x r ⊆ closedBall p x r := fun _ h =>
+  (mem_closedBall _).mpr ((mem_ball _).mp h).le
 #align seminorm.ball_subset_closed_ball Seminorm.ball_subset_closedBall
 
 theorem closedBall_eq_binterᵢ_ball (x r) : closedBall p x r = ⋂ ρ > r, ball p x ρ := by
@@ -718,14 +736,18 @@ theorem ball_finset_sup' (p : ι → Seminorm 𝕜 E) (s : Finset ι) (H : s.Non
     ball (s.sup' H p) e r = s.inf' H fun i => ball (p i) e r := by
   induction' H using Finset.Nonempty.cons_induction with a a s ha hs ih
   · classical simp
-  · rw [Finset.sup'_cons hs, Finset.inf'_cons hs, ball_sup, inf_eq_inter, ih]
+  · rw [Finset.sup'_cons hs, Finset.inf'_cons hs, ball_sup]
+    -- Porting note: `rw` can't use `inf_eq_inter` here, but `simp` can?
+    simp only [inf_eq_inter, ih]
 #align seminorm.ball_finset_sup' Seminorm.ball_finset_sup'
 
 theorem closedBall_finset_sup' (p : ι → Seminorm 𝕜 E) (s : Finset ι) (H : s.Nonempty) (e : E)
     (r : ℝ) : closedBall (s.sup' H p) e r = s.inf' H fun i => closedBall (p i) e r := by
   induction' H using Finset.Nonempty.cons_induction with a a s ha hs ih
   · classical simp
-  · rw [Finset.sup'_cons hs, Finset.inf'_cons hs, closedBall_sup, inf_eq_inter, ih]
+  · rw [Finset.sup'_cons hs, Finset.inf'_cons hs, closedBall_sup]
+    -- Porting note: `rw` can't use `inf_eq_inter` here, but `simp` can?
+    simp only [inf_eq_inter, ih]
 #align seminorm.closed_ball_finset_sup' Seminorm.closedBall_finset_sup'
 
 theorem ball_mono {p : Seminorm 𝕜 E} {r₁ r₂ : ℝ} (h : r₁ ≤ r₂) : p.ball x r₁ ⊆ p.ball x r₂ :=
@@ -784,16 +806,18 @@ variable [SeminormedRing 𝕜₂] [AddCommGroup E₂] [Module 𝕜₂ E₂]
 
 variable {σ₁₂ : 𝕜 →+* 𝕜₂} [RingHomIsometric σ₁₂]
 
+set_option synthInstance.etaExperiment true in
 theorem ball_comp (p : Seminorm 𝕜₂ E₂) (f : E →ₛₗ[σ₁₂] E₂) (x : E) (r : ℝ) :
     (p.comp f).ball x r = f ⁻¹' p.ball (f x) r := by
   ext
   simp_rw [ball, mem_preimage, comp_apply, Set.mem_setOf_eq, map_sub]
 #align seminorm.ball_comp Seminorm.ball_comp
 
+set_option synthInstance.etaExperiment true in
 theorem closedBall_comp (p : Seminorm 𝕜₂ E₂) (f : E →ₛₗ[σ₁₂] E₂) (x : E) (r : ℝ) :
     (p.comp f).closedBall x r = f ⁻¹' p.closedBall (f x) r := by
   ext
-  simp_rw [closed_ball, mem_preimage, comp_apply, Set.mem_setOf_eq, map_sub]
+  simp_rw [closedBall, mem_preimage, comp_apply, Set.mem_setOf_eq, map_sub]
 #align seminorm.closed_ball_comp Seminorm.closedBall_comp
 
 variable (p : Seminorm 𝕜 E)
@@ -851,14 +875,14 @@ theorem ball_finset_sup_eq_interᵢ (p : ι → Seminorm 𝕜 E) (s : Finset ι)
     (hr : 0 < r) : ball (s.sup p) x r = ⋂ i ∈ s, ball (p i) x r := by
   lift r to NNReal using hr.le
   simp_rw [ball, interᵢ_setOf, finset_sup_apply, NNReal.coe_lt_coe,
-    Finset.sup_lt_iff (show ⊥ < r from hr), ← NNReal.coe_lt_coe, Subtype.coe_mk]
+    Finset.sup_lt_iff (show ⊥ < r from hr), ← NNReal.coe_lt_coe, coe_mk]
 #align seminorm.ball_finset_sup_eq_Inter Seminorm.ball_finset_sup_eq_interᵢ
 
 theorem closedBall_finset_sup_eq_interᵢ (p : ι → Seminorm 𝕜 E) (s : Finset ι) (x : E) {r : ℝ}
     (hr : 0 ≤ r) : closedBall (s.sup p) x r = ⋂ i ∈ s, closedBall (p i) x r := by
   lift r to NNReal using hr
   simp_rw [closedBall, interᵢ_setOf, finset_sup_apply, NNReal.coe_le_coe, Finset.sup_le_iff, ←
-    NNReal.coe_le_coe, Subtype.coe_mk]
+    NNReal.coe_le_coe, coe_mk]
 #align seminorm.closed_ball_finset_sup_eq_Inter Seminorm.closedBall_finset_sup_eq_interᵢ
 
 theorem ball_finset_sup (p : ι → Seminorm 𝕜 E) (s : Finset ι) (x : E) {r : ℝ} (hr : 0 < r) :
