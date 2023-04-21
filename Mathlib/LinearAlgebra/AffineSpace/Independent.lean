@@ -627,10 +627,9 @@ theorem affineIndependent_of_ne {p₁ p₂ : P} (h : p₁ ≠ p₂) : AffineInde
     · simp at hi
     · simp only [Fin.val_one]
   haveI : Unique { x // x ≠ (0 : Fin 2) } := ⟨⟨i₁⟩, he'⟩
-  have hz : (![p₁, p₂] ↑default -ᵥ ![p₁, p₂] 0 : V) ≠ 0 := by
-    rw [he' default]
-    simpa using h.symm
-  simp_all only [ne_eq, Fin.default_eq_zero, vsub_self]
+  apply linearIndependent_unique
+  rw [he' default]
+  simpa using h.symm
 #align affine_independent_of_ne affineIndependent_of_ne
 
 variable {k}
@@ -653,10 +652,13 @@ theorem AffineIndependent.affineIndependent_of_not_mem_span {p : ι → P} {i : 
       have hwmi : wm i = -1 := by simp [his.2]
       let w' : { y // y ≠ i } → k := fun x => wm x
       have hw' : (∑ x in s', w' x) = 1 := by
-        simp_rw [w', Finset.sum_subtype_eq_sum_filter]
+        simp_rw [Finset.sum_subtype_eq_sum_filter]
         rw [← s.sum_filter_add_sum_filter_not (· ≠ i)] at hwm
-        simp_rw [Classical.not_not, Finset.filter_eq', if_pos his.1, Finset.sum_singleton, ← wm,
-          hwmi, ← sub_eq_add_neg, sub_eq_zero] at hwm
+        simp_rw [Classical.not_not] at hwm
+        -- Porting note: this `erw` used to be part of the `simp_rw`.
+        -- I'm not sure why we needed to pull it out.
+        erw [Finset.filter_eq'] at hwm
+        simp_rw [if_pos his.1, Finset.sum_singleton, hwmi, ← sub_eq_add_neg, sub_eq_zero] at hwm
         exact hwm
       rw [← s.affineCombination_eq_of_weightedVSub_eq_zero_of_eq_neg_one hms his.1 hwmi, ←
         (Subtype.range_coe : _ = { x | x ≠ i }), ← Set.range_comp, ←
@@ -859,7 +861,9 @@ theorem face_points' {n : ℕ} (s : Simplex k P n) {fs : Finset (Fin (n + 1))} {
 theorem face_eq_mkOfPoint {n : ℕ} (s : Simplex k P n) (i : Fin (n + 1)) :
     s.face (Finset.card_singleton i) = mkOfPoint k (s.points i) := by
   ext
-  simp [face_points]
+  simp only [Affine.Simplex.mkOfPoint_points, Affine.Simplex.face_points]
+  -- Porting note: `simp` can't use the next lemma, not sure why!?
+  rw [Finset.orderEmbOfFin_singleton]
 #align affine.simplex.face_eq_mk_of_point Affine.Simplex.face_eq_mkOfPoint
 
 /-- The set of points of a face. -/
