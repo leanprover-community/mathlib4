@@ -16,9 +16,9 @@ import Mathlib.Topology.MetricSpace.HausdorffDistance
 /-!
 # Quotients of seminormed groups
 
-For any `seminormed_add_comm_group M` and any `S : add_subgroup M`, we provide a
-`seminormed_add_comm_group`, the group quotient `M ⧸ S`.
-If `S` is closed, we provide `normed_add_comm_group (M ⧸ S)` (regardless of whether `M` itself is
+For any `SeminormedAddCommGroup M` and any `S : AddSubgroup M`, we provide a
+`SeminormedAddCommGroup`, the group quotient `M ⧸ S`.
+If `S` is closed, we provide `NormedAddCommGroup (M ⧸ S)` (regardless of whether `M` itself is
 separated). The two main properties of these structures are the underlying topology is the quotient
 topology and the projection is a normed group homomorphism which is norm non-increasing
 (better, it has operator norm exactly one unless `S` is dense in `M`). The corresponding
@@ -29,19 +29,19 @@ This file also introduces a predicate `is_quotient` characterizing normed group 
 are isomorphic to the canonical projection onto a normed group quotient.
 
 In addition, this file also provides normed structures for quotients of modules by submodules, and
-of (commutative) rings by ideals. The `seminormed_add_comm_group` and `normed_add_comm_group`
-instances described above are transferred directly, but we also define instances of `normed_space`,
-`semi_normed_comm_ring`, `normed_comm_ring` and `normed_algebra` under appropriate type class
-assumptions on the original space. Moreover, while `quotient_add_group.complete_space` works
-out-of-the-box for quotients of `normed_add_comm_group`s by `add_subgroup`s, we need to transfer
-this instance in `submodule.quotient.complete_space` so that it applies to these other quotients.
+of (commutative) rings by ideals. The `SeminormedAddCommGroup` and `NormedAddCommGroup`
+instances described above are transferred directly, but we also define instances of `NormedSpace`,
+`SeminormedCommRing`, `NormedCommRing` and `NormedAlgebra` under appropriate type class
+assumptions on the original space. Moreover, while `QuotientAddGroup.completeSpace` works
+out-of-the-box for quotients of `NormedAddCommGroup`s by `AddSubgroup`s, we need to transfer
+this instance in `Submodule.Quotient.completeSpace` so that it applies to these other quotients.
 
 ## Main definitions
 
 
-We use `M` and `N` to denote seminormed groups and `S : add_subgroup M`.
-All the following definitions are in the `add_subgroup` namespace. Hence we can access
-`add_subgroup.normed_mk S` as `S.normed_mk`.
+We use `M` and `N` to denote seminormed groups and `S : AddSubgroup M`.
+All the following definitions are in the `AddSubgroup` namespace. Hence we can access
+`AddSubgroup.normedMk S` as `S.normed_mk`.
 
 * `seminormed_add_comm_group_quotient` : The seminormed group structure on the quotient by
     an additive subgroup. This is an instance so there is no need to explictly use it.
@@ -52,10 +52,10 @@ All the following definitions are in the `add_subgroup` namespace. Hence we can 
 * `normed_mk S` : the normed group hom from `M` to `M ⧸ S`.
 
 * `lift S f hf`: implements the universal property of `M ⧸ S`. Here
-    `(f : normed_add_group_hom M N)`, `(hf : ∀ s ∈ S, f s = 0)` and
-    `lift S f hf : normed_add_group_hom (M ⧸ S) N`.
+    `(f : NormedAddGroupHom M N)`, `(hf : ∀ s ∈ S, f s = 0)` and
+    `lift S f hf : NormedAddGroupHom (M ⧸ S) N`.
 
-* `is_quotient`: given `f : normed_add_group_hom M N`, `is_quotient f` means `N` is isomorphic
+* `is_quotient`: given `f : NormedAddGroupHom M N`, `is_quotient f` means `N` is isomorphic
     to a quotient of `M` by a subgroup, with projection `f`. Technically it asserts `f` is
     surjective and the norm of `f x` is the infimum of the norms of `x + m` for `m` in `f.ker`.
 
@@ -69,12 +69,12 @@ All the following definitions are in the `add_subgroup` namespace. Hence we can 
 
 ## Implementation details
 
-For any `seminormed_add_comm_group M` and any `S : add_subgroup M` we define a norm on `M ⧸ S` by
+For any `SeminormedAddCommGroup M` and any `S : AddSubgroup M` we define a norm on `M ⧸ S` by
 `‖x‖ = Inf (norm '' {m | mk' S m = x})`. This formula is really an implementation detail, it
 shouldn't be needed outside of this file setting up the theory.
 
 Since `M ⧸ S` is automatically a topological space (as any quotient of a topological space),
-one needs to be careful while defining the `seminormed_add_comm_group` instance to avoid having two
+one needs to be careful while defining the `SeminormedAddCommGroup` instance to avoid having two
 different topologies on this quotient. This is not purely a technological issue.
 Mathematically there is something to prove. The main point is proved in the auxiliary lemma
 `quotient_nhd_basis` that has no use beyond this verification and states that zero in the quotient
@@ -85,9 +85,9 @@ is not good enough for the type class system. As usual we ensure *definitional* 
 using forgetful inheritance, see Note [forgetful inheritance]. A (semi)-normed group structure
 includes a uniform space structure which includes a topological space structure, together
 with propositional fields asserting compatibility conditions.
-The usual way to define a `seminormed_add_comm_group` is to let Lean build a uniform space structure
+The usual way to define a `SeminormedAddCommGroup` is to let Lean build a uniform space structure
 using the provided norm, and then trivially build a proof that the norm and uniform structure are
-compatible. Here the uniform structure is provided using `topological_add_group.to_uniform_space`
+compatible. Here the uniform structure is provided using `TopologicalAddGroup.toUniformSpace`
 which uses the topological structure and the group structure to build the uniform structure. This
 uniform structure induces the correct topological structure by construction, but the fact that it
 is compatible with the norm is not obvious; this is where the mathematical content explained in
@@ -285,7 +285,7 @@ noncomputable def normedMk (S : AddSubgroup M) : NormedAddGroupHom M (M ⧸ S) :
     bound' := ⟨1, fun m => by simpa [one_mul] using quotient_norm_mk_le _ m⟩ }
 #align add_subgroup.normed_mk AddSubgroup.normedMk
 
-/-- `S.normed_mk` agrees with `quotient_add_group.mk' S`. -/
+/-- `S.normed_mk` agrees with `QuotientAddGroup.mk' S`. -/
 @[simp]
 theorem normedMk.apply (S : AddSubgroup M) (m : M) : normedMk S m = QuotientAddGroup.mk' S m :=
   rfl
@@ -350,8 +350,8 @@ structure IsQuotient (f : NormedAddGroupHom M N) : Prop where
   protected norm : ∀ x, ‖f x‖ = infₛ ((fun m => ‖x + m‖) '' f.ker)
 #align normed_add_group_hom.is_quotient NormedAddGroupHom.IsQuotient
 
-/-- Given  `f : normed_add_group_hom M N` such that `f s = 0` for all `s ∈ S`, where,
-`S : add_subgroup M` is closed, the induced morphism `normed_add_group_hom (M ⧸ S) N`. -/
+/-- Given  `f : NormedAddGroupHom M N` such that `f s = 0` for all `s ∈ S`, where,
+`S : AddSubgroup M` is closed, the induced morphism `NormedAddGroupHom (M ⧸ S) N`. -/
 noncomputable def lift {N : Type _} [SeminormedAddCommGroup N] (S : AddSubgroup M)
     (f : NormedAddGroupHom M N) (hf : ∀ s ∈ S, f s = 0) : NormedAddGroupHom (M ⧸ S) N :=
   { QuotientAddGroup.lift S f.toAddMonoidHom hf with
@@ -426,14 +426,14 @@ end NormedAddGroupHom
 /-!
 ### Submodules and ideals
 
-In what follows, the norm structures created above for quotients of (semi)`normed_add_comm_group`s
-by `add_subgroup`s are transferred via definitional equality to quotients of modules by submodules,
+In what follows, the norm structures created above for quotients of (semi)`NormedAddCommGroup`s
+by `AddSubgroup`s are transferred via definitional equality to quotients of modules by submodules,
 and of rings by ideals, thereby preserving the definitional equality for the topological group and
 uniform structures worked for above. Completeness is also transferred via this definitional
 equality.
 
-In addition, instances are constructed for `normed_space`, `semi_normed_comm_ring`,
-`normed_comm_ring` and `normed_algebra` under the appropriate hypotheses. Currently, we do not
+In addition, instances are constructed for `NormedSpace`, `SeminormedCommRing`,
+`NormedCommRing` and `NormedAlgebra` under the appropriate hypotheses. Currently, we do not
 have quotients of rings by two-sided ideals, hence the commutativity hypotheses are required.
 -/
 
@@ -454,7 +454,7 @@ instance Submodule.Quotient.completeSpace [CompleteSpace M] : CompleteSpace (M �
   QuotientAddGroup.completeSpace M S.toAddSubgroup
 #align submodule.quotient.complete_space Submodule.Quotient.completeSpace
 
-/-- For any `x : M ⧸ S` and any `0 < ε`, there is `m : M` such that `submodule.quotient.mk m = x`
+/-- For any `x : M ⧸ S` and any `0 < ε`, there is `m : M` such that `Submodule.Quotient.mk m = x`
 and `‖m‖ < ‖x‖ + ε`. -/
 nonrec theorem Submodule.Quotient.norm_mk_lt {S : Submodule R M} (x : M ⧸ S) {ε : ℝ} (hε : 0 < ε) :
     ∃ m : M, Submodule.Quotient.mk m = x ∧ ‖m‖ < ‖x‖ + ε :=
