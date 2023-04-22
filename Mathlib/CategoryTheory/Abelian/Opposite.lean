@@ -8,9 +8,9 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Abelian.Basic
-import Mathbin.CategoryTheory.Preadditive.Opposite
-import Mathbin.CategoryTheory.Limits.Opposites
+import Mathlib.CategoryTheory.Abelian.Basic
+import Mathlib.CategoryTheory.Preadditive.Opposite
+import Mathlib.CategoryTheory.Limits.Opposites
 
 /-!
 # The opposite of an abelian category is abelian.
@@ -28,8 +28,7 @@ variable (C : Type _) [Category C] [Abelian C]
 attribute [local instance]
   has_finite_limits_of_has_equalizers_and_finite_products has_finite_colimits_of_has_coequalizers_and_finite_coproducts
 
-instance : Abelian Cᵒᵖ
-    where
+instance : Abelian Cᵒᵖ where
   normalMonoOfMono X Y f m := normal_mono_of_normal_epi_unop _ (normal_epi_of_epi f.unop)
   normalEpiOfEpi X Y f m := normal_epi_of_normal_mono_unop _ (normal_mono_of_mono f.unop)
 
@@ -41,12 +40,10 @@ variable {C} {X Y : C} (f : X ⟶ Y) {A B : Cᵒᵖ} (g : A ⟶ B)
 -- (The abelian case is probably sufficient for most applications.)
 /-- The kernel of `f.op` is the opposite of `cokernel f`. -/
 @[simps]
-def kernelOpUnop : (kernel f.op).unop ≅ cokernel f
-    where
+def kernelOpUnop : (kernel f.op).unop ≅ cokernel f where
   Hom := (kernel.lift f.op (cokernel.π f).op <| by simp [← op_comp]).unop
   inv :=
-    cokernel.desc f (kernel.ι f.op).unop <|
-      by
+    cokernel.desc f (kernel.ι f.op).unop <| by
       rw [← f.unop_op, ← unop_comp, f.unop_op]
       simp
   hom_inv_id' := by
@@ -65,11 +62,9 @@ def kernelOpUnop : (kernel f.op).unop ≅ cokernel f
 -- (The abelian case is probably sufficient for most applications.)
 /-- The cokernel of `f.op` is the opposite of `kernel f`. -/
 @[simps]
-def cokernelOpUnop : (cokernel f.op).unop ≅ kernel f
-    where
+def cokernelOpUnop : (cokernel f.op).unop ≅ kernel f where
   Hom :=
-    kernel.lift f (cokernel.π f.op).unop <|
-      by
+    kernel.lift f (cokernel.π f.op).unop <| by
       rw [← f.unop_op, ← unop_comp, f.unop_op]
       simp
   inv := (cokernel.desc f.op (kernel.ι f).op <| by simp [← op_comp]).unop
@@ -167,8 +162,7 @@ def imageUnopUnop : (image g).unop ≅ image g.unop :=
 #align category_theory.image_unop_unop CategoryTheory.imageUnopUnop
 
 theorem image_ι_op_comp_imageUnopOp_hom :
-    (image.ι g.unop).op ≫ (imageUnopOp g).Hom = factorThruImage g :=
-  by
+    (image.ι g.unop).op ≫ (imageUnopOp g).Hom = factorThruImage g := by
   dsimp only [image_unop_op]
   simp only [← category.assoc, ← op_comp, iso.trans_hom, iso.symm_hom, iso.op_hom,
     cokernel_op_op_inv, cokernel_comp_is_iso_hom, cokernel_epi_comp_hom,
