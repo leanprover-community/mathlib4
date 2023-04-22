@@ -50,7 +50,7 @@ def Γ : Karoubi (ChainComplex C ℕ) ⥤ Karoubi (SimplicialObject C) :=
 
 /-- The Dold-Kan equivalence `Karoubi (SimplicialObject C) ≌ Karoubi (ChainComplex C ℕ)`
 for additive categories. -/
-@[simps functor inverse unitIso counitIso]
+@[simps]
 def equivalence : Karoubi (SimplicialObject C) ≌ Karoubi (ChainComplex C ℕ) where
   functor := N
   inverse := Γ
