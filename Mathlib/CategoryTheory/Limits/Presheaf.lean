@@ -147,12 +147,20 @@ theorem extendAlongYoneda_obj (P : Cᵒᵖ ⥤ Type u₁) :
   rfl
 #align category_theory.colimit_adj.extend_along_yoneda_obj CategoryTheory.ColimitAdj.extendAlongYoneda_obj
 
+-- porting note: adding this lemma because lean 4 ext no longer applies all ext lemmas when
+-- stuck (and hence can see through definitional equalities). The previous lemma shows that
+-- `(extendAlongYoneda A).obj P` is definitionally a colimit, and the ext lemma is just
+-- a special case of `CategoryTheory.Limits.colimit.hom_ext`.
+@[ext] lemma extendAlongYoneda_obj.homext {P : Cᵒᵖ ⥤ Type u₁}
+    {f f' : (extendAlongYoneda A).obj P ⟶ X}
+    (w : ∀ j, colimit.ι ((CategoryOfElements.π P).leftOp ⋙ A) j ≫ f =
+      colimit.ι ((CategoryOfElements.π P).leftOp ⋙ A) j ≫ f') : f = f' :=
+CategoryTheory.Limits.colimit.hom_ext w
+
 theorem extendAlongYoneda_map {X Y : Cᵒᵖ ⥤ Type u₁} (f : X ⟶ Y) :
     (extendAlongYoneda A).map f =
       colimit.pre ((CategoryOfElements.π Y).leftOp ⋙ A) (CategoryOfElements.map f).op := by
-  -- Porting note:
-  -- the next line was `ext J` in mathlib3
-  refine CategoryTheory.Limits.colimit.hom_ext (fun J => ?_)
+  ext J
   erw [colimit.ι_pre ((CategoryOfElements.π Y).leftOp ⋙ A) (CategoryOfElements.map f).op]
   dsimp only [extendAlongYoneda, restrictYonedaHomEquiv, IsColimit.homIso', IsColimit.homIso,
     uliftTrivial]
