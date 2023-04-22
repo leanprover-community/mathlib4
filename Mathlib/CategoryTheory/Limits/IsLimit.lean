@@ -927,6 +927,12 @@ def homIso (h : IsColimit t) (W : C) : ULift.{u₁} (t.pt ⟶ W : Type v₃) ≅
     funext f; dsimp [const]; aesop_cat
 #align category_theory.limits.is_colimit.hom_iso CategoryTheory.Limits.IsColimit.homIso
 
+/-- This unexpander makes `IsColimit.homIso C` pretty print as `C.homIso`. -/
+@[app_unexpander IsColimit.homIso] def
+  unexpandIsColimit.homIso : Lean.PrettyPrinter.Unexpander
+  | `($_ $F $(X)*)  => set_option hygiene false in `($(F).homIso $(X)*)
+  | _                 => throw ()
+
 @[simp]
 theorem homIso_hom (h : IsColimit t) {W : C} (f : ULift (t.pt ⟶ W)) :
     (IsColimit.homIso h W).hom f = (t.extend f.down).ι :=
@@ -952,6 +958,12 @@ def homIso' (h : IsColimit t) (W : C) :
         { app := fun j => p.1 j
           naturality := fun j j' f => by dsimp; rw [comp_id]; exact p.2 f } }
 #align category_theory.limits.is_colimit.hom_iso' CategoryTheory.Limits.IsColimit.homIso'
+
+/-- This unexpander makes `IsColimit.homIso' C` pretty print as `C.homIso'`. -/
+@[app_unexpander IsColimit.homIso'] def
+  unexpandIsColimit.homIso' : Lean.PrettyPrinter.Unexpander
+  | `($_ $F $(X)*)  => set_option hygiene false in `($(F).homIso' $(X)*)
+  | _                 => throw ()
 
 /-- If G : C → D is a faithful functor which sends t to a colimit cocone,
   then it suffices to check that the induced maps for the image of t

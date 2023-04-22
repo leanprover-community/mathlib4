@@ -181,6 +181,12 @@ protected def trans (e₁ : α ≃ β) (e₂ : β ≃ γ) : α ≃ γ :=
   ⟨e₂ ∘ e₁, e₁.symm ∘ e₂.symm, e₂.left_inv.comp e₁.left_inv, e₂.right_inv.comp e₁.right_inv⟩
 #align equiv.trans Equiv.trans
 
+/-- This unexpander makes `Equiv.trans e` pretty print as `e.trans`. -/
+@[app_unexpander Equiv.trans] def
+  unexpandEquiv.trans : Lean.PrettyPrinter.Unexpander
+  | `($_ $F $(X)*)  => set_option hygiene false in `($(F).trans $(X)*)
+  | _                 => throw ()
+
 @[simps]
 instance : Trans Equiv Equiv Equiv where
   trans := Equiv.trans

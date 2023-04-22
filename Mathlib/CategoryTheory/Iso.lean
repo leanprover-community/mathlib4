@@ -101,6 +101,12 @@ def symm (I : X ≅ Y) : Y ≅ X where
   inv := I.hom
 #align category_theory.iso.symm CategoryTheory.Iso.symm
 
+/-- This unexpander makes `Iso.symm i` pretty print as `i.symm`. -/
+@[app_unexpander Iso.symm] def
+  unexpandIso.symm : Lean.PrettyPrinter.Unexpander
+  | `($_ $F $(X)*)  => set_option hygiene false in `($(F).symm $(X)*)
+  | _                 => throw ()
+
 @[simp]
 theorem symm_hom (α : X ≅ Y) : α.symm.hom = α.inv :=
   rfl

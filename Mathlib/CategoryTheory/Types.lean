@@ -344,6 +344,12 @@ def toEquiv (i : X ≅ Y) : X ≃ Y where
   right_inv y := congr_fun i.inv_hom_id y
 #align category_theory.iso.to_equiv CategoryTheory.Iso.toEquiv
 
+/-- This unexpander makes `Iso.toEquiv i` pretty print as `i.toEquiv`. -/
+@[app_unexpander Iso.toEquiv] def
+  unexpandIso.toEquiv : Lean.PrettyPrinter.Unexpander
+  | `($_ $F $(X)*)  => set_option hygiene false in `($(F).toEquiv $(X)*)
+  | _                 => throw ()
+
 @[simp]
 theorem toEquiv_fun (i : X ≅ Y) : (i.toEquiv : X → Y) = i.hom :=
   rfl
