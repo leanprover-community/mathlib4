@@ -419,6 +419,11 @@ variable {C}
 
 namespace Split
 
+-- porting note: added as `Hom.ext` is not triggered automatically
+@[ext]
+theorem hom_ext {S₁ S₂ : Split C} (Φ₁ Φ₂ : S₁ ⟶ S₂) (h : ∀ n : ℕ, Φ₁.f n = Φ₂.f n) : Φ₁ = Φ₂ :=
+  Hom.ext _ _ h
+
 theorem congr_F {S₁ S₂ : Split C} {Φ₁ Φ₂ : S₁ ⟶ S₂} (h : Φ₁ = Φ₂) : Φ₁.f = Φ₂.f := by rw [h]
 set_option linter.uppercaseLean3 false in
 #align simplicial_object.split.congr_F SimplicialObject.Split.congr_F
