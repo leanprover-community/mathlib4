@@ -194,8 +194,7 @@ def toCostructuredArrow (F : Cᵒᵖ ⥤ Type v) : F.Elementsᵒᵖ ⥤ Costruct
   map f := by
     fapply CostructuredArrow.homMk
     · exact f.unop.val.unop
-    · ext Z
-      funext y
+    · ext Z y
       dsimp
       simp only [FunctorToTypes.map_comp_apply, ← f.unop.2]
 #align category_theory.category_of_elements.to_costructured_arrow CategoryTheory.CategoryOfElements.toCostructuredArrow
@@ -249,8 +248,7 @@ theorem to_fromCostructuredArrow_eq (F : Cᵒᵖ ⥤ Type v) :
     simp only [Functor.id_obj, Functor.rightOp_obj, toCostructuredArrow_obj, Functor.comp_obj,
       CostructuredArrow.mk]
     congr
-    ext x
-    funext f
+    ext x f
     convert congr_fun (X_hom.naturality f.op).symm (𝟙 X_left)
     simp
   · intro X Y f
@@ -280,8 +278,7 @@ theorem costructuredArrow_yoneda_equivalence_naturality {F₁ F₂ : Cᵒᵖ ⥤
     simp only [CostructuredArrow.map_mk, toCostructuredArrow_obj, Functor.op_obj,
       Functor.comp_obj]
     congr
-    ext
-    funext f
+    ext _ f
     simpa using congr_fun (α.naturality f.op).symm (unop X).snd
   · intro X Y f
     ext
