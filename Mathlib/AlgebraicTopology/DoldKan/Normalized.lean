@@ -8,7 +8,7 @@ Authors: Joël Riou
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.AlgebraicTopology.DoldKan.FunctorN
+import Mathlib.AlgebraicTopology.DoldKan.FunctorN
 
 /-!
 
@@ -47,8 +47,7 @@ universe v
 variable {A : Type _} [Category A] [Abelian A] {X : SimplicialObject A}
 
 theorem HigherFacesVanish.inclusionOfMooreComplexMap (n : ℕ) :
-    HigherFacesVanish (n + 1) ((inclusionOfMooreComplexMap X).f (n + 1)) := fun j hj =>
-  by
+    HigherFacesVanish (n + 1) ((inclusionOfMooreComplexMap X).f (n + 1)) := fun j hj => by
   dsimp [inclusion_of_Moore_complex_map]
   rw [←
     factor_thru_arrow _ _
@@ -57,8 +56,7 @@ theorem HigherFacesVanish.inclusionOfMooreComplexMap (n : ℕ) :
 #align algebraic_topology.dold_kan.higher_faces_vanish.inclusion_of_Moore_complex_map AlgebraicTopology.DoldKan.HigherFacesVanish.inclusionOfMooreComplexMap
 
 theorem factors_normalized_Moore_complex_pInfty (n : ℕ) :
-    Subobject.Factors (NormalizedMooreComplex.objX X n) (PInfty.f n) :=
-  by
+    Subobject.Factors (NormalizedMooreComplex.objX X n) (PInfty.f n) := by
   cases n
   · apply top_factors
   · rw [P_infty_f, normalized_Moore_complex.obj_X, finset_inf_factors]
@@ -71,8 +69,7 @@ theorem factors_normalized_Moore_complex_pInfty (n : ℕ) :
 @[simps]
 def pInftyToNormalizedMooreComplex (X : SimplicialObject A) : K[X] ⟶ N[X] :=
   ChainComplex.ofHom _ _ _ _ _ _
-    (fun n => factorThru _ _ (factors_normalized_Moore_complex_pInfty n)) fun n =>
-    by
+    (fun n => factorThru _ _ (factors_normalized_Moore_complex_pInfty n)) fun n => by
     rw [← cancel_mono (normalized_Moore_complex.obj_X X n).arrow, assoc, assoc, factor_thru_arrow, ←
       inclusion_of_Moore_complex_map_f, ← normalized_Moore_complex_obj_d, ←
       (inclusion_of_Moore_complex_map X).comm' (n + 1) n rfl, inclusion_of_Moore_complex_map_f,
@@ -99,8 +96,7 @@ theorem pInfty_comp_pInftyToNormalizedMooreComplex (X : SimplicialObject A) :
 
 @[simp, reassoc.1]
 theorem inclusionOfMooreComplexMap_comp_pInfty (X : SimplicialObject A) :
-    inclusionOfMooreComplexMap X ≫ PInfty = inclusionOfMooreComplexMap X :=
-  by
+    inclusionOfMooreComplexMap X ≫ PInfty = inclusionOfMooreComplexMap X := by
   ext n
   cases n
   · dsimp
@@ -115,8 +111,7 @@ instance : Mono (inclusionOfMooreComplexMap X) :=
 
 /-- `inclusion_of_Moore_complex_map X` is a split mono. -/
 def splitMonoInclusionOfMooreComplexMap (X : SimplicialObject A) :
-    SplitMono (inclusionOfMooreComplexMap X)
-    where
+    SplitMono (inclusionOfMooreComplexMap X) where
   retraction := pInftyToNormalizedMooreComplex X
   id' := by
     simp only [← cancel_mono (inclusion_of_Moore_complex_map X), assoc, id_comp,
@@ -130,8 +125,7 @@ variable (A)
 the functor `N₁ : simplicial_object A ⥤ karoubi (chain_complex A ℕ)` defined
 using `P_infty` identifies to the composition of the normalized Moore complex functor
 and the inclusion in the Karoubi envelope. -/
-def n₁IsoNormalizedMooreComplexCompToKaroubi : N₁ ≅ normalizedMooreComplex A ⋙ toKaroubi _
-    where
+def n₁IsoNormalizedMooreComplexCompToKaroubi : N₁ ≅ normalizedMooreComplex A ⋙ toKaroubi _ where
   Hom :=
     { app := fun X =>
         { f := pInftyToNormalizedMooreComplex X
