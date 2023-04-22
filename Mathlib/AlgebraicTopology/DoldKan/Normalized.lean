@@ -45,8 +45,8 @@ variable {A : Type _} [Category A] [Abelian A] {X : SimplicialObject A}
 theorem HigherFacesVanish.inclusionOfMooreComplexMap (n : ℕ) :
     HigherFacesVanish (n + 1) ((inclusionOfMooreComplexMap X).f (n + 1)) := fun j _ => by
   dsimp [AlgebraicTopology.inclusionOfMooreComplexMap, NormalizedMooreComplex.objX]
-  rw [← factorThru_arrow _ _ (finset_inf_arrow_factors Finset.univ _ j (by simp only [Finset.mem_univ])),
-    assoc, kernelSubobject_arrow_comp, comp_zero]
+  rw [← factorThru_arrow _ _ (finset_inf_arrow_factors Finset.univ _ j
+    (by simp only [Finset.mem_univ])), assoc, kernelSubobject_arrow_comp, comp_zero]
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.higher_faces_vanish.inclusion_of_Moore_complex_map AlgebraicTopology.DoldKan.HigherFacesVanish.inclusionOfMooreComplexMap
 
@@ -61,7 +61,7 @@ theorem factors_normalizedMooreComplex_PInfty (n : ℕ) :
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.factors_normalized_Moore_complex_P_infty AlgebraicTopology.DoldKan.factors_normalizedMooreComplex_PInfty
 
-/-- P_infty factors through the normalized Moore complex -/
+/-- `PInfty` factors through the normalized Moore complex -/
 @[simps!]
 def PInftyToNormalizedMooreComplex (X : SimplicialObject A) : K[X] ⟶ N[X] :=
   ChainComplex.ofHom _ _ _ _ _ _
@@ -125,8 +125,8 @@ set_option linter.uppercaseLean3 false in
 variable (A)
 
 /-- When the category `A` is abelian,
-the functor `N₁ : simplicial_object A ⥤ karoubi (chain_complex A ℕ)` defined
-using `P_infty` identifies to the composition of the normalized Moore complex functor
+the functor `N₁ : SimplicialObject A ⥤ Karoubi (ChainComplex A ℕ)` defined
+using `PInfty` identifies to the composition of the normalized Moore complex functor
 and the inclusion in the Karoubi envelope. -/
 def N₁_iso_normalizedMooreComplex_comp_toKaroubi : N₁ ≅ normalizedMooreComplex A ⋙ toKaroubi _ where
   hom :=
