@@ -8,10 +8,10 @@ Authors: Anne Baanen
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.BigOperators.Fin
-import Mathbin.Algebra.GeomSum
-import Mathbin.LinearAlgebra.Matrix.Determinant
-import Mathbin.LinearAlgebra.Matrix.Nondegenerate
+import Mathlib.Algebra.BigOperators.Fin
+import Mathlib.Algebra.GeomSum
+import Mathlib.LinearAlgebra.Matrix.Determinant
+import Mathlib.LinearAlgebra.Matrix.Nondegenerate
 
 /-!
 # Vandermonde matrix
@@ -50,8 +50,7 @@ theorem vandermonde_apply {n : ℕ} (v : Fin n → R) (i j) : vandermonde v i j 
 @[simp]
 theorem vandermonde_cons {n : ℕ} (v0 : R) (v : Fin n → R) :
     vandermonde (Fin.cons v0 v : Fin n.succ → R) =
-      Fin.cons (fun j => v0 ^ (j : ℕ)) fun i => Fin.cons 1 fun j => v i * vandermonde v i j :=
-  by
+      Fin.cons (fun j => v0 ^ (j : ℕ)) fun i => Fin.cons 1 fun j => v i * vandermonde v i j := by
   ext (i j)
   refine' Fin.cases (by simp) (fun i => _) i
   refine' Fin.cases (by simp) (fun j => _) j
@@ -61,8 +60,7 @@ theorem vandermonde_cons {n : ℕ} (v0 : R) (v : Fin n → R) :
 theorem vandermonde_succ {n : ℕ} (v : Fin n.succ → R) :
     vandermonde v =
       Fin.cons (fun j => v 0 ^ (j : ℕ)) fun i =>
-        Fin.cons 1 fun j => v i.succ * vandermonde (Fin.tail v) i j :=
-  by
+        Fin.cons 1 fun j => v i.succ * vandermonde (Fin.tail v) i j := by
   conv_lhs => rw [← Fin.cons_self_tail v, vandermonde_cons]
   simp only [Fin.tail]
 #align matrix.vandermonde_succ Matrix.vandermonde_succ
@@ -78,8 +76,7 @@ theorem vandermonde_transpose_mul_vandermonde {n : ℕ} (v : Fin n → R) (i j) 
 #align matrix.vandermonde_transpose_mul_vandermonde Matrix.vandermonde_transpose_mul_vandermonde
 
 theorem det_vandermonde {n : ℕ} (v : Fin n → R) :
-    det (vandermonde v) = ∏ i : Fin n, ∏ j in Ioi i, v j - v i :=
-  by
+    det (vandermonde v) = ∏ i : Fin n, ∏ j in Ioi i, v j - v i := by
   unfold vandermonde
   induction' n with n ih
   · exact det_eq_one_of_card_eq_zero (Fintype.card_fin 0)
@@ -94,8 +91,7 @@ theorem det_vandermonde {n : ℕ} (v : Fin n → R) :
           (of fun i j : Fin n =>
             Matrix.vecCons (v 0 ^ (j.succ : ℕ))
               (fun i : Fin n => v (Fin.succ i) ^ (j.succ : ℕ) - v 0 ^ (j.succ : ℕ))
-              (Fin.succAbove 0 i)) :=
-      by
+              (Fin.succAbove 0 i)) := by
       simp_rw [det_succ_column_zero, Fin.sum_univ_succ, of_apply, Matrix.cons_val_zero, submatrix,
         of_apply, Matrix.cons_val_succ, Fin.val_zero, pow_zero, one_mul, sub_self,
         MulZeroClass.mul_zero, MulZeroClass.zero_mul, Finset.sum_const_zero, add_zero]
@@ -104,8 +100,7 @@ theorem det_vandermonde {n : ℕ} (v : Fin n → R) :
           (of fun i j : Fin n =>
               (v (Fin.succ i) - v 0) *
                 ∑ k in Finset.range (j + 1 : ℕ), v i.succ ^ k * v 0 ^ (j - k : ℕ) :
-            Matrix _ _ R) :=
-      by
+            Matrix _ _ R) := by
       congr
       ext (i j)
       rw [Fin.succAbove_zero, Matrix.cons_val_succ, Fin.val_succ, mul_comm]
@@ -142,8 +137,7 @@ theorem det_vandermonde {n : ℕ} (v : Fin n → R) :
 #align matrix.det_vandermonde Matrix.det_vandermonde
 
 theorem det_vandermonde_eq_zero_iff [IsDomain R] {n : ℕ} {v : Fin n → R} :
-    det (vandermonde v) = 0 ↔ ∃ i j : Fin n, v i = v j ∧ i ≠ j :=
-  by
+    det (vandermonde v) = 0 ↔ ∃ i j : Fin n, v i = v j ∧ i ≠ j := by
   constructor
   · simp only [det_vandermonde v, Finset.prod_eq_zero_iff, sub_eq_zero, forall_exists_index]
     exact fun i _ j h₁ h₂ => ⟨j, i, h₂, (mem_Ioi.mp h₁).ne'⟩
