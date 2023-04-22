@@ -64,8 +64,9 @@ def applyFunHyp (f : Term) (using? : Option Expr) (h : FVarId) (g : MVarId) :
 def applyFunTargetFailure (f : Term) : MetaM (List MVarId) := do
   throwError "`apply_fun` could not apply `{f}` to the main goal."
 
-/-- Given a metavariable `ginj` of type `Injective f`, try to prove it. -/
-def proveInjective (ginj : Expr) (using? : Option Expr) : MetaM Bool := do
+/-- Given a metavariable `ginj` of type `Injective f`, try to prove it.
+Returns whether it was successful. -/
+def maybeProveInjective (ginj : Expr) (using? : Option Expr) : MetaM Bool := do
   -- Try the `using` clause
   if let some u := using? then
     if ← isDefEq ginj u then
@@ -77,6 +78,9 @@ def proveInjective (ginj : Expr) (using? : Option Expr) : MetaM Bool := do
   -- Try an assumption
   try ginj.mvarId!.assumption; return true catch _ => pure ()
   -- Try using that this is an equivalence
+  -- Note: if `f` is itself a metavariable, this can cause it to become an equivalence;
+  -- perhaps making sure `f` is an equivalence would be correct, but maybe users
+  -- shouldn't do `apply_fun _`.
   let ok ← observing? do
     let [] ← ginj.mvarId!.apply (← mkConstWithFreshMVarLevels ``Equiv.injective) | failure
   if ok.isSome then return true
@@ -87,13 +91,14 @@ def applyFunTarget (f : Term) (using? : Option Expr) (g : MVarId) : TacticM (Lis
   -- handle applying a two-argument theorem whose first argument is f
   let handle (thm : Name) : TacticM (List MVarId) := do
     let ng ← mkFreshExprMVar none
-    let pf ← withoutRecover <| runTermElab do
-      let pf ← Term.elabTermEnsuringType (← ``($(mkIdent thm) $f $(← Term.exprToSyntax ng)))
-                  (← g.getType)
-      Term.synthesizeSyntheticMVarsUsingDefault
-      return pf
+    let (pf, gs) ← withCollectingNewGoalsFrom (tagSuffix := `apply_fun) <|
+      withoutRecover <| runTermElab do
+        let pf ← Term.elabTermEnsuringType (← `($(mkIdent thm) $f $(← Term.exprToSyntax ng)))
+                    (← g.getType)
+        Term.synthesizeSyntheticMVarsUsingDefault
+        return pf
     g.assign pf
-    return [ng.mvarId!]
+    return ng.mvarId! :: gs
   match (← g.getType).getAppFnArgs with
   | (``Ne, #[_, _, _]) => handle ``ne_of_apply_ne
   | (``Not, #[p]) => match p.getAppFnArgs with
@@ -105,20 +110,27 @@ def applyFunTarget (f : Term) (using? : Option Expr) (g : MVarId) : TacticM (Lis
   -- | (``LT.lt, _) => g.apply (← mkAppM ``OrderIso.lt_iff_lt #[f])
   -- | (``GT.gt, _) => g.apply (← mkAppM ``OrderIso.lt_iff_lt #[f])
   | (``Eq, #[_, _, _]) => do
-    -- g' is the `f lhs = f rhs` goal, ginj is the `Injective f` goal.
-    let (g', ginj) ← withoutRecover <| runTermElab do
-      let finj ← Term.elabTerm (← ``(Function.Injective $f)) none
-      let ginj ← mkFreshExprMVar finj
-      let g' ← mkFreshExprMVar none
-      let pf ← Term.elabAppArgs ginj #[] #[.expr g'] (← g.getType) false false
-      let pf ← Term.ensureHasType (← g.getType) pf
-      Term.synthesizeSyntheticMVarsUsingDefault
-      g.assign pf
-      return (g', ginj)
-    if ← proveInjective ginj using? then
-      return [g'.mvarId!]
-    else
-      return [g'.mvarId!, ginj.mvarId!]
+    -- g' is for the `f lhs = f rhs` goal
+    let g' ← mkFreshExprSyntheticOpaqueMVar (← mkFreshTypeMVar) (← g.getTag)
+    -- ginj is for the `Injective f` goal
+    let ginj ← mkFreshExprSyntheticOpaqueMVar (← mkFreshTypeMVar) (appendTag (← g.getTag) `inj)
+    -- `withCollectingNewGoalsFrom` does not expect the goal to be closed, so here is "the goal"
+    let gDefer ← mkFreshExprMVar (← g.getType)
+    let (_, gs) ← withCollectingNewGoalsFrom (tagSuffix := `apply_fun) <|
+      withoutRecover <| runTermElab do
+        let inj ← Term.elabTerm (← ``(Function.Injective $f)) none
+        _ ← isDefEq (← inferType ginj) inj
+        let pf ← Term.elabAppArgs ginj #[] #[.expr g'] (← g.getType) false false
+        let pf ← Term.ensureHasType (← g.getType) pf
+        -- In the current context, let's try proving injectivity since it might fill in some holes
+        _ ← withAssignableSyntheticOpaque <| maybeProveInjective ginj using?
+        Term.synthesizeSyntheticMVarsUsingDefault
+        gDefer.mvarId!.assign pf
+        -- Return `inj` so that `withCollectingNewGoalsFrom` detects holes in `f`.
+        return inj
+    g.assign gDefer
+    -- Perhaps ginj was assigned by `proveInjective`, but it's OK putting `ginj` in the list.
+    return [g'.mvarId!, ginj.mvarId!] ++ gs
   | _ => applyFunTargetFailure f
 
 /--
@@ -150,6 +162,9 @@ example (X Y Z : Type) (f : X → Y) (g : Y → Z) (H : Injective <| g ∘ f) :
   apply_fun g at h
   exact H h
 ```
+
+The function `f` is handled similarly to how it would be handled by `refine` in that `f` can contain
+placeholders. Named placeholders (like `?a` or `?_`) will produce new goals.
  -/
 syntax (name := applyFun) "apply_fun " term (ppSpace location)? (" using " term)? : tactic
 

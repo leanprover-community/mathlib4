@@ -14,6 +14,44 @@ example (f : ℕ → ℕ) (h : f x = f y) : x = y := by
   · guard_target = Injective f
     sorry
 
+example (f : ℕ → ℕ → ℕ) (h : f 1 x = f 1 y) (hinj : ∀ n, Injective (f n)) : x = y := by
+  apply_fun f ?foo
+  guard_target = f ?foo x = f ?foo y
+  case foo => exact 1
+  · exact h
+  · apply hinj
+
+-- Uses `refine`-style rules for placeholders:
+example (f : ℕ → ℕ → ℕ) : x = y := by
+  fail_if_success apply_fun f _
+  sorry
+
+example (f : ℕ → ℕ → ℕ) (h : f 1 x = f 1 y) (hinj : Injective (f 1)) : x = y := by
+  apply_fun f _ using hinj
+  -- Solves for the hole using unification since it makes use of the `using` clause.
+  guard_target = f 1 x = f 1 y
+  assumption
+
+-- A test to show a perhaps unexpected consequence of how injectivity is auto-proved:
+example (f : ℕ → ℕ → ℕ) (h : f 1 x = f 1 y) (hinj : Injective (f 1)) : x = y := by
+  apply_fun f _
+  -- Solves for the hole using unification since `hinj` is pulled in by `assumption`.
+  guard_target = f 1 x = f 1 y
+  assumption
+
+-- A test to show a perhaps unexpected consequence of how injectivity is auto-proved:
+example (f : ℕ → ℕ) (h : f x = f y) (hinj : Injective f) : x = y := by
+  apply_fun _
+  guard_target = f x = f y
+  assumption
+
+-- Make sure named holes generate new goals for `≠`
+example (f : ℕ → ℕ → ℕ) (h : f 1 x ≠ f 1 y) : x ≠ y := by
+  apply_fun f ?foo
+  guard_target = f ?foo x ≠ f ?foo y
+  case foo => exact 1
+  assumption
+
 example (X Y Z : Type) (f : X → Y) (g : Y → Z) (H : Injective $ g ∘ f) : Injective f := by
   intros x x' h
   apply_fun g at h
