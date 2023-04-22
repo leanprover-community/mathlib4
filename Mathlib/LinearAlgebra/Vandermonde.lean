@@ -50,7 +50,8 @@ theorem vandermonde_apply {n : ℕ} (v : Fin n → R) (i j) : vandermonde v i j 
 @[simp]
 theorem vandermonde_cons {n : ℕ} (v0 : R) (v : Fin n → R) :
     vandermonde (Fin.cons v0 v : Fin n.succ → R) =
-      Fin.cons (fun (j : Fin n.succ) => v0 ^ (j : ℕ)) fun i => Fin.cons 1 fun j => v i * vandermonde v i j := by
+      Fin.cons (fun (j : Fin n.succ) => v0 ^ (j : ℕ)) fun i => Fin.cons 1
+      fun j => v i * vandermonde v i j := by
   ext (i j)
   refine' Fin.cases (by simp) (fun i => _) i
   refine' Fin.cases (by simp) (fun j => _) j
@@ -109,7 +110,8 @@ theorem det_vandermonde {n : ℕ} (v : Fin n → R) :
           det fun i j : Fin n =>
             ∑ k in Finset.range (j + 1 : ℕ), v i.succ ^ k * v 0 ^ (j - k : ℕ) :=
       (det_mul_column (fun i => v (Fin.succ i) - v 0) _)
-    _ = (Finset.prod Finset.univ (fun i => v (Fin.succ i) - v 0)) * det fun i j : Fin n => v (Fin.succ i) ^ (j : ℕ) :=
+    _ = (Finset.prod Finset.univ (fun i => v (Fin.succ i) - v 0)) *
+    det fun i j : Fin n => v (Fin.succ i) ^ (j : ℕ) :=
       (congr_arg _ _)
     _ = ∏ i : Fin n.succ, Finset.prod (Ioi i) (fun j => v j - v i) := by
       simp_rw [Fin.prod_univ_succ, Fin.prod_Ioi_zero, Fin.prod_Ioi_succ]
@@ -159,7 +161,8 @@ theorem eq_zero_of_forall_index_sum_pow_mul_eq_zero {R : Type _} [CommRing R] [I
     {f v : Fin n → R} (hf : Function.Injective f)
     (hfv : ∀ j, (∑ i : Fin n, f j ^ (i : ℕ) * v i) = 0) : v = 0 :=
   eq_zero_of_mulVec_eq_zero (det_vandermonde_ne_zero_iff.mpr hf) (funext hfv)
-#align matrix.eq_zero_of_forall_index_sum_pow_mul_eq_zero Matrix.eq_zero_of_forall_index_sum_pow_mul_eq_zero
+#align matrix.eq_zero_of_forall_index_sum_pow_mul_eq_zero
+Matrix.eq_zero_of_forall_index_sum_pow_mul_eq_zero
 
 theorem eq_zero_of_forall_index_sum_mul_pow_eq_zero {R : Type _} [CommRing R] [IsDomain R] {n : ℕ}
     {f v : Fin n → R} (hf : Function.Injective f) (hfv : ∀ j, (∑ i, v i * f j ^ (i : ℕ)) = 0) :
@@ -167,12 +170,14 @@ theorem eq_zero_of_forall_index_sum_mul_pow_eq_zero {R : Type _} [CommRing R] [I
   apply eq_zero_of_forall_index_sum_pow_mul_eq_zero hf
   simp_rw [mul_comm]
   exact hfv
-#align matrix.eq_zero_of_forall_index_sum_mul_pow_eq_zero Matrix.eq_zero_of_forall_index_sum_mul_pow_eq_zero
+#align matrix.eq_zero_of_forall_index_sum_mul_pow_eq_zero
+Matrix.eq_zero_of_forall_index_sum_mul_pow_eq_zero
 
 theorem eq_zero_of_forall_pow_sum_mul_pow_eq_zero {R : Type _} [CommRing R] [IsDomain R] {n : ℕ}
     {f v : Fin n → R} (hf : Function.Injective f)
     (hfv : ∀ i : Fin n, (∑ j : Fin n, v j * f j ^ (i : ℕ)) = 0) : v = 0 :=
   eq_zero_of_vecMul_eq_zero (det_vandermonde_ne_zero_iff.mpr hf) (funext hfv)
-#align matrix.eq_zero_of_forall_pow_sum_mul_pow_eq_zero Matrix.eq_zero_of_forall_pow_sum_mul_pow_eq_zero
+#align matrix.eq_zero_of_forall_pow_sum_mul_pow_eq_zero
+Matrix.eq_zero_of_forall_pow_sum_mul_pow_eq_zero
 
 end Matrix
