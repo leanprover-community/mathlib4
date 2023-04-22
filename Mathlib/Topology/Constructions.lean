@@ -1395,19 +1395,21 @@ theorem pi_generateFrom_eq_finite {π : ι → Type _} {g : ∀ a, Set (Set (π 
     by_cases a ∈ i <;> simp [*]
 #align pi_generate_from_eq_finite pi_generateFrom_eq_finite
 
+-- porting note: new lemma
+theorem induced_to_pi {X : Type _} (f : X → ∀ i, π i) :
+    induced f Pi.topologicalSpace = ⨅ i, induced (f · i) inferInstance := by
+  erw [induced_infᵢ]
+  simp only [induced_compose]
+  rfl
+
 /-- Suppose `π i` is a family of topological spaces indexed by `i : ι`, and `X` is a type
 endowed with a family of maps `f i : X → π i` for every `i : ι`, hence inducing a
 map `g : X → Π i, π i`. This lemma shows that infimum of the topologies on `X` induced by
 the `f i` as `i : ι` varies is simply the topology on `X` induced by `g : X → Π i, π i`
 where `Π i, π i` is endowed with the usual product topology. -/
 theorem inducing_infᵢ_to_pi {X : Type _} (f : ∀ i, X → π i) :
-    @Inducing X (∀ i, π i) (⨅ i, induced (f i) inferInstance) _ fun x i => f i x := by
-  letI := ⨅ i, induced (f i) inferInstance
-  constructor
-  erw [induced_infᵢ]
-  congr 1
-  funext
-  erw [induced_compose]; rfl
+    @Inducing X (∀ i, π i) (⨅ i, induced (f i) inferInstance) _ fun x i => f i x :=
+  letI := ⨅ i, induced (f i) inferInstance; ⟨(induced_to_pi _).symm⟩
 #align inducing_infi_to_pi inducing_infᵢ_to_pi
 
 variable [Finite ι] [∀ i, DiscreteTopology (π i)]

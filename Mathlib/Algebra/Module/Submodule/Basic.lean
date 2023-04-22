@@ -409,9 +409,9 @@ variable {α β : Type _}
 instance [VAdd M α] : VAdd p α :=
   p.toAddSubmonoid.vadd
 
-instance vAddCommClass [VAdd M β] [VAdd α β] [VAddCommClass M α β] : VAddCommClass p α β :=
+instance vaddCommClass [VAdd M β] [VAdd α β] [VAddCommClass M α β] : VAddCommClass p α β :=
   ⟨fun a => (vadd_comm (a : M) : _)⟩
-#align submodule.vadd_comm_class Submodule.vAddCommClass
+#align submodule.vadd_comm_class Submodule.vaddCommClass
 
 instance [VAdd M α] [FaithfulVAdd M α] : FaithfulVAdd p α :=
   ⟨fun h => Subtype.ext <| eq_of_vadd_eq_vadd h⟩
