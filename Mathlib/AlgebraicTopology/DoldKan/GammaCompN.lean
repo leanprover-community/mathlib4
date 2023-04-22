@@ -178,10 +178,8 @@ lemma whiskerLeft_toKaroubi_N₂Γ₂_hom :
 attribute [irreducible] N₂Γ₂
 
 theorem N₂Γ₂_compatible_with_N₁Γ₀ (K : ChainComplex C ℕ) :
-    N₂Γ₂.hom.app ((toKaroubi _).obj K) = N₂Γ₂ToKaroubiIso.hom.app K ≫ N₁Γ₀.hom.app K := by
-  have h := congr_app whiskerLeft_toKaroubi_N₂Γ₂_hom K
-  simp only [whiskerLeft, NatTrans.comp_app] at h
-  exact h
+    N₂Γ₂.hom.app ((toKaroubi _).obj K) = N₂Γ₂ToKaroubiIso.hom.app K ≫ N₁Γ₀.hom.app K :=
+  congr_app whiskerLeft_toKaroubi_N₂Γ₂_hom K
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.N₂Γ₂_compatible_with_N₁Γ₀ AlgebraicTopology.DoldKan.N₂Γ₂_compatible_with_N₁Γ₀
 
