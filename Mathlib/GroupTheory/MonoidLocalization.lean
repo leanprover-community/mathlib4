@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 
 ! This file was ported from Lean 3 source module group_theory.monoid_localization
-! leanprover-community/mathlib commit 13b8e258f14bffb5def542aa78b803b0b80541aa
+! leanprover-community/mathlib commit 10ee941346c27bdb5e87bb3535100c0b1f08ac41
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -1967,35 +1967,39 @@ theorem mk_lt_mk : mk a₁ a₂ < mk b₁ b₂ ↔ ↑b₂ * a₁ < a₂ * b₁ 
 #align localization.mk_lt_mk Localization.mk_lt_mk
 #align add_localization.mk_lt_mk addLocalization.mk_lt_mk
 
+-- declaring this separately to the instance below makes things faster
+@[to_additive]
+instance : PartialOrder (Localization s) where
+  le := (· ≤ ·)
+  lt := (· < ·)
+  le_refl a := Localization.induction_on a fun a => le_rfl
+  le_trans a b c :=
+    Localization.induction_on₃ a b c fun a b c hab hbc => by
+      simp only [mk_le_mk] at hab hbc⊢
+      refine' le_of_mul_le_mul_left' _
+      · exact b.2
+      rw [mul_left_comm]
+      refine' (mul_le_mul_left' hab _).trans _
+      rwa [mul_left_comm, mul_left_comm ↑b.2, mul_le_mul_iff_left]
+  le_antisymm a b := by
+    induction' a with a₁ a₂
+    induction' b with b₁ b₂
+    simp_rw [mk_le_mk, mk_eq_mk_iff, r_iff_exists]
+    exact fun hab hba => ⟨1, by rw [hab.antisymm hba]⟩
+    all_goals intros ; rfl
+  lt_iff_le_not_le a b := Localization.induction_on₂ a b fun a b => lt_iff_le_not_le
+
 @[to_additive]
 instance orderedCancelCommMonoid : OrderedCancelCommMonoid (Localization s) :=
-  { Localization.commMonoid _, Localization.le, Localization.lt with
-    le_refl := fun a => Localization.induction_on a fun a => le_rfl
-    le_trans := fun a b c =>
-      Localization.induction_on₃ a b c @fun a b c hab hbc =>
-        by
-        simp only [mk_le_mk] at hab hbc⊢
-        refine' le_of_mul_le_mul_left' _
-        · exact ↑b.2
-        rw [mul_left_comm]
-        refine' (mul_le_mul_left' hab _).trans _
-        rwa [mul_left_comm, mul_left_comm (b.2 : α), mul_le_mul_iff_left]
-    le_antisymm := fun a b => by
-      induction' a with a₁ a₂
-      induction' b with b₁ b₂
-      simp_rw [mk_le_mk, mk_eq_mk_iff, r_iff_exists]
-      exact fun hab hba => ⟨1, by rw [hab.antisymm hba]⟩
-      all_goals intros ; rfl
-    lt_iff_le_not_le := fun a b => Localization.induction_on₂ a b fun a b => lt_iff_le_not_le
+  { Localization.commMonoid s,
+    Localization.partialOrder with
     mul_le_mul_left := fun a b =>
       Localization.induction_on₂ a b fun a b hab c =>
-        Localization.induction_on c fun c =>
-          by
+        Localization.induction_on c fun c => by
           simp only [mk_mul, mk_le_mk, Submonoid.coe_mul, mul_mul_mul_comm _ _ c.1] at hab⊢
           exact mul_le_mul_left' hab _
     le_of_mul_le_mul_left := fun a b c =>
-      Localization.induction_on₃ a b c fun a b c hab =>
-        by
+      Localization.induction_on₃ a b c fun a b c hab => by
         simp only [mk_mul, mk_le_mk, Submonoid.coe_mul, mul_mul_mul_comm _ _ a.1] at hab⊢
         exact le_of_mul_le_mul_left' hab }
 
@@ -2030,12 +2034,12 @@ instance [LinearOrderedCancelCommMonoid α] {s : Submonoid α} :
     LinearOrderedCancelCommMonoid (Localization s) :=
   { Localization.orderedCancelCommMonoid with
     le_total := fun a b =>
-      Localization.induction_on₂ a b fun _ _ =>
-        by
+      Localization.induction_on₂ a b fun _ _ => by
         simp_rw [mk_le_mk]
         exact le_total _ _
     decidable_le := @Localization.decidableLe α _ _ LE.le.decidable
     decidable_lt := @Localization.decidableLt α _ _ LT.lt.decidable
+      -- porting note: was wrong in mathlib3
     decidable_eq := Localization.decidableEq }
 
 end Localization
