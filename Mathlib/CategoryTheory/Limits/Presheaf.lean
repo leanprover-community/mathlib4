@@ -151,41 +151,6 @@ theorem extendAlongYoneda_obj (P : Cᵒᵖ ⥤ Type u₁) :
   rfl
 #align category_theory.colimit_adj.extend_along_yoneda_obj CategoryTheory.ColimitAdj.extendAlongYoneda_obj
 
-@[app_unexpander Functor.leftOp] def
-  unexpandFunctorleftOp : Lean.PrettyPrinter.Unexpander
-  | `($_ $F $(X)*)  => set_option hygiene false in `($(F).leftOp $(X)*)
-  | _                 => throw ()
-
-@[app_unexpander Functor.map] def
-  unexpandFunctorMap : Lean.PrettyPrinter.Unexpander
-  | `($_ $F $(X)*)  => set_option hygiene false in `($(F).map $(X)*)
-  | _                 => throw ()
-
-@[app_unexpander Iso.toEquiv] def
-  unexpandIsotoEquiv : Lean.PrettyPrinter.Unexpander
-  | `($_ $F $(X)*)  => set_option hygiene false in `($(F).toEquiv $(X)*)
-  | _                 => throw ()
-
-@[app_unexpander Iso.symm] def
-  unexpandIsosymm : Lean.PrettyPrinter.Unexpander
-  | `($_ $F $(X)*)  => set_option hygiene false in `($(F).symm $(X)*)
-  | _                 => throw ()
-
-@[app_unexpander Equiv.trans] def
-  unexpandEquivtrans : Lean.PrettyPrinter.Unexpander
-  | `($_ $F $(X)*)  => set_option hygiene false in `($(F).trans $(X)*)
-  | _                 => throw ()
-
-@[app_unexpander IsColimit.homIso'] def
-  unexpandIsColimithomIso' : Lean.PrettyPrinter.Unexpander
-  | `($_ $F $(X)*)  => set_option hygiene false in `($(F).homIso' $(X)*)
-  | _                 => throw ()
-
-@[app_unexpander IsColimit.homIso] def
-  unexpandIsColimithomIso : Lean.PrettyPrinter.Unexpander
-  | `($_ $F $(X)*)  => set_option hygiene false in `($(F).homIso $(X)*)
-  | _                 => throw ()
-
 theorem extendAlongYoneda_map {X Y : Cᵒᵖ ⥤ Type u₁} (f : X ⟶ Y) :
     (extendAlongYoneda A).map f =
       colimit.pre ((CategoryOfElements.π Y).leftOp ⋙ A) (CategoryOfElements.map f).op := by
