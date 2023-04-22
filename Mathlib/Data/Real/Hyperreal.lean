@@ -16,22 +16,24 @@ import Mathlib.Analysis.SpecificLimits.Basic
 -/
 
 
-open Filter Filter.Germ
-
-open Topology Classical
+open Filter Germ Topology Classical
 
 /-- Hyperreal numbers on the ultrafilter extending the cofinite filter -/
 def Hyperreal : Type :=
-  Germ (hyperfilter ℕ : Filter ℕ) ℝ deriving LinearOrderedField, Inhabited
+  Germ (hyperfilter ℕ : Filter ℕ) ℝ deriving Inhabited
 #align hyperreal Hyperreal
 
 namespace Hyperreal
 
--- mathport name: «exprℝ*»
 notation "ℝ*" => Hyperreal
 
-noncomputable instance : CoeTC ℝ ℝ* :=
-  ⟨fun x => (↑x : Germ _ _)⟩
+noncomputable instance : LinearOrderedField ℝ* :=
+  inferInstanceAs (LinearOrderedField (Germ _ _))
+
+/-- Natural embedding `ℝ → ℝ*`. -/
+@[coe] def coe : ℝ → ℝ* := const
+
+noncomputable instance : CoeTC ℝ ℝ* := ⟨const⟩
 
 @[simp, norm_cast]
 theorem coe_eq_coe {x y : ℝ} : (x : ℝ*) = y ↔ x = y :=
@@ -39,7 +41,7 @@ theorem coe_eq_coe {x y : ℝ} : (x : ℝ*) = y ↔ x = y :=
 #align hyperreal.coe_eq_coe Hyperreal.coe_eq_coe
 
 theorem coe_ne_coe {x y : ℝ} : (x : ℝ*) ≠ y ↔ x ≠ y :=
-  coe_eq_coe.Not
+  coe_eq_coe.not
 #align hyperreal.coe_ne_coe Hyperreal.coe_ne_coe
 
 @[simp, norm_cast]
@@ -87,15 +89,11 @@ theorem coe_add (x y : ℝ) : ↑(x + y) = (x + y : ℝ*) :=
   rfl
 #align hyperreal.coe_add Hyperreal.coe_add
 
-@[simp, norm_cast]
-theorem coe_bit0 (x : ℝ) : ↑(bit0 x) = (bit0 x : ℝ*) :=
-  rfl
-#align hyperreal.coe_bit0 Hyperreal.coe_bit0
+#noalign hyperreal.coe_bit0
+#noalign hyperreal.coe_bit1
 
 @[simp, norm_cast]
-theorem coe_bit1 (x : ℝ) : ↑(bit1 x) = (bit1 x : ℝ*) :=
-  rfl
-#align hyperreal.coe_bit1 Hyperreal.coe_bit1
+theorem coe_ofNat (n : ℕ) [n.AtLeastTwo] : ((n : ℝ) : ℝ*) = n := rfl
 
 @[simp, norm_cast]
 theorem coe_mul (x y : ℝ) : ↑(x * y) = (x * y : ℝ*) :=
@@ -133,17 +131,17 @@ theorem coe_pos {x : ℝ} : 0 < (x : ℝ*) ↔ 0 < x :=
 #align hyperreal.coe_pos Hyperreal.coe_pos
 
 @[simp, norm_cast]
-theorem coe_abs (x : ℝ) : ((|x| : ℝ) : ℝ*) = |x| :=
+theorem coe_abs (x : ℝ) : ((|x| : ℝ) : ℝ*) = |↑x| :=
   const_abs x
 #align hyperreal.coe_abs Hyperreal.coe_abs
 
 @[simp, norm_cast]
-theorem coe_max (x y : ℝ) : ((max x y : ℝ) : ℝ*) = max x y :=
+theorem coe_max (x y : ℝ) : ((max x y : ℝ) : ℝ*) = max ↑x ↑y :=
   Germ.const_max _ _
 #align hyperreal.coe_max Hyperreal.coe_max
 
 @[simp, norm_cast]
-theorem coe_min (x y : ℝ) : ((min x y : ℝ) : ℝ*) = min x y :=
+theorem coe_min (x y : ℝ) : ((min x y : ℝ) : ℝ*) = min ↑x ↑y :=
   Germ.const_min _ _
 #align hyperreal.coe_min Hyperreal.coe_min
 
@@ -158,14 +156,10 @@ noncomputable def epsilon : ℝ* :=
 #align hyperreal.epsilon Hyperreal.epsilon
 
 /-- A sample infinite hyperreal-/
-noncomputable def omega : ℝ* :=
-  ofSeq coe
+noncomputable def omega : ℝ* := ofSeq Nat.cast
 #align hyperreal.omega Hyperreal.omega
 
--- mathport name: hyperreal.epsilon
 scoped notation "ε" => Hyperreal.epsilon
-
--- mathport name: hyperreal.omega
 scoped notation "ω" => Hyperreal.omega
 
 @[simp]
@@ -203,26 +197,22 @@ theorem epsilon_mul_omega : ε * ω = 1 :=
 
 theorem lt_of_tendsto_zero_of_pos {f : ℕ → ℝ} (hf : Tendsto f atTop (𝓝 0)) :
     ∀ {r : ℝ}, 0 < r → ofSeq f < (r : ℝ*) := by
-  simp only [Metric.tendsto_atTop, Real.dist_eq, sub_zero, lt_def] at hf⊢
+  simp only [Metric.tendsto_atTop, Real.dist_eq, sub_zero] at hf ⊢
   intro r hr; cases' hf r hr with N hf'
   have hs : { i : ℕ | f i < r }ᶜ ⊆ { i : ℕ | i ≤ N } := fun i hi1 =>
-    le_of_lt
-      (by
-        simp only [lt_iff_not_ge] <;>
-          exact fun hi2 => hi1 (lt_of_le_of_lt (le_abs_self _) (hf' i hi2)) :
-        i < N)
-  exact mem_hyperfilter_of_finite_compl ((Set.finite_le_nat N).Subset hs)
+    le_of_not_ge <| fun hi2 => hi1 (lt_of_le_of_lt (le_abs_self _) (hf' i hi2))
+  exact mem_hyperfilter_of_finite_compl ((Set.finite_le_nat N).subset hs)
 #align hyperreal.lt_of_tendsto_zero_of_pos Hyperreal.lt_of_tendsto_zero_of_pos
 
 theorem neg_lt_of_tendsto_zero_of_pos {f : ℕ → ℝ} (hf : Tendsto f atTop (𝓝 0)) :
-    ∀ {r : ℝ}, 0 < r → (-r : ℝ*) < ofSeq f := fun r hr =>
+    ∀ {r : ℝ}, 0 < r → (-r : ℝ*) < ofSeq f := fun hr =>
   have hg := hf.neg
-  neg_lt_of_neg_lt (by rw [neg_zero] at hg <;> exact lt_of_tendsto_zero_of_pos hg hr)
+  neg_lt_of_neg_lt (by rw [neg_zero] at hg; exact lt_of_tendsto_zero_of_pos hg hr)
 #align hyperreal.neg_lt_of_tendsto_zero_of_pos Hyperreal.neg_lt_of_tendsto_zero_of_pos
 
 theorem gt_of_tendsto_zero_of_neg {f : ℕ → ℝ} (hf : Tendsto f atTop (𝓝 0)) :
-    ∀ {r : ℝ}, r < 0 → (r : ℝ*) < ofSeq f := fun r hr => by
-  rw [← neg_neg r, coe_neg] <;> exact neg_lt_of_tendsto_zero_of_pos hf (neg_pos.mpr hr)
+    ∀ {r : ℝ}, r < 0 → (r : ℝ*) < ofSeq f := fun {r} hr => by
+  rw [← neg_neg r, coe_neg]; exact neg_lt_of_tendsto_zero_of_pos hf (neg_pos.mpr hr)
 #align hyperreal.gt_of_tendsto_zero_of_neg Hyperreal.gt_of_tendsto_zero_of_neg
 
 theorem epsilon_lt_pos (x : ℝ) : 0 < x → ε < x :=
@@ -262,8 +252,7 @@ def Infinite (x : ℝ*) :=
 ### Some facts about `st`
 -/
 
-
-private theorem is_st_unique' (x : ℝ*) (r s : ℝ) (hr : IsSt x r) (hs : IsSt x s) (hrs : r < s) :
+private theorem isSt_unique' (x : ℝ*) (r s : ℝ) (hr : IsSt x r) (hs : IsSt x s) (hrs : r < s) :
     False := by
   have hrs' := half_pos <| sub_pos_of_lt hrs
   have hr' := (hr _ hrs').2
@@ -272,41 +261,38 @@ private theorem is_st_unique' (x : ℝ*) (r s : ℝ) (hr : IsSt x r) (hs : IsSt 
   norm_cast  at *
   rw [h] at hs'
   exact not_lt_of_lt hs' hr'
-#align hyperreal.is_st_unique' hyperreal.is_st_unique'
 
 theorem isSt_unique {x : ℝ*} {r s : ℝ} (hr : IsSt x r) (hs : IsSt x s) : r = s := by
   rcases lt_trichotomy r s with (h | h | h)
-  · exact False.elim (is_st_unique' x r s hr hs h)
+  · exact False.elim (isSt_unique' x r s hr hs h)
   · exact h
-  · exact False.elim (is_st_unique' x s r hs hr h)
+  · exact False.elim (isSt_unique' x s r hs hr h)
 #align hyperreal.is_st_unique Hyperreal.isSt_unique
 
 theorem not_infinite_of_exists_st {x : ℝ*} : (∃ r : ℝ, IsSt x r) → ¬Infinite x := fun he hi =>
-  Exists.dcases_on he fun r hr =>
-    hi.elim (fun hip => not_lt_of_lt (hr 2 zero_lt_two).2 (hip <| r + 2)) fun hin =>
-      not_lt_of_lt (hr 2 zero_lt_two).1 (hin <| r - 2)
+  let ⟨r, hr⟩ := he
+  hi.elim (fun hip => not_lt_of_lt (hr 2 zero_lt_two).2 (hip <| r + 2)) fun hin =>
+    not_lt_of_lt (hr 2 zero_lt_two).1 (hin <| r - 2)
 #align hyperreal.not_infinite_of_exists_st Hyperreal.not_infinite_of_exists_st
 
 theorem isSt_supₛ {x : ℝ*} (hni : ¬Infinite x) : IsSt x (supₛ { y : ℝ | (y : ℝ*) < x }) :=
   let S : Set ℝ := { y : ℝ | (y : ℝ*) < x }
   let R : _ := supₛ S
-  have hnile := not_forall.mp (not_or.mp hni).1
-  have hnige := not_forall.mp (not_or.mp hni).2
-  Exists.dcases_on hnile <|
-    Exists.dcases_on hnige fun r₁ hr₁ r₂ hr₂ =>
-      have HR₁ : S.Nonempty :=
-        ⟨r₁ - 1, lt_of_lt_of_le (coe_lt_coe.2 <| sub_one_lt _) (not_lt.mp hr₁)⟩
-      have HR₂ : BddAbove S :=
-        ⟨r₂, fun y hy => le_of_lt (coe_lt_coe.1 (lt_of_lt_of_le hy (not_lt.mp hr₂)))⟩
-      fun δ hδ =>
-      ⟨lt_of_not_le fun c =>
-          have hc : ∀ y ∈ S, y ≤ R - δ := fun y hy =>
-            coe_le_coe.1 <| le_of_lt <| lt_of_lt_of_le hy c
-          not_lt_of_le (csupₛ_le HR₁ hc) <| sub_lt_self R hδ,
-        lt_of_not_le fun c =>
-          have hc : ↑(R + δ / 2) < x :=
-            lt_of_lt_of_le (add_lt_add_left (coe_lt_coe.2 (half_lt_self hδ)) R) c
-          not_lt_of_le (le_csupₛ HR₂ hc) <| (lt_add_iff_pos_right _).mpr <| half_pos hδ⟩
+  let ⟨r₁, hr₁⟩ := not_forall.mp (not_or.mp hni).2
+  let ⟨r₂, hr₂⟩ := not_forall.mp (not_or.mp hni).1
+  have HR₁ : S.Nonempty :=
+    ⟨r₁ - 1, lt_of_lt_of_le (coe_lt_coe.2 <| sub_one_lt _) (not_lt.mp hr₁)⟩
+  have HR₂ : BddAbove S :=
+    ⟨r₂, fun _y hy => le_of_lt (coe_lt_coe.1 (lt_of_lt_of_le hy (not_lt.mp hr₂)))⟩
+  fun δ hδ =>
+  ⟨lt_of_not_le fun c =>
+      have hc : ∀ y ∈ S, y ≤ R - δ := fun _y hy =>
+        coe_le_coe.1 <| le_of_lt <| lt_of_lt_of_le hy c
+      not_lt_of_le (csupₛ_le HR₁ hc) <| sub_lt_self R hδ,
+    lt_of_not_le fun c =>
+      have hc : ↑(R + δ / 2) < x :=
+        lt_of_lt_of_le (add_lt_add_left (coe_lt_coe.2 (half_lt_self hδ)) R) c
+      not_lt_of_le (le_csupₛ HR₂ hc) <| (lt_add_iff_pos_right _).mpr <| half_pos hδ⟩
 #align hyperreal.is_st_Sup Hyperreal.isSt_supₛ
 
 theorem exists_st_of_not_infinite {x : ℝ*} (hni : ¬Infinite x) : ∃ r : ℝ, IsSt x r :=
@@ -314,12 +300,12 @@ theorem exists_st_of_not_infinite {x : ℝ*} (hni : ¬Infinite x) : ∃ r : ℝ,
 #align hyperreal.exists_st_of_not_infinite Hyperreal.exists_st_of_not_infinite
 
 theorem st_eq_supₛ {x : ℝ*} : st x = supₛ { y : ℝ | (y : ℝ*) < x } := by
-  unfold st; split_ifs
-  · exact is_st_unique (Classical.choose_spec h) (is_st_Sup (not_infinite_of_exists_st h))
+  unfold st; split_ifs with h
+  · exact isSt_unique (Classical.choose_spec h) (isSt_supₛ (not_infinite_of_exists_st h))
   · cases' not_imp_comm.mp exists_st_of_not_infinite h with H H
     · rw [(Set.ext fun i => ⟨fun hi => Set.mem_univ i, fun hi => H i⟩ :
           { y : ℝ | (y : ℝ*) < x } = Set.univ)]
-      exact real.Sup_univ.symm
+      exact Real.supₛ_univ.symm
     · rw [(Set.ext fun i =>
             ⟨fun hi => False.elim (not_lt_of_lt (H i) hi), fun hi =>
               False.elim (Set.not_mem_empty i hi)⟩ :
@@ -336,36 +322,36 @@ theorem infinite_iff_not_exists_st {x : ℝ*} : Infinite x ↔ ¬∃ r : ℝ, Is
 #align hyperreal.infinite_iff_not_exists_st Hyperreal.infinite_iff_not_exists_st
 
 theorem st_infinite {x : ℝ*} (hi : Infinite x) : st x = 0 := by
-  unfold st; split_ifs
+  unfold st; split_ifs with h
   · exact False.elim ((infinite_iff_not_exists_st.mp hi) h)
   · rfl
 #align hyperreal.st_infinite Hyperreal.st_infinite
 
 theorem st_of_isSt {x : ℝ*} {r : ℝ} (hxr : IsSt x r) : st x = r := by
-  unfold st; split_ifs
-  · exact is_st_unique (Classical.choose_spec h) hxr
+  unfold st; split_ifs with h
+  · exact isSt_unique (Classical.choose_spec h) hxr
   · exact False.elim (h ⟨r, hxr⟩)
 #align hyperreal.st_of_is_st Hyperreal.st_of_isSt
 
 theorem isSt_st_of_isSt {x : ℝ*} {r : ℝ} (hxr : IsSt x r) : IsSt x (st x) := by
-  rwa [st_of_is_st hxr]
+  rwa [st_of_isSt hxr]
 #align hyperreal.is_st_st_of_is_st Hyperreal.isSt_st_of_isSt
 
 theorem isSt_st_of_exists_st {x : ℝ*} (hx : ∃ r : ℝ, IsSt x r) : IsSt x (st x) :=
-  Exists.dcases_on hx fun r => isSt_st_of_isSt
+  let ⟨_r, hr⟩ := hx; isSt_st_of_isSt hr
 #align hyperreal.is_st_st_of_exists_st Hyperreal.isSt_st_of_exists_st
 
 theorem isSt_st {x : ℝ*} (hx : st x ≠ 0) : IsSt x (st x) := by
-  unfold st; split_ifs
+  unfold st; split_ifs with h
   · exact Classical.choose_spec h
-  · exact False.elim (hx (by unfold st <;> split_ifs <;> rfl))
+  · exact False.elim (hx (by unfold st; split_ifs; rfl))
 #align hyperreal.is_st_st Hyperreal.isSt_st
 
 theorem isSt_st' {x : ℝ*} (hx : ¬Infinite x) : IsSt x (st x) :=
   isSt_st_of_exists_st <| exists_st_of_not_infinite hx
 #align hyperreal.is_st_st' Hyperreal.isSt_st'
 
-theorem isSt_refl_real (r : ℝ) : IsSt r r := fun δ hδ =>
+theorem isSt_refl_real (r : ℝ) : IsSt r r := fun _δ hδ =>
   ⟨sub_lt_self _ (coe_lt_coe.2 hδ), lt_add_of_pos_right _ (coe_lt_coe.2 hδ)⟩
 #align hyperreal.is_st_refl_real Hyperreal.isSt_refl_real
 
@@ -378,15 +364,15 @@ theorem eq_of_isSt_real {r s : ℝ} : IsSt r s → r = s :=
 #align hyperreal.eq_of_is_st_real Hyperreal.eq_of_isSt_real
 
 theorem isSt_real_iff_eq {r s : ℝ} : IsSt r s ↔ r = s :=
-  ⟨eq_of_isSt_real, fun hrs => by rw [hrs] <;> exact is_st_refl_real s⟩
+  ⟨eq_of_isSt_real, fun hrs => by rw [hrs]; exact isSt_refl_real s⟩
 #align hyperreal.is_st_real_iff_eq Hyperreal.isSt_real_iff_eq
 
 theorem isSt_symm_real {r s : ℝ} : IsSt r s ↔ IsSt s r := by
-  rw [is_st_real_iff_eq, is_st_real_iff_eq, eq_comm]
+  rw [isSt_real_iff_eq, isSt_real_iff_eq, eq_comm]
 #align hyperreal.is_st_symm_real Hyperreal.isSt_symm_real
 
 theorem isSt_trans_real {r s t : ℝ} : IsSt r s → IsSt s t → IsSt r t := by
-  rw [is_st_real_iff_eq, is_st_real_iff_eq, is_st_real_iff_eq] <;> exact Eq.trans
+  rw [isSt_real_iff_eq, isSt_real_iff_eq, isSt_real_iff_eq]; exact Eq.trans
 #align hyperreal.is_st_trans_real Hyperreal.isSt_trans_real
 
 theorem isSt_inj_real {r₁ r₂ s : ℝ} (h1 : IsSt r₁ s) (h2 : IsSt r₂ s) : r₁ = r₂ :=
@@ -624,25 +610,23 @@ theorem infiniteNeg_add_not_infinite {x y : ℝ*} :
 theorem infinitePos_of_tendsto_top {f : ℕ → ℝ} (hf : Tendsto f atTop atTop) :
     InfinitePos (ofSeq f) := fun r =>
   have hf' := tendsto_atTop_atTop.mp hf
-  Exists.cases_on (hf' (r + 1)) fun i hi =>
-    have hi' : ∀ a : ℕ, f a < r + 1 → a < i := fun a => by
-      rw [← not_le, ← not_le] <;> exact not_imp_not.mpr (hi a)
-    have hS : { a : ℕ | r < f a }ᶜ ⊆ { a : ℕ | a ≤ i } := by
-      simp only [Set.compl_setOf, not_lt] <;>
-        exact fun a har => le_of_lt (hi' a (lt_of_le_of_lt har (lt_add_one _)))
-    Germ.coe_lt.2 <| mem_hyperfilter_of_finite_compl <| (Set.finite_le_nat _).Subset hS
+  let ⟨i, hi⟩ := hf' (r + 1)
+  have hi' : ∀ a : ℕ, f a < r + 1 → a < i := fun a => lt_imp_lt_of_le_imp_le (hi a)
+  have hS : { a : ℕ | r < f a }ᶜ ⊆ { a : ℕ | a ≤ i } := by
+    simp only [Set.compl_setOf, not_lt]
+    exact fun a har => le_of_lt (hi' a (lt_of_le_of_lt har (lt_add_one _)))
+  Germ.coe_lt.2 <| mem_hyperfilter_of_finite_compl <| (Set.finite_le_nat _).subset hS
 #align hyperreal.infinite_pos_of_tendsto_top Hyperreal.infinitePos_of_tendsto_top
 
 theorem infiniteNeg_of_tendsto_bot {f : ℕ → ℝ} (hf : Tendsto f atTop atBot) :
     InfiniteNeg (ofSeq f) := fun r =>
   have hf' := tendsto_atTop_atBot.mp hf
-  Exists.cases_on (hf' (r - 1)) fun i hi =>
-    have hi' : ∀ a : ℕ, r - 1 < f a → a < i := fun a => by
-      rw [← not_le, ← not_le] <;> exact not_imp_not.mpr (hi a)
-    have hS : { a : ℕ | f a < r }ᶜ ⊆ { a : ℕ | a ≤ i } := by
-      simp only [Set.compl_setOf, not_lt] <;>
-        exact fun a har => le_of_lt (hi' a (lt_of_lt_of_le (sub_one_lt _) har))
-    Germ.coe_lt.2 <| mem_hyperfilter_of_finite_compl <| (Set.finite_le_nat _).Subset hS
+  let ⟨i, hi⟩ := hf' (r - 1)
+  have hi' : ∀ a : ℕ, r - 1 < f a → a < i := fun a => lt_imp_lt_of_le_imp_le (hi a)
+  have hS : { a : ℕ | f a < r }ᶜ ⊆ { a : ℕ | a ≤ i } := by
+    simp only [Set.compl_setOf, not_lt]
+    exact fun a har => le_of_lt (hi' a (lt_of_lt_of_le (sub_one_lt _) har))
+  Germ.coe_lt.2 <| mem_hyperfilter_of_finite_compl <| (Set.finite_le_nat _).subset hS
 #align hyperreal.infinite_neg_of_tendsto_bot Hyperreal.infiniteNeg_of_tendsto_bot
 
 theorem not_infinite_neg {x : ℝ*} : ¬Infinite x → ¬Infinite (-x) :=
