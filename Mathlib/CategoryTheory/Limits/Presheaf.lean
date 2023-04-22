@@ -128,6 +128,8 @@ theorem restrictYonedaHomEquiv_natural (P : Cᵒᵖ ⥤ Type u₁) (E₁ E₂ : 
   ext x
   funext X
   -- porting note: those last two lines were `ext x X` in mathlib3
+  -- See https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/
+  -- ext.20issues/near/351905867
   apply (assoc _ _ _).symm
 #align category_theory.colimit_adj.restrict_yoneda_hom_equiv_natural CategoryTheory.ColimitAdj.restrictYonedaHomEquiv_natural
 
@@ -143,8 +145,6 @@ noncomputable def extendAlongYoneda : (Cᵒᵖ ⥤ Type u₁) ⥤ ℰ :=
     fun P E E' g => restrictYonedaHomEquiv_natural A P E E' g _
 #align category_theory.colimit_adj.extend_along_yoneda CategoryTheory.ColimitAdj.extendAlongYoneda
 
--- porting note: these are not necessary for this PR but should
--- presumably go somewhere
 @[simp]
 theorem extendAlongYoneda_obj (P : Cᵒᵖ ⥤ Type u₁) :
     (extendAlongYoneda A).obj P = colimit ((CategoryOfElements.π P).leftOp ⋙ A) :=
@@ -349,8 +349,7 @@ theorem coconeOfRepresentable_naturality {P₁ P₂ : Cᵒᵖ ⥤ Type u₁} (α
     (coconeOfRepresentable P₁).ι.app j ≫ α =
       (coconeOfRepresentable P₂).ι.app ((CategoryOfElements.map α).op.obj j) := by
   -- The next few lines were `ext T f` in mathlib3
-  refine NatTrans.ext (((coconeOfRepresentable P₁).ι.app j ≫ α))
-    (((coconeOfRepresentable P₂).ι.app ((Functor.op (CategoryOfElements.map α)).obj j))) ?_
+  apply NatTrans.ext
   ext T
   funext f
   simpa [coconeOfRepresentable_ι_app] using FunctorToTypes.naturality _ _ α f.op _
