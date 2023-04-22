@@ -8,8 +8,8 @@ Authors: Anne Baanen
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Int.AbsoluteValue
-import Mathbin.LinearAlgebra.Matrix.Determinant
+import Mathlib.Data.Int.AbsoluteValue
+import Mathlib.LinearAlgebra.Matrix.Determinant
 
 /-!
 # Absolute values and matrices
@@ -73,8 +73,7 @@ theorem det_sum_smul_le {ι : Type _} (s : Finset ι) {c : ι → R} {A : ι →
     {abv : AbsoluteValue R S} {x : S} (hx : ∀ k i j, abv (A k i j) ≤ x) {y : S}
     (hy : ∀ k, abv (c k) ≤ y) :
     abv (det (∑ k in s, c k • A k)) ≤
-      Nat.factorial (Fintype.card n) • (Finset.card s • y * x) ^ Fintype.card n :=
-  by
+      Nat.factorial (Fintype.card n) • (Finset.card s • y * x) ^ Fintype.card n := by
   simpa only [smul_mul_assoc] using
     det_sum_le s fun k i j =>
       calc
