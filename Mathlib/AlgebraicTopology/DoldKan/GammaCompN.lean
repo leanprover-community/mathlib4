@@ -117,6 +117,9 @@ theorem N₁Γ₀_inv_app_f_f (K : ChainComplex C ℕ) (n : ℕ) :
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.N₁Γ₀_inv_app_f_f AlgebraicTopology.DoldKan.N₁Γ₀_inv_app_f_f
 
+-- Porting note: added to speed up elaboration
+attribute [irreducible] N₁Γ₀
+
 theorem N₂Γ₂_toKaroubi : toKaroubi (ChainComplex C ℕ) ⋙ Γ₂ ⋙ N₂ = Γ₀ ⋙ N₁ := by
   have h := Functor.congr_obj (functorExtension₂_comp_whiskeringLeft_toKaroubi
     (ChainComplex C ℕ) (SimplicialObject C)) Γ₀
@@ -135,30 +138,15 @@ def N₂Γ₂ToKaroubiIso : toKaroubi (ChainComplex C ℕ) ⋙ Γ₂ ⋙ N₂ �
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.N₂Γ₂_to_karoubi_iso AlgebraicTopology.DoldKan.N₂Γ₂ToKaroubiIso
 
+-- Porting note: added to speed up elaboration
+attribute [irreducible] N₂Γ₂ToKaroubiIso
+
 /-- The counit isomorphism of the Dold-Kan equivalence for additive categories. -/
 def N₂Γ₂ : Γ₂ ⋙ N₂ ≅ 𝟭 (Karoubi (ChainComplex C ℕ)) :=
   ((whiskeringLeft _ _ _).obj (toKaroubi (ChainComplex C ℕ))).preimageIso
       (N₂Γ₂ToKaroubiIso ≪≫ N₁Γ₀)
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.N₂Γ₂ AlgebraicTopology.DoldKan.N₂Γ₂
-
--- porting note: added to ease the proof of `N₂Γ₂_compatible_with_N₁Γ₀`
-lemma whiskerLeft_toKaroubi_N₂Γ₂_hom :
-    whiskerLeft (toKaroubi (ChainComplex C ℕ)) N₂Γ₂.hom = N₂Γ₂ToKaroubiIso.hom ≫ N₁Γ₀.hom := by
-  let e : _ ≅ toKaroubi (ChainComplex C ℕ) ⋙ 𝟭 _ := N₂Γ₂ToKaroubiIso ≪≫ N₁Γ₀
-  have h := ((whiskeringLeft _ _ (Karoubi (ChainComplex C ℕ))).obj
-    (toKaroubi (ChainComplex C ℕ))).image_preimage e.hom
-  dsimp only [whiskeringLeft, N₂Γ₂, Functor.preimageIso] at h ⊢
-  exact h
-
-theorem N₂Γ₂_compatible_with_N₁Γ₀ (K : ChainComplex C ℕ) :
-    N₂Γ₂.hom.app ((toKaroubi _).obj K) = N₂Γ₂ToKaroubiIso.hom.app K ≫ N₁Γ₀.hom.app K := by
-  have h := congr_app whiskerLeft_toKaroubi_N₂Γ₂_hom K
-  simp only [whiskerLeft, NatTrans.comp_app] at h
-  -- porting note: `exact h` causes a timeout
-  rw [h]
-set_option linter.uppercaseLean3 false in
-#align algebraic_topology.dold_kan.N₂Γ₂_compatible_with_N₁Γ₀ AlgebraicTopology.DoldKan.N₂Γ₂_compatible_with_N₁Γ₀
 
 @[simp]
 theorem N₂Γ₂_inv_app_f_f (X : Karoubi (ChainComplex C ℕ)) (n : ℕ) :
@@ -176,6 +164,24 @@ theorem N₂Γ₂_inv_app_f_f (X : Karoubi (ChainComplex C ℕ)) (n : ℕ) :
     Karoubi.HomologicalComplex.p_idem_assoc]
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.N₂Γ₂_inv_app_f_f AlgebraicTopology.DoldKan.N₂Γ₂_inv_app_f_f
+
+-- porting note: added to ease the proof of `N₂Γ₂_compatible_with_N₁Γ₀`
+lemma whiskerLeft_toKaroubi_N₂Γ₂_hom :
+    whiskerLeft (toKaroubi (ChainComplex C ℕ)) N₂Γ₂.hom = N₂Γ₂ToKaroubiIso.hom ≫ N₁Γ₀.hom := by
+  let e : _ ≅ toKaroubi (ChainComplex C ℕ) ⋙ 𝟭 _ := N₂Γ₂ToKaroubiIso ≪≫ N₁Γ₀
+  have h := ((whiskeringLeft _ _ (Karoubi (ChainComplex C ℕ))).obj
+    (toKaroubi (ChainComplex C ℕ))).image_preimage e.hom
+  dsimp only [whiskeringLeft, N₂Γ₂, Functor.preimageIso] at h ⊢
+  exact h
+
+-- Porting note: added to speed up elaboration
+attribute [irreducible] N₂Γ₂
+
+theorem N₂Γ₂_compatible_with_N₁Γ₀ (K : ChainComplex C ℕ) :
+    N₂Γ₂.hom.app ((toKaroubi _).obj K) = N₂Γ₂ToKaroubiIso.hom.app K ≫ N₁Γ₀.hom.app K :=
+  congr_app whiskerLeft_toKaroubi_N₂Γ₂_hom K
+set_option linter.uppercaseLean3 false in
+#align algebraic_topology.dold_kan.N₂Γ₂_compatible_with_N₁Γ₀ AlgebraicTopology.DoldKan.N₂Γ₂_compatible_with_N₁Γ₀
 
 end DoldKan
 
