@@ -216,9 +216,13 @@ theorem compatibility_Γ₂N₁_Γ₂N₂_natTrans (X : SimplicialObject C) :
     Γ₂N₁.natTrans.app X =
       (compatibility_Γ₂N₁_Γ₂N₂.app X).inv ≫
         Γ₂N₂.natTrans.app ((toKaroubi (SimplicialObject C)).obj X) := by
-  simp only [Γ₂N₂.natTrans_app_f_app, Karoubi.decompId_i_toKaroubi, Karoubi.decompId_p_toKaroubi,
-    NatTrans.comp_app, Functor.comp_map, toKaroubi]
-  erw [N₂.map_id, Γ₂.map_id, comp_id, id_comp, Iso.app_inv, Iso.inv_hom_id_app_assoc]
+  rw [Γ₂N₂.natTrans_app_f_app]
+  dsimp only [Karoubi.decompId_i_toKaroubi, Karoubi.decompId_p_toKaroubi, Functor.comp_map,
+    NatTrans.comp_app]
+  rw [N₂.map_id, Γ₂.map_id, Iso.app_inv]
+  dsimp only [toKaroubi]
+  erw [id_comp]
+  rw [comp_id, Iso.inv_hom_id_app_assoc]
 
 theorem identity_N₂_objectwise (P : Karoubi (SimplicialObject C)) :
   (N₂Γ₂.inv.app (N₂.obj P) : N₂.obj P ⟶ N₂.obj (Γ₂.obj (N₂.obj P))) ≫ N₂.map (Γ₂N₂.natTrans.app P) =
