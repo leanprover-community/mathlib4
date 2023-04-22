@@ -403,7 +403,6 @@ theorem exists_of_sep (P : Cᵒᵖ ⥤ D)
           exact hf)
   use e0, 𝟙 _
   ext IV
-  --dsimp only [Meq.refine_apply, Meq.pullback_apply, w]
   let IA : B.Arrow := ⟨_, (IV.f ≫ II.f) ≫ I.f,
     ⟨I.Y, _, _, I.hf, Sieve.downward_closed _ II.hf _, rfl⟩⟩
   let IB : S.Arrow := IA.fromMiddle
