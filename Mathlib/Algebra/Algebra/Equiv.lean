@@ -296,9 +296,9 @@ instance : Inhabited (A₁ ≃ₐ[R] A₁) :=
   ⟨refl⟩
 
 @[simp]
-theorem refl_to_algHom : ↑(refl : A₁ ≃ₐ[R] A₁) = AlgHom.id R A₁ :=
+theorem refl_toAlgHom : ↑(refl : A₁ ≃ₐ[R] A₁) = AlgHom.id R A₁ :=
   rfl
-#align alg_equiv.refl_to_alg_hom AlgEquiv.refl_to_algHom
+#align alg_equiv.refl_to_alg_hom AlgEquiv.refl_toAlgHom
 
 @[simp]
 theorem coe_refl : ⇑(refl : A₁ ≃ₐ[R] A₁) = id :=
@@ -309,8 +309,7 @@ theorem coe_refl : ⇑(refl : A₁ ≃ₐ[R] A₁) = id :=
 @[symm]
 def symm (e : A₁ ≃ₐ[R] A₂) : A₂ ≃ₐ[R] A₁ :=
   { e.toRingEquiv.symm with
-    commutes' := fun r =>
-      by
+    commutes' := fun r => by
       rw [← e.toRingEquiv.symm_apply_apply (algebraMap R A₁ r)]
       congr
       change _ = e _
@@ -376,14 +375,14 @@ theorem refl_symm : (AlgEquiv.refl : A₁ ≃ₐ[R] A₁).symm = AlgEquiv.refl :
 #align alg_equiv.refl_symm AlgEquiv.refl_symm
 
 --this should be a simp lemma but causes a lint timeout
-theorem to_ringEquiv_symm (f : A₁ ≃ₐ[R] A₁) : (f : A₁ ≃+* A₁).symm = f.symm :=
+theorem toRingEquiv_symm (f : A₁ ≃ₐ[R] A₁) : (f : A₁ ≃+* A₁).symm = f.symm :=
   rfl
-#align alg_equiv.to_ring_equiv_symm AlgEquiv.to_ringEquiv_symm
+#align alg_equiv.to_ring_equiv_symm AlgEquiv.toRingEquiv_symm
 
 @[simp]
-theorem symm_to_ringEquiv : (e.symm : A₂ ≃+* A₁) = (e : A₁ ≃+* A₂).symm :=
+theorem symm_toRingEquiv : (e.symm : A₂ ≃+* A₁) = (e : A₁ ≃+* A₂).symm :=
   rfl
-#align alg_equiv.symm_to_ring_equiv AlgEquiv.symm_to_ringEquiv
+#align alg_equiv.symm_to_ring_equiv AlgEquiv.symm_toRingEquiv
 
 /-- Algebra equivalences are transitive. -/
 @[trans]
@@ -571,9 +570,9 @@ def toLinearMap : A₁ →ₗ[R] A₂ :=
 #align alg_equiv.to_linear_map AlgEquiv.toLinearMap
 
 @[simp]
-theorem to_algHom_toLinearMap : (e : A₁ →ₐ[R] A₂).toLinearMap = e.toLinearMap :=
+theorem toAlgHom_toLinearMap : (e : A₁ →ₐ[R] A₂).toLinearMap = e.toLinearMap :=
   rfl
-#align alg_equiv.to_alg_hom_to_linear_map AlgEquiv.to_algHom_toLinearMap
+#align alg_equiv.to_alg_hom_to_linear_map AlgEquiv.toAlgHom_toLinearMap
 
 @[simp]
 theorem toLinearEquiv_toLinearMap : e.toLinearEquiv.toLinearMap = e.toLinearMap :=
@@ -679,8 +678,7 @@ theorem mul_apply (e₁ e₂ : A₁ ≃ₐ[R] A₁) (x : A₁) : (e₁ * e₂) x
 
 /-- An algebra isomorphism induces a group isomorphism between automorphism groups -/
 @[simps apply]
-def autCongr (ϕ : A₁ ≃ₐ[R] A₂) : (A₁ ≃ₐ[R] A₁) ≃* A₂ ≃ₐ[R] A₂
-    where
+def autCongr (ϕ : A₁ ≃ₐ[R] A₂) : (A₁ ≃ₐ[R] A₁) ≃* A₂ ≃ₐ[R] A₂ where
   toFun ψ := ϕ.symm.trans (ψ.trans ϕ)
   invFun ψ := ϕ.trans (ψ.trans ϕ.symm)
   left_inv ψ := by
@@ -713,9 +711,8 @@ theorem autCongr_trans (ϕ : A₁ ≃ₐ[R] A₂) (ψ : A₂ ≃ₐ[R] A₃) :
 
 /-- The tautological action by `A₁ ≃ₐ[R] A₁` on `A₁`.
 
-This generalizes `function.End.apply_mul_action`. -/
-instance applyMulSemiringAction : MulSemiringAction (A₁ ≃ₐ[R] A₁) A₁
-    where
+This generalizes `Function.End.applyMulAction`. -/
+instance applyMulSemiringAction : MulSemiringAction (A₁ ≃ₐ[R] A₁) A₁ where
   smul := (· <| ·)
   smul_zero := AlgEquiv.map_zero
   smul_add := AlgEquiv.map_add
