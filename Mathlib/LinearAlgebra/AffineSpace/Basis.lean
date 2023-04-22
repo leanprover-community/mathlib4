@@ -178,7 +178,10 @@ theorem coord_apply_eq (i : ι) : b.coord i (b i) = 1 := by
 
 @[simp]
 theorem coord_apply_ne (h : i ≠ j) : b.coord i (b j) = 0 := by
-  rw [coord, AffineMap.coe_mk, ← Subtype.coe_mk j h.symm, ← b.basisOf_apply,
+  -- Porting note:
+  -- in mathlib3 we didn't need to given the `fun j => j ≠ i` argument to `Subtype.coe_mk`,
+  -- but I don't think we can complain: this proof was over-golfed.
+  rw [coord, AffineMap.coe_mk, ← @Subtype.coe_mk _ (fun j => j ≠ i) j h.symm, ← b.basisOf_apply,
     Basis.sumCoords_self_apply, sub_self]
 #align affine_basis.coord_apply_ne AffineBasis.coord_apply_ne
 
@@ -260,9 +263,15 @@ theorem surjective_coord [Nontrivial ι] (i : ι) : Function.Surjective <| b.coo
     obtain ⟨j, hij⟩ := exists_ne i
     let s : Finset ι := {i, j}
     have hi : i ∈ s := by simp
-    have hj : j ∈ s := by simp
+    have _ : j ∈ s := by simp
     let w : ι → k := fun j' => if j' = i then x else 1 - x
-    have hw : s.sum w = 1 := by simp [hij, Finset.sum_ite, Finset.filter_insert, Finset.filter_eq']
+    have hw : s.sum w = 1 := by
+      -- Porting note: previously this subgoal worked just by:
+      -- simp [hij, Finset.sum_ite, Finset.filter_insert, Finset.filter_eq']
+      -- I'm not sure why `simp` can not successfully use `Finset.filter_eq'`.
+      simp [Finset.sum_ite, Finset.filter_insert, hij]
+      erw [Finset.filter_eq']
+      simp [hij.symm]
     use s.affineCombination k b w
     simp [b.coord_apply_combination_of_mem hi hw]
 #align affine_basis.surjective_coord AffineBasis.surjective_coord
@@ -280,8 +289,17 @@ noncomputable def coords : P →ᵃ[k] ι → k where
         simp only [LinearMap.map_smul, Pi.smul_apply, smul_neg, RingHom.id_apply, mul_neg] }
   map_vadd' p v := by
     ext i
-    simp only [linear_eq_sumCoords, LinearMap.coe_mk, LinearMap.neg_apply, Pi.vadd_apply',
-      AffineMap.map_vadd]
+    -- Porting note:
+    -- mathlib3 proof was:
+    -- simp only [linear_eq_sumCoords, LinearMap.coe_mk, LinearMap.neg_apply, Pi.vadd_apply',
+    --   AffineMap.map_vadd]
+    -- but now we need to `dsimp` before `AffinteMap.map_vadd` works.
+    rw [LinearMap.coe_mk, Pi.vadd_apply']
+    dsimp
+    rw [AffineMap.map_vadd, linear_eq_sumCoords,
+        LinearMap.neg_apply]
+    simp only [ne_eq, Basis.coe_sumCoords, vadd_eq_add]
+
 #align affine_basis.coords AffineBasis.coords
 
 @[simp]
