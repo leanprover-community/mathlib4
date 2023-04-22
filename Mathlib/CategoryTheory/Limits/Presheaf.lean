@@ -352,8 +352,6 @@ theorem coconeOfRepresentable_ι_app (P : Cᵒᵖ ⥤ Type u₁) (j : P.Elements
 theorem coconeOfRepresentable_naturality {P₁ P₂ : Cᵒᵖ ⥤ Type u₁} (α : P₁ ⟶ P₂) (j : P₁.Elementsᵒᵖ) :
     (coconeOfRepresentable P₁).ι.app j ≫ α =
       (coconeOfRepresentable P₂).ι.app ((CategoryOfElements.map α).op.obj j) := by
-  -- The next few lines were `ext T f` in mathlib3
-  apply NatTrans.ext
   ext T f
   simpa [coconeOfRepresentable_ι_app] using FunctorToTypes.naturality _ _ α f.op _
 #align category_theory.cocone_of_representable_naturality CategoryTheory.coconeOfRepresentable_naturality
