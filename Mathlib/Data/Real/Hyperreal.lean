@@ -379,8 +379,8 @@ theorem isSt_inj_real {r₁ r₂ s : ℝ} (h1 : IsSt r₁ s) (h2 : IsSt r₂ s) 
   Eq.trans (eq_of_isSt_real h1) (eq_of_isSt_real h2).symm
 #align hyperreal.is_st_inj_real Hyperreal.isSt_inj_real
 
-theorem isSt_iff_abs_sub_lt_delta {x : ℝ*} {r : ℝ} : IsSt x r ↔ ∀ δ : ℝ, 0 < δ → |x - r| < δ := by
-  simp only [abs_sub_lt_iff, sub_lt_iff_lt_add, is_st, and_comm', add_comm]
+theorem isSt_iff_abs_sub_lt_delta {x : ℝ*} {r : ℝ} : IsSt x r ↔ ∀ δ : ℝ, 0 < δ → |x - ↑r| < δ := by
+  simp only [abs_sub_lt_iff, sub_lt_iff_lt_add, IsSt, and_comm, add_comm]
 #align hyperreal.is_st_iff_abs_sub_lt_delta Hyperreal.isSt_iff_abs_sub_lt_delta
 
 theorem isSt_add {x y : ℝ*} {r s : ℝ} : IsSt x r → IsSt y s → IsSt (x + y) (r + s) :=
@@ -392,7 +392,7 @@ theorem isSt_add {x y : ℝ*} {r s : ℝ} : IsSt x r → IsSt y s → IsSt (x + 
 #align hyperreal.is_st_add Hyperreal.isSt_add
 
 theorem isSt_neg {x : ℝ*} {r : ℝ} (hxr : IsSt x r) : IsSt (-x) (-r) := fun d hd =>
-  show -(r : ℝ*) - d < -x ∧ -x < -r + d by cases hxr d hd <;> constructor <;> linarith
+  show -(r : ℝ*) - d < -x ∧ -x < -r + d by cases hxr d hd; constructor <;> linarith
 #align hyperreal.is_st_neg Hyperreal.isSt_neg
 
 theorem isSt_sub {x y : ℝ*} {r s : ℝ} : IsSt x r → IsSt y s → IsSt (x - y) (r - s) := fun hxr hys =>
@@ -414,7 +414,7 @@ theorem lt_of_isSt_lt {x y : ℝ*} {r s : ℝ} (hxr : IsSt x r) (hys : IsSt y s)
 #align hyperreal.lt_of_is_st_lt Hyperreal.lt_of_isSt_lt
 
 theorem isSt_le_of_le {x y : ℝ*} {r s : ℝ} (hrx : IsSt x r) (hsy : IsSt y s) : x ≤ y → r ≤ s := by
-  rw [← not_lt, ← not_lt, not_imp_not] <;> exact lt_of_is_st_lt hsy hrx
+  rw [← not_lt, ← not_lt, not_imp_not]; exact lt_of_isSt_lt hsy hrx
 #align hyperreal.is_st_le_of_le Hyperreal.isSt_le_of_le
 
 theorem st_le_of_le {x y : ℝ*} (hix : ¬Infinite x) (hiy : ¬Infinite y) : x ≤ y → st x ≤ st y :=
@@ -454,7 +454,8 @@ theorem neg_of_infiniteNeg {x : ℝ*} : InfiniteNeg x → x < 0 := fun hin => hi
 #align hyperreal.neg_of_infinite_neg Hyperreal.neg_of_infiniteNeg
 
 theorem not_infinitePos_of_infiniteNeg {x : ℝ*} : InfiniteNeg x → ¬InfinitePos x := fun hn hp =>
-  not_lt_of_lt (hn 1) (hp 1)
+  -- porting note: needs `α := ℝ*`, otherwise unfolds `ℝ*` and fails
+  not_lt_of_lt (α := ℝ*) (hn 1) (hp 1)
 #align hyperreal.not_infinite_pos_of_infinite_neg Hyperreal.not_infinitePos_of_infiniteNeg
 
 theorem not_infiniteNeg_of_infinitePos {x : ℝ*} : InfinitePos x → ¬InfiniteNeg x :=
