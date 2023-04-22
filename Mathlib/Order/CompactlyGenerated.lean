@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 
 ! This file was ported from Lean 3 source module order.compactly_generated
-! leanprover-community/mathlib commit 210657c4ea4a4a7b234392f70a3a2a83346dfa90
+! leanprover-community/mathlib commit e8cf0cfec5fcab9baf46dc17d30c5e22048468be
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -55,8 +55,7 @@ This is demonstrated by means of the following four lemmas:
 complete lattice, well-founded, compact
 -/
 
-
-variable {α : Type _} [CompleteLattice α]
+variable {ι : Sort _} {α : Type _} [CompleteLattice α] {f : ι → α}
 
 namespace CompleteLattice
 
