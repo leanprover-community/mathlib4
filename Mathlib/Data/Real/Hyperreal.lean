@@ -488,7 +488,7 @@ theorem infinite_iff_infinite_neg {x : ℝ*} : Infinite x ↔ Infinite (-x) :=
 
 theorem not_infinite_of_infinitesimal {x : ℝ*} : Infinitesimal x → ¬Infinite x := fun hi hI =>
   have hi' := hi 2 zero_lt_two
-  Or.dcases_on hI
+  hI.elim
     (fun hip =>
       have hip' := hip 2
       not_lt_of_lt hip' (by convert hi'.2 <;> exact (zero_add 2).symm))
