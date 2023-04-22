@@ -50,7 +50,7 @@ theorem vandermonde_apply {n : ℕ} (v : Fin n → R) (i j) : vandermonde v i j 
 @[simp]
 theorem vandermonde_cons {n : ℕ} (v0 : R) (v : Fin n → R) :
     vandermonde (Fin.cons v0 v : Fin n.succ → R) =
-      Fin.cons (fun j => v0 ^ (j : ℕ)) fun i => Fin.cons 1 fun j => v i * vandermonde v i j := by
+      Fin.cons (fun (j : Fin n.succ) => v0 ^ (j : ℕ)) fun i => Fin.cons 1 fun j => v i * vandermonde v i j := by
   ext (i j)
   refine' Fin.cases (by simp) (fun i => _) i
   refine' Fin.cases (by simp) (fun j => _) j
@@ -59,10 +59,9 @@ theorem vandermonde_cons {n : ℕ} (v0 : R) (v : Fin n → R) :
 
 theorem vandermonde_succ {n : ℕ} (v : Fin n.succ → R) :
     vandermonde v =
-      Fin.cons (fun j => v 0 ^ (j : ℕ)) fun i =>
+      Fin.cons (fun (j : Fin n.succ) => v 0 ^ (j : ℕ)) fun i =>
         Fin.cons 1 fun j => v i.succ * vandermonde (Fin.tail v) i j := by
   conv_lhs => rw [← Fin.cons_self_tail v, vandermonde_cons]
-  simp only [Fin.tail]
 #align matrix.vandermonde_succ Matrix.vandermonde_succ
 
 theorem vandermonde_mul_vandermonde_transpose {n : ℕ} (v w : Fin n → R) (i j) :
@@ -76,7 +75,7 @@ theorem vandermonde_transpose_mul_vandermonde {n : ℕ} (v : Fin n → R) (i j) 
 #align matrix.vandermonde_transpose_mul_vandermonde Matrix.vandermonde_transpose_mul_vandermonde
 
 theorem det_vandermonde {n : ℕ} (v : Fin n → R) :
-    det (vandermonde v) = ∏ i : Fin n, ∏ j in Ioi i, v j - v i := by
+    det (vandermonde v) = ∏ i : Fin n, Finset.prod (Ioi i) (fun j => v j - v i) := by
   unfold vandermonde
   induction' n with n ih
   · exact det_eq_one_of_card_eq_zero (Fintype.card_fin 0)
@@ -106,15 +105,18 @@ theorem det_vandermonde {n : ℕ} (v : Fin n → R) :
       rw [Fin.succAbove_zero, Matrix.cons_val_succ, Fin.val_succ, mul_comm]
       exact (geom_sum₂_mul (v i.succ) (v 0) (j + 1 : ℕ)).symm
     _ =
-        (∏ i : Fin n, v (Fin.succ i) - v 0) *
+        (Finset.prod Finset.univ (fun i => v (Fin.succ i) - v 0)) *
           det fun i j : Fin n =>
             ∑ k in Finset.range (j + 1 : ℕ), v i.succ ^ k * v 0 ^ (j - k : ℕ) :=
       (det_mul_column (fun i => v (Fin.succ i) - v 0) _)
-    _ = (∏ i : Fin n, v (Fin.succ i) - v 0) * det fun i j : Fin n => v (Fin.succ i) ^ (j : ℕ) :=
-      (congr_arg ((· * ·) _) _)
-    _ = ∏ i : Fin n.succ, ∏ j in Ioi i, v j - v i := by
-      simp_rw [ih (v ∘ Fin.succ), Fin.prod_univ_succ, Fin.prod_Ioi_zero, Fin.prod_Ioi_succ]
-    
+    _ = (Finset.prod Finset.univ (fun i => v (Fin.succ i) - v 0)) * det fun i j : Fin n => v (Fin.succ i) ^ (j : ℕ) :=
+      (congr_arg _ _)
+    _ = ∏ i : Fin n.succ, Finset.prod (Ioi i) (fun j => v j - v i) := by
+      simp_rw [Fin.prod_univ_succ, Fin.prod_Ioi_zero, Fin.prod_Ioi_succ]
+      have h := ih (v ∘ Fin.succ)
+      simp at h
+      rw [h]
+
   · intro i j
     simp_rw [of_apply]
     rw [Matrix.cons_val_zero]
@@ -140,7 +142,8 @@ theorem det_vandermonde_eq_zero_iff [IsDomain R] {n : ℕ} {v : Fin n → R} :
     det (vandermonde v) = 0 ↔ ∃ i j : Fin n, v i = v j ∧ i ≠ j := by
   constructor
   · simp only [det_vandermonde v, Finset.prod_eq_zero_iff, sub_eq_zero, forall_exists_index]
-    exact fun i _ j h₁ h₂ => ⟨j, i, h₂, (mem_Ioi.mp h₁).ne'⟩
+    rintro i ⟨_, j, h₁, h₂⟩
+    exact ⟨j, i, h₂, (mem_Ioi.mp h₁).ne'⟩
   · simp only [Ne.def, forall_exists_index, and_imp]
     refine' fun i j h₁ h₂ => Matrix.det_zero_of_row_eq h₂ (funext fun k => _)
     rw [vandermonde_apply, vandermonde_apply, h₁]
@@ -148,7 +151,8 @@ theorem det_vandermonde_eq_zero_iff [IsDomain R] {n : ℕ} {v : Fin n → R} :
 
 theorem det_vandermonde_ne_zero_iff [IsDomain R] {n : ℕ} {v : Fin n → R} :
     det (vandermonde v) ≠ 0 ↔ Function.Injective v := by
-  simpa only [det_vandermonde_eq_zero_iff, Ne.def, not_exists, not_and, Classical.not_not]
+  unfold Function.Injective
+  simp only [det_vandermonde_eq_zero_iff, Ne.def, not_exists, not_and, Classical.not_not]
 #align matrix.det_vandermonde_ne_zero_iff Matrix.det_vandermonde_ne_zero_iff
 
 theorem eq_zero_of_forall_index_sum_pow_mul_eq_zero {R : Type _} [CommRing R] [IsDomain R] {n : ℕ}
@@ -172,4 +176,3 @@ theorem eq_zero_of_forall_pow_sum_mul_pow_eq_zero {R : Type _} [CommRing R] [IsD
 #align matrix.eq_zero_of_forall_pow_sum_mul_pow_eq_zero Matrix.eq_zero_of_forall_pow_sum_mul_pow_eq_zero
 
 end Matrix
-
