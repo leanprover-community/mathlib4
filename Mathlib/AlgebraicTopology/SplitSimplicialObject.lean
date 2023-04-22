@@ -111,6 +111,7 @@ variable (Δ)
 
 /-- The distinguished element in `Splitting.IndexSet Δ` which corresponds to the
 identity of `Δ`. -/
+@[simps]
 def id : IndexSet Δ :=
   ⟨Δ, ⟨𝟙 _, by infer_instance⟩⟩
 #align simplicial_object.splitting.index_set.id SimplicialObject.Splitting.IndexSet.id
