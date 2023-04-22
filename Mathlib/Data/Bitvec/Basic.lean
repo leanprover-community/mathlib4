@@ -23,7 +23,7 @@ namespace Bitvec
 instance (n : ℕ) : Preorder (Bitvec n) :=
   Preorder.lift Bitvec.toNat
 
-/-- convert `fin` to `bitvec` -/
+/-- convert `fin` to `Bitvec` -/
 def ofFin {n : ℕ} (i : Fin <| 2 ^ n) : Bitvec n :=
   Bitvec.ofNat _ i.val
 #align bitvec.of_fin Bitvec.ofFin
@@ -33,7 +33,7 @@ theorem ofFin_val {n : ℕ} (i : Fin <| 2 ^ n) : (ofFin i).toNat = i.val := by
   apply i.is_lt
 #align bitvec.of_fin_val Bitvec.ofFin_val
 
-/-- convert `bitvec` to `fin` -/
+/-- convert `Bitvec` to `fin` -/
 def toFin {n : ℕ} (i : Bitvec n) : Fin (2 ^ n) :=
   i.toNat
 #align bitvec.to_fin Bitvec.toFin

@@ -158,7 +158,6 @@ def mkBuildPaths (path : FilePath) : IO $ Array (FilePath × Bool) := do
     (packageDir / LIBDIR / path.withExtension "ilean", true),
     (packageDir / LIBDIR / path.withExtension "trace", true),
     (packageDir / IRDIR  / path.withExtension "c", true),
-    (packageDir / IRDIR  / path.withExtension "c.trace", true),
     (packageDir / LIBDIR / path.withExtension "extra", false)]
 
 /-- Check that all required build files exist. -/
