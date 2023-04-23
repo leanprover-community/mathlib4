@@ -523,7 +523,6 @@ section LimFunctor
 variable [HasLimitsOfShape J C]
 
 section
-
 /-- `limit F` is functorial in `F`, when `C` has all limits of shape `J`. -/
 @[simps]
 def lim : (J ⥤ C) ⥤ C where
@@ -546,6 +545,11 @@ variable {G : J ⥤ C} (α : F ⟶ G)
 -- theorem limMap_eq_limMap : lim.map α = limMap α :=
 --   rfl
 -- #align category_theory.limits.lim_map_eq_lim_map CategoryTheory.Limits.limMap_eq_limMap
+
+-- porting note: not entirely sure why the previous lemma is commented out. Aligning the
+-- "weird name"
+#align category_theory.limits.lim_map_eq_lim_map CategoryTheory.Limits.lim_map
+
 
 theorem limit.map_pre [HasLimitsOfShape K C] (E : K ⥤ J) :
     lim.map α ≫ limit.pre G E = limit.pre F E ≫ lim.map (whiskerLeft E α) := by
