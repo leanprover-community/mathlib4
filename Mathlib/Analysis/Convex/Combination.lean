@@ -19,11 +19,11 @@ This file defines convex combinations of points in a vector space.
 
 ## Main declarations
 
-* `finset.center_mass`: Center of mass of a finite family of points.
+* `Finset.centerMass`: Center of mass of a finite family of points.
 
 ## Implementation notes
 
-We divide by the sum of the weights in the definition of `finset.center_mass` because of the way
+We divide by the sum of the weights in the definition of `Finset.centerMass` because of the way
 mathematical arguments go: one doesn't change weights, but merely adds some. This also makes a few
 lemmas unconditional on the sum of the weights being `1`.
 -/
@@ -184,10 +184,10 @@ theorem Convex.sum_mem (hs : Convex R s) (h₀ : ∀ i ∈ t, 0 ≤ w i) (h₁ :
     hs.centerMass_mem h₀ (h₁.symm ▸ zero_lt_one) hz
 #align convex.sum_mem Convex.sum_mem
 
-/-- A version of `convex.sum_mem` for `finsum`s. If `s` is a convex set, `w : ι → R` is a family of
+/-- A version of `Convex.sum_mem` for `finsum`s. If `s` is a convex set, `w : ι → R` is a family of
 nonnegative weights with sum one and `z : ι → E` is a family of elements of a module over `R` such
-that `z i ∈ s` whenever `w i ≠ 0``, then the sum `∑ᶠ i, w i • z i` belongs to `s`. See also
-`partition_of_unity.finsum_smul_mem_convex`. -/
+that `z i ∈ s` whenever `w i ≠ 0`, then the sum `∑ᶠ i, w i • z i` belongs to `s`. See also
+`PartitionOfUnity.finsum_smul_mem_convex`. -/
 theorem Convex.finsum_mem {ι : Sort _} {w : ι → R} {z : ι → E} {s : Set E} (hs : Convex R s)
     (h₀ : ∀ i, 0 ≤ w i) (h₁ : (∑ᶠ i, w i) = 1) (hz : ∀ i, w i ≠ 0 → z i ∈ s) :
     (∑ᶠ i, w i • z i) ∈ s := by
@@ -230,7 +230,7 @@ theorem Finset.centerMass_mem_convexHull (t : Finset ι) {w : ι → R} (hw₀ :
   (convex_convexHull R s).centerMass_mem hw₀ hws fun i hi => subset_convexHull R s <| hz i hi
 #align finset.center_mass_mem_convex_hull Finset.centerMass_mem_convexHull
 
-/-- A refinement of `finset.center_mass_mem_convex_hull` when the indexed family is a `finset` of
+/-- A refinement of `Finset.centerMass_mem_convexHull` when the indexed family is a `Finset` of
 the space. -/
 theorem Finset.centerMass_id_mem_convexHull (t : Finset E) {w : E → R} (hw₀ : ∀ i ∈ t, 0 ≤ w i)
     (hws : 0 < ∑ i in t, w i) : t.centerMass w id ∈ convexHull R (t : Set E) :=
@@ -304,7 +304,7 @@ theorem convexHull_range_eq_exists_affineCombination (v : ι → E) :
     exact affineCombination_mem_convexHull hw₀ hw₁
 #align convex_hull_range_eq_exists_affine_combination convexHull_range_eq_exists_affineCombination
 
-/-- Convex hull of `s` is equal to the set of all centers of masses of `finset`s `t`, `z '' t ⊆ s`.
+/-- Convex hull of `s` is equal to the set of all centers of masses of `Finset`s `t`, `z '' t ⊆ s`.
 This version allows finsets in any type in any universe. -/
 theorem convexHull_eq (s : Set E) :
     convexHull R s =
@@ -452,12 +452,12 @@ theorem convexHull_sub (s t : Set E) : convexHull R (s - t) = convexHull R s - c
   simp_rw [sub_eq_add_neg, convexHull_add, convexHull_neg]
 #align convex_hull_sub convexHull_sub
 
-/-! ### `std_simplex` -/
+/-! ### `stdSimplex` -/
 
 
 variable (ι) [Fintype ι] {f : ι → R}
 
-/-- `std_simplex 𝕜 ι` is the convex hull of the canonical basis in `ι → 𝕜`. -/
+/-- `stdSimplex 𝕜 ι` is the convex hull of the canonical basis in `ι → 𝕜`. -/
 theorem convexHull_basis_eq_stdSimplex :
     convexHull R (range fun i j : ι => if i = j then (1 : R) else 0) = stdSimplex R ι := by
   refine' Subset.antisymm (convexHull_min _ (convex_stdSimplex R ι)) _
@@ -474,7 +474,7 @@ variable {ι}
 /-- The convex hull of a finite set is the image of the standard simplex in `s → ℝ`
 under the linear map sending each function `w` to `∑ x in s, w x • x`.
 
-Since we have no sums over finite sets, we use sum over `@finset.univ _ hs.fintype`.
+Since we have no sums over finite sets, we use sum over `@Finset.univ _ hs.fintype`.
 The map is defined in terms of operations on `(s → ℝ) →ₗ[ℝ] ℝ` so that later we will not need
 to prove that this map is linear. -/
 theorem Set.Finite.convexHull_eq_image {s : Set E} (hs : s.Finite) :
@@ -491,7 +491,7 @@ theorem Set.Finite.convexHull_eq_image {s : Set E} (hs : s.Finite) :
   sorry
 #align set.finite.convex_hull_eq_image Set.Finite.convexHull_eq_image
 
-/-- All values of a function `f ∈ std_simplex 𝕜 ι` belong to `[0, 1]`. -/
+/-- All values of a function `f ∈ stdSimplex 𝕜 ι` belong to `[0, 1]`. -/
 theorem mem_Icc_of_mem_stdSimplex (hf : f ∈ stdSimplex R ι) (x) : f x ∈ Icc (0 : R) 1 :=
   ⟨hf.1 x, hf.2 ▸ Finset.single_le_sum (fun y _ => hf.1 y) (Finset.mem_univ x)⟩
 #align mem_Icc_of_mem_std_simplex mem_Icc_of_mem_stdSimplex
