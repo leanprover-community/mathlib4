@@ -414,6 +414,7 @@ import Mathlib.CategoryTheory.ConcreteCategory.Bundled
 import Mathlib.CategoryTheory.ConcreteCategory.BundledHom
 import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 import Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso
+import Mathlib.CategoryTheory.ConcreteCategory.UnbundledHom
 import Mathlib.CategoryTheory.Conj
 import Mathlib.CategoryTheory.ConnectedComponents
 import Mathlib.CategoryTheory.Core
