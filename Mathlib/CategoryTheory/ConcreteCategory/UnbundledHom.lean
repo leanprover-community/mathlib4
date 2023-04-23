@@ -8,7 +8,7 @@ Authors: Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.ConcreteCategory.BundledHom
+import Mathlib.CategoryTheory.ConcreteCategory.BundledHom
 
 /-!
 # Category instances for structures that use unbundled homs
@@ -42,8 +42,7 @@ variable (c : Type u → Type u) (hom : ∀ ⦃α β⦄, c α → c β → (α �
 
 include 𝒞
 
-instance bundledHom : BundledHom fun α β (Iα : c α) (Iβ : c β) => Subtype (hom Iα Iβ)
-    where
+instance bundledHom : BundledHom fun α β (Iα : c α) (Iβ : c β) => Subtype (hom Iα Iβ) where
   toFun _ _ _ _ := Subtype.val
   id α Iα := ⟨id, hom_id hom Iα⟩
   id_toFun := by intros <;> rfl
