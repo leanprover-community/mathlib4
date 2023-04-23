@@ -8,10 +8,10 @@ Authors: Markus Himmel
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Limits.Yoneda
-import Mathbin.CategoryTheory.Preadditive.Opposite
-import Mathbin.Algebra.Category.Module.Basic
-import Mathbin.Algebra.Category.Group.Preadditive
+import Mathlib.CategoryTheory.Limits.Yoneda
+import Mathlib.CategoryTheory.Preadditive.Opposite
+import Mathlib.Algebra.Category.Module.Basic
+import Mathlib.Algebra.Category.Group.Preadditive
 
 /-!
 # The Yoneda embedding for preadditive categories
@@ -43,8 +43,7 @@ variable {C : Type u} [Category.{v} C] [Preadditive C]
 object `X` to the `End Y`-module of morphisms `X ⟶ Y`.
 -/
 @[simps]
-def preadditiveYonedaObj (Y : C) : Cᵒᵖ ⥤ ModuleCat.{v} (End Y)
-    where
+def preadditiveYonedaObj (Y : C) : Cᵒᵖ ⥤ ModuleCat.{v} (End Y) where
   obj X := ModuleCat.of _ (X.unop ⟶ Y)
   map X X' f :=
     { toFun := fun g => f.unop ≫ g
@@ -57,8 +56,7 @@ object `X` to the group of morphisms `X ⟶ Y`. At each point, we get an additio
 structure, see `preadditive_yoneda_obj`.
 -/
 @[simps]
-def preadditiveYoneda : C ⥤ Cᵒᵖ ⥤ AddCommGroupCat.{v}
-    where
+def preadditiveYoneda : C ⥤ Cᵒᵖ ⥤ AddCommGroupCat.{v} where
   obj Y := preadditiveYonedaObj Y ⋙ forget₂ _ _
   map Y Y' f :=
     { app := fun X =>
@@ -78,8 +76,7 @@ def preadditiveYoneda : C ⥤ Cᵒᵖ ⥤ AddCommGroupCat.{v}
 object `Y` to the `End X`-module of morphisms `X ⟶ Y`.
 -/
 @[simps]
-def preadditiveCoyonedaObj (X : Cᵒᵖ) : C ⥤ ModuleCat.{v} (End X)
-    where
+def preadditiveCoyonedaObj (X : Cᵒᵖ) : C ⥤ ModuleCat.{v} (End X) where
   obj Y := ModuleCat.of _ (unop X ⟶ Y)
   map Y Y' f :=
     { toFun := fun g => g ≫ f
@@ -92,8 +89,7 @@ object `Y` to the group of morphisms `X ⟶ Y`. At each point, we get an additio
 structure, see `preadditive_coyoneda_obj`.
 -/
 @[simps]
-def preadditiveCoyoneda : Cᵒᵖ ⥤ C ⥤ AddCommGroupCat.{v}
-    where
+def preadditiveCoyoneda : Cᵒᵖ ⥤ C ⥤ AddCommGroupCat.{v} where
   obj X := preadditiveCoyonedaObj X ⋙ forget₂ _ _
   map X X' f :=
     { app := fun Y =>
