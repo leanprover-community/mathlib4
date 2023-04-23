@@ -277,6 +277,11 @@ theorem C_eq_smul_one : (C a : MvPolynomial σ R) = a • (1 : MvPolynomial σ R
   rw [← C_mul', mul_one]
 #align mv_polynomial.C_eq_smul_one MvPolynomial.C_eq_smul_one
 
+-- Porting note: new theorem
+theorem smul_monomial: a' • monomial s a = monomial s (a' * a) := by
+  rw [smul_eq_C_mul, C_mul_monomial]
+#align mv_polynomial.smul_monomial MvPolynomial.smul_monomial
+
 theorem X_injective [Nontrivial R] : Function.Injective (X : σ → MvPolynomial σ R) :=
   (monomial_left_injective one_ne_zero).comp (Finsupp.single_left_injective one_ne_zero)
 #align mv_polynomial.X_injective MvPolynomial.X_injective
@@ -728,6 +733,12 @@ theorem support_X_mul (s : σ) (p : MvPolynomial σ R) :
   AddMonoidAlgebra.support_single_mul p _ (by simp) _
 #align mv_polynomial.support_X_mul MvPolynomial.support_X_mul
 
+-- Porting note: new theorem
+@[simp]
+theorem support_smul_eq [NoZeroDivisors R] {a : R} (h: a≠0) {p: MvPolynomial σ R}:
+    (a • p).support = p.support := Finsupp.support_smul_eq h
+#align mv_polynomial.support_smul_eq MvPolynomial.support_smul_eq
+
 theorem support_sdiff_support_subset_support_add [DecidableEq σ] (p q : MvPolynomial σ R) :
     p.support \ q.support ⊆ (p + q).support := by
   intro m hm
@@ -797,6 +808,17 @@ theorem ne_zero_iff {p : MvPolynomial σ R} : p ≠ 0 ↔ ∃ d, coeff d p ≠ 0
   push_neg
   rfl
 #align mv_polynomial.ne_zero_iff MvPolynomial.ne_zero_iff
+
+-- Porting note: new theorem
+theorem eq_zero_iff_support_eq_empty (p: MvPolynomial σ R): p = 0 ↔ p.support = ∅ :=
+  by
+  constructor
+  · intro hp
+    exact hp ▸ support_zero
+  · rw [eq_zero_iff]
+    intros hps d
+    exact not_mem_support_iff.mp (Finset.eq_empty_iff_forall_not_mem.mp hps d)
+#align mv_polynomial.eq_zero_iff_support_eq_empty MvPolynomial.eq_zero_iff_support_eq_empty
 
 theorem exists_coeff_ne_zero {p : MvPolynomial σ R} (h : p ≠ 0) : ∃ d, coeff d p ≠ 0 :=
   ne_zero_iff.mp h
