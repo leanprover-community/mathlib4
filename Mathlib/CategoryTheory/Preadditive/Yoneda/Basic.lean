@@ -10,8 +10,8 @@ Authors: Markus Himmel
 -/
 import Mathlib.CategoryTheory.Limits.Yoneda
 import Mathlib.CategoryTheory.Preadditive.Opposite
-import Mathlib.Algebra.Category.Module.Basic
-import Mathlib.Algebra.Category.Group.Preadditive
+import Mathlib.Algebra.Category.ModuleCat.Basic
+import Mathlib.Algebra.Category.GroupCat.Preadditive
 
 /-!
 # The Yoneda embedding for preadditive categories
