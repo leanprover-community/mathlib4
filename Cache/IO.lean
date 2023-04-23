@@ -153,8 +153,7 @@ def mkBuildPaths (path : FilePath) : IO $ Array FilePath := do
     packageDir / LIBDIR / path.withExtension "olean",
     packageDir / LIBDIR / path.withExtension "ilean",
     packageDir / LIBDIR / path.withExtension "trace",
-    packageDir / IRDIR  / path.withExtension "c",
-    packageDir / IRDIR  / path.withExtension "c.trace"]
+    packageDir / IRDIR  / path.withExtension "c"]
 
 def allExist (paths : Array FilePath) : IO Bool := do
   for path in paths do
@@ -180,7 +179,7 @@ def packCache (hashMap : HashMap) (overwrite : Bool) : IO $ Array String := do
 /-- Gets the set of all cached files -/
 def getLocalCacheSet : IO $ Lean.RBTree String compare := do
   let paths ← getFilesWithExtension CACHEDIR "gz"
-  return .ofList (paths.data.map (·.withoutParent CACHEDIR |>.toString))
+  return .fromList (paths.data.map (·.withoutParent CACHEDIR |>.toString)) _
 
 def isPathFromMathlib (path : FilePath) : Bool :=
   match path.components with

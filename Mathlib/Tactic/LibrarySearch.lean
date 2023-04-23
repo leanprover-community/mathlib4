@@ -3,7 +3,7 @@ Copyright (c) 2021 Gabriel Ebner. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner, Scott Morrison
 -/
-import Std.Tactic.TryThis
+import Mathlib.Tactic.TryThis
 import Mathlib.Lean.Expr.Basic
 import Mathlib.Lean.Meta.DiscrTree
 import Mathlib.Tactic.Cache
@@ -104,14 +104,13 @@ def librarySearchLemma (lem : Name) (mod : DeclMod) (required : List Expr) (solv
 Returns a lazy list of the results of applying a library lemma,
 then calling `solveByElim` on the resulting goals.
 -/
-unsafe def librarySearchCore (goal : MVarId) (lemmas : DiscrTree (Name × DeclMod) s)
+def librarySearchCore (goal : MVarId) (lemmas : DiscrTree (Name × DeclMod) s)
     (required : List Expr) (solveByElimDepth := 6) : ListM MetaM (MetavarContext × List MVarId) :=
   .squash do
     let ty ← goal.getType
-    withTraceNode `Tactic.librarySearch (return m!"{·.emoji} {ty}") do
-      let lemmas := ListM.ofList ((← lemmas.getMatch ty).toList)
-      return lemmas.filterMapM fun (lem, mod) =>
-        try? <| librarySearchLemma lem mod required solveByElimDepth goal
+    let lemmas := ListM.ofList ((← lemmas.getMatch ty).toList)
+    return lemmas.filterMapM fun (lem, mod) =>
+      try? <| librarySearchLemma lem mod required solveByElimDepth goal
 
 /--
 Try to solve the goal either by:
@@ -131,11 +130,16 @@ this is not currently tracked.)
 -/
 def librarySearch (goal : MVarId) (lemmas : DiscrTree (Name × DeclMod) s) (required : List Expr)
     (solveByElimDepth := 6) : MetaM (Option (Array (MetavarContext × List MVarId))) := do
+  let librarySearchEmoji := fun
+    | .error _ => bombEmoji
+    | .ok (some _) => crossEmoji
+    | .ok none => checkEmoji
+  withTraceNode `Tactic.librarySearch (return m!"{librarySearchEmoji ·} {← goal.getType}") do
   profileitM Exception "librarySearch" (← getOptions) do
   (do
     solveByElim [goal] required solveByElimDepth
     return none) <|>
-  unsafe (do
+  (do
     let results ← librarySearchCore goal lemmas required solveByElimDepth
       -- Don't use too many heartbeats.
       |>.whileAtLeastHeartbeatsPercent 10
@@ -178,6 +182,7 @@ elab_rules : tactic | `(tactic| library_search%$tk $[using $[$required:term],*]?
       for suggestion in suggestions do
         withMCtx suggestion.1 do
           addExactSuggestion tk (← instantiateMVars (mkMVar mvar)).headBeta
+      if suggestions.isEmpty then logError "library_search didn't find any relevant lemmas"
       admitGoal goal
     else
       addExactSuggestion tk (← instantiateMVars (mkMVar mvar)).headBeta
@@ -192,7 +197,45 @@ elab tk:"library_search%" : term <= expectedType => do
       for suggestion in suggestions do
         withMCtx suggestion.1 do
           addTermSuggestion tk (← instantiateMVars goal).headBeta
+      if suggestions.isEmpty then logError "library_search didn't find any relevant lemmas"
       mkSorry expectedType (synthetic := true)
     else
       addTermSuggestion tk (← instantiateMVars goal).headBeta
       instantiateMVars goal
+
+/-- `observe hp : p` asserts the proposition `p`, and tries to prove it using `library_search`.
+If no proof is found, the tactic fails.
+In other words, this tactic is equivalent to `have hp : p := by library_search`.
+
+If `hp` is omitted, then the placeholder `this` is used.
+
+The variant `observe? hp : p` will emit a trace message of the form `have hp : p := proof_term`.
+This may be particularly useful to speed up proofs. -/
+syntax (name := observe) "observe" "?"? (ident)? ":" term (" using " (colGt term),+)? : tactic
+
+open Elab.Tactic Elab Tactic in
+elab_rules : tactic |
+  `(tactic| observe%$tk $[?%$trace]? $[$n?:ident]? : $t:term $[using $[$required:term],*]?) => do
+  let name : Name := match n? with
+    | none   => `this
+    | some n => n.getId
+  withMainContext do
+    let (type, _) ← elabTermWithHoles t none (← getMainTag) true
+    let .mvar goal ← mkFreshExprMVar type | failure
+    if let some _ ← librarySearch goal (← librarySearchLemmas.get) [] then
+      reportOutOfHeartbeats tk
+      throwError "observe did not find a solution"
+    else
+      let v := (← instantiateMVars (mkMVar goal)).headBeta
+      if trace.isSome then
+        -- TODO: we should be allowed to pass an identifier to `addHaveSuggestion`.
+        addHaveSuggestion tk type v
+      let (_, newGoal) ← (← getMainGoal).note name v
+      replaceMainGoal [newGoal]
+
+@[inherit_doc observe] macro "observe?" h:(ident)? ":" t:term : tactic =>
+  `(tactic| observe ? $[$h]? : $t)
+
+@[inherit_doc observe]
+macro "observe?" h:(ident)? ":" t:term " using " terms:(colGt term),+ : tactic =>
+  `(tactic| observe ? $[$h]? : $t using $[$terms],*)
