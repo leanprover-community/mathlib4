@@ -1399,6 +1399,7 @@ import Mathlib.LinearAlgebra.SModEq
 import Mathlib.LinearAlgebra.SesquilinearForm
 import Mathlib.LinearAlgebra.Span
 import Mathlib.LinearAlgebra.StdBasis
+import Mathlib.LinearAlgebra.TensorAlgebra.Basic
 import Mathlib.LinearAlgebra.TensorProduct
 import Mathlib.LinearAlgebra.TensorProductBasis
 import Mathlib.Logic.Basic

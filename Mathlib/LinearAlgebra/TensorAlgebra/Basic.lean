@@ -8,11 +8,11 @@ Authors: Adam Topaz
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.FreeAlgebra
-import Mathbin.Algebra.RingQuot
-import Mathbin.Algebra.TrivSqZeroExt
-import Mathbin.Algebra.Algebra.Operations
-import Mathbin.LinearAlgebra.Multilinear.Basic
+import Mathlib.Algebra.FreeAlgebra
+import Mathlib.Algebra.RingQuot
+import Mathlib.Algebra.TrivSqZeroExt
+import Mathlib.Algebra.Algebra.Operations
+import Mathlib.LinearAlgebra.Multilinear.Basic
 
 /-!
 # Tensor Algebras
@@ -90,8 +90,7 @@ irreducible_def ι : M →ₗ[R] TensorAlgebra R M :=
 #align tensor_algebra.ι TensorAlgebra.ι
 
 theorem ringQuot_mkAlgHom_freeAlgebra_ι_eq_ι (m : M) :
-    RingQuot.mkAlgHom R (Rel R M) (FreeAlgebra.ι R m) = ι R m :=
-  by
+    RingQuot.mkAlgHom R (Rel R M) (FreeAlgebra.ι R m) = ι R m := by
   rw [ι]
   rfl
 #align tensor_algebra.ring_quot_mk_alg_hom_free_algebra_ι_eq_ι TensorAlgebra.ringQuot_mkAlgHom_freeAlgebra_ι_eq_ι
@@ -126,8 +125,7 @@ variable {R}
 
 @[simp]
 theorem ι_comp_lift {A : Type _} [Semiring A] [Algebra R A] (f : M →ₗ[R] A) :
-    (lift R f).toLinearMap.comp (ι R) = f :=
-  by
+    (lift R f).toLinearMap.comp (ι R) = f := by
   convert(lift R).symm_apply_apply f
   simp only [lift, Equiv.coe_fn_symm_mk]
 #align tensor_algebra.ι_comp_lift TensorAlgebra.ι_comp_lift
@@ -141,8 +139,7 @@ theorem lift_ι_apply {A : Type _} [Semiring A] [Algebra R A] (f : M →ₗ[R] A
 
 @[simp]
 theorem lift_unique {A : Type _} [Semiring A] [Algebra R A] (f : M →ₗ[R] A)
-    (g : TensorAlgebra R M →ₐ[R] A) : g.toLinearMap.comp (ι R) = f ↔ g = lift R f :=
-  by
+    (g : TensorAlgebra R M →ₐ[R] A) : g.toLinearMap.comp (ι R) = f ↔ g = lift R f := by
   rw [← (lift R).symm_apply_eq]
   simp only [lift, Equiv.coe_fn_symm_mk]
 #align tensor_algebra.lift_unique TensorAlgebra.lift_unique
@@ -152,8 +149,7 @@ theorem lift_unique {A : Type _} [Semiring A] [Algebra R A] (f : M →ₗ[R] A)
 -- For now, we avoid this by not marking it irreducible.
 @[simp]
 theorem lift_comp_ι {A : Type _} [Semiring A] [Algebra R A] (g : TensorAlgebra R M →ₐ[R] A) :
-    lift R (g.toLinearMap.comp (ι R)) = g :=
-  by
+    lift R (g.toLinearMap.comp (ι R)) = g := by
   rw [← lift_symm_apply]
   exact (lift R).apply_symm_apply g
 #align tensor_algebra.lift_comp_ι TensorAlgebra.lift_comp_ι
@@ -161,8 +157,7 @@ theorem lift_comp_ι {A : Type _} [Semiring A] [Algebra R A] (g : TensorAlgebra 
 /-- See note [partially-applied ext lemmas]. -/
 @[ext]
 theorem hom_ext {A : Type _} [Semiring A] [Algebra R A] {f g : TensorAlgebra R M →ₐ[R] A}
-    (w : f.toLinearMap.comp (ι R) = g.toLinearMap.comp (ι R)) : f = g :=
-  by
+    (w : f.toLinearMap.comp (ι R) = g.toLinearMap.comp (ι R)) : f = g := by
   rw [← lift_symm_apply, ← lift_symm_apply] at w
   exact (lift R).symm.Injective w
 #align tensor_algebra.hom_ext TensorAlgebra.hom_ext
@@ -175,8 +170,7 @@ and is preserved under addition and muliplication, then it holds for all of `ten
 theorem induction {C : TensorAlgebra R M → Prop}
     (h_grade0 : ∀ r, C (algebraMap R (TensorAlgebra R M) r)) (h_grade1 : ∀ x, C (ι R x))
     (h_mul : ∀ a b, C a → C b → C (a * b)) (h_add : ∀ a b, C a → C b → C (a + b))
-    (a : TensorAlgebra R M) : C a :=
-  by
+    (a : TensorAlgebra R M) : C a := by
   -- the arguments are enough to construct a subalgebra, and a mapping into it from M
   let s : Subalgebra R (TensorAlgebra R M) :=
     { carrier := C
@@ -185,8 +179,7 @@ theorem induction {C : TensorAlgebra R M → Prop}
       algebraMap_mem' := h_grade0 }
   let of : M →ₗ[R] s := (ι R).codRestrict s.to_submodule h_grade1
   -- the mapping through the subalgebra is the identity
-  have of_id : AlgHom.id R (TensorAlgebra R M) = s.val.comp (lift R of) :=
-    by
+  have of_id : AlgHom.id R (TensorAlgebra R M) = s.val.comp (lift R of) := by
     ext
     simp [of]
   -- finding a proof is finding an element of the subalgebra
@@ -241,8 +234,7 @@ theorem toTrivSqZeroExt_ι (x : M) [Module Rᵐᵒᵖ M] [IsCentralScalar R M] :
 
 As an implementation detail, we implement this using `triv_sq_zero_ext` which has a suitable
 algebra structure. -/
-def ιInv : TensorAlgebra R M →ₗ[R] M :=
-  by
+def ιInv : TensorAlgebra R M →ₗ[R] M := by
   letI : Module Rᵐᵒᵖ M := Module.compHom _ ((RingHom.id R).fromOpposite mul_comm)
   haveI : IsCentralScalar R M := ⟨fun r m => rfl⟩
   exact (TrivSqZeroExt.sndHom R M).comp to_triv_sq_zero_ext.to_linear_map
@@ -266,8 +258,7 @@ theorem ι_eq_zero_iff (x : M) : ι R x = 0 ↔ x = 0 := by rw [← ι_inj R x 0
 variable {R}
 
 @[simp]
-theorem ι_eq_algebraMap_iff (x : M) (r : R) : ι R x = algebraMap R _ r ↔ x = 0 ∧ r = 0 :=
-  by
+theorem ι_eq_algebraMap_iff (x : M) (r : R) : ι R x = algebraMap R _ r ↔ x = 0 ∧ r = 0 := by
   refine' ⟨fun h => _, _⟩
   · letI : Module Rᵐᵒᵖ M := Module.compHom _ ((RingHom.id R).fromOpposite mul_comm)
     haveI : IsCentralScalar R M := ⟨fun r m => rfl⟩
@@ -280,8 +271,7 @@ theorem ι_eq_algebraMap_iff (x : M) (r : R) : ι R x = algebraMap R _ r ↔ x =
 #align tensor_algebra.ι_eq_algebra_map_iff TensorAlgebra.ι_eq_algebraMap_iff
 
 @[simp]
-theorem ι_ne_one [Nontrivial R] (x : M) : ι R x ≠ 1 :=
-  by
+theorem ι_ne_one [Nontrivial R] (x : M) : ι R x ≠ 1 := by
   rw [← (algebraMap R (TensorAlgebra R M)).map_one, Ne.def, ι_eq_algebra_map_iff]
   exact one_ne_zero ∘ And.right
 #align tensor_algebra.ι_ne_one TensorAlgebra.ι_ne_one
@@ -289,8 +279,7 @@ theorem ι_ne_one [Nontrivial R] (x : M) : ι R x ≠ 1 :=
 /-- The generators of the tensor algebra are disjoint from its scalars. -/
 theorem ι_range_disjoint_one :
     Disjoint (LinearMap.range (ι R : M →ₗ[R] TensorAlgebra R M))
-      (1 : Submodule R (TensorAlgebra R M)) :=
-  by
+      (1 : Submodule R (TensorAlgebra R M)) := by
   rw [Submodule.disjoint_def]
   rintro _ ⟨x, hx⟩ ⟨r, rfl : algebraMap _ _ _ = _⟩
   rw [ι_eq_algebra_map_iff x] at hx
