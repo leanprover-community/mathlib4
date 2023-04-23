@@ -1,11 +1,7 @@
 /-
 Copyright (c) 2019 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Simon Hudon, Keeley Hoek, Floris van Doorn
-
-Copyright (c) 2021 Chris Bailey. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Chris Bailey
+Authors: Simon Hudon, Keeley Hoek, Floris van Doorn, Chris Bailey
 
 ! This file was ported from Lean 3 source module data.string.defs
 ! leanprover-community/mathlib commit e7131068d9696deec51e6cd7668b6d9ac69af6a4
