@@ -849,7 +849,7 @@ variable [NonAssocSemiring α]
 
 @[simp]
 theorem one_dotProduct_one : (1 : n → α) ⬝ᵥ 1 = Fintype.card n := by
-  simp [dot_product, Fintype.card]
+  simp [dotProduct, Fintype.card]
 #align matrix.one_dot_product_one Matrix.one_dotProduct_one
 
 end NonAssocSemiring
@@ -1866,11 +1866,11 @@ section NonAssocSemiring
 variable [NonAssocSemiring α]
 
 theorem mulVec_one [Fintype n] (A : Matrix m n α) : mulVec A 1 = fun i => ∑ j, A i j := by
-  ext <;> simp [mul_vec, dot_product]
+  ext <;> simp [mulVec, dotProduct]
 #align matrix.mul_vec_one Matrix.mulVec_one
 
 theorem vec_one_mul [Fintype m] (A : Matrix m n α) : vecMul 1 A = fun j => ∑ i, A i j := by
-  ext <;> simp [vec_mul, dot_product]
+  ext <;> simp [vecMul, dotProduct]
 #align matrix.vec_one_mul Matrix.vec_one_mul
 
 variable [Fintype m] [Fintype n] [DecidableEq m]
