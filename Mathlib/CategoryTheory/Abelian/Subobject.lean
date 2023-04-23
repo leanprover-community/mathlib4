@@ -8,8 +8,8 @@ Authors: Markus Himmel
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Subobject.Limits
-import Mathbin.CategoryTheory.Abelian.Basic
+import Mathlib.CategoryTheory.Subobject.Limits
+import Mathlib.CategoryTheory.Abelian.Basic
 
 /-!
 # Equivalence between subobjects and quotients in an abelian category
@@ -32,8 +32,7 @@ variable {C : Type u} [Category.{v} C]
     Implemented here using subobjects in the opposite category,
     since mathlib does not have a notion of quotient objects at the time of writing. -/
 @[simps]
-def subobjectIsoSubobjectOp [Abelian C] (X : C) : Subobject X ≃o (Subobject (op X))ᵒᵈ :=
-  by
+def subobjectIsoSubobjectOp [Abelian C] (X : C) : Subobject X ≃o (Subobject (op X))ᵒᵈ := by
   refine' OrderIso.ofHomInv (cokernel_order_hom X) (kernel_order_hom X) _ _
   · change (cokernel_order_hom X).comp (kernel_order_hom X) = _
     refine' OrderHom.ext _ _ (funext (subobject.ind _ _))
