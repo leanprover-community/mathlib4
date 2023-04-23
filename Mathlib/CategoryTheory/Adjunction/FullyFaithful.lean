@@ -58,11 +58,10 @@ instance unit_isIso_of_L_fully_faithful [Full L] [Faithful L] : IsIso (Adjunctio
             funext x -- porting note: `aesop_cat` is not able to do `funext` automatically
             aesop_cat },
           ⟨by
-            ext x f
+            ext x
             apply L.map_injective
-            aesop_cat,
-          by
-            ext x f
+            aesop_cat, by
+            ext x
             dsimp
             simp only [Adjunction.homEquiv_counit, preimage_comp, preimage_map, Category.assoc]
             rw [← h.unit_naturality]
@@ -83,10 +82,10 @@ instance counit_isIso_of_R_fully_faithful [Full R] [Faithful R] : IsIso (Adjunct
               funext x
               aesop_cat },
             ⟨by
-              ext x f
+              ext x
               apply R.map_injective
               simp, by
-              ext x f
+              ext x
               dsimp
               simp only [Adjunction.homEquiv_unit, preimage_comp, preimage_map]
               rw [← h.counit_naturality]

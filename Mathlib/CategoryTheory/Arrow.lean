@@ -56,7 +56,8 @@ end
 namespace Arrow
 
 @[ext]
-lemma hom_ext {X Y : Arrow T} (f g : X ⟶ Y) (h₁ : f.left = g.left) (h₂ : f.right = g.right) : f = g :=
+lemma hom_ext {X Y : Arrow T} (f g : X ⟶ Y) (h₁ : f.left = g.left) (h₂ : f.right = g.right) :
+    f = g :=
   CommaMorphism.ext _ _ h₁ h₂
 
 @[simp]
@@ -69,15 +70,15 @@ theorem id_right (f : Arrow T) : CommaMorphism.right (𝟙 f) = 𝟙 f.right :=
   rfl
 #align category_theory.arrow.id_right CategoryTheory.Arrow.id_right
 
+-- porting note: added to ease automation
 @[simp]
 theorem comp_left {X Y Z : Arrow T} (f : X ⟶ Y) (g : Y ⟶ Z) :
-    (f ≫ g).left = f.left ≫ g.left :=
-  rfl
+  (f ≫ g).left = f.left ≫ g.left := rfl
 
+-- porting note: added to ease automation
 @[simp]
 theorem comp_right {X Y Z : Arrow T} (f : X ⟶ Y) (g : Y ⟶ Z) :
-    (f ≫ g).right = f.right ≫ g.right :=
-  rfl
+  (f ≫ g).right = f.right ≫ g.right := rfl
 
 /-- An object in the arrow category is simply a morphism in `T`. -/
 @[simps]
@@ -145,13 +146,7 @@ theorem isIso_of_isIso_left_of_isIso_right {f g : Arrow T} (ff : f ⟶ g) [IsIso
   out := by
     let inverse : g ⟶ f := ⟨inv ff.left, inv ff.right, (by simp)⟩
     apply Exists.intro inverse
-    constructor
-    · apply CommaMorphism.ext
-      · rw [Comma.comp_left, IsIso.hom_inv_id, ←Comma.id_left]
-      · rw [Comma.comp_right, IsIso.hom_inv_id, ←Comma.id_right]
-    · apply CommaMorphism.ext
-      · rw [Comma.comp_left, IsIso.inv_hom_id, ←Comma.id_left]
-      · rw [Comma.comp_right, IsIso.inv_hom_id, ←Comma.id_right]
+    aesop_cat
 #align category_theory.arrow.is_iso_of_iso_left_of_is_iso_right CategoryTheory.Arrow.isIso_of_isIso_left_of_isIso_right
 
 /-- Create an isomorphism between arrows,
@@ -180,8 +175,9 @@ theorem hom.congr_right {f g : Arrow T} {φ₁ φ₂ : f ⟶ g} (h : φ₁ = φ�
 #align category_theory.arrow.hom.congr_right CategoryTheory.Arrow.hom.congr_right
 
 theorem iso_w {f g : Arrow T} (e : f ≅ g) : g.hom = e.inv.left ≫ f.hom ≫ e.hom.right := by
-  simp only [Functor.id_obj, w_mk_right_assoc, ← Arrow.comp_right, e.inv_hom_id, id_right,
-    Category.comp_id]
+  have eq := Arrow.hom.congr_right e.inv_hom_id
+  rw [Arrow.comp_right, Arrow.id_right] at eq
+  erw [Arrow.w_assoc, eq, Category.comp_id]
 #align category_theory.arrow.iso_w CategoryTheory.Arrow.iso_w
 
 theorem iso_w' {W X Y Z : T} {f : W ⟶ X} {g : Y ⟶ Z} (e : Arrow.mk f ≅ Arrow.mk g) :
