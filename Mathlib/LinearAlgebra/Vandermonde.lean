@@ -87,14 +87,13 @@ theorem det_vandermonde {n : ℕ} (v : Fin n → R) :
             Matrix.vecCons (v 0 ^ (j : ℕ)) (fun i => v (Fin.succ i) ^ (j : ℕ) - v 0 ^ (j : ℕ)) i) :=
       by
       refine' det_eq_of_forall_row_eq_smul_add_const (Matrix.vecCons 0 1) 0 (Fin.cons_zero _ _) _
-      rintro i j
-      simp_rw [Matrix.of_apply, Matrix.cons_val_zero]
-      revert i
-      rw [Fin.forall_fin_succ]
-      constructor
-      simp_rw [Matrix.cons_val_zero, zero_mul, add_zero]
-      intro i
-      simp
+      intro i j
+      simp_rw [of_apply]
+      rw [Matrix.cons_val_zero]
+      refine' Fin.cases _ (fun i => _) i
+      · simp
+      rw [Matrix.cons_val_succ, Matrix.cons_val_succ, Pi.one_apply]
+      ring
     _ =
         det
           (of fun i j : Fin n =>
@@ -120,33 +119,25 @@ theorem det_vandermonde {n : ℕ} (v : Fin n → R) :
             ∑ k in Finset.range (j + 1 : ℕ), v i.succ ^ k * v 0 ^ (j - k : ℕ) :=
       (det_mul_column (fun i => v (Fin.succ i) - v 0) _)
     _ = (Finset.prod Finset.univ (fun i => v (Fin.succ i) - v 0)) *
-    det fun i j : Fin n => v (Fin.succ i) ^ (j : ℕ) :=
-      (congr_arg _ _)
+    det fun i j : Fin n => v (Fin.succ i) ^ (j : ℕ) := by
+      refine' (congr_arg _ _)
+      · cases n
+        · simp only [det_eq_one_of_card_eq_zero (Fintype.card_fin 0)]
+          apply det_eq_of_forall_col_eq_smul_add_pred fun i => v 0
+        · intro j
+          simp
+        · intro i j
+          simp only [smul_eq_mul, Pi.add_apply, Fin.val_succ, Fin.coe_castSucc, Pi.smul_apply]
+          rw [Finset.sum_range_succ, add_comm, tsub_self, pow_zero, mul_one, Finset.mul_sum]
+          congr 1
+          refine' Finset.sum_congr rfl fun i' hi' => _
+          rw [mul_left_comm (v 0), Nat.succ_sub, pow_succ]
+          exact Nat.lt_succ_iff.mp (Finset.mem_range.mp hi')
     _ = ∏ i : Fin n.succ, Finset.prod (Ioi i) (fun j => v j - v i) := by
       simp_rw [Fin.prod_univ_succ, Fin.prod_Ioi_zero, Fin.prod_Ioi_succ]
       have h := ih (v ∘ Fin.succ)
       simp at h
       rw [h]
-
-  · intro i j
-    simp_rw [of_apply]
-    rw [Matrix.cons_val_zero]
-    refine' Fin.cases _ (fun i => _) i
-    · simp
-    rw [Matrix.cons_val_succ, Matrix.cons_val_succ, Pi.one_apply]
-    ring
-  · cases n
-    · simp only [det_eq_one_of_card_eq_zero (Fintype.card_fin 0)]
-    apply det_eq_of_forall_col_eq_smul_add_pred fun i => v 0
-    · intro j
-      simp
-    · intro i j
-      simp only [smul_eq_mul, Pi.add_apply, Fin.val_succ, Fin.coe_castSucc, Pi.smul_apply]
-      rw [Finset.sum_range_succ, add_comm, tsub_self, pow_zero, mul_one, Finset.mul_sum]
-      congr 1
-      refine' Finset.sum_congr rfl fun i' hi' => _
-      rw [mul_left_comm (v 0), Nat.succ_sub, pow_succ]
-      exact nat.lt_succ_iff.mp (finset.mem_range.mp hi')
 #align matrix.det_vandermonde Matrix.det_vandermonde
 
 theorem det_vandermonde_eq_zero_iff [IsDomain R] {n : ℕ} {v : Fin n → R} :
