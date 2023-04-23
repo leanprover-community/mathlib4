@@ -137,7 +137,7 @@ theorem det_vandermonde {n : ℕ} (v : Fin n → R) :
     _ = ∏ i : Fin n.succ, Finset.prod (Ioi i) (fun j => v j - v i) := by
       simp_rw [Fin.prod_univ_succ, Fin.prod_Ioi_zero, Fin.prod_Ioi_succ]
       have h := ih (v ∘ Fin.succ)
-      simp at h
+      unfold Function.comp at h
       rw [h]
 #align matrix.det_vandermonde Matrix.det_vandermonde
 
