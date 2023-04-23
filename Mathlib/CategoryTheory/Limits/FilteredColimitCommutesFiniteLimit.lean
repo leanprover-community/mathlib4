@@ -192,8 +192,8 @@ theorem colimitLimitToLimitColimit_surjective :
     -- where these images of `y j` and `y j'` become equal.
     simp_rw [colimit_eq_iff.{v, v}] at w
     -- We take a moment to restate `w` more conveniently.
-    let kf : ∀ {j j'} (f : j ⟶ j'), K := fun _ {_} {f} => (w f).choose
-    let gf : ∀ {j j'} (f : j ⟶ j'), k' ⟶ kf f := fun _ {_} {f} => (w f).choose_spec.choose
+    let kf : ∀ {j j'} (f : j ⟶ j'), K := fun {_} {_} {f} => (w f).choose
+    let gf : ∀ {j j'} (f : j ⟶ j'), k' ⟶ kf f := fun {_} {_} {f} => (w f).choose_spec.choose
     let hf : ∀ {j j'} (f : j ⟶ j'), k' ⟶ kf f := fun {_} {_} f => (w f).choose_spec.choose_spec.choose
     have wf :
       ∀ {j j'} (f : j ⟶ j'),
@@ -204,11 +204,16 @@ theorem colimitLimitToLimitColimit_surjective :
         ((curry.obj F).obj j').map (gf f) (F.map _ (y j')) =
           ((curry.obj F).obj j').map (hf f) (F.map _ (y j)) :=
         (w f).choose_spec.choose_spec.choose_spec
-      dsimp at q
-      simp_rw [← FunctorToTypes.map_comp_apply] at q
-      convert q <;> simp only [comp_id]
-      sorry
-      sorry
+      dsimp [curry_obj_obj_obj, curry_obj_obj_map] at q
+      -- change F.map ((𝟙 j', gf f) : (j', k) ⟶ (j', kf f)) (F.map ((𝟙 j', g j') : (j', k j') ⟶ (j', k')) (y j')) =
+      --   F.map ((𝟙 j', hf f) : (j' ⟶ j') × (k' ⟶ kf f)) (F.map ((f, g j) : (j ⟶ j') × (k j ⟶ k')) (y j)) at q
+      -- { simpa using q }
+      simp_rw [← FunctorToTypes.map_comp_apply, CategoryStruct.comp] at q
+      dsimp at *
+      convert q
+      · simp only [comp_id]
+      · simp only [comp_id]
+        sorry
     clear_value kf gf hf
     -- and clean up some things that are no longer needed.
     clear w
