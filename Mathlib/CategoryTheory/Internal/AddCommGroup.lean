@@ -13,12 +13,12 @@ variable {C D : Type _} [Category C] [Category D]
 
 def addCommGroup (G : Internal AddCommGroupCat C) (X : C) :
     AddCommGroup (X ⟶ G.obj) :=
-{ zero := (addCommGroupCat_zero.onInternal G).app X PUnit.unit
-  add := fun a b => (addCommGroupCat_add.onInternal G).app X ⟨a, b⟩
+{ zero := (addCommGroupCat_zero.onInternal G).app _ PUnit.unit
+  add := fun a b => (addCommGroupCat_add.onInternal G).app _ ⟨a, b⟩
   add_zero := congr_fun (congr_app (addCommGroupCat_add_zero.onInternal G) (Opposite.op X))
   zero_add := congr_fun (congr_app (addCommGroupCat_zero_add.onInternal G) (Opposite.op X))
   add_assoc := fun a b c =>
-    congr_fun (congr_app (addCommGroupCat_add_assoc.onInternal G) X) ⟨a, ⟨b, c⟩⟩
+    congr_fun (congr_app (addCommGroupCat_add_assoc.onInternal G) _) ⟨a, ⟨b, c⟩⟩
   neg := (addCommGroupCat_neg.onInternal G).app (Opposite.op X)
   add_left_neg := congr_fun (congr_app (addCommGroupCat_add_left_neg.onInternal G) (Opposite.op X))
   add_comm := fun a b =>
@@ -31,8 +31,8 @@ def addCommGroup_addMonoidHom (G : Internal AddCommGroupCat C) {X Y : C} (f : X 
     (Y ⟶ G.obj) →+ (X ⟶ G.obj) :=
   letI := addCommGroup G X
   letI := addCommGroup G Y
-  AddMonoidHom.mk' (fun φ => f ≫ φ) (fun a b =>
-    (congr_fun ((addCommGroupCat_add.onInternal G).naturality f) ⟨a, b⟩).symm)
+  AddMonoidHom.mk' (fun φ => f ≫ φ)
+    (fun a b => (congr_fun ((addCommGroupCat_add.onInternal G).naturality f.op) ⟨a, b⟩).symm)
 
 @[simp]
 def addCommGroup_addMonoidHom' {G₁ G₂ : Internal AddCommGroupCat C} (f : G₁ ⟶ G₂) (f_obj : G₁.obj ⟶ G₂.obj)
@@ -44,7 +44,7 @@ def addCommGroup_addMonoidHom' {G₁ G₂ : Internal AddCommGroupCat C} (f : G�
   letI := addCommGroup G₂ X
   AddMonoidHom.mk' (fun φ => φ ≫ f_obj)
     (fun a b => (congr_fun (congr_app
-      (addCommGroupCat_add.onInternal_naturality f f_obj h) X) ⟨a, b⟩).symm)
+      (addCommGroupCat_add.onInternal_naturality f f_obj h) _) ⟨a, b⟩).symm)
 
 structure AddCommGroupCatObjOperations (G : C)
     [HasTerminal C] [HasBinaryProduct G G] [HasBinaryProduct G (G ⨯ G)] :=

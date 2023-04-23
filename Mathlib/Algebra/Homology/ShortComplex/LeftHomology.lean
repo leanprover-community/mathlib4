@@ -64,7 +64,7 @@ def CokernelCofork.IsColimit.ofπ_unop {X Y Q : Cᵒᵖ} (p : Y ⟶ Q) {f : X �
     (w : f ≫ p = 0) (h : IsColimit (CokernelCofork.ofπ p w)) :
     IsLimit (KernelFork.ofι p.unop (show p.unop ≫ f.unop = 0 by rw [← unop_comp, w, unop_zero])) :=
   KernelFork.IsLimit.ofι _ _
-    (fun x hx => (h.desc (CokernelCofork.ofπ x.op (Quiver.Hom.op_inj hx))).unop)
+    (fun x hx => (h.desc (CokernelCofork.ofπ x.op (Quiver.Hom.unop_inj hx))).unop)
     (fun x hx => Quiver.Hom.op_inj (Cofork.IsColimit.π_desc h))
     (fun x hx b hb => Quiver.Hom.op_inj (Cofork.IsColimit.hom_ext h
       (by simpa only [Quiver.Hom.op_unop, Cofork.IsColimit.π_desc] using Quiver.Hom.unop_inj hb)))
