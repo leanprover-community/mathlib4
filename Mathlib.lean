@@ -136,6 +136,8 @@ import Mathlib.Algebra.Hom.Ring
 import Mathlib.Algebra.Hom.Units
 import Mathlib.AlgebraicTopology.DoldKan.Compatibility
 import Mathlib.AlgebraicTopology.SimplexCategory
+import Mathlib.AlgebraicTopology.SimplicialObject
+import Mathlib.AlgebraicTopology.SplitSimplicialObject
 import Mathlib.Algebra.IndicatorFunction
 import Mathlib.Algebra.Invertible
 import Mathlib.Algebra.IsPrimePow
@@ -289,10 +291,6 @@ import Mathlib.Algebra.TrivSqZeroExt
 import Mathlib.Algebra.Tropical.Basic
 import Mathlib.Algebra.Tropical.BigOperators
 import Mathlib.Algebra.Tropical.Lattice
-import Mathlib.AlgebraicTopology.DoldKan.Compatibility
-import Mathlib.AlgebraicTopology.SimplexCategory
-import Mathlib.AlgebraicTopology.SimplicialObject
-import Mathlib.AlgebraicTopology.SplitSimplicialObject
 import Mathlib.Analysis.Asymptotics.Asymptotics
 import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
 import Mathlib.Analysis.Asymptotics.SuperpolynomialDecay
@@ -418,11 +416,11 @@ import Mathlib.CategoryTheory.Idempotents.FunctorCategories
 import Mathlib.CategoryTheory.Idempotents.FunctorExtension
 import Mathlib.CategoryTheory.Idempotents.Karoubi
 import Mathlib.CategoryTheory.Idempotents.KaroubiKaroubi
+import Mathlib.CategoryTheory.Idempotents.SimplicialObject
 import Mathlib.CategoryTheory.Internal.AddCommGroup
 import Mathlib.CategoryTheory.Internal.Basic
 import Mathlib.CategoryTheory.Internal.ObjOperation
 import Mathlib.CategoryTheory.Internal.Preadditive
-import Mathlib.CategoryTheory.Idempotents.SimplicialObject
 import Mathlib.CategoryTheory.IsConnected
 import Mathlib.CategoryTheory.Iso
 import Mathlib.CategoryTheory.IsomorphismClasses
@@ -559,8 +557,8 @@ import Mathlib.CategoryTheory.Sites.Grothendieck
 import Mathlib.CategoryTheory.Sites.Plus
 import Mathlib.CategoryTheory.Sites.Pretopology
 import Mathlib.CategoryTheory.Sites.Sheaf
-import Mathlib.CategoryTheory.Sites.SheafOfTypes
 import Mathlib.CategoryTheory.Sites.Sheafification
+import Mathlib.CategoryTheory.Sites.SheafOfTypes
 import Mathlib.CategoryTheory.Sites.Sieves
 import Mathlib.CategoryTheory.Sites.Spaces
 import Mathlib.CategoryTheory.Skeletal
