@@ -356,8 +356,8 @@ theorem Finset.convexHull_eq (s : Finset E) :
 
 theorem Finset.mem_convexHull {s : Finset E} {x : E} :
     x ∈ convexHull R (s : Set E) ↔
-      ∃ (w : E → R) (_ : ∀ y ∈ s, 0 ≤ w y) (_ : (∑ y in s, w y) = 1), s.centerMass w id = x :=
-  by rw [Finset.convexHull_eq, Set.mem_setOf_eq]
+      ∃ (w : E → R) (_ : ∀ y ∈ s, 0 ≤ w y) (_ : (∑ y in s, w y) = 1), s.centerMass w id = x := by
+  rw [Finset.convexHull_eq, Set.mem_setOf_eq]
 #align finset.mem_convex_hull Finset.mem_convexHull
 
 theorem Set.Finite.convexHull_eq {s : Set E} (hs : s.Finite) :
@@ -439,7 +439,7 @@ theorem convexHull_prod (s : Set E) (t : Set F) :
   Subset.antisymm
       (convexHull_min (prod_mono (subset_convexHull _ _) <| subset_convexHull _ _) <|
         (convex_convexHull _ _).prod <| convex_convexHull _ _) <|
-    prod_subset_iff.2 fun x hx y => mk_mem_convexHull_prod hx
+    prod_subset_iff.2 fun _ hx _ => mk_mem_convexHull_prod hx
 #align convex_hull_prod convexHull_prod
 
 theorem convexHull_add (s t : Set E) : convexHull R (s + t) = convexHull R s + convexHull R t := by
