@@ -58,7 +58,8 @@ theorem Basis.tensorProduct_apply' (b : Basis ι R M) (c : Basis κ R N) (i : ι
 set_option synthInstance.etaExperiment true in
 @[simp]
 theorem Basis.tensorProduct_repr_tmul_apply (b : Basis ι R M) (c : Basis κ R N) (m : M) (n : N)
-    (i : ι) (j : κ) : (Basis.tensorProduct b c).repr (m ⊗ₜ n) (i, j) = b.repr m i * c.repr n j := by
+    (i : ι) (j : κ) :
+    (Basis.tensorProduct b c).repr (m ⊗ₜ n) (i, j) = b.repr m i * c.repr n j := by
   simp [Basis.tensorProduct]
 #align basis.tensor_product_repr_tmul_apply Basis.tensorProduct_repr_tmul_apply
 
