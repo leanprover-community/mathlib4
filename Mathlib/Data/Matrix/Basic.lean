@@ -1866,11 +1866,11 @@ section NonAssocSemiring
 variable [NonAssocSemiring α]
 
 theorem mulVec_one [Fintype n] (A : Matrix m n α) : mulVec A 1 = fun i => ∑ j, A i j := by
-  ext <;> simp [mulVec, dotProduct]
+  ext; simp [mulVec, dotProduct]
 #align matrix.mul_vec_one Matrix.mulVec_one
 
 theorem vec_one_mul [Fintype m] (A : Matrix m n α) : vecMul 1 A = fun j => ∑ i, A i j := by
-  ext <;> simp [vecMul, dotProduct]
+  ext; simp [vecMul, dotProduct]
 #align matrix.vec_one_mul Matrix.vec_one_mul
 
 variable [Fintype m] [Fintype n] [DecidableEq m]
