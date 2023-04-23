@@ -97,12 +97,12 @@ theorem ringQuot_mkAlgHom_freeAlgebra_ι_eq_ι (m : M) :
   rfl
 #align tensor_algebra.ring_quot_mk_alg_hom_free_algebra_ι_eq_ι TensorAlgebra.ringQuot_mkAlgHom_freeAlgebra_ι_eq_ι
 
+-- Porting note: Changed `irreducible_def` to `def` to get `@[simps symm_apply]` to work
 /-- Given a linear map `f : M → A` where `A` is an `R`-algebra, `lift R f` is the unique lift
 of `f` to a morphism of `R`-algebras `TensorAlgebra R M → A`.
 -/
 @[simps symm_apply]
-irreducible_def lift {A : Type _} [Semiring A] [Algebra R A] :
-  (M →ₗ[R] A) ≃ (TensorAlgebra R M →ₐ[R] A) :=
+def lift {A : Type _} [Semiring A] [Algebra R A] : (M →ₗ[R] A) ≃ (TensorAlgebra R M →ₐ[R] A) :=
   { toFun :=
       RingQuot.liftAlgHom R ∘ fun f =>
         ⟨FreeAlgebra.lift R (⇑f), fun x y (h : Rel R M x y) => by
@@ -128,8 +128,7 @@ variable {R}
 @[simp]
 theorem ι_comp_lift {A : Type _} [Semiring A] [Algebra R A] (f : M →ₗ[R] A) :
     (lift R f).toLinearMap.comp (ι R) = f := by
-  convert(lift R).symm_apply_apply f
-  simp only [lift, Equiv.coe_fn_symm_mk]
+  convert (lift R).symm_apply_apply f
 #align tensor_algebra.ι_comp_lift TensorAlgebra.ι_comp_lift
 
 @[simp]
@@ -160,7 +159,7 @@ theorem lift_comp_ι {A : Type _} [Semiring A] [Algebra R A] (g : TensorAlgebra 
 theorem hom_ext {A : Type _} [Semiring A] [Algebra R A] {f g : TensorAlgebra R M →ₐ[R] A}
     (w : f.toLinearMap.comp (ι R) = g.toLinearMap.comp (ι R)) : f = g := by
   rw [← lift_symm_apply, ← lift_symm_apply] at w
-  exact (lift R).symm.Injective w
+  exact (lift R).symm.injective w
 #align tensor_algebra.hom_ext TensorAlgebra.hom_ext
 
 -- This proof closely follows `FreeAlgebra.induction`
