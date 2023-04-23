@@ -204,7 +204,6 @@ noncomputable def extension : hat K → Γ₀ :=
   Completion.denseInducing_coe.extend (v : K → Γ₀)
 #align valued.extension Valued.extension
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:635:2: warning: expanding binder collection (x y «expr ∈ » V') -/
 theorem continuous_extension : Continuous (Valued.extension : hat K → Γ₀) := by
   refine' Completion.denseInducing_coe.continuous_extend _
   intro x₀
@@ -234,13 +233,14 @@ theorem continuous_extension : Continuous (Valued.extension : hat K → Γ₀) :
         refine'
           Tendsto.mul continuous_fst.continuousAt (Tendsto.comp _ continuous_snd.continuousAt)
         convert continuousAt_inv₀ (zero_ne_one.symm : 1 ≠ (0 : hat K))
-        exact inv_one.symm
+        -- Porting note: Added `ContinuousAt._eq_1`
+        rw [ContinuousAt._eq_1, inv_one]
       rcases tendsto_prod_self_iff.mp this V V_in with ⟨U, U_in, hU⟩
       let hatKstar := ({0}ᶜ : Set <| hat K)
       have : hatKstar ∈ 𝓝 (1 : hat K) := compl_singleton_mem_nhds zero_ne_one.symm
       use U ∩ hatKstar, Filter.inter_mem U_in this
       constructor
-      · rintro ⟨h, h'⟩
+      · rintro ⟨_, h'⟩
         rw [mem_compl_singleton_iff] at h'
         exact h' rfl
       · rintro x ⟨hx, _⟩ y ⟨hy, _⟩
