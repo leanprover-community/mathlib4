@@ -73,7 +73,6 @@ theorem Valuation.inversion_estimate {x y : K} {γ : Γ₀ˣ} (y_ne : y ≠ 0)
     _ = (v <| y - x) * (v y * v y)⁻¹ := rfl
     _ = (v <| x - y) * (v y * v y)⁻¹ := by rw [Valuation.map_sub_swap]
     _ < γ := hyp1'
-
 #align valuation.inversion_estimate Valuation.inversion_estimate
 
 end InversionEstimate
@@ -194,7 +193,6 @@ instance (priority := 100) completable : CompletableTopField K :=
             calc
               ↑γ₀ * ↑γ₀ ≤ ↑γ₀ * v x := mul_le_mul_left' x_in₀ ↑γ₀
               _ ≤ _ := mul_le_mul_right' x_in₀ (v x)
-
           rw [Units.val_mul]
           exact mul_le_mul_left' this γ }
 #align valued.completable Valued.completable
@@ -230,12 +228,12 @@ theorem continuous_extension : Continuous (Valued.extension : hat K → Γ₀) :
         rw [← nhds_prod_eq]
         conv =>
           congr
-          skip
-          skip
+          rfl
+          rfl
           rw [← one_mul (1 : hat K)]
         refine'
-          tendsto.mul continuous_fst.continuous_at (tendsto.comp _ continuous_snd.continuous_at)
-        convert continuous_at_inv₀ (zero_ne_one.symm : 1 ≠ (0 : hat K))
+          Tendsto.mul continuous_fst.continuousAt (Tendsto.comp _ continuous_snd.continuousAt)
+        convert continuousAt_inv₀ (zero_ne_one.symm : 1 ≠ (0 : hat K))
         exact inv_one.symm
       rcases tendsto_prod_self_iff.mp this V V_in with ⟨U, U_in, hU⟩
       let hatKstar := ({0}ᶜ : Set <| hat K)
@@ -259,7 +257,7 @@ theorem continuous_extension : Continuous (Valued.extension : hat K → Γ₀) :
       rw [image_eq_preimage_of_inverse l r]
       rw [← mul_inv_cancel h] at V'_in
       exact c.continuousAt V'_in
-    have : ∃ z₀ : K, ∃ y₀ ∈ V', Coe z₀ = y₀ * x₀ ∧ z₀ ≠ 0 := by
+    have : ∃ z₀ : K, ∃ y₀ ∈ V', ↑z₀ = y₀ * x₀ ∧ z₀ ≠ 0 := by
       rcases Completion.denseRange_coe.mem_nhds nhds_right with ⟨z₀, y₀, y₀_in, H : y₀ * x₀ = z₀⟩
       refine' ⟨z₀, y₀, y₀_in, ⟨H.symm, _⟩⟩
       rintro rfl
@@ -272,14 +270,14 @@ theorem continuous_extension : Continuous (Valued.extension : hat K → Γ₀) :
     rcases x_in with ⟨y, y_in, rfl⟩
     have : (v (a * z₀⁻¹) : Γ₀) = 1 := by
       apply hV
-      have : ((z₀⁻¹ : K) : hat K) = z₀⁻¹ := map_inv₀ (Completion.coeRingHom : K →+* hat K) z₀
-      rw [Completion.coe_mul, this, ha, hz₀, mul_inv, mul_comm y₀⁻¹, ← mul_assoc, mul_assoc y, mul_inv_cancel h, mul_one]
+      have : (z₀⁻¹ : K) = (z₀ : hat K)⁻¹ := map_inv₀ (Completion.coeRingHom : K →+* hat K) z₀
+      rw [Completion.coe_mul, this, ha, hz₀, mul_inv, mul_comm y₀⁻¹, ← mul_assoc, mul_assoc y,
+        mul_inv_cancel h, mul_one]
       solve_by_elim
     calc
       v a = v (a * z₀⁻¹ * z₀) := by rw [mul_assoc, inv_mul_cancel z₀_ne, mul_one]
       _ = v (a * z₀⁻¹) * v z₀ := (Valuation.map_mul _ _ _)
       _ = v z₀ := by rw [this, one_mul]
-
 #align valued.continuous_extension Valued.continuous_extension
 
 @[simp, norm_cast]
@@ -293,7 +291,7 @@ theorem extension_extends (x : K) : extension (x : hat K) = v x := by
 noncomputable def extensionValuation : Valuation (hat K) Γ₀ where
   toFun := Valued.extension
   map_zero' := by
-    rw [← v.map_zero, ← Valued.extension_extends (0 : K)]
+    rw [← v.map_zero (R := K), ← Valued.extension_extends (0 : K)]
     rfl
   map_one' := by
     simp
@@ -301,6 +299,7 @@ noncomputable def extensionValuation : Valuation (hat K) Γ₀ where
     exact Valuation.map_one _
   map_mul' x y := by
     apply Completion.induction_on₂ x y
+      (p := fun x y => extension (x * y) = extension x * extension y)
     · have c1 : Continuous fun x : hat K × hat K => Valued.extension (x.1 * x.2) :=
         Valued.continuous_extension.comp (continuous_fst.mul continuous_snd)
       have c2 : Continuous fun x : hat K × hat K => Valued.extension x.1 * Valued.extension x.2 :=
@@ -313,6 +312,7 @@ noncomputable def extensionValuation : Valuation (hat K) Γ₀ where
   map_add_le_max' x y := by
     rw [le_max_iff]
     apply Completion.induction_on₂ x y
+      (p := fun x y => extension (x + y) ≤ extension x ∨ extension (x + y) ≤ extension y)
     · have cont : Continuous (Valued.extension : hat K → Γ₀) := Valued.continuous_extension
       exact
         (isClosed_le (cont.comp continuous_add) <| cont.comp continuous_fst).union
@@ -326,16 +326,16 @@ noncomputable def extensionValuation : Valuation (hat K) Γ₀ where
 
 -- Bourbaki CA VI §5 no.3 Proposition 5 (d)
 theorem closure_coe_completion_v_lt {γ : Γ₀ˣ} :
-    closure (coe '' { x : K | v x < (γ : Γ₀) }) = { x : hat K | extensionValuation x < (γ : Γ₀) } :=
+    closure ((↑) '' { x : K | v x < (γ : Γ₀) }) = { x : hat K | extensionValuation x < (γ : Γ₀) } :=
   by
   ext x
   let γ₀ := extensionValuation x
-  suffices γ₀ ≠ 0 → (x ∈ closure (coe '' { x : K | v x < (γ : Γ₀) }) ↔ γ₀ < (γ : Γ₀)) by
-    cases eq_or_ne γ₀ 0
-    · simp only [h, (Valuation.zero_iff _).mp h, mem_set_of_eq, Valuation.map_zero, Units.zero_lt,
+  suffices γ₀ ≠ 0 → (x ∈ closure ((↑) '' { x : K | v x < (γ : Γ₀) }) ↔ γ₀ < (γ : Γ₀)) by
+    cases' eq_or_ne γ₀ 0 with h h
+    · simp only [h, (Valuation.zero_iff _).mp h, mem_setOf_eq, Valuation.map_zero, Units.zero_lt,
         iff_true_iff]
       apply subset_closure
-      exact ⟨0, by simpa only [mem_set_of_eq, Valuation.map_zero, Units.zero_lt, true_and_iff] ⟩
+      exact ⟨0, by simp only [mem_setOf_eq, Valuation.map_zero, Units.zero_lt, true_and_iff]; rfl ⟩
     · exact this h
   intro h
   have hγ₀ : extension ⁻¹' {γ₀} ∈ 𝓝 x :=
@@ -347,7 +347,7 @@ theorem closure_coe_completion_v_lt {γ : Γ₀ˣ} :
     replace hy₂ : v y = γ₀
     · simpa using hy₂
     rwa [← hy₂]
-  · obtain ⟨y, hy₁, hy₂ : ↑y ∈ s⟩ := Completion.denseRange_coe.mem_nhds (inter_mem hγ₀ hs)
+  · obtain ⟨y, hy₁, hy₂⟩ := Completion.denseRange_coe.mem_nhds (inter_mem hγ₀ hs)
     replace hy₁ : v y = γ₀
     · simpa using hy₁
     rw [← hy₁] at hx
