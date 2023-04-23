@@ -8,9 +8,9 @@ Authors: Yury Kudriashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.BigOperators.Order
-import Mathbin.Analysis.Convex.Hull
-import Mathbin.LinearAlgebra.AffineSpace.Basis
+import Mathlib.Algebra.BigOperators.Order
+import Mathlib.Analysis.Convex.Hull
+import Mathlib.LinearAlgebra.AffineSpace.Basis
 
 /-!
 # Convex combinations
@@ -62,8 +62,7 @@ variable {w}
 theorem Finset.centerMass_insert (ha : i ∉ t) (hw : (∑ j in t, w j) ≠ 0) :
     (insert i t).centerMass w z =
       (w i / (w i + ∑ j in t, w j)) • z i +
-        ((∑ j in t, w j) / (w i + ∑ j in t, w j)) • t.centerMass w z :=
-  by
+        ((∑ j in t, w j) / (w i + ∑ j in t, w j)) • t.centerMass w z := by
   simp only [center_mass, sum_insert ha, smul_add, (mul_smul _ _ _).symm, ← div_eq_inv_mul]
   congr 2
   rw [div_mul_eq_mul_div, mul_inv_cancel hw, one_div]
@@ -108,8 +107,7 @@ theorem Finset.centerMass_segment (s : Finset ι) (w₁ w₂ : ι → R) (z : ι
 #align finset.center_mass_segment Finset.centerMass_segment
 
 theorem Finset.centerMass_ite_eq (hi : i ∈ t) :
-    t.centerMass (fun j => if i = j then (1 : R) else 0) z = z i :=
-  by
+    t.centerMass (fun j => if i = j then (1 : R) else 0) z = z i := by
   rw [Finset.centerMass_eq_of_sum_1]
   trans ∑ j in t, if i = j then z i else 0
   · congr with i
@@ -122,8 +120,7 @@ theorem Finset.centerMass_ite_eq (hi : i ∈ t) :
 variable {t w}
 
 theorem Finset.centerMass_subset {t' : Finset ι} (ht : t ⊆ t') (h : ∀ i ∈ t', i ∉ t → w i = 0) :
-    t.centerMass w z = t'.centerMass w z :=
-  by
+    t.centerMass w z = t'.centerMass w z := by
   rw [center_mass, sum_subset ht h, smul_sum, center_mass, smul_sum]
   apply sum_subset ht
   intro i hit' hit
@@ -145,8 +142,7 @@ theorem centerMass_le_sup {s : Finset ι} {f : ι → α} {w : ι → R} (hw₀ 
         (nonempty_of_ne_empty <| by
           rintro rfl
           simpa using hw₁)
-        f :=
-  by
+        f := by
   rw [center_mass, inv_smul_le_iff hw₁, sum_smul]
   exact sum_le_sum fun i hi => smul_le_smul_of_nonneg (le_sup' _ hi) <| hw₀ i hi
   infer_instance
@@ -170,8 +166,7 @@ variable {z}
 /-- The center of mass of a finite subset of a convex set belongs to the set
 provided that all weights are non-negative, and the total weight is positive. -/
 theorem Convex.centerMass_mem (hs : Convex R s) :
-    (∀ i ∈ t, 0 ≤ w i) → (0 < ∑ i in t, w i) → (∀ i ∈ t, z i ∈ s) → t.centerMass w z ∈ s :=
-  by
+    (∀ i ∈ t, 0 ≤ w i) → (0 < ∑ i in t, w i) → (∀ i ∈ t, z i ∈ s) → t.centerMass w z ∈ s := by
   induction' t using Finset.induction with i t hi ht
   · simp [lt_irrefl]
   intro h₀ hpos hmem
@@ -205,10 +200,8 @@ that `z i ∈ s` whenever `w i ≠ 0``, then the sum `∑ᶠ i, w i • z i` bel
 `partition_of_unity.finsum_smul_mem_convex`. -/
 theorem Convex.finsum_mem {ι : Sort _} {w : ι → R} {z : ι → E} {s : Set E} (hs : Convex R s)
     (h₀ : ∀ i, 0 ≤ w i) (h₁ : (∑ᶠ i, w i) = 1) (hz : ∀ i, w i ≠ 0 → z i ∈ s) :
-    (∑ᶠ i, w i • z i) ∈ s :=
-  by
-  have hfin_w : (support (w ∘ PLift.down)).Finite :=
-    by
+    (∑ᶠ i, w i • z i) ∈ s := by
+  have hfin_w : (support (w ∘ PLift.down)).Finite := by
     by_contra H
     rw [finsum, dif_neg H] at h₁
     exact zero_ne_one h₁
@@ -223,8 +216,7 @@ theorem Convex.finsum_mem {ι : Sort _} {w : ι → R} {z : ι → E} {s : Set E
 theorem convex_iff_sum_mem :
     Convex R s ↔
       ∀ (t : Finset E) (w : E → R),
-        (∀ i ∈ t, 0 ≤ w i) → (∑ i in t, w i) = 1 → (∀ x ∈ t, x ∈ s) → (∑ x in t, w x • x) ∈ s :=
-  by
+        (∀ i ∈ t, 0 ≤ w i) → (∑ i in t, w i) = 1 → (∀ x ∈ t, x ∈ s) → (∑ x in t, w x • x) ∈ s := by
   refine' ⟨fun hs t w hw₀ hw₁ hts => hs.sum_mem hw₀ hw₁ hts, _⟩
   intro h x hx y hy a b ha hb hab
   by_cases h_cases : x = y
@@ -253,8 +245,7 @@ theorem Finset.centerMass_id_mem_convexHull (t : Finset E) {w : E → R} (hw₀ 
 #align finset.center_mass_id_mem_convex_hull Finset.centerMass_id_mem_convexHull
 
 theorem affineCombination_eq_centerMass {ι : Type _} {t : Finset ι} {p : ι → E} {w : ι → R}
-    (hw₂ : (∑ i in t, w i) = 1) : t.affineCombination R p w = centerMass t w p :=
-  by
+    (hw₂ : (∑ i in t, w i) = 1) : t.affineCombination R p w = centerMass t w p := by
   rw [affine_combination_eq_weighted_vsub_of_point_vadd_of_sum_eq_one _ w _ hw₂ (0 : E),
     Finset.weightedVSubOfPoint_apply, vadd_eq_add, add_zero, t.center_mass_eq_of_sum_1 _ hw₂]
   simp_rw [vsub_eq_sub, sub_zero]
@@ -262,8 +253,7 @@ theorem affineCombination_eq_centerMass {ι : Type _} {t : Finset ι} {p : ι �
 
 theorem affineCombination_mem_convexHull {s : Finset ι} {v : ι → E} {w : ι → R}
     (hw₀ : ∀ i ∈ s, 0 ≤ w i) (hw₁ : s.Sum w = 1) :
-    s.affineCombination R v w ∈ convexHull R (range v) :=
-  by
+    s.affineCombination R v w ∈ convexHull R (range v) := by
   rw [affineCombination_eq_centerMass hw₁]
   apply s.center_mass_mem_convex_hull hw₀
   · simp [hw₁]
@@ -278,8 +268,7 @@ theorem Finset.centroid_eq_centerMass (s : Finset ι) (hs : s.Nonempty) (p : ι 
 #align finset.centroid_eq_center_mass Finset.centroid_eq_centerMass
 
 theorem Finset.centroid_mem_convexHull (s : Finset E) (hs : s.Nonempty) :
-    s.centroid R id ∈ convexHull R (s : Set E) :=
-  by
+    s.centroid R id ∈ convexHull R (s : Set E) := by
   rw [s.centroid_eq_center_mass hs]
   apply s.center_mass_id_mem_convex_hull
   · simp only [inv_nonneg, imp_true_iff, Nat.cast_nonneg, Finset.centroidWeights_apply]
@@ -292,8 +281,7 @@ theorem convexHull_range_eq_exists_affineCombination (v : ι → E) :
     convexHull R (range v) =
       { x |
         ∃ (s : Finset ι)(w : ι → R)(hw₀ : ∀ i ∈ s, 0 ≤ w i)(hw₁ : s.Sum w = 1),
-          s.affineCombination R v w = x } :=
-  by
+          s.affineCombination R v w = x } := by
   refine' subset.antisymm (convexHull_min _ _) _
   · intro x hx
     obtain ⟨i, hi⟩ := set.mem_range.mp hx
@@ -330,8 +318,7 @@ theorem convexHull_eq (s : Set E) :
     convexHull R s =
       { x : E |
         ∃ (ι : Type u')(t : Finset ι)(w : ι → R)(z : ι → E)(hw₀ : ∀ i ∈ t, 0 ≤ w i)(hw₁ :
-          (∑ i in t, w i) = 1)(hz : ∀ i ∈ t, z i ∈ s), t.centerMass w z = x } :=
-  by
+          (∑ i in t, w i) = 1)(hz : ∀ i ∈ t, z i ∈ s), t.centerMass w z = x } := by
   refine' subset.antisymm (convexHull_min _ _) _
   · intro x hx
     use PUnit, {PUnit.unit}, fun _ => 1, fun _ => x, fun _ _ => zero_le_one, Finset.sum_singleton,
@@ -387,16 +374,14 @@ theorem Set.Finite.convexHull_eq {s : Set E} (hs : s.Finite) :
     convexHull R s =
       { x : E |
         ∃ (w : E → R)(hw₀ : ∀ y ∈ s, 0 ≤ w y)(hw₁ : (∑ y in hs.toFinset, w y) = 1),
-          hs.toFinset.centerMass w id = x } :=
-  by
+          hs.toFinset.centerMass w id = x } := by
   simpa only [Set.Finite.coe_toFinset, Set.Finite.mem_toFinset, exists_prop] using
     hs.to_finset.convex_hull_eq
 #align set.finite.convex_hull_eq Set.Finite.convexHull_eq
 
 /-- A weak version of Carathéodory's theorem. -/
 theorem convexHull_eq_union_convexHull_finite_subsets (s : Set E) :
-    convexHull R s = ⋃ (t : Finset E) (w : ↑t ⊆ s), convexHull R ↑t :=
-  by
+    convexHull R s = ⋃ (t : Finset E) (w : ↑t ⊆ s), convexHull R ↑t := by
   refine' subset.antisymm _ _
   · rw [convexHull_eq]
     rintro x ⟨ι, t, w, z, hw₀, hw₁, hz, rfl⟩
@@ -414,18 +399,15 @@ theorem convexHull_eq_union_convexHull_finite_subsets (s : Set E) :
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem mk_mem_convexHull_prod {t : Set F} {x : E} {y : F} (hx : x ∈ convexHull R s)
-    (hy : y ∈ convexHull R t) : (x, y) ∈ convexHull R (s ×ˢ t) :=
-  by
+    (hy : y ∈ convexHull R t) : (x, y) ∈ convexHull R (s ×ˢ t) := by
   rw [convexHull_eq] at hx hy⊢
   obtain ⟨ι, a, w, S, hw, hw', hS, hSp⟩ := hx
   obtain ⟨κ, b, v, T, hv, hv', hT, hTp⟩ := hy
-  have h_sum : (∑ i : ι × κ in a ×ˢ b, w i.fst * v i.snd) = 1 :=
-    by
+  have h_sum : (∑ i : ι × κ in a ×ˢ b, w i.fst * v i.snd) = 1 := by
     rw [Finset.sum_product, ← hw']
     congr
     ext i
-    have : (∑ y : κ in b, w i * v y) = ∑ y : κ in b, v y * w i :=
-      by
+    have : (∑ y : κ in b, w i * v y) = ∑ y : κ in b, v y * w i := by
       congr
       ext
       simp [mul_comm]
@@ -444,8 +426,7 @@ theorem mk_mem_convexHull_prod {t : Set F} {x : E} {y : F} (hx : x ∈ convexHul
     rw [Finset.sum_product]
     congr
     ext i
-    have : (∑ j : κ in b, (w i * v j) • S i) = ∑ j : κ in b, v j • w i • S i :=
-      by
+    have : (∑ j : κ in b, (w i * v j) • S i) = ∑ j : κ in b, v j • w i • S i := by
       congr
       ext
       rw [mul_smul, smul_comm]
@@ -486,8 +467,7 @@ variable (ι) [Fintype ι] {f : ι → R}
 
 /-- `std_simplex 𝕜 ι` is the convex hull of the canonical basis in `ι → 𝕜`. -/
 theorem convexHull_basis_eq_stdSimplex :
-    convexHull R (range fun i j : ι => if i = j then (1 : R) else 0) = stdSimplex R ι :=
-  by
+    convexHull R (range fun i j : ι => if i = j then (1 : R) else 0) = stdSimplex R ι := by
   refine' subset.antisymm (convexHull_min _ (convex_stdSimplex R ι)) _
   · rintro _ ⟨i, rfl⟩
     exact ite_eq_mem_stdSimplex R i
@@ -509,8 +489,7 @@ to prove that this map is linear. -/
 theorem Set.Finite.convexHull_eq_image {s : Set E} (hs : s.Finite) :
     convexHull R s =
       haveI := hs.fintype
-      ⇑(∑ x : s, (@LinearMap.proj R s _ (fun i => R) _ _ x).smul_right x.1) '' stdSimplex R s :=
-  by
+      ⇑(∑ x : s, (@LinearMap.proj R s _ (fun i => R) _ _ x).smul_right x.1) '' stdSimplex R s := by
   rw [← convexHull_basis_eq_stdSimplex, ← LinearMap.convexHull_image, ← Set.range_comp, (· ∘ ·)]
   apply congr_arg
   convert subtype.range_coe.symm
@@ -526,8 +505,7 @@ theorem mem_Icc_of_mem_stdSimplex (hf : f ∈ stdSimplex R ι) (x) : f x ∈ Icc
 /-- The convex hull of an affine basis is the intersection of the half-spaces defined by the
 corresponding barycentric coordinates. -/
 theorem AffineBasis.convexHull_eq_nonneg_coord {ι : Type _} (b : AffineBasis ι R E) :
-    convexHull R (range b) = { x | ∀ i, 0 ≤ b.Coord i x } :=
-  by
+    convexHull R (range b) = { x | ∀ i, 0 ≤ b.Coord i x } := by
   rw [convexHull_range_eq_exists_affineCombination]
   ext x
   refine' ⟨_, fun hx => _⟩
