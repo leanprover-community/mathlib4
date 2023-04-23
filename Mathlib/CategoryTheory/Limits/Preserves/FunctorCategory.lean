@@ -8,10 +8,10 @@ Authors: Bhavik Mehta
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Limits.FunctorCategory
-import Mathbin.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
-import Mathbin.CategoryTheory.Limits.Yoneda
-import Mathbin.CategoryTheory.Limits.Presheaf
+import Mathlib.CategoryTheory.Limits.FunctorCategory
+import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
+import Mathlib.CategoryTheory.Limits.Yoneda
+import Mathlib.CategoryTheory.Limits.Presheaf
 
 /-!
 # Preservation of (co)limits in the functor category
@@ -64,8 +64,7 @@ def FunctorCategory.prodPreservesColimits [HasBinaryProducts D] [HasColimits D]
     {
       PreservesColimit := fun K =>
         {
-          preserves := fun c t =>
-            by
+          preserves := fun c t => by
             apply evaluation_jointly_reflects_colimits _ fun k => _
             change is_colimit ((prod.functor.obj F ⋙ (evaluation _ _).obj k).mapCocone c)
             let this :=
@@ -110,8 +109,7 @@ instance whiskeringRightPreservesLimits {C : Type u} [Category C] {D : Type _} [
 /-- If `Lan F.op : (Cᵒᵖ ⥤ Type*) ⥤ (Dᵒᵖ ⥤ Type*)` preserves limits of shape `J`, so will `F`. -/
 noncomputable def preservesLimitOfLanPresesrvesLimit {C D : Type u} [SmallCategory C]
     [SmallCategory D] (F : C ⥤ D) (J : Type u) [SmallCategory J]
-    [PreservesLimitsOfShape J (lan F.op : _ ⥤ Dᵒᵖ ⥤ Type u)] : PreservesLimitsOfShape J F :=
-  by
+    [PreservesLimitsOfShape J (lan F.op : _ ⥤ Dᵒᵖ ⥤ Type u)] : PreservesLimitsOfShape J F := by
   apply preserves_limits_of_shape_of_reflects_of_preserves F yoneda
   exact preserves_limits_of_shape_of_nat_iso (comp_yoneda_iso_yoneda_comp_Lan F).symm
   infer_instance
