@@ -22,15 +22,15 @@ This is the free `R`-algebra generated (`R`-linearly) by the module `M`.
 
 ## Notation
 
-1. `tensor_algebra R M` is the tensor algebra itself. It is endowed with an R-algebra structure.
-2. `tensor_algebra.ι R` is the canonical R-linear map `M → tensor_algebra R M`.
+1. `TensorAlgebra R M` is the tensor algebra itself. It is endowed with an R-algebra structure.
+2. `TensorAlgebra.ι R` is the canonical R-linear map `M → TensorAlgebra R M`.
 3. Given a linear map `f : M → A` to an R-algebra `A`, `lift R f` is the lift of `f` to an
-  `R`-algebra morphism `tensor_algebra R M → A`.
+  `R`-algebra morphism `TensorAlgebra R M → A`.
 
 ## Theorems
 
 1. `ι_comp_lift` states that the composition `(lift R f) ∘ (ι R)` is identical to `f`.
-2. `lift_unique` states that whenever an R-algebra morphism `g : tensor_algebra R M → A` is
+2. `lift_unique` states that whenever an R-algebra morphism `g : TensorAlgebra R M → A` is
   given whose composition with `ι R` is `f`, then one has `g = lift R f`.
 3. `hom_ext` is a variant of `lift_unique` in the form of an extensionality theorem.
 4. `lift_comp_ι` is a combination of `ι_comp_lift` and `lift_unique`. It states that the lift
@@ -49,7 +49,7 @@ variable (M : Type _) [AddCommMonoid M] [Module R M]
 
 namespace TensorAlgebra
 
-/-- An inductively defined relation on `pre R M` used to force the initial algebra structure on
+/-- An inductively defined relation on `Pre R M` used to force the initial algebra structure on
 the associated quotient.
 -/
 inductive Rel : FreeAlgebra R M → FreeAlgebra R M → Prop
@@ -79,7 +79,7 @@ instance {S : Type _} [CommRing S] [Module S M] : Ring (TensorAlgebra S M) :=
 
 variable {M}
 
-/-- The canonical linear map `M →ₗ[R] tensor_algebra R M`.
+/-- The canonical linear map `M →ₗ[R] TensorAlgebra R M`.
 -/
 irreducible_def ι : M →ₗ[R] TensorAlgebra R M :=
   { toFun := fun m => RingQuot.mkAlgHom R _ (FreeAlgebra.ι R m)
@@ -98,7 +98,7 @@ theorem ringQuot_mkAlgHom_freeAlgebra_ι_eq_ι (m : M) :
 #align tensor_algebra.ring_quot_mk_alg_hom_free_algebra_ι_eq_ι TensorAlgebra.ringQuot_mkAlgHom_freeAlgebra_ι_eq_ι
 
 /-- Given a linear map `f : M → A` where `A` is an `R`-algebra, `lift R f` is the unique lift
-of `f` to a morphism of `R`-algebras `tensor_algebra R M → A`.
+of `f` to a morphism of `R`-algebras `TensorAlgebra R M → A`.
 -/
 @[simps symm_apply]
 irreducible_def lift {A : Type _} [Semiring A] [Algebra R A] :
@@ -145,7 +145,7 @@ theorem lift_unique {A : Type _} [Semiring A] [Algebra R A] (f : M →ₗ[R] A)
   simp only [lift, Equiv.coe_fn_symm_mk]
 #align tensor_algebra.lift_unique TensorAlgebra.lift_unique
 
--- Marking `tensor_algebra` irreducible makes `ring` instances inaccessible on quotients.
+-- Marking `TensorAlgebra` irreducible makes `Ring` instances inaccessible on quotients.
 -- https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/algebra.2Esemiring_to_ring.20breaks.20semimodule.20typeclass.20lookup/near/212580241
 -- For now, we avoid this by not marking it irreducible.
 @[simp]
@@ -163,9 +163,9 @@ theorem hom_ext {A : Type _} [Semiring A] [Algebra R A] {f g : TensorAlgebra R M
   exact (lift R).symm.Injective w
 #align tensor_algebra.hom_ext TensorAlgebra.hom_ext
 
--- This proof closely follows `free_algebra.induction`
-/-- If `C` holds for the `algebra_map` of `r : R` into `tensor_algebra R M`, the `ι` of `x : M`,
-and is preserved under addition and muliplication, then it holds for all of `tensor_algebra R M`.
+-- This proof closely follows `FreeAlgebra.induction`
+/-- If `C` holds for the `algebraMap` of `r : R` into `TensorAlgebra R M`, the `ι` of `x : M`,
+and is preserved under addition and muliplication, then it holds for all of `TensorAlgebra R M`.
 -/
 @[elab_as_elim]
 theorem induction {C : TensorAlgebra R M → Prop}
@@ -188,7 +188,7 @@ theorem induction {C : TensorAlgebra R M → Prop}
   exact AlgHom.congr_fun of_id a
 #align tensor_algebra.induction TensorAlgebra.induction
 
-/-- The left-inverse of `algebra_map`. -/
+/-- The left-inverse of `algebraMap`. -/
 def algebraMapInv : TensorAlgebra R M →ₐ[R] R :=
   lift R (0 : M →ₗ[R] R)
 #align tensor_algebra.algebra_map_inv TensorAlgebra.algebraMapInv
@@ -218,8 +218,8 @@ theorem algebraMap_eq_one_iff (x : R) : algebraMap R (TensorAlgebra R M) x = 1 �
 
 variable {M}
 
-/-- The canonical map from `tensor_algebra R M` into `triv_sq_zero_ext R M` that sends
-`tensor_algebra.ι` to `triv_sq_zero_ext.inr`. -/
+/-- The canonical map from `TensorAlgebra R M` into `TrivSqZeroExt R M` that sends
+`TensorAlgebra.ι` to `TrivSqZeroExt.inr`. -/
 def toTrivSqZeroExt [Module Rᵐᵒᵖ M] [IsCentralScalar R M] :
     TensorAlgebra R M →ₐ[R] TrivSqZeroExt R M :=
   lift R (TrivSqZeroExt.inrHom R M)
@@ -233,7 +233,7 @@ theorem toTrivSqZeroExt_ι (x : M) [Module Rᵐᵒᵖ M] [IsCentralScalar R M] :
 
 /-- The left-inverse of `ι`.
 
-As an implementation detail, we implement this using `triv_sq_zero_ext` which has a suitable
+As an implementation detail, we implement this using `TrivSqZeroExt` which has a suitable
 algebra structure. -/
 def ιInv : TensorAlgebra R M →ₗ[R] M := by
   letI : Module Rᵐᵒᵖ M := Module.compHom _ ((RingHom.id R).fromOpposite mul_comm)
@@ -291,7 +291,7 @@ variable (R M)
 
 /-- Construct a product of `n` elements of the module within the tensor algebra.
 
-See also `pi_tensor_product.tprod`. -/
+See also `PiTensorProduct.tprod`. -/
 def tprod (n : ℕ) : MultilinearMap R (fun _ : Fin n => M) (TensorAlgebra R M) :=
   (MultilinearMap.mkPiAlgebraFin R n (TensorAlgebra R M)).compLinearMap fun _ => ι R
 #align tensor_algebra.tprod TensorAlgebra.tprod
@@ -309,8 +309,8 @@ namespace FreeAlgebra
 
 variable {R M}
 
-/-- The canonical image of the `free_algebra` in the `tensor_algebra`, which maps
-`free_algebra.ι R x` to `tensor_algebra.ι R x`. -/
+/-- The canonical image of the `FreeAlgebra` in the `TensorAlgebra`, which maps
+`FreeAlgebra.ι R x` to `TensorAlgebra.ι R x`. -/
 def toTensor : FreeAlgebra R M →ₐ[R] TensorAlgebra R M :=
   FreeAlgebra.lift R (TensorAlgebra.ι R)
 #align free_algebra.to_tensor FreeAlgebra.toTensor
