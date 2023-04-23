@@ -60,13 +60,12 @@ work to convert to this version: namely, the natural isomorphism
 def FunctorCategory.prodPreservesColimits [HasBinaryProducts D] [HasColimits D]
     [∀ X : D, PreservesColimits (prod.functor.obj X)] (F : C ⥤ D) :
     PreservesColimits (prod.functor.obj F)
-    where preservesColimitsOfShape {J : Type u} [Category.{u, u} J] : PreservesColimitsOfShape J _ :=
+    where preservesColimitsOfShape {J : Type u} [Category.{u, u} J] :=
     {
       preservesColimit := fun {K : J ⥤ C ⥤ D} =>
         ( {
           preserves := fun {c : Cocone K} (t : IsColimit c) => by
-            apply evaluationJointlyReflectsColimits _
-            intro k
+            apply evaluationJointlyReflectsColimits _ fun {k} => ?_
             change IsColimit ((prod.functor.obj F ⋙ (evaluation _ _).obj k).mapCocone c)
             let this :=
               isColimitOfPreserves ((evaluation C D).obj k ⋙ prod.functor.obj (F.obj k)) t
@@ -93,10 +92,9 @@ instance whiskeringRightPreservesLimitsOfShape {C : Type u} [Category C] {D : Ty
     [Category.{u} D] {E : Type _} [Category.{u} E] {J : Type u} [SmallCategory J]
     [HasLimitsOfShape J D] (F : D ⥤ E) [PreservesLimitsOfShape J F] :
     PreservesLimitsOfShape J ((whiskeringRight C D E).obj F) :=
-  ⟨fun {K : J ⥤ C ⥤ D} =>
+  ⟨fun {K} =>
     ⟨fun c {hc} => by
-      apply evaluationJointlyReflectsLimits
-      intro k
+      apply evaluationJointlyReflectsLimits _ (fun k => ?_)
       change IsLimit (((evaluation _ _).obj k ⋙ F).mapCone c)
       exact PreservesLimit.preserves hc⟩⟩
 #align category_theory.whiskering_right_preserves_limits_of_shape CategoryTheory.whiskeringRightPreservesLimitsOfShape
