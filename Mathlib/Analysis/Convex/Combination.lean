@@ -333,10 +333,9 @@ theorem convexHull_eq (s : Set E) :
 
 theorem Finset.convexHull_eq (s : Finset E) :
     convexHull R ↑s =
-      { x : E | ∃ (w : E → R) (hw₀ : ∀ y ∈ s, 0 ≤ w y) (hw₁ : (∑ y in s, w y) = 1),
-        s.centerMass w id = x } :=
-  by
-  refine' Subset.antisymm (convexHull_min _ _) _
+      { x : E | ∃ (w : E → R) (_ : ∀ y ∈ s, 0 ≤ w y) (_ : (∑ y in s, w y) = 1),
+        s.centerMass w id = x } := by
+  refine' Set.Subset.antisymm (convexHull_min _ _) _
   · intro x hx
     rw [Finset.mem_coe] at hx
     refine' ⟨_, _, _, Finset.centerMass_ite_eq _ _ _ hx⟩
@@ -349,10 +348,10 @@ theorem Finset.convexHull_eq (s : Finset E) :
     refine' ⟨_, _, _, rfl⟩
     · rintro i hi
       apply_rules [add_nonneg, mul_nonneg, hwx₀, hwy₀]
-    · simp only [Finset.sum_add_distrib, finset.mul_sum.symm, mul_one, *]
+    · simp only [Finset.sum_add_distrib, Finset.mul_sum.symm, mul_one, *]
   · rintro _ ⟨w, hw₀, hw₁, rfl⟩
     exact
-      s.center_mass_mem_convex_hull (fun x hx => hw₀ _ hx) (hw₁.symm ▸ zero_lt_one) fun x hx => hx
+      s.centerMass_mem_convexHull (fun x hx => hw₀ _ hx) (hw₁.symm ▸ zero_lt_one) fun x hx => hx
 #align finset.convex_hull_eq Finset.convexHull_eq
 
 theorem Finset.mem_convexHull {s : Finset E} {x : E} :
