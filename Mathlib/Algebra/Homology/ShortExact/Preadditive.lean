@@ -8,8 +8,8 @@ Authors: Johan Commelin, Andrew Yang
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Homology.Exact
-import Mathbin.CategoryTheory.Preadditive.AdditiveFunctor
+import Mathlib.Algebra.Homology.Exact
+import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 
 /-!
 # Short exact sequences, and splittings.
@@ -114,12 +114,10 @@ variable [HasKernels 𝒜] [HasImages 𝒜]
 theorem exact_of_split {A B C : 𝒜} {f : A ⟶ B} {g : B ⟶ C} {χ : C ⟶ B} {φ : B ⟶ A} (hfg : f ≫ g = 0)
     (H : φ ≫ f + g ≫ χ = 𝟙 B) : Exact f g :=
   { w := hfg
-    Epi :=
-      by
+    Epi := by
       let ψ : (kernel_subobject g : 𝒜) ⟶ image_subobject f :=
         subobject.arrow _ ≫ φ ≫ factor_thru_image_subobject f
-      suffices ψ ≫ imageToKernel f g hfg = 𝟙 _
-        by
+      suffices ψ ≫ imageToKernel f g hfg = 𝟙 _ by
         convert epi_of_epi ψ _
         rw [this]
         infer_instance
@@ -139,8 +137,7 @@ section
 
 variable {f g}
 
-theorem Split.exact (h : Split f g) : Exact f g :=
-  by
+theorem Split.exact (h : Split f g) : Exact f g := by
   obtain ⟨φ, χ, -, -, h1, -, h2⟩ := h
   exact exact_of_split h1 h2
 #align category_theory.split.exact CategoryTheory.Split.exact
@@ -179,8 +176,7 @@ end
 
 theorem Split.map {𝒜 ℬ : Type _} [Category 𝒜] [Preadditive 𝒜] [Category ℬ] [Preadditive ℬ]
     (F : 𝒜 ⥤ ℬ) [Functor.Additive F] {A B C : 𝒜} {f : A ⟶ B} {g : B ⟶ C} (h : Split f g) :
-    Split (F.map f) (F.map g) :=
-  by
+    Split (F.map f) (F.map g) := by
   obtain ⟨φ, χ, h1, h2, h3, h4, h5⟩ := h
   refine' ⟨⟨F.map φ, F.map χ, _⟩⟩
   simp only [← F.map_comp, ← F.map_id, ← F.map_add, F.map_zero, *, eq_self_iff_true, and_true_iff]
@@ -243,22 +239,19 @@ def retraction : B ⟶ A :=
 #align category_theory.splitting.retraction CategoryTheory.Splitting.retraction
 
 @[simp, reassoc.1]
-theorem section_π : h.section ≫ g = 𝟙 C :=
-  by
+theorem section_π : h.section ≫ g = 𝟙 C := by
   delta splitting.section
   simp
 #align category_theory.splitting.section_π CategoryTheory.Splitting.section_π
 
 @[simp, reassoc.1]
-theorem ι_retraction : f ≫ h.retraction = 𝟙 A :=
-  by
+theorem ι_retraction : f ≫ h.retraction = 𝟙 A := by
   delta retraction
   simp
 #align category_theory.splitting.ι_retraction CategoryTheory.Splitting.ι_retraction
 
 @[simp, reassoc.1]
-theorem section_retraction : h.section ≫ h.retraction = 0 :=
-  by
+theorem section_retraction : h.section ≫ h.retraction = 0 := by
   delta splitting.section retraction
   simp
 #align category_theory.splitting.section_retraction CategoryTheory.Splitting.section_retraction
@@ -292,15 +285,13 @@ def splittingOfIsIsoZero {X Y Z : 𝒜} (f : X ⟶ Y) [IsIso f] (hZ : IsZero Z) 
 
 include h
 
-protected theorem mono : Mono f :=
-  by
+protected theorem mono : Mono f := by
   apply mono_of_mono _ h.retraction
   rw [h.ι_retraction]
   infer_instance
 #align category_theory.splitting.mono CategoryTheory.Splitting.mono
 
-protected theorem epi : Epi g :=
-  by
+protected theorem epi : Epi g := by
   apply (config := { instances := false }) epi_of_epi h.section
   rw [h.section_π]
   infer_instance
@@ -322,8 +313,7 @@ variable [Preadditive 𝒜] [HasBinaryBiproducts 𝒜]
 
 variable (h : Splitting f g)
 
-theorem split_add : h.retraction ≫ f + g ≫ h.section = 𝟙 _ :=
-  by
+theorem split_add : h.retraction ≫ f + g ≫ h.section = 𝟙 _ := by
   delta splitting.section retraction
   rw [← cancel_mono h.iso.hom, ← cancel_epi h.iso.inv]
   simp only [category.comp_id, category.id_comp, category.assoc, iso.inv_hom_id_assoc,
@@ -342,8 +332,7 @@ theorem π_section_eq_id_sub : g ≫ h.section = 𝟙 _ - h.retraction ≫ f :=
 #align category_theory.splitting.π_section_eq_id_sub CategoryTheory.Splitting.π_section_eq_id_sub
 
 theorem splittings_comm (h h' : Splitting f g) :
-    h'.section ≫ h.retraction = -h.section ≫ h'.retraction :=
-  by
+    h'.section ≫ h.retraction = -h.section ≫ h'.retraction := by
   haveI := h.mono
   rw [← cancel_mono f]
   simp [retraction_ι_eq_id_sub]
@@ -366,8 +355,7 @@ theorem comp_eq_zero : f ≫ g = 0 :=
 
 variable [HasKernels 𝒜] [HasImages 𝒜] [HasZeroObject 𝒜] [HasCokernels 𝒜]
 
-protected theorem exact : Exact f g :=
-  by
+protected theorem exact : Exact f g := by
   rw [exact_iff_exact_of_iso f g (biprod.inl : A ⟶ A ⊞ C) (biprod.snd : A ⊞ C ⟶ C) _ _ _]
   · exact exact_inl_snd _ _
   · refine' arrow.iso_mk (iso.refl _) h.iso _
