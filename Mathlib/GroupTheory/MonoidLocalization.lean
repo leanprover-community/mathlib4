@@ -1895,14 +1895,14 @@ variable {α : Type _} [CancelCommMonoid α] {s : Submonoid α} {a₁ b₁ : α}
 
 @[to_additive]
 theorem mk_left_injective (b : s) : Injective fun a => mk a b := fun c d h => by
-  have : Nonempty s := ⟨b⟩ -- porting note: Needed to add this `have`
+  have : Nonempty s := One.nonempty -- porting note: Needed to add this `have`
   simpa [-mk_eq_monoidOf_mk', mk_eq_mk_iff, r_iff_exists] using h
 #align localization.mk_left_injective Localization.mk_left_injective
 #align add_localization.mk_left_injective addLocalization.mk_left_injective
 
 @[to_additive]
 theorem mk_eq_mk_iff' : mk a₁ a₂ = mk b₁ b₂ ↔ ↑b₂ * a₁ = a₂ * b₁ := by
-  have : Nonempty s := ⟨a₂⟩ -- porting note: Needed to add this `have`
+  have : Nonempty s := One.nonempty -- porting note: Needed to add this `have`
   simp_rw [mk_eq_mk_iff, r_iff_exists, mul_left_cancel_iff, exists_const]
 #align localization.mk_eq_mk_iff' Localization.mk_eq_mk_iff'
 #align add_localization.mk_eq_mk_iff' addLocalization.mk_eq_mk_iff'
@@ -1969,7 +1969,7 @@ theorem mk_lt_mk : mk a₁ a₂ < mk b₁ b₂ ↔ ↑b₂ * a₁ < a₂ * b₁ 
 
 -- declaring this separately to the instance below makes things faster
 @[to_additive]
-instance : PartialOrder (Localization s) where
+instance partialOrder : PartialOrder (Localization s) where
   le := (· ≤ ·)
   lt := (· < ·)
   le_refl a := Localization.induction_on a fun a => le_rfl
@@ -1982,8 +1982,8 @@ instance : PartialOrder (Localization s) where
       refine' (mul_le_mul_left' hab _).trans _
       rwa [mul_left_comm, mul_left_comm ↑b.2, mul_le_mul_iff_left]
   le_antisymm a b := by
-    induction' a with a₁ a₂
-    induction' b with b₁ b₂
+    induction' a using Localization.rec with a₁ a₂
+    induction' b using Localization.rec with b₁ b₂
     simp_rw [mk_le_mk, mk_eq_mk_iff, r_iff_exists]
     exact fun hab hba => ⟨1, by rw [hab.antisymm hba]⟩
     all_goals intros ; rfl
@@ -2037,9 +2037,8 @@ instance [LinearOrderedCancelCommMonoid α] {s : Submonoid α} :
       Localization.induction_on₂ a b fun _ _ => by
         simp_rw [mk_le_mk]
         exact le_total _ _
-    decidable_le := @Localization.decidableLe α _ _ LE.le.decidable
-    decidable_lt := @Localization.decidableLt α _ _ LT.lt.decidable
-      -- porting note: was wrong in mathlib3
+    decidable_le := Localization.decidableLe
+    decidable_lt := Localization.decidableLt  -- porting note: was wrong in mathlib3
     decidable_eq := Localization.decidableEq }
 
 end Localization
