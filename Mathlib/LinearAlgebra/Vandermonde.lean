@@ -85,7 +85,16 @@ theorem det_vandermonde {n : ℕ} (v : Fin n → R) :
         det
           (of fun i j : Fin n.succ =>
             Matrix.vecCons (v 0 ^ (j : ℕ)) (fun i => v (Fin.succ i) ^ (j : ℕ) - v 0 ^ (j : ℕ)) i) :=
-      det_eq_of_forall_row_eq_smul_add_const (Matrix.vecCons 0 1) 0 (Fin.cons_zero _ _) _
+      by
+      refine' det_eq_of_forall_row_eq_smul_add_const (Matrix.vecCons 0 1) 0 (Fin.cons_zero _ _) _
+      rintro i j
+      simp_rw [Matrix.of_apply, Matrix.cons_val_zero]
+      revert i
+      rw [Fin.forall_fin_succ]
+      constructor
+      simp_rw [Matrix.cons_val_zero, zero_mul, add_zero]
+      intro i
+      simp
     _ =
         det
           (of fun i j : Fin n =>
