@@ -140,7 +140,7 @@ theorem w_mk_right {f : Arrow T} {X Y : T} {g : X ⟶ Y} (sq : f ⟶ mk g) :
   sq.w
 #align category_theory.arrow.w_mk_right CategoryTheory.Arrow.w_mk_right
 
-theorem isIso_of_iso_left_of_isIso_right {f g : Arrow T} (ff : f ⟶ g) [IsIso ff.left]
+theorem isIso_of_isIso_left_of_isIso_right {f g : Arrow T} (ff : f ⟶ g) [IsIso ff.left]
     [IsIso ff.right] : IsIso ff where
   out := by
     let inverse : g ⟶ f := ⟨inv ff.left, inv ff.right, (by simp)⟩
@@ -152,7 +152,7 @@ theorem isIso_of_iso_left_of_isIso_right {f g : Arrow T} (ff : f ⟶ g) [IsIso f
     · apply CommaMorphism.ext
       · rw [Comma.comp_left, IsIso.inv_hom_id, ←Comma.id_left]
       · rw [Comma.comp_right, IsIso.inv_hom_id, ←Comma.id_right]
-#align category_theory.arrow.is_iso_of_iso_left_of_is_iso_right CategoryTheory.Arrow.isIso_of_iso_left_of_isIso_right
+#align category_theory.arrow.is_iso_of_iso_left_of_is_iso_right CategoryTheory.Arrow.isIso_of_isIso_left_of_isIso_right
 
 /-- Create an isomorphism between arrows,
 by providing isomorphisms between the domains and codomains,
