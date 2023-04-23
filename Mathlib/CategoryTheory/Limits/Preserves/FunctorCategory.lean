@@ -12,6 +12,9 @@ import Mathlib.CategoryTheory.Limits.FunctorCategory
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
 import Mathlib.CategoryTheory.Limits.Yoneda
 import Mathlib.CategoryTheory.Limits.Presheaf
+-- *TODO* remove
+set_option autoImplicit false
+--set_option pp.universes true
 
 /-!
 # Preservation of (co)limits in the functor category
@@ -47,6 +50,8 @@ variable {D : Type u₂} [Category.{u} D]
 
 variable {E : Type u} [Category.{v₂} E]
 
+#print CategoryTheory.Limits.PreservesColimitsOfShape
+
 /-- If `X × -` preserves colimits in `D` for any `X : D`, then the product functor `F ⨯ -` for
 `F : C ⥤ D` also preserves colimits.
 
@@ -60,21 +65,23 @@ work to convert to this version: namely, the natural isomorphism
 def FunctorCategory.prodPreservesColimits [HasBinaryProducts D] [HasColimits D]
     [∀ X : D, PreservesColimits (prod.functor.obj X)] (F : C ⥤ D) :
     PreservesColimits (prod.functor.obj F)
-    where PreservesColimitsOfShape J 𝒥 :=
+    where preservesColimitsOfShape {J : Type u} [Category.{u, u} J] : PreservesColimitsOfShape J _ :=
     {
-      PreservesColimit := fun K =>
-        {
-          preserves := fun c t => by
-            apply evaluation_jointly_reflects_colimits _ fun k => _
-            change is_colimit ((prod.functor.obj F ⋙ (evaluation _ _).obj k).mapCocone c)
+      preservesColimit := fun {K : J ⥤ C ⥤ D} =>
+        ( {
+          preserves := fun {c : Cocone K} (t : IsColimit c) => by
+            apply evaluationJointlyReflectsColimits _--fun (k : C) => _
+            intro k
+            change IsColimit ((prod.functor.obj F ⋙ (evaluation _ _).obj k).mapCocone c)
             let this :=
-              is_colimit_of_preserves ((evaluation C D).obj k ⋙ prod.functor.obj (F.obj k)) t
-            apply is_colimit.map_cocone_equiv _ this
-            apply (nat_iso.of_components _ _).symm
+              isColimitOfPreserves ((evaluation C D).obj k ⋙ prod.functor.obj (F.obj k)) t
+            apply IsColimit.mapCoconeEquiv _ this
+            apply (NatIso.ofComponents _ _).symm
             · intro G
-              apply as_iso (prod_comparison ((evaluation C D).obj k) F G)
+              apply asIso (prodComparison ((evaluation C D).obj k) F G)
             · intro G G'
-              apply prod_comparison_natural ((evaluation C D).obj k) (𝟙 F) } }
+              apply prodComparison_natural ((evaluation C D).obj k) (𝟙 F)
+          } : PreservesColimit K (prod.functor.obj F)) }
 #align category_theory.functor_category.prod_preserves_colimits CategoryTheory.FunctorCategory.prodPreservesColimits
 
 instance whiskeringLeftPreservesLimits [HasLimits D] (F : C ⥤ E) :
@@ -116,4 +123,3 @@ noncomputable def preservesLimitOfLanPresesrvesLimit {C D : Type u} [SmallCatego
 #align category_theory.preserves_limit_of_Lan_presesrves_limit CategoryTheory.preservesLimitOfLanPresesrvesLimit
 
 end CategoryTheory
-
