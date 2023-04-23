@@ -826,31 +826,31 @@ abbrev _root_.CategoryTheory.CategoryWithLeftHomology : Prop :=
   ∀ (S : ShortComplex C), S.HasLeftHomology
 
 @[simps]
-noncomputable def leftHomology_functor [CategoryWithLeftHomology C] :
+noncomputable def leftHomologyFunctor [CategoryWithLeftHomology C] :
     ShortComplex C ⥤ C where
   obj S := S.leftHomology
   map := leftHomology_map
 
 @[simps]
-noncomputable def cycles_functor [CategoryWithLeftHomology C] :
+noncomputable def cyclesFunctor [CategoryWithLeftHomology C] :
     ShortComplex C ⥤ C where
   obj S := S.cycles
   map := cycles_map
 
 @[simps]
 noncomputable def leftHomology_π_natTrans [CategoryWithLeftHomology C] :
-    cycles_functor C ⟶ leftHomology_functor C where
+    cyclesFunctor C ⟶ leftHomologyFunctor C where
   app S := leftHomology_π S
   naturality := fun _ _ φ => (leftHomology_π_naturality φ).symm
 
 @[simps]
 noncomputable def cycles_i_natTrans [CategoryWithLeftHomology C] :
-    cycles_functor C ⟶ ShortComplex.π₂ where
+    cyclesFunctor C ⟶ ShortComplex.π₂ where
   app S := S.cycles_i
 
 @[simps]
 noncomputable def toCycles_natTrans [CategoryWithLeftHomology C] :
-    π₁ ⟶ cycles_functor C where
+    π₁ ⟶ cyclesFunctor C where
   app S := S.toCycles
   naturality := fun _ _  φ => (toCycles_naturality φ).symm
 
@@ -947,14 +947,13 @@ def of_epi_of_isIso_of_mono (φ : S₁ ⟶ S₂) (h : LeftHomologyData S₁)
     LeftHomologyMapData φ h (LeftHomologyData.of_epi_of_isIso_of_mono φ h) where
   φK := 𝟙 _
   φH := 𝟙 _
-  commf' := by simp only [LeftHomologyData.of_epi_of_isIso_of_mono_τ₁_f' φ h, comp_id]
 
 @[simps]
 noncomputable def of_epi_of_isIso_of_mono' (φ : S₁ ⟶ S₂) (h : LeftHomologyData S₂)
   [Epi φ.τ₁] [IsIso φ.τ₂] [Mono φ.τ₃] :
-    LeftHomologyMapData φ (LeftHomologyData.of_epi_of_isIso_of_mono' φ h) h :=
-{ φK := 𝟙 _,
-  φH := 𝟙 _, }
+    LeftHomologyMapData φ (LeftHomologyData.of_epi_of_isIso_of_mono' φ h) h where
+  φK := 𝟙 _
+  φH := 𝟙 _
 
 end LeftHomologyMapData
 
@@ -997,7 +996,7 @@ lemma comp_lift_cycles {A' : C} (α : A' ⟶ A) :
 noncomputable def cycles_is_kernel : IsLimit (KernelFork.ofι S.cycles_i S.cycles_i_g) :=
   S.leftHomologyData.hi
 
-lemma isIso_cycles_i_of (hg : S.g = 0) : IsIso (S.cycles_i) :=
+lemma isIso_cycles_i_of_zero (hg : S.g = 0) : IsIso (S.cycles_i) :=
   KernelFork.IsLimit.isIso_ι_of_zero _ S.cycles_is_kernel hg
 
 @[simps]
@@ -1014,7 +1013,7 @@ noncomputable def lift_leftHomology : A ⟶ S.leftHomology :=
   S.lift_cycles k hk ≫ S.leftHomology_π
 
 lemma lift_cycles_π_eq_zero_of_boundary (x : A ⟶ S.X₁) (hx : k = x ≫ S.f) :
-    S.lift_cycles k (by rw [hx, assoc, S.zero, comp_zero])≫ S.leftHomology_π = 0 :=
+    S.lift_cycles k (by rw [hx, assoc, S.zero, comp_zero]) ≫ S.leftHomology_π = 0 :=
   LeftHomologyData.lift_K_π_eq_zero_of_boundary _ k x hx
 
 @[reassoc (attr := simp)]
@@ -1042,7 +1041,7 @@ lemma LeftHomologyData.leftHomology_π_comp_leftHomology_iso_hom :
   rw [← leftHomology_π_naturality']
 
 @[reassoc (attr := simp)]
-lemma LeftHomologyData.π_comp_left_homology_iso_inv :
+lemma LeftHomologyData.π_comp_leftHomology_iso_inv :
     h.π ≫ h.leftHomology_iso.inv = h.cycles_iso.inv ≫ S.leftHomology_π := by
   simp only [← cancel_epi h.cycles_iso.hom, ← cancel_mono h.leftHomology_iso.hom, assoc,
     Iso.inv_hom_id, comp_id, Iso.hom_inv_id_assoc,
