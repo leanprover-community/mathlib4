@@ -96,13 +96,15 @@ noncomputable def internal :
 
 noncomputable def map (F : C ⥤ D)
     [HasTerminal D] [HasBinaryProduct (F.obj G) (F.obj G)]
+    [HasBinaryProduct (F.obj G) (F.obj (G ⨯ G))]
     [HasBinaryProduct (F.obj G) (F.obj G ⨯ F.obj G)]
-    [PreservesLimit (Functor.empty C) F] [PreservesLimit (pair G G) F] :
+    [PreservesLimit (Functor.empty C) F] [PreservesLimit (pair G G) F]
+    [PreservesLimit (pair G (G ⨯ G)) F] :
     AddCommGroupCatObjOperations (F.obj G) where
   zero := h.zero.map F
   neg := h.neg.map F
   add := h.add.map F
-  add_assoc := sorry
+  add_assoc := h.add_assoc.map F
   add_comm := h.add_comm.map F
   add_zero := h.add_zero.map F
   zero_add := h.zero_add.map F
