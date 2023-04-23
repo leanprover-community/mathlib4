@@ -523,6 +523,7 @@ section LimFunctor
 variable [HasLimitsOfShape J C]
 
 section
+
 /-- `limit F` is functorial in `F`, when `C` has all limits of shape `J`. -/
 @[simps]
 def lim : (J ⥤ C) ⥤ C where
