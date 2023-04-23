@@ -9,8 +9,8 @@ Authors: Chris Hughes
 ! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.CharP.Basic
+import Mathlib.Data.Fintype.Units
 import Mathlib.Data.Nat.Parity
-import Mathlib.Algebra.Group.ConjFinite
 import Mathlib.Tactic.FinCases
 
 /-!
