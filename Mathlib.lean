@@ -307,6 +307,7 @@ import Mathlib.AlgebraicTopology.DoldKan.FunctorN
 import Mathlib.AlgebraicTopology.DoldKan.GammaCompN
 import Mathlib.AlgebraicTopology.DoldKan.Homotopies
 import Mathlib.AlgebraicTopology.DoldKan.HomotopyEquivalence
+import Mathlib.AlgebraicTopology.DoldKan.NCompGamma
 import Mathlib.AlgebraicTopology.DoldKan.NReflectsIso
 import Mathlib.AlgebraicTopology.DoldKan.Normalized
 import Mathlib.AlgebraicTopology.DoldKan.Notations
@@ -504,6 +505,7 @@ import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Pullbacks
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
+import Mathlib.CategoryTheory.Limits.Presheaf
 import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
 import Mathlib.CategoryTheory.Limits.Shapes.CommSq
