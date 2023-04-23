@@ -252,32 +252,47 @@ def Infinite (x : ℝ*) :=
 ### Some facts about `st`
 -/
 
-private theorem isSt_unique' (x : ℝ*) (r s : ℝ) (hr : IsSt x r) (hs : IsSt x s) (hrs : r < s) :
-    False := by
-  have hrs' := half_pos <| sub_pos_of_lt hrs
-  have hr' := (hr _ hrs').2
-  have hs' := (hs _ hrs').1
-  have h : s - (s - r) / 2 = r + (s - r) / 2 := by linarith
-  norm_cast at *
-  rw [h] at hs'
-  exact not_lt_of_lt hs' hr'
+-- porting note: moved up, renamed
+protected theorem IsSt.lt {x y : ℝ*} {r s : ℝ} (hxr : IsSt x r) (hys : IsSt y s) (hrs : r < s) :
+    x < y :=
+  have hpos : 0 < (s - r) / 2 := half_pos <| sub_pos_of_lt hrs
+  calc
+    x < ↑r + ↑((s - r) / 2) := (hxr _ hpos).2
+    _ = ↑s - ↑((s - r) / 2) := by
+      rw [← coe_add, ← coe_sub, coe_eq_coe] -- porting note: `norm_cast` fails
+      field_simp
+      ring
+    _ < y                   := (hys _ hpos).1
+#align hyperreal.lt_of_is_st_lt Hyperreal.IsSt.lt
 
-theorem isSt_unique {x : ℝ*} {r s : ℝ} (hr : IsSt x r) (hs : IsSt x s) : r = s := by
+theorem IsSt.unique {x : ℝ*} {r s : ℝ} (hr : IsSt x r) (hs : IsSt x s) : r = s := by
   rcases lt_trichotomy r s with (h | h | h)
-  · exact False.elim (isSt_unique' x r s hr hs h)
+  · exact absurd (hr.lt hs h) (lt_irrefl _)
   · exact h
-  · exact False.elim (isSt_unique' x s r hs hr h)
-#align hyperreal.is_st_unique Hyperreal.isSt_unique
+  · exact absurd (hs.lt hr h) (lt_irrefl _)
+#align hyperreal.is_st_unique Hyperreal.IsSt.unique
 
-theorem not_infinite_of_exists_st {x : ℝ*} : (∃ r : ℝ, IsSt x r) → ¬Infinite x := fun he hi =>
-  let ⟨r, hr⟩ := he
-  hi.elim (fun hip => not_lt_of_lt (hr 2 zero_lt_two).2 (hip <| r + 2)) fun hin =>
-    not_lt_of_lt (hr 2 zero_lt_two).1 (hin <| r - 2)
+theorem IsSt.st_eq {x : ℝ*} {r : ℝ} (hxr : IsSt x r) : st x = r := by
+  have h : ∃ r, IsSt x r := ⟨r, hxr⟩
+  rw [st, dif_pos h]
+  exact (Classical.choose_spec h).unique hxr
+#align hyperreal.st_of_is_st Hyperreal.IsSt.st_eq
+
+theorem IsSt.not_infinite {x : ℝ*} {r : ℝ} (h : IsSt x r) : ¬Infinite x := fun hi ↦
+  hi.elim (fun hp ↦ lt_asymm (h 1 one_pos).2 (hp (r + 1))) fun hn ↦
+    lt_asymm (h 1 one_pos).1 (hn (r - 1))
+
+theorem not_infinite_of_exists_st {x : ℝ*} : (∃ r : ℝ, IsSt x r) → ¬Infinite x := fun ⟨_r, hr⟩ =>
+  hr.not_infinite
 #align hyperreal.not_infinite_of_exists_st Hyperreal.not_infinite_of_exists_st
+
+theorem Infinite.st_eq {x : ℝ*} (hi : Infinite x) : st x = 0 :=
+  dif_neg <| fun ⟨_r, hr⟩ ↦ hr.not_infinite hi
+#align hyperreal.st_infinite Hyperreal.Infinite.st_eq
 
 theorem isSt_supₛ {x : ℝ*} (hni : ¬Infinite x) : IsSt x (supₛ { y : ℝ | (y : ℝ*) < x }) :=
   let S : Set ℝ := { y : ℝ | (y : ℝ*) < x }
-  let R : _ := supₛ S
+  let R : ℝ := supₛ S
   let ⟨r₁, hr₁⟩ := not_forall.mp (not_or.mp hni).2
   let ⟨r₂, hr₂⟩ := not_forall.mp (not_or.mp hni).1
   have HR₁ : S.Nonempty :=
@@ -300,17 +315,16 @@ theorem exists_st_of_not_infinite {x : ℝ*} (hni : ¬Infinite x) : ∃ r : ℝ,
 #align hyperreal.exists_st_of_not_infinite Hyperreal.exists_st_of_not_infinite
 
 theorem st_eq_supₛ {x : ℝ*} : st x = supₛ { y : ℝ | (y : ℝ*) < x } := by
-  unfold st; split_ifs with h
-  · exact isSt_unique (Classical.choose_spec h) (isSt_supₛ (not_infinite_of_exists_st h))
-  · cases' not_imp_comm.mp exists_st_of_not_infinite h with H H
-    · rw [(Set.ext fun i => ⟨fun hi => Set.mem_univ i, fun hi => H i⟩ :
-          { y : ℝ | (y : ℝ*) < x } = Set.univ)]
-      exact Real.supₛ_univ.symm
-    · rw [(Set.ext fun i =>
-            ⟨fun hi => False.elim (not_lt_of_lt (H i) hi), fun hi =>
-              False.elim (Set.not_mem_empty i hi)⟩ :
-          { y : ℝ | (y : ℝ*) < x } = ∅)]
-      exact Real.supₛ_empty.symm
+  rcases _root_.em (Infinite x) with (hx|hx)
+  · rw [hx.st_eq]
+    cases hx with
+    | inl hx =>
+      convert Real.supₛ_univ.symm
+      exact Set.eq_univ_of_forall hx
+    | inr hx =>
+      convert Real.supₛ_empty.symm
+      exact Set.eq_empty_of_forall_not_mem fun y hy ↦ hy.out.not_lt (hx _)
+  · exact (isSt_supₛ hx).st_eq
 #align hyperreal.st_eq_Sup Hyperreal.st_eq_supₛ
 
 theorem exists_st_iff_not_infinite {x : ℝ*} : (∃ r : ℝ, IsSt x r) ↔ ¬Infinite x :=
@@ -321,24 +335,12 @@ theorem infinite_iff_not_exists_st {x : ℝ*} : Infinite x ↔ ¬∃ r : ℝ, Is
   iff_not_comm.mp exists_st_iff_not_infinite
 #align hyperreal.infinite_iff_not_exists_st Hyperreal.infinite_iff_not_exists_st
 
-theorem st_infinite {x : ℝ*} (hi : Infinite x) : st x = 0 := by
-  unfold st; split_ifs with h
-  · exact False.elim ((infinite_iff_not_exists_st.mp hi) h)
-  · rfl
-#align hyperreal.st_infinite Hyperreal.st_infinite
-
-theorem st_of_isSt {x : ℝ*} {r : ℝ} (hxr : IsSt x r) : st x = r := by
-  unfold st; split_ifs with h
-  · exact isSt_unique (Classical.choose_spec h) hxr
-  · exact False.elim (h ⟨r, hxr⟩)
-#align hyperreal.st_of_is_st Hyperreal.st_of_isSt
-
-theorem isSt_st_of_isSt {x : ℝ*} {r : ℝ} (hxr : IsSt x r) : IsSt x (st x) := by
-  rwa [st_of_isSt hxr]
-#align hyperreal.is_st_st_of_is_st Hyperreal.isSt_st_of_isSt
+theorem IsSt.isSt_st {x : ℝ*} {r : ℝ} (hxr : IsSt x r) : IsSt x (st x) := by
+  rwa [hxr.st_eq]
+#align hyperreal.is_st_st_of_is_st Hyperreal.IsSt.isSt_st
 
 theorem isSt_st_of_exists_st {x : ℝ*} (hx : ∃ r : ℝ, IsSt x r) : IsSt x (st x) :=
-  let ⟨_r, hr⟩ := hx; isSt_st_of_isSt hr
+  let ⟨_r, hr⟩ := hx; hr.isSt_st
 #align hyperreal.is_st_st_of_exists_st Hyperreal.isSt_st_of_exists_st
 
 theorem isSt_st {x : ℝ*} (hx : st x ≠ 0) : IsSt x (st x) := by
@@ -348,23 +350,22 @@ theorem isSt_st {x : ℝ*} (hx : st x ≠ 0) : IsSt x (st x) := by
 #align hyperreal.is_st_st Hyperreal.isSt_st
 
 theorem isSt_st' {x : ℝ*} (hx : ¬Infinite x) : IsSt x (st x) :=
-  isSt_st_of_exists_st <| exists_st_of_not_infinite hx
+  (isSt_supₛ hx).isSt_st
 #align hyperreal.is_st_st' Hyperreal.isSt_st'
 
 theorem isSt_refl_real (r : ℝ) : IsSt r r := fun _δ hδ =>
   ⟨sub_lt_self _ (coe_lt_coe.2 hδ), lt_add_of_pos_right _ (coe_lt_coe.2 hδ)⟩
 #align hyperreal.is_st_refl_real Hyperreal.isSt_refl_real
 
-theorem st_id_real (r : ℝ) : st r = r :=
-  st_of_isSt (isSt_refl_real r)
+theorem st_id_real (r : ℝ) : st r = r := (isSt_refl_real r).st_eq
 #align hyperreal.st_id_real Hyperreal.st_id_real
 
 theorem eq_of_isSt_real {r s : ℝ} : IsSt r s → r = s :=
-  isSt_unique (isSt_refl_real r)
+  (isSt_refl_real r).unique
 #align hyperreal.eq_of_is_st_real Hyperreal.eq_of_isSt_real
 
 theorem isSt_real_iff_eq {r s : ℝ} : IsSt r s ↔ r = s :=
-  ⟨eq_of_isSt_real, fun hrs => by rw [hrs]; exact isSt_refl_real s⟩
+  ⟨eq_of_isSt_real, fun hrs => hrs ▸ isSt_refl_real r⟩
 #align hyperreal.is_st_real_iff_eq Hyperreal.isSt_real_iff_eq
 
 theorem isSt_symm_real {r s : ℝ} : IsSt r s ↔ IsSt s r := by
@@ -383,13 +384,13 @@ theorem isSt_iff_abs_sub_lt_delta {x : ℝ*} {r : ℝ} : IsSt x r ↔ ∀ δ : �
   simp only [abs_sub_lt_iff, sub_lt_iff_lt_add, IsSt, and_comm, add_comm]
 #align hyperreal.is_st_iff_abs_sub_lt_delta Hyperreal.isSt_iff_abs_sub_lt_delta
 
-theorem isSt_add {x y : ℝ*} {r s : ℝ} : IsSt x r → IsSt y s → IsSt (x + y) (r + s) :=
-  fun hxr hys d hd =>
+theorem IsSt.add {x y : ℝ*} {r s : ℝ} (hxr : IsSt x r) (hys : IsSt y s) :
+    IsSt (x + y) (r + s) := fun d hd =>
   have hxr' := hxr (d / 2) (half_pos hd)
   have hys' := hys (d / 2) (half_pos hd)
   ⟨by convert add_lt_add hxr'.1 hys'.1 using 1 <;> norm_cast <;> linarith, by
     convert add_lt_add hxr'.2 hys'.2 using 1 <;> norm_cast <;> linarith⟩
-#align hyperreal.is_st_add Hyperreal.isSt_add
+#align hyperreal.is_st_add Hyperreal.IsSt.add
 
 theorem isSt_neg {x : ℝ*} {r : ℝ} (hxr : IsSt x r) : IsSt (-x) (-r) := fun d hd =>
   show -(r : ℝ*) - d < -x ∧ -x < -r + d by cases hxr d hd; constructor <;> linarith
@@ -399,34 +400,16 @@ theorem isSt_sub {x y : ℝ*} {r s : ℝ} : IsSt x r → IsSt y s → IsSt (x - 
   by rw [sub_eq_add_neg, sub_eq_add_neg]; exact isSt_add hxr (isSt_neg hys)
 #align hyperreal.is_st_sub Hyperreal.isSt_sub
 
--- (st x < st y) → (x < y) → (x ≤ y) → (st x ≤ st y)
-theorem lt_of_isSt_lt {x y : ℝ*} {r s : ℝ} (hxr : IsSt x r) (hys : IsSt y s) : r < s → x < y :=
-  fun hrs => by
-  have hrs' : 0 < (s - r) / 2 := half_pos (sub_pos.mpr hrs)
-  have hxr' := (hxr _ hrs').2
-  have hys' := (hys _ hrs').1
-  have H1 : r + (s - r) / 2 = (r + s) / 2 := by linarith
-  have H2 : s - (s - r) / 2 = (r + s) / 2 := by linarith
-  norm_cast  at *
-  rw [H1] at hxr'
-  rw [H2] at hys'
-  exact lt_trans hxr' hys'
-#align hyperreal.lt_of_is_st_lt Hyperreal.lt_of_isSt_lt
-
-theorem isSt_le_of_le {x y : ℝ*} {r s : ℝ} (hrx : IsSt x r) (hsy : IsSt y s) : x ≤ y → r ≤ s := by
-  rw [← not_lt, ← not_lt, not_imp_not]; exact lt_of_isSt_lt hsy hrx
-#align hyperreal.is_st_le_of_le Hyperreal.isSt_le_of_le
+theorem IsSt.le {x y : ℝ*} {r s : ℝ} (hrx : IsSt x r) (hsy : IsSt y s) (hxy : x ≤ y) : r ≤ s :=
+  not_lt.1 <| fun h ↦ hxy.not_lt <| hsy.lt hrx h
+#align hyperreal.is_st_le_of_le Hyperreal.IsSt.le
 
 theorem st_le_of_le {x y : ℝ*} (hix : ¬Infinite x) (hiy : ¬Infinite y) : x ≤ y → st x ≤ st y :=
-  have hx' := isSt_st' hix
-  have hy' := isSt_st' hiy
-  isSt_le_of_le hx' hy'
+  (isSt_st' hix).le (isSt_st' hiy)
 #align hyperreal.st_le_of_le Hyperreal.st_le_of_le
 
 theorem lt_of_st_lt {x y : ℝ*} (hix : ¬Infinite x) (hiy : ¬Infinite y) : st x < st y → x < y :=
-  have hx' := isSt_st' hix
-  have hy' := isSt_st' hiy
-  lt_of_isSt_lt hx' hy'
+  (isSt_st' hix).lt (isSt_st' hiy)
 #align hyperreal.lt_of_st_lt Hyperreal.lt_of_st_lt
 
 /-!
@@ -439,19 +422,19 @@ theorem infinitePos_def {x : ℝ*} : InfinitePos x ↔ ∀ r : ℝ, ↑r < x := 
 theorem infiniteNeg_def {x : ℝ*} : InfiniteNeg x ↔ ∀ r : ℝ, x < r := Iff.rfl
 #align hyperreal.infinite_neg_def Hyperreal.infiniteNeg_def
 
-theorem ne_zero_of_infinite {x : ℝ*} : Infinite x → x ≠ 0 := fun hI h0 =>
-  Or.casesOn hI (fun hip => lt_irrefl (0 : ℝ*) ((by rwa [← h0] : InfinitePos 0) 0)) fun hin =>
-    lt_irrefl (0 : ℝ*) ((by rwa [← h0] : InfiniteNeg 0) 0)
-#align hyperreal.ne_zero_of_infinite Hyperreal.ne_zero_of_infinite
-
-theorem not_infinite_zero : ¬Infinite 0 := fun hI => ne_zero_of_infinite hI rfl
-#align hyperreal.not_infinite_zero Hyperreal.not_infinite_zero
-
-theorem pos_of_infinitePos {x : ℝ*} : InfinitePos x → 0 < x := fun hip => hip 0
-#align hyperreal.pos_of_infinite_pos Hyperreal.pos_of_infinitePos
+theorem InfinitePos.pos {x : ℝ*} (hip : InfinitePos x) : 0 < x := hip 0
+#align hyperreal.pos_of_infinite_pos Hyperreal.InfinitePos.pos
 
 theorem neg_of_infiniteNeg {x : ℝ*} : InfiniteNeg x → x < 0 := fun hin => hin 0
 #align hyperreal.neg_of_infinite_neg Hyperreal.neg_of_infiniteNeg
+
+theorem Infinite.ne_zero {x : ℝ*} : Infinite x → x ≠ 0 := fun hI h0 =>
+  Or.casesOn hI (fun hip => lt_irrefl (0 : ℝ*) ((by rwa [← h0] : InfinitePos 0) 0)) fun hin =>
+    lt_irrefl (0 : ℝ*) ((by rwa [← h0] : InfiniteNeg 0) 0)
+#align hyperreal.ne_zero_of_infinite Hyperreal.Infinite.ne_zero
+
+theorem not_infinite_zero : ¬Infinite 0 := fun hI => hI.ne_zero rfl
+#align hyperreal.not_infinite_zero Hyperreal.not_infinite_zero
 
 theorem not_infinitePos_of_infiniteNeg {x : ℝ*} : InfiniteNeg x → ¬InfinitePos x := fun hn hp =>
   -- porting note: needs `α := ℝ*`, otherwise unfolds `ℝ*` and fails
