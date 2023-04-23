@@ -67,7 +67,7 @@ theorem circulant_injective [AddGroup n] : Injective (circulant : (n → α) →
 #align matrix.circulant_injective Matrix.circulant_injective
 
 theorem Fin.circulant_injective : ∀ n, Injective fun v : Fin n → α => circulant v
-  | 0 => by decide
+  | 0 => by simp [Injective]
   | n + 1 => Matrix.circulant_injective
 #align matrix.fin.circulant_injective Matrix.Fin.circulant_injective
 
@@ -90,13 +90,13 @@ theorem conjTranspose_circulant [Star α] [AddGroup n] (v : n → α) :
 #align matrix.conj_transpose_circulant Matrix.conjTranspose_circulant
 
 theorem Fin.transpose_circulant : ∀ {n} (v : Fin n → α), (circulant v)ᵀ = circulant fun i => v (-i)
-  | 0 => by decide
+  | 0 => by simp [Injective]
   | n + 1 => Matrix.transpose_circulant
 #align matrix.fin.transpose_circulant Matrix.Fin.transpose_circulant
 
 theorem Fin.conjTranspose_circulant [Star α] :
     ∀ {n} (v : Fin n → α), (circulant v)ᴴ = circulant (star fun i => v (-i))
-  | 0 => by decide
+  | 0 => by simp [Injective]
   | n + 1 => Matrix.conjTranspose_circulant
 #align matrix.fin.conj_transpose_circulant Matrix.Fin.conjTranspose_circulant
 
@@ -137,7 +137,7 @@ theorem circulant_mul [Semiring α] [Fintype n] [AddGroup n] (v w : n → α) :
 
 theorem Fin.circulant_mul [Semiring α] :
     ∀ {n} (v w : Fin n → α), circulant v ⬝ circulant w = circulant (mulVec (circulant v) w)
-  | 0 => by decide
+  | 0 => by simp [Injective]
   | n + 1 => Matrix.circulant_mul
 #align matrix.fin.circulant_mul Matrix.Fin.circulant_mul
 
@@ -155,7 +155,7 @@ theorem circulant_mul_comm [CommSemigroup α] [AddCommMonoid α] [Fintype n] [Ad
 
 theorem Fin.circulant_mul_comm [CommSemigroup α] [AddCommMonoid α] :
     ∀ {n} (v w : Fin n → α), circulant v ⬝ circulant w = circulant w ⬝ circulant v
-  | 0 => by decide
+  | 0 => by simp [Injective]
   | n + 1 => Matrix.circulant_mul_comm
 #align matrix.fin.circulant_mul_comm Matrix.Fin.circulant_mul_comm
 
@@ -182,7 +182,7 @@ theorem circulant_single (n) [Semiring α] [DecidableEq n] [AddGroup n] [Fintype
 This means that we cannot state this with `pi.single` as we did with `matrix.circulant_single`. -/
 theorem Fin.circulant_ite (α) [Zero α] [One α] :
     ∀ n, circulant (fun i => ite (i.1 = 0) 1 0 : Fin n → α) = 1
-  | 0 => by decide
+  | 0 => by simp [Injective]
   | n + 1 => by
     rw [← circulant_single_one]
     congr with j
