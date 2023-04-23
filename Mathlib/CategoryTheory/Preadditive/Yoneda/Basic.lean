@@ -45,7 +45,7 @@ object `X` to the `End Y`-module of morphisms `X ⟶ Y`.
 @[simps]
 def preadditiveYonedaObj (Y : C) : Cᵒᵖ ⥤ ModuleCat.{v} (End Y) where
   obj X := ModuleCat.of _ (X.unop ⟶ Y)
-  map X X' f :=
+  map f := ModuleCat.ofHom
     { toFun := fun g => f.unop ≫ g
       map_add' := fun g g' => comp_add _ _ _ _ _ _
       map_smul' := fun r g => Eq.symm <| Category.assoc _ _ _ }
@@ -53,23 +53,19 @@ def preadditiveYonedaObj (Y : C) : Cᵒᵖ ⥤ ModuleCat.{v} (End Y) where
 
 /-- The Yoneda embedding for preadditive categories sends an object `Y` to the presheaf sending an
 object `X` to the group of morphisms `X ⟶ Y`. At each point, we get an additional `End Y`-module
-structure, see `preadditive_yoneda_obj`.
+structure, see `preadditiveYonedaObj`.
 -/
 @[simps]
 def preadditiveYoneda : C ⥤ Cᵒᵖ ⥤ AddCommGroupCat.{v} where
   obj Y := preadditiveYonedaObj Y ⋙ forget₂ _ _
-  map Y Y' f :=
-    { app := fun X =>
+  map f :=
+    { app := fun X => AddCommGroupCat.Hom.mk
         { toFun := fun g => g ≫ f
           map_zero' := Limits.zero_comp
           map_add' := fun g g' => add_comp _ _ _ _ _ _ }
-      naturality' := fun X X' g => AddCommGroupCat.ext _ _ _ _ fun x => Category.assoc _ _ _ }
-  map_id' X := by
-    ext
-    simp
-  map_comp' X Y Z f g := by
-    ext
-    simp
+      naturality := fun X X' g => AddCommGroupCat.ext _ _ _ _ fun x => Category.assoc _ _ _ }
+  map_id _ := by ext ; dsimp ; simp
+  map_comp f g := by ext ; dsimp ; simp
 #align category_theory.preadditive_yoneda CategoryTheory.preadditiveYoneda
 
 /-- The Yoneda embedding for preadditive categories sends an object `X` to the copresheaf sending an
@@ -78,7 +74,7 @@ object `Y` to the `End X`-module of morphisms `X ⟶ Y`.
 @[simps]
 def preadditiveCoyonedaObj (X : Cᵒᵖ) : C ⥤ ModuleCat.{v} (End X) where
   obj Y := ModuleCat.of _ (unop X ⟶ Y)
-  map Y Y' f :=
+  map f := ModuleCat.ofHom
     { toFun := fun g => g ≫ f
       map_add' := fun g g' => add_comp _ _ _ _ _ _
       map_smul' := fun r g => Category.assoc _ _ _ }
@@ -86,37 +82,33 @@ def preadditiveCoyonedaObj (X : Cᵒᵖ) : C ⥤ ModuleCat.{v} (End X) where
 
 /-- The Yoneda embedding for preadditive categories sends an object `X` to the copresheaf sending an
 object `Y` to the group of morphisms `X ⟶ Y`. At each point, we get an additional `End X`-module
-structure, see `preadditive_coyoneda_obj`.
+structure, see `preadditiveCoyonedaObj`.
 -/
 @[simps]
 def preadditiveCoyoneda : Cᵒᵖ ⥤ C ⥤ AddCommGroupCat.{v} where
   obj X := preadditiveCoyonedaObj X ⋙ forget₂ _ _
-  map X X' f :=
-    { app := fun Y =>
+  map f :=
+    { app := fun Y => AddCommGroupCat.Hom.mk
         { toFun := fun g => f.unop ≫ g
           map_zero' := Limits.comp_zero
           map_add' := fun g g' => comp_add _ _ _ _ _ _ }
-      naturality' := fun Y Y' g =>
+      naturality := fun Y Y' g =>
         AddCommGroupCat.ext _ _ _ _ fun x => Eq.symm <| Category.assoc _ _ _ }
-  map_id' X := by
-    ext
-    simp
-  map_comp' X Y Z f g := by
-    ext
-    simp
+  map_id _ := by ext ; dsimp ; simp
+  map_comp f g := by ext ; dsimp ; simp
 #align category_theory.preadditive_coyoneda CategoryTheory.preadditiveCoyoneda
 
-instance additive_yoneda_obj (X : C) : Functor.Additive (preadditiveYonedaObj X) where
-#align category_theory.additive_yoneda_obj CategoryTheory.additive_yoneda_obj
+instance additive_yonedaObj (X : C) : Functor.Additive (preadditiveYonedaObj X) where
+#align category_theory.additive_yoneda_obj CategoryTheory.additive_yonedaObj
 
-instance additive_yoneda_obj' (X : C) : Functor.Additive (preadditiveYoneda.obj X) where
-#align category_theory.additive_yoneda_obj' CategoryTheory.additive_yoneda_obj'
+instance additive_yonedaObj' (X : C) : Functor.Additive (preadditiveYoneda.obj X) where
+#align category_theory.additive_yoneda_obj' CategoryTheory.additive_yonedaObj'
 
-instance additive_coyoneda_obj (X : Cᵒᵖ) : Functor.Additive (preadditiveCoyonedaObj X) where
-#align category_theory.additive_coyoneda_obj CategoryTheory.additive_coyoneda_obj
+instance additive_coyonedaObj (X : Cᵒᵖ) : Functor.Additive (preadditiveCoyonedaObj X) where
+#align category_theory.additive_coyoneda_obj CategoryTheory.additive_coyonedaObj
 
-instance additive_coyoneda_obj' (X : Cᵒᵖ) : Functor.Additive (preadditiveCoyoneda.obj X) where
-#align category_theory.additive_coyoneda_obj' CategoryTheory.additive_coyoneda_obj'
+instance additive_coyonedaObj' (X : Cᵒᵖ) : Functor.Additive (preadditiveCoyoneda.obj X) where
+#align category_theory.additive_coyoneda_obj' CategoryTheory.additive_coyonedaObj'
 
 /-- Composing the preadditive yoneda embedding with the forgetful functor yields the regular
 Yoneda embedding.
@@ -140,34 +132,29 @@ theorem whiskering_preadditiveCoyoneda :
   rfl
 #align category_theory.whiskering_preadditive_coyoneda CategoryTheory.whiskering_preadditiveCoyoneda
 
-instance preadditiveYonedaFull : Full (preadditiveYoneda : C ⥤ Cᵒᵖ ⥤ AddCommGroupCat) :=
-  let yoneda_full :
-    Full
-      (preadditiveYoneda ⋙
-        (whiskeringRight Cᵒᵖ AddCommGroupCat (Type v)).obj (forget AddCommGroupCat)) :=
+instance full_preadditiveYoneda : Full (preadditiveYoneda : C ⥤ Cᵒᵖ ⥤ AddCommGroupCat) :=
+  let _ : Full (preadditiveYoneda ⋙
+      (whiskeringRight Cᵒᵖ AddCommGroupCat (Type v)).obj (forget AddCommGroupCat)) :=
     Yoneda.yonedaFull
-  full.of_comp_faithful preadditive_yoneda
-    ((whiskering_right Cᵒᵖ AddCommGroupCat (Type v)).obj (forget AddCommGroupCat))
-#align category_theory.preadditive_yoneda_full CategoryTheory.preadditiveYonedaFull
+  Full.ofCompFaithful preadditiveYoneda
+    ((whiskeringRight Cᵒᵖ AddCommGroupCat (Type v)).obj (forget AddCommGroupCat))
+#align category_theory.preadditive_yoneda_full CategoryTheory.full_preadditiveYoneda
 
-instance preadditiveCoyonedaFull : Full (preadditiveCoyoneda : Cᵒᵖ ⥤ C ⥤ AddCommGroupCat) :=
-  let coyoneda_full :
-    Full
-      (preadditiveCoyoneda ⋙
-        (whiskeringRight C AddCommGroupCat (Type v)).obj (forget AddCommGroupCat)) :=
+instance full_preadditiveCoyoneda : Full (preadditiveCoyoneda : Cᵒᵖ ⥤ C ⥤ AddCommGroupCat) :=
+  let _ : Full (preadditiveCoyoneda ⋙
+      (whiskeringRight C AddCommGroupCat (Type v)).obj (forget AddCommGroupCat)) :=
     Coyoneda.coyonedaFull
-  full.of_comp_faithful preadditive_coyoneda
-    ((whiskering_right C AddCommGroupCat (Type v)).obj (forget AddCommGroupCat))
-#align category_theory.preadditive_coyoneda_full CategoryTheory.preadditiveCoyonedaFull
+  Full.ofCompFaithful preadditiveCoyoneda
+    ((whiskeringRight C AddCommGroupCat (Type v)).obj (forget AddCommGroupCat))
+#align category_theory.preadditive_coyoneda_full CategoryTheory.full_preadditiveCoyoneda
 
-instance preadditiveYoneda_faithful : Faithful (preadditiveYoneda : C ⥤ Cᵒᵖ ⥤ AddCommGroupCat) :=
+instance faithful_preadditiveYoneda : Faithful (preadditiveYoneda : C ⥤ Cᵒᵖ ⥤ AddCommGroupCat) :=
   Faithful.of_comp_eq whiskering_preadditiveYoneda
-#align category_theory.preadditive_yoneda_faithful CategoryTheory.preadditiveYoneda_faithful
+#align category_theory.preadditive_yoneda_faithful CategoryTheory.faithful_preadditiveYoneda
 
-instance preadditiveCoyoneda_faithful :
+instance faithful_preadditiveCoyoneda :
     Faithful (preadditiveCoyoneda : Cᵒᵖ ⥤ C ⥤ AddCommGroupCat) :=
   Faithful.of_comp_eq whiskering_preadditiveCoyoneda
-#align category_theory.preadditive_coyoneda_faithful CategoryTheory.preadditiveCoyoneda_faithful
+#align category_theory.preadditive_coyoneda_faithful CategoryTheory.faithful_preadditiveCoyoneda
 
 end CategoryTheory
-
