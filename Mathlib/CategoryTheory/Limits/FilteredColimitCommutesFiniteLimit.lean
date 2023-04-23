@@ -8,12 +8,12 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Limits.ColimitLimit
-import Mathbin.CategoryTheory.Limits.Preserves.FunctorCategory
-import Mathbin.CategoryTheory.Limits.Preserves.Finite
-import Mathbin.CategoryTheory.Limits.Shapes.FiniteLimits
-import Mathbin.CategoryTheory.Limits.Preserves.Filtered
-import Mathbin.CategoryTheory.ConcreteCategory.Basic
+import Mathlib.CategoryTheory.Limits.ColimitLimit
+import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
+import Mathlib.CategoryTheory.Limits.Preserves.Finite
+import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
+import Mathlib.CategoryTheory.Limits.Preserves.Filtered
+import Mathlib.CategoryTheory.ConcreteCategory.Basic
 
 /-!
 # Filtered colimits commute with finite limits.
@@ -174,8 +174,7 @@ theorem colimitLimitToLimitColimit_surjective :
     have w :
       ∀ {j j' : J} (f : j ⟶ j'),
         colimit.ι ((curry.obj F).obj j') k' (F.map ((𝟙 j', g j') : (j', k j') ⟶ (j', k')) (y j')) =
-          colimit.ι ((curry.obj F).obj j') k' (F.map ((f, g j) : (j, k j) ⟶ (j', k')) (y j)) :=
-      by
+          colimit.ι ((curry.obj F).obj j') k' (F.map ((f, g j) : (j, k j) ⟶ (j', k')) (y j)) := by
       intro j j' f
       have t :
         (f, g j) = (((f, 𝟙 (k j)) : (j, k j) ⟶ (j', k j)) ≫ (𝟙 j', g j) : (j, k j) ⟶ (j', k')) := by
@@ -195,8 +194,7 @@ theorem colimitLimitToLimitColimit_surjective :
       ∀ {j j'} (f : j ⟶ j'),
         F.map ((𝟙 j', g j' ≫ gf f) : (j', k j') ⟶ (j', kf f)) (y j') =
           F.map ((f, g j ≫ hf f) : (j, k j) ⟶ (j', kf f)) (y j) :=
-      fun j j' f =>
-      by
+      fun j j' f => by
       have q :
         ((curry.obj F).obj j').map (gf f) (F.map _ (y j')) =
           ((curry.obj F).obj j').map (hf f) (F.map _ (y j)) :=
@@ -234,8 +232,7 @@ theorem colimitLimitToLimitColimit_surjective :
     -- We then restate this slightly more conveniently, as a family of morphism `i f : kf f ⟶ k''`,
     -- satisfying `gf f ≫ i f = hf f' ≫ i f'`.
     let i : ∀ {j j'} (f : j ⟶ j'), kf f ⟶ k'' := fun j j' f => i' (kfO f)
-    have s : ∀ {j₁ j₂ j₃ j₄} (f : j₁ ⟶ j₂) (f' : j₃ ⟶ j₄), gf f ≫ i f = hf f' ≫ i f' :=
-      by
+    have s : ∀ {j₁ j₂ j₃ j₄} (f : j₁ ⟶ j₂) (f' : j₃ ⟶ j₄), gf f ≫ i f = hf f' ≫ i f' := by
       intros
       rw [s', s']
       swap
@@ -310,18 +307,15 @@ instance colimitLimitToLimitColimit_isIso : IsIso (colimitLimitToLimitColimit F)
 #align category_theory.limits.colimit_limit_to_limit_colimit_is_iso CategoryTheory.Limits.colimitLimitToLimitColimit_isIso
 
 instance colimitLimitToLimitColimitCone_iso (F : J ⥤ K ⥤ Type v) :
-    IsIso (colimitLimitToLimitColimitCone F) :=
-  by
-  have : is_iso (colimit_limit_to_limit_colimit_cone F).Hom :=
-    by
+    IsIso (colimitLimitToLimitColimitCone F) := by
+  have : is_iso (colimit_limit_to_limit_colimit_cone F).Hom := by
     dsimp only [colimit_limit_to_limit_colimit_cone]
     infer_instance
   apply cones.cone_iso_of_hom_iso
 #align category_theory.limits.colimit_limit_to_limit_colimit_cone_iso CategoryTheory.Limits.colimitLimitToLimitColimitCone_iso
 
 noncomputable instance filteredColimPreservesFiniteLimitsOfTypes :
-    PreservesFiniteLimits (colim : (K ⥤ Type v) ⥤ _) :=
-  by
+    PreservesFiniteLimits (colim : (K ⥤ Type v) ⥤ _) := by
   apply preservesFiniteLimitsOfPreservesFiniteLimitsOfSize.{v}
   intro J _ _; skip; constructor
   intro F; constructor
@@ -355,8 +349,7 @@ attribute [local instance] reflects_limits_of_shape_of_reflects_isomorphisms
 
 noncomputable instance [PreservesFiniteLimits (forget C)] [PreservesFilteredColimits (forget C)]
     [HasFiniteLimits C] [HasColimitsOfShape K C] [ReflectsIsomorphisms (forget C)] :
-    PreservesFiniteLimits (colim : (K ⥤ C) ⥤ _) :=
-  by
+    PreservesFiniteLimits (colim : (K ⥤ C) ⥤ _) := by
   apply preservesFiniteLimitsOfPreservesFiniteLimitsOfSize.{v}
   intro J _ _; skip; infer_instance
 
@@ -377,8 +370,7 @@ noncomputable def colimitLimitIso (F : J ⥤ K ⥤ C) : colimit (limit F) ≅ li
 @[simp, reassoc.1]
 theorem ι_colimitLimitIso_limit_π (F : J ⥤ K ⥤ C) (a) (b) :
     colimit.ι (limit F) a ≫ (colimitLimitIso F).Hom ≫ limit.π (colimit F.flip) b =
-      (limit.π F b).app a ≫ (colimit.ι F.flip a).app b :=
-  by
+      (limit.π F b).app a ≫ (colimit.ι F.flip a).app b := by
   dsimp [colimit_limit_iso]
   simp only [functor.map_cone_π_app, iso.symm_hom,
     limits.limit.cone_point_unique_up_to_iso_hom_comp_assoc, limits.limit.cone_π,
