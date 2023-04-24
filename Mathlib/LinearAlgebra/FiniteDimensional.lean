@@ -1549,7 +1549,7 @@ theorem ker_pow_constant {f : End K V} {k : ℕ}
     apply le_antisymm
     · rw [add_comm, pow_add]
       apply LinearMap.ker_le_ker_comp
-    · rw [ker_pow_constant _ m, add_comm m 1, ← add_assoc, pow_add, pow_add f k m]
+    · rw [ker_pow_constant h m, add_comm m 1, ← add_assoc, pow_add, pow_add f k m]
       change LinearMap.ker ((f ^ (k + 1)).comp (f ^ m)) ≤ LinearMap.ker ((f ^ k).comp (f ^ m))
       rw [LinearMap.ker_comp, LinearMap.ker_comp, h, Nat.add_one]
 #align module.End.ker_pow_constant Module.End.ker_pow_constant
