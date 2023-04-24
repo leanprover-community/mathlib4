@@ -331,6 +331,7 @@ import Mathlib.Analysis.BoxIntegral.Box.Basic
 import Mathlib.Analysis.BoxIntegral.Box.SubboxInduction
 import Mathlib.Analysis.Convex.Basic
 import Mathlib.Analysis.Convex.Body
+import Mathlib.Analysis.Convex.Combination
 import Mathlib.Analysis.Convex.Exposed
 import Mathlib.Analysis.Convex.Extrema
 import Mathlib.Analysis.Convex.Extreme
