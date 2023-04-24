@@ -131,13 +131,14 @@ then the eventual maximum of `f` on `convexHull 𝕜 s` lies in `s`. -/
 theorem ConvexOn.exists_ge_of_mem_convexHull (hf : ConvexOn 𝕜 (convexHull 𝕜 s) f) {x}
     (hx : x ∈ convexHull 𝕜 s) : ∃ y ∈ s, f x ≤ f y := by
   rw [_root_.convexHull_eq] at hx
-  obtain ⟨α, t, w, p, hw₀, hw₁, hp, rfl⟩ := hx
+  obtain ⟨α : Type u_1, t, w, p, hw₀, hw₁, hp, rfl⟩ := hx -- Porting note: `α`'s type specified
   rcases hf.exists_ge_of_centerMass hw₀ (hw₁.symm ▸ zero_lt_one) fun i hi =>
       subset_convexHull 𝕜 s (hp i hi) with
     ⟨i, hit, Hi⟩
   exact ⟨p i, hp i hit, Hi⟩
 #align convex_on.exists_ge_of_mem_convex_hull ConvexOn.exists_ge_of_mem_convexHull
 
+set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 /-- Minimum principle for concave functions. If a function `f` is concave on the convex hull of `s`,
 then the eventual minimum of `f` on `convexHull 𝕜 s` lies in `s`. -/
 theorem ConcaveOn.exists_le_of_mem_convexHull (hf : ConcaveOn 𝕜 (convexHull 𝕜 s) f) {x}
