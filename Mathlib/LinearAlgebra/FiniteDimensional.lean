@@ -264,7 +264,6 @@ noncomputable def finBasisOfFinrankEq [FiniteDimensional K V] {n : ℕ} (hn : fi
 
 variable {K V}
 
-set_option pp.explicit true in
 set_option synthInstance.etaExperiment true in
 /-- A module with dimension 1 has a basis with one element. -/
 noncomputable def basisUnique (ι : Type _) [Unique ι] (h : finrank K V = 1) : Basis ι K V :=
@@ -544,7 +543,8 @@ theorem exists_nontrivial_relation_sum_zero_of_rank_succ_lt_card [FiniteDimensio
     -- At the end we have to reindex the sum, so we use `change` to
     -- express the summand using `shift`.
     change (∑ x : V in t.erase x₀, (fun e => g e • e) (shift x)) = 0
-    rw [← sum_map _ shift]
+    -- porting note: last argument can't be inferred
+    rw [← sum_map _ shift (fun e => g e • e)]
     exact gsum
   · show (∑ e : V in t, f e) = 0
     -- Again we split off the `x₀` term,
@@ -608,7 +608,8 @@ noncomputable def basisSingleton (ι : Type _) [Unique ι] (h : finrank K V = 1)
       map_smul' := by simp [mul_div]
       left_inv := fun w => by
         apply_fun b.repr using b.repr.toEquiv.injective
-        apply_fun Equiv.finsuppUnique
+        -- porting note: was `apply_fun Equiv.finsuppUnique`
+        refine Equiv.finsuppUnique.injective ?_
         simp only [LinearEquiv.map_smulₛₗ, Finsupp.coe_smul, Finsupp.single_eq_same,
           RingHom.id_apply, smul_eq_mul, Pi.smul_apply, Equiv.finsuppUnique_apply]
         exact div_mul_cancel _ h
@@ -1208,7 +1209,6 @@ end Span
 
 section Basis
 
-set_option pp.explicit true in
 theorem span_eq_top_of_linearIndependent_of_card_eq_finrank {ι : Type _} [hι : Nonempty ι]
     [Fintype ι] {b : ι → V} (lin_ind : LinearIndependent K b)
     (card_eq : Fintype.card ι = finrank K V) : span K (Set.range b) = ⊤ := by
@@ -1426,27 +1426,26 @@ set_option synthInstance.etaExperiment true in
 theorem Subalgebra.eq_bot_of_rank_le_one {S : Subalgebra F E} (h : Module.rank F S ≤ 1) :
     S = ⊥ := by
   nontriviality E
-  obtain ⟨m, _, he⟩ := Cardinal.exists_nat_eq_of_le_nat (h.trans_eq Nat.cast_one.symm)
-  haveI I₁ := finiteDimensional_of_rank_eq_nat he
+  obtain ⟨m, hm, he⟩ := Cardinal.exists_nat_eq_of_le_nat (h.trans_eq Nat.cast_one.symm)
+  -- porting note: fails without explicit type
+  haveI : FiniteDimensional F S := finiteDimensional_of_rank_eq_nat he
   rw [← not_bot_lt_iff, ← Subalgebra.toSubmodule.lt_iff_lt]
-  -- Porting FIXME: why does this not pick up the `I₁` when we use
-  -- haveI := LinearEquiv.finiteDimensional S.toSubmoduleEquiv.symm
-  haveI I₂ := @LinearEquiv.finiteDimensional _ _ _ _ _ _ _ _ S.toSubmoduleEquiv.symm I₁
-  -- Porting FIXME: similarly here:
-  refine' fun hl => (@Submodule.finrank_lt_finrank_of_lt _ _ _ _ _ _ _ I₂ hl ).not_le (natCast_le.1 _)
-  -- Porting FIXME: similarly here:
-  rw [Subalgebra.finrank_toSubmodule, @finrank_eq_rank _ _ _ _ _ _ I₁]
-  rw [Subalgebra.finrank_toSubmodule, finrank_eq_rank]
-  exact h.trans_eq Subalgebra.rank_bot.symm
+  -- porting note: fails without explicit type
+  haveI : FiniteDimensional F (Subalgebra.toSubmodule S) :=
+    S.toSubmoduleEquiv.symm.finiteDimensional
+  refine fun hl => (Submodule.finrank_lt_finrank_of_lt hl).not_le (natCast_le.1 ?_)
+  iterate 2 rw [Subalgebra.finrank_toSubmodule, finrank_eq_rank]
+  -- porting note: was `exact h.trans_eq subalgebra.rank_bot.symm`
+  refine h.trans_eq (Eq.symm ?_)
+  rw [←@Subalgebra.rank_bot F E]
+  sorry -- refl is too slow
 #align subalgebra.eq_bot_of_rank_le_one Subalgebra.eq_bot_of_rank_le_one
 
 theorem Subalgebra.eq_bot_of_finrank_one {S : Subalgebra F E} (h : finrank F S = 1) : S = ⊥ :=
   Subalgebra.eq_bot_of_rank_le_one <| by
-    haveI := finiteDimensional_of_finrank_eq_succ h
-    -- Porting FIXME: why do we need `@finrank_eq_rank _ _ _ _ _ _ this`
-    -- rather than just `finrank_eq_rank`?
-    rw [← @finrank_eq_rank _ _ _ _ _ _ this, h, Nat.cast_one]
-    apply le_refl
+    -- porting note: fails without explicit type
+    haveI : FiniteDimensional F S := finiteDimensional_of_finrank_eq_succ h
+    rw [← finrank_eq_rank, h, Nat.cast_one]
 #align subalgebra.eq_bot_of_finrank_one Subalgebra.eq_bot_of_finrank_one
 
 @[simp]
@@ -1461,11 +1460,14 @@ theorem Subalgebra.finrank_eq_one_iff [Nontrivial E] {S : Subalgebra F E} :
   ⟨Subalgebra.eq_bot_of_finrank_one, fun h => h.symm ▸ Subalgebra.finrank_bot⟩
 #align subalgebra.finrank_eq_one_iff Subalgebra.finrank_eq_one_iff
 
+set_option synthInstance.etaExperiment true in
 theorem Subalgebra.bot_eq_top_iff_rank_eq_one [Nontrivial E] :
     (⊥ : Subalgebra F E) = ⊤ ↔ Module.rank F E = 1 := by
-  rw [← rank_top, ← subalgebra_top_rank_eq_submodule_top_rank, Subalgebra.rank_eq_one_iff, eq_comm]
+  rw [← rank_top, ← subalgebra_top_rank_eq_submodule_top_rank (F := F) (E := E),
+    Subalgebra.rank_eq_one_iff, eq_comm]
 #align subalgebra.bot_eq_top_iff_rank_eq_one Subalgebra.bot_eq_top_iff_rank_eq_one
 
+set_option synthInstance.etaExperiment true in
 theorem Subalgebra.bot_eq_top_iff_finrank_eq_one [Nontrivial E] :
     (⊥ : Subalgebra F E) = ⊤ ↔ finrank F E = 1 := by
   rw [← finrank_top, ← subalgebra_top_finrank_eq_submodule_top_finrank,
@@ -1489,7 +1491,8 @@ theorem Subalgebra.isSimpleOrder_of_finrank (hr : finrank F E = 2) :
     eq_bot_or_eq_top := by
       intro S
       haveI : FiniteDimensional F E := finiteDimensional_of_finrank_eq_succ hr
-      haveI : FiniteDimensional F S := FiniteDimensional.finiteDimensional_submodule S.toSubmodule
+      haveI : FiniteDimensional F S :=
+        FiniteDimensional.finiteDimensional_submodule (Subalgebra.toSubmodule S)
       have : finrank F S ≤ 2 := hr ▸ S.toSubmodule.finrank_le
       have : 0 < finrank F S := finrank_pos_iff.mpr inferInstance
       interval_cases
@@ -1546,7 +1549,7 @@ theorem ker_pow_constant {f : End K V} {k : ℕ}
     apply le_antisymm
     · rw [add_comm, pow_add]
       apply LinearMap.ker_le_ker_comp
-    · rw [ker_pow_constant m, add_comm m 1, ← add_assoc, pow_add, pow_add f k m]
+    · rw [ker_pow_constant _ m, add_comm m 1, ← add_assoc, pow_add, pow_add f k m]
       change LinearMap.ker ((f ^ (k + 1)).comp (f ^ m)) ≤ LinearMap.ker ((f ^ k).comp (f ^ m))
       rw [LinearMap.ker_comp, LinearMap.ker_comp, h, Nat.add_one]
       exact le_rfl
