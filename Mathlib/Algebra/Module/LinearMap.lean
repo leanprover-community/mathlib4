@@ -1214,7 +1214,7 @@ def toModuleEnd : S →+* Module.End R M :=
     DistribMulAction.toModuleEnd R
       M with
     toFun := DistribMulAction.toLinearMap R M
-    map_zero' := LinearMap.ext <| zero_smul _
+    map_zero' := LinearMap.ext <| zero_smul S
     map_add' := fun _ _ ↦ LinearMap.ext <| add_smul _ _ }
 #align module.to_module_End Module.toModuleEnd
 #align module.to_module_End_apply Module.toModuleEnd_apply
