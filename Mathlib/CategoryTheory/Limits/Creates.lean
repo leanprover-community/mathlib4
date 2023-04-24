@@ -131,7 +131,8 @@ abbrev CreatesColimits (F : C ⥤ D) :=
   CreatesColimitsOfSize.{v₂, v₂} F
 #align category_theory.creates_colimits CategoryTheory.CreatesColimits
 
-attribute [instance] CreatesLimitsOfShape.CreatesLimit CreatesLimitsOfSize.CreatesLimitsOfShape
+-- see Note [lower instance priority]
+attribute [instance 100] CreatesLimitsOfShape.CreatesLimit CreatesLimitsOfSize.CreatesLimitsOfShape
   CreatesColimitsOfShape.CreatesColimit CreatesColimitsOfSize.CreatesColimitsOfShape
 
 -- see Note [lower instance priority]

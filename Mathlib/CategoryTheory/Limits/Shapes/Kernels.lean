@@ -1130,7 +1130,7 @@ class HasCokernels : Prop where
   has_colimit : ∀ {X Y : C} (f : X ⟶ Y), HasCokernel f := by infer_instance
 #align category_theory.limits.has_cokernels CategoryTheory.Limits.HasCokernels
 
-attribute [instance] HasKernels.has_limit HasCokernels.has_colimit
+attribute [instance 100] HasKernels.has_limit HasCokernels.has_colimit
 
 instance (priority := 100) hasKernels_of_hasEqualizers [HasEqualizers C] : HasKernels C where
 #align category_theory.limits.has_kernels_of_has_equalizers CategoryTheory.Limits.hasKernels_of_hasEqualizers
