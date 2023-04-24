@@ -58,57 +58,57 @@ end HomologyMapData
 namespace HomologyData
 
 @[simps]
-def of_isLimit_kernelFork (hf : S.f = 0) (c : KernelFork S.g) (hc : IsLimit c) :
+def ofIsLimitKernelFork (hf : S.f = 0) (c : KernelFork S.g) (hc : IsLimit c) :
     S.HomologyData where
-  left := LeftHomologyData.of_isLimit_kernelFork S hf c hc
-  right := RightHomologyData.of_isLimit_kernelFork S hf c hc
+  left := LeftHomologyData.ofIsLimitKernelFork S hf c hc
+  right := RightHomologyData.ofIsLimitKernelFork S hf c hc
   iso := Iso.refl _
 
 @[simps]
-noncomputable def of_hasKernel (hf : S.f = 0) [HasKernel S.g] :
+noncomputable def ofHasKernel (hf : S.f = 0) [HasKernel S.g] :
     S.HomologyData where
-  left := LeftHomologyData.of_hasKernel S hf
-  right := RightHomologyData.of_hasKernel S hf
+  left := LeftHomologyData.ofHasKernel S hf
+  right := RightHomologyData.ofHasKernel S hf
   iso := Iso.refl _
 
 @[simps]
-def of_isColimit_cokernelCofork (hg : S.g = 0) (c : CokernelCofork S.f) (hc : IsColimit c) :
+def ofIsColimitCokernelCofork (hg : S.g = 0) (c : CokernelCofork S.f) (hc : IsColimit c) :
     S.HomologyData where
-  left := LeftHomologyData.of_isColimit_cokernelCofork S hg c hc
-  right := RightHomologyData.of_isColimit_cokernelCofork S hg c hc
+  left := LeftHomologyData.ofIsColimitCokernelCofork S hg c hc
+  right := RightHomologyData.ofIsColimitCokernelCofork S hg c hc
   iso := Iso.refl _
 
 @[simps]
-noncomputable def of_hasCokernel (hg : S.g = 0) [HasCokernel S.f] :
+noncomputable def ofHasCokernel (hg : S.g = 0) [HasCokernel S.f] :
     S.HomologyData where
-  left := LeftHomologyData.of_hasCokernel S hg
-  right := RightHomologyData.of_hasCokernel S hg
+  left := LeftHomologyData.ofHasCokernel S hg
+  right := RightHomologyData.ofHasCokernel S hg
   iso := Iso.refl _
 
 @[simps]
-noncomputable def of_zeros (hf : S.f = 0) (hg : S.g = 0) :
+noncomputable def ofZeros (hf : S.f = 0) (hg : S.g = 0) :
     S.HomologyData where
-  left := LeftHomologyData.of_zeros S hf hg
-  right := RightHomologyData.of_zeros S hf hg
+  left := LeftHomologyData.ofZeros S hf hg
+  right := RightHomologyData.ofZeros S hf hg
   iso := Iso.refl _
 
 @[simps]
-noncomputable def of_epi_of_isIso_of_mono (φ : S₁ ⟶ S₂) (h : HomologyData S₁)
+noncomputable def ofEpiOfIsIsoOfMono (φ : S₁ ⟶ S₂) (h : HomologyData S₁)
     [Epi φ.τ₁] [IsIso φ.τ₂] [Mono φ.τ₃] : HomologyData S₂ where
-  left := LeftHomologyData.of_epi_of_isIso_of_mono φ h.left
-  right := RightHomologyData.of_epi_of_isIso_of_mono φ h.right
+  left := LeftHomologyData.ofEpiOfIsIsoOfMono φ h.left
+  right := RightHomologyData.ofEpiOfIsIsoOfMono φ h.right
   iso := h.iso
 
 @[simps]
-noncomputable def of_epi_of_isIso_of_mono' (φ : S₁ ⟶ S₂) (h : HomologyData S₂)
+noncomputable def ofEpiOfIsIsoOfMono' (φ : S₁ ⟶ S₂) (h : HomologyData S₂)
     [Epi φ.τ₁] [IsIso φ.τ₂] [Mono φ.τ₃] : HomologyData S₁ where
-  left := LeftHomologyData.of_epi_of_isIso_of_mono' φ h.left
-  right := RightHomologyData.of_epi_of_isIso_of_mono' φ h.right
+  left := LeftHomologyData.ofEpiOfIsIsoOfMono' φ h.left
+  right := RightHomologyData.ofEpiOfIsIsoOfMono' φ h.right
   iso := h.iso
 
 @[simps!]
-noncomputable def of_iso (e : S₁ ≅ S₂) (h : HomologyData S₁) :=
-  h.of_epi_of_isIso_of_mono e.hom
+noncomputable def ofIso (e : S₁ ≅ S₂) (h : HomologyData S₁) :=
+  h.ofEpiOfIsIsoOfMono e.hom
 
 variable {S}
 
@@ -150,26 +150,26 @@ instance hasRightHomology_of_hasHomology [S.HasHomology] : S.HasRightHomology :=
 
 instance hasHomology_of_hasCokernel {X Y : C} (f : X ⟶ Y) (Z : C) [HasCokernel f] :
     (ShortComplex.mk f (0 : Y ⟶ Z) comp_zero).HasHomology :=
-  HasHomology.mk' (HomologyData.of_hasCokernel _ rfl)
+  HasHomology.mk' (HomologyData.ofHasCokernel _ rfl)
 
 instance hasHomology_of_hasKernel {Y Z : C} (g : Y ⟶ Z) (X : C) [HasKernel g] :
     (ShortComplex.mk (0 : X ⟶ Y) g zero_comp).HasHomology :=
-  HasHomology.mk' (HomologyData.of_hasKernel _ rfl)
+  HasHomology.mk' (HomologyData.ofHasKernel _ rfl)
 
 instance hasHomology_of_zeros (X Y Z : C) :
     (ShortComplex.mk (0 : X ⟶ Y) (0 : Y ⟶ Z) zero_comp).HasHomology :=
-  HasHomology.mk' (HomologyData.of_zeros _ rfl rfl)
+  HasHomology.mk' (HomologyData.ofZeros _ rfl rfl)
 
 lemma hasHomology_of_epi_of_isIso_of_mono (φ : S₁ ⟶ S₂) [HasHomology S₁]
     [Epi φ.τ₁] [IsIso φ.τ₂] [Mono φ.τ₃] : HasHomology S₂ :=
-  HasHomology.mk' (HomologyData.of_epi_of_isIso_of_mono φ S₁.homologyData)
+  HasHomology.mk' (HomologyData.ofEpiOfIsIsoOfMono φ S₁.homologyData)
 
 lemma hasHomology_of_epi_of_isIso_of_mono' (φ : S₁ ⟶ S₂) [HasHomology S₂]
     [Epi φ.τ₁] [IsIso φ.τ₂] [Mono φ.τ₃] : HasHomology S₁ :=
-  HasHomology.mk' (HomologyData.of_epi_of_isIso_of_mono' φ S₂.homologyData)
+  HasHomology.mk' (HomologyData.ofEpiOfIsIsoOfMono' φ S₂.homologyData)
 
 lemma hasHomology_of_iso (e : S₁ ≅ S₂) [HasHomology S₁] : HasHomology S₂ :=
-  HasHomology.mk' (HomologyData.of_iso e S₁.homologyData)
+  HasHomology.mk' (HomologyData.ofIso e S₁.homologyData)
 
 namespace HomologyMapData
 
@@ -189,7 +189,7 @@ def comp {φ : S₁ ⟶ S₂} {φ' : S₂ ⟶ S₃} {h₁ : S₁.HomologyData}
 @[simps]
 def op {φ : S₁ ⟶ S₂} {h₁ : S₁.HomologyData} {h₂ : S₂.HomologyData}
     (ψ : HomologyMapData φ h₁ h₂) :
-    HomologyMapData (op_map φ) h₂.op h₁.op where
+    HomologyMapData (opMap φ) h₂.op h₁.op where
   left := ψ.right.op
   right := ψ.left.op
 
@@ -197,15 +197,26 @@ def op {φ : S₁ ⟶ S₂} {h₁ : S₁.HomologyData} {h₂ : S₂.HomologyData
 def unop {S₁ S₂ : ShortComplex Cᵒᵖ} {φ : S₁ ⟶ S₂}
     {h₁ : S₁.HomologyData} {h₂ : S₂.HomologyData}
     (ψ : HomologyMapData φ h₁ h₂) :
-    HomologyMapData (unop_map φ) h₂.unop h₁.unop where
+    HomologyMapData (unopMap φ) h₂.unop h₁.unop where
   left := ψ.right.unop
   right := ψ.left.unop
 
 @[simps]
-def of_zeros (φ : S₁ ⟶ S₂) (hf₁ : S₁.f = 0) (hg₁ : S₁.g = 0) (hf₂ : S₂.f = 0) (hg₂ : S₂.g = 0) :
-    HomologyMapData φ (HomologyData.of_zeros S₁ hf₁ hg₁) (HomologyData.of_zeros S₂ hf₂ hg₂) where
-  left := LeftHomologyMapData.of_zeros φ hf₁ hg₁ hf₂ hg₂
-  right := RightHomologyMapData.of_zeros φ hf₁ hg₁ hf₂ hg₂
+def ofZeros (φ : S₁ ⟶ S₂) (hf₁ : S₁.f = 0) (hg₁ : S₁.g = 0) (hf₂ : S₂.f = 0) (hg₂ : S₂.g = 0) :
+    HomologyMapData φ (HomologyData.ofZeros S₁ hf₁ hg₁) (HomologyData.ofZeros S₂ hf₂ hg₂) where
+  left := LeftHomologyMapData.ofZeros φ hf₁ hg₁ hf₂ hg₂
+  right := RightHomologyMapData.ofZeros φ hf₁ hg₁ hf₂ hg₂
+
+@[simps]
+def ofIsColimitCokernelCofork (φ : S₁ ⟶ S₂)
+  (hg₁ : S₁.g = 0) (c₁ : CokernelCofork S₁.f) (hc₁ : IsColimit c₁)
+  (hg₂ : S₂.g = 0) (c₂ : CokernelCofork S₂.f) (hc₂ : IsColimit c₂) (f : c₁.pt ⟶ c₂.pt)
+  (comm : φ.τ₂ ≫ c₂.π = c₁.π ≫ f) :
+  HomologyMapData φ (HomologyData.ofIsColimitCokernelCofork S₁ hg₁ c₁ hc₁)
+    (HomologyData.ofIsColimitCokernelCofork S₂ hg₂ c₂ hc₂) where
+  left := LeftHomologyMapData.ofIsColimitCokernelCofork φ hg₁ c₁ hc₁ hg₂ c₂ hc₂ f comm
+  right := RightHomologyMapData.ofIsColimitCokernelCofork φ hg₁ c₁ hc₁ hg₂ c₂ hc₂ f comm
+
 
 end HomologyMapData
 
@@ -213,7 +224,7 @@ end ShortComplex
 
 variable (C)
 
-class CategoryWithHomology where
+class CategoryWithHomology : Prop where
   hasHomology : ∀ (S : ShortComplex C), S.HasHomology
 
 attribute [instance] CategoryWithHomology.hasHomology
@@ -221,7 +232,6 @@ attribute [instance] CategoryWithHomology.hasHomology
 end CategoryTheory
 
 attribute [-simp] CategoryTheory.ShortComplex.HomologyMapData.mk.injEq
-
 
 #exit
 

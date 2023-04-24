@@ -26,7 +26,7 @@ instance : Mono S.abelianImageToKernel :=
 lemma abelianImageToKernel_comp_kernel_ι_comp_cokernel_π :
   S.abelianImageToKernel ≫ kernel.ι S.g ≫ cokernel.π S.f = 0 := by simp
 
-noncomputable def abelianImageToKernel_is_kernel :
+noncomputable def abelianImageToKernelIsKernel :
   IsLimit (KernelFork.ofι S.abelianImageToKernel
     S.abelianImageToKernel_comp_kernel_ι_comp_cokernel_π) :=
   KernelFork.IsLimit.ofι _ _
@@ -39,7 +39,7 @@ noncomputable def abelianImageToKernel_is_kernel :
 namespace LeftHomologyData
 
 @[simps]
-noncomputable def of_abelian : S.LeftHomologyData := by
+noncomputable def ofAbelian : S.LeftHomologyData := by
   let γ := kernel.ι S.g ≫ cokernel.π S.f
   let f' := kernel.lift S.g S.f S.zero
   have hf' : f' = kernel.lift γ f' (by simp) ≫ kernel.ι γ := by rw [kernel.lift_ι]
@@ -47,7 +47,7 @@ noncomputable def of_abelian : S.LeftHomologyData := by
     rw [hf']
     simp only [assoc, cokernel.condition, comp_zero]
   let e : Abelian.image S.f ≅ kernel γ :=
-    IsLimit.conePointUniqueUpToIso S.abelianImageToKernel_is_kernel (limit.isLimit _)
+    IsLimit.conePointUniqueUpToIso S.abelianImageToKernelIsKernel (limit.isLimit _)
   have he : e.hom ≫ kernel.ι γ = S.abelianImageToKernel :=
     IsLimit.conePointUniqueUpToIso_hom_comp _ _ WalkingParallelPair.zero
   have fac : f' = Abelian.factorThruImage S.f ≫ e.hom ≫ kernel.ι γ := by
@@ -88,7 +88,7 @@ instance : Epi S.cokernelToAbelianCoimage :=
 lemma kernel_ι_comp_cokernel_π_comp_cokernelToAbelianCoimage :
   (kernel.ι S.g ≫ cokernel.π S.f) ≫ S.cokernelToAbelianCoimage = 0 := by simp
 
-noncomputable def cokernelToAbelianCoimage_is_cokernel :
+noncomputable def cokernelToAbelianCoimageIsCokernel :
   IsColimit (CokernelCofork.ofπ S.cokernelToAbelianCoimage
     S.kernel_ι_comp_cokernel_π_comp_cokernelToAbelianCoimage) :=
   CokernelCofork.IsColimit.ofπ _ _
@@ -102,13 +102,13 @@ noncomputable def cokernelToAbelianCoimage_is_cokernel :
 namespace RightHomologyData
 
 @[simps]
-noncomputable def of_abelian : S.RightHomologyData := by
+noncomputable def ofAbelian : S.RightHomologyData := by
   let γ := kernel.ι S.g ≫ cokernel.π S.f
   let g' := cokernel.desc S.f S.g S.zero
   have hg' : g' = cokernel.π γ ≫ cokernel.desc γ g' (by simp) := by rw [cokernel.π_desc]
   have wι : kernel.ι (cokernel.π γ) ≫ g' = 0 := by rw [hg', kernel.condition_assoc, zero_comp]
   let e : cokernel γ ≅ Abelian.coimage S.g :=
-    IsColimit.coconePointUniqueUpToIso (colimit.isColimit _) S.cokernelToAbelianCoimage_is_cokernel
+    IsColimit.coconePointUniqueUpToIso (colimit.isColimit _) S.cokernelToAbelianCoimageIsCokernel
   have he : cokernel.π γ ≫ e.hom = S.cokernelToAbelianCoimage :=
     IsColimit.comp_coconePointUniqueUpToIso_hom _ _ WalkingParallelPair.one
   have fac : g' = cokernel.π γ ≫ e.hom ≫ Abelian.factorThruCoimage S.g := by
@@ -134,14 +134,14 @@ noncomputable def of_abelian : S.RightHomologyData := by
 
 end RightHomologyData
 
-noncomputable def HomologyData.of_abelian : S.HomologyData where
-  left := LeftHomologyData.of_abelian S
-  right := RightHomologyData.of_abelian S
+noncomputable def HomologyData.ofAbelian : S.HomologyData where
+  left := LeftHomologyData.ofAbelian S
+  right := RightHomologyData.ofAbelian S
   iso := Abelian.coimageIsoImage (kernel.ι S.g ≫ cokernel.π S.f)
 
 instance _root_.CategoryTheory.categoryWithHomology_of_abelian :
     CategoryWithHomology C where
-  hasHomology S := HasHomology.mk' (HomologyData.of_abelian S)
+  hasHomology S := HasHomology.mk' (HomologyData.ofAbelian S)
 
 end ShortComplex
 

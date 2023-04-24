@@ -135,16 +135,16 @@ instance (f : S₁ ⟶ S₂) [IsIso f] : IsIso f.τ₃ :=
 
 /-- The natural transformation `π₁ ⟶ π₂` induced by `S.f` for all `S : ShortComplex C`. -/
 @[simps]
-def π₁_to_π₂ : (π₁ : _ ⥤ C) ⟶ π₂ where
+def π₁Toπ₂ : (π₁ : _ ⥤ C) ⟶ π₂ where
   app S := S.f
 
 /-- The natural transformation `π₂ ⟶ π₃` induced by `S.g` for all `S : ShortComplex C`. -/
 @[simps]
-def π₂_to_π₃ : (π₂ : _ ⥤ C) ⟶ π₃ where
+def π₂Toπ₃ : (π₂ : _ ⥤ C) ⟶ π₃ where
   app S := S.g
 
 @[reassoc (attr := simp)]
-lemma π₁_to_π₂_comp_π₂_to_π₃ : (π₁_to_π₂ : (_ : _ ⥤ C) ⟶ _) ≫ π₂_to_π₃ = 0 := by
+lemma π₁Toπ₂_comp_π₂Toπ₃ : (π₁Toπ₂ : (_ : _ ⥤ C) ⟶ _) ≫ π₂Toπ₃ = 0 := by
   aesop_cat
 
 variable {D}
@@ -213,7 +213,7 @@ def op : ShortComplex Cᵒᵖ :=
 
 /-- The opposite morphism in `short_complex Cᵒᵖ` associated to a morphism in `short_complex C` -/
 @[simps]
-def op_map (φ : S₁ ⟶ S₂) : S₂.op ⟶ S₁.op where
+def opMap (φ : S₁ ⟶ S₂) : S₂.op ⟶ S₁.op where
   τ₁ := φ.τ₃.op
   τ₂ := φ.τ₂.op
   τ₃ := φ.τ₁.op
@@ -231,7 +231,7 @@ def unop (S : ShortComplex Cᵒᵖ) : ShortComplex C :=
 
 /-- The morphism in `ShortComplex C` associated to a morphism in `ShortComplex Cᵒᵖ` -/
 @[simps]
-def unop_map {S₁ S₂ : ShortComplex Cᵒᵖ} (φ : S₁ ⟶ S₂) : S₂.unop ⟶ S₁.unop where
+def unopMap {S₁ S₂ : ShortComplex Cᵒᵖ} (φ : S₁ ⟶ S₂) : S₂.unop ⟶ S₁.unop where
   τ₁ := φ.τ₃.unop
   τ₂ := φ.τ₂.unop
   τ₃ := φ.τ₁.unop
@@ -246,29 +246,29 @@ variable (C)
 
 /-- The obvious functor `(ShortComplex C)ᵒᵖ ⥤ ShortComplex Cᵒᵖ`. -/
 @[simps]
-def op_functor : (ShortComplex C)ᵒᵖ ⥤ ShortComplex Cᵒᵖ where
+def opFunctor : (ShortComplex C)ᵒᵖ ⥤ ShortComplex Cᵒᵖ where
   obj S := (Opposite.unop S).op
-  map φ := op_map φ.unop
+  map φ := opMap φ.unop
 
 /-- The obvious functor `ShortComplex Cᵒᵖ ⥤ (ShortComplex C)ᵒᵖ`. -/
 @[simps]
-def unop_functor : ShortComplex Cᵒᵖ ⥤ (ShortComplex C)ᵒᵖ where
+def unopFunctor : ShortComplex Cᵒᵖ ⥤ (ShortComplex C)ᵒᵖ where
   obj S := Opposite.op (S.unop)
-  map φ := (unop_map φ).op
+  map φ := (unopMap φ).op
 
 /-- The obvious equivalence of categories `(ShortComplex C)ᵒᵖ ≌ ShortComplex Cᵒᵖ`. -/
 @[simps]
-def op_equiv : (ShortComplex C)ᵒᵖ ≌ ShortComplex Cᵒᵖ where
-  functor := op_functor C
-  inverse := unop_functor C
+def opEquiv : (ShortComplex C)ᵒᵖ ≌ ShortComplex Cᵒᵖ where
+  functor := opFunctor C
+  inverse := unopFunctor C
   unitIso := Iso.refl _
   counitIso := Iso.refl _
 
 variable {C}
 
-abbrev unop_op (S : ShortComplex Cᵒᵖ) : S.unop.op ≅ S := (op_equiv C).counitIso.app S
-abbrev op_unop (S : ShortComplex C) : S.op.unop ≅ S :=
-  Iso.unop ((op_equiv C).unitIso.app (Opposite.op S))
+abbrev unopOp (S : ShortComplex Cᵒᵖ) : S.unop.op ≅ S := (opEquiv C).counitIso.app S
+abbrev opUnop (S : ShortComplex C) : S.op.unop ≅ S :=
+  Iso.unop ((opEquiv C).unitIso.app (Opposite.op S))
 
 end ShortComplex
 
