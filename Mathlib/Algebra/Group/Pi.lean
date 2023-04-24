@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot
 
 ! This file was ported from Lean 3 source module algebra.group.pi
-! leanprover-community/mathlib commit b3f25363ae62cb169e72cd6b8b1ac97bacf21ca7
+! leanprover-community/mathlib commit 90df25ded755a2cf9651ea850d1abe429b1e4eb1
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -42,7 +42,7 @@ variable {I : Type u}
 variable {f : I → Type v}
 
 -- The family of types already equipped with instances
-variable (x y : ∀ i, f i) (i : I)
+variable (x y : ∀ i, f i) (i j : I)
 
 @[to_additive]
 theorem Set.preimage_one {α β : Type _} [One β] (s : Set β) [Decidable ((1 : β) ∈ s)] :
@@ -499,6 +499,26 @@ theorem Pi.single_mul [∀ i, MulZeroClass <| f i] (i : I) (x y : f i) :
   (MulHom.single f i).map_mul x y
 #align pi.single_mul Pi.single_mul
 
+theorem Pi.single_mul_left_apply [∀ i, MulZeroClass <| f i] (a : f i) :
+    Pi.single i (a * x i) j = Pi.single i a j * x j :=
+  (Pi.apply_single (fun i => (· * x i)) (fun _ => MulZeroClass.zero_mul _) _ _ _).symm
+#align pi.single_mul_left_apply Pi.single_mul_left_apply
+
+theorem Pi.single_mul_right_apply [∀ i, MulZeroClass <| f i] (a : f i) :
+    Pi.single i (x i * a) j = x j * Pi.single i a j :=
+  (Pi.apply_single (fun i => (· * ·) (x i)) (fun _ => MulZeroClass.mul_zero _) _ _ _).symm
+#align pi.single_mul_right_apply Pi.single_mul_right_apply
+
+theorem Pi.single_mul_left [∀ i, MulZeroClass <| f i] (a : f i) :
+    Pi.single i (a * x i) = Pi.single i a * x :=
+  funext fun _ => Pi.single_mul_left_apply _ _ _ _
+#align pi.single_mul_left Pi.single_mul_left
+
+theorem Pi.single_mul_right [∀ i, MulZeroClass <| f i] (a : f i) :
+    Pi.single i (x i * a) = x * Pi.single i a :=
+  funext fun _ => Pi.single_mul_right_apply _ _ _ _
+#align pi.single_mul_right Pi.single_mul_right
+
 /-- The injection into a pi group at different indices commutes.
 
 For injections of commuting elements at the same index, see `Commute.map` -/
@@ -665,3 +685,21 @@ noncomputable def Function.ExtendByOne.hom [MulOneClass R] :
 #align function.extend_by_zero.hom_apply Function.ExtendByZero.hom_apply
 
 end Extend
+
+namespace Pi
+
+variable [DecidableEq I] [∀ i, Preorder (f i)] [∀ i, One (f i)]
+
+@[to_additive]
+theorem mulSingle_mono : Monotone (Pi.mulSingle i : f i → ∀ i, f i) :=
+  Function.update_mono
+#align pi.mul_single_mono Pi.mulSingle_mono
+#align pi.single_mono Pi.single_mono
+
+@[to_additive]
+theorem mulSingle_strictMono : StrictMono (Pi.mulSingle i : f i → ∀ i, f i) :=
+  Function.update_strictMono
+#align pi.mul_single_strict_mono Pi.mulSingle_strictMono
+#align pi.single_strict_mono Pi.single_strictMono
+
+end Pi
