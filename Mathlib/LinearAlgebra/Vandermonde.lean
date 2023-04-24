@@ -111,21 +111,7 @@ theorem det_vandermonde {n : ℕ} (v : Fin n → R) :
             ∑ k in Finset.range (j + 1 : ℕ), v i.succ ^ k * v 0 ^ (j - k : ℕ) :=
       (det_mul_column (fun i => v (Fin.succ i) - v 0) _)
     _ = (Finset.prod Finset.univ (fun i => v (Fin.succ i) - v 0)) *
-    det fun i j : Fin n => v (Fin.succ i) ^ (j : ℕ) := by
-      refine' (congr_arg _ _)
-      · cases n
-        · rw [det_eq_one_of_card_eq_zero (Fintype.card_fin 0),
-          det_eq_one_of_card_eq_zero (Fintype.card_fin 0)]
-        apply det_eq_of_forall_col_eq_smul_add_pred fun _ => v 0
-        · intro j
-          simp
-        · intro i j
-          simp only [smul_eq_mul, Pi.add_apply, Fin.val_succ, Fin.coe_castSucc, Pi.smul_apply]
-          rw [Finset.sum_range_succ, add_comm, tsub_self, pow_zero, mul_one, Finset.mul_sum]
-          congr 1
-          refine' Finset.sum_congr rfl fun i' hi' => _
-          rw [mul_left_comm (v 0), Nat.succ_sub, pow_succ]
-          exact Nat.lt_succ_iff.mp (Finset.mem_range.mp hi')
+    det fun i j : Fin n => v (Fin.succ i) ^ (j : ℕ) := congr_arg _ ?_
     _ = ∏ i : Fin n.succ, Finset.prod (Ioi i) (fun j => v j - v i) := by
       simp_rw [Fin.prod_univ_succ, Fin.prod_Ioi_zero, Fin.prod_Ioi_succ]
       have h := ih (v ∘ Fin.succ)
