@@ -8,7 +8,7 @@ Authors: Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Convex.Combination
+import Mathlib.Analysis.Convex.Combination
 
 /-!
 # Convex join
@@ -94,8 +94,7 @@ theorem convexJoin_union_right (s t₁ t₂ : Set E) :
 
 @[simp]
 theorem convexJoin_unionᵢ_left (s : ι → Set E) (t : Set E) :
-    convexJoin 𝕜 (⋃ i, s i) t = ⋃ i, convexJoin 𝕜 (s i) t :=
-  by
+    convexJoin 𝕜 (⋃ i, s i) t = ⋃ i, convexJoin 𝕜 (s i) t := by
   simp_rw [convexJoin, mem_Union, Union_exists]
   exact Union_comm _
 #align convex_join_Union_left convexJoin_unionᵢ_left
@@ -137,8 +136,7 @@ section LinearOrderedField
 variable [LinearOrderedField 𝕜] [AddCommGroup E] [Module 𝕜 E] {s t u : Set E} {x y : E}
 
 theorem convexJoin_assoc_aux (s t u : Set E) :
-    convexJoin 𝕜 (convexJoin 𝕜 s t) u ⊆ convexJoin 𝕜 s (convexJoin 𝕜 t u) :=
-  by
+    convexJoin 𝕜 (convexJoin 𝕜 s t) u ⊆ convexJoin 𝕜 s (convexJoin 𝕜 t u) := by
   simp_rw [subset_def, mem_convexJoin]
   rintro _ ⟨z, ⟨x, hx, y, hy, a₁, b₁, ha₁, hb₁, hab₁, rfl⟩, z, hz, a₂, b₂, ha₂, hb₂, hab₂, rfl⟩
   obtain rfl | hb₂ := hb₂.eq_or_lt
@@ -158,8 +156,7 @@ theorem convexJoin_assoc_aux (s t u : Set E) :
 #align convex_join_assoc_aux convexJoin_assoc_aux
 
 theorem convexJoin_assoc (s t u : Set E) :
-    convexJoin 𝕜 (convexJoin 𝕜 s t) u = convexJoin 𝕜 s (convexJoin 𝕜 t u) :=
-  by
+    convexJoin 𝕜 (convexJoin 𝕜 s t) u = convexJoin 𝕜 s (convexJoin 𝕜 t u) := by
   refine' (convexJoin_assoc_aux _ _ _).antisymm _
   simp_rw [convexJoin_comm s, convexJoin_comm _ u]
   exact convexJoin_assoc_aux _ _ _
@@ -193,8 +190,7 @@ theorem convexHull_insert (hs : s.Nonempty) :
     obtain ⟨ι, t, w, z, hw₀, hw₁, hz, rfl⟩ := hx
     have :
       ((∑ i in t.filter fun i => z i = x, w i) • x + ∑ i in t.filter fun i => z i ≠ x, w i • z i) =
-        t.center_mass w z :=
-      by
+        t.center_mass w z := by
       rw [Finset.centerMass_eq_of_sum_1 _ _ hw₁, Finset.sum_smul]
       convert Finset.sum_filter_add_sum_filter_not _ _ (w • z) using 2
       refine' Finset.sum_congr rfl fun i hi => _
@@ -239,8 +235,7 @@ theorem convexJoin_singleton_segment (a b c : E) :
 #align convex_join_singleton_segment convexJoin_singleton_segment
 
 protected theorem Convex.convexJoin (hs : Convex 𝕜 s) (ht : Convex 𝕜 t) :
-    Convex 𝕜 (convexJoin 𝕜 s t) :=
-  by
+    Convex 𝕜 (convexJoin 𝕜 s t) := by
   rw [convex_iff_segment_subset] at ht hs⊢
   simp_rw [mem_convexJoin]
   rintro x ⟨xa, hxa, xb, hxb, hx⟩ y ⟨ya, hya, yb, hyb, hy⟩
@@ -258,8 +253,7 @@ protected theorem Convex.convexHull_union (hs : Convex 𝕜 s) (ht : Convex 𝕜
 #align convex.convex_hull_union Convex.convexHull_union
 
 theorem convexHull_union (hs : s.Nonempty) (ht : t.Nonempty) :
-    convexHull 𝕜 (s ∪ t) = convexJoin 𝕜 (convexHull 𝕜 s) (convexHull 𝕜 t) :=
-  by
+    convexHull 𝕜 (s ∪ t) = convexJoin 𝕜 (convexHull 𝕜 s) (convexHull 𝕜 t) := by
   rw [← convexHull_convexHull_union_left, ← convexHull_convexHull_union_right]
   exact
     (convex_convexHull 𝕜 s).convexHull_union (convex_convexHull 𝕜 t) hs.convex_hull ht.convex_hull
