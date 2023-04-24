@@ -25,15 +25,15 @@ def Hyperreal : Type :=
 
 namespace Hyperreal
 
-notation "ℝ*" => Hyperreal
+@[inherit_doc] notation "ℝ*" => Hyperreal
 
 noncomputable instance : LinearOrderedField ℝ* :=
   inferInstanceAs (LinearOrderedField (Germ _ _))
 
 /-- Natural embedding `ℝ → ℝ*`. -/
-@[coe] def coe : ℝ → ℝ* := const
+@[coe] def ofReal : ℝ → ℝ* := const
 
-noncomputable instance : CoeTC ℝ ℝ* := ⟨const⟩
+noncomputable instance : CoeTC ℝ ℝ* := ⟨ofReal⟩
 
 @[simp, norm_cast]
 theorem coe_eq_coe {x y : ℝ} : (x : ℝ*) = y ↔ x = y :=
@@ -93,7 +93,7 @@ theorem coe_add (x y : ℝ) : ↑(x + y) = (x + y : ℝ*) :=
 #noalign hyperreal.coe_bit1
 
 @[simp, norm_cast]
-theorem coe_ofNat (n : ℕ) [n.AtLeastTwo] : ((n : ℝ) : ℝ*) = n := rfl
+theorem coe_ofNat (n : ℕ) [n.AtLeastTwo] : ((OfNat.ofNat n : ℝ) : ℝ*) = OfNat.ofNat n := rfl
 
 @[simp, norm_cast]
 theorem coe_mul (x y : ℝ) : ↑(x * y) = (x * y : ℝ*) :=
@@ -164,8 +164,8 @@ noncomputable def epsilon : ℝ* :=
 noncomputable def omega : ℝ* := ofSeq Nat.cast
 #align hyperreal.omega Hyperreal.omega
 
-scoped notation "ε" => Hyperreal.epsilon
-scoped notation "ω" => Hyperreal.omega
+@[inherit_doc] scoped notation "ε" => Hyperreal.epsilon
+@[inherit_doc] scoped notation "ω" => Hyperreal.omega
 
 @[simp]
 theorem inv_omega : ω⁻¹ = ε :=
