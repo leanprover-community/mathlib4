@@ -785,12 +785,8 @@ theorem infinitesimal_iff_infinite_inv {x : ℝ*} (h : x ≠ 0) : Infinitesimal 
 ### `Hyperreal.st` stuff that requires infinitesimal machinery
 -/
 
-theorem IsSt.inv {x : ℝ*} {r : ℝ} (hi : ¬Infinitesimal x) : IsSt x r → IsSt x⁻¹ r⁻¹ := fun hxr =>
-  have h : x ≠ 0 := fun h => hi (h.symm ▸ infinitesimal_zero)
-  have ⟨s, hs⟩ := exists_st_of_not_infinite <| not_imp_not.mpr (infinitesimal_iff_infinite_inv h).mpr hi
-  have H' : IsSt 1 (r * s) := mul_inv_cancel h ▸ hxr.mul hs
-  have H'' : s = r⁻¹ := one_div r ▸ eq_one_div_of_mul_eq_one_right (eq_of_isSt_real H').symm
-  H'' ▸ hs
+theorem IsSt.inv {x : ℝ*} {r : ℝ} (hi : ¬Infinitesimal x) (hr : IsSt x r) : IsSt x⁻¹ r⁻¹ :=
+  hr.map <| continuousAt_inv₀ <| by rintro rfl; exact hi hr
 #align hyperreal.is_st_inv Hyperreal.IsSt.inv
 
 theorem st_inv (x : ℝ*) : st x⁻¹ = (st x)⁻¹ := by
