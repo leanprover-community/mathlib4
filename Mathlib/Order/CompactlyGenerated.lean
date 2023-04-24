@@ -562,20 +562,21 @@ of `s` is an atom. See also `complemented_lattice_of_Sup_atoms_eq_top`. -/
 theorem exists_setIndependent_isCompl_supₛ_atoms (h : supₛ { a : α | IsAtom a } = ⊤) (b : α) :
     ∃ s : Set α, CompleteLattice.SetIndependent s ∧ IsCompl b (supₛ s) ∧ ∀ ⦃a⦄, a ∈ s → IsAtom a :=
   by
-  obtain ⟨s, ⟨s_ind, b_inf_Sup_s, s_atoms⟩, s_max⟩ :=
-    zorn_subset
-      { s : Set α | CompleteLattice.SetIndependent s ∧ Disjoint b (supₛ s) ∧ ∀ a ∈ s, IsAtom a }
-      fun c hc1 hc2 =>
+  -- porting note: `obtain` chokes on the placeholder.
+  have := zorn_subset
+    {s : Set α | CompleteLattice.SetIndependent s ∧ Disjoint b (supₛ s) ∧ ∀ a ∈ s, IsAtom a}
+    fun c hc1 hc2 =>
       ⟨⋃₀ c,
         ⟨CompleteLattice.independent_unionₛ_of_directed hc2.directedOn fun s hs => (hc1 hs).1, ?_,
           fun a ⟨s, sc, as⟩ => (hc1 sc).2.2 a as⟩,
         fun _ => Set.subset_unionₛ_of_mem⟩
-  -- swap
-  -- · rw [supₛ_unionₛ, ← supₛ_image, DirectedOn.disjoint_supₛ_right]
-  --   · rintro _ ⟨s, hs, rfl⟩
-  --     exact (hc1 hs).2.1
-  --   · rw [directedOn_image]
-  --     exact hc2.directed_on.mono fun s t => supₛ_le_supₛ
+  obtain ⟨s, ⟨s_ind, b_inf_Sup_s, s_atoms⟩, s_max⟩ := this
+  swap
+  · rw [supₛ_unionₛ, ← supₛ_image, DirectedOn.disjoint_supₛ_right]
+    · rintro _ ⟨s, hs, rfl⟩
+      exact (hc1 hs).2.1
+    · rw [directedOn_image]
+      exact hc2.directedOn.mono @fun s t => supₛ_le_supₛ
   refine' ⟨s, s_ind, ⟨b_inf_Sup_s, _⟩, s_atoms⟩
   rw [codisjoint_iff_le_sup, ← h, supₛ_le_iff]
   intro a ha
