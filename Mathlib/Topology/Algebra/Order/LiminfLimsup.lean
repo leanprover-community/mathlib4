@@ -13,7 +13,7 @@ import Mathlib.Algebra.BigOperators.Order
 import Mathlib.Algebra.IndicatorFunction
 import Mathlib.Order.LiminfLimsup
 import Mathlib.Order.Filter.Archimedean
-import Mathbin.Order.Filter.CountableInter
+import Mathlib.Order.Filter.CountableInter
 import Mathlib.Topology.Order.Basic
 
 /-!
@@ -265,12 +265,11 @@ theorem eventually_le_limsup (hf : IsBoundedUnder (· ≤ ·) f u := by isBounde
     exact
       (eventually_countable_forall.2 this).mono fun b hb =>
         ge_of_tendsto hua <| eventually_of_forall fun n => (hb _).le
-  · obtain ⟨x, hx, xa⟩ : ∃ x, (∀ ⦃b⦄, f.limsup u < b → x ≤ b) ∧ f.limsup u < x :=
-      by
+  · obtain ⟨x, hx, xa⟩ : ∃ x, (∀ ⦃b⦄, f.limsup u < b → x ≤ b) ∧ f.limsup u < x := by
       simp only [IsGLB, IsGreatest, lowerBounds, upperBounds, Set.mem_Ioi, Set.mem_setOf_eq,
         not_and, not_forall, not_le, exists_prop] at H
-      exact H fun x hx => le_of_lt hx
-    filter_upwards [eventually_lt_of_limsup_lt xa hf]with y hy
+      exact H fun x => le_of_lt
+    filter_upwards [eventually_lt_of_limsup_lt xa hf] with y hy
     contrapose! hy
     exact hx hy
 #align eventually_le_limsup eventually_le_limsup

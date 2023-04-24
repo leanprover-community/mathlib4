@@ -8,7 +8,7 @@ Authors: Rémy Degenne
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.Instances.Ennreal
+import Mathlib.Topology.Instances.Ennreal
 
 /-!
 # Order properties of extended non-negative reals
