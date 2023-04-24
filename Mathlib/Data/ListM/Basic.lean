@@ -419,26 +419,26 @@ a monadic function.
 Return a lazy lists of pairs, consisting of a value under that function,
 and a maximal list of elements having that value.
 -/
-partial def runsM [DecidableEq β] (L : ListM m α) (f : α → m β) : ListM m (β × List α) :=
+partial def groupByM [DecidableEq β] (L : ListM m α) (f : α → m β) : ListM m (β × List α) :=
   L.cases' nil fun a t => squash do
     let b ← f a
     let (l, t') ← t.splitWhileM (fun a => do return .up ((← f a) = b))
-    return cons do pure (some (b, a :: l), t'.runsM f)
+    return cons do pure (some (b, a :: l), t'.groupByM f)
 
 /--
 Splits a lazy list into contiguous sublists of elements with the same value under a function.
 Return a lazy lists of pairs, consisting of a value under that function,
 and a maximal list of elements having that value.
 -/
-def runs [DecidableEq β] (L : ListM m α) (f : α → β) : ListM m (β × List α) :=
-  L.runsM fun a => pure (f a)
+def groupBy [DecidableEq β] (L : ListM m α) (f : α → β) : ListM m (β × List α) :=
+  L.groupByM fun a => pure (f a)
 
 /--
 Split a lazy list into contiguous sublists,
 starting a new sublist each time a monadic predicate changes from `false` to `true`.
 -/
 partial def splitAtBecomesTrueM (L : ListM m α) (p : α → m (ULift Bool)) : ListM m (List α) :=
-  aux (L.runsM p)
+  aux (L.groupByM p)
 where aux (M : ListM m (ULift.{u} Bool × List α)) : ListM m (List α) :=
   M.cases' nil fun (b, l) t => (if b.down then
     t.cases' (cons do pure (some l, nil)) fun (_, l') t' => cons do pure (some (l ++ l'), aux t')
