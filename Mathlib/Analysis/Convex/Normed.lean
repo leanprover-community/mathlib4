@@ -8,10 +8,10 @@ Authors: Alexander Bentkamp, Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Convex.Jensen
-import Mathbin.Analysis.Convex.Topology
-import Mathbin.Analysis.Normed.Group.Pointwise
-import Mathbin.Analysis.NormedSpace.Ray
+import Mathlib.Analysis.Convex.Jensen
+import Mathlib.Analysis.Convex.Topology
+import Mathlib.Analysis.Normed.Group.Pointwise
+import Mathlib.Analysis.NormedSpace.Ray
 
 /-!
 # Topological and metric properties of convex sets in normed spaces
@@ -73,14 +73,12 @@ theorem convex_closedBall (a : E) (r : ℝ) : Convex ℝ (Metric.closedBall a r)
   simpa only [Metric.closedBall, sep_univ] using (convexOn_univ_dist a).convex_le r
 #align convex_closed_ball convex_closedBall
 
-theorem Convex.thickening (hs : Convex ℝ s) (δ : ℝ) : Convex ℝ (thickening δ s) :=
-  by
+theorem Convex.thickening (hs : Convex ℝ s) (δ : ℝ) : Convex ℝ (thickening δ s) := by
   rw [← add_ball_zero]
   exact hs.add (convex_ball 0 _)
 #align convex.thickening Convex.thickening
 
-theorem Convex.cthickening (hs : Convex ℝ s) (δ : ℝ) : Convex ℝ (cthickening δ s) :=
-  by
+theorem Convex.cthickening (hs : Convex ℝ s) (δ : ℝ) : Convex ℝ (cthickening δ s) := by
   obtain hδ | hδ := le_total 0 δ
   · rw [cthickening_eq_Inter_thickening hδ]
     exact convex_interᵢ₂ fun _ _ => hs.thickening _
@@ -98,8 +96,7 @@ theorem convexHull_exists_dist_ge {s : Set E} {x : E} (hx : x ∈ convexHull ℝ
 /-- Given a point `x` in the convex hull of `s` and a point `y` in the convex hull of `t`,
 there exist points `x' ∈ s` and `y' ∈ t` at distance at least `dist x y`. -/
 theorem convexHull_exists_dist_ge2 {s t : Set E} {x y : E} (hx : x ∈ convexHull ℝ s)
-    (hy : y ∈ convexHull ℝ t) : ∃ x' ∈ s, ∃ y' ∈ t, dist x y ≤ dist x' y' :=
-  by
+    (hy : y ∈ convexHull ℝ t) : ∃ x' ∈ s, ∃ y' ∈ t, dist x y ≤ dist x' y' := by
   rcases convexHull_exists_dist_ge hx y with ⟨x', hx', Hx'⟩
   rcases convexHull_exists_dist_ge hy x' with ⟨y', hy', Hy'⟩
   use x', hx', y', hy'
@@ -108,8 +105,7 @@ theorem convexHull_exists_dist_ge2 {s t : Set E} {x y : E} (hx : x ∈ convexHul
 
 /-- Emetric diameter of the convex hull of a set `s` equals the emetric diameter of `s. -/
 @[simp]
-theorem convexHull_ediam (s : Set E) : EMetric.diam (convexHull ℝ s) = EMetric.diam s :=
-  by
+theorem convexHull_ediam (s : Set E) : EMetric.diam (convexHull ℝ s) = EMetric.diam s := by
   refine' (EMetric.diam_le fun x hx y hy => _).antisymm (EMetric.diam_mono <| subset_convexHull ℝ s)
   rcases convexHull_exists_dist_ge2 hx hy with ⟨x', hx', y', hy', H⟩
   rw [edist_dist]
@@ -140,15 +136,13 @@ instance (priority := 100) NormedSpace.loc_path_connected : LocPathConnectedSpac
 #align normed_space.loc_path_connected NormedSpace.loc_path_connected
 
 theorem dist_add_dist_of_mem_segment {x y z : E} (h : y ∈ [x -[ℝ] z]) :
-    dist x y + dist y z = dist x z :=
-  by
+    dist x y + dist y z = dist x z := by
   simp only [dist_eq_norm, mem_segment_iff_sameRay] at *
   simpa only [sub_add_sub_cancel', norm_sub_rev] using h.norm_add.symm
 #align dist_add_dist_of_mem_segment dist_add_dist_of_mem_segment
 
 /-- The set of vectors in the same ray as `x` is connected. -/
-theorem isConnected_setOf_sameRay (x : E) : IsConnected { y | SameRay ℝ x y } :=
-  by
+theorem isConnected_setOf_sameRay (x : E) : IsConnected { y | SameRay ℝ x y } := by
   by_cases hx : x = 0; · simpa [hx] using isConnected_univ
   simp_rw [← exists_nonneg_left_iff_sameRay hx]
   exact is_connected_Ici.image _ (continuous_id.smul continuous_const).ContinuousOn
@@ -156,8 +150,7 @@ theorem isConnected_setOf_sameRay (x : E) : IsConnected { y | SameRay ℝ x y } 
 
 /-- The set of nonzero vectors in the same ray as the nonzero vector `x` is connected. -/
 theorem isConnected_setOf_sameRay_and_ne_zero {x : E} (hx : x ≠ 0) :
-    IsConnected { y | SameRay ℝ x y ∧ y ≠ 0 } :=
-  by
+    IsConnected { y | SameRay ℝ x y ∧ y ≠ 0 } := by
   simp_rw [← exists_pos_left_iff_sameRay_and_ne_zero hx]
   exact is_connected_Ioi.image _ (continuous_id.smul continuous_const).ContinuousOn
 #align is_connected_set_of_same_ray_and_ne_zero isConnected_setOf_sameRay_and_ne_zero

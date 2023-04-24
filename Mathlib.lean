@@ -337,6 +337,7 @@ import Mathlib.Analysis.Convex.Extrema
 import Mathlib.Analysis.Convex.Extreme
 import Mathlib.Analysis.Convex.Function
 import Mathlib.Analysis.Convex.Hull
+import Mathlib.Analysis.Convex.Normed
 import Mathlib.Analysis.Convex.Quasiconvex
 import Mathlib.Analysis.Convex.Segment
 import Mathlib.Analysis.Convex.Slope
