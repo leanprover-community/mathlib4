@@ -117,6 +117,27 @@ theorem det_vandermonde {n : ℕ} (v : Fin n → R) :
       have h := ih (v ∘ Fin.succ)
       unfold Function.comp at h
       rw [h]
+
+  · intro i j
+    simp_rw [of_apply]
+    rw [Matrix.cons_val_zero]
+    refine' Fin.cases _ (fun i => _) i
+    · simp
+    rw [Matrix.cons_val_succ, Matrix.cons_val_succ, Pi.one_apply]
+    ring
+  · cases n
+    · rw [det_eq_one_of_card_eq_zero (Fintype.card_fin 0),
+      det_eq_one_of_card_eq_zero (Fintype.card_fin 0)]
+    apply det_eq_of_forall_col_eq_smul_add_pred fun _ => v 0
+    · intro j
+      simp
+    · intro i j
+      simp only [smul_eq_mul, Pi.add_apply, Fin.val_succ, Fin.coe_castSucc, Pi.smul_apply]
+      rw [Finset.sum_range_succ, add_comm, tsub_self, pow_zero, mul_one, Finset.mul_sum]
+      congr 1
+      refine' Finset.sum_congr rfl fun i' hi' => _
+      rw [mul_left_comm (v 0), Nat.succ_sub, pow_succ]
+      exact Nat.lt_succ_iff.mp (Finset.mem_range.mp hi')
 #align matrix.det_vandermonde Matrix.det_vandermonde
 
 theorem det_vandermonde_eq_zero_iff [IsDomain R] {n : ℕ} {v : Fin n → R} :
