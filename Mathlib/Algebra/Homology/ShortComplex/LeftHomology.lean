@@ -271,13 +271,13 @@ lemma liftK_π_eq_zero_of_boundary (k : A ⟶ S.X₂) (x : A ⟶ S.X₁) (hx : k
 `π : h.K ⟶ h.H` is a cokernel of `h.f' : S.X₁ ⟶ h.K`. -/
 def hπ' : IsColimit (CokernelCofork.ofπ h.π h.f'_π) := h.hπ
 
-def desc_H (k : h.K ⟶ A) (hk : h.f' ≫ k = 0) :
+def descH (k : h.K ⟶ A) (hk : h.f' ≫ k = 0) :
   h.H ⟶ A :=
 h.hπ.desc (CokernelCofork.ofπ k hk)
 
 @[reassoc (attr := simp)]
-lemma π_desc_H (k : h.K ⟶ A) (hk : h.f' ≫ k = 0) :
-  h.π ≫ h.desc_H k hk = k :=
+lemma π_descH (k : h.K ⟶ A) (hk : h.f' ≫ k = 0) :
+  h.π ≫ h.descH k hk = k :=
 h.hπ.fac (CokernelCofork.ofπ k hk) WalkingParallelPair.one
 
 variable (S)
@@ -494,7 +494,7 @@ instance : Inhabited (LeftHomologyMapData φ h₁ h₂) := ⟨by
   have commf' : h₁.f' ≫ φK = φ.τ₁ ≫ h₂.f' := by
     rw [← cancel_mono h₂.i, assoc, assoc, LeftHomologyData.liftK_i,
       LeftHomologyData.f'_i_assoc, LeftHomologyData.f'_i, φ.comm₁₂]
-  let φH : h₁.H ⟶ h₂.H := h₁.desc_H (φK ≫ h₂.π)
+  let φH : h₁.H ⟶ h₂.H := h₁.descH (φK ≫ h₂.π)
     (by rw [reassoc_of% commf', h₂.f'_π, comp_zero])
   exact ⟨φK, φH, by simp, commf', by simp⟩⟩
 
@@ -689,6 +689,7 @@ cyclesMap'_zero _ _
 
 variable {S₁ S₂}
 
+@[reassoc]
 lemma leftHomologyMap'_comp (φ₁ : S₁ ⟶ S₂) (φ₂ : S₂ ⟶ S₃)
     (h₁ : S₁.LeftHomologyData) (h₂ : S₂.LeftHomologyData) (h₃ : S₃.LeftHomologyData) :
     leftHomologyMap' (φ₁ ≫ φ₂) h₁ h₃ = leftHomologyMap' φ₁ h₁ h₂ ≫
@@ -698,6 +699,7 @@ lemma leftHomologyMap'_comp (φ₁ : S₁ ⟶ S₂) (φ₂ : S₂ ⟶ S₃)
   rw [γ₁.leftHomologyMap'_eq, γ₂.leftHomologyMap'_eq, (γ₁.comp γ₂).leftHomologyMap'_eq,
     LeftHomologyMapData.comp_φH]
 
+@[reassoc]
 lemma cyclesMap'_comp (φ₁ : S₁ ⟶ S₂) (φ₂ : S₂ ⟶ S₃)
     (h₁ : S₁.LeftHomologyData) (h₂ : S₂.LeftHomologyData) (h₃ : S₃.LeftHomologyData) :
     cyclesMap' (φ₁ ≫ φ₂) h₁ h₃ = cyclesMap' φ₁ h₁ h₂ ≫ cyclesMap' φ₂ h₂ h₃ := by
@@ -706,17 +708,19 @@ lemma cyclesMap'_comp (φ₁ : S₁ ⟶ S₂) (φ₂ : S₂ ⟶ S₃)
   rw [γ₁.cyclesMap'_eq, γ₂.cyclesMap'_eq, (γ₁.comp γ₂).cyclesMap'_eq,
     LeftHomologyMapData.comp_φK]
 
-@[simp]
+@[reassoc]
 lemma leftHomologyMap_comp [HasLeftHomology S₁] [HasLeftHomology S₂] [HasLeftHomology S₃]
     (φ₁ : S₁ ⟶ S₂) (φ₂ : S₂ ⟶ S₃) :
     leftHomologyMap (φ₁ ≫ φ₂) = leftHomologyMap φ₁ ≫ leftHomologyMap φ₂ :=
 leftHomologyMap'_comp _ _ _ _ _
 
-@[simp]
+@[reassoc]
 lemma cyclesMap_comp [HasLeftHomology S₁] [HasLeftHomology S₂] [HasLeftHomology S₃]
     (φ₁ : S₁ ⟶ S₂) (φ₂ : S₂ ⟶ S₃) :
     cyclesMap (φ₁ ≫ φ₂) = cyclesMap φ₁ ≫ cyclesMap φ₂ :=
   cyclesMap'_comp _ _ _ _ _
+
+attribute [simp] leftHomologyMap_comp cyclesMap_comp
 
 @[simps]
 def leftHomologyMapIso' (e : S₁ ≅ S₂) (h₁ : S₁.LeftHomologyData)
@@ -876,8 +880,8 @@ noncomputable def ofEpiOfIsIsoOfMono (φ : S₁ ⟶ S₂) (h : LeftHomologyData 
   have wπ : f' ≫ h.π = 0 := by
     rw [← cancel_epi φ.τ₁, comp_zero, reassoc_of% hf', h.f'_π]
   have hπ : IsColimit (CokernelCofork.ofπ h.π wπ) := CokernelCofork.IsColimit.ofπ _ _
-    (fun x hx => h.desc_H x (by rw [← hf', assoc, hx, comp_zero]))
-    (fun x hx => by simp) (fun x hx b hb => by rw [← cancel_epi h.π, π_desc_H, hb])
+    (fun x hx => h.descH x (by rw [← hf', assoc, hx, comp_zero]))
+    (fun x hx => by simp) (fun x hx b hb => by rw [← cancel_epi h.π, π_descH, hb])
   exact ⟨h.K, h.H, i, h.π, wi, hi, wπ, hπ⟩
 
 @[simp]
@@ -906,9 +910,9 @@ noncomputable def ofEpiOfIsIsoOfMono' (φ : S₁ ⟶ S₂) (h : LeftHomologyData
       φ.comm₁₂_assoc, IsIso.hom_inv_id, comp_id]
   have wπ : f' ≫ h.π = 0 := by simp only [hf'', assoc, f'_π, comp_zero]
   have hπ : IsColimit (CokernelCofork.ofπ h.π wπ) := CokernelCofork.IsColimit.ofπ _ _
-    (fun x hx => h.desc_H x (by rw [← cancel_epi φ.τ₁, ← reassoc_of% hf'', hx, comp_zero]))
-    (fun x hx => π_desc_H _ _ _)
-    (fun x hx b hx => by rw [← cancel_epi h.π, π_desc_H, hx])
+    (fun x hx => h.descH x (by rw [← cancel_epi φ.τ₁, ← reassoc_of% hf'', hx, comp_zero]))
+    (fun x hx => π_descH _ _ _)
+    (fun x hx b hx => by rw [← cancel_epi h.π, π_descH, hx])
   exact ⟨h.K, h.H, i, h.π, wi, hi, wπ, hπ⟩
 
 @[simp]

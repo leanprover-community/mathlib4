@@ -402,7 +402,7 @@ def compatibilityOfZerosOfIsLimitKernelFork (hf : S.f = 0) (hg : S.g = 0)
   φH := c.ι
 
 @[simps]
-def compatibility_ofZerosOfIsColimitCokernelCofork (hf : S.f = 0) (hg : S.g = 0)
+def compatibilityOfZerosOfIsColimitCokernelCofork (hf : S.f = 0) (hg : S.g = 0)
   (c : CokernelCofork S.f) (hc : IsColimit c) :
   RightHomologyMapData (𝟙 S)
     (RightHomologyData.ofZeros S hf hg)
@@ -448,7 +448,7 @@ def cyclesCoMap' (φ : S₁ ⟶ S₂) (h₁ : S₁.RightHomologyData) (h₂ : S�
   h₁.Q ⟶ h₂.Q := (rightHomologyMapData φ _ _).φQ
 
 @[reassoc (attr := simp)]
-lemma pCyclesCoMap' (φ : S₁ ⟶ S₂) (h₁ : S₁.RightHomologyData) (h₂ : S₂.RightHomologyData) :
+lemma p_cyclesCoMap' (φ : S₁ ⟶ S₂) (h₁ : S₁.RightHomologyData) (h₂ : S₂.RightHomologyData) :
     h₁.p ≫ cyclesCoMap' φ h₁ h₂ = φ.τ₂ ≫ h₂.p :=
   RightHomologyMapData.commp _
 
@@ -467,14 +467,14 @@ noncomputable def cyclesCoMap [HasRightHomology S₁] [HasRightHomology S₂]
   cyclesCoMap' φ _ _
 
 @[reassoc (attr := simp)]
-lemma pCyclesCoMap (φ : S₁ ⟶ S₂) [S₁.HasRightHomology] [S₂.HasRightHomology] :
+lemma p_cyclesCoMap (φ : S₁ ⟶ S₂) [S₁.HasRightHomology] [S₂.HasRightHomology] :
     S₁.pCyclesCo ≫ cyclesCoMap φ = φ.τ₂ ≫ S₂.pCyclesCo :=
-  pCyclesCoMap' _ _ _
+  p_cyclesCoMap' _ _ _
 
 @[reassoc (attr := simp)]
 lemma fromCyclesCo_naturality (φ : S₁ ⟶ S₂) [S₁.HasRightHomology] [S₂.HasRightHomology] :
     cyclesCoMap φ ≫ S₂.fromCyclesCo = S₁.fromCyclesCo ≫ φ.τ₃ := by
-  simp only [← cancel_epi S₁.pCyclesCo, pCyclesCoMap_assoc, p_fromCyclesCo,
+  simp only [← cancel_epi S₁.pCyclesCo, p_cyclesCoMap_assoc, p_fromCyclesCo,
     p_fromCyclesCo_assoc, φ.comm₂₃]
 
 @[reassoc (attr := simp)]
@@ -542,6 +542,7 @@ cyclesCoMap'_zero _ _
 
 variable {S₁ S₂}
 
+@[reassoc]
 lemma rightHomologyMap'_comp (φ₁ : S₁ ⟶ S₂) (φ₂ : S₂ ⟶ S₃)
     (h₁ : S₁.RightHomologyData) (h₂ : S₂.RightHomologyData) (h₃ : S₃.RightHomologyData) :
     rightHomologyMap' (φ₁ ≫ φ₂) h₁ h₃ = rightHomologyMap' φ₁ h₁ h₂ ≫
@@ -551,6 +552,7 @@ lemma rightHomologyMap'_comp (φ₁ : S₁ ⟶ S₂) (φ₂ : S₂ ⟶ S₃)
   rw [γ₁.rightHomologyMap'_eq, γ₂.rightHomologyMap'_eq, (γ₁.comp γ₂).rightHomologyMap'_eq,
     RightHomologyMapData.comp_φH]
 
+@[reassoc]
 lemma cyclesCoMap'_comp (φ₁ : S₁ ⟶ S₂) (φ₂ : S₂ ⟶ S₃)
     (h₁ : S₁.RightHomologyData) (h₂ : S₂.RightHomologyData) (h₃ : S₃.RightHomologyData) :
     cyclesCoMap' (φ₁ ≫ φ₂) h₁ h₃ = cyclesCoMap' φ₁ h₁ h₂ ≫ cyclesCoMap' φ₂ h₂ h₃ := by
@@ -570,6 +572,8 @@ lemma cyclesCoMap_comp [HasRightHomology S₁] [HasRightHomology S₂] [HasRight
     (φ₁ : S₁ ⟶ S₂) (φ₂ : S₂ ⟶ S₃) :
     cyclesCoMap (φ₁ ≫ φ₂) = cyclesCoMap φ₁ ≫ cyclesCoMap φ₂ :=
   cyclesCoMap'_comp _ _ _ _ _
+
+attribute [simp] rightHomologyMap_comp cyclesCoMap_comp
 
 @[simps]
 def rightHomologyMapIso' (e : S₁ ≅ S₂) (h₁ : S₁.RightHomologyData)
@@ -634,7 +638,7 @@ noncomputable def RightHomologyData.cyclesCoIso (h : S.RightHomologyData) [S.Has
 lemma RightHomologyData.p_compCyclesCoIso_inv (h : S.RightHomologyData) [S.HasRightHomology] :
     h.p ≫ h.cyclesCoIso.inv = S.pCyclesCo := by
   dsimp [pCyclesCo, RightHomologyData.cyclesCoIso]
-  simp only [pCyclesCoMap', id_τ₂, id_comp]
+  simp only [p_cyclesCoMap', id_τ₂, id_comp]
 
 @[reassoc (attr := simp)]
 lemma RightHomologyData.pCyclesCo_compCyclesCoIso_hom (h : S.RightHomologyData)
@@ -977,7 +981,7 @@ noncomputable def rightHomologyIsKernel :
 lemma cyclesCoMap_comp_descCyclesCo (φ : S₁ ⟶ S) [S₁.HasRightHomology] :
     cyclesCoMap φ ≫ S.descCyclesCo k hk =
       S₁.descCyclesCo (φ.τ₂ ≫ k) (by rw [← φ.comm₁₂_assoc, hk, comp_zero]) := by
-  simp only [← cancel_epi (S₁.pCyclesCo), pCyclesCoMap_assoc, p_descCyclesCo]
+  simp only [← cancel_epi (S₁.pCyclesCo), p_cyclesCoMap_assoc, p_descCyclesCo]
 
 @[reassoc (attr := simp)]
 lemma RightHomologyData.rightHomologyIso_inv_comp_rightHomologyι :
@@ -1039,5 +1043,3 @@ end RightHomologyData
 end ShortComplex
 
 end CategoryTheory
-
-attribute [-simp] CategoryTheory.ShortComplex.RightHomologyMapData.mk.injEq
