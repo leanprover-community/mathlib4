@@ -43,7 +43,7 @@ that all these points of view are equivalent, with the following lemmas
   finite type implies finite-dimensionality
 - `of_finite_basis` states that the existence of a basis indexed by a
   finite set implies finite-dimensionality
-- `is_noetherian.iff_fg` states that the space is finite-dimensional if and only if
+- `IsNoetherian.iff_fg` states that the space is finite-dimensional if and only if
   it is noetherian
 
 We make use of `finrank`, the dimension of a finite dimensional space, returning a `Nat`, as
