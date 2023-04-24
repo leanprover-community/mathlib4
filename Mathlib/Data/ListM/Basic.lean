@@ -361,6 +361,82 @@ This will run forever if the list is infinite. -/
 unsafe def fold (f : β → α → β) (init : β) (L : ListM m α) : m β :=
   L.foldM (fun b a => pure (f b a)) init
 
+/--
+Extract the prefix up a lazy list consisting of elements up to and including
+the first element satisfying a monadic predicate.
+Return (in the monad) the prefix as a `List`, along with the remaining elements as a `ListM`.
+-/
+partial def getUpToFirstM (L : ListM m α) (p : α → m (ULift Bool)) : m (List α × ListM m α) := do
+  match ← L.uncons with
+  | none => return ([], nil)
+  | some (x, xs) => (if (← p x).down then
+      return ([x], xs)
+    else do
+      let (acc, R) ← getUpToFirstM xs p
+      return (x :: acc, R))
+
+/--
+Extract the prefix up a lazy list consisting of elements up to and including
+the first element satisfying a predicate.
+Return (in the monad) the prefix as a `List`, along with the remaining elements as a `ListM`.
+-/
+def getUpToFirst (L : ListM m α) (p : α → Bool) : m (List α × ListM m α) :=
+  L.getUpToFirstM fun a => pure (.up (p a))
+
+/--
+Extract a maximal prefix of a lazy list consisting of elements
+satisfying a monadic predicate.
+Return (in the monad) the prefix as a `List`, along with the remaining elements as a `ListM`.
+
+(Note that the first element *not* satisfying the predicate will be generated,
+and pushed back on to the remaining lazy list.)
+-/
+partial def getWhileM (L : ListM m α) (p : α → m (ULift Bool)) :
+    m (List α × ListM m α) := do
+  match ← L.uncons with
+  | none => return ([], nil)
+  | some (x, xs) => (if (← p x).down then do
+      let (acc, R) ← getWhileM xs p
+      return (x :: acc, R)
+    else
+      return ([], cons do pure (some x, xs)))
+
+/--
+Extract a maximal prefix of a lazy list consisting of elements
+satisfying a predicate.
+Return (in the monad) the prefix as a `List`, along with the remaining elements as a `ListM`.
+
+(Note that the first element *not* satisfying the predicate will be generated,
+and pushed back on to the remaining lazy list.)
+-/
+def getWhile (L : ListM m α) (p : α → Bool) : m (List α × ListM m α) :=
+  L.getWhileM fun a => pure (.up (p a))
+
+/--
+Partition a lazy list in runs of elements satisfying and not satisfying
+a monadic predicate.
+Return a lazy list of pairs of `List`s,
+where the first list consists of elements satisfying the predicate,
+and the second list consists of those that don't.
+-/
+partial def partitionM (L : ListM m α) (p : α → m (ULift Bool)) : ListM m (List α × List α) :=
+  core (L.mapM fun a => do pure (a, ← p a)) (fun (_, b) => do pure b)
+    |>.map fun (yes, no) => (yes.map (·.1), no.map (·.1))
+where core {β} (L : ListM m β) (p : β → m (ULift Bool)) : ListM m (List β × List β) := squash do
+  let (yes, L') ← L.getWhileM p
+  let (no, L'') ← L'.getWhileM fun a => do pure <| .up (¬ (← p a).down)
+  if yes.isEmpty && no.isEmpty then
+    return nil
+  else
+    return cons do pure (some (yes, no), core L'' p)
+
+/--
+Partition a lazy list in runs of elements satisfying and not satisfying
+a predicate.
+-/
+def partition (L : ListM m α) (p : α → Bool) : ListM m (List α × List α) :=
+  L.partitionM fun a => pure (.up (p a))
+
 section Alternative
 variable [Alternative m]
 
