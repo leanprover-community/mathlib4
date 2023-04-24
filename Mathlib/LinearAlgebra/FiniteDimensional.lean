@@ -451,6 +451,7 @@ section
 open BigOperators
 
 open Finset
+
 /-- If a finset has cardinality larger than the dimension of the space,
 then there is a nontrivial linear relation amongst its elements.
 -/
