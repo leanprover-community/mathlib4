@@ -373,7 +373,8 @@ theorem convexHull_eq_union_convexHull_finite_subsets (s : Set E) :
     convexHull R s = ⋃ (t : Finset E) (w : ↑t ⊆ s), convexHull R ↑t := by
   refine' Subset.antisymm _ _
   · rw [_root_.convexHull_eq]
-    rintro x ⟨ι, t, w, z, hw₀, hw₁, hz, rfl⟩
+    -- Porting note: We have specify the universe of `ι`
+    rintro x ⟨ι : Type u_1, t, w, z, hw₀, hw₁, hz, rfl⟩
     simp only [mem_unionᵢ]
     refine' ⟨t.image z, _, _⟩
     · rw [coe_image, Set.image_subset_iff]
@@ -389,9 +390,10 @@ theorem convexHull_eq_union_convexHull_finite_subsets (s : Set E) :
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem mk_mem_convexHull_prod {t : Set F} {x : E} {y : F} (hx : x ∈ convexHull R s)
     (hy : y ∈ convexHull R t) : (x, y) ∈ convexHull R (s ×ˢ t) := by
-  rw [_root_.convexHull_eq] at hx hy⊢
-  obtain ⟨ι, a, w, S, hw, hw', hS, hSp⟩ := hx
-  obtain ⟨κ, b, v, T, hv, hv', hT, hTp⟩ := hy
+  rw [_root_.convexHull_eq] at hx hy ⊢
+    -- Porting note: We have specify the universe of `ι` and `κ`
+  obtain ⟨ι : Type u_1, a, w, S, hw, hw', hS, hSp⟩ := hx
+  obtain ⟨κ : Type u_1, b, v, T, hv, hv', hT, hTp⟩ := hy
   -- Porting note: Changed `×ˢ` to `×ᶠ`
   have h_sum : (∑ i : ι × κ in a ×ᶠ b, w i.fst * v i.snd) = 1 := by
     rw [Finset.sum_product, ← hw']
@@ -479,15 +481,16 @@ to prove that this map is linear. -/
 theorem Set.Finite.convexHull_eq_image {s : Set E} (hs : s.Finite) :
     convexHull R s =
       haveI := hs.fintype
-      (⇑(∑ x : s, (@LinearMap.proj R s _ (fun i => R) _ _ x).smulRight x.1)) '' stdSimplex R s := by
+      (⇑(∑ x : s, (@LinearMap.proj R s _ (fun _ => R) _ _ x).smulRight x.1)) '' stdSimplex R s := by
   -- Porting note: Original proof didn't need to specify `hs.fintype`
   rw [← @convexHull_basis_eq_stdSimplex _ _ _ hs.fintype, ← LinearMap.convexHull_image,
     ← Set.range_comp]
   simp_rw [Function.comp]
   apply congr_arg
   convert Subtype.range_coe.symm
-  simp [LinearMap.sum_apply, ite_smul, Finset.filter_eq]
-  sorry
+  -- Porting note: Original proof didn't need to specify `hs.fintype` and `(1 : R)`
+  simp [LinearMap.sum_apply, ite_smul _ (1 : R), Finset.filter_eq,
+    @Finset.mem_univ _ hs.fintype _]
 #align set.finite.convex_hull_eq_image Set.Finite.convexHull_eq_image
 
 /-- All values of a function `f ∈ stdSimplex 𝕜 ι` belong to `[0, 1]`. -/
