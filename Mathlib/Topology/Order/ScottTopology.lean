@@ -130,8 +130,8 @@ instance : TopologicalSpace (WithScottTopology α) :=
         . exact (Ici b ∩ d).subset_univ,
       isOpen_inter := by
         intros s t hs ht d a hd₁ hd₂ hd₃ ha
-        obtain ⟨ b₁, ⟨hb₁_w, hb₁_h ⟩ ⟩  := hs d a hd₁ hd₂ hd₃ ha.1
-        obtain ⟨ b₂, ⟨hb₂_w, hb₂_h ⟩ ⟩  := ht d a hd₁ hd₂ hd₃ ha.2
+        obtain ⟨b₁, hb₁_w, hb₁_h⟩ := hs d a hd₁ hd₂ hd₃ ha.1
+        obtain ⟨b₂, hb₂_w, hb₂_h⟩ := ht d a hd₁ hd₂ hd₃ ha.2
         rw [DirectedOn] at hd₂
         obtain ⟨ c, ⟨hc_w, hc_h ⟩ ⟩ := hd₂ b₁ hb₁_w b₂ hb₂_w
         refine ⟨c, hc_w, ?_⟩
