@@ -1535,10 +1535,8 @@ theorem exists_ker_pow_eq_ker_pow_succ [FiniteDimensional K V] (f : End K V) :
           n.succ ≤ (finrank K ↑(LinearMap.ker (f ^ n))).succ :=
             Nat.succ_le_succ (ih (Nat.le_of_succ_le hn))
           _ ≤ finrank K ↑(LinearMap.ker (f ^ n.succ)) := Nat.succ_le_of_lt h_finrank_lt_finrank
-    have h_le_finrank_V : ∀ n, finrank K (LinearMap.ker (f ^ n)) ≤ finrank K V := fun n =>
-      Submodule.finrank_le _
     have h_any_n_lt : ∀ n, n ≤ (finrank K V).succ → n ≤ finrank K V := fun n hn =>
-      (h_le_ker_pow n hn).trans (h_le_finrank_V n)
+      (h_le_ker_pow n hn).trans (Submodule.finrank_le _)
     show False
     exact Nat.not_succ_le_self _ (h_any_n_lt (finrank K V).succ (finrank K V).succ.le_refl)
 #align module.End.exists_ker_pow_eq_ker_pow_succ Module.End.exists_ker_pow_eq_ker_pow_succ
