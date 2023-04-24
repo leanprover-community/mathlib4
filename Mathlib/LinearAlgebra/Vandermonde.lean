@@ -169,14 +169,12 @@ theorem eq_zero_of_forall_index_sum_mul_pow_eq_zero {R : Type _} [CommRing R] [I
   apply eq_zero_of_forall_index_sum_pow_mul_eq_zero hf
   simp_rw [mul_comm]
   exact hfv
-#align matrix.eq_zero_of_forall_index_sum_mul_pow_eq_zero
-Matrix.eq_zero_of_forall_index_sum_mul_pow_eq_zero
+#align matrix.eq_zero_of_forall_index_sum_mul_pow_eq_zero Matrix.eq_zero_of_forall_index_sum_mul_pow_eq_zero
 
 theorem eq_zero_of_forall_pow_sum_mul_pow_eq_zero {R : Type _} [CommRing R] [IsDomain R] {n : ℕ}
     {f v : Fin n → R} (hf : Function.Injective f)
     (hfv : ∀ i : Fin n, (∑ j : Fin n, v j * f j ^ (i : ℕ)) = 0) : v = 0 :=
   eq_zero_of_vecMul_eq_zero (det_vandermonde_ne_zero_iff.mpr hf) (funext hfv)
-#align matrix.eq_zero_of_forall_pow_sum_mul_pow_eq_zero
-Matrix.eq_zero_of_forall_pow_sum_mul_pow_eq_zero
+#align matrix.eq_zero_of_forall_pow_sum_mul_pow_eq_zero Matrix.eq_zero_of_forall_pow_sum_mul_pow_eq_zero
 
 end Matrix
