@@ -8,9 +8,9 @@ Authors: Bhavik Mehta
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Limits.Shapes.WideEqualizers
-import Mathbin.CategoryTheory.Limits.Shapes.Products
-import Mathbin.CategoryTheory.Limits.Shapes.Terminal
+import Mathlib.CategoryTheory.Limits.Shapes.WideEqualizers
+import Mathlib.CategoryTheory.Limits.Shapes.Products
+import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 
 /-!
 # Constructions related to weakly initial objects
@@ -47,20 +47,17 @@ The initial object is constructed as the wide equalizer of all endomorphisms on 
 initial object.
 -/
 theorem hasInitial_of_weakly_initial_and_hasWideEqualizers [HasWideEqualizers.{v} C] {T : C}
-    (hT : ∀ X, Nonempty (T ⟶ X)) : HasInitial C :=
-  by
+    (hT : ∀ X, Nonempty (T ⟶ X)) : HasInitial C := by
   let endos := T ⟶ T
   let i := wide_equalizer.ι (id : endos → endos)
   haveI : Nonempty endos := ⟨𝟙 _⟩
-  have : ∀ X : C, Unique (wide_equalizer (id : endos → endos) ⟶ X) :=
-    by
+  have : ∀ X : C, Unique (wide_equalizer (id : endos → endos) ⟶ X) := by
     intro X
     refine' ⟨⟨i ≫ Classical.choice (hT X)⟩, fun a => _⟩
     let E := equalizer a (i ≫ Classical.choice (hT _))
     let e : E ⟶ wide_equalizer id := equalizer.ι _ _
     let h : T ⟶ E := Classical.choice (hT E)
-    have : ((i ≫ h) ≫ e) ≫ i = i ≫ 𝟙 _ :=
-      by
+    have : ((i ≫ h) ≫ e) ≫ i = i ≫ 𝟙 _ := by
       rw [category.assoc, category.assoc]
       apply wide_equalizer.condition (id : endos → endos) (h ≫ e ≫ i)
     rw [category.comp_id, cancel_mono_id i] at this
