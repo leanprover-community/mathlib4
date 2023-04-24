@@ -8,11 +8,11 @@ Authors: Bhavik Mehta
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Generator
-import Mathbin.CategoryTheory.Limits.ConeCategory
-import Mathbin.CategoryTheory.Limits.Constructions.WeaklyInitial
-import Mathbin.CategoryTheory.Limits.FunctorCategory
-import Mathbin.CategoryTheory.Subobject.Comma
+import Mathlib.CategoryTheory.Generator
+import Mathlib.CategoryTheory.Limits.ConeCategory
+import Mathlib.CategoryTheory.Limits.Constructions.WeaklyInitial
+import Mathlib.CategoryTheory.Limits.FunctorCategory
+import Mathlib.CategoryTheory.Subobject.Comma
 
 /-!
 # Adjoint functor theorem
@@ -71,8 +71,7 @@ variable {D : Type u} [Category.{v} D]
 variable (G : D ⥤ C)
 
 /-- If `G : D ⥤ C` is a right adjoint it satisfies the solution set condition.  -/
-theorem solutionSetCondition_of_isRightAdjoint [IsRightAdjoint G] : SolutionSetCondition G :=
-  by
+theorem solutionSetCondition_of_isRightAdjoint [IsRightAdjoint G] : SolutionSetCondition G := by
   intro A
   refine'
     ⟨PUnit, fun _ => (left_adjoint G).obj A, fun _ => (adjunction.of_right_adjoint G).Unit.app A, _⟩
@@ -85,15 +84,13 @@ theorem solutionSetCondition_of_isRightAdjoint [IsRightAdjoint G] : SolutionSetC
 if `G` satisfies the solution set condition then `G` is a right adjoint.
 -/
 noncomputable def isRightAdjointOfPreservesLimitsOfSolutionSetCondition [HasLimits D]
-    [PreservesLimits G] (hG : SolutionSetCondition G) : IsRightAdjoint G :=
-  by
+    [PreservesLimits G] (hG : SolutionSetCondition G) : IsRightAdjoint G := by
   apply is_right_adjoint_of_structured_arrow_initials _
   intro A
   specialize hG A
   choose ι B f g using hG
   let B' : ι → structured_arrow A G := fun i => structured_arrow.mk (f i)
-  have hB' : ∀ A' : structured_arrow A G, ∃ i, Nonempty (B' i ⟶ A') :=
-    by
+  have hB' : ∀ A' : structured_arrow A G, ∃ i, Nonempty (B' i ⟶ A') := by
     intro A'
     obtain ⟨i, _, t⟩ := g _ A'.hom
     exact ⟨i, ⟨structured_arrow.hom_mk _ t⟩⟩
