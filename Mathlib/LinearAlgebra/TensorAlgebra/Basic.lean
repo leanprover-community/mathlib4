@@ -177,7 +177,9 @@ theorem induction {C : TensorAlgebra R M → Prop}
       mul_mem' := @h_mul
       add_mem' := @h_add
       algebraMap_mem' := h_grade0 }
-  let of : M →ₗ[R] s := (ι R).codRestrict (Subalgebra.toSubmodule s) h_grade1
+  -- porting note: split `let` in two to isolate a timeout in the second half
+  let of' : M →ₗ[R] (Subalgebra.toSubmodule s) := (ι R).codRestrict (Subalgebra.toSubmodule s) h_grade1
+  let of : M →ₗ[R] s := of'
   -- the mapping through the subalgebra is the identity
   have of_id : AlgHom.id R (TensorAlgebra R M) = s.val.comp (lift R of) := by
     ext
