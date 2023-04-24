@@ -134,7 +134,7 @@ theorem pow_def [∀ i, Pow (f i) β] (x : ∀ i, f i) (b : β) : x ^ b = fun i 
 #align pi.smul_def Pi.smul_def
 #align pi.vadd_def Pi.vadd_def
 
-@[to_additive (attr := simp, to_additive) (reorder := 2 3|5 6) smul_const]
+@[to_additive (attr := simp, to_additive) (reorder:= 2 3, 5 6) smul_const]
 theorem const_pow [Pow α β] (a : α) (b : β) : const I a ^ b = const I (a ^ b) :=
   rfl
 #align pi.const_pow Pi.const_pow

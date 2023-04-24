@@ -43,7 +43,7 @@ syntax (name := to_additive_change_numeral) "to_additive_change_numeral" num* : 
 /-- An `attr := ...` option for `to_additive`. -/
 syntax toAdditiveAttrOption := &"attr" ":=" Parser.Term.attrInstance,*
 /-- An `reorder := ...` option for `to_additive`. -/
-syntax toAdditiveReorderOption := &"reorder" ":=" num,+
+syntax toAdditiveReorderOption := &"reorder" ":=" (num+),+
 /-- Options to `to_additive`. -/
 syntax toAdditiveParenthesizedOption := "(" toAdditiveAttrOption <|> toAdditiveReorderOption ")"
 /-- Options to `to_additive`. -/
@@ -863,8 +863,8 @@ def elabToAdditive : Syntax → CoreM Config
       match stx with
       | `(toAdditiveOption| (attr := $[$stxs],*)) =>
         attrs := attrs ++ stxs
-      | `(toAdditiveOption| (reorder := $[$reorders],*)) =>
-        reorder := reorders.toList.map (·.raw.isNatLit?.get! - 1) :: reorder
+      | `(toAdditiveOption| (reorder := $[$[$reorders:num]*],*)) =>
+        reorder := reorder ++ reorders.toList.map (·.toList.map (·.raw.isNatLit?.get! - 1))
       | `(toAdditiveOption| existing) =>
         existing := some true
       | _ => throwUnsupportedSyntax
