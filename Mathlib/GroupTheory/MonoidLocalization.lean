@@ -1894,14 +1894,16 @@ variable {α : Type _} [CancelCommMonoid α] {s : Submonoid α} {a₁ b₁ : α}
 
 @[to_additive]
 theorem mk_left_injective (b : s) : Injective fun a => mk a b := fun c d h => by
-  have : Nonempty s := One.nonempty -- porting note: Needed to add this `have`
+  -- porting note: times out unless we add this `have`. Even `infer_instance` times out here.
+  have : Nonempty s := One.nonempty
   simpa [-mk_eq_monoidOf_mk', mk_eq_mk_iff, r_iff_exists] using h
 #align localization.mk_left_injective Localization.mk_left_injective
 #align add_localization.mk_left_injective addLocalization.mk_left_injective
 
 @[to_additive]
 theorem mk_eq_mk_iff' : mk a₁ a₂ = mk b₁ b₂ ↔ ↑b₂ * a₁ = a₂ * b₁ := by
-  have : Nonempty s := One.nonempty -- porting note: Needed to add this `have`
+  -- porting note: times out unless we add this `have`. Even `infer_instance` times out here.
+  have : Nonempty s := One.nonempty
   simp_rw [mk_eq_mk_iff, r_iff_exists, mul_left_cancel_iff, exists_const]
 #align localization.mk_eq_mk_iff' Localization.mk_eq_mk_iff'
 #align add_localization.mk_eq_mk_iff' addLocalization.mk_eq_mk_iff'
