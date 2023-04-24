@@ -20,13 +20,13 @@ Return the value and the list of remaining tasks.
 def IO.waitAny' (tasks : List (Task α)) (h : List.length tasks > 0 := by nonempty_list) :
     BaseIO (α × List (Task α)) := do
   let (i, a) ← IO.waitAny
-    (tasks.mapIdx fun i t => t.map fun a => (i, a))
+    (tasks.mapIdx fun i t => t.map (prio := .max) fun a => (i, a))
     ((tasks.length_mapIdx _).symm ▸ h)
   return (a, tasks.eraseIdx i)
 
 /--
 Given a list of tasks, create the task returning the list of results,
-by sequentially waiting for each.
+by waiting for each.
 -/
 def BaseIO.sequenceTasks (tasks : List (Task α)) : BaseIO (Task (List α)) :=
   BaseIO.mapTasks pure tasks
