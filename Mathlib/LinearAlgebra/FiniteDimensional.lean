@@ -523,18 +523,20 @@ theorem exists_nontrivial_relation_sum_zero_of_rank_succ_lt_card [FiniteDimensio
     simp only
     conv_lhs =>
       apply_congr
-      skip
+      rfl
       rw [ite_smul]
     rw [Finset.sum_ite]
     conv =>
       congr
       congr
       apply_congr
-      simp [filter_eq', m]
+      -- Porting note: the next two steps used to work by `simp [filter_eq', m]`
+      erw [filter_eq']
+      simp [m]
     conv =>
       congr
       congr
-      skip
+      rfl
       apply_congr
       simp [filter_ne']
     rw [sum_singleton, neg_smul, add_comm, ← sub_eq_add_neg, sum_smul, ← sum_sub_distrib]
@@ -552,10 +554,10 @@ theorem exists_nontrivial_relation_sum_zero_of_rank_succ_lt_card [FiniteDimensio
     rw [if_pos rfl]
     conv_lhs =>
       congr
-      skip
+      rfl
       apply_congr
-      skip
-      rw [if_neg (show x ≠ x₀ from (mem_erase.mp H).1)]
+      rfl
+      rw [if_neg (show _ ≠ x₀ from (mem_erase.mp ‹_›).1)]
     exact neg_add_self _
   · show ∃ (x : V), x ∈ t ∧ f x ≠ 0
     -- We can use x₁ + x₀.
@@ -1160,7 +1162,7 @@ theorem finrank_strictMono [FiniteDimensional K V] :
 
 theorem finrank_add_eq_of_isCompl [FiniteDimensional K V] {U W : Submodule K V} (h : IsCompl U W) :
     finrank K U + finrank K W = finrank K V := by
-  rw [← finrank_sup_add_finrank_inf_eq, h.codisjoint.eq_top, h.disjoint.eq_bot, finrank_bot,
+  rw [← finrank_sup_add_finrank_inf_eq, h.Codisjoint.eq_top, h.Disjoint.eq_bot, finrank_bot,
     add_zero]
   exact finrank_top _ _
 #align submodule.finrank_add_eq_of_is_compl Submodule.finrank_add_eq_of_isCompl
