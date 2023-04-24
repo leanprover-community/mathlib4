@@ -313,6 +313,13 @@ theorem isUnit'_iff_exists_inv [CommMonoid M] {a : M} : IsUnit' a ↔ ∃ b, a *
 theorem isUnit'_iff_exists_inv' [CommMonoid M] {a : M} : IsUnit' a ↔ ∃ b, b * a = 1 := by
   simp [isUnit'_iff_exists_inv, mul_comm]
 
+/-! Test a permutation with a cycle of length > 2. -/
+@[to_additive (reorder := 3 4 5)]
+def reorderMulThree {α : Type _} [Mul α] (x y z : α) : α := x * y * z
+
+example {α : Type _} [Add α] (x y z : α) : reorderAddThree z x y = x + y + z := rfl
+
+
 def Ones : ℕ → Q(Nat)
 | 0     => q(1)
 | (n+1) => q($(Ones n) + $(Ones n))

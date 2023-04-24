@@ -255,7 +255,7 @@ structure Config : Type where
   /-- If `allowAutoName` is `false` (default) then
   `@[to_additive]` will check whether the given name can be auto-generated. -/
   allowAutoName : Bool := false
-  /-- The arguments that should be reordered by `to_additive` -/
+  /-- The arguments that should be reordered by `to_additive`, using cycle notation. -/
   reorder : List (List Nat) := []
   /-- The attributes which we want to give to both the multiplicative and additive versions.
   For certain attributes (such as `simp` and `simps`) this will also add generated lemmas to the
@@ -276,9 +276,14 @@ variable [Monad M] [MonadOptions M] [MonadEnv M]
 
 open Lean.Expr.FindImpl in
 /-- Implementation function for `additiveTest`.
-  We use a method similar to that in `Expr.find?` to avoid visiting the same subexpression many
-  times. However, this is still called many times by `applyReplacementFun` and we're not remembering
-  the cache between these calls. -/
+  We cache previous applications of the function, using the same method that `Expr.find?` uses,
+  to avoid visiting the same subexpression many times. Note that we only need to cache the
+  expressions without taking the value of `inApp` into account, since `inApp` only matters when
+  the expression is a constant. However, for this reason we have to make sure that we never
+  cache constant expressions, so that's why the `if`s in the implementation are in this order.
+
+  Note that this function is still called many times by `applyReplacementFun`
+  and we're not remembering the cache between these calls. -/
 unsafe def additiveTestUnsafe (findTranslation? : Name → Option Name)
   (ignore : Name → Option (List ℕ)) (e : Expr) : Bool :=
   let size := cacheSize
@@ -1070,6 +1075,12 @@ theorem mul_comm' {α} [comm_semigroup α] (x y : α) : x * y = y * x := comm_se
 The transport tries to do the right thing in most cases using several
 heuristics described below.  However, in some cases it fails, and
 requires manual intervention.
+
+Use the `(reorder := ...)` syntax to reorder the arguments in the generated additive declaration.
+This is specified using cycle notation. For example `(reorder := 1 2, 5 6)` swaps the first two
+arguments with each other and the fifth and the sixth argument and `(reorder := 3 4 5)` will move
+the fifth argument before the third argument. This is mostly useful to translate declarations using
+`Pow` to those using `SMul`.
 
 Use the `(attr := ...)` syntax to apply attributes to both the multiplicative and the additive
 version:
