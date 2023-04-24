@@ -152,11 +152,12 @@ instance : SemilinearIsometryClass (E →ₛₗᵢ[σ₁₂] E₂) σ₁₂ E E�
   map_smulₛₗ f := map_smulₛₗ f.toLinearMap
   norm_map f := f.norm_map'
 
-/-- Helper instance for when there's too many metavariables to apply `FunLike.has_coe_to_fun`
-directly.
--/
-instance : CoeFun (E →ₛₗᵢ[σ₁₂] E₂) fun _ => E → E₂ :=
-  ⟨fun f => f.toFun⟩
+-- porting note: These helper instances are unhelpful in Lean 4, so omitting:
+-- /-- Helper instance for when there's too many metavariables to apply `FunLike.has_coe_to_fun`
+-- directly.
+-- -/
+-- instance : CoeFun (E →ₛₗᵢ[σ₁₂] E₂) fun _ => E → E₂ :=
+--   ⟨fun f => f.toFun⟩
 
 @[simp]
 theorem coe_toLinearMap : ⇑f.toLinearMap = f :=
@@ -460,6 +461,7 @@ def subtypeₗᵢ : p →ₗᵢ[R'] E :=
   ⟨p.subtype, fun _ => rfl⟩
 #align submodule.subtypeₗᵢ Submodule.subtypeₗᵢ
 
+set_option synthInstance.etaExperiment true in
 @[simp]
 theorem coe_subtypeₗᵢ : ⇑p.subtypeₗᵢ = p.subtype :=
   rfl
@@ -561,10 +563,10 @@ instance : SemilinearIsometryEquivClass (E ≃ₛₗᵢ[σ₁₂] E₂) σ₁₂
 /-- Helper instance for when there's too many metavariables to apply `FunLike.hasCoeToFun`
 directly.
 -/
-instance : CoeFun (E ≃ₛₗᵢ[σ₁₂] E₂) fun _ => E → E₂ :=
-  ⟨fun f => f.toFun⟩
+-- instance : CoeFun (E ≃ₛₗᵢ[σ₁₂] E₂) fun _ => E → E₂ :=
+--   ⟨fun f => f.toFun⟩
 
-theorem coe_injective : @Function.Injective (E ≃ₛₗᵢ[σ₁₂] E₂) (E → E₂) coeFn :=
+theorem coe_injective : @Function.Injective (E ≃ₛₗᵢ[σ₁₂] E₂) (E → E₂) (↑) :=
   FunLike.coe_injective
 #align linear_isometry_equiv.coe_injective LinearIsometryEquiv.coe_injective
 
@@ -609,7 +611,7 @@ def toLinearIsometry : E →ₛₗᵢ[σ₁₂] E₂ :=
 #align linear_isometry_equiv.to_linear_isometry LinearIsometryEquiv.toLinearIsometry
 
 theorem toLinearIsometry_injective : Function.Injective (toLinearIsometry : _ → E →ₛₗᵢ[σ₁₂] E₂) :=
-  fun x y h => coe_injective (congr_arg _ h : ⇑x.toLinearIsometry = _)
+  fun x _ h => coe_injective (congr_arg _ h : ⇑x.toLinearIsometry = _)
 #align linear_isometry_equiv.to_linear_isometry_injective LinearIsometryEquiv.toLinearIsometry_injective
 
 @[simp]
@@ -633,7 +635,7 @@ def toIsometryEquiv : E ≃ᵢ E₂ :=
 #align linear_isometry_equiv.to_isometry_equiv LinearIsometryEquiv.toIsometryEquiv
 
 theorem toIsometryEquiv_injective :
-    Function.Injective (toIsometryEquiv : (E ≃ₛₗᵢ[σ₁₂] E₂) → E ≃ᵢ E₂) := fun x y h =>
+    Function.Injective (toIsometryEquiv : (E ≃ₛₗᵢ[σ₁₂] E₂) → E ≃ᵢ E₂) := fun x _ h =>
   coe_injective (congr_arg _ h : ⇑x.toIsometryEquiv = _)
 #align linear_isometry_equiv.to_isometry_equiv_injective LinearIsometryEquiv.toIsometryEquiv_injective
 
@@ -659,7 +661,7 @@ def toHomeomorph : E ≃ₜ E₂ :=
 #align linear_isometry_equiv.to_homeomorph LinearIsometryEquiv.toHomeomorph
 
 theorem toHomeomorph_injective : Function.Injective (toHomeomorph : (E ≃ₛₗᵢ[σ₁₂] E₂) → E ≃ₜ E₂) :=
-  fun x y h => coe_injective (congr_arg _ h : ⇑x.toHomeomorph = _)
+  fun x _ h => coe_injective (congr_arg _ h : ⇑x.toHomeomorph = _)
 #align linear_isometry_equiv.to_homeomorph_injective LinearIsometryEquiv.toHomeomorph_injective
 
 @[simp]
@@ -694,7 +696,7 @@ def toContinuousLinearEquiv : E ≃SL[σ₁₂] E₂ :=
 #align linear_isometry_equiv.to_continuous_linear_equiv LinearIsometryEquiv.toContinuousLinearEquiv
 
 theorem toContinuousLinearEquiv_injective :
-    Function.Injective (toContinuousLinearEquiv : _ → E ≃SL[σ₁₂] E₂) := fun x y h =>
+    Function.Injective (toContinuousLinearEquiv : _ → E ≃SL[σ₁₂] E₂) := fun x _ h =>
   coe_injective (congr_arg _ h : ⇑x.toContinuousLinearEquiv = _)
 #align linear_isometry_equiv.to_continuous_linear_equiv_injective LinearIsometryEquiv.toContinuousLinearEquiv_injective
 
