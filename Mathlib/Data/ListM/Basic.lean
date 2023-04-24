@@ -9,6 +9,7 @@ Authors: Mario Carneiro, Keeley Hoek, Simon Hudon, Scott Morrison
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Option.Defs
+import Mathlib.Data.ULift
 import Mathlib.Control.Basic
 
 /-! # Monadic lazy lists.
@@ -391,12 +392,12 @@ Return (in the monad) the prefix as a `List`, along with the remaining elements 
 (Note that the first element *not* satisfying the predicate will be generated,
 and pushed back on to the remaining lazy list.)
 -/
-partial def getWhileM (L : ListM m α) (p : α → m (ULift Bool)) :
+partial def splitWhileM (L : ListM m α) (p : α → m (ULift Bool)) :
     m (List α × ListM m α) := do
   match ← L.uncons with
   | none => return ([], nil)
   | some (x, xs) => (if (← p x).down then do
-      let (acc, R) ← getWhileM xs p
+      let (acc, R) ← splitWhileM xs p
       return (x :: acc, R)
     else
       return ([], cons do pure (some x, xs)))
@@ -409,33 +410,47 @@ Return (in the monad) the prefix as a `List`, along with the remaining elements 
 (Note that the first element *not* satisfying the predicate will be generated,
 and pushed back on to the remaining lazy list.)
 -/
-def getWhile (L : ListM m α) (p : α → Bool) : m (List α × ListM m α) :=
-  L.getWhileM fun a => pure (.up (p a))
+def splitWhile (L : ListM m α) (p : α → Bool) : m (List α × ListM m α) :=
+  L.splitWhileM fun a => pure (.up (p a))
 
 /--
-Partition a lazy list in runs of elements satisfying and not satisfying
-a monadic predicate.
-Return a lazy list of pairs of `List`s,
-where the first list consists of elements satisfying the predicate,
-and the second list consists of those that don't.
+Splits a lazy list into contiguous sublists of elements with the same value under
+a monadic function.
+Return a lazy lists of pairs, consisting of a value under that function,
+and a maximal list of elements having that value.
 -/
-partial def partitionM (L : ListM m α) (p : α → m (ULift Bool)) : ListM m (List α × List α) :=
-  core (L.mapM fun a => do pure (a, ← p a)) (fun (_, b) => do pure b)
-    |>.map fun (yes, no) => (yes.map (·.1), no.map (·.1))
-where core {β} (L : ListM m β) (p : β → m (ULift Bool)) : ListM m (List β × List β) := squash do
-  let (yes, L') ← L.getWhileM p
-  let (no, L'') ← L'.getWhileM fun a => do pure <| .up (¬ (← p a).down)
-  if yes.isEmpty && no.isEmpty then
-    return nil
+partial def runsM [DecidableEq β] (L : ListM m α) (f : α → m β) : ListM m (β × List α) :=
+  L.cases' nil fun a t => squash do
+    let b ← f a
+    let (l, t') ← t.splitWhileM (fun a => do return .up ((← f a) = b))
+    return cons do pure (some (b, a :: l), t'.runsM f)
+
+/--
+Splits a lazy list into contiguous sublists of elements with the same value under a function.
+Return a lazy lists of pairs, consisting of a value under that function,
+and a maximal list of elements having that value.
+-/
+def runs [DecidableEq β] (L : ListM m α) (f : α → β) : ListM m (β × List α) :=
+  L.runsM fun a => pure (f a)
+
+/--
+Split a lazy list into contiguous sublists,
+starting a new sublist each time a monadic predicate changes from `false` to `true`.
+-/
+partial def splitAtBecomesTrueM (L : ListM m α) (p : α → m (ULift Bool)) : ListM m (List α) :=
+  aux (L.runsM p)
+where aux (M : ListM m (ULift.{u} Bool × List α)) : ListM m (List α) :=
+  M.cases' nil fun (b, l) t => (if b.down then
+    t.cases' (cons do pure (some l, nil)) fun (_, l') t' => cons do pure (some (l ++ l'), aux t')
   else
-    return cons do pure (some (yes, no), core L'' p)
+    cons do pure (some l, aux t))
 
 /--
-Partition a lazy list in runs of elements satisfying and not satisfying
-a predicate.
+Split a lazy list into contiguous sublists,
+starting a new sublist each time a predicate changes from `false` to `true`.
 -/
-def partition (L : ListM m α) (p : α → Bool) : ListM m (List α × List α) :=
-  L.partitionM fun a => pure (.up (p a))
+def splitAtBecomesTrue (L : ListM m α) (p : α → Bool) : ListM m (List α) :=
+  L.splitAtBecomesTrueM fun a => pure (.up (p a))
 
 section Alternative
 variable [Alternative m]
