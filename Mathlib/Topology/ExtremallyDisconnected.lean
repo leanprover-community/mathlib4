@@ -8,7 +8,7 @@ Authors: Johan Commelin
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.StoneCech
+import Mathlib.Topology.StoneCech
 
 /-!
 # Extremally disconnected spaces
@@ -73,8 +73,7 @@ end
 
 variable {X}
 
-theorem StoneCech.projective [DiscreteTopology X] : CompactT2.Projective (StoneCech X) :=
-  by
+theorem StoneCech.projective [DiscreteTopology X] : CompactT2.Projective (StoneCech X) := by
   intro Y Z _tsY _tsZ _csY _t2Y _csZ _csZ f g hf hg g_sur
   let s : Z → Y := fun z => Classical.choose <| g_sur z
   have hs : g ∘ s = id := funext fun z => Classical.choose_spec (g_sur z)
@@ -89,8 +88,7 @@ theorem StoneCech.projective [DiscreteTopology X] : CompactT2.Projective (StoneC
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 protected theorem CompactT2.Projective.extremallyDisconnected [CompactSpace X] [T2Space X]
-    (h : CompactT2.Projective X) : ExtremallyDisconnected X :=
-  by
+    (h : CompactT2.Projective X) : ExtremallyDisconnected X := by
   refine' { open_closure := fun U hU => _ }
   let Z₁ : Set (X × Bool) := Uᶜ ×ˢ {tt}
   let Z₂ : Set (X × Bool) := closure U ×ˢ {ff}
@@ -111,8 +109,7 @@ protected theorem CompactT2.Projective.extremallyDisconnected [CompactSpace X] [
   let φ := coe ∘ g
   have hφ : Continuous φ := continuous_subtype_val.comp hg
   have hφ₁ : ∀ x, (φ x).1 = x := congr_fun g_sec
-  suffices closure U = φ ⁻¹' Z₂
-    by
+  suffices closure U = φ ⁻¹' Z₂ by
     rw [this, Set.preimage_comp, ← isClosed_compl_iff, ← preimage_compl, ←
       preimage_subtype_coe_eq_compl subset.rfl]
     · exact hZ₁.preimage hφ
