@@ -18,19 +18,18 @@ This file introduces the Scott topology on a preorder.
 
 ## Main definitions
 
-- `preserve_lub_on_directed` - a function between preorders which preserves least upper bounds.
 - `WithScottTopology.topological_space` - the Scott topology is defined as the join of the
   topology of upper sets and the topological space where a set `u` is open if, when the least upper
   bound of a directed set `d` lies in `u` then there is a tail of `d` which is a subset of `u`..
 
 ## Main statements
 
-- `WithScottTopology.is_open_is_upper` - Scott open sets are upper
-- `WithScottTopology.is_closed_is_lower` - Scott closed sets are lower
+- `WithScottTopology.is_open_is_upper` - Scott open sets are upper.
+- `WithScottTopology.is_closed_is_lower` - Scott closed sets are lower.
 - `WithScottTopology.continuous_monotone` - Scott continuous functions are monotone.
-- `preserve_lub_on_directed_iff_scott_continuity` - a function preserves least upper bounds of
-  directed sets if and only if it is Scott continuous
-- `WithScottTopology.t0_space` - the Scott topology on a partial order is T₀
+- `ScottContinuous_iff_continuous_wrt_Scott` - a function is Scott continuous (preserves least upper
+  bounds of directed sets) if and only if it is continuous wrt the Scott topology.
+- `WithScottTopology.t0_space` - the Scott topology on a partial order is T₀.
 
 ## Implementation notes
 
