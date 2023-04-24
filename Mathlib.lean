@@ -139,7 +139,9 @@ import Mathlib.Algebra.Homology.Functor
 import Mathlib.Algebra.Homology.HomologicalComplex
 import Mathlib.Algebra.Homology.Homology
 import Mathlib.Algebra.Homology.Homotopy
+import Mathlib.Algebra.Homology.HomotopyCategory
 import Mathlib.Algebra.Homology.ImageToKernel
+import Mathlib.Algebra.Homology.ShortExact.Preadditive
 import Mathlib.Algebra.Homology.Single
 import Mathlib.Algebra.IndicatorFunction
 import Mathlib.Algebra.Invertible
@@ -301,13 +303,16 @@ import Mathlib.AlgebraicTopology.CechNerve
 import Mathlib.AlgebraicTopology.DoldKan.Compatibility
 import Mathlib.AlgebraicTopology.DoldKan.Decomposition
 import Mathlib.AlgebraicTopology.DoldKan.Degeneracies
+import Mathlib.AlgebraicTopology.DoldKan.EquivalenceAdditive
 import Mathlib.AlgebraicTopology.DoldKan.Faces
 import Mathlib.AlgebraicTopology.DoldKan.FunctorGamma
 import Mathlib.AlgebraicTopology.DoldKan.FunctorN
 import Mathlib.AlgebraicTopology.DoldKan.GammaCompN
 import Mathlib.AlgebraicTopology.DoldKan.Homotopies
+import Mathlib.AlgebraicTopology.DoldKan.HomotopyEquivalence
 import Mathlib.AlgebraicTopology.DoldKan.NCompGamma
 import Mathlib.AlgebraicTopology.DoldKan.NReflectsIso
+import Mathlib.AlgebraicTopology.DoldKan.Normalized
 import Mathlib.AlgebraicTopology.DoldKan.Notations
 import Mathlib.AlgebraicTopology.DoldKan.PInfty
 import Mathlib.AlgebraicTopology.DoldKan.Projections
@@ -326,6 +331,7 @@ import Mathlib.Analysis.BoxIntegral.Box.Basic
 import Mathlib.Analysis.BoxIntegral.Box.SubboxInduction
 import Mathlib.Analysis.Convex.Basic
 import Mathlib.Analysis.Convex.Body
+import Mathlib.Analysis.Convex.Combination
 import Mathlib.Analysis.Convex.Exposed
 import Mathlib.Analysis.Convex.Extrema
 import Mathlib.Analysis.Convex.Extreme
@@ -543,6 +549,7 @@ import Mathlib.CategoryTheory.Limits.Yoneda
 import Mathlib.CategoryTheory.Linear.Basic
 import Mathlib.CategoryTheory.Linear.FunctorCategory
 import Mathlib.CategoryTheory.Linear.LinearFunctor
+import Mathlib.CategoryTheory.Linear.Yoneda
 import Mathlib.CategoryTheory.Localization.Construction
 import Mathlib.CategoryTheory.Localization.Opposite
 import Mathlib.CategoryTheory.Localization.Predicate
@@ -580,6 +587,7 @@ import Mathlib.CategoryTheory.Preadditive.LeftExact
 import Mathlib.CategoryTheory.Preadditive.OfBiproducts
 import Mathlib.CategoryTheory.Preadditive.Opposite
 import Mathlib.CategoryTheory.Preadditive.SingleObj
+import Mathlib.CategoryTheory.Preadditive.Yoneda.Basic
 import Mathlib.CategoryTheory.Products.Associator
 import Mathlib.CategoryTheory.Products.Basic
 import Mathlib.CategoryTheory.Products.Bifunctor
@@ -1382,6 +1390,7 @@ import Mathlib.LinearAlgebra.LinearIndependent
 import Mathlib.LinearAlgebra.LinearPMap
 import Mathlib.LinearAlgebra.Matrix.AbsoluteValue
 import Mathlib.LinearAlgebra.Matrix.Adjugate
+import Mathlib.LinearAlgebra.Matrix.Circulant
 import Mathlib.LinearAlgebra.Matrix.Determinant
 import Mathlib.LinearAlgebra.Matrix.DotProduct
 import Mathlib.LinearAlgebra.Matrix.MvPolynomial
@@ -1406,6 +1415,7 @@ import Mathlib.LinearAlgebra.Span
 import Mathlib.LinearAlgebra.StdBasis
 import Mathlib.LinearAlgebra.TensorProduct
 import Mathlib.LinearAlgebra.TensorProductBasis
+import Mathlib.LinearAlgebra.Vandermonde
 import Mathlib.Logic.Basic
 import Mathlib.Logic.Denumerable
 import Mathlib.Logic.Embedding.Basic
@@ -1880,6 +1890,7 @@ import Mathlib.Topology.Covering
 import Mathlib.Topology.DenseEmbedding
 import Mathlib.Topology.DiscreteQuotient
 import Mathlib.Topology.ExtendFrom
+import Mathlib.Topology.ExtremallyDisconnected
 import Mathlib.Topology.FiberBundle.Basic
 import Mathlib.Topology.FiberBundle.IsHomeomorphicTrivialBundle
 import Mathlib.Topology.FiberBundle.Trivialization
