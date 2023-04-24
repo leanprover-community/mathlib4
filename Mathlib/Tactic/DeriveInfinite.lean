@@ -91,10 +91,11 @@ Given a constructor `ctor` with `m` inductive parameters, `n` fields, and `field
      …  -- (except bᵢ)
      Nonempty.elim inferInstance fun bₙ => $x))
 ```
-Additionally, fields in `leaveAsHole` are left as `_` and don't have a corresponding `Nonempty.elim`.
-`leaveAsHole` must be sorted.
+Additionally, fields in `leaveAsHole` are left as `_` and don't have a corresponding
+`Nonempty.elim`. `leaveAsHole` must be sorted.
 -/
-private def mkObj (ctorInfo : ConstructorVal) (fieldIdx : Nat) (leaveAsHole : Array Nat := {}) : MetaM (Term × Ident × (Term → MetaM Term)) := do
+private def mkObj (ctorInfo : ConstructorVal) (fieldIdx : Nat) (leaveAsHole : Array Nat := {})
+    : MetaM (Term × Ident × (Term → MetaM Term)) := do
   let mut leaveAsHole := leaveAsHole.toSubarray
   let mut ctorArgs := #[]
   let mut addNonemptyElim := pure
@@ -120,46 +121,54 @@ private def mkObj (ctorInfo : ConstructorVal) (fieldIdx : Nat) (leaveAsHole : Ar
 Given constructor `ctor` with `n` fields and `fieldIdx = i`, returns either
 `fun a₁ … aₙ => aᵢ` or `fun a₁ … aₙ => eq_of_heq aᵢ`.
 -/
-private def mkNoConfusionMotive (ctorInfo : ConstructorVal) (xs : Array Expr) (self : Expr) (fieldIdx : Nat) : TermElabM Term := do
+private def mkNoConfusionMotive (ctorInfo : ConstructorVal) (xs : Array Expr) (self : Expr)
+    (fieldIdx : Nat) : TermElabM Term := do
+  let eqTypes ← noConfusionTypes
+  let mut nonPropIdx := 0
   let a ← mkFreshUserName `a
   let mut binders := #[]
+  let mut isHEq := false
   for i in [:ctorInfo.numFields] do
-    if i = fieldIdx then
-      binders := binders.push (mkIdent a : Term)
+    let xTy   ← inferType xs[ctorInfo.numParams + i]!
+    let xTyTy ← inferType xTy
+    if !xTyTy.isProp then
+      if i = fieldIdx then
+        binders := binders.push (mkIdent a : Term)
+        isHEq := eqTypes[nonPropIdx]!.isHEq
+      else
+        binders := binders.push (← `(_))
+      nonPropIdx := nonPropIdx + 1
     else
-      binders := binders.push (← `(_))
+      if i = fieldIdx then
+        throwError "(internal error) noConfusion has no equality for Prop-valued field{indentD xTy}"
 
-  let isHEq ← do
-    let xsTerm ← xs.mapM Expr.toSyntax
-    let obj ← Term.elabTermEnsuringType (← `(@$(mkCIdent ctorInfo.name) $xsTerm:term*)) self
-    let eqTypes ← noConfusionTypes obj
-    pure eqTypes[fieldIdx]!.isHEq
   if isHEq then
     `(fun $binders:term* => $(mkCIdent ``eq_of_heq) $(mkIdent a))
   else
     `(fun $binders:term* => $(mkIdent a))
 
 where
-  /-- Return the equality types provided by `noConfusion (_ : obj = obj)`. -/
-  noConfusionTypes (obj : Expr) : MetaM (Array Expr) := do
-    let name := ctorInfo.induct.str "noConfusionType"
-    let type ← mkAppM name #[.sort .zero, obj, obj]
+  /-- Return the equality types provided by `noConfusion (_ : ctor xs = ctor xs)`. -/
+  noConfusionTypes : TermElabM (Array Expr) := do
+    let xsTerm ← xs.mapM Expr.toSyntax
+    let obj    ← Term.elabTermEnsuringType (← `(@$(mkCIdent ctorInfo.name) $xsTerm:term*)) self
+    let objStx ← obj.toSyntax
+    let name   := ctorInfo.induct.str "noConfusionType"
+    let type   ← Term.elabTerm (← `($(mkCIdent name) Prop $objStx $objStx)) none
     match ← whnf type with
     | .forallE (binderType := t) .. => do
-      let eqTypes ← forallBoundedTelescope t ctorInfo.numFields fun eqs _ => do
+      forallBoundedTelescope t ctorInfo.numFields fun eqs _ => do
         eqs.mapM fun eq => do
           let t ← inferType eq
           whnf t
-      if eqTypes.size < ctorInfo.numFields then
-        throwError "(internal error) {name} has fewer arguments than constructor fields{indentD eqTypes}\nvs{indentExpr ctorInfo.type}"
-      return eqTypes
     | _ => pure #[]
 
 /--
 Try to construct a proof for `Infinite α` by forming an injection from an `Infinite` field to `α`,
 and then using `Infinite.of_injective`.
 -/
-private def mkProofField (ctorInfo : ConstructorVal) (xs : Array Expr) (self : Expr) : TermElabM (Option Term) := do
+private def mkProofField (ctorInfo : ConstructorVal) (xs : Array Expr) (self : Expr) :
+    TermElabM (Option Term) := do
   let mut infiniteField := none
   let mut leaveAsHole := #[]
   for i in [:ctorInfo.numFields] do
@@ -180,9 +189,11 @@ private def mkProofField (ctorInfo : ConstructorVal) (xs : Array Expr) (self : E
                     else ← trySynthInstance (← mkAppM ``Infinite #[xTy]) <&> LOption.toOption
     let nonempty ← trySynthInstance (← mkAppM ``Nonempty #[xTy]) <&> LOption.toOption
 
-    trace[Elab.Deriving.infinite] "{ctorInfo.name} field {i}: dependedOn={dependedOn} usedBySelf={usedBySelf} infinite={infinite} nonempty={nonempty} value={toString x} value={x} type={toString xTy} type={xTy}"
+    let tracePrefix := m!"{ctorInfo.name} field {i}: "
+    trace[Elab.Deriving.infinite] tracePrefix ++
+      m!"dependedOn={dependedOn} usedBySelf={usedBySelf} infinite={infinite} nonempty={nonempty}"
     if nonempty.isNone then
-      trace[Elab.Deriving.infinite] "{ctorInfo.name} field {i}: not Nonempty; giving up on this constructor"
+      trace[Elab.Deriving.infinite] tracePrefix ++ "not Nonempty; giving up on this constructor"
       return none
     else if infiniteField.isNone && infinite.isSome then
       infiniteField := some i
@@ -198,14 +209,15 @@ private def mkProofField (ctorInfo : ConstructorVal) (xs : Array Expr) (self : E
         (fun _ _ h => $noConfusion h $noConfusionMotive))
   addNonemptyElim val
 
-/-- Get the constructor name of the `default` element of `type`.  -/
-private def getDefaultCtor (type : Expr) : TermElabM (Option Name) := do
+/-- Get the constructor of the `default` element of `type`.  -/
+private def getDefaultCtor (type : Expr) : TermElabM (Option (Expr × Name)) := do
   try
     let val ← Term.elabTerm (mkCIdent ``default) type
     let val ← whnf val
-    if let .const ctor _ := val.getAppFn then
-      let ctorInfo ← getConstInfoCtor ctor
-      return some ctorInfo.name
+    let ctor := val.getAppFn
+    if let .const ctorName _ := val.getAppFn then
+      let ctorInfo ← getConstInfoCtor ctorName
+      return some (ctor, ctorInfo.name)
     else
       return none
   catch _ =>
@@ -217,7 +229,8 @@ subset of `α` created with this constructor, and then using `Infinite.of_inject
 To prove that this subset is proper, we show that the `default` element of `α` is not headed by
 this constructor (if `default` is headed by this constructor, then this function fails).
 -/
-private def mkProofSelf (ctorInfo : ConstructorVal) (xs : Array Expr) (self : Expr) (defaultCtor : Name) : TermElabM (Option Term) := do
+private def mkProofSelf (ctorInfo : ConstructorVal) (xs : Array Expr) (self : Expr)
+    (defaultCtor : Name) : TermElabM (Option Term) := do
   if ctorInfo.name == defaultCtor then
     return none
 
@@ -228,14 +241,18 @@ private def mkProofSelf (ctorInfo : ConstructorVal) (xs : Array Expr) (self : Ex
     let isSelf ← withNewMCtxDepth (isDefEq self xTy)
     let nonempty ← trySynthInstance (← mkAppM ``Nonempty #[xTy]) <&> LOption.toOption
 
-    trace[Elab.Deriving.infinite] "{ctorInfo.name} field {i}: isSelf={isSelf} nonempty={nonempty} value={toString x} value={x} type={toString xTy} type={xTy}"
+    let tracePrefix := m!"{ctorInfo.name} field {i}: "
+    trace[Elab.Deriving.infinite] tracePrefix ++ m!"isSelf={isSelf} nonempty={nonempty}"
 
     match selfField, isSelf, nonempty with
-    | _, false, none =>
-      trace[Elab.Deriving.infinite] "{ctorInfo.name} field {i}: not Nonempty or self; giving up on this constructor"
-      return none -- field is neither self nor Nonempty
-    | none, true, _ => selfField := some i -- first self field found
-    | _, true, none => selfField := some i -- this field is only self, not Nonempty
+    | _, false, none => -- field is neither self nor Nonempty
+      trace[Elab.Deriving.infinite] tracePrefix ++
+        "not Nonempty or recursive; giving up on this constructor"
+      return none
+    | none, true, _ => -- first self field found
+      selfField := some i
+    | _, true, none => -- this field is only self, not Nonempty
+      selfField := some i
     | _, _, _ => pure ()
 
   let some j := selfField
@@ -246,7 +263,8 @@ private def mkProofSelf (ctorInfo : ConstructorVal) (xs : Array Expr) (self : Ex
   let val ←
     `(let S := {x | ∃ $holeArg:ident, $obj = x}
       let notUniv : S ≠ $(mkCIdent ``Set.univ) := fun h =>
-        (h ▸ show $(mkCIdent ``default) ∉ S from fun ⟨_, h₂⟩ => $noConfusion h₂) $(mkCIdent ``trivial)
+        (h ▸ show $(mkCIdent ``default) ∉ S from fun ⟨_, h₂⟩ => $noConfusion h₂)
+        $(mkCIdent ``trivial)
       let f : _ → S := fun $holeArg:ident => ⟨$obj, $holeArg, rfl⟩
       let inj : $(mkCIdent ``Function.Injective) f := fun _ _ h =>
         $(mkCIdent ``Subtype.noConfusion) h fun h₂ => $noConfusion h₂ $noConfusionMotive
@@ -260,7 +278,8 @@ The `derive_infinite% α` term elaborator attempts to derive an instance of `Inf
 syntax (name := derive_infinite) "derive_infinite% " term : term
 
 /-- Unifies `Infinite type` with `expectedType?` and returns `type`. -/
-private def matchTypes (type : Term) (expectedType? : Option Expr) : TermElabM (Expr × InductiveVal) := do
+private def matchTypes (type : Term) (expectedType? : Option Expr) :
+    TermElabM (Expr × InductiveVal) := do
   let type ← Term.elabType type
   if let some expectedType := expectedType? then
     let infType ← mkAppM ``Infinite #[type]
@@ -273,7 +292,8 @@ private def matchTypes (type : Term) (expectedType? : Option Expr) : TermElabM (
     | throwError "{type} is not a constant or constant application"
   return (type, ← getConstInfoInduct declName)
 
-@[term_elab derive_infinite] private def elabDeriveInfinite : Term.TermElab := fun stx expectedType? =>
+@[term_elab derive_infinite]
+private def elabDeriveInfinite : Term.TermElab := fun stx expectedType? =>
   match stx with
   | `(derive_infinite% $t) => do
     let (type, indVal) ← matchTypes t expectedType?
@@ -284,15 +304,17 @@ private def matchTypes (type : Term) (expectedType? : Option Expr) : TermElabM (
         if ← isDefEqGuarded type x then
           f ctorInfo xs x
         else
-          trace[Elab.Deriving.infinite] "{ctorName}: cannot unify{indentExpr type}\nwith{indentExpr x}"
+          trace[Elab.Deriving.infinite]
+            "{ctorName}: cannot unify{indentExpr type}\nwith{indentExpr x}"
           return none
     let mut proof ← getProof mkProofField
     if proof.isNone then
-      if let some defaultCtor ← getDefaultCtor type then
-        trace[Elab.Deriving.infinite] "Trying to prove from self (default value uses constructor {defaultCtor})"
-        proof ← getProof (mkProofSelf (defaultCtor := defaultCtor))
+      if let some (ctor, ctorName) ← getDefaultCtor type then
+        trace[Elab.Deriving.infinite]
+          "Trying to prove from self (default value uses constructor {ctor})"
+        proof ← getProof (mkProofSelf (defaultCtor := ctorName))
     let some proofVal := proof
-      | throwError "cannot find constructor with every field Nonempty and at least one field Infinite"
+      | throwError "cannot derive {← mkAppM ``Infinite #[type]}"
     trace[Elab.Deriving.infinite] "{stx} elaborated as{indentD proofVal}"
     Term.elabTerm proofVal expectedType?
   | _ => throwUnsupportedSyntax

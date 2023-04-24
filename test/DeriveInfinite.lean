@@ -7,7 +7,7 @@ import Mathlib.Tactic.DeriveInfinite
 
 namespace tests
 
--- for debugging
+-- for debugging, uncomment this:
 -- set_option trace.Elab.Deriving.infinite true
 
 -- We assume Nat is Infinite in a few places.
@@ -87,6 +87,12 @@ inductive Dependent (α : Type _) : Type _
   deriving Nonempty, Infinite
 
 example : Infinite (Dependent Empty) := inferInstance
+
+local instance : Nonempty (a = a) := ⟨rfl⟩
+structure HasProof where
+  n : Nat
+  h : 0 = 0
+  deriving Infinite
 
 attribute [-instance] instInfiniteOption in
 example [Infinite α] : Infinite (Option α) := derive_infinite% _
