@@ -597,7 +597,7 @@ end
 end
 
 /-- In a vector space with dimension 1, each set {v} is a basis for `v ≠ 0`. -/
-@[simps]
+@[simps repr_apply]
 noncomputable def basisSingleton (ι : Type _) [Unique ι] (h : finrank K V = 1) (v : V)
     (hv : v ≠ 0) : Basis ι K V :=
   let b := basisUnique ι h
@@ -1233,7 +1233,7 @@ theorem span_eq_top_of_linearIndependent_of_card_eq_finrank {ι : Type _} [hι :
 #align span_eq_top_of_linear_independent_of_card_eq_finrank span_eq_top_of_linearIndependent_of_card_eq_finrank
 
 /-- A linear independent family of `finrank K V` vectors forms a basis. -/
-@[simps!]
+@[simps! repr_apply]
 noncomputable def basisOfLinearIndependentOfCardEqFinrank {ι : Type _} [Nonempty ι] [Fintype ι]
     {b : ι → V} (lin_ind : LinearIndependent K b) (card_eq : Fintype.card ι = finrank K V) :
     Basis ι K V :=
@@ -1248,7 +1248,7 @@ theorem coe_basisOfLinearIndependentOfCardEqFinrank {ι : Type _} [Nonempty ι] 
 #align coe_basis_of_linear_independent_of_card_eq_finrank coe_basisOfLinearIndependentOfCardEqFinrank
 
 /-- A linear independent finset of `finrank K V` vectors forms a basis. -/
-@[simps!]
+@[simps! repr_apply]
 noncomputable def finsetBasisOfLinearIndependentOfCardEqFinrank {s : Finset V} (hs : s.Nonempty)
     (lin_ind : LinearIndependent K ((↑) : s → V)) (card_eq : s.card = finrank K V) : Basis s K V :=
   @basisOfLinearIndependentOfCardEqFinrank _ _ _ _ _ _
@@ -1265,7 +1265,7 @@ theorem coe_finsetBasisOfLinearIndependentOfCardEqFinrank {s : Finset V} (hs : s
 #align coe_finset_basis_of_linear_independent_of_card_eq_finrank coe_finsetBasisOfLinearIndependentOfCardEqFinrank
 
 /-- A linear independent set of `finrank K V` vectors forms a basis. -/
-@[simps!]
+@[simps! repr_apply]
 noncomputable def setBasisOfLinearIndependentOfCardEqFinrank {s : Set V} [Nonempty s] [Fintype s]
     (lin_ind : LinearIndependent K ((↑) : s → V)) (card_eq : s.toFinset.card = finrank K V) :
     Basis s K V :=
