@@ -25,7 +25,7 @@ variable {α : Type _} {f : Filter α}
 
 theorem eventually_le_limsup [CountableInterFilter f] (u : α → ℝ≥0∞) :
     ∀ᶠ y in f, u y ≤ f.limsup u :=
-  eventually_le_limsup
+  _root_.eventually_le_limsup
 #align ennreal.eventually_le_limsup ENNReal.eventually_le_limsup
 
 theorem limsup_eq_zero_iff [CountableInterFilter f] {u : α → ℝ≥0∞} :
