@@ -20,7 +20,7 @@ This file introduces the Scott topology on a preorder.
 
 - `WithScottTopology.topological_space` - the Scott topology is defined as the join of the
   topology of upper sets and the topological space where a set `u` is open if, when the least upper
-  bound of a directed set `d` lies in `u` then there is a tail of `d` which is a subset of `u`..
+  bound of a directed set `d` lies in `u` then there is a tail of `d` which is a subset of `u`.
 
 ## Main statements
 
@@ -74,6 +74,45 @@ def upperSetTopology : TopologicalSpace α :=
   isOpen_inter := fun _ _ => IsUpperSet.inter,
   isOpen_unionₛ := fun _ h => isUpperSet_unionₛ h, }
 
+/--
+The Scott topology is defined as the join of the topology of upper sets and the topological space
+where a set `u` is open if, when the least upper bound of a directed set `d` lies in `u` then there
+is a tail of `d` which is a subset of `u`.
+-/
+def ScottTopology' : TopologicalSpace α := (upperSetTopology ⊔
+    { IsOpen := fun u => ∀ (d : Set α) (a : α), d.Nonempty → DirectedOn (· ≤ ·) d → IsLUB d a →
+      a ∈ u → ∃ b ∈ d, (Ici b) ∩ d ⊆ u,
+      isOpen_univ := by
+        intros d _ hd₁ _ _ _
+        cases' hd₁ with b hb
+        use b
+        constructor
+        . exact hb
+        . exact (Ici b ∩ d).subset_univ,
+      isOpen_inter := by
+        intros s t hs ht d a hd₁ hd₂ hd₃ ha
+        obtain ⟨b₁, hb₁_w, hb₁_h⟩ := hs d a hd₁ hd₂ hd₃ ha.1
+        obtain ⟨b₂, hb₂_w, hb₂_h⟩ := ht d a hd₁ hd₂ hd₃ ha.2
+        rw [DirectedOn] at hd₂
+        obtain ⟨c, hc_w, hc_h⟩ := hd₂ b₁ hb₁_w b₂ hb₂_w
+        refine ⟨c, hc_w, ?_⟩
+        . calc
+            Ici c ∩ d ⊆ (Ici b₁ ∩ Ici b₂) ∩ d := by
+            { apply inter_subset_inter_left d
+              apply subset_inter (Ici_subset_Ici.mpr hc_h.1) (Ici_subset_Ici.mpr hc_h.2) }
+            _ = ((Ici b₁)∩d) ∩ ((Ici b₂)∩d) := by rw [inter_inter_distrib_right]
+            _ ⊆ s ∩ t := inter_subset_inter hb₁_h hb₂_h
+      isOpen_unionₛ := by
+        intros s h d a hd₁ hd₂ hd₃ ha
+        rw [mem_unionₛ] at ha
+        obtain ⟨s₀, hs₀_w, hs₀_h⟩ := ha
+        obtain ⟨b, hb_w, hb_h⟩ := h s₀ hs₀_w d a hd₁ hd₂ hd₃ hs₀_h
+        use b
+        constructor
+        . exact hb_w
+        . exact Set.subset_unionₛ_of_subset s s₀ hb_h hs₀_w
+      })
+
 end preorder
 
 /--
@@ -109,48 +148,28 @@ protected def rec {β : WithScottTopology α → Sort _}
 instance [Nonempty α] : Nonempty (WithScottTopology α) := ‹Nonempty α›
 instance [Inhabited α] : Inhabited (WithScottTopology α) := ‹Inhabited α›
 
+variable [Preorder α]
+
+instance : Preorder (WithScottTopology α) := ‹Preorder α›
+
+instance : TopologicalSpace (WithScottTopology α) := ScottTopology'
+
 end WithScottTopology
+
+/--
+The Scott topology is defined as the join of the topology of upper sets and the topological space
+where a set `u` is open if, when the least upper bound of a directed set `d` lies in `u` then there
+is a tail of `d` which is a subset of `u`.
+-/
+class ScottTopology (α : Type _) [t : TopologicalSpace α] [Preorder α] : Prop where
+  topology_eq_ScottTopology : t = ScottTopology'
+
+instance [Preorder α] : ScottTopology (WithScottTopology α) :=
+  ⟨rfl⟩
 
 section preorder
 
 variable [Preorder α] [Preorder β]
-
-instance : Preorder (WithScottTopology α) := ‹Preorder α›
-
-instance : TopologicalSpace (WithScottTopology α) :=
-  (upperSetTopology ⊔
-    { IsOpen := fun u => ∀ (d : Set α) (a : α), d.Nonempty → DirectedOn (· ≤ ·) d → IsLUB d a →
-      a ∈ u → ∃ b ∈ d, (Ici b) ∩ d ⊆ u,
-      isOpen_univ := by
-        intros d _ hd₁ _ _ _
-        cases' hd₁ with b hb
-        use b
-        constructor
-        . exact hb
-        . exact (Ici b ∩ d).subset_univ,
-      isOpen_inter := by
-        intros s t hs ht d a hd₁ hd₂ hd₃ ha
-        obtain ⟨b₁, hb₁_w, hb₁_h⟩ := hs d a hd₁ hd₂ hd₃ ha.1
-        obtain ⟨b₂, hb₂_w, hb₂_h⟩ := ht d a hd₁ hd₂ hd₃ ha.2
-        rw [DirectedOn] at hd₂
-        obtain ⟨c, hc_w, hc_h⟩ := hd₂ b₁ hb₁_w b₂ hb₂_w
-        refine ⟨c, hc_w, ?_⟩
-        . calc
-            Ici c ∩ d ⊆ (Ici b₁ ∩ Ici b₂) ∩ d := by
-            { apply inter_subset_inter_left d
-              apply subset_inter (Ici_subset_Ici.mpr hc_h.1) (Ici_subset_Ici.mpr hc_h.2) }
-            _ = ((Ici b₁)∩d) ∩ ((Ici b₂)∩d) := by rw [inter_inter_distrib_right]
-            _ ⊆ s ∩ t := inter_subset_inter hb₁_h hb₂_h
-      isOpen_unionₛ := by
-        intros s h d a hd₁ hd₂ hd₃ ha
-        rw [mem_unionₛ] at ha
-        obtain ⟨s₀, hs₀_w, hs₀_h⟩ := ha
-        obtain ⟨b, hb_w, hb_h⟩ := h s₀ hs₀_w d a hd₁ hd₂ hd₃ hs₀_h
-        use b
-        constructor
-        . exact hb_w
-        . exact Set.subset_unionₛ_of_subset s s₀ hb_h hs₀_w
-      })
 
 namespace WithScottTopology
 
@@ -310,6 +329,23 @@ lemma ScottContinuous_iff_continuousWrtScott
         apply hb
         exact h_1_left
       contradiction
+
+variable [TopologicalSpace α] [ScottTopology α]
+
+namespace ScottTopology
+
+variable (α)
+
+lemma topology_eq : ‹_› = ScottTopology' := topology_eq_ScottTopology
+
+variable {α}
+
+/-- If `α` is equipped with the Scott topology, then it is homeomorphic to `WithScottTopology α`.
+-/
+def withScottTopologyHomeomorph : WithScottTopology α ≃ₜ α :=
+  WithScottTopology.ofScott.toHomeomorphOfInducing ⟨by erw [topology_eq α, induced_id]; rfl⟩
+
+end ScottTopology
 
 end preorder
 
