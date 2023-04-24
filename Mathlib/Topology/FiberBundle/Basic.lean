@@ -50,7 +50,7 @@ fiber bundle from trivializations given as local equivalences with minimum addit
 
 ### Basic definitions
 
-* `FiberBundle F E` : Structure saying that `E : B → Type*` is a fiber bundle with fiber `F`.
+* `FiberBundle F E` : Structure saying that `E : B → Type _` is a fiber bundle with fiber `F`.
 
 ### Construction of a bundle from trivializations
 
@@ -91,15 +91,15 @@ a family of trivializations (constituting the data) which are all mutually-compa
 The PRs #13052 and #13175 implemented this change.
 
 There is still the choice about whether to hold this data at the level of fiber bundles or of vector
-bundles. As of PR #17505, the data is all held in `FiberBundle`, with `vector_bundle` a
+bundles. As of PR #17505, the data is all held in `FiberBundle`, with `VectorBundle` a
 (propositional) mixin stating fiberwise-linearity.
 
 This allows bundles to carry instances of typeclasses in which the scalar field, `R`, does not
 appear as a parameter. Notably, we would like a vector bundle over `R` with fiber `F` over base `B`
-to be a `charted_space (B × F)`, with the trivializations providing the charts. This would be a
+to be a `ChartedSpace (B × F)`, with the trivializations providing the charts. This would be a
 dangerous instance for typeclass inference, because `R` does not appear as a parameter in
-`charted_space (B × F)`. But if the data of the trivializations is held in `FiberBundle`, then a
-fiber bundle with fiber `F` over base `B` can be a `charted_space (B × F)`, and this is safe for
+`ChartedSpace (B × F)`. But if the data of the trivializations is held in `FiberBundle`, then a
+fiber bundle with fiber `F` over base `B` can be a `ChartedSpace (B × F)`, and this is safe for
 typeclass inference.
 
 We expect that this choice of definition will also streamline constructions of fiber bundles with
@@ -135,7 +135,7 @@ This has several practical advantages:
 * without any work, one gets a topological space structure on the fiber. And if `F` has more
 structure it is inherited for free by the fiber.
 * In the case of the tangent bundle of manifolds, this implies that on vector spaces the derivative
-(from `F` to `F`) and the manifold derivative (from `tangent_space I x` to `tangent_space I' (f x)`)
+(from `F` to `F`) and the manifold derivative (from `TangentSpace I x` to `TangentSpace I' (f x)`)
 are equal.
 
 A drawback is that some silly constructions will typecheck: in the case of the tangent bundle, one
@@ -145,8 +145,8 @@ lose the identification of the tangent space to `F` with `F`. There is however a
 this situation: even if Lean can not check that two basepoints are defeq, it will accept the fact
 that the tangent spaces are the same. For instance, if two maps `f` and `g` are locally inverse to
 each other, one can express that the composition of their derivatives is the identity of
-`tangent_space I x`. One could fear issues as this composition goes from `tangent_space I x` to
-`tangent_space I (g (f x))` (which should be the same, but should not be obvious to Lean
+`TangentSpace I x`. One could fear issues as this composition goes from `TangentSpace I x` to
+`TangentSpace I (g (f x))` (which should be the same, but should not be obvious to Lean
 as it does not know that `g (f x) = x`). As these types are the same to Lean (equal to `F`), there
 are in fact no dependent type difficulties here!
 
@@ -363,7 +363,7 @@ end FiberBundle
 space `B`. Note that "bundle" is used in its mathematical sense. This is the (computer science)
 bundled version, i.e., all the relevant data is contained in the following structure. A family of
 local trivializations is indexed by a type `ι`, on open subsets `baseSet i` for each `i : ι`.
-Trivialization changes from `i` to `j` are given by continuous maps `coord_change i j` from
+Trivialization changes from `i` to `j` are given by continuous maps `coordChange i j` from
 `baseSet i ∩ baseSet j` to the set of homeomorphisms of `F`, but we express them as maps
 `B → F → F` and require continuity on `(baseSet i ∩ baseSet j) × F` to avoid the topology on the
 space of continuous maps on `F`. -/
@@ -786,7 +786,7 @@ theorem isOpen_target_of_mem_pretrivializationAtlas_inter (e e' : Pretrivializat
 /-- Promotion from a `Pretrivialization` to a `Trivialization`. -/
 def trivializationOfMemPretrivializationAtlas (he : e ∈ a.pretrivializationAtlas) :
     @Trivialization B F _ _ _ a.totalSpaceTopology (π E) :=
-  let _ := a.totalSpaceTopology;
+  let _ := a.totalSpaceTopology
   { e with
     open_source := a.isOpen_source e,
     continuous_toFun := by
@@ -816,7 +816,7 @@ theorem totalSpaceMk_preimage_source (b : B) :
   eq_univ_of_forall (a.mem_pretrivializationAt_source b)
 #align fiber_prebundle.total_space_mk_preimage_source FiberPrebundle.totalSpaceMk_preimage_source
 
-/-- Topology on the fibers `E b` induced by the map `E b → E.total_space`. -/
+/-- Topology on the fibers `E b` induced by the map `E b → E.TotalSpace`. -/
 def fiberTopology (b : B) : TopologicalSpace (E b) :=
   TopologicalSpace.induced (totalSpaceMk b) a.totalSpaceTopology
 #align fiber_prebundle.fiber_topology FiberPrebundle.fiberTopology
@@ -843,7 +843,7 @@ establishes that for the topology constructed on the sigma-type using
 `FiberPrebundle.totalSpaceTopology`, these "pretrivializations" are actually
 "trivializations" (i.e., homeomorphisms with respect to the constructed topology). -/
 def toFiberBundle : @FiberBundle B F _ _ E a.totalSpaceTopology a.fiberTopology :=
-  let _ := a.totalSpaceTopology; let _ := a.fiberTopology;
+  let _ := a.totalSpaceTopology; let _ := a.fiberTopology
   { totalSpaceMk_inducing' := a.inducing_totalSpaceMk,
     trivializationAtlas' :=
       { e | ∃ (e₀ : _) (he₀ : e₀ ∈ a.pretrivializationAtlas),
@@ -862,7 +862,7 @@ theorem continuous_proj : @Continuous _ _ a.totalSpaceTopology _ (π E) := by
 #align fiber_prebundle.continuous_proj FiberPrebundle.continuous_proj
 
 /-- For a fiber bundle `E` over `B` constructed using the `FiberPrebundle` mechanism,
-continuity of a function `total_space E → X` on an open set `s` can be checked by precomposing at
+continuity of a function `TotalSpace E → X` on an open set `s` can be checked by precomposing at
 each point with the pretrivialization used for the construction at that point. -/
 theorem continuousOn_of_comp_right {X : Type _} [TopologicalSpace X] {f : TotalSpace E → X}
     {s : Set B} (hs : IsOpen s) (hf : ∀ b ∈ s,

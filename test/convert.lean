@@ -70,3 +70,10 @@ example (prime : Nat → Prop) (n : Nat) (h : prime (2 * n + 1)) :
   convert (config := .unfoldSameFun) h
   guard_target = n + n = 2 * n
   sorry
+
+example (p q : Nat → Prop) (h : ∀ ε > 0, p ε) :
+    ∀ ε > 0, q ε := by
+  convert h using 2 with ε hε
+  guard_hyp hε : ε > 0
+  guard_target = q ε ↔ p ε
+  sorry

@@ -231,8 +231,8 @@ attribute [simp] map_inv_eq_map -- porting note: `to_additive` translation alrea
 attribute [to_additive] GroupSeminormClass.toMulLEAddHomClass
 
 -- See note [lower instance priority]
-instance (priority := 100) AddGroupSeminormClass.toZeroHomClass {_ : AddGroup α}
-    {_ : OrderedAddCommMonoid β} [AddGroupSeminormClass F α β] : ZeroHomClass F α β :=
+instance (priority := 100) AddGroupSeminormClass.toZeroHomClass [AddGroup α]
+    [OrderedAddCommMonoid β] [AddGroupSeminormClass F α β] : ZeroHomClass F α β :=
   { ‹AddGroupSeminormClass F α β› with }
 #align add_group_seminorm_class.to_zero_hom_class AddGroupSeminormClass.toZeroHomClass
 
@@ -275,8 +275,8 @@ theorem abs_sub_map_le_div [Group α] [LinearOrderedAddCommGroup β] [GroupSemin
 
 -- See note [lower instance priority]
 @[to_additive]
-instance (priority := 100) GroupSeminormClass.toNonnegHomClass {_ : Group α}
-    {_ : LinearOrderedAddCommMonoid β} [GroupSeminormClass F α β] : NonnegHomClass F α β :=
+instance (priority := 100) GroupSeminormClass.toNonnegHomClass [Group α]
+    [LinearOrderedAddCommMonoid β] [GroupSeminormClass F α β] : NonnegHomClass F α β :=
   { ‹GroupSeminormClass F α β› with
     map_nonneg := fun f a =>
       (nsmul_nonneg_iff two_ne_zero).1 <|
@@ -348,19 +348,19 @@ class MulRingNormClass (F : Type _) (α β : outParam <| Type _) [NonAssocRing �
 
 -- See note [out-param inheritance]
 -- See note [lower instance priority]
-instance (priority := 100) RingSeminormClass.toNonnegHomClass {_ : NonUnitalNonAssocRing α}
-    {_ : LinearOrderedSemiring β} [RingSeminormClass F α β] : NonnegHomClass F α β :=
+instance (priority := 100) RingSeminormClass.toNonnegHomClass [NonUnitalNonAssocRing α]
+    [LinearOrderedSemiring β] [RingSeminormClass F α β] : NonnegHomClass F α β :=
   AddGroupSeminormClass.toNonnegHomClass
 #align ring_seminorm_class.to_nonneg_hom_class RingSeminormClass.toNonnegHomClass
 
 -- See note [lower instance priority]
-instance (priority := 100) MulRingSeminormClass.toRingSeminormClass {_ : NonAssocRing α}
-    {_ : OrderedSemiring β} [MulRingSeminormClass F α β] : RingSeminormClass F α β :=
+instance (priority := 100) MulRingSeminormClass.toRingSeminormClass [NonAssocRing α]
+    [OrderedSemiring β] [MulRingSeminormClass F α β] : RingSeminormClass F α β :=
   { ‹MulRingSeminormClass F α β› with map_mul_le_mul := fun f a b => (map_mul _ _ _).le }
 #align mul_ring_seminorm_class.to_ring_seminorm_class MulRingSeminormClass.toRingSeminormClass
 
 -- See note [lower instance priority]
-instance (priority := 100) MulRingNormClass.toRingNormClass {_ : NonAssocRing α}
-    {_ : OrderedSemiring β} [MulRingNormClass F α β] : RingNormClass F α β :=
+instance (priority := 100) MulRingNormClass.toRingNormClass [NonAssocRing α]
+    [OrderedSemiring β] [MulRingNormClass F α β] : RingNormClass F α β :=
   { ‹MulRingNormClass F α β›, MulRingSeminormClass.toRingSeminormClass with }
 #align mul_ring_norm_class.to_ring_norm_class MulRingNormClass.toRingNormClass
