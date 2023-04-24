@@ -149,7 +149,7 @@ initialize ignoreArgsAttr : NameMapExtension (List Nat) ←
           | _ => throwUnsupportedSyntax
         return ids.toList }
 
- /--
+/--
 An attribute that stores all the declarations that needs their arguments reordered when
 applying `@[to_additive]`. It is applied by the `(reorder := ...)` syntax of `to_additive`.
 -/
