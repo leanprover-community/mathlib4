@@ -19,15 +19,15 @@ compact Hausdorff spaces.
 
 ## Main declarations
 
-* `extremally_disconnected`: Predicate for a space to be extremally disconnected.
-* `compact_t2.projective`: ¨Predicate for a topological space to be a projective object in the
+* `ExtremallyDisconnected`: Predicate for a space to be extremally disconnected.
+* `CompactT2.Projective`: Predicate for a topological space to be a projective object in the
   category of compact Hausdorff spaces.
-* `compact_t2.projective.extremally_disconnected`: Compact Hausdorff spaces that are
+* `CompactT2.Projective.extremallyDisconnected`: Compact Hausdorff spaces that are
   projective are extremally disconnected.
 
 # TODO
 
-Prove the converse to `compact_t2.projective.extremally_disconnected`, namely that a compact,
+Prove the converse to `CompactT2.Projective.extremallyDisconnected`, namely that a compact,
 Hausdorff, extremally disconnected space is a projective object in the category of compact Hausdorff
 spaces.
 
@@ -57,15 +57,13 @@ class ExtremallyDisconnected : Prop where
 
 section
 
-include X
-
-/-- The assertion `compact_t2.projective` states that given continuous maps
+/-- The assertion `CompactT2.Projective` states that given continuous maps
 `f : X → Z` and `g : Y → Z` with `g` surjective between `t_2`, compact topological spaces,
 there exists a continuous lift `h : X → Y`, such that `f = g ∘ h`. -/
 def CompactT2.Projective : Prop :=
   ∀ {Y Z : Type u} [TopologicalSpace Y] [TopologicalSpace Z],
     ∀ [CompactSpace Y] [T2Space Y] [CompactSpace Z] [T2Space Z],
-      ∀ {f : X → Z} {g : Y → Z} (hf : Continuous f) (hg : Continuous g) (g_sur : surjective g),
+      ∀ {f : X → Z} {g : Y → Z} (_ : Continuous f) (_ : Continuous g) (_ : Surjective g),
         ∃ h : X → Y, Continuous h ∧ g ∘ h = f
 #align compact_t2.projective CompactT2.Projective
 
@@ -81,44 +79,44 @@ theorem StoneCech.projective [DiscreteTopology X] : CompactT2.Projective (StoneC
   have ht : Continuous t := continuous_of_discreteTopology
   let h : StoneCech X → Y := stoneCechExtend ht
   have hh : Continuous h := continuous_stoneCechExtend ht
-  refine' ⟨h, hh, dense_range_stone_cech_unit.equalizer (hg.comp hh) hf _⟩
+  refine' ⟨h, hh, denseRange_stoneCechUnit.equalizer (hg.comp hh) hf _⟩
   rw [comp.assoc, stoneCechExtend_extends ht, ← comp.assoc, hs, comp.left_id]
 #align stone_cech.projective StoneCech.projective
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 protected theorem CompactT2.Projective.extremallyDisconnected [CompactSpace X] [T2Space X]
     (h : CompactT2.Projective X) : ExtremallyDisconnected X := by
   refine' { open_closure := fun U hU => _ }
-  let Z₁ : Set (X × Bool) := Uᶜ ×ˢ {tt}
-  let Z₂ : Set (X × Bool) := closure U ×ˢ {ff}
+  let Z₁ : Set (X × Bool) := Uᶜ ×ˢ {true}
+  let Z₂ : Set (X × Bool) := closure U ×ˢ {false}
   let Z : Set (X × Bool) := Z₁ ∪ Z₂
   have hZ₁₂ : Disjoint Z₁ Z₂ := disjoint_left.2 fun x hx₁ hx₂ => by cases hx₁.2.symm.trans hx₂.2
-  have hZ₁ : IsClosed Z₁ := hU.is_closed_compl.prod (T1Space.t1 _)
-  have hZ₂ : IsClosed Z₂ := is_closed_closure.prod (T1Space.t1 ff)
+  have hZ₁ : IsClosed Z₁ := hU.isClosed_compl.prod (T1Space.t1 _)
+  have hZ₂ : IsClosed Z₂ := isClosed_closure.prod (T1Space.t1 false)
   have hZ : IsClosed Z := hZ₁.union hZ₂
   let f : Z → X := Prod.fst ∘ Subtype.val
   have f_cont : Continuous f := continuous_fst.comp continuous_subtype_val
-  have f_sur : surjective f := by
+  have f_sur : Surjective f := by
     intro x
     by_cases hx : x ∈ U
-    · exact ⟨⟨(x, ff), Or.inr ⟨subset_closure hx, Set.mem_singleton _⟩⟩, rfl⟩
-    · exact ⟨⟨(x, tt), Or.inl ⟨hx, Set.mem_singleton _⟩⟩, rfl⟩
-  haveI : CompactSpace Z := is_compact_iff_compact_space.mp hZ.is_compact
+    · exact ⟨⟨(x, false), Or.inr ⟨subset_closure hx, Set.mem_singleton _⟩⟩, rfl⟩
+    · exact ⟨⟨(x, true), Or.inl ⟨hx, Set.mem_singleton _⟩⟩, rfl⟩
+  haveI : CompactSpace Z := isCompact_iff_compactSpace.mp hZ.isCompact
   obtain ⟨g, hg, g_sec⟩ := h continuous_id f_cont f_sur
-  let φ := coe ∘ g
+  let φ := Subtype.val ∘ g
   have hφ : Continuous φ := continuous_subtype_val.comp hg
   have hφ₁ : ∀ x, (φ x).1 = x := congr_fun g_sec
   suffices closure U = φ ⁻¹' Z₂ by
     rw [this, Set.preimage_comp, ← isClosed_compl_iff, ← preimage_compl, ←
-      preimage_subtype_coe_eq_compl subset.rfl]
+      preimage_subtype_coe_eq_compl Subset.rfl]
     · exact hZ₁.preimage hφ
     · rw [hZ₁₂.inter_eq, inter_empty]
   refine' (closure_minimal _ <| hZ₂.preimage hφ).antisymm fun x hx => _
-  · rintro x hx
+  · intro x hx
     have : φ x ∈ Z₁ ∪ Z₂ := (g x).2
-    simpa [hx, hφ₁] using this
+    -- Porting note: Originally `simpa [hx, hφ₁] using this`
+    cases' this with hφ hφ
+    · exact ((hφ₁ x ▸ hφ.1) hx).elim
+    · exact hφ
   · rw [← hφ₁ x]
     exact hx.1
 #align compact_t2.projective.extremally_disconnected CompactT2.Projective.extremallyDisconnected
-
