@@ -275,7 +275,8 @@ theorem Cotrident.π_ofπ [Nonempty J] {P : C} (π : Y ⟶ P) (w : ∀ j₁ j₂
   rfl
 #align category_theory.limits.cotrident.π_of_π CategoryTheory.Limits.Cotrident.π_ofπ
 
-@[reassoc (attr := simp)]
+-- porting note: @[simp] as the linter complains even if we increase the priority
+@[reassoc]
 theorem Trident.condition (j₁ j₂ : J) (t : Trident f) : t.ι ≫ f j₁ = t.ι ≫ f j₂ := by
   rw [t.app_zero, t.app_zero]
 #align category_theory.limits.trident.condition CategoryTheory.Limits.Trident.condition
@@ -599,7 +600,7 @@ theorem wideEqualizer.trident_ι : (wideEqualizer.trident f).ι = wideEqualizer.
   rfl
 #align category_theory.limits.wide_equalizer.trident_ι CategoryTheory.Limits.wideEqualizer.trident_ι
 
-@[simp]
+@[simp 1100]
 theorem wideEqualizer.trident_π_app_zero :
     (wideEqualizer.trident f).π.app zero = wideEqualizer.ι f :=
   rfl
@@ -629,7 +630,7 @@ abbrev wideEqualizer.lift [Nonempty J] {W : C} (k : W ⟶ X) (h : ∀ j₁ j₂,
   limit.lift (parallelFamily f) (Trident.ofι k h)
 #align category_theory.limits.wide_equalizer.lift CategoryTheory.Limits.wideEqualizer.lift
 
-@[reassoc (attr := simp)]
+@[reassoc (attr := simp 1100)]
 theorem wideEqualizer.lift_ι [Nonempty J] {W : C} (k : W ⟶ X)
   (h : ∀ j₁ j₂, k ≫ f j₁ = k ≫ f j₂) :
     wideEqualizer.lift k h ≫ wideEqualizer.ι f = k :=
@@ -710,7 +711,7 @@ theorem wideCoequalizer.cotrident_π : (wideCoequalizer.cotrident f).π = wideCo
   category_theory.limits.wide_coequalizer.cotrident_π
   CategoryTheory.Limits.wideCoequalizer.cotrident_π
 
-@[simp]
+@[simp 1100]
 theorem wideCoequalizer.cotrident_ι_app_one :
     (wideCoequalizer.cotrident f).ι.app one = wideCoequalizer.π f :=
   rfl
@@ -743,7 +744,7 @@ abbrev wideCoequalizer.desc [Nonempty J] {W : C} (k : Y ⟶ W) (h : ∀ j₁ j�
   colimit.desc (parallelFamily f) (Cotrident.ofπ k h)
 #align category_theory.limits.wide_coequalizer.desc CategoryTheory.Limits.wideCoequalizer.desc
 
-@[reassoc (attr := simp)]
+@[reassoc (attr := simp 1100)]
 theorem wideCoequalizer.π_desc [Nonempty J] {W : C} (k : Y ⟶ W)
   (h : ∀ j₁ j₂, f j₁ ≫ k = f j₂ ≫ k) :
     wideCoequalizer.π f ≫ wideCoequalizer.desc k h = k :=
@@ -831,3 +832,5 @@ instance (priority := 10) hasCoequalizers_of_hasWideCoequalizers [HasWideCoequal
   CategoryTheory.Limits.hasCoequalizers_of_hasWideCoequalizers
 
 end CategoryTheory.Limits
+
+attribute [-simp] CategoryTheory.Limits.WalkingParallelFamily.Hom.id.sizeOf_spec
