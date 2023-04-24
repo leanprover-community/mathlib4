@@ -140,7 +140,7 @@ instance : TopologicalSpace (WithScottTopology α) :=
             { apply inter_subset_inter_left d
               apply subset_inter (Ici_subset_Ici.mpr hc_h.1) (Ici_subset_Ici.mpr hc_h.2) }
             _ = ((Ici b₁)∩d) ∩ ((Ici b₂)∩d) := by rw [inter_inter_distrib_right]
-            _ ⊆ s ∩ t := by { exact inter_subset_inter hb₁_h hb₂_h }
+            _ ⊆ s ∩ t := inter_subset_inter hb₁_h hb₂_h
       isOpen_unionₛ := by
         intros s h d a hd₁ hd₂ hd₃ ha
         rw [mem_unionₛ] at ha
@@ -179,13 +179,13 @@ a ∈ u → (d ∩ u).Nonempty) := by
     constructor
     . exact h.1
     . intros d a d₁ d₂ d₃ ha
-      have e1 : (d ∩ u).Nonempty := by exact h.2 d a d₁ d₂ d₃ ha
+      have e1 : (d ∩ u).Nonempty := h.2 d a d₁ d₂ d₃ ha
       rw [inter_nonempty_iff_exists_left] at e1
       obtain ⟨b, ⟨e1_h_w, e1_h_h⟩⟩ := e1
       use b
       constructor
       . exact e1_h_w
-      . have e2 : Ici b ⊆ u := by exact isUpperSet_iff_Ici_subset.mp h.1 e1_h_h
+      . have e2 : Ici b ⊆ u := isUpperSet_iff_Ici_subset.mp h.1 e1_h_h
         apply Subset.trans _ e2
         apply inter_subset_left
 
@@ -200,7 +200,7 @@ lemma isClosed_eq_lower_and_subset_implies_LUB_mem (s : Set (WithScottTopology �
   . intros h d a d₁ d₂ d₃ d₄
     by_contra h'
     rw [← mem_compl_iff] at h'
-    have c1: (d ∩ sᶜ).Nonempty := by exact h d a d₁ d₂ d₃ h'
+    have c1: (d ∩ sᶜ).Nonempty := h d a d₁ d₂ d₃ h'
     have c2: (d ∩ sᶜ) =  ∅ := by
       rw [← subset_empty_iff, ← inter_compl_self s]
       exact inter_subset_inter_left _ d₄
@@ -209,7 +209,7 @@ lemma isClosed_eq_lower_and_subset_implies_LUB_mem (s : Set (WithScottTopology �
   . intros h d a d₁ d₂ d₃ d₄
     by_contra h'
     rw [inter_compl_nonempty_iff, not_not] at h'
-    have c1: a ∈ s := by exact h d a d₁ d₂ d₃ h'
+    have c1: a ∈ s := h d a d₁ d₂ d₃ h'
     contradiction
 
 
@@ -269,8 +269,7 @@ lemma ScottContinuous_iff_continuousWrtScott
     rw [WithScottTopology.isOpen_iff_upper_and_LUB_mem_implies_inter_nonempty]
     constructor
     . apply IsUpperSet.preimage (WithScottTopology.isOpen_isUpper hu)
-      apply ScottContinuous.monotone
-      exact h
+      apply h.monotone
     . intros d a hd₁ hd₂ hd₃ ha
       have e1: IsLUB (f '' d) (f a) := by
         apply h
@@ -281,12 +280,9 @@ lemma ScottContinuous_iff_continuousWrtScott
       have e2: ((f '' d) ∩ u).Nonempty := by
         apply hu.2
         exact Nonempty.image f hd₁
-        have e3: Monotone f := by
-          apply ScottContinuous.monotone
-          exact h
         apply directedOn_image.mpr
         apply DirectedOn.mono hd₂
-        apply e3
+        apply h.monotone
         apply e1
         exact ha
       exact image_inter_nonempty_iff.mp e2
