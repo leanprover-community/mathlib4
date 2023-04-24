@@ -138,7 +138,9 @@ import Mathlib.Algebra.Homology.HomologicalComplex
 import Mathlib.Algebra.Homology.Homology
 import Mathlib.Algebra.Homology.Homotopy
 import Mathlib.Algebra.Homology.ImageToKernel
+import Mathlib.Algebra.Homology.ShortComplex.Abelian
 import Mathlib.Algebra.Homology.ShortComplex.Basic
+import Mathlib.Algebra.Homology.ShortComplex.Homology
 import Mathlib.Algebra.Homology.ShortComplex.LeftHomology
 import Mathlib.Algebra.Homology.ShortComplex.RightHomology
 import Mathlib.Algebra.Homology.Single
