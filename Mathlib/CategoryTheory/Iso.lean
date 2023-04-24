@@ -9,7 +9,7 @@ Ported by: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.CategoryTheory.Functor.Basic
+import Mathlib.Tactic.Reassoc
 
 /-!
 # Isomorphisms
@@ -39,7 +39,7 @@ category, category theory, isomorphism
 
 universe v u
 
--- morphism levels before object levels. See note [category_theory universes].
+-- morphism levels before object levels. See note [CategoryTheory universes].
 namespace CategoryTheory
 
 open Category

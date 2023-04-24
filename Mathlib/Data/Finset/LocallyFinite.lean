@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Yaël Dillies
 
 ! This file was ported from Lean 3 source module data.finset.locally_finite
-! leanprover-community/mathlib commit e3d9ab8faa9dea8f78155c6c27d62a621f4c152d
+! leanprover-community/mathlib commit f24cc2891c0e328f0ee8c57387103aa462c44b5e
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -601,13 +601,26 @@ theorem Ico_inter_Ico_consecutive (a b c : α) : Ico a b ∩ Ico b c = ∅ :=
 end DecidableEq
 
 -- Those lemmas are purposefully the other way around
+
+/-- `Finset.cons` version of `Finset.Ico_insert_right`. -/
 theorem Icc_eq_cons_Ico (h : a ≤ b) : Icc a b = (Ico a b).cons b right_not_mem_Ico := by
   classical rw [cons_eq_insert, Ico_insert_right h]
 #align finset.Icc_eq_cons_Ico Finset.Icc_eq_cons_Ico
 
+/-- `Finset.cons` version of `Finset.Ioc_insert_left`. -/
 theorem Icc_eq_cons_Ioc (h : a ≤ b) : Icc a b = (Ioc a b).cons a left_not_mem_Ioc := by
   classical rw [cons_eq_insert, Ioc_insert_left h]
 #align finset.Icc_eq_cons_Ioc Finset.Icc_eq_cons_Ioc
+
+/-- `Finset.cons` version of `Finset.Ioo_insert_right`. -/
+theorem Ioc_eq_cons_Ioo (h : a < b) : Ioc a b = (Ioo a b).cons b right_not_mem_Ioo := by
+  classical rw [cons_eq_insert, Ioo_insert_right h]
+#align finset.Ioc_eq_cons_Ioo Finset.Ioc_eq_cons_Ioo
+
+/-- `Finset.cons` version of `Finset.Ioo_insert_left`. -/
+theorem Ico_eq_cons_Ioo (h : a < b) : Ico a b = (Ioo a b).cons a left_not_mem_Ioo := by
+  classical rw [cons_eq_insert, Ioo_insert_left h]
+#align finset.Ico_eq_cons_Ioo Finset.Ico_eq_cons_Ioo
 
 theorem Ico_filter_le_left {a b : α} [DecidablePred (· ≤ a)] (hab : a < b) :
     ((Ico a b).filter fun x => x ≤ a) = {a} := by
@@ -619,7 +632,7 @@ theorem Ico_filter_le_left {a b : α} [DecidablePred (· ≤ a)] (hab : a < b) :
 theorem card_Ico_eq_card_Icc_sub_one (a b : α) : (Ico a b).card = (Icc a b).card - 1 := by
   classical
     by_cases h : a ≤ b
-    · rw [← Ico_insert_right h, card_insert_of_not_mem right_not_mem_Ico]
+    · rw [Icc_eq_cons_Ico h, card_cons]
       exact (Nat.add_sub_cancel _ _).symm
     · rw [Ico_eq_empty fun h' => h h'.le, Icc_eq_empty h, card_empty, zero_tsub]
 #align finset.card_Ico_eq_card_Icc_sub_one Finset.card_Ico_eq_card_Icc_sub_one
@@ -630,12 +643,10 @@ theorem card_Ioc_eq_card_Icc_sub_one (a b : α) : (Ioc a b).card = (Icc a b).car
 
 theorem card_Ioo_eq_card_Ico_sub_one (a b : α) : (Ioo a b).card = (Ico a b).card - 1 := by
   classical
-    by_cases h : a ≤ b
-    · obtain rfl | h' := h.eq_or_lt
-      · rw [Ioo_self, Ico_self, card_empty]
-      rw [← Ioo_insert_left h', card_insert_of_not_mem left_not_mem_Ioo]
+    by_cases h : a < b
+    · rw [Ico_eq_cons_Ioo h, card_cons]
       exact (Nat.add_sub_cancel _ _).symm
-    · rw [Ioo_eq_empty fun h' => h h'.le, Ico_eq_empty fun h' => h h'.le, card_empty, zero_tsub]
+    · rw [Ioo_eq_empty h, Ico_eq_empty h, card_empty, zero_tsub]
 #align finset.card_Ioo_eq_card_Ico_sub_one Finset.card_Ioo_eq_card_Ico_sub_one
 
 theorem card_Ioo_eq_card_Ioc_sub_one (a b : α) : (Ioo a b).card = (Ioc a b).card - 1 :=
@@ -675,6 +686,7 @@ theorem not_mem_Ioi_self {b : α} : b ∉ Ioi b := fun h => lt_irrefl _ (mem_Ioi
 #align finset.not_mem_Ioi_self Finset.not_mem_Ioi_self
 
 -- Purposefully written the other way around
+/-- `Finset.cons` version of `Finset.Ioi_insert`. -/
 theorem Ici_eq_cons_Ioi (a : α) : Ici a = (Ioi a).cons a not_mem_Ioi_self := by
   classical rw [cons_eq_insert, Ioi_insert]
 #align finset.Ici_eq_cons_Ioi Finset.Ici_eq_cons_Ioi
@@ -707,6 +719,7 @@ theorem not_mem_Iio_self {b : α} : b ∉ Iio b := fun h => lt_irrefl _ (mem_Iio
 #align finset.not_mem_Iio_self Finset.not_mem_Iio_self
 
 -- Purposefully written the other way around
+/-- `Finset.cons` version of `Finset.Iio_insert`. -/
 theorem Iic_eq_cons_Iio (b : α) : Iic b = (Iio b).cons b not_mem_Iio_self := by
   classical rw [cons_eq_insert, Iio_insert]
 #align finset.Iic_eq_cons_Iio Finset.Iic_eq_cons_Iio

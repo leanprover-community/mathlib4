@@ -92,7 +92,7 @@ def Subsemigroup.toAddSubsemigroup : Subsemigroup M ≃o AddSubsemigroup (Additi
   right_inv _ := rfl
   map_rel_iff':= Iff.rfl
 #align subsemigroup.to_add_subsemigroup Subsemigroup.toAddSubsemigroup
-#align subsemigroup.to_add_subsemigroup_symm_apply_coe Subsemigroup.toAddSubsemigroup_symmApply_coe
+#align subsemigroup.to_add_subsemigroup_symm_apply_coe Subsemigroup.toAddSubsemigroup_symm_apply_coe
 #align subsemigroup.to_add_subsemigroup_apply_coe Subsemigroup.toAddSubsemigroup_apply_coe
 
 /-- Additive subsemigroups of an additive semigroup `Additive M` are isomorphic to subsemigroups
@@ -140,7 +140,7 @@ def AddSubsemigroup.toSubsemigroup : AddSubsemigroup A ≃o Subsemigroup (Multip
   map_rel_iff' := Iff.rfl
 #align add_subsemigroup.to_subsemigroup AddSubsemigroup.toSubsemigroup
 #align add_subsemigroup.to_subsemigroup_apply_coe AddSubsemigroup.toSubsemigroup_apply_coe
-#align add_subsemigroup.to_subsemigroup_symm_apply_coe AddSubsemigroup.toSubsemigroup_symmApply_coe
+#align add_subsemigroup.to_subsemigroup_symm_apply_coe AddSubsemigroup.toSubsemigroup_symm_apply_coe
 
 /-- Subsemigroups of a semigroup `Multiplicative A` are isomorphic to additive subsemigroups
 of `A`. -/
@@ -596,8 +596,8 @@ def topEquiv : (⊤ : Subsemigroup M) ≃* M where
   map_mul' _ _ := rfl
 #align subsemigroup.top_equiv Subsemigroup.topEquiv
 #align add_subsemigroup.top_equiv AddSubsemigroup.topEquiv
-#align subsemigroup.top_equiv_symm_apply_coe Subsemigroup.topEquiv_symmApply_coe
-#align add_subsemigroup.top_equiv_symm_apply_coe AddSubsemigroup.topEquiv_symmApply_coe
+#align subsemigroup.top_equiv_symm_apply_coe Subsemigroup.topEquiv_symm_apply_coe
+#align add_subsemigroup.top_equiv_symm_apply_coe AddSubsemigroup.topEquiv_symm_apply_coe
 #align add_subsemigroup.top_equiv_apply AddSubsemigroup.topEquiv_apply
 
 @[to_additive (attr := simp)]
@@ -984,8 +984,8 @@ def ofLeftInverse (f : M →ₙ* N) {g : N → M} (h : Function.LeftInverse g f)
 #align add_equiv.of_left_inverse AddEquiv.ofLeftInverse
 #align mul_equiv.of_left_inverse_apply MulEquiv.ofLeftInverse_apply
 #align add_equiv.of_left_inverse_apply AddEquiv.ofLeftInverse_apply
-#align mul_equiv.of_left_inverse_symm_apply MulEquiv.ofLeftInverse_symmApply
-#align add_equiv.of_left_inverse_symm_apply AddEquiv.ofLeftInverse_symmApply
+#align mul_equiv.of_left_inverse_symm_apply MulEquiv.ofLeftInverse_symm_apply
+#align add_equiv.of_left_inverse_symm_apply AddEquiv.ofLeftInverse_symm_apply
 
 /-- A `MulEquiv` `φ` between two semigroups `M` and `N` induces a `MulEquiv` between
 a subsemigroup `S ≤ M` and the subsemigroup `φ(S) ≤ N`.
@@ -1004,7 +1004,7 @@ def subsemigroupMap (e : M ≃* N) (S : Subsemigroup M) : S ≃* S.map e.toMulHo
 #align add_equiv.subsemigroup_map AddEquiv.subsemigroupMap
 #align mul_equiv.subsemigroup_map_apply_coe MulEquiv.subsemigroupMap_apply_coe
 #align add_equiv.subsemigroup_map_apply_coe AddEquiv.subsemigroupMap_apply_coe
-#align mul_equiv.subsemigroup_map_symm_apply_coe MulEquiv.subsemigroupMap_symmApply_coe
-#align add_equiv.subsemigroup_map_symm_apply_coe AddEquiv.subsemigroupMap_symmApply_coe
+#align mul_equiv.subsemigroup_map_symm_apply_coe MulEquiv.subsemigroupMap_symm_apply_coe
+#align add_equiv.subsemigroup_map_symm_apply_coe AddEquiv.subsemigroupMap_symm_apply_coe
 
 end MulEquiv

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kenny Lau
 
 ! This file was ported from Lean 3 source module data.dfinsupp.basic
-! leanprover-community/mathlib commit e3d9ab8faa9dea8f78155c6c27d62a621f4c152d
+! leanprover-community/mathlib commit 6623e6af705e97002a9054c1c05a980180276fc1
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -360,16 +360,17 @@ theorem coe_smul [Monoid γ] [∀ i, AddMonoid (β i)] [∀ i, DistribMulAction 
   rfl
 #align dfinsupp.coe_smul Dfinsupp.coe_smul
 
-instance {δ : Type _} [Monoid γ] [Monoid δ] [∀ i, AddMonoid (β i)] [∀ i, DistribMulAction γ (β i)]
-    [∀ i, DistribMulAction δ (β i)] [∀ i, SMulCommClass γ δ (β i)] : SMulCommClass γ δ (Π₀ i, β i)
+instance smulCommClass {δ : Type _} [Monoid γ] [Monoid δ] [∀ i, AddMonoid (β i)]
+    [∀ i, DistribMulAction γ (β i)] [∀ i, DistribMulAction δ (β i)] [∀ i, SMulCommClass γ δ (β i)] :
+    SMulCommClass γ δ (Π₀ i, β i)
     where smul_comm r s m := ext fun i => by simp only [smul_apply, smul_comm r s (m i)]
 
-instance {δ : Type _} [Monoid γ] [Monoid δ] [∀ i, AddMonoid (β i)] [∀ i, DistribMulAction γ (β i)]
-    [∀ i, DistribMulAction δ (β i)] [SMul γ δ] [∀ i, IsScalarTower γ δ (β i)] :
-    IsScalarTower γ δ (Π₀ i, β i)
+instance isScalarTower {δ : Type _} [Monoid γ] [Monoid δ] [∀ i, AddMonoid (β i)]
+    [∀ i, DistribMulAction γ (β i)] [∀ i, DistribMulAction δ (β i)] [SMul γ δ]
+    [∀ i, IsScalarTower γ δ (β i)] : IsScalarTower γ δ (Π₀ i, β i)
     where smul_assoc r s m := ext fun i => by simp only [smul_apply, smul_assoc r s (m i)]
 
-instance [Monoid γ] [∀ i, AddMonoid (β i)] [∀ i, DistribMulAction γ (β i)]
+instance isCentralScalar [Monoid γ] [∀ i, AddMonoid (β i)] [∀ i, DistribMulAction γ (β i)]
     [∀ i, DistribMulAction γᵐᵒᵖ (β i)] [∀ i, IsCentralScalar γ (β i)] :
     IsCentralScalar γ (Π₀ i, β i)
     where op_smul_eq_smul r m := ext fun i => by simp only [smul_apply, op_smul_eq_smul r (m i)]
@@ -382,10 +383,13 @@ instance distribMulAction [Monoid γ] [∀ i, AddMonoid (β i)] [∀ i, DistribM
 
 /-- Dependent functions with finite support inherit a module structure from such a structure on
 each coordinate. -/
-instance [Semiring γ] [∀ i, AddCommMonoid (β i)] [∀ i, Module γ (β i)] : Module γ (Π₀ i, β i) :=
+instance module [Semiring γ] [∀ i, AddCommMonoid (β i)] [∀ i, Module γ (β i)] :
+    Module γ (Π₀ i, β i) :=
   { inferInstanceAs (DistribMulAction γ (Π₀ i, β i)) with
     zero_smul := fun c => ext fun i => by simp only [smul_apply, zero_smul, zero_apply]
     add_smul := fun c x y => ext fun i => by simp only [add_apply, smul_apply, add_smul] }
+#align dfinsupp.module Dfinsupp.module
+
 
 end Algebra
 
@@ -1181,10 +1185,10 @@ theorem mapRange_def [∀ (i) (x : β₁ i), Decidable (x ≠ 0)] {f : ∀ i, β
 theorem mapRange_single {f : ∀ i, β₁ i → β₂ i} {hf : ∀ i, f i 0 = 0} {i : ι} {b : β₁ i} :
     mapRange f hf (single i b) = single i (f i b) :=
   Dfinsupp.ext fun i' => by
-    by_cases i = i' <;>
-      [·
-        subst i'
-        simp, simp [h, hf]]
+    by_cases h : i = i'
+    · subst i'
+      simp
+    · simp [h, hf]
 #align dfinsupp.map_range_single Dfinsupp.mapRange_single
 
 variable [∀ (i) (x : β₁ i), Decidable (x ≠ 0)] [∀ (i) (x : β₂ i), Decidable (x ≠ 0)]
@@ -1476,9 +1480,9 @@ theorem sigmaCurry_apply [∀ i j, Zero (δ i j)] (f : Π₀ i : Σi, _, δ i.1 
     case h₁ =>
       rw [@mem_image _ _ (fun a b ↦ Classical.propDecidable (a = b))]
       refine' ⟨⟨i, j⟩, _, rfl⟩
-      convert (mem_support_toFun f _).2 h <;> apply Subsingleton.elim
+      convert (mem_support_toFun f _).2 h
     · rw [mem_preimage]
-      convert (mem_support_toFun f _).2 h <;> apply Subsingleton.elim
+      convert (mem_support_toFun f _).2 h
 #align dfinsupp.sigma_curry_apply Dfinsupp.sigmaCurry_apply
 
 @[simp]
@@ -2014,7 +2018,7 @@ theorem sumAddHom_comm {ι₁ ι₂ : Sort _} {β₁ : ι₁ → Type _} {β₂ 
 #align dfinsupp.sum_add_hom_comm Dfinsupp.sumAddHom_comm
 
 /-- The `Dfinsupp` version of `Finsupp.liftAddHom`,-/
-@[simps apply symmApply]
+@[simps apply symm_apply]
 def liftAddHom [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] : (∀ i, β i →+ γ) ≃+ ((Π₀ i, β i) →+ γ)
     where
   toFun := sumAddHom
@@ -2035,7 +2039,7 @@ def liftAddHom [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] : (∀ i, β i �
     simp [sumAddHom_apply, sum, Finset.sum_add_distrib]
 #align dfinsupp.lift_add_hom Dfinsupp.liftAddHom
 #align dfinsupp.lift_add_hom_apply Dfinsupp.liftAddHom_apply
-#align dfinsupp.lift_add_hom_symm_apply Dfinsupp.liftAddHom_symmApply
+#align dfinsupp.lift_add_hom_symm_apply Dfinsupp.liftAddHom_symm_apply
 
 -- Porting note: The elaborator is struggling with `liftAddHom`. Passing it `β` explicitly helps.
 -- This applies to roughly the remainder of the file.
@@ -2063,7 +2067,7 @@ theorem comp_liftAddHom {δ : Type _} [∀ i, AddZeroClass (β i)] [AddCommMonoi
     g.comp (liftAddHom (β := β) f) = liftAddHom (β := β) fun a => g.comp (f a) :=
   (liftAddHom (β := β)).symm_apply_eq.1 <|
     funext fun a => by
-      rw [liftAddHom_symmApply, AddMonoidHom.comp_assoc, liftAddHom_comp_single]
+      rw [liftAddHom_symm_apply, AddMonoidHom.comp_assoc, liftAddHom_comp_single]
 #align dfinsupp.comp_lift_add_hom Dfinsupp.comp_liftAddHom
 
 @[simp]

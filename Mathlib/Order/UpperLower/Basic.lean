@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Sara Rousta
 
 ! This file was ported from Lean 3 source module order.upper_lower.basic
-! leanprover-community/mathlib commit 59694bd07f0a39c5beccba34bd9f413a160782bf
+! leanprover-community/mathlib commit e9ce88cd0d54891c714c604076084f763dd480ed
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -483,10 +483,10 @@ namespace UpperSet
 
 variable {S : Set (UpperSet α)} {s t : UpperSet α} {a : α}
 
-instance : HasSup (UpperSet α) :=
+instance : Sup (UpperSet α) :=
   ⟨fun s t => ⟨s ∩ t, s.upper.inter t.upper⟩⟩
 
-instance : HasInf (UpperSet α) :=
+instance : Inf (UpperSet α) :=
   ⟨fun s t => ⟨s ∪ t, s.upper.union t.upper⟩⟩
 
 instance : Top (UpperSet α) :=
@@ -632,10 +632,10 @@ namespace LowerSet
 
 variable {S : Set (LowerSet α)} {s t : LowerSet α} {a : α}
 
-instance : HasSup (LowerSet α) :=
+instance : Sup (LowerSet α) :=
   ⟨fun s t => ⟨s ∪ t, fun _ _ h => Or.imp (s.lower h) (t.lower h)⟩⟩
 
-instance : HasInf (LowerSet α) :=
+instance : Inf (LowerSet α) :=
   ⟨fun s t => ⟨s ∩ t, fun _ _ h => And.imp (s.lower h) (t.lower h)⟩⟩
 
 instance : Top (LowerSet α) :=
@@ -1474,6 +1474,37 @@ theorem ordConnected_iff_upperClosure_inter_lowerClosure :
   exact (UpperSet.upper _).ordConnected.inter (LowerSet.lower _).ordConnected
 #align ord_connected_iff_upper_closure_inter_lower_closure ordConnected_iff_upperClosure_inter_lowerClosure
 
+@[simp]
+theorem upperBounds_lowerClosure : upperBounds (lowerClosure s : Set α) = upperBounds s :=
+  (upperBounds_mono_set subset_lowerClosure).antisymm λ _a ha _b ⟨_c, hc, hcb⟩ => hcb.trans <| ha hc
+#align upper_bounds_lower_closure upperBounds_lowerClosure
+
+@[simp]
+theorem lowerBounds_upperClosure : lowerBounds (upperClosure s : Set α) = lowerBounds s :=
+  (lowerBounds_mono_set subset_upperClosure).antisymm λ _a ha _b ⟨_c, hc, hcb⟩ => (ha hc).trans hcb
+#align lower_bounds_upper_closure lowerBounds_upperClosure
+
+@[simp]
+theorem bddAbove_lowerClosure : BddAbove (lowerClosure s : Set α) ↔ BddAbove s := by
+  simp_rw [BddAbove, upperBounds_lowerClosure]
+#align bdd_above_lower_closure bddAbove_lowerClosure
+
+@[simp]
+theorem bddBelow_upperClosure : BddBelow (upperClosure s : Set α) ↔ BddBelow s := by
+  simp_rw [BddBelow, lowerBounds_upperClosure]
+#align bdd_below_upper_closure bddBelow_upperClosure
+
+alias bddAbove_lowerClosure ↔ BddAbove.of_lowerClosure BddAbove.lowerClosure
+#align bdd_above.of_lower_closure BddAbove.of_lowerClosure
+#align bdd_above.lower_closure BddAbove.lowerClosure
+
+alias bddBelow_upperClosure ↔ BddBelow.of_upperClosure BddBelow.upperClosure
+#align bdd_below.of_upper_closure BddBelow.of_upperClosure
+#align bdd_below.upper_closure BddBelow.upperClosure
+
+-- Porting note: attribute [protected] doesn't work
+-- attribute protected BddAbove.lowerClosure BddBelow.upperClosure
+
 end closure
 
 /-! ### Product -/
@@ -1569,7 +1600,7 @@ theorem prod_sup_prod : s₁ ×ᵘˢ t₁ ⊔ s₂ ×ᵘˢ t₂ = (s₁ ⊔ s₂
 
 variable {s s₁ s₂ t t₁ t₂}
 
--- porting note: todo: add `@[mono]`
+@[mono]
 theorem prod_mono : s₁ ≤ s₂ → t₁ ≤ t₂ → s₁ ×ᵘˢ t₁ ≤ s₂ ×ᵘˢ t₂ :=
   Set.prod_mono
 #align upper_set.prod_mono UpperSet.prod_mono

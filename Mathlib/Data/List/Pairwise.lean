@@ -182,7 +182,7 @@ theorem pairwise_middle (s : Symmetric R) {a : α} {l₁ l₂ : List α} :
     ∀ {l : List β}, Pairwise R (map f l) ↔ Pairwise (fun a b : β => R (f a) (f b)) l
   | [] => by simp only [map, Pairwise.nil]
   | b :: l => by
-    simp only [map, pairwise_cons, mem_map', forall_exists_index, and_imp,
+    simp only [map, pairwise_cons, mem_map, forall_exists_index, and_imp,
       forall_apply_eq_imp_iff₂, pairwise_map]
 #align list.pairwise_map List.pairwise_map'
 
@@ -267,7 +267,7 @@ theorem pairwise_join {L : List (List α)} :
 theorem pairwise_bind {R : β → β → Prop} {l : List α} {f : α → List β} :
     List.Pairwise R (l.bind f) ↔
       (∀ a ∈ l, Pairwise R (f a)) ∧ Pairwise (fun a₁ a₂ => ∀ x ∈ f a₁, ∀ y ∈ f a₂, R x y) l :=
-  by simp [List.bind, List.pairwise_join, List.mem_map', List.pairwise_map]
+  by simp [List.bind, List.pairwise_join, List.mem_map, List.pairwise_map]
 #align list.pairwise_bind List.pairwise_bind
 
 #align list.pairwise_reverse List.pairwise_reverse
@@ -393,7 +393,7 @@ theorem pwFilter_map (f : β → α) :
 theorem pwFilter_sublist : ∀ l : List α, pwFilter R l <+ l
   | [] => nil_sublist _
   | x :: l => by
-    by_cases ∀ y ∈ pwFilter R l, R x y
+    by_cases h : ∀ y ∈ pwFilter R l, R x y
     · rw [pwFilter_cons_of_pos h]
       exact (pwFilter_sublist l).cons_cons _
     · rw [pwFilter_cons_of_neg h]
@@ -407,7 +407,7 @@ theorem pwFilter_subset (l : List α) : pwFilter R l ⊆ l :=
 theorem pairwise_pwFilter : ∀ l : List α, Pairwise R (pwFilter R l)
   | [] => Pairwise.nil
   | x :: l => by
-    by_cases ∀ y ∈ pwFilter R l, R x y
+    by_cases h : ∀ y ∈ pwFilter R l, R x y
     · rw [pwFilter_cons_of_pos h]
       exact pairwise_cons.2 ⟨h, pairwise_pwFilter l⟩
     · rw [pwFilter_cons_of_neg h]
@@ -438,7 +438,7 @@ theorem forall_mem_pwFilter (neg_trans : ∀ {x y z}, R x z → R x y ∨ R y z)
   ⟨by
     induction' l with x l IH; · exact fun _ _ h => (not_mem_nil _ h).elim
     simp only [forall_mem_cons]
-    by_cases ∀ y ∈ pwFilter R l, R x y <;> dsimp at h
+    by_cases h : ∀ y ∈ pwFilter R l, R x y <;> dsimp at h
     · simp only [pwFilter_cons_of_pos h, forall_mem_cons, and_imp]
       exact fun r H => ⟨r, IH H⟩
     · rw [pwFilter_cons_of_neg h]

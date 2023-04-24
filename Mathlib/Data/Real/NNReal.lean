@@ -4,15 +4,16 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 
 ! This file was ported from Lean 3 source module data.real.nnreal
-! leanprover-community/mathlib commit b2ff9a3d7a15fd5b0f060b135421d6a89a999c2f
+! leanprover-community/mathlib commit de29c328903507bb7aff506af9135f4bdaf1849c
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Order.ConditionallyCompleteLattice.Group
 import Mathlib.Algebra.Algebra.Basic
-import Mathlib.Algebra.Order.Nonneg.Field
 import Mathlib.Algebra.Order.Field.Canonical.Basic
+import Mathlib.Algebra.Order.Nonneg.Field
+import Mathlib.Algebra.Order.Nonneg.Floor
 import Mathlib.Data.Real.Pointwise
+import Mathlib.Order.ConditionallyCompleteLattice.Group
 import Mathlib.Tactic.Positivity
 
 /-!
@@ -252,13 +253,13 @@ theorem smul_def {M : Type _} [MulAction ℝ M] (c : ℝ≥0) (x : M) : c • x 
 instance {M N : Type _} [MulAction ℝ M] [MulAction ℝ N] [SMul M N] [IsScalarTower ℝ M N] :
     IsScalarTower ℝ≥0 M N where smul_assoc r := (smul_assoc (r : ℝ) : _)
 
-instance sMulCommClass_left {M N : Type _} [MulAction ℝ N] [SMul M N] [SMulCommClass ℝ M N] :
+instance smulCommClass_left {M N : Type _} [MulAction ℝ N] [SMul M N] [SMulCommClass ℝ M N] :
     SMulCommClass ℝ≥0 M N where smul_comm r := (smul_comm (r : ℝ) : _)
-#align nnreal.smul_comm_class_left NNReal.sMulCommClass_left
+#align nnreal.smul_comm_class_left NNReal.smulCommClass_left
 
-instance sMulCommClass_right {M N : Type _} [MulAction ℝ N] [SMul M N] [SMulCommClass M ℝ N] :
+instance smulCommClass_right {M N : Type _} [MulAction ℝ N] [SMul M N] [SMulCommClass M ℝ N] :
     SMulCommClass M ℝ≥0 N where smul_comm m r := (smul_comm m (r : ℝ) : _)
-#align nnreal.smul_comm_class_right NNReal.sMulCommClass_right
+#align nnreal.smul_comm_class_right NNReal.smulCommClass_right
 
 /-- A `DistribMulAction` over `ℝ` restricts to a `DistribMulAction` over `ℝ≥0`. -/
 instance {M : Type _} [AddMonoid M] [DistribMulAction ℝ M] : DistribMulAction ℝ≥0 M :=
@@ -741,7 +742,7 @@ section Sub
 
 In this section we provide a few lemmas about subtraction that do not fit well into any other
 typeclass. For lemmas about subtraction and addition see lemmas about `OrderedSub` in the file
-`Mathlib.Algebra.Order.Sub.Bsic`. See also `mul_tsub` and `tsub_mul`.
+`Mathlib.Algebra.Order.Sub.Basic`. See also `mul_tsub` and `tsub_mul`.
 -/
 
 theorem sub_def {r p : ℝ≥0} : r - p = Real.toNNReal (r - p) :=
@@ -752,7 +753,7 @@ theorem coe_sub_def {r p : ℝ≥0} : ↑(r - p) = max (r - p : ℝ) 0 :=
   rfl
 #align nnreal.coe_sub_def NNReal.coe_sub_def
 
-noncomputable example : OrderedSub ℝ≥0 := by infer_instance
+example : OrderedSub ℝ≥0 := by infer_instance
 
 theorem sub_div (a b c : ℝ≥0) : (a - b) / c = a / c - b / c :=
   tsub_div _ _ _

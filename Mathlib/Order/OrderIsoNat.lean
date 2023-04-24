@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 
 ! This file was ported from Lean 3 source module order.order_iso_nat
-! leanprover-community/mathlib commit 2445c98ae4b87eabebdde552593519b9b6dc350c
+! leanprover-community/mathlib commit 210657c4ea4a4a7b234392f70a3a2a83346dfa90
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -128,30 +128,29 @@ noncomputable def Subtype.orderIsoOfNat : ℕ ≃o s := by
       Nat.Subtype.ofNat_surjective
 #align nat.subtype.order_iso_of_nat Nat.Subtype.orderIsoOfNat
 
---porting note: Added the decidability requirement, I'm not sure how it worked in lean3 without it
-variable {s} [dP : DecidablePred (· ∈ s)]
+variable {s}
 
 @[simp]
-theorem coe_orderEmbeddingOfSet : ⇑(orderEmbeddingOfSet s) = (↑) ∘ Subtype.ofNat s :=
+theorem coe_orderEmbeddingOfSet [DecidablePred (· ∈ s)] :
+    ⇑(orderEmbeddingOfSet s) = (↑) ∘ Subtype.ofNat s :=
   rfl
 #align nat.coe_order_embedding_of_set Nat.coe_orderEmbeddingOfSet
 
-theorem orderEmbeddingOfSet_apply {n : ℕ} : orderEmbeddingOfSet s n = Subtype.ofNat s n :=
+theorem orderEmbeddingOfSet_apply [DecidablePred (· ∈ s)] {n : ℕ} :
+    orderEmbeddingOfSet s n = Subtype.ofNat s n :=
   rfl
 #align nat.order_embedding_of_set_apply Nat.orderEmbeddingOfSet_apply
 
 @[simp]
-theorem Subtype.orderIsoOfNat_apply {n : ℕ} : Subtype.orderIsoOfNat s n = Subtype.ofNat s n := by
-  simp only [orderIsoOfNat, RelIso.ofSurjective_apply,
-    RelEmbedding.orderEmbeddingOfLTEmbedding_apply, RelEmbedding.coe_natLt]
-  suffices (fun a => Classical.propDecidable (a ∈ s)) = (fun a => dP a) by
-    rw [this]
-  simp
+theorem Subtype.orderIsoOfNat_apply [dP : DecidablePred (· ∈ s)] {n : ℕ} :
+    Subtype.orderIsoOfNat s n = Subtype.ofNat s n := by
+  simp [orderIsoOfNat]; congr!
 #align nat.subtype.order_iso_of_nat_apply Nat.Subtype.orderIsoOfNat_apply
 
 variable (s)
 
-theorem orderEmbeddingOfSet_range : Set.range (Nat.orderEmbeddingOfSet s) = s :=
+theorem orderEmbeddingOfSet_range [DecidablePred (· ∈ s)] :
+    Set.range (Nat.orderEmbeddingOfSet s) = s :=
   Subtype.coe_comp_ofNat_range
 #align nat.order_embedding_of_set_range Nat.orderEmbeddingOfSet_range
 
@@ -232,21 +231,14 @@ theorem WellFounded.monotone_chain_condition' [Preorder α] :
     exact hn n.succ n.lt_succ_self.le ((RelEmbedding.map_rel_iff _).2 n.lt_succ_self)
 #align well_founded.monotone_chain_condition' WellFounded.monotone_chain_condition'
 
---porting note: congrm tactic doesn't exist so this proof is much messier
 /-- The "monotone chain condition" below is sometimes a convenient form of well foundedness. -/
 theorem WellFounded.monotone_chain_condition [PartialOrder α] :
     WellFounded ((· > ·) : α → α → Prop) ↔ ∀ a : ℕ →o α, ∃ n, ∀ m, n ≤ m → a n = a m :=
   WellFounded.monotone_chain_condition'.trans <| by
-  refine' ⟨fun h a => _, fun h a => _⟩ <;> specialize h a <;> cases' h with n h <;>
-      use n <;> intro m hmn <;> specialize h m hmn
-  · rw [lt_iff_le_and_ne] at h
-    push_neg at h
-    apply h
-    simp [a.mono hmn]
-  · rw [lt_iff_le_and_ne]
-    push_neg
-    intro _
-    exact h
+  -- porting note: was congrm ∀ a, ∃ n, ∀ m (h : n ≤ m), (_ : Prop)
+  congr! 4
+  rename_i a n m
+  simp (config := {contextual := true}) [lt_iff_le_and_ne, fun h => a.mono h]
 #align well_founded.monotone_chain_condition WellFounded.monotone_chain_condition
 
 /-- Given an eventually-constant monotone sequence `a₀ ≤ a₁ ≤ a₂ ≤ ...` in a partially-ordered
@@ -266,17 +258,10 @@ noncomputable def monotonicSequenceLimit [Preorder α] (a : ℕ →o α) :=
 theorem WellFounded.supᵢ_eq_monotonicSequenceLimit [CompleteLattice α]
     (h : WellFounded ((· > ·) : α → α → Prop)) (a : ℕ →o α) : supᵢ a = monotonicSequenceLimit a :=
   by
-  suffices (⨆ m : ℕ, a m) ≤ monotonicSequenceLimit a by exact le_antisymm this (le_supᵢ a _)
-  apply supᵢ_le
-  intro m
-  by_cases hm : m ≤ monotonicSequenceLimitIndex a
+  refine' (supᵢ_le fun m => _).antisymm (le_supᵢ a _)
+  cases' le_or_lt m (monotonicSequenceLimitIndex a) with hm hm
   · exact a.monotone hm
-  · replace hm := le_of_not_le hm
-    let S := { n | ∀ m, n ≤ m → a n = a m }
-    have hInf : infₛ S ∈ S := by
-      refine' Nat.infₛ_mem _
-      rw [WellFounded.monotone_chain_condition] at h
-      exact h a
-    change a m ≤ a (infₛ S)
-    rw [hInf m hm]
+  · cases' WellFounded.monotone_chain_condition'.1 h a with n hn
+    have : n ∈ {n | ∀ m, n ≤ m → a n = a m} := fun k hk => (a.mono hk).eq_of_not_lt (hn k hk)
+    exact (Nat.infₛ_mem ⟨n, this⟩ m hm.le).ge
 #align well_founded.supr_eq_monotonic_sequence_limit WellFounded.supᵢ_eq_monotonicSequenceLimit

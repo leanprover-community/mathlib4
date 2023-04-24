@@ -4,10 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 
 ! This file was ported from Lean 3 source module topology.uniform_space.cauchy
-! leanprover-community/mathlib commit d90e4e186f1d18e375dcd4e5b5f6364b01cb3e46
+! leanprover-community/mathlib commit 22131150f88a2d125713ffa0f4693e3355b1eb49
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
+import Mathlib.Topology.Algebra.Constructions
 import Mathlib.Topology.Bases
 import Mathlib.Topology.UniformSpace.Basic
 
@@ -386,6 +387,15 @@ instance CompleteSpace.prod [UniformSpace β] [CompleteSpace α] [CompleteSpace 
       rw [nhds_prod_eq, Filter.prod_def]
       exact Filter.le_lift.2 fun s hs => Filter.le_lift'.2 fun t ht => inter_mem (hx1 hs) (hx2 ht)⟩
 #align complete_space.prod CompleteSpace.prod
+
+@[to_additive]
+instance CompleteSpace.mulOpposite [CompleteSpace α] : CompleteSpace αᵐᵒᵖ where
+  complete hf :=
+    MulOpposite.op_surjective.exists.mpr <|
+      let ⟨x, hx⟩ := CompleteSpace.complete (hf.map MulOpposite.uniformContinuous_unop)
+      ⟨x, (map_le_iff_le_comap.mp hx).trans_eq <| MulOpposite.comap_unop_nhds _⟩
+#align complete_space.mul_opposite CompleteSpace.mulOpposite
+#align complete_space.add_opposite CompleteSpace.addOpposite
 
 /-- If `univ` is complete, the space is a complete space -/
 theorem completeSpace_of_isComplete_univ (h : IsComplete (univ : Set α)) : CompleteSpace α :=

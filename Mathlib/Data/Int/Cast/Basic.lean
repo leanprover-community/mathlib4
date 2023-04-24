@@ -71,6 +71,11 @@ theorem cast_ofNat (n : ℕ) : ((n : ℤ) : R) = n :=
 #align int.cast_of_nat Int.cast_ofNatₓ
 
 @[simp, norm_cast]
+theorem int_cast_ofNat (n : ℕ) [n.AtLeastTwo] :
+    ((OfNat.ofNat n : ℤ) : R) = OfNat.ofNat n := by
+  simpa only [OfNat.ofNat] using AddGroupWithOne.intCast_ofNat (R := R) n
+
+@[simp, norm_cast]
 theorem cast_one : ((1 : ℤ) : R) = 1 := by
   erw [cast_ofNat, Nat.cast_one]
 #align int.cast_one Int.cast_oneₓ

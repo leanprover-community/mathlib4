@@ -146,10 +146,10 @@ theorem mk_smul (r : S) (x : M) : (mk (r • x) : M ⧸ p) = r • mk x :=
   rfl
 #align submodule.quotient.mk_smul Submodule.Quotient.mk_smul
 
-instance sMulCommClass (T : Type _) [SMul T R] [SMul T M] [IsScalarTower T R M]
+instance smulCommClass (T : Type _) [SMul T R] [SMul T M] [IsScalarTower T R M]
     [SMulCommClass S T M] : SMulCommClass S T (M ⧸ P)
     where smul_comm _x _y := Quotient.ind' fun _z => congr_arg mk (smul_comm _ _ _)
-#align submodule.quotient.smul_comm_class Submodule.Quotient.sMulCommClass
+#align submodule.quotient.smul_comm_class Submodule.Quotient.smulCommClass
 
 instance isScalarTower (T : Type _) [SMul T R] [SMul T M] [IsScalarTower T R M] [SMul S T]
     [IsScalarTower S T M] : IsScalarTower S T (M ⧸ P)
@@ -342,7 +342,7 @@ variable {R₂ M₂ : Type _} [Ring R₂] [AddCommGroup M₂] [Module R₂ M₂]
 `submodule.mkQ` are equal.
 
 See note [partially-applied ext lemmas]. -/
-@[ext 1001] -- porting note: increase priority so this applies before `LinearMap.ext`
+@[ext 1100] -- porting note: increase priority so this applies before `LinearMap.ext`
 theorem linearMap_qext ⦃f g : M ⧸ p →ₛₗ[τ₁₂] M₂⦄ (h : f.comp p.mkQ = g.comp p.mkQ) : f = g :=
   LinearMap.ext fun x => Quotient.inductionOn' x <| (LinearMap.congr_fun h : _)
 #align submodule.linear_map_qext Submodule.linearMap_qext
@@ -543,16 +543,7 @@ def Quotient.equiv {N : Type _} [AddCommGroup N] [Module R N] (P : Submodule R M
     left_inv := fun x => Quotient.inductionOn' x (by simp)
     right_inv := fun x => Quotient.inductionOn' x (by simp) }
 #align submodule.quotient.equiv Submodule.Quotient.equiv
-
--- porting note: `simps` didn't generate this?
-@[simp]
-theorem Quotient.equiv_apply {N : Type _} [AddCommGroup N] [Module R N]
-    (P : Submodule R M) (Q : Submodule R N) (f : M ≃ₗ[R] N) (hf : P.map f = Q)
-    (hf' :=  fun _ hx => hf ▸ Submodule.mem_map_of_mem hx) (x : M ⧸ P) :
-    (Quotient.equiv P Q f hf) x = (P.mapQ Q (f : M →ₗ[R] N) hf') x :=
-  rfl
--- porting note: this is `align`ed with an `ₓ` because I had to add `hf'` as an `optParam`.
-#align submodule.quotient.equiv_apply Submodule.Quotient.equiv_applyₓ
+#align submodule.quotient.equiv_apply Submodule.Quotient.equiv_apply
 
 @[simp]
 theorem Quotient.equiv_symm {R M N : Type _} [CommRing R] [AddCommGroup M] [Module R M]
@@ -571,17 +562,9 @@ theorem Quotient.equiv_trans {N O : Type _} [AddCommGroup N] [Module R N] [AddCo
       (Quotient.equiv P Q e he).trans (Quotient.equiv Q S f hf) := by
   ext
   -- `simp` can deal with `hef` depending on `e` and `f`
-  -- porting note: this doesn't work in Lean 4?
-  simp only [Quotient.equiv_apply P S (e.trans f)
-    hef (fun _ hx => hef ▸ Submodule.mem_map_of_mem hx) _,
-    Quotient.equiv_apply P Q e he (fun _ hx => he ▸ Submodule.mem_map_of_mem hx) _,
-    Quotient.equiv_apply Q S f hf (fun _ hx => hf ▸ Submodule.mem_map_of_mem hx) _]
-  simp only [LinearEquiv.trans_apply, LinearEquiv.coe_trans]
+  simp only [Quotient.equiv_apply, LinearEquiv.trans_apply, LinearEquiv.coe_trans]
   -- `rw` can deal with `mapQ_comp` needing extra hypotheses coming from the RHS
-  -- porting note: this doesn't work in Lean 4?
-  rw [mapQ_comp P Q S e.toLinearMap f.toLinearMap (fun _ hx => he ▸ Submodule.mem_map_of_mem hx)
-    (fun _ hx => hf ▸ Submodule.mem_map_of_mem hx) _]
-  rfl
+  rw [mapQ_comp, LinearMap.comp_apply]
 #align submodule.quotient.equiv_trans Submodule.Quotient.equiv_trans
 
 end Submodule

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 
 ! This file was ported from Lean 3 source module measure_theory.measurable_space
-! leanprover-community/mathlib commit d101e93197bb5f6ea89bd7ba386b7f7dff1f3903
+! leanprover-community/mathlib commit 88fcb83fe7996142dfcfe7368d31304a9adc874a
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -21,7 +21,7 @@ import Mathlib.Data.Set.UnionLift
 # Measurable spaces and measurable functions
 
 This file provides properties of measurable spaces and the functions and isomorphisms
-between them. The definition of a measurable space is in `measure_theory.measurable_space_def`.
+between them. The definition of a measurable space is in `MeasureTheory.MeasurableSpaceDef`.
 
 A measurable space is a set equipped with a σ-algebra, a collection of
 subsets closed under complementation and countable union. A function
@@ -271,9 +271,21 @@ for functions between empty types. -/
 theorem measurable_const' {f : β → α} (hf : ∀ x y, f x = f y) : Measurable f := by
   nontriviality β
   inhabit β
-  convert @measurable_const α β ‹_› ‹_› (f default)
-  exact funext fun x => hf x default
+  convert @measurable_const α β ‹_› ‹_› (f default) using 2
+  apply hf
 #align measurable_const' measurable_const'
+
+-- porting note: Attribute not yet supported
+-- @[measurability]
+theorem measurable_natCast [NatCast α] (n : ℕ) : Measurable (n : β → α) :=
+  @measurable_const α _ _ _ n
+#align measurable_nat_cast measurable_natCast
+
+-- porting note: Attribute not yet supported
+-- @[measurability]
+theorem measurable_intCast [IntCast α] (n : ℤ) : Measurable (n : β → α) :=
+  @measurable_const α _ _ _ n
+#align measurable_int_cast measurable_intCast
 
 theorem measurable_of_countable [Countable α] [MeasurableSingletonClass α] (f : α → β) :
     Measurable f := fun s _ =>
@@ -346,8 +358,7 @@ theorem Measurable.measurable_of_countable_ne [MeasurableSingletonClass α] (hf 
     simp [← inter_union_distrib_left]
   rw [this]
   refine (h.mono (inter_subset_right _ _)).measurableSet.union ?_
-  have : g ⁻¹' t ∩ { x : α | f x = g x } = f ⁻¹' t ∩ { x : α | f x = g x } :=
-    by
+  have : g ⁻¹' t ∩ { x : α | f x = g x } = f ⁻¹' t ∩ { x : α | f x = g x } := by
     ext x
     simp (config := { contextual := true })
   rw [this]
@@ -400,15 +411,15 @@ theorem measurable_to_nat {f : α → ℕ} : (∀ y, MeasurableSet (f ⁻¹' {f 
   measurable_to_countable
 #align measurable_to_nat measurable_to_nat
 
-theorem measurable_find_greatest' {p : α → ℕ → Prop} [∀ x, DecidablePred (p x)] {N : ℕ}
+theorem measurable_findGreatest' {p : α → ℕ → Prop} [∀ x, DecidablePred (p x)] {N : ℕ}
     (hN : ∀ k ≤ N, MeasurableSet { x | Nat.findGreatest (p x) N = k }) :
     Measurable fun x => Nat.findGreatest (p x) N :=
   measurable_to_nat fun _ => hN _ N.findGreatest_le
-#align measurable_find_greatest' measurable_find_greatest'
+#align measurable_find_greatest' measurable_findGreatest'
 
 theorem measurable_findGreatest {p : α → ℕ → Prop} [∀ x, DecidablePred (p x)] {N}
     (hN : ∀ k ≤ N, MeasurableSet { x | p x k }) : Measurable fun x => Nat.findGreatest (p x) N := by
-  refine' measurable_find_greatest' fun k hk => _
+  refine' measurable_findGreatest' fun k hk => _
   simp only [Nat.findGreatest_eq_iff, setOf_and, setOf_forall, ← compl_setOf]
   repeat' apply_rules [MeasurableSet.inter, MeasurableSet.const, MeasurableSet.interᵢ,
     MeasurableSet.compl, hN] <;> try intros
@@ -882,13 +893,13 @@ theorem measurable_piEquivPiSubtypeProd (p : δ → Prop) [DecidablePred p] :
 
 end Pi
 
-instance Tprod.measurableSpace (π : δ → Type _) [∀ x, MeasurableSpace (π x)] :
+instance TProd.measurableSpace (π : δ → Type _) [∀ x, MeasurableSpace (π x)] :
     ∀ l : List δ, MeasurableSpace (List.TProd π l)
   | [] => instMeasurableSpacePUnit
-  | _::is => @instMeasurableSpaceProd _ _ _ (Tprod.measurableSpace π is)
-#align tprod.measurable_space Tprod.measurableSpace
+  | _::is => @instMeasurableSpaceProd _ _ _ (TProd.measurableSpace π is)
+#align tprod.measurable_space TProd.measurableSpace
 
-section Tprod
+section TProd
 
 open List
 
@@ -923,7 +934,7 @@ theorem MeasurableSet.tProd (l : List δ) {s : ∀ i, Set (π i)} (hs : ∀ i, M
   exact (hs i).prod ih
 #align measurable_set.tprod MeasurableSet.tProd
 
-end Tprod
+end TProd
 
 instance {α β} [m₁ : MeasurableSpace α] [m₂ : MeasurableSpace β] : MeasurableSpace (α ⊕ β) :=
   m₁.map Sum.inl ⊓ m₂.map Sum.inr
@@ -1177,8 +1188,7 @@ def Simps.apply (h : α ≃ᵐ β) : α → β := h
 def Simps.symm_apply (h : α ≃ᵐ β) : β → α := h.symm
 #align measurable_equiv.simps.symm_apply MeasurableEquiv.Simps.symm_apply
 
-initialize_simps_projections MeasurableEquiv (toEquiv_toFun → apply, toEquiv_invFun →
-  symm_apply)
+initialize_simps_projections MeasurableEquiv (toFun → apply, invFun → symm_apply)
 
 @[ext] theorem ext {e₁ e₂ : α ≃ᵐ β} (h : (e₁ : α → β) = e₂) : e₁ = e₂ := FunLike.ext' h
 #align measurable_equiv.ext MeasurableEquiv.ext
@@ -1283,8 +1293,7 @@ protected def cast {α β} [i₁ : MeasurableSpace α] [i₂ : MeasurableSpace �
 protected theorem measurable_comp_iff {f : β → γ} (e : α ≃ᵐ β) :
     Measurable (f ∘ e) ↔ Measurable f :=
   Iff.intro
-    (fun hfe =>
-      by
+    (fun hfe => by
       have : Measurable (f ∘ (e.symm.trans e).toEquiv) := hfe.comp e.symm.measurable
       rwa [coe_toEquiv, symm_trans_self] at this)
     fun h => h.comp e.measurable
@@ -1420,12 +1429,12 @@ def piCongrRight (e : ∀ a, π a ≃ᵐ π' a) : (∀ a, π a) ≃ᵐ ∀ a, π
 
 /-- Pi-types are measurably equivalent to iterated products. -/
 @[simps! (config := { fullyApplied := false })]
-def piMeasurableEquivTprod [DecidableEq δ'] {l : List δ'} (hnd : l.Nodup) (h : ∀ i, i ∈ l) :
+def piMeasurableEquivTProd [DecidableEq δ'] {l : List δ'} (hnd : l.Nodup) (h : ∀ i, i ∈ l) :
     (∀ i, π i) ≃ᵐ List.TProd π l where
   toEquiv := List.TProd.piEquivTProd hnd h
   measurable_toFun := measurable_tProd_mk l
   measurable_invFun := measurable_tProd_elim' h
-#align measurable_equiv.pi_measurable_equiv_tprod MeasurableEquiv.piMeasurableEquivTprod
+#align measurable_equiv.pi_measurable_equiv_tprod MeasurableEquiv.piMeasurableEquivTProd
 
 /-- If `α` has a unique term, then the type of function `α → β` is measurably equivalent to `β`. -/
 @[simps! (config := { fullyApplied := false })]
@@ -1649,7 +1658,7 @@ end Filter
 /-- We say that a collection of sets is countably spanning if a countable subset spans the
   whole type. This is a useful condition in various parts of measure theory. For example, it is
   a needed condition to show that the product of two collections generate the product sigma algebra,
-  see `generate_from_prod_eq`. -/
+  see `generateFrom_prod_eq`. -/
 def IsCountablySpanning (C : Set (Set α)) : Prop :=
   ∃ s : ℕ → Set α, (∀ n, s n ∈ C) ∧ (⋃ n, s n) = univ
 #align is_countably_spanning IsCountablySpanning
@@ -1725,7 +1734,7 @@ theorem coe_union (s t : Subtype (MeasurableSet : Set α → Prop)) : ↑(s ∪ 
   rfl
 #align measurable_set.coe_union MeasurableSet.coe_union
 
-noncomputable instance : HasSup (Subtype (MeasurableSet : Set α → Prop)) :=
+noncomputable instance : Sup (Subtype (MeasurableSet : Set α → Prop)) :=
   ⟨fun x y => x ∪ y⟩
 
 -- porting note: new lemma
@@ -1740,7 +1749,7 @@ theorem coe_inter (s t : Subtype (MeasurableSet : Set α → Prop)) : ↑(s ∩ 
   rfl
 #align measurable_set.coe_inter MeasurableSet.coe_inter
 
-noncomputable instance : HasInf (Subtype (MeasurableSet : Set α → Prop)) :=
+noncomputable instance : Inf (Subtype (MeasurableSet : Set α → Prop)) :=
   ⟨fun x y => x ∩ y⟩
 
 -- porting note: new lemma

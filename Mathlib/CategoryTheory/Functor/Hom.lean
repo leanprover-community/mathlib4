@@ -32,7 +32,7 @@ covariant in `Y`. -/
 def hom : Cᵒᵖ × C ⥤ Type v where
   obj p := unop p.1 ⟶ p.2
   map f h := f.1.unop ≫ h ≫ f.2
-  map_id := by aesop_cat 
+  map_id := by aesop_cat
   map_comp := fun {X} {Y} {Z} f g => by funext b; simp
 #align category_theory.functor.hom CategoryTheory.Functor.hom
 

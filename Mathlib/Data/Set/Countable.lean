@@ -179,8 +179,7 @@ theorem exists_seq_cover_iff_countable {p : Set α → Prop} (h : ∃ s, p s) :
 
 theorem countable_of_injective_of_countable_image {s : Set α} {f : α → β} (hf : InjOn f s)
     (hs : (f '' s).Countable) : s.Countable :=
-  let ⟨g, hg⟩ := countable_iff_exists_injOn.1 hs
-  countable_iff_exists_injOn.2 ⟨g ∘ f, hg.comp hf (mapsTo_image _ _)⟩
+  (mapsTo_image _ _).countable_of_injOn hf hs
 #align set.countable_of_injective_of_countable_image Set.countable_of_injective_of_countable_image
 
 theorem countable_unionᵢ {t : ι → Set α} [Countable ι] (ht : ∀ i, (t i).Countable) :

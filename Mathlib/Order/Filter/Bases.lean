@@ -964,7 +964,6 @@ theorem map_sigma_mk_comap {π : α → Type _} {π' : β → Type _} {f : α �
     map (Sigma.mk a) (comap (g a) l) = comap (Sigma.map f g) (map (Sigma.mk (f a)) l) := by
   refine' (((basis_sets _).comap _).map _).eq_of_same_basis _
   convert ((basis_sets l).map (Sigma.mk (f a))).comap (Sigma.map f g)
-  ext1 s
   apply image_sigmaMk_preimage_sigmaMap hf
 #align filter.map_sigma_mk_comap Filter.map_sigma_mk_comap
 
@@ -1013,8 +1012,7 @@ instance Nat.inhabitedCountableFilterBasis : Inhabited (CountableFilterBasis ℕ
 theorem HasCountableBasis.isCountablyGenerated {f : Filter α} {p : ι → Prop} {s : ι → Set α}
     (h : f.HasCountableBasis p s) : f.IsCountablyGenerated :=
   ⟨⟨{ t | ∃ i, p i ∧ s i = t }, h.countable.image s, h.toHasBasis.eq_generate⟩⟩
-#align filter.has_countable_basis.is_countably_generated
-  Filter.HasCountableBasis.isCountablyGenerated
+#align filter.has_countable_basis.is_countably_generated Filter.HasCountableBasis.isCountablyGenerated
 
 theorem antitone_seq_of_seq (s : ℕ → Set α) :
     ∃ t : ℕ → Set α, Antitone t ∧ (⨅ i, 𝓟 <| s i) = ⨅ i, 𝓟 (t i) := by
@@ -1173,8 +1171,7 @@ theorem isCountablyGenerated_iff_exists_antitone_basis {f : Filter α} :
   · rintro ⟨x, h⟩
     rw [h.1.eq_infᵢ]
     exact isCountablyGenerated_seq x
-#align filter.is_countably_generated_iff_exists_antitone_basis
-  Filter.isCountablyGenerated_iff_exists_antitone_basis
+#align filter.is_countably_generated_iff_exists_antitone_basis Filter.isCountablyGenerated_iff_exists_antitone_basis
 
 @[instance]
 theorem isCountablyGenerated_principal (s : Set α) : IsCountablyGenerated (𝓟 s) :=

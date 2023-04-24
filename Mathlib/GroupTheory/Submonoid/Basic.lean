@@ -157,19 +157,9 @@ instance : SubmonoidClass (Submonoid M) M where
   one_mem := Submonoid.one_mem'
   mul_mem {s} := s.mul_mem'
 
-/-- See Note [custom simps projection] -/
-@[to_additive]
-def Simps.coe (S : Submonoid M) : Set M :=
-  S
-#align submonoid.simps.coe Submonoid.Simps.coe
-#align add_submonoid.simps.coe AddSubmonoid.Simps.coe
+initialize_simps_projections Submonoid (carrier → coe)
 
-/-- See Note [custom simps projection] -/
-add_decl_doc AddSubmonoid.Simps.coe
-
-initialize_simps_projections Submonoid (toSubsemigroup_carrier → coe)
-
-initialize_simps_projections AddSubmonoid (toAddSubsemigroup_carrier → coe)
+initialize_simps_projections AddSubmonoid (carrier → coe)
 
 @[to_additive (attr := simp)]
 theorem mem_toSubsemigroup {s : Submonoid M} {x : M} : x ∈ s.toSubsemigroup ↔ x ∈ s :=
@@ -296,7 +286,7 @@ theorem coe_bot : ((⊥ : Submonoid M) : Set M) = {1} :=
 
 /-- The inf of two submonoids is their intersection. -/
 @[to_additive "The inf of two `AddSubmonoid`s is their intersection."]
-instance : HasInf (Submonoid M) :=
+instance : Inf (Submonoid M) :=
   ⟨fun S₁ S₂ =>
     { carrier := S₁ ∩ S₂
       one_mem' := ⟨S₁.one_mem, S₂.one_mem⟩
@@ -451,8 +441,7 @@ variable (S)
 
 /-- An induction principle for closure membership. If `p` holds for `1` and all elements of `s`, and
 is preserved under multiplication, then `p` holds for all elements of the closure of `s`. -/
-@[elab_as_elim,
-  to_additive
+@[to_additive (attr := elab_as_elim)
       "An induction principle for additive closure membership. If `p` holds for `0` and all
       elements of `s`, and is preserved under addition, then `p` holds for all elements of the
       additive closure of `s`."]
@@ -476,8 +465,7 @@ theorem closure_induction' (s : Set M) {p : ∀ x, x ∈ closure s → Prop}
 #align add_submonoid.closure_induction' AddSubmonoid.closure_induction'
 
 /-- An induction principle for closure membership for predicates with two arguments.  -/
-@[elab_as_elim,
-  to_additive
+@[to_additive (attr := elab_as_elim)
       "An induction principle for additive closure membership for predicates with two arguments."]
 theorem closure_induction₂ {p : M → M → Prop} {x} {y : M} (hx : x ∈ closure s) (hy : y ∈ closure s)
     (Hs : ∀ x ∈ s, ∀ y ∈ s, p x y) (H1_left : ∀ x, p 1 x) (H1_right : ∀ x, p x 1)
@@ -493,8 +481,7 @@ theorem closure_induction₂ {p : M → M → Prop} {x} {y : M} (hx : x ∈ clos
 /-- If `s` is a dense set in a monoid `M`, `Submonoid.closure s = ⊤`, then in order to prove that
 some predicate `p` holds for all `x : M` it suffices to verify `p x` for `x ∈ s`, verify `p 1`,
 and verify that `p x` and `p y` imply `p (x * y)`. -/
-@[elab_as_elim,
-  to_additive
+@[to_additive (attr := elab_as_elim)
       "If `s` is a dense set in an additive monoid `M`, `AddSubmonoid.closure s = ⊤`, then in
       order to prove that some predicate `p` holds for all `x : M` it suffices to verify `p x` for
       `x ∈ s`, verify `p 0`, and verify that `p x` and `p y` imply `p (x + y)`."]

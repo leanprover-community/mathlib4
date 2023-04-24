@@ -81,7 +81,7 @@ theorem toDfinsupp_singleton (a : α) : toDfinsupp {a} = Dfinsupp.single a 1 := 
 #align multiset.to_dfinsupp_singleton Multiset.toDfinsupp_singleton
 
 /-- `Multiset.toDfinsupp` as an `AddEquiv`. -/
-@[simps! apply symmApply]
+@[simps! apply symm_apply]
 def equivDfinsupp : Multiset α ≃+ Π₀ _a : α, ℕ :=
   AddMonoidHom.toAddEquiv Multiset.toDfinsupp Dfinsupp.toMultiset
     (by

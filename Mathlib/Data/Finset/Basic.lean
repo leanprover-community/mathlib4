@@ -4,11 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Minchao Wu, Mario Carneiro
 
 ! This file was ported from Lean 3 source module data.finset.basic
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
+! leanprover-community/mathlib commit 68cc421841f2ebb8ad2b5a35a853895feb4b850a
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Multiset.FinsetOps
+import Mathlib.Data.Set.Lattice
 
 /-!
 # Finite sets
@@ -143,6 +144,10 @@ structure Finset (α : Type _) where
   /-- `val` contains no duplicates -/
   nodup : Nodup val
 #align finset Finset
+
+instance Multiset.canLiftFinset {α} : CanLift (Multiset α) (Finset α) Finset.val Multiset.Nodup :=
+  ⟨fun m hm => ⟨⟨m, hm⟩, rfl⟩⟩
+#align multiset.can_lift_finset Multiset.canLiftFinset
 
 namespace Finset
 
@@ -690,6 +695,12 @@ theorem mem_singleton_self (a : α) : a ∈ ({a} : Finset α) :=
   mem_singleton.mpr rfl
 #align finset.mem_singleton_self Finset.mem_singleton_self
 
+@[simp]
+theorem val_eq_singleton_iff {a : α} {s : Finset α} : s.val = {a} ↔ s = {a} := by
+  rw [← val_inj]
+  rfl
+#align finset.val_eq_singleton_iff Finset.val_eq_singleton_iff
+
 theorem singleton_injective : Injective (singleton : α → Finset α) := fun _a _b h =>
   mem_singleton.1 (h ▸ mem_singleton_self _)
 #align finset.singleton_injective Finset.singleton_injective
@@ -1174,16 +1185,16 @@ theorem ssubset_insert (h : a ∉ s) : s ⊂ insert a s :=
 #align finset.ssubset_insert Finset.ssubset_insert
 
 @[elab_as_elim]
-theorem cons_induction {α : Type _} {p : Finset α → Prop} (h₁ : p ∅)
-    (h₂ : ∀ ⦃a : α⦄ {s : Finset α} (h : a ∉ s), p s → p (cons a s h)) : ∀ s, p s
-  | ⟨s, nd⟩ =>
-    Multiset.induction_on s (fun _ => h₁)
-      (fun a s IH nd => by
-        cases' nodup_cons.1 nd with m nd'
-        rw [← (eq_of_veq _ : cons a (Finset.mk s _) m = ⟨a ::ₘ s, nd⟩)]
-        · exact h₂ m (IH nd')
-        · rw [cons_val])
-      nd
+theorem cons_induction {α : Type _} {p : Finset α → Prop} (empty : p ∅)
+    (cons : ∀ ⦃a : α⦄ {s : Finset α} (h : a ∉ s), p s → p (cons a s h)) : ∀ s, p s
+  | ⟨s, nd⟩ => by
+    induction s using Multiset.induction with
+    | empty => exact empty
+    | @cons a s IH =>
+      cases' nodup_cons.1 nd with m nd'
+      rw [← (eq_of_veq _ : Finset.cons a ⟨s, _⟩ m = ⟨a ::ₘ s, nd⟩)]
+      · exact cons m (IH nd')
+      · rw [cons_val]
 #align finset.cons_induction Finset.cons_induction
 
 @[elab_as_elim]
@@ -1193,9 +1204,9 @@ theorem cons_induction_on {α : Type _} {p : Finset α → Prop} (s : Finset α)
 #align finset.cons_induction_on Finset.cons_induction_on
 
 @[elab_as_elim]
-protected theorem induction {α : Type _} {p : Finset α → Prop} [DecidableEq α] (h₁ : p ∅)
-    (h₂ : ∀ ⦃a : α⦄ {s : Finset α}, a ∉ s → p s → p (insert a s)) : ∀ s, p s :=
-  cons_induction h₁ fun a s ha => (s.cons_eq_insert a ha).symm ▸ h₂ ha
+protected theorem induction {α : Type _} {p : Finset α → Prop} [DecidableEq α] (empty : p ∅)
+    (insert : ∀ ⦃a : α⦄ {s : Finset α}, a ∉ s → p s → p (insert a s)) : ∀ s, p s :=
+  cons_induction empty fun a s ha => (s.cons_eq_insert a ha).symm ▸ insert ha
 #align finset.induction Finset.induction
 
 /-- To prove a proposition about an arbitrary `Finset α`,
@@ -1296,12 +1307,12 @@ instance : Lattice (Finset α) :=
     inf_le_right := fun _ _ _ h => (mem_ndinter.1 h).2 }
 
 @[simp]
-theorem sup_eq_union : (HasSup.sup : Finset α → Finset α → Finset α) = Union.union :=
+theorem sup_eq_union : (Sup.sup : Finset α → Finset α → Finset α) = Union.union :=
   rfl
 #align finset.sup_eq_union Finset.sup_eq_union
 
 @[simp]
-theorem inf_eq_inter : (HasInf.inf : Finset α → Finset α → Finset α) = Inter.inter :=
+theorem inf_eq_inter : (Inf.inf : Finset α → Finset α → Finset α) = Inter.inter :=
   rfl
 #align finset.inf_eq_inter Finset.inf_eq_inter
 
@@ -1902,6 +1913,11 @@ theorem erase_insert_of_ne {a b : α} {s : Finset α} (h : a ≠ b) :
     simp only [mem_erase, mem_insert, and_or_left, this]
 #align finset.erase_insert_of_ne Finset.erase_insert_of_ne
 
+theorem erase_cons_of_ne {a b : α} {s : Finset α} (ha : a ∉ s) (hb : a ≠ b) :
+    erase (cons a s ha) b = cons a (erase s b) fun h => ha <| erase_subset _ _ h := by
+  simp only [cons_eq_insert, erase_insert_of_ne hb]
+#align finset.erase_cons_of_ne Finset.erase_cons_of_ne
+
 theorem insert_erase {a : α} {s : Finset α} (h : a ∈ s) : insert a (erase s a) = s :=
   ext fun x => by
     simp only [mem_insert, mem_erase, or_and_left, dec_em, true_and_iff]
@@ -2497,6 +2513,14 @@ instance decidableDforallFinset {p : ∀ a ∈ s, Prop} [_hp : ∀ (a) (h : a �
 instance decidableSubsetFinset [DecidableEq α] {s t : Finset α} : Decidable (s ⊆ t) :=
   decidableDforallFinset
 
+-- porting notes: In lean3, the above was picked up when decidability of s ⊂ t was needed
+-- in lean4 it seems this is not the case.
+instance decidableSSubsetFinset [DecidableEq α] {s t : Finset α} : Decidable (s ⊂ t) := by
+  rw [ssubset_iff_subset_ne]
+  have h₁ : Decidable (s ⊆ t) := decidableSubsetFinset
+  have h₂ : Decidable (s ≠ t) := instDecidableNot
+  exact instDecidableAnd
+
 /-- decidable equality for functions whose domain is bounded by finsets -/
 instance decidableEqPiFinset {β : α → Type _} [_h : ∀ a, DecidableEq (β a)] :
     DecidableEq (∀ a ∈ s, β a) :=
@@ -2940,11 +2964,10 @@ theorem nonempty_range_succ : (range <| n + 1).Nonempty :=
 #align finset.nonempty_range_succ Finset.nonempty_range_succ
 
 @[simp]
-theorem range_filter_eq {n m : ℕ} : (range n).filter (· = m) = if m < n then {m} else ∅ :=
-  by
-  convert filter_eq (range n) m
+theorem range_filter_eq {n m : ℕ} : (range n).filter (· = m) = if m < n then {m} else ∅ := by
+  convert filter_eq (range n) m using 2
   · ext
-    simp_rw [@eq_comm _ m]
+    rw [eq_comm]
   · simp
 #align finset.range_filter_eq Finset.range_filter_eq
 
@@ -3049,7 +3072,7 @@ theorem toFinset_add (s t : Multiset α) : toFinset (s + t) = toFinset s ∪ toF
 theorem toFinset_nsmul (s : Multiset α) : ∀ (n : ℕ) (_ : n ≠ 0), (n • s).toFinset = s.toFinset
   | 0, h => by contradiction
   | n + 1, _ => by
-    by_cases n = 0
+    by_cases h : n = 0
     · rw [h, zero_add, one_nsmul]
     · rw [add_nsmul, toFinset_add, one_nsmul, toFinset_nsmul s n h, Finset.union_idempotent]
 #align multiset.to_finset_nsmul Multiset.toFinset_nsmul
@@ -3276,6 +3299,16 @@ theorem toList_toFinset [DecidableEq α] (s : Finset α) : s.toList.toFinset = s
   ext
   simp
 #align finset.to_list_to_finset Finset.toList_toFinset
+
+@[simp]
+theorem toList_eq_singleton_iff {a : α} {s : Finset α} : s.toList = [a] ↔ s = {a} := by
+  rw [toList, Multiset.toList_eq_singleton_iff, val_eq_singleton_iff]
+#align finset.to_list_eq_singleton_iff Finset.toList_eq_singleton_iff
+
+@[simp]
+theorem toList_singleton : ∀ a, ({a} : Finset α).toList = [a] :=
+  Multiset.toList_singleton
+#align finset.to_list_singleton Finset.toList_singleton
 
 theorem exists_list_nodup_eq [DecidableEq α] (s : Finset α) :
     ∃ l : List α, l.Nodup ∧ l.toFinset = s :=

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ashvni Narayanan
 
 ! This file was ported from Lean 3 source module ring_theory.subring.basic
-! leanprover-community/mathlib commit f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c
+! leanprover-community/mathlib commit feb99064803fd3108e37c18b0f77d0a8344677a3
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -256,12 +256,12 @@ theorem toSubsemiring_injective : Function.Injective (toSubsemiring : Subring R 
   | _, _, h => ext (SetLike.ext_iff.mp h : _)
 #align subring.to_subsemiring_injective Subring.toSubsemiring_injective
 
---@[mono] -- Porting note: mono not implemented yet
+@[mono]
 theorem toSubsemiring_strictMono : StrictMono (toSubsemiring : Subring R → Subsemiring R) :=
   fun _ _ => id
 #align subring.to_subsemiring_strict_mono Subring.toSubsemiring_strictMono
 
---@[mono] -- Porting note: mono not implemented yet
+@[mono]
 theorem toSubsemiring_mono : Monotone (toSubsemiring : Subring R → Subsemiring R) :=
   toSubsemiring_strictMono.monotone
 #align subring.to_subsemiring_mono Subring.toSubsemiring_mono
@@ -270,12 +270,12 @@ theorem toAddSubgroup_injective : Function.Injective (toAddSubgroup : Subring R 
   | _, _, h => ext (SetLike.ext_iff.mp h : _)
 #align subring.to_add_subgroup_injective Subring.toAddSubgroup_injective
 
---@[mono] -- Porting note: mono not implemented yet
+@[mono]
 theorem toAddSubgroup_strictMono : StrictMono (toAddSubgroup : Subring R → AddSubgroup R) :=
   fun _ _ => id
 #align subring.to_add_subgroup_strict_mono Subring.toAddSubgroup_strictMono
 
---@[mono] -- Porting note: mono not implemented yet
+@[mono]
 theorem toAddSubgroup_mono : Monotone (toAddSubgroup : Subring R → AddSubgroup R) :=
   toAddSubgroup_strictMono.monotone
 #align subring.to_add_subgroup_mono Subring.toAddSubgroup_mono
@@ -284,11 +284,11 @@ theorem toSubmonoid_injective : Function.Injective (fun s : Subring R => s.toSub
   | _, _, h => ext (SetLike.ext_iff.mp h : _)
 #align subring.to_submonoid_injective Subring.toSubmonoid_injective
 
---@[mono] -- Porting note: mono not implemented yet
+@[mono]
 theorem toSubmonoid_strictMono : StrictMono (fun s : Subring R => s.toSubmonoid) := fun _ _ => id
 #align subring.to_submonoid_strict_mono Subring.toSubmonoid_strictMono
 
---@[mono] -- Porting note: mono not implemented yet
+@[mono]
 theorem toSubmonoid_mono : Monotone (fun s : Subring R => s.toSubmonoid) :=
   toSubmonoid_strictMono.monotone
 #align subring.to_submonoid_mono Subring.toSubmonoid_mono
@@ -704,7 +704,7 @@ theorem mem_bot {x : R} : x ∈ (⊥ : Subring R) ↔ ∃ n : ℤ, ↑n = x :=
 
 
 /-- The inf of two subrings is their intersection. -/
-instance : HasInf (Subring R) :=
+instance : Inf (Subring R) :=
   ⟨fun s t =>
     { s.toSubmonoid ⊓ t.toSubmonoid, s.toAddSubgroup ⊓ t.toAddSubgroup with carrier := s ∩ t }⟩
 
@@ -914,7 +914,7 @@ theorem mem_closure_iff {s : Set R} {x} :
       (AddSubgroup.subset_closure (Submonoid.one_mem (Submonoid.closure s)))
       (fun x y hx hy => AddSubgroup.add_mem _ hx hy) (fun x hx => AddSubgroup.neg_mem _ hx)
       fun x y hx hy =>
-      AddSubgroup.closure_induction (G := R) hy
+      AddSubgroup.closure_induction hy
         (fun q hq =>
           AddSubgroup.closure_induction hx
             (fun p hp => AddSubgroup.subset_closure ((Submonoid.closure s).mul_mem hp hq))
@@ -1056,7 +1056,7 @@ theorem mem_prod {s : Subring R} {t : Subring S} {p : R × S} : p ∈ s.prod t �
   Iff.rfl
 #align subring.mem_prod Subring.mem_prod
 
---@[mono] -- Porting note: mono not implemented yet
+@[mono]
 theorem prod_mono ⦃s₁ s₂ : Subring R⦄ (hs : s₁ ≤ s₂) ⦃t₁ t₂ : Subring S⦄ (ht : t₁ ≤ t₂) :
     s₁.prod t₁ ≤ s₂.prod t₂ :=
   Set.prod_mono hs ht
@@ -1358,7 +1358,7 @@ end Subring
 
 theorem AddSubgroup.int_mul_mem {G : AddSubgroup R} (k : ℤ) {g : R} (h : g ∈ G) :
     (k : R) * g ∈ G := by
-  convert AddSubgroup.zsmul_mem G h k
+  convert AddSubgroup.zsmul_mem G h k using 1
   simp
 #align add_subgroup.int_mul_mem AddSubgroup.int_mul_mem
 
@@ -1446,14 +1446,14 @@ instance [Semiring α] [MulSemiringAction R α] (S : Subring R) : MulSemiringAct
   inferInstanceAs (MulSemiringAction S.toSubmonoid α)
 
 /-- The center of a semiring acts commutatively on that semiring. -/
-instance center.sMulCommClass_left : SMulCommClass (center R) R R :=
-  Subsemiring.center.sMulCommClass_left
-#align subring.center.smul_comm_class_left Subring.center.sMulCommClass_left
+instance center.smulCommClass_left : SMulCommClass (center R) R R :=
+  Subsemiring.center.smulCommClass_left
+#align subring.center.smul_comm_class_left Subring.center.smulCommClass_left
 
 /-- The center of a semiring acts commutatively on that semiring. -/
-instance center.sMulCommClass_right : SMulCommClass R (center R) R :=
-  Subsemiring.center.sMulCommClass_right
-#align subring.center.smul_comm_class_right Subring.center.sMulCommClass_right
+instance center.smulCommClass_right : SMulCommClass R (center R) R :=
+  Subsemiring.center.smulCommClass_right
+#align subring.center.smul_comm_class_right Subring.center.smulCommClass_right
 
 end Subring
 

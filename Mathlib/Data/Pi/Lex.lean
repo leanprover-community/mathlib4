@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 
 ! This file was ported from Lean 3 source module data.pi.lex
-! leanprover-community/mathlib commit d4f69d96f3532729da8ebb763f4bc26fcf640f06
+! leanprover-community/mathlib commit 6623e6af705e97002a9054c1c05a980180276fc1
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/

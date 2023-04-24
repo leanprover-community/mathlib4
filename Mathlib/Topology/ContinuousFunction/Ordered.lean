@@ -64,9 +64,9 @@ theorem lt_def [PartialOrder β] {f g : C(α, β)} : f < g ↔ (∀ a, f a ≤ g
   Pi.lt_def
 #align continuous_map.lt_def ContinuousMap.lt_def
 
-instance hasSup [LinearOrder β] [OrderClosedTopology β] : HasSup C(α, β)
+instance sup [LinearOrder β] [OrderClosedTopology β] : Sup C(α, β)
     where sup f g := { toFun := fun a => max (f a) (g a) }
-#align continuous_map.has_sup ContinuousMap.hasSup
+#align continuous_map.has_sup ContinuousMap.sup
 
 @[simp, norm_cast]
 theorem sup_coe [LinearOrder β] [OrderClosedTopology β] (f g : C(α, β)) :
@@ -82,14 +82,14 @@ theorem sup_apply [LinearOrder β] [OrderClosedTopology β] (f g : C(α, β)) (a
 
 instance semilatticeSup [LinearOrder β] [OrderClosedTopology β] : SemilatticeSup C(α, β) :=
   { ContinuousMap.partialOrder,
-    ContinuousMap.hasSup with
+    ContinuousMap.sup with
     le_sup_left := fun f g => le_def.mpr (by simp [le_refl])
     le_sup_right := fun f g => le_def.mpr (by simp [le_refl])
     sup_le := fun f₁ f₂ g w₁ w₂ => le_def.mpr fun a => by simp [le_def.mp w₁ a, le_def.mp w₂ a] }
 
-instance hasInf [LinearOrder β] [OrderClosedTopology β] : HasInf C(α, β)
+instance inf [LinearOrder β] [OrderClosedTopology β] : Inf C(α, β)
     where inf f g := { toFun := fun a => min (f a) (g a) }
-#align continuous_map.has_inf ContinuousMap.hasInf
+#align continuous_map.has_inf ContinuousMap.inf
 
 @[simp, norm_cast]
 theorem inf_coe [LinearOrder β] [OrderClosedTopology β] (f g : C(α, β)) :
@@ -105,7 +105,7 @@ theorem inf_apply [LinearOrder β] [OrderClosedTopology β] (f g : C(α, β)) (a
 
 instance semilatticeInf [LinearOrder β] [OrderClosedTopology β] : SemilatticeInf C(α, β) :=
   { ContinuousMap.partialOrder,
-    ContinuousMap.hasInf with
+    ContinuousMap.inf with
     inf_le_left := fun f g => le_def.mpr (by simp [le_refl])
     inf_le_right := fun f g => le_def.mpr (by simp [le_refl])
     le_inf := fun f₁ f₂ g w₁ w₂ => le_def.mpr fun a => by simp [le_def.mp w₁ a, le_def.mp w₂ a] }

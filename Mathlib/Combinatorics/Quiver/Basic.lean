@@ -31,7 +31,7 @@ but it is also results in error-prone universe signatures when constraints requi
 open Opposite
 
 -- We use the same universe order as in category theory.
--- See note [category_theory universes]
+-- See note [CategoryTheory universes]
 universe v v₁ v₂ u u₁ u₂
 
 /-- A quiver `G` on a type `V` of vertices assigns to every pair `a b : V` of vertices
@@ -136,17 +136,17 @@ namespace Quiver
 
 /-- `Vᵒᵖ` reverses the direction of all arrows of `V`. -/
 instance opposite {V} [Quiver V] : Quiver Vᵒᵖ :=
-  ⟨fun a b => unop b ⟶ unop a⟩
+  ⟨fun a b => (unop b ⟶ unop a)ᵒᵖ⟩
 #align quiver.opposite Quiver.opposite
 
 /-- The opposite of an arrow in `V`.
 -/
-def Hom.op {V} [Quiver V] {X Y : V} (f : X ⟶ Y) : op Y ⟶ op X := f
+def Hom.op {V} [Quiver V] {X Y : V} (f : X ⟶ Y) : op Y ⟶ op X := ⟨f⟩
 #align quiver.hom.op Quiver.Hom.op
 
 /-- Given an arrow in `Vᵒᵖ`, we can take the "unopposite" back in `V`.
 -/
-def Hom.unop {V} [Quiver V] {X Y : Vᵒᵖ} (f : X ⟶ Y) : unop Y ⟶ unop X := f
+def Hom.unop {V} [Quiver V] {X Y : Vᵒᵖ} (f : X ⟶ Y) : unop Y ⟶ unop X := Opposite.unop f
 #align quiver.hom.unop Quiver.Hom.unop
 
 /-- A type synonym for a quiver with no arrows. -/

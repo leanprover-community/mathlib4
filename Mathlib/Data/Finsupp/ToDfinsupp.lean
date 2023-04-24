@@ -266,7 +266,7 @@ theorem finsuppLequivDfinsupp_apply_apply [DecidableEq ι] [Semiring R] [AddComm
        simp only [@LinearEquiv.coe_coe]; rfl
 
 @[simp]
-theorem finsuppLequivDfinsupp_symmApply [DecidableEq ι] [Semiring R] [AddCommMonoid M]
+theorem finsuppLequivDfinsupp_symm_apply [DecidableEq ι] [Semiring R] [AddCommMonoid M]
     [∀ m : M, Decidable (m ≠ 0)] [Module R M] :
     ↑(LinearEquiv.symm (finsuppLequivDfinsupp (ι := ι) (M := M) R)) = Dfinsupp.toFinsupp :=
   rfl

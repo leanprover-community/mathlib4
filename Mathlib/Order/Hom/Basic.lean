@@ -135,16 +135,16 @@ attribute [simp] map_le_map_iff
 /-- Turn an element of a type `F` satisfying `OrderIsoClass F α β` into an actual
 `OrderIso`. This is declared as the default coercion from `F` to `α ≃o β`. -/
 @[coe]
-def OrderIsoClass.toOrderIso {_ : LE α} {_ : LE β} [OrderIsoClass F α β] (f : F) : α ≃o β :=
+def OrderIsoClass.toOrderIso [LE α] [LE β] [OrderIsoClass F α β] (f : F) : α ≃o β :=
 { EquivLike.toEquiv f with map_rel_iff' := map_le_map_iff f }
 
 /-- Any type satisfying `OrderIsoClass` can be cast into `OrderIso` via
 `OrderIsoClass.toOrderIso`. -/
-instance {_ : LE α} {_ : LE β} [OrderIsoClass F α β] : CoeTC F (α ≃o β) :=
+instance [LE α] [LE β] [OrderIsoClass F α β] : CoeTC F (α ≃o β) :=
   ⟨OrderIsoClass.toOrderIso⟩
 
 -- See note [lower instance priority]
-instance (priority := 100) OrderIsoClass.toOrderHomClass {_ : LE α} {_ : LE β}
+instance (priority := 100) OrderIsoClass.toOrderHomClass [LE α] [LE β]
     [OrderIsoClass F α β] : OrderHomClass F α β :=
   { EquivLike.toEmbeddingLike with
     map_rel := fun f _ _ => (map_le_map_iff f).2 }
@@ -221,7 +221,10 @@ namespace OrderHom
 variable [Preorder α] [Preorder β] [Preorder γ] [Preorder δ]
 
 /-- Helper instance for when there's too many metavariables to apply the coercion via `FunLike`
-directly. -/
+directly.
+Remark(Floris): I think this instance is a really bad idea because now applications of
+`FunLike.coe` are not being simplified by `simp`, unlike all other hom-classes.
+Todo: fix after port.-/
 instance : CoeFun (α →o β) fun _ => α → β :=
   ⟨OrderHom.toFun⟩
 
@@ -239,12 +242,14 @@ instance : OrderHomClass (α →o β) α β where
     cases f
     cases g
     congr
-  map_rel f _ _ h := f.monotone h
+  map_rel f _ _ h := f.monotone' h
 
-/-- See Note [custom simps projection]. Note: all other FunLike classes use `apply` instead of `coe`
-for the projection names. Maybe we should change this. -/
+/-- See Note [custom simps projection]. We give this manually so that we use `toFun` as the
+projection directly instead. -/
 def Simps.coe (f : α →o β) : α → β := f
 
+/- Todo: all other FunLike classes use `apply` instead of `coe`
+for the projection names. Maybe we should change this. -/
 initialize_simps_projections OrderHom (toFun → coe)
 
 -- Porting note: dropped `to_fun_eq_coe` as it is a tautology now.
@@ -476,7 +481,7 @@ def prodIso : (α →o β × γ) ≃o (α →o β) × (α →o γ) where
   map_rel_iff' := forall_and.symm
 #align order_hom.prod_iso OrderHom.prodIso
 #align order_hom.prod_iso_apply OrderHom.prodIso_apply
-#align order_hom.prod_iso_symm_apply OrderHom.prodIso_symmApply
+#align order_hom.prod_iso_symm_apply OrderHom.prodIso_symm_apply
 
 /-- `Prod.map` of two `OrderHom`s as a `OrderHom`. -/
 @[simps]
@@ -534,7 +539,7 @@ def piIso : (α →o ∀ i, π i) ≃o ∀ i, α →o π i where
   map_rel_iff' := forall_swap
 #align order_hom.pi_iso OrderHom.piIso
 #align order_hom.pi_iso_apply OrderHom.piIso_apply
-#align order_hom.pi_iso_symm_apply OrderHom.piIso_symmApply
+#align order_hom.pi_iso_symm_apply OrderHom.piIso_symm_apply
 
 /-- `Subtype.val` as a bundled monotone function.  -/
 @[simps (config := { fullyApplied := false })]
@@ -647,14 +652,12 @@ theorem le_iff_le {a b} : f a ≤ f b ↔ a ≤ b :=
   f.map_rel_iff
 #align order_embedding.le_iff_le OrderEmbedding.le_iff_le
 
--- Porting note: `simp` can prove this.
--- @[simp]
+@[simp]
 theorem lt_iff_lt {a b} : f a < f b ↔ a < b :=
   f.ltEmbedding.map_rel_iff
 #align order_embedding.lt_iff_lt OrderEmbedding.lt_iff_lt
 
--- Porting note: `simp` can prove this.
--- @[simp]
+@[simp]
 theorem eq_iff_eq {a b} : f a = f b ↔ a = b :=
   f.injective.eq_iff
 #align order_embedding.eq_iff_eq OrderEmbedding.eq_iff_eq
@@ -703,20 +706,20 @@ protected def withTopMap (f : α ↪o β) : WithTop α ↪o WithTop β :=
 /-- To define an order embedding from a partial order to a preorder it suffices to give a function
 together with a proof that it satisfies `f a ≤ f b ↔ a ≤ b`.
 -/
-def ofMapLeIff {α β} [PartialOrder α] [Preorder β] (f : α → β) (hf : ∀ a b, f a ≤ f b ↔ a ≤ b) :
+def ofMapLEIff {α β} [PartialOrder α] [Preorder β] (f : α → β) (hf : ∀ a b, f a ≤ f b ↔ a ≤ b) :
     α ↪o β :=
   RelEmbedding.ofMapRelIff f hf
-#align order_embedding.of_map_le_iff OrderEmbedding.ofMapLeIff
+#align order_embedding.of_map_le_iff OrderEmbedding.ofMapLEIff
 
 @[simp]
-theorem coe_ofMapLeIff {α β} [PartialOrder α] [Preorder β] {f : α → β} (h) :
-    ⇑ofMapLeIff f h = f :=
+theorem coe_ofMapLEIff {α β} [PartialOrder α] [Preorder β] {f : α → β} (h) :
+    ⇑ofMapLEIff f h = f :=
   rfl
-#align order_embedding.coe_of_map_le_iff OrderEmbedding.coe_ofMapLeIff
+#align order_embedding.coe_of_map_le_iff OrderEmbedding.coe_ofMapLEIff
 
 /-- A strictly monotone map from a linear order is an order embedding. -/
 def ofStrictMono {α β} [LinearOrder α] [Preorder β] (f : α → β) (h : StrictMono f) : α ↪o β :=
-  ofMapLeIff f fun _ _ => h.le_iff_le
+  ofMapLEIff f fun _ _ => h.le_iff_le
 #align order_embedding.of_strict_mono OrderEmbedding.ofStrictMono
 
 @[simp]
@@ -978,7 +981,7 @@ section LE
 
 variable [LE α] [LE β] [LE γ]
 
-@[simp]
+--@[simp] porting note: simp can prove it
 theorem le_iff_le (e : α ≃o β) {x y : α} : e x ≤ e y ↔ x ≤ y :=
   e.map_rel_iff
 #align order_iso.le_iff_le OrderIso.le_iff_le
@@ -1026,7 +1029,7 @@ theorem toRelIsoLT_symm (e : α ≃o β) : e.toRelIsoLT.symm = e.symm.toRelIsoLT
 /-- Converts a `RelIso (<) (<)` into an `OrderIso`. -/
 def ofRelIsoLT {α β} [PartialOrder α] [PartialOrder β]
     (e : ((· < ·) : α → α → Prop) ≃r ((· < ·) : β → β → Prop)) : α ≃o β :=
-  ⟨e.toEquiv, by simp [le_iff_eq_or_lt, e.map_rel_iff]⟩
+  ⟨e.toEquiv, by simp [le_iff_eq_or_lt, e.map_rel_iff, e.injective.eq_iff]⟩
 #align order_iso.of_rel_iso_lt OrderIso.ofRelIsoLT
 
 @[simp]
@@ -1149,7 +1152,7 @@ def orderIsoOfRightInverse (g : β → α) (hg : Function.RightInverse g f) : α
     right_inv := hg }
 #align strict_mono.order_iso_of_right_inverse StrictMono.orderIsoOfRightInverse
 #align strict_mono.order_iso_of_right_inverse_apply StrictMono.orderIsoOfRightInverse_apply
-#align strict_mono.order_iso_of_right_inverse_symm_apply StrictMono.orderIsoOfRightInverse_symmApply
+#align strict_mono.order_iso_of_right_inverse_symm_apply StrictMono.orderIsoOfRightInverse_symm_apply
 
 end StrictMono
 

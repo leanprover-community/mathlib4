@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 
 ! This file was ported from Lean 3 source module topology.algebra.monoid
-! leanprover-community/mathlib commit dc6c365e751e34d100e80fe6e314c3c3e0fd2988
+! leanprover-community/mathlib commit 6efec6bb9fcaed3cf1baaddb2eaadd8a2a06679c
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -12,6 +12,7 @@ import Mathlib.Algebra.BigOperators.Finprod
 import Mathlib.Order.Filter.Pointwise
 import Mathlib.Topology.Algebra.MulAction
 import Mathlib.Algebra.BigOperators.Pi
+import Mathlib.Topology.ContinuousFunction.Basic
 
 /-!
 # Theory of topological monoids
@@ -230,7 +231,8 @@ theorem ContinuousWithinAt.mul {f g : X → M} {s : Set X} {x : X} (hf : Continu
 #align continuous_within_at.add ContinuousWithinAt.add
 
 @[to_additive]
-instance [TopologicalSpace N] [Mul N] [ContinuousMul N] : ContinuousMul (M × N) :=
+instance Prod.continuousMul [TopologicalSpace N] [Mul N] [ContinuousMul N] :
+    ContinuousMul (M × N) :=
   ⟨(continuous_fst.fst'.mul continuous_fst.snd').prod_mk
       (continuous_snd.fst'.mul continuous_snd.snd')⟩
 
@@ -339,10 +341,10 @@ variable [MulOneClass M₁] [MulOneClass M₂] [ContinuousMul M₂]
 /-- Construct a bundled monoid homomorphism `M₁ →* M₂` from a function `f` and a proof that it
 belongs to the closure of the range of the coercion from `M₁ →* M₂` (or another type of bundled
 homomorphisms that has a `MonoidHomClass` instance) to `M₁ → M₂`. -/
-@[to_additive "Construct a bundled additive monoid homomorphism `M₁ →+ M₂` from a function `f`
+@[to_additive (attr := simps (config := .asFn))
+  "Construct a bundled additive monoid homomorphism `M₁ →+ M₂` from a function `f`
 and a proof that it belongs to the closure of the range of the coercion from `M₁ →+ M₂` (or another
-type of bundled homomorphisms that has a `add_monoid_hom_class` instance) to `M₁ → M₂`.",
-  simps (config := { fullyApplied := false })]
+type of bundled homomorphisms that has a `add_monoid_hom_class` instance) to `M₁ → M₂`."]
 def monoidHomOfMemClosureRangeCoe (f : M₁ → M₂)
     (hf : f ∈ closure (range fun (f : F) (x : M₁) => f x)) : M₁ →* M₂
     where
@@ -353,9 +355,9 @@ def monoidHomOfMemClosureRangeCoe (f : M₁ → M₂)
 #align add_monoid_hom_of_mem_closure_range_coe addMonoidHomOfMemClosureRangeCoe
 
 /-- Construct a bundled monoid homomorphism from a pointwise limit of monoid homomorphisms. -/
-@[to_additive "Construct a bundled additive monoid homomorphism from a pointwise limit of additive
-monoid homomorphisms",
-  simps! (config := { fullyApplied := false })]
+@[to_additive (attr := simps! (config := .asFn))
+  "Construct a bundled additive monoid homomorphism from a pointwise limit of additive
+monoid homomorphisms"]
 def monoidHomOfTendsto (f : M₁ → M₂) (g : α → F) [l.NeBot]
     (h : Tendsto (fun a x => g a x) l (𝓝 f)) : M₁ →* M₂ :=
   monoidHomOfMemClosureRangeCoe f <|
@@ -700,8 +702,8 @@ because the predicate `ContinuousInv` has not yet been defined. -/
 @[to_additive "If addition on an additive monoid is continuous, then addition on the additive units
 of the monoid, with respect to the induced topology, is continuous.
 
-Negation is also continuous, but we register this in a later file, `topology.algebra.group`, because
-the predicate `has_continuous_neg` has not yet been defined."]
+Negation is also continuous, but we register this in a later file, `Topology.Algebra.Group`, because
+the predicate `ContinuousNeg` has not yet been defined."]
 instance : ContinuousMul αˣ :=
   inducing_embedProduct.continuousMul (embedProduct α)
 
@@ -865,3 +867,35 @@ theorem continuousMul_inf {t₁ t₂ : TopologicalSpace M} (h₁ : @ContinuousMu
 #align has_continuous_add_inf continuousAdd_inf
 
 end LatticeOps
+
+namespace ContinuousMap
+
+variable [Mul X] [ContinuousMul X]
+
+/-- The continuous map `fun y => y * x` -/
+@[to_additive "The continuous map `fun y => y + x"]
+protected def mulRight (x : X) : C(X, X) :=
+  mk _ (continuous_mul_right x)
+#align continuous_map.mul_right ContinuousMap.mulRight
+#align continuous_map.add_right ContinuousMap.addRight
+
+@[to_additive, simp]
+theorem coe_mulRight (x : X) : ⇑(ContinuousMap.mulRight x) = fun y => y * x :=
+  rfl
+#align continuous_map.coe_mul_right ContinuousMap.coe_mulRight
+#align continuous_map.coe_add_right ContinuousMap.coe_addRight
+
+/-- The continuous map `fun y => x * y` -/
+@[to_additive "The continuous map `fun y => x + y"]
+protected def mulLeft (x : X) : C(X, X) :=
+  mk _ (continuous_mul_left x)
+#align continuous_map.mul_left ContinuousMap.mulLeft
+#align continuous_map.add_left ContinuousMap.addLeft
+
+@[to_additive, simp]
+theorem coe_mulLeft (x : X) : ⇑(ContinuousMap.mulLeft x) = fun y => x * y :=
+  rfl
+#align continuous_map.coe_mul_left ContinuousMap.coe_mulLeft
+#align continuous_map.coe_add_left ContinuousMap.coe_addLeft
+
+end ContinuousMap

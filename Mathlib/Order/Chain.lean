@@ -5,11 +5,12 @@ Authors: Johannes Hölzl
 Ported by: Anatole Dedecker
 
 ! This file was ported from Lean 3 source module order.chain
-! leanprover-community/mathlib commit 207cfac9fcd06138865b5d04f7091e46d9320432
+! leanprover-community/mathlib commit c227d107bbada5d0d9d20287e3282c0a7f1651a0
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Data.Set.Pairwise
+import Mathlib.Data.Set.Pairwise.Basic
+import Mathlib.Data.Set.Lattice
 import Mathlib.Data.SetLike.Basic
 
 /-!

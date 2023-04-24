@@ -70,8 +70,7 @@ theorem count_succ (n : ℕ) : count p (n + 1) = count p n + if p n then 1 else 
   split_ifs with h <;> simp [count, List.range_succ, h]
 #align nat.count_succ Nat.count_succ
 
--- Porting note: tactic does not exist yet
--- @[mono]
+@[mono]
 theorem count_monotone : Monotone (count p) :=
   monotone_nat_of_le_succ fun n ↦ by by_cases h : p n <;> simp [count_succ, h]
 #align nat.count_monotone Nat.count_monotone

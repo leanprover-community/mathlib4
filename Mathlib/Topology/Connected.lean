@@ -673,7 +673,7 @@ theorem connectedComponent_eq {x y : α} (h : y ∈ connectedComponent x) :
 theorem connectedComponent_eq_iff_mem {x y : α} :
     connectedComponent x = connectedComponent y ↔ x ∈ connectedComponent y :=
   ⟨fun h => h ▸ mem_connectedComponent, fun h => (connectedComponent_eq h).symm⟩
-#align connected_component_eq_iff_mem connectedComponent_eq_iff_mem 
+#align connected_component_eq_iff_mem connectedComponent_eq_iff_mem
 
 theorem connectedComponentIn_eq {x y : α} {F : Set α} (h : y ∈ connectedComponentIn F x) :
     connectedComponentIn F x = connectedComponentIn F y := by
@@ -719,7 +719,7 @@ theorem irreducibleComponent_subset_connectedComponent {x : α} :
   isIrreducible_irreducibleComponent.isConnected.subset_connectedComponent mem_irreducibleComponent
 #align irreducible_component_subset_connected_component irreducibleComponent_subset_connectedComponent
 
--- porting note: todo: restore @[mono]
+@[mono]
 theorem connectedComponentIn_mono (x : α) {F G : Set α} (h : F ⊆ G) :
     connectedComponentIn F x ⊆ connectedComponentIn G x := by
   by_cases hx : x ∈ F
@@ -1610,3 +1610,12 @@ theorem IsPreconnected.constant_of_mapsTo [TopologicalSpace β] {S : Set α} (hS
   suffices F ⟨x, hx⟩ = F ⟨y, hy⟩ by rwa [← Subtype.coe_inj] at this
   exact (isPreconnected_iff_preconnectedSpace.mp hS).constant (hc.restrict_mapsTo _)
 #align is_preconnected.constant_of_maps_to IsPreconnected.constant_of_mapsTo
+
+/-- A version of `IsPreconnected.constant_of_mapsTo` that assumes that the codomain is nonempty and
+proves that `f` is equal to `const α y` on `S` for some `y ∈ T`. -/
+theorem IsPreconnected.eqOn_const_of_mapsTo [TopologicalSpace β] {S : Set α} (hS : IsPreconnected S)
+    {T : Set β} [DiscreteTopology T] {f : α → β} (hc : ContinuousOn f S) (hTm : MapsTo f S T)
+    (hne : T.Nonempty) : ∃ y ∈ T, EqOn f (const α y) S := by
+  rcases S.eq_empty_or_nonempty with (rfl | ⟨x, hx⟩)
+  · exact hne.imp fun _ hy => ⟨hy, eqOn_empty _ _⟩
+  · exact ⟨f x, hTm hx, fun x' hx' => hS.constant_of_mapsTo hc hTm hx' hx⟩

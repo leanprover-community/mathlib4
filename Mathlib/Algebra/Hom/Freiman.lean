@@ -556,7 +556,7 @@ theorem FreimanHom.toFreimanHom_coe (h : m ≤ n) (f : A →*[n] β) :
 @[to_additive AddFreimanHom.toAddFreimanHom_injective]
 theorem FreimanHom.toFreimanHom_injective (h : m ≤ n) :
     Function.Injective (FreimanHom.toFreimanHom h : (A →*[n] β) → A →*[m] β) := fun f g hfg =>
-  FreimanHom.ext <| by convert FunLike.ext_iff.1 hfg
+  FreimanHom.ext <| by convert FunLike.ext_iff.1 hfg using 0
 #align freiman_hom.to_freiman_hom_injective FreimanHom.toFreimanHom_injective
 #align add_freiman_hom.to_freiman_hom_injective AddFreimanHom.toAddFreimanHom_injective
 

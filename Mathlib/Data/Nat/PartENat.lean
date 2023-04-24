@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 
 ! This file was ported from Lean 3 source module data.nat.part_enat
-! leanprover-community/mathlib commit f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c
+! leanprover-community/mathlib commit 114ff8a4a7935cb7531062200bff375e7b1d6d85
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -121,6 +121,9 @@ theorem dom_natCast (x : ℕ) : (x : PartENat).Dom :=
   trivial
 #align part_enat.dom_coe PartENat.dom_natCast
 
+instance : CanLift PartENat ℕ (↑) Dom :=
+  ⟨fun n hn => ⟨n.get hn, Part.some_get _⟩⟩
+
 instance : LE PartENat :=
   ⟨fun x y => ∃ h : y.Dom → x.Dom, ∀ hy : y.Dom, x.get (h hy) ≤ y.get hy⟩
 
@@ -130,7 +133,7 @@ instance : Top PartENat :=
 instance : Bot PartENat :=
   ⟨0⟩
 
-instance : HasSup PartENat :=
+instance : Sup PartENat :=
   ⟨fun x y => ⟨x.Dom ∧ y.Dom, fun h => x.get h.1 ⊔ y.get h.2⟩⟩
 
 theorem le_def (x y : PartENat) :
@@ -447,6 +450,14 @@ noncomputable instance : CanonicallyOrderedAddMonoid PartENat :=
           ⟨(b - a : ℕ), by
             rw [← Nat.cast_add, natCast_inj, add_comm, tsub_add_cancel_of_le (coe_le_coe.1 h)]⟩ }
 
+theorem eq_natCast_sub_of_add_eq_natCast {x y : PartENat} {n : ℕ} (h : x + y = n) :
+    x = ↑(n - y.get (dom_of_le_natCast ((le_add_left le_rfl).trans_eq h))) := by
+  lift x to ℕ using dom_of_le_natCast ((le_add_right le_rfl).trans_eq h)
+  lift y to ℕ using dom_of_le_natCast ((le_add_left le_rfl).trans_eq h)
+  rw [← Nat.cast_add, natCast_inj] at h
+  rw [get_natCast, natCast_inj, eq_tsub_of_add_eq h]
+#align part_enat.eq_coe_sub_of_add_eq_coe PartENat.eq_natCast_sub_of_add_eq_natCast
+
 protected theorem add_lt_add_right {x y z : PartENat} (h : x < y) (hz : z ≠ ⊤) : x + z < y + z := by
   rcases ne_top_iff.mp (ne_top_of_lt h) with ⟨m, rfl⟩
   rcases ne_top_iff.mp hz with ⟨k, rfl⟩
@@ -743,15 +754,11 @@ noncomputable def withTopAddEquiv : PartENat ≃+ ℕ∞ :=
 
 end WithTopEquiv
 
--- Porting note: `Nat.lt_wfRel` changed in core,
--- the last line of the mathlib3 proof was:
--- `exact InvImage.wf _ (WithTop.wellFounded_lt Nat.lt_wfRel)`
 theorem lt_wf : @WellFounded PartENat (· < ·) := by
   classical
     change WellFounded fun a b : PartENat => a < b
     simp_rw [← withTopEquiv_lt]
-    refine InvImage.wf _ (WithTop.wellFounded_lt ?_)
-    exact IsWellFounded.fix.proof_1 fun y x => y < x
+    exact InvImage.wf _ (WithTop.wellFounded_lt Nat.lt_wfRel.wf)
 #align part_enat.lt_wf PartENat.lt_wf
 
 instance : WellFoundedLT PartENat :=

@@ -99,6 +99,8 @@ class IsCancelMulZero (M₀ : Type u) [Mul M₀] [Zero M₀]
 
 export MulZeroClass (zero_mul mul_zero)
 attribute [simp] zero_mul mul_zero
+#align zero_mul MulZeroClass.zero_mul
+#align mul_zero MulZeroClass.mul_zero
 
 /-- Predicate typeclass for expressing that `a * b = 0` implies `a = 0` or `b = 0`
 for all `a` and `b` of type `G₀`. -/

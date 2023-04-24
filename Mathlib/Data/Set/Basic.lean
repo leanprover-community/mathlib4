@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 
 ! This file was ported from Lean 3 source module data.set.basic
-! leanprover-community/mathlib commit b875cbb7f2aa2b4c685aaa2f99705689c95322ad
+! leanprover-community/mathlib commit 29cb56a7b35f72758b05a30490e1f10bd62c35c1
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -1024,6 +1024,14 @@ theorem union_inter_cancel_right {s t : Set α} : (s ∪ t) ∩ t = t :=
   inter_eq_self_of_subset_right <| subset_union_right _ _
 #align set.union_inter_cancel_right Set.union_inter_cancel_right
 
+theorem inter_setOf_eq_sep (s : Set α) (p : α → Prop) : s ∩ {a | p a} = {a ∈ s | p a} :=
+  rfl
+#align set.inter_set_of_eq_sep Set.inter_setOf_eq_sep
+
+theorem setOf_inter_eq_sep (p : α → Prop) (s : Set α) : {a | p a} ∩ s = {a ∈ s | p a} :=
+  inter_comm _ _
+#align set.set_of_inter_eq_sep Set.setOf_inter_eq_sep
+
 /-! ### Distributivity laws -/
 
 
@@ -1153,6 +1161,10 @@ theorem insert_subset_insert_iff (ha : a ∉ s) : insert a s ⊆ insert a t ↔ 
   rcases h (subset_insert _ _ hx) with (rfl | hxt)
   exacts[(ha hx).elim, hxt]
 #align set.insert_subset_insert_iff Set.insert_subset_insert_iff
+
+theorem subset_insert_iff_of_not_mem (ha : a ∉ s) : s ⊆ insert a t ↔ s ⊆ t :=
+  forall₂_congr <| fun _ hb => or_iff_right <| ne_of_mem_of_not_mem hb ha
+#align set.subset_insert_iff_of_not_mem Set.subset_insert_iff_of_not_mem
 
 theorem ssubset_iff_insert {s t : Set α} : s ⊂ t ↔ ∃ (a : α) (_ : a ∉ s), insert a s ⊆ t := by
   simp only [insert_subset, exists_and_right, ssubset_def, not_subset]
@@ -1298,6 +1310,9 @@ theorem empty_ssubset_singleton : (∅ : Set α) ⊂ {a} :=
 theorem singleton_subset_iff {a : α} {s : Set α} : {a} ⊆ s ↔ a ∈ s :=
   forall_eq
 #align set.singleton_subset_iff Set.singleton_subset_iff
+
+theorem singleton_subset_singleton : ({a} : Set α) ⊆ {b} ↔ a = b := by simp
+#align set.singleton_subset_singleton Set.singleton_subset_singleton
 
 theorem set_compr_eq_eq_singleton {a : α} : { b | b = a } = {a} :=
   rfl
@@ -1583,6 +1598,14 @@ lemma disjoint_singleton : Disjoint ({a} : Set α) {b} ↔ a ≠ b :=
 
 lemma subset_diff : s ⊆ t \ u ↔ s ⊆ t ∧ Disjoint s u := le_iff_subset.symm.trans le_sdiff
 #align set.subset_diff Set.subset_diff
+
+theorem inter_diff_distrib_left (s t u : Set α) : s ∩ (t \ u) = (s ∩ t) \ (s ∩ u) :=
+  inf_sdiff_distrib_left _ _ _
+#align set.inter_diff_distrib_left Set.inter_diff_distrib_left
+
+theorem inter_diff_distrib_right (s t u : Set α) : s \ t ∩ u = (s ∩ u) \ (t ∩ u) :=
+  inf_sdiff_distrib_right _ _ _
+#align set.inter_diff_distrib_right Set.inter_diff_distrib_right
 
 /-! ### Lemmas about complement -/
 
@@ -2013,9 +2036,20 @@ sdiff_eq_self_iff_disjoint.2 $ by simp [h]
 #align set.diff_singleton_eq_self Set.diff_singleton_eq_self
 
 @[simp]
+theorem diff_singleton_sSubset {s : Set α} {a : α} : s \ {a} ⊂ s ↔ a ∈ s :=
+  sdiff_le.lt_iff_ne.trans <| sdiff_eq_left.not.trans <| by simp
+#align set.diff_singleton_ssubset Set.diff_singleton_sSubset
+
+@[simp]
 theorem insert_diff_singleton {a : α} {s : Set α} : insert a (s \ {a}) = insert a s := by
   simp [insert_eq, union_diff_self, -union_singleton, -singleton_union]
 #align set.insert_diff_singleton Set.insert_diff_singleton
+
+theorem insert_diff_singleton_comm (hab : a ≠ b) (s : Set α) :
+    insert a (s \ {b}) = insert a s \ {b} := by
+  simp_rw [← union_singleton, union_diff_distrib,
+    diff_singleton_eq_self (mem_singleton_iff.not.2 hab.symm)]
+#align set.insert_diff_singleton_comm Set.insert_diff_singleton_comm
 
 --Porting note: removed `simp` attribute because `simp` can prove it
 theorem diff_self {s : Set α} : s \ s = ∅ :=
@@ -2124,6 +2158,12 @@ theorem powerset_empty : 𝒫(∅ : Set α) = {∅} :=
 theorem powerset_univ : 𝒫(univ : Set α) = univ :=
   eq_univ_of_forall subset_univ
 #align set.powerset_univ Set.powerset_univ
+
+/-- The powerset of a singleton contains only `∅` and the singleton itself. -/
+theorem powerset_singleton (x : α) : 𝒫({x} : Set α) = {∅, {x}} := by
+  ext y
+  rw [mem_powerset_iff, subset_singleton_iff_eq, mem_insert_iff, mem_singleton_iff]
+#align set.powerset_singleton Set.powerset_singleton
 
 /-! ### Sets defined as an if-then-else -/
 
@@ -2823,6 +2863,10 @@ instance decidableUniv : DecidablePred (· ∈ (Set.univ : Set α)) := fun _ =>
 instance decidableSetOf (p : α → Prop) [Decidable (p a)] : Decidable (a ∈ { a | p a }) := by
   assumption
 #align set.decidable_set_of Set.decidableSetOf
+
+-- porting note: Lean 3 unfolded `{a}` before finding instances but Lean 4 needs additional help
+instance decidableMemSingleton {a b : α} [DecidableEq α] :
+    Decidable (a ∈ ({b} : Set α)) := decidableSetOf _ (· = b)
 
 end Set
 

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 
 ! This file was ported from Lean 3 source module data.list.perm
-! leanprover-community/mathlib commit 7b78d1776212a91ecc94cf601f83bdcc46b04213
+! leanprover-community/mathlib commit 47adfab39a11a072db552f47594bf8ed2cf8a722
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -215,13 +215,8 @@ theorem singleton_perm {a : α} {l : List α} : [a] ~ l ↔ [a] = l :=
   @replicate_perm α 1 a l
 #align list.singleton_perm List.singleton_perm
 
-theorem Perm.eq_singleton {a : α} {l : List α} (p : l ~ [a]) : l = [a] :=
-  perm_singleton.1 p
-#align list.perm.eq_singleton List.Perm.eq_singleton
-
-theorem Perm.singleton_eq {a : α} {l : List α} (p : [a] ~ l) : [a] = l :=
-  p.symm.eq_singleton.symm
-#align list.perm.singleton_eq List.Perm.singleton_eq
+alias perm_singleton ↔ Perm.eq_singleton _
+alias singleton_perm ↔ Perm.singleton_eq _
 
 theorem singleton_perm_singleton {a b : α} : [a] ~ [b] ↔ a = b := by simp
 #align list.singleton_perm_singleton List.singleton_perm_singleton
@@ -841,7 +836,7 @@ theorem Perm.bagInter_right {l₁ l₂ : List α} (t : List α) (h : l₁ ~ l₂
     l₁.bagInter t ~ l₂.bagInter t := by
   induction' h with x _ _ _ _ x y _ _ _ _ _ _ ih_1 ih_2 generalizing t; · simp
   · by_cases x ∈ t <;> simp [*, Perm.cons]
-  · by_cases x = y
+  · by_cases h : x = y
     · simp [h]
     by_cases xt : x ∈ t <;> by_cases yt : y ∈ t
     · simp [xt, yt, mem_erase_of_ne h, mem_erase_of_ne (Ne.symm h), erase_comm, swap]
@@ -854,7 +849,7 @@ theorem Perm.bagInter_right {l₁ l₂ : List α} (t : List α) (h : l₁ ~ l₂
 theorem Perm.bagInter_left (l : List α) {t₁ t₂ : List α} (p : t₁ ~ t₂) :
     l.bagInter t₁ = l.bagInter t₂ := by
   induction' l with a l IH generalizing t₁ t₂ p; · simp
-  by_cases a ∈ t₁
+  by_cases h : a ∈ t₁
   · simp [h, p.subset h, IH (p.erase _)]
   · simp [h, mt p.mem_iff.2 h, IH p]
 #align list.perm.bag_inter_left List.Perm.bagInter_left
@@ -880,11 +875,11 @@ theorem perm_iff_count {l₁ l₂ : List α} : l₁ ~ l₂ ↔ ∀ a, count a l�
       specialize H b
       simp at H
       contradiction
-    · have : a ∈ l₂ := count_pos.1 (by rw [← H] ; simp)
+    · have : a ∈ l₂ := count_pos.1 (by rw [← H]; simp)
       refine' ((IH fun b => _).cons a).trans (perm_cons_erase this).symm
       specialize H b
       rw [(perm_cons_erase this).count_eq] at H
-      by_cases b = a <;> simp [h] at H⊢ <;> assumption⟩
+      by_cases h : b = a <;> simpa [h] using H⟩
 #align list.perm_iff_count List.perm_iff_count
 
 theorem perm_replicate_append_replicate {l : List α} {a b : α} {m n : ℕ} (h : a ≠ b) :
@@ -1378,7 +1373,7 @@ theorem count_permutations'Aux_self [DecidableEq α] (l : List α) (x : α) :
     · subst hx
       simpa [takeWhile, Nat.succ_inj', DecEq_eq] using IH _
     · rw [takeWhile]
-      simp only [mem_map', cons.injEq, Ne.symm hx, false_and, and_false, exists_false,
+      simp only [mem_map, cons.injEq, Ne.symm hx, false_and, and_false, exists_false,
         not_false_iff, count_eq_zero_of_not_mem, zero_add, hx, decide_False, length_nil]
 #align list.count_permutations'_aux_self List.count_permutations'Aux_self
 
@@ -1411,7 +1406,7 @@ theorem nodup_permutations'Aux_of_not_mem (s : List α) (x : α) (hx : x ∉ s) 
   induction' s with y s IH
   · simp
   · simp only [not_or, mem_cons] at hx
-    simp only [permutations'Aux, nodup_cons, mem_map', cons.injEq, exists_eq_right_right, not_and]
+    simp only [permutations'Aux, nodup_cons, mem_map, cons.injEq, exists_eq_right_right, not_and]
     refine' ⟨fun _ => Ne.symm hx.left, _⟩
     rw [nodup_map_iff]
     · exact IH hx.right

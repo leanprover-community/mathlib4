@@ -2,8 +2,9 @@
 Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro
+
 ! This file was ported from Lean 3 source module algebra.order.ring.with_top
-! leanprover-community/mathlib commit afdb4fa3b32d41106a4a09b371ce549ad7958abd
+! leanprover-community/mathlib commit 0111834459f5d7400215223ea95ae38a1265a907
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -20,9 +21,6 @@ The main results of this section are `WithTop.canonicallyOrderedCommSemiring` an
 variable {α : Type _}
 
 namespace WithTop
-
-instance [Nonempty α] : Nontrivial (WithTop α) :=
-  Option.nontrivial
 
 variable [DecidableEq α]
 
@@ -136,7 +134,7 @@ instance [MulZeroOneClass α] [Nontrivial α] : MulZeroOneClass (WithTop α) :=
 
 /-- A version of `WithTop.map` for `MonoidWithZeroHom`s. -/
 @[simps (config := { fullyApplied := false })]
-protected def MonoidWithZeroHom.withTopMap {R S : Type _} [MulZeroOneClass R] [DecidableEq R]
+protected def _root_.MonoidWithZeroHom.withTopMap {R S : Type _} [MulZeroOneClass R] [DecidableEq R]
     [Nontrivial R] [MulZeroOneClass S] [DecidableEq S] [Nontrivial S] (f : R →*₀ S)
     (hf : Function.Injective f) : WithTop R →*₀ WithTop S :=
   { f.toZeroHom.withTopMap, f.toMonoidHom.toOneHom.withTopMap with
@@ -154,7 +152,7 @@ protected def MonoidWithZeroHom.withTopMap {R S : Type _} [MulZeroOneClass R] [D
       · have : (f x : WithTop S) ≠ 0 := by simpa [hf.eq_iff' (map_zero f)] using hx
         simp [mul_top hx, mul_top this]
       · simp only [map_coe, ← coe_mul, map_mul] } -- porting note: todo: `simp [← coe_mul]` fails
-#align monoid_with_zero_hom.with_top_map WithTop.MonoidWithZeroHom.withTopMap
+#align monoid_with_zero_hom.with_top_map MonoidWithZeroHom.withTopMap
 
 instance [SemigroupWithZero α] [NoZeroDivisors α] : SemigroupWithZero (WithTop α) :=
   { WithTop.instMulZeroClassWithTop with
@@ -211,18 +209,15 @@ instance [Nontrivial α] : CanonicallyOrderedCommSemiring (WithTop α) :=
 
 /-- A version of `WithTop.map` for `RingHom`s. -/
 @[simps (config := { fullyApplied := false })]
-protected def RingHom.withTopMap {R S : Type _} [CanonicallyOrderedCommSemiring R] [DecidableEq R]
-    [Nontrivial R] [CanonicallyOrderedCommSemiring S] [DecidableEq S] [Nontrivial S] (f : R →+* S)
-    (hf : Function.Injective f) : WithTop R →+* WithTop S :=
+protected def _root_.RingHom.withTopMap {R S : Type _} [CanonicallyOrderedCommSemiring R]
+    [DecidableEq R] [Nontrivial R] [CanonicallyOrderedCommSemiring S] [DecidableEq S] [Nontrivial S]
+    (f : R →+* S) (hf : Function.Injective f) : WithTop R →+* WithTop S :=
   {MonoidWithZeroHom.withTopMap f.toMonoidWithZeroHom hf, f.toAddMonoidHom.withTopMap with}
-#align ring_hom.with_top_map WithTop.RingHom.withTopMap
+#align ring_hom.with_top_map RingHom.withTopMap
 
 end WithTop
 
 namespace WithBot
-
-instance [Nonempty α] : Nontrivial (WithBot α) :=
-  Option.nontrivial
 
 variable [DecidableEq α]
 

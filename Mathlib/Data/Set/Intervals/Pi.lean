@@ -4,11 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 
 ! This file was ported from Lean 3 source module data.set.intervals.pi
-! leanprover-community/mathlib commit 207cfac9fcd06138865b5d04f7091e46d9320432
+! leanprover-community/mathlib commit 4020ddee5b4580a409bfda7d2f42726ce86ae674
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Intervals.Basic
+import Mathlib.Data.Set.Intervals.UnorderedInterval
 import Mathlib.Data.Set.Lattice
 
 /-!
@@ -110,7 +111,7 @@ theorem pi_univ_Ioc_update_right {x y : ∀ i, α i} {i₀ : ι} {m : α i₀} (
 theorem disjoint_pi_univ_Ioc_update_left_right {x y : ∀ i, α i} {i₀ : ι} {m : α i₀} :
     Disjoint (pi univ fun i ↦ Ioc (x i) (update y i₀ m i))
       (pi univ fun i ↦ Ioc (update x i₀ m i) (y i)) :=
-  by 
+  by
   rw [disjoint_left]
   rintro z h₁ h₂
   refine' (h₁ i₀ (mem_univ _)).2.not_lt _
@@ -118,6 +119,17 @@ theorem disjoint_pi_univ_Ioc_update_left_right {x y : ∀ i, α i} {i₀ : ι} {
 #align set.disjoint_pi_univ_Ioc_update_left_right Set.disjoint_pi_univ_Ioc_update_left_right
 
 end PiPreorder
+
+section PiLattice
+
+variable [∀ i, Lattice (α i)]
+
+@[simp]
+theorem pi_univ_uIcc (a b : ∀ i, α i) : (pi univ fun i => uIcc (a i) (b i)) = uIcc a b :=
+  pi_univ_Icc _ _
+#align set.pi_univ_uIcc Set.pi_univ_uIcc
+
+end PiLattice
 
 variable [DecidableEq ι] [∀ i, LinearOrder (α i)]
 
@@ -142,7 +154,7 @@ of the faces of `[x, y]`. -/
 theorem Icc_diff_pi_univ_Ioo_subset (x y x' y' : ∀ i, α i) :
     (Icc x y \ pi univ fun i ↦ Ioo (x' i) (y' i)) ⊆
       (⋃ i : ι, Icc x (update y i (x' i))) ∪ ⋃ i : ι, Icc (update x i (y' i)) y :=
-  by 
+  by
   rintro a ⟨⟨hxa, hay⟩, ha'⟩
   simp at ha'
   simp [le_update_iff, update_le_iff, hxa, hay, hxa _, hay _, ← exists_or]

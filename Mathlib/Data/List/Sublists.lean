@@ -397,7 +397,7 @@ alias nodup_sublists' ↔ nodup.of_sublists' nodup.sublists'
 
 theorem nodup_sublistsLen (n : ℕ) {l : List α} (h : Nodup l) : (sublistsLen n l).Nodup := by
   have : Pairwise (. ≠ .) l.sublists' := Pairwise.imp
-    (fun h => Lex.to_ne (by convert h; funext _ _; simp[swap, eq_comm])) h.sublists'
+    (fun h => Lex.to_ne (by convert h using 3; simp [swap, eq_comm])) h.sublists'
   exact this.sublist (sublistsLen_sublist_sublists' _ _)
 
 #align list.nodup_sublists_len List.nodup_sublistsLen

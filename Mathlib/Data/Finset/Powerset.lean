@@ -353,7 +353,10 @@ theorem powersetLen_map {β : Type _} (f : α ↪ β) (n : ℕ) (s : Finset α) 
       refine' ⟨_, _, this⟩
       rw [← card_map f, this, h.2]; simp
     . rintro ⟨a, ⟨has, rfl⟩, rfl⟩
-      simp [*]
+      dsimp [RelEmbedding.coe_toEmbedding]
+      --Porting note: Why is `rw` required here and not `simp`?
+      rw [mapEmbedding_apply]
+      simp [has]
 #align finset.powerset_len_map Finset.powersetLen_map
 
 end PowersetLen

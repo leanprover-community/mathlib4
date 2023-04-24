@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
 
 ! This file was ported from Lean 3 source module topology.algebra.group_with_zero
-! leanprover-community/mathlib commit 48085f140e684306f9e7da907cd5932056d1aded
+! leanprover-community/mathlib commit c10e724be91096453ee3db13862b9fb9a992fef2
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -142,6 +142,13 @@ theorem ContinuousOn.inv₀ (hf : ContinuousOn f s) (h0 : ∀ x ∈ s, f x ≠ 0
 
 end Inv₀
 
+/-- If `G₀` is a group with zero with topology such that `x ↦ x⁻¹` is continuous at all nonzero
+points. Then the coercion `G₀ˣ → G₀` is a topological embedding. -/
+theorem Units.embedding_val₀ [GroupWithZero G₀] [TopologicalSpace G₀] [HasContinuousInv₀ G₀] :
+    Embedding (val : G₀ˣ → G₀) :=
+  embedding_val_mk <| (continuousOn_inv₀ (G₀ := G₀)).mono <| fun _ ↦ IsUnit.ne_zero
+#align units.embedding_coe₀ Units.embedding_val₀
+
 /-!
 ### Continuity of division
 
@@ -248,28 +255,59 @@ protected def mulRight₀ (c : α) (hc : c ≠ 0) : α ≃ₜ α :=
 #align homeomorph.mul_right₀ Homeomorph.mulRight₀
 
 @[simp]
-theorem coe_mulLeft₀ (c : α) (hc : c ≠ 0) : ⇑(Homeomorph.mulLeft₀ c hc) = (· * ·) c :=
+theorem coe_mulLeft₀ (c : α) (hc : c ≠ 0) : ⇑(Homeomorph.mulLeft₀ c hc) = (c * ·) :=
   rfl
 #align homeomorph.coe_mul_left₀ Homeomorph.coe_mulLeft₀
 
 @[simp]
 theorem mulLeft₀_symm_apply (c : α) (hc : c ≠ 0) :
-    ((Homeomorph.mulLeft₀ c hc).symm : α → α) = (· * ·) c⁻¹ :=
+    ((Homeomorph.mulLeft₀ c hc).symm : α → α) = (c⁻¹ * ·) :=
   rfl
 #align homeomorph.mul_left₀_symm_apply Homeomorph.mulLeft₀_symm_apply
 
 @[simp]
-theorem coe_mulRight₀ (c : α) (hc : c ≠ 0) : ⇑(Homeomorph.mulRight₀ c hc) = fun x => x * c :=
+theorem coe_mulRight₀ (c : α) (hc : c ≠ 0) : ⇑(Homeomorph.mulRight₀ c hc) = (· * c) :=
   rfl
 #align homeomorph.coe_mul_right₀ Homeomorph.coe_mulRight₀
 
 @[simp]
 theorem mulRight₀_symm_apply (c : α) (hc : c ≠ 0) :
-    ((Homeomorph.mulRight₀ c hc).symm : α → α) = fun x => x * c⁻¹ :=
+    ((Homeomorph.mulRight₀ c hc).symm : α → α) = (· * c⁻¹) :=
   rfl
 #align homeomorph.mul_right₀_symm_apply Homeomorph.mulRight₀_symm_apply
 
 end Homeomorph
+
+section map_comap
+
+variable [TopologicalSpace G₀] [GroupWithZero G₀] [ContinuousMul G₀] {a : G₀}
+
+theorem map_mul_left_nhds₀ (ha : a ≠ 0) (b : G₀) : map (a * ·) (𝓝 b) = 𝓝 (a * b) :=
+  (Homeomorph.mulLeft₀ a ha).map_nhds_eq b
+
+theorem map_mul_left_nhds_one₀ (ha : a ≠ 0) : map (a * ·) (𝓝 1) = 𝓝 (a) := by
+  rw [map_mul_left_nhds₀ ha, mul_one]
+
+theorem map_mul_right_nhds₀ (ha : a ≠ 0) (b : G₀) : map (· * a) (𝓝 b) = 𝓝 (b * a) :=
+  (Homeomorph.mulRight₀ a ha).map_nhds_eq b
+
+theorem map_mul_right_nhds_one₀ (ha : a ≠ 0) : map (· * a) (𝓝 1) = 𝓝 (a) := by
+  rw [map_mul_right_nhds₀ ha, one_mul]
+
+theorem nhds_translation_mul_inv₀ (ha : a ≠ 0) : comap (· * a⁻¹) (𝓝 1) = 𝓝 a :=
+  ((Homeomorph.mulRight₀ a ha).symm.comap_nhds_eq 1).trans <| by simp
+
+/-- If a group with zero has continuous multiplication and `fun x ↦ x⁻¹` is continuous at one,
+then it is continuous at any unit. -/
+theorem HasContinuousInv₀.of_nhds_one (h : Tendsto Inv.inv (𝓝 (1 : G₀)) (𝓝 1)) :
+    HasContinuousInv₀ G₀ where
+  continuousAt_inv₀ x hx := by
+    have hx' := inv_ne_zero hx
+    rw [ContinuousAt, ← map_mul_left_nhds_one₀ hx, ← nhds_translation_mul_inv₀ hx',
+      tendsto_map'_iff, tendsto_comap_iff]
+    simpa only [(· ∘ ·), mul_inv_rev, mul_inv_cancel_right₀ hx']
+
+end map_comap
 
 section Zpow
 

@@ -102,7 +102,9 @@ theorem normUnit_one : normUnit (1 : α) = 1 :=
 /-- Chooses an element of each associate class, by multiplying by `normUnit` -/
 def normalize : α →*₀ α where
   toFun x := x * normUnit x
-  map_zero' := by simp only [normUnit_zero, Units.val_one, mul_one]
+  map_zero' := by
+    simp only [normUnit_zero]
+    exact mul_one (0:α)
   map_one' := by dsimp only; rw [normUnit_one, one_mul]; rfl
   map_mul' x y :=
     (by_cases fun hx : x = 0 => by dsimp only; rw [hx, zero_mul, zero_mul, zero_mul]) fun hx =>
@@ -702,7 +704,7 @@ end GCD
 section LCM
 
 theorem lcm_dvd_iff [GCDMonoid α] {a b c : α} : lcm a b ∣ c ↔ a ∣ c ∧ b ∣ c := by
-  by_cases a = 0 ∨ b = 0
+  by_cases h : a = 0 ∨ b = 0
   · rcases h with (rfl | rfl) <;>
       simp (config := { contextual := true }) only [iff_def, lcm_zero_left, lcm_zero_right,
         zero_dvd_iff, dvd_zero, eq_self_iff_true, and_true_iff, imp_true_iff]
@@ -970,7 +972,7 @@ def associatesEquivOfUniqueUnits : Associates α ≃* α where
   right_inv _ := (Associates.out_mk _).trans <| normalize_eq _
   map_mul' := Associates.out_mul
 #align associates_equiv_of_unique_units associatesEquivOfUniqueUnits
-#align associates_equiv_of_unique_units_symm_apply associatesEquivOfUniqueUnits_symmApply
+#align associates_equiv_of_unique_units_symm_apply associatesEquivOfUniqueUnits_symm_apply
 #align associates_equiv_of_unique_units_apply associatesEquivOfUniqueUnits_apply
 
 end UniqueUnit
@@ -1105,7 +1107,7 @@ noncomputable def normalizedGCDMonoidOfGCD [NormalizationMonoid α] [DecidableEq
           · apply (a0 _).elim
             rw [← zero_dvd_iff, ← ha]
             exact gcd_dvd_left _ _
-          · convert @normalize_zero α _ _
+          · rw [hl, zero_mul]
         have h1 : gcd a b ≠ 0 := by
           have hab : a * b ≠ 0 := mul_ne_zero a0 hb
           contrapose! hab

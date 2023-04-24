@@ -4,10 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Jalex Stark, Kyle Miller, Alena Gusakov, Hunter Monroe
 
 ! This file was ported from Lean 3 source module combinatorics.simple_graph.basic
-! leanprover-community/mathlib commit db53863fb135228820ee0b08e8dce9349a3d911b
+! leanprover-community/mathlib commit c6ef6387ede9983aee397d442974e61f89dfd87b
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
+import Mathlib.Combinatorics.SimpleGraph.Init
 import Mathlib.Data.Rel
 import Mathlib.Data.Set.Finite
 import Mathlib.Data.Sym.Sym2
@@ -45,8 +46,9 @@ finitely many vertices.
   graph isomorphisms. Note that a graph embedding is a stronger notion than an
   injective graph homomorphism, since its image is an induced subgraph.
 
-* `BooleanAlgebra` instance: Under the subgraph relation, `SimpleGraph` forms a `BooleanAlgebra`.
-  In other words, this is the lattice of spanning subgraphs of the complete graph.
+* `CompleteBooleanAlgebra` instance: Under the subgraph relation, `SimpleGraph` forms a
+  `CompleteBooleanAlgebra`. In other words, this is the complete lattice of spanning subgraphs of
+  the complete graph.
 
 ## Notations
 
@@ -70,8 +72,6 @@ finitely many vertices.
 
 ## Todo
 
-* Upgrade boolean algebra instance to a `CompleteBooleanAlgebra`.
-
 * This is the simplest notion of an unoriented graph.  This should
   eventually fit into a more complete combinatorics hierarchy which
   includes multigraphs and directed graphs.  We begin with simple graphs
@@ -80,16 +80,37 @@ finitely many vertices.
 -/
 
 -- porting note: using `aesop` for automation
-declare_aesop_rule_sets [SimpleGraph]
 
 -- porting note: These attributes are needed to use `aesop` as a replacement for `obviously`
 attribute [aesop norm unfold (rule_sets [SimpleGraph])] Symmetric
 attribute [aesop norm unfold (rule_sets [SimpleGraph])] Irreflexive
 
 -- porting note: a thin wrapper around `aesop` for graph lemmas, modelled on `aesop_cat`
+/--
+A variant of the `aesop` tactic for use in the graph library. Changes relative
+to standard `aesop`:
+
+- We use the `SimpleGraph` rule set in addition to the default rule sets.
+- We instruct Aesop's `intro` rule to unfold with `default` transparency.
+- We instruct Aesop to fail if it can't fully solve the goal. This allows us to
+  use `aesop_graph` for auto-params.
+-/
 macro (name := aesop_graph) "aesop_graph" c:Aesop.tactic_clause*: tactic =>
   `(tactic|
-    aesop $c* (options := { introsTransparency? := some .default }) (rule_sets [SimpleGraph]))
+    aesop $c*
+      (options := { introsTransparency? := some .default, terminal := true })
+      (rule_sets [$(Lean.mkIdent `SimpleGraph):ident]))
+
+/--
+A variant of `aesop_graph` which does not fail if it is unable to solve the
+goal. Use this only for exploration! Nonterminal Aesop is even worse than
+nonterminal `simp`.
+-/
+macro (name := aesop_graph_nonterminal) "aesop_graph_nonterminal" c:Aesop.tactic_clause*: tactic =>
+  `(tactic|
+    aesop $c*
+      (options := { introsTransparency? := some .default, warnOnNonterminal := false })
+      (rule_sets [$(Lean.mkIdent `SimpleGraph):ident]))
 
 open Finset Function
 
@@ -160,7 +181,7 @@ def completeBipartiteGraph (V W : Type _) : SimpleGraph (Sum V W)
 
 namespace SimpleGraph
 
-variable {𝕜 : Type _} {V : Type u} {W : Type v} {X : Type w} (G : SimpleGraph V)
+variable {ι : Sort _} {𝕜 : Type _} {V : Type u} {W : Type v} {X : Type w} (G : SimpleGraph V)
   (G' : SimpleGraph W) {a b c u v w : V} {e : Sym2 V}
 
 @[simp]
@@ -198,6 +219,15 @@ theorem ne_of_adj_of_not_adj {v w x : V} (h : G.Adj v x) (hn : ¬G.Adj w x) : v 
   hn (h' ▸ h)
 #align simple_graph.ne_of_adj_of_not_adj SimpleGraph.ne_of_adj_of_not_adj
 
+theorem adj_injective : Injective (Adj : SimpleGraph V → V → V → Prop) :=
+  SimpleGraph.ext
+#align simple_graph.adj_injective SimpleGraph.adj_injective
+
+@[simp]
+theorem adj_inj {G H : SimpleGraph V} : G.Adj = H.Adj ↔ G = H :=
+  adj_injective.eq_iff
+#align simple_graph.adj_inj SimpleGraph.adj_inj
+
 section Order
 
 /-- The relation that one `SimpleGraph` is a subgraph of another.
@@ -215,10 +245,10 @@ theorem isSubgraph_eq_le : (IsSubgraph : SimpleGraph V → SimpleGraph V → Pro
 #align simple_graph.is_subgraph_eq_le SimpleGraph.isSubgraph_eq_le
 
 /-- The supremum of two graphs `x ⊔ y` has edges where either `x` or `y` have edges. -/
-instance : HasSup (SimpleGraph V) :=
-  ⟨fun x y =>
+instance : Sup (SimpleGraph V) where
+  sup x y :=
     { Adj := x.Adj ⊔ y.Adj
-      symm := fun v w h => by rwa [Pi.sup_apply, Pi.sup_apply, x.adj_comm, y.adj_comm] }⟩
+      symm := fun v w h => by rwa [Pi.sup_apply, Pi.sup_apply, x.adj_comm, y.adj_comm] }
 
 @[simp]
 theorem sup_adj (x y : SimpleGraph V) (v w : V) : (x ⊔ y).Adj v w ↔ x.Adj v w ∨ y.Adj v w :=
@@ -226,10 +256,10 @@ theorem sup_adj (x y : SimpleGraph V) (v w : V) : (x ⊔ y).Adj v w ↔ x.Adj v 
 #align simple_graph.sup_adj SimpleGraph.sup_adj
 
 /-- The infimum of two graphs `x ⊓ y` has edges where both `x` and `y` have edges. -/
-instance : HasInf (SimpleGraph V) :=
-  ⟨fun x y =>
+instance : Inf (SimpleGraph V) where
+  inf x y :=
     { Adj := x.Adj ⊓ y.Adj
-      symm := fun v w h => by rwa [Pi.inf_apply, Pi.inf_apply, x.adj_comm, y.adj_comm] }⟩
+      symm := fun v w h => by rwa [Pi.inf_apply, Pi.inf_apply, x.adj_comm, y.adj_comm] }
 
 @[simp]
 theorem inf_adj (x y : SimpleGraph V) (v w : V) : (x ⊓ y).Adj v w ↔ x.Adj v w ∧ y.Adj v w :=
@@ -239,11 +269,11 @@ theorem inf_adj (x y : SimpleGraph V) (v w : V) : (x ⊓ y).Adj v w ↔ x.Adj v 
 /-- We define `Gᶜ` to be the `SimpleGraph V` such that no two adjacent vertices in `G`
 are adjacent in the complement, and every nonadjacent pair of vertices is adjacent
 (still ensuring that vertices are not adjacent to themselves). -/
-instance : HasCompl (SimpleGraph V) :=
-  ⟨fun G =>
+instance hasCompl : HasCompl (SimpleGraph V) where
+  compl G :=
     { Adj := fun v w => v ≠ w ∧ ¬G.Adj v w
       symm := fun v w ⟨hne, _⟩ => ⟨hne.symm, by rwa [adj_comm]⟩
-      loopless := fun v ⟨hne, _⟩ => (hne rfl).elim }⟩
+      loopless := fun v ⟨hne, _⟩ => (hne rfl).elim }
 
 @[simp]
 theorem compl_adj (G : SimpleGraph V) (v w : V) : Gᶜ.Adj v w ↔ v ≠ w ∧ ¬G.Adj v w :=
@@ -251,19 +281,70 @@ theorem compl_adj (G : SimpleGraph V) (v w : V) : Gᶜ.Adj v w ↔ v ≠ w ∧ �
 #align simple_graph.compl_adj SimpleGraph.compl_adj
 
 /-- The difference of two graphs `x \ y` has the edges of `x` with the edges of `y` removed. -/
-instance : SDiff (SimpleGraph V) :=
-  ⟨fun x y =>
+instance sdiff : SDiff (SimpleGraph V) where
+  sdiff x y :=
     { Adj := x.Adj \ y.Adj
-      symm := fun v w h => by change x.Adj w v ∧ ¬y.Adj w v; rwa [x.adj_comm, y.adj_comm] }⟩
+      symm := fun v w h => by change x.Adj w v ∧ ¬y.Adj w v; rwa [x.adj_comm, y.adj_comm] }
 
 @[simp]
 theorem sdiff_adj (x y : SimpleGraph V) (v w : V) : (x \ y).Adj v w ↔ x.Adj v w ∧ ¬y.Adj v w :=
   Iff.rfl
 #align simple_graph.sdiff_adj SimpleGraph.sdiff_adj
 
-instance : BooleanAlgebra (SimpleGraph V) :=
-  { PartialOrder.lift Adj
-    (by intro _ _ h; ext; simp only [h]) with
+instance supSet : SupSet (SimpleGraph V) where
+  supₛ s :=
+    { Adj := fun a b => ∃ G ∈ s, Adj G a b
+      symm := fun a b => Exists.imp $ fun _ => And.imp_right Adj.symm
+      loopless := by
+        rintro a ⟨G, _, ha⟩
+        exact ha.ne rfl }
+
+instance infSet : InfSet (SimpleGraph V) where
+  infₛ s :=
+    { Adj := fun a b => (∀ ⦃G⦄, G ∈ s → Adj G a b) ∧ a ≠ b
+      symm := fun _ _ => And.imp (forall₂_imp fun _ _ => Adj.symm) Ne.symm
+      loopless := fun _ h => h.2 rfl }
+
+@[simp]
+theorem supₛ_adj {s : Set (SimpleGraph V)} {a b : V} : (supₛ s).Adj a b ↔ ∃ G ∈ s, Adj G a b :=
+  Iff.rfl
+#align simple_graph.Sup_adj SimpleGraph.supₛ_adj
+
+@[simp]
+theorem infₛ_adj {s : Set (SimpleGraph V)} : (infₛ s).Adj a b ↔ (∀ G ∈ s, Adj G a b) ∧ a ≠ b :=
+  Iff.rfl
+#align simple_graph.Inf_adj SimpleGraph.infₛ_adj
+
+@[simp]
+theorem supᵢ_adj {f : ι → SimpleGraph V} : (⨆ i, f i).Adj a b ↔ ∃ i, (f i).Adj a b := by simp [supᵢ]
+#align simple_graph.supr_adj SimpleGraph.supᵢ_adj
+
+@[simp]
+theorem infᵢ_adj {f : ι → SimpleGraph V} : (⨅ i, f i).Adj a b ↔ (∀ i, (f i).Adj a b) ∧ a ≠ b := by
+  simp [infᵢ]
+#align simple_graph.infi_adj SimpleGraph.infᵢ_adj
+
+theorem infₛ_adj_of_nonempty {s : Set (SimpleGraph V)} (hs : s.Nonempty) :
+    (infₛ s).Adj a b ↔ ∀ G ∈ s, Adj G a b :=
+  infₛ_adj.trans <|
+    and_iff_left_of_imp <| by
+      obtain ⟨G, hG⟩ := hs
+      exact fun h => (h _ hG).ne
+#align simple_graph.Inf_adj_of_nonempty SimpleGraph.infₛ_adj_of_nonempty
+
+theorem infᵢ_adj_of_nonempty [Nonempty ι] {f : ι → SimpleGraph V} :
+    (⨅ i, f i).Adj a b ↔ ∀ i, (f i).Adj a b := by
+  rw [infᵢ, infₛ_adj_of_nonempty (Set.range_nonempty _), Set.forall_range_iff]
+#align simple_graph.infi_adj_of_nonempty SimpleGraph.infᵢ_adj_of_nonempty
+
+/-- For graphs `G`, `H`, `G ≤ H` iff `∀ a b, G.Adj a b → H.Adj a b`. -/
+instance distribLattice : DistribLattice (SimpleGraph V) :=
+  { show DistribLattice (SimpleGraph V) from
+      adj_injective.distribLattice _ (fun _ _ => rfl) fun _ _ => rfl with
+    le := fun G H => ∀ ⦃a b⦄, G.Adj a b → H.Adj a b }
+
+instance completeBooleanAlgebra : CompleteBooleanAlgebra (SimpleGraph V) :=
+  { SimpleGraph.distribLattice with
     le := (· ≤ ·)
     sup := (· ⊔ ·)
     inf := (· ⊓ ·)
@@ -273,23 +354,27 @@ instance : BooleanAlgebra (SimpleGraph V) :=
     bot := emptyGraph V
     le_top := fun x v w h => x.ne_of_adj h
     bot_le := fun x v w h => h.elim
-    sup_le := fun x y z hxy hyz v w h => h.casesOn (fun h => hxy h) fun h => hyz h
     sdiff_eq := fun x y => by
       ext (v w)
       refine' ⟨fun h => ⟨h.1, ⟨_, h.2⟩⟩, fun h => ⟨h.1, h.2.2⟩⟩
       rintro rfl
       exact x.irrefl h.1
-    le_sup_left := fun x y v w h => Or.inl h
-    le_sup_right := fun x y v w h => Or.inr h
-    le_inf := fun x y z hxy hyz v w h => ⟨hxy h, hyz h⟩
-    le_sup_inf := by aesop_graph
-    inf_compl_le_bot := fun a v w h => False.elim <| h.2.2 h.1
-    top_le_sup_compl := fun a v w ne => by
-      by_cases a.Adj v w
-      exact Or.inl h
-      exact Or.inr ⟨ne, h⟩
-    inf_le_left := fun x y v w h => h.1
-    inf_le_right := fun x y v w h => h.2 }
+    inf_compl_le_bot := fun G v w h => False.elim <| h.2.2 h.1
+    top_le_sup_compl := fun G v w hvw => by
+      by_cases G.Adj v w
+      · exact Or.inl h
+      · exact Or.inr ⟨hvw, h⟩
+    supₛ := supₛ
+    le_supₛ := fun s G hG a b hab => ⟨G, hG, hab⟩
+    supₛ_le := fun s G hG a b => by
+      rintro ⟨H, hH, hab⟩
+      exact hG _ hH hab
+    infₛ := infₛ
+    infₛ_le := fun s G hG a b hab => hab.1 hG
+    le_infₛ := fun s G hG a b hab => ⟨fun H hH => hG _ hH hab, hab.ne⟩
+    inf_supₛ_le_supᵢ_inf := fun G s a b hab => by simpa using hab
+    infᵢ_sup_le_sup_infₛ := fun G s a b hab => by
+      simpa [forall_and, forall_or_left, or_and_right, and_iff_left_of_imp Adj.ne] using hab }
 
 @[simp]
 theorem top_adj (v w : V) : (⊤ : SimpleGraph V).Adj v w ↔ v ≠ w :=
@@ -384,11 +469,11 @@ The way `edgeSet` is defined is such that `mem_edgeSet` is proved by `refl`.
 -/
 -- porting note: We need a separate definition so that dot notation works.
 def edgeSetEmbedding (V : Type _) : SimpleGraph V ↪o Set (Sym2 V) :=
-  OrderEmbedding.ofMapLeIff (fun G => Sym2.fromRel G.symm) fun _ _ =>
+  OrderEmbedding.ofMapLEIff (fun G => Sym2.fromRel G.symm) fun _ _ =>
     ⟨fun h a b => @h ⟦(a, b)⟧, fun h e => Sym2.ind @h e⟩
 
 /-- `G.edgeSet` is the edge set for `G`.
-This is an abbreviation for `edgeSet' G` that permits dot notation. -/
+This is an abbreviation for `edgeSetEmbedding G` that permits dot notation. -/
 abbrev edgeSet (G : SimpleGraph V) : Set (Sym2 V) := edgeSetEmbedding V G
 
 #align simple_graph.edge_set SimpleGraph.edgeSetEmbedding
@@ -411,9 +496,9 @@ theorem edgeSet_subset_edgeSet : edgeSet G₁ ⊆ edgeSet G₂ ↔ G₁ ≤ G₂
 #align simple_graph.edge_set_subset_edge_set SimpleGraph.edgeSet_subset_edgeSet
 
 @[simp]
-theorem edgeSet_sSubset_edgeSet : edgeSet G₁ ⊂ edgeSet G₂ ↔ G₁ < G₂ :=
+theorem edgeSet_ssubset_edgeSet : edgeSet G₁ ⊂ edgeSet G₂ ↔ G₁ < G₂ :=
   (edgeSetEmbedding V).lt_iff_lt
-#align simple_graph.edge_set_ssubset_edge_set SimpleGraph.edgeSet_sSubset_edgeSet
+#align simple_graph.edge_set_ssubset_edge_set SimpleGraph.edgeSet_ssubset_edgeSet
 
 theorem edgeSet_injective : Injective (edgeSet : SimpleGraph V → Set (Sym2 V)) :=
   (edgeSetEmbedding V).injective
@@ -422,7 +507,7 @@ theorem edgeSet_injective : Injective (edgeSet : SimpleGraph V → Set (Sym2 V))
 alias edgeSet_subset_edgeSet ↔ _ edgeSet_mono
 #align simple_graph.edge_set_mono SimpleGraph.edgeSet_mono
 
-alias edgeSet_sSubset_edgeSet ↔ _ edgeSet_strict_mono
+alias edgeSet_ssubset_edgeSet ↔ _ edgeSet_strict_mono
 #align simple_graph.edge_set_strict_mono SimpleGraph.edgeSet_strict_mono
 
 attribute [mono] edgeSet_mono edgeSet_strict_mono
@@ -605,6 +690,8 @@ structure Dart extends V × V where
   is_adj : G.Adj fst snd
   deriving DecidableEq
 #align simple_graph.dart SimpleGraph.Dart
+
+initialize_simps_projections Dart (+toProd, -fst, -snd)
 
 section Darts
 
@@ -821,13 +908,13 @@ theorem edgeFinset_inj : G₁.edgeFinset = G₂.edgeFinset ↔ G₁ = G₂ := by
 theorem edgeFinset_subset_edgeFinset : G₁.edgeFinset ⊆ G₂.edgeFinset ↔ G₁ ≤ G₂ := by simp
 #align simple_graph.edge_finset_subset_edge_finset SimpleGraph.edgeFinset_subset_edgeFinset
 
-theorem edgeFinset_sSubset_edgeFinset : G₁.edgeFinset ⊂ G₂.edgeFinset ↔ G₁ < G₂ := by simp
-#align simple_graph.edge_finset_ssubset_edge_finset SimpleGraph.edgeFinset_sSubset_edgeFinset
+theorem edgeFinset_ssubset_edgeFinset : G₁.edgeFinset ⊂ G₂.edgeFinset ↔ G₁ < G₂ := by simp
+#align simple_graph.edge_finset_ssubset_edge_finset SimpleGraph.edgeFinset_ssubset_edgeFinset
 
 alias edgeFinset_subset_edgeFinset ↔ _ edgeFinset_mono
 #align simple_graph.edge_finset_mono SimpleGraph.edgeFinset_mono
 
-alias edgeFinset_sSubset_edgeFinset ↔ _ edgeFinset_strict_mono
+alias edgeFinset_ssubset_edgeFinset ↔ _ edgeFinset_strict_mono
 #align simple_graph.edge_finset_strict_mono SimpleGraph.edgeFinset_strict_mono
 
 attribute [mono] edgeFinset_mono edgeFinset_strict_mono
@@ -1016,7 +1103,7 @@ def deleteEdges (s : Set (Sym2 V)) : SimpleGraph V
     where
   Adj := G.Adj \ Sym2.ToRel s
   symm a b := by simp [adj_comm, Sym2.eq_swap]
-  loopless a := by simp [sdiff] -- porting note: used to be handled by `obviously`
+  loopless a := by simp [SDiff.sdiff] -- porting note: used to be handled by `obviously`
 #align simple_graph.delete_edges SimpleGraph.deleteEdges
 
 @[simp]
@@ -1121,8 +1208,7 @@ theorem deleteFar_iff :
     simp only [deleteEdges_sdiff_eq_of_le _ hHG, edgeFinset_mono hHG, card_sdiff,
       card_le_of_subset, coe_sdiff, coe_edgeFinset, Nat.cast_sub] at this
     exact this hH
-  ·
-    simpa [card_sdiff hs, edgeFinset_deleteEdges, -Set.toFinset_card, Nat.cast_sub,
+  · simpa [card_sdiff hs, edgeFinset_deleteEdges, -Set.toFinset_card, Nat.cast_sub,
       card_le_of_subset hs] using h (G.deleteEdges_le s) hG
 #align simple_graph.delete_far_iff SimpleGraph.deleteFar_iff
 
@@ -1285,6 +1371,13 @@ theorem singleton_disjoint_neighborFinset : Disjoint {v} (G.neighborFinset v) :=
 def degree : ℕ :=
   (G.neighborFinset v).card
 #align simple_graph.degree SimpleGraph.degree
+
+-- Porting note: in Lean 3 we could do `simp [← degree]`, but that gives
+-- "invalid '←' modifier, 'SimpleGraph.degree' is a declaration name to be unfolded".
+-- In any case, having this lemma is good since there's no guarantee we won't still change
+-- the definition of `degree`.
+@[simp]
+theorem card_neighborFinset_eq_degree : (G.neighborFinset v).card = G.degree v := rfl
 
 @[simp]
 theorem card_neighborSet_eq_degree : Fintype.card (G.neighborSet v) = G.degree v :=
@@ -1846,17 +1939,13 @@ def mapEdgeSet : G.edgeSet ≃ G'.edgeSet
   left_inv := by
     rintro ⟨e, h⟩
     simp [Hom.mapEdgeSet, Sym2.map_map, RelEmbedding.toRelHom]
-    apply congr_fun
-    convert Sym2.map_id (α := V)
-    apply congr_arg -- porting note: `convert` tactic did not do enough `congr`
-    exact funext fun _ => RelIso.symm_apply_apply _ _
+    convert congr_fun Sym2.map_id e
+    exact RelIso.symm_apply_apply _ _
   right_inv := by
     rintro ⟨e, h⟩
     simp [Hom.mapEdgeSet, Sym2.map_map, RelEmbedding.toRelHom]
-    apply congr_fun
-    convert Sym2.map_id (α := W)
-    apply congr_arg -- porting note: `convert` tactic did not do enough `congr`
-    exact funext fun _ => RelIso.apply_symm_apply _ _
+    convert congr_fun Sym2.map_id e
+    exact RelIso.apply_symm_apply _ _
 #align simple_graph.iso.map_edge_set SimpleGraph.Iso.mapEdgeSet
 
 /-- A graph isomorphism induces an equivalence of neighbor sets. -/

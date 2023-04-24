@@ -44,7 +44,7 @@ variable (C : Type u₁) [Category.{v₁} C] (D : Type u₂) [Category.{v₂} D]
 
 See <https://stacks.math.columbia.edu/tag/001K>.
 -/
-@[simps (config := { notRecursive := [] })]
+@[simps (config := { notRecursive := [] }) Hom id_fst id_snd comp_fst comp_snd]
 instance prod : Category.{max v₁ v₂} (C × D)
     where
   Hom X Y := (X.1 ⟶ Y.1) × (X.2 ⟶ Y.2)
@@ -172,7 +172,7 @@ def symmetry : swap C D ⋙ swap D C ≅ 𝟭 (C × D)
 -/
 @[simps!]
 def braiding : C × D ≌ D × C :=
-  Equivalence.mk (swap C D) (swap D C) 
+  Equivalence.mk (swap C D) (swap D C)
     (NatIso.ofComponents (fun X => eqToIso (by simp)) (by aesop_cat))
     (NatIso.ofComponents (fun X => eqToIso (by simp)) (by aesop_cat))
 #align category_theory.prod.braiding CategoryTheory.Prod.braiding
@@ -294,9 +294,9 @@ def prod {F G : A ⥤ B} {H I : C ⥤ D} (α : F ⟶ G) (β : H ⟶ I) : F.prod 
   app X := (α.app X.1, β.app X.2)
   naturality {X} {Y} f := by
     cases X; cases Y
-    simp only [Functor.prod_map, prod_comp] 
-    rw [Prod.mk.inj_iff] 
-    constructor 
+    simp only [Functor.prod_map, prod_comp]
+    rw [Prod.mk.inj_iff]
+    constructor
     repeat {rw [naturality]}
 #align category_theory.nat_trans.prod CategoryTheory.NatTrans.prod
 
@@ -338,11 +338,11 @@ def functorProdToProdFunctor : (A ⥤ B × C) ⥤ (A ⥤ B) × (A ⥤ C)
 @[simps!]
 def functorProdFunctorEquivUnitIso :
     𝟭 _ ≅ prodFunctorToFunctorProd A B C ⋙ functorProdToProdFunctor A B C :=
-  NatIso.ofComponents 
-    (fun F => 
-      (((Functor.prod'CompFst F.fst F.snd).prod (Functor.prod'CompSnd F.fst F.snd)).trans 
-        (prod.etaIso F)).symm) 
-      (fun α => by aesop_cat) 
+  NatIso.ofComponents
+    (fun F =>
+      (((Functor.prod'CompFst F.fst F.snd).prod (Functor.prod'CompSnd F.fst F.snd)).trans
+        (prod.etaIso F)).symm)
+      (fun α => by aesop_cat)
 #align category_theory.functor_prod_functor_equiv_unit_iso CategoryTheory.functorProdFunctorEquivUnitIso
 
 /-- The counit isomorphism for `functorProdFunctorEquiv` -/
@@ -354,12 +354,12 @@ def functorProdFunctorEquivCounitIso :
 #align category_theory.functor_prod_functor_equiv_counit_iso CategoryTheory.functorProdFunctorEquivCounitIso
 
 /- Porting note: unlike with Lean 3, we needed to provide `functor_unitIso_comp` because
-Lean 4 could not see through `functorProdFunctorEquivUnitIso` (or the co-unit version) 
+Lean 4 could not see through `functorProdFunctorEquivUnitIso` (or the co-unit version)
 to run the auto tactic `by aesop_cat` -/
 
 /-- The equivalence of categories between `(A ⥤ B) × (A ⥤ C)` and `A ⥤ (B × C)` -/
 @[simps]
-def functorProdFunctorEquiv : (A ⥤ B) × (A ⥤ C) ≌ A ⥤ B × C := 
+def functorProdFunctorEquiv : (A ⥤ B) × (A ⥤ C) ≌ A ⥤ B × C :=
   { functor := prodFunctorToFunctorProd A B C,
     inverse := functorProdToProdFunctor A B C,
     unitIso := functorProdFunctorEquivUnitIso A B C,

@@ -88,8 +88,7 @@ private irreducible_def neg : ℝ → ℝ
 private irreducible_def mul : ℝ → ℝ → ℝ
   | ⟨a⟩, ⟨b⟩ => ⟨a * b⟩
 
--- TODO irreducible_def
-private noncomputable def inv' : ℝ → ℝ
+private noncomputable irreducible_def inv' : ℝ → ℝ
   | ⟨a⟩ => ⟨a⁻¹⟩
 
 instance : Zero ℝ :=
@@ -246,7 +245,7 @@ set_option linter.uppercaseLean3 false in
 set_option linter.uppercaseLean3 false in
 #align real.ring_equiv_Cauchy_apply Real.ringEquivCauchy_apply
 set_option linter.uppercaseLean3 false in
-#align real.ring_equiv_Cauchy_symm_apply_cauchy Real.ringEquivCauchy_symmApply_cauchy
+#align real.ring_equiv_Cauchy_symm_apply_cauchy Real.ringEquivCauchy_symm_apply_cauchy
 
 /-! Extra instances to short-circuit type class resolution.
 
@@ -458,7 +457,7 @@ instance nontrivial : Nontrivial ℝ :=
 private irreducible_def sup : ℝ → ℝ → ℝ
   | ⟨x⟩, ⟨y⟩ => ⟨Quotient.map₂ (· ⊔ ·) (fun _ _ hx _ _ hy => sup_equiv_sup hx hy) x y⟩
 
-instance : HasSup ℝ :=
+instance : Sup ℝ :=
   ⟨sup⟩
 
 theorem ofCauchy_sup (a b) : (⟨⟦a ⊔ b⟧⟩ : ℝ) = ⟨⟦a⟧⟩ ⊔ ⟨⟦b⟧⟩ :=
@@ -475,7 +474,7 @@ theorem mk_sup (a b) : (mk (a ⊔ b) : ℝ) = mk a ⊔ mk b :=
 private irreducible_def inf : ℝ → ℝ → ℝ
   | ⟨x⟩, ⟨y⟩ => ⟨Quotient.map₂ (· ⊓ ·) (fun _ _ hx _ _ hy => inf_equiv_inf hx hy) x y⟩
 
-instance : HasInf ℝ :=
+instance : Inf ℝ :=
   ⟨inf⟩
 
 theorem ofCauchy_inf (a b) : (⟨⟦a ⊓ b⟧⟩ : ℝ) = ⟨⟦a⟧⟩ ⊓ ⟨⟦b⟧⟩ :=
@@ -875,6 +874,12 @@ theorem infₛ_nonneg (S : Set ℝ) (hS : ∀ x ∈ S, (0 : ℝ) ≤ x) : 0 ≤ 
   rcases S.eq_empty_or_nonempty with (rfl | hS₂)
   exacts[infₛ_empty.ge, le_cinfₛ hS₂ hS]
 #align real.Inf_nonneg Real.infₛ_nonneg
+
+/-- As `0` is the default value for `Real.infₛ` of the empty set, it suffices to show that `f i` is
+bounded below by `0` to show that `0 ≤ infᵢ f`.
+-/
+theorem infᵢ_nonneg {ι} {f : ι → ℝ} (hf : ∀ i, 0 ≤ f i) : 0 ≤ infᵢ f :=
+  infₛ_nonneg _ <| Set.forall_range_iff.2 hf
 
 /--
 As `0` is the default value for `Real.infₛ` of the empty set or sets which are not bounded below, it

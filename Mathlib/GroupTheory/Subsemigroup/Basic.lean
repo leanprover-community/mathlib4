@@ -106,13 +106,6 @@ instance : SetLike (Subsemigroup M) M :=
 @[to_additive]
 instance : MulMemClass (Subsemigroup M) M where mul_mem := fun {_ _ _} => Subsemigroup.mul_mem' _
 
-/-- See Note [custom simps projection] -/
-@[to_additive "See Note [custom simps projection]"]
-def Simps.coe (S : Subsemigroup M) : Set M :=
-  S
-#align subsemigroup.simps.coe Subsemigroup.Simps.coe
-#align add_subsemigroup.simps.coe AddSubsemigroup.Simps.coe
-
 initialize_simps_projections Subsemigroup (carrier → coe)
 initialize_simps_projections AddSubsemigroup (carrier → coe)
 
@@ -221,7 +214,7 @@ theorem coe_bot : ((⊥ : Subsemigroup M) : Set M) = ∅ :=
 
 /-- The inf of two subsemigroups is their intersection. -/
 @[to_additive "The inf of two `AddSubsemigroup`s is their intersection."]
-instance : HasInf (Subsemigroup M) :=
+instance : Inf (Subsemigroup M) :=
   ⟨fun S₁ S₂ =>
     { carrier := S₁ ∩ S₂
       mul_mem' := fun ⟨hx, hx'⟩ ⟨hy, hy'⟩ => ⟨S₁.mul_mem hx hy, S₂.mul_mem hx' hy'⟩ }⟩

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 
 ! This file was ported from Lean 3 source module algebra.quandle
-! leanprover-community/mathlib commit 8631e2d5ea77f6c13054d9151d82b83069680cb1
+! leanprover-community/mathlib commit 28aa996fc6fb4317f0083c4e6daf79878d81be33
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -36,7 +36,7 @@ complements that is analogous to the fundamental group of the
 exterior, and he showed that the quandle associated to an oriented
 knot is invariant up to orientation-reversed mirror image.  Racks were
 used by Fenn and Rourke for framed codimension-2 knots and
-links.[FennRourke1992]
+links in [FennRourke1992]. Unital shelves are discussed in [crans2017].
 
 The name "rack" came from wordplay by Conway and Wraith for the "wrack
 and ruin" of forgetting everything but the conjugation operation for a
@@ -45,6 +45,7 @@ group.
 ## Main definitions
 
 * `Shelf` is a type with a self-distributive action
+* `UnitalShelf` is a shelf with a left and right unit
 * `Rack` is a shelf whose action for each element is invertible
 * `Quandle` is a rack whose action for an element fixes that element
 * `Quandle.conj` defines a quandle of a group acting on itself by conjugation.
@@ -56,6 +57,10 @@ group.
 * `Rack.EnvelGroup` is left adjoint to `Quandle.Conj` (`toEnvelGroup.map`).
   The universality statements are `toEnvelGroup.univ` and `toEnvelGroup.univ_uniq`.
 
+## Implementation notes
+"Unital racks" are uninteresting (see `Rack.assoc_iff_id`, `UnitalShelf.assoc`), so we do not
+define them.
+
 ## Notation
 
 The following notation is localized in `quandles`:
@@ -64,7 +69,7 @@ The following notation is localized in `quandles`:
 * `x ◃⁻¹ y` is `Rack.inv_act x y`
 * `S →◃ S'` is `ShelfHom S S'`
 
-Use `open_locale quandles` to use these.
+Use `open quandles` to use these.
 
 ## Todo
 
@@ -97,6 +102,15 @@ class Shelf (α : Type u) where
   /--A verification that `act` is self-distributive-/
   self_distrib : ∀ {x y z : α}, act x (act y z) = act (act x y) (act x z)
 #align shelf Shelf
+
+/--
+A *unital shelf* is a shelf equipped with an element `1` such that, for all elements `x`,
+we have both `x ◃ 1` and `1 ◃ x` equal `x`.
+-/
+class UnitalShelf (α : Type u) extends Shelf α, One α :=
+(one_act : ∀ a : α, act 1 a = a)
+(act_one : ∀ a : α, act a 1 = a)
+#align unital_shelf UnitalShelf
 
 /-- The type of homomorphisms between shelves.
 This is also the notion of rack and quandle homomorphisms.
@@ -137,6 +151,38 @@ scoped[Quandles] infixr:65 " ◃⁻¹ " => Rack.invAct
 scoped[Quandles] infixr:25 " →◃ " => ShelfHom
 
 open Quandles
+
+namespace UnitalShelf
+open Shelf
+
+variable {S : Type _} [UnitalShelf S]
+
+/--
+A monoid is *graphic* if, for all `x` and `y`, the *graphic identity*
+`(x * y) * x = x * y` holds.  For a unital shelf, this graphic
+identity holds.
+-/
+lemma act_act_self_eq (x y : S) : (x ◃ y) ◃ x = x ◃ y := by
+  have h : (x ◃ y) ◃ x = (x ◃ y) ◃ (x ◃ 1) := by rw [act_one]
+  rw [h, ←Shelf.self_distrib, act_one]
+#align unital_shelf.act_act_self_eq UnitalShelf.act_act_self_eq
+
+lemma act_idem (x : S) : (x ◃ x) = x := by rw [←act_one x, ←Shelf.self_distrib, act_one, act_one]
+#align unital_shelf.act_idem UnitalShelf.act_idem
+
+lemma act_self_act_eq (x y : S) : x ◃ (x ◃ y) = x ◃ y := by
+  have h : x ◃ (x ◃ y) = (x ◃ 1) ◃ (x ◃ y) := by rw [act_one]
+  rw [h, ←Shelf.self_distrib, one_act]
+#align unital_shelf.act_self_act_eq UnitalShelf.act_self_act_eq
+
+/--
+The associativity of a unital shelf comes for free.
+-/
+lemma assoc (x y z : S) : (x ◃ y) ◃ z = x ◃ y ◃ z := by
+  rw [self_distrib, self_distrib, act_act_self_eq, act_self_act_eq]
+#align unital_shelf.assoc UnitalShelf.assoc
+
+end UnitalShelf
 
 namespace Rack
 
@@ -463,7 +509,6 @@ instance (n : ℕ) : Quandle (Dihedral n)
     intro x
     simp only [dihedralAct]
     ring_nf
-    rw [mul_two, add_sub_cancel]
 
 end Quandle
 
@@ -667,10 +712,10 @@ See `toEnvelGroup.map`.
 -/
 def toEnvelGroup.mapAux {R : Type _} [Rack R] {G : Type _} [Group G] (f : R →◃ Quandle.Conj G) :
     PreEnvelGroup R → G
-  | unit => 1
-  | incl x => f x
-  | mul a b => toEnvelGroup.mapAux f a * toEnvelGroup.mapAux f b
-  | inv a => (toEnvelGroup.mapAux f a)⁻¹
+  | .unit => 1
+  | .incl x => f x
+  | .mul a b => toEnvelGroup.mapAux f a * toEnvelGroup.mapAux f b
+  | .inv a => (toEnvelGroup.mapAux f a)⁻¹
 #align rack.to_envel_group.map_aux Rack.toEnvelGroup.mapAux
 
 namespace toEnvelGroup.mapAux

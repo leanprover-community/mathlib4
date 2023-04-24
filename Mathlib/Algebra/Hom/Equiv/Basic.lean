@@ -85,7 +85,7 @@ add_decl_doc AddEquiv.toAddHom
 structure MulEquiv (M N : Type _) [Mul M] [Mul N] extends M ≃ N, M →ₙ* N
 -- Porting note: remove when `to_additive` can do this
 -- https://github.com/leanprover-community/mathlib4/issues/660
-attribute [to_additive] MulEquiv.toMulHom
+attribute [to_additive existing] MulEquiv.toMulHom
 #align mul_equiv MulEquiv
 
 /-- The `Equiv` underlying a `MulEquiv`. -/
@@ -117,14 +117,14 @@ variable (F)
 
 -- See note [lower instance priority]
 @[to_additive]
-instance (priority := 100) (F : Type _) {M N : Type _}
-    {_ : Mul M} {_ : Mul N} [h : MulEquivClass F M N] : MulHomClass F M N :=
+instance (priority := 100) (F : Type _)
+    [Mul M] [Mul N] [h : MulEquivClass F M N] : MulHomClass F M N :=
   { h with coe := h.coe, coe_injective' := FunLike.coe_injective' }
 
 -- See note [lower instance priority]
 @[to_additive]
-instance (priority := 100) {_ : MulOneClass M} {_ : MulOneClass N} [MulEquivClass F M N] :
-  MonoidHomClass F M N :=
+instance (priority := 100) [MulOneClass M] [MulOneClass N] [MulEquivClass F M N] :
+    MonoidHomClass F M N :=
   { MulEquivClass.instMulHomClass F with
     coe := fun _ => _,
     map_one := fun e =>
@@ -138,7 +138,7 @@ instance (priority := 100) {_ : MulOneClass M} {_ : MulOneClass N} [MulEquivClas
 
 -- See note [lower instance priority]
 instance (priority := 100) toMonoidWithZeroHomClass
-  {α β : Type _} {_ : MulZeroOneClass α} {_ : MulZeroOneClass β} [MulEquivClass F α β] :
+    [MulZeroOneClass α] [MulZeroOneClass β] [MulEquivClass F α β] :
   MonoidWithZeroHomClass F α β :=
   { MulEquivClass.instMonoidHomClass _ with
     map_zero := fun e =>
@@ -195,15 +195,18 @@ instance [Mul M] [Mul N] : MulEquivClass (M ≃* N) M N where
 
 variable [Mul M] [Mul N] [Mul P] [Mul Q]
 
--- Porting note: `to_equiv_eq_coe` no longer needed in Lean4
-#noalign mul_equiv.to_equiv_eq_coe
-#noalign add_equiv.to_equiv_eq_coe
+@[to_additive (attr := simp)]
+theorem toEquiv_eq_coe (f : M ≃* N) : f.toEquiv = f :=
+  rfl
+#align mul_equiv.to_equiv_eq_coe MulEquiv.toEquiv_eq_coe
+#align add_equiv.to_equiv_eq_coe AddEquiv.toEquiv_eq_coe
+
 -- Porting note: `to_fun_eq_coe` no longer needed in Lean4
 #noalign mul_equiv.to_fun_eq_coe
 #noalign add_equiv.to_fun_eq_coe
 
 @[to_additive (attr := simp)]
-theorem coe_toEquiv (f : M ≃* N) : (f.toEquiv : M → N) = f := rfl
+theorem coe_toEquiv (f : M ≃* N) : ⇑(f : M ≃ N) = f := rfl
 #align mul_equiv.coe_to_equiv MulEquiv.coe_toEquiv
 #align add_equiv.coe_to_equiv AddEquiv.coe_toEquiv
 
@@ -269,7 +272,7 @@ theorem invFun_eq_symm {f : M ≃* N} : f.invFun = f.symm := rfl
 #align add_equiv.neg_fun_eq_symm AddEquiv.invFun_eq_symm
 
 @[to_additive (attr := simp)]
-theorem coe_toEquiv_symm (f : M ≃* N) : (f.toEquiv.symm : N → M) = f.symm := rfl
+theorem coe_toEquiv_symm (f : M ≃* N) : ((f : M ≃ N).symm : N → M) = f.symm := rfl
 
 @[to_additive (attr := simp)]
 theorem equivLike_inv_eq_symm (f : M ≃* N) : EquivLike.inv f = f.symm := rfl
@@ -277,23 +280,19 @@ theorem equivLike_inv_eq_symm (f : M ≃* N) : EquivLike.inv f = f.symm := rfl
 -- we don't hyperlink the note in the additive version, since that breaks syntax highlighting
 -- in the whole file.
 
--- Porting note: in mathlib3 we didn't need the `Simps.apply` hint.
 /-- See Note [custom simps projection] -/
-@[to_additive "See Note custom simps projection"]
-def Simps.apply (e : M ≃* N) : M → N := e
-/-- See Note [custom simps projection] -/
-@[to_additive "See Note custom simps projection"]
-def Simps.symmApply (e : M ≃* N) : N → M :=
+@[to_additive "See Note [custom simps projection]"] -- this comment fixes the syntax highlighting "
+def Simps.symm_apply (e : M ≃* N) : N → M :=
   e.symm
-#align mul_equiv.simps.symm_apply MulEquiv.Simps.symmApply
-#align add_equiv.simps.symm_apply AddEquiv.Simps.symmApply
+#align mul_equiv.simps.symm_apply MulEquiv.Simps.symm_apply
+#align add_equiv.simps.symm_apply AddEquiv.Simps.symm_apply
 
-initialize_simps_projections AddEquiv (toEquiv_toFun → apply, toEquiv_invFun → symmApply, -toEquiv)
+initialize_simps_projections AddEquiv (toFun → apply, invFun → symm_apply)
 
-initialize_simps_projections MulEquiv (toEquiv_toFun → apply, toEquiv_invFun → symmApply, -toEquiv)
+initialize_simps_projections MulEquiv (toFun → apply, invFun → symm_apply)
 
 @[to_additive (attr := simp)]
-theorem toEquiv_symm (f : M ≃* N) : f.symm.toEquiv = f.toEquiv.symm := rfl
+theorem toEquiv_symm (f : M ≃* N) : (f.symm : N ≃ M) = (f : M ≃ N).symm := rfl
 #align mul_equiv.to_equiv_symm MulEquiv.toEquiv_symm
 #align add_equiv.to_equiv_symm AddEquiv.toEquiv_symm
 
@@ -686,8 +685,8 @@ def piSubsingleton {ι : Type _} (M : ι → Type _) [∀ j, Mul (M j)] [Subsing
 #align add_equiv.Pi_subsingleton AddEquiv.piSubsingleton
 #align mul_equiv.Pi_subsingleton_apply MulEquiv.piSubsingleton_apply
 #align add_equiv.Pi_subsingleton_apply AddEquiv.piSubsingleton_apply
-#align mul_equiv.Pi_subsingleton_symm_apply MulEquiv.piSubsingleton_symmApply
-#align add_equiv.Pi_subsingleton_symm_apply AddEquiv.piSubsingleton_symmApply
+#align mul_equiv.Pi_subsingleton_symm_apply MulEquiv.piSubsingleton_symm_apply
+#align add_equiv.Pi_subsingleton_symm_apply AddEquiv.piSubsingleton_symm_apply
 
 /-!
 # Groups
@@ -745,12 +744,12 @@ theorem MulHom.toMulEquiv_apply [Mul M] [Mul N] (f : M →ₙ* N) (g : N →ₙ*
 #align add_hom.to_add_equiv_apply AddHom.toAddEquiv_apply
 
 @[to_additive (attr := simp)]
-theorem MulHom.toMulEquiv_symmApply [Mul M] [Mul N] (f : M →ₙ* N) (g : N →ₙ* M)
+theorem MulHom.toMulEquiv_symm_apply [Mul M] [Mul N] (f : M →ₙ* N) (g : N →ₙ* M)
     (h₁ : g.comp f = MulHom.id _) (h₂ : f.comp g = MulHom.id _) :
     (MulEquiv.symm (MulHom.toMulEquiv f g h₁ h₂) : N → M) = ↑g :=
   rfl
-#align mul_hom.to_mul_equiv_symm_apply MulHom.toMulEquiv_symmApply
-#align add_hom.to_add_equiv_symm_apply AddHom.toAddEquiv_symmApply
+#align mul_hom.to_mul_equiv_symm_apply MulHom.toMulEquiv_symm_apply
+#align add_hom.to_add_equiv_symm_apply AddHom.toAddEquiv_symm_apply
 
 /-- Given a pair of monoid homomorphisms `f`, `g` such that `g.comp f = id` and `f.comp g = id`,
 returns an multiplicative equivalence with `toFun = f` and `invFun = g`.  This constructor is
@@ -771,8 +770,8 @@ def MonoidHom.toMulEquiv [MulOneClass M] [MulOneClass N] (f : M →* N) (g : N �
 #align add_monoid_hom.to_add_equiv AddMonoidHom.toAddEquiv
 #align monoid_hom.to_mul_equiv_apply MonoidHom.toMulEquiv_apply
 #align add_monoid_hom.to_add_equiv_apply AddMonoidHom.toAddEquiv_apply
-#align monoid_hom.to_mul_equiv_symm_apply MonoidHom.toMulEquiv_symmApply
-#align add_monoid_hom.to_add_equiv_symm_apply AddMonoidHom.toAddEquiv_symmApply
+#align monoid_hom.to_mul_equiv_symm_apply MonoidHom.toMulEquiv_symm_apply
+#align add_monoid_hom.to_add_equiv_symm_apply AddMonoidHom.toAddEquiv_symm_apply
 
 namespace Equiv
 

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 
 ! This file was ported from Lean 3 source module order.complete_lattice
-! leanprover-community/mathlib commit aba57d4d3dae35460225919dcd82fe91355162f9
+! leanprover-community/mathlib commit 5709b0d8725255e76f47debca6400c07b5c2d8e6
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -403,8 +403,8 @@ class CompleteLinearOrder (α : Type _) extends CompleteLattice α where
 
 instance CompleteLinearOrder.toLinearOrder [i : CompleteLinearOrder α] : LinearOrder α :=
   { i with
-    min := HasInf.inf
-    max := HasSup.sup
+    min := Inf.inf
+    max := Sup.sup
     min_def := fun a b => by
       split_ifs with h
       . simp [h]
@@ -664,7 +664,7 @@ theorem Equiv.supᵢ_comp {g : ι' → α} (e : ι ≃ ι') : (⨆ x, g (e x)) =
 protected theorem Function.Surjective.supᵢ_congr {g : ι' → α} (h : ι → ι') (h1 : Surjective h)
     (h2 : ∀ x, g (h x) = f x) : (⨆ x, f x) = ⨆ y, g y := by
   convert h1.supᵢ_comp g
-  exact (funext h2).symm
+  exact (h2 _).symm
 #align function.surjective.supr_congr Function.Surjective.supᵢ_congr
 
 protected theorem Equiv.supᵢ_congr {g : ι' → α} (e : ι ≃ ι') (h : ∀ x, g (e x) = f x) :
@@ -1133,7 +1133,7 @@ theorem infᵢ_eq_of_forall_ge_of_forall_gt_exists_lt :
 #align infi_eq_of_forall_ge_of_forall_gt_exists_lt infᵢ_eq_of_forall_ge_of_forall_gt_exists_lt
 
 theorem supᵢ_eq_dif {p : Prop} [Decidable p] (a : p → α) :
-    (⨆ h : p, a h) = if h : p then a h else ⊥ := by by_cases p <;> simp [h]
+    (⨆ h : p, a h) = if h : p then a h else ⊥ := by by_cases h : p <;> simp [h]
 #align supr_eq_dif supᵢ_eq_dif
 
 theorem supᵢ_eq_if {p : Prop} [Decidable p] (a : α) : (⨆ _h : p, a) = if p then a else ⊥ :=
@@ -1978,7 +1978,7 @@ end CompleteLattice
 -- See note [reducible non-instances]
 /-- Pullback a `CompleteLattice` along an injection. -/
 @[reducible]
-protected def Function.Injective.completeLattice [HasSup α] [HasInf α] [SupSet α] [InfSet α] [Top α]
+protected def Function.Injective.completeLattice [Sup α] [Inf α] [SupSet α] [InfSet α] [Top α]
     [Bot α] [CompleteLattice β] (f : α → β) (hf : Function.Injective f)
     (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b)
     (map_supₛ : ∀ s, f (supₛ s) = ⨆ a ∈ s, f a) (map_infₛ : ∀ s, f (infₛ s) = ⨅ a ∈ s, f a)
