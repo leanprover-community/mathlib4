@@ -290,6 +290,7 @@ theorem mem_trivializationAt_proj_source {x : TotalSpace E} :
   (Trivialization.mem_source _).mpr <| mem_baseSet_trivializationAt F E x.proj
 #align fiber_bundle.mem_trivialization_at_proj_source FiberBundle.mem_trivializationAt_proj_source
 
+-- porting note: removed `@[simp, mfld_simps]` because `simp` could already prove this
 theorem trivializationAt_proj_fst {x : TotalSpace E} :
     ((trivializationAt F E x.proj) x).1 = x.proj :=
   Trivialization.coe_fst' _ <| mem_baseSet_trivializationAt F E x.proj
