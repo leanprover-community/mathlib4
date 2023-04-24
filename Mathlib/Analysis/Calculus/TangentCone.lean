@@ -90,13 +90,12 @@ section TangentCone
 open NormedField
 
 theorem tangent_cone_univ : tangentConeAt 𝕜 univ x = univ := by
-  refine' univ_subset_iff.1 fun y hy => _
+  refine' univ_subset_iff.1 fun y _ => _
   rcases exists_one_lt_norm 𝕜 with ⟨w, hw⟩
   refine' ⟨fun n => w ^ n, fun n => (w ^ n)⁻¹ • y, univ_mem' fun n => mem_univ _, _, _⟩
   · simp only [norm_pow]
     exact tendsto_pow_atTop_atTop_of_one_lt hw
-  · convert tendsto_const_nhds
-    ext n
+  · convert @tendsto_const_nhds E ℕ _ _ atTop with n
     have : w ^ n * (w ^ n)⁻¹ = 1 := by
       apply mul_inv_cancel
       apply pow_ne_zero
