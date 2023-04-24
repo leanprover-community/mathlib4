@@ -129,9 +129,9 @@ theorem ConcaveOn.exists_le_of_centerMass (h : ConcaveOn 𝕜 s f) (hw₀ : ∀ 
 /-- Maximum principle for convex functions. If a function `f` is convex on the convex hull of `s`,
 then the eventual maximum of `f` on `convexHull 𝕜 s` lies in `s`. -/
 theorem ConvexOn.exists_ge_of_mem_convexHull (hf : ConvexOn 𝕜 (convexHull 𝕜 s) f) {x}
-    (hx : x ∈ convexHull 𝕜 s) : ∃ y ∈ s, f x ≤ f y := by
+    (hx : x ∈ convexHull.{v} 𝕜 s) : ∃ y ∈ s, f x ≤ f y := by
   rw [_root_.convexHull_eq] at hx
-  obtain ⟨α : Type u_1, t, w, p, hw₀, hw₁, hp, rfl⟩ := hx -- Porting note: `α`'s type specified
+  obtain ⟨α : Type v, t, w, p, hw₀, hw₁, hp, rfl⟩ := hx -- Porting note: `α`'s type specified
   rcases hf.exists_ge_of_centerMass hw₀ (hw₁.symm ▸ zero_lt_one) fun i hi =>
       subset_convexHull 𝕜 s (hp i hi) with
     ⟨i, hit, Hi⟩
