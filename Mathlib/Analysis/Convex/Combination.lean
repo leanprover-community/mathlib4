@@ -299,8 +299,9 @@ theorem convexHull_range_eq_exists_affineCombination (v : ι → E) : convexHull
     exact affineCombination_mem_convexHull hw₀ hw₁
 #align convex_hull_range_eq_exists_affine_combination convexHull_range_eq_exists_affineCombination
 
-/-- Convex hull of `s` is equal to the set of all centers of masses of `Finset`s `t`, `z '' t ⊆ s`.
-This version allows finsets in any type in any universe. -/
+/--
+Convex hull of `s` is equal to the set of all centers of masses of `Finset`s `t`, `z '' t ⊆ s`.
+-/
 theorem convexHull_eq (s : Set E) : convexHull R s =
     { x : E | ∃ (ι : Type) (t : Finset ι) (w : ι → R) (z : ι → E) (_ : ∀ i ∈ t, 0 ≤ w i)
     (_ : (∑ i in t, w i) = 1) (_ : ∀ i ∈ t, z i ∈ s), t.centerMass w z = x } := by
