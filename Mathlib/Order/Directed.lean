@@ -9,7 +9,6 @@ Authors: Johannes Hölzl
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Image
-import Mathlib.Order.Bounds.Basic
 import Mathlib.Order.Lattice
 import Mathlib.Order.Max
 import Mathlib.Order.Bounds.Basic
@@ -288,12 +287,6 @@ theorem isBot_iff_isMin [IsDirected α (· ≥ ·)] : IsBot a ↔ IsMin a :=
 theorem isTop_iff_isMax [IsDirected α (· ≤ ·)] : IsTop a ↔ IsMax a :=
   ⟨IsTop.isMax, IsMax.isTop⟩
 #align is_top_iff_is_max isTop_iff_isMax
-
-/--
-A function which preserves lub on directed sets
--/
-def preserve_LUB_on_directed [Preorder β] (f : α → β) := ∀ (d : Set α) (a : α), d.Nonempty →
-DirectedOn (· ≤ ·) d → IsLUB d a → IsLUB (f '' d) (f a)
 
 variable (β) [PartialOrder β]
 
