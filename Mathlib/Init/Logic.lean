@@ -270,10 +270,7 @@ theorem exists_unique_congr {p q : α → Prop} (h : ∀ a, p a ↔ q a) : (∃!
 theorem decide_True' (h : Decidable True) : decide True = true := by simp
 #align to_bool_true_eq_tt decide_True'
 
-theorem decide_False' (h : Decidable False) : decide False = false := by
-  cases h with
-  | isFalse h => rfl
-  | isTrue h => exact h.elim
+theorem decide_False' (h : Decidable False) : decide False = false := by simp
 #align to_bool_false_eq_ff decide_False'
 
 namespace Decidable

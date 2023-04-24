@@ -42,10 +42,8 @@ syntax (name := to_additive_reorder) "to_additive_reorder" num* : attr
 syntax (name := to_additive_change_numeral) "to_additive_change_numeral" num* : attr
 /-- An `attr := ...` option for `to_additive`. -/
 syntax toAdditiveAttrOption := &"attr" ":=" Parser.Term.attrInstance,*
-/-- A numeral or a pipe -/
-syntax numOrPipe := &"|" <|> num
 /-- An `reorder := ...` option for `to_additive`. -/
-syntax toAdditiveReorderOption := &"reorder" ":=" numOrPipe+
+syntax toAdditiveReorderOption := &"reorder" ":=" num,+
 /-- Options to `to_additive`. -/
 syntax toAdditiveParenthesizedOption := "(" toAdditiveAttrOption <|> toAdditiveReorderOption ")"
 /-- Options to `to_additive`. -/
@@ -858,24 +856,15 @@ def proceedFields (src tgt : Name) : CoreM Unit := do
 /-- Elaboration of the configuration options for `to_additive`. -/
 def elabToAdditive : Syntax → CoreM Config
   | `(attr| to_additive%$tk $[?%$trace]? $[$opts:toAdditiveOption]* $[$tgt]? $[$doc]?) => do
-    let mut attrs : Array Syntax := #[]
+    let mut attrs := #[]
     let mut reorder := []
     let mut existing := some false
-    let mut numList := []
     for stx in opts do
       match stx with
       | `(toAdditiveOption| (attr := $[$stxs],*)) =>
         attrs := attrs ++ stxs
-      | `(toAdditiveOption| (reorder := $[$reorders:numOrPipe]*)) =>
-        for stx in reorders do
-          match stx with
-          | `(numOrPipe| |) =>
-            reorder := numList.reverse :: reorder
-            numList := []
-          | `(numOrPipe| $id:num) => numList := (id.raw.isNatLit?.get! - 1) :: numList
-          | _ => throwUnsupportedSyntax
-        reorder := numList.reverse :: reorder
-        numList := []
+      | `(toAdditiveOption| (reorder := $[$reorders],*)) =>
+        reorder := reorders.toList.map (·.raw.isNatLit?.get! - 1) :: reorder
       | `(toAdditiveOption| existing) =>
         existing := some true
       | _ => throwUnsupportedSyntax
