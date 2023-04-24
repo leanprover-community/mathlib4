@@ -129,10 +129,7 @@ instance : TopologicalSpace (WithScottTopology α) :=
         . exact hb
         . exact (Ici b ∩ d).subset_univ,
       isOpen_inter := by
-        intros s t
-        intros hs
-        intro ht
-        intros d a hd₁ hd₂ hd₃ ha
+        intros s t hs ht d a hd₁ hd₂ hd₃ ha
         obtain ⟨ b₁, ⟨hb₁_w, hb₁_h ⟩ ⟩  := hs d a hd₁ hd₂ hd₃ ha.1
         obtain ⟨ b₂, ⟨hb₂_w, hb₂_h ⟩ ⟩  := ht d a hd₁ hd₂ hd₃ ha.2
         rw [DirectedOn] at hd₂
@@ -147,8 +144,7 @@ instance : TopologicalSpace (WithScottTopology α) :=
             _ = ((Ici b₁)∩d) ∩ ((Ici b₂)∩d) := by rw [inter_inter_distrib_right]
             _ ⊆ s ∩ t := by { exact inter_subset_inter hb₁_h hb₂_h }
       isOpen_unionₛ := by
-        intros s h
-        intros d a hd₁ hd₂ hd₃ ha
+        intros s h d a hd₁ hd₂ hd₃ ha
         rw [mem_unionₛ] at ha
         obtain ⟨s₀, ⟨hs₀_w, hs₀_h⟩⟩ := ha
         obtain ⟨b, ⟨hb_w, hb_h⟩⟩ := h s₀ hs₀_w d a hd₁ hd₂ hd₃ hs₀_h
