@@ -22,7 +22,14 @@ def pickle {α : Type} (path : FilePath) (x : α) (key : Name := by exact decl_n
   saveModuleData path key (unsafe unsafeCast x)
 
 /--
-Load an object from disk. Better to use `withUnpickle`, which frees memory.
+Load an object from disk.
+Note: The returned `CompactedRegion` can be used to free the memory behind the value
+of type `α`, using `CompactedRegion.free` (which is only safe once all references to the `α` are
+released). Ignoring the `CompactedRegion` results in the data being leaked.
+Use `withUnpickle` to call `CompactedRegion.free` automatically.
+
+This function is unsafe because the data being loaded may not actually have type `α`, and this
+may cause crashes or other bad behavior.
 -/
 unsafe def unpickle (α : Type) (path : FilePath) : IO (α × CompactedRegion) := do
   let (x, region) ← readModuleData path
