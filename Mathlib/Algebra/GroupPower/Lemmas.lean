@@ -71,7 +71,6 @@ def Units.ofPow (u : Mˣ) (x : M) {n : ℕ} (hn : n ≠ 0) (hu : x ^ n = u) : M�
     (by rwa [← _root_.pow_succ, Nat.sub_add_cancel (Nat.succ_le_of_lt <| Nat.pos_of_ne_zero hn)])
     (Commute.self_pow _ _)
 #align units.of_pow Units.ofPow
-#align units.of_nsmul AddUnits.ofNSMul
 #align add_units.of_nsmul AddUnits.ofNSMul
 
 @[to_additive (attr := simp)]
