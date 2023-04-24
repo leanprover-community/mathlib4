@@ -1109,14 +1109,26 @@ end LinearMap
 
 section
 
+-- Porting note: without this short-circuit instance the next lemma fails.
+set_option synthInstance.etaExperiment true in
+instance (F K : Type _) [CommSemiring F] [Semiring K]
+    [Algebra F K] : SMulCommClass F K K := IsScalarTower.to_smulCommClass
+
+-- Porting note: this was originally inlined into the construction of
+-- `divisionRingOfFiniteDimensional`. I've stated to separately to avoid a timeout.
+set_option synthInstance.etaExperiment true in
+lemma LinearMap.mulLeft_surjective (F : Type _) [Field F] [Ring K] [IsDomain K]
+    [Algebra F K] [FiniteDimensional F K] {x : K} (H : x ≠ 0) :
+    Function.Surjective (LinearMap.mulLeft F x) :=
+  LinearMap.injective_iff_surjective.1 fun y z => ((mul_right_inj' H).1 : x * y = x * z → y = z)
+
 set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 /-- A domain that is module-finite as an algebra over a field is a division ring. -/
 noncomputable def divisionRingOfFiniteDimensional (F K : Type _) [Field F] [Ring K] [IsDomain K]
     [Algebra F K] [FiniteDimensional F K] : DivisionRing K :=
   { ‹IsDomain K›, ‹Ring K› with
     inv := fun x => if H : x = 0 then 0 else Classical.choose <|
-      (show Function.Surjective (LinearMap.mulLeft F x) from
-        LinearMap.injective_iff_surjective.1 fun _ _ => (mul_right_inj' H).1) 1
+      (LinearMap.mulLeft_surjective F H) 1
     mul_inv_cancel := fun x hx =>
       show x * dite _ _ _ = _ by
         rw [dif_neg hx]
@@ -1187,9 +1199,9 @@ theorem finrank_span_singleton {v : V} (hv : v ≠ 0) : finrank K (K ∙ v) = 1 
     simp [hv]
 #align finrank_span_singleton finrank_span_singleton
 
-nonrec theorem Set.finrank_mono [FiniteDimensional K V] {s t : Set V} (h : s ⊆ t) :
+theorem Set.finrank_mono [FiniteDimensional K V] {s t : Set V} (h : s ⊆ t) :
     s.finrank K ≤ t.finrank K :=
-  finrank_mono (span_mono h)
+  Submodule.finrank_mono (span_mono h)
 #align set.finrank_mono Set.finrank_mono
 
 end Span
@@ -1381,6 +1393,11 @@ open Module
 
 variable {F E : Type _} [Field F] [Ring E] [Algebra F E]
 
+-- Porting note: these instances can not be found with `etaExperiment`,
+-- so we have to provide a short-circuit instance here.
+instance (S : Subalgebra F E) : AddCommMonoid { x // x ∈ S } := inferInstance
+instance (S : Subalgebra F E) : AddCommGroup { x // x ∈ S } := inferInstance
+
 set_option synthInstance.etaExperiment true in
 /-- A `Subalgebra` is `FiniteDimensional` iff it is `FiniteDimensional` as a submodule. -/
 theorem Subalgebra.finiteDimensional_toSubmodule {S : Subalgebra F E} :
@@ -1399,27 +1416,37 @@ instance FiniteDimensional.finiteDimensional_subalgebra [FiniteDimensional F E]
   FiniteDimensional.of_subalgebra_toSubmodule inferInstance
 #align finite_dimensional.finite_dimensional_subalgebra FiniteDimensional.finiteDimensional_subalgebra
 
+set_option synthInstance.etaExperiment true in
 instance Subalgebra.finiteDimensional_bot : FiniteDimensional F (⊥ : Subalgebra F E) := by
   nontriviality E
   exact finiteDimensional_of_rank_eq_one Subalgebra.rank_bot
 #align subalgebra.finite_dimensional_bot Subalgebra.finiteDimensional_bot
 
+set_option synthInstance.etaExperiment true in
 theorem Subalgebra.eq_bot_of_rank_le_one {S : Subalgebra F E} (h : Module.rank F S ≤ 1) :
     S = ⊥ := by
   nontriviality E
-  obtain ⟨m, hm, he⟩ := Cardinal.exists_nat_eq_of_le_nat (h.trans_eq Nat.cast_one.symm)
-  haveI := finiteDimensional_of_rank_eq_nat he
+  obtain ⟨m, _, he⟩ := Cardinal.exists_nat_eq_of_le_nat (h.trans_eq Nat.cast_one.symm)
+  haveI I₁ := finiteDimensional_of_rank_eq_nat he
   rw [← not_bot_lt_iff, ← Subalgebra.toSubmodule.lt_iff_lt]
-  haveI := S.toSubmoduleEquiv.symm.finiteDimensional
-  refine' fun hl => (Submodule.finrank_lt_finrank_of_lt hl).not_le (nat_cast_le.1 _)
-  iterate 2 rw [Subalgebra.finrank_toSubmodule, finrank_eq_rank]
-  exact h.trans_eq subalgebra.rank_bot.symm
+  -- Porting FIXME: why does this not pick up the `I₁` when we use
+  -- haveI := LinearEquiv.finiteDimensional S.toSubmoduleEquiv.symm
+  haveI I₂ := @LinearEquiv.finiteDimensional _ _ _ _ _ _ _ _ S.toSubmoduleEquiv.symm I₁
+  -- Porting FIXME: similarly here:
+  refine' fun hl => (@Submodule.finrank_lt_finrank_of_lt _ _ _ _ _ _ _ I₂ hl ).not_le (natCast_le.1 _)
+  -- Porting FIXME: similarly here:
+  rw [Subalgebra.finrank_toSubmodule, @finrank_eq_rank _ _ _ _ _ _ I₁]
+  rw [Subalgebra.finrank_toSubmodule, finrank_eq_rank]
+  exact h.trans_eq Subalgebra.rank_bot.symm
 #align subalgebra.eq_bot_of_rank_le_one Subalgebra.eq_bot_of_rank_le_one
 
 theorem Subalgebra.eq_bot_of_finrank_one {S : Subalgebra F E} (h : finrank F S = 1) : S = ⊥ :=
   Subalgebra.eq_bot_of_rank_le_one <| by
     haveI := finiteDimensional_of_finrank_eq_succ h
-    rw [← finrank_eq_rank, h, Nat.cast_one]
+    -- Porting FIXME: why do we need `@finrank_eq_rank _ _ _ _ _ _ this`
+    -- rather than just `finrank_eq_rank`?
+    rw [← @finrank_eq_rank _ _ _ _ _ _ this, h, Nat.cast_one]
+    apply le_refl
 #align subalgebra.eq_bot_of_finrank_one Subalgebra.eq_bot_of_finrank_one
 
 @[simp]
