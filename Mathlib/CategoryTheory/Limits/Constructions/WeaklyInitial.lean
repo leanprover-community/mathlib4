@@ -49,23 +49,22 @@ initial object.
 theorem hasInitial_of_weakly_initial_and_hasWideEqualizers [HasWideEqualizers.{v} C] {T : C}
     (hT : ∀ X, Nonempty (T ⟶ X)) : HasInitial C := by
   let endos := T ⟶ T
-  let i := wide_equalizer.ι (id : endos → endos)
+  let i := wideEqualizer.ι (id : endos → endos)
   haveI : Nonempty endos := ⟨𝟙 _⟩
-  have : ∀ X : C, Unique (wide_equalizer (id : endos → endos) ⟶ X) := by
+  have : ∀ X : C, Unique (wideEqualizer (id : endos → endos) ⟶ X) := by
     intro X
     refine' ⟨⟨i ≫ Classical.choice (hT X)⟩, fun a => _⟩
     let E := equalizer a (i ≫ Classical.choice (hT _))
-    let e : E ⟶ wide_equalizer id := equalizer.ι _ _
+    let e : E ⟶ wideEqualizer id := equalizer.ι _ _
     let h : T ⟶ E := Classical.choice (hT E)
     have : ((i ≫ h) ≫ e) ≫ i = i ≫ 𝟙 _ := by
-      rw [category.assoc, category.assoc]
-      apply wide_equalizer.condition (id : endos → endos) (h ≫ e ≫ i)
-    rw [category.comp_id, cancel_mono_id i] at this
-    haveI : is_split_epi e := is_split_epi.mk' ⟨i ≫ h, this⟩
+      rw [Category.assoc, Category.assoc]
+      apply wideEqualizer.condition (id : endos → endos) (h ≫ e ≫ i)
+    rw [Category.comp_id, cancel_mono_id i] at this
+    haveI : IsSplitEpi e := IsSplitEpi.mk' ⟨i ≫ h, this⟩
     rw [← cancel_epi e]
     apply equalizer.condition
-  exact has_initial_of_unique (wide_equalizer (id : endos → endos))
+  exact hasInitial_of_unique (wideEqualizer (id : endos → endos))
 #align category_theory.has_initial_of_weakly_initial_and_has_wide_equalizers CategoryTheory.hasInitial_of_weakly_initial_and_hasWideEqualizers
 
 end CategoryTheory
-
