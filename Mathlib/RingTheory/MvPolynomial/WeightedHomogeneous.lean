@@ -46,15 +46,15 @@ components.
 
 noncomputable section
 
-open BigOperators
+open Classical BigOperators
 
 open Set Function Finset Finsupp AddMonoidAlgebra
 
-variable {R M : Type _} [CommSemiring R] [DecidableEq M]
+variable {R M : Type _} [CommSemiring R]
 
 namespace MvPolynomial
 
-variable {σ : Type _} [DecidableEq σ]
+variable {σ : Type _}
 
 section AddCommMonoid
 
@@ -283,8 +283,7 @@ theorem mul {w : σ → M} (hφ : IsWeightedHomogeneous w φ m) (hψ : IsWeighte
 
 /-- A product of weighted homogeneous polynomials is weighted homogeneous, with weighted degree
   equal to the sum of the weighted degrees. -/
-theorem prod {ι : Type _} [DecidableEq ι] (s : Finset ι)
-    (φ : ι → MvPolynomial σ R) (n : ι → M) {w : σ → M} :
+theorem prod {ι : Type _} (s : Finset ι) (φ : ι → MvPolynomial σ R) (n : ι → M) {w : σ → M} :
     (∀ i ∈ s, IsWeightedHomogeneous w (φ i) (n i)) →
       IsWeightedHomogeneous w (∏ i in s, φ i) (∑ i in s, n i) := by
   refine Finset.induction_on s ?_ ?_
@@ -374,7 +373,9 @@ theorem weightedHomogeneousComponent_eq_zero [SemilatticeSup M] [OrderBot M]
     (h : weightedTotalDegree w φ < n) : weightedHomogeneousComponent w n φ = 0 := by
   rw [weightedHomogeneousComponent_apply, sum_eq_zero]
   intro d hd
-  rw [Finset.mem_filter] at hd
+  have := @Finset.mem_filter _ _
+      (fun a => propDecidable ((fun d => weightedDegree' w d = n) a)) (support φ)
+  rw [this] at hd
   exfalso
   apply lt_irrefl n
   nth_rw 1 [← hd.2]

@@ -50,7 +50,7 @@ open Cubic Polynomial
 
 open Polynomial
 
-variable {R S F K : Type _} [DecidableEq R] [DecidableEq S] [DecidableEq K]
+variable {R S F K : Type _}
 
 instance [Inhabited R] : Inhabited (Cubic R) :=
   ⟨⟨default, default, default, default⟩⟩

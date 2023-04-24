@@ -28,11 +28,13 @@ euclidean domain
 
 noncomputable section
 
+open Classical
+
 open EuclideanDomain Set Ideal
 
 section GCDMonoid
 
-variable {R : Type _} [EuclideanDomain R] [GCDMonoid R] [DecidableEq R]
+variable {R : Type _} [EuclideanDomain R] [GCDMonoid R]
 
 theorem gcd_ne_zero_of_left (p q : R) (hp : p ≠ 0) : GCDMonoid.gcd p q ≠ 0 := fun h =>
   hp <| eq_zero_of_zero_dvd (h ▸ gcd_dvd_left p q)
@@ -76,26 +78,26 @@ def gcdMonoid (R) [EuclideanDomain R] : GCDMonoid R where
 
 variable {α : Type _} [EuclideanDomain α] [DecidableEq α]
 
-theorem span_gcd (x y : α) :
+theorem span_gcd {α} [EuclideanDomain α] (x y : α) :
     span ({gcd x y} : Set α) = span ({x, y} : Set α) :=
   letI := EuclideanDomain.gcdMonoid α
   _root_.span_gcd x y
 #align euclidean_domain.span_gcd EuclideanDomain.span_gcd
 
-theorem gcd_isUnit_iff {x y : α} : IsUnit (gcd x y) ↔ IsCoprime x y :=
+theorem gcd_isUnit_iff {α} [EuclideanDomain α] {x y : α} : IsUnit (gcd x y) ↔ IsCoprime x y :=
   letI := EuclideanDomain.gcdMonoid α
   _root_.gcd_isUnit_iff x y
 #align euclidean_domain.gcd_is_unit_iff EuclideanDomain.gcd_isUnit_iff
 
 -- this should be proved for UFDs surely?
-theorem isCoprime_of_dvd {x y : α} (nonzero : ¬(x = 0 ∧ y = 0))
+theorem isCoprime_of_dvd {α} [EuclideanDomain α] {x y : α} (nonzero : ¬(x = 0 ∧ y = 0))
     (H : ∀ z ∈ nonunits α, z ≠ 0 → z ∣ x → ¬z ∣ y) : IsCoprime x y :=
   letI := EuclideanDomain.gcdMonoid α
   _root_.isCoprime_of_dvd x y nonzero H
 #align euclidean_domain.is_coprime_of_dvd EuclideanDomain.isCoprime_of_dvd
 
 -- this should be proved for UFDs surely?
-theorem dvd_or_coprime (x y : α) (h : Irreducible x) :
+theorem dvd_or_coprime {α} [EuclideanDomain α] (x y : α) (h : Irreducible x) :
     x ∣ y ∨ IsCoprime x y :=
   letI := EuclideanDomain.gcdMonoid α
   _root_.dvd_or_coprime x y h

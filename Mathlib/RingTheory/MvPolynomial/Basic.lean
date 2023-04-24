@@ -41,6 +41,8 @@ Generalise to noncommutative (semi)rings
 
 noncomputable section
 
+open Classical
+
 open Set LinearMap Submodule
 
 open BigOperators Polynomial
@@ -48,7 +50,6 @@ open BigOperators Polynomial
 universe u v
 
 variable (σ : Type u) (R : Type v) [CommRing R] (p m : ℕ)
-  [DecidableEq σ ]
 
 namespace MvPolynomial
 

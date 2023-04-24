@@ -149,7 +149,7 @@ section Roots
 
 open Polynomial NNReal
 
-variable {F K : Type _} [CommRing F] [NormedField K] [DecidableEq K]
+variable {F K : Type _} [CommRing F] [NormedField K]
 
 open Multiset
 

@@ -22,14 +22,13 @@ This file starts looking like the ring theory of $ R[X] $
 
 noncomputable section
 
-open BigOperators Polynomial
+open Classical BigOperators Polynomial
 
 namespace Polynomial
 
 universe u v w y z
 
 variable {R : Type u} {S : Type v} {k : Type y} {A : Type z} {a b : R} {n : ℕ}
-  [DecidableEq R] [DecidableEq S] [DecidableEq k]
 
 section IsDomain
 
@@ -235,7 +234,8 @@ theorem mod_eq_self_iff (hq0 : q ≠ 0) : p % q = p ↔ degree p < degree q :=
       not_le_of_gt <| by rwa [degree_mul_leadingCoeff_inv q hq0]
     rw [mod_def, modByMonic, dif_pos (monic_mul_leadingCoeff_inv hq0)]
     unfold divModByMonicAux
-    simp only [this, ne_eq, false_and, ge_iff_le, dite_eq_ite, ite_false]⟩
+    dsimp
+    simp only [this, false_and_iff, if_false]⟩
 #align polynomial.mod_eq_self_iff Polynomial.mod_eq_self_iff
 
 theorem div_eq_zero_iff (hq0 : q ≠ 0) : p / q = 0 ↔ degree p < degree q :=
@@ -394,7 +394,6 @@ set_option linter.uppercaseLean3 false in
 set_option synthInstance.etaExperiment true in
 theorem rootSet_prod [CommRing S] [IsDomain S] [Algebra R S] {ι : Type _} (f : ι → R[X])
     (s : Finset ι) (h : s.prod f ≠ 0) : (s.prod f).rootSet S = ⋃ i ∈ s, (f i).rootSet S := by
-  classical
   simp only [rootSet, ← Finset.mem_coe]
   rw [Polynomial.map_prod, roots_prod, Finset.bind_toFinset, s.val_toFinset, Finset.coe_bunionᵢ]
   rwa [← Polynomial.map_prod, Ne, map_eq_zero]
@@ -553,7 +552,6 @@ then `f / (X - a)` is coprime with `X - a`.
 Note that we do not assume `f a = 0`, because `f / (X - a) = (f - f a) / (X - a)`. -/
 theorem isCoprime_of_is_root_of_eval_derivative_ne_zero {K : Type _} [Field K] (f : K[X]) (a : K)
     (hf' : f.derivative.eval a ≠ 0) : IsCoprime (X - C a : K[X]) (f /ₘ (X - C a)) := by
-  classical
   refine Or.resolve_left
       (EuclideanDomain.dvd_or_coprime (X - C a) (f /ₘ (X - C a))
         (irreducible_of_degree_eq_one (Polynomial.degree_X_sub_C a))) ?_

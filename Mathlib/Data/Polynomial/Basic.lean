@@ -71,12 +71,6 @@ structure Polynomial (R : Type _) [Semiring R] where ofFinsupp ::
 -- mathport name: polynomial
 scoped[Polynomial] notation:9000 R "[X]" => Polynomial R
 
-instance (R : Type _) [DecidableEq R] [Semiring R] : DecidableEq (Polynomial R) := by
-  rintro ⟨a : ℕ →₀ R⟩ ⟨b : ℕ →₀ R⟩
-  obtain (h | h) := decEq a b
-  . exact Decidable.isFalse (fun h' => h (by simpa using h'))
-  . exact Decidable.isTrue (by simpa using h)
-
 open AddMonoidAlgebra
 open Finsupp hiding single
 open Function hiding Commute

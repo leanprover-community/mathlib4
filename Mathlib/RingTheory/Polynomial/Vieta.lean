@@ -36,7 +36,7 @@ open Polynomial
 
 section Semiring
 
-variable {R : Type _} [CommSemiring R] [DecidableEq R]
+variable {R : Type _} [CommSemiring R]
 
 /-- A sum version of Vieta's formula for `Multiset`: the product of the linear terms `X + λ` where
 `λ` runs through a multiset `s` is equal to a linear combination of the symmetric functions
@@ -92,7 +92,7 @@ end Semiring
 
 section Ring
 
-variable {R : Type _} [CommRing R] [DecidableEq R]
+variable {R : Type _} [CommRing R]
 
 theorem esymm_neg (s : Multiset R) (k : ℕ) : (map Neg.neg s).esymm k = (-1) ^ k * esymm s k := by
   rw [esymm, esymm, ← Multiset.sum_map_mul_left, Multiset.powersetLen_map, Multiset.map_map,
@@ -149,11 +149,10 @@ theorem _root_.Polynomial.coeff_eq_esymm_roots_of_card [IsDomain R] {p : R[X]}
 #align polynomial.coeff_eq_esymm_roots_of_card Polynomial.coeff_eq_esymm_roots_of_card
 
 /-- Vieta's formula for split polynomials over a field. -/
-theorem _root_.Polynomial.coeff_eq_esymm_roots_of_splits {F} [Field F] [DecidableEq F] {p : F[X]}
+theorem _root_.Polynomial.coeff_eq_esymm_roots_of_splits {F} [Field F] {p : F[X]}
     (hsplit : p.Splits (RingHom.id F)) {k : ℕ} (h : k ≤ p.natDegree) :
-    p.coeff k = p.leadingCoeff * (-1) ^ (p.natDegree - k) * p.roots.esymm (p.natDegree - k) := by
-  have H := Polynomial.coeff_eq_esymm_roots_of_card (splits_iff_card_roots.1 hsplit) h
-  exact H
+    p.coeff k = p.leadingCoeff * (-1) ^ (p.natDegree - k) * p.roots.esymm (p.natDegree - k) :=
+  Polynomial.coeff_eq_esymm_roots_of_card (splits_iff_card_roots.1 hsplit) h
 #align polynomial.coeff_eq_esymm_roots_of_splits Polynomial.coeff_eq_esymm_roots_of_splits
 
 end Ring
@@ -173,7 +172,6 @@ theorem MvPolynomial.prod_C_add_X_eq_sum_esymm :
     (∏ i : σ, (Polynomial.X + Polynomial.C (MvPolynomial.X i))) =
       ∑ j in range (card σ + 1), Polynomial.C
         (MvPolynomial.esymm σ R j) * Polynomial.X ^ (card σ - j) := by
-  classical
   let s := Finset.univ.val.map fun i : σ => (MvPolynomial.X i : MvPolynomial σ R)
   have : Fintype.card σ = Multiset.card s := by
     rw [Multiset.card_map, ←Finset.card_univ, Finset.card_def]
@@ -186,7 +184,6 @@ set_option linter.uppercaseLean3 false in
 theorem MvPolynomial.prod_X_add_C_coeff (k : ℕ) (h : k ≤ card σ) :
     (∏ i : σ, (Polynomial.X + Polynomial.C (MvPolynomial.X i)) : Polynomial _).coeff k =
     MvPolynomial.esymm σ R (card σ - k) := by
-  classical
   let s := Finset.univ.val.map fun i => (MvPolynomial.X i : MvPolynomial σ R)
   have : Fintype.card σ = Multiset.card s := by
     rw [Multiset.card_map, ←Finset.card_univ, Finset.card_def]

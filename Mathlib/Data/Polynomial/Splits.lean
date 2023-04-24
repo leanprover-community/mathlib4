@@ -35,12 +35,11 @@ irreducible factors over `L` have degree `1`.
 
 noncomputable section
 
-open BigOperators Polynomial
+open Classical BigOperators Polynomial
 
 universe u v w
 
 variable {F : Type u} {K : Type v} {L : Type w}
-  [DecidableEq F] [DecidableEq L]
 
 namespace Polynomial
 
@@ -154,7 +153,7 @@ theorem splits_X : X.Splits i :=
 set_option linter.uppercaseLean3 false in
 #align polynomial.splits_X Polynomial.splits_X
 
-theorem splits_prod {ι : Type u} [DecidableEq ι] {s : ι → K[X]} {t : Finset ι} :
+theorem splits_prod {ι : Type u} {s : ι → K[X]} {t : Finset ι} :
     (∀ j ∈ t, (s j).Splits i) → (∏ x in t, s x).Splits i := by
   refine' Finset.induction_on t (fun _ => splits_one i) fun a t hat ih ht => _
   rw [Finset.forall_mem_insert] at ht; rw [Finset.prod_insert hat]
@@ -236,7 +235,7 @@ theorem degree_eq_card_roots' {p : K[X]} {i : K →+* L} (p_ne_zero : p.map i �
 
 end CommRing
 
-variable [Field K] [Field L] [Field F] [DecidableEq K]
+variable [Field K] [Field L] [Field F]
 
 variable (i : K →+* L)
 
@@ -282,7 +281,6 @@ theorem splits_mul_iff {f g : K[X]} (hf : f ≠ 0) (hg : g ≠ 0) :
 
 theorem splits_prod_iff {ι : Type u} {s : ι → K[X]} {t : Finset ι} :
     (∀ j ∈ t, s j ≠ 0) → ((∏ x in t, s x).Splits i ↔ ∀ j ∈ t, (s j).Splits i) := by
-  classical
   refine'
     Finset.induction_on t (fun _ =>
         ⟨fun _ _ h => by simp only [Finset.not_mem_empty] at h, fun _ => splits_one i⟩)

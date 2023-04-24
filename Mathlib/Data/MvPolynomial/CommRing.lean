@@ -40,7 +40,7 @@ This will give rise to a monomial in `MvPolynomial σ R` which mathematicians mi
 
 noncomputable section
 
-open BigOperators Set Function Finsupp AddMonoidAlgebra
+open Classical BigOperators Set Function Finsupp AddMonoidAlgebra
 
 universe u v
 
@@ -49,7 +49,6 @@ variable {R : Type u} {S : Type v}
 namespace MvPolynomial
 
 variable {σ : Type _} {a a' a₁ a₂ : R} {e : ℕ} {n m : σ} {s : σ →₀ ℕ}
-  [DecidableEq σ]
 
 section CommRing
 
@@ -149,8 +148,8 @@ set_option linter.uppercaseLean3 false in
 /-- A ring homomorphism f : Z[X_1, X_2, ...] → R
 is determined by the evaluations f(X_1), f(X_2), ... -/
 @[simp]
-theorem eval₂Hom_X {R : Type u} [DecidableEq R] (c : ℤ →+* S)
-    (f : MvPolynomial R ℤ →+* S) (x : MvPolynomial R ℤ) : eval₂ c (f ∘ X) x = f x := by
+theorem eval₂Hom_X {R : Type u} (c : ℤ →+* S) (f : MvPolynomial R ℤ →+* S) (x : MvPolynomial R ℤ) :
+    eval₂ c (f ∘ X) x = f x := by
   apply MvPolynomial.induction_on x
     (fun n => by
       rw [hom_C f, eval₂_C]

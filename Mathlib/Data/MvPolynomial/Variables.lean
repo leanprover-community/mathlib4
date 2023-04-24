@@ -61,7 +61,7 @@ This will give rise to a monomial in `MvPolynomial σ R` which mathematicians mi
 
 noncomputable section
 
-open BigOperators
+open Classical BigOperators
 
 open Set Function Finsupp AddMonoidAlgebra
 
@@ -74,7 +74,6 @@ variable {R : Type u} {S : Type v}
 namespace MvPolynomial
 
 variable {σ τ : Type _} {r : R} {e : ℕ} {n m : σ} {s : σ →₀ ℕ}
-  [DecidableEq σ] [DecidableEq τ] [DecidableEq R]
 
 section CommSemiring
 
@@ -142,7 +141,7 @@ theorem degrees_add (p q : MvPolynomial σ R) : (p + q).degrees ≤ p.degrees �
   · exact le_sup_of_le_right (Finset.le_sup h)
 #align mv_polynomial.degrees_add MvPolynomial.degrees_add
 
-theorem degrees_sum {ι : Type _} [DecidableEq ι] (s : Finset ι) (f : ι → MvPolynomial σ R) :
+theorem degrees_sum {ι : Type _} (s : Finset ι) (f : ι → MvPolynomial σ R) :
     (∑ i in s, f i).degrees ≤ s.sup fun i => (f i).degrees := by
   refine' s.induction _ _
   · simp only [Finset.sum_empty, Finset.sup_empty, degrees_zero]
@@ -155,14 +154,13 @@ theorem degrees_sum {ι : Type _} [DecidableEq ι] (s : Finset ι) (f : ι → M
 theorem degrees_mul (p q : MvPolynomial σ R) : (p * q).degrees ≤ p.degrees + q.degrees := by
   refine' Finset.sup_le fun b hb => _
   have := support_mul p q hb
-  rw [Finset.mem_bunionᵢ] at this
   simp only [Finset.mem_bunionᵢ, Finset.mem_singleton] at this
   rcases this with ⟨a₁, h₁, a₂, h₂, rfl⟩
   rw [Finsupp.toMultiset_add]
   exact add_le_add (Finset.le_sup h₁) (Finset.le_sup h₂)
 #align mv_polynomial.degrees_mul MvPolynomial.degrees_mul
 
-theorem degrees_prod {ι : Type _} [DecidableEq ι] (s : Finset ι) (f : ι → MvPolynomial σ R) :
+theorem degrees_prod {ι : Type _} (s : Finset ι) (f : ι → MvPolynomial σ R) :
     (∏ i in s, f i).degrees ≤ ∑ i in s, (f i).degrees := by
   refine' s.induction _ _
   · simp only [Finset.prod_empty, Finset.sum_empty, degrees_one, le_refl]
@@ -215,7 +213,7 @@ theorem degrees_add_of_disjoint {p q : MvPolynomial σ R}
       apply le_degrees_add h.symm
 #align mv_polynomial.degrees_add_of_disjoint MvPolynomial.degrees_add_of_disjoint
 
-theorem degrees_map [CommSemiring S] [DecidableEq S] (p : MvPolynomial σ R) (f : R →+* S) :
+theorem degrees_map [CommSemiring S] (p : MvPolynomial σ R) (f : R →+* S) :
     (map f p).degrees ⊆ p.degrees := by
   dsimp only [degrees]
   apply Multiset.subset_of_le
@@ -223,7 +221,7 @@ theorem degrees_map [CommSemiring S] [DecidableEq S] (p : MvPolynomial σ R) (f 
   apply MvPolynomial.support_map_subset
 #align mv_polynomial.degrees_map MvPolynomial.degrees_map
 
-theorem degrees_rename (f : σ → τ) [DecidableEq τ] (φ : MvPolynomial σ R) :
+theorem degrees_rename (f : σ → τ) (φ : MvPolynomial σ R) :
     (rename f φ).degrees ⊆ φ.degrees.map f := by
   intro i
   rw [mem_degrees, Multiset.mem_map]
@@ -239,14 +237,13 @@ theorem degrees_rename (f : σ → τ) [DecidableEq τ] (φ : MvPolynomial σ R)
   rw [Finsupp.single_apply, if_neg hi]
 #align mv_polynomial.degrees_rename MvPolynomial.degrees_rename
 
-theorem degrees_map_of_injective [CommSemiring S] [DecidableEq S] (p : MvPolynomial σ R)
-    {f : R →+* S} (hf : Injective f) : (map f p).degrees = p.degrees := by
+theorem degrees_map_of_injective [CommSemiring S] (p : MvPolynomial σ R) {f : R →+* S}
+    (hf : Injective f) : (map f p).degrees = p.degrees := by
   simp only [degrees, MvPolynomial.support_map_of_injective _ hf]
 #align mv_polynomial.degrees_map_of_injective MvPolynomial.degrees_map_of_injective
 
-theorem degrees_rename_of_injective {p : MvPolynomial σ R} {f : σ → τ} [DecidableEq τ]
-    (h : Function.Injective f) : degrees (rename f p) = (degrees p).map f := by
-  simp only [degrees]
+theorem degrees_rename_of_injective {p : MvPolynomial σ R} {f : σ → τ} (h : Function.Injective f) :
+    degrees (rename f p) = (degrees p).map f := by
   simp only [degrees, Multiset.map_finset_sup p.support Finsupp.toMultiset f h,
     support_rename_of_injective h, Finset.sup_image]
   refine' Finset.sup_congr rfl fun x _ => _
@@ -359,7 +356,7 @@ theorem vars_pow (φ : MvPolynomial σ R) (n : ℕ) : (φ ^ n).vars ⊆ φ.vars 
 /-- The variables of the product of a family of polynomials
 are a subset of the union of the sets of variables of each polynomial.
 -/
-theorem vars_prod {ι : Type _} [DecidableEq ι] {s : Finset ι} (f : ι → MvPolynomial σ R) :
+theorem vars_prod {ι : Type _} {s : Finset ι} (f : ι → MvPolynomial σ R) :
     (∏ i in s, f i).vars ⊆ s.bunionᵢ fun i => (f i).vars := by
   induction s using Finset.induction_on with
   | empty => simp
@@ -371,7 +368,7 @@ theorem vars_prod {ι : Type _} [DecidableEq ι] {s : Finset ι} (f : ι → MvP
 
 section IsDomain
 
-variable {A : Type _} [CommRing A] [IsDomain A] [DecidableEq A]
+variable {A : Type _} [CommRing A] [IsDomain A]
 
 theorem vars_C_mul (a : A) (ha : a ≠ 0) (φ : MvPolynomial σ A) :
     (C a * φ : MvPolynomial σ A).vars = φ.vars := by
@@ -390,7 +387,7 @@ end Mul
 
 section Sum
 
-variable {ι : Type _} [DecidableEq ι] (t : Finset ι) (φ : ι → MvPolynomial σ R)
+variable {ι : Type _} (t : Finset ι) (φ : ι → MvPolynomial σ R)
 
 theorem vars_sum_subset : (∑ i in t, φ i).vars ⊆ Finset.bunionᵢ t fun i => (φ i).vars := by
   induction t using Finset.induction_on with
@@ -423,7 +420,7 @@ end Sum
 
 section Map
 
-variable [CommSemiring S] [DecidableEq S] (f : R →+* S)
+variable [CommSemiring S] (f : R →+* S)
 
 variable (p)
 
@@ -523,9 +520,7 @@ theorem degreeOf_mul_X_ne {i j : σ} (f : MvPolynomial σ R) (h : i ≠ j) :
   congr
   ext
   simp only [Finsupp.single, Nat.one_ne_zero, add_right_eq_self, addRightEmbedding_apply, coe_mk,
-    Pi.add_apply, comp_apply, ite_eq_right_iff, Finsupp.coe_add]
-  -- porting note: not sure why `simp only [Pi.single_eq_of_ne h]` does not work here?
-  convert @Pi.single_eq_of_ne σ (fun _ => ℕ) _ _ _ _ h 1
+    Pi.add_apply, comp_apply, ite_eq_right_iff, Finsupp.coe_add, Pi.single_eq_of_ne h]
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.degree_of_mul_X_ne MvPolynomial.degreeOf_mul_X_ne
 
@@ -596,7 +591,7 @@ theorem totalDegree_one : (1 : MvPolynomial σ R).totalDegree = 0 :=
 #align mv_polynomial.total_degree_one MvPolynomial.totalDegree_one
 
 @[simp]
-theorem totalDegree_X {R} [DecidableEq R] [CommSemiring R] [Nontrivial R] (s : σ) :
+theorem totalDegree_X {R} [CommSemiring R] [Nontrivial R] (s : σ) :
     (X s : MvPolynomial σ R).totalDegree = 1 := by
   rw [totalDegree, support_X]
   simp only [Finset.sup, Finsupp.sum_single_index, Finset.fold_singleton, sup_bot_eq]

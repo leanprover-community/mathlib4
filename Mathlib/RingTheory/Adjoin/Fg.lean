@@ -201,7 +201,7 @@ end Semiring
 
 section Ring
 
-variable {R : Type u} {A : Type v} {B : Type w} [DecidableEq R] [DecidableEq A]
+variable {R : Type u} {A : Type v} {B : Type w}
 
 variable [CommRing R] [CommRing A] [CommRing B] [Algebra R A] [Algebra R B]
 

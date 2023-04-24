@@ -82,9 +82,8 @@ theorem cardPowDegree_apply (p : Fq[X]) :
 #align polynomial.card_pow_degree_apply Polynomial.cardPowDegree_apply
 
 -- @[simp] -- Porting note: simp can prove this
-theorem cardPowDegree_zero : cardPowDegree (0 : Fq[X]) = 0 := by
-  dsimp [cardPowDegree]
-  simp only [ite_true]
+theorem cardPowDegree_zero : cardPowDegree (0 : Fq[X]) = 0 :=
+  if_pos rfl
 #align polynomial.card_pow_degree_zero Polynomial.cardPowDegree_zero
 
 @[simp]

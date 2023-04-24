@@ -43,14 +43,13 @@ This will give rise to a monomial in `MvPolynomial σ R` which mathematicians mi
 
 noncomputable section
 
-open BigOperators
+open Classical BigOperators
 
 open Set Function Finsupp AddMonoidAlgebra
 
 open BigOperators
 
 variable {σ τ α R S : Type _} [CommSemiring R] [CommSemiring S]
-  [DecidableEq σ] [DecidableEq τ] [DecidableEq α]
 
 namespace MvPolynomial
 
@@ -324,7 +323,7 @@ theorem coeff_rename_ne_zero (f : σ → τ) (φ : MvPolynomial σ R) (d : τ �
 #align mv_polynomial.coeff_rename_ne_zero MvPolynomial.coeff_rename_ne_zero
 
 @[simp]
-theorem constantCoeff_rename {τ : Type _} [DecidableEq τ] (f : σ → τ) (φ : MvPolynomial σ R) :
+theorem constantCoeff_rename {τ : Type _} (f : σ → τ) (φ : MvPolynomial σ R) :
     constantCoeff (rename f φ) = constantCoeff φ := by
   apply φ.induction_on
   · intro a

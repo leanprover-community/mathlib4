@@ -163,7 +163,6 @@ then B is algebra-finite over A.
 
 References: Atiyah--Macdonald Proposition 7.8; Stacks 00IS; Altman--Kleiman 16.17. -/
 theorem fg_of_fg_of_fg [IsNoetherianRing A] (hAC : (⊤ : Subalgebra A C).Fg)
-    [DecidableEq A] [DecidableEq B]
     (hBC : (⊤ : Submodule B C).Fg) (hBCi : Function.Injective (algebraMap B C)) :
     (⊤ : Subalgebra A B).Fg :=
   let ⟨B₀, hAB₀, hB₀C⟩ := exists_subalgebra_of_fg A B C hAC hBC
@@ -177,3 +176,4 @@ theorem fg_of_fg_of_fg [IsNoetherianRing A] (hAC : (⊤ : Subalgebra A C).Fg)
 end Ring
 
 end ArtinTate
+

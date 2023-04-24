@@ -58,10 +58,9 @@ namespace MvPolynomial
 
 open Finsupp
 
-variable {σ : Type _} {τ : Type _} [DecidableEq σ] [DecidableEq τ]
+variable {σ : Type _} {τ : Type _}
 
 variable {R S T : Type _} [CommSemiring R] [CommSemiring S] [CommSemiring T]
-  [DecidableEq R]
 
 /--
 `bind₁` is the "left hand side" bind operation on `MvPolynomial`, operating on the variable type.
@@ -127,7 +126,7 @@ section
 variable (σ R)
 
 @[simp]
-theorem aeval_id_eq_join₁ : aeval id = @join₁ σ _ R _ _ :=
+theorem aeval_id_eq_join₁ : aeval id = @join₁ σ R _ :=
   rfl
 #align mv_polynomial.aeval_id_eq_join₁ MvPolynomial.aeval_id_eq_join₁
 
@@ -138,7 +137,7 @@ set_option linter.uppercaseLean3 false in
 #align mv_polynomial.eval₂_hom_C_id_eq_join₁ MvPolynomial.eval₂Hom_C_id_eq_join₁
 
 @[simp]
-theorem eval₂Hom_id_X_eq_join₂ : eval₂Hom (RingHom.id _) X = @join₂ σ _ R _ :=
+theorem eval₂Hom_id_X_eq_join₂ : eval₂Hom (RingHom.id _) X = @join₂ σ R _ :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.eval₂_hom_id_X_eq_join₂ MvPolynomial.eval₂Hom_id_X_eq_join₂
@@ -358,6 +357,8 @@ theorem bind₂_monomial_one (f : R →+* MvPolynomial σ S) (d : σ →₀ ℕ)
 
 section
 
+open Classical
+
 theorem vars_bind₁ (f : σ → MvPolynomial τ R) (φ : MvPolynomial σ R) :
     (bind₁ f φ).vars ⊆ φ.vars.bunionᵢ fun i => (f i).vars := by
   calc
@@ -398,10 +399,6 @@ theorem mem_vars_bind₁ (f : σ → MvPolynomial τ R) (φ : MvPolynomial σ R)
   simpa only [exists_prop, Finset.mem_bunionᵢ, mem_support_iff, Ne.def] using vars_bind₁ f φ h
 #align mv_polynomial.mem_vars_bind₁ MvPolynomial.mem_vars_bind₁
 
-section
-
-open Classical
-
 instance monad : Monad fun σ => MvPolynomial σ R
     where
   map f p := rename f p
@@ -427,8 +424,6 @@ instance lawfulMonad : LawfulMonad fun σ => MvPolynomial σ R
   bind_pure_comp := by aesop
   bind_map := by aesop
 #align mv_polynomial.is_lawful_monad MvPolynomial.lawfulMonad
-
-end
 
 /-
 Possible TODO for the future:
