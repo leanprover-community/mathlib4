@@ -37,7 +37,7 @@ syntax (name := to_additive_ignore_args) "to_additive_ignore_args" num* : attr
 /-- The  `to_additive_relevant_arg` attribute. -/
 syntax (name := to_additive_relevant_arg) "to_additive_relevant_arg" num : attr
 /-- The  `to_additive_reorder` attribute. -/
-syntax (name := to_additive_reorder) "to_additive_reorder" num* : attr
+syntax (name := to_additive_reorder) "to_additive_reorder" (num+),+ : attr
 /-- The  `to_additive_change_numeral` attribute. -/
 syntax (name := to_additive_change_numeral) "to_additive_change_numeral" num* : attr
 /-- An `attr := ...` option for `to_additive`. -/
@@ -151,7 +151,8 @@ initialize ignoreArgsAttr : NameMapExtension (List Nat) ←
 
 /--
 An attribute that stores all the declarations that needs their arguments reordered when
-applying `@[to_additive]`. It is applied by the `(reorder := ...)` syntax of `to_additive`.
+applying `@[to_additive]`. It is applied automatically by the `(reorder := ...)` syntax of
+`to_additive`, and should not usually be added manually.
 -/
 initialize reorderAttr : NameMapExtension (List $ List Nat) ←
   registerNameMapAttribute {
@@ -162,12 +163,12 @@ initialize reorderAttr : NameMapExtension (List $ List Nat) ←
         We keep it as an attribute for now so that mathport can still use it, and it can generate a
         warning."
     add := fun
-    | _, stx@`(attr| to_additive_reorder $[$ids:num]*) => do
+    | _, stx@`(attr| to_additive_reorder $[$[$reorders:num]*],*) => do
       Linter.logLintIf linter.toAdditiveReorder stx
         m!"Using this attribute is deprecated. Use `@[to_additive (reorder := <num>)]` {""
         }instead.\nThat will also generate the additive version with the arguments swapped, {""
         }so you are probably able to remove the manually written additive declaration."
-      pure <| Array.toList <| ids.map ([·.1.isNatLit?.get!])
+      pure <| reorders.toList.map (·.toList.map (·.raw.isNatLit?.get! - 1))
     | _, _ => throwUnsupportedSyntax }
 
 /--
@@ -188,8 +189,7 @@ The reason is that whether we additivize a declaration is an all-or-nothing deci
 we will not be able to additivize declarations that (e.g.) talk about multiplication on `ℕ × α`
 anyway.
 
-Warning: adding `@[to_additive_reorder]` with an equal or smaller number than the number in this
-attribute is currently not supported.
+Warning: interactions between this and the `(reorder := ...)` argument are not well-tested.
 -/
 initialize relevantArgAttr : NameMapExtension Nat ←
   registerNameMapAttribute {
@@ -1186,8 +1186,7 @@ mismatch error.
     multiplicative and additive version. This might mean that arguments have an "unnatural" order
     (e.g. `Monoid.npow n x` corresponds to `x ^ n`, but it is convenient that `Monoid.npow` has this
     argument order, since it matches `AddMonoid.nsmul n x`.
-  * If this is not possible, add the `[to_additive_reorder k]` to the multiplicative declaration
-    to indicate that the `k`-th and `(k+1)`-st arguments are reordered in the additive version.
+  * If this is not possible, add `(reorder := ...)` argument to `to_additive`.
 
 If neither of these solutions work, and `to_additive` is unable to automatically generate the
 additive version of a declaration, manually write and prove the additive version.
