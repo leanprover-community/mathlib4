@@ -233,7 +233,8 @@ def quotientEquiv [HasColimits C] [PreservesColimits S] (A : CostructuredArrow S
       refine' Quiver.Hom.unop_inj _
       have := congr_arg Quiver.Hom.unop (Subobject.ofMkLEMk_comp h)
       simpa only [unop_op, Functor.id_obj, Functor.const_obj_obj, MonoOver.mk'_obj, Over.mk_left,
-        MonoOver.mk'_arrow, unop_comp, Quiver.Hom.unop_op, comp_left] using congr_arg CommaMorphism.left this
+        MonoOver.mk'_arrow, unop_comp, Quiver.Hom.unop_op, comp_left]
+          using congr_arg CommaMorphism.left this
 #align category_theory.costructured_arrow.quotient_equiv CategoryTheory.CostructuredArrow.quotientEquiv
 
 /-- If `C` is well-copowered and cocomplete and `S` preserves colimits, then
