@@ -46,6 +46,17 @@ def applyTactics (cfg : ApplyConfig := {}) (transparency : TransparencyMode := .
         goals.filterM fun g => try g.inferInstance; pure false catch _ => pure true
 
 /--
+`applyFirst lemmas goal` applies the first of the `lemmas`
+which can be successfully applied to `goal`, and fails if none apply.
+
+We use this in `apply_rules` and `apply_assumption` where backtracking is not needed.
+-/
+def applyFirst (cfg : ApplyConfig := {}) (transparency : TransparencyMode := .default)
+    (lemmas : List Expr) : MVarId → MetaM (List MVarId) :=
+  fun g => do
+    (← applyTactics cfg transparency lemmas g).firstM (fun t => t)
+
+/--
 Configuration structure to control the behaviour of `solve_by_elim`:
 * transparency mode for calls to `apply`
 * whether to use `symm` on hypotheses and `exfalso` on the goal as needed,
@@ -59,6 +70,7 @@ structure Config extends BacktrackConfig, ApplyConfig where
   /-- Try proving the goal via `exfalso` if `solve_by_elim` otherwise fails.
   This is only used when operating on a single goal. -/
   exfalso : Bool := true
+  backtracking : Bool := true
 
 instance : Coe Config BacktrackConfig := ⟨Config.toBacktrackConfig⟩
 
@@ -90,9 +102,6 @@ def accept (cfg : Config := {}) (test : MVarId → MetaM Bool) : Config :=
       pure none
     else
       cfg.discharge g }
-
-/-- Create or modify a `Config` which does no backtracking. -/
-def noBackTracking (cfg : Config := {}) : Config := cfg.accept fun _ => pure true
 
 /--
 Create or modify a `Config` which runs a tactic on the main goal.
@@ -182,6 +191,12 @@ def applyLemmas (cfg : Config) (lemmas : List (TermElabM Expr)) (ctx : TermElabM
 let es ← elabContextLemmas g lemmas ctx
 applyTactics cfg.toApplyConfig cfg.transparency es g
 
+/-- Applies the first possible lemma to the goal. -/
+def applyFirstLemma (cfg : Config) (lemmas : List (TermElabM Expr)) (ctx : TermElabM (List Expr))
+    (g : MVarId) : MetaM (List MVarId) := do
+let es ← elabContextLemmas g lemmas ctx
+applyFirst cfg.toApplyConfig cfg.transparency es g
+
 /--
 Solve a collection of goals by repeatedly applying lemmas, backtracking as necessary.
 
@@ -209,8 +224,10 @@ def solveByElim (cfg : Config) (lemmas : List (TermElabM Expr)) (ctx : TermElabM
   else
     pure goals
 
-  let alternatives := applyLemmas cfg lemmas ctx
-  let run := backtrack cfg `Meta.Tactic.solveByElim alternatives
+  let run := if cfg.backtracking then
+    backtrack cfg `Meta.Tactic.solveByElim (applyLemmas cfg lemmas ctx)
+  else
+    repeat1' (maxIters := cfg.maxDepth) (applyFirstLemma cfg lemmas ctx)
   -- Implementation note: as with `cfg.symm`, this is different from the mathlib3 approach,
   -- for (not as bad) performance reasons.
   match cfg.exfalso, goals with
@@ -227,20 +244,16 @@ def solveByElim (cfg : Config) (lemmas : List (TermElabM Expr)) (ctx : TermElabM
 /--
 A `MetaM` analogue of the `apply_rules` user tactic.
 
-Since `apply_rules` does not backtrack, we don't need to worry about stuck metavariables
-and can pass the lemmas as a `List Expr`.
-
-TODO: this is incorrect behaviour: stuck metavariables come from applying the same lemma twice,
-not from backtracking.
+We pass the lemmas as `TermElabM Expr` rather than just `Expr`,
+so they can be generated fresh for each application, to avoid stuck metavariables.
 
 By default it uses all local hypotheses, but you can disable this with `only := true`.
 If you need to remove particular local hypotheses, call `solveByElim` directly.
 -/
-def _root_.Lean.MVarId.applyRules (cfg : Config) (lemmas : List Expr) (only : Bool := false)
-    (g : MVarId) : MetaM (List MVarId) := do
-  let lemmas := lemmas.map pure
+def _root_.Lean.MVarId.applyRules (cfg : Config) (lemmas : List (TermElabM Expr))
+    (only : Bool := false) (g : MVarId) : MetaM (List MVarId) := do
   let ctx : TermElabM (List Expr) := if only then pure [] else do pure (← getLocalHyps).toList
-  solveByElim { cfg.noBackTracking with failAtMaxDepth := false } lemmas ctx [g]
+  solveByElim { cfg with backtracking := false } lemmas ctx [g]
 
 open Lean.Parser.Tactic
 open Mathlib.Tactic.LabelAttr
@@ -454,8 +467,8 @@ elab_rules : tactic |
   let use := parseUsing use
   let cfg ← elabConfig (mkOptionalNode cfg)
   let cfg := { cfg with
-    maxDepth := 1
-    failAtMaxDepth := false }
+    backtracking := false
+    maxDepth := 1 }
   replaceMainGoal (← solveByElim.processSyntax cfg o.isSome star add remove use [← getMainGoal])
 
 /--
@@ -489,6 +502,6 @@ elab_rules : tactic |
   let (star, add, remove) := parseArgs t
   let use := parseUsing use
   let cfg ← elabApplyRulesConfig (mkOptionalNode cfg)
-  let cfg := { cfg.noBackTracking with
-    failAtMaxDepth := false }
+  let cfg := { cfg with
+    backtracking := false }
   liftMetaTactic fun g => solveByElim.processSyntax cfg o.isSome star add remove use [g]
