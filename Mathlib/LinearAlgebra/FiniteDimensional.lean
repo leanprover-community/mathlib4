@@ -1497,7 +1497,7 @@ theorem Subalgebra.isSimpleOrder_of_finrank (hr : finrank F E = 2) :
         FiniteDimensional.finiteDimensional_submodule (Subalgebra.toSubmodule S)
       have : finrank F S ≤ 2 := hr ▸ S.toSubmodule.finrank_le
       have : 0 < finrank F S := finrank_pos_iff.mpr inferInstance
-      interval_cases
+      interval_cases h : finrank F { x // x ∈ S }
       · left
         exact Subalgebra.eq_bot_of_finrank_one h
       · right
