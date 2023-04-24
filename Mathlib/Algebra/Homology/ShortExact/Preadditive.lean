@@ -21,8 +21,8 @@ We define when a short exact sequence is left-split, right-split, and split.
 
 ## See also
 
-In `algebra.homology.short_exact.abelian` we show that in an abelian category a left-split short
-exact sequences admits a splitting.
+In `Mathlib.Algebra.Homology.ShortExact.Abelian` we show that in an abelian category a left-split
+short exact sequences admits a splitting.
 
 -/
 
@@ -209,15 +209,15 @@ then `h.retraction : B ⟶ A` is the morphism satisfying `f ≫ h.retraction = �
 def retraction : B ⟶ A := h.iso.hom ≫ biprod.fst
 #align category_theory.splitting.retraction CategoryTheory.Splitting.retraction
 
-@[simp, reassoc]
+@[reassoc (attr := simp)]
 theorem section_π : h.section ≫ g = 𝟙 C := by simp [Splitting.section]
 #align category_theory.splitting.section_π CategoryTheory.Splitting.section_π
 
-@[simp, reassoc]
+@[reassoc (attr := simp)]
 theorem ι_retraction : f ≫ h.retraction = 𝟙 A := by simp [retraction]
 #align category_theory.splitting.ι_retraction CategoryTheory.Splitting.ι_retraction
 
-@[simp, reassoc]
+@[reassoc (attr := simp)]
 theorem section_retraction : h.section ≫ h.retraction = 0 := by
   delta Splitting.section retraction
   simp
@@ -233,12 +233,12 @@ protected def splitEpi : SplitEpi g :=
   ⟨h.section, by simp⟩
 #align category_theory.splitting.split_epi CategoryTheory.Splitting.splitEpi
 
-@[simp, reassoc]
+@[reassoc (attr := simp)]
 theorem inr_iso_inv : biprod.inr ≫ h.iso.inv = h.section :=
   rfl
 #align category_theory.splitting.inr_iso_inv CategoryTheory.Splitting.inr_iso_inv
 
-@[simp, reassoc]
+@[reassoc (attr := simp)]
 theorem iso_hom_fst : h.iso.hom ≫ biprod.fst = h.retraction :=
   rfl
 #align category_theory.splitting.iso_hom_fst CategoryTheory.Splitting.iso_hom_fst
