@@ -245,7 +245,7 @@ protected theorem isometry : Isometry f :=
 @[simp]
 theorem isComplete_image_iff [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] (f : 𝓕) {s : Set E} :
     IsComplete (f '' s) ↔ IsComplete s :=
-  isComplete_image_iff (SemilinearIsometryClass.isometry f).uniformInducing
+  _root_.isComplete_image_iff (SemilinearIsometryClass.isometry f).uniformInducing
 #align linear_isometry.is_complete_image_iff LinearIsometry.isComplete_image_iff
 
 theorem isComplete_map_iff [RingHomSurjective σ₁₂] {p : Submodule R E} :
@@ -369,7 +369,7 @@ def id : E →ₗᵢ[R] E :=
 #align linear_isometry.id LinearIsometry.id
 
 @[simp]
-theorem coe_id : ((id : E →ₗᵢ[R] E) : E → E) = id :=
+theorem coe_id : ((id : E →ₗᵢ[R] E) : E → E) = _root_.id :=
   rfl
 #align linear_isometry.coe_id LinearIsometry.coe_id
 
@@ -424,7 +424,7 @@ instance : Monoid (E →ₗᵢ[R] E) where
   mul_one := comp_id
 
 @[simp]
-theorem coe_one : ((1 : E →ₗᵢ[R] E) : E → E) = id :=
+theorem coe_one : ((1 : E →ₗᵢ[R] E) : E → E) = _root_.id :=
   rfl
 #align linear_isometry.coe_one LinearIsometry.coe_one
 
@@ -448,7 +448,7 @@ def LinearMap.toLinearIsometry (f : E →ₛₗ[σ₁₂] E₂) (hf : Isometry f
   { f with
     norm_map' := by
       simp_rw [← dist_zero_right, ← f.map_zero]
-      exact fun x => hf.dist_eq x _ }
+      simpa using (hf.dist_eq · 0) }
 #align linear_map.to_linear_isometry LinearMap.toLinearIsometry
 
 namespace Submodule
@@ -550,6 +550,7 @@ instance : SemilinearIsometryEquivClass (E ≃ₛₗᵢ[σ₁₂] E₂) σ₁₂
     cases' g with g' _
     cases f'
     cases g'
+    simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, FunLike.coe_fn_eq] at h₁
     congr
   left_inv e := e.left_inv
   right_inv e := e.right_inv
@@ -1157,7 +1158,7 @@ theorem coe_prodAssoc_symm [Module R E₂] [Module R E₃] :
 set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 /-- If `p` is a submodule that is equal to `⊤`, then `LinearIsometryEquiv.ofTop p hp` is the
 "identity" equivalence between `p` and `E`. -/
-@[simps! toLinearEquiv apply symm_apply_coe]
+@[simps! toLinearEquiv apply symmApply_coe]
 def ofTop {R : Type _} [Ring R] [Module R E] (p : Submodule R E) (hp : p = ⊤) : p ≃ₗᵢ[R] E :=
   { p.subtypeₗᵢ with toLinearEquiv := LinearEquiv.ofTop p hp }
 #align linear_isometry_equiv.of_top LinearIsometryEquiv.ofTop
