@@ -18,16 +18,14 @@ import Mathlib.Analysis.NormedSpace.Ray
 
 We prove the following facts:
 
-* `convex_on_norm`, `convex_on_dist` : norm and distance to a fixed point is convex on any convex
+* `convexOn_norm`, `convexOn_dist` : norm and distance to a fixed point is convex on any convex
   set;
-* `convex_on_univ_norm`, `convex_on_univ_dist` : norm and distance to a fixed point is convex on
+* `convexOn_univ_norm`, `convexOn_univ_dist` : norm and distance to a fixed point is convex on
   the whole space;
-* `convex_hull_ediam`, `convex_hull_diam` : convex hull of a set has the same (e)metric diameter
+* `convexHull_ediam`, `convexHull_diam` : convex hull of a set has the same (e)metric diameter
   as the original set;
-* `bounded_convex_hull` : convex hull of a set is bounded if and only if the original set
+* `bounded_convexHull` : convex hull of a set is bounded if and only if the original set
   is bounded.
-* `bounded_std_simplex`, `is_closed_std_simplex`, `compact_std_simplex`: topological properties
-  of the standard simplex.
 -/
 
 
@@ -39,19 +37,18 @@ open Pointwise Convex
 
 variable [SeminormedAddCommGroup E] [NormedSpace ℝ E] {s t : Set E}
 
-/-- The norm on a real normed space is convex on any convex set. See also `seminorm.convex_on`
-and `convex_on_univ_norm`. -/
+/-- The norm on a real normed space is convex on any convex set. See also `Seminorm.convexOn`
+and `convexOn_univ_norm`. -/
 theorem convexOn_norm (hs : Convex ℝ s) : ConvexOn ℝ s norm :=
-  ⟨hs, fun x hx y hy a b ha hb hab =>
+  ⟨hs, fun x _ y _ a b ha hb _ =>
     calc
       ‖a • x + b • y‖ ≤ ‖a • x‖ + ‖b • y‖ := norm_add_le _ _
       _ = a * ‖x‖ + b * ‖y‖ := by
-        rw [norm_smul, norm_smul, Real.norm_of_nonneg ha, Real.norm_of_nonneg hb]
-      ⟩
+        rw [norm_smul, norm_smul, Real.norm_of_nonneg ha, Real.norm_of_nonneg hb]⟩
 #align convex_on_norm convexOn_norm
 
-/-- The norm on a real normed space is convex on the whole space. See also `seminorm.convex_on`
-and `convex_on_norm`. -/
+/-- The norm on a real normed space is convex on the whole space. See also `Seminorm.convexOn`
+and `convexOn_norm`. -/
 theorem convexOn_univ_norm : ConvexOn ℝ univ (norm : E → ℝ) :=
   convexOn_norm convex_univ
 #align convex_on_univ_norm convexOn_univ_norm
@@ -80,7 +77,7 @@ theorem Convex.thickening (hs : Convex ℝ s) (δ : ℝ) : Convex ℝ (thickenin
 
 theorem Convex.cthickening (hs : Convex ℝ s) (δ : ℝ) : Convex ℝ (cthickening δ s) := by
   obtain hδ | hδ := le_total 0 δ
-  · rw [cthickening_eq_Inter_thickening hδ]
+  · rw [cthickening_eq_interᵢ_thickening hδ]
     exact convex_interᵢ₂ fun _ _ => hs.thickening _
   · rw [cthickening_of_nonpos hδ]
     exact hs.closure
@@ -127,12 +124,12 @@ theorem bounded_convexHull {s : Set E} : Metric.Bounded (convexHull ℝ s) ↔ M
 #align bounded_convex_hull bounded_convexHull
 
 instance (priority := 100) NormedSpace.path_connected : PathConnectedSpace E :=
-  TopologicalAddGroup.path_connected
+  TopologicalAddGroup.pathConnectedSpace
 #align normed_space.path_connected NormedSpace.path_connected
 
 instance (priority := 100) NormedSpace.loc_path_connected : LocPathConnectedSpace E :=
   locPathConnected_of_bases (fun x => Metric.nhds_basis_ball) fun x r r_pos =>
-    (convex_ball x r).IsPathConnected <| by simp [r_pos]
+    (convex_ball x r).isPathConnected <| by simp [r_pos]
 #align normed_space.loc_path_connected NormedSpace.loc_path_connected
 
 theorem dist_add_dist_of_mem_segment {x y z : E} (h : y ∈ [x -[ℝ] z]) :
@@ -145,13 +142,12 @@ theorem dist_add_dist_of_mem_segment {x y z : E} (h : y ∈ [x -[ℝ] z]) :
 theorem isConnected_setOf_sameRay (x : E) : IsConnected { y | SameRay ℝ x y } := by
   by_cases hx : x = 0; · simpa [hx] using isConnected_univ
   simp_rw [← exists_nonneg_left_iff_sameRay hx]
-  exact is_connected_Ici.image _ (continuous_id.smul continuous_const).ContinuousOn
+  exact isConnected_Ici.image _ (continuous_id.smul continuous_const).continuousOn
 #align is_connected_set_of_same_ray isConnected_setOf_sameRay
 
 /-- The set of nonzero vectors in the same ray as the nonzero vector `x` is connected. -/
 theorem isConnected_setOf_sameRay_and_ne_zero {x : E} (hx : x ≠ 0) :
     IsConnected { y | SameRay ℝ x y ∧ y ≠ 0 } := by
   simp_rw [← exists_pos_left_iff_sameRay_and_ne_zero hx]
-  exact is_connected_Ioi.image _ (continuous_id.smul continuous_const).ContinuousOn
+  exact isConnected_Ioi.image _ (continuous_id.smul continuous_const).continuousOn
 #align is_connected_set_of_same_ray_and_ne_zero isConnected_setOf_sameRay_and_ne_zero
-
