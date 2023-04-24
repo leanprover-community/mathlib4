@@ -1394,11 +1394,7 @@ open Module
 
 variable {F E : Type _} [Field F] [Ring E] [Algebra F E]
 
--- Porting note: these instances can not be found with `etaExperiment`,
--- so we have to provide a short-circuit instance here.
-instance (S : Subalgebra F E) : AddCommMonoid { x // x ∈ S } := inferInstance
-instance (S : Subalgebra F E) : AddCommGroup { x // x ∈ S } := inferInstance
-
+set_option synthInstance.maxHeartbeats 300000
 set_option synthInstance.etaExperiment true in
 /-- A `Subalgebra` is `FiniteDimensional` iff it is `FiniteDimensional` as a submodule. -/
 theorem Subalgebra.finiteDimensional_toSubmodule {S : Subalgebra F E} :
@@ -1417,6 +1413,7 @@ instance FiniteDimensional.finiteDimensional_subalgebra [FiniteDimensional F E]
   FiniteDimensional.of_subalgebra_toSubmodule inferInstance
 #align finite_dimensional.finite_dimensional_subalgebra FiniteDimensional.finiteDimensional_subalgebra
 
+set_option maxHeartbeats 300000
 set_option synthInstance.etaExperiment true in
 instance Subalgebra.finiteDimensional_bot : FiniteDimensional F (⊥ : Subalgebra F E) := by
   nontriviality E
@@ -1424,7 +1421,7 @@ instance Subalgebra.finiteDimensional_bot : FiniteDimensional F (⊥ : Subalgebr
 #align subalgebra.finite_dimensional_bot Subalgebra.finiteDimensional_bot
 
 set_option synthInstance.etaExperiment true in
-set_option maxHeartbeats 300000 in
+set_option maxHeartbeats 450000 in
 theorem Subalgebra.eq_bot_of_rank_le_one {S : Subalgebra F E} (h : Module.rank F S ≤ 1) :
     S = ⊥ := by
   nontriviality E
