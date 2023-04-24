@@ -1111,32 +1111,21 @@ end LinearMap
 
 section
 
--- Porting note: without this short-circuit instance the next lemma fails.
-set_option synthInstance.etaExperiment true in
-instance (F K : Type _) [CommSemiring F] [Semiring K]
-    [Algebra F K] : SMulCommClass F K K := IsScalarTower.to_smulCommClass
-
--- Porting note: this was originally inlined into the construction of
--- `divisionRingOfFiniteDimensional`. I've stated to separately to avoid a timeout.
-set_option synthInstance.etaExperiment true in
-lemma LinearMap.mulLeft_surjective (F : Type _) [Field F] [Ring K] [IsDomain K]
-    [Algebra F K] [FiniteDimensional F K] {x : K} (H : x ≠ 0) :
-    Function.Surjective (LinearMap.mulLeft F x) :=
-  LinearMap.injective_iff_surjective.1 fun y z => ((mul_right_inj' H).1 : x * y = x * z → y = z)
-
 set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 /-- A domain that is module-finite as an algebra over a field is a division ring. -/
 noncomputable def divisionRingOfFiniteDimensional (F K : Type _) [Field F] [Ring K] [IsDomain K]
     [Algebra F K] [FiniteDimensional F K] : DivisionRing K :=
+  -- porting note: added to avoid a timeout
+  haveI : SMulCommClass F K K := IsScalarTower.to_smulCommClass
+  -- porting note: extracted from the fields below to a `haveI`
+  haveI : ∀ x : K, x ≠ 0 → Function.Surjective (LinearMap.mulLeft F x) := fun x H =>
+    LinearMap.injective_iff_surjective.1 fun y z => ((mul_right_inj' H).1 : x * y = x * z → y = z)
   { ‹IsDomain K›, ‹Ring K› with
-    inv := fun x => if H : x = 0 then 0 else Classical.choose <|
-      (LinearMap.mulLeft_surjective F H) 1
+    inv := fun x => if H : x = 0 then 0 else Classical.choose <| (this _ H) 1
     mul_inv_cancel := fun x hx =>
       show x * dite _ _ _ = _ by
         rw [dif_neg hx]
-        exact Classical.choose_spec
-          ((show Function.Surjective (LinearMap.mulLeft F x) from
-            LinearMap.injective_iff_surjective.1 fun _ _ => (mul_right_inj' hx).1) 1)
+        exact (Classical.choose_spec (this _ hx 1) :)
     inv_zero := dif_pos rfl }
 #align division_ring_of_finite_dimensional divisionRingOfFiniteDimensional
 
