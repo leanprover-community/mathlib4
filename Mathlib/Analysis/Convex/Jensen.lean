@@ -8,8 +8,8 @@ Authors: Alexander Bentkamp, Yury Kudriashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Convex.Combination
-import Mathbin.Analysis.Convex.Function
+import Mathlib.Analysis.Convex.Combination
+import Mathlib.Analysis.Convex.Function
 
 /-!
 # Jensen's inequality and maximum principle for convex functions
@@ -48,8 +48,7 @@ variable [LinearOrderedField 𝕜] [AddCommGroup E] [OrderedAddCommGroup β] [Mo
 /-- Convex **Jensen's inequality**, `finset.center_mass` version. -/
 theorem ConvexOn.map_centerMass_le (hf : ConvexOn 𝕜 s f) (h₀ : ∀ i ∈ t, 0 ≤ w i)
     (h₁ : 0 < ∑ i in t, w i) (hmem : ∀ i ∈ t, p i ∈ s) :
-    f (t.centerMass w p) ≤ t.centerMass w (f ∘ p) :=
-  by
+    f (t.centerMass w p) ≤ t.centerMass w (f ∘ p) := by
   have hmem' : ∀ i ∈ t, (p i, (f ∘ p) i) ∈ { p : E × β | p.1 ∈ s ∧ f p.1 ≤ p.2 } := fun i hi =>
     ⟨hmem i hi, le_rfl⟩
   convert(hf.convex_epigraph.center_mass_mem h₀ h₁ hmem').2 <;>
@@ -90,8 +89,7 @@ variable [LinearOrderedField 𝕜] [AddCommGroup E] [LinearOrderedAddCommGroup �
 
 theorem le_sup_of_mem_convexHull {s : Finset E} (hf : ConvexOn 𝕜 (convexHull 𝕜 (s : Set E)) f)
     (hx : x ∈ convexHull 𝕜 (s : Set E)) :
-    f x ≤ s.sup' (coe_nonempty.1 <| convexHull_nonempty_iff.1 ⟨x, hx⟩) f :=
-  by
+    f x ≤ s.sup' (coe_nonempty.1 <| convexHull_nonempty_iff.1 ⟨x, hx⟩) f := by
   obtain ⟨w, hw₀, hw₁, rfl⟩ := mem_convex_hull.1 hx
   exact
     (hf.map_center_mass_le hw₀ (by positivity) <| subset_convexHull _ _).trans
@@ -131,8 +129,7 @@ theorem ConcaveOn.exists_le_of_centerMass (h : ConcaveOn 𝕜 s f) (hw₀ : ∀ 
 /-- Maximum principle for convex functions. If a function `f` is convex on the convex hull of `s`,
 then the eventual maximum of `f` on `convex_hull 𝕜 s` lies in `s`. -/
 theorem ConvexOn.exists_ge_of_mem_convexHull (hf : ConvexOn 𝕜 (convexHull 𝕜 s) f) {x}
-    (hx : x ∈ convexHull 𝕜 s) : ∃ y ∈ s, f x ≤ f y :=
-  by
+    (hx : x ∈ convexHull 𝕜 s) : ∃ y ∈ s, f x ≤ f y := by
   rw [_root_.convex_hull_eq] at hx
   obtain ⟨α, t, w, p, hw₀, hw₁, hp, rfl⟩ := hx
   rcases hf.exists_ge_of_center_mass hw₀ (hw₁.symm ▸ zero_lt_one) fun i hi =>
