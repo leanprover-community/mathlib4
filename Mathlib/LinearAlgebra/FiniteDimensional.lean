@@ -609,8 +609,7 @@ noncomputable def basisSingleton (ι : Type _) [Unique ι] (h : finrank K V = 1)
       map_smul' := by simp [mul_div]
       left_inv := fun w => by
         apply_fun b.repr using b.repr.toEquiv.injective
-        -- porting note: was `apply_fun Equiv.finsuppUnique`
-        refine Equiv.finsuppUnique.injective ?_
+        apply_fun Equiv.finsuppUnique
         simp only [LinearEquiv.map_smulₛₗ, Finsupp.coe_smul, Finsupp.single_eq_same,
           RingHom.id_apply, smul_eq_mul, Pi.smul_apply, Equiv.finsuppUnique_apply]
         exact div_mul_cancel _ h
