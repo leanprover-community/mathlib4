@@ -19,13 +19,13 @@ import Mathlib.Topology.Algebra.Module.Basic
 
 We prove the following facts:
 
-* `convex.interior` : interior of a convex set is convex;
-* `convex.closure` : closure of a convex set is convex;
-* `set.finite.compact_convex_hull` : convex hull of a finite set is compact;
-* `set.finite.is_closed_convex_hull` : convex hull of a finite set is closed.
+* `Convex.interior` : interior of a convex set is convex;
+* `Convex.closure` : closure of a convex set is convex;
+* `Set.Finite.isCompact_convexHull` : convex hull of a finite set is compact;
+* `Set.Finite.isClosed_convexHull` : convex hull of a finite set is closed.
 -/
 
-
+-- Porting note: this does not exist in Lean 4:
 --assert_not_exists Norm
 
 open Metric Set
@@ -48,7 +48,7 @@ section stdSimplex
 
 variable [Fintype ι]
 
-/-- Every vector in `std_simplex 𝕜 ι` has `max`-norm at most `1`. -/
+/-- Every vector in `stdSimplex 𝕜 ι` has `max`-norm at most `1`. -/
 theorem stdSimplex_subset_closedBall : stdSimplex ℝ ι ⊆ Metric.closedBall 0 1 := by
   intro f hf
   rw [Metric.mem_closedBall, dist_pi_le_iff zero_le_one]
@@ -59,12 +59,12 @@ theorem stdSimplex_subset_closedBall : stdSimplex ℝ ι ⊆ Metric.closedBall 0
 
 variable (ι)
 
-/-- `std_simplex ℝ ι` is bounded. -/
+/-- `stdSimplex ℝ ι` is bounded. -/
 theorem bounded_stdSimplex : Metric.Bounded (stdSimplex ℝ ι) :=
   (Metric.bounded_iff_subset_ball 0).2 ⟨1, stdSimplex_subset_closedBall⟩
 #align bounded_std_simplex bounded_stdSimplex
 
-/-- `std_simplex ℝ ι` is closed. -/
+/-- `stdSimplex ℝ ι` is closed. -/
 theorem isClosed_stdSimplex : IsClosed (stdSimplex ℝ ι) :=
   (stdSimplex_eq_inter ℝ ι).symm ▸
     IsClosed.inter (isClosed_interᵢ fun i => isClosed_le continuous_const (continuous_apply i))
@@ -116,7 +116,7 @@ variable [LinearOrderedField 𝕜] [AddCommGroup E] [Module 𝕜 E] [Topological
   [TopologicalAddGroup E] [ContinuousConstSMul 𝕜 E]
 
 /-- If `s` is a convex set, then `a • interior s + b • closure s ⊆ interior s` for all `0 < a`,
-`0 ≤ b`, `a + b = 1`. See also `convex.combo_interior_self_subset_interior` for a weaker version. -/
+`0 ≤ b`, `a + b = 1`. See also `Convex.combo_interior_self_subset_interior` for a weaker version. -/
 theorem Convex.combo_interior_closure_subset_interior {s : Set E} (hs : Convex 𝕜 s) {a b : 𝕜}
     (ha : 0 < a) (hb : 0 ≤ b) (hab : a + b = 1) : a • interior s + b • closure s ⊆ interior s :=
   interior_smul₀ ha.ne' s ▸
@@ -130,7 +130,7 @@ theorem Convex.combo_interior_closure_subset_interior {s : Set E} (hs : Convex �
 #align convex.combo_interior_closure_subset_interior Convex.combo_interior_closure_subset_interior
 
 /-- If `s` is a convex set, then `a • interior s + b • s ⊆ interior s` for all `0 < a`, `0 ≤ b`,
-`a + b = 1`. See also `convex.combo_interior_closure_subset_interior` for a stronger version. -/
+`a + b = 1`. See also `Convex.combo_interior_closure_subset_interior` for a stronger version. -/
 theorem Convex.combo_interior_self_subset_interior {s : Set E} (hs : Convex 𝕜 s) {a b : 𝕜}
     (ha : 0 < a) (hb : 0 ≤ b) (hab : a + b = 1) : a • interior s + b • s ⊆ interior s :=
   calc
@@ -141,7 +141,7 @@ theorem Convex.combo_interior_self_subset_interior {s : Set E} (hs : Convex 𝕜
 #align convex.combo_interior_self_subset_interior Convex.combo_interior_self_subset_interior
 
 /-- If `s` is a convex set, then `a • closure s + b • interior s ⊆ interior s` for all `0 ≤ a`,
-`0 < b`, `a + b = 1`. See also `convex.combo_self_interior_subset_interior` for a weaker version. -/
+`0 < b`, `a + b = 1`. See also `Convex.combo_self_interior_subset_interior` for a weaker version. -/
 theorem Convex.combo_closure_interior_subset_interior {s : Set E} (hs : Convex 𝕜 s) {a b : 𝕜}
     (ha : 0 ≤ a) (hb : 0 < b) (hab : a + b = 1) : a • closure s + b • interior s ⊆ interior s := by
   rw [add_comm]
@@ -149,7 +149,7 @@ theorem Convex.combo_closure_interior_subset_interior {s : Set E} (hs : Convex �
 #align convex.combo_closure_interior_subset_interior Convex.combo_closure_interior_subset_interior
 
 /-- If `s` is a convex set, then `a • s + b • interior s ⊆ interior s` for all `0 ≤ a`, `0 < b`,
-`a + b = 1`. See also `convex.combo_closure_interior_subset_interior` for a stronger version. -/
+`a + b = 1`. See also `Convex.combo_closure_interior_subset_interior` for a stronger version. -/
 theorem Convex.combo_self_interior_subset_interior {s : Set E} (hs : Convex 𝕜 s) {a b : 𝕜}
     (ha : 0 ≤ a) (hb : 0 < b) (hab : a + b = 1) : a • s + b • interior s ⊆ interior s := by
   rw [add_comm]
@@ -286,17 +286,18 @@ variable [AddCommGroup E] [Module ℝ E] [TopologicalSpace E] [TopologicalAddGro
   [ContinuousSMul ℝ E]
 
 /-- Convex hull of a finite set is compact. -/
-theorem Set.Finite.compact_convexHull {s : Set E} (hs : s.Finite) : IsCompact (convexHull ℝ s) := by
+theorem Set.Finite.isCompact_convexHull {s : Set E} (hs : s.Finite) :
+    IsCompact (convexHull ℝ s) := by
   rw [hs.convexHull_eq_image]
   apply (@isCompact_stdSimplex _ hs.fintype).image
   haveI := hs.fintype
   apply LinearMap.continuous_on_pi
-#align set.finite.compact_convex_hull Set.Finite.compact_convexHull
+#align set.finite.compact_convex_hull Set.Finite.isCompact_convexHull
 
 /-- Convex hull of a finite set is closed. -/
 theorem Set.Finite.isClosed_convexHull [T2Space E] {s : Set E} (hs : s.Finite) :
     IsClosed (convexHull ℝ s) :=
-  hs.compact_convexHull.isClosed
+  hs.isCompact_convexHull.isClosed
 #align set.finite.is_closed_convex_hull Set.Finite.isClosed_convexHull
 
 open AffineMap
@@ -366,8 +367,8 @@ protected theorem Convex.isPreconnected {s : Set E} (h : Convex ℝ s) : IsPreco
 
 Not an instance, because it creates enormous TC subproblems (turn on `pp.all`).
 -/
-protected theorem TopologicalAddGroup.path_connected : PathConnectedSpace E :=
+protected theorem TopologicalAddGroup.pathConnectedSpace : PathConnectedSpace E :=
   pathConnectedSpace_iff_univ.mpr <| convex_univ.isPathConnected ⟨(0 : E), trivial⟩
-#align topological_add_group.path_connected TopologicalAddGroup.path_connected
+#align topological_add_group.path_connected TopologicalAddGroup.pathConnectedSpace
 
 end ContinuousSMul
