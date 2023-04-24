@@ -275,13 +275,12 @@ theorem Cotrident.π_ofπ [Nonempty J] {P : C} (π : Y ⟶ P) (w : ∀ j₁ j₂
   rfl
 #align category_theory.limits.cotrident.π_of_π CategoryTheory.Limits.Cotrident.π_ofπ
 
--- porting note: @[simp] as the linter complains even if we increase the priority
 @[reassoc]
 theorem Trident.condition (j₁ j₂ : J) (t : Trident f) : t.ι ≫ f j₁ = t.ι ≫ f j₂ := by
   rw [t.app_zero, t.app_zero]
 #align category_theory.limits.trident.condition CategoryTheory.Limits.Trident.condition
 
-@[reassoc (attr := simp)]
+@[reassoc]
 theorem Cotrident.condition (j₁ j₂ : J) (t : Cotrident f) : f j₁ ≫ t.π = f j₂ ≫ t.π := by
   rw [t.app_one, t.app_one]
 #align category_theory.limits.cotrident.condition CategoryTheory.Limits.Cotrident.condition
