@@ -833,4 +833,4 @@ instance (priority := 10) hasCoequalizers_of_hasWideCoequalizers [HasWideCoequal
 
 end CategoryTheory.Limits
 
-attribute [-simp] CategoryTheory.Limits.WalkingParallelFamily.Hom.id.sizeOf_spec
+attribute [nolint simpNF] CategoryTheory.Limits.WalkingParallelFamily.Hom.id.sizeOf_spec
