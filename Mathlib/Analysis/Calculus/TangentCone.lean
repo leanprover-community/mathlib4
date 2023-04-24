@@ -8,9 +8,9 @@ Authors: Sébastien Gouëzel
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Convex.Topology
-import Mathbin.Analysis.NormedSpace.Basic
-import Mathbin.Analysis.SpecificLimits.Basic
+import Mathlib.Analysis.Convex.Topology
+import Mathlib.Analysis.NormedSpace.Basic
+import Mathlib.Analysis.SpecificLimits.Basic
 
 /-!
 # Tangent cone
@@ -89,8 +89,7 @@ section TangentCone
 -- This section is devoted to the properties of the tangent cone.
 open NormedField
 
-theorem tangent_cone_univ : tangentConeAt 𝕜 univ x = univ :=
-  by
+theorem tangent_cone_univ : tangentConeAt 𝕜 univ x = univ := by
   refine' univ_subset_iff.1 fun y hy => _
   rcases exists_one_lt_norm 𝕜 with ⟨w, hw⟩
   refine' ⟨fun n => w ^ n, fun n => (w ^ n)⁻¹ • y, univ_mem' fun n => mem_univ _, _, _⟩
@@ -105,8 +104,7 @@ theorem tangent_cone_univ : tangentConeAt 𝕜 univ x = univ :=
     rw [smul_smul, this, one_smul]
 #align tangent_cone_univ tangent_cone_univ
 
-theorem tangent_cone_mono (h : s ⊆ t) : tangentConeAt 𝕜 s x ⊆ tangentConeAt 𝕜 t x :=
-  by
+theorem tangent_cone_mono (h : s ⊆ t) : tangentConeAt 𝕜 s x ⊆ tangentConeAt 𝕜 t x := by
   rintro y ⟨c, d, ds, ctop, clim⟩
   exact ⟨c, d, mem_of_superset ds fun n hn => h hn, Ctop, clim⟩
 #align tangent_cone_mono tangent_cone_mono
@@ -115,14 +113,12 @@ theorem tangent_cone_mono (h : s ⊆ t) : tangentConeAt 𝕜 s x ⊆ tangentCone
 the sequence `d` tends to 0 at infinity. -/
 theorem tangentConeAt.lim_zero {α : Type _} (l : Filter α) {c : α → 𝕜} {d : α → E}
     (hc : Tendsto (fun n => ‖c n‖) l atTop) (hd : Tendsto (fun n => c n • d n) l (𝓝 y)) :
-    Tendsto d l (𝓝 0) :=
-  by
+    Tendsto d l (𝓝 0) := by
   have A : tendsto (fun n => ‖c n‖⁻¹) l (𝓝 0) := tendsto_inv_at_top_zero.comp hc
   have B : tendsto (fun n => ‖c n • d n‖) l (𝓝 ‖y‖) := (continuous_norm.tendsto _).comp hd
   have C : tendsto (fun n => ‖c n‖⁻¹ * ‖c n • d n‖) l (𝓝 (0 * ‖y‖)) := A.mul B
   rw [MulZeroClass.zero_mul] at C
-  have : ∀ᶠ n in l, ‖c n‖⁻¹ * ‖c n • d n‖ = ‖d n‖ :=
-    by
+  have : ∀ᶠ n in l, ‖c n‖⁻¹ * ‖c n • d n‖ = ‖d n‖ := by
     apply (eventually_ne_of_tendsto_norm_atTop hc 0).mono fun n hn => _
     rw [norm_smul, ← mul_assoc, inv_mul_cancel, one_mul]
     rwa [Ne.def, norm_eq_zero]
@@ -155,11 +151,9 @@ theorem tangent_cone_inter_nhds (ht : t ∈ 𝓝 x) : tangentConeAt 𝕜 (s ∩ 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- The tangent cone of a product contains the tangent cone of its left factor. -/
 theorem subset_tangent_cone_prod_left {t : Set F} {y : F} (ht : y ∈ closure t) :
-    LinearMap.inl 𝕜 E F '' tangentConeAt 𝕜 s x ⊆ tangentConeAt 𝕜 (s ×ˢ t) (x, y) :=
-  by
+    LinearMap.inl 𝕜 E F '' tangentConeAt 𝕜 s x ⊆ tangentConeAt 𝕜 (s ×ˢ t) (x, y) := by
   rintro _ ⟨v, ⟨c, d, hd, hc, hy⟩, rfl⟩
-  have : ∀ n, ∃ d', y + d' ∈ t ∧ ‖c n • d'‖ < ((1 : ℝ) / 2) ^ n :=
-    by
+  have : ∀ n, ∃ d', y + d' ∈ t ∧ ‖c n • d'‖ < ((1 : ℝ) / 2) ^ n := by
     intro n
     rcases mem_closure_iff_nhds.1 ht _
         (eventually_nhds_norm_smul_sub_lt (c n) y (pow_pos one_half_pos n)) with
@@ -179,11 +173,9 @@ theorem subset_tangent_cone_prod_left {t : Set F} {y : F} (ht : y ∈ closure t)
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- The tangent cone of a product contains the tangent cone of its right factor. -/
 theorem subset_tangent_cone_prod_right {t : Set F} {y : F} (hs : x ∈ closure s) :
-    LinearMap.inr 𝕜 E F '' tangentConeAt 𝕜 t y ⊆ tangentConeAt 𝕜 (s ×ˢ t) (x, y) :=
-  by
+    LinearMap.inr 𝕜 E F '' tangentConeAt 𝕜 t y ⊆ tangentConeAt 𝕜 (s ×ˢ t) (x, y) := by
   rintro _ ⟨w, ⟨c, d, hd, hc, hy⟩, rfl⟩
-  have : ∀ n, ∃ d', x + d' ∈ s ∧ ‖c n • d'‖ < ((1 : ℝ) / 2) ^ n :=
-    by
+  have : ∀ n, ∃ d', x + d' ∈ s ∧ ‖c n • d'‖ < ((1 : ℝ) / 2) ^ n := by
     intro n
     rcases mem_closure_iff_nhds.1 hs _
         (eventually_nhds_norm_smul_sub_lt (c n) x (pow_pos one_half_pos n)) with
@@ -206,11 +198,9 @@ theorem mapsTo_tangent_cone_pi {ι : Type _} [DecidableEq ι] {E : ι → Type _
     [∀ i, NormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)] {s : ∀ i, Set (E i)} {x : ∀ i, E i}
     {i : ι} (hi : ∀ (j) (_ : j ≠ i), x j ∈ closure (s j)) :
     MapsTo (LinearMap.single i : E i →ₗ[𝕜] ∀ j, E j) (tangentConeAt 𝕜 (s i) (x i))
-      (tangentConeAt 𝕜 (Set.pi univ s) x) :=
-  by
+      (tangentConeAt 𝕜 (Set.pi univ s) x) := by
   rintro w ⟨c, d, hd, hc, hy⟩
-  have : ∀ (n) (j) (_ : j ≠ i), ∃ d', x j + d' ∈ s j ∧ ‖c n • d'‖ < (1 / 2 : ℝ) ^ n :=
-    by
+  have : ∀ (n) (j) (_ : j ≠ i), ∃ d', x j + d' ∈ s j ∧ ‖c n • d'‖ < (1 / 2 : ℝ) ^ n := by
     intro n j hj
     rcases mem_closure_iff_nhds.1 (hi j hj) _
         (eventually_nhds_norm_smul_sub_lt (c n) (x j) (pow_pos one_half_pos n)) with
@@ -231,8 +221,7 @@ theorem mapsTo_tangent_cone_pi {ι : Type _} [DecidableEq ι] {E : ι → Type _
 /-- If a subset of a real vector space contains an open segment, then the direction of this
 segment belongs to the tangent cone at its endpoints. -/
 theorem mem_tangent_cone_of_openSegment_subset {s : Set G} {x y : G} (h : openSegment ℝ x y ⊆ s) :
-    y - x ∈ tangentConeAt ℝ s x :=
-  by
+    y - x ∈ tangentConeAt ℝ s x := by
   let c := fun n : ℕ => (2 : ℝ) ^ (n + 1)
   let d := fun n : ℕ => (c n)⁻¹ • (y - x)
   refine' ⟨c, d, Filter.univ_mem' fun n => h _, _, _⟩
@@ -254,8 +243,7 @@ theorem mem_tangent_cone_of_openSegment_subset {s : Set G} {x y : G} (h : openSe
     rw [this]
     exact (tendsto_pow_atTop_atTop_of_one_lt (by norm_num)).comp (tendsto_add_at_top_nat 1)
   show Filter.Tendsto (fun n : ℕ => c n • d n) Filter.atTop (𝓝 (y - x))
-  · have : (fun n : ℕ => c n • d n) = fun n => y - x :=
-      by
+  · have : (fun n : ℕ => c n • d n) = fun n => y - x := by
       ext n
       simp only [d, smul_smul]
       rw [mul_inv_cancel, one_smul]
@@ -287,8 +275,7 @@ theorem UniqueDiffOn.uniqueDiffWithinAt {s : Set E} {x} (hs : UniqueDiffOn 𝕜 
   hs x h
 #align unique_diff_on.unique_diff_within_at UniqueDiffOn.uniqueDiffWithinAt
 
-theorem uniqueDiffWithinAt_univ : UniqueDiffWithinAt 𝕜 univ x :=
-  by
+theorem uniqueDiffWithinAt_univ : UniqueDiffWithinAt 𝕜 univ x := by
   rw [uniqueDiffWithinAt_iff, tangent_cone_univ]
   simp
 #align unique_diff_within_at_univ uniqueDiffWithinAt_univ
@@ -300,8 +287,7 @@ theorem uniqueDiffOn_empty : UniqueDiffOn 𝕜 (∅ : Set E) := fun x hx => hx.e
 #align unique_diff_on_empty uniqueDiffOn_empty
 
 theorem UniqueDiffWithinAt.mono_nhds (h : UniqueDiffWithinAt 𝕜 s x) (st : 𝓝[s] x ≤ 𝓝[t] x) :
-    UniqueDiffWithinAt 𝕜 t x :=
-  by
+    UniqueDiffWithinAt 𝕜 t x := by
   simp only [uniqueDiffWithinAt_iff] at *
   rw [mem_closure_iff_nhdsWithin_neBot] at h⊢
   exact ⟨h.1.mono <| Submodule.span_mono <| tangent_cone_mono_nhds st, h.2.mono st⟩
@@ -358,8 +344,7 @@ theorem IsOpen.uniqueDiffOn (hs : IsOpen s) : UniqueDiffOn 𝕜 s := fun x hx =>
 /-- The product of two sets of unique differentiability at points `x` and `y` has unique
 differentiability at `(x, y)`. -/
 theorem UniqueDiffWithinAt.prod {t : Set F} {y : F} (hs : UniqueDiffWithinAt 𝕜 s x)
-    (ht : UniqueDiffWithinAt 𝕜 t y) : UniqueDiffWithinAt 𝕜 (s ×ˢ t) (x, y) :=
-  by
+    (ht : UniqueDiffWithinAt 𝕜 t y) : UniqueDiffWithinAt 𝕜 (s ×ˢ t) (x, y) := by
   rw [uniqueDiffWithinAt_iff] at hs ht⊢
   rw [closure_prod_eq]
   refine' ⟨_, hs.2, ht.2⟩
@@ -418,11 +403,9 @@ theorem UniqueDiffOn.univ_pi (ι : Type _) [Finite ι] (E : ι → Type _)
 /-- In a real vector space, a convex set with nonempty interior is a set of unique
 differentiability at every point of its closure. -/
 theorem uniqueDiffWithinAt_convex {s : Set G} (conv : Convex ℝ s) (hs : (interior s).Nonempty)
-    {x : G} (hx : x ∈ closure s) : UniqueDiffWithinAt ℝ s x :=
-  by
+    {x : G} (hx : x ∈ closure s) : UniqueDiffWithinAt ℝ s x := by
   rcases hs with ⟨y, hy⟩
-  suffices y - x ∈ interior (tangentConeAt ℝ s x)
-    by
+  suffices y - x ∈ interior (tangentConeAt ℝ s x) by
     refine' ⟨Dense.of_closure _, hx⟩
     simp [(Submodule.span ℝ (tangentConeAt ℝ s x)).eq_top_of_nonempty_interior'
         ⟨y - x, interior_mono Submodule.subset_span this⟩]
