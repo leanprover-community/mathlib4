@@ -48,6 +48,12 @@ def getFileImports (source : String) (pkgDirs : PackageDirs) : Array FilePath :=
       | none => false
   imps.map (mkFilePath · |>.withExtension "lean")
 
+/-- Computes a canonical hash of a file's contents. -/
+def hashFileContents (contents : String) : UInt64 :=
+  -- revert potential file transformation by git's `autocrlf`
+  let contents := contents.replace "\r\n" "\n"
+  hash contents
+
 /--
 Computes the root hash, which mixes the hashes of the content of:
 * `lakefile.lean`
@@ -57,8 +63,8 @@ Computes the root hash, which mixes the hashes of the content of:
 def getRootHash : IO UInt64 := do
   let rootFiles : List FilePath := ["lakefile.lean", "lean-toolchain", "lake-manifest.json"]
   let isMathlibRoot ← isMathlibRoot
-  return hash $ ← rootFiles.mapM fun path => do
-    pure $ ← IO.FS.readFile $ if isMathlibRoot then path else mathlibDepPath / path
+  hash <$> rootFiles.mapM fun path =>
+    hashFileContents <$> IO.FS.readFile (if isMathlibRoot then path else mathlibDepPath / path)
 
 initialize rootHash : UInt64 ← getRootHash
 
@@ -89,7 +95,7 @@ partial def getFileHash (filePath : FilePath) : HashM $ Option UInt64 := do
         set { stt with cache := stt.cache.insert filePath none }
         return none
     let pathHash := hash filePath.components
-    let fileHash := hash $ rootHash :: pathHash :: content.hash :: importHashes.toList
+    let fileHash := hash $ rootHash :: pathHash :: hashFileContents content :: importHashes.toList
     modifyGet fun stt =>
       (some fileHash, { stt with
         hashMap := stt.hashMap.insert filePath fileHash

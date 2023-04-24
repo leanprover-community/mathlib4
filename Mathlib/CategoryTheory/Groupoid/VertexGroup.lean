@@ -14,6 +14,7 @@ import Mathlib.Algebra.Group.Defs
 import Mathlib.Algebra.Hom.Group
 import Mathlib.Algebra.Hom.Equiv.Basic
 import Mathlib.Combinatorics.Quiver.Path
+import Mathlib.Combinatorics.Quiver.ConnectedComponent
 
 /-!
 # Vertex group

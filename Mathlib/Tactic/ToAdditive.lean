@@ -12,12 +12,13 @@ import Mathlib.Lean.EnvExtension
 import Mathlib.Lean.Meta.Simp
 import Std.Lean.NameMapAttribute
 import Std.Data.Option.Basic
-import Std.Tactic.NormCast.Ext -- just to copy the attribute
+import Std.Tactic.CoeExt -- just to copy the attribute
 import Std.Tactic.Ext.Attr -- just to copy the attribute
 import Std.Tactic.Lint -- useful to lint this file and for for DiscrTree.elements
 import Mathlib.Tactic.Relation.Rfl -- just to copy the attribute
 import Mathlib.Tactic.Relation.Symm -- just to copy the attribute
 import Mathlib.Tactic.Relation.Trans -- just to copy the attribute
+import Mathlib.Tactic.Eqns -- just to copy the attribute
 import Mathlib.Tactic.Simps.Basic
 
 /-!
@@ -28,7 +29,7 @@ and definitions (but not inductive types and structures) from a multiplicative
 theory to an additive theory.
 -/
 
-open Lean Meta Elab Command Std Tactic.NormCast
+open Lean Meta Elab Command Std
 
 /-- The  `to_additive_ignore_args` attribute. -/
 syntax (name := to_additive_ignore_args) "to_additive_ignore_args" num* : attr
@@ -488,6 +489,9 @@ def updateDecl
   decl := decl.updateType <| ← applyReplacementFun <| ← reorderForall (← expand decl.type) reorder
   if let some v := decl.value? then
     decl := decl.updateValue <| ← applyReplacementFun <| ← reorderLambda (← expand v) reorder
+  else if let .opaqueInfo info := decl then -- not covered by `value?`
+    decl := .opaqueInfo { info with
+      value := ← applyReplacementFun <| ← reorderLambda (← expand info.value) reorder }
   return decl
 
 /-- Find the target name of `pre` and all created auxiliary declarations. -/
@@ -507,6 +511,8 @@ def findTargetName (env : Environment) (src pre tgt_pre : Name) : CoreM Name :=
   -- Todo: we do not currently check whether such lemmas actually should be additivized.
   else if let some post := env.mainModule ++ `_auxLemma |>.isPrefixOf? src then
     return env.mainModule ++ `_auxAddLemma ++ post
+  else if src.hasMacroScopes then
+    mkFreshUserName src.eraseMacroScopes
   else
     throwError "internal @[to_additive] error."
 
@@ -521,7 +527,7 @@ attribute. We will only translate it has the `@[to_additive]` attribute.
 def findAuxDecls (e : Expr) (pre mainModule : Name) : NameSet :=
 let auxLemma := mainModule ++ `_auxLemma
 e.foldConsts ∅ fun n l ↦
-  if n.getPrefix == pre || n.getPrefix == auxLemma || isPrivateName n then
+  if n.getPrefix == pre || n.getPrefix == auxLemma || isPrivateName n || n.hasMacroScopes then
     l.insert n
   else
     l
@@ -561,6 +567,9 @@ partial def transformDeclAux
   if let some value := srcDecl.value? then
     for n in findAuxDecls value pre env.mainModule do
       transformDeclAux cfg pre tgt_pre n
+  if let .opaqueInfo {value, ..} := srcDecl then
+    for n in findAuxDecls value pre env.mainModule do
+      transformDeclAux cfg pre tgt_pre n
   -- if the auxilliary declaration doesn't have prefix `pre`, then we have to add this declaration
   -- to the translation dictionary, since otherwise we cannot find the additive name.
   if !pre.isPrefixOf src then
@@ -568,13 +577,14 @@ partial def transformDeclAux
   -- now transform the source declaration
   let trgDecl : ConstantInfo ←
     MetaM.run' <| updateDecl tgt srcDecl <| if src == pre then cfg.reorder else []
-  if !trgDecl.hasValue then
-    throwError "Expected {tgt} to have a value."
-  trace[to_additive] "generating\n{tgt} : {trgDecl.type} :=\n  {trgDecl.value!}"
+  let value ← match trgDecl with
+    | .thmInfo { value, .. } | .defnInfo { value, .. } | .opaqueInfo { value, .. } => pure value
+    | _ => throwError "Expected {tgt} to have a value."
+  trace[to_additive] "generating\n{tgt} : {trgDecl.type} :=\n  {value}"
   try
     -- make sure that the type is correct,
     -- and emit a more helpful error message if it fails
-    discard <| MetaM.run' <| inferType trgDecl.value!
+    discard <| MetaM.run' <| inferType value
   catch
     | Exception.error _ msg => throwError "@[to_additive] failed.
       Type mismatch in additive declaration. For help, see the docstring
@@ -895,11 +905,13 @@ partial def applyAttributes (stx : Syntax) (rawAttrs : Array Syntax) (thisAttr s
   copyInstanceAttribute src tgt
   -- Warn users if the multiplicative version has an attribute
   if linter.existingAttributeWarning.get (← getOptions) then
-    warnAttr stx simpExtension (·.lemmaNames.contains <| .decl ·) thisAttr `simp src tgt
-    warnAttr stx normCastExt.up (·.lemmaNames.contains <| .decl ·) thisAttr `norm_cast src tgt
-    warnAttr stx normCastExt.down (·.lemmaNames.contains <| .decl ·) thisAttr `norm_cast src tgt
-    warnAttr stx normCastExt.squash (·.lemmaNames.contains <| .decl ·) thisAttr `norm_cast src tgt
-    warnAttr stx pushCastExt (·.lemmaNames.contains <| .decl ·) thisAttr `norm_cast src tgt
+    let appliedAttrs ← getAllSimpAttrs src
+    if appliedAttrs.size > 0 then
+      Linter.logLintIf linter.existingAttributeWarning stx <|
+        m!"The source declaration {src} was given the simp-attribute(s) {appliedAttrs} before {
+        ""}calling @[{thisAttr}]. The preferred method is to use {
+        ""}`@[{thisAttr} (attr := {appliedAttrs})]` to apply the attribute to both {
+        src} and the target declaration {tgt}."
     warnAttr stx Std.Tactic.Ext.extExtension (fun b n => (b.elements.any fun t => t.declName = n))
       thisAttr `ext src tgt
     warnAttr stx Mathlib.Tactic.reflExt (·.elements.contains ·) thisAttr `refl src tgt
@@ -909,6 +921,7 @@ partial def applyAttributes (stx : Syntax) (rawAttrs : Array Syntax) (thisAttr s
     warnParametricAttr stx Lean.Linter.deprecatedAttr thisAttr `deprecated src tgt
     -- the next line also warns for `@[to_additive, simps]`, because of the application times
     warnParametricAttr stx simpsAttr thisAttr `simps src tgt
+    warnExt stx Term.elabAsElim.ext (·.contains ·) thisAttr `elab_as_elim src tgt
   -- add attributes
   -- the following is similar to `Term.ApplyAttributesCore`, but we hijack the implementation of
   -- `simp`, `simps` and `to_additive`.
@@ -958,11 +971,16 @@ partial def applyAttributes (stx : Syntax) (rawAttrs : Array Syntax) (thisAttr s
 Copies equation lemmas and attributes from `src` to `tgt`
 -/
 partial def copyMetaData (cfg : Config) (src tgt : Name) : CoreM (Array Name) := do
-  /- We need to generate all equation lemmas for `src` and `tgt`, even for non-recursive
-  definitions. If we don't do that, the equation lemma for `src` might be generated later
-  when doing a `rw`, but it won't be generated for `tgt`. -/
-  additivizeLemmas #[src, tgt] "equation lemmas" fun nm ↦
-    (·.getD #[]) <$> MetaM.run' (getEqnsFor? nm true)
+  if let some eqns := eqnsAttribute.find? (← getEnv) src then
+    unless (eqnsAttribute.find? (← getEnv) tgt).isSome do
+      for eqn in eqns do _ ← addToAdditiveAttr eqn cfg
+      eqnsAttribute.add tgt (eqns.map (findTranslation? (← getEnv) · |>.get!))
+  else
+    /- We need to generate all equation lemmas for `src` and `tgt`, even for non-recursive
+    definitions. If we don't do that, the equation lemma for `src` might be generated later
+    when doing a `rw`, but it won't be generated for `tgt`. -/
+    additivizeLemmas #[src, tgt] "equation lemmas" fun nm ↦
+      (·.getD #[]) <$> MetaM.run' (getEqnsFor? nm true)
   MetaM.run' <| Elab.Term.TermElabM.run' <|
     applyAttributes cfg.ref cfg.attrs `to_additive src tgt
 

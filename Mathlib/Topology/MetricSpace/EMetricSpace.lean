@@ -76,7 +76,7 @@ will be filled in by default. There is a default value for the uniformity, that 
 in cases of interest, for instance when instantiating a `PseudoEMetricSpace` structure
 on a product.
 
-Continuity of `edist` is proved in `topology.instances.ennreal`
+Continuity of `edist` is proved in `Topology.Instances.ENNReal`
 -/
 class PseudoEMetricSpace (α : Type u) extends EDist α : Type u where
   edist_self : ∀ x : α, edist x x = 0

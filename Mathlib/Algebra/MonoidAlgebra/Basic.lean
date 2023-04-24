@@ -58,7 +58,7 @@ open Finset
 
 open Finsupp hiding single mapDomain
 
-universe u₁ u₂ u₃
+universe u₁ u₂ u₃ u₄
 
 variable (k : Type u₁) (G : Type u₂) {R : Type _}
 
@@ -997,7 +997,7 @@ section
 
 variable {k}
 
-variable [Monoid G] [CommSemiring k] {V W : Type u₃} [AddCommMonoid V] [Module k V]
+variable [Monoid G] [CommSemiring k] {V : Type u₃} {W : Type u₄} [AddCommMonoid V] [Module k V]
   [Module (MonoidAlgebra k G) V] [IsScalarTower k (MonoidAlgebra k G) V] [AddCommMonoid W]
   [Module k W] [Module (MonoidAlgebra k G) W] [IsScalarTower k (MonoidAlgebra k G) W]
   (f : V →ₗ[k] W)

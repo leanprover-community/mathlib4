@@ -77,10 +77,6 @@ This feature wasn't needed yet, so it's not implemented yet.
 ring, semiring, exponent, power
 -/
 
--- TODO: move somewhere else
-instance : Ord ℚ where
-  compare x y := compareOfLessAndEq x y
-
 namespace Mathlib.Tactic
 namespace Ring
 open Mathlib.Meta Qq NormNum Lean.Meta AtomM

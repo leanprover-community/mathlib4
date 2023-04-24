@@ -33,7 +33,7 @@ Given a commutative semiring `R`, and a type `X`, we construct the free unital, 
 3. `hom_ext` is a variant of `lift_unique` in the form of an extensionality theorem.
 4. `lift_comp_ι` is a combination of `ι_comp_lift` and `lift_unique`. It states that the lift
   of the composition of an algebra morphism with `ι` is the algebra morphism itself.
-5. `equiv_monoid_algebra_free_monoid : FreeAlgebra R X ≃ₐ[R] MonoidAlgebra R (FreeMonoid X)`
+5. `equivMonoidAlgebraFreeMonoid : FreeAlgebra R X ≃ₐ[R] MonoidAlgebra R (FreeMonoid X)`
 6. An inductive principle `induction`.
 
 ## Implementation details
@@ -162,8 +162,7 @@ namespace FreeAlgebra
 attribute [local instance] Pre.hasCoeGenerator Pre.hasCoeSemiring Pre.hasMul Pre.hasAdd
   Pre.hasZero Pre.hasOne Pre.hasSmul
 
-instance : Semiring (FreeAlgebra R X)
-    where
+instance : Semiring (FreeAlgebra R X) where
   add := Quot.map₂ (· + ·) (fun _ _ _ ↦ Rel.add_compat_right) fun _ _ _ ↦ Rel.add_compat_left
   add_assoc := by
     rintro ⟨⟩ ⟨⟩ ⟨⟩
@@ -206,11 +205,10 @@ instance : Semiring (FreeAlgebra R X)
 instance : Inhabited (FreeAlgebra R X) :=
   ⟨0⟩
 
-instance : SMul R (FreeAlgebra R X)
-    where smul r := Quot.map ((· * ·) ↑r) fun _ _ ↦ Rel.mul_compat_right
+instance : SMul R (FreeAlgebra R X) where
+  smul r := Quot.map ((· * ·) ↑r) fun _ _ ↦ Rel.mul_compat_right
 
-instance : Algebra R (FreeAlgebra R X)
-    where
+instance : Algebra R (FreeAlgebra R X) where
   toFun r := Quot.mk _ r
   map_one' := rfl
   map_mul' _ _ := Quot.sound Rel.mul_scalar
@@ -238,8 +236,7 @@ theorem quot_mk_eq_ι (m : X) : Quot.mk (FreeAlgebra.Rel R X) m = ι R m := by r
 variable {A : Type _} [Semiring A] [Algebra R A]
 
 /-- Internal definition used to define `lift` -/
-private def liftAux (f : X → A) : FreeAlgebra R X →ₐ[R] A
-    where
+private def liftAux (f : X → A) : FreeAlgebra R X →ₐ[R] A where
   toFun a :=
     Quot.liftOn a (liftFun _ _ f) fun a b h ↦
       by
