@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro
 
 ! This file was ported from Lean 3 source module algebra.module.submodule.basic
-! leanprover-community/mathlib commit feb99064803fd3108e37c18b0f77d0a8344677a3
+! leanprover-community/mathlib commit 155d5519569cecf21f48c534da8b729890e20ce6
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -392,6 +392,41 @@ theorem injective_subtype : Injective p.subtype :=
 theorem coe_sum (x : ι → p) (s : Finset ι) : ↑(∑ i in s, x i) = ∑ i in s, (x i : M) :=
   map_sum p.subtype _ _
 #align submodule.coe_sum Submodule.coe_sum
+
+section AddAction
+
+/-! ### Additive actions by `submodule`s
+These instances transfer the action by an element `m : M` of a `R`-module `M` written as `m +ᵥ a`
+onto the action by an element `s : S` of a submodule `S : submodule R M` such that
+`s +ᵥ a = (s : M) +ᵥ a`.
+These instances work particularly well in conjunction with `add_group.to_add_action`, enabling
+`s +ᵥ m` as an alias for `↑s + m`.
+-/
+
+
+variable {α β : Type _}
+
+instance [VAdd M α] : VAdd p α :=
+  p.toAddSubmonoid.vadd
+
+instance vaddCommClass [VAdd M β] [VAdd α β] [VAddCommClass M α β] : VAddCommClass p α β :=
+  ⟨fun a => (vadd_comm (a : M) : _)⟩
+#align submodule.vadd_comm_class Submodule.vaddCommClass
+
+instance [VAdd M α] [FaithfulVAdd M α] : FaithfulVAdd p α :=
+  ⟨fun h => Subtype.ext <| eq_of_vadd_eq_vadd h⟩
+
+/-- The action by a submodule is the action by the underlying module. -/
+instance [AddAction M α] : AddAction p α :=
+  AddAction.compHom _ p.subtype.toAddMonoidHom
+
+variable {p}
+
+theorem vadd_def [VAdd M α] (g : p) (m : α) : g +ᵥ m = (g : M) +ᵥ m :=
+  rfl
+#align submodule.vadd_def Submodule.vadd_def
+
+end AddAction
 
 section RestrictScalars
 

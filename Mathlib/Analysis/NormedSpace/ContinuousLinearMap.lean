@@ -61,7 +61,7 @@ def LinearMap.mkContinuous (C : ℝ) (h : ∀ x, ‖f x‖ ≤ C * ‖x‖) : E 
 
 /-- Reinterpret a linear map `𝕜 →ₗ[𝕜] E` as a continuous linear map. This construction
 is generalized to the case of any finite dimensional domain
-in `linear_map.to_continuous_linear_map`. -/
+in `LinearMap.toContinuousLinearMap`. -/
 def LinearMap.toContinuousLinearMap₁ (f : 𝕜 →ₗ[𝕜] E) : 𝕜 →L[𝕜] E :=
   f.mkContinuous ‖f 1‖ fun x =>
     le_of_eq <| by
@@ -71,7 +71,7 @@ def LinearMap.toContinuousLinearMap₁ (f : 𝕜 →ₗ[𝕜] E) : 𝕜 →L[�
 
 /-- Construct a continuous linear map from a linear map and the existence of a bound on this linear
 map. If you have an explicit bound, use `LinearMap.mkContinuous` instead, as a norm estimate will
-follow automatically in `linear_map.mk_continuous_norm_le`. -/
+follow automatically in `LinearMap.mkContinuous_norm_le`. -/
 def LinearMap.mkContinuousOfExistsBound (h : ∃ C, ∀ x, ‖f x‖ ≤ C * ‖x‖) : E →SL[σ] F :=
   ⟨f,
     let ⟨C, hC⟩ := h

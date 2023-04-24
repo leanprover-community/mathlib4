@@ -952,9 +952,7 @@ theorem OrderIso.apply_blimsup [CompleteLattice γ] (e : α ≃o γ) :
   congr
   ext c
   obtain ⟨a, rfl⟩ := e.surjective c
-  -- Porting note: Also needed to add this next line
-  have : ↑(RelIso.toRelEmbedding e).toEmbedding = FunLike.coe e := rfl
-  simp [this]
+  simp
 #align filter.order_iso.apply_blimsup Filter.OrderIso.apply_blimsup
 
 theorem OrderIso.apply_bliminf [CompleteLattice γ] (e : α ≃o γ) :
