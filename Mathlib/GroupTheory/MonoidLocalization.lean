@@ -312,9 +312,8 @@ def rec {p : Localization S → Sort u} (f : ∀ (a : M) (b : S), p (mk a b))
 #align localization.rec Localization.rec
 #align add_localization.rec addLocalization.rec
 
-/-- Copy of `quotient.rec_on_subsingleton₂` for `localization` -/
-@[to_additive (attr := elab_as_elim) "Copy of `quotient.rec_on_subsingleton₂` for
-`add_localization`"]
+/-- Copy of `Quotient.recOnSubsingleton₂` for `Localization` -/
+@[to_additive (attr := elab_as_elim) "Copy of `Quotient.recOnSubsingleton₂` for `addLocalization`"]
 def recOnSubsingleton₂ {r : Localization S → Localization S → Sort u}
     [h : ∀ (a c : M) (b d : S), Subsingleton (r (mk a b) (mk c d))] (x y : Localization S)
     (f : ∀ (a c : M) (b d : S), r (mk a b) (mk c d)) : r x y :=
@@ -354,7 +353,7 @@ then `f` is defined on the whole `Localization S`. -/
 -- Porting note: the attibute `elab_as_elim` fails with `unexpected eliminator resulting type p`
 -- @[to_additive (attr := elab_as_elim)
 @[to_additive
-    "Non-dependent recursion principle for `add_localization`s: given elements `f a b : p`
+    "Non-dependent recursion principle for `addLocalization`s: given elements `f a b : p`
 for all `a b`, such that `r S (a, b) (c, d)` implies `f a b = f c d`,
 then `f` is defined on the whole `Localization S`."]
 def liftOn {p : Sort u} (x : Localization S) (f : M → S → p)
@@ -1929,31 +1928,27 @@ variable [OrderedCancelCommMonoid α] {s : Submonoid α} {a₁ b₁ : α} {a₂ 
 instance le : LE (Localization s) :=
   ⟨fun a b =>
     Localization.liftOn₂ a b (fun a₁ a₂ b₁ b₂ => ↑b₂ * a₁ ≤ a₂ * b₁)
-      @fun a₁ b₁ a₂ b₂ c₁ d₁ c₂ d₂ hab hcd =>
-      propext
-        (by
-          obtain ⟨e, he⟩ := r_iff_exists.1 hab
-          obtain ⟨f, hf⟩ := r_iff_exists.1 hcd
-          simp only [mul_right_inj] at he hf
-          dsimp
-          rw [← mul_le_mul_iff_right, mul_right_comm, ← hf, mul_right_comm, mul_right_comm (a₂ : α),
-            mul_le_mul_iff_right, ← mul_le_mul_iff_left, mul_left_comm, he, mul_left_comm,
-            mul_left_comm (b₂ : α), mul_le_mul_iff_left])⟩
+      @fun a₁ b₁ a₂ b₂ c₁ d₁ c₂ d₂ hab hcd => propext $ by
+        obtain ⟨e, he⟩ := r_iff_exists.1 hab
+        obtain ⟨f, hf⟩ := r_iff_exists.1 hcd
+        simp only [mul_right_inj] at he hf
+        dsimp
+        rw [← mul_le_mul_iff_right, mul_right_comm, ← hf, mul_right_comm, mul_right_comm (a₂ : α),
+          mul_le_mul_iff_right, ← mul_le_mul_iff_left, mul_left_comm, he, mul_left_comm,
+          mul_left_comm (b₂ : α), mul_le_mul_iff_left]⟩
 
 @[to_additive]
 instance lt : LT (Localization s) :=
   ⟨fun a b =>
     Localization.liftOn₂ a b (fun a₁ a₂ b₁ b₂ => ↑b₂ * a₁ < a₂ * b₁)
-      @fun a₁ b₁ a₂ b₂ c₁ d₁ c₂ d₂ hab hcd =>
-      propext
-        (by
-          obtain ⟨e, he⟩ := r_iff_exists.1 hab
-          obtain ⟨f, hf⟩ := r_iff_exists.1 hcd
-          simp only [mul_right_inj] at he hf
-          dsimp
-          rw [← mul_lt_mul_iff_right, mul_right_comm, ← hf, mul_right_comm, mul_right_comm (a₂ : α),
-            mul_lt_mul_iff_right, ← mul_lt_mul_iff_left, mul_left_comm, he, mul_left_comm,
-            mul_left_comm (b₂ : α), mul_lt_mul_iff_left])⟩
+      @fun a₁ b₁ a₂ b₂ c₁ d₁ c₂ d₂ hab hcd => propext $ by
+        obtain ⟨e, he⟩ := r_iff_exists.1 hab
+        obtain ⟨f, hf⟩ := r_iff_exists.1 hcd
+        simp only [mul_right_inj] at he hf
+        dsimp
+        rw [← mul_lt_mul_iff_right, mul_right_comm, ← hf, mul_right_comm, mul_right_comm (a₂ : α),
+          mul_lt_mul_iff_right, ← mul_lt_mul_iff_left, mul_left_comm, he, mul_left_comm,
+          mul_left_comm (b₂ : α), mul_lt_mul_iff_left]⟩
 
 @[to_additive]
 theorem mk_le_mk : mk a₁ a₂ ≤ mk b₁ b₂ ↔ ↑b₂ * a₁ ≤ a₂ * b₁ :=
