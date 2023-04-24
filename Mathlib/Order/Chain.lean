@@ -95,13 +95,6 @@ theorem IsChain.insert (hs : IsChain r s) (ha : ∀ b ∈ s, a ≠ b → a ≺ b
   hs.insert_of_symmetric (fun _ _ => Or.symm) ha
 #align is_chain.insert IsChain.insert
 
-lemma pair_isChain (a b : α) (hab: r a b) : IsChain r ({a, b} : Set α) := by
-  apply IsChain.insert (Set.Subsingleton.isChain subsingleton_singleton)
-  intros c h₁ h₂
-  rw [mem_singleton_iff] at h₁
-  rw [h₁]
-  exact Or.inl hab
-
 theorem isChain_univ_iff : IsChain r (univ : Set α) ↔ IsTrichotomous α r := by
   refine' ⟨fun h => ⟨fun a b => _⟩, fun h => @isChain_of_trichotomous _ _ h univ⟩
   rw [or_left_comm, or_iff_not_imp_left]
