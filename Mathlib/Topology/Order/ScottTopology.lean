@@ -74,32 +74,6 @@ def upperSetTopology : TopologicalSpace α :=
   isOpen_inter := fun _ _ => IsUpperSet.inter,
   isOpen_unionₛ := fun _ h => isUpperSet_unionₛ h, }
 
-lemma directed_on_pair (a b : α) (hab: a ≤ b) : DirectedOn (· ≤ ·) ({a, b} : Set α) :=
-  (pair_isChain _ _ hab).directedOn
-
-lemma preserve_LUB_on_directed_montotone (f : α → β) (h: preserve_LUB_on_directed f) :
-  Monotone f := by
-  intro a b hab
-  rw [preserve_LUB_on_directed] at h
-  let d := ({a, b} : Set α)
-  have e1: IsLUB (f '' d) (f b) := by
-    apply h
-    . exact insert_nonempty a {b}
-    . exact directed_on_pair a b hab
-    . rw [IsLUB]
-      constructor
-      . simp only [upperBounds_insert, upperBounds_singleton, mem_inter_iff, mem_Ici, le_refl,
-          and_true]
-        exact hab
-      . simp only [upperBounds_insert, upperBounds_singleton]
-        rw [(inter_eq_self_of_subset_right (Ici_subset_Ici.mpr hab))]
-        exact fun {x : α} => mem_Ici.mpr
-  rw [IsLUB, IsLeast] at e1
-  apply e1.1
-  rw [mem_image]
-  use a
-  simp only [mem_insert_iff, eq_self_iff_true, true_or, and_self]
-
 end preorder
 
 /--
@@ -291,9 +265,9 @@ lemma continuous_monotone {f : WithScottTopology α → WithScottTopology β}
 
 end WithScottTopology
 
-lemma preserve_LUB_on_directed_iff_scott_continuity
+lemma ScottContinuous_iff_continuous_wrt_Scott
   (f : (WithScottTopology α) → (WithScottTopology β)) :
-  preserve_LUB_on_directed f ↔ Continuous f := by
+  ScottContinuous f ↔ Continuous f := by
   constructor
   . intro h
     rw [continuous_def]
@@ -301,7 +275,7 @@ lemma preserve_LUB_on_directed_iff_scott_continuity
     rw [WithScottTopology.isOpen_iff_upper_and_LUB_mem_implies_inter_nonempty]
     constructor
     . apply IsUpperSet.preimage (WithScottTopology.isOpen_isUpper hu)
-      apply preserve_LUB_on_directed_montotone
+      apply ScottContinuous.monotone
       exact h
     . intros d a hd₁ hd₂ hd₃ ha
       have e1: IsLUB (f '' d) (f a) := by
@@ -314,7 +288,7 @@ lemma preserve_LUB_on_directed_iff_scott_continuity
         apply hu.2
         exact Nonempty.image f hd₁
         have e3: Monotone f := by
-          apply preserve_LUB_on_directed_montotone
+          apply ScottContinuous.monotone
           exact h
         apply directedOn_image.mpr
         apply DirectedOn.mono hd₂
@@ -322,7 +296,7 @@ lemma preserve_LUB_on_directed_iff_scott_continuity
         apply e1
         exact ha
       exact image_inter_nonempty_iff.mp e2
-  . intros hf d a d₁ d₂ d₃
+  . intros hf d d₁ d₂ a d₃
     rw [IsLUB]
     constructor
     . apply Monotone.mem_upperBounds_image (WithScottTopology.continuous_monotone hf)
