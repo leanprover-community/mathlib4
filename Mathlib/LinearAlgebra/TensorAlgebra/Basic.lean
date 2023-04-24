@@ -241,7 +241,8 @@ def ιInv : TensorAlgebra R M →ₗ[R] M := by
 #align tensor_algebra.ι_inv TensorAlgebra.ιInv
 
 theorem ι_leftInverse : Function.LeftInverse ιInv (ι R : M → TensorAlgebra R M) := fun x => by
-  simp [ιInv]
+  -- porting note: needs the last two `simp` lemmas explicitly in order to use them
+  simp [ιInv, (AlgHom.toLinearMap_apply), toTrivSqZeroExt_ι _]
 #align tensor_algebra.ι_left_inverse TensorAlgebra.ι_leftInverse
 
 variable (R)
