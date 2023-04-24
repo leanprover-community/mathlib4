@@ -6,7 +6,11 @@ Authors: Scott Morrison
 import Mathlib.Data.List.Indexes
 
 /-!
-# Wrapper for `IO.waitAny` that also returns the remaining tasks.
+# Functions for manipulating a list of tasks
+
+* `IO.waitAny'` is a wrapper for `IO.waitAny` that also returns the remaining tasks.
+* `List.waitAll : List (Task α) → Task (List α)` gathers a list of tasks into a task returning
+  the list of all results.
 -/
 
 -- duplicated from `lean4/src/Init/System/IO.lean`
