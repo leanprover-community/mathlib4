@@ -274,28 +274,41 @@ structure Config : Type where
 
 variable [Monad M] [MonadOptions M] [MonadEnv M]
 
-/-- Auxilliary function for `additiveTest`. The bool argument *only* matters when applied
-to exactly a constant. -/
-def additiveTestAux (findTranslation? : Name → Option Name)
-  (ignore : Name → Option (List ℕ)) : Bool → Expr → Bool := visit where
-  /-- see `additiveTestAux` -/
-  visit : Bool → Expr → Bool
-  | b, .const n _         => b || (findTranslation? n).isSome
-  | _, x@(.app e a)       => Id.run do
-      if !visit true e then
-        return false
-      -- make sure that we don't treat `(fun x => α) (n + 1)` as a type that depends on `Nat`
-      if x.isConstantApplication then
-        return true
-      if let some n := e.getAppFn.constName? then
-        if let some l := ignore n then
-          if e.getAppNumArgs + 1 ∈ l then
-            return true
-      visit false a
-  | _, .lam _ _ t _       => visit false t
-  | _, .forallE _ _ t _   => visit false t
-  | _, .letE _ _ e body _ => visit false e && visit false body
-  | _, _                  => true
+open Lean.Expr.FindImpl
+/-- Implementation function for `additiveTest`.
+  We use a method similar to that in `Expr.find?` to avoid visiting the same subexpression many
+  times. However, this is still called many times by `applyReplacementFun` and we're not remembering
+  the cache between these calls. -/
+unsafe def additiveTestUnsafe (findTranslation? : Name → Option Name)
+  (ignore : Name → Option (List ℕ)) (e : Expr) : Bool :=
+  let size := cacheSize
+  let rec visit (e : Expr) (inApp := false) : OptionT FindM Unit := do
+    if e.isConst then
+      if inApp || (findTranslation? e.constName).isSome then
+        failure
+      else
+        return
+    if ← visited e size then
+      failure
+    match e with
+    | x@(.app e a)       => do
+        try visit e true
+        catch _ =>
+          -- make sure that we don't treat `(fun x => α) (n + 1)` as a type that depends on `Nat`
+          if x.isConstantApplication then
+            failure
+          if let some n := e.getAppFn.constName? then
+            if let some l := ignore n then
+              if e.getAppNumArgs + 1 ∈ l then
+                failure
+          visit a
+    | .lam _ _ t _       => visit t
+    | .forallE _ _ t _   => visit t
+    | .letE _ _ e body _ => visit e <|> visit body
+    | .mdata _ b         => visit b
+    | .proj _ _ b        => visit b
+    | _                  => failure
+  (Id.run <| visit e |>.run' initCache).isNone
 
 /--
 `additiveTest e` tests whether the expression `e` contains no constant
@@ -308,7 +321,7 @@ We ignore all arguments specified by the `ignore` `NameMap`.
 -/
 def additiveTest (findTranslation? : Name → Option Name)
   (ignore : Name → Option (List ℕ)) (e : Expr) : Bool :=
-  additiveTestAux findTranslation? ignore false e
+  unsafe additiveTestUnsafe findTranslation? ignore e
 
 /-- Swap the first two elements of a list -/
 def _root_.List.swapFirstTwo {α : Type _} : List α → List α
