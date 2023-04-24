@@ -36,7 +36,7 @@ noncomputable section
 
 open CategoryTheory Limits Opposite
 
-universe v u
+universe v u v' u'
 
 namespace CategoryTheory
 
@@ -209,7 +209,7 @@ end Projective
 
 namespace Adjunction
 
-variable {D : Type _} [Category D] {F : C ⥤ D} {G : D ⥤ C}
+variable {D : Type u'} [Category.{v'} D] {F : C ⥤ D} {G : D ⥤ C}
 
 theorem map_projective (adj : F ⊣ G) [G.PreservesEpimorphisms] (P : C) (hP : Projective P) :
     Projective (F.obj P) where
@@ -223,7 +223,7 @@ theorem map_projective (adj : F ⊣ G) [G.PreservesEpimorphisms] (P : C) (hP : P
 theorem projective_of_map_projective (adj : F ⊣ G) [Full F] [Faithful F] (P : C)
     (hP : Projective (F.obj P)) : Projective P where
   factors f g _ := by
-    haveI := adj.leftAdjointPreservesColimits
+    haveI := Adjunction.leftAdjointPreservesColimits.{v, u} adj
     rcases (@hP).1 (F.map f) (F.map g) with ⟨f', hf'⟩
     use adj.unit.app _ ≫ G.map f' ≫ (inv <| adj.unit.app _)
     refine' Faithful.map_injective (F := F) _
@@ -237,14 +237,14 @@ def mapProjectivePresentation (adj : F ⊣ G) [G.PreservesEpimorphisms] (X : C)
   p := F.obj Y.p
   projective := adj.map_projective _ Y.projective
   f := F.map Y.f
-  epi := haveI := adj.leftAdjointPreservesColimits; inferInstance
+  epi := have := Adjunction.leftAdjointPreservesColimits.{v, u} adj; inferInstance
 #align category_theory.adjunction.map_projective_presentation CategoryTheory.Adjunction.mapProjectivePresentation
 
 end Adjunction
 
 namespace Equivalence
 
-variable {D : Type _} [Category D] (F : C ≌ D)
+variable {D : Type u'} [Category.{v'} D] (F : C ≌ D)
 
 /-- Given an equivalence of categories `F`, a projective presentation of `F(X)` induces a
 projective presentation of `X.` -/
@@ -259,7 +259,7 @@ def projectivePresentationOfMapProjectivePresentation (X : C)
 theorem enoughProjectives_iff (F : C ≌ D) : EnoughProjectives C ↔ EnoughProjectives D := by
   constructor
   all_goals intro H; constructor; intro X; constructor
-  · exact F.symm.projective_presentation_of_map_projective_presentation _
+  · exact F.symm.projectivePresentationOfMapProjectivePresentation _
       (Nonempty.some (H.presentation (F.inverse.obj X)))
   · exact F.projective_presentation_of_map_projective_presentation X
       (Nonempty.some (H.presentation (F.functor.obj X)))
@@ -286,12 +286,12 @@ def Exact.lift {P Q R S : C} [Projective P] (h : P ⟶ R) (f : Q ⟶ R) (g : R �
 @[simp]
 theorem Exact.lift_comp {P Q R S : C} [Projective P] (h : P ⟶ R) (f : Q ⟶ R) (g : R ⟶ S)
     (hfg : Exact f g) (w : h ≫ g = 0) : Exact.lift h f g hfg w ≫ f = h := by
-  simp [Exact.lift]
+  simp only [Exact.lift]
   conv_lhs =>
     congr
     skip
-    rw [← image_subobject_arrow_comp f]
-  rw [← category.assoc, factor_thru_comp, ← imageToKernel_arrow, ← category.assoc,
+    rw [← imageSubobject_arrow_comp f]
+  rw [← Category.assoc, factor_thru_comp, ← imageToKernel_arrow, ← category.assoc,
     CategoryTheory.Projective.factorThru_comp, factor_thru_kernel_subobject_comp_arrow]
 #align category_theory.exact.lift_comp CategoryTheory.Exact.lift_comp
 
