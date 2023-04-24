@@ -93,14 +93,15 @@ def applyFunTarget (f : Term) (using? : Option Expr) (g : MVarId) : TacticM (Lis
     let ng ← mkFreshExprMVar none
     let (pf, gs) ← withCollectingNewGoalsFrom (tagSuffix := `apply_fun) <|
       withoutRecover <| runTermElab do
+        -- This coerces `f` to be a function as necessary:
         let pf ← Term.elabTermEnsuringType (← `($(mkIdent thm) $f $(← Term.exprToSyntax ng)))
                     (← g.getType)
         Term.synthesizeSyntheticMVarsUsingDefault
         return pf
     g.assign pf
     return ng.mvarId! :: gs
-  match (← g.getType).getAppFnArgs with
-  | (``Ne, #[_, _, _]) => handle ``ne_of_apply_ne
+  let gty ← whnfR (← instantiateMVars (← g.getType))
+  match gty.getAppFnArgs with
   | (``Not, #[p]) => match p.getAppFnArgs with
     | (``Eq, #[_, _, _]) => handle ``ne_of_apply_ne
     | _ => applyFunTargetFailure f
