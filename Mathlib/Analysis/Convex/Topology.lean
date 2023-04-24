@@ -8,11 +8,11 @@ Authors: Alexander Bentkamp, Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Convex.Combination
-import Mathbin.Analysis.Convex.Strict
-import Mathbin.Topology.PathConnected
-import Mathbin.Topology.Algebra.Affine
-import Mathbin.Topology.Algebra.Module.Basic
+import Mathlib.Analysis.Convex.Combination
+import Mathlib.Analysis.Convex.Strict
+import Mathlib.Topology.PathConnected
+import Mathlib.Topology.Algebra.Affine
+import Mathlib.Topology.Algebra.Module.Basic
 
 /-!
 # Topological properties of convex sets
@@ -49,8 +49,7 @@ section stdSimplex
 variable [Fintype ι]
 
 /-- Every vector in `std_simplex 𝕜 ι` has `max`-norm at most `1`. -/
-theorem stdSimplex_subset_closedBall : stdSimplex ℝ ι ⊆ Metric.closedBall 0 1 :=
-  by
+theorem stdSimplex_subset_closedBall : stdSimplex ℝ ι ⊆ Metric.closedBall 0 1 := by
   intro f hf
   rw [Metric.mem_closedBall, dist_pi_le_iff zero_le_one]
   intro x
@@ -88,8 +87,7 @@ variable [LinearOrderedRing 𝕜] [DenselyOrdered 𝕜] [TopologicalSpace 𝕜] 
   [AddCommGroup E] [TopologicalSpace E] [ContinuousAdd E] [Module 𝕜 E] [ContinuousSMul 𝕜 E]
   {x y : E}
 
-theorem segment_subset_closure_openSegment : [x -[𝕜] y] ⊆ closure (openSegment 𝕜 x y) :=
-  by
+theorem segment_subset_closure_openSegment : [x -[𝕜] y] ⊆ closure (openSegment 𝕜 x y) := by
   rw [segment_eq_image, openSegment_eq_image, ← closure_Ioo (zero_ne_one' 𝕜)]
   exact image_closure_subset_closure_image (by continuity)
 #align segment_subset_closure_open_segment segment_subset_closure_openSegment
@@ -103,8 +101,7 @@ variable [LinearOrderedRing 𝕜] [DenselyOrdered 𝕜] [PseudoMetricSpace 𝕜]
   [ContinuousAdd E] [Module 𝕜 E] [ContinuousSMul 𝕜 E]
 
 @[simp]
-theorem closure_openSegment (x y : E) : closure (openSegment 𝕜 x y) = [x -[𝕜] y] :=
-  by
+theorem closure_openSegment (x y : E) : closure (openSegment 𝕜 x y) = [x -[𝕜] y] := by
   rw [segment_eq_image, openSegment_eq_image, ← closure_Ioo (zero_ne_one' 𝕜)]
   exact
     (image_closure_of_isCompact (bounded_Ioo _ _).isCompact_closure <|
@@ -146,8 +143,7 @@ theorem Convex.combo_interior_self_subset_interior {s : Set E} (hs : Convex 𝕜
 /-- If `s` is a convex set, then `a • closure s + b • interior s ⊆ interior s` for all `0 ≤ a`,
 `0 < b`, `a + b = 1`. See also `convex.combo_self_interior_subset_interior` for a weaker version. -/
 theorem Convex.combo_closure_interior_subset_interior {s : Set E} (hs : Convex 𝕜 s) {a b : 𝕜}
-    (ha : 0 ≤ a) (hb : 0 < b) (hab : a + b = 1) : a • closure s + b • interior s ⊆ interior s :=
-  by
+    (ha : 0 ≤ a) (hb : 0 < b) (hab : a + b = 1) : a • closure s + b • interior s ⊆ interior s := by
   rw [add_comm]
   exact hs.combo_interior_closure_subset_interior hb ha (add_comm a b ▸ hab)
 #align convex.combo_closure_interior_subset_interior Convex.combo_closure_interior_subset_interior
@@ -155,8 +151,7 @@ theorem Convex.combo_closure_interior_subset_interior {s : Set E} (hs : Convex �
 /-- If `s` is a convex set, then `a • s + b • interior s ⊆ interior s` for all `0 ≤ a`, `0 < b`,
 `a + b = 1`. See also `convex.combo_closure_interior_subset_interior` for a stronger version. -/
 theorem Convex.combo_self_interior_subset_interior {s : Set E} (hs : Convex 𝕜 s) {a b : 𝕜}
-    (ha : 0 ≤ a) (hb : 0 < b) (hab : a + b = 1) : a • s + b • interior s ⊆ interior s :=
-  by
+    (ha : 0 ≤ a) (hb : 0 < b) (hab : a + b = 1) : a • s + b • interior s ⊆ interior s := by
   rw [add_comm]
   exact hs.combo_interior_self_subset_interior hb ha (add_comm a b ▸ hab)
 #align convex.combo_self_interior_subset_interior Convex.combo_self_interior_subset_interior
@@ -188,8 +183,7 @@ theorem Convex.combo_self_interior_mem_interior {s : Set E} (hs : Convex 𝕜 s)
 #align convex.combo_self_interior_mem_interior Convex.combo_self_interior_mem_interior
 
 theorem Convex.openSegment_interior_closure_subset_interior {s : Set E} (hs : Convex 𝕜 s) {x y : E}
-    (hx : x ∈ interior s) (hy : y ∈ closure s) : openSegment 𝕜 x y ⊆ interior s :=
-  by
+    (hx : x ∈ interior s) (hy : y ∈ closure s) : openSegment 𝕜 x y ⊆ interior s := by
   rintro _ ⟨a, b, ha, hb, hab, rfl⟩
   exact hs.combo_interior_closure_mem_interior hx hy ha hb.le hab
 #align convex.open_segment_interior_closure_subset_interior Convex.openSegment_interior_closure_subset_interior
@@ -200,8 +194,7 @@ theorem Convex.openSegment_interior_self_subset_interior {s : Set E} (hs : Conve
 #align convex.open_segment_interior_self_subset_interior Convex.openSegment_interior_self_subset_interior
 
 theorem Convex.openSegment_closure_interior_subset_interior {s : Set E} (hs : Convex 𝕜 s) {x y : E}
-    (hx : x ∈ closure s) (hy : y ∈ interior s) : openSegment 𝕜 x y ⊆ interior s :=
-  by
+    (hx : x ∈ closure s) (hy : y ∈ interior s) : openSegment 𝕜 x y ⊆ interior s := by
   rintro _ ⟨a, b, ha, hb, hab, rfl⟩
   exact hs.combo_closure_interior_mem_interior hx hy ha.le hb hab
 #align convex.open_segment_closure_interior_subset_interior Convex.openSegment_closure_interior_subset_interior
@@ -277,8 +270,7 @@ protected theorem Convex.strict_convex' {s : Set E} (hs : Convex 𝕜 s)
 `interior s`. -/
 protected theorem Convex.strictConvex {s : Set E} (hs : Convex 𝕜 s)
     (h : (s \ interior s).Pairwise fun x y => ([x -[𝕜] y] \ frontier s).Nonempty) :
-    StrictConvex 𝕜 s :=
-  by
+    StrictConvex 𝕜 s := by
   refine' hs.strict_convex' <| h.imp_on fun x hx y hy hne => _
   simp only [segment_eq_image_lineMap, ← self_diff_frontier]
   rintro ⟨_, ⟨⟨c, hc, rfl⟩, hcs⟩⟩
@@ -294,8 +286,7 @@ variable [AddCommGroup E] [Module ℝ E] [TopologicalSpace E] [TopologicalAddGro
   [ContinuousSMul ℝ E]
 
 /-- Convex hull of a finite set is compact. -/
-theorem Set.Finite.compact_convexHull {s : Set E} (hs : s.Finite) : IsCompact (convexHull ℝ s) :=
-  by
+theorem Set.Finite.compact_convexHull {s : Set E} (hs : s.Finite) : IsCompact (convexHull ℝ s) := by
   rw [hs.convex_hull_eq_image]
   apply (isCompact_stdSimplex _).image
   haveI := hs.fintype
