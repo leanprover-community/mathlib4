@@ -28,5 +28,8 @@ def IO.waitAny' (tasks : List (Task α)) (h : List.length tasks > 0 := by nonemp
 Given a list of tasks, create the task returning the list of results,
 by waiting for each.
 -/
-def BaseIO.sequenceTasks (tasks : List (Task α)) : BaseIO (Task (List α)) :=
-  BaseIO.mapTasks pure tasks
+def List.waitAll (tasks : List (Task α)) : Task (List α) :=
+  match tasks with
+  | [] => .pure []
+  | task::tasks => task.bind (prio := .max) fun a =>
+      tasks.waitAll.map (prio := .max) fun as => a::as
