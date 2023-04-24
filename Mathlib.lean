@@ -1412,6 +1412,7 @@ import Mathlib.LinearAlgebra.Span
 import Mathlib.LinearAlgebra.StdBasis
 import Mathlib.LinearAlgebra.TensorProduct
 import Mathlib.LinearAlgebra.TensorProductBasis
+import Mathlib.LinearAlgebra.Vandermonde
 import Mathlib.Logic.Basic
 import Mathlib.Logic.Denumerable
 import Mathlib.Logic.Embedding.Basic
