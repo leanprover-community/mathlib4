@@ -135,6 +135,8 @@ alias not_not_not ↔ not_of_not_not_not _
 
 #align and_iff_left and_iff_leftₓ -- reorder implicits
 
+variable (p)
+
 -- FIXME: remove _iff and add _eq for the lean 4 core versions
 theorem and_true_iff : p ∧ True ↔ p := iff_of_eq (and_true _)
 #align and_true and_true_iff
