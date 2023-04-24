@@ -14,7 +14,7 @@ import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 /-!
 # Short exact sequences, and splittings.
 
-`category_theory.short_exact f g` is the proposition that `0 ⟶ A -f⟶ B -g⟶ C ⟶ 0` is an exact
+`CategoryTheory.ShortExact f g` is the proposition that `0 ⟶ A -f⟶ B -g⟶ C ⟶ 0` is an exact
 sequence.
 
 We define when a short exact sequence is left-split, right-split, and split.
