@@ -1,95 +1,90 @@
 /-
 Copyright (c) 2019 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Simon Hudon, Keeley Hoek, Floris van Doorn
+Authors: Simon Hudon, Keeley Hoek, Floris van Doorn, Chris Bailey
 
 ! This file was ported from Lean 3 source module data.string.defs
 ! leanprover-community/mathlib commit e7131068d9696deec51e6cd7668b6d9ac69af6a4
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Data.List.Defs
+import Std.Data.List.Basic
+import Mathlib.Mathport.Rename
 
 /-!
-# Definitions for `string`
+# Definitions for `String`
 
-This file defines a bunch of functions for the `string` datatype.
+This file defines a bunch of functions for the `String` datatype.
 -/
-
 
 namespace String
 
-/- warning: string.split_on -> String.splitOn is a dubious translation:
-lean 3 declaration is
-  String -> Char -> (List.{0} String)
-but is expected to have type
-  String -> (optParam.{1} String " ") -> (List.{0} String)
-Case conversion may be inaccurate. Consider using '#align string.split_on String.splitOnₓ'. -/
-/-- `s.split_on c` tokenizes `s : string` on `c : char`. -/
-def splitOn (s : String) (c : Char) : List String :=
-  split (· = c) s
-#align string.split_on String.splitOn
+/-- pad `s : String` with repeated occurrences of `c : Char` until it's of length `n`.
+  If `s` is initially larger than `n`, just return `s`. -/
+def leftpad (n : Nat) (c : Char) (s : String) : String :=
+  ⟨List.leftpad n c s.data⟩
 
-#print String.mapTokens /-
-/-- `string.map_tokens c f s` tokenizes `s : string` on `c : char`, maps `f` over each token, and
+/-- Construct the string consisting of `n` copies of the character `c`. -/
+def replicate (n : Nat) (c : Char) : String :=
+  ⟨List.replicate n c⟩
+
+/-- `s.isPrefix t` checks if the string `s` is a prefix of the string `t`. -/
+def isPrefix : String → String → Prop
+| ⟨d1⟩, ⟨d2⟩ => List.isPrefix d1 d2
+
+/-- `s.isSuffix t` checks if the string `s` is a suffix of the string `t`. -/
+def isSuffix : String → String → Prop
+| ⟨d1⟩, ⟨d2⟩ => List.isSuffix d1 d2
+
+/-- `String.mapTokens c f s` tokenizes `s : string` on `c : char`, maps `f` over each token, and
 then reassembles the string by intercalating the separator token `c` over the mapped tokens. -/
 def mapTokens (c : Char) (f : String → String) : String → String :=
-  intercalate (singleton c) ∘ List.map f ∘ split (· = c)
+  intercalate (singleton c) ∘ List.map f ∘ (·.split (· = c))
 #align string.map_tokens String.mapTokens
--/
 
-#print String.isPrefixOf /-
-/-- Tests whether the first string is a prefix of the second string. -/
-def isPrefixOf (x y : String) : Bool :=
-  x.toList.isPrefixOfₓ y.toList
-#align string.is_prefix_of String.isPrefixOf
--/
+/-- `isPrefixOf? pre s` returns `some post` if `s = pre ++ post`.
+If `pre` is not a prefix of `s`, it returns `none`. -/
+def isPrefixOf? (pre s : String) : Option String :=
+  if startsWith s pre then some <| s.drop pre.length else none
 
-/-- Tests whether the first string is a suffix of the second string. -/
-def isSuffixOf (x y : String) : Bool :=
-  x.toList.isSuffixOfₓ y.toList
+/-- Return true iff `p` is a suffix of `s`. -/
+def isSuffixOf (p s : String) : Bool :=
+  substrEq p 0 s (s.endPos - p.endPos) p.endPos.byteIdx
 #align string.is_suffix_of String.isSuffixOf
 
-#print String.startsWith /-
-/-- `x.starts_with y` is true if `y` is a prefix of `x`, and is false otherwise. -/
-abbrev startsWith (x y : String) : Bool :=
-  y.isPrefixOfₓ x
-#align string.starts_with String.startsWith
--/
+/-- `isSuffixOf? suff s` returns `some pre` if `s = pre ++ suff`.
+If `suff` is not a suffix of `s`, it returns `none`. -/
+def isSuffixOf? (suff s : String) : Option String :=
+  if s.endsWith suff then some <| s.dropRight suff.length else none
 
-#print String.endsWith /-
-/-- `x.ends_with y` is true if `y` is a suffix of `x`, and is false otherwise. -/
-abbrev endsWith (x y : String) : Bool :=
-  y.isSuffixOfₓ x
-#align string.ends_with String.endsWith
--/
+/-- `s.stripPrefix p` will remove `p` from the beginning of `s` if it occurs there,
+or otherwise return `s`. -/
+def stripPrefix (s p : String) :=
+  if s.startsWith p then s.drop p.length else s
 
-/-- `get_rest s t` returns `some r` if `s = t ++ r`.
-  If `t` is not a prefix of `s`, returns `none` -/
+/-- `s.stripSuffix p` will remove `p` from the end of `s` if it occurs there,
+or otherwise return `s`. -/
+def stripSuffix (s p : String) :=
+  if s.endsWith p then s.dropRight p.length else s
+
+/-- Count the occurrences of a character in a string. -/
+def count (s : String) (c : Char) : Nat :=
+  s.foldl (fun n d => if d = c then n + 1 else n) 0
+
+/-- `getRest s t` returns `some r` if `s = t ++ r`.
+If `t` is not a prefix of `s`, it returns `none`. -/
 def getRest (s t : String) : Option String :=
   List.asString <$> s.toList.getRest t.toList
 #align string.get_rest String.getRest
 
-#print String.popn /-
-/-- Removes the first `n` elements from the string `s` -/
+/-- Removes the first `n` elements from the string `s`. -/
 def popn (s : String) (n : Nat) : String :=
-  (s.mkIterator.nextn n).nextToString
+  ⟨s.toList.drop n⟩
 #align string.popn String.popn
--/
 
-#print String.isNat /-
-/-- `is_nat s` is true iff `s` is a nonempty sequence of digits. -/
-def isNat (s : String) : Bool :=
-  ¬s.isEmpty ∧ s.toList.all fun c => decide c.IsDigit
-#align string.is_nat String.isNat
--/
-
-#print String.head /-
 /-- Produce the head character from the string `s`, if `s` is not empty, otherwise 'A'. -/
 def head (s : String) : Char :=
-  s.mkIterator.curr
+  s.iter.curr
 #align string.head String.head
--/
 
 end String
-
