@@ -2216,14 +2216,14 @@ theorem union_sdiff_self (s t : Finset α) : (s ∪ t) \ t = s \ t :=
   sup_sdiff_right_self
 #align finset.union_sdiff_self Finset.union_sdiff_self
 
--- TODO: Do we want to delete this lemma and `finset.disj_union_singleton`,
--- or instead add `finset.union_singleton`/`finset.singleton_union`?
+-- TODO: Do we want to delete this lemma and `Finset.disjUnion_singleton`,
+-- or instead add `Finset.union_singleton`/`Finset.singleton_union`?
 theorem sdiff_singleton_eq_erase (a : α) (s : Finset α) : s \ singleton a = erase s a := by
   ext
   rw [mem_erase, mem_sdiff, mem_singleton, and_comm]
 #align finset.sdiff_singleton_eq_erase Finset.sdiff_singleton_eq_erase
 
--- This lemma matches `finset.insert_eq` in functionality.
+-- This lemma matches `Finset.insert_eq` in functionality.
 theorem erase_eq (s : Finset α) (a : α) : s.erase a = s \ {a} :=
   (sdiff_singleton_eq_erase _ _).symm
 #align finset.erase_eq Finset.erase_eq
