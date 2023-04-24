@@ -134,9 +134,7 @@ instance : TopologicalSpace (WithScottTopology α) :=
         obtain ⟨ b₂, ⟨hb₂_w, hb₂_h ⟩ ⟩  := ht d a hd₁ hd₂ hd₃ ha.2
         rw [DirectedOn] at hd₂
         obtain ⟨ c, ⟨hc_w, hc_h ⟩ ⟩ := hd₂ b₁ hb₁_w b₂ hb₂_w
-        use c
-        constructor
-        . exact hc_w
+        refine ⟨c, hc_w, ?_⟩
         . calc
             Ici c ∩ d ⊆ (Ici b₁ ∩ Ici b₂) ∩ d := by
             { apply inter_subset_inter_left d
