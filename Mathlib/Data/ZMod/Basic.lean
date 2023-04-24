@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 
 ! This file was ported from Lean 3 source module data.zmod.basic
-! leanprover-community/mathlib commit 473ee9e095b89a24df125a4d363bd996f0989748
+! leanprover-community/mathlib commit 74ad1c88c77e799d2fea62801d1dbbd698cff1b7
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
