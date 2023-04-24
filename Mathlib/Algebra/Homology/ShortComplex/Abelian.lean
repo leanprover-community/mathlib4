@@ -1,4 +1,4 @@
-import Mathlib.Algebra.Homology.ShortComplex.RightHomology
+import Mathlib.Algebra.Homology.ShortComplex.Homology
 
 namespace CategoryTheory
 
@@ -133,6 +133,15 @@ noncomputable def of_abelian : S.RightHomologyData := by
     hι := hι }
 
 end RightHomologyData
+
+noncomputable def HomologyData.of_abelian : S.HomologyData where
+  left := LeftHomologyData.of_abelian S
+  right := RightHomologyData.of_abelian S
+  iso := Abelian.coimageIsoImage (kernel.ι S.g ≫ cokernel.π S.f)
+
+instance _root_.CategoryTheory.categoryWithHomology_of_abelian :
+    CategoryWithHomology C where
+  hasHomology S := HasHomology.mk' (HomologyData.of_abelian S)
 
 end ShortComplex
 
