@@ -132,33 +132,39 @@ def LinearMap.toMatrixRight' : ((m → R) →ₗ[R] n → R) ≃ₗ[Rᵐᵒᵖ] 
 /-- A `Matrix m n R` is linearly equivalent over `Rᵐᵒᵖ` to a linear map `(m → R) →ₗ[R] (n → R)`,
 by having matrices act by right multiplication. -/
 abbrev Matrix.toLinearMapRight' : Matrix m n R ≃ₗ[Rᵐᵒᵖ] (m → R) →ₗ[R] n → R :=
-  LinearMap.toMatrixRight'.symm
+  LinearEquiv.symm LinearMap.toMatrixRight'
 #align matrix.to_linear_map_right' Matrix.toLinearMapRight'
 
 @[simp]
 theorem Matrix.toLinearMapRight'_apply (M : Matrix m n R) (v : m → R) :
-    Matrix.toLinearMapRight' M v = M.vecMul v :=
+    -- porting note: needs type annotation for `⇑` to resolve
+    (Matrix.toLinearMapRight' : _ ≃ₗ[Rᵐᵒᵖ] _) M v = M.vecMul v :=
   rfl
 #align matrix.to_linear_map_right'_apply Matrix.toLinearMapRight'_apply
 
 @[simp]
 theorem Matrix.toLinearMapRight'_mul [Fintype l] [DecidableEq l] (M : Matrix l m R)
     (N : Matrix m n R) :
-    Matrix.toLinearMapRight' (M ⬝ N) =
-      (Matrix.toLinearMapRight' N).comp (Matrix.toLinearMapRight' M) :=
-  LinearMap.ext fun x => (vecMul_vecMul _ M N).symm
+    -- porting note: needs type annotation for `⇑` to resolve
+    (Matrix.toLinearMapRight' : _ ≃ₗ[Rᵐᵒᵖ] _) (M ⬝ N) =
+      ((Matrix.toLinearMapRight' : _ ≃ₗ[Rᵐᵒᵖ] _) N).comp
+        ((Matrix.toLinearMapRight' : _ ≃ₗ[Rᵐᵒᵖ] _) M) :=
+  LinearMap.ext fun _x => (vecMul_vecMul _ M N).symm
 #align matrix.to_linear_map_right'_mul Matrix.toLinearMapRight'_mul
 
 theorem Matrix.toLinearMapRight'_mul_apply [Fintype l] [DecidableEq l] (M : Matrix l m R)
     (N : Matrix m n R) (x) :
-    Matrix.toLinearMapRight' (M ⬝ N) x =
-      Matrix.toLinearMapRight' N (Matrix.toLinearMapRight' M x) :=
+    -- porting note: needs type annotation for `⇑` to resolve
+    (Matrix.toLinearMapRight' : _ ≃ₗ[Rᵐᵒᵖ] _) (M ⬝ N) x =
+      (Matrix.toLinearMapRight' : _ ≃ₗ[Rᵐᵒᵖ] _) N
+        ((Matrix.toLinearMapRight' : _ ≃ₗ[Rᵐᵒᵖ] _) M x) :=
   (vecMul_vecMul _ M N).symm
 #align matrix.to_linear_map_right'_mul_apply Matrix.toLinearMapRight'_mul_apply
 
 @[simp]
 theorem Matrix.toLinearMapRight'_one :
-    Matrix.toLinearMapRight' (1 : Matrix m m R) = LinearMap.id := by
+    -- porting note: needs type annotation for `⇑` to resolve
+    (Matrix.toLinearMapRight' : _ ≃ₗ[Rᵐᵒᵖ] _) (1 : Matrix m m R) = LinearMap.id := by
   ext
   simp [LinearMap.one_apply, stdBasis_apply]
 #align matrix.to_linear_map_right'_one Matrix.toLinearMapRight'_one
@@ -168,13 +174,18 @@ and `m → A` corresponding to `M.vecMul` and `M'.vecMul`. -/
 @[simps]
 def Matrix.toLinearEquivRight'OfInv [Fintype n] [DecidableEq n] {M : Matrix m n R}
     {M' : Matrix n m R} (hMM' : M ⬝ M' = 1) (hM'M : M' ⬝ M = 1) : (n → R) ≃ₗ[R] m → R :=
-  { LinearMap.toMatrixRight'.symm
+  { -- porting note: needs type annotation for `⇑` to resolve
+    (LinearMap.toMatrixRight' : _ ≃ₗ[Rᵐᵒᵖ] _).symm
       M' with
-    toFun := M'.toLinearMapRight'
-    invFun := M.toLinearMapRight'
+    -- porting note: needs type annotation for `⇑` to resolve
+    toFun := (Matrix.toLinearMapRight' : _ ≃ₗ[Rᵐᵒᵖ] _) M'
+    -- porting note: needs type annotation for `⇑` to resolve
+    invFun := (Matrix.toLinearMapRight' : _ ≃ₗ[Rᵐᵒᵖ] _) M
     left_inv := fun x => by
+      dsimp only -- porting note: needed due to non-flat structures
       rw [← Matrix.toLinearMapRight'_mul_apply, hM'M, Matrix.toLinearMapRight'_one, id_apply]
     right_inv := fun x => by
+      dsimp only -- porting note: needed due to non-flat structures
       rw [← Matrix.toLinearMapRight'_mul_apply, hMM', Matrix.toLinearMapRight'_one, id_apply] }
 #align matrix.to_linear_equiv_right'_of_inv Matrix.toLinearEquivRight'OfInv
 
