@@ -9,6 +9,7 @@ import Mathlib.Data.List.Indexes
 # Wrapper for `IO.waitAny` that also returns the remaining tasks.
 -/
 
+-- duplicated from `lean4/src/Init/System/IO.lean`
 local macro "nonempty_list" : tactic =>
   `(tactic| exact Nat.zero_lt_succ _)
 
