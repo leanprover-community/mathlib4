@@ -2,14 +2,17 @@ import Lake
 
 open Lake DSL
 
-package mathlib
+def moreLeanArgs := #[
+  "-DwarningAsError=true",
+  "-Dpp.unicode.fun=true" -- pretty-prints `fun a ↦ b`
+]
+
+package mathlib where
+  moreServerArgs := moreLeanArgs
 
 @[default_target]
 lean_lib Mathlib where
-  moreLeanArgs := #[
-    "-DwarningAsError=true",
-    "-Dpp.unicode.fun=true" -- pretty-prints `fun a ↦ b`
-  ]
+  moreLeanArgs := moreLeanArgs
 
 @[default_target]
 lean_exe runLinter where
@@ -24,6 +27,7 @@ require Qq from git "https://github.com/gebner/quote4" @ "master"
 require aesop from git "https://github.com/JLimperg/aesop" @ "master"
 
 lean_lib Cache where
+  moreLeanArgs := moreLeanArgs
   roots := #[`Cache]
 
 lean_exe cache where
