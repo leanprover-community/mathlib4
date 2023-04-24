@@ -49,12 +49,13 @@ that all these points of view are equivalent, with the following lemmas
 We make use of `finrank`, the dimension of a finite dimensional space, returning a `Nat`, as
 opposed to `Module.rank`, which returns a `Cardinal`. When the space has infinite dimension, its
 `finrank` is by convention set to `0`. `finrank` is not defined using `FiniteDimensional`.
-For basic results that do not need the `FiniteDimensional` class, import `LinearAlgebra.Finrank`.
+For basic results that do not need the `FiniteDimensional` class, import
+`Mathlib.LinearAlgebra.Finrank`.
 
 Preservation of finite-dimensionality and formulas for the dimension are given for
 - submodules
 - quotients (for the dimension of a quotient, see `finrank_quotient_add_finrank`)
-- linear equivs, in `LinearEquiv.FiniteDimensional`
+- linear equivs, in `LinearEquiv.finiteDimensional`
 - image under a linear map (the rank-nullity formula is in `finrank_range_add_finrank_ker`)
 
 Basic properties of linear maps of a finite-dimensional vector space are given. Notably, the
@@ -65,7 +66,7 @@ and `LinearMap.comp_eq_id_comm`.
 ## Implementation notes
 
 Most results are deduced from the corresponding results for the general dimension (as a cardinal),
-in `Dimension.lean`. Not all results have been ported yet.
+in `Mathlib.LinearAlgebra.Dimension`. Not all results have been ported yet.
 
 You should not assume that there has been any effort to state lemmas as generally as possible.
 
