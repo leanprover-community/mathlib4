@@ -133,7 +133,7 @@ instance : TopologicalSpace (WithScottTopology α) :=
         obtain ⟨b₁, hb₁_w, hb₁_h⟩ := hs d a hd₁ hd₂ hd₃ ha.1
         obtain ⟨b₂, hb₂_w, hb₂_h⟩ := ht d a hd₁ hd₂ hd₃ ha.2
         rw [DirectedOn] at hd₂
-        obtain ⟨ c, ⟨hc_w, hc_h ⟩ ⟩ := hd₂ b₁ hb₁_w b₂ hb₂_w
+        obtain ⟨c, hc_w, hc_h⟩ := hd₂ b₁ hb₁_w b₂ hb₂_w
         refine ⟨c, hc_w, ?_⟩
         . calc
             Ici c ∩ d ⊆ (Ici b₁ ∩ Ici b₂) ∩ d := by
@@ -144,8 +144,8 @@ instance : TopologicalSpace (WithScottTopology α) :=
       isOpen_unionₛ := by
         intros s h d a hd₁ hd₂ hd₃ ha
         rw [mem_unionₛ] at ha
-        obtain ⟨s₀, ⟨hs₀_w, hs₀_h⟩⟩ := ha
-        obtain ⟨b, ⟨hb_w, hb_h⟩⟩ := h s₀ hs₀_w d a hd₁ hd₂ hd₃ hs₀_h
+        obtain ⟨s₀, hs₀_w, hs₀_h⟩ := ha
+        obtain ⟨b, hb_w, hb_h⟩ := h s₀ hs₀_w d a hd₁ hd₂ hd₃ hs₀_h
         use b
         constructor
         . exact hb_w
@@ -165,7 +165,7 @@ a ∈ u → (d ∩ u).Nonempty) := by
   constructor
   . refine' And.imp_right _
     intros h d a d₁ d₂ d₃ ha
-    obtain ⟨b, ⟨h_1_w, h_1_h⟩⟩ := h d a d₁ d₂ d₃ ha
+    obtain ⟨b, h_1_w, h_1_h⟩ := h d a d₁ d₂ d₃ ha
     rw [inter_nonempty_iff_exists_left]
     use b
     constructor
@@ -181,7 +181,7 @@ a ∈ u → (d ∩ u).Nonempty) := by
     . intros d a d₁ d₂ d₃ ha
       have e1 : (d ∩ u).Nonempty := h.2 d a d₁ d₂ d₃ ha
       rw [inter_nonempty_iff_exists_left] at e1
-      obtain ⟨b, ⟨e1_h_w, e1_h_h⟩⟩ := e1
+      obtain ⟨b, e1_h_w, e1_h_h⟩ := e1
       use b
       constructor
       . exact e1_h_w
@@ -302,7 +302,7 @@ lemma ScottContinuous_iff_continuousWrtScott
         exact isClosed_closure
       have s2 : IsOpen (f⁻¹'  u) := IsOpen.preimage hf s1
       rw [WithScottTopology.isOpen_iff_upper_and_LUB_mem_implies_inter_nonempty] at s2
-      obtain ⟨c, ⟨h_1_left, h_1_right⟩⟩ := s2.2 d a d₁ d₂ d₃ e1
+      obtain ⟨c, h_1_left, h_1_right⟩ := s2.2 d a d₁ d₂ d₃ e1
       simp at h_1_right
       rw [upperBounds] at hb
       simp at hb
