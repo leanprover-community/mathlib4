@@ -8,7 +8,7 @@ Authors: Simon Hudon, Keeley Hoek, Floris van Doorn
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.List.Defs
+import Mathlib.Data.List.Defs
 
 /-!
 # Definitions for `string`
