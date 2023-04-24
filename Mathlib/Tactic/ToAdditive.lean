@@ -274,7 +274,7 @@ structure Config : Type where
 
 variable [Monad M] [MonadOptions M] [MonadEnv M]
 
-open Lean.Expr.FindImpl
+open Lean.Expr.FindImpl in
 /-- Implementation function for `additiveTest`.
   We use a method similar to that in `Expr.find?` to avoid visiting the same subexpression many
   times. However, this is still called many times by `applyReplacementFun` and we're not remembering
@@ -291,12 +291,10 @@ unsafe def additiveTestUnsafe (findTranslation? : Name → Option Name)
     if ← visited e size then
       failure
     match e with
-    | x@(.app e a)       => do
-        try visit e true
-        catch _ =>
+    | x@(.app e a)       =>
+        visit e true <|> do
           -- make sure that we don't treat `(fun x => α) (n + 1)` as a type that depends on `Nat`
-          if x.isConstantApplication then
-            failure
+          guard !x.isConstantApplication
           if let some n := e.getAppFn.constName? then
             if let some l := ignore n then
               if e.getAppNumArgs + 1 ∈ l then
@@ -308,7 +306,7 @@ unsafe def additiveTestUnsafe (findTranslation? : Name → Option Name)
     | .mdata _ b         => visit b
     | .proj _ _ b        => visit b
     | _                  => failure
-  (Id.run <| visit e |>.run' initCache).isNone
+  Option.isNone <| Id.run <| (visit e).run' initCache
 
 /--
 `additiveTest e` tests whether the expression `e` contains no constant
