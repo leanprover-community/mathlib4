@@ -1423,10 +1423,11 @@ instance Subalgebra.finiteDimensional_bot : FiniteDimensional F (⊥ : Subalgebr
 #align subalgebra.finite_dimensional_bot Subalgebra.finiteDimensional_bot
 
 set_option synthInstance.etaExperiment true in
+set_option maxHeartbeats 300000 in
 theorem Subalgebra.eq_bot_of_rank_le_one {S : Subalgebra F E} (h : Module.rank F S ≤ 1) :
     S = ⊥ := by
   nontriviality E
-  obtain ⟨m, hm, he⟩ := Cardinal.exists_nat_eq_of_le_nat (h.trans_eq Nat.cast_one.symm)
+  obtain ⟨m, _, he⟩ := Cardinal.exists_nat_eq_of_le_nat (h.trans_eq Nat.cast_one.symm)
   -- porting note: fails without explicit type
   haveI : FiniteDimensional F S := finiteDimensional_of_rank_eq_nat he
   rw [← not_bot_lt_iff, ← Subalgebra.toSubmodule.lt_iff_lt]
@@ -1435,10 +1436,7 @@ theorem Subalgebra.eq_bot_of_rank_le_one {S : Subalgebra F E} (h : Module.rank F
     S.toSubmoduleEquiv.symm.finiteDimensional
   refine fun hl => (Submodule.finrank_lt_finrank_of_lt hl).not_le (natCast_le.1 ?_)
   iterate 2 rw [Subalgebra.finrank_toSubmodule, finrank_eq_rank]
-  -- porting note: was `exact h.trans_eq subalgebra.rank_bot.symm`
-  refine h.trans_eq (Eq.symm ?_)
-  rw [←@Subalgebra.rank_bot F E]
-  sorry -- refl is too slow
+  exact h.trans_eq Subalgebra.rank_bot.symm
 #align subalgebra.eq_bot_of_rank_le_one Subalgebra.eq_bot_of_rank_le_one
 
 theorem Subalgebra.eq_bot_of_finrank_one {S : Subalgebra F E} (h : finrank F S = 1) : S = ⊥ :=
@@ -1446,14 +1444,18 @@ theorem Subalgebra.eq_bot_of_finrank_one {S : Subalgebra F E} (h : finrank F S =
     -- porting note: fails without explicit type
     haveI : FiniteDimensional F S := finiteDimensional_of_finrank_eq_succ h
     rw [← finrank_eq_rank, h, Nat.cast_one]
+    -- porting note: added, `rw` forgot to close this
+    exact le_rfl
 #align subalgebra.eq_bot_of_finrank_one Subalgebra.eq_bot_of_finrank_one
 
+set_option synthInstance.etaExperiment true in
 @[simp]
 theorem Subalgebra.rank_eq_one_iff [Nontrivial E] {S : Subalgebra F E} :
     Module.rank F S = 1 ↔ S = ⊥ :=
   ⟨fun h => Subalgebra.eq_bot_of_rank_le_one h.le, fun h => h.symm ▸ Subalgebra.rank_bot⟩
 #align subalgebra.rank_eq_one_iff Subalgebra.rank_eq_one_iff
 
+set_option synthInstance.etaExperiment true in
 @[simp]
 theorem Subalgebra.finrank_eq_one_iff [Nontrivial E] {S : Subalgebra F E} :
     finrank F S = 1 ↔ S = ⊥ :=
@@ -1463,8 +1465,8 @@ theorem Subalgebra.finrank_eq_one_iff [Nontrivial E] {S : Subalgebra F E} :
 set_option synthInstance.etaExperiment true in
 theorem Subalgebra.bot_eq_top_iff_rank_eq_one [Nontrivial E] :
     (⊥ : Subalgebra F E) = ⊤ ↔ Module.rank F E = 1 := by
-  rw [← rank_top, ← subalgebra_top_rank_eq_submodule_top_rank (F := F) (E := E),
-    Subalgebra.rank_eq_one_iff, eq_comm]
+  -- porting note: removed `subalgebra_top_rank_eq_submodule_top_rank`
+  rw [← rank_top, Subalgebra.rank_eq_one_iff, eq_comm]
 #align subalgebra.bot_eq_top_iff_rank_eq_one Subalgebra.bot_eq_top_iff_rank_eq_one
 
 set_option synthInstance.etaExperiment true in
