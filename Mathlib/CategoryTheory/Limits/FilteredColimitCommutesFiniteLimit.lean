@@ -97,12 +97,12 @@ theorem colimitLimitToLimitColimit_injective : Function.Injective (colimitLimitT
     have kxO : kx ∈ O := Finset.mem_union.mpr (Or.inr (by simp))
     have kyO : ky ∈ O := Finset.mem_union.mpr (Or.inr (by simp))
     have kjO : ∀ j, k j ∈ O := fun j => Finset.mem_union.mpr (Or.inl (by simp))
-    let H : Finset (Σ'(X Y : K)(mX : X ∈ O)(mY : Y ∈ O), X ⟶ Y) :=
+    let H : Finset (Σ'(X Y : K)(_ : X ∈ O)(_ : Y ∈ O), X ⟶ Y) :=
       (Finset.univ.image fun j : J =>
           ⟨kx, k j, kxO, Finset.mem_union.mpr (Or.inl (by simp)), f j⟩) ∪
         Finset.univ.image fun j : J => ⟨ky, k j, kyO, Finset.mem_union.mpr (Or.inl (by simp)), g j⟩
     obtain ⟨S, T, W⟩ := IsFiltered.sup_exists O H
-    have fH : ∀ j, (⟨kx, k j, kxO, kjO j, f j⟩ : Σ'(X Y : K)(mX : X ∈ O)(mY : Y ∈ O), X ⟶ Y) ∈ H :=
+    have fH : ∀ j, (⟨kx, k j, kxO, kjO j, f j⟩ : Σ'(X Y : K)(_ : X ∈ O)(_ : Y ∈ O), X ⟶ Y) ∈ H :=
       fun j =>
       Finset.mem_union.mpr
         (Or.inl
@@ -111,7 +111,7 @@ theorem colimitLimitToLimitColimit_injective : Function.Injective (colimitLimitT
               Finset.mem_image, heq_iff_eq]
             refine' ⟨j, _⟩
             simp only [heq_iff_eq] ))
-    have gH : ∀ j, (⟨ky, k j, kyO, kjO j, g j⟩ : Σ'(X Y : K)(mX : X ∈ O)(mY : Y ∈ O), X ⟶ Y) ∈ H :=
+    have gH : ∀ j, (⟨ky, k j, kyO, kjO j, g j⟩ : Σ'(X Y : K)(_ : X ∈ O)(_ : Y ∈ O), X ⟶ Y) ∈ H :=
       fun j =>
       Finset.mem_union.mpr
         (Or.inr
@@ -192,8 +192,8 @@ theorem colimitLimitToLimitColimit_surjective :
     -- where these images of `y j` and `y j'` become equal.
     simp_rw [colimit_eq_iff.{v, v}] at w
     -- We take a moment to restate `w` more conveniently.
-    let kf : ∀ {j j'} (f : j ⟶ j'), K := fun {_} {_} {f} => (w f).choose
-    let gf : ∀ {j j'} (f : j ⟶ j'), k' ⟶ kf f := fun {_} {_} {f} => (w f).choose_spec.choose
+    let kf : ∀ {j j'} (f : j ⟶ j'), K := fun {_} {_} f => (w f).choose
+    let gf : ∀ {j j'} (f : j ⟶ j'), k' ⟶ kf f := fun {_} {_} f => (w f).choose_spec.choose
     let hf : ∀ {j j'} (f : j ⟶ j'), k' ⟶ kf f := fun {_} {_} f => (w f).choose_spec.choose_spec.choose
     have wf :
       ∀ {j j'} (f : j ⟶ j'),
@@ -205,15 +205,14 @@ theorem colimitLimitToLimitColimit_surjective :
           ((curry.obj F).obj j').map (hf f) (F.map _ (y j)) :=
         (w f).choose_spec.choose_spec.choose_spec
       dsimp [curry_obj_obj_obj, curry_obj_obj_map] at q
-      -- change F.map ((𝟙 j', gf f) : (j', k) ⟶ (j', kf f)) (F.map ((𝟙 j', g j') : (j', k j') ⟶ (j', k')) (y j')) =
-      --   F.map ((𝟙 j', hf f) : (j' ⟶ j') × (k' ⟶ kf f)) (F.map ((f, g j) : (j ⟶ j') × (k j ⟶ k')) (y j)) at q
-      -- { simpa using q }
+      -- porting note: Lean 4 `dsimp` is unfolding `gf` and `hf` :-(
+      -- We fold them back up.
+      change F.map ((𝟙 j', gf f) : (j', k') ⟶ (j', kf f)) (F.map ((𝟙 j', g j') : (j', k j') ⟶ (j', k')) (y j')) =
+        F.map ((𝟙 j', hf f) : (j', k') ⟶ (j', kf f)) (F.map ((f, g j) : (j, k j) ⟶ (j', k')) (y j)) at q
       simp_rw [← FunctorToTypes.map_comp_apply, CategoryStruct.comp] at q
-      dsimp at *
       convert q
       · simp only [comp_id]
       · simp only [comp_id]
-        sorry
     clear_value kf gf hf
     -- and clean up some things that are no longer needed.
     clear w
