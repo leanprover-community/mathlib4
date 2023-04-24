@@ -165,8 +165,7 @@ theorem eq_of_mem_ordConnectedSection_of_uIcc_subset (hx : x ∈ ordConnectedSec
       (mem_ordConnectedComponent_trans
         (mem_ordConnectedComponent_trans (ordConnectedProj_mem_ordConnectedComponent _ _) h)
         (mem_ordConnectedComponent_ordConnectedProj _ _))
-#align set.eq_of_mem_ord_connected_section_of_uIcc_subset
-  Set.eq_of_mem_ordConnectedSection_of_uIcc_subset
+#align set.eq_of_mem_ord_connected_section_of_uIcc_subset Set.eq_of_mem_ordConnectedSection_of_uIcc_subset
 
 /-- Given two sets `s t : Set α`, the set `Set.orderSeparatingSet s t` is the set of points that
 belong both to some `Set.ordConnectedComponent tᶜ x`, `x ∈ s`, and to some

@@ -347,8 +347,7 @@ theorem leftRel_r_eq_leftCosetEquivalence :
   ext
   rw [leftRel_eq]
   exact (leftCoset_eq_iff s).symm
-#align quotient_group.left_rel_r_eq_left_coset_equivalence
-  QuotientGroup.leftRel_r_eq_leftCosetEquivalence
+#align quotient_group.left_rel_r_eq_left_coset_equivalence QuotientGroup.leftRel_r_eq_leftCosetEquivalence
 
 @[to_additive]
 instance leftRelDecidable [DecidablePred (· ∈ s)] : DecidableRel (leftRel s).r := fun x y => by
@@ -617,7 +616,6 @@ noncomputable def groupEquivQuotientProdSubgroup : α ≃ (α ⧸ s) × s :=
         rfl
     _ ≃ Σ _L : α ⧸ s, s := Equiv.sigmaCongrRight fun L => leftCosetEquivSubgroup _
     _ ≃ (α ⧸ s) × s := Equiv.sigmaEquivProd _ _
-
 #align subgroup.group_equiv_quotient_times_subgroup Subgroup.groupEquivQuotientProdSubgroup
 #align add_subgroup.add_group_equiv_quotient_times_add_subgroup AddSubgroup.addGroupEquivQuotientProdAddSubgroup
 
@@ -707,7 +705,6 @@ theorem quotientSubgroupOfEmbeddingOfLe_apply_mk (H : Subgroup α) (h : s ≤ t)
     quotientSubgroupOfEmbeddingOfLe H h (QuotientGroup.mk g) =
       (QuotientGroup.mk (inclusion h g) : (fun _ => { x // x ∈ t } ⧸ subgroupOf H t) ↑g) :=
   rfl
-
 #align subgroup.quotient_subgroup_of_embedding_of_le_apply_mk Subgroup.quotientSubgroupOfEmbeddingOfLe_apply_mk
 #align add_subgroup.quotient_add_subgroup_of_embedding_of_le_apply_mk AddSubgroup.quotientAddSubgroupOfEmbeddingOfLe_apply_mk
 
@@ -727,10 +724,8 @@ theorem quotientSubgroupOfMapOfLe_apply_mk (H : Subgroup α) (h : s ≤ t) (g : 
     quotientSubgroupOfMapOfLe H h (QuotientGroup.mk g) =
       (QuotientGroup.mk g : { x // x ∈ H } ⧸ subgroupOf t H) :=
   rfl
-#align subgroup.quotient_subgroup_of_map_of_le_apply_mk
-  Subgroup.quotientSubgroupOfMapOfLe_apply_mk
-#align add_subgroup.quotient_add_subgroup_of_map_of_le_apply_mk
-  AddSubgroup.quotientAddSubgroupOfMapOfLe_apply_mk
+#align subgroup.quotient_subgroup_of_map_of_le_apply_mk Subgroup.quotientSubgroupOfMapOfLe_apply_mk
+#align add_subgroup.quotient_add_subgroup_of_map_of_le_apply_mk AddSubgroup.quotientAddSubgroupOfMapOfLe_apply_mk
 
 /-- If `s ≤ t`, then there is a map `α ⧸ s → α ⧸ t`. -/
 @[to_additive "If `s ≤ t`, then there is an map `α ⧸ s → α ⧸ t`."]

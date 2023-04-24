@@ -41,8 +41,7 @@ theorem zsmul_mem_zmultiples_iff_exists_sub_div {r : R} {z : ℤ} (hz : z ≠ 0)
     simp only [add_sub_cancel'_right, zsmul_eq_mul, Int.div_def']
   · rintro ⟨k, n, h⟩
     exact ⟨_, h⟩
-#align add_subgroup.zsmul_mem_zmultiples_iff_exists_sub_div
-    AddSubgroup.zsmul_mem_zmultiples_iff_exists_sub_div
+#align add_subgroup.zsmul_mem_zmultiples_iff_exists_sub_div AddSubgroup.zsmul_mem_zmultiples_iff_exists_sub_div
 
 theorem nsmul_mem_zmultiples_iff_exists_sub_div {r : R} {n : ℕ} (hn : n ≠ 0) :
     n • r ∈ AddSubgroup.zmultiples p ↔
