@@ -60,7 +60,6 @@ theorem choose_le_centralBinom (r n : ℕ) : choose (2 * n) r ≤ centralBinom n
   calc
     (2 * n).choose r ≤ (2 * n).choose (2 * n / 2) := choose_le_middle r (2 * n)
     _ = (2 * n).choose n := by rw [Nat.mul_div_cancel_left n zero_lt_two]
-
 #align nat.choose_le_central_binom Nat.choose_le_centralBinom
 
 theorem two_le_centralBinom (n : ℕ) (n_pos : 0 < n) : 2 ≤ centralBinom n :=
@@ -68,7 +67,6 @@ theorem two_le_centralBinom (n : ℕ) (n_pos : 0 < n) : 2 ≤ centralBinom n :=
     2 ≤ 2 * n := le_mul_of_pos_right n_pos
     _ = (2 * n).choose 1 := (choose_one_right (2 * n)).symm
     _ ≤ centralBinom n := choose_le_centralBinom 1 n
-
 #align nat.two_le_central_binom Nat.two_le_centralBinom
 
 /-- An inductive property of the central binomial coefficient.

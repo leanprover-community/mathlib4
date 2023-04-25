@@ -93,7 +93,6 @@ theorem mem_ordConnectedComponent_trans (hxy : y ∈ ordConnectedComponent s x)
   calc
     [[x, z]] ⊆ [[x, y]] ∪ [[y, z]] := uIcc_subset_uIcc_union_uIcc
     _ ⊆ s := union_subset hxy hyz
-
 #align set.mem_ord_connected_component_trans Set.mem_ordConnectedComponent_trans
 
 theorem ordConnectedComponent_eq (h : [[x, y]] ⊆ s) :
@@ -150,7 +149,6 @@ theorem dual_ordConnectedSection (s : Set α) :
   ext x
   simp [dual_ordConnectedComponent]
   tauto
-
 #align set.dual_ord_connected_section Set.dual_ordConnectedSection
 
 theorem ordConnectedSection_subset : ordConnectedSection s ⊆ s :=

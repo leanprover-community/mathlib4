@@ -468,7 +468,6 @@ theorem div_num_den (q r : ℚ) : q / r = q.num * r.den /. (q.den * r.num) :=
       _ = q.num /. q.den * (r.num /. r.den)⁻¹ := by simp [num_den]
       _ = q.num /. q.den * (r.den /. r.num) := by rw [inv_def']
       _ = q.num * r.den /. (q.den * r.num) := mul_def' (by simpa using den_nz q) hr
-
 #align rat.div_num_denom Rat.div_num_den
 
 section Casts

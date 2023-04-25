@@ -194,7 +194,6 @@ theorem apply_of_ne_none {α ι} (l : Line α ι) (x : α) (i : ι) (h : l.idxFu
 theorem map_apply {α α' ι} (f : α → α') (l : Line α ι) (x : α) : l.map f (f x) = f ∘ l x := by
   simp only [Line.apply, Line.map, Option.getD_map]
   rfl
-
 #align combinatorics.line.map_apply Combinatorics.Line.map_apply
 
 @[simp]
