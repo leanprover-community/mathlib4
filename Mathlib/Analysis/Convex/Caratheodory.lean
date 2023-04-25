@@ -30,7 +30,7 @@ in `𝕜ᵈ` is the union of the convex hulls of the `(d + 1)`-tuples in `s`.
 
 ## Main results
 
-* `convex_hull_eq_union`: Carathéodory's convexity theorem
+* `convexHull_eq_union`: Carathéodory's convexity theorem
 
 ## Implementation details
 
@@ -135,20 +135,19 @@ theorem affineIndependent_minCardFinsetOfMemConvexHull :
     AffineIndependent 𝕜 ((↑) : minCardFinsetOfMemConvexHull hx → E) := by
   let k := (minCardFinsetOfMemConvexHull hx).card - 1
   have hk : (minCardFinsetOfMemConvexHull hx).card = k + 1 :=
-    (Nat.succ_pred_eq_of_pos
-        (Finset.card_pos.mpr (minCardFinsetOfMemConvexHull_nonempty hx))).symm
+    (Nat.succ_pred_eq_of_pos (Finset.card_pos.mpr (minCardFinsetOfMemConvexHull_nonempty hx))).symm
   classical
-    by_contra h
-    obtain ⟨p, hp⟩ := mem_convexHull_erase h (mem_minCardFinsetOfMemConvexHull hx)
-    have contra :=
-      minCardFinsetOfMemConvexHull_card_le_card hx
-        (Set.Subset.trans (Finset.erase_subset (↑p) (minCardFinsetOfMemConvexHull hx))
-          (minCardFinsetOfMemConvexHull_subseteq hx))
-        hp
-    rw [← not_lt] at contra
-    apply contra
-    erw [card_erase_of_mem p.2, hk]
-    exact lt_add_one _
+  by_contra h
+  obtain ⟨p, hp⟩ := mem_convexHull_erase h (mem_minCardFinsetOfMemConvexHull hx)
+  have contra :=
+    minCardFinsetOfMemConvexHull_card_le_card hx
+      (Set.Subset.trans (Finset.erase_subset (↑p) (minCardFinsetOfMemConvexHull hx))
+        (minCardFinsetOfMemConvexHull_subseteq hx))
+      hp
+  rw [← not_lt] at contra
+  apply contra
+  erw [card_erase_of_mem p.2, hk]
+  exact lt_add_one _
 #align caratheodory.affine_independent_min_card_finset_of_mem_convex_hull Caratheodory.affineIndependent_minCardFinsetOfMemConvexHull
 
 end Caratheodory
@@ -156,27 +155,24 @@ end Caratheodory
 variable {s : Set E}
 
 /-- **Carathéodory's convexity theorem** -/
-theorem convexHull_eq_union :
-    convexHull 𝕜 s =
-      ⋃ (t : Finset E) (hss : ↑t ⊆ s) (hai : AffineIndependent 𝕜 ((↑) : t → E)), convexHull 𝕜 ↑t :=
-  by
+theorem convexHull_eq_union : convexHull 𝕜 s =
+    ⋃ (t : Finset E) (hss : ↑t ⊆ s) (hai : AffineIndependent 𝕜 ((↑) : t → E)), convexHull 𝕜 ↑t := by
   apply Set.Subset.antisymm
   · intro x hx
     simp only [exists_prop, Set.mem_unionᵢ]
-    exact
-      ⟨Caratheodory.minCardFinsetOfMemConvexHull hx,
-        Caratheodory.minCardFinsetOfMemConvexHull_subseteq hx,
-        Caratheodory.affineIndependent_minCardFinsetOfMemConvexHull hx,
-        Caratheodory.mem_minCardFinsetOfMemConvexHull hx⟩
+    exact ⟨Caratheodory.minCardFinsetOfMemConvexHull hx,
+      Caratheodory.minCardFinsetOfMemConvexHull_subseteq hx,
+      Caratheodory.affineIndependent_minCardFinsetOfMemConvexHull hx,
+      Caratheodory.mem_minCardFinsetOfMemConvexHull hx⟩
   · iterate 3 convert Set.unionᵢ_subset _; intro
     exact convexHull_mono ‹_›
 #align convex_hull_eq_union convexHull_eq_union
 
-/-- A more explicit version of `convex_hull_eq_union`. -/
+/-- A more explicit version of `convexHull_eq_union`. -/
 theorem eq_pos_convex_span_of_mem_convexHull {x : E} (hx : x ∈ convexHull 𝕜 s) :
-    ∃ (ι : Sort (u + 1))(_ : Fintype ι),
-      ∃ (z : ι → E)(w : ι → 𝕜)(hss : Set.range z ⊆ s)(hai : AffineIndependent 𝕜 z)(hw :
-        ∀ i, 0 < w i), (∑ i, w i) = 1 ∧ (∑ i, w i • z i) = x := by
+    ∃ (ι : Sort (u + 1)) (_ : Fintype ι),
+      ∃ (z : ι → E) (w : ι → 𝕜) (_ : Set.range z ⊆ s) (_ : AffineIndependent 𝕜 z)
+        (_ : ∀ i, 0 < w i), (∑ i, w i) = 1 ∧ (∑ i, w i • z i) = x := by
   rw [convexHull_eq_union] at hx
   simp only [exists_prop, Set.mem_unionᵢ] at hx
   obtain ⟨t, ht₁, ht₂, ht₃⟩ := hx
@@ -187,15 +183,14 @@ theorem eq_pos_convex_span_of_mem_convexHull {x : E} (hx : x ∈ convexHull 𝕜
   · rw [Subtype.range_coe_subtype]
     exact Subset.trans (Finset.filter_subset _ t) ht₁
   · exact ht₂.comp_embedding ⟨_, inclusion_injective (Finset.filter_subset (fun i => w i ≠ 0) t)⟩
-  ·
-    exact fun i =>
+  · exact fun i =>
       (hw₁ _ (Finset.mem_filter.mp i.2).1).lt_of_ne (Finset.mem_filter.mp i.property).2.symm
   · erw [Finset.sum_attach, Finset.sum_filter_ne_zero, hw₂]
   · change (∑ i : t' in t'.attach, (fun e => w e • e) ↑i) = x
-    erw [Finset.sum_attach, Finset.sum_filter_of_ne]
-    · rw [t.center_mass_eq_of_sum_1 id hw₂] at hw₃
+    erw [Finset.sum_attach (f := fun e => w e • e), Finset.sum_filter_of_ne]
+    · rw [t.centerMass_eq_of_sum_1 id hw₂] at hw₃
       exact hw₃
-    · intro e he hwe contra
+    · intro e _ hwe contra
       apply hwe
       rw [contra, zero_smul]
 #align eq_pos_convex_span_of_mem_convex_hull eq_pos_convex_span_of_mem_convexHull
