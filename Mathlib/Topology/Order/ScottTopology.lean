@@ -244,7 +244,7 @@ lemma isClosed_eq_lower_and_subset_implies_LUB_mem (s : Set α) : IsClosed s
     have c1: a ∈ s := h d a d₁ d₂ d₃ h'
     contradiction
 
-lemma isOpen_isUpper {s : Set α} : IsOpen s → IsUpperSet s := by
+lemma isOpen_isUpperSet {s : Set α} : IsOpen s → IsUpperSet s := by
   intros h
   rw [isOpen_eq_upper_and_LUB_mem_implies_tail_subset] at h
   exact h.1
