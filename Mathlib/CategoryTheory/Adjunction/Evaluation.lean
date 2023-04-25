@@ -128,7 +128,7 @@ def evaluationAdjunctionLeft (c : C) : (evaluation _ _).obj c ⊣ evaluationRigh
             intro f
             ext x
             dsimp
-            ext ⟨g⟩
+            ext g
             simp only [Discrete.functor_obj, NatTrans.naturality_assoc,
               evaluationRightAdjoint_obj_obj, evaluationRightAdjoint_obj_map, limit.lift_π,
               Fan.mk_pt, Fan.mk_π_app, Discrete.natTrans_app, Category.comp_id] } }
