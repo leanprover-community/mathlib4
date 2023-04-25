@@ -127,7 +127,6 @@ theorem add_one_le_two_mul [LE α] [Semiring α] [CovariantClass α α (· + ·)
   calc
     a + 1 ≤ a + a := add_le_add_left a1 a
     _ = 2 * a := (two_mul _).symm
-
 #align add_one_le_two_mul add_one_le_two_mul
 
 /-- An `OrderedSemiring` is a semiring with a partial order such that addition is monotone and

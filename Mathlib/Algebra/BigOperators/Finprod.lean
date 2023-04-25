@@ -1161,7 +1161,6 @@ theorem single_le_finprod {M : Type _} [OrderedCommMonoid M] (i : α) {f : α �
         Finset.single_le_prod' (fun j _ => h j) (Finset.mem_insert_self _ _)
       _ = ∏ᶠ j, f j :=
         (finprod_eq_prod_of_mulSupport_toFinset_subset _ hf (Finset.subset_insert _ _)).symm
-
 #align single_le_finprod single_le_finprod
 #align single_le_finsum single_le_finsum
 
