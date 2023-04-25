@@ -477,8 +477,8 @@ variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] {p q : Seminorm �
 theorem bddBelow_range_add : BddBelow (range fun u => p u + q (x - u)) :=
   ⟨0, by
     rintro _ ⟨x, rfl⟩
-    dsimp
-    positivity⟩
+    -- Porting note: the following was previously `dsimp; positivity`
+    exact add_nonneg (map_nonneg _ _) (map_nonneg _ _)⟩
 #align seminorm.bdd_below_range_add Seminorm.bddBelow_range_add
 
 noncomputable instance : Inf (Seminorm 𝕜 E) where
@@ -490,12 +490,14 @@ noncomputable instance : Inf (Seminorm 𝕜 E) where
         obtain rfl | ha := eq_or_ne a 0
         · rw [norm_zero, MulZeroClass.zero_mul, zero_smul]
           refine'
-            cinfᵢ_eq_of_forall_ge_of_forall_gt_exists_lt (fun i => by positivity) fun x hx =>
-              ⟨0, by rwa [map_zero, sub_zero, map_zero, add_zero]⟩
+            cinfᵢ_eq_of_forall_ge_of_forall_gt_exists_lt
+              -- Porting note: the following was previously `fun i => by positivity`
+              (fun i => add_nonneg (map_nonneg _ _) (map_nonneg _ _))
+              fun x hx => ⟨0, by rwa [map_zero, sub_zero, map_zero, add_zero]⟩
         simp_rw [Real.mul_infᵢ_of_nonneg (norm_nonneg a), mul_add, ← map_smul_eq_mul p, ←
           map_smul_eq_mul q, smul_sub]
         refine'
-          Function.Surjective.infᵢ_congr ((· • ·) a⁻¹ : E → E)
+          Function.Surjective.infᵢ_congr ((a⁻¹ • ·) : E → E)
             (fun u => ⟨a • u, inv_smul_smul₀ ha u⟩) fun u => _
         rw [smul_inv_smul₀ ha] }
 
