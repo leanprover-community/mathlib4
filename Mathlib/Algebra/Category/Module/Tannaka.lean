@@ -8,8 +8,8 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Category.Module.Basic
-import Mathbin.LinearAlgebra.Span
+import Mathlib.Algebra.Category.Module.Basic
+import Mathlib.LinearAlgebra.Span
 
 /-!
 # Tannaka duality for rings
@@ -29,8 +29,7 @@ A ring `R` is equivalent to
 the endomorphisms of the additive forgetful functor `Module R ⥤ AddCommGroup`.
 -/
 def ringEquivEndForget₂ (R : Type u) [Ring R] :
-    R ≃+* End (AdditiveFunctor.of (forget₂ (ModuleCat.{u} R) AddCommGroupCat.{u}))
-    where
+    R ≃+* End (AdditiveFunctor.of (forget₂ (ModuleCat.{u} R) AddCommGroupCat.{u})) where
   toFun r :=
     { app := fun M => by apply DistribMulAction.toAddMonoidHom M r
       naturality' := fun M N f => by
