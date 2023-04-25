@@ -163,7 +163,7 @@ attribute [instance] AddUnits.instDecidableEqAddUnits
 theorem mk_val (u : αˣ) (y h₁ h₂) : mk (u : α) y h₁ h₂ = u :=
   ext rfl
 #align units.mk_coe Units.mk_val
-#align add_units.mk_coe Units.mk_val
+#align add_units.mk_coe AddUnits.mk_val
 
 /-- Copy a unit, adjusting definition equalities. -/
 @[to_additive (attr := simps) "Copy an `AddUnit`, adjusting definitional equalities."]
