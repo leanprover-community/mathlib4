@@ -386,14 +386,20 @@ colimitLimitToLimitColimit F
           colimit_eq_iff.{v, v}, Bifunctor.map_id_comp, types_comp_apply, curry_obj_obj_map]
       /-
       Lean 4 : ⊢ ∃ k_1 f g_1,
-        F.map (𝟙 j, f) (F.map (𝟙 j,                g j ≫ gf (𝟙 j) ≫ i     (𝟙 j))     (y j))  = F.map (𝟙 j, g_1) (y j)
+        F.map (𝟙 j, f) (F.map (𝟙 j,                g j ≫ gf (𝟙 j) ≫ i     (𝟙 j))     (y j))  =
+          F.map (𝟙 j, g_1) (y j)
       Lean 3 : ⊢ ∃ (k_1 : K) (f : k'' ⟶ k_1) (g_1 : k j ⟶ k_1),
-        F.map (𝟙 j, f) (F.map (𝟙 j, i (𝟙 j)) (F.map (𝟙 j, gf (𝟙 j)) (F.map (𝟙 j, g j) (y j)))) = F.map (𝟙 j, g_1) (y j)
+        F.map (𝟙 j, f) (F.map (𝟙 j, i (𝟙 j)) (F.map (𝟙 j, gf (𝟙 j)) (F.map (𝟙 j, g j) (y j)))) =
+          F.map (𝟙 j, g_1) (y j)
       -/
       refine' ⟨k'', 𝟙 k'', g j ≫ gf (𝟙 j) ≫ i (𝟙 j), _⟩
       /-
-      Lean 3 ⊢ F.map (𝟙 j, 𝟙 k'') (F.map (𝟙 j, i (𝟙 j)) (F.map (𝟙 j, gf (𝟙 j)) (F.map (𝟙 j, g j) (y j)))) = F.map (𝟙 j, g j ≫ gf (𝟙 j) ≫ i (𝟙 j)) (y j)
-      Lean 4 ⊢ F.map (𝟙 j, 𝟙 k'') (F.map (𝟙 j,           g ≫        gf (𝟙 j) ≫ i     (𝟙 j))     (y j))   = F.map (𝟙 j, g j ≫ gf (𝟙 j) ≫ i (𝟙 j)) (y j)
+      Lean 3 ⊢ F.map (𝟙 j, 𝟙 k'') (F.map (𝟙 j, i (𝟙 j))
+        (F.map (𝟙 j, gf (𝟙 j)) (F.map (𝟙 j, g j) (y j)))) =
+        F.map (𝟙 j, g j ≫ gf (𝟙 j) ≫ i (𝟙 j)) (y j)
+      Lean 4 ⊢ F.map (𝟙 j, 𝟙 k'') (F.map (𝟙 j,
+        g ≫        gf (𝟙 j) ≫ i     (𝟙 j))     (y j))   =
+        F.map (𝟙 j, g j ≫ gf (𝟙 j) ≫ i (𝟙 j)) (y j)
 
       -/
       simp only [Bifunctor.map_id_comp, types_comp_apply, Bifunctor.map_id, types_id_apply]
