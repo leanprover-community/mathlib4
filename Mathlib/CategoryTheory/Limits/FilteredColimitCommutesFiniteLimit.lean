@@ -192,7 +192,7 @@ theorem colimitLimitToLimitColimit_surjective :
     -- where these images of `y j` and `y j'` become equal.
     simp_rw [colimit_eq_iff.{v, v}] at w
     -- We take a moment to restate `w` more conveniently.
-    let kf : ∀ {j j'} (f : j ⟶ j'), K := fun {_} {_} f => (w f).choose
+    let kf : ∀ {j j'} (_ : j ⟶ j'), K := fun {_} {_} f => (w f).choose
     let gf : ∀ {j j'} (f : j ⟶ j'), k' ⟶ kf f := fun {_} {_} f => (w f).choose_spec.choose
     let hf : ∀ {j j'} (f : j ⟶ j'), k' ⟶ kf f := fun {_} {_} f =>
       (w f).choose_spec.choose_spec.choose
@@ -238,7 +238,7 @@ theorem colimitLimitToLimitColimit_surjective :
             refine' ⟨f, Finset.mem_univ _, _⟩
             rfl))
     have k'O : k' ∈ O := Finset.mem_union.mpr (Or.inr (Finset.mem_singleton.mpr rfl))
-    let H : Finset (Σ'(X Y : K)(mX : X ∈ O)(mY : Y ∈ O), X ⟶ Y) :=
+    let H : Finset (Σ'(X Y : K)(_ : X ∈ O)(_ : Y ∈ O), X ⟶ Y) :=
       Finset.univ.bunionᵢ fun j : J =>
         Finset.univ.bunionᵢ fun j' : J =>
           Finset.univ.bunionᵢ fun f : j ⟶ j' =>
@@ -310,101 +310,20 @@ theorem colimitLimitToLimitColimit_surjective :
             rw [s f (𝟙 j'), ← s (𝟙 j') (𝟙 j')]
     -- Finally we check that this maps to `x`.
     · -- We can do this componentwise:
-      /-
-      Lean 4
-
-colimitLimitToLimitColimit F
-    (colimit.ι (curry.obj (swap K J ⋙ F) ⋙ lim) k''
-      (id
-        (Limit.mk ((curry.obj (swap K J ⋙ F)).obj k'')
-          (fun j => F.map (𝟙 j, g j ≫ gf (𝟙 j) ≫ i (𝟙 j)) (y j))
-          (_ :
-            ∀ (j j' : J) (f : j ⟶ j'),
-              ((curry.obj (swap K J ⋙ F)).obj k'').map f
-                (F.map (𝟙 j, g j ≫ gf (𝟙 j) ≫ i (𝟙 j)) (y j)) =
-                F.map (𝟙 j', g j' ≫ gf (𝟙 j') ≫ i (𝟙 j')) (y j'))))) =
-  x
-      Lean 3
-        : ⊢
-        limits.colimit_limit_to_limit_colimit F
-    (limits.colimit.ι (curry.obj (swap K J ⋙ F) ⋙ limits.lim) k''
-       (id
-          (limit.mk ((curry.obj (swap K J ⋙ F)).obj k'')
-             (λ (j : J), F.map (𝟙 j, g j ≫ gf (𝟙 j) ≫ i (𝟙 j)) (y j))
-             _))) =
-  x
-
-      -/
       apply limit_ext'
       intro j
-      /-
-      Lean 4 : ⊢ limit.π (curry.obj F ⋙ colim) j
-    (colimitLimitToLimitColimit F
-      (colimit.ι (curry.obj (swap K J ⋙ F) ⋙ lim) k''
-        (id
-          (Limit.mk ((curry.obj (swap K J ⋙ F)).obj k'')
-            (fun j => F.map (𝟙 j, g j ≫ gf (𝟙 j) ≫ i (𝟙 j)) (y j))
-            (_ :
-              ∀ (j j' : J) (f : j ⟶ j'),
-                ((curry.obj (swap K J ⋙ F)).obj k'').map f
-                  (F.map (𝟙 j, g j ≫ gf (𝟙 j) ≫ i (𝟙 j)) (y j)) =
-                  F.map (𝟙 j', g j' ≫ gf (𝟙 j') ≫ i (𝟙 j')) (y j'))
-            )))) =
-  limit.π (curry.obj F ⋙ colim) j x
-
-      Lean 3 : ⊢ limits.limit.π (curry.obj F ⋙ limits.colim) j
-    (limits.colimit_limit_to_limit_colimit F
-       (limits.colimit.ι (curry.obj (swap K J ⋙ F) ⋙ limits.lim) k''
-          (id
-             (limit.mk ((curry.obj (swap K J ⋙ F)).obj k'')
-                (λ (j : J), F.map (𝟙 j, g j ≫ gf (𝟙 j) ≫ i (𝟙 j)) (y j))
-                _)))) =
-  limits.limit.π (curry.obj F ⋙ limits.colim) j x
-
-  -/
       -- and as each component is an equation in a colimit, we can verify it by
       -- pointing out the morphism which carries one representative to the other:
       -- porting note: was one `simp only`
-      -- **TODO**: finally works but this needs tidying
       simp_rw [id.def, ← e, Limits.ι_colimitLimitToLimitColimit_π_apply,
           colimit_eq_iff.{v, v}, Bifunctor.map_id_comp, types_comp_apply, curry_obj_obj_map]
-      /-
-      Lean 4 : ⊢ colimit.ι ((curry.obj F).obj j) k''
-    (limit.π ((curry.obj (swap K J ⋙ F)).obj k'') j
-      (Limit.mk ((curry.obj (swap K J ⋙ F)).obj k'')
-        (fun j => F.map (𝟙 j, g j ≫ gf (𝟙 j) ≫ i (𝟙 j)) (y j))
-        (_ :
-          ∀ (j j' : J) (f : j ⟶ j'),
-            ((curry.obj (swap K J ⋙ F)).obj k'').map f
-              (F.map (𝟙 j, g j ≫ gf (𝟙 j) ≫ i (𝟙 j)) (y j)) =
-              F.map (𝟙 j', g j' ≫ gf (𝟙 j') ≫ i (𝟙 j')) (y j')))) =
-  colimit.ι ((curry.obj F).obj j) (k j) (y j)
-
-  -/
       simp only [Functor.comp_obj, colim_obj, Limit.π_mk]
       simp_rw [id.def, ← e, Limits.ι_colimitLimitToLimitColimit_π_apply,
           colimit_eq_iff.{v, v}, Bifunctor.map_id_comp, types_comp_apply, curry_obj_obj_map]
-      /-
-      Lean 4 : ⊢ ∃ k_1 f g_1,
-        F.map (𝟙 j, f) (F.map (𝟙 j,                g j ≫ gf (𝟙 j) ≫ i     (𝟙 j))     (y j))  =
-          F.map (𝟙 j, g_1) (y j)
-      Lean 3 : ⊢ ∃ (k_1 : K) (f : k'' ⟶ k_1) (g_1 : k j ⟶ k_1),
-        F.map (𝟙 j, f) (F.map (𝟙 j, i (𝟙 j)) (F.map (𝟙 j, gf (𝟙 j)) (F.map (𝟙 j, g j) (y j)))) =
-          F.map (𝟙 j, g_1) (y j)
-      -/
-      refine' ⟨k'', 𝟙 k'', g j ≫ gf (𝟙 j) ≫ i (𝟙 j), _⟩
-      /-
-      Lean 3 ⊢ F.map (𝟙 j, 𝟙 k'') (F.map (𝟙 j, i (𝟙 j))
-        (F.map (𝟙 j, gf (𝟙 j)) (F.map (𝟙 j, g j) (y j)))) =
-        F.map (𝟙 j, g j ≫ gf (𝟙 j) ≫ i (𝟙 j)) (y j)
-      Lean 4 ⊢ F.map (𝟙 j, 𝟙 k'') (F.map (𝟙 j,
-        g ≫        gf (𝟙 j) ≫ i     (𝟙 j))     (y j))   =
-        F.map (𝟙 j, g j ≫ gf (𝟙 j) ≫ i (𝟙 j)) (y j)
-
-      -/
-      simp only [Bifunctor.map_id_comp, types_comp_apply, Bifunctor.map_id, types_id_apply]
-      -- **QUESTION** Can Lean 4 draw me a picture of this goal?
-      sorry
+      -- porting note: was       refine' ⟨k'', 𝟙 k'', g j ≫ gf (𝟙 j) ≫ i (𝟙 j), _⟩
+      use k'', 𝟙 k'', g j ≫ gf (𝟙 j) ≫ i (𝟙 j)
+      convert (types_comp_apply (F.map _) (F.map _) (y j)).symm
+      simp [← F.map_comp]
 #align category_theory.limits.colimit_limit_to_limit_colimit_surjective CategoryTheory.Limits.colimitLimitToLimitColimit_surjective
 
 instance colimitLimitToLimitColimit_isIso : IsIso (colimitLimitToLimitColimit F) :=
