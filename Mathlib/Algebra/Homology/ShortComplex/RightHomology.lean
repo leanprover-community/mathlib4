@@ -928,7 +928,7 @@ noncomputable def leftHomologyFunctorOpNatIso [CategoryWithLeftHomology C] :
 
 section
 
-variable {S}
+variable {S C}
 variable (h : RightHomologyData S)
   {A : C} (k : S.X₂ ⟶ A) (hk : S.f ≫ k = 0) [HasRightHomology S]
 
@@ -943,6 +943,8 @@ lemma p_descCyclesCo : S.pCyclesCo ≫ S.descCyclesCo k hk = k :=
 lemma descCyclesCo_comp {A' : C} (α : A ⟶ A') :
     S.descCyclesCo k hk ≫ α = S.descCyclesCo (k ≫ α) (by rw [reassoc_of% hk, zero_comp]) := by
   simp only [← cancel_epi S.pCyclesCo, p_descCyclesCo_assoc, p_descCyclesCo]
+
+variable (S)
 
 noncomputable def cyclesCoIsCokernel :
     IsColimit (CokernelCofork.ofπ S.pCyclesCo S.f_pCyclesCo) :=
@@ -960,6 +962,8 @@ noncomputable def cyclesCoIsoCokernel [HasCokernel S.f] : S.cyclesCo ≅ cokerne
   inv_hom_id := by simp only [← cancel_epi (cokernel.π S.f), cokernel.π_desc_assoc,
     p_descCyclesCo, comp_id]
 
+variable {S}
+
 @[simp]
 noncomputable def descRightHomology : S.rightHomology ⟶ A :=
   S.rightHomologyι ≫ S.descCyclesCo k hk
@@ -967,6 +971,8 @@ noncomputable def descRightHomology : S.rightHomology ⟶ A :=
 lemma ι_descCyclesCo_π_eq_zero_of_boundary (x : S.X₃ ⟶ A) (hx : k = S.g ≫ x) :
     S.rightHomologyι ≫ S.descCyclesCo k (by rw [hx, S.zero_assoc, zero_comp]) = 0 :=
   RightHomologyData.ι_descQ_eq_zero_of_boundary _ k x hx
+
+variable (S)
 
 @[reassoc (attr := simp)]
 lemma rightHomologyι_comp_fromCyclesCo :
@@ -976,6 +982,8 @@ lemma rightHomologyι_comp_fromCyclesCo :
 noncomputable def rightHomologyIsKernel :
     IsLimit (KernelFork.ofι S.rightHomologyι S.rightHomologyι_comp_fromCyclesCo) :=
   S.rightHomologyData.hι
+
+variable {S}
 
 @[reassoc (attr := simp)]
 lemma cyclesCoMap_comp_descCyclesCo (φ : S₁ ⟶ S) [S₁.HasRightHomology] :
@@ -1010,6 +1018,8 @@ lemma RightHomologyData.ext_iff' (f₁ f₂ : A ⟶ S.rightHomology) :
   rw [← cancel_mono h.rightHomologyIso.hom, ← cancel_mono h.ι, assoc, assoc]
 
 end
+
+variable {C}
 
 namespace HasRightHomology
 
