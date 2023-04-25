@@ -453,15 +453,14 @@ variable {σ₁₂ : 𝕜 →+* 𝕜₂} [RingHomIsometric σ₁₂]
 
 variable [AddCommGroup E] [AddCommGroup E₂] [Module 𝕜 E] [Module 𝕜₂ E₂]
 
--- FIXME this lemma doesn't typecheck either with or without etaExperiment.
-set_option synthInstance.etaExperiment true in
 theorem comp_smul (p : Seminorm 𝕜₂ E₂) (f : E →ₛₗ[σ₁₂] E₂) (c : 𝕜₂) :
-    p.comp (c • f) = ‖c‖₊ • p.comp f :=
+    p.comp (eta_experiment% c • f) = ‖c‖₊ • p.comp f :=
   ext fun _ => by
     rw [comp_apply, smul_apply, LinearMap.smul_apply, map_smul_eq_mul, NNReal.smul_def, coe_nnnorm,
       smul_eq_mul, comp_apply]
 #align seminorm.comp_smul Seminorm.comp_smul
 
+set_option synthInstance.etaExperiment true in
 theorem comp_smul_apply (p : Seminorm 𝕜₂ E₂) (f : E →ₛₗ[σ₁₂] E₂) (c : 𝕜₂) (x : E) :
     p.comp (c • f) x = ‖c‖ * p (f x) :=
   map_smul_eq_mul p _ _
