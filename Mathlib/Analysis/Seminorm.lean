@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jean Lo, Yaël Dillies, Moritz Doll
 
 ! This file was ported from Lean 3 source module analysis.seminorm
-! leanprover-community/mathlib commit 7ebf83ed9c262adbf983ef64d5e8c2ae94b625f4
+! leanprover-community/mathlib commit 09079525fd01b3dda35e96adaa08d2f943e1648c
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
