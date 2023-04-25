@@ -286,7 +286,7 @@ lemma continuous_monotone {f : α → β}
     exact isClosed_closure }
   have u3 : b ∈ (f⁻¹'  u) := by
     apply isUpperSet_iff_forall_le.mp
-    apply isOpen_isUpper
+    apply isOpen_isUpperSet
     apply IsOpen.preimage hf s1
     exact hab
     exact u2
@@ -327,7 +327,7 @@ lemma continuous_iff_scottContinuous
     intros u hu
     rw [isOpen_iff_upper_and_LUB_mem_implies_inter_nonempty]
     constructor
-    . apply IsUpperSet.preimage (isOpen_isUpper hu)
+    . apply IsUpperSet.preimage (isOpen_isUpperSet hu)
       apply h.monotone
     . intros d a hd₁ hd₂ hd₃ ha
       have e1: IsLUB (f '' d) (f a) := by
