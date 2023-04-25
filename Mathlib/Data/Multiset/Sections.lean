@@ -64,7 +64,6 @@ theorem mem_sections {s : Multiset (Multiset α)} :
   induction s using Multiset.induction_on
   case empty => simp
   case cons a a' ih => simp [ih, rel_cons_left, eq_comm]
-
 #align multiset.mem_sections Multiset.mem_sections
 
 theorem card_sections {s : Multiset (Multiset α)} : card (Sections s) = prod (s.map card) :=
