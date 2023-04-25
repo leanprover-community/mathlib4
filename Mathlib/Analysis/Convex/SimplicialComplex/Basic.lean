@@ -176,9 +176,9 @@ theorem vertices_subset_space : K.vertices ⊆ K.space :=
 
 theorem vertex_mem_convexHull_iff (hx : x ∈ K.vertices) (hs : s ∈ K.faces) :
     x ∈ convexHull 𝕜 (s : Set E) ↔ x ∈ s := by
-  refine' ⟨fun h => _, fun h => subset_convexHull _ _ h⟩
+  refine' ⟨fun h => _, fun h => subset_convexHull 𝕜 _ h⟩
   classical
-    have h := K.inter_subset_convex_hull hx hs ⟨by simp, h⟩
+    have h := K.inter_subset_convexHull hx hs ⟨by simp, h⟩
     by_contra H
     rwa [← coe_inter,
       Finset.disjoint_iff_inter_eq_empty.1 (Finset.disjoint_singleton_right.2 H).symm, coe_empty,
