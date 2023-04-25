@@ -1220,22 +1220,27 @@ section repr
 
 variable [Semiring R]
 
-open Classical
-
-protected instance repr [Repr R] : Repr R[X] :=
-  ⟨fun p _ =>
-    if p = 0 then "0"
-    else
-      (p.support.sort (· ≤ ·)).foldr
-        (fun n a =>
-          (a ++ if a = "" then "" else " + ") ++
-            if n = 0 then "C (" ++ repr (coeff p n) ++ ")"
-            else
-              if n = 1 then if coeff p n = 1 then "X" else "C (" ++ repr (coeff p n) ++ ") * X"
-              else
-                if coeff p n = 1 then "X ^ " ++ repr n
-                else "C (" ++ repr (coeff p n) ++ ") * X ^ " ++ repr n)
-        ""⟩
+protected instance repr [Repr R] [DecidableEq R] : Repr R[X] :=
+  ⟨fun p prec =>
+    let termPrecAndReprs : List (WithTop ℕ × Lean.Format) :=
+      List.map (fun
+        | 0 => (max_prec, "C " ++ reprArg (coeff p 0))
+        | 1 => if coeff p 1 = 1
+          then (⊤, "X")
+          else (70, "C " ++ reprArg (coeff p 1) ++ " * X")
+        | n =>
+          if coeff p n = 1
+          then (80, "X ^ " ++ Nat.repr n)
+          else (70, "C " ++ reprArg (coeff p n) ++ " * X ^ " ++ Nat.repr n))
+      (p.support.sort (· ≤ ·));
+    match termPrecAndReprs with
+    | [] => "0"
+    | [(tprec, t)] => if prec ≥ tprec then Lean.Format.paren t else t
+    | ts =>
+      -- multiple terms, use `+` precedence
+      (if prec ≥ 65 then Lean.Format.paren else id)
+      (Lean.Format.fill
+        (Lean.Format.joinSep (ts.map Prod.snd) (" +" ++ Lean.Format.line)))⟩
 #align polynomial.has_repr Polynomial.repr
 
 end repr

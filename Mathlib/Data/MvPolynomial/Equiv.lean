@@ -27,16 +27,16 @@ As in other polynomial files, we typically use the notation:
 
 + `σ : Type _` (indexing the variables)
 
-+ `R : Type _` `[comm_semiring R]` (the coefficients)
++ `R : Type _` `[CommSemiring R]` (the coefficients)
 
 + `s : σ →₀ ℕ`, a function from `σ` to `ℕ` which is zero away from a finite set.
-This will give rise to a monomial in `mv_polynomial σ R` which mathematicians might call `X^s`
+This will give rise to a monomial in `MvPolynomial σ R` which mathematicians might call `X^s`
 
 + `a : R`
 
 + `i : σ`, with corresponding monomial `X i`, often denoted `X_i` by mathematicians
 
-+ `p : mv_polynomial σ R`
++ `p : MvPolynomial σ R`
 
 ## Tags
 
@@ -47,9 +47,7 @@ equivalence, isomorphism, morphism, ring hom, hom
 
 noncomputable section
 
-open Classical BigOperators Polynomial
-
-open Set Function Finsupp AddMonoidAlgebra
+open Classical BigOperators Polynomial Set Function Finsupp AddMonoidAlgebra
 
 universe u v w x
 
@@ -67,12 +65,10 @@ variable (R) [CommSemiring R]
 polynomials over the ground ring.
 -/
 @[simps]
-def pUnitAlgEquiv : MvPolynomial PUnit R ≃ₐ[R] R[X]
-    where
+def pUnitAlgEquiv : MvPolynomial PUnit R ≃ₐ[R] R[X] where
   toFun := eval₂ Polynomial.C fun _ => Polynomial.X
   invFun := Polynomial.eval₂ MvPolynomial.C (X PUnit.unit)
-  left_inv :=
-    by
+  left_inv := by
     let f : R[X] →+* MvPolynomial PUnit R := Polynomial.eval₂RingHom MvPolynomial.C (X PUnit.unit)
     let g : MvPolynomial PUnit R →+* R[X] := eval₂Hom Polynomial.C fun _ => Polynomial.X
     show ∀ p, f.comp g p = p
@@ -166,7 +162,7 @@ variable (S₁ S₂ S₃)
 to multivariable polynomials in one of the types,
 with coefficents in multivariable polynomials in the other type.
 
-See `sum_ring_equiv` for the ring isomorphism.
+See `sumRingEquiv` for the ring isomorphism.
 -/
 def sumToIter : MvPolynomial (Sum S₁ S₂) R →+* MvPolynomial S₁ (MvPolynomial S₂ R) :=
   eval₂Hom (C.comp C) fun bc => Sum.recOn bc X (C ∘ X)
@@ -194,7 +190,7 @@ set_option linter.uppercaseLean3 false in
 with coefficents in multivariable polynomials in another type,
 to multivariable polynomials in the sum of the two types.
 
-See `sum_ring_equiv` for the ring isomorphism.
+See `sumRingEquiv` for the ring isomorphism.
 -/
 def iterToSum : MvPolynomial S₁ (MvPolynomial S₂ R) →+* MvPolynomial (Sum S₁ S₂) R :=
   eval₂Hom (eval₂Hom C (X ∘ Sum.inr)) (X ∘ Sum.inl)
@@ -239,7 +235,7 @@ def isEmptyRingEquiv [IsEmpty σ] : MvPolynomial σ R ≃+* R :=
 
 variable {σ}
 
-/-- A helper function for `sum_ring_equiv`. -/
+/-- A helper function for `sumRingEquiv`. -/
 @[simps]
 def mvPolynomialEquivMvPolynomial [CommSemiring S₃] (f : MvPolynomial S₁ R →+* MvPolynomial S₂ S₃)
     (g : MvPolynomial S₂ S₃ →+* MvPolynomial S₁ R) (hfgC : (f.comp g).comp C = C)
@@ -259,25 +255,13 @@ and multivariable polynomials in one of the types,
 with coefficents in multivariable polynomials in the other type.
 -/
 def sumRingEquiv : MvPolynomial (Sum S₁ S₂) R ≃+* MvPolynomial S₁ (MvPolynomial S₂ R) := by
-  apply
-    @mvPolynomialEquivMvPolynomial R (Sum S₁ S₂) _ _ _ _ (sumToIter R S₁ S₂) (iterToSum R S₁ S₂)
-  · refine' RingHom.ext fun p => _
-    rw [RingHom.comp_apply]
-    convert hom_eq_hom ((sumToIter R S₁ S₂).comp ((iterToSum R S₁ S₂).comp C)) C _ _ p
-    · ext1 a
-      dsimp
-      rw [iterToSum_C_C R S₁ S₂, sumToIter_C R S₁ S₂]
-    · intro c
-      dsimp
-      rw [iterToSum_C_X R S₁ S₂, sumToIter_Xr R S₁ S₂]
-  · intro b
-    rw [iterToSum_X R S₁ S₂, sumToIter_Xl R S₁ S₂]
-  · ext1 a
-    rw [RingHom.comp_apply, RingHom.comp_apply, sumToIter_C R S₁ S₂, iterToSum_C_C R S₁ S₂]
-  · intro n
-    cases' n with b c
-    · rw [sumToIter_Xl, iterToSum_X]
-    · rw [sumToIter_Xr, iterToSum_C_X]
+  apply mvPolynomialEquivMvPolynomial R (Sum S₁ S₂) _ _ (sumToIter R S₁ S₂) (iterToSum R S₁ S₂)
+  · refine RingHom.ext (hom_eq_hom _ _ ?hC ?hX)
+    case hC => ext1; simp only [RingHom.comp_apply, iterToSum_C_C, sumToIter_C]
+    case hX => intro; simp only [RingHom.comp_apply, iterToSum_C_X, sumToIter_Xr]
+  · simp [iterToSum_X, sumToIter_Xl]
+  · ext1; simp only [RingHom.comp_apply, sumToIter_C, iterToSum_C_C]
+  · rintro ⟨⟩ <;> simp only [sumToIter_Xl, iterToSum_X, sumToIter_Xr, iterToSum_C_X]
 #align mv_polynomial.sum_ring_equiv MvPolynomial.sumRingEquiv
 
 /-- The algebra isomorphism between multivariable polynomials in a sum of two types,
@@ -299,8 +283,8 @@ section
 -- this speeds up typeclass search in the lemma below
 attribute [local instance] IsScalarTower.right
 
-/-- The algebra isomorphism between multivariable polynomials in `option S₁` and
-polynomials with coefficients in `mv_polynomial S₁ R`.
+/-- The algebra isomorphism between multivariable polynomials in `Option S₁` and
+polynomials with coefficients in `MvPolynomial S₁ R`.
 -/
 @[simps!]
 def optionEquivLeft : MvPolynomial (Option S₁) R ≃ₐ[R] Polynomial (MvPolynomial S₁ R) :=
@@ -311,7 +295,7 @@ def optionEquivLeft : MvPolynomial (Option S₁) R ≃ₐ[R] Polynomial (MvPolyn
 
 end
 
-/-- The algebra isomorphism between multivariable polynomials in `option S₁` and
+/-- The algebra isomorphism between multivariable polynomials in `Option S₁` and
 multivariable polynomials with coefficients in polynomials.
 -/
 def optionEquivRight : MvPolynomial (Option S₁) R ≃ₐ[R] MvPolynomial S₁ R[X] :=
@@ -320,7 +304,7 @@ def optionEquivRight : MvPolynomial (Option S₁) R ≃ₐ[R] MvPolynomial S₁ 
     (by
       ext : 2 <;>
         simp only [MvPolynomial.algebraMap_eq, Option.elim, AlgHom.coe_comp, AlgHom.id_comp,
-          IsScalarTower.coe_to_alg_hom', comp_apply, aevalTower_C, Polynomial.aeval_X, aeval_X,
+          IsScalarTower.coe_toAlgHom', comp_apply, aevalTower_C, Polynomial.aeval_X, aeval_X,
           Option.elim', aevalTower_X, AlgHom.coe_id, id.def, eq_self_iff_true, imp_true_iff])
     (by
       ext ⟨i⟩ : 2 <;>
@@ -330,8 +314,8 @@ def optionEquivRight : MvPolynomial (Option S₁) R ≃ₐ[R] MvPolynomial S₁ 
 
 variable (n : ℕ)
 
-/-- The algebra isomorphism between multivariable polynomials in `fin (n + 1)` and
-polynomials over multivariable polynomials in `fin n`.
+/-- The algebra isomorphism between multivariable polynomials in `Fin (n + 1)` and
+polynomials over multivariable polynomials in `Fin n`.
 -/
 def finSuccEquiv : MvPolynomial (Fin (n + 1)) R ≃ₐ[R] Polynomial (MvPolynomial (Fin n) R) :=
   (renameEquiv R (_root_.finSuccEquiv n)).trans (optionEquivLeft R (Fin n))
@@ -353,8 +337,7 @@ theorem finSuccEquiv_apply (p : MvPolynomial (Fin (n + 1)) R) :
     finSuccEquiv R n p =
       eval₂Hom (Polynomial.C.comp (C : R →+* MvPolynomial (Fin n) R))
         (fun i : Fin (n + 1) => Fin.cases Polynomial.X (fun k => Polynomial.C (X k)) i) p := by
-  rw [← finSuccEquiv_eq]
-  rfl
+  rw [← finSuccEquiv_eq, RingHom.coe_coe]
 #align mv_polynomial.fin_succ_equiv_apply MvPolynomial.finSuccEquiv_apply
 
 theorem finSuccEquiv_comp_C_eq_C {R : Type u} [CommSemiring R] (n : ℕ) :
@@ -381,8 +364,8 @@ theorem finSuccEquiv_X_succ {j : Fin n} : finSuccEquiv R n (X j.succ) = Polynomi
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.fin_succ_equiv_X_succ MvPolynomial.finSuccEquiv_X_succ
 
-/-- The coefficient of `m` in the `i`-th coefficient of `fin_succ_equiv R n f` equals the
-    coefficient of `finsupp.cons i m` in `f`. -/
+/-- The coefficient of `m` in the `i`-th coefficient of `finSuccEquiv R n f` equals the
+    coefficient of `Finsupp.cons i m` in `f`. -/
 theorem finSuccEquiv_coeff_coeff (m : Fin n →₀ ℕ) (f : MvPolynomial (Fin (n + 1)) R) (i : ℕ) :
     coeff m (Polynomial.coeff (finSuccEquiv R n f) i) = coeff (m.cons i) f := by
   induction' f using MvPolynomial.induction_on' with j r p q hp hq generalizing i m
@@ -410,7 +393,7 @@ theorem finSuccEquiv_coeff_coeff (m : Fin n →₀ ℕ) (f : MvPolynomial (Fin (
 theorem eval_eq_eval_mv_eval' (s : Fin n → R) (y : R) (f : MvPolynomial (Fin (n + 1)) R) :
     eval (Fin.cons y s : Fin (n + 1) → R) f =
       Polynomial.eval y (Polynomial.map (eval s) (finSuccEquiv R n f)) := by
-  -- turn this into a def `polynomial.map_alg_hom`
+  -- turn this into a def `Polynomial.mapAlgHom`
   let φ : (MvPolynomial (Fin n) R)[X] →ₐ[R] R[X] :=
     { Polynomial.mapRingHom (eval s) with
       commutes' := fun r => by

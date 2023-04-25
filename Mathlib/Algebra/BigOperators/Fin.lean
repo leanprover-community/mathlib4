@@ -70,7 +70,8 @@ is the product of `f x`, for some `x : Fin (n + 1)` times the remaining product 
 `f x`, for some `x : Fin (n + 1)` plus the remaining product"]
 theorem prod_univ_succAbove [CommMonoid β] {n : ℕ} (f : Fin (n + 1) → β) (x : Fin (n + 1)) :
     (∏ i, f i) = f x * ∏ i : Fin n, f (x.succAbove i) := by
-  rw [univ_succAbove, prod_cons, Finset.prod_map]
+  rw [univ_succAbove, prod_cons, Finset.prod_map _ x.succAbove.toEmbedding,
+    RelEmbedding.coe_toEmbedding]
 #align fin.prod_univ_succ_above Fin.prod_univ_succAbove
 #align fin.sum_univ_succ_above Fin.sum_univ_succAbove
 
@@ -172,14 +173,14 @@ theorem sum_const [AddCommMonoid α] (n : ℕ) (x : α) : (∑ _i : Fin n, x) = 
 @[to_additive]
 theorem prod_Ioi_zero {M : Type _} [CommMonoid M] {n : ℕ} {v : Fin n.succ → M} :
     (∏ i in Ioi 0, v i) = ∏ j : Fin n, v j.succ := by
-  rw [Ioi_zero_eq_map, Finset.prod_map, val_succEmbedding]
+  rw [Ioi_zero_eq_map, Finset.prod_map, RelEmbedding.coe_toEmbedding, val_succEmbedding]
 #align fin.prod_Ioi_zero Fin.prod_Ioi_zero
 #align fin.sum_Ioi_zero Fin.sum_Ioi_zero
 
 @[to_additive]
 theorem prod_Ioi_succ {M : Type _} [CommMonoid M] {n : ℕ} (i : Fin n) (v : Fin n.succ → M) :
     (∏ j in Ioi i.succ, v j) = ∏ j in Ioi i, v j.succ := by
-  rw [Ioi_succ, Finset.prod_map, val_succEmbedding]
+  rw [Ioi_succ, Finset.prod_map, RelEmbedding.coe_toEmbedding, val_succEmbedding]
 #align fin.prod_Ioi_succ Fin.prod_Ioi_succ
 #align fin.sum_Ioi_succ Fin.sum_Ioi_succ
 
@@ -204,7 +205,7 @@ theorem prod_univ_add {M : Type _} [CommMonoid M] {a b : ℕ} (f : Fin (a + b) �
 @[to_additive]
 theorem prod_trunc {M : Type _} [CommMonoid M] {a b : ℕ} (f : Fin (a + b) → M)
     (hf : ∀ j : Fin b, f (natAdd a j) = 1) :
-    (∏ i : Fin (a + b), f i) = ∏ i : Fin a, f (castLe (Nat.le.intro rfl) i) := by
+    (∏ i : Fin (a + b), f i) = ∏ i : Fin a, f (castLE (Nat.le.intro rfl) i) := by
   rw [prod_univ_add, Fintype.prod_eq_one _ hf, mul_one]
   rfl
 #align fin.prod_trunc Fin.prod_trunc
@@ -252,7 +253,7 @@ theorem partialProd_left_inv {G : Type _} [Group G] (f : Fin (n + 1) → G) :
 #align fin.partial_sum_left_neg Fin.partialSum_left_neg
 
 -- Porting note:
--- 1) Changed `i` in statement to `(Fin.castLt i (Nat.lt_succ_of_lt i.2))` because of
+-- 1) Changed `i` in statement to `(Fin.castLT i (Nat.lt_succ_of_lt i.2))` because of
 --    coercion issues. Might need to be fixed later.
 -- 2) The current proof is really bad! It should be redone once `assoc_rw` is
 --    implemented and `rw` knows that `i.succ = i + 1`.
@@ -268,7 +269,7 @@ theorem partialProd_left_inv {G : Type _} [Group G] (f : Fin (n + 1) → G) :
 --     assoc_rw [hi, inv_mul_cancel_left]
 @[to_additive]
 theorem partialProd_right_inv {G : Type _} [Group G] (g : G) (f : Fin n → G) (i : Fin n) :
-    ((g • partialProd f) (Fin.castLt i (Nat.lt_succ_of_lt i.2)))⁻¹ *
+    ((g • partialProd f) (Fin.castLT i (Nat.lt_succ_of_lt i.2)))⁻¹ *
     (g • partialProd f) i.succ = f i := by
   rcases i with ⟨i, hn⟩
   induction i with

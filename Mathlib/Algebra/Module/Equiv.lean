@@ -122,7 +122,6 @@ variable [AddCommMonoid M] [AddCommMonoid M₁] [AddCommMonoid M₂]
 
 variable [Module R M] [Module S M₂] {σ : R →+* S} {σ' : S →+* R}
 
-@[infer_tc_goals_rl, nolint dangerousInstance]
 instance (priority := 100) [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
   [s : SemilinearEquivClass F σ M M₂] : SemilinearMapClass F σ M M₂ :=
   { s with
