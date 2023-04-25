@@ -402,7 +402,6 @@ theorem mem_colon_singleton {N : Submodule R M} {x : M} {r : R} :
     r ∈ N.colon (Submodule.span R {x}) ↔ ∀ a : R, r • a • x ∈ N := by
       simp [Submodule.mem_colon, Submodule.mem_span_singleton]
     _ ↔ r • x ∈ N := by simp_rw [fun (a : R) ↦ smul_comm r a x]; exact SetLike.forall_smul_mem_iff
-
 #align submodule.mem_colon_singleton Submodule.mem_colon_singleton
 
 @[simp]
