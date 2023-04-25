@@ -14,23 +14,21 @@ import Mathlib.Analysis.NormedSpace.LinearIsometry
 /-!
 # Conformal Linear Maps
 
-A continuous linear map between `R`-normed spaces `X` and `Y` `is_conformal_map` if it is
+A continuous linear map between `R`-normed spaces `X` and `Y` `IsConformalMap` if it is
 a nonzero multiple of a linear isometry.
 
 ## Main definitions
 
-* `is_conformal_map`: the main definition of conformal linear maps
+* `IsConformalMap`: the main definition of conformal linear maps
 
 ## Main results
 
 * The conformality of the composition of two conformal linear maps, the identity map
   and multiplications by nonzero constants as continuous linear maps
-* `is_conformal_map_of_subsingleton`: all continuous linear maps on singleton spaces are conformal
-* `is_conformal_map.preserves_angle`: if a continuous linear map is conformal, then it
-                                      preserves all angles in the normed space
+* `isConformalMap_of_subsingleton`: all continuous linear maps on singleton spaces are conformal
 
-See `analysis.normed_space.conformal_linear_map.inner_product` for
-* `is_conformal_map_iff`: a map between inner product spaces is conformal
+See `Analysis.InnerProductSpace.ConformalLinearMap` for
+* `isConformalMap_iff`: a map between inner product spaces is conformal
   iff it preserves inner products up to a fixed scalar factor.
 
 
@@ -48,11 +46,13 @@ noncomputable section
 
 open Function LinearIsometry ContinuousLinearMap
 
+set_option synthInstance.etaExperiment true -- Porting note: gets around lean4#2074
+
 /-- A continuous linear map `f'` is said to be conformal if it's
     a nonzero multiple of a linear isometry. -/
 def IsConformalMap {R : Type _} {X Y : Type _} [NormedField R] [SeminormedAddCommGroup X]
     [SeminormedAddCommGroup Y] [NormedSpace R X] [NormedSpace R Y] (f' : X →L[R] Y) :=
-  ∃ (c : R)(hc : c ≠ 0)(li : X →ₗᵢ[R] Y), f' = c • li.toContinuousLinearMap
+  ∃ (c : R) (_ : c ≠ 0) (li : X →ₗᵢ[R] Y), f' = c • li.toContinuousLinearMap
 #align is_conformal_map IsConformalMap
 
 variable {R M N G M' : Type _} [NormedField R] [SeminormedAddCommGroup M] [SeminormedAddCommGroup N]
@@ -105,4 +105,3 @@ theorem ne_zero [Nontrivial M'] {f' : M' →L[R] N} (hf' : IsConformalMap f') : 
 #align is_conformal_map.ne_zero IsConformalMap.ne_zero
 
 end IsConformalMap
-
