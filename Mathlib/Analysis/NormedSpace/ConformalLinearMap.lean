@@ -8,8 +8,8 @@ Authors: Yourong Zang
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.NormedSpace.Basic
-import Mathbin.Analysis.NormedSpace.LinearIsometry
+import Mathlib.Analysis.NormedSpace.Basic
+import Mathlib.Analysis.NormedSpace.LinearIsometry
 
 /-!
 # Conformal Linear Maps
@@ -85,8 +85,7 @@ theorem isConformalMap_of_subsingleton [Subsingleton M] (f' : M →L[R] N) : IsC
 
 namespace IsConformalMap
 
-theorem comp (hg : IsConformalMap g) (hf : IsConformalMap f) : IsConformalMap (g.comp f) :=
-  by
+theorem comp (hg : IsConformalMap g) (hf : IsConformalMap f) : IsConformalMap (g.comp f) := by
   rcases hf with ⟨cf, hcf, lif, rfl⟩
   rcases hg with ⟨cg, hcg, lig, rfl⟩
   refine' ⟨cg * cf, mul_ne_zero hcg hcf, lig.comp lif, _⟩
@@ -94,14 +93,12 @@ theorem comp (hg : IsConformalMap g) (hf : IsConformalMap f) : IsConformalMap (g
   rfl
 #align is_conformal_map.comp IsConformalMap.comp
 
-protected theorem injective {f : M' →L[R] N} (h : IsConformalMap f) : Function.Injective f :=
-  by
+protected theorem injective {f : M' →L[R] N} (h : IsConformalMap f) : Function.Injective f := by
   rcases h with ⟨c, hc, li, rfl⟩
   exact (smul_right_injective _ hc).comp li.injective
 #align is_conformal_map.injective IsConformalMap.injective
 
-theorem ne_zero [Nontrivial M'] {f' : M' →L[R] N} (hf' : IsConformalMap f') : f' ≠ 0 :=
-  by
+theorem ne_zero [Nontrivial M'] {f' : M' →L[R] N} (hf' : IsConformalMap f') : f' ≠ 0 := by
   rintro rfl
   rcases exists_ne (0 : M') with ⟨a, ha⟩
   exact ha (hf'.injective rfl)
