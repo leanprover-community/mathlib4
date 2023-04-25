@@ -365,7 +365,7 @@ end partial_order
 
 section complete_lattice
 
-variables [CompleteLattice α] [TopologicalSpace α] [ScottTopology α]
+variable [CompleteLattice α] [TopologicalSpace α] [ScottTopology α]
 
 lemma isOpen_eq_upper_and_sup_mem_implies_tail_subset
 (u : Set α) : IsOpen u =
