@@ -479,7 +479,6 @@ theorem eq_sup_of_le_sup {x i j : P} (hi : i ∈ I) (hj : j ∈ J) (hx : x ≤ i
   calc
     x = x ⊓ (i ⊔ j) := left_eq_inf.mpr hx
     _ = x ⊓ i ⊔ x ⊓ j := inf_sup_left
-
 #align order.ideal.eq_sup_of_le_sup Order.Ideal.eq_sup_of_le_sup
 
 theorem coe_sup_eq : ↑(I ⊔ J) = { x | ∃ i ∈ I, ∃ j ∈ J, x = i ⊔ j } :=

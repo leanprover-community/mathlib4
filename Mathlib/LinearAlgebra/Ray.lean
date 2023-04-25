@@ -526,7 +526,6 @@ theorem units_inv_smul (u : Rˣ) (v : Module.Ray R M) : u⁻¹ • v = u • v :
   calc
     u⁻¹ • v = (u * u) • u⁻¹ • v := Eq.symm <| (u⁻¹ • v).units_smul_of_pos _ (by exact this)
     _ = u • v := by rw [mul_smul, smul_inv_smul]
-
 #align units_inv_smul units_inv_smul
 
 section

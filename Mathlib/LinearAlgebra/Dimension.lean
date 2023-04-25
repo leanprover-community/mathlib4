@@ -1414,7 +1414,6 @@ theorem rank_add_le (f g : V →ₗ[K] V') : rank (f + g) ≤ rank f + rank g :=
         show f x + g x ∈ (LinearMap.range f ⊔ LinearMap.range g : Submodule K V') from
         mem_sup.2 ⟨_, ⟨x, rfl⟩, _, ⟨x, rfl⟩, rfl⟩
     _ ≤ rank f + rank g := Submodule.rank_add_le_rank_add_rank _ _
-
 #align linear_map.rank_add_le LinearMap.rank_add_le
 
 set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074

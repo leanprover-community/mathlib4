@@ -178,7 +178,6 @@ def r' : Con (M × S) := by
     calc
       (t₂ * t₁ : M) * (b.2 * d.2 * (a.1 * c.1)) = t₂ * (d.2 * c.1) * (t₁ * (b.2 * a.1)) := by ac_rfl
       _ = (t₂ * t₁ : M) * (a.2 * c.2 * (b.1 * d.1)) := by rw [ht₁, ht₂] ; ac_rfl
-
 #align localization.r' Localization.r'
 #align add_localization.r' addLocalization.r'
 
@@ -754,8 +753,7 @@ theorem mk'_spec' (x) (y : S) : f.toMap y * f.mk' x y = f.toMap x := by rw [mul_
 theorem eq_mk'_iff_mul_eq {x} {y : S} {z} : z = f.mk' x y ↔ z * f.toMap y = f.toMap x :=
   ⟨fun H ↦ by rw [H, mk'_spec], fun H ↦ by erw [mul_inv_right, H]⟩
 #align submonoid.localization_map.eq_mk'_iff_mul_eq Submonoid.LocalizationMap.eq_mk'_iff_mul_eq
-#align add_submonoid.localization_map.eq_mk'_iff_add_eq
-  AddSubmonoid.LocalizationMap.eq_mk'_iff_add_eq
+#align add_submonoid.localization_map.eq_mk'_iff_add_eq AddSubmonoid.LocalizationMap.eq_mk'_iff_add_eq
 
 @[to_additive]
 theorem mk'_eq_iff_eq_mul {x} {y : S} {z} : f.mk' x y = z ↔ f.toMap x = z * f.toMap y := by
@@ -876,16 +874,14 @@ theorem mk'_mul_cancel_right (x : M) (y : S) : f.mk' (x * y) y = f.toMap x := by
 theorem mk'_mul_cancel_left (x) (y : S) : f.mk' ((y : M) * x) y = f.toMap x := by
   rw [mul_comm, mk'_mul_cancel_right]
 #align submonoid.localization_map.mk'_mul_cancel_left Submonoid.LocalizationMap.mk'_mul_cancel_left
-#align add_submonoid.localization_map.mk'_add_cancel_left
-  AddSubmonoid.LocalizationMap.mk'_add_cancel_left
+#align add_submonoid.localization_map.mk'_add_cancel_left AddSubmonoid.LocalizationMap.mk'_add_cancel_left
 
 @[to_additive]
 theorem isUnit_comp (j : N →* P) (y : S) : IsUnit (j.comp f.toMap y) :=
   ⟨Units.map j <| IsUnit.liftRight (f.toMap.restrict S) f.map_units y,
     show j _ = j _ from congr_arg j <| IsUnit.coe_liftRight (f.toMap.restrict S) f.map_units _⟩
 #align submonoid.localization_map.is_unit_comp Submonoid.LocalizationMap.isUnit_comp
-#align add_submonoid.localization_map.is_add_unit_comp
-  AddSubmonoid.LocalizationMap.isAddUnit_comp
+#align add_submonoid.localization_map.is_add_unit_comp AddSubmonoid.LocalizationMap.isAddUnit_comp
 
 variable {g : M →* P}
 
@@ -1042,10 +1038,8 @@ theorem epic_of_localizationMap {j k : N →* P} (h : ∀ a, j.comp f.toMap a = 
     j = k := by
   rw [← f.lift_of_comp j, ← f.lift_of_comp k]
   congr 1 with x; exact h x
-#align submonoid.localization_map.epic_of_localization_map
-  Submonoid.LocalizationMap.epic_of_localizationMap
-#align add_submonoid.localization_map.epic_of_localization_map
-  AddSubmonoid.LocalizationMap.epic_of_localizationMap
+#align submonoid.localization_map.epic_of_localization_map Submonoid.LocalizationMap.epic_of_localizationMap
+#align add_submonoid.localization_map.epic_of_localization_map AddSubmonoid.LocalizationMap.epic_of_localizationMap
 
 @[to_additive]
 theorem lift_unique {j : N →* P} (hj : ∀ x, j (f.toMap x) = g x) : f.lift hg = j := by
@@ -1084,8 +1078,7 @@ theorem lift_left_inverse {k : LocalizationMap S P} (z : N) :
   rw [sec_spec', ← hx]
   ac_rfl
 #align submonoid.localization_map.lift_left_inverse Submonoid.LocalizationMap.lift_left_inverse
-#align add_submonoid.localization_map.lift_left_inverse
-  AddSubmonoid.LocalizationMap.lift_left_inverse
+#align add_submonoid.localization_map.lift_left_inverse AddSubmonoid.LocalizationMap.lift_left_inverse
 
 @[to_additive]
 theorem lift_surjective_iff :
@@ -1102,8 +1095,7 @@ theorem lift_surjective_iff :
     use f.mk' x.1 x.2
     rw [lift_mk', mul_inv_left hg, mul_comm, ← hx]
 #align submonoid.localization_map.lift_surjective_iff Submonoid.LocalizationMap.lift_surjective_iff
-#align add_submonoid.localization_map.lift_surjective_iff
-  AddSubmonoid.LocalizationMap.lift_surjective_iff
+#align add_submonoid.localization_map.lift_surjective_iff AddSubmonoid.LocalizationMap.lift_surjective_iff
 
 @[to_additive]
 theorem lift_injective_iff :
@@ -1847,7 +1839,6 @@ instance : CommMonoidWithZero (Localization S) where
     simp only [← Localization.mk_zero y.2, mk_mul, mk_eq_mk_iff, mul_zero, zero_mul, r_of_eq]
   mul_zero := fun x ↦ Localization.induction_on x fun y => by
     simp only [← Localization.mk_zero y.2, mk_mul, mk_eq_mk_iff, mul_zero, zero_mul, r_of_eq]
-
 #align localization.mk_zero Localization.mk_zero
 
 theorem liftOn_zero {p : Type _} (f : ∀ (_ : M) (_ : S), p) (H) : liftOn 0 f H = f 0 1 := by
