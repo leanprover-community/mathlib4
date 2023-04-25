@@ -278,6 +278,4 @@ theorem Finset.all_card_le_bunionᵢ_card_iff_existsInjective' {ι α : Type _} 
     rw [mem_image, mem_bunionᵢ]
     rintro ⟨x, hx, rfl⟩
     exact ⟨x, hx, hf₂ x⟩
-#align
-    finset.all_card_le_bUnion_card_iff_exists_injective'
-    Finset.all_card_le_bunionᵢ_card_iff_existsInjective'
+#align finset.all_card_le_bUnion_card_iff_exists_injective' Finset.all_card_le_bunionᵢ_card_iff_existsInjective'

@@ -70,7 +70,6 @@ theorem pow_le_pow' {a : M} {n m : ℕ} (ha : 1 ≤ a) (h : n ≤ m) : a ^ n ≤
   calc
     a ^ n ≤ a ^ n * a ^ k := le_mul_of_one_le_right' (one_le_pow_of_one_le' ha _)
     _ = a ^ m := by rw [← hk, pow_add]
-
 #align pow_le_pow' pow_le_pow'
 #align nsmul_le_nsmul nsmul_le_nsmul
 
@@ -262,7 +261,6 @@ theorem pow_lt_one_iff {x : M} {n : ℕ} (hn : n ≠ 0) : x ^ n < 1 ↔ x < 1 :=
 theorem pow_eq_one_iff {x : M} {n : ℕ} (hn : n ≠ 0) : x ^ n = 1 ↔ x = 1 := by
   simp only [le_antisymm_iff]
   rw [pow_le_one_iff hn, one_le_pow_iff hn]
-
 #align pow_eq_one_iff pow_eq_one_iff
 #align nsmul_eq_zero_iff nsmul_eq_zero_iff
 
@@ -424,7 +422,6 @@ theorem pow_add_pow_le (hx : 0 ≤ x) (hy : 0 ≤ y) (hn : n ≠ 0) : x ^ n + y 
       by
         rw [pow_succ _ n]
         exact mul_le_mul_of_nonneg_left (ih (Nat.succ_ne_zero k)) h2
-
 #align pow_add_pow_le pow_add_pow_le
 
 theorem pow_le_one : ∀ (n : ℕ) (_ : 0 ≤ a) (_ : a ≤ 1), a ^ n ≤ 1
@@ -533,7 +530,6 @@ theorem pow_lt_self_of_lt_one (h₀ : 0 < a) (h₁ : a < 1) (hn : 1 < n) : a ^ n
   calc
     a ^ n < a ^ 1 := pow_lt_pow_of_lt_one h₀ h₁ hn
     _ = a := pow_one _
-
 #align pow_lt_self_of_lt_one pow_lt_self_of_lt_one
 
 theorem sq_pos_of_pos (ha : 0 < a) : 0 < a ^ 2 := by

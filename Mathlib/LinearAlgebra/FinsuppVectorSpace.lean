@@ -177,7 +177,6 @@ theorem _root_.Finset.sum_univ_ite (b : n → M) (i : n) :
 theorem equivFun_symm_stdBasis (b : Basis n R M) (i : n) :
     b.equivFun.symm (LinearMap.stdBasis R (fun _ => R) i 1) = b i := by
   simp
-
 #align basis.equiv_fun_symm_std_basis Basis.equivFun_symm_stdBasis
 
 end Basis

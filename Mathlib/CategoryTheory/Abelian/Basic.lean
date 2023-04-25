@@ -115,9 +115,8 @@ class Abelian extends Preadditive C, NormalMonoCategory C, NormalEpiCategory C w
   [has_cokernels : HasCokernels C]
 #align category_theory.abelian CategoryTheory.Abelian
 
-attribute [instance] Abelian.has_finite_products
-
-attribute [instance] Abelian.has_kernels Abelian.has_cokernels
+attribute [instance 100] Abelian.has_finite_products
+attribute [instance 90] Abelian.has_kernels Abelian.has_cokernels
 
 end CategoryTheory
 
@@ -638,7 +637,6 @@ instance epi_pullback_of_epi_f [Epi f] : Epi (pullback.snd : pullback f g ⟶ Y)
       f ≫ d = (biprod.inl ≫ biprod.desc f (-g)) ≫ d := by rw [biprod.inl_desc]
       _ = biprod.inl ≫ u := by rw [Category.assoc, hd]
       _ = 0 := biprod.inl_desc _ _
-
     -- But f is an epimorphism, so d = 0...
     have : d = 0 := (cancel_epi f).1 (by simpa)
     -- ...or, in other words, e = 0.
@@ -648,7 +646,6 @@ instance epi_pullback_of_epi_f [Epi f] : Epi (pullback.snd : pullback f g ⟶ Y)
       _ = biprod.inr ≫ biprod.desc f (-g) ≫ 0 := by rw [this]
       _ = (biprod.inr ≫ biprod.desc f (-g)) ≫ 0 := by rw [← Category.assoc]
       _ = 0 := HasZeroMorphisms.comp_zero _ _
-
 #align category_theory.abelian.epi_pullback_of_epi_f CategoryTheory.Abelian.epi_pullback_of_epi_f
 
 /-- In an abelian category, the pullback of an epimorphism is an epimorphism. -/
@@ -676,7 +673,6 @@ instance epi_pullback_of_epi_g [Epi g] : Epi (pullback.fst : pullback f g ⟶ X)
       (-g) ≫ d = (biprod.inr ≫ biprod.desc f (-g)) ≫ d := by rw [biprod.inr_desc]
       _ = biprod.inr ≫ u := by rw [Category.assoc, hd]
       _ = 0 := biprod.inr_desc _ _
-
     -- But g is an epimorphism, thus so is -g, so d = 0...
     have : d = 0 := (cancel_epi (-g)).1 (by simpa)
     -- ...or, in other words, e = 0.
@@ -686,7 +682,6 @@ instance epi_pullback_of_epi_g [Epi g] : Epi (pullback.fst : pullback f g ⟶ X)
       _ = biprod.inl ≫ biprod.desc f (-g) ≫ 0 := by rw [this]
       _ = (biprod.inl ≫ biprod.desc f (-g)) ≫ 0 := by rw [← Category.assoc]
       _ = 0 := HasZeroMorphisms.comp_zero _ _
-
 #align category_theory.abelian.epi_pullback_of_epi_g CategoryTheory.Abelian.epi_pullback_of_epi_g
 
 theorem epi_snd_of_isLimit [Epi f] {s : PullbackCone f g} (hs : IsLimit s) : Epi s.snd := by
@@ -731,7 +726,6 @@ instance mono_pushout_of_mono_f [Mono f] : Mono (pushout.inr : Z ⟶ pushout f g
       d ≫ f = d ≫ biprod.lift f (-g) ≫ biprod.fst := by rw [biprod.lift_fst]
       _ = u ≫ biprod.fst := by rw [← Category.assoc, hd]
       _ = 0 := biprod.lift_fst _ _
-
     have : d = 0 := (cancel_mono f).1 (by simpa)
     calc
       e = biprod.lift (0 : R ⟶  Y) e ≫ biprod.snd := by rw [biprod.lift_snd]
@@ -739,7 +733,6 @@ instance mono_pushout_of_mono_f [Mono f] : Mono (pushout.inr : Z ⟶ pushout f g
       _ = (0 ≫ biprod.lift f (-g)) ≫ biprod.snd := by rw [this]
       _ = 0 ≫ biprod.lift f (-g) ≫ biprod.snd := by rw [Category.assoc]
       _ = 0 := zero_comp
-
 #align category_theory.abelian.mono_pushout_of_mono_f CategoryTheory.Abelian.mono_pushout_of_mono_f
 
 instance mono_pushout_of_mono_g [Mono g] : Mono (pushout.inl : Y ⟶ pushout f g) :=
@@ -757,7 +750,6 @@ instance mono_pushout_of_mono_g [Mono g] : Mono (pushout.inl : Y ⟶ pushout f g
       d ≫ (-g) = d ≫ biprod.lift f (-g) ≫ biprod.snd := by rw [biprod.lift_snd]
       _ = biprod.lift e (0 : R ⟶  Z) ≫ biprod.snd := by rw [← Category.assoc, hd]
       _ = 0 := biprod.lift_snd _ _
-
     have : d = 0 := (cancel_mono (-g)).1 (by simpa)
     calc
       e = biprod.lift e (0 : R ⟶  Z) ≫ biprod.fst := by rw [biprod.lift_fst]
@@ -765,7 +757,6 @@ instance mono_pushout_of_mono_g [Mono g] : Mono (pushout.inl : Y ⟶ pushout f g
       _ = (0 ≫ biprod.lift f (-g)) ≫ biprod.fst := by rw [this]
       _ = 0 ≫ biprod.lift f (-g) ≫ biprod.fst := by rw [Category.assoc]
       _ = 0 := zero_comp
-
 #align category_theory.abelian.mono_pushout_of_mono_g CategoryTheory.Abelian.mono_pushout_of_mono_g
 
 theorem mono_inr_of_isColimit [Mono f] {s : PushoutCocone f g} (hs : IsColimit s) : Mono s.inr := by
