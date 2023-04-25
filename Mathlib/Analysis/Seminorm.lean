@@ -560,12 +560,14 @@ noncomputable instance : SupSet (Seminorm 𝕜 E) where
           · simp [Real.csupᵢ_empty]
           haveI : Nonempty ↑s := h.coe_sort
           simp only [supᵢ_apply]
-          refine'
-                csupᵢ_le fun i =>
-                  ((i : Seminorm 𝕜 E).add_le' x y).trans <|
-                    add_le_add (le_csupᵢ ⟨q x, _⟩ i) (le_csupᵢ ⟨q y, _⟩ i) <;>
-              rw [mem_upperBounds, forall_range_iff] <;>
-            exact fun j => hq (mem_image_of_mem _ j.2) _
+          refine' csupᵢ_le fun i =>
+            ((i : Seminorm 𝕜 E).add_le' x y).trans <| add_le_add
+              -- Porting note: `f` is provided to force `Subtype.val` to appear.
+              -- A type ascription on `_` would have also worked, but would have been more verbose.
+              (le_csupᵢ (f := fun i => (Subtype.val i : Seminorm 𝕜 E).toFun x) ⟨q x, _⟩ i)
+              (le_csupᵢ (f := fun i => (Subtype.val i : Seminorm 𝕜 E).toFun y) ⟨q y, _⟩ i)
+          <;> rw [mem_upperBounds, forall_range_iff]
+          <;> exact fun j => hq (mem_image_of_mem _ j.2) _
         neg' := fun x => by
           simp only [supᵢ_apply]
           congr! 2
