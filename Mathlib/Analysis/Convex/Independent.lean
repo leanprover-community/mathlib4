@@ -24,11 +24,11 @@ convex independence.
 
 ## Main declarations
 
-* `convex_independent p`: Convex independence of the indexed family `p : ι → E`. Every point of the
+* `ConvexIndependent p`: Convex independence of the indexed family `p : ι → E`. Every point of the
   family only belongs to convex hulls of sets of the family containing it.
-* `convex_independent_iff_finset`: Carathéodory's theorem allows us to only check finsets to
+* `convexIndependent_iff_finset`: Carathéodory's theorem allows us to only check finsets to
   conclude convex independence.
-* `convex.extreme_points_convex_independent`: Extreme points of a convex set are convex independent.
+* `Convex.convexIndependent_extremePoints`: Extreme points of a convex set are convex independent.
 
 ## References
 
@@ -36,8 +36,8 @@ convex independence.
 
 ## TODO
 
-Prove `affine_independent.convex_independent`. This requires some glue between `affine_combination`
-and `finset.center_mass`.
+Prove `AffineIndependent.convexIndependent`. This requires some glue between `affineCombination`
+and `Finset.centerMass`.
 
 ## Tags
 
@@ -64,8 +64,8 @@ def ConvexIndependent (p : ι → E) : Prop :=
 variable {𝕜}
 
 /-- A family with at most one point is convex independent. -/
-theorem Subsingleton.convexIndependent [Subsingleton ι] (p : ι → E) : ConvexIndependent 𝕜 p :=
-  fun s x hx => by
+theorem Subsingleton.convexIndependent [Subsingleton ι] (p : ι → E) : ConvexIndependent 𝕜 p := by
+  intro s x hx
   have : (convexHull 𝕜 (p '' s)).Nonempty := ⟨p x, hx⟩
   rw [convexHull_nonempty_iff, Set.nonempty_image_iff] at this
   rwa [Subsingleton.mem_iff_nonempty]
@@ -132,7 +132,7 @@ protected theorem ConvexIndependent.mem_convexHull_iff {p : ι → E} (hc : Conv
 #align convex_independent.mem_convex_hull_iff ConvexIndependent.mem_convexHull_iff
 
 /-- If a family is convex independent, a point in the family is not in the convex hull of the other
-points. See `convex_independent_set_iff_not_mem_convex_hull_diff` for the `set` version.  -/
+points. See `convexIndependent_set_iff_not_mem_convexHull_diff` for the `Set` version. -/
 theorem convexIndependent_iff_not_mem_convexHull_diff {p : ι → E} :
     ConvexIndependent 𝕜 p ↔ ∀ i s, p i ∉ convexHull 𝕜 (p '' (s \ {i})) := by
   refine' ⟨fun hc i s h => _, fun h s i hi => _⟩
@@ -157,7 +157,7 @@ theorem convexIndependent_set_iff_inter_convexHull_subset {s : Set E} :
 #align convex_independent_set_iff_inter_convex_hull_subset convexIndependent_set_iff_inter_convexHull_subset
 
 /-- If a set is convex independent, a point in the set is not in the convex hull of the other
-points. See `convex_independent_iff_not_mem_convex_hull_diff` for the indexed family version.  -/
+points. See `convexIndependent_iff_not_mem_convexHull_diff` for the indexed family version. -/
 theorem convexIndependent_set_iff_not_mem_convexHull_diff {s : Set E} :
     ConvexIndependent 𝕜 (fun x => x : s → E) ↔ ∀ x ∈ s, x ∉ convexHull 𝕜 (s \ {x}) := by
   rw [convexIndependent_set_iff_inter_convexHull_subset]
