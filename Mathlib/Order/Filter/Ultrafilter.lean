@@ -481,10 +481,12 @@ theorem hyperfilter_le_cofinite : ↑(hyperfilter α) ≤ @cofinite α :=
   Ultrafilter.of_le cofinite
 #align filter.hyperfilter_le_cofinite Filter.hyperfilter_le_cofinite
 
+theorem _root_.Nat.hyperfilter_le_atTop : (hyperfilter ℕ).toFilter ≤ atTop :=
+  hyperfilter_le_cofinite.trans_eq Nat.cofinite_eq_atTop
+
 @[simp]
 theorem bot_ne_hyperfilter : (⊥ : Filter α) ≠ hyperfilter α :=
   (NeBot.ne inferInstance).symm
-
 #align filter.bot_ne_hyperfilter Filter.bot_ne_hyperfilter
 
 theorem nmem_hyperfilter_of_finite {s : Set α} (hf : s.Finite) : s ∉ hyperfilter α := fun hy =>
