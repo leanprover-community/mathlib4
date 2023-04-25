@@ -125,7 +125,9 @@ instance {P Q : C} [HasBinaryCoproduct P Q] [Projective P] [Projective Q] : Proj
 
 section
 
--- porting note: todo: attribute [local tidy] tactic.discrete_cases
+-- porting note: `coprod.hom_ext` and `Sigma.hom_ext` have been added in
+--   Limits.Shapes.BinaryProducts and Limits.Shapes.Products
+-- attribute [local tidy] tactic.discrete_cases
 
 instance {β : Type v} (g : β → C) [HasCoproduct g] [∀ b, Projective (g b)] : Projective (∐ g) where
   factors f e epi := ⟨Sigma.desc fun b => factorThru (Sigma.ι g b ≫ f) e, by aesop_cat⟩
@@ -139,7 +141,7 @@ instance {P Q : C} [HasZeroMorphisms C] [HasBinaryBiproduct P Q] [Projective P] 
 
 instance {β : Type v} (g : β → C) [HasZeroMorphisms C] [HasBiproduct g] [∀ b, Projective (g b)] :
     Projective (⨁ g) where
-  factors f e epi := ⟨biproduct.desc fun b => factor_thru (biproduct.ι g b ≫ f) e, by aesop_cat⟩
+  factors f e epi := ⟨biproduct.desc fun b => factorThru (biproduct.ι g b ≫ f) e, by aesop_cat⟩
 
 theorem projective_iff_preservesEpimorphisms_coyoneda_obj (P : C) :
     Projective P ↔ (coyoneda.obj (op P)).PreservesEpimorphisms :=
@@ -157,8 +159,8 @@ section EnoughProjectives
 
 variable [EnoughProjectives C]
 
-/-- `projective.over X` provides an arbitrarily chosen projective object equipped with
-an epimorphism `projective.π : projective.over X ⟶ X`.
+/-- `Projective.over X` provides an arbitrarily chosen projective object equipped with
+an epimorphism `Projective.π : Projective.over X ⟶ X`.
 -/
 def over (X : C) : C :=
   (EnoughProjectives.presentation X).some.p
