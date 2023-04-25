@@ -199,32 +199,32 @@ protected theorem congr_fun [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] {f g 
   h ▸ rfl
 #align linear_isometry.congr_fun LinearIsometry.congr_fun
 
-@[simp]
+-- @[simp] -- Porting note: simp can prove this
 protected theorem map_zero : f 0 = 0 :=
   f.toLinearMap.map_zero
 #align linear_isometry.map_zero LinearIsometry.map_zero
 
-@[simp]
+-- @[simp] -- Porting note: simp can prove this
 protected theorem map_add (x y : E) : f (x + y) = f x + f y :=
   f.toLinearMap.map_add x y
 #align linear_isometry.map_add LinearIsometry.map_add
 
-@[simp]
+-- @[simp] -- Porting note: simp can prove this
 protected theorem map_neg (x : E) : f (-x) = -f x :=
   f.toLinearMap.map_neg x
 #align linear_isometry.map_neg LinearIsometry.map_neg
 
-@[simp]
+-- @[simp] -- Porting note: simp can prove this
 protected theorem map_sub (x y : E) : f (x - y) = f x - f y :=
   f.toLinearMap.map_sub x y
 #align linear_isometry.map_sub LinearIsometry.map_sub
 
-@[simp]
+-- @[simp] -- Porting note: simp can prove this
 protected theorem map_smulₛₗ (c : R) (x : E) : f (c • x) = σ₁₂ c • f x :=
   f.toLinearMap.map_smulₛₗ c x
 #align linear_isometry.map_smulₛₗ LinearIsometry.map_smulₛₗ
 
-@[simp]
+-- @[simp] -- Porting note: simp can prove this
 protected theorem map_smul [Module R E₂] (f : E →ₗᵢ[R] E₂) (c : R) (x : E) : f (c • x) = c • f x :=
   f.toLinearMap.map_smul c x
 #align linear_isometry.map_smul LinearIsometry.map_smul
@@ -234,7 +234,7 @@ theorem norm_map (x : E) : ‖f x‖ = ‖x‖ :=
   SemilinearIsometryClass.norm_map f x
 #align linear_isometry.norm_map LinearIsometry.norm_map
 
-@[simp]
+-- @[simp] -- Porting note: simp can prove this
 theorem nnnorm_map (x : E) : ‖f x‖₊ = ‖x‖₊ :=
   NNReal.eq <| norm_map f x
 #align linear_isometry.nnnorm_map LinearIsometry.nnnorm_map
@@ -749,7 +749,7 @@ theorem symm_apply_apply (x : E) : e.symm (e x) = x :=
   e.toLinearEquiv.symm_apply_apply x
 #align linear_isometry_equiv.symm_apply_apply LinearIsometryEquiv.symm_apply_apply
 
-@[simp]
+-- @[simp] -- Porting note: simp can prove this
 theorem map_eq_zero_iff {x : E} : e x = 0 ↔ x = 0 :=
   e.toLinearEquiv.map_eq_zero_iff
 #align linear_isometry_equiv.map_eq_zero_iff LinearIsometryEquiv.map_eq_zero_iff
@@ -783,14 +783,14 @@ def Simps.apply (σ₁₂ : R →+* R₂) {σ₂₁ : R₂ →+* R} [RingHomInvP
 #align linear_isometry_equiv.simps.apply LinearIsometryEquiv.Simps.apply
 
 /-- See Note [custom simps projection] -/
-def Simps.symmApply (σ₁₂ : R →+* R₂) {σ₂₁ : R₂ →+* R} [RingHomInvPair σ₁₂ σ₂₁]
+def Simps.symm_apply (σ₁₂ : R →+* R₂) {σ₂₁ : R₂ →+* R} [RingHomInvPair σ₁₂ σ₂₁]
     [RingHomInvPair σ₂₁ σ₁₂] (E E₂ : Type _) [SeminormedAddCommGroup E] [SeminormedAddCommGroup E₂]
     [Module R E] [Module R₂ E₂] (h : E ≃ₛₗᵢ[σ₁₂] E₂) : E₂ → E :=
   h.symm
-#align linear_isometry_equiv.simps.symm_apply LinearIsometryEquiv.Simps.symmApply
+#align linear_isometry_equiv.simps.symm_apply LinearIsometryEquiv.Simps.symm_apply
 
 initialize_simps_projections LinearIsometryEquiv (toLinearEquiv_toFun → apply,
-  toLinearEquiv_invFun → symmApply)
+  toLinearEquiv_invFun → symm_apply)
 
 /-- Composition of `LinearIsometryEquiv`s as a `LinearIsometryEquiv`. -/
 def trans (e' : E₂ ≃ₛₗᵢ[σ₂₃] E₃) : E ≃ₛₗᵢ[σ₁₃] E₃ :=
@@ -937,42 +937,42 @@ theorem coe_coe : ⇑(e : E ≃SL[σ₁₂] E₂) = e :=
   rfl
 #align linear_isometry_equiv.coe_coe LinearIsometryEquiv.coe_coe
 
-@[simp]
-theorem coe_coe' : ((e : E ≃SL[σ₁₂] E₂) : E →SL[σ₁₂] E₂) = e :=
-  rfl
-#align linear_isometry_equiv.coe_coe' LinearIsometryEquiv.coe_coe'
+-- @[simp] -- Porting note: now a syntactic tautology
+-- theorem coe_coe' : ((e : E ≃SL[σ₁₂] E₂) : E →SL[σ₁₂] E₂) = e :=
+--   rfl
+#noalign linear_isometry_equiv.coe_coe'
 
 @[simp]
 theorem coe_coe'' : ⇑(e : E →SL[σ₁₂] E₂) = e :=
   rfl
 #align linear_isometry_equiv.coe_coe'' LinearIsometryEquiv.coe_coe''
 
-@[simp]
+-- @[simp] -- Porting note: simp can prove this
 theorem map_zero : e 0 = 0 :=
   e.1.map_zero
 #align linear_isometry_equiv.map_zero LinearIsometryEquiv.map_zero
 
-@[simp]
+-- @[simp] -- Porting note: simp can prove this
 theorem map_add (x y : E) : e (x + y) = e x + e y :=
   e.1.map_add x y
 #align linear_isometry_equiv.map_add LinearIsometryEquiv.map_add
 
-@[simp]
+-- @[simp] -- Porting note: simp can prove this
 theorem map_sub (x y : E) : e (x - y) = e x - e y :=
   e.1.map_sub x y
 #align linear_isometry_equiv.map_sub LinearIsometryEquiv.map_sub
 
-@[simp]
+-- @[simp] -- Porting note: simp can prove this
 theorem map_smulₛₗ (c : R) (x : E) : e (c • x) = σ₁₂ c • e x :=
   e.1.map_smulₛₗ c x
 #align linear_isometry_equiv.map_smulₛₗ LinearIsometryEquiv.map_smulₛₗ
 
-@[simp]
+-- @[simp] -- Porting note: simp can prove this
 theorem map_smul [Module R E₂] {e : E ≃ₗᵢ[R] E₂} (c : R) (x : E) : e (c • x) = c • e x :=
   e.1.map_smul c x
 #align linear_isometry_equiv.map_smul LinearIsometryEquiv.map_smul
 
-@[simp]
+-- @[simp] -- Porting note: simp can prove this
 theorem nnnorm_map (x : E) : ‖e x‖₊ = ‖x‖₊ :=
   SemilinearIsometryClass.nnnorm_map e x
 #align linear_isometry_equiv.nnnorm_map LinearIsometryEquiv.nnnorm_map
@@ -999,7 +999,7 @@ protected theorem surjective : Surjective e :=
   e.1.surjective
 #align linear_isometry_equiv.surjective LinearIsometryEquiv.surjective
 
-@[simp]
+-- @[simp] -- Porting note: simp can prove this
 theorem map_eq_iff {x y : E} : e x = e y ↔ x = y :=
   e.injective.eq_iff
 #align linear_isometry_equiv.map_eq_iff LinearIsometryEquiv.map_eq_iff
@@ -1160,7 +1160,7 @@ theorem coe_prodAssoc_symm [Module R E₂] [Module R E₃] :
 set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 /-- If `p` is a submodule that is equal to `⊤`, then `LinearIsometryEquiv.ofTop p hp` is the
 "identity" equivalence between `p` and `E`. -/
-@[simps! toLinearEquiv apply symmApply_coe]
+@[simps! toLinearEquiv apply symm_apply_coe]
 def ofTop {R : Type _} [Ring R] [Module R E] (p : Submodule R E) (hp : p = ⊤) : p ≃ₗᵢ[R] E :=
   { p.subtypeₗᵢ with toLinearEquiv := LinearEquiv.ofTop p hp }
 #align linear_isometry_equiv.of_top LinearIsometryEquiv.ofTop
@@ -1209,7 +1209,7 @@ theorem Basis.ext_linearIsometryEquiv {ι : Type _} (b : Basis ι R E) {f₁ f�
 
 set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 /-- Reinterpret a `LinearIsometry` as a `LinearIsometryEquiv` to the range. -/
-@[simps! toLinearEquiv apply_coe]
+@[simps! apply_coe] -- Porting note: `toLinearEquiv` projection does not simplify using itself
 noncomputable def LinearIsometry.equivRange {R S : Type _} [Semiring R] [Ring S] [Module S E]
     [Module R F] {σ₁₂ : R →+* S} {σ₂₁ : S →+* R} [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂]
     (f : F →ₛₗᵢ[σ₁₂] E) : F ≃ₛₗᵢ[σ₁₂] (LinearMap.range f.toLinearMap) :=
