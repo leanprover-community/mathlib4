@@ -190,7 +190,7 @@ def invertibleOfInvertibleTranspose [Invertible Aᵀ] : Invertible A := by
 
 /-- A matrix is invertible if the conjugate transpose is invertible. -/
 def invertibleOfInvertibleConjTranspose [StarRing α] [Invertible Aᴴ] : Invertible A := by
-  rw [← conjTranspose_conjTranspose A]
+  rw [← conjTranspose_conjTranspose A, ← star_eq_conjTranspose]
   infer_instance
 #align matrix.invertible_of_invertible_conj_transpose Matrix.invertibleOfInvertibleConjTranspose
 
@@ -528,7 +528,7 @@ def diagonalInvertible {α} [NonAssocSemiring α] (v : n → α) [Invertible v] 
 theorem invOf_diagonal_eq {α} [Semiring α] (v : n → α) [Invertible v] [Invertible (diagonal v)] :
     ⅟ (diagonal v) = diagonal (⅟ v) := by
   letI := diagonalInvertible v
-  haveI := Invertible.subsingleton (diagonal v)
+  -- Porting note: no longer need `haveI := Invertible.subsingleton (diagonal v)`
   convert(rfl : ⅟ (diagonal v) = _)
 #align matrix.inv_of_diagonal_eq Matrix.invOf_diagonal_eq
 
@@ -565,7 +565,7 @@ def diagonalInvertibleEquivInvertible (v : n → α) : Invertible (diagonal v) �
 @[simp]
 theorem isUnit_diagonal {v : n → α} : IsUnit (diagonal v) ↔ IsUnit v := by
   simp only [← nonempty_invertible_iff_isUnit,
-    (diagonal_invertible_equiv_invertible v).nonempty_congr]
+    (diagonalInvertibleEquivInvertible v).nonempty_congr]
 #align matrix.is_unit_diagonal Matrix.isUnit_diagonal
 
 theorem inv_diagonal (v : n → α) : (diagonal v)⁻¹ = diagonal (Ring.inverse v) := by
@@ -574,7 +574,7 @@ theorem inv_diagonal (v : n → α) : (diagonal v)⁻¹ = diagonal (Ring.inverse
   · have := isUnit_diagonal.mpr h
     cases this.nonempty_invertible
     cases h.nonempty_invertible
-    rw [Ring.inverse_invertible, Ring.inverse_invertible, inv_of_diagonal_eq]
+    rw [Ring.inverse_invertible, Ring.inverse_invertible, invOf_diagonal_eq]
   · have := isUnit_diagonal.not.mpr h
     rw [Ring.inverse_non_unit _ h, Pi.zero_def, diagonal_zero, Ring.inverse_non_unit _ this]
 #align matrix.inv_diagonal Matrix.inv_diagonal
@@ -596,26 +596,28 @@ theorem mul_inv_rev (A B : Matrix n n α) : (A ⬝ B)⁻¹ = B⁻¹ ⬝ A⁻¹ :
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- A version of `list.prod_inv_reverse` for `matrix.has_inv`. -/
-theorem list_prod_inv_reverse : ∀ l : List (Matrix n n α), l.Prod⁻¹ = (l.reverse.map Inv.inv).Prod
+theorem list_prod_inv_reverse : ∀ l : List (Matrix n n α), l.prod⁻¹ = (l.reverse.map Inv.inv).prod
   | [] => by rw [List.reverse_nil, List.map_nil, List.prod_nil, inv_one]
   | A::Xs => by
     rw [List.reverse_cons', List.map_concat, List.prod_concat, List.prod_cons, Matrix.mul_eq_mul,
-      Matrix.mul_eq_mul, mul_inv_rev, list_prod_inv_reverse]
+      Matrix.mul_eq_mul, mul_inv_rev, list_prod_inv_reverse Xs]
 #align matrix.list_prod_inv_reverse Matrix.list_prod_inv_reverse
 
+set_option synthInstance.etaExperiment true in
 /-- One form of **Cramer's rule**. See `matrix.mul_vec_cramer` for a stronger form. -/
 @[simp]
 theorem det_smul_inv_mulVec_eq_cramer (A : Matrix n n α) (b : n → α) (h : IsUnit A.det) :
     A.det • A⁻¹.mulVec b = cramer A b := by
-  rw [cramer_eq_adjugate_mul_vec, A.nonsing_inv_apply h, ← smul_mul_vec_assoc, smul_smul,
-    h.mul_coe_inv, one_smul]
+  rw [cramer_eq_adjugate_mulVec, A.nonsing_inv_apply h, ← smul_mulVec_assoc, smul_smul,
+    h.mul_val_inv, one_smul]
 #align matrix.det_smul_inv_mul_vec_eq_cramer Matrix.det_smul_inv_mulVec_eq_cramer
 
+set_option synthInstance.etaExperiment true in
 /-- One form of **Cramer's rule**. See `matrix.mul_vec_cramer` for a stronger form. -/
 @[simp]
 theorem det_smul_inv_vecMul_eq_cramer_transpose (A : Matrix n n α) (b : n → α) (h : IsUnit A.det) :
     A.det • A⁻¹.vecMul b = cramer Aᵀ b := by
-  rw [← A⁻¹.transpose_transpose, vec_mul_transpose, transpose_nonsing_inv, ← det_transpose,
+  rw [← A⁻¹.transpose_transpose, vecMul_transpose, transpose_nonsing_inv, ← det_transpose,
     Aᵀ.det_smul_inv_mulVec_eq_cramer _ (isUnit_det_transpose A h)]
 #align matrix.det_smul_inv_vec_mul_eq_cramer_transpose Matrix.det_smul_inv_vecMul_eq_cramer_transpose
 
