@@ -188,7 +188,7 @@ def withScottTopologyHomeomorph : WithScottTopology α ≃ₜ α :=
 
 lemma isOpen_eq_upper_and_LUB_mem_implies_tail_subset (u : Set α) : IsOpen u
 = (IsUpperSet u ∧ ∀ (d : Set α) (a : α), d.Nonempty → DirectedOn (· ≤ ·) d → IsLUB d a → a ∈ u
-  → ∃ b ∈ d, (Ici b) ∩ d ⊆ u) := sorry
+  → ∃ b ∈ d, (Ici b) ∩ d ⊆ u) := by erw [topology_eq α]; rfl
 
 lemma isOpen_iff_upper_and_LUB_mem_implies_inter_nonempty (u : Set α) :
 IsOpen u ↔ (IsUpperSet u ∧ ∀ (d : Set α) (a : α), d.Nonempty → DirectedOn (· ≤ ·) d → IsLUB d a →
