@@ -81,7 +81,6 @@ theorem succ_mul_centralBinom_succ (n : ℕ) :
                                                                Nat.add_sub_cancel_left]
     _ = 2 * ((2 * n).choose n * (2 * n + 1)) := by rw [choose_mul_succ_eq]
     _ = 2 * (2 * n + 1) * (2 * n).choose n := by rw [mul_assoc, mul_comm (2 * n + 1)]
-
 #align nat.succ_mul_central_binom_succ Nat.succ_mul_centralBinom_succ
 
 /-- An exponential lower bound on the central binomial coefficient.
@@ -99,7 +98,6 @@ theorem four_pow_lt_mul_centralBinom (n : ℕ) (n_big : 4 ≤ n) : 4 ^ n < n * c
       (mul_lt_mul_left <| zero_lt_four' ℕ).mpr (IH n n.lt_succ_self (Nat.le_of_lt_succ hn))
     _ ≤ 2 * (2 * n + 1) * centralBinom n := by rw [← mul_assoc]; linarith
     _ = (n + 1) * centralBinom (n + 1) := (succ_mul_centralBinom_succ n).symm
-
 #align nat.four_pow_lt_mul_central_binom Nat.four_pow_lt_mul_centralBinom
 
 /-- An exponential lower bound on the central binomial coefficient.

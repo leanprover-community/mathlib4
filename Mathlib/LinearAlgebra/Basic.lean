@@ -146,7 +146,6 @@ theorem LinearEquiv.finsuppUnique_symm_apply {α : Type _} [Unique α] (m : M) :
     (LinearEquiv.finsuppUnique R M α).symm m = Finsupp.single default m := by
   ext; simp [LinearEquiv.finsuppUnique, Equiv.funUnique, single, Pi.single,
     equivFunOnFinite, Function.update]
-
 #align finsupp.linear_equiv.finsupp_unique_symm_apply Finsupp.LinearEquiv.finsuppUnique_symm_apply
 
 end Finsupp
@@ -326,7 +325,6 @@ theorem coeFn_sum {ι : Type _} (t : Finset ι) (f : ι → M →ₛₗ[σ₁₂
       from { toFun := FunLike.coe,
              map_zero' := rfl
              map_add' := fun _ _ => rfl }) _ _
-
 #align linear_map.coe_fn_sum LinearMap.coeFn_sum
 
 @[simp]
@@ -1131,7 +1129,6 @@ theorem map_finsupp_sum (f : M →ₛₗ[σ₁₂] M₂) {t : ι →₀ γ} {g :
 
 theorem coe_finsupp_sum (t : ι →₀ γ) (g : ι → γ → M →ₛₗ[σ₁₂] M₂) :
     ⇑(t.sum g) = t.sum fun i d => g i d := rfl
-
 #align linear_map.coe_finsupp_sum LinearMap.coe_finsupp_sum
 
 @[simp]
@@ -1288,7 +1285,6 @@ theorem eqLocus_toAddSubmonoid (f g : M →ₛₗ[τ₁₂] M₂) :
 theorem eqLocus_same (f : M →ₛₗ[τ₁₂] M₂) : f.eqLocus f = ⊤ :=
   SetLike.ext fun _ => by
     simp only [mem_eqLocus, mem_top]
-
 #align linear_map.eq_locus_same LinearMap.eqLocus_same
 
 end
@@ -2542,7 +2538,6 @@ theorem map_symm_eq_iff (e : M ≃ₛₗ[τ₁₂] M₂) {K : Submodule R₂ M�
   · calc
       map e.symm (map e p) = comap e (map e p) := (comap_equiv_eq_map_symm _ _).symm
       _ = p := comap_map_eq_of_injective e.injective _
-
 #align submodule.map_symm_eq_iff Submodule.map_symm_eq_iff
 
 theorem orderIsoMapComap_apply' (e : M ≃ₛₗ[τ₁₂] M₂) (p : Submodule R M) :

@@ -384,7 +384,6 @@ theorem interior_union_isClosed_of_interior_empty {s t : Set α} (h₁ : IsClose
 theorem isOpen_iff_forall_mem_open : IsOpen s ↔ ∀ x ∈ s, ∃ t, t ⊆ s ∧ IsOpen t ∧ x ∈ t := by
   rw [← subset_interior_iff_isOpen]
   simp only [subset_def, mem_interior]
-
 #align is_open_iff_forall_mem_open isOpen_iff_forall_mem_open
 
 theorem interior_interᵢ_subset (s : ι → Set α) : interior (⋂ i, s i) ⊆ ⋂ i, interior (s i) :=
@@ -1368,7 +1367,6 @@ theorem isClosed_iff_clusterPt {s : Set α} : IsClosed s ↔ ∀ a, ClusterPt a 
   calc
     IsClosed s ↔ closure s ⊆ s := closure_subset_iff_isClosed.symm
     _ ↔ ∀ a, ClusterPt a (𝓟 s) → a ∈ s := by simp only [subset_def, mem_closure_iff_clusterPt]
-
 #align is_closed_iff_cluster_pt isClosed_iff_clusterPt
 
 theorem isClosed_iff_nhds {s : Set α} : IsClosed s ↔ ∀ x, (∀ U ∈ 𝓝 x, (U ∩ s).Nonempty) → x ∈ s :=
@@ -1402,7 +1400,6 @@ theorem Dense.open_subset_closure_inter {s t : Set α} (hs : Dense s) (ht : IsOp
   calc
     t = t ∩ closure s := by rw [hs.closure_eq, inter_univ]
     _ ⊆ closure (t ∩ s) := ht.inter_closure
-
 #align dense.open_subset_closure_inter Dense.open_subset_closure_inter
 
 theorem mem_closure_of_mem_closure_union {s₁ s₂ : Set α} {x : α} (h : x ∈ closure (s₁ ∪ s₂))
@@ -1441,7 +1438,6 @@ theorem closure_diff {s t : Set α} : closure s \ closure t ⊆ closure (s \ t) 
     _ ⊆ closure (closure tᶜ ∩ s) := (isOpen_compl_iff.mpr <| isClosed_closure).inter_closure
     _ = closure (s \ closure t) := by simp only [diff_eq, inter_comm]
     _ ⊆ closure (s \ t) := closure_mono <| diff_subset_diff (Subset.refl s) subset_closure
-
 #align closure_diff closure_diff
 
 theorem Filter.Frequently.mem_of_closed {a : α} {s : Set α} (h : ∃ᶠ x in 𝓝 a, x ∈ s)
