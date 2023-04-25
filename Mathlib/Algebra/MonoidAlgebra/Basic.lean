@@ -1480,6 +1480,10 @@ instance commRing [CommRing k] [AddCommMonoid G] : CommRing (AddMonoidAlgebra k 
 
 variable {S : Type _}
 
+instance distribSMul [Semiring k] [DistribSMul R k] : DistribSMul R (AddMonoidAlgebra k G) :=
+  Finsupp.distribSMul G k
+#align add_monoid_algebra.distrib_smul AddMonoidAlgebra.distribSMul
+
 instance distribMulAction [Monoid R] [Semiring k] [DistribMulAction R k] :
     DistribMulAction R (AddMonoidAlgebra k G) :=
   Finsupp.distribMulAction G k
