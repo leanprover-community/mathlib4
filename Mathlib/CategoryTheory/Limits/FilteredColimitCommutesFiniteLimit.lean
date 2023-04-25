@@ -316,10 +316,9 @@ theorem colimitLimitToLimitColimit_surjective :
       refine' ⟨k'', 𝟙 k'', g j ≫ gf (𝟙 j) ≫ i (𝟙 j), _⟩
       -- porting note: the lean 3 proof finished with
       -- `simp only [Bifunctor.map_id_comp, types_comp_apply, Bifunctor.map_id, types_id_apply]`
-      -- which doesn't work. why doesn't `rw [← types_comp_apply]` work? **TODO** ask on github
-      convert (types_comp_apply (F.map _) (F.map _) (y j)).symm
-      -- Gabriel advises against non-terminal `convert`s but I wrestled and lost
-      simp [← F.map_comp]
+      -- which doesn't work; the corresponding `rw` works fine:
+      rw [Bifunctor.map_id_comp, Bifunctor.map_id_comp, types_comp_apply, types_comp_apply,
+        Bifunctor.map_id, types_id_apply]
 #align category_theory.limits.colimit_limit_to_limit_colimit_surjective CategoryTheory.Limits.colimitLimitToLimitColimit_surjective
 
 instance colimitLimitToLimitColimit_isIso : IsIso (colimitLimitToLimitColimit F) :=
