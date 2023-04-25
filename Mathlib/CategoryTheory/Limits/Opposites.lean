@@ -463,7 +463,6 @@ def opSpan {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) :
     _ ≅ walkingSpanOpEquiv.functor ⋙ walkingSpanOpEquiv.inverse ⋙ (span f g).op :=
       (Functor.associator _ _ _)
     _ ≅ walkingSpanOpEquiv.functor ⋙ cospan f.op g.op := isoWhiskerLeft _ (cospanOp f g).symm
-
 #align category_theory.limits.op_span CategoryTheory.Limits.opSpan
 
 namespace PushoutCocone

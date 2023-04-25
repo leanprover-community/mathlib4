@@ -740,7 +740,6 @@ theorem id_apply (a : α) : CompleteLatticeHom.id α a = a :=
 /-- Composition of `CompleteLatticeHom`s as a `CompleteLatticeHom`. -/
 def comp (f : CompleteLatticeHom β γ) (g : CompleteLatticeHom α β) : CompleteLatticeHom α γ :=
   { f.toSupₛHom.comp g.toSupₛHom with toInfₛHom := f.toInfₛHom.comp g.toInfₛHom }
-
 #align complete_lattice_hom.comp CompleteLatticeHom.comp
 
 @[simp]
