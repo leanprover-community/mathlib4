@@ -124,6 +124,7 @@ theorem colimitLimitToLimitColimit_injective : Function.Injective (colimitLimitT
     -- We can check if two elements of a limit (in `Type`)
     -- are equal by comparing them componentwise.
     -- porting note: next two lines were `ext` in mathlib3
+    -- **TODO** make it `ext` again
     apply limit_ext'
     intro j
     -- Now it's just a calculation using `W` and `w`.
@@ -208,14 +209,13 @@ theorem colimitLimitToLimitColimit_surjective :
       dsimp [curry_obj_obj_obj, curry_obj_obj_map] at q
       -- porting note: Lean 4 `dsimp` is unfolding `gf` and `hf` :-(
       -- We fold them back up.
+      -- **TODO** minimise and ask why this is happening
       change F.map ((𝟙 j', gf f) : (j', k') ⟶ (j', kf f))
         (F.map ((𝟙 j', g j') : (j', k j') ⟶ (j', k')) (y j')) =
         F.map ((𝟙 j', hf f) : (j', k') ⟶ (j', kf f)) (F.map ((f, g j) :
           (j, k j) ⟶ (j', k')) (y j)) at q
       simp_rw [← FunctorToTypes.map_comp_apply, CategoryStruct.comp] at q
-      convert q
-      · simp only [comp_id]
-      · simp only [comp_id]
+      convert q <;> simp only [comp_id]
     clear_value kf gf hf
     -- and clean up some things that are no longer needed.
     clear w
@@ -250,6 +250,7 @@ theorem colimitLimitToLimitColimit_surjective :
     have s : ∀ {j₁ j₂ j₃ j₄} (f : j₁ ⟶ j₂) (f' : j₃ ⟶ j₄), gf f ≫ i f = hf f' ≫ i f' := by
       intros j₁ j₂ j₃ j₄ f f'
       rw [s', s']
+      -- porting note: the three goals here in Lean 3 were in a different order
       exact k'O
       swap
       · rw [Finset.mem_bunionᵢ]
@@ -270,12 +271,7 @@ theorem colimitLimitToLimitColimit_surjective :
     clear_value i
     clear s' i' H kfO k'O O
     -- We're finally ready to construct the pre-image, and verify it really maps to `x`.
-    /-
-    Lean 3: ⊢ ∃ (a : limits.colimit (curry.obj (swap K J ⋙ F) ⋙ limits.lim)),
-      limits.colimit_limit_to_limit_colimit F a = x
-    Lean 4: ⊢ ∃ a, colimitLimitToLimitColimit F a = x
-    -/
-    --dsimp only [colimitLimitToLimitColimit]
+    -- ⊢ ∃ a, colimitLimitToLimitColimit F a = x
     fconstructor
     · -- We construct the pre-image (which, recall is meant to be a point
       -- in the colimit (over `K`) of the limits (over `J`)) via a representative at `k''`.
@@ -314,15 +310,16 @@ theorem colimitLimitToLimitColimit_surjective :
       intro j
       -- and as each component is an equation in a colimit, we can verify it by
       -- pointing out the morphism which carries one representative to the other:
-      -- porting note: was one `simp only`
-      simp_rw [id.def, ← e, Limits.ι_colimitLimitToLimitColimit_π_apply,
-          colimit_eq_iff.{v, v}, Bifunctor.map_id_comp, types_comp_apply, curry_obj_obj_map]
-      simp only [Functor.comp_obj, colim_obj, Limit.π_mk]
-      simp_rw [id.def, ← e, Limits.ι_colimitLimitToLimitColimit_π_apply,
-          colimit_eq_iff.{v, v}, Bifunctor.map_id_comp, types_comp_apply, curry_obj_obj_map]
+      simp only [id.def, ← e, Limits.ι_colimitLimitToLimitColimit_π_apply,
+          colimit_eq_iff.{v, v}, Bifunctor.map_id_comp, types_comp_apply, curry_obj_obj_map,
+          Functor.comp_obj, colim_obj, Limit.π_mk]
       -- porting note: was       refine' ⟨k'', 𝟙 k'', g j ≫ gf (𝟙 j) ≫ i (𝟙 j), _⟩
       use k'', 𝟙 k'', g j ≫ gf (𝟙 j) ≫ i (𝟙 j)
+      -- porting note: the lean 3 proof finished with
+      -- `simp only [Bifunctor.map_id_comp, types_comp_apply, Bifunctor.map_id, types_id_apply]`
+      -- which doesn't work. why doesn't `rw [← types_comp_apply]` work? **TODO** ask on github
       convert (types_comp_apply (F.map _) (F.map _) (y j)).symm
+      -- Gabriel advises against non-terminal `convert`s but I wrestled and lost
       simp [← F.map_comp]
 #align category_theory.limits.colimit_limit_to_limit_colimit_surjective CategoryTheory.Limits.colimitLimitToLimitColimit_surjective
 
