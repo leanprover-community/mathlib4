@@ -337,11 +337,14 @@ import Mathlib.Analysis.Convex.Extrema
 import Mathlib.Analysis.Convex.Extreme
 import Mathlib.Analysis.Convex.Function
 import Mathlib.Analysis.Convex.Hull
+import Mathlib.Analysis.Convex.Jensen
+import Mathlib.Analysis.Convex.Normed
 import Mathlib.Analysis.Convex.Quasiconvex
 import Mathlib.Analysis.Convex.Segment
 import Mathlib.Analysis.Convex.Slope
 import Mathlib.Analysis.Convex.Star
 import Mathlib.Analysis.Convex.Strict
+import Mathlib.Analysis.Convex.Topology
 import Mathlib.Analysis.Hofer
 import Mathlib.Analysis.LocallyConvex.BalancedCoreHull
 import Mathlib.Analysis.LocallyConvex.Basic
@@ -381,6 +384,7 @@ import Mathlib.CategoryTheory.Abelian.Basic
 import Mathlib.CategoryTheory.Abelian.FunctorCategory
 import Mathlib.CategoryTheory.Abelian.Images
 import Mathlib.CategoryTheory.Abelian.NonPreadditive
+import Mathlib.CategoryTheory.Abelian.Opposite
 import Mathlib.CategoryTheory.Abelian.Subobject
 import Mathlib.CategoryTheory.Adjunction.Basic
 import Mathlib.CategoryTheory.Adjunction.Comma
@@ -449,6 +453,7 @@ import Mathlib.CategoryTheory.Functor.Functorial
 import Mathlib.CategoryTheory.Functor.Hom
 import Mathlib.CategoryTheory.Functor.InvIsos
 import Mathlib.CategoryTheory.Functor.ReflectsIso
+import Mathlib.CategoryTheory.Generator
 import Mathlib.CategoryTheory.GlueData
 import Mathlib.CategoryTheory.GradedObject
 import Mathlib.CategoryTheory.Grothendieck
@@ -482,6 +487,7 @@ import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProduct
 import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
 import Mathlib.CategoryTheory.Limits.Constructions.Over.Connected
 import Mathlib.CategoryTheory.Limits.Constructions.Pullbacks
+import Mathlib.CategoryTheory.Limits.Constructions.WeaklyInitial
 import Mathlib.CategoryTheory.Limits.Constructions.ZeroObjects
 import Mathlib.CategoryTheory.Limits.Creates
 import Mathlib.CategoryTheory.Limits.EssentiallySmall
@@ -539,6 +545,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.StrictInitial
 import Mathlib.CategoryTheory.Limits.Shapes.StrongEpi
 import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 import Mathlib.CategoryTheory.Limits.Shapes.Types
+import Mathlib.CategoryTheory.Limits.Shapes.WideEqualizers
 import Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
 import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
 import Mathlib.CategoryTheory.Limits.Shapes.ZeroObjects
@@ -608,6 +615,7 @@ import Mathlib.CategoryTheory.Sites.Whiskering
 import Mathlib.CategoryTheory.Skeletal
 import Mathlib.CategoryTheory.StructuredArrow
 import Mathlib.CategoryTheory.Subobject.Basic
+import Mathlib.CategoryTheory.Subobject.Comma
 import Mathlib.CategoryTheory.Subobject.FactorThru
 import Mathlib.CategoryTheory.Subobject.Lattice
 import Mathlib.CategoryTheory.Subobject.Limits
@@ -1103,6 +1111,7 @@ import Mathlib.Data.Real.ConjugateExponents
 import Mathlib.Data.Real.ENNReal
 import Mathlib.Data.Real.ENatENNReal
 import Mathlib.Data.Real.EReal
+import Mathlib.Data.Real.Hyperreal
 import Mathlib.Data.Real.NNReal
 import Mathlib.Data.Real.Pointwise
 import Mathlib.Data.Real.Sign
