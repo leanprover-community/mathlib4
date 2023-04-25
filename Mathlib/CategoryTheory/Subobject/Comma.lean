@@ -20,7 +20,7 @@ and `S : D` as a subtype of the subobjects of `A.right`. We deduce that `Structu
 well-powered if `C` is.
 
 ## Main declarations
-* `StructuredArrow.equivSubtype`: the order-equivalence between `Subobject A` and a subtype of
+* `StructuredArrow.subobjectEquiv `: the order-equivalence between `Subobject A` and a subtype of
   `Subobject A.right`.
 
 ## Implementation notes
@@ -32,8 +32,6 @@ We also provide the dual results. As usual, we use `Subobject (op A)` for the qu
 `A`.
 
 -/
--- porting note: the main declaration `StructuredArrow.equivSubtype` as claimed above is not there,
--- perhaps either `subobjectEquiv` or `quotientEquiv` is meant?!
 
 noncomputable section
 
