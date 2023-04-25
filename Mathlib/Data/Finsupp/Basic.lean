@@ -1496,21 +1496,21 @@ Throughout this section, some `Monoid` and `Semiring` arguments are specified wi
 -/
 
 @[simp]
-theorem coe_smul [AddMonoid M] [SMulZeroClass R M] (b : R) (v : α →₀ M) : ⇑(b • v) = b • ⇑v :=
+theorem coe_smul [Zero M] [SMulZeroClass R M] (b : R) (v : α →₀ M) : ⇑(b • v) = b • ⇑v :=
   rfl
 #align finsupp.coe_smul Finsupp.coe_smul
 
-theorem smul_apply [AddMonoid M] [SMulZeroClass R M] (b : R) (v : α →₀ M) (a : α) :
+theorem smul_apply [Zero M] [SMulZeroClass R M] (b : R) (v : α →₀ M) (a : α) :
     (b • v) a = b • v a :=
   rfl
 #align finsupp.smul_apply Finsupp.smul_apply
 
-theorem _root_.IsSMulRegular.finsupp [AddMonoid M] [SMulZeroClass R M] {k : R}
+theorem _root_.IsSMulRegular.finsupp [Zero M] [SMulZeroClass R M] {k : R}
     (hk : IsSMulRegular M k) : IsSMulRegular (α →₀ M) k :=
   fun _ _ h => ext fun i => hk (FunLike.congr_fun h i)
 #align is_smul_regular.finsupp IsSMulRegular.finsupp
 
-instance faithfulSMul [Nonempty α] [AddMonoid M] [SMulZeroClass R M] [FaithfulSMul R M] :
+instance faithfulSMul [Nonempty α] [Zero M] [SMulZeroClass R M] [FaithfulSMul R M] :
     FaithfulSMul R (α →₀ M) where
   eq_of_smul_eq_smul h :=
     let ⟨a⟩ := ‹Nonempty α›
