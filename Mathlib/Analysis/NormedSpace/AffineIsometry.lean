@@ -8,11 +8,11 @@ Authors: Heather Macbeth
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.NormedSpace.LinearIsometry
-import Mathbin.Analysis.Normed.Group.AddTorsor
-import Mathbin.Analysis.NormedSpace.Basic
-import Mathbin.LinearAlgebra.AffineSpace.Restrict
-import Mathbin.LinearAlgebra.AffineSpace.MidpointZero
+import Mathlib.Analysis.NormedSpace.LinearIsometry
+import Mathlib.Analysis.Normed.Group.AddTorsor
+import Mathlib.Analysis.NormedSpace.Basic
+import Mathlib.LinearAlgebra.AffineSpace.Restrict
+import Mathlib.LinearAlgebra.AffineSpace.MidpointZero
 
 /-!
 # Affine isometries
@@ -73,8 +73,7 @@ protected def linearIsometry : V →ₗᵢ[𝕜] V₂ :=
 #align affine_isometry.linear_isometry AffineIsometry.linearIsometry
 
 @[simp]
-theorem linear_eq_linearIsometry : f.linear = f.LinearIsometry.toLinearMap :=
-  by
+theorem linear_eq_linearIsometry : f.linear = f.LinearIsometry.toLinearMap := by
   ext
   rfl
 #align affine_isometry.linear_eq_linear_isometry AffineIsometry.linear_eq_linearIsometry
@@ -125,8 +124,7 @@ theorem coe_toAffineIsometry : ⇑(f.toAffineIsometry : V →ᵃⁱ[𝕜] V₂) 
 #align linear_isometry.coe_to_affine_isometry LinearIsometry.coe_toAffineIsometry
 
 @[simp]
-theorem toAffineIsometry_linearIsometry : f.toAffineIsometry.LinearIsometry = f :=
-  by
+theorem toAffineIsometry_linearIsometry : f.toAffineIsometry.LinearIsometry = f := by
   ext
   rfl
 #align linear_isometry.to_affine_isometry_linear_isometry LinearIsometry.toAffineIsometry_linearIsometry
@@ -356,8 +354,7 @@ protected def linearIsometryEquiv : V ≃ₗᵢ[𝕜] V₂ :=
 #align affine_isometry_equiv.linear_isometry_equiv AffineIsometryEquiv.linearIsometryEquiv
 
 @[simp]
-theorem linear_eq_linear_isometry : e.linear = e.LinearIsometryEquiv.toLinearEquiv :=
-  by
+theorem linear_eq_linear_isometry : e.linear = e.LinearIsometryEquiv.toLinearEquiv := by
   ext
   rfl
 #align affine_isometry_equiv.linear_eq_linear_isometry AffineIsometryEquiv.linear_eq_linear_isometry
@@ -437,8 +434,7 @@ theorem coe_toAffineIsometryEquiv : ⇑(e.toAffineIsometryEquiv : V ≃ᵃⁱ[�
 
 @[simp]
 theorem toAffineIsometryEquiv_linearIsometryEquiv :
-    e.toAffineIsometryEquiv.LinearIsometryEquiv = e :=
-  by
+    e.toAffineIsometryEquiv.LinearIsometryEquiv = e := by
   ext
   rfl
 #align linear_isometry_equiv.to_affine_isometry_equiv_linear_isometry_equiv LinearIsometryEquiv.toAffineIsometryEquiv_linearIsometryEquiv
@@ -479,8 +475,7 @@ theorem coe_toIsometryEquiv : ⇑e.toIsometryEquiv = e :=
 
 include V V₂
 
-theorem range_eq_univ (e : P ≃ᵃⁱ[𝕜] P₂) : Set.range e = Set.univ :=
-  by
+theorem range_eq_univ (e : P ≃ᵃⁱ[𝕜] P₂) : Set.range e = Set.univ := by
   rw [← coe_to_isometry_equiv]
   exact IsometryEquiv.range_eq_univ _
 #align affine_isometry_equiv.range_eq_univ AffineIsometryEquiv.range_eq_univ
@@ -785,8 +780,7 @@ theorem coe_constVsub (p : P) : ⇑(constVsub 𝕜 p) = (· -ᵥ ·) p :=
 @[simp]
 theorem symm_constVsub (p : P) :
     (constVsub 𝕜 p).symm =
-      (LinearIsometryEquiv.neg 𝕜).toAffineIsometryEquiv.trans (vaddConst 𝕜 p) :=
-  by
+      (LinearIsometryEquiv.neg 𝕜).toAffineIsometryEquiv.trans (vaddConst 𝕜 p) := by
   ext
   rfl
 #align affine_isometry_equiv.symm_const_vsub AffineIsometryEquiv.symm_constVsub
@@ -818,8 +812,7 @@ include 𝕜 V
 /-- The map `g` from `V` to `V₂` corresponding to a map `f` from `P` to `P₂`, at a base point `p`,
 is an isometry if `f` is one. -/
 theorem vadd_vsub {f : P → P₂} (hf : Isometry f) {p : P} {g : V → V₂}
-    (hg : ∀ v, g v = f (v +ᵥ p) -ᵥ f p) : Isometry g :=
-  by
+    (hg : ∀ v, g v = f (v +ᵥ p) -ᵥ f p) : Isometry g := by
   convert(vadd_const 𝕜 (f p)).symm.Isometry.comp (hf.comp (vadd_const 𝕜 p).Isometry)
   exact funext hg
 #align affine_isometry_equiv.vadd_vsub AffineIsometryEquiv.vadd_vsub
@@ -901,14 +894,12 @@ end AffineIsometryEquiv
 include V V₂
 
 /-- If `f` is an affine map, then its linear part is continuous iff `f` is continuous. -/
-theorem AffineMap.continuous_linear_iff {f : P →ᵃ[𝕜] P₂} : Continuous f.linear ↔ Continuous f :=
-  by
+theorem AffineMap.continuous_linear_iff {f : P →ᵃ[𝕜] P₂} : Continuous f.linear ↔ Continuous f := by
   inhabit P
   have :
     (f.linear : V → V₂) =
       (AffineIsometryEquiv.vaddConst 𝕜 <| f default).toHomeomorph.symm ∘
-        f ∘ (AffineIsometryEquiv.vaddConst 𝕜 default).toHomeomorph :=
-    by
+        f ∘ (AffineIsometryEquiv.vaddConst 𝕜 default).toHomeomorph := by
     ext v
     simp
   rw [this]
@@ -916,14 +907,12 @@ theorem AffineMap.continuous_linear_iff {f : P →ᵃ[𝕜] P₂} : Continuous f
 #align affine_map.continuous_linear_iff AffineMap.continuous_linear_iff
 
 /-- If `f` is an affine map, then its linear part is an open map iff `f` is an open map. -/
-theorem AffineMap.isOpenMap_linear_iff {f : P →ᵃ[𝕜] P₂} : IsOpenMap f.linear ↔ IsOpenMap f :=
-  by
+theorem AffineMap.isOpenMap_linear_iff {f : P →ᵃ[𝕜] P₂} : IsOpenMap f.linear ↔ IsOpenMap f := by
   inhabit P
   have :
     (f.linear : V → V₂) =
       (AffineIsometryEquiv.vaddConst 𝕜 <| f default).toHomeomorph.symm ∘
-        f ∘ (AffineIsometryEquiv.vaddConst 𝕜 default).toHomeomorph :=
-    by
+        f ∘ (AffineIsometryEquiv.vaddConst 𝕜 default).toHomeomorph := by
     ext v
     simp
   rw [this]
