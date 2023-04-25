@@ -1387,6 +1387,7 @@ open Module
 variable {F E : Type _} [Field F] [Ring E] [Algebra F E]
 
 /-
+porting note:
 Some of the lemmas in this section can be made faster by adding these short-cut instances
 ```lean4
 instance (S : Subalgebra F E) : AddCommMonoid { x // x ∈ S } := inferInstance
