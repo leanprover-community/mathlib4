@@ -139,11 +139,9 @@ theorem affineIndependent_minCardFinsetOfMemConvexHull :
   classical
   by_contra h
   obtain ⟨p, hp⟩ := mem_convexHull_erase h (mem_minCardFinsetOfMemConvexHull hx)
-  have contra :=
-    minCardFinsetOfMemConvexHull_card_le_card hx
-      (Set.Subset.trans (Finset.erase_subset (↑p) (minCardFinsetOfMemConvexHull hx))
-        (minCardFinsetOfMemConvexHull_subseteq hx))
-      hp
+  have contra := minCardFinsetOfMemConvexHull_card_le_card hx (Set.Subset.trans
+    (Finset.erase_subset (p : E) (minCardFinsetOfMemConvexHull hx))
+    (minCardFinsetOfMemConvexHull_subseteq hx)) hp
   rw [← not_lt] at contra
   apply contra
   erw [card_erase_of_mem p.2, hk]
