@@ -84,9 +84,7 @@ variable {K : Type u} {V V₁ V₂ V₃ : Type v} {V' V'₁ : Type v'} {V'' : Ty
 
 variable {ι : Type w} {ι' : Type w'} {η : Type u₁'} {φ : η → Type _}
 
-open Classical BigOperators Cardinal
-
-open Basis Submodule Function Set
+open Classical BigOperators Cardinal Basis Submodule Function Set
 
 section Module
 
@@ -165,9 +163,9 @@ theorem lift_rank_range_le (f : M →ₗ[R] M') : Cardinal.lift.{v}
   rintro ⟨s, li⟩
   apply le_trans
   swap
-  apply Cardinal.lift_le.mpr
-  refine' le_csupᵢ (Cardinal.bddAbove_range.{v, v} _) ⟨rangeSplitting f '' s, _⟩
-  · apply LinearIndependent.of_comp f.rangeRestrict
+  · apply Cardinal.lift_le.mpr
+    refine' le_csupᵢ (Cardinal.bddAbove_range.{v, v} _) ⟨rangeSplitting f '' s, _⟩
+    apply LinearIndependent.of_comp f.rangeRestrict
     convert li.comp (Equiv.Set.rangeSplittingImageEquiv f s) (Equiv.injective _) using 1
   · exact (Cardinal.lift_mk_eq'.mpr ⟨Equiv.Set.rangeSplittingImageEquiv f s⟩).ge
 #align lift_rank_range_le lift_rank_range_le
@@ -267,8 +265,8 @@ theorem cardinal_lift_le_rank_of_linearIndependent {ι : Type w} {v : ι → M}
   · simp only [Cardinal.lift_le, Module.rank_def]
     apply le_trans
     swap
-    exact le_csupᵢ (Cardinal.bddAbove_range.{v, v} _) ⟨range v, hv.coe_range⟩
-    exact le_rfl
+    · exact le_csupᵢ (Cardinal.bddAbove_range.{v, v} _) ⟨range v, hv.coe_range⟩
+    · exact le_rfl
 #align cardinal_lift_le_rank_of_linear_independent cardinal_lift_le_rank_of_linearIndependent
 
 theorem cardinal_lift_le_rank_of_linearIndependent' {ι : Type w} {v : ι → M}
@@ -290,13 +288,10 @@ variable (R M)
 
 @[simp]
 theorem rank_punit : Module.rank R PUnit = 0 := by
-  apply le_bot_iff.mp
-  rw [Module.rank_def]
+  rw [← bot_eq_zero, ← le_bot_iff, Module.rank_def]
   apply csupᵢ_le'
   rintro ⟨s, li⟩
-  apply le_bot_iff.mpr
-  apply Cardinal.mk_emptyCollection_iff.mpr
-  simp only [Subtype.coe_mk]
+  rw [le_bot_iff, bot_eq_zero, Cardinal.mk_emptyCollection_iff, Subtype.coe_mk]
   by_contra h
   obtain ⟨a, ha⟩ := nonempty_iff_ne_empty.2 h
   simpa using LinearIndependent.ne_zero (⟨a, ha⟩ : s) li
@@ -803,13 +798,13 @@ theorem Basis.mk_eq_rank'' {ι : Type v} (v : Basis ι R M) : (#ι) = Module.ran
   apply le_antisymm
   · trans
     swap
-    apply le_csupᵢ (Cardinal.bddAbove_range.{v, v} _)
-    exact
-      ⟨Set.range v, by
-        convert v.reindexRange.linearIndependent
-        ext
-        simp⟩
-    exact (Cardinal.mk_range_eq v v.injective).ge
+    · apply le_csupᵢ (Cardinal.bddAbove_range.{v, v} _)
+      exact
+        ⟨Set.range v, by
+          convert v.reindexRange.linearIndependent
+          ext
+          simp⟩
+    · exact (Cardinal.mk_range_eq v v.injective).ge
   · apply csupᵢ_le'
     rintro ⟨s, li⟩
     apply linearIndependent_le_basis v _ li
@@ -915,9 +910,9 @@ theorem Ideal.rank_eq {R S : Type _} [CommRing R] [StrongRankCondition R] [Ring 
     apply hb g
     simp only [← smul_assoc, ← Finset.sum_smul, smul_eq_zero] at hg
     exact hg.resolve_right ha
-  exact
-    le_antisymm (b.card_le_card_of_linearIndependent (c.linearIndependent.map' (Submodule.subtype I)
-    ((LinearMap.ker_eq_bot (f := (Submodule.subtype I : I →ₗ[R] S))).mpr Subtype.coe_injective)))
+  exact le_antisymm
+    (b.card_le_card_of_linearIndependent (c.linearIndependent.map' (Submodule.subtype I)
+      ((LinearMap.ker_eq_bot (f := (Submodule.subtype I : I →ₗ[R] S))).mpr Subtype.coe_injective)))
     (c.card_le_card_of_linearIndependent this)
 #align ideal.rank_eq Ideal.rank_eq
 
@@ -1110,9 +1105,9 @@ theorem rank_span_of_finset (s : Finset V) : Module.rank K (span K (↑s : Set V
 
 theorem rank_quotient_add_rank (p : Submodule K V) :
     Module.rank K (V ⧸ p) + Module.rank K p = Module.rank K V := by
-  classical exact
+  classical
     let ⟨f⟩ := quotient_prod_linearEquiv p
-    rank_prod'.symm.trans f.rank_eq
+    exact rank_prod'.symm.trans f.rank_eq
 #align rank_quotient_add_rank rank_quotient_add_rank
 
 set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
