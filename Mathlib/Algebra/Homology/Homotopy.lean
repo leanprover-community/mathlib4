@@ -206,7 +206,6 @@ def compRight {e f : C ⟶ D} (h : Homotopy e f) (g : D ⟶ E) : Homotopy (e ≫
   zero i j w := by dsimp ; rw [h.zero i j w, zero_comp]
   comm i := by rw [comp_f, h.comm i, dNext_comp_right, prevD_comp_right, Preadditive.add_comp,
     comp_f, Preadditive.add_comp]
-
 #align homotopy.comp_right Homotopy.compRight
 
 /-- homotopy is closed under composition (on the left) -/

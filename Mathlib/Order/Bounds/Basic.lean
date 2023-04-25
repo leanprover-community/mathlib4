@@ -1061,7 +1061,6 @@ theorem le_of_isLUB_le_isGLB {x y} (ha : IsGLB s a) (hb : IsLUB s b) (hab : b �
     x ≤ b := hb.1 hx
     _ ≤ a := hab
     _ ≤ y := ha.1 hy
-
 #align le_of_is_lub_le_is_glb le_of_isLUB_le_isGLB
 
 end Preorder

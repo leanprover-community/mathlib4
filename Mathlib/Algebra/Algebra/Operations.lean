@@ -281,7 +281,6 @@ protected theorem map_mul {A'} [Semiring A'] [Algebra R A'] (f : A →ₐ[R] A')
         rw [f.toLinearMap_apply] at fy_eq
         ext
         simp [fy_eq]
-
 #align submodule.map_mul Submodule.map_mul
 
 theorem map_op_mul :

@@ -639,7 +639,6 @@ theorem mapDomain.addMonoidHom_comp_mapRange [AddCommMonoid N] (f : α → β) (
     Finsupp.singleAddHom_apply, eq_self_iff_true, Function.comp_apply, Finsupp.mapDomain_single,
     Finsupp.mapRange.addMonoidHom_apply]
   -- porting note: this is ugly, just expanded the Lean 3 proof; `ext` didn't work in the same way
-
 #align finsupp.map_domain.add_monoid_hom_comp_map_range Finsupp.mapDomain.addMonoidHom_comp_mapRange
 
 /-- When `g` preserves addition, `mapRange` and `mapDomain` commute. -/
