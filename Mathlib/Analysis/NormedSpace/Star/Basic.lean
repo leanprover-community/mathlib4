@@ -8,12 +8,12 @@ Authors: Frédéric Dupuis
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Normed.Group.Hom
-import Mathbin.Analysis.NormedSpace.Basic
-import Mathbin.Analysis.NormedSpace.LinearIsometry
-import Mathbin.Algebra.Star.SelfAdjoint
-import Mathbin.Algebra.Star.Unitary
-import Mathbin.Topology.Algebra.StarSubalgebra
+import Mathlib.Analysis.Normed.Group.Hom
+import Mathlib.Analysis.NormedSpace.Basic
+import Mathlib.Analysis.NormedSpace.LinearIsometry
+import Mathlib.Algebra.Star.SelfAdjoint
+import Mathlib.Algebra.Star.Unitary
+import Mathlib.Topology.Algebra.StarSubalgebra
 
 /-!
 # Normed star rings and algebras
@@ -120,8 +120,7 @@ instance (priority := 100) to_normedStarGroup : NormedStarGroup E :=
       exact le_antisymm (le_of_mul_le_mul_right h₂ hnt_star) (le_of_mul_le_mul_right h₁ hnt)⟩
 #align cstar_ring.to_normed_star_group CstarRing.to_normedStarGroup
 
-theorem norm_self_mul_star {x : E} : ‖x * x⋆‖ = ‖x‖ * ‖x‖ :=
-  by
+theorem norm_self_mul_star {x : E} : ‖x * x⋆‖ = ‖x‖ * ‖x‖ := by
   nth_rw 1 [← star_star x]
   simp only [norm_star_mul_self, norm_star]
 #align cstar_ring.norm_self_mul_star CstarRing.norm_self_mul_star
@@ -138,8 +137,7 @@ theorem nnnorm_star_mul_self {x : E} : ‖x⋆ * x‖₊ = ‖x‖₊ * ‖x‖�
 #align cstar_ring.nnnorm_star_mul_self CstarRing.nnnorm_star_mul_self
 
 @[simp]
-theorem star_mul_self_eq_zero_iff (x : E) : star x * x = 0 ↔ x = 0 :=
-  by
+theorem star_mul_self_eq_zero_iff (x : E) : star x * x = 0 ↔ x = 0 := by
   rw [← norm_eq_zero, norm_star_mul_self]
   exact mul_self_eq_zero.trans norm_eq_zero
 #align cstar_ring.star_mul_self_eq_zero_iff CstarRing.star_mul_self_eq_zero_iff
@@ -190,8 +188,7 @@ instance Prod.cstarRing : CstarRing (R₁ × R₂)
 #align prod.cstar_ring Prod.cstarRing
 
 instance Pi.cstarRing : CstarRing (∀ i, R i)
-    where norm_star_mul_self x :=
-    by
+    where norm_star_mul_self x := by
     simp only [norm, Pi.mul_apply, Pi.star_apply, nnnorm_star_mul_self, ← sq]
     norm_cast
     exact
@@ -210,8 +207,7 @@ section Unital
 variable [NormedRing E] [StarRing E] [CstarRing E]
 
 @[simp]
-theorem norm_one [Nontrivial E] : ‖(1 : E)‖ = 1 :=
-  by
+theorem norm_one [Nontrivial E] : ‖(1 : E)‖ = 1 := by
   have : 0 < ‖(1 : E)‖ := norm_pos_iff.mpr one_ne_zero
   rw [← mul_left_inj' this.ne', ← norm_star_mul_self, mul_one, star_one, one_mul]
 #align cstar_ring.norm_one CstarRing.norm_one
@@ -231,8 +227,7 @@ theorem norm_of_mem_unitary [Nontrivial E] {U : E} (hU : U ∈ unitary E) : ‖U
 #align cstar_ring.norm_of_mem_unitary CstarRing.norm_of_mem_unitary
 
 @[simp]
-theorem norm_coe_unitary_mul (U : unitary E) (A : E) : ‖(U : E) * A‖ = ‖A‖ :=
-  by
+theorem norm_coe_unitary_mul (U : unitary E) (A : E) : ‖(U : E) * A‖ = ‖A‖ := by
   nontriviality E
   refine' le_antisymm _ _
   ·
@@ -278,8 +273,7 @@ end Unital
 end CstarRing
 
 theorem IsSelfAdjoint.nnnorm_pow_two_pow [NormedRing E] [StarRing E] [CstarRing E] {x : E}
-    (hx : IsSelfAdjoint x) (n : ℕ) : ‖x ^ 2 ^ n‖₊ = ‖x‖₊ ^ 2 ^ n :=
-  by
+    (hx : IsSelfAdjoint x) (n : ℕ) : ‖x ^ 2 ^ n‖₊ = ‖x‖₊ ^ 2 ^ n := by
   induction' n with k hk
   · simp only [pow_zero, pow_one]
   · rw [pow_succ, pow_mul', sq]
