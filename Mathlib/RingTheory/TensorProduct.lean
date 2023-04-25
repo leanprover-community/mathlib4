@@ -52,8 +52,6 @@ universe u v₁ v₂ v₃ v₄
 
 open TensorProduct
 
-open TensorProduct
-
 namespace TensorProduct
 
 variable {R A M N P : Type _}
@@ -87,17 +85,15 @@ theorem smul_eq_lsmul_rtensor (a : A) (x : M ⊗[R] N) : a • x = (lsmul R M a)
 
 Given a linear map `M ⊗[R] N →[A] P`, compose it with the canonical
 bilinear map `M →[A] N →[R] M ⊗[R] N` to form a bilinear map `M →[A] N →[R] P`. -/
-@[simps]
-def curry (f : M ⊗[R] N →ₗ[A] P) : M →ₗ[A] N →ₗ[R] P :=
-  {
-    curry (f.restrictScalars
-        R) with
+@[simps!]
+nonrec def curry (f : M ⊗[R] N →ₗ[A] P) : M →ₗ[A] N →ₗ[R] P :=
+  { curry (f.restrictScalars R) with
     toFun := curry (f.restrictScalars R)
     map_smul' := fun c x => LinearMap.ext fun y => f.map_smul c (x ⊗ₜ y) }
 #align tensor_product.algebra_tensor_module.curry TensorProduct.AlgebraTensorModule.curry
 
 theorem restrictScalars_curry (f : M ⊗[R] N →ₗ[A] P) :
-    RestrictScalars R (curry f) = curry (f.restrictScalars R) :=
+    restrictScalars R (curry f) = TensorProduct.curry (f.restrictScalars R) :=
   rfl
 #align tensor_product.algebra_tensor_module.restrict_scalars_curry TensorProduct.AlgebraTensorModule.restrictScalars_curry
 
@@ -106,8 +102,8 @@ a better `ext` lemma than `tensor_product.algebra_tensor_module.ext` below.
 
 See note [partially-applied ext lemmas]. -/
 @[ext]
-theorem curry_injective : Function.Injective (curry : (M ⊗ N →ₗ[A] P) → M →ₗ[A] N →ₗ[R] P) :=
-  fun x y h =>
+nonrec theorem curry_injective : Function.Injective (curry : (M ⊗ N →ₗ[A] P) → M →ₗ[A] N →ₗ[R] P) :=
+  fun _ _ h =>
   LinearMap.restrictScalars_injective R <|
     curry_injective <| (congr_arg (LinearMap.restrictScalars R) h : _)
 #align tensor_product.algebra_tensor_module.curry_injective TensorProduct.AlgebraTensorModule.curry_injective
@@ -133,8 +129,8 @@ variable [AddCommMonoid P] [Module R P] [Module A P] [IsScalarTower R A P]
 Constructing a linear map `M ⊗[R] N →[A] P` given a bilinear map `M →[A] N →[R] P` with the
 property that its composition with the canonical bilinear map `M →[A] N →[R] M ⊗[R] N` is
 the given bilinear map `M →[A] N →[R] P`. -/
-@[simps]
-def lift (f : M →ₗ[A] N →ₗ[R] P) : M ⊗[R] N →ₗ[A] P :=
+@[simps!]
+nonrec def lift (f : M →ₗ[A] N →ₗ[R] P) : M ⊗[R] N →ₗ[A] P :=
   { lift (f.restrictScalars R) with
     map_smul' := fun c =>
       show
@@ -145,7 +141,7 @@ def lift (f : M →ₗ[A] N →ₗ[R] P) : M ⊗[R] N →ₗ[A] P :=
         ext_iff.1 <|
           TensorProduct.ext' fun x y => by
             simp only [comp_apply, Algebra.lsmul_coe, smul_tmul', lift.tmul,
-              coe_restrict_scalars_eq_coe, f.map_smul, smul_apply] }
+              coe_restrictScalars, f.map_smul, smul_apply] }
 #align tensor_product.algebra_tensor_module.lift TensorProduct.AlgebraTensorModule.lift
 
 @[simp]
@@ -163,8 +159,8 @@ the given bilinear map `M →[A] N →[R] P`. -/
 @[simps]
 def uncurry : (M →ₗ[A] N →ₗ[R] P) →ₗ[A] M ⊗[R] N →ₗ[A] P where
   toFun := lift
-  map_add' f g := ext fun x y => by simp only [lift_tmul, add_apply]
-  map_smul' c f := ext fun x y => by simp only [lift_tmul, smul_apply, RingHom.id_apply]
+  map_add' _ _ := ext fun x y => by simp only [lift_tmul, add_apply]
+  map_smul' _ _ := ext fun x y => by simp only [lift_tmul, smul_apply, RingHom.id_apply]
 #align tensor_product.algebra_tensor_module.uncurry TensorProduct.AlgebraTensorModule.uncurry
 
 /-- Heterobasic version of `tensor_product.lcurry`:
@@ -174,8 +170,8 @@ bilinear map `M →[A] N →[R] M ⊗[R] N` to form a bilinear map `M →[A] N �
 @[simps]
 def lcurry : (M ⊗[R] N →ₗ[A] P) →ₗ[A] M →ₗ[A] N →ₗ[R] P where
   toFun := curry
-  map_add' f g := rfl
-  map_smul' c f := rfl
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
 #align tensor_product.algebra_tensor_module.lcurry TensorProduct.AlgebraTensorModule.lcurry
 
 /-- Heterobasic version of `tensor_product.lift.equiv`:
@@ -185,18 +181,16 @@ bilinear map `M →[A] N →[R] P` with the property that its composition with t
 canonical bilinear map `M →[A] N →[R] M ⊗[R] N` is the given bilinear map `M →[A] N →[R] P`. -/
 def lift.equiv : (M →ₗ[A] N →ₗ[R] P) ≃ₗ[A] M ⊗[R] N →ₗ[A] P :=
   LinearEquiv.ofLinear (uncurry R A M N P) (lcurry R A M N P)
-    (LinearMap.ext fun f => ext fun x y => lift_tmul _ x y)
+    (LinearMap.ext fun _ => ext fun x y => lift_tmul _ x y)
     (LinearMap.ext fun f => LinearMap.ext fun x => LinearMap.ext fun y => lift_tmul f x y)
 #align tensor_product.algebra_tensor_module.lift.equiv TensorProduct.AlgebraTensorModule.lift.equiv
-
-variable (R A M N P)
 
 /-- Heterobasic version of `tensor_product.mk`:
 
 The canonical bilinear map `M →[A] N →[R] M ⊗[R] N`. -/
-@[simps]
-def mk : M →ₗ[A] N →ₗ[R] M ⊗[R] N :=
-  { mk R M N with map_smul' := fun c x => rfl }
+@[simps!]
+nonrec def mk : M →ₗ[A] N →ₗ[R] M ⊗[R] N :=
+  { mk R M N with map_smul' := fun _ _ => rfl }
 #align tensor_product.algebra_tensor_module.mk TensorProduct.AlgebraTensorModule.mk
 
 attribute [local ext] TensorProduct.ext
@@ -219,7 +213,7 @@ def assoc : (M ⊗[A] P) ⊗[R] N ≃ₗ[A] M ⊗[A] P ⊗[R] N :=
       ext
       simp only [curry_apply, TensorProduct.curry_apply, mk_apply, TensorProduct.mk_apply,
         uncurry_apply, TensorProduct.uncurry_apply, id_apply, lift_tmul, compr₂_apply,
-        restrict_scalars_apply, Function.comp_apply, to_fun_eq_coe, lcurry_apply,
+        restrictScalars_apply, Function.comp_apply, toFun_eq_coe, lcurry_apply,
         LinearMap.comp_apply])
 #align tensor_product.algebra_tensor_module.assoc TensorProduct.AlgebraTensorModule.assoc
 
@@ -265,30 +259,30 @@ def baseChange (f : M →ₗ[R] N) : A ⊗[R] M →ₗ[A] A ⊗[R] N where
 variable {A}
 
 @[simp]
-theorem baseChange_tmul (a : A) (x : M) : f.base_change A (a ⊗ₜ x) = a ⊗ₜ f x :=
+theorem baseChange_tmul (a : A) (x : M) : f.baseChange A (a ⊗ₜ x) = a ⊗ₜ f x :=
   rfl
 #align linear_map.base_change_tmul LinearMap.baseChange_tmul
 
-theorem baseChange_eq_ltensor : (f.base_change A : A ⊗ M → A ⊗ N) = f.ltensor A :=
+theorem baseChange_eq_ltensor : (f.baseChange A : A ⊗ M → A ⊗ N) = f.ltensor A :=
   rfl
 #align linear_map.base_change_eq_ltensor LinearMap.baseChange_eq_ltensor
 
 @[simp]
-theorem baseChange_add : (f + g).base_change A = f.base_change A + g.base_change A := by
+theorem baseChange_add : (f + g).baseChange A = f.baseChange A + g.baseChange A := by
   ext
-  simp [base_change_eq_ltensor]
+  simp [baseChange_eq_ltensor]
 #align linear_map.base_change_add LinearMap.baseChange_add
 
 @[simp]
 theorem baseChange_zero : baseChange A (0 : M →ₗ[R] N) = 0 := by
   ext
-  simp [base_change_eq_ltensor]
+  simp [baseChange_eq_ltensor]
 #align linear_map.base_change_zero LinearMap.baseChange_zero
 
 @[simp]
-theorem baseChange_smul : (r • f).base_change A = r • f.base_change A := by
+theorem baseChange_smul : (r • f).baseChange A = r • f.baseChange A := by
   ext
-  simp [base_change_tmul]
+  simp [baseChange_tmul]
 #align linear_map.base_change_smul LinearMap.baseChange_smul
 
 variable (R A M N)
@@ -313,16 +307,18 @@ variable [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
 
 variable (f g : M →ₗ[R] N)
 
+set_option synthInstance.etaExperiment true in
 @[simp]
-theorem baseChange_sub : (f - g).base_change A = f.base_change A - g.base_change A := by
+theorem baseChange_sub : (f - g).baseChange A = f.baseChange A - g.baseChange A := by
   ext
-  simp [base_change_eq_ltensor]
+  simp [baseChange_eq_ltensor]
 #align linear_map.base_change_sub LinearMap.baseChange_sub
 
+set_option synthInstance.etaExperiment true in
 @[simp]
-theorem baseChange_neg : (-f).base_change A = -f.base_change A := by
+theorem baseChange_neg : (-f).baseChange A = -f.baseChange A := by
   ext
-  simp [base_change_eq_ltensor]
+  simp [baseChange_eq_ltensor]
 #align linear_map.base_change_neg LinearMap.baseChange_neg
 
 end Ring
@@ -370,16 +366,16 @@ def mul : A ⊗[R] B →ₗ[R] A ⊗[R] B →ₗ[R] A ⊗[R] B :=
     LinearMap.mk₂ R mulAux
       (fun x₁ x₂ y =>
         TensorProduct.ext' fun x' y' => by
-          simp only [mul_aux_apply, LinearMap.add_apply, add_mul, add_tmul])
+          simp only [mulAux_apply, LinearMap.add_apply, add_mul, add_tmul])
       (fun c x y =>
         TensorProduct.ext' fun x' y' => by
-          simp only [mul_aux_apply, LinearMap.smul_apply, smul_tmul', smul_mul_assoc])
+          simp only [mulAux_apply, LinearMap.smul_apply, smul_tmul', smul_mul_assoc])
       (fun x y₁ y₂ =>
         TensorProduct.ext' fun x' y' => by
-          simp only [mul_aux_apply, LinearMap.add_apply, add_mul, tmul_add])
+          simp only [mulAux_apply, LinearMap.add_apply, add_mul, tmul_add])
       fun c x y =>
       TensorProduct.ext' fun x' y' => by
-        simp only [mul_aux_apply, LinearMap.smul_apply, smul_tmul, smul_tmul', smul_mul_assoc]
+        simp only [mulAux_apply, LinearMap.smul_apply, smul_tmul, smul_tmul', smul_mul_assoc]
 #align algebra.tensor_product.mul Algebra.TensorProduct.mul
 
 @[simp]
@@ -394,12 +390,12 @@ theorem mul_assoc' (mul : A ⊗[R] B →ₗ[R] A ⊗[R] B →ₗ[R] A ⊗[R] B)
         mul (mul (a₁ ⊗ₜ[R] b₁) (a₂ ⊗ₜ[R] b₂)) (a₃ ⊗ₜ[R] b₃) =
           mul (a₁ ⊗ₜ[R] b₁) (mul (a₂ ⊗ₜ[R] b₂) (a₃ ⊗ₜ[R] b₃))) :
     ∀ x y z : A ⊗[R] B, mul (mul x y) z = mul x (mul y z) := by
-  intros
-  apply TensorProduct.induction_on x
+  intros x y z
+  refine TensorProduct.induction_on x ?_ ?_ ?_
   · simp only [LinearMap.map_zero, LinearMap.zero_apply]
-  apply TensorProduct.induction_on y
+  refine TensorProduct.induction_on y ?_ ?_ ?_
   · simp only [LinearMap.map_zero, forall_const, LinearMap.zero_apply]
-  apply TensorProduct.induction_on z
+  refine TensorProduct.induction_on z ?_ ?_ ?_
   · simp only [LinearMap.map_zero, forall_const]
   · intros
     simp only [h]
@@ -411,7 +407,7 @@ theorem mul_assoc' (mul : A ⊗[R] B →ₗ[R] A ⊗[R] B →ₗ[R] A ⊗[R] B)
     simp only [LinearMap.map_add, *, LinearMap.add_apply]
 #align algebra.tensor_product.mul_assoc' Algebra.TensorProduct.mul_assoc'
 
-theorem mul_assoc (x y z : A ⊗[R] B) : mul (mul x y) z = mul x (mul y z) :=
+nonrec theorem mul_assoc (x y z : A ⊗[R] B) : mul (mul x y) z = mul x (mul y z) :=
   mul_assoc' mul
     (by
       intros
@@ -420,11 +416,11 @@ theorem mul_assoc (x y z : A ⊗[R] B) : mul (mul x y) z = mul x (mul y z) :=
 #align algebra.tensor_product.mul_assoc Algebra.TensorProduct.mul_assoc
 
 theorem one_mul (x : A ⊗[R] B) : mul (1 ⊗ₜ 1) x = x := by
-  apply TensorProduct.induction_on x <;> simp (config := { contextual := true })
+  refine TensorProduct.induction_on x ?_ ?_ ?_ <;> simp (config := { contextual := true })
 #align algebra.tensor_product.one_mul Algebra.TensorProduct.one_mul
 
 theorem mul_one (x : A ⊗[R] B) : mul x (1 ⊗ₜ 1) = x := by
-  apply TensorProduct.induction_on x <;> simp (config := { contextual := true })
+  refine TensorProduct.induction_on x ?_ ?_ ?_ <;> simp (config := { contextual := true })
 #align algebra.tensor_product.mul_one Algebra.TensorProduct.mul_one
 
 instance : One (A ⊗[R] B) where one := 1 ⊗ₜ 1
@@ -434,8 +430,7 @@ instance : AddMonoidWithOne (A ⊗[R] B) :=
 
 instance : Semiring (A ⊗[R] B) :=
   { (by infer_instance : AddMonoidWithOne (A ⊗[R] B)),
-    (by infer_instance : AddCommMonoid
-        (A ⊗[R] B)) with
+    (by infer_instance : AddCommMonoid (A ⊗[R] B)) with
     zero := 0
     add := (· + ·)
     one := 1
@@ -479,12 +474,9 @@ variable {S : Type _} [CommSemiring S] [Algebra R S] [Algebra S A] [IsScalarTowe
 
 instance leftAlgebra : Algebra S (A ⊗[R] B) :=
   { TensorProduct.includeLeftRingHom.comp (algebraMap S A),
-    (by infer_instance :
-      Module S
-        (A ⊗[R]
-          B)) with
+    (by infer_instance : Module S (A ⊗[R] B)) with
     commutes' := fun r x => by
-      apply TensorProduct.induction_on x
+      refine TensorProduct.induction_on x ?_ ?_ ?_
       · simp
       · intro a b
         dsimp
@@ -493,7 +485,7 @@ instance leftAlgebra : Algebra S (A ⊗[R] B) :=
         dsimp at h h'⊢
         simp only [mul_add, add_mul, h, h']
     smul_def' := fun r x => by
-      apply TensorProduct.induction_on x
+      refine TensorProduct.induction_on x ?_ ?_ ?_
       · simp [smul_zero]
       · intro a b
         dsimp
@@ -759,7 +751,7 @@ variable (R A)
 
 /-- The base ring is a left identity for the tensor product of algebra, up to algebra isomorphism.
 -/
-protected def lid : R ⊗[R] A ≃ₐ[R] A :=
+protected nonrec def lid : R ⊗[R] A ≃ₐ[R] A :=
   algEquivOfLinearEquivTensorProduct (TensorProduct.lid R A) (by simp [mul_smul])
     (by simp [Algebra.smul_def])
 #align algebra.tensor_product.lid Algebra.TensorProduct.lid
@@ -771,7 +763,7 @@ theorem lid_tmul (r : R) (a : A) : (TensorProduct.lid R A : R ⊗ A → A) (r �
 
 /-- The base ring is a right identity for the tensor product of algebra, up to algebra isomorphism.
 -/
-protected def rid : A ⊗[R] R ≃ₐ[R] A :=
+protected nonrec def rid : A ⊗[R] R ≃ₐ[R] A :=
   algEquivOfLinearEquivTensorProduct (TensorProduct.rid R A) (by simp [mul_smul])
     (by simp [Algebra.smul_def])
 #align algebra.tensor_product.rid Algebra.TensorProduct.rid
@@ -1175,4 +1167,3 @@ theorem smul_def (a : A) (b : B) (m : M) : a ⊗ₜ[R] b • m = a • b • m :
 #align tensor_product.algebra.smul_def TensorProduct.Algebra.smul_def
 
 end TensorProduct.Algebra
-
