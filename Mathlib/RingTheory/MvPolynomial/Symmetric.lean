@@ -169,12 +169,12 @@ def esymm (n : ℕ) : MvPolynomial σ R :=
 /-- The `n`th elementary symmetric `MvPolynomial σ R` is obtained by evaluating the
 `n`th elementary symmetric at the `Multiset` of the monomials -/
 theorem esymm_eq_multiset_esymm : esymm σ R = (Finset.univ.val.map X).esymm := by
-  refine' funext fun n => (Multiset.Finset.esymm_map_val X _ n).symm
+  refine' funext fun n => (Finset.esymm_map_val X _ n).symm
 #align mv_polynomial.esymm_eq_multiset_esymm MvPolynomial.esymm_eq_multiset_esymm
 
 theorem aeval_esymm_eq_multiset_esymm [Algebra R S] (f : σ → S) (n : ℕ) :
     aeval f (esymm σ R n) = (Finset.univ.val.map f).esymm n := by
-  simp_rw [esymm, aeval_sum, aeval_prod, aeval_X, Multiset.Finset.esymm_map_val]
+  simp_rw [esymm, aeval_sum, aeval_prod, aeval_X, Finset.esymm_map_val]
 #align mv_polynomial.aeval_esymm_eq_multiset_esymm MvPolynomial.aeval_esymm_eq_multiset_esymm
 
 /-- We can define `esymm σ R n` by summing over a subtype instead of over `powerset_len`. -/
