@@ -128,7 +128,7 @@ theorem minCardFinsetOfMemConvexHull_nonempty : (minCardFinsetOfMemConvexHull hx
 
 theorem minCardFinsetOfMemConvexHull_card_le_card {t : Finset E} (ht₁ : ↑t ⊆ s)
     (ht₂ : x ∈ convexHull 𝕜 (t : Set E)) : (minCardFinsetOfMemConvexHull hx).card ≤ t.card :=
-  Function.argminOn_le _ _ _ ⟨ht₁, ht₂⟩
+  Function.argminOn_le _ _ _ (by exact ⟨ht₁, ht₂⟩)
 #align caratheodory.min_card_finset_of_mem_convex_hull_card_le_card Caratheodory.minCardFinsetOfMemConvexHull_card_le_card
 
 theorem affineIndependent_minCardFinsetOfMemConvexHull :
