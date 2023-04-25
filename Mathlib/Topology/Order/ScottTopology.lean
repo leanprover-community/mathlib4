@@ -169,15 +169,28 @@ instance [Preorder α] : ScottTopology (WithScottTopology α) :=
 
 section preorder
 
-variable [Preorder α] [Preorder β]
+variable [Preorder α]
 
-namespace WithScottTopology
+variable [TopologicalSpace α] [ScottTopology α]
 
-lemma isOpen_eq_upper_and_LUB_mem_implies_tail_subset (u : Set (WithScottTopology α)) : IsOpen u
+namespace ScottTopology
+
+variable (α)
+
+lemma topology_eq : ‹_› = ScottTopology' := topology_eq_ScottTopology
+
+variable {α}
+
+/-- If `α` is equipped with the Scott topology, then it is homeomorphic to `WithScottTopology α`.
+-/
+def withScottTopologyHomeomorph : WithScottTopology α ≃ₜ α :=
+  WithScottTopology.ofScott.toHomeomorphOfInducing ⟨by erw [topology_eq α, induced_id]; rfl⟩
+
+lemma isOpen_eq_upper_and_LUB_mem_implies_tail_subset (u : Set α) : IsOpen u
 = (IsUpperSet u ∧ ∀ (d : Set α) (a : α), d.Nonempty → DirectedOn (· ≤ ·) d → IsLUB d a → a ∈ u
-  → ∃ b ∈ d, (Ici b) ∩ d ⊆ u) := rfl
+  → ∃ b ∈ d, (Ici b) ∩ d ⊆ u) := sorry
 
-lemma isOpen_iff_upper_and_LUB_mem_implies_inter_nonempty (u : Set (WithScottTopology α)) :
+lemma isOpen_iff_upper_and_LUB_mem_implies_inter_nonempty (u : Set α) :
 IsOpen u ↔ (IsUpperSet u ∧ ∀ (d : Set α) (a : α), d.Nonempty → DirectedOn (· ≤ ·) d → IsLUB d a →
 a ∈ u → (d ∩ u).Nonempty) := by
   rw [isOpen_eq_upper_and_LUB_mem_implies_tail_subset]
@@ -208,7 +221,7 @@ a ∈ u → (d ∩ u).Nonempty) := by
         apply Subset.trans _ e2
         apply inter_subset_left
 
-lemma isClosed_eq_lower_and_subset_implies_LUB_mem (s : Set (WithScottTopology α)) : IsClosed s
+lemma isClosed_eq_lower_and_subset_implies_LUB_mem (s : Set α) : IsClosed s
   = (IsLowerSet s ∧
   ∀ (d : Set α) (a : α), d.Nonempty → DirectedOn (· ≤ ·) d → IsLUB d a → d ⊆ s → a ∈ s ) := by
   rw [← isOpen_compl_iff, isOpen_iff_upper_and_LUB_mem_implies_inter_nonempty,
@@ -231,13 +244,12 @@ lemma isClosed_eq_lower_and_subset_implies_LUB_mem (s : Set (WithScottTopology �
     have c1: a ∈ s := h d a d₁ d₂ d₃ h'
     contradiction
 
-
-lemma isOpen_isUpper {s : Set (WithScottTopology α)} : IsOpen s → IsUpperSet s := by
+lemma isOpen_isUpper {s : Set α} : IsOpen s → IsUpperSet s := by
   intros h
   rw [isOpen_eq_upper_and_LUB_mem_implies_tail_subset] at h
   exact h.1
 
-lemma isClosed_isLower {s : Set (WithScottTopology α)} : IsClosed s → IsLowerSet s := by
+lemma isClosed_isLower {s : Set α} : IsClosed s → IsLowerSet s := by
   intro h
   rw [isClosed_eq_lower_and_subset_implies_LUB_mem] at h
   exact h.1
@@ -246,7 +258,7 @@ lemma isClosed_isLower {s : Set (WithScottTopology α)} : IsClosed s → IsLower
 The closure of a singleton `{a}` in the Scott topology is the right-closed left-infinite interval
 (-∞,a].
 -/
-@[simp] lemma closure_singleton (a : WithScottTopology α) : closure {a} = Iic a := by
+@[simp] lemma closure_singleton (a : α) : closure {a} = Iic a := by
   rw [← LowerSet.coe_Iic, ← lowerClosure_singleton]
   refine' subset_antisymm _ _
   . apply closure_minimal subset_lowerClosure
@@ -260,7 +272,9 @@ The closure of a singleton `{a}` in the Scott topology is the right-closed left-
   . apply lowerClosure_min subset_closure (isClosed_isLower _)
     apply isClosed_closure
 
-lemma continuous_monotone {f : WithScottTopology α → WithScottTopology β}
+variable [Preorder β] [TopologicalSpace β] [ScottTopology β]
+
+lemma continuous_monotone {f : α → β}
   (hf : Continuous f) : Monotone f := by
   rw [Monotone]
   intros a b hab
@@ -276,18 +290,40 @@ lemma continuous_monotone {f : WithScottTopology α → WithScottTopology β}
     simp only [mem_compl_iff, mem_preimage, mem_Iic, le_refl, not_true] at u3
   simp only [mem_compl_iff, mem_Iic, le_refl, not_true] at c1
 
-end WithScottTopology
-
-lemma ScottContinuous_iff_continuousWrtScott
-  (f : (WithScottTopology α) → (WithScottTopology β)) :
-  ScottContinuous f ↔ Continuous f := by
+lemma continuous_iff_scottContinuous
+  (f : α → β) :
+  Continuous f ↔ ScottContinuous f := by
   constructor
+  . intros hf d d₁ d₂ a d₃
+    rw [IsLUB]
+    constructor
+    . apply Monotone.mem_upperBounds_image (continuous_monotone hf)
+      rw [← isLUB_le_iff]
+      exact d₃
+    . rw [lowerBounds, mem_setOf_eq]
+      intros b hb
+      let u := (Iic b)ᶜ
+      by_contra h
+      have e1: a ∈ (f⁻¹'  u) := h
+      have s1 : IsOpen u := by
+        rw [isOpen_compl_iff, ← closure_singleton]
+        exact isClosed_closure
+      have s2 : IsOpen (f⁻¹'  u) := IsOpen.preimage hf s1
+      rw [isOpen_iff_upper_and_LUB_mem_implies_inter_nonempty] at s2
+      obtain ⟨c, h_1_left, h_1_right⟩ := s2.2 d a d₁ d₂ d₃ e1
+      simp at h_1_right
+      rw [upperBounds] at hb
+      simp at hb
+      have c1: f c ≤ b := by
+        apply hb
+        exact h_1_left
+      contradiction
   . intro h
     rw [continuous_def]
     intros u hu
-    rw [WithScottTopology.isOpen_iff_upper_and_LUB_mem_implies_inter_nonempty]
+    rw [isOpen_iff_upper_and_LUB_mem_implies_inter_nonempty]
     constructor
-    . apply IsUpperSet.preimage (WithScottTopology.isOpen_isUpper hu)
+    . apply IsUpperSet.preimage (isOpen_isUpper hu)
       apply h.monotone
     . intros d a hd₁ hd₂ hd₃ ha
       have e1: IsLUB (f '' d) (f a) := by
@@ -295,7 +331,7 @@ lemma ScottContinuous_iff_continuousWrtScott
         apply hd₁
         apply hd₂
         apply hd₃
-      rw [WithScottTopology.isOpen_iff_upper_and_LUB_mem_implies_inter_nonempty] at hu
+      rw [isOpen_iff_upper_and_LUB_mem_implies_inter_nonempty] at hu
       have e2: ((f '' d) ∩ u).Nonempty := by
         apply hu.2
         exact Nonempty.image f hd₁
@@ -305,45 +341,6 @@ lemma ScottContinuous_iff_continuousWrtScott
         apply e1
         exact ha
       exact image_inter_nonempty_iff.mp e2
-  . intros hf d d₁ d₂ a d₃
-    rw [IsLUB]
-    constructor
-    . apply Monotone.mem_upperBounds_image (WithScottTopology.continuous_monotone hf)
-      rw [← isLUB_le_iff]
-      exact d₃
-    . rw [lowerBounds, mem_setOf_eq]
-      intros b hb
-      let u := (Iic b)ᶜ
-      by_contra h
-      have e1: a ∈ (f⁻¹'  u) := h
-      have s1 : IsOpen u := by
-        rw [isOpen_compl_iff, ← WithScottTopology.closure_singleton]
-        exact isClosed_closure
-      have s2 : IsOpen (f⁻¹'  u) := IsOpen.preimage hf s1
-      rw [WithScottTopology.isOpen_iff_upper_and_LUB_mem_implies_inter_nonempty] at s2
-      obtain ⟨c, h_1_left, h_1_right⟩ := s2.2 d a d₁ d₂ d₃ e1
-      simp at h_1_right
-      rw [upperBounds] at hb
-      simp at hb
-      have c1: f c ≤ b := by
-        apply hb
-        exact h_1_left
-      contradiction
-
-variable [TopologicalSpace α] [ScottTopology α]
-
-namespace ScottTopology
-
-variable (α)
-
-lemma topology_eq : ‹_› = ScottTopology' := topology_eq_ScottTopology
-
-variable {α}
-
-/-- If `α` is equipped with the Scott topology, then it is homeomorphic to `WithScottTopology α`.
--/
-def withScottTopologyHomeomorph : WithScottTopology α ≃ₜ α :=
-  WithScottTopology.ofScott.toHomeomorphOfInducing ⟨by erw [topology_eq α, induced_id]; rfl⟩
 
 end ScottTopology
 
