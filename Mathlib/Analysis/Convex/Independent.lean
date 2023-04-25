@@ -98,12 +98,12 @@ protected theorem ConvexIndependent.subtype {p : ι → E} (hc : ConvexIndepende
 /-- If an indexed family of points is convex independent, so is the corresponding set of points. -/
 protected theorem ConvexIndependent.range {p : ι → E} (hc : ConvexIndependent 𝕜 p) :
     ConvexIndependent 𝕜 (fun x => x : Set.range p → E) := by
-  let f : Set.range p → ι := fun x => x.property.some
-  have hf : ∀ x, p (f x) = x := fun x => x.property.some_spec
+  let f : Set.range p → ι := fun x => x.property.choose
+  have hf : ∀ x, p (f x) = x := fun x => x.property.choose_spec
   let fe : Set.range p ↪ ι := ⟨f, fun x₁ x₂ he => Subtype.ext (hf x₁ ▸ hf x₂ ▸ he ▸ rfl)⟩
   convert hc.comp_embedding fe
   ext
-  rw [embedding.coe_fn_mk, comp_app, hf]
+  rw [Embedding.coeFn_mk, comp_apply, hf]
 #align convex_independent.range ConvexIndependent.range
 
 /-- A subset of a convex independent set of points is convex independent as well. -/
@@ -118,7 +118,7 @@ theorem Function.Injective.convexIndependent_iff_set {p : ι → E} (hi : Functi
     ConvexIndependent 𝕜 (fun x => x : Set.range p → E) ↔ ConvexIndependent 𝕜 p :=
   ⟨fun hc =>
     hc.comp_embedding
-      (⟨fun i => ⟨p i, Set.mem_range_self _⟩, fun x y h => hi (Subtype.mk_eq_mk.1 h)⟩ :
+      (⟨fun i => ⟨p i, Set.mem_range_self _⟩, fun _ _ h => hi (Subtype.mk_eq_mk.1 h)⟩ :
         ι ↪ Set.range p),
     ConvexIndependent.range⟩
 #align function.injective.convex_independent_iff_set Function.Injective.convexIndependent_iff_set
@@ -136,7 +136,7 @@ points. See `convex_independent_set_iff_not_mem_convex_hull_diff` for the `set` 
 theorem convexIndependent_iff_not_mem_convexHull_diff {p : ι → E} :
     ConvexIndependent 𝕜 p ↔ ∀ i s, p i ∉ convexHull 𝕜 (p '' (s \ {i})) := by
   refine' ⟨fun hc i s h => _, fun h s i hi => _⟩
-  · rw [hc.mem_convex_hull_iff] at h
+  · rw [hc.mem_convexHull_iff] at h
     exact h.2 (Set.mem_singleton _)
   · by_contra H
     refine' h i s _
@@ -152,8 +152,8 @@ theorem convexIndependent_set_iff_inter_convexHull_subset {s : Set E} :
     rw [Subtype.coe_image_of_subset h]
     exact hxt
   · intro hc t x h
-    rw [← subtype.coe_injective.mem_set_image]
-    exact hc (t.image coe) (Subtype.coe_image_subset s t) ⟨x.prop, h⟩
+    rw [← Subtype.coe_injective.mem_set_image]
+    exact hc (t.image Subtype.val) (Subtype.coe_image_subset s t) ⟨x.prop, h⟩
 #align convex_independent_set_iff_inter_convex_hull_subset convexIndependent_set_iff_inter_convexHull_subset
 
 /-- If a set is convex independent, a point in the set is not in the convex hull of the other
@@ -181,7 +181,7 @@ theorem convexIndependent_iff_finset {p : ι → E} :
       ∀ (s : Finset ι) (x : ι), p x ∈ convexHull 𝕜 (s.image p : Set E) → x ∈ s := by
   refine' ⟨fun hc s x hx => hc s x _, fun h s x hx => _⟩
   · rwa [Finset.coe_image] at hx
-  have hp : injective p := by
+  have hp : Injective p := by
     rintro a b hab
     rw [← mem_singleton]
     refine' h {b} a _
@@ -192,9 +192,9 @@ theorem convexIndependent_iff_finset {p : ι → E} :
   obtain ⟨t, ht, hx⟩ := hx
   rw [← hp.mem_set_image]
   refine' ht _
-  suffices x ∈ t.preimage p (hp.inj_on _) by rwa [mem_preimage, ← mem_coe] at this
+  suffices x ∈ t.preimage p (hp.injOn _) by rwa [mem_preimage, ← mem_coe] at this
   refine' h _ x _
-  rwa [t.image_preimage p (hp.inj_on _), filter_true_of_mem]
+  rwa [t.image_preimage p (hp.injOn _), filter_true_of_mem]
   · exact fun y hy => s.image_subset_range p (ht <| mem_coe.2 hy)
 #align convex_independent_iff_finset convexIndependent_iff_finset
 
@@ -203,7 +203,7 @@ theorem convexIndependent_iff_finset {p : ι → E} :
 
 theorem Convex.convexIndependent_extremePoints (hs : Convex 𝕜 s) :
     ConvexIndependent 𝕜 (fun p => p : s.extremePoints 𝕜 → E) :=
-  convexIndependent_set_iff_not_mem_convexHull_diff.2 fun x hx h =>
+  convexIndependent_set_iff_not_mem_convexHull_diff.2 fun _ hx h =>
     (extremePoints_convexHull_subset
           (inter_extremePoints_subset_extremePoints_of_subset
             (convexHull_min ((Set.diff_subset _ _).trans extremePoints_subset) hs) ⟨h, hx⟩)).2
@@ -211,4 +211,3 @@ theorem Convex.convexIndependent_extremePoints (hs : Convex 𝕜 s) :
 #align convex.convex_independent_extreme_points Convex.convexIndependent_extremePoints
 
 end LinearOrderedField
-
