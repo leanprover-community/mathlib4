@@ -24,10 +24,10 @@ will result in a multiplicative inverse to `A`.
 
 Note that there are at least three different inverses in mathlib:
 
-* `A⁻¹` (`has_inv.inv`): alone, this satisfies no properties, although it is usually used in
+* `A⁻¹` (`Inv.inv`): alone, this satisfies no properties, although it is usually used in
   conjunction with `Group` or `GroupWithZero`. On matrices, this is defined to be zero when no
   inverse exists.
-* `⅟A` (`inv_of`): this is only available in the presence of `[Invertible A]`, which guarantees an
+* `⅟A` (`invOf`): this is only available in the presence of `[Invertible A]`, which guarantees an
   inverse exists.
 * `Ring.inverse A`: this is defined on any `MonoidWithZero`, and just like `⁻¹` on matrices, is
   defined to be zero when no inverse exists.
@@ -39,7 +39,7 @@ We start by working with `Invertible`, and show the main results:
 * `Matrix.isUnit_iff_isUnit_det`
 * `Matrix.mul_eq_one_comm`
 
-After this we define `matrix.has_inv` and show it matches `⅟A` and `Ring.inverse A`.
+After this we define `Matrix.inv` and show it matches `⅟A` and `Ring.inverse A`.
 The rest of the results in the file are then about `A⁻¹`
 
 ## References
@@ -58,9 +58,7 @@ universe u u' v
 
 variable {l : Type _} {m : Type u} {n : Type u'} {α : Type v}
 
-open Matrix BigOperators
-
-open Equiv Equiv.Perm Finset
+open Matrix BigOperators Equiv Equiv.Perm Finset
 
 /-! ### Matrices are `Invertible` iff their determinants are -/
 
@@ -267,14 +265,14 @@ theorem nonsing_inv_apply (h : IsUnit A.det) : A⁻¹ = (↑h.unit⁻¹ : α) �
   rw [inv_def, ← Ring.inverse_unit h.unit, IsUnit.unit_spec]
 #align matrix.nonsing_inv_apply Matrix.nonsing_inv_apply
 
-/-- The nonsingular inverse is the same as `inv_of` when `A` is invertible. -/
+/-- The nonsingular inverse is the same as `invOf` when `A` is invertible. -/
 @[simp]
 theorem invOf_eq_nonsing_inv [Invertible A] : ⅟ A = A⁻¹ := by
   letI := detInvertibleOfInvertible A
   rw [inv_def, Ring.inverse_invertible, invOf_eq]
 #align matrix.inv_of_eq_nonsing_inv Matrix.invOf_eq_nonsing_inv
 
-/-- Coercing the result of `units.has_inv` is the same as coercing first and applying the
+/-- Coercing the result of `Units.instInv` is the same as coercing first and applying the
 nonsingular inverse. -/
 @[simp, norm_cast]
 theorem coe_units_inv (A : (Matrix n n α)ˣ) : ↑A⁻¹ = (A⁻¹ : Matrix n n α) := by
@@ -376,14 +374,14 @@ theorem inv_mul_cancel_left_of_invertible (B : Matrix n m α) [Invertible A] : A
 
 theorem inv_mul_eq_iff_eq_mul_of_invertible (A B C : Matrix n n α) [Invertible A] :
     A⁻¹ ⬝ B = C ↔ B = A ⬝ C :=
-  ⟨fun h => by rw [← h, mul_inv_cancel_left_of_invertible], fun h => by
-    rw [h, inv_mul_cancel_left_of_invertible]⟩
+  ⟨fun h => by rw [← h, mul_inv_cancel_left_of_invertible],
+   fun h => by rw [h, inv_mul_cancel_left_of_invertible]⟩
 #align matrix.inv_mul_eq_iff_eq_mul_of_invertible Matrix.inv_mul_eq_iff_eq_mul_of_invertible
 
 theorem mul_inv_eq_iff_eq_mul_of_invertible (A B C : Matrix n n α) [Invertible A] :
     B ⬝ A⁻¹ = C ↔ B = C ⬝ A :=
-  ⟨fun h => by rw [← h, inv_mul_cancel_right_of_invertible], fun h => by
-    rw [h, mul_inv_cancel_right_of_invertible]⟩
+  ⟨fun h => by rw [← h, inv_mul_cancel_right_of_invertible],
+   fun h => by rw [h, mul_inv_cancel_right_of_invertible]⟩
 #align matrix.mul_inv_eq_iff_eq_mul_of_invertible Matrix.mul_inv_eq_iff_eq_mul_of_invertible
 
 theorem nonsing_inv_cancel_or_zero : A⁻¹ ⬝ A = 1 ∧ A ⬝ A⁻¹ = 1 ∨ A⁻¹ = 0 := by
@@ -432,7 +430,7 @@ noncomputable def invertibleOfIsUnitDet (h : IsUnit A.det) : Invertible A :=
   ⟨A⁻¹, nonsing_inv_mul A h, mul_nonsing_inv A h⟩
 #align matrix.invertible_of_is_unit_det Matrix.invertibleOfIsUnitDet
 
-/-- A version of `matrix.units_of_det_invertible` with the inverse defeq to `A⁻¹` that is therefore
+/-- A version of `Matrix.unitOfDetInvertible` with the inverse defeq to `A⁻¹` that is therefore
 noncomputable. -/
 noncomputable def nonsingInvUnit (h : IsUnit A.det) : (Matrix n n α)ˣ :=
   @unitOfInvertible _ _ _ (invertibleOfIsUnitDet A h)
@@ -594,8 +592,7 @@ theorem mul_inv_rev (A B : Matrix n n α) : (A ⬝ B)⁻¹ = B⁻¹ ⬝ A⁻¹ :
     Ring.mul_inverse_rev]
 #align matrix.mul_inv_rev Matrix.mul_inv_rev
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/-- A version of `List.prod_inv_reverse` for `matrix.has_inv`. -/
+/-- A version of `List.prod_inv_reverse` for `Matrix.inv`. -/
 theorem list_prod_inv_reverse : ∀ l : List (Matrix n n α), l.prod⁻¹ = (l.reverse.map Inv.inv).prod
   | [] => by rw [List.reverse_nil, List.map_nil, List.prod_nil, inv_one]
   | A::Xs => by
