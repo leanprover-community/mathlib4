@@ -224,6 +224,9 @@ def opMap (φ : S₁ ⟶ S₂) : S₂.op ⟶ S₁.op where
     dsimp
     simp only [← op_comp, φ.comm₁₂]
 
+@[simp]
+lemma opMap_id : opMap (𝟙 S) = 𝟙 S.op := rfl
+
 /-- The short_complex in `C` associated to a short complex in `Cᵒᵖ`. -/
 @[simps]
 def unop (S : ShortComplex Cᵒᵖ) : ShortComplex C :=
@@ -241,6 +244,9 @@ def unopMap {S₁ S₂ : ShortComplex Cᵒᵖ} (φ : S₁ ⟶ S₂) : S₂.unop 
   comm₂₃ := by
     dsimp
     simp only [← unop_comp, φ.comm₁₂]
+
+@[simp]
+lemma unopMap_id (S : ShortComplex Cᵒᵖ) : unopMap (𝟙 S) = 𝟙 S.unop := rfl
 
 variable (C)
 

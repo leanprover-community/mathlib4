@@ -678,7 +678,7 @@ lemma cyclesMap'_zero (h₁ : S₁.LeftHomologyData) (h₂ : S₂.LeftHomologyDa
 variable (S₁ S₂)
 
 @[simp]
-lemma left_homology_map_zero [HasLeftHomology S₁] [HasLeftHomology S₂] :
+lemma leftHomologyMap_zero [HasLeftHomology S₁] [HasLeftHomology S₂] :
     leftHomologyMap (0 : S₁ ⟶ S₂) = 0 :=
   leftHomologyMap'_zero _ _
 
@@ -1043,7 +1043,7 @@ lemma LeftHomologyData.leftHomologyπ_comp_leftHomologyIso_hom :
   rw [← leftHomologyπ_naturality']
 
 @[reassoc (attr := simp)]
-lemma LeftHomologyData.π_comp_leftHomology_iso_inv :
+lemma LeftHomologyData.π_comp_leftHomologyIso_inv :
     h.π ≫ h.leftHomologyIso.inv = h.cyclesIso.inv ≫ S.leftHomologyπ := by
   simp only [← cancel_epi h.cyclesIso.hom, ← cancel_mono h.leftHomologyIso.hom, assoc,
     Iso.inv_hom_id, comp_id, Iso.hom_inv_id_assoc,
