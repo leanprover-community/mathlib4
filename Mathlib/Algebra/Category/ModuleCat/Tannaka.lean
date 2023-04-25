@@ -8,7 +8,7 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Algebra.Category.Module.Basic
+import Mathlib.Algebra.Category.ModuleCat.Basic
 import Mathlib.LinearAlgebra.Span
 
 /-!
@@ -19,11 +19,11 @@ the endomorphisms of the additive forgetful functor `Module R ⥤ AddCommGroup`.
 
 -/
 
-
 universe u
 
 open CategoryTheory
 
+set_option synthInstance.etaExperiment true in
 /-- An ingredient of Tannaka duality for rings:
 A ring `R` is equivalent to
 the endomorphisms of the additive forgetful functor `Module R ⥤ AddCommGroup`.
@@ -31,29 +31,39 @@ the endomorphisms of the additive forgetful functor `Module R ⥤ AddCommGroup`.
 def ringEquivEndForget₂ (R : Type u) [Ring R] :
     R ≃+* End (AdditiveFunctor.of (forget₂ (ModuleCat.{u} R) AddCommGroupCat.{u})) where
   toFun r :=
-    { app := fun M => by apply DistribMulAction.toAddMonoidHom M r
-      naturality' := fun M N f => by
+    { app := fun M =>
+        @AddCommGroupCat.ofHom M.carrier M.carrier _ _ (DistribMulAction.toAddMonoidHom M r)
+      naturality := fun M N f => by
         ext
         exact (f.map_smul _ _).symm }
   invFun φ := φ.app (ModuleCat.of R R) (1 : R)
   left_inv := by
     intro r
-    simp
+    dsimp
+    erw [AddCommGroupCat.ofHom_apply]
+    simp only [DistribMulAction.toAddMonoidHom_apply, smul_eq_mul, mul_one]
   right_inv := by
-    intro φ; ext (M x)
-    simp only [DistribMulAction.toAddMonoidHom_apply]
-    have w :=
-      AddMonoidHom.congr_fun (φ.naturality (ModuleCat.asHomRight (LinearMap.toSpanSingleton R M x)))
-        (1 : R)
-    convert w.symm
-    exact (one_smul _ _).symm
+    intro φ
+    apply NatTrans.ext
+    ext M (x : M)
+    have w := congr_fun ((forget _).congr_map
+      (φ.naturality (ModuleCat.asHomRight (LinearMap.toSpanSingleton R M x)))) (1 : R)
+    exact w.symm.trans (congr_arg (φ.app M) (one_smul R x))
   map_add' := by
     intros
+    apply NatTrans.ext
+    ext1
+    dsimp
     ext
-    simp [add_smul]
+    simp only [AddCommGroupCat.ofHom_apply, DistribMulAction.toAddMonoidHom_apply, add_smul]
+    rfl
   map_mul' := by
     intros
+    apply NatTrans.ext
+    ext1
+    dsimp
     ext
-    simpa using mul_smul _ _ _
-#align ring_equiv_End_forget₂ ringEquivEndForget₂
+    simp only [AddCommGroupCat.ofHom_apply, DistribMulAction.toAddMonoidHom_apply, mul_smul]
+    rfl
 
+#align ring_equiv_End_forget₂ ringEquivEndForget₂
