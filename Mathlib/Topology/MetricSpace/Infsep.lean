@@ -513,8 +513,8 @@ theorem _root_.Finset.coe_infsep_of_offDiag_nonempty [DecidableEq α] {s : Finse
   rw [Finset.coe_infsep, dif_pos hs]
 #align finset.coe_infsep_of_off_diag_nonempty Finset.coe_infsep_of_offDiag_nonempty
 
-theorem _root_.Finset.coe_infsep_of_offDiag_empty [DecidableEq α] {s : Finset α} (hs : s.offDiag = ∅) :
-    (s : Set α).infsep = 0 := by
+theorem _root_.Finset.coe_infsep_of_offDiag_empty
+    [DecidableEq α] {s : Finset α} (hs : s.offDiag = ∅) : (s : Set α).infsep = 0 := by
   rw [← Finset.not_nonempty_iff_eq_empty] at hs
   rw [Finset.coe_infsep, dif_neg hs]
 #align finset.coe_infsep_of_off_diag_empty Finset.coe_infsep_of_offDiag_empty
