@@ -192,9 +192,7 @@ instance (priority := 100) CompleteLatticeHomClass.toFrameHomClass [CompleteLatt
 instance (priority := 100) CompleteLatticeHomClass.toBoundedLatticeHomClass [CompleteLattice α]
     [CompleteLattice β]  [CompleteLatticeHomClass F α β] : BoundedLatticeHomClass F α β :=
   { SupₛHomClass.toSupBotHomClass, InfₛHomClass.toInfTopHomClass with }
-#align
-  complete_lattice_hom_class.to_bounded_lattice_hom_class
-  CompleteLatticeHomClass.toBoundedLatticeHomClass
+#align complete_lattice_hom_class.to_bounded_lattice_hom_class CompleteLatticeHomClass.toBoundedLatticeHomClass
 
 -- See note [lower instance priority]
 instance (priority := 100) OrderIsoClass.toSupₛHomClass [CompleteLattice α]

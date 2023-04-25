@@ -340,9 +340,7 @@ theorem exists_mono_in_high_dimension (α : Type u) [Finite α] (κ : Type v) [F
   ⟨ι, ιfin, fun C =>
     let ⟨l, c, hc⟩ := hι (ULift.up ∘ C)
     ⟨l, c.down, fun x => by rw [← hc x, Function.comp_apply]⟩⟩
-#align
-  combinatorics.line.exists_mono_in_high_dimension
-  Combinatorics.Line.exists_mono_in_high_dimension
+#align combinatorics.line.exists_mono_in_high_dimension Combinatorics.Line.exists_mono_in_high_dimension
 
 end Line
 

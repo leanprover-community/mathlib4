@@ -247,17 +247,13 @@ theorem restrict_eq_codRestrict_domRestrict {f : M →ₗ[R] M₁} {p : Submodul
     {q : Submodule R M₁} (hf : ∀ x ∈ p, f x ∈ q) :
     f.restrict hf = (f.domRestrict p).codRestrict q fun x => hf x.1 x.2 :=
   rfl
-#align
-  linear_map.restrict_eq_cod_restrict_dom_restrict
-  LinearMap.restrict_eq_codRestrict_domRestrict
+#align linear_map.restrict_eq_cod_restrict_dom_restrict LinearMap.restrict_eq_codRestrict_domRestrict
 
 theorem restrict_eq_domRestrict_codRestrict {f : M →ₗ[R] M₁} {p : Submodule R M}
     {q : Submodule R M₁} (hf : ∀ x, f x ∈ q) :
     (f.restrict fun x _ => hf x) = (f.codRestrict q hf).domRestrict p :=
   rfl
-#align
-  linear_map.restrict_eq_dom_restrict_cod_restrict
-  LinearMap.restrict_eq_domRestrict_codRestrict
+#align linear_map.restrict_eq_dom_restrict_cod_restrict LinearMap.restrict_eq_domRestrict_codRestrict
 
 instance uniqueOfLeft [Subsingleton M] : Unique (M →ₛₗ[σ₁₂] M₂) :=
   { inferInstanceAs (Inhabited (M →ₛₗ[σ₁₂] M₂)) with
@@ -356,9 +352,7 @@ theorem submodule_pow_eq_zero_of_pow_eq_zero {N : Submodule R M} {g : Module.End
   have hg : N.subtype.comp (g ^ k) m = 0 := by
     rw [← commute_pow_left_of_commute h, hG, zero_comp, zero_apply]
   simpa using hg
-#align
-  linear_map.submodule_pow_eq_zero_of_pow_eq_zero
-  LinearMap.submodule_pow_eq_zero_of_pow_eq_zero
+#align linear_map.submodule_pow_eq_zero_of_pow_eq_zero LinearMap.submodule_pow_eq_zero_of_pow_eq_zero
 
 theorem coe_pow (f : M →ₗ[R] M) (n : ℕ) : ⇑(f ^ n) = f^[n] := by
   ext m

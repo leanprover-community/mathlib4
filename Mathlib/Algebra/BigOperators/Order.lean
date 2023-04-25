@@ -46,9 +46,7 @@ theorem le_prod_nonempty_of_submultiplicative_on_pred (f : M → N) (p : M → P
   · exact Multiset.forall_mem_map_iff.mpr hs
   rw [Multiset.map_map]
   rfl
-#align
-  finset.le_prod_nonempty_of_submultiplicative_on_pred
-  Finset.le_prod_nonempty_of_submultiplicative_on_pred
+#align finset.le_prod_nonempty_of_submultiplicative_on_pred Finset.le_prod_nonempty_of_submultiplicative_on_pred
 #align finset.le_sum_nonempty_of_subadditive_on_pred Finset.le_sum_nonempty_of_subadditive_on_pred
 
 /-- Let `{x | p x}` be an additive subsemigroup of an additive commutative monoid `M`. Let
@@ -239,11 +237,8 @@ theorem prod_le_prod_fiberwise_of_prod_fiber_le_one' {t : Finset ι'} {g : ι �
     (h : ∀ (y) (_ : y ∉ t), (∏ x in s.filter fun x ↦ g x = y, f x) ≤ 1) :
     (∏ x in s, f x) ≤ ∏ y in t, ∏ x in s.filter fun x ↦ g x = y, f x :=
   @prod_fiberwise_le_prod_of_one_le_prod_fiber' _ Nᵒᵈ _ _ _ _ _ _ _ h
-#align
-  finset.prod_le_prod_fiberwise_of_prod_fiber_le_one'
-  Finset.prod_le_prod_fiberwise_of_prod_fiber_le_one'
-#align
-  finset.sum_le_sum_fiberwise_of_sum_fiber_nonpos Finset.sum_le_sum_fiberwise_of_sum_fiber_nonpos
+#align finset.prod_le_prod_fiberwise_of_prod_fiber_le_one' Finset.prod_le_prod_fiberwise_of_prod_fiber_le_one'
+#align finset.sum_le_sum_fiberwise_of_sum_fiber_nonpos Finset.sum_le_sum_fiberwise_of_sum_fiber_nonpos
 
 end OrderedCommMonoid
 
