@@ -8,7 +8,7 @@ Authors: Anatole Dedecker
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Convex.Topology
+import Mathlib.Analysis.Convex.Topology
 
 /-!
 # Locally convex topological modules
@@ -132,8 +132,7 @@ variable {𝕜 E}
 closed, then we can find open disjoint convex sets containing them. -/
 theorem Disjoint.exists_open_convexes [LocallyConvexSpace 𝕜 E] {s t : Set E} (disj : Disjoint s t)
     (hs₁ : Convex 𝕜 s) (hs₂ : IsCompact s) (ht₁ : Convex 𝕜 t) (ht₂ : IsClosed t) :
-    ∃ u v, IsOpen u ∧ IsOpen v ∧ Convex 𝕜 u ∧ Convex 𝕜 v ∧ s ⊆ u ∧ t ⊆ v ∧ Disjoint u v :=
-  by
+    ∃ u v, IsOpen u ∧ IsOpen v ∧ Convex 𝕜 u ∧ Convex 𝕜 v ∧ s ⊆ u ∧ t ⊆ v ∧ Disjoint u v := by
   letI : UniformSpace E := TopologicalAddGroup.toUniformSpace E
   haveI : UniformAddGroup E := comm_topologicalAddGroup_is_uniform
   have := (LocallyConvexSpace.convex_open_basis_zero 𝕜 E).comap fun x : E × E => x.2 - x.1
@@ -155,8 +154,7 @@ variable {ι : Sort _} {𝕜 E F : Type _} [OrderedSemiring 𝕜] [AddCommMonoid
   [AddCommMonoid F] [Module 𝕜 F]
 
 theorem locallyConvexSpaceInf {ts : Set (TopologicalSpace E)}
-    (h : ∀ t ∈ ts, @LocallyConvexSpace 𝕜 E _ _ _ t) : @LocallyConvexSpace 𝕜 E _ _ _ (infₛ ts) :=
-  by
+    (h : ∀ t ∈ ts, @LocallyConvexSpace 𝕜 E _ _ _ t) : @LocallyConvexSpace 𝕜 E _ _ _ (infₛ ts) := by
   letI : TopologicalSpace E := Inf ts
   refine'
     LocallyConvexSpace.ofBases 𝕜 E (fun x => fun If : Set ts × (ts → Set E) => ⋂ i ∈ If.1, If.2 i)
@@ -169,8 +167,7 @@ theorem locallyConvexSpaceInf {ts : Set (TopologicalSpace E)}
 
 theorem locallyConvexSpaceInfi {ts' : ι → TopologicalSpace E}
     (h' : ∀ i, @LocallyConvexSpace 𝕜 E _ _ _ (ts' i)) :
-    @LocallyConvexSpace 𝕜 E _ _ _ (⨅ i, ts' i) :=
-  by
+    @LocallyConvexSpace 𝕜 E _ _ _ (⨅ i, ts' i) := by
   refine' locallyConvexSpaceInf _
   rwa [forall_range_iff]
 #align locally_convex_space_infi locallyConvexSpaceInfi
@@ -179,8 +176,7 @@ theorem locallyConvexSpaceInfi {ts' : ι → TopologicalSpace E}
 Case conversion may be inaccurate. Consider using '#align locally_convex_space_inf locallyConvexSpaceInfₓ'. -/
 #print locallyConvexSpaceInf /-
 theorem locallyConvexSpaceInf {t₁ t₂ : TopologicalSpace E} (h₁ : @LocallyConvexSpace 𝕜 E _ _ _ t₁)
-    (h₂ : @LocallyConvexSpace 𝕜 E _ _ _ t₂) : @LocallyConvexSpace 𝕜 E _ _ _ (t₁ ⊓ t₂) :=
-  by
+    (h₂ : @LocallyConvexSpace 𝕜 E _ _ _ t₂) : @LocallyConvexSpace 𝕜 E _ _ _ (t₁ ⊓ t₂) := by
   rw [inf_eq_infᵢ]
   refine' locallyConvexSpaceInfi fun b => _
   cases b <;> assumption
@@ -188,8 +184,7 @@ theorem locallyConvexSpaceInf {t₁ t₂ : TopologicalSpace E} (h₁ : @LocallyC
 -/
 
 theorem locallyConvexSpaceInduced {t : TopologicalSpace F} [LocallyConvexSpace 𝕜 F]
-    (f : E →ₗ[𝕜] F) : @LocallyConvexSpace 𝕜 E _ _ _ (t.induced f) :=
-  by
+    (f : E →ₗ[𝕜] F) : @LocallyConvexSpace 𝕜 E _ _ _ (t.induced f) := by
   letI : TopologicalSpace E := t.induced f
   refine'
     LocallyConvexSpace.ofBases 𝕜 E (fun x => preimage f)
