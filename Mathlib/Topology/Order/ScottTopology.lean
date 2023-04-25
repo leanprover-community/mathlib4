@@ -351,27 +351,27 @@ end ScottTopology
 end preorder
 
 section partial_order
-variable [PartialOrder α]
-
-instance : PartialOrder (WithScottTopology α) := ‹PartialOrder α›
+variable [PartialOrder α] [TopologicalSpace α] [ScottTopology α]
 
 /--
 The Scott topology on a partial order is T₀.
 -/
 -- see Note [lower instance priority]
-instance (priority := 90): T0Space (WithScottTopology α) :=
-(t0Space_iff_inseparable (WithScottTopology α)).2 $ fun x y h => Iic_injective $
-  by simpa only [inseparable_iff_closure_eq, WithScottTopology.closure_singleton] using h
+instance (priority := 90): T0Space α :=
+(t0Space_iff_inseparable α).2 $ fun x y h => Iic_injective $
+  by simpa only [inseparable_iff_closure_eq, ScottTopology.closure_singleton] using h
 
 end partial_order
 
 section complete_lattice
 
-lemma isOpen_eq_upper_and_sup_mem_implies_tail_subset [CompleteLattice α]
-(u : Set (WithScottTopology α)) : IsOpen u =
+variables [CompleteLattice α] [TopologicalSpace α] [ScottTopology α]
+
+lemma isOpen_eq_upper_and_sup_mem_implies_tail_subset
+(u : Set α) : IsOpen u =
 (IsUpperSet u ∧
   ∀ (d : Set α), d.Nonempty → DirectedOn (· ≤ ·) d → supₛ d ∈ u → ∃ b ∈ d, (Ici b) ∩ d ⊆ u) := by
-  rw [WithScottTopology.isOpen_eq_upper_and_LUB_mem_implies_tail_subset]
+  rw [ScottTopology.isOpen_eq_upper_and_LUB_mem_implies_tail_subset]
   refine' let_value_eq (And (IsUpperSet u)) _
   rw [eq_iff_iff]
   constructor
@@ -382,11 +382,11 @@ lemma isOpen_eq_upper_and_sup_mem_implies_tail_subset [CompleteLattice α]
     rw [(IsLUB.supₛ_eq hd₃)]
     exact ha
 
-lemma isOpen_eq_upper_and_sup_mem_implies_inter_nonempty [CompleteLattice α]
-(u : Set (WithScottTopology α)) : IsOpen u =
+lemma isOpen_eq_upper_and_sup_mem_implies_inter_nonempty
+(u : Set α) : IsOpen u =
 (IsUpperSet u ∧  ∀ (d : Set α), d.Nonempty → DirectedOn (· ≤ ·) d → supₛ d ∈ u →
 (d∩u).Nonempty) := by
-  rw [WithScottTopology.isOpen_iff_upper_and_LUB_mem_implies_inter_nonempty]
+  rw [ScottTopology.isOpen_iff_upper_and_LUB_mem_implies_inter_nonempty]
   refine' let_value_eq (And (IsUpperSet u)) _
   rw [eq_iff_iff]
   constructor
