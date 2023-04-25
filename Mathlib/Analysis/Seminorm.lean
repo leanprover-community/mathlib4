@@ -303,13 +303,14 @@ noncomputable instance smul_nnreal_nnreal  : SMul ℝ≥0 ℝ≥0 := inferInstan
 
 variable [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ]
 
--- FIXME things start going wrong here:
+-- Porting note:
+-- FIXME: things start going wrong here:
 
 -- This is failing, because we are not finding the right instances!
 -- example (f : E →ₛₗ[σ₁₂] E₂) : E → E₂ := f
 -- However `etaExperiment` saves the day:
-set_option synthInstance.etaExperiment true in
-example (f : E →ₛₗ[σ₁₂] E₂) : E → E₂ := f
+-- set_option synthInstance.etaExperiment true in
+-- example (f : E →ₛₗ[σ₁₂] E₂) : E → E₂ := f
 
 set_option synthInstance.etaExperiment true in
 /-- Composition of a seminorm with a linear map is a seminorm. -/
