@@ -269,6 +269,15 @@ lemma exact_iff_mono_cokernel_desc [S.HasHomology] [HasCokernel S.f] :
     rw [eq₂]
     apply mono_comp
 
+lemma QuasiIso.exact_iff {S₁ S₂ : ShortComplex C} (φ : S₁ ⟶ S₂)
+    [S₁.HasHomology] [S₂.HasHomology] [QuasiIso φ] : S₁.Exact ↔ S₂.Exact := by
+  simp only [exact_iff_isZero_homology]
+  exact Iso.isZero_iff (QuasiIso.iso φ)
+
+lemma HomotopyEquiv.exact_iff {S₁ S₂ : ShortComplex C} (e : HomotopyEquiv S₁ S₂)
+    [S₁.HasHomology] [S₂.HasHomology] : S₁.Exact ↔ S₂.Exact :=
+  QuasiIso.exact_iff e.hom
+
 structure Splitting (S : ShortComplex C) where
   r : S.X₂ ⟶ S.X₁
   s : S.X₃ ⟶ S.X₂

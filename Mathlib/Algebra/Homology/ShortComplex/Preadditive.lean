@@ -1,4 +1,4 @@
-import Mathlib.Algebra.Homology.ShortComplex.Homology
+import Mathlib.Algebra.Homology.ShortComplex.QuasiIso
 import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 import Mathlib.CategoryTheory.Preadditive.Opposite
 
@@ -30,7 +30,7 @@ lemma epi_of_isZero_cokernel {X Y : C} (f : X ⟶ Y) [HasCokernel f] (h : IsZero
 
 namespace ShortComplex
 
-variable {S₁ S₂ : ShortComplex C}
+variable {S₁ S₂ S₃ : ShortComplex C}
 
 attribute [local simp] Hom.comm₁₂ Hom.comm₂₃
 
@@ -628,6 +628,114 @@ lemma congr_homologyMap (h : Homotopy φ₁ φ₂) [S₁.HasHomology] [S₂.HasH
   h.congr_homologyMap' _ _
 
 end Homotopy
+
+@[ext]
+structure HomotopyEquiv where
+  hom : S₁ ⟶ S₂
+  inv : S₂ ⟶ S₁
+  homotopyHomInvId : Homotopy (hom ≫ inv) (𝟙 S₁)
+  homotopyInvHomId : Homotopy (inv ≫ hom) (𝟙 S₂)
+
+namespace HomotopyEquiv
+
+variable {S₁ S₂}
+
+
+@[simps]
+def refl (S : ShortComplex C) : HomotopyEquiv S S where
+  hom := 𝟙 S
+  inv := 𝟙 S
+  homotopyHomInvId := Homotopy.ofEq (by simp)
+  homotopyInvHomId := Homotopy.ofEq (by simp)
+
+@[simps]
+def symm (e : HomotopyEquiv S₁ S₂) : HomotopyEquiv S₂ S₁ where
+  hom := e.inv
+  inv := e.hom
+  homotopyHomInvId := e.homotopyInvHomId
+  homotopyInvHomId := e.homotopyHomInvId
+
+@[simps]
+def trans (e : HomotopyEquiv S₁ S₂) (e' : HomotopyEquiv S₂ S₃) :
+    HomotopyEquiv S₁ S₃ where
+  hom := e.hom ≫ e'.hom
+  inv := e'.inv ≫ e.inv
+  homotopyHomInvId := (Homotopy.ofEq (by simp)).trans
+    (((e'.homotopyHomInvId.comp_right e.inv).comp_left e.hom).trans
+      ((Homotopy.ofEq (by simp)).trans e.homotopyHomInvId))
+  homotopyInvHomId := (Homotopy.ofEq (by simp)).trans
+    (((e.homotopyInvHomId.comp_right e'.hom).comp_left e'.inv).trans
+      ((Homotopy.ofEq (by simp)).trans e'.homotopyInvHomId))
+
+variable (e : HomotopyEquiv S₁ S₂)
+
+@[simps]
+def leftHomologyIso' (h₁ : S₁.LeftHomologyData) (h₂ : S₂.LeftHomologyData) :
+    h₁.H ≅ h₂.H where
+  hom := leftHomologyMap' e.hom h₁ h₂
+  inv := leftHomologyMap' e.inv h₂ h₁
+  hom_inv_id := by
+    rw [← leftHomologyMap'_comp, e.homotopyHomInvId.congr_leftHomologyMap',
+      leftHomologyMap'_id]
+  inv_hom_id := by
+    rw [← leftHomologyMap'_comp, e.homotopyInvHomId.congr_leftHomologyMap',
+      leftHomologyMap'_id]
+
+@[simps]
+def rightHomologyIso' (h₁ : S₁.RightHomologyData) (h₂ : S₂.RightHomologyData) :
+    h₁.H ≅ h₂.H where
+  hom := rightHomologyMap' e.hom h₁ h₂
+  inv := rightHomologyMap' e.inv h₂ h₁
+  hom_inv_id := by
+    rw [← rightHomologyMap'_comp, e.homotopyHomInvId.congr_rightHomologyMap',
+      rightHomologyMap'_id]
+  inv_hom_id := by
+    rw [← rightHomologyMap'_comp, e.homotopyInvHomId.congr_rightHomologyMap',
+      rightHomologyMap'_id]
+
+@[simps]
+def homologyIso' (h₁ : S₁.HomologyData) (h₂ : S₂.HomologyData) :
+    h₁.left.H ≅ h₂.left.H where
+  hom := homologyMap' e.hom h₁ h₂
+  inv := homologyMap' e.inv h₂ h₁
+  hom_inv_id := by
+    rw [← homologyMap'_comp, e.homotopyHomInvId.congr_homologyMap', homologyMap'_id]
+  inv_hom_id := by
+    rw [← homologyMap'_comp, e.homotopyInvHomId.congr_homologyMap', homologyMap'_id]
+
+@[simps]
+noncomputable def leftHomologyIso [S₁.HasLeftHomology] [S₂.HasLeftHomology] :
+    S₁.leftHomology ≅ S₂.leftHomology where
+  hom := leftHomologyMap e.hom
+  inv := leftHomologyMap e.inv
+  hom_inv_id := (e.leftHomologyIso' _ _).hom_inv_id
+  inv_hom_id := (e.leftHomologyIso' _ _).inv_hom_id
+
+@[simps]
+noncomputable def rightHomologyIso [S₁.HasRightHomology] [S₂.HasRightHomology] :
+    S₁.rightHomology ≅ S₂.rightHomology where
+  hom := rightHomologyMap e.hom
+  inv := rightHomologyMap e.inv
+  hom_inv_id := (e.rightHomologyIso' _ _).hom_inv_id
+  inv_hom_id := (e.rightHomologyIso' _ _).inv_hom_id
+
+@[simps]
+noncomputable def homologyIso [S₁.HasHomology] [S₂.HasHomology] :
+    S₁.homology ≅ S₂.homology where
+  hom := homologyMap e.hom
+  inv := homologyMap e.inv
+  hom_inv_id := (e.homologyIso' _ _).hom_inv_id
+  inv_hom_id := (e.homologyIso' _ _).inv_hom_id
+
+instance quasiIso_hom [S₁.HasHomology] [S₂.HasHomology] : QuasiIso e.hom := by
+  rw [quasiIso_iff]
+  change IsIso e.homologyIso.hom
+  infer_instance
+
+instance quasiIso_inv [S₁.HasHomology] [S₂.HasHomology] : QuasiIso e.inv :=
+  (inferInstance : QuasiIso (e.symm).hom)
+
+end HomotopyEquiv
 
 end Homotopy
 

@@ -15,6 +15,10 @@ class QuasiIso (φ : S₁ ⟶ S₂) : Prop where
 
 instance QuasiIso.isIso (φ : S₁ ⟶ S₂) [QuasiIso φ] : IsIso (homologyMap φ) := QuasiIso.isIso'
 
+@[simps! hom]
+noncomputable def QuasiIso.iso (φ : S₁ ⟶ S₂) [QuasiIso φ] : S₁.homology ≅ S₂.homology :=
+  asIso (homologyMap φ)
+
 lemma quasiIso_iff (φ : S₁ ⟶ S₂) :
     QuasiIso φ ↔ IsIso (homologyMap φ) := by
   constructor
