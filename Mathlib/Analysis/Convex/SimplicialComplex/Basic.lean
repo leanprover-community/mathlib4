@@ -63,9 +63,8 @@ structure SimplicialComplex where
   not_empty_mem : ∅ ∉ faces
   indep : ∀ {s}, s ∈ faces → AffineIndependent 𝕜 ((↑) : s → E)
   down_closed : ∀ {s t}, s ∈ faces → t ⊆ s → t ≠ ∅ → t ∈ faces
-  inter_subset_convexHull :
-    ∀ {s t},
-      s ∈ faces → t ∈ faces → convexHull 𝕜 ↑s ∩ convexHull 𝕜 ↑t ⊆ convexHull 𝕜 (s ∩ t : Set E)
+  inter_subset_convexHull : ∀ {s t}, s ∈ faces → t ∈ faces →
+    convexHull 𝕜 ↑s ∩ convexHull 𝕜 ↑t ⊆ convexHull 𝕜 (s ∩ t : Set E)
 #align geometry.simplicial_complex Geometry.SimplicialComplex
 
 namespace SimplicialComplex
@@ -111,25 +110,20 @@ theorem disjoint_or_exists_inter_eq_convexHull (hs : s ∈ K.faces) (ht : t ∈ 
     Disjoint (convexHull 𝕜 (s : Set E)) (convexHull 𝕜 ↑t) ∨
       ∃ u ∈ K.faces, convexHull 𝕜 (s : Set E) ∩ convexHull 𝕜 ↑t = convexHull 𝕜 ↑u := by
   classical
-    by_contra' h
-    refine'
-      h.2 (s ∩ t)
-        (K.down_closed hs (inter_subset_left _ _) fun hst =>
-          h.1 <| disjoint_iff_inf_le.mpr <| (K.inter_subset_convexHull hs ht).trans _)
-        _
-    · rw [← coe_inter, hst, coe_empty, convexHull_empty]
-      rfl
-    · rw [coe_inter, convexHull_inter_convexHull hs ht]
+  by_contra' h
+  refine' h.2 (s ∩ t) (K.down_closed hs (inter_subset_left _ _) fun hst => h.1 <|
+    disjoint_iff_inf_le.mpr <| (K.inter_subset_convexHull hs ht).trans _) _
+  · rw [← coe_inter, hst, coe_empty, convexHull_empty]
+    rfl
+  · rw [coe_inter, convexHull_inter_convexHull hs ht]
 #align geometry.simplicial_complex.disjoint_or_exists_inter_eq_convex_hull Geometry.SimplicialComplex.disjoint_or_exists_inter_eq_convexHull
 
 /-- Construct a simplicial complex by removing the empty face for you. -/
 @[simps]
-def ofErase (faces : Set (Finset E))
-    (indep : ∀ s ∈ faces, AffineIndependent 𝕜 ((↑) : s → E))
+def ofErase (faces : Set (Finset E)) (indep : ∀ s ∈ faces, AffineIndependent 𝕜 ((↑) : s → E))
     (down_closed : ∀ s ∈ faces, ∀ (t) (_ : t ⊆ s), t ∈ faces)
-    (inter_subset_convexHull :
-      ∀ (s) (_ : s ∈ faces) (t) (_ : t ∈ faces),
-        convexHull 𝕜 ↑s ∩ convexHull 𝕜 ↑t ⊆ convexHull 𝕜 (s ∩ t : Set E)) :
+    (inter_subset_convexHull : ∀ (s) (_ : s ∈ faces) (t) (_ : t ∈ faces),
+      convexHull 𝕜 ↑s ∩ convexHull 𝕜 ↑t ⊆ convexHull 𝕜 (s ∩ t : Set E)) :
     SimplicialComplex 𝕜 E where
   faces := faces \ {∅}
   not_empty_mem h := h.2 (mem_singleton _)
@@ -157,8 +151,7 @@ def vertices (K : SimplicialComplex 𝕜 E) : Set E :=
   { x | {x} ∈ K.faces }
 #align geometry.simplicial_complex.vertices Geometry.SimplicialComplex.vertices
 
-theorem mem_vertices : x ∈ K.vertices ↔ {x} ∈ K.faces :=
-  Iff.rfl
+theorem mem_vertices : x ∈ K.vertices ↔ {x} ∈ K.faces := Iff.rfl
 #align geometry.simplicial_complex.mem_vertices Geometry.SimplicialComplex.mem_vertices
 
 theorem vertices_eq : K.vertices = ⋃ k ∈ K.faces, (k : Set E) := by
@@ -176,11 +169,10 @@ theorem vertex_mem_convexHull_iff (hx : x ∈ K.vertices) (hs : s ∈ K.faces) :
     x ∈ convexHull 𝕜 (s : Set E) ↔ x ∈ s := by
   refine' ⟨fun h => _, fun h => subset_convexHull 𝕜 _ h⟩
   classical
-    have h := K.inter_subset_convexHull hx hs ⟨by simp, h⟩
-    by_contra H
-    rwa [← coe_inter,
-      Finset.disjoint_iff_inter_eq_empty.1 (Finset.disjoint_singleton_right.2 H).symm, coe_empty,
-      convexHull_empty] at h
+  have h := K.inter_subset_convexHull hx hs ⟨by simp, h⟩
+  by_contra H
+  rwa [← coe_inter, Finset.disjoint_iff_inter_eq_empty.1 (Finset.disjoint_singleton_right.2 H).symm,
+    coe_empty, convexHull_empty] at h
 #align geometry.simplicial_complex.vertex_mem_convex_hull_iff Geometry.SimplicialComplex.vertex_mem_convexHull_iff
 
 /-- A face is a subset of another one iff its vertices are. -/
@@ -210,7 +202,7 @@ theorem facets_subset : K.facets ⊆ K.faces := fun _ hs => hs.1
 
 theorem not_facet_iff_subface (hs : s ∈ K.faces) : s ∉ K.facets ↔ ∃ t, t ∈ K.faces ∧ s ⊂ t := by
   refine' ⟨fun hs' : ¬(_ ∧ _) => _, _⟩
-  · push_neg  at hs'
+  · push_neg at hs'
     obtain ⟨t, ht⟩ := hs' hs
     exact ⟨t, ht.1, ⟨ht.2.1, fun hts => ht.2.2 (Subset.antisymm ht.2.1 hts)⟩⟩
   · rintro ⟨t, ht⟩ ⟨hs, hs'⟩
@@ -260,8 +252,7 @@ instance : Inhabited (SimplicialComplex 𝕜 E) :=
 
 variable {𝕜 E}
 
-theorem faces_bot : (⊥ : SimplicialComplex 𝕜 E).faces = ∅ :=
-  rfl
+theorem faces_bot : (⊥ : SimplicialComplex 𝕜 E).faces = ∅ := rfl
 #align geometry.simplicial_complex.faces_bot Geometry.SimplicialComplex.faces_bot
 
 theorem space_bot : (⊥ : SimplicialComplex 𝕜 E).space = ∅ :=
