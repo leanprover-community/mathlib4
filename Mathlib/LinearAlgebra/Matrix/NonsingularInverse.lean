@@ -646,16 +646,18 @@ def invertibleOfSubmatrixEquivInvertible (A : Matrix m m α) (e₁ e₂ : n ≃ 
     [Invertible (A.submatrix e₁ e₂)] : Invertible A :=
   invertibleOfRightInverse _ ((⅟ (A.submatrix e₁ e₂)).submatrix e₂.symm e₁.symm) <| by
     have : A = (A.submatrix e₁ e₂).submatrix e₁.symm e₂.symm := by simp
-    conv in _ ⬝ _ =>
-      congr
-      rw [this]
+    -- Porting note: was
+    -- conv in _ ⬝ _ =>
+    --   congr
+    --   rw [this]
+    rw [congr_arg₂ (· ⬝ ·) this rfl]
     rw [Matrix.submatrix_mul_equiv, Matrix.mul_invOf_self, submatrix_one_equiv]
 #align matrix.invertible_of_submatrix_equiv_invertible Matrix.invertibleOfSubmatrixEquivInvertible
 
 theorem invOf_submatrix_equiv_eq (A : Matrix m m α) (e₁ e₂ : n ≃ m) [Invertible A]
     [Invertible (A.submatrix e₁ e₂)] : ⅟ (A.submatrix e₁ e₂) = (⅟ A).submatrix e₂ e₁ := by
   letI := submatrixEquivInvertible A e₁ e₂
-  haveI := Invertible.subsingleton (A.submatrix e₁ e₂)
+  -- Porting note: no longer need `haveI := Invertible.subsingleton (A.submatrix e₁ e₂)`
   convert(rfl : ⅟ (A.submatrix e₁ e₂) = _)
 #align matrix.inv_of_submatrix_equiv_eq Matrix.invOf_submatrix_equiv_eq
 
@@ -685,7 +687,7 @@ theorem inv_submatrix_equiv (A : Matrix m m α) (e₁ e₂ : n ≃ m) :
   by_cases h : IsUnit A
   · cases h.nonempty_invertible
     letI := submatrixEquivInvertible A e₁ e₂
-    rw [← invOf_eq_nonsing_inv, ← invOf_eq_nonsing_inv, invOf_submatrix_equiv_eq]
+    rw [← invOf_eq_nonsing_inv, ← invOf_eq_nonsing_inv, invOf_submatrix_equiv_eq A]
   · have := (isUnit_submatrix_equiv e₁ e₂).not.mpr h
     simp_rw [nonsing_inv_eq_ring_inverse, Ring.inverse_non_unit _ h, Ring.inverse_non_unit _ this,
       submatrix_zero, Pi.zero_apply]
