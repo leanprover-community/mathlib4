@@ -76,7 +76,7 @@ theorem convexJoin_singleton_right (s : Set E) (y : E) :
     convexJoin 𝕜 s {y} = ⋃ x ∈ s, segment 𝕜 x y := by simp [convexJoin]
 #align convex_join_singleton_right convexJoin_singleton_right
 
-@[simp]
+-- porting note: simp can prove it
 theorem convexJoin_singletons (x : E) : convexJoin 𝕜 {x} {y} = segment 𝕜 x y := by simp
 #align convex_join_singletons convexJoin_singletons
 
