@@ -25,21 +25,21 @@ will result in a multiplicative inverse to `A`.
 Note that there are at least three different inverses in mathlib:
 
 * `A⁻¹` (`has_inv.inv`): alone, this satisfies no properties, although it is usually used in
-  conjunction with `group` or `group_with_zero`. On matrices, this is defined to be zero when no
+  conjunction with `Group` or `GroupWithZero`. On matrices, this is defined to be zero when no
   inverse exists.
-* `⅟A` (`inv_of`): this is only available in the presence of `[invertible A]`, which guarantees an
+* `⅟A` (`inv_of`): this is only available in the presence of `[Invertible A]`, which guarantees an
   inverse exists.
-* `ring.inverse A`: this is defined on any `monoid_with_zero`, and just like `⁻¹` on matrices, is
+* `Ring.inverse A`: this is defined on any `MonoidWithZero`, and just like `⁻¹` on matrices, is
   defined to be zero when no inverse exists.
 
-We start by working with `invertible`, and show the main results:
+We start by working with `Invertible`, and show the main results:
 
-* `matrix.invertible_of_det_invertible`
-* `matrix.det_invertible_of_invertible`
-* `matrix.is_unit_iff_is_unit_det`
-* `matrix.mul_eq_one_comm`
+* `Matrix.invertibleOfDetInvertible`
+* `Matrix.detInvertibleOfInvertible`
+* `Matrix.isUnit_iff_isUnit_det`
+* `Matrix.mul_eq_one_comm`
 
-After this we define `matrix.has_inv` and show it matches `⅟A` and `ring.inverse A`.
+After this we define `matrix.has_inv` and show it matches `⅟A` and `Ring.inverse A`.
 The rest of the results in the file are then about `A⁻¹`
 
 ## References
@@ -62,39 +62,39 @@ open Matrix BigOperators
 
 open Equiv Equiv.Perm Finset
 
-/-! ### Matrices are `invertible` iff their determinants are -/
+/-! ### Matrices are `Invertible` iff their determinants are -/
 
 
 section Invertible
 
 variable [Fintype n] [DecidableEq n] [CommRing α]
 
-/-- A copy of `inv_of_mul_self` using `⬝` not `*`. -/
+/-- A copy of `invOf_mul_self` using `⬝` not `*`. -/
 protected theorem invOf_mul_self (A : Matrix n n α) [Invertible A] : ⅟ A ⬝ A = 1 :=
   invOf_mul_self A
 #align matrix.inv_of_mul_self Matrix.invOf_mul_self
 
-/-- A copy of `mul_inv_of_self` using `⬝` not `*`. -/
+/-- A copy of `mul_invOf_self` using `⬝` not `*`. -/
 protected theorem mul_invOf_self (A : Matrix n n α) [Invertible A] : A ⬝ ⅟ A = 1 :=
   mul_invOf_self A
 #align matrix.mul_inv_of_self Matrix.mul_invOf_self
 
-/-- A copy of `inv_of_mul_self_assoc` using `⬝` not `*`. -/
+/-- A copy of `invOf_mul_self_assoc` using `⬝` not `*`. -/
 protected theorem invOf_mul_self_assoc (A : Matrix n n α) (B : Matrix n m α) [Invertible A] :
     ⅟ A ⬝ (A ⬝ B) = B := by rw [← Matrix.mul_assoc, Matrix.invOf_mul_self, Matrix.one_mul]
 #align matrix.inv_of_mul_self_assoc Matrix.invOf_mul_self_assoc
 
-/-- A copy of `mul_inv_of_self_assoc` using `⬝` not `*`. -/
+/-- A copy of `mul_invOf_self_assoc` using `⬝` not `*`. -/
 protected theorem mul_invOf_self_assoc (A : Matrix n n α) (B : Matrix n m α) [Invertible A] :
     A ⬝ (⅟ A ⬝ B) = B := by rw [← Matrix.mul_assoc, Matrix.mul_invOf_self, Matrix.one_mul]
 #align matrix.mul_inv_of_self_assoc Matrix.mul_invOf_self_assoc
 
-/-- A copy of `mul_inv_of_mul_self_cancel` using `⬝` not `*`. -/
+/-- A copy of `mul_invOf_mul_self_cancel` using `⬝` not `*`. -/
 protected theorem mul_invOf_mul_self_cancel (A : Matrix m n α) (B : Matrix n n α) [Invertible B] :
     A ⬝ ⅟ B ⬝ B = A := by rw [Matrix.mul_assoc, Matrix.invOf_mul_self, Matrix.mul_one]
 #align matrix.mul_inv_of_mul_self_cancel Matrix.mul_invOf_mul_self_cancel
 
-/-- A copy of `mul_mul_inv_of_self_cancel` using `⬝` not `*`. -/
+/-- A copy of `mul_mul_invOf_self_cancel` using `⬝` not `*`. -/
 protected theorem mul_mul_invOf_self_cancel (A : Matrix m n α) (B : Matrix n n α) [Invertible B] :
     A ⬝ B ⬝ ⅟ B = A := by rw [Matrix.mul_assoc, Matrix.mul_invOf_self, Matrix.mul_one]
 #align matrix.mul_mul_inv_of_self_cancel Matrix.mul_mul_invOf_self_cancel
@@ -139,7 +139,7 @@ theorem det_invOf [Invertible A] [Invertible A.det] : (⅟ A).det = ⅟ A.det :=
   convert(rfl : _ = ⅟ A.det)
 #align matrix.det_inv_of Matrix.det_invOf
 
-/-- Together `matrix.det_invertible_of_invertible` and `matrix.invertible_of_det_invertible` form an
+/-- Together `Matrix.detInvertibleOfInvertible` and `Matrix.invertibleOfDetInvertible` form an
 equivalence, although both sides of the equiv are subsingleton anyway. -/
 @[simps]
 def invertibleEquivDetInvertible : Invertible A ≃ Invertible A.det where
@@ -194,17 +194,17 @@ def invertibleOfInvertibleConjTranspose [StarRing α] [Invertible Aᴴ] : Invert
   infer_instance
 #align matrix.invertible_of_invertible_conj_transpose Matrix.invertibleOfInvertibleConjTranspose
 
-/-- Given a proof that `A.det` has a constructive inverse, lift `A` to `(matrix n n α)ˣ`-/
+/-- Given a proof that `A.det` has a constructive inverse, lift `A` to `(Matrix n n α)ˣ`-/
 def unitOfDetInvertible [Invertible A.det] : (Matrix n n α)ˣ :=
   @unitOfInvertible _ _ A (invertibleOfDetInvertible A)
 #align matrix.unit_of_det_invertible Matrix.unitOfDetInvertible
 
-/-- When lowered to a prop, `matrix.invertible_equiv_det_invertible` forms an `iff`. -/
+/-- When lowered to a prop, `Matrix.invertibleEquivDetInvertible` forms an `iff`. -/
 theorem isUnit_iff_isUnit_det : IsUnit A ↔ IsUnit A.det := by
   simp only [← nonempty_invertible_iff_isUnit, (invertibleEquivDetInvertible A).nonempty_congr]
 #align matrix.is_unit_iff_is_unit_det Matrix.isUnit_iff_isUnit_det
 
-/-! #### Variants of the statements above with `is_unit`-/
+/-! #### Variants of the statements above with `IsUnit`-/
 
 
 theorem isUnit_det_of_invertible [Invertible A] : IsUnit A.det :=
@@ -248,7 +248,7 @@ theorem isUnit_det_transpose (h : IsUnit A.det) : IsUnit Aᵀ.det := by
   exact h
 #align matrix.is_unit_det_transpose Matrix.isUnit_det_transpose
 
-/-! ### A noncomputable `has_inv` instance  -/
+/-! ### A noncomputable `Inv` instance  -/
 
 
 /-- The inverse of a square matrix, when it is invertible (and zero otherwise).-/
@@ -282,7 +282,7 @@ theorem coe_units_inv (A : (Matrix n n α)ˣ) : ↑A⁻¹ = (A⁻¹ : Matrix n n
   rw [← invOf_eq_nonsing_inv, invOf_units]
 #align matrix.coe_units_inv Matrix.coe_units_inv
 
-/-- The nonsingular inverse is the same as the general `ring.inverse`. -/
+/-- The nonsingular inverse is the same as the general `Ring.inverse`. -/
 theorem nonsing_inv_eq_ring_inverse : A⁻¹ = Ring.inverse A := by
   by_cases h_det : IsUnit A.det
   · cases (A.isUnit_iff_isUnit_det.mpr h_det).nonempty_invertible
@@ -425,8 +425,8 @@ theorem isUnit_nonsing_inv_det_iff {A : Matrix n n α} : IsUnit A⁻¹.det ↔ I
   rw [Matrix.det_nonsing_inv, isUnit_ring_inverse]
 #align matrix.is_unit_nonsing_inv_det_iff Matrix.isUnit_nonsing_inv_det_iff
 
--- `is_unit.invertible` lifts the proposition `is_unit A` to a constructive inverse of `A`.
-/-- A version of `matrix.invertible_of_det_invertible` with the inverse defeq to `A⁻¹` that is
+-- `IsUnit.invertible` lifts the proposition `IsUnit A` to a constructive inverse of `A`.
+/-- A version of `Matrix.invertibleOfDetInvertible` with the inverse defeq to `A⁻¹` that is
 therefore noncomputable. -/
 noncomputable def invertibleOfIsUnitDet (h : IsUnit A.det) : Invertible A :=
   ⟨A⁻¹, nonsing_inv_mul A h, mul_nonsing_inv A h⟩
@@ -551,7 +551,7 @@ def invertibleOfDiagonalInvertible (v : n → α) [Invertible (diagonal v)] : In
       exact mul_invOf_self _
 #align matrix.invertible_of_diagonal_invertible Matrix.invertibleOfDiagonalInvertible
 
-/-- Together `matrix.diagonal_invertible` and `matrix.invertible_of_diagonal_invertible` form an
+/-- Together `Matrix.diagonalInvertible` and `Matrix.invertibleOfDiagonalInvertible` form an
 equivalence, although both sides of the equiv are subsingleton anyway. -/
 @[simps]
 def diagonalInvertibleEquivInvertible (v : n → α) : Invertible (diagonal v) ≃ Invertible v where
@@ -561,7 +561,7 @@ def diagonalInvertibleEquivInvertible (v : n → α) : Invertible (diagonal v) �
   right_inv _ := Subsingleton.elim _ _
 #align matrix.diagonal_invertible_equiv_invertible Matrix.diagonalInvertibleEquivInvertible
 
-/-- When lowered to a prop, `matrix.diagonal_invertible_equiv_invertible` forms an `iff`. -/
+/-- When lowered to a prop, `Matrix.diagonalInvertibleEquivInvertible` forms an `iff`. -/
 @[simp]
 theorem isUnit_diagonal {v : n → α} : IsUnit (diagonal v) ↔ IsUnit v := by
   simp only [← nonempty_invertible_iff_isUnit,
@@ -595,7 +595,7 @@ theorem mul_inv_rev (A B : Matrix n n α) : (A ⬝ B)⁻¹ = B⁻¹ ⬝ A⁻¹ :
 #align matrix.mul_inv_rev Matrix.mul_inv_rev
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/-- A version of `list.prod_inv_reverse` for `matrix.has_inv`. -/
+/-- A version of `List.prod_inv_reverse` for `matrix.has_inv`. -/
 theorem list_prod_inv_reverse : ∀ l : List (Matrix n n α), l.prod⁻¹ = (l.reverse.map Inv.inv).prod
   | [] => by rw [List.reverse_nil, List.map_nil, List.prod_nil, inv_one]
   | A::Xs => by
@@ -604,7 +604,7 @@ theorem list_prod_inv_reverse : ∀ l : List (Matrix n n α), l.prod⁻¹ = (l.r
 #align matrix.list_prod_inv_reverse Matrix.list_prod_inv_reverse
 
 set_option synthInstance.etaExperiment true in
-/-- One form of **Cramer's rule**. See `matrix.mul_vec_cramer` for a stronger form. -/
+/-- One form of **Cramer's rule**. See `Matrix.mulVec_cramer` for a stronger form. -/
 @[simp]
 theorem det_smul_inv_mulVec_eq_cramer (A : Matrix n n α) (b : n → α) (h : IsUnit A.det) :
     A.det • A⁻¹.mulVec b = cramer A b := by
@@ -613,7 +613,7 @@ theorem det_smul_inv_mulVec_eq_cramer (A : Matrix n n α) (b : n → α) (h : Is
 #align matrix.det_smul_inv_mul_vec_eq_cramer Matrix.det_smul_inv_mulVec_eq_cramer
 
 set_option synthInstance.etaExperiment true in
-/-- One form of **Cramer's rule**. See `matrix.mul_vec_cramer` for a stronger form. -/
+/-- One form of **Cramer's rule**. See `Matrix.mulVec_cramer` for a stronger form. -/
 @[simp]
 theorem det_smul_inv_vecMul_eq_cramer_transpose (A : Matrix n n α) (b : n → α) (h : IsUnit A.det) :
     A.det • A⁻¹.vecMul b = cramer Aᵀ b := by
@@ -623,7 +623,7 @@ theorem det_smul_inv_vecMul_eq_cramer_transpose (A : Matrix n n α) (b : n → �
 
 /-! ### Inverses of permutated matrices
 
-Note that the simp-normal form of `matrix.reindex` is `matrix.submatrix`, so we prove most of these
+Note that the simp-normal form of `Matrix.reindex` is `Matrix.submatrix`, so we prove most of these
 results about only the latter.
 -/
 
@@ -661,8 +661,8 @@ theorem invOf_submatrix_equiv_eq (A : Matrix m m α) (e₁ e₂ : n ≃ m) [Inve
   convert(rfl : ⅟ (A.submatrix e₁ e₂) = _)
 #align matrix.inv_of_submatrix_equiv_eq Matrix.invOf_submatrix_equiv_eq
 
-/-- Together `matrix.submatrix_equiv_invertible` and
-`matrix.invertible_of_submatrix_equiv_invertible` form an equivalence, although both sides of the
+/-- Together `Matrix.submatrixEquivInvertible` and
+`Matrix.invertibleOfSubmatrixEquivInvertible` form an equivalence, although both sides of the
 equiv are subsingleton anyway. -/
 @[simps]
 def submatrixEquivInvertibleEquivInvertible (A : Matrix m m α) (e₁ e₂ : n ≃ m) :
@@ -673,7 +673,7 @@ def submatrixEquivInvertibleEquivInvertible (A : Matrix m m α) (e₁ e₂ : n �
   right_inv _ := Subsingleton.elim _ _
 #align matrix.submatrix_equiv_invertible_equiv_invertible Matrix.submatrixEquivInvertibleEquivInvertible
 
-/-- When lowered to a prop, `matrix.invertible_of_submatrix_equiv_invertible` forms an `iff`. -/
+/-- When lowered to a prop, `Matrix.invertibleOfSubmatrixEquivInvertible` forms an `iff`. -/
 @[simp]
 theorem isUnit_submatrix_equiv {A : Matrix m m α} (e₁ e₂ : n ≃ m) :
     IsUnit (A.submatrix e₁ e₂) ↔ IsUnit A := by
@@ -706,12 +706,12 @@ section Det
 
 variable [Fintype m] [DecidableEq m]
 
-/-- A variant of `matrix.det_units_conj`. -/
+/-- A variant of `Matrix.det_units_conj`. -/
 theorem det_conj {M : Matrix m m α} (h : IsUnit M) (N : Matrix m m α) : det (M ⬝ N ⬝ M⁻¹) = det N :=
   by rw [← h.unit_spec, ← coe_units_inv, det_units_conj]
 #align matrix.det_conj Matrix.det_conj
 
-/-- A variant of `matrix.det_units_conj'`. -/
+/-- A variant of `Matrix.det_units_conj'`. -/
 theorem det_conj' {M : Matrix m m α} (h : IsUnit M) (N : Matrix m m α) :
     det (M⁻¹ ⬝ N ⬝ M) = det N := by rw [← h.unit_spec, ← coe_units_inv, det_units_conj']
 #align matrix.det_conj' Matrix.det_conj'
