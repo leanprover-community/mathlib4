@@ -66,7 +66,7 @@ def evaluationAdjunctionRight (c : C) : evaluationLeftAdjoint D c ⊣ (evaluatio
             intro f
             ext x
             dsimp
-            ext ⟨g⟩
+            ext g
             simp only [colimit.ι_desc, Cofan.mk_ι_app, Category.assoc, ←f.naturality,
               evaluationLeftAdjoint_obj_map, colimit.ι_desc_assoc,
               Discrete.functor_obj, Cofan.mk_pt, Discrete.natTrans_app, Category.id_comp]
