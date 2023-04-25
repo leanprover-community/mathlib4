@@ -8,9 +8,9 @@ Authors: Johan Commelin, Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Convex.Combination
-import Mathbin.LinearAlgebra.AffineSpace.Independent
-import Mathbin.Tactic.FieldSimp
+import Mathlib.Analysis.Convex.Combination
+import Mathlib.LinearAlgebra.AffineSpace.Independent
+import Mathlib.Tactic.FieldSimp
 
 /-!
 # Carathéodory's convexity theorem
@@ -56,16 +56,14 @@ namespace Caratheodory
 then it is in the convex hull of a strict subset of `t`. -/
 theorem mem_convexHull_erase [DecidableEq E] {t : Finset E} (h : ¬AffineIndependent 𝕜 (coe : t → E))
     {x : E} (m : x ∈ convexHull 𝕜 (↑t : Set E)) :
-    ∃ y : (↑t : Set E), x ∈ convexHull 𝕜 (↑(t.eraseₓ y) : Set E) :=
-  by
+    ∃ y : (↑t : Set E), x ∈ convexHull 𝕜 (↑(t.eraseₓ y) : Set E) := by
   simp only [Finset.convexHull_eq, mem_set_of_eq] at m⊢
   obtain ⟨f, fpos, fsum, rfl⟩ := m
   obtain ⟨g, gcombo, gsum, gpos⟩ := exists_nontrivial_relation_sum_zero_of_not_affine_ind h
   replace gpos := exists_pos_of_sum_zero_of_exists_nonzero g gsum gpos
   clear h
   let s := @Finset.filter _ (fun z => 0 < g z) (fun _ => LinearOrder.decidableLt _ _) t
-  obtain ⟨i₀, mem, w⟩ : ∃ i₀ ∈ s, ∀ i ∈ s, f i₀ / g i₀ ≤ f i / g i :=
-    by
+  obtain ⟨i₀, mem, w⟩ : ∃ i₀ ∈ s, ∀ i ∈ s, f i₀ / g i₀ ≤ f i / g i := by
     apply s.exists_min_image fun z => f z / g z
     obtain ⟨x, hx, hgx⟩ : ∃ x ∈ t, 0 < g x := gpos
     exact ⟨x, mem_filter.mpr ⟨hx, hgx⟩⟩
@@ -131,8 +129,7 @@ theorem mem_minCardFinsetOfMemConvexHull :
   (Function.argminOn_mem _ _ { t : Finset E | ↑t ⊆ s ∧ x ∈ convexHull 𝕜 (t : Set E) } _).2
 #align caratheodory.mem_min_card_finset_of_mem_convex_hull Caratheodory.mem_minCardFinsetOfMemConvexHull
 
-theorem minCardFinsetOfMemConvexHull_nonempty : (minCardFinsetOfMemConvexHull hx).Nonempty :=
-  by
+theorem minCardFinsetOfMemConvexHull_nonempty : (minCardFinsetOfMemConvexHull hx).Nonempty := by
   rw [← Finset.coe_nonempty, ← @convexHull_nonempty_iff 𝕜]
   exact ⟨x, mem_min_card_finset_of_mem_convex_hull hx⟩
 #align caratheodory.min_card_finset_of_mem_convex_hull_nonempty Caratheodory.minCardFinsetOfMemConvexHull_nonempty
@@ -143,8 +140,7 @@ theorem minCardFinsetOfMemConvexHull_card_le_card {t : Finset E} (ht₁ : ↑t �
 #align caratheodory.min_card_finset_of_mem_convex_hull_card_le_card Caratheodory.minCardFinsetOfMemConvexHull_card_le_card
 
 theorem affineIndependent_minCardFinsetOfMemConvexHull :
-    AffineIndependent 𝕜 (coe : minCardFinsetOfMemConvexHull hx → E) :=
-  by
+    AffineIndependent 𝕜 (coe : minCardFinsetOfMemConvexHull hx → E) := by
   let k := (min_card_finset_of_mem_convex_hull hx).card - 1
   have hk : (min_card_finset_of_mem_convex_hull hx).card = k + 1 :=
     (Nat.succ_pred_eq_of_pos
@@ -188,8 +184,7 @@ theorem convexHull_eq_union :
 theorem eq_pos_convex_span_of_mem_convexHull {x : E} (hx : x ∈ convexHull 𝕜 s) :
     ∃ (ι : Sort (u + 1))(_ : Fintype ι),
       ∃ (z : ι → E)(w : ι → 𝕜)(hss : Set.range z ⊆ s)(hai : AffineIndependent 𝕜 z)(hw :
-        ∀ i, 0 < w i), (∑ i, w i) = 1 ∧ (∑ i, w i • z i) = x :=
-  by
+        ∀ i, 0 < w i), (∑ i, w i) = 1 ∧ (∑ i, w i • z i) = x := by
   rw [convexHull_eq_union] at hx
   simp only [exists_prop, Set.mem_unionᵢ] at hx
   obtain ⟨t, ht₁, ht₂, ht₃⟩ := hx
