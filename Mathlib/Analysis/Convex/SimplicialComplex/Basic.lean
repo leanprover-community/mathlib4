@@ -8,8 +8,8 @@ Authors: Yaël Dillies, Bhavik Mehta
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Convex.Hull
-import Mathbin.LinearAlgebra.AffineSpace.Independent
+import Mathlib.Analysis.Convex.Hull
+import Mathlib.LinearAlgebra.AffineSpace.Independent
 
 /-!
 # Simplicial complexes
@@ -105,8 +105,7 @@ unusable, as it's about faces as sets in space rather than simplices. Further,  
 on `𝕜` means the only choice of `u` is `s ∩ t` (but it's hard to prove). -/
 theorem disjoint_or_exists_inter_eq_convexHull (hs : s ∈ K.faces) (ht : t ∈ K.faces) :
     Disjoint (convexHull 𝕜 (s : Set E)) (convexHull 𝕜 ↑t) ∨
-      ∃ u ∈ K.faces, convexHull 𝕜 (s : Set E) ∩ convexHull 𝕜 ↑t = convexHull 𝕜 ↑u :=
-  by
+      ∃ u ∈ K.faces, convexHull 𝕜 (s : Set E) ∩ convexHull 𝕜 ↑t = convexHull 𝕜 ↑u := by
   classical
     by_contra' h
     refine'
@@ -160,8 +159,7 @@ theorem mem_vertices : x ∈ K.vertices ↔ {x} ∈ K.faces :=
   Iff.rfl
 #align geometry.simplicial_complex.mem_vertices Geometry.SimplicialComplex.mem_vertices
 
-theorem vertices_eq : K.vertices = ⋃ k ∈ K.faces, (k : Set E) :=
-  by
+theorem vertices_eq : K.vertices = ⋃ k ∈ K.faces, (k : Set E) := by
   ext x
   refine' ⟨fun h => mem_bUnion h <| mem_coe.2 <| mem_singleton_self x, fun h => _⟩
   obtain ⟨s, hs, hx⟩ := mem_Union₂.1 h
@@ -173,8 +171,7 @@ theorem vertices_subset_space : K.vertices ⊆ K.space :=
 #align geometry.simplicial_complex.vertices_subset_space Geometry.SimplicialComplex.vertices_subset_space
 
 theorem vertex_mem_convexHull_iff (hx : x ∈ K.vertices) (hs : s ∈ K.faces) :
-    x ∈ convexHull 𝕜 (s : Set E) ↔ x ∈ s :=
-  by
+    x ∈ convexHull 𝕜 (s : Set E) ↔ x ∈ s := by
   refine' ⟨fun h => _, fun h => subset_convexHull _ _ h⟩
   classical
     have h := K.inter_subset_convex_hull hx hs ⟨by simp, h⟩
@@ -209,8 +206,7 @@ theorem mem_facets : s ∈ K.facets ↔ s ∈ K.faces ∧ ∀ t ∈ K.faces, s �
 theorem facets_subset : K.facets ⊆ K.faces := fun s hs => hs.1
 #align geometry.simplicial_complex.facets_subset Geometry.SimplicialComplex.facets_subset
 
-theorem not_facet_iff_subface (hs : s ∈ K.faces) : s ∉ K.facets ↔ ∃ t, t ∈ K.faces ∧ s ⊂ t :=
-  by
+theorem not_facet_iff_subface (hs : s ∈ K.faces) : s ∉ K.facets ↔ ∃ t, t ∈ K.faces ∧ s ⊂ t := by
   refine' ⟨fun hs' : ¬(_ ∧ _) => _, _⟩
   · push_neg  at hs'
     obtain ⟨t, ht⟩ := hs' hs
