@@ -23,9 +23,9 @@ underlying set of a simplex.
 
 ## Main declarations
 
-* `simplicial_complex 𝕜 E`: A simplicial complex in the `𝕜`-module `E`.
-* `simplicial_complex.vertices`: The zero dimensional faces of a simplicial complex.
-* `simplicial_complex.facets`: The maximal faces of a simplicial complex.
+* `SimplicialComplex 𝕜 E`: A simplicial complex in the `𝕜`-module `E`.
+* `SimplicialComplex.vertices`: The zero dimensional faces of a simplicial complex.
+* `SimplicialComplex.facets`: The maximal faces of a simplicial complex.
 
 ## Notation
 
@@ -37,12 +37,12 @@ underlying set of a simplex.
 
 "glue nicely" usually means that the intersection of two faces (as sets in the ambient space) is a
 face. Given that we store the vertices, not the faces, this would be a bit awkward to spell.
-Instead, `simplicial_complex.inter_subset_convex_hull` is an equivalent condition which works on the
+Instead, `SimplicialComplex.inter_subset_convexHull` is an equivalent condition which works on the
 vertices.
 
 ## TODO
 
-Simplicial complexes can be generalized to affine spaces once `convex_hull` has been ported.
+Simplicial complexes can be generalized to affine spaces once `ConvexHull` has been ported.
 -/
 
 
@@ -55,8 +55,8 @@ namespace Geometry
 -- TODO: update to new binder order? not sure what binder order is correct for `down_closed`.
 /-- A simplicial complex in a `𝕜`-module is a collection of simplices which glue nicely together.
 Note that the textbook meaning of "glue nicely" is given in
-`geometry.simplicial_complex.disjoint_or_exists_inter_eq_convex_hull`. It is mostly useless, as
-`geometry.simplicial_complex.convex_hull_inter_convex_hull` is enough for all purposes. -/
+`Geometry.SimplicialComplex.disjoint_or_exists_inter_eq_convexHull`. It is mostly useless, as
+`Geometry.SimplicialComplex.convexHull_inter_convexHull` is enough for all purposes. -/
 @[ext]
 structure SimplicialComplex where
   faces : Set (Finset E)
@@ -73,7 +73,7 @@ namespace SimplicialComplex
 variable {𝕜 E}
 variable {K : SimplicialComplex 𝕜 E} {s t : Finset E} {x : E}
 
-/-- A `finset` belongs to a `simplicial_complex` if it's a face of it. -/
+/-- A `Finset` belongs to a `SimplicialComplex` if it's a face of it. -/
 instance : Membership (Finset E) (SimplicialComplex 𝕜 E) :=
   ⟨fun s K => s ∈ K.faces⟩
 
@@ -105,7 +105,7 @@ theorem convexHull_inter_convexHull (hs : s ∈ K.faces) (ht : t ∈ K.faces) :
 #align geometry.simplicial_complex.convex_hull_inter_convex_hull Geometry.SimplicialComplex.convexHull_inter_convexHull
 
 /-- The conclusion is the usual meaning of "glue nicely" in textbooks. It turns out to be quite
-unusable, as it's about faces as sets in space rather than simplices. Further,  additional structure
+unusable, as it's about faces as sets in space rather than simplices. Further, additional structure
 on `𝕜` means the only choice of `u` is `s ∩ t` (but it's hard to prove). -/
 theorem disjoint_or_exists_inter_eq_convexHull (hs : s ∈ K.faces) (ht : t ∈ K.faces) :
     Disjoint (convexHull 𝕜 (s : Set E)) (convexHull 𝕜 ↑t) ∨
@@ -122,14 +122,12 @@ theorem disjoint_or_exists_inter_eq_convexHull (hs : s ∈ K.faces) (ht : t ∈ 
     · rw [coe_inter, convexHull_inter_convexHull hs ht]
 #align geometry.simplicial_complex.disjoint_or_exists_inter_eq_convex_hull Geometry.SimplicialComplex.disjoint_or_exists_inter_eq_convexHull
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:635:2: warning: expanding binder collection (t «expr ⊆ » s) -/
-/- ./././Mathport/Syntax/Translate/Basic.lean:635:2: warning: expanding binder collection (s t «expr ∈ » faces) -/
 /-- Construct a simplicial complex by removing the empty face for you. -/
 @[simps]
 def ofErase (faces : Set (Finset E))
     (indep : ∀ s ∈ faces, AffineIndependent 𝕜 ((↑) : s → E))
     (down_closed : ∀ s ∈ faces, ∀ (t) (_ : t ⊆ s), t ∈ faces)
-    (inter_subset_convex_hull :
+    (inter_subset_convexHull :
       ∀ (s) (_ : s ∈ faces) (t) (_ : t ∈ faces),
         convexHull 𝕜 ↑s ∩ convexHull 𝕜 ↑t ⊆ convexHull 𝕜 (s ∩ t : Set E)) :
     SimplicialComplex 𝕜 E where
@@ -137,7 +135,7 @@ def ofErase (faces : Set (Finset E))
   not_empty_mem h := h.2 (mem_singleton _)
   indep hs := indep _ hs.1
   down_closed hs hts ht := ⟨down_closed _ hs.1 _ hts, ht⟩
-  inter_subset_convexHull hs ht := inter_subset_convex_hull _ hs.1 _ ht.1
+  inter_subset_convexHull hs ht := inter_subset_convexHull _ hs.1 _ ht.1
 #align geometry.simplicial_complex.of_erase Geometry.SimplicialComplex.ofErase
 
 /-- Construct a simplicial complex as a subset of a given simplicial complex. -/
@@ -185,7 +183,7 @@ theorem vertex_mem_convexHull_iff (hx : x ∈ K.vertices) (hs : s ∈ K.faces) :
       convexHull_empty] at h
 #align geometry.simplicial_complex.vertex_mem_convex_hull_iff Geometry.SimplicialComplex.vertex_mem_convexHull_iff
 
-/-- A face is a subset of another one iff its vertices are.  -/
+/-- A face is a subset of another one iff its vertices are. -/
 theorem face_subset_face_iff (hs : s ∈ K.faces) (ht : t ∈ K.faces) :
     convexHull 𝕜 (s : Set E) ⊆ convexHull 𝕜 ↑t ↔ s ⊆ t :=
   ⟨fun h _ hxs =>
@@ -228,7 +226,7 @@ theorem not_facet_iff_subface (hs : s ∈ K.faces) : s ∉ K.facets ↔ ∃ t, t
 -/
 
 
--- `has_ssubset.ssubset.ne` would be handy here
+-- `HasSSubset.SSubset.ne` would be handy here
 variable (𝕜 E)
 
 /-- The complex consisting of only the faces present in both of its arguments. -/
