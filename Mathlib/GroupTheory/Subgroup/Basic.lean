@@ -276,12 +276,8 @@ instance (priority := 75) toLinearOrderedCommGroup {G : Type _} [LinearOrderedCo
     [SetLike S G] [SubgroupClass S G] : LinearOrderedCommGroup H :=
   Subtype.coe_injective.linearOrderedCommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
-#align
-  subgroup_class.to_linear_ordered_comm_group
-  SubgroupClass.toLinearOrderedCommGroup
-#align
-  add_subgroup_class.to_linear_ordered_add_comm_group
-  AddSubgroupClass.toLinearOrderedAddCommGroup
+#align subgroup_class.to_linear_ordered_comm_group SubgroupClass.toLinearOrderedCommGroup
+#align add_subgroup_class.to_linear_ordered_add_comm_group AddSubgroupClass.toLinearOrderedAddCommGroup
 
 /-- The natural group hom from a subgroup of group `G` to `G`. -/
 @[to_additive (attr := coe)
@@ -811,7 +807,6 @@ theorem subtype_injective : Function.Injective (Subgroup.subtype H) :=
 @[to_additive "The inclusion homomorphism from a additive subgroup `H` contained in `K` to `K`."]
 def inclusion {H K : Subgroup G} (h : H ≤ K) : H →* K :=
   MonoidHom.mk' (fun x => ⟨x, h x.2⟩) fun _ _ => rfl
-
 #align subgroup.inclusion Subgroup.inclusion
 #align add_subgroup.inclusion AddSubgroup.inclusion
 
@@ -2255,9 +2250,7 @@ theorem _root_.normalizerCondition_iff_only_full_group_self_normalizing :
   apply forall_congr'; intro H
   simp only [lt_iff_le_and_ne, le_normalizer, true_and_iff, le_top, Ne.def]
   tauto
-#align
-  normalizer_condition_iff_only_full_group_self_normalizing
-  normalizerCondition_iff_only_full_group_self_normalizing
+#align normalizer_condition_iff_only_full_group_self_normalizing normalizerCondition_iff_only_full_group_self_normalizing
 
 variable (H)
 
@@ -2295,9 +2288,7 @@ theorem mem_centralizer_iff_commutator_eq_one {g : G} :
     g ∈ H.centralizer ↔ ∀ h ∈ H, h * g * h⁻¹ * g⁻¹ = 1 := by
   simp only [mem_centralizer_iff, mul_inv_eq_iff_eq_mul, one_mul]
 #align subgroup.mem_centralizer_iff_commutator_eq_one Subgroup.mem_centralizer_iff_commutator_eq_one
-#align
-  add_subgroup.mem_centralizer_iff_commutator_eq_zero
-  AddSubgroup.mem_centralizer_iff_commutator_eq_zero
+#align add_subgroup.mem_centralizer_iff_commutator_eq_zero AddSubgroup.mem_centralizer_iff_commutator_eq_zero
 
 @[to_additive]
 theorem centralizer_top : centralizer ⊤ = center G :=
@@ -2323,12 +2314,8 @@ instance Centralizer.characteristic [hH : H.Characteristic] :
   refine' Subgroup.characteristic_iff_comap_le.mpr fun ϕ g hg h hh => ϕ.injective _
   rw [map_mul, map_mul]
   exact hg (ϕ h) (Subgroup.characteristic_iff_le_comap.mp hH ϕ hh)
-#align
-  subgroup.subgroup.centralizer.characteristic
-  Subgroup.Centralizer.characteristic
-#align
-  add_subgroup.subgroup.centralizer.characteristic
-  AddSubgroup.Centralizer.characteristic
+#align subgroup.subgroup.centralizer.characteristic Subgroup.Centralizer.characteristic
+#align add_subgroup.subgroup.centralizer.characteristic AddSubgroup.Centralizer.characteristic
 
 end Centralizer
 
@@ -2460,9 +2447,7 @@ def normalClosure (s : Set G) : Subgroup G :=
 
 theorem conjugatesOfSet_subset_normalClosure : conjugatesOfSet s ⊆ normalClosure s :=
   subset_closure
-#align
-  subgroup.conjugates_of_set_subset_normal_closure
-  Subgroup.conjugatesOfSet_subset_normalClosure
+#align subgroup.conjugates_of_set_subset_normal_closure Subgroup.conjugatesOfSet_subset_normalClosure
 
 theorem subset_normalClosure : s ⊆ normalClosure s :=
   Set.Subset.trans subset_conjugatesOfSet conjugatesOfSet_subset_normalClosure
@@ -2529,9 +2514,7 @@ theorem closure_le_normalClosure {s : Set G} : closure s ≤ normalClosure s := 
 theorem normalClosure_closure_eq_normalClosure {s : Set G} :
     normalClosure ↑(closure s) = normalClosure s :=
   le_antisymm (normalClosure_le_normal closure_le_normalClosure) (normalClosure_mono subset_closure)
-#align
-  subgroup.normal_closure_closure_eq_normal_closure
-  Subgroup.normalClosure_closure_eq_normalClosure
+#align subgroup.normal_closure_closure_eq_normal_closure Subgroup.normalClosure_closure_eq_normalClosure
 
 /-- The normal core of a subgroup `H` is the largest normal subgroup of `G` contained in `H`,
 as shown by `Subgroup.normalCore_eq_supᵢ`. -/
@@ -3229,12 +3212,8 @@ theorem comap_normalizer_eq_of_injective_of_le_range {N : Type _} [Group N] (H :
     rw [map_comap_eq_self h]
   · refine' le_trans (le_normalizer_map f) (le_of_eq _)
     rw [map_comap_eq_self (le_trans le_normalizer h)]
-#align
-  subgroup.comap_normalizer_eq_of_injective_of_le_range
-  Subgroup.comap_normalizer_eq_of_injective_of_le_range
-#align
-  add_subgroup.comap_normalizer_eq_of_injective_of_le_range
-  AddSubgroup.comap_normalizer_eq_of_injective_of_le_range
+#align subgroup.comap_normalizer_eq_of_injective_of_le_range Subgroup.comap_normalizer_eq_of_injective_of_le_range
+#align add_subgroup.comap_normalizer_eq_of_injective_of_le_range AddSubgroup.comap_normalizer_eq_of_injective_of_le_range
 
 @[to_additive]
 theorem subgroupOf_normalizer_eq {H N : Subgroup G} (h : H.normalizer ≤ N) :
@@ -3303,12 +3282,8 @@ theorem liftOfRightInverseAux_comp_apply (hf : Function.RightInverse f_inv f) (g
   apply hg
   rw [f.mem_ker, f.map_mul, f.map_inv, mul_inv_eq_one]
   simp only [hf _]
-#align
-  monoid_hom.lift_of_right_inverse_aux_comp_apply
-  MonoidHom.liftOfRightInverseAux_comp_apply
-#align
-  add_monoid_hom.lift_of_right_inverse_aux_comp_apply
-  AddMonoidHom.liftOfRightInverseAux_comp_apply
+#align monoid_hom.lift_of_right_inverse_aux_comp_apply MonoidHom.liftOfRightInverseAux_comp_apply
+#align add_monoid_hom.lift_of_right_inverse_aux_comp_apply AddMonoidHom.liftOfRightInverseAux_comp_apply
 
 /-- `liftOfRightInverse f hf g hg` is the unique group homomorphism `φ`
 
@@ -3503,9 +3478,7 @@ theorem equivMapOfInjective_coe_mulEquiv (H : Subgroup G) (e : G ≃* G') :
   ext
   rfl
 #align subgroup.equiv_map_of_injective_coe_mul_equiv Subgroup.equivMapOfInjective_coe_mulEquiv
-#align
-  add_subgroup.equiv_map_of_injective_coe_add_equiv
-  AddSubgroup.equivMapOfInjective_coe_addEquiv
+#align add_subgroup.equiv_map_of_injective_coe_add_equiv AddSubgroup.equivMapOfInjective_coe_addEquiv
 
 variable {C : Type _} [CommGroup C] {s t : Subgroup C} {x : C}
 
@@ -3590,12 +3563,8 @@ theorem inf_subgroupOf_inf_normal_of_right (A B' B : Subgroup G) (hB : B' ≤ B)
       ⟨mul_mem (mul_mem (mem_inf.1 g.2).1 (mem_inf.1 n.2).1) $
         show ↑g⁻¹ ∈ A from (inv_mem (mem_inf.1 g.2).1),
         (normal_subgroupOf_iff hB).mp hN n g hn.2 (mem_inf.mp g.2).2⟩ }
-#align
-  subgroup.inf_subgroup_of_inf_normal_of_right
-  Subgroup.inf_subgroupOf_inf_normal_of_right
-#align
-  add_subgroup.inf_add_subgroup_of_inf_normal_of_right
-  AddSubgroup.inf_addSubgroupOf_inf_normal_of_right
+#align subgroup.inf_subgroup_of_inf_normal_of_right Subgroup.inf_subgroupOf_inf_normal_of_right
+#align add_subgroup.inf_add_subgroup_of_inf_normal_of_right AddSubgroup.inf_addSubgroupOf_inf_normal_of_right
 
 @[to_additive]
 theorem inf_subgroupOf_inf_normal_of_left {A' A : Subgroup G} (B : Subgroup G) (hA : A' ≤ A)
@@ -3605,9 +3574,7 @@ theorem inf_subgroupOf_inf_normal_of_left {A' A : Subgroup G} (B : Subgroup G) (
         mul_mem (mul_mem (mem_inf.1 g.2).2 (mem_inf.1 n.2).2) $
         show ↑g⁻¹ ∈ B from (inv_mem (mem_inf.1 g.2).2)⟩ }
 #align subgroup.inf_subgroup_of_inf_normal_of_left Subgroup.inf_subgroupOf_inf_normal_of_left
-#align
-  add_subgroup.inf_add_subgroup_of_inf_normal_of_left
-  AddSubgroup.inf_addSubgroupOf_inf_normal_of_left
+#align add_subgroup.inf_add_subgroup_of_inf_normal_of_left AddSubgroup.inf_addSubgroupOf_inf_normal_of_left
 
 @[to_additive]
 instance normal_inf_normal (H K : Subgroup G) [hH : H.Normal] [hK : K.Normal] : (H ⊓ K).Normal :=

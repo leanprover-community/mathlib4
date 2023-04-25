@@ -916,7 +916,6 @@ variable {W X Y Z : C} {f : W ⟶ X} {g : W ⟶ Y} {h : X ⟶ Z} {i : Y ⟶ Z}
 theorem of_isPullback_isPushout (p₁ : IsPullback f g h i) (p₂ : IsPushout f g h i) :
     BicartesianSq f g h i :=
   BicartesianSq.mk p₁ p₂.isColimit'
-
 #align category_theory.bicartesian_sq.of_is_pullback_is_pushout CategoryTheory.BicartesianSq.of_isPullback_isPushout
 
 theorem flip (p : BicartesianSq f g h i) : BicartesianSq g f i h :=

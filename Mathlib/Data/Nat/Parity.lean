@@ -317,7 +317,6 @@ theorem iterate_even (hf : Involutive f) (hn : Even n) : f^[n] = id := by
 theorem iterate_odd (hf : Involutive f) (hn : Odd n) : f^[n] = f := by
   rcases hn with ⟨m, rfl⟩
   rw [iterate_add, hf.iterate_two_mul, comp.left_id, iterate_one]
-
 #align function.involutive.iterate_odd Function.Involutive.iterate_odd
 
 theorem iterate_eq_self (hf : Involutive f) (hne : f ≠ id) : f^[n] = f ↔ Odd n :=

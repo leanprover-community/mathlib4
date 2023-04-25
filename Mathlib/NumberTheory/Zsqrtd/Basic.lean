@@ -975,7 +975,6 @@ protected theorem eq_zero_or_eq_zero_of_mul_eq_zero : ∀ {a b : ℤ√d}, a * b
                 calc
                   x * x * w = -y * (x * z) := by simp [h2, mul_assoc, mul_left_comm]
                   _ = d * y * y * w := by simp [h1, mul_assoc, mul_left_comm]
-
       else
         Or.inl <|
           fin <|
@@ -983,7 +982,6 @@ protected theorem eq_zero_or_eq_zero_of_mul_eq_zero : ∀ {a b : ℤ√d}, a * b
               calc
                 x * x * z = d * -y * (x * w) := by simp [h1, mul_assoc, mul_left_comm]
                 _ = d * y * y * z := by simp [h2, mul_assoc, mul_left_comm]
-
 #align zsqrtd.eq_zero_or_eq_zero_of_mul_eq_zero Zsqrtd.eq_zero_or_eq_zero_of_mul_eq_zero
 
 instance : NoZeroDivisors (ℤ√d) where

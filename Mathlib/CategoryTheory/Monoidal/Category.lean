@@ -286,13 +286,11 @@ theorem tensor_id_comp_id_tensor (f : W ⟶ X) (g : Y ⟶ Z) : (g ⊗ 𝟙 W) �
 theorem rightUnitor_conjugation {X Y : C} (f : X ⟶ Y) :
     f ⊗ 𝟙 (𝟙_ C) = (ρ_ X).hom ≫ f ≫ (ρ_ Y).inv := by
   rw [← rightUnitor_naturality_assoc, Iso.hom_inv_id, Category.comp_id]
-
 #align category_theory.monoidal_category.right_unitor_conjugation CategoryTheory.MonoidalCategory.rightUnitor_conjugation
 
 @[simp]
 theorem leftUnitor_conjugation {X Y : C} (f : X ⟶ Y) : 𝟙 (𝟙_ C) ⊗ f = (λ_ X).hom ≫ f ≫ (λ_ Y).inv
   := by rw [← leftUnitor_naturality_assoc, Iso.hom_inv_id, Category.comp_id]
-
 #align category_theory.monoidal_category.left_unitor_conjugation CategoryTheory.MonoidalCategory.leftUnitor_conjugation
 
 @[reassoc]

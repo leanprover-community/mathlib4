@@ -324,7 +324,6 @@ theorem Commute.invOf_right [Monoid α] {a b : α} [Invertible b] (h : Commute a
     a * ⅟ b = ⅟ b * (b * a * ⅟ b) := by simp [mul_assoc]
     _ = ⅟ b * (a * b * ⅟ b) := by rw [h.eq]
     _ = ⅟ b * a := by simp [mul_assoc]
-
 #align commute.inv_of_right Commute.invOf_right
 
 theorem Commute.invOf_left [Monoid α] {a b : α} [Invertible b] (h : Commute b a) :
@@ -333,14 +332,12 @@ theorem Commute.invOf_left [Monoid α] {a b : α} [Invertible b] (h : Commute b 
     ⅟ b * a = ⅟ b * (a * b * ⅟ b) := by simp [mul_assoc]
     _ = ⅟ b * (b * a * ⅟ b) := by rw [h.eq]
     _ = a * ⅟ b := by simp [mul_assoc]
-
 #align commute.inv_of_left Commute.invOf_left
 
 theorem commute_invOf {M : Type _} [One M] [Mul M] (m : M) [Invertible m] : Commute m (⅟ m) :=
   calc
     m * ⅟ m = 1 := mul_invOf_self m
     _ = ⅟ m * m := (invOf_mul_self m).symm
-
 #align commute_inv_of commute_invOf
 
 theorem nonzero_of_invertible [MulZeroOneClass α] (a : α) [Nontrivial α] [Invertible a] : a ≠ 0 :=
@@ -349,7 +346,6 @@ theorem nonzero_of_invertible [MulZeroOneClass α] (a : α) [Nontrivial α] [Inv
     calc
       0 = ⅟ a * a := by simp [ha]
       _ = 1 := invOf_mul_self a
-
 #align nonzero_of_invertible nonzero_of_invertible
 
 theorem pos_of_invertible_cast [Semiring α] [Nontrivial α] (n : ℕ) [Invertible (n : α)] : 0 < n :=
@@ -445,7 +441,6 @@ theorem map_invOf {R : Type _} {S : Type _} {F : Type _} [MulOneClass R] [Monoid
     f (⅟ r) = ⅟ (f r) :=
   have h : ifr = Invertible.map f r := Subsingleton.elim _ _
   by subst h ; rfl
-
 #align map_inv_of map_invOf
 
 /-- If a function `f : R → S` has a left-inverse that is a monoid hom,

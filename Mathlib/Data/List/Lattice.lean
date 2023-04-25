@@ -85,7 +85,6 @@ theorem mem_union : a ∈ l₁ ∪ l₂ ↔ a ∈ l₁ ∨ a ∈ l₂ := by
   induction l₁
   · simp only [not_mem_nil, false_or_iff, instUnionList, nil_union]
   · simp only [find?, mem_cons, or_assoc, instUnionList, cons_union, mem_union_iff, mem_insert_iff]
-
 #align list.mem_union List.mem_union
 
 theorem mem_union_left (h : a ∈ l₁) (l₂ : List α) : a ∈ l₁ ∪ l₂ :=

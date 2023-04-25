@@ -555,7 +555,6 @@ theorem mem_map {f : R →+* S} {s : Subsemiring R} {y : S} : y ∈ s.map f ↔ 
     -- Porting note: was `exact Set.mem_image_iff_bex`
     convert Set.mem_image_iff_bex (f := f) (s := s.carrier) (y := y) using 1
     simp
-
 #align subsemiring.mem_map Subsemiring.mem_map
 
 @[simp]

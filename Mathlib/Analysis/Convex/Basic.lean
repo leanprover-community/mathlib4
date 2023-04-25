@@ -247,7 +247,6 @@ theorem convex_Iic (r : β) : Convex 𝕜 (Iic r) := fun x hx y hy a b ha hb hab
     a • x + b • y ≤ a • r + b • r :=
       add_le_add (smul_le_smul_of_nonneg hx ha) (smul_le_smul_of_nonneg hy hb)
     _ = r := Convex.combo_self hab _
-
 #align convex_Iic convex_Iic
 
 set_option synthInstance.etaExperiment true in -- Porting note: lean4#2074
@@ -288,7 +287,6 @@ theorem convex_Iio (r : β) : Convex 𝕜 (Iio r) := by
     a • x + b • y < a • r + b • r :=
       add_lt_add_of_lt_of_le (smul_lt_smul_of_pos hx ha') (smul_le_smul_of_nonneg hy.le hb)
     _ = r := Convex.combo_self hab _
-
 #align convex_Iio convex_Iio
 
 set_option synthInstance.etaExperiment true in -- Porting note: lean4#2074

@@ -155,7 +155,6 @@ theorem geom_sum₂_self {α : Type _} [CommRing α] (x : α) (n : ℕ) :
         congr_arg _ <| add_tsub_cancel_of_le <| Nat.le_pred_of_lt <| Finset.mem_range.1 hi
     _ = (Finset.range n).card • x ^ (n - 1) := Finset.sum_const _
     _ = n * x ^ (n - 1) := by rw [Finset.card_range, nsmul_eq_mul]
-
 #align geom_sum₂_self geom_sum₂_self
 
 /-- $x^n-y^n = (x-y) \sum x^ky^{n-1-k}$ reformulated without `-` signs. -/
@@ -422,7 +421,6 @@ theorem Nat.pred_mul_geom_sum_le (a b n : ℕ) :
       rw [← Nat.div_div_eq_div_mul]
       exact Nat.div_mul_le_self _ _
     _ = a * b - a / b ^ n := add_tsub_add_eq_tsub_left _ _ _
-
 #align nat.pred_mul_geom_sum_le Nat.pred_mul_geom_sum_le
 
 theorem Nat.geom_sum_le {b : ℕ} (hb : 2 ≤ b) (a n : ℕ) :
@@ -454,7 +452,6 @@ theorem Nat.geom_sum_Ico_le {b : ℕ} (hb : 2 ≤ b) (a n : ℕ) :
     by
       rw [← mul_add, add_tsub_cancel_of_le (one_le_two.trans hb)]
     _ = a + a / (b - 1) := by rw [mul_one, Nat.add_mul_div_right _ _ (tsub_pos_of_lt hb), add_comm]
-
 #align nat.geom_sum_Ico_le Nat.geom_sum_Ico_le
 
 section Order

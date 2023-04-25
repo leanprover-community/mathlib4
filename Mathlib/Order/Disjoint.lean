@@ -512,7 +512,6 @@ theorem inf_left_le_of_le_sup_right (h : IsCompl x y) (hle : a ≤ b ⊔ y) : a 
     _ = b ⊓ x ⊔ y ⊓ x := inf_sup_right
     _ = b ⊓ x := by rw [h.symm.inf_eq_bot, sup_bot_eq]
     _ ≤ b := inf_le_left
-
 #align is_compl.inf_left_le_of_le_sup_right IsCompl.inf_left_le_of_le_sup_right
 
 theorem le_sup_right_iff_inf_left_le {a b} (h : IsCompl x y) : a ≤ b ⊔ y ↔ a ⊓ x ≤ b :=
@@ -589,10 +588,8 @@ protected theorem disjoint_iff [OrderBot α] [OrderBot β] {x y : α × β} :
     refine' ⟨fun a hx hy ↦ (@h (a, ⊥) ⟨hx, _⟩ ⟨hy, _⟩).1,
       fun b hx hy ↦ (@h (⊥, b) ⟨_, hx⟩ ⟨_, hy⟩).2⟩
     all_goals exact bot_le
-
   · rintro ⟨ha, hb⟩ z hza hzb
     refine' ⟨ha hza.1 hzb.1, hb hza.2 hzb.2⟩
-
 #align prod.disjoint_iff Prod.disjoint_iff
 
 protected theorem codisjoint_iff [OrderTop α] [OrderTop β] {x y : α × β} :

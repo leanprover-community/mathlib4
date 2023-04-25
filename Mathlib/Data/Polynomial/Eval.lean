@@ -502,7 +502,6 @@ theorem coeff_zero_eq_eval_zero (p : R[X]) : coeff p 0 = p.eval 0 :=
       rw [eval_eq_sum]
       exact
         Finset.sum_eq_single _ (fun b _ hb => by simp [zero_pow (Nat.pos_of_ne_zero hb)]) (by simp)
-
 #align polynomial.coeff_zero_eq_eval_zero Polynomial.coeff_zero_eq_eval_zero
 
 theorem zero_isRoot_of_coeff_zero_eq_zero {p : R[X]} (hp : p.coeff 0 = 0) : IsRoot p 0 := by

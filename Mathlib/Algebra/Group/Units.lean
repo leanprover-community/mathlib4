@@ -139,7 +139,6 @@ theorem ext : Function.Injective (fun (u : αˣ) => (u : α))
     simp only at e; subst v'; congr;
     simpa only [iv₂, vi₁, one_mul, mul_one] using mul_assoc i₂ v i₁
 #align units.ext Units.ext
-
 #align add_units.ext AddUnits.ext
 
 @[to_additive (attr := norm_cast)]

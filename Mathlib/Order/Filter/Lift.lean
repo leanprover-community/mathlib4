@@ -165,7 +165,6 @@ theorem lift_lift_same_eq_lift {g : Set α → Set α → Filter β} (hg₁ : �
       calc
         g (s ∩ t) (s ∩ t) ≤ g s (s ∩ t) := hg₂ (s ∩ t) (inter_subset_left _ _)
         _ ≤ g s t := hg₁ s (inter_subset_right _ _)
-
 #align filter.lift_lift_same_eq_lift Filter.lift_lift_same_eq_lift
 
 theorem lift_principal {s : Set α} (hg : Monotone g) : (𝓟 s).lift g = g s :=
@@ -299,7 +298,6 @@ theorem map_lift'_eq {m : β → γ} (hh : Monotone h) : map m (f.lift' h) = f.l
   calc
     map m (f.lift' h) = f.lift (map m ∘ 𝓟 ∘ h) := map_lift_eq <| monotone_principal.comp hh
     _ = f.lift' (image m ∘ h) := by simp only [comp, Filter.lift', map_principal]
-
 #align filter.map_lift'_eq Filter.map_lift'_eq
 
 theorem lift'_map_le {g : Set β → Set γ} {m : α → β} : (map m f).lift' g ≤ f.lift' (g ∘ image m) :=
@@ -350,7 +348,6 @@ theorem lift_lift'_assoc {g : Set α → Set β} {h : Set β → Filter γ} (hg 
   calc
     (f.lift' g).lift h = f.lift fun s => (𝓟 (g s)).lift h := lift_assoc (monotone_principal.comp hg)
     _ = f.lift fun s => h (g s) := by simp only [lift_principal, hh, eq_self_iff_true]
-
 #align filter.lift_lift'_assoc Filter.lift_lift'_assoc
 
 theorem lift'_lift'_assoc {g : Set α → Set β} {h : Set β → Set γ} (hg : Monotone g)

@@ -272,7 +272,6 @@ theorem map_eq_map_of_bij_of_nodup (f : α → γ) (g : β → γ) {s : Multiset
     s.map f = s.pmap (fun x _ => f x) fun _ => id := by rw [pmap_eq_map]
     _ = s.attach.map fun x => f x.1 := by rw [pmap_eq_map_attach]
     _ = t.map g := by rw [this, Multiset.map_map]; exact map_congr rfl fun x _ => h _ _
-
 #align multiset.map_eq_map_of_bij_of_nodup Multiset.map_eq_map_of_bij_of_nodup
 
 end Multiset

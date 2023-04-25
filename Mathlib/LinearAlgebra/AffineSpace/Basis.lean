@@ -299,7 +299,6 @@ noncomputable def coords : P →ᵃ[k] ι → k where
     rw [AffineMap.map_vadd, linear_eq_sumCoords,
         LinearMap.neg_apply]
     simp only [ne_eq, Basis.coe_sumCoords, vadd_eq_add]
-
 #align affine_basis.coords AffineBasis.coords
 
 @[simp]

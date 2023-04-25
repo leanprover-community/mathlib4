@@ -242,7 +242,6 @@ noncomputable instance createsLimitsOfShape [PreservesLimitsOfShape J G] :
 #align category_theory.structured_arrow.creates_limits_of_shape CategoryTheory.StructuredArrow.createsLimitsOfShape
 
 noncomputable instance createsLimits [PreservesLimits G] : CreatesLimits (proj X G : _) where
-
 #align category_theory.structured_arrow.creates_limits CategoryTheory.StructuredArrow.createsLimits
 
 instance mono_right_of_mono [HasPullbacks A] [PreservesLimitsOfShape WalkingCospan G]

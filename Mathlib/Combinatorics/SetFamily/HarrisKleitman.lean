@@ -53,8 +53,7 @@ theorem IsLowerSet.memberSubfamily_subset_nonMemberSubfamily (h : IsLowerSet (�
     𝒜.memberSubfamily a ⊆ 𝒜.nonMemberSubfamily a := fun s => by
   rw [mem_memberSubfamily, mem_nonMemberSubfamily]
   exact And.imp_left (h <| subset_insert _ _)
-#align is_lower_set.member_subfamily_subset_non_member_subfamily
-    IsLowerSet.memberSubfamily_subset_nonMemberSubfamily
+#align is_lower_set.member_subfamily_subset_non_member_subfamily IsLowerSet.memberSubfamily_subset_nonMemberSubfamily
 
 /-- **Harris-Kleitman inequality**: Any two lower sets of finsets correlate. -/
 theorem IsLowerSet.le_card_inter_finset' (h𝒜 : IsLowerSet (𝒜 : Set (Finset α)))

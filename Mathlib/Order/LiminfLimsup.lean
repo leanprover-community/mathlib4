@@ -252,7 +252,6 @@ theorem _root_.OrderIso.isBoundedUnder_le_comp [Preorder α] [Preorder β] (e : 
     {u : γ → α} : (IsBoundedUnder (· ≤ ·) l fun x => e (u x)) ↔ IsBoundedUnder (· ≤ ·) l u :=
   (Function.Surjective.exists e.surjective).trans <|
     exists_congr fun a => by simp only [eventually_map, e.le_iff_le]
-
 #align order_iso.is_bounded_under_le_comp OrderIso.isBoundedUnder_le_comp
 
 @[simp]

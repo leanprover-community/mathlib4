@@ -89,7 +89,6 @@ theorem mulSupport_eq_iff {f : α → M} {s : Set α} :
     mulSupport f = s ↔ (∀ x, x ∈ s → f x ≠ 1) ∧ ∀ x, x ∉ s → f x = 1 := by
   simp (config := { contextual := true }) only [ext_iff, mem_mulSupport, ne_eq, iff_def,
     not_imp_comm, and_comm, forall_and]
-
 #align function.mul_support_eq_iff Function.mulSupport_eq_iff
 #align function.support_eq_iff Function.support_eq_iff
 

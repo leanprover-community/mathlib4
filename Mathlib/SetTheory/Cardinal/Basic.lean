@@ -2181,9 +2181,7 @@ theorem mk_preimage_of_subset_range_lift {α : Type u} {β : Type v} (f : α →
 theorem mk_preimage_of_injective_of_subset_range_lift {β : Type v} (f : α → β) (s : Set β)
     (h : Injective f) (h2 : s ⊆ range f) : lift.{v} (#f ⁻¹' s) = lift.{u} (#s) :=
   le_antisymm (mk_preimage_of_injective_lift f s h) (mk_preimage_of_subset_range_lift f s h2)
-#align
-  cardinal.mk_preimage_of_injective_of_subset_range_lift
-  Cardinal.mk_preimage_of_injective_of_subset_range_lift
+#align cardinal.mk_preimage_of_injective_of_subset_range_lift Cardinal.mk_preimage_of_injective_of_subset_range_lift
 
 theorem mk_preimage_of_injective (f : α → β) (s : Set β) (h : Injective f) :
     (#f ⁻¹' s) ≤ (#s) := by
@@ -2200,9 +2198,7 @@ theorem mk_preimage_of_subset_range (f : α → β) (s : Set β) (h : s ⊆ rang
 theorem mk_preimage_of_injective_of_subset_range (f : α → β) (s : Set β) (h : Injective f)
     (h2 : s ⊆ range f) : (#f ⁻¹' s) = (#s) := by
   convert mk_preimage_of_injective_of_subset_range_lift.{u, u} f s h h2 using 1 <;> rw [lift_id]
-#align
-  cardinal.mk_preimage_of_injective_of_subset_range
-  Cardinal.mk_preimage_of_injective_of_subset_range
+#align cardinal.mk_preimage_of_injective_of_subset_range Cardinal.mk_preimage_of_injective_of_subset_range
 
 theorem mk_subset_ge_of_subset_image_lift {α : Type u} {β : Type v} (f : α → β) {s : Set α}
     {t : Set β} (h : t ⊆ f '' s) : lift.{u} (#t) ≤ lift.{v} (#({ x ∈ s | f x ∈ t } : Set α)) := by

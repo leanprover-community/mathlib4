@@ -194,7 +194,6 @@ theorem apply_of_ne_none {α ι} (l : Line α ι) (x : α) (i : ι) (h : l.idxFu
 theorem map_apply {α α' ι} (f : α → α') (l : Line α ι) (x : α) : l.map f (f x) = f ∘ l x := by
   simp only [Line.apply, Line.map, Option.getD_map]
   rfl
-
 #align combinatorics.line.map_apply Combinatorics.Line.map_apply
 
 @[simp]
@@ -341,9 +340,7 @@ theorem exists_mono_in_high_dimension (α : Type u) [Finite α] (κ : Type v) [F
   ⟨ι, ιfin, fun C =>
     let ⟨l, c, hc⟩ := hι (ULift.up ∘ C)
     ⟨l, c.down, fun x => by rw [← hc x, Function.comp_apply]⟩⟩
-#align
-  combinatorics.line.exists_mono_in_high_dimension
-  Combinatorics.Line.exists_mono_in_high_dimension
+#align combinatorics.line.exists_mono_in_high_dimension Combinatorics.Line.exists_mono_in_high_dimension
 
 end Line
 

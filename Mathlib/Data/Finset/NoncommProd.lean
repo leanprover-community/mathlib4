@@ -290,7 +290,6 @@ theorem noncommProd_insert_of_not_mem [DecidableEq α] (s : Finset α) (a : α) 
        { congr
          rw [insert_val_of_not_mem ha, Multiset.map_cons] }
    _ = _ := by rw [Multiset.noncommProd_cons, noncommProd]
-
 #align finset.noncomm_prod_insert_of_not_mem Finset.noncommProd_insert_of_not_mem
 #align finset.noncomm_sum_insert_of_not_mem Finset.noncommSum_insert_of_not_mem
 

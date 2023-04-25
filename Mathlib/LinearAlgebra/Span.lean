@@ -827,7 +827,6 @@ theorem span_neg (s : Set M) : span R (-s) = span R s :=
     span R (-s) = span R ((-LinearMap.id : M →ₗ[R] M) '' s) := by simp
     _ = map (-LinearMap.id) (span R s) := ((-LinearMap.id).map_span _).symm
     _ = span R s := by simp
-
 #align submodule.span_neg Submodule.span_neg
 
 theorem mem_span_insert' {x y} {s : Set M} :

@@ -734,7 +734,6 @@ end
 --Porting note: removed `simp`, `simp` can prove it
 theorem algEquiv_mk' (x : R) (y : M) : algEquiv M S Q (mk' S x y) = mk' Q x y :=
   map_mk' _ _ _
-
 #align is_localization.alg_equiv_mk' IsLocalization.algEquiv_mk'
 
 --Porting note: removed `simp`, `simp` can prove it
@@ -1151,7 +1150,6 @@ theorem sub_mk (a c) (b d) : (mk a b : Localization M) - mk c d =
     _ = mk a b + mk (-c) d := by rw [neg_mk]
     _ = mk (b * -c + d * a) (b * d) := (add_mk _ _ _ _)
     _ = mk (d * a - b * c) (b * d) := by congr; ring
-
 #align localization.sub_mk Localization.sub_mk
 
 theorem mk_int_cast (m : ℤ) : (mk m 1 : Localization M) = m := by

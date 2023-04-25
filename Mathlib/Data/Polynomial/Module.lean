@@ -49,7 +49,6 @@ for the full discussion.
 -/
 @[nolint unusedArguments]
 def PolynomialModule (R M : Type _) [CommRing R] [AddCommGroup M] [Module R M] := ℕ →₀ M
-
 #align polynomial_module PolynomialModule
 
 variable (R M : Type _) [CommRing R] [AddCommGroup M] [Module R M] (I : Ideal R)

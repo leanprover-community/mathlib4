@@ -399,7 +399,6 @@ theorem nodup_sublistsLen (n : ℕ) {l : List α} (h : Nodup l) : (sublistsLen n
   have : Pairwise (. ≠ .) l.sublists' := Pairwise.imp
     (fun h => Lex.to_ne (by convert h using 3; simp [swap, eq_comm])) h.sublists'
   exact this.sublist (sublistsLen_sublist_sublists' _ _)
-
 #align list.nodup_sublists_len List.nodup_sublistsLen
 
 --Porting note: new theorem

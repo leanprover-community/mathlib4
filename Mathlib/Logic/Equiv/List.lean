@@ -428,7 +428,6 @@ def listEquivSelfOfEquivNat {α : Type _} (e : α ≃ ℕ) : List α ≃ α :=
     List α ≃ List ℕ := listEquivOfEquiv e
     _ ≃ ℕ := listNatEquivNat
     _ ≃ α := e.symm
-
 #align equiv.list_equiv_self_of_equiv_nat Equiv.listEquivSelfOfEquivNat
 
 end Equiv

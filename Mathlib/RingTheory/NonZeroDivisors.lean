@@ -161,8 +161,7 @@ theorem map_le_nonZeroDivisors_of_injective [NoZeroDivisors M'] [MonoidWithZeroH
 theorem nonZeroDivisors_le_comap_nonZeroDivisors_of_injective [NoZeroDivisors M']
     [MonoidWithZeroHomClass F M M'] (f : F) (hf : Function.Injective f) : M⁰ ≤ M'⁰.comap f :=
   Submonoid.le_comap_of_map_le _ (map_le_nonZeroDivisors_of_injective _ hf le_rfl)
-#align non_zero_divisors_le_comap_non_zero_divisors_of_injective
-  nonZeroDivisors_le_comap_nonZeroDivisors_of_injective
+#align non_zero_divisors_le_comap_non_zero_divisors_of_injective nonZeroDivisors_le_comap_nonZeroDivisors_of_injective
 
 theorem prod_zero_iff_exists_zero [NoZeroDivisors M₁] [Nontrivial M₁] {s : Multiset M₁} :
     s.prod = 0 ↔ ∃ (r : M₁) (_ : r ∈ s), r = 0 := by

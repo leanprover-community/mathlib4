@@ -1435,7 +1435,6 @@ instance (priority := 100) TopologicalGroup.regularSpace : RegularSpace G := by
     _ = U * interior V := isOpen_interior.closure_mul U
     _ ⊆ U * V := mul_subset_mul_left interior_subset
     _ ⊆ s := hUV
-
 #align topological_group.regular_space TopologicalGroup.regularSpace
 #align topological_add_group.regular_space TopologicalAddGroup.regularSpace
 
@@ -1682,7 +1681,6 @@ theorem nhds_mul (x y : G) : 𝓝 (x * y) = 𝓝 x * 𝓝 y :=
     _ = 𝓝 x * 𝓝 y :=
     by rw [← map_mul_left_nhds_one x, ← map_mul_right_nhds_one y, ← map₂_mul, map₂_map_left,
         map₂_map_right]
-
 #align nhds_mul nhds_mul
 #align nhds_add nhds_add
 

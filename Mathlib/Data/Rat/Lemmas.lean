@@ -66,7 +66,6 @@ theorem num_mk (n d : ℤ) : (n /. d).num = d.sign * n / n.gcd d := by
   rw [←Int.div_eq_ediv_of_dvd] <;>
   simp [divInt, mkRat, Rat.normalize, Nat.succPNat, Int.sign, Int.gcd, -Nat.cast_succ,
     Int.zero_ediv, Int.ofNat_dvd_left, Nat.gcd_dvd_left]
-
 #align rat.num_mk Rat.num_mk
 
 theorem den_mk (n d : ℤ) : (n /. d).den = if d = 0 then 1 else d.natAbs / n.gcd d := by

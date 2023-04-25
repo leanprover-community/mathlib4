@@ -434,11 +434,9 @@ theorem segment_subset_Icc (h : x ≤ y) : [x -[𝕜] y] ⊆ Icc x y := by
   calc
     x = a • x + b • x := (Convex.combo_self hab _).symm
     _ ≤ a • x + b • y := add_le_add_left (smul_le_smul_of_nonneg h hb) _
-
   calc
     a • x + b • y ≤ a • y + b • y := add_le_add_right (smul_le_smul_of_nonneg h ha) _
     _ = y := Convex.combo_self hab _
-
 #align segment_subset_Icc segment_subset_Icc
 
 end OrderedAddCommMonoid
@@ -453,11 +451,9 @@ theorem openSegment_subset_Ioo (h : x < y) : openSegment 𝕜 x y ⊆ Ioo x y :=
   calc
     x = a • x + b • x := (Convex.combo_self hab _).symm
     _ < a • x + b • y := add_lt_add_left (smul_lt_smul_of_pos h hb) _
-
   calc
     a • x + b • y < a • y + b • y := add_lt_add_right (smul_lt_smul_of_pos h ha) _
     _ = y := Convex.combo_self hab _
-
 #align open_segment_subset_Ioo openSegment_subset_Ioo
 
 end OrderedCancelAddCommMonoid

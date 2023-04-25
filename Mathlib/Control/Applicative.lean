@@ -65,7 +65,6 @@ theorem Applicative.ext {F} :
     congr <;> funext α β x y
     · exact (seqLeft_eq1 _ (y Unit.unit)).trans (seqLeft_eq2 _ _).symm
     · exact (seqRight_eq1 _ (y Unit.unit)).trans (seqRight_eq2 _ (y Unit.unit)).symm
-
 #align applicative.ext Applicative.ext
 
 end Lemmas

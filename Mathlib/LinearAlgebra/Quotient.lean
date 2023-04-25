@@ -497,7 +497,6 @@ def comapMkQRelIso : Submodule R (M ⧸ p) ≃o { p' : Submodule R M // p ≤ p'
 of `M`. -/
 def comapMkQOrderEmbedding : Submodule R (M ⧸ p) ↪o Submodule R M :=
   (RelIso.toRelEmbedding <| comapMkQRelIso p).trans (Subtype.relEmbedding (· ≤ ·) _)
-
 #align submodule.comap_mkq.order_embedding Submodule.comapMkQOrderEmbedding
 
 @[simp]

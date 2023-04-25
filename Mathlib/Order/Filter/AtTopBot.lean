@@ -654,7 +654,6 @@ theorem Tendsto.nsmul_atTop (hf : Tendsto f l atTop) {n : ℕ} (hn : 0 < n) :
           y ≤ f x := hy
           _ = 1 • f x := (one_nsmul _).symm
           _ ≤ n • f x := nsmul_le_nsmul h₀ hn
-
 #align filter.tendsto.nsmul_at_top Filter.Tendsto.nsmul_atTop
 
 theorem Tendsto.nsmul_atBot (hf : Tendsto f l atBot) {n : ℕ} (hn : 0 < n) :
@@ -1850,7 +1849,6 @@ theorem frequently_iff_seq_frequently {ι : Type _} {l : Filter ι} {p : ι → 
     have : { n : ℕ | ¬p (x n) } = { n | x n ∈ { y | ¬p y } } := rfl
     rw [this, ← mem_map'] at hx_freq
     exact mt (@hx_tendsto _) hx_freq
-
 #align filter.frequently_iff_seq_frequently Filter.frequently_iff_seq_frequently
 
 theorem eventually_iff_seq_eventually {ι : Type _} {l : Filter ι} {p : ι → Prop}

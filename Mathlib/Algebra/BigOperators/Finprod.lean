@@ -181,18 +181,13 @@ theorem finprod_eq_prod_pLift_of_mulSupport_toFinset_subset {f : α → M}
   rw [finprod, dif_pos]
   refine' Finset.prod_subset hs fun x _ hxf => _
   rwa [hf.mem_toFinset, nmem_mulSupport] at hxf
-#align
-  finprod_eq_prod_plift_of_mul_support_to_finset_subset
-  finprod_eq_prod_pLift_of_mulSupport_toFinset_subset
-#align
-  finsum_eq_sum_plift_of_support_to_finset_subset
-  finsum_eq_sum_pLift_of_support_toFinset_subset
+#align finprod_eq_prod_plift_of_mul_support_to_finset_subset finprod_eq_prod_pLift_of_mulSupport_toFinset_subset
+#align finsum_eq_sum_plift_of_support_to_finset_subset finsum_eq_sum_pLift_of_support_toFinset_subset
 
 @[to_additive]
 theorem finprod_eq_prod_pLift_of_mulSupport_subset {f : α → M} {s : Finset (PLift α)}
     (hs : mulSupport (f ∘ PLift.down) ⊆ s) : (∏ᶠ i, f i) = ∏ i in s, f i.down :=
-  finprod_eq_prod_pLift_of_mulSupport_toFinset_subset (s.finite_toSet.subset hs) fun x hx =>
-    by
+  finprod_eq_prod_pLift_of_mulSupport_toFinset_subset (s.finite_toSet.subset hs) fun x hx => by
     rw [Finite.mem_toFinset] at hx
     exact hs hx
 #align finprod_eq_prod_plift_of_mul_support_subset finprod_eq_prod_pLift_of_mulSupport_subset
@@ -1161,7 +1156,6 @@ theorem single_le_finprod {M : Type _} [OrderedCommMonoid M] (i : α) {f : α �
         Finset.single_le_prod' (fun j _ => h j) (Finset.mem_insert_self _ _)
       _ = ∏ᶠ j, f j :=
         (finprod_eq_prod_of_mulSupport_toFinset_subset _ hf (Finset.subset_insert _ _)).symm
-
 #align single_le_finprod single_le_finprod
 #align single_le_finsum single_le_finsum
 
@@ -1219,12 +1213,8 @@ theorem Finset.mulSupport_of_fiberwise_prod_subset_image [DecidableEq β] (s : F
   suffices (s.filter fun a : α => g a = b).Nonempty by
     simpa only [s.fiber_nonempty_iff_mem_image g b, Finset.mem_image, exists_prop]
   exact Finset.nonempty_of_prod_ne_one h
-#align
-  finset.mul_support_of_fiberwise_prod_subset_image
-  Finset.mulSupport_of_fiberwise_prod_subset_image
-#align
-  finset.support_of_fiberwise_sum_subset_image
-  Finset.support_of_fiberwise_sum_subset_image
+#align finset.mul_support_of_fiberwise_prod_subset_image Finset.mulSupport_of_fiberwise_prod_subset_image
+#align finset.support_of_fiberwise_sum_subset_image Finset.support_of_fiberwise_sum_subset_image
 
 /-- Note that `b ∈ (s.filter (fun ab => Prod.fst ab = a)).image Prod.snd` iff `(a, b) ∈ s` so
 we can simplify the right hand side of this lemma. However the form stated here is more useful for

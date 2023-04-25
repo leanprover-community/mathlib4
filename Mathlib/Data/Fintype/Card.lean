@@ -117,7 +117,6 @@ def truncFinBijection (α) [Fintype α] : Trunc { f : Fin (card α) → α // Bi
       univ.val
       (fun l (h : ∀ x : α, x ∈ l) (nd : l.Nodup) => Trunc.mk (nd.getBijectionOfForallMemList _ h))
       mem_univ_val univ.2
-
 #align fintype.trunc_fin_bijection Fintype.truncFinBijection
 
 theorem subtype_card {p : α → Prop} (s : Finset α) (H : ∀ x : α, x ∈ s ↔ p x) :
@@ -475,7 +474,6 @@ theorem card_lt_of_injective_of_not_mem (f : α → β) (h : Function.Injective 
     card α = (univ.map ⟨f, h⟩).card := (card_map _).symm
     _ < card β :=
       Finset.card_lt_univ_of_not_mem <| by rwa [← mem_coe, coe_map, coe_univ, Set.image_univ]
-
 #align fintype.card_lt_of_injective_of_not_mem Fintype.card_lt_of_injective_of_not_mem
 
 theorem card_lt_of_injective_not_surjective (f : α → β) (h : Function.Injective f)
@@ -992,7 +990,6 @@ theorem of_injective_to_set {s : Set α} (hs : s ≠ Set.univ) {f : α → s} (h
         _ = s.toFinset.card := s.toFinset_card.symm
         _ < Fintype.card α :=
           Finset.card_lt_card <| by rwa [Set.toFinset_ssubset_univ, Set.ssubset_univ_iff]
-
 #align infinite.of_injective_to_set Infinite.of_injective_to_set
 
 /-- If `s : Set α` is a proper subset of `α` and `f : s → α` is surjective, then `α` is infinite. -/

@@ -476,7 +476,6 @@ theorem append_succ_castAdd_aux (i : Fin m) (h : a (Fin.last _) = b 0) :
       b ⟨i + 1 - m, by simp [this]⟩ = b 0 := congr_arg b (by simp [Fin.ext_iff, this])
       _ = a (Fin.last _) := h.symm
       _ = _ := congr_arg a (by simp [Fin.ext_iff, this])
-
 #align composition_series.append_succ_cast_add_aux CompositionSeries.append_succ_castAdd_aux
 
 theorem append_natAdd_aux (i : Fin n) :

@@ -520,7 +520,6 @@ theorem pellZd_succ_succ (n) :
     dsimp
     constructor <;> ring_nf
   simpa [mul_add, mul_comm, mul_left_comm, add_comm] using congr_arg (· * pellZd a1 n) this
-
 #align pell.pell_zd_succ_succ Pell.pellZd_succ_succ
 
 theorem xy_succ_succ (n) :
@@ -957,7 +956,6 @@ theorem eq_pow_of_pell_lem {a y k : ℕ} (hy0 : y ≠ 0) (hk0 : k ≠ 0) (hyk : 
       have := hya.le
       mono * <;> norm_cast <;> simp [Nat.zero_le, Nat.succ_le_of_lt (Nat.pos_of_ne_zero hy0)]
     _ = 2 * a * y - y * y - 1 := by ring
-
 #align pell.eq_pow_of_pell_lem Pell.eq_pow_of_pell_lem
 
 theorem eq_pow_of_pell {m n k} :

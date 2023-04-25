@@ -223,10 +223,8 @@ theorem le_iff_exists_sup : a ≤ b ↔ ∃ c, b = a ⊔ c := by
   constructor
   · intro h
     exact ⟨b, (sup_eq_right.mpr h).symm⟩
-
   · rintro ⟨c, rfl : _ = _ ⊔ _⟩
     exact le_sup_left
-
 #align le_iff_exists_sup le_iff_exists_sup
 
 theorem sup_le_sup (h₁ : a ≤ b) (h₂ : c ≤ d) : a ⊔ c ≤ b ⊔ d :=
@@ -320,7 +318,6 @@ theorem Monotone.forall_le_of_antitone {β : Type _} [Preorder β] {f g : α →
     f m ≤ f (m ⊔ n) := hf le_sup_left
     _ ≤ g (m ⊔ n) := h _
     _ ≤ g n := hg le_sup_right
-
 #align monotone.forall_le_of_antitone Monotone.forall_le_of_antitone
 
 theorem SemilatticeSup.ext_sup {α} {A B : SemilatticeSup α}
@@ -776,7 +773,6 @@ theorem inf_sup_left : x ⊓ (y ⊔ z) = x ⊓ y ⊔ x ⊓ z :=
     _ = (x ⊔ x ⊓ y) ⊓ (x ⊓ y ⊔ z) := by rw [sup_inf_self]
     _ = (x ⊓ y ⊔ x) ⊓ (x ⊓ y ⊔ z) := by rw [sup_comm]
     _ = x ⊓ y ⊔ x ⊓ z := by rw [sup_inf_left]
-
 #align inf_sup_left inf_sup_left
 
 instance OrderDual.distribLattice (α : Type _) [DistribLattice α] : DistribLattice αᵒᵈ where
@@ -795,7 +791,6 @@ theorem le_of_inf_le_sup_le (h₁ : x ⊓ z ≤ y ⊓ z) (h₂ : x ⊔ z ≤ y �
     _ = y ⊔ x ⊓ z := sup_inf_left.symm
     _ ≤ y ⊔ y ⊓ z := sup_le_sup_left h₁ _
     _ ≤ _ := sup_le (le_refl y) inf_le_left
-
 #align le_of_inf_le_sup_le le_of_inf_le_sup_le
 
 theorem eq_of_inf_eq_sup_eq {α : Type u} [DistribLattice α] {a b c : α} (h₁ : b ⊓ a = c ⊓ a)

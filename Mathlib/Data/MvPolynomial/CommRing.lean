@@ -205,7 +205,6 @@ theorem totalDegree_sub (a b : MvPolynomial σ R) :
     (a - b).totalDegree = (a + -b).totalDegree := by rw [sub_eq_add_neg]
     _ ≤ max a.totalDegree (-b).totalDegree := (totalDegree_add a (-b))
     _ = max a.totalDegree b.totalDegree := by rw [totalDegree_neg]
-
 #align mv_polynomial.total_degree_sub MvPolynomial.totalDegree_sub
 
 end TotalDegree

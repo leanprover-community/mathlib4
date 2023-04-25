@@ -197,7 +197,6 @@ theorem IsBigOWith.weaken (h : IsBigOWith c l f g') (hc : c ≤ c') : IsBigOWith
       calc
         ‖f x‖ ≤ c * ‖g' x‖ := hx
         _ ≤ _ := mul_le_mul_of_nonneg_right hc (norm_nonneg _)
-
 #align asymptotics.is_O_with.weaken Asymptotics.IsBigOWith.weaken
 
 theorem IsBigOWith.exists_pos (h : IsBigOWith c l f g') :
@@ -465,7 +464,6 @@ theorem IsBigOWith.trans (hfg : IsBigOWith c l f g) (hgk : IsBigOWith c' l g k) 
     ‖f x‖ ≤ c * ‖g x‖ := hx
     _ ≤ c * (c' * ‖k x‖) := (mul_le_mul_of_nonneg_left hx' hc)
     _ = c * c' * ‖k x‖ := (mul_assoc _ _ _).symm
-
 #align asymptotics.is_O_with.trans Asymptotics.IsBigOWith.trans
 
 @[trans]
@@ -1066,7 +1064,6 @@ theorem IsBigOWith.add (h₁ : IsBigOWith c₁ l f₁ g) (h₂ : IsBigOWith c₂
       h₂]with x hx₁ hx₂ using calc
         ‖f₁ x + f₂ x‖ ≤ c₁ * ‖g x‖ + c₂ * ‖g x‖ := norm_add_le_of_le hx₁ hx₂
         _ = (c₁ + c₂) * ‖g x‖ := (add_mul _ _ _).symm
-
 #align asymptotics.is_O_with.add Asymptotics.IsBigOWith.add
 
 theorem IsBigO.add (h₁ : f₁ =O[l] g) (h₂ : f₂ =O[l] g) : (fun x => f₁ x + f₂ x) =O[l] g :=
@@ -1269,7 +1266,6 @@ theorem isBigO_pure {x} : f'' =O[pure x] g'' ↔ g'' x = 0 → f'' x = 0 :=
   calc
     f'' =O[pure x] g'' ↔ (fun _y : α => f'' x) =O[pure x] fun _ => g'' x := isBigO_congr rfl rfl
     _ ↔ g'' x = 0 → f'' x = 0 := isBigO_const_const_iff _
-
 #align asymptotics.is_O_pure Asymptotics.isBigO_pure
 
 end ZeroConst
@@ -1348,7 +1344,6 @@ theorem isLittleO_one_left_iff : (fun _x => 1 : α → F) =o[l] f ↔ Tendsto (f
       simp only [norm_one, mul_one, true_imp_iff, mem_Ici]
     _ ↔ Tendsto (fun x => ‖f x‖) l atTop :=
       atTop_hasCountableBasis_of_archimedean.1.tendsto_right_iff.symm
-
 #align asymptotics.is_o_one_left_iff Asymptotics.isLittleO_one_left_iff
 
 theorem _root_.Filter.Tendsto.isBigO_one {c : E'} (h : Tendsto f' l (𝓝 c)) :
@@ -1640,7 +1635,6 @@ theorem IsBigOWith.of_pow {n : ℕ} {f : α → 𝕜} {g : α → R} (h : IsBigO
           _ ≤ c' ^ n * ‖g x‖ ^ n :=
             (mul_le_mul_of_nonneg_left (norm_pow_le' _ hn.bot_lt) (pow_nonneg hc' _))
           _ = (c' * ‖g x‖) ^ n := (mul_pow _ _ _).symm
-
 #align asymptotics.is_O_with.of_pow Asymptotics.IsBigOWith.of_pow
 
 theorem IsBigO.pow {f : α → R} {g : α → 𝕜} (h : f =O[l] g) (n : ℕ) :
@@ -1882,7 +1876,6 @@ theorem isLittleO_pure {x} : f'' =o[pure x] g'' ↔ f'' x = 0 :=
   calc
     f'' =o[pure x] g'' ↔ (fun _y : α => f'' x) =o[pure x] fun _ => g'' x := isLittleO_congr rfl rfl
     _ ↔ f'' x = 0 := isLittleO_const_const_iff
-
 #align asymptotics.is_o_pure Asymptotics.isLittleO_pure
 
 theorem isLittleO_const_id_comap_norm_atTop (c : F'') :

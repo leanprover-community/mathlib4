@@ -206,7 +206,6 @@ theorem perm_factors_mul {a b : ℕ} (ha : a ≠ 0) (hb : b ≠ 0) :
   · intro p hp
     rw [List.mem_append] at hp
     cases' hp with hp' hp' <;> exact prime_of_mem_factors hp'
-
 #align nat.perm_factors_mul Nat.perm_factors_mul
 
 /-- For coprime `a` and `b`, the prime factors of `a * b` are the union of those of `a` and `b` -/

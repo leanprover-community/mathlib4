@@ -43,7 +43,6 @@ def pi (f : ∀ i, Filter (α i)) : Filter (∀ i, α i) :=
 instance pi.isCountablyGenerated [Countable ι] [∀ i, IsCountablyGenerated (f i)] :
     IsCountablyGenerated (pi f) :=
   infᵢ.isCountablyGenerated _
-
 #align filter.pi.is_countably_generated Filter.pi.isCountablyGenerated
 
 theorem tendsto_eval_pi (f : ∀ i, Filter (α i)) (i : ι) : Tendsto (eval i) (pi f) (f i) :=

@@ -338,7 +338,6 @@ theorem cast_lt {m n : ℚ} : (m : K) < n ↔ m < n :=
 @[simp]
 theorem cast_nonneg {n : ℚ} : 0 ≤ (n : K) ↔ 0 ≤ n := by
       norm_cast
-
 #align rat.cast_nonneg Rat.cast_nonneg
 
 @[simp]

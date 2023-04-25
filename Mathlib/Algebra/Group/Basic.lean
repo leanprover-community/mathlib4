@@ -1024,7 +1024,6 @@ lemma multiplicative_of_symmetric_of_isTotal
   obtain rbc | rcb := total_of r b c
   · exact hmul' rbc pab pbc pac
   · rw [hmul' rcb pac (hsymm pbc) pab, mul_assoc, hf_swap (hsymm pbc), mul_one]
-
 #align multiplicative_of_symmetric_of_is_total multiplicative_of_symmetric_of_isTotal
 #align additive_of_symmetric_of_is_total additive_of_symmetric_of_isTotal
 
@@ -1049,6 +1048,5 @@ lemma multiplicative_of_isTotal [Monoid β] (f : α → α → β) (r : α → �
   obtain hbc | hcb := t.total b c
   · exact h b c hbc
   · rw [h c b hcb, mul_assoc, hswap c b, mul_one]
-
 #align multiplicative_of_is_total multiplicative_of_isTotal
 #align additive_of_is_total additive_of_isTotal

@@ -183,7 +183,6 @@ theorem normalize_eq_normalize {a b : α} (hab : a ∣ b) (hba : b ∣ a) :
   calc
     a * ↑(normUnit a) = a * ↑(normUnit a) * ↑u * ↑u⁻¹ := (Units.mul_inv_cancel_right _ _).symm
     _ = a * ↑u * ↑(normUnit a) * ↑u⁻¹ := by rw [mul_right_comm a]
-
 #align normalize_eq_normalize normalize_eq_normalize
 
 theorem normalize_eq_normalize_iff {x y : α} : normalize x = normalize y ↔ x ∣ y ∧ y ∣ x :=
@@ -585,7 +584,6 @@ theorem gcd_pow_left_dvd_pow_gcd [GCDMonoid α] {a b : α} {k : ℕ} : gcd (a ^ 
     gcd (a ^ k) b ∣ gcd b (a ^ k) := (gcd_comm' _ _).dvd
     _ ∣ gcd b a ^ k := gcd_pow_right_dvd_pow_gcd
     _ ∣ gcd a b ^ k := pow_dvd_pow_of_dvd (gcd_comm' _ _).dvd _
-
 #align gcd_pow_left_dvd_pow_gcd gcd_pow_left_dvd_pow_gcd
 
 theorem pow_dvd_of_mul_eq_pow [GCDMonoid α] {a b c d₁ d₂ : α} (ha : a ≠ 0) (hab : IsUnit (gcd a b))

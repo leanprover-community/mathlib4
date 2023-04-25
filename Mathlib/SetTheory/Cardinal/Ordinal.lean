@@ -1004,7 +1004,6 @@ theorem mk_list_eq_mk (α : Type u) [Infinite α] : (#List α) = (#α) :=
         (#List α) = sum fun n : ℕ => (#α) ^ (n : Cardinal.{u}) := mk_list_eq_sum_pow α
         _ ≤ sum fun _ : ℕ => #α := sum_le_sum _ _ fun n => pow_le H1 <| nat_lt_aleph0 n
         _ = (#α) := by simp [H1]
-
 #align cardinal.mk_list_eq_mk Cardinal.mk_list_eq_mk
 
 theorem mk_list_eq_aleph0 (α : Type u) [Countable α] [Nonempty α] : (#List α) = ℵ₀ :=
@@ -1033,7 +1032,6 @@ theorem mk_finset_of_infinite (α : Type u) [Infinite α] : (#Finset α) = (#α)
       calc
         (#Finset α) ≤ (#List α) := mk_le_of_surjective List.toFinset_surjective
         _ = (#α) := mk_list_eq_mk α
-
 #align cardinal.mk_finset_of_infinite Cardinal.mk_finset_of_infinite
 
 @[simp]
