@@ -313,8 +313,7 @@ theorem colimitLimitToLimitColimit_surjective :
       simp only [id.def, ← e, Limits.ι_colimitLimitToLimitColimit_π_apply,
           colimit_eq_iff.{v, v}, Bifunctor.map_id_comp, types_comp_apply, curry_obj_obj_map,
           Functor.comp_obj, colim_obj, Limit.π_mk]
-      -- porting note: was       refine' ⟨k'', 𝟙 k'', g j ≫ gf (𝟙 j) ≫ i (𝟙 j), _⟩
-      use k'', 𝟙 k'', g j ≫ gf (𝟙 j) ≫ i (𝟙 j)
+      refine' ⟨k'', 𝟙 k'', g j ≫ gf (𝟙 j) ≫ i (𝟙 j), _⟩
       -- porting note: the lean 3 proof finished with
       -- `simp only [Bifunctor.map_id_comp, types_comp_apply, Bifunctor.map_id, types_id_apply]`
       -- which doesn't work. why doesn't `rw [← types_comp_apply]` work? **TODO** ask on github
@@ -391,7 +390,6 @@ noncomputable def colimitLimitIso (F : J ⥤ K ⥤ C) : colimit (limit F) ≅ li
     HasLimit.isoOfNatIso (colimitFlipIsoCompColim _).symm
 #align category_theory.limits.colimit_limit_iso CategoryTheory.Limits.colimitLimitIso
 
--- porting note: was `@[simp, reassoc.1]`
 @[reassoc (attr := simp)]
 theorem ι_colimitLimitIso_limit_π (F : J ⥤ K ⥤ C) (a) (b) :
     colimit.ι (limit F) a ≫ (colimitLimitIso F).hom ≫ limit.π (colimit F.flip) b =
