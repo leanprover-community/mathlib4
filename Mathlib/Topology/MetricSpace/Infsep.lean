@@ -498,7 +498,7 @@ theorem Finite.infsep_of_nontrivial (hsf : s.Finite) (hs : s.Nontrivial) :
   classical simp_rw [hsf.infsep, dif_pos hs]
 #align set.finite.infsep_of_nontrivial Set.Finite.infsep_of_nontrivial
 
-theorem Finset.coe_infsep [DecidableEq α] (s : Finset α) :
+theorem _root_.Finset.coe_infsep [DecidableEq α] (s : Finset α) :
     (s : Set α).infsep = if hs : s.offDiag.Nonempty then s.offDiag.inf' hs (uncurry dist) else 0 :=
   by
   have H : (s : Set α).Nontrivial ↔ s.offDiag.Nonempty := by
@@ -506,18 +506,18 @@ theorem Finset.coe_infsep [DecidableEq α] (s : Finset α) :
   split_ifs with hs
   · simp_rw [(H.mpr hs).infsep_of_fintype, ← Finset.coe_offDiag, Finset.toFinset_coe]
   · exact (not_nontrivial_iff.mp (H.mp.mt hs)).infsep_zero
-#align finset.coe_infsep Set.Finset.coe_infsep
+#align finset.coe_infsep Finset.coe_infsep
 
-theorem Finset.coe_infsep_of_offDiag_nonempty [DecidableEq α] {s : Finset α}
+theorem _root_.Finset.coe_infsep_of_offDiag_nonempty [DecidableEq α] {s : Finset α}
     (hs : s.offDiag.Nonempty) : (s : Set α).infsep = s.offDiag.inf' hs (uncurry dist) := by
   rw [Finset.coe_infsep, dif_pos hs]
-#align finset.coe_infsep_of_off_diag_nonempty Set.Finset.coe_infsep_of_offDiag_nonempty
+#align finset.coe_infsep_of_off_diag_nonempty Finset.coe_infsep_of_offDiag_nonempty
 
-theorem Finset.coe_infsep_of_offDiag_empty [DecidableEq α] {s : Finset α} (hs : s.offDiag = ∅) :
-    (s : Set α).infsep = 0 := by
+theorem _root_.Finset.coe_infsep_of_offDiag_empty
+    [DecidableEq α] {s : Finset α} (hs : s.offDiag = ∅) : (s : Set α).infsep = 0 := by
   rw [← Finset.not_nonempty_iff_eq_empty] at hs
   rw [Finset.coe_infsep, dif_neg hs]
-#align finset.coe_infsep_of_off_diag_empty Set.Finset.coe_infsep_of_offDiag_empty
+#align finset.coe_infsep_of_off_diag_empty Finset.coe_infsep_of_offDiag_empty
 
 theorem Nontrivial.infsep_exists_of_finite [Finite s] (hs : s.Nontrivial) :
     ∃ (x : _)(_ : x ∈ s)(y : _)(_ : y ∈ s)(_hxy : x ≠ y), s.infsep = dist x y := by
@@ -562,15 +562,15 @@ theorem Finite.infsep_pos_iff_nontrivial (hs : s.Finite) : 0 < s.infsep ↔ s.No
   infsep_pos_iff_nontrivial_of_finite
 #align set.finite.infsep_pos_iff_nontrivial Set.Finite.infsep_pos_iff_nontrivial
 
-theorem Finset.infsep_zero_iff_subsingleton (s : Finset α) :
+theorem _root_.Finset.infsep_zero_iff_subsingleton (s : Finset α) :
     (s : Set α).infsep = 0 ↔ (s : Set α).Subsingleton :=
   infsep_zero_iff_subsingleton_of_finite
-#align finset.infsep_zero_iff_subsingleton Set.Finset.infsep_zero_iff_subsingleton
+#align finset.infsep_zero_iff_subsingleton Finset.infsep_zero_iff_subsingleton
 
-theorem Finset.infsep_pos_iff_nontrivial (s : Finset α) :
+theorem _root_.Finset.infsep_pos_iff_nontrivial (s : Finset α) :
     0 < (s : Set α).infsep ↔ (s : Set α).Nontrivial :=
   infsep_pos_iff_nontrivial_of_finite
-#align finset.infsep_pos_iff_nontrivial Set.Finset.infsep_pos_iff_nontrivial
+#align finset.infsep_pos_iff_nontrivial Finset.infsep_pos_iff_nontrivial
 
 end MetricSpace
 
