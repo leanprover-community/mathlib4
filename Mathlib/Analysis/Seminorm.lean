@@ -19,7 +19,7 @@ import Mathlib.Analysis.Normed.Group.AddTorsor
 This file defines seminorms.
 
 A seminorm is a function to the reals which is positive-semidefinite, absolutely homogeneous, and
-subadditive. They are closely related to convex sets and a topological vector space is locally
+subadditive. They are closely related to convex sets, and a topological vector space is locally
 convex if and only if its topology is induced by a family of seminorms.
 
 ## Main declarations
@@ -54,7 +54,7 @@ structure Seminorm (𝕜 : Type _) (E : Type _) [SeminormedRing 𝕜] [AddGroup 
 
 attribute [nolint docBlame] Seminorm.toAddGroupSeminorm
 
-/-- `SeminormClass F 𝕜 E` states that `F` is a type of seminorms on the `𝕜`-module E.
+/-- `SeminormClass F 𝕜 E` states that `F` is a type of seminorms on the `𝕜`-module `E`.
 
 You should extend this class when you extend `Seminorm`. -/
 class SeminormClass (F : Type _) (𝕜 E : outParam <| Type _) [SeminormedRing 𝕜] [AddGroup E]
@@ -205,8 +205,7 @@ instance [Monoid R] [MulAction R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 
 
 variable (𝕜 E)
 
-/-- `coeFn` as an `AddMonoidHom`. Helper definition for showing that `Seminorm 𝕜 E` is
-a module. -/
+/-- `coeFn` as an `AddMonoidHom`. Helper definition for showing that `Seminorm 𝕜 E` is a module. -/
 @[simps]
 def coeFnAddMonoidHom : AddMonoidHom (Seminorm 𝕜 E) (E → ℝ) where
   toFun := (↑)
@@ -533,7 +532,7 @@ above), we take the pointwise supremum of all elements of `s`, and we prove that
 seminorm.
 * otherwise, we take the zero seminorm `⊥`.
 
-There are two things worth mentionning here:
+There are two things worth mentioning here:
 * First, it is not trivial at first that `s` being bounded above *by a function* implies
 being bounded above *as a seminorm*. We show this in `Seminorm.bddAbove_iff` by using
 that the `Sup s` as defined here is then a bounding seminorm for `s`. So it is important to make
@@ -617,10 +616,10 @@ private theorem Seminorm.isLUB_supₛ (s : Set (Seminorm 𝕜 E)) (hs₁ : BddAb
 
 /-- `Seminorm 𝕜 E` is a conditionally complete lattice.
 
-Note that, while `inf`, `sup` and `Sup` have good definitional properties (corresponding to
-`Seminorm.has_inf`, `Seminorm.has_sup` and `Seminorm.has_Sup` respectively), `Inf s` is just
+Note that, while `inf`, `sup` and `supₛ` have good definitional properties (corresponding to
+the instances given here for `Inf`, `Sup` and `SupSet` respectively), `infₛ s` is just
 defined as the supremum of the lower bounds of `s`, which is not really useful in practice. If you
-need to use `Inf` on seminorms, then you should probably provide a more workable definition first,
+need to use `infₛ` on seminorms, then you should probably provide a more workable definition first,
 but this is unlikely to happen so we keep the "bad" definition for now. -/
 noncomputable instance : ConditionallyCompleteLattice (Seminorm 𝕜 E) :=
   conditionallyCompleteLatticeOfLatticeOfSupₛ (Seminorm 𝕜 E) Seminorm.isLUB_supₛ
@@ -1048,7 +1047,7 @@ section SMul
 
 variable [SMul ℝ E] [IsScalarTower ℝ 𝕜 E] (p : Seminorm 𝕜 E)
 
-/-- A seminorm is convex. Also see `convex_on_norm`. -/
+/-- A seminorm is convex. Also see `convexOn_norm`. -/
 protected theorem convexOn : ConvexOn ℝ univ p := by
   refine' ⟨convex_univ, fun x _ y _ a b ha hb _ => _⟩
   calc
