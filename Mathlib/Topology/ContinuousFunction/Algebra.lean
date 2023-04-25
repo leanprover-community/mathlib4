@@ -905,8 +905,8 @@ instance hasSmul' {α : Type _} [TopologicalSpace α] {R : Type _} [Semiring R] 
   ⟨fun f g => ⟨fun x => f x • g x, Continuous.smul f.2 g.2⟩⟩
 #align continuous_map.has_smul' ContinuousMap.hasSmul'
 
-instance module' {α : Type _} [TopologicalSpace α] (R : Type _) [Ring R] [TopologicalSpace R]
-    [TopologicalRing R] (M : Type _) [TopologicalSpace M] [AddCommMonoid M] [ContinuousAdd M]
+instance module' {α : Type _} [TopologicalSpace α] (R : Type _) [Semiring R] [TopologicalSpace R]
+    [TopologicalSemiring R] (M : Type _) [TopologicalSpace M] [AddCommMonoid M] [ContinuousAdd M]
     [Module R M] [ContinuousSMul R M] : Module C(α, R) C(α, M) where
   smul := (· • ·)
   smul_add c f g := by ext x; exact smul_add (c x) (f x) (g x)
