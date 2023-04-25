@@ -146,7 +146,6 @@ theorem pathToList_listToPath (l : List α) : pathToList (listToPath l) = l := b
   induction' l with a l ih
   · rfl
   · change a :: pathToList (listToPath l) = a :: l; rw [ih]
-
 #align quiver.single_obj.list_to_path_to_list Quiver.SingleObj.pathToList_listToPath
 
 /-- Paths in `SingleObj α` quiver correspond to lists of elements of type `α`. -/

@@ -520,7 +520,6 @@ theorem continuous_uncurry_extend_of_continuous_family {X ι : Type _} [Topologi
     Continuous ↿fun t => (γ t).extend := by
   refine' h.comp (continuous_id.prod_map continuous_projIcc)
   exact zero_le_one
-
 #align path.continuous_uncurry_extend_of_continuous_family Path.continuous_uncurry_extend_of_continuous_family
 
 @[continuity]

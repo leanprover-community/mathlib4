@@ -252,13 +252,13 @@ theorem Commute.function_commute_mul_left (h : _root_.Commute a b) :
 theorem SemiconjBy.function_semiconj_mul_right_swap (h : SemiconjBy a b c) :
     Function.Semiconj (· * a) (· * c) (· * b) := fun j => by simp_rw [mul_assoc, ← h.eq]
 #align semiconj_by.function_semiconj_mul_right_swap SemiconjBy.function_semiconj_mul_right_swap
-#align add_semiconj_by.function_semiconj_add_right_swap  SemiconjBy.function_semiconj_mul_right_swap
+#align add_semiconj_by.function_semiconj_add_right_swap AddSemiconjBy.function_semiconj_add_right_swap
 
 @[to_additive]
 theorem Commute.function_commute_mul_right (h : _root_.Commute a b) :
   Function.Commute (· * a) (· * b) :=
   SemiconjBy.function_semiconj_mul_right_swap h
 #align commute.function_commute_mul_right Commute.function_commute_mul_right
-#align add_commute.function_commute_add_right  AddCommute.function_commute_add_right
+#align add_commute.function_commute_add_right AddCommute.function_commute_add_right
 
 end Semigroup

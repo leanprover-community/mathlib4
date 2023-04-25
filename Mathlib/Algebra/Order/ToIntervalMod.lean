@@ -515,7 +515,7 @@ def MemIooMod (b x : α) : Prop :=
 #align mem_Ioo_mod MemIooMod
 
 open List in
-theorem tFAE_memIooMod :
+theorem tfae_memIooMod :
     TFAE
       [MemIooMod a b x,
       toIcoMod a hb x = toIocMod a hb x,
@@ -538,21 +538,21 @@ theorem tFAE_memIooMod :
     conv_lhs => rw [← toIcoMod_add_toIcoDiv_zsmul a hb x, h]
   · have h' := toIcoMod_mem_Ico a hb x
     exact fun h => ⟨_, h'.1.lt_of_ne' h, h'.2⟩
-#align tfae_mem_Ioo_mod tFAE_memIooMod
+#align tfae_mem_Ioo_mod tfae_memIooMod
 
 variable {a x}
 
 theorem memIooMod_iff_toIcoMod_eq_toIocMod : MemIooMod a b x ↔ toIcoMod a hb x = toIocMod a hb x :=
-  (tFAE_memIooMod a hb x).out 0 1
+  (tfae_memIooMod a hb x).out 0 1
 #align mem_Ioo_mod_iff_to_Ico_mod_eq_to_Ioc_mod memIooMod_iff_toIcoMod_eq_toIocMod
 
 theorem memIooMod_iff_toIcoMod_add_period_ne_toIocMod :
     MemIooMod a b x ↔ toIcoMod a hb x + b ≠ toIocMod a hb x :=
-  (tFAE_memIooMod a hb x).out 0 2
+  (tfae_memIooMod a hb x).out 0 2
 #align mem_Ioo_mod_iff_to_Ico_mod_add_period_ne_to_Ioc_mod memIooMod_iff_toIcoMod_add_period_ne_toIocMod
 
 theorem memIooMod_iff_toIcoMod_ne_left : MemIooMod a b x ↔ toIcoMod a hb x ≠ a :=
-  (tFAE_memIooMod a hb x).out 0 3
+  (tfae_memIooMod a hb x).out 0 3
 #align mem_Ioo_mod_iff_to_Ico_mod_ne_left memIooMod_iff_toIcoMod_ne_left
 
 theorem not_memIooMod_iff_toIcoMod_add_period_eq_toIocMod :
