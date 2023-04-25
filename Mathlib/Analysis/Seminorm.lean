@@ -12,7 +12,6 @@ import Mathlib.Data.Real.Pointwise
 import Mathlib.Analysis.Convex.Function
 import Mathlib.Analysis.LocallyConvex.Basic
 import Mathlib.Analysis.Normed.Group.AddTorsor
-import Mathlib.Tactic.LibrarySearch
 
 /-!
 # Seminorms
