@@ -32,8 +32,6 @@ We also provide the dual results. As usual, we use `Subobject (op A)` for the qu
 `A`.
 
 -/
--- porting note: the main declaration `StructuredArrow.equivSubtype` as claimed above is not there,
--- perhaps either `subobjectEquiv` or `quotientEquiv` is meant?!
 
 noncomputable section
 
