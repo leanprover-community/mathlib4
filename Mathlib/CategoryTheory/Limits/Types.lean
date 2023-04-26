@@ -8,6 +8,7 @@ Authors: Scott Morrison, Reid Barton
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
+import Mathlib.Data.TypeMax
 import Mathlib.CategoryTheory.Limits.Shapes.Images
 import Mathlib.CategoryTheory.Filtered
 
@@ -25,8 +26,6 @@ and that these agree with the range of a function.
 
 
 open CategoryTheory CategoryTheory.Limits
-
-abbrev TypeMax.{u, v} := Type max u v
 
 universe v u
 
