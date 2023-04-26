@@ -314,9 +314,7 @@ lemma continuous_iff_scottContinuous
       simp at h_1_right
       rw [upperBounds] at hb
       simp at hb
-      have c1: f c ≤ b := by
-        apply hb
-        exact h_1_left
+      have c1: f c ≤ b := hb _ h_1_left
       contradiction
   . intro h
     rw [continuous_def]
