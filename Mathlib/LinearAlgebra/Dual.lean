@@ -132,6 +132,9 @@ instance : Inhabited (Dual R M) := ⟨0⟩
 
 instance : CoeFun (Dual R M) fun _ => M → R := ⟨FunLike.coe⟩
 
+-- porting note: new lemma: `ext` no longer unfolds type synonyms
+@[ext] theorem ext (f g : Dual R M) (h : ∀ x, f x = g x) : f = g := FunLike.ext f g h
+
 /-- Maps a module M to the dual of the dual of M. See `Module.erange_coe` and
 `Module.evalEquiv`. -/
 def eval : M →ₗ[R] Dual R (Dual R M) :=
@@ -297,7 +300,7 @@ def toDual : M →ₗ[R] Module.Dual R M :=
 
 theorem toDual_apply (i j : ι) : b.toDual (b i) (b j) = if i = j then 1 else 0 := by
   erw [constr_basis b, constr_basis b]
-  ac_rfl
+  simp only [eq_comm]
 #align basis.to_dual_apply Basis.toDual_apply
 
 @[simp]
