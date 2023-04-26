@@ -326,11 +326,7 @@ lemma continuous_iff_scottContinuous
     . apply IsUpperSet.preimage (isOpen_isUpperSet hu)
       apply h.monotone
     . intros d a hd₁ hd₂ hd₃ ha
-      have e1: IsLUB (f '' d) (f a) := by
-        apply h
-        apply hd₁
-        apply hd₂
-        apply hd₃
+      have e1: IsLUB (f '' d) (f a) := h hd₁ hd₂ hd₃
       rw [isOpen_iff_upper_and_LUB_mem_implies_inter_nonempty] at hu
       have e2: ((f '' d) ∩ u).Nonempty := by
         apply hu.2
