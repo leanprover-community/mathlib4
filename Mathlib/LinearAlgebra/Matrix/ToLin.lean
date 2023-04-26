@@ -606,8 +606,8 @@ theorem Matrix.toLin_apply (M : Matrix m n R) (v : M₁) :
 @[simp]
 theorem Matrix.toLin_self (M : Matrix m n R) (i : n) :
     Matrix.toLin v₁ v₂ M (v₁ i) = ∑ j, M j i • v₂ j := by
-  rw [Matrix.toLin_apply, Finset.sum_congr rfl fun j hj => _]
-  rw [Basis.repr_self, Matrix.mulVec, dot_product, Finset.sum_eq_single i, Finsupp.single_eq_same,
+  rw [Matrix.toLin_apply, Finset.sum_congr rfl fun j _hj => ?_]
+  rw [Basis.repr_self, Matrix.mulVec, dotProduct, Finset.sum_eq_single i, Finsupp.single_eq_same,
     mul_one]
   · intro i' _ i'_ne
     rw [Finsupp.single_eq_of_ne i'_ne.symm, MulZeroClass.mul_zero]
@@ -633,8 +633,8 @@ theorem Matrix.toLin_one : Matrix.toLin v₁ v₁ 1 = LinearMap.id := by
 
 theorem LinearMap.toMatrix_reindexRange [DecidableEq M₁] [DecidableEq M₂] (f : M₁ →ₗ[R] M₂) (k : m)
     (i : n) :
-    LinearMap.toMatrix v₁.reindexRange v₂.reindexRange f ⟨v₂ k, mem_range_self k⟩
-        ⟨v₁ i, mem_range_self i⟩ =
+    LinearMap.toMatrix v₁.reindexRange v₂.reindexRange f ⟨v₂ k, Set.mem_range_self k⟩
+        ⟨v₁ i, Set.mem_range_self i⟩ =
       LinearMap.toMatrix v₁ v₂ f k i :=
   by simp_rw [LinearMap.toMatrix_apply, Basis.reindexRange_self, Basis.reindexRange_repr]
 #align linear_map.to_matrix_reindex_range LinearMap.toMatrix_reindexRange
@@ -783,7 +783,8 @@ theorem Matrix.toLinAlgEquiv_one : Matrix.toLinAlgEquiv v₁ 1 = LinearMap.id :=
 #align matrix.to_lin_alg_equiv_one Matrix.toLinAlgEquiv_one
 
 theorem LinearMap.toMatrixAlgEquiv_reindexRange [DecidableEq M₁] (f : M₁ →ₗ[R] M₁) (k i : n) :
-    LinearMap.toMatrixAlgEquiv v₁.reindexRange f ⟨v₁ k, mem_range_self k⟩ ⟨v₁ i, mem_range_self i⟩ =
+    LinearMap.toMatrixAlgEquiv v₁.reindexRange f
+        ⟨v₁ k, Set.mem_range_self k⟩ ⟨v₁ i, Set.mem_range_self i⟩ =
       LinearMap.toMatrixAlgEquiv v₁ f k i :=
   by simp_rw [LinearMap.toMatrixAlgEquiv_apply, Basis.reindexRange_self, Basis.reindexRange_repr]
 #align linear_map.to_matrix_alg_equiv_reindex_range LinearMap.toMatrixAlgEquiv_reindexRange
