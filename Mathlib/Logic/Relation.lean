@@ -451,7 +451,6 @@ theorem _root_.acc_transGen_iff : Acc (TransGen r) a ↔ Acc r a :=
 
 theorem _root_.WellFounded.transGen (h : WellFounded r) : WellFounded (TransGen r) :=
   ⟨fun a ↦ (h.apply a).TransGen⟩
-
 #align well_founded.trans_gen WellFounded.transGen
 
 section TransGen

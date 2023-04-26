@@ -100,8 +100,7 @@ attribute [coe] CategoryTheory.PrelaxFunctor.toPrefunctor
 
 instance hasCoeToPrefunctor : Coe (PrelaxFunctor B C) (Prefunctor B C) :=
   ⟨toPrefunctor⟩
-#align category_theory.prelax_functor.has_coe_to_prefunctor
-  CategoryTheory.PrelaxFunctor.hasCoeToPrefunctor
+#align category_theory.prelax_functor.has_coe_to_prefunctor CategoryTheory.PrelaxFunctor.hasCoeToPrefunctor
 
 variable (F : PrelaxFunctor B C)
 

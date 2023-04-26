@@ -195,7 +195,6 @@ instance orderBot [PartialOrder ι] [OrderBot ι] [∀ i, Preorder (α i)] [Orde
     obtain rfl | ha := eq_bot_or_bot_lt a
     · exact Lex.right _ _ bot_le
     · exact Lex.left _ _ ha
-
 #align sigma.lex.order_bot Sigma.Lex.orderBot
 
 /-- The lexicographical linear order on a sigma type. -/
@@ -206,7 +205,6 @@ instance orderTop [PartialOrder ι] [OrderTop ι] [∀ i, Preorder (α i)] [Orde
     obtain rfl | ha := eq_top_or_lt_top a
     · exact Lex.right _ _ le_top
     · exact Lex.left _ _ ha
-
 #align sigma.lex.order_top Sigma.Lex.orderTop
 
 /-- The lexicographical linear order on a sigma type. -/

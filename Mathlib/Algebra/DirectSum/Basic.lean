@@ -213,7 +213,6 @@ theorem toAddMonoid.unique (f : ⨁ i, β i) : ψ f = toAddMonoid (fun i => ψ.c
   -- Porting note: ext applied unsuitable ext lemma
   apply Dfinsupp.addHom_ext'
   simp [toAddMonoid, of]
-
 #align direct_sum.to_add_monoid.unique DirectSum.toAddMonoid.unique
 
 end ToAddMonoid

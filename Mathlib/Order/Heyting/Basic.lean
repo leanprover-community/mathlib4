@@ -937,12 +937,10 @@ theorem compl_compl_himp_distrib (a b : α) : (a ⇨ b)ᶜᶜ = aᶜᶜ ⇨ bᶜ
   refine' le_antisymm _ _
   · rw [le_himp_iff, ← compl_compl_inf_distrib]
     exact compl_anti (compl_anti himp_inf_le)
-
   · refine' le_compl_comm.1 ((compl_anti compl_sup_le_himp).trans _)
     rw [compl_sup_distrib, le_compl_iff_disjoint_right, disjoint_right_comm, ←
       le_compl_iff_disjoint_right]
     exact inf_himp_le
-
 #align compl_compl_himp_distrib compl_compl_himp_distrib
 
 instance : CoheytingAlgebra αᵒᵈ :=
@@ -1121,10 +1119,8 @@ theorem hnot_hnot_sdiff_distrib (a b : α) : ￢￢(a \ b) = ￢￢a \ ￢￢b :
     rw [hnot_inf_distrib, hnot_le_iff_codisjoint_right, codisjoint_left_comm, ←
       hnot_le_iff_codisjoint_right]
     exact le_sdiff_sup
-
   · rw [sdiff_le_iff, ← hnot_hnot_sup_distrib]
     exact hnot_anti (hnot_anti le_sup_sdiff)
-
 #align hnot_hnot_sdiff_distrib hnot_hnot_sdiff_distrib
 
 instance : HeytingAlgebra αᵒᵈ :=

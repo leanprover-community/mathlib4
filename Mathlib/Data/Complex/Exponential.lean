@@ -69,7 +69,6 @@ theorem isCauSeq_of_decreasing_bounded (f : ℕ → α) {a : α} {m : ℕ} (ham 
         rw [← Nat.succ_pred_eq_of_pos (Nat.pos_of_ne_zero hl0), succ_nsmul', sub_add,
           add_sub_cancel]
     _ < f j + ε := add_lt_add_right (hl j (le_trans hi.1 hj)) _
-
 #align is_cau_of_decreasing_bounded isCauSeq_of_decreasing_bounded
 
 theorem isCauSeq_of_mono_bounded (f : ℕ → α) {a : α} {m : ℕ} (ham : ∀ n ≥ m, |f n| ≤ a)
@@ -190,7 +189,6 @@ theorem series_ratio_test {f : ℕ → β} (n : ℕ) (r : α) (hr0 : 0 ≤ r) (h
       le_trans (by rw [mul_comm] <;> exact h _ (Nat.le_of_succ_le kn))
         (mul_le_mul_of_nonneg_right ?_ hr0)
     exact ih _ h _ (by simp) rfl
-
 #align series_ratio_test series_ratio_test
 
 theorem sum_range_diag_flip {α : Type _} [AddCommMonoid α] (n : ℕ) (f : ℕ → ℕ → α) :
@@ -1500,7 +1498,6 @@ theorem add_one_le_exp_of_nonneg {x : ℝ} (hx : 0 ≤ x) : x + 1 ≤ exp x :=
               rw [← ofReal_pow, ← ofReal_nat_cast, ← ofReal_div, ofReal_re]
               exact div_nonneg (pow_nonneg hx _) (Nat.cast_nonneg _)⟩)
     _ = exp x := by rw [exp, Complex.exp, ← cauSeqRe, lim_re]
-
 #align real.add_one_le_exp_of_nonneg Real.add_one_le_exp_of_nonneg
 
 theorem one_le_exp {x : ℝ} (hx : 0 ≤ x) : 1 ≤ exp x := by linarith [add_one_le_exp_of_nonneg hx]
@@ -1668,7 +1665,6 @@ theorem exp_bound {x : ℂ} (hx : abs x ≤ 1) {n : ℕ} (hn : 0 < n) :
       simp [abs_mul, abv_pow abs, abs_div, mul_sum.symm]
     _ ≤ abs x ^ n * (n.succ * (n.factorial * n : ℝ)⁻¹) :=
       mul_le_mul_of_nonneg_left (sum_div_factorial_le _ _ hn) (pow_nonneg (abs.nonneg _) _)
-
 #align complex.exp_bound Complex.exp_bound
 
 theorem exp_bound' {x : ℂ} {n : ℕ} (hx : abs x / n.succ ≤ 1 / 2) :
@@ -1731,7 +1727,6 @@ theorem abs_exp_sub_one_le {x : ℂ} (hx : abs x ≤ 1) : abs (exp x - 1) ≤ 2 
     _ ≤ abs x ^ 1 * ((Nat.succ 1 : ℝ) * ((Nat.factorial 1) * (1 : ℕ) : ℝ)⁻¹) :=
       (exp_bound hx (by decide))
     _ = 2 * abs x := by simp [two_mul, mul_two, mul_add, mul_comm, add_mul]
-
 #align complex.abs_exp_sub_one_le Complex.abs_exp_sub_one_le
 
 theorem abs_exp_sub_one_sub_id_le {x : ℂ} (hx : abs x ≤ 1) : abs (exp x - 1 - x) ≤ abs x ^ 2 :=
@@ -1742,7 +1737,6 @@ theorem abs_exp_sub_one_sub_id_le {x : ℂ} (hx : abs x ≤ 1) : abs (exp x - 1 
       (exp_bound hx (by decide))
     _ ≤ abs x ^ 2 * 1 := (mul_le_mul_of_nonneg_left (by norm_num) (sq_nonneg (abs x)))
     _ = abs x ^ 2 := by rw [mul_one]
-
 #align complex.abs_exp_sub_one_sub_id_le Complex.abs_exp_sub_one_sub_id_le
 
 end Complex
@@ -1961,7 +1955,6 @@ theorem sin_pos_of_pos_of_le_two {x : ℝ} (hx0 : 0 < x) (hx : x ≤ 2) : 0 < si
       mul_pos (mul_pos (by norm_num) (sin_pos_of_pos_of_le_one (half_pos hx0) this))
         (cos_pos_of_le_one (by rwa [_root_.abs_of_nonneg (le_of_lt (half_pos hx0))]))
     _ = sin x := by rw [← sin_two_mul, two_mul, add_halves]
-
 #align real.sin_pos_of_pos_of_le_two Real.sin_pos_of_pos_of_le_two
 
 theorem cos_one_le : cos 1 ≤ 2 / 3 :=
@@ -1969,7 +1962,6 @@ theorem cos_one_le : cos 1 ≤ 2 / 3 :=
     cos 1 ≤ |(1 : ℝ)| ^ 4 * (5 / 96) + (1 - 1 ^ 2 / 2) :=
       sub_le_iff_le_add.1 (abs_sub_le_iff.1 (cos_bound (by simp))).1
     _ ≤ 2 / 3 := by norm_num
-
 #align real.cos_one_le Real.cos_one_le
 
 theorem cos_one_pos : 0 < cos 1 :=

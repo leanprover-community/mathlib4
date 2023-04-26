@@ -564,7 +564,6 @@ private irreducible_def star' : RingQuot r → RingQuot r
 
 theorem star'_quot (hr : ∀ a b, r a b → r (star a) (star b)) {a} :
     (star' r hr ⟨Quot.mk _ a⟩ : RingQuot r) = ⟨Quot.mk _ (star a)⟩ := star'_def _ _ _
-
 #align ring_quot.star'_quot RingQuot.star'_quot
 
 /-- Transfer a star_ring instance through a quotient, if the quotient is invariant to `star` -/
