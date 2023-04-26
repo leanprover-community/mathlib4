@@ -207,17 +207,11 @@ theorem colimitLimitToLimitColimit_surjective :
           F.map ((f, g j ≫ hf f) : (j, k j) ⟶ (j', kf f)) (y j) :=
       fun {j} {j'} f => by
       have q :
-        ((curry.obj F).obj j').map (gf f) (F.map _ (y j')) =
-          ((curry.obj F).obj j').map (hf f) (F.map _ (y j)) :=
+        ((curry.obj F).obj j').map (gf f) (F.map ((𝟙 j', g j') : (j', k j') ⟶ (j', k')) (y j')) =
+          ((curry.obj F).obj j').map (hf f) (F.map ((f, g j) : (j, k j) ⟶ (j', k')) (y j)) :=
         (w f).choose_spec.choose_spec.choose_spec
-      dsimp [curry_obj_obj_obj, curry_obj_obj_map] at q
-      -- porting note: Lean 4 `dsimp` is unfolding `gf` and `hf` :-(
-      -- We fold them back up.
-      -- **TODO** minimise and ask why this is happening
-      change F.map ((𝟙 j', gf f) : (j', k') ⟶ (j', kf f))
-        (F.map ((𝟙 j', g j') : (j', k j') ⟶ (j', k')) (y j')) =
-        F.map ((𝟙 j', hf f) : (j', k') ⟶ (j', kf f)) (F.map ((f, g j) :
-          (j, k j) ⟶ (j', k')) (y j)) at q
+      rw [curry_obj_obj_map, curry_obj_obj_map] at q
+      -- porting note: Lean 4 `dsimp` unfolds `gf` and `hf` in `q` :-(
       simp_rw [← FunctorToTypes.map_comp_apply, CategoryStruct.comp] at q
       convert q <;> simp only [comp_id]
     clear_value kf gf hf
