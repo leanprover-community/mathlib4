@@ -88,7 +88,7 @@ The dual space of an $R$-module $M$ is the $R$-module of $R$-linear maps $M \to 
 
 ## TODO
 
-Erdös-Kaplansky theorem about the dimension of a dual vector space in case of infinite dimension.
+Erdős-Kaplansky theorem about the dimension of a dual vector space in case of infinite dimension.
 -/
 
 
@@ -227,6 +227,7 @@ theorem LinearMap.dualMap_comp_dualMap {M₃ : Type _} [AddCommGroup M₃] [Modu
 /-- If a linear map is surjective, then its dual is injective. -/
 theorem LinearMap.dualMap_injective_of_surjective {f : M₁ →ₗ[R] M₂} (hf : Function.Surjective f) :
     Function.Injective f.dualMap := fun φ ψ h ↦ by
+  unfold Dual
   ext x
   obtain ⟨y, rfl⟩ := hf x
   exact congr_arg (fun g : Module.Dual R M₁ => g y) h
@@ -238,8 +239,8 @@ def LinearEquiv.dualMap (f : M₁ ≃ₗ[R] M₂) : Dual R M₂ ≃ₗ[R] Dual R
     invFun := f.symm.toLinearMap.dualMap
     left_inv := by
       intro φ; ext x
-      simp only [LinearMap.dualMap_apply, LinearEquiv.coe_toLinearMap, LinearMap.toFun_eq_coe,
-        LinearEquiv.apply_symm_apply]
+      simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, LinearMap.dualMap_apply,
+        LinearEquiv.coe_toLinearMap, LinearMap.toFun_eq_coe, LinearEquiv.apply_symm_apply]
     right_inv := by
       intro φ; ext x
       simp only [LinearMap.dualMap_apply, LinearEquiv.coe_toLinearMap, LinearMap.toFun_eq_coe,
@@ -1540,7 +1541,7 @@ theorem dualDistribInvOfBasis_apply (b : Basis ι R M) (c : Basis κ R N) (f : D
 It sends `f ⊗ g` to the composition of `TensorProduct.map f g` with the natural
 isomorphism `R ⊗ R ≃ R`.
 -/
-@[simps]
+@[simps!]
 noncomputable def dualDistribEquivOfBasis (b : Basis ι R M) (c : Basis κ R N) :
     Dual R M ⊗[R] Dual R N ≃ₗ[R] Dual R (M ⊗[R] N) := by
   refine' LinearEquiv.ofLinear (dualDistrib R M N) (dualDistribInvOfBasis b c) _ _
