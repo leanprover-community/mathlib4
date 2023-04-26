@@ -299,9 +299,6 @@ variable [Module 𝕜 E] [Module 𝕜₂ E₂] [Module 𝕜₃ E₃] [Module �
 -- it seems to be needed below!?
 noncomputable instance smul_nnreal_real : SMul ℝ≥0 ℝ := inferInstance
 
--- Porting note: this one doesn't work by `inferInstance`, even though it is just an instance!
-noncomputable instance : SMul ℝ≥0 (Seminorm 𝕜 E) := smul
-
 variable [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ]
 
 -- Porting note:
@@ -395,6 +392,10 @@ theorem bot_eq_zero : (⊥ : Seminorm 𝕜 E) = 0 :=
   rfl
 #align seminorm.bot_eq_zero Seminorm.bot_eq_zero
 
+-- Porting note:
+-- finding the instance `SMul ℝ≥0 (Seminorm 𝕜 E)` is slow,
+-- and needs an increase to `synthInstance.maxHeartbeats`.
+set_option synthInstance.maxHeartbeats 30000 in
 theorem smul_le_smul {p q : Seminorm 𝕜 E} {a b : ℝ≥0} (hpq : p ≤ q) (hab : a ≤ b) :
     a • p ≤ b • q := by
   simp_rw [le_def, coe_smul]
@@ -452,9 +453,14 @@ variable {σ₁₂ : 𝕜 →+* 𝕜₂} [RingHomIsometric σ₁₂]
 variable [AddCommGroup E] [AddCommGroup E₂] [Module 𝕜 E] [Module 𝕜₂ E₂]
 
 -- Porting note: unhappily, turning on `synthInstance.etaExperiment` isn't enough here:
--- we need to elaborate the type using `etaExperiment`, but then can't use it for the proof!
+-- we need to elaborate a fragement of the type using `eta_experiment%`,
+-- but then can't use it for the proof!
+-- Porting note:
+-- finding the instance `SMul ℝ≥0 (Seminorm 𝕜 E)` is slow,
+-- and needs an increase to `synthInstance.maxHeartbeats`.
+set_option synthInstance.maxHeartbeats 30000 in
 theorem comp_smul (p : Seminorm 𝕜₂ E₂) (f : E →ₛₗ[σ₁₂] E₂) (c : 𝕜₂) :
-    eta_experiment% p.comp (c • f) = ‖c‖₊ • p.comp f :=
+    p.comp (eta_experiment% c • f) = ‖c‖₊ • p.comp f :=
   ext fun _ => by
     rw [comp_apply, smul_apply, LinearMap.smul_apply, map_smul_eq_mul, NNReal.smul_def, coe_nnnorm,
       smul_eq_mul, comp_apply]
