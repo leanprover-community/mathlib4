@@ -811,7 +811,8 @@ theorem Matrix.toLinAlgEquiv_mul (A B : Matrix n n R) :
 theorem Matrix.toLin_finTwoProd_apply (a b c d : R) (x : R × R) :
     Matrix.toLin (Basis.finTwoProd R) (Basis.finTwoProd R) !![a, b; c, d] x =
       (a * x.fst + b * x.snd, c * x.fst + d * x.snd) :=
-  by simp [Matrix.toLin_apply, Matrix.mulVec, Matrix.dotProduct]
+  -- porting note: added `(Prod.smul_mk)` which is already a simp lemma
+  by simp [Matrix.toLin_apply, Matrix.mulVec, Matrix.dotProduct, (Prod.smul_mk)]
 #align matrix.to_lin_fin_two_prod_apply Matrix.toLin_finTwoProd_apply
 
 theorem Matrix.toLin_finTwoProd (a b c d : R) :
