@@ -46,6 +46,13 @@ variable {J K : Type v} [SmallCategory J] [SmallCategory K]
 
 variable (F : J × K ⥤ Type v)
 
+-- **TODO** naming? placing?
+/-- `(curry.obj F ⋙ lim).obj S` = `limit ((curry.obj F).obj S)` definitionally, so this
+is just a variant of `limit_ext'`. -/
+@[ext] lemma curry_obj_ggg_lim_obj_ext (x y : (curry.obj F ⋙ lim).obj S) (w : ∀ (j : K),
+    limit.π ((curry.obj F).obj S) j x = limit.π ((curry.obj F).obj S) j y) : x = y :=
+  limit_ext' _ x y w
+
 open CategoryTheory.Prod
 
 variable [IsFiltered K]
@@ -123,10 +130,7 @@ theorem colimitLimitToLimitColimit_injective : Function.Injective (colimitLimitT
     apply colimit_sound'.{v, v} (T kxO) (T kyO)
     -- We can check if two elements of a limit (in `Type`)
     -- are equal by comparing them componentwise.
-    -- porting note: next two lines were `ext` in mathlib3
-    -- **TODO** make it `ext` again
-    apply limit_ext'
-    intro j
+    ext j
     -- Now it's just a calculation using `W` and `w`.
     simp only [Functor.comp_map, Limit.map_π_apply, curry_obj_map_app, swap_map]
     rw [← W _ _ (fH j)]
