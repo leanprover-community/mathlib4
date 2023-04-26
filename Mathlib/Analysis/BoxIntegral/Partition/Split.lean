@@ -68,8 +68,8 @@ theorem coe_splitLower : (splitLower I i x : Set (ι → ℝ)) = ↑I ∩ { y | 
   rw [splitLower, coe_mk']
   ext y
   simp only [mem_univ_pi, mem_Ioc, mem_inter_iff, mem_coe, mem_setOf_eq, forall_and, ← Pi.le_def,
-    le_update_iff, le_min_iff, and_assoc', and_forall_ne i, mem_def]
-  rw [and_comm' (y i ≤ x), Pi.le_def]
+    le_update_iff, le_min_iff, and_assoc, and_forall_ne (p := fun j => y j ≤ upper I j) i, mem_def]
+  rw [and_comm (a := y i ≤ x), Pi.le_def]
 #align box_integral.box.coe_split_lower BoxIntegral.Box.coe_splitLower
 
 theorem splitLower_le : I.splitLower i x ≤ I :=
@@ -229,7 +229,8 @@ theorem restrict_split (h : I ≤ J) (i : ι) (x : ℝ) : (split J i x).restrict
   refine' ((isPartitionSplit J i x).restrict h).eq_of_boxes_subset _
   simp only [Finset.subset_iff, mem_boxes, mem_restrict', exists_prop, mem_split_iff']
   have : ∀ s, (I ∩ s : Set (ι → ℝ)) ⊆ J := fun s => (inter_subset_left _ _).trans h
-  rintro J₁ ⟨J₂, H₂ | H₂, H₁⟩ <;> [left, right] <;> simp [H₁, H₂, inter_left_comm ↑I, this]
+  rintro J₁ ⟨J₂, H₂ | H₂, H₁⟩ <;> [left, right] <;>
+    simp [H₁, H₂, inter_left_comm (I : Set (ι → ℝ)), this]
 #align box_integral.prepartition.restrict_split BoxIntegral.Prepartition.restrict_split
 
 theorem inf_split (π : Prepartition I) (i : ι) (x : ℝ) :
