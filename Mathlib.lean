@@ -331,6 +331,7 @@ import Mathlib.Analysis.Asymptotics.Theta
 import Mathlib.Analysis.BoxIntegral.Box.Basic
 import Mathlib.Analysis.BoxIntegral.Box.SubboxInduction
 import Mathlib.Analysis.BoxIntegral.Partition.Basic
+import Mathlib.Analysis.BoxIntegral.Partition.Split
 import Mathlib.Analysis.Calculus.TangentCone
 import Mathlib.Analysis.Convex.Basic
 import Mathlib.Analysis.Convex.Body
@@ -1927,6 +1928,7 @@ import Mathlib.Topology.Inseparable
 import Mathlib.Topology.Instances.ENNReal
 import Mathlib.Topology.Instances.EReal
 import Mathlib.Topology.Instances.Int
+import Mathlib.Topology.Instances.Matrix
 import Mathlib.Topology.Instances.NNReal
 import Mathlib.Topology.Instances.Nat
 import Mathlib.Topology.Instances.Rat
