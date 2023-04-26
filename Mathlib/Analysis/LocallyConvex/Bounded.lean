@@ -180,7 +180,7 @@ theorem isVonNBounded_of_smul_tendsto_zero {ε : ι → 𝕝} {l : Filter ι} [l
   rcases this.choice with ⟨x, hx⟩
   refine' Filter.frequently_false l (Filter.Eventually.frequently _)
   filter_upwards [hx,
-    (H ((↑) ∘ x) fun n => (x n).2).Eventually (eventually_mem_set.mpr hV)] using fun n => id
+    (H (_ ∘ x) fun n => (x n).2).eventually (eventually_mem_set.mpr hV)] using fun n => id
 #align bornology.is_vonN_bounded_of_smul_tendsto_zero Bornology.isVonNBounded_of_smul_tendsto_zero
 
 /-- Given any sequence `ε` of scalars which tends to `𝓝[≠] 0`, we have that a set `S` is bounded
@@ -191,7 +191,8 @@ theorem isVonNBounded_iff_smul_tendsto_zero {ε : ι → 𝕝} {l : Filter ι} [
     (hε : Tendsto ε l (𝓝[≠] 0)) {S : Set E} :
     IsVonNBounded 𝕝 S ↔ ∀ x : ι → E, (∀ n, x n ∈ S) → Tendsto (ε • x) l (𝓝 0) :=
   ⟨fun hS x hxS => hS.smul_tendsto_zero (eventually_of_forall hxS) (le_trans hε nhdsWithin_le_nhds),
-    isVonNBounded_of_smul_tendsto_zero (hε self_mem_nhdsWithin)⟩
+    -- Porting note: was `isVonNBounded_of_smul_tendsto_zero (hε self_mem_nhdsWithin)`
+    by apply isVonNBounded_of_smul_tendsto_zero; exact hε self_mem_nhdsWithin⟩
 #align bornology.is_vonN_bounded_iff_smul_tendsto_zero Bornology.isVonNBounded_iff_smul_tendsto_zero
 
 end sequence
