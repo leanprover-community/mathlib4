@@ -8,9 +8,9 @@ Authors: Adam Topaz
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Adjunction.Whiskering
-import Mathbin.CategoryTheory.Sites.Sheafification
-import Mathbin.CategoryTheory.Sites.Whiskering
+import Mathlib.CategoryTheory.Adjunction.Whiskering
+import Mathlib.CategoryTheory.Sites.Sheafification
+import Mathlib.CategoryTheory.Sites.Whiskering
 
 /-!
 
@@ -93,13 +93,11 @@ and `F` preserves the correct limits. -/
 def adjunction (adj : G ⊣ F) : composeAndSheafify J G ⊣ sheafCompose J F :=
   Adjunction.mkOfHomEquiv
     { homEquiv := composeEquiv J adj
-      homEquiv_naturality_left_symm := fun X' X Y f g =>
-        by
+      homEquiv_naturality_left_symm := fun X' X Y f g => by
         ext1
         dsimp
         simp
-      homEquiv_naturality_right := fun X Y Y' f g =>
-        by
+      homEquiv_naturality_right := fun X Y Y' f g => by
         ext1
         dsimp
         simp }
@@ -127,8 +125,7 @@ theorem adjunctionToTypes_unit_app_val {G : Type max v u ⥤ D} (adj : G ⊣ for
     (Y : SheafOfTypes J) :
     ((adjunctionToTypes J adj).Unit.app Y).val =
       (adj.whiskerRight _).Unit.app ((sheafOfTypesToPresheaf J).obj Y) ≫
-        whiskerRight (J.toSheafify _) (forget D) :=
-  by
+        whiskerRight (J.toSheafify _) (forget D) := by
   dsimp [adjunction_to_types, adjunction.comp]
   simpa
 #align category_theory.Sheaf.adjunction_to_types_unit_app_val CategoryTheory.Sheaf.adjunctionToTypes_unit_app_val
@@ -137,8 +134,7 @@ theorem adjunctionToTypes_unit_app_val {G : Type max v u ⥤ D} (adj : G ⊣ for
 theorem adjunctionToTypes_counit_app_val {G : Type max v u ⥤ D} (adj : G ⊣ forget D)
     (X : Sheaf J D) :
     ((adjunctionToTypes J adj).counit.app X).val =
-      J.sheafifyLift ((Functor.associator _ _ _).Hom ≫ (adj.whiskerRight _).counit.app _) X.2 :=
-  by
+      J.sheafifyLift ((Functor.associator _ _ _).Hom ≫ (adj.whiskerRight _).counit.app _) X.2 := by
   dsimp [adjunction_to_types, adjunction.comp, adjunction.whisker_right]
   rw [category.id_comp]
   apply J.sheafify_lift_unique
