@@ -184,15 +184,11 @@ protected def cases {P : ∀ ⦃a b : ActionCategory G X⦄, (a ⟶ b) → Sort 
 #align category_theory.action_category.cases CategoryTheory.ActionCategory.cases
 
 -- porting note: added to ease the proof of `uncurry`
-lemma cases' ⦃t u : X⦄ (f : @Quiver.Hom (ActionCategory G X) _ t u) :
-    ∃ (g : G) (hg : t = g⁻¹ • u), f = eqToHom (by rw [hg]) ≫ homOfPair u g := by
-  obtain ⟨g : G, hg⟩ := f
-  dsimp at hg
-  obtain rfl : t = g⁻¹ • u := by rw [← hg, inv_smul_smul]
-  refine' ⟨g, rfl, _⟩
-  dsimp
-  simp only [Category.id_comp]
-  rfl
+lemma cases' ⦃a' b' : ActionCategory G X⦄ (f : a' ⟶ b') :
+    ∃ (a b : X) (g : G) (ha : a' = a) (hb : b' = b)  (hg : a = g⁻¹ • b),
+      f = eqToHom (by rw [ha, hg]) ≫ homOfPair b g ≫ eqToHom (by rw [hb]) := by
+  revert a' b' f
+  exact ActionCategory.cases (fun t g => ⟨g⁻¹ • t, t, g, rfl, rfl, rfl, by simp⟩)
 
 variable {H : Type _} [Group H]
 
@@ -217,8 +213,7 @@ def curry (F : ActionCategory G X ⥤ SingleObj H) : G →* (X → H) ⋊[mulAut
       congr
       ext b
       exact F_map_eq.symm.trans (F.map_comp (homOfPair (g⁻¹ • b) h) (homOfPair b g))
-      rfl
-       }
+      rfl }
 #align category_theory.action_category.curry CategoryTheory.ActionCategory.curry
 
 /-- Given `G` acting on `X`, a group homomorphism `φ : G →* (X → H) ⋊ G` can be uncurried to
@@ -232,23 +227,16 @@ def uncurry (F : G →* (X → H) ⋊[mulAutArrow] G) (sane : ∀ g, (F g).right
     dsimp
     rw [F.map_one]
     rfl
-  map_comp {x y z} f g := by
-    -- porting note: I was not able to use `ActionCategory.cases` here
+  map_comp f g := by
+    -- porting note: I was not able to use `ActionCategory.cases` here,
+    -- but `ActionCategory.cases'` seems as good; the original proof was:
     -- intro x y z f g; revert y z g
     -- refine' action_category.cases _
     -- simp [single_obj.comp_as_mul, sane]
-    obtain ⟨b, hb, hg⟩ := ActionCategory.cases' g
-    obtain ⟨a, ha, hf⟩ := ActionCategory.cases' f
-    obtain ⟨⟨⟩, x⟩ := x
-    obtain ⟨⟨⟩, y⟩ := y
-    obtain ⟨⟨⟩, z⟩ := z
-    dsimp at ha hb hf hg
-    obtain rfl := ha
-    obtain rfl := hb
-    simp only [eqToHom_refl, Category.id_comp] at hf hg
-    obtain rfl := hf
-    obtain rfl := hg
-    simp [SingleObj.comp_as_mul, sane]
+    obtain ⟨_, z, γ₁, rfl, rfl, rfl, rfl⟩ := ActionCategory.cases' g
+    obtain ⟨_, y, γ₂, rfl, hy, rfl, rfl⟩ := ActionCategory.cases' f
+    obtain rfl : y = γ₁⁻¹ • z := congr_arg Sigma.snd hy.symm
+    simp [sane]
     rfl
 #align category_theory.action_category.uncurry CategoryTheory.ActionCategory.uncurry
 
