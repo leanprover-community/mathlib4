@@ -329,6 +329,8 @@ def preservesRightHomologyOf_of_rightHomologyData_isPreservedBy (h : S.RightHomo
 
 section
 
+-- this should be moved out of the `Functor` namespace
+
 variable (φ : S₁ ⟶ S₂) (h₁ : S₁.LeftHomologyData) (h₂ : S₂.LeftHomologyData)
   [h₁.IsPreservedBy F] [h₂.IsPreservedBy F]
 
@@ -362,6 +364,14 @@ lemma map_rightHomologyMap' : F.map (ShortComplex.rightHomologyMap' φ h₁ h₂
     ShortComplex.RightHomologyMapData.map_φH]
 
 end
+
+lemma map_homologyMap' (φ : S₁ ⟶ S₂) (h₁ : S₁.HomologyData) (h₂ : S₂.HomologyData)
+    [h₁.left.IsPreservedBy F] [h₁.right.IsPreservedBy F]
+    [h₂.left.IsPreservedBy F] [h₂.right.IsPreservedBy F] :
+    F.map (ShortComplex.homologyMap' φ h₁ h₂) =
+      ShortComplex.homologyMap' (F.mapShortComplex.map φ) (h₁.map F) (h₂.map F) :=
+  map_leftHomologyMap' _ _ _ _
+
 
 end Functor
 
@@ -447,7 +457,9 @@ lemma RightHomologyData.mapHomologyIso'_eq [S.HasHomology]
     [(S.map F).HasHomology] [F.PreservesRightHomologyOf S] :
     S.mapHomologyIso' F = (hr.map F).homologyIso ≪≫ F.mapIso hr.homologyIso.symm := by
   ext
-  sorry
+  dsimp only [Iso.trans, Iso.symm, Iso.refl, Functor.mapIso, mapHomologyIso', homologyIso,
+    rightHomologyIso, rightHomologyMapIso', ShortComplex.rightHomologyIso]
+  simp only [assoc, F.map_comp, Functor.map_rightHomologyMap', ← rightHomologyMap'_comp_assoc]
 
 @[reassoc]
 lemma mapCyclesIso_hom_naturality [S₁.HasLeftHomology] [S₂.HasLeftHomology]
@@ -546,7 +558,12 @@ lemma mapHomologyIso'_hom_naturality [S₁.HasHomology] [S₂.HasHomology]
     [F.PreservesRightHomologyOf S₁] [F.PreservesRightHomologyOf S₂] :
     @homologyMap _ _ _ (S₁.map F) (S₂.map F) (F.mapShortComplex.map φ) _ _ ≫
       (S₂.mapHomologyIso' F).hom = (S₁.mapHomologyIso' F).hom ≫ F.map (homologyMap φ) := by
-  sorry
+  dsimp only [Iso.trans, Iso.symm, Functor.mapIso, mapHomologyIso']
+  simp only [← RightHomologyData.rightHomologyIso_hom_naturality_assoc _
+    ((homologyData S₁).right.map F) ((homologyData S₂).right.map F), assoc,
+    ← Functor.map_rightHomologyMap', ← F.map_comp,
+    RightHomologyData.rightHomologyIso_inv_naturality _
+      (homologyData S₁).right (homologyData S₂).right]
 
 @[reassoc]
 lemma mapHomologyIso'_inv_naturality [S₁.HasHomology] [S₂.HasHomology]
@@ -579,6 +596,48 @@ lemma mapHomologyIso'_eq_mapHomologyIso [S.HasHomology] [F.PreservesLeftHomology
   simp only [← reassoc_of% eq, ← F.map_comp, Iso.hom_inv_id, F.map_id, comp_id]
 
 end ShortComplex
+
+namespace Functor
+-- this should be moved out of the `Functor` namespace
+
+variable [HasZeroMorphisms C] [HasZeroMorphisms D] (F : C ⥤ D) [F.PreservesZeroMorphisms]
+
+noncomputable def cyclesFunctorIso
+    [CategoryWithLeftHomology C] [CategoryWithLeftHomology D] [F.PreservesHomology] :
+    F.mapShortComplex ⋙ ShortComplex.cyclesFunctor D ≅
+      ShortComplex.cyclesFunctor C ⋙ F :=
+  NatIso.ofComponents (fun S => S.mapCyclesIso F)
+    (fun f => ShortComplex.mapCyclesIso_hom_naturality f F)
+
+noncomputable def leftHomologyFunctorIso
+    [CategoryWithLeftHomology C] [CategoryWithLeftHomology D] [F.PreservesHomology] :
+    F.mapShortComplex ⋙ ShortComplex.leftHomologyFunctor D ≅
+      ShortComplex.leftHomologyFunctor C ⋙ F :=
+  NatIso.ofComponents (fun S => S.mapLeftHomologyIso F)
+    (fun f => ShortComplex.mapLeftHomologyIso_hom_naturality f F)
+
+noncomputable def cyclesCoFunctorIso
+    [CategoryWithRightHomology C] [CategoryWithRightHomology D] [F.PreservesHomology] :
+    F.mapShortComplex ⋙ ShortComplex.cyclesCoFunctor D ≅
+      ShortComplex.cyclesCoFunctor C ⋙ F :=
+  NatIso.ofComponents (fun S => S.mapCyclesCoIso F)
+    (fun f => ShortComplex.mapCyclesCoIso_hom_naturality f F)
+
+noncomputable def rightHomologyFunctorIso
+    [CategoryWithRightHomology C] [CategoryWithRightHomology D] [F.PreservesHomology] :
+    F.mapShortComplex ⋙ ShortComplex.rightHomologyFunctor D ≅
+      ShortComplex.rightHomologyFunctor C ⋙ F :=
+  NatIso.ofComponents (fun S => S.mapRightHomologyIso F)
+    (fun f => ShortComplex.mapRightHomologyIso_hom_naturality f F)
+
+noncomputable def homologyFunctorIso
+    [CategoryWithHomology C] [CategoryWithHomology D] [F.PreservesHomology] :
+    F.mapShortComplex ⋙ ShortComplex.homologyFunctor D ≅
+      ShortComplex.homologyFunctor C ⋙ F :=
+  NatIso.ofComponents (fun S => S.mapHomologyIso F)
+    (fun f => ShortComplex.mapHomologyIso_hom_naturality f F)
+
+end Functor
 
 end CategoryTheory
 
@@ -669,14 +728,6 @@ end short_complex
 
 open limits short_complex
 
-
-lemma map_homology_map' (F : C ⥤ D) (φ : S₁ ⟶ S₂)
-  (h₁ : S₁.homology_data) (h₂ : S₂.homology_data)
-  [F.preserves_zero_morphisms] [h₁.left.is_preserved_by F] [h₁.right.is_preserved_by F]
-  [h₂.left.is_preserved_by F] [h₂.right.is_preserved_by F] :
-  F.map (homology_map' φ h₁ h₂) =
-    homology_map' (F.map_short_complex.map φ) (h₁.map F) (h₂.map F) :=
-map_left_homology_map' _ _ _ _
 
 
 @[simps]
