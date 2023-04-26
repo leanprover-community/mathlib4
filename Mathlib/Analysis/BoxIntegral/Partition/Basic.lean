@@ -14,26 +14,26 @@ import Mathlib.Analysis.BoxIntegral.Box.Basic
 /-!
 # Partitions of rectangular boxes in `ℝⁿ`
 
-In this file we define (pre)partitions of rectangular boxes in `ℝⁿ`.  A partition of a box `I` in
-`ℝⁿ` (see `box_integral.prepartition` and `box_integral.prepartition.is_partition`) is a finite set
-of pairwise disjoint boxes such that their union is exactly `I`. We use `boxes : finset (box ι)` to
+In this file we define (pre)partitions of rectangular boxes in `ℝⁿ`. A partition of a box `I` in
+`ℝⁿ` (see `BoxIntegral.Prepartition` and `BoxIntegral.Prepartition.IsPartition`) is a finite set
+of pairwise disjoint boxes such that their union is exactly `I`. We use `boxes : Finset (Box ι)` to
 store the set of boxes.
 
 Many lemmas about box integrals deal with pairwise disjoint collections of subboxes, so we define a
-structure `box_integral.prepartition (I : box_integral.box ι)` that stores a collection of boxes
+structure `BoxIntegral.Prepartition (I : BoxIntegral.Box ι)` that stores a collection of boxes
 such that
 
 * each box `J ∈ boxes` is a subbox of `I`;
 * the boxes are pairwise disjoint as sets in `ℝⁿ`.
 
-Then we define a predicate `box_integral.prepartition.is_partition`; `π.is_partition` means that the
+Then we define a predicate `BoxIntegral.Prepartition.IsPartition`; `π.IsPartition` means that the
 boxes of `π` actually cover the whole `I`. We also define some operations on prepartitions:
 
-* `box_integral.partition.bunionᵢ`: split each box of a partition into smaller boxes;
-* `box_integral.partition.restrict`: restrict a partition to a smaller box.
+* `BoxIntegral.Prepartition.bunionᵢ`: split each box of a partition into smaller boxes;
+* `BoxIntegral.Prepartition.restrict`: restrict a partition to a smaller box.
 
-We also define a `semilattice_inf` structure on `box_integral.partition I` for all
-`I : box_integral.box ι`.
+We also define a `SemilatticeInf` structure on `BoxIntegral.Prepartition I` for all
+`I : BoxIntegral.Box ι`.
 
 ## Tags
 
@@ -51,7 +51,7 @@ namespace BoxIntegral
 
 variable {ι : Type _}
 
-/-- A prepartition of `I : box_integral.box ι` is a finite set of pairwise disjoint subboxes of
+/-- A prepartition of `I : BoxIntegral.Box ι` is a finite set of pairwise disjoint subboxes of
 `I`. -/
 structure Prepartition (I : Box ι) where
   boxes : Finset (Box ι)
@@ -184,7 +184,7 @@ theorem bot_boxes : (⊥ : Prepartition I).boxes = ∅ :=
 #align box_integral.prepartition.bot_boxes BoxIntegral.Prepartition.bot_boxes
 
 /-- An auxiliary lemma used to prove that the same point can't belong to more than
-`2 ^ fintype.card ι` closed boxes of a prepartition. -/
+`2 ^ Fintype.card ι` closed boxes of a prepartition. -/
 theorem injOn_setOf_mem_Icc_setOf_lower_eq (x : ι → ℝ) :
     InjOn (fun J : Box ι => { i | J.lower i = x i }) { J | J ∈ π ∧ x ∈ Box.Icc J } := by
   rintro J₁ ⟨h₁, hx₁⟩ J₂ ⟨h₂, hx₂⟩ (H : { i | J₁.lower i = x i } = { i | J₂.lower i = x i })
@@ -204,7 +204,7 @@ theorem injOn_setOf_mem_Icc_setOf_lower_eq (x : ι → ℝ) :
 #align box_integral.prepartition.inj_on_set_of_mem_Icc_set_of_lower_eq BoxIntegral.Prepartition.injOn_setOf_mem_Icc_setOf_lower_eq
 
 /-- The set of boxes of a prepartition that contain `x` in their closures has cardinality
-at most `2 ^ fintype.card ι`. -/
+at most `2 ^ Fintype.card ι`. -/
 theorem card_filter_mem_Icc_le [Fintype ι] (x : ι → ℝ) :
     (π.boxes.filter fun J : Box ι => x ∈ Box.Icc J).card ≤ 2 ^ Fintype.card ι := by
   rw [← Fintype.card_set]
@@ -214,7 +214,7 @@ theorem card_filter_mem_Icc_le [Fintype ι] (x : ι → ℝ) :
   simpa only [Finset.mem_filter] using π.injOn_setOf_mem_Icc_setOf_lower_eq x
 #align box_integral.prepartition.card_filter_mem_Icc_le BoxIntegral.Prepartition.card_filter_mem_Icc_le
 
-/-- Given a prepartition `π : box_integral.prepartition I`, `π.unionᵢ` is the part of `I` covered by
+/-- Given a prepartition `π : BoxIntegral.Prepartition I`, `π.unionᵢ` is the part of `I` covered by
 the boxes of `π`. -/
 protected def unionᵢ : Set (ι → ℝ) :=
   ⋃ J ∈ π, ↑J
@@ -388,7 +388,7 @@ theorem le_bunionᵢIndex (hJ : J ∈ π.bunionᵢ πi) : J ≤ π.bunionᵢInde
   le_of_mem _ (π.mem_bunionᵢIndex hJ)
 #align box_integral.prepartition.le_bUnion_index BoxIntegral.Prepartition.le_bunionᵢIndex
 
-/-- Uniqueness property of `box_integral.partition.bunionᵢIndex`. -/
+/-- Uniqueness property of `BoxIntegral.Prepartition.bunionᵢIndex`. -/
 theorem bunionᵢIndex_of_mem (hJ : J ∈ π) {J'} (hJ' : J' ∈ πi J) : π.bunionᵢIndex πi J' = J :=
   have : J' ∈ π.bunionᵢ πi := π.mem_bunionᵢ.2 ⟨J, hJ, hJ'⟩
   π.eq_of_le_of_le (π.bunionᵢIndex_mem this) hJ (π.le_bunionᵢIndex this) (le_of_mem _ hJ')
@@ -408,7 +408,7 @@ theorem bunionᵢ_assoc (πi : ∀ J, Prepartition J) (πi' : Box ι → ∀ J :
     rwa [π.bunionᵢIndex_of_mem hJ₂ hJ₁] at hJ
 #align box_integral.prepartition.bUnion_assoc BoxIntegral.Prepartition.bunionᵢ_assoc
 
-/-- Create a `box_integral.prepartition` from a collection of possibly empty boxes by filtering out
+/-- Create a `BoxIntegral.Prepartition` from a collection of possibly empty boxes by filtering out
 the empty one if it exists. -/
 def ofWithBot (boxes : Finset (WithBot (Box ι)))
     (le_of_mem : ∀ J ∈ boxes, (J : WithBot (Box ι)) ≤ I)
@@ -752,8 +752,8 @@ theorem unionᵢ_subset (h : π.IsPartition) (π₁ : Prepartition I) : π₁.un
   h.unionᵢ_eq.symm ▸ π₁.unionᵢ_subset
 #align box_integral.prepartition.is_partition.Union_subset BoxIntegral.Prepartition.IsPartition.unionᵢ_subset
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:635:2: warning: expanding binder collection (J «expr ∈ » π) -/
-protected theorem existsUnique (h : π.IsPartition) (hx : x ∈ I) : ∃! (J : _)(_ : J ∈ π), x ∈ J := by
+protected theorem existsUnique (h : π.IsPartition) (hx : x ∈ I) :
+    ∃! (J : _) (_ : J ∈ π), x ∈ J := by
   rcases h x hx with ⟨J, h, hx⟩
   exact ExistsUnique.intro₂ J h hx fun J' h' hx' => π.eq_of_mem_of_mem h' h hx' hx
 #align box_integral.prepartition.is_partition.exists_unique BoxIntegral.Prepartition.IsPartition.existsUnique
