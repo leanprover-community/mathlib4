@@ -8,11 +8,11 @@ Authors: David Wärn
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Elements
-import Mathbin.CategoryTheory.IsConnected
-import Mathbin.CategoryTheory.SingleObj
-import Mathbin.GroupTheory.GroupAction.Quotient
-import Mathbin.GroupTheory.SemidirectProduct
+import Mathlib.CategoryTheory.Elements
+import Mathlib.CategoryTheory.IsConnected
+import Mathlib.CategoryTheory.SingleObj
+import Mathlib.GroupTheory.GroupAction.Quotient
+import Mathlib.GroupTheory.SemidirectProduct
 
 /-!
 # Actions as functors and as categories
@@ -37,8 +37,7 @@ variable (M : Type _) [Monoid M] (X : Type u) [MulAction M X]
 /-- A multiplicative action M ↻ X viewed as a functor mapping the single object of M to X
   and an element `m : M` to the map `X → X` given by multiplication by `m`. -/
 @[simps]
-def actionAsFunctor : SingleObj M ⥤ Type u
-    where
+def actionAsFunctor : SingleObj M ⥤ Type u where
   obj _ := X
   map _ _ := (· • ·)
   map_id' _ := funext <| MulAction.one_smul
@@ -171,8 +170,7 @@ theorem homOfPair.val (t : X) (g : G) : (homOfPair t g).val = g :=
 
 /-- Any morphism in the action groupoid is given by some pair. -/
 protected def cases {P : ∀ ⦃a b : ActionCategory G X⦄, (a ⟶ b) → Sort _}
-    (hyp : ∀ t g, P (homOfPair t g)) ⦃a b⦄ (f : a ⟶ b) : P f :=
-  by
+    (hyp : ∀ t g, P (homOfPair t g)) ⦃a b⦄ (f : a ⟶ b) : P f := by
   refine' cast _ (hyp b.back f.val)
   rcases a with ⟨⟨⟩, a : X⟩
   rcases b with ⟨⟨⟩, b : X⟩
