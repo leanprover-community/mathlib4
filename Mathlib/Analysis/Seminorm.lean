@@ -171,18 +171,10 @@ instance [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] [SMul R' �
     [IsScalarTower R' ℝ≥0 ℝ] [SMul R R'] [IsScalarTower R R' ℝ] : IsScalarTower R R' (Seminorm 𝕜 E)
     where smul_assoc r a p := ext fun x => smul_assoc r a (p x)
 
-<<<<<<< HEAD
 theorem coe_smul [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] (r : R) (p : Seminorm 𝕜 E) :
     ⇑(r • p) = r • ⇑p :=
   rfl
 #align seminorm.coe_smul Seminorm.coe_smul
-=======
--- Porting note: now a syntactic tautology
--- theorem coe_smul [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] (r : R) (p : Seminorm 𝕜 E) :
---     ⇑(r • p) = r • p :=
---   rfl
-#noalign seminorm.coe_smul
->>>>>>> f84d6d2cd4eb91138db5652f9d46df3aa0a51e11
 
 @[simp]
 theorem smul_apply [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] (r : R) (p : Seminorm 𝕜 E)
