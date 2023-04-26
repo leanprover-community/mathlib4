@@ -969,24 +969,23 @@ variable {M M₁ M₂ : Type _} [AddCommGroup M] [Module R M]
 
 variable [AddCommGroup M₁] [Module R M₁] [AddCommGroup M₂] [Module R M₂]
 
+set_option synthInstance.etaExperiment true in
 /-- The natural equivalence between linear endomorphisms of finite free modules and square matrices
 is compatible with the algebra structures. -/
 def algEquivMatrix' [Fintype n] : Module.End R (n → R) ≃ₐ[R] Matrix n n R :=
   { LinearMap.toMatrix' with
     map_mul' := LinearMap.toMatrix'_comp
     map_add' := LinearMap.toMatrix'.map_add
-    commutes' := fun r => by
-      change (r • (LinearMap.id : Module.End R _)).toMatrix' = r • 1
-      rw [← LinearMap.toMatrix'_id]
-      rfl
-      infer_instance }
+    -- porting note: golfed away messy failing proof
+    commutes' := LinearMap.toMatrix'_algebraMap }
 #align alg_equiv_matrix' algEquivMatrix'
 
+set_option synthInstance.etaExperiment true in
 /-- A linear equivalence of two modules induces an equivalence of algebras of their
 endomorphisms. -/
 def LinearEquiv.algConj (e : M₁ ≃ₗ[R] M₂) : Module.End R M₁ ≃ₐ[R] Module.End R M₂ :=
   { e.conj with
-    map_mul' := fun f g => by apply e.arrow_congr_comp
+    map_mul' := fun f g => by apply e.arrowCongr_comp
     map_add' := e.conj.map_add
     commutes' := fun r => by
       change e.conj (r • LinearMap.id) = r • LinearMap.id
