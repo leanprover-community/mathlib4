@@ -205,14 +205,14 @@ theorem injOn_setOf_mem_Icc_setOf_lower_eq (x : ι → ℝ) :
 
 /-- The set of boxes of a prepartition that contain `x` in their closures has cardinality
 at most `2 ^ fintype.card ι`. -/
-theorem card_filter_mem_icc_le [Fintype ι] (x : ι → ℝ) :
+theorem card_filter_mem_Icc_le [Fintype ι] (x : ι → ℝ) :
     (π.boxes.filter fun J : Box ι => x ∈ Box.Icc J).card ≤ 2 ^ Fintype.card ι := by
   rw [← Fintype.card_set]
   refine'
     Finset.card_le_card_of_inj_on (fun J : Box ι => { i | J.lower i = x i })
       (fun _ _ => Finset.mem_univ _) _
   simpa only [Finset.mem_filter] using π.injOn_setOf_mem_Icc_setOf_lower_eq x
-#align box_integral.prepartition.card_filter_mem_Icc_le BoxIntegral.Prepartition.card_filter_mem_icc_le
+#align box_integral.prepartition.card_filter_mem_Icc_le BoxIntegral.Prepartition.card_filter_mem_Icc_le
 
 /-- Given a prepartition `π : box_integral.prepartition I`, `π.unionᵢ` is the part of `I` covered by
 the boxes of `π`. -/
