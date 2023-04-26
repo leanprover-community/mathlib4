@@ -55,7 +55,7 @@ def applyMono (t : Expr) (m : MonoExt) : MetaM (Expr × List MVarId) := do
   trace[Tactic.mono] "Applied {m.name} to {t}"
   let goals := goals.toList
   let (lemmas, ctx) ← mkAssumptionSet false false [/-(←`(term|le_refl))-/] [] #[]
-  let cfg : SolveByElim.Config := { failAtMaxDepth := false, discharge := fun _ => pure none }
+  let cfg : SolveByElim.Config := { discharge := fun _ => pure none }
   let goals ←
     try
     -- attempt to prove as many goals as possible
