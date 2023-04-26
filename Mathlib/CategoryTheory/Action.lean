@@ -39,17 +39,21 @@ variable (M : Type _) [Monoid M] (X : Type u) [MulAction M X]
 @[simps]
 def actionAsFunctor : SingleObj M ⥤ Type u where
   obj _ := X
-  map _ _ := (· • ·)
-  map_id' _ := funext <| MulAction.one_smul
-  map_comp' _ _ _ f g := funext fun x => (smul_smul g f x).symm
+  map := (· • ·)
+  map_id _ := funext <| MulAction.one_smul
+  map_comp f g := funext fun x => (smul_smul g f x).symm
 #align category_theory.action_as_functor CategoryTheory.actionAsFunctor
 
 /-- A multiplicative action M ↻ X induces a category strucure on X, where a morphism
  from x to y is a scalar taking x to y. Due to implementation details, the object type
  of this category is not equal to X, but is in bijection with X. -/
 def ActionCategory :=
-  (actionAsFunctor M X).Elements deriving Category
+  (actionAsFunctor M X).Elements
 #align category_theory.action_category CategoryTheory.ActionCategory
+
+instance : Category (ActionCategory M X) := by
+  dsimp only [ActionCategory]
+  infer_instance
 
 namespace ActionCategory
 
@@ -66,12 +70,12 @@ theorem π_map (p q : ActionCategory M X) (f : p ⟶ q) : (π M X).map f = f.val
 
 @[simp]
 theorem π_obj (p : ActionCategory M X) : (π M X).obj p = SingleObj.star M :=
-  Unit.ext
+  Unit.ext _ _
 #align category_theory.action_category.π_obj CategoryTheory.ActionCategory.π_obj
 
 variable {M X}
 
-/-- The canonical map `action_category M X → X`. It is given by `λ x, x.snd`, but
+/-- The canonical map `ActionCategory M X → X`. It is given by `λ x, x.snd`, but
   has a more explicit type. -/
 protected def back : ActionCategory M X → X := fun x => x.snd
 #align category_theory.action_category.back CategoryTheory.ActionCategory.back
@@ -80,19 +84,19 @@ instance : CoeTC X (ActionCategory M X) :=
   ⟨fun x => ⟨(), x⟩⟩
 
 @[simp]
-theorem coe_back (x : X) : (↑x : ActionCategory M X).back = x :=
+theorem coe_back (x : X) : ActionCategory.back (x : ActionCategory M X) = x :=
   rfl
 #align category_theory.action_category.coe_back CategoryTheory.ActionCategory.coe_back
 
 @[simp]
-theorem back_coe (x : ActionCategory M X) : ↑x.back = x := by ext <;> rfl
+theorem back_coe (x : ActionCategory M X) : ↑x.back = x := by cases x ; rfl
 #align category_theory.action_category.back_coe CategoryTheory.ActionCategory.back_coe
 
 variable (M X)
 
 /-- An object of the action category given by M ↻ X corresponds to an element of X. -/
 def objEquiv : X ≃ ActionCategory M X where
-  toFun := coe
+  toFun x := x
   invFun x := x.back
   left_inv := coe_back
   right_inv := back_coe
@@ -112,7 +116,7 @@ variable {X} (x : X)
 
 /-- The stabilizer of a point is isomorphic to the endomorphism monoid at the
   corresponding point. In fact they are definitionally equivalent. -/
-def stabilizerIsoEnd : Stabilizer.submonoid M x ≃* End (↑x : ActionCategory M X) :=
+def stabilizerIsoEnd : Stabilizer.submonoid M x ≃* @End (ActionCategory M X) _ x :=
   MulEquiv.refl _
 #align category_theory.action_category.stabilizer_iso_End CategoryTheory.ActionCategory.stabilizerIsoEnd
 
@@ -127,7 +131,7 @@ theorem stabilizerIsoEnd_symm_apply (f : End _) : (stabilizerIsoEnd M x).invFun 
   rfl
 #align category_theory.action_category.stabilizer_iso_End_symm_apply CategoryTheory.ActionCategory.stabilizerIsoEnd_symm_apply
 
-variable {M X}
+variable {M}
 
 @[simp]
 protected theorem id_val (x : ActionCategory M X) : Subtype.val (𝟙 x) = 1 :=
@@ -159,7 +163,7 @@ def endMulEquivSubgroup (H : Subgroup G) : End (objEquiv G (G ⧸ H) ↑(1 : G))
 #align category_theory.action_category.End_mul_equiv_subgroup CategoryTheory.ActionCategory.endMulEquivSubgroup
 
 /-- A target vertex `t` and a scalar `g` determine a morphism in the action groupoid. -/
-def homOfPair (t : X) (g : G) : ↑(g⁻¹ • t) ⟶ (t : ActionCategory G X) :=
+def homOfPair (t : X) (g : G) : @Quiver.Hom (ActionCategory G X) _ (g⁻¹ • t) t :=
   Subtype.mk g (smul_inv_smul g t)
 #align category_theory.action_category.hom_of_pair CategoryTheory.ActionCategory.homOfPair
 
@@ -179,23 +183,42 @@ protected def cases {P : ∀ ⦃a b : ActionCategory G X⦄, (a ⟶ b) → Sort 
   rfl
 #align category_theory.action_category.cases CategoryTheory.ActionCategory.cases
 
+-- porting note: added to ease the proof of `uncurry`
+lemma cases' ⦃t u : X⦄ (f : @Quiver.Hom (ActionCategory G X) _ t u) :
+    ∃ (g : G) (hg : t = g⁻¹ • u), f = eqToHom (by rw [hg]) ≫ homOfPair u g := by
+  obtain ⟨g : G, hg⟩ := f
+  dsimp at hg
+  obtain rfl : t = g⁻¹ • u := by rw [← hg, inv_smul_smul]
+  refine' ⟨g, rfl, _⟩
+  dsimp
+  simp only [Category.id_comp]
+  rfl
+
 variable {H : Type _} [Group H]
 
 /-- Given `G` acting on `X`, a functor from the corresponding action groupoid to a group `H`
     can be curried to a group homomorphism `G →* (X → H) ⋊ G`. -/
 @[simps]
 def curry (F : ActionCategory G X ⥤ SingleObj H) : G →* (X → H) ⋊[mulAutArrow] G :=
-  have F_map_eq : ∀ {a b} {f : a ⟶ b}, F.map f = (F.map (homOfPair b.back f.val) : H) :=
-    ActionCategory.cases fun _ _ => rfl
+  have F_map_eq : ∀ {a b} {f : a ⟶ b}, F.map f = (F.map (homOfPair b.back f.val) : H) := by
+    apply ActionCategory.cases
+    intros
+    rfl
   { toFun := fun g => ⟨fun b => F.map (homOfPair b g), g⟩
     map_one' := by
       congr
-      funext
+      dsimp
+      ext1
+      ext b
       exact F_map_eq.symm.trans (F.map_id b)
+      rfl
     map_mul' := by
       intro g h
-      congr ; funext
-      exact F_map_eq.symm.trans (F.map_comp (hom_of_pair (g⁻¹ • b) h) (hom_of_pair b g)) }
+      congr
+      ext b
+      exact F_map_eq.symm.trans (F.map_comp (homOfPair (g⁻¹ • b) h) (homOfPair b g))
+      rfl
+       }
 #align category_theory.action_category.curry CategoryTheory.ActionCategory.curry
 
 /-- Given `G` acting on `X`, a group homomorphism `φ : G →* (X → H) ⋊ G` can be uncurried to
@@ -204,15 +227,29 @@ def curry (F : ActionCategory G X ⥤ SingleObj H) : G →* (X → H) ⋊[mulAut
 def uncurry (F : G →* (X → H) ⋊[mulAutArrow] G) (sane : ∀ g, (F g).right = g) :
     ActionCategory G X ⥤ SingleObj H where
   obj _ := ()
-  map a b f := (F f.val).left b.back
-  map_id' := by
-    intro x
-    rw [action_category.id_val, F.map_one]
+  map {_ b} f := (F f.val).left b.back
+  map_id x := by
+    dsimp
+    rw [F.map_one]
     rfl
-  map_comp' := by
-    intro x y z f g; revert y z g
-    refine' action_category.cases _
-    simp [single_obj.comp_as_mul, sane]
+  map_comp {x y z} f g := by
+    -- porting note: I was not able to use `ActionCategory.cases` here
+    -- intro x y z f g; revert y z g
+    -- refine' action_category.cases _
+    -- simp [single_obj.comp_as_mul, sane]
+    obtain ⟨b, hb, hg⟩ := ActionCategory.cases' g
+    obtain ⟨a, ha, hf⟩ := ActionCategory.cases' f
+    obtain ⟨⟨⟩, x⟩ := x
+    obtain ⟨⟨⟩, y⟩ := y
+    obtain ⟨⟨⟩, z⟩ := z
+    dsimp at ha hb hf hg
+    obtain rfl := ha
+    obtain rfl := hb
+    simp only [eqToHom_refl, Category.id_comp] at hf hg
+    obtain rfl := hf
+    obtain rfl := hg
+    simp [SingleObj.comp_as_mul, sane]
+    rfl
 #align category_theory.action_category.uncurry CategoryTheory.ActionCategory.uncurry
 
 end Group
@@ -220,4 +257,3 @@ end Group
 end ActionCategory
 
 end CategoryTheory
-
