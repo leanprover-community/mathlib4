@@ -602,33 +602,36 @@ namespace Functor
 
 variable [HasZeroMorphisms C] [HasZeroMorphisms D] (F : C ⥤ D) [F.PreservesZeroMorphisms]
 
-noncomputable def cyclesFunctorIso
-    [CategoryWithLeftHomology C] [CategoryWithLeftHomology D] [F.PreservesHomology] :
+section
+
+variable [HasKernels C] [HasCokernels C]
+  [HasKernels D] [HasCokernels D]
+
+noncomputable def cyclesFunctorIso [F.PreservesHomology] :
     F.mapShortComplex ⋙ ShortComplex.cyclesFunctor D ≅
       ShortComplex.cyclesFunctor C ⋙ F :=
   NatIso.ofComponents (fun S => S.mapCyclesIso F)
     (fun f => ShortComplex.mapCyclesIso_hom_naturality f F)
 
-noncomputable def leftHomologyFunctorIso
-    [CategoryWithLeftHomology C] [CategoryWithLeftHomology D] [F.PreservesHomology] :
+noncomputable def leftHomologyFunctorIso [F.PreservesHomology] :
     F.mapShortComplex ⋙ ShortComplex.leftHomologyFunctor D ≅
       ShortComplex.leftHomologyFunctor C ⋙ F :=
   NatIso.ofComponents (fun S => S.mapLeftHomologyIso F)
     (fun f => ShortComplex.mapLeftHomologyIso_hom_naturality f F)
 
-noncomputable def cyclesCoFunctorIso
-    [CategoryWithRightHomology C] [CategoryWithRightHomology D] [F.PreservesHomology] :
+noncomputable def cyclesCoFunctorIso [F.PreservesHomology] :
     F.mapShortComplex ⋙ ShortComplex.cyclesCoFunctor D ≅
       ShortComplex.cyclesCoFunctor C ⋙ F :=
   NatIso.ofComponents (fun S => S.mapCyclesCoIso F)
     (fun f => ShortComplex.mapCyclesCoIso_hom_naturality f F)
 
-noncomputable def rightHomologyFunctorIso
-    [CategoryWithRightHomology C] [CategoryWithRightHomology D] [F.PreservesHomology] :
+noncomputable def rightHomologyFunctorIso [F.PreservesHomology] :
     F.mapShortComplex ⋙ ShortComplex.rightHomologyFunctor D ≅
       ShortComplex.rightHomologyFunctor C ⋙ F :=
   NatIso.ofComponents (fun S => S.mapRightHomologyIso F)
     (fun f => ShortComplex.mapRightHomologyIso_hom_naturality f F)
+
+end
 
 noncomputable def homologyFunctorIso
     [CategoryWithHomology C] [CategoryWithHomology D] [F.PreservesHomology] :

@@ -825,45 +825,43 @@ lemma cyclesMap_comm [S₁.HasLeftHomology] [S₂.HasLeftHomology] :
 
 end LeftHomologyMapData
 
-variable (C)
+section
 
-/-- We shall say that a category with left homology is a category for which
-all short complexes have left homology. -/
-abbrev _root_.CategoryTheory.CategoryWithLeftHomology : Prop :=
-  ∀ (S : ShortComplex C), S.HasLeftHomology
+variable (C)
+variable [HasKernels C] [HasCokernels C]
 
 @[simps]
-noncomputable def leftHomologyFunctor [CategoryWithLeftHomology C] :
+noncomputable def leftHomologyFunctor :
     ShortComplex C ⥤ C where
   obj S := S.leftHomology
   map := leftHomologyMap
 
 @[simps]
-noncomputable def cyclesFunctor [CategoryWithLeftHomology C] :
+noncomputable def cyclesFunctor :
     ShortComplex C ⥤ C where
   obj S := S.cycles
   map := cyclesMap
 
 @[simps]
-noncomputable def leftHomologyπNatTrans [CategoryWithLeftHomology C] :
+noncomputable def leftHomologyπNatTrans :
     cyclesFunctor C ⟶ leftHomologyFunctor C where
   app S := leftHomologyπ S
   naturality := fun _ _ φ => (leftHomologyπ_naturality φ).symm
 
 @[simps]
-noncomputable def iCyclesNatTrans [CategoryWithLeftHomology C] :
+noncomputable def iCyclesNatTrans :
     cyclesFunctor C ⟶ ShortComplex.π₂ where
   app S := S.iCycles
 
 @[simps]
-noncomputable def toCyclesNatTrans [CategoryWithLeftHomology C] :
+noncomputable def toCyclesNatTrans :
     π₁ ⟶ cyclesFunctor C where
   app S := S.toCycles
   naturality := fun _ _  φ => (toCycles_naturality φ).symm
 
-namespace LeftHomologyData
+end
 
-variable {C}
+namespace LeftHomologyData
 
 @[simps]
 noncomputable def ofEpiOfIsIsoOfMono (φ : S₁ ⟶ S₂) (h : LeftHomologyData S₁)
@@ -931,8 +929,6 @@ noncomputable def ofIso (e : S₁ ≅ S₂) (h₁ : LeftHomologyData S₁) : Lef
   h₁.ofEpiOfIsIsoOfMono e.hom
 
 end LeftHomologyData
-
-variable {C}
 
 lemma hasLeftHomology_of_epi_of_isIso_of_mono (φ : S₁ ⟶ S₂) [HasLeftHomology S₁]
     [Epi φ.τ₁] [IsIso φ.τ₂] [Mono φ.τ₃] : HasLeftHomology S₂ :=

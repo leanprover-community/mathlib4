@@ -170,10 +170,10 @@ lemma cyclesMap_sub : cyclesMap (φ - φ') = cyclesMap φ - cyclesMap φ' :=
 
 end
 
-instance leftHomologyFunctor_additive [CategoryWithLeftHomology C] :
+instance leftHomologyFunctor_additive [HasKernels C] [HasCokernels C] :
   (leftHomologyFunctor C).Additive where
 
-instance cyclesFunctor_additive [CategoryWithLeftHomology C] :
+instance cyclesFunctor_additive [HasKernels C] [HasCokernels C] :
   (cyclesFunctor C).Additive where
 
 end LeftHomology
@@ -274,10 +274,10 @@ lemma cyclesCoMap_sub : cyclesCoMap (φ - φ') = cyclesCoMap φ - cyclesCoMap φ
 
 end
 
-instance rightHomologyFunctor_additive [CategoryWithRightHomology C] :
+instance rightHomologyFunctor_additive [HasKernels C] [HasCokernels C] :
   (rightHomologyFunctor C).Additive where
 
-instance cyclesCoFunctor_additive [CategoryWithRightHomology C] :
+instance cyclesCoFunctor_additive [HasKernels C] [HasCokernels C] :
   (cyclesCoFunctor C).Additive where
 
 end RightHomology

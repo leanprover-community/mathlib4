@@ -678,43 +678,41 @@ lemma cyclesCoMap_comm [S₁.HasRightHomology] [S₂.HasRightHomology] :
 
 end RightHomologyMapData
 
-variable (C)
+section
 
-/-- We shall say that a category with right homology is a category for which
-all short complexes have right homology. -/
-abbrev _root_.CategoryTheory.CategoryWithRightHomology : Prop :=
-  ∀ (S : ShortComplex C), S.HasRightHomology
+variable (C)
+variable [HasKernels C] [HasCokernels C]
 
 @[simps]
-noncomputable def rightHomologyFunctor [CategoryWithRightHomology C] :
+noncomputable def rightHomologyFunctor :
     ShortComplex C ⥤ C where
   obj S := S.rightHomology
   map := rightHomologyMap
 
 @[simps]
-noncomputable def cyclesCoFunctor [CategoryWithRightHomology C] :
+noncomputable def cyclesCoFunctor :
     ShortComplex C ⥤ C where
   obj S := S.cyclesCo
   map := cyclesCoMap
 
 @[simps]
-noncomputable def rightHomologyιNatTrans [CategoryWithRightHomology C] :
+noncomputable def rightHomologyιNatTrans :
     rightHomologyFunctor C ⟶ cyclesCoFunctor C where
   app S := rightHomologyι S
   naturality := fun _ _ φ => rightHomologyι_naturality φ
 
 @[simps]
-noncomputable def pCyclesCoNatTrans [CategoryWithRightHomology C] :
+noncomputable def pCyclesCoNatTrans :
     ShortComplex.π₂ ⟶ cyclesCoFunctor C where
   app S := S.pCyclesCo
 
 @[simps]
-noncomputable def fromCyclesCoNatTrans [CategoryWithRightHomology C] :
+noncomputable def fromCyclesCoNatTrans :
     cyclesCoFunctor C ⟶ π₃ where
   app S := S.fromCyclesCo
   naturality := fun _ _  φ => fromCyclesCo_naturality φ
 
-variable {C}
+end
 
 @[simps]
 def LeftHomologyMapData.op {S₁ S₂ : ShortComplex C} {φ : S₁ ⟶ S₂}
@@ -874,14 +872,6 @@ lemma hasRightHomology_of_iso {S₁ S₂ : ShortComplex C}
     (e : S₁ ≅ S₂) [HasRightHomology S₁] : HasRightHomology S₂ :=
   hasRightHomology_of_epi_of_isIso_of_mono e.hom
 
-instance _root_.CategoryTheory.CategoryWithRightHomology.op
-    [CategoryWithRightHomology C] : CategoryWithLeftHomology Cᵒᵖ :=
-  fun S => ShortComplex.hasLeftHomology_of_iso S.unopOp
-
-instance _root_.CategoryTheory.CategoryWithLeftHomology.op
-    [CategoryWithLeftHomology C] : CategoryWithRightHomology Cᵒᵖ :=
-  fun S => ShortComplex.hasRightHomology_of_iso S.unopOp
-
 namespace RightHomologyMapData
 
 @[simps]
@@ -921,15 +911,20 @@ instance (φ : S₁ ⟶ S₂) [S₁.HasRightHomology] [S₂.HasRightHomology]
 
 variable (C)
 
+section
+
+variable [HasKernels C] [HasCokernels C] [HasKernels Cᵒᵖ] [HasCokernels Cᵒᵖ]
 @[simps!]
-noncomputable def rightHomologyFunctorOpNatIso [CategoryWithRightHomology C] :
+noncomputable def rightHomologyFunctorOpNatIso :
   (rightHomologyFunctor C).op ≅ opFunctor C ⋙ leftHomologyFunctor Cᵒᵖ :=
     NatIso.ofComponents (fun S => (leftHomologyOpIso S.unop).symm) (by simp)
 
 @[simps!]
-noncomputable def leftHomologyFunctorOpNatIso [CategoryWithLeftHomology C] :
+noncomputable def leftHomologyFunctorOpNatIso :
   (leftHomologyFunctor C).op ≅ opFunctor C ⋙ rightHomologyFunctor Cᵒᵖ :=
     NatIso.ofComponents (fun S => (rightHomologyOpIso S.unop).symm) (by simp)
+
+end
 
 section
 
