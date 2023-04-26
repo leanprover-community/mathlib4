@@ -536,21 +536,11 @@ def lim : (J ⥤ C) ⥤ C where
     apply Limits.limit.hom_ext; intro j
     erw [assoc, IsLimit.fac, IsLimit.fac, ← assoc, IsLimit.fac, assoc]; rfl
 #align category_theory.limits.lim CategoryTheory.Limits.lim
+#align category_theory.limits.lim_map_eq_lim_map CategoryTheory.Limits.lim_map
 
 end
 
 variable {G : J ⥤ C} (α : F ⟶ G)
-
--- We generate this manually since `simps` gives it a weird name.
--- @[simp]
--- theorem limMap_eq_limMap : lim.map α = limMap α :=
---   rfl
--- #align category_theory.limits.lim_map_eq_lim_map CategoryTheory.Limits.limMap_eq_limMap
-
--- porting note: not entirely sure why the previous lemma is commented out. Aligning the
--- "weird name"
-#align category_theory.limits.lim_map_eq_lim_map CategoryTheory.Limits.lim_map
-
 
 theorem limit.map_pre [HasLimitsOfShape K C] (E : K ⥤ J) :
     lim.map α ≫ limit.pre G E = limit.pre F E ≫ lim.map (whiskerLeft E α) := by

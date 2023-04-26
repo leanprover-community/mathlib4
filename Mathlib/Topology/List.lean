@@ -112,7 +112,6 @@ theorem tendsto_nhds {β : Type _} {f : List α → β} {r : List α → Filter 
   | [] => by rwa [nhds_nil]
   | a::l => by
     rw [tendsto_cons_iff];  exact h_cons l a (@tendsto_nhds _ _ _ h_nil h_cons l)
-
 #align list.tendsto_nhds List.tendsto_nhds
 
 theorem continuousAt_length : ∀ l : List α, ContinuousAt List.length l := by

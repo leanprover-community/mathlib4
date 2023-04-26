@@ -650,8 +650,7 @@ instance toLinearOrderedCancelAddCommMonoid {M} [LinearOrderedCancelAddCommMonoi
     (S : Submodule R M) : LinearOrderedCancelAddCommMonoid S :=
   Subtype.coe_injective.linearOrderedCancelAddCommMonoid Subtype.val rfl (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
-#align submodule.to_linear_ordered_cancel_add_comm_monoid
-  Submodule.toLinearOrderedCancelAddCommMonoid
+#align submodule.to_linear_ordered_cancel_add_comm_monoid Submodule.toLinearOrderedCancelAddCommMonoid
 
 end OrderedMonoid
 
