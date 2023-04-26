@@ -849,6 +849,7 @@ variable {m : Type _} [Fintype m] [DecidableEq m]
 set_option synthInstance.etaExperiment true in
 theorem toMatrix_lmul' (x : S) (i j) :
     LinearMap.toMatrix b b (lmul R S x) i j = b.repr (x * b j) i := by
+  have : SMulCommClass R S S := by infer_instance  -- porting note: added
   simp only [LinearMap.toMatrix_apply', coe_lmul_eq_mul, LinearMap.mul_apply']
 #align algebra.to_matrix_lmul' Algebra.toMatrix_lmul'
 
