@@ -317,18 +317,20 @@ theorem vonNBornology_eq : Bornology.vonNBornology 𝕜 E = PseudoMetricSpace.to
   exact isVonNBounded_iff 𝕜 E s
 #align normed_space.vonN_bornology_eq NormedSpace.vonNBornology_eq
 
+set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 theorem isBounded_iff_subset_smul_ball {s : Set E} :
     Bornology.IsBounded s ↔ ∃ a : 𝕜, s ⊆ a • Metric.ball (0 : E) 1 := by
   rw [← isVonNBounded_iff 𝕜]
   constructor
   · intro h
-    rcases h (Metric.ball_mem_nhds 0 zero_lt_one) with ⟨ρ, hρ, hρball⟩
+    rcases h (Metric.ball_mem_nhds 0 zero_lt_one) with ⟨ρ, _, hρball⟩
     rcases NormedField.exists_lt_norm 𝕜 ρ with ⟨a, ha⟩
     exact ⟨a, hρball a ha.le⟩
   · rintro ⟨a, ha⟩
-    exact ((isVonNBounded_ball 𝕜 E 1).image (a • 1 : E →L[𝕜] E)).subset ha
+    exact ((isVonNBounded_ball 𝕜 E 1).image (a • (1 : E →L[𝕜] E))).subset ha
 #align normed_space.is_bounded_iff_subset_smul_ball NormedSpace.isBounded_iff_subset_smul_ball
 
+set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 theorem isBounded_iff_subset_smul_closedBall {s : Set E} :
     Bornology.IsBounded s ↔ ∃ a : 𝕜, s ⊆ a • Metric.closedBall (0 : E) 1 := by
   constructor
@@ -336,7 +338,7 @@ theorem isBounded_iff_subset_smul_closedBall {s : Set E} :
     exact Exists.imp fun a ha => ha.trans <| Set.smul_set_mono <| Metric.ball_subset_closedBall
   · rw [← isVonNBounded_iff 𝕜]
     rintro ⟨a, ha⟩
-    exact ((isVonNBounded_closedBall 𝕜 E 1).image (a • 1 : E →L[𝕜] E)).subset ha
+    exact ((isVonNBounded_closedBall 𝕜 E 1).image (a • (1 : E →L[𝕜] E))).subset ha
 #align normed_space.is_bounded_iff_subset_smul_closed_ball NormedSpace.isBounded_iff_subset_smul_closedBall
 
 end NormedSpace
