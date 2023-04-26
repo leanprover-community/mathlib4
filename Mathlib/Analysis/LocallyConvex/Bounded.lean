@@ -155,10 +155,10 @@ theorem IsVonNBounded.smul_tendsto_zero {S : Set E} {ε : ι → 𝕜} {x : ι �
   intro V hV
   rcases hS hV with ⟨r, r_pos, hrS⟩
   filter_upwards [hxS, hε _ (Metric.ball_mem_nhds 0 <| inv_pos.mpr r_pos)] with n hnS hnr
-  by_cases this : ε n = 0
-  · simp [this, mem_of_mem_nhds hV]
-  · rw [mem_preimage, mem_ball_zero_iff, lt_inv (norm_pos_iff.mpr this) r_pos, ← norm_inv] at hnr
-    rw [mem_preimage, Pi.smul_apply', ← Set.mem_inv_smul_set_iff₀ this]
+  by_cases dis : ε n = 0
+  · simp [dis, mem_of_mem_nhds hV]
+  · rw [mem_preimage, mem_ball_zero_iff, lt_inv (norm_pos_iff.mpr dis) r_pos, ← norm_inv] at hnr
+    rw [mem_preimage, Pi.smul_apply', ← Set.mem_inv_smul_set_iff₀ dis]
     exact hrS _ hnr.le hnS
 #align bornology.is_vonN_bounded.smul_tendsto_zero Bornology.IsVonNBounded.smul_tendsto_zero
 
