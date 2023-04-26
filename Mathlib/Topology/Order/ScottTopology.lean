@@ -281,16 +281,11 @@ lemma continuous_monotone {f : α → β}
   intros a b hab
   let u := (Iic (f b))ᶜ
   by_contra h
-  have u2 : a ∈ (f⁻¹'  u) := h
   have s1 : IsOpen u
   { rw [isOpen_compl_iff, ← closure_singleton]
     exact isClosed_closure }
-  have u3 : b ∈ (f⁻¹'  u) := by
-    apply isUpperSet_iff_forall_le.mp
-    apply isOpen_isUpperSet
-    apply IsOpen.preimage hf s1
-    exact hab
-    exact u2
+  have u3 : b ∈ (f⁻¹'  u) :=
+    isUpperSet_iff_forall_le.mp (isOpen_isUpperSet (IsOpen.preimage hf s1)) hab h
   have c1 : f b ∈ (Iic (f b))ᶜ := by
     simp only [mem_compl_iff, mem_preimage, mem_Iic, le_refl, not_true] at u3
   simp only [mem_compl_iff, mem_Iic, le_refl, not_true] at c1
