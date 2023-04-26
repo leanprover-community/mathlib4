@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ellen Arlt, Blair Shi, Sean Leather, Mario Carneiro, Johan Commelin
 
 ! This file was ported from Lean 3 source module data.matrix.block
-! leanprover-community/mathlib commit 3e068ece210655b7b9a9477c3aff38a492400aa1
+! leanprover-community/mathlib commit eba5bb3155cab51d80af00e8d7d69fa271b1302b
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -31,9 +31,14 @@ variable {l m n o p q : Type _} {m' n' p' : o → Type _}
 
 variable {R : Type _} {S : Type _} {α : Type _} {β : Type _}
 
-open Matrix
+open BigOperators Matrix
 
 namespace Matrix
+
+theorem dotProduct_block [Fintype m] [Fintype n] [Mul α] [AddCommMonoid α] (v w : Sum m n → α) :
+    v ⬝ᵥ w = v ∘ Sum.inl ⬝ᵥ w ∘ Sum.inl + v ∘ Sum.inr ⬝ᵥ w ∘ Sum.inr :=
+  Fintype.sum_sum_type _
+#align matrix.dot_product_block Matrix.dotProduct_block
 
 section BlockMatrices
 
@@ -93,35 +98,35 @@ def toBlocks₂₂ (M : Matrix (Sum n o) (Sum l m) α) : Matrix o m α :=
   of fun i j => M (Sum.inr i) (Sum.inr j)
 #align matrix.to_blocks₂₂ Matrix.toBlocks₂₂
 
-theorem fromBlocks_to_blocks (M : Matrix (Sum n o) (Sum l m) α) :
+theorem fromBlocks_toBlocks (M : Matrix (Sum n o) (Sum l m) α) :
     fromBlocks M.toBlocks₁₁ M.toBlocks₁₂ M.toBlocks₂₁ M.toBlocks₂₂ = M := by
   ext i j
   rcases i with ⟨⟩ <;> rcases j with ⟨⟩ <;> rfl
-#align matrix.from_blocks_to_blocks Matrix.fromBlocks_to_blocks
+#align matrix.from_blocks_to_blocks Matrix.fromBlocks_toBlocks
 
 @[simp]
-theorem to_blocks_from_blocks₁₁ (A : Matrix n l α) (B : Matrix n m α) (C : Matrix o l α)
+theorem toBlocks_fromBlocks₁₁ (A : Matrix n l α) (B : Matrix n m α) (C : Matrix o l α)
     (D : Matrix o m α) : (fromBlocks A B C D).toBlocks₁₁ = A :=
   rfl
-#align matrix.to_blocks_from_blocks₁₁ Matrix.to_blocks_from_blocks₁₁
+#align matrix.to_blocks_from_blocks₁₁ Matrix.toBlocks_fromBlocks₁₁
 
 @[simp]
-theorem to_blocks_from_blocks₁₂ (A : Matrix n l α) (B : Matrix n m α) (C : Matrix o l α)
+theorem toBlocks_fromBlocks₁₂ (A : Matrix n l α) (B : Matrix n m α) (C : Matrix o l α)
     (D : Matrix o m α) : (fromBlocks A B C D).toBlocks₁₂ = B :=
   rfl
-#align matrix.to_blocks_from_blocks₁₂ Matrix.to_blocks_from_blocks₁₂
+#align matrix.to_blocks_from_blocks₁₂ Matrix.toBlocks_fromBlocks₁₂
 
 @[simp]
-theorem to_blocks_from_blocks₂₁ (A : Matrix n l α) (B : Matrix n m α) (C : Matrix o l α)
+theorem toBlocks_fromBlocks₂₁ (A : Matrix n l α) (B : Matrix n m α) (C : Matrix o l α)
     (D : Matrix o m α) : (fromBlocks A B C D).toBlocks₂₁ = C :=
   rfl
-#align matrix.to_blocks_from_blocks₂₁ Matrix.to_blocks_from_blocks₂₁
+#align matrix.to_blocks_from_blocks₂₁ Matrix.toBlocks_fromBlocks₂₁
 
 @[simp]
-theorem to_blocks_from_blocks₂₂ (A : Matrix n l α) (B : Matrix n m α) (C : Matrix o l α)
+theorem toBlocks_fromBlocks₂₂ (A : Matrix n l α) (B : Matrix n m α) (C : Matrix o l α)
     (D : Matrix o m α) : (fromBlocks A B C D).toBlocks₂₂ = D :=
   rfl
-#align matrix.to_blocks_from_blocks₂₂ Matrix.to_blocks_from_blocks₂₂
+#align matrix.to_blocks_from_blocks₂₂ Matrix.toBlocks_fromBlocks₂₂
 
 theorem fromBlocks_map (A : Matrix n l α) (B : Matrix n m α) (C : Matrix o l α) (D : Matrix o m α)
     (f : α → β) : (fromBlocks A B C D).map f = fromBlocks (A.map f) (B.map f) (C.map f) (D.map f) :=
@@ -430,7 +435,7 @@ theorem blockDiagonal_sub [AddGroup α] (M N : o → Matrix m n α) :
 theorem blockDiagonal_mul [Fintype n] [Fintype o] [NonUnitalNonAssocSemiring α]
     (M : o → Matrix m n α) (N : o → Matrix n p α) :
     (blockDiagonal fun k => M k ⬝ N k) = blockDiagonal M ⬝ blockDiagonal N := by
-  ext (⟨i, k⟩⟨j, k'⟩)
+  ext (⟨i, k⟩ ⟨j, k'⟩)
   simp only [blockDiagonal_apply, mul_apply, ← Finset.univ_product_univ, Finset.sum_product]
   split_ifs with h <;> simp [h]
 #align matrix.block_diagonal_mul Matrix.blockDiagonal_mul
@@ -443,8 +448,7 @@ variable (α m o)
 @[simps]
 def blockDiagonalRingHom [DecidableEq m] [Fintype o] [Fintype m] [NonAssocSemiring α] :
     (o → Matrix m m α) →+* Matrix (m × o) (m × o) α :=
-  {
-    blockDiagonalAddMonoidHom m m o α with
+  { blockDiagonalAddMonoidHom m m o α with
     toFun := blockDiagonal
     map_one' := blockDiagonal_one
     map_mul' := blockDiagonal_mul }
@@ -477,7 +481,7 @@ def blockDiag (M : Matrix (m × o) (n × o) α) (k : o) : Matrix m n α :=
   of fun i j => M (i, k) (j, k)
 #align matrix.block_diag Matrix.blockDiag
 
--- TODO: set as an equation lemma for `block_diag`, see mathlib4#3024
+-- TODO: set as an equation lemma for `blockDiag`, see mathlib4#3024
 theorem blockDiag_apply (M : Matrix (m × o) (n × o) α) (k : o) (i j) :
     blockDiag M k i j = M (i, k) (j, k) :=
   rfl
@@ -580,7 +584,7 @@ section Zero
 
 variable [Zero α] [Zero β]
 
-/-- `Matrix.blockDiagonal' M` turns `M : Π i, matrix (m i) (n i) α` into a
+/-- `Matrix.blockDiagonal' M` turns `M : Π i, Matrix (m i) (n i) α` into a
 `Σ i, m i`-by-`Σ i, n i` block matrix which has the entries of `M` along the diagonal
 and zero elsewhere.
 
@@ -735,8 +739,7 @@ variable (α m')
 @[simps]
 def blockDiagonal'RingHom [∀ i, DecidableEq (m' i)] [Fintype o] [∀ i, Fintype (m' i)]
     [NonAssocSemiring α] : (∀ i, Matrix (m' i) (m' i) α) →+* Matrix (Σi, m' i) (Σi, m' i) α :=
-  { blockDiagonal'AddMonoidHom m' m'
-      α with
+  { blockDiagonal'AddMonoidHom m' m' α with
     toFun := blockDiagonal'
     map_one' := blockDiagonal'_one
     map_mul' := blockDiagonal'_mul }
@@ -886,7 +889,7 @@ theorem toBlock_mul_eq_add {m n k : Type _} [Fintype n] (p : m → Prop) (q : n 
   classical
     ext (i k)
     simp only [toBlock_apply, mul_apply, Pi.add_apply]
-    convert(Fintype.sum_subtype_add_sum_subtype q fun x => A (↑i) x * B x ↑k).symm
+    exact (Fintype.sum_subtype_add_sum_subtype q fun x => A (↑i) x * B x ↑k).symm
 #align matrix.to_block_mul_eq_add Matrix.toBlock_mul_eq_add
 
 end

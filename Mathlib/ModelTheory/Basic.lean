@@ -283,7 +283,6 @@ theorem card_mk₂ (c f₁ f₂ : Type u) (r₁ r₂ : Type v) :
       Cardinal.lift.{v} (#c) + Cardinal.lift.{v} (#f₁) + Cardinal.lift.{v} (#f₂) +
           Cardinal.lift.{u} (#r₁) + Cardinal.lift.{u} (#r₂) := by
   simp [card_eq_card_functions_add_card_relations, add_assoc]
-
 #align first_order.language.card_mk₂ FirstOrder.Language.card_mk₂
 
 variable (L) (M : Type w)

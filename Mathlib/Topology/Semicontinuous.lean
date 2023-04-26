@@ -437,7 +437,6 @@ theorem LowerSemicontinuousWithinAt.add' {f g : α → γ} (hf : LowerSemicontin
       calc
         y < f x + min (g z) (g x) := h this
         _ ≤ f z + g z := add_le_add (hx₁ (f z)) (min_le_left _ _)
-
     · simp only [not_exists, not_lt] at hx₁ hx₂
       apply Filter.eventually_of_forall
       intro z
@@ -445,7 +444,6 @@ theorem LowerSemicontinuousWithinAt.add' {f g : α → γ} (hf : LowerSemicontin
       calc
         y < f x + g x := h this
         _ ≤ f z + g z := add_le_add (hx₁ (f z)) (hx₂ (g z))
-
 #align lower_semicontinuous_within_at.add' LowerSemicontinuousWithinAt.add'
 
 /-- The sum of two lower semicontinuous functions is lower semicontinuous. Formulated with an
