@@ -221,9 +221,7 @@ a ∈ u → (d ∩ u).Nonempty) := by
       use b
       constructor
       . exact e1_h_w
-      . have e2 : Ici b ⊆ u := isUpperSet_iff_Ici_subset.mp h.1 e1_h_h
-        apply Subset.trans _ e2
-        apply inter_subset_left
+      . exact Subset.trans (inter_subset_left (Ici b) d) (isUpperSet_iff_Ici_subset.mp h.1 e1_h_h)
 
 lemma isClosed_eq_lower_and_subset_implies_LUB_mem (s : Set α) : IsClosed s
   = (IsLowerSet s ∧
