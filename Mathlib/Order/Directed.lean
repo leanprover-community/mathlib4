@@ -67,7 +67,7 @@ theorem directedOn_range {f : ι → α} : Directed r f ↔ DirectedOn r (Set.ra
   simp_rw [Directed, DirectedOn, Set.forall_range_iff, Set.exists_range_iff]
 #align directed_on_range directedOn_range
 
--- porting note: This lemma was misplaced in mathlib
+-- porting note: This alias was misplaced in `order/compactly_generated.lean` in mathlib3
 alias directedOn_range ↔ Directed.directedOn_range _
 #align directed.directed_on_range Directed.directedOn_range
 
