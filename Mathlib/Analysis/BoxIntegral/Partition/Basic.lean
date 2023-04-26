@@ -67,13 +67,11 @@ instance : Membership (Box ι) (Prepartition I) :=
   ⟨fun J π => J ∈ π.boxes⟩
 
 @[simp]
-theorem mem_boxes : J ∈ π.boxes ↔ J ∈ π :=
-  Iff.rfl
+theorem mem_boxes : J ∈ π.boxes ↔ J ∈ π := Iff.rfl
 #align box_integral.prepartition.mem_boxes BoxIntegral.Prepartition.mem_boxes
 
 @[simp]
-theorem mem_mk {s h₁ h₂} : J ∈ (mk s h₁ h₂ : Prepartition I) ↔ J ∈ s :=
-  Iff.rfl
+theorem mem_mk {s h₁ h₂} : J ∈ (mk s h₁ h₂ : Prepartition I) ↔ J ∈ s := Iff.rfl
 #align box_integral.prepartition.mem_mk BoxIntegral.Prepartition.mem_mk
 
 theorem disjoint_coe_of_mem (h₁ : J₁ ∈ π) (h₂ : J₂ ∈ π) (h : J₁ ≠ J₂) :
@@ -156,11 +154,9 @@ instance : OrderBot (Prepartition I) where
     fun _ hJ => (Set.not_mem_empty _ <| Finset.coe_empty ▸ hJ).elim⟩
   bot_le _ _ hJ := (Finset.not_mem_empty _ hJ).elim
 
-instance : Inhabited (Prepartition I) :=
-  ⟨⊤⟩
+instance : Inhabited (Prepartition I) := ⟨⊤⟩
 
-theorem le_def : π₁ ≤ π₂ ↔ ∀ J ∈ π₁, ∃ J' ∈ π₂, J ≤ J' :=
-  Iff.rfl
+theorem le_def : π₁ ≤ π₂ ↔ ∀ J ∈ π₁, ∃ J' ∈ π₂, J ≤ J' := Iff.rfl
 #align box_integral.prepartition.le_def BoxIntegral.Prepartition.le_def
 
 @[simp]
@@ -169,8 +165,7 @@ theorem mem_top : J ∈ (⊤ : Prepartition I) ↔ J = I :=
 #align box_integral.prepartition.mem_top BoxIntegral.Prepartition.mem_top
 
 @[simp]
-theorem top_boxes : (⊤ : Prepartition I).boxes = {I} :=
-  rfl
+theorem top_boxes : (⊤ : Prepartition I).boxes = {I} := rfl
 #align box_integral.prepartition.top_boxes BoxIntegral.Prepartition.top_boxes
 
 @[simp]
@@ -179,8 +174,7 @@ theorem not_mem_bot : J ∉ (⊥ : Prepartition I) :=
 #align box_integral.prepartition.not_mem_bot BoxIntegral.Prepartition.not_mem_bot
 
 @[simp]
-theorem bot_boxes : (⊥ : Prepartition I).boxes = ∅ :=
-  rfl
+theorem bot_boxes : (⊥ : Prepartition I).boxes = ∅ := rfl
 #align box_integral.prepartition.bot_boxes BoxIntegral.Prepartition.bot_boxes
 
 /-- An auxiliary lemma used to prove that the same point can't belong to more than
@@ -208,9 +202,8 @@ at most `2 ^ Fintype.card ι`. -/
 theorem card_filter_mem_Icc_le [Fintype ι] (x : ι → ℝ) :
     (π.boxes.filter fun J : Box ι => x ∈ Box.Icc J).card ≤ 2 ^ Fintype.card ι := by
   rw [← Fintype.card_set]
-  refine'
-    Finset.card_le_card_of_inj_on (fun J : Box ι => { i | J.lower i = x i })
-      (fun _ _ => Finset.mem_univ _) _
+  refine' Finset.card_le_card_of_inj_on (fun J : Box ι => { i | J.lower i = x i })
+    (fun _ _ => Finset.mem_univ _) _
   simpa only [Finset.mem_filter] using π.injOn_setOf_mem_Icc_setOf_lower_eq x
 #align box_integral.prepartition.card_filter_mem_Icc_le BoxIntegral.Prepartition.card_filter_mem_Icc_le
 
@@ -220,12 +213,10 @@ protected def unionᵢ : Set (ι → ℝ) :=
   ⋃ J ∈ π, ↑J
 #align box_integral.prepartition.Union BoxIntegral.Prepartition.unionᵢ
 
-theorem unionᵢ_def : π.unionᵢ = ⋃ J ∈ π, ↑J :=
-  rfl
+theorem unionᵢ_def : π.unionᵢ = ⋃ J ∈ π, ↑J := rfl
 #align box_integral.prepartition.Union_def BoxIntegral.Prepartition.unionᵢ_def
 
-theorem unionᵢ_def' : π.unionᵢ = ⋃ J ∈ π.boxes, ↑J :=
-  rfl
+theorem unionᵢ_def' : π.unionᵢ = ⋃ J ∈ π.boxes, ↑J := rfl
 #align box_integral.prepartition.Union_def' BoxIntegral.Prepartition.unionᵢ_def'
 
 -- Porting note: Previous proof was `:= Set.mem_unionᵢ₂`
@@ -381,7 +372,7 @@ theorem bunionᵢIndex_le (πi : ∀ J, Prepartition J) (J : Box ι) : π.bunion
 #align box_integral.prepartition.bUnion_index_le BoxIntegral.Prepartition.bunionᵢIndex_le
 
 theorem mem_bunionᵢIndex (hJ : J ∈ π.bunionᵢ πi) : J ∈ πi (π.bunionᵢIndex πi J) := by
-  convert(π.mem_bunionᵢ.1 hJ).choose_spec.2 <;> exact dif_pos hJ
+  convert (π.mem_bunionᵢ.1 hJ).choose_spec.2 <;> exact dif_pos hJ
 #align box_integral.prepartition.mem_bUnion_index BoxIntegral.Prepartition.mem_bunionᵢIndex
 
 theorem le_bunionᵢIndex (hJ : J ∈ π.bunionᵢ πi) : J ≤ π.bunionᵢIndex πi J :=
@@ -412,8 +403,8 @@ theorem bunionᵢ_assoc (πi : ∀ J, Prepartition J) (πi' : Box ι → ∀ J :
 the empty one if it exists. -/
 def ofWithBot (boxes : Finset (WithBot (Box ι)))
     (le_of_mem : ∀ J ∈ boxes, (J : WithBot (Box ι)) ≤ I)
-    (pairwise_disjoint : Set.Pairwise (boxes : Set (WithBot (Box ι))) Disjoint) : Prepartition I
-    where
+    (pairwise_disjoint : Set.Pairwise (boxes : Set (WithBot (Box ι))) Disjoint) :
+    Prepartition I where
   boxes := Finset.eraseNone boxes
   le_of_mem' J hJ := by
     rw [mem_eraseNone] at hJ
@@ -577,8 +568,7 @@ theorem le_bunionᵢ_iff {πi : ∀ J, Prepartition J} {π' : Prepartition I} :
 instance inf : Inf (Prepartition I) :=
   ⟨fun π₁ π₂ => π₁.bunionᵢ fun J => π₂.restrict J⟩
 
-theorem inf_def (π₁ π₂ : Prepartition I) : π₁ ⊓ π₂ = π₁.bunionᵢ fun J => π₂.restrict J :=
-  rfl
+theorem inf_def (π₁ π₂ : Prepartition I) : π₁ ⊓ π₂ = π₁.bunionᵢ fun J => π₂.restrict J := rfl
 #align box_integral.prepartition.inf_def BoxIntegral.Prepartition.inf_def
 
 @[simp]
@@ -641,8 +631,8 @@ theorem unionᵢ_filter_not (π : Prepartition I) (p : Box ι → Prop) :
 
 theorem sum_fiberwise {α M} [AddCommMonoid M] (π : Prepartition I) (f : Box ι → α) (g : Box ι → M) :
     (∑ y in π.boxes.image f, ∑ J in (π.filter fun J => f J = y).boxes, g J) =
-      ∑ J in π.boxes, g J :=
-  by convert sum_fiberwise_of_maps_to (fun _ => Finset.mem_image_of_mem f) g
+      ∑ J in π.boxes, g J := by
+  convert sum_fiberwise_of_maps_to (fun _ => Finset.mem_image_of_mem f) g
 #align box_integral.prepartition.sum_fiberwise BoxIntegral.Prepartition.sum_fiberwise
 
 /-- Union of two disjoint prepartitions. -/
