@@ -179,10 +179,9 @@ theorem mem_split_iff : J ∈ split I i x ↔ ↑J = I.splitLower i x ∨ ↑J =
   simp [split]
 #align box_integral.prepartition.mem_split_iff BoxIntegral.Prepartition.mem_split_iff
 
-theorem mem_split_iff' :
-    J ∈ split I i x ↔
-      (J : Set (ι → ℝ)) = ↑I ∩ { y | y i ≤ x } ∨ (J : Set (ι → ℝ)) = ↑I ∩ { y | x < y i } :=
-  by simp [mem_split_iff, ← Box.withBotCoe_inj]
+theorem mem_split_iff' : J ∈ split I i x ↔
+    (J : Set (ι → ℝ)) = ↑I ∩ { y | y i ≤ x } ∨ (J : Set (ι → ℝ)) = ↑I ∩ { y | x < y i } := by
+  simp [mem_split_iff, ← Box.withBotCoe_inj]
 #align box_integral.prepartition.mem_split_iff' BoxIntegral.Prepartition.mem_split_iff'
 
 @[simp]
@@ -211,17 +210,17 @@ theorem split_of_not_mem_Ioo (h : x ∉ Ioo (I.lower i) (I.upper i)) : split I i
 #align box_integral.prepartition.split_of_not_mem_Ioo BoxIntegral.Prepartition.split_of_not_mem_Ioo
 
 theorem coe_eq_of_mem_split_of_mem_le {y : ι → ℝ} (h₁ : J ∈ split I i x) (h₂ : y ∈ J)
-    (h₃ : y i ≤ x) : (J : Set (ι → ℝ)) = ↑I ∩ { y | y i ≤ x } :=
-  (mem_split_iff'.1 h₁).resolve_right fun H => by
-    rw [← Box.mem_coe, H] at h₂
-    exact h₃.not_lt h₂.2
+    (h₃ : y i ≤ x) : (J : Set (ι → ℝ)) = ↑I ∩ { y | y i ≤ x } := by
+  refine' (mem_split_iff'.1 h₁).resolve_right fun H => _
+  rw [← Box.mem_coe, H] at h₂
+  exact h₃.not_lt h₂.2
 #align box_integral.prepartition.coe_eq_of_mem_split_of_mem_le BoxIntegral.Prepartition.coe_eq_of_mem_split_of_mem_le
 
 theorem coe_eq_of_mem_split_of_lt_mem {y : ι → ℝ} (h₁ : J ∈ split I i x) (h₂ : y ∈ J)
-    (h₃ : x < y i) : (J : Set (ι → ℝ)) = ↑I ∩ { y | x < y i } :=
-  (mem_split_iff'.1 h₁).resolve_left fun H => by
-    rw [← Box.mem_coe, H] at h₂
-    exact h₃.not_le h₂.2
+    (h₃ : x < y i) : (J : Set (ι → ℝ)) = ↑I ∩ { y | x < y i } := by
+  refine' (mem_split_iff'.1 h₁).resolve_left fun H => _
+  rw [← Box.mem_coe, H] at h₂
+  exact h₃.not_le h₂.2
 #align box_integral.prepartition.coe_eq_of_mem_split_of_lt_mem BoxIntegral.Prepartition.coe_eq_of_mem_split_of_lt_mem
 
 @[simp]
@@ -307,14 +306,12 @@ and any box `I` in `ℝⁿ` the following holds. The hyperplanes from `t` split 
 Let `J'` be one of them, and let `J` be one of the boxes in `s`. If these boxes have a nonempty
 intersection, then `J' ≤ J`. -/
 theorem eventually_not_disjoint_imp_le_of_mem_splitMany (s : Finset (Box ι)) :
-    ∀ᶠ t : Finset (ι × ℝ) in atTop,
-      ∀ (I : Box ι), ∀ J ∈ s, ∀ J' ∈ splitMany I t, ¬Disjoint (J : WithBot (Box ι)) J' → J' ≤ J :=
-  by
+    ∀ᶠ t : Finset (ι × ℝ) in atTop, ∀ (I : Box ι), ∀ J ∈ s, ∀ J' ∈ splitMany I t,
+      ¬Disjoint (J : WithBot (Box ι)) J' → J' ≤ J := by
   cases nonempty_fintype ι
-  refine'
-    eventually_atTop.2
-      ⟨s.bunionᵢ fun J => Finset.univ.bunionᵢ fun i => {(i, J.lower i), (i, J.upper i)},
-        fun t ht I J hJ J' hJ' => not_disjoint_imp_le_of_subset_of_mem_splitMany (fun i => _) hJ'⟩
+  refine' eventually_atTop.2
+    ⟨s.bunionᵢ fun J => Finset.univ.bunionᵢ fun i => {(i, J.lower i), (i, J.upper i)},
+      fun t ht I J hJ J' hJ' => not_disjoint_imp_le_of_subset_of_mem_splitMany (fun i => _) hJ'⟩
   exact fun p hp =>
     ht (Finset.mem_bunionᵢ.2 ⟨J, hJ, Finset.mem_bunionᵢ.2 ⟨i, Finset.mem_univ _, hp⟩⟩)
 #align box_integral.prepartition.eventually_not_disjoint_imp_le_of_mem_split_many BoxIntegral.Prepartition.eventually_not_disjoint_imp_le_of_mem_splitMany
@@ -345,10 +342,10 @@ theorem exists_splitMany_inf_eq_filter_of_finite (s : Set (Prepartition I)) (hs 
 /-- If `π` is a partition of `I`, then there exists a finite set `s` of hyperplanes such that
 `splitMany I s ≤ π`. -/
 theorem IsPartition.exists_splitMany_le {I : Box ι} {π : Prepartition I} (h : IsPartition π) :
-    ∃ s, splitMany I s ≤ π :=
-  (eventually_splitMany_inf_eq_filter π).exists.imp fun s hs => by
-    rwa [h.unionᵢ_eq, filter_of_true, inf_eq_right] at hs
-    exact fun J hJ => le_of_mem _ hJ
+    ∃ s, splitMany I s ≤ π := by
+  refine' (eventually_splitMany_inf_eq_filter π).exists.imp fun s hs => _
+  rwa [h.unionᵢ_eq, filter_of_true, inf_eq_right] at hs
+  exact fun J hJ => le_of_mem _ hJ
 #align box_integral.prepartition.is_partition.exists_split_many_le BoxIntegral.Prepartition.IsPartition.exists_splitMany_le
 
 /-- For every prepartition `π` of `I` there exists a prepartition that covers exactly
