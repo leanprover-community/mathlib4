@@ -191,8 +191,7 @@ theorem isVonNBounded_iff_smul_tendsto_zero {ε : ι → 𝕝} {l : Filter ι} [
     (hε : Tendsto ε l (𝓝[≠] 0)) {S : Set E} :
     IsVonNBounded 𝕝 S ↔ ∀ x : ι → E, (∀ n, x n ∈ S) → Tendsto (ε • x) l (𝓝 0) :=
   ⟨fun hS x hxS => hS.smul_tendsto_zero (eventually_of_forall hxS) (le_trans hε nhdsWithin_le_nhds),
-    -- Porting note: was `isVonNBounded_of_smul_tendsto_zero (hε self_mem_nhdsWithin)`
-    by apply isVonNBounded_of_smul_tendsto_zero; exact hε self_mem_nhdsWithin⟩
+    isVonNBounded_of_smul_tendsto_zero (by exact hε self_mem_nhdsWithin)⟩
 #align bornology.is_vonN_bounded_iff_smul_tendsto_zero Bornology.isVonNBounded_iff_smul_tendsto_zero
 
 end sequence
