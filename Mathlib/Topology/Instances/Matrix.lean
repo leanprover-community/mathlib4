@@ -26,13 +26,13 @@ This file is a place to collect topological results about matrices.
 ## Main results
 
 * Continuity:
-  * `continuous.matrix_det`: the determinant is continuous over a topological ring.
-  * `continuous.matrix_adjugate`: the adjugate is continuous over a topological ring.
+  * `Continuous.matrix_det`: the determinant is continuous over a topological ring.
+  * `Continuous.matrix_adjugate`: the adjugate is continuous over a topological ring.
 * Infinite sums
-  * `matrix.transpose_tsum`: transpose commutes with infinite sums
-  * `matrix.diagonal_tsum`: diagonal commutes with infinite sums
-  * `matrix.block_diagonal_tsum`: block diagonal commutes with infinite sums
-  * `matrix.block_diagonal'_tsum`: non-uniform block diagonal commutes with infinite sums
+  * `Matrix.transpose_tsum`: transpose commutes with infinite sums
+  * `Matrix.diagonal_tsum`: diagonal commutes with infinite sums
+  * `Matrix.blockDiagonal_tsum`: block diagonal commutes with infinite sums
+  * `Matrix.blockDiagonal'_tsum`: non-uniform block diagonal commutes with infinite sums
 -/
 
 
@@ -230,14 +230,14 @@ theorem Continuous.matrix_adjugate [Fintype n] [DecidableEq n] [CommRing R] [Top
     (hA.matrix_transpose.matrix_updateColumn k continuous_const).matrix_det
 #align continuous.matrix_adjugate Continuous.matrix_adjugate
 
-/-- When `ring.inverse` is continuous at the determinant (such as in a `normed_ring`, or a
+/-- When `Ring.inverse` is continuous at the determinant (such as in a `NormedRing`, or a
 `topological_field`), so is `matrix.has_inv`. -/
 theorem continuousAt_matrix_inv [Fintype n] [DecidableEq n] [CommRing R] [TopologicalRing R]
     (A : Matrix n n R) (h : ContinuousAt Ring.inverse A.det) : ContinuousAt Inv.inv A :=
   (h.comp continuous_id.matrix_det.continuousAt).smul continuous_id.matrix_adjugate.continuousAt
 #align continuous_at_matrix_inv continuousAt_matrix_inv
 
--- lemmas about functions in `data/matrix/block.lean`
+-- lemmas about functions in `data/Matrix/block.lean`
 section BlockMatrices
 
 @[continuity]
