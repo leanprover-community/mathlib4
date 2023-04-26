@@ -102,17 +102,18 @@ variable [CommSemiring R] [AddCommMonoid M] [Module R M]
 
 /- ./././Mathport/Syntax/Translate/Command.lean:42:9: unsupported derive handler module[module] R -/
 /-- The dual space of an R-module M is the R-module of linear maps `M → R`. -/
-def Dual :=
-  M →ₗ[R] R deriving AddCommMonoid,
-  «./././Mathport/Syntax/Translate/Command.lean:42:9: unsupported derive handler module[module] R»
+def Dual := M →ₗ[R] R
 #align module.dual Module.Dual
+
+instance : AddCommMonoid (Dual R M) := inferInstanceAs (AddCommMonoid (M →ₗ[R] R))
+instance : Module R (Dual R M) := inferInstanceAs (Module R (M →ₗ[R] R))
 
 instance {S : Type _} [CommRing S] {N : Type _} [AddCommGroup N] [Module S N] :
     AddCommGroup (Dual S N) :=
   LinearMap.addCommGroup
 
 instance : LinearMapClass (Dual R M) R M R :=
-  LinearMap.semilinearMapClass
+  inferInstanceAs (LinearMapClass (M →ₗ[R] R) R M R)
 
 /-- The canonical pairing of a vector space and its algebraic dual. -/
 def dualPairing (R M) [CommSemiring R] [AddCommMonoid M] [Module R M] :
@@ -127,11 +128,9 @@ theorem dualPairing_apply (v x) : dualPairing R M v x = v x :=
 
 namespace Dual
 
-instance : Inhabited (Dual R M) :=
-  LinearMap.inhabited
+instance : Inhabited (Dual R M) := ⟨0⟩
 
-instance : CoeFun (Dual R M) fun _ => M → R :=
-  ⟨LinearMap.toFun⟩
+instance : CoeFun (Dual R M) fun _ => M → R := ⟨FunLike.coe⟩
 
 /-- Maps a module M to the dual of the dual of M. See `module.erange_coe` and
 `module.eval_equiv`. -/
@@ -144,7 +143,8 @@ theorem eval_apply (v : M) (a : Dual R M) : eval R M v a = a v :=
   rfl
 #align module.dual.eval_apply Module.Dual.eval_apply
 
-variable {R M} {M' : Type _} [AddCommMonoid M'] [Module R M']
+variable {R M} {M' : Type _}
+variable [AddCommMonoid M'] [Module R M']
 
 /-- The transposition of linear maps, as a linear map from `M →ₗ[R] M'` to
 `dual R M' →ₗ[R] dual R M`. -/
@@ -226,8 +226,7 @@ theorem LinearMap.dualMap_comp_dualMap {M₃ : Type _} [AddCommGroup M₃] [Modu
 
 /-- If a linear map is surjective, then its dual is injective. -/
 theorem LinearMap.dualMap_injective_of_surjective {f : M₁ →ₗ[R] M₂} (hf : Function.Surjective f) :
-    Function.Injective f.dualMap := by
-  intro φ ψ h
+    Function.Injective f.dualMap := fun φ ψ h ↦ by
   ext x
   obtain ⟨y, rfl⟩ := hf x
   exact congr_arg (fun g : Module.Dual R M₁ => g y) h
