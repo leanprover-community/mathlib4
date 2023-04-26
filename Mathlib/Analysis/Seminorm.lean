@@ -298,8 +298,6 @@ variable [Module 𝕜 E] [Module 𝕜₂ E₂] [Module 𝕜₃ E₃] [Module �
 -- Porting note: even though this instance is found immediately by typeclass search,
 -- it seems to be needed below!?
 noncomputable instance smul_nnreal_real : SMul ℝ≥0 ℝ := inferInstance
--- I think we need this later, but it isn't available after turning on etaExperiment...
-noncomputable instance smul_nnreal_nnreal  : SMul ℝ≥0 ℝ≥0 := inferInstance
 
 -- Porting note: this one doesn't work by `inferInstance`, even though it is just an instance!
 noncomputable instance : SMul ℝ≥0 (Seminorm 𝕜 E) := smul
@@ -453,8 +451,10 @@ variable {σ₁₂ : 𝕜 →+* 𝕜₂} [RingHomIsometric σ₁₂]
 
 variable [AddCommGroup E] [AddCommGroup E₂] [Module 𝕜 E] [Module 𝕜₂ E₂]
 
+-- Porting note: unhappily, turning on `synthInstance.etaExperiment` isn't enough here:
+-- we need to elaborate the type using `etaExperiment`, but then can't use it for the proof!
 theorem comp_smul (p : Seminorm 𝕜₂ E₂) (f : E →ₛₗ[σ₁₂] E₂) (c : 𝕜₂) :
-    p.comp (eta_experiment% c • f) = ‖c‖₊ • p.comp f :=
+    eta_experiment% p.comp (c • f) = ‖c‖₊ • p.comp f :=
   ext fun _ => by
     rw [comp_apply, smul_apply, LinearMap.smul_apply, map_smul_eq_mul, NNReal.smul_def, coe_nnnorm,
       smul_eq_mul, comp_apply]
