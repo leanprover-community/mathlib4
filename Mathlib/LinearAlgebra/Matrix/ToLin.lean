@@ -842,17 +842,20 @@ variable {R S : Type _} [CommRing R] [Ring S] [Algebra R S]
 
 variable {m : Type _} [Fintype m] [DecidableEq m] (b : Basis m R S)
 
+set_option synthInstance.etaExperiment true in
 theorem toMatrix_lmul' (x : S) (i j) :
     LinearMap.toMatrix b b (lmul R S x) i j = b.repr (x * b j) i := by
   simp only [LinearMap.toMatrix_apply', coe_lmul_eq_mul, LinearMap.mul_apply']
 #align algebra.to_matrix_lmul' Algebra.toMatrix_lmul'
 
+set_option synthInstance.etaExperiment true in
 @[simp]
 theorem toMatrix_lsmul (x : R) :
     LinearMap.toMatrix b b (Algebra.lsmul R S x) = Matrix.diagonal fun _ => x :=
   toMatrix_distrib_mul_action_toLinearMap b x
 #align algebra.to_matrix_lsmul Algebra.toMatrix_lsmul
 
+set_option synthInstance.etaExperiment true in
 /-- `leftMulMatrix b x` is the matrix corresponding to the linear map `λ y, x * y`.
 
 `leftMulMatrix_eq_repr_mul` gives a formula for the entries of `leftMulMatrix`.
@@ -862,41 +865,55 @@ such as the trace form or norm map for algebras.
 -/
 noncomputable def leftMulMatrix : S →ₐ[R] Matrix m m R where
   toFun x := LinearMap.toMatrix b b (Algebra.lmul R S x)
-  map_zero' := by rw [AlgHom.map_zero, LinearEquiv.map_zero]
-  map_one' := by rw [AlgHom.map_one, LinearMap.toMatrix_one]
-  map_add' x y := by rw [AlgHom.map_add, LinearEquiv.map_add]
-  map_mul' x y := by rw [AlgHom.map_mul, LinearMap.toMatrix_mul, Matrix.mul_eq_mul]
+  map_zero' := by
+    dsimp only  -- porting node: needed due to new-style structures
+    rw [AlgHom.map_zero, LinearEquiv.map_zero]
+  map_one' := by
+    dsimp only  -- porting node: needed due to new-style structures
+    rw [AlgHom.map_one, LinearMap.toMatrix_one]
+  map_add' x y := by
+    dsimp only  -- porting node: needed due to new-style structures
+    rw [AlgHom.map_add, LinearEquiv.map_add]
+  map_mul' x y := by
+    dsimp only  -- porting node: needed due to new-style structures
+    rw [AlgHom.map_mul, LinearMap.toMatrix_mul, Matrix.mul_eq_mul]
   commutes' r := by
+    dsimp only  -- porting node: needed due to new-style structures
     ext
-    rw [lmul_algebra_map, to_matrix_lsmul, algebra_map_eq_diagonal, Pi.algebraMap_def,
+    rw [lmul_algebraMap, toMatrix_lsmul, algebraMap_eq_diagonal, Pi.algebraMap_def,
       Algebra.id.map_eq_self]
 #align algebra.left_mul_matrix Algebra.leftMulMatrix
 
+set_option synthInstance.etaExperiment true in
 theorem leftMulMatrix_apply (x : S) : leftMulMatrix b x = LinearMap.toMatrix b b (lmul R S x) :=
   rfl
 #align algebra.left_mul_matrix_apply Algebra.leftMulMatrix_apply
 
-theorem leftMulMatrix_eq_repr_mul (x : S) (i j) : leftMulMatrix b x i j = b.repr (x * b j) i :=
-  by-- This is defeq to just `toMatrix_lmul' b x i j`,
+set_option synthInstance.etaExperiment true in
+theorem leftMulMatrix_eq_repr_mul (x : S) (i j) : leftMulMatrix b x i j = b.repr (x * b j) i := by
+  -- This is defeq to just `toMatrix_lmul' b x i j`,
   -- but the unfolding goes a lot faster with this explicit `rw`.
-  rw [left_mul_matrix_apply, to_matrix_lmul' b x i j]
+  rw [leftMulMatrix_apply, toMatrix_lmul' b x i j]
 #align algebra.left_mul_matrix_eq_repr_mul Algebra.leftMulMatrix_eq_repr_mul
 
+set_option synthInstance.etaExperiment true in
 theorem leftMulMatrix_mulVec_repr (x y : S) :
     (leftMulMatrix b x).mulVec (b.repr y) = b.repr (x * y) :=
   (LinearMap.mulLeft R x).toMatrix_mulVec_repr b b y
 #align algebra.left_mul_matrix_mul_vec_repr Algebra.leftMulMatrix_mulVec_repr
 
+set_option synthInstance.etaExperiment true in
 @[simp]
 theorem toMatrix_lmul_eq (x : S) :
     LinearMap.toMatrix b b (LinearMap.mulLeft R x) = leftMulMatrix b x :=
   rfl
 #align algebra.to_matrix_lmul_eq Algebra.toMatrix_lmul_eq
 
+set_option synthInstance.etaExperiment true in
 theorem leftMulMatrix_injective : Function.Injective (leftMulMatrix b) := fun x x' h =>
   calc
     x = Algebra.lmul R S x 1 := (mul_one x).symm
-    _ = Algebra.lmul R S x' 1 := by rw [(LinearMap.toMatrix b b).Injective h]
+    _ = Algebra.lmul R S x' 1 := by rw [(LinearMap.toMatrix b b).injective h]
     _ = x' := mul_one x'
 #align algebra.left_mul_matrix_injective Algebra.leftMulMatrix_injective
 
@@ -912,28 +929,32 @@ variable {m n : Type _} [Fintype m] [Fintype n] [DecidableEq m] [DecidableEq n]
 
 variable (b : Basis m R S) (c : Basis n S T)
 
+set_option synthInstance.etaExperiment true in
 theorem smul_leftMulMatrix (x) (ik jk) :
     leftMulMatrix (b.smul c) x ik jk = leftMulMatrix b (leftMulMatrix c x ik.2 jk.2) ik.1 jk.1 := by
-  simp only [left_mul_matrix_apply, LinearMap.toMatrix_apply, mul_comm, Basis.smul_apply,
+  simp only [leftMulMatrix_apply, LinearMap.toMatrix_apply, mul_comm, Basis.smul_apply,
     Basis.smul_repr, Finsupp.smul_apply, id.smul_eq_mul, LinearEquiv.map_smul, mul_smul_comm,
     coe_lmul_eq_mul, LinearMap.mul_apply']
 #align algebra.smul_left_mul_matrix Algebra.smul_leftMulMatrix
 
+set_option synthInstance.etaExperiment true in
 theorem smul_leftMulMatrix_algebraMap (x : S) :
     leftMulMatrix (b.smul c) (algebraMap _ _ x) = blockDiagonal fun k => leftMulMatrix b x := by
   ext (⟨i, k⟩⟨j, k'⟩)
-  rw [smul_left_mul_matrix, AlgHom.commutes, block_diagonal_apply, algebra_map_matrix_apply]
+  rw [smul_leftMulMatrix, AlgHom.commutes, blockDiagonal_apply, algebraMap_matrix_apply]
   split_ifs with h <;> simp [h]
 #align algebra.smul_left_mul_matrix_algebra_map Algebra.smul_leftMulMatrix_algebraMap
 
+set_option synthInstance.etaExperiment true in
 theorem smul_leftMulMatrix_algebraMap_eq (x : S) (i j k) :
     leftMulMatrix (b.smul c) (algebraMap _ _ x) (i, k) (j, k) = leftMulMatrix b x i j := by
-  rw [smul_left_mul_matrix_algebra_map, block_diagonal_apply_eq]
+  rw [smul_leftMulMatrix_algebraMap, blockDiagonal_apply_eq]
 #align algebra.smul_left_mul_matrix_algebra_map_eq Algebra.smul_leftMulMatrix_algebraMap_eq
 
+set_option synthInstance.etaExperiment true in
 theorem smul_leftMulMatrix_algebraMap_ne (x : S) (i j) {k k'} (h : k ≠ k') :
     leftMulMatrix (b.smul c) (algebraMap _ _ x) (i, k) (j, k') = 0 := by
-  rw [smul_left_mul_matrix_algebra_map, block_diagonal_apply_ne _ _ _ h]
+  rw [smul_leftMulMatrix_algebraMap, blockDiagonal_apply_ne _ _ _ h]
 #align algebra.smul_left_mul_matrix_algebra_map_ne Algebra.smul_leftMulMatrix_algebraMap_ne
 
 end LmulTower
