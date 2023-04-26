@@ -304,13 +304,12 @@ lemma continuous_iff_scottContinuous
       intros b hb
       let u := (Iic b)ᶜ
       by_contra h
-      have e1: a ∈ (f⁻¹'  u) := h
       have s1 : IsOpen u := by
         rw [isOpen_compl_iff, ← closure_singleton]
         exact isClosed_closure
       have s2 : IsOpen (f⁻¹'  u) := IsOpen.preimage hf s1
       rw [isOpen_iff_upper_and_LUB_mem_implies_inter_nonempty] at s2
-      obtain ⟨c, h_1_left, h_1_right⟩ := s2.2 d a d₁ d₂ d₃ e1
+      obtain ⟨c, h_1_left, h_1_right⟩ := s2.2 d a d₁ d₂ d₃ h
       simp at h_1_right
       rw [upperBounds] at hb
       simp at hb
