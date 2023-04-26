@@ -841,7 +841,10 @@ section Lmul
 
 variable {R S : Type _} [CommRing R] [Ring S] [Algebra R S]
 
-variable {m : Type _} [Fintype m] [DecidableEq m] (b : Basis m R S)
+variable {m : Type _} [Fintype m] [DecidableEq m]
+  -- porting note: the fact we need this is really stupid as type is re-elaborated in ever
+  -- subsequent lemma
+  (b : set_option synthInstance.etaExperiment true in Basis m R S)
 
 set_option synthInstance.etaExperiment true in
 theorem toMatrix_lmul' (x : S) (i j) :
