@@ -271,8 +271,7 @@ The closure of a singleton `{a}` in the Scott topology is the right-closed left-
       intros d b _ _ d₃ d₄
       rw [LowerSet.coe_Iic, mem_Iic]
       exact (isLUB_le_iff d₃).mpr d₄
-  . apply lowerClosure_min subset_closure (isClosed_isLower _)
-    apply isClosed_closure
+  . exact lowerClosure_min subset_closure (isClosed_isLower isClosed_closure)
 
 variable [Preorder β] [TopologicalSpace β] [ScottTopology β]
 
