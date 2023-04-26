@@ -15,25 +15,25 @@ import Mathlib.Analysis.BoxIntegral.Partition.Basic
 
 ## Main definitions
 
-A hyperplane `{x : ι → ℝ | x i = a}` splits a rectangular box `I : box_integral.box ι` into two
+A hyperplane `{x : ι → ℝ | x i = a}` splits a rectangular box `I : BoxIntegral.Box ι` into two
 smaller boxes. If `a ∉ Ioo (I.lower i, I.upper i)`, then one of these boxes is empty, so it is not a
-box in the sense of `box_integral.box`.
+box in the sense of `BoxIntegral.Box`.
 
 We introduce the following definitions.
 
-* `box_integral.box.split_lower I i a` and `box_integral.box.split_upper I i a` are these boxes (as
-  `with_bot (box_integral.box ι)`);
-* `box_integral.prepartition.split I i a` is the partition of `I` made of these two boxes (or of one
+* `BoxIntegral.Box.splitLower I i a` and `BoxIntegral.Box.splitUpper I i a` are these boxes (as
+  `WithBot (BoxIntegral.Box ι)`);
+* `BoxIntegral.Prepartition.split I i a` is the partition of `I` made of these two boxes (or of one
    box `I` if one of these boxes is empty);
-* `box_integral.prepartition.split_many I s`, where `s : finset (ι × ℝ)` is a finite set of
+* `BoxIntegral.Prepartition.splitMany I s`, where `s : Finset (ι × ℝ)` is a finite set of
   hyperplanes `{x : ι → ℝ | x i = a}` encoded as pairs `(i, a)`, is the partition of `I` made by
   cutting it along all the hyperplanes in `s`.
 
 ## Main results
 
-The main result `box_integral.prepartition.exists_Union_eq_diff` says that any prepartition `π` of
-`I` admits a prepartition `π'` of `I` that covers exactly `I \ π.Union`. One of these prepartitions
-is available as `box_integral.prepartition.compl`.
+The main result `BoxIntegral.Prepartition.exists_unionᵢ_eq_diff` says that any prepartition `π` of
+`I` admits a prepartition `π'` of `I` that covers exactly `I \ π.unionᵢ`. One of these prepartitions
+is available as `BoxIntegral.Prepartition.compl`.
 
 ## Tags
 
@@ -56,9 +56,9 @@ namespace Box
 variable {I : Box ι} {i : ι} {x : ℝ} {y : ι → ℝ}
 
 /-- Given a box `I` and `x ∈ (I.lower i, I.upper i)`, the hyperplane `{y : ι → ℝ | y i = x}` splits
-`I` into two boxes. `box_integral.box.split_lower I i x` is the box `I ∩ {y | y i ≤ x}`
+`I` into two boxes. `BoxIntegral.Box.splitLower I i x` is the box `I ∩ {y | y i ≤ x}`
 (if it is nonempty). As usual, we represent a box that may be empty as
-`with_bot (box_integral.box ι)`. -/
+`WithBot (BoxIntegral.Box ι)`. -/
 def splitLower (I : Box ι) (i : ι) (x : ℝ) : WithBot (Box ι) :=
   mk' I.lower (update I.upper i (min x (I.upper i)))
 #align box_integral.box.split_lower BoxIntegral.Box.splitLower
@@ -96,9 +96,9 @@ theorem splitLower_def [DecidableEq ι] {i x} (h : x ∈ Ioo (I.lower i) (I.uppe
 #align box_integral.box.split_lower_def BoxIntegral.Box.splitLower_def
 
 /-- Given a box `I` and `x ∈ (I.lower i, I.upper i)`, the hyperplane `{y : ι → ℝ | y i = x}` splits
-`I` into two boxes. `box_integral.box.split_upper I i x` is the box `I ∩ {y | x < y i}`
+`I` into two boxes. `BoxIntegral.Box.splitUpper I i x` is the box `I ∩ {y | x < y i}`
 (if it is nonempty). As usual, we represent a box that may be empty as
-`with_bot (box_integral.box ι)`. -/
+`WithBot (BoxIntegral.Box ι)`. -/
 def splitUpper (I : Box ι) (i : ι) (x : ℝ) : WithBot (Box ι) :=
   mk' (update I.lower i (max x (I.lower i))) I.upper
 #align box_integral.box.split_upper BoxIntegral.Box.splitUpper
@@ -159,7 +159,7 @@ namespace Prepartition
 
 variable {I J : Box ι} {i : ι} {x : ℝ}
 
-/-- The partition of `I : box ι` into the boxes `I ∩ {y | y ≤ x i}` and `I ∩ {y | x i < y}`.
+/-- The partition of `I : Box ι` into the boxes `I ∩ {y | y ≤ x i}` and `I ∩ {y | x i < y}`.
 One of these boxes can be empty, then this partition is just the single-box partition `⊤`. -/
 def split (I : Box ι) (i : ι) (x : ℝ) : Prepartition I :=
   ofWithBot {I.splitLower i x, I.splitUpper i x}
@@ -276,7 +276,7 @@ theorem inf_splitMany {I : Box ι} (π : Prepartition I) (s : Finset (ι × ℝ)
   · simp_rw [splitMany_insert, ← inf_assoc, ihp, inf_split, bunionᵢ_assoc]
 #align box_integral.prepartition.inf_split_many BoxIntegral.Prepartition.inf_splitMany
 
-/-- Let `s : finset (ι × ℝ)` be a set of hyperplanes `{x : ι → ℝ | x i = r}` in `ι → ℝ` encoded as
+/-- Let `s : Finset (ι × ℝ)` be a set of hyperplanes `{x : ι → ℝ | x i = r}` in `ι → ℝ` encoded as
 pairs `(i, r)`. Suppose that this set contains all faces of a box `J`. The hyperplanes of `s` split
 a box `I` into subboxes. Let `Js` be one of them. If `J` and `Js` have nonempty intersection, then
 `Js` is a subbox of `J`.  -/
@@ -342,7 +342,7 @@ theorem exists_splitMany_inf_eq_filter_of_finite (s : Set (Prepartition I)) (hs 
 #align box_integral.prepartition.exists_split_many_inf_eq_filter_of_finite BoxIntegral.Prepartition.exists_splitMany_inf_eq_filter_of_finite
 
 /-- If `π` is a partition of `I`, then there exists a finite set `s` of hyperplanes such that
-`split_many I s ≤ π`. -/
+`splitMany I s ≤ π`. -/
 theorem IsPartition.exists_splitMany_le {I : Box ι} {π : Prepartition I} (h : IsPartition π) :
     ∃ s, splitMany I s ≤ π :=
   (eventually_splitMany_inf_eq_filter π).exists.imp fun s hs => by
@@ -351,7 +351,7 @@ theorem IsPartition.exists_splitMany_le {I : Box ι} {π : Prepartition I} (h : 
 #align box_integral.prepartition.is_partition.exists_split_many_le BoxIntegral.Prepartition.IsPartition.exists_splitMany_le
 
 /-- For every prepartition `π` of `I` there exists a prepartition that covers exactly
-`I \ π.Union`. -/
+`I \ π.unionᵢ`. -/
 theorem exists_unionᵢ_eq_diff (π : Prepartition I) :
     ∃ π' : Prepartition I, π'.unionᵢ = ↑I \ π.unionᵢ := by
   rcases π.eventually_splitMany_inf_eq_filter.exists with ⟨s, hs⟩
@@ -360,7 +360,7 @@ theorem exists_unionᵢ_eq_diff (π : Prepartition I) :
 #align box_integral.prepartition.exists_Union_eq_diff BoxIntegral.Prepartition.exists_unionᵢ_eq_diff
 
 /-- If `π` is a prepartition of `I`, then `π.compl` is a prepartition of `I`
-such that `π.compl.Union = I \ π.Union`. -/
+such that `π.compl.unionᵢ = I \ π.unionᵢ`. -/
 def compl (π : Prepartition I) : Prepartition I :=
   π.exists_unionᵢ_eq_diff.choose
 #align box_integral.prepartition.compl BoxIntegral.Prepartition.compl
@@ -370,8 +370,8 @@ theorem unionᵢ_compl (π : Prepartition I) : π.compl.unionᵢ = ↑I \ π.uni
   π.exists_unionᵢ_eq_diff.choose_spec
 #align box_integral.prepartition.Union_compl BoxIntegral.Prepartition.unionᵢ_compl
 
-/-- Since the definition of `box_integral.prepartition.compl` uses `Exists.some`,
-the result depends only on `π.Union`. -/
+/-- Since the definition of `BoxIntegral.Prepartition.compl` uses `Exists.choose`,
+the result depends only on `π.unionᵢ`. -/
 theorem compl_congr {π₁ π₂ : Prepartition I} (h : π₁.unionᵢ = π₂.unionᵢ) : π₁.compl = π₂.compl := by
   dsimp only [compl]
   congr 1
