@@ -108,9 +108,9 @@ theorem coe_splitUpper : (splitUpper I i x : Set (ι → ℝ)) = ↑I ∩ { y | 
   rw [splitUpper, coe_mk']
   ext y
   simp only [mem_univ_pi, mem_Ioc, mem_inter_iff, mem_coe, mem_setOf_eq, forall_and,
-    forall_update_iff I.lower fun j z => z < y j, max_lt_iff, and_assoc' (x < y i), and_forall_ne i,
-    mem_def]
-  exact and_comm' _ _
+    forall_update_iff I.lower fun j z => z < y j, max_lt_iff, and_assoc (a := x < y i),
+    and_forall_ne (p := fun j => lower I j < y j) i, mem_def]
+  exact and_comm
 #align box_integral.box.coe_split_upper BoxIntegral.Box.coe_splitUpper
 
 theorem splitUpper_le : I.splitUpper i x ≤ I :=
