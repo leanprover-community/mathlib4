@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 
 ! This file was ported from Lean 3 source module order.heyting.basic
-! leanprover-community/mathlib commit 4e42a9d0a79d151ee359c270e498b1a00cc6fa4e
+! leanprover-community/mathlib commit 9ac7c0c8c4d7a535ec3e5b34b8859aab9233b2f4
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -450,6 +450,11 @@ theorem Codisjoint.himp_inf_cancel_left (h : Codisjoint a b) : b ⇨ a ⊓ b = a
   rw [himp_inf_distrib, himp_self, inf_top_eq, h.himp_eq_right]
 #align codisjoint.himp_inf_cancel_left Codisjoint.himp_inf_cancel_left
 
+/-- See `himp_le` for a stronger version in Boolean algebras. -/
+theorem Codisjoint.himp_le_of_right_le (hac : Codisjoint a c) (hba : b ≤ a) : c ⇨ b ≤ a :=
+  (himp_le_himp_left hba).trans_eq hac.himp_eq_right
+#align codisjoint.himp_le_of_right_le Codisjoint.himp_le_of_right_le
+
 theorem le_himp_himp : a ≤ (a ⇨ b) ⇨ b :=
   le_himp_iff.2 inf_himp_le
 #align le_himp_himp le_himp_himp
@@ -701,6 +706,11 @@ theorem Disjoint.sup_sdiff_cancel_right (h : Disjoint a b) : (a ⊔ b) \ b = a :
   rw [sup_sdiff, sdiff_self, sup_bot_eq, h.sdiff_eq_left]
 #align disjoint.sup_sdiff_cancel_right Disjoint.sup_sdiff_cancel_right
 
+/-- See `le_sdiff` for a stronger version in generalised Boolean algebras. -/
+theorem Disjoint.le_sdiff_of_le_left (hac : Disjoint a c) (hab : a ≤ b) : a ≤ b \ c :=
+  hac.sdiff_eq_left.ge.trans <| sdiff_le_sdiff_right hab
+#align disjoint.le_sdiff_of_le_left Disjoint.le_sdiff_of_le_left
+
 theorem sdiff_sdiff_le : a \ (a \ b) ≤ b :=
   sdiff_le_iff.2 le_sdiff_sup
 #align sdiff_sdiff_le sdiff_sdiff_le
@@ -927,12 +937,10 @@ theorem compl_compl_himp_distrib (a b : α) : (a ⇨ b)ᶜᶜ = aᶜᶜ ⇨ bᶜ
   refine' le_antisymm _ _
   · rw [le_himp_iff, ← compl_compl_inf_distrib]
     exact compl_anti (compl_anti himp_inf_le)
-
   · refine' le_compl_comm.1 ((compl_anti compl_sup_le_himp).trans _)
     rw [compl_sup_distrib, le_compl_iff_disjoint_right, disjoint_right_comm, ←
       le_compl_iff_disjoint_right]
     exact inf_himp_le
-
 #align compl_compl_himp_distrib compl_compl_himp_distrib
 
 instance : CoheytingAlgebra αᵒᵈ :=
@@ -1111,10 +1119,8 @@ theorem hnot_hnot_sdiff_distrib (a b : α) : ￢￢(a \ b) = ￢￢a \ ￢￢b :
     rw [hnot_inf_distrib, hnot_le_iff_codisjoint_right, codisjoint_left_comm, ←
       hnot_le_iff_codisjoint_right]
     exact le_sdiff_sup
-
   · rw [sdiff_le_iff, ← hnot_hnot_sup_distrib]
     exact hnot_anti (hnot_anti le_sup_sdiff)
-
 #align hnot_hnot_sdiff_distrib hnot_hnot_sdiff_distrib
 
 instance : HeytingAlgebra αᵒᵈ :=

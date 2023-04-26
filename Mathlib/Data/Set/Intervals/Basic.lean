@@ -1875,7 +1875,6 @@ theorem Ioc_union_Ioc_union_Ioc_cycle :
   --     le_max_of_le_left, le_max_of_le_right, le_refl]
   simp [min_le_of_left_le, min_le_of_right_le, le_max_of_le_left, le_max_of_le_right, le_refl,
     min_assoc, max_comm]
-
 #align set.Ioc_union_Ioc_union_Ioc_cycle Set.Ioc_union_Ioc_union_Ioc_cycle
 
 end LinearOrder

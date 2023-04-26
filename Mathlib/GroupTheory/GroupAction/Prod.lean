@@ -165,7 +165,7 @@ instance isScalarTowerBoth [Mul N] [Mul P] [SMul M N] [SMul M P] [IsScalarTower 
 #align prod.is_scalar_tower_both Prod.isScalarTowerBoth
 
 @[to_additive]
-instance mulAction {_ : Monoid M} [MulAction M α] [MulAction M β] : MulAction M (α × β) where
+instance mulAction [Monoid M] [MulAction M α] [MulAction M β] : MulAction M (α × β) where
   mul_smul _ _ _ := mk.inj_iff.mpr ⟨mul_smul _ _ _, mul_smul _ _ _⟩
   one_smul := fun ⟨_, _⟩ => mk.inj_iff.mpr ⟨one_smul _ _, one_smul _ _⟩
 
@@ -176,11 +176,11 @@ instance distribSMul {R M N : Type _} [AddZeroClass M] [AddZeroClass N] [Distrib
     [DistribSMul R N] : DistribSMul R (M × N) where
   smul_add _ _ _ := mk.inj_iff.mpr ⟨smul_add _ _ _, smul_add _ _ _⟩
 
-instance distribMulAction {R M N : Type _} {_ : Monoid R} [AddMonoid M] [AddMonoid N]
+instance distribMulAction [Monoid R] [AddMonoid M] [AddMonoid N]
     [DistribMulAction R M] [DistribMulAction R N] : DistribMulAction R (M × N) :=
   { Prod.mulAction, Prod.distribSMul with }
 
-instance mulDistribMulAction {R M N : Type _} {_ : Monoid R} [Monoid M] [Monoid N]
+instance mulDistribMulAction [Monoid R] [Monoid M] [Monoid N]
     [MulDistribMulAction R M] [MulDistribMulAction R N] : MulDistribMulAction R (M × N) where
   smul_mul _ _ _ := mk.inj_iff.mpr ⟨smul_mul' _ _ _, smul_mul' _ _ _⟩
   smul_one _ := mk.inj_iff.mpr ⟨smul_one _, smul_one _⟩

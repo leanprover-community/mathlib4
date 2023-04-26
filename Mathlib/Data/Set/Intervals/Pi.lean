@@ -4,11 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 
 ! This file was ported from Lean 3 source module data.set.intervals.pi
-! leanprover-community/mathlib commit 207cfac9fcd06138865b5d04f7091e46d9320432
+! leanprover-community/mathlib commit 4020ddee5b4580a409bfda7d2f42726ce86ae674
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Intervals.Basic
+import Mathlib.Data.Set.Intervals.UnorderedInterval
 import Mathlib.Data.Set.Lattice
 
 /-!
@@ -119,6 +120,17 @@ theorem disjoint_pi_univ_Ioc_update_left_right {x y : ∀ i, α i} {i₀ : ι} {
 
 end PiPreorder
 
+section PiLattice
+
+variable [∀ i, Lattice (α i)]
+
+@[simp]
+theorem pi_univ_uIcc (a b : ∀ i, α i) : (pi univ fun i => uIcc (a i) (b i)) = uIcc a b :=
+  pi_univ_Icc _ _
+#align set.pi_univ_uIcc Set.pi_univ_uIcc
+
+end PiLattice
+
 variable [DecidableEq ι] [∀ i, LinearOrder (α i)]
 
 open Function (update)
@@ -149,7 +161,6 @@ theorem Icc_diff_pi_univ_Ioo_subset (x y x' y' : ∀ i, α i) :
   rcases ha' with ⟨w, hw⟩
   apply Exists.intro w
   cases lt_or_le (x' w) (a w) <;> simp_all
-
 #align set.Icc_diff_pi_univ_Ioo_subset Set.Icc_diff_pi_univ_Ioo_subset
 
 /-- If `x`, `y`, `z` are functions `Π i : ι, α i`, then

@@ -140,7 +140,7 @@ instance (priority := 100) [SemilatticeSup α] [OrderBot α] : HasBinaryCoproduc
     infer_instance
   apply hasBinaryCoproducts_of_hasColimit_pair
 
-/-- The binary coproduct in the category of a `semilattice_sup` with `order_bot` is the same as the
+/-- The binary coproduct in the category of a `SemilatticeSup` with `OrderBot` is the same as the
 supremum.
 -/
 @[simp]
@@ -149,11 +149,11 @@ theorem coprod_eq_sup [SemilatticeSup α] [OrderBot α] (x y : α) : Limits.copr
     Limits.coprod x y = colimit (pair x y) := rfl
     _ = Finset.univ.sup (pair x y).obj := by rw [finite_colimit_eq_finset_univ_sup (pair x y)]
     _ = x ⊔ (y ⊔ ⊥) := rfl
-    -- Note: finset.sup is realized as a fold, hence the definitional equality
+    -- Note: Finset.sup is realized as a fold, hence the definitional equality
     _ = x ⊔ y := by rw [sup_bot_eq]
 #align category_theory.limits.complete_lattice.coprod_eq_sup CategoryTheory.Limits.CompleteLattice.coprod_eq_sup
 
-/-- The pullback in the category of a `semilattice_inf` with `order_top` is the same as the infimum
+/-- The pullback in the category of a `SemilatticeInf` with `OrderTop` is the same as the infimum
 over the objects.
 -/
 @[simp]
@@ -165,10 +165,9 @@ theorem pullback_eq_inf [SemilatticeInf α] [OrderTop α] {x y z : α} (f : x �
     _ = z ⊓ (x ⊓ (y ⊓ ⊤)) := rfl
     _ = z ⊓ (x ⊓ y) := by rw [inf_top_eq]
     _ = x ⊓ y := inf_eq_right.mpr (inf_le_of_left_le f.le)
-
 #align category_theory.limits.complete_lattice.pullback_eq_inf CategoryTheory.Limits.CompleteLattice.pullback_eq_inf
 
-/-- The pushout in the category of a `semilattice_sup` with `order_bot` is the same as the supremum
+/-- The pushout in the category of a `SemilatticeSup` with `OrderBot` is the same as the supremum
 over the objects.
 -/
 @[simp]
@@ -180,7 +179,6 @@ theorem pushout_eq_sup [SemilatticeSup α] [OrderBot α] (x y z : α) (f : z ⟶
     _ = z ⊔ (x ⊔ (y ⊔ ⊥)) := rfl
     _ = z ⊔ (x ⊔ y) := by rw [sup_bot_eq]
     _ = x ⊔ y := sup_eq_right.mpr (le_sup_of_le_left f.le)
-
 #align category_theory.limits.complete_lattice.pushout_eq_sup CategoryTheory.Limits.CompleteLattice.pushout_eq_sup
 
 end Semilattice
