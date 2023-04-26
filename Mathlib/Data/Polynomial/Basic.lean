@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Jens Wagemaker
 
 ! This file was ported from Lean 3 source module data.polynomial.basic
-! leanprover-community/mathlib commit 1f0096e6caa61e9c849ec2adbd227e960e9dff58
+! leanprover-community/mathlib commit 2651125b48fc5c170ab1111afd0817c903b1fc6c
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -298,6 +298,11 @@ instance semiring : Semiring R[X] :=
     toFinsupp_add toFinsupp_mul (fun _ _ => toFinsupp_smul _ _) toFinsupp_pow fun _ => rfl
 #align polynomial.semiring Polynomial.semiring
 
+instance distribSMul {S} [DistribSMul S R] : DistribSMul S R[X] :=
+  Function.Injective.distribSMul ⟨⟨toFinsupp, toFinsupp_zero⟩, toFinsupp_add⟩ toFinsupp_injective
+    toFinsupp_smul
+#align polynomial.distrib_smul Polynomial.distribSMul
+
 instance distribMulAction {S} [Monoid S] [DistribMulAction S R] : DistribMulAction S R[X] :=
   Function.Injective.distribMulAction ⟨⟨toFinsupp, toFinsupp_zero⟩, toFinsupp_add⟩
     toFinsupp_injective toFinsupp_smul
@@ -452,7 +457,7 @@ theorem monomial_pow (n : ℕ) (r : R) (k : ℕ) : monomial n r ^ k = monomial (
   · simp [pow_succ, ih, monomial_mul_monomial, Nat.succ_eq_add_one, mul_add, add_comm]
 #align polynomial.monomial_pow Polynomial.monomial_pow
 
-theorem smul_monomial {S} [Monoid S] [DistribMulAction S R] (a : S) (n : ℕ) (b : R) :
+theorem smul_monomial {S} [SMulZeroClass S R] (a : S) (n : ℕ) (b : R) :
     a • monomial n b = monomial n (a • b) :=
   toFinsupp_injective <| by simp; rw [smul_single]
 #align polynomial.smul_monomial Polynomial.smul_monomial
@@ -508,7 +513,7 @@ theorem C_add : C (a + b) = C a + C b :=
 #align polynomial.C_add Polynomial.C_add
 
 @[simp]
-theorem smul_C {S} [Monoid S] [DistribMulAction S R] (s : S) (r : R) : s • C r = C (s • r) :=
+theorem smul_C {S} [SMulZeroClass S R] (s : S) (r : R) : s • C r = C (s • r) :=
   smul_monomial _ _ r
 #align polynomial.smul_C Polynomial.smul_C
 
@@ -1207,6 +1212,16 @@ theorem X_ne_zero : (X : R[X]) ≠ 0 :=
 #align polynomial.X_ne_zero Polynomial.X_ne_zero
 
 end NonzeroSemiring
+
+section DivisionRing
+
+variable [DivisionRing R]
+
+theorem rat_smul_eq_C_mul (a : ℚ) (f : R[X]) : a • f = Polynomial.C (a : R) * f := by
+  rw [← Rat.smul_one_eq_coe, ← Polynomial.smul_C, C_1, smul_one_mul]
+#align polynomial.rat_smul_eq_C_mul Polynomial.rat_smul_eq_C_mul
+
+end DivisionRing
 
 @[simp]
 theorem nontrivial_iff [Semiring R] : Nontrivial R[X] ↔ Nontrivial R :=

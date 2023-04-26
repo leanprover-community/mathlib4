@@ -585,10 +585,7 @@ norm. -/
 instance normedAlgebraRat {𝕜} [NormedDivisionRing 𝕜] [CharZero 𝕜] [NormedAlgebra ℝ 𝕜] :
     NormedAlgebra ℚ 𝕜 where
   norm_smul_le q x := by
-    rw [← smul_one_smul ℝ q x]
-    -- Porting note: broken notation class seems to cause a problem here
-    conv_lhs => change ‖(SMul.smul q (1:ℝ)) • x‖; rw [Rat.smul_one_eq_coe q]
-    rw [norm_smul, Rat.norm_cast_real]
+    rw [← smul_one_smul ℝ q x, Rat.smul_one_eq_coe, norm_smul, Rat.norm_cast_real]
 #align normed_algebra_rat normedAlgebraRat
 
 instance PUnit.normedAlgebra : NormedAlgebra 𝕜 PUnit where
