@@ -453,6 +453,12 @@ lemma p_cyclesCoMap' (φ : S₁ ⟶ S₂) (h₁ : S₁.RightHomologyData) (h₂ 
   RightHomologyMapData.commp _
 
 @[reassoc (attr := simp)]
+lemma cyclesCoMap'_g' (φ : S₁ ⟶ S₂) (h₁ : S₁.RightHomologyData) (h₂ : S₂.RightHomologyData) :
+    cyclesCoMap' φ h₁ h₂ ≫ h₂.g' = h₁.g' ≫ φ.τ₃ := by
+  simp only [← cancel_epi h₁.p, assoc, φ.comm₂₃, p_cyclesCoMap'_assoc,
+    RightHomologyData.p_g'_assoc, RightHomologyData.p_g']
+
+@[reassoc (attr := simp)]
 lemma rightHomologyι_naturality' (φ : S₁ ⟶ S₂)
     (h₁ : S₁.RightHomologyData) (h₂ : S₂.RightHomologyData) :
     rightHomologyMap' φ h₁ h₂ ≫ h₂.ι = h₁.ι ≫ cyclesCoMap' φ h₁ h₂ :=
@@ -473,9 +479,8 @@ lemma p_cyclesCoMap (φ : S₁ ⟶ S₂) [S₁.HasRightHomology] [S₂.HasRightH
 
 @[reassoc (attr := simp)]
 lemma fromCyclesCo_naturality (φ : S₁ ⟶ S₂) [S₁.HasRightHomology] [S₂.HasRightHomology] :
-    cyclesCoMap φ ≫ S₂.fromCyclesCo = S₁.fromCyclesCo ≫ φ.τ₃ := by
-  simp only [← cancel_epi S₁.pCyclesCo, p_cyclesCoMap_assoc, p_fromCyclesCo,
-    p_fromCyclesCo_assoc, φ.comm₂₃]
+    cyclesCoMap φ ≫ S₂.fromCyclesCo = S₁.fromCyclesCo ≫ φ.τ₃ :=
+  cyclesCoMap'_g' _ _ _
 
 @[reassoc (attr := simp)]
 lemma rightHomologyι_naturality [HasRightHomology S₁] [HasRightHomology S₂]

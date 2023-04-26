@@ -600,6 +600,12 @@ lemma cyclesMap'_i (φ : S₁ ⟶ S₂) (h₁ : S₁.LeftHomologyData) (h₂ : S
   LeftHomologyMapData.commi _
 
 @[reassoc (attr := simp)]
+lemma f'_cyclesMap' (φ : S₁ ⟶ S₂) (h₁ : S₁.LeftHomologyData) (h₂ : S₂.LeftHomologyData) :
+    h₁.f' ≫ cyclesMap' φ h₁ h₂ = φ.τ₁ ≫ h₂.f' := by
+  simp only [← cancel_mono h₂.i, assoc, φ.comm₁₂, cyclesMap'_i,
+    LeftHomologyData.f'_i_assoc, LeftHomologyData.f'_i]
+
+@[reassoc (attr := simp)]
 lemma leftHomologyπ_naturality' (φ : S₁ ⟶ S₂)
     (h₁ : S₁.LeftHomologyData) (h₂ : S₂.LeftHomologyData) :
     h₁.π ≫ leftHomologyMap' φ h₁ h₂ = cyclesMap' φ h₁ h₂ ≫ h₂.π :=
@@ -620,9 +626,8 @@ lemma cyclesMap_i (φ : S₁ ⟶ S₂) [S₁.HasLeftHomology] [S₂.HasLeftHomol
 
 @[reassoc (attr := simp)]
 lemma toCycles_naturality (φ : S₁ ⟶ S₂) [S₁.HasLeftHomology] [S₂.HasLeftHomology] :
-    S₁.toCycles ≫ cyclesMap φ = φ.τ₁ ≫ S₂.toCycles := by
-  simp only [← cancel_mono S₂.iCycles, φ.comm₁₂, assoc, toCycles_i,
-    cyclesMap_i, toCycles_i_assoc]
+    S₁.toCycles ≫ cyclesMap φ = φ.τ₁ ≫ S₂.toCycles :=
+  f'_cyclesMap' _ _ _
 
 @[reassoc (attr := simp)]
 lemma leftHomologyπ_naturality [HasLeftHomology S₁] [HasLeftHomology S₂]
