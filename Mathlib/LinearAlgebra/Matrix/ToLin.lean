@@ -341,11 +341,12 @@ theorem Matrix.toLin'_toMatrix' (f : (n → R) →ₗ[R] m → R) :
 theorem LinearMap.toMatrix'_apply (f : (n → R) →ₗ[R] m → R) (i j) :
     LinearMap.toMatrix' f i j = f (fun j' => if j' = j then 1 else 0) i := by
   simp only [LinearMap.toMatrix', LinearEquiv.coe_mk, of_apply]
+  refine congr_fun ?_ _  -- porting note: `congr` didn't do this
   congr
   ext j'
   split_ifs with h
-  · rw [h, std_basis_same]
-  apply std_basis_ne _ _ _ _ h
+  · rw [h, stdBasis_same]
+  apply stdBasis_ne _ _ _ _ h
 #align linear_map.to_matrix'_apply LinearMap.toMatrix'_apply
 
 @[simp]
