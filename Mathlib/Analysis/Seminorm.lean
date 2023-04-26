@@ -301,11 +301,12 @@ noncomputable instance smul_nnreal_real : SMul ℝ≥0 ℝ := inferInstance
 -- I think we need this later, but it isn't available after turning on etaExperiment...
 noncomputable instance smul_nnreal_nnreal  : SMul ℝ≥0 ℝ≥0 := inferInstance
 
+-- Porting note: this one doesn't work by `inferInstance`, even though it is just an instance!
+noncomputable instance : SMul ℝ≥0 (Seminorm 𝕜 E) := smul
+
 variable [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ]
 
 -- Porting note:
--- FIXME: things start going wrong here:
-
 -- This is failing, because we are not finding the right instances!
 -- example (f : E →ₛₗ[σ₁₂] E₂) : E → E₂ := f
 -- However `etaExperiment` saves the day:
