@@ -171,10 +171,18 @@ instance [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] [SMul R' �
     [IsScalarTower R' ℝ≥0 ℝ] [SMul R R'] [IsScalarTower R R' ℝ] : IsScalarTower R R' (Seminorm 𝕜 E)
     where smul_assoc r a p := ext fun x => smul_assoc r a (p x)
 
+<<<<<<< HEAD
 theorem coe_smul [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] (r : R) (p : Seminorm 𝕜 E) :
     ⇑(r • p) = r • ⇑p :=
   rfl
 #align seminorm.coe_smul Seminorm.coe_smul
+=======
+-- Porting note: now a syntactic tautology
+-- theorem coe_smul [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] (r : R) (p : Seminorm 𝕜 E) :
+--     ⇑(r • p) = r • p :=
+--   rfl
+#noalign seminorm.coe_smul
+>>>>>>> f84d6d2cd4eb91138db5652f9d46df3aa0a51e11
 
 @[simp]
 theorem smul_apply [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] (r : R) (p : Seminorm 𝕜 E)
@@ -198,14 +206,14 @@ theorem add_apply (p q : Seminorm 𝕜 E) (x : E) : (p + q) x = p x + q x :=
 #align seminorm.add_apply Seminorm.add_apply
 
 instance : AddMonoid (Seminorm 𝕜 E) :=
-  FunLike.coe_injective.addMonoid _ rfl coe_add fun p n => coe_smul n p
+  FunLike.coe_injective.addMonoid _ rfl coe_add fun _ _ => by rfl
 
 instance : OrderedCancelAddCommMonoid (Seminorm 𝕜 E) :=
-  FunLike.coe_injective.orderedCancelAddCommMonoid _ rfl coe_add fun p n => coe_smul n p
+  FunLike.coe_injective.orderedCancelAddCommMonoid _ rfl coe_add fun _ _ => rfl
 
 instance [Monoid R] [MulAction R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] :
     MulAction R (Seminorm 𝕜 E) :=
-  FunLike.coe_injective.mulAction _ coe_smul
+  FunLike.coe_injective.mulAction _ (by intros; rfl)
 
 variable (𝕜 E)
 
@@ -225,10 +233,10 @@ variable {𝕜 E}
 
 instance [Monoid R] [DistribMulAction R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] :
     DistribMulAction R (Seminorm 𝕜 E) :=
-  (coeFnAddMonoidHom_injective 𝕜 E).distribMulAction _ coe_smul
+  (coeFnAddMonoidHom_injective 𝕜 E).distribMulAction _ (by intros; rfl)
 
 instance [Semiring R] [Module R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] : Module R (Seminorm 𝕜 E) :=
-  (coeFnAddMonoidHom_injective 𝕜 E).module R _ coe_smul
+  (coeFnAddMonoidHom_injective 𝕜 E).module R _ (by intros; rfl)
 
 instance : Sup (Seminorm 𝕜 E) where
   sup p q :=
@@ -402,7 +410,7 @@ theorem bot_eq_zero : (⊥ : Seminorm 𝕜 E) = 0 :=
 set_option synthInstance.maxHeartbeats 30000 in
 theorem smul_le_smul {p q : Seminorm 𝕜 E} {a b : ℝ≥0} (hpq : p ≤ q) (hab : a ≤ b) :
     a • p ≤ b • q := by
-  simp_rw [le_def, coe_smul]
+  simp_rw [le_def]
   intro x
   simp_rw [Pi.smul_apply, NNReal.smul_def, smul_eq_mul]
   exact mul_le_mul hab (hpq x) (map_nonneg p x) (NNReal.coe_nonneg b)
