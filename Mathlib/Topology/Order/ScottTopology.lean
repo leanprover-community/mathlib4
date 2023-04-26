@@ -325,11 +325,9 @@ lemma continuous_iff_scottContinuous
       have e1: IsLUB (f '' d) (f a) := h hd₁ hd₂ hd₃
       rw [isOpen_iff_upper_and_LUB_mem_implies_inter_nonempty] at hu
       have e2: ((f '' d) ∩ u).Nonempty := by
-        apply hu.2 _ _ (Nonempty.image f hd₁)
-        apply (directedOn_image.mpr (DirectedOn.mono hd₂ _))
+        apply hu.2 (f '' d) (f a) (Nonempty.image f hd₁)
+          (directedOn_image.mpr (DirectedOn.mono hd₂ _)) e1 ha
         apply h.monotone
-        apply e1
-        exact ha
       exact image_inter_nonempty_iff.mp e2
 
 end preorder
