@@ -257,12 +257,13 @@ theorem piIsoPi_inv_π_apply {ι : Type v} (α : ι → TopCatMax.{v, u}) (i : �
   ConcreteCategory.congr_hom (piIsoPi_inv_π α i) x
 #align Top.pi_iso_pi_inv_π_apply TopCat.piIsoPi_inv_π_apply
 
+-- Porting note: needing the type ascription on `∏ α : TopCatMax.{v, u}` is unfortunate.
 @[simp]
-theorem piIsoPi_hom_apply {ι : Type v} (α : ι → TopCatMax.{v, u}) (i : ι) (x : ∏ α) :
-    (piIsoPi α).hom x i = (Pi.π α i : _) x := by
-  have := pi_iso_pi_inv_π α i
-  rw [iso.inv_comp_eq] at this
-  exact concrete_category.congr_hom this x
+theorem piIsoPi_hom_apply {ι : Type v} (α : ι → TopCatMax.{v, u}) (i : ι)
+    (x : (∏ α : TopCatMax.{v, u})) : (piIsoPi α).hom x i = (Pi.π α i : _) x := by
+  have := piIsoPi_inv_π α i
+  rw [Iso.inv_comp_eq] at this
+  exact ConcreteCategory.congr_hom this x
 #align Top.pi_iso_pi_hom_apply TopCat.piIsoPi_hom_apply
 
 /-- The inclusion to the coproduct as a bundled continous map. -/
@@ -320,7 +321,8 @@ theorem induced_of_isLimit {F : J ⥤ TopCatMax.{v, u}} (C : Cone F) (hC : IsLim
   let homeo := homeoOfIso (hC.conePointUniqueUpToIso (limitConeInfiIsLimit F))
   refine' homeo.inducing.induced.trans _
   change induced homeo (⨅ j : J, _) = _
-  simpa [induced_infᵢ, induced_compose]
+  simp [induced_infᵢ, induced_compose]
+  rfl
 #align Top.induced_of_is_limit TopCat.induced_of_isLimit
 
 theorem limit_topology (F : J ⥤ TopCatMax.{v, u}) :
@@ -375,12 +377,16 @@ def prodIsoProd (X Y : TopCat.{u}) : X ⨯ Y ≅ TopCat.of (X × Y) :=
 
 @[reassoc (attr := simp)]
 theorem prodIsoProd_hom_fst (X Y : TopCat.{u}) :
-    (prodIsoProd X Y).hom ≫ prodFst = Limits.prod.fst := by simpa [← Iso.eq_inv_comp, prodIsoProd]
+    (prodIsoProd X Y).hom ≫ prodFst = Limits.prod.fst := by
+  simp [← Iso.eq_inv_comp, prodIsoProd]
+  rfl
 #align Top.prod_iso_prod_hom_fst TopCat.prodIsoProd_hom_fst
 
 @[reassoc (attr := simp)]
 theorem prodIsoProd_hom_snd (X Y : TopCat.{u}) :
-    (prodIsoProd X Y).hom ≫ prodSnd = Limits.prod.snd := by simpa [← Iso.eq_inv_comp, prodIsoProd]
+    (prodIsoProd X Y).hom ≫ prodSnd = Limits.prod.snd := by
+  simp [← Iso.eq_inv_comp, prodIsoProd]
+  rfl
 #align Top.prod_iso_prod_hom_snd TopCat.prodIsoProd_hom_snd
 
 @[simp]
@@ -409,7 +415,8 @@ theorem prod_topology {X Y : TopCat} :
   let homeo := homeoOfIso (prodIsoProd X Y)
   refine' homeo.inducing.induced.trans _
   change induced homeo (_ ⊓ _) = _
-  simpa [induced_compose]
+  simp [induced_compose]
+  rfl
 #align Top.prod_topology TopCat.prod_topology
 
 theorem range_prod_map {W X Y Z : TopCat.{u}} (f : W ⟶ Y) (g : X ⟶ Z) :
@@ -685,12 +692,12 @@ theorem pullback_map_openEmbedding_of_open_embeddings {W X Y Z S T : TopCat} (f�
   · rw [range_pullback_map]
     apply IsOpen.inter <;> apply Continuous.isOpen_preimage
     continuity
-    exacts[H₁.open_range, H₂.open_range]
+    exacts [H₁.open_range, H₂.open_range]
 #align Top.pullback_map_open_embedding_of_open_embeddings TopCat.pullback_map_openEmbedding_of_open_embeddings
 
 theorem snd_embedding_of_left_embedding {X Y S : TopCat} {f : X ⟶ S} (H : Embedding f) (g : Y ⟶ S) :
     Embedding <| ⇑(pullback.snd : pullback f g ⟶ Y) := by
-  convert(homeoOfIso (asIso (pullback.snd : pullback (𝟙 S) g ⟶ _))).embedding.comp
+  convert (homeoOfIso (asIso (pullback.snd : pullback (𝟙 S) g ⟶ _))).embedding.comp
       (pullback_map_embedding_of_embeddings f g (𝟙 _) g H (homeoOfIso (Iso.refl _)).embedding
         (𝟙 _) rfl (by simp))
   erw [← coe_comp]
@@ -699,7 +706,7 @@ theorem snd_embedding_of_left_embedding {X Y S : TopCat} {f : X ⟶ S} (H : Embe
 
 theorem fst_embedding_of_right_embedding {X Y S : TopCat} (f : X ⟶ S) {g : Y ⟶ S}
     (H : Embedding g) : Embedding <| ⇑(pullback.fst : pullback f g ⟶ X) := by
-  convert(homeoOfIso (asIso (pullback.fst : pullback f (𝟙 S) ⟶ _))).embedding.comp
+  convert (homeoOfIso (asIso (pullback.fst : pullback f (𝟙 S) ⟶ _))).embedding.comp
       (pullback_map_embedding_of_embeddings f g f (𝟙 _) (homeoOfIso (Iso.refl _)).embedding H
         (𝟙 _) rfl (by simp))
   erw [← coe_comp]
@@ -716,7 +723,7 @@ theorem embedding_of_pullback_embeddings {X Y S : TopCat} {f : X ⟶ S} {g : Y �
 
 theorem snd_openEmbedding_of_left_openEmbedding {X Y S : TopCat} {f : X ⟶ S} (H : OpenEmbedding f)
     (g : Y ⟶ S) : OpenEmbedding <| ⇑(pullback.snd : pullback f g ⟶ Y) := by
-  convert(homeoOfIso (asIso (pullback.snd : pullback (𝟙 S) g ⟶ _))).openEmbedding.comp
+  convert (homeoOfIso (asIso (pullback.snd : pullback (𝟙 S) g ⟶ _))).openEmbedding.comp
       (pullback_map_openEmbedding_of_open_embeddings f g (𝟙 _) g H
         (homeoOfIso (Iso.refl _)).openEmbedding (𝟙 _) rfl (by simp))
   erw [← coe_comp]
@@ -725,7 +732,7 @@ theorem snd_openEmbedding_of_left_openEmbedding {X Y S : TopCat} {f : X ⟶ S} (
 
 theorem fst_openEmbedding_of_right_openEmbedding {X Y S : TopCat} (f : X ⟶ S) {g : Y ⟶ S}
     (H : OpenEmbedding g) : OpenEmbedding <| ⇑(pullback.fst : pullback f g ⟶ X) := by
-  convert(homeoOfIso (asIso (pullback.fst : pullback f (𝟙 S) ⟶ _))).openEmbedding.comp
+  convert (homeoOfIso (asIso (pullback.fst : pullback f (𝟙 S) ⟶ _))).openEmbedding.comp
       (pullbackMapOpenEmbeddingOfOpenEmbeddings f g f (𝟙 _)
         (homeoOfIso (Iso.refl _)).ppenEmbedding H (𝟙 _) rfl (by simp))
   erw [← coe_comp]
@@ -935,9 +942,9 @@ theorem binaryCofan_isColimit_iff {X Y : TopCat} (c : BinaryCofan X Y) :
 --TODO: Add analogous constructions for `pushout`.
 theorem coinduced_of_isColimit {F : J ⥤ TopCatMax.{v, u}} (c : Cocone F) (hc : IsColimit c) :
     c.pt.str = ⨆ j, (F.obj j).str.coinduced (c.ι.app j) := by
-  let homeo := homeoOfIso (hc.cocone_point_unique_up_to_iso (colimitCoconeIsColimit F))
+  let homeo := homeoOfIso (hc.coconePointUniqueUpToIso (colimitCoconeIsColimit F))
   ext
-  refine' homeo.symm.is_open_preimage.symm.trans (Iff.trans _ is_open_supr_iff.symm)
+  refine' homeo.symm.isOpen_preimage.symm.trans (Iff.trans _ isOpen_supᵢ_iff.symm)
   exact isOpen_supᵢ_iff
 #align Top.coinduced_of_is_colimit TopCat.coinduced_of_isColimit
 
@@ -989,12 +996,12 @@ theorem isTopologicalBasis_cofiltered_limit (T : ∀ j, Set (Set (F.obj j)))
     -- The limit cone for `F` whose topology is defined as an infimum.
     let D := limitConeInfi F
     -- The isomorphism between the cone point of `C` and the cone point of `D`.
-    let E : C.X ≅ D.X := hC.cone_point_unique_up_to_iso (limit_cone_infi_is_limit _)
-    have hE : Inducing E.hom := (TopCat.homeoOfIso E).Inducing
+    let E : C.pt ≅ D.pt := hC.conePointUniqueUpToIso (limitConeInfiIsLimit _)
+    have hE : Inducing E.hom := (TopCat.homeoOfIso E).inducing
     -- Reduce to the assertion of the theorem with `D` instead of `C`.
     suffices
-      is_topological_basis
-        { U : Set D.X | ∃ (j : _)(V : Set (F.obj j)), V ∈ T j ∧ U = D.π.app j ⁻¹' V } by
+      IsTopologicalBasis
+        { U : Set D.pt | ∃ (j : _)(V : Set (F.obj j)), V ∈ T j ∧ U = D.π.app j ⁻¹' V } by
       convert this.inducing hE
       ext U0
       constructor
@@ -1004,7 +1011,7 @@ theorem isTopologicalBasis_cofiltered_limit (T : ∀ j, Set (Set (F.obj j)))
         refine' ⟨j, V, hV, rfl⟩
     -- Using `D`, we can apply the characterization of the topological basis of a
     -- topology defined as an infimum...
-    convert isTopologicalBasis_infᵢ hT fun j (x : D.X) => D.π.app j x
+    convert isTopologicalBasis_infᵢ hT fun j (x : D.pt) => D.π.app j x
     ext U0
     constructor
     · rintro ⟨j, V, hV, rfl⟩
@@ -1114,7 +1121,7 @@ theorem partialSections.nonempty [IsCofilteredOrEmpty J] [h : ∀ j : J, Nonempt
     {G : Finset J} (H : Finset (FiniteDiagramArrow G)) : (partialSections F H).Nonempty := by
     haveI : IsCofiltered J := ⟨⟩
     use fun j : J =>
-      if hj : j ∈ G then F.map (IsCofiltered.inf_to G H hj) (h (IsCofiltered.inf G H)).some
+      if hj : j ∈ G then F.map (IsCofiltered.infTo G H hj) (h (IsCofiltered.inf G H)).some
       else (h _).some
     rintro ⟨X, Y, hX, hY, f⟩ hf
     dsimp only
