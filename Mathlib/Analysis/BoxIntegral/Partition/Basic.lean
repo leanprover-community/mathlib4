@@ -631,11 +631,12 @@ theorem filter_true : (π.filter fun _ => True) = π :=
 theorem unionᵢ_filter_not (π : Prepartition I) (p : Box ι → Prop) :
     (π.filter fun J => ¬p J).unionᵢ = π.unionᵢ \ (π.filter p).unionᵢ := by
   simp only [Prepartition.unionᵢ]
-  convert(@Set.bunionᵢ_diff_bunionᵢ_eq _ (Box ι) π.boxes (π.filter p).boxes (↑) _).symm
-  · ext (J x)
-    simp (config := { contextual := true })
-  · convert π.PairwiseDisjoint
-    simp
+  convert (@Set.bunionᵢ_diff_bunionᵢ_eq _ (Box ι) π.boxes (π.filter p).boxes (↑) _).symm
+  · simp (config := { contextual := true })
+  · rw [Set.PairwiseDisjoint]
+    convert π.PairwiseDisjoint
+    rw [Set.union_eq_left_iff_subset, filter_boxes, coe_filter]
+    exact fun _ ⟨h, _⟩ => h
 #align box_integral.prepartition.Union_filter_not BoxIntegral.Prepartition.unionᵢ_filter_not
 
 theorem sum_fiberwise {α M} [AddCommMonoid M] (π : Prepartition I) (f : Box ι → α) (g : Box ι → M) :
