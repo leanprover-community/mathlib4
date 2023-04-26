@@ -49,6 +49,8 @@ variable {R R' 𝕜 𝕜₂ 𝕜₃ 𝕝 E E₂ E₃ F G ι : Type _}
 semidefinite, positive homogeneous, and subadditive. -/
 structure Seminorm (𝕜 : Type _) (E : Type _) [SeminormedRing 𝕜] [AddGroup E] [SMul 𝕜 E] extends
   AddGroupSeminorm E where
+  /-- The seminorm of a scalar multiplication is the product of the absolute value of the scalar
+  and the original seminorm. -/
   smul' : ∀ (a : 𝕜) (x : E), toFun (a • x) = ‖a‖ * toFun x
 #align seminorm Seminorm
 
@@ -59,6 +61,8 @@ attribute [nolint docBlame] Seminorm.toAddGroupSeminorm
 You should extend this class when you extend `Seminorm`. -/
 class SeminormClass (F : Type _) (𝕜 E : outParam <| Type _) [SeminormedRing 𝕜] [AddGroup E]
   [SMul 𝕜 E] extends AddGroupSeminormClass F E ℝ where
+  /-- The seminorm of a scalar multiplication is the product of the absolute value of the scalar
+  and the original seminorm. -/
   map_smul_eq_mul (f : F) (a : 𝕜) (x : E) : f (a • x) = ‖a‖ * f x
 #align seminorm_class SeminormClass
 
@@ -168,7 +172,7 @@ instance [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] [SMul R' �
     where smul_assoc r a p := ext fun x => smul_assoc r a (p x)
 
 theorem coe_smul [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] (r : R) (p : Seminorm 𝕜 E) :
-    ⇑(r • p) = r • p :=
+    ⇑(r • p) = r • ⇑p :=
   rfl
 #align seminorm.coe_smul Seminorm.coe_smul
 
