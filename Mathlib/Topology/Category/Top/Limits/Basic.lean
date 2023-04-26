@@ -29,7 +29,16 @@ open CategoryTheory.Limits
 
 open Opposite
 
--- FIXME needs documentation explaining this trick.
+/--
+Universe inequalities in Mathlib 3 are expressed through use of `max u v`. Unfortunately,
+this leads to unbound universes which cannot be solved for during unification, eg
+`max u v =?= max v ?`.
+The current solution is to wrap `Type max u v` in `TypeMax.{u,v}`
+to expose both universe parameters directly.
+
+Similarly, for other concrete categories for which we need to refer to the maximum of two universes
+(e.g. any category for which we are constructing limits), we need an analogous abbreviation.
+-/
 abbrev TopCatMax.{u, v} := TopCat.{max u v}
 
 universe v u w
