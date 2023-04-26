@@ -441,7 +441,6 @@ def iso (X : C) : (Arrow.mk (terminal.from X)).cechNerve ≅ cechNerveTerminalFr
     erw [wideCospan.limitIsoPi_hom_comp_pi,
       wideCospan.limitIsoPi_hom_comp_pi, limit.lift_π]
     rfl)
-
 #align category_theory.cech_nerve_terminal_from.iso CategoryTheory.CechNerveTerminalFrom.iso
 
 end CechNerveTerminalFrom

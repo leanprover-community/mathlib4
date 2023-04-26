@@ -256,7 +256,6 @@ theorem ConvexOn.convex_epigraph (hf : ConvexOn 𝕜 s f) :
   calc
     f (a • x + b • y) ≤ a • f x + b • f y := hf.2 hx hy ha hb hab
     _ ≤ a • r + b • t := add_le_add (smul_le_smul_of_nonneg hr ha) (smul_le_smul_of_nonneg ht hb)
-
 #align convex_on.convex_epigraph ConvexOn.convex_epigraph
 
 set_option synthInstance.etaExperiment true in -- lean4#2074
@@ -582,7 +581,6 @@ theorem ConvexOn.openSegment_subset_strict_epigraph (hf : ConvexOn 𝕜 s f) (p 
     f (a • p.1 + b • q.1) ≤ a • f p.1 + b • f q.1 := hf.2 hp.1 hq.1 ha.le hb.le hab
     _ < a • p.2 + b • q.2 :=
       add_lt_add_of_lt_of_le (smul_lt_smul_of_pos hp.2 ha) (smul_le_smul_of_nonneg hq.2 hb.le)
-
 #align convex_on.open_segment_subset_strict_epigraph ConvexOn.openSegment_subset_strict_epigraph
 
 set_option synthInstance.etaExperiment true in -- lean4#2074
@@ -624,7 +622,6 @@ theorem ConvexOn.sup (hf : ConvexOn 𝕜 s f) (hg : ConvexOn 𝕜 s g) : ConvexO
       g (a • x + b • y) ≤ a • g x + b • g y := hg.right hx hy ha hb hab
       _ ≤ a • (f x ⊔ g x) + b • (f y ⊔ g y) :=
         add_le_add (smul_le_smul_of_nonneg le_sup_right ha) (smul_le_smul_of_nonneg le_sup_right hb)
-
 #align convex_on.sup ConvexOn.sup
 
 set_option synthInstance.etaExperiment true in -- lean4#2074
@@ -700,7 +697,6 @@ theorem StrictConvexOn.lt_on_open_segment' (hf : StrictConvexOn 𝕜 s f) {x y :
       (add_le_add (smul_le_smul_of_nonneg (le_max_left _ _) ha.le)
         (smul_le_smul_of_nonneg (le_max_right _ _) hb.le))
     _ = max (f x) (f y) := Convex.combo_self hab _
-
 #align strict_convex_on.lt_on_open_segment' StrictConvexOn.lt_on_open_segment'
 
 set_option synthInstance.etaExperiment true in -- lean4#2074
@@ -748,7 +744,6 @@ theorem ConvexOn.le_left_of_right_le' (hf : ConvexOn 𝕜 s f) {x y : E} (hx : x
         _ < a • f (a • x + b • y) + b • f (a • x + b • y) :=
           (add_lt_add_of_lt_of_le (smul_lt_smul_of_pos h ha) (smul_le_smul_of_nonneg hfy hb))
         _ = f (a • x + b • y) := Convex.combo_self hab _
-
 #align convex_on.le_left_of_right_le' ConvexOn.le_left_of_right_le'
 
 set_option synthInstance.etaExperiment true in -- lean4#2074
@@ -814,7 +809,6 @@ theorem ConvexOn.lt_left_of_right_lt' (hf : ConvexOn 𝕜 s f) {x y : E} (hx : x
         _ < a • f (a • x + b • y) + b • f (a • x + b • y) :=
           (add_lt_add_of_le_of_lt (smul_le_smul_of_nonneg h ha.le) (smul_lt_smul_of_pos hfy hb))
         _ = f (a • x + b • y) := Convex.combo_self hab _
-
 #align convex_on.lt_left_of_right_lt' ConvexOn.lt_left_of_right_lt'
 
 set_option synthInstance.etaExperiment true in -- lean4#2074

@@ -110,7 +110,6 @@ theorem rotate'_mod (l : List α) (n : ℕ) : l.rotate' (n % l.length) = l.rotat
         (l.rotate' (n % l.length)).rotate' ((l.rotate' (n % l.length)).length * (n / l.length)) :=
       by rw [rotate'_length_mul]
     _ = l.rotate' n := by rw [rotate'_rotate', length_rotate', Nat.mod_add_div]
-
 #align list.rotate'_mod List.rotate'_mod
 
 theorem rotate_eq_rotate' (l : List α) (n : ℕ) : l.rotate n = l.rotate' n :=

@@ -151,7 +151,6 @@ theorem leadingCoeff_multiset_prod' (h : (t.map leadingCoeff).prod ≠ 0) :
     · rw [ih]
       simp [*]
       apply right_ne_zero_of_mul h
-
 #align polynomial.leading_coeff_multiset_prod' Polynomial.leadingCoeff_multiset_prod'
 
 /-- The leading coefficient of a product of polynomials is equal to

@@ -111,8 +111,7 @@ theorem card_div_choose_le_card_shadow_div_choose (hr : r ≠ 0)
       exact Or.inl (mul_comm _ _)
   · exact Nat.choose_pos hr'
   · exact Nat.choose_pos (r.pred_le.trans hr')
-#align finset.card_div_choose_le_card_shadow_div_choose
-    Finset.card_div_choose_le_card_shadow_div_choose
+#align finset.card_div_choose_le_card_shadow_div_choose Finset.card_div_choose_le_card_shadow_div_choose
 
 end LocalLYM
 
@@ -202,8 +201,7 @@ theorem le_card_falling_div_choose [Fintype α] (hk : k ≤ Fintype.card α)
     add_le_add_left
       ((ih <| le_of_succ_le hk).trans <|
         card_div_choose_le_card_shadow_div_choose (tsub_pos_iff_lt.2 <| Nat.succ_le_iff.1 hk).ne' <|
-          sized_falling _ _)
-      _
+          sized_falling _ _) _
 #align finset.le_card_falling_div_choose Finset.le_card_falling_div_choose
 
 end Falling

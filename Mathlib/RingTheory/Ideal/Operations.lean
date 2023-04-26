@@ -402,7 +402,6 @@ theorem mem_colon_singleton {N : Submodule R M} {x : M} {r : R} :
     r ∈ N.colon (Submodule.span R {x}) ↔ ∀ a : R, r • a • x ∈ N := by
       simp [Submodule.mem_colon, Submodule.mem_span_singleton]
     _ ↔ r • x ∈ N := by simp_rw [fun (a : R) ↦ smul_comm r a x]; exact SetLike.forall_smul_mem_iff
-
 #align submodule.mem_colon_singleton Submodule.mem_colon_singleton
 
 @[simp]
@@ -803,7 +802,6 @@ theorem pow_le_self {n : ℕ} (hn : n ≠ 0) : I ^ n ≤ I :=
   calc
     I ^ n ≤ I ^ 1 := pow_le_pow (Nat.pos_of_ne_zero hn)
     _ = I := pow_one _
-
 #align ideal.pow_le_self Ideal.pow_le_self
 
 theorem pow_mono {I J : Ideal R} (e : I ≤ J) (n : ℕ) : I ^ n ≤ J ^ n := by
@@ -1776,7 +1774,6 @@ theorem map.isMaximal {I : Ideal R} (H : IsMaximal I) : IsMaximal (map f I) := b
       I = comap f (map f I) := ((relIsoOfBijective f hf).right_inv I).symm
       _ = comap f ⊤ := by rw [h]
       _ = ⊤ := by rw [comap_top]
-
 #align ideal.map.is_maximal Ideal.map.isMaximal
 
 end Bijective
@@ -1961,7 +1958,7 @@ private instance : Module R S := Algebra.toModule
 noncomputable def basisSpanSingleton (b : Basis ι R S) {x : S} (hx : x ≠ 0) :
     Basis ι R (span ({x} : Set S)) :=
   b.map <|
-    LinearEquiv.ofInjective (LinearMap.Algebra.lmul R S x) (LinearMap.mul_injective hx) ≪≫ₗ
+    LinearEquiv.ofInjective (Algebra.lmul R S x) (LinearMap.mul_injective hx) ≪≫ₗ
         LinearEquiv.ofEq _ _
           (by
             ext
@@ -1974,13 +1971,13 @@ theorem basisSpanSingleton_apply (b : Basis ι R S) {x : S} (hx : x ≠ 0) (i : 
     (basisSpanSingleton b hx i : S) = x * b i := by
   simp only [basisSpanSingleton, Basis.map_apply, LinearEquiv.trans_apply,
     Submodule.restrictScalarsEquiv_apply, LinearEquiv.ofInjective_apply, LinearEquiv.coe_ofEq_apply,
-    LinearEquiv.restrictScalars_apply, LinearMap.Algebra.coe_lmul_eq_mul, LinearMap.mul_apply']
+    LinearEquiv.restrictScalars_apply, Algebra.coe_lmul_eq_mul, LinearMap.mul_apply']
 #align ideal.basis_span_singleton_apply Ideal.basisSpanSingleton_apply
 
 @[simp]
 theorem constr_basisSpanSingleton {N : Type _} [Semiring N] [Module N S] [SMulCommClass R N S]
     (b : Basis ι R S) {x : S} (hx : x ≠ 0) :
-    (b.constr N).toFun (((↑) : _ → S) ∘ (basisSpanSingleton b hx)) = LinearMap.Algebra.lmul R S x :=
+    (b.constr N).toFun (((↑) : _ → S) ∘ (basisSpanSingleton b hx)) = Algebra.lmul R S x :=
   b.ext fun i => by
     erw [Basis.constr_basis, Function.comp_apply, basisSpanSingleton_apply, LinearMap.mul_apply']
 #align ideal.constr_basis_span_singleton Ideal.constr_basisSpanSingleton
