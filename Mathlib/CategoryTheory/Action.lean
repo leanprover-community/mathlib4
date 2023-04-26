@@ -75,7 +75,7 @@ theorem π_obj (p : ActionCategory M X) : (π M X).obj p = SingleObj.star M :=
 
 variable {M X}
 
-/-- The canonical map `ActionCategory M X → X`. It is given by `λ x, x.snd`, but
+/-- The canonical map `ActionCategory M X → X`. It is given by `fun x => x.snd`, but
   has a more explicit type. -/
 protected def back : ActionCategory M X → X := fun x => x.snd
 #align category_theory.action_category.back CategoryTheory.ActionCategory.back
@@ -122,12 +122,12 @@ def stabilizerIsoEnd : Stabilizer.submonoid M x ≃* @End (ActionCategory M X) _
 
 @[simp]
 theorem stabilizerIsoEnd_apply (f : Stabilizer.submonoid M x) :
-    (stabilizerIsoEnd M x).toFun f = f :=
+    (stabilizerIsoEnd M x) f = f :=
   rfl
 #align category_theory.action_category.stabilizer_iso_End_apply CategoryTheory.ActionCategory.stabilizerIsoEnd_apply
 
-@[simp]
-theorem stabilizerIsoEnd_symm_apply (f : End _) : (stabilizerIsoEnd M x).invFun f = f :=
+@[simp 1100]
+theorem stabilizerIsoEnd_symm_apply (f : End _) : (stabilizerIsoEnd M x).symm f = f :=
   rfl
 #align category_theory.action_category.stabilizer_iso_End_symm_apply CategoryTheory.ActionCategory.stabilizerIsoEnd_symm_apply
 
