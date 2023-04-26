@@ -211,10 +211,9 @@ theorem indecomposable_of_simple (X : C) [Simple X] : Indecomposable X :=
     refine' or_iff_not_imp_left.mpr fun h => _
     rw [IsZero.iff_isSplitMono_eq_zero (biprod.inl : Y ⟶ Y ⊞ Z)] at h
     change biprod.inl ≠ 0 at h
+    have : Simple (Y ⊞ Z) := by exact Simple.of_iso i.symm -- Porting note: this instance is needed
     rw [← Simple.mono_isIso_iff_nonzero biprod.inl] at h
-    · rwa [biprod.is_iso_inl_iff_is_zero] at h
-    · exact simple.of_iso i.symm
-    · infer_instance⟩
+    rwa [Biprod.isIso_inl_iff_isZero] at h⟩
 #align category_theory.indecomposable_of_simple CategoryTheory.indecomposable_of_simple
 
 end Indecomposable
