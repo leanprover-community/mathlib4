@@ -39,8 +39,10 @@ open CategoryTheory
 /-- The type of Compact Hausdorff topological spaces. -/
 structure CompHaus where
   toTop : TopCat
-  [IsCompact : CompactSpace to_Top]
-  [is_hausdorff : T2Space to_Top]
+  -- Porting note: Renamed field.
+  [is_compact : CompactSpace toTop]
+  [is_hausdorff : T2Space toTop]
+set_option linter.uppercaseLean3 false in
 #align CompHaus CompHaus
 
 namespace CompHaus
@@ -52,22 +54,25 @@ instance : CoeSort CompHaus (Type _) :=
   ⟨fun X => X.toTop⟩
 
 instance {X : CompHaus} : CompactSpace X :=
-  X.IsCompact
+  X.is_compact
 
 instance {X : CompHaus} : T2Space X :=
   X.is_hausdorff
 
 instance category : Category CompHaus :=
   InducedCategory.category toTop
+set_option linter.uppercaseLean3 false in
 #align CompHaus.category CompHaus.category
 
 instance concreteCategory : ConcreteCategory CompHaus :=
   InducedCategory.concreteCategory _
+set_option linter.uppercaseLean3 false in
 #align CompHaus.concrete_category CompHaus.concreteCategory
 
 @[simp]
 theorem coe_toTop {X : CompHaus} : (X.toTop : Type _) = X :=
   rfl
+set_option linter.uppercaseLean3 false in
 #align CompHaus.coe_to_Top CompHaus.coe_toTop
 
 variable (X : Type _) [TopologicalSpace X] [CompactSpace X] [T2Space X]
@@ -77,18 +82,33 @@ taking a type, and bundling the compact Hausdorff topology
 found by typeclass inference. -/
 def of : CompHaus where
   toTop := TopCat.of X
-  IsCompact := ‹_›
+  is_compact := ‹_›
   is_hausdorff := ‹_›
+set_option linter.uppercaseLean3 false in
 #align CompHaus.of CompHaus.of
 
 @[simp]
 theorem coe_of : (CompHaus.of X : Type _) = X :=
   rfl
+set_option linter.uppercaseLean3 false in
 #align CompHaus.coe_of CompHaus.coe_of
 
+-- Porting note: Adding instance
+instance (X : CompHaus.{u}) : TopologicalSpace ((forget CompHaus).obj X) :=
+show TopologicalSpace X.toTop from inferInstance
+
+-- Porting note: Adding instance
+instance (X : CompHaus.{u}) : CompactSpace ((forget CompHaus).obj X) :=
+show CompactSpace X.toTop from inferInstance
+
+-- Porting note: Adding instance
+instance (X : CompHaus.{u}) : T2Space ((forget CompHaus).obj X) :=
+show T2Space X.toTop from inferInstance
+
 /-- Any continuous function on compact Hausdorff spaces is a closed map. -/
-theorem isClosedMap {X Y : CompHaus.{u}} (f : X ⟶ Y) : IsClosedMap f := fun C hC =>
-  (hC.IsCompact.image f.Continuous).IsClosed
+theorem isClosedMap {X Y : CompHaus.{u}} (f : X ⟶ Y) : IsClosedMap f := fun _ hC =>
+  (hC.isCompact.image f.continuous).isClosed
+set_option linter.uppercaseLean3 false in
 #align CompHaus.is_closed_map CompHaus.isClosedMap
 
 /-- Any continuous bijection of compact Hausdorff spaces is an isomorphism. -/
@@ -99,39 +119,59 @@ theorem isIso_of_bijective {X Y : CompHaus.{u}} (f : X ⟶ Y) (bij : Function.Bi
     rw [continuous_iff_isClosed]
     intro S hS
     rw [← E.image_eq_preimage]
-    exact IsClosedMap f S hS
+    exact isClosedMap f S hS
   refine' ⟨⟨⟨E.symm, hE⟩, _, _⟩⟩
   · ext x
     apply E.symm_apply_apply
   · ext x
     apply E.apply_symm_apply
+set_option linter.uppercaseLean3 false in
 #align CompHaus.is_iso_of_bijective CompHaus.isIso_of_bijective
 
 /-- Any continuous bijection of compact Hausdorff spaces induces an isomorphism. -/
 noncomputable def isoOfBijective {X Y : CompHaus.{u}} (f : X ⟶ Y) (bij : Function.Bijective f) :
     X ≅ Y :=
-  letI := is_iso_of_bijective _ bij
-  as_iso f
+  letI := isIso_of_bijective _ bij
+  asIso f
+set_option linter.uppercaseLean3 false in
 #align CompHaus.iso_of_bijective CompHaus.isoOfBijective
 
 end CompHaus
 
 /-- The fully faithful embedding of `CompHaus` in `Top`. -/
-@[simps (config := { rhsMd := semireducible })]
+-- Porting note: `semireducible` -> `.default`.
+@[simps (config := { rhsMd := .default })]
 def compHausToTop : CompHaus.{u} ⥤ TopCat.{u} :=
-  inducedFunctor _ deriving Full, Faithful
+  inducedFunctor _ -- deriving Full, Faithful -- Porting note: deriving fails, adding manually.
+set_option linter.uppercaseLean3 false in
 #align CompHaus_to_Top compHausToTop
 
+instance : Full compHausToTop :=
+show Full <| inducedFunctor _ from inferInstance
+
+instance : Faithful compHausToTop :=
+show Faithful <| inducedFunctor _ from inferInstance
+
+-- Porting note: Adding instance
+instance (X : CompHaus) : CompactSpace (compHausToTop.obj X) :=
+show CompactSpace X.toTop from inferInstance
+
+-- Porting note: Adding instance
+instance (X : CompHaus) : T2Space (compHausToTop.obj X) :=
+show T2Space X.toTop from inferInstance
+
 instance CompHaus.forget_reflectsIsomorphisms : ReflectsIsomorphisms (forget CompHaus.{u}) :=
-  ⟨by intro A B f hf <;> exact CompHaus.isIso_of_bijective _ ((is_iso_iff_bijective f).mp hf)⟩
+  ⟨by intro A B f hf ; exact CompHaus.isIso_of_bijective _ ((isIso_iff_bijective f).mp hf)⟩
+set_option linter.uppercaseLean3 false in
 #align CompHaus.forget_reflects_isomorphisms CompHaus.forget_reflectsIsomorphisms
 
 /-- (Implementation) The object part of the compactification functor from topological spaces to
 compact Hausdorff spaces.
 -/
-@[simps]
+@[simps!]
 def stoneCechObj (X : TopCat) : CompHaus :=
   CompHaus.of (StoneCech X)
+set_option linter.uppercaseLean3 false in
 #align StoneCech_obj stoneCechObj
 
 /-- (Implementation) The bijection of homsets to establish the reflective adjunction of compact
@@ -147,14 +187,19 @@ noncomputable def stoneCechEquivalence (X : TopCat.{u}) (Y : CompHaus.{u}) :
       continuous_toFun := continuous_stoneCechExtend f.2 }
   left_inv := by
     rintro ⟨f : StoneCech X ⟶ Y, hf : Continuous f⟩
-    ext (x : StoneCech X)
+    -- Porting note: `ext` fails.
+    apply ContinuousMap.ext
+    intro (x : StoneCech X)
     refine' congr_fun _ x
     apply Continuous.ext_on denseRange_stoneCechUnit (continuous_stoneCechExtend _) hf
     rintro _ ⟨y, rfl⟩
     apply congr_fun (stoneCechExtend_extends (hf.comp _)) y
+    apply continuous_stoneCechUnit
   right_inv := by
     rintro ⟨f : (X : Type _) ⟶ Y, hf : Continuous f⟩
-    ext
+    -- Porting note: `ext` fails.
+    apply ContinuousMap.ext
+    intro
     exact congr_fun (stoneCechExtend_extends hf) _
 #align stone_cech_equivalence stoneCechEquivalence
 
@@ -163,28 +208,34 @@ left adjoint to the inclusion functor.
 -/
 noncomputable def topToCompHaus : TopCat.{u} ⥤ CompHaus.{u} :=
   Adjunction.leftAdjointOfEquiv stoneCechEquivalence.{u} fun _ _ _ _ _ => rfl
+set_option linter.uppercaseLean3 false in
 #align Top_to_CompHaus topToCompHaus
 
 theorem topToCompHaus_obj (X : TopCat) : ↥(topToCompHaus.obj X) = StoneCech X :=
   rfl
+set_option linter.uppercaseLean3 false in
 #align Top_to_CompHaus_obj topToCompHaus_obj
 
 /-- The category of compact Hausdorff spaces is reflective in the category of topological spaces.
 -/
 noncomputable instance compHausToTop.reflective : Reflective compHausToTop
     where toIsRightAdjoint := ⟨topToCompHaus, Adjunction.adjunctionOfEquivLeft _ _⟩
+set_option linter.uppercaseLean3 false in
 #align CompHaus_to_Top.reflective compHausToTop.reflective
 
 noncomputable instance compHausToTop.createsLimits : CreatesLimits compHausToTop :=
   monadicCreatesLimits _
+set_option linter.uppercaseLean3 false in
 #align CompHaus_to_Top.creates_limits compHausToTop.createsLimits
 
 instance CompHaus.hasLimits : Limits.HasLimits CompHaus :=
   has_limits_of_has_limits_creates_limits compHausToTop
+set_option linter.uppercaseLean3 false in
 #align CompHaus.has_limits CompHaus.hasLimits
 
 instance CompHaus.hasColimits : Limits.HasColimits CompHaus :=
   has_colimits_of_reflective compHausToTop
+set_option linter.uppercaseLean3 false in
 #align CompHaus.has_colimits CompHaus.hasColimits
 
 namespace CompHaus
@@ -192,11 +243,13 @@ namespace CompHaus
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 /-- An explicit limit cone for a functor `F : J ⥤ CompHaus`, defined in terms of
 `Top.limit_cone`. -/
-def limitCone {J : Type v} [SmallCategory J] (F : J ⥤ CompHaus.{max v u}) : Limits.Cone F where
-  pt :=
-    { toTop := (TopCat.limitCone (F ⋙ compHausToTop)).pt
-      IsCompact := by
-        show CompactSpace ↥{ u : ∀ j, F.obj j | ∀ {i j : J} (f : i ⟶ j), (F.map f) (u i) = u j }
+def limitCone {J : Type v} [SmallCategory J] (F : J ⥤ CompHaus.{max v u}) : Limits.Cone F :=
+  -- Porting note: Exploit the `TopCatMax` trick.
+  letI FF : J ⥤ TopCatMax.{v,u} := F ⋙ compHausToTop
+  { pt := {
+      toTop := (TopCat.limitCone FF).pt
+      is_compact := by
+        show CompactSpace { u : ∀ j, F.obj j | ∀ {i j : J} (f : i ⟶ j), (F.map f) (u i) = u j }
         rw [← isCompact_iff_compactSpace]
         apply IsClosed.isCompact
         have :
@@ -215,57 +268,73 @@ def limitCone {J : Type v} [SmallCategory J] (F : J ⥤ CompHaus.{max v u}) : Li
         · exact (ContinuousMap.continuous (F.map f)).comp (continuous_apply i)
         · exact continuous_apply j
       is_hausdorff :=
-        show T2Space ↥{ u : ∀ j, F.obj j | ∀ {i j : J} (f : i ⟶ j), (F.map f) (u i) = u j } from
+        show T2Space { u : ∀ j, F.obj j | ∀ {i j : J} (f : i ⟶ j), (F.map f) (u i) = u j } from
           inferInstance }
-  π :=
-    { app := fun j => (TopCat.limitCone (F ⋙ compHausToTop)).π.app j
-      naturality' := by
-        intro _ _ _
+    π := {
+      app := fun j => (TopCat.limitCone FF).π.app j
+      naturality := by
+        intro _ _ f
         ext ⟨x, hx⟩
-        simp only [comp_apply, functor.const_obj_map, id_apply]
-        exact (hx f).symm }
+        simp only [comp_apply, Functor.const_obj_map, id_apply]
+        exact (hx f).symm } }
+set_option linter.uppercaseLean3 false in
 #align CompHaus.limit_cone CompHaus.limitCone
 
 /-- The limit cone `CompHaus.limit_cone F` is indeed a limit cone. -/
 def limitConeIsLimit {J : Type v} [SmallCategory J] (F : J ⥤ CompHaus.{max v u}) :
-    Limits.IsLimit (limitCone F) where
-  lift S := (TopCat.limitConeIsLimit (F ⋙ compHausToTop)).lift (compHausToTop.mapCone S)
-  uniq S m h := (TopCat.limitConeIsLimit _).uniq (compHausToTop.mapCone S) _ h
+    Limits.IsLimit.{v} (limitCone.{v,u} F) :=
+  letI FF : J ⥤ TopCatMax.{v,u} := F ⋙ compHausToTop
+  { lift := fun S => (TopCat.limitConeIsLimit FF).lift (compHausToTop.mapCone S)
+    fac := fun S => (TopCat.limitConeIsLimit FF).fac (compHausToTop.mapCone S)
+    uniq := fun S => (TopCat.limitConeIsLimit FF).uniq (compHausToTop.mapCone S) }
+set_option linter.uppercaseLean3 false in
 #align CompHaus.limit_cone_is_limit CompHaus.limitConeIsLimit
 
 theorem epi_iff_surjective {X Y : CompHaus.{u}} (f : X ⟶ Y) : Epi f ↔ Function.Surjective f := by
   constructor
-  · contrapose!
+  · dsimp [Function.Surjective]
+    contrapose!
     rintro ⟨y, hy⟩ hf
     let C := Set.range f
-    have hC : IsClosed C := (isCompact_range f.continuous).IsClosed
-    let D := {y}
+    have hC : IsClosed C := (isCompact_range f.continuous).isClosed
+    let D := ({y} : Set Y)
     have hD : IsClosed D := isClosed_singleton
     have hCD : Disjoint C D := by
       rw [Set.disjoint_singleton_right]
       rintro ⟨y', hy'⟩
       exact hy y' hy'
-    haveI : NormalSpace ↥Y.to_Top := normalOfCompactT2
+    --haveI : NormalSpace Y.toTop := normalOfCompactT2
+    haveI : NormalSpace ((forget CompHaus).obj Y) := normalOfCompactT2
     obtain ⟨φ, hφ0, hφ1, hφ01⟩ := exists_continuous_zero_one_of_closed hC hD hCD
-    haveI : CompactSpace (ULift.{u} <| Set.Icc (0 : ℝ) 1) := homeomorph.ulift.symm.compact_space
-    haveI : T2Space (ULift.{u} <| Set.Icc (0 : ℝ) 1) := homeomorph.ulift.symm.t2_space
+    haveI : CompactSpace (ULift.{u} <| Set.Icc (0 : ℝ) 1) := Homeomorph.ulift.symm.compactSpace
+    haveI : T2Space (ULift.{u} <| Set.Icc (0 : ℝ) 1) := Homeomorph.ulift.symm.t2Space
     let Z := of (ULift.{u} <| Set.Icc (0 : ℝ) 1)
     let g : Y ⟶ Z :=
       ⟨fun y' => ⟨⟨φ y', hφ01 y'⟩⟩,
-        continuous_ulift_up.comp (φ.continuous.subtype_mk fun y' => hφ01 y')⟩
-    let h : Y ⟶ Z := ⟨fun _ => ⟨⟨0, set.left_mem_Icc.mpr zero_le_one⟩⟩, continuous_const⟩
+        continuous_uLift_up.comp (φ.continuous.subtype_mk fun y' => hφ01 y')⟩
+    let h : Y ⟶ Z := ⟨fun _ => ⟨⟨0, Set.left_mem_Icc.mpr zero_le_one⟩⟩, continuous_const⟩
     have H : h = g := by
       rw [← cancel_epi f]
       ext x
+      -- Porting note: `ext` doesn't apply these two lemmas.
+      apply ULift.ext
+      apply Subtype.ext
       dsimp
-      simp only [comp_apply, ContinuousMap.coe_mk, Subtype.coe_mk, hφ0 (Set.mem_range_self x),
-        Pi.zero_apply]
-    apply_fun fun e => (e y).down  at H
+      -- Porting note: This `change` is not ideal.
+      -- I think lean is having issues understanding when a `ContinuousMap` should be considered
+      -- as a morphism.
+      -- TODO(?): Make morphisms in `CompHaus` (and other topological categories)
+      -- into a one-field-structure.
+      change 0 = φ (f x)
+      simp only [hφ0 (Set.mem_range_self x), Pi.zero_apply]
+    apply_fun fun e => (e y).down.1 at H
     dsimp at H
-    simp only [Subtype.mk_eq_mk, hφ1 (Set.mem_singleton y), Pi.one_apply] at H
+    change 0 = φ y at H
+    simp only [hφ1 (Set.mem_singleton y), Pi.one_apply] at H
     exact zero_ne_one H
   · rw [← CategoryTheory.epi_iff_surjective]
     apply (forget CompHaus).epi_of_epi_map
+set_option linter.uppercaseLean3 false in
 #align CompHaus.epi_iff_surjective CompHaus.epi_iff_surjective
 
 theorem mono_iff_injective {X Y : CompHaus.{u}} (f : X ⟶ Y) : Mono f ↔ Function.Injective f := by
@@ -281,7 +350,7 @@ theorem mono_iff_injective {X Y : CompHaus.{u}} (f : X ⟶ Y) : Mono f ↔ Funct
     exact this
   · rw [← CategoryTheory.mono_iff_injective]
     apply (forget CompHaus).mono_of_mono_map
+set_option linter.uppercaseLean3 false in
 #align CompHaus.mono_iff_injective CompHaus.mono_iff_injective
 
 end CompHaus
-
