@@ -183,7 +183,17 @@ variable (𝕜 α E H : Type _) {hom : Type _} [NormedField 𝕜] [AddCommGroup 
   [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace H] [UniformSpace E] [UniformAddGroup E]
   [ContinuousSMul 𝕜 E] {𝔖 : Set <| Set α} [LinearMapClass hom 𝕜 H (α →ᵤ[𝔖] E)]
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
+-- FIXME this declaration is just isolating a problem that occurs below, for diagnosis.
+lemma foo (φ : hom) (V : Set E) (m : 0 ∈ V):
+    @FunLike.coe hom H (fun _ ↦ α →ᵤ[𝔖] E) SMulHomClass.toFunLike φ 0 x ∈ V := by
+  rw [map_zero]
+  -- `OfNat.ofNat` has leaked into the goal: `⊢ OfNat.ofNat 0 x ∈ V`
+  exact m
+
+-- Porting note:
+-- This is another alarming location where we need to use
+-- `eta_experiment%` to elaborate a particular subterm, but having `synthInstance.etaExperiment`
+-- on for the whole declaration breaks other typeclass search.
 /-- Let `E` be a TVS, `𝔖 : Set (Set α)` and `H` a submodule of `α →ᵤ[𝔖] E`. If the image of any
 `S ∈ 𝔖` by any `u ∈ H` is bounded (in the sense of `Bornology.IsVonNBounded`), then `H`,
 equipped with the topology of `𝔖`-convergence, is a TVS.
@@ -202,7 +212,7 @@ theorem UniformOnFun.continuousSMul_induced_of_image_bounded (h𝔖₁ : 𝔖.No
   have : (𝓝 0 : Filter H).HasBasis _ _ := by
     rw [hφ.induced, nhds_induced, map_zero]
     exact (UniformOnFun.hasBasis_nhds_zero 𝔖 h𝔖₁ h𝔖₂).comap φ
-  refine' ContinuousSMul.of_basis_zero this _ _ _
+  refine' eta_experiment% ContinuousSMul.of_basis_zero this _ _ _
   · rintro ⟨S, V⟩ ⟨hS, hV⟩
     have : Tendsto (fun kx : 𝕜 × E => kx.1 • kx.2) (𝓝 (0, 0)) (𝓝 <| (0 : 𝕜) • (0 : E)) :=
       continuous_smul.tendsto (0 : 𝕜 × E)
@@ -218,7 +228,7 @@ theorem UniformOnFun.continuousSMul_induced_of_image_bounded (h𝔖₁ : 𝔖.No
   · rintro a ⟨S, V⟩ ⟨hS, hV⟩
     have : Tendsto (fun x : E => a • x) (𝓝 0) (𝓝 <| a • (0 : E)) := tendsto_id.const_smul a
     rw [smul_zero] at this
-    refine' ⟨⟨S, (· • ·) a ⁻¹' V⟩, ⟨hS, this hV⟩, fun f hf x hx => _⟩
+    refine' ⟨⟨S, (a • ·) ⁻¹' V⟩, ⟨hS, this hV⟩, fun f hf x hx => _⟩
     rw [SMulHomClass.map_smul]
     exact hf x hx
   · rintro u ⟨S, V⟩ ⟨hS, hV⟩
@@ -227,7 +237,9 @@ theorem UniformOnFun.continuousSMul_induced_of_image_bounded (h𝔖₁ : 𝔖.No
     refine' ⟨r⁻¹, inv_pos.mpr hrpos, fun a ha x hx => _⟩
     by_cases ha0 : a = 0
     · rw [ha0]
-      simp [mem_of_mem_nhds hV]
+      -- Porting note: this used to just be `simp [mem_of_mem_nhds hV]`.
+      rw [zero_smul, map_zero]
+      exact mem_of_mem_nhds hV
     · rw [mem_ball_zero_iff] at ha
       rw [SMulHomClass.map_smul, Pi.smul_apply]
       have : φ u x ∈ a⁻¹ • V := by
