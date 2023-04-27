@@ -1206,6 +1206,7 @@ import Mathlib.Data.Sym.Sym2
 import Mathlib.Data.Sym.Sym2.Init
 import Mathlib.Data.Tree
 import Mathlib.Data.TwoPointing
+import Mathlib.Data.TypeMax
 import Mathlib.Data.TypeVec
 import Mathlib.Data.TypeVec.Attr
 import Mathlib.Data.UInt
