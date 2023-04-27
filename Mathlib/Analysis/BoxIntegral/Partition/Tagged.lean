@@ -147,7 +147,7 @@ theorem mem_bunionᵢTagged (π : Prepartition I) {πi : ∀ J, TaggedPrepartiti
 theorem tag_bunionᵢTagged (π : Prepartition I) {πi : ∀ J, TaggedPrepartition J} (hJ : J ∈ π) {J'}
     (hJ' : J' ∈ πi J) : (π.bunionᵢTagged πi).tag J' = (πi J).tag J' := by
   have : J' ∈ π.bunionᵢTagged πi := π.mem_bunionᵢ.2 ⟨J, hJ, hJ'⟩
-  obtain rfl := π.bunionᵢIndex_of_mem hJ hJ'
+  rw [← π.bunionᵢIndex_of_mem (πi := fun J => (πi J).toPrepartition) hJ hJ']
   rfl
 #align box_integral.prepartition.tag_bUnion_tagged BoxIntegral.Prepartition.tag_bunionᵢTagged
 
