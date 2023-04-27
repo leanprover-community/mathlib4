@@ -8,11 +8,11 @@ Authors: Adam Topaz, Bhavik Mehta
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Adjunction.Reflective
-import Mathbin.Topology.StoneCech
-import Mathbin.CategoryTheory.Monad.Limits
-import Mathbin.Topology.UrysohnsLemma
-import Mathbin.Topology.Category.Top.Limits.Basic
+import Mathlib.CategoryTheory.Adjunction.Reflective
+import Mathlib.Topology.StoneCech
+import Mathlib.CategoryTheory.Monad.Limits
+import Mathlib.Topology.UrysohnsLemma
+import Mathlib.Topology.Category.Top.Limits.Basic
 
 /-!
 # The category of Compact Hausdorff Spaces
@@ -138,8 +138,7 @@ def stoneCechObj (X : TopCat) : CompHaus :=
 Hausdorff spaces in topological spaces.
 -/
 noncomputable def stoneCechEquivalence (X : TopCat.{u}) (Y : CompHaus.{u}) :
-    (stoneCechObj X ⟶ Y) ≃ (X ⟶ compHausToTop.obj Y)
-    where
+    (stoneCechObj X ⟶ Y) ≃ (X ⟶ compHausToTop.obj Y) where
   toFun f :=
     { toFun := f ∘ stoneCechUnit
       continuous_toFun := f.2.comp (@continuous_stoneCechUnit X _) }
@@ -193,19 +192,16 @@ namespace CompHaus
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 /-- An explicit limit cone for a functor `F : J ⥤ CompHaus`, defined in terms of
 `Top.limit_cone`. -/
-def limitCone {J : Type v} [SmallCategory J] (F : J ⥤ CompHaus.{max v u}) : Limits.Cone F
-    where
+def limitCone {J : Type v} [SmallCategory J] (F : J ⥤ CompHaus.{max v u}) : Limits.Cone F where
   pt :=
     { toTop := (TopCat.limitCone (F ⋙ compHausToTop)).pt
-      IsCompact :=
-        by
+      IsCompact := by
         show CompactSpace ↥{ u : ∀ j, F.obj j | ∀ {i j : J} (f : i ⟶ j), (F.map f) (u i) = u j }
         rw [← isCompact_iff_compactSpace]
         apply IsClosed.isCompact
         have :
           { u : ∀ j, F.obj j | ∀ {i j : J} (f : i ⟶ j), F.map f (u i) = u j } =
-            ⋂ (i : J) (j : J) (f : i ⟶ j), { u | F.map f (u i) = u j } :=
-          by
+            ⋂ (i : J) (j : J) (f : i ⟶ j), { u | F.map f (u i) = u j } := by
           ext1
           simp only [Set.mem_interᵢ, Set.mem_setOf_eq]
         rw [this]
@@ -232,14 +228,12 @@ def limitCone {J : Type v} [SmallCategory J] (F : J ⥤ CompHaus.{max v u}) : Li
 
 /-- The limit cone `CompHaus.limit_cone F` is indeed a limit cone. -/
 def limitConeIsLimit {J : Type v} [SmallCategory J] (F : J ⥤ CompHaus.{max v u}) :
-    Limits.IsLimit (limitCone F)
-    where
+    Limits.IsLimit (limitCone F) where
   lift S := (TopCat.limitConeIsLimit (F ⋙ compHausToTop)).lift (compHausToTop.mapCone S)
   uniq S m h := (TopCat.limitConeIsLimit _).uniq (compHausToTop.mapCone S) _ h
 #align CompHaus.limit_cone_is_limit CompHaus.limitConeIsLimit
 
-theorem epi_iff_surjective {X Y : CompHaus.{u}} (f : X ⟶ Y) : Epi f ↔ Function.Surjective f :=
-  by
+theorem epi_iff_surjective {X Y : CompHaus.{u}} (f : X ⟶ Y) : Epi f ↔ Function.Surjective f := by
   constructor
   · contrapose!
     rintro ⟨y, hy⟩ hf
@@ -274,8 +268,7 @@ theorem epi_iff_surjective {X Y : CompHaus.{u}} (f : X ⟶ Y) : Epi f ↔ Functi
     apply (forget CompHaus).epi_of_epi_map
 #align CompHaus.epi_iff_surjective CompHaus.epi_iff_surjective
 
-theorem mono_iff_injective {X Y : CompHaus.{u}} (f : X ⟶ Y) : Mono f ↔ Function.Injective f :=
-  by
+theorem mono_iff_injective {X Y : CompHaus.{u}} (f : X ⟶ Y) : Mono f ↔ Function.Injective f := by
   constructor
   · intro hf x₁ x₂ h
     let g₁ : of PUnit ⟶ X := ⟨fun _ => x₁, continuous_const⟩
