@@ -109,8 +109,8 @@ theorem strongUniformity.uniformEmbedding_coeFn [UniformSpace F] [UniformAddGrou
 
 set_option synthInstance.etaExperiment true in
 theorem strongTopology.embedding_coeFn [UniformSpace F] [UniformAddGroup F] (𝔖 : Set (Set E)) :
-    @Embedding (E →SL[σ] F) (E →ᵤ[𝔖] F) (strongTopology σ F 𝔖) (UniformOnFun.topologicalSpace E F 𝔖)
-      (UniformOnFun.ofFun 𝔖 ∘ FunLike.coe) :=
+    @Embedding (E →SL[σ] F) (E →ᵤ[𝔖] F) (strongTopology σ F 𝔖)
+      (UniformOnFun.topologicalSpace E F 𝔖) (UniformOnFun.ofFun 𝔖 ∘ FunLike.coe) :=
   @UniformEmbedding.embedding _ _ (_root_.id _) _ _ (strongUniformity.uniformEmbedding_coeFn _ _ _)
 #align continuous_linear_map.strong_topology.embedding_coe_fn ContinuousLinearMap.strongTopology.embedding_coeFn
 
@@ -119,7 +119,8 @@ theorem strongUniformity.uniformAddGroup [UniformSpace F] [UniformAddGroup F] (�
     @UniformAddGroup (E →SL[σ] F) (strongUniformity σ F 𝔖) _ := by
   letI : UniformSpace (E →SL[σ] F) := strongUniformity σ F 𝔖
   rw [strongUniformity, UniformSpace.replaceTopology_eq]
-  let φ : (E →SL[σ] F) →+ E →ᵤ[𝔖] F := ⟨⟨(FunLike.coe : (E →SL[σ] F) → E →ᵤ[𝔖] F), rfl⟩, fun _ _ => rfl⟩
+  let φ : (E →SL[σ] F) →+ E →ᵤ[𝔖] F :=
+    ⟨⟨(FunLike.coe : (E →SL[σ] F) → E →ᵤ[𝔖] F), rfl⟩, fun _ _ => rfl⟩
   exact uniformAddGroup_comap φ
 #align continuous_linear_map.strong_uniformity.uniform_add_group ContinuousLinearMap.strongUniformity.uniformAddGroup
 
@@ -147,7 +148,8 @@ theorem strongTopology.t2Space [TopologicalSpace F] [TopologicalAddGroup F] [T2S
 set_option synthInstance.etaExperiment true in
 theorem strongTopology.continuousSMul [RingHomSurjective σ] [RingHomIsometric σ]
     [TopologicalSpace F] [TopologicalAddGroup F] [ContinuousSMul 𝕜₂ F] (𝔖 : Set (Set E))
-    (h𝔖₁ : 𝔖.Nonempty) (h𝔖₂ : DirectedOn (· ⊆ ·) 𝔖) (h𝔖₃ : ∀ S ∈ 𝔖, Bornology.IsVonNBounded 𝕜₁ S) :
+    (h𝔖₁ : 𝔖.Nonempty) (h𝔖₂ : DirectedOn (· ⊆ ·) 𝔖)
+    (h𝔖₃ : ∀ S ∈ 𝔖, Bornology.IsVonNBounded 𝕜₁ S) :
     @ContinuousSMul 𝕜₂ (E →SL[σ] F) _ _ (strongTopology σ F 𝔖) := by
   letI : UniformSpace F := TopologicalAddGroup.toUniformSpace F
   haveI : UniformAddGroup F := comm_topologicalAddGroup_is_uniform
@@ -163,7 +165,8 @@ set_option synthInstance.etaExperiment true in
 theorem strongTopology.hasBasis_nhds_zero_of_basis [TopologicalSpace F] [TopologicalAddGroup F]
     {ι : Type _} (𝔖 : Set (Set E)) (h𝔖₁ : 𝔖.Nonempty) (h𝔖₂ : DirectedOn (· ⊆ ·) 𝔖) {p : ι → Prop}
     {b : ι → Set F} (h : (𝓝 0 : Filter F).HasBasis p b) :
-    (@nhds (E →SL[σ] F) (strongTopology σ F 𝔖) 0).HasBasis (fun Si : Set E × ι => Si.1 ∈ 𝔖 ∧ p Si.2)
+    (@nhds (E →SL[σ] F) (strongTopology σ F 𝔖) 0).HasBasis
+      (fun Si : Set E × ι => Si.1 ∈ 𝔖 ∧ p Si.2)
       fun Si => { f : E →SL[σ] F | ∀ x ∈ Si.1, f x ∈ b Si.2 } := by
   letI : UniformSpace F := TopologicalAddGroup.toUniformSpace F
   haveI : UniformAddGroup F := comm_topologicalAddGroup_is_uniform
