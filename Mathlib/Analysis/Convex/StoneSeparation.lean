@@ -8,7 +8,7 @@ Authors: Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Convex.Join
+import Mathlib.Analysis.Convex.Join
 
 /-!
 # Stone's separation theorem
@@ -33,8 +33,7 @@ edges `[x, p]` and `[y, q]` passes through any triangle of vertices `p`, `q`, `z
 `z ∈ [x, y]`. -/
 theorem not_disjoint_segment_convexHull_triple {p q u v x y z : E} (hz : z ∈ segment 𝕜 x y)
     (hu : u ∈ segment 𝕜 x p) (hv : v ∈ segment 𝕜 y q) :
-    ¬Disjoint (segment 𝕜 u v) (convexHull 𝕜 {p, q, z}) :=
-  by
+    ¬Disjoint (segment 𝕜 u v) (convexHull 𝕜 {p, q, z}) := by
   rw [not_disjoint_iff]
   obtain ⟨az, bz, haz, hbz, habz, rfl⟩ := hz
   obtain rfl | haz' := haz.eq_or_lt
@@ -66,15 +65,13 @@ theorem not_disjoint_segment_convexHull_triple {p q u v x y z : E} (hz : z ∈ s
       · exact mul_nonneg (mul_nonneg haz hav) hbu
       · exact mul_nonneg (mul_nonneg hbz hau) hbv
       · exact mul_nonneg hau hav
-    have hw : (∑ i, w i) = az * av + bz * au :=
-      by
+    have hw : (∑ i, w i) = az * av + bz * au := by
       trans az * av * bu + (bz * au * bv + au * av)
       · simp [w, Fin.sum_univ_succ, Fin.sum_univ_zero]
       rw [← one_mul (au * av), ← habz, add_mul, ← add_assoc, add_add_add_comm, mul_assoc, ← mul_add,
         mul_assoc, ← mul_add, mul_comm av, ← add_mul, ← mul_add, add_comm bu, add_comm bv, habu,
         habv, one_mul, mul_one]
-    have hz : ∀ i, z i ∈ ({p, q, az • x + bz • y} : Set E) :=
-      by
+    have hz : ∀ i, z i ∈ ({p, q, az • x + bz • y} : Set E) := by
       rintro i
       fin_cases i <;> simp [z]
     convert Finset.centerMass_mem_convexHull (Finset.univ : Finset (Fin 3)) (fun i _ => hw₀ i)
@@ -92,8 +89,7 @@ theorem not_disjoint_segment_convexHull_triple {p q u v x y z : E} (hz : z ∈ s
 
 /-- **Stone's Separation Theorem** -/
 theorem exists_convex_convex_compl_subset (hs : Convex 𝕜 s) (ht : Convex 𝕜 t) (hst : Disjoint s t) :
-    ∃ C : Set E, Convex 𝕜 C ∧ Convex 𝕜 (Cᶜ) ∧ s ⊆ C ∧ t ⊆ Cᶜ :=
-  by
+    ∃ C : Set E, Convex 𝕜 C ∧ Convex 𝕜 (Cᶜ) ∧ s ⊆ C ∧ t ⊆ Cᶜ := by
   let S : Set (Set E) := { C | Convex 𝕜 C ∧ Disjoint C t }
   obtain ⟨C, hC, hsC, hCmax⟩ :=
     zorn_subset_nonempty S
