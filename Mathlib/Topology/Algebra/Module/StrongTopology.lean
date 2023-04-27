@@ -110,7 +110,7 @@ theorem strongUniformity.uniformEmbedding_coeFn [UniformSpace F] [UniformAddGrou
 set_option synthInstance.etaExperiment true in
 theorem strongTopology.embedding_coeFn [UniformSpace F] [UniformAddGroup F] (𝔖 : Set (Set E)) :
     @Embedding (E →SL[σ] F) (E →ᵤ[𝔖] F) (strongTopology σ F 𝔖)
-      (UniformOnFun.topologicalSpace E F 𝔖) (UniformOnFun.ofFun 𝔖 ∘ FunLike.coe) :=
+    (UniformOnFun.topologicalSpace E F 𝔖) (UniformOnFun.ofFun 𝔖 ∘ FunLike.coe) :=
   @UniformEmbedding.embedding _ _ (_root_.id _) _ _ (strongUniformity.uniformEmbedding_coeFn _ _ _)
 #align continuous_linear_map.strong_topology.embedding_coe_fn ContinuousLinearMap.strongTopology.embedding_coeFn
 
