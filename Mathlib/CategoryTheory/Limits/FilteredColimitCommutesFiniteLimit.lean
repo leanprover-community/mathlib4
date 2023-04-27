@@ -44,14 +44,13 @@ namespace CategoryTheory.Limits
 
 variable {J K : Type v} [SmallCategory J] [SmallCategory K]
 
-variable (F : J × K ⥤ Type v)
-
--- **TODO** naming? placing?
 /-- `(curry.obj F ⋙ lim).obj S` = `limit ((curry.obj F).obj S)` definitionally, so this
 is just a variant of `limit_ext'`. -/
-@[ext] lemma curry_obj_ggg_lim_obj_ext (x y : (curry.obj F ⋙ lim).obj S) (w : ∀ (j : K),
-    limit.π ((curry.obj F).obj S) j x = limit.π ((curry.obj F).obj S) j y) : x = y :=
+@[ext] lemma comp_lim_obj_ext {G : J ⥤ K ⥤ Type v} (x y : (G ⋙ lim).obj S) (w : ∀ (j : K),
+    limit.π (G.obj S) j x = limit.π (G.obj S) j y) : x = y :=
   limit_ext' _ x y w
+
+variable (F : J × K ⥤ Type v)
 
 open CategoryTheory.Prod
 
