@@ -111,13 +111,12 @@ variable {α G ι : Type _} [Group G] {𝔖 : Set <| Set α} [UniformSpace G] [U
 then `α →ᵤ G` is a uniform additive group as well."]
 instance : UniformGroup (α →ᵤ G) :=
   ⟨(-- Since `(/) : G × G → G` is uniformly continuous,
-          -- `UniformFun.postcomp_uniformContinuous` tells us that
-          -- `((/) ∘ —) : (α →ᵤ G × G) → (α →ᵤ G)` is uniformly continuous too. By precomposing with
-          -- `UniformFun.uniformEquivProdArrow`, this gives that
-          -- `(/) : (α →ᵤ G) × (α →ᵤ G) → (α →ᵤ G)` is also uniformly continuous
-          UniformFun.postcomp_uniformContinuous
-          uniformContinuous_div).comp
-      UniformFun.uniformEquivProdArrow.symm.uniformContinuous⟩
+    -- `UniformFun.postcomp_uniformContinuous` tells us that
+    -- `((/) ∘ —) : (α →ᵤ G × G) → (α →ᵤ G)` is uniformly continuous too. By precomposing with
+    -- `UniformFun.uniformEquivProdArrow`, this gives that
+    -- `(/) : (α →ᵤ G) × (α →ᵤ G) → (α →ᵤ G)` is also uniformly continuous
+    UniformFun.postcomp_uniformContinuous uniformContinuous_div).comp
+    UniformFun.uniformEquivProdArrow.symm.uniformContinuous⟩
 
 @[to_additive]
 protected theorem UniformFun.hasBasis_nhds_one_of_basis {p : ι → Prop} {b : ι → Set G}
@@ -145,13 +144,12 @@ well. -/
 then `α →ᵤ[𝔖] G` is a uniform additive group as well."]
 instance : UniformGroup (α →ᵤ[𝔖] G) :=
   ⟨(-- Since `(/) : G × G → G` is uniformly continuous,
-          -- `UniformOnFun.postcomp_uniformContinuous` tells us that
-          -- `((/) ∘ —) : (α →ᵤ[𝔖] G × G) → (α →ᵤ[𝔖] G)` is uniformly continuous too. By precomposing with
-          -- `UniformOnFun.uniformEquivProdArrow`, this gives that
-          -- `(/) : (α →ᵤ[𝔖] G) × (α →ᵤ[𝔖] G) → (α →ᵤ[𝔖] G)` is also uniformly continuous
-          UniformOnFun.postcomp_uniformContinuous
-          uniformContinuous_div).comp
-      UniformOnFun.uniformEquivProdArrow.symm.uniformContinuous⟩
+    -- `UniformOnFun.postcomp_uniformContinuous` tells us that
+    -- `((/) ∘ —) : (α →ᵤ[𝔖] G × G) → (α →ᵤ[𝔖] G)` is uniformly continuous too. By precomposing with
+    -- `UniformOnFun.uniformEquivProdArrow`, this gives that
+    -- `(/) : (α →ᵤ[𝔖] G) × (α →ᵤ[𝔖] G) → (α →ᵤ[𝔖] G)` is also uniformly continuous
+    UniformOnFun.postcomp_uniformContinuous uniformContinuous_div).comp
+    UniformOnFun.uniformEquivProdArrow.symm.uniformContinuous⟩
 
 @[to_additive]
 protected theorem UniformOnFun.hasBasis_nhds_one_of_basis (𝔖 : Set <| Set α) (h𝔖₁ : 𝔖.Nonempty)
