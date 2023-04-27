@@ -1017,12 +1017,12 @@ instance [InvolutiveStar β] [ContinuousStar β] : InvolutiveStar C(α, β)
 instance starAddMonoid [AddMonoid β] [ContinuousAdd β] [StarAddMonoid β] [ContinuousStar β] :
     StarAddMonoid C(α, β) where star_add _ _ := ext fun _ => star_add _ _
 
-instance [Semigroup β] [ContinuousMul β] [StarSemigroup β] [ContinuousStar β] :
+instance starSemigroup [Semigroup β] [ContinuousMul β] [StarSemigroup β] [ContinuousStar β] :
     StarSemigroup C(α, β) where star_mul _ _ := ext fun _ => star_mul _ _
 
 instance [NonUnitalSemiring β] [TopologicalSemiring β] [StarRing β] [ContinuousStar β] :
     StarRing C(α, β) :=
-  { ContinuousMap.starAddMonoid with }
+  { ContinuousMap.starAddMonoid, ContinuousMap.starSemigroup with }
 
 instance [Star R] [Star β] [SMul R β] [StarModule R β] [ContinuousStar β]
     [ContinuousConstSMul R β] : StarModule R C(α, β)
