@@ -39,6 +39,7 @@ to expose both universe parameters directly.
 Similarly, for other concrete categories for which we need to refer to the maximum of two universes
 (e.g. any category for which we are constructing limits), we need an analogous abbreviation.
 -/
+@[nolint checkUnivs]
 abbrev TopCatMax.{u, v} := TopCat.{max u v}
 
 universe v u w
