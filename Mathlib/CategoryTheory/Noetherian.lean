@@ -8,9 +8,9 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Subobject.Lattice
-import Mathbin.CategoryTheory.EssentiallySmall
-import Mathbin.CategoryTheory.Simple
+import Mathlib.CategoryTheory.Subobject.Lattice
+import Mathlib.CategoryTheory.EssentiallySmall
+import Mathlib.CategoryTheory.Simple
 
 /-!
 # Artinian and noetherian categories
@@ -76,8 +76,7 @@ open Subobject
 variable [HasZeroMorphisms C] [HasZeroObject C]
 
 theorem exists_simple_subobject {X : C} [ArtinianObject X] (h : ¬IsZero X) :
-    ∃ Y : Subobject X, Simple (Y : C) :=
-  by
+    ∃ Y : Subobject X, Simple (Y : C) := by
   haveI : Nontrivial (subobject X) := nontrivial_of_not_is_zero h
   haveI := isAtomic_of_orderBot_wellFounded_lt (artinian_object.subobject_lt_well_founded X)
   have := IsAtomic.eq_bot_or_exists_atom_le (⊤ : subobject X)
