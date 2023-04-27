@@ -14,11 +14,11 @@ import Mathlib.Analysis.BoxIntegral.Partition.Basic
 # Tagged partitions
 
 A tagged (pre)partition is a (pre)partition `π` enriched with a tagged point for each box of
-‵π`. For simplicity we require that the function `box_integral.tagged_prepartition.tag` is defined
-on all boxes `J : box ι` but use its values only on boxes of the partition. Given `π :
-box_integral.tagged_partition I`, we require that each `box_integral.tagged_partition π J` belongs
-to `box_integral.box.Icc I`. If for every `J ∈ π`, `π.tag J` belongs to `J.Icc`, then `π` is called
-a *Henstock* partition. We do not include this assumption into the definition of a tagged
+`π`. For simplicity we require that the function `BoxIntegral.TaggedPrepartition.tag` is defined
+on all boxes `J : Box ι` but use its values only on boxes of the partition. Given
+`π : BoxIntegral.TaggedPrepartition I`, we require that each `BoxIntegral.TaggedPrepartition π J`
+belongs to `BoxIntegral.Box.Icc I`. If for every `J ∈ π`, `π.tag J` belongs to `J.Icc`, then `π` is
+called a *Henstock* partition. We do not include this assumption into the definition of a tagged
 (pre)partition because McShane integral is defined as a limit along tagged partitions without this
 requirement.
 
@@ -128,7 +128,7 @@ namespace Prepartition
 
 variable {I J : Box ι}
 
-/-- Given a partition `π` of `I : box_integral.box ι` and a collection of tagged partitions
+/-- Given a partition `π` of `I : BoxIntegral.Box ι` and a collection of tagged partitions
 `πi J` of all boxes `J ∈ π`, returns the tagged partition of `I` into all the boxes of `πi J`
 with tags coming from `(πi J).tag`. -/
 def bunionᵢTagged (π : Prepartition I) (πi : ∀ J : Box ι, TaggedPrepartition J) :
@@ -201,7 +201,7 @@ theorem IsPartition.bunionᵢPrepartition {π : TaggedPrepartition I} (h : IsPar
 #align box_integral.tagged_prepartition.is_partition.bUnion_prepartition BoxIntegral.TaggedPrepartition.IsPartition.bunionᵢPrepartition
 
 /-- Given two partitions `π₁` and `π₁`, one of them tagged and the other is not, returns the tagged
-partition with `to_partition = π₁.to_partition ⊓ π₂` and tags coming from `π₁`.
+partition with `toPrepartition = π₁.toPrepartition ⊓ π₂` and tags coming from `π₁`.
 
 Note that usually the result is not a Henstock partition. -/
 def infPrepartition (π : TaggedPrepartition I) (π' : Prepartition I) : TaggedPrepartition I :=
@@ -240,7 +240,7 @@ theorem isHenstock_bunionᵢTagged {π : Prepartition I} {πi : ∀ J, TaggedPre
 set_option linter.uppercaseLean3 false in
 #align box_integral.tagged_prepartition.is_Henstock_bUnion_tagged BoxIntegral.TaggedPrepartition.isHenstock_bunionᵢTagged
 
-/-- In a Henstock prepartition, there are at most `2 ^ fintype.card ι` boxes with a given tag. -/
+/-- In a Henstock prepartition, there are at most `2 ^ Fintype.card ι` boxes with a given tag. -/
 theorem IsHenstock.card_filter_tag_eq_le [Fintype ι] (h : π.IsHenstock) (x : ι → ℝ) :
     (π.boxes.filter fun J => π.tag J = x).card ≤ 2 ^ Fintype.card ι :=
   calc
