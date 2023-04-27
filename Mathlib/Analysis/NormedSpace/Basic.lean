@@ -208,12 +208,12 @@ theorem frontier_closedBall [NormedSpace ℝ E] (x : E) {r : ℝ} (hr : r ≠ 0)
 
 theorem interior_sphere [NormedSpace ℝ E] (x : E) {r : ℝ} (hr : r ≠ 0) :
     interior (sphere x r) = ∅ := by
-  rw [← frontier_closedBall x hr, interior_frontier is_closed_ball]
+  rw [← frontier_closedBall x hr, interior_frontier isClosed_ball]
 #align interior_sphere interior_sphere
 
 theorem frontier_sphere [NormedSpace ℝ E] (x : E) {r : ℝ} (hr : r ≠ 0) :
     frontier (sphere x r) = sphere x r := by
-  rw [is_closed_sphere.frontier_eq, interior_sphere x hr, diff_empty]
+  rw [isClosed_sphere.frontier_eq, interior_sphere x hr, diff_empty]
 #align frontier_sphere frontier_sphere
 
 instance {E : Type _} [NormedAddCommGroup E] [NormedSpace ℚ E] (e : E) :
@@ -445,13 +445,13 @@ theorem frontier_closedBall' [NormedSpace ℝ E] [Nontrivial E] (x : E) (r : ℝ
 
 @[simp]
 theorem interior_sphere' [NormedSpace ℝ E] [Nontrivial E] (x : E) (r : ℝ) :
-    interior (sphere x r) = ∅ := by rw [← frontier_closedBall' x, interior_frontier is_closed_ball]
+    interior (sphere x r) = ∅ := by rw [← frontier_closedBall' x, interior_frontier isClosed_ball]
 #align interior_sphere' interior_sphere'
 
 @[simp]
 theorem frontier_sphere' [NormedSpace ℝ E] [Nontrivial E] (x : E) (r : ℝ) :
     frontier (sphere x r) = sphere x r := by
-  rw [is_closed_sphere.frontier_eq, interior_sphere' x, diff_empty]
+  rw [isClosed_sphere.frontier_eq, interior_sphere' x, diff_empty]
 #align frontier_sphere' frontier_sphere'
 
 theorem rescale_to_shell_zpow {c : α} (hc : 1 < ‖c‖) {ε : ℝ} (εpos : 0 < ε) {x : E} (hx : x ≠ 0) :
