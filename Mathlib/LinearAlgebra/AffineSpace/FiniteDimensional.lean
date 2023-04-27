@@ -409,7 +409,7 @@ theorem collinear_iff_of_mem {s : Set P} {p₀ : P} (h : p₀ ∈ s) :
 expressed as multiples of the same vector, added to the same base
 point. -/
 theorem collinear_iff_exists_forall_eq_smul_vadd (s : Set P) :
-    Collinear k s ↔ ∃ (p₀ : P)(v : V), ∀ p ∈ s, ∃ r : k, p = r • v +ᵥ p₀ := by
+    Collinear k s ↔ ∃ (p₀ : P) (v : V), ∀ p ∈ s, ∃ r : k, p = r • v +ᵥ p₀ := by
   rcases Set.eq_empty_or_nonempty s with (rfl | ⟨⟨p₁, hp₁⟩⟩)
   · simp [collinear_empty]
   · rw [collinear_iff_of_mem hp₁]
@@ -537,9 +537,10 @@ theorem Collinear.collinear_insert_iff_of_ne {s : Set P} (h : Collinear k s) {p�
     (hp₂ : p₂ ∈ s) (hp₃ : p₃ ∈ s) (hp₂p₃ : p₂ ≠ p₃) :
     Collinear k (insert p₁ s) ↔ Collinear k ({p₁, p₂, p₃} : Set P) := by
   have hv : vectorSpan k (insert p₁ s) = vectorSpan k ({p₁, p₂, p₃} : Set P) := by
-    conv_lhs => rw [← direction_affineSpan, ← affineSpan_insert_affineSpan]
-    conv_rhs => rw [← direction_affineSpan, ← affineSpan_insert_affineSpan]
-    rw [h.affineSpan_eq_of_ne hp₂ hp₃ hp₂p₃]
+    -- Porting note: Original proof used `conv_lhs` and `conv_rhs`, but these tactics timed out.
+    rw [← direction_affineSpan, ← affineSpan_insert_affineSpan]
+    symm
+    rw [← direction_affineSpan, ← affineSpan_insert_affineSpan, h.affineSpan_eq_of_ne hp₂ hp₃ hp₂p₃]
   rw [Collinear, Collinear, hv]
 #align collinear.collinear_insert_iff_of_ne Collinear.collinear_insert_iff_of_ne
 
@@ -583,7 +584,8 @@ theorem collinear_insert_insert_insert_left_of_mem_affineSpan_pair {p₁ p₂ p�
     (h₁ : p₁ ∈ line[k, p₄, p₅]) (h₂ : p₂ ∈ line[k, p₄, p₅]) (h₃ : p₃ ∈ line[k, p₄, p₅]) :
     Collinear k ({p₁, p₂, p₃, p₄} : Set P) := by
   refine' (collinear_insert_insert_insert_of_mem_affineSpan_pair h₁ h₂ h₃).subset _
-  simp [Set.insert_subset_insert]
+  repeat apply Set.insert_subset_insert
+  simp
 #align collinear_insert_insert_insert_left_of_mem_affine_span_pair collinear_insert_insert_insert_left_of_mem_affineSpan_pair
 
 /-- If three points lie in the affine span of two points, the first three points are collinear. -/
@@ -687,9 +689,8 @@ theorem finrank_vectorSpan_insert_le (s : AffineSubspace k P) (p : P) :
       exact hf (Submodule.finiteDimensional_of_le h')
     rw [finrank_of_infinite_dimensional hf, finrank_of_infinite_dimensional hf', zero_add]
     exact zero_le_one
-  haveI := hf
   rw [← direction_affineSpan, ← affineSpan_insert_affineSpan]
-  rcases(s : Set P).eq_empty_or_nonempty with (hs | ⟨p₀, hp₀⟩)
+  rcases (s : Set P).eq_empty_or_nonempty with (hs | ⟨p₀, hp₀⟩)
   · rw [coe_eq_bot_iff] at hs
     rw [hs, bot_coe, span_empty, bot_coe, direction_affineSpan, direction_bot, finrank_bot,
       zero_add]
@@ -697,7 +698,9 @@ theorem finrank_vectorSpan_insert_le (s : AffineSubspace k P) (p : P) :
     rw [← finrank_bot k V]
     convert rfl <;> simp
   · rw [affineSpan_coe, direction_affineSpan_insert hp₀, add_comm]
-    refine' (Submodule.finrank_add_le_finrank_add_finrank _ _).trans (add_le_add_right _ _)
+    -- Porting note: Added `span_of_finite` instance
+    refine' (@Submodule.finrank_add_le_finrank_add_finrank _ _ _ _ _ _ _
+      (span_of_finite _ (Set.finite_singleton _)) hf).trans (add_le_add_right _ _)
     refine' finrank_le_one ⟨p -ᵥ p₀, Submodule.mem_span_singleton_self _⟩ fun v => _
     have h := v.property
     rw [Submodule.mem_span_singleton] at h
