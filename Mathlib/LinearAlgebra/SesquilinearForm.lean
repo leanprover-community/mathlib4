@@ -20,17 +20,17 @@ import Mathlib.RingTheory.NonZeroDivisors
 This files provides properties about sesquilinear forms. The maps considered are of the form
 `M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] R`, where `I₁ : R₁ →+* R` and `I₂ : R₂ →+* R` are ring homomorphisms and
 `M₁` is a module over `R₁` and `M₂` is a module over `R₂`.
-Sesquilinear forms are the special case that `M₁ = M₂`, `R₁ = R₂ = R`, and `I₁ = ring_hom.id R`.
-Taking additionally `I₂ = ring_hom.id R`, then one obtains bilinear forms.
+Sesquilinear forms are the special case that `M₁ = M₂`, `R₁ = R₂ = R`, and `I₁ = RingHom.id R`.
+Taking additionally `I₂ = RingHom.id R`, then one obtains bilinear forms.
 
-These forms are a special case of the bilinear maps defined in `bilinear_map.lean` and all basic
+These forms are a special case of the bilinear maps defined in `BilinearMap.lean` and all basic
 lemmas about construction and elementary calculations are found there.
 
 ## Main declarations
 
-* `is_ortho`: states that two vectors are orthogonal with respect to a sesquilinear form
-* `is_symm`, `is_alt`: states that a sesquilinear form is symmetric and alternating, respectively
-* `orthogonal_bilin`: provides the orthogonal complement with respect to sesquilinear form
+* `IsOrtho`: states that two vectors are orthogonal with respect to a sesquilinear form
+* `IsSymm`, `IsAlt`: states that a sesquilinear form is symmetric and alternating, respectively
+* `orthogonalBilin`: provides the orthogonal complement with respect to sesquilinear form
 
 ## References
 
@@ -66,14 +66,14 @@ theorem isOrtho_def {B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] R} {x y} : B.
   Iff.rfl
 #align linear_map.is_ortho_def LinearMap.isOrtho_def
 
-theorem isOrthoZeroLeft (B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] R) (x) : IsOrtho B (0 : M₁) x := by
+theorem isOrtho_zero_left (B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] R) (x) : IsOrtho B (0 : M₁) x := by
   dsimp only [IsOrtho]
   rw [map_zero B, zero_apply]
-#align linear_map.is_ortho_zero_left LinearMap.isOrthoZeroLeft
+#align linear_map.is_ortho_zero_left LinearMap.isOrtho_zero_left
 
-theorem isOrthoZeroRight (B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] R) (x) : IsOrtho B x (0 : M₂) :=
+theorem isOrtho_zero_right (B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] R) (x) : IsOrtho B x (0 : M₂) :=
   map_zero (B x)
-#align linear_map.is_ortho_zero_right LinearMap.isOrthoZeroRight
+#align linear_map.is_ortho_zero_right LinearMap.isOrtho_zero_right
 
 theorem isOrtho_flip {B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₁'] R} {x y} : B.IsOrtho x y ↔ B.flip.IsOrtho y x := by
   simp_rw [isOrtho_def, flip_apply]
@@ -81,7 +81,7 @@ theorem isOrtho_flip {B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₁'] R} {x y} : 
 
 /-- A set of vectors `v` is orthogonal with respect to some bilinear form `B` if and only
 if for all `i ≠ j`, `B (v i) (v j) = 0`. For orthogonality between two elements, use
-`bilin_form.is_ortho` -/
+`BilinForm.isOrtho` -/
 def IsOrthoᵢ (B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₁'] R) (v : n → M₁) : Prop :=
   Pairwise (B.IsOrtho on v)
 set_option linter.uppercaseLean3 false in
@@ -95,14 +95,11 @@ set_option linter.uppercaseLean3 false in
 
 theorem isOrthoᵢ_flip (B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₁'] R) {v : n → M₁} :
     B.IsOrthoᵢ v ↔ B.flip.IsOrthoᵢ v := by
-  simp_rw [isOrtho_def]
+  simp_rw [isOrthoᵢ_def]
   constructor <;> intro h i j hij
-  · change B.flip (v i) (v j) = 0 -- porting note: added this line (TODO understand why?)
-    rw [flip_apply]
-    rw [isOrthoᵢ_def] at h -- porting note: added this line (TODO verify this is expected)
+  · rw [flip_apply]
     exact h j i (Ne.symm hij)
   simp_rw [flip_apply] at h
-  rw [isOrthoᵢ_def] at h -- porting note: added this line (TODO verify this is expected)
   exact h j i (Ne.symm hij)
 set_option linter.uppercaseLean3 false in
 #align linear_map.is_Ortho_flip LinearMap.isOrthoᵢ_flip
@@ -114,17 +111,8 @@ section Field
 variable [Field K] [Field K₁] [AddCommGroup V₁] [Module K₁ V₁] [Field K₂] [AddCommGroup V₂]
   [Module K₂ V₂] {I₁ : K₁ →+* K} {I₂ : K₂ →+* K} {I₁' : K₁ →+* K} {J₁ : K →+* K} {J₂ : K →+* K}
 
--- porting note: manual instances required. Alternative solution is lean4#2074
--- verified using `set_option synthInstance.etaExperiment true`
-attribute [-instance] Ring.toNonAssocRing
-instance : Module K K := Semiring.toModule
-
--- Alternative to the above:
--- instance : AddCommMonoid (V₂ →ₛₗ[I₂] K) := LinearMap.addCommMonoid
--- instance : Module K (V₂ →ₛₗ[I₂] K) := LinearMap.instModuleLinearMapAddCommMonoid
--- set_option maxHeartbeats 400000
-
--- todo: this also holds for [comm_ring R] [is_domain R] when J₁ is invertible
+set_option synthInstance.etaExperiment true in
+-- todo: this also holds for [CommRing R] [IsDomain R] when J₁ is invertible
 theorem ortho_smul_left {B : V₁ →ₛₗ[I₁] V₂ →ₛₗ[I₂] K} {x y} {a : K₁} (ha : a ≠ 0) :
     IsOrtho B x y ↔ IsOrtho B (a • x) y := by
   dsimp only [IsOrtho]
@@ -137,7 +125,8 @@ theorem ortho_smul_left {B : V₁ →ₛₗ[I₁] V₂ →ₛₗ[I₂] K} {x y} 
     · exact H
 #align linear_map.ortho_smul_left LinearMap.ortho_smul_left
 
--- todo: this also holds for [comm_ring R] [is_domain R] when J₂ is invertible
+set_option synthInstance.etaExperiment true in
+-- todo: this also holds for [CommRing R] [IsDomain R] when J₂ is invertible
 theorem ortho_smul_right {B : V₁ →ₛₗ[I₁] V₂ →ₛₗ[I₂] K} {x y} {a : K₂} {ha : a ≠ 0} :
     IsOrtho B x y ↔ IsOrtho B x (a • y) := by
   dsimp only [IsOrtho]
@@ -151,6 +140,7 @@ theorem ortho_smul_right {B : V₁ →ₛₗ[I₁] V₂ →ₛₗ[I₂] K} {x y}
     · exact H
 #align linear_map.ortho_smul_right LinearMap.ortho_smul_right
 
+set_option synthInstance.etaExperiment true in
 /-- A set of orthogonal vectors `v` with respect to some sesquilinear form `B` is linearly
   independent if for all `i`, `B (v i) (v i) ≠ 0`. -/
 theorem linearIndependent_of_isOrthoᵢ {B : V₁ →ₛₗ[I₁] V₁ →ₛₗ[I₁'] K} {v : n → V₁}
@@ -196,11 +186,11 @@ theorem ortho_comm {x y} : IsOrtho B x y ↔ IsOrtho B y x :=
   ⟨eq_zero H, eq_zero H⟩
 #align linear_map.is_refl.ortho_comm LinearMap.IsRefl.ortho_comm
 
-theorem domRestrictRefl (H : B.IsRefl) (p : Submodule R₁ M₁) : (B.domRestrict₁₂ p p).IsRefl :=
+theorem domRestrict (H : B.IsRefl) (p : Submodule R₁ M₁) : (B.domRestrict₁₂ p p).IsRefl :=
   fun _ _ ↦ by
   simp_rw [domRestrict₁₂_apply]
   exact H _ _
-#align linear_map.is_refl.dom_restrict_refl LinearMap.IsRefl.domRestrictRefl
+#align linear_map.is_refl.dom_restrict_refl LinearMap.IsRefl.domRestrict
 
 @[simp]
 theorem flip_isRefl_iff : B.flip.IsRefl ↔ B.IsRefl :=
@@ -250,11 +240,11 @@ theorem ortho_comm (H : B.IsSymm) {x y} : IsOrtho B x y ↔ IsOrtho B y x :=
   H.isRefl.ortho_comm
 #align linear_map.is_symm.ortho_comm LinearMap.IsSymm.ortho_comm
 
-theorem domRestrictSymm (H : B.IsSymm) (p : Submodule R M) : (B.domRestrict₁₂ p p).IsSymm :=
+theorem domRestrict (H : B.IsSymm) (p : Submodule R M) : (B.domRestrict₁₂ p p).IsSymm :=
   fun _ _ ↦ by
   simp_rw [domRestrict₁₂_apply]
   exact H _ _
-#align linear_map.is_symm.dom_restrict_symm LinearMap.IsSymm.domRestrictSymm
+#align linear_map.is_symm.dom_restrict_symm LinearMap.IsSymm.domRestrict
 
 end IsSymm
 
@@ -273,12 +263,10 @@ end Symmetric
 
 section Alternating
 
--- porting note: alternative lean4#2074 checked using `set_option synthInstance.etaExperiment true`
-attribute [-instance] Ring.toNonAssocRing
-
 variable [CommRing R] [CommSemiring R₁] [AddCommMonoid M₁] [Module R₁ M₁] {I₁ : R₁ →+* R}
-  {I₂ : R₁ →+* R} {I : R₁ →+* R} {B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₂] R}
+  {I₂ : R₁ →+* R} {I : R₁ →+* R} {B : eta_experiment% M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₂] R}
 
+set_option synthInstance.etaExperiment true in
 /-- The proposition that a sesquilinear form is alternating -/
 def IsAlt (B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₂] R) : Prop :=
   ∀ x, B x x = 0
@@ -288,12 +276,12 @@ namespace IsAlt
 
 variable (H : B.IsAlt)
 
--- include H
-
+set_option synthInstance.etaExperiment true in
 theorem self_eq_zero (x : M₁) : B x x = 0 :=
   H x
 #align linear_map.is_alt.self_eq_zero LinearMap.IsAlt.self_eq_zero
 
+set_option synthInstance.etaExperiment true in
 theorem neg (x y : M₁) : -B x y = B y x := by
   have H1 : B (y + x) (y + x) = 0 := self_eq_zero H (y + x)
   simp [map_add, self_eq_zero H] at H1
@@ -312,6 +300,7 @@ theorem ortho_comm {x y} : IsOrtho B x y ↔ IsOrtho B y x :=
 
 end IsAlt
 
+set_option synthInstance.etaExperiment true in
 theorem isAlt_iff_eq_neg_flip [NoZeroDivisors R] [CharZero R] {B : M₁ →ₛₗ[I] M₁ →ₛₗ[I] R} :
     B.IsAlt ↔ B = -B.flip := by
   constructor <;> intro h
@@ -332,12 +321,10 @@ namespace Submodule
 
 /-! ### The orthogonal complement -/
 
--- porting note: alternative lean4#2074 checked using `set_option synthInstance.etaExperiment true`
-attribute [-instance] Ring.toNonAssocRing
-
 variable [CommRing R] [CommRing R₁] [AddCommGroup M₁] [Module R₁ M₁] {I₁ : R₁ →+* R} {I₂ : R₁ →+* R}
-  {B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₂] R}
+  {B : eta_experiment% M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₂] R}
 
+set_option synthInstance.etaExperiment true in
 /-- The orthogonal complement of a submodule `N` with respect to some bilinear form is the set of
 elements `x` which are orthogonal to all elements of `N`; i.e., for all `y` in `N`, `B x y = 0`.
 
@@ -348,7 +335,7 @@ provided in mathlib. -/
 def orthogonalBilin (N : Submodule R₁ M₁) (B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₂] R) : Submodule R₁ M₁
     where
   carrier := { m | ∀ n ∈ N, B.IsOrtho n m }
-  zero_mem' x _ := B.isOrthoZeroRight x
+  zero_mem' x _ := B.isOrtho_zero_right x
   add_mem' hx hy n hn := by
     rw [LinearMap.IsOrtho, map_add, show B n _ = 0 from hx n hn, show B n _ = 0 from hy n hn,
       zero_add]
@@ -374,11 +361,6 @@ theorem le_orthogonalBilin_orthogonalBilin (b : B.IsRefl) :
 end Submodule
 
 namespace LinearMap
-
-/- porting note: disabling `Ring.toNonAssocRing` solves some of the problems, but not the one with
-`Submodule.orthogonalBilin`. That one can be avoided by making Lean find the instance through
-unification, but then the proof still has problems, so we opt for `etaExperiment` in a few
-declarations below. -/
 
 section Orthogonal
 
@@ -415,9 +397,7 @@ theorem orthogonal_span_singleton_eq_to_lin_ker {B : V →ₗ[K] V →ₛₗ[J] 
     exact Or.intro_right _ h
 #align linear_map.orthogonal_span_singleton_eq_to_lin_ker LinearMap.orthogonal_span_singleton_eq_to_lin_ker
 
--- porting note: workaround for lean4#2074, `etaExperiment` works here
-attribute [-instance] Ring.toNonAssocRing
-
+set_option synthInstance.etaExperiment true in
 -- todo: Generalize this to sesquilinear maps
 theorem span_singleton_sup_orthogonal_eq_top {B : V →ₗ[K] V →ₗ[K] K} {x : V} (hx : ¬B.IsOrtho x x) :
     (K ∙ x) ⊔ @Submodule.orthogonalBilin _ _ _ _ _ _ (_) _ _ (K ∙ x) B = ⊤ := by
@@ -425,13 +405,14 @@ theorem span_singleton_sup_orthogonal_eq_top {B : V →ₗ[K] V →ₗ[K] K} {x 
   exact (B x).span_singleton_sup_ker_eq_top hx
 #align linear_map.span_singleton_sup_orthogonal_eq_top LinearMap.span_singleton_sup_orthogonal_eq_top
 
+set_option synthInstance.etaExperiment true in
 -- todo: Generalize this to sesquilinear maps
 /-- Given a bilinear form `B` and some `x` such that `B x x ≠ 0`, the span of the singleton of `x`
   is complement to its orthogonal complement. -/
 theorem isCompl_span_singleton_orthogonal {B : V →ₗ[K] V →ₗ[K] K} {x : V} (hx : ¬B.IsOrtho x x) :
     IsCompl (K ∙ x) (@Submodule.orthogonalBilin _ _ _ _ _ _ (_) _ _  (K ∙ x) B) :=
-  { Disjoint := disjoint_iff.2 <| span_singleton_inf_orthogonal_eq_bot B x hx
-    Codisjoint := codisjoint_iff.2 <| span_singleton_sup_orthogonal_eq_top hx }
+  { disjoint := disjoint_iff.2 <| span_singleton_inf_orthogonal_eq_bot B x hx
+    codisjoint := codisjoint_iff.2 <| span_singleton_sup_orthogonal_eq_top hx }
 #align linear_map.is_compl_span_singleton_orthogonal LinearMap.isCompl_span_singleton_orthogonal
 
 end Orthogonal
@@ -476,11 +457,11 @@ theorem isAdjointPair_iff_comp_eq_compl₂ : IsAdjointPair B B' f g ↔ B'.comp 
     rw [← compl₂_apply, ← comp_apply, h]
 #align linear_map.is_adjoint_pair_iff_comp_eq_compl₂ LinearMap.isAdjointPair_iff_comp_eq_compl₂
 
-theorem isAdjointPairZero : IsAdjointPair B B' 0 0 := fun _ _ ↦ by simp only [zero_apply, map_zero]
-#align linear_map.is_adjoint_pair_zero LinearMap.isAdjointPairZero
+theorem isAdjointPair_zero : IsAdjointPair B B' 0 0 := fun _ _ ↦ by simp only [zero_apply, map_zero]
+#align linear_map.is_adjoint_pair_zero LinearMap.isAdjointPair_zero
 
-theorem isAdjointPairId : IsAdjointPair B B 1 1 := fun _ _ ↦ rfl
-#align linear_map.is_adjoint_pair_id LinearMap.isAdjointPairId
+theorem isAdjointPair_id : IsAdjointPair B B 1 1 := fun _ _ ↦ rfl
+#align linear_map.is_adjoint_pair_id LinearMap.isAdjointPair_id
 
 theorem IsAdjointPair.add (h : IsAdjointPair B B' f g) (h' : IsAdjointPair B B' f' g') :
     IsAdjointPair B B' (f + f') (g + g') := fun x _ ↦ by
@@ -507,19 +488,17 @@ variable [AddCommGroup M] [Module R M]
 
 variable [AddCommGroup M₁] [Module R M₁]
 
--- porting note: manual instances required. Alternative solution is lean4#2074
--- verified using `set_option synthInstance.etaExperiment true`
-attribute [-instance] Ring.toNonAssocRing
-
-variable {B F : M →ₗ[R] M →ₗ[R] R} {B' : M₁ →ₗ[R] M₁ →ₗ[R] R}
+variable {B F : eta_experiment% M →ₗ[R] M →ₗ[R] R} {B' : eta_experiment% M₁ →ₗ[R] M₁ →ₗ[R] R}
 
 variable {f f' : M →ₗ[R] M₁} {g g' : M₁ →ₗ[R] M}
 
+set_option synthInstance.etaExperiment true in
 theorem IsAdjointPair.sub (h : IsAdjointPair B B' f g) (h' : IsAdjointPair B B' f' g') :
     IsAdjointPair B B' (f - f') (g - g') := fun x _ ↦ by
   rw [f.sub_apply, g.sub_apply, B'.map_sub₂, (B x).map_sub, h, h']
 #align linear_map.is_adjoint_pair.sub LinearMap.IsAdjointPair.sub
 
+set_option synthInstance.etaExperiment true in
 theorem IsAdjointPair.smul (c : R) (h : IsAdjointPair B B' f g) :
     IsAdjointPair B B' (c • f) (c • g) := fun _ _ ↦ by
   simp [h _]
@@ -566,19 +545,14 @@ variable [CommRing R]
 
 variable [AddCommGroup M] [Module R M]
 
--- porting note: manual instances required. Alternative solution is lean4#2074
--- verified using `set_option synthInstance.etaExperiment true`
-attribute [-instance] Ring.toNonAssocRing
-
-variable [AddCommGroup M₁] [Module R M₁] (B F : M →ₗ[R] M →ₗ[R] R)
+variable [AddCommGroup M₁] [Module R M₁] (B F : eta_experiment% M →ₗ[R] M →ₗ[R] R)
 
 /-- The set of pair-self-adjoint endomorphisms are a submodule of the type of all endomorphisms. -/
-def isPairSelfAdjointSubmodule : Submodule R (Module.End R M)
-    where
+def isPairSelfAdjointSubmodule : Submodule R (Module.End R M) where
   carrier := { f | IsPairSelfAdjoint B F f }
-  zero_mem' := isAdjointPairZero
-  add_mem' := fun hf hg => hf.add hg
-  smul_mem' := @fun c _ h => h.smul c
+  zero_mem' := isAdjointPair_zero
+  add_mem' hf hg := hf.add hg
+  smul_mem' c _ h := h.smul c
 #align linear_map.is_pair_self_adjoint_submodule LinearMap.isPairSelfAdjointSubmodule
 
 /-- An endomorphism of a module is skew-adjoint with respect to a bilinear form if its negation
@@ -593,6 +567,7 @@ def selfAdjointSubmodule :=
   isPairSelfAdjointSubmodule B B
 #align linear_map.self_adjoint_submodule LinearMap.selfAdjointSubmodule
 
+set_option synthInstance.etaExperiment true in
 /-- The set of skew-adjoint endomorphisms of a module with bilinear form is a submodule. (In fact
 it is a Lie subalgebra.) -/
 def skewAdjointSubmodule :=
@@ -607,6 +582,7 @@ theorem mem_isPairSelfAdjointSubmodule (f : Module.End R M) :
   Iff.rfl
 #align linear_map.mem_is_pair_self_adjoint_submodule LinearMap.mem_isPairSelfAdjointSubmodule
 
+set_option synthInstance.etaExperiment true in
 theorem isPairSelfAdjoint_equiv (e : M₁ ≃ₗ[R] M) (f : Module.End R M) :
     IsPairSelfAdjoint B F f ↔
       IsPairSelfAdjoint (B.compl₁₂ ↑e ↑e) (F.compl₁₂ ↑e ↑e) (e.symm.conj f) := by
@@ -626,6 +602,7 @@ theorem isPairSelfAdjoint_equiv (e : M₁ ≃ₗ[R] M) (f : Module.End R M) :
   simp_rw [IsPairSelfAdjoint, isAdjointPair_iff_comp_eq_compl₂, hₗ, hᵣ, compl₁₂_inj he he]
 #align linear_map.is_pair_self_adjoint_equiv LinearMap.isPairSelfAdjoint_equiv
 
+set_option synthInstance.etaExperiment true in
 theorem isSkewAdjoint_iff_neg_self_adjoint (f : Module.End R M) :
     B.IsSkewAdjoint f ↔ IsAdjointPair (-B) B f f :=
   show (∀ x y, B (f x) y = B x ((-f) y)) ↔ ∀ x y, B (f x) y = (-B) x (f y) by simp
@@ -704,7 +681,8 @@ theorem separatingLeft_congr_iff :
   ⟨fun h ↦ by
     convert h.congr e₁.symm e₂.symm
     ext (x y)
-    simp, SeparatingLeft.congr e₁ e₂⟩
+    simp,
+   SeparatingLeft.congr e₁ e₂⟩
 #align linear_map.separating_left_congr_iff LinearMap.separatingLeft_congr_iff
 
 end Linear
@@ -740,9 +718,7 @@ theorem flip_nondegenerate {B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] R} : B
 theorem separatingLeft_iff_linear_nontrivial {B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] R} :
     B.SeparatingLeft ↔ ∀ x : M₁, B x = 0 → x = 0 := by
   constructor <;> intro h x hB
-  · let h' := h x
-    simp only [hB, zero_apply, eq_self_iff_true, forall_const] at h'
-    exact h'
+  · simpa only [hB, zero_apply, eq_self_iff_true, forall_const] using h x
   have h' : B x = 0 := by
     ext
     rw [zero_apply]
@@ -773,31 +749,30 @@ section CommRing
 
 variable [CommRing R] [AddCommGroup M] [Module R M] {I I' : R →+* R}
 
--- porting note: manual instances required. Alternative solution is lean4#2074
--- verified using `set_option synthInstance.etaExperiment true`
-attribute [-instance] Ring.toNonAssocRing
-
-theorem IsRefl.nondegenerateOfSeparatingLeft {B : M →ₗ[R] M →ₗ[R] R} (hB : B.IsRefl)
+set_option synthInstance.etaExperiment true in
+theorem IsRefl.nondegenerate_of_separatingLeft {B : M →ₗ[R] M →ₗ[R] R} (hB : B.IsRefl)
     (hB' : B.SeparatingLeft) : B.Nondegenerate := by
   refine' ⟨hB', _⟩
   rw [separatingRight_iff_flip_ker_eq_bot, hB.ker_eq_bot_iff_ker_flip_eq_bot.mp]
   rwa [← separatingLeft_iff_ker_eq_bot]
-#align linear_map.is_refl.nondegenerate_of_separating_left LinearMap.IsRefl.nondegenerateOfSeparatingLeft
+#align linear_map.is_refl.nondegenerate_of_separating_left LinearMap.IsRefl.nondegenerate_of_separatingLeft
 
-theorem IsRefl.nondegenerateOfSeparatingRight {B : M →ₗ[R] M →ₗ[R] R} (hB : B.IsRefl)
+set_option synthInstance.etaExperiment true in
+theorem IsRefl.nondegenerate_of_separatingRight {B : M →ₗ[R] M →ₗ[R] R} (hB : B.IsRefl)
     (hB' : B.SeparatingRight) : B.Nondegenerate := by
   refine' ⟨_, hB'⟩
   rw [separatingLeft_iff_ker_eq_bot, hB.ker_eq_bot_iff_ker_flip_eq_bot.mpr]
   rwa [← separatingRight_iff_flip_ker_eq_bot]
-#align linear_map.is_refl.nondegenerate_of_separating_right LinearMap.IsRefl.nondegenerateOfSeparatingRight
+#align linear_map.is_refl.nondegenerate_of_separating_right LinearMap.IsRefl.nondegenerate_of_separatingRight
 
+set_option synthInstance.etaExperiment true in
 /-- The restriction of a reflexive bilinear form `B` onto a submodule `W` is
 nondegenerate if `W` has trivial intersection with its orthogonal complement,
-that is `disjoint W (W.orthogonal_bilin B)`. -/
+that is `Disjoint W (W.orthogonalBilin B)`. -/
 theorem nondegenerateRestrictOfDisjointOrthogonal {B : M →ₗ[R] M →ₗ[R] R} (hB : B.IsRefl)
     {W : Submodule R M} (hW : Disjoint W (W.orthogonalBilin B)) :
     (B.domRestrict₁₂ W W).Nondegenerate := by
-  refine' (hB.domRestrictRefl W).nondegenerateOfSeparatingLeft _
+  refine' (hB.domRestrict W).nondegenerate_of_separatingLeft _
   rintro ⟨x, hx⟩ b₁
   rw [Submodule.mk_eq_zero, ← Submodule.mem_bot R]
   refine' hW.le_bot ⟨hx, fun y hy ↦ _⟩
@@ -807,6 +782,7 @@ theorem nondegenerateRestrictOfDisjointOrthogonal {B : M →ₗ[R] M →ₗ[R] R
   exact b₁
 #align linear_map.nondegenerate_restrict_of_disjoint_orthogonal LinearMap.nondegenerateRestrictOfDisjointOrthogonal
 
+set_option synthInstance.etaExperiment true in
 /-- An orthogonal basis with respect to a left-separating bilinear form has no self-orthogonal
 elements. -/
 theorem IsOrthoᵢ.not_isOrtho_basis_self_of_separatingLeft [Nontrivial R]
@@ -827,6 +803,7 @@ theorem IsOrthoᵢ.not_isOrtho_basis_self_of_separatingLeft [Nontrivial R]
 set_option linter.uppercaseLean3 false in
 #align linear_map.is_Ortho.not_is_ortho_basis_self_of_separating_left LinearMap.IsOrthoᵢ.not_isOrtho_basis_self_of_separatingLeft
 
+set_option synthInstance.etaExperiment true in
 /-- An orthogonal basis with respect to a right-separating bilinear form has no self-orthogonal
 elements. -/
 theorem IsOrthoᵢ.not_isOrtho_basis_self_of_separatingRight [Nontrivial R]
@@ -838,9 +815,10 @@ theorem IsOrthoᵢ.not_isOrtho_basis_self_of_separatingRight [Nontrivial R]
 set_option linter.uppercaseLean3 false in
 #align linear_map.is_Ortho.not_is_ortho_basis_self_of_separating_right LinearMap.IsOrthoᵢ.not_isOrtho_basis_self_of_separatingRight
 
+set_option synthInstance.etaExperiment true in
 /-- Given an orthogonal basis with respect to a bilinear form, the bilinear form is left-separating
 if the basis has no elements which are self-orthogonal. -/
-theorem IsOrthoᵢ.separatingLeftOfNotIsOrthoBasisSelf [NoZeroDivisors R] {B : M →ₗ[R] M →ₗ[R] R}
+theorem IsOrthoᵢ.separatingLeft_of_not_isOrtho_basis_self [NoZeroDivisors R] {B : M →ₗ[R] M →ₗ[R] R}
     (v : Basis n R M) (hO : B.IsOrthoᵢ v) (h : ∀ i, ¬B.IsOrtho (v i) (v i)) : B.SeparatingLeft :=
   by
   intro m hB
@@ -860,29 +838,31 @@ theorem IsOrthoᵢ.separatingLeftOfNotIsOrthoBasisSelf [NoZeroDivisors R] {B : M
     replace hi : vi i = 0 := Finsupp.not_mem_support_iff.mp hi
     rw [hi, RingHom.id_apply, zero_mul]
 set_option linter.uppercaseLean3 false in
-#align linear_map.is_Ortho.separating_left_of_not_is_ortho_basis_self LinearMap.IsOrthoᵢ.separatingLeftOfNotIsOrthoBasisSelf
+#align linear_map.is_Ortho.separating_left_of_not_is_ortho_basis_self LinearMap.IsOrthoᵢ.separatingLeft_of_not_isOrtho_basis_self
 
+set_option synthInstance.etaExperiment true in
 /-- Given an orthogonal basis with respect to a bilinear form, the bilinear form is right-separating
 if the basis has no elements which are self-orthogonal. -/
-theorem IsOrthoᵢ.separatingRightIffNotIsOrthoBasisSelf [NoZeroDivisors R] {B : M →ₗ[R] M →ₗ[R] R}
-    (v : Basis n R M) (hO : B.IsOrthoᵢ v) (h : ∀ i, ¬B.IsOrtho (v i) (v i)) : B.SeparatingRight :=
-  by
+theorem IsOrthoᵢ.separatingRight_iff_not_isOrtho_basis_self [NoZeroDivisors R]
+    {B : M →ₗ[R] M →ₗ[R] R} (v : Basis n R M) (hO : B.IsOrthoᵢ v)
+    (h : ∀ i, ¬B.IsOrtho (v i) (v i)) : B.SeparatingRight := by
   rw [isOrthoᵢ_flip] at hO
   rw [← flip_separatingLeft]
-  refine' IsOrthoᵢ.separatingLeftOfNotIsOrthoBasisSelf v hO fun i ↦ _
+  refine' IsOrthoᵢ.separatingLeft_of_not_isOrtho_basis_self v hO fun i ↦ _
   rw [isOrtho_flip]
   exact h i
 set_option linter.uppercaseLean3 false in
-#align linear_map.is_Ortho.separating_right_iff_not_is_ortho_basis_self LinearMap.IsOrthoᵢ.separatingRightIffNotIsOrthoBasisSelf
+#align linear_map.is_Ortho.separating_right_iff_not_is_ortho_basis_self LinearMap.IsOrthoᵢ.separatingRight_iff_not_isOrtho_basis_self
 
+set_option synthInstance.etaExperiment true in
 /-- Given an orthogonal basis with respect to a bilinear form, the bilinear form is nondegenerate
 if the basis has no elements which are self-orthogonal. -/
-theorem IsOrthoᵢ.nondegenerateOfNotIsOrthoBasisSelf [NoZeroDivisors R] {B : M →ₗ[R] M →ₗ[R] R}
+theorem IsOrthoᵢ.nondegenerate_of_not_isOrtho_basis_self [NoZeroDivisors R] {B : M →ₗ[R] M →ₗ[R] R}
     (v : Basis n R M) (hO : B.IsOrthoᵢ v) (h : ∀ i, ¬B.IsOrtho (v i) (v i)) : B.Nondegenerate :=
-  ⟨IsOrthoᵢ.separatingLeftOfNotIsOrthoBasisSelf v hO h,
-    IsOrthoᵢ.separatingRightIffNotIsOrthoBasisSelf v hO h⟩
+  ⟨IsOrthoᵢ.separatingLeft_of_not_isOrtho_basis_self v hO h,
+    IsOrthoᵢ.separatingRight_iff_not_isOrtho_basis_self v hO h⟩
 set_option linter.uppercaseLean3 false in
-#align linear_map.is_Ortho.nondegenerate_of_not_is_ortho_basis_self LinearMap.IsOrthoᵢ.nondegenerateOfNotIsOrthoBasisSelf
+#align linear_map.is_Ortho.nondegenerate_of_not_is_ortho_basis_self LinearMap.IsOrthoᵢ.nondegenerate_of_not_isOrtho_basis_self
 
 end CommRing
 

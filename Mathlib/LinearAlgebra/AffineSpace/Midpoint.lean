@@ -205,7 +205,6 @@ theorem midpoint_add_self (x y : V) : midpoint R x y + midpoint R x y = x + y :=
   calc
     midpoint R x y +ᵥ midpoint R x y = midpoint R x y +ᵥ midpoint R y x := by rw [midpoint_comm]
     _ = x + y := by rw [midpoint_vadd_midpoint, vadd_eq_add, vadd_eq_add, add_comm, midpoint_self]
-
 #align midpoint_add_self midpoint_add_self
 
 theorem midpoint_zero_add (x y : V) : midpoint R 0 (x + y) = midpoint R x y :=
@@ -256,7 +255,6 @@ def ofMapMidpoint (f : E → F) (h0 : f 0 = 0)
         (midpoint_add_self _ _ _).symm
       _ = f (midpoint R x y) + f (midpoint R x y) := by rw [← hm, midpoint_zero_add]
       _ = f x + f y := by rw [hm, midpoint_add_self]
-
 #align add_monoid_hom.of_map_midpoint AddMonoidHom.ofMapMidpoint
 
 @[simp]

@@ -674,7 +674,6 @@ after using `[WellPowered C]` to reindex by a small type.
 -/
 def smallCoproductDesc {A : C} (s : Set (Subobject A)) :=
   Limits.Sigma.desc fun j : equivShrink _ '' s => ((equivShrink (Subobject A)).symm j).arrow
-
 #align category_theory.subobject.small_coproduct_desc CategoryTheory.Subobject.smallCoproductDesc
 
 variable [HasImages C]
