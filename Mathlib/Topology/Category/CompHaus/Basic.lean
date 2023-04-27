@@ -246,7 +246,6 @@ set_option linter.uppercaseLean3 false in
 
 namespace CompHaus
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 /-- An explicit limit cone for a functor `F : J ⥤ CompHaus`, defined in terms of
 `TopCat.limitCone`. -/
 def limitCone {J : Type v} [SmallCategory J] (F : J ⥤ CompHaus.{max v u}) : Limits.Cone F :=
