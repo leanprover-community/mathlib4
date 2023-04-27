@@ -59,18 +59,18 @@ theorem pow_sub' (A : M) {m n : ℕ} (ha : IsUnit A.det) (h : n ≤ m) :
 theorem pow_inv_comm' (A : M) (m n : ℕ) : A⁻¹ ^ m ⬝ A ^ n = A ^ n ⬝ A⁻¹ ^ m := by
   induction' n with n IH generalizing m
   · simp
-  cases m
+  cases' m with m m
   · simp
   rcases nonsing_inv_cancel_or_zero A with (⟨h, h'⟩ | h)
-  ·
-    calc
-      A⁻¹ ^ (m + 1) ⬝ A ^ (n + 1) = A⁻¹ ^ m ⬝ (A⁻¹ ⬝ A) ⬝ A ^ n := by
+  ·  simp only [Nat.succ_eq_add_one]
+     calc
+       A⁻¹ ^ (m + 1) ⬝ A ^ (n + 1) = A⁻¹ ^ m ⬝ (A⁻¹ ⬝ A) ⬝ A ^ n := by
         simp only [pow_succ' A⁻¹, pow_succ A, mul_eq_mul, Matrix.mul_assoc]
       _ = A ^ n ⬝ A⁻¹ ^ m := by simp only [h, Matrix.mul_one, Matrix.one_mul, IH m]
       _ = A ^ n ⬝ (A ⬝ A⁻¹) ⬝ A⁻¹ ^ m := by simp only [h', Matrix.mul_one, Matrix.one_mul]
       _ = A ^ (n + 1) ⬝ A⁻¹ ^ (m + 1) := by
         simp only [pow_succ' A, pow_succ A⁻¹, mul_eq_mul, Matrix.mul_assoc]
-      
+
   · simp [h]
 #align matrix.pow_inv_comm' Matrix.pow_inv_comm'
 
@@ -91,7 +91,7 @@ theorem zero_zpow : ∀ z : ℤ, z ≠ 0 → (0 : M) ^ z = 0
     rw [zpow_ofNat, zero_pow]
     refine' lt_of_le_of_ne n.zero_le (Ne.symm _)
     simpa using h
-  | -[n+1], h => by simp [zero_pow n.zero_lt_succ]
+  | -[n+1], _ => by simp [zero_pow n.zero_lt_succ]
 #align matrix.zero_zpow Matrix.zero_zpow
 
 theorem zero_zpow_eq (n : ℤ) : (0 : M) ^ n = if n = 0 then 1 else 0 := by
@@ -123,17 +123,17 @@ theorem zpow_neg_coe_nat (A : M) (n : ℕ) : A ^ (-n : ℤ) = (A ^ n)⁻¹ := by
 #align matrix.zpow_neg_coe_nat Matrix.zpow_neg_coe_nat
 
 theorem IsUnit.det_zpow {A : M} (h : IsUnit A.det) (n : ℤ) : IsUnit (A ^ n).det := by
-  cases n
+  cases' n with n n
   · simpa using h.pow n
   · simpa using h.pow n.succ
-#align is_unit.det_zpow IsUnit.det_zpow
+#align is_unit.det_zpow Matrix.IsUnit.det_zpow
 
 theorem isUnit_det_zpow_iff {A : M} {z : ℤ} : IsUnit (A ^ z).det ↔ IsUnit A.det ∨ z = 0 := by
   induction' z using Int.induction_on with z IH z IH
   · simp
   · rw [← Int.ofNat_succ, zpow_ofNat, det_pow, isUnit_pow_succ_iff, ← Int.ofNat_zero, Int.ofNat_inj]
     simp
-  · rw [← neg_add', ← Int.ofNat_succ, zpow_neg_coe_nat, is_unit_nonsing_inv_det_iff, det_pow,
+  · rw [← neg_add', ← Int.ofNat_succ, zpow_neg_coe_nat, isUnit_nonsing_inv_det_iff, det_pow,
       isUnit_pow_succ_iff, neg_eq_zero, ← Int.ofNat_zero, Int.ofNat_inj]
     simp
 #align matrix.is_unit_det_zpow_iff Matrix.isUnit_det_zpow_iff
@@ -141,7 +141,7 @@ theorem isUnit_det_zpow_iff {A : M} {z : ℤ} : IsUnit (A ^ z).det ↔ IsUnit A.
 theorem zpow_neg {A : M} (h : IsUnit A.det) : ∀ n : ℤ, A ^ (-n) = (A ^ n)⁻¹
   | (n : ℕ) => zpow_neg_coe_nat _ _
   | -[n+1] => by
-    rw [zpow_negSucc, neg_neg_of_nat_succ, of_nat_eq_coe, zpow_ofNat, nonsing_inv_nonsing_inv]
+    rw [zpow_negSucc, neg_negSucc, zpow_ofNat, nonsing_inv_nonsing_inv]
     rw [det_pow]
     exact h.pow _
 #align matrix.zpow_neg Matrix.zpow_neg
@@ -160,7 +160,7 @@ theorem zpow_add_one {A : M} (h : IsUnit A.det) : ∀ n : ℤ, A ^ (n + 1) = A ^
         rw [mul_inv_rev, Matrix.mul_assoc, nonsing_inv_mul _ h, Matrix.mul_one]
       _ = A ^ (-(n + 1 : ℤ)) * A := by
         rw [zpow_neg h, ← Int.ofNat_succ, zpow_ofNat, pow_succ, mul_eq_mul, mul_eq_mul]
-      
+
 #align matrix.zpow_add_one Matrix.zpow_add_one
 
 theorem zpow_sub_one {A : M} (h : IsUnit A.det) (n : ℤ) : A ^ (n - 1) = A ^ n * A⁻¹ :=
@@ -168,7 +168,7 @@ theorem zpow_sub_one {A : M} (h : IsUnit A.det) (n : ℤ) : A ^ (n - 1) = A ^ n 
     A ^ (n - 1) = A ^ (n - 1) * A * A⁻¹ := by
       rw [mul_assoc, mul_eq_mul A, mul_nonsing_inv _ h, mul_one]
     _ = A ^ n * A⁻¹ := by rw [← zpow_add_one h, sub_add_cancel]
-    
+
 #align matrix.zpow_sub_one Matrix.zpow_sub_one
 
 theorem zpow_add {A : M} (ha : IsUnit A.det) (m n : ℤ) : A ^ (m + n) = A ^ m * A ^ n := by
@@ -344,4 +344,3 @@ theorem conjTranspose_zpow [StarRing R] (A : M) : ∀ n : ℤ, (A ^ n)ᴴ = Aᴴ
 end Zpow
 
 end Matrix
-
