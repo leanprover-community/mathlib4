@@ -303,7 +303,7 @@ end PartialProd
 end Fin
 
 /-- Equivalence between `Fin n → Fin m` and `Fin (m ^ n)`. -/
-@[simps]
+@[simps!]
 def finFunctionFinEquiv {m n : ℕ} : (Fin n → Fin m) ≃ Fin (m ^ n) :=
   Equiv.ofRightInverseOfCardLe (le_of_eq <| by simp_rw [Fintype.card_fun, Fintype.card_fin])
     (fun f => ⟨∑ i, f i * m ^ (i : ℕ), by
@@ -399,6 +399,11 @@ def finPiFinEquiv {m : ℕ} {n : Fin m → ℕ} : (∀ i : Fin m, Fin (n i)) ≃
         change (_ + ∑ y : _, _ / (x * _) % _ * (x * _)) = _
         simp_rw [← Nat.div_div_eq_div_mul, mul_left_comm (_ % _ : ℕ), ← mul_sum]
         convert Nat.mod_add_div _ _
+        -- porting note: new
+        refine (ih (a / x) (Nat.div_lt_of_lt_mul <| a.is_lt.trans_eq ?_))
+        exact Fin.prod_univ_succ _
+        -- porting note: was:
+        /-
         refine' Eq.trans _ (ih (a / x) (Nat.div_lt_of_lt_mul <| a.is_lt.trans_eq _))
         swap
         · convert Fin.prod_univ_succ (Fin.cons x xs : ∀ _, ℕ)
@@ -408,7 +413,7 @@ def finPiFinEquiv {m : ℕ} {n : Fin m → ℕ} : (∀ i : Fin m, Fin (n i)) ≃
         · cases j
           rfl
         · cases j
-          rfl)
+          rfl-/)
 #align fin_pi_fin_equiv finPiFinEquiv
 
 theorem finPiFinEquiv_apply {m : ℕ} {n : Fin m → ℕ} (f : ∀ i : Fin m, Fin (n i)) :
