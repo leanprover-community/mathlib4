@@ -7,9 +7,5 @@
   "files.insertFinalNewline": true,
   "files.trimFinalNewlines": true,
   "files.trimTrailingWhitespace": true,
-  "search.exclude": {
-    "**/build/**/*.c": true,
-    "**/build/**/*.ilean": true,
-    "**/build/**/*.trace": true
-  }
+  "search.useIgnoreFiles": true
 }
