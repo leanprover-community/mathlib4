@@ -44,7 +44,7 @@ namespace CategoryTheory.Limits
 
 variable {J K : Type v} [SmallCategory J] [SmallCategory K]
 
-/-- `(curry.obj F ⋙ lim).obj S` = `limit ((curry.obj F).obj S)` definitionally, so this
+/-- `(G ⋙ lim).obj S` = `limit (G.obj S)` definitionally, so this
 is just a variant of `limit_ext'`. -/
 @[ext] lemma comp_lim_obj_ext {G : J ⥤ K ⥤ Type v} (x y : (G ⋙ lim).obj S) (w : ∀ (j : K),
     limit.π (G.obj S) j x = limit.π (G.obj S) j y) : x = y :=
