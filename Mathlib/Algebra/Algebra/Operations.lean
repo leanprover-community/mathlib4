@@ -258,7 +258,7 @@ theorem sup_mul : (M ⊔ N) * P = M * P ⊔ N * P :=
 #align submodule.sup_mul Submodule.sup_mul
 
 theorem mul_subset_mul : (↑M : Set A) * (↑N : Set A) ⊆ (↑(M * N) : Set A) :=
-  image2_subset_map₂ (LinearMap.Algebra.lmul R A).toLinearMap M N
+  image2_subset_map₂ (Algebra.lmul R A).toLinearMap M N
 #align submodule.mul_subset_mul Submodule.mul_subset_mul
 
 protected theorem map_mul {A'} [Semiring A'] [Algebra R A'] (f : A →ₐ[R] A') :
@@ -281,7 +281,6 @@ protected theorem map_mul {A'} [Semiring A'] [Algebra R A'] (f : A →ₐ[R] A')
         rw [f.toLinearMap_apply] at fy_eq
         ext
         simp [fy_eq]
-
 #align submodule.map_mul Submodule.map_mul
 
 theorem map_op_mul :

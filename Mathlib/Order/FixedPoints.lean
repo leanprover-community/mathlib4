@@ -91,7 +91,6 @@ theorem lfp_le_map {a : α} (ha : lfp f ≤ a) : lfp f ≤ f a :=
   calc
     lfp f = f (lfp f) := f.map_lfp.symm
     _ ≤ f a := f.mono ha
-
 #align order_hom.lfp_le_map OrderHom.lfp_le_map
 
 theorem isLeast_lfp_le : IsLeast { a | f a ≤ a } (lfp f) :=
