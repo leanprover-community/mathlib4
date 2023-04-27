@@ -515,7 +515,7 @@ instance (priority := 100) isAtomistic_of_complementedLattice [ComplementedLatti
       · exact ne_of_lt con (Subtype.ext_iff.1 (eq_top_of_isCompl_bot hc))
       · apply ha.1
         rw [eq_bot_iff]
-        apply le_trans (le_inf _ hac) hc.Disjoint.le_bot
+        apply le_trans (le_inf _ hac) hc.disjoint.le_bot
         rw [← Subtype.coe_le_coe, Subtype.coe_mk]
         exact le_supₛ ⟨ha.of_isAtom_coe_Iic, a.2⟩, fun _ => And.left⟩⟩
 #align is_atomistic_of_complemented_lattice isAtomistic_of_complementedLattice

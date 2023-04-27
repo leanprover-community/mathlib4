@@ -451,9 +451,9 @@ section IsCompl
 /-- Two elements `x` and `y` are complements of each other if `x ⊔ y = ⊤` and `x ⊓ y = ⊥`. -/
 structure IsCompl [PartialOrder α] [BoundedOrder α] (x y : α) : Prop where
   /-- If `x` and `y` are to be complementary in an order, they should be disjoint. -/
-  protected Disjoint : Disjoint x y
+  protected disjoint : Disjoint x y
   /-- If `x` and `y` are to be complementary in an order, they should be codisjoint. -/
-  protected Codisjoint : Codisjoint x y
+  protected codisjoint : Codisjoint x y
 #align is_compl IsCompl
 
 theorem isCompl_iff [PartialOrder α] [BoundedOrder α] {a b : α} :
@@ -495,11 +495,11 @@ theorem of_eq (h₁ : x ⊓ y = ⊥) (h₂ : x ⊔ y = ⊤) : IsCompl x y :=
 #align is_compl.of_eq IsCompl.of_eq
 
 theorem inf_eq_bot (h : IsCompl x y) : x ⊓ y = ⊥ :=
-  h.Disjoint.eq_bot
+  h.disjoint.eq_bot
 #align is_compl.inf_eq_bot IsCompl.inf_eq_bot
 
 theorem sup_eq_top (h : IsCompl x y) : x ⊔ y = ⊤ :=
-  h.Codisjoint.eq_top
+  h.codisjoint.eq_top
 #align is_compl.sup_eq_top IsCompl.sup_eq_top
 
 end BoundedLattice
@@ -552,7 +552,7 @@ theorem right_le_iff (h : IsCompl x y) : y ≤ z ↔ Codisjoint z x :=
 #align is_compl.right_le_iff IsCompl.right_le_iff
 
 protected theorem Antitone {x' y'} (h : IsCompl x y) (h' : IsCompl x' y') (hx : x ≤ x') : y' ≤ y :=
-  h'.right_le_iff.2 <| h.symm.Codisjoint.mono_right hx
+  h'.right_le_iff.2 <| h.symm.codisjoint.mono_right hx
 #align is_compl.antitone IsCompl.Antitone
 
 theorem right_unique (hxy : IsCompl x y) (hxz : IsCompl x z) : y = z :=

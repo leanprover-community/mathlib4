@@ -419,7 +419,7 @@ variable [Fintype α] [CommMonoid β]
 @[to_additive]
 theorem IsCompl.prod_mul_prod {s t : Finset α} (h : IsCompl s t) (f : α → β) :
     ((∏ i in s, f i) * ∏ i in t, f i) = ∏ i, f i :=
-  (Finset.prod_disjUnion h.Disjoint).symm.trans <| by
+  (Finset.prod_disjUnion h.disjoint).symm.trans <| by
     classical rw [Finset.disjUnion_eq_union, ← Finset.sup_eq_union, h.sup_eq_top]; rfl
 #align is_compl.prod_mul_prod IsCompl.prod_mul_prod
 #align is_compl.sum_add_sum IsCompl.sum_add_sum
