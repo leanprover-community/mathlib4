@@ -81,11 +81,11 @@ def of (X : Type u) [TopologicalSpace X] : TopCat :=
 set_option linter.uppercaseLean3 false in
 #align Top.of TopCat.of
 
-instance (X : TopCat) : TopologicalSpace X :=
+instance topologicalSpace_coe (X : TopCat) : TopologicalSpace X :=
   X.str
 
 -- Porting note: cannot see through forget
-instance (X : TopCat) : TopologicalSpace <| (forget TopCat).obj X := by
+instance topologicalSpace_forget (X : TopCat) : TopologicalSpace <| (forget TopCat).obj X := by
   change TopologicalSpace X
   infer_instance
 
@@ -94,7 +94,7 @@ theorem coe_of (X : Type u) [TopologicalSpace X] : (of X : Type u) = X := rfl
 set_option linter.uppercaseLean3 false in
 #align Top.coe_of TopCat.coe_of
 
-instance : Inhabited TopCat :=
+instance inhabited : Inhabited TopCat :=
   ⟨TopCat.of Empty⟩
 
 -- porting note: added to ease the port of `AlgebraicTopology.TopologicalSimplex`
