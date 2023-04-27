@@ -19,13 +19,13 @@ import Mathlib.Topology.Category.Top.Limits.Basic
 
 We construct the category of compact Hausdorff spaces.
 The type of compact Hausdorff spaces is denoted `CompHaus`, and it is endowed with a category
-instance making it a full subcategory of `Top`.
-The fully faithful functor `CompHaus ⥤ Top` is denoted `CompHaus_to_Top`.
+instance making it a full subcategory of `TopCat`.
+The fully faithful functor `CompHaus ⥤ TopCat` is denoted `compHausToTop`.
 
-**Note:** The file `topology/category/Compactum.lean` provides the equivalence between `Compactum`,
+**Note:** The file `Topology/Category/Compactum.lean` provides the equivalence between `Compactum`,
 which is defined as the category of algebras for the ultrafilter monad, and `CompHaus`.
-`Compactum_to_CompHaus` is the functor from `Compactum` to `CompHaus` which is proven to be an
-equivalence of categories in `Compactum_to_CompHaus.is_equivalence`.
+`CompactumToCompHaus` is the functor from `Compactum` to `CompHaus` which is proven to be an
+equivalence of categories in `CompactumToCompHaus.isEquivalence`.
 See `topology/category/Compactum.lean` for a more detailed discussion where these definitions are
 introduced.
 
@@ -138,7 +138,7 @@ set_option linter.uppercaseLean3 false in
 
 end CompHaus
 
-/-- The fully faithful embedding of `CompHaus` in `Top`. -/
+/-- The fully faithful embedding of `CompHaus` in `TopCat`. -/
 -- Porting note: `semireducible` -> `.default`.
 @[simps (config := { rhsMd := .default })]
 def compHausToTop : CompHaus.{u} ⥤ TopCat.{u} :=
@@ -242,7 +242,7 @@ namespace CompHaus
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 /-- An explicit limit cone for a functor `F : J ⥤ CompHaus`, defined in terms of
-`Top.limit_cone`. -/
+`TopCat.limitCone`. -/
 def limitCone {J : Type v} [SmallCategory J] (F : J ⥤ CompHaus.{max v u}) : Limits.Cone F :=
   -- Porting note: Exploit the `TopCatMax` trick.
   letI FF : J ⥤ TopCatMax.{v,u} := F ⋙ compHausToTop
@@ -280,7 +280,7 @@ def limitCone {J : Type v} [SmallCategory J] (F : J ⥤ CompHaus.{max v u}) : Li
 set_option linter.uppercaseLean3 false in
 #align CompHaus.limit_cone CompHaus.limitCone
 
-/-- The limit cone `CompHaus.limit_cone F` is indeed a limit cone. -/
+/-- The limit cone `CompHaus.limitCone F` is indeed a limit cone. -/
 def limitConeIsLimit {J : Type v} [SmallCategory J] (F : J ⥤ CompHaus.{max v u}) :
     Limits.IsLimit.{v} (limitCone.{v,u} F) :=
   letI FF : J ⥤ TopCatMax.{v,u} := F ⋙ compHausToTop
