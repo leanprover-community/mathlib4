@@ -483,7 +483,9 @@ theorem Matrix.toLinAlgEquiv'_apply (M : Matrix n n R) (v : n → R) :
   rfl
 #align matrix.to_lin_alg_equiv'_apply Matrix.toLinAlgEquiv'_apply
 
-@[simp]
+-- Porting note: the simpNF lemma rejects this, as `simp` already simplifies the lhs
+-- to `(1 : (n → R) →ₗ[R] n → R)`.
+-- @[simp]
 theorem Matrix.toLinAlgEquiv'_one : Matrix.toLinAlgEquiv' (1 : Matrix n n R) = LinearMap.id :=
   Matrix.toLin'_one
 #align matrix.to_lin_alg_equiv'_one Matrix.toLinAlgEquiv'_one
@@ -778,7 +780,9 @@ theorem LinearMap.toMatrixAlgEquiv_id : LinearMap.toMatrixAlgEquiv v₁ id = 1 :
   simp_rw [LinearMap.toMatrixAlgEquiv, AlgEquiv.ofLinearEquiv_apply, LinearMap.toMatrix_id]
 #align linear_map.to_matrix_alg_equiv_id LinearMap.toMatrixAlgEquiv_id
 
-@[simp]
+-- Porting note: the simpNF lemma rejects this, as `simp` already simplifies the lhs
+-- to `(1 : M₁ →ₗ[R] M₁)`.
+-- @[simp]
 theorem Matrix.toLinAlgEquiv_one : Matrix.toLinAlgEquiv v₁ 1 = LinearMap.id := by
   rw [← LinearMap.toMatrixAlgEquiv_id v₁, Matrix.toLinAlgEquiv_toMatrixAlgEquiv]
 #align matrix.to_lin_alg_equiv_one Matrix.toLinAlgEquiv_one
@@ -849,7 +853,6 @@ variable {m : Type _} [Fintype m] [DecidableEq m]
 set_option synthInstance.etaExperiment true in
 theorem toMatrix_lmul' (x : S) (i j) :
     LinearMap.toMatrix b b (lmul R S x) i j = b.repr (x * b j) i := by
-  have : SMulCommClass R S S := by infer_instance  -- porting note: added
   simp only [LinearMap.toMatrix_apply', coe_lmul_eq_mul, LinearMap.mul_apply']
 #align algebra.to_matrix_lmul' Algebra.toMatrix_lmul'
 
