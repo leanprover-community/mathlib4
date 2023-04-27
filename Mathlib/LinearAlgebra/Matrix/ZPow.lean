@@ -34,7 +34,6 @@ namespace Matrix
 
 variable {n' : Type _} [DecidableEq n'] [Fintype n'] {R : Type _} [CommRing R]
 
--- mathport name: exprM
 local notation "M" => Matrix n' n' R
 
 noncomputable instance : DivInvMonoid M :=
@@ -70,7 +69,6 @@ theorem pow_inv_comm' (A : M) (m n : ℕ) : A⁻¹ ^ m ⬝ A ^ n = A ^ n ⬝ A�
       _ = A ^ n ⬝ (A ⬝ A⁻¹) ⬝ A⁻¹ ^ m := by simp only [h', Matrix.mul_one, Matrix.one_mul]
       _ = A ^ (n + 1) ⬝ A⁻¹ ^ (m + 1) := by
         simp only [pow_succ' A, pow_succ A⁻¹, mul_eq_mul, Matrix.mul_assoc]
-
   · simp [h]
 #align matrix.pow_inv_comm' Matrix.pow_inv_comm'
 
@@ -152,7 +150,7 @@ theorem inv_zpow' {A : M} (h : IsUnit A.det) (n : ℤ) : A⁻¹ ^ n = A ^ (-n) :
 
 theorem zpow_add_one {A : M} (h : IsUnit A.det) : ∀ n : ℤ, A ^ (n + 1) = A ^ n * A
   | (n : ℕ) => by simp only [← Nat.cast_succ, pow_succ', zpow_ofNat]
-  | -((n : ℕ) + 1) =>
+  | -[n+1] =>
     calc
       A ^ (-(n + 1) + 1 : ℤ) = (A ^ n)⁻¹ := by
         rw [neg_add, neg_add_cancel_right, zpow_neg h, zpow_ofNat]
@@ -160,7 +158,6 @@ theorem zpow_add_one {A : M} (h : IsUnit A.det) : ∀ n : ℤ, A ^ (n + 1) = A ^
         rw [mul_inv_rev, Matrix.mul_assoc, nonsing_inv_mul _ h, Matrix.mul_one]
       _ = A ^ (-(n + 1 : ℤ)) * A := by
         rw [zpow_neg h, ← Int.ofNat_succ, zpow_ofNat, pow_succ, mul_eq_mul, mul_eq_mul]
-
 #align matrix.zpow_add_one Matrix.zpow_add_one
 
 theorem zpow_sub_one {A : M} (h : IsUnit A.det) (n : ℤ) : A ^ (n - 1) = A ^ n * A⁻¹ :=
@@ -168,14 +165,13 @@ theorem zpow_sub_one {A : M} (h : IsUnit A.det) (n : ℤ) : A ^ (n - 1) = A ^ n 
     A ^ (n - 1) = A ^ (n - 1) * A * A⁻¹ := by
       rw [mul_assoc, mul_eq_mul A, mul_nonsing_inv _ h, mul_one]
     _ = A ^ n * A⁻¹ := by rw [← zpow_add_one h, sub_add_cancel]
-
 #align matrix.zpow_sub_one Matrix.zpow_sub_one
 
 theorem zpow_add {A : M} (ha : IsUnit A.det) (m n : ℤ) : A ^ (m + n) = A ^ m * A ^ n := by
-  induction' n using Int.induction_on with n ihn n ihn
-  case hz => simp
-  · simp only [← add_assoc, zpow_add_one ha, ihn, mul_assoc]
-  · rw [zpow_sub_one ha, ← mul_assoc, ← ihn, ← zpow_sub_one ha, add_sub_assoc]
+  induction n using Int.induction_on with
+  | hz => simp
+  | hp n ihn => simp only [← add_assoc, zpow_add_one ha, ihn, mul_assoc]
+  | hn n ihn => rw [zpow_sub_one ha, ← mul_assoc, ← ihn, ← zpow_sub_one ha, add_sub_assoc]
 #align matrix.zpow_add Matrix.zpow_add
 
 theorem zpow_add_of_nonpos {A : M} {m n : ℤ} (hm : m ≤ 0) (hn : n ≤ 0) :
@@ -300,7 +296,7 @@ theorem coe_units_zpow (u : Mˣ) : ∀ n : ℤ, ((u ^ n : Mˣ) : M) = (u : M) ^ 
 theorem zpow_ne_zero_of_isUnit_det [Nonempty n'] [Nontrivial R] {A : M} (ha : IsUnit A.det)
     (z : ℤ) : A ^ z ≠ 0 := by
   have := ha.det_zpow z
-  -- oorting note: was `contrapose! this`
+  -- Porting note: was `contrapose! this`
   revert this
   contrapose!
   rw [ne_eq, not_not]
