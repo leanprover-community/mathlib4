@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Scott Morrison
 
 ! This file was ported from Lean 3 source module data.finsupp.basic
-! leanprover-community/mathlib commit 2651125b48fc5c170ab1111afd0817c903b1fc6c
+! leanprover-community/mathlib commit 57911c5a05a1b040598e1e15b189f035ac5cc33c
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -1494,25 +1494,21 @@ Throughout this section, some `Monoid` and `Semiring` arguments are specified wi
 `[]`. See note [implicit instance arguments].
 -/
 
--- porting note: changed `AddMonoid` to `Zero`
 @[simp]
 theorem coe_smul [Zero M] [SMulZeroClass R M] (b : R) (v : α →₀ M) : ⇑(b • v) = b • ⇑v :=
   rfl
 #align finsupp.coe_smul Finsupp.coe_smul
 
--- porting note: changed `AddMonoid` to `Zero`
 theorem smul_apply [Zero M] [SMulZeroClass R M] (b : R) (v : α →₀ M) (a : α) :
     (b • v) a = b • v a :=
   rfl
 #align finsupp.smul_apply Finsupp.smul_apply
 
--- porting note: changed `AddMonoid` to `Zero`
 theorem _root_.IsSMulRegular.finsupp [Zero M] [SMulZeroClass R M] {k : R}
     (hk : IsSMulRegular M k) : IsSMulRegular (α →₀ M) k :=
   fun _ _ h => ext fun i => hk (FunLike.congr_fun h i)
 #align is_smul_regular.finsupp IsSMulRegular.finsupp
 
--- porting note: changed `AddMonoid` to `Zero`
 instance faithfulSMul [Nonempty α] [Zero M] [SMulZeroClass R M] [FaithfulSMul R M] :
     FaithfulSMul R (α →₀ M) where
   eq_of_smul_eq_smul h :=
