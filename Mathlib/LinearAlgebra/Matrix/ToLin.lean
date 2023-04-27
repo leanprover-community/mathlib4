@@ -932,7 +932,7 @@ variable [Algebra R S] [Algebra S T] [Algebra R T] [IsScalarTower R S T]
 
 variable {m n : Type _} [Fintype m] [Fintype n] [DecidableEq m] [DecidableEq n]
 
-variable (b : Basis m R S) (c : Basis n S T)
+variable (b : (eta_experiment% Basis m R S)) (c : eta_experiment% Basis n S T)
 
 set_option synthInstance.etaExperiment true in
 theorem smul_leftMulMatrix (x) (ik jk) :
@@ -944,10 +944,10 @@ theorem smul_leftMulMatrix (x) (ik jk) :
 
 set_option synthInstance.etaExperiment true in
 theorem smul_leftMulMatrix_algebraMap (x : S) :
-    leftMulMatrix (b.smul c) (algebraMap _ _ x) = blockDiagonal fun k => leftMulMatrix b x := by
+    leftMulMatrix (b.smul c) (algebraMap _ _ x) = blockDiagonal fun _ => leftMulMatrix b x := by
   ext (⟨i, k⟩⟨j, k'⟩)
   rw [smul_leftMulMatrix, AlgHom.commutes, blockDiagonal_apply, algebraMap_matrix_apply]
-  split_ifs with h <;> simp [h]
+  split_ifs with h <;> simp only at h <;> simp [h]
 #align algebra.smul_left_mul_matrix_algebra_map Algebra.smul_leftMulMatrix_algebraMap
 
 set_option synthInstance.etaExperiment true in
