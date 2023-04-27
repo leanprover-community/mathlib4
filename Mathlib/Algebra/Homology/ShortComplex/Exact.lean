@@ -1,22 +1,20 @@
 import Mathlib.Algebra.Homology.ShortComplex.QuasiIso
 import Mathlib.Algebra.Homology.ShortComplex.Preadditive
---algebra.homology.short_complex.homology
---import algebra.homology.short_complex.abelian
---import algebra.homology.short_complex.preserves_homology
---import category_theory.preadditive.opposite
+import Mathlib.Algebra.Homology.ShortComplex.PreservesHomology
+import Mathlib.CategoryTheory.Balanced
 
 namespace CategoryTheory
 
 open Category Limits ZeroObject Preadditive
 
-variable {C : Type _} [Category C]
+variable {C D : Type _} [Category C] [Category D]
 
 namespace ShortComplex
 
 section
 
 variable
-  [HasZeroMorphisms C]
+  [HasZeroMorphisms C] [HasZeroMorphisms D]
   (S : ShortComplex C) {S₁ S₂ : ShortComplex C}
 
 structure Exact : Prop :=
@@ -153,11 +151,72 @@ lemma exact_iff_op : S.Exact ↔ S.op.Exact :=
 lemma exact_iff_unop (S : ShortComplex Cᵒᵖ) : S.Exact ↔ S.unop.Exact :=
   S.unop.exact_iff_op.symm
 
+variable {S}
+
+lemma LeftHomologyData.exact_map_iff (h : S.LeftHomologyData) (F : C ⥤ D)
+    [F.PreservesZeroMorphisms] [h.IsPreservedBy F] [(S.map F).HasHomology] :
+    (S.map F).Exact ↔ IsZero (F.obj h.H) :=
+    (h.map F).exact_iff
+
+lemma RightHomologyData.exact_map_iff (h : S.RightHomologyData) (F : C ⥤ D)
+    [F.PreservesZeroMorphisms] [h.IsPreservedBy F] [(S.map F).HasHomology] :
+    (S.map F).Exact ↔ IsZero (F.obj h.H) :=
+    (h.map F).exact_iff
+
+lemma Exact.map_of_preservesLeftHomologyOf (h : S.Exact) (F : C ⥤ D)
+    [F.PreservesZeroMorphisms] [F.PreservesLeftHomologyOf S]
+    [(S.map F).HasHomology] : (S.map F).Exact := by
+    have := h.hasHomology
+    rw [(S.leftHomologyData).exact_iff, IsZero.iff_id_eq_zero] at h
+    rw [(S.leftHomologyData).exact_map_iff F, IsZero.iff_id_eq_zero,
+      ← F.map_id, h, F.map_zero]
+
+lemma Exact.map_of_preservesRightHomologyOf (h : S.Exact) (F : C ⥤ D)
+    [F.PreservesZeroMorphisms] [F.PreservesRightHomologyOf S]
+    [(S.map F).HasHomology] : (S.map F).Exact := by
+    have : S.HasHomology := h.hasHomology
+    rw [(S.rightHomologyData).exact_iff, IsZero.iff_id_eq_zero] at h
+    rw [(S.rightHomologyData).exact_map_iff F, IsZero.iff_id_eq_zero,
+      ← F.map_id, h, F.map_zero]
+
+lemma Exact.map (h : S.Exact) (F : C ⥤ D)
+    [F.PreservesZeroMorphisms] [F.PreservesLeftHomologyOf S]
+    [F.PreservesRightHomologyOf S] : (S.map F).Exact := by
+    have := h.hasHomology
+    exact h.map_of_preservesLeftHomologyOf F
+
+variable (S)
+
+lemma exact_map_iff_of_faithful [S.HasHomology]
+    (F : C ⥤ D) [F.PreservesZeroMorphisms] [F.PreservesLeftHomologyOf S]
+    [F.PreservesRightHomologyOf S] [Faithful F] :
+    (S.map F).Exact ↔ S.Exact := by
+    constructor
+    . intro h
+      rw [S.leftHomologyData.exact_iff, IsZero.iff_id_eq_zero]
+      rw [(S.leftHomologyData.map F).exact_iff, IsZero.iff_id_eq_zero,
+        LeftHomologyData.map_H] at h
+      apply F.map_injective
+      rw [F.map_id, F.map_zero, h]
+    . intro h
+      exact h.map F
+
+
+variable {S}
+
+lemma Exact.comp_eq_zero (h : S.Exact) {X Y : C} {a : X ⟶ S.X₂} (ha : a ≫ S.g = 0)
+  {b : S.X₂ ⟶ Y} (hb : S.f ≫ b = 0) : a ≫ b = 0 := by
+    have := h.hasHomology
+    have eq := h
+    rw [exact_iff_iCycles_pCyclesCo_zero] at eq
+    rw [← S.liftCycles_i a ha, ← S.p_descCyclesCo b hb, assoc, reassoc_of% eq,
+      zero_comp, comp_zero]
+
 end
 
 section Preadditive
 
-variable [Preadditive C] (S : ShortComplex C)
+variable [Preadditive C] [Preadditive D] (S : ShortComplex C)
 
 lemma exact_iff_mono [HasZeroObject C] (hf : S.f = 0) :
     S.Exact ↔ Mono S.g := by
@@ -278,6 +337,28 @@ lemma HomotopyEquiv.exact_iff {S₁ S₂ : ShortComplex C} (e : HomotopyEquiv S�
     [S₁.HasHomology] [S₂.HasHomology] : S₁.Exact ↔ S₂.Exact :=
   QuasiIso.exact_iff e.hom
 
+lemma exact_of_f_is_kernel [Mono S.f] (hS : IsLimit (KernelFork.ofι S.f S.zero))
+    [S.HasHomology] : S.Exact := by
+  rw [exact_iff_epi_toCycles]
+  have : IsSplitEpi S.toCycles :=
+    ⟨⟨{ section_ := hS.lift (KernelFork.ofι S.iCycles S.iCycles_g)
+        id := by
+          rw [← cancel_mono S.iCycles]
+          simp only [assoc, toCycles_i, id_comp]
+          exact Fork.IsLimit.lift_ι hS }⟩⟩
+  infer_instance
+
+lemma exact_of_g_is_cokernel [Epi S.g] (hS : IsColimit (CokernelCofork.ofπ S.g S.zero))
+    [S.HasHomology] : S.Exact := by
+  rw [exact_iff_mono_fromCyclesCo]
+  have : IsSplitMono S.fromCyclesCo :=
+    ⟨⟨{ retraction := hS.desc (CokernelCofork.ofπ S.pCyclesCo S.f_pCyclesCo)
+        id := by
+          rw [← cancel_epi S.pCyclesCo]
+          simp only [assoc, p_fromCyclesCo_assoc, comp_id]
+          exact Cofork.IsColimit.π_desc hS }⟩⟩
+  infer_instance
+
 structure Splitting (S : ShortComplex C) where
   r : S.X₂ ⟶ S.X₁
   s : S.X₃ ⟶ S.X₂
@@ -393,78 +474,97 @@ noncomputable def homologyData [HasZeroObject C] (s : S.Splitting) : S.HomologyD
 lemma exact [HasZeroObject C] (s : S.Splitting) : S.Exact :=
   ⟨s.homologyData, isZero_zero _⟩
 
+@[simps]
+def map (s : S.Splitting) (F : C ⥤ D) [F.Additive] : (S.map F).Splitting where
+  r := F.map s.r
+  s := F.map s.s
+  f_r := by
+    dsimp
+    simp only [← F.map_comp, f_r, F.map_id]
+  s_g := by
+    dsimp
+    simp only [← F.map_comp, s_g, F.map_id]
+  id := by
+    dsimp
+    simp only [← F.map_id, ← s.id, Functor.map_comp, Functor.map_add]
+
+@[simps]
+def ofIso {S₁ S₂ : ShortComplex C} (s : S₁.Splitting) (e : S₁ ≅ S₂) : S₂.Splitting where
+  r := e.inv.τ₂ ≫ s.r ≫ e.hom.τ₁
+  s := e.inv.τ₃ ≫ s.s ≫ e.hom.τ₂
+  f_r := by rw [← e.inv.comm₁₂_assoc, s.f_r_assoc, ← comp_τ₁, e.inv_hom_id, id_τ₁]
+  s_g := by rw [assoc, assoc, e.hom.comm₂₃, s.s_g_assoc, ← comp_τ₃, e.inv_hom_id, id_τ₃]
+  id := by
+    have eq := e.inv.τ₂ ≫= s.id =≫ e.hom.τ₂
+    rw [id_comp, ← comp_τ₂, e.inv_hom_id, id_τ₂] at eq
+    rw [← eq, assoc, assoc, add_comp, assoc, assoc, comp_add,
+      e.hom.comm₁₂, e.inv.comm₂₃_assoc]
+
 end Splitting
+
+section Balanced
+
+variable {S}
+variable [Balanced C]
+
+namespace Exact
+
+variable (hS : S.Exact)
+
+lemma isIso_f' (h : S.LeftHomologyData) [Mono S.f] :
+    IsIso h.f' := by
+    have := hS.epi_f' h
+    have := mono_of_mono_fac h.f'_i
+    exact isIso_of_mono_of_epi h.f'
+
+lemma isIso_toCycles [Mono S.f] [S.HasLeftHomology] :
+    IsIso S.toCycles := by
+    exact hS.isIso_f' _
+
+lemma isIso_g' (h : S.RightHomologyData) [Epi S.g] :
+    IsIso h.g' := by
+    have := hS.mono_g' h
+    have := epi_of_epi_fac h.p_g'
+    exact isIso_of_mono_of_epi h.g'
+
+lemma isIso_fromCyclesCo [Epi S.g] [S.HasRightHomology] :
+    IsIso S.fromCyclesCo := by
+    exact hS.isIso_g' _
+
+noncomputable def fIsKernel [Mono S.f] : IsLimit (KernelFork.ofι S.f S.zero) := by
+  have := hS.hasHomology
+  have := hS.isIso_toCycles
+  exact IsLimit.ofIsoLimit S.cyclesIsKernel
+    (Iso.symm (Fork.ext (asIso S.toCycles) (by simp)))
+
+noncomputable def gIsCokernel [Epi S.g] : IsColimit (CokernelCofork.ofπ S.g S.zero) := by
+  have := hS.hasHomology
+  have := hS.isIso_fromCyclesCo
+  exact IsColimit.ofIsoColimit S.cyclesCoIsCokernel
+    ((Cofork.ext (asIso S.fromCyclesCo) (by simp)))
+
+noncomputable def lift {A : C} (k : A ⟶ S.X₂) (hk : k ≫ S.g = 0) [Mono S.f] :
+    A ⟶ S.X₁ := hS.fIsKernel.lift (KernelFork.ofι k hk)
+
+@[reassoc (attr := simp)]
+lemma lift_f {A : C} (k : A ⟶ S.X₂) (hk : k ≫ S.g = 0) [Mono S.f] :
+    hS.lift k hk ≫ S.f = k :=
+  Fork.IsLimit.lift_ι _
+
+noncomputable def desc {A : C} (k : S.X₂ ⟶ A) (hk : S.f ≫ k = 0) [Epi S.g] :
+    S.X₃ ⟶ A := hS.gIsCokernel.desc (CokernelCofork.ofπ k hk)
+
+@[reassoc (attr := simp)]
+lemma g_desc {A : C} (k : S.X₂ ⟶ A) (hk : S.f ≫ k = 0) [Epi S.g] :
+    S.g ≫ hS.desc k hk = k :=
+  Cofork.IsColimit.π_desc (hS.gIsCokernel)
+
+end Exact
+
+end Balanced
 
 end Preadditive
 
 end ShortComplex
 
 end CategoryTheory
-
-#exit
-
-variable {S}
-
-lemma left_homology_data.exact_map_iff (h : S.left_homology_data) (F : C ⥤ D)
-  [F.preserves_zero_morphisms] [h.is_preserved_by F] [(S.map F).has_homology]:
-  (S.map F).exact ↔ is_zero (F.obj h.H) :=
-(h.map F).exact_iff
-
-lemma right_homology_data.exact_map_iff (h : S.right_homology_data) (F : C ⥤ D)
-  [F.preserves_zero_morphisms] [h.is_preserved_by F] [(S.map F).has_homology]:
-  (S.map F).exact ↔ is_zero (F.obj h.H) :=
-(h.map F).exact_iff
-
-
-lemma exact_map_of_preserves_homology (hS : S.exact)
-  (F : C ⥤ D) [F.preserves_zero_morphisms] [F.preserves_left_homology_of S]
-  [F.preserves_right_homology_of S] : (S.map F).exact :=
-begin
-  haveI : S.has_homology := hS.has_homology,
-  let h := S.some_homology_data,
-  haveI := functor.preserves_left_homology_of.condition F S,
-  haveI := functor.preserves_right_homology_of.condition F S,
-  rw [h.exact_iff, is_zero.iff_id_eq_zero] at hS,
-  simpa only [(h.map F).exact_iff, is_zero.iff_id_eq_zero,
-    category_theory.functor.map_id, functor.map_zero] using F.congr_map hS,
-end
-
-variable (S)
-
-lemma exact_map_iff_of_preserves_homology [S.has_homology]
-  (F : C ⥤ D) [F.preserves_zero_morphisms] [F.preserves_left_homology_of S]
-  [F.preserves_right_homology_of S] [faithful F] :
-  (S.map F).exact ↔ S.exact :=
-begin
-  let h := S.some_homology_data,
-  have e : F.map (𝟙 h.left.H) = 0 ↔ (𝟙 h.left.H) = 0,
-  { split,
-    { intro eq,
-      apply F.map_injective,
-      rw [eq, F.map_zero], },
-    { intro eq,
-      rw [eq, F.map_zero], }, },
-  haveI := functor.preserves_left_homology_of.condition F S,
-  haveI := functor.preserves_right_homology_of.condition F S,
-  simpa only [h.exact_iff, is_zero.iff_id_eq_zero, (h.map F).exact_iff,
-    F.map_id] using e,
-end
-
-
-variable {S}
-
-lemma exact.comp_eq_zero (h : S.exact) {X Y : C} {ι : X ⟶ S.X₂} (hι : ι ≫ S.g = 0)
-  {π : S.X₂ ⟶ Y} (hπ : S.f ≫ π = 0) : ι ≫ π = 0 :=
-begin
-  haveI : S.has_homology := h.has_homology,
-  rw exact_iff_cycles_i_p_cycles_co_zero at h,
-  rw [← S.lift_cycles_i ι hι, ← S.p_desc_cycles_co π hπ, assoc,
-    reassoc_of h, zero_comp, comp_zero],
-end
-
-end
-
-
-end short_complex
-
-end category_theory

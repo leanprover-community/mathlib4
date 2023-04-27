@@ -988,13 +988,13 @@ noncomputable def liftCycles : A ⟶ S.cycles :=
   S.leftHomologyData.liftK k hk
 
 @[reassoc (attr := simp)]
-lemma liftiCycles : S.liftCycles k hk ≫ S.iCycles = k :=
+lemma liftCycles_i : S.liftCycles k hk ≫ S.iCycles = k :=
   LeftHomologyData.liftK_i _ k hk
 
 @[reassoc]
 lemma comp_liftCycles {A' : C} (α : A' ⟶ A) :
     α ≫ S.liftCycles k hk = S.liftCycles (α ≫ k) (by rw [assoc, hk, comp_zero]) := by
-  simp only [← cancel_mono S.iCycles, assoc, liftiCycles]
+  simp only [← cancel_mono S.iCycles, assoc, liftCycles_i]
 
 noncomputable def cyclesIsKernel : IsLimit (KernelFork.ofι S.iCycles S.iCycles_g) :=
   S.leftHomologyData.hi
@@ -1006,10 +1006,10 @@ lemma isIso_iCycles_of_zero (hg : S.g = 0) : IsIso (S.iCycles) :=
 noncomputable def cyclesIsoKernel [HasKernel S.g] : S.cycles ≅ kernel S.g where
   hom := kernel.lift S.g S.iCycles (by simp)
   inv := S.liftCycles (kernel.ι S.g) (by simp)
-  hom_inv_id := by simp only [←  cancel_mono S.iCycles, assoc, liftiCycles,
+  hom_inv_id := by simp only [←  cancel_mono S.iCycles, assoc, liftCycles_i,
     kernel.lift_ι, id_comp]
   inv_hom_id := by simp only [← cancel_mono (kernel.ι S.g), assoc, kernel.lift_ι,
-    liftiCycles, id_comp]
+    liftCycles_i, id_comp]
 
 @[simp]
 noncomputable def liftLeftHomology : A ⟶ S.leftHomology :=
@@ -1032,7 +1032,7 @@ noncomputable def leftHomologyIsCokernel :
 lemma liftCycles_comp_cyclesMap (φ : S ⟶ S₁) [S₁.HasLeftHomology] :
   S.liftCycles k hk ≫ cyclesMap φ =
     S₁.liftCycles (k ≫ φ.τ₂) (by rw [assoc, φ.comm₂₃, reassoc_of% hk, zero_comp]) :=
-by simp only [← cancel_mono (S₁.iCycles), assoc, cyclesMap_i, liftiCycles_assoc, liftiCycles]
+by simp only [← cancel_mono (S₁.iCycles), assoc, cyclesMap_i, liftCycles_i_assoc, liftCycles_i]
 
 variable {S}
 
@@ -1054,7 +1054,7 @@ lemma LeftHomologyData.π_comp_leftHomologyIso_inv :
 lemma LeftHomologyData.liftCycles_comp_cyclesIso_hom :
   S.liftCycles k hk ≫ h.cyclesIso.hom = h.liftK k hk :=
 by simp only [← cancel_mono h.i, assoc, LeftHomologyData.cyclesIso_hom_comp_i,
-  liftiCycles, LeftHomologyData.liftK_i]
+  liftCycles_i, LeftHomologyData.liftK_i]
 
 @[simp]
 lemma LeftHomologyData.lift_K_comp_cyclesIso_inv :
