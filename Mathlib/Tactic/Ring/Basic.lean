@@ -1096,7 +1096,7 @@ def proveEq (g : MVarId) : AtomM Unit := do
   let v ← u.dec
   have α : Q(Type v) := α
   have e₁ : Q($α) := e₁; have e₂ : Q($α) := e₂
-  let sα ← synthInstanceQ (q(CommSemiring $α) : Q(Type (v)))
+  let sα ← synthInstanceQ (q(CommSemiring $α) : Q(Type v))
   let c ← mkCache sα
   profileitM Exception "ring" (← getOptions) do
     let ⟨a, va, pa⟩ ← eval sα c e₁
