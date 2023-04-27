@@ -38,9 +38,12 @@ open CategoryTheory
 
 /-- The type of Compact Hausdorff topological spaces. -/
 structure CompHaus where
+  /-- The underlying topological space of an object of `CompHaus`. -/
   toTop : TopCat
   -- Porting note: Renamed field.
+  /-- The underlying topological space is compact.-/
   [is_compact : CompactSpace toTop]
+  /-- The underlying topological space is T2.-/
   [is_hausdorff : T2Space toTop]
 set_option linter.uppercaseLean3 false in
 #align CompHaus CompHaus
@@ -69,11 +72,14 @@ instance concreteCategory : ConcreteCategory CompHaus :=
 set_option linter.uppercaseLean3 false in
 #align CompHaus.concrete_category CompHaus.concreteCategory
 
+/-
+-- Porting note: This is now a syntactic tautology.
 @[simp]
 theorem coe_toTop {X : CompHaus} : (X.toTop : Type _) = X :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align CompHaus.coe_to_Top CompHaus.coe_toTop
+-/
 
 variable (X : Type _) [TopologicalSpace X] [CompactSpace X] [T2Space X]
 
