@@ -130,7 +130,8 @@ theorem strongTopology.topologicalAddGroup [TopologicalSpace F] [TopologicalAddG
   haveI : UniformAddGroup F := comm_topologicalAddGroup_is_uniform
   letI : UniformSpace (E →SL[σ] F) := strongUniformity σ F 𝔖
   haveI : UniformAddGroup (E →SL[σ] F) := strongUniformity.uniformAddGroup σ F 𝔖
-  -- Porting note: this is not found by `inferInstance`, I'm not sure why.
+  -- Porting note: this type inference is slow, so instead we provide the answer:
+  -- set_option synthInstance.maxHeartbeats 80000 in exact inferInstance
   exact UniformAddGroup.to_topologicalAddGroup
 #align continuous_linear_map.strong_topology.topological_add_group ContinuousLinearMap.strongTopology.topologicalAddGroup
 
