@@ -138,20 +138,22 @@ theorem adjunctionToTypes_unit_app_val {G : Type max v u ⥤ D} (adj : G ⊣ for
 set_option linter.uppercaseLean3 false in
 #align category_theory.Sheaf.adjunction_to_types_unit_app_val CategoryTheory.Sheaf.adjunctionToTypes_unit_app_val
 
+set_option maxHeartbeats 800000 in
 @[simp]
 theorem adjunctionToTypes_counit_app_val {G : Type max v u ⥤ D} (adj : G ⊣ forget D)
     (X : Sheaf J D) :
     ((adjunctionToTypes J adj).counit.app X).val =
       J.sheafifyLift ((Functor.associator _ _ _).hom ≫ (adj.whiskerRight _).counit.app _) X.2 := by
-  sorry
-  --dsimp [adjunctionToTypes, Adjunction.comp, Adjunction.whiskerRight]
-  --rw [Category.id_comp]
-  --apply J.sheafifyLift_unique
-  --rw [adjunction_counit_app_val, J.sheafifyMap_sheafifyLift, J.toSheafify_sheafifyLift]
-  --ext
-  --dsimp [Sheaf_equiv_SheafOfTypes, equivalence.symm, equivalence.to_adjunction,
-  --  NatIso.of_components]
-  --simp
+  apply J.sheafifyLift_unique
+  dsimp only [adjunctionToTypes, Adjunction.comp, NatTrans.comp_app,
+    instCategorySheaf_comp_val, instCategorySheaf_id_val]
+  rw [adjunction_counit_app_val]
+  erw [Category.id_comp, J.sheafifyMap_sheafifyLift, J.toSheafify_sheafifyLift]
+  ext
+  dsimp [sheafEquivSheafOfTypes, Equivalence.symm, Equivalence.toAdjunction,
+    NatIso.ofComponents, Adjunction.whiskerRight, Adjunction.mkOfUnitCounit]
+  simp
+
 set_option linter.uppercaseLean3 false in
 #align category_theory.Sheaf.adjunction_to_types_counit_app_val CategoryTheory.Sheaf.adjunctionToTypes_counit_app_val
 
