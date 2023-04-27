@@ -245,6 +245,7 @@ theorem Commute.zpow_zpow_self (A : M) (m n : ℤ) : Commute (A ^ m) (A ^ n) :=
   Commute.zpow_zpow (Commute.refl A) _ _
 #align matrix.commute.zpow_zpow_self Matrix.Commute.zpow_zpow_self
 
+set_option linter.deprecated false in
 theorem zpow_bit0 (A : M) (n : ℤ) : A ^ bit0 n = A ^ n * A ^ n := by
   cases' le_total 0 n with nonneg nonpos
   · exact zpow_add_of_nonneg nonneg nonneg
@@ -261,6 +262,7 @@ theorem zpow_add_one_of_ne_neg_one {A : M} : ∀ n : ℤ, n ≠ -1 → A ^ (n + 
       simp_rw [zpow_neg_coe_nat, ← inv_pow', h, zero_pow Nat.succ_pos', MulZeroClass.zero_mul]
 #align matrix.zpow_add_one_of_ne_neg_one Matrix.zpow_add_one_of_ne_neg_one
 
+set_option linter.deprecated false in
 theorem zpow_bit1 (A : M) (n : ℤ) : A ^ bit1 n = A ^ n * A ^ n * A := by
   rw [bit1, zpow_add_one_of_ne_neg_one, zpow_bit0]
   intro h
@@ -270,11 +272,10 @@ theorem zpow_bit1 (A : M) (n : ℤ) : A ^ bit1 n = A ^ n * A ^ n * A := by
 theorem zpow_mul (A : M) (h : IsUnit A.det) : ∀ m n : ℤ, A ^ (m * n) = (A ^ m) ^ n
   | (m : ℕ), (n : ℕ) => by rw [zpow_ofNat, zpow_ofNat, ← pow_mul, ← zpow_ofNat, Int.ofNat_mul]
   | (m : ℕ), -[n+1] => by
-    rw [zpow_ofNat, zpow_negSucc, ← pow_mul, ofNat_mul_negSucc, ← Int.ofNat_mul,
-      zpow_neg_coe_nat]
+    rw [zpow_ofNat, zpow_negSucc, ← pow_mul, ofNat_mul_negSucc, zpow_neg_coe_nat]
   | -[m+1], (n : ℕ) => by
-    rw [zpow_ofNat, zpow_negSucc, ← inv_pow', ← pow_mul, negSucc_mul_ofNat, ← Int.ofNat_mul,
-      zpow_neg_coe_nat, inv_pow']
+    rw [zpow_ofNat, zpow_negSucc, ← inv_pow', ← pow_mul, negSucc_mul_ofNat, zpow_neg_coe_nat,
+        inv_pow']
   | -[m+1], -[n+1] => by
     rw [zpow_negSucc, zpow_negSucc, negSucc_mul_negSucc, ← Int.ofNat_mul, zpow_ofNat, inv_pow', ←
       pow_mul, nonsing_inv_nonsing_inv]
@@ -286,19 +287,23 @@ theorem zpow_mul' (A : M) (h : IsUnit A.det) (m n : ℤ) : A ^ (m * n) = (A ^ n)
   rw [mul_comm, zpow_mul _ h]
 #align matrix.zpow_mul' Matrix.zpow_mul'
 
+/-
+porting note: TODO: is this still needed, or should just the norm_cast be removed?
 @[simp, norm_cast]
 theorem coe_units_zpow (u : Mˣ) : ∀ n : ℤ, ((u ^ n : Mˣ) : M) = u ^ n
-  | (n : ℕ) => by rw [_root_.zpow_coe_nat, zpow_ofNat, Units.val_pow_eq_pow_val]
+  | (n : ℕ) => by rw [_root_.zpow_coe_nat]
   | -[k+1] => by
     rw [zpow_negSucc, zpow_negSucc, ← inv_pow, u⁻¹.val_pow_eq_pow_val, ← inv_pow', coe_units_inv]
 #align matrix.coe_units_zpow Matrix.coe_units_zpow
+-/
+#noalign matrix.coe_units_zpow
 
 theorem zpow_ne_zero_of_isUnit_det [Nonempty n'] [Nontrivial R] {A : M} (ha : IsUnit A.det)
     (z : ℤ) : A ^ z ≠ 0 := by
-  have := ha.det_zpow z
-  contrapose! this
-  rw [this, det_zero ‹_›]
-  exact not_isUnit_zero
+  have := IsUnit.det_zpow ha z
+  by_contra ha
+  rw [ha, det_zero ‹_›] at this
+  exact not_isUnit_zero this
 #align matrix.zpow_ne_zero_of_is_unit_det Matrix.zpow_ne_zero_of_isUnit_det
 
 theorem zpow_sub {A : M} (ha : IsUnit A.det) (z1 z2 : ℤ) : A ^ (z1 - z2) = A ^ z1 / A ^ z2 := by
@@ -309,19 +314,21 @@ theorem Commute.mul_zpow {A B : M} (h : Commute A B) : ∀ i : ℤ, (A * B) ^ i 
   | (n : ℕ) => by simp [h.mul_pow n, -mul_eq_mul]
   | -[n+1] => by
     rw [zpow_negSucc, zpow_negSucc, zpow_negSucc, mul_eq_mul _⁻¹, ← mul_inv_rev, ← mul_eq_mul,
-      h.mul_pow n.succ, (h.pow_pow _ _).Eq]
+      h.mul_pow n.succ, (h.pow_pow _ _).eq]
 #align matrix.commute.mul_zpow Matrix.Commute.mul_zpow
 
+set_option linter.deprecated false in
 theorem zpow_bit0' (A : M) (n : ℤ) : A ^ bit0 n = (A * A) ^ n :=
   (zpow_bit0 A n).trans (Commute.mul_zpow (Commute.refl A) n).symm
 #align matrix.zpow_bit0' Matrix.zpow_bit0'
 
+set_option linter.deprecated false in
 theorem zpow_bit1' (A : M) (n : ℤ) : A ^ bit1 n = (A * A) ^ n * A := by
   rw [zpow_bit1, Commute.mul_zpow (Commute.refl A)]
 #align matrix.zpow_bit1' Matrix.zpow_bit1'
 
 theorem zpow_neg_mul_zpow_self (n : ℤ) {A : M} (h : IsUnit A.det) : A ^ (-n) * A ^ n = 1 := by
-  rw [zpow_neg h, mul_eq_mul, nonsing_inv_mul _ (h.det_zpow _)]
+  rw [zpow_neg h, mul_eq_mul, nonsing_inv_mul _ (IsUnit.det_zpow h _)]
 #align matrix.zpow_neg_mul_zpow_self Matrix.zpow_neg_mul_zpow_self
 
 theorem one_div_pow {A : M} (n : ℕ) : (1 / A) ^ n = 1 / A ^ n := by simp only [one_div, inv_pow']
@@ -336,6 +343,8 @@ theorem transpose_zpow (A : M) : ∀ n : ℤ, (A ^ n)ᵀ = Aᵀ ^ n
   | -[n+1] => by rw [zpow_negSucc, zpow_negSucc, transpose_nonsing_inv, transpose_pow]
 #align matrix.transpose_zpow Matrix.transpose_zpow
 
+-- porting note: without etaExperiment, conjTranspose_pow can't find the StarRing R instance.
+set_option synthInstance.etaExperiment true in
 @[simp]
 theorem conjTranspose_zpow [StarRing R] (A : M) : ∀ n : ℤ, (A ^ n)ᴴ = Aᴴ ^ n
   | (n : ℕ) => by rw [zpow_ofNat, zpow_ofNat, conjTranspose_pow]
