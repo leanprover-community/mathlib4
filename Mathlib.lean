@@ -1414,6 +1414,7 @@ import Mathlib.LinearAlgebra.LinearIndependent
 import Mathlib.LinearAlgebra.LinearPMap
 import Mathlib.LinearAlgebra.Matrix.AbsoluteValue
 import Mathlib.LinearAlgebra.Matrix.Adjugate
+import Mathlib.LinearAlgebra.Matrix.Block
 import Mathlib.LinearAlgebra.Matrix.Circulant
 import Mathlib.LinearAlgebra.Matrix.Determinant
 import Mathlib.LinearAlgebra.Matrix.DotProduct
