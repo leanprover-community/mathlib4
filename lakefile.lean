@@ -4,7 +4,6 @@ open Lake DSL
 
 def moreLeanArgs := #[
   "-DwarningAsError=true",
-  "-DsynthInstance.etaExperiment=true",
   "-Dpp.unicode.fun=true" -- pretty-prints `fun a ↦ b`
 ]
 
