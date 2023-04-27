@@ -144,7 +144,7 @@ instance hasNSMul [AddMonoid β] [ContinuousAdd β] : SMul ℕ C(α, β) :=
 
 @[to_additive existing]
 instance hasPow [Monoid β] [ContinuousMul β] : Pow C(α, β) ℕ :=
-  ⟨fun f n => ⟨Pow.pow f n, f.continuous.pow n⟩⟩
+  ⟨fun f n => ⟨(⇑f) ^ n, f.continuous.pow n⟩⟩
 #align continuous_map.has_pow ContinuousMap.hasPow
 
 @[to_additive (attr := norm_cast)]
@@ -228,12 +228,11 @@ instance hasZsmul [AddGroup β] [TopologicalAddGroup β] : SMul ℤ C(α, β)
 
 @[to_additive existing]
 instance hasZpow [Group β] [TopologicalGroup β] : Pow C(α, β) ℤ
-    where pow f z := ⟨Pow.pow f z, f.continuous.zpow z⟩
+    where pow f z := ⟨(⇑f) ^ z, f.continuous.zpow z⟩
 #align continuous_map.has_zpow ContinuousMap.hasZpow
 
 @[to_additive (attr := norm_cast)]
-theorem coe_zpow [Group β] [TopologicalGroup β] (f : C(α, β)) (z : ℤ) :
-    ⇑(f ^ z) = (f : α → β) ^ z :=
+theorem coe_zpow [Group β] [TopologicalGroup β] (f : C(α, β)) (z : ℤ) : ⇑(f ^ z) = (⇑f) ^ z :=
   rfl
 #align continuous_map.coe_zpow ContinuousMap.coe_zpow
 #align continuous_map.coe_zsmul ContinuousMap.coe_zsmul
