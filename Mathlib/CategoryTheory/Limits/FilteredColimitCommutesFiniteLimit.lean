@@ -211,6 +211,7 @@ theorem colimitLimitToLimitColimit_surjective :
         (w f).choose_spec.choose_spec.choose_spec
       rw [curry_obj_obj_map, curry_obj_obj_map] at q
       -- porting note: Lean 4 `dsimp` unfolds `gf` and `hf` in `q` :-(
+      -- See discussion at https://leanprover.zulipchat.com/#narrow/stream/270676-lean4/topic/.60dsimp.60.20unfolding.20local.20lets
       simp_rw [← FunctorToTypes.map_comp_apply, CategoryStruct.comp] at q
       convert q <;> simp only [comp_id]
     clear_value kf gf hf
