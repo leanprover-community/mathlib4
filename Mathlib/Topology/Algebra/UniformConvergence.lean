@@ -100,6 +100,32 @@ instance [Semiring R] [AddCommMonoid β] [Module R β] : Module R (α →ᵤ β)
 instance [Semiring R] [AddCommMonoid β] [Module R β] : Module R (α →ᵤ[𝔖] β) :=
   Pi.module _ _ _
 
+-- Porting note: unfortunately `simp` will no longer use `Pi.one_apply` etc.
+-- on `α →ᵤ β` or `α →ᵤ[𝔖] β`, so we restate some of these here. More may be needed later.
+@[to_additive (attr := simp)]
+lemma UniformFun.one_apply [Monoid β] : (1 : α →ᵤ β) x = 1 := Pi.one_apply x
+
+@[to_additive (attr := simp)]
+lemma UniformOnFun.one_apply [Monoid β] : (1 : α →ᵤ[𝔖] β) x = 1 := Pi.one_apply x
+
+@[to_additive (attr := simp)]
+lemma UniformFun.mul_apply [Monoid β] : (f * g : α →ᵤ β) x = f x * g x := Pi.mul_apply f g x
+
+@[to_additive (attr := simp)]
+lemma UniformOnFun.mul_apply [Monoid β] : (f * g : α →ᵤ[𝔖] β) x = f x * g x := Pi.mul_apply f g x
+
+@[to_additive (attr := simp)]
+lemma UniformFun.inv_apply [Group β] : (f : α →ᵤ β)⁻¹ x = (f x)⁻¹ := Pi.inv_apply f x
+
+@[to_additive (attr := simp)]
+lemma UniformOnFun.inv_apply [Group β] : (f : α →ᵤ[𝔖] β)⁻¹ x = (f x)⁻¹ := Pi.inv_apply f x
+
+@[to_additive (attr := simp)]
+lemma UniformFun.div_apply [Group β] : (f / g : α →ᵤ β) x = f x / g x := Pi.div_apply f g x
+
+@[to_additive (attr := simp)]
+lemma UniformOnFun.div_apply [Group β] : (f / g : α →ᵤ[𝔖] β) x = f x / g x := Pi.div_apply f g x
+
 end AlgebraicInstances
 
 section Group
@@ -127,10 +153,6 @@ protected theorem UniformFun.hasBasis_nhds_one_of_basis {p : ι → Prop} {b : �
   convert UniformFun.hasBasis_nhds_of_basis α _ (1 : α →ᵤ G) this
   -- Porting note: removed `ext i f` here, as it has already been done by `convert`.
   simp [UniformFun.gen]
-  -- Porting note: FIXME
-  -- This is failing because `OfNat.ofNat 1 x` has leaked into the goal
-  -- and the simplifier doesn't know what to do.
-  sorry
 #align uniform_fun.has_basis_nhds_one_of_basis UniformFun.hasBasis_nhds_one_of_basis
 #align uniform_fun.has_basis_nhds_zero_of_basis UniformFun.hasBasis_nhds_zero_of_basis
 
@@ -166,10 +188,6 @@ protected theorem UniformOnFun.hasBasis_nhds_one_of_basis (𝔖 : Set <| Set α)
   convert UniformOnFun.hasBasis_nhds_of_basis α _ 𝔖 (1 : α →ᵤ[𝔖] G) h𝔖₁ h𝔖₂ this
   -- Porting note: removed `ext i f` here, as it has already been done by `convert`.
   simp [UniformOnFun.gen]
-  -- Porting note: FIXME
-  -- This is failing because `OfNat.ofNat 1 x` has leaked into the goal
-  -- and the simplifier doesn't know what to do.
-  sorry
 #align uniform_on_fun.has_basis_nhds_one_of_basis UniformOnFun.hasBasis_nhds_one_of_basis
 #align uniform_on_fun.has_basis_nhds_zero_of_basis UniformOnFun.hasBasis_nhds_zero_of_basis
 
@@ -190,13 +208,6 @@ section Module
 variable (𝕜 α E H : Type _) {hom : Type _} [NormedField 𝕜] [AddCommGroup H] [Module 𝕜 H]
   [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace H] [UniformSpace E] [UniformAddGroup E]
   [ContinuousSMul 𝕜 E] {𝔖 : Set <| Set α} [LinearMapClass hom 𝕜 H (α →ᵤ[𝔖] E)]
-
--- FIXME this declaration is just isolating a problem that occurs below, for diagnosis.
-lemma foo (φ : hom) (V : Set E) (m : 0 ∈ V):
-    @FunLike.coe hom H (fun _ ↦ α →ᵤ[𝔖] E) SMulHomClass.toFunLike φ 0 x ∈ V := by
-  rw [map_zero]
-  -- `OfNat.ofNat` has leaked into the goal: `⊢ OfNat.ofNat 0 x ∈ V`
-  exact m
 
 -- Porting note:
 -- This is another alarming location where we need to use
@@ -245,9 +256,7 @@ theorem UniformOnFun.continuousSMul_induced_of_image_bounded (h𝔖₁ : 𝔖.No
     refine' ⟨r⁻¹, inv_pos.mpr hrpos, fun a ha x hx => _⟩
     by_cases ha0 : a = 0
     · rw [ha0]
-      -- Porting note: this used to just be `simp [mem_of_mem_nhds hV]`.
-      rw [zero_smul, map_zero]
-      exact mem_of_mem_nhds hV
+      simpa using mem_of_mem_nhds hV
     · rw [mem_ball_zero_iff] at ha
       rw [SMulHomClass.map_smul, Pi.smul_apply]
       have : φ u x ∈ a⁻¹ • V := by
