@@ -31,10 +31,10 @@ is sometimes enough), `M` and its variations are `R`-modules, `ι`, `κ`, `n` an
 types used for indexing.
 
  * `LinearMap.toMatrix`: given bases `v₁ : ι → M₁` and `v₂ : κ → M₂`,
-   the `R`-linear equivalence from `M₁ →ₗ[R] M₂` to `matrix κ ι R`
+   the `R`-linear equivalence from `M₁ →ₗ[R] M₂` to `Matrix κ ι R`
  * `Matrix.toLin`: the inverse of `LinearMap.toMatrix`
  * `LinearMap.toMatrix'`: the `R`-linear equivalence from `(m → R) →ₗ[R] (n → R)`
-   to `matrix m n R` (with the standard basis on `m → R` and `n → R`)
+   to `Matrix m n R` (with the standard basis on `m → R` and `n → R`)
  * `Matrix.toLin'`: the inverse of `LinearMap.toMatrix'`
  * `algEquivMatrix`: given a basis indexed by `n`, the `R`-algebra equivalence between
    `R`-endomorphisms of `M` and `Matrix n n R`
@@ -108,7 +108,7 @@ theorem Matrix.vecMul_stdBasis (M : Matrix m n R) (i j) :
   · rw [Function.update_noteq (Ne.symm h), Pi.zero_apply]
 #align matrix.vec_mul_std_basis Matrix.vecMul_stdBasis
 
-/-- Linear maps `(m → R) →ₗ[R] (n → R)` are linearly equivalent over `Rᵐᵒᵖ` to `matrix m n R`,
+/-- Linear maps `(m → R) →ₗ[R] (n → R)` are linearly equivalent over `Rᵐᵒᵖ` to `Matrix m n R`,
 by having matrices act by right multiplication.
  -/
 def LinearMap.toMatrixRight' : ((m → R) →ₗ[R] n → R) ≃ₗ[Rᵐᵒᵖ] Matrix m n R where
