@@ -15,6 +15,9 @@ import Mathlib.RingTheory.QuotientNilpotent
 # Noetherian quotient rings and quotient modules
 -/
 
+-- Porting note: we keep this instance local to avoid downstream effects.
+-- I haven't been able to work out how to omit it or inline it into the the construction below.
+local instance {R : Type _} [CommRing R] : Module R R := eta_experiment% inferInstance
 
 instance Ideal.Quotient.isNoetherianRing {R : Type _} [CommRing R] [h : IsNoetherianRing R]
     (I : Ideal R) : IsNoetherianRing (R ⧸ I) :=
