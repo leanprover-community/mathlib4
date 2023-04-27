@@ -8,9 +8,9 @@ Authors: Anatole Dedecker
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.UniformSpace.UniformConvergenceTopology
-import Mathbin.Analysis.LocallyConvex.Bounded
-import Mathbin.Topology.Algebra.FilterBasis
+import Mathlib.Topology.UniformSpace.UniformConvergenceTopology
+import Mathlib.Analysis.LocallyConvex.Bounded
+import Mathlib.Topology.Algebra.FilterBasis
 
 /-!
 # Algebraic facts about the topology of uniform convergence
@@ -122,8 +122,7 @@ instance : UniformGroup (α →ᵤ G) :=
 @[to_additive]
 protected theorem UniformFun.hasBasis_nhds_one_of_basis {p : ι → Prop} {b : ι → Set G}
     (h : (𝓝 1 : Filter G).HasBasis p b) :
-    (𝓝 1 : Filter (α →ᵤ G)).HasBasis p fun i => { f : α →ᵤ G | ∀ x, f x ∈ b i } :=
-  by
+    (𝓝 1 : Filter (α →ᵤ G)).HasBasis p fun i => { f : α →ᵤ G | ∀ x, f x ∈ b i } := by
   have := h.comap fun p : G × G => p.2 / p.1
   rw [← uniformity_eq_comap_nhds_one] at this
   convert UniformFun.hasBasis_nhds_of_basis α _ 1 this
@@ -159,8 +158,7 @@ protected theorem UniformOnFun.hasBasis_nhds_one_of_basis (𝔖 : Set <| Set α)
     (h𝔖₂ : DirectedOn (· ⊆ ·) 𝔖) {p : ι → Prop} {b : ι → Set G}
     (h : (𝓝 1 : Filter G).HasBasis p b) :
     (𝓝 1 : Filter (α →ᵤ[𝔖] G)).HasBasis (fun Si : Set α × ι => Si.1 ∈ 𝔖 ∧ p Si.2) fun Si =>
-      { f : α →ᵤ[𝔖] G | ∀ x ∈ Si.1, f x ∈ b Si.2 } :=
-  by
+      { f : α →ᵤ[𝔖] G | ∀ x ∈ Si.1, f x ∈ b Si.2 } := by
   have := h.comap fun p : G × G => p.1 / p.2
   rw [← uniformity_eq_comap_nhds_one_swapped] at this
   convert UniformOnFun.hasBasis_nhds_of_basis α _ 𝔖 1 h𝔖₁ h𝔖₂ this
@@ -203,8 +201,7 @@ theorem UniformOnFun.continuousSMul_induced_of_image_bounded (h𝔖₁ : 𝔖.No
   have : TopologicalAddGroup H := by
     rw [hφ.induced]
     exact topologicalAddGroup_induced φ
-  have : (𝓝 0 : Filter H).HasBasis _ _ :=
-    by
+  have : (𝓝 0 : Filter H).HasBasis _ _ := by
     rw [hφ.induced, nhds_induced, map_zero]
     exact (UniformOnFun.hasBasis_nhds_zero 𝔖 h𝔖₁ h𝔖₂).comap φ
   refine' ContinuousSMul.of_basis_zero this _ _ _
@@ -235,8 +232,7 @@ theorem UniformOnFun.continuousSMul_induced_of_image_bounded (h𝔖₁ : 𝔖.No
       simp [mem_of_mem_nhds hV]
     · rw [mem_ball_zero_iff] at ha
       rw [SMulHomClass.map_smul, Pi.smul_apply]
-      have : φ u x ∈ a⁻¹ • V :=
-        by
+      have : φ u x ∈ a⁻¹ • V := by
         have ha0 : 0 < ‖a‖ := norm_pos_iff.mpr ha0
         refine' (hr a⁻¹ _) (Set.mem_image_of_mem (φ u) hx)
         rw [norm_inv, le_inv hrpos ha0]
