@@ -82,10 +82,7 @@ instance (priority := 100) NormedSpace.boundedSMul [NormedSpace α β] : Bounded
   dist_pair_smul' x₁ x₂ y := by simpa [dist_eq_norm, sub_smul] using norm_smul_le (x₁ - x₂) y
 #align normed_space.has_bounded_smul NormedSpace.boundedSMul
 
--- Shortcut instance, as otherwise this will be found by `NormedSpace.toModule` and be
--- noncomputable.
-instance : Module ℝ ℝ := by infer_instance
-
+set_option synthInstance.etaExperiment true in
 instance NormedField.toNormedSpace : NormedSpace α α where norm_smul_le a b := norm_mul_le a b
 #align normed_field.to_normed_space NormedField.toNormedSpace
 
