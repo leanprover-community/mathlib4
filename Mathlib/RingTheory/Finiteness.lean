@@ -272,7 +272,10 @@ theorem fg_pi {ι : Type _} {M : ι → Type _} [Finite ι] [∀ i, AddCommMonoi
 abbrev asFun [AddCommGroup N] [Module R N] (f : M →ₗ[R] N) : M → N :=
   f
 
--- set_option synthInstance.etaExperiment true in
+-- Porting note: We've since turned on etaExperiment here,
+-- but there remain lots of notes below about clean up that is possible with etaExperiment,
+-- and we should follow these!
+set_option synthInstance.etaExperiment true in
 /-- If 0 → M' → M → M'' → 0 is exact and M' and M'' are
 finitely generated then so is M. -/
 theorem fg_of_fg_map_of_fg_inf_ker {R M P : Type _} [Ring R] [AddCommGroup M] [Module R M]
@@ -698,6 +701,7 @@ namespace RingHom
 
 variable {A B C : Type _} [CommRing A] [CommRing B] [CommRing C]
 
+set_option synthInstance.etaExperiment true in
 /-- A ring morphism `A →+* B` is `Finite` if `B` is finitely generated as `A`-module. -/
 def Finite (f : A →+* B) : Prop :=
   letI : Algebra A B := f.toAlgebra
@@ -714,6 +718,7 @@ theorem id : Finite (RingHom.id A) :=
 
 variable {A}
 
+set_option synthInstance.etaExperiment true in
 theorem of_surjective (f : A →+* B) (hf : Surjective f) : f.Finite :=
   letI := f.toAlgebra
   Module.Finite.of_surjective (Algebra.ofId A B).toLinearMap hf
@@ -728,6 +733,7 @@ theorem comp {g : B →+* C} {f : A →+* B} (hg : g.Finite) (hf : f.Finite) : (
     hf hg
 #align ring_hom.finite.comp RingHom.Finite.comp
 
+set_option synthInstance.etaExperiment true in
 theorem of_comp_finite {f : A →+* B} {g : B →+* C} (h : (g.comp f).Finite) : g.Finite := by
   letI := f.toAlgebra
   letI := g.toAlgebra
