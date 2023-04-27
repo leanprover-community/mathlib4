@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner, Scott Morrison
 -/
 import Mathlib.Tactic.TryThis
+import Mathlib.Util.Pickle
 import Mathlib.Lean.Expr.Basic
 import Mathlib.Lean.Meta.DiscrTree
 import Mathlib.Tactic.Cache
@@ -46,23 +47,58 @@ inductive DeclMod
 | none | symm | mp | mpr
 deriving DecidableEq
 
-initialize librarySearchLemmas : DeclCache (DiscrTree (Name × DeclMod) true) ←
-  DeclCache.mk "librarySearch: init cache" {} fun name constInfo lemmas => do
-    if constInfo.isUnsafe then return lemmas
-    if ← name.isBlackListed then return lemmas
-    withNewMCtxDepth do withReducible do
-      let (_, _, type) ← forallMetaTelescopeReducing constInfo.type
-      let keys ← DiscrTree.mkPath type
-      let lemmas := lemmas.insertIfSpecific keys (name, .none)
-      match type.getAppFnArgs with
-      | (``Eq, #[_, lhs, rhs]) => do
-        let keys_symm ← DiscrTree.mkPath (← mkEq rhs lhs)
-        pure (lemmas.insertIfSpecific keys_symm (name, .symm))
-      | (``Iff, #[lhs, rhs]) => do
-        let keys_mp ← DiscrTree.mkPath rhs
-        let keys_mpr ← DiscrTree.mkPath lhs
-        pure <| (lemmas.insertIfSpecific keys_mp (name, .mp)).insertIfSpecific keys_mpr (name, .mpr)
-      | _ => pure lemmas
+/-- Insert a lemma into the discrimination tree. -/
+def addLemma (name : Name) (constInfo : ConstantInfo)
+    (lemmas : DiscrTree (Name × DeclMod) true) : MetaM (DiscrTree (Name × DeclMod) true) := do
+  if constInfo.isUnsafe then return lemmas
+  if ← name.isBlackListed then return lemmas
+  withNewMCtxDepth do withReducible do
+    let (_, _, type) ← forallMetaTelescopeReducing constInfo.type
+    let keys ← DiscrTree.mkPath type
+    let lemmas := lemmas.insertIfSpecific keys (name, .none)
+    match type.getAppFnArgs with
+    | (``Eq, #[_, lhs, rhs]) => do
+      let keys_symm ← DiscrTree.mkPath (← mkEq rhs lhs)
+      pure (lemmas.insertIfSpecific keys_symm (name, .symm))
+    | (``Iff, #[lhs, rhs]) => do
+      let keys_mp ← DiscrTree.mkPath rhs
+      let keys_mpr ← DiscrTree.mkPath lhs
+      pure <| (lemmas.insertIfSpecific keys_mp (name, .mp)).insertIfSpecific keys_mpr (name, .mpr)
+    | _ => pure lemmas
+
+/-- Construct the discrimination tree of all lemmas. -/
+def buildDiscrTree : IO (DeclCache (DiscrTree (Name × DeclMod) true)) :=
+  DeclCache.mk "librarySearch: init cache" {} addLemma
+
+open System (FilePath)
+
+def cachePath : IO FilePath :=
+  try
+    return (← findOLean `MathlibExtras.LibrarySearch).withExtension "extra"
+  catch _ =>
+    return "build" / "lib" / "MathlibExtras" / "LibrarySearch.extra"
+
+/--
+A structure that holds the cached discrimination tree,
+and possibly a pointer to a memory region, if we unpickled the tree from disk.
+-/
+structure CachedData where
+  pointer? : Option CompactedRegion
+  cache : DeclCache (DiscrTree (Name × DeclMod) true)
+deriving Nonempty
+
+initialize cachedData : CachedData ← unsafe do
+  let path ← cachePath
+  if (← path.pathExists) then
+    let (d, r) ← unpickle (DiscrTree (Name × DeclMod) true) path
+    return ⟨r, (← Cache.mk (pure d), addLemma)⟩
+  else
+    return ⟨none, ← buildDiscrTree⟩
+
+/--
+Retrieve the current current of lemmas.
+-/
+def librarySearchLemmas : DeclCache (DiscrTree (Name × DeclMod) true) := cachedData.cache
 
 /-- Shortcut for calling `solveByElim`. -/
 def solveByElim (goals : List MVarId) (required : List Expr) (depth) := do
