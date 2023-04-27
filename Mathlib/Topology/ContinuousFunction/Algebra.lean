@@ -1048,7 +1048,7 @@ def compStarAlgHom' (f : C(X, Y)) : C(Y, A) →⋆ₐ[𝕜] C(X, A) where
   toFun g := g.comp f
   map_one' := one_comp _
   map_mul' _ _ := rfl
-  map_zero' := sorry -- zero_comp _
+  map_zero' := zero_comp f
   map_add' _ _ := rfl
   commutes' _ := rfl
   map_star' _ := rfl
@@ -1082,6 +1082,7 @@ theorem periodic_tsum_comp_add_zsmul [LocallyCompactSpace X] [AddCommGroup X]
   · convert congr_arg (fun f : C(X, Y) => f x) ((Equiv.addRight (1 : ℤ)).tsum_eq _) using 1
     simp_rw [← tsum_apply h, ← tsum_apply ((Equiv.addRight (1 : ℤ)).summable_iff.mpr h),
       Equiv.coe_addRight, comp_apply, coe_addRight, add_one_zsmul, add_comm (_ • p) p, ← add_assoc]
+    sorry
   · rw [tsum_eq_zero_of_not_summable h]
     simp only [coe_zero, Pi.zero_apply]
 #align continuous_map.periodic_tsum_comp_add_zsmul ContinuousMap.periodic_tsum_comp_add_zsmul
