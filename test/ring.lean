@@ -126,6 +126,7 @@ example (a : Nat) : 1 * f a * 1 = f (a + 0) := by
 -- Powers in the exponent get evaluated correctly
 example (X : ℤ) : (X^5 + 1) * (X^2^3 + X) = X^13 + X^8 + X^6 + X := by ring
 
+-- simulate the type of MvPolynomial
 def R : Type u → Type v → Sort (max (u+1) (v+1)) := sorry
 instance : CommRing (R a b) := sorry
 
