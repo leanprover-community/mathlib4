@@ -118,7 +118,7 @@ theorem strongUniformity.uniformAddGroup [UniformSpace F] [UniformAddGroup F] (�
     @UniformAddGroup (E →SL[σ] F) (strongUniformity σ F 𝔖) _ := by
   letI : UniformSpace (E →SL[σ] F) := strongUniformity σ F 𝔖
   rw [strongUniformity, UniformSpace.replaceTopology_eq]
-  let φ : (E →SL[σ] F) →+ E →ᵤ[𝔖] F := ⟨(coeFn : (E →SL[σ] F) → E →ᵤ F), rfl, fun _ _ => rfl⟩
+  let φ : (E →SL[σ] F) →+ E →ᵤ[𝔖] F := ⟨⟨(FunLike.coe : (E →SL[σ] F) → E →ᵤ[𝔖] F), rfl⟩, fun _ _ => rfl⟩
   exact uniformAddGroup_comap φ
 #align continuous_linear_map.strong_uniformity.uniform_add_group ContinuousLinearMap.strongUniformity.uniformAddGroup
 
@@ -141,6 +141,7 @@ theorem strongTopology.t2Space [TopologicalSpace F] [TopologicalAddGroup F] [T2S
   exact (strongTopology.embedding_coeFn σ F 𝔖).t2Space
 #align continuous_linear_map.strong_topology.t2_space ContinuousLinearMap.strongTopology.t2Space
 
+set_option synthInstance.etaExperiment true in
 theorem strongTopology.continuousSMul [RingHomSurjective σ] [RingHomIsometric σ]
     [TopologicalSpace F] [TopologicalAddGroup F] [ContinuousSMul 𝕜₂ F] (𝔖 : Set (Set E))
     (h𝔖₁ : 𝔖.Nonempty) (h𝔖₂ : DirectedOn (· ⊆ ·) 𝔖) (h𝔖₃ : ∀ S ∈ 𝔖, Bornology.IsVonNBounded 𝕜₁ S) :
@@ -149,7 +150,7 @@ theorem strongTopology.continuousSMul [RingHomSurjective σ] [RingHomIsometric �
   haveI : UniformAddGroup F := comm_topologicalAddGroup_is_uniform
   letI : TopologicalSpace (E →SL[σ] F) := strongTopology σ F 𝔖
   let φ : (E →SL[σ] F) →ₗ[𝕜₂] E →ᵤ[𝔖] F :=
-    ⟨(coeFn : (E →SL[σ] F) → E → F), fun _ _ => rfl, fun _ _ => rfl⟩
+    ⟨⟨(FunLike.coe : (E →SL[σ] F) → E → F), fun _ _ => rfl⟩, fun _ _ => rfl⟩
   exact
     UniformOnFun.continuousSMul_induced_of_image_bounded 𝕜₂ E F (E →SL[σ] F) h𝔖₁ h𝔖₂ φ ⟨rfl⟩
       fun u s hs => (h𝔖₃ s hs).image u
@@ -200,7 +201,7 @@ instance continuousSMul [RingHomSurjective σ] [RingHomIsometric σ] [Topologica
     [TopologicalAddGroup F] [ContinuousSMul 𝕜₂ F] : ContinuousSMul 𝕜₂ (E →SL[σ] F) :=
   strongTopology.continuousSMul σ F { S | Bornology.IsVonNBounded 𝕜₁ S }
     ⟨∅, Bornology.isVonNBounded_empty 𝕜₁ E⟩
-    (directedOn_of_sup_mem fun _ _ => Bornology.IsVonNBounded.union) fun s hs => hs
+    (directedOn_of_sup_mem fun _ _ => Bornology.IsVonNBounded.union) fun _ hs => hs
 
 instance [UniformSpace F] [UniformAddGroup F] : UniformSpace (E →SL[σ] F) :=
   strongUniformity σ F { S | Bornology.IsVonNBounded 𝕜₁ S }
