@@ -54,13 +54,11 @@ instance : Membership (Box ι) (TaggedPrepartition I) :=
   ⟨fun J π => J ∈ π.boxes⟩
 
 @[simp]
-theorem mem_toPrepartition {π : TaggedPrepartition I} : J ∈ π.toPrepartition ↔ J ∈ π :=
-  Iff.rfl
+theorem mem_toPrepartition {π : TaggedPrepartition I} : J ∈ π.toPrepartition ↔ J ∈ π := Iff.rfl
 #align box_integral.tagged_prepartition.mem_to_prepartition BoxIntegral.TaggedPrepartition.mem_toPrepartition
 
 @[simp]
-theorem mem_mk (π : Prepartition I) (f h) : J ∈ mk π f h ↔ J ∈ π :=
-  Iff.rfl
+theorem mem_mk (π : Prepartition I) (f h) : J ∈ mk π f h ↔ J ∈ π := Iff.rfl
 #align box_integral.tagged_prepartition.mem_mk BoxIntegral.TaggedPrepartition.mem_mk
 
 /-- Union of all boxes of a tagged prepartition. -/
@@ -68,20 +66,18 @@ def unionᵢ : Set (ι → ℝ) :=
   π.toPrepartition.unionᵢ
 #align box_integral.tagged_prepartition.Union BoxIntegral.TaggedPrepartition.unionᵢ
 
-theorem unionᵢ_def : π.unionᵢ = ⋃ J ∈ π, ↑J :=
-  rfl
+theorem unionᵢ_def : π.unionᵢ = ⋃ J ∈ π, ↑J := rfl
 #align box_integral.tagged_prepartition.Union_def BoxIntegral.TaggedPrepartition.unionᵢ_def
 
 @[simp]
-theorem unionᵢ_mk (π : Prepartition I) (f h) : (mk π f h).unionᵢ = π.unionᵢ :=
-  rfl
+theorem unionᵢ_mk (π : Prepartition I) (f h) : (mk π f h).unionᵢ = π.unionᵢ := rfl
 #align box_integral.tagged_prepartition.Union_mk BoxIntegral.TaggedPrepartition.unionᵢ_mk
 
 @[simp]
-theorem unionᵢ_toPrepartition : π.toPrepartition.unionᵢ = π.unionᵢ :=
-  rfl
+theorem unionᵢ_toPrepartition : π.toPrepartition.unionᵢ = π.unionᵢ := rfl
 #align box_integral.tagged_prepartition.Union_to_prepartition BoxIntegral.TaggedPrepartition.unionᵢ_toPrepartition
 
+-- Porting note: Previous proof was `:= Set.mem_unionᵢ₂`
 @[simp]
 theorem mem_unionᵢ : x ∈ π.unionᵢ ↔ ∃ J ∈ π, x ∈ J := by
   convert Set.mem_unionᵢ₂
@@ -210,8 +206,7 @@ def infPrepartition (π : TaggedPrepartition I) (π' : Prepartition I) : TaggedP
 
 @[simp]
 theorem infPrepartition_toPrepartition (π : TaggedPrepartition I) (π' : Prepartition I) :
-    (π.infPrepartition π').toPrepartition = π.toPrepartition ⊓ π' :=
-  rfl
+    (π.infPrepartition π').toPrepartition = π.toPrepartition ⊓ π' := rfl
 #align box_integral.tagged_prepartition.inf_prepartition_to_prepartition BoxIntegral.TaggedPrepartition.infPrepartition_toPrepartition
 
 theorem mem_infPrepartition_comm :
@@ -269,8 +264,8 @@ theorem isSubordinate_bunionᵢTagged [Fintype ι] {π : Prepartition I}
 #align box_integral.tagged_prepartition.is_subordinate_bUnion_tagged BoxIntegral.TaggedPrepartition.isSubordinate_bunionᵢTagged
 
 theorem IsSubordinate.bunionᵢPrepartition [Fintype ι] (h : IsSubordinate π r)
-    (πi : ∀ J, Prepartition J) : IsSubordinate (π.bunionᵢPrepartition πi) r := fun _ hJ =>
-  Subset.trans (Box.le_iff_Icc.1 <| π.toPrepartition.le_bunionᵢIndex hJ) <|
+    (πi : ∀ J, Prepartition J) : IsSubordinate (π.bunionᵢPrepartition πi) r :=
+  fun _ hJ => Subset.trans (Box.le_iff_Icc.1 <| π.toPrepartition.le_bunionᵢIndex hJ) <|
     h _ <| π.toPrepartition.bunionᵢIndex_mem hJ
 #align box_integral.tagged_prepartition.is_subordinate.bUnion_prepartition BoxIntegral.TaggedPrepartition.IsSubordinate.bunionᵢPrepartition
 
@@ -280,8 +275,8 @@ theorem IsSubordinate.infPrepartition [Fintype ι] (h : IsSubordinate π r) (π'
 #align box_integral.tagged_prepartition.is_subordinate.inf_prepartition BoxIntegral.TaggedPrepartition.IsSubordinate.infPrepartition
 
 theorem IsSubordinate.mono' [Fintype ι] {π : TaggedPrepartition I} (hr₁ : π.IsSubordinate r₁)
-    (h : ∀ J ∈ π, r₁ (π.tag J) ≤ r₂ (π.tag J)) : π.IsSubordinate r₂ := fun _ hJ _ hx =>
-  closedBall_subset_closedBall (h _ hJ) (hr₁ _ hJ hx)
+    (h : ∀ J ∈ π, r₁ (π.tag J) ≤ r₂ (π.tag J)) : π.IsSubordinate r₂ :=
+  fun _ hJ _ hx => closedBall_subset_closedBall (h _ hJ) (hr₁ _ hJ hx)
 #align box_integral.tagged_prepartition.is_subordinate.mono' BoxIntegral.TaggedPrepartition.IsSubordinate.mono'
 
 theorem IsSubordinate.mono [Fintype ι] {π : TaggedPrepartition I} (hr₁ : π.IsSubordinate r₁)
@@ -361,8 +356,7 @@ def disjUnion (π₁ π₂ : TaggedPrepartition I) (h : Disjoint π₁.unionᵢ 
 
 @[simp]
 theorem disjUnion_boxes (h : Disjoint π₁.unionᵢ π₂.unionᵢ) :
-    (π₁.disjUnion π₂ h).boxes = π₁.boxes ∪ π₂.boxes :=
-  rfl
+    (π₁.disjUnion π₂ h).boxes = π₁.boxes ∪ π₂.boxes := rfl
 #align box_integral.tagged_prepartition.disj_union_boxes BoxIntegral.TaggedPrepartition.disjUnion_boxes
 
 @[simp]
