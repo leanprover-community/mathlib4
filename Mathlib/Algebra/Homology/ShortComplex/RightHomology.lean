@@ -968,7 +968,8 @@ variable {S}
 noncomputable def descRightHomology : S.rightHomology ⟶ A :=
   S.rightHomologyι ≫ S.descCyclesCo k hk
 
-lemma ι_descCyclesCo_π_eq_zero_of_boundary (x : S.X₃ ⟶ A) (hx : k = S.g ≫ x) :
+@[reassoc]
+lemma rightHomologyι_descCyclesCo_π_eq_zero_of_boundary (x : S.X₃ ⟶ A) (hx : k = S.g ≫ x) :
     S.rightHomologyι ≫ S.descCyclesCo k (by rw [hx, S.zero_assoc, zero_comp]) = 0 :=
   RightHomologyData.ι_descQ_eq_zero_of_boundary _ k x hx
 
@@ -977,7 +978,7 @@ variable (S)
 @[reassoc (attr := simp)]
 lemma rightHomologyι_comp_fromCyclesCo :
     S.rightHomologyι ≫ S.fromCyclesCo = 0 :=
-  S.ι_descCyclesCo_π_eq_zero_of_boundary S.g (𝟙 _) (by rw [comp_id])
+  S.rightHomologyι_descCyclesCo_π_eq_zero_of_boundary S.g (𝟙 _) (by rw [comp_id])
 
 noncomputable def rightHomologyIsKernel :
     IsLimit (KernelFork.ofι S.rightHomologyι S.rightHomologyι_comp_fromCyclesCo) :=

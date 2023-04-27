@@ -1015,14 +1015,15 @@ noncomputable def cyclesIsoKernel [HasKernel S.g] : S.cycles ≅ kernel S.g wher
 noncomputable def liftLeftHomology : A ⟶ S.leftHomology :=
   S.liftCycles k hk ≫ S.leftHomologyπ
 
-lemma liftCycles_π_eq_zero_of_boundary (x : A ⟶ S.X₁) (hx : k = x ≫ S.f) :
+@[reassoc]
+lemma liftCycles_leftHomologyπ_eq_zero_of_boundary (x : A ⟶ S.X₁) (hx : k = x ≫ S.f) :
     S.liftCycles k (by rw [hx, assoc, S.zero, comp_zero]) ≫ S.leftHomologyπ = 0 :=
   LeftHomologyData.liftK_π_eq_zero_of_boundary _ k x hx
 
 @[reassoc (attr := simp)]
 lemma toCycles_comp_leftHomology_π :
   S.toCycles ≫ S.leftHomologyπ = 0 :=
-S.liftCycles_π_eq_zero_of_boundary S.f (𝟙 _) (by rw [id_comp])
+S.liftCycles_leftHomologyπ_eq_zero_of_boundary S.f (𝟙 _) (by rw [id_comp])
 
 noncomputable def leftHomologyIsCokernel :
     IsColimit (CokernelCofork.ofπ S.leftHomologyπ S.toCycles_comp_leftHomology_π) :=

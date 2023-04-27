@@ -896,6 +896,21 @@ noncomputable def homologyFunctorOpNatIso [CategoryWithHomology C] :
     (homologyFunctor C).op ≅ opFunctor C ⋙ homologyFunctor Cᵒᵖ :=
   NatIso.ofComponents (fun S => Iso.symm S.unop.homologyOpIso) (by simp)
 
+variable {C}
+
+lemma liftCycles_homologyπ_eq_zero_of_boundary [S.HasHomology]
+    (k : A ⟶ S.X₂) (x : A ⟶ S.X₁) (hx : k = x ≫ S.f) :
+    S.liftCycles k (by rw [hx, assoc, S.zero, comp_zero]) ≫ S.homologyπ = 0 := by
+  dsimp only [homologyπ]
+  rw [S.liftCycles_leftHomologyπ_eq_zero_of_boundary_assoc k x hx, zero_comp]
+
+@[reassoc]
+lemma homologyι_descCyclesCo_π_eq_zero_of_boundary [S.HasHomology]
+    (x : S.X₃ ⟶ A) (hx : k = S.g ≫ x) :
+    S.homologyι ≫ S.descCyclesCo k (by rw [hx, S.zero_assoc, zero_comp]) = 0 := by
+  dsimp only [homologyι]
+  rw [assoc, S.rightHomologyι_descCyclesCo_π_eq_zero_of_boundary k x hx, comp_zero]
+
 end ShortComplex
 
 end CategoryTheory
