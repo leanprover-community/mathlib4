@@ -726,14 +726,14 @@ variable {k}
 /-- Adding a point to a collinear set produces a coplanar set. -/
 theorem Collinear.coplanar_insert {s : Set P} (h : Collinear k s) (p : P) :
     Coplanar k (insert p s) := by
-  haveI := h.finiteDimensional_vectorSpan
+  have : FiniteDimensional k { x // x ∈ vectorSpan k s } := h.finiteDimensional_vectorSpan
   rw [coplanar_iff_finrank_le_two]
   exact (finrank_vectorSpan_insert_le_set k s p).trans (add_le_add_right h.finrank_le_one _)
 #align collinear.coplanar_insert Collinear.coplanar_insert
 
 /-- A set of points in a two-dimensional space is coplanar. -/
 theorem coplanar_of_finrank_eq_two (s : Set P) (h : finrank k V = 2) : Coplanar k s := by
-  haveI := finiteDimensional_of_finrank_eq_succ h
+  have : FiniteDimensional k V := finiteDimensional_of_finrank_eq_succ h
   rw [coplanar_iff_finrank_le_two, ← h]
   exact Submodule.finrank_le _
 #align coplanar_of_finrank_eq_two coplanar_of_finrank_eq_two
@@ -780,7 +780,7 @@ protected theorem finite_set [FiniteDimensional k V] {s : Set ι} (b : AffineBas
 
 theorem card_eq_finrank_add_one [Fintype ι] (b : AffineBasis ι k P) :
     Fintype.card ι = FiniteDimensional.finrank k V + 1 :=
-  haveI := b.finiteDimensional
+  have : FiniteDimensional k V := b.finiteDimensional
   b.ind.affineSpan_eq_top_iff_card_eq_finrank_add_one.mp b.tot
 #align affine_basis.card_eq_finrank_add_one AffineBasis.card_eq_finrank_add_one
 
