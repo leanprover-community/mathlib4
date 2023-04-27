@@ -49,7 +49,5 @@ def levenshtein (s₀ : String) (s₁ : String) : Nat :=
 
 end String
 
-open Lean
-
 #eval "sitting".levenshtein "kitten" = 3
 #eval "guard".levenshtein "lords" = 4
