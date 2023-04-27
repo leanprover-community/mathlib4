@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl
 
 ! This file was ported from Lean 3 source module analysis.normed_space.basic
-! leanprover-community/mathlib commit d3af0609f6db8691dffdc3e1fb7feb7da72698f2
+! leanprover-community/mathlib commit 8000bbbe2e9d39b84edb993d88781f536a8a3fa8
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -205,6 +205,16 @@ theorem frontier_closedBall [NormedSpace ℝ E] (x : E) {r : ℝ} (hr : r ≠ 0)
     frontier (closedBall x r) = sphere x r := by
   rw [frontier, closure_closedBall, interior_closedBall x hr, closedBall_diff_ball]
 #align frontier_closed_ball frontier_closedBall
+
+theorem interior_sphere [NormedSpace ℝ E] (x : E) {r : ℝ} (hr : r ≠ 0) :
+    interior (sphere x r) = ∅ := by
+  rw [← frontier_closedBall x hr, interior_frontier is_closed_ball]
+#align interior_sphere interior_sphere
+
+theorem frontier_sphere [NormedSpace ℝ E] (x : E) {r : ℝ} (hr : r ≠ 0) :
+    frontier (sphere x r) = sphere x r := by
+  rw [is_closed_sphere.frontier_eq, interior_sphere x hr, diff_empty]
+#align frontier_sphere frontier_sphere
 
 instance {E : Type _} [NormedAddCommGroup E] [NormedSpace ℚ E] (e : E) :
     DiscreteTopology <| AddSubgroup.zmultiples e := by
@@ -432,6 +442,17 @@ theorem frontier_closedBall' [NormedSpace ℝ E] [Nontrivial E] (x : E) (r : ℝ
     frontier (closedBall x r) = sphere x r := by
   rw [frontier, closure_closedBall, interior_closedBall' x r, closedBall_diff_ball]
 #align frontier_closed_ball' frontier_closedBall'
+
+@[simp]
+theorem interior_sphere' [NormedSpace ℝ E] [Nontrivial E] (x : E) (r : ℝ) :
+    interior (sphere x r) = ∅ := by rw [← frontier_closedBall' x, interior_frontier is_closed_ball]
+#align interior_sphere' interior_sphere'
+
+@[simp]
+theorem frontier_sphere' [NormedSpace ℝ E] [Nontrivial E] (x : E) (r : ℝ) :
+    frontier (sphere x r) = sphere x r := by
+  rw [is_closed_sphere.frontier_eq, interior_sphere' x, diff_empty]
+#align frontier_sphere' frontier_sphere'
 
 theorem rescale_to_shell_zpow {c : α} (hc : 1 < ‖c‖) {ε : ℝ} (εpos : 0 < ε) {x : E} (hx : x ≠ 0) :
     ∃ n : ℤ, c ^ n ≠ 0 ∧ ‖c ^ n • x‖ < ε ∧ ε / ‖c‖ ≤ ‖c ^ n • x‖ ∧ ‖c ^ n‖⁻¹ ≤ ε⁻¹ * ‖c‖ * ‖x‖ :=
