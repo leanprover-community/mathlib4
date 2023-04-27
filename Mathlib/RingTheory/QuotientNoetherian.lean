@@ -15,12 +15,10 @@ import Mathlib.RingTheory.QuotientNilpotent
 # Noetherian quotient rings and quotient modules
 -/
 
--- set_option profiler true
--- set_option trace.Meta.isDefEq true
--- set_option trace.Meta.synthInstance true
--- #print RingCon.instCommRingQuotientToAddToDistribToNonUnitalNonAssocSemiringToNonUnitalNonAssocRingToNonAssocRingToRingToMul
+-- Porting note: we keep this instance local to avoid downstream effects.
+-- I haven't been able to work out how to omit it or inline it into the the construction below.
+local instance {R : Type _} [CommRing R] : Module R R := eta_experiment% inferInstance
 
-set_option synthInstance.etaExperiment true in
 instance Ideal.Quotient.isNoetherianRing {R : Type _} [CommRing R] [h : IsNoetherianRing R]
     (I : Ideal R) : IsNoetherianRing (R ⧸ I) :=
   have : IsNoetherian R R := by simp_all only -- Porting note: this instance is needed
