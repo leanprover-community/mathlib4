@@ -4,12 +4,16 @@ import Mathlib.Algebra.Order.Ring.Canonical
 
 noncomputable section
 
-set_option maxHeartbeats 400000 in
 example (x : Nat) : x ≠ x.succ := ne_of_lt (by library_search)
 example : 0 ≠ 1 + 1 := ne_of_lt (by library_search)
 example (x y : Nat) : x + y = y + x := by library_search
 example (n m k : Nat) : n ≤ m → n + k ≤ m + k := by library_search
 example (ha : a > 0) (w : b ∣ c) : a * b ∣ a * c := by library_search
+
+example (x y : Nat) : True := by
+  observe h : x + y = y + x
+  guard_hyp h : x + y = y + x
+  trivial
 
 example : Int := by library_search
 

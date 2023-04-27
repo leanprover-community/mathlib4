@@ -272,7 +272,6 @@ def splitMonoEquiv [Full F] [Faithful F] : SplitMono f ≃ SplitMono (F.map f)
     intro x
     simp only [SplitMono.map,preimage]
     aesop_cat
-
 #align category_theory.functor.split_mono_equiv CategoryTheory.Functor.splitMonoEquiv
 
 @[simp]

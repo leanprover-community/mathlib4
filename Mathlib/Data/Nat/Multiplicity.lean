@@ -39,7 +39,7 @@ coefficients.
 * `Nat.multiplicity_two_factorial_lt`: The multiplicity of `2` in `n!` is strictly less than `n`.
 * `Nat.prime.multiplicity_something`: Specialization of `multiplicity.something` to a prime in the
   naturals. Avoids having to provide `p ≠ 1` and other trivialities, along with translating between
-  `prime` and `nat.prime`.
+  `Prime` and `Nat.Prime`.
 
 ## Tags
 
@@ -129,9 +129,9 @@ theorem multiplicity_factorial_mul_succ {n p : ℕ} (hp : p.Prime) :
   have h0 : 2 ≤ p := hp.two_le
   have h1 : 1 ≤ p * n + 1 := Nat.le_add_left _ _
   have h2 : p * n + 1 ≤ p * (n + 1)
-  linarith
+  · linarith
   have h3 : p * n + 1 ≤ p * (n + 1) + 1
-  linarith
+  · linarith
   have hm : multiplicity p (p * n)! ≠ ⊤ := by
     rw [Ne.def, eq_top_iff_not_finite, Classical.not_not, finite_nat_iff]
     exact ⟨hp.ne_one, factorial_pos _⟩
@@ -183,7 +183,6 @@ theorem multiplicity_choose_aux {p n b k : ℕ} (hp : p.Prime) (hkn : k ≤ n) :
           (k / p ^ i + (n - k) / p ^ i + if p ^ i ≤ k % p ^ i + (n - k) % p ^ i then 1 else 0) :=
       by simp only [Nat.add_div (pow_pos hp.pos _)]
     _ = _ := by simp [sum_add_distrib, sum_boole]
-
 #align nat.prime.multiplicity_choose_aux Nat.Prime.multiplicity_choose_aux
 
 /-- The multiplicity of `p` in `choose n k` is the number of carries when `k` and `n - k`
@@ -204,8 +203,7 @@ theorem multiplicity_choose {p n k b : ℕ} (hp : p.Prime) (hkn : k ≤ n) (hnb 
     simp [add_comm]
   refine (PartENat.add_right_cancel_iff ?_).1 h₁
   apply PartENat.ne_top_iff_dom.2
-  apply finite_nat_iff.2
-            ⟨ne_of_gt hp.one_lt, mul_pos (factorial_pos k) (factorial_pos (n - k))⟩
+  exact finite_nat_iff.2 ⟨hp.ne_one, mul_pos (factorial_pos k) (factorial_pos (n - k))⟩
 #align nat.prime.multiplicity_choose Nat.Prime.multiplicity_choose
 
 /-- A lower bound on the multiplicity of `p` in `choose n k`. -/
@@ -236,7 +234,7 @@ theorem multiplicity_choose_prime_pow_add_multiplicity (hp : p.Prime) (hkn : k �
           (lt_succ_of_le (log_mono_right hkn)),
         ← Nat.cast_add, PartENat.coe_le_coe, log_pow hp.one_lt, ← card_disjoint_union hdisj,
         filter_union_right]
-      have filter_le_Ico := (Ico 1 n.succ).card_filter_le 
+      have filter_le_Ico := (Ico 1 n.succ).card_filter_le
         fun x => p ^ x ≤ k % p ^ x + (p ^ n - k) % p ^ x ∨ p ^ x ∣ k
       rwa [card_Ico 1 n.succ] at filter_le_Ico)
     (by rw [← hp.multiplicity_pow_self]; exact multiplicity_le_multiplicity_choose_add hp _ _)

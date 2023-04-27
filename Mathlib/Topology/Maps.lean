@@ -385,7 +385,6 @@ theorem of_sections {f : α → β}
       𝓝 (f x) = map f (map g (𝓝 (f x))) := by rw [map_map, hgf.comp_eq_id, map_id]
       _ ≤ map f (𝓝 (g (f x))) := map_mono hgc
       _ = map f (𝓝 x) := by rw [hgx]
-
 #align is_open_map.of_sections IsOpenMap.of_sections
 
 theorem of_inverse {f : α → β} {f' : β → α} (h : Continuous f') (l_inv : LeftInverse f f')

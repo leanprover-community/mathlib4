@@ -95,6 +95,9 @@ jobs:
       - name: build mathlib
         run: env LEAN_ABORT_ON_PANIC=1 lake build
 
+      - name: build library_search cache
+        run: lake build MathlibExtras
+
       - name: upload cache
         if: always()
         run: |

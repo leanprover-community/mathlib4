@@ -15,8 +15,6 @@ import Mathlib.Data.Fin.VecNotation
 import Mathlib.Data.Finset.Sym
 import Mathlib.Data.Finsupp.Multiset
 
-import Mathlib.Tactic.LibrarySearch
-
 /-!
 # Multinomial
 

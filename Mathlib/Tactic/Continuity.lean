@@ -5,6 +5,7 @@ Authors: Moritz Doll
 -/
 
 import Mathlib.Tactic.Continuity.Init
+import Mathlib.Algebra.Group.Defs
 
 /-!
 # Continuity
@@ -12,6 +13,7 @@ import Mathlib.Tactic.Continuity.Init
 We define the `continuity` tactic using `aesop`. -/
 
 attribute [aesop (rule_sets [Continuous]) unfold norm] Function.comp
+attribute [aesop (rule_sets [Continuous]) unfold norm] npowRec
 
 /--
 The `continuity` attribute used to tag continuity statements for the `continuity` tactic. -/
