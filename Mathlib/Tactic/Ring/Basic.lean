@@ -1092,8 +1092,8 @@ initialize ringCleanupRef : IO.Ref (Expr → MetaM Expr) ← IO.mkRef pure
 def proveEq (g : MVarId) : AtomM Unit := do
   let some (α, e₁, e₂) := (← whnfR <|← instantiateMVars <|← g.getType).eq?
     | throwError "ring failed: not an equality"
-  let .sort u ← whnf (← inferType α) | throwError "not a sort{indentExpr α}"
-  let v ← u.dec
+  let .sort u ← whnf (← inferType α) | unreachable!
+  let v ← try u.dec catch _ => throwError "not a sort{indentExpr α}"
   have α : Q(Type v) := α
   have e₁ : Q($α) := e₁; have e₂ : Q($α) := e₂
   let sα ← synthInstanceQ (q(CommSemiring $α) : Q(Type v))
