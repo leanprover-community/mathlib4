@@ -187,7 +187,6 @@ theorem SuperpolynomialDecay.trans_eventually_abs_le (hf : SuperpolynomialDecay 
     |k x ^ z * g x| = |k x ^ z| * |g x| := abs_mul (k x ^ z) (g x)
     _ ≤ |k x ^ z| * |f x| := (mul_le_mul le_rfl hx (abs_nonneg _) (abs_nonneg _))
     _ = |k x ^ z * f x| := (abs_mul (k x ^ z) (f x)).symm
-
 #align asymptotics.superpolynomial_decay.trans_eventually_abs_le Asymptotics.SuperpolynomialDecay.trans_eventually_abs_le
 
 theorem SuperpolynomialDecay.trans_abs_le (hf : SuperpolynomialDecay l k f)

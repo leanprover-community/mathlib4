@@ -1204,7 +1204,6 @@ theorem card_image_of_inj_on {s : Set α} [Fintype s] {f : α → β} [Fintype (
       Finset.card_image_of_injOn fun x hx y hy hxy =>
         H x (mem_toFinset.1 hx) y (mem_toFinset.1 hy) hxy
     _ = Fintype.card s := (Fintype.card_of_finset' _ fun a => mem_toFinset).symm
-
 #align set.card_image_of_inj_on Set.card_image_of_inj_on
 
 theorem card_image_of_injective (s : Set α) [Fintype s] {f : α → β} [Fintype (f '' s)]

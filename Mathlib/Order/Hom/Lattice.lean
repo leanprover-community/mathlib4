@@ -218,8 +218,7 @@ instance (priority := 100) BoundedLatticeHomClass.toBoundedOrderHomClass [Lattic
     [Lattice β] [BoundedOrder α] [BoundedOrder β] [BoundedLatticeHomClass F α β] :
     BoundedOrderHomClass F α β :=
 { show OrderHomClass F α β from inferInstance, ‹BoundedLatticeHomClass F α β› with }
-#align
-  bounded_lattice_hom_class.to_bounded_order_hom_class BoundedLatticeHomClass.toBoundedOrderHomClass
+#align bounded_lattice_hom_class.to_bounded_order_hom_class BoundedLatticeHomClass.toBoundedOrderHomClass
 
 -- See note [lower instance priority]
 instance (priority := 100) OrderIsoClass.toSupHomClass [SemilatticeSup α] [SemilatticeSup β]

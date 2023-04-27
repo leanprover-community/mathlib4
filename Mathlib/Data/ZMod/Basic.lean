@@ -4,13 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 
 ! This file was ported from Lean 3 source module data.zmod.basic
-! leanprover-community/mathlib commit 47a1a73351de8dd6c8d3d32b569c8e434b03ca47
+! leanprover-community/mathlib commit 74ad1c88c77e799d2fea62801d1dbbd698cff1b7
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.CharP.Basic
+import Mathlib.Data.Fintype.Units
 import Mathlib.Data.Nat.Parity
-import Mathlib.Algebra.Group.ConjFinite
 import Mathlib.Tactic.FinCases
 
 /-!
@@ -503,7 +503,6 @@ theorem val_neg_one (n : ℕ) : (-1 : ZMod n.succ).val = n := by
   · simp [Nat.mod_one]
   · dsimp [ZMod, ZMod.cast]
     rw [Fin.coe_neg_one]
-
 #align zmod.val_neg_one ZMod.val_neg_one
 
 /-- `-1 : ZMod n` lifts to `n - 1 : R`. This avoids the characteristic assumption in `cast_neg`. -/
@@ -660,7 +659,6 @@ theorem mul_inv_eq_gcd {n : ℕ} (a : ZMod n) : a * a⁻¹ = Nat.gcd a.val n := 
         rw [nat_cast_zmod_val]
         rfl
       _ = Nat.gcd a.val n.succ := by rw [← Nat.gcd_eq_gcd_ab a.val n.succ]; rfl
-
 #align zmod.mul_inv_eq_gcd ZMod.mul_inv_eq_gcd
 
 @[simp]
@@ -890,7 +888,6 @@ theorem neg_val' {n : ℕ} [NeZero n] (a : ZMod n) : (-a).val = (n - a.val) % n 
         (by
           rw [Nat.ModEq, ← val_add, add_left_neg, tsub_add_cancel_of_le a.val_le, Nat.mod_self,
             val_zero])
-
 #align zmod.neg_val' ZMod.neg_val'
 
 theorem neg_val {n : ℕ} [NeZero n] (a : ZMod n) : (-a).val = if a = 0 then 0 else n - a.val := by

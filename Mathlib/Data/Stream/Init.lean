@@ -448,8 +448,6 @@ theorem tail_even (s : Stream' α) : tail (even s) = even (tail (tail s)) := by
   unfold even;
   rw [corec_eq];
   rfl
-
-
 #align stream.tail_even Stream'.tail_even
 
 theorem even_cons_cons (a₁ a₂ : α) (s : Stream' α) : even (a₁::a₂::s) = a₁::even s := by
@@ -485,7 +483,6 @@ theorem nth_even : ∀ (n : Nat) (s : Stream' α), nth (even s) n = nth s (2 * n
   | succ n, s => by
     change nth (even s) (succ n) = nth s (succ (succ (2 * n)))
     rw [nth_succ, nth_succ, tail_even, nth_even n]; rfl
-
 #align stream.nth_even Stream'.nth_even
 
 theorem nth_odd : ∀ (n : Nat) (s : Stream' α), nth (odd s) n = nth s (2 * n + 1) := fun n s => by
@@ -514,7 +511,6 @@ theorem append_append_stream : ∀ (l₁ l₂ : List α) (s : Stream' α),
   | [], l₂, s => rfl
   | List.cons a l₁, l₂, s => by
     rw [List.cons_append, cons_append_stream, cons_append_stream, append_append_stream l₁]
-
 #align stream.append_append_stream Stream'.append_append_stream
 
 theorem map_append_stream (f : α → β) :
