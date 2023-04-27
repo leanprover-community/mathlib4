@@ -41,11 +41,11 @@ theorem supₛ_def {s : Set ℕ} (h : ∃ n, ∀ a ∈ s, a ≤ n) :
   dif_pos _
 #align nat.Sup_def Nat.supₛ_def
 
-theorem Set.Infinite.Nat.supₛ_eq_zero {s : Set ℕ} (h : s.Infinite) : supₛ s = 0 :=
+theorem _root_.Set.Infinite.Nat.supₛ_eq_zero {s : Set ℕ} (h : s.Infinite) : supₛ s = 0 :=
   dif_neg fun ⟨n, hn⟩ ↦
     let ⟨k, hks, hk⟩ := h.exists_nat_lt n
     (hn k hks).not_lt hk
-#align set.infinite.nat.Sup_eq_zero Nat.Set.Infinite.Nat.supₛ_eq_zero
+#align set.infinite.nat.Sup_eq_zero Set.Infinite.Nat.supₛ_eq_zero
 
 @[simp]
 theorem infₛ_eq_zero {s : Set ℕ} : infₛ s = 0 ↔ 0 ∈ s ∨ s = ∅ := by
@@ -218,4 +218,3 @@ theorem binterᵢ_lt_succ' (u : ℕ → Set α) (n : ℕ) : (⋂ k < n + 1, u k)
 #align set.bInter_lt_succ' Set.binterᵢ_lt_succ'
 
 end Set
-
