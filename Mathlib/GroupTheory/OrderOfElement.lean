@@ -839,33 +839,33 @@ theorem mem_zpowers_iff_mem_range_orderOf [Finite G] [DecidableEq G] :
 #align mem_zmultiples_iff_mem_range_add_order_of mem_zmultiples_iff_mem_range_addOrderOf
 
 @[to_additive decidableZmultiples]
-noncomputable instance decidableZpowers : DecidablePred (· ∈ Subgroup.zpowers x) :=
+noncomputable instance decidableZPowers : DecidablePred (· ∈ Subgroup.zpowers x) :=
   Classical.decPred _
-#align decidable_zpowers decidableZpowers
+#align decidable_zpowers decidableZPowers
 #align decidable_zmultiples decidableZmultiples
 
 /-- The equivalence between `Fin (orderOf x)` and `Subgroup.zpowers x`, sending `i` to `x ^ i`. -/
 @[to_additive finEquivZmultiples "The equivalence between `Fin (addOrderOf a)` and
 `Subgroup.zmultiples a`, sending `i` to `i • a`."]
-noncomputable def finEquivZpowers [Finite G] (x : G) :
+noncomputable def finEquivZPowers [Finite G] (x : G) :
     Fin (orderOf x) ≃ (Subgroup.zpowers x : Set G) :=
   (finEquivPowers x).trans (Equiv.Set.ofEq (powers_eq_zpowers x))
-#align fin_equiv_zpowers finEquivZpowers
+#align fin_equiv_zpowers finEquivZPowers
 #align fin_equiv_zmultiples finEquivZmultiples
 
 @[to_additive (attr := simp) finEquivZmultiples_apply]
-theorem finEquivZpowers_apply [Finite G] {n : Fin (orderOf x)} :
-    finEquivZpowers x n = ⟨x ^ (n : ℕ), n, zpow_ofNat x n⟩ :=
+theorem finEquivZPowers_apply [Finite G] {n : Fin (orderOf x)} :
+    finEquivZPowers x n = ⟨x ^ (n : ℕ), n, zpow_ofNat x n⟩ :=
   rfl
-#align fin_equiv_zpowers_apply finEquivZpowers_apply
+#align fin_equiv_zpowers_apply finEquivZPowers_apply
 #align fin_equiv_zmultiples_apply finEquivZmultiples_apply
 
 @[to_additive (attr := simp) finEquivZmultiples_symm_apply]
-theorem finEquivZpowers_symm_apply [Finite G] (x : G) (n : ℕ) {hn : ∃ m : ℤ, x ^ m = x ^ n} :
-    (finEquivZpowers x).symm ⟨x ^ n, hn⟩ = ⟨n % orderOf x, Nat.mod_lt _ (orderOf_pos x)⟩ := by
-  rw [finEquivZpowers, Equiv.symm_trans_apply]
+theorem finEquivZPowers_symm_apply [Finite G] (x : G) (n : ℕ) {hn : ∃ m : ℤ, x ^ m = x ^ n} :
+    (finEquivZPowers x).symm ⟨x ^ n, hn⟩ = ⟨n % orderOf x, Nat.mod_lt _ (orderOf_pos x)⟩ := by
+  rw [finEquivZPowers, Equiv.symm_trans_apply]
   exact finEquivPowers_symm_apply x n
-#align fin_equiv_zpowers_symm_apply finEquivZpowers_symm_apply
+#align fin_equiv_zpowers_symm_apply finEquivZPowers_symm_apply
 #align fin_equiv_zmultiples_symm_apply finEquivZmultiples_symm_apply
 
 /-- The equivalence between `Subgroup.zpowers` of two elements `x, y` of the same order, mapping
@@ -873,21 +873,21 @@ theorem finEquivZpowers_symm_apply [Finite G] (x : G) (n : ℕ) {hn : ∃ m : �
 @[to_additive zmultiplesEquivZmultiples
   "The equivalence between `Subgroup.zmultiples` of two elements `a, b` of the same additive order,
   mapping `i • a` to `i • b`."]
-noncomputable def zpowersEquivZpowers [Finite G] (h : orderOf x = orderOf y) :
+noncomputable def zpowersEquivZPowers [Finite G] (h : orderOf x = orderOf y) :
     (Subgroup.zpowers x : Set G) ≃ (Subgroup.zpowers y : Set G) :=
-  (finEquivZpowers x).symm.trans ((Fin.cast h).toEquiv.trans (finEquivZpowers y))
-#align zpowers_equiv_zpowers zpowersEquivZpowers
+  (finEquivZPowers x).symm.trans ((Fin.cast h).toEquiv.trans (finEquivZPowers y))
+#align zpowers_equiv_zpowers zpowersEquivZPowers
 #align zmultiples_equiv_zmultiples zmultiplesEquivZmultiples
 
 -- Porting note: the simpNF linter complains that simp can change the LHS to something
 -- that looks the same as the current LHS even with `pp.explicit`
 @[to_additive (attr := simp, nolint simpNF) zmultiples_equiv_zmultiples_apply]
-theorem zpowersEquivZpowers_apply [Finite G] (h : orderOf x = orderOf y) (n : ℕ) :
-    zpowersEquivZpowers h ⟨x ^ n, n, zpow_ofNat x n⟩ = ⟨y ^ n, n, zpow_ofNat y n⟩ := by
-  rw [zpowersEquivZpowers, Equiv.trans_apply, Equiv.trans_apply, finEquivZpowers_symm_apply, ←
-    Equiv.eq_symm_apply, finEquivZpowers_symm_apply]
+theorem zpowersEquivZPowers_apply [Finite G] (h : orderOf x = orderOf y) (n : ℕ) :
+    zpowersEquivZPowers h ⟨x ^ n, n, zpow_ofNat x n⟩ = ⟨y ^ n, n, zpow_ofNat y n⟩ := by
+  rw [zpowersEquivZPowers, Equiv.trans_apply, Equiv.trans_apply, finEquivZPowers_symm_apply, ←
+    Equiv.eq_symm_apply, finEquivZPowers_symm_apply]
   simp [h]
-#align zpowers_equiv_zpowers_apply zpowersEquivZpowers_apply
+#align zpowers_equiv_zpowers_apply zpowersEquivZPowers_apply
 #align zmultiples_equiv_zmultiples_apply zmultiples_equiv_zmultiples_apply
 
 variable [Fintype G]
@@ -895,7 +895,7 @@ variable [Fintype G]
 /-- See also `orderOf_eq_card_zpowers'`. -/
 @[to_additive addOrderOf_eq_card_zmultiples "See also `addOrderOf_eq_card_zmultiples'`."]
 theorem orderOf_eq_card_zpowers : orderOf x = Fintype.card (zpowers x) :=
-  (Fintype.card_fin (orderOf x)).symm.trans (Fintype.card_eq.2 ⟨finEquivZpowers x⟩)
+  (Fintype.card_fin (orderOf x)).symm.trans (Fintype.card_eq.2 ⟨finEquivZPowers x⟩)
 #align order_eq_card_zpowers orderOf_eq_card_zpowers
 #align add_order_eq_card_zmultiples addOrderOf_eq_card_zmultiples
 
