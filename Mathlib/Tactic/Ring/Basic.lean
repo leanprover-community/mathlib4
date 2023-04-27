@@ -77,14 +77,6 @@ This feature wasn't needed yet, so it's not implemented yet.
 ring, semiring, exponent, power
 -/
 
-def Lean.Level.pred (u : Level) : Level := match u with
-| .succ v => v
-| .imax a b => .imax a.pred b.pred
-| .max a b => .max a.pred b.pred
-| .mvar (.mk _)
-| .param _
-| .zero => u
-
 namespace Mathlib.Tactic
 namespace Ring
 open Mathlib.Meta Qq NormNum Lean.Meta AtomM
@@ -1100,8 +1092,8 @@ initialize ringCleanupRef : IO.Ref (Expr → MetaM Expr) ← IO.mkRef pure
 def proveEq (g : MVarId) : AtomM Unit := do
   let some (α, e₁, e₂) := (← whnfR <|← instantiateMVars <|← g.getType).eq?
     | throwError "ring failed: not an equality"
-  let .sort u ← whnf (← inferType α) | throwError "not a type{indentExpr α}"
-  let v := u.pred
+  let .sort u ← whnf (← inferType α) | throwError "not a sort{indentExpr α}"
+  let v ← u.dec
   have α : Q(Type v) := α
   have e₁ : Q($α) := e₁; have e₂ : Q($α) := e₂
   let sα ← synthInstanceQ (q(CommSemiring $α) : Q(Type (v)))
