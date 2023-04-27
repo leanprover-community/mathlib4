@@ -161,10 +161,10 @@ theorem forall_bunionᵢTagged (p : (ι → ℝ) → Box ι → Prop) (π : Prep
     (πi : ∀ J, TaggedPrepartition J) :
     (∀ J ∈ π.bunionᵢTagged πi, p ((π.bunionᵢTagged πi).tag J) J) ↔
       ∀ J ∈ π, ∀ J' ∈ πi J, p ((πi J).tag J') J' := by
-  simp only [bex_imp, mem_bunionᵢTagged]
-  refine' ⟨fun H J hJ J' hJ' => _, fun H J' J hJ hJ' => _⟩
+  simp only [mem_bunionᵢTagged]
+  refine' ⟨fun H J hJ J' hJ' => _, fun H J' ⟨J, hJ, hJ'⟩ => _⟩
   · rw [← π.tag_bunionᵢTagged hJ hJ']
-    exact H J' J hJ hJ'
+    exact H J' ⟨J, hJ, hJ'⟩
   · rw [π.tag_bunionᵢTagged hJ hJ']
     exact H J hJ J' hJ'
 #align box_integral.prepartition.forall_bUnion_tagged BoxIntegral.Prepartition.forall_bunionᵢTagged
@@ -374,7 +374,7 @@ theorem mem_disjUnion (h : Disjoint π₁.unionᵢ π₂.unionᵢ) :
 @[simp]
 theorem unionᵢ_disjUnion (h : Disjoint π₁.unionᵢ π₂.unionᵢ) :
     (π₁.disjUnion π₂ h).unionᵢ = π₁.unionᵢ ∪ π₂.unionᵢ :=
-  Prepartition.unionᵢ_disjUnion _
+  Prepartition.unionᵢ_disjUnion h
 #align box_integral.tagged_prepartition.Union_disj_union BoxIntegral.TaggedPrepartition.unionᵢ_disjUnion
 
 theorem disjUnion_tag_of_mem_left (h : Disjoint π₁.unionᵢ π₂.unionᵢ) (hJ : J ∈ π₁) :
