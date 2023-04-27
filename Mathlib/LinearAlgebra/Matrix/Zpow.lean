@@ -210,10 +210,11 @@ theorem SemiconjBy.zpow_right {A X Y : M} (hx : IsUnit X.det) (hy : IsUnit Y.det
       exact hy.pow n.succ
     rw [zpow_negSucc, zpow_negSucc, nonsing_inv_apply _ hx', nonsing_inv_apply _ hy', SemiconjBy]
     refine' (isRegular_of_isLeftRegular_det hy'.isRegular.left).left _
-    rw [← mul_assoc, ← (h.pow_right n.succ).Eq, mul_assoc, mul_eq_mul (X ^ _), mul_smul,
+    dsimp only
+    rw [← mul_assoc, ← (h.pow_right n.succ).eq, mul_assoc, mul_eq_mul (X ^ _), mul_smul,
       mul_adjugate, mul_eq_mul, mul_eq_mul, mul_eq_mul, ← Matrix.mul_assoc,
-      mul_smul (Y ^ _) (↑hy'.unit⁻¹ : R), mul_adjugate, smul_smul, smul_smul, hx'.coe_inv_mul,
-      hy'.coe_inv_mul, one_smul, Matrix.mul_one, Matrix.one_mul]
+      mul_smul (Y ^ _) (↑hy'.unit⁻¹ : R), mul_adjugate, smul_smul, smul_smul, hx'.val_inv_mul,
+      hy'.val_inv_mul, one_smul, Matrix.mul_one, Matrix.one_mul]
 #align matrix.semiconj_by.zpow_right Matrix.SemiconjBy.zpow_right
 
 theorem Commute.zpow_right {A B : M} (h : Commute A B) (m : ℤ) : Commute A (B ^ m) := by
