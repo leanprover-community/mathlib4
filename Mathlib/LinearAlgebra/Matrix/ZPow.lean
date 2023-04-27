@@ -19,8 +19,8 @@ the nonsingular inverse definition for negative powers.
 ## Implementation details
 
 The main definition is a direct recursive call on the integer inductive type,
-as provided by the `div_inv_monoid.zpow` default implementation.
-The lemma names are taken from `algebra.group_with_zero.power`.
+as provided by the `DivInvMonoid.Pow` default implementation.
+The lemma names are taken from `Algebra.group_with_zero.power`.
 
 ## Tags
 
