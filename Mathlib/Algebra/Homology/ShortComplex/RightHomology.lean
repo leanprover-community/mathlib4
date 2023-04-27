@@ -1044,6 +1044,8 @@ noncomputable def rightHomologyIsoKernelDesc [S.HasRightHomology] [HasCokernel S
 
 namespace RightHomologyData
 
+variable {S}
+
 lemma isIso_p_of_zero_f (h : RightHomologyData S) (hf : S.f = 0) : IsIso h.p :=
   ⟨⟨h.descQ (𝟙 S.X₂) (by rw [hf, comp_id]), p_descQ _ _ _, by
     rw [← cancel_epi h.p, p_descQ_assoc, id_comp, comp_id]⟩⟩

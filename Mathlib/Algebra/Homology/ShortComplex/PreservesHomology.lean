@@ -1,4 +1,4 @@
-import Mathlib.Algebra.Homology.ShortComplex.Homology
+import Mathlib.Algebra.Homology.ShortComplex.QuasiIso
 
 namespace CategoryTheory
 
@@ -6,12 +6,11 @@ open Category Limits ZeroObject
 
 variable {C D : Type _} [Category C] [Category D]
 
-
 namespace Limits
 
 variable [HasZeroMorphisms C] [HasZeroMorphisms D]
 
-variable {X Y : C} {f : X ⟶ Y}  (c : KernelFork f) (c' : CokernelCofork f)
+variable {X Y : C} {f : X ⟶ Y} (c : KernelFork f) (c' : CokernelCofork f)
   (hc : IsLimit c) (hc' : IsColimit c') (F : C ⥤ D) [F.PreservesZeroMorphisms]
 
 @[reassoc (attr := simp)]
@@ -49,6 +48,38 @@ def CokernelCofork.mapIsColimit [PreservesColimit (parallelPair f 0) F] :
   refine' IsColimit.precomposeHomEquiv e (c'.map F)
     (IsColimit.ofIsoColimit (isColimitOfPreserves F hc') _)
   exact Cocones.ext (Iso.refl _) (by rintro (_|_) <;> aesop_cat)
+
+variable (X Y)
+
+noncomputable instance preserves_kernel_zero :
+    PreservesLimit (parallelPair (0 : X ⟶ Y) 0) F := ⟨fun {c} hc => by
+    have := KernelFork.IsLimit.isIso_ι_of_zero c hc rfl
+    let e : parallelPair (0 : X ⟶ Y) 0 ⋙ F ≅ parallelPair (F.map 0) 0 :=
+      parallelPair.ext (Iso.refl _) (Iso.refl _) (by simp) (by simp)
+    refine' IsLimit.postcomposeHomEquiv e _ _
+    refine' IsLimit.ofIsoLimit (KernelFork.IsLimit.ofId _ (F.map_zero _ _)) _
+    exact Iso.symm (Fork.ext (F.mapIso (asIso (Fork.ι c))) rfl)⟩
+
+noncomputable instance preserves_cokernel_zero :
+    PreservesColimit (parallelPair (0 : X ⟶ Y) 0) F := ⟨fun {c} hc => by
+    have := CokernelCofork.IsColimit.isIso_π_of_zero c hc rfl
+    let e : parallelPair (0 : X ⟶ Y) 0 ⋙ F ≅ parallelPair (F.map 0) 0 :=
+      parallelPair.ext (Iso.refl _) (Iso.refl _) (by simp) (by simp)
+    refine' IsColimit.precomposeInvEquiv e _ _
+    refine' IsColimit.ofIsoColimit (CokernelCofork.IsColimit.ofId _ (F.map_zero _ _)) _
+    exact (Cofork.ext (F.mapIso (asIso (Cofork.π c))) rfl)⟩
+
+variable {X Y}
+
+noncomputable def preserves_kernel_zero' (f : X ⟶ Y) (hf : f = 0) :
+    PreservesLimit (parallelPair f 0) F := by
+  rw [hf]
+  infer_instance
+
+noncomputable def preserves_cokernel_zero' (f : X ⟶ Y) (hf : f = 0) :
+    PreservesColimit (parallelPair f 0) F := by
+  rw [hf]
+  infer_instance
 
 end Limits
 
@@ -327,60 +358,61 @@ def preservesRightHomologyOf_of_rightHomologyData_isPreservedBy (h : S.RightHomo
       have := ShortComplex.RightHomologyData.IsPreservedBy.hg' h F
       exact preservesLimitOfIsoDiagram F e }⟩
 
-section
-
--- this should be moved out of the `Functor` namespace
-
-variable (φ : S₁ ⟶ S₂) (h₁ : S₁.LeftHomologyData) (h₂ : S₂.LeftHomologyData)
-  [h₁.IsPreservedBy F] [h₂.IsPreservedBy F]
-
-lemma map_cyclesMap' : F.map (ShortComplex.cyclesMap' φ h₁ h₂) =
-    ShortComplex.cyclesMap' (F.mapShortComplex.map φ) (h₁.map F) (h₂.map F) := by
-  have γ : ShortComplex.LeftHomologyMapData φ h₁ h₂ := default
-  rw [γ.cyclesMap'_eq, (γ.map F).cyclesMap'_eq,  ShortComplex.LeftHomologyMapData.map_φK]
-
-lemma map_leftHomologyMap' : F.map (ShortComplex.leftHomologyMap' φ h₁ h₂) =
-    ShortComplex.leftHomologyMap' (F.mapShortComplex.map φ) (h₁.map F) (h₂.map F) := by
-  have γ : ShortComplex.LeftHomologyMapData φ h₁ h₂ := default
-  rw [γ.leftHomologyMap'_eq, (γ.map F).leftHomologyMap'_eq,
-    ShortComplex.LeftHomologyMapData.map_φH]
-
-end
-
-section
-
-variable (φ : S₁ ⟶ S₂) (h₁ : S₁.RightHomologyData) (h₂ : S₂.RightHomologyData)
-  [h₁.IsPreservedBy F] [h₂.IsPreservedBy F]
-
-lemma map_cyclesCoMap' : F.map (ShortComplex.cyclesCoMap' φ h₁ h₂) =
-    ShortComplex.cyclesCoMap' (F.mapShortComplex.map φ) (h₁.map F) (h₂.map F) := by
-  have γ : ShortComplex.RightHomologyMapData φ h₁ h₂ := default
-  rw [γ.cyclesCoMap'_eq, (γ.map F).cyclesCoMap'_eq,  ShortComplex.RightHomologyMapData.map_φQ]
-
-lemma map_rightHomologyMap' : F.map (ShortComplex.rightHomologyMap' φ h₁ h₂) =
-    ShortComplex.rightHomologyMap' (F.mapShortComplex.map φ) (h₁.map F) (h₂.map F) := by
-  have γ : ShortComplex.RightHomologyMapData φ h₁ h₂ := default
-  rw [γ.rightHomologyMap'_eq, (γ.map F).rightHomologyMap'_eq,
-    ShortComplex.RightHomologyMapData.map_φH]
-
-end
-
-lemma map_homologyMap' (φ : S₁ ⟶ S₂) (h₁ : S₁.HomologyData) (h₂ : S₂.HomologyData)
-    [h₁.left.IsPreservedBy F] [h₁.right.IsPreservedBy F]
-    [h₂.left.IsPreservedBy F] [h₂.right.IsPreservedBy F] :
-    F.map (ShortComplex.homologyMap' φ h₁ h₂) =
-      ShortComplex.homologyMap' (F.mapShortComplex.map φ) (h₁.map F) (h₂.map F) :=
-  map_leftHomologyMap' _ _ _ _
-
-
 end Functor
 
 namespace ShortComplex
 
-variable [HasZeroMorphisms C] [HasZeroMorphisms D] (S : ShortComplex C)
+variable [HasZeroMorphisms C] [HasZeroMorphisms D]
+  (S : ShortComplex C)
   (hl : S.LeftHomologyData) (hr : S.RightHomologyData)
   {S₁ S₂ : ShortComplex C} (φ : S₁ ⟶ S₂)
+  (hl₁ : S₁.LeftHomologyData) (hr₁ : S₁.RightHomologyData)
+  (hl₂ : S₂.LeftHomologyData) (hr₂ : S₂.RightHomologyData)
+  (h₁ : S₁.HomologyData) (h₂ : S₂.HomologyData)
+  (ψl : LeftHomologyMapData φ hl₁ hl₂)
+  (ψr : RightHomologyMapData φ hr₁ hr₂)
   (F : C ⥤ D) [F.PreservesZeroMorphisms]
+
+namespace LeftHomologyData
+
+variable [hl₁.IsPreservedBy F] [hl₂.IsPreservedBy F]
+
+lemma map_cyclesMap' : F.map (ShortComplex.cyclesMap' φ hl₁ hl₂) =
+    ShortComplex.cyclesMap' (F.mapShortComplex.map φ) (hl₁.map F) (hl₂.map F) := by
+  have γ : ShortComplex.LeftHomologyMapData φ hl₁ hl₂ := default
+  rw [γ.cyclesMap'_eq, (γ.map F).cyclesMap'_eq,  ShortComplex.LeftHomologyMapData.map_φK]
+
+lemma map_leftHomologyMap' : F.map (ShortComplex.leftHomologyMap' φ hl₁ hl₂) =
+    ShortComplex.leftHomologyMap' (F.mapShortComplex.map φ) (hl₁.map F) (hl₂.map F) := by
+  have γ : ShortComplex.LeftHomologyMapData φ hl₁ hl₂ := default
+  rw [γ.leftHomologyMap'_eq, (γ.map F).leftHomologyMap'_eq,
+    ShortComplex.LeftHomologyMapData.map_φH]
+
+end LeftHomologyData
+
+namespace RightHomologyData
+
+variable [hr₁.IsPreservedBy F] [hr₂.IsPreservedBy F]
+
+lemma map_cyclesCoMap' : F.map (ShortComplex.cyclesCoMap' φ hr₁ hr₂) =
+    ShortComplex.cyclesCoMap' (F.mapShortComplex.map φ) (hr₁.map F) (hr₂.map F) := by
+  have γ : ShortComplex.RightHomologyMapData φ hr₁ hr₂ := default
+  rw [γ.cyclesCoMap'_eq, (γ.map F).cyclesCoMap'_eq,  ShortComplex.RightHomologyMapData.map_φQ]
+
+lemma map_rightHomologyMap' : F.map (ShortComplex.rightHomologyMap' φ hr₁ hr₂) =
+    ShortComplex.rightHomologyMap' (F.mapShortComplex.map φ) (hr₁.map F) (hr₂.map F) := by
+  have γ : ShortComplex.RightHomologyMapData φ hr₁ hr₂ := default
+  rw [γ.rightHomologyMap'_eq, (γ.map F).rightHomologyMap'_eq,
+    ShortComplex.RightHomologyMapData.map_φH]
+
+end RightHomologyData
+
+lemma HomologyData.map_homologyMap'
+    [h₁.left.IsPreservedBy F] [h₁.right.IsPreservedBy F]
+    [h₂.left.IsPreservedBy F] [h₂.right.IsPreservedBy F] :
+    F.map (ShortComplex.homologyMap' φ h₁ h₂) =
+      ShortComplex.homologyMap' (F.mapShortComplex.map φ) (h₁.map F) (h₂.map F) :=
+  LeftHomologyData.map_leftHomologyMap' _ _ _ _
 
 noncomputable def mapCyclesIso [S.HasLeftHomology] [F.PreservesLeftHomologyOf S] :
     (S.map F).cycles ≅ F.obj S.cycles :=
@@ -415,7 +447,7 @@ lemma LeftHomologyData.mapCyclesIso_eq [S.HasHomology]
     S.mapCyclesIso F = (hl.map F).cyclesIso ≪≫ F.mapIso hl.cyclesIso.symm := by
   ext
   dsimp [mapCyclesIso, cyclesIso]
-  simp only [F.map_cyclesMap', ← cyclesMap'_comp, Functor.map_id, comp_id,
+  simp only [map_cyclesMap', ← cyclesMap'_comp, Functor.map_id, comp_id,
     Functor.mapShortComplex_obj]
 
 lemma LeftHomologyData.mapLeftHomologyIso_eq [S.HasHomology]
@@ -423,7 +455,7 @@ lemma LeftHomologyData.mapLeftHomologyIso_eq [S.HasHomology]
     S.mapLeftHomologyIso F = (hl.map F).leftHomologyIso ≪≫ F.mapIso hl.leftHomologyIso.symm := by
   ext
   dsimp [mapLeftHomologyIso, leftHomologyIso]
-  simp only [F.map_leftHomologyMap', ← leftHomologyMap'_comp, Functor.map_id, comp_id,
+  simp only [map_leftHomologyMap', ← leftHomologyMap'_comp, Functor.map_id, comp_id,
     Functor.mapShortComplex_obj]
 
 lemma RightHomologyData.mapCyclesCoIso_eq [S.HasHomology]
@@ -431,7 +463,7 @@ lemma RightHomologyData.mapCyclesCoIso_eq [S.HasHomology]
     S.mapCyclesCoIso F = (hr.map F).cyclesCoIso ≪≫ F.mapIso hr.cyclesCoIso.symm := by
   ext
   dsimp [mapCyclesCoIso, cyclesCoIso]
-  simp only [F.map_cyclesCoMap', ← cyclesCoMap'_comp, Functor.map_id, comp_id,
+  simp only [map_cyclesCoMap', ← cyclesCoMap'_comp, Functor.map_id, comp_id,
     Functor.mapShortComplex_obj]
 
 lemma RightHomologyData.mapRightHomologyIso_eq [S.HasHomology]
@@ -440,7 +472,7 @@ lemma RightHomologyData.mapRightHomologyIso_eq [S.HasHomology]
       F.mapIso hr.rightHomologyIso.symm := by
   ext
   dsimp [mapRightHomologyIso, rightHomologyIso]
-  simp only [F.map_rightHomologyMap', ← rightHomologyMap'_comp, Functor.map_id, comp_id,
+  simp only [map_rightHomologyMap', ← rightHomologyMap'_comp, Functor.map_id, comp_id,
     Functor.mapShortComplex_obj]
 
 lemma LeftHomologyData.mapHomologyIso_eq [S.HasHomology]
@@ -450,7 +482,7 @@ lemma LeftHomologyData.mapHomologyIso_eq [S.HasHomology]
   dsimp only [mapHomologyIso, homologyIso, ShortComplex.leftHomologyIso,
     leftHomologyMapIso', leftHomologyIso, Functor.mapIso,
     Iso.symm, Iso.trans, Iso.refl]
-  simp only [F.map_comp, F.map_leftHomologyMap', ← leftHomologyMap'_comp, comp_id,
+  simp only [F.map_comp, map_leftHomologyMap', ← leftHomologyMap'_comp, comp_id,
     Functor.map_id, Functor.mapShortComplex_obj]
 
 lemma RightHomologyData.mapHomologyIso'_eq [S.HasHomology]
@@ -459,7 +491,7 @@ lemma RightHomologyData.mapHomologyIso'_eq [S.HasHomology]
   ext
   dsimp only [Iso.trans, Iso.symm, Iso.refl, Functor.mapIso, mapHomologyIso', homologyIso,
     rightHomologyIso, rightHomologyMapIso', ShortComplex.rightHomologyIso]
-  simp only [assoc, F.map_comp, Functor.map_rightHomologyMap', ← rightHomologyMap'_comp_assoc]
+  simp only [assoc, F.map_comp, map_rightHomologyMap', ← rightHomologyMap'_comp_assoc]
 
 @[reassoc]
 lemma mapCyclesIso_hom_naturality [S₁.HasLeftHomology] [S₂.HasLeftHomology]
@@ -467,7 +499,7 @@ lemma mapCyclesIso_hom_naturality [S₁.HasLeftHomology] [S₂.HasLeftHomology]
     cyclesMap (F.mapShortComplex.map φ) ≫ (S₂.mapCyclesIso F).hom =
       (S₁.mapCyclesIso F).hom ≫ F.map (cyclesMap φ) := by
   dsimp only [cyclesMap, mapCyclesIso, LeftHomologyData.cyclesIso, cyclesMapIso', Iso.refl]
-  simp only [Functor.map_cyclesMap', Functor.mapShortComplex_obj, ← cyclesMap'_comp,
+  simp only [LeftHomologyData.map_cyclesMap', Functor.mapShortComplex_obj, ← cyclesMap'_comp,
     comp_id, id_comp]
 
 @[reassoc]
@@ -485,8 +517,8 @@ lemma mapLeftHomologyIso_hom_naturality [S₁.HasLeftHomology] [S₂.HasLeftHomo
       (S₁.mapLeftHomologyIso F).hom ≫ F.map (leftHomologyMap φ) := by
   dsimp only [leftHomologyMap, mapLeftHomologyIso, LeftHomologyData.leftHomologyIso,
     leftHomologyMapIso', Iso.refl]
-  simp only [Functor.map_leftHomologyMap', Functor.mapShortComplex_obj, ← leftHomologyMap'_comp,
-    comp_id, id_comp]
+  simp only [LeftHomologyData.map_leftHomologyMap', Functor.mapShortComplex_obj,
+    ← leftHomologyMap'_comp, comp_id, id_comp]
 
 @[reassoc]
 lemma mapLeftHomologyIso_inv_naturality [S₁.HasLeftHomology] [S₂.HasLeftHomology]
@@ -502,7 +534,7 @@ lemma mapCyclesCoIso_hom_naturality [S₁.HasRightHomology] [S₂.HasRightHomolo
     cyclesCoMap (F.mapShortComplex.map φ) ≫ (S₂.mapCyclesCoIso F).hom =
       (S₁.mapCyclesCoIso F).hom ≫ F.map (cyclesCoMap φ) := by
   dsimp only [cyclesCoMap, mapCyclesCoIso, RightHomologyData.cyclesCoIso, cyclesCoMapIso', Iso.refl]
-  simp only [Functor.map_cyclesCoMap', Functor.mapShortComplex_obj, ← cyclesCoMap'_comp,
+  simp only [RightHomologyData.map_cyclesCoMap', Functor.mapShortComplex_obj, ← cyclesCoMap'_comp,
     comp_id, id_comp]
 
 @[reassoc]
@@ -520,8 +552,8 @@ lemma mapRightHomologyIso_hom_naturality [S₁.HasRightHomology] [S₂.HasRightH
       (S₁.mapRightHomologyIso F).hom ≫ F.map (rightHomologyMap φ) := by
   dsimp only [rightHomologyMap, mapRightHomologyIso, RightHomologyData.rightHomologyIso,
     rightHomologyMapIso', Iso.refl]
-  simp only [Functor.map_rightHomologyMap', Functor.mapShortComplex_obj, ← rightHomologyMap'_comp,
-    comp_id, id_comp]
+  simp only [RightHomologyData.map_rightHomologyMap', Functor.mapShortComplex_obj,
+    ← rightHomologyMap'_comp, comp_id, id_comp]
 
 @[reassoc]
 lemma mapRightHomologyIso_inv_naturality [S₁.HasRightHomology] [S₂.HasRightHomology]
@@ -540,7 +572,7 @@ lemma mapHomologyIso_hom_naturality [S₁.HasHomology] [S₂.HasHomology]
   dsimp only [homologyMap, homologyMap', mapHomologyIso, LeftHomologyData.homologyIso,
     LeftHomologyData.leftHomologyIso, leftHomologyMapIso', leftHomologyIso,
     Iso.symm, Iso.trans, Iso.refl]
-  simp only [Functor.map_leftHomologyMap', ← leftHomologyMap'_comp, comp_id, id_comp]
+  simp only [LeftHomologyData.map_leftHomologyMap', ← leftHomologyMap'_comp, comp_id, id_comp]
 
 @[reassoc]
 lemma mapHomologyIso_inv_naturality [S₁.HasHomology] [S₂.HasHomology]
@@ -561,7 +593,7 @@ lemma mapHomologyIso'_hom_naturality [S₁.HasHomology] [S₂.HasHomology]
   dsimp only [Iso.trans, Iso.symm, Functor.mapIso, mapHomologyIso']
   simp only [← RightHomologyData.rightHomologyIso_hom_naturality_assoc _
     ((homologyData S₁).right.map F) ((homologyData S₂).right.map F), assoc,
-    ← Functor.map_rightHomologyMap', ← F.map_comp,
+    ← RightHomologyData.map_rightHomologyMap', ← F.map_comp,
     RightHomologyData.rightHomologyIso_inv_naturality _
       (homologyData S₁).right (homologyData S₂).right]
 
@@ -585,22 +617,15 @@ lemma mapHomologyIso'_eq_mapHomologyIso [S.HasHomology] [F.PreservesLeftHomology
     rightHomologyIso, RightHomologyData.rightHomologyIso, LeftHomologyData.homologyIso,
     leftHomologyIso, LeftHomologyData.leftHomologyIso]
   simp only [RightHomologyData.map_H, rightHomologyMapIso'_inv, rightHomologyMapIso'_hom, assoc,
-    Functor.map_comp, F.map_rightHomologyMap', Functor.mapShortComplex_obj, Functor.map_id,
-    LeftHomologyData.map_H, leftHomologyMapIso'_inv, leftHomologyMapIso'_hom,
-    F.map_leftHomologyMap', ← rightHomologyMap'_comp_assoc, ← leftHomologyMap'_comp,
+    Functor.map_comp, RightHomologyData.map_rightHomologyMap', Functor.mapShortComplex_obj,
+    Functor.map_id, LeftHomologyData.map_H, leftHomologyMapIso'_inv, leftHomologyMapIso'_hom,
+    LeftHomologyData.map_leftHomologyMap', ← rightHomologyMap'_comp_assoc, ← leftHomologyMap'_comp,
     ← leftHomologyMap'_comp_assoc, id_comp]
   have γ : HomologyMapData (𝟙 (S.map F)) (map S F).homologyData (S.homologyData.map F) := default
   have eq := γ.comm
   rw [← γ.left.leftHomologyMap'_eq, ← γ.right.rightHomologyMap'_eq] at eq
   dsimp at eq
   simp only [← reassoc_of% eq, ← F.map_comp, Iso.hom_inv_id, F.map_id, comp_id]
-
-end ShortComplex
-
-namespace Functor
--- this should be moved out of the `Functor` namespace
-
-variable [HasZeroMorphisms C] [HasZeroMorphisms D] (F : C ⥤ D) [F.PreservesZeroMorphisms]
 
 section
 
@@ -640,238 +665,107 @@ noncomputable def homologyFunctorIso
   NatIso.ofComponents (fun S => S.mapHomologyIso F)
     (fun f => ShortComplex.mapHomologyIso_hom_naturality f F)
 
+section
+
+variable {φ hl₁ hl₂ hr₁ hr₂}
+
+lemma LeftHomologyMapData.quasiIso_map_iff
+    [(F.mapShortComplex.obj S₁).HasHomology]
+    [(F.mapShortComplex.obj S₂).HasHomology]
+    [hl₁.IsPreservedBy F] [hl₂.IsPreservedBy F] :
+    QuasiIso (F.mapShortComplex.map φ) ↔ IsIso (F.map ψl.φH) :=
+  (ψl.map F).quasiIso_iff
+
+lemma RightHomologyMapData.quasiIso_map_iff
+    [(F.mapShortComplex.obj S₁).HasHomology]
+    [(F.mapShortComplex.obj S₂).HasHomology]
+    [hr₁.IsPreservedBy F] [hr₂.IsPreservedBy F] :
+    QuasiIso (F.mapShortComplex.map φ) ↔ IsIso (F.map ψr.φH) :=
+  (ψr.map F).quasiIso_iff
+
+variable (φ) [S₁.HasHomology] [S₂.HasHomology]
+    [(F.mapShortComplex.obj S₁).HasHomology] [(F.mapShortComplex.obj S₂).HasHomology]
+
+instance quasiIso_map_of_preservesLeftHomology
+    [F.PreservesLeftHomologyOf S₁] [F.PreservesLeftHomologyOf S₂]
+    [QuasiIso φ] : QuasiIso (F.mapShortComplex.map φ) := by
+  have γ : LeftHomologyMapData φ S₁.leftHomologyData S₂.leftHomologyData := default
+  have : IsIso γ.φH := by
+    rw [← γ.quasiIso_iff]
+    infer_instance
+  rw [(γ.map F).quasiIso_iff, LeftHomologyMapData.map_φH]
+  infer_instance
+
+instance quasiIso_map_of_preservesRightHomology
+    [F.PreservesRightHomologyOf S₁] [F.PreservesRightHomologyOf S₂]
+    [QuasiIso φ] : QuasiIso (F.mapShortComplex.map φ) := by
+  have γ : RightHomologyMapData φ S₁.rightHomologyData S₂.rightHomologyData := default
+  have : IsIso γ.φH := by
+    rw [← γ.quasiIso_iff]
+    infer_instance
+  rw [(γ.map F).quasiIso_iff, RightHomologyMapData.map_φH]
+  infer_instance
+
+lemma quasiIso_map_iff_of_preservesRightHomology
+    [F.PreservesRightHomologyOf S₁] [F.PreservesRightHomologyOf S₂]
+    [ReflectsIsomorphisms F] :
+    QuasiIso (F.mapShortComplex.map φ) ↔ QuasiIso φ := by
+  have γ : RightHomologyMapData φ S₁.rightHomologyData S₂.rightHomologyData := default
+  rw [γ.quasiIso_iff, (γ.map F).quasiIso_iff, RightHomologyMapData.map_φH]
+  constructor
+  . intro
+    exact isIso_of_reflects_iso _ F
+  . intro
+    infer_instance
+
+end
+
+end ShortComplex
+
+namespace Functor
+
+variable [HasZeroMorphisms C] [HasZeroMorphisms D] (F : C ⥤ D) [F.PreservesZeroMorphisms]
+  (S : ShortComplex C)
+
+noncomputable def preservesLeftHomologyOf_of_zero_left (hf : S.f = 0)
+    [PreservesLimit (parallelPair S.g 0) F] :
+    F.PreservesLeftHomologyOf S := ⟨fun h =>
+  { g := by infer_instance
+    f' := Limits.preserves_cokernel_zero' _ _
+      (by rw [← cancel_mono h.i, h.f'_i, zero_comp, hf]) }⟩
+
+noncomputable def preservesRightHomologyOf_of_zero_right (hg : S.g = 0)
+    [PreservesColimit (parallelPair S.f 0) F] :
+    F.PreservesRightHomologyOf S := ⟨fun h =>
+  { f := by infer_instance
+    g' := Limits.preserves_kernel_zero' _ _
+      (by rw [← cancel_epi h.p, h.p_g', comp_zero, hg]) }⟩
+
+noncomputable def preservesLeftHomologyOf_of_zero_right (hg : S.g = 0)
+    [PreservesColimit (parallelPair S.f 0) F] :
+    F.PreservesLeftHomologyOf S := ⟨fun h =>
+  { g := by
+      rw [hg]
+      infer_instance
+    f' := by
+      have := h.isIso_i_of_zero_g hg
+      let e : parallelPair h.f' 0 ≅ parallelPair S.f 0 :=
+        parallelPair.ext (Iso.refl _) (asIso h.i) (by aesop_cat) (by aesop_cat)
+      exact Limits.preservesColimitOfIsoDiagram F e.symm}⟩
+
+noncomputable def preservesRightHomologyOf_of_zero_left (hf : S.f = 0)
+    [PreservesLimit (parallelPair S.g 0) F] :
+    F.PreservesRightHomologyOf S := ⟨fun h =>
+  { f := by
+      rw [hf]
+      infer_instance
+    g' := by
+      have := h.isIso_p_of_zero_f hf
+      let e : parallelPair S.g 0 ≅ parallelPair h.g' 0 :=
+        parallelPair.ext (asIso h.p) (Iso.refl _) (by aesop_cat) (by aesop_cat)
+      exact Limits.preservesLimitOfIsoDiagram F e }
+      ⟩
+
 end Functor
 
 end CategoryTheory
-
-#exit
-
-import algebra.homology.short_complex.homology
-
-noncomputable theory
-
-
-namespace category_theory
-
-open category
-open_locale zero_object
-
-variables {C D : Type*} [category C] [category D]
-
-namespace limits
-
-@[simps]
-def parallel_pair.comp_nat_iso'
-  {C D : Type*} [category C] [category D] (F : C ⥤ D) [has_zero_morphisms C] [has_zero_morphisms D]
-  [F.preserves_zero_morphisms] {X Y : C} (f : X ⟶ Y) (f' : F.obj X ⟶ F.obj Y)
-  (h : f' = F.map f) :
-  parallel_pair f 0 ⋙ F ≅ parallel_pair f' 0 :=
-parallel_pair.ext (iso.refl _) (iso.refl _) (by tidy) (by tidy)
-
-@[simps]
-def parallel_pair.comp_nat_iso
-  {C D : Type*} [category C] [category D] (F : C ⥤ D) [has_zero_morphisms C] [has_zero_morphisms D]
-  [F.preserves_zero_morphisms] {X Y : C} (f : X ⟶ Y) :
-  parallel_pair f 0 ⋙ F ≅ parallel_pair (F.map f) 0 :=
-category_theory.limits.parallel_pair.comp_nat_iso' F f _ rfl
-
-@[simps]
-def kernel_fork.map {X Y : C} {f : X ⟶ Y} [has_zero_morphisms C] [has_zero_morphisms D]
-  (c : kernel_fork f) (F : C ⥤ D) [F.preserves_zero_morphisms] :
-  kernel_fork (F.map f) :=
-kernel_fork.of_ι (F.map c.ι) (by rw [← F.map_comp, c.condition, F.map_zero])
-
-def kernel_fork.map_is_limit {X Y : C} {f : X ⟶ Y} [has_zero_morphisms C] [has_zero_morphisms D]
-  {c : kernel_fork f} (hc : is_limit c) (F : C ⥤ D) [F.preserves_zero_morphisms]
-  [preserves_limit (parallel_pair f 0) F] :
-  is_limit (c.map F) :=
-begin
-  equiv_rw (is_limit.postcompose_inv_equiv (parallel_pair.comp_nat_iso F f) _).symm,
-  refine is_limit.of_iso_limit (is_limit_of_preserves F hc) _,
-  refine cones.ext (iso.refl _) _,
-  rintro (_|_),
-  { tidy, },
-  { dsimp,
-    simp only [kernel_fork.app_one, category.comp_id, category.id_comp,
-      ← F.map_comp, c.condition], },
-end
-
-instance preserves_kernel_zero {X Y : C} [has_zero_morphisms C] [has_zero_morphisms D] (F : C ⥤ D)
-  [F.preserves_zero_morphisms] :
-  preserves_limit (parallel_pair (0 : X ⟶ Y) 0) F :=
-⟨λ c hc, begin
-  haveI := kernel_fork.is_limit.is_iso_ι_of_zero c hc rfl,
-  equiv_rw (is_limit.postcompose_inv_equiv (parallel_pair.comp_nat_iso F _).symm _).symm,
-  refine is_limit.of_iso_limit (kernel_zero _ (F.map_zero _ _)) _,
-  symmetry,
-  exact (fork.ext (F.map_iso (as_iso (fork.ι c))) rfl),
-end⟩
-
-instance preserves_cokernel_zero {X Y : C} [has_zero_morphisms C] [has_zero_morphisms D] (F : C ⥤ D)
-  [F.preserves_zero_morphisms] :
-  preserves_colimit (parallel_pair (0 : X ⟶ Y) 0) F :=
-⟨λ c hc, begin
-  haveI := cokernel_cofork.is_colimit.is_iso_π_of_zero c hc rfl,
-  equiv_rw (is_colimit.precompose_hom_equiv (parallel_pair.comp_nat_iso F _).symm _).symm,
-  exact is_colimit.of_iso_colimit (cokernel_zero _ (F.map_zero _ _))
-    (cofork.ext (F.map_iso (as_iso (cofork.π c))) rfl),
-end⟩
-
-end limits
-
-open limits
-
-namespace short_complex
-
-variables [has_zero_morphisms C] [has_zero_morphisms D]
-  {S S₁ S₂ : short_complex C}
-
-
-end short_complex
-
-open limits short_complex
-
-
-
-@[simps]
-def left_homology_nat_iso [category_with_left_homology C] [category_with_left_homology D]
-  [F.preserves_homology] :
-  F.map_short_complex ⋙ left_homology_functor D ≅ left_homology_functor C ⋙ F :=
-nat_iso.of_components (λ S, left_homology_iso F S)
-  (λ S₁ S₂ f, left_homology_iso_naturality F f)
-
-@[simps]
-def right_homology_nat_iso [category_with_right_homology C] [category_with_right_homology D]
-  [F.preserves_homology] :
-  F.map_short_complex ⋙ right_homology_functor D ≅ right_homology_functor C ⋙ F :=
-nat_iso.of_components (λ S, right_homology_iso F S)
-  (λ S₁ S₂ f, right_homology_iso_naturality F f)
-
-@[simps]
-def homology_nat_iso [category_with_homology C] [category_with_homology D]
-  [F.preserves_homology] :
-  F.map_short_complex ⋙ homology_functor D ≅ homology_functor C ⋙ F :=
-nat_iso.of_components (λ S, homology_iso F S)
-  (λ S₁ S₂ f, homology_iso_naturality F f)
-
-end functor
-
-namespace short_complex
-
-variables [has_zero_morphisms C] [has_zero_morphisms D] {S₁ S₂ : short_complex C}
-
-namespace left_homology_map_data
-
-lemma quasi_iso_map_iff {φ : S₁ ⟶ S₂} {h₁ : left_homology_data S₁} {h₂ : left_homology_data S₂}
-  (ψ : left_homology_map_data φ h₁ h₂) (F : C ⥤ D) [F.preserves_zero_morphisms]
-  [(F.map_short_complex.obj S₁).has_homology]
-  [(F.map_short_complex.obj S₂).has_homology]
-  [h₁.is_preserved_by F] [h₂.is_preserved_by F] :
-  short_complex.quasi_iso (F.map_short_complex.map φ) ↔ is_iso (F.map ψ.φH) :=
-(ψ.map F).quasi_iso_iff
-
-end left_homology_map_data
-
-namespace right_homology_map_data
-
-lemma quasi_iso_map_iff {φ : S₁ ⟶ S₂} {h₁ : right_homology_data S₁} {h₂ : right_homology_data S₂}
-  (ψ : right_homology_map_data φ h₁ h₂) (F : C ⥤ D) [F.preserves_zero_morphisms]
-  [(F.map_short_complex.obj S₁).has_homology]
-  [(F.map_short_complex.obj S₂).has_homology]
-  [h₁.is_preserved_by F] [h₂.is_preserved_by F] :
-  short_complex.quasi_iso (F.map_short_complex.map φ) ↔ is_iso (F.map ψ.φH) :=
-(ψ.map F).quasi_iso_iff
-
-end right_homology_map_data
-
-lemma quasi_iso_map_of_preserves_left_homology {φ : S₁ ⟶ S₂}
-  [S₁.has_homology] [S₂.has_homology] (h : short_complex.quasi_iso φ)
-  (F : C ⥤ D) [F.preserves_zero_morphisms] [F.preserves_left_homology_of S₁]
-  [F.preserves_left_homology_of S₂]
-  [(F.map_short_complex.obj S₁).has_homology]
-  [(F.map_short_complex.obj S₂).has_homology] :
-  short_complex.quasi_iso (F.map_short_complex.map φ) :=
-begin
-  haveI := functor.preserves_left_homology_of.condition F S₁,
-  haveI := functor.preserves_left_homology_of.condition F S₂,
-  let ψ := left_homology_map_data.some φ S₁.some_left_homology_data
-    S₂.some_left_homology_data,
-  haveI : is_iso ψ.φH := by simpa only [← ψ.quasi_iso_iff] using h,
-  rw ψ.quasi_iso_map_iff F,
-  apply_instance,
-end
-
-lemma quasi_iso_map_iff_of_preserves_left_homology (φ : S₁ ⟶ S₂)
-  [S₁.has_homology] [S₂.has_homology]
-  (F : C ⥤ D) [F.preserves_zero_morphisms] [F.preserves_left_homology_of S₁]
-  [F.preserves_left_homology_of S₂]
-  [(F.map_short_complex.obj S₁).has_homology]
-  [(F.map_short_complex.obj S₂).has_homology] [reflects_isomorphisms F]:
-  short_complex.quasi_iso (F.map_short_complex.map φ) ↔
-    short_complex.quasi_iso φ :=
-begin
-  haveI := functor.preserves_left_homology_of.condition F S₁,
-  haveI := functor.preserves_left_homology_of.condition F S₂,
-  let ψ := left_homology_map_data.some φ S₁.some_left_homology_data
-    S₂.some_left_homology_data,
-  rw [ψ.quasi_iso_map_iff F, ψ.quasi_iso_iff],
-  split,
-  { introI,
-    exact is_iso_of_reflects_iso ψ.φH F, },
-  { introI,
-    apply_instance, },
-end
-
-section
-
-variables (F : C ⥤ D) [functor.preserves_zero_morphisms F] (S : short_complex C)
-
-def preserves_left_homology_of_zero_left (hf : S.f = 0)
-  [preserves_limit (parallel_pair S.g 0) F] :
-  F.preserves_left_homology_of S :=
-⟨λ h, begin
-  split,
-  { apply_instance, },
-  { rw [show h.f' = 0, by rw [← cancel_mono h.i, h.f'_i, zero_comp, hf]],
-    apply_instance, },
-end⟩
-
-def preserves_right_homology_of_zero_left (hf : S.f = 0)
-  [preserves_limit (parallel_pair S.g 0) F] :
-  F.preserves_right_homology_of S :=
-⟨λ h, begin
-  split,
-  { rw hf, apply_instance, },
-  { let e : parallel_pair S.g 0 ≅ parallel_pair h.g' 0,
-    { haveI : is_iso h.p := h.is_iso_p_of_zero_f hf,
-      exact parallel_pair.ext (as_iso h.p) (iso.refl _) (by tidy) (by tidy), },
-    exact limits.preserves_limit_of_iso_diagram F e, },
-end⟩
-
-def preserves_left_homology_of_zero_right (hg : S.g = 0)
-  [preserves_colimit (parallel_pair S.f 0) F] :
-  F.preserves_left_homology_of S :=
-⟨λ h, begin
-  split,
-  { rw hg, apply_instance, },
-  { let e : parallel_pair h.f' 0 ≅ parallel_pair S.f 0,
-    { haveI : is_iso h.i := h.is_iso_i_of_zero_g hg,
-      refine parallel_pair.ext (iso.refl _) (as_iso h.i) (by tidy) (by tidy), },
-    exact limits.preserves_colimit_of_iso_diagram F e.symm, },
-end⟩
-
-def preserves_right_homology_of_zero_right (hg : S.g = 0)
-  [preserves_colimit (parallel_pair S.f 0) F] :
-  F.preserves_right_homology_of S :=
-⟨λ h, begin
-  split,
-  { apply_instance, },
-  { rw [show h.g' = 0, by rw [← cancel_epi h.p, h.p_g', comp_zero, hg]],
-    apply_instance, },
-end⟩
-
-end
-
-end short_complex
-
-end category_theory
