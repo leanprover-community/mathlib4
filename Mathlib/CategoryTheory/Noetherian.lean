@@ -40,34 +40,41 @@ which does not have infinite increasing sequences of subobjects.
 See https://stacks.math.columbia.edu/tag/0FCG
 -/
 class NoetherianObject (X : C) : Prop where
-  subobject_gt_wellFounded : WellFounded ((· > ·) : Subobject X → Subobject X → Prop)
+  subobject_gt_wellFounded' : WellFounded ((· > ·) : Subobject X → Subobject X → Prop)
 #align category_theory.noetherian_object CategoryTheory.NoetherianObject
 
-/- ./././Mathport/Syntax/Translate/Command.lean:393:30: infer kinds are unsupported in Lean 4: #[`subobject_lt_wellFounded] [] -/
+lemma NoetherianObject.subobject_gt_wellFounded (X : C) [NoetherianObject X] :
+    WellFounded ((· > ·) : Subobject X → Subobject X → Prop) :=
+  NoetherianObject.subobject_gt_wellFounded'
+
 /-- An artinian object is an object
 which does not have infinite decreasing sequences of subobjects.
 
 See https://stacks.math.columbia.edu/tag/0FCF
 -/
 class ArtinianObject (X : C) : Prop where
-  subobject_lt_wellFounded : WellFounded ((· < ·) : Subobject X → Subobject X → Prop)
+  subobject_lt_wellFounded' : WellFounded ((· < ·) : Subobject X → Subobject X → Prop)
 #align category_theory.artinian_object CategoryTheory.ArtinianObject
+
+lemma ArtinianObject.subobject_lt_wellFounded (X : C) [ArtinianObject X] :
+    WellFounded ((· < ·) : Subobject X → Subobject X → Prop) :=
+  ArtinianObject.subobject_lt_wellFounded'
 
 variable (C)
 
 /-- A category is noetherian if it is essentially small and all objects are noetherian. -/
 class Noetherian extends EssentiallySmall C where
-  NoetherianObject : ∀ X : C, NoetherianObject X
+  noetherianObject : ∀ X : C, NoetherianObject X
 #align category_theory.noetherian CategoryTheory.Noetherian
 
-attribute [instance] noetherian.noetherian_object
+attribute [instance] Noetherian.noetherianObject
 
 /-- A category is artinian if it is essentially small and all objects are artinian. -/
 class Artinian extends EssentiallySmall C where
-  ArtinianObject : ∀ X : C, ArtinianObject X
+  artinianObject : ∀ X : C, ArtinianObject X
 #align category_theory.artinian CategoryTheory.Artinian
 
-attribute [instance] artinian.artinian_object
+attribute [instance] Artinian.artinianObject
 
 variable {C}
 
@@ -77,26 +84,29 @@ variable [HasZeroMorphisms C] [HasZeroObject C]
 
 theorem exists_simple_subobject {X : C} [ArtinianObject X] (h : ¬IsZero X) :
     ∃ Y : Subobject X, Simple (Y : C) := by
-  haveI : Nontrivial (subobject X) := nontrivial_of_not_is_zero h
-  haveI := isAtomic_of_orderBot_wellFounded_lt (artinian_object.subobject_lt_well_founded X)
-  have := IsAtomic.eq_bot_or_exists_atom_le (⊤ : subobject X)
-  obtain ⟨Y, s⟩ := (IsAtomic.eq_bot_or_exists_atom_le (⊤ : subobject X)).resolve_left top_ne_bot
-  exact ⟨Y, (subobject_simple_iff_is_atom _).mpr s.1⟩
+  haveI : Nontrivial (Subobject X) := nontrivial_of_not_isZero h
+  haveI := isAtomic_of_orderBot_wellFounded_lt (ArtinianObject.subobject_lt_wellFounded X)
+  obtain ⟨Y, s⟩ := (IsAtomic.eq_bot_or_exists_atom_le (⊤ : Subobject X)).resolve_left top_ne_bot
+  exact ⟨Y, (subobject_simple_iff_isAtom _).mpr s.1⟩
 #align category_theory.exists_simple_subobject CategoryTheory.exists_simple_subobject
 
 /-- Choose an arbitrary simple subobject of a non-zero artinian object. -/
 noncomputable def simpleSubobject {X : C} [ArtinianObject X] (h : ¬IsZero X) : C :=
-  (exists_simple_subobject h).some
+  (exists_simple_subobject h).choose
 #align category_theory.simple_subobject CategoryTheory.simpleSubobject
 
 /-- The monomorphism from the arbitrary simple subobject of a non-zero artinian object. -/
 noncomputable def simpleSubobjectArrow {X : C} [ArtinianObject X] (h : ¬IsZero X) :
     simpleSubobject h ⟶ X :=
-  (exists_simple_subobject h).some.arrow deriving Mono
+  (exists_simple_subobject h).choose.arrow
 #align category_theory.simple_subobject_arrow CategoryTheory.simpleSubobjectArrow
+
+instance mono_simpleSubobjectArrow {X : C} [ArtinianObject X] (h : ¬IsZero X) :
+    Mono (simpleSubobjectArrow h) := by
+  dsimp only [simpleSubobjectArrow]
+  infer_instance
 
 instance {X : C} [ArtinianObject X] (h : ¬IsZero X) : Simple (simpleSubobject h) :=
   (exists_simple_subobject h).choose_spec
 
 end CategoryTheory
-
