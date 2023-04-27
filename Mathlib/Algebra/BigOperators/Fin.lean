@@ -24,7 +24,7 @@ constant function. These results have variants for sums instead of products.
 
 ## Main declarations
 
-* `fin_function_fin_equiv`: An explicit equivalence between `fin n → fin m` and `fin (m ^ n)`.
+* `finFunctionFinEquiv`: An explicit equivalence between `Fin n → Fin m` and `Fin (m ^ n)`.
 -/
 
 open BigOperators
@@ -302,7 +302,7 @@ end PartialProd
 
 end Fin
 
-/-- Equivalence between `fin n → fin m` and `fin (m ^ n)`. -/
+/-- Equivalence between `Fin n → Fin m` and `Fin (m ^ n)`. -/
 @[simps]
 def finFunctionFinEquiv {m n : ℕ} : (Fin n → Fin m) ≃ Fin (m ^ n) :=
   Equiv.ofRightInverseOfCardLe (le_of_eq <| by simp_rw [Fintype.card_fun, Fintype.card_fin])
@@ -347,7 +347,7 @@ theorem finFunctionFinEquiv_single {m n : ℕ} [NeZero m] (i : Fin n) (j : Fin m
   rw [Pi.single_eq_of_ne hx, Fin.val_zero, MulZeroClass.zero_mul]
 #align fin_function_fin_equiv_single finFunctionFinEquiv_single
 
-/-- Equivalence between `Π i : fin m, fin (n i)` and `fin (∏ i : fin m, n i)`. -/
+/-- Equivalence between `∀ i : Fin m, Fin (n i)` and `Fin (∏ i : Fin m, n i)`. -/
 def finPiFinEquiv {m : ℕ} {n : Fin m → ℕ} : (∀ i : Fin m, Fin (n i)) ≃ Fin (∏ i : Fin m, n i) :=
   Equiv.ofRightInverseOfCardLe (le_of_eq <| by simp_rw [Fintype.card_pi, Fintype.card_fin])
     (fun f => ⟨∑ i, f i * ∏ j, n (Fin.castLE i.is_lt.le j), by
