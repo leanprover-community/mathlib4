@@ -125,8 +125,12 @@ protected theorem UniformFun.hasBasis_nhds_one_of_basis {p : ι → Prop} {b : �
   have := h.comap fun p : G × G => p.2 / p.1
   rw [← uniformity_eq_comap_nhds_one] at this
   convert UniformFun.hasBasis_nhds_of_basis α _ (1 : α →ᵤ G) this
-  ext (i f)
+  -- Porting note: removed `ext i f` here, as it has already been done by `convert`.
   simp [UniformFun.gen]
+  -- Porting note: FIXME
+  -- This is failing because `OfNat.ofNat 1 x` has leaked into the goal
+  -- and the simplifier doesn't know what to do.
+  sorry
 #align uniform_fun.has_basis_nhds_one_of_basis UniformFun.hasBasis_nhds_one_of_basis
 #align uniform_fun.has_basis_nhds_zero_of_basis UniformFun.hasBasis_nhds_zero_of_basis
 
@@ -160,8 +164,12 @@ protected theorem UniformOnFun.hasBasis_nhds_one_of_basis (𝔖 : Set <| Set α)
   have := h.comap fun p : G × G => p.1 / p.2
   rw [← uniformity_eq_comap_nhds_one_swapped] at this
   convert UniformOnFun.hasBasis_nhds_of_basis α _ 𝔖 (1 : α →ᵤ[𝔖] G) h𝔖₁ h𝔖₂ this
-  ext (i f)
+  -- Porting note: removed `ext i f` here, as it has already been done by `convert`.
   simp [UniformOnFun.gen]
+  -- Porting note: FIXME
+  -- This is failing because `OfNat.ofNat 1 x` has leaked into the goal
+  -- and the simplifier doesn't know what to do.
+  sorry
 #align uniform_on_fun.has_basis_nhds_one_of_basis UniformOnFun.hasBasis_nhds_one_of_basis
 #align uniform_on_fun.has_basis_nhds_zero_of_basis UniformOnFun.hasBasis_nhds_zero_of_basis
 
