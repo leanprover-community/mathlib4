@@ -197,10 +197,10 @@ theorem smul_apply (f : R[X]) (g : PolynomialModule R M) (n : ℕ) :
     exacts [rfl, (zero_smul R _).symm]
 #align polynomial_module.smul_apply PolynomialModule.smul_apply
 
--- Porting note: typeclass inference goes haywire in the next declaration.
+-- Porting note: typeclass inference goes haywire in the next declaration,
+-- possibly due to either lean4#2074 or upstream workarounds for it.
 -- One way to prune the bad branches is:
-attribute [-instance] IsDomain.toCancelCommMonoidWithZero
-
+attribute [-instance] IsDomain.toCancelCommMonoidWithZero in
 set_option synthInstance.etaExperiment true in
 /-- `PolynomialModule R R` is isomorphic to `R[X]` as an `R[X]` module. -/
 noncomputable def equivPolynomialSelf : PolynomialModule R R ≃ₗ[R[X]] R[X] :=

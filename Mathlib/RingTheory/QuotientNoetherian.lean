@@ -17,6 +17,10 @@ import Mathlib.RingTheory.QuotientNilpotent
 
 -- Porting note: we keep this instance local to avoid downstream effects.
 -- I haven't been able to work out how to omit it or inline it into the the construction below.
+<<<<<<< HEAD
+=======
+-- The fact we need this issue is surely related to lean4#2074.
+>>>>>>> 9d4816ffee0f94987b508c8929bbe52a37f460ce
 local instance {R : Type _} [CommRing R] : Module R R := eta_experiment% inferInstance
 
 instance Ideal.Quotient.isNoetherianRing {R : Type _} [CommRing R] [h : IsNoetherianRing R]

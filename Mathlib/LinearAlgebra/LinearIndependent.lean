@@ -661,7 +661,7 @@ theorem linearIndependent_sum {v : Sum ι ι' → M} :
     refine' ⟨h.comp _ Sum.inl_injective, h.comp _ Sum.inr_injective, _⟩
     refine' h.disjoint_span_image _
     -- Porting note: `isCompl_range_inl_range_inr.1` timeouts.
-    exact IsCompl.Disjoint isCompl_range_inl_range_inr
+    exact IsCompl.disjoint isCompl_range_inl_range_inr
   rintro ⟨hl, hr, hlr⟩
   rw [linearIndependent_iff'] at *
   intro s g hg i hi
@@ -676,7 +676,7 @@ theorem linearIndependent_sum {v : Sum ι ι' → M} :
     · -- Porting note: Here was one `exact`, but timeouted.
       refine Finset.disjoint_filter.2 fun x _ hx =>
         disjoint_left.1 ?_ hx
-      exact IsCompl.Disjoint isCompl_range_inl_range_inr
+      exact IsCompl.disjoint isCompl_range_inl_range_inr
   · rw [← eq_neg_iff_add_eq_zero] at this
     rw [disjoint_def'] at hlr
     have A := by
@@ -1018,7 +1018,7 @@ theorem linearIndependent_inl_union_inr' {v : ι → M} {v' : ι' → M'} (hv : 
     (hv' : LinearIndependent R v') :
     LinearIndependent R (Sum.elim (inl R M M' ∘ v) (inr R M M' ∘ v')) :=
   (hv.map' (inl R M M') ker_inl).sum_type (hv'.map' (inr R M M') ker_inr) <| by
-    refine' isCompl_range_inl_inr.Disjoint.mono _ _ <;>
+    refine' isCompl_range_inl_inr.disjoint.mono _ _ <;>
       simp only [span_le, range_coe, range_comp_subset_range]
 #align linear_independent_inl_union_inr' linearIndependent_inl_union_inr'
 
