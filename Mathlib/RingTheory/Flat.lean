@@ -69,6 +69,7 @@ namespace Flat
 
 open TensorProduct LinearMap Submodule
 
+set_option synthInstance.etaExperiment true in
 instance self (R : Type u) [CommRing R] : Flat R R :=
   ⟨by
     intro I _

@@ -597,6 +597,7 @@ end
 
 end
 
+set_option synthInstance.etaExperiment true in
 /-- In a vector space with dimension 1, each set {v} is a basis for `v ≠ 0`. -/
 @[simps repr_apply]
 noncomputable def basisSingleton (ι : Type _) [Unique ι] (h : finrank K V = 1) (v : V)
@@ -622,6 +623,7 @@ noncomputable def basisSingleton (ι : Type _) [Unique ι] (h : finrank K V = 1)
         exact mul_div_cancel _ h }
 #align finite_dimensional.basis_singleton FiniteDimensional.basisSingleton
 
+set_option synthInstance.etaExperiment true in
 @[simp]
 theorem basisSingleton_apply (ι : Type _) [Unique ι] (h : finrank K V = 1) (v : V) (hv : v ≠ 0)
     (i : ι) : basisSingleton ι h v hv i = v := by
@@ -1129,6 +1131,7 @@ noncomputable def divisionRingOfFiniteDimensional (F K : Type _) [Field F] [Ring
     inv_zero := dif_pos rfl }
 #align division_ring_of_finite_dimensional divisionRingOfFiniteDimensional
 
+set_option synthInstance.etaExperiment true in
 /-- An integral domain that is module-finite as an algebra over a field is a field. -/
 noncomputable def fieldOfFiniteDimensional (F K : Type _) [Field F] [CommRing K] [IsDomain K]
     [Algebra F K] [FiniteDimensional F K] : Field K :=
@@ -1586,6 +1589,7 @@ open Module
 
 open Cardinal
 
+set_option synthInstance.etaExperiment true in
 theorem cardinal_mk_eq_cardinal_mk_field_pow_rank (K V : Type u) [DivisionRing K] [AddCommGroup V]
     [Module K V] [FiniteDimensional K V] : (#V) = (#K) ^ Module.rank K V := by
   let s := Basis.ofVectorSpaceIndex K V

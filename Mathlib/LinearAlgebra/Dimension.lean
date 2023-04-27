@@ -328,6 +328,7 @@ theorem LinearIndependent.set_finite_of_isNoetherian [IsNoetherian R M] {s : Set
   @Set.toFinite _ _ hi.finite_of_isNoetherian
 #align linear_independent.set_finite_of_is_noetherian LinearIndependent.set_finite_of_isNoetherian
 
+set_option synthInstance.etaExperiment true in
 -- One might hope that a finite spanning set implies that any linearly independent set is finite.
 -- While this is true over a division ring
 -- (simply because any linearly independent set can be extended to a basis),
@@ -549,6 +550,7 @@ variable {R : Type u} [Ring R] [InvariantBasisNumber R]
 
 variable {M : Type v} [AddCommGroup M] [Module R M]
 
+set_option synthInstance.etaExperiment true in
 /-- The dimension theorem: if `v` and `v'` are two bases, their index types
 have the same cardinalities. -/
 theorem mk_eq_mk_of_basis (v : Basis ι R M) (v' : Basis ι' R M) :
@@ -595,6 +597,7 @@ variable {R : Type u} [Ring R] [RankCondition R]
 
 variable {M : Type v} [AddCommGroup M] [Module R M]
 
+set_option synthInstance.etaExperiment true in
 /-- An auxiliary lemma for `Basis.le_span`.
 
 If `R` satisfies the rank condition,
@@ -627,6 +630,7 @@ theorem basis_le_span' {ι : Type _} (b : Basis ι R M) {w : Set M} [Fintype w] 
   exact Basis.le_span'' b s
 #align basis_le_span' basis_le_span'
 
+set_option synthInstance.etaExperiment true in
 -- Note that if `R` satisfies the strong rank condition,
 -- this also follows from `linearIndependent_le_span` below.
 /-- If `R` satisfies the rank condition,
@@ -669,6 +673,7 @@ variable {M : Type v} [AddCommGroup M] [Module R M]
 
 open Submodule
 
+set_option synthInstance.etaExperiment true in
 -- An auxiliary lemma for `linearIndependent_le_span'`,
 -- with the additional assumption that the linearly independent family is finite.
 theorem linearIndependent_le_span_aux' {ι : Type _} [Fintype ι] (v : ι → M)
@@ -769,6 +774,7 @@ theorem linearIndependent_le_basis {ι : Type _} (b : Basis ι R M) {κ : Type _
     exact linearIndependent_le_infinite_basis b v i
 #align linear_independent_le_basis linearIndependent_le_basis
 
+set_option synthInstance.etaExperiment true in
 /-- Let `R` satisfy the strong rank condition. If `m` elements of a free rank `n` `R`-module are
 linearly independent, then `m ≤ n`. -/
 theorem Basis.card_le_card_of_linearIndependent_aux {R : Type _} [Ring R] [StrongRankCondition R]
@@ -918,6 +924,7 @@ theorem Ideal.rank_eq {R S : Type _} [CommRing R] [StrongRankCondition R] [Ring 
 
 variable (R)
 
+set_option synthInstance.etaExperiment true in
 @[simp]
 theorem rank_self : Module.rank R R = 1 := by
   rw [← Cardinal.lift_inj, ← (Basis.singleton PUnit R).mk_eq_rank, Cardinal.mk_punit]
@@ -1051,6 +1058,7 @@ theorem rank_fun' : Module.rank K (η → K) = Fintype.card η := by
   rw [rank_fun_eq_lift_mul, rank_self, Cardinal.lift_one, mul_one, Cardinal.natCast_inj]
 #align rank_fun' rank_fun'
 
+set_option synthInstance.etaExperiment true in
 theorem rank_fin_fun (n : ℕ) : Module.rank K (Fin n → K) = n := by simp [rank_fun']
 #align rank_fin_fun rank_fin_fun
 
