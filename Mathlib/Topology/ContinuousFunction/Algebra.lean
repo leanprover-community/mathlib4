@@ -139,7 +139,7 @@ theorem int_cast_apply [IntCast β] (n : ℤ) (x : α) : (n : C(α, β)) x = n :
 
 -- ### "nsmul" and "pow"
 instance hasNSMul [AddMonoid β] [ContinuousAdd β] : SMul ℕ C(α, β) :=
-  ⟨fun n f => ⟨SMul.smul n f, f.continuous.nsmul n⟩⟩
+  ⟨fun n f => ⟨n • ⇑f, f.continuous.nsmul n⟩⟩
 #align continuous_map.has_nsmul ContinuousMap.hasNSMul
 
 @[to_additive existing]
@@ -148,7 +148,7 @@ instance hasPow [Monoid β] [ContinuousMul β] : Pow C(α, β) ℕ :=
 #align continuous_map.has_pow ContinuousMap.hasPow
 
 @[to_additive (attr := norm_cast)]
-theorem coe_pow [Monoid β] [ContinuousMul β] (f : C(α, β)) (n : ℕ) : ⇑(f ^ n) = f ^ n :=
+theorem coe_pow [Monoid β] [ContinuousMul β] (f : C(α, β)) (n : ℕ) : ⇑(f ^ n) = (⇑f) ^ n :=
   rfl
 #align continuous_map.coe_pow ContinuousMap.coe_pow
 #align continuous_map.coe_nsmul ContinuousMap.coe_nsmul
@@ -232,7 +232,8 @@ instance hasZpow [Group β] [TopologicalGroup β] : Pow C(α, β) ℤ
 #align continuous_map.has_zpow ContinuousMap.hasZpow
 
 @[to_additive (attr := norm_cast)]
-theorem coe_zpow [Group β] [TopologicalGroup β] (f : C(α, β)) (z : ℤ) : ⇑(f ^ z) = f ^ z :=
+theorem coe_zpow [Group β] [TopologicalGroup β] (f : C(α, β)) (z : ℤ) :
+    ⇑(f ^ z) = (f : α → β) ^ z :=
   rfl
 #align continuous_map.coe_zpow ContinuousMap.coe_zpow
 #align continuous_map.coe_zsmul ContinuousMap.coe_zsmul
@@ -596,7 +597,7 @@ variable {α β : Type _} [TopologicalSpace α] [TopologicalSpace β] {R R₁ : 
 
 @[to_additive ContinuousMap.hasVadd]
 instance [SMul R M] [ContinuousConstSMul R M] : SMul R C(α, M) :=
-  ⟨fun r f => ⟨SMul.smul r f, f.continuous.const_smul r⟩⟩
+  ⟨fun r f => ⟨r • ⇑f, f.continuous.const_smul r⟩⟩
 
 @[to_additive]
 instance [LocallyCompactSpace α] [SMul R M] [ContinuousConstSMul R M] :
@@ -802,7 +803,7 @@ theorem Subalgebra.separatesPoints_monotone :
 #align subalgebra.separates_points_monotone Subalgebra.separatesPoints_monotone
 
 @[simp]
-theorem algebraMap_apply (k : R) (a : α) : algebraMap R C(α, A) k a = SMul.smul k 1 := by
+theorem algebraMap_apply (k : R) (a : α) : algebraMap R C(α, A) k a = k • (1 : A) := by
   rw [Algebra.algebraMap_eq_smul_one]
   rfl
 #align algebra_map_apply algebraMap_apply
@@ -824,7 +825,7 @@ writing it this way avoids having to deal with casts inside the set.
 where the functions would be continuous functions vanishing at infinity.)
 -/
 def Set.SeparatesPointsStrongly (s : Set C(α, 𝕜)) : Prop :=
-  ∀ (v : α → 𝕜) (x y : α), ∃ f : s, (f x : 𝕜) = v x ∧ f y = v y
+  ∀ (v : α → 𝕜) (x y : α), ∃ f : s, ((f : C(α, 𝕜)) x : 𝕜) = v x ∧ (f : C(α, 𝕜)) y = v y
 #align set.separates_points_strongly Set.SeparatesPointsStrongly
 
 variable [Field 𝕜] [TopologicalRing 𝕜]
@@ -839,7 +840,7 @@ theorem Subalgebra.SeparatesPoints.strongly {s : Subalgebra 𝕜 C(α, 𝕜)} (h
     (s : Set C(α, 𝕜)).SeparatesPointsStrongly := fun v x y => by
   by_cases n : x = y
   · subst n
-    use (SMul.smul (v x) 1 : C(α, 𝕜))
+    use v x • (1 : C(α, 𝕜))
     · apply s.smul_mem
       apply s.one_mem
   obtain ⟨f, ⟨f, ⟨m, rfl⟩⟩, w⟩ := h n
@@ -1052,8 +1053,6 @@ def compStarAlgHom' (f : C(X, Y)) : C(Y, A) →⋆ₐ[𝕜] C(X, A) where
   commutes' _ := rfl
   map_star' _ := rfl
 #align continuous_map.comp_star_alg_hom' ContinuousMap.compStarAlgHom'
-
-#check compStarAlgHom'_apply
 
 /-- `continuous_map.comp_star_alg_hom'` sends the identity continuous map to the identity
 `star_alg_hom` -/
