@@ -78,7 +78,8 @@ If the continuous linear image of any element of `𝔖` is bounded, this makes `
 topological vector space. -/
 def strongTopology [TopologicalSpace F] [TopologicalAddGroup F] (𝔖 : Set (Set E)) :
     TopologicalSpace (E →SL[σ] F) :=
-  (@UniformOnFun.topologicalSpace E F (TopologicalAddGroup.toUniformSpace F) 𝔖).induced FunLike.coe
+  (@UniformOnFun.topologicalSpace E F (TopologicalAddGroup.toUniformSpace F) 𝔖).induced
+    (FunLike.coe : (E →SL[σ] F) → (E →ᵤ[𝔖] F))
 #align continuous_linear_map.strong_topology ContinuousLinearMap.strongTopology
 
 set_option synthInstance.etaExperiment true in
@@ -87,7 +88,7 @@ that this has nice definitional properties. -/
 def strongUniformity [UniformSpace F] [UniformAddGroup F] (𝔖 : Set (Set E)) :
     UniformSpace (E →SL[σ] F) :=
   @UniformSpace.replaceTopology _ (strongTopology σ F 𝔖)
-    ((UniformOnFun.uniformSpace E F 𝔖).comap FunLike.coe)
+    ((UniformOnFun.uniformSpace E F 𝔖).comap (FunLike.coe : (E →SL[σ] F) → (E →ᵤ[𝔖] F)))
     (by rw [strongTopology, UniformAddGroup.toUniformSpace_eq]; rfl)
 #align continuous_linear_map.strong_uniformity ContinuousLinearMap.strongUniformity
 
@@ -164,7 +165,10 @@ theorem strongTopology.hasBasis_nhds_zero_of_basis [TopologicalSpace F] [Topolog
       fun Si => { f : E →SL[σ] F | ∀ x ∈ Si.1, f x ∈ b Si.2 } := by
   letI : UniformSpace F := TopologicalAddGroup.toUniformSpace F
   haveI : UniformAddGroup F := comm_topologicalAddGroup_is_uniform
-  rw [nhds_induced]
+  -- Porting note: replace `nhds_induced` by `inducing.nhds_eq_comap` (which needs an additional
+  -- `letI`) so that Lean doesn't try to use the product topology
+  letI : TopologicalSpace (E →SL[σ] F) := strongTopology σ F 𝔖
+  rw [(strongTopology.embedding_coeFn σ F 𝔖).toInducing.nhds_eq_comap]
   exact (UniformOnFun.hasBasis_nhds_zero_of_basis 𝔖 h𝔖₁ h𝔖₂ h).comap FunLike.coe
 #align continuous_linear_map.strong_topology.has_basis_nhds_zero_of_basis ContinuousLinearMap.strongTopology.hasBasis_nhds_zero_of_basis
 
