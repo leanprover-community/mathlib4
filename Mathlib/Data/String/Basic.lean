@@ -53,7 +53,7 @@ open private utf8GetAux from Init.Data.String.Basic
 
 private lemma utf8GetAux.add_right_cancel (i p n : ℕ) (s : List Char) :
     utf8GetAux s ⟨i + n⟩ ⟨p + n⟩ = utf8GetAux s ⟨i⟩ ⟨p⟩ := by
-  apply utf8GetAux.inductionOn s ⟨i⟩ ⟨p⟩ (motive := fun s i p ↦
+  apply inductionOn s ⟨i⟩ ⟨p⟩ (motive := fun s i p ↦
     utf8GetAux s ⟨i.byteIdx + n⟩ ⟨p.byteIdx + n⟩ = utf8GetAux s i p) <;>
   simp [utf8GetAux]
   · intro c cs ⟨i⟩ ⟨p⟩ h
@@ -95,7 +95,7 @@ instance LT' : LT String :=
 
 instance decidableLT : @DecidableRel String (· < ·) := by
   simp only [LT']
-  infer_instance
+  infer_instance -- short-circuit type class inference
 #align string.decidable_lt String.decidableLT
 
 /-- Induction on `String.ltb`. -/
@@ -120,7 +120,7 @@ def ltb.inductionOn.{u} {motive : Iterator → Iterator → Sort u} (it₁ it₂
 lemma ltb.cons_add_csize (c : Char) (cs₁ cs₂ : List Char) (i₁ i₂ : ℕ) :
     ltb ⟨⟨c :: cs₁⟩, ⟨i₁ + csize c⟩⟩ ⟨⟨c :: cs₂⟩, ⟨i₂ + csize c⟩⟩ =
     ltb ⟨⟨cs₁⟩, ⟨i₁⟩⟩ ⟨⟨cs₂⟩, ⟨i₂⟩⟩ := by
-  apply ltb.inductionOn ⟨⟨cs₁⟩, ⟨i₁⟩⟩ ⟨⟨cs₂⟩, ⟨i₂⟩⟩ (motive := fun ⟨⟨cs₁⟩, ⟨i₁⟩⟩ ⟨⟨cs₂⟩, ⟨i₂⟩⟩ ↦
+  apply inductionOn ⟨⟨cs₁⟩, ⟨i₁⟩⟩ ⟨⟨cs₂⟩, ⟨i₂⟩⟩ (motive := fun ⟨⟨cs₁⟩, ⟨i₁⟩⟩ ⟨⟨cs₂⟩, ⟨i₂⟩⟩ ↦
     ltb ⟨⟨c :: cs₁⟩, ⟨i₁ + csize c⟩⟩ ⟨⟨c :: cs₂⟩, ⟨i₂ + csize c⟩⟩ =
     ltb ⟨⟨cs₁⟩, ⟨i₁⟩⟩ ⟨⟨cs₂⟩, ⟨i₂⟩⟩) <;> simp <;>
   intro ⟨cs₁⟩ ⟨cs₂⟩ ⟨i₁⟩ ⟨i₂⟩ <;>
@@ -138,7 +138,6 @@ lemma ltb.cons_add_csize (c : Char) (cs₁ cs₂ : List Char) (i₁ i₂ : ℕ) 
   · rename_i h₂ h₁ hne
     simp [Iterator.curr, Iterator.hasNext.cons_add_csize, get.cons_add_csize, *] at *
 
--- short-circuit type class inference
 @[simp]
 theorem lt_iff_toList_lt : ∀ {s₁ s₂ : String}, s₁ < s₂ ↔ s₁.toList < s₂.toList
 | ⟨s₁⟩, ⟨s₂⟩ => show ltb ⟨⟨s₁⟩, 0⟩ ⟨⟨s₂⟩, 0⟩ ↔ s₁ < s₂ by
@@ -175,10 +174,9 @@ instance LE : LE String :=
 
 instance decidableLE : @DecidableRel String (· ≤ ·) := by
   simp only [LE]
-  infer_instance
+  infer_instance -- short-circuit type class inference
 #align string.decidable_le String.decidableLE
 
--- short-circuit type class inference
 @[simp]
 theorem le_iff_toList_le {s₁ s₂ : String} : s₁ ≤ s₂ ↔ s₁.toList ≤ s₂.toList :=
   (not_congr lt_iff_toList_lt).trans not_lt
@@ -240,7 +238,11 @@ instance : LinearOrder String where
     simp only [le_iff_toList_le]
     apply le_total
   decidable_le := String.decidableLE
-  compare a b := compareOfLessAndEq a b
+  compare_eq_compareOfLessAndEq a b := by
+    simp [compare, compareOfLessAndEq, toList, instLTString, List.instLTList, List.LT']
+    split_ifs <;>
+    simp [List.lt_iff_lex_lt] at * <;>
+    contradiction
 
 end String
 
@@ -257,7 +259,7 @@ theorem List.length_asString (l : List Char) : l.asString.length = l.length :=
 
 @[simp]
 theorem List.asString_inj {l l' : List Char} : l.asString = l'.asString ↔ l = l' :=
-  ⟨fun h ↦ by rw [← List.toList_inv_asString l, ← List.toList_inv_asString l', toList_inj, h],
+  ⟨fun h ↦ by rw [← toList_inv_asString l, ← toList_inv_asString l', toList_inj, h],
    fun h ↦ h ▸ rfl⟩
 #align list.as_string_inj List.asString_inj
 
@@ -267,5 +269,5 @@ theorem String.length_toList (s : String) : s.toList.length = s.length := by
 #align string.length_to_list String.length_toList
 
 theorem List.asString_eq {l : List Char} {s : String} : l.asString = s ↔ l = s.toList := by
-  rw [← asString_inv_toList s, List.asString_inj, asString_inv_toList s]
+  rw [← asString_inv_toList s, asString_inj, asString_inv_toList s]
 #align list.as_string_eq List.asString_eq

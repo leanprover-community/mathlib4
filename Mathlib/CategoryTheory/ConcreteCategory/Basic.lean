@@ -16,23 +16,23 @@ import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
 # Concrete categories
 
 A concrete category is a category `C` with a fixed faithful functor
-`forget : C ⥤ Type*`.  We define concrete categories using `class
+`forget : C ⥤ Type _`.  We define concrete categories using `class
 concrete_category`.  In particular, we impose no restrictions on the
 carrier type `C`, so `Type` is a concrete category with the identity
 forgetful functor.
 
 Each concrete category `C` comes with a canonical faithful functor
-`forget C : C ⥤ Type*`.  We say that a concrete category `C` admits a
+`forget C : C ⥤ Type _`.  We say that a concrete category `C` admits a
 *forgetful functor* to a concrete category `D`, if it has a functor
 `forget₂ C D : C ⥤ D` such that `(forget₂ C D) ⋙ (forget D) = forget C`,
-see `class has_forget₂`.  Due to `faithful.div_comp`, it suffices
+see `class HasForget₂`.  Due to `Faithful.div_comp`, it suffices
 to verify that `forget₂.obj` and `forget₂.map` agree with the equality
 above; then `forget₂` will satisfy the functor laws automatically, see
-`has_forget₂.mk'`.
+`HasForget₂.mk'`.
 
 Two classes helping construct concrete categories in the two most
-common cases are provided in the files `bundled_hom` and
-`unbundled_hom`, see their documentation for details.
+common cases are provided in the files `BundledHom` and
+`UnbundledHom`, see their documentation for details.
 
 ## References
 

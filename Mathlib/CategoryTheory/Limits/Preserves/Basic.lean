@@ -113,7 +113,8 @@ abbrev PreservesColimits (F : C ⥤ D) :=
   PreservesColimitsOfSize.{v₂, v₂} F
 #align category_theory.limits.preserves_colimits CategoryTheory.Limits.PreservesColimits
 
-attribute [instance]
+-- see Note [lower instance priority]
+attribute [instance 100]
   PreservesLimitsOfShape.preservesLimit PreservesLimitsOfSize.preservesLimitsOfShape
   PreservesColimitsOfShape.preservesColimit
   PreservesColimitsOfSize.preservesColimitsOfShape
@@ -139,7 +140,6 @@ def isColimitOfPreserves (F : C ⥤ D) {c : Cocone K} (t : IsColimit c) [Preserv
 instance preservesLimit_subsingleton (K : J ⥤ C) (F : C ⥤ D) : Subsingleton (PreservesLimit K F)
     := by
   constructor; rintro ⟨a⟩ ⟨b⟩; congr!
-
 #align category_theory.limits.preserves_limit_subsingleton CategoryTheory.Limits.preservesLimit_subsingleton
 
 instance preservesColimit_subsingleton (K : J ⥤ C) (F : C ⥤ D) :

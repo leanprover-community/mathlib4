@@ -239,14 +239,13 @@ theorem orderEmbOfFin_eq_orderEmbOfFin_iff {k l : ℕ} {s : Finset α} {i : Fin 
     s.orderEmbOfFin h i = s.orderEmbOfFin h' j ↔ (i : ℕ) = (j : ℕ) := by
   substs k l
   exact (s.orderEmbOfFin rfl).eq_iff_eq.trans Fin.ext_iff
-#align
-  finset.order_emb_of_fin_eq_order_emb_of_fin_iff Finset.orderEmbOfFin_eq_orderEmbOfFin_iff
+#align finset.order_emb_of_fin_eq_order_emb_of_fin_iff Finset.orderEmbOfFin_eq_orderEmbOfFin_iff
 
 /-- Given a finset `s` of size at least `k` in a linear order `α`, the map `orderEmbOfCardLe`
 is an order embedding from `Fin k` to `α` whose image is contained in `s`. Specifically, it maps
 `Fin k` to an initial segment of `s`. -/
 def orderEmbOfCardLe (s : Finset α) {k : ℕ} (h : k ≤ s.card) : Fin k ↪o α :=
-  (Fin.castLe h).trans (s.orderEmbOfFin rfl)
+  (Fin.castLE h).trans (s.orderEmbOfFin rfl)
 #align finset.order_emb_of_card_le Finset.orderEmbOfCardLe
 
 theorem orderEmbOfCardLe_mem (s : Finset α) {k : ℕ} (h : k ≤ s.card) (a) :

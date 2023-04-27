@@ -8,8 +8,7 @@ Authors: Reid Barton, Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Topology.SubsetProperties
-import Mathlib.Topology.Separation
+import Mathlib.Topology.Homeomorph
 import Mathlib.Data.Option.Basic
 
 /-!
@@ -55,7 +54,7 @@ open Set Filter Function
 
 open Filter Topology
 
-universe u v
+universe u v w
 
 /-- A topological space is called paracompact, if every open covering of this space admits a locally
 finite refinement. We use the same universe for all types in the definition to avoid creating a
@@ -70,7 +69,7 @@ class ParacompactSpace (X : Type v) [TopologicalSpace X] : Prop where
         LocallyFinite t ∧ ∀ b, ∃ a, t b ⊆ s a
 #align paracompact_space ParacompactSpace
 
-variable {ι : Type u} {X : Type v} [TopologicalSpace X]
+variable {ι : Type u} {X : Type v} {Y : Type w} [TopologicalSpace X] [TopologicalSpace Y]
 
 /-- Any open cover of a paracompact space has a locally finite *precise* refinement, that is,
 one indexed on the same type with each open set contained in the corresponding original one. -/
@@ -117,14 +116,62 @@ theorem precise_refinement_set [ParacompactSpace X] {s : Set X} (hs : IsClosed s
     exact Subset.trans (subset_compl_comm.1 <| vu Option.none) vc
 #align precise_refinement_set precise_refinement_set
 
+theorem ClosedEmbedding.paracompactSpace [ParacompactSpace Y] {e : X → Y} (he : ClosedEmbedding e) :
+    ParacompactSpace X where
+  locallyFinite_refinement α s ho hu := by
+    choose U hUo hU using fun a ↦ he.isOpen_iff.1 (ho a)
+    simp only [← hU] at hu ⊢
+    have heU : range e ⊆ ⋃ i, U i := by
+      simpa only [range_subset_iff, mem_unionᵢ, unionᵢ_eq_univ_iff] using hu
+    rcases precise_refinement_set he.closed_range U hUo heU with ⟨V, hVo, heV, hVf, hVU⟩
+    refine ⟨α, fun a ↦ e ⁻¹' (V a), fun a ↦ (hVo a).preimage he.continuous, ?_,
+      hVf.preimage_continuous he.continuous, fun a ↦ ⟨a, preimage_mono (hVU a)⟩⟩
+    simpa only [range_subset_iff, mem_unionᵢ, unionᵢ_eq_univ_iff] using heV
+
+theorem Homeomorph.paracompactSpace_iff (e : X ≃ₜ Y) : ParacompactSpace X ↔ ParacompactSpace Y :=
+  ⟨fun _ ↦ e.symm.closedEmbedding.paracompactSpace, fun _ ↦ e.closedEmbedding.paracompactSpace⟩
+
+/-- The product of a compact space and a paracompact space is a paracompact space. The formalization
+is based on https://dantopology.wordpress.com/2009/10/24/compact-x-paracompact-is-paracompact/
+with some minor modifications.
+
+This version assumes that `X` in `X × Y` is compact and `Y` is paracompact, see next lemma for the
+other case. -/
+instance (priority := 200) [CompactSpace X] [ParacompactSpace Y] : ParacompactSpace (X × Y) where
+  locallyFinite_refinement α s ho hu := by
+    have : ∀ (x : X) (y : Y), ∃ (a : α) (U : Set X) (V : Set Y),
+        IsOpen U ∧ IsOpen V ∧ x ∈ U ∧ y ∈ V ∧ U ×ˢ V ⊆ s a := fun x y ↦
+      (unionᵢ_eq_univ_iff.1 hu (x, y)).imp fun a ha ↦ isOpen_prod_iff.1 (ho a) x y ha
+    choose a U V hUo hVo hxU hyV hUV using this
+    choose T hT using fun y ↦ CompactSpace.elim_nhds_subcover (U · y) fun x ↦
+      (hUo x y).mem_nhds (hxU x y)
+    set W : Y → Set Y := fun y ↦ ⋂ x ∈ T y, V x y
+    have hWo : ∀ y, IsOpen (W y) := fun y ↦ isOpen_binterᵢ_finset fun _ _ ↦ hVo _ _
+    have hW : ∀ y, y ∈ W y := fun _ ↦ mem_interᵢ₂.2 fun _ _ ↦ hyV _ _
+    rcases precise_refinement W hWo (unionᵢ_eq_univ_iff.2 fun y ↦ ⟨y, hW y⟩)
+      with ⟨E, hEo, hE, hEf, hEA⟩
+    refine ⟨Σ y, T y, fun z ↦ U z.2.1 z.1 ×ˢ E z.1, fun _ ↦ (hUo _ _).prod (hEo _),
+      unionᵢ_eq_univ_iff.2 fun (x, y) ↦ ?_, fun (x, y) ↦ ?_, fun ⟨y, x, hx⟩ ↦ ?_⟩
+    · rcases unionᵢ_eq_univ_iff.1 hE y with ⟨b, hb⟩
+      rcases unionᵢ₂_eq_univ_iff.1 (hT b) x with ⟨a, ha, hx⟩
+      exact ⟨⟨b, a, ha⟩, hx, hb⟩
+    · rcases hEf y with ⟨t, ht, htf⟩
+      refine ⟨univ ×ˢ t, prod_mem_nhds univ_mem ht, ?_⟩
+      refine (htf.bunionᵢ fun y _ ↦ finite_range (Sigma.mk y)).subset ?_
+      rintro ⟨b, a, ha⟩ ⟨⟨c, d⟩, ⟨-, hd : d ∈ E b⟩, -, hdt : d ∈ t⟩
+      exact mem_unionᵢ₂.2 ⟨b, ⟨d, hd, hdt⟩, mem_range_self _⟩
+    · refine ⟨a x y, (Set.prod_mono Subset.rfl ?_).trans (hUV x y)⟩
+      exact (hEA _).trans (interᵢ₂_subset x hx)
+
+instance (priority := 200) [ParacompactSpace X] [CompactSpace Y] : ParacompactSpace (X × Y) :=
+  (Homeomorph.prodComm X Y).paracompactSpace_iff.2 inferInstance
+
 -- See note [lower instance priority]
 /-- A compact space is paracompact. -/
 instance (priority := 100) paracompact_of_compact [CompactSpace X] : ParacompactSpace X := by
   -- the proof is trivial: we choose a finite subcover using compactness, and use it
   refine' ⟨fun ι s ho hu ↦ _⟩
   rcases isCompact_univ.elim_finite_subcover _ ho hu.ge with ⟨T, hT⟩
-  have := hT; simp only [subset_def, mem_unionᵢ] at this
-  choose i _ _ using fun x ↦ this x (mem_univ x)
   refine' ⟨(T : Set ι), fun t ↦ s t, fun t ↦ ho _, _, locallyFinite_of_finite _,
     fun t ↦ ⟨t, Subset.rfl⟩⟩
   simpa only [unionᵢ_coe_set, ← univ_subset_iff]

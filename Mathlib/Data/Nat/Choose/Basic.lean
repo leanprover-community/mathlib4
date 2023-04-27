@@ -163,7 +163,6 @@ theorem choose_mul {n k s : ℕ} (hkn : k ≤ n) (hsk : s ≤ k) :
     _ = n.choose s * (n - s).choose (k - s) * ((n - k)! * (k - s)! * s !) :=
       by rw [tsub_tsub_tsub_cancel_right hsk, mul_assoc, mul_left_comm s !, mul_assoc,
         mul_comm (k - s)!, mul_comm s !, mul_right_comm, ← mul_assoc]
-
 #align nat.choose_mul Nat.choose_mul
 
 theorem choose_eq_factorial_div_factorial {n k : ℕ} (hk : k ≤ n) :

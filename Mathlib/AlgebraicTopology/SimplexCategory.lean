@@ -94,14 +94,14 @@ protected def rec {F : ∀ _ : SimplexCategory, Sort _} (h : ∀ n : ℕ, F [n])
 #align simplex_category.rec SimplexCategory.rec
 
 -- porting note: removed @[nolint has_nonempty_instance]
-/-- Morphisms in the simplex_category. -/
+/-- Morphisms in the `SimplexCategory`. -/
 protected def Hom (a b : SimplexCategory) :=
   Fin (a.len + 1) →o Fin (b.len + 1)
 #align simplex_category.hom SimplexCategory.Hom
 
 namespace Hom
 
-/-- Make a moprhism in `SimplexCategory` from a monotone map of fin's. -/
+/-- Make a moprhism in `SimplexCategory` from a monotone map of `Fin`'s. -/
 def mk {a b : SimplexCategory} (f : Fin (a.len + 1) →o Fin (b.len + 1)) : SimplexCategory.Hom a b :=
   f
 #align simplex_category.hom.mk SimplexCategory.Hom.mk
@@ -236,7 +236,7 @@ theorem δ_comp_δ' {n} {i : Fin (n + 2)} {j : Fin (n + 3)} (H : Fin.castSucc i 
 #align simplex_category.δ_comp_δ' SimplexCategory.δ_comp_δ'
 
 theorem δ_comp_δ'' {n} {i : Fin (n + 3)} {j : Fin (n + 2)} (H : i ≤ Fin.castSucc j) :
-    δ (i.castLt (Nat.lt_of_le_of_lt (Fin.le_iff_val_le_val.mp H) j.is_lt)) ≫ δ j.succ =
+    δ (i.castLT (Nat.lt_of_le_of_lt (Fin.le_iff_val_le_val.mp H) j.is_lt)) ≫ δ j.succ =
       δ j ≫ δ i := by
   rw [δ_comp_δ]
   · rfl
@@ -326,11 +326,11 @@ theorem δ_comp_σ_of_gt {n} {i : Fin (n + 2)} {j : Fin (n + 1)} (H : Fin.castSu
 
 @[reassoc]
 theorem δ_comp_σ_of_gt' {n} {i : Fin (n + 3)} {j : Fin (n + 2)} (H : j.succ < i) :
-    δ i ≫ σ j = σ (j.castLt ((add_lt_add_iff_right 1).mp (lt_of_lt_of_le H i.is_le))) ≫
+    δ i ≫ σ j = σ (j.castLT ((add_lt_add_iff_right 1).mp (lt_of_lt_of_le H i.is_le))) ≫
       δ (i.pred fun hi => by simp only [Fin.not_lt_zero, hi] at H) := by
   rw [← δ_comp_σ_of_gt]
   · simp
-  · rw [Fin.castSucc_cast_lt, ← Fin.succ_lt_succ_iff, Fin.succ_pred]
+  · rw [Fin.castSucc_castLT, ← Fin.succ_lt_succ_iff, Fin.succ_pred]
     exact H
 #align simplex_category.δ_comp_σ_of_gt' SimplexCategory.δ_comp_σ_of_gt'
 
@@ -640,7 +640,7 @@ theorem eq_σ_comp_of_not_injective {n : ℕ} {Δ' : SimplexCategory} (θ : mk (
   -- and then, `θ x = θ (x+1)`
   have hθ₂ : ∃ x y : Fin (n + 2), (Hom.toOrderHom θ) x = (Hom.toOrderHom θ) y ∧ x < y := by
     rcases hθ with ⟨x, y, ⟨h₁, h₂⟩⟩
-    by_cases x < y
+    by_cases h : x < y
     · exact ⟨x, y, ⟨h₁, h⟩⟩
     · refine' ⟨y, x, ⟨h₁.symm, _⟩⟩
       cases' lt_or_eq_of_le (not_lt.mp h) with h' h'

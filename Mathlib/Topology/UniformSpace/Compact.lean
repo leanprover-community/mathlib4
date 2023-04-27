@@ -39,9 +39,7 @@ uniform space, uniform continuity, compact space
 -/
 
 
-open Classical Uniformity Topology Filter
-
-open Filter UniformSpace Set
+open Classical Uniformity Topology Filter UniformSpace Set
 
 variable {α β γ : Type _} [UniformSpace α] [UniformSpace β]
 
@@ -56,8 +54,7 @@ theorem nhdsSet_diagonal_eq_uniformity [CompactSpace α] : 𝓝ˢ (diagonal α) 
   refine' nhdsSet_diagonal_le_uniformity.antisymm _
   have :
     (𝓤 (α × α)).HasBasis (fun U => U ∈ 𝓤 α) fun U =>
-      (fun p : (α × α) × α × α => ((p.1.1, p.2.1), p.1.2, p.2.2)) ⁻¹' U ×ˢ U :=
-    by
+      (fun p : (α × α) × α × α => ((p.1.1, p.2.1), p.1.2, p.2.2)) ⁻¹' U ×ˢ U := by
     rw [uniformity_prod_eq_comap_prod]
     exact (𝓤 α).basis_sets.prod_self.comap _
   refine' (isCompact_diagonal.nhdsSet_basis_uniformity this).ge_iff.2 fun U hU => _
@@ -86,8 +83,7 @@ def uniformSpaceOfCompactT2 [TopologicalSpace γ] [CompactSpace γ] [T2Space γ]
   uniformity := 𝓝ˢ (diagonal γ)
   refl := principal_le_nhdsSet
   symm := continuous_swap.tendsto_nhdsSet fun x => Eq.symm
-  comp :=
-    by
+  comp := by
     /-  This is the difficult part of the proof. We need to prove that, for each neighborhood `W`
         of the diagonal `Δ`, there exists a smaller neighborhood `V` such that `V ○ V ⊆ W`.
         -/
@@ -105,8 +101,7 @@ def uniformSpaceOfCompactT2 [TopologicalSpace γ] [CompactSpace γ] [T2Space γ]
     -- In particular (x, y) is a cluster point of 𝓟 Vᶜ, hence is not in the interior of V,
     -- and a fortiori not in Δ, so x ≠ y
     have clV : ClusterPt (x, y) (𝓟 <| Vᶜ) := hxy.of_inf_right
-    have : (x, y) ∉ interior V :=
-      by
+    have : (x, y) ∉ interior V := by
       have : (x, y) ∈ closure (Vᶜ) := by rwa [mem_closure_iff_clusterPt]
       rwa [closure_compl] at this
     have diag_subset : diagonal γ ⊆ interior V := subset_interior_iff_mem_nhdsSet.2 V_in
@@ -151,12 +146,10 @@ def uniformSpaceOfCompactT2 [TopologicalSpace γ] [CompactSpace γ] [T2Space γ]
     -- Hence w ∈ U₁ ∩ U₂ which is empty.
     -- So we have a contradiction
     exact hU₁₂.le_bot ⟨uw_in.2, wv_in.1⟩
-  isOpen_uniformity :=
-    by
+  isOpen_uniformity := by
     -- Here we need to prove the topology induced by the constructed uniformity is the
     -- topology we started with.
-    suffices ∀ x : γ, Filter.comap (Prod.mk x) (𝓝ˢ (diagonal γ)) = 𝓝 x
-      by
+    suffices ∀ x : γ, Filter.comap (Prod.mk x) (𝓝ˢ (diagonal γ)) = 𝓝 x by
       intro s
       simp_rw [isOpen_fold, isOpen_iff_mem_nhds, ← mem_comap_prod_mk, this]
     intro x
@@ -188,7 +181,6 @@ theorem IsCompact.uniformContinuousOn_of_continuous {s : Set α} {f : α → β}
   rw [uniformContinuousOn_iff_restrict]
   rw [isCompact_iff_compactSpace] at hs
   rw [continuousOn_iff_continuous_restrict] at hf
-  skip
   exact CompactSpace.uniformContinuous_of_continuous hf
 #align is_compact.uniform_continuous_on_of_continuous IsCompact.uniformContinuousOn_of_continuous
 
@@ -213,8 +205,7 @@ theorem IsCompact.uniformContinuousAt_of_continuousAt {r : Set (β × β)} {s : 
 
 theorem Continuous.uniformContinuous_of_tendsto_cocompact {f : α → β} {x : β}
     (h_cont : Continuous f) (hx : Tendsto f (cocompact α) (𝓝 x)) : UniformContinuous f :=
-  uniformContinuous_def.2 fun r hr =>
-    by
+  uniformContinuous_def.2 fun r hr => by
     obtain ⟨t, ht, htsymm, htr⟩ := comp_symm_mem_uniformity_sets hr
     obtain ⟨s, hs, hst⟩ := mem_cocompact.1 (hx <| mem_nhds_left _ ht)
     apply
