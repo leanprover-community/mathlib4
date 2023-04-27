@@ -95,7 +95,7 @@ instance LT' : LT String :=
 
 instance decidableLT : @DecidableRel String (· < ·) := by
   simp only [LT']
-  infer_instance
+  infer_instance -- short-circuit type class inference
 #align string.decidable_lt String.decidableLT
 
 /-- Induction on `String.ltb`. -/
@@ -138,7 +138,6 @@ lemma ltb.cons_add_csize (c : Char) (cs₁ cs₂ : List Char) (i₁ i₂ : ℕ) 
   · rename_i h₂ h₁ hne
     simp [Iterator.curr, Iterator.hasNext.cons_add_csize, get.cons_add_csize, *] at *
 
--- short-circuit type class inference
 @[simp]
 theorem lt_iff_toList_lt : ∀ {s₁ s₂ : String}, s₁ < s₂ ↔ s₁.toList < s₂.toList
 | ⟨s₁⟩, ⟨s₂⟩ => show ltb ⟨⟨s₁⟩, 0⟩ ⟨⟨s₂⟩, 0⟩ ↔ s₁ < s₂ by
@@ -175,10 +174,9 @@ instance LE : LE String :=
 
 instance decidableLE : @DecidableRel String (· ≤ ·) := by
   simp only [LE]
-  infer_instance
+  infer_instance -- short-circuit type class inference
 #align string.decidable_le String.decidableLE
 
--- short-circuit type class inference
 @[simp]
 theorem le_iff_toList_le {s₁ s₂ : String} : s₁ ≤ s₂ ↔ s₁.toList ≤ s₂.toList :=
   (not_congr lt_iff_toList_lt).trans not_lt
