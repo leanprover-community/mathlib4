@@ -304,24 +304,33 @@ theorem toDual_apply (i j : ι) : b.toDual (b i) (b j) = if i = j then 1 else 0 
 #align basis.to_dual_apply Basis.toDual_apply
 
 @[simp]
-theorem toDual_total_left (f : ι →₀ R) (i : ι) : b.toDual (Finsupp.total ι M R b f) (b i) = f i :=
-  by
+theorem toDual_total_left (f : ι →₀ R) (i : ι) :
+    b.toDual (Finsupp.total ι M R b f) (b i) = f i := by
   rw [Finsupp.total_apply, Finsupp.sum, LinearMap.map_sum, LinearMap.sum_apply]
-  simp_rw [LinearMap.map_smul, LinearMap.smul_apply, toDual_apply, smul_eq_mul, mul_boole,
-    Finset.sum_ite_eq']
+  -- Porting note: was `simp_rw` rather than `conv ... rw`
+  conv_lhs =>
+    arg 2
+    ext j
+    rw [LinearMap.map_smul, LinearMap.smul_apply, toDual_apply, smul_eq_mul, mul_boole]
+  rw [Finset.sum_ite_eq']
   split_ifs with h
   · rfl
-  · rw [finsupp.not_mem_support_iff.mp h]
+  · rw [Finsupp.not_mem_support_iff.mp h]
 #align basis.to_dual_total_left Basis.toDual_total_left
 
 @[simp]
-theorem toDual_total_right (f : ι →₀ R) (i : ι) : b.toDual (b i) (Finsupp.total ι M R b f) = f i :=
-  by
+theorem toDual_total_right (f : ι →₀ R) (i : ι) :
+    b.toDual (b i) (Finsupp.total ι M R b f) = f i := by
   rw [Finsupp.total_apply, Finsupp.sum, LinearMap.map_sum]
-  simp_rw [LinearMap.map_smul, toDual_apply, smul_eq_mul, mul_boole, Finset.sum_ite_eq]
+  -- Porting note: was `simp_rw` rather than `conv ... rw`
+  conv_lhs =>
+    arg 2
+    ext j
+    rw [LinearMap.map_smul, toDual_apply, smul_eq_mul, mul_boole]
+  rw [Finset.sum_ite_eq]
   split_ifs with h
   · rfl
-  · rw [finsupp.not_mem_support_iff.mp h]
+  · rw [Finsupp.not_mem_support_iff.mp h]
 #align basis.to_dual_total_right Basis.toDual_total_right
 
 theorem toDual_apply_left (m : M) (i : ι) : b.toDual m (b i) = b.repr m i := by
@@ -387,8 +396,13 @@ variable (b : Basis ι R M)
 @[simp]
 theorem sum_dual_apply_smul_coord (f : Module.Dual R M) : (∑ x, f (b x) • b.coord x) = f := by
   ext m
-  simp_rw [LinearMap.sum_apply, LinearMap.smul_apply, smul_eq_mul, mul_comm (f _), ← smul_eq_mul, ←
-    f.map_smul, ← f.map_sum, Basis.coord_apply, Basis.sum_repr]
+  -- Porting note: `rw` and `conv_lhs` were `simp_rw`
+  rw [LinearMap.sum_apply]
+  conv_lhs =>
+    arg 2
+    ext j
+    rw [LinearMap.smul_apply, smul_eq_mul, mul_comm, ← smul_eq_mul, ← f.map_smul]
+  simp_rw [← f.map_sum, Basis.coord_apply, Basis.sum_repr]
 #align basis.sum_dual_apply_smul_coord Basis.sum_dual_apply_smul_coord
 
 end
@@ -425,8 +439,12 @@ theorem total_dualBasis (f : ι →₀ R) (i : ι) :
     Finsupp.total ι (Dual R M) R b.dualBasis f (b i) = f i := by
   cases nonempty_fintype ι
   rw [Finsupp.total_apply, Finsupp.sum_fintype, LinearMap.sum_apply]
-  · simp_rw [LinearMap.smul_apply, smul_eq_mul, dualBasis_apply_self, mul_boole, Finset.sum_ite_eq,
-      if_pos (Finset.mem_univ i)]
+  · -- Porting note: was `simp_rw` rather than `conv ... rw`.
+    conv_lhs =>
+      arg 2
+      ext i
+      rw [LinearMap.smul_apply, smul_eq_mul, dualBasis_apply_self, mul_boole]
+    simp_rw [Finset.sum_ite_eq, if_pos (Finset.mem_univ i)]
   · intro
     rw [zero_smul]
 #align basis.total_dual_basis Basis.total_dualBasis
@@ -461,7 +479,9 @@ theorem dualBasis_equivFun [Fintype ι] (l : Dual R M) (i : ι) :
 theorem eval_ker {ι : Type _} (b : Basis ι R M) : LinearMap.ker (Dual.eval R M) = ⊥ := by
   rw [ker_eq_bot']
   intro m hm
-  simp_rw [LinearMap.ext_iff, Dual.eval_apply, zero_apply] at hm
+  -- Porting note: `rw` was part of `simp_rw`.
+  rw [LinearMap.ext_iff] at hm
+  simp_rw [Dual.eval_apply, zero_apply] at hm
   exact (Basis.forall_coord_eq_zero_iff _).mp fun i => hm (b.coord i)
 #align basis.eval_ker Basis.eval_ker
 
