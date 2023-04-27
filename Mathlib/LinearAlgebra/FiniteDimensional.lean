@@ -1165,7 +1165,7 @@ theorem finrank_strictMono [FiniteDimensional K V] :
 
 theorem finrank_add_eq_of_isCompl [FiniteDimensional K V] {U W : Submodule K V} (h : IsCompl U W) :
     finrank K U + finrank K W = finrank K V := by
-  rw [← finrank_sup_add_finrank_inf_eq, h.Codisjoint.eq_top, h.Disjoint.eq_bot, finrank_bot,
+  rw [← finrank_sup_add_finrank_inf_eq, h.codisjoint.eq_top, h.disjoint.eq_bot, finrank_bot,
     add_zero]
   exact finrank_top _ _
 #align submodule.finrank_add_eq_of_is_compl Submodule.finrank_add_eq_of_isCompl
