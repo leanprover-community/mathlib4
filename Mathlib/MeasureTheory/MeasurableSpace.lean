@@ -1615,7 +1615,7 @@ class CountablyGenerated [m : MeasurableSpace α] : Prop where
 open Classical
 
 /-- If a measurable space is countably generated, it admits a measurable injection
-into the Cantor space `ℕ → bool` (equipped with the product sigma algebra). -/
+into the Cantor space `ℕ → Bool` (equipped with the product sigma algebra). -/
 theorem measurable_injection_cantor_of_countablyGenerated [MeasurableSpace α]
     [h : CountablyGenerated α] [MeasurableSingletonClass α] :
     ∃ f : α → ℕ → Bool, Measurable f ∧ Function.Injective f := by
