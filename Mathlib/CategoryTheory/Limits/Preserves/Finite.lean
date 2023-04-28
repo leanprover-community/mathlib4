@@ -69,8 +69,8 @@ noncomputable def PreservesLimitsOfSize.preservesFiniteLimits (F : C ⥤ D)
 #align category_theory.limits.preserves_limits.preserves_finite_limits_of_size CategoryTheory.Limits.PreservesLimitsOfSize.preservesFiniteLimits
 
 -- Porting note: added as a specialization of the dangerous instance above.
-noncomputable instance (priority := 120) PreservesLimitsOfSize0.preservesFiniteLimits (F : C ⥤ D)
-    [PreservesLimitsOfSize.{0, 0} F] : PreservesFiniteLimits F :=
+noncomputable instance (priority := 120) PreservesLimitsOfSize0.preservesFiniteLimits
+    (F : C ⥤ D) [PreservesLimitsOfSize.{0, 0} F] : PreservesFiniteLimits F :=
   PreservesLimitsOfSize.preservesFiniteLimits F
 
 noncomputable instance (priority := 120) PreservesLimits.preservesFiniteLimits (F : C ⥤ D)
@@ -136,8 +136,8 @@ noncomputable def PreservesColimitsOfSize.preservesFiniteColimits (F : C ⥤ D)
     exact preservesColimitsOfShapeOfEquiv (FinCategory.equivAsType J) F
 
 -- Porting note: added as a specialization of the dangerous instance above.
-noncomputable instance (priority := 120) PreservesColimitsOfSize0.preservesFiniteColimits (F : C ⥤ D)
-    [PreservesColimitsOfSize.{0, 0} F] : PreservesFiniteColimits F :=
+noncomputable instance (priority := 120) PreservesColimitsOfSize0.preservesFiniteColimits
+    (F : C ⥤ D) [PreservesColimitsOfSize.{0, 0} F] : PreservesFiniteColimits F :=
   PreservesColimitsOfSize.preservesFiniteColimits F
 
 noncomputable instance (priority := 120) PreservesColimits.preservesFiniteColimits (F : C ⥤ D)
