@@ -8,9 +8,9 @@ Authors: Anne Baanen
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.LinearAlgebra.GeneralLinearGroup
-import Mathbin.LinearAlgebra.Matrix.Adjugate
-import Mathbin.LinearAlgebra.Matrix.ToLin
+import Mathlib.LinearAlgebra.GeneralLinearGroup
+import Mathlib.LinearAlgebra.Matrix.Adjugate
+import Mathlib.LinearAlgebra.Matrix.ToLin
 
 /-!
 # The Special Linear group $SL(n, R)$
@@ -153,8 +153,7 @@ theorem coe_pow (m : ℕ) : ↑ₘ(A ^ m) = ↑ₘA ^ m :=
   rfl
 #align matrix.special_linear_group.coe_pow Matrix.SpecialLinearGroup.coe_pow
 
-theorem det_ne_zero [Nontrivial R] (g : SpecialLinearGroup n R) : det ↑ₘg ≠ 0 :=
-  by
+theorem det_ne_zero [Nontrivial R] (g : SpecialLinearGroup n R) : det ↑ₘg ≠ 0 := by
   rw [g.det_coe]
   norm_num
 #align matrix.special_linear_group.det_ne_zero Matrix.SpecialLinearGroup.det_ne_zero
@@ -175,8 +174,7 @@ instance : Group (SpecialLinearGroup n R) :=
       simp [adjugate_mul] }
 
 /-- A version of `matrix.to_lin' A` that produces linear equivalences. -/
-def toLin' : SpecialLinearGroup n R →* (n → R) ≃ₗ[R] n → R
-    where
+def toLin' : SpecialLinearGroup n R →* (n → R) ≃ₗ[R] n → R where
   toFun A :=
     LinearEquiv.ofLinear (Matrix.toLin' ↑ₘA) (Matrix.toLin' ↑ₘA⁻¹)
       (by rw [← to_lin'_mul, ← coe_mul, mul_right_inv, coe_one, to_lin'_one])
@@ -224,8 +222,7 @@ variable {S : Type _} [CommRing S]
 /-- A ring homomorphism from `R` to `S` induces a group homomorphism from
 `special_linear_group n R` to `special_linear_group n S`. -/
 @[simps]
-def map (f : R →+* S) : SpecialLinearGroup n R →* SpecialLinearGroup n S
-    where
+def map (f : R →+* S) : SpecialLinearGroup n R →* SpecialLinearGroup n S where
   toFun g :=
     ⟨f.mapMatrix ↑g, by
       rw [← f.map_det]
@@ -287,8 +284,7 @@ theorem SL2_inv_expl_det (A : SL(2, R)) : det ![![A.1 1 1, -A.1 0 1], ![-A.1 1 0
 #align matrix.special_linear_group.SL2_inv_expl_det Matrix.SpecialLinearGroup.SL2_inv_expl_det
 
 theorem SL2_inv_expl (A : SL(2, R)) :
-    A⁻¹ = ⟨![![A.1 1 1, -A.1 0 1], ![-A.1 1 0, A.1 0 0]], SL2_inv_expl_det A⟩ :=
-  by
+    A⁻¹ = ⟨![![A.1 1 1, -A.1 0 1], ![-A.1 1 0, A.1 0 0]], SL2_inv_expl_det A⟩ := by
   ext
   have := Matrix.adjugate_fin_two A.1
   simp only [Subtype.val_eq_coe] at this
@@ -306,8 +302,7 @@ theorem fin_two_induction (P : SL(2, R) → Prop)
 
 theorem fin_two_exists_eq_mk_of_apply_zero_one_eq_zero {R : Type _} [Field R] (g : SL(2, R))
     (hg : (g : Matrix (Fin 2) (Fin 2) R) 1 0 = 0) :
-    ∃ (a b : R)(h : a ≠ 0), g = (⟨!![a, b; 0, a⁻¹], by simp [h]⟩ : SL(2, R)) :=
-  by
+    ∃ (a b : R)(h : a ≠ 0), g = (⟨!![a, b; 0, a⁻¹], by simp [h]⟩ : SL(2, R)) := by
   induction' g using Matrix.SpecialLinearGroup.fin_two_induction with a b c d h_det
   replace hg : c = 0 := by simpa using hg
   have had : a * d = 1 := by rwa [hg, MulZeroClass.mul_zero, sub_zero] at h_det
@@ -371,8 +366,7 @@ theorem coe_t_inv : ↑ₘt⁻¹ = !![1, -1; 0, 1] := by simp [coe_inv, coe_T, a
 
 /- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:73:14: unsupported tactic `congrm #[[expr «expr!![ »(matrix.notation [expr _, ",", expr _, ";", expr _, ",", expr _, "]"] [])]] -/
 /- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:73:14: unsupported tactic `congrm #[[expr «expr!![ »(matrix.notation [expr _, ",", expr _, ";", expr _, ",", expr _, "]"] [])]] -/
-theorem coe_t_zpow (n : ℤ) : ↑ₘ(t ^ n) = !![1, n; 0, 1] :=
-  by
+theorem coe_t_zpow (n : ℤ) : ↑ₘ(t ^ n) = !![1, n; 0, 1] := by
   induction' n using Int.induction_on with n h n h
   · rw [zpow_zero, coe_one, Matrix.one_fin_two]
   · simp_rw [zpow_add, zpow_one, coe_mul, h, coe_T, Matrix.mul_fin_two]
