@@ -324,7 +324,7 @@ def All (P : α → Prop) : Ordnode α → Prop
   | node _ l x r => All P l ∧ P x ∧ All P r
 #align ordnode.all Ordnode.All
 
--- porting notes: required `noncomutable`
+-- porting notes: required `noncomutable` -- TODO fix recursor
 noncomputable instance All.decidable {P : α → Prop} (t) [DecidablePred P] : Decidable (All P t) :=
  by
   induction' t with _ l x r lih rih <;> dsimp only [All] <;> skip
@@ -343,12 +343,14 @@ def Any (P : α → Prop) : Ordnode α → Prop
   | node _ l x r => Any P l ∨ P x ∨ Any P r
 #align ordnode.any Ordnode.Any
 
--- porting notes: required `noncomutable` & can remove `[Decidable P]`
-noncomputable instance Any.decidable {P : α → Prop} (t) : Decidable (Any P t) :=
+-- porting notes: required `noncomutable` -- TODO fix recursor
+noncomputable instance Any.decidable {P : α → Prop} (t) [DecidablePred P] : Decidable (Any P t) :=
   by
-  induction' t with _ l x r <;> dsimp only [Any] <;> skip
+  induction' t with _ l x r lih rih <;> dsimp only [Any] <;> skip
   . infer_instance
-  . exact Classical.decPred (Or (Any P l)) (P x ∨ Any P r)
+  . refine @Or.decidable (Any P l) _ lih ?_
+    refine @Or.decidable _ (Any P r) ?_ rih
+    infer_instance
 #align ordnode.any.decidable Ordnode.Any.decidable
 
 /-- O(n). Exact membership in the set. This is useful primarily for stating
