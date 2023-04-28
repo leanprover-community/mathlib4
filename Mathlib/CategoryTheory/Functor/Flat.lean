@@ -68,28 +68,28 @@ variable {K : J ⥤ C} (F : C ⥤ D) (c : Cone K)
 /-- Given a cone `c : cone K` and a map `f : X ⟶ c.X`, we can construct a cone of structured
 arrows over `X` with `f` as the cone point. This is the underlying diagram.
 -/
-@[simps]
+@[simps!]
 def toDiagram : J ⥤ StructuredArrow c.pt K where
   obj j := StructuredArrow.mk (c.π.app j)
-  map j k g := StructuredArrow.homMk g (by simpa)
+  map g := StructuredArrow.homMk g (by simp)
 #align category_theory.structured_arrow_cone.to_diagram CategoryTheory.StructuredArrowCone.toDiagram
 
 /-- Given a diagram of `structured_arrow X F`s, we may obtain a cone with cone point `X`. -/
-@[simps]
-def diagramToCone {X : D} (G : J ⥤ StructuredArrow X F) : Cone (G ⋙ proj X F ⋙ F) :=
-  { pt
-    π := { app := fun j => (G.obj j).Hom } }
+@[simps!]
+def diagramToCone {X : D} (G : J ⥤ StructuredArrow X F) : Cone (G ⋙ proj X F ⋙ F) where
+  π := { app := fun j => (G.obj j).hom }
 #align category_theory.structured_arrow_cone.diagram_to_cone CategoryTheory.StructuredArrowCone.diagramToCone
 
 /-- Given a cone `c : cone K` and a map `f : X ⟶ F.obj c.X`, we can construct a cone of structured
 arrows over `X` with `f` as the cone point.
 -/
 @[simps]
-def toCone {X : D} (f : X ⟶ F.obj c.pt) : Cone (toDiagram (F.mapCone c) ⋙ map f ⋙ pre _ K F) where
+def toCone {X : D} (f : X ⟶ F.obj c.pt) :
+    Cone (toDiagram (F.mapCone c) ⋙ map f ⋙ pre _ K F) where
   pt := mk f
   π :=
     { app := fun j => homMk (c.π.app j) rfl
-      naturality' := fun j k g => by
+      naturality := fun j k g => by
         ext
         dsimp
         simp }
@@ -110,24 +110,25 @@ class RepresentablyFlat (F : C ⥤ D) : Prop where
   cofiltered : ∀ X : D, IsCofiltered (StructuredArrow X F)
 #align category_theory.representably_flat CategoryTheory.RepresentablyFlat
 
-attribute [instance] representably_flat.cofiltered
+attribute [instance] RepresentablyFlat.cofiltered
 
-attribute [local instance] is_cofiltered.nonempty
+attribute [local instance] IsCofiltered.Nonempty
 
 instance RepresentablyFlat.id : RepresentablyFlat (𝟭 C) := by
   constructor
   intro X
-  haveI : Nonempty (structured_arrow X (𝟭 C)) := ⟨structured_arrow.mk (𝟙 _)⟩
-  rsuffices : is_cofiltered_or_empty (structured_arrow X (𝟭 C))
+  haveI : Nonempty (StructuredArrow X (𝟭 C)) := ⟨StructuredArrow.mk (𝟙 _)⟩
+  suffices : IsCofilteredOrEmpty (StructuredArrow X (𝟭 C))
   · constructor
   constructor
   · intro Y Z
-    use structured_arrow.mk (𝟙 _)
-    use structured_arrow.hom_mk Y.hom (by erw [functor.id_map, category.id_comp])
-    use structured_arrow.hom_mk Z.hom (by erw [functor.id_map, category.id_comp])
+    use StructuredArrow.mk (𝟙 _)
+    use StructuredArrow.homMk Y.hom (by erw [Functor.id_map, Category.id_comp])
+    use StructuredArrow.homMk Z.hom (by erw [Functor.id_map, Category.id_comp])
+    trivial
   · intro Y Z f g
-    use structured_arrow.mk (𝟙 _)
-    use structured_arrow.hom_mk Y.hom (by erw [functor.id_map, category.id_comp])
+    use StructuredArrow.mk (𝟙 _)
+    use StructuredArrow.homMk Y.hom (by erw [Functor.id_map, Category.id_comp])
     ext
     trans Z.hom <;> simp
 #align category_theory.representably_flat.id CategoryTheory.RepresentablyFlat.id
@@ -136,44 +137,45 @@ instance RepresentablyFlat.comp (F : C ⥤ D) (G : D ⥤ E) [RepresentablyFlat F
     [RepresentablyFlat G] : RepresentablyFlat (F ⋙ G) := by
   constructor
   intro X
-  have : Nonempty (structured_arrow X (F ⋙ G)) := by
-    have f₁ : structured_arrow X G := Nonempty.some inferInstance
-    have f₂ : structured_arrow f₁.right F := Nonempty.some inferInstance
-    exact ⟨structured_arrow.mk (f₁.hom ≫ G.map f₂.hom)⟩
-  rsuffices : is_cofiltered_or_empty (structured_arrow X (F ⋙ G))
+  have : Nonempty (StructuredArrow X (F ⋙ G)) := by
+    have f₁ : StructuredArrow X G := Nonempty.some inferInstance
+    have f₂ : StructuredArrow f₁.right F := Nonempty.some inferInstance
+    exact ⟨StructuredArrow.mk (f₁.hom ≫ G.map f₂.hom)⟩
+  suffices : IsCofilteredOrEmpty (StructuredArrow X (F ⋙ G))
   · constructor
   constructor
   · intro Y Z
     let W :=
-      @is_cofiltered.min (structured_arrow X G) _ _ (structured_arrow.mk Y.hom)
-        (structured_arrow.mk Z.hom)
-    let Y' : W ⟶ _ := is_cofiltered.min_to_left _ _
-    let Z' : W ⟶ _ := is_cofiltered.min_to_right _ _
+      @IsCofiltered.min (StructuredArrow X G) _ _ (StructuredArrow.mk Y.hom)
+        (StructuredArrow.mk Z.hom)
+    let Y' : W ⟶ _ := IsCofiltered.minToLeft _ _
+    let Z' : W ⟶ _ := IsCofiltered.minToRight _ _
     let W' :=
-      @is_cofiltered.min (structured_arrow W.right F) _ _ (structured_arrow.mk Y'.right)
-        (structured_arrow.mk Z'.right)
-    let Y'' : W' ⟶ _ := is_cofiltered.min_to_left _ _
-    let Z'' : W' ⟶ _ := is_cofiltered.min_to_right _ _
-    use structured_arrow.mk (W.hom ≫ G.map W'.hom)
-    use structured_arrow.hom_mk Y''.right (by simp [← G.map_comp])
-    use structured_arrow.hom_mk Z''.right (by simp [← G.map_comp])
+      @IsCofiltered.min (StructuredArrow W.right F) _ _ (StructuredArrow.mk Y'.right)
+        (StructuredArrow.mk Z'.right)
+    let Y'' : W' ⟶ _ := IsCofiltered.minToLeft _ _
+    let Z'' : W' ⟶ _ := IsCofiltered.minToRight _ _
+    use StructuredArrow.mk (W.hom ≫ G.map W'.hom)
+    use StructuredArrow.homMk Y''.right (by simp [← G.map_comp])
+    use StructuredArrow.homMk Z''.right (by simp [← G.map_comp])
+    trivial
   · intro Y Z f g
     let W :=
-      @is_cofiltered.eq (structured_arrow X G) _ _ (structured_arrow.mk Y.hom)
-        (structured_arrow.mk Z.hom) (structured_arrow.hom_mk (F.map f.right) (structured_arrow.w f))
-        (structured_arrow.hom_mk (F.map g.right) (structured_arrow.w g))
-    let h : W ⟶ _ := is_cofiltered.eq_hom _ _
-    let h_cond : h ≫ _ = h ≫ _ := is_cofiltered.eq_condition _ _
+      @IsCofiltered.eq (StructuredArrow X G) _ _ (StructuredArrow.mk Y.hom)
+        (StructuredArrow.mk Z.hom) (StructuredArrow.homMk (F.map f.right) (StructuredArrow.w f))
+        (StructuredArrow.homMk (F.map g.right) (StructuredArrow.w g))
+    let h : W ⟶ _ := IsCofiltered.eqHom _ _
+    let h_cond : h ≫ _ = h ≫ _ := IsCofiltered.eq_condition _ _
     let W' :=
-      @is_cofiltered.eq (structured_arrow W.right F) _ _ (structured_arrow.mk h.right)
-        (structured_arrow.mk (h.right ≫ F.map f.right)) (structured_arrow.hom_mk f.right rfl)
-        (structured_arrow.hom_mk g.right (congr_arg comma_morphism.right h_cond).symm)
-    let h' : W' ⟶ _ := is_cofiltered.eq_hom _ _
-    let h'_cond : h' ≫ _ = h' ≫ _ := is_cofiltered.eq_condition _ _
-    use structured_arrow.mk (W.hom ≫ G.map W'.hom)
-    use structured_arrow.hom_mk h'.right (by simp [← G.map_comp])
+      @IsCofiltered.eq (StructuredArrow W.right F) _ _ (StructuredArrow.mk h.right)
+        (StructuredArrow.mk (h.right ≫ F.map f.right)) (StructuredArrow.homMk f.right rfl)
+        (StructuredArrow.homMk g.right (congr_arg CommaMorphism.right h_cond).symm)
+    let h' : W' ⟶ _ := IsCofiltered.eqHom _ _
+    let h'_cond : h' ≫ _ = h' ≫ _ := IsCofiltered.eq_condition _ _
+    use StructuredArrow.mk (W.hom ≫ G.map W'.hom)
+    use StructuredArrow.homMk h'.right (by simp [← G.map_comp])
     ext
-    exact (congr_arg comma_morphism.right h'_cond : _)
+    exact (congr_arg CommaMorphism.right h'_cond : _)
 #align category_theory.representably_flat.comp CategoryTheory.RepresentablyFlat.comp
 
 end RepresentablyFlat
@@ -182,21 +184,23 @@ section HasLimit
 
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₁} D]
 
-attribute [local instance] has_finite_limits_of_has_finite_limits_of_size
+attribute [local instance] hasFiniteLimits_of_hasFiniteLimits_of_size
 
 theorem cofiltered_of_hasFiniteLimits [HasFiniteLimits C] : IsCofiltered C :=
   { cone_objs := fun A B => ⟨Limits.prod A B, Limits.prod.fst, Limits.prod.snd, trivial⟩
-    cone_maps := fun A B f g => ⟨equalizer f g, equalizer.ι f g, equalizer.condition f g⟩
+    cone_maps := fun _ _ f g => ⟨equalizer f g, equalizer.ι f g, equalizer.condition f g⟩
     Nonempty := ⟨⊤_ C⟩ }
 #align category_theory.cofiltered_of_has_finite_limits CategoryTheory.cofiltered_of_hasFiniteLimits
 
 theorem flat_of_preservesFiniteLimits [HasFiniteLimits C] (F : C ⥤ D) [PreservesFiniteLimits F] :
     RepresentablyFlat F :=
   ⟨fun X =>
-    haveI : has_finite_limits (structured_arrow X F) := by
-      apply hasFiniteLimits_of_hasFiniteLimits_of_size.{v₁} (structured_arrow X F)
-      intro J sJ fJ; skip; constructor
-    cofiltered_of_has_finite_limits⟩
+    haveI : HasFiniteLimits (StructuredArrow X F) := by
+      apply hasFiniteLimits_of_hasFiniteLimits_of_size.{v₁} (StructuredArrow X F)
+      intro J sJ fJ
+      skip
+      constructor
+    cofiltered_of_hasFiniteLimits⟩
 #align category_theory.flat_of_preserves_finite_limits CategoryTheory.flat_of_preservesFiniteLimits
 
 namespace PreservesFiniteLimitsOfFlat
@@ -209,60 +213,58 @@ variable {J : Type v₁} [SmallCategory J] [FinCategory J] {K : J ⥤ C}
 
 variable (F : C ⥤ D) [RepresentablyFlat F] {c : Cone K} (hc : IsLimit c) (s : Cone (K ⋙ F))
 
-include hc
-
 /-- (Implementation).
 Given a limit cone `c : cone K` and a cone `s : cone (K ⋙ F)` with `F` representably flat,
 `s` can factor through `F.map_cone c`.
 -/
 noncomputable def lift : s.pt ⟶ F.obj c.pt :=
   let s' := IsCofiltered.cone (toDiagram s ⋙ StructuredArrow.pre _ K F)
-  s'.pt.Hom ≫
+  s'.pt.hom ≫
     (F.map <|
       hc.lift <|
         (Cones.postcompose
               ({  app := fun X => 𝟙 _
-                  naturality' := by simp } : (toDiagram s ⋙ pre s.pt K F) ⋙ proj s.pt F ⟶ K)).obj <|
+                  naturality := by simp } : (toDiagram s ⋙ pre s.pt K F) ⋙ proj s.pt F ⟶ K)).obj <|
           (StructuredArrow.proj s.pt F).mapCone s')
 #align category_theory.preserves_finite_limits_of_flat.lift CategoryTheory.PreservesFiniteLimitsOfFlat.lift
 
 theorem fac (x : J) : lift F hc s ≫ (F.mapCone c).π.app x = s.π.app x := by
-  simpa [lift, ← functor.map_comp]
+  simp [lift, ← Functor.map_comp]
 #align category_theory.preserves_finite_limits_of_flat.fac CategoryTheory.PreservesFiniteLimitsOfFlat.fac
 
-attribute [local simp] eq_to_hom_map
+attribute [local simp] eqToHom_map
 
 theorem uniq {K : J ⥤ C} {c : Cone K} (hc : IsLimit c) (s : Cone (K ⋙ F))
     (f₁ f₂ : s.pt ⟶ F.obj c.pt) (h₁ : ∀ j : J, f₁ ≫ (F.mapCone c).π.app j = s.π.app j)
     (h₂ : ∀ j : J, f₂ ≫ (F.mapCone c).π.app j = s.π.app j) : f₁ = f₂ := by
   -- We can make two cones over the diagram of `s` via `f₁` and `f₂`.
-  let α₁ : to_diagram (F.map_cone c) ⋙ map f₁ ⟶ to_diagram s :=
-    { app := fun X => eq_to_hom (by simp [← h₁])
-      naturality' := fun _ _ _ => by
+  let α₁ : toDiagram (F.mapCone c) ⋙ map f₁ ⟶ toDiagram s :=
+    { app := fun X => eqToHom (by simp [← h₁])
+      naturality := fun _ _ _ => by
         ext
         simp }
-  let α₂ : to_diagram (F.map_cone c) ⋙ map f₂ ⟶ to_diagram s :=
-    { app := fun X => eq_to_hom (by simp [← h₂])
-      naturality' := fun _ _ _ => by
+  let α₂ : toDiagram (F.mapCone c) ⋙ map f₂ ⟶ toDiagram s :=
+    { app := fun X => eqToHom (by simp [← h₂])
+      naturality := fun _ _ _ => by
         ext
         simp }
-  let c₁ : cone (to_diagram s ⋙ pre s.X K F) :=
-    (cones.postcompose (whisker_right α₁ (pre s.X K F) : _)).obj (to_cone F c f₁)
-  let c₂ : cone (to_diagram s ⋙ pre s.X K F) :=
-    (cones.postcompose (whisker_right α₂ (pre s.X K F) : _)).obj (to_cone F c f₂)
+  let c₁ : Cone (toDiagram s ⋙ pre s.pt K F) :=
+    (Cones.postcompose (whiskerRight α₁ (pre s.pt K F) : _)).obj (toCone F c f₁)
+  let c₂ : Cone (toDiagram s ⋙ pre s.pt K F) :=
+    (Cones.postcompose (whiskerRight α₂ (pre s.pt K F) : _)).obj (toCone F c f₂)
   -- The two cones can then be combined and we may obtain a cone over the two cones since
-  -- `structured_arrow s.X F` is cofiltered.
-  let c₀ := is_cofiltered.cone (bicone_mk _ c₁ c₂)
-  let g₁ : c₀.X ⟶ c₁.X := c₀.π.app bicone.left
-  let g₂ : c₀.X ⟶ c₂.X := c₀.π.app bicone.right
+  -- `StructuredArrow s.pt F` is cofiltered.
+  let c₀ := IsCofiltered.cone (biconeMk _ c₁ c₂)
+  let g₁ : c₀.pt ⟶ c₁.pt := c₀.π.app Bicone.left
+  let g₂ : c₀.pt ⟶ c₂.pt := c₀.π.app Bicone.right
   -- Then `g₁.right` and `g₂.right` are two maps from the same cone into the `c`.
   have : ∀ j : J, g₁.right ≫ c.π.app j = g₂.right ≫ c.π.app j := by
     intro j
-    injection c₀.π.naturality (bicone_hom.left j) with _ e₁
-    injection c₀.π.naturality (bicone_hom.right j) with _ e₂
+    injection c₀.π.naturality (BiconeHom.left j) with _ e₁
+    injection c₀.π.naturality (BiconeHom.right j) with _ e₂
     simpa using e₁.symm.trans e₂
   have : c.extend g₁.right = c.extend g₂.right := by
-    unfold cone.extend
+    unfold Cone.extend
     congr 1
     ext x
     apply this
@@ -271,15 +273,17 @@ theorem uniq {K : J ⥤ C} {c : Cone K} (hc : IsLimit c) (s : Cone (K ⋙ F))
   calc
     g₁.right = hc.lift (c.extend g₁.right) := by
       apply hc.uniq (c.extend _)
-      tidy
+      -- Porting note: was `by tidy`
+      sorry
     _ = hc.lift (c.extend g₂.right) := by
       congr
       exact this
     _ = g₂.right := by
       symm
       apply hc.uniq (c.extend _)
-      tidy
-    
+      -- Porting note: was `by tidy`
+      sorry
+
   -- Finally, since `fᵢ` factors through `F(gᵢ)`, the result follows.
   calc
     f₁ = 𝟙 _ ≫ f₁ := by simp
@@ -287,7 +291,7 @@ theorem uniq {K : J ⥤ C} {c : Cone K} (hc : IsLimit c) (s : Cone (K ⋙ F))
     _ = c₀.X.hom ≫ F.map g₂.right := by rw [this]
     _ = 𝟙 _ ≫ f₂ := g₂.w.symm
     _ = f₂ := by simp
-    
+
 #align category_theory.preserves_finite_limits_of_flat.uniq CategoryTheory.PreservesFiniteLimitsOfFlat.uniq
 
 end PreservesFiniteLimitsOfFlat
@@ -295,17 +299,17 @@ end PreservesFiniteLimitsOfFlat
 /-- Representably flat functors preserve finite limits. -/
 noncomputable def preservesFiniteLimitsOfFlat (F : C ⥤ D) [RepresentablyFlat F] :
     PreservesFiniteLimits F := by
-  apply preserves_finite_limits_of_preserves_finite_limits_of_size
+  apply preservesFiniteLimitsOfPreservesFiniteLimitsOfSize
   intro J _ _; constructor
   intro K; constructor
   intro c hc
   exact
-    { lift := preserves_finite_limits_of_flat.lift F hc
-      fac := preserves_finite_limits_of_flat.fac F hc
+    { lift := PreservesFiniteLimitsOfFlat.lift F hc
+      fac := PreservesFiniteLimitsOfFlat.fac F hc
       uniq := fun s m h => by
-        apply preserves_finite_limits_of_flat.uniq F hc
+        apply PreservesFiniteLimitsOfFlat.uniq F hc
         exact h
-        exact preserves_finite_limits_of_flat.fac F hc s }
+        exact PreservesFiniteLimitsOfFlat.fac F hc s }
 #align category_theory.preserves_finite_limits_of_flat CategoryTheory.preservesFiniteLimitsOfFlat
 
 /-- If `C` is finitely cocomplete, then `F : C ⥤ D` is representably flat iff it preserves
@@ -313,13 +317,13 @@ finite limits.
 -/
 noncomputable def preservesFiniteLimitsIffFlat [HasFiniteLimits C] (F : C ⥤ D) :
     RepresentablyFlat F ≃ PreservesFiniteLimits F where
-  toFun _ := preserves_finite_limits_of_flat F
-  invFun _ := flat_of_preserves_finite_limits F
+  toFun _ := preservesFiniteLimitsOfFlat F
+  invFun _ := flat_of_preservesFiniteLimits F
   left_inv _ := proof_irrel _ _
   right_inv x := by
     cases x
-    unfold preserves_finite_limits_of_flat
-    dsimp only [preserves_finite_limits_of_preserves_finite_limits_of_size]
+    unfold preservesFiniteLimitsOfFlat
+    dsimp only [preservesFiniteLimitsOfPreservesFiniteLimitsOfSize]
     congr
 #align category_theory.preserves_finite_limits_iff_flat CategoryTheory.preservesFiniteLimitsIffFlat
 
@@ -347,6 +351,7 @@ noncomputable def lanEvaluationIsoColim (F : C ⥤ D) (X : D)
       rcases j with ⟨j_left, ⟨⟨⟩⟩, j_hom⟩
       congr
       rw [costructured_arrow.map_mk, category.id_comp, costructured_arrow.mk])
+set_option linter.uppercaseLean3 false in
 #align category_theory.Lan_evaluation_iso_colim CategoryTheory.lanEvaluationIsoColim
 
 variable [ConcreteCategory.{u₁} E] [HasLimits E] [HasColimits E]
@@ -362,35 +367,39 @@ noncomputable instance lanPreservesFiniteLimitsOfFlat (F : C ⥤ D) [Representab
     PreservesFiniteLimits (lan F.op : _ ⥤ Dᵒᵖ ⥤ E) := by
   apply preservesFiniteLimitsOfPreservesFiniteLimitsOfSize.{u₁}
   intro J _ _; skip
-  apply preserves_limits_of_shape_of_evaluation (Lan F.op : (Cᵒᵖ ⥤ E) ⥤ Dᵒᵖ ⥤ E) J
+  apply preservesLimitsOfShapeOfEvaluation (lan F.op : (Cᵒᵖ ⥤ E) ⥤ Dᵒᵖ ⥤ E) J
   intro K
-  haveI : is_filtered (costructured_arrow F.op K) :=
-    is_filtered.of_equivalence (structured_arrow_op_equivalence F (unop K))
-  exact preserves_limits_of_shape_of_nat_iso (Lan_evaluation_iso_colim _ _ _).symm
+  haveI : IsFiltered (CostructuredArrow F.op K) :=
+    IsFiltered.of_equivalence (structuredArrowOpEquivalence F (unop K))
+  exact preservesLimitsOfShapeOfNatIso (lanEvaluationIsoColim _ _ _).symm
+set_option linter.uppercaseLean3 false in
 #align category_theory.Lan_preserves_finite_limits_of_flat CategoryTheory.lanPreservesFiniteLimitsOfFlat
 
 instance lan_flat_of_flat (F : C ⥤ D) [RepresentablyFlat F] :
     RepresentablyFlat (lan F.op : _ ⥤ Dᵒᵖ ⥤ E) :=
   flat_of_preservesFiniteLimits _
+set_option linter.uppercaseLean3 false in
 #align category_theory.Lan_flat_of_flat CategoryTheory.lan_flat_of_flat
 
 variable [HasFiniteLimits C]
 
 noncomputable instance lanPreservesFiniteLimitsOfPreservesFiniteLimits (F : C ⥤ D)
     [PreservesFiniteLimits F] : PreservesFiniteLimits (lan F.op : _ ⥤ Dᵒᵖ ⥤ E) := by
-  haveI := flat_of_preserves_finite_limits F
+  haveI := flat_of_preservesFiniteLimits F
   infer_instance
+set_option linter.uppercaseLean3 false in
 #align category_theory.Lan_preserves_finite_limits_of_preserves_finite_limits CategoryTheory.lanPreservesFiniteLimitsOfPreservesFiniteLimits
 
 theorem flat_iff_lan_flat (F : C ⥤ D) :
     RepresentablyFlat F ↔ RepresentablyFlat (lan F.op : _ ⥤ Dᵒᵖ ⥤ Type u₁) :=
   ⟨fun H => inferInstance, fun H => by
     skip
-    haveI := preserves_finite_limits_of_flat (Lan F.op : _ ⥤ Dᵒᵖ ⥤ Type u₁)
-    haveI : preserves_finite_limits F := by
+    haveI := preservesFiniteLimitsOfFlat (lan F.op : _ ⥤ Dᵒᵖ ⥤ Type u₁)
+    haveI : PreservesFiniteLimits F := by
       apply preservesFiniteLimitsOfPreservesFiniteLimitsOfSize.{u₁}
-      intros ; skip; apply preserves_limit_of_Lan_presesrves_limit
-    apply flat_of_preserves_finite_limits⟩
+      intros ; skip; apply preservesLimitOfLanPreservesLimit
+    apply flat_of_preservesFiniteLimits⟩
+set_option linter.uppercaseLean3 false in
 #align category_theory.flat_iff_Lan_flat CategoryTheory.flat_iff_lan_flat
 
 /-- If `C` is finitely complete, then `F : C ⥤ D` preserves finite limits iff
@@ -401,20 +410,20 @@ noncomputable def preservesFiniteLimitsIffLanPreservesFiniteLimits (F : C ⥤ D)
   toFun _ := inferInstance
   invFun _ := by
     apply preservesFiniteLimitsOfPreservesFiniteLimitsOfSize.{u₁}
-    intros ; skip; apply preserves_limit_of_Lan_presesrves_limit
+    intros ; skip; apply preservesLimitOfLanPreservesLimit
   left_inv x := by
-    cases x; unfold preserves_finite_limits_of_flat
+    cases x; unfold preservesFiniteLimitsOfFlat
     dsimp only [preserves_finite_limits_of_preserves_finite_limits_of_size]; congr
   right_inv x := by
     cases x
-    unfold preserves_finite_limits_of_flat
+    unfold preservesFiniteLimitsOfFlat
     congr
     unfold
       CategoryTheory.lanPreservesFiniteLimitsOfPreservesFiniteLimits CategoryTheory.lanPreservesFiniteLimitsOfFlat
     dsimp only [preserves_finite_limits_of_preserves_finite_limits_of_size]; congr
+set_option linter.uppercaseLean3 false in
 #align category_theory.preserves_finite_limits_iff_Lan_preserves_finite_limits CategoryTheory.preservesFiniteLimitsIffLanPreservesFiniteLimits
 
 end SmallCategory
 
 end CategoryTheory
-
