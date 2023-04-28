@@ -458,23 +458,20 @@ variable {F G}
 @[simp] lemma δ_zsmul (k : ℤ) (z : Cochain F G n) : δ n m (k • z) = k • δ n m z :=
   (δ_hom F G n m).map_zsmul z k
 
+lemma δδ (n₀ n₁ n₂ : ℤ) (z : Cochain F G n₀) : δ n₁ n₂ (δ n₀ n₁ z) = 0 := by
+  by_cases h₁₂ : n₁ + 1 = n₂ ; swap ; rw [δ_shape _ _ h₁₂]
+  by_cases h₀₁ : n₀ + 1 = n₁ ; swap ; rw [δ_shape _ _ h₀₁, δ_zero]
+  ext ⟨p, q, hpq⟩
+  dsimp
+  simp only [δ_v n₁ n₂ h₁₂ _ p q hpq _ _ rfl rfl,
+    δ_v n₀ n₁ h₀₁ z p (q-1) (by linarith) (q-2) _ (by linarith) rfl,
+    δ_v n₀ n₁ h₀₁ z (p+1) q (by linarith) _ (p+2) rfl (by linarith),
+    ← h₀₁, ε_succ, neg_smul, sub_add_cancel, add_comp, assoc,
+    HomologicalComplex.d_comp_d, comp_zero, neg_comp, zero_add, neg_neg, comp_add,
+    comp_neg, comp_zsmul, HomologicalComplex.d_comp_d_assoc, zero_comp, zsmul_zero,
+    neg_zero, add_zero, zsmul_comp, add_left_neg]
+
 #exit
-@[simp]
-lemma δδ (n₀ n₁ n₂ : ℤ) (z : cochain F G n₀) : δ n₁ n₂ (δ n₀ n₁ z) = 0 :=
-begin
-  by_cases h₀₁ : n₀+1 = n₁, swap,
-  { rw [δ_shape n₀ n₁ h₀₁, δ_zero], },
-  by_cases h₁₂ : n₁+1 = n₂, swap,
-  { rw [δ_shape n₁ n₂ h₁₂], },
-  ext,
-  rw δ_v n₁ n₂ h₁₂ _ p q hpq _ _ rfl rfl,
-  rw δ_v n₀ n₁ h₀₁ z p (q-1) (by linarith) (q-2) _ (by linarith) rfl,
-  rw δ_v n₀ n₁ h₀₁ z (p+1) q (by linarith) _ (p+2) rfl (by linarith),
-  simp only [← h₀₁, ε_succ, add_comp, neg_neg, neg_zsmul, neg_comp, cochain.zero_v,
-    zsmul_comp, comp_zsmul, comp_add, comp_neg, assoc, homological_complex.d_comp_d,
-    homological_complex.d_comp_d_assoc, comp_zero, zero_comp, zsmul_zero, neg_zero, add_zero,
-    zero_add, add_left_neg],
-end
 
 lemma δ_comp {n₁ n₂ n₁₂ : ℤ} (z₁ : cochain F G n₁) (z₂ : cochain G K n₂) (h : n₁₂ = n₁ + n₂)
   (m₁ m₂ m₁₂ : ℤ) (h₁₂ : n₁₂+1 = m₁₂) (h₁ : n₁+1 = m₁) (h₂ : n₂+1 = m₂) :
