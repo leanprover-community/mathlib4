@@ -1,10 +1,13 @@
 import Mathlib.Algebra.Homology.ShortComplex.Homology
+import Mathlib.Algebra.Homology.ShortComplex.Limits
+import Mathlib.Algebra.Homology.ShortComplex.Preadditive
+import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
 
 namespace CategoryTheory
 
 open Category Limits
 
-variable {C D : Type _} [Category C] [Abelian C]
+variable {C D : Type _} [Category C] [Abelian C] [Category D] [HasZeroMorphisms D]
   (S : ShortComplex C) {S₁ S₂ S₃ : ShortComplex C}
 
 namespace ShortComplex
@@ -142,6 +145,44 @@ noncomputable def HomologyData.ofAbelian : S.HomologyData where
 instance _root_.CategoryTheory.categoryWithHomology_of_abelian :
     CategoryWithHomology C where
   hasHomology S := HasHomology.mk' (HomologyData.ofAbelian S)
+
+noncomputable def isLimit_mapCone_of_kernelFork_ofι_cokernel_condition_of_mono
+    {X Y : D} (i : X ⟶ Y) [HasCokernel i] (F : D ⥤ C)
+    [F.PreservesZeroMorphisms] [Mono (F.map i)]
+    [PreservesColimit (parallelPair i 0) F] :
+    IsLimit (F.mapCone (KernelFork.ofι i (cokernel.condition i))) := by
+  let e : parallelPair (cokernel.π (F.map i)) 0 ≅ parallelPair (cokernel.π i) 0 ⋙ F :=
+    parallelPair.ext (Iso.refl _) (asIso (cokernelComparison i F)) (by simp) (by simp)
+  refine' IsLimit.postcomposeInvEquiv e _ _
+  let hi := Abelian.monoIsKernelOfCokernel _ (cokernelIsCokernel (F.map i))
+  refine' IsLimit.ofIsoLimit hi (Fork.ext (Iso.refl _) _)
+  change 𝟙 _ ≫ F.map i ≫ 𝟙 _ = F.map i
+  rw [comp_id, id_comp]
+
+noncomputable instance : NormalMonoCategory (ShortComplex C) := ⟨fun i _ => by
+  refine' NormalMono.mk _ (cokernel.π i) (cokernel.condition _)
+    (isLimit_of_isLimitπ _ _ _ _ )
+  all_goals apply isLimit_mapCone_of_kernelFork_ofι_cokernel_condition_of_mono⟩
+
+noncomputable def isColimit_mapCocone_of_cokernelCofork_ofπ_kernel_condition_of_epi
+    {X Y : D} (p : X ⟶ Y) [HasKernel p] (F : D ⥤ C)
+    [F.PreservesZeroMorphisms] [Epi (F.map p)]
+    [PreservesLimit (parallelPair p 0) F] :
+    IsColimit (F.mapCocone (CokernelCofork.ofπ p (kernel.condition p))) := by
+  let e : parallelPair (kernel.ι p) 0 ⋙ F ≅ parallelPair (kernel.ι (F.map p)) 0 := by
+    refine' parallelPair.ext (asIso (kernelComparison p F)) (Iso.refl _) (by simp) (by simp)
+  refine' IsColimit.precomposeInvEquiv e _ _
+  let hp := Abelian.epiIsCokernelOfKernel _ (kernelIsKernel (F.map p))
+  refine' IsColimit.ofIsoColimit hp (Cofork.ext (Iso.refl _) _)
+  change F.map p ≫ 𝟙 _ = 𝟙 _ ≫ F.map p
+  rw [comp_id, id_comp]
+
+noncomputable instance : NormalEpiCategory (ShortComplex C) := ⟨fun p _ => by
+  refine' NormalEpi.mk _ (kernel.ι p) (kernel.condition _)
+    (isColimit_of_isColimitπ _ _ _ _ )
+  all_goals apply isColimit_mapCocone_of_cokernelCofork_ofπ_kernel_condition_of_epi⟩
+
+noncomputable instance : Abelian (ShortComplex C) where
 
 end ShortComplex
 
