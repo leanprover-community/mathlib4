@@ -324,14 +324,12 @@ def All (P : α → Prop) : Ordnode α → Prop
   | node _ l x r => All P l ∧ P x ∧ All P r
 #align ordnode.all Ordnode.All
 
--- porting notes: required `noncomutable` -- TODO fix recursor
-noncomputable instance All.decidable {P : α → Prop} (t) [DecidablePred P] : Decidable (All P t) :=
- by
-  induction' t with _ l x r lih rih <;> dsimp only [All] <;> skip
-  . infer_instance
-  . refine @And.decidable (All P l) _ lih ?_
-    refine @And.decidable _ (All P r) ?_ rih
-    infer_instance
+instance All.decidable {P : α → Prop} : (t : Ordnode α) → [DecidablePred P] → Decidable (All P t)
+| nil => decidableTrue
+| node _ l _ r =>
+  have : Decidable (All P l) := All.decidable l
+  have : Decidable (All P r) := All.decidable r
+  And.decidable
 #align ordnode.all.decidable Ordnode.All.decidable
 
 /-- O(n). Does any element of the map satisfy property `P`?

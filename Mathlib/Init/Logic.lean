@@ -269,6 +269,12 @@ theorem exists_unique_congr {p q : α → Prop} (h : ∀ a, p a ↔ q a) : (∃!
 
 #align decidable.to_bool Decidable.decide
 
+instance decidableTrue : Decidable True := isTrue trivial
+#align decidable.true decidableTrue
+
+theorem decidableFalse : Decidable False := isFalse not_false
+#align decidable.false decidableFalse
+
 theorem decide_True' (h : Decidable True) : decide True = true := by simp
 #align to_bool_true_eq_tt decide_True'
 
@@ -300,10 +306,21 @@ end Decidable
 #align decidable_of_decidable_of_eq decidable_of_decidable_of_eq
 #align or.by_cases Or.by_cases
 
-alias instDecidableOr ← Or.decidable
-alias instDecidableAnd ← And.decidable
-alias instDecidableNot ← Not.decidable
-alias instDecidableIff ← Iff.decidable
+/- Disjunctions are decidable. We're not using alias because this doesn't currently produce
+decidable definitions. -/
+def Or.decidable := @instDecidableOr
+
+/- Conjunctions are decidable. We're not using alias because this doesn't currently produce
+decidable definitions. -/
+def And.decidable := @instDecidableAnd
+
+/- Negations are decidable. We're not using alias because this doesn't currently produce
+decidable definitions. -/
+def Not.decidable := @instDecidableNot
+
+/- Equivalences are decidable. We're not using alias because this doesn't currently produce
+decidable definitions. -/
+def Iff.decidable := @instDecidableIff
 
 #align or.decidable Or.decidable
 #align and.decidable And.decidable
