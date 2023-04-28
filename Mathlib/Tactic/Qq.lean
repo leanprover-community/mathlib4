@@ -5,6 +5,11 @@ Authors: Scott Morrison, Alex J. Best
 -/
 import Qq
 
+/-!
+# Extra `Qq` helpers
+
+This file contains some additional functions for using the quote4 library more conveniently.
+-/
 open Lean Elab Tactic Meta
 
 namespace Qq
