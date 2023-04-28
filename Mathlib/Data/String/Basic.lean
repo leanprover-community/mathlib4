@@ -19,36 +19,6 @@ Supplementary theorems about the `String` type.
 
 namespace String
 
-@[simp]
-theorem Pos.byteIdx_zero : (0 : Pos).byteIdx = 0 :=
-  rfl
-
-@[simp]
-theorem Pos.eq_iff {i₁ i₂ : Pos} : i₁ = i₂ ↔ i₁.byteIdx = i₂.byteIdx :=
-  ⟨fun h ↦ h ▸ rfl, fun h ↦ show ⟨i₁.byteIdx⟩ = (⟨i₂.byteIdx⟩ : Pos) from h ▸ rfl⟩
-
-@[simp]
-theorem Pos.zero_add_char (c : Char) : (0 : Pos) + c = ⟨csize c⟩ :=
-  show ⟨0 + csize c⟩ = (⟨csize c⟩ : Pos) by rw [Nat.zero_add]
-
-@[simp]
-theorem Pos.zero_add_string (s : String) : (0 : Pos) + s = ⟨s.utf8ByteSize⟩ :=
-  show ⟨0 + s.utf8ByteSize⟩ = (⟨s.utf8ByteSize⟩ : Pos) by rw [Nat.zero_add]
-
-/-- Induction on `String.utf8GetAux`. -/
-def utf8GetAux.inductionOn.{u} {motive : List Char → Pos → Pos → Sort u}
-    (s : List Char) (i p : Pos)
-    (nil : ∀ i p, motive [] i p)
-    (eq  : ∀ c cs i p, i = p → motive (c :: cs) i p)
-    (ind : ∀ c cs i p, i ≠ p → motive cs ⟨i.byteIdx + csize c⟩ p → motive (c :: cs) i p) :
-    motive s i p :=
-  match s with
-  | [] => nil i p
-  | c::cs =>
-    if h : i = p then
-      eq c cs i p h
-    else ind c cs i p h (inductionOn cs ⟨i.byteIdx + csize c⟩ p nil eq ind)
-
 open private utf8GetAux from Init.Data.String.Basic
 
 private lemma utf8GetAux.add_right_cancel (s : List Char) (i p n : ℕ) :
