@@ -14,7 +14,8 @@ import Mathlib.CategoryTheory.Limits.Bicones
 import Mathlib.CategoryTheory.Limits.Comma
 import Mathlib.CategoryTheory.Limits.Preserves.Finite
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
-
+import Mathlib.Tactic
+set_option autoImplicit false
 /-!
 # Representably flat functors
 
@@ -65,15 +66,21 @@ variable {J : Type w} [SmallCategory J]
 
 variable {K : J ⥤ C} (F : C ⥤ D) (c : Cone K)
 
+-- **TODO** Scott changed `@[simps]` to `@[simps!]` below and I don't
+-- know what this does, but one thing it does is that
+-- it stops `toDiagram_obj` being created, and `toDiagram_obj` is
+-- used later on so I (kmb) have removed the `!`
+
 /-- Given a cone `c : cone K` and a map `f : X ⟶ c.X`, we can construct a cone of structured
 arrows over `X` with `f` as the cone point. This is the underlying diagram.
 -/
-@[simps!]
+@[simps]
 def toDiagram : J ⥤ StructuredArrow c.pt K where
   obj j := StructuredArrow.mk (c.π.app j)
   map g := StructuredArrow.homMk g (by simp)
 #align category_theory.structured_arrow_cone.to_diagram CategoryTheory.StructuredArrowCone.toDiagram
 
+#check CategoryTheory.StructuredArrowCone.toDiagram_obj
 /-- Given a diagram of `structured_arrow X F`s, we may obtain a cone with cone point `X`. -/
 @[simps!]
 def diagramToCone {X : D} (G : J ⥤ StructuredArrow X F) : Cone (G ⋙ proj X F ⋙ F) where
@@ -91,7 +98,6 @@ def toCone {X : D} (f : X ⟶ F.obj c.pt) :
     { app := fun j => homMk (c.π.app j) rfl
       naturality := fun j k g => by
         ext
-        dsimp
         simp }
 #align category_theory.structured_arrow_cone.to_cone CategoryTheory.StructuredArrowCone.toCone
 
@@ -198,8 +204,9 @@ theorem flat_of_preservesFiniteLimits [HasFiniteLimits C] (F : C ⥤ D) [Preserv
     haveI : HasFiniteLimits (StructuredArrow X F) := by
       apply hasFiniteLimits_of_hasFiniteLimits_of_size.{v₁} (StructuredArrow X F)
       intro J sJ fJ
-      skip
       constructor
+      -- porting note: instance was inferred automatically in Lean 3
+      infer_instance
     cofiltered_of_hasFiniteLimits⟩
 #align category_theory.flat_of_preserves_finite_limits CategoryTheory.flat_of_preservesFiniteLimits
 
@@ -234,19 +241,35 @@ theorem fac (x : J) : lift F hc s ≫ (F.mapCone c).π.app x = s.π.app x := by
 
 attribute [local simp] eqToHom_map
 
+--set_option pp.universes true
+
+-- **TODO** Functor.mapCone F -> F.mapCone?
+-- porting note: :-/
+set_option maxHeartbeats 2000000
 theorem uniq {K : J ⥤ C} {c : Cone K} (hc : IsLimit c) (s : Cone (K ⋙ F))
     (f₁ f₂ : s.pt ⟶ F.obj c.pt) (h₁ : ∀ j : J, f₁ ≫ (F.mapCone c).π.app j = s.π.app j)
     (h₂ : ∀ j : J, f₂ ≫ (F.mapCone c).π.app j = s.π.app j) : f₁ = f₂ := by
   -- We can make two cones over the diagram of `s` via `f₁` and `f₂`.
   let α₁ : toDiagram (F.mapCone c) ⋙ map f₁ ⟶ toDiagram s :=
-    { app := fun X => eqToHom (by simp [← h₁])
-      naturality := fun _ _ _ => by
+    { -- porting note: this proof uses `toDiagram_obj` and
+      -- breaks if `@[simps]` is changed to `@[simps!]`
+      -- in the definition of `toDiagram
+      app := fun X => eqToHom (by simp [← h₁])
+      naturality := fun j₁ j₂ φ => by
         ext
+        -- porting note: Lean 3 proof was `simp` but `Comma.eqToHom_right`
+        -- isn't firing for some reason
+        -- Asked here https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/
+        -- simp.20not.20using.20a.20simp.20lemma/near/353943416
+        simp
+        rw [Comma.eqToHom_right, Comma.eqToHom_right] -- this is a `simp` lemma
         simp }
   let α₂ : toDiagram (F.mapCone c) ⋙ map f₂ ⟶ toDiagram s :=
     { app := fun X => eqToHom (by simp [← h₂])
       naturality := fun _ _ _ => by
         ext
+        simp
+        rw [Comma.eqToHom_right, Comma.eqToHom_right] -- this is a `simp` lemma
         simp }
   let c₁ : Cone (toDiagram s ⋙ pre s.pt K F) :=
     (Cones.postcompose (whiskerRight α₁ (pre s.pt K F) : _)).obj (toCone F c f₁)
