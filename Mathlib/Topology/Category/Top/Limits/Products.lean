@@ -216,13 +216,15 @@ theorem prodIsoProd_hom_snd (X Y : TopCat.{u}) :
   rfl
 #align Top.prod_iso_prod_hom_snd TopCat.prodIsoProd_hom_snd
 
+-- Porting note: need to force Lean to coerce X × Y to a type
 @[simp]
-theorem prodIsoProd_hom_apply {X Y : TopCat.{u}} (x : X ⨯ Y) :
+theorem prodIsoProd_hom_apply {X Y : TopCat.{u}} (x : ↑ (X ⨯ Y)) :
     (prodIsoProd X Y).hom x = ((Limits.prod.fst : X ⨯ Y ⟶ _) x, (Limits.prod.snd : X ⨯ Y ⟶ _) x) :=
   by
-  ext
-  · exact concrete_category.congr_hom (prod_iso_prod_hom_fst X Y) x
-  · exact concrete_category.congr_hom (prod_iso_prod_hom_snd X Y) x
+  -- Porting note: ext didn't pick this up
+  apply Prod.ext
+  · exact ConcreteCategory.congr_hom (prodIsoProd_hom_fst X Y) x
+  · exact ConcreteCategory.congr_hom (prodIsoProd_hom_snd X Y) x
 #align Top.prod_iso_prod_hom_apply TopCat.prodIsoProd_hom_apply
 
 @[reassoc (attr := simp), elementwise]
@@ -258,6 +260,8 @@ theorem range_prod_map {W X Y Z : TopCat.{u}} (f : W ⟶ Y) (g : X ⟶ Z) :
       and_self_iff]
   · rintro ⟨⟨x₁, hx₁⟩, ⟨x₂, hx₂⟩⟩
     use (prodIsoProd W X).inv (x₁, x₂)
+    have : PreservesLimit (pair Y Z) (forget TopCat) := by
+      apply forgetPreservesLimits.preservesLimitsOfShape (J := Discrete WalkingPair)|>.preservesLimit (K := (pair Y Z))
     apply Concrete.limit_ext
     rintro ⟨⟨⟩⟩
     · simp only [← comp_apply, Category.assoc]
