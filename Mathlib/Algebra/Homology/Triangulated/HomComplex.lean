@@ -224,81 +224,74 @@ lemma v_comp_X_iso_of_eq_hom
   subst hq'
   simp only [HomologicalComplex.XIsoOfEq, eqToIso_refl, Iso.refl_hom, comp_id]
 
-protected def comp {n₁ n₂ n₁₂ : ℤ} (z₁ : Cochain F G n₁) (z₂ : Cochain G K n₂) (h : n₁₂ = n₁ + n₂) :
-    Cochain F K n₁₂ :=
-  Cochain.mk (fun p q hpq => z₁.v p (p+n₁) rfl ≫ z₂.v (p+n₁) q (by linarith))
+protected def comp {n₁ n₂ n₁₂ : ℤ} (z₁ : Cochain F G n₁) (z₂ : Cochain G K n₂) (h : n₁ + n₂ = n₁₂) :
+    Cochain F K n₁₂ := Cochain.mk (fun p q hpq => z₁.v p (p+n₁) rfl ≫ z₂.v (p+n₁) q (by linarith))
 
---notation a " ≫[":81 b "] " c:80 := Cochain.comp a c b
+--notation a " ≫[":81 b "] " c:80 => Cochain.comp a c b
+notation a " ≫[" b "] " c:80 => Cochain.comp a c b
 
-protected lemma comp_v {n₁ n₂ n₁₂ : ℤ} (z₁ : Cochain F G n₁) (z₂ : Cochain G K n₂) (h : n₁₂ = n₁+n₂)
+protected lemma comp_v {n₁ n₂ n₁₂ : ℤ} (z₁ : Cochain F G n₁) (z₂ : Cochain G K n₂) (h : n₁ + n₂ = n₁₂)
     (p₁ p₂ p₃ : ℤ) (h₁ : p₁ + n₁ = p₂) (h₂ : p₂ + n₂ = p₃) :
-    (z₁.comp z₂ h).v p₁ p₃ (by rw [← h₂, ← h₁, h, add_assoc]) =
+    (z₁.comp z₂ h).v p₁ p₃ (by rw [← h₂, ← h₁, ← h, add_assoc]) =
       z₁.v p₁ p₂ h₁ ≫ z₂.v p₂ p₃ h₂ := by
   subst h₁ ; rfl
 
 protected lemma zero_comp {n₁ n₂ n₁₂ : ℤ} (z₂ : Cochain G K n₂)
-    (h : n₁₂ = n₁ + n₂) : (0 : Cochain F G n₁).comp z₂ h = 0 := by
+    (h : n₁ + n₂ = n₁₂) : (0 : Cochain F G n₁).comp z₂ h = 0 := by
   ext ⟨p, q, hpq⟩
-  simp only [Cochain.comp, zero_v, zero_comp, mk_v]
+  dsimp
+  simp only [Cochain.comp_v _ _ h p _ q rfl (by linarith), zero_v, zero_comp]
+
+@[simp]
+protected lemma add_comp {n₁ n₂ n₁₂ : ℤ} (z₁ z₁' : Cochain F G n₁) (z₂ : Cochain G K n₂)
+    (h : n₁ + n₂ = n₁₂) : (z₁+z₁').comp z₂ h = z₁.comp z₂ h + z₁'.comp z₂ h := by
+  ext ⟨p, q, hpq⟩
+  dsimp
+  simp only [Cochain.comp_v _ _ h p _ q rfl (by linarith), add_v, add_comp]
+
+@[simp]
+protected lemma sub_comp {n₁ n₂ n₁₂ : ℤ} (z₁ z₁' : Cochain F G n₁) (z₂ : Cochain G K n₂)
+    (h : n₁ + n₂ = n₁₂) : (z₁-z₁').comp z₂ h = z₁.comp z₂ h - z₁'.comp z₂ h := by
+  ext ⟨p, q, hpq⟩
+  dsimp
+  simp only [Cochain.comp_v _ _ h p _ q rfl (by linarith), sub_v, sub_comp]
+
+@[simp]
+protected lemma neg_comp {n₁ n₂ n₁₂ : ℤ} (z₁ : Cochain F G n₁) (z₂ : Cochain G K n₂)
+    (h : n₁ + n₂ = n₁₂) : (-z₁).comp z₂ h = -z₁.comp z₂ h := by
+  ext ⟨p, q, hpq⟩
+  dsimp
+  simp only [Cochain.comp_v _ _ h p _ q rfl (by linarith), neg_v, neg_comp]
+
+@[simp]
+protected lemma zsmul_comp {n₁ n₂ n₁₂ : ℤ} (k : ℤ) (z₁ : Cochain F G n₁) (z₂ : Cochain G K n₂)
+    (h : n₁ + n₂ = n₁₂) : (k • z₁).comp z₂ h = k • z₁.comp z₂ h := by
+  ext ⟨p, q, hpq⟩
+  dsimp
+  simp only [Cochain.comp_v _ _ h p _ q rfl (by linarith), zsmul_v, zsmul_comp]
+
+@[simp]
+lemma zero_cochain_comp_v {n : ℤ} (z₁ : Cochain F G 0) (z₂ : Cochain G K n)
+    (p q : ℤ) (hpq : p + n = q) : (z₁.comp z₂ (zero_add n)).v p q hpq =
+      z₁.v p p (add_zero p) ≫ z₂.v p q hpq :=
+  Cochain.comp_v z₁ z₂ (zero_add n) p p q (add_zero p) hpq
+
+@[simp]
+lemma comp_zero_cochain {n : ℤ} (z₁ : Cochain F G 0) (z₂ : Cochain G K n)
+    (p₁ p₂ p₃ : ℤ) (h₁₂ : p₁ + 0 = p₂) (h₂₃ : p₂ + n =p₃) :
+    (z₁.v p₁ p₂ h₁₂ ≫ z₂.v p₂ p₃ h₂₃ : F.X p₁ ⟶ K.X p₃) =
+      z₁.v p₁ p₁ (add_zero p₁) ≫ z₂.v p₁ p₃ (show p₁+n = p₃ by rw [← h₂₃, ← h₁₂, add_zero]) := by
+  rw [add_zero] at h₁₂
+  subst h₁₂
+  rfl
+
+@[simp]
+protected lemma id_comp {n : ℤ} (z₂ : Cochain F G n) :
+    (Cochain.ofHom (𝟙 F)).comp z₂ (zero_add n) = z₂ := by
+  ext ⟨p, q, hpq⟩
+  simp only [zero_cochain_comp_v, ofHom_v, HomologicalComplex.id_f, id_comp]
 
 #exit
-@[simp]
-lemma add_comp {n₁ n₂ n₁₂ : ℤ} (z₁ z₁' : cochain F G n₁) (z₂ : cochain G K n₂)
-  (h : n₁₂ = n₁ + n₂) : comp (z₁+z₁') z₂ h = comp z₁ z₂ h + comp z₁' z₂ h :=
-begin
-  ext,
-  dsimp [comp, mk, v],
-  simp only [add_comp],
-end
-
-@[simp]
-lemma sub_comp {n₁ n₂ n₁₂ : ℤ} (z₁ z₁' : cochain F G n₁) (z₂ : cochain G K n₂)
-  (h : n₁₂ = n₁ + n₂) : comp (z₁-z₁') z₂ h = comp z₁ z₂ h - comp z₁' z₂ h :=
-begin
-  ext,
-  dsimp [comp, mk, v],
-  simp only [sub_comp],
-end
-
-@[simp]
-lemma neg_comp {n₁ n₂ n₁₂ : ℤ} (z₁ : cochain F G n₁) (z₂ : cochain G K n₂)
-  (h : n₁₂ = n₁ + n₂) : comp (-z₁) z₂ h = -comp z₁ z₂ h :=
-begin
-  ext,
-  dsimp [comp, mk, v],
-  simp only [neg_comp],
-end
-
-@[simp]
-lemma zsmul_comp {n₁ n₂ n₁₂ : ℤ} (k : ℤ) (z₁ : cochain F G n₁) (z₂ : cochain G K n₂)
-  (h : n₁₂ = n₁ + n₂) : comp (k • z₁) z₂ h = k • comp z₁ z₂ h :=
-begin
-  ext,
-  dsimp [comp, mk, v],
-  simp only [zsmul_comp],
-end
-
-@[simp]
-lemma zero_cochain_comp {n : ℤ} (z₁ : cochain F G 0) (z₂ : cochain G K n)
-  (p q : ℤ) (hpq : q=p+n) :
-  (cochain.comp z₁ z₂ (zero_add n).symm).v p q hpq =
-    z₁.v p p (add_zero p).symm ≫ z₂.v p q hpq :=
-comp_v z₁ z₂ (zero_add n).symm p p q (add_zero p).symm hpq
-
-lemma zero_cochain_comp' {n : ℤ} (z₁ : cochain F G 0) (z₂ : cochain G K n)
-  (p₁ p₂ p₃ : ℤ) (h₁₂ : p₂=p₁+0) (h₂₃ : p₃=p₂+n) :
-  (z₁.v p₁ p₂ h₁₂ ≫ z₂.v p₂ p₃ h₂₃ : F.X p₁ ⟶ K.X p₃) =
-  z₁.v p₁ p₁ (add_zero p₁).symm ≫ z₂.v p₁ p₃ (show p₃ = p₁+n, by rw [h₂₃, h₁₂, add_zero]) :=
-by { rw add_zero at h₁₂, subst h₁₂, }
-
-@[simp]
-lemma id_comp {n : ℤ} (z₂ : cochain F G n) :
-  cochain.comp (cochain.of_hom (𝟙 F)) z₂ (zero_add n).symm = z₂ :=
-begin
-  ext,
-  simp only [zero_cochain_comp, of_hom_v, homological_complex.id_f, id_comp],
-end
-
 @[simp]
 lemma comp_zero {n₁ n₂ n₁₂ : ℤ} (z₁ : cochain F G n₁)
   (h : n₁₂ = n₁ + n₂) : comp z₁ (0 : cochain G K n₂) h = 0 :=
@@ -376,23 +369,21 @@ end
 @[simp]
 lemma of_hom_comp (f : F ⟶ G) (g : G ⟶ K) :
   of_hom (f ≫ g) = cochain.comp (of_hom f) (of_hom g) (zero_add 0).symm :=
-by simpa only [of_hom, of_homs_comp]
+by simpa only [of_hom, of_homs_comp]-/
 
-lemma comp_assoc {n₁ n₂ n₃ n₁₂ n₂₃ n₁₂₃ : ℤ}
-  (z₁ : cochain F G n₁) (z₂ : cochain G K n₂) (z₃ : cochain K L n₃)
-  (h₁₂ : n₁₂ = n₁ + n₂) (h₂₃ : n₂₃ = n₂ + n₃) (h₁₂₃ : n₁₂₃ = n₁ + n₂ + n₃) :
-  cochain.comp (cochain.comp z₁ z₂ h₁₂) z₃ (show n₁₂₃ = n₁₂ + n₃, by rw [h₁₂, h₁₂₃]) =
-    cochain.comp z₁ (cochain.comp z₂ z₃ h₂₃)
-      (show n₁₂₃ = n₁ + n₂₃, by rw [h₂₃, h₁₂₃, add_assoc]) :=
-begin
-  ext,
-  simp only [comp_v _ _ (show n₁₂₃ = n₁₂ + n₃, by rw [h₁₂, h₁₂₃]) p (p+n₁₂) q rfl (by linarith),
-    comp_v _ _ h₁₂ p (p+n₁) (p+n₁₂) rfl (by linarith),
-    comp_v z₁ (cochain.comp z₂ z₃ h₂₃) (show n₁₂₃ = n₁ + n₂₃, by linarith)
-      p (p+n₁) q rfl (by linarith),
-    comp_v _ _ h₂₃ (p+n₁) (p+n₁₂) q (by linarith) (by linarith), assoc],
-end
+protected lemma comp_assoc {n₁ n₂ n₃ n₁₂ n₂₃ n₁₂₃ : ℤ}
+    (z₁ : Cochain F G n₁) (z₂ : Cochain G K n₂) (z₃ : Cochain K L n₃)
+    (h₁₂ : n₁₂ = n₁ + n₂) (h₂₃ : n₂₃ = n₂ + n₃) (h₁₂₃ : n₁₂₃ = n₁ + n₂ + n₃) :
+    (z₁.comp z₂ h₁₂).comp z₃ (show n₁₂₃ = n₁₂ + n₃ by rw [h₁₂, h₁₂₃]) =
+      z₁.comp (z₂.comp z₃ h₂₃) (show n₁₂₃ = n₁ + n₂₃ by rw [h₂₃, h₁₂₃, add_assoc]) := by
+  ext ⟨p, q, hpq⟩
+  dsimp
+  simp only [Cochain.comp_v _ _ (show n₁₂₃ = n₁₂ + n₃ by rw [h₁₂, h₁₂₃]) p (p+n₁₂) q rfl (by linarith),
+    Cochain.comp_v _ _ h₁₂ p (p+n₁) (p+n₁₂) rfl (by linarith),
+    Cochain.comp_v _ _ (show n₁₂₃ = n₁ + n₂₃ by linarith) p (p+n₁) q rfl (by linarith),
+    Cochain.comp_v _ _ h₂₃ (p+n₁) (p+n₁₂) q (by linarith) (by linarith), assoc]
 
+#exit
 @[simp]
 lemma comp_assoc_of_first_is_zero_cochain {n₂ n₃ n₂₃ : ℤ}
   (z₁ : cochain F G 0) (z₂ : cochain G K n₂) (z₃ : cochain K L n₃)
