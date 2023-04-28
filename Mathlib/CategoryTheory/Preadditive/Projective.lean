@@ -225,7 +225,7 @@ theorem map_projective (adj : F ⊣ G) [G.PreservesEpimorphisms] (P : C) (hP : P
 theorem projective_of_map_projective (adj : F ⊣ G) [Full F] [Faithful F] (P : C)
     (hP : Projective (F.obj P)) : Projective P where
   factors f g _ := by
-    haveI := Adjunction.leftAdjointPreservesColimits.{v, u} adj
+    haveI := Adjunction.leftAdjointPreservesColimits.{0, 0} adj
     rcases (@hP).1 (F.map f) (F.map g) with ⟨f', hf'⟩
     use adj.unit.app _ ≫ G.map f' ≫ (inv <| adj.unit.app _)
     refine' Faithful.map_injective (F := F) _
@@ -239,7 +239,7 @@ def mapProjectivePresentation (adj : F ⊣ G) [G.PreservesEpimorphisms] (X : C)
   p := F.obj Y.p
   projective := adj.map_projective _ Y.projective
   f := F.map Y.f
-  epi := have := Adjunction.leftAdjointPreservesColimits.{v, u} adj; inferInstance
+  epi := have := Adjunction.leftAdjointPreservesColimits.{0, 0} adj; inferInstance
 #align category_theory.adjunction.map_projective_presentation CategoryTheory.Adjunction.mapProjectivePresentation
 
 end Adjunction
@@ -263,7 +263,7 @@ theorem enoughProjectives_iff (F : C ≌ D) : EnoughProjectives C ↔ EnoughProj
   all_goals intro H; constructor; intro X; constructor
   · exact F.symm.projectivePresentationOfMapProjectivePresentation _
       (Nonempty.some (H.presentation (F.inverse.obj X)))
-  · exact F.projective_presentation_of_map_projective_presentation X
+  · exact F.projectivePresentationOfMapProjectivePresentation X
       (Nonempty.some (H.presentation (F.functor.obj X)))
 #align category_theory.equivalence.enough_projectives_iff CategoryTheory.Equivalence.enoughProjectives_iff
 
@@ -281,6 +281,8 @@ such that `h ≫ g = 0`, there is a lift of `h` to `Q`.
 -/
 def Exact.lift {P Q R S : C} [Projective P] (h : P ⟶ R) (f : Q ⟶ R) (g : R ⟶ S) (hfg : Exact f g)
     (w : h ≫ g = 0) : P ⟶ Q :=
+  -- See the porting note on `Exact.epi`.
+  haveI := hfg.epi
   factorThru (factorThru (factorThruKernelSubobject g h w) (imageToKernel f g hfg.w))
     (factorThruImageSubobject f)
 #align category_theory.exact.lift CategoryTheory.Exact.lift
@@ -291,10 +293,12 @@ theorem Exact.lift_comp {P Q R S : C} [Projective P] (h : P ⟶ R) (f : Q ⟶ R)
   simp only [Exact.lift]
   conv_lhs =>
     congr
-    skip
+    rfl
     rw [← imageSubobject_arrow_comp f]
-  rw [← Category.assoc, factor_thru_comp, ← imageToKernel_arrow, ← category.assoc,
-    CategoryTheory.Projective.factorThru_comp, factor_thru_kernel_subobject_comp_arrow]
+  -- See the porting note on `Exact.epi`.
+  haveI := hfg.epi
+  rw [← Category.assoc, factorThru_comp, ← imageToKernel_arrow f g, ← Category.assoc,
+    CategoryTheory.Projective.factorThru_comp, factorThruKernelSubobject_comp_arrow]
 #align category_theory.exact.lift_comp CategoryTheory.Exact.lift_comp
 
 end
