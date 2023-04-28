@@ -32,7 +32,12 @@ lemma epi_iff_surjective_up_to_refinements (f : X ⟶ Y) :
     rw [comp_id] at fac
     exact epi_of_epi_fac fac.symm
 
-lemma ShortComplex.exact_iff_exact_up_to_refinaments :
+lemma surjective_up_to_refinements_of_epi (f : X ⟶ Y) [Epi f] :
+    ∀ ⦃A : C⦄ (a : A ⟶ Y),
+      ∃ (A' : C) (π : A' ⟶ A) (_ : Epi π) (a' : A' ⟶ X), π ≫ a = a' ≫ f :=
+  (epi_iff_surjective_up_to_refinements f).1 inferInstance
+
+lemma ShortComplex.exact_iff_exact_up_to_refinements :
     S.Exact ↔ ∀ ⦃A : C⦄ (x₂ : A ⟶ S.X₂) (_ : x₂ ≫ S.g = 0),
       ∃ (A' : C) (π : A' ⟶ A) (_ : Epi π) (x₁ : A' ⟶ S.X₁), π ≫ x₂ = x₁ ≫ S.f := by
   rw [S.exact_iff_epi_toCycles, epi_iff_surjective_up_to_refinements]
@@ -46,6 +51,15 @@ lemma ShortComplex.exact_iff_exact_up_to_refinaments :
     obtain ⟨A', π, hπ, x₁, fac⟩ := hS (a ≫ S.iCycles) (by simp)
     exact ⟨A', π, hπ, x₁, by simp only [← cancel_mono S.iCycles, assoc, toCycles_i, fac]⟩
 
+variable {S}
+
+lemma ShortComplex.Exact.exact_up_to_refinements (hS : S.Exact) :
+    ∀ ⦃A : C⦄ (x₂ : A ⟶ S.X₂) (_ : x₂ ≫ S.g = 0),
+      ∃ (A' : C) (π : A' ⟶ A) (_ : Epi π) (x₁ : A' ⟶ S.X₁), π ≫ x₂ = x₁ ≫ S.f := by
+  simpa only [ShortComplex.exact_iff_exact_up_to_refinements] using hS
+
+variable (S)
+
 lemma Limits.CokernelCofork.IsColimit.comp_π_eq_zero_iff_up_to_refinements {f : X ⟶ Y}
     {c : CokernelCofork f} (hc : IsColimit c) {A : C} (y : A ⟶ Y) :
     y ≫ c.π = 0 ↔ ∃ (A' : C) (π : A' ⟶ A) (_ : Epi π) (x : A' ⟶ X), π ≫ y = x ≫ f := by
@@ -55,7 +69,7 @@ lemma Limits.CokernelCofork.IsColimit.comp_π_eq_zero_iff_up_to_refinements {f :
     have : Epi T.g := epi_of_isColimit_cofork hc
     have hT := T.exact_of_g_is_cokernel
       (IsColimit.ofIsoColimit hc (Cofork.ext (Iso.refl _) (by simp)))
-    rw [T.exact_iff_exact_up_to_refinaments] at hT
+    rw [T.exact_iff_exact_up_to_refinements] at hT
     obtain ⟨A', π, hπ, x₁, fac⟩ := hT y hy
     exact ⟨A', π, hπ, x₁, fac⟩
   . rintro ⟨A', π, hπ, x, fac⟩
@@ -110,7 +124,7 @@ lemma ShortComplex.comp_homologyπ_eq_iff_up_to_refinements
 lemma ShortComplex.eq_liftCycles_homologyπ_up_to_refinements {A : C} (γ : A ⟶ S.homology) :
     ∃ (A' : C) (π : A' ⟶ A) (_ : Epi π) (z : A' ⟶ S.X₂) (hz : z ≫ S.g = 0),
       π ≫ γ = S.liftCycles z hz ≫ S.homologyπ := by
-  obtain ⟨A', π, hπ, z, hz⟩ := (epi_iff_surjective_up_to_refinements S.homologyπ).1 inferInstance γ
+  obtain ⟨A', π, hπ, z, hz⟩ := surjective_up_to_refinements_of_epi S.homologyπ γ
   refine' ⟨A', π, hπ, z ≫ S.iCycles, by simp, _⟩
   rw [hz]
   congr 1
