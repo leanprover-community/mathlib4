@@ -337,7 +337,7 @@ lemma HomotopyEquiv.exact_iff {S₁ S₂ : ShortComplex C} (e : HomotopyEquiv S�
     [S₁.HasHomology] [S₂.HasHomology] : S₁.Exact ↔ S₂.Exact :=
   QuasiIso.exact_iff e.hom
 
-lemma exact_of_f_is_kernel [Mono S.f] (hS : IsLimit (KernelFork.ofι S.f S.zero))
+lemma exact_of_f_is_kernel (hS : IsLimit (KernelFork.ofι S.f S.zero))
     [S.HasHomology] : S.Exact := by
   rw [exact_iff_epi_toCycles]
   have : IsSplitEpi S.toCycles :=
@@ -348,7 +348,7 @@ lemma exact_of_f_is_kernel [Mono S.f] (hS : IsLimit (KernelFork.ofι S.f S.zero)
           exact Fork.IsLimit.lift_ι hS }⟩⟩
   infer_instance
 
-lemma exact_of_g_is_cokernel [Epi S.g] (hS : IsColimit (CokernelCofork.ofπ S.g S.zero))
+lemma exact_of_g_is_cokernel (hS : IsColimit (CokernelCofork.ofπ S.g S.zero))
     [S.HasHomology] : S.Exact := by
   rw [exact_iff_mono_fromCyclesCo]
   have : IsSplitMono S.fromCyclesCo :=
