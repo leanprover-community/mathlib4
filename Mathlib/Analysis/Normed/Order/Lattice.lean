@@ -108,7 +108,6 @@ theorem norm_inf_sub_inf_le_add_norm (a b c d : α) : ‖a ⊓ b - c ⊓ d‖ �
       · exact abs_inf_sub_inf_le_abs _ _ _
       · rw [@inf_comm _ _ c, @inf_comm _ _ c]
         exact abs_inf_sub_inf_le_abs _ _ _
-
 #align norm_inf_sub_inf_le_add_norm norm_inf_sub_inf_le_add_norm
 
 theorem norm_sup_sub_sup_le_add_norm (a b c d : α) : ‖a ⊔ b - c ⊔ d‖ ≤ ‖a - c‖ + ‖b - d‖ := by
@@ -123,7 +122,6 @@ theorem norm_sup_sub_sup_le_add_norm (a b c d : α) : ‖a ⊔ b - c ⊔ d‖ �
       · exact abs_sup_sub_sup_le_abs _ _ _
       · rw [@sup_comm _ _ c, @sup_comm _ _ c]
         exact abs_sup_sub_sup_le_abs _ _ _
-
 #align norm_sup_sub_sup_le_add_norm norm_sup_sub_sup_le_add_norm
 
 theorem norm_inf_le_add (x y : α) : ‖x ⊓ y‖ ≤ ‖x‖ + ‖y‖ := by
