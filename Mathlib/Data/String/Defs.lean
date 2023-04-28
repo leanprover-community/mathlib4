@@ -19,7 +19,7 @@ This file defines a bunch of functions for the `String` datatype.
 
 namespace String
 
-/-- pad `s : String` with repeated occurrences of `c : Char` until it's of length `n`.
+/-- Pad `s : String` with repeated occurrences of `c : Char` until it's of length `n`.
   If `s` is initially larger than `n`, just return `s`. -/
 def leftpad (n : Nat) (c : Char) (s : String) : String :=
   ⟨List.leftpad n c s.data⟩
@@ -82,7 +82,7 @@ def popn (s : String) (n : Nat) : String :=
   ⟨s.toList.drop n⟩
 #align string.popn String.popn
 
-/-- Produce the head character from the string `s`, if `s` is not empty, otherwise 'A'. -/
+/-- Produce the head character from the string `s`, if `s` is not empty, otherwise `'A'`. -/
 def head (s : String) : Char :=
   s.iter.curr
 #align string.head String.head
