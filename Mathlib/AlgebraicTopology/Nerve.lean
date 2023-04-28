@@ -8,7 +8,7 @@ Authors: Joël Riou
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.AlgebraicTopology.SimplicialSet
+import Mathlib.AlgebraicTopology.SimplicialSet
 
 /-!
 
@@ -31,8 +31,7 @@ namespace CategoryTheory
 
 /-- The nerve of a category -/
 @[simps]
-def nerve (C : Type u) [Category.{v} C] : SSet.{max u v}
-    where
+def nerve (C : Type u) [Category.{v} C] : SSet.{max u v} where
   obj Δ := SimplexCategory.toCat.obj Δ.unop ⥤ C
   map Δ₁ Δ₂ f x := SimplexCategory.toCat.map f.unop ⋙ x
   map_id' Δ := by
