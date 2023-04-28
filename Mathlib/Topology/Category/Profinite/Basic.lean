@@ -8,13 +8,13 @@ Authors: Kevin Buzzard, Calle Sönne
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.Category.CompHaus.Basic
-import Mathbin.Topology.Connected
-import Mathbin.Topology.SubsetProperties
-import Mathbin.Topology.LocallyConstant.Basic
-import Mathbin.CategoryTheory.Adjunction.Reflective
-import Mathbin.CategoryTheory.Monad.Limits
-import Mathbin.CategoryTheory.Fintype
+import Mathlib.Topology.Category.CompHaus.Basic
+import Mathlib.Topology.Connected
+import Mathlib.Topology.SubsetProperties
+import Mathlib.Topology.LocallyConstant.Basic
+import Mathlib.CategoryTheory.Adjunction.Reflective
+import Mathlib.CategoryTheory.Monad.Limits
+import Mathlib.CategoryTheory.Fintype
 
 /-!
 # The category of Profinite Types
@@ -139,8 +139,7 @@ section Profinite
 to Profinite spaces, given by quotienting a space by its connected components.
 See: https://stacks.math.columbia.edu/tag/0900
 -/
-def CompHaus.toProfiniteObj (X : CompHaus.{u}) : Profinite.{u}
-    where
+def CompHaus.toProfiniteObj (X : CompHaus.{u}) : Profinite.{u} where
   toCompHaus :=
     { toTop := TopCat.of (ConnectedComponents X)
       IsCompact := Quotient.compactSpace
@@ -152,8 +151,7 @@ def CompHaus.toProfiniteObj (X : CompHaus.{u}) : Profinite.{u}
 spaces in compact Hausdorff spaces.
 -/
 def Profinite.toCompHausEquivalence (X : CompHaus.{u}) (Y : Profinite.{u}) :
-    (CompHaus.toProfiniteObj X ⟶ Y) ≃ (X ⟶ profiniteToCompHaus.obj Y)
-    where
+    (CompHaus.toProfiniteObj X ⟶ Y) ≃ (X ⟶ profiniteToCompHaus.obj Y) where
   toFun f := f.comp ⟨Quotient.mk'', continuous_quotient_mk'⟩
   invFun g :=
     { toFun := Continuous.connectedComponentsLift g.2
@@ -191,8 +189,7 @@ theorem FintypeCat.discreteTopology (A : FintypeCat) : DiscreteTopology A :=
 /-- The natural functor from `Fintype` to `Profinite`, endowing a finite type with the
 discrete topology. -/
 @[simps]
-def FintypeCat.toProfinite : FintypeCat ⥤ Profinite
-    where
+def FintypeCat.toProfinite : FintypeCat ⥤ Profinite where
   obj A := Profinite.of A
   map _ _ f := ⟨f⟩
 #align Fintype.to_Profinite FintypeCat.toProfinite
@@ -207,12 +204,10 @@ namespace Profinite
 -- to allow diagrams in lower universes.
 /-- An explicit limit cone for a functor `F : J ⥤ Profinite`, defined in terms of
 `Top.limit_cone`. -/
-def limitCone {J : Type u} [SmallCategory J] (F : J ⥤ Profinite.{u}) : Limits.Cone F
-    where
+def limitCone {J : Type u} [SmallCategory J] (F : J ⥤ Profinite.{u}) : Limits.Cone F where
   pt :=
     { toCompHaus := (CompHaus.limitCone.{u, u} (F ⋙ profiniteToCompHaus)).pt
-      IsTotallyDisconnected :=
-        by
+      IsTotallyDisconnected := by
         change TotallyDisconnectedSpace ↥{ u : ∀ j : J, F.obj j | _ }
         exact Subtype.totallyDisconnectedSpace }
   π := { app := (CompHaus.limitCone.{u, u} (F ⋙ profiniteToCompHaus)).π.app }
@@ -220,8 +215,7 @@ def limitCone {J : Type u} [SmallCategory J] (F : J ⥤ Profinite.{u}) : Limits.
 
 /-- The limit cone `Profinite.limit_cone F` is indeed a limit cone. -/
 def limitConeIsLimit {J : Type u} [SmallCategory J] (F : J ⥤ Profinite.{u}) :
-    Limits.IsLimit (limitCone F)
-    where
+    Limits.IsLimit (limitCone F) where
   lift S :=
     (CompHaus.limitConeIsLimit.{u, u} (F ⋙ profiniteToCompHaus)).lift
       (profiniteToCompHaus.mapCone S)
@@ -287,8 +281,7 @@ instance forget_reflectsIsomorphisms : ReflectsIsomorphisms (forget Profinite) :
 
 /-- Construct an isomorphism from a homeomorphism. -/
 @[simps Hom inv]
-def isoOfHomeo (f : X ≃ₜ Y) : X ≅ Y
-    where
+def isoOfHomeo (f : X ≃ₜ Y) : X ≅ Y where
   Hom := ⟨f, f.Continuous⟩
   inv := ⟨f.symm, f.symm.Continuous⟩
   hom_inv_id' := by
@@ -317,8 +310,7 @@ def homeoOfIso (f : X ≅ Y) : X ≃ₜ Y where
 /-- The equivalence between isomorphisms in `Profinite` and homeomorphisms
 of topological spaces. -/
 @[simps]
-def isoEquivHomeo : (X ≅ Y) ≃ (X ≃ₜ Y)
-    where
+def isoEquivHomeo : (X ≅ Y) ≃ (X ≃ₜ Y) where
   toFun := homeoOfIso
   invFun := isoOfHomeo
   left_inv f := by
@@ -329,8 +321,7 @@ def isoEquivHomeo : (X ≅ Y) ≃ (X ≃ₜ Y)
     rfl
 #align Profinite.iso_equiv_homeo Profinite.isoEquivHomeo
 
-theorem epi_iff_surjective {X Y : Profinite.{u}} (f : X ⟶ Y) : Epi f ↔ Function.Surjective f :=
-  by
+theorem epi_iff_surjective {X Y : Profinite.{u}} (f : X ⟶ Y) : Epi f ↔ Function.Surjective f := by
   constructor
   · contrapose!
     rintro ⟨y, hy⟩ hf
@@ -364,8 +355,7 @@ theorem epi_iff_surjective {X Y : Profinite.{u}} (f : X ⟶ Y) : Epi f ↔ Funct
     apply (forget Profinite).epi_of_epi_map
 #align Profinite.epi_iff_surjective Profinite.epi_iff_surjective
 
-theorem mono_iff_injective {X Y : Profinite.{u}} (f : X ⟶ Y) : Mono f ↔ Function.Injective f :=
-  by
+theorem mono_iff_injective {X Y : Profinite.{u}} (f : X ⟶ Y) : Mono f ↔ Function.Injective f := by
   constructor
   · intro h
     haveI : limits.preserves_limits profiniteToCompHaus := inferInstance
