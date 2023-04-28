@@ -272,10 +272,12 @@ end Neg
 
 section SpecialCases
 
-theorem SL2_inv_expl_det (A : SL(2, R)) : det ![![A.1 1 1, -A.1 0 1], ![-A.1 1 0, A.1 0 0]] = 1 :=
-  by
+open scoped MatrixGroups
+
+theorem SL2_inv_expl_det (A : SL(2, R)) :
+    det ![![A.1 1 1, -A.1 0 1], ![-A.1 1 0, A.1 0 0]] = 1 := by
   rw [Matrix.det_fin_two, mul_comm]
-  simp only [Subtype.val_eq_coe, cons_val_zero, cons_val_one, head_cons, mul_neg, neg_mul, neg_neg]
+  simp only [cons_val_zero, cons_val_one, head_cons, mul_neg, neg_mul, neg_neg]
   have := A.2
   rw [Matrix.det_fin_two] at this
   convert this
@@ -286,7 +288,6 @@ theorem SL2_inv_expl (A : SL(2, R)) :
     A⁻¹ = ⟨![![A.1 1 1, -A.1 0 1], ![-A.1 1 0, A.1 0 0]], SL2_inv_expl_det A⟩ := by
   ext
   have := Matrix.adjugate_fin_two A.1
-  simp only [Subtype.val_eq_coe] at this
   rw [coe_inv, this]
   rfl
 set_option linter.uppercaseLean3 false in
@@ -335,7 +336,6 @@ open MatrixGroups
 
 open Matrix Matrix.SpecialLinearGroup
 
--- mathport name: «expr↑ₘ »
 local notation:1024 "↑ₘ" A:1024 => ((A : SL(2, ℤ)) : Matrix (Fin 2) (Fin 2) ℤ)
 
 set_option linter.uppercaseLean3 false
