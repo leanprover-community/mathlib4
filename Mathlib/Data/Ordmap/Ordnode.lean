@@ -359,8 +359,7 @@ def Emem (x : α) : Ordnode α → Prop :=
   Any (Eq x)
 #align ordnode.emem Ordnode.Emem
 
--- porting notes: required `noncomutable`
-noncomputable instance Emem.decidable (x : α) [DecidableEq α] : ∀ t, Decidable (Emem x t) := by
+instance Emem.decidable (x : α) [DecidableEq α] : ∀ t, Decidable (Emem x t) := by
   dsimp [Emem]; infer_instance
 #align ordnode.emem.decidable Ordnode.Emem.decidable
 
@@ -385,8 +384,7 @@ def Amem [LE α] (x : α) : Ordnode α → Prop :=
   Any fun y => x ≤ y ∧ y ≤ x
 #align ordnode.amem Ordnode.Amem
 
--- porting notes: required `noncomutable` & can remove [@DecidableRel α (· ≤ ·)]
-noncomputable instance Amem.decidable [LE α] [@DecidableRel α (· ≤ ·)] (x : α) :
+instance Amem.decidable [LE α] [@DecidableRel α (· ≤ ·)] (x : α) :
     ∀ t, Decidable (Amem x t) := by
   dsimp [Amem]; infer_instance
 #align ordnode.amem.decidable Ordnode.Amem.decidable
