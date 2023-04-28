@@ -26,34 +26,34 @@ For a preordered set `(α, <)`, a strict series of `α` of length `n` is a stric
 `fin (n + 1) → α`, i.e. `a₀ < a₁ < ... < aₙ` with `aᵢ : α`.
 -/
 structure StrictSeries where
-/-- length of a strict series -/
-length : ℕ
+/-- the largest (right most) index of a strict series -/
+maxIndex : ℕ
 /-- the underlying function of a strict series -/
-toFun : Fin (length + 1) → α
+toFun : Fin (maxIndex + 1) → α
 /-- the underlying function should be strictly monotonic -/
 StrictMono : StrictMono toFun
 
 namespace StrictSeries
 
-instance : CoeFun (StrictSeries α) (fun x ↦ Fin (x.length + 1) → α) :=
+instance : CoeFun (StrictSeries α) (fun x ↦ Fin (x.maxIndex + 1) → α) :=
 { coe := StrictSeries.toFun }
 
 instance : Preorder (StrictSeries α) :=
-Preorder.lift StrictSeries.length
+Preorder.lift StrictSeries.maxIndex
 
 variable {α}
 
-lemma le_def (x y : StrictSeries α) : x ≤ y ↔ x.length ≤ y.length :=
+lemma le_def (x y : StrictSeries α) : x ≤ y ↔ x.maxIndex ≤ y.maxIndex :=
 Iff.rfl
 
-lemma lt_def (x y : StrictSeries α) : x < y ↔ x.length < y.length :=
+lemma lt_def (x y : StrictSeries α) : x < y ↔ x.maxIndex < y.maxIndex :=
 Iff.rfl
 
 /--
-In a preordered set `α`, each term of `α` gives a strict series of length 0.
+In a preordered set `α`, each term of `α` gives a strict series with the right most index to be 0.
 -/
 @[simps!] def singleton (a : α) : StrictSeries α :=
-{ length := 0
+{ maxIndex := 0
   toFun := fun _ ↦ a
   StrictMono := fun _ _ h ↦ (ne_of_lt h $ @Subsingleton.elim _ subsingleton_fin_one _ _).elim }
 
@@ -67,26 +67,27 @@ instance [Nonempty α] : Nonempty (StrictSeries α) :=
 Nonempty.map singleton inferInstance
 
 lemma top_len_unique [OrderTop (StrictSeries α)] (p : StrictSeries α) (hp : IsTop p) :
-  p.length = (⊤ : StrictSeries α).length :=
+  p.maxIndex = (⊤ : StrictSeries α).maxIndex :=
 le_antisymm (@le_top (StrictSeries α) _ _ _) (hp ⊤)
 
-lemma top_len_unique' (H1 H2 : OrderTop (StrictSeries α)) : H1.top.length = H2.top.length :=
+lemma top_len_unique' (H1 H2 : OrderTop (StrictSeries α)) : H1.top.maxIndex = H2.top.maxIndex :=
 le_antisymm (H2.le_top H1.top) (H1.le_top H2.top)
 
 end StrictSeries
 
 /--
-Krull dimension of a preordered set `α` is the supremum of lengths of all strict series of `α`.
+Krull dimension of a preordered set `α` is the supremum of the right most index of all strict
+series of `α`.
 -/
-noncomputable def krull_dim : WithBot (WithTop ℕ) :=
-⨆ (p : StrictSeries α), p.length
+noncomputable def krullDim : WithBot (WithTop ℕ) :=
+⨆ (p : StrictSeries α), p.maxIndex
 
 /--
 Height of an element `a` of a preordered set `α` is the Krull dimension of the subset `(-∞, a]`
 -/
-noncomputable def height (a : α) : WithBot (WithTop ℕ) := krull_dim (Set.Iic a)
+noncomputable def height (a : α) : WithBot (WithTop ℕ) := krullDim (Set.Iic a)
 
 /--
 Coheight of an element `a` of a pre-ordered set `α` is the Krull dimension of the subset `[a, +∞)`
 -/
-noncomputable def coheight (a : α) : WithBot (WithTop ℕ) := krull_dim (Set.Ici a)
+noncomputable def coheight (a : α) : WithBot (WithTop ℕ) := krullDim (Set.Ici a)
