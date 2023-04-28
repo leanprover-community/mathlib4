@@ -21,8 +21,8 @@ In this file we show that `CompHaus` has enough projectives.
 
 Let `X` be a compact Hausdorff space.
 
-* `CompHaus.projective_ultrafilter`: the space `ultrafilter X` is a projective object
-* `CompHaus.projective_presentation`: the natural map `ultrafilter X → X`
+* `CompHaus.projective_ultrafilter`: the space `Ultrafilter X` is a projective object
+* `CompHaus.projective_presentation`: the natural map `Ultrafilter X → X`
   is a projective presentation
 
 ## Reference
@@ -38,32 +38,41 @@ open CategoryTheory Function
 
 namespace CompHaus
 
+attribute [local instance] ConcreteCategory.hasCoeToFun
+
 instance projective_ultrafilter (X : Type _) : Projective (of <| Ultrafilter X)
-    where Factors Y Z f g hg := by
+    where
+  factors {Y Z} f g hg := by
     rw [epi_iff_surjective] at hg
-    obtain ⟨g', hg'⟩ := hg.has_right_inverse
+    obtain ⟨g', hg'⟩ := hg.hasRightInverse
     let t : X → Y := g' ∘ f ∘ (pure : X → Ultrafilter X)
     let h : Ultrafilter X → Y := Ultrafilter.extend t
     have hh : Continuous h := continuous_ultrafilter_extend _
     use ⟨h, hh⟩
-    apply faithful.map_injective (forget CompHaus)
-    simp only [forget_map_eq_coe, ContinuousMap.coe_mk, coe_comp]
-    convert dense_range_pure.equalizer (g.continuous.comp hh) f.continuous _
-    rw [comp.assoc, ultrafilter_extend_extends, ← comp.assoc, hg'.comp_eq_id, comp.left_id]
+    apply Faithful.map_injective (F := forget CompHaus)
+    simp only [Functor.map_comp, forget_map_eq_coe, ContinuousMap.coe_mk, coe_comp]
+    convert denseRange_pure.equalizer (g.continuous.comp hh) f.continuous _
+    -- Porting note: We need to get the coercions to functions under control.
+    -- The next two lines should not be needed.
+    let g'' : ContinuousMap Y Z := g
+    have : g'' ∘ g' = id := hg'.comp_eq_id
+    rw [comp.assoc, ultrafilter_extend_extends, ← comp.assoc, this, comp.left_id]
+    rfl
+set_option linter.uppercaseLean3 false in
 #align CompHaus.projective_ultrafilter CompHaus.projective_ultrafilter
 
 /-- For any compact Hausdorff space `X`,
-  the natural map `ultrafilter X → X` is a projective presentation. -/
+  the natural map `Ultrafilter X → X` is a projective presentation. -/
 def projectivePresentation (X : CompHaus) : ProjectivePresentation X where
-  P := of <| Ultrafilter X
+  p := of <| Ultrafilter X
   f := ⟨_, continuous_ultrafilter_extend id⟩
-  Projective := CompHaus.projective_ultrafilter X
-  Epi :=
+  projective := CompHaus.projective_ultrafilter X
+  epi :=
     ConcreteCategory.epi_of_surjective _ fun x =>
       ⟨(pure x : Ultrafilter X), congr_fun (ultrafilter_extend_extends (𝟙 X)) x⟩
+set_option linter.uppercaseLean3 false in
 #align CompHaus.projective_presentation CompHaus.projectivePresentation
 
 instance : EnoughProjectives CompHaus where presentation X := ⟨projectivePresentation X⟩
 
 end CompHaus
-
