@@ -494,7 +494,7 @@ theorem _root_.BddAbove.finite {s : Set α} (hs : BddAbove s) : s.Finite :=
   hs.dual.finite
 #align bdd_above.finite BddAbove.finite
 
-theorem Set.Infinite.not_bddAbove {s : Set α} : s.Infinite → ¬BddAbove s :=
+theorem _root_.Set.Infinite.not_bddAbove {s : Set α} : s.Infinite → ¬BddAbove s :=
   mt BddAbove.finite
 #align set.infinite.not_bdd_above Set.Infinite.not_bddAbove
 
