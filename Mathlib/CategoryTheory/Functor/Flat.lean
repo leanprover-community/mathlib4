@@ -80,7 +80,6 @@ def toDiagram : J ⥤ StructuredArrow c.pt K where
   map g := StructuredArrow.homMk g (by simp)
 #align category_theory.structured_arrow_cone.to_diagram CategoryTheory.StructuredArrowCone.toDiagram
 
-#check CategoryTheory.StructuredArrowCone.toDiagram_obj
 /-- Given a diagram of `structured_arrow X F`s, we may obtain a cone with cone point `X`. -/
 @[simps!]
 def diagramToCone {X : D} (G : J ⥤ StructuredArrow X F) : Cone (G ⋙ proj X F ⋙ F) where
@@ -243,9 +242,7 @@ attribute [local simp] eqToHom_map
 
 --set_option pp.universes true
 
--- **TODO** Functor.mapCone F -> F.mapCone?
--- porting note: :-/
-set_option maxHeartbeats 2000000
+-- **TODO** unexpander to make Functor.mapCone F -> F.mapCone?
 theorem uniq {K : J ⥤ C} {c : Cone K} (hc : IsLimit c) (s : Cone (K ⋙ F))
     (f₁ f₂ : s.pt ⟶ F.obj c.pt) (h₁ : ∀ j : J, f₁ ≫ (F.mapCone c).π.app j = s.π.app j)
     (h₂ : ∀ j : J, f₂ ≫ (F.mapCone c).π.app j = s.π.app j) : f₁ = f₂ := by
@@ -285,7 +282,7 @@ theorem uniq {K : J ⥤ C} {c : Cone K} (hc : IsLimit c) (s : Cone (K ⋙ F))
     intro j
     injection c₀.π.naturality (BiconeHom.left j) with _ e₁
     injection c₀.π.naturality (BiconeHom.right j) with _ e₂
-    simpa using e₁.symm.trans e₂
+    sorry--simpa using e₁.symm.trans e₂
   have : c.extend g₁.right = c.extend g₂.right := by
     unfold Cone.extend
     congr 1
@@ -300,7 +297,6 @@ theorem uniq {K : J ⥤ C} {c : Cone K} (hc : IsLimit c) (s : Cone (K ⋙ F))
       sorry
     _ = hc.lift (c.extend g₂.right) := by
       congr
-      exact this
     _ = g₂.right := by
       symm
       apply hc.uniq (c.extend _)
@@ -310,8 +306,8 @@ theorem uniq {K : J ⥤ C} {c : Cone K} (hc : IsLimit c) (s : Cone (K ⋙ F))
   -- Finally, since `fᵢ` factors through `F(gᵢ)`, the result follows.
   calc
     f₁ = 𝟙 _ ≫ f₁ := by simp
-    _ = c₀.X.hom ≫ F.map g₁.right := g₁.w
-    _ = c₀.X.hom ≫ F.map g₂.right := by rw [this]
+    _ = c₀.pt.hom ≫ F.map g₁.right := g₁.w
+    _ = c₀.pt.hom ≫ F.map g₂.right := by rw [this]
     _ = 𝟙 _ ≫ f₂ := g₂.w.symm
     _ = f₂ := by simp
 
@@ -344,10 +340,13 @@ noncomputable def preservesFiniteLimitsIffFlat [HasFiniteLimits C] (F : C ⥤ D)
   invFun _ := flat_of_preservesFiniteLimits F
   left_inv _ := proof_irrel _ _
   right_inv x := by
-    cases x
+    cases' x with x
     unfold preservesFiniteLimitsOfFlat
     dsimp only [preservesFiniteLimitsOfPreservesFiniteLimitsOfSize]
     congr
+    -- porting note: this next line wasn't needed in lean 3
+    apply Subsingleton.elim
+
 #align category_theory.preserves_finite_limits_iff_flat CategoryTheory.preservesFiniteLimitsIffFlat
 
 end HasLimit
@@ -366,14 +365,64 @@ noncomputable def lanEvaluationIsoColim (F : C ⥤ D) (X : D)
   NatIso.ofComponents (fun G => colim.mapIso (Iso.refl _))
     (by
       intro G H i
-      ext
-      simp only [functor.comp_map, colimit.ι_desc_assoc, functor.map_iso_refl, evaluation_obj_map,
-        whiskering_left_obj_map, category.comp_id, Lan_map_app, category.assoc]
-      erw [colimit.ι_pre_assoc (Lan.diagram F H X) (costructured_arrow.map j.hom), category.id_comp,
-        category.comp_id, colimit.ι_map]
+      -- porting note: was `ext` in lean 3
+      apply colimit.hom_ext
+      intro j
+      /-
+      Lean 4 : ⊢ colimit.ι (Lan.diagram F G X) j ≫
+    (lan F ⋙ (evaluation D E).obj X).map i ≫ ((fun G ↦ Functor.mapIso colim (Iso.refl (Lan.diagram F G X))) H).hom =
+  colimit.ι (Lan.diagram F G X) j ≫
+    ((fun G ↦ Functor.mapIso colim (Iso.refl (Lan.diagram F G X))) G).hom ≫
+      ((whiskeringLeft (CostructuredArrow F X) C E).obj (CostructuredArrow.proj F X) ⋙ colim).map i
+
+      Lean 3 : ⊢ colimit.ι (Lan.diagram F G X) j ≫
+    (Lan F ⋙ (evaluation D E).obj X).map i ≫ (colim.map_iso (iso.refl (Lan.diagram F H X))).hom =
+  colimit.ι (Lan.diagram F G X) j ≫
+    (colim.map_iso (iso.refl (Lan.diagram F G X))).hom ≫
+      ((whiskering_left (costructured_arrow F X) C E).obj (costructured_arrow.proj F X) ⋙ colim).map i
+      -/
+      -- still trying to debug this; I have some analogous Lean 3 code which works
+      rw [Functor.comp_map]
+      rw [Functor.comp_map]
+      rw [Functor.mapIso_refl]
+      rw [Functor.mapIso_refl]
+      rw [evaluation_obj_map]
+      rw [whiskering_left_obj_map]
+      rw [Lan_map_app]
+      rw [colimit.ι_desc_assoc]
+      simp only [category.comp_id, category.assoc]
+
+  --    simp only [Functor.comp_map, colimit.ι_desc_assoc, Functor.mapIso_refl, evaluation_obj_map,
+  --      whiskeringLeft_obj_map, Category.comp_id, lan_map_app, Category.assoc]
+
+  --    have bar : ((Lan.equiv F H (Lan.loc F H)) (𝟙 (Lan.loc F H))).app j.left =
+  --      colimit.ι (Lan.diagram F H (F.obj j.left))
+  --      (CostructuredArrow.mk (𝟙 (F.obj j.left))) := by simp
+  --    erw [bar]
+      /-
+      Lean 4 : ⊢ i.app j.left ≫
+
+       (↑(Lan.equiv F H (Lan.loc F H)) (𝟙 (Lan.loc F H))).app j.left ≫
+
+      colimit.pre (Lan.diagram F H X) (CostructuredArrow.map j.hom) ≫ (Iso.refl (colim.obj (Lan.diagram F H X))).hom =
+       colimit.ι (Lan.diagram F G X) j ≫
+      (Iso.refl (colim.obj (Lan.diagram F G X))).hom ≫ colim.map (whiskerLeft (CostructuredArrow.proj F X) i)
+
+      Lean 3 : ⊢ i.app j.left ≫
+
+      colimit.ι (Lan.diagram F H (F.obj j.left))
+      (costructured_arrow.mk (𝟙 (F.obj j.left))) ≫
+
+      colimit.pre (Lan.diagram F H X) (costructured_arrow.map j.hom) ≫ (iso.refl (colim.obj (Lan.diagram F H X))).hom =
+      colimit.ι (Lan.diagram F G X) j ≫
+      (iso.refl (colim.obj (Lan.diagram F G X))).hom ≫ colim.map (whisker_left (costructured_arrow.proj F X) i)
+
+      -/
+      erw [colimit.ι_pre_assoc (Lan.diagram F H X) (CostructuredArrow.map j.hom), Category.id_comp,
+        Category.comp_id, colimit.ι_map]
       rcases j with ⟨j_left, ⟨⟨⟩⟩, j_hom⟩
       congr
-      rw [costructured_arrow.map_mk, category.id_comp, costructured_arrow.mk])
+      rw [CostructuredArrow.map_mk, Category.id_comp, CostructuredArrow.mk])
 set_option linter.uppercaseLean3 false in
 #align category_theory.Lan_evaluation_iso_colim CategoryTheory.lanEvaluationIsoColim
 
