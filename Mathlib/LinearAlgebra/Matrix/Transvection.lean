@@ -298,7 +298,7 @@ variable [Fintype n] [Fintype p]
 
 theorem toMatrix_reindexEquiv (e : n ≃ p) (t : TransvectionStruct n R) :
     (t.reindexEquiv e).toMatrix = reindexAlgEquiv R e t.toMatrix := by
-  cases t
+  rcases t with ⟨t_i, t_j, _⟩
   ext (a b)
   simp only [reindexEquiv, transvection, mul_boole, Algebra.id.smul_eq_mul, toMatrix_mk,
     submatrix_apply, reindex_apply, DMatrix.add_apply, Pi.smul_apply, reindexAlgEquiv_apply]
@@ -720,6 +720,24 @@ theorem diagonal_transvection_induction (P : Matrix n n 𝕜 → Prop) (M : Matr
     exact PD
   intro L₁ L₂ E PE
   induction' L₁ with t L₁ IH
+  /-
+  unknown identifier ''
+  -/
+  /-
+  unknown identifier ''
+  -/
+  /-
+  unknown identifier ''
+  -/
+  /-
+  unknown identifier ''
+  -/
+  /-
+  unknown identifier ''
+  -/
+  /-
+  unknown identifier ''
+  -/
   · simp only [Matrix.one_mul, List.prod_nil, List.map]
     induction' L₂ with t L₂ IH generalizing E
     · simpa
