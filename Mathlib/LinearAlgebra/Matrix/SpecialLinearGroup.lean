@@ -15,32 +15,32 @@ import Mathlib.LinearAlgebra.Matrix.ToLin
 /-!
 # The Special Linear group $SL(n, R)$
 
-This file defines the elements of the Special Linear group `special_linear_group n R`, consisting
+This file defines the elements of the Special Linear group `SpecialLinearGroup n R`, consisting
 of all square `R`-matrices with determinant `1` on the fintype `n` by `n`.  In addition, we define
-the group structure on `special_linear_group n R` and the embedding into the general linear group
-`general_linear_group R (n → R)`.
+the group structure on `SpecialLinearGroup n R` and the embedding into the general linear group
+`GeneralLinearGroup R (n → R)`.
 
 ## Main definitions
 
- * `matrix.special_linear_group` is the type of matrices with determinant 1
- * `matrix.special_linear_group.group` gives the group structure (under multiplication)
- * `matrix.special_linear_group.to_GL` is the embedding `SLₙ(R) → GLₙ(R)`
+ * `Matrix.SpecialLinearGroup` is the type of matrices with determinant 1
+ * `Matrix.SpecialLinearGroup.group` gives the group structure (under multiplication)
+ * `Matrix.SpecialLinearGroup.toGL` is the embedding `SLₙ(R) → GLₙ(R)`
 
 ## Notation
 
 For `m : ℕ`, we introduce the notation `SL(m,R)` for the special linear group on the fintype
-`n = fin m`, in the locale `matrix_groups`.
+`n = Fin m`, in the locale `MatrixGroups`.
 
 ## Implementation notes
-The inverse operation in the `special_linear_group` is defined to be the adjugate
-matrix, so that `special_linear_group n R` has a group structure for all `comm_ring R`.
+The inverse operation in the `SpecialLinearGroup` is defined to be the adjugate
+matrix, so that `SpecialLinearGroup n R` has a group structure for all `CommRing R`.
 
-We define the elements of `special_linear_group` to be matrices, since we need to
-compute their determinant. This is in contrast with `general_linear_group R M`,
+We define the elements of `SpecialLinearGroup` to be matrices, since we need to
+compute their determinant. This is in contrast with `GeneralLinearGroup R M`,
 which consists of invertible `R`-linear maps on `M`.
 
-We provide `matrix.special_linear_group.has_coe_to_fun` for convenience, but do not state any
-lemmas about it, and use `matrix.special_linear_group.coe_fn_eq_coe` to eliminate it `⇑` in favor
+We provide `Matrix.SpecialLinearGroup.hasCoeToFun` for convenience, but do not state any
+lemmas about it, and use `Matrix.SpecialLinearGroup.coeFn_eq_coe` to eliminate it `⇑` in favor
 of a regular `↑` coercion.
 
 ## References
@@ -65,7 +65,7 @@ section
 
 variable (n : Type u) [DecidableEq n] [Fintype n] (R : Type v) [CommRing R]
 
-/-- `special_linear_group n R` is the group of `n` by `n` `R`-matrices with determinant equal to 1.
+/-- `SpecialLinearGroup n R` is the group of `n` by `n` `R`-matrices with determinant equal to 1.
 -/
 def SpecialLinearGroup :=
   { A : Matrix n n R // A.det = 1 }
@@ -73,7 +73,6 @@ def SpecialLinearGroup :=
 
 end
 
--- mathport name: special_linear_group.fin
 scoped[MatrixGroups] notation "SL(" n ", " R ")" => Matrix.SpecialLinearGroup (Fin n) R
 
 namespace SpecialLinearGroup
@@ -84,13 +83,12 @@ instance hasCoeToMatrix : Coe (SpecialLinearGroup n R) (Matrix n n R) :=
   ⟨fun A => A.val⟩
 #align matrix.special_linear_group.has_coe_to_matrix Matrix.SpecialLinearGroup.hasCoeToMatrix
 
--- mathport name: «expr↑ₘ »
 /- In this file, Lean often has a hard time working out the values of `n` and `R` for an expression
-like `det ↑A`. Rather than writing `(A : matrix n n R)` everywhere in this file which is annoyingly
+like `det ↑A`. Rather than writing `(A : Matrix n n R)` everywhere in this file which is annoyingly
 verbose, or `A.val` which is not the simp-normal form for subtypes, we create a local notation
 `↑ₘA`. This notation references the local `n` and `R` variables, so is not valid as a global
 notation. -/
-local prefix:1024 "↑ₘ" => @coe _ (Matrix n n R) _
+local prefix:1024 "↑ₘ" => Subtype.val
 
 theorem ext_iff (A B : SpecialLinearGroup n R) : A = B ↔ ∀ i j, ↑ₘA i j = ↑ₘB i j :=
   Subtype.ext_iff.trans Matrix.ext_iff.symm
@@ -113,8 +111,8 @@ instance hasOne : One (SpecialLinearGroup n R) :=
   ⟨⟨1, det_one⟩⟩
 #align matrix.special_linear_group.has_one Matrix.SpecialLinearGroup.hasOne
 
-instance : Pow (SpecialLinearGroup n R) ℕ
-    where pow x n := ⟨x ^ n, (det_pow _ _).trans <| x.Prop.symm ▸ one_pow _⟩
+instance : Pow (SpecialLinearGroup n R) ℕ where
+  pow x n := ⟨↑ₘx ^ n, (det_pow _ _).trans <| x.prop.symm ▸ one_pow _⟩
 
 instance : Inhabited (SpecialLinearGroup n R) :=
   ⟨1⟩
@@ -164,8 +162,8 @@ theorem row_ne_zero [Nontrivial R] (g : SpecialLinearGroup n R) (i : n) : ↑ₘ
 
 end CoeLemmas
 
-instance : Monoid (SpecialLinearGroup n R) :=
-  Function.Injective.monoid coe Subtype.coe_injective coe_one coe_mul coe_pow
+instance monoid : Monoid (SpecialLinearGroup n R) :=
+  Function.Injective.monoid (↑) Subtype.coe_injective coe_one coe_mul coe_pow
 
 instance : Group (SpecialLinearGroup n R) :=
   { SpecialLinearGroup.monoid, SpecialLinearGroup.hasInv with
@@ -173,7 +171,7 @@ instance : Group (SpecialLinearGroup n R) :=
       ext1
       simp [adjugate_mul] }
 
-/-- A version of `matrix.to_lin' A` that produces linear equivalences. -/
+/-- A version of `Matrix.toLin' A` that produces linear equivalences. -/
 def toLin' : SpecialLinearGroup n R →* (n → R) ≃ₗ[R] n → R where
   toFun A :=
     LinearEquiv.ofLinear (Matrix.toLin' ↑ₘA) (Matrix.toLin' ↑ₘA⁻¹)
@@ -204,23 +202,25 @@ theorem toLin'_symm_to_linearMap (A : SpecialLinearGroup n R) :
 #align matrix.special_linear_group.to_lin'_symm_to_linear_map Matrix.SpecialLinearGroup.toLin'_symm_to_linearMap
 
 theorem toLin'_injective :
-    Function.Injective ⇑(toLin' : SpecialLinearGroup n R →* (n → R) ≃ₗ[R] n → R) := fun A B h =>
-  Subtype.coe_injective <| Matrix.toLin'.Injective <| LinearEquiv.toLinearMap_injective.eq_iff.mpr h
+    Function.Injective ↑(toLin' : SpecialLinearGroup n R →* (n → R) ≃ₗ[R] n → R) := fun A B h =>
+  Subtype.coe_injective <| Matrix.toLin'.injective <| LinearEquiv.toLinearMap_injective.eq_iff.mpr h
 #align matrix.special_linear_group.to_lin'_injective Matrix.SpecialLinearGroup.toLin'_injective
 
-/-- `to_GL` is the map from the special linear group to the general linear group -/
+/-- `toGL` is the map from the special linear group to the general linear group -/
 def toGL : SpecialLinearGroup n R →* GeneralLinearGroup R (n → R) :=
   (GeneralLinearGroup.generalLinearEquiv _ _).symm.toMonoidHom.comp toLin'
+set_option linter.uppercaseLean3 false in
 #align matrix.special_linear_group.to_GL Matrix.SpecialLinearGroup.toGL
 
 theorem coe_toGL (A : SpecialLinearGroup n R) : ↑A.toGL = A.toLin'.toLinearMap :=
   rfl
+set_option linter.uppercaseLean3 false in
 #align matrix.special_linear_group.coe_to_GL Matrix.SpecialLinearGroup.coe_toGL
 
 variable {S : Type _} [CommRing S]
 
 /-- A ring homomorphism from `R` to `S` induces a group homomorphism from
-`special_linear_group n R` to `special_linear_group n S`. -/
+`SpecialLinearGroup n R` to `SpecialLinearGroup n S`. -/
 @[simps]
 def map (f : R →+* S) : SpecialLinearGroup n R →* SpecialLinearGroup n S where
   toFun g :=
@@ -252,10 +252,8 @@ variable [Fact (Even (Fintype.card n))]
 /-- Formal operation of negation on special linear group on even cardinality `n` given by negating
 each element. -/
 instance : Neg (SpecialLinearGroup n R) :=
-  ⟨fun g =>
-    ⟨-g, by
-      simpa [(Fact.out <| Even <| Fintype.card n).neg_one_pow, g.det_coe] using
-        det_smul (↑ₘg) (-1)⟩⟩
+  ⟨fun g => ⟨-g, by
+    simpa [(Fact.out <| Even <| Fintype.card n).neg_one_pow, g.det_coe] using det_smul (↑ₘg) (-1)⟩⟩
 
 @[simp]
 theorem coe_neg (g : SpecialLinearGroup n R) : ↑(-g) = -(g : Matrix n n R) :=
@@ -281,6 +279,7 @@ theorem SL2_inv_expl_det (A : SL(2, R)) : det ![![A.1 1 1, -A.1 0 1], ![-A.1 1 0
   have := A.2
   rw [Matrix.det_fin_two] at this
   convert this
+set_option linter.uppercaseLean3 false in
 #align matrix.special_linear_group.SL2_inv_expl_det Matrix.SpecialLinearGroup.SL2_inv_expl_det
 
 theorem SL2_inv_expl (A : SL(2, R)) :
@@ -290,6 +289,7 @@ theorem SL2_inv_expl (A : SL(2, R)) :
   simp only [Subtype.val_eq_coe] at this
   rw [coe_inv, this]
   rfl
+set_option linter.uppercaseLean3 false in
 #align matrix.special_linear_group.SL2_inv_expl Matrix.SpecialLinearGroup.SL2_inv_expl
 
 theorem fin_two_induction (P : SL(2, R) → Prop)
@@ -336,7 +336,9 @@ open MatrixGroups
 open Matrix Matrix.SpecialLinearGroup
 
 -- mathport name: «expr↑ₘ »
-local prefix:1024 "↑ₘ" => @coe _ (Matrix (Fin 2) (Fin 2) ℤ) _
+local prefix:1024 "↑ₘ" => Subtype.val
+
+set_option linter.uppercaseLean3 false
 
 /-- The matrix `S = [[0, -1], [1, 0]]` as an element of `SL(2, ℤ)`.
 
@@ -344,55 +346,50 @@ This element acts naturally on the Euclidean plane as a rotation about the origi
 
 This element also acts naturally on the hyperbolic plane as rotation about `i` by `π`. It
 represents the Mobiüs transformation `z ↦ -1/z` and is an involutive elliptic isometry. -/
-def s : SL(2, ℤ) :=
+def S : SL(2, ℤ) :=
   ⟨!![0, -1; 1, 0], by norm_num [Matrix.det_fin_two_of] ⟩
-#align modular_group.S ModularGroup.s
+#align modular_group.S ModularGroup.S
 
 /-- The matrix `T = [[1, 1], [0, 1]]` as an element of `SL(2, ℤ)` -/
-def t : SL(2, ℤ) :=
+def T : SL(2, ℤ) :=
   ⟨!![1, 1; 0, 1], by norm_num [Matrix.det_fin_two_of] ⟩
-#align modular_group.T ModularGroup.t
+#align modular_group.T ModularGroup.T
 
-theorem coe_s : ↑ₘs = !![0, -1; 1, 0] :=
+theorem coe_S : ↑ₘS = !![0, -1; 1, 0] :=
   rfl
-#align modular_group.coe_S ModularGroup.coe_s
+#align modular_group.coe_S ModularGroup.coe_S
 
-theorem coe_t : ↑ₘt = !![1, 1; 0, 1] :=
+theorem coe_T : ↑ₘT = !![1, 1; 0, 1] :=
   rfl
-#align modular_group.coe_T ModularGroup.coe_t
+#align modular_group.coe_T ModularGroup.coe_T
 
-theorem coe_t_inv : ↑ₘt⁻¹ = !![1, -1; 0, 1] := by simp [coe_inv, coe_T, adjugate_fin_two]
-#align modular_group.coe_T_inv ModularGroup.coe_t_inv
+theorem coe_T_inv : ↑ₘT⁻¹ = !![1, -1; 0, 1] := by simp [coe_inv, coe_T, adjugate_fin_two]
+#align modular_group.coe_T_inv ModularGroup.coe_T_inv
 
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:73:14: unsupported tactic `congrm #[[expr «expr!![ »(matrix.notation [expr _, ",", expr _, ";", expr _, ",", expr _, "]"] [])]] -/
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:73:14: unsupported tactic `congrm #[[expr «expr!![ »(matrix.notation [expr _, ",", expr _, ";", expr _, ",", expr _, "]"] [])]] -/
-theorem coe_t_zpow (n : ℤ) : ↑ₘ(t ^ n) = !![1, n; 0, 1] := by
+theorem coe_T_zpow (n : ℤ) : ↑ₘ(T ^ n) = !![1, n; 0, 1] := by
   induction' n using Int.induction_on with n h n h
   · rw [zpow_zero, coe_one, Matrix.one_fin_two]
   · simp_rw [zpow_add, zpow_one, coe_mul, h, coe_T, Matrix.mul_fin_two]
-    trace
-      "./././Mathport/Syntax/Translate/Tactic/Builtin.lean:73:14: unsupported tactic `congrm #[[expr «expr!![ »(matrix.notation [expr _, \",\", expr _, \";\", expr _, \",\", expr _, \"]\"] [])]]"
+    congr! !![_, _; _, _]
     rw [mul_one, mul_one, add_comm]
   · simp_rw [zpow_sub, zpow_one, coe_mul, h, coe_T_inv, Matrix.mul_fin_two]
-    trace
-        "./././Mathport/Syntax/Translate/Tactic/Builtin.lean:73:14: unsupported tactic `congrm #[[expr «expr!![ »(matrix.notation [expr _, \",\", expr _, \";\", expr _, \",\", expr _, \"]\"] [])]]" <;>
-      ring
-#align modular_group.coe_T_zpow ModularGroup.coe_t_zpow
+    congr! !![_, _; _, _]
+    ring
+#align modular_group.coe_T_zpow ModularGroup.coe_T_zpow
 
 @[simp]
-theorem t_pow_mul_apply_one (n : ℤ) (g : SL(2, ℤ)) : ↑ₘ(t ^ n * g) 1 = ↑ₘg 1 := by
+theorem T_pow_mul_apply_one (n : ℤ) (g : SL(2, ℤ)) : ↑ₘ(T ^ n * g) 1 = ↑ₘg 1 := by
   simp [coe_T_zpow, Matrix.mul, Matrix.dotProduct, Fin.sum_univ_succ]
-#align modular_group.T_pow_mul_apply_one ModularGroup.t_pow_mul_apply_one
+#align modular_group.T_pow_mul_apply_one ModularGroup.T_pow_mul_apply_one
 
 @[simp]
-theorem t_mul_apply_one (g : SL(2, ℤ)) : ↑ₘ(t * g) 1 = ↑ₘg 1 := by
+theorem T_mul_apply_one (g : SL(2, ℤ)) : ↑ₘ(T * g) 1 = ↑ₘg 1 := by
   simpa using T_pow_mul_apply_one 1 g
-#align modular_group.T_mul_apply_one ModularGroup.t_mul_apply_one
+#align modular_group.T_mul_apply_one ModularGroup.T_mul_apply_one
 
 @[simp]
-theorem t_inv_mul_apply_one (g : SL(2, ℤ)) : ↑ₘ(t⁻¹ * g) 1 = ↑ₘg 1 := by
+theorem T_inv_mul_apply_one (g : SL(2, ℤ)) : ↑ₘ(T⁻¹ * g) 1 = ↑ₘg 1 := by
   simpa using T_pow_mul_apply_one (-1) g
-#align modular_group.T_inv_mul_apply_one ModularGroup.t_inv_mul_apply_one
+#align modular_group.T_inv_mul_apply_one ModularGroup.T_inv_mul_apply_one
 
 end ModularGroup
-
