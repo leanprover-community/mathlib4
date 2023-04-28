@@ -17,13 +17,13 @@ import Mathlib.LinearAlgebra.Matrix.ToLin
 # The finite-dimensional space of matrices
 
 This file shows that `m` by `n` matrices form a finite-dimensional space.
-Note that this is proven more generally elsewhere over modules as `module.finite.matrix`; this file
-exists only to provide an entry in the instance list for `finite_dimensional`.
+Note that this is proven more generally elsewhere over modules as `Module.Finite.matrix`; this file
+exists only to provide an entry in the instance list for `FiniteDimensional`.
 
 ## Main definitions
 
- * `matrix.finite_dimensional`: matrices form a finite dimensional vector space over a field `K`
- * `linear_map.finite_dimensional`
+ * `Matrix.finiteDimensional`: matrices form a finite dimensional vector space over a field `K`
+ * `LinearMap.finiteDimensional`
 
 ## Tags
 
@@ -40,7 +40,7 @@ section FiniteDimensional
 
 variable {m n : Type _} {R : Type v} [Field R]
 
-instance [Finite m] [Finite n] : FiniteDimensional R (Matrix m n R) :=
+instance finiteDimensional [Finite m] [Finite n] : FiniteDimensional R (Matrix m n R) :=
   Module.Finite.matrix
 
 end FiniteDimensional
@@ -55,6 +55,7 @@ variable {V : Type _} [AddCommGroup V] [Module K V] [FiniteDimensional K V]
 
 variable {W : Type _} [AddCommGroup W] [Module K W] [FiniteDimensional K W]
 
+set_option synthInstance.etaExperiment true in
 instance finiteDimensional : FiniteDimensional K (V →ₗ[K] W) :=
   Module.Finite.linearMap _ _
 #align linear_map.finite_dimensional LinearMap.finiteDimensional
@@ -62,11 +63,12 @@ instance finiteDimensional : FiniteDimensional K (V →ₗ[K] W) :=
 variable {A : Type _} [Ring A] [Algebra K A] [Module A V] [IsScalarTower K A V] [Module A W]
   [IsScalarTower K A W]
 
+set_option synthInstance.maxHeartbeats 50000 in
+set_option synthInstance.etaExperiment true in
 /-- Linear maps over a `k`-algebra are finite dimensional (over `k`) if both the source and
 target are, as they form a subspace of all `k`-linear maps. -/
-instance finite_dimensional' : FiniteDimensional K (V →ₗ[A] W) :=
+instance finiteDimensional' : FiniteDimensional K (V →ₗ[A] W) :=
   FiniteDimensional.of_injective (restrictScalarsLinearMap K A V W) (restrictScalars_injective _)
-#align linear_map.finite_dimensional' LinearMap.finite_dimensional'
+#align linear_map.finite_dimensional' LinearMap.finiteDimensional'
 
 end LinearMap
-
