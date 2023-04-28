@@ -8,10 +8,10 @@ Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Matrix.Basic
-import Mathbin.LinearAlgebra.FiniteDimensional
-import Mathbin.LinearAlgebra.FreeModule.Finite.Matrix
-import Mathbin.LinearAlgebra.Matrix.ToLin
+import Mathlib.Data.Matrix.Basic
+import Mathlib.LinearAlgebra.FiniteDimensional
+import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
+import Mathlib.LinearAlgebra.Matrix.ToLin
 
 /-!
 # The finite-dimensional space of matrices
