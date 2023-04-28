@@ -363,9 +363,9 @@ def Emem (x : α) : Ordnode α → Prop :=
   Any (Eq x)
 #align ordnode.emem Ordnode.Emem
 
--- porting notes: required `noncomutable` & can remove `[Decidable]`
-noncomputable instance Emem.decidable (x : α) : ∀ t, Decidable (Emem x t) :=
-  Any.decidable
+-- porting notes: required `noncomutable`
+noncomputable instance Emem.decidable (x : α) [DecidableEq α] : ∀ t, Decidable (Emem x t) := by
+  dsimp [Emem]; infer_instance
 #align ordnode.emem.decidable Ordnode.Emem.decidable
 
 /-- O(n). Approximate membership in the set, that is, whether some element in the
@@ -390,8 +390,9 @@ def Amem [LE α] (x : α) : Ordnode α → Prop :=
 #align ordnode.amem Ordnode.Amem
 
 -- porting notes: required `noncomutable` & can remove [@DecidableRel α (· ≤ ·)]
-noncomputable instance Amem.decidable
-  [LE α] (x : α) : ∀ t, Decidable (Amem x t) := Any.decidable
+noncomputable instance Amem.decidable [LE α] [@DecidableRel α (· ≤ ·)] (x : α) :
+    ∀ t, Decidable (Amem x t) := by
+  dsimp [Amem]; infer_instance
 #align ordnode.amem.decidable Ordnode.Amem.decidable
 
 /-- O(log n). Return the minimum element of the tree, or the provided default value.
