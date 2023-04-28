@@ -341,14 +341,12 @@ def Any (P : α → Prop) : Ordnode α → Prop
   | node _ l x r => Any P l ∨ P x ∨ Any P r
 #align ordnode.any Ordnode.Any
 
--- porting notes: required `noncomutable` -- TODO fix recursor
-noncomputable instance Any.decidable {P : α → Prop} (t) [DecidablePred P] : Decidable (Any P t) :=
-  by
-  induction' t with _ l x r lih rih <;> dsimp only [Any] <;> skip
-  . infer_instance
-  . refine @Or.decidable (Any P l) _ lih ?_
-    refine @Or.decidable _ (Any P r) ?_ rih
-    infer_instance
+instance Any.decidable {P : α → Prop} : (t: Ordnode α ) → [DecidablePred P] → Decidable (Any P t)
+| nil => decidableFalse
+| node _ l _ r =>
+  have : Decidable (Any P l) := Any.decidable l
+  have : Decidable (Any P r) := Any.decidable r
+  Or.decidable
 #align ordnode.any.decidable Ordnode.Any.decidable
 
 /-- O(n). Exact membership in the set. This is useful primarily for stating
