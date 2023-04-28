@@ -8,9 +8,9 @@ Authors: Johan Commelin
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.Category.CompHaus.Basic
-import Mathbin.Topology.StoneCech
-import Mathbin.CategoryTheory.Preadditive.Projective
+import Mathlib.Topology.Category.CompHaus.Basic
+import Mathlib.Topology.StoneCech
+import Mathlib.CategoryTheory.Preadditive.Projective
 
 /-!
 # CompHaus has enough projectives
@@ -54,8 +54,7 @@ instance projective_ultrafilter (X : Type _) : Projective (of <| Ultrafilter X)
 
 /-- For any compact Hausdorff space `X`,
   the natural map `ultrafilter X → X` is a projective presentation. -/
-def projectivePresentation (X : CompHaus) : ProjectivePresentation X
-    where
+def projectivePresentation (X : CompHaus) : ProjectivePresentation X where
   P := of <| Ultrafilter X
   f := ⟨_, continuous_ultrafilter_extend id⟩
   Projective := CompHaus.projective_ultrafilter X
