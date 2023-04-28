@@ -651,7 +651,6 @@ example : (- ((- (((66 - 86) - 36) / 94) - 3) / - - (77 / (56 - - - 79))) + 87) 
 def R : Type u → Type v → Sort (max (u+1) (v+1)) := sorry
 instance : LinearOrderedField (R a b) := sorry
 
-example  : (1 : R PUnit.{u+1} PUnit.{v+1}) <= 2 :=
+example : (1 : R PUnit.{u+1} PUnit.{v+1}) <= 2 :=
 by
   norm_num
- 
