@@ -336,7 +336,7 @@ open MatrixGroups
 open Matrix Matrix.SpecialLinearGroup
 
 -- mathport name: «expr↑ₘ »
-local prefix:1024 "↑ₘ" => Subtype.val
+local notation:1024 "↑ₘ" A:1024 => ((A : SL(2, ℤ)) : Matrix (Fin 2) (Fin 2) ℤ)
 
 set_option linter.uppercaseLean3 false
 
