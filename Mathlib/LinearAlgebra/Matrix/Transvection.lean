@@ -358,13 +358,15 @@ def listTransvecRow : List (Matrix (Sum (Fin r) Unit) (Sum (Fin r) Unit) 𝕜) :
 /-- Multiplying by some of the matrices in `list_transvec_col M` does not change the last row. -/
 theorem listTransvecCol_mul_last_row_drop (i : Sum (Fin r) Unit) {k : ℕ} (hk : k ≤ r) :
     (((listTransvecCol M).drop k).prod ⬝ M) (inr unit) i = M (inr unit) i := by
-  apply Nat.decreasingInduction' _ hk
-  · simp only [listTransvecCol, List.length_ofFn, Matrix.one_mul, List.drop_eq_nil_of_le,
-      List.prod_nil]
-  · intro n hn hk IH
-    have hn' : n < (list_transvec_col M).length := by simpa [list_transvec_col] using hn
-    rw [← List.cons_nthLe_drop_succ hn']
-    simpa [list_transvec_col, Matrix.mul_assoc]
+  -- porting note: `apply` didn't work anymore, because of the implicit arguments
+  refine' Nat.decreasingInduction' _ hk _
+  · intro n hn _ IH
+    have hn' : n < (listTransvecCol M).length := by simpa [listTransvecCol] using hn
+    -- porting note: after changing from `nthLe` to `get`, we need to provide all arguments
+    rw [← @List.cons_get_drop_succ _ (listTransvecCol M) ⟨n, hn'⟩]
+    simpa [listTransvecCol, Matrix.mul_assoc]
+  · simp only [listTransvecCol, List.length_ofFn, le_refl, List.drop_eq_nil_of_le, List.prod_nil,
+      Matrix.one_mul]
 #align matrix.pivot.list_transvec_col_mul_last_row_drop Matrix.Pivot.listTransvecCol_mul_last_row_drop
 
 /-- Multiplying by all the matrices in `list_transvec_col M` does not change the last row. -/
@@ -573,7 +575,7 @@ theorem exists_isTwoBlockDiagonal_list_transvec_mul_mul_list_transvec
       exact (H j).2
   rcases this with ⟨i, h | h⟩
   · let M' := transvection (inr Unit.unit) (inl i) 1 ⬝ M
-    have hM' : M' (inr unit) (inr unit) ≠ 0 := by simpa [M', hM]
+    have hM' : M' (inr unit) (inr unit) ≠ 0 := by simpa [hM]
     rcases exists_isTwoBlockDiagonal_of_ne_zero M' hM' with ⟨L, L', hLL'⟩
     rw [Matrix.mul_assoc] at hLL'
     refine' ⟨L ++ [⟨inr unit, inl i, by simp, 1⟩], L', _⟩
@@ -581,7 +583,7 @@ theorem exists_isTwoBlockDiagonal_list_transvec_mul_mul_list_transvec
       List.prod_nil, mul_eq_mul, List.map, Matrix.mul_assoc (L.map toMatrix).prod]
     exact hLL'
   · let M' := M ⬝ transvection (inl i) (inr unit) 1
-    have hM' : M' (inr unit) (inr unit) ≠ 0 := by simpa [M', hM]
+    have hM' : M' (inr unit) (inr unit) ≠ 0 := by simpa [hM]
     rcases exists_isTwoBlockDiagonal_of_ne_zero M' hM' with ⟨L, L', hLL'⟩
     refine' ⟨L, ⟨inl i, inr unit, by simp, 1⟩::L', _⟩
     simp only [← Matrix.mul_assoc, toMatrix_mk, List.prod_cons, mul_eq_mul, List.map]
