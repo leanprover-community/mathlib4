@@ -1097,7 +1097,6 @@ theorem mod_mod_of_dvd (a : Ordinal) {b c : Ordinal} (h : c ∣ b) : a % b % c =
   nth_rw 2 [← div_add_mod a b]
   rcases h with ⟨d, rfl⟩
   rw [mul_assoc, mul_add_mod_self]
-
 #align ordinal.mod_mod_of_dvd Ordinal.mod_mod_of_dvd
 
 @[simp]

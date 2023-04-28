@@ -207,8 +207,7 @@ theorem surjective_quotientMap_of_maximal_of_localization {I : Ideal S} [I.IsPri
     -- Porting note: was `rw`, but this took extremely long.
     refine Eq.trans ?_ (RingHom.map_mul (Ideal.Quotient.mk I) (algebraMap R S m) (mk' S 1 ⟨m, hm⟩))
     rw [← mk'_eq_mul_mk'_one, mk'_self, RingHom.map_one]
-#align is_localization.surjective_quotient_map_of_maximal_of_localization
-IsLocalization.surjective_quotientMap_of_maximal_of_localization
+#align is_localization.surjective_quotient_map_of_maximal_of_localization IsLocalization.surjective_quotientMap_of_maximal_of_localization
 
 open nonZeroDivisors
 

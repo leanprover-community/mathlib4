@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Jens Wagemaker
 
 ! This file was ported from Lean 3 source module data.polynomial.coeff
-! leanprover-community/mathlib commit fa256f00ce018e7b40e1dc756e403c86680bf448
+! leanprover-community/mathlib commit 2651125b48fc5c170ab1111afd0817c903b1fc6c
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -57,7 +57,7 @@ theorem coeff_bit0 (p : R[X]) (n : ℕ) : coeff (bit0 p) n = bit0 (coeff p n) :=
 #align polynomial.coeff_bit0 Polynomial.coeff_bit0
 
 @[simp]
-theorem coeff_smul [Monoid S] [DistribMulAction S R] (r : S) (p : R[X]) (n : ℕ) :
+theorem coeff_smul [SMulZeroClass S R] (r : S) (p : R[X]) (n : ℕ) :
     coeff (r • p) n = r • coeff p n := by
   rcases p with ⟨⟩
   simp_rw [← ofFinsupp_smul, coeff]

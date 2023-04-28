@@ -281,7 +281,6 @@ theorem none_orElse' (x : Option α) : none.orElse (fun _ ↦ x) = x := by cases
 
 @[simp]
 theorem orElse_none' (x : Option α) : x.orElse (fun _ ↦ none) = x := by cases x <;> rfl
-
 #align option.orelse_none' Option.orElse_none'
 
 #align option.orelse_none Option.orElse_none

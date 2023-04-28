@@ -278,7 +278,6 @@ def opAddEquiv [Add α] : α ≃+ αᵐᵒᵖ :=
 
 @[simp]
 theorem opAddEquiv_toEquiv [Add α] : ((opAddEquiv : α ≃+ αᵐᵒᵖ) : α ≃ αᵐᵒᵖ) = opEquiv := rfl
-
 #align mul_opposite.op_add_equiv_to_equiv MulOpposite.opAddEquiv_toEquiv
 
 end MulOpposite

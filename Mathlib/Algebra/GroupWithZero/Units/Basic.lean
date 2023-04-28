@@ -243,7 +243,6 @@ theorem _root_.GroupWithZero.eq_zero_or_unit (a : G₀) : a = 0 ∨ ∃ u : G₀
     exact h
   · right
     simpa only [eq_comm] using Units.exists_iff_ne_zero.mpr h
-
 #align group_with_zero.eq_zero_or_unit GroupWithZero.eq_zero_or_unit
 
 end Units

@@ -153,7 +153,8 @@ theorem infEdist_closure : infEdist x (closure s) = infEdist x s := by
 theorem mem_closure_iff_infEdist_zero : x ∈ closure s ↔ infEdist x s = 0 :=
   ⟨fun h => by
     rw [← infEdist_closure]
-    exact infEdist_zero_of_mem h, fun h =>
+    exact infEdist_zero_of_mem h,
+   fun h =>
     EMetric.mem_closure_iff.2 fun ε εpos => infEdist_lt_iff.mp <| by rwa [h]⟩
 #align emetric.mem_closure_iff_inf_edist_zero EMetric.mem_closure_iff_infEdist_zero
 
@@ -351,21 +352,21 @@ theorem hausdorffEdist_triangle : hausdorffEdist s u ≤ hausdorffEdist s t + ha
   rw [hausdorffEdist_def]
   simp only [sup_le_iff, supᵢ_le_iff]
   constructor
-  show ∀ x ∈ s, infEdist x u ≤ hausdorffEdist s t + hausdorffEdist t u
-  exact fun x xs =>
-    calc
-      infEdist x u ≤ infEdist x t + hausdorffEdist t u :=
-        infEdist_le_infEdist_add_hausdorffEdist
-      _ ≤ hausdorffEdist s t + hausdorffEdist t u :=
-        add_le_add_right (infEdist_le_hausdorffEdist_of_mem xs) _
-  show ∀ x ∈ u, infEdist x s ≤ hausdorffEdist s t + hausdorffEdist t u
-  exact fun x xu =>
-    calc
-      infEdist x s ≤ infEdist x t + hausdorffEdist t s :=
-        infEdist_le_infEdist_add_hausdorffEdist
-      _ ≤ hausdorffEdist u t + hausdorffEdist t s :=
-        add_le_add_right (infEdist_le_hausdorffEdist_of_mem xu) _
-      _ = hausdorffEdist s t + hausdorffEdist t u := by simp [hausdorffEdist_comm, add_comm]
+  · show ∀ x ∈ s, infEdist x u ≤ hausdorffEdist s t + hausdorffEdist t u
+    exact fun x xs =>
+      calc
+        infEdist x u ≤ infEdist x t + hausdorffEdist t u :=
+          infEdist_le_infEdist_add_hausdorffEdist
+        _ ≤ hausdorffEdist s t + hausdorffEdist t u :=
+          add_le_add_right (infEdist_le_hausdorffEdist_of_mem xs) _
+  · show ∀ x ∈ u, infEdist x s ≤ hausdorffEdist s t + hausdorffEdist t u
+    exact fun x xu =>
+      calc
+        infEdist x s ≤ infEdist x t + hausdorffEdist t s :=
+          infEdist_le_infEdist_add_hausdorffEdist
+        _ ≤ hausdorffEdist u t + hausdorffEdist t s :=
+          add_le_add_right (infEdist_le_hausdorffEdist_of_mem xu) _
+        _ = hausdorffEdist s t + hausdorffEdist t u := by simp [hausdorffEdist_comm, add_comm]
 #align emetric.Hausdorff_edist_triangle EMetric.hausdorffEdist_triangle
 
 /-- Two sets are at zero Hausdorff edistance if and only if they have the same closure -/
@@ -425,7 +426,7 @@ theorem nonempty_of_hausdorffEdist_ne_top (hs : s.Nonempty) (fin : hausdorffEdis
 #align emetric.nonempty_of_Hausdorff_edist_ne_top EMetric.nonempty_of_hausdorffEdist_ne_top
 
 theorem empty_or_nonempty_of_hausdorffEdist_ne_top (fin : hausdorffEdist s t ≠ ⊤) :
-    s = ∅ ∧ t = ∅ ∨ s.Nonempty ∧ t.Nonempty := by
+    (s = ∅ ∧ t = ∅) ∨ (s.Nonempty ∧ t.Nonempty) := by
   cases' s.eq_empty_or_nonempty with hs hs
   · cases' t.eq_empty_or_nonempty with ht ht
     · exact Or.inl ⟨hs, ht⟩
@@ -440,7 +441,7 @@ end HausdorffEdist
 end EMetric
 
 /-! Now, we turn to the same notions in metric spaces. To avoid the difficulties related to
-`Inf` and `Sup` on `ℝ` (which is only conditionally complete), we use the notions in `ℝ≥0∞`
+`infₛ` and `supₛ` on `ℝ` (which is only conditionally complete), we use the notions in `ℝ≥0∞`
 formulated in terms of the edistance, and coerce them to `ℝ`.
 Then their properties follow readily from the corresponding properties in `ℝ≥0∞`,
 modulo some tedious rewriting of inequalities from one to the other. -/
