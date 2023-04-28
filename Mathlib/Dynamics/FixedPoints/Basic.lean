@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 
 ! This file was ported from Lean 3 source module dynamics.fixed_points.basic
-! leanprover-community/mathlib commit 792a2a264169d64986541c6f8f7e3bbb6acb6295
+! leanprover-community/mathlib commit b86832321b586c6ac23ef8cdef6a7a27e42b13bd
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -48,7 +48,7 @@ theorem isFixedPt_id (x : α) : IsFixedPt id x :=
 
 namespace IsFixedPt
 
-instance instDecidable [h : DecidableEq α] {f : α → α} {x : α} : Decidable (IsFixedPt f x) :=
+instance decidable [h : DecidableEq α] {f : α → α} {x : α} : Decidable (IsFixedPt f x) :=
   h (f x) x
 
 /-- If `x` is a fixed point of `f`, then `f x = x`. This is useful, e.g., for `rw` or `simp`.-/
@@ -61,7 +61,6 @@ protected theorem comp (hf : IsFixedPt f x) (hg : IsFixedPt g x) : IsFixedPt (f 
   calc
     f (g x) = f x := congr_arg f hg
     _ = x := hf
-
 #align function.is_fixed_pt.comp Function.IsFixedPt.comp
 
 /-- If `x` is a fixed point of `f`, then it is a fixed point of `f^[n]`. -/
@@ -74,7 +73,6 @@ theorem left_of_comp (hfg : IsFixedPt (f ∘ g) x) (hg : IsFixedPt g x) : IsFixe
   calc
     f x = f (g x) := congr_arg f hg.symm
     _ = x := hfg
-
 #align function.is_fixed_pt.left_of_comp Function.IsFixedPt.left_of_comp
 
 /-- If `x` is a fixed point of `f` and `g` is a left inverse of `f`, then `x` is a fixed
@@ -83,7 +81,6 @@ theorem to_leftInverse (hf : IsFixedPt f x) (h : LeftInverse g f) : IsFixedPt g 
   calc
     g x = g (f x) := congr_arg g hf.symm
     _ = x := h x
-
 #align function.is_fixed_pt.to_left_inverse Function.IsFixedPt.to_leftInverse
 
 /-- If `g` (semi)conjugates `fa` to `fb`, then it sends fixed points of `fa` to fixed points
@@ -93,7 +90,6 @@ protected theorem map {x : α} (hx : IsFixedPt fa x) {g : α → β} (h : Semico
   calc
     fb (g x) = g (fa x) := (h.eq x).symm
     _ = g x := congr_arg g hx
-
 #align function.is_fixed_pt.map Function.IsFixedPt.map
 
 protected theorem apply {x : α} (hx : IsFixedPt f x) : IsFixedPt f (f x) := by convert hx
@@ -136,10 +132,10 @@ def fixedPoints (f : α → α) : Set α :=
   { x : α | IsFixedPt f x }
 #align function.fixed_points Function.fixedPoints
 
-instance fixedPoints.instDecidable [DecidableEq α] (f : α → α) (x : α) :
+instance fixedPoints.decidable [DecidableEq α] (f : α → α) (x : α) :
     Decidable (x ∈ fixedPoints f) :=
-  IsFixedPt.instDecidable
-#align function.fixed_points.decidable Function.fixedPoints.instDecidable
+  IsFixedPt.decidable
+#align function.fixed_points.decidable Function.fixedPoints.decidable
 
 @[simp]
 theorem mem_fixedPoints : x ∈ fixedPoints f ↔ IsFixedPt f x :=

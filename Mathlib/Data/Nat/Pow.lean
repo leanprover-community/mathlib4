@@ -50,7 +50,6 @@ theorem lt_pow_self {p : ℕ} (h : 1 < p) : ∀ n : ℕ, n < p ^ n
     calc
       n + 1 < p ^ n + 1 := Nat.add_lt_add_right (lt_pow_self h _) _
       _ ≤ p ^ (n + 1) := pow_lt_pow_succ h _
-
 #align nat.lt_pow_self Nat.lt_pow_self
 
 theorem lt_two_pow (n : ℕ) : n < 2 ^ n :=
@@ -154,6 +153,7 @@ theorem sq_sub_sq (a b : ℕ) : a ^ 2 - b ^ 2 = (a + b) * (a - b) := by
 #align nat.sq_sub_sq Nat.sq_sub_sq
 
 alias sq_sub_sq ← pow_two_sub_pow_two
+#align nat.pow_two_sub_pow_two Nat.pow_two_sub_pow_two
 
 /-! ### `pow` and `mod` / `dvd` -/
 

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 
 ! This file was ported from Lean 3 source module data.pi.lex
-! leanprover-community/mathlib commit d4f69d96f3532729da8ebb763f4bc26fcf640f06
+! leanprover-community/mathlib commit 6623e6af705e97002a9054c1c05a980180276fc1
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -235,6 +235,7 @@ instance Lex.orderedCommGroup [LinearOrder ι] [∀ a, OrderedCommGroup (β a)] 
         Or.inr ⟨i, fun j hji =>
           show z j * x j = z j * y j by rw [hi.1 j hji], mul_lt_mul_left' hi.2 _⟩ }
 #align pi.lex.ordered_comm_group Pi.Lex.orderedCommGroup
+#align pi.lex.ordered_add_comm_group Pi.Lex.orderedAddCommGroup
 
 /-- If we swap two strictly decreasing values in a function, then the result is lexicographically
 smaller than the original function. -/

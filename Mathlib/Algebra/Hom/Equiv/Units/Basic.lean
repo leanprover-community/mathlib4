@@ -59,8 +59,8 @@ theorem coe_mapEquiv (h : M ≃* N) (x : Mˣ) : (mapEquiv h x : N) = h x :=
 #align units.coe_map_equiv Units.coe_mapEquiv
 
 /-- Left multiplication by a unit of a monoid is a permutation of the underlying type. -/
-@[to_additive "Left addition of an additive unit is a permutation of the underlying type.",
-  simps (config := { fullyApplied := false }) apply]
+@[to_additive (attr := simps (config := { fullyApplied := false }) apply)
+  "Left addition of an additive unit is a permutation of the underlying type."]
 def mulLeft (u : Mˣ) : Equiv.Perm M where
   toFun x := u * x
   invFun x := u⁻¹ * x
@@ -68,6 +68,8 @@ def mulLeft (u : Mˣ) : Equiv.Perm M where
   right_inv := u.mul_inv_cancel_left
 #align units.mul_left Units.mulLeft
 #align add_units.add_left AddUnits.addLeft
+#align units.mul_left_apply Units.mulLeft_apply
+#align add_units.add_left_apply AddUnits.addLeft_apply
 
 @[to_additive (attr := simp)]
 theorem mulLeft_symm (u : Mˣ) : u.mulLeft.symm = u⁻¹.mulLeft :=
@@ -82,8 +84,8 @@ theorem mulLeft_bijective (a : Mˣ) : Function.Bijective ((a * ·) : M → M) :=
 #align add_units.add_left_bijective AddUnits.addLeft_bijective
 
 /-- Right multiplication by a unit of a monoid is a permutation of the underlying type. -/
-@[to_additive "Right addition of an additive unit is a permutation of the underlying type.",
-  simps (config := { fullyApplied := false }) apply]
+@[to_additive (attr := simps (config := { fullyApplied := false }) apply)
+"Right addition of an additive unit is a permutation of the underlying type."]
 def mulRight (u : Mˣ) : Equiv.Perm M where
   toFun x := x * u
   invFun x := x * ↑u⁻¹
@@ -91,6 +93,8 @@ def mulRight (u : Mˣ) : Equiv.Perm M where
   right_inv x := inv_mul_cancel_right x u
 #align units.mul_right Units.mulRight
 #align add_units.add_right AddUnits.addRight
+#align units.mul_right_apply Units.mulRight_apply
+#align add_units.add_right_apply AddUnits.addRight_apply
 
 @[to_additive (attr := simp)]
 theorem mulRight_symm (u : Mˣ) : u.mulRight.symm = u⁻¹.mulRight :=
@@ -181,7 +185,7 @@ theorem _root_.Group.mulRight_bijective (a : G) : Function.Bijective (· * a) :=
 #align add_group.add_right_bijective AddGroup.addRight_bijective
 
 /-- A version of `Equiv.mulLeft a b⁻¹` that is defeq to `a / b`. -/
-@[to_additive " A version of `equiv.add_left a (-b)` that is defeq to `a - b`. ", simps]
+@[to_additive (attr := simps) " A version of `Equiv.addLeft a (-b)` that is defeq to `a - b`. "]
 protected def divLeft (a : G) : G ≃ G where
   toFun b := a / b
   invFun b := b⁻¹ * a
@@ -189,6 +193,10 @@ protected def divLeft (a : G) : G ≃ G where
   right_inv b := by simp [div_eq_mul_inv]
 #align equiv.div_left Equiv.divLeft
 #align equiv.sub_left Equiv.subLeft
+#align equiv.div_left_apply Equiv.divLeft_apply
+#align equiv.div_left_symm_apply Equiv.divLeft_symm_apply
+#align equiv.sub_left_apply Equiv.subLeft_apply
+#align equiv.sub_left_symm_apply Equiv.subLeft_symm_apply
 
 @[to_additive]
 theorem divLeft_eq_inv_trans_mulLeft (a : G) :
@@ -198,7 +206,7 @@ theorem divLeft_eq_inv_trans_mulLeft (a : G) :
 #align equiv.sub_left_eq_neg_trans_add_left Equiv.subLeft_eq_neg_trans_addLeft
 
 /-- A version of `Equiv.mulRight a⁻¹ b` that is defeq to `b / a`. -/
-@[to_additive " A version of `equiv.add_right (-a) b` that is defeq to `b - a`. ", simps]
+@[to_additive (attr := simps) " A version of `Equiv.addRight (-a) b` that is defeq to `b - a`. "]
 protected def divRight (a : G) : G ≃
       G where
   toFun b := b / a
@@ -207,6 +215,10 @@ protected def divRight (a : G) : G ≃
   right_inv b := by simp [div_eq_mul_inv]
 #align equiv.div_right Equiv.divRight
 #align equiv.sub_right Equiv.subRight
+#align equiv.div_right_symm_apply Equiv.divRight_symm_apply
+#align equiv.div_right_apply Equiv.divRight_apply
+#align equiv.sub_right_symm_apply Equiv.subRight_symm_apply
+#align equiv.sub_right_apply Equiv.subRight_apply
 
 @[to_additive]
 theorem divRight_eq_mulRight_inv (a : G) : Equiv.divRight a = Equiv.mulRight a⁻¹ :=
@@ -224,26 +236,18 @@ end Equiv
 -- aren't in simp normal form (they contain a `toFun`)
 /-- In a `DivisionCommMonoid`, `Equiv.inv` is a `MulEquiv`. There is a variant of this
 `MulEquiv.inv' G : G ≃* Gᵐᵒᵖ` for the non-commutative case. -/
-@[to_additive "When the `AddGroup` is commutative, `Equiv.neg` is an `AddEquiv`."]
+@[to_additive (attr := simps apply)
+  "When the `AddGroup` is commutative, `Equiv.neg` is an `AddEquiv`."]
 def MulEquiv.inv (G : Type _) [DivisionCommMonoid G] : G ≃* G :=
   { Equiv.inv G with toFun := Inv.inv, invFun := Inv.inv, map_mul' := mul_inv }
 #align mul_equiv.inv MulEquiv.inv
 #align add_equiv.neg AddEquiv.neg
-
--- porting note: this lemma and the next are added manually because `simps` was
--- not quite generating the right thing
-@[simp] theorem MulEquiv.inv_apply (G : Type _) [DivisionCommMonoid G] (a : G) :
-    (MulEquiv.inv G).toEquiv a = a⁻¹ :=
-  rfl
 #align mul_equiv.inv_apply MulEquiv.inv_apply
-
-@[simp] theorem AddEquiv.neg_apply (G : Type _) [SubtractionCommMonoid G] (a : G) :
-    (AddEquiv.neg G).toEquiv a = -a :=
-  rfl
 #align add_equiv.neg_apply AddEquiv.neg_apply
 
-@[simp]
+@[to_additive (attr := simp)]
 theorem MulEquiv.inv_symm (G : Type _) [DivisionCommMonoid G] :
     (MulEquiv.inv G).symm = MulEquiv.inv G :=
   rfl
 #align mul_equiv.inv_symm MulEquiv.inv_symm
+-- porting note: no `add_equiv.neg_symm` in `mathlib3`

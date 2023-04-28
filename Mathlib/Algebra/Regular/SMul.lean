@@ -102,8 +102,8 @@ theorem mul [Mul R] [IsScalarTower R R M] (ra : IsSMulRegular M a) (rb : IsSMulR
   ra.smul rb
 #align is_smul_regular.mul IsSMulRegular.mul
 
-theorem of_mul [Mul R] [IsScalarTower R R M] (ab : IsSMulRegular M (a * b)) : IsSMulRegular M b :=
-  by
+theorem of_mul [Mul R] [IsScalarTower R R M] (ab : IsSMulRegular M (a * b)) :
+    IsSMulRegular M b := by
   rw [← smul_eq_mul] at ab
   exact ab.of_smul _
 #align is_smul_regular.of_mul IsSMulRegular.of_mul
@@ -238,7 +238,7 @@ variable {G : Type _} [Group G]
 of the inverse given by groups, since there is no `LeftCancelSMul` typeclass. -/
 theorem isSMulRegular_of_group [MulAction G R] (g : G) : IsSMulRegular R g := by
   intro x y h
-  convert congr_arg ((· • ·) g⁻¹) h using 1 <;> simp [← smul_assoc]
+  convert congr_arg (g⁻¹ • ·) h using 1 <;> simp [← smul_assoc]
 #align is_smul_regular_of_group isSMulRegular_of_group
 
 end Group

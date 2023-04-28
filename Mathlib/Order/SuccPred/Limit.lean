@@ -60,9 +60,9 @@ section Preorder
 
 variable [Preorder α] {a : α}
 
-protected theorem IsMin.isSuccLimit : IsMin a → IsSuccLimit a := fun h _ hab =>
+protected theorem _root_.IsMin.isSuccLimit : IsMin a → IsSuccLimit a := fun h _ hab =>
   not_isMin_of_lt hab.lt h
-#align is_min.is_succ_limit Order.IsMin.isSuccLimit
+#align is_min.is_succ_limit IsMin.isSuccLimit
 
 theorem isSuccLimit_bot [OrderBot α] : IsSuccLimit (⊥ : α) :=
   IsMin.isSuccLimit isMin_bot
@@ -123,7 +123,7 @@ section PartialOrder
 variable [PartialOrder α] [SuccOrder α] {a b : α} {C : α → Sort _}
 
 theorem isSuccLimit_of_succ_ne (h : ∀ b, succ b ≠ a) : IsSuccLimit a := fun b hba =>
-  h b (Order.Covby.succ_eq hba)
+  h b (Covby.succ_eq hba)
 #align order.is_succ_limit_of_succ_ne Order.isSuccLimit_of_succ_ne
 
 theorem not_isSuccLimit_iff : ¬IsSuccLimit a ↔ ∃ b, ¬IsMax b ∧ succ b = a := by
@@ -266,8 +266,10 @@ theorem isPredLimit_toDual_iff : IsPredLimit (toDual a) ↔ IsSuccLimit a := by
 #align order.is_pred_limit_to_dual_iff Order.isPredLimit_toDual_iff
 
 alias isSuccLimit_toDual_iff ↔ _ isPredLimit.dual
+#align order.is_pred_limit.dual Order.isPredLimit.dual
 
 alias isPredLimit_toDual_iff ↔ _ isSuccLimit.dual
+#align order.is_succ_limit.dual Order.isSuccLimit.dual
 
 end LT
 
@@ -275,9 +277,9 @@ section Preorder
 
 variable [Preorder α] {a : α}
 
-protected theorem IsMax.isPredLimit : IsMax a → IsPredLimit a := fun h _ hab =>
+protected theorem _root_.IsMax.isPredLimit : IsMax a → IsPredLimit a := fun h _ hab =>
   not_isMax_of_lt hab.lt h
-#align is_max.is_pred_limit Order.IsMax.isPredLimit
+#align is_max.is_pred_limit IsMax.isPredLimit
 
 theorem isPredLimit_top [OrderTop α] : IsPredLimit (⊤ : α) :=
    IsMax.isPredLimit isMax_top
@@ -288,7 +290,7 @@ variable [PredOrder α]
 protected theorem IsPredLimit.isMin (h : IsPredLimit (pred a)) : IsMin a := by
   by_contra H
   exact h a (pred_covby_of_not_isMin H)
-#align order.isPredLimit.is_min Order.IsPredLimit.isMin
+#align order.is_pred_limit.is_min Order.IsPredLimit.isMin
 
 theorem not_isPredLimit_pred_of_not_isMin (ha : ¬IsMin a) : ¬IsPredLimit (pred a) := by
   contrapose! ha
@@ -356,7 +358,7 @@ theorem isPredLimit_of_pred_lt (H : ∀ a > b, pred a < b) : IsPredLimit b := fu
 
 theorem IsPredLimit.lt_pred (h : IsPredLimit a) : a < b → a < pred b :=
   (isPredLimit.dual h).succ_lt
-#align order.isPredLimit.lt_pred Order.IsPredLimit.lt_pred
+#align order.is_pred_limit.lt_pred Order.IsPredLimit.lt_pred
 
 theorem IsPredLimit.lt_pred_iff (h : IsPredLimit a) : a < pred b ↔ a < b :=
   (isPredLimit.dual h).succ_lt_iff
@@ -401,7 +403,7 @@ variable [IsPredArchimedean α]
 
 protected theorem IsPredLimit.isMax (h : IsPredLimit a) : IsMax a :=
   (isPredLimit.dual h).isMin
-#align order.isPredLimit.is_max Order.IsPredLimit.isMax
+#align order.is_pred_limit.is_max Order.IsPredLimit.isMax
 
 @[simp]
 theorem isPredLimit_iff : IsPredLimit a ↔ IsMax a :=

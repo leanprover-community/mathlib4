@@ -90,11 +90,9 @@ section OrderTop
 noncomputable def topOrderOrNoTopOrder (α : Type _) [LE α] : PSum (OrderTop α) (NoTopOrder α) := by
   by_cases H : ∀ a : α, ∃ b, ¬b ≤ a
   · exact PSum.inr ⟨H⟩
-
   · push_neg at H
     letI : Top α := ⟨Classical.choose H⟩
     exact PSum.inl ⟨Classical.choose_spec H⟩
-
 #align top_order_or_no_top_order topOrderOrNoTopOrder
 
 section LE
@@ -155,8 +153,10 @@ theorem not_isTop_iff_ne_top : ¬IsTop a ↔ a ≠ ⊤ :=
 #align not_is_top_iff_ne_top not_isTop_iff_ne_top
 
 alias isMax_iff_eq_top ↔ IsMax.eq_top _
+#align is_max.eq_top IsMax.eq_top
 
 alias isTop_iff_eq_top ↔ IsTop.eq_top _
+#align is_top.eq_top IsTop.eq_top
 
 @[simp]
 theorem top_le_iff : ⊤ ≤ a ↔ a = ⊤ :=
@@ -256,11 +256,9 @@ section OrderBot
 noncomputable def botOrderOrNoBotOrder (α : Type _) [LE α] : PSum (OrderBot α) (NoBotOrder α) := by
   by_cases H : ∀ a : α, ∃ b, ¬a ≤ b
   · exact PSum.inr ⟨H⟩
-
   · push_neg at H
     letI : Bot α := ⟨Classical.choose H⟩
     exact PSum.inl ⟨Classical.choose_spec H⟩
-
 #align bot_order_or_no_bot_order botOrderOrNoBotOrder
 
 section LE
@@ -361,8 +359,10 @@ theorem not_isBot_iff_ne_bot : ¬IsBot a ↔ a ≠ ⊥ :=
 #align not_is_bot_iff_ne_bot not_isBot_iff_ne_bot
 
 alias isMin_iff_eq_bot ↔ IsMin.eq_bot _
+#align is_min.eq_bot IsMin.eq_bot
 
 alias isBot_iff_eq_bot ↔ IsBot.eq_bot _
+#align is_bot.eq_bot IsBot.eq_bot
 
 @[simp]
 theorem le_bot_iff : a ≤ ⊥ ↔ a = ⊥ :=

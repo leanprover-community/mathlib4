@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 
 ! This file was ported from Lean 3 source module order.complete_lattice
-! leanprover-community/mathlib commit aba57d4d3dae35460225919dcd82fe91355162f9
+! leanprover-community/mathlib commit 5709b0d8725255e76f47debca6400c07b5c2d8e6
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -253,7 +253,7 @@ theorem infₛ_le_iff : infₛ s ≤ a ↔ ∀ b ∈ lowerBounds s, b ≤ a :=
 
 theorem infᵢ_le_iff {s : ι → α} : infᵢ s ≤ a ↔ ∀ b, (∀ i, b ≤ s i) → b ≤ a := by
   simp [infᵢ, infₛ_le_iff, lowerBounds]
-#align infᵢ_le_iff infᵢ_le_iff
+#align infi_le_iff infᵢ_le_iff
 
 theorem infₛ_le_infₛ_of_forall_exists_le (h : ∀ x ∈ s, ∃ y ∈ t, y ≤ x) : infₛ t ≤ infₛ s :=
   le_of_forall_le
@@ -262,7 +262,6 @@ theorem infₛ_le_infₛ_of_forall_exists_le (h : ∀ x ∈ s, ∃ y ∈ t, y �
       introv h₀ h₁
       rcases h _ h₁ with ⟨y, hy, hy'⟩
       solve_by_elim [le_trans _ hy'])
-
 #align Inf_le_Inf_of_forall_exists_le infₛ_le_infₛ_of_forall_exists_le
 
 -- We will generalize this to conditionally complete lattices in `cInf_singleton`.
@@ -398,11 +397,20 @@ class CompleteLinearOrder (α : Type _) extends CompleteLattice α where
   /-- In a linearly ordered type, we assume the order relations are all decidable. -/
   decidable_lt : DecidableRel (. < . : α → α → Prop) :=
     @decidableLT_of_decidableLE _ _ decidable_le
-
 #align complete_linear_order CompleteLinearOrder
 
 instance CompleteLinearOrder.toLinearOrder [i : CompleteLinearOrder α] : LinearOrder α :=
-  { i with }
+  { i with
+    min := Inf.inf
+    max := Sup.sup
+    min_def := fun a b => by
+      split_ifs with h
+      . simp [h]
+      . simp [(CompleteLinearOrder.le_total a b).resolve_left h]
+    max_def :=  fun a b => by
+      split_ifs with h
+      . simp [h]
+      . simp [(CompleteLinearOrder.le_total a b).resolve_left h] }
 
 namespace OrderDual
 
@@ -654,7 +662,7 @@ theorem Equiv.supᵢ_comp {g : ι' → α} (e : ι ≃ ι') : (⨆ x, g (e x)) =
 protected theorem Function.Surjective.supᵢ_congr {g : ι' → α} (h : ι → ι') (h1 : Surjective h)
     (h2 : ∀ x, g (h x) = f x) : (⨆ x, f x) = ⨆ y, g y := by
   convert h1.supᵢ_comp g
-  exact (funext h2).symm
+  exact (h2 _).symm
 #align function.surjective.supr_congr Function.Surjective.supᵢ_congr
 
 protected theorem Equiv.supᵢ_congr {g : ι' → α} (e : ι ≃ ι') (h : ∀ x, g (e x) = f x) :
@@ -917,7 +925,6 @@ theorem le_infᵢ_iff : a ≤ infᵢ f ↔ ∀ i, a ≤ f i :=
 
 theorem supᵢ₂_le_iff {f : ∀ i, κ i → α} : (⨆ (i) (j), f i j) ≤ a ↔ ∀ i j, f i j ≤ a := by
   simp_rw [supᵢ_le_iff]
-
 #align supr₂_le_iff supᵢ₂_le_iff
 
 theorem le_infᵢ₂_iff {f : ∀ i, κ i → α} : (a ≤ ⨅ (i) (j), f i j) ↔ ∀ i j, a ≤ f i j := by
@@ -967,7 +974,7 @@ theorem Monotone.le_map_supₛ [CompleteLattice β] {s : Set α} {f : α → β}
 theorem Antitone.le_map_infₛ [CompleteLattice β] {s : Set α} {f : α → β} (hf : Antitone f) :
     (⨆ a ∈ s, f a) ≤ f (infₛ s) :=
   hf.dual_left.le_map_supₛ
-#align antitone.le_map_infₛ Antitone.le_map_infₛ
+#align antitone.le_map_Inf Antitone.le_map_infₛ
 
 theorem OrderIso.map_supᵢ [CompleteLattice β] (f : α ≃o β) (x : ι → α) :
     f (⨆ i, x i) = ⨆ i, f (x i) :=
@@ -1123,7 +1130,7 @@ theorem infᵢ_eq_of_forall_ge_of_forall_gt_exists_lt :
 #align infi_eq_of_forall_ge_of_forall_gt_exists_lt infᵢ_eq_of_forall_ge_of_forall_gt_exists_lt
 
 theorem supᵢ_eq_dif {p : Prop} [Decidable p] (a : p → α) :
-    (⨆ h : p, a h) = if h : p then a h else ⊥ := by by_cases p <;> simp [h]
+    (⨆ h : p, a h) = if h : p then a h else ⊥ := by by_cases h : p <;> simp [h]
 #align supr_eq_dif supᵢ_eq_dif
 
 theorem supᵢ_eq_if {p : Prop} [Decidable p] (a : α) : (⨆ _h : p, a) = if p then a else ⊥ :=
@@ -1363,8 +1370,8 @@ section
 variable (p : ι → Prop) [DecidablePred p]
 
 theorem supᵢ_dite (f : ∀ i, p i → α) (g : ∀ i, ¬p i → α) :
-    (⨆ i, if h : p i then f i h else g i h) = (⨆ (i) (h : p i), f i h) ⊔ ⨆ (i) (h : ¬p i), g i h :=
-  by
+    (⨆ i, if h : p i then f i h else g i h) = (⨆ (i) (h : p i), f i h) ⊔ ⨆ (i) (h : ¬p i),
+    g i h := by
   rw [← supᵢ_sup_eq]
   congr 1 with i
   split_ifs with h <;> simp [h]
@@ -1655,8 +1662,8 @@ theorem Antitone.infᵢ_nat_add {f : ℕ → α} (hf : Antitone f) (k : ℕ) : (
 -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/complete_lattice.20and.20has_sup/near/316497982
 -- "the subterm ?f (i + ?k) produces an ugly higher-order unification problem."
 -- @[simp]
-theorem supᵢ_infᵢ_ge_nat_add (f : ℕ → α) (k : ℕ) : (⨆ n, ⨅ i ≥ n, f (i + k)) = ⨆ n, ⨅ i ≥ n, f i :=
-  by
+theorem supᵢ_infᵢ_ge_nat_add (f : ℕ → α) (k : ℕ) :
+    (⨆ n, ⨅ i ≥ n, f (i + k)) = ⨆ n, ⨅ i ≥ n, f i := by
   have hf : Monotone fun n => ⨅ i ≥ n, f i := fun n m h => binfᵢ_mono fun i => h.trans
   rw [← Monotone.supᵢ_nat_add hf k]
   · simp_rw [infᵢ_ge_eq_infᵢ_nat_add, ← Nat.add_assoc]
@@ -1674,7 +1681,6 @@ theorem sup_supᵢ_nat_succ (u : ℕ → α) : (u 0 ⊔ ⨆ i, u (i + 1)) = ⨆ 
     (u 0 ⊔ ⨆ i, u (i + 1)) = ⨆ x ∈ {0} ∪ range Nat.succ, u x := by
       { rw [supᵢ_union, supᵢ_singleton, supᵢ_range] }
     _ = ⨆ i, u i := by rw [Nat.zero_union_range_succ, supᵢ_univ]
-
 #align sup_supr_nat_succ sup_supᵢ_nat_succ
 
 theorem inf_infᵢ_nat_succ (u : ℕ → α) : (u 0 ⊓ ⨅ i, u (i + 1)) = ⨅ i, u i :=
@@ -1834,6 +1840,70 @@ instance supSet [SupSet α] [SupSet β] : SupSet (α × β) :=
 instance infSet [InfSet α] [InfSet β] : InfSet (α × β) :=
   ⟨fun s => (infₛ (Prod.fst '' s), infₛ (Prod.snd '' s))⟩
 
+variable {α β}
+
+theorem fst_infₛ [InfSet α] [InfSet β] (s : Set (α × β)) : (infₛ s).fst = infₛ (Prod.fst '' s) :=
+  rfl
+#align prod.fst_Inf Prod.fst_infₛ
+
+theorem snd_infₛ [InfSet α] [InfSet β] (s : Set (α × β)) : (infₛ s).snd = infₛ (Prod.snd '' s) :=
+  rfl
+#align prod.snd_Inf Prod.snd_infₛ
+
+theorem swap_infₛ [InfSet α] [InfSet β] (s : Set (α × β)) : (infₛ s).swap = infₛ (Prod.swap '' s) :=
+  ext (congr_arg infₛ <| image_comp Prod.fst swap s : _)
+    (congr_arg infₛ <| image_comp Prod.snd swap s : _)
+#align prod.swap_Inf Prod.swap_infₛ
+
+theorem fst_supₛ [SupSet α] [SupSet β] (s : Set (α × β)) : (supₛ s).fst = supₛ (Prod.fst '' s) :=
+  rfl
+#align prod.fst_Sup Prod.fst_supₛ
+
+theorem snd_supₛ [SupSet α] [SupSet β] (s : Set (α × β)) : (supₛ s).snd = supₛ (Prod.snd '' s) :=
+  rfl
+#align prod.snd_Sup Prod.snd_supₛ
+
+theorem swap_supₛ [SupSet α] [SupSet β] (s : Set (α × β)) : (supₛ s).swap = supₛ (Prod.swap '' s) :=
+  ext (congr_arg supₛ <| image_comp Prod.fst swap s : _)
+    (congr_arg supₛ <| image_comp Prod.snd swap s : _)
+#align prod.swap_Sup Prod.swap_supₛ
+
+theorem fst_infᵢ [InfSet α] [InfSet β] (f : ι → α × β) : (infᵢ f).fst = ⨅ i, (f i).fst :=
+  congr_arg infₛ (range_comp _ _).symm
+#align prod.fst_infi Prod.fst_infᵢ
+
+theorem snd_infᵢ [InfSet α] [InfSet β] (f : ι → α × β) : (infᵢ f).snd = ⨅ i, (f i).snd :=
+  congr_arg infₛ (range_comp _ _).symm
+#align prod.snd_infi Prod.snd_infᵢ
+
+theorem swap_infᵢ [InfSet α] [InfSet β] (f : ι → α × β) : (infᵢ f).swap = ⨅ i, (f i).swap := by
+  simp_rw [infᵢ, swap_infₛ, ←range_comp, Function.comp]  -- Porting note: need to unfold `∘`
+#align prod.swap_infi Prod.swap_infᵢ
+
+theorem infᵢ_mk [InfSet α] [InfSet β] (f : ι → α) (g : ι → β) :
+    (⨅ i, (f i, g i)) = (⨅ i, f i, ⨅ i, g i) :=
+  congr_arg₂ Prod.mk (fst_infᵢ _) (snd_infᵢ _)
+#align prod.infi_mk Prod.infᵢ_mk
+
+theorem fst_supᵢ [SupSet α] [SupSet β] (f : ι → α × β) : (supᵢ f).fst = ⨆ i, (f i).fst :=
+  congr_arg supₛ (range_comp _ _).symm
+#align prod.fst_supr Prod.fst_supᵢ
+
+theorem snd_supᵢ [SupSet α] [SupSet β] (f : ι → α × β) : (supᵢ f).snd = ⨆ i, (f i).snd :=
+  congr_arg supₛ (range_comp _ _).symm
+#align prod.snd_supr Prod.snd_supᵢ
+
+theorem swap_supᵢ [SupSet α] [SupSet β] (f : ι → α × β) : (supᵢ f).swap = ⨆ i, (f i).swap := by
+  simp_rw [supᵢ, swap_supₛ, ←range_comp, Function.comp]  -- Porting note: need to unfold `∘`
+#align prod.swap_supr Prod.swap_supᵢ
+
+theorem supᵢ_mk [SupSet α] [SupSet β] (f : ι → α) (g : ι → β) :
+    (⨆ i, (f i, g i)) = (⨆ i, f i, ⨆ i, g i) :=
+  congr_arg₂ Prod.mk (fst_supᵢ _) (snd_supᵢ _)
+#align prod.supr_mk Prod.supᵢ_mk
+
+variable (α β)
+
 instance completeLattice [CompleteLattice α] [CompleteLattice β] : CompleteLattice (α × β) :=
   { Prod.lattice α β, Prod.boundedOrder α β, Prod.supSet α β, Prod.infSet α β with
     le_supₛ := fun _ _ hab => ⟨le_supₛ <| mem_image_of_mem _ hab, le_supₛ <| mem_image_of_mem _ hab⟩
@@ -1846,6 +1916,16 @@ instance completeLattice [CompleteLattice α] [CompleteLattice β] : CompleteLat
         le_infₛ <| ball_image_of_ball fun p hp => (h p hp).2⟩ }
 
 end Prod
+
+lemma infₛ_prod [InfSet α] [InfSet β] {s : Set α} {t : Set β} (hs : s.Nonempty) (ht : t.Nonempty) :
+  infₛ (s ×ˢ t) = (infₛ s, infₛ t) :=
+congr_arg₂ Prod.mk (congr_arg infₛ $ fst_image_prod _ ht) (congr_arg infₛ $ snd_image_prod hs _)
+#align Inf_prod infₛ_prod
+
+lemma supₛ_prod [SupSet α] [SupSet β] {s : Set α} {t : Set β} (hs : s.Nonempty) (ht : t.Nonempty) :
+  supₛ (s ×ˢ t) = (supₛ s, supₛ t) :=
+congr_arg₂ Prod.mk (congr_arg supₛ $ fst_image_prod _ ht) (congr_arg supₛ $ snd_image_prod hs _)
+#align Sup_prod supₛ_prod
 
 section CompleteLattice
 
@@ -1894,7 +1974,7 @@ end CompleteLattice
 -- See note [reducible non-instances]
 /-- Pullback a `CompleteLattice` along an injection. -/
 @[reducible]
-protected def Function.Injective.completeLattice [HasSup α] [HasInf α] [SupSet α] [InfSet α] [Top α]
+protected def Function.Injective.completeLattice [Sup α] [Inf α] [SupSet α] [InfSet α] [Top α]
     [Bot α] [CompleteLattice β] (f : α → β) (hf : Function.Injective f)
     (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b)
     (map_supₛ : ∀ s, f (supₛ s) = ⨆ a ∈ s, f a) (map_infₛ : ∀ s, f (infₛ s) = ⨅ a ∈ s, f a)

@@ -14,7 +14,7 @@ import Mathlib.Data.Set.Lattice
 # Formal concept analysis
 
 This file defines concept lattices. A concept of a relation `r : α → β → Prop` is a pair of sets
-`s : set α` and `t : set β` such that `s` is the set of all `a : α` that are related to all elements
+`s : Set α` and `t : Set β` such that `s` is the set of all `a : α` that are related to all elements
 of `t`, and `t` is the set of all `b : β` that are related to all elements of `s`.
 
 Ordering the concepts of a relation `r` by inclusion on the first component gives rise to a
@@ -48,13 +48,13 @@ variable {ι : Sort _} {α β γ : Type _} {κ : ι → Sort _} (r : α → β �
 /-! ### Intent and extent -/
 
 
-/-- The intent closure of `s : set α` along a relation `r : α → β → Prop` is the set of all elements
+/-- The intent closure of `s : Set α` along a relation `r : α → β → Prop` is the set of all elements
 which `r` relates to all elements of `s`. -/
 def intentClosure (s : Set α) : Set β :=
   { b | ∀ ⦃a⦄, a ∈ s → r a b }
 #align intent_closure intentClosure
 
-/-- The extent closure of `t : set β` along a relation `r : α → β → Prop` is the set of all elements
+/-- The extent closure of `t : Set β` along a relation `r : α → β → Prop` is the set of all elements
 which `r` relates to all elements of `t`. -/
 def extentClosure (t : Set β) : Set α :=
   { a | ∀ ⦃b⦄, b ∈ t → r a b }
@@ -65,8 +65,7 @@ variable {r}
 theorem subset_intentClosure_iff_subset_extentClosure :
     t ⊆ intentClosure r s ↔ s ⊆ extentClosure r t :=
   ⟨fun h _ ha _ hb => h hb ha, fun h _ hb _ ha => h ha hb⟩
-#align
-  subset_intent_closure_iff_subset_extent_closure subset_intentClosure_iff_subset_extentClosure
+#align subset_intent_closure_iff_subset_extent_closure subset_intentClosure_iff_subset_extentClosure
 
 variable (r)
 
@@ -124,7 +123,7 @@ theorem extentClosure_unionᵢ (f : ι → Set β) :
 theorem intentClosure_unionᵢ₂ (f : ∀ i, κ i → Set α) :
     intentClosure r (⋃ (i) (j), f i j) = ⋂ (i) (j), intentClosure r (f i j) :=
   (gc_intentClosure_extentClosure r).l_supᵢ₂
-#align intent_closure_unionᵢ₂ intentClosure_unionᵢ₂
+#align intent_closure_Union₂ intentClosure_unionᵢ₂
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
@@ -180,6 +179,8 @@ structure Concept extends Set α × Set β where
   closure_snd : extentClosure r snd = fst
 #align concept Concept
 
+initialize_simps_projections Concept (+toProd, -fst, -snd)
+
 namespace Concept
 
 variable {r α β} {c d : Concept α β r}
@@ -187,8 +188,7 @@ variable {r α β} {c d : Concept α β r}
 attribute [simp] closure_fst closure_snd
 
 @[ext]
-theorem ext (h : c.fst = d.fst) : c = d :=
-  by
+theorem ext (h : c.fst = d.fst) : c = d := by
   obtain ⟨⟨s₁, t₁⟩, h₁, _⟩ := c
   obtain ⟨⟨s₂, t₂⟩, h₂, _⟩ := d
   dsimp at h₁ h₂ h
@@ -196,8 +196,7 @@ theorem ext (h : c.fst = d.fst) : c = d :=
   rfl
 #align concept.ext Concept.ext
 
-theorem ext' (h : c.snd = d.snd) : c = d :=
-  by
+theorem ext' (h : c.snd = d.snd) : c = d := by
   obtain ⟨⟨s₁, t₁⟩, _, h₁⟩ := c
   obtain ⟨⟨s₂, t₂⟩, _, h₂⟩ := d
   dsimp at h₁ h₂ h
@@ -211,7 +210,7 @@ theorem fst_injective : Injective fun c : Concept α β r => c.fst := fun _ _ =>
 theorem snd_injective : Injective fun c : Concept α β r => c.snd := fun _ _ => ext'
 #align concept.snd_injective Concept.snd_injective
 
-instance : HasSup (Concept α β r) :=
+instance : Sup (Concept α β r) :=
   ⟨fun c d =>
     { fst := extentClosure r (c.snd ∩ d.snd)
       snd := c.snd ∩ d.snd
@@ -220,7 +219,7 @@ instance : HasSup (Concept α β r) :=
           intentClosure_extentClosure_intentClosure]
       closure_snd := rfl }⟩
 
-instance : HasInf (Concept α β r) :=
+instance : Inf (Concept α β r) :=
   ⟨fun c d =>
     { fst := c.fst ∩ d.fst
       snd := intentClosure r (c.fst ∩ d.fst)
@@ -243,8 +242,7 @@ theorem fst_ssubset_fst_iff : c.fst ⊂ d.fst ↔ c < d :=
 #align concept.fst_ssubset_fst_iff Concept.fst_ssubset_fst_iff
 
 @[simp]
-theorem snd_subset_snd_iff : c.snd ⊆ d.snd ↔ d ≤ c :=
-  by
+theorem snd_subset_snd_iff : c.snd ⊆ d.snd ↔ d ≤ c := by
   refine' ⟨fun h => _, fun h => _⟩
   · rw [← fst_subset_fst_iff, ← c.closure_snd, ← d.closure_snd]
     exact extentClosure_anti _ h
@@ -301,11 +299,11 @@ instance : InfSet (Concept α β r) :=
 instance : CompleteLattice (Concept α β r) :=
   { Concept.instLatticeConcept,
     Concept.instBoundedOrderConceptToLEToPreorderToPartialOrderInstSemilatticeInfConcept with
-    sup := Concept.instHasSupConcept.sup
+    sup := Concept.instSupConcept.sup
     le_supₛ := fun _ _ hc => snd_subset_snd_iff.1 <| binterᵢ_subset_of_mem hc
     supₛ_le := fun _ _ hc =>
       snd_subset_snd_iff.1 <| subset_interᵢ₂ fun d hd => snd_subset_snd_iff.2 <| hc d hd
-    inf := Concept.instHasInfConcept.inf
+    inf := Concept.instInfConcept.inf
     infₛ_le := fun _ _ => binterᵢ_subset_of_mem
     le_infₛ := fun _ _ => subset_interᵢ₂ }
 
@@ -379,6 +377,7 @@ instance : Inhabited (Concept α β r) :=
 def swap (c : Concept α β r) : Concept β α (swap r) :=
   ⟨c.toProd.swap, c.closure_snd, c.closure_fst⟩
 #align concept.swap Concept.swap
+#align concept.swap_to_prod Concept.swap_toProd
 
 @[simp]
 theorem swap_swap (c : Concept α β r) : c.swap.swap = c :=
@@ -404,5 +403,7 @@ def swapEquiv : (Concept α β r)ᵒᵈ ≃o Concept β α (Function.swap r) whe
   right_inv := swap_swap
   map_rel_iff' := swap_le_swap_iff
 #align concept.swap_equiv Concept.swapEquiv
+#align concept.swap_equiv_symm_apply Concept.swapEquiv_symm_apply
+#align concept.swap_equiv_apply Concept.swapEquiv_apply
 
 end Concept

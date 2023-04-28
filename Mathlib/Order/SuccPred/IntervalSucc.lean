@@ -4,11 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 
 ! This file was ported from Lean 3 source module order.succ_pred.interval_succ
-! leanprover-community/mathlib commit 1e05171a5e8cf18d98d9cf7b207540acb044acae
+! leanprover-community/mathlib commit c227d107bbada5d0d9d20287e3282c0a7f1651a0
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Data.Set.Pairwise
+import Mathlib.Data.Set.Pairwise.Basic
 import Mathlib.Order.SuccPred.Basic
 
 /-!
@@ -38,8 +38,7 @@ namespace Monotone
 function `f` and `m n : α`, the union of intervals `Set.Ioc (f i) (f (Order.succ i))`, `m ≤ i < n`,
 is equal to `Set.Ioc (f m) (f n)` -/
 theorem bunionᵢ_Ico_Ioc_map_succ [SuccOrder α] [IsSuccArchimedean α] [LinearOrder β] {f : α → β}
-    (hf : Monotone f) (m n : α) : (⋃ i ∈ Ico m n, Ioc (f i) (f (succ i))) = Ioc (f m) (f n) :=
-  by
+    (hf : Monotone f) (m n : α) : (⋃ i ∈ Ico m n, Ioc (f i) (f (succ i))) = Ioc (f m) (f n) := by
   cases' le_total n m with hnm hmn
   · rw [Ico_eq_empty_of_le hnm, Ioc_eq_empty_of_le (hf hnm), bunionᵢ_empty]
   · refine' Succ.rec _ _ hmn

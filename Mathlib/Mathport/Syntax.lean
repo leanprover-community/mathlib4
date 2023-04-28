@@ -8,6 +8,7 @@ import Lean.Elab.Quotation
 import Std.Tactic.Ext
 import Std.Tactic.RCases
 import Mathlib.Logic.Equiv.LocalEquiv
+import Mathlib.Order.Filter.Basic
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.Alias
 import Mathlib.Tactic.ApplyFun
@@ -21,16 +22,19 @@ import Mathlib.Tactic.Clear_
 import Mathlib.Tactic.Clear!
 import Mathlib.Tactic.ClearExcept
 import Mathlib.Tactic.Constructor
+import Mathlib.Tactic.Continuity
 import Mathlib.Tactic.Contrapose
 import Mathlib.Tactic.Conv
 import Mathlib.Tactic.Convert
 import Mathlib.Tactic.Core
 import Mathlib.Tactic.Existsi
+import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.Find
 import Mathlib.Tactic.GeneralizeProofs
 import Mathlib.Tactic.GuardHypNums
 import Mathlib.Tactic.InferParam
+import Mathlib.Tactic.IntervalCases
 import Mathlib.Tactic.Inhabit
 import Mathlib.Tactic.IrreducibleDef
 import Mathlib.Tactic.LeftRight
@@ -39,13 +43,16 @@ import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.MkIffOfInductiveProp
 import Mathlib.Tactic.ModCases
+import Mathlib.Tactic.Monotonicity
 import Mathlib.Tactic.Nontriviality
 import Mathlib.Tactic.NormCast
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.NthRewrite
 import Mathlib.Tactic.PermuteGoals
+import Mathlib.Tactic.Polyrith
 import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.PushNeg
+import Mathlib.Tactic.Qify
 import Mathlib.Tactic.Recover
 import Mathlib.Tactic.Relation.Rfl
 import Mathlib.Tactic.Relation.Symm
@@ -55,20 +62,24 @@ import Mathlib.Tactic.RenameBVar
 import Mathlib.Tactic.Replace
 import Mathlib.Tactic.RestateAxiom
 import Mathlib.Tactic.Ring
+import Mathlib.Tactic.RSuffices
 import Mathlib.Tactic.RunCmd
 import Mathlib.Tactic.ScopedNS
 import Mathlib.Tactic.Set
 import Mathlib.Tactic.SimpIntro
 import Mathlib.Tactic.SimpRw
 import Mathlib.Tactic.Simps.Basic
+import Mathlib.Tactic.Slice
 import Mathlib.Tactic.SolveByElim
 import Mathlib.Tactic.SplitIfs
 import Mathlib.Tactic.Substs
 import Mathlib.Tactic.SwapVar
 import Mathlib.Tactic.Tauto
+import Mathlib.Tactic.TFAE
 import Mathlib.Tactic.Trace
 import Mathlib.Tactic.TypeCheck
 import Mathlib.Tactic.Use
+import Mathlib.Tactic.WLOG
 import Mathlib.Tactic.Zify
 import Mathlib.Util.Syntax
 import Mathlib.Util.WithWeakNamespace
@@ -156,8 +167,6 @@ namespace Tactic
 
 /- S -/ syntax (name := rcases?) "rcases?" casesTarget,* (" : " num)? : tactic
 /- S -/ syntax (name := rintro?) "rintro?" (" : " num)? : tactic
-/- E -/ syntax (name := rsuffices) "rsuffices"
-    (ppSpace Std.Tactic.RCases.rcasesPatMed)? (" : " term)? (" := " term,+)? : tactic
 
 /- M -/ syntax (name := decide!) "decide!" : tactic
 
@@ -208,37 +217,17 @@ syntax termList := " [" term,* "]"
 
 /- E -/ syntax (name := applyNormed) "apply_normed " term : tactic
 
-/- B -/ syntax (name := abel) "abel" (ppSpace (&"raw" <|> &"term"))? (ppSpace location)? : tactic
-/- B -/ syntax (name := abel!) "abel!" (ppSpace (&"raw" <|> &"term"))? (ppSpace location)? : tactic
-
 /- E -/ syntax (name := noncommRing) "noncomm_ring" : tactic
 
-/- M -/ syntax (name := nlinarith) "nlinarith" (config)? (&" only")? (" [" term,* "]")? : tactic
-/- M -/ syntax (name := nlinarith!) "nlinarith!" (config)? (&" only")? (" [" term,* "]")? : tactic
-/- S -/ syntax (name := polyrith) "polyrith" (&" only")? (" [" term,* "]")? : tactic
 
 /- S -/ syntax (name := omega) "omega" (&" manual")? (&" nat" <|> &" int")? : tactic
-
-/- M -/ syntax (name := tfaeHave) "tfae_have " (ident " : ")? num (" → " <|> " ↔ " <|> " ← ") num :
-  tactic
-/- M -/ syntax (name := tfaeFinish) "tfae_finish" : tactic
-
-syntax mono.side := &"left" <|> &"right" <|> &"both"
-/- B -/ syntax (name := mono) "mono" "*"? (ppSpace mono.side)?
-  (" with " (colGt term),+)? (" using " (colGt simpArg),+)? : tactic
 
 /- B -/ syntax (name := acMono) "ac_mono" ("*" <|> ("^" num))?
   (config)? ((" : " term) <|> (" := " term))? : tactic
 
-/- M -/ syntax (name := intervalCases) "interval_cases" (ppSpace (colGt term))?
-  (" using " term ", " term)? (" with " ident)? : tactic
-
 /- M -/ syntax (name := reassoc) "reassoc" (ppSpace (colGt ident))* : tactic
 /- M -/ syntax (name := reassoc!) "reassoc!" (ppSpace (colGt ident))* : tactic
 /- M -/ syntax (name := deriveReassocProof) "derive_reassoc_proof" : tactic
-
-/- M -/ syntax (name := sliceLHS) "slice_lhs " num num " => " Conv.convSeq : tactic
-/- M -/ syntax (name := sliceRHS) "slice_rhs " num num " => " Conv.convSeq : tactic
 
 /- S -/ syntax (name := subtypeInstance) "subtype_instance" : tactic
 
@@ -249,9 +238,6 @@ syntax mono.side := &"left" <|> &"right" <|> &"both"
 /- S -/ syntax (name := transport) "transport" (ppSpace term)? " using " term : tactic
 
 /- M -/ syntax (name := unfoldCases) "unfold_cases " tacticSeq : tactic
-
-/- M -/ syntax (name := fieldSimp) "field_simp" (config)? (discharger)? (&" only")?
-  (Tactic.simpArgs)? (ppSpace location)? : tactic
 
 /- B -/ syntax (name := equivRw) "equiv_rw" (config)? (termList <|> term) (ppSpace location)? :
   tactic
@@ -269,21 +255,13 @@ syntax mono.side := &"left" <|> &"right" <|> &"both"
 /- B -/ syntax (name := tidy) "tidy" (config)? : tactic
 /- B -/ syntax (name := tidy?) "tidy?" (config)? : tactic
 
-/- B -/ syntax (name := wlog) "wlog" (" (" &"discharger" " := " term ")")?
-  (ppSpace (colGt ident))? (" : " term)? (" := " term)? (" using " (ident*),+)? : tactic
-
 /- M -/ syntax (name := elementwise) "elementwise" (ppSpace (colGt ident))* : tactic
 /- M -/ syntax (name := elementwise!) "elementwise!" (ppSpace (colGt ident))* : tactic
 /- M -/ syntax (name := deriveElementwiseProof) "derive_elementwise_proof" : tactic
 
 /- M -/ syntax (name := computeDegreeLE) "compute_degree_le" : tactic
 
-/- E -/ syntax (name := qify) "qify" (simpArgs)? (ppSpace location)? : tactic
-
 /- S -/ syntax (name := mkDecorations) "mk_decorations" : tactic
-
-/- M -/ syntax (name := filterUpwards) "filter_upwards" (termList)?
-  (" with" term:max*)? (" using" term)? : tactic
 
 /- E -/ syntax (name := isBounded_default) "isBounded_default" : tactic
 
@@ -291,11 +269,6 @@ syntax mono.side := &"left" <|> &"right" <|> &"both"
 
 /- S -/ syntax (name := mvBisim) "mv_bisim" (ppSpace (colGt term))? (" with " binderIdent+)? :
   tactic
-
-/- M -/ syntax (name := continuity) "continuity" (config)? : tactic
-/- M -/ syntax (name := continuity!) "continuity!" (config)? : tactic
-/- M -/ syntax (name := continuity?) "continuity?" (config)? : tactic
-/- M -/ syntax (name := continuity!?) "continuity!?" (config)? : tactic
 
 /- E -/ syntax (name := unitInterval) "unit_interval" : tactic
 
@@ -332,8 +305,6 @@ namespace Conv
 -- https://github.com/leanprover-community/mathlib/issues/2882
 /- M -/ syntax (name := applyCongr) "apply_congr" (ppSpace (colGt term))? : conv
 
-/- M -/ syntax (name := slice) "slice " num num : conv
-
 end Conv
 end Tactic
 
@@ -342,7 +313,6 @@ namespace Attr
 /- S -/ syntax (name := intro) "intro" : attr
 /- S -/ syntax (name := intro!) "intro!" : attr
 
-/- M -/ syntax (name := higherOrder) "higher_order" (ppSpace ident)? : attr
 /- S -/ syntax (name := interactive) "interactive" : attr
 
 /- M -/ syntax (name := expandExists) "expand_exists" (ppSpace ident)+ : attr
@@ -351,8 +321,6 @@ namespace Attr
 /- S -/ syntax (name := protectProj) "protect_proj" (&" without" (ppSpace ident)+)? : attr
 
 /- M -/ syntax (name := notationClass) "notation_class" "*"? (ppSpace ident)? : attr
-
-/- M -/ syntax (name := mono) "mono" (ppSpace Tactic.mono.side)? : attr
 
 /- M -/ syntax (name := elementwise) "elementwise" (ppSpace ident)? : attr
 
@@ -386,3 +354,12 @@ namespace Command
 /- E -/ syntax (name := assertNoInstance) "assert_no_instance " term : command
 
 end Command
+
+namespace Term
+
+/- M -/ syntax (name := matrixNotation)
+  "!![" ppRealGroup(sepBy1(ppGroup(term,+,?), ";", "; ", allowTrailingSep)) "]" : term
+/- M -/ syntax (name := matrixNotationRx0) "!![" ";"* "]" : term
+/- M -/ syntax (name := matrixNotation0xC) "!![" ","+ "]" : term
+
+end Term

@@ -35,18 +35,18 @@ open Lean hiding Rat
 open Elab Meta Term
 
 theorem pf_add_c [Add α] (p : a = b) (c : α) : a + c = b + c := p ▸ rfl
-theorem c_add_pf [Add α] (a : α) (p : b = c) : a + b = a + c := p ▸ rfl
+theorem c_add_pf [Add α] (p : b = c) (a : α) : a + b = a + c := p ▸ rfl
 theorem add_pf [Add α] (p₁ : (a₁:α) = b₁) (p₂ : a₂ = b₂) : a₁ + a₂ = b₁ + b₂ := p₁ ▸ p₂ ▸ rfl
 theorem pf_sub_c [Sub α] (p : a = b) (c : α) : a - c = b - c := p ▸ rfl
-theorem c_sub_pf [Sub α] (a : α) (p : b = c) : a - b = a - c := p ▸ rfl
+theorem c_sub_pf [Sub α] (p : b = c) (a : α) : a - b = a - c := p ▸ rfl
 theorem sub_pf [Sub α] (p₁ : (a₁:α) = b₁) (p₂ : a₂ = b₂) : a₁ - a₂ = b₁ - b₂ := p₁ ▸ p₂ ▸ rfl
 theorem neg_pf [Neg α] (p : (a:α) = b) : -a = -b := p ▸ rfl
 theorem pf_mul_c [Mul α] (p : a = b) (c : α) : a * c = b * c := p ▸ rfl
-theorem c_mul_pf [Mul α] (a : α) (p : b = c) : a * b = a * c := p ▸ rfl
+theorem c_mul_pf [Mul α] (p : b = c) (a : α) : a * b = a * c := p ▸ rfl
 theorem mul_pf [Mul α] (p₁ : (a₁:α) = b₁) (p₂ : a₂ = b₂) : a₁ * a₂ = b₁ * b₂ := p₁ ▸ p₂ ▸ rfl
 theorem inv_pf [Inv α] (p : (a:α) = b) : a⁻¹ = b⁻¹ := p ▸ rfl
 theorem pf_div_c [Div α] (p : a = b) (c : α) : a / c = b / c := p ▸ rfl
-theorem c_div_pf [Div α] (a : α) (p : b = c) : a / b = a / c := p ▸ rfl
+theorem c_div_pf [Div α] (p : b = c) (a : α) : a / b = a / c := p ▸ rfl
 theorem div_pf [Div α] (p₁ : (a₁:α) = b₁) (p₂ : a₂ = b₂) : a₁ / a₂ = b₁ / b₂ := p₁ ▸ p₂ ▸ rfl
 
 /--
@@ -65,13 +65,13 @@ partial def expandLinearCombo (stx : Syntax.Term) : TermElabM (Option Syntax.Ter
     match ← expandLinearCombo e₁, ← expandLinearCombo e₂ with
     | none, none => pure none
     | some p₁, none => ``(pf_add_c $p₁ $e₂)
-    | none, some p₂ => ``(c_add_pf $e₁ $p₂)
+    | none, some p₂ => ``(c_add_pf $p₂ $e₁)
     | some p₁, some p₂ => ``(add_pf $p₁ $p₂)
   | `($e₁ - $e₂) => do
     match ← expandLinearCombo e₁, ← expandLinearCombo e₂ with
     | none, none => pure none
     | some p₁, none => ``(pf_sub_c $p₁ $e₂)
-    | none, some p₂ => ``(c_sub_pf $e₁ $p₂)
+    | none, some p₂ => ``(c_sub_pf $p₂ $e₁)
     | some p₁, some p₂ => ``(sub_pf $p₁ $p₂)
   | `(-$e) => do
     match ← expandLinearCombo e with
@@ -85,7 +85,7 @@ partial def expandLinearCombo (stx : Syntax.Term) : TermElabM (Option Syntax.Ter
     match ← expandLinearCombo e₁, ← expandLinearCombo e₂ with
     | none, none => pure none
     | some p₁, none => ``(pf_mul_c $p₁ $e₂)
-    | none, some p₂ => ``(c_mul_pf $e₁ $p₂)
+    | none, some p₂ => ``(c_mul_pf $p₂ $e₁)
     | some p₁, some p₂ => ``(mul_pf $p₁ $p₂)
   | `($e⁻¹) => do
     match ← expandLinearCombo e with
@@ -95,7 +95,7 @@ partial def expandLinearCombo (stx : Syntax.Term) : TermElabM (Option Syntax.Ter
     match ← expandLinearCombo e₁, ← expandLinearCombo e₂ with
     | none, none => pure none
     | some p₁, none => ``(pf_div_c $p₁ $e₂)
-    | none, some p₂ => ``(c_div_pf $e₁ $p₂)
+    | none, some p₂ => ``(c_div_pf $p₂ $e₁)
     | some p₁, some p₂ => ``(div_pf $p₁ $p₂)
   | e => do
     let e ← elabTerm e none
@@ -126,16 +126,21 @@ theorem eq_of_add [AddGroup α] (p : (a:α) = b) (H : (a' - b') - (a - b) = 0) :
 /-- Implementation of `linear_combination` and `linear_combination2`. -/
 def elabLinearCombination
     (norm? : Option Syntax.Tactic) (input : Option Syntax.Term)
-    (twoGoals := false) : Tactic.TacticM Unit := do
+    (twoGoals := false) : Tactic.TacticM Unit := Tactic.withMainContext do
   let p ← match input with
   | none => `(Eq.refl 0)
   | some e => withSynthesize do
     match ← expandLinearCombo e with
     | none => `(Eq.refl $e)
     | some p => pure p
-  let stx ← if twoGoals then ``(eq_trans₃ $p ?_ ?_) else ``(eq_of_add $p ?_)
   let norm := norm?.getD (Unhygienic.run `(tactic| ring1))
-  Tactic.evalTactic <|← `(tactic| refine $stx <;> $norm)
+  Tactic.evalTactic <|← withFreshMacroScope <| if twoGoals then
+    `(tactic| (
+      refine eq_trans₃ $p ?a ?b
+      case' a => $norm:tactic
+      case' b => $norm:tactic))
+  else
+    `(tactic| (refine eq_of_add $p ?a; case' a => $norm:tactic))
 
 /--
 The `(norm := $tac)` syntax says to use `tac` as a normalization postprocessor for

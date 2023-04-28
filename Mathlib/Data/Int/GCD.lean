@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sangwoo Jo (aka Jason), Guy Leroy, Johannes Hölzl, Mario Carneiro
 
 ! This file was ported from Lean 3 source module data.int.gcd
-! leanprover-community/mathlib commit d4f69d96f3532729da8ebb763f4bc26fcf640f06
+! leanprover-community/mathlib commit 47a1a73351de8dd6c8d3d32b569c8e434b03ca47
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -96,14 +96,18 @@ theorem gcdB_zero_left {s : ℕ} : gcdB 0 s = 1 := by
 theorem gcdA_zero_right {s : ℕ} (h : s ≠ 0) : gcdA s 0 = 1 := by
   unfold gcdA xgcd
   obtain ⟨s, rfl⟩ := Nat.exists_eq_succ_of_ne_zero h
-  simp [xgcdAux_succ]
+  -- Porting note: `simp [xgcdAux_succ]` crashes Lean here
+  rw [xgcdAux_succ]
+  rfl
 #align nat.gcd_a_zero_right Nat.gcdA_zero_right
 
 @[simp]
 theorem gcdB_zero_right {s : ℕ} (h : s ≠ 0) : gcdB s 0 = 0 := by
   unfold gcdB xgcd
   obtain ⟨s, rfl⟩ := Nat.exists_eq_succ_of_ne_zero h
-  simp [xgcdAux_succ]
+  -- Porting note: `simp [xgcdAux_succ]` crashes Lean here
+  rw [xgcdAux_succ]
+  rfl
 #align nat.gcd_b_zero_right Nat.gcdB_zero_right
 
 @[simp]
@@ -138,6 +142,7 @@ theorem xgcd_aux_P {r r'} :
     rw [Int.emod_def]; generalize (b / a : ℤ) = k
     rw [p, p', mul_sub, sub_add_eq_add_sub, mul_sub, add_mul, mul_comm k t, mul_comm k s,
       ← mul_assoc, ← mul_assoc, add_comm (x * s * k), ← add_sub_assoc, sub_sub]
+set_option linter.uppercaseLean3 false in
 #align nat.xgcd_aux_P Nat.xgcd_aux_P
 
 /-- **Bézout's lemma**: given `x y : ℕ`, `gcd x y = x * a + y * b`, where `a = gcd_a x y` and
@@ -301,13 +306,13 @@ theorem gcd_mul_right (i j k : ℤ) : gcd (i * j) (k * j) = gcd i k * natAbs j :
   apply Nat.gcd_mul_right
 #align int.gcd_mul_right Int.gcd_mul_right
 
-theorem gcd_pos_of_non_zero_left {i : ℤ} (j : ℤ) (i_non_zero : i ≠ 0) : 0 < gcd i j :=
-  Nat.gcd_pos_of_pos_left (natAbs j) (natAbs_pos.2 i_non_zero)
-#align int.gcd_pos_of_non_zero_left Int.gcd_pos_of_non_zero_left
+theorem gcd_pos_of_ne_zero_left {i : ℤ} (j : ℤ) (hi : i ≠ 0) : 0 < gcd i j :=
+  Nat.gcd_pos_of_pos_left _ $ natAbs_pos.2 hi
+#align int.gcd_pos_of_ne_zero_left Int.gcd_pos_of_ne_zero_left
 
-theorem gcd_pos_of_non_zero_right (i : ℤ) {j : ℤ} (j_non_zero : j ≠ 0) : 0 < gcd i j :=
-  Nat.gcd_pos_of_pos_right (natAbs i) (natAbs_pos.2 j_non_zero)
-#align int.gcd_pos_of_non_zero_right Int.gcd_pos_of_non_zero_right
+theorem gcd_pos_of_ne_zero_right (i : ℤ) {j : ℤ} (hj : j ≠ 0) : 0 < gcd i j :=
+  Nat.gcd_pos_of_pos_right _ $ natAbs_pos.2 hj
+#align int.gcd_pos_of_ne_zero_right Int.gcd_pos_of_ne_zero_right
 
 theorem gcd_eq_zero_iff {i j : ℤ} : gcd i j = 0 ↔ i = 0 ∧ j = 0 := by
   rw [gcd, Nat.gcd_eq_zero_iff, natAbs_eq_zero, natAbs_eq_zero]
@@ -317,8 +322,8 @@ theorem gcd_pos_iff {i j : ℤ} : 0 < gcd i j ↔ i ≠ 0 ∨ j ≠ 0 :=
   pos_iff_ne_zero.trans <| gcd_eq_zero_iff.not.trans not_and_or
 #align int.gcd_pos_iff Int.gcd_pos_iff
 
-theorem gcd_div {i j k : ℤ} (H1 : k ∣ i) (H2 : k ∣ j) : gcd (i / k) (j / k) = gcd i j / natAbs k :=
-  by
+theorem gcd_div {i j k : ℤ} (H1 : k ∣ i) (H2 : k ∣ j) :
+    gcd (i / k) (j / k) = gcd i j / natAbs k := by
   rw [gcd, natAbs_ediv i k H1, natAbs_ediv j k H2]
   exact Nat.gcd_div (natAbs_dvd_natAbs.mpr H1) (natAbs_dvd_natAbs.mpr H2)
 #align int.gcd_div Int.gcd_div
@@ -401,8 +406,8 @@ theorem gcd_greatest {a b d : ℤ} (hd_pos : 0 ≤ d) (hda : d ∣ a) (hdb : d �
 /-- Euclid's lemma: if `a ∣ b * c` and `gcd a c = 1` then `a ∣ b`.
 Compare with `IsCoprime.dvd_of_dvd_mul_left` and
 `UniqueFactorizationMonoid.dvd_of_dvd_mul_left_of_no_prime_factors` -/
-theorem dvd_of_dvd_mul_left_of_gcd_one {a b c : ℤ} (habc : a ∣ b * c) (hab : gcd a c = 1) : a ∣ b :=
-  by
+theorem dvd_of_dvd_mul_left_of_gcd_one {a b c : ℤ} (habc : a ∣ b * c) (hab : gcd a c = 1) :
+    a ∣ b := by
   have := gcd_eq_gcd_ab a c
   simp only [hab, Int.ofNat_zero, Int.ofNat_succ, zero_add] at this
   have : b * a * gcdA a c + b * c * gcdB a c = b := by simp [mul_assoc, ← mul_add, ← this]
@@ -425,7 +430,7 @@ theorem gcd_least_linear {a b : ℤ} (ha : a ≠ 0) :
     IsLeast { n : ℕ | 0 < n ∧ ∃ x y : ℤ, ↑n = a * x + b * y } (a.gcd b) := by
   simp_rw [← gcd_dvd_iff]
   constructor
-  · simpa [and_true_iff, dvd_refl, Set.mem_setOf_eq] using gcd_pos_of_non_zero_left b ha
+  · simpa [and_true_iff, dvd_refl, Set.mem_setOf_eq] using gcd_pos_of_ne_zero_left b ha
   · simp only [lowerBounds, and_imp, Set.mem_setOf_eq]
     exact fun n hn_pos hn => Nat.le_of_dvd hn_pos hn
 #align int.gcd_least_linear Int.gcd_least_linear

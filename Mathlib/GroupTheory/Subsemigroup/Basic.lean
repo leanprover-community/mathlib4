@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Kenny Lau, Johan Commelin, Mario Carneiro, Kevin Buzza
 Amelia Livingston, Yury Kudryashov, Yakov Pechersky
 
 ! This file was ported from Lean 3 source module group_theory.subsemigroup.basic
-! leanprover-community/mathlib commit 207cfac9fcd06138865b5d04f7091e46d9320432
+! leanprover-community/mathlib commit feb99064803fd3108e37c18b0f77d0a8344677a3
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -62,7 +62,7 @@ variable [Mul M] {s : Set M}
 variable [Add A] {t : Set A}
 
 /-- `MulMemClass S M` says `S` is a type of sets `s : Set M` that are closed under `(*)` -/
-class MulMemClass (S : Type _) (M : outParam <| Type _) [Mul M] [SetLike S M] : Prop where
+class MulMemClass (S : Type _) (M : Type _) [Mul M] [SetLike S M] : Prop where
   /-- A substructure satisfying `MulMemClass` is closed under multiplication. -/
   mul_mem : ∀ {s : S} {a b : M}, a ∈ s → b ∈ s → a * b ∈ s
 #align mul_mem_class MulMemClass
@@ -70,7 +70,7 @@ class MulMemClass (S : Type _) (M : outParam <| Type _) [Mul M] [SetLike S M] : 
 export MulMemClass (mul_mem)
 
 /-- `AddMemClass S M` says `S` is a type of sets `s : Set M` that are closed under `(+)` -/
-class AddMemClass (S : Type _) (M : outParam <| Type _) [Add M] [SetLike S M] : Prop where
+class AddMemClass (S : Type _) (M : Type _) [Add M] [SetLike S M] : Prop where
   /-- A substructure satisfying `AddMemClass` is closed under addition. -/
   add_mem : ∀ {s : S} {a b : M}, a ∈ s → b ∈ s → a + b ∈ s
 #align add_mem_class AddMemClass
@@ -105,13 +105,6 @@ instance : SetLike (Subsemigroup M) M :=
 
 @[to_additive]
 instance : MulMemClass (Subsemigroup M) M where mul_mem := fun {_ _ _} => Subsemigroup.mul_mem' _
-
-/-- See Note [custom simps projection] -/
-@[to_additive "See Note [custom simps projection]"]
-def Simps.coe (S : Subsemigroup M) : Set M :=
-  S
-#align subsemigroup.simps.coe Subsemigroup.Simps.coe
-#align add_subsemigroup.simps.coe AddSubsemigroup.Simps.coe
 
 initialize_simps_projections Subsemigroup (carrier → coe)
 initialize_simps_projections AddSubsemigroup (carrier → coe)
@@ -177,7 +170,7 @@ variable (S)
 protected theorem mul_mem {x y : M} : x ∈ S → y ∈ S → x * y ∈ S :=
   Subsemigroup.mul_mem' S
 #align subsemigroup.mul_mem Subsemigroup.mul_mem
-#align add_subsemigroup.mul_mem AddSubsemigroup.add_mem
+#align add_subsemigroup.add_mem AddSubsemigroup.add_mem
 
 /-- The subsemigroup `M` of the magma `M`. -/
 @[to_additive "The additive subsemigroup `M` of the magma `M`."]
@@ -221,7 +214,7 @@ theorem coe_bot : ((⊥ : Subsemigroup M) : Set M) = ∅ :=
 
 /-- The inf of two subsemigroups is their intersection. -/
 @[to_additive "The inf of two `AddSubsemigroup`s is their intersection."]
-instance : HasInf (Subsemigroup M) :=
+instance : Inf (Subsemigroup M) :=
   ⟨fun S₁ S₂ =>
     { carrier := S₁ ∩ S₂
       mul_mem' := fun ⟨hx, hx'⟩ ⟨hy, hy'⟩ => ⟨S₁.mul_mem hx hy, S₂.mul_mem hx' hy'⟩ }⟩
@@ -332,8 +325,8 @@ variable {S}
 open Set
 
 /-- A subsemigroup `S` includes `closure s` if and only if it includes `s`. -/
-@[simp,
-  to_additive "An additive subsemigroup `S` includes `closure s` if and only if it includes `s`"]
+@[to_additive (attr := simp)
+  "An additive subsemigroup `S` includes `closure s` if and only if it includes `s`"]
 theorem closure_le : closure s ≤ S ↔ s ⊆ S :=
   ⟨Subset.trans subset_closure, fun h => infₛ_le h⟩
 #align subsemigroup.closure_le Subsemigroup.closure_le

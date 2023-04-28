@@ -100,10 +100,10 @@ instance [IsIrrefl ι r] [∀ i, IsIrrefl (α i) (s i)] : IsIrrefl _ (Lex r s) :
 instance [IsTrans ι r] [∀ i, IsTrans (α i) (s i)] : IsTrans _ (Lex r s) :=
   ⟨by
     rintro _ _ _ (⟨a, b, hij⟩ | ⟨a, b, hab⟩) (⟨_, c, hk⟩ | ⟨_, c, hc⟩)
-    · exact Lex.left _ _ (trans hij hk)
+    · exact Lex.left _ _ (_root_.trans hij hk)
     · exact Lex.left _ _ hij
     · exact Lex.left _ _ hk
-    · exact Lex.right _ _ (trans hab hc)⟩
+    · exact Lex.right _ _ (_root_.trans hab hc)⟩
 
 instance [IsSymm ι r] [∀ i, IsSymm (α i) (s i)] : IsSymm _ (Lex r s) :=
   ⟨by
@@ -164,8 +164,6 @@ theorem lex_iff {a b : Σ' i, α i} :
     rintro (h | ⟨rfl, h⟩)
     · exact Lex.left _ _ h
     · exact Lex.right _ h
-
-
 #align psigma.lex_iff PSigma.lex_iff
 
 instance Lex.decidable (r : ι → ι → Prop) (s : ∀ i, α i → α i → Prop) [DecidableEq ι]

@@ -58,12 +58,14 @@ section Ring
 
 variable [Ring α] {a b : α}
 
-@[field_simps]
+-- Needs to have higher simp priority than divp_add_divp. 1000 is the default priority.
+@[field_simps 1010]
 theorem divp_add_divp_same (a b : α) (u : αˣ) : a /ₚ u + b /ₚ u = (a + b) /ₚ u := by
   simp only [divp, add_mul]
 #align units.divp_add_divp_same Units.divp_add_divp_same
 
-@[field_simps]
+-- Needs to have higher simp priority than divp_sub_divp. 1000 is the default priority.
+@[field_simps 1010]
 theorem divp_sub_divp_same (a b : α) (u : αˣ) : a /ₚ u - b /ₚ u = (a - b) /ₚ u := by
   rw [sub_eq_add_neg, sub_eq_add_neg, neg_divp, divp_add_divp_same]
 #align units.divp_sub_divp_same Units.divp_sub_divp_same

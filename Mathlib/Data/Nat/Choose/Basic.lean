@@ -65,6 +65,9 @@ theorem choose_succ_succ (n k : ℕ) : choose (succ n) (succ k) = choose n k + c
   rfl
 #align nat.choose_succ_succ Nat.choose_succ_succ
 
+theorem choose_succ_succ' (n k : ℕ) : choose (n + 1) (k + 1) = choose n k + choose n (k + 1) :=
+  rfl
+
 theorem choose_eq_zero_of_lt : ∀ {n k}, n < k → choose n k = 0
   | _, 0, hk => absurd hk (Nat.not_lt_zero _)
   | 0, k + 1, _ => choose_zero_succ _
@@ -160,7 +163,6 @@ theorem choose_mul {n k s : ℕ} (hkn : k ≤ n) (hsk : s ≤ k) :
     _ = n.choose s * (n - s).choose (k - s) * ((n - k)! * (k - s)! * s !) :=
       by rw [tsub_tsub_tsub_cancel_right hsk, mul_assoc, mul_left_comm s !, mul_assoc,
         mul_comm (k - s)!, mul_comm s !, mul_right_comm, ← mul_assoc]
-
 #align nat.choose_mul Nat.choose_mul
 
 theorem choose_eq_factorial_div_factorial {n k : ℕ} (hk : k ≤ n) :
@@ -253,8 +255,7 @@ theorem choose_eq_asc_factorial_div_factorial (n k : ℕ) :
   exact (Nat.mul_div_cancel' <| factorial_dvd_ascFactorial _ _).symm
 #align nat.choose_eq_asc_factorial_div_factorial Nat.choose_eq_asc_factorial_div_factorial
 
-theorem descFactorial_eq_factorial_mul_choose (n k : ℕ) : n.descFactorial k = k ! * n.choose k :=
-  by
+theorem descFactorial_eq_factorial_mul_choose (n k : ℕ) : n.descFactorial k = k ! * n.choose k := by
   obtain h | h := Nat.lt_or_ge n k
   · rw [descFactorial_eq_zero_iff_lt.2 h, choose_eq_zero_of_lt h, mul_zero]
   rw [mul_comm]
@@ -266,8 +267,7 @@ theorem factorial_dvd_descFactorial (n k : ℕ) : k ! ∣ n.descFactorial k :=
   ⟨n.choose k, descFactorial_eq_factorial_mul_choose _ _⟩
 #align nat.factorial_dvd_desc_factorial Nat.factorial_dvd_descFactorial
 
-theorem choose_eq_descFactorial_div_factorial (n k : ℕ) : n.choose k = n.descFactorial k / k ! :=
-  by
+theorem choose_eq_descFactorial_div_factorial (n k : ℕ) : n.choose k = n.descFactorial k / k ! := by
   apply mul_left_cancel₀ (factorial_ne_zero k)
   rw [← descFactorial_eq_factorial_mul_choose]
   exact (Nat.mul_div_cancel' <| factorial_dvd_descFactorial _ _).symm
@@ -277,8 +277,8 @@ theorem choose_eq_descFactorial_div_factorial (n k : ℕ) : n.choose k = n.descF
 
 
 /-- Show that `Nat.choose` is increasing for small values of the right argument. -/
-theorem choose_le_succ_of_lt_half_left {r n : ℕ} (h : r < n / 2) : choose n r ≤ choose n (r + 1) :=
-  by
+theorem choose_le_succ_of_lt_half_left {r n : ℕ} (h : r < n / 2) :
+    choose n r ≤ choose n (r + 1) := by
   refine' le_of_mul_le_mul_right _ (lt_tsub_iff_left.mpr (lt_of_lt_of_le h (n.div_le_self 2)))
   rw [← choose_succ_right_eq]
   apply Nat.mul_le_mul_left

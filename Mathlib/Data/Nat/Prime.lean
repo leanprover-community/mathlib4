@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 
 ! This file was ported from Lean 3 source module data.nat.prime
-! leanprover-community/mathlib commit c3291da49cfa65f0d43b094750541c0731edc932
+! leanprover-community/mathlib commit 8631e2d5ea77f6c13054d9151d82b83069680cb1
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -89,8 +89,8 @@ theorem Prime.ne_one {p : ℕ} (hp : p.Prime) : p ≠ 1 :=
   hp.one_lt.ne'
 #align nat.prime.ne_one Nat.Prime.ne_one
 
-theorem Prime.eq_one_or_self_of_dvd {p : ℕ} (pp : p.Prime) (m : ℕ) (hm : m ∣ p) : m = 1 ∨ m = p :=
-  by
+theorem Prime.eq_one_or_self_of_dvd {p : ℕ} (pp : p.Prime) (m : ℕ) (hm : m ∣ p) :
+    m = 1 ∨ m = p := by
   obtain ⟨n, hn⟩ := hm
   have := pp.isUnit_or_isUnit hn
   rw [Nat.isUnit_iff, Nat.isUnit_iff] at this
@@ -349,7 +349,7 @@ theorem minFac_le_of_dvd {n : ℕ} : ∀ {m : ℕ}, 2 ≤ m → m ∣ n → minF
 
 theorem minFac_pos (n : ℕ) : 0 < minFac n := by
   by_cases n1 : n = 1 <;> [exact n1.symm ▸ by decide, exact (minFac_prime n1).pos]
-#align nat.minFac_pos Nat.minFac_pos
+#align nat.min_fac_pos Nat.minFac_pos
 
 theorem minFac_le {n : ℕ} (H : 0 < n) : minFac n ≤ n :=
   le_of_dvd H (minFac_dvd n)
@@ -422,7 +422,6 @@ theorem minFac_sq_le_self {n : ℕ} (w : 0 < n) (h : ¬Prime n) : minFac n ^ 2 �
     minFac n ^ 2 = minFac n * minFac n := sq (minFac n)
     _ ≤ n / minFac n * minFac n := Nat.mul_le_mul_right (minFac n) t
     _ ≤ n := div_mul_le_self n (minFac n)
-
 #align nat.min_fac_sq_le_self Nat.minFac_sq_le_self
 
 @[simp]
@@ -476,6 +475,7 @@ theorem dvd_of_forall_prime_mul_dvd {a b : ℕ}
   · apply one_dvd
   obtain ⟨p, hp⟩ := exists_prime_and_dvd ha
   exact _root_.trans (dvd_mul_left a p) (hdvd p hp.1 hp.2)
+#align nat.dvd_of_forall_prime_mul_dvd Nat.dvd_of_forall_prime_mul_dvd
 
 /-- Euclid's theorem on the **infinitude of primes**.
 Here given in the form: for every `n`, there exists a prime number `p ≥ n`. -/
@@ -515,6 +515,10 @@ theorem Prime.even_iff {p : ℕ} (hp : Prime p) : Even p ↔ p = 2 := by
 theorem Prime.odd_of_ne_two {p : ℕ} (hp : p.Prime) (h_two : p ≠ 2) : Odd p :=
   hp.eq_two_or_odd'.resolve_left h_two
 #align nat.prime.odd_of_ne_two Nat.Prime.odd_of_ne_two
+
+theorem Prime.even_sub_one {p : ℕ} (hp : p.Prime) (h2 : p ≠ 2) : Even (p - 1) :=
+  let ⟨n, hn⟩ := hp.odd_of_ne_two h2; ⟨n, by rw [hn, Nat.add_sub_cancel, two_mul]⟩
+#align nat.prime.even_sub_one Nat.Prime.even_sub_one
 
 /-- A prime `p` satisfies `p % 2 = 1` if and only if `p ≠ 2`. -/
 theorem Prime.mod_two_eq_one_iff_ne_two {p : ℕ} [Fact p.Prime] : p % 2 = 1 ↔ p ≠ 2 := by
@@ -578,6 +582,8 @@ theorem prime_iff {p : ℕ} : p.Prime ↔ _root_.Prime p :=
 #align nat.prime_iff Nat.prime_iff
 
 alias prime_iff ↔ Prime.prime _root_.Prime.nat_prime
+#align nat.prime.prime Nat.Prime.prime
+#align prime.nat_prime Prime.nat_prime
 
 -- Porting note: attributes `protected`, `nolint dup_namespace` removed
 
@@ -600,7 +606,6 @@ theorem Prime.pow_not_prime {x n : ℕ} (hn : 2 ≤ n) : ¬(x ^ n).Prime := fun 
         x = x ^ 1 := (pow_one _).symm
         _ < x ^ n := Nat.pow_right_strictMono (hxn.symm ▸ hp.two_le) hn
         _ = x := hxn.symm
-
 #align nat.prime.pow_not_prime Nat.Prime.pow_not_prime
 
 theorem Prime.pow_not_prime' {x : ℕ} : ∀ {n : ℕ}, n ≠ 1 → ¬(x ^ n).Prime
@@ -658,7 +663,6 @@ theorem Prime.mul_eq_prime_sq_iff {x y p : ℕ} (hp : p.Prime) (hx : x ≠ 1) (h
       subst ha
       rw [sq, Nat.mul_right_eq_self_iff (Nat.mul_pos hp.pos hp.pos : 0 < a * a)] at h
       exact h
-
 #align nat.prime.mul_eq_prime_sq_iff Nat.Prime.mul_eq_prime_sq_iff
 
 theorem Prime.dvd_factorial : ∀ {n p : ℕ} (_ : Prime p), p ∣ n ! ↔ p ≤ n
@@ -761,6 +765,7 @@ theorem prime_iff_prime_int {p : ℕ} : p.Prime ↔ _root_.Prime (p : ℤ) :=
 /-- The type of prime numbers -/
 def Primes :=
   { p : ℕ // p.Prime }
+  deriving DecidableEq
 #align nat.primes Nat.Primes
 
 namespace Primes

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Yaël Dillies, Patrick Stevens
 
 ! This file was ported from Lean 3 source module data.nat.cast.field
-! leanprover-community/mathlib commit 9116dd6709f303dcf781632e15fdef382b0fc579
+! leanprover-community/mathlib commit acee671f47b8e7972a1eb6f4eed74b4b3abce829
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -29,22 +29,22 @@ namespace Nat
 variable {α : Type _}
 
 @[simp]
-theorem cast_div [Field α] {m n : ℕ} (n_dvd : n ∣ m) (n_nonzero : (n : α) ≠ 0) :
+theorem cast_div [DivisionSemiring α] {m n : ℕ} (n_dvd : n ∣ m) (n_nonzero : (n : α) ≠ 0) :
     ((m / n : ℕ) : α) = m / n := by
   rcases n_dvd with ⟨k, rfl⟩
   have : n ≠ 0 := by
     rintro rfl
     simp at n_nonzero
-  rw [Nat.mul_div_cancel_left _ this.bot_lt, cast_mul, mul_div_cancel_left _ n_nonzero]
+  rw [Nat.mul_div_cancel_left _ this.bot_lt, mul_comm n k,cast_mul, mul_div_cancel _ n_nonzero]
 #align nat.cast_div Nat.cast_div
 
-theorem cast_div_div_div_cancel_right [Field α] [CharZero α] {m n d : ℕ} (hn : d ∣ n) (hm : d ∣ m) :
+theorem cast_div_div_div_cancel_right [DivisionSemiring α] [CharZero α] {m n d : ℕ}
+  (hn : d ∣ n) (hm : d ∣ m) :
     (↑(m / d) : α) / (↑(n / d) : α) = (m : α) / n := by
   rcases eq_or_ne d 0 with (rfl | hd); · simp [zero_dvd_iff.mp hm]
   replace hd : (d : α) ≠ 0;
   · norm_cast
   rw [cast_div hm, cast_div hn, div_div_div_cancel_right _ hd] <;> exact hd
-
 #align nat.cast_div_div_div_cancel_right Nat.cast_div_div_div_cancel_right
 
 section LinearOrderedSemifield

@@ -87,7 +87,7 @@ theorem dvd_factorial : ∀ {m n}, 0 < m → m ≤ n → m ∣ n !
   | succ _, _, _, h => dvd_of_mul_right_dvd (factorial_dvd_factorial h)
 #align nat.dvd_factorial Nat.dvd_factorial
 
--- Porting note: `mono` not yet implemented @[mono]
+@[mono]
 theorem factorial_le {m n} (h : m ≤ n) : m ! ≤ n ! :=
   le_of_dvd (factorial_pos _) (factorial_dvd_factorial h)
 #align nat.factorial_le Nat.factorial_le
@@ -174,16 +174,16 @@ theorem add_factorial_succ_lt_factorial_add_succ {i : ℕ} (n : ℕ) (hi : 2 ≤
         ((add_le_add_iff_right n).mpr ((by decide : 1 ≤ 2).trans hi))))
 #align nat.add_factorial_succ_lt_factorial_add_succ Nat.add_factorial_succ_lt_factorial_add_succ
 
-theorem add_factorial_lt_factorial_add {i n : ℕ} (hi : 2 ≤ i) (hn : 1 ≤ n) : i + n ! < (i + n)! :=
-  by
+theorem add_factorial_lt_factorial_add {i n : ℕ} (hi : 2 ≤ i) (hn : 1 ≤ n) :
+    i + n ! < (i + n)! := by
   cases hn
   · rw [factorial_one]
     exact lt_factorial_self (succ_le_succ hi)
   exact add_factorial_succ_lt_factorial_add_succ _ hi
 #align nat.add_factorial_lt_factorial_add Nat.add_factorial_lt_factorial_add
 
-theorem add_factorial_succ_le_factorial_add_succ (i : ℕ) (n : ℕ) : i + (n + 1)! ≤ (i + (n + 1))! :=
-  by
+theorem add_factorial_succ_le_factorial_add_succ (i : ℕ) (n : ℕ) :
+    i + (n + 1)! ≤ (i + (n + 1))! := by
   cases (le_or_lt (2 : ℕ) i)
   · rw [← add_assoc]
     apply Nat.le_of_lt
@@ -229,23 +229,23 @@ recursively to allow for "quick" computation when using `norm_num`. This is clos
 def ascFactorial (n : ℕ) : ℕ → ℕ
   | 0 => 1
   | k + 1 => (n + k + 1) * ascFactorial n k
-#align nat.ascFactorial Nat.ascFactorial
+#align nat.asc_factorial Nat.ascFactorial
 
 @[simp]
 theorem ascFactorial_zero (n : ℕ) : n.ascFactorial 0 = 1 :=
   rfl
-#align nat.ascFactorial_zero Nat.ascFactorial_zero
+#align nat.asc_factorial_zero Nat.ascFactorial_zero
 
 @[simp]
 theorem zero_ascFactorial (k : ℕ) : (0 : ℕ).ascFactorial k = k ! := by
   induction' k with t ht
   · rfl
   rw [ascFactorial, ht, zero_add, Nat.factorial_succ]
-#align nat.zero_ascFactorial Nat.zero_ascFactorial
+#align nat.zero_asc_factorial Nat.zero_ascFactorial
 
 theorem ascFactorial_succ {n k : ℕ} : n.ascFactorial k.succ = (n + k + 1) * n.ascFactorial k :=
   rfl
-#align nat.ascFactorial_succ Nat.ascFactorial_succ
+#align nat.asc_factorial_succ Nat.ascFactorial_succ
 
 -- Porting note: Explicit arguments are required to show that the recursion terminates
 theorem succ_ascFactorial (n : ℕ) :
@@ -254,7 +254,7 @@ theorem succ_ascFactorial (n : ℕ) :
   | k + 1 => by
     rw [ascFactorial, mul_left_comm, succ_ascFactorial n k, ascFactorial,
       succ_add, ← add_assoc, succ_eq_add_one]
-#align nat.succ_ascFactorial Nat.succ_ascFactorial
+#align nat.succ_asc_factorial Nat.succ_ascFactorial
 
 /-- `n.ascFactorial k = (n + k)! / n!` but without ℕ-division. See `Nat.ascFactorial_eq_div` for
 the version with ℕ-division. -/
@@ -265,14 +265,14 @@ theorem factorial_mul_ascFactorial (n : ℕ) : ∀ k, n ! * n.ascFactorial k = (
   | k + 1 => by
     rw [ascFactorial_succ, mul_left_comm, factorial_mul_ascFactorial n k,
       ← add_assoc, ← Nat.succ_eq_add_one (n + k), factorial]
-#align nat.factorial_mul_ascFactorial Nat.factorial_mul_ascFactorial
+#align nat.factorial_mul_asc_factorial Nat.factorial_mul_ascFactorial
 
 /-- Avoid in favor of `Nat.factorial_mul_ascFactorial` if you can. ℕ-division isn't worth it. -/
 theorem ascFactorial_eq_div (n k : ℕ) : n.ascFactorial k = (n + k)! / n ! := by
   apply mul_left_cancel₀ n.factorial_ne_zero
   rw [factorial_mul_ascFactorial]
   exact (Nat.mul_div_cancel' <| factorial_dvd_factorial <| le.intro rfl).symm
-#align nat.ascFactorial_eq_div Nat.ascFactorial_eq_div
+#align nat.asc_factorial_eq_div Nat.ascFactorial_eq_div
 
 theorem ascFactorial_of_sub {n k : ℕ} (h : k < n) :
     (n - k) * (n - k).ascFactorial k = (n - (k + 1)).ascFactorial (k + 1) := by
@@ -280,27 +280,27 @@ theorem ascFactorial_of_sub {n k : ℕ} (h : k < n) :
   let ht : t = n - k.succ := rfl
   suffices h' : n - k = t.succ; · rw [← ht, h', succ_ascFactorial, ascFactorial_succ]
   rw [ht, succ_eq_add_one, ← tsub_tsub_assoc (succ_le_of_lt h) (succ_pos _), succ_sub_one]
-#align nat.ascFactorial_of_sub Nat.ascFactorial_of_sub
+#align nat.asc_factorial_of_sub Nat.ascFactorial_of_sub
 
 theorem pow_succ_le_ascFactorial (n : ℕ) : ∀ k : ℕ, (n + 1) ^ k ≤ n.ascFactorial k
   | 0 => by rw [ascFactorial_zero, pow_zero]
   | k + 1 => by
     rw [pow_succ, mul_comm]
     exact Nat.mul_le_mul (Nat.add_le_add_right le_self_add _) (pow_succ_le_ascFactorial _ k)
-#align nat.pow_succ_le_ascFactorial Nat.pow_succ_le_ascFactorial
+#align nat.pow_succ_le_asc_factorial Nat.pow_succ_le_ascFactorial
 
 theorem pow_lt_ascFactorial' (n k : ℕ) : (n + 1) ^ (k + 2) < n.ascFactorial (k + 2) := by
   rw [pow_succ, ascFactorial, mul_comm]
   exact
     Nat.mul_lt_mul (Nat.add_lt_add_right (Nat.lt_add_of_pos_right succ_pos') 1)
       (pow_succ_le_ascFactorial n _) (pow_pos succ_pos' _)
-#align nat.pow_lt_ascFactorial' Nat.pow_lt_ascFactorial'
+#align nat.pow_lt_asc_factorial' Nat.pow_lt_ascFactorial'
 
 theorem pow_lt_ascFactorial (n : ℕ) : ∀ {k : ℕ}, 2 ≤ k → (n + 1) ^ k < n.ascFactorial k
   | 0 => by rintro ⟨⟩
   | 1 => by intro; contradiction
   | k + 2 => fun _ => pow_lt_ascFactorial' n k
-#align nat.pow_lt_ascFactorial Nat.pow_lt_ascFactorial
+#align nat.pow_lt_asc_factorial Nat.pow_lt_ascFactorial
 
 theorem ascFactorial_le_pow_add (n : ℕ) : ∀ k : ℕ, n.ascFactorial k ≤ (n + k) ^ k
   | 0 => by rw [ascFactorial_zero, pow_zero]
@@ -310,7 +310,7 @@ theorem ascFactorial_le_pow_add (n : ℕ) : ∀ k : ℕ, n.ascFactorial k ≤ (n
     exact
       Nat.mul_le_mul_of_nonneg_left
         ((ascFactorial_le_pow_add _ k).trans (Nat.pow_le_pow_of_le_left (le_succ _) _))
-#align nat.ascFactorial_le_pow_add Nat.ascFactorial_le_pow_add
+#align nat.asc_factorial_le_pow_add Nat.ascFactorial_le_pow_add
 
 theorem ascFactorial_lt_pow_add (n : ℕ) : ∀ {k : ℕ}, 2 ≤ k → n.ascFactorial k < (n + k) ^ k
   | 0 => by rintro ⟨⟩
@@ -323,11 +323,11 @@ theorem ascFactorial_lt_pow_add (n : ℕ) : ∀ {k : ℕ}, 2 ≤ k → n.ascFact
         ((ascFactorial_le_pow_add n _).trans_lt
           (pow_lt_pow_of_lt_left (lt_add_one _) (succ_pos _)))
         (succ_pos _)
-#align nat.ascFactorial_lt_pow_add Nat.ascFactorial_lt_pow_add
+#align nat.asc_factorial_lt_pow_add Nat.ascFactorial_lt_pow_add
 
 theorem ascFactorial_pos (n k : ℕ) : 0 < n.ascFactorial k :=
   (pow_pos (succ_pos n) k).trans_le (pow_succ_le_ascFactorial n k)
-#align nat.ascFactorial_pos Nat.ascFactorial_pos
+#align nat.asc_factorial_pos Nat.ascFactorial_pos
 
 end AscFactorial
 
@@ -339,21 +339,21 @@ related to `pochhammer`, but much less general. -/
 def descFactorial (n : ℕ) : ℕ → ℕ
   | 0 => 1
   | k + 1 => (n - k) * descFactorial n k
-#align nat.descFactorial Nat.descFactorial
+#align nat.desc_factorial Nat.descFactorial
 
 @[simp]
 theorem descFactorial_zero (n : ℕ) : n.descFactorial 0 = 1 :=
   rfl
-#align nat.descFactorial_zero Nat.descFactorial_zero
+#align nat.desc_factorial_zero Nat.descFactorial_zero
 
 @[simp]
 theorem descFactorial_succ (n k : ℕ) : n.descFactorial k.succ = (n - k) * n.descFactorial k :=
   rfl
-#align nat.descFactorial_succ Nat.descFactorial_succ
+#align nat.desc_factorial_succ Nat.descFactorial_succ
 
 theorem zero_descFactorial_succ (k : ℕ) : (0 : ℕ).descFactorial k.succ = 0 := by
   rw [descFactorial_succ, zero_tsub, zero_mul]
-#align nat.zero_descFactorial_succ Nat.zero_descFactorial_succ
+#align nat.zero_desc_factorial_succ Nat.zero_descFactorial_succ
 
 /- Porting note: simp removed because this can be proved by
 simp only [Nat.descFactorial_succ, nonpos_iff_eq_zero, tsub_zero, Nat.descFactorial_zero, mul_one]
@@ -361,7 +361,7 @@ simp only [Nat.descFactorial_succ, nonpos_iff_eq_zero, tsub_zero, Nat.descFactor
 -- @[simp]
 theorem descFactorial_one (n : ℕ) : n.descFactorial 1 = n := by
   rw [descFactorial_succ, descFactorial_zero, mul_one, tsub_zero]
-#align nat.descFactorial_one Nat.descFactorial_one
+#align nat.desc_factorial_one Nat.descFactorial_one
 
 /- Porting note: simp removed because the lhs simplifies,
 according to the linter:
@@ -379,19 +379,19 @@ theorem succ_descFactorial_succ (n : ℕ) :
   | succ k => by
     rw [descFactorial_succ, succ_descFactorial_succ _ k, descFactorial_succ, succ_sub_succ,
       mul_left_comm]
-#align nat.succ_descFactorial_succ Nat.succ_descFactorial_succ
+#align nat.succ_desc_factorial_succ Nat.succ_descFactorial_succ
 
 theorem succ_descFactorial (n : ℕ) :
     ∀ k, (n + 1 - k) * (n + 1).descFactorial k = (n + 1) * n.descFactorial k
   | 0 => by rw [tsub_zero, descFactorial_zero, descFactorial_zero]
   | k + 1 => by
     rw [descFactorial, succ_descFactorial _ k, descFactorial_succ, succ_sub_succ, mul_left_comm]
-#align nat.succ_descFactorial Nat.succ_descFactorial
+#align nat.succ_desc_factorial Nat.succ_descFactorial
 
 theorem descFactorial_self : ∀ n : ℕ, n.descFactorial n = n !
   | 0 => by rw [descFactorial_zero, factorial_zero]
   | succ n => by rw [succ_descFactorial_succ, descFactorial_self n, factorial_succ]
-#align nat.descFactorial_self Nat.descFactorial_self
+#align nat.desc_factorial_self Nat.descFactorial_self
 
 @[simp]
 theorem descFactorial_eq_zero_iff_lt {n : ℕ} : ∀ {k : ℕ}, n.descFactorial k = 0 ↔ n < k
@@ -400,9 +400,10 @@ theorem descFactorial_eq_zero_iff_lt {n : ℕ} : ∀ {k : ℕ}, n.descFactorial 
     rw [descFactorial_succ, mul_eq_zero, descFactorial_eq_zero_iff_lt, lt_succ_iff,
       tsub_eq_zero_iff_le, lt_iff_le_and_ne, or_iff_left_iff_imp, and_imp]
     exact fun h _ => h
-#align nat.descFactorial_eq_zero_iff_lt Nat.descFactorial_eq_zero_iff_lt
+#align nat.desc_factorial_eq_zero_iff_lt Nat.descFactorial_eq_zero_iff_lt
 
 alias descFactorial_eq_zero_iff_lt ↔ _ descFactorial_of_lt
+#align nat.desc_factorial_of_lt Nat.descFactorial_of_lt
 
 theorem add_descFactorial_eq_ascFactorial (n : ℕ) :
     ∀ k : ℕ, (n + k).descFactorial k = n.ascFactorial k
@@ -410,7 +411,7 @@ theorem add_descFactorial_eq_ascFactorial (n : ℕ) :
   | succ k => by
     rw [Nat.add_succ, Nat.succ_eq_add_one, Nat.succ_eq_add_one,
         succ_descFactorial_succ, ascFactorial_succ, add_descFactorial_eq_ascFactorial _ k]
-#align nat.add_descFactorial_eq_ascFactorial Nat.add_descFactorial_eq_ascFactorial
+#align nat.add_desc_factorial_eq_asc_factorial Nat.add_descFactorial_eq_ascFactorial
 
 /-- `n.descFactorial k = n! / (n - k)!` but without ℕ-division. See `Nat.descFactorial_eq_div`
 for the version using ℕ-division. -/
@@ -422,14 +423,14 @@ theorem factorial_mul_descFactorial : ∀ {n k : ℕ}, k ≤ n → (n - k)! * n.
   | succ n, succ k => fun h => by
     rw [succ_descFactorial_succ, succ_sub_succ, ← mul_assoc, mul_comm (n - k)!, mul_assoc,
       factorial_mul_descFactorial (Nat.succ_le_succ_iff.1 h), factorial_succ]
-#align nat.factorial_mul_descFactorial Nat.factorial_mul_descFactorial
+#align nat.factorial_mul_desc_factorial Nat.factorial_mul_descFactorial
 
 /-- Avoid in favor of `Nat.factorial_mul_descFactorial` if you can. ℕ-division isn't worth it. -/
 theorem descFactorial_eq_div {n k : ℕ} (h : k ≤ n) : n.descFactorial k = n ! / (n - k)! := by
   apply mul_left_cancel₀ (factorial_ne_zero (n - k))
   rw [factorial_mul_descFactorial h]
   exact (Nat.mul_div_cancel' <| factorial_dvd_factorial <| Nat.sub_le n k).symm
-#align nat.descFactorial_eq_div Nat.descFactorial_eq_div
+#align nat.desc_factorial_eq_div Nat.descFactorial_eq_div
 
 theorem pow_sub_le_descFactorial (n : ℕ) : ∀ k : ℕ, (n + 1 - k) ^ k ≤ n.descFactorial k
   | 0 => by rw [descFactorial_zero, pow_zero]
@@ -438,7 +439,7 @@ theorem pow_sub_le_descFactorial (n : ℕ) : ∀ k : ℕ, (n + 1 - k) ^ k ≤ n.
     apply Nat.mul_le_mul_of_nonneg_left
     exact   (le_trans (Nat.pow_le_pow_of_le_left (tsub_le_tsub_right (le_succ _) _) k)
           (pow_sub_le_descFactorial n k))
-#align nat.pow_sub_le_descFactorial Nat.pow_sub_le_descFactorial
+#align nat.pow_sub_le_desc_factorial Nat.pow_sub_le_descFactorial
 
 theorem pow_sub_lt_descFactorial' {n : ℕ} :
     ∀ {k : ℕ}, k + 2 ≤ n → (n - (k + 1)) ^ (k + 2) < n.descFactorial (k + 2)
@@ -454,7 +455,7 @@ theorem pow_sub_lt_descFactorial' {n : ℕ} :
       rw [succ_sub_succ]
       exact pow_sub_lt_descFactorial' ((le_succ _).trans h)
     · apply tsub_pos_of_lt; apply h
-#align nat.pow_sub_lt_descFactorial' Nat.pow_sub_lt_descFactorial'
+#align nat.pow_sub_lt_desc_factorial' Nat.pow_sub_lt_descFactorial'
 
 theorem pow_sub_lt_descFactorial {n : ℕ} :
     ∀ {k : ℕ}, 2 ≤ k → k ≤ n → (n + 1 - k) ^ k < n.descFactorial k
@@ -463,14 +464,14 @@ theorem pow_sub_lt_descFactorial {n : ℕ} :
   | k + 2 => fun _ h => by
     rw [succ_sub_succ]
     exact pow_sub_lt_descFactorial' h
-#align nat.pow_sub_lt_descFactorial Nat.pow_sub_lt_descFactorial
+#align nat.pow_sub_lt_desc_factorial Nat.pow_sub_lt_descFactorial
 
 theorem descFactorial_le_pow (n : ℕ) : ∀ k : ℕ, n.descFactorial k ≤ n ^ k
   | 0 => by rw [descFactorial_zero, pow_zero]
   | k + 1 => by
     rw [descFactorial_succ, pow_succ, mul_comm _ n]
     exact Nat.mul_le_mul (Nat.sub_le _ _) (descFactorial_le_pow _ k)
-#align nat.descFactorial_le_pow Nat.descFactorial_le_pow
+#align nat.desc_factorial_le_pow Nat.descFactorial_le_pow
 
 theorem descFactorial_lt_pow {n : ℕ} (hn : 1 ≤ n) : ∀ {k : ℕ}, 2 ≤ k → n.descFactorial k < n ^ k
   | 0 => by rintro ⟨⟩
@@ -479,7 +480,7 @@ theorem descFactorial_lt_pow {n : ℕ} (hn : 1 ≤ n) : ∀ {k : ℕ}, 2 ≤ k �
     rw [descFactorial_succ, pow_succ', mul_comm, mul_comm n]
     exact Nat.mul_lt_mul' (descFactorial_le_pow _ _) (tsub_lt_self hn k.zero_lt_succ)
       (pow_pos (Nat.lt_of_succ_le hn) _)
-#align nat.descFactorial_lt_pow Nat.descFactorial_lt_pow
+#align nat.desc_factorial_lt_pow Nat.descFactorial_lt_pow
 
 end DescFactorial
 

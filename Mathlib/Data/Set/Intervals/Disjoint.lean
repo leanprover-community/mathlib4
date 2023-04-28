@@ -60,7 +60,7 @@ theorem Ici_disjoint_Iic : Disjoint (Ici a) (Iic b) ↔ ¬a ≤ b := by
 
 @[simp]
 theorem Iic_disjoint_Ici : Disjoint (Iic a) (Ici b) ↔ ¬b ≤ a :=
-  Disjoint.comm.trans Ici_disjoint_Iic
+  disjoint_comm.trans Ici_disjoint_Iic
 #align set.Iic_disjoint_Ici Set.Iic_disjoint_Ici
 
 @[simp]

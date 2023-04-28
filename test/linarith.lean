@@ -48,12 +48,13 @@ example [LinearOrderedCommRing α] (x : α) : 0 ≤ x := by
   have h : 0 ≤ x := sorry
   linarith [h]
 
--- Currently fails, because `norm_num` can't solve `(0 : α) < 3` with only `[LinearOrderedRing α]`.
--- example [LinearOrderedCommRing α] (u v r s t : α) (h : 0 < u*(t*v + t*r + s)) : 0 < (t*(r + v) + s)*3*u :=
--- by linarith
+example [LinearOrderedCommRing α] (u v r s t : α) (h : 0 < u*(t*v + t*r + s)) :
+    0 < (t*(r + v) + s)*3*u := by linarith
 
--- example [LinearOrderedCommRing α] (A B : α) (h : 0 < A * B) : 0 < 8*A*B := by
---   linarith
+example [LinearOrderedCommRing α] (A B : α) (h : 0 < A * B) : 0 < 8*A*B := by
+  linarith
+
+example (s : Set ℕ) (_h : s = ∅) : 0 ≤ 1 := by linarith
 
 -- Needs the `cancel_denoms` preprocessor, which in turn needs the `cancel_denoms` tactic ported.
 section cancel_denoms
@@ -475,3 +476,24 @@ lemma bar (x y: Int) (h : 0 ≤ y ∧ 1 ≤ x) : 1 ≤ y + x * x := by linarith 
 
 -- -- issue #9822
 -- lemma mytest (j : ℕ) (h : 0 < j) : j-1 < j:= by linarith
+
+example [LinearOrderedCommRing α] (h : ∃ x : α, 0 ≤ x) : True := by
+  cases' h with x h
+  have : 0 ≤ x; · linarith
+  trivial
+
+-- At one point, this failed, due to `mdata` interfering with `Expr.isEq`.
+example (a : Int) : a = a := by
+  have h : True := True.intro
+  linarith
+
+example (n : Nat) (h1 : ¬n = 1) (h2 : n ≥ 1) : n ≥ 2 := by
+  by_contra h3
+  suffices n = 1 by exact h1 this
+  linarith
+
+example (n : Nat) (h1 : ¬n = 1) (h2 : n ≥ 1) : n ≥ 2 := by
+  have h4 : n ≥ 1 := h2
+  by_contra h3
+  suffices n = 1 by exact h1 this
+  linarith

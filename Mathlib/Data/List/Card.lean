@@ -29,7 +29,7 @@ theorem insert_equiv_cons [DecidableEq α] (a : α) (as : List α) : (as.insert 
 theorem union_equiv_append [DecidableEq α] (as bs : List α) : (as.union bs).equiv (as ++ bs) :=
   fun x ↦ by simp
 
-section decidable_eq
+section DecidableEq
 variable [DecidableEq α] [DecidableEq β]
 
 /- remove -/
@@ -158,7 +158,7 @@ theorem card_map_eq_of_inj_on {f : α → β} {as : List α} :
       intro inj_on'
       cases (exists_of_mem_map h) with
       | intro x hx =>
-        have : a = x := inj_on' (mem_cons_self ..) (mem_cons_of_mem _ hx.1) hx.2
+        have : x = a := inj_on' (mem_cons_of_mem _ hx.1) (mem_cons_self ..) hx.2
         have h1 : a ∈ as := this ▸ hx.1
         have h2 : inj_on f as := inj_on_of_subset inj_on' (subset_cons _ _)
         rw [map, card_cons_of_mem h, ih h2, card_cons_of_mem h1]
@@ -189,6 +189,6 @@ theorem card_union_disjoint {as bs : List α} (h : Disjoint as bs) :
     card (as.union bs) = card as + card bs := by
   rw [card_eq_of_equiv (union_equiv_append as bs), card_append_disjoint h]
 
-end decidable_eq
+end DecidableEq
 
 end List

@@ -8,5 +8,5 @@ import Lean.Meta.Tactic.Simp.SimpTheorems
 /-! # Internal simp attribute for `zify` tactic -/
 
 /-- The simpset `zify_simps` is used by the tactic `zify` to moved expression from `ℕ` to `ℤ`
-which gives a well-behaved substraction. -/
+which gives a well-behaved subtraction. -/
 register_simp_attr zify_simps

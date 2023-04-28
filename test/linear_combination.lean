@@ -1,5 +1,10 @@
 import Mathlib.Tactic.LinearCombination
 
+-- We deliberately mock R here so that we don't have to import the deps
+axiom Real : Type
+notation "ℝ" => Real
+@[instance] axiom Real.linearOrderedField : LinearOrderedField ℝ
+
 /-! ### Simple Cases with ℤ and two or less equations -/
 
 example (x y : ℤ) (h1 : 3 * x + 2 * y = 10) : 3 * x + 2 * y = 10 := by
@@ -39,14 +44,6 @@ example (x y : ℤ) (h1 : 10 = 3 * x + 2 * y) (h2 : 3 = 2 * x + 5 * y) : 11 + 1 
 
 example (x y : ℤ) (h1 : x + 2 = -3) (h2 : y = 10) : -y + 2 * x + 4 = -16 := by
   linear_combination 2 * h1 - h2
-
-axiom Rat' : Type
-@[instance] axiom instRat : CommRing Rat'
-notation "ℚ" => Rat'
-
-axiom Real' : Type
-@[instance] axiom instReal : CommRing Real'
-notation "ℝ" => Real'
 
 example (x y : ℚ) (h1 : 3 * x + 2 * y = 10) (h2 : 2 * x + 5 * y = 3) : -11 * y + 1 = 11 + 1 := by
   linear_combination 2 * h1 - 3 * h2
@@ -195,3 +192,15 @@ example (a _b : ℕ) (h1 : a = 3) : a = 3 := by
 example (a b : ℤ) (x y : ℝ) (hab : a = b) (hxy : x = y) : 2 * x = 2 * y := by
   fail_if_success linear_combination 2 * hab
   linear_combination 2 * hxy
+
+/-! ### Regression tests -/
+
+def g (a : ℤ) : ℤ := a ^ 2
+
+example (h : g a = g b) : a ^ 4 = b ^ 4 := by
+  dsimp [g] at h
+  linear_combination (a ^ 2 + b ^ 2) * h
+
+example {r s a b : ℕ} (h₁ : (r : ℤ) = a + 1) (h₂ : (s : ℤ) = b + 1) :
+    r * s = (a + 1 : ℤ) * (b + 1) := by
+  linear_combination (↑b + 1) * h₁ + ↑r * h₂

@@ -63,11 +63,17 @@ theorem cast_zero : ((0 : ℤ) : R) = 0 :=
 #align int.cast_zero Int.cast_zeroₓ
 -- type had `HasLiftT`
 
-@[simp high, nolint simpNF] -- this lemma competes with `Int.ofNat_eq_cast` to come later
+@[simp high, nolint simpNF, norm_cast] -- this lemma competes with `Int.ofNat_eq_cast` to come later
 theorem cast_ofNat (n : ℕ) : ((n : ℤ) : R) = n :=
   AddGroupWithOne.intCast_ofNat _
 #align int.cast_coe_nat Int.cast_ofNatₓ
 -- expected `n` to be implicit, and `HasLiftT`
+#align int.cast_of_nat Int.cast_ofNatₓ
+
+@[simp, norm_cast]
+theorem int_cast_ofNat (n : ℕ) [n.AtLeastTwo] :
+    ((OfNat.ofNat n : ℤ) : R) = OfNat.ofNat n := by
+  simpa only [OfNat.ofNat] using AddGroupWithOne.intCast_ofNat (R := R) n
 
 @[simp, norm_cast]
 theorem cast_one : ((1 : ℤ) : R) = 1 := by

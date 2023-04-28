@@ -211,9 +211,9 @@ instance : SemilatticeInf ℚ := by infer_instance
 
 instance : SemilatticeSup ℚ := by infer_instance
 
-instance : HasInf ℚ := by infer_instance
+instance : Inf ℚ := by infer_instance
 
-instance : HasSup ℚ := by infer_instance
+instance : Sup ℚ := by infer_instance
 
 instance : PartialOrder ℚ := by infer_instance
 

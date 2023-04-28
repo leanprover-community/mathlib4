@@ -63,7 +63,7 @@ elab (name := induction') "induction' " tgts:(casesTarget,+)
     withArg:((" with " (colGt binderIdent)+)?)
     genArg:((" generalizing " (colGt ident)+)?) : tactic => do
   let targets ← elabCasesTargets tgts.1.getSepArgs
-  let g ← getMainGoal
+  let g :: gs ← getUnsolvedGoals | throwNoGoalsToBeSolved
   g.withContext do
     let elimInfo ← getElimNameInfo usingArg targets (induction := true)
     let targets ← addImplicitTargets elimInfo targets
@@ -88,13 +88,13 @@ elab (name := induction') "induction' " tgts:(casesTarget,+)
       g.assign result.elimApp
       let subgoals ← ElimApp.evalNames elimInfo result.alts withArg
         (numGeneralized := fvarIds.size) (toClear := targetFVarIds)
-      setGoals (subgoals ++ result.others).toList
+      setGoals <| (subgoals ++ result.others).toList ++ gs
 
 open private getElimNameInfo in evalCases in
 elab (name := cases') "cases' " tgts:(casesTarget,+) usingArg:((" using " ident)?)
   withArg:((" with " (colGt binderIdent)+)?) : tactic => do
   let targets ← elabCasesTargets tgts.1.getSepArgs
-  let g ← getMainGoal
+  let g :: gs ← getUnsolvedGoals | throwNoGoalsToBeSolved
   g.withContext do
     let elimInfo ← getElimNameInfo usingArg targets (induction := false)
     let targets ← addImplicitTargets elimInfo targets
@@ -109,4 +109,4 @@ elab (name := cases') "cases' " tgts:(casesTarget,+) usingArg:((" using " ident)
       g.assign result.elimApp
       let subgoals ← ElimApp.evalNames elimInfo result.alts withArg
          (numEqs := targets.size) (toClear := targetsNew)
-      setGoals subgoals.toList
+      setGoals <| subgoals.toList ++ gs

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 
 ! This file was ported from Lean 3 source module data.rat.cast
-! leanprover-community/mathlib commit 422e70f7ce183d2900c586a8cda8381e788a0c62
+! leanprover-community/mathlib commit acebd8d49928f6ed8920e502a6c90674e75bd441
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -79,8 +79,7 @@ theorem commute_cast (a : α) (r : ℚ) : Commute a r :=
 #align rat.commute_cast Rat.commute_cast
 
 @[norm_cast]
-theorem cast_mk_of_ne_zero (a b : ℤ) (b0 : (b : α) ≠ 0) : (a /. b : α) = a / b :=
-  by
+theorem cast_mk_of_ne_zero (a b : ℤ) (b0 : (b : α) ≠ 0) : (a /. b : α) = a / b := by
   have b0' : b ≠ 0 := by
     refine' mt _ b0
     simp (config := { contextual := true })
@@ -132,8 +131,7 @@ theorem cast_neg : ∀ n, ((-n : ℚ) : α) = -n
 
 @[norm_cast]
 theorem cast_sub_of_ne_zero {m n : ℚ} (m0 : (m.den : α) ≠ 0) (n0 : (n.den : α) ≠ 0) :
-    ((m - n : ℚ) : α) = m - n :=
-  by
+    ((m - n : ℚ) : α) = m - n := by
   have : ((-n).den : α) ≠ 0 := by cases n ; exact n0
   simp [sub_eq_add_neg, cast_add_of_ne_zero m0 this]
 #align rat.cast_sub_of_ne_zero Rat.cast_sub_of_ne_zero
@@ -158,8 +156,7 @@ theorem cast_mul_of_ne_zero :
 
 -- Porting note: rewrote proof
 @[simp]
-theorem cast_inv_nat (n : ℕ) : ((n⁻¹ : ℚ) : α) = (n : α)⁻¹ :=
-  by
+theorem cast_inv_nat (n : ℕ) : ((n⁻¹ : ℚ) : α) = (n : α)⁻¹ := by
   cases' n with n
   · simp
   rw [cast_def, inv_coe_nat_num, inv_coe_nat_den, if_neg n.succ_ne_zero,
@@ -168,8 +165,7 @@ theorem cast_inv_nat (n : ℕ) : ((n⁻¹ : ℚ) : α) = (n : α)⁻¹ :=
 
 -- Porting note: proof got a lot easier - is this still the intended statement?
 @[simp]
-theorem cast_inv_int (n : ℤ) : ((n⁻¹ : ℚ) : α) = (n : α)⁻¹ :=
-  by
+theorem cast_inv_int (n : ℤ) : ((n⁻¹ : ℚ) : α) = (n : α)⁻¹ := by
   cases' n with n n
   · simp [ofInt_eq_cast, cast_inv_nat]
   · simp only [ofInt_eq_cast, Int.cast_negSucc, ← Nat.cast_succ, cast_neg, inv_neg, cast_inv_nat]
@@ -189,8 +185,7 @@ theorem cast_inv_of_ne_zero :
 
 @[norm_cast]
 theorem cast_div_of_ne_zero {m n : ℚ} (md : (m.den : α) ≠ 0) (nn : (n.num : α) ≠ 0)
-    (nd : (n.den : α) ≠ 0) : ((m / n : ℚ) : α) = m / n :=
-  by
+    (nd : (n.den : α) ≠ 0) : ((m / n : ℚ) : α) = m / n := by
   have : (n⁻¹.den : ℤ) ∣ n.num := by
     conv in n⁻¹.den => rw [← @num_den n, inv_def']
     apply den_dvd
@@ -308,27 +303,27 @@ section LinearOrderedField
 
 variable {K : Type _} [LinearOrderedField K]
 
-theorem cast_pos_of_pos {r : ℚ} (hr : 0 < r) : (0 : K) < r :=
-  by
+theorem cast_pos_of_pos {r : ℚ} (hr : 0 < r) : (0 : K) < r := by
   rw [Rat.cast_def]
   exact div_pos (Int.cast_pos.2 <| num_pos_iff_pos.2 hr) (Nat.cast_pos.2 r.pos)
 #align rat.cast_pos_of_pos Rat.cast_pos_of_pos
 
--- @[mono]
+@[mono]
 theorem cast_strictMono : StrictMono ((↑) : ℚ → K) := fun m n => by
   simpa only [sub_pos, cast_sub] using @cast_pos_of_pos K _ (n - m)
 #align rat.cast_strict_mono Rat.cast_strictMono
 
--- @[mono]
+@[mono]
 theorem cast_mono : Monotone ((↑) : ℚ → K) :=
   cast_strictMono.monotone
 #align rat.cast_mono Rat.cast_mono
 
 /-- Coercion from `ℚ` as an order embedding. -/
-@[simps]
+@[simps!]
 def castOrderEmbedding : ℚ ↪o K :=
   OrderEmbedding.ofStrictMono (↑) cast_strictMono
 #align rat.cast_order_embedding Rat.castOrderEmbedding
+#align rat.cast_order_embedding_apply Rat.castOrderEmbedding_apply
 
 @[simp, norm_cast]
 theorem cast_le {m n : ℚ} : (m : K) ≤ n ↔ m ≤ n :=
@@ -343,7 +338,6 @@ theorem cast_lt {m n : ℚ} : (m : K) < n ↔ m < n :=
 @[simp]
 theorem cast_nonneg {n : ℚ} : 0 ≤ (n : K) ↔ 0 ≤ n := by
       norm_cast
-
 #align rat.cast_nonneg Rat.cast_nonneg
 
 @[simp]
@@ -379,57 +373,49 @@ theorem cast_abs {q : ℚ} : ((|q| : ℚ) : K) = |(q : K)| := by simp [abs_eq_ma
 open Set
 
 @[simp]
-theorem preimage_cast_Icc (a b : ℚ) : (↑) ⁻¹' Icc (a : K) b = Icc a b :=
-  by
+theorem preimage_cast_Icc (a b : ℚ) : (↑) ⁻¹' Icc (a : K) b = Icc a b := by
   ext x
   simp
 #align rat.preimage_cast_Icc Rat.preimage_cast_Icc
 
 @[simp]
-theorem preimage_cast_Ico (a b : ℚ) : (↑) ⁻¹' Ico (a : K) b = Ico a b :=
-  by
+theorem preimage_cast_Ico (a b : ℚ) : (↑) ⁻¹' Ico (a : K) b = Ico a b := by
   ext x
   simp
 #align rat.preimage_cast_Ico Rat.preimage_cast_Ico
 
 @[simp]
-theorem preimage_cast_Ioc (a b : ℚ) : (↑) ⁻¹' Ioc (a : K) b = Ioc a b :=
-  by
+theorem preimage_cast_Ioc (a b : ℚ) : (↑) ⁻¹' Ioc (a : K) b = Ioc a b := by
   ext x
   simp
 #align rat.preimage_cast_Ioc Rat.preimage_cast_Ioc
 
 @[simp]
-theorem preimage_cast_Ioo (a b : ℚ) : (↑) ⁻¹' Ioo (a : K) b = Ioo a b :=
-  by
+theorem preimage_cast_Ioo (a b : ℚ) : (↑) ⁻¹' Ioo (a : K) b = Ioo a b := by
   ext x
   simp
 #align rat.preimage_cast_Ioo Rat.preimage_cast_Ioo
 
 @[simp]
-theorem preimage_cast_Ici (a : ℚ) : (↑) ⁻¹' Ici (a : K) = Ici a :=
-  by
+theorem preimage_cast_Ici (a : ℚ) : (↑) ⁻¹' Ici (a : K) = Ici a := by
   ext x
   simp
 #align rat.preimage_cast_Ici Rat.preimage_cast_Ici
 
 @[simp]
-theorem preimage_cast_Iic (a : ℚ) : (↑) ⁻¹' Iic (a : K) = Iic a :=
-  by
+theorem preimage_cast_Iic (a : ℚ) : (↑) ⁻¹' Iic (a : K) = Iic a := by
   ext x
   simp
 #align rat.preimage_cast_Iic Rat.preimage_cast_Iic
 
 @[simp]
-theorem preimage_cast_Ioi (a : ℚ) : (↑) ⁻¹' Ioi (a : K) = Ioi a :=
-  by
+theorem preimage_cast_Ioi (a : ℚ) : (↑) ⁻¹' Ioi (a : K) = Ioi a := by
   ext x
   simp
 #align rat.preimage_cast_Ioi Rat.preimage_cast_Ioi
 
 @[simp]
-theorem preimage_cast_Iio (a : ℚ) : (↑) ⁻¹' Iio (a : K) = Iio a :=
-  by
+theorem preimage_cast_Iio (a : ℚ) : (↑) ⁻¹' Iio (a : K) = Iio a := by
   ext x
   simp
 #align rat.preimage_cast_Iio Rat.preimage_cast_Iio
@@ -438,7 +424,7 @@ end LinearOrderedField
 
 -- Porting note: statement made more explicit
 @[norm_cast]
-theorem cast_id (n : ℚ) : (RatCast.ratCast n ) = n := by rfl
+theorem cast_id (n : ℚ) : Rat.cast n = n := rfl
 #align rat.cast_id Rat.cast_id
 
 @[simp]
@@ -508,39 +494,21 @@ theorem RingHom.ext_rat {R : Type _} [Semiring R] [RingHomClass F ℚ R] (f g : 
       ((f : ℚ →+* R).comp (Int.castRingHom ℚ)).ext_int ((g : ℚ →+* R).comp (Int.castRingHom ℚ))
 #align ring_hom.ext_rat RingHom.ext_rat
 
-instance Rat.subsingleton_ring_hom {R : Type _} [Semiring R] : Subsingleton (ℚ →+* R) :=
+instance Rat.subsingleton_ringHom {R : Type _} [Semiring R] : Subsingleton (ℚ →+* R) :=
   ⟨RingHom.ext_rat⟩
-#align rat.subsingleton_ring_hom Rat.subsingleton_ring_hom
+#align rat.subsingleton_ring_hom Rat.subsingleton_ringHom
 
-namespace MulOpposite
-
-variable [DivisionRing α]
-
-@[simp, norm_cast]
-theorem op_ratCast (r : ℚ) : op (r : α) = (↑r : αᵐᵒᵖ) := by
-  rw [cast_def, div_eq_mul_inv, op_mul, op_inv, op_natCast, op_intCast,
-    (Commute.cast_int_right _ r.num).eq, cast_def, div_eq_mul_inv]
-#align mul_opposite.op_rat_cast MulOpposite.op_ratCast
-
-@[simp, norm_cast]
-theorem unop_ratCast (r : ℚ) : unop (r : αᵐᵒᵖ) = r := by
-  rw [cast_def, div_eq_mul_inv, unop_mul, unop_inv, unop_natCast, unop_intCast,
-    (Commute.cast_int_right _ r.num).eq, cast_def, div_eq_mul_inv]
-#align mul_opposite.unop_rat_cast MulOpposite.unop_ratCast
-
-end MulOpposite
-
-section Smul
+section SMul
 
 namespace Rat
 
 variable {K : Type _} [DivisionRing K]
 
-instance (priority := 100) distribSmul : DistribSMul ℚ K where
+instance (priority := 100) distribSMul : DistribSMul ℚ K where
   smul := (· • ·)
   smul_zero a := by rw [smul_def, mul_zero]
   smul_add a x y := by rw [smul_def, smul_def, smul_def, mul_add]
-#align rat.distrib_smul Rat.distribSmul
+#align rat.distrib_smul Rat.distribSMul
 
 instance isScalarTower_right : IsScalarTower ℚ K K :=
   ⟨fun a x y => by simp only [smul_def, smul_eq_mul, mul_assoc]⟩
@@ -548,4 +516,4 @@ instance isScalarTower_right : IsScalarTower ℚ K K :=
 
 end Rat
 
-end Smul
+end SMul

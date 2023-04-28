@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Johannes Hölzl, Mario Carneiro
 
 ! This file was ported from Lean 3 source module data.set.lattice
-! leanprover-community/mathlib commit 3d95492390dc90e34184b13e865f50bc67f30fbb
+! leanprover-community/mathlib commit b86832321b586c6ac23ef8cdef6a7a27e42b13bd
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -449,13 +449,42 @@ theorem interᵢ_congr_of_surjective {f : ι → Set α} {g : ι₂ → Set α} 
   h1.infᵢ_congr h h2
 #align set.Inter_congr_of_surjective Set.interᵢ_congr_of_surjective
 
-theorem unionᵢ_const [Nonempty ι] (s : Set β) : (⋃ _i : ι, s) = s :=
-  supᵢ_const
-#align set.Union_const Set.unionᵢ_const
+lemma unionᵢ_congr {s t : ι → Set α} (h : ∀ i, s i = t i) : (⋃ i, s i) = ⋃ i, t i := supᵢ_congr h
+#align set.Union_congr Set.unionᵢ_congr
+lemma interᵢ_congr {s t : ι → Set α} (h : ∀ i, s i = t i) : (⋂ i, s i) = ⋂ i, t i := infᵢ_congr h
+#align set.Inter_congr Set.interᵢ_congr
 
-theorem interᵢ_const [Nonempty ι] (s : Set β) : (⋂ _i : ι, s) = s :=
-  infᵢ_const
+/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
+/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
+lemma unionᵢ₂_congr {s t : ∀ i, κ i → Set α} (h : ∀ i j, s i j = t i j) :
+    (⋃ (i) (j), s i j) = ⋃ (i) (j), t i j :=
+  unionᵢ_congr fun i => unionᵢ_congr <| h i
+#align set.Union₂_congr Set.unionᵢ₂_congr
+
+/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
+/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
+lemma interᵢ₂_congr {s t : ∀ i, κ i → Set α} (h : ∀ i j, s i j = t i j) :
+    (⋂ (i) (j), s i j) = ⋂ (i) (j), t i j :=
+  interᵢ_congr fun i => interᵢ_congr <| h i
+#align set.Inter₂_congr Set.interᵢ₂_congr
+
+section Nonempty
+variable [Nonempty ι] {f : ι → Set α} {s : Set α}
+
+lemma unionᵢ_const (s : Set β) : (⋃ _i : ι, s) = s := supᵢ_const
+#align set.Union_const Set.unionᵢ_const
+lemma interᵢ_const (s : Set β) : (⋂ _i : ι, s) = s := infᵢ_const
 #align set.Inter_const Set.interᵢ_const
+
+lemma unionᵢ_eq_const (hf : ∀ i, f i = s) : (⋃ i, f i) = s :=
+(unionᵢ_congr hf).trans $ unionᵢ_const _
+#align set.Union_eq_const Set.unionᵢ_eq_const
+
+lemma interᵢ_eq_const (hf : ∀ i, f i = s) : (⋂ i, f i) = s :=
+(interᵢ_congr hf).trans $ interᵢ_const _
+#align set.Inter_eq_const Set.interᵢ_eq_const
+
+end Nonempty
 
 @[simp]
 theorem compl_unionᵢ (s : ι → Set β) : (⋃ i, s i)ᶜ = ⋂ i, s iᶜ :=
@@ -864,28 +893,6 @@ theorem binterᵢ_mono {s s' : Set α} {t t' : α → Set β} (hs : s ⊆ s') (h
   (binterᵢ_subset_binterᵢ_left hs).trans <| interᵢ₂_mono h
 #align set.bInter_mono Set.binterᵢ_mono
 
-theorem unionᵢ_congr {s t : ι → Set α} (h : ∀ i, s i = t i) : (⋃ i, s i) = ⋃ i, t i :=
-  supᵢ_congr h
-#align set.Union_congr Set.unionᵢ_congr
-
-theorem interᵢ_congr {s t : ι → Set α} (h : ∀ i, s i = t i) : (⋂ i, s i) = ⋂ i, t i :=
-  infᵢ_congr h
-#align set.Inter_congr Set.interᵢ_congr
-
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
-theorem unionᵢ₂_congr {s t : ∀ i, κ i → Set α} (h : ∀ i j, s i j = t i j) :
-    (⋃ (i) (j), s i j) = ⋃ (i) (j), t i j :=
-  unionᵢ_congr fun i => unionᵢ_congr <| h i
-#align set.Union₂_congr Set.unionᵢ₂_congr
-
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
-theorem interᵢ₂_congr {s t : ∀ i, κ i → Set α} (h : ∀ i j, s i j = t i j) :
-    (⋂ (i) (j), s i j) = ⋂ (i) (j), t i j :=
-  interᵢ_congr fun i => interᵢ_congr <| h i
-#align set.Inter₂_congr Set.interᵢ₂_congr
-
 theorem bunionᵢ_eq_unionᵢ (s : Set α) (t : ∀ x ∈ s, Set β) :
     (⋃ x ∈ s, t x ‹_›) = ⋃ x : s, t x x.2 :=
   supᵢ_subtype'
@@ -1097,6 +1104,14 @@ theorem unionₛ_eq_empty {S : Set (Set α)} : ⋃₀S = ∅ ↔ ∀ s ∈ S, s 
 theorem interₛ_eq_univ {S : Set (Set α)} : ⋂₀ S = univ ↔ ∀ s ∈ S, s = univ :=
   infₛ_eq_top
 #align set.sInter_eq_univ Set.interₛ_eq_univ
+
+/-- If all sets in a collection are either `∅` or `Set.univ`, then so is their union. -/
+theorem unionₛ_mem_empty_univ {S : Set (Set α)} (h : S ⊆ {∅, univ}) :
+    ⋃₀ S ∈ ({∅, univ} :Set (Set α)) := by
+  simp only [mem_insert_iff, mem_singleton_iff, or_iff_not_imp_left, unionₛ_eq_empty, not_forall]
+  rintro ⟨s, hs, hne⟩
+  obtain rfl : s = univ := (h hs).resolve_left hne
+  exact univ_subset_iff.1 <| subset_unionₛ_of_mem hs
 
 @[simp]
 theorem nonempty_unionₛ {S : Set (Set α)} : (⋃₀S).Nonempty ↔ ∃ s ∈ S, Set.Nonempty s := by
@@ -1497,8 +1512,7 @@ theorem surjective_iff_surjective_of_unionᵢ_eq_univ :
     Set.mem_unionᵢ.mp
       (show x ∈ Set.unionᵢ U by rw [hU]; triv)
   exact ⟨_, congr_arg Subtype.val (H i ⟨x, hi⟩).choose_spec⟩
-#align set.surjective_iff_surjective_of_Union_eq_univ
-  Set.surjective_iff_surjective_of_unionᵢ_eq_univ
+#align set.surjective_iff_surjective_of_Union_eq_univ Set.surjective_iff_surjective_of_unionᵢ_eq_univ
 
 theorem bijective_iff_bijective_of_unionᵢ_eq_univ :
     Bijective f ↔ ∀ i, Bijective ((U i).restrictPreimage f) := by
@@ -1825,16 +1839,16 @@ theorem interₛ_prod_interₛ {S : Set (Set α)} {T : Set (Set β)} (hS : S.Non
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-theorem interₛ_prod {S : Set (Set α)} (hS : S.Nonempty) (t : Set β) : ⋂₀ S ×ˢ t = ⋂ s ∈ S, s ×ˢ t :=
-  by
+theorem interₛ_prod {S : Set (Set α)} (hS : S.Nonempty) (t : Set β) :
+    ⋂₀ S ×ˢ t = ⋂ s ∈ S, s ×ˢ t := by
   rw [← interₛ_singleton t, interₛ_prod_interₛ hS (singleton_nonempty t), interₛ_singleton]
   simp_rw [prod_singleton, mem_image, interᵢ_exists, binterᵢ_and', interᵢ_interᵢ_eq_right]
 #align set.sInter_prod Set.interₛ_prod
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-theorem prod_interₛ {T : Set (Set β)} (hT : T.Nonempty) (s : Set α) : s ×ˢ ⋂₀ T = ⋂ t ∈ T, s ×ˢ t :=
-  by
+theorem prod_interₛ {T : Set (Set β)} (hT : T.Nonempty) (s : Set α) :
+    s ×ˢ ⋂₀ T = ⋂ t ∈ T, s ×ˢ t := by
   rw [← interₛ_singleton s, interₛ_prod_interₛ (singleton_nonempty s) hT, interₛ_singleton]
   simp_rw [singleton_prod, mem_image, interᵢ_exists, binterᵢ_and', interᵢ_interᵢ_eq_right]
 #align set.prod_sInter Set.prod_interₛ

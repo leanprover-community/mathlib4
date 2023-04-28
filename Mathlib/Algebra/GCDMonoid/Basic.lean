@@ -102,7 +102,9 @@ theorem normUnit_one : normUnit (1 : α) = 1 :=
 /-- Chooses an element of each associate class, by multiplying by `normUnit` -/
 def normalize : α →*₀ α where
   toFun x := x * normUnit x
-  map_zero' := by simp only [normUnit_zero, Units.val_one, mul_one]
+  map_zero' := by
+    simp only [normUnit_zero]
+    exact mul_one (0:α)
   map_one' := by dsimp only; rw [normUnit_one, one_mul]; rfl
   map_mul' x y :=
     (by_cases fun hx : x = 0 => by dsimp only; rw [hx, zero_mul, zero_mul, zero_mul]) fun hx =>
@@ -171,8 +173,8 @@ theorem normUnit_mul_normUnit (a : α) : normUnit (a * normUnit a) = 1 := by
 theorem normalize_idem (x : α) : normalize (normalize x) = normalize x := by simp
 #align normalize_idem normalize_idem
 
-theorem normalize_eq_normalize {a b : α} (hab : a ∣ b) (hba : b ∣ a) : normalize a = normalize b :=
-  by
+theorem normalize_eq_normalize {a b : α} (hab : a ∣ b) (hba : b ∣ a) :
+    normalize a = normalize b := by
   nontriviality α
   rcases associated_of_dvd_dvd hab hba with ⟨u, rfl⟩
   refine' by_cases (by rintro rfl; simp only [zero_mul]) fun ha : a ≠ 0 => _
@@ -181,7 +183,6 @@ theorem normalize_eq_normalize {a b : α} (hab : a ∣ b) (hba : b ∣ a) : norm
   calc
     a * ↑(normUnit a) = a * ↑(normUnit a) * ↑u * ↑u⁻¹ := (Units.mul_inv_cancel_right _ _).symm
     _ = a * ↑u * ↑(normUnit a) * ↑u⁻¹ := by rw [mul_right_comm a]
-
 #align normalize_eq_normalize normalize_eq_normalize
 
 theorem normalize_eq_normalize_iff {x y : α} : normalize x = normalize y ↔ x ∣ y ∧ y ∣ x :=
@@ -446,8 +447,8 @@ theorem gcd_mul_left [NormalizedGCDMonoid α] (a b c : α) :
       (dvd_gcd (mul_dvd_mul_left a <| gcd_dvd_left _ _) (mul_dvd_mul_left a <| gcd_dvd_right _ _))
 #align gcd_mul_left gcd_mul_left
 
-theorem gcd_mul_left' [GCDMonoid α] (a b c : α) : Associated (gcd (a * b) (a * c)) (a * gcd b c) :=
-  by
+theorem gcd_mul_left' [GCDMonoid α] (a b c : α) :
+    Associated (gcd (a * b) (a * c)) (a * gcd b c) := by
   obtain rfl | ha := eq_or_ne a 0
   · simp only [zero_mul, gcd_zero_left']
   obtain ⟨d, eq⟩ := dvd_gcd (dvd_mul_right a b) (dvd_mul_right a c)
@@ -561,8 +562,8 @@ theorem gcd_mul_dvd_mul_gcd [GCDMonoid α] (k m n : α) : gcd k (m * n) ∣ gcd 
     exact dvd_gcd hn'k hn'
 #align gcd_mul_dvd_mul_gcd gcd_mul_dvd_mul_gcd
 
-theorem gcd_pow_right_dvd_pow_gcd [GCDMonoid α] {a b : α} {k : ℕ} : gcd a (b ^ k) ∣ gcd a b ^ k :=
-  by
+theorem gcd_pow_right_dvd_pow_gcd [GCDMonoid α] {a b : α} {k : ℕ} :
+    gcd a (b ^ k) ∣ gcd a b ^ k := by
   by_cases hg : gcd a b = 0
   · rw [gcd_eq_zero_iff] at hg
     rcases hg with ⟨rfl, rfl⟩
@@ -583,7 +584,6 @@ theorem gcd_pow_left_dvd_pow_gcd [GCDMonoid α] {a b : α} {k : ℕ} : gcd (a ^ 
     gcd (a ^ k) b ∣ gcd b (a ^ k) := (gcd_comm' _ _).dvd
     _ ∣ gcd b a ^ k := gcd_pow_right_dvd_pow_gcd
     _ ∣ gcd a b ^ k := pow_dvd_pow_of_dvd (gcd_comm' _ _).dvd _
-
 #align gcd_pow_left_dvd_pow_gcd gcd_pow_left_dvd_pow_gcd
 
 theorem pow_dvd_of_mul_eq_pow [GCDMonoid α] {a b c d₁ d₂ : α} (ha : a ≠ 0) (hab : IsUnit (gcd a b))
@@ -702,7 +702,7 @@ end GCD
 section LCM
 
 theorem lcm_dvd_iff [GCDMonoid α] {a b c : α} : lcm a b ∣ c ↔ a ∣ c ∧ b ∣ c := by
-  by_cases a = 0 ∨ b = 0
+  by_cases h : a = 0 ∨ b = 0
   · rcases h with (rfl | rfl) <;>
       simp (config := { contextual := true }) only [iff_def, lcm_zero_left, lcm_zero_right,
         zero_dvd_iff, dvd_zero, eq_self_iff_true, and_true_iff, imp_true_iff]
@@ -948,9 +948,7 @@ instance subsingleton_normalizedGCDMonoid_of_unique_units : Subsingleton (Normal
     have := Subsingleton.elim a_norm b_norm
     subst this
     rfl⟩
-#align
-  subsingleton_normalized_gcd_monoid_of_unique_units
-  subsingleton_normalizedGCDMonoid_of_unique_units
+#align subsingleton_normalized_gcd_monoid_of_unique_units subsingleton_normalizedGCDMonoid_of_unique_units
 
 @[simp]
 theorem normUnit_eq_one (x : α) : normUnit x = 1 :=
@@ -972,6 +970,8 @@ def associatesEquivOfUniqueUnits : Associates α ≃* α where
   right_inv _ := (Associates.out_mk _).trans <| normalize_eq _
   map_mul' := Associates.out_mul
 #align associates_equiv_of_unique_units associatesEquivOfUniqueUnits
+#align associates_equiv_of_unique_units_symm_apply associatesEquivOfUniqueUnits_symm_apply
+#align associates_equiv_of_unique_units_apply associatesEquivOfUniqueUnits_apply
 
 end UniqueUnit
 
@@ -1105,7 +1105,7 @@ noncomputable def normalizedGCDMonoidOfGCD [NormalizationMonoid α] [DecidableEq
           · apply (a0 _).elim
             rw [← zero_dvd_iff, ← ha]
             exact gcd_dvd_left _ _
-          · convert @normalize_zero α _ _
+          · rw [hl, zero_mul]
         have h1 : gcd a b ≠ 0 := by
           have hab : a * b ≠ 0 := mul_ne_zero a0 hb
           contrapose! hab

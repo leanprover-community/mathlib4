@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 
 ! This file was ported from Lean 3 source module order.succ_pred.basic
-! leanprover-community/mathlib commit 207cfac9fcd06138865b5d04f7091e46d9320432
+! leanprover-community/mathlib commit 0111834459f5d7400215223ea95ae38a1265a907
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -33,7 +33,7 @@ order...
 
 Maximal elements don't have a sensible successor. Thus the naïve typeclass
 ```lean
-class NaiveSuccOrder (α : Type*) [Preorder α] :=
+class NaiveSuccOrder (α : Type _) [Preorder α] :=
 (succ : α → α)
 (succ_le_iff : ∀ {a b}, succ a ≤ b ↔ a < b)
 (lt_succ_iff : ∀ {a b}, a < succ b ↔ a ≤ b)
@@ -50,7 +50,7 @@ combination of `SuccOrder α` and `NoMaxOrder α`.
 
 Is `GaloisConnection pred succ` always true? If not, we should introduce
 ```lean
-class SuccPredOrder (α : Type*) [Preorder α] extends SuccOrder α, PredOrder α :=
+class SuccPredOrder (α : Type _) [Preorder α] extends SuccOrder α, PredOrder α :=
 (pred_succ_gc : GaloisConnection (pred : α → α) succ)
 ```
 `covby` should help here.
@@ -75,6 +75,8 @@ class SuccOrder (α : Type _) [Preorder α] where
   /--Proof that `succ` satifies ordering invariants betweeen `LE` and `LT`-/
   le_of_lt_succ {a b} : a < succ b → a ≤ b
 #align succ_order SuccOrder
+#align succ_order.ext_iff SuccOrder.ext_iff
+#align succ_order.ext SuccOrder.ext
 
 /-- Order equipped with a sensible predecessor function. -/
 @[ext]
@@ -90,6 +92,8 @@ class PredOrder (α : Type _) [Preorder α] where
   /--Proof that `pred` satifies ordering invariants betweeen `LE` and `LT`-/
   le_of_pred_lt {a b} : pred a < b → a ≤ b
 #align pred_order PredOrder
+#align pred_order.ext PredOrder.ext
+#align pred_order.ext_iff PredOrder.ext_iff
 
 instance [Preorder α] [SuccOrder α] :
     PredOrder αᵒᵈ where
@@ -154,6 +158,7 @@ def SuccOrder.ofCore (succ : α → α) (hn : ∀ {a}, ¬IsMax a → ∀ b, a < 
       by_cases (fun h => hm b h ▸ hab.le) fun h => by simpa [hab] using (hn h a).not
     max_of_succ_le := fun {a} => not_imp_not.mp fun h => by simpa using (hn h a).not }
 #align succ_order.of_core SuccOrder.ofCore
+#align succ_order.of_core_succ SuccOrder.ofCore_succ
 
 /-- A constructor for `PredOrder α` for `α` a linear order. -/
 @[simps]
@@ -169,6 +174,7 @@ def PredOrder.ofCore {α} [LinearOrder α] (pred : α → α)
       by_cases (fun h => hm a h ▸ hab.le) fun h => by simpa [hab] using (hn h b).not
     min_of_le_pred := fun {a} => not_imp_not.mp fun h => by simpa using (hn h a).not }
 #align pred_order.of_core PredOrder.ofCore
+#align pred_order.of_core_pred PredOrder.ofCore_pred
 
 /-- A constructor for `SuccOrder α` usable when `α` is a linear order with no maximal element. -/
 def SuccOrder.ofSuccLeIff (succ : α → α) (hsucc_le_iff : ∀ {a b}, succ a ≤ b ↔ a < b) :
@@ -260,8 +266,7 @@ theorem succ_le_succ_iff_of_not_isMax (ha : ¬IsMax a) (hb : ¬IsMax b) : succ a
   by rw [succ_le_iff_of_not_isMax ha, lt_succ_iff_of_not_isMax hb]
 #align order.succ_le_succ_iff_of_not_is_max Order.succ_le_succ_iff_of_not_isMax
 
---porting notes: no mono
-@[simp] --, mono]
+@[simp, mono]
 theorem succ_le_succ (h : a ≤ b) : succ a ≤ succ b := by
   by_cases hb : IsMax b
   · by_cases hba : b ≤ a
@@ -403,8 +408,8 @@ theorem succ_eq_iff_isMax : succ a = a ↔ IsMax a :=
 alias succ_eq_iff_isMax ↔ _ _root_.IsMax.succ_eq
 #align is_max.succ_eq IsMax.succ_eq
 
-theorem succ_eq_succ_iff_of_not_isMax (ha : ¬IsMax a) (hb : ¬IsMax b) : succ a = succ b ↔ a = b :=
-  by
+theorem succ_eq_succ_iff_of_not_isMax (ha : ¬IsMax a) (hb : ¬IsMax b) :
+    succ a = succ b ↔ a = b := by
   rw [eq_iff_le_not_lt, eq_iff_le_not_lt, succ_le_succ_iff_of_not_isMax ha hb,
     succ_lt_succ_iff_of_not_isMax ha hb]
 #align order.succ_eq_succ_iff_of_not_is_max Order.succ_eq_succ_iff_of_not_isMax
@@ -420,15 +425,15 @@ theorem le_le_succ_iff : a ≤ b ∧ b ≤ succ a ↔ b = a ∨ b = succ a := by
   · exact ⟨le_succ a, le_rfl⟩
 #align order.le_le_succ_iff Order.le_le_succ_iff
 
-theorem Covby.succ_eq (h : a ⋖ b) : succ a = b :=
+theorem _root_.Covby.succ_eq (h : a ⋖ b) : succ a = b :=
   (succ_le_of_lt h.lt).eq_of_not_lt fun h' => h.2 (lt_succ_of_not_isMax h.lt.not_isMax) h'
-#align covby.succ_eq Order.Covby.succ_eq
+#align covby.succ_eq Covby.succ_eq
 
-theorem Wcovby.le_succ (h : a ⩿ b) : b ≤ succ a := by
+theorem _root_.Wcovby.le_succ (h : a ⩿ b) : b ≤ succ a := by
   obtain h | rfl := h.covby_or_eq
   · exact (Covby.succ_eq h).ge
   · exact le_succ _
-#align wcovby.le_succ Order.Wcovby.le_succ
+#align wcovby.le_succ Wcovby.le_succ
 
 theorem le_succ_iff_eq_or_le : a ≤ succ b ↔ a = succ b ∨ a ≤ b := by
   by_cases hb : IsMax b
@@ -636,8 +641,7 @@ theorem le_pred_iff_of_not_isMin (ha : ¬IsMin a) : b ≤ pred a ↔ b < a :=
   ⟨fun h => h.trans_lt <| pred_lt_of_not_isMin ha, le_pred_of_lt⟩
 #align order.le_pred_iff_of_not_is_min Order.le_pred_iff_of_not_isMin
 
--- porting notes -- no mono
-@[simp] --, mono]
+@[simp, mono]
 theorem pred_le_pred {a b : α} (h : a ≤ b) : pred a ≤ pred b :=
   succ_le_succ h.dual
 #align order.pred_le_pred Order.pred_le_pred
@@ -777,15 +781,15 @@ theorem pred_le_le_iff {a b : α} : pred a ≤ b ∧ b ≤ a ↔ b = a ∨ b = p
   · exact ⟨le_rfl, pred_le a⟩
 #align order.pred_le_le_iff Order.pred_le_le_iff
 
-theorem Covby.pred_eq {a b : α} (h : a ⋖ b) : pred b = a :=
+theorem _root_.Covby.pred_eq {a b : α} (h : a ⋖ b) : pred b = a :=
   (le_pred_of_lt h.lt).eq_of_not_gt fun h' => h.2 h' <| pred_lt_of_not_isMin h.lt.not_isMin
-#align covby.pred_eq Order.Covby.pred_eq
+#align covby.pred_eq Covby.pred_eq
 
-theorem Wcovby.pred_le (h : a ⩿ b) : pred b ≤ a := by
+theorem _root_.Wcovby.pred_le (h : a ⩿ b) : pred b ≤ a := by
   obtain h | rfl := h.covby_or_eq
   · exact (Covby.pred_eq h).le
   · exact pred_le _
-#align wcovby.pred_le Order.Wcovby.pred_le
+#align wcovby.pred_le Wcovby.pred_le
 
 theorem pred_le_iff_eq_or_le : pred a ≤ b ↔ b = pred a ∨ a ≤ b := by
   by_cases ha : IsMin a
@@ -1101,6 +1105,14 @@ theorem pred_coe (a : α) : pred (↑a : WithTop α) = ↑(pred a) :=
   rfl
 #align with_top.pred_coe WithTop.pred_coe
 
+@[simp]
+theorem pred_untop :
+    ∀ (a : WithTop α) (ha : a ≠ ⊤),
+      pred (a.untop ha) = (pred a).untop (by induction a using WithTop.recTopCoe <;> simp)
+  | ⊤, ha => (ha rfl).elim
+  | (a : α), _ => rfl
+#align with_top.pred_untop WithTop.pred_untop
+
 end Pred
 
 /-! #### Adding a `⊤` to a `NoMaxOrder` -/
@@ -1203,6 +1215,14 @@ theorem succ_bot : succ (⊥ : WithBot α) = ↑(⊥ : α) :=
 theorem succ_coe (a : α) : succ (↑a : WithBot α) = ↑(succ a) :=
   rfl
 #align with_bot.succ_coe WithBot.succ_coe
+
+@[simp]
+theorem succ_unbot :
+    ∀ (a : WithBot α) (ha : a ≠ ⊥),
+      succ (a.unbot ha) = (succ a).unbot (by induction a using WithBot.recBotCoe <;> simp)
+  | ⊥, ha => (ha rfl).elim
+  | (a : α), _ => rfl
+#align with_bot.succ_unbot WithBot.succ_unbot
 
 end Succ
 

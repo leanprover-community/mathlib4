@@ -157,13 +157,11 @@ theorem max_eq_right_iff : max a b = b ↔ a ≤ b :=
     or `min a b = b` and `b < a`.
     Use cases on this lemma to automate linarith in inequalities -/
 theorem min_cases (a b : α) : min a b = a ∧ a ≤ b ∨ min a b = b ∧ b < a := by
-  by_cases a ≤ b
+  by_cases h : a ≤ b
   · left
     exact ⟨min_eq_left h, h⟩
-
   · right
     exact ⟨min_eq_right (le_of_lt (not_le.mp h)), not_le.mp h⟩
-
 #align min_cases min_cases
 
 /-- For elements `a` and `b` of a linear order, either `max a b = a` and `b ≤ a`,
@@ -177,9 +175,7 @@ theorem min_eq_iff : min a b = c ↔ a = c ∧ a ≤ b ∨ b = c ∧ b ≤ a := 
   constructor
   · intro h
     refine' Or.imp (fun h' => _) (fun h' => _) (le_total a b) <;> exact ⟨by simpa [h'] using h, h'⟩
-
   · rintro (⟨rfl, h⟩ | ⟨rfl, h⟩) <;> simp [h]
-
 #align min_eq_iff min_eq_iff
 
 theorem max_eq_iff : max a b = c ↔ a = c ∧ b ≤ a ∨ b = c ∧ a ≤ b :=
@@ -242,7 +238,7 @@ theorem Max.right_comm (a b c : α) : max (max a b) c = max (max a c) b :=
 
 theorem MonotoneOn.map_max (hf : MonotoneOn f s) (ha : a ∈ s) (hb : b ∈ s) : f (max a b) =
     max (f a) (f b) := by
-  cases le_total a b <;> rename_i h <;>
+  cases' le_total a b with h h <;>
     simp only [max_eq_right, max_eq_left, hf ha hb, hf hb ha, h]
 #align monotone_on.map_max MonotoneOn.map_max
 
@@ -259,7 +255,7 @@ theorem AntitoneOn.map_min (hf : AntitoneOn f s) (ha : a ∈ s) (hb : b ∈ s) :
 #align antitone_on.map_min AntitoneOn.map_min
 
 theorem Monotone.map_max (hf : Monotone f) : f (max a b) = max (f a) (f b) := by
-  cases le_total a b <;> rename_i h <;> simp [h, hf h]
+  cases' le_total a b with h h <;> simp [h, hf h]
 #align monotone.map_max Monotone.map_max
 
 theorem Monotone.map_min (hf : Monotone f) : f (min a b) = min (f a) (f b) :=
@@ -267,7 +263,7 @@ theorem Monotone.map_min (hf : Monotone f) : f (min a b) = min (f a) (f b) :=
 #align monotone.map_min Monotone.map_min
 
 theorem Antitone.map_max (hf : Antitone f) : f (max a b) = min (f a) (f b) := by
-  cases le_total a b <;> rename_i h <;> simp [h, hf h]
+  cases' le_total a b with h h <;> simp [h, hf h]
 #align antitone.map_max Antitone.map_max
 
 theorem Antitone.map_min (hf : Antitone f) : f (min a b) = max (f a) (f b) :=

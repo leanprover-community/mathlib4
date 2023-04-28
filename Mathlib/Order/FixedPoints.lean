@@ -91,7 +91,6 @@ theorem lfp_le_map {a : α} (ha : lfp f ≤ a) : lfp f ≤ f a :=
   calc
     lfp f = f (lfp f) := f.map_lfp.symm
     _ ≤ f a := f.mono ha
-
 #align order_hom.lfp_le_map OrderHom.lfp_le_map
 
 theorem isLeast_lfp_le : IsLeast { a | f a ≤ a } (lfp f) :=
@@ -249,7 +248,7 @@ theorem le_map_sup_fixedPoints (x y : fixedPoints f) : (x ⊔ y : α) ≤ f (x �
     _ ≤ f (x ⊔ y) := f.mono.le_map_sup x y
 #align order_hom.le_map_sup_fixed_points OrderHom.le_map_sup_fixedPoints
 
--- porting note: `x ⊓ y` without the `.val`sw fails to synthesize `HasInf` instance
+-- porting note: `x ⊓ y` without the `.val`sw fails to synthesize `Inf` instance
 theorem map_inf_fixedPoints_le (x y : fixedPoints f) : f (x ⊓ y) ≤ x.val ⊓ y.val :=
   f.dual.le_map_sup_fixedPoints x y
 #align order_hom.map_inf_fixed_points_le OrderHom.map_inf_fixedPoints_le

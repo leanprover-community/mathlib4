@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 
 ! This file was ported from Lean 3 source module data.list.infix
-! leanprover-community/mathlib commit 6d0adfa76594f304b4650d098273d4366edeb61b
+! leanprover-community/mathlib commit 26f081a2fb920140ed5bc5cc5344e84bcc7cb2b2
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -137,8 +137,7 @@ theorem isInfix.trans : ∀ {l₁ l₂ l₃ : List α}, l₁ <:+: l₂ → l₂ 
   | l, _, _, ⟨l₁, r₁, rfl⟩, ⟨l₂, r₂, rfl⟩ => ⟨l₂ ++ l₁, r₁ ++ r₂, by simp only [append_assoc]⟩
 #align list.is_infix.trans List.isInfix.trans
 
-protected theorem isInfix.sublist : l₁ <:+: l₂ → l₁ <+ l₂ := fun ⟨s, t, h⟩ =>
-  by
+protected theorem isInfix.sublist : l₁ <:+: l₂ → l₁ <+ l₂ := fun ⟨s, t, h⟩ => by
   rw [← h]
   exact (sublist_append_right _ _).trans (sublist_append_left _ _)
 #align list.is_infix.sublist List.isInfix.sublist
@@ -185,10 +184,13 @@ theorem reverse_infix : reverse l₁ <:+: reverse l₂ ↔ l₁ <:+: l₂ :=
 #align list.reverse_infix List.reverse_infix
 
 alias reverse_prefix ↔ _ isSuffix.reverse
+#align list.is_suffix.reverse List.isSuffix.reverse
 
 alias reverse_suffix ↔ _ isPrefix.reverse
+#align list.is_prefix.reverse List.isPrefix.reverse
 
 alias reverse_infix ↔ _ isInfix.reverse
+#align list.is_infix.reverse List.isInfix.reverse
 
 theorem isInfix.length_le (h : l₁ <:+: l₂) : l₁.length ≤ l₂.length :=
   h.sublist.length_le
@@ -222,8 +224,10 @@ theorem suffix_nil_iff : l <:+ [] ↔ l = [] :=
 #align list.suffix_nil_iff List.suffix_nil_iff
 
 alias prefix_nil_iff ↔ eq_nil_of_prefix_nil _
+#align list.eq_nil_of_prefix_nil List.eq_nil_of_prefix_nil
 
 alias suffix_nil_iff ↔ eq_nil_of_suffix_nil _
+#align list.eq_nil_of_suffix_nil List.eq_nil_of_suffix_nil
 
 theorem infix_iff_prefix_suffix (l₁ l₂ : List α) : l₁ <:+: l₂ ↔ ∃ t, l₁ <+: t ∧ t <:+ l₂ :=
   ⟨fun ⟨s, t, e⟩ => ⟨l₁ ++ t, ⟨_, rfl⟩, by rw [← e, append_assoc]; exact ⟨_, rfl⟩⟩,
@@ -339,6 +343,20 @@ theorem mem_of_mem_take (h : a ∈ l.take n) : a ∈ l :=
 
 #align list.mem_of_mem_drop List.mem_of_mem_drop
 
+lemma dropSlice_sublist (n m : ℕ) (l : List α) : l.dropSlice n m <+ l :=
+  calc l.dropSlice n m = take n l ++ drop m (drop n l) := by rw [dropSlice_eq, drop_drop, add_comm]
+  _ <+ take n l ++ drop n l := (Sublist.refl _).append (drop_sublist _ _)
+  _ = _ := take_append_drop _ _
+#align list.slice_sublist List.dropSlice_sublist
+
+lemma dropSlice_subset (n m : ℕ) (l : List α) : l.dropSlice n m ⊆ l :=
+  (dropSlice_sublist n m l).subset
+#align list.slice_subset List.dropSlice_subset
+
+lemma mem_of_mem_dropSlice {n m : ℕ} {l : List α} {a : α} (h : a ∈ l.dropSlice n m) : a ∈ l :=
+  dropSlice_subset n m l h
+#align list.mem_of_mem_slice List.mem_of_mem_dropSlice
+
 theorem takeWhile_prefix (p : α → Bool) : l.takeWhile p <+: l :=
   ⟨l.dropWhile p, takeWhile_append_drop p l⟩
 #align list.take_while_prefix List.takeWhile_prefix
@@ -417,7 +435,6 @@ instance decidableSuffix [DecidableEq α] : ∀ l₁ l₂ : List α, Decidable (
       (@instDecidableOr _ _ _ (l₁.decidableSuffix l₂))
       suffix_cons_iff.symm
 termination_by decidableSuffix l₁ l₂ => (l₁, l₂)
-
 #align list.decidable_suffix List.decidableSuffix
 
 instance decidableInfix [DecidableEq α] : ∀ l₁ l₂ : List α, Decidable (l₁ <:+: l₂)
@@ -472,8 +489,7 @@ theorem isPrefix.map (h : l₁ <+: l₂) (f : α → β) : l₁.map f <+: l₂.m
 #align list.is_prefix.map List.isPrefix.map
 
 theorem isPrefix.filter_map (h : l₁ <+: l₂) (f : α → Option β) :
-    l₁.filterMap f <+: l₂.filterMap f :=
-  by
+    l₁.filterMap f <+: l₂.filterMap f := by
   induction' l₁ with hd₁ tl₁ hl generalizing l₂
   · simp only [nil_prefix, filterMap_nil]
   · cases' l₂ with hd₂ tl₂
@@ -680,14 +696,13 @@ theorem insert.def (a : α) (l : List α) : insert a l = if a ∈ l then l else 
 #align list.mem_insert_iff List.mem_insert_iff
 
 @[simp]
-theorem suffix_insert (a : α) (l : List α) : l <:+ insert a l := by
-  by_cases a ∈ l
+theorem suffix_insert (a : α) (l : List α) : l <:+ l.insert a := by
+  by_cases h : a ∈ l
   · simp only [insert_of_mem h, insert, suffix_refl]
   · simp only [insert_of_not_mem h, suffix_cons, insert]
-
 #align list.suffix_insert List.suffix_insert
 
-theorem infix_insert (a : α) (l : List α) : l <:+: insert a l :=
+theorem infix_insert (a : α) (l : List α) : l <:+: l.insert a :=
   (suffix_insert a l).isInfix
 #align list.infix_insert List.infix_insert
 

@@ -14,14 +14,10 @@ open Lean Meta
 
 namespace Lean.MVarId
 
-/-- Close the goal by typeclass synthesis, or fail. -/
+/-- Solve a goal by synthesizing an instance. -/
+-- FIXME: probably can just be `g.inferInstance` once lean4#2054 is fixed
 def synthInstance (g : MVarId) : MetaM Unit := do
-  let ty ← g.getType
-  match (←isClass? ty) with
-  | some _ => do
-     if ¬ (← isDefEq (.mvar g) (← Meta.synthInstance ty)) then
-      throwError "Could not solve goal by typeclass synthesis."
-  | none => throwError "Goal is not a typeclass."
+  g.assign (← Lean.Meta.synthInstance (← g.getType))
 
 /--
 Replace hypothesis `hyp` in goal `g` with `proof : typeNew`.
@@ -32,7 +28,7 @@ it attempts to avoid reordering hypotheses, and the original is cleared if possi
 def replace (g : MVarId) (hyp : FVarId) (proof : Expr) (typeNew : Option Expr := none) :
     MetaM AssertAfterResult :=
   g.withContext do
-    let typeNew ← Option.getDM (pure typeNew) (inferType proof)
+    let typeNew ← typeNew.getDM (inferType proof)
     let ldecl ← hyp.getDecl
     -- `typeNew` may contain variables that occur after `hyp`.
     -- Thus, we use the auxiliary function `findMaxFVar` to ensure `typeNew` is well-formed
@@ -54,7 +50,12 @@ where
 /-- Add the hypothesis `h : t`, given `v : t`, and return the new `FVarId`. -/
 def note (g : MVarId) (h : Name) (v : Expr) (t : Option Expr := .none) :
     MetaM (FVarId × MVarId) := do
-  (← g.assert h (← Option.getDM (pure t) (inferType v)) v).intro1P
+  (← g.assert h (← t.getDM (inferType v)) v).intro1P
+
+/-- Add the hypothesis `h : t`, given `v : t`, and return the new `FVarId`. -/
+def «let» (g : MVarId) (h : Name) (v : Expr) (t : Option Expr := .none) :
+    MetaM (FVarId × MVarId) := do
+  (← g.define h (← t.getDM (inferType v)) v).intro1P
 
 /-- Has the effect of `refine ⟨e₁,e₂,⋯, ?_⟩`.
 -/
@@ -111,6 +112,13 @@ def mapForallTelescope (F : Expr → MetaM Expr) (forallTerm : Expr) : MetaM Exp
   mapForallTelescope' (fun _ e => F e) forallTerm
 
 end Lean.Meta
+
+section SynthInstance
+
+/-- Elaborate the following term with `set_option synthInstance.etaExperiment true`. -/
+macro "eta_experiment% " a:term : term => `(term|set_option synthInstance.etaExperiment true in $a)
+
+end SynthInstance
 
 namespace Lean.Elab.Tactic
 

@@ -83,6 +83,7 @@ elab_rules : tactic
     let n := n.getNat
     if n == 0 then Elab.throwUnsupportedSyntax
     let g ← getMainGoal
+    g.withContext do
     let ⟨u, p, g⟩ ← inferTypeQ (.mvar g)
     let e : Q(ℤ) ← Tactic.elabTermEnsuringType e q(ℤ)
     let h := h.getD (← `(binderIdent| _))

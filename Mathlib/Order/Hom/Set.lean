@@ -104,12 +104,13 @@ variable (f : α → β) (h_mono : StrictMono f) (h_surj : Function.Surjective f
 
 /-- A strictly monotone function from a linear order is an order isomorphism between its domain and
 its range. -/
-@[simps apply]
+@[simps! apply]
 protected noncomputable def orderIso :
     α ≃o Set.range f where
   toEquiv := Equiv.ofInjective f h_mono.injective
   map_rel_iff' := h_mono.le_iff_le
 #align strict_mono.order_iso StrictMono.orderIso
+#align strict_mono.order_iso_apply StrictMono.orderIso_apply
 
 /-- A strictly monotone surjective function from a linear order is an order isomorphism. -/
 noncomputable def orderIsoOfSurjective : α ≃o β :=
@@ -126,14 +127,12 @@ theorem coe_orderIsoOfSurjective : (orderIsoOfSurjective f h_mono h_surj : α �
 theorem orderIsoOfSurjective_symm_apply_self (a : α) :
     (orderIsoOfSurjective f h_mono h_surj).symm (f a) = a :=
   (orderIsoOfSurjective f h_mono h_surj).symm_apply_apply _
-#align strict_mono.order_iso_of_surjective_symm_apply_self
-  StrictMono.orderIsoOfSurjective_symm_apply_self
+#align strict_mono.order_iso_of_surjective_symm_apply_self StrictMono.orderIsoOfSurjective_symm_apply_self
 
 theorem orderIsoOfSurjective_self_symm_apply (b : β) :
     f ((orderIsoOfSurjective f h_mono h_surj).symm b) = b :=
   (orderIsoOfSurjective f h_mono h_surj).apply_symm_apply _
-#align strict_mono.order_iso_of_surjective_self_symm_apply
-  StrictMono.orderIsoOfSurjective_self_symm_apply
+#align strict_mono.order_iso_of_surjective_self_symm_apply StrictMono.orderIsoOfSurjective_self_symm_apply
 
 end StrictMono
 
@@ -150,6 +149,8 @@ def OrderIso.compl : α ≃o αᵒᵈ where
   right_inv := compl_compl (α := αᵒᵈ)
   map_rel_iff' := compl_le_compl_iff_le
 #align order_iso.compl OrderIso.compl
+#align order_iso.compl_symm_apply OrderIso.compl_symm_apply
+#align order_iso.compl_apply OrderIso.compl_apply
 
 theorem compl_strictAnti : StrictAnti (compl : α → α) :=
   (OrderIso.compl α).strictMono

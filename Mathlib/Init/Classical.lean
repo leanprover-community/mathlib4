@@ -29,6 +29,7 @@ theorem cases_on (a : Prop) {p : Prop → Prop} (h1 : p True) (h2 : p False) : p
   @cases_true_false p h1 h2 a
 
 theorem cases {p : Prop → Prop} (h1 : p True) (h2 : p False) (a) : p a := cases_on a h1 h2
+#align classical.cases Classical.cases
 
 alias byCases ← by_cases
 alias byContradiction ← by_contradiction

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Mario Carneiro
 
 ! This file was ported from Lean 3 source module data.list.defs
-! leanprover-community/mathlib commit 1fc36cc9c8264e6e81253f88be7fb2cb6c92d76a
+! leanprover-community/mathlib commit d2d8742b0c21426362a9dacebc6005db895ca963
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -32,6 +32,32 @@ namespace List
 
 open Function Nat
 
+section recursor_workarounds
+/-- A computable version of `List.rec`. Workaround until Lean has native support for this. -/
+def recC.{u_1, u} {α : Type u} {motive : List α → Sort u_1} (nil : motive [])
+  (cons : (head : α) → (tail : List α) → motive tail → motive (head :: tail)) :
+    (l : List α) → motive l
+| [] => nil
+| (x :: xs) => cons x xs (List.recC nil cons xs)
+
+@[csimp]
+lemma rec_eq_recC : @List.rec = @List.recC := by
+  ext α motive nil cons l
+  induction l with
+  | nil => rfl
+  | cons x xs ih =>
+    rw [List.recC, ←ih]
+
+/-- A computable version of `List._sizeOf_inst`. -/
+def _sizeOf_instC.{u} (α : Type u) [SizeOf α] : SizeOf (List α) where
+  sizeOf t := List.rec 1 (fun head _ tail_ih => 1 + SizeOf.sizeOf head + tail_ih) t
+
+@[csimp]
+lemma _sizeOfinst_eq_sizeOfinstC : @List._sizeOf_inst = @List._sizeOf_instC := by
+  simp [List._sizeOf_1, List._sizeOf_instC, _sizeOf_inst]
+
+end recursor_workarounds
+
 universe u v w x
 
 variable {α β γ δ ε ζ : Type _}
@@ -44,7 +70,10 @@ instance [DecidableEq α] : SDiff (List α) :=
 #align list.split_on List.splitOn
 #align list.concat List.concat
 #align list.head' List.head?
-#align list.to_array List.toArray
+
+-- mathlib3 `array` is not ported.
+#noalign list.to_array
+
 #align list.nthd List.getD
 -- porting notes: see
 -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/List.2Ehead/near/313204716
@@ -215,14 +244,6 @@ end mapIdxM
 #align list.sublists List.sublists
 #align list.forall₂ List.Forall₂
 
-/-- Definition of a `sublists` function with an explicit list construction function
-    Used in `Data.Lists.Sublists`: TODO: move there when ported.
--/
-def sublistsAux₁ : List α → (List α → List β) → List β
-  | [], _ => []
-  | a :: l, f => f [a] ++ sublistsAux₁ l fun ys => f ys ++ f (a :: ys)
-#align list.sublists_aux₁ List.sublistsAux₁
-
 /-- `l.all₂ p` is equivalent to `∀ a ∈ l, p a`, but unfolds directly to a conjunction, i.e.
 `list.all₂ p [0, 1, 2] = p 0 ∧ p 1 ∧ p 2`. -/
 @[simp]
@@ -352,14 +373,14 @@ theorem chain_cons {a b : α} {l : List α} : Chain R a (b :: l) ↔ R a b ∧ C
    fun ⟨n, p⟩ ↦ p.cons n⟩
 #align list.chain_cons List.chain_cons
 
-noncomputable instance decidableChain [DecidableRel R] (a : α) (l : List α) :
+instance decidableChain [DecidableRel R] (a : α) (l : List α) :
     Decidable (Chain R a l) := by
   induction l generalizing a with
   | nil => simp only [List.Chain.nil]; infer_instance
   | cons a as ih => haveI := ih; simp only [List.chain_cons]; infer_instance
 #align list.decidable_chain List.decidableChain
 
-noncomputable instance decidableChain' [DecidableRel R] (l : List α) : Decidable (Chain' R l) := by
+instance decidableChain' [DecidableRel R] (l : List α) : Decidable (Chain' R l) := by
   cases l <;> dsimp only [List.Chain'] <;> infer_instance
 #align list.decidable_chain' List.decidableChain'
 

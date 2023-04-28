@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 
 ! This file was ported from Lean 3 source module data.nat.gcd.basic
-! leanprover-community/mathlib commit cf9386b56953fb40904843af98b7a80757bbe7f9
+! leanprover-community/mathlib commit e8638a0fcaf73e4500469f368ef9494e495099b3
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -101,13 +101,18 @@ theorem lcm_dvd_iff {m n k : ℕ} : lcm m n ∣ k ↔ m ∣ k ∧ n ∣ k :=
   ⟨fun h => ⟨(dvd_lcm_left _ _).trans h, (dvd_lcm_right _ _).trans h⟩, and_imp.2 lcm_dvd⟩
 #align nat.lcm_dvd_iff Nat.lcm_dvd_iff
 
+theorem lcm_pos {m n : ℕ} : 0 < m → 0 < n → 0 < m.lcm n := by
+  simp_rw [pos_iff_ne_zero]
+  exact lcm_ne_zero
+#align nat.lcm_pos Nat.lcm_pos
+
 /-!
 ### `coprime`
 
 See also `Nat.coprime_of_dvd` and `Nat.coprime_of_dvd'` to prove `Nat.coprime m n`.
 -/
 
-instance (m n : ℕ) : Decidable (coprime m n) := by unfold coprime ;infer_instance
+instance (m n : ℕ) : Decidable (coprime m n) := inferInstanceAs (Decidable (gcd m n = 1))
 
 theorem coprime.lcm_eq_mul {m n : ℕ} (h : coprime m n) : lcm m n = m * n := by
   rw [← one_mul (lcm m n), ← h.gcd_eq_one, gcd_mul_lcm]

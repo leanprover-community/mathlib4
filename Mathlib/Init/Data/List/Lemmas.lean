@@ -22,7 +22,8 @@ namespace List
 
 #align list.ball_nil List.forall_mem_nil
 #align list.ball_cons List.forall_mem_consₓ -- explicit → implicit arguments
-
+#align list.mem_cons_iff List.mem_cons
+#align list.sublist.cons2 List.Sublist.cons₂
 
 section MapAccumr
 
@@ -82,3 +83,7 @@ theorem length_mapAccumr₂ :
 end MapAccumr₂
 
 end List
+
+#align list.length_zip_with List.length_zipWith
+#align list.mem_replicate List.mem_replicate
+#align list.eq_of_mem_replicate List.eq_of_mem_replicate

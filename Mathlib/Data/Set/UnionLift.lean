@@ -41,8 +41,6 @@ constants, unary functions, or binary functions are preserved. These lemmas are:
 directed union, directed supremum, glue, gluing
 -/
 
-set_option autoImplicit false
-
 variable {α ι β : Type _}
 
 namespace Set
@@ -80,6 +78,19 @@ theorem unionᵢLift_inclusion {i : ι} (x : S i) (h : S i ⊆ T) :
 theorem unionᵢLift_of_mem (x : T) {i : ι} (hx : (x : α) ∈ S i) :
     unionᵢLift S f hf T hT x = f i ⟨x, hx⟩ := by cases' x with x hx; exact hf _ _ _ _ _
 #align set.Union_lift_of_mem Set.unionᵢLift_of_mem
+
+theorem preimage_unionᵢLift (t : Set β) :
+    unionᵢLift S f hf T hT ⁻¹' t =
+      inclusion hT ⁻¹' (⋃ i, inclusion (subset_unionᵢ S i) '' (f i ⁻¹' t)) := by
+  ext x
+  simp only [mem_preimage, mem_unionᵢ, mem_image]
+  constructor
+  · rcases mem_unionᵢ.1 (hT x.prop) with ⟨i, hi⟩
+    refine fun h => ⟨i, ⟨x, hi⟩, ?_, rfl⟩
+    rwa [unionᵢLift_of_mem x hi] at h
+  · rintro ⟨i, ⟨y, hi⟩, h, hxy⟩
+    obtain rfl : y = x := congr_arg Subtype.val hxy
+    rwa [unionᵢLift_of_mem x hi]
 
 /-- `unionᵢLift_const` is useful for proving that `unionᵢLift` is a homomorphism
   of algebraic structures when defined on the Union of algebraic subobjects.
@@ -124,8 +135,7 @@ theorem unionᵢLift_binary (dir : Directed (· ≤ ·) S) (op : T → T → T) 
             (Set.inclusion (show S i ⊆ T from hT'.symm ▸ Set.subset_unionᵢ S i) y))
     (opβ : β → β → β) (h : ∀ (i) (x y : S i), f i (opi i x y) = opβ (f i x) (f i y)) (x y : T) :
     unionᵢLift S f hf T (le_of_eq hT') (op x y) =
-      opβ (unionᵢLift S f hf T (le_of_eq hT') x) (unionᵢLift S f hf T (le_of_eq hT') y) :=
-  by
+      opβ (unionᵢLift S f hf T (le_of_eq hT') x) (unionᵢLift S f hf T (le_of_eq hT') y) := by
   subst hT'
   cases' Set.mem_unionᵢ.1 x.prop with i hi
   cases' Set.mem_unionᵢ.1 y.prop with j hj
@@ -153,7 +163,7 @@ variable {S : ι → Set α} {f : ∀ (i) (_ : S i), β}
 noncomputable def liftCover (S : ι → Set α) (f : ∀ (i) (_ : S i), β)
     (hf : ∀ (i j) (x : α) (hxi : x ∈ S i) (hxj : x ∈ S j), f i ⟨x, hxi⟩ = f j ⟨x, hxj⟩)
     (hS : unionᵢ S = univ) (a : α) : β :=
-  unionᵢLift S f hf univ (hS ▸ Set.Subset.refl _) ⟨a, trivial⟩
+  unionᵢLift S f hf univ hS.symm.subset ⟨a, trivial⟩
 #align set.lift_cover Set.liftCover
 
 @[simp]
@@ -165,5 +175,10 @@ theorem liftCover_of_mem {i : ι} {x : α} (hx : (x : α) ∈ S i) :
     liftCover S f hf hS x = f i ⟨x, hx⟩ :=
   unionᵢLift_of_mem (⟨x, trivial⟩ : {_z // True}) hx
 #align set.lift_cover_of_mem Set.liftCover_of_mem
+
+theorem preimage_liftCover (t : Set β) : liftCover S f hf hS ⁻¹' t = ⋃ i, (↑) '' (f i ⁻¹' t) := by
+  change (unionᵢLift S f hf univ hS.symm.subset ∘ fun a => ⟨a, mem_univ a⟩) ⁻¹' t = _
+  rw [preimage_comp, preimage_unionᵢLift]
+  ext; simp
 
 end Set

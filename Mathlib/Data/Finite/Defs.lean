@@ -37,7 +37,7 @@ instead.
 ## Implementation notes
 
 The definition of `Finite α` is not just `NonEmpty (Fintype α)` since `Fintype` requires
-that `α : Type*`, and the definition in this module allows for `α : Sort*`. This means
+that `α : Type _`, and the definition in this module allows for `α : Sort*`. This means
 we can write the instance `Finite.prop`.
 
 ## Tags
@@ -138,3 +138,5 @@ protected theorem Infinite.false [Finite α] (_ : Infinite α) : False :=
 #align infinite.false Infinite.false
 
 alias not_infinite_iff_finite ↔ Finite.of_not_infinite Finite.not_infinite
+#align finite.of_not_infinite Finite.of_not_infinite
+#align finite.not_infinite Finite.not_infinite
