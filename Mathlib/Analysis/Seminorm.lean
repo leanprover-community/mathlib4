@@ -457,7 +457,7 @@ variable {σ₁₂ : 𝕜 →+* 𝕜₂} [RingHomIsometric σ₁₂]
 variable [AddCommGroup E] [AddCommGroup E₂] [Module 𝕜 E] [Module 𝕜₂ E₂]
 
 -- Porting note: unhappily, turning on `synthInstance.etaExperiment` isn't enough here:
--- we need to elaborate a fragement of the type using `eta_experiment%`,
+-- we need to elaborate a fragment of the type using `eta_experiment%`,
 -- but then can't use it for the proof!
 -- Porting note:
 -- finding the instance `SMul ℝ≥0 (Seminorm 𝕜 E)` is slow,
