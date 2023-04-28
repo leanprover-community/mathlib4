@@ -60,18 +60,26 @@ noncomputable instance (priority := 100) preservesLimitsOfShapeOfPreservesFinite
   apply preservesLimitsOfShapeOfEquiv (FinCategory.equivAsType J)
 #align category_theory.limits.preserves_limits_of_shape_of_preserves_finite_limits CategoryTheory.Limits.preservesLimitsOfShapeOfPreservesFiniteLimits
 
-noncomputable instance (priority := 100) PreservesLimits.preservesFiniteLimitsOfSize (F : C ⥤ D)
+-- Porting note: this is a dangerous instance as it has unbound universe variables.
+noncomputable def PreservesLimitsOfSize.preservesFiniteLimits (F : C ⥤ D)
     [PreservesLimitsOfSize.{w, w₂} F] : PreservesFiniteLimits F where
   preservesFiniteLimits J (sJ : SmallCategory J) fJ := by
     haveI := preservesSmallestLimitsOfPreservesLimits F
     exact preservesLimitsOfShapeOfEquiv (FinCategory.equivAsType J) F
-#align category_theory.limits.preserves_limits.preserves_finite_limits_of_size CategoryTheory.Limits.PreservesLimits.preservesFiniteLimitsOfSize
+#align category_theory.limits.preserves_limits.preserves_finite_limits_of_size CategoryTheory.Limits.PreservesLimitsOfSize.preservesFiniteLimits
+
+-- Porting note: added as a specialization of the dangerous instance above.
+noncomputable instance (priority := 120) PreservesLimitsOfSize0.preservesFiniteLimits
+    (F : C ⥤ D) [PreservesLimitsOfSize.{0, 0} F] : PreservesFiniteLimits F :=
+  PreservesLimitsOfSize.preservesFiniteLimits F
 
 noncomputable instance (priority := 120) PreservesLimits.preservesFiniteLimits (F : C ⥤ D)
     [PreservesLimits F] : PreservesFiniteLimits F :=
-  PreservesLimits.preservesFiniteLimitsOfSize F
+  PreservesLimitsOfSize.preservesFiniteLimits F
 #align category_theory.limits.preserves_limits.preserves_finite_limits CategoryTheory.Limits.PreservesLimits.preservesFiniteLimits
 
+-- Porting note: is this unnecessary given the instance
+-- `PreservesLimitsOfSize0.preservesFiniteLimits`?
 /-- We can always derive `PreservesFiniteLimits C` by showing that we are preserving limits at an
 arbitrary universe. -/
 def preservesFiniteLimitsOfPreservesFiniteLimitsOfSize (F : C ⥤ D)
@@ -120,15 +128,27 @@ noncomputable instance (priority := 100) preservesColimitsOfShapeOfPreservesFini
   apply preservesColimitsOfShapeOfEquiv (FinCategory.equivAsType J)
 #align category_theory.limits.preserves_colimits_of_shape_of_preserves_finite_colimits CategoryTheory.Limits.preservesColimitsOfShapeOfPreservesFiniteColimits
 
-noncomputable instance (priority := 100) PreservesColimits.preservesFiniteColimits (F : C ⥤ D)
+-- Porting note: this is a dangerous instance as it has unbound universe variables.
+noncomputable def PreservesColimitsOfSize.preservesFiniteColimits (F : C ⥤ D)
     [PreservesColimitsOfSize.{w, w₂} F] : PreservesFiniteColimits F where
   preservesFiniteColimits J (sJ : SmallCategory J) fJ := by
     haveI := preservesSmallestColimitsOfPreservesColimits F
     exact preservesColimitsOfShapeOfEquiv (FinCategory.equivAsType J) F
+
+-- Porting note: added as a specialization of the dangerous instance above.
+noncomputable instance (priority := 120) PreservesColimitsOfSize0.preservesFiniteColimits
+    (F : C ⥤ D) [PreservesColimitsOfSize.{0, 0} F] : PreservesFiniteColimits F :=
+  PreservesColimitsOfSize.preservesFiniteColimits F
+
+noncomputable instance (priority := 120) PreservesColimits.preservesFiniteColimits (F : C ⥤ D)
+    [PreservesColimits F] : PreservesFiniteColimits F :=
+  PreservesColimitsOfSize.preservesFiniteColimits F
 #align category_theory.limits.preserves_colimits.preserves_finite_colimits CategoryTheory.Limits.PreservesColimits.preservesFiniteColimits
 
-/-- We can always derive `PreservesFiniteLimits C` by showing that we are preserving limits at an
-arbitrary universe. -/
+-- Porting note: is this unnecessary given the instance
+-- `PreservesColimitsOfSize0.preservesFiniteColimits`?
+/-- We can always derive `PreservesFiniteColimits C`
+by showing that we are preserving colimits at an arbitrary universe. -/
 def preservesFiniteColimitsOfPreservesFiniteColimitsOfSize (F : C ⥤ D)
     (h :
       ∀ (J : Type w) {𝒥 : SmallCategory J} (_ : @FinCategory J 𝒥), PreservesColimitsOfShape J F) :
