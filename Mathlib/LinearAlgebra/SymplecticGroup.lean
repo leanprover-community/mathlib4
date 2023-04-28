@@ -8,7 +8,7 @@ Authors: Matej Penciak, Moritz Doll, Fabien Clery
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.LinearAlgebra.Matrix.NonsingularInverse
+import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 
 /-!
 # The Symplectic Group
@@ -42,8 +42,7 @@ def j : Matrix (Sum l l) (Sum l l) R :=
 #align matrix.J Matrix.j
 
 @[simp]
-theorem j_transpose : (j l R)ᵀ = -j l R :=
-  by
+theorem j_transpose : (j l R)ᵀ = -j l R := by
   rw [J, from_blocks_transpose, ← neg_one_smul R (from_blocks _ _ _ _), from_blocks_smul,
     Matrix.transpose_zero, Matrix.transpose_one, transpose_neg]
   simp [from_blocks]
@@ -51,22 +50,19 @@ theorem j_transpose : (j l R)ᵀ = -j l R :=
 
 variable [Fintype l]
 
-theorem j_squared : j l R ⬝ j l R = -1 :=
-  by
+theorem j_squared : j l R ⬝ j l R = -1 := by
   rw [J, from_blocks_multiply]
   simp only [Matrix.zero_mul, Matrix.neg_mul, zero_add, neg_zero, Matrix.one_mul, add_zero]
   rw [← neg_zero, ← Matrix.fromBlocks_neg, ← from_blocks_one]
 #align matrix.J_squared Matrix.j_squared
 
-theorem j_inv : (j l R)⁻¹ = -j l R :=
-  by
+theorem j_inv : (j l R)⁻¹ = -j l R := by
   refine' Matrix.inv_eq_right_inv _
   rw [Matrix.mul_neg, J_squared]
   exact neg_neg 1
 #align matrix.J_inv Matrix.j_inv
 
-theorem j_det_mul_j_det : det (j l R) * det (j l R) = 1 :=
-  by
+theorem j_det_mul_j_det : det (j l R) * det (j l R) = 1 := by
   rw [← det_mul, J_squared]
   rw [← one_smul R (-1 : Matrix _ _ R)]
   rw [smul_neg, ← neg_smul, det_smul]
@@ -84,8 +80,7 @@ end JMatrixLemmas
 variable [Fintype l]
 
 /-- The group of symplectic matrices over a ring `R`. -/
-def symplecticGroup : Submonoid (Matrix (Sum l l) (Sum l l) R)
-    where
+def symplecticGroup : Submonoid (Matrix (Sum l l) (Sum l l) R) where
   carrier := { A | A ⬝ j l R ⬝ Aᵀ = j l R }
   mul_mem' := by
     intro a b ha hb
@@ -114,8 +109,7 @@ section SymplecticJ
 
 variable (l) (R)
 
-theorem j_mem : j l R ∈ symplecticGroup l R :=
-  by
+theorem j_mem : j l R ∈ symplecticGroup l R := by
   rw [mem_iff, J, from_blocks_multiply, from_blocks_transpose, from_blocks_multiply]
   simp
 #align symplectic_group.J_mem SymplecticGroup.j_mem
@@ -136,14 +130,12 @@ end SymplecticJ
 
 variable {R} {A : Matrix (Sum l l) (Sum l l) R}
 
-theorem neg_mem (h : A ∈ symplecticGroup l R) : -A ∈ symplecticGroup l R :=
-  by
+theorem neg_mem (h : A ∈ symplecticGroup l R) : -A ∈ symplecticGroup l R := by
   rw [mem_iff] at h⊢
   simp [h]
 #align symplectic_group.neg_mem SymplecticGroup.neg_mem
 
-theorem symplectic_det (hA : A ∈ symplecticGroup l R) : IsUnit <| det A :=
-  by
+theorem symplectic_det (hA : A ∈ symplecticGroup l R) : IsUnit <| det A := by
   rw [isUnit_iff_exists_inv]
   use A.det
   refine' (is_unit_det_J l R).mul_left_cancel _
@@ -155,8 +147,7 @@ theorem symplectic_det (hA : A ∈ symplecticGroup l R) : IsUnit <| det A :=
   exact hA
 #align symplectic_group.symplectic_det SymplecticGroup.symplectic_det
 
-theorem transpose_mem (hA : A ∈ symplecticGroup l R) : Aᵀ ∈ symplecticGroup l R :=
-  by
+theorem transpose_mem (hA : A ∈ symplecticGroup l R) : Aᵀ ∈ symplecticGroup l R := by
   rw [mem_iff] at hA⊢
   rw [transpose_transpose]
   have huA := symplectic_det hA
@@ -207,8 +198,7 @@ theorem inv_left_mul_aux (hA : A ∈ symplecticGroup l R) : -j l R ⬝ Aᵀ ⬝ 
     
 #align symplectic_group.inv_left_mul_aux SymplecticGroup.inv_left_mul_aux
 
-theorem coe_inv' (A : symplecticGroup l R) : (↑A⁻¹ : Matrix (Sum l l) (Sum l l) R) = A⁻¹ :=
-  by
+theorem coe_inv' (A : symplecticGroup l R) : (↑A⁻¹ : Matrix (Sum l l) (Sum l l) R) = A⁻¹ := by
   refine' (coe_inv A).trans (inv_eq_left_inv _).symm
   simp [inv_left_mul_aux, coe_inv]
 #align symplectic_group.coe_inv' SymplecticGroup.coe_inv'
