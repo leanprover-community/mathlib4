@@ -8,10 +8,10 @@ Authors: Shing Tak Lam
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.LinearAlgebra.GeneralLinearGroup
-import Mathbin.LinearAlgebra.Matrix.ToLin
-import Mathbin.LinearAlgebra.Matrix.NonsingularInverse
-import Mathbin.Algebra.Star.Unitary
+import Mathlib.LinearAlgebra.GeneralLinearGroup
+import Mathlib.LinearAlgebra.Matrix.ToLin
+import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
+import Mathlib.Algebra.Star.Unitary
 
 /-!
 # The Unitary Group
@@ -67,8 +67,7 @@ variable {n : Type u} [DecidableEq n] [Fintype n]
 
 variable {α : Type v} [CommRing α] [StarRing α]
 
-theorem mem_unitaryGroup_iff {A : Matrix n n α} : A ∈ Matrix.unitaryGroup n α ↔ A * star A = 1 :=
-  by
+theorem mem_unitaryGroup_iff {A : Matrix n n α} : A ∈ Matrix.unitaryGroup n α ↔ A * star A = 1 := by
   refine' ⟨And.right, fun hA => ⟨_, hA⟩⟩
   simpa only [mul_eq_mul, mul_eq_one_comm] using hA
 #align matrix.mem_unitary_group_iff Matrix.mem_unitaryGroup_iff
@@ -190,16 +189,14 @@ theorem coe_toGL (A : unitaryGroup n α) : ↑(toGL A) = toLin' A :=
 #align matrix.unitary_group.coe_to_GL Matrix.unitaryGroup.coe_toGL
 
 @[simp]
-theorem toGL_one : toGL (1 : unitaryGroup n α) = 1 :=
-  by
+theorem toGL_one : toGL (1 : unitaryGroup n α) = 1 := by
   ext1 v i
   rw [coe_to_GL, to_lin'_one]
   rfl
 #align matrix.unitary_group.to_GL_one Matrix.unitaryGroup.toGL_one
 
 @[simp]
-theorem toGL_mul (A B : unitaryGroup n α) : toGL (A * B) = toGL A * toGL B :=
-  by
+theorem toGL_mul (A B : unitaryGroup n α) : toGL (A * B) = toGL A * toGL B := by
   ext1 v i
   rw [coe_to_GL, to_lin'_mul]
   rfl
@@ -226,15 +223,13 @@ abbrev orthogonalGroup :=
 #align matrix.orthogonal_group Matrix.orthogonalGroup
 
 theorem mem_orthogonalGroup_iff {A : Matrix n n β} :
-    A ∈ Matrix.orthogonalGroup n β ↔ A * star A = 1 :=
-  by
+    A ∈ Matrix.orthogonalGroup n β ↔ A * star A = 1 := by
   refine' ⟨And.right, fun hA => ⟨_, hA⟩⟩
   simpa only [mul_eq_mul, mul_eq_one_comm] using hA
 #align matrix.mem_orthogonal_group_iff Matrix.mem_orthogonalGroup_iff
 
 theorem mem_orthogonalGroup_iff' {A : Matrix n n β} :
-    A ∈ Matrix.orthogonalGroup n β ↔ star A * A = 1 :=
-  by
+    A ∈ Matrix.orthogonalGroup n β ↔ star A * A = 1 := by
   refine' ⟨And.left, fun hA => ⟨hA, _⟩⟩
   rwa [mul_eq_mul, mul_eq_one_comm] at hA
 #align matrix.mem_orthogonal_group_iff' Matrix.mem_orthogonalGroup_iff'
