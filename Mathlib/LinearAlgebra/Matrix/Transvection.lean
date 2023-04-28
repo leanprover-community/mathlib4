@@ -363,7 +363,7 @@ theorem listTransvecCol_mul_last_row_drop (i : Sum (Fin r) Unit) {k : ℕ} (hk :
   · intro n hn _ IH
     have hn' : n < (listTransvecCol M).length := by simpa [listTransvecCol] using hn
     -- porting note: after changing from `nthLe` to `get`, we need to provide all arguments
-    rw [← @List.cons_get_drop_succ _ (listTransvecCol M) ⟨n, hn'⟩]
+    rw [← @List.cons_get_drop_succ _ _ ⟨n, hn'⟩]
     simpa [listTransvecCol, Matrix.mul_assoc]
   · simp only [listTransvecCol, List.length_ofFn, le_refl, List.drop_eq_nil_of_le, List.prod_nil,
       Matrix.one_mul]
@@ -384,40 +384,43 @@ theorem listTransvecCol_mul_last_col (hM : M (inr unit) (inr unit) ≠ 0) (i : F
       k ≤ r →
         (((listTransvecCol M).drop k).prod ⬝ M) (inl i) (inr unit) =
           if k ≤ i then 0 else M (inl i) (inr unit)
-  · simpa only [if_true, List.drop.equations._eqn_1] using H 0 (zero_le _)
+  · simpa only [List.drop, _root_.zero_le, ite_true] using H 0 (zero_le _)
   intro k hk
-  apply Nat.decreasingInduction' _ hk
-  · simp only [listTransvecCol, List.length_ofFn, Matrix.one_mul, List.drop_eq_nil_of_le,
-      List.prod_nil]
-    rw [if_neg]
-    simpa only [not_le] using i.2
+  -- porting note: `apply` didn't work anymore, because of the implicit arguments
+  refine' Nat.decreasingInduction' _ hk _
   · intro n hn hk IH
-    have hn' : n < (list_transvec_col M).length := by simpa [list_transvec_col] using hn
+    have hn' : n < (listTransvecCol M).length := by simpa [listTransvecCol] using hn
     let n' : Fin r := ⟨n, hn⟩
-    rw [← List.cons_nthLe_drop_succ hn']
+    -- porting note: after changing from `nthLe` to `get`, we need to provide all arguments
+    rw [← @List.cons_get_drop_succ _ _ ⟨n, hn'⟩]
     have A :
-      (list_transvec_col M).nthLe n hn' =
+      (listTransvecCol M).get ⟨n, hn'⟩ =
         transvection (inl n') (inr unit) (-M (inl n') (inr unit) / M (inr unit) (inr unit)) :=
-      by simp [list_transvec_col]
+      by simp [listTransvecCol]
     simp only [Matrix.mul_assoc, A, Matrix.mul_eq_mul, List.prod_cons]
     by_cases h : n' = i
     · have hni : n = i := by
         cases i
         simp only [Fin.mk_eq_mk] at h
         simp [h]
-      rw [h, transvection_mul_apply_same, IH, list_transvec_col_mul_last_row_drop _ _ hn, ← hni]
+      simp only [h, transvection_mul_apply_same, IH, ← hni, add_le_iff_nonpos_right,
+          listTransvecCol_mul_last_row_drop _ _ hn]
       field_simp [hM]
     · have hni : n ≠ i := by
         rintro rfl
         cases i
-        simpa using h
-      simp only [transvection_mul_apply_of_ne, Ne.def, not_false_iff, Ne.symm h]
+        simp at h
+      simp only [ne_eq, inl.injEq, Ne.symm h, not_false_eq_true, transvection_mul_apply_of_ne]
       rw [IH]
       rcases le_or_lt (n + 1) i with (hi | hi)
       · simp only [hi, n.le_succ.trans hi, if_true]
       · rw [if_neg, if_neg]
         · simpa only [hni.symm, not_le, or_false_iff] using Nat.lt_succ_iff_lt_or_eq.1 hi
         · simpa only [not_le] using hi
+  · simp only [listTransvecCol, List.length_ofFn, le_refl, List.drop_eq_nil_of_le, List.prod_nil,
+      Matrix.one_mul]
+    rw [if_neg]
+    simpa only [not_le] using i.2
 #align matrix.pivot.list_transvec_col_mul_last_col Matrix.Pivot.listTransvecCol_mul_last_col
 
 /-- Multiplying by some of the matrices in `list_transvec_row M` does not change the last column. -/
