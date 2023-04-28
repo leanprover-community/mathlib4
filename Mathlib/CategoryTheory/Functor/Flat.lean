@@ -8,12 +8,12 @@ Authors: Andrew Yang
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Limits.FilteredColimitCommutesFiniteLimit
-import Mathbin.CategoryTheory.Limits.Preserves.FunctorCategory
-import Mathbin.CategoryTheory.Limits.Bicones
-import Mathbin.CategoryTheory.Limits.Comma
-import Mathbin.CategoryTheory.Limits.Preserves.Finite
-import Mathbin.CategoryTheory.Limits.Shapes.FiniteLimits
+import Mathlib.CategoryTheory.Limits.FilteredColimitCommutesFiniteLimit
+import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
+import Mathlib.CategoryTheory.Limits.Bicones
+import Mathlib.CategoryTheory.Limits.Comma
+import Mathlib.CategoryTheory.Limits.Preserves.Finite
+import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
 
 /-!
 # Representably flat functors
@@ -69,8 +69,7 @@ variable {K : J ⥤ C} (F : C ⥤ D) (c : Cone K)
 arrows over `X` with `f` as the cone point. This is the underlying diagram.
 -/
 @[simps]
-def toDiagram : J ⥤ StructuredArrow c.pt K
-    where
+def toDiagram : J ⥤ StructuredArrow c.pt K where
   obj j := StructuredArrow.mk (c.π.app j)
   map j k g := StructuredArrow.homMk g (by simpa)
 #align category_theory.structured_arrow_cone.to_diagram CategoryTheory.StructuredArrowCone.toDiagram
@@ -86,8 +85,7 @@ def diagramToCone {X : D} (G : J ⥤ StructuredArrow X F) : Cone (G ⋙ proj X F
 arrows over `X` with `f` as the cone point.
 -/
 @[simps]
-def toCone {X : D} (f : X ⟶ F.obj c.pt) : Cone (toDiagram (F.mapCone c) ⋙ map f ⋙ pre _ K F)
-    where
+def toCone {X : D} (f : X ⟶ F.obj c.pt) : Cone (toDiagram (F.mapCone c) ⋙ map f ⋙ pre _ K F) where
   pt := mk f
   π :=
     { app := fun j => homMk (c.π.app j) rfl
@@ -116,8 +114,7 @@ attribute [instance] representably_flat.cofiltered
 
 attribute [local instance] is_cofiltered.nonempty
 
-instance RepresentablyFlat.id : RepresentablyFlat (𝟭 C) :=
-  by
+instance RepresentablyFlat.id : RepresentablyFlat (𝟭 C) := by
   constructor
   intro X
   haveI : Nonempty (structured_arrow X (𝟭 C)) := ⟨structured_arrow.mk (𝟙 _)⟩
@@ -136,12 +133,10 @@ instance RepresentablyFlat.id : RepresentablyFlat (𝟭 C) :=
 #align category_theory.representably_flat.id CategoryTheory.RepresentablyFlat.id
 
 instance RepresentablyFlat.comp (F : C ⥤ D) (G : D ⥤ E) [RepresentablyFlat F]
-    [RepresentablyFlat G] : RepresentablyFlat (F ⋙ G) :=
-  by
+    [RepresentablyFlat G] : RepresentablyFlat (F ⋙ G) := by
   constructor
   intro X
-  have : Nonempty (structured_arrow X (F ⋙ G)) :=
-    by
+  have : Nonempty (structured_arrow X (F ⋙ G)) := by
     have f₁ : structured_arrow X G := Nonempty.some inferInstance
     have f₂ : structured_arrow f₁.right F := Nonempty.some inferInstance
     exact ⟨structured_arrow.mk (f₁.hom ≫ G.map f₂.hom)⟩
@@ -198,8 +193,7 @@ theorem cofiltered_of_hasFiniteLimits [HasFiniteLimits C] : IsCofiltered C :=
 theorem flat_of_preservesFiniteLimits [HasFiniteLimits C] (F : C ⥤ D) [PreservesFiniteLimits F] :
     RepresentablyFlat F :=
   ⟨fun X =>
-    haveI : has_finite_limits (structured_arrow X F) :=
-      by
+    haveI : has_finite_limits (structured_arrow X F) := by
       apply hasFiniteLimits_of_hasFiniteLimits_of_size.{v₁} (structured_arrow X F)
       intro J sJ fJ; skip; constructor
     cofiltered_of_has_finite_limits⟩
@@ -240,8 +234,7 @@ attribute [local simp] eq_to_hom_map
 
 theorem uniq {K : J ⥤ C} {c : Cone K} (hc : IsLimit c) (s : Cone (K ⋙ F))
     (f₁ f₂ : s.pt ⟶ F.obj c.pt) (h₁ : ∀ j : J, f₁ ≫ (F.mapCone c).π.app j = s.π.app j)
-    (h₂ : ∀ j : J, f₂ ≫ (F.mapCone c).π.app j = s.π.app j) : f₁ = f₂ :=
-  by
+    (h₂ : ∀ j : J, f₂ ≫ (F.mapCone c).π.app j = s.π.app j) : f₁ = f₂ := by
   -- We can make two cones over the diagram of `s` via `f₁` and `f₂`.
   let α₁ : to_diagram (F.map_cone c) ⋙ map f₁ ⟶ to_diagram s :=
     { app := fun X => eq_to_hom (by simp [← h₁])
@@ -263,14 +256,12 @@ theorem uniq {K : J ⥤ C} {c : Cone K} (hc : IsLimit c) (s : Cone (K ⋙ F))
   let g₁ : c₀.X ⟶ c₁.X := c₀.π.app bicone.left
   let g₂ : c₀.X ⟶ c₂.X := c₀.π.app bicone.right
   -- Then `g₁.right` and `g₂.right` are two maps from the same cone into the `c`.
-  have : ∀ j : J, g₁.right ≫ c.π.app j = g₂.right ≫ c.π.app j :=
-    by
+  have : ∀ j : J, g₁.right ≫ c.π.app j = g₂.right ≫ c.π.app j := by
     intro j
     injection c₀.π.naturality (bicone_hom.left j) with _ e₁
     injection c₀.π.naturality (bicone_hom.right j) with _ e₂
     simpa using e₁.symm.trans e₂
-  have : c.extend g₁.right = c.extend g₂.right :=
-    by
+  have : c.extend g₁.right = c.extend g₂.right := by
     unfold cone.extend
     congr 1
     ext x
@@ -278,8 +269,7 @@ theorem uniq {K : J ⥤ C} {c : Cone K} (hc : IsLimit c) (s : Cone (K ⋙ F))
   -- And thus they are equal as `c` is the limit.
   have : g₁.right = g₂.right
   calc
-    g₁.right = hc.lift (c.extend g₁.right) :=
-      by
+    g₁.right = hc.lift (c.extend g₁.right) := by
       apply hc.uniq (c.extend _)
       tidy
     _ = hc.lift (c.extend g₂.right) := by
@@ -304,8 +294,7 @@ end PreservesFiniteLimitsOfFlat
 
 /-- Representably flat functors preserve finite limits. -/
 noncomputable def preservesFiniteLimitsOfFlat (F : C ⥤ D) [RepresentablyFlat F] :
-    PreservesFiniteLimits F :=
-  by
+    PreservesFiniteLimits F := by
   apply preserves_finite_limits_of_preserves_finite_limits_of_size
   intro J _ _; constructor
   intro K; constructor
@@ -323,8 +312,7 @@ noncomputable def preservesFiniteLimitsOfFlat (F : C ⥤ D) [RepresentablyFlat F
 finite limits.
 -/
 noncomputable def preservesFiniteLimitsIffFlat [HasFiniteLimits C] (F : C ⥤ D) :
-    RepresentablyFlat F ≃ PreservesFiniteLimits F
-    where
+    RepresentablyFlat F ≃ PreservesFiniteLimits F where
   toFun _ := preserves_finite_limits_of_flat F
   invFun _ := flat_of_preserves_finite_limits F
   left_inv _ := proof_irrel _ _
@@ -371,8 +359,7 @@ variable [PreservesLimits (forget E)]
 `Lan F.op` that takes presheaves over `C` to presheaves over `D` preserves finite limits.
 -/
 noncomputable instance lanPreservesFiniteLimitsOfFlat (F : C ⥤ D) [RepresentablyFlat F] :
-    PreservesFiniteLimits (lan F.op : _ ⥤ Dᵒᵖ ⥤ E) :=
-  by
+    PreservesFiniteLimits (lan F.op : _ ⥤ Dᵒᵖ ⥤ E) := by
   apply preservesFiniteLimitsOfPreservesFiniteLimitsOfSize.{u₁}
   intro J _ _; skip
   apply preserves_limits_of_shape_of_evaluation (Lan F.op : (Cᵒᵖ ⥤ E) ⥤ Dᵒᵖ ⥤ E) J
@@ -390,8 +377,7 @@ instance lan_flat_of_flat (F : C ⥤ D) [RepresentablyFlat F] :
 variable [HasFiniteLimits C]
 
 noncomputable instance lanPreservesFiniteLimitsOfPreservesFiniteLimits (F : C ⥤ D)
-    [PreservesFiniteLimits F] : PreservesFiniteLimits (lan F.op : _ ⥤ Dᵒᵖ ⥤ E) :=
-  by
+    [PreservesFiniteLimits F] : PreservesFiniteLimits (lan F.op : _ ⥤ Dᵒᵖ ⥤ E) := by
   haveI := flat_of_preserves_finite_limits F
   infer_instance
 #align category_theory.Lan_preserves_finite_limits_of_preserves_finite_limits CategoryTheory.lanPreservesFiniteLimitsOfPreservesFiniteLimits
@@ -401,8 +387,7 @@ theorem flat_iff_lan_flat (F : C ⥤ D) :
   ⟨fun H => inferInstance, fun H => by
     skip
     haveI := preserves_finite_limits_of_flat (Lan F.op : _ ⥤ Dᵒᵖ ⥤ Type u₁)
-    haveI : preserves_finite_limits F :=
-      by
+    haveI : preserves_finite_limits F := by
       apply preservesFiniteLimitsOfPreservesFiniteLimitsOfSize.{u₁}
       intros ; skip; apply preserves_limit_of_Lan_presesrves_limit
     apply flat_of_preserves_finite_limits⟩
@@ -412,8 +397,7 @@ theorem flat_iff_lan_flat (F : C ⥤ D) :
 `Lan F.op : (Cᵒᵖ ⥤ Type*) ⥤ (Dᵒᵖ ⥤ Type*)` preserves finite limits.
 -/
 noncomputable def preservesFiniteLimitsIffLanPreservesFiniteLimits (F : C ⥤ D) :
-    PreservesFiniteLimits F ≃ PreservesFiniteLimits (lan F.op : _ ⥤ Dᵒᵖ ⥤ Type u₁)
-    where
+    PreservesFiniteLimits F ≃ PreservesFiniteLimits (lan F.op : _ ⥤ Dᵒᵖ ⥤ Type u₁) where
   toFun _ := inferInstance
   invFun _ := by
     apply preservesFiniteLimitsOfPreservesFiniteLimitsOfSize.{u₁}
