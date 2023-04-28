@@ -481,7 +481,7 @@ theorem mul_listTransvecRow_last_row (hM : M (inr unit) (inr unit) ≠ 0) (i : F
     · have hni : n ≠ i := by
         rintro rfl
         cases i
-        simpa using h
+        tauto
       simp only [IH hnr.le, Ne.def, mul_transvection_apply_of_ne, not_false_iff, Ne.symm h]
       rcases le_or_lt (n + 1) i with (hi | hi)
       · simp [hi, n.le_succ.trans hi, if_true]
@@ -540,8 +540,8 @@ theorem exists_isTwoBlockDiagonal_of_ne_zero (hM : M (inr unit) (inr unit) ≠ 0
     List.ofFn fun i : Fin r =>
       ⟨inr unit, inl i, by simp, -M (inr unit) (inl i) / M (inr unit) (inr unit)⟩
   refine' ⟨L, L', _⟩
-  have A : L.map toMatrix = listTransvecCol M := by simp [L, listTransvecCol, (· ∘ ·)]
-  have B : L'.map toMatrix = listTransvecRow M := by simp [L, listTransvecRow, (· ∘ ·)]
+  have A : L.map toMatrix = listTransvecCol M := by simp [listTransvecCol, (· ∘ ·)]
+  have B : L'.map toMatrix = listTransvecRow M := by simp [listTransvecRow, (· ∘ ·)]
   rw [A, B]
   exact isTwoBlockDiagonal_listTransvecCol_mul_mul_listTransvecRow M hM
 #align matrix.pivot.exists_is_two_block_diagonal_of_ne_zero Matrix.Pivot.exists_isTwoBlockDiagonal_of_ne_zero
@@ -610,7 +610,8 @@ theorem exists_list_transvec_mul_mul_list_transvec_eq_diagonal_induction
   suffices
     (L₀.map (toMatrix ∘ sumInl Unit)).prod ⬝ M' ⬝ (L₀'.map (toMatrix ∘ sumInl Unit)).prod =
       diagonal (Sum.elim D₀ fun _ => c)
-    by simpa [M', Matrix.mul_assoc, c]
+    by
+      simp [M', Matrix.mul_assoc, c]
   have : M' = fromBlocks M'' 0 0 (diagonal fun _ => c) := by
     rw [← fromBlocks_toBlocks M']
     congr
@@ -720,24 +721,6 @@ theorem diagonal_transvection_induction (P : Matrix n n 𝕜 → Prop) (M : Matr
     exact PD
   intro L₁ L₂ E PE
   induction' L₁ with t L₁ IH
-  /-
-  unknown identifier ''
-  -/
-  /-
-  unknown identifier ''
-  -/
-  /-
-  unknown identifier ''
-  -/
-  /-
-  unknown identifier ''
-  -/
-  /-
-  unknown identifier ''
-  -/
-  /-
-  unknown identifier ''
-  -/
   · simp only [Matrix.one_mul, List.prod_nil, List.map]
     induction' L₂ with t L₂ IH generalizing E
     · simpa
