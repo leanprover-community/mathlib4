@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner, Scott Morrison
 -/
 import Mathlib.Tactic.TryThis
+import Mathlib.Util.Pickle
 import Mathlib.Lean.Expr.Basic
 import Mathlib.Lean.Meta.DiscrTree
 import Mathlib.Tactic.Cache
@@ -46,23 +47,58 @@ inductive DeclMod
 | none | symm | mp | mpr
 deriving DecidableEq
 
-initialize librarySearchLemmas : DeclCache (DiscrTree (Name × DeclMod) true) ←
-  DeclCache.mk "librarySearch: init cache" {} fun name constInfo lemmas => do
-    if constInfo.isUnsafe then return lemmas
-    if ← name.isBlackListed then return lemmas
-    withNewMCtxDepth do withReducible do
-      let (_, _, type) ← forallMetaTelescopeReducing constInfo.type
-      let keys ← DiscrTree.mkPath type
-      let lemmas := lemmas.insertIfSpecific keys (name, .none)
-      match type.getAppFnArgs with
-      | (``Eq, #[_, lhs, rhs]) => do
-        let keys_symm ← DiscrTree.mkPath (← mkEq rhs lhs)
-        pure (lemmas.insertIfSpecific keys_symm (name, .symm))
-      | (``Iff, #[lhs, rhs]) => do
-        let keys_mp ← DiscrTree.mkPath rhs
-        let keys_mpr ← DiscrTree.mkPath lhs
-        pure <| (lemmas.insertIfSpecific keys_mp (name, .mp)).insertIfSpecific keys_mpr (name, .mpr)
-      | _ => pure lemmas
+/-- Insert a lemma into the discrimination tree. -/
+def addLemma (name : Name) (constInfo : ConstantInfo)
+    (lemmas : DiscrTree (Name × DeclMod) true) : MetaM (DiscrTree (Name × DeclMod) true) := do
+  if constInfo.isUnsafe then return lemmas
+  if ← name.isBlackListed then return lemmas
+  withNewMCtxDepth do withReducible do
+    let (_, _, type) ← forallMetaTelescopeReducing constInfo.type
+    let keys ← DiscrTree.mkPath type
+    let lemmas := lemmas.insertIfSpecific keys (name, .none)
+    match type.getAppFnArgs with
+    | (``Eq, #[_, lhs, rhs]) => do
+      let keys_symm ← DiscrTree.mkPath (← mkEq rhs lhs)
+      pure (lemmas.insertIfSpecific keys_symm (name, .symm))
+    | (``Iff, #[lhs, rhs]) => do
+      let keys_mp ← DiscrTree.mkPath rhs
+      let keys_mpr ← DiscrTree.mkPath lhs
+      pure <| (lemmas.insertIfSpecific keys_mp (name, .mp)).insertIfSpecific keys_mpr (name, .mpr)
+    | _ => pure lemmas
+
+/-- Construct the discrimination tree of all lemmas. -/
+def buildDiscrTree : IO (DeclCache (DiscrTree (Name × DeclMod) true)) :=
+  DeclCache.mk "librarySearch: init cache" {} addLemma
+
+open System (FilePath)
+
+def cachePath : IO FilePath :=
+  try
+    return (← findOLean `MathlibExtras.LibrarySearch).withExtension "extra"
+  catch _ =>
+    return "build" / "lib" / "MathlibExtras" / "LibrarySearch.extra"
+
+/--
+A structure that holds the cached discrimination tree,
+and possibly a pointer to a memory region, if we unpickled the tree from disk.
+-/
+structure CachedData where
+  pointer? : Option CompactedRegion
+  cache : DeclCache (DiscrTree (Name × DeclMod) true)
+deriving Nonempty
+
+initialize cachedData : CachedData ← unsafe do
+  let path ← cachePath
+  if (← path.pathExists) then
+    let (d, r) ← unpickle (DiscrTree (Name × DeclMod) true) path
+    return ⟨r, (← Cache.mk (pure d), addLemma)⟩
+  else
+    return ⟨none, ← buildDiscrTree⟩
+
+/--
+Retrieve the current current of lemmas.
+-/
+def librarySearchLemmas : DeclCache (DiscrTree (Name × DeclMod) true) := cachedData.cache
 
 /-- Shortcut for calling `solveByElim`. -/
 def solveByElim (goals : List MVarId) (required : List Expr) (depth) := do
@@ -104,14 +140,13 @@ def librarySearchLemma (lem : Name) (mod : DeclMod) (required : List Expr) (solv
 Returns a lazy list of the results of applying a library lemma,
 then calling `solveByElim` on the resulting goals.
 -/
-unsafe def librarySearchCore (goal : MVarId) (lemmas : DiscrTree (Name × DeclMod) s)
+def librarySearchCore (goal : MVarId) (lemmas : DiscrTree (Name × DeclMod) s)
     (required : List Expr) (solveByElimDepth := 6) : ListM MetaM (MetavarContext × List MVarId) :=
   .squash do
     let ty ← goal.getType
-    withTraceNode `Tactic.librarySearch (return m!"{·.emoji} {ty}") do
-      let lemmas := ListM.ofList ((← lemmas.getMatch ty).toList)
-      return lemmas.filterMapM fun (lem, mod) =>
-        try? <| librarySearchLemma lem mod required solveByElimDepth goal
+    let lemmas := ListM.ofList ((← lemmas.getMatch ty).toList)
+    return lemmas.filterMapM fun (lem, mod) =>
+      try? <| librarySearchLemma lem mod required solveByElimDepth goal
 
 /--
 Try to solve the goal either by:
@@ -131,11 +166,16 @@ this is not currently tracked.)
 -/
 def librarySearch (goal : MVarId) (lemmas : DiscrTree (Name × DeclMod) s) (required : List Expr)
     (solveByElimDepth := 6) : MetaM (Option (Array (MetavarContext × List MVarId))) := do
+  let librarySearchEmoji := fun
+    | .error _ => bombEmoji
+    | .ok (some _) => crossEmoji
+    | .ok none => checkEmoji
+  withTraceNode `Tactic.librarySearch (return m!"{librarySearchEmoji ·} {← goal.getType}") do
   profileitM Exception "librarySearch" (← getOptions) do
   (do
     solveByElim [goal] required solveByElimDepth
     return none) <|>
-  unsafe (do
+  (do
     let results ← librarySearchCore goal lemmas required solveByElimDepth
       -- Don't use too many heartbeats.
       |>.whileAtLeastHeartbeatsPercent 10
@@ -178,6 +218,7 @@ elab_rules : tactic | `(tactic| library_search%$tk $[using $[$required:term],*]?
       for suggestion in suggestions do
         withMCtx suggestion.1 do
           addExactSuggestion tk (← instantiateMVars (mkMVar mvar)).headBeta
+      if suggestions.isEmpty then logError "library_search didn't find any relevant lemmas"
       admitGoal goal
     else
       addExactSuggestion tk (← instantiateMVars (mkMVar mvar)).headBeta
@@ -192,6 +233,7 @@ elab tk:"library_search%" : term <= expectedType => do
       for suggestion in suggestions do
         withMCtx suggestion.1 do
           addTermSuggestion tk (← instantiateMVars goal).headBeta
+      if suggestions.isEmpty then logError "library_search didn't find any relevant lemmas"
       mkSorry expectedType (synthetic := true)
     else
       addTermSuggestion tk (← instantiateMVars goal).headBeta
