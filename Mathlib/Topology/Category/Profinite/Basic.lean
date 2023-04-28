@@ -24,8 +24,8 @@ often called profinite sets -- perhaps they could be called
 profinite types in Lean.
 
 The type of profinite topological spaces is called `Profinite`. It has a category
-instance and is a fully faithful subcategory of `Top`. The fully faithful functor
-is called `Profinite_to_Top`.
+instance and is a fully faithful subcategory of `TopCat`. The fully faithful functor
+is called `Profinite.toTop`.
 
 ## Implementation notes
 
@@ -63,8 +63,8 @@ namespace Profinite
 /-- Construct a term of `Profinite` from a type endowed with the structure of a
 compact, Hausdorff and totally disconnected topological space.
 -/
-def of (X : Type _) [TopologicalSpace X] [CompactSpace X] [T2Space X] [TotallyDisconnectedSpace X] :
-    Profinite :=
+def of (X : Type _) [TopologicalSpace X] [CompactSpace X] [T2Space X]
+    [TotallyDisconnectedSpace X] : Profinite :=
   ⟨⟨⟨X, inferInstance⟩⟩⟩
 #align Profinite.of Profinite.of
 
@@ -85,6 +85,12 @@ instance hasForget₂ : HasForget₂ Profinite TopCat :=
 
 instance : CoeSort Profinite (Type _) :=
   ⟨fun X => X.toCompHaus⟩
+
+-- Porting note: This lemma was not needed in mathlib3
+@[simp]
+lemma forget_ContinuousMap_mk {X Y : Profinite} (f : X → Y) (hf : Continuous f) :
+    (forget Profinite).map (ContinuousMap.mk f hf) = f :=
+  rfl
 
 instance {X : Profinite} : TotallyDisconnectedSpace X :=
   X.IsTotallyDisconnected
@@ -148,25 +154,26 @@ show Faithful <| inducedFunctor _ from inferInstance
 instance {X : Profinite} : TotallyDisconnectedSpace (profiniteToCompHaus.obj X) :=
   X.IsTotallyDisconnected
 
-/-- The fully faithful embedding of `Profinite` in `Top`. This is definitionally the same as the
-obvious composite. -/
+/-- The fully faithful embedding of `Profinite` in `TopCat`.
+This is definitionally the same as the obvious composite. -/
 @[simps!]
-def Profinite.toTop : Profinite ⥤ TopCat :=
+def Profinite.toTopCat : Profinite ⥤ TopCat :=
   forget₂ _ _
 -- Porting note: deriving fails, adding manually.
 -- deriving Full, Faithful
-#align Profinite.to_Top Profinite.toTop
+#align Profinite.to_Top Profinite.toTopCat
 
-instance : Full Profinite.toTop :=
+instance : Full Profinite.toTopCat :=
 show Full <| inducedFunctor _ from inferInstance
 
-instance : Faithful Profinite.toTop :=
+instance : Faithful Profinite.toTopCat :=
 show Faithful <| inducedFunctor _ from inferInstance
 
 @[simp]
-theorem Profinite.to_compHausToTop : profiniteToCompHaus ⋙ compHausToTop = Profinite.toTop :=
+theorem Profinite.to_compHausToTopCat :
+    profiniteToCompHaus ⋙ compHausToTop = Profinite.toTopCat :=
   rfl
-#align Profinite.to_CompHaus_to_Top Profinite.to_compHausToTop
+#align Profinite.to_CompHaus_to_Top Profinite.to_compHausToTopCat
 
 section Profinite
 
@@ -241,7 +248,7 @@ namespace Profinite
 -- TODO the following construction of limits could be generalised
 -- to allow diagrams in lower universes.
 /-- An explicit limit cone for a functor `F : J ⥤ Profinite`, defined in terms of
-`Top.limit_cone`. -/
+`CompHaus.limitCone`, which is defined in terms of `TopCat.limitCone`. -/
 def limitCone {J : Type u} [SmallCategory J] (F : J ⥤ Profinite.{u}) : Limits.Cone F where
   pt :=
     { toCompHaus := (CompHaus.limitCone.{u, u} (F ⋙ profiniteToCompHaus)).pt
@@ -257,7 +264,7 @@ def limitCone {J : Type u} [SmallCategory J] (F : J ⥤ Profinite.{u}) : Limits.
       exact (p f).symm }
 #align Profinite.limit_cone Profinite.limitCone
 
-/-- The limit cone `Profinite.limit_cone F` is indeed a limit cone. -/
+/-- The limit cone `Profinite.limitCone F` is indeed a limit cone. -/
 def limitConeIsLimit {J : Type u} [SmallCategory J] (F : J ⥤ Profinite.{u}) :
     Limits.IsLimit (limitCone F) where
   lift S :=
@@ -280,16 +287,16 @@ noncomputable instance toCompHaus.createsLimits : CreatesLimits profiniteToCompH
   monadicCreatesLimits _
 #align Profinite.to_CompHaus.creates_limits Profinite.toCompHaus.createsLimits
 
-noncomputable instance toTop.reflective : Reflective Profinite.toTop :=
+noncomputable instance toTopCat.reflective : Reflective Profinite.toTopCat :=
   Reflective.comp profiniteToCompHaus compHausToTop
-#align Profinite.to_Top.reflective Profinite.toTop.reflective
+#align Profinite.to_Top.reflective Profinite.toTopCat.reflective
 
-noncomputable instance toTop.createsLimits : CreatesLimits Profinite.toTop :=
+noncomputable instance toTopCat.createsLimits : CreatesLimits Profinite.toTopCat :=
   monadicCreatesLimits _
-#align Profinite.to_Top.creates_limits Profinite.toTop.createsLimits
+#align Profinite.to_Top.creates_limits Profinite.toTopCat.createsLimits
 
 instance hasLimits : Limits.HasLimits Profinite :=
-  has_limits_of_has_limits_creates_limits Profinite.toTop
+  has_limits_of_has_limits_creates_limits Profinite.toTopCat
 #align Profinite.has_limits Profinite.hasLimits
 
 instance hasColimits : Limits.HasColimits Profinite :=
@@ -297,7 +304,7 @@ instance hasColimits : Limits.HasColimits Profinite :=
 #align Profinite.has_colimits Profinite.hasColimits
 
 noncomputable instance forgetPreservesLimits : Limits.PreservesLimits (forget Profinite) := by
-  apply Limits.compPreservesLimits Profinite.toTop (forget TopCat)
+  apply Limits.compPreservesLimits Profinite.toTopCat (forget TopCat)
 #align Profinite.forget_preserves_limits Profinite.forgetPreservesLimits
 
 variable {X Y : Profinite.{u}} (f : X ⟶ Y)
@@ -390,19 +397,13 @@ theorem epi_iff_surjective {X Y : Profinite.{u}} (f : X ⟶ Y) : Epi f ↔ Funct
       have H : h = g := by
         rw [← cancel_epi f]
         ext x
+        apply ULift.ext
         dsimp [LocallyConstant.ofClopen]
-        -- Porting TODO: something has gone wrong with our simp lemmas.
-        -- At this point in mathlib3 the goal is:
-        -- `1 = ↑(ite (⇑f x ∈ V) 0 1)`.
         rw [if_neg]
-        · rfl
         refine' mt (fun α => hVU α) _
         simp only [Set.mem_range_self, not_true, not_false_iff, Set.mem_compl_iff]
       apply_fun fun e => (e y).down  at H
       dsimp [LocallyConstant.ofClopen] at H
-      -- Porting TODO: something has gone wrong with our simp lemmas.
-      -- At this point in mathlib3 the goal is:
-      -- `1 = ite (y ∈ V) 0 1`.
       rw [if_pos hyV] at H
       exact top_ne_bot H
   · rw [← CategoryTheory.epi_iff_surjective]
