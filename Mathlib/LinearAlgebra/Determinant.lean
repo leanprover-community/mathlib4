@@ -28,12 +28,12 @@ In the list below, and in all this file, `R` is a commutative ring (semiring
 is sometimes enough), `M` and its variations are `R`-modules, `ι`, `κ`, `n` and `m` are finite
 types used for indexing.
 
- * `basis.det`: the determinant of a family of vectors with respect to a basis,
+ * `Basis.det`: the determinant of a family of vectors with respect to a basis,
    as a multilinear map
- * `linear_map.det`: the determinant of an endomorphism `f : End R M` as a
+ * `LinearMap.det`: the determinant of an endomorphism `f : End R M` as a
    multiplicative homomorphism (if `M` does not have a finite `R`-basis, the
    result is `1` instead)
- * `linear_equiv.det`: the determinant of an isomorphism `f : M ≃ₗ[R] M` as a
+ * `LinearEquiv.det`: the determinant of an isomorphism `f : M ≃ₗ[R] M` as a
    multiplicative homomorphism (if `M` does not have a finite `R`-basis, the
    result is `1` instead)
 
@@ -73,10 +73,11 @@ variable {A : Type _} [CommRing A]
 
 variable {m n : Type _} [Fintype m] [Fintype n]
 
+set_option synthInstance.etaExperiment true in
 /-- If `R^m` and `R^n` are linearly equivalent, then `m` and `n` are also equivalent. -/
-def equivOfPiLequivPi {R : Type _} [CommRing R] [Nontrivial R] (e : (m → R) ≃ₗ[R] n → R) : m ≃ n :=
+def equivOfPiLEquivPi {R : Type _} [CommRing R] [Nontrivial R] (e : (m → R) ≃ₗ[R] n → R) : m ≃ n :=
   Basis.indexEquiv (Basis.ofEquivFun e.symm) (Pi.basisFun _ _)
-#align equiv_of_pi_lequiv_pi equivOfPiLequivPi
+#align equiv_of_pi_lequiv_pi equivOfPiLEquivPi
 
 namespace Matrix
 
@@ -84,7 +85,7 @@ namespace Matrix
 equivalence of types. -/
 def indexEquivOfInv [Nontrivial A] [DecidableEq m] [DecidableEq n] {M : Matrix m n A}
     {M' : Matrix n m A} (hMM' : M ⬝ M' = 1) (hM'M : M' ⬝ M = 1) : m ≃ n :=
-  equivOfPiLequivPi (toLin'OfInv hMM' hM'M)
+  equivOfPiLEquivPi (toLin'OfInv hMM' hM'M)
 #align matrix.index_equiv_of_inv Matrix.indexEquivOfInv
 
 theorem det_comm [DecidableEq n] (M N : Matrix n n A) : det (M ⬝ N) = det (N ⬝ M) := by
@@ -98,7 +99,7 @@ theorem det_comm' [DecidableEq m] [DecidableEq n] {M : Matrix n m A} {N : Matrix
   nontriviality A
   -- Although `m` and `n` are different a priori, we will show they have the same cardinality.
   -- This turns the problem into one for square matrices, which is easy.
-  let e := index_equiv_of_inv hMM' hM'M
+  let e := indexEquivOfInv hMM' hM'M
   rw [← det_submatrix_equiv_self e, ← submatrix_mul_equiv _ _ _ (Equiv.refl n) _, det_comm,
     submatrix_mul_equiv, Equiv.coe_refl, submatrix_id_id]
 #align matrix.det_comm' Matrix.det_comm'
@@ -125,7 +126,7 @@ variable {A : Type _} [CommRing A] [Module A M]
 
 variable {κ : Type _} [Fintype κ]
 
-/-- The determinant of `linear_map.to_matrix` does not depend on the choice of basis. -/
+/-- The determinant of `LinearMap.toMatrix` does not depend on the choice of basis. -/
 theorem det_toMatrix_eq_det_toMatrix [DecidableEq κ] (b : Basis ι A M) (c : Basis κ A M)
     (f : M →ₗ[A] M) : det (LinearMap.toMatrix b b f) = det (LinearMap.toMatrix c c f) := by
   rw [← linearMap_toMatrix_mul_basis_toMatrix c b c, ← basis_toMatrix_mul_linearMap_toMatrix b c b,
@@ -133,13 +134,15 @@ theorem det_toMatrix_eq_det_toMatrix [DecidableEq κ] (b : Basis ι A M) (c : Ba
     rw [Basis.toMatrix_mul_toMatrix, Basis.toMatrix_self]
 #align linear_map.det_to_matrix_eq_det_to_matrix LinearMap.det_toMatrix_eq_det_toMatrix
 
+set_option synthInstance.etaExperiment true
+
 /-- The determinant of an endomorphism given a basis.
 
-See `linear_map.det` for a version that populates the basis non-computably.
+See `LinearMap.det` for a version that populates the basis non-computably.
 
-Although the `trunc (basis ι A M)` parameter makes it slightly more convenient to switch bases,
-there is no good way to generalize over universe parameters, so we can't fully state in `det_aux`'s
-type that it does not depend on the choice of basis. Instead you can use the `det_aux_def'` lemma,
+Although the `Trunc (Basis ι A M)` parameter makes it slightly more convenient to switch bases,
+there is no good way to generalize over universe parameters, so we can't fully state in `detAux`'s
+type that it does not depend on the choice of basis. Instead you can use the `detAux_def''` lemma,
 or avoid mentioning a basis at all using `linear_map.det`.
 -/
 irreducible_def detAux : Trunc (Basis ι A M) → (M →ₗ[A] M) →* A :=
@@ -148,23 +151,22 @@ irreducible_def detAux : Trunc (Basis ι A M) → (M →ₗ[A] M) →* A :=
     fun b c => MonoidHom.ext <| det_toMatrix_eq_det_toMatrix b c
 #align linear_map.det_aux LinearMap.detAux
 
-/-- Unfold lemma for `det_aux`.
+/-- Unfold lemma for `detAux`.
 
-See also `det_aux_def'` which allows you to vary the basis.
+See also `detAux_def''` which allows you to vary the basis.
 -/
-theorem detAux_def (b : Basis ι A M) (f : M →ₗ[A] M) :
+theorem detAux_def' (b : Basis ι A M) (f : M →ₗ[A] M) :
     LinearMap.detAux (Trunc.mk b) f = Matrix.det (LinearMap.toMatrix b b f) := by
-  rw [det_aux]
+  rw [detAux]
   rfl
-#align linear_map.det_aux_def LinearMap.detAux_def
+#align linear_map.det_aux_def LinearMap.detAux_def'
 
-theorem detAux_def' {ι' : Type _} [Fintype ι'] [DecidableEq ι'] (tb : Trunc <| Basis ι A M)
+theorem detAux_def'' {ι' : Type _} [Fintype ι'] [DecidableEq ι'] (tb : Trunc <| Basis ι A M)
     (b' : Basis ι' A M) (f : M →ₗ[A] M) :
     LinearMap.detAux tb f = Matrix.det (LinearMap.toMatrix b' b' f) := by
-  apply Trunc.induction_on tb
-  intro b
-  rw [det_aux_def, det_to_matrix_eq_det_to_matrix b b']
-#align linear_map.det_aux_def' LinearMap.detAux_def'
+  induction tb using Trunc.induction_on with
+  | h b => rw [detAux_def', det_toMatrix_eq_det_toMatrix b b']
+#align linear_map.det_aux_def' LinearMap.detAux_def''
 
 @[simp]
 theorem detAux_id (b : Trunc <| Basis ι A M) : LinearMap.detAux b LinearMap.id = 1 :=
@@ -198,32 +200,33 @@ theorem coe_det [DecidableEq M] :
         LinearMap.detAux (Trunc.mk H.choose_spec.some)
       else 1 := by
   ext
-  unfold LinearMap.det
+  rw [LinearMap.det_def]
   split_ifs
-  · congr
-  -- use the correct `decidable_eq` instance
+  · congr -- use the correct `decidableEq` instance
   rfl
 #align linear_map.coe_det LinearMap.coe_det
 
 end
 
 -- Auxiliary lemma, the `simp` normal form goes in the other direction
--- (using `linear_map.det_to_matrix`)
+-- (using `LinearMap.det_toMatrix`)
 theorem det_eq_det_toMatrix_of_finset [DecidableEq M] {s : Finset M} (b : Basis s A M)
-    (f : M →ₗ[A] M) : f.det = Matrix.det (LinearMap.toMatrix b b f) := by
+    (f : M →ₗ[A] M) : LinearMap.det f = Matrix.det (LinearMap.toMatrix b b f) := by
   have : ∃ s : Finset M, Nonempty (Basis s A M) := ⟨s, ⟨b⟩⟩
-  rw [LinearMap.coe_det, dif_pos, det_aux_def' _ b] <;> assumption
+  rw [LinearMap.coe_det, dif_pos, detAux_def'' _ b] <;> assumption
 #align linear_map.det_eq_det_to_matrix_of_finset LinearMap.det_eq_det_toMatrix_of_finset
 
 @[simp]
-theorem det_toMatrix (b : Basis ι A M) (f : M →ₗ[A] M) : Matrix.det (toMatrix b b f) = f.det := by
+theorem det_toMatrix (b : Basis ι A M) (f : M →ₗ[A] M) :
+    Matrix.det (toMatrix b b f) = LinearMap.det f := by
   haveI := Classical.decEq M
-  rw [det_eq_det_to_matrix_of_finset b.reindex_finset_range, det_to_matrix_eq_det_to_matrix b]
+  rw [det_eq_det_toMatrix_of_finset b.reindexFinsetRange]
+  apply det_toMatrix_eq_det_toMatrix b
 #align linear_map.det_to_matrix LinearMap.det_toMatrix
 
 @[simp]
 theorem det_toMatrix' {ι : Type _} [Fintype ι] [DecidableEq ι] (f : (ι → A) →ₗ[A] ι → A) :
-    det f.toMatrix' = f.det := by simp [← to_matrix_eq_to_matrix']
+    Matrix.det (LinearMap.toMatrix' f) = LinearMap.det f := by simp [← toMatrix_eq_toMatrix']
 #align linear_map.det_to_matrix' LinearMap.det_toMatrix'
 
 @[simp]
@@ -233,18 +236,20 @@ theorem det_toLin (b : Basis ι R M) (f : Matrix ι ι R) :
 #align linear_map.det_to_lin LinearMap.det_toLin
 
 @[simp]
-theorem det_toLin' (f : Matrix ι ι R) : LinearMap.det f.toLin' = f.det := by
-  simp only [← to_lin_eq_to_lin', det_to_lin]
+theorem det_toLin' (f : Matrix ι ι R) : LinearMap.det (Matrix.toLin' f) = Matrix.det f := by
+  simp only [← toLin_eq_toLin', det_toLin]
 #align linear_map.det_to_lin' LinearMap.det_toLin'
 
-/-- To show `P f.det` it suffices to consider `P (to_matrix _ _ f).det` and `P 1`. -/
+/-- To show `P (LinearMap.det f)` it suffices to consider `P (Matrix.det (toMatrix _ _ f))` and
+`P 1`. -/
 @[elab_as_elim]
 theorem det_cases [DecidableEq M] {P : A → Prop} (f : M →ₗ[A] M)
-    (hb : ∀ (s : Finset M) (b : Basis s A M), P (toMatrix b b f).det) (h1 : P 1) : P f.det := by
-  unfold LinearMap.det
+    (hb : ∀ (s : Finset M) (b : Basis s A M), P (Matrix.det (toMatrix b b f))) (h1 : P 1) :
+    P (LinearMap.det f) := by
+  rw [LinearMap.det_def]
   split_ifs with h
-  · convert hb _ h.some_spec.some
-    apply det_aux_def'
+  · convert hb _ h.choose_spec.some
+    apply detAux_def''
   · exact h1
 #align linear_map.det_cases LinearMap.det_cases
 
@@ -457,14 +462,14 @@ def LinearEquiv.ofIsUnitDet {f : M →ₗ[R] M'} {v : Basis ι R M} {v' : Basis 
       toLin v' v (toMatrix v v' f)⁻¹ (f x) = toLin v v ((toMatrix v v' f)⁻¹ ⬝ toMatrix v v' f) x :=
         by rw [to_lin_mul v v' v, to_lin_to_matrix, LinearMap.comp_apply]
       _ = x := by simp [h]
-      
+
   right_inv x :=
     calc
       f (toLin v' v (toMatrix v v' f)⁻¹ x) =
           toLin v' v' (toMatrix v v' f ⬝ (toMatrix v v' f)⁻¹) x :=
         by rw [to_lin_mul v' v v', LinearMap.comp_apply, to_lin_to_matrix v v']
       _ = x := by simp [h]
-      
+
 #align linear_equiv.of_is_unit_det LinearEquiv.ofIsUnitDet
 
 @[simp]
@@ -678,4 +683,3 @@ theorem Basis.det_isUnitSmul {w : ι → R} (hw : ∀ i, IsUnit (w i)) :
     e.det (e.isUnitSmul hw) = ∏ i, w i :=
   e.det_unitsSmul_self _
 #align basis.det_is_unit_smul Basis.det_isUnitSmul
-
