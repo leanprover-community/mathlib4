@@ -8,9 +8,9 @@ Authors: Riccardo Brasca
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.LinearAlgebra.Finrank
-import Mathbin.LinearAlgebra.FreeModule.Finite.Rank
-import Mathbin.LinearAlgebra.Matrix.ToLin
+import Mathlib.LinearAlgebra.Finrank
+import Mathlib.LinearAlgebra.FreeModule.Finite.Rank
+import Mathlib.LinearAlgebra.Matrix.ToLin
 
 /-!
 # Finite and free modules using matrices
@@ -41,8 +41,7 @@ variable [CommRing R] [AddCommGroup M] [Module R M] [Module.Free R M]
 variable [AddCommGroup N] [Module R N] [Module.Free R N]
 
 instance Module.Free.linearMap [Module.Finite R M] [Module.Finite R N] :
-    Module.Free R (M →ₗ[R] N) :=
-  by
+    Module.Free R (M →ₗ[R] N) := by
   cases subsingleton_or_nontrivial R
   · apply Module.Free.of_subsingleton'
   classical exact
@@ -52,8 +51,7 @@ instance Module.Free.linearMap [Module.Finite R M] [Module.Finite R N] :
 variable {R}
 
 instance Module.Finite.linearMap [Module.Finite R M] [Module.Finite R N] :
-    Module.Finite R (M →ₗ[R] N) :=
-  by
+    Module.Finite R (M →ₗ[R] N) := by
   cases subsingleton_or_nontrivial R
   · infer_instance
   classical
@@ -101,8 +99,7 @@ theorem FiniteDimensional.finrank_linearMap : finrank R (M →ₗ[R] N) = finran
 end CommRing
 
 theorem Matrix.rank_vecMulVec {K m n : Type u} [CommRing K] [StrongRankCondition K] [Fintype n]
-    [DecidableEq n] (w : m → K) (v : n → K) : (Matrix.vecMulVec w v).toLin'.rank ≤ 1 :=
-  by
+    [DecidableEq n] (w : m → K) (v : n → K) : (Matrix.vecMulVec w v).toLin'.rank ≤ 1 := by
   rw [Matrix.vecMulVec_eq, Matrix.toLin'_mul]
   refine' le_trans (LinearMap.rank_comp_le_left _ _) _
   refine' (LinearMap.rank_le_domain _).trans_eq _
