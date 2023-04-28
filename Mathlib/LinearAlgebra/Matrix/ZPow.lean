@@ -198,6 +198,8 @@ theorem zpow_one_add {A : M} (h : IsUnit A.det) (i : ℤ) : A ^ (1 + i) = A * A 
   rw [zpow_add h, zpow_one]
 #align matrix.zpow_one_add Matrix.zpow_one_add
 
+-- porting note: without etaExperiment it failes to synthesize DistribMulAction Rˣ R
+set_option synthInstance.etaExperiment true in
 theorem SemiconjBy.zpow_right {A X Y : M} (hx : IsUnit X.det) (hy : IsUnit Y.det)
     (h : SemiconjBy A X Y) : ∀ m : ℤ, SemiconjBy A (X ^ m) (Y ^ m)
   | (n : ℕ) => by simp [h.pow_right n]
