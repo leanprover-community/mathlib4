@@ -679,7 +679,7 @@ end Submodule
 
 namespace Submodule
 
-variable [DivisionRing S] [Semiring R] [AddCommMonoid M] [Module R M]
+variable [DivisionSemiring S] [Semiring R] [AddCommMonoid M] [Module R M]
 
 variable [SMul S R] [Module S M] [IsScalarTower S R M]
 
