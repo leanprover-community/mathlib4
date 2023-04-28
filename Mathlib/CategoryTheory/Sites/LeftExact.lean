@@ -8,10 +8,10 @@ Authors: Adam Topaz
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Sites.Sheafification
-import Mathbin.CategoryTheory.Sites.Limits
-import Mathbin.CategoryTheory.Limits.FunctorCategory
-import Mathbin.CategoryTheory.Limits.FilteredColimitCommutesFiniteLimit
+import Mathlib.CategoryTheory.Sites.Sheafification
+import Mathlib.CategoryTheory.Sites.Limits
+import Mathlib.CategoryTheory.Limits.FunctorCategory
+import Mathlib.CategoryTheory.Limits.FilteredColimitCommutesFiniteLimit
 
 /-!
 # Left exactness of sheafification
@@ -43,8 +43,7 @@ namespace CategoryTheory.GrothendieckTopology
 def coneCompEvaluationOfConeCompDiagramFunctorCompEvaluation {X : C} {K : Type max v u}
     [SmallCategory K] {F : K ⥤ Cᵒᵖ ⥤ D} {W : J.cover X} (i : W.arrow)
     (E : Cone (F ⋙ J.diagramFunctor D X ⋙ (evaluation (J.cover X)ᵒᵖ D).obj (op W))) :
-    Cone (F ⋙ (evaluation _ _).obj (op i.y))
-    where
+    Cone (F ⋙ (evaluation _ _).obj (op i.y)) where
   pt := E.pt
   π :=
     { app := fun k => E.π.app k ≫ Multiequalizer.ι (W.index (F.obj k)) i
@@ -155,8 +154,7 @@ theorem liftToPlusObjLimitObj_fac {K : Type max v u} [SmallCategory K] [FinCateg
     [HasLimitsOfShape K D] [PreservesLimitsOfShape K (forget D)]
     [ReflectsLimitsOfShape K (forget D)] (F : K ⥤ Cᵒᵖ ⥤ D) (X : C)
     (S : Cone (F ⋙ J.plusFunctor D ⋙ (evaluation Cᵒᵖ D).obj (op X))) (k) :
-    liftToPlusObjLimitObj F X S ≫ (J.plusMap (limit.π F k)).app (op X) = S.π.app k :=
-  by
+    liftToPlusObjLimitObj F X S ≫ (J.plusMap (limit.π F k)).app (op X) = S.π.app k := by
   dsimp only [lift_to_plus_obj_limit_obj]
   rw [← (limit.is_limit (F ⋙ J.plus_functor D ⋙ (evaluation Cᵒᵖ D).obj (op X))).fac S k,
     category.assoc]
@@ -181,8 +179,7 @@ theorem liftToPlusObjLimitObj_fac {K : Type max v u} [SmallCategory K] [FinCateg
 
 instance (K : Type max v u) [SmallCategory K] [FinCategory K] [HasLimitsOfShape K D]
     [PreservesLimitsOfShape K (forget D)] [ReflectsLimitsOfShape K (forget D)] :
-    PreservesLimitsOfShape K (J.plusFunctor D) :=
-  by
+    PreservesLimitsOfShape K (J.plusFunctor D) := by
   constructor; intro F; apply preserves_limit_of_evaluation; intro X
   apply preserves_limit_of_preserves_limit_cone (limit.is_limit F)
   refine' ⟨fun S => lift_to_plus_obj_limit_obj F X.unop S, _, _⟩
@@ -207,8 +204,7 @@ instance (K : Type max v u) [SmallCategory K] [FinCategory K] [HasLimitsOfShape 
     rfl
 
 instance [HasFiniteLimits D] [PreservesFiniteLimits (forget D)] [ReflectsIsomorphisms (forget D)] :
-    PreservesFiniteLimits (J.plusFunctor D) :=
-  by
+    PreservesFiniteLimits (J.plusFunctor D) := by
   apply preservesFiniteLimitsOfPreservesFiniteLimitsOfSize.{max v u}
   intro K _ _
   haveI : reflects_limits_of_shape K (forget D) := reflects_limits_of_shape_of_reflects_isomorphisms
@@ -241,15 +237,13 @@ variable (K : Type max v u)
 
 variable [SmallCategory K] [FinCategory K] [HasLimitsOfShape K D]
 
-instance : PreservesLimitsOfShape K (presheafToSheaf J D) :=
-  by
+instance : PreservesLimitsOfShape K (presheafToSheaf J D) := by
   constructor; intro F; constructor; intro S hS
   apply is_limit_of_reflects (Sheaf_to_presheaf J D)
   haveI : reflects_limits_of_shape K (forget D) := reflects_limits_of_shape_of_reflects_isomorphisms
   apply is_limit_of_preserves (J.sheafification D) hS
 
-instance [HasFiniteLimits D] : PreservesFiniteLimits (presheafToSheaf J D) :=
-  by
+instance [HasFiniteLimits D] : PreservesFiniteLimits (presheafToSheaf J D) := by
   apply preservesFiniteLimitsOfPreservesFiniteLimitsOfSize.{max v u}
   intros ; skip; infer_instance
 
