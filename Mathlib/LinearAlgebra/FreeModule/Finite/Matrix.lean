@@ -19,9 +19,9 @@ We provide some instances for finite and free modules involving matrices.
 
 ## Main results
 
-* `module.free.linear_map` : if `M` and `N` are finite and free, then `M →ₗ[R] N` is free.
-* `module.finite.of_basis` : A free module with a basis indexed by a `fintype` is finite.
-* `module.finite.linear_map` : if `M` and `N` are finite and free, then `M →ₗ[R] N`
+* `Module.Free.linearMap` : if `M` and `N` are finite and free, then `M →ₗ[R] N` is free.
+* `Module.Finite.ofBasis` : A free module with a basis indexed by a `Fintype` is finite.
+* `Module.Finite.linearMap` : if `M` and `N` are finite and free, then `M →ₗ[R] N`
   is finite.
 -/
 
@@ -40,23 +40,25 @@ variable [CommRing R] [AddCommGroup M] [Module R M] [Module.Free R M]
 
 variable [AddCommGroup N] [Module R N] [Module.Free R N]
 
+set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 instance Module.Free.linearMap [Module.Finite R M] [Module.Finite R N] :
     Module.Free R (M →ₗ[R] N) := by
   cases subsingleton_or_nontrivial R
   · apply Module.Free.of_subsingleton'
   classical exact
-      Module.Free.of_equiv (LinearMap.toMatrix (choose_basis R M) (choose_basis R N)).symm
+      Module.Free.of_equiv (LinearMap.toMatrix (chooseBasis R M) (chooseBasis R N)).symm
 #align module.free.linear_map Module.Free.linearMap
 
 variable {R}
 
+set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 instance Module.Finite.linearMap [Module.Finite R M] [Module.Finite R N] :
     Module.Finite R (M →ₗ[R] N) := by
   cases subsingleton_or_nontrivial R
   · infer_instance
   classical
-    have f := (LinearMap.toMatrix (choose_basis R M) (choose_basis R N)).symm
-    exact Module.Finite.of_surjective f.to_linear_map (LinearEquiv.surjective f)
+    have f := (LinearMap.toMatrix (chooseBasis R M) (chooseBasis R N)).symm
+    exact Module.Finite.of_surjective f.toLinearMap (LinearEquiv.surjective f)
 #align module.finite.linear_map Module.Finite.linearMap
 
 end CommRing
@@ -86,12 +88,13 @@ variable [AddCommGroup M] [Module R M] [Module.Free R M] [Module.Finite R M]
 
 variable [AddCommGroup N] [Module R N] [Module.Free R N] [Module.Finite R N]
 
+set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 /-- The finrank of `M →ₗ[R] N` is `(finrank R M) * (finrank R N)`. -/
 theorem FiniteDimensional.finrank_linearMap : finrank R (M →ₗ[R] N) = finrank R M * finrank R N :=
   by
   classical
     letI := nontrivial_of_invariantBasisNumber R
-    have h := LinearMap.toMatrix (choose_basis R M) (choose_basis R N)
+    have h := LinearMap.toMatrix (chooseBasis R M) (chooseBasis R N)
     simp_rw [h.finrank_eq, FiniteDimensional.finrank_matrix,
       FiniteDimensional.finrank_eq_card_chooseBasisIndex, mul_comm]
 #align finite_dimensional.finrank_linear_map FiniteDimensional.finrank_linearMap
@@ -105,4 +108,3 @@ theorem Matrix.rank_vecMulVec {K m n : Type u} [CommRing K] [StrongRankCondition
   refine' (LinearMap.rank_le_domain _).trans_eq _
   rw [rank_fun', Fintype.card_unit, Nat.cast_one]
 #align matrix.rank_vec_mul_vec Matrix.rank_vecMulVec
-
