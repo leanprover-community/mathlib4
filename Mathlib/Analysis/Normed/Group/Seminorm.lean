@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández, Yaël Dillies
 
 ! This file was ported from Lean 3 source module analysis.normed.group.seminorm
-! leanprover-community/mathlib commit 28aa996fc6fb4317f0083c4e6daf79878d81be33
+! leanprover-community/mathlib commit 09079525fd01b3dda35e96adaa08d2f943e1648c
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -495,14 +495,10 @@ instance isScalarTower [SMul R' ℝ] [SMul R' ℝ≥0] [IsScalarTower R' ℝ≥0
   ⟨fun r a p => ext fun x => smul_assoc r a (p x)⟩
 
 theorem smul_sup (r : R) (p q : AddGroupSeminorm E) : r • (p ⊔ q) = r • p ⊔ r • q :=
-  have real.smul_max : ∀ x y : ℝ, r • max x y = max (r • x) (r • y) := fun x y => by
-    -- porting note: This appears to be due to lean4#2074 that we need this
-    have max_eq_max : @max ℝ LinearOrderedSemiring.toMax = @max ℝ LinearOrderedRing.toMax := rfl
-    simpa only [←smul_eq_mul, max_eq_max, ←NNReal.smul_def, smul_one_smul ℝ≥0 r (_ : ℝ)] using
-      mul_max_of_nonneg (a := (r • (1 : ℝ≥0) : ℝ)) x y (r • (1 : ℝ≥0)).zero_le_coe
-    -- porting note: for `ℝ≥0` it is important to use `.zero_le_coe` instead of `.prop` so that
-    -- the coercion function which appears is `NNReal.toReal` instead of `Subtype.val`
-  ext fun x => real.smul_max _ _
+  have Real.smul_max : ∀ x y : ℝ, r • max x y = max (r • x) (r • y) := fun x y => by
+    simpa only [← smul_eq_mul, ← NNReal.smul_def, smul_one_smul ℝ≥0 r (_ : ℝ)] using
+      mul_max_of_nonneg x y (r • (1 : ℝ≥0) : ℝ≥0).coe_nonneg
+  ext fun x => Real.smul_max _ _
 #align add_group_seminorm.smul_sup AddGroupSeminorm.smul_sup
 
 end AddGroupSeminorm
@@ -677,14 +673,10 @@ theorem smul_apply (r : R) (p : GroupSeminorm E) (x : E) : (r • p) x = r • p
 
 @[to_additive existing AddGroupSeminorm.smul_sup]
 theorem smul_sup (r : R) (p q : GroupSeminorm E) : r • (p ⊔ q) = r • p ⊔ r • q :=
-  have real.smul_max : ∀ x y : ℝ, r • max x y = max (r • x) (r • y) := fun x y => by
-    -- porting note: This appears to be due to lean4#2074 that we need this
-    have max_eq_max : @max ℝ LinearOrderedSemiring.toMax = @max ℝ LinearOrderedRing.toMax := rfl
-    simpa only [←smul_eq_mul, max_eq_max, ←NNReal.smul_def, smul_one_smul ℝ≥0 r (_ : ℝ)] using
-      mul_max_of_nonneg (a := (r • (1 : ℝ≥0) : ℝ)) x y (r • (1 : ℝ≥0)).zero_le_coe
-    -- porting note: for `ℝ≥0` it is important to use `.zero_le_coe` instead of `.prop` so that
-    -- the coercion function which appears is `NNReal.toReal` instead of `Subtype.val`
-  ext fun x => real.smul_max _ _
+  have Real.smul_max : ∀ x y : ℝ, r • max x y = max (r • x) (r • y) := fun x y => by
+    simpa only [← smul_eq_mul, ← NNReal.smul_def, smul_one_smul ℝ≥0 r (_ : ℝ)] using
+      mul_max_of_nonneg x y (r • (1 : ℝ≥0) : ℝ≥0).coe_nonneg
+  ext fun x => Real.smul_max _ _
 #align group_seminorm.smul_sup GroupSeminorm.smul_sup
 
 end GroupSeminorm
@@ -739,14 +731,10 @@ theorem smul_apply (r : R) (p : NonarchAddGroupSeminorm E) (x : E) : (r • p) x
 #align nonarch_add_group_seminorm.smul_apply NonarchAddGroupSeminorm.smul_apply
 
 theorem smul_sup (r : R) (p q : NonarchAddGroupSeminorm E) : r • (p ⊔ q) = r • p ⊔ r • q :=
-  have real.smul_max : ∀ x y : ℝ, r • max x y = max (r • x) (r • y) := fun x y => by
-    -- porting note: This appears to be due to lean4#2074 that we need this
-    have max_eq_max : @max ℝ LinearOrderedSemiring.toMax = @max ℝ LinearOrderedRing.toMax := rfl
-    simpa only [←smul_eq_mul, max_eq_max, ←NNReal.smul_def, smul_one_smul ℝ≥0 r (_ : ℝ)] using
-      mul_max_of_nonneg (a := (r • (1 : ℝ≥0) : ℝ)) x y (r • (1 : ℝ≥0)).zero_le_coe
-    -- porting note: for `ℝ≥0` it is important to use `.zero_le_coe` instead of `.prop` so that
-    -- the coercion function which appears is `NNReal.toReal` instead of `Subtype.val`
-  ext fun x => real.smul_max _ _
+  have Real.smul_max : ∀ x y : ℝ, r • max x y = max (r • x) (r • y) := fun x y => by
+    simpa only [← smul_eq_mul, ← NNReal.smul_def, smul_one_smul ℝ≥0 r (_ : ℝ)] using
+      mul_max_of_nonneg x y (r • (1 : ℝ≥0) : ℝ≥0).coe_nonneg
+  ext fun x => Real.smul_max _ _
 #align nonarch_add_group_seminorm.smul_sup NonarchAddGroupSeminorm.smul_sup
 
 end NonarchAddGroupSeminorm
