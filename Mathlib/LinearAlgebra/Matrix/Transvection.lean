@@ -605,7 +605,7 @@ theorem exists_list_transvec_mul_mul_list_transvec_eq_diagonal_induction
   let M' := (L₁.map toMatrix).prod ⬝ M ⬝ (L₁'.map toMatrix).prod
   let M'' := toBlocks₁₁ M'
   rcases IH M'' with ⟨L₀, L₀', D₀, h₀⟩
-  set c := M' (inr unit) (inr unit) with hc
+  set c := M' (inr unit) (inr unit)
   refine'
     ⟨L₀.map (sumInl Unit) ++ L₁, L₁' ++ L₀'.map (sumInl Unit),
       Sum.elim D₀ fun _ => M' (inr unit) (inr unit), _⟩
@@ -660,7 +660,7 @@ theorem exists_list_transvec_mul_mul_list_transvec_eq_diagonal_aux (n : Type) [F
   · have e : n ≃ Sum (Fin r) Unit := by
       refine' Fintype.equivOfCardEq _
       rw [hn]
-      convert(@Fintype.card_sum (Fin r) Unit _ _).symm
+      rw [@Fintype.card_sum (Fin r) Unit _ _]
       simp
     apply reindex_exists_list_transvec_mul_mul_list_transvec_eq_diagonal M e
     apply
