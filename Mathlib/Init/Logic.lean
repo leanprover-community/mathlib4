@@ -269,12 +269,6 @@ theorem exists_unique_congr {p q : α → Prop} (h : ∀ a, p a ↔ q a) : (∃!
 
 #align decidable.to_bool Decidable.decide
 
-instance decidableTrue : Decidable True := isTrue trivial
-#align decidable.true decidableTrue
-
-theorem decidableFalse : Decidable False := isFalse not_false
-#align decidable.false decidableFalse
-
 theorem decide_True' (h : Decidable True) : decide True = true := by simp
 #align to_bool_true_eq_tt decide_True'
 
@@ -322,6 +316,16 @@ def Not.decidable := @instDecidableNot
 decidable definitions. -/
 def Iff.decidable := @instDecidableIff
 
+/- True is decidable. We're not using alias because this doesn't currently produce
+decidable definitions. -/
+def decidableTrue := @instDecidableTrue
+
+/- False is decidable. We're not using alias because this doesn't currently produce
+decidable definitions. -/
+def decidableFalse := @instDecidableFalse
+
+#align decidable.true decidableTrue
+#align decidable.false decidableFalse
 #align or.decidable Or.decidable
 #align and.decidable And.decidable
 #align not.decidable Not.decidable
