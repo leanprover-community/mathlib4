@@ -17,8 +17,8 @@ This file defines the symplectic group and proves elementary properties.
 
 ## Main Definitions
 
-`matrix.J`: the canonical `2n × 2n` skew-symmetric matrix
-`symplectic_group`: the group of symplectic matrices
+* `Matrix.J`: the canonical `2n × 2n` skew-symmetric matrix
+* `symplecticGroup`: the group of symplectic matrices
 
 ## TODO
 * Every symplectic matrix has determinant 1.
@@ -67,10 +67,8 @@ set_option linter.uppercaseLean3 false in
 #align matrix.J_inv Matrix.J_inv
 
 theorem J_det_mul_J_det : det (J l R) * det (J l R) = 1 := by
-  rw [← det_mul, J_squared]
-  rw [← one_smul R (-1 : Matrix _ _ R)]
-  rw [smul_neg, ← neg_smul, det_smul]
-  simp only [Fintype.card_sum, det_one, mul_one]
+  rw [← det_mul, J_squared, ← one_smul R (-1 : Matrix _ _ R), smul_neg, ← neg_smul, det_smul,
+    Fintype.card_sum, det_one, mul_one]
   apply Even.neg_one_pow
   exact even_add_self _
 set_option linter.uppercaseLean3 false in
@@ -88,8 +86,7 @@ variable [Fintype l]
 /-- The group of symplectic matrices over a ring `R`. -/
 def symplecticGroup : Submonoid (Matrix (Sum l l) (Sum l l) R) where
   carrier := { A | A ⬝ J l R ⬝ Aᵀ = J l R }
-  mul_mem' := by
-    intro a b ha hb
+  mul_mem' {a b} ha hb := by
     simp only [mul_eq_mul, Set.mem_setOf_eq, transpose_mul] at *
     rw [← Matrix.mul_assoc, a.mul_assoc, a.mul_assoc, hb]
     exact ha
@@ -132,8 +129,7 @@ set_option linter.uppercaseLean3 false in
 variable {l} {R}
 
 @[simp]
-theorem coe_J : ↑(symJ l R) = J l R :=
-  rfl
+theorem coe_J : ↑(symJ l R) = J l R := rfl
 set_option linter.uppercaseLean3 false in
 #align symplectic_group.coe_J SymplecticGroup.coe_J
 
@@ -152,7 +148,7 @@ theorem symplectic_det (hA : A ∈ symplecticGroup l R) : IsUnit <| det A := by
   refine' (isUnit_det_J l R).mul_left_cancel _
   rw [mul_one]
   rw [mem_iff] at hA
-  apply_fun det  at hA
+  apply_fun det at hA
   simp only [det_mul, det_transpose] at hA
   rw [mul_comm A.det, mul_assoc] at hA
   exact hA
@@ -187,13 +183,11 @@ theorem mem_iff' : A ∈ symplecticGroup l R ↔ Aᵀ ⬝ J l R ⬝ A = J l R :=
 #align symplectic_group.mem_iff' SymplecticGroup.mem_iff'
 
 -- Porting note: Added a name for this instance.
-instance hasInv : Inv (symplecticGroup l R)
-    where inv A :=
-    ⟨(-J l R) ⬝ (A : Matrix (Sum l l) (Sum l l) R)ᵀ ⬝ J l R,
+instance hasInv : Inv (symplecticGroup l R) where
+  inv A := ⟨(-J l R) ⬝ (A : Matrix (Sum l l) (Sum l l) R)ᵀ ⬝ J l R,
       mul_mem (mul_mem (neg_mem <| J_mem _ _) <| transpose_mem A.2) <| J_mem _ _⟩
 
-theorem coe_inv (A : symplecticGroup l R) : (↑A⁻¹ : Matrix _ _ _) = (-J l R) ⬝ (↑A)ᵀ ⬝ J l R :=
-  rfl
+theorem coe_inv (A : symplecticGroup l R) : (↑A⁻¹ : Matrix _ _ _) = (-J l R) ⬝ (↑A)ᵀ ⬝ J l R := rfl
 #align symplectic_group.coe_inv SymplecticGroup.coe_inv
 
 theorem inv_left_mul_aux (hA : A ∈ symplecticGroup l R) : -J l R ⬝ Aᵀ ⬝ J l R ⬝ A = 1 :=
