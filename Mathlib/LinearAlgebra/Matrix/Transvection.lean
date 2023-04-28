@@ -56,7 +56,7 @@ one can put a nonzero coefficient in the last diagonal entry by a row or column 
 subtract this last diagonal entry from the other entries in the last row and column to make them
 vanish.
 
-This step is done in the type `fin r ⊕ unit`, where `fin r` is useful to choose arbitrarily some
+This step is done in the type `Fin r ⊕ Unit`, where `Fin r` is useful to choose arbitrarily some
 order in which we cancel the coefficients, and the sum structure is useful to use the formalism of
 block matrices.
 
@@ -324,14 +324,14 @@ end Transvection
 
 In this section, we show that any matrix can be reduced to diagonal form by left and right
 multiplication by transvections (or, equivalently, by elementary operations on lines and columns).
-The main step is to kill the last row and column of a matrix in `fin r ⊕ unit` with nonzero last
+The main step is to kill the last row and column of a matrix in `Fin r ⊕ Unit` with nonzero last
 coefficient, by subtracting this coefficient from the other ones. The list of these operations is
 recorded in `list_transvec_col M` and `list_transvec_row M`. We have to analyze inductively how
 these operations affect the coefficients in the last row and the last column to conclude that they
 have the desired effect.
 
 Once this is done, one concludes the reduction by induction on the size
-of the matrices, through a suitable reindexing to identify any fintype with `fin r ⊕ unit`.
+of the matrices, through a suitable reindexing to identify any fintype with `Fin r ⊕ Unit`.
 -/
 
 
@@ -595,7 +595,7 @@ theorem exists_isTwoBlockDiagonal_list_transvec_mul_mul_list_transvec
 #align matrix.pivot.exists_is_two_block_diagonal_list_transvec_mul_mul_list_transvec Matrix.Pivot.exists_isTwoBlockDiagonal_list_transvec_mul_mul_list_transvec
 
 /-- Inductive step for the reduction: if one knows that any size `r` matrix can be reduced to
-diagonal form by elementary operations, then one deduces it for matrices over `fin r ⊕ unit`. -/
+diagonal form by elementary operations, then one deduces it for matrices over `Fin r ⊕ Unit`. -/
 theorem exists_list_transvec_mul_mul_list_transvec_eq_diagonal_induction
     (IH :
       ∀ M : Matrix (Fin r) (Fin r) 𝕜,
@@ -648,7 +648,7 @@ theorem reindex_exists_list_transvec_mul_mul_list_transvec_eq_diagonal (M : Matr
 #align matrix.pivot.reindex_exists_list_transvec_mul_mul_list_transvec_eq_diagonal Matrix.Pivot.reindex_exists_list_transvec_mul_mul_list_transvec_eq_diagonal
 
 /-- Any matrix can be reduced to diagonal form by elementary operations. Formulated here on `Type 0`
-because we will make an induction using `fin r`.
+because we will make an induction using `Fin r`.
 See `exists_list_transvec_mul_mul_list_transvec_eq_diagonal` for the general version (which follows
 from this one and reindexing). -/
 theorem exists_list_transvec_mul_mul_list_transvec_eq_diagonal_aux (n : Type) [Fintype n]
