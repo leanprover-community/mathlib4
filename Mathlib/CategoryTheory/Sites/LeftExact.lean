@@ -19,11 +19,7 @@ In this file we show that sheafification commutes with finite limits.
 -/
 
 
-open CategoryTheory
-
-open CategoryTheory.Limits
-
-open Opposite
+open CategoryTheory Limits Opposite
 
 universe w v u
 
@@ -31,51 +27,52 @@ variable {C : Type max v u} [Category.{v} C] {J : GrothendieckTopology C}
 
 variable {D : Type w} [Category.{max v u} D]
 
-variable [∀ (P : Cᵒᵖ ⥤ D) (X : C) (S : J.cover X), HasMultiequalizer (S.index P)]
+variable [∀ (P : Cᵒᵖ ⥤ D) (X : C) (S : J.Cover X), HasMultiequalizer (S.index P)]
 
 noncomputable section
 
 namespace CategoryTheory.GrothendieckTopology
 
 /-- An auxiliary definition to be used in the proof of the fact that
-`J.diagram_functor D X` preserves limits. -/
+`J.diagramFunctor D X` preserves limits. -/
 @[simps]
 def coneCompEvaluationOfConeCompDiagramFunctorCompEvaluation {X : C} {K : Type max v u}
-    [SmallCategory K] {F : K ⥤ Cᵒᵖ ⥤ D} {W : J.cover X} (i : W.arrow)
-    (E : Cone (F ⋙ J.diagramFunctor D X ⋙ (evaluation (J.cover X)ᵒᵖ D).obj (op W))) :
-    Cone (F ⋙ (evaluation _ _).obj (op i.y)) where
+    [SmallCategory K] {F : K ⥤ Cᵒᵖ ⥤ D} {W : J.Cover X} (i : W.Arrow)
+    (E : Cone (F ⋙ J.diagramFunctor D X ⋙ (evaluation (J.Cover X)ᵒᵖ D).obj (op W))) :
+    Cone (F ⋙ (evaluation _ _).obj (op i.Y)) where
   pt := E.pt
   π :=
     { app := fun k => E.π.app k ≫ Multiequalizer.ι (W.index (F.obj k)) i
-      naturality' := by
+      naturality := by
         intro a b f
         dsimp
-        rw [category.id_comp, category.assoc, ← E.w f]
-        dsimp [diagram_nat_trans]
-        simp only [multiequalizer.lift_ι, category.assoc] }
+        rw [Category.id_comp, Category.assoc, ← E.w f]
+        dsimp [diagramNatTrans]
+        simp only [Multiequalizer.lift_ι, Category.assoc] }
 #align category_theory.grothendieck_topology.cone_comp_evaluation_of_cone_comp_diagram_functor_comp_evaluation CategoryTheory.GrothendieckTopology.coneCompEvaluationOfConeCompDiagramFunctorCompEvaluation
 
 /-- An auxiliary definition to be used in the proof of the fact that
-`J.diagram_functor D X` preserves limits. -/
+`J.diagramFunctor D X` preserves limits. -/
 abbrev liftToDiagramLimitObj {X : C} {K : Type max v u} [SmallCategory K] [HasLimitsOfShape K D]
-    {W : (J.cover X)ᵒᵖ} (F : K ⥤ Cᵒᵖ ⥤ D)
-    (E : Cone (F ⋙ J.diagramFunctor D X ⋙ (evaluation (J.cover X)ᵒᵖ D).obj W)) :
+    {W : (J.Cover X)ᵒᵖ} (F : K ⥤ Cᵒᵖ ⥤ D)
+    (E : Cone (F ⋙ J.diagramFunctor D X ⋙ (evaluation (J.Cover X)ᵒᵖ D).obj W)) :
     E.pt ⟶ (J.diagram (limit F) X).obj W :=
   Multiequalizer.lift _ _
     (fun i =>
-      (isLimitOfPreserves ((evaluation _ _).obj (op i.y)) (limit.isLimit _)).lift
+      (isLimitOfPreserves ((evaluation _ _).obj (op i.Y)) (limit.isLimit _)).lift
         (coneCompEvaluationOfConeCompDiagramFunctorCompEvaluation i E))
     (by
-      intro i
-      change (_ ≫ _) ≫ _ = (_ ≫ _) ≫ _
-      dsimp [evaluate_combined_cones]
-      erw [category.comp_id, category.comp_id, category.assoc, category.assoc, ←
-        (limit.lift F _).naturality, ← (limit.lift F _).naturality, ← category.assoc, ←
-        category.assoc]
-      congr 1; ext1
-      erw [category.assoc, category.assoc, limit.lift_π, limit.lift_π, limit.lift_π_assoc,
-        limit.lift_π_assoc, category.assoc, category.assoc, multiequalizer.condition]
-      rfl)
+      sorry)
+      --intro i
+      --change (_ ≫ _) ≫ _ = (_ ≫ _) ≫ _
+      --dsimp [evaluate_combined_cones]
+      --erw [category.comp_id, category.comp_id, category.assoc, category.assoc, ←
+      --  (limit.lift F _).naturality, ← (limit.lift F _).naturality, ← category.assoc, ←
+      --  category.assoc]
+      --congr 1; ext1
+      --erw [category.assoc, category.assoc, limit.lift_π, limit.lift_π, limit.lift_π_assoc,
+      --  limit.lift_π_assoc, category.assoc, category.assoc, multiequalizer.condition]
+      --rfl)
 #align category_theory.grothendieck_topology.lift_to_diagram_limit_obj CategoryTheory.GrothendieckTopology.liftToDiagramLimitObj
 
 instance (X : C) (K : Type max v u) [SmallCategory K] [HasLimitsOfShape K D] (F : K ⥤ Cᵒᵖ ⥤ D) :
@@ -248,4 +245,3 @@ instance [HasFiniteLimits D] : PreservesFiniteLimits (presheafToSheaf J D) := by
   intros ; skip; infer_instance
 
 end CategoryTheory
-
