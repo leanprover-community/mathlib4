@@ -8,8 +8,8 @@ Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.LinearAlgebra.Matrix.ToLin
-import Mathbin.LinearAlgebra.FreeModule.Rank
+import Mathlib.LinearAlgebra.Matrix.ToLin
+import Mathlib.LinearAlgebra.FreeModule.Rank
 
 /-!
 # Diagonal matrices
@@ -77,8 +77,7 @@ theorem ker_diagonal_toLin' [DecidableEq m] (w : m → K) :
 
 theorem range_diagonal [DecidableEq m] (w : m → K) :
     (diagonal w).toLin'.range =
-      ⨆ i ∈ { i | w i ≠ 0 }, (LinearMap.stdBasis K (fun i => K) i).range :=
-  by
+      ⨆ i ∈ { i | w i ≠ 0 }, (LinearMap.stdBasis K (fun i => K) i).range := by
   dsimp only [mem_set_of_eq]
   rw [← Submodule.map_top, ← supr_range_std_basis, Submodule.map_supᵢ]
   congr ; funext i
@@ -86,8 +85,7 @@ theorem range_diagonal [DecidableEq m] (w : m → K) :
 #align matrix.range_diagonal Matrix.range_diagonal
 
 theorem rank_diagonal [DecidableEq m] [DecidableEq K] (w : m → K) :
-    rank (diagonal w).toLin' = Fintype.card { i // w i ≠ 0 } :=
-  by
+    rank (diagonal w).toLin' = Fintype.card { i // w i ≠ 0 } := by
   have hu : univ ⊆ { i : m | w i = 0 }ᶜ ∪ { i : m | w i = 0 } := by rw [Set.compl_union_self]
   have hd : Disjoint { i : m | w i ≠ 0 } { i : m | w i = 0 } := disjoint_compl_left
   have B₁ := supr_range_std_basis_eq_infi_ker_proj K (fun i : m => K) hd hu (Set.toFinite _)
