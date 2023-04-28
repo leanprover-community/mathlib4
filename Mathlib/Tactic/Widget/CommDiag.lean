@@ -6,9 +6,9 @@ Authors: Wojciech Nawrocki
 
 import Mathlib.CategoryTheory.Category.Basic
 
-import ProofWidgets.Component.Panel
-import ProofWidgets.Component.SelectionPanel
 import ProofWidgets.Component.PenroseDiagram
+import ProofWidgets.Presentation.Expr
+import ProofWidgets.Component.SelectionPanel
 
 /-! This module defines tactic/meta infrastructure for displaying commutative diagrams in the
 infoview. -/
@@ -102,7 +102,7 @@ def commutativeTrianglePresenter : ExprPresenter where
   present type := do
     if let some d ← commTriangleM? type then
       return d
-    throwError "Not a commutative triangle."
+    throwError "Couldn't find a commutative triangle."
 
 /-! ## Commutative squares -/
 
@@ -134,51 +134,4 @@ def commutativeSquarePresenter : ExprPresenter where
   present type := do
     if let some d ← commSquareM? type then
       return d
-    throwError "Not a commutative square."
-
-/-! ## Example diagrams -/
-
-/-- Local instance to make examples work. -/
-local instance : Category (Type u) where
-  Hom α β := α → β
-  id _ := id
-  comp f g := g ∘ f
-  id_comp _ := rfl
-  comp_id _ := rfl
-  assoc _ _ _ := rfl
-
-example {f g : Nat ⟶ Bool}: f = g → (f ≫ 𝟙 Bool) = (g ≫ 𝟙 Bool) := by
-  withPanelWidgets [SelectionPanel]
-    intro h
-    exact h
-
-example {fButActuallyTheNameIsReallyLong g : Nat ⟶ Bool}: fButActuallyTheNameIsReallyLong = g →
-    fButActuallyTheNameIsReallyLong = (g ≫ 𝟙 Bool) := by
-  withPanelWidgets [SelectionPanel]
-    intro h
-    conv =>
-      rhs
-      enter [1]
-      rw [← h]
-
--- from Sina Hazratpour
-example {X Y Z : Type} {f g : X ⟶ Y} {k : Y ⟶ Y} {f' : Y ⟶ Z} {i : X ⟶ Z}
-    (h': g ≫ f' = i) :
-    (f ≫ k) = g → ((f ≫ k) ≫ f') = (g ≫ 𝟙 Y ≫ f') := by
-  withPanelWidgets [SelectionPanel]
-    intro h
-    rw [
-      h,
-      ← Category.assoc g (𝟙 Y) f',
-      h',
-      Category.comp_id g, h'
-    ]
-
-example {X Y Z : Type} {f i : X ⟶ Y}
-    {g j : Y ⟶ Z} {h : X ⟶ Z} :
-    h = f ≫ g →
-    i ≫ j = h →
-    f ≫ g = i ≫ j := by
-  withPanelWidgets [SelectionPanel]
-    intro h₁ h₂
-    rw [← h₁, h₂]
+    throwError "Couldn't find a commutative square."
