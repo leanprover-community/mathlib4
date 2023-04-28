@@ -11,6 +11,14 @@ import Mathlib.Data.Fin.Basic
 import Mathlib.Data.Nat.Lattice
 import Mathlib.Logic.Equiv.Fin
 
+/-!
+# Krull dimension of a preordered set
+
+If `α` is a preordered set, then `krull_dim α` is defined to be `sup {n | a₀ < a₁ < ... < aₙ}`.
+For `a : α`, its height is defined to be the krull dimension of the subset `(-∞, a]` while its
+coheight is defined to be the krull dimension of `[a, +∞)`.
+-/
+
 variable (α : Type _) [Preorder α]
 
 /--
