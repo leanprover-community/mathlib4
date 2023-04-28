@@ -19,18 +19,18 @@ as well as the bijection between said projectivization and the collection of all
 dimensional subspaces of the vector space.
 
 ## Notation
-`ℙ K V` is notation for `projectivization K V`, the projectivization of a `K`-vector space `V`.
+`ℙ K V` is notation for `Projectivization K V`, the projectivization of a `K`-vector space `V`.
 
 ## Constructing terms of `ℙ K V`.
 We have three ways to construct terms of `ℙ K V`:
-- `projectivization.mk K v hv` where `v : V` and `hv : v ≠ 0`.
-- `projectivization.mk' K v` where `v : { w : V // w ≠ 0 }`.
-- `projectivization.mk'' H h` where `H : submodule K V` and `h : finrank H = 1`.
+- `Projectivization.mk K v hv` where `v : V` and `hv : v ≠ 0`.
+- `Projectivization.mk' K v` where `v : { w : V // w ≠ 0 }`.
+- `Projectivization.mk'' H h` where `H : Submodule K V` and `h : finrank H = 1`.
 
 ## Other definitions
 - For `v : ℙ K V`, `v.submodule` gives the corresponding submodule of `V`.
-- `projectivization.equiv_submodule` is the equivalence between `ℙ K V`
-  and `{ H : submodule K V // finrank H = 1 }`.
+- `Projectivization.equivSubmodule` is the equivalence between `ℙ K V`
+  and `{ H : Submodule K V // finrank H = 1 }`.
 - For `v : ℙ K V`, `v.rep : V` is a representative of `v`.
 
 -/
@@ -59,7 +59,7 @@ def mk (v : V) (hv : v ≠ 0) : ℙ K V :=
   Quotient.mk'' ⟨v, hv⟩
 #align projectivization.mk Projectivization.mk
 
-/-- A variant of `projectivization.mk` in terms of a subtype. `mk` is preferred. -/
+/-- A variant of `Projectivization.mk` in terms of a subtype. `mk` is preferred. -/
 def mk' (v : { v : V // v ≠ 0 }) : ℙ K V :=
   Quotient.mk'' v
 #align projectivization.mk' Projectivization.mk'
@@ -74,7 +74,7 @@ instance [Nontrivial V] : Nonempty (ℙ K V) :=
 
 variable {K}
 
-/-- Choose a representative of `v : projectivization K V` in `V`. -/
+/-- Choose a representative of `v : Projectivization K V` in `V`. -/
 protected noncomputable def rep (v : ℙ K V) : V :=
   v.out'
 #align projectivization.rep Projectivization.rep
@@ -122,8 +122,8 @@ theorem exists_smul_eq_mk_rep (v : V) (hv : v ≠ 0) : ∃ a : Kˣ, a • v = (m
 
 variable {K}
 
-/-- An induction principle for `projectivization`.
-Use as `induction v using projectivization.ind`. -/
+/-- An induction principle for `Projectivization`.
+Use as `induction v using Projectivization.ind`. -/
 @[elab_as_elim]
 theorem ind {P : ℙ K V → Prop} (h : ∀ (v : V) (h : v ≠ 0), P (mk K v h)) : ∀ p, P p :=
   Quotient.ind' <| Subtype.rec <| h
