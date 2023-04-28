@@ -9,7 +9,7 @@ Authors: Sébastien Gouëzel
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Matrix.Basis
-import Mathlib.Data.Matrix.Dmatrix
+import Mathlib.Data.Matrix.DMatrix
 import Mathlib.LinearAlgebra.Matrix.Determinant
 import Mathlib.LinearAlgebra.Matrix.Reindex
 import Mathlib.Tactic.FieldSimp
@@ -102,17 +102,14 @@ theorem updateRow_eq_transvection [Finite n] (c : R) :
   cases nonempty_fintype n
   ext (a b)
   by_cases ha : i = a; by_cases hb : j = b
-  ·
-    simp only [update_row_self, transvection, ha, hb, Pi.add_apply, std_basis_matrix.apply_same,
-      one_apply_eq, Pi.smul_apply, mul_one, Algebra.id.smul_eq_mul]
-  ·
-    simp only [update_row_self, transvection, ha, hb, std_basis_matrix.apply_of_ne, Pi.add_apply,
+  · simp only [updateRow_self, transvection, ha, hb, Pi.add_apply, StdBasisMatrix.apply_same,
+      one_apply_eq, Pi.smul_apply, mul_one, Algebra.id.smul_eq_mul, add_apply]
+  · simp only [updateRow_self, transvection, ha, hb, StdBasisMatrix.apply_of_ne, Pi.add_apply,
       Ne.def, not_false_iff, Pi.smul_apply, and_false_iff, one_apply_ne, Algebra.id.smul_eq_mul,
-      MulZeroClass.mul_zero]
-  ·
-    simp only [update_row_ne, transvection, ha, Ne.symm ha, std_basis_matrix.apply_of_ne, add_zero,
+      MulZeroClass.mul_zero, add_apply]
+  · simp only [updateRow_ne, transvection, ha, Ne.symm ha, StdBasisMatrix.apply_of_ne, add_zero,
       Algebra.id.smul_eq_mul, Ne.def, not_false_iff, DMatrix.add_apply, Pi.smul_apply,
-      MulZeroClass.mul_zero, false_and_iff]
+      MulZeroClass.mul_zero, false_and_iff, add_apply]
 #align matrix.update_row_eq_transvection Matrix.updateRow_eq_transvection
 
 variable [Fintype n]
@@ -120,7 +117,7 @@ variable [Fintype n]
 theorem transvection_mul_transvection_same (h : i ≠ j) (c d : R) :
     transvection i j c ⬝ transvection i j d = transvection i j (c + d) := by
   simp [transvection, Matrix.add_mul, Matrix.mul_add, h, h.symm, add_smul, add_assoc,
-    std_basis_matrix_add]
+    stdBasisMatrix_add]
 #align matrix.transvection_mul_transvection_same Matrix.transvection_mul_transvection_same
 
 @[simp]
@@ -146,7 +143,7 @@ theorem mul_transvection_apply_of_ne (a b : n) (hb : b ≠ j) (c : R) (M : Matri
 
 @[simp]
 theorem det_transvection_of_ne (h : i ≠ j) (c : R) : det (transvection i j c) = 1 := by
-  rw [← update_row_eq_transvection i j, det_update_row_add_smul_self _ h, det_one]
+  rw [← updateRow_eq_transvection i j, det_updateRow_add_smul_self _ h, det_one]
 #align matrix.det_transvection_of_ne Matrix.det_transvection_of_ne
 
 end
@@ -156,7 +153,7 @@ variable (R n)
 /-- A structure containing all the information from which one can build a nontrivial transvection.
 This structure is easier to manipulate than transvections as one has a direct access to all the
 relevant fields. -/
-@[nolint has_nonempty_instance]
+-- porting note: removed @[nolint has_nonempty_instance]
 structure TransvectionStruct where
   (i j : n)
   hij : i ≠ j
@@ -189,7 +186,7 @@ protected theorem det [Fintype n] (t : TransvectionStruct n R) : det t.toMatrix 
 
 @[simp]
 theorem det_toMatrix_prod [Fintype n] (L : List (TransvectionStruct n 𝕜)) :
-    det (L.map toMatrix).Prod = 1 := by
+    det (L.map toMatrix).prod = 1 := by
   induction' L with t L IH
   · simp
   · simp [IH]
@@ -211,12 +208,12 @@ variable [Fintype n]
 
 theorem inv_mul (t : TransvectionStruct n R) : t.inv.toMatrix ⬝ t.toMatrix = 1 := by
   rcases t with ⟨⟩
-  simp [to_matrix, transvection_mul_transvection_same, t_hij]
+  simp [toMatrix, transvection_mul_transvection_same, t_hij]
 #align matrix.transvection_struct.inv_mul Matrix.TransvectionStruct.inv_mul
 
 theorem mul_inv (t : TransvectionStruct n R) : t.toMatrix ⬝ t.inv.toMatrix = 1 := by
   rcases t with ⟨⟩
-  simp [to_matrix, transvection_mul_transvection_same, t_hij]
+  simp [toMatrix, transvection_mul_transvection_same, t_hij]
 #align matrix.transvection_struct.mul_inv Matrix.TransvectionStruct.mul_inv
 
 theorem reverse_inv_prod_mul_prod (L : List (TransvectionStruct n R)) :
@@ -764,4 +761,3 @@ theorem diagonal_transvection_induction_of_det_ne_zero (P : Matrix n n 𝕜 → 
 #align matrix.diagonal_transvection_induction_of_det_ne_zero Matrix.diagonal_transvection_induction_of_det_ne_zero
 
 end Matrix
-
