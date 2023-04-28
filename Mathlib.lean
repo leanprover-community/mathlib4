@@ -1636,6 +1636,7 @@ import Mathlib.Order.WellFoundedSet
 import Mathlib.Order.WithBot
 import Mathlib.Order.Zorn
 import Mathlib.Order.ZornAtoms
+import Mathlib.Order.KrullDimension
 import Mathlib.RepresentationTheory.Maschke
 import Mathlib.RingTheory.Adjoin.Basic
 import Mathlib.RingTheory.Adjoin.Fg
