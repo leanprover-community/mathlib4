@@ -85,7 +85,7 @@ variable {m n : Type _} [Fintype m] [Fintype n] {K : Type u} [Field K]
 
 set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 theorem rank_diagonal [DecidableEq m] [DecidableEq K] (w : m → K) :
-    rank (K := K) (V := m → K) (V' := m → K) (toLin' (diagonal w)) = Fintype.card { i // w i ≠ 0 } := by
+    rank (toLin' (diagonal w)) = Fintype.card { i // w i ≠ 0 } := by
   have hu : univ ⊆ { i : m | w i = 0 }ᶜ ∪ { i : m | w i = 0 } := by rw [Set.compl_union_self]
   have hd : Disjoint { i : m | w i ≠ 0 } { i : m | w i = 0 } := disjoint_compl_left
   have B₁ := supᵢ_range_stdBasis_eq_infᵢ_ker_proj K (fun _ : m => K) hd hu (Set.toFinite _)
