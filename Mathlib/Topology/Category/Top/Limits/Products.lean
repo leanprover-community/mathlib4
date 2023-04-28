@@ -8,8 +8,8 @@ Authors: Patrick Massot, Scott Morrison, Mario Carneiro, Andrew Yang
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.Category.Top.EpiMono
-import Mathbin.Topology.Category.Top.Limits.Basic
+import Mathlib.Topology.Category.Top.EpiMono
+import Mathlib.Topology.Category.Top.Limits.Basic
 
 /-!
 # Products and coproducts in the category of topological spaces
@@ -43,8 +43,7 @@ def piFan {ι : Type v} (α : ι → TopCat.{max v u}) : Fan α :=
 #align Top.pi_fan TopCat.piFan
 
 /-- The constructed fan is indeed a limit -/
-def piFanIsLimit {ι : Type v} (α : ι → TopCat.{max v u}) : IsLimit (piFan α)
-    where
+def piFanIsLimit {ι : Type v} (α : ι → TopCat.{max v u}) : IsLimit (piFan α) where
   lift S := { toFun := fun s i => S.π.app ⟨i⟩ s }
   uniq := by
     intro S m h
@@ -75,8 +74,7 @@ theorem piIsoPi_inv_π_apply {ι : Type v} (α : ι → TopCat.{max v u}) (i : �
 
 @[simp]
 theorem piIsoPi_hom_apply {ι : Type v} (α : ι → TopCat.{max v u}) (i : ι) (x : ∏ α) :
-    (piIsoPi α).Hom x i = (Pi.π α i : _) x :=
-  by
+    (piIsoPi α).Hom x i = (Pi.π α i : _) x := by
   have := pi_iso_pi_inv_π α i
   rw [iso.inv_comp_eq] at this
   exact concrete_category.congr_hom this x
@@ -94,8 +92,7 @@ def sigmaCofan {ι : Type v} (α : ι → TopCat.{max v u}) : Cofan α :=
 #align Top.sigma_cofan TopCat.sigmaCofan
 
 /-- The constructed cofan is indeed a colimit -/
-def sigmaCofanIsColimit {ι : Type v} (α : ι → TopCat.{max v u}) : IsColimit (sigmaCofan α)
-    where
+def sigmaCofanIsColimit {ι : Type v} (α : ι → TopCat.{max v u}) : IsColimit (sigmaCofan α) where
   desc S :=
     { toFun := fun s => S.ι.app ⟨s.1⟩ s.2
       continuous_toFun := continuous_sigma fun i => map_continuous (S.ι.app ⟨i⟩) }
@@ -127,15 +124,13 @@ theorem sigmaIsoSigma_hom_ι_apply {ι : Type v} (α : ι → TopCat.{max v u}) 
 
 @[simp]
 theorem sigmaIsoSigma_inv_apply {ι : Type v} (α : ι → TopCat.{max v u}) (i : ι) (x : α i) :
-    (sigmaIsoSigma α).inv ⟨i, x⟩ = (Sigma.ι α i : _) x :=
-  by
+    (sigmaIsoSigma α).inv ⟨i, x⟩ = (Sigma.ι α i : _) x := by
   rw [← sigma_iso_sigma_hom_ι_apply, ← comp_app]
   simp
 #align Top.sigma_iso_sigma_inv_apply TopCat.sigmaIsoSigma_inv_apply
 
 theorem induced_of_isLimit {F : J ⥤ TopCat.{max v u}} (C : Cone F) (hC : IsLimit C) :
-    C.pt.TopologicalSpace = ⨅ j, (F.obj j).TopologicalSpace.induced (C.π.app j) :=
-  by
+    C.pt.TopologicalSpace = ⨅ j, (F.obj j).TopologicalSpace.induced (C.π.app j) := by
   let homeo := homeo_of_iso (hC.cone_point_unique_up_to_iso (limit_cone_infi_is_limit F))
   refine' homeo.inducing.induced.trans _
   change induced homeo (⨅ j : J, _) = _
@@ -165,8 +160,7 @@ def prodBinaryFan (X Y : TopCat.{u}) : BinaryFan X Y :=
 #align Top.prod_binary_fan TopCat.prodBinaryFan
 
 /-- The constructed binary fan is indeed a limit -/
-def prodBinaryFanIsLimit (X Y : TopCat.{u}) : IsLimit (prodBinaryFan X Y)
-    where
+def prodBinaryFanIsLimit (X Y : TopCat.{u}) : IsLimit (prodBinaryFan X Y) where
   lift := fun S : BinaryFan X Y => { toFun := fun s => (S.fst s, S.snd s) }
   fac := by
     rintro S (_ | _)
@@ -221,8 +215,7 @@ theorem prodIsoProd_inv_snd (X Y : TopCat.{u}) :
 theorem prod_topology {X Y : TopCat} :
     (X ⨯ Y).TopologicalSpace =
       induced (Limits.prod.fst : X ⨯ Y ⟶ _) X.TopologicalSpace ⊓
-        induced (Limits.prod.snd : X ⨯ Y ⟶ _) Y.TopologicalSpace :=
-  by
+        induced (Limits.prod.snd : X ⨯ Y ⟶ _) Y.TopologicalSpace := by
   let homeo := homeo_of_iso (prod_iso_prod X Y)
   refine' homeo.inducing.induced.trans _
   change induced homeo (_ ⊓ _) = _
@@ -232,8 +225,7 @@ theorem prod_topology {X Y : TopCat} :
 theorem range_prod_map {W X Y Z : TopCat.{u}} (f : W ⟶ Y) (g : X ⟶ Z) :
     Set.range (Limits.prod.map f g) =
       (Limits.prod.fst : Y ⨯ Z ⟶ _) ⁻¹' Set.range f ∩
-        (Limits.prod.snd : Y ⨯ Z ⟶ _) ⁻¹' Set.range g :=
-  by
+        (Limits.prod.snd : Y ⨯ Z ⟶ _) ⁻¹' Set.range g := by
   ext
   constructor
   · rintro ⟨y, rfl⟩
@@ -253,8 +245,7 @@ theorem range_prod_map {W X Y Z : TopCat.{u}} (f : W ⟶ Y) (g : X ⟶ Z) :
 #align Top.range_prod_map TopCat.range_prod_map
 
 theorem inducing_prod_map {W X Y Z : TopCat} {f : W ⟶ X} {g : Y ⟶ Z} (hf : Inducing f)
-    (hg : Inducing g) : Inducing (Limits.prod.map f g) :=
-  by
+    (hg : Inducing g) : Inducing (Limits.prod.map f g) := by
   constructor
   simp only [prod_topology, induced_compose, ← coe_comp, limits.prod.map_fst, limits.prod.map_snd,
     induced_inf]
@@ -264,8 +255,7 @@ theorem inducing_prod_map {W X Y Z : TopCat} {f : W ⟶ X} {g : Y ⟶ Z} (hf : I
 
 theorem embedding_prod_map {W X Y Z : TopCat} {f : W ⟶ X} {g : Y ⟶ Z} (hf : Embedding f)
     (hg : Embedding g) : Embedding (Limits.prod.map f g) :=
-  ⟨inducing_prod_map hf.to_inducing hg.to_inducing,
-    by
+  ⟨inducing_prod_map hf.to_inducing hg.to_inducing, by
     haveI := (TopCat.mono_iff_injective _).mpr hf.inj
     haveI := (TopCat.mono_iff_injective _).mpr hg.inj
     exact (TopCat.mono_iff_injective _).mp inferInstance⟩
@@ -279,8 +269,7 @@ protected def binaryCofan (X Y : TopCat.{u}) : BinaryCofan X Y :=
 #align Top.binary_cofan TopCat.binaryCofan
 
 /-- The constructed binary coproduct cofan in `Top` is the coproduct. -/
-def binaryCofanIsColimit (X Y : TopCat.{u}) : IsColimit (TopCat.binaryCofan X Y) :=
-  by
+def binaryCofanIsColimit (X Y : TopCat.{u}) : IsColimit (TopCat.binaryCofan X Y) := by
   refine' limits.binary_cofan.is_colimit_mk (fun s => ⟨Sum.elim s.inl s.inr⟩) _ _ _
   · intro s
     ext
@@ -295,8 +284,7 @@ def binaryCofanIsColimit (X Y : TopCat.{u}) : IsColimit (TopCat.binaryCofan X Y)
 
 theorem binaryCofan_isColimit_iff {X Y : TopCat} (c : BinaryCofan X Y) :
     Nonempty (IsColimit c) ↔
-      OpenEmbedding c.inl ∧ OpenEmbedding c.inr ∧ IsCompl (Set.range c.inl) (Set.range c.inr) :=
-  by
+      OpenEmbedding c.inl ∧ OpenEmbedding c.inr ∧ IsCompl (Set.range c.inl) (Set.range c.inr) := by
   classical
     constructor
     · rintro ⟨h⟩
@@ -326,8 +314,7 @@ theorem binaryCofan_isColimit_iff {X Y : TopCat} (c : BinaryCofan X Y) :
       congr 1
       exact set.compl_range_inr.symm
     · rintro ⟨h₁, h₂, h₃⟩
-      have : ∀ x, x ∈ Set.range c.inl ∨ x ∈ Set.range c.inr :=
-        by
+      have : ∀ x, x ∈ Set.range c.inl ∨ x ∈ Set.range c.inr := by
         rw [eq_compl_iff_is_compl.mpr h₃.symm]
         exact fun _ => or_not
       refine' ⟨binary_cofan.is_colimit.mk _ _ _ _ _⟩
@@ -351,8 +338,7 @@ theorem binaryCofan_isColimit_iff {X Y : TopCat} (c : BinaryCofan X Y) :
         · revert h x
           apply (IsOpen.continuousOn_iff _).mp
           · rw [continuousOn_iff_continuous_restrict]
-            have : ∀ a, a ∉ Set.range c.inl → a ∈ Set.range c.inr :=
-              by
+            have : ∀ a, a ∉ Set.range c.inl → a ∈ Set.range c.inr := by
               rintro a (h : a ∈ Set.range c.inlᶜ)
               rwa [eq_compl_iff_is_compl.mpr h₃.symm]
             convert_to Continuous
