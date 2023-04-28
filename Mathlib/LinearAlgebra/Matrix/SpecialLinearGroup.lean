@@ -88,7 +88,7 @@ like `det ↑A`. Rather than writing `(A : Matrix n n R)` everywhere in this fil
 verbose, or `A.val` which is not the simp-normal form for subtypes, we create a local notation
 `↑ₘA`. This notation references the local `n` and `R` variables, so is not valid as a global
 notation. -/
-local prefix:1024 "↑ₘ" => Subtype.val
+local notation:1024 "↑ₘ" A:1024 => ((A : SpecialLinearGroup n R) : Matrix n n R)
 
 theorem ext_iff (A B : SpecialLinearGroup n R) : A = B ↔ ∀ i j, ↑ₘA i j = ↑ₘB i j :=
   Subtype.ext_iff.trans Matrix.ext_iff.symm
