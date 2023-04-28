@@ -1868,11 +1868,6 @@ theorem supᵢ_finset_image {f : γ → α} {g : α → β} {s : Finset γ} :
     (⨆ x ∈ s.image f, g x) = ⨆ y ∈ s, g (f y) := by rw [← supᵢ_coe, coe_image, supᵢ_image, supᵢ_coe]
 #align finset.supr_finset_image Finset.supᵢ_finset_image
 
-theorem sup_finset_image {β γ : Type _} [SemilatticeSup β] [OrderBot β] (f : γ → α) (g : α → β)
-    (s : Finset γ) : (s.image f).sup g = s.sup (g ∘ f) := by
-  classical induction' s using Finset.induction_on with a s' _ ih <;> simp [*]
-#align finset.sup_finset_image Finset.sup_finset_image
-
 theorem infᵢ_finset_image {f : γ → α} {g : α → β} {s : Finset γ} :
     (⨅ x ∈ s.image f, g x) = ⨅ y ∈ s, g (f y) := by rw [← infᵢ_coe, coe_image, infᵢ_image, infᵢ_coe]
 #align finset.infi_finset_image Finset.infᵢ_finset_image

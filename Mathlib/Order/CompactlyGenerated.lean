@@ -192,7 +192,7 @@ theorem finset_sup_compact_of_compact {α β : Type _} [CompleteLattice α] {f :
     rw [isCompactElement_iff_le_of_directed_supₛ_le]
     intro d hemp hdir hsup
     rw [← Function.comp.left_id f]
-    rw [← Finset.sup_finset_image]
+    rw [← Finset.sup_image]
     apply Finset.sup_le_of_le_directed d hemp hdir
     rintro x hx
     obtain ⟨p, ⟨hps, rfl⟩⟩ := Finset.mem_image.mp hx
