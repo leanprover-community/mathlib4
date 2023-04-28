@@ -321,6 +321,7 @@ import Mathlib.AlgebraicTopology.DoldKan.SplitSimplicialObject
 import Mathlib.AlgebraicTopology.MooreComplex
 import Mathlib.AlgebraicTopology.SimplexCategory
 import Mathlib.AlgebraicTopology.SimplicialObject
+import Mathlib.AlgebraicTopology.SimplicialSet
 import Mathlib.AlgebraicTopology.SplitSimplicialObject
 import Mathlib.AlgebraicTopology.TopologicalSimplex
 import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
@@ -1307,7 +1308,7 @@ import Mathlib.GroupTheory.Subgroup.MulOpposite
 import Mathlib.GroupTheory.Subgroup.Pointwise
 import Mathlib.GroupTheory.Subgroup.Saturated
 import Mathlib.GroupTheory.Subgroup.Simple
-import Mathlib.GroupTheory.Subgroup.Zpowers
+import Mathlib.GroupTheory.Subgroup.ZPowers
 import Mathlib.GroupTheory.Submonoid.Basic
 import Mathlib.GroupTheory.Submonoid.Center
 import Mathlib.GroupTheory.Submonoid.Centralizer
