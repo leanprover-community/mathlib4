@@ -7,6 +7,7 @@ Ported by: Scott Morrison
 
 import Mathlib.Tactic.Linarith.Elimination
 import Mathlib.Tactic.Linarith.Parsing
+import Mathlib.Tactic.Qq
 
 /-!
 # Deriving a proof of false
@@ -35,14 +36,6 @@ def ofNatQ (α : Q(Type $u)) (_ : Q(Semiring $α)) (n : ℕ) : Q($α) :=
     let _x : Q(Nat.AtLeastTwo $lit) :=
       (q(instAtLeastTwoHAddNatInstHAddInstAddNatOfNat (n := $k)) : Expr)
     q(OfNat.ofNat $lit)
-
-/-- Analogue of `inferTypeQ`, but that gets universe levels right for our application. -/
--- See https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Using.20.60QQ.60.20when.20you.20only.20have.20an.20.60Expr.60/near/303349037
-def inferTypeQ' (e : Expr) : MetaM ((u : Level) × (α : Q(Type $u)) × Q($α)) := do
-  let α ← inferType e
-  let .sort u ← instantiateMVars (← whnf (← inferType α)) | unreachable!
-  let some v := u.dec | throwError "not a type{indentExpr α}"
-  pure ⟨v, α, e⟩
 
 end Qq
 

@@ -134,3 +134,9 @@ example (p : R PUnit.{u+1} PUnit.{v+1}) : p + 0 = p := by
   ring
 example (p q : R PUnit.{u+1} PUnit.{v+1}) : p + q = q + p := by
   ring
+
+
+example (p : R PUnit.{u+1} PUnit.{v+1}) : p + 0 = p := by
+  ring_nf
+example (p q : R PUnit.{u+1} PUnit.{v+1}) : p + q = q + p := by
+  ring_nf
