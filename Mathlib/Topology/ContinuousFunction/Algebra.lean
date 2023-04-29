@@ -224,7 +224,7 @@ theorem div_comp [Div γ] [ContinuousDiv γ] (f g : C(β, γ)) (h : C(α, β)) :
 
 -- ### "zpow" and "zsmul"
 instance hasZsmul [AddGroup β] [TopologicalAddGroup β] : SMul ℤ C(α, β)
-    where smul z f := ⟨SMul.smul z  f, f.continuous.zsmul z⟩
+    where smul z f := ⟨z • ⇑f, f.continuous.zsmul z⟩
 #align continuous_map.has_zsmul ContinuousMap.hasZsmul
 
 @[to_additive existing]
@@ -858,7 +858,7 @@ instance ContinuousMap.subsingleton_subalgebra (α : Type _) [TopologicalSpace �
     Subsingleton (Subalgebra R C(α, R)) :=
   ⟨fun s₁ s₂ => by
     cases isEmpty_or_nonempty α
-    · haveI : Subsingleton C(α, R) := fun_like.coe_injective.subsingleton
+    · haveI : Subsingleton C(α, R) := FunLike.coe_injective.subsingleton
       exact Subsingleton.elim _ _
     · inhabit α
       ext f
