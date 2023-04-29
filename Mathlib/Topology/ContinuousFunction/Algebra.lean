@@ -830,6 +830,12 @@ def Set.SeparatesPointsStrongly (s : Set C(α, 𝕜)) : Prop :=
 
 variable [Field 𝕜] [TopologicalRing 𝕜]
 
+-- TODO: move (do not merge)
+instance : SubmoduleClass (Subalgebra 𝕜 C(α, 𝕜)) 𝕜 C(α, 𝕜) where
+  smul_mem _ _ hx := Subalgebra.smul_mem _ hx _
+
+set_option synthInstance.etaExperiment true in
+set_option synthInstance.maxHeartbeats 40000 in
 /-- Working in continuous functions into a topological field,
 a subalgebra of functions that separates points also separates points strongly.
 
@@ -840,15 +846,21 @@ theorem Subalgebra.SeparatesPoints.strongly {s : Subalgebra 𝕜 C(α, 𝕜)} (h
     (s : Set C(α, 𝕜)).SeparatesPointsStrongly := fun v x y => by
   by_cases n : x = y
   · subst n
-    refine' ⟨_, (v x • 1 : s).Prop, mul_one _, mul_one _⟩
+    refine' ⟨_, (v x • (1 : s) : s).prop, mul_one _, mul_one _⟩
   obtain ⟨_, ⟨f, hf, rfl⟩, hxy⟩ := h n
   replace hxy : f x - f y ≠ 0 := sub_ne_zero_of_ne hxy
   let a := v x
   let b := v y
-  let f' : s := ((b - a) * (f x - f y)⁻¹) • (algebraMap _ _ (f x) - ⟨f, hf⟩) + algebraMap _ _ a
+  -- porting note: Lean4 really struggles to find any of these instances
+  let inst : Ring s := Subalgebra.toRing s
+  let inst : AddCommGroup s := Ring.toAddCommGroup
+  let inst : Sub s := SubNegMonoid.toSub
+  let inst : HSub s s s := instHSub
+  let f' : s :=
+    ((b - a) * (f x - f y)⁻¹) • (algebraMap _ s (f x) - (⟨f, hf⟩ : s)) + algebraMap _ s a
   refine' ⟨f', f'.prop, _, _⟩
-  · simp [f']
-  · simp [f', inv_mul_cancel_right₀ hxy]
+  · simp
+  · simp [inv_mul_cancel_right₀ hxy]
 #align subalgebra.separates_points.strongly Subalgebra.SeparatesPoints.strongly
 
 end ContinuousMap
