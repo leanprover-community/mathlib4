@@ -96,14 +96,15 @@ noncomputable def matrixDecomposition (o : HomOrthogonal s) {α β : Type} [Fint
       if h : f j = g k then z (f j) ⟨k, by simp [h]⟩ ⟨j, by simp⟩ ≫ eqToHom (by simp [h]) else 0
   left_inv z := by
     ext (j k)
-    simp only [category.assoc, biproduct.lift_π, biproduct.ι_matrix]
-    split_ifs
+    simp only [biproduct.matrix_π, biproduct.ι_desc]
+    split_ifs with h
     · simp
       rfl
     · symm
       apply o.eq_zero h
   right_inv z := by
     ext (i⟨j, w⟩⟨k, ⟨⟩⟩)
+    simp only [eqToHom_refl, biproduct.matrix_components, Category.id_comp]
     simp only [Set.mem_preimage, Set.mem_singleton_iff]
     simp [w.symm]; rfl
 #align category_theory.hom_orthogonal.matrix_decomposition CategoryTheory.HomOrthogonal.matrixDecomposition
@@ -130,10 +131,10 @@ noncomputable def matrixDecompositionAddEquiv (o : HomOrthogonal s) {α β : Typ
 @[simp]
 theorem matrixDecomposition_id (o : HomOrthogonal s) {α : Type} [Fintype α] {f : α → ι} (i : ι) :
     o.matrixDecomposition (𝟙 (⨁ fun a => s (f a))) i = 1 := by
-  ext (⟨b, ⟨⟩⟩⟨a⟩)
+  ext (⟨b, ⟨⟩⟩⟨a, j_property⟩)
   simp only [Set.mem_preimage, Set.mem_singleton_iff] at j_property
-  simp only [category.comp_id, category.id_comp, category.assoc, End.one_def, eq_to_hom_refl,
-    Matrix.one_apply, hom_orthogonal.matrix_decomposition_apply, biproduct.components]
+  simp only [Category.comp_id, Category.id_comp, Category.assoc, End.one_def, eqToHom_refl,
+    Matrix.one_apply, HomOrthogonal.matrixDecomposition_apply, biproduct.components]
   split_ifs with h
   · cases h
     simp
@@ -145,20 +146,19 @@ theorem matrixDecomposition_comp (o : HomOrthogonal s) {α β γ : Type} [Fintyp
     [Fintype γ] {f : α → ι} {g : β → ι} {h : γ → ι} (z : (⨁ fun a => s (f a)) ⟶ ⨁ fun b => s (g b))
     (w : (⨁ fun b => s (g b)) ⟶ ⨁ fun c => s (h c)) (i : ι) :
     o.matrixDecomposition (z ≫ w) i = o.matrixDecomposition w i ⬝ o.matrixDecomposition z i := by
-  ext (⟨c, ⟨⟩⟩⟨a⟩)
+  ext (⟨c, ⟨⟩⟩⟨a, j_property⟩)
   simp only [Set.mem_preimage, Set.mem_singleton_iff] at j_property
-  simp only [Matrix.mul_apply, limits.biproduct.components,
-    hom_orthogonal.matrix_decomposition_apply, category.comp_id, category.id_comp, category.assoc,
-    End.mul_def, eq_to_hom_refl, eq_to_hom_trans_assoc, Finset.sum_congr]
-  conv_lhs => rw [← category.id_comp w, ← biproduct.total]
-  simp only [preadditive.sum_comp, preadditive.comp_sum]
+  simp only [Matrix.mul_apply, Limits.biproduct.components,
+    HomOrthogonal.matrixDecomposition_apply, Category.comp_id, Category.id_comp, Category.assoc,
+    End.mul_def, eqToHom_refl, eqToHom_trans_assoc, Finset.sum_congr]
+  conv_lhs => rw [← Category.id_comp w, ← biproduct.total]
+  simp only [Preadditive.sum_comp, Preadditive.comp_sum]
   apply Finset.sum_congr_set
   · intros
     simp
-    rfl
   · intro b nm
     simp only [Set.mem_preimage, Set.mem_singleton_iff] at nm
-    simp only [category.assoc]
+    simp only [Category.assoc]
     convert comp_zero
     convert comp_zero
     convert comp_zero
@@ -206,12 +206,12 @@ theorem equiv_of_iso (o : HomOrthogonal s) {α β : Type} [Fintype α] [Fintype 
   apply Cardinal.eq.1
   simp only [Cardinal.mk_fintype, Nat.cast_inj]
   exact
-    Matrix.square_of_invertible (o.matrix_decomposition i.inv c) (o.matrix_decomposition i.hom c)
+    Matrix.square_of_invertible (o.matrixDecomposition i.inv c) (o.matrixDecomposition i.hom c)
       (by
-        rw [← o.matrix_decomposition_comp]
+        rw [← o.matrixDecomposition_comp]
         simp)
       (by
-        rw [← o.matrix_decomposition_comp]
+        rw [← o.matrixDecomposition_comp]
         simp)
 #align category_theory.hom_orthogonal.equiv_of_iso CategoryTheory.HomOrthogonal.equiv_of_iso
 
@@ -220,4 +220,3 @@ end
 end HomOrthogonal
 
 end CategoryTheory
-
