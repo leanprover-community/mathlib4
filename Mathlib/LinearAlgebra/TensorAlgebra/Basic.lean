@@ -75,7 +75,7 @@ instance : Algebra R (TensorAlgebra R M) := RingQuot.instAlgebraRingQuotInstSemi
 namespace TensorAlgebra
 
 instance {S : Type _} [CommRing S] [Module S M] : Ring (TensorAlgebra S M) :=
-  RingQuot.Ring (Rel S M)
+  RingQuot.instRing (Rel S M)
 
 variable {M}
 
