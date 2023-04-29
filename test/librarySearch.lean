@@ -4,6 +4,9 @@ import Mathlib.Algebra.Order.Ring.Canonical
 
 noncomputable section
 
+set_option trace.Tactic.librarySearch true
+set_option trace.Meta.Tactic.solveByElim true
+
 example (x : Nat) : x ≠ x.succ := ne_of_lt (by library_search)
 example : 0 ≠ 1 + 1 := ne_of_lt (by library_search)
 example (x y : Nat) : x + y = y + x := by library_search

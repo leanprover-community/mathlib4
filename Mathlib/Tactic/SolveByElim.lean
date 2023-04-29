@@ -18,6 +18,12 @@ import Mathlib.Control.Basic
 open Lean Meta Elab Tactic
 open Mathlib.Tactic
 
+/-- Run a monadic function on every element of a list,
+returning the list of elements on which the function fails, and the list of successful results. -/
+def List.tryAllM [Monad m] [Alternative m] (L : List α) (f : α → m β) : m (List α × List β) := do
+  let R ← L.mapM (fun a => (Sum.inr <$> f a) <|> (pure (Sum.inl a)))
+  return (R.filterMap Sum.getLeft, R.filterMap Sum.getRight)
+
 initialize registerTraceClass `Meta.Tactic.solveByElim
 
 namespace Mathlib.Tactic.SolveByElim
@@ -72,6 +78,8 @@ structure Config extends BacktrackConfig, ApplyConfig where
   This is only used when operating on a single goal. -/
   exfalso : Bool := true
   backtracking : Bool := true
+  /-- If we solve any "independent" goals, don't fail. -/
+  commitIndependentGoals : Bool := false
 
 instance : Coe Config BacktrackConfig := ⟨Config.toBacktrackConfig⟩
 
@@ -245,13 +253,22 @@ where
       repeat1' (maxIters := cfg.maxDepth) (applyFirstLemma cfg lemmas ctx)
   -- A wrapper around `run'`, which works on "independent" goals separately first,
   -- to reduce backtracking.
+  -- TODO consider moving this functionality inside `backtrack`? It is completely generic.
   run (goals remaining : List MVarId) : MetaM (List MVarId) := do
     let (igs, ogs) ← remaining.partitionM (MVarId.independent? goals)
     if igs.isEmpty then
       return (← run' remaining)
     else
-      let R := (← igs.mapM (fun g => run' [g])).join
-      return R ++ (← run (goals ++ R) ogs)
+      -- Invoke `run'` on each of the independent goals separately.
+      let (failed, newSubgoals') ← igs.tryAllM (fun g => run' [g])
+      let newSubgoals := newSubgoals'.join
+      let goals' := (← goals.filterM (fun g => do pure !(← g.isAssigned))) ++ newSubgoals
+      if cfg.commitIndependentGoals && !newSubgoals.isEmpty then
+        return newSubgoals ++ failed ++ (← (run goals' ogs <|> pure ogs))
+      else if !failed.isEmpty then
+        failure
+      else
+        return newSubgoals ++ (← run goals' ogs)
 
 /--
 A `MetaM` analogue of the `apply_rules` user tactic.

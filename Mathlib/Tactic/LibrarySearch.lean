@@ -107,7 +107,7 @@ def solveByElim (goals : List MVarId) (required : List Expr) (depth) := do
   -- (measured via `lake build && time lake env lean test/librarySearch.lean`).
   let cfg : SolveByElim.Config := { maxDepth := depth, exfalso := true, symm := true }
   let cfg := if !required.isEmpty then cfg.requireUsingAll required else cfg
-  _ ← SolveByElim.solveByElim.processSyntax cfg false false [] [] #[] goals
+  SolveByElim.solveByElim.processSyntax cfg false false [] [] #[] goals
 
 /--
 Try applying the given lemma (with symmetry modifer) to the goal,
@@ -131,8 +131,8 @@ def librarySearchLemma (lem : Name) (mod : DeclMod) (required : List Expr) (solv
     | .mpr => mapForallTelescope (fun e => mkAppM ``Iff.mpr #[e]) lem
     let newGoals ← goal.apply lem
     try
-      solveByElim newGoals required solveByElimDepth
-      pure (← getMCtx, [])
+      let subgoals ← solveByElim newGoals required solveByElimDepth
+      pure (← getMCtx, subgoals)
     catch _ =>
       pure (← getMCtx, newGoals)
 
@@ -173,7 +173,7 @@ def librarySearch (goal : MVarId) (lemmas : DiscrTree (Name × DeclMod) s) (requ
   withTraceNode `Tactic.librarySearch (return m!"{librarySearchEmoji ·} {← goal.getType}") do
   profileitM Exception "librarySearch" (← getOptions) do
   (do
-    solveByElim [goal] required solveByElimDepth
+    _ ← solveByElim [goal] required solveByElimDepth
     return none) <|>
   (do
     let results ← librarySearchCore goal lemmas required solveByElimDepth
