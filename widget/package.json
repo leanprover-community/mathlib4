@@ -24,7 +24,7 @@
     "@rollup/plugin-typescript": "^11.0.0",
     "@types/react": "^18.0.26",
     "@types/react-dom": "^18.0.10",
-    "glob": "^8.0.3",
+    "glob": "^8.1.0",
     "rollup": "^3.9.1",
     "rollup-plugin-import-css": "^3.2.1",
     "tslib": "^2.4.1",
