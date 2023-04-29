@@ -9,6 +9,7 @@ import Mathlib.Lean.LocalContext
 import Mathlib.Tactic.Relation.Symm
 import Mathlib.Data.Sum.Basic
 import Mathlib.Tactic.LabelAttr
+import Mathlib.Control.Basic
 
 /-!
 # `solve_by_elim`, `apply_rules`, and `apply_assumption`.
@@ -213,7 +214,7 @@ By default `cfg.suspend` is `false,` `cfg.discharge` fails, and `cfg.failAtMaxDe
 and so the returned list is always empty.
 Custom wrappers (e.g. `apply_assumption` and `apply_rules`) may modify this behaviour.
 -/
-def solveByElim (cfg : Config) (lemmas : List (TermElabM Expr)) (ctx : TermElabM (List Expr))
+partial def solveByElim (cfg : Config) (lemmas : List (TermElabM Expr)) (ctx : TermElabM (List Expr))
     (goals : List MVarId) : MetaM (List MVarId) := do
   -- We handle `cfg.symm` by saturating hypotheses of all goals using `symm`.
   -- Implementation note:
@@ -224,22 +225,33 @@ def solveByElim (cfg : Config) (lemmas : List (TermElabM Expr)) (ctx : TermElabM
   else
     pure goals
 
-  let run := if cfg.backtracking then
-    backtrack cfg `Meta.Tactic.solveByElim (applyLemmas cfg lemmas ctx)
-  else
-    repeat1' (maxIters := cfg.maxDepth) (applyFirstLemma cfg lemmas ctx)
   -- Implementation note: as with `cfg.symm`, this is different from the mathlib3 approach,
   -- for (not as bad) performance reasons.
   match cfg.exfalso, goals with
     | true, [g] => try
-        run [g]
+        run' [g]
       catch _ => do
         withTraceNode `Meta.Tactic.solveByElim
             (fun _ => return m!"⏮️ starting over using `exfalso`") do
           let g ← g.exfalso
-          run [g]
+          run' [g]
     | _, _ =>
-      run goals
+      run goals goals
+where
+  -- Run either backtracking search, or repeated application, on the list of goals.
+  run' : List MVarId → MetaM (List MVarId) := if cfg.backtracking then
+      backtrack cfg `Meta.Tactic.solveByElim (applyLemmas cfg lemmas ctx)
+    else
+      repeat1' (maxIters := cfg.maxDepth) (applyFirstLemma cfg lemmas ctx)
+  -- A wrapper around `run'`, which works on "independent" goals separately first,
+  -- to reduce backtracking.
+  run (goals remaining : List MVarId) : MetaM (List MVarId) := do
+    let (igs, ogs) ← remaining.partitionM (MVarId.independent? goals)
+    if igs.isEmpty then
+      return (← run' remaining)
+    else
+      let R := (← igs.mapM (fun g => run' [g])).join
+      return R ++ (← run (goals ++ R) ogs)
 
 /--
 A `MetaM` analogue of the `apply_rules` user tactic.
