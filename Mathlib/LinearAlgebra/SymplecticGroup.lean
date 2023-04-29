@@ -182,7 +182,6 @@ theorem mem_iff' : A ∈ symplecticGroup l R ↔ Aᵀ ⬝ J l R ⬝ A = J l R :=
   rw [← transpose_mem_iff, mem_iff, transpose_transpose]
 #align symplectic_group.mem_iff' SymplecticGroup.mem_iff'
 
--- Porting note: Added a name for this instance.
 instance hasInv : Inv (symplecticGroup l R) where
   inv A := ⟨(-J l R) ⬝ (A : Matrix (Sum l l) (Sum l l) R)ᵀ ⬝ J l R,
       mul_mem (mul_mem (neg_mem <| J_mem _ _) <| transpose_mem A.2) <| J_mem _ _⟩
