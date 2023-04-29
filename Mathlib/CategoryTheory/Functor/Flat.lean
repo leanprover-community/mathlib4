@@ -355,6 +355,37 @@ section SmallCategory
 
 variable {C D : Type u₁} [SmallCategory C] [SmallCategory D] (E : Type u₂) [Category.{u₁} E]
 
+
+-- the below proof is broken because
+/-
+
+Lean 4:
+CategoryTheory.lan_map_app.{v₁, v₂, v₃, u₁, u₂, u₃}
+  {S : Type u₁} {L : Type u₂} {D : Type u₃} [inst✝ : Category S]
+  [inst✝¹ : Category L] [inst✝² : Category D] (ι : S ⥤ L)
+  [inst✝³ : ∀ (X : L), HasColimitsOfShape (CostructuredArrow ι X) D] {X X' : S ⥤ D} (f : X ⟶ X') (x : L) :
+  ((lan ι).map f).app x =
+    colimit.desc (Lan.diagram ι X x)
+      { pt := colimit (Lan.diagram ι X' x),
+        ι :=
+          NatTrans.mk fun i ↦
+            (f.app i.left ≫ (↑(Lan.equiv ι X' (Lan.loc ι X')) (𝟙 (Lan.loc ι X'))).app i.left) ≫
+              colimit.pre (Lan.diagram ι X' x) (CostructuredArrow.map i.hom) }
+
+Lean 3:
+category_theory.Lan_map_app :
+  ∀ {S L : Type u₁} {D : Type u₂} [_inst_1 : category S]
+  [_inst_2 : category L] [_inst_3 : category D] (ι : S ⥤ L)
+  [_inst_4 : ∀ (X : L), has_colimits_of_shape (costructured_arrow ι X) D] (X X' : S ⥤ D) (f : X ⟶ X') (x : L),
+  ((Lan ι).map f).app x =
+    colimit.desc (Lan.diagram ι X x)
+      {X := colimit (Lan.diagram ι X' x) _,
+        ι :=
+          {app := λ (i : costructured_arrow ι x),
+            (f.app i.left ≫ colimit.ι (Lan.diagram ι X' (ι.obj i.left)) (costructured_arrow.mk (𝟙 (ι.obj i.left))) ≫ 𝟙 (colimit (Lan.diagram ι X' (ι.obj i.left)))) ≫ colimit.pre (Lan.diagram ι X' x) (costructured_arrow.map i.hom), naturality' := _}}
+
+
+-/
 /-- (Implementation)
 The evaluation of `Lan F` at `X` is the colimit over the costructured arrows over `X`.
 -/
@@ -381,24 +412,57 @@ noncomputable def lanEvaluationIsoColim (F : C ⥤ D) (X : D)
     (colim.map_iso (iso.refl (Lan.diagram F G X))).hom ≫
       ((whiskering_left (costructured_arrow F X) C E).obj (costructured_arrow.proj F X) ⋙ colim).map i
       -/
-      -- still trying to debug this; I have some analogous Lean 3 code which works
       rw [Functor.comp_map]
       rw [Functor.comp_map]
+      dsimp only
       rw [Functor.mapIso_refl]
       rw [Functor.mapIso_refl]
       rw [evaluation_obj_map]
-      rw [whiskering_left_obj_map]
-      rw [Lan_map_app]
+      rw [whiskeringLeft_obj_map]
+      rw [lan_map_app]
       rw [colimit.ι_desc_assoc]
-      simp only [category.comp_id, category.assoc]
+      /-
+      Lean 4 : ⊢ { pt := colimit (Lan.diagram F H X),
+            ι :=
+              NatTrans.mk fun i_1 ↦
+                (i.app i_1.left ≫
+
+                (↑(Lan.equiv F H (Lan.loc F H)) (𝟙 (Lan.loc F H))).app i_1.left) ≫
+
+                  colimit.pre (Lan.diagram F H X) (CostructuredArrow.map i_1.hom) }.ι.app
+      j ≫
+      (Iso.refl (colim.obj (Lan.diagram F H X))).hom =
+      colimit.ι (Lan.diagram F G X) j ≫
+      (Iso.refl (colim.obj (Lan.diagram F G X))).hom ≫ colim.map (whiskerLeft (CostructuredArrow.proj F X) i)
+
+      Lean 3 : ⊢ {X := colimit (Lan.diagram F H X) _
+          , ι :=
+              {app := λ (i_1 : costructured_arrow F X),
+                (i.app i_1.left ≫
+
+                colimit.ι (Lan.diagram F H (F.obj i_1.left))
+                  (costructured_arrow.mk (𝟙 (F.obj i_1.left))) ≫
+                  𝟙 (colimit (Lan.diagram F H (F.obj i_1.left)))) ≫
+
+                  colimit.pre (Lan.diagram F H X) (costructured_arrow.map i_1.hom), naturality' := _}}.ι.app
+      j ≫
+      (iso.refl (colim.obj (Lan.diagram F H X))).hom =
+      colimit.ι (Lan.diagram F G X) j ≫
+      (iso.refl (colim.obj (Lan.diagram F G X))).hom ≫ colim.map (whisker_left (costructured_arrow.proj F X) i)
+
+      -/
+      simp only [Category.comp_id, Category.assoc]
 
   --    simp only [Functor.comp_map, colimit.ι_desc_assoc, Functor.mapIso_refl, evaluation_obj_map,
   --      whiskeringLeft_obj_map, Category.comp_id, lan_map_app, Category.assoc]
 
-  --    have bar : ((Lan.equiv F H (Lan.loc F H)) (𝟙 (Lan.loc F H))).app j.left =
-  --      colimit.ι (Lan.diagram F H (F.obj j.left))
-  --      (CostructuredArrow.mk (𝟙 (F.obj j.left))) := by simp
-  --    erw [bar]
+      have bar : ((Lan.equiv F H (Lan.loc F H)) (𝟙 (Lan.loc F H))).app j.left =
+        colimit.ι (Lan.diagram F H (F.obj j.left))
+        (CostructuredArrow.mk (𝟙 (F.obj j.left))) := sorry
+      -- **TODO** change in behaviour of `lan_map_app` constructed by `simps`
+      -- and I cannot fill in this sorry. See
+      -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/change.20in.20behaviour.20with.20.60simps.60/near/354350606
+      erw [bar]
       /-
       Lean 4 : ⊢ i.app j.left ≫
 
