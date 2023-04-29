@@ -4,12 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Felix Weilacher
 
 ! This file was ported from Lean 3 source module topology.perfect
-! leanprover-community/mathlib commit 49b7f94aab3a3bdca1f9f34c5d818afb253b3993
+! leanprover-community/mathlib commit 9b2b58d6b14b895b2f375108e765cb47de71aebd
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Topology.Separation
-import Mathlib.Topology.Bases
+import Mathlib.Topology.MetricSpace.Polish
 import Mathlib.Topology.MetricSpace.CantorScheme
 
 /-!
@@ -224,7 +223,7 @@ end Kernel
 
 end Basic
 
-section CantorInj
+section CantorInjMetric
 
 open Function ENNReal
 
@@ -320,4 +319,15 @@ theorem Perfect.exists_nat_bool_injection [CompleteSpace α] :
   simpa only [← Subtype.val_inj] using hdisj'.map_injective hxy
 #align perfect.exists_nat_bool_injection Perfect.exists_nat_bool_injection
 
-end CantorInj
+end CantorInjMetric
+
+/-- Any closed uncountable subset of a Polish space admits a continuous injection
+from the Cantor space `ℕ → Bool`.-/
+theorem IsClosed.exists_nat_bool_injection_of_not_countable {α : Type _} [TopologicalSpace α]
+    [PolishSpace α] {C : Set α} (hC : IsClosed C) (hunc : ¬C.Countable) :
+    ∃ f : (ℕ → Bool) → α, range f ⊆ C ∧ Continuous f ∧ Function.Injective f := by
+  letI := upgradePolishSpace α
+  obtain ⟨D, hD, Dnonempty, hDC⟩ := exists_perfect_nonempty_of_isClosed_of_not_countable hC hunc
+  obtain ⟨f, hfD, hf⟩ := hD.exists_nat_bool_injection Dnonempty
+  exact ⟨f, hfD.trans hDC, hf⟩
+#align is_closed.exists_nat_bool_injection_of_not_countable IsClosed.exists_nat_bool_injection_of_not_countable
