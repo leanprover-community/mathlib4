@@ -4,9 +4,9 @@ import Mathlib.Algebra.Order.Ring.Canonical
 import Mathlib.Data.Quot
 
 -- Enable this option for tracing:
-set_option trace.Tactic.librarySearch true
+-- set_option trace.Tactic.librarySearch true
 -- And this option to trace all candidate lemmas before application.
-set_option trace.Tactic.librarySearch.lemmas true
+-- set_option trace.Tactic.librarySearch.lemmas true
 
 -- Recall that `library_search` caches the discrimination tree on disk.
 -- If you are modifying the way that `library_search` indexes lemmas,

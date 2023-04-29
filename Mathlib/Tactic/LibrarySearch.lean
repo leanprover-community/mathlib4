@@ -153,7 +153,7 @@ def librarySearchCore (goal : MVarId) (lemmas : DiscrTree (Name × DeclMod) s)
   .squash do
     let ty ← goal.getType
     let lemmas := (← lemmas.getMatch ty).toList
-    logInfo m!"Candidate library_search lemmas:\n{lemmas}"
+    trace[Tactic.librarySearch.lemmas] m!"Candidate library_search lemmas:\n{lemmas}"
     return (ListM.ofList lemmas).filterMapM fun (lem, mod) =>
       try? <| librarySearchLemma lem mod required solveByElimDepth goal
 
