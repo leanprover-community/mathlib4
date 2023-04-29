@@ -54,7 +54,9 @@ open Topology
 
 /-- The type of profinite topological spaces. -/
 structure Profinite where
+  /-- The underlying compact Hausdorff space of a profinite space. -/
   toCompHaus : CompHaus
+  /-- A profinite space is totally disconnected. -/
   [IsTotallyDisconnected : TotallyDisconnectedSpace toCompHaus]
 #align Profinite Profinite
 
@@ -119,17 +121,22 @@ instance {X : Profinite} : T2Space ((forget Profinite).obj X) := by
   change T2Space X
   exact inferInstance
 
-@[simp]
-theorem coe_toCompHaus {X : Profinite} : (X.toCompHaus : Type _) = X :=
-  rfl
-#align Profinite.coe_to_CompHaus Profinite.coe_toCompHaus
+-- Porting note: removed, as it is a syntactic tautology.
+-- @[simp]
+-- theorem coe_toCompHaus {X : Profinite} : (X.toCompHaus : Type _) = (X : Type _) :=
+--   rfl
+-- #align Profinite.coe_to_CompHaus Profinite.coe_toCompHaus
 
-@[simp]
+-- Porting note: should no longer be needed as a simp lemma, as the LHS is
+-- `(forget Profinite).map (𝟙 X)` which will simplify directly.
+-- @[simp]
 theorem coe_id (X : Profinite) : (𝟙 X : X → X) = id :=
   rfl
 #align Profinite.coe_id Profinite.coe_id
 
-@[simp]
+-- Porting note: should no longer be needed as a simp lemma, as the LHS is
+-- `(forget Profinite).map (f ≫ g)` which will simplify directly.
+-- @[simp]
 theorem coe_comp {X Y Z : Profinite} (f : X ⟶ Y) (g : Y ⟶ Z) : (f ≫ g : X → Z) = g ∘ f :=
   rfl
 #align Profinite.coe_comp Profinite.coe_comp
