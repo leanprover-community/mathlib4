@@ -149,7 +149,7 @@ def empty : Ordnode α → Bool
 -- porting note: workaround for leanprover/lean4#2049
 section recursor_workarounds
 
-def Ordnode.recC {α : Type _} {motive : Ordnode α → Sort u_1} (nil : motive nil)
+def recC {α : Type _} {motive : Ordnode α → Sort u_1} (nil : motive nil)
   (node : (size : ℕ) → (l : Ordnode α) → (x : α) → (r : Ordnode α) →
     motive l → motive r → motive (node size l x r))
   (t : Ordnode α) : motive t := match t with
