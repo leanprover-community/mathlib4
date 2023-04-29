@@ -153,9 +153,9 @@ theorem Subalgebra.isSimpleOrder_of_finrank_prime (A) [Ring A] [IsDomain A] [Alg
       · exact
           Algebra.toSubmodule_eq_top.1 (eq_top_of_finrank_eq <| K.finrank_toSubmodule.trans h) }
 #align finite_dimensional.subalgebra.is_simple_order_of_finrank_prime FiniteDimensional.Subalgebra.isSimpleOrder_of_finrank_prime
+-- TODO: `IntermediateField` version
 
 set_option synthInstance.maxHeartbeats 60000 in
--- TODO: `IntermediateField` version
 -- TODO: generalize by removing [FiniteDimensional F K]
 -- V = ⊕F,
 -- (V →ₗ[F] K) = ((⊕F) →ₗ[F] K) = (⊕ (F →ₗ[F] K)) = ⊕K
