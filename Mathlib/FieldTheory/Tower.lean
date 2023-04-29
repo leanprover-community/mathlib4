@@ -61,6 +61,8 @@ $\operatorname{rank}_F(A) = \operatorname{rank}_F(K) * \operatorname{rank}_K(A)$
 theorem lift_rank_mul_lift_rank :
     Cardinal.lift.{w} (Module.rank F K) * Cardinal.lift.{v} (Module.rank K A) =
       Cardinal.lift.{v} (Module.rank F A) := by
+  -- porting note: `Module.Free.exists_basis` now has implicit arguments, but this is annoying
+  -- to fix as it is a projection.
   obtain ⟨_, b⟩ := Module.Free.exists_basis (R := F) (M := K)
   obtain ⟨_, c⟩ := Module.Free.exists_basis (R := K) (M := A)
   rw [← (Module.rank F K).lift_id, ← b.mk_eq_rank, ← (Module.rank K A).lift_id, ← c.mk_eq_rank, ←
