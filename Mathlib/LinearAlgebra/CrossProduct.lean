@@ -21,7 +21,7 @@ as a bilinear map.
 
 ## Main definitions
 
-* `cross_product` is the cross product of pairs of vectors in $R^3$.
+* `crossProduct` is the cross product of pairs of vectors in $R^3$.
 
 ## Main results
 
@@ -31,7 +31,7 @@ as a bilinear map.
 
 ## Notation
 
-The locale `matrix` gives the following notation:
+The locale `Matrix` gives the following notation:
 
 * `×₃` for the cross product
 
@@ -157,7 +157,7 @@ theorem leibniz_cross (u v w : Fin 3 → R) : u ×₃ (v ×₃ w) = u ×₃ v ×
 set_option synthInstance.etaExperiment true in
 /-- The three-dimensional vectors together with the operations + and ×₃ form a Lie ring.
     Note we do not make this an instance as a conflicting one already exists
-    via `lie_ring.of_associative_ring`. -/
+    via `LieRing.ofAssociativeRing`. -/
 def Cross.lieRing : LieRing (Fin 3 → R) :=
   { Pi.addCommGroup with
     bracket := fun u v => u ×₃ v
