@@ -8,9 +8,9 @@ Authors: Bhavik Mehta
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Limits.Shapes.Reflexive
-import Mathbin.CategoryTheory.Limits.Shapes.SplitCoequalizer
-import Mathbin.CategoryTheory.Monad.Algebra
+import Mathlib.CategoryTheory.Limits.Shapes.Reflexive
+import Mathlib.CategoryTheory.Limits.Shapes.SplitCoequalizer
+import Mathlib.CategoryTheory.Monad.Algebra
 
 /-!
 # Special coequalizers associated to a monad
@@ -51,16 +51,14 @@ def FreeCoequalizer.topMap : (Monad.free T).obj (T.obj X.A) ⟶ (Monad.free T).o
 
 /-- The bottom map in the coequalizer diagram we will construct. -/
 @[simps]
-def FreeCoequalizer.bottomMap : (Monad.free T).obj (T.obj X.A) ⟶ (Monad.free T).obj X.A
-    where
+def FreeCoequalizer.bottomMap : (Monad.free T).obj (T.obj X.A) ⟶ (Monad.free T).obj X.A where
   f := T.μ.app X.A
   h' := T.and_assoc X.A
 #align category_theory.monad.free_coequalizer.bottom_map CategoryTheory.Monad.FreeCoequalizer.bottomMap
 
 /-- The cofork map in the coequalizer diagram we will construct. -/
 @[simps]
-def FreeCoequalizer.π : (Monad.free T).obj X.A ⟶ X
-    where
+def FreeCoequalizer.π : (Monad.free T).obj X.A ⟶ X where
   f := X.a
   h' := X.and_assoc.symm
 #align category_theory.monad.free_coequalizer.π CategoryTheory.Monad.FreeCoequalizer.π
@@ -71,8 +69,7 @@ theorem FreeCoequalizer.condition :
   Algebra.Hom.ext _ _ X.and_assoc.symm
 #align category_theory.monad.free_coequalizer.condition CategoryTheory.Monad.FreeCoequalizer.condition
 
-instance : IsReflexivePair (FreeCoequalizer.topMap X) (FreeCoequalizer.bottomMap X) :=
-  by
+instance : IsReflexivePair (FreeCoequalizer.topMap X) (FreeCoequalizer.bottomMap X) := by
   apply is_reflexive_pair.mk' _ _ _
   apply (free T).map (T.η.app X.A)
   · ext
@@ -93,8 +90,7 @@ def beckAlgebraCofork : Cofork (FreeCoequalizer.topMap X) (FreeCoequalizer.botto
 free algebras.
 -/
 def beckAlgebraCoequalizer : IsColimit (beckAlgebraCofork X) :=
-  Cofork.IsColimit.mk' _ fun s =>
-    by
+  Cofork.IsColimit.mk' _ fun s => by
     have h₁ : (T : C ⥤ C).map X.a ≫ s.π.f = T.μ.app X.A ≫ s.π.f :=
       congr_arg monad.algebra.hom.f s.condition
     have h₂ : (T : C ⥤ C).map s.π.f ≫ s.X.a = T.μ.app X.A ≫ s.π.f := s.π.h
