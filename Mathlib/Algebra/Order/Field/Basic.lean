@@ -522,10 +522,12 @@ theorem half_lt_self_iff : a / 2 < a ↔ 0 < a := by
 #align half_lt_self_iff half_lt_self_iff
 
 alias half_le_self_iff ↔ _ half_le_self
-alias half_lt_self_iff ↔ _ half_lt_self
-alias half_lt_self ← div_two_lt_of_pos
 #align half_le_self half_le_self
+
+alias half_lt_self_iff ↔ _ half_lt_self
 #align half_lt_self half_lt_self
+
+alias half_lt_self ← div_two_lt_of_pos
 #align div_two_lt_of_pos div_two_lt_of_pos
 
 theorem one_half_lt_one : (1 / 2 : α) < 1 :=
