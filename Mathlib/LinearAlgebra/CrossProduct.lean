@@ -98,12 +98,16 @@ theorem cross_self (v : Fin 3 → R) : v ×₃ v = 0 := by
   exact ⟨sub_self _, sub_self _, sub_self _, zero_empty.symm⟩
 #align cross_self cross_self
 
+-- Porting note: Added this to make `norm_num` work better
+@[simp]
+private theorem vecCons2 (a : R) (v : Fin 2 → R) : vecCons a v 2 = v 1 := rfl
+
 set_option synthInstance.etaExperiment true in
 /-- The cross product of two vectors is perpendicular to the first vector. -/
 @[simp]
 theorem dot_self_cross (v w : Fin 3 → R) : v ⬝ᵥ v ×₃ w = 0 := by
-  change ![v 0, v 1, v 2] ⬝ᵥ v ×₃ w = 0
-  rw [cross_apply, vec3_dotProduct']
+  rw [cross_apply, vec3_dotProduct]
+  norm_num
   ring
 #align dot_self_cross dot_self_cross
 
@@ -117,9 +121,8 @@ theorem dot_cross_self (v w : Fin 3 → R) : w ⬝ᵥ v ×₃ w = 0 := by
 set_option synthInstance.etaExperiment true in
 /-- Cyclic permutations preserve the triple product. See also `triple_product_eq_det`. -/
 theorem triple_product_permutation (u v w : Fin 3 → R) : u ⬝ᵥ v ×₃ w = v ⬝ᵥ w ×₃ u := by
-  simp only [cross_apply, vec3_dotProduct, Matrix.head_cons, Matrix.cons_vec_bit0_eq_alt0,
-    Matrix.empty_vecAppend, Matrix.cons_val_one, Matrix.cons_vecAlt0, Matrix.cons_vecAppend,
-    Matrix.cons_val_zero]
+  simp_rw [cross_apply, vec3_dotProduct]
+  norm_num
   ring
 #align triple_product_permutation triple_product_permutation
 
@@ -127,10 +130,8 @@ set_option synthInstance.etaExperiment true in
 /-- The triple product of `u`, `v`, and `w` is equal to the determinant of the matrix
     with those vectors as its rows. -/
 theorem triple_product_eq_det (u v w : Fin 3 → R) : u ⬝ᵥ v ×₃ w = Matrix.det ![u, v, w] := by
-  simp only [vec3_dotProduct, cross_apply, Matrix.det_fin_three, Matrix.head_cons,
-    Matrix.cons_vec_bit0_eq_alt0, Matrix.empty_vecAlt0, Matrix.cons_vecAlt0, Matrix.vecHead_vecAlt0,
-    Matrix.vecAppend_apply_zero, Matrix.empty_vecAppend, Matrix.cons_vecAppend, Matrix.cons_val',
-    Matrix.cons_val_one, Matrix.cons_val_zero]
+  rw [vec3_dotProduct, cross_apply, det_fin_three]
+  norm_num
   ring
 #align triple_product_eq_det triple_product_eq_det
 
@@ -138,9 +139,9 @@ set_option synthInstance.etaExperiment true in
 /-- The scalar quadruple product identity, related to the Binet-Cauchy identity. -/
 theorem cross_dot_cross (u v w x : Fin 3 → R) :
     u ×₃ v ⬝ᵥ w ×₃ x = u ⬝ᵥ w * v ⬝ᵥ x - u ⬝ᵥ x * v ⬝ᵥ w := by
-  simp only [vec3_dotProduct, cross_apply, cons_vecAppend, cons_vec_bit0_eq_alt0, cons_val_one,
-    cons_vecAlt0, LinearMap.mk₂_apply, cons_val_zero, head_cons, empty_vecAppend]
-  ring_nf
+  simp_rw [cross_apply, vec3_dotProduct]
+  norm_num
+  ring
 #align cross_dot_cross cross_dot_cross
 
 end ProductsProperties
@@ -150,9 +151,8 @@ section LeibnizProperties
 set_option synthInstance.etaExperiment true in
 /-- The cross product satisfies the Leibniz lie property. -/
 theorem leibniz_cross (u v w : Fin 3 → R) : u ×₃ (v ×₃ w) = u ×₃ v ×₃ w + v ×₃ (u ×₃ w) := by
-  dsimp only [cross_apply]
-  ext i
-  fin_cases i <;> norm_num <;> ring
+  simp_rw [cross_apply, vec3_add]
+  apply vec3_eq <;> norm_num <;> ring
 #align leibniz_cross leibniz_cross
 
 set_option synthInstance.etaExperiment true in
