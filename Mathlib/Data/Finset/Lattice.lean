@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 
 ! This file was ported from Lean 3 source module data.finset.lattice
-! leanprover-community/mathlib commit a968611b6a772cf7bdf61146e6d62fc882c92372
+! leanprover-community/mathlib commit c813ed7de0f5115f956239124e9b30f3a621966f
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -1867,11 +1867,6 @@ theorem infᵢ_insert (a : α) (s : Finset α) (t : α → β) :
 theorem supᵢ_finset_image {f : γ → α} {g : α → β} {s : Finset γ} :
     (⨆ x ∈ s.image f, g x) = ⨆ y ∈ s, g (f y) := by rw [← supᵢ_coe, coe_image, supᵢ_image, supᵢ_coe]
 #align finset.supr_finset_image Finset.supᵢ_finset_image
-
-theorem sup_finset_image {β γ : Type _} [SemilatticeSup β] [OrderBot β] (f : γ → α) (g : α → β)
-    (s : Finset γ) : (s.image f).sup g = s.sup (g ∘ f) := by
-  classical induction' s using Finset.induction_on with a s' _ ih <;> simp [*]
-#align finset.sup_finset_image Finset.sup_finset_image
 
 theorem infᵢ_finset_image {f : γ → α} {g : α → β} {s : Finset γ} :
     (⨅ x ∈ s.image f, g x) = ⨅ y ∈ s, g (f y) := by rw [← infᵢ_coe, coe_image, infᵢ_image, infᵢ_coe]
