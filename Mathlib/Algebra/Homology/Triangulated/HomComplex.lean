@@ -8,6 +8,7 @@ import Mathlib.Algebra.Homology.Homotopy
 import Mathlib.Algebra.Homology.Additive
 import Mathlib.Data.Int.Parity
 import Mathlib.Tactic.Linarith
+import Mathlib.Algebra.Category.GroupCat.Basic
 
 --import algebra.homology.homotopy
 --import algebra.homology.additive
@@ -471,56 +472,51 @@ lemma δδ (n₀ n₁ n₂ : ℤ) (z : Cochain F G n₀) : δ n₁ n₂ (δ n₀
     comp_neg, comp_zsmul, HomologicalComplex.d_comp_d_assoc, zero_comp, zsmul_zero,
     neg_zero, add_zero, zsmul_comp, add_left_neg]
 
+lemma δ_comp {n₁ n₂ n₁₂ : ℤ} (z₁ : Cochain F G n₁) (z₂ : Cochain G K n₂) (h : n₁ + n₂ = n₁₂)
+    (m₁ m₂ m₁₂ : ℤ) (h₁₂ : n₁₂ + 1 = m₁₂) (h₁ : n₁ + 1 = m₁) (h₂ : n₂ + 1 = m₂) :
+  δ n₁₂ m₁₂ (z₁.comp z₂ h) = z₁.comp (δ n₂ m₂ z₂) (by rw [← h₁₂, ← h₂, ← h, add_assoc]) +
+    ε n₂ • (δ n₁ m₁ z₁).comp z₂ (by rw [← h₁₂, ← h₁, ← h, add_assoc, add_comm 1, add_assoc]) := by
+  subst h₁₂ h₁ h₂ h
+  ext ⟨p, q, hpq⟩
+  dsimp
+  rw [z₁.comp_v _ (add_assoc n₁ n₂ 1).symm p _ q rfl (by linarith),
+    Cochain.comp_v _ _ (show n₁ + 1 + n₂ = n₁ + n₂ + 1 by linarith) p (p+n₁+1) q (by linarith) (by linarith),
+    δ_v (n₁ + n₂) _ rfl (z₁.comp z₂ rfl) p q hpq (p + n₁ + n₂) _ (by linarith) rfl,
+    z₁.comp_v z₂ rfl p _ _ rfl rfl,
+    z₁.comp_v z₂ rfl (p+1) (p+n₁+1) q (by linarith) (by linarith),
+    δ_v n₂ (n₂+1) rfl z₂ (p+n₁) q (by linarith) (p+n₁+n₂) _ (by linarith) rfl]
+  rw [δ_v n₁ (n₁+1) rfl z₁ p (p+n₁+1) (by linarith) (p+n₁) _ (by linarith) rfl]
+  simp only [assoc, comp_add, add_comp, ε_add, ε_1, mul_neg, mul_one, zsmul_add, neg_zsmul,
+    neg_comp, zsmul_neg, zsmul_comp, smul_smul, comp_neg, comp_zsmul, mul_comm (ε n₁) (ε n₂)]
+  abel
+
+@[simp]
+lemma δ_zero_cochain_comp {n₂ : ℤ} (z₁ : Cochain F G 0) (z₂ : Cochain G K n₂)
+    (m₂ : ℤ) (h₂ : n₂+1 = m₂) :
+    δ n₂ m₂ (z₁.comp z₂ (zero_add n₂)) =
+      z₁.comp (δ n₂ m₂ z₂) (by rw [zero_add]) + ε n₂ • (δ 0 1 z₁).comp z₂ (by rw [add_comm, h₂]) :=
+  δ_comp z₁ z₂ (zero_add n₂) 1 m₂ m₂ h₂ (zero_add 1) h₂
+
+@[simp]
+lemma δ_comp_zero_cochain {n₁ : ℤ} (z₁ : Cochain F G n₁) (z₂ : Cochain G K 0)
+    (m₁ : ℤ) (h₁ : n₁ + 1 = m₁) : δ n₁ m₁ (z₁.comp z₂ (add_zero n₁)) =
+      z₁.comp (δ 0 1 z₂) h₁ + (δ n₁ m₁ z₁).comp z₂ (add_zero m₁) := by
+  simp only [δ_comp z₁ z₂ (add_zero n₁) m₁ 1 m₁ h₁ h₁ (zero_add 1), ε_0, one_zsmul]
+
+end HomComplex
+
+variable (F G)
+
+open HomComplex
+
 #exit
 
-lemma δ_comp {n₁ n₂ n₁₂ : ℤ} (z₁ : cochain F G n₁) (z₂ : cochain G K n₂) (h : n₁₂ = n₁ + n₂)
-  (m₁ m₂ m₁₂ : ℤ) (h₁₂ : n₁₂+1 = m₁₂) (h₁ : n₁+1 = m₁) (h₂ : n₂+1 = m₂) :
-δ n₁₂ m₁₂ (cochain.comp z₁ z₂ h) = cochain.comp z₁ (δ n₂ m₂ z₂) (by linarith) + ε n₂ • cochain.comp (δ n₁ m₁ z₁) z₂ (by linarith) :=
-begin
-  substs h₁₂ h₁ h₂,
-  ext,
-  have eq : ε (n₁₂ + 1) = ε n₂ * ε (n₁+1),
-  { rw ← ε_add, congr' 1, linarith, },
-  simp only [cochain.add_v, cochain.zsmul_v,
-    cochain.comp_v z₁ (δ n₂ (n₂+1) z₂) (show n₁₂+1=n₁+(n₂+1), by linarith) p _ q rfl (by linarith),
-    cochain.comp_v (δ n₁ (n₁+1) z₁) z₂ (show n₁₂+1=_, by linarith) p (p+n₁+1) q (by linarith) (by linarith),
-    cochain.comp_v z₁ z₂ h p (p+n₁) (p+n₁₂) rfl (by linarith),
-    cochain.comp_v z₁ z₂ h (p+1) (p+n₁+1) q (by linarith) (by linarith),
-    δ_v n₁₂ _ rfl (cochain.comp z₁ z₂ h) p q hpq (p+n₁₂) _ (by linarith) rfl,
-    δ_v n₁ (n₁+1) rfl z₁ p (p+n₁+1) (by linarith) (p+n₁) (p+1) (by linarith) rfl,
-    δ_v n₂ (n₂+1) rfl z₂ (p+n₁) q (by linarith) (p+n₁₂) (p+n₁+1) (by linarith) rfl,
-    assoc, comp_add, comp_zsmul, zsmul_add, add_comp, zsmul_comp, smul_smul, eq,
-    ε_add n₂ 1, ε_1, mul_neg, mul_one, neg_zsmul, comp_neg, ← add_assoc],
-  suffices : ∀ (a b c : F.X p ⟶ K.X q), a+b=a+(-c)+c+b,
-  { apply this, },
-  intros a b c,
-  abel,
-end
-
-@[simp]
-lemma δ_comp_of_first_is_zero_cochain {n₂ : ℤ} (z₁ : cochain F G 0) (z₂ : cochain G K n₂)
-  (m₂ : ℤ) (h₂ : n₂+1 = m₂) :
-δ n₂ m₂ (cochain.comp z₁ z₂ (zero_add n₂).symm) =
-  cochain.comp z₁ (δ n₂ m₂ z₂) (by linarith) + ε n₂ • cochain.comp (δ 0 1 z₁) z₂ (by linarith) :=
-δ_comp z₁ z₂ (zero_add n₂).symm 1 m₂ m₂ h₂ (zero_add 1) h₂
-
-@[simp]
-lemma δ_comp_of_second_is_zero_cochain {n₁ : ℤ} (z₁ : cochain F G n₁) (z₂ : cochain G K 0)
-  (m₁ : ℤ) (h₁ : n₁+1 = m₁) : δ n₁ m₁ (cochain.comp z₁ z₂ (add_zero n₁).symm) =
-  cochain.comp z₁ (δ 0 1 z₂) h₁.symm + cochain.comp (δ n₁ m₁ z₁) z₂ (add_zero m₁).symm :=
-by simp only [δ_comp z₁ z₂ (add_zero n₁).symm m₁ 1 m₁ h₁ h₁ (zero_add 1), ε_0, one_zsmul]
-
-end hom_complex
-
-variables (F G)
-
-open hom_complex
-
-def hom_complex : cochain_complex AddCommGroup ℤ :=
-{ X := λ i, AddCommGroup.of (cochain F G i),
-  d := λ i j, AddCommGroup.of_hom (δ_hom F G i j),
-  shape' := λ i j hij, by { ext1 z, exact δ_shape i j hij z, },
-  d_comp_d' := λ i j k hij hjk, by { ext1 f, apply δδ, } }
+def HomComplex : CochainComplex AddCommGroupCat ℤ where
+  X i := AddCommGroup.of (Cochain F G i)
+  d i j := AddCommGroup.of_hom (δ_hom F G i j)
+  shape i j hij := by
+    sorry --λ i j hij, by { ext1 z, exact δ_shape i j hij z, },
+  d_comp_d := sorry --λ i j k hij hjk, by { ext1 f, apply δδ, } }
 
 namespace hom_complex
 
