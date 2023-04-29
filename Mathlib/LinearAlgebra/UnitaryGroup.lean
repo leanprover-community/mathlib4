@@ -16,19 +16,19 @@ import Mathlib.Algebra.Star.Unitary
 /-!
 # The Unitary Group
 
-This file defines elements of the unitary group `unitary_group n α`, where `α` is a `star_ring`.
+This file defines elements of the unitary group `unitary_group n α`, where `α` is a `StarRing`.
 This consists of all `n` by `n` matrices with entries in `α` such that the star-transpose is its
 inverse. In addition, we define the group structure on `unitary_group n α`, and the embedding into
 the general linear group `general_linear_group α (n → α)`.
 
-We also define the orthogonal group `orthogonal_group n β`, where `β` is a `comm_ring`.
+We also define the orthogonal group `orthogonal_group n β`, where `β` is a `CommRing`.
 
 ## Main Definitions
 
- * `matrix.unitary_group` is the type of matrices where the star-transpose is the inverse
+ * `Matrix.unitaryGroup` is the type of matrices where the star-transpose is the inverse
  * `matrix.unitary_group.group` is the group structure (under multiplication)
- * `matrix.unitary_group.embedding_GL` is the embedding `unitary_group n α → GLₙ(α)`
- * `matrix.orthogonal_group` is the type of matrices where the transpose is the inverse
+ * `Matrix.UnitaryGroup.embeddingGL` is the embedding `unitary_group n α → GLₙ(α)`
+ * `Matrix.orthogonalGroup` is the type of matrices where the transpose is the inverse
 
 ## References
 
@@ -52,7 +52,7 @@ section
 variable (n : Type u) [DecidableEq n] [Fintype n]
 variable (α : Type v) [CommRing α] [StarRing α]
 
-/-- `matrix.unitary_group n` is the group of `n` by `n` matrices where the star-transpose is the
+/-- `Matrix.unitaryGroup n` is the group of `n` by `n` matrices where the star-transpose is the
 inverse.
 -/
 abbrev unitaryGroup :=
