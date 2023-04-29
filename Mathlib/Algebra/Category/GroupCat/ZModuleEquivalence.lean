@@ -36,7 +36,7 @@ instance forget₂AddCommGroupFull : Full (forget₂ (ModuleCat ℤ) AddCommGrou
     -- instances it expects.
     f := @LinearMap.mk _ _ _ _ _ _ _ _ _ A.isModule B.isModule
         { toFun := f,
-          map_add' := AddMonoidHom.map_add (show AddMonoidHom A.carrier B.carrier from f) }
+          map_add' := AddMonoidHom.map_add (show A.carrier →+ B.carrier from f) }
         (fun n x => by
           convert AddMonoidHom.map_zsmul (show A.carrier →+ B.carrier from f) x n <;>
             ext <;> apply int_smul_eq_zsmul)
