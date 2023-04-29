@@ -8,7 +8,7 @@ Authors: Johan Commelin
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Order.Category.LatCat
+import Mathlib.Order.Category.Lat
 
 /-!
 # Category of linear orders
@@ -58,12 +58,12 @@ instance : Inhabited LinOrd :=
 instance (α : LinOrd) : LinearOrder α :=
   α.str
 
-instance hasForgetToLatCat : HasForget₂ LinOrd LatCat where
+instance hasForgetToLat : HasForget₂ LinOrd Lat where
   forget₂ :=
-    { obj := fun X => LatCat.of X
+    { obj := fun X => Lat.of X
       map := fun {X Y} (f : OrderHom _ _) => OrderHomClass.toLatticeHom X Y f }
 set_option linter.uppercaseLean3 false in
-#align LinOrd.has_forget_to_Lat LinOrd.hasForgetToLatCat
+#align LinOrd.has_forget_to_Lat LinOrd.hasForgetToLat
 
 /-- Constructs an equivalence between linear orders from an order isomorphism between them. -/
 @[simps]
@@ -99,8 +99,8 @@ set_option linter.uppercaseLean3 false in
 
 end LinOrd
 
-theorem linOrdCat_dual_comp_forget_to_latCat :
-    LinOrd.dual ⋙ forget₂ LinOrd LatCat = forget₂ LinOrd LatCat ⋙ LatCat.dual :=
+theorem linOrdCat_dual_comp_forget_to_Lat :
+    LinOrd.dual ⋙ forget₂ LinOrd Lat = forget₂ LinOrd Lat ⋙ Lat.dual :=
   rfl
 set_option linter.uppercaseLean3 false in
-#align LinOrd_dual_comp_forget_to_Lat linOrdCat_dual_comp_forget_to_latCat
+#align LinOrd_dual_comp_forget_to_Lat linOrdCat_dual_comp_forget_to_Lat

@@ -9,7 +9,7 @@ Authors: Joël Riou
 ! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.MorphismProperty
-import Mathlib.CategoryTheory.Category.QuivCat
+import Mathlib.CategoryTheory.Category.Quiv
 
 /-!
 
@@ -153,7 +153,7 @@ variable {W} (G : C ⥤ D) (hG : W.IsInvertedBy G)
 /-- The lifting of a functor to the path category of `LocQuiver W` -/
 @[simps!]
 def liftToPathCategory : Paths (LocQuiver W) ⥤ D :=
-  QuivCat.lift
+  Quiv.lift
     { obj := fun X => G.obj X.obj
       map := by
         intros X Y

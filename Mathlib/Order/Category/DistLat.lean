@@ -8,7 +8,7 @@ Authors: Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Order.Category.LatCat
+import Mathlib.Order.Category.Lat
 
 /-!
 # The category of distributive lattices
@@ -61,9 +61,9 @@ deriving instance LargeCategory for DistLat
 instance : ConcreteCategory DistLat :=
   BundledHom.concreteCategory _
 
-instance hasForgetToLatCat : HasForget₂ DistLat LatCat :=
+instance hasForgetToLat : HasForget₂ DistLat Lat :=
   BundledHom.forget₂ _ _
-#align DistLat.has_forget_to_Lat DistLat.hasForgetToLatCat
+#align DistLat.has_forget_to_Lat DistLat.hasForgetToLat
 
 /-- Constructs an equivalence between distributive lattices from an order isomorphism between them.
 -/
@@ -97,7 +97,7 @@ def dualEquiv : DistLat ≌ DistLat where
 
 end DistLat
 
-theorem distLatCat_dual_comp_forget_to_latCat :
-    DistLat.dual ⋙ forget₂ DistLat LatCat = forget₂ DistLat LatCat ⋙ LatCat.dual :=
+theorem distLat_dual_comp_forget_to_Lat :
+    DistLat.dual ⋙ forget₂ DistLat Lat = forget₂ DistLat Lat ⋙ Lat.dual :=
   rfl
-#align DistLat_dual_comp_forget_to_Lat distLatCat_dual_comp_forget_to_latCat
+#align DistLat_dual_comp_forget_to_Lat distLat_dual_comp_forget_to_Lat

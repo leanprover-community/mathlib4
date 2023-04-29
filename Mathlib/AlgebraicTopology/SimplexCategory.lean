@@ -802,7 +802,7 @@ to the category attached to the ordered set `{0, 1, ..., n}` -/
 @[simps! obj map]
 def toCat : SimplexCategory ⥤ Cat.{0} :=
   SimplexCategory.skeletalFunctor ⋙ forget₂ NonemptyFinLinOrd LinOrd ⋙
-      forget₂ LinOrd LatCat ⋙ forget₂ LatCat PartOrd ⋙
+      forget₂ LinOrd Lat ⋙ forget₂ Lat PartOrd ⋙
       forget₂ PartOrd Preord ⋙ preordCatToCat
 set_option linter.uppercaseLean3 false in
 #align simplex_category.to_Cat SimplexCategory.toCat

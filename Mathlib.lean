@@ -430,7 +430,7 @@ import Mathlib.CategoryTheory.Category.KleisliCat
 import Mathlib.CategoryTheory.Category.Pairwise
 import Mathlib.CategoryTheory.Category.Pointed
 import Mathlib.CategoryTheory.Category.Preorder
-import Mathlib.CategoryTheory.Category.QuivCat
+import Mathlib.CategoryTheory.Category.Quiv
 import Mathlib.CategoryTheory.Category.RelCat
 import Mathlib.CategoryTheory.Category.TwoP
 import Mathlib.CategoryTheory.Category.ULift
@@ -1535,7 +1535,7 @@ import Mathlib.Order.BoundedOrder
 import Mathlib.Order.Bounds.Basic
 import Mathlib.Order.Bounds.OrderIso
 import Mathlib.Order.Category.DistLat
-import Mathlib.Order.Category.LatCat
+import Mathlib.Order.Category.Lat
 import Mathlib.Order.Category.LinOrd
 import Mathlib.Order.Category.NonemptyFinLinOrd
 import Mathlib.Order.Category.PartOrd
