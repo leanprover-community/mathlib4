@@ -8,10 +8,10 @@ Authors: Kenny Lau
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Nat.Prime
-import Mathbin.RingTheory.AlgebraTower
-import Mathbin.LinearAlgebra.FiniteDimensional
-import Mathbin.LinearAlgebra.FreeModule.Finite.Matrix
+import Mathlib.Data.Nat.Prime
+import Mathlib.RingTheory.AlgebraTower
+import Mathlib.LinearAlgebra.FiniteDimensional
+import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 
 /-!
 # Tower of field extensions
@@ -58,8 +58,7 @@ variable [StrongRankCondition F] [StrongRankCondition K] [Module.Free F K] [Modu
 $\operatorname{rank}_F(A) = \operatorname{rank}_F(K) * \operatorname{rank}_K(A)$. -/
 theorem lift_rank_mul_lift_rank :
     Cardinal.lift.{w} (Module.rank F K) * Cardinal.lift.{v} (Module.rank K A) =
-      Cardinal.lift.{v} (Module.rank F A) :=
-  by
+      Cardinal.lift.{v} (Module.rank F A) := by
   obtain ⟨_, b⟩ := Module.Free.exists_basis F K
   obtain ⟨_, c⟩ := Module.Free.exists_basis K A
   rw [← (Module.rank F K).lift_id, ← b.mk_eq_rank, ← (Module.rank K A).lift_id, ← c.mk_eq_rank, ←
@@ -81,8 +80,7 @@ theorem rank_mul_rank (F : Type u) (K A : Type v) [CommRing F] [Ring K] [AddComm
 /-- Tower law: if `A` is a `K`-module and `K` is an extension of `F` then
 $\operatorname{rank}_F(A) = \operatorname{rank}_F(K) * \operatorname{rank}_K(A)$. -/
 theorem FiniteDimensional.finrank_mul_finrank' [Nontrivial K] [Module.Finite F K]
-    [Module.Finite K A] : finrank F K * finrank K A = finrank F A :=
-  by
+    [Module.Finite K A] : finrank F K * finrank K A = finrank F A := by
   letI := nontrivial_of_invariantBasisNumber F
   let b := Module.Free.chooseBasis F K
   let c := Module.Free.chooseBasis K A
@@ -120,8 +118,7 @@ theorem left (K L : Type _) [Field K] [Algebra F K] [Ring L] [Nontrivial L] [Alg
 theorem right [hf : FiniteDimensional F A] : FiniteDimensional K A :=
   let ⟨⟨b, hb⟩⟩ := hf
   ⟨⟨b,
-      Submodule.restrictScalars_injective F _ _ <|
-        by
+      Submodule.restrictScalars_injective F _ _ <| by
         rw [Submodule.restrictScalars_top, eq_top_iff, ← hb, Submodule.span_le]
         exact Submodule.subset_span⟩⟩
 #align finite_dimensional.right FiniteDimensional.right
@@ -130,8 +127,7 @@ theorem right [hf : FiniteDimensional F A] : FiniteDimensional K A :=
 `dim_F(A) = dim_F(K) * dim_K(A)`.
 
 This is `finite_dimensional.finrank_mul_finrank'` with one fewer finiteness assumption. -/
-theorem finrank_mul_finrank [FiniteDimensional F K] : finrank F K * finrank K A = finrank F A :=
-  by
+theorem finrank_mul_finrank [FiniteDimensional F K] : finrank F K * finrank K A = finrank F A := by
   by_cases hA : FiniteDimensional K A
   · skip
     rw [finrank_mul_finrank']
@@ -144,8 +140,7 @@ theorem Subalgebra.isSimpleOrder_of_finrank_prime (A) [Ring A] [IsDomain A] [Alg
   { to_nontrivial :=
       ⟨⟨⊥, ⊤, fun he =>
           Nat.not_prime_one ((Subalgebra.bot_eq_top_iff_finrank_eq_one.1 he).subst hp)⟩⟩
-    eq_bot_or_eq_top := fun K =>
-      by
+    eq_bot_or_eq_top := fun K => by
       haveI := finite_dimensional_of_finrank hp.pos
       letI := divisionRingOfFiniteDimensional F K
       refine' (hp.eq_one_or_self_of_dvd _ ⟨_, (finrank_mul_finrank F K A).symm⟩).imp _ fun h => _
