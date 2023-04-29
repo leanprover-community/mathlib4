@@ -8,7 +8,7 @@ Authors: Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Order.Category.PartOrdCat
+import Mathlib.Order.Category.PartOrd
 import Mathlib.Order.Hom.Lattice
 
 /-!
@@ -69,7 +69,7 @@ instance : LargeCategory.{u} LatCat :=
 instance : ConcreteCategory LatCat :=
   BundledHom.concreteCategory LatticeHom
 
-instance hasForgetToPartOrd : HasForget₂ LatCat PartOrdCat where
+instance hasForgetToPartOrd : HasForget₂ LatCat PartOrd where
   forget₂ :=
     { obj := fun X => Bundled.mk X inferInstance
       map := fun {X Y} (f : LatticeHom X Y) => (f : OrderHom X Y) }
@@ -107,6 +107,6 @@ def dualEquiv : LatCat ≌ LatCat where
 end LatCat
 
 theorem latCat_dual_comp_forget_to_partOrdCat :
-    LatCat.dual ⋙ forget₂ LatCat PartOrdCat = forget₂ LatCat PartOrdCat ⋙ PartOrdCat.dual :=
+    LatCat.dual ⋙ forget₂ LatCat PartOrd = forget₂ LatCat PartOrd ⋙ PartOrd.dual :=
   rfl
 #align Lat_dual_comp_forget_to_PartOrd latCat_dual_comp_forget_to_partOrdCat
