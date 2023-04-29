@@ -8,9 +8,9 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Linear.Basic
-import Mathbin.CategoryTheory.Preadditive.Biproducts
-import Mathbin.LinearAlgebra.Matrix.InvariantBasisNumber
+import Mathlib.CategoryTheory.Linear.Basic
+import Mathlib.CategoryTheory.Preadditive.Biproducts
+import Mathlib.LinearAlgebra.Matrix.InvariantBasisNumber
 
 /-!
 # Hom orthogonal families.
@@ -80,8 +80,7 @@ and matrix entries in `i`-th block living in the endomorphisms of `s i`. -/
 noncomputable def matrixDecomposition (o : HomOrthogonal s) {α β : Type} [Fintype α] [Fintype β]
     {f : α → ι} {g : β → ι} :
     ((⨁ fun a => s (f a)) ⟶ ⨁ fun b => s (g b)) ≃
-      ∀ i : ι, Matrix (g ⁻¹' {i}) (f ⁻¹' {i}) (End (s i))
-    where
+      ∀ i : ι, Matrix (g ⁻¹' {i}) (f ⁻¹' {i}) (End (s i)) where
   toFun z i j k :=
     eqToHom
         (by
@@ -130,8 +129,7 @@ noncomputable def matrixDecompositionAddEquiv (o : HomOrthogonal s) {α β : Typ
 
 @[simp]
 theorem matrixDecomposition_id (o : HomOrthogonal s) {α : Type} [Fintype α] {f : α → ι} (i : ι) :
-    o.matrixDecomposition (𝟙 (⨁ fun a => s (f a))) i = 1 :=
-  by
+    o.matrixDecomposition (𝟙 (⨁ fun a => s (f a))) i = 1 := by
   ext (⟨b, ⟨⟩⟩⟨a⟩)
   simp only [Set.mem_preimage, Set.mem_singleton_iff] at j_property
   simp only [category.comp_id, category.id_comp, category.assoc, End.one_def, eq_to_hom_refl,
@@ -146,8 +144,7 @@ theorem matrixDecomposition_id (o : HomOrthogonal s) {α : Type} [Fintype α] {f
 theorem matrixDecomposition_comp (o : HomOrthogonal s) {α β γ : Type} [Fintype α] [Fintype β]
     [Fintype γ] {f : α → ι} {g : β → ι} {h : γ → ι} (z : (⨁ fun a => s (f a)) ⟶ ⨁ fun b => s (g b))
     (w : (⨁ fun b => s (g b)) ⟶ ⨁ fun c => s (h c)) (i : ι) :
-    o.matrixDecomposition (z ≫ w) i = o.matrixDecomposition w i ⬝ o.matrixDecomposition z i :=
-  by
+    o.matrixDecomposition (z ≫ w) i = o.matrixDecomposition w i ⬝ o.matrixDecomposition z i := by
   ext (⟨c, ⟨⟩⟩⟨a⟩)
   simp only [Set.mem_preimage, Set.mem_singleton_iff] at j_property
   simp only [Matrix.mul_apply, limits.biproduct.components,
