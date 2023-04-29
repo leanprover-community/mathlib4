@@ -103,10 +103,13 @@ noncomputable def matrixDecomposition (o : HomOrthogonal s) {α β : Type} [Fint
     · symm
       apply o.eq_zero h
   right_inv z := by
-    ext (i⟨j, w⟩⟨k, ⟨⟩⟩)
+    ext (i ⟨j, w⟩ ⟨k, ⟨⟩⟩)
     simp only [eqToHom_refl, biproduct.matrix_components, Category.id_comp]
     simp only [Set.mem_preimage, Set.mem_singleton_iff]
-    simp [w.symm]; rfl
+    split_ifs with h
+    · simp
+    · exfalso
+      exact h w.symm
 #align category_theory.hom_orthogonal.matrix_decomposition CategoryTheory.HomOrthogonal.matrixDecomposition
 
 end
