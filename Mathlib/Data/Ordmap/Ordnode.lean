@@ -67,7 +67,6 @@ ordered map, ordered set, data structure
 -/
 
 
-universe u
 
 /- ./././Mathport/Syntax/Translate/Command.lean:355:30: infer kinds are unsupported in Lean 4:
   nil {} -/
@@ -81,7 +80,7 @@ inductive Ordnode (α : Type u) : Type u
 
 namespace Ordnode
 
-variable {α : Type u}
+variable {α : Type _}
 
 instance : EmptyCollection (Ordnode α) :=
   ⟨nil⟩
@@ -146,6 +145,26 @@ def empty : Ordnode α → Bool
   | nil => true
   | node _ _ _ _ => false
 #align ordnode.empty Ordnode.empty
+
+-- porting note: workaround for leanprover/lean4#2049
+section recursor_workarounds
+
+def Ordnode.recC {α : Type _} {motive : Ordnode α → Sort u_1} (nil : motive nil)
+  (node : (size : ℕ) → (l : Ordnode α) → (x : α) → (r : Ordnode α) → motive l → motive r → motive (node size l x r))
+  (t : Ordnode α) : motive t := match t with
+| Ordnode.nil => nil
+| Ordnode.node sz l x r => (node sz l x r) (recC nil node l) (recC nil node r)
+
+@[csimp]
+lemma rec_eq_reqC: @Ordnode.rec = @Ordnode.recC := by
+  ext α motive nil node t
+  induction t with
+  | nil => rfl
+  | node sz l x r ihl ihr =>
+    rw [Ordnode.recC, ←ihl, ←ihr]
+
+end recursor_workarounds
+
 
 /-- **Internal use only**, because it violates the BST property on the original order.
 
@@ -1024,8 +1043,7 @@ Note that the element returned by `f` must be equivalent to `x`.
                         = {a, 1, 2, 3}  if f none = some a
     alter f 1 {1, 2, 3} = {2, 3}     if f 1 = none
                         = {a, 2, 3}  if f 1 = some a -/
---porting notes: requires `noncomputable`
-noncomputable def alter (f : Option α → Option α) (x : α) : Ordnode α → Ordnode α
+def alter (f : Option α → Option α) (x : α) : Ordnode α → Ordnode α
   | nil => Option.recOn (f none) nil Ordnode.singleton
   | _t@(node sz l y r) =>
     match cmpLE x y with
