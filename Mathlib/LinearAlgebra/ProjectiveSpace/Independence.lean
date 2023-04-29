@@ -36,14 +36,15 @@ ambient vector space. Similarly for the definition of dependence.
 
 variable {ι K V : Type _} [Field K] [AddCommGroup V] [Module K V] {f : ι → ℙ K V}
 
+variable [dec_ι : DecidableEq ι] -- Porting note: not needed in Lean 3
+
 namespace Projectivization
 
 /-- A linearly independent family of nonzero vectors gives an independent family of points
 in projective space. -/
 inductive Independent : (ι → ℙ K V) → Prop
-  |
-  mk (f : ι → V) (hf : ∀ i : ι, f i ≠ 0) (hl : LinearIndependent K f) :
-    independent fun i => mk K (f i) (hf i)
+| mk (f : ι → V) (hf : ∀ i : ι, f i ≠ 0) (hl : LinearIndependent K f) :
+  Independent fun i => mk K (f i) (hf i)
 #align projectivization.independent Projectivization.Independent
 
 /-- A family of points in a projective space is independent if and only if the representative
@@ -55,9 +56,8 @@ theorem independent_iff : Independent f ↔ LinearIndependent K (Projectivizatio
     convert hh.units_smul a
     ext i
     exact (ha i).symm
-  · convert independent.mk _ _ h
-    · ext
-      simp only [mk_rep]
+  · convert Independent.mk _ _ h
+    · simp only [mk_rep, Function.comp_apply]
     · intro i
       apply rep_nonzero
 #align projectivization.independent_iff Projectivization.independent_iff
@@ -65,12 +65,13 @@ theorem independent_iff : Independent f ↔ LinearIndependent K (Projectivizatio
 /-- A family of points in projective space is independent if and only if the family of
 submodules which the points determine is independent in the lattice-theoretic sense. -/
 theorem independent_iff_completeLattice_independent :
-    Independent f ↔ CompleteLattice.Independent fun i => (f i).Submodule := by
+    Independent f ↔ CompleteLattice.Independent fun i => (f i).submodule := by
   refine' ⟨_, fun h => _⟩
   · rintro ⟨f, hf, hi⟩
-    simpa [submodule_mk, CompleteLattice.independent_iff_linearIndependent_of_ne_zero hf]
+    simp only [submodule_mk]
+    exact (CompleteLattice.independent_iff_linearIndependent_of_ne_zero (R := K) hf).mpr hi
   · rw [independent_iff]
-    refine' h.linear_independent (Projectivization.submodule ∘ f) (fun i => _) fun i => _
+    refine' h.linearIndependent (Projectivization.submodule ∘ f) (fun i => _) fun i => _
     · simpa only [Function.comp_apply, submodule_eq] using Submodule.mem_span_singleton_self _
     · exact rep_nonzero (f i)
 #align projectivization.independent_iff_complete_lattice_independent Projectivization.independent_iff_completeLattice_independent
@@ -78,9 +79,8 @@ theorem independent_iff_completeLattice_independent :
 /-- A linearly dependent family of nonzero vectors gives a dependent family of points
 in projective space. -/
 inductive Dependent : (ι → ℙ K V) → Prop
-  |
-  mk (f : ι → V) (hf : ∀ i : ι, f i ≠ 0) (h : ¬LinearIndependent K f) :
-    dependent fun i => mk K (f i) (hf i)
+| mk (f : ι → V) (hf : ∀ i : ι, f i ≠ 0) (h : ¬LinearIndependent K f) :
+  Dependent fun i => mk K (f i) (hf i)
 #align projectivization.dependent Projectivization.Dependent
 
 /-- A family of points in a projective space is dependent if and only if their
@@ -93,9 +93,8 @@ theorem dependent_iff : Dependent f ↔ ¬LinearIndependent K (Projectivization.
     convert hh1.units_smul a⁻¹
     ext i
     simp only [← ha, inv_smul_smul, Pi.smul_apply', Pi.inv_apply, Function.comp_apply]
-  · convert dependent.mk _ _ h
-    · ext i
-      simp only [mk_rep]
+  · convert Dependent.mk _ _ h
+    · simp only [mk_rep, Function.comp_apply]
     · exact fun i => rep_nonzero (f i)
 #align projectivization.dependent_iff Projectivization.dependent_iff
 
@@ -112,10 +111,10 @@ theorem independent_iff_not_dependent : Independent f ↔ ¬Dependent f := by
 /-- Two points in a projective space are dependent if and only if they are equal. -/
 @[simp]
 theorem dependent_pair_iff_eq (u v : ℙ K V) : Dependent ![u, v] ↔ u = v := by
-  simp_rw [dependent_iff_not_independent, independent_iff, linearIndependent_fin2,
-    Function.comp_apply, Matrix.cons_val_one, Matrix.head_cons, Ne.def, Matrix.cons_val_zero,
-    not_and, not_forall, Classical.not_not, ← mk_eq_mk_iff' K _ _ (rep_nonzero u) (rep_nonzero v),
-    mk_rep, imp_iff_right_iff]
+  rw [dependent_iff_not_independent, independent_iff, linearIndependent_fin2,
+    Function.comp_apply, Matrix.cons_val_one, Matrix.head_cons, Ne.def]
+  simp only [Matrix.cons_val_zero, not_and, not_forall, Classical.not_not, Function.comp_apply,
+    ← mk_eq_mk_iff' K _ _ (rep_nonzero u) (rep_nonzero v), mk_rep, imp_iff_right_iff]
   exact Or.inl (rep_nonzero v)
 #align projectivization.dependent_pair_iff_eq Projectivization.dependent_pair_iff_eq
 
@@ -126,4 +125,3 @@ theorem independent_pair_iff_neq (u v : ℙ K V) : Independent ![u, v] ↔ u ≠
 #align projectivization.independent_pair_iff_neq Projectivization.independent_pair_iff_neq
 
 end Projectivization
-
