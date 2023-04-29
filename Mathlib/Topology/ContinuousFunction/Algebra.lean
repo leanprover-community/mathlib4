@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Nicolò Cavalleri
 
 ! This file was ported from Lean 3 source module topology.continuous_function.algebra
-! leanprover-community/mathlib commit efe03a53241aaa777c1016a7a0e71dd3b92a4313
+! leanprover-community/mathlib commit 16e59248c0ebafabd5d071b1cd41743eb8698ffb
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -825,7 +825,7 @@ writing it this way avoids having to deal with casts inside the set.
 where the functions would be continuous functions vanishing at infinity.)
 -/
 def Set.SeparatesPointsStrongly (s : Set C(α, 𝕜)) : Prop :=
-  ∀ (v : α → 𝕜) (x y : α), ∃ f : s, ((f : C(α, 𝕜)) x : 𝕜) = v x ∧ (f : C(α, 𝕜)) y = v y
+  ∀ (v : α → 𝕜) (x y : α), ∃ f ∈ s, (f x : 𝕜) = v x ∧ f y = v y
 #align set.separates_points_strongly Set.SeparatesPointsStrongly
 
 variable [Field 𝕜] [TopologicalRing 𝕜]
@@ -840,47 +840,34 @@ theorem Subalgebra.SeparatesPoints.strongly {s : Subalgebra 𝕜 C(α, 𝕜)} (h
     (s : Set C(α, 𝕜)).SeparatesPointsStrongly := fun v x y => by
   by_cases n : x = y
   · subst n
-    use v x • (1 : C(α, 𝕜))
-    · apply s.smul_mem
-      apply s.one_mem
-  obtain ⟨f, ⟨f, ⟨m, rfl⟩⟩, w⟩ := h n
-  replace w : f x - f y ≠ 0 := sub_ne_zero_of_ne w
+    refine' ⟨_, (v x • 1 : s).Prop, mul_one _, mul_one _⟩
+  obtain ⟨_, ⟨f, hf, rfl⟩, hxy⟩ := h n
+  replace hxy : f x - f y ≠ 0 := sub_ne_zero_of_ne hxy
   let a := v x
   let b := v y
-  let f' := ((b - a) * (f x - f y)⁻¹) • (ContinuousMap.c (f x) - f) + ContinuousMap.c a
-  refine' ⟨⟨f', _⟩, _, _⟩
-  · simp only [f', SetLike.mem_coe, Subalgebra.mem_toSubmodule]
-    -- TODO should there be a tactic for this?
-    -- We could add an attribute `@[subobject_mem]`, and a tactic
-    -- ``def subobject_mem := `[solve_by_elim with subobject_mem { max_depth := 10 }]``
-    solve_by_elim (config := { max_depth := 6 }) [Subalgebra.add_mem, Subalgebra.smul_mem,
-      Subalgebra.sub_mem, Subalgebra.algebraMap_mem]
-  · simp [f', coeFn_coe_base']
-  · simp [f', coeFn_coe_base', inv_mul_cancel_right₀ w]
+  let f' : s := ((b - a) * (f x - f y)⁻¹) • (algebraMap _ _ (f x) - ⟨f, hf⟩) + algebraMap _ _ a
+  refine' ⟨f', f'.prop, _, _⟩
+  · simp [f']
+  · simp [f', inv_mul_cancel_right₀ hxy]
 #align subalgebra.separates_points.strongly Subalgebra.SeparatesPoints.strongly
 
 end ContinuousMap
 
 instance ContinuousMap.subsingleton_subalgebra (α : Type _) [TopologicalSpace α] (R : Type _)
     [CommSemiring R] [TopologicalSpace R] [TopologicalSemiring R] [Subsingleton α] :
-    Subsingleton (Subalgebra R C(α, R)) := by
-  fconstructor
-  intro s₁ s₂
-  by_cases n : Nonempty α
-  · obtain ⟨x⟩ := n
-    ext f
-    have h : f = algebraMap R C(α, R) (f x) := by
-      ext x'
-      simp only [mul_one, Algebra.id.smul_eq_mul, algebraMap_apply]
-      congr
-    rw [h]
-    simp only [Subalgebra.algebraMap_mem]
-  · ext f
-    have h : f = 0 := by
-      ext x'
-      exact False.elim (n ⟨x'⟩)
-    subst h
-    simp only [Subalgebra.zero_mem]
+    Subsingleton (Subalgebra R C(α, R)) :=
+  ⟨fun s₁ s₂ => by
+    cases isEmpty_or_nonempty α
+    · haveI : Subsingleton C(α, R) := fun_like.coe_injective.subsingleton
+      exact Subsingleton.elim _ _
+    · inhabit α
+      ext f
+      have h : f = algebraMap R C(α, R) (f default) := by
+        ext x'
+        simp only [mul_one, Algebra.id.smul_eq_mul, algebraMap_apply]
+        congr
+      rw [h]
+      simp only [Subalgebra.algebraMap_mem]⟩
 #align continuous_map.subsingleton_subalgebra ContinuousMap.subsingleton_subalgebra
 
 end AlgebraStructure

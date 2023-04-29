@@ -51,7 +51,7 @@ def utf8GetAux.inductionOn.{u} {motive : List Char → Pos → Pos → Sort u}
 
 open private utf8GetAux from Init.Data.String.Basic
 
-private lemma utf8GetAux.add_right_cancel (i p n : ℕ) (s : List Char) :
+private lemma utf8GetAux.add_right_cancel (s : List Char) (i p n : ℕ) :
     utf8GetAux s ⟨i + n⟩ ⟨p + n⟩ = utf8GetAux s ⟨i⟩ ⟨p⟩ := by
   apply inductionOn s ⟨i⟩ ⟨p⟩ (motive := fun s i p ↦
     utf8GetAux s ⟨i.byteIdx + n⟩ ⟨p.byteIdx + n⟩ = utf8GetAux s i p) <;>
