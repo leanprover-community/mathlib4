@@ -8,11 +8,11 @@ Authors: Joël Riou
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.AlgebraicTopology.AlternatingFaceMapComplex
-import Mathbin.AlgebraicTopology.SimplicialSet
-import Mathbin.AlgebraicTopology.CechNerve
-import Mathbin.Algebra.Homology.Homotopy
-import Mathbin.Tactic.FinCases
+import Mathlib.AlgebraicTopology.AlternatingFaceMapComplex
+import Mathlib.AlgebraicTopology.SimplicialSet
+import Mathlib.AlgebraicTopology.CechNerve
+import Mathlib.Algebra.Homology.Homotopy
+import Mathlib.Tactic.FinCases
 
 /-!
 
@@ -98,8 +98,7 @@ attribute [simp] s'_comp_ε s_comp_δ₀
 `F : C ⥤ D` is a functor, then `ed.map F` is an extra degeneracy for the
 augmented simplical object in `D` obtained by applying `F` to `X`. -/
 def map {D : Type _} [Category D] {X : SimplicialObject.Augmented C} (ed : ExtraDegeneracy X)
-    (F : C ⥤ D) : ExtraDegeneracy (((whiskering _ _).obj F).obj X)
-    where
+    (F : C ⥤ D) : ExtraDegeneracy (((whiskering _ _).obj F).obj X) where
   s' := F.map ed.s'
   s n := F.map (ed.s n)
   s'_comp_ε' := by
@@ -124,8 +123,7 @@ def map {D : Type _} [Category D] {X : SimplicialObject.Augmented C} (ed : Extra
 /-- If `X` and `Y` are isomorphic augmented simplicial objects, then an extra
 degeneracy for `X` gives also an extra degeneracy for `Y` -/
 def ofIso {X Y : SimplicialObject.Augmented C} (e : X ≅ Y) (ed : ExtraDegeneracy X) :
-    ExtraDegeneracy Y
-    where
+    ExtraDegeneracy Y where
   s' := (point.mapIso e).inv ≫ ed.s' ≫ (drop.mapIso e).Hom.app (op [0])
   s n := (drop.mapIso e).inv.app (op [n]) ≫ ed.s n ≫ (drop.mapIso e).Hom.app (op [n + 1])
   s'_comp_ε' := by
@@ -207,8 +205,7 @@ def shift {n : ℕ} {Δ : SimplexCategory} (f : [n] ⟶ Δ) : [n + 1] ⟶ Δ :=
 /-- The obvious extra degeneracy on the standard simplex. -/
 @[protected]
 def extraDegeneracy (Δ : SimplexCategory) :
-    SimplicialObject.Augmented.ExtraDegeneracy (standardSimplex.obj Δ)
-    where
+    SimplicialObject.Augmented.ExtraDegeneracy (standardSimplex.obj Δ) where
   s' x := SimplexCategory.Hom.mk (OrderHom.const _ 0)
   s n f := shift f
   s'_comp_ε' := by
@@ -284,16 +281,14 @@ noncomputable def ExtraDegeneracy.s (n : ℕ) :
 
 @[simp]
 theorem ExtraDegeneracy.s_comp_π_0 (n : ℕ) :
-    ExtraDegeneracy.s f S n ≫ WidePullback.π _ 0 = WidePullback.base _ ≫ S.section_ :=
-  by
+    ExtraDegeneracy.s f S n ≫ WidePullback.π _ 0 = WidePullback.base _ ≫ S.section_ := by
   dsimp [extra_degeneracy.s]
   simpa only [wide_pullback.lift_π]
 #align category_theory.arrow.augmented_cech_nerve.extra_degeneracy.s_comp_π_0 CategoryTheory.Arrow.augmentedCechNerve.ExtraDegeneracy.s_comp_π_0
 
 @[simp]
 theorem ExtraDegeneracy.s_comp_π_succ (n : ℕ) (i : Fin (n + 1)) :
-    ExtraDegeneracy.s f S n ≫ WidePullback.π _ i.succ = WidePullback.π _ i :=
-  by
+    ExtraDegeneracy.s f S n ≫ WidePullback.π _ i.succ = WidePullback.π _ i := by
   dsimp [extra_degeneracy.s]
   simp only [wide_pullback.lift_π]
   split_ifs
@@ -389,8 +384,7 @@ face map complex of `X` is an homotopy equivalence. -/
 noncomputable def homotopyEquiv {C : Type _} [Category C] [Preadditive C] [HasZeroObject C]
     {X : SimplicialObject.Augmented C} (ed : ExtraDegeneracy X) :
     HomotopyEquiv (AlgebraicTopology.AlternatingFaceMapComplex.obj (drop.obj X))
-      ((ChainComplex.single₀ C).obj (point.obj X))
-    where
+      ((ChainComplex.single₀ C).obj (point.obj X)) where
   Hom := AlternatingFaceMapComplex.ε.app X
   inv := (ChainComplex.fromSingle₀Equiv _ _).invFun ed.s'
   homotopyInvHomId :=
