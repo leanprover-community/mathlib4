@@ -8,17 +8,17 @@ Authors: Scott Morrison, Nicolò Cavalleri
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Algebra.Pi
-import Mathbin.Algebra.Periodic
-import Mathbin.Algebra.Algebra.Subalgebra.Basic
-import Mathbin.Algebra.Star.StarAlgHom
-import Mathbin.Tactic.FieldSimp
-import Mathbin.Topology.Algebra.Module.Basic
-import Mathbin.Topology.Algebra.InfiniteSum.Basic
-import Mathbin.Topology.Algebra.Star
-import Mathbin.Topology.Algebra.UniformGroup
-import Mathbin.Topology.ContinuousFunction.Ordered
-import Mathbin.Topology.UniformSpace.CompactConvergence
+import Mathlib.Algebra.Algebra.Pi
+import Mathlib.Algebra.Periodic
+import Mathlib.Algebra.Algebra.Subalgebra.Basic
+import Mathlib.Algebra.Star.StarAlgHom
+import Mathlib.Tactic.FieldSimp
+import Mathlib.Topology.Algebra.Module.Basic
+import Mathlib.Topology.Algebra.InfiniteSum.Basic
+import Mathlib.Topology.Algebra.Star
+import Mathlib.Topology.Algebra.UniformGroup
+import Mathlib.Topology.ContinuousFunction.Ordered
+import Mathlib.Topology.UniformSpace.CompactConvergence
 
 /-!
 # Algebraic structures over continuous functions
@@ -273,8 +273,7 @@ section Subtype
 /-- The `submonoid` of continuous maps `α → β`. -/
 @[to_additive "The `add_submonoid` of continuous maps `α → β`. "]
 def continuousSubmonoid (α : Type _) (β : Type _) [TopologicalSpace α] [TopologicalSpace β]
-    [MulOneClass β] [ContinuousMul β] : Submonoid (α → β)
-    where
+    [MulOneClass β] [ContinuousMul β] : Submonoid (α → β) where
   carrier := { f : α → β | Continuous f }
   one_mem' := @continuous_const _ _ _ _ 1
   mul_mem' f g fc gc := fc.mul gc
@@ -340,8 +339,7 @@ instance [LocallyCompactSpace α] [Mul β] [ContinuousMul β] : ContinuousMul C(
 /-- Coercion to a function as an `monoid_hom`. Similar to `monoid_hom.coe_fn`. -/
 @[to_additive "Coercion to a function as an `add_monoid_hom`. Similar to `add_monoid_hom.coe_fn`.",
   simps]
-def coeFnMonoidHom [Monoid β] [ContinuousMul β] : C(α, β) →* α → β
-    where
+def coeFnMonoidHom [Monoid β] [ContinuousMul β] : C(α, β) →* α → β where
   toFun := coeFn
   map_one' := coe_one
   map_mul' := coe_mul
@@ -371,8 +369,7 @@ variable {α}
       "Composition on the right as an `add_monoid_hom`. Similar to\n`add_monoid_hom.comp_hom'`.",
   simps]
 def compMonoidHom' {γ : Type _} [TopologicalSpace γ] [MulOneClass γ] [ContinuousMul γ]
-    (g : C(α, β)) : C(β, γ) →* C(α, γ)
-    where
+    (g : C(α, β)) : C(β, γ) →* C(α, γ) where
   toFun f := f.comp g
   map_one' := one_comp g
   map_mul' f₁ f₂ := mul_comp f₁ f₂ g
@@ -403,8 +400,7 @@ instance [CommGroup β] [TopologicalGroup β] : CommGroup C(α, β) :=
   coe_injective.CommGroup _ coe_one coe_mul coe_inv coe_div coe_pow coe_zpow
 
 @[to_additive]
-instance [CommGroup β] [TopologicalGroup β] : TopologicalGroup C(α, β)
-    where
+instance [CommGroup β] [TopologicalGroup β] : TopologicalGroup C(α, β) where
   continuous_mul := by
     letI : UniformSpace β := TopologicalGroup.toUniformSpace β
     have : UniformGroup β := comm_topologicalGroup_is_uniform
@@ -716,8 +712,7 @@ variable {α : Type _} [TopologicalSpace α] {R : Type _} [CommSemiring R] {A : 
   [TopologicalSpace A₂] [Semiring A₂] [Algebra R A₂] [TopologicalSemiring A₂]
 
 /-- Continuous constant functions as a `ring_hom`. -/
-def ContinuousMap.c : R →+* C(α, A)
-    where
+def ContinuousMap.c : R →+* C(α, A) where
   toFun := fun c : R => ⟨fun x : α => (algebraMap R A) c, continuous_const⟩
   map_one' := by ext x <;> exact (algebraMap R A).map_one
   map_mul' c₁ c₂ := by ext x <;> exact (algebraMap R A).map_mul _ _
@@ -730,8 +725,7 @@ theorem ContinuousMap.c_apply (r : R) (a : α) : ContinuousMap.c r a = algebraMa
   rfl
 #align continuous_map.C_apply ContinuousMap.c_apply
 
-instance ContinuousMap.algebra : Algebra R C(α, A)
-    where
+instance ContinuousMap.algebra : Algebra R C(α, A) where
   toRingHom := ContinuousMap.c
   commutes' c f := by ext x <;> exact Algebra.commutes' _ _
   smul_def' c f := by ext x <;> exact Algebra.smul_def' _ _
@@ -754,8 +748,7 @@ variable (A)
 -/
 @[simps]
 def ContinuousMap.compRightAlgHom {α β : Type _} [TopologicalSpace α] [TopologicalSpace β]
-    (f : C(α, β)) : C(β, A) →ₐ[R] C(α, A)
-    where
+    (f : C(α, β)) : C(β, A) →ₐ[R] C(α, A) where
   toFun g := g.comp f
   map_zero' := by
     ext
@@ -796,16 +789,14 @@ abbrev Subalgebra.SeparatesPoints (s : Subalgebra R C(α, A)) : Prop :=
 #align subalgebra.separates_points Subalgebra.SeparatesPoints
 
 theorem Subalgebra.separatesPoints_monotone :
-    Monotone fun s : Subalgebra R C(α, A) => s.SeparatesPoints := fun s s' r h x y n =>
-  by
+    Monotone fun s : Subalgebra R C(α, A) => s.SeparatesPoints := fun s s' r h x y n => by
   obtain ⟨f, m, w⟩ := h n
   rcases m with ⟨f, ⟨m, rfl⟩⟩
   exact ⟨_, ⟨f, ⟨r m, rfl⟩⟩, w⟩
 #align subalgebra.separates_points_monotone Subalgebra.separatesPoints_monotone
 
 @[simp]
-theorem algebraMap_apply (k : R) (a : α) : algebraMap R C(α, A) k a = k • 1 :=
-  by
+theorem algebraMap_apply (k : R) (a : α) : algebraMap R C(α, A) k a = k • 1 := by
   rw [Algebra.algebraMap_eq_smul_one]
   rfl
 #align algebra_map_apply algebraMap_apply
@@ -837,8 +828,7 @@ By the hypothesis, we can find a function `f` so `f x ≠ f y`.
 By an affine transformation in the field we can arrange so that `f x = a` and `f x = b`.
 -/
 theorem Subalgebra.SeparatesPoints.strongly {s : Subalgebra 𝕜 C(α, 𝕜)} (h : s.SeparatesPoints) :
-    (s : Set C(α, 𝕜)).SeparatesPointsStrongly := fun v x y =>
-  by
+    (s : Set C(α, 𝕜)).SeparatesPointsStrongly := fun v x y => by
   by_cases n : x = y
   · subst n
     refine' ⟨_, (v x • 1 : s).Prop, mul_one _, mul_one _⟩
@@ -863,8 +853,7 @@ instance ContinuousMap.subsingleton_subalgebra (α : Type _) [TopologicalSpace �
       exact Subsingleton.elim _ _
     · inhabit α
       ext f
-      have h : f = algebraMap R C(α, R) (f default) :=
-        by
+      have h : f = algebraMap R C(α, R) (f default) := by
         ext x'
         simp only [mul_one, Algebra.id.smul_eq_mul, algebraMap_apply]
         congr
@@ -893,8 +882,7 @@ instance hasSmul' {α : Type _} [TopologicalSpace α] {R : Type _} [Semiring R] 
 
 instance module' {α : Type _} [TopologicalSpace α] (R : Type _) [Semiring R] [TopologicalSpace R]
     [TopologicalSemiring R] (M : Type _) [TopologicalSpace M] [AddCommMonoid M] [ContinuousAdd M]
-    [Module R M] [ContinuousSMul R M] : Module C(α, R) C(α, M)
-    where
+    [Module R M] [ContinuousSMul R M] : Module C(α, R) C(α, M) where
   smul := (· • ·)
   smul_add c f g := by ext x <;> exact smul_add (c x) (f x) (g x)
   add_smul c₁ c₂ f := by ext x <;> exact add_smul (c₁ x) (c₂ x) (f x)
@@ -1024,8 +1012,7 @@ with the continuous function `f`. See `continuous_map.comp_monoid_hom'` and
 pre-composition into a `monoid_hom`, an `add_monoid_hom` and an `alg_hom`, respectively, under
 suitable assumptions on `A`. -/
 @[simps]
-def compStarAlgHom' (f : C(X, Y)) : C(Y, A) →⋆ₐ[𝕜] C(X, A)
-    where
+def compStarAlgHom' (f : C(X, Y)) : C(Y, A) →⋆ₐ[𝕜] C(X, A) where
   toFun g := g.comp f
   map_one' := one_comp _
   map_mul' _ _ := rfl
@@ -1057,8 +1044,7 @@ section Periodicity
 be the zero map, which is periodic.) -/
 theorem periodic_tsum_comp_add_zsmul [LocallyCompactSpace X] [AddCommGroup X]
     [TopologicalAddGroup X] [AddCommMonoid Y] [ContinuousAdd Y] [T2Space Y] (f : C(X, Y)) (p : X) :
-    Function.Periodic (⇑(∑' n : ℤ, f.comp (ContinuousMap.addRight (n • p)))) p :=
-  by
+    Function.Periodic (⇑(∑' n : ℤ, f.comp (ContinuousMap.addRight (n • p)))) p := by
   intro x
   by_cases h : Summable fun n : ℤ => f.comp (ContinuousMap.addRight (n • p))
   · convert congr_arg (fun f : C(X, Y) => f x) ((Equiv.addRight (1 : ℤ)).tsum_eq _) using 1
