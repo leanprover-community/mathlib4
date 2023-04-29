@@ -45,7 +45,7 @@ A "modifier" for a declaration.
 -/
 inductive DeclMod
 | none | symm | mp | mpr
-deriving DecidableEq
+deriving DecidableEq, Ord
 
 /-- Insert a lemma into the discrimination tree. -/
 def addLemma (name : Name) (constInfo : ConstantInfo)
@@ -69,6 +69,9 @@ def addLemma (name : Name) (constInfo : ConstantInfo)
 /-- Construct the discrimination tree of all lemmas. -/
 def buildDiscrTree : IO (DeclCache (DiscrTree (Name × DeclMod) true)) :=
   DeclCache.mk "librarySearch: init cache" {} addLemma
+    -- Sort so lemmas with shorted names come first.
+    (post := fun T => return T.mapArrays (fun A =>
+      A.map (fun (n, m) => (n.toString.length, n, m)) |>.qsort (fun p q => p.1 < q.1) |>.map (·.2)))
 
 open System (FilePath)
 

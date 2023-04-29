@@ -106,13 +106,14 @@ and then `addDecl` is called for every constant in the environment.
 Calls to `addDecl` for imported constants are cached.
 -/
 def DeclCache.mk (profilingName : String) (empty : α)
-    (addDecl : Name → ConstantInfo → α → MetaM α) : IO (DeclCache α) := do
+    (addDecl : Name → ConstantInfo → α → MetaM α) (post : α → MetaM α := fun a => pure a) :
+    IO (DeclCache α) := do
   let cache ← Cache.mk do
     profileitM Exception profilingName (← getOptions) do
     let mut a := empty
     for (n, c) in (← getEnv).constants.map₁.toList do
       a ← addDecl n c a
-    return a
+    return (← post a)
   pure (cache, addDecl)
 
 /--
