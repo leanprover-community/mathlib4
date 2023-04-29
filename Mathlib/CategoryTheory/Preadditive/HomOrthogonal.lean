@@ -141,8 +141,12 @@ theorem matrixDecomposition_id (o : HomOrthogonal s) {α : Type} [Fintype α] {f
   split_ifs with h
   · cases h
     simp
-  · convert comp_zero
-    simpa using biproduct.ι_π_ne _ (Ne.symm h)
+  · simp at h
+    -- porting note: used to be `convert comp_zero`, but that does not work anymore
+    have : biproduct.ι (fun a ↦ s (f a)) a ≫ biproduct.π (fun b ↦ s (f b)) b = 0 := by
+      simpa using biproduct.ι_π_ne _ (Ne.symm h)
+    rw [this, comp_zero]
+
 #align category_theory.hom_orthogonal.matrix_decomposition_id CategoryTheory.HomOrthogonal.matrixDecomposition_id
 
 theorem matrixDecomposition_comp (o : HomOrthogonal s) {α β γ : Type} [Fintype α] [Fintype β]
@@ -162,11 +166,20 @@ theorem matrixDecomposition_comp (o : HomOrthogonal s) {α β γ : Type} [Fintyp
   · intro b nm
     simp only [Set.mem_preimage, Set.mem_singleton_iff] at nm
     simp only [Category.assoc]
-    convert comp_zero
-    convert comp_zero
-    convert comp_zero
-    convert comp_zero
-    apply o.eq_zero nm
+    -- porting note: this used to be 4 times `convert comp_zero`
+    have : biproduct.ι (fun a ↦ s (f a)) a ≫
+      z ≫ biproduct.π (fun b ↦ s (g b)) b ≫ biproduct.ι (fun b ↦ s (g b)) b ≫ w ≫
+      biproduct.π (fun b ↦ s (h b)) c  = 0 := by
+      have : z ≫ biproduct.π (fun b ↦ s (g b)) b ≫ biproduct.ι (fun b ↦ s (g b)) b ≫ w ≫
+          biproduct.π (fun b ↦ s (h b)) c = 0 := by
+        have : biproduct.π (fun b ↦ s (g b)) b ≫ biproduct.ι (fun b ↦ s (g b)) b ≫ w ≫
+            biproduct.π (fun b ↦ s (h b)) c = 0 := by
+          have : biproduct.ι (fun b ↦ s (g b)) b ≫ w ≫ biproduct.π (fun b ↦ s (h b)) c = 0 := by
+            apply o.eq_zero nm
+          rw [this, comp_zero]
+        rw [this, comp_zero]
+      rw [this, comp_zero]
+    rw [this, comp_zero]
 #align category_theory.hom_orthogonal.matrix_decomposition_comp CategoryTheory.HomOrthogonal.matrixDecomposition_comp
 
 section
