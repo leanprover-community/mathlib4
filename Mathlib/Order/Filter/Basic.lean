@@ -2727,7 +2727,6 @@ theorem mem_bind {s : Set β} {f : Filter α} {m : α → Filter β} :
     s ∈ bind f m ↔ { a | s ∈ m a } ∈ f := Iff.rfl
     _ ↔ ∃ t ∈ f, t ⊆ { a | s ∈ m a } := exists_mem_subset_iff.symm
     _ ↔ ∃ t ∈ f, ∀ x ∈ t, s ∈ m x := Iff.rfl
-
 #align filter.mem_bind Filter.mem_bind
 
 theorem bind_le {f : Filter α} {g : α → Filter β} {l : Filter β} (h : ∀ᶠ x in f, g x ≤ l) :
@@ -2953,7 +2952,6 @@ theorem Tendsto.of_tendsto_comp {f : α → β} {g : β → γ} {a : Filter α} 
   calc
     a ≤ comap (g ∘ f) c := hfg
     _ ≤ comap f b := by simpa [comap_comap] using comap_mono hg
-
 #align filter.tendsto.of_tendsto_comp Filter.Tendsto.of_tendsto_comp
 
 theorem comap_eq_of_inverse {f : Filter α} {g : Filter β} {φ : α → β} (ψ : β → α) (eq : ψ ∘ φ = id)

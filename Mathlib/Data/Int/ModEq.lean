@@ -96,7 +96,6 @@ theorem _root_.Dvd.dvd.zero_modEq_int (h : n ∣ a) : 0 ≡ a [ZMOD n] :=
 theorem modEq_iff_dvd : a ≡ b [ZMOD n] ↔ n ∣ b - a := by
   rw [ModEq, eq_comm]
   simp [emod_eq_emod_iff_emod_sub_eq_zero, dvd_iff_emod_eq_zero]
-
 #align int.modeq_iff_dvd Int.modEq_iff_dvd
 
 theorem modEq_iff_add_fac {a b n : ℤ} : a ≡ b [ZMOD n] ↔ ∃ t, b = a + n * t := by
@@ -284,7 +283,6 @@ theorem modEq_add_fac {a b n : ℤ} (c : ℤ) (ha : a ≡ b [ZMOD n]) : a + n * 
     a + n * c ≡ b + n * c [ZMOD n] := ha.add_right _
     _ ≡ b + 0 [ZMOD n] := (dvd_mul_right _ _).modEq_zero_int.add_left _
     _ ≡ b [ZMOD n] := by rw [add_zero]
-
 #align int.modeq_add_fac Int.modEq_add_fac
 
 theorem modEq_add_fac_self {a t n : ℤ} : a + n * t ≡ a [ZMOD n] :=

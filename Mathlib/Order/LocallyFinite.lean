@@ -442,13 +442,13 @@ section OrderTop
 variable [LocallyFiniteOrder α] [OrderTop α] {a x : α}
 
 -- See note [lower priority instance]
-instance (priority := 100) LocallyFiniteOrder.toLocallyFiniteOrderTop : LocallyFiniteOrderTop α
-    where
+instance (priority := 100) _root_.LocallyFiniteOrder.toLocallyFiniteOrderTop :
+    LocallyFiniteOrderTop α where
   finsetIci b := Icc b ⊤
   finsetIoi b := Ioc b ⊤
   finset_mem_Ici a x := by rw [mem_Icc, and_iff_left le_top]
   finset_mem_Ioi a x := by rw [mem_Ioc, and_iff_left le_top]
-#align locally_finite_order.to_locally_finite_order_top Finset.LocallyFiniteOrder.toLocallyFiniteOrderTop
+#align locally_finite_order.to_locally_finite_order_top LocallyFiniteOrder.toLocallyFiniteOrderTop
 
 theorem Ici_eq_Icc (a : α) : Ici a = Icc a ⊤ :=
   rfl

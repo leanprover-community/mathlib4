@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Scott Morrison
 
 ! This file was ported from Lean 3 source module data.finsupp.basic
-! leanprover-community/mathlib commit f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c
+! leanprover-community/mathlib commit 57911c5a05a1b040598e1e15b189f035ac5cc33c
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -639,7 +639,6 @@ theorem mapDomain.addMonoidHom_comp_mapRange [AddCommMonoid N] (f : α → β) (
     Finsupp.singleAddHom_apply, eq_self_iff_true, Function.comp_apply, Finsupp.mapDomain_single,
     Finsupp.mapRange.addMonoidHom_apply]
   -- porting note: this is ugly, just expanded the Lean 3 proof; `ext` didn't work in the same way
-
 #align finsupp.map_domain.add_monoid_hom_comp_map_range Finsupp.mapDomain.addMonoidHom_comp_mapRange
 
 /-- When `g` preserves addition, `mapRange` and `mapDomain` commute. -/
@@ -1495,23 +1494,22 @@ Throughout this section, some `Monoid` and `Semiring` arguments are specified wi
 `[]`. See note [implicit instance arguments].
 -/
 
-
 @[simp]
-theorem coe_smul [AddMonoid M] [DistribSMul R M] (b : R) (v : α →₀ M) : ⇑(b • v) = b • ⇑v :=
+theorem coe_smul [Zero M] [SMulZeroClass R M] (b : R) (v : α →₀ M) : ⇑(b • v) = b • ⇑v :=
   rfl
 #align finsupp.coe_smul Finsupp.coe_smul
 
-theorem smul_apply [AddMonoid M] [DistribSMul R M] (b : R) (v : α →₀ M) (a : α) :
+theorem smul_apply [Zero M] [SMulZeroClass R M] (b : R) (v : α →₀ M) (a : α) :
     (b • v) a = b • v a :=
   rfl
 #align finsupp.smul_apply Finsupp.smul_apply
 
-theorem _root_.IsSMulRegular.finsupp [AddMonoid M] [DistribSMul R M] {k : R}
+theorem _root_.IsSMulRegular.finsupp [Zero M] [SMulZeroClass R M] {k : R}
     (hk : IsSMulRegular M k) : IsSMulRegular (α →₀ M) k :=
   fun _ _ h => ext fun i => hk (FunLike.congr_fun h i)
 #align is_smul_regular.finsupp IsSMulRegular.finsupp
 
-instance faithfulSMul [Nonempty α] [AddMonoid M] [DistribSMul R M] [FaithfulSMul R M] :
+instance faithfulSMul [Nonempty α] [Zero M] [SMulZeroClass R M] [FaithfulSMul R M] :
     FaithfulSMul R (α →₀ M) where
   eq_of_smul_eq_smul h :=
     let ⟨a⟩ := ‹Nonempty α›
@@ -1533,18 +1531,17 @@ instance distribMulAction [Monoid R] [AddMonoid M] [DistribMulAction R M] :
     mul_smul := fun r s x => ext fun y => mul_smul r s (x y) }
 #align finsupp.distrib_mul_action Finsupp.distribMulAction
 
-instance isScalarTower [Monoid R] [Monoid S] [AddMonoid M] [DistribMulAction R M]
-    [DistribMulAction S M] [SMul R S] [IsScalarTower R S M] : IsScalarTower R S (α →₀ M) where
+instance isScalarTower [Zero M] [SMulZeroClass R M] [SMulZeroClass S M] [SMul R S]
+  [IsScalarTower R S M] : IsScalarTower R S (α →₀ M) where
   smul_assoc _ _ _ := ext fun _ => smul_assoc _ _ _
-#align finsuppp.is_scalar_tower Finsupp.isScalarTower
 
-instance smulCommClass [Monoid R] [Monoid S] [AddMonoid M] [DistribMulAction R M]
-    [DistribMulAction S M] [SMulCommClass R S M] : SMulCommClass R S (α →₀ M) where
+instance smulCommClass [Zero M] [SMulZeroClass R M] [SMulZeroClass S M] [SMulCommClass R S M] :
+  SMulCommClass R S (α →₀ M) where
   smul_comm _ _ _ := ext fun _ => smul_comm _ _ _
 #align finsupp.smul_comm_class Finsupp.smulCommClass
 
-instance isCentralScalar [Monoid R] [AddMonoid M] [DistribMulAction R M] [DistribMulAction Rᵐᵒᵖ M]
-    [IsCentralScalar R M] : IsCentralScalar R (α →₀ M) where
+instance isCentralScalar [Zero M] [SMulZeroClass R M] [SMulZeroClass Rᵐᵒᵖ M] [IsCentralScalar R M] :
+  IsCentralScalar R (α →₀ M) where
   op_smul_eq_smul _ _ := ext fun _ => op_smul_eq_smul _ _
 #align finsupp.is_central_scalar Finsupp.isCentralScalar
 
@@ -1587,7 +1584,7 @@ theorem mapDomain_smul {_ : Monoid R} [AddCommMonoid M] [DistribMulAction R M] {
 #align finsupp.map_domain_smul Finsupp.mapDomain_smul
 
 @[simp]
-theorem smul_single {_ : Monoid R} [AddMonoid M] [DistribMulAction R M] (c : R) (a : α) (b : M) :
+theorem smul_single [Zero M] [SMulZeroClass R M] (c : R) (a : α) (b : M) :
     c • Finsupp.single a b = Finsupp.single a (c • b) :=
   mapRange_single
 #align finsupp.smul_single Finsupp.smul_single

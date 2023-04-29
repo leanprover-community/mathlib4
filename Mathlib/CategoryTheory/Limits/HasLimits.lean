@@ -536,16 +536,11 @@ def lim : (J ⥤ C) ⥤ C where
     apply Limits.limit.hom_ext; intro j
     erw [assoc, IsLimit.fac, IsLimit.fac, ← assoc, IsLimit.fac, assoc]; rfl
 #align category_theory.limits.lim CategoryTheory.Limits.lim
+#align category_theory.limits.lim_map_eq_lim_map CategoryTheory.Limits.lim_map
 
 end
 
 variable {G : J ⥤ C} (α : F ⟶ G)
-
--- We generate this manually since `simps` gives it a weird name.
--- @[simp]
--- theorem limMap_eq_limMap : lim.map α = limMap α :=
---   rfl
--- #align category_theory.limits.lim_map_eq_lim_map CategoryTheory.Limits.limMap_eq_limMap
 
 theorem limit.map_pre [HasLimitsOfShape K C] (E : K ⥤ J) :
     lim.map α ≫ limit.pre G E = limit.pre F E ≫ lim.map (whiskerLeft E α) := by
@@ -1167,7 +1162,7 @@ is natural in `F`.
 -/
 def colimCoyoneda : colim.op ⋙ coyoneda ⋙ (whiskeringRight _ _ _).obj uliftFunctor.{u₁}
     ≅ CategoryTheory.cocones J C :=
-  NatIso.ofComponents (fun F => NatIso.ofComponents (fun W => colimit.homIso (unop F) (op W))
+  NatIso.ofComponents (fun F => NatIso.ofComponents (fun W => colimit.homIso (unop F) W)
     <| by intros ; funext ; aesop_cat) <| by intros ; ext ; funext ; aesop_cat
 #align category_theory.limits.colim_coyoneda CategoryTheory.Limits.colimCoyoneda
 

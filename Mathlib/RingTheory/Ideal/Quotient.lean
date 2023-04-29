@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Chris Hughes, Mario Carneiro, Anne Baanen
 
 ! This file was ported from Lean 3 source module ring_theory.ideal.quotient
-! leanprover-community/mathlib commit bd9851ca476957ea4549eb19b40e7b5ade9428cc
+! leanprover-community/mathlib commit e064a7bf82ad94c3c17b5128bbd860d1ec34874e
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -96,7 +96,7 @@ def mk (I : Ideal R) : R →+* R ⧸ I where
 compositions with `Ideal.Quotient.mk'` are equal.
 
 See note [partially-applied ext lemmas]. -/
-@[ext]
+@[ext 1100]
 theorem ringHom_ext [NonAssocSemiring S] ⦃f g : R ⧸ I →+* S⦄ (h : f.comp (mk I) = g.comp (mk I)) :
     f = g :=
   RingHom.ext fun x => Quotient.inductionOn' x <| (RingHom.congr_fun h : _)
@@ -275,7 +275,7 @@ end Quotient
 
 /-- Quotienting by equal ideals gives equivalent rings.
 
-See also `Submodule.quotEquivOfEq`.
+See also `Submodule.quotEquivOfEq` and `Ideal.quotientEquivAlgOfEq`.
 -/
 def quotEquivOfEq {R : Type _} [CommRing R] {I J : Ideal R} (h : I = J) : R ⧸ I ≃+* R ⧸ J :=
   { Submodule.quotEquivOfEq I J h with
