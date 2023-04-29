@@ -36,8 +36,6 @@ ambient vector space. Similarly for the definition of dependence.
 
 variable {ι K V : Type _} [Field K] [AddCommGroup V] [Module K V] {f : ι → ℙ K V}
 
-variable [dec_ι : DecidableEq ι] -- Porting note: not needed in Lean 3
-
 namespace Projectivization
 
 /-- A linearly independent family of nonzero vectors gives an independent family of points
@@ -62,9 +60,10 @@ theorem independent_iff : Independent f ↔ LinearIndependent K (Projectivizatio
       apply rep_nonzero
 #align projectivization.independent_iff Projectivization.independent_iff
 
+-- Porting note: `[DecidableEq ι]` is needed
 /-- A family of points in projective space is independent if and only if the family of
 submodules which the points determine is independent in the lattice-theoretic sense. -/
-theorem independent_iff_completeLattice_independent :
+theorem independent_iff_completeLattice_independent [DecidableEq ι] :
     Independent f ↔ CompleteLattice.Independent fun i => (f i).submodule := by
   refine' ⟨_, fun h => _⟩
   · rintro ⟨f, hf, hi⟩
