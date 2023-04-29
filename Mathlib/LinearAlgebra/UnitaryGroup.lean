@@ -16,10 +16,11 @@ import Mathlib.Algebra.Star.Unitary
 /-!
 # The Unitary Group
 
-This file defines elements of the unitary group `Matrix.unitaryGroup n α`, where `α` is a `StarRing`.
-This consists of all `n` by `n` matrices with entries in `α` such that the star-transpose is its
-inverse. In addition, we define the group structure on `Matrix.unitaryGroup n α`, and the embedding into
-the general linear group `LinearMap.GeneralLinearGroup α (n → α)`.
+This file defines elements of the unitary group `Matrix.unitaryGroup n α`, where `α` is a
+`StarRing`. This consists of all `n` by `n` matrices with entries in `α` such that the
+star-transpose is its inverse. In addition, we define the group structure on
+`Matrix.unitaryGroup n α`, and the embedding into the general linear group
+`LinearMap.GeneralLinearGroup α (n → α)`.
 
 We also define the orthogonal group `Matrix.orthogonalGroup n β`, where `β` is a `CommRing`.
 
