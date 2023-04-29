@@ -50,17 +50,16 @@ variable {R : Type _} [CommRing R]
 set_option synthInstance.etaExperiment true in
 /-- The cross product of two vectors in $R^3$ for $R$ a commutative ring. -/
 def crossProduct : (Fin 3 → R) →ₗ[R] (Fin 3 → R) →ₗ[R] Fin 3 → R := by
-  apply
-    LinearMap.mk₂ R fun a b : Fin 3 → R =>
+  apply LinearMap.mk₂ R fun a b : Fin 3 → R =>
       ![a 1 * b 2 - a 2 * b 1, a 2 * b 0 - a 0 * b 2, a 0 * b 1 - a 1 * b 0]
   · intros
-    simp_rw [vec3_add, Pi.add_apply, right_distrib, sub_add_eq_sub_sub, sub_eq_add_neg,
-      add_add_add_comm, ← add_assoc]
+    simp_rw [vec3_add, Pi.add_apply]
+    apply vec3_eq <;> ring
   · intros
     simp_rw [smul_vec3, Pi.smul_apply, smul_sub, smul_mul_assoc]
   · intros
-    simp_rw [vec3_add, Pi.add_apply, left_distrib, sub_add_eq_sub_sub, sub_eq_add_neg,
-      add_add_add_comm, ← add_assoc]
+    simp_rw [vec3_add, Pi.add_apply]
+    apply vec3_eq <;> ring
   · intros
     simp_rw [smul_vec3, Pi.smul_apply, smul_sub, mul_smul_comm]
 #align cross_product crossProduct
@@ -70,15 +69,15 @@ scoped[Matrix] infixl:74 " ×₃ " => crossProduct
 
 set_option synthInstance.etaExperiment true in
 theorem cross_apply (a b : Fin 3 → R) :
-    a ×₃ b = ![a 1 * b 2 - a 2 * b 1, a 2 * b 0 - a 0 * b 2, a 0 * b 1 - a 1 * b 0] :=
-  rfl
+    a ×₃ b = ![a 1 * b 2 - a 2 * b 1, a 2 * b 0 - a 0 * b 2, a 0 * b 1 - a 1 * b 0] := rfl
 #align cross_apply cross_apply
 
 section ProductsProperties
 
 set_option synthInstance.etaExperiment true in
 @[simp]
-theorem cross_anticomm (v w : Fin 3 → R) : -(v ×₃ w) = w ×₃ v := by simp [cross_apply, mul_comm]
+theorem cross_anticomm (v w : Fin 3 → R) : -(v ×₃ w) = w ×₃ v := by
+  simp [cross_apply, mul_comm]
 #align cross_anticomm cross_anticomm
 
 alias cross_anticomm ← neg_cross
