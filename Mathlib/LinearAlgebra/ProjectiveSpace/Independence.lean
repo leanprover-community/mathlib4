@@ -8,7 +8,7 @@ Authors: Michael Blyth
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.LinearAlgebra.ProjectiveSpace.Basic
+import Mathlib.LinearAlgebra.ProjectiveSpace.Basic
 
 /-!
 # Independence in Projective Space
@@ -48,8 +48,7 @@ inductive Independent : (ι → ℙ K V) → Prop
 
 /-- A family of points in a projective space is independent if and only if the representative
 vectors determined by the family are linearly independent. -/
-theorem independent_iff : Independent f ↔ LinearIndependent K (Projectivization.rep ∘ f) :=
-  by
+theorem independent_iff : Independent f ↔ LinearIndependent K (Projectivization.rep ∘ f) := by
   refine' ⟨_, fun h => _⟩
   · rintro ⟨ff, hff, hh⟩
     choose a ha using fun i : ι => exists_smul_eq_mk_rep K (ff i) (hff i)
@@ -66,8 +65,7 @@ theorem independent_iff : Independent f ↔ LinearIndependent K (Projectivizatio
 /-- A family of points in projective space is independent if and only if the family of
 submodules which the points determine is independent in the lattice-theoretic sense. -/
 theorem independent_iff_completeLattice_independent :
-    Independent f ↔ CompleteLattice.Independent fun i => (f i).Submodule :=
-  by
+    Independent f ↔ CompleteLattice.Independent fun i => (f i).Submodule := by
   refine' ⟨_, fun h => _⟩
   · rintro ⟨f, hf, hi⟩
     simpa [submodule_mk, CompleteLattice.independent_iff_linearIndependent_of_ne_zero hf]
@@ -87,8 +85,7 @@ inductive Dependent : (ι → ℙ K V) → Prop
 
 /-- A family of points in a projective space is dependent if and only if their
 representatives are linearly dependent. -/
-theorem dependent_iff : Dependent f ↔ ¬LinearIndependent K (Projectivization.rep ∘ f) :=
-  by
+theorem dependent_iff : Dependent f ↔ ¬LinearIndependent K (Projectivization.rep ∘ f) := by
   refine' ⟨_, fun h => _⟩
   · rintro ⟨ff, hff, hh1⟩
     contrapose! hh1
@@ -114,8 +111,7 @@ theorem independent_iff_not_dependent : Independent f ↔ ¬Dependent f := by
 
 /-- Two points in a projective space are dependent if and only if they are equal. -/
 @[simp]
-theorem dependent_pair_iff_eq (u v : ℙ K V) : Dependent ![u, v] ↔ u = v :=
-  by
+theorem dependent_pair_iff_eq (u v : ℙ K V) : Dependent ![u, v] ↔ u = v := by
   simp_rw [dependent_iff_not_independent, independent_iff, linearIndependent_fin2,
     Function.comp_apply, Matrix.cons_val_one, Matrix.head_cons, Ne.def, Matrix.cons_val_zero,
     not_and, not_forall, Classical.not_not, ← mk_eq_mk_iff' K _ _ (rep_nonzero u) (rep_nonzero v),
