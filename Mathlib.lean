@@ -1787,7 +1787,6 @@ import Mathlib.Tactic.ProxyType
 import Mathlib.Tactic.PushNeg
 import Mathlib.Tactic.Qify
 import Mathlib.Tactic.Qify.Attr
-import Mathlib.Util.Qq
 import Mathlib.Tactic.RSuffices
 import Mathlib.Tactic.Reassoc
 import Mathlib.Tactic.Recover
@@ -2016,6 +2015,7 @@ import Mathlib.Util.Export
 import Mathlib.Util.IncludeStr
 import Mathlib.Util.LongNames
 import Mathlib.Util.MemoFix
+import Mathlib.Util.Qq
 import Mathlib.Util.Syntax
 import Mathlib.Util.SynthesizeUsing
 import Mathlib.Util.Tactic
