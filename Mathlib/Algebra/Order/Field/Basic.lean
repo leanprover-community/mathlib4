@@ -528,22 +528,6 @@ alias half_lt_self ← div_two_lt_of_pos
 #align half_lt_self half_lt_self
 #align div_two_lt_of_pos div_two_lt_of_pos
 
-theorem div_two_lt_of_pos (h : 0 < a) : a / 2 < a := by
-  rw [div_lt_iff (zero_lt_two' α)]
-  exact lt_mul_of_one_lt_right h one_lt_two
-#align div_two_lt_of_pos div_two_lt_of_pos
-
-theorem half_lt_self : 0 < a → a / 2 < a :=
-  div_two_lt_of_pos
-#align half_lt_self half_lt_self
-
-theorem half_le_self (ha_nonneg : 0 ≤ a) : a / 2 ≤ a := by
-  by_cases h0 : a = 0
-  · simp [h0]
-  · rw [← Ne.def] at h0
-    exact (half_lt_self (lt_of_le_of_ne ha_nonneg h0.symm)).le
-#align half_le_self half_le_self
-
 theorem one_half_lt_one : (1 / 2 : α) < 1 :=
   half_lt_self zero_lt_one
 #align one_half_lt_one one_half_lt_one
