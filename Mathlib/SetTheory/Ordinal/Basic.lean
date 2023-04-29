@@ -948,7 +948,7 @@ instance add_covariantClass_le : CovariantClass Ordinal.{u} Ordinal.{u} (· + ·
       | Sum.inr a, Sum.inr b, H =>
         let ⟨w, h⟩ := fi _ _ (Sum.lex_inr_inr.1 H)
         exact ⟨Sum.inr w, congr_arg Sum.inr h⟩
-  #align ordinal.add_covariant_class_le Ordinal.add_covariantClass_le
+#align ordinal.add_covariant_class_le Ordinal.add_covariantClass_le
 
 -- Porting note: Rewritten proof of elim, previous version was difficult to debug
 instance add_swap_covariantClass_le :
