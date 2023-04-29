@@ -10,8 +10,7 @@ import Mathlib.Data.Rat.Cast
 import Mathlib.Data.Nat.Basic
 import Mathlib.Data.Int.Basic
 import Mathlib.Tactic.Conv
-import Qq.MetaM
-import Qq.Delab
+import Mathlib.Util.Qq
 
 /-!
 ## `norm_num` core functionality
@@ -619,7 +618,7 @@ def isNormalForm : Expr → Bool
 returning a `Simp.Result`. -/
 def eval (e : Expr) (post := false) : MetaM Simp.Result := do
   if isNormalForm e then return { expr := e }
-  let ⟨.succ _, _, e⟩ ← inferTypeQ e | failure
+  let ⟨_, _, e⟩ ← inferTypeQ' e
   (← derive e post).toSimpResult
 
 /-- Erases a name marked `norm_num` by adding it to the state's `erased` field and

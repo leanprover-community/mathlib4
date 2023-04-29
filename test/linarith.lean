@@ -497,3 +497,10 @@ example (n : Nat) (h1 : ¬n = 1) (h2 : n ≥ 1) : n ≥ 2 := by
   by_contra h3
   suffices n = 1 by exact h1 this
   linarith
+
+-- simulate the type of MvPolynomial
+def R : Type u → Type v → Sort (max (u+1) (v+1)) := sorry
+instance : LinearOrderedField (R c d) := sorry
+
+example (p : R PUnit.{u+1} PUnit.{v+1}) (h : 0 < p) : 0 < 2 * p := by
+  linarith
