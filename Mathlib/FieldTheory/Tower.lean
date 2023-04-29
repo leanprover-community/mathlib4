@@ -146,7 +146,7 @@ theorem Subalgebra.isSimpleOrder_of_finrank_prime (A) [Ring A] [IsDomain A] [Alg
       ⟨⟨⊥, ⊤, fun he =>
           Nat.not_prime_one ((Subalgebra.bot_eq_top_iff_finrank_eq_one.1 he).subst hp)⟩⟩
     eq_bot_or_eq_top := fun K => by
-      haveI := finiteDimensional_of_finrank hp.pos
+      haveI : FiniteDimensional _ _ := finiteDimensional_of_finrank hp.pos
       letI := divisionRingOfFiniteDimensional F K
       refine' (hp.eq_one_or_self_of_dvd _ ⟨_, (finrank_mul_finrank F K A).symm⟩).imp _ fun h => _
       · exact Subalgebra.eq_bot_of_finrank_one
