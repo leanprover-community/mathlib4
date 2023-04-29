@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Alexander Bentkamp
 
 ! This file was ported from Lean 3 source module linear_algebra.basis
-! leanprover-community/mathlib commit 2f4cdce0c2f2f3b8cd58f05d556d03b468e1eb2e
+! leanprover-community/mathlib commit 04cdee31e196e30f507e8e9eb2d06e02c9ff6310
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -155,7 +155,6 @@ theorem repr_symm_single : b.repr.symm (Finsupp.single i c) = c • b i :=
     b.repr.symm (Finsupp.single i c) = b.repr.symm (c • Finsupp.single i (1 : R)) := by
       { rw [Finsupp.smul_single', mul_one] }
     _ = c • b i := by rw [LinearEquiv.map_smul, repr_symm_single_one]
-
 #align basis.repr_symm_single Basis.repr_symm_single
 
 @[simp]
@@ -174,7 +173,6 @@ theorem repr_symm_apply (v) : b.repr.symm v = Finsupp.total ι M R b v :=
     _ = ∑ i in v.support, b.repr.symm (Finsupp.single i (v i)) :=
       by rw [Finsupp.sum, LinearEquiv.map_sum]
     _ = Finsupp.total ι M R b v := by simp [repr_symm_single, Finsupp.total_apply, Finsupp.sum]
-
 #align basis.repr_symm_apply Basis.repr_symm_apply
 
 @[simp]
@@ -333,7 +331,6 @@ theorem repr_apply_eq (f : M → ι → R) (hadd : ∀ x y, f (x + y) = f x + f 
       { rw [← this]
         rfl }
     _ = f x i := rfl
-
 #align basis.repr_apply_eq Basis.repr_apply_eq
 
 /-- Two bases are equal if they assign the same coordinates. -/
@@ -487,7 +484,6 @@ theorem reindexRange_repr_self (i : ι) :
     b.reindexRange.repr (b i) = b.reindexRange.repr (b.reindexRange ⟨b i, mem_range_self i⟩) :=
       congr_arg _ (b.reindexRange_self _ _).symm
     _ = Finsupp.single ⟨b i, mem_range_self i⟩ 1 := b.reindexRange.repr_self _
-
 #align basis.reindex_range_repr_self Basis.reindexRange_repr_self
 
 @[simp]
@@ -567,7 +563,6 @@ protected theorem linearIndependent : LinearIndependent R b :=
     calc
       l = b.repr (Finsupp.total _ _ _ b l) := (b.repr_total l).symm
       _ = 0 := by rw [hl, LinearEquiv.map_zero]
-
 #align basis.linear_independent Basis.linearIndependent
 
 protected theorem ne_zero [Nontrivial R] (i) : b i ≠ 0 :=
@@ -837,6 +832,7 @@ theorem singleton_repr (ι R : Type _) [Unique ι] [Semiring R] (x i) :
     (Basis.singleton ι R).repr x i = x := by simp [Basis.singleton, Unique.eq_default i]
 #align basis.singleton_repr Basis.singleton_repr
 
+set_option synthInstance.etaExperiment true in
 theorem basis_singleton_iff {R M : Type _} [Ring R] [Nontrivial R] [AddCommGroup M] [Module R M]
     [NoZeroSMulDivisors R M] (ι : Type _) [Unique ι] :
     Nonempty (Basis ι R M) ↔ ∃ (x : _)(_ : x ≠ 0), ∀ y : M, ∃ r : R, r • x = y := by
@@ -1121,6 +1117,7 @@ section Mk
 
 variable (hli : LinearIndependent R v) (hsp : ⊤ ≤ span R (range v))
 
+set_option synthInstance.etaExperiment true in
 /-- A linear independent family of vectors spanning the whole module is a basis. -/
 protected noncomputable def mk : Basis ι R M :=
   .ofRepr
@@ -1133,6 +1130,7 @@ protected noncomputable def mk : Basis ι R M :=
       right_inv := fun _ => hli.repr_eq rfl }
 #align basis.mk Basis.mk
 
+set_option synthInstance.etaExperiment true in
 @[simp]
 theorem mk_repr : (Basis.mk hli hsp).repr x = hli.repr ⟨x, hsp Submodule.mem_top⟩ :=
   rfl
@@ -1149,12 +1147,14 @@ theorem coe_mk : ⇑(Basis.mk hli hsp) = v :=
 
 variable {hli hsp}
 
+set_option synthInstance.etaExperiment true in
 /-- Given a basis, the `i`th element of the dual basis evaluates to 1 on the `i`th element of the
 basis. -/
 theorem mk_coord_apply_eq (i : ι) : (Basis.mk hli hsp).coord i (v i) = 1 :=
   show hli.repr ⟨v i, Submodule.subset_span (mem_range_self i)⟩ i = 1 by simp [hli.repr_eq_single i]
 #align basis.mk_coord_apply_eq Basis.mk_coord_apply_eq
 
+set_option synthInstance.etaExperiment true in
 /-- Given a basis, the `i`th element of the dual basis evaluates to 0 on the `j`th element of the
 basis if `j ≠ i`. -/
 theorem mk_coord_apply_ne {i j : ι} (h : j ≠ i) : (Basis.mk hli hsp).coord i (v j) = 0 :=
@@ -1237,6 +1237,7 @@ theorem groupSmul_apply {G : Type _} [Group G] [DistribMulAction G R] [DistribMu
     (groupSmul_span_eq_top v.span_eq).ge i
 #align basis.group_smul_apply Basis.groupSmul_apply
 
+set_option synthInstance.etaExperiment true in
 theorem units_smul_span_eq_top {v : ι → M} (hv : Submodule.span R (Set.range v) = ⊤) {w : ι → Rˣ} :
     Submodule.span R (Set.range (w • v)) = ⊤ :=
   groupSmul_span_eq_top hv
@@ -1244,47 +1245,47 @@ theorem units_smul_span_eq_top {v : ι → M} (hv : Submodule.span R (Set.range 
 
 /-- Given a basis `v` and a map `w` such that for all `i`, `w i` is a unit, `smul_of_is_unit`
 provides the basis corresponding to `w • v`. -/
-def unitsSmul (v : Basis ι R M) (w : ι → Rˣ) : Basis ι R M :=
+def unitsSMul (v : Basis ι R M) (w : ι → Rˣ) : Basis ι R M :=
   Basis.mk (LinearIndependent.units_smul v.linearIndependent w)
     (units_smul_span_eq_top v.span_eq).ge
-#align basis.units_smul Basis.unitsSmul
+#align basis.units_smul Basis.unitsSMul
 
-theorem unitsSmul_apply {v : Basis ι R M} {w : ι → Rˣ} (i : ι) : unitsSmul v w i = w i • v i :=
+theorem unitsSMul_apply {v : Basis ι R M} {w : ι → Rˣ} (i : ι) : unitsSMul v w i = w i • v i :=
   mk_apply (LinearIndependent.units_smul v.linearIndependent w)
     (units_smul_span_eq_top v.span_eq).ge i
-#align basis.units_smul_apply Basis.unitsSmul_apply
+#align basis.units_smul_apply Basis.unitsSMul_apply
 
+set_option synthInstance.etaExperiment true in
 @[simp]
-theorem coord_unitsSmul (e : Basis ι R₂ M) (w : ι → R₂ˣ) (i : ι) :
-    (unitsSmul e w).coord i = (w i)⁻¹ • e.coord i := by
+theorem coord_unitsSMul (e : Basis ι R₂ M) (w : ι → R₂ˣ) (i : ι) :
+    (unitsSMul e w).coord i = (w i)⁻¹ • e.coord i := by
   classical
     apply e.ext
     intro j
-    trans ((unitsSmul e w).coord i) ((w j)⁻¹ • (unitsSmul e w) j)
+    trans ((unitsSMul e w).coord i) ((w j)⁻¹ • (unitsSMul e w) j)
     · congr
-      simp [Basis.unitsSmul, ← mul_smul]
+      simp [Basis.unitsSMul, ← mul_smul]
     simp only [Basis.coord_apply, LinearMap.smul_apply, Basis.repr_self, Units.smul_def,
       SMulHomClass.map_smul, Finsupp.single_apply]
     split_ifs with h <;> simp [h]
-#align basis.coord_units_smul Basis.coord_unitsSmul
+#align basis.coord_units_smul Basis.coord_unitsSMul
 
--- Porting note: TODO: workaround for lean4#2074
-attribute [-instance] Ring.toNonAssocRing in
+set_option synthInstance.etaExperiment true in
 @[simp]
-theorem repr_unitsSmul (e : Basis ι R₂ M) (w : ι → R₂ˣ) (v : M) (i : ι) :
-    (e.unitsSmul w).repr v i = (w i)⁻¹ • e.repr v i :=
-  congr_arg (fun f : M →ₗ[R₂] R₂ => f v) (e.coord_unitsSmul w i)
-#align basis.repr_units_smul Basis.repr_unitsSmul
+theorem repr_unitsSMul (e : Basis ι R₂ M) (w : ι → R₂ˣ) (v : M) (i : ι) :
+    (e.unitsSMul w).repr v i = (w i)⁻¹ • e.repr v i :=
+  congr_arg (fun f : M →ₗ[R₂] R₂ => f v) (e.coord_unitsSMul w i)
+#align basis.repr_units_smul Basis.repr_unitsSMul
 
 /-- A version of `smul_of_units` that uses `IsUnit`. -/
-def isUnitSmul (v : Basis ι R M) {w : ι → R} (hw : ∀ i, IsUnit (w i)) : Basis ι R M :=
-  unitsSmul v fun i => (hw i).unit
-#align basis.is_unit_smul Basis.isUnitSmul
+def isUnitSMul (v : Basis ι R M) {w : ι → R} (hw : ∀ i, IsUnit (w i)) : Basis ι R M :=
+  unitsSMul v fun i => (hw i).unit
+#align basis.is_unit_smul Basis.isUnitSMul
 
-theorem isUnitSmul_apply {v : Basis ι R M} {w : ι → R} (hw : ∀ i, IsUnit (w i)) (i : ι) :
-    v.isUnitSmul hw i = w i • v i :=
-  unitsSmul_apply i
-#align basis.is_unit_smul_apply Basis.isUnitSmul_apply
+theorem isUnitSMul_apply {v : Basis ι R M} {w : ι → R} (hw : ∀ i, IsUnit (w i)) (i : ι) :
+    v.isUnitSMul hw i = w i • v i :=
+  unitsSMul_apply i
+#align basis.is_unit_smul_apply Basis.isUnitSMul_apply
 
 section Fin
 
@@ -1458,7 +1459,6 @@ noncomputable def sumExtend (hs : LinearIndependent K v) : Basis (ι ⊕ sumExte
         _ ≃ b :=
           haveI := Classical.decPred (· ∈ s)
           Equiv.Set.sumDiffSubset (hs.to_subtype_range.subset_extend _)
-
 #align basis.sum_extend Basis.sumExtend
 
 theorem subset_extend {s : Set V} (hs : LinearIndependent K ((↑) : s → V)) :
@@ -1624,6 +1624,7 @@ theorem LinearMap.exists_extend {p : Submodule K V} (f : p →ₗ[K] V') :
 
 open Submodule LinearMap
 
+set_option synthInstance.etaExperiment true in
 /-- If `p < ⊤` is a subspace of a vector space `V`, then there exists a nonzero linear map
 `f : V →ₗ[K] K` such that `p ≤ ker f`. -/
 theorem Submodule.exists_le_ker_of_lt_top (p : Submodule K V) (hp : p < ⊤) :
@@ -1648,3 +1649,58 @@ theorem quotient_prod_linearEquiv (p : Submodule K V) : Nonempty (((V ⧸ p) × 
 #align quotient_prod_linear_equiv quotient_prod_linearEquiv
 
 end DivisionRing
+
+section RestrictScalars
+
+variable {S : Type _} [CommRing R] [Ring S] [Nontrivial S] [AddCommGroup M]
+
+variable [Algebra R S] [Module S M] [Module R M]
+
+variable [IsScalarTower R S M] [NoZeroSMulDivisors R S] (b : Basis ι S M)
+
+variable (R)
+
+open Submodule
+
+set_option synthInstance.etaExperiment true in
+/-- Let `b` be a `S`-basis of `M`. Let `R` be a CommRing such that `Algebra R S` has no zero smul
+divisors, then the submodule of `M` spanned by `b` over `R` admits `b` as a `R`-basis. -/
+noncomputable def Basis.restrictScalars : Basis ι R (span R (Set.range b)) :=
+  Basis.span (b.linearIndependent.restrict_scalars (smul_left_injective R one_ne_zero))
+#align basis.restrict_scalars Basis.restrictScalars
+
+@[simp]
+theorem Basis.restrictScalars_apply (i : ι) : (b.restrictScalars R i : M) = b i := by
+  simp only [Basis.restrictScalars, Basis.span_apply]
+#align basis.restrict_scalars_apply Basis.restrictScalars_apply
+
+set_option synthInstance.etaExperiment true in
+@[simp]
+theorem Basis.restrictScalars_repr_apply (m : span R (Set.range b)) (i : ι) :
+    algebraMap R S ((b.restrictScalars R).repr m i) = b.repr m i := by
+  suffices
+    Finsupp.mapRange.linearMap (Algebra.linearMap R S) ∘ₗ (b.restrictScalars R).repr.toLinearMap =
+      ((b.repr : M →ₗ[S] ι →₀ S).restrictScalars R).domRestrict _
+    by exact FunLike.congr_fun (LinearMap.congr_fun this m) i
+  refine Basis.ext (b.restrictScalars R) fun _ => ?_
+  simp only [LinearMap.coe_comp, LinearEquiv.coe_toLinearMap, Function.comp_apply, map_one,
+    Basis.repr_self, Finsupp.mapRange.linearMap_apply, Finsupp.mapRange_single,
+    Algebra.linearMap_apply, LinearMap.domRestrict_apply, LinearEquiv.coe_coe,
+    Basis.restrictScalars_apply, LinearMap.coe_restrictScalars]
+#align basis.restrict_scalars_repr_apply Basis.restrictScalars_repr_apply
+
+/-- Let `b` be a `S`-basis of `M`. Then `m : M` lies in the `R`-module spanned by `b` iff all the
+coordinates of `m` on the basis `b` are in `R` (see `Basis.mem_span` for the case `R = S`). -/
+theorem Basis.mem_span_iff_repr_mem (m : M) :
+    m ∈ span R (Set.range b) ↔ ∀ i, b.repr m i ∈ Set.range (algebraMap R S) := by
+  refine
+    ⟨fun hm i => ⟨(b.restrictScalars R).repr ⟨m, hm⟩ i, b.restrictScalars_repr_apply R ⟨m, hm⟩ i⟩,
+      fun h => ?_⟩
+  rw [← b.total_repr m, Finsupp.total_apply S _]
+  refine sum_mem fun i _ => ?_
+  obtain ⟨_, h⟩ := h i
+  simp_rw [← h, algebraMap_smul]
+  exact smul_mem _ _ (subset_span (Set.mem_range_self i))
+#align basis.mem_span_iff_repr_mem Basis.mem_span_iff_repr_mem
+
+end RestrictScalars

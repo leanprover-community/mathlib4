@@ -827,7 +827,6 @@ theorem span_neg (s : Set M) : span R (-s) = span R s :=
     span R (-s) = span R ((-LinearMap.id : M →ₗ[R] M) '' s) := by simp
     _ = map (-LinearMap.id) (span R s) := ((-LinearMap.id).map_span _).symm
     _ = span R s := by simp
-
 #align submodule.span_neg Submodule.span_neg
 
 theorem mem_span_insert' {x y} {s : Set M} :
@@ -985,12 +984,7 @@ variable [Field K] [AddCommGroup V] [Module K V]
 
 open Classical
 
--- Porting note: TODO Erase this line. Needed because we don't have η for classes. (lean4#2074)
-attribute [-instance] Ring.toNonAssocRing
-
--- Porting note: added the following line, fails to be inferred otherwise. Probably lean4#2074
-instance : Module K K := Semiring.toModule
-
+set_option synthInstance.etaExperiment true in
 theorem span_singleton_sup_ker_eq_top (f : V →ₗ[K] K) {x : V} (hx : f x ≠ 0) :
     (K ∙ x) ⊔ ker f = ⊤ :=
   eq_top_iff.2 fun y _ =>
@@ -1034,9 +1028,7 @@ section Field
 
 variable (K V) [Field K] [AddCommGroup V] [Module K V]
 
--- Porting note: TODO Erase this line. Needed because we don't have η for classes. (lean4#2074)
-attribute [-instance] Ring.toNonAssocRing
-
+set_option synthInstance.etaExperiment true in
 /-- Given a nonzero element `x` of a vector space `V` over a field `K`, the natural
     map from `K` to the span of `x`, with invertibility check to consider it as an
     isomorphism.-/
@@ -1048,6 +1040,7 @@ def toSpanNonzeroSingleton (x : V) (h : x ≠ 0) : K ≃ₗ[K] K ∙ x :=
     (LinearEquiv.ofEq (range $ toSpanSingleton K V x) (K ∙ x) (span_singleton_eq_range K V x).symm)
 #align linear_equiv.to_span_nonzero_singleton LinearEquiv.toSpanNonzeroSingleton
 
+set_option synthInstance.etaExperiment true in
 theorem toSpanNonzeroSingleton_one (x : V) (h : x ≠ 0) :
     LinearEquiv.toSpanNonzeroSingleton K V x h 1 =
       (⟨x, Submodule.mem_span_singleton_self x⟩ : K ∙ x) := by
@@ -1056,6 +1049,7 @@ theorem toSpanNonzeroSingleton_one (x : V) (h : x ≠ 0) :
   rw [this, toSpanSingleton_one, Submodule.coe_mk]
 #align linear_equiv.to_span_nonzero_singleton_one LinearEquiv.toSpanNonzeroSingleton_one
 
+set_option synthInstance.etaExperiment true in
 /-- Given a nonzero element `x` of a vector space `V` over a field `K`, the natural map
     from the span of `x` to `K`.-/
 noncomputable
@@ -1063,6 +1057,7 @@ abbrev coord (x : V) (h : x ≠ 0) : (K ∙ x) ≃ₗ[K] K :=
   (toSpanNonzeroSingleton K V x h).symm
 #align linear_equiv.coord LinearEquiv.coord
 
+set_option synthInstance.etaExperiment true in
 theorem coord_self (x : V) (h : x ≠ 0) :
     (coord K V x h) (⟨x, Submodule.mem_span_singleton_self x⟩ : K ∙ x) = 1 := by
   rw [← toSpanNonzeroSingleton_one K V x h, LinearEquiv.symm_apply_apply]

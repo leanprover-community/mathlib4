@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury G. Kudryashov, Scott Morrison
 
 ! This file was ported from Lean 3 source module algebra.monoid_algebra.basic
-! leanprover-community/mathlib commit 57e09a1296bfb4330ddf6624f1028ba186117d82
+! leanprover-community/mathlib commit 2651125b48fc5c170ab1111afd0817c903b1fc6c
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -430,7 +430,6 @@ theorem mul_apply [DecidableEq G] [Mul G] (f g : MonoidAlgebra k G) (x : G) :
   rw [mul_def, Finsupp.sum_apply]; congr; ext
   rw [Finsupp.sum_apply]; congr; ext
   apply single_apply
-
 #align monoid_algebra.mul_apply MonoidAlgebra.mul_apply
 
 theorem mul_apply_antidiagonal [Mul G] (f g : MonoidAlgebra k G) (x : G) (s : Finset (G × G))
@@ -455,7 +454,6 @@ theorem mul_apply_antidiagonal [Mul G] (f g : MonoidAlgebra k G) (x : G) (s : Fi
             by_cases h1 : f p.1 = 0
             · rw [h1, zero_mul]
             · rw [hp hps h1, mul_zero]
-
 #align monoid_algebra.mul_apply_antidiagonal MonoidAlgebra.mul_apply_antidiagonal
 
 @[simp]
@@ -555,7 +553,6 @@ theorem mul_single_apply_aux [Mul G] (f : MonoidAlgebra k G) {r : k} {x y z : G}
             sum f fun a b => if a = y then b * r else 0 := by simp only [mul_apply, A, H]
         _ = if y ∈ f.support then f y * r else 0 := (f.support.sum_ite_eq' _ _)
         _ = f y * r := by split_ifs with h <;> simp at h <;> simp [h]
-
 #align monoid_algebra.mul_single_apply_aux MonoidAlgebra.mul_single_apply_aux
 
 theorem mul_single_one_apply [MulOneClass G] (f : MonoidAlgebra k G) (r : k) (x : G) :
@@ -587,7 +584,6 @@ theorem single_mul_apply_aux [Mul G] (f : MonoidAlgebra k G) {r : k} {x y z : G}
         _ = f.sum fun a b => ite (a = z) (r * b) 0 := by simp only [H]
         _ = if z ∈ f.support then r * f z else 0 := (f.support.sum_ite_eq' _ _)
         _ = _ := by split_ifs with h <;> simp at h <;> simp [h]
-
 #align monoid_algebra.single_mul_apply_aux MonoidAlgebra.single_mul_apply_aux
 
 theorem single_one_mul_apply [MulOneClass G] (f : MonoidAlgebra k G) (r : k) (x : G) :
@@ -1070,7 +1066,6 @@ theorem mul_apply_left (f g : MonoidAlgebra k G) (x : G) :
     (f * g) x = sum f fun a b => (single a b * g) x := by
       rw [← Finsupp.sum_apply, ← Finsupp.sum_mul g f, f.sum_single]
     _ = _ := by simp only [single_mul_apply, Finsupp.sum]
-
 #align monoid_algebra.mul_apply_left MonoidAlgebra.mul_apply_left
 
 -- If we'd assumed `CommSemiring`, we could deduce this from `mul_apply_left`.
@@ -1080,7 +1075,6 @@ theorem mul_apply_right (f g : MonoidAlgebra k G) (x : G) :
     (f * g) x = sum g fun a b => (f * single a b) x := by
       rw [← Finsupp.sum_apply, ← Finsupp.mul_sum f g, g.sum_single]
     _ = _ := by simp only [mul_single_apply, Finsupp.sum]
-
 #align monoid_algebra.mul_apply_right MonoidAlgebra.mul_apply_right
 
 end
@@ -1479,6 +1473,10 @@ instance commRing [CommRing k] [AddCommMonoid G] : CommRing (AddMonoidAlgebra k 
 #align add_monoid_algebra.comm_ring AddMonoidAlgebra.commRing
 
 variable {S : Type _}
+
+instance distribSMul [Semiring k] [DistribSMul R k] : DistribSMul R (AddMonoidAlgebra k G) :=
+  Finsupp.distribSMul G k
+#align add_monoid_algebra.distrib_smul AddMonoidAlgebra.distribSMul
 
 instance distribMulAction [Monoid R] [Semiring k] [DistribMulAction R k] :
     DistribMulAction R (AddMonoidAlgebra k G) :=

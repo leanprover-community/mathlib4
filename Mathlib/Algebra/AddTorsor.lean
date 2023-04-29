@@ -57,7 +57,7 @@ class AddTorsor (G : outParam (Type _)) (P : Type _) [outParam <| AddGroup G] ex
   vadd_vsub' : ∀ (g : G) (p : P), g +ᵥ p -ᵥ p = g
 #align add_torsor AddTorsor
 
-attribute [instance] AddTorsor.Nonempty -- porting note: removers `nolint instance_priority`
+attribute [instance 100] AddTorsor.Nonempty -- porting note: removers `nolint instance_priority`
 
 --Porting note: removed
 --attribute [nolint dangerous_instance] AddTorsor.toVSub
@@ -473,9 +473,7 @@ theorem pointReflection_fixed_iff_of_injective_bit0 {x y : P} (h : Injective (bi
     pointReflection x y = y ↔ y = x := by
   rw [pointReflection_apply, eq_comm, eq_vadd_iff_vsub_eq, ← neg_vsub_eq_vsub_rev,
     neg_eq_iff_add_eq_zero, ← bit0, ← bit0_zero, h.eq_iff, vsub_eq_zero_iff_eq, eq_comm]
-#align
-  equiv.point_reflection_fixed_iff_of_injective_bit0
-  Equiv.pointReflection_fixed_iff_of_injective_bit0
+#align equiv.point_reflection_fixed_iff_of_injective_bit0 Equiv.pointReflection_fixed_iff_of_injective_bit0
 
 -- Porting note: Removed:
 -- omit G
@@ -488,9 +486,7 @@ theorem injective_pointReflection_left_of_injective_bit0 {G P : Type _} [AddComm
   rwa [pointReflection_apply, pointReflection_apply, vadd_eq_vadd_iff_sub_eq_vsub,
     vsub_sub_vsub_cancel_right, ← neg_vsub_eq_vsub_rev, neg_eq_iff_add_eq_zero, ← bit0, ← bit0_zero,
     h.eq_iff, vsub_eq_zero_iff_eq] at hy
-#align
-  equiv.injective_point_reflection_left_of_injective_bit0
-  Equiv.injective_pointReflection_left_of_injective_bit0
+#align equiv.injective_point_reflection_left_of_injective_bit0 Equiv.injective_pointReflection_left_of_injective_bit0
 
 end Equiv
 

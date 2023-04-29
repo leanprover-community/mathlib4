@@ -146,7 +146,6 @@ theorem LinearEquiv.finsuppUnique_symm_apply {α : Type _} [Unique α] (m : M) :
     (LinearEquiv.finsuppUnique R M α).symm m = Finsupp.single default m := by
   ext; simp [LinearEquiv.finsuppUnique, Equiv.funUnique, single, Pi.single,
     equivFunOnFinite, Function.update]
-
 #align finsupp.linear_equiv.finsupp_unique_symm_apply Finsupp.LinearEquiv.finsuppUnique_symm_apply
 
 end Finsupp
@@ -248,17 +247,13 @@ theorem restrict_eq_codRestrict_domRestrict {f : M →ₗ[R] M₁} {p : Submodul
     {q : Submodule R M₁} (hf : ∀ x ∈ p, f x ∈ q) :
     f.restrict hf = (f.domRestrict p).codRestrict q fun x => hf x.1 x.2 :=
   rfl
-#align
-  linear_map.restrict_eq_cod_restrict_dom_restrict
-  LinearMap.restrict_eq_codRestrict_domRestrict
+#align linear_map.restrict_eq_cod_restrict_dom_restrict LinearMap.restrict_eq_codRestrict_domRestrict
 
 theorem restrict_eq_domRestrict_codRestrict {f : M →ₗ[R] M₁} {p : Submodule R M}
     {q : Submodule R M₁} (hf : ∀ x, f x ∈ q) :
     (f.restrict fun x _ => hf x) = (f.codRestrict q hf).domRestrict p :=
   rfl
-#align
-  linear_map.restrict_eq_dom_restrict_cod_restrict
-  LinearMap.restrict_eq_domRestrict_codRestrict
+#align linear_map.restrict_eq_dom_restrict_cod_restrict LinearMap.restrict_eq_domRestrict_codRestrict
 
 instance uniqueOfLeft [Subsingleton M] : Unique (M →ₛₗ[σ₁₂] M₂) :=
   { inferInstanceAs (Inhabited (M →ₛₗ[σ₁₂] M₂)) with
@@ -326,7 +321,6 @@ theorem coeFn_sum {ι : Type _} (t : Finset ι) (f : ι → M →ₛₗ[σ₁₂
       from { toFun := FunLike.coe,
              map_zero' := rfl
              map_add' := fun _ _ => rfl }) _ _
-
 #align linear_map.coe_fn_sum LinearMap.coeFn_sum
 
 @[simp]
@@ -358,9 +352,7 @@ theorem submodule_pow_eq_zero_of_pow_eq_zero {N : Submodule R M} {g : Module.End
   have hg : N.subtype.comp (g ^ k) m = 0 := by
     rw [← commute_pow_left_of_commute h, hG, zero_comp, zero_apply]
   simpa using hg
-#align
-  linear_map.submodule_pow_eq_zero_of_pow_eq_zero
-  LinearMap.submodule_pow_eq_zero_of_pow_eq_zero
+#align linear_map.submodule_pow_eq_zero_of_pow_eq_zero LinearMap.submodule_pow_eq_zero_of_pow_eq_zero
 
 theorem coe_pow (f : M →ₗ[R] M) (n : ℕ) : ⇑(f ^ n) = f^[n] := by
   ext m
@@ -1074,9 +1066,9 @@ end Submodule
 
 namespace Submodule
 
-variable [Field K]
-variable [AddCommGroup V] [Module K V]
-variable [AddCommGroup V₂] [Module K V₂]
+variable [Semifield K]
+variable [AddCommMonoid V] [Module K V]
+variable [AddCommMonoid V₂] [Module K V₂]
 
 theorem comap_smul (f : V →ₗ[K] V₂) (p : Submodule K V₂) (a : K) (h : a ≠ 0) :
     p.comap (a • f) = p.comap f := by
@@ -1131,7 +1123,6 @@ theorem map_finsupp_sum (f : M →ₛₗ[σ₁₂] M₂) {t : ι →₀ γ} {g :
 
 theorem coe_finsupp_sum (t : ι →₀ γ) (g : ι → γ → M →ₛₗ[σ₁₂] M₂) :
     ⇑(t.sum g) = t.sum fun i d => g i d := rfl
-
 #align linear_map.coe_finsupp_sum LinearMap.coe_finsupp_sum
 
 @[simp]
@@ -1288,7 +1279,6 @@ theorem eqLocus_toAddSubmonoid (f g : M →ₛₗ[τ₁₂] M₂) :
 theorem eqLocus_same (f : M →ₛₗ[τ₁₂] M₂) : f.eqLocus f = ⊤ :=
   SetLike.ext fun _ => by
     simp only [mem_eqLocus, mem_top]
-
 #align linear_map.eq_locus_same LinearMap.eqLocus_same
 
 end
@@ -1548,21 +1538,17 @@ theorem ker_le_iff [RingHomSurjective τ₁₂] {p : Submodule R M} :
 
 end Ring
 
-section Field
+section Semifield
 
-variable [Field K] [Field K₂]
-
-variable [AddCommGroup V] [Module K V]
-
-variable [AddCommGroup V₂] [Module K V₂]
+variable [Semifield K] [Semifield K₂]
+variable [AddCommMonoid V] [Module K V]
+variable [AddCommMonoid V₂] [Module K V₂]
 
 theorem ker_smul (f : V →ₗ[K] V₂) (a : K) (h : a ≠ 0) : ker (a • f) = ker f :=
   Submodule.comap_smul f _ a h
 #align linear_map.ker_smul LinearMap.ker_smul
 
--- Porting note: `⨅ h : a ≠ 0, ker f` gets a `unusedVariables` lint, but
--- `⨅ _ : a ≠ 0, ker f` is ill-formed. So, this is written `infᵢ (fun _ : a ≠ 0 => ker f)`.
-theorem ker_smul' (f : V →ₗ[K] V₂) (a : K) : ker (a • f) = infᵢ (fun _ : a ≠ 0 => ker f) :=
+theorem ker_smul' (f : V →ₗ[K] V₂) (a : K) : ker (a • f) = ⨅ _h : a ≠ 0, ker f :=
   Submodule.comap_smul' f _ a
 #align linear_map.ker_smul' LinearMap.ker_smul'
 
@@ -1570,13 +1556,12 @@ theorem range_smul (f : V →ₗ[K] V₂) (a : K) (h : a ≠ 0) : range (a • f
   simpa only [range_eq_map] using Submodule.map_smul f _ a h
 #align linear_map.range_smul LinearMap.range_smul
 
--- Porting note: Idem.
 theorem range_smul' (f : V →ₗ[K] V₂) (a : K) :
-    range (a • f) = supᵢ (fun _ : a ≠ 0 => range f) := by
+    range (a • f) = ⨆ _h : a ≠ 0, range f := by
   simpa only [range_eq_map] using Submodule.map_smul' f _ a
 #align linear_map.range_smul' LinearMap.range_smul'
 
-end Field
+end Semifield
 
 end LinearMap
 
@@ -2542,7 +2527,6 @@ theorem map_symm_eq_iff (e : M ≃ₛₗ[τ₁₂] M₂) {K : Submodule R₂ M�
   · calc
       map e.symm (map e p) = comap e (map e p) := (comap_equiv_eq_map_symm _ _).symm
       _ = p := comap_map_eq_of_injective e.injective _
-
 #align submodule.map_symm_eq_iff Submodule.map_symm_eq_iff
 
 theorem orderIsoMapComap_apply' (e : M ≃ₛₗ[τ₁₂] M₂) (p : Submodule R M) :

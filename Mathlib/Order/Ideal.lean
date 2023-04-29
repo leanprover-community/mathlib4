@@ -225,9 +225,9 @@ theorem IsProper.ne_top (_ : IsProper I) : I ≠ ⊤ :=
   fun h ↦ IsProper.ne_univ <| congr_arg SetLike.coe h
 #align order.ideal.is_proper.ne_top Order.Ideal.IsProper.ne_top
 
-theorem IsCoatom.isProper (hI : IsCoatom I) : IsProper I :=
+theorem _root_.IsCoatom.isProper (hI : IsCoatom I) : IsProper I :=
   isProper_of_ne_top hI.1
-#align is_coatom.is_proper Order.Ideal.IsCoatom.isProper
+#align is_coatom.is_proper IsCoatom.isProper
 
 theorem isProper_iff_ne_top : IsProper I ↔ I ≠ ⊤ :=
   ⟨fun h ↦ h.ne_top, fun h ↦ isProper_of_ne_top h⟩
@@ -241,9 +241,9 @@ theorem IsMaximal.isCoatom' [IsMaximal I] : IsCoatom I :=
   IsMaximal.isCoatom ‹_›
 #align order.ideal.is_maximal.is_coatom' Order.Ideal.IsMaximal.isCoatom'
 
-theorem IsCoatom.isMaximal (hI : IsCoatom I) : IsMaximal I :=
+theorem _root_.IsCoatom.isMaximal (hI : IsCoatom I) : IsMaximal I :=
   { IsCoatom.isProper hI with maximal_proper := fun _ hJ ↦ by simp [hI.2 _ hJ] }
-#align is_coatom.is_maximal Order.Ideal.IsCoatom.isMaximal
+#align is_coatom.is_maximal IsCoatom.isMaximal
 
 theorem isMaximal_iff_isCoatom : IsMaximal I ↔ IsCoatom I :=
   ⟨fun h ↦ h.isCoatom, fun h ↦ IsCoatom.isMaximal h⟩
@@ -479,7 +479,6 @@ theorem eq_sup_of_le_sup {x i j : P} (hi : i ∈ I) (hj : j ∈ J) (hx : x ≤ i
   calc
     x = x ⊓ (i ⊔ j) := left_eq_inf.mpr hx
     _ = x ⊓ i ⊔ x ⊓ j := inf_sup_left
-
 #align order.ideal.eq_sup_of_le_sup Order.Ideal.eq_sup_of_le_sup
 
 theorem coe_sup_eq : ↑(I ⊔ J) = { x | ∃ i ∈ I, ∃ j ∈ J, x = i ⊔ j } :=
