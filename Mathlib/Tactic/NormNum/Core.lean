@@ -10,7 +10,7 @@ import Mathlib.Data.Rat.Cast
 import Mathlib.Data.Nat.Basic
 import Mathlib.Data.Int.Basic
 import Mathlib.Tactic.Conv
-import Mathlib.Tactic.Qq
+import Mathlib.Util.Qq
 
 /-!
 ## `norm_num` core functionality

@@ -6,7 +6,7 @@ Authors: Mario Carneiro, Thomas Murrills
 import Mathlib.Tactic.NormNum.Core
 import Mathlib.Algebra.GroupPower.Lemmas
 import Mathlib.Algebra.Order.Invertible
-import Mathlib.Tactic.Qq
+import Mathlib.Util.Qq
 
 /-!
 ## `norm_num` basic plugins

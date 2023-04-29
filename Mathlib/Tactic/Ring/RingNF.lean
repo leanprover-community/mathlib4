@@ -5,7 +5,7 @@ Authors: Mario Carneiro, Tim Baanen
 -/
 import Mathlib.Tactic.Ring.Basic
 import Mathlib.Tactic.Conv
-import Mathlib.Tactic.Qq
+import Mathlib.Util.Qq
 
 /-!
 # `ring_nf` tactic

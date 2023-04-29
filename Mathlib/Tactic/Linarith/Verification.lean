@@ -7,7 +7,7 @@ Ported by: Scott Morrison
 
 import Mathlib.Tactic.Linarith.Elimination
 import Mathlib.Tactic.Linarith.Parsing
-import Mathlib.Tactic.Qq
+import Mathlib.Util.Qq
 
 /-!
 # Deriving a proof of false
