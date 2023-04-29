@@ -150,7 +150,8 @@ def empty : Ordnode α → Bool
 section recursor_workarounds
 
 def Ordnode.recC {α : Type _} {motive : Ordnode α → Sort u_1} (nil : motive nil)
-  (node : (size : ℕ) → (l : Ordnode α) → (x : α) → (r : Ordnode α) → motive l → motive r → motive (node size l x r))
+  (node : (size : ℕ) → (l : Ordnode α) → (x : α) → (r : Ordnode α) →
+    motive l → motive r → motive (node size l x r))
   (t : Ordnode α) : motive t := match t with
 | Ordnode.nil => nil
 | Ordnode.node sz l x r => (node sz l x r) (recC nil node l) (recC nil node r)
