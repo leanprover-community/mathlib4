@@ -526,9 +526,14 @@ noncomputable instance lanPreservesFiniteLimitsOfPreservesFiniteLimits (F : C �
 set_option linter.uppercaseLean3 false in
 #align category_theory.Lan_preserves_finite_limits_of_preserves_finite_limits CategoryTheory.lanPreservesFiniteLimitsOfPreservesFiniteLimits
 
+set_option pp.universes true
 theorem flat_iff_lan_flat (F : C ⥤ D) :
     RepresentablyFlat F ↔ RepresentablyFlat (lan F.op : _ ⥤ Dᵒᵖ ⥤ Type u₁) :=
-  ⟨fun H => inferInstance, fun H => by
+--    ⟨λ H, by exactI category_theory.Lan_flat_of_flat (Type u₁) F, λ H,
+  ⟨fun H => by exact
+  let foo : ReflectsLimits.{u₁, u₁, u₁ + 1, u₁ + 1} (forget.{u₁ + 1, u₁, u₁} (Type u₁)) :=
+       Limits.idReflectsLimits
+  CategoryTheory.lan_flat_of_flat (Type u₁) F, fun H => by
     skip
     haveI := preservesFiniteLimitsOfFlat (lan F.op : _ ⥤ Dᵒᵖ ⥤ Type u₁)
     haveI : PreservesFiniteLimits F := by
