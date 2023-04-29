@@ -1428,6 +1428,7 @@ import Mathlib.LinearAlgebra.Matrix.Basis
 import Mathlib.LinearAlgebra.Matrix.Block
 import Mathlib.LinearAlgebra.Matrix.Circulant
 import Mathlib.LinearAlgebra.Matrix.Determinant
+import Mathlib.LinearAlgebra.Matrix.Diagonal
 import Mathlib.LinearAlgebra.Matrix.DotProduct
 import Mathlib.LinearAlgebra.Matrix.FiniteDimensional
 import Mathlib.LinearAlgebra.Matrix.InvariantBasisNumber
@@ -1921,6 +1922,7 @@ import Mathlib.Topology.Bornology.Constructions
 import Mathlib.Topology.Bornology.Hom
 import Mathlib.Topology.Category.Born
 import Mathlib.Topology.Category.CompHaus.Basic
+import Mathlib.Topology.Category.CompHaus.Projective
 import Mathlib.Topology.Category.Top.Adjunctions
 import Mathlib.Topology.Category.Top.Basic
 import Mathlib.Topology.Category.Top.EpiMono
