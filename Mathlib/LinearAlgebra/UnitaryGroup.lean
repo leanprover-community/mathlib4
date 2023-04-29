@@ -16,23 +16,24 @@ import Mathlib.Algebra.Star.Unitary
 /-!
 # The Unitary Group
 
-This file defines elements of the unitary group `unitary_group n α`, where `α` is a `StarRing`.
+This file defines elements of the unitary group `Matrix.unitaryGroup n α`, where `α` is a `StarRing`.
 This consists of all `n` by `n` matrices with entries in `α` such that the star-transpose is its
-inverse. In addition, we define the group structure on `unitary_group n α`, and the embedding into
-the general linear group `general_linear_group α (n → α)`.
+inverse. In addition, we define the group structure on `Matrix.unitaryGroup n α`, and the embedding into
+the general linear group `LinearMap.GeneralLinearGroup α (n → α)`.
 
-We also define the orthogonal group `orthogonal_group n β`, where `β` is a `CommRing`.
+We also define the orthogonal group `Matrix.orthogonalGroup n β`, where `β` is a `CommRing`.
 
 ## Main Definitions
 
- * `Matrix.unitaryGroup` is the type of matrices where the star-transpose is the inverse
- * `matrix.unitary_group.group` is the group structure (under multiplication)
- * `Matrix.UnitaryGroup.embeddingGL` is the embedding `unitary_group n α → GLₙ(α)`
- * `Matrix.orthogonalGroup` is the type of matrices where the transpose is the inverse
+* `Matrix.unitaryGroup` is the submonoid of matrices where the star-transpose is the inverse; the
+  group structure (under multiplication) is inherited from a more general `unitary` construction.
+* `Matrix.UnitaryGroup.embeddingGL` is the embedding `Matrix.unitaryGroup n α → GLₙ(α)`, where
+  `GLₙ(α)` is `LinearMap.GeneralLinearGroup α (n → α)`.
+* `Matrix.orthogonalGroup` is the submonoid of matrices where the transpose is the inverse.
 
 ## References
 
- * https://en.wikipedia.org/wiki/Unitary_group
+* https://en.wikipedia.org/wiki/Unitary_group
 
 ## Tags
 
@@ -90,10 +91,10 @@ instance coeMatrix : Coe (unitaryGroup n α) (Matrix n n α) :=
 instance coeFun : CoeFun (unitaryGroup n α) fun _ => n → n → α where coe A := A.val
 #align matrix.unitary_group.coe_fun Matrix.UnitaryGroup.coeFun
 
-/-- `to_lin' A` is matrix multiplication of vectors by `A`, as a linear map.
+/-- `Matrix.UnitaryGroup.toLin' A` is matrix multiplication of vectors by `A`, as a linear map.
 
-After the group structure on `unitary_group n` is defined,
-we show in `to_linear_equiv` that this gives a linear equivalence.
+After the group structure on `Matrix.unitaryGroup n` is defined, we show in
+`Matrix.UnitaryGroup.toLinearEquiv` that this gives a linear equivalence.
 -/
 def toLin' (A : unitaryGroup n α) :=
   Matrix.toLin' A.1
@@ -153,7 +154,8 @@ example : unitaryGroup n α →* GeneralLinearGroup α (n → α) :=
 -- porting note: then we can get `toLinearEquiv` from `GeneralLinearGroup.toLinearEquiv`
 
 set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
-/-- `to_linear_equiv A` is matrix multiplication of vectors by `A`, as a linear equivalence. -/
+/-- `Matrix.unitaryGroup.toLinearEquiv A` is matrix multiplication of vectors by `A`, as a linear
+equivalence. -/
 def toLinearEquiv (A : unitaryGroup n α) : (n → α) ≃ₗ[α] n → α :=
   { Matrix.toLin' A.1 with
     invFun := toLin' A⁻¹
@@ -167,7 +169,7 @@ def toLinearEquiv (A : unitaryGroup n α) : (n → α) ≃ₗ[α] n → α :=
         _ = x := by rw [mul_right_inv, toLin'_one, id_apply] }
 #align matrix.unitary_group.to_linear_equiv Matrix.UnitaryGroup.toLinearEquiv
 
-/-- `to_GL` is the map from the unitary group to the general linear group -/
+/-- `Matrix.unitaryGroup.toGL` is the map from the unitary group to the general linear group -/
 def toGL (A : unitaryGroup n α) : GeneralLinearGroup α (n → α) :=
   GeneralLinearGroup.ofLinearEquiv (toLinearEquiv A)
 set_option linter.uppercaseLean3 false in
@@ -191,8 +193,8 @@ theorem toGL_mul (A B : unitaryGroup n α) : toGL (A * B) = toGL A * toGL B := U
 set_option linter.uppercaseLean3 false in
 #align matrix.unitary_group.to_GL_mul Matrix.UnitaryGroup.toGL_mul
 
-/-- `unitary_group.embedding_GL` is the embedding from `unitary_group n α`
-to `general_linear_group n α`. -/
+/-- `Matrix.unitaryGroup.embeddingGL` is the embedding from `Matrix.unitaryGroup n α` to
+`LinearMap.GeneralLinearGroup n α`. -/
 def embeddingGL : unitaryGroup n α →* GeneralLinearGroup α (n → α) :=
   ⟨⟨fun A => toGL A, toGL_one⟩, toGL_mul⟩
 set_option linter.uppercaseLean3 false in
@@ -204,11 +206,14 @@ section OrthogonalGroup
 
 variable (n) (β : Type v) [CommRing β]
 
+-- Porting note: todo: will lemmas about `Matrix.orthogonalGroup` work without making
+-- `starRingOfComm` a local instance? E.g., can we talk about unitary group and orthogonal group
+-- at the same time?
 attribute [local instance] starRingOfComm
 set_option synthInstance.etaExperiment true -- Porting note: gets around lean4#2074
 
-/-- `orthogonal_group n` is the group of `n` by `n` matrices where the transpose is the inverse.
--/
+/-- `Matrix.orthogonalGroup n` is the group of `n` by `n` matrices where the transpose is the
+inverse. -/
 abbrev orthogonalGroup := unitaryGroup n β
 #align matrix.orthogonal_group Matrix.orthogonalGroup
 
