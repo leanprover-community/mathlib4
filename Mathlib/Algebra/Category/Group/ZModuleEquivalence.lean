@@ -8,7 +8,7 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Category.Module.Basic
+import Mathlib.Algebra.Category.Module.Basic
 
 /-!
 The forgetful functor from ℤ-modules to additive commutative groups is
