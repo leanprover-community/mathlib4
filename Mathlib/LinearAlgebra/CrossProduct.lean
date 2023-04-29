@@ -8,10 +8,10 @@ Authors: Martin Dvorak, Kyle Miller, Eric Wieser
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Matrix.Notation
-import Mathbin.LinearAlgebra.BilinearMap
-import Mathbin.LinearAlgebra.Matrix.Determinant
-import Mathbin.Algebra.Lie.Basic
+import Mathlib.Data.Matrix.Notation
+import Mathlib.LinearAlgebra.BilinearMap
+import Mathlib.LinearAlgebra.Matrix.Determinant
+import Mathlib.Algebra.Lie.Basic
 
 /-!
 # Cross products
@@ -48,8 +48,7 @@ open Matrix
 variable {R : Type _} [CommRing R]
 
 /-- The cross product of two vectors in $R^3$ for $R$ a commutative ring. -/
-def crossProduct : (Fin 3 → R) →ₗ[R] (Fin 3 → R) →ₗ[R] Fin 3 → R :=
-  by
+def crossProduct : (Fin 3 → R) →ₗ[R] (Fin 3 → R) →ₗ[R] Fin 3 → R := by
   apply
     LinearMap.mk₂ R fun a b : Fin 3 → R =>
       ![a 1 * b 2 - a 2 * b 1, a 2 * b 0 - a 0 * b 2, a 0 * b 1 - a 1 * b 0]
@@ -102,8 +101,7 @@ theorem dot_cross_self (v w : Fin 3 → R) : w ⬝ᵥ v ×₃ w = 0 := by
 #align dot_cross_self dot_cross_self
 
 /-- Cyclic permutations preserve the triple product. See also `triple_product_eq_det`. -/
-theorem triple_product_permutation (u v w : Fin 3 → R) : u ⬝ᵥ v ×₃ w = v ⬝ᵥ w ×₃ u :=
-  by
+theorem triple_product_permutation (u v w : Fin 3 → R) : u ⬝ᵥ v ×₃ w = v ⬝ᵥ w ×₃ u := by
   simp only [cross_apply, vec3_dot_product, Matrix.head_cons, Matrix.cons_vec_bit0_eq_alt0,
     Matrix.empty_vecAppend, Matrix.cons_val_one, Matrix.cons_vecAlt0, Matrix.cons_vecAppend,
     Matrix.cons_val_zero]
@@ -112,8 +110,7 @@ theorem triple_product_permutation (u v w : Fin 3 → R) : u ⬝ᵥ v ×₃ w = 
 
 /-- The triple product of `u`, `v`, and `w` is equal to the determinant of the matrix
     with those vectors as its rows. -/
-theorem triple_product_eq_det (u v w : Fin 3 → R) : u ⬝ᵥ v ×₃ w = Matrix.det ![u, v, w] :=
-  by
+theorem triple_product_eq_det (u v w : Fin 3 → R) : u ⬝ᵥ v ×₃ w = Matrix.det ![u, v, w] := by
   simp only [vec3_dot_product, cross_apply, Matrix.det_fin_three, Matrix.head_cons,
     Matrix.cons_vec_bit0_eq_alt0, Matrix.empty_vecAlt0, Matrix.cons_vecAlt0, Matrix.vecHead_vecAlt0,
     Matrix.vecAppend_apply_zero, Matrix.empty_vecAppend, Matrix.cons_vecAppend, Matrix.cons_val',
@@ -123,8 +120,7 @@ theorem triple_product_eq_det (u v w : Fin 3 → R) : u ⬝ᵥ v ×₃ w = Matri
 
 /-- The scalar quadruple product identity, related to the Binet-Cauchy identity. -/
 theorem cross_dot_cross (u v w x : Fin 3 → R) :
-    u ×₃ v ⬝ᵥ w ×₃ x = u ⬝ᵥ w * v ⬝ᵥ x - u ⬝ᵥ x * v ⬝ᵥ w :=
-  by
+    u ×₃ v ⬝ᵥ w ×₃ x = u ⬝ᵥ w * v ⬝ᵥ x - u ⬝ᵥ x * v ⬝ᵥ w := by
   simp only [vec3_dot_product, cross_apply, cons_vec_append, cons_vec_bit0_eq_alt0, cons_val_one,
     cons_vec_alt0, LinearMap.mk₂_apply, cons_val_zero, head_cons, empty_vec_append]
   ring_nf
@@ -135,8 +131,7 @@ end ProductsProperties
 section LeibnizProperties
 
 /-- The cross product satisfies the Leibniz lie property. -/
-theorem leibniz_cross (u v w : Fin 3 → R) : u ×₃ (v ×₃ w) = u ×₃ v ×₃ w + v ×₃ (u ×₃ w) :=
-  by
+theorem leibniz_cross (u v w : Fin 3 → R) : u ×₃ (v ×₃ w) = u ×₃ v ×₃ w + v ×₃ (u ×₃ w) := by
   dsimp only [cross_apply]
   ext i
   fin_cases i <;> norm_num <;> ring
