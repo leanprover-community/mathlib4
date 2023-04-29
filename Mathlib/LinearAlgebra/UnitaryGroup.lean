@@ -147,6 +147,11 @@ theorem toLin'_one : toLin' (1 : unitaryGroup n α) = LinearMap.id :=
 
 end CoeLemmas
 
+-- porting note: todo: redefine `toGL`/`embeddingGL` as in this example:
+example : unitaryGroup n α →* GeneralLinearGroup α (n → α) :=
+  .toHomUnits ⟨⟨toLin', toLin'_one⟩, toLin'_mul⟩
+-- porting note: then we can get `toLinearEquiv` from `GeneralLinearGroup.toLinearEquiv`
+
 set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 /-- `to_linear_equiv A` is matrix multiplication of vectors by `A`, as a linear equivalence. -/
 def toLinearEquiv (A : unitaryGroup n α) : (n → α) ≃ₗ[α] n → α :=
@@ -173,25 +178,25 @@ set_option linter.uppercaseLean3 false in
 #align matrix.unitary_group.coe_to_GL Matrix.UnitaryGroup.coe_toGL
 
 @[simp]
-theorem toGL_one : toGL (1 : unitaryGroup n α) = 1 := by
-  ext1 v i
-  rw [coe_to_GL, to_lin'_one]
+theorem toGL_one : toGL (1 : unitaryGroup n α) = 1 := Units.ext <| by
+  simp only [coe_toGL, toLin'_one]
   rfl
 set_option linter.uppercaseLean3 false in
-#align matrix.unitary_group.to_GL_one Matrix.unitaryGroup.toGL_one
+#align matrix.unitary_group.to_GL_one Matrix.UnitaryGroup.toGL_one
 
 @[simp]
-theorem toGL_mul (A B : unitaryGroup n α) : toGL (A * B) = toGL A * toGL B := by
-  ext1 v i
-  rw [coe_to_GL, to_lin'_mul]
+theorem toGL_mul (A B : unitaryGroup n α) : toGL (A * B) = toGL A * toGL B := Units.ext <| by
+  simp only [coe_toGL, toLin'_mul]
   rfl
-#align matrix.unitary_group.to_GL_mul Matrix.unitaryGroup.toGL_mul
+set_option linter.uppercaseLean3 false in
+#align matrix.unitary_group.to_GL_mul Matrix.UnitaryGroup.toGL_mul
 
 /-- `unitary_group.embedding_GL` is the embedding from `unitary_group n α`
 to `general_linear_group n α`. -/
 def embeddingGL : unitaryGroup n α →* GeneralLinearGroup α (n → α) :=
-  ⟨fun A => toGL A, by simp, by simp⟩
-#align matrix.unitary_group.embedding_GL Matrix.unitaryGroup.embeddingGL
+  ⟨⟨fun A => toGL A, toGL_one⟩, toGL_mul⟩
+set_option linter.uppercaseLean3 false in
+#align matrix.unitary_group.embedding_GL Matrix.UnitaryGroup.embeddingGL
 
 end UnitaryGroup
 
@@ -200,11 +205,11 @@ section OrthogonalGroup
 variable (n) (β : Type v) [CommRing β]
 
 attribute [local instance] starRingOfComm
+set_option synthInstance.etaExperiment true -- Porting note: gets around lean4#2074
 
 /-- `orthogonal_group n` is the group of `n` by `n` matrices where the transpose is the inverse.
 -/
-abbrev orthogonalGroup :=
-  unitaryGroup n β
+abbrev orthogonalGroup := unitaryGroup n β
 #align matrix.orthogonal_group Matrix.orthogonalGroup
 
 theorem mem_orthogonalGroup_iff {A : Matrix n n β} :
