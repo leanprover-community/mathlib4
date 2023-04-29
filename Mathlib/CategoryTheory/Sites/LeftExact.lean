@@ -76,37 +76,37 @@ abbrev liftToDiagramLimitObj {X : C} {K : Type max v u} [SmallCategory K] [HasLi
 
 instance preservesLimit_diagramFunctor (X : C) (K : Type max v u) [SmallCategory K] [HasLimitsOfShape K D] (F : K ⥤ Cᵒᵖ ⥤ D) :
     PreservesLimit F (J.diagramFunctor D X) :=
-  sorry
-  --preservesLimitOfEvaluation _ _ fun W =>
-  --  preservesLimitOfPreservesLimitCone (limit.isLimit _)
-  --    { lift := fun E => liftToDiagramLimitObj F E
-  --      fac := by
-  --        intro E k
-  --        dsimp [diagram_nat_trans]
-  --        ext1
-  --        simp only [multiequalizer.lift_ι, multiequalizer.lift_ι_assoc, category.assoc]
-  --        change (_ ≫ _) ≫ _ = _
-  --        dsimp [evaluate_combined_cones]
-  --        erw [category.comp_id, category.assoc, ← nat_trans.comp_app, limit.lift_π, limit.lift_π]
-  --        rfl
-  --      uniq := by
-  --        intro E m hm
-  --        ext
-  --        delta lift_to_diagram_limit_obj
-  --        erw [multiequalizer.lift_ι, category.assoc]
-  --        change _ = (_ ≫ _) ≫ _
-  --        dsimp [evaluate_combined_cones]
-  --        erw [category.comp_id, category.assoc, ← nat_trans.comp_app, limit.lift_π, limit.lift_π]
-  --        dsimp
-  --        rw [← hm]
-  --        dsimp [diagram_nat_trans]
-  --        simp }
+  preservesLimitOfEvaluation _ _ fun W =>
+    preservesLimitOfPreservesLimitCone (limit.isLimit _)
+      { lift := fun E => liftToDiagramLimitObj.{w, v, u} F E
+        fac := by
+          intro E k
+          dsimp [diagramNatTrans]
+          refine' Multiequalizer.hom_ext _ _ _ (fun a => _)
+          simp only [Multiequalizer.lift_ι, Multiequalizer.lift_ι_assoc, Category.assoc]
+          change (_ ≫ _) ≫ _ = _
+          dsimp [evaluateCombinedCones]
+          erw [Category.comp_id, Category.assoc, ← NatTrans.comp_app, limit.lift_π, limit.lift_π]
+          rfl
+        uniq := by
+          intro E m hm
+          refine' Multiequalizer.hom_ext _ _ _ (fun a => limit_obj_ext (fun j => _))
+          delta liftToDiagramLimitObj
+          erw [Multiequalizer.lift_ι, Category.assoc]
+          change _ = (_ ≫ _) ≫ _
+          dsimp [evaluateCombinedCones]
+          erw [Category.comp_id, Category.assoc, ← NatTrans.comp_app, limit.lift_π, limit.lift_π]
+          dsimp
+          rw [← hm]
+          dsimp [diagramNatTrans]
+          simp }
 
 instance preservesLimitsOfShape_diagramFunctor (X : C) (K : Type max v u) [SmallCategory K] [HasLimitsOfShape K D] :
     PreservesLimitsOfShape K (J.diagramFunctor D X) :=
   ⟨by apply preservesLimit_diagramFunctor.{w, v, u}⟩
 
-instance (X : C) [HasLimits D] : PreservesLimits (J.diagramFunctor D X) := by
+instance preservesLimits_diagramFunctor (X : C) [HasLimits D] :
+    PreservesLimits (J.diagramFunctor D X) := by
   constructor
   intro _ _
   apply preservesLimitsOfShape_diagramFunctor.{w, v, u}
@@ -125,8 +125,11 @@ def liftToPlusObjLimitObj {K : Type max v u} [SmallCategory K] [FinCategory K]
     (S : Cone (F ⋙ J.plusFunctor D ⋙ (evaluation Cᵒᵖ D).obj (op X))) :
     S.pt ⟶ (J.plusObj (limit F)).obj (op X) :=
   let e := colimitLimitIso (F ⋙ J.diagramFunctor D X)
+  -- porting note: the next specific `have` had to be introduce to avoid universe problems
+  have : PreservesLimit F (diagramFunctor J D X) :=
+    preservesLimit_diagramFunctor.{w, v, u} X K F
   let t : J.diagram (limit F) X ≅ limit (F ⋙ J.diagramFunctor D X) :=
-    (isLimitOfPreserves (J.diagramFunctor D X) (limit.isLimit _)).conePointUniqueUpToIso
+    (isLimitOfPreserves (J.diagramFunctor D X) (limit.isLimit F)).conePointUniqueUpToIso
       (limit.isLimit _)
   let p : (J.plusObj (limit F)).obj (op X) ≅ colimit (limit (F ⋙ J.diagramFunctor D X)) :=
     HasColimit.isoOfNatIso t
@@ -135,15 +138,15 @@ def liftToPlusObjLimitObj {K : Type max v u} [SmallCategory K] [FinCategory K]
     NatIso.ofComponents (fun k => colimitObjIsoColimitCompEvaluation _ k)
       (by
         intro i j f
-        rw [← Iso.eq_comp_inv, category.assoc, ← iso.inv_comp_eq]
-        ext w
-        dsimp [plus_map]
+        rw [← Iso.eq_comp_inv, Category.assoc, ← Iso.inv_comp_eq]
+        refine' colimit.hom_ext (fun w => _)
+        dsimp [plusMap]
         erw [colimit.ι_map_assoc,
-          colimit_obj_iso_colimit_comp_evaluation_ι_inv (F ⋙ J.diagram_functor D X).flip w j,
-          colimit_obj_iso_colimit_comp_evaluation_ι_inv_assoc (F ⋙ J.diagram_functor D X).flip w i]
-        rw [← (colimit.ι (F ⋙ J.diagram_functor D X).flip w).naturality]
+          colimitObjIsoColimitCompEvaluation_ι_inv (F ⋙ J.diagramFunctor D X).flip w j,
+          colimitObjIsoColimitCompEvaluation_ι_inv_assoc (F ⋙ J.diagramFunctor D X).flip w i]
+        rw [← (colimit.ι (F ⋙ J.diagramFunctor D X).flip w).naturality]
         rfl)
-  limit.lift _ S ≫ (HasLimit.isoOfNatIso s.symm).Hom ≫ e.inv ≫ p.inv
+  limit.lift _ S ≫ (HasLimit.isoOfNatIso s.symm).hom ≫ e.inv ≫ p.inv
 #align category_theory.grothendieck_topology.lift_to_plus_obj_limit_obj CategoryTheory.GrothendieckTopology.liftToPlusObjLimitObj
 
 -- This lemma should not be used directly. Instead, one should use the fact that
