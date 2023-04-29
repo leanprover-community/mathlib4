@@ -183,12 +183,13 @@ def prodBinaryFanIsLimit (X Y : TopCat.{u}) : IsLimit (prodBinaryFan X Y) where
   fac := by
     rintro S (_ | _)
     dsimp [prodBinaryFan] at * <;> simp
+    sorry
   uniq := by
     intro S m h
-    ext x
+    -- porting note: used to be `ext x`
+    refine' ContinuousMap.ext (fun (x : ↥(S.pt)) => Prod.ext _ _)
     · specialize h ⟨WalkingPair.left⟩
       apply_fun fun e => e x  at h
-      dsimp at *
       exact h
     · specialize h ⟨WalkingPair.right⟩
       apply_fun fun e => e x  at h
@@ -290,5 +291,3 @@ theorem embedding_prod_map {W X Y Z : TopCat} {f : W ⟶ X} {g : Y ⟶ Z} (hf : 
 #align Top.embedding_prod_map TopCat.embedding_prod_map
 
 end Prod
-
-
