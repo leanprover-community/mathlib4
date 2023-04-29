@@ -62,9 +62,9 @@ variable [Module.Free F K] [Module.Free K A]
 $\operatorname{rank}_F(A) = \operatorname{rank}_F(K) * \operatorname{rank}_K(A)$. -/
 theorem lift_rank_mul_lift_rank :
     Cardinal.lift.{w} (Module.rank F K) * Cardinal.lift.{v} (Module.rank K A) =
-    Cardinal.lift.{v} (Module.rank F A) := by
-  let b := Module.Free.chooseBasis F K
-  let c := Module.Free.chooseBasis K A
+      Cardinal.lift.{v} (Module.rank F A) := by
+  obtain ⟨_, b⟩ := Module.Free.exists_basis (R := F) (M := K)
+  obtain ⟨_, c⟩ := Module.Free.exists_basis (R := K) (M := A)
   rw [← (Module.rank F K).lift_id, ← b.mk_eq_rank, ← (Module.rank K A).lift_id, ← c.mk_eq_rank, ←
     lift_umax.{w, v}, ← (b.smul c).mk_eq_rank, mk_prod, lift_mul, lift_lift, lift_lift, lift_lift,
     lift_lift, lift_umax.{v, w}]
