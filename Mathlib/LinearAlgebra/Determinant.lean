@@ -542,10 +542,11 @@ nonrec def Basis.det : AlternatingMap R M R ι where
     apply det_updateColumn_smul
   map_eq_zero_of_eq' := by
     intro v i j h hij
-    rw [← Function.update_eq_self i v, h, ← det_transpose, e.to_matrix_update, ←
-      update_row_transpose, ← e.to_matrix_transpose_apply]
+    simp only
+    rw [← Function.update_eq_self i v, h, ← det_transpose, e.toMatrix_update, ← updateRow_transpose,
+      ← e.toMatrix_transpose_apply]
     apply det_zero_of_row_eq hij
-    rw [update_row_ne hij.symm, update_row_self]
+    rw [updateRow_ne hij.symm, updateRow_self]
 #align basis.det Basis.det
 
 set_option synthInstance.etaExperiment true in
