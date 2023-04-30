@@ -211,10 +211,8 @@ def assoc : (M ⊗[A] P) ⊗[R] N ≃ₗ[A] M ⊗[A] P ⊗[R] N :=
       rfl)
     (by
       ext
-      simp only [curry_apply, TensorProduct.curry_apply, mk_apply, TensorProduct.mk_apply,
-        uncurry_apply, TensorProduct.uncurry_apply, id_apply, lift_tmul, compr₂_apply,
-        restrictScalars_apply, Function.comp_apply, toFun_eq_coe, lcurry_apply,
-        LinearMap.comp_apply])
+      -- porting note: was `simp only [...]`
+      rfl)
 #align tensor_product.algebra_tensor_module.assoc TensorProduct.AlgebraTensorModule.assoc
 
 end CommSemiring
@@ -270,7 +268,8 @@ theorem baseChange_eq_ltensor : (f.baseChange A : A ⊗ M → A ⊗ N) = f.ltens
 @[simp]
 theorem baseChange_add : (f + g).baseChange A = f.baseChange A + g.baseChange A := by
   ext
-  simp [baseChange_eq_ltensor]
+  -- porting note: added `-baseChange_tmul`
+  simp [baseChange_eq_ltensor, -baseChange_tmul]
 #align linear_map.base_change_add LinearMap.baseChange_add
 
 @[simp]
