@@ -309,6 +309,11 @@ variable (f g : M →ₗ[R] N)
 set_option synthInstance.etaExperiment true in
 @[simp]
 theorem baseChange_sub : (f - g).baseChange A = f.baseChange A - g.baseChange A := by
+  -- porting note: was part of the `ext` below, but that's too slow so instead we have a horrible
+  -- mess which is also too slow.
+  have h := @TensorProduct.AlgebraTensorModule.curry_injective R A A M (A ⊗[R] N)
+  refine @h (_) (_) _ (_) (_) (_) _ (_) (_) (_) _ (_) (?_) _ _ ?_
+  · sorry  -- `infer_instance` times out
   ext
   simp [baseChange_eq_ltensor]
 #align linear_map.base_change_sub LinearMap.baseChange_sub
