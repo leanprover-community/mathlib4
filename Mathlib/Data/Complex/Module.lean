@@ -74,25 +74,25 @@ theorem real_smul {x : ℝ} {z : ℂ} : x • z = x * z :=
 
 end
 
-instance [SMul R ℝ] [SMul S ℝ] [SMulCommClass R S ℝ] : SMulCommClass R S ℂ
-    where smul_comm r s x := by ext <;> simp [smul_re, smul_im, smul_comm]
+instance [SMul R ℝ] [SMul S ℝ] [SMulCommClass R S ℝ] : SMulCommClass R S ℂ where
+  smul_comm r s x := by ext <;> simp [smul_re, smul_im, smul_comm]
 
-instance [SMul R S] [SMul R ℝ] [SMul S ℝ] [IsScalarTower R S ℝ] : IsScalarTower R S ℂ
-    where smul_assoc r s x := by ext <;> simp [smul_re, smul_im, smul_assoc]
+instance [SMul R S] [SMul R ℝ] [SMul S ℝ] [IsScalarTower R S ℝ] : IsScalarTower R S ℂ where
+  smul_assoc r s x := by ext <;> simp [smul_re, smul_im, smul_assoc]
 
-instance [SMul R ℝ] [SMul Rᵐᵒᵖ ℝ] [IsCentralScalar R ℝ] : IsCentralScalar R ℂ
-    where op_smul_eq_smul r x := by ext <;> simp [smul_re, smul_im, op_smul_eq_smul]
+instance [SMul R ℝ] [SMul Rᵐᵒᵖ ℝ] [IsCentralScalar R ℝ] : IsCentralScalar R ℂ where
+  op_smul_eq_smul r x := by ext <;> simp [smul_re, smul_im, op_smul_eq_smul]
 
 instance mulAction [Monoid R] [MulAction R ℝ] : MulAction R ℂ where
   one_smul x := by ext <;> simp [smul_re, smul_im, one_smul]
   mul_smul r s x := by ext <;> simp [smul_re, smul_im, mul_smul]
 
-instance distribSmul [DistribSMul R ℝ] : DistribSMul R ℂ where
+instance distribSMul [DistribSMul R ℝ] : DistribSMul R ℂ where
   smul_add r x y := by ext <;> simp [smul_re, smul_im, smul_add]
   smul_zero r := by ext <;> simp [smul_re, smul_im, smul_zero]
 
 instance [Semiring R] [DistribMulAction R ℝ] : DistribMulAction R ℂ :=
-  { Complex.distribSmul, Complex.mulAction with }
+  { Complex.distribSMul, Complex.mulAction with }
 
 instance [Semiring R] [Module R ℝ] : Module R ℂ where
   add_smul r s x := by ext <;> simp [smul_re, smul_im, add_smul]
@@ -156,8 +156,7 @@ noncomputable def basisOneI : Basis (Fin 2) ℝ ℂ :=
         ext i
         fin_cases i <;> simp
       map_add' := fun z z' => by simp
-      -- why does `simp` not know how to apply `smul_cons`, which is a `@[simp]` lemma, here?
-      map_smul' := fun c z => by simp [Matrix.smul_cons c z.re, Matrix.smul_cons c z.im] }
+      map_smul' := fun c z => by simp }
 set_option linter.uppercaseLean3 false in
 #align complex.basis_one_I Complex.basisOneI
 
@@ -310,8 +309,8 @@ theorem conjAe_coe : ⇑conjAe = conj :=
 theorem toMatrix_conjAe :
     LinearMap.toMatrix basisOneI basisOneI conjAe.toLinearMap = !![1, 0; 0, -1] := by
   ext (i j)
-  simp [LinearMap.toMatrix_apply]
-  fin_cases i <;> fin_cases j <;> simp
+  -- Porting note: replaced non-terminal `simp [LinearMap.toMatrix_apply]`
+  fin_cases i <;> fin_cases j <;> simp [LinearMap.toMatrix_apply]
 #align complex.to_matrix_conj_ae Complex.toMatrix_conjAe
 
 /-- The identity and the complex conjugation are the only two `ℝ`-algebra homomorphisms of `ℂ`. -/
@@ -414,7 +413,7 @@ variable {A : Type _} [AddCommGroup A] [Module ℂ A] [StarAddMonoid A] [StarMod
 /-- Create a `selfAdjoint` element from a `skewAdjoint` element by multiplying by the scalar
 `-Complex.I`. -/
 @[simps]
-def skewAdjoint.negISmul : skewAdjoint A →ₗ[ℝ] selfAdjoint A where
+def skewAdjoint.negISMul : skewAdjoint A →ₗ[ℝ] selfAdjoint A where
   toFun a :=
     ⟨-I • ↑a, by
       simp only [neg_smul, neg_mem_iff, selfAdjoint.mem_iff, star_smul, star_def, conj_I,
@@ -428,10 +427,10 @@ def skewAdjoint.negISmul : skewAdjoint A →ₗ[ℝ] selfAdjoint A where
       selfAdjoint.val_smul, smul_neg, neg_inj]
     rw [smul_comm]
 set_option linter.uppercaseLean3 false in
-#align skew_adjoint.neg_I_smul skewAdjoint.negISmul
+#align skew_adjoint.neg_I_smul skewAdjoint.negISMul
 
-theorem skewAdjoint.I_smul_neg_I (a : skewAdjoint A) : I • (skewAdjoint.negISmul a : A) = a := by
-  simp only [smul_smul, skewAdjoint.negISmul_apply_coe, neg_smul, smul_neg, I_mul_I, one_smul,
+theorem skewAdjoint.I_smul_neg_I (a : skewAdjoint A) : I • (skewAdjoint.negISMul a : A) = a := by
+  simp only [smul_smul, skewAdjoint.negISMul_apply_coe, neg_smul, smul_neg, I_mul_I, one_smul,
     neg_neg]
 set_option linter.uppercaseLean3 false in
 #align skew_adjoint.I_smul_neg_I skewAdjoint.I_smul_neg_I
@@ -449,7 +448,7 @@ and `skewAdjoint` parts, but in a star module over `ℂ` we have
 `realPart_add_I_smul_imaginaryPart`, which allows us to decompose into a linear combination of
 `selfAdjoint`s. -/
 noncomputable def imaginaryPart : A →ₗ[ℝ] selfAdjoint A :=
-  skewAdjoint.negISmul.comp (skewAdjointPart ℝ)
+  skewAdjoint.negISMul.comp (skewAdjointPart ℝ)
 #align imaginary_part imaginaryPart
 
 scoped[ComplexStarModule] notation "ℜ" => realPart
@@ -466,7 +465,7 @@ theorem realPart_apply_coe (a : A) : (ℜ a : A) = (2 : ℝ)⁻¹ • (a + star 
 @[simp]
 theorem imaginaryPart_apply_coe (a : A) : (ℑ a : A) = -I • (2 : ℝ)⁻¹ • (a - star a) := by
   unfold imaginaryPart
-  simp only [LinearMap.coe_comp, Function.comp_apply, skewAdjoint.negISmul_apply_coe,
+  simp only [LinearMap.coe_comp, Function.comp_apply, skewAdjoint.negISMul_apply_coe,
     skewAdjointPart_apply_coe, invOf_eq_inv, neg_smul]
 #align imaginary_part_apply_coe imaginaryPart_apply_coe
 
