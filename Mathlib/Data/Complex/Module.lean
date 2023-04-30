@@ -98,7 +98,7 @@ instance [Semiring R] [Module R ℝ] : Module R ℂ where
   add_smul r s x := by ext <;> simp [smul_re, smul_im, add_smul]
   zero_smul r := by ext <;> simp [smul_re, smul_im, zero_smul]
 
-noncomputable instance [CommSemiring R] [Algebra R ℝ] : Algebra R ℂ :=
+instance [CommSemiring R] [Algebra R ℝ] : Algebra R ℂ :=
   { Complex.ofReal.comp (algebraMap R ℝ) with
     smul := (· • ·)
     smul_def' := fun r x => by ext <;> simp [smul_re, smul_im, Algebra.smul_def]
@@ -206,8 +206,7 @@ end Complex
 
 /- Register as an instance (with low priority) the fact that a complex vector space is also a real
 vector space. -/
-noncomputable instance (priority := 900) Module.complexToReal
-    (E : Type _) [AddCommGroup E] [Module ℂ E] :
+instance (priority := 900) Module.complexToReal (E : Type _) [AddCommGroup E] [Module ℂ E] :
     Module ℝ E :=
   RestrictScalars.module ℝ ℂ E
 #align module.complex_to_real Module.complexToReal
@@ -281,7 +280,7 @@ theorem imLm_coe : ⇑imLm = im :=
 #align complex.im_lm_coe Complex.imLm_coe
 
 /-- `ℝ`-algebra morphism version of the canonical embedding of `ℝ` in `ℂ`. -/
-noncomputable def ofRealAm : ℝ →ₐ[ℝ] ℂ :=
+def ofRealAm : ℝ →ₐ[ℝ] ℂ :=
   Algebra.ofId ℝ ℂ
 #align complex.of_real_am Complex.ofRealAm
 

@@ -435,6 +435,12 @@ instance : Ring ℂ := by infer_instance
 instance : CommSemiring ℂ :=
   inferInstance
 
+-- porting note: added due to changes in typeclass search order
+/-- This shortcut instance ensures we do not find `Semiring` via the noncomputable
+`Complex.field` instance. -/
+instance : Semiring ℂ :=
+  inferInstance
+
 /-- The "real part" map, considered as an additive group homomorphism. -/
 def reAddGroupHom : ℂ →+ ℝ where
   toFun := re
