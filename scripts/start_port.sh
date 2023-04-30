@@ -65,8 +65,8 @@ echo "Applying automated fixes"
 # Apply automated fixes
 (
     cd $GIT_WORK_TREE;
-    gsed -i 's/Mathbin\./Mathlib\./g' "$mathlib4_path"
-    gsed -i '/^import/{s/[.]Gcd/.GCD/g; s/[.]Modeq/.ModEq/g; s/[.]Nary/.NAry/g; s/[.]Peq/.PEq/g; s/[.]Pfun/.PFun/g; s/[.]Pnat/.PNat/g; s/[.]Smul/.SMul/g; s/[.]Zmod/.ZMod/g; s/[.]Nnreal/.NNReal/g; s/[.]Ennreal/.ENNReal/g}' "$mathlib4_path"
+    sed -i 's/Mathbin\./Mathlib\./g' "$mathlib4_path"
+    sed -i '/^import/{s/[.]Gcd/.GCD/g; s/[.]Modeq/.ModEq/g; s/[.]Nary/.NAry/g; s/[.]Peq/.PEq/g; s/[.]Pfun/.PFun/g; s/[.]Pnat/.PNat/g; s/[.]Smul/.SMul/g; s/[.]Zmod/.ZMod/g; s/[.]Nnreal/.NNReal/g; s/[.]Ennreal/.ENNReal/g}' "$mathlib4_path"
 
     python3 "$root_path/scripts/fix-line-breaks.py" "$mathlib4_path" "$mathlib4_path.tmp"
     mv "$mathlib4_path.tmp" "$mathlib4_path"
@@ -92,7 +92,7 @@ echo "Successfully created initial commits:"
 git log -n3 $BASE_COMMIT --graph --oneline
 echo ""
 
-mathlib3_module=$(grep '^! .*source module ' <"$GIT_WORK_TREE/$mathlib4_path" | gsed 's/.*source module \(.*\)$/\1/')
+mathlib3_module=$(grep '^! .*source module ' <"$GIT_WORK_TREE/$mathlib4_path" | sed 's/.*source module \(.*\)$/\1/')
 
 # stop using the temporary working tree
 unset GIT_WORK_TREE
