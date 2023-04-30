@@ -253,7 +253,7 @@ elab_rules : tactic |
     let (type, _) ← elabTermWithHoles t none (← getMainTag) true
     let .mvar goal ← mkFreshExprMVar type | failure
     if let some _ ← librarySearch goal (← librarySearchLemmas.get) [] then
-      reportOutOfHeartbeats tk
+      reportOutOfHeartbeats `library_search tk
       throwError "observe did not find a solution"
     else
       let v := (← instantiateMVars (mkMVar goal)).headBeta
