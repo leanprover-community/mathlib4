@@ -18,7 +18,7 @@ import Mathlib.Algebra.CharP.Invertible
 # Complex number as a vector space over `ℝ`
 
 This file contains the following instances:
-* Any `•`-structure (`has_smul`, `mul_action`, `distrib_mul_action`, `module`, `algebra`) on
+* Any `•`-structure (`SMul`, `MulAction`, `DistribMulAction`, `Module`, `Algebra`) on
   `ℝ` imbues a corresponding structure on `ℂ`. This includes the statement that `ℂ` is an `ℝ`
   algebra.
 * any complex vector space is a real vector space;
@@ -29,21 +29,21 @@ This file contains the following instances:
 It also defines bundled versions of four standard maps (respectively, the real part, the imaginary
 part, the embedding of `ℝ` in `ℂ`, and the complex conjugate):
 
-* `complex.re_lm` (`ℝ`-linear map);
-* `complex.im_lm` (`ℝ`-linear map);
-* `complex.of_real_am` (`ℝ`-algebra (homo)morphism);
-* `complex.conj_ae` (`ℝ`-algebra equivalence).
+* `Complex.reLm` (`ℝ`-linear map);
+* `Complex.imLm` (`ℝ`-linear map);
+* `Complex.ofRealAm` (`ℝ`-algebra (homo)morphism);
+* `Complex.conjAe` (`ℝ`-algebra equivalence).
 
-It also provides a universal property of the complex numbers `complex.lift`, which constructs a
+It also provides a universal property of the complex numbers `Complex.lift`, which constructs a
 `ℂ →ₐ[ℝ] A` into any `ℝ`-algebra `A` given a square root of `-1`.
 
-In addition, this file provides a decomposition into `real_part` and `imaginary_part` for any
-element of a `star_module` over `ℂ`.
+In addition, this file provides a decomposition into `realPart` and `imaginaryPart` for any
+element of a `StarModule` over `ℂ`.
 
 ## Notation
 
-* `ℜ` and `ℑ` for the `real_part` and `imaginary_part`, respectively, in the locale
-  `complex_star_module`.
+* `ℜ` and `ℑ` for the `realPart` and `imaginaryPart`, respectively, in the locale
+  `ComplexStarModule`.
 -/
 
 
@@ -58,7 +58,7 @@ section
 variable [SMul R ℝ]
 
 /- The useless `0` multiplication in `smul` is to make sure that
-`restrict_scalars.module ℝ ℂ ℂ = complex.module` definitionally. -/
+`RestrictScalars.module ℝ ℂ ℂ = Complex.module` definitionally. -/
 instance : SMul R ℂ where smul r x := ⟨r • x.re - 0 * x.im, r • x.im + 0 * x.re⟩
 
 theorem smul_re (r : R) (z : ℂ) : (r • z).re = r • z.re := by simp [(· • ·), SMul.smul]
@@ -116,14 +116,14 @@ section
 
 variable {A : Type _} [Semiring A] [Algebra ℝ A]
 
-/-- We need this lemma since `complex.coe_algebra_map` diverts the simp-normal form away from
-`alg_hom.commutes`. -/
+/-- We need this lemma since `Complex.coe_algebraMap` diverts the simp-normal form away from
+`AlgHom.commutes`. -/
 @[simp]
 theorem _root_.AlgHom.map_coe_real_complex (f : ℂ →ₐ[ℝ] A) (x : ℝ) : f x = algebraMap ℝ A x :=
   f.commutes x
 #align alg_hom.map_coe_real_complex AlgHom.map_coe_real_complex
 
-/-- Two `ℝ`-algebra homomorphisms from ℂ are equal if they agree on `complex.I`. -/
+/-- Two `ℝ`-algebra homomorphisms from `ℂ` are equal if they agree on `Complex.I`. -/
 @[ext]
 theorem algHom_ext ⦃f g : ℂ →ₐ[ℝ] A⦄ (h : f I = g I) : f = g := by
   ext ⟨x, y⟩
@@ -197,7 +197,7 @@ theorem rank_real_complex'.{u} : Cardinal.lift.{u} (Module.rank ℝ ℂ) = 2 := 
   rfl
 #align complex.rank_real_complex' Complex.rank_real_complex'
 
-/-- `fact` version of the dimension of `ℂ` over `ℝ`, locally useful in the definition of the
+/-- `Fact` version of the dimension of `ℂ` over `ℝ`, locally useful in the definition of the
 circle. -/
 theorem finrank_real_complex_fact : Fact (finrank ℝ ℂ = 2) :=
   ⟨finrank_real_complex⟩
@@ -224,7 +224,7 @@ theorem Complex.coe_smul {E : Type _} [AddCommGroup E] [Module ℂ E] (x : ℝ) 
   rfl
 #align complex.coe_smul Complex.coe_smul
 
-/-- The scalar action of `ℝ` on a `ℂ`-module `E` induced by `module.complex_to_real` commutes with
+/-- The scalar action of `ℝ` on a `ℂ`-module `E` induced by `Module.complexToReal` commutes with
 another scalar action of `M` on `E` whenever the action of `ℂ` commutes with the action of `M`. -/
 instance (priority := 900) SMulCommClass.complexToReal {M E : Type _} [AddCommGroup E] [Module ℂ E]
     [SMul M E] [SMulCommClass ℂ M E] : SMulCommClass ℝ M E
@@ -305,7 +305,7 @@ theorem conjAe_coe : ⇑conjAe = conj :=
   rfl
 #align complex.conj_ae_coe Complex.conjAe_coe
 
-/-- The matrix representation of `conj_ae`. -/
+/-- The matrix representation of `conjAe`. -/
 @[simp]
 theorem toMatrix_conjAe :
     LinearMap.toMatrix basisOneI basisOneI conjAe.toLinearMap = !![1, 0; 0, -1] := by
@@ -322,13 +322,13 @@ theorem real_algHom_eq_id_or_conj (f : ℂ →ₐ[ℝ] ℂ) : f = AlgHom.id ℝ 
   exacts[h, conj_I.symm ▸ h]
 #align complex.real_alg_hom_eq_id_or_conj Complex.real_algHom_eq_id_or_conj
 
-/-- The natural `add_equiv` from `ℂ` to `ℝ × ℝ`. -/
+/-- The natural `AddEquiv` from `ℂ` to `ℝ × ℝ`. -/
 @[simps! (config := { simpRhs := true }) apply symm_apply_re symm_apply_im]
 def equivRealProdAddHom : ℂ ≃+ ℝ × ℝ :=
   { equivRealProd with map_add' := by simp }
 #align complex.equiv_real_prod_add_hom Complex.equivRealProdAddHom
 
-/-- The natural `linear_equiv` from `ℂ` to `ℝ × ℝ`. -/
+/-- The natural `LinearEquiv` from `ℂ` to `ℝ × ℝ`. -/
 @[simps! (config := { simpRhs := true }) apply symm_apply_re symm_apply_im]
 def equivRealProdLm : ℂ ≃ₗ[ℝ] ℝ × ℝ :=
   { equivRealProdAddHom with
@@ -343,7 +343,7 @@ variable {A : Type _} [Ring A] [Algebra ℝ A]
 set_option synthInstance.etaExperiment true in
 /-- There is an alg_hom from `ℂ` to any `ℝ`-algebra with an element that squares to `-1`.
 
-See `complex.lift` for this as an equiv. -/
+See `Complex.lift` for this as an equiv. -/
 def liftAux (I' : A) (hf : I' * I' = -1) : ℂ →ₐ[ℝ] A :=
   AlgHom.ofLinearMap
     ((Algebra.ofId ℝ A).toLinearMap.comp reLm + (LinearMap.toSpanSingleton _ _ I').comp imLm)
@@ -373,9 +373,9 @@ set_option linter.uppercaseLean3 false in
 /-- A universal property of the complex numbers, providing a unique `ℂ →ₐ[ℝ] A` for every element
 of `A` which squares to `-1`.
 
-This can be used to embed the complex numbers in the `quaternion`s.
+This can be used to embed the complex numbers in the `Quaternion`s.
 
-This isomorphism is named to match the very similar `zsqrtd.lift`. -/
+This isomorphism is named to match the very similar `Zsqrtd.lift`. -/
 @[simps (config := { simpRhs := true })]
 def lift : { I' : A // I' * I' = -1 } ≃ (ℂ →ₐ[ℝ] A) where
   toFun I' := liftAux I' I'.prop
@@ -386,14 +386,14 @@ def lift : { I' : A // I' * I' = -1 } ≃ (ℂ →ₐ[ℝ] A) where
   right_inv F := algHom_ext <| liftAux_apply_I _ _
 #align complex.lift Complex.lift
 
--- When applied to `complex.I` itself, `lift` is the identity.
+-- When applied to `Complex.I` itself, `lift` is the identity.
 @[simp]
 theorem liftAux_I : liftAux I I_mul_I = AlgHom.id ℝ ℂ :=
   algHom_ext <| liftAux_apply_I _ _
 set_option linter.uppercaseLean3 false in
 #align complex.lift_aux_I Complex.liftAux_I
 
--- When applied to `-complex.I`, `lift` is conjugation, `conj`.
+-- When applied to `-Complex.I`, `lift` is conjugation, `conj`.
 @[simp]
 theorem liftAux_neg_I : liftAux (-I) ((neg_mul_neg _ _).trans I_mul_I) = conjAe :=
   algHom_ext <| (liftAux_apply_I _ _).trans conj_I.symm
@@ -410,8 +410,8 @@ open Complex
 
 variable {A : Type _} [AddCommGroup A] [Module ℂ A] [StarAddMonoid A] [StarModule ℂ A]
 
-/-- Create a `self_adjoint` element from a `skew_adjoint` element by multiplying by the scalar
-`-complex.I`. -/
+/-- Create a `selfAdjoint` element from a `skewAdjoint` element by multiplying by the scalar
+`-Complex.I`. -/
 @[simps]
 def skewAdjoint.negISmul : skewAdjoint A →ₗ[ℝ] selfAdjoint A where
   toFun a :=
@@ -436,17 +436,17 @@ set_option linter.uppercaseLean3 false in
 #align skew_adjoint.I_smul_neg_I skewAdjoint.I_smul_neg_I
 
 /-- The real part `ℜ a` of an element `a` of a star module over `ℂ`, as a linear map. This is just
-`self_adjoint_part ℝ`, but we provide it as a separate definition in order to link it with lemmas
-concerning the `imaginary_part`, which doesn't exist in star modules over other rings. -/
+`selfAdjointPart ℝ`, but we provide it as a separate definition in order to link it with lemmas
+concerning the `imaginaryPart`, which doesn't exist in star modules over other rings. -/
 noncomputable def realPart : A →ₗ[ℝ] selfAdjoint A :=
   selfAdjointPart ℝ
 #align real_part realPart
 
 /-- The imaginary part `ℑ a` of an element `a` of a star module over `ℂ`, as a linear map into the
-self adjoint elements. In a general star module, we have a decomposition into the `self_adjoint`
-and `skew_adjoint` parts, but in a star module over `ℂ` we have
-`real_part_add_I_smul_imaginary_part`, which allows us to decompose into a linear combination of
-`self_adjoint`s. -/
+self adjoint elements. In a general star module, we have a decomposition into the `selfAdjoint`
+and `skewAdjoint` parts, but in a star module over `ℂ` we have
+`realPart_add_I_smul_imaginaryPart`, which allows us to decompose into a linear combination of
+`selfAdjoint`s. -/
 noncomputable def imaginaryPart : A →ₗ[ℝ] selfAdjoint A :=
   skewAdjoint.negISmul.comp (skewAdjointPart ℝ)
 #align imaginary_part imaginaryPart
@@ -469,7 +469,7 @@ theorem imaginaryPart_apply_coe (a : A) : (ℑ a : A) = -I • (2 : ℝ)⁻¹ �
     skewAdjointPart_apply_coe, invOf_eq_inv, neg_smul]
 #align imaginary_part_apply_coe imaginaryPart_apply_coe
 
-/-- The standard decomposition of `ℜ a + complex.I • ℑ a = a` of an element of a star module over
+/-- The standard decomposition of `ℜ a + Complex.I • ℑ a = a` of an element of a star module over
 `ℂ` into a linear combination of self adjoint elements. -/
 theorem realPart_add_I_smul_imaginaryPart (a : A) : (ℜ a + I • ℑ a : A) = a := by
   simpa only [smul_smul, realPart_apply_coe, imaginaryPart_apply_coe, neg_smul, I_mul_I, one_smul,
