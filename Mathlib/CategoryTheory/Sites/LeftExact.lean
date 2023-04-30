@@ -74,7 +74,8 @@ abbrev liftToDiagramLimitObj {X : C} {K : Type max v u} [SmallCategory K] [HasLi
       rfl)
 #align category_theory.grothendieck_topology.lift_to_diagram_limit_obj CategoryTheory.GrothendieckTopology.liftToDiagramLimitObj
 
-instance preservesLimit_diagramFunctor (X : C) (K : Type max v u) [SmallCategory K] [HasLimitsOfShape K D] (F : K ⥤ Cᵒᵖ ⥤ D) :
+instance preservesLimit_diagramFunctor
+    (X : C) (K : Type max v u) [SmallCategory K] [HasLimitsOfShape K D] (F : K ⥤ Cᵒᵖ ⥤ D) :
     PreservesLimit F (J.diagramFunctor D X) :=
   preservesLimitOfEvaluation _ _ fun W =>
     preservesLimitOfPreservesLimitCone (limit.isLimit _)
@@ -101,7 +102,8 @@ instance preservesLimit_diagramFunctor (X : C) (K : Type max v u) [SmallCategory
           dsimp [diagramNatTrans]
           simp }
 
-instance preservesLimitsOfShape_diagramFunctor (X : C) (K : Type max v u) [SmallCategory K] [HasLimitsOfShape K D] :
+instance preservesLimitsOfShape_diagramFunctor
+    (X : C) (K : Type max v u) [SmallCategory K] [HasLimitsOfShape K D] :
     PreservesLimitsOfShape K (J.diagramFunctor D X) :=
   ⟨by apply preservesLimit_diagramFunctor.{w, v, u}⟩
 
