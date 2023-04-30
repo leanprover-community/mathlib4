@@ -530,9 +530,13 @@ theorem flat_iff_lan_flat (F : C ⥤ D) :
     RepresentablyFlat F ↔ RepresentablyFlat (lan F.op : _ ⥤ Dᵒᵖ ⥤ Type u₁) :=
 --    ⟨λ H, by exactI category_theory.Lan_flat_of_flat (Type u₁) F, λ H,
   ⟨fun H => by exact
-  let foo : ReflectsLimits.{u₁, u₁, u₁ + 1, u₁ + 1} (forget.{u₁ + 1, u₁, u₁} (Type u₁)) :=
-       Limits.idReflectsLimits
-  CategoryTheory.lan_flat_of_flat (Type u₁) F, fun H => by
+  -- porting note: this was `infer_instance` in mathlib3
+  let foo : ReflectsLimits.{u₁, u₁, u₁ + 1, u₁ + 1} (forget.{u₁ + 1, u₁, u₁} (Type u₁)) := Limits.idReflectsLimits
+  let moo : PreservesColimits.{u₁, u₁, u₁ + 1, u₁ + 1} (forget.{u₁ + 1, u₁, u₁} (Type u₁)) := Limits.idPreservesColimits.{u₁, u₁, u₁, u₁+1}
+  let bar : PreservesFilteredColimits.{u₁, u₁ + 1, u₁ + 1} (forget.{u₁ + 1, u₁, u₁} (Type u₁)) := PreservesColimits.preservesFilteredColimits.{u₁, u₁+1, u₁+1} (forget.{u₁+1, u₁, u₁} (Type u₁))
+  let baz : PreservesLimits.{u₁, u₁, u₁ + 1, u₁ + 1} (forget.{u₁ + 1, u₁, u₁} (Type u₁)) := Limits.idPreservesLimits.{u₁, u₁, u₁, u₁+1}
+  CategoryTheory.lan_flat_of_flat (Type u₁) F,
+  fun H => by
     skip
     haveI := preservesFiniteLimitsOfFlat (lan F.op : _ ⥤ Dᵒᵖ ⥤ Type u₁)
     haveI : PreservesFiniteLimits F := by
@@ -547,20 +551,28 @@ set_option linter.uppercaseLean3 false in
 -/
 noncomputable def preservesFiniteLimitsIffLanPreservesFiniteLimits (F : C ⥤ D) :
     PreservesFiniteLimits F ≃ PreservesFiniteLimits (lan F.op : _ ⥤ Dᵒᵖ ⥤ Type u₁) where
-  toFun _ := inferInstance
+  toFun _ :=
+    let foo : ReflectsLimits.{u₁, u₁, u₁ + 1, u₁ + 1} (forget.{u₁ + 1, u₁, u₁} (Type u₁)) := Limits.idReflectsLimits
+    let moo : PreservesColimits.{u₁, u₁, u₁ + 1, u₁ + 1} (forget.{u₁ + 1, u₁, u₁} (Type u₁)) := Limits.idPreservesColimits.{u₁, u₁, u₁, u₁+1}
+    let bar : PreservesFilteredColimits.{u₁, u₁ + 1, u₁ + 1} (forget.{u₁ + 1, u₁, u₁} (Type u₁)) := PreservesColimits.preservesFilteredColimits.{u₁, u₁+1, u₁+1} (forget.{u₁+1, u₁, u₁} (Type u₁))
+    let baz : PreservesLimits.{u₁, u₁, u₁ + 1, u₁ + 1} (forget.{u₁ + 1, u₁, u₁} (Type u₁)) := Limits.idPreservesLimits.{u₁, u₁, u₁, u₁+1}
+    CategoryTheory.lanPreservesFiniteLimitsOfPreservesFiniteLimits.{u₁, u₁+1} (Type u₁) F
   invFun _ := by
     apply preservesFiniteLimitsOfPreservesFiniteLimitsOfSize.{u₁}
     intros ; skip; apply preservesLimitOfLanPreservesLimit
   left_inv x := by
-    cases x; unfold preservesFiniteLimitsOfFlat
-    dsimp only [preserves_finite_limits_of_preserves_finite_limits_of_size]; congr
+    cases x;
+    --unfold preservesFiniteLimitsOfFlat
+    dsimp only [preservesFiniteLimitsOfPreservesFiniteLimitsOfSize]; congr
+    sorry
   right_inv x := by
     cases x
-    unfold preservesFiniteLimitsOfFlat
+    --unfold preservesFiniteLimitsOfFlat
     congr
     unfold
       CategoryTheory.lanPreservesFiniteLimitsOfPreservesFiniteLimits CategoryTheory.lanPreservesFiniteLimitsOfFlat
-    dsimp only [preserves_finite_limits_of_preserves_finite_limits_of_size]; congr
+    dsimp only [preservesFiniteLimitsOfPreservesFiniteLimitsOfSize]; congr
+    sorry
 set_option linter.uppercaseLean3 false in
 #align category_theory.preserves_finite_limits_iff_Lan_preserves_finite_limits CategoryTheory.preservesFiniteLimitsIffLanPreservesFiniteLimits
 
