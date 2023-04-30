@@ -1070,7 +1070,7 @@ theorem unionₛ_empty : ⋃₀ (∅ : ZFSet.{u}) = ∅ :=
 
 @[simp]
 theorem unionₛ_singleton {x : ZFSet.{u}} : ⋃₀ ({x} : ZFSet) = x :=
-  ext fun y => by simp_rw [mem_unionₛ, exists_prop, mem_singleton, exists_eq_left]
+  ext fun y => by simp_rw [mem_unionₛ, mem_singleton, exists_eq_left]
 #align Set.sUnion_singleton ZFSet.unionₛ_singleton
 
 @[simp]

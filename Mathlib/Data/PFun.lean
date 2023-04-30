@@ -593,7 +593,7 @@ theorem comp_id (f : α →. β) : f.comp (PFun.id α) = f :=
 @[simp]
 theorem dom_comp (f : β →. γ) (g : α →. β) : (f.comp g).Dom = g.preimage f.Dom := by
   ext
-  simp_rw [mem_preimage, mem_dom, comp_apply, Part.mem_bind_iff, exists_prop, ← exists_and_right]
+  simp_rw [mem_preimage, mem_dom, comp_apply, Part.mem_bind_iff, ← exists_and_right]
   rw [exists_comm]
   simp_rw [and_comm]
 #align pfun.dom_comp PFun.dom_comp
@@ -602,8 +602,7 @@ theorem dom_comp (f : β →. γ) (g : α →. β) : (f.comp g).Dom = g.preimage
 theorem preimage_comp (f : β →. γ) (g : α →. β) (s : Set γ) :
     (f.comp g).preimage s = g.preimage (f.preimage s) := by
   ext
-  simp_rw [mem_preimage, comp_apply, Part.mem_bind_iff, exists_prop, ← exists_and_right, ←
-    exists_and_left]
+  simp_rw [mem_preimage, comp_apply, Part.mem_bind_iff, ← exists_and_right, ← exists_and_left]
   rw [exists_comm]
   simp_rw [and_assoc, and_comm]
 #align pfun.preimage_comp PFun.preimage_comp
@@ -612,8 +611,7 @@ theorem preimage_comp (f : β →. γ) (g : α →. β) (s : Set γ) :
 theorem Part.bind_comp (f : β →. γ) (g : α →. β) (a : Part α) :
     a.bind (f.comp g) = (a.bind g).bind f := by
   ext c
-  simp_rw [Part.mem_bind_iff, comp_apply, Part.mem_bind_iff, exists_prop, ← exists_and_right, ←
-    exists_and_left]
+  simp_rw [Part.mem_bind_iff, comp_apply, Part.mem_bind_iff, ← exists_and_right, ← exists_and_left]
   rw [exists_comm]
   simp_rw [and_assoc]
 #align part.bind_comp PFun.Part.bind_comp
