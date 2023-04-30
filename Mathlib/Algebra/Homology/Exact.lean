@@ -239,6 +239,7 @@ instance Exact.epi_factorThruKernelSubobject (h : Exact f g) :
   haveI := h.epi
   apply epi_comp
 
+-- porting note: this can no longer be an instance in Lean4
 lemma Exact.epi_kernel_lift (h : Exact f g) : Epi (kernel.lift g f h.w) := by
   rw [← factorThruKernelSubobject_comp_kernelSubobjectIso]
   haveI := h.epi_factorThruKernelSubobject
