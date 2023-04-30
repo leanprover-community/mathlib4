@@ -158,11 +158,13 @@ noncomputable def basisOneI : Basis (Fin 2) ℝ ℂ :=
       map_add' := fun z z' => by simp
       -- why does `simp` not know how to apply `smul_cons`, which is a `@[simp]` lemma, here?
       map_smul' := fun c z => by simp [Matrix.smul_cons c z.re, Matrix.smul_cons c z.im] }
+set_option linter.uppercaseLean3 false in
 #align complex.basis_one_I Complex.basisOneI
 
 @[simp]
 theorem coe_basisOneI_repr (z : ℂ) : ⇑(basisOneI.repr z) = ![z.re, z.im] :=
   rfl
+set_option linter.uppercaseLean3 false in
 #align complex.coe_basis_one_I_repr Complex.coe_basisOneI_repr
 
 @[simp]
@@ -171,9 +173,11 @@ theorem coe_basisOneI : ⇑basisOneI = ![1, I] :=
     Basis.apply_eq_iff.mpr <|
       Finsupp.ext fun j => by
         fin_cases i <;> fin_cases j <;>
-          simp only [coe_basis_one_I_repr, Finsupp.single_eq_of_ne, Matrix.cons_val_zero,
+          -- Porting note: consider squeezing again
+          simp [coe_basisOneI_repr, Finsupp.single_eq_of_ne, Matrix.cons_val_zero,
             Matrix.cons_val_one, Matrix.head_cons, Fin.one_eq_zero_iff, Ne.def, not_false_iff, I_re,
             Nat.succ_succ_ne_one, one_im, I_im, one_re, Finsupp.single_eq_same, Fin.zero_eq_one_iff]
+set_option linter.uppercaseLean3 false in
 #align complex.coe_basis_one_I Complex.coe_basisOneI
 
 instance : FiniteDimensional ℝ ℂ :=
@@ -181,7 +185,7 @@ instance : FiniteDimensional ℝ ℂ :=
 
 @[simp]
 theorem finrank_real_complex : FiniteDimensional.finrank ℝ ℂ = 2 := by
-  rw [finrank_eq_card_basis basis_one_I, Fintype.card_fin]
+  rw [finrank_eq_card_basis basisOneI, Fintype.card_fin]
 #align complex.finrank_real_complex Complex.finrank_real_complex
 
 @[simp]
@@ -202,7 +206,8 @@ end Complex
 
 /- Register as an instance (with low priority) the fact that a complex vector space is also a real
 vector space. -/
-instance (priority := 900) Module.complexToReal (E : Type _) [AddCommGroup E] [Module ℂ E] :
+noncomputable instance (priority := 900) Module.complexToReal
+    (E : Type _) [AddCommGroup E] [Module ℂ E] :
     Module ℝ E :=
   RestrictScalars.module ℝ ℂ E
 #align module.complex_to_real Module.complexToReal
@@ -276,12 +281,12 @@ theorem imLm_coe : ⇑imLm = im :=
 #align complex.im_lm_coe Complex.imLm_coe
 
 /-- `ℝ`-algebra morphism version of the canonical embedding of `ℝ` in `ℂ`. -/
-def ofRealAm : ℝ →ₐ[ℝ] ℂ :=
+noncomputable def ofRealAm : ℝ →ₐ[ℝ] ℂ :=
   Algebra.ofId ℝ ℂ
 #align complex.of_real_am Complex.ofRealAm
 
 @[simp]
-theorem ofRealAm_coe : ⇑ofRealAm = coe :=
+theorem ofRealAm_coe : ⇑ofRealAm = ((↑) : ℝ → ℂ) :=
   rfl
 #align complex.of_real_am_coe Complex.ofRealAm_coe
 
@@ -312,26 +317,29 @@ theorem toMatrix_conjAe :
 theorem real_algHom_eq_id_or_conj (f : ℂ →ₐ[ℝ] ℂ) : f = AlgHom.id ℝ ℂ ∨ f = conjAe := by
   refine'
       (eq_or_eq_neg_of_sq_eq_sq (f I) I <| by rw [← map_pow, I_sq, map_neg, map_one]).imp _ _ <;>
-    refine' fun h => alg_hom_ext _
+    refine' fun h => algHom_ext _
   exacts[h, conj_I.symm ▸ h]
 #align complex.real_alg_hom_eq_id_or_conj Complex.real_algHom_eq_id_or_conj
 
 /-- The natural `add_equiv` from `ℂ` to `ℝ × ℝ`. -/
-@[simps (config := { simpRhs := true }) apply symm_apply_re symm_apply_im]
+@[simps! (config := { simpRhs := true }) apply symm_apply_re symm_apply_im]
 def equivRealProdAddHom : ℂ ≃+ ℝ × ℝ :=
   { equivRealProd with map_add' := by simp }
 #align complex.equiv_real_prod_add_hom Complex.equivRealProdAddHom
 
 /-- The natural `linear_equiv` from `ℂ` to `ℝ × ℝ`. -/
-@[simps (config := { simpRhs := true }) apply symm_apply_re symm_apply_im]
+@[simps! (config := { simpRhs := true }) apply symm_apply_re symm_apply_im]
 def equivRealProdLm : ℂ ≃ₗ[ℝ] ℝ × ℝ :=
-  { equivRealProdAddHom with map_smul' := by simp [equiv_real_prod_add_hom] }
+  { equivRealProdAddHom with
+    -- Porting note: `simp` has issues with `Prod.smul_def`
+    map_smul' := fun r c => by simp [equivRealProdAddHom, (Prod.smul_def), smul_eq_mul] }
 #align complex.equiv_real_prod_lm Complex.equivRealProdLm
 
 section lift
 
 variable {A : Type _} [Ring A] [Algebra ℝ A]
 
+set_option synthInstance.etaExperiment true in
 /-- There is an alg_hom from `ℂ` to any `ℝ`-algebra with an element that squares to `-1`.
 
 See `complex.lift` for this as an equiv. -/
@@ -346,11 +354,9 @@ def liftAux (I' : A) (hf : I' * I' = -1) : ℂ →ₐ[ℝ] A :=
       rw [add_mul, mul_add, mul_add, add_comm _ (y₁ • I' * y₂ • I'), add_add_add_comm]
       congr 1
       -- equate "real" and "imaginary" parts
-      ·
-        rw [smul_mul_smul, hf, smul_neg, ← Algebra.algebraMap_eq_smul_one, ← sub_eq_add_neg, ←
+      · rw [smul_mul_smul, hf, smul_neg, ← Algebra.algebraMap_eq_smul_one, ← sub_eq_add_neg, ←
           RingHom.map_mul, ← RingHom.map_sub]
-      ·
-        rw [Algebra.smul_def, Algebra.smul_def, Algebra.smul_def, ← Algebra.right_comm _ x₂, ←
+      · rw [Algebra.smul_def, Algebra.smul_def, Algebra.smul_def, ← Algebra.right_comm _ x₂, ←
           mul_assoc, ← add_mul, ← RingHom.map_mul, ← RingHom.map_mul, ← RingHom.map_add]
 #align complex.lift_aux Complex.liftAux
 
@@ -359,8 +365,9 @@ theorem liftAux_apply (I' : A) (hI') (z : ℂ) : liftAux I' hI' z = algebraMap �
   rfl
 #align complex.lift_aux_apply Complex.liftAux_apply
 
-theorem liftAux_apply_i (I' : A) (hI') : liftAux I' hI' I = I' := by simp
-#align complex.lift_aux_apply_I Complex.liftAux_apply_i
+theorem liftAux_apply_I (I' : A) (hI') : liftAux I' hI' I = I' := by simp
+set_option linter.uppercaseLean3 false in
+#align complex.lift_aux_apply_I Complex.liftAux_apply_I
 
 /-- A universal property of the complex numbers, providing a unique `ℂ →ₐ[ℝ] A` for every element
 of `A` which squares to `-1`.
@@ -370,23 +377,27 @@ This can be used to embed the complex numbers in the `quaternion`s.
 This isomorphism is named to match the very similar `zsqrtd.lift`. -/
 @[simps (config := { simpRhs := true })]
 def lift : { I' : A // I' * I' = -1 } ≃ (ℂ →ₐ[ℝ] A) where
-  toFun I' := liftAux I' I'.Prop
+  toFun I' := liftAux I' I'.prop
   invFun F := ⟨F I, by rw [← F.map_mul, I_mul_I, AlgHom.map_neg, AlgHom.map_one]⟩
-  left_inv I' := Subtype.ext <| liftAux_apply_i I' I'.Prop
-  right_inv F := algHom_ext <| liftAux_apply_i _ _
+  -- Porting note: was
+  -- left_inv I' := Subtype.ext <| liftAux_apply_i I' I'.Prop
+  left_inv I' := Subtype.ext <| by apply liftAux_apply_I
+  right_inv F := algHom_ext <| liftAux_apply_I _ _
 #align complex.lift Complex.lift
 
 -- When applied to `complex.I` itself, `lift` is the identity.
 @[simp]
-theorem liftAux_i : liftAux I I_mul_I = AlgHom.id ℝ ℂ :=
-  algHom_ext <| liftAux_apply_i _ _
-#align complex.lift_aux_I Complex.liftAux_i
+theorem liftAux_I : liftAux I I_mul_I = AlgHom.id ℝ ℂ :=
+  algHom_ext <| liftAux_apply_I _ _
+set_option linter.uppercaseLean3 false in
+#align complex.lift_aux_I Complex.liftAux_I
 
 -- When applied to `-complex.I`, `lift` is conjugation, `conj`.
 @[simp]
-theorem liftAux_neg_i : liftAux (-I) ((neg_mul_neg _ _).trans I_mul_I) = conjAe :=
-  algHom_ext <| (liftAux_apply_i _ _).trans conj_I.symm
-#align complex.lift_aux_neg_I Complex.liftAux_neg_i
+theorem liftAux_neg_I : liftAux (-I) ((neg_mul_neg _ _).trans I_mul_I) = conjAe :=
+  algHom_ext <| (liftAux_apply_I _ _).trans conj_I.symm
+set_option linter.uppercaseLean3 false in
+#align complex.lift_aux_neg_I Complex.liftAux_neg_I
 
 end lift
 
@@ -403,9 +414,9 @@ variable {A : Type _} [AddCommGroup A] [Module ℂ A] [StarAddMonoid A] [StarMod
 @[simps]
 def skewAdjoint.negISmul : skewAdjoint A →ₗ[ℝ] selfAdjoint A where
   toFun a :=
-    ⟨-I • a, by
-      simp only [selfAdjoint.mem_iff, neg_smul, star_neg, star_smul, star_def, conj_I,
-        skewAdjoint.star_val_eq, neg_smul_neg]⟩
+    ⟨-I • ↑a, by
+      simp only [neg_smul, neg_mem_iff, selfAdjoint.mem_iff, star_smul, star_def, conj_I,
+        star_val_eq, smul_neg, neg_neg]⟩
   map_add' a b := by
     ext
     simp only [AddSubgroup.coe_add, smul_add, AddMemClass.mk_add_mk]
@@ -414,12 +425,14 @@ def skewAdjoint.negISmul : skewAdjoint A →ₗ[ℝ] selfAdjoint A where
     simp only [neg_smul, skewAdjoint.val_smul, AddSubgroup.coe_mk, RingHom.id_apply,
       selfAdjoint.val_smul, smul_neg, neg_inj]
     rw [smul_comm]
+set_option linter.uppercaseLean3 false in
 #align skew_adjoint.neg_I_smul skewAdjoint.negISmul
 
-theorem skewAdjoint.i_smul_neg_i (a : skewAdjoint A) : I • (skewAdjoint.negISmul a : A) = a := by
+theorem skewAdjoint.I_smul_neg_I (a : skewAdjoint A) : I • (skewAdjoint.negISmul a : A) = a := by
   simp only [smul_smul, skewAdjoint.negISmul_apply_coe, neg_smul, smul_neg, I_mul_I, one_smul,
     neg_neg]
-#align skew_adjoint.I_smul_neg_I skewAdjoint.i_smul_neg_i
+set_option linter.uppercaseLean3 false in
+#align skew_adjoint.I_smul_neg_I skewAdjoint.I_smul_neg_I
 
 /-- The real part `ℜ a` of an element `a` of a star module over `ℂ`, as a linear map. This is just
 `self_adjoint_part ℝ`, but we provide it as a separate definition in order to link it with lemmas
@@ -437,11 +450,10 @@ noncomputable def imaginaryPart : A →ₗ[ℝ] selfAdjoint A :=
   skewAdjoint.negISmul.comp (skewAdjointPart ℝ)
 #align imaginary_part imaginaryPart
 
--- mathport name: exprℜ
 scoped[ComplexStarModule] notation "ℜ" => realPart
-
--- mathport name: exprℑ
 scoped[ComplexStarModule] notation "ℑ" => imaginaryPart
+
+open ComplexStarModule
 
 @[simp]
 theorem realPart_apply_coe (a : A) : (ℜ a : A) = (2 : ℝ)⁻¹ • (a + star a) := by
@@ -452,29 +464,32 @@ theorem realPart_apply_coe (a : A) : (ℜ a : A) = (2 : ℝ)⁻¹ • (a + star 
 @[simp]
 theorem imaginaryPart_apply_coe (a : A) : (ℑ a : A) = -I • (2 : ℝ)⁻¹ • (a - star a) := by
   unfold imaginaryPart
-  simp only [LinearMap.coe_comp, skewAdjoint.negISmul_apply_coe, skewAdjointPart_apply_coe,
-    invOf_eq_inv]
+  simp only [LinearMap.coe_comp, Function.comp_apply, skewAdjoint.negISmul_apply_coe,
+    skewAdjointPart_apply_coe, invOf_eq_inv, neg_smul]
 #align imaginary_part_apply_coe imaginaryPart_apply_coe
 
 /-- The standard decomposition of `ℜ a + complex.I • ℑ a = a` of an element of a star module over
 `ℂ` into a linear combination of self adjoint elements. -/
-theorem realPart_add_i_smul_imaginaryPart (a : A) : (ℜ a + I • ℑ a : A) = a := by
+theorem realPart_add_I_smul_imaginaryPart (a : A) : (ℜ a + I • ℑ a : A) = a := by
   simpa only [smul_smul, realPart_apply_coe, imaginaryPart_apply_coe, neg_smul, I_mul_I, one_smul,
     neg_sub, add_add_sub_cancel, smul_sub, smul_add, neg_sub_neg, invOf_eq_inv] using
     invOf_two_smul_add_invOf_two_smul ℝ a
-#align real_part_add_I_smul_imaginary_part realPart_add_i_smul_imaginaryPart
+set_option linter.uppercaseLean3 false in
+#align real_part_add_I_smul_imaginary_part realPart_add_I_smul_imaginaryPart
 
 @[simp]
-theorem realPart_i_smul (a : A) : ℜ (I • a) = -ℑ a := by
+theorem realPart_I_smul (a : A) : ℜ (I • a) = -ℑ a := by
   ext
   simp [smul_comm I, smul_sub, sub_eq_add_neg, add_comm]
-#align real_part_I_smul realPart_i_smul
+set_option linter.uppercaseLean3 false in
+#align real_part_I_smul realPart_I_smul
 
 @[simp]
-theorem imaginaryPart_i_smul (a : A) : ℑ (I • a) = ℜ a := by
+theorem imaginaryPart_I_smul (a : A) : ℑ (I • a) = ℜ a := by
   ext
   simp [smul_comm I, smul_smul I]
-#align imaginary_part_I_smul imaginaryPart_i_smul
+set_option linter.uppercaseLean3 false in
+#align imaginary_part_I_smul imaginaryPart_I_smul
 
 theorem realPart_smul (z : ℂ) (a : A) : ℜ (z • a) = z.re • ℜ a - z.im • ℑ a := by
   nth_rw 1 [← re_add_im z]
