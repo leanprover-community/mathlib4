@@ -192,8 +192,7 @@ theorem rank_real_complex : Module.rank ℝ ℂ = 2 := by simp [← finrank_eq_r
 #align complex.rank_real_complex Complex.rank_real_complex
 
 theorem rank_real_complex'.{u} : Cardinal.lift.{u} (Module.rank ℝ ℂ) = 2 := by
-  rw [← finrank_eq_rank, finrank_real_complex, Cardinal.lift_natCast]
-  rfl
+  rw [← finrank_eq_rank, finrank_real_complex, Cardinal.lift_natCast, Nat.cast_ofNat]
 #align complex.rank_real_complex' Complex.rank_real_complex'
 
 /-- `Fact` version of the dimension of `ℂ` over `ℝ`, locally useful in the definition of the
