@@ -73,4 +73,10 @@ example : True := by
   guard_hyp h2 :ₛ 2 = 2 → 1 + 1 = 2
   trivial
 
+def foo : ℕ → ℕ := id
+
+alias foo ← bar
+
+def baz (n : ℕ) := bar n
+
 end Alias
