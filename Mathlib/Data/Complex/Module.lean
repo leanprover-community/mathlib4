@@ -193,7 +193,8 @@ theorem rank_real_complex : Module.rank ℝ ℂ = 2 := by simp [← finrank_eq_r
 #align complex.rank_real_complex Complex.rank_real_complex
 
 theorem rank_real_complex'.{u} : Cardinal.lift.{u} (Module.rank ℝ ℂ) = 2 := by
-  simp [← finrank_eq_rank, finrank_real_complex, bit0]
+  rw [← finrank_eq_rank, finrank_real_complex, Cardinal.lift_natCast]
+  rfl
 #align complex.rank_real_complex' Complex.rank_real_complex'
 
 /-- `fact` version of the dimension of `ℂ` over `ℝ`, locally useful in the definition of the
@@ -238,8 +239,8 @@ instance (priority := 100) FiniteDimensional.complexToReal (E : Type _) [AddComm
 theorem rank_real_of_complex (E : Type _) [AddCommGroup E] [Module ℂ E] :
     Module.rank ℝ E = 2 * Module.rank ℂ E :=
   Cardinal.lift_inj.1 <| by
-    rw [← lift_rank_mul_lift_rank ℝ ℂ E, Complex.rank_real_complex]
-    simp [bit0]
+    rw [← lift_rank_mul_lift_rank ℝ ℂ E, Complex.rank_real_complex']
+    simp only [Cardinal.lift_id']
 #align rank_real_of_complex rank_real_of_complex
 
 theorem finrank_real_of_complex (E : Type _) [AddCommGroup E] [Module ℂ E] :
