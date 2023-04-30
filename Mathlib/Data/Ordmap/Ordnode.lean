@@ -146,27 +146,6 @@ def empty : Ordnode α → Bool
   | node _ _ _ _ => false
 #align ordnode.empty Ordnode.empty
 
--- porting note: workaround for leanprover/lean4#2049
-section recursor_workarounds
-
-def recC {α : Type _} {motive : Ordnode α → Sort u_1} (nil : motive nil)
-  (node : (size : ℕ) → (l : Ordnode α) → (x : α) → (r : Ordnode α) →
-    motive l → motive r → motive (node size l x r))
-  (t : Ordnode α) : motive t := match t with
-| Ordnode.nil => nil
-| Ordnode.node sz l x r => (node sz l x r) (recC nil node l) (recC nil node r)
-
-@[csimp]
-lemma rec_eq_reqC: @Ordnode.rec = @Ordnode.recC := by
-  ext α motive nil node t
-  induction t with
-  | nil => rfl
-  | node sz l x r ihl ihr =>
-    rw [Ordnode.recC, ←ihl, ←ihr]
-
-end recursor_workarounds
-
-
 /-- **Internal use only**, because it violates the BST property on the original order.
 
 O(n). The dual of a tree is a tree with its left and right sides reversed throughout.
