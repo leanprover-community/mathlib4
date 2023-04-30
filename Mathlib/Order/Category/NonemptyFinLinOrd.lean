@@ -27,40 +27,41 @@ universe u v
 open CategoryTheory CategoryTheory.Limits
 
 /-- A typeclass for nonempty finite linear orders. -/
-class NonemptyFinLinOrd (α : Type _) extends Fintype α, LinearOrder α where
+class NonemptyFiniteLinearOrder (α : Type _) extends Fintype α, LinearOrder α where
   Nonempty : Nonempty α := by infer_instance
-#align nonempty_fin_lin_ord NonemptyFinLinOrd
+#align nonempty_fin_lin_ord NonemptyFiniteLinearOrder
 
-attribute [instance] NonemptyFinLinOrd.Nonempty
+attribute [instance] NonemptyFiniteLinearOrder.Nonempty
 
-instance (priority := 100) NonemptyFinLinOrd.toBoundedOrder (α : Type _) [NonemptyFinLinOrd α] :
+instance (priority := 100) NonemptyFinLinOrd.toBoundedOrder (α : Type _)
+  [NonemptyFiniteLinearOrder α] :
     BoundedOrder α :=
   Fintype.toBoundedOrder α
 #align nonempty_fin_lin_ord.to_bounded_order NonemptyFinLinOrd.toBoundedOrder
 
-instance PUnit.nonemptyFinLinOrd : NonemptyFinLinOrd PUnit where
-#align punit.nonempty_fin_lin_ord PUnit.nonemptyFinLinOrd
+instance PUnit.nonemptyFiniteLinearOrder : NonemptyFiniteLinearOrder PUnit where
+#align punit.nonempty_fin_lin_ord PUnit.nonemptyFiniteLinearOrder
 
-instance Fin.nonemptyFinLinOrd (n : ℕ) : NonemptyFinLinOrd (Fin (n + 1)) where
-#align fin.nonempty_fin_lin_ord Fin.nonemptyFinLinOrd
+instance Fin.nonemptyFiniteLinearOrder (n : ℕ) : NonemptyFiniteLinearOrder (Fin (n + 1)) where
+#align fin.nonempty_fin_lin_ord Fin.nonemptyFiniteLinearOrder
 
-instance ULift.nonemptyFinLinOrd (α : Type u) [NonemptyFinLinOrd α] :
-    NonemptyFinLinOrd (ULift.{v} α) :=
+instance ULift.nonemptyFiniteLinearOrder (α : Type u) [NonemptyFiniteLinearOrder α] :
+    NonemptyFiniteLinearOrder (ULift.{v} α) :=
   { LinearOrder.lift' Equiv.ulift (Equiv.injective _) with }
-#align ulift.nonempty_fin_lin_ord ULift.nonemptyFinLinOrd
+#align ulift.nonempty_fin_lin_ord ULift.nonemptyFiniteLinearOrder
 
-instance (α : Type _) [NonemptyFinLinOrd α] : NonemptyFinLinOrd αᵒᵈ :=
+instance (α : Type _) [NonemptyFiniteLinearOrder α] : NonemptyFiniteLinearOrder αᵒᵈ :=
   { OrderDual.fintype α with }
 
 /-- The category of nonempty finite linear orders. -/
 def NonemptyFinLinOrd :=
-  Bundled NonemptyFinLinOrd
+  Bundled NonemptyFiniteLinearOrder
 set_option linter.uppercaseLean3 false in
 #align NonemptyFinLinOrd NonemptyFinLinOrd
 
 namespace NonemptyFinLinOrd
 
-instance : BundledHom.ParentProjection @NonemptyFinLinOrd.toLinearOrder :=
+instance : BundledHom.ParentProjection @NonemptyFiniteLinearOrder.toLinearOrder :=
   ⟨⟩
 
 deriving instance LargeCategory for NonemptyFinLinOrd
@@ -72,13 +73,13 @@ instance : CoeSort NonemptyFinLinOrd (Type _) :=
   Bundled.coeSort
 
 /-- Construct a bundled `NonemptyFinLinOrd` from the underlying type and typeclass. -/
-def of (α : Type _) [NonemptyFinLinOrd α] : NonemptyFinLinOrd :=
+def of (α : Type _) [NonemptyFiniteLinearOrder α] : NonemptyFinLinOrd :=
   Bundled.of α
 set_option linter.uppercaseLean3 false in
 #align NonemptyFinLinOrd.of NonemptyFinLinOrd.of
 
 @[simp]
-theorem coe_of (α : Type _) [NonemptyFinLinOrd α] : ↥(of α) = α :=
+theorem coe_of (α : Type _) [NonemptyFiniteLinearOrder α] : ↥(of α) = α :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align NonemptyFinLinOrd.coe_of NonemptyFinLinOrd.coe_of
@@ -86,7 +87,7 @@ set_option linter.uppercaseLean3 false in
 instance : Inhabited NonemptyFinLinOrd :=
   ⟨of PUnit⟩
 
-instance (α : NonemptyFinLinOrd) : NonemptyFinLinOrd α :=
+instance (α : NonemptyFinLinOrd) : NonemptyFiniteLinearOrder α :=
   α.str
 
 instance hasForgetToLinOrd : HasForget₂ NonemptyFinLinOrd LinOrd :=
@@ -224,7 +225,7 @@ instance : SplitEpiCategory NonemptyFinLinOrd.{u} :=
 
 instance : HasStrongEpiMonoFactorisations NonemptyFinLinOrd.{u} :=
   ⟨fun {X Y} f => by
-    letI : NonemptyFinLinOrd (Set.image f ⊤) := ⟨by infer_instance⟩
+    letI : NonemptyFiniteLinearOrder (Set.image f ⊤) := ⟨by infer_instance⟩
     let I := NonemptyFinLinOrd.of (Set.image f ⊤)
     let e : X ⟶ I := ⟨fun x => ⟨f x, ⟨x, by tauto⟩⟩, fun x₁ x₂ h => f.monotone h⟩
     let m : I ⟶ Y := ⟨fun y => y.1, by tauto⟩
