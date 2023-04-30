@@ -211,10 +211,8 @@ def isColimitOfExactOfEpi [Epi g] (h : Exact f g) : IsColimit (CokernelCofork.of
   IsColimit.ofIsoColimit (colimit.isColimit _) <|
     Cocones.ext
       ⟨cokernel.desc _ _ h.w, epiDesc g (cokernel.π f) ((exact_iff _ _).1 h).2,
-        (cancel_epi (cokernel.π f)).1 (by aesop_cat), (cancel_epi g).1 (by aesop_cat)⟩ (by
-          rintro (_|_)
-          . sorry
-          . simp)
+        (cancel_epi (cokernel.π f)).1 (by aesop_cat), (cancel_epi g).1 (by aesop_cat)⟩
+          (by rintro (_|_) <;> simp [h.w])
 #align category_theory.abelian.is_colimit_of_exact_of_epi CategoryTheory.Abelian.isColimitOfExactOfEpi
 
 /-- If `0 ⟶ X ⟶ Y ⟶ Z` is exact, then the first map is a kernel of the second. -/
