@@ -471,7 +471,7 @@ theorem imaginaryPart_apply_coe (a : A) : (ℑ a : A) = -I • (2 : ℝ)⁻¹ �
 
 /-- The standard decomposition of `ℜ a + Complex.I • ℑ a = a` of an element of a star module over
 `ℂ` into a linear combination of self adjoint elements. -/
-theorem realPart_add_I_smul_imaginaryPart (a : A) : (ℜ a + I • ℑ a : A) = a := by
+theorem realPart_add_I_smul_imaginaryPart (a : A) : (ℜ a : A) + I • (ℑ a : A) = a := by
   simpa only [smul_smul, realPart_apply_coe, imaginaryPart_apply_coe, neg_smul, I_mul_I, one_smul,
     neg_sub, add_add_sub_cancel, smul_sub, smul_add, neg_sub_neg, invOf_eq_inv] using
     invOf_two_smul_add_invOf_two_smul ℝ a
@@ -481,14 +481,20 @@ set_option linter.uppercaseLean3 false in
 @[simp]
 theorem realPart_I_smul (a : A) : ℜ (I • a) = -ℑ a := by
   ext
-  simp [smul_comm I, smul_sub, sub_eq_add_neg, add_comm]
+  -- Porting note: was
+  -- simp [smul_comm I, smul_sub, sub_eq_add_neg, add_comm]
+  rw [realPart_apply_coe, AddSubgroupClass.coe_neg, imaginaryPart_apply_coe, neg_smul, neg_neg,
+    smul_comm I, star_smul, star_def, conj_I, smul_sub, neg_smul, sub_eq_add_neg]
 set_option linter.uppercaseLean3 false in
 #align real_part_I_smul realPart_I_smul
 
 @[simp]
 theorem imaginaryPart_I_smul (a : A) : ℑ (I • a) = ℜ a := by
   ext
-  simp [smul_comm I, smul_smul I]
+  -- Porting note: was
+  -- simp [smul_comm I, smul_smul I]
+  rw [realPart_apply_coe, imaginaryPart_apply_coe, smul_comm]
+  simp [←smul_assoc]
 set_option linter.uppercaseLean3 false in
 #align imaginary_part_I_smul imaginaryPart_I_smul
 
