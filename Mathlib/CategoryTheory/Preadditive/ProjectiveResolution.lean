@@ -8,9 +8,9 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Preadditive.Projective
-import Mathbin.Algebra.Homology.Single
-import Mathbin.Algebra.Homology.HomotopyCategory
+import Mathlib.CategoryTheory.Preadditive.Projective
+import Mathlib.Algebra.Homology.Single
+import Mathlib.Algebra.Homology.HomotopyCategory
 
 /-!
 # Projective resolutions
@@ -113,8 +113,7 @@ end
 namespace ProjectiveResolution
 
 @[simp]
-theorem π_f_succ {Z : C} (P : ProjectiveResolution Z) (n : ℕ) : P.π.f (n + 1) = 0 :=
-  by
+theorem π_f_succ {Z : C} (P : ProjectiveResolution Z) (n : ℕ) : P.π.f (n + 1) = 0 := by
   apply zero_of_target_iso_zero
   dsimp; rfl
 #align category_theory.ProjectiveResolution.π_f_succ CategoryTheory.ProjectiveResolution.π_f_succ
@@ -135,8 +134,7 @@ instance {Z : C} (P : ProjectiveResolution Z) (n : ℕ) : CategoryTheory.Epi (P.
   cases n <;> infer_instance
 
 /-- A projective object admits a trivial projective resolution: itself in degree 0. -/
-def self (Z : C) [CategoryTheory.Projective Z] : ProjectiveResolution Z
-    where
+def self (Z : C) [CategoryTheory.Projective Z] : ProjectiveResolution Z where
   complex := (ChainComplex.single₀ C).obj Z
   π := 𝟙 ((ChainComplex.single₀ C).obj Z)
   Projective n := by
@@ -173,8 +171,7 @@ def liftFOne {Y Z : C} (f : Y ⟶ Z) (P : ProjectiveResolution Y) (Q : Projectiv
 @[simp]
 theorem liftFOne_zero_comm {Y Z : C} (f : Y ⟶ Z) (P : ProjectiveResolution Y)
     (Q : ProjectiveResolution Z) :
-    liftFOne f P Q ≫ Q.complex.d 1 0 = P.complex.d 1 0 ≫ liftFZero f P Q :=
-  by
+    liftFOne f P Q ≫ Q.complex.d 1 0 = P.complex.d 1 0 ≫ liftFZero f P Q := by
   dsimp [lift_f_zero, lift_f_one]
   simp
 #align category_theory.ProjectiveResolution.lift_f_one_zero_comm CategoryTheory.ProjectiveResolution.liftFOne_zero_comm
@@ -200,8 +197,7 @@ def lift {Y Z : C} (f : Y ⟶ Z) (P : ProjectiveResolution Y) (Q : ProjectiveRes
 /-- The resolution maps intertwine the lift of a morphism and that morphism. -/
 @[simp, reassoc.1]
 theorem lift_commutes {Y Z : C} (f : Y ⟶ Z) (P : ProjectiveResolution Y)
-    (Q : ProjectiveResolution Z) : lift f P Q ≫ Q.π = P.π ≫ (ChainComplex.single₀ C).map f :=
-  by
+    (Q : ProjectiveResolution Z) : lift f P Q ≫ Q.π = P.π ≫ (ChainComplex.single₀ C).map f := by
   ext
   dsimp [lift, lift_f_zero]
   apply factor_thru_comp
@@ -269,17 +265,14 @@ def liftCompHomotopy {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (P : ProjectiveReso
 
 -- We don't care about the actual definitions of these homotopies.
 /-- Any two projective resolutions are homotopy equivalent. -/
-def homotopyEquiv {X : C} (P Q : ProjectiveResolution X) : HomotopyEquiv P.complex Q.complex
-    where
+def homotopyEquiv {X : C} (P Q : ProjectiveResolution X) : HomotopyEquiv P.complex Q.complex where
   Hom := lift (𝟙 X) P Q
   inv := lift (𝟙 X) Q P
-  homotopyHomInvId :=
-    by
+  homotopyHomInvId := by
     refine' (lift_comp_homotopy (𝟙 X) (𝟙 X) P Q P).symm.trans _
     simp [category.id_comp]
     apply lift_id_homotopy
-  homotopyInvHomId :=
-    by
+  homotopyInvHomId := by
     refine' (lift_comp_homotopy (𝟙 X) (𝟙 X) Q P Q).symm.trans _
     simp [category.id_comp]
     apply lift_id_homotopy
@@ -328,8 +321,7 @@ variable (C) [Preadditive C] [HasZeroObject C] [HasEqualizers C] [HasImages C]
 if considered with target the homotopy category
 (`ℕ`-indexed chain complexes and chain maps up to homotopy).
 -/
-def projectiveResolutions : C ⥤ HomotopyCategory C (ComplexShape.down ℕ)
-    where
+def projectiveResolutions : C ⥤ HomotopyCategory C (ComplexShape.down ℕ) where
   obj X := (HomotopyCategory.quotient _ _).obj (projectiveResolution X)
   map X Y f := (HomotopyCategory.quotient _ _).map (projectiveResolution.lift f)
   map_id' X := by
