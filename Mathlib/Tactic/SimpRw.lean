@@ -11,6 +11,32 @@ namespace Mathlib.Tactic
 
 open Lean Parser.Tactic Elab.Tactic
 
+/-- A version of `withRWRulesSeq` (in core) that doesn't attempt to find equation lemmas, and simply
+  passes the rw rules on to `x`. -/
+def withSimpRWRulesSeq (token : Syntax) (rwRulesSeqStx : Syntax)
+  (x : (symm : Bool) → (term : Syntax) → TacticM Unit) : TacticM Unit := do
+  let lbrak := rwRulesSeqStx[0]
+  let rules := rwRulesSeqStx[1].getArgs
+  -- show initial state up to (incl.) `[`
+  withTacticInfoContext (mkNullNode #[token, lbrak]) (pure ())
+  let numRules := (rules.size + 1) / 2
+  for i in [:numRules] do
+    let rule := rules[i * 2]!
+    let sep  := rules.getD (i * 2 + 1) Syntax.missing
+    -- show rule state up to (incl.) next `,`
+    withTacticInfoContext (mkNullNode #[rule, sep]) do
+      -- show errors on rule
+      withRef rule do
+        let symm := !rule[0].isNone
+        let term := rule[1]
+        -- let processId (id : Syntax) : TacticM Unit := do
+        x symm term
+        --   discard <| Term.addTermInfo id (← mkConstWithFreshMVarLevels declName) (lctx? := ← getLCtx)
+        -- match term with
+        -- | `($id:ident)  => processId id
+        -- | `(@$id:ident) => processId id
+        -- | _ => x symm term
+
 /--
 `simp_rw` functions as a mix of `simp` and `rw`. Like `rw`, it applies each
 rewrite rule in the given order, but like `simp` it repeatedly applies these
@@ -34,10 +60,11 @@ by simp_rw [h1, h2]
 ```
 -/
 elab s:"simp_rw " rws:rwRuleSeq g:location ? : tactic => do
-  withRWRulesSeq s rws fun symm term => do
+  evalTactic (← `(tactic| simp%$s only))
+  withSimpRWRulesSeq s rws fun symm term => do
     evalTactic (← match term with
     | `(term| $e:term) =>
       if symm then
-        `(tactic| (fail_if_no_progress (simp%$e only [← $e:term] $g ?)))
+        `(tactic| fail_if_no_progress (simp%$e only [← $e:term] $g ?))
       else
-        `(tactic| (fail_if_no_progress (simp%$e only [$e:term] $g ?))))
+        `(tactic| fail_if_no_progress (simp%$e only [$e:term] $g ?)))
