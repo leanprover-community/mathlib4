@@ -43,6 +43,10 @@ example {α : Type} (x y : α) : x = y ↔ y = x := by library_search -- says: `
 
 example (a b : ℕ) (ha : 0 < a) (_hb : 0 < b) : 0 < a + b := by library_search
 
+-- Verify that if maxHeartbeats is 0 we don't stop immediately.
+set_option maxHeartbeats 0 in
+example (a b : ℕ) (ha : 0 < a) (_hb : 0 < b) : 0 < a + b := by library_search
+
 section synonym
 
 example (a b : ℕ) (ha : a > 0) (_hb : 0 < b) : 0 < a + b := by library_search
