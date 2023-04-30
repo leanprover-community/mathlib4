@@ -23,7 +23,9 @@ open CategoryTheory Limits Opposite
 
 universe w v u
 
-variable {C : Type max v u} [Category.{v} C] {J : GrothendieckTopology C}
+-- porting note: was `C : Type max v u` which made most instances non automatically applicable
+-- it seems to me it is better to declare `C : Type u`: it works better, and it is more general
+variable {C : Type u} [Category.{v} C] {J : GrothendieckTopology C}
 
 variable {D : Type w} [Category.{max v u} D]
 
@@ -127,9 +129,6 @@ def liftToPlusObjLimitObj {K : Type max v u} [SmallCategory K] [FinCategory K]
     (S : Cone (F ⋙ J.plusFunctor D ⋙ (evaluation Cᵒᵖ D).obj (op X))) :
     S.pt ⟶ (J.plusObj (limit F)).obj (op X) :=
   let e := colimitLimitIso (F ⋙ J.diagramFunctor D X)
-  -- porting note: the next specific `have` had to be introduce to avoid universe problems
-  have : PreservesLimit F (diagramFunctor J D X) :=
-    preservesLimit_diagramFunctor.{w, v, u} X K F
   let t : J.diagram (limit F) X ≅ limit (F ⋙ J.diagramFunctor D X) :=
     (isLimitOfPreserves (J.diagramFunctor D X) (limit.isLimit F)).conePointUniqueUpToIso
       (limit.isLimit _)
@@ -215,23 +214,19 @@ instance preserveFiniteLimits_plusFunctor
     PreservesFiniteLimits (J.plusFunctor D) := by
   apply preservesFiniteLimitsOfPreservesFiniteLimitsOfSize.{max v u}
   intro K _ _
-  haveI : ReflectsLimitsOfShape K (forget D) := reflectsLimitsOfShapeOfReflectsIsomorphisms
+  have : ReflectsLimitsOfShape K (forget D) := reflectsLimitsOfShapeOfReflectsIsomorphisms
   apply preservesLimitsOfShape_plusFunctor.{w, v, u}
 
 instance preservesLimitsOfShape_sheafification
     (K : Type max v u) [SmallCategory K] [FinCategory K] [HasLimitsOfShape K D]
     [PreservesLimitsOfShape K (forget D)] [ReflectsLimitsOfShape K (forget D)] :
-    PreservesLimitsOfShape K (J.sheafification D) := by
-  have : PreservesLimitsOfShape K (plusFunctor J D) := by
-    apply preservesLimitsOfShape_plusFunctor.{w, v, u}
-  apply Limits.compPreservesLimitsOfShape
+    PreservesLimitsOfShape K (J.sheafification D) :=
+  Limits.compPreservesLimitsOfShape _ _
 
 instance preservesFiniteLimits_sheafification
     [HasFiniteLimits D] [PreservesFiniteLimits (forget D)] [ReflectsIsomorphisms (forget D)] :
-    PreservesFiniteLimits (J.sheafification D) := by
-  have : PreservesFiniteLimits (J.plusFunctor D) := by
-    apply preserveFiniteLimits_plusFunctor.{w, v, u}
-  exact Limits.compPreservesFiniteLimits _ _
+    PreservesFiniteLimits (J.sheafification D) :=
+  Limits.compPreservesFiniteLimits _ _
 
 end CategoryTheory.GrothendieckTopology
 
@@ -256,8 +251,6 @@ instance preservesLimitsOfShape_presheafToSheaf :
   constructor; intro F; constructor; intro S hS
   apply isLimitOfReflects (sheafToPresheaf J D)
   have : ReflectsLimitsOfShape K (forget D) := reflectsLimitsOfShapeOfReflectsIsomorphisms
-  have : PreservesLimitsOfShape K (GrothendieckTopology.sheafification J D) := by
-    apply GrothendieckTopology.preservesLimitsOfShape_sheafification.{w, v, u}
   -- porting note: the mathlib proof was by `apply is_limit_of_preserves (J.sheafification D) hS`
   have : PreservesLimitsOfShape K (presheafToSheaf J D ⋙ sheafToPresheaf J D) :=
     preservesLimitsOfShapeOfNatIso (J.sheafificationIsoPresheafToSheafCompSheafToPreasheaf D)
@@ -267,10 +260,6 @@ instance preservesfiniteLimits_presheafToSheaf [HasFiniteLimits D] :
     PreservesFiniteLimits (presheafToSheaf J D) := by
   apply preservesFiniteLimitsOfPreservesFiniteLimitsOfSize.{max v u}
   intros
-  apply preservesLimitsOfShape_presheafToSheaf.{w, v, u}
-
--- porting note: this has to be fixed!
-example [HasFiniteLimits D] : PreservesFiniteLimits (presheafToSheaf J D) := by
-  infer_instance -- fails
+  infer_instance
 
 end CategoryTheory
