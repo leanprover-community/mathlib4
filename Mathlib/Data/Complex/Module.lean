@@ -368,6 +368,7 @@ theorem liftAux_apply (I' : A) (hI') (z : â„‚) : liftAux I' hI' z = algebraMap â
   rfl
 #align complex.lift_aux_apply Complex.liftAux_apply
 
+set_option synthInstance.etaExperiment true in
 theorem liftAux_apply_I (I' : A) (hI') : liftAux I' hI' I = I' := by simp
 set_option linter.uppercaseLean3 false in
 #align complex.lift_aux_apply_I Complex.liftAux_apply_I
