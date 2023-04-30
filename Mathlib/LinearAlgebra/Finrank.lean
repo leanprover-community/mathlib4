@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Anne Baanen
 
 ! This file was ported from Lean 3 source module linear_algebra.finrank
-! leanprover-community/mathlib commit 8535b76e601f11868af3e612fbecb730998a5631
+! leanprover-community/mathlib commit 347636a7a80595d55bedf6e6fbd996a3c39da69a
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -137,6 +137,7 @@ theorem finrank_eq_card_finset_basis {ι : Type w} {b : Finset ι} (h : Basis.{w
 
 variable (K)
 
+set_option synthInstance.etaExperiment true in
 /-- A ring satisfying `StrongRankCondition` (such as a `DivisionRing`) is one-dimensional as a
 module over itself. -/
 @[simp]
@@ -144,12 +145,14 @@ theorem finrank_self : finrank K K = 1 :=
   finrank_eq_of_rank_eq (by simp)
 #align finite_dimensional.finrank_self FiniteDimensional.finrank_self
 
+set_option synthInstance.etaExperiment true in
 /-- The vector space of functions on a `Fintype ι` has finrank equal to the cardinality of `ι`. -/
 @[simp]
 theorem finrank_fintype_fun_eq_card {ι : Type v} [Fintype ι] : finrank K (ι → K) = Fintype.card ι :=
   finrank_eq_of_rank_eq rank_fun'
 #align finite_dimensional.finrank_fintype_fun_eq_card FiniteDimensional.finrank_fintype_fun_eq_card
 
+set_option synthInstance.etaExperiment true in
 /-- The vector space of functions on `Fin n` has finrank equal to `n`. -/
 -- @[simp] -- Porting note: simp already proves this
 theorem finrank_fin_fun {n : ℕ} : finrank K (Fin n → K) = n := by simp

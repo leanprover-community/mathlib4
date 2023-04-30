@@ -636,7 +636,6 @@ theorem degree_add_le (p q : R[X]) : degree (p + q) ≤ max (degree p) (degree q
     degree (p + q) = (p + q).support.sup WithBot.some := rfl
     _ ≤ (p.support ∪ q.support).sup WithBot.some := (sup_mono support_add)
     _ = p.support.sup WithBot.some ⊔ q.support.sup WithBot.some := sup_union
-
 #align polynomial.degree_add_le Polynomial.degree_add_le
 
 theorem degree_add_le_of_degree_le {p q : R[X]} {n : ℕ} (hp : degree p ≤ n) (hq : degree q ≤ n) :
@@ -763,7 +762,6 @@ theorem degree_sum_le (s : Finset ι) (f : ι → R[X]) :
       degree (∑ i in insert a s, f i) ≤ max (degree (f a)) (degree (∑ i in s, f i)) := by
         rw [sum_insert has]; exact degree_add_le _ _
       _ ≤ _ := by rw [sup_insert, sup_eq_max]; exact max_le_max le_rfl ih
-
 #align polynomial.degree_sum_le Polynomial.degree_sum_le
 
 theorem degree_mul_le (p q : R[X]) : degree (p * q) ≤ degree p + degree q :=
@@ -784,7 +782,6 @@ theorem degree_mul_le (p q : R[X]) : degree (p * q) ≤ degree p + degree q :=
       rw [Nat.cast_withBot, WithBot.coe_add]
       rw [mem_support_iff] at ha hb
       exact add_le_add (le_degree_of_ne_zero ha) (le_degree_of_ne_zero hb)
-
 #align polynomial.degree_mul_le Polynomial.degree_mul_le
 
 theorem degree_pow_le (p : R[X]) : ∀ n : ℕ, degree (p ^ n) ≤ n • degree p
@@ -794,7 +791,6 @@ theorem degree_pow_le (p : R[X]) : ∀ n : ℕ, degree (p ^ n) ≤ n • degree 
       degree (p ^ (n + 1)) ≤ degree p + degree (p ^ n) := by
         rw [pow_succ]; exact degree_mul_le _ _
       _ ≤ _ := by rw [succ_nsmul]; exact add_le_add le_rfl (degree_pow_le _ _)
-
 #align polynomial.degree_pow_le Polynomial.degree_pow_le
 
 @[simp]
@@ -906,8 +902,7 @@ theorem coeff_mul_degree_add_degree (p q : R[X]) :
       · rintro ⟨i, j⟩ h₁ h₂
         rw [Nat.mem_antidiagonal] at h₁
         by_cases H : natDegree p < i
-        ·
-          rw [coeff_eq_zero_of_degree_lt
+        · rw [coeff_eq_zero_of_degree_lt
               (lt_of_le_of_lt degree_le_natDegree (WithBot.coe_lt_coe.2 H)),
             zero_mul]
         · rw [not_lt_iff_eq_or_lt] at H
@@ -931,7 +926,6 @@ theorem coeff_mul_degree_add_degree (p q : R[X]) :
         exfalso
         apply H
         rw [Nat.mem_antidiagonal]
-
 #align polynomial.coeff_mul_degree_add_degree Polynomial.coeff_mul_degree_add_degree
 
 theorem degree_mul' (h : leadingCoeff p * leadingCoeff q ≠ 0) :
@@ -1327,7 +1321,6 @@ theorem degree_sub_lt (hd : degree p = degree q) (hp0 : p ≠ 0)
     _ ≤ max (degree (erase (natDegree q) p)) (degree (erase (natDegree q) q)) :=
       (degree_neg (erase (natDegree q) q) ▸ degree_add_le _ _)
     _ < degree p := max_lt_iff.2 ⟨hd' ▸ degree_erase_lt hp0, hd.symm ▸ degree_erase_lt hq0⟩
-
 #align polynomial.degree_sub_lt Polynomial.degree_sub_lt
 
 theorem degree_X_sub_C_le (r : R) : (X - C r).degree ≤ 1 :=

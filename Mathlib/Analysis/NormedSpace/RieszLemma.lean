@@ -72,7 +72,6 @@ theorem riesz_lemma {F : Subspace 𝕜 E} (hFc : IsClosed (F : Set E)) (hF : ∃
         exact (lt_div_iff' hlt).1 hxy₀
       _ ≤ dist x (y₀ + y) := (Metric.infDist_le_dist_of_mem hy₀y)
       _ = ‖x - y₀ - y‖ := by rw [sub_sub, dist_eq_norm]
-
 #align riesz_lemma riesz_lemma
 
 /--

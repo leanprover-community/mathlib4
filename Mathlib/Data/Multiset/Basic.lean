@@ -2403,7 +2403,6 @@ theorem count_cons (a b : α) (s : Multiset α) :
 
 theorem count_singleton_self (a : α) : count a ({a} : Multiset α) = 1 :=
   count_eq_one_of_mem (nodup_singleton a) <| mem_singleton_self a
-
 #align multiset.count_singleton_self Multiset.count_singleton_self
 
 theorem count_singleton (a b : α) : count a ({b} : Multiset α) = if a = b then 1 else 0 := by
@@ -2598,7 +2597,6 @@ theorem attach_count_eq_count_coe (m : Multiset α) (a) : m.attach.count a = m.c
     m.attach.count a = (m.attach.map (Subtype.val : _ → α)).count (a : α) :=
       (Multiset.count_map_eq_count' _ _ Subtype.coe_injective _).symm
     _ = m.count (a : α) := congr_arg _ m.attach_map_val
-
 #align multiset.attach_count_eq_count_coe Multiset.attach_count_eq_count_coe
 
 theorem filter_eq' (s : Multiset α) (b : α) : s.filter (· = b) = replicate (count b s) b :=
