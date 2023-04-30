@@ -149,87 +149,97 @@ def liftToPlusObjLimitObj {K : Type max v u} [SmallCategory K] [FinCategory K]
   limit.lift _ S ≫ (HasLimit.isoOfNatIso s.symm).hom ≫ e.inv ≫ p.inv
 #align category_theory.grothendieck_topology.lift_to_plus_obj_limit_obj CategoryTheory.GrothendieckTopology.liftToPlusObjLimitObj
 
+set_option maxHeartbeats 800000 in
 -- This lemma should not be used directly. Instead, one should use the fact that
--- `J.plus_functor D` preserves finite limits, along with the fact that
+-- `J.plusFunctor D` preserves finite limits, along with the fact that
 -- evaluation preserves limits.
 theorem liftToPlusObjLimitObj_fac {K : Type max v u} [SmallCategory K] [FinCategory K]
     [HasLimitsOfShape K D] [PreservesLimitsOfShape K (forget D)]
     [ReflectsLimitsOfShape K (forget D)] (F : K ⥤ Cᵒᵖ ⥤ D) (X : C)
     (S : Cone (F ⋙ J.plusFunctor D ⋙ (evaluation Cᵒᵖ D).obj (op X))) (k) :
-    liftToPlusObjLimitObj F X S ≫ (J.plusMap (limit.π F k)).app (op X) = S.π.app k := by
-  dsimp only [lift_to_plus_obj_limit_obj]
-  rw [← (limit.is_limit (F ⋙ J.plus_functor D ⋙ (evaluation Cᵒᵖ D).obj (op X))).fac S k,
-    category.assoc]
+    liftToPlusObjLimitObj.{w, v, u} F X S ≫ (J.plusMap (limit.π F k)).app (op X) = S.π.app k := by
+  dsimp only [liftToPlusObjLimitObj]
+  rw [← (limit.isLimit (F ⋙ J.plusFunctor D ⋙ (evaluation Cᵒᵖ D).obj (op X))).fac S k,
+    Category.assoc]
   congr 1
   dsimp
-  simp only [category.assoc]
-  rw [← iso.eq_inv_comp, iso.inv_comp_eq, iso.inv_comp_eq]
-  ext
-  dsimp [plus_map]
-  simp only [has_colimit.iso_of_nat_iso_ι_hom_assoc, ι_colim_map]
-  dsimp [is_limit.cone_point_unique_up_to_iso, has_limit.iso_of_nat_iso, is_limit.map]
+  rw [Category.assoc, Category.assoc, ← Iso.eq_inv_comp, Iso.inv_comp_eq, Iso.inv_comp_eq]
+  refine' colimit.hom_ext (fun j => _)
+  dsimp [plusMap]
+  simp only [HasColimit.isoOfNatIso_ι_hom_assoc, ι_colimMap]
+  dsimp [IsLimit.conePointUniqueUpToIso, HasLimit.isoOfNatIso, IsLimit.map]
   rw [limit.lift_π]
   dsimp
-  rw [ι_colimit_limit_iso_limit_π_assoc]
-  simp_rw [← nat_trans.comp_app, ← category.assoc, ← nat_trans.comp_app]
-  rw [limit.lift_π, category.assoc]
+  rw [ι_colimitLimitIso_limit_π_assoc]
+  simp_rw [← NatTrans.comp_app, ← Category.assoc, ← NatTrans.comp_app]
+  rw [limit.lift_π, Category.assoc]
   congr 1
-  rw [← iso.comp_inv_eq]
+  rw [← Iso.comp_inv_eq]
   erw [colimit.ι_desc]
   rfl
 #align category_theory.grothendieck_topology.lift_to_plus_obj_limit_obj_fac CategoryTheory.GrothendieckTopology.liftToPlusObjLimitObj_fac
 
-instance (K : Type max v u) [SmallCategory K] [FinCategory K] [HasLimitsOfShape K D]
+set_option maxHeartbeats 400000 in
+instance preservesLimitsOfShape_plusFunctor
+    (K : Type max v u) [SmallCategory K] [FinCategory K] [HasLimitsOfShape K D]
     [PreservesLimitsOfShape K (forget D)] [ReflectsLimitsOfShape K (forget D)] :
     PreservesLimitsOfShape K (J.plusFunctor D) := by
-  constructor; intro F; apply preserves_limit_of_evaluation; intro X
-  apply preserves_limit_of_preserves_limit_cone (limit.is_limit F)
-  refine' ⟨fun S => lift_to_plus_obj_limit_obj F X.unop S, _, _⟩
+  constructor; intro F; apply preservesLimitOfEvaluation; intro X
+  apply preservesLimitOfPreservesLimitCone (limit.isLimit F)
+  refine' ⟨fun S => liftToPlusObjLimitObj.{w, v, u} F X.unop S, _, _⟩
   · intro S k
-    apply lift_to_plus_obj_limit_obj_fac
-  · intro S m hm
-    dsimp [lift_to_plus_obj_limit_obj]
-    simp_rw [← category.assoc, iso.eq_comp_inv, ← iso.comp_inv_eq]
-    ext
-    simp only [limit.lift_π, category.assoc, ← hm]
+    apply liftToPlusObjLimitObj_fac
+  . intro S m hm
+    dsimp [liftToPlusObjLimitObj]
+    simp_rw [← Category.assoc, Iso.eq_comp_inv, ← Iso.comp_inv_eq]
+    refine' limit.hom_ext (fun k => _)
+    simp only [limit.lift_π, Category.assoc, ← hm]
     congr 1
-    ext
-    dsimp [plus_map, plus_obj]
+    refine' colimit.hom_ext (fun k => _)
+    dsimp [plusMap, plusObj]
     erw [colimit.ι_map, colimit.ι_desc_assoc, limit.lift_π]
-    dsimp
-    simp only [category.assoc]
-    rw [ι_colimit_limit_iso_limit_π_assoc]
-    simp only [nat_iso.of_components_inv_app, colimit_obj_iso_colimit_comp_evaluation_ι_app_hom,
-      iso.symm_inv]
-    dsimp [is_limit.cone_point_unique_up_to_iso]
-    rw [← category.assoc, ← nat_trans.comp_app, limit.lift_π]
+    conv_lhs => dsimp
+    simp only [Category.assoc]
+    rw [ι_colimitLimitIso_limit_π_assoc]
+    simp only [NatIso.ofComponents_inv_app, colimitObjIsoColimitCompEvaluation_ι_app_hom,
+      Iso.symm_inv]
+    conv_lhs =>
+      dsimp [IsLimit.conePointUniqueUpToIso]
+    rw [← Category.assoc, ← NatTrans.comp_app, limit.lift_π]
     rfl
 
-instance [HasFiniteLimits D] [PreservesFiniteLimits (forget D)] [ReflectsIsomorphisms (forget D)] :
+instance preserveFiniteLimits_plusFunctor
+    [HasFiniteLimits D] [PreservesFiniteLimits (forget D)] [ReflectsIsomorphisms (forget D)] :
     PreservesFiniteLimits (J.plusFunctor D) := by
   apply preservesFiniteLimitsOfPreservesFiniteLimitsOfSize.{max v u}
   intro K _ _
-  haveI : reflects_limits_of_shape K (forget D) := reflects_limits_of_shape_of_reflects_isomorphisms
-  infer_instance
+  haveI : ReflectsLimitsOfShape K (forget D) := reflectsLimitsOfShapeOfReflectsIsomorphisms
+  apply preservesLimitsOfShape_plusFunctor.{w, v, u}
 
-instance (K : Type max v u) [SmallCategory K] [FinCategory K] [HasLimitsOfShape K D]
+instance preservesLimitsOfShape_sheafification
+    (K : Type max v u) [SmallCategory K] [FinCategory K] [HasLimitsOfShape K D]
     [PreservesLimitsOfShape K (forget D)] [ReflectsLimitsOfShape K (forget D)] :
-    PreservesLimitsOfShape K (J.sheafification D) :=
-  Limits.compPreservesLimitsOfShape _ _
+    PreservesLimitsOfShape K (J.sheafification D) := by
+  have : PreservesLimitsOfShape K (plusFunctor J D) := by
+    apply preservesLimitsOfShape_plusFunctor.{w, v, u}
+  apply Limits.compPreservesLimitsOfShape
 
-instance [HasFiniteLimits D] [PreservesFiniteLimits (forget D)] [ReflectsIsomorphisms (forget D)] :
-    PreservesFiniteLimits (J.sheafification D) :=
-  Limits.compPreservesFiniteLimits _ _
+instance preservesFiniteLimits_sheafification
+    [HasFiniteLimits D] [PreservesFiniteLimits (forget D)] [ReflectsIsomorphisms (forget D)] :
+    PreservesFiniteLimits (J.sheafification D) := by
+  have : PreservesFiniteLimits (J.plusFunctor D) := by
+    apply preserveFiniteLimits_plusFunctor.{w, v, u}
+  exact Limits.compPreservesFiniteLimits _ _
 
 end CategoryTheory.GrothendieckTopology
 
 namespace CategoryTheory
 
-variable [∀ X : C, HasColimitsOfShape (J.cover X)ᵒᵖ D]
+variable [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ D]
 
 variable [ConcreteCategory.{max v u} D]
 
-variable [∀ X : C, PreservesColimitsOfShape (J.cover X)ᵒᵖ (forget D)]
+variable [∀ X : C, PreservesColimitsOfShape (J.Cover X)ᵒᵖ (forget D)]
 
 variable [PreservesLimits (forget D)]
 
@@ -239,14 +249,26 @@ variable (K : Type max v u)
 
 variable [SmallCategory K] [FinCategory K] [HasLimitsOfShape K D]
 
-instance : PreservesLimitsOfShape K (presheafToSheaf J D) := by
+instance preservesLimitsOfShape_presheafToSheaf :
+    PreservesLimitsOfShape K (presheafToSheaf J D) := by
   constructor; intro F; constructor; intro S hS
-  apply is_limit_of_reflects (Sheaf_to_presheaf J D)
-  haveI : reflects_limits_of_shape K (forget D) := reflects_limits_of_shape_of_reflects_isomorphisms
-  apply is_limit_of_preserves (J.sheafification D) hS
+  apply isLimitOfReflects (sheafToPresheaf J D)
+  have : ReflectsLimitsOfShape K (forget D) := reflectsLimitsOfShapeOfReflectsIsomorphisms
+  have : PreservesLimitsOfShape K (GrothendieckTopology.sheafification J D) := by
+    apply GrothendieckTopology.preservesLimitsOfShape_sheafification.{w, v, u}
+  -- porting note: the mathlib proof was by `apply is_limit_of_preserves (J.sheafification D) hS`
+  have : PreservesLimitsOfShape K (presheafToSheaf J D ⋙ sheafToPresheaf J D) :=
+    preservesLimitsOfShapeOfNatIso (J.sheafificationIsoPresheafToSheafCompSheafToPreasheaf D)
+  exact isLimitOfPreserves (presheafToSheaf J D ⋙ sheafToPresheaf J D) hS
 
-instance [HasFiniteLimits D] : PreservesFiniteLimits (presheafToSheaf J D) := by
+instance preservesfiniteLimits_presheafToSheaf [HasFiniteLimits D] :
+    PreservesFiniteLimits (presheafToSheaf J D) := by
   apply preservesFiniteLimitsOfPreservesFiniteLimitsOfSize.{max v u}
-  intros ; skip; infer_instance
+  intros
+  apply preservesLimitsOfShape_presheafToSheaf.{w, v, u}
+
+-- porting note: this has to be fixed!
+example [HasFiniteLimits D] : PreservesFiniteLimits (presheafToSheaf J D) := by
+  infer_instance -- fails
 
 end CategoryTheory

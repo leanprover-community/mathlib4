@@ -663,6 +663,14 @@ theorem Sheaf.Hom.mono_iff_presheaf_mono {F G : Sheaf J D} (f : F ⟶ G) : Mono 
 set_option linter.uppercaseLean3 false in
 #align category_theory.Sheaf.hom.mono_iff_presheaf_mono CategoryTheory.Sheaf.Hom.mono_iff_presheaf_mono
 
+-- porting note: added to ease the port of CategoryTheory.Sites.LeftExact
+-- in mathlib, this was `by refl`, but here it would timeout
+@[simps! hom_app inv_app]
+noncomputable
+def GrothendieckTopology.sheafificationIsoPresheafToSheafCompSheafToPreasheaf :
+    J.sheafification D ≅ presheafToSheaf J D ⋙ sheafToPresheaf J D :=
+  NatIso.ofComponents (fun P => Iso.refl _) (by simp)
+
 variable {J D}
 
 /-- A sheaf `P` is isomorphic to its own sheafification. -/
