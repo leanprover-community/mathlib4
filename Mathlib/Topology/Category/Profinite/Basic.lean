@@ -127,17 +127,16 @@ instance {X : Profinite} : T2Space ((forget Profinite).obj X) := by
 --   rfl
 -- #align Profinite.coe_to_CompHaus Profinite.coe_toCompHaus
 
--- Porting note: should no longer be needed as a simp lemma, as the LHS is
--- `(forget Profinite).map (𝟙 X)` which will simplify directly.
--- @[simp]
-theorem coe_id (X : Profinite) : (𝟙 X : X → X) = id :=
+-- Porting note: have changed statement as the original LHS simplified.
+@[simp]
+theorem coe_id (X : Profinite) : (𝟙 ((forget Profinite).obj X)) = id :=
   rfl
 #align Profinite.coe_id Profinite.coe_id
 
--- Porting note: should no longer be needed as a simp lemma, as the LHS is
--- `(forget Profinite).map (f ≫ g)` which will simplify directly.
--- @[simp]
-theorem coe_comp {X Y Z : Profinite} (f : X ⟶ Y) (g : Y ⟶ Z) : (f ≫ g : X → Z) = g ∘ f :=
+-- Porting note: have changed statement as the original LHS simplified.
+@[simp]
+theorem coe_comp {X Y Z : Profinite} (f : X ⟶ Y) (g : Y ⟶ Z) :
+    ((forget Profinite).map f ≫ (forget Profinite).map g) = g ∘ f :=
   rfl
 #align Profinite.coe_comp Profinite.coe_comp
 
@@ -357,12 +356,8 @@ def isoOfHomeo (f : X ≃ₜ Y) : X ≅ Y where
 def homeoOfIso (f : X ≅ Y) : X ≃ₜ Y where
   toFun := f.hom
   invFun := f.inv
-  left_inv x := by
-    change (f.hom ≫ f.inv) x = x
-    rw [Iso.hom_inv_id, coe_id, id.def]
-  right_inv x := by
-    change (f.inv ≫ f.hom) x = x
-    rw [Iso.inv_hom_id, coe_id, id.def]
+  left_inv x := by simp
+  right_inv x := by simp
   continuous_toFun := f.hom.continuous
   continuous_invFun := f.inv.continuous
 #align Profinite.homeo_of_iso Profinite.homeoOfIso
@@ -406,6 +401,7 @@ theorem epi_iff_surjective {X Y : Profinite.{u}} (f : X ⟶ Y) : Epi f ↔ Funct
         ext x
         apply ULift.ext
         dsimp [LocallyConstant.ofClopen]
+        simp only [FunctorToTypes.map_comp_apply, forget_ContinuousMap_mk, Function.comp_apply]
         rw [if_neg]
         refine' mt (fun α => hVU α) _
         simp only [Set.mem_range_self, not_true, not_false_iff, Set.mem_compl_iff]
