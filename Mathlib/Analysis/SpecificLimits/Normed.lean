@@ -587,11 +587,13 @@ theorem Monotone.cauchySeq_series_mul_of_tendsto_zero_of_bounded (hfa : Monotone
     tsub_zero]
   apply (NormedField.tendsto_zero_smul_of_tendsto_zero_of_bounded hf0
     ⟨b, eventually_map.mpr <| eventually_of_forall fun n ↦ hgb <| n + 1⟩).cauchySeq.add
-  refine' (cauchySeq_range_of_norm_bounded _ _ (fun n ↦ _ : ∀ n, _ ≤ b * |f (n + 1) - f n|)).neg
+  refine' CauchySeq.neg _
+  refine' cauchySeq_range_of_norm_bounded _ _
+    (fun n ↦ _ : ∀ n, ‖(f (n + 1) + -f n) • (Finset.range (n + 1)).sum z‖ ≤ b * |f (n + 1) - f n|)
   · simp_rw [abs_of_nonneg (sub_nonneg_of_le (hfa (Nat.le_succ _))), ← mul_sum]
-    apply real.uniform_continuous_const_mul.comp_cauchy_seq
+    apply Real.uniformContinuous_const_mul.comp_cauchySeq
     simp_rw [sum_range_sub, sub_eq_add_neg]
-    exact (tendsto.cauchy_seq hf0).AddConst
+    exact (Tendsto.cauchySeq hf0).add_const
   · rw [norm_smul, mul_comm]
     exact mul_le_mul_of_nonneg_right (hgb _) (abs_nonneg _)
 #align monotone.cauchy_seq_series_mul_of_tendsto_zero_of_bounded Monotone.cauchySeq_series_mul_of_tendsto_zero_of_bounded
