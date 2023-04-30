@@ -8,7 +8,7 @@ import Lean
 
 namespace Mathlib.Tactic
 
-open Lean Parser.Tactic
+open Lean Parser.Tactic Elab.Tactic
 
 /--
 `simp_rw` functions as a mix of `simp` and `rw`. Like `rw`, it applies each
@@ -32,13 +32,11 @@ example {a : ℕ}
 by simp_rw [h1, h2]
 ```
 -/
-macro "simp_rw " rws:rwRuleSeq loc:location ? : tactic => do
-  let stx ← rws.1[1].getSepArgs.mapM fun
-    | `(rwRule| $e:term) => `(tactic| simp%$e only [$e:term] $(loc)?)
-    -- FIXME There is a slight regression here after nightly-2022-10-29,
-    -- see https://github.com/leanprover/lean4/issues/1791.
-    -- Instead of lining up with the `←`, for now we line up with the lemma name.
-    -- Perhaps this is good enough anyway.
-    | `(rwRule| ← $e:term) => `(tactic| simp%$e only [← $e:term] $(loc)?)
-    | _ => Macro.throwUnsupported
-  `(tactic| ($[$stx]*))
+elab s:"simp_rw " rws:rwRuleSeq g:location ? : tactic => do
+  withRWRulesSeq s rws fun symm term => do
+    evalTactic (← match term with
+    | `(term| $e:term) =>
+      if symm then
+        `(tactic| (simp%$e only [← $e:term] $g ?))
+      else
+        `(tactic| (simp%$e only [$e:term] $g ?)))
