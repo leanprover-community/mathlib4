@@ -499,12 +499,16 @@ set_option linter.uppercaseLean3 false in
 #align imaginary_part_I_smul imaginaryPart_I_smul
 
 theorem realPart_smul (z : ℂ) (a : A) : ℜ (z • a) = z.re • ℜ a - z.im • ℑ a := by
-  nth_rw 1 [← re_add_im z]
+  -- Porting note: was `nth_rw 1 [← re_add_im z]`
+  conv_lhs =>
+    rw [← re_add_im z]
   simp [-re_add_im, add_smul, ← smul_smul, sub_eq_add_neg]
 #align real_part_smul realPart_smul
 
 theorem imaginaryPart_smul (z : ℂ) (a : A) : ℑ (z • a) = z.re • ℑ a + z.im • ℜ a := by
-  nth_rw 1 [← re_add_im z]
+  -- Porting note: was `nth_rw 1 [← re_add_im z]`
+  conv_lhs =>
+    rw [← re_add_im z]
   simp [-re_add_im, add_smul, ← smul_smul]
 #align imaginary_part_smul imaginaryPart_smul
 
