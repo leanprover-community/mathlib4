@@ -81,11 +81,12 @@ theorem coe_toAffineMap : ⇑f.toAffineMap = f :=
   rfl
 #align affine_isometry.coe_to_affine_map AffineIsometry.coe_toAffineMap
 
-theorem toAffineMap_injective : Injective (toAffineMap : (P →ᵃⁱ[𝕜] P₂) → P →ᵃ[𝕜] P₂)
-  | ⟨f, _⟩, ⟨g, _⟩, rfl => rfl
+theorem toAffineMap_injective : Injective (toAffineMap : (P →ᵃⁱ[𝕜] P₂) → P →ᵃ[𝕜] P₂) := by
+  rintro ⟨f, _⟩ ⟨g, _⟩ rfl
+  rfl
 #align affine_isometry.to_affine_map_injective AffineIsometry.toAffineMap_injective
 
-theorem coeFn_injective : @Injective (P →ᵃⁱ[𝕜] P₂) (P → P₂) coeFn :=
+theorem coeFn_injective : @Injective (P →ᵃⁱ[𝕜] P₂) (P → P₂) (↑) :=
   AffineMap.coeFn_injective.comp toAffineMap_injective
 #align affine_isometry.coe_fn_injective AffineIsometry.coeFn_injective
 
@@ -894,7 +895,7 @@ noncomputable def isometryEquivMap (φ : P₁ →ᵃⁱ[𝕜] P₂) (E : AffineS
 @[simp]
 theorem isometryEquivMap.apply_symm_apply {E : AffineSubspace 𝕜 P₁} [Nonempty E] {φ : P₁ →ᵃⁱ[𝕜] P₂}
     (x : E.map φ.toAffineMap) : φ ((E.isometryEquivMap φ).symm x) = x :=
-  congr_arg (↑) <| (E.isometryEquivMap φ).apply_symm_apply _
+  congr_arg Subtype.val <| (E.isometryEquivMap φ).apply_symm_apply _
 #align affine_subspace.isometry_equiv_map.apply_symm_apply AffineSubspace.isometryEquivMap.apply_symm_apply
 
 @[simp]
