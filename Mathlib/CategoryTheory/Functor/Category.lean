@@ -62,7 +62,7 @@ namespace NatTrans
 theorem ext' {α β : F ⟶ G} (w : α.app = β.app) : α = β := NatTrans.ext _ _ w
 
 @[simp]
-theorem vcomp_eq_comp (α : F ⟶ G) (β : G ⟶ H) : vomp α β = α ≫ β := rfl
+theorem vcomp_eq_comp (α : F ⟶ G) (β : G ⟶ H) : vcomp α β = α ≫ β := rfl
 #align category_theory.nat_trans.vcomp_eq_comp CategoryTheory.NatTrans.vcomp_eq_comp
 
 theorem vcomp_app' (α : F ⟶ G) (β : G ⟶ H) (X : C) : (α ≫ β).app X = α.app X ≫ β.app X := rfl
