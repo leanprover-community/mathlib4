@@ -83,7 +83,7 @@ partial def intros! (mvarId : MVarId) : MetaM (Array FVarId × MVarId) :=
   /-- Implementation of `intros!`. -/
   run (acc : Array FVarId) (g : MVarId) :=
   try
-    let ⟨f, g⟩ ← mvarId.intro1
+    let ⟨f, g⟩ ← g.intro1
     run (acc.push f) g
   catch _ =>
     pure (acc, g)
@@ -95,7 +95,7 @@ partial def introsP! (mvarId : MVarId) : MetaM (Array FVarId × MVarId) :=
   /-- Implementation of `introsP!`. -/
   run (acc : Array FVarId) (g : MVarId) :=
   try
-    let ⟨f, g⟩ ← mvarId.intro1P
+    let ⟨f, g⟩ ← g.intro1P
     run (acc.push f) g
   catch _ =>
     pure (acc, g)
