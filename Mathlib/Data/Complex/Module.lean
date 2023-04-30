@@ -380,9 +380,7 @@ This isomorphism is named to match the very similar `Zsqrtd.lift`. -/
 def lift : { I' : A // I' * I' = -1 } ≃ (ℂ →ₐ[ℝ] A) where
   toFun I' := liftAux I' I'.prop
   invFun F := ⟨F I, by rw [← F.map_mul, I_mul_I, AlgHom.map_neg, AlgHom.map_one]⟩
-  -- Porting note: was
-  -- left_inv I' := Subtype.ext <| liftAux_apply_i I' I'.Prop
-  left_inv I' := Subtype.ext <| by apply liftAux_apply_I
+  left_inv I' := Subtype.ext <| liftAux_apply_I (I' : A) I'.prop
   right_inv F := algHom_ext <| liftAux_apply_I _ _
 #align complex.lift Complex.lift
 
