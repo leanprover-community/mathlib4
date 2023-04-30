@@ -309,6 +309,11 @@ variable (f g : M →ₗ[R] N)
 set_option synthInstance.etaExperiment true in
 @[simp]
 theorem baseChange_sub : (f - g).baseChange A = f.baseChange A - g.baseChange A := by
+  -- porting note: was part of the `ext` below, but that's too slow so instead we have a horrible
+  -- mess which is also too slow.
+  have h := @TensorProduct.AlgebraTensorModule.curry_injective R A A M (A ⊗[R] N)
+  refine @h (_) (_) _ (_) (_) (_) _ (_) (_) (_) _ (_) (?_) _ _ ?_
+  · sorry  -- `infer_instance` times out
   ext
   simp [baseChange_eq_ltensor]
 #align linear_map.base_change_sub LinearMap.baseChange_sub
@@ -534,7 +539,7 @@ def includeRight : B →ₐ[R] A ⊗[R] B where
   map_one' := rfl
   map_mul' := by simp
   commutes' r := by
-    simp only [algebra_map_apply]
+    simp only [algebraMap_apply]
     trans r • (1 : A) ⊗ₜ[R] (1 : B)
     · rw [← tmul_smul, Algebra.smul_def]
       simp
@@ -664,7 +669,7 @@ def algHomOfLinearMapTensorProduct (f : A ⊗[R] B →ₗ[R] C)
           rw [mul_add, map_add, map_add, mul_add, h₁, h₂]
       · intro x₁ x₂ h₁ h₂
         rw [add_mul, map_add, map_add, add_mul, h₁, h₂]
-    commutes' := fun r => by rw [LinearMap.toFun_eq_coe, algebra_map_apply, w₂] }
+    commutes' := fun r => by rw [LinearMap.toFun_eq_coe, algebraMap_apply, w₂] }
 #align algebra.tensor_product.alg_hom_of_linear_map_tensor_product Algebra.TensorProduct.algHomOfLinearMapTensorProduct
 
 @[simp]
