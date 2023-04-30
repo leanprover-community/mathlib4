@@ -4,12 +4,16 @@ import Mathlib.Algebra.Order.Ring.Canonical
 
 noncomputable section
 
-set_option maxHeartbeats 400000 in
 example (x : Nat) : x ≠ x.succ := ne_of_lt (by library_search)
 example : 0 ≠ 1 + 1 := ne_of_lt (by library_search)
 example (x y : Nat) : x + y = y + x := by library_search
 example (n m k : Nat) : n ≤ m → n + k ≤ m + k := by library_search
 example (ha : a > 0) (w : b ∣ c) : a * b ∣ a * c := by library_search
+
+example (x y : Nat) : True := by
+  observe h : x + y = y + x
+  guard_hyp h : x + y = y + x
+  trivial
 
 example : Int := by library_search
 
@@ -37,6 +41,10 @@ by library_search -- says: `exact Eq.symm (mul_tsub n m k)`
 
 example {α : Type} (x y : α) : x = y ↔ y = x := by library_search -- says: `exact eq_comm`
 
+example (a b : ℕ) (ha : 0 < a) (_hb : 0 < b) : 0 < a + b := by library_search
+
+-- Verify that if maxHeartbeats is 0 we don't stop immediately.
+set_option maxHeartbeats 0 in
 example (a b : ℕ) (ha : 0 < a) (_hb : 0 < b) : 0 < a + b := by library_search
 
 section synonym

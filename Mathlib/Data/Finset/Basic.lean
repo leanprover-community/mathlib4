@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Minchao Wu, Mario Carneiro
 
 ! This file was ported from Lean 3 source module data.finset.basic
-! leanprover-community/mathlib commit 68cc421841f2ebb8ad2b5a35a853895feb4b850a
+! leanprover-community/mathlib commit 9ac7c0c8c4d7a535ec3e5b34b8859aab9233b2f4
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -1285,7 +1285,7 @@ end Insert
 
 section Lattice
 
-variable [DecidableEq α] {s t u v : Finset α} {a b : α}
+variable [DecidableEq α] {s s₁ s₂ t t₁ t₂ u v : Finset α} {a b : α}
 
 /-- `s ∪ t` is the set such that `a ∈ s ∪ t` iff `a ∈ s` or `a ∈ t`. -/
 instance : Union (Finset α) :=
@@ -1380,6 +1380,14 @@ theorem subset_union_right (s₁ s₂ : Finset α) : s₂ ⊆ s₁ ∪ s₂ := f
 theorem union_subset_union (hsu : s ⊆ u) (htv : t ⊆ v) : s ∪ t ⊆ u ∪ v :=
   sup_le_sup (le_iff_subset.2 hsu) htv
 #align finset.union_subset_union Finset.union_subset_union
+
+theorem union_subset_union_left (h : s₁ ⊆ s₂) : s₁ ∪ t ⊆ s₂ ∪ t :=
+  union_subset_union h Subset.rfl
+#align finset.union_subset_union_left Finset.union_subset_union_left
+
+theorem union_subset_union_right (h : t₁ ⊆ t₂) : s ∪ t₁ ⊆ s ∪ t₂ :=
+  union_subset_union Subset.rfl h
+#align finset.union_subset_union_right Finset.union_subset_union_right
 
 theorem union_comm (s₁ s₂ : Finset α) : s₁ ∪ s₂ = s₂ ∪ s₁ :=
   sup_comm
@@ -1948,7 +1956,6 @@ theorem erase_ssubset {a : α} {s : Finset α} (h : a ∈ s) : s.erase a ⊂ s :
   calc
     s.erase a ⊂ insert a (s.erase a) := ssubset_insert <| not_mem_erase _ _
     _ = _ := insert_erase h
-
 #align finset.erase_ssubset Finset.erase_ssubset
 
 theorem ssubset_iff_exists_subset_erase {s t : Finset α} : s ⊂ t ↔ ∃ a ∈ t, s ⊆ t.erase a := by
@@ -2127,6 +2134,14 @@ theorem union_sdiff_right (s t : Finset α) : (s ∪ t) \ t = s \ t :=
   sup_sdiff_right_self
 #align finset.union_sdiff_right Finset.union_sdiff_right
 
+theorem union_sdiff_cancel_left (h : Disjoint s t) : (s ∪ t) \ s = t :=
+  h.sup_sdiff_cancel_left
+#align finset.union_sdiff_cancel_left Finset.union_sdiff_cancel_left
+
+theorem union_sdiff_cancel_right (h : Disjoint s t) : (s ∪ t) \ t = s :=
+  h.sup_sdiff_cancel_right
+#align finset.union_sdiff_cancel_right Finset.union_sdiff_cancel_right
+
 theorem union_sdiff_symm : s ∪ t \ s = t ∪ s \ t := by simp [union_comm]
 #align finset.union_sdiff_symm Finset.union_sdiff_symm
 
@@ -2200,19 +2215,95 @@ theorem union_sdiff_self (s t : Finset α) : (s ∪ t) \ t = s \ t :=
   sup_sdiff_right_self
 #align finset.union_sdiff_self Finset.union_sdiff_self
 
+-- TODO: Do we want to delete this lemma and `Finset.disjUnion_singleton`,
+-- or instead add `Finset.union_singleton`/`Finset.singleton_union`?
 theorem sdiff_singleton_eq_erase (a : α) (s : Finset α) : s \ singleton a = erase s a := by
   ext
   rw [mem_erase, mem_sdiff, mem_singleton, and_comm]
 #align finset.sdiff_singleton_eq_erase Finset.sdiff_singleton_eq_erase
 
+-- This lemma matches `Finset.insert_eq` in functionality.
+theorem erase_eq (s : Finset α) (a : α) : s.erase a = s \ {a} :=
+  (sdiff_singleton_eq_erase _ _).symm
+#align finset.erase_eq Finset.erase_eq
+
+theorem disjoint_erase_comm : Disjoint (s.erase a) t ↔ Disjoint s (t.erase a) := by
+  simp_rw [erase_eq, disjoint_sdiff_comm]
+#align finset.disjoint_erase_comm Finset.disjoint_erase_comm
+
+theorem disjoint_of_erase_left (ha : a ∉ t) (hst : Disjoint (s.erase a) t) : Disjoint s t :=
+  by
+  rw [← erase_insert ha, ← disjoint_erase_comm, disjoint_insert_right]
+  exact ⟨not_mem_erase _ _, hst⟩
+#align finset.disjoint_of_erase_left Finset.disjoint_of_erase_left
+
+theorem disjoint_of_erase_right (ha : a ∉ s) (hst : Disjoint s (t.erase a)) : Disjoint s t :=
+  by
+  rw [← erase_insert ha, disjoint_erase_comm, disjoint_insert_left]
+  exact ⟨not_mem_erase _ _, hst⟩
+#align finset.disjoint_of_erase_right Finset.disjoint_of_erase_right
+
+theorem inter_erase (a : α) (s t : Finset α) : s ∩ t.erase a = (s ∩ t).erase a := by
+  simp only [erase_eq, inter_sdiff]
+#align finset.inter_erase Finset.inter_erase
+
 @[simp]
-theorem sdiff_singleton_not_mem_eq_self (s : Finset α) {a : α} (ha : a ∉ s) : s \ {a} = s := by
-  simp only [sdiff_singleton_eq_erase, ha, erase_eq_of_not_mem, not_false_iff]
-#align finset.sdiff_singleton_not_mem_eq_self Finset.sdiff_singleton_not_mem_eq_self
+theorem erase_inter (a : α) (s t : Finset α) : s.erase a ∩ t = (s ∩ t).erase a := by
+  simpa only [inter_comm t] using inter_erase a t s
+#align finset.erase_inter Finset.erase_inter
+
+theorem erase_sdiff_comm (s t : Finset α) (a : α) : s.erase a \ t = (s \ t).erase a := by
+  simp_rw [erase_eq, sdiff_right_comm]
+#align finset.erase_sdiff_comm Finset.erase_sdiff_comm
+
+theorem insert_union_comm (s t : Finset α) (a : α) : insert a s ∪ t = s ∪ insert a t := by
+  rw [insert_union, union_insert]
+#align finset.insert_union_comm Finset.insert_union_comm
+
+theorem erase_inter_comm (s t : Finset α) (a : α) : s.erase a ∩ t = s ∩ t.erase a := by
+  rw [erase_inter, inter_erase]
+#align finset.erase_inter_comm Finset.erase_inter_comm
+
+theorem erase_union_distrib (s t : Finset α) (a : α) : (s ∪ t).erase a = s.erase a ∪ t.erase a :=
+  by simp_rw [erase_eq, union_sdiff_distrib]
+#align finset.erase_union_distrib Finset.erase_union_distrib
+
+theorem insert_inter_distrib (s t : Finset α) (a : α) :
+    insert a (s ∩ t) = insert a s ∩ insert a t := by simp_rw [insert_eq, union_distrib_left]
+#align finset.insert_inter_distrib Finset.insert_inter_distrib
+
+theorem erase_sdiff_distrib (s t : Finset α) (a : α) : (s \ t).erase a = s.erase a \ t.erase a :=
+  by simp_rw [erase_eq, sdiff_sdiff, sup_sdiff_eq_sup le_rfl, sup_comm]
+#align finset.erase_sdiff_distrib Finset.erase_sdiff_distrib
+
+theorem erase_union_of_mem (ha : a ∈ t) (s : Finset α) : s.erase a ∪ t = s ∪ t := by
+  rw [← insert_erase (mem_union_right s ha), erase_union_distrib, ← union_insert, insert_erase ha]
+#align finset.erase_union_of_mem Finset.erase_union_of_mem
+
+theorem union_erase_of_mem (ha : a ∈ s) (t : Finset α) : s ∪ t.erase a = s ∪ t := by
+  rw [← insert_erase (mem_union_left t ha), erase_union_distrib, ← insert_union, insert_erase ha]
+#align finset.union_erase_of_mem Finset.union_erase_of_mem
+
+@[simp]
+theorem sdiff_singleton_eq_self (ha : a ∉ s) : s \ {a} = s :=
+  sdiff_eq_self_iff_disjoint.2 <| by simp [ha]
+#align finset.sdiff_singleton_eq_self Finset.sdiff_singleton_eq_self
 
 theorem sdiff_sdiff_left' (s t u : Finset α) : (s \ t) \ u = s \ t ∩ (s \ u) :=
   _root_.sdiff_sdiff_left'
 #align finset.sdiff_sdiff_left' Finset.sdiff_sdiff_left'
+
+theorem sdiff_union_sdiff_cancel (hts : t ⊆ s) (hut : u ⊆ t) : s \ t ∪ t \ u = s \ u :=
+  sdiff_sup_sdiff_cancel hts hut
+#align finset.sdiff_union_sdiff_cancel Finset.sdiff_union_sdiff_cancel
+
+theorem sdiff_union_erase_cancel (hts : t ⊆ s) (ha : a ∈ t) : s \ t ∪ t.erase a = s.erase a := by
+  simp_rw [erase_eq, sdiff_union_sdiff_cancel hts (singleton_subset_iff.2 ha)]
+#align finset.sdiff_union_erase_cancel Finset.sdiff_union_erase_cancel
+
+theorem sdiff_sdiff_eq_sdiff_union (h : u ⊆ s) : s \ (t \ u) = s \ t ∪ u :=
+  sdiff_sdiff_eq_sdiff_sup h
+#align finset.sdiff_sdiff_eq_sdiff_union Finset.sdiff_sdiff_eq_sdiff_union
 
 theorem sdiff_insert (s t : Finset α) (x : α) : s \ insert x t = (s \ t).erase x := by
   simp_rw [← sdiff_singleton_eq_erase, insert_eq, sdiff_sdiff_left', sdiff_union_distrib,
@@ -2224,10 +2315,14 @@ theorem sdiff_insert_insert_of_mem_of_not_mem {s t : Finset α} {x : α} (hxs : 
   rw [sdiff_insert, insert_erase (mem_sdiff.mpr ⟨hxs, hxt⟩)]
 #align finset.sdiff_insert_insert_of_mem_of_not_mem Finset.sdiff_insert_insert_of_mem_of_not_mem
 
-theorem sdiff_erase {x : α} (hx : x ∈ s) : s \ s.erase x = {x} := by
-  rw [← sdiff_singleton_eq_erase, sdiff_sdiff_right_self]
-  exact inf_eq_right.2 (singleton_subset_iff.2 hx)
+theorem sdiff_erase (h : a ∈ s) : s \ t.erase a = insert a (s \ t) := by
+  rw [← sdiff_singleton_eq_erase, sdiff_sdiff_eq_sdiff_union (singleton_subset_iff.2 h), insert_eq,
+    union_comm]
 #align finset.sdiff_erase Finset.sdiff_erase
+
+theorem sdiff_erase_self (ha : a ∈ s) : s \ s.erase a = {a} := by
+  rw [sdiff_erase ha, sdiff_self, insert_emptyc_eq]
+#align finset.sdiff_erase_self Finset.sdiff_erase_self
 
 theorem sdiff_sdiff_self_left (s t : Finset α) : s \ (s \ t) = s ∩ t :=
   sdiff_sdiff_right_self
@@ -2776,7 +2871,6 @@ theorem sdiff_eq_filter (s₁ s₂ : Finset α) : s₁ \ s₂ = filter (· ∉ s
 
 theorem sdiff_eq_self (s₁ s₂ : Finset α) : s₁ \ s₂ = s₁ ↔ s₁ ∩ s₂ ⊆ ∅ := by
   simp [Subset.antisymm_iff, disjoint_iff_inter_eq_empty]
-
 #align finset.sdiff_eq_self Finset.sdiff_eq_self
 
 theorem subset_union_elim {s : Finset α} {t₁ t₂ : Set α} (h : ↑s ⊆ t₁ ∪ t₂) :

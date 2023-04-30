@@ -39,7 +39,6 @@ protected theorem zero_lt_bit0 : ∀ {n : Nat}, n ≠ 0 → 0 < bit0 n
     calc
       0 < succ (succ (bit0 n)) := zero_lt_succ _
       _ = bit0 (succ n) := (Nat.bit0_succ_eq n).symm
-
 #align nat.zero_lt_bit0 Nat.zero_lt_bit0
 
 protected theorem zero_lt_bit1 (n : Nat) : 0 < bit1 n :=
@@ -59,4 +58,3 @@ protected theorem bit1_ne_zero (n : ℕ) : bit1 n ≠ 0 :=
 #align nat.bit1_ne_zero Nat.bit1_ne_zero
 
 end Nat
-

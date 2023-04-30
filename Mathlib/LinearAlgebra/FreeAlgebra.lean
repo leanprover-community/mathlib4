@@ -25,13 +25,13 @@ universe u v
 
 namespace FreeAlgebra
 
+set_option synthInstance.etaExperiment true in
 /-- The `FreeMonoid X` basis on the `FreeAlgebra R X`,
 mapping `[x₁, x₂, ..., xₙ]` to the "monomial" `1 • x₁ * x₂ * ⋯ * xₙ` -/
 -- @[simps]
 noncomputable def basisFreeMonoid (R : Type u) (X : Type v) [CommRing R] :
     Basis (FreeMonoid X) R (FreeAlgebra R X) :=
   Finsupp.basisSingleOne.map (equivMonoidAlgebraFreeMonoid (R := R) (X := X)).symm.toLinearEquiv
-
 #align free_algebra.basis_free_monoid FreeAlgebra.basisFreeMonoid
 
 -- TODO: generalize to `X : Type v`
