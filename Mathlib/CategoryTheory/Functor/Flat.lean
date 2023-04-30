@@ -281,7 +281,7 @@ theorem uniq {K : J ⥤ C} {c : Cone K} (hc : IsLimit c) (s : Cone (K ⋙ F))
     intro j
     injection c₀.π.naturality (BiconeHom.left j) with _ e₁
     injection c₀.π.naturality (BiconeHom.right j) with _ e₂
-    sorry--simpa using e₁.symm.trans e₂
+    sorry--porting note: was `simpa using e₁.symm.trans e₂`
   have : c.extend g₁.right = c.extend g₂.right := by
     unfold Cone.extend
     congr 1
@@ -552,6 +552,7 @@ set_option linter.uppercaseLean3 false in
 noncomputable def preservesFiniteLimitsIffLanPreservesFiniteLimits (F : C ⥤ D) :
     PreservesFiniteLimits F ≃ PreservesFiniteLimits (lan F.op : _ ⥤ Dᵒᵖ ⥤ Type u₁) where
   toFun _ :=
+    -- porting note: none of the four `let`s were needed in lean 3
     let foo : ReflectsLimits.{u₁, u₁, u₁ + 1, u₁ + 1} (forget.{u₁ + 1, u₁, u₁} (Type u₁)) := Limits.idReflectsLimits
     let moo : PreservesColimits.{u₁, u₁, u₁ + 1, u₁ + 1} (forget.{u₁ + 1, u₁, u₁} (Type u₁)) := Limits.idPreservesColimits.{u₁, u₁, u₁, u₁+1}
     let bar : PreservesFilteredColimits.{u₁, u₁ + 1, u₁ + 1} (forget.{u₁ + 1, u₁, u₁} (Type u₁)) := PreservesColimits.preservesFilteredColimits.{u₁, u₁+1, u₁+1} (forget.{u₁+1, u₁, u₁} (Type u₁))
@@ -562,11 +563,13 @@ noncomputable def preservesFiniteLimitsIffLanPreservesFiniteLimits (F : C ⥤ D)
     intros ; skip; apply preservesLimitOfLanPreservesLimit
   left_inv x := by
     cases x;
+    -- porting note: commenting out a tactic which is now failing
     --unfold preservesFiniteLimitsOfFlat
     dsimp only [preservesFiniteLimitsOfPreservesFiniteLimitsOfSize]; congr
     sorry
   right_inv x := by
     cases x
+    -- porting note: commenting out a tactic which is now failing
     --unfold preservesFiniteLimitsOfFlat
     congr
     unfold
