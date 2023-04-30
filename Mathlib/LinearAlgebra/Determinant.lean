@@ -20,7 +20,7 @@ import Mathlib.LinearAlgebra.Matrix.Basis
 
 This file defines the determinant of an endomorphism, and of a family of vectors
 with respect to some basis. For the determinant of a matrix, see the file
-`linear_algebra.matrix.determinant`.
+`LinearAlgebra.Matrix.Determinant`.
 
 ## Main definitions
 
@@ -242,14 +242,14 @@ theorem det_toLin' (f : Matrix ι ι R) : LinearMap.det (Matrix.toLin' f) = Matr
 
 /-- To show `P (LinearMap.det f)` it suffices to consider `P (Matrix.det (toMatrix _ _ f))` and
 `P 1`. -/
-@[elab_as_elim]
+-- @[elab_as_elim] -- Porting note: This attr can't be applied.
 theorem det_cases [DecidableEq M] {P : A → Prop} (f : M →ₗ[A] M)
     (hb : ∀ (s : Finset M) (b : Basis s A M), P (Matrix.det (toMatrix b b f))) (h1 : P 1) :
     P (LinearMap.det f) := by
   rw [LinearMap.det_def]
   split_ifs with h
   · convert hb _ h.choose_spec.some
-    apply detAux_def''
+    convert detAux_def'' (Trunc.mk h.choose_spec.some) h.choose_spec.some f
   · exact h1
 #align linear_map.det_cases LinearMap.det_cases
 
@@ -373,47 +373,42 @@ theorem bot_lt_ker_of_det_eq_zero {𝕜 : Type _} [Field 𝕜] [Module 𝕜 M] {
 
 end LinearMap
 
+set_option synthInstance.etaExperiment true
+
 namespace LinearEquiv
 
-set_option synthInstance.etaExperiment true in
 /-- On a `LinearEquiv`, the domain of `LinearMap.det` can be promoted to `Rˣ`. -/
 protected def det : (M ≃ₗ[R] M) →* Rˣ :=
   (Units.map (LinearMap.det : (M →ₗ[R] M) →* R)).comp
     (LinearMap.GeneralLinearGroup.generalLinearEquiv R M).symm.toMonoidHom
 #align linear_equiv.det LinearEquiv.det
 
-set_option synthInstance.etaExperiment true in
 @[simp]
 theorem coe_det (f : M ≃ₗ[R] M) : ↑(LinearEquiv.det f) = LinearMap.det (f : M →ₗ[R] M) :=
   rfl
 #align linear_equiv.coe_det LinearEquiv.coe_det
 
-set_option synthInstance.etaExperiment true in
 @[simp]
-theorem coe_inv_det (f : M ≃ₗ[R] M) : ↑(LinearEquiv.det f⁻¹) = LinearMap.det (f.symm : M →ₗ[R] M) :=
+theorem coe_inv_det (f : M ≃ₗ[R] M) : ↑(LinearEquiv.det f)⁻¹ = LinearMap.det (f.symm : M →ₗ[R] M) :=
   rfl
 #align linear_equiv.coe_inv_det LinearEquiv.coe_inv_det
 
-set_option synthInstance.etaExperiment true in
 @[simp]
 theorem det_refl : LinearEquiv.det (LinearEquiv.refl R M) = 1 :=
   Units.ext <| LinearMap.det_id
 #align linear_equiv.det_refl LinearEquiv.det_refl
 
-set_option synthInstance.etaExperiment true in
 @[simp]
 theorem det_trans (f g : M ≃ₗ[R] M) :
     LinearEquiv.det (f.trans g) = LinearEquiv.det g * LinearEquiv.det f :=
   map_mul _ g f
 #align linear_equiv.det_trans LinearEquiv.det_trans
 
-set_option synthInstance.etaExperiment true in
 @[simp]
 theorem det_symm (f : M ≃ₗ[R] M) : LinearEquiv.det f.symm = LinearEquiv.det f⁻¹ :=
   map_inv _ f
 #align linear_equiv.det_symm LinearEquiv.det_symm
 
-set_option synthInstance.etaExperiment true in
 /-- Conjugating a linear equiv by a linear equiv does not change its determinant. -/
 @[simp]
 theorem det_conj (f : M ≃ₗ[R] M) (e : M ≃ₗ[R] M') :
@@ -423,7 +418,6 @@ theorem det_conj (f : M ≃ₗ[R] M) (e : M ≃ₗ[R] M') :
 
 end LinearEquiv
 
-set_option synthInstance.etaExperiment true in
 /-- The determinants of a `LinearEquiv` and its inverse multiply to 1. -/
 @[simp]
 theorem LinearEquiv.det_mul_det_symm {A : Type _} [CommRing A] [Module A M] (f : M ≃ₗ[A] M) :
@@ -431,7 +425,6 @@ theorem LinearEquiv.det_mul_det_symm {A : Type _} [CommRing A] [Module A M] (f :
   simp [← LinearMap.det_comp]
 #align linear_equiv.det_mul_det_symm LinearEquiv.det_mul_det_symm
 
-set_option synthInstance.etaExperiment true in
 /-- The determinants of a `LinearEquiv` and its inverse multiply to 1. -/
 @[simp]
 theorem LinearEquiv.det_symm_mul_det {A : Type _} [CommRing A] [Module A M] (f : M ≃ₗ[A] M) :
@@ -439,7 +432,6 @@ theorem LinearEquiv.det_symm_mul_det {A : Type _} [CommRing A] [Module A M] (f :
   by simp [← LinearMap.det_comp]
 #align linear_equiv.det_symm_mul_det LinearEquiv.det_symm_mul_det
 
-set_option synthInstance.etaExperiment true in
 -- Cannot be stated using `LinearMap.det` because `f` is not an endomorphism.
 theorem LinearEquiv.isUnit_det (f : M ≃ₗ[R] M') (v : Basis ι R M) (v' : Basis ι R M') :
     IsUnit (LinearMap.toMatrix v v' f).det := by
@@ -447,21 +439,18 @@ theorem LinearEquiv.isUnit_det (f : M ≃ₗ[R] M') (v : Basis ι R M) (v' : Bas
   simpa using (LinearMap.toMatrix_comp v v' v f.symm f).symm
 #align linear_equiv.is_unit_det LinearEquiv.isUnit_det
 
-set_option synthInstance.etaExperiment true in
 /-- Specialization of `LinearEquiv.isUnit_det` -/
 theorem LinearEquiv.isUnit_det' {A : Type _} [CommRing A] [Module A M] (f : M ≃ₗ[A] M) :
     IsUnit (LinearMap.det (f : M →ₗ[A] M)) :=
   isUnit_of_mul_eq_one _ _ f.det_mul_det_symm
 #align linear_equiv.is_unit_det' LinearEquiv.isUnit_det'
 
-set_option synthInstance.etaExperiment true in
 /-- The determinant of `f.symm` is the inverse of that of `f` when `f` is a linear equiv. -/
 theorem LinearEquiv.det_coe_symm {𝕜 : Type _} [Field 𝕜] [Module 𝕜 M] (f : M ≃ₗ[𝕜] M) :
     LinearMap.det (f.symm : M →ₗ[𝕜] M) = (LinearMap.det (f : M →ₗ[𝕜] M))⁻¹ := by
   field_simp [IsUnit.ne_zero f.isUnit_det']
 #align linear_equiv.det_coe_symm LinearEquiv.det_coe_symm
 
-set_option synthInstance.etaExperiment true in
 /-- Builds a linear equivalence from a linear map whose determinant in some bases is a unit. -/
 @[simps]
 def LinearEquiv.ofIsUnitDet {f : M →ₗ[R] M'} {v : Basis ι R M} {v' : Basis ι R M'}
@@ -483,7 +472,6 @@ def LinearEquiv.ofIsUnitDet {f : M →ₗ[R] M'} {v : Basis ι R M} {v' : Basis 
       _ = x := by simp [h]
 #align linear_equiv.of_is_unit_det LinearEquiv.ofIsUnitDet
 
-set_option synthInstance.etaExperiment true in
 @[simp]
 theorem LinearEquiv.coe_ofIsUnitDet {f : M →ₗ[R] M'} {v : Basis ι R M} {v' : Basis ι R M'}
     (h : IsUnit (LinearMap.toMatrix v v' f).det) :
@@ -492,7 +480,7 @@ theorem LinearEquiv.coe_ofIsUnitDet {f : M →ₗ[R] M'} {v : Basis ι R M} {v' 
   rfl
 #align linear_equiv.coe_of_is_unit_det LinearEquiv.coe_ofIsUnitDet
 
-set_option synthInstance.etaExperiment true in
+set_option maxHeartbeats 300000 in
 /-- Builds a linear equivalence from a linear map on a finite-dimensional vector space whose
 determinant is nonzero. -/
 @[reducible]
@@ -504,7 +492,6 @@ def LinearMap.equivOfDetNeZero {𝕜 : Type _} [Field 𝕜] {M : Type _} [AddCom
   LinearEquiv.ofIsUnitDet this
 #align linear_map.equiv_of_det_ne_zero LinearMap.equivOfDetNeZero
 
-set_option synthInstance.etaExperiment true in
 theorem LinearMap.associated_det_of_eq_comp (e : M ≃ₗ[R] M) (f f' : M →ₗ[R] M)
     (h : ∀ x, f x = f' (e x)) : Associated (LinearMap.det f) (LinearMap.det f') := by
   suffices Associated (LinearMap.det (f' ∘ₗ ↑e)) (LinearMap.det f') by
@@ -515,7 +502,6 @@ theorem LinearMap.associated_det_of_eq_comp (e : M ≃ₗ[R] M) (f f' : M →ₗ
   exact Associated.mul_left _ (associated_one_iff_isUnit.mpr e.isUnit_det')
 #align linear_map.associated_det_of_eq_comp LinearMap.associated_det_of_eq_comp
 
-set_option synthInstance.etaExperiment true in
 theorem LinearMap.associated_det_comp_equiv {N : Type _} [AddCommGroup N] [Module R N]
     (f : N →ₗ[R] M) (e e' : M ≃ₗ[R] N) :
     Associated (LinearMap.det (f ∘ₗ ↑e)) (LinearMap.det (f ∘ₗ ↑e')) := by
@@ -525,7 +511,6 @@ theorem LinearMap.associated_det_comp_equiv {N : Type _} [AddCommGroup N] [Modul
     LinearEquiv.apply_symm_apply]
 #align linear_map.associated_det_comp_equiv LinearMap.associated_det_comp_equiv
 
-set_option synthInstance.etaExperiment true in
 /-- The determinant of a family of vectors with respect to some basis, as an alternating
 multilinear map. -/
 nonrec def Basis.det : AlternatingMap R M R ι where
@@ -534,12 +519,12 @@ nonrec def Basis.det : AlternatingMap R M R ι where
     intro inst v i x y
     cases Subsingleton.elim inst ‹_›
     simp only [e.toMatrix_update, LinearEquiv.map_add, Finsupp.coe_add]
-    exact det_updateColumn_add _ _ _ _
+    convert det_updateColumn_add (e.toMatrix v) i (e.repr x) (e.repr y)
   map_smul' := by
     intro inst u i c x
     cases Subsingleton.elim inst ‹_›
     simp only [e.toMatrix_update, Algebra.id.smul_eq_mul, LinearEquiv.map_smul]
-    apply det_updateColumn_smul
+    convert det_updateColumn_smul (e.toMatrix u) i c (e.repr x)
   map_eq_zero_of_eq' := by
     intro v i j h hij
     simp only
@@ -549,35 +534,30 @@ nonrec def Basis.det : AlternatingMap R M R ι where
     rw [updateRow_ne hij.symm, updateRow_self]
 #align basis.det Basis.det
 
-set_option synthInstance.etaExperiment true in
 theorem Basis.det_apply (v : ι → M) : e.det v = Matrix.det (e.toMatrix v) :=
   rfl
 #align basis.det_apply Basis.det_apply
 
-set_option synthInstance.etaExperiment true in
 theorem Basis.det_self : e.det e = 1 := by simp [e.det_apply]
 #align basis.det_self Basis.det_self
 
-set_option synthInstance.etaExperiment true in
 @[simp]
 theorem Basis.det_isEmpty [IsEmpty ι] : e.det = AlternatingMap.constOfIsEmpty R M 1 := by
   ext v
   exact Matrix.det_isEmpty
 #align basis.det_is_empty Basis.det_isEmpty
 
-set_option synthInstance.etaExperiment true in
 /-- `Basis.det` is not the zero map. -/
 theorem Basis.det_ne_zero [Nontrivial R] : e.det ≠ 0 := fun h => by simpa [h] using e.det_self
 #align basis.det_ne_zero Basis.det_ne_zero
 
-set_option synthInstance.etaExperiment true in
 theorem is_basis_iff_det {v : ι → M} :
     LinearIndependent R v ∧ span R (Set.range v) = ⊤ ↔ IsUnit (e.det v) := by
   constructor
   · rintro ⟨hli, hspan⟩
-    set v' := Basis.mk hli hspan.ge with v'_eq
+    set v' := Basis.mk hli hspan.ge
     rw [e.det_apply]
-    convert LinearEquiv.isUnit_det (LinearEquiv.refl _ _) v' e using 2
+    convert LinearEquiv.isUnit_det (LinearEquiv.refl R M) v' e using 2
     ext (i j)
     simp
   · intro h
@@ -589,8 +569,6 @@ theorem is_basis_iff_det {v : ι → M} :
     rw [← this]
     exact ⟨v'.linearIndependent, v'.span_eq⟩
 #align is_basis_iff_det is_basis_iff_det
-
-set_option synthInstance.etaExperiment true
 
 theorem Basis.isUnit_det (e' : Basis ι R M) : IsUnit (e.det e') :=
   (is_basis_iff_det e).mp ⟨e'.linearIndependent, e'.span_eq⟩
@@ -697,7 +675,7 @@ theorem Basis.det_unitsSMul (e : Basis ι R M) (w : ι → Rˣ) :
 
 /-- The determinant of a basis constructed by `unitsSMul` is the product of the given units. -/
 @[simp]
-theorem Basis.det_unitsSMul_self (w : ι → Rˣ) : e.det (e.unitsSMul w) = ∏ i, w i := by
+theorem Basis.det_unitsSMul_self (w : ι → Rˣ) : e.det (e.unitsSMul w) = ∏ i, (w i : R) := by
   simp [Basis.det_apply]
 #align basis.det_units_smul_self Basis.det_unitsSMul_self
 
