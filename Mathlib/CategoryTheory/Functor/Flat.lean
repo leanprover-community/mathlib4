@@ -256,8 +256,7 @@ theorem uniq {K : J ⥤ C} {c : Cone K} (hc : IsLimit c) (s : Cone (K ⋙ F))
         ext
         -- porting note: Lean 3 proof was `simp` but `Comma.eqToHom_right`
         -- isn't firing for some reason
-        -- Asked here https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/
-        -- simp.20not.20using.20a.20simp.20lemma/near/353943416
+        -- Asked here https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/simp.20not.20using.20a.20simp.20lemma/near/353943416
         simp
         rw [Comma.eqToHom_right, Comma.eqToHom_right] -- this is a `simp` lemma
         simp }
