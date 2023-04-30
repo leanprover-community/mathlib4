@@ -300,29 +300,12 @@ end Decidable
 #align decidable_of_decidable_of_eq decidable_of_decidable_of_eq
 #align or.by_cases Or.by_cases
 
-/- Disjunctions are decidable. We're not using alias because this doesn't currently produce
-decidable definitions. -/
-def Or.decidable := @instDecidableOr
-
-/- Conjunctions are decidable. We're not using alias because this doesn't currently produce
-decidable definitions. -/
-def And.decidable := @instDecidableAnd
-
-/- Negations are decidable. We're not using alias because this doesn't currently produce
-decidable definitions. -/
-def Not.decidable := @instDecidableNot
-
-/- Equivalences are decidable. We're not using alias because this doesn't currently produce
-decidable definitions. -/
-def Iff.decidable := @instDecidableIff
-
-/- True is decidable. We're not using alias because this doesn't currently produce
-decidable definitions. -/
-def decidableTrue := @instDecidableTrue
-
-/- False is decidable. We're not using alias because this doesn't currently produce
-decidable definitions. -/
-def decidableFalse := @instDecidableFalse
+alias instDecidableOr ← Or.decidable
+alias instDecidableAnd ← And.decidable
+alias instDecidableNot ← Not.decidable
+alias instDecidableIff ← Iff.decidable
+alias instDecidableTrue ← decidableTrue
+alias instDecidableFalse ← decidableFalse
 
 #align decidable.true decidableTrue
 #align decidable.false decidableFalse
