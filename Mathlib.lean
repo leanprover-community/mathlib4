@@ -1428,6 +1428,7 @@ import Mathlib.LinearAlgebra.Matrix.Basis
 import Mathlib.LinearAlgebra.Matrix.Block
 import Mathlib.LinearAlgebra.Matrix.Circulant
 import Mathlib.LinearAlgebra.Matrix.Determinant
+import Mathlib.LinearAlgebra.Matrix.Diagonal
 import Mathlib.LinearAlgebra.Matrix.DotProduct
 import Mathlib.LinearAlgebra.Matrix.FiniteDimensional
 import Mathlib.LinearAlgebra.Matrix.InvariantBasisNumber
@@ -1440,6 +1441,7 @@ import Mathlib.LinearAlgebra.Matrix.Reindex
 import Mathlib.LinearAlgebra.Matrix.Symmetric
 import Mathlib.LinearAlgebra.Matrix.ToLin
 import Mathlib.LinearAlgebra.Matrix.Trace
+import Mathlib.LinearAlgebra.Matrix.Transvection
 import Mathlib.LinearAlgebra.Matrix.ZPow
 import Mathlib.LinearAlgebra.Multilinear.Basic
 import Mathlib.LinearAlgebra.Multilinear.Basis
@@ -1454,6 +1456,7 @@ import Mathlib.LinearAlgebra.SModEq
 import Mathlib.LinearAlgebra.SesquilinearForm
 import Mathlib.LinearAlgebra.Span
 import Mathlib.LinearAlgebra.StdBasis
+import Mathlib.LinearAlgebra.SymplecticGroup
 import Mathlib.LinearAlgebra.TensorProduct
 import Mathlib.LinearAlgebra.TensorProductBasis
 import Mathlib.LinearAlgebra.Vandermonde
@@ -1920,6 +1923,7 @@ import Mathlib.Topology.Bornology.Constructions
 import Mathlib.Topology.Bornology.Hom
 import Mathlib.Topology.Category.Born
 import Mathlib.Topology.Category.CompHaus.Basic
+import Mathlib.Topology.Category.CompHaus.Projective
 import Mathlib.Topology.Category.Top.Adjunctions
 import Mathlib.Topology.Category.Top.Basic
 import Mathlib.Topology.Category.Top.EpiMono

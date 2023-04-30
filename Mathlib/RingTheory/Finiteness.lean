@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 
 ! This file was ported from Lean 3 source module ring_theory.finiteness
-! leanprover-community/mathlib commit e95e4f92c8f8da3c7f693c3ec948bcf9b6683f51
+! leanprover-community/mathlib commit fa78268d4d77cb2b2fbc89f0527e2e7807763780
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -648,14 +648,14 @@ theorem equiv [Finite R M] (e : M ≃ₗ[R] N) : Finite R N :=
 
 section Algebra
 
-theorem trans {R : Type _} (A B : Type _) [CommSemiring R] [CommSemiring A] [Algebra R A]
-    [Semiring B] [Algebra R B] [Algebra A B] [IsScalarTower R A B] :
-    ∀ [Finite R A] [Finite A B], Finite R B
+theorem trans {R : Type _} (A M : Type _) [CommSemiring R] [Semiring A] [Algebra R A]
+    [AddCommMonoid M] [Module R M] [Module A M] [IsScalarTower R A M] :
+    ∀ [Finite R A] [Finite A M], Finite R M
   | ⟨⟨s, hs⟩⟩, ⟨⟨t, ht⟩⟩ =>
     ⟨Submodule.fg_def.2
-        ⟨Set.image2 (· • ·) (↑s : Set A) (↑t : Set B),
+        ⟨Set.image2 (· • ·) (↑s : Set A) (↑t : Set M),
           Set.Finite.image2 _ s.finite_toSet t.finite_toSet, by
-          erw [Set.image2_smul, Submodule.span_smul_of_span_eq_top hs (↑t : Set B), ht,
+          erw [Set.image2_smul, Submodule.span_smul_of_span_eq_top hs (↑t : Set M), ht,
             Submodule.restrictScalars_top]⟩⟩
 #align module.finite.trans Module.Finite.trans
 
@@ -724,13 +724,15 @@ theorem of_surjective (f : A →+* B) (hf : Surjective f) : f.Finite :=
   Module.Finite.of_surjective (Algebra.ofId A B).toLinearMap hf
 #align ring_hom.finite.of_surjective RingHom.Finite.of_surjective
 
-theorem comp {g : B →+* C} {f : A →+* B} (hg : g.Finite) (hf : f.Finite) : (g.comp f).Finite :=
+theorem comp {g : B →+* C} {f : A →+* B} (hg : g.Finite) (hf : f.Finite) : (g.comp f).Finite := by
+  set_option synthInstance.etaExperiment true in
   letI := f.toAlgebra
   letI := g.toAlgebra
   letI := (g.comp f).toAlgebra
-  @Module.Finite.trans A B C _ _ f.toAlgebra _ (g.comp f).toAlgebra g.toAlgebra
-    ⟨fun a b c => show (g ((f a) * b)) * c = g (f a) * (g b * c) by rw [map_mul, mul_assoc]⟩
-    hf hg
+  letI : IsScalarTower A B C := RestrictScalars.isScalarTower A B C
+  letI : Module.Finite A B := hf
+  letI : Module.Finite B C := hg
+  exact Module.Finite.trans B C
 #align ring_hom.finite.comp RingHom.Finite.comp
 
 set_option synthInstance.etaExperiment true in
