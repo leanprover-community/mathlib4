@@ -101,7 +101,7 @@ theorem restrictScalars_curry (f : M ⊗[R] N →ₗ[A] P) :
 a better `ext` lemma than `tensor_product.algebra_tensor_module.ext` below.
 
 See note [partially-applied ext lemmas]. -/
-@[ext]
+@[ext high]
 nonrec theorem curry_injective : Function.Injective (curry : (M ⊗ N →ₗ[A] P) → M →ₗ[A] N →ₗ[R] P) :=
   fun _ _ h =>
   LinearMap.restrictScalars_injective R <|
@@ -193,7 +193,7 @@ nonrec def mk : M →ₗ[A] N →ₗ[R] M ⊗[R] N :=
   { mk R M N with map_smul' := fun _ _ => rfl }
 #align tensor_product.algebra_tensor_module.mk TensorProduct.AlgebraTensorModule.mk
 
-attribute [local ext] TensorProduct.ext
+attribute [local ext high] TensorProduct.ext
 
 /-- Heterobasic version of `tensor_product.assoc`:
 
@@ -510,7 +510,7 @@ instance : IsScalarTower R S (A ⊗[R] B) :=
 
 variable {C : Type v₃} [Semiring C] [Algebra R C]
 
-@[ext]
+@[ext high]
 theorem ext {g h : A ⊗[R] B →ₐ[R] C} (H : ∀ a b, g (a ⊗ₜ b) = h (a ⊗ₜ b)) : g = h := by
   apply @AlgHom.toLinearMap_injective R (A ⊗[R] B) C _ _ _ _ _ _ _ _
   ext
