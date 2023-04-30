@@ -39,9 +39,6 @@ theorem get.cons_add_csize (c : Char) (cs : List Char) (i : ℕ) :
   simp [get, utf8GetAux, Pos.ext_iff, this]
   apply utf8GetAux.add_right_cancel
 
-theorem get.cons_csize (c : Char) (cs : List Char) : get ⟨c :: cs⟩ ⟨csize c⟩ = get ⟨cs⟩ ⟨0⟩ := by
-  rw [← Nat.zero_add (csize c), cons_add_csize]
-
 theorem Iterator.hasNext.cons_add_csize (c : Char) (cs : List Char) (i : ℕ) :
     hasNext ⟨⟨c :: cs⟩, ⟨i + csize c⟩⟩ = hasNext ⟨⟨cs⟩, ⟨i⟩⟩ := by
   simp [hasNext, endPos, utf8ByteSize, utf8ByteSize.go]
