@@ -61,10 +61,10 @@ variable [SMul R ℝ]
 `restrict_scalars.module ℝ ℂ ℂ = complex.module` definitionally. -/
 instance : SMul R ℂ where smul r x := ⟨r • x.re - 0 * x.im, r • x.im + 0 * x.re⟩
 
-theorem smul_re (r : R) (z : ℂ) : (r • z).re = r • z.re := by simp [(· • ·)]
+theorem smul_re (r : R) (z : ℂ) : (r • z).re = r • z.re := by simp [(· • ·), SMul.smul]
 #align complex.smul_re Complex.smul_re
 
-theorem smul_im (r : R) (z : ℂ) : (r • z).im = r • z.im := by simp [(· • ·)]
+theorem smul_im (r : R) (z : ℂ) : (r • z).im = r • z.im := by simp [(· • ·), SMul.smul]
 #align complex.smul_im Complex.smul_im
 
 @[simp]
@@ -83,32 +83,32 @@ instance [SMul R S] [SMul R ℝ] [SMul S ℝ] [IsScalarTower R S ℝ] : IsScalar
 instance [SMul R ℝ] [SMul Rᵐᵒᵖ ℝ] [IsCentralScalar R ℝ] : IsCentralScalar R ℂ
     where op_smul_eq_smul r x := by ext <;> simp [smul_re, smul_im, op_smul_eq_smul]
 
-instance [Monoid R] [MulAction R ℝ] : MulAction R ℂ where
+instance mulAction [Monoid R] [MulAction R ℝ] : MulAction R ℂ where
   one_smul x := by ext <;> simp [smul_re, smul_im, one_smul]
   mul_smul r s x := by ext <;> simp [smul_re, smul_im, mul_smul]
 
-instance [DistribSMul R ℝ] : DistribSMul R ℂ where
+instance distribSmul [DistribSMul R ℝ] : DistribSMul R ℂ where
   smul_add r x y := by ext <;> simp [smul_re, smul_im, smul_add]
   smul_zero r := by ext <;> simp [smul_re, smul_im, smul_zero]
 
 instance [Semiring R] [DistribMulAction R ℝ] : DistribMulAction R ℂ :=
-  { Complex.distribSmul with }
+  { Complex.distribSmul, Complex.mulAction with }
 
 instance [Semiring R] [Module R ℝ] : Module R ℂ where
   add_smul r s x := by ext <;> simp [smul_re, smul_im, add_smul]
   zero_smul r := by ext <;> simp [smul_re, smul_im, zero_smul]
 
-instance [CommSemiring R] [Algebra R ℝ] : Algebra R ℂ :=
+noncomputable instance [CommSemiring R] [Algebra R ℝ] : Algebra R ℂ :=
   { Complex.ofReal.comp (algebraMap R ℝ) with
     smul := (· • ·)
     smul_def' := fun r x => by ext <;> simp [smul_re, smul_im, Algebra.smul_def]
     commutes' := fun r ⟨xr, xi⟩ => by ext <;> simp [smul_re, smul_im, Algebra.commutes] }
 
 instance : StarModule ℝ ℂ :=
-  ⟨fun r x => by simp only [star_def, star_trivial, real_smul, map_mul, conj_of_real]⟩
+  ⟨fun r x => by simp only [star_def, star_trivial, real_smul, map_mul, conj_ofReal]⟩
 
 @[simp]
-theorem coe_algebraMap : (algebraMap ℝ ℂ : ℝ → ℂ) = coe :=
+theorem coe_algebraMap : (algebraMap ℝ ℂ : ℝ → ℂ) = ((↑) : ℝ → ℂ) :=
   rfl
 #align complex.coe_algebra_map Complex.coe_algebraMap
 
@@ -119,7 +119,7 @@ variable {A : Type _} [Semiring A] [Algebra ℝ A]
 /-- We need this lemma since `complex.coe_algebra_map` diverts the simp-normal form away from
 `alg_hom.commutes`. -/
 @[simp]
-theorem AlgHom.map_coe_real_complex (f : ℂ →ₐ[ℝ] A) (x : ℝ) : f x = algebraMap ℝ A x :=
+theorem _root_.AlgHom.map_coe_real_complex (f : ℂ →ₐ[ℝ] A) (x : ℝ) : f x = algebraMap ℝ A x :=
   f.commutes x
 #align alg_hom.map_coe_real_complex AlgHom.map_coe_real_complex
 
@@ -487,4 +487,3 @@ theorem imaginaryPart_smul (z : ℂ) (a : A) : ℑ (z • a) = z.re • ℑ a + 
 #align imaginary_part_smul imaginaryPart_smul
 
 end RealImaginaryPart
-

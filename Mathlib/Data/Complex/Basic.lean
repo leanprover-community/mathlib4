@@ -90,9 +90,7 @@ def ofReal' (r : ℝ) : ℂ :=
 instance : Coe ℝ ℂ :=
   ⟨ofReal'⟩
 
-/- Porting note: `simp` attribute removed as this has a variable as head symbol of
-the left-hand side (after whnfR)-/
-@[norm_cast]
+@[simp, norm_cast]
 theorem ofReal_re (r : ℝ) : Complex.re (r : ℂ) = r :=
   rfl
 #align complex.of_real_re Complex.ofReal_re
