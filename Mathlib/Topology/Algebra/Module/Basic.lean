@@ -843,9 +843,9 @@ theorem comp_assoc {R₄ : Type _} [Semiring R₄] [Module R₄ M₄] {σ₁₄ 
   rfl
 #align continuous_linear_map.comp_assoc ContinuousLinearMap.comp_assoc
 
-instance mul : Mul (M₁ →L[R₁] M₁) :=
+instance instMul : Mul (M₁ →L[R₁] M₁) :=
   ⟨comp⟩
-#align continuous_linear_map.has_mul ContinuousLinearMap.mul
+#align continuous_linear_map.has_mul ContinuousLinearMap.instMul
 
 theorem mul_def (f g : M₁ →L[R₁] M₁) : f * g = f.comp g :=
   rfl
@@ -2811,4 +2811,3 @@ instance t3_quotient_of_isClosed [TopologicalAddGroup M] [IsClosed (S : Set M)] 
 end Submodule
 
 end Quotient
-

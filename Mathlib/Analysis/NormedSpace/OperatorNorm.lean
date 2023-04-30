@@ -376,9 +376,9 @@ attribute [-instance] ContinuousLinearMap.uniformSpace
 attribute [local instance] ContinuousLinearMap.tmpSeminormedAddCommGroup
 
 set_option synthInstance.etaExperiment true in
-protected theorem tmp_topologicalAddGroup : TopologicalAddGroup (E →SL[σ₁₂] F) :=
+protected theorem tmpTopologicalAddGroup : TopologicalAddGroup (E →SL[σ₁₂] F) :=
   inferInstance
-#align continuous_linear_map.tmp_topological_add_group ContinuousLinearMap.tmp_topologicalAddGroup
+#align continuous_linear_map.tmp_topological_add_group ContinuousLinearMap.tmpTopologicalAddGroup
 
 set_option synthInstance.etaExperiment true in
 protected theorem tmp_closedBall_div_subset {a b : ℝ} (ha : 0 < a) (hb : 0 < b) :
@@ -403,9 +403,8 @@ protected theorem tmp_topology_eq :
       ((@Metric.nhds_basis_closedBall _ ContinuousLinearMap.tmpPseudoMetricSpace 0).ext
         (ContinuousLinearMap.hasBasis_nhds_zero_of_basis Metric.nhds_basis_closedBall) _ _)
   · rcases NormedField.exists_norm_lt_one 𝕜 with ⟨c, hc₀, hc₁⟩
-    refine' fun ε hε =>
-      ⟨⟨closed_ball 0 (1 / ‖c‖), ε⟩, ⟨NormedSpace.isVonNBounded_closedBall _ _ _, hε⟩, fun f hf =>
-        _⟩
+    refine' fun ε hε => ⟨⟨closedBall 0 (1 / ‖c‖), ε⟩,
+      ⟨NormedSpace.isVonNBounded_closedBall _ _ _, hε⟩, fun f hf => _⟩
     change ∀ x, _ at hf
     simp_rw [mem_closedBall_zero_iff] at hf
     rw [@mem_closedBall_zero_iff _ SeminormedAddCommGroup.toSeminormedAddGroup]
@@ -413,11 +412,10 @@ protected theorem tmp_topology_eq :
     rw [div_mul_cancel 1 hc₀.ne.symm] at hx₁
     exact (hf x hxc.le).trans (le_mul_of_one_le_right hε.le hx₁)
   · rintro ⟨S, ε⟩ ⟨hS, hε⟩
-    rw [NormedSpace.isVonNBounded_iff, ← bounded_iff_is_bounded] at hS
+    rw [NormedSpace.isVonNBounded_iff, ← bounded_iff_isBounded] at hS
     rcases hS.subset_ball_lt 0 0 with ⟨δ, hδ, hSδ⟩
-    exact
-      ⟨ε / δ, div_pos hε hδ,
-        (ContinuousLinearMap.tmp_closedBall_div_subset hε hδ).trans fun f hf x hx => hf x <| hSδ hx⟩
+    exact ⟨ε / δ, div_pos hε hδ,
+      (ContinuousLinearMap.tmp_closedBall_div_subset hε hδ).trans fun f hf x hx => hf x <| hSδ hx⟩
 #align continuous_linear_map.tmp_topology_eq ContinuousLinearMap.tmp_topology_eq
 
 set_option synthInstance.etaExperiment true in
@@ -426,7 +424,7 @@ protected theorem tmpUniformSpace_eq :
       ContinuousLinearMap.uniformSpace := by
   rw [← @UniformAddGroup.toUniformSpace_eq _ ContinuousLinearMap.tmpUniformSpace, ←
     @UniformAddGroup.toUniformSpace_eq _ ContinuousLinearMap.uniformSpace]
-  congr 1
+  congr! 1
   exact ContinuousLinearMap.tmp_topology_eq
 #align continuous_linear_map.tmp_uniform_space_eq ContinuousLinearMap.tmpUniformSpace_eq
 
@@ -844,7 +842,6 @@ private theorem le_norm_flip (f : E →SL[σ₁₃] F →SL[σ₂₃] G) : ‖f�
   f.op_norm_le_bound₂ (norm_nonneg _) fun x y => by
     rw [mul_right_comm]
     exact (flip f).le_op_norm₂ y x
-#align continuous_linear_map.le_norm_flip continuous_linear_map.le_norm_flip
 
 set_option synthInstance.etaExperiment true in
 @[simp]
@@ -1151,21 +1148,25 @@ variable (𝕜) (𝕜' : Type _) [NonUnitalSeminormedRing 𝕜']
 
 variable [NormedSpace 𝕜 𝕜'] [IsScalarTower 𝕜 𝕜' 𝕜'] [SMulCommClass 𝕜 𝕜' 𝕜']
 
+set_option synthInstance.etaExperiment true in
 /-- Multiplication in a non-unital normed algebra as a continuous bilinear map. -/
 def mul : 𝕜' →L[𝕜] 𝕜' →L[𝕜] 𝕜' :=
   (LinearMap.mul 𝕜 𝕜').mkContinuous₂ 1 fun x y => by simpa using norm_mul_le x y
 #align continuous_linear_map.mul ContinuousLinearMap.mul
 
+set_option synthInstance.etaExperiment true in
 @[simp]
 theorem mul_apply' (x y : 𝕜') : mul 𝕜 𝕜' x y = x * y :=
   rfl
 #align continuous_linear_map.mul_apply' ContinuousLinearMap.mul_apply'
 
+set_option synthInstance.etaExperiment true in
 @[simp]
 theorem op_norm_mul_apply_le (x : 𝕜') : ‖mul 𝕜 𝕜' x‖ ≤ ‖x‖ :=
   op_norm_le_bound _ (norm_nonneg x) (norm_mul_le x)
 #align continuous_linear_map.op_norm_mul_apply_le ContinuousLinearMap.op_norm_mul_apply_le
 
+set_option synthInstance.etaExperiment true in
 theorem op_norm_mul_le : ‖mul 𝕜 𝕜'‖ ≤ 1 :=
   LinearMap.mkContinuous₂_norm_le _ zero_le_one _
 #align continuous_linear_map.op_norm_mul_le ContinuousLinearMap.op_norm_mul_le
@@ -1499,7 +1500,7 @@ theorem bound_of_ball_bound {r : ℝ} (r_pos : 0 < r) (c : ℝ) (f : E →ₗ[�
 set_option synthInstance.etaExperiment true in
 theorem antilipschitz_of_comap_nhds_le [h : RingHomIsometric σ₁₂] (f : E →ₛₗ[σ₁₂] F)
     (hf : (𝓝 0).comap f ≤ 𝓝 0) : ∃ K, AntilipschitzWith K f := by
-  rcases((nhds_basis_ball.comap _).le_basis_iffₓ nhds_basis_ball).1 hf 1 one_pos with ⟨ε, ε0, hε⟩
+  rcases ((nhds_basis_ball.comap _).le_basis_iff nhds_basis_ball).1 hf 1 one_pos with ⟨ε, ε0, hε⟩
   simp only [Set.subset_def, Set.mem_preimage, mem_ball_zero_iff] at hε
   lift ε to ℝ≥0 using ε0.le
   rcases NormedField.exists_one_lt_norm 𝕜 with ⟨c, hc⟩
@@ -1627,9 +1628,8 @@ that takes values in a bounded set and converges to `f` pointwise along a nontri
 def ofTendstoOfBoundedRange {α : Type _} {l : Filter α} [l.NeBot] (f : E' → F)
     (g : α → E' →SL[σ₁₂] F) (hf : Tendsto (fun a x => g a x) l (𝓝 f)) (hg : Bounded (Set.range g)) :
     E' →SL[σ₁₂] F :=
-  ofMemClosureImageCoeBounded f hg <|
-    mem_closure_of_tendsto hf <|
-      eventually_of_forall fun a => mem_image_of_mem _ <| Set.mem_range_self _
+  ofMemClosureImageCoeBounded f hg <| mem_closure_of_tendsto hf <|
+    eventually_of_forall fun a => mem_image_of_mem _ <| Set.mem_range_self _
 #align continuous_linear_map.of_tendsto_of_bounded_range ContinuousLinearMap.ofTendstoOfBoundedRange
 
 set_option synthInstance.etaExperiment true in
@@ -1655,21 +1655,22 @@ theorem tendsto_of_tendsto_pointwise_of_cauchySeq {f : ℕ → E' →SL[σ₁₂
   exact (f n - f m).le_of_op_norm_le (hfb _ _ _ le_rfl hm) _
 #align continuous_linear_map.tendsto_of_tendsto_pointwise_of_cauchy_seq ContinuousLinearMap.tendsto_of_tendsto_pointwise_of_cauchySeq
 
+set_option synthInstance.etaExperiment true in
 /-- If the target space is complete, the space of continuous linear maps with its norm is also
 complete. This works also if the source space is seminormed. -/
 instance [CompleteSpace F] : CompleteSpace (E' →SL[σ₁₂] F) := by
   -- We show that every Cauchy sequence converges.
   refine' Metric.complete_of_cauchySeq_tendsto fun f hf => _
   -- The evaluation at any point `v : E` is Cauchy.
-  have cau : ∀ v, CauchySeq fun n => f n v := fun v => hf.map (lipschitz_apply v).UniformContinuous
+  have cau : ∀ v, CauchySeq fun n => f n v := fun v => hf.map (lipschitz_apply v).uniformContinuous
   -- We assemble the limits points of those Cauchy sequences
   -- (which exist as `F` is complete)
   -- into a function which we call `G`.
   choose G hG using fun v => cauchySeq_tendsto_of_complete (cau v)
   -- Next, we show that this `G` is a continuous linear map.
-  -- This is done in `ContinuousLinearMap.of_tendsto_of_bounded_range`.
+  -- This is done in `ContinuousLinearMap.ofTendstoOfBoundedRange`.
   set Glin : E' →SL[σ₁₂] F :=
-    of_tendsto_of_bounded_range _ _ (tendsto_pi_nhds.mpr hG) hf.bounded_range
+    ofTendstoOfBoundedRange _ _ (tendsto_pi_nhds.mpr hG) hf.bounded_range
   -- Finally, `f n` converges to `Glin` in norm because of
   -- `ContinuousLinearMap.tendsto_of_tendsto_pointwise_of_cauchy_seq`
   exact ⟨Glin, tendsto_of_tendsto_pointwise_of_cauchy_seq (tendsto_pi_nhds.2 hG) hf⟩
@@ -1888,11 +1889,12 @@ variable {𝕜₂' : Type _} [NontriviallyNormedField 𝕜₂'] {F' : Type _} [N
   [RingHomCompTriple σ₂'' σ₂₃' σ₂₃] [RingHomIsometric σ₂₃] [RingHomIsometric σ₂']
   [RingHomIsometric σ₂''] [RingHomIsometric σ₂₃']
 
+set_option synthInstance.etaExperiment true in
 /-- Precomposition with a linear isometry preserves the operator norm. -/
 theorem op_norm_comp_linearIsometryEquiv (f : F →SL[σ₂₃] G) (g : F' ≃ₛₗᵢ[σ₂'] F) :
     ‖f.comp g.toLinearIsometry.toContinuousLinearMap‖ = ‖f‖ := by
   cases subsingleton_or_nontrivial F'
-  · haveI := g.symm.to_linear_equiv.to_equiv.subsingleton
+  · haveI := g.symm.toLinearEquiv.toEquiv.subsingleton
     simp
   refine' le_antisymm _ _
   · convert f.op_norm_comp_le g.toLinearIsometry.toContinuousLinearMap
@@ -1905,6 +1907,7 @@ theorem op_norm_comp_linearIsometryEquiv (f : F →SL[σ₂₃] G) (g : F' ≃�
     simp [g.symm.toLinearIsometry.norm_toContinuousLinearMap]
 #align continuous_linear_map.op_norm_comp_linear_isometry_equiv ContinuousLinearMap.op_norm_comp_linearIsometryEquiv
 
+set_option synthInstance.etaExperiment true in
 /-- The norm of the tensor product of a scalar linear map and of an element of a normed space
 is the product of the norms. -/
 @[simp]
