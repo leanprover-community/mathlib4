@@ -477,7 +477,7 @@ theorem sum_univ_single [AddCommMonoid M] [Fintype α] (i : α) (m : M) :
 theorem sum_univ_single' [AddCommMonoid M] [Fintype α] (i : α) (m : M) :
     (∑ j : α, (single j m) i) = m := by
 -- Porting note: rewrite due to leaky classical in lean3
-  simp_rw [single, coe_mk, Finset.sum_pi_single]
+  simp_rw [single, coe_mk]
   classical rw [Finset.sum_pi_single]
   simp
 #align finsupp.sum_univ_single' Finsupp.sum_univ_single'

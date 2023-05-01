@@ -777,7 +777,7 @@ theorem nondegenerateRestrictOfDisjointOrthogonal {B : M →ₗ[R] M →ₗ[R] R
   rw [Submodule.mk_eq_zero, ← Submodule.mem_bot R]
   refine' hW.le_bot ⟨hx, fun y hy ↦ _⟩
   specialize b₁ ⟨y, hy⟩
-  simp_rw [domRestrict₁₂_apply, Submodule.coe_mk] at b₁
+  simp_rw [domRestrict₁₂_apply] at b₁
   rw [hB.ortho_comm]
   exact b₁
 #align linear_map.nondegenerate_restrict_of_disjoint_orthogonal LinearMap.nondegenerateRestrictOfDisjointOrthogonal

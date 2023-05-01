@@ -694,7 +694,7 @@ theorem mem_closure_pair {A : Type _} [CommMonoid A] (a b c : A) :
     c ∈ Submonoid.closure ({a, b} : Set A) ↔ ∃ m n : ℕ, a ^ m * b ^ n = c :=
   by
   rw [← Set.singleton_union, Submonoid.closure_union, mem_sup]
-  simp_rw [exists_prop, mem_closure_singleton, exists_exists_eq_and]
+  simp_rw [mem_closure_singleton, exists_exists_eq_and]
 #align submonoid.mem_closure_pair Submonoid.mem_closure_pair
 #align add_submonoid.mem_closure_pair AddSubmonoid.mem_closure_pair
 

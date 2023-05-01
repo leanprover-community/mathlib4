@@ -33,7 +33,7 @@ instance : LocallyFiniteOrder ℤ
     (Finset.range (b - a - 1).toNat).map <| Nat.castEmbedding.trans <| addLeftEmbedding (a + 1)
   finset_mem_Icc a b x :=
     by
-    simp_rw [mem_map, exists_prop, mem_range, Int.lt_toNat, Function.Embedding.trans_apply,
+    simp_rw [mem_map, mem_range, Int.lt_toNat, Function.Embedding.trans_apply,
       Nat.castEmbedding_apply, addLeftEmbedding_apply]
     constructor
     · rintro ⟨a, h, rfl⟩
@@ -46,7 +46,7 @@ instance : LocallyFiniteOrder ℤ
       exact ⟨sub_lt_sub_right hb _, add_sub_cancel'_right _ _⟩
   finset_mem_Ico a b x :=
     by
-    simp_rw [mem_map, exists_prop, mem_range, Int.lt_toNat, Function.Embedding.trans_apply,
+    simp_rw [mem_map, mem_range, Int.lt_toNat, Function.Embedding.trans_apply,
       Nat.castEmbedding_apply, addLeftEmbedding_apply]
     constructor
     · rintro ⟨a, h, rfl⟩
@@ -57,7 +57,7 @@ instance : LocallyFiniteOrder ℤ
       exact ⟨sub_lt_sub_right hb _, add_sub_cancel'_right _ _⟩
   finset_mem_Ioc a b x :=
     by
-    simp_rw [mem_map, exists_prop, mem_range, Int.lt_toNat, Function.Embedding.trans_apply,
+    simp_rw [mem_map, mem_range, Int.lt_toNat, Function.Embedding.trans_apply,
       Nat.castEmbedding_apply, addLeftEmbedding_apply]
     constructor
     · rintro ⟨a, h, rfl⟩
@@ -69,7 +69,7 @@ instance : LocallyFiniteOrder ℤ
       exact ⟨sub_le_sub_right hb _, add_sub_cancel'_right _ _⟩
   finset_mem_Ioo a b x :=
     by
-    simp_rw [mem_map, exists_prop, mem_range, Int.lt_toNat, Function.Embedding.trans_apply,
+    simp_rw [mem_map, mem_range, Int.lt_toNat, Function.Embedding.trans_apply,
       Nat.castEmbedding_apply, addLeftEmbedding_apply]
     constructor
     · rintro ⟨a, h, rfl⟩
@@ -187,7 +187,7 @@ theorem image_Ico_emod (n a : ℤ) (h : 0 ≤ a) : (Ico n (n + a)).image (· % a
   obtain rfl | ha := eq_or_lt_of_le h
   · simp
   ext i
-  simp only [mem_image, exists_prop, mem_range, mem_Ico]
+  simp only [mem_image, mem_range, mem_Ico]
   constructor
   · rintro ⟨i, _, rfl⟩
     exact ⟨emod_nonneg i ha.ne', emod_lt_of_pos i ha⟩
