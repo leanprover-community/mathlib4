@@ -315,14 +315,14 @@ variable [HasZeroMorphisms C] [HasZeroObject C] [HasEqualizers C] [HasImages C]
 def projectiveResolution (Z : C) [HasProjectiveResolution Z] : ProjectiveResolution Z :=
   HasProjectiveResolution.out.some
 
--- porting note: this was named `projectiveResolution` is mathlib. As there was also a need
+-- porting note: this was named `projective_resolution` in mathlib 3. As there was also a need
 -- for a definition of `ProjectiveResolution Z` given `(Z : projectiveResolution Z)`, it
 -- seemed more consistent to have `projectiveResolution Z : ProjectiveResolution Z`
 -- and `projectiveResolution.complex Z : ChainComplex C ℕ`
 /-- An arbitrarily chosen projective resolution of an object. -/
 abbrev projectiveResolution.complex (Z : C) [HasProjectiveResolution Z] : ChainComplex C ℕ :=
   (projectiveResolution Z).complex
-#align category_theory.projective_resolution CategoryTheory.projectiveResolution
+#align category_theory.projective_resolution CategoryTheory.projectiveResolution.complex
 
 /-- The chain map from the arbitrarily chosen projective resolution
 `projectiveResolution.complex Z` back to the chain complex consisting
