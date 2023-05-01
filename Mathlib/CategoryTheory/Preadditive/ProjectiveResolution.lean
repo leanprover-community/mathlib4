@@ -322,7 +322,7 @@ def projectiveResolution (Z : C) [HasProjectiveResolution Z] : ProjectiveResolut
 /-- An arbitrarily chosen projective resolution of an object. -/
 abbrev projectiveResolution.complex (Z : C) [HasProjectiveResolution Z] : ChainComplex C ℕ :=
   (projectiveResolution Z).complex
-#align category_theory.projective_resolution CategoryTheory.projectiveResolution
+#align category_theory.projective_resolution CategoryTheory.projectiveResolution.complex
 
 /-- The chain map from the arbitrarily chosen projective resolution
 `projectiveResolution.complex Z` back to the chain complex consisting
