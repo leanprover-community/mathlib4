@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Newell Jensen
 -/
 import Lean
+import Mathlib.Lean.Meta
 
 /-!
 # `rfl` tactic extension for reflexive relations
@@ -43,14 +44,14 @@ initialize registerBuiltinAttribute {
 This tactic applies to a goal whose target has the form `x ~ x`, where `~` is a reflexive
 relation, that is, a relation which has a reflexive lemma tagged with the attribute [refl].
 -/
-def _root_.Lean.MVarId.rfl (goal : MVarId) : MetaM (List MVarId) := do
+def _root_.Lean.MVarId.rfl (goal : MVarId) : MetaM Unit := do
   let .app (.app rel _) _ ← whnfR <|← instantiateMVars <|← goal.getType
     | throwError "reflexivity lemmas only apply to binary relations, not
       {indentExpr (← goal.getType)}"
   let s ← saveState
   for lem in ← (reflExt.getState (← getEnv)).getMatch rel do
     try
-      return ← goal.apply (← mkConstWithFreshMVarLevels lem)
+      let _ ← goal.apply (← mkConstWithFreshMVarLevels lem)
     catch e =>
       s.restore
       throw e
@@ -62,4 +63,4 @@ This tactic applies to a goal whose target has the form `x ~ x`, where `~` is a 
 relation, that is, a relation which has a reflexive lemma tagged with the attribute [refl].
 -/
 elab_rules : tactic
-| `(tactic| rfl) => withMainContext do liftMetaTactic (·.rfl)
+| `(tactic| rfl) => withMainContext do liftMetaFinishingTactic (·.rfl)
