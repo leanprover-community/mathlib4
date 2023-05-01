@@ -31,11 +31,6 @@ def withSimpRWRulesSeq (token : Syntax) (rwRulesSeqStx : Syntax)
         let term := rule[1]
         -- let processId (id : Syntax) : TacticM Unit := do
         x symm term
-        --   discard <| Term.addTermInfo id (← mkConstWithFreshMVarLevels declName) (lctx? := ← getLCtx)
-        -- match term with
-        -- | `($id:ident)  => processId id
-        -- | `(@$id:ident) => processId id
-        -- | _ => x symm term
 
 /--
 `simp_rw` functions as a mix of `simp` and `rw`. Like `rw`, it applies each
