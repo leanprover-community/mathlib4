@@ -542,7 +542,8 @@ noncomputable instance lanPreservesFiniteLimitsOfPreservesFiniteLimits (F : C �
 set_option linter.uppercaseLean3 false in
 #align category_theory.Lan_preserves_finite_limits_of_preserves_finite_limits CategoryTheory.lanPreservesFiniteLimitsOfPreservesFiniteLimits
 
--- porting note: these were all inferred in mathlib3
+-- porting note: these were all inferred in mathlib3 because lean 3 typeclass inference could see
+-- that `forget (Type u) = 𝟭 (Type u)`
 -- see https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/typeclass.20inference.20failure/near/354843721
 instance : ReflectsLimits (forget (Type u₁)) := Limits.idReflectsLimits
 instance : PreservesColimits (forget (Type u₁)) := Limits.idPreservesColimits
