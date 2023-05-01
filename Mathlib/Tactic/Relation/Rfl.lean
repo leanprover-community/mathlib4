@@ -39,6 +39,8 @@ initialize registerBuiltinAttribute {
     reflExt.add (decl, key) kind
 }
 
+open Elab Tactic
+
 /-- `MetaM` version of the `rfl` tactic.
 
 This tactic applies to a goal whose target has the form `x ~ x`, where `~` is a reflexive
@@ -51,13 +53,15 @@ def _root_.Lean.MVarId.rfl (goal : MVarId) : MetaM Unit := do
   let s ← saveState
   for lem in ← (reflExt.getState (← getEnv)).getMatch rel do
     try
-      let _ ← goal.apply (← mkConstWithFreshMVarLevels lem)
+      let gs ← goal.apply (← mkConstWithFreshMVarLevels lem)
+      if gs.isEmpty then return () else
+        logError <| MessageData.tagged `Tactic.unsolvedGoals <| m!"unsolved goals\n
+          {goalsToMessageData gs}"
     catch e =>
       s.restore
       throw e
   throwError "rfl failed, no lemma with @[refl] applies"
 
-open Elab.Tactic in
 /--
 This tactic applies to a goal whose target has the form `x ~ x`, where `~` is a reflexive
 relation, that is, a relation which has a reflexive lemma tagged with the attribute [refl].
