@@ -238,11 +238,9 @@ instance : Inhabited (SimpleContinuedFraction α) :=
   ⟨ofInteger 1⟩
 
 /-- Lift a scf to a gcf using the inclusion map. -/
-instance toGeneralizedContinuedFraction :
-    Coe (SimpleContinuedFraction α) (GeneralizedContinuedFraction α) :=
+instance : Coe (SimpleContinuedFraction α) (GeneralizedContinuedFraction α) :=
   -- Porting note: originally `by unfold SimpleContinuedFraction; infer_instance`
   ⟨Subtype.val⟩
-#align simple_continued_fraction.has_coe_to_generalized_continued_fraction SimpleContinuedFraction.toGeneralizedContinuedFraction
 
 -- Porting note: Syntactic tautology due to change in `Coe` above.
 -- theorem coe_toGeneralizedContinuedFraction {s : SimpleContinuedFraction α} :
