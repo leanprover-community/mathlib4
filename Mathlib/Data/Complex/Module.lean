@@ -172,7 +172,7 @@ theorem coe_basisOneI : ⇑basisOneI = ![1, I] :=
     Basis.apply_eq_iff.mpr <|
       Finsupp.ext fun j => by
         fin_cases i <;> fin_cases j <;>
-          -- Porting note: consider squeezing again
+          -- Porting note: removed `only`, consider squeezing again
           simp [coe_basisOneI_repr, Finsupp.single_eq_of_ne, Matrix.cons_val_zero,
             Matrix.cons_val_one, Matrix.head_cons, Fin.one_eq_zero_iff, Ne.def, not_false_iff, I_re,
             Nat.succ_succ_ne_one, one_im, I_im, one_re, Finsupp.single_eq_same, Fin.zero_eq_one_iff]
