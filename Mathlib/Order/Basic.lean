@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro
 
 ! This file was ported from Lean 3 source module order.basic
-! leanprover-community/mathlib commit de87d5053a9fe5cbde723172c0fb7e27e7436473
+! leanprover-community/mathlib commit 90df25ded755a2cf9651ea850d1abe429b1e4eb1
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -383,6 +383,10 @@ theorem le_iff_eq_or_lt [PartialOrder α] {a b : α} : a ≤ b ↔ a = b ∨ a <
 theorem lt_iff_le_and_ne [PartialOrder α] {a b : α} : a < b ↔ a ≤ b ∧ a ≠ b :=
   ⟨fun h ↦ ⟨le_of_lt h, ne_of_lt h⟩, fun ⟨h1, h2⟩ ↦ h1.lt_of_ne h2⟩
 #align lt_iff_le_and_ne lt_iff_le_and_ne
+
+theorem eq_iff_not_lt_of_le {α} [PartialOrder α] {x y : α} : x ≤ y → y = x ↔ ¬x < y := by
+  rw [lt_iff_le_and_ne, not_and, Classical.not_not, eq_comm]
+#align eq_iff_not_lt_of_le eq_iff_not_lt_of_le
 
 -- See Note [decidable namespace]
 protected theorem Decidable.eq_iff_le_not_lt [PartialOrder α] [@DecidableRel α (· ≤ ·)] {a b : α} :
@@ -873,6 +877,16 @@ theorem update_le_update_iff :
     Function.update x i a ≤ Function.update y i b ↔ a ≤ b ∧ ∀ (j) (_ : j ≠ i), x j ≤ y j := by
   simp (config := { contextual := true }) [update_le_iff]
 #align update_le_update_iff update_le_update_iff
+
+@[simp]
+theorem update_le_update_iff' : update x i a ≤ update x i b ↔ a ≤ b := by
+  simp [update_le_update_iff]
+#align update_le_update_iff' update_le_update_iff'
+
+@[simp]
+theorem update_lt_update_iff : update x i a < update x i b ↔ a < b :=
+  lt_iff_lt_of_le_iff_le' update_le_update_iff' update_le_update_iff'
+#align update_lt_update_iff update_lt_update_iff
 
 @[simp]
 theorem le_update_self_iff : x ≤ update x i a ↔ x i ≤ a := by simp [le_update_iff]

@@ -326,11 +326,11 @@ abbrev ContinuousLinearEquivClass (F : Type _) (R : outParam (Type _)) [Semiring
 
 namespace ContinuousSemilinearEquivClass
 
-variable (F : Type _) {R : Type _} {S : Type _} {_ : Semiring R} {_ : Semiring S} (σ : R →+* S)
-  {σ' : S →+* R} {_ : RingHomInvPair σ σ'} {_ : RingHomInvPair σ' σ}
-  (M : Type _) {_ : TopologicalSpace M} {_ : AddCommMonoid M}
-  (M₂ : Type _) {_ : TopologicalSpace M₂} {_ : AddCommMonoid M₂}
-  {_ : Module R M} {_ : Module S M₂}
+variable (F : Type _) {R : Type _} {S : Type _} [Semiring R] [Semiring S] (σ : R →+* S)
+  {σ' : S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
+  (M : Type _) [TopologicalSpace M] [AddCommMonoid M]
+  (M₂ : Type _) [TopologicalSpace M₂] [AddCommMonoid M₂]
+  [Module R M] [Module S M₂]
 
 -- `σ'` becomes a metavariable, but it's OK since it's an outparam
 instance (priority := 100) continuousSemilinearMapClass

@@ -82,7 +82,6 @@ instance [Inhabited P] : Inhabited (PFilter P) := ⟨⟨default⟩⟩
 instance : SetLike (PFilter P) P where
   coe F := toDual ⁻¹' F.dual.carrier
   coe_injective' := fun ⟨_⟩ ⟨_⟩ h => congr_arg mk <| Ideal.ext h
-
 #align order.pfilter.mem_coe SetLike.mem_coeₓ
 
 theorem isPFilter : IsPFilter (F : Set P) := F.dual.isIdeal

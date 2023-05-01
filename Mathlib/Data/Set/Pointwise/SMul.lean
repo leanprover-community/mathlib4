@@ -1087,6 +1087,17 @@ protected theorem smul_neg : s • -t = -(s • t) := by
 
 end Monoid
 
+section Semiring
+
+variable [Semiring α] [AddCommMonoid β] [Module α β]
+
+-- porting note: new lemma
+theorem add_smul_subset (a b : α) (s : Set β) : (a + b) • s ⊆ a • s + b • s := by
+  rintro _ ⟨x, hx, rfl⟩
+  simpa only [add_smul] using add_mem_add (smul_mem_smul_set hx) (smul_mem_smul_set hx)
+
+end Semiring
+
 section Ring
 
 variable [Ring α] [AddCommGroup β] [Module α β] (a : α) (s : Set α) (t : Set β)

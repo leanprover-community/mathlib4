@@ -652,7 +652,6 @@ protected def comp (g : NormedAddGroupHom V₂ V₃) (f : NormedAddGroupHom V₁
       ‖g (f v)‖ ≤ ‖g‖ * ‖f v‖ := le_opNorm _ _
       _ ≤ ‖g‖ * (‖f‖ * ‖v‖) := (mul_le_mul_of_nonneg_left (le_opNorm _ _) (opNorm_nonneg _))
       _ = ‖g‖ * ‖f‖ * ‖v‖ := by rw [mul_assoc]
-
 #align normed_add_group_hom.comp NormedAddGroupHom.comp
 
 theorem norm_comp_le (g : NormedAddGroupHom V₂ V₃) (f : NormedAddGroupHom V₁ V₂) :
