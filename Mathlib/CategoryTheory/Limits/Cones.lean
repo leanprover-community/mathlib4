@@ -720,6 +720,12 @@ def mapCone (c : Cone F) : Cone (F ⋙ H) :=
   (Cones.functoriality F H).obj c
 #align category_theory.functor.map_cone CategoryTheory.Functor.mapCone
 
+/-- This unexpander makes `Functor.mapCone F` pretty print as `F.mapCone`. -/
+@[app_unexpander Functor.mapCone] def
+  unexpandFunctor.mapCone : Lean.PrettyPrinter.Unexpander
+  | `($_ $F $(X)*)  => set_option hygiene false in `($(F).mapCone $(X)*)
+  | _                 => throw ()
+
 /-- The image of a cocone in C under a functor G : C ⥤ D is a cocone in D. -/
 @[simps!]
 def mapCocone (c : Cocone F) : Cocone (F ⋙ H) :=
