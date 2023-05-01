@@ -1,6 +1,7 @@
-import Mathlib.Algebra.Homology.Triangulated.HomComplex
+import Mathlib.Algebra.Homology.Triangulated.Epsilon
 import Mathlib.Algebra.Homology.HomotopyCategory
 import Mathlib.CategoryTheory.Shift.Quotient
+import Mathlib.Tactic.Linarith
 
 open CategoryTheory Category Limits
 
@@ -17,7 +18,7 @@ attribute [local simp] XIsoOfEq_hom_naturality
 def shiftFunctor (n : ℤ) : CochainComplex C ℤ ⥤ CochainComplex C ℤ where
   obj K :=
     { X := fun i => K.X (i + n)
-      d := fun i j => CochainComplex.HomComplex.ε n • K.d _ _
+      d := fun i j => CochainComplex.ε n • K.d _ _
       d_comp_d' := by
         intros
         simp only [Preadditive.comp_zsmul, Preadditive.zsmul_comp, d_comp_d, smul_zero]
@@ -66,7 +67,7 @@ def shiftFunctorAdd' (n₁ n₂ n₁₂ : ℤ) (h : n₁ + n₂ = n₁₂ ) :
     (fun _ _ _ => by
       subst h
       dsimp
-      simp only [add_comm n₁ n₂, HomComplex.ε_add, Preadditive.comp_zsmul,
+      simp only [add_comm n₁ n₂, ε_add, Preadditive.comp_zsmul,
         XIsoOfEq_hom_comp_d, smul_smul, Preadditive.zsmul_comp, d_comp_XIsoOfEq_hom]))
     (by aesop_cat)
 
@@ -86,7 +87,7 @@ lemma shiftFunctor_map_f' {K L : CochainComplex C ℤ} (φ : K ⟶ L) (n p : ℤ
 @[simp]
 lemma shiftFunctor_obj_d' (K : CochainComplex C ℤ) (n i j : ℤ) :
     ((CategoryTheory.shiftFunctor (CochainComplex C ℤ) n).obj K).d i j =
-      HomComplex.ε n • K.d _ _ := rfl
+      ε n • K.d _ _ := rfl
 
 lemma shiftFunctorAdd_inv_app_f (K : CochainComplex C ℤ) (a b n : ℤ) :
   ((shiftFunctorAdd (CochainComplex C ℤ) a b).inv.app K).f n =
@@ -211,7 +212,7 @@ variable {C}
 
 def shift {K L : CochainComplex C ℤ} {φ₁ φ₂ : K ⟶ L} (h : Homotopy φ₁ φ₂) (n : ℤ) :
     Homotopy (φ₁⟦n⟧') (φ₂⟦n⟧') where
-  hom i j := CochainComplex.HomComplex.ε n • h.hom _ _
+  hom i j := CochainComplex.ε n • h.hom _ _
   zero i j hij := by
     dsimp
     rw [h.zero, zsmul_zero]
@@ -224,7 +225,7 @@ def shift {K L : CochainComplex C ℤ} {φ₁ φ₂ : K ⟶ L} (h : Homotopy φ�
     rw [prevD_eq _ (show (ComplexShape.up ℤ).Rel (i-1) i by simp)]
     dsimp
     simpa only [Preadditive.zsmul_comp, Preadditive.comp_zsmul, smul_smul,
-      CochainComplex.HomComplex.mul_ε_self, one_smul,
+      CochainComplex.mul_ε_self, one_smul,
       dNext_eq _ (show (ComplexShape.up ℤ).Rel (i+n) (i+1+n) by dsimp ; linarith),
       prevD_eq _ (show (ComplexShape.up ℤ).Rel (i-1+n) (i+n) by dsimp ; linarith)]
         using h.comm (i + n)
