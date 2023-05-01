@@ -512,9 +512,7 @@ instance : PreservesLimits (forget (Type u₁)) := Limits.idPreservesLimits
 
 theorem flat_iff_lan_flat (F : C ⥤ D) :
     RepresentablyFlat F ↔ RepresentablyFlat (lan F.op : _ ⥤ Dᵒᵖ ⥤ Type u₁) :=
---    ⟨λ H, by exactI category_theory.Lan_flat_of_flat (Type u₁) F, λ H,
-  ⟨fun H => inferInstance,
-  fun H => by
+  ⟨fun H => inferInstance, fun H => by
     skip
     haveI := preservesFiniteLimitsOfFlat (lan F.op : _ ⥤ Dᵒᵖ ⥤ Type u₁)
     haveI : PreservesFiniteLimits F := by
@@ -532,11 +530,10 @@ noncomputable def preservesFiniteLimitsIffLanPreservesFiniteLimits (F : C ⥤ D)
   toFun _ := inferInstance
   invFun _ := by
     apply preservesFiniteLimitsOfPreservesFiniteLimitsOfSize.{u₁}
-    intros
-    apply preservesLimitOfLanPreservesLimit
+    intros ; apply preservesLimitOfLanPreservesLimit
   left_inv x := by
-    -- cases x; -- porting note: not necessary in lean 4.
-    -- porting note: in mathlib3 we had `unfold preservesFiniteLimitsOfFlat`
+    -- porting note: `cases x` and an `unfold` not necessary in lean 4.
+    -- Remark : in mathlib3 we had `unfold preservesFiniteLimitsOfFlat`
     -- but there was no `preservesFiniteLimitsOfFlat` in the goal! Experimentation
     -- indicates that it was doing the same as `dsimp only`
     dsimp only [preservesFiniteLimitsOfPreservesFiniteLimitsOfSize]; congr
