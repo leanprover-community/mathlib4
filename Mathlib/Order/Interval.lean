@@ -12,9 +12,6 @@ import Mathlib.Data.Set.Intervals.Basic
 import Mathlib.Data.Set.Lattice
 import Mathlib.Data.SetLike.Basic
 import Mathlib.Init.Data.Prod
-import Mathlib.Tactic.LibrarySearch
-
-set_option autoImplicit false
 
 /-!
 # Order intervals
