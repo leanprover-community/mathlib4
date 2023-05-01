@@ -3,6 +3,10 @@ import Mathlib.Tactic.Propose
 import Mathlib.Tactic.GuardHypNums
 import Mathlib.Algebra.Associated
 
+-- For debugging, you may find these options useful:
+-- set_option trace.Tactic.propose true
+-- set_option trace.Meta.Tactic.solveByElim true
+
 theorem foo (L M : List α) (w : L.Disjoint M) (m : a ∈ L) : a ∉ M := fun h => w m h
 
 example (K L M : List α) (w : L.Disjoint M) (m : K ⊆ L) : True := by
@@ -24,8 +28,6 @@ example (K L M : List α) (w : L.Disjoint M) (m : K ⊆ L) : True := by
 
 def bar (n : Nat) (x : String) : Nat × String := (n + x.length, x)
 
-set_option trace.Tactic.propose true in
-set_option trace.Meta.Tactic.solveByElim true in
 example (p : Nat × String) : True := by
   fail_if_success propose using p
   propose : Nat × String using p.1, p.2
