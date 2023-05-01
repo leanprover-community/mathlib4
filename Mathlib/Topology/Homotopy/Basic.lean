@@ -29,7 +29,7 @@ on `S`.
 * `ContinuousMap.Homotopy f₀ f₁` is the type of homotopies between `f₀` and `f₁`.
 * `ContinuousMap.HomotopyWith f₀ f₁ P` is the type of homotopies between `f₀` and `f₁`, where
   the intermediate maps satisfy the predicate `P`.
-* `ContinuousMap.HomotopyEel f₀ f₁ S` is the type of homotopies between `f₀` and `f₁` which
+* `ContinuousMap.HomotopyRel f₀ f₁ S` is the type of homotopies between `f₀` and `f₁` which
   are fixed on `S`.
 
 For each of the above, we have
@@ -220,8 +220,7 @@ instance : Inhabited (Homotopy (ContinuousMap.id X) (ContinuousMap.id X)) :=
 /-- Given a `Homotopy f₀ f₁`, we can define a `Homotopy f₁ f₀` by reversing the homotopy.
 -/
 @[simps]
-def symm {f₀ f₁ : C(X, Y)} (F : Homotopy f₀ f₁) : Homotopy f₁ f₀
-    where
+def symm {f₀ f₁ : C(X, Y)} (F : Homotopy f₀ f₁) : Homotopy f₁ f₀ where
   toFun x := F (σ x.1, x.2)
   map_zero_left := by norm_num
   map_one_left := by norm_num
@@ -269,18 +268,18 @@ theorem symm_trans {f₀ f₁ f₂ : C(X, Y)} (F : Homotopy f₀ f₁) (G : Homo
   rw [trans_apply, symm_apply, trans_apply]
   simp only [coe_symm_eq, symm_apply]
   split_ifs with h₁ h₂ h₂
-  . have ht : (t : ℝ) = 1 / 2 := by linarith
+  · have ht : (t : ℝ) = 1 / 2 := by linarith
     simp only [ht]
     norm_num
-  . congr 2
+  · congr 2
     apply Subtype.ext
     simp only [coe_symm_eq]
     linarith
-  . congr 2
+  · congr 2
     apply Subtype.ext
     simp only [coe_symm_eq]
     linarith
-  . exfalso
+  · exfalso
     linarith
 #align continuous_map.homotopy.symm_trans ContinuousMap.Homotopy.symm_trans
 
@@ -597,7 +596,7 @@ end
 
 variable {f₀ f₁ f₂ : C(X, Y)} {S : Set X}
 
-/-- Given a map `f : C(X, Y)` and a set `S`, we can define a `HomotopyEel f f S` by setting
+/-- Given a map `f : C(X, Y)` and a set `S`, we can define a `HomotopyRel f f S` by setting
 `F (t, x) = f x` for all `t`. This is defined using `HomotopyWith.refl`, but with the proof
 filled in.
 -/
