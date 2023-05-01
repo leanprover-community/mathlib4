@@ -8,7 +8,7 @@ Authors: Johan Commelin
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Algebra.Category.MonCat.Basic
+import Mathlib.Algebra.Category.Mon.Basic
 import Mathlib.CategoryTheory.Endomorphism
 
 /-!
@@ -158,16 +158,16 @@ set_option linter.uppercaseLean3 false in
 set_option linter.uppercaseLean3 false in
 #align AddGroup.ext AddGroupCat.ext
 
-@[to_additive hasForgetToAddMonCat]
-instance hasForgetToMonCat : HasForget₂ GroupCat MonCat :=
+@[to_additive hasForgetToAddMon]
+instance hasForgetToMon : HasForget₂ GroupCat Mon :=
   BundledHom.forget₂ _ _
 set_option linter.uppercaseLean3 false in
-#align Group.has_forget_to_Mon GroupCat.hasForgetToMonCat
+#align Group.has_forget_to_Mon GroupCat.hasForgetToMon
 set_option linter.uppercaseLean3 false in
-#align AddGroup.has_forget_to_AddMon AddGroupCat.hasForgetToAddMonCat
+#align AddGroup.has_forget_to_AddMon AddGroupCat.hasForgetToAddMon
 
 @[to_additive]
-instance : Coe GroupCat.{u} MonCat.{u} where coe := (forget₂ GroupCat MonCat).obj
+instance : Coe GroupCat.{u} Mon.{u} where coe := (forget₂ GroupCat Mon).obj
 
 -- porting note: this was added to ease the port
 /-- the morphism in `GroupCat` associated to a `MonoidHom` -/
@@ -340,16 +340,16 @@ set_option linter.uppercaseLean3 false in
 @[to_additive]
 instance : Coe CommGroupCat.{u} GroupCat.{u} where coe := (forget₂ CommGroupCat GroupCat).obj
 
-@[to_additive hasForgetToAddCommMonCat]
-instance hasForgetToCommMonCat : HasForget₂ CommGroupCat CommMonCat :=
-  InducedCategory.hasForget₂ fun G : CommGroupCat => CommMonCat.of G
+@[to_additive hasForgetToAddCommMon]
+instance hasForgetToCommMon : HasForget₂ CommGroupCat CommMon :=
+  InducedCategory.hasForget₂ fun G : CommGroupCat => CommMon.of G
 set_option linter.uppercaseLean3 false in
-#align CommGroup.has_forget_to_CommMon CommGroupCat.hasForgetToCommMonCat
+#align CommGroup.has_forget_to_CommMon CommGroupCat.hasForgetToCommMon
 set_option linter.uppercaseLean3 false in
-#align AddCommGroup.has_forget_to_AddCommMon AddCommGroupCat.hasForgetToAddCommMonCat
+#align AddCommGroup.has_forget_to_AddCommMon AddCommGroupCat.hasForgetToAddCommMon
 
 @[to_additive]
-instance : Coe CommGroupCat.{u} CommMonCat.{u} where coe := (forget₂ CommGroupCat CommMonCat).obj
+instance : Coe CommGroupCat.{u} CommMon.{u} where coe := (forget₂ CommGroupCat CommMon).obj
 
 -- porting note: this was added to ease the port
 /-- the morphism in `CommGroupCat` associated to a `MonoidHom` -/
