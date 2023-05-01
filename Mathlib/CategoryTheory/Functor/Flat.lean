@@ -14,8 +14,6 @@ import Mathlib.CategoryTheory.Limits.Bicones
 import Mathlib.CategoryTheory.Limits.Comma
 import Mathlib.CategoryTheory.Limits.Preserves.Finite
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
-import Mathlib.Tactic
-set_option autoImplicit false
 /-!
 # Representably flat functors
 
@@ -69,7 +67,7 @@ variable {K : J ⥤ C} (F : C ⥤ D) (c : Cone K)
 -- **TODO** Scott changed `@[simps]` to `@[simps!]` below and I don't
 -- know what this does, but one thing it does is that
 -- it stops `toDiagram_obj` being created, and `toDiagram_obj` is
--- used later on so I (kmb) have removed the `!`
+-- used later on so I (kmb) have changed it back
 
 /-- Given a cone `c : cone K` and a map `f : X ⟶ c.X`, we can construct a cone of structured
 arrows over `X` with `f` as the cone point. This is the underlying diagram.
@@ -287,7 +285,8 @@ theorem uniq {K : J ⥤ C} {c : Cone K} (hc : IsLimit c) (s : Cone (K ⋙ F))
     -- the below job was done by `simp` in lean 3;
     rw [biconeMk_map, biconeMk_map] at foo
     -- `dsimp only` tames this in Lean 3 but not Lean 4
-    change (c₀.π.app Bicone.left).right ≫ (c₁.π.app j).right = (c₀.π.app Bicone.right).right ≫ (c₂.π.app j).right at foo
+    change (c₀.π.app Bicone.left).right ≫ (c₁.π.app j).right =
+      (c₀.π.app Bicone.right).right ≫ (c₂.π.app j).right at foo
     rw [Cones.postcompose_obj_π, Cones.postcompose_obj_π] at foo
     rw [NatTrans.comp_app, whiskerRight_app,
       eqToHom_map, Comma.comp_right,
@@ -439,6 +438,7 @@ noncomputable def lanEvaluationIsoColim (F : C ⥤ D) (X : D)
       rw [lan_map_app]
       rw [colimit.ι_desc_assoc]
       rw [Lan.equiv]
+      dsimp only
       /-
       Lean 4 : ⊢ { pt := colimit (Lan.diagram F H X),
             ι :=
@@ -574,7 +574,7 @@ noncomputable def preservesFiniteLimitsIffLanPreservesFiniteLimits (F : C ⥤ D)
     intros
     apply preservesLimitOfLanPreservesLimit
   left_inv x := by
-    cases x;
+    -- cases x; -- porting note: not necessary in lean 4.
     -- porting note: in mathlib3 we had `unfold preservesFiniteLimitsOfFlat`
     -- but there was no `preservesFiniteLimitsOfFlat` in the goal! Experimentation
     -- indicates that it was doing the same as `dsimp only`
@@ -582,12 +582,11 @@ noncomputable def preservesFiniteLimitsIffLanPreservesFiniteLimits (F : C ⥤ D)
     -- porting note: next line wasn't necessary in lean 3
     apply Subsingleton.elim
   right_inv x := by
-    cases x
-    simp only
+    -- cases x; -- porting note: not necessary in lean 4
+    dsimp only [lanPreservesFiniteLimitsOfPreservesFiniteLimits,
+      lanPreservesFiniteLimitsOfFlat,
+      preservesFiniteLimitsOfPreservesFiniteLimitsOfSize]
     congr
-    unfold
-      CategoryTheory.lanPreservesFiniteLimitsOfPreservesFiniteLimits CategoryTheory.lanPreservesFiniteLimitsOfFlat
-    dsimp only [preservesFiniteLimitsOfPreservesFiniteLimitsOfSize]; congr
     -- porting note: next line wasn't necessary in lean 3
     apply Subsingleton.elim
 set_option linter.uppercaseLean3 false in
