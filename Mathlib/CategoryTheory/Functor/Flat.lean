@@ -238,8 +238,6 @@ theorem fac (x : J) : lift F hc s ≫ (F.mapCone c).π.app x = s.π.app x := by
 
 attribute [local simp] eqToHom_map
 
---set_option pp.universes true
-
 -- **TODO** unexpander to make Functor.mapCone F -> F.mapCone?
 theorem uniq {K : J ⥤ C} {c : Cone K} (hc : IsLimit c) (s : Cone (K ⋙ F))
     (f₁ f₂ : s.pt ⟶ F.obj c.pt) (h₁ : ∀ j : J, f₁ ≫ (F.mapCone c).π.app j = s.π.app j)
@@ -280,6 +278,8 @@ theorem uniq {K : J ⥤ C} {c : Cone K} (hc : IsLimit c) (s : Cone (K ⋙ F))
     injection c₀.π.naturality (BiconeHom.left j) with _ e₁
     injection c₀.π.naturality (BiconeHom.right j) with _ e₂
     -- Lean 3 proof now finished with `simpa using e₁.symm.trans e₂`
+    -- **TODO** tidy up this proof
+    -- **TODO** figure out why `simp at foo` is timing out.
     have foo := e₁.symm.trans e₂
     -- simp at foo -- deterministic timeout :-(
     -- the below job was done by `simp` in lean 3;
@@ -313,7 +313,8 @@ theorem uniq {K : J ⥤ C} {c : Cone K} (hc : IsLimit c) (s : Cone (K ⋙ F))
     _ = g₂.right := by
       symm
       apply hc.uniq (c.extend _)
-      -- Porting note: was `by tidy`; `aesop` is timing out
+      -- Porting note: was `by tidy`; `aesop` is timing out, possibly
+      -- for the same reason `simp at foo` is timing out above.
       intro _ ; rfl
 
   -- Finally, since `fᵢ` factors through `F(gᵢ)`, the result follows.
@@ -353,7 +354,7 @@ noncomputable def preservesFiniteLimitsIffFlat [HasFiniteLimits C] (F : C ⥤ D)
   invFun _ := flat_of_preservesFiniteLimits F
   left_inv _ := proof_irrel _ _
   right_inv x := by
-    cases' x with x
+    cases x
     unfold preservesFiniteLimitsOfFlat
     dsimp only [preservesFiniteLimitsOfPreservesFiniteLimitsOfSize]
     congr
@@ -369,36 +370,6 @@ section SmallCategory
 variable {C D : Type u₁} [SmallCategory C] [SmallCategory D] (E : Type u₂) [Category.{u₁} E]
 
 
--- the below proof is broken because
-/-
-
-Lean 4:
-CategoryTheory.lan_map_app.{v₁, v₂, v₃, u₁, u₂, u₃}
-  {S : Type u₁} {L : Type u₂} {D : Type u₃} [inst✝ : Category S]
-  [inst✝¹ : Category L] [inst✝² : Category D] (ι : S ⥤ L)
-  [inst✝³ : ∀ (X : L), HasColimitsOfShape (CostructuredArrow ι X) D] {X X' : S ⥤ D} (f : X ⟶ X') (x : L) :
-  ((lan ι).map f).app x =
-    colimit.desc (Lan.diagram ι X x)
-      { pt := colimit (Lan.diagram ι X' x),
-        ι :=
-          NatTrans.mk fun i ↦
-            (f.app i.left ≫ (↑(Lan.equiv ι X' (Lan.loc ι X')) (𝟙 (Lan.loc ι X'))).app i.left) ≫
-              colimit.pre (Lan.diagram ι X' x) (CostructuredArrow.map i.hom) }
-
-Lean 3:
-category_theory.Lan_map_app :
-  ∀ {S L : Type u₁} {D : Type u₂} [_inst_1 : category S]
-  [_inst_2 : category L] [_inst_3 : category D] (ι : S ⥤ L)
-  [_inst_4 : ∀ (X : L), has_colimits_of_shape (costructured_arrow ι X) D] (X X' : S ⥤ D) (f : X ⟶ X') (x : L),
-  ((Lan ι).map f).app x =
-    colimit.desc (Lan.diagram ι X x)
-      {X := colimit (Lan.diagram ι X' x) _,
-        ι :=
-          {app := λ (i : costructured_arrow ι x),
-            (f.app i.left ≫ colimit.ι (Lan.diagram ι X' (ι.obj i.left)) (costructured_arrow.mk (𝟙 (ι.obj i.left))) ≫ 𝟙 (colimit (Lan.diagram ι X' (ι.obj i.left)))) ≫ colimit.pre (Lan.diagram ι X' x) (costructured_arrow.map i.hom), naturality' := _}}
-
-
--/
 /-- (Implementation)
 The evaluation of `Lan F` at `X` is the colimit over the costructured arrows over `X`.
 -/
@@ -410,23 +381,14 @@ noncomputable def lanEvaluationIsoColim (F : C ⥤ D) (X : D)
     (by
       intro G H i
       -- porting note: was `ext` in lean 3
+      -- **TODO** add missing `ext` lemma.
       apply colimit.hom_ext
       intro j
-      -- **Explanation**
-      -- Overview of problem: `simp` has changed behaviour. I've narrowed it down
-      -- to a change in the type of `lan_map_app`.
-      /-
-      Lean 4 : ⊢ colimit.ι (Lan.diagram F G X) j ≫
-    (lan F ⋙ (evaluation D E).obj X).map i ≫ ((fun G ↦ Functor.mapIso colim (Iso.refl (Lan.diagram F G X))) H).hom =
-  colimit.ι (Lan.diagram F G X) j ≫
-    ((fun G ↦ Functor.mapIso colim (Iso.refl (Lan.diagram F G X))) G).hom ≫
-      ((whiskeringLeft (CostructuredArrow F X) C E).obj (CostructuredArrow.proj F X) ⋙ colim).map i
-
-      Lean 3 : ⊢ colimit.ι (Lan.diagram F G X) j ≫
-    (Lan F ⋙ (evaluation D E).obj X).map i ≫ (colim.map_iso (iso.refl (Lan.diagram F H X))).hom =
-  colimit.ι (Lan.diagram F G X) j ≫
-    (colim.map_iso (iso.refl (Lan.diagram F G X))).hom ≫
-      ((whiskering_left (costructured_arrow F X) C E).obj (costructured_arrow.proj F X) ⋙ colim).map i
+      /- **TODO** golf this.
+         **Explanation** This was
+        simp only [Functor.comp_map, colimit.ι_desc_assoc, Functor.mapIso_refl, evaluation_obj_map,
+          whiskeringLeft_obj_map, Category.comp_id, lan_map_app, Category.assoc]
+        in Lean 3. However the type of `Lan_map_app` has changed.
       -/
       rw [Functor.comp_map]
       rw [Functor.comp_map]
@@ -437,8 +399,6 @@ noncomputable def lanEvaluationIsoColim (F : C ⥤ D) (X : D)
       rw [whiskeringLeft_obj_map]
       rw [lan_map_app]
       rw [colimit.ι_desc_assoc]
-      rw [Lan.equiv]
-      dsimp only
       /-
       Lean 4 : ⊢ { pt := colimit (Lan.diagram F H X),
             ι :=
@@ -469,10 +429,11 @@ noncomputable def lanEvaluationIsoColim (F : C ⥤ D) (X : D)
       (iso.refl (colim.obj (Lan.diagram F G X))).hom ≫ colim.map (whisker_left (costructured_arrow.proj F X) i)
 
       -/
+      rw [Lan.equiv] -- this term was not in `Lan_map_app` in lean 3
+      dsimp only
       simp only [Category.comp_id, Category.assoc]
 
-  --    simp only [Functor.comp_map, colimit.ι_desc_assoc, Functor.mapIso_refl, evaluation_obj_map,
-  --      whiskeringLeft_obj_map, Category.comp_id, lan_map_app, Category.assoc]
+
 
       erw [show ((Lan.equiv F H (Lan.loc F H)) (𝟙 (Lan.loc F H))).app j.left =
         colimit.ι (Lan.diagram F H (F.obj j.left))
