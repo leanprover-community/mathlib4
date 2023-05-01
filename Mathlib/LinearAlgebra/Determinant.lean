@@ -416,6 +416,8 @@ theorem det_conj (f : M ≃ₗ[R] M) (e : M ≃ₗ[R] M') :
   rw [← Units.eq_iff, coe_det, coe_det, ← comp_coe, ← comp_coe, LinearMap.det_conj]
 #align linear_equiv.det_conj LinearEquiv.det_conj
 
+attribute [irreducible] LinearEquiv.det
+
 end LinearEquiv
 
 /-- The determinants of a `LinearEquiv` and its inverse multiply to 1. -/
