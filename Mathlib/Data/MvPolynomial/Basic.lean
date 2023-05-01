@@ -1215,7 +1215,9 @@ theorem eval₂_eq_eval_map (g : σ → S₁) (p : MvPolynomial σ R) : p.eval�
     simp only [comp_apply, eval₂_X]
 #align mv_polynomial.eval₂_eq_eval_map MvPolynomial.eval₂_eq_eval_map
 
--- This probably belongs earlier, but it breaks the fragile proof of `eval₂_eq_eval_map`
+-- Porting note: this was immediately before eval_eval₂ in mathlib3,
+-- but it breaks the fragile proof of `eval₂_eq_eval_map`
+-- so I've moved it here.
 @[simp]
 theorem eval₂_id (p : MvPolynomial σ R) : eval₂ (RingHom.id _) g p = eval g p :=
   rfl

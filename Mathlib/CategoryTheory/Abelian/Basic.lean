@@ -269,11 +269,6 @@ namespace CategoryTheory.Abelian
 variable {C : Type u} [Category.{v} C] [Abelian C]
 
 /-- An abelian category has finite biproducts. -/
--- Porting note: we would like this to be an instance, and indeed it worked in mathlib3
--- however it triggers https://github.com/leanprover/lean4/issues/2055
--- during the simpNF linter, so for now we turn it on locally in this file.
--- This will likely cause problems in downstream ports, unfortunately.
--- instance (priority := 100)
 theorem hasFiniteBiproducts : HasFiniteBiproducts C :=
   Limits.HasFiniteBiproducts.of_hasFiniteProducts
 #align category_theory.abelian.has_finite_biproducts CategoryTheory.Abelian.hasFiniteBiproducts

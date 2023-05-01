@@ -10,8 +10,8 @@ Authors: Johan Commelin
 -/
 import Mathlib.Data.Polynomial.RingDivision
 import Mathlib.Data.MvPolynomial.Rename
-import Mathlib.Data.MvPolynomial.Polynomial
 import Mathlib.RingTheory.Polynomial.Basic
+import Mathlib.Data.MvPolynomial.Polynomial
 
 /-!
 ## Function extensionality for multivariate polynomials
