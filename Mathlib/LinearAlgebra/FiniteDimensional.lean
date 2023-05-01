@@ -133,7 +133,7 @@ instance finiteDimensional_pi' {ι : Type _} [Finite ι] (M : ι → Type _) [�
 #align finite_dimensional.finite_dimensional_pi' FiniteDimensional.finiteDimensional_pi'
 
 /-- A finite dimensional vector space over a finite field is finite -/
-noncomputable def fintypeOfFintype [Fintype K] [FiniteDimensional K V] : Fintype V :=
+noncomputable irreducible_def fintypeOfFintype [Fintype K] [FiniteDimensional K V] : Fintype V :=
   Module.fintypeOfFintype (@finsetBasis K V _ _ _ (iff_fg.2 inferInstance))
 #align finite_dimensional.fintype_of_fintype FiniteDimensional.fintypeOfFintype
 
@@ -154,7 +154,7 @@ theorem of_fintype_basis {ι : Type w} [Finite ι] (h : Basis ι K V) : FiniteDi
 #align finite_dimensional.of_fintype_basis FiniteDimensional.of_fintype_basis
 
 /-- If a vector space is `FiniteDimensional`, all bases are indexed by a finite type -/
-noncomputable def fintypeBasisIndex {ι : Type _} [FiniteDimensional K V] (b : Basis ι K V) :
+noncomputable irreducible_def fintypeBasisIndex {ι : Type _} [FiniteDimensional K V] (b : Basis ι K V) :
     Fintype ι :=
   letI : IsNoetherian K V := IsNoetherian.iff_fg.2 inferInstance
   IsNoetherian.fintypeBasisIndex b
@@ -162,7 +162,8 @@ noncomputable def fintypeBasisIndex {ι : Type _} [FiniteDimensional K V] (b : B
 
 /-- If a vector space is `FiniteDimensional`, `Basis.ofVectorSpace` is indexed by
   a finite type.-/
-noncomputable instance [FiniteDimensional K V] : Fintype (Basis.ofVectorSpaceIndex K V) := by
+@[irreducible] noncomputable
+instance [FiniteDimensional K V] : Fintype (Basis.ofVectorSpaceIndex K V) := by
   letI : IsNoetherian K V := IsNoetherian.iff_fg.2 inferInstance
   infer_instance
 
@@ -240,7 +241,7 @@ theorem finrank_eq_card_basis' [FiniteDimensional K V] {ι : Type w} (h : Basis 
 
 set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 /-- Given a basis of a division ring over itself indexed by a type `ι`, then `ι` is `Unique`. -/
-noncomputable def _root_.Basis.unique {ι : Type _} (b : Basis ι K K) : Unique ι := by
+noncomputable irreducible_def _root_.Basis.unique {ι : Type _} (b : Basis ι K K) : Unique ι := by
   have A : Cardinal.mk ι = ↑(FiniteDimensional.finrank K K) :=
     (FiniteDimensional.finrank_eq_card_basis' b).symm
   -- porting note: replace `algebra_map.coe_one` with `Nat.cast_one`
@@ -251,14 +252,14 @@ noncomputable def _root_.Basis.unique {ι : Type _} (b : Basis ι K K) : Unique 
 variable (K V)
 
 /-- A finite dimensional vector space has a basis indexed by `Fin (finrank K V)`. -/
-noncomputable def finBasis [FiniteDimensional K V] : Basis (Fin (finrank K V)) K V :=
+noncomputable irreducible_def finBasis [FiniteDimensional K V] : Basis (Fin (finrank K V)) K V :=
   have h : Fintype.card (@finsetBasisIndex K V _ _ _ (iff_fg.2 inferInstance)) = finrank K V :=
     (finrank_eq_card_basis (@finsetBasis K V _ _ _ (iff_fg.2 inferInstance))).symm
   (@finsetBasis K V _ _ _ (iff_fg.2 inferInstance)).reindex (Fintype.equivFinOfCardEq h)
 #align finite_dimensional.fin_basis FiniteDimensional.finBasis
 
 /-- An `n`-dimensional vector space has a basis indexed by `Fin n`. -/
-noncomputable def finBasisOfFinrankEq [FiniteDimensional K V] {n : ℕ} (hn : finrank K V = n) :
+noncomputable irreducible_def finBasisOfFinrankEq [FiniteDimensional K V] {n : ℕ} (hn : finrank K V = n) :
     Basis (Fin n) K V :=
   (finBasis K V).reindex (Fin.cast hn).toEquiv
 #align finite_dimensional.fin_basis_of_finrank_eq FiniteDimensional.finBasisOfFinrankEq
@@ -267,7 +268,7 @@ variable {K V}
 
 set_option synthInstance.etaExperiment true in
 /-- A module with dimension 1 has a basis with one element. -/
-noncomputable def basisUnique (ι : Type _) [Unique ι] (h : finrank K V = 1) : Basis ι K V :=
+noncomputable irreducible_def basisUnique (ι : Type _) [Unique ι] (h : finrank K V = 1) : Basis ι K V :=
   haveI : FiniteDimensional _ _ :=
     finiteDimensional_of_finrank (_root_.zero_lt_one.trans_le h.symm.le)
   (finBasisOfFinrankEq K V h).reindex (Equiv.equivOfUnique _ _)
@@ -426,7 +427,7 @@ theorem _root_.CompleteLattice.Independent.subtype_ne_bot_le_finrank_aux [Finite
 
 /-- If `p` is an independent family of subspaces of a finite-dimensional space `V`, then the
 number of nontrivial subspaces in the family `p` is finite. -/
-noncomputable def _root_.CompleteLattice.Independent.fintypeNeBotOfFiniteDimensional
+noncomputable irreducible_def _root_.CompleteLattice.Independent.fintypeNeBotOfFiniteDimensional
     [FiniteDimensional K V] {ι : Type w} {p : ι → Submodule K V}
     (hp : CompleteLattice.Independent p) : Fintype { i : ι // p i ≠ ⊥ } := by
   suffices (#{ i // p i ≠ ⊥ }) < (ℵ₀ : Cardinal.{w}) by
@@ -630,6 +631,8 @@ theorem basisSingleton_apply (ι : Type _) [Unique ι] (h : finrank K V = 1) (v 
   cases Unique.uniq ‹Unique ι› i
   simp [basisSingleton]
 #align finite_dimensional.basis_singleton_apply FiniteDimensional.basisSingleton_apply
+
+attribute [irreducible] basisSingleton
 
 @[simp]
 theorem range_basisSingleton (ι : Type _) [Unique ι] (h : finrank K V = 1) (v : V) (hv : v ≠ 0) :
@@ -873,7 +876,7 @@ variable [FiniteDimensional K V] [FiniteDimensional K V₂]
 set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 /-- Given isomorphic subspaces `p q` of vector spaces `V` and `V₁` respectively,
   `p.quotient` is isomorphic to `q.quotient`. -/
-noncomputable def LinearEquiv.quotEquivOfEquiv {p : Subspace K V} {q : Subspace K V₂}
+noncomputable irreducible_def LinearEquiv.quotEquivOfEquiv {p : Subspace K V} {q : Subspace K V₂}
     (f₁ : p ≃ₗ[K] q) (f₂ : V ≃ₗ[K] V₂) : (V ⧸ p) ≃ₗ[K] V₂ ⧸ q :=
   LinearEquiv.ofFinrankEq _ _
     (by
@@ -885,7 +888,7 @@ noncomputable def LinearEquiv.quotEquivOfEquiv {p : Subspace K V} {q : Subspace 
 set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 -- TODO: generalize to the case where one of `p` and `q` is finite-dimensional.
 /-- Given the subspaces `p q`, if `p.quotient ≃ₗ[K] q`, then `q.quotient ≃ₗ[K] p` -/
-noncomputable def LinearEquiv.quotEquivOfQuotEquiv {p q : Subspace K V} (f : (V ⧸ p) ≃ₗ[K] q) :
+noncomputable irreducible_def LinearEquiv.quotEquivOfQuotEquiv {p q : Subspace K V} (f : (V ⧸ p) ≃ₗ[K] q) :
     (V ⧸ q) ≃ₗ[K] p :=
   LinearEquiv.ofFinrankEq _ _ <|
     add_right_cancel <| by
@@ -1059,7 +1062,7 @@ theorem finrank_zero_iff_forall_zero [FiniteDimensional K V] : finrank K V = 0 �
 #align finrank_zero_iff_forall_zero finrank_zero_iff_forall_zero
 
 /-- If `ι` is an empty type and `V` is zero-dimensional, there is a unique `ι`-indexed basis. -/
-noncomputable def basisOfFinrankZero [FiniteDimensional K V] {ι : Type _} [IsEmpty ι]
+noncomputable irreducible_def basisOfFinrankZero [FiniteDimensional K V] {ι : Type _} [IsEmpty ι]
     (hV : finrank K V = 0) : Basis ι K V :=
   haveI : Subsingleton V := finrank_zero_iff.1 hV
   Basis.empty _
@@ -1272,6 +1275,10 @@ theorem coe_setBasisOfLinearIndependentOfCardEqFinrank {s : Set V} [Nonempty s] 
   rw [setBasisOfLinearIndependentOfCardEqFinrank]
   exact Basis.coe_mk _ _
 #align coe_set_basis_of_linear_independent_of_card_eq_finrank coe_setBasisOfLinearIndependentOfCardEqFinrank
+
+attribute [irreducible] basisOfLinearIndependentOfCardEqFinrank
+  finsetBasisOfLinearIndependentOfCardEqFinrank
+  setBasisOfLinearIndependentOfCardEqFinrank
 
 end Basis
 

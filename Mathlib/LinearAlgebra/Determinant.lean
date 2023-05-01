@@ -483,6 +483,8 @@ theorem LinearEquiv.coe_ofIsUnitDet {f : M →ₗ[R] M'} {v : Basis ι R M} {v' 
 #align linear_equiv.coe_of_is_unit_det LinearEquiv.coe_ofIsUnitDet
 
 set_option maxHeartbeats 300000 in
+set_option profiler true in
+set_option trace.Meta.isDefEq true in
 /-- Builds a linear equivalence from a linear map on a finite-dimensional vector space whose
 determinant is nonzero. -/
 @[reducible]
@@ -490,7 +492,12 @@ def LinearMap.equivOfDetNeZero {𝕜 : Type _} [Field 𝕜] {M : Type _} [AddCom
     [FiniteDimensional 𝕜 M] (f : M →ₗ[𝕜] M) (hf : LinearMap.det f ≠ 0) : M ≃ₗ[𝕜] M :=
   have : IsUnit (LinearMap.toMatrix (FiniteDimensional.finBasis 𝕜 M)
       (FiniteDimensional.finBasis 𝕜 M) f).det := by
-    simp only [LinearMap.det_toMatrix, isUnit_iff_ne_zero.2 hf]
+    -- The problem here is a slow `isDefEq` problem:
+    -- [Meta.isDefEq] [8.157421s] ✅ Matrix.det
+    --       (↑(LinearMap.toMatrix (FiniteDimensional.finBasis 𝕜 M) (FiniteDimensional.finBasis 𝕜 M))
+    --         f) =?= Matrix.det (↑(LinearMap.toMatrix ?b ?b) ?f) ▶
+    rw [LinearMap.det_toMatrix]
+    exact isUnit_iff_ne_zero.2 hf
   LinearEquiv.ofIsUnitDet this
 #align linear_map.equiv_of_det_ne_zero LinearMap.equivOfDetNeZero
 
