@@ -43,6 +43,7 @@ elements between these endpoints, use the coercion `NonemptyInterval α → Set 
 -- this is because in `Std.Tactic.Ext.withExtHyps`, the for-loop goes over
 -- `getStructureFieldsFlattened` instead of `getStructureFields`.
 structure NonemptyInterval (α : Type _) [LE α] extends Prod α α where
+  /-- The starting point of the interval is smaller than the endpoint. -/
   fst_le_snd : fst ≤ snd
 #align nonempty_interval NonemptyInterval
 
@@ -147,7 +148,7 @@ theorem mem_def : a ∈ s ↔ s.fst ≤ a ∧ a ≤ s.snd :=
   Iff.rfl
 #align nonempty_interval.mem_def NonemptyInterval.mem_def
 
-@[simp]
+-- @[simp] -- Porting note: not in simpNF
 theorem coe_nonempty (s : NonemptyInterval α) : (s : Set α).Nonempty :=
   nonempty_Icc.2 s.fst_le_snd
 #align nonempty_interval.coe_nonempty NonemptyInterval.coe_nonempty
@@ -253,12 +254,12 @@ instance setLike : SetLike (NonemptyInterval α) α where
   coe s := Icc s.fst s.snd
   coe_injective' := coeHom.injective
 
-@[simp, norm_cast]
+-- @[simp, norm_cast] -- Porting note: not in simpNF
 theorem coe_subset_coe : (s : Set α) ⊆ t ↔ (s : NonemptyInterval α) ≤ t :=
   (@coeHom α _).le_iff_le
 #align nonempty_interval.coe_subset_coe NonemptyInterval.coe_subset_coe
 
-@[simp, norm_cast]
+-- @[simp, norm_cast] -- Porting note: not in simpNF
 theorem coe_ssubset_coe : (s : Set α) ⊂ t ↔ s < t :=
   (@coeHom α _).lt_iff_lt
 #align nonempty_interval.coe_ssubset_coe NonemptyInterval.coe_ssubset_coe
@@ -353,7 +354,7 @@ theorem coe_injective : Injective ((↑) : NonemptyInterval α → Interval α) 
   WithBot.coe_injective
 #align interval.coe_injective Interval.coe_injective
 
-@[simp, norm_cast]
+-- @[simp, norm_cast] -- Porting note: not in simpNF
 theorem coe_inj {s t : NonemptyInterval α} : (s : Interval α) = t ↔ s = t :=
   WithBot.coe_inj
 #align interval.coe_inj Interval.coe_inj
@@ -477,12 +478,12 @@ instance setLike : SetLike (Interval α) α where
   coe := coeHom
   coe_injective' := coeHom.injective
 
-@[simp, norm_cast]
+-- @[simp, norm_cast] -- Porting note: not in simpNF
 theorem coe_subset_coe : (s : Set α) ⊆ t ↔ s ≤ t :=
   (@coeHom α _).le_iff_le
 #align interval.coe_subset_coe Interval.coe_subset_coe
 
-@[simp, norm_cast]
+-- @[simp, norm_cast] -- Porting note: not in simpNF
 theorem coe_sSubset_coe : (s : Set α) ⊂ t ↔ s < t :=
   (@coeHom α _).lt_iff_lt
 #align interval.coe_ssubset_coe Interval.coe_sSubset_coe
@@ -685,8 +686,8 @@ noncomputable instance completeLattice [@DecidableRel α (· ≤ ·)] :
           if h : S ⊆ {⊥} then ⊥
           else
             some
-              ⟨⟨⨅ (s : NonemptyInterval α) (h : ↑s ∈ S), s.fst,
-                  ⨆ (s : NonemptyInterval α) (h : ↑s ∈ S), s.snd⟩, by
+              ⟨⟨⨅ (s : NonemptyInterval α) (_h : ↑s ∈ S), s.fst,
+                  ⨆ (s : NonemptyInterval α) (_h : ↑s ∈ S), s.snd⟩, by
                 obtain ⟨s, hs, ha⟩ := not_subset.1 h
                 lift s to NonemptyInterval α using ha
                 exact infᵢ₂_le_of_le s hs (le_supᵢ₂_of_le s hs s.fst_le_snd)⟩
@@ -720,8 +721,8 @@ noncomputable instance completeLattice [@DecidableRel α (· ≤ ·)] :
                 ∀ ⦃s : NonemptyInterval α⦄,
                   ↑s ∈ S → ∀ ⦃t : NonemptyInterval α⦄, ↑t ∈ S → s.fst ≤ t.snd then
             some
-              ⟨⟨⨆ (s : NonemptyInterval α) (h : ↑s ∈ S), s.fst,
-                  ⨅ (s : NonemptyInterval α) (h : ↑s ∈ S), s.snd⟩,
+              ⟨⟨⨆ (s : NonemptyInterval α) (_h : ↑s ∈ S), s.fst,
+                  ⨅ (s : NonemptyInterval α) (_h : ↑s ∈ S), s.snd⟩,
                 supᵢ₂_le fun s hs => le_infᵢ₂ <| h.2 hs⟩
           else ⊥
         infₛ_le := fun s₁ s ha => by
@@ -730,7 +731,7 @@ noncomputable instance completeLattice [@DecidableRel α (· ≤ ·)] :
           · lift s to NonemptyInterval α using ne_of_mem_of_not_mem ha h.1
             -- Porting note: Lean failed to figure out the function `f` by itself,
             -- so I added it through manually
-            let f := fun (s : NonemptyInterval α) (ha : ↑s ∈ s₁) => s.toProd.fst
+            let f := fun (s : NonemptyInterval α) (_ : ↑s ∈ s₁) => s.toProd.fst
             exact WithBot.coe_le_coe.2 ⟨le_supᵢ₂ (f := f) s ha, infᵢ₂_le s ha⟩
           · exact bot_le
         le_infₛ := by
@@ -766,7 +767,7 @@ theorem coe_infₛ [@DecidableRel α (· ≤ ·)] (S : Set (Interval α)) :
   classical -- Porting note: added
   -- Porting note: this `change` was
   -- change ↑ (dite _ _ _) = _
-  change setLike.coe (dite _ _ _) = ⋂ (s : Interval α) (H : s ∈ S), (s : Set α)
+  change setLike.coe (dite _ _ _) = ⋂ (s : Interval α) (_H : s ∈ S), (s : Set α)
   split_ifs with h
   · ext
     simp [WithBot.some_eq_coe, Interval.forall, h.1, ← forall_and, ← NonemptyInterval.mem_def]
@@ -785,9 +786,7 @@ theorem coe_infᵢ [@DecidableRel α (· ≤ ·)] (f : ι → Interval α) :
     ↑(⨅ i, f i) = ⋂ i, (f i : Set α) := by simp [infᵢ]
 #align interval.coe_infi Interval.coe_infᵢ
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
-@[simp, norm_cast]
+-- @[simp, norm_cast] -- Porting note: not in simpNF
 theorem coe_infᵢ₂ [@DecidableRel α (· ≤ ·)] (f : ∀ i, κ i → Interval α) :
     ↑(⨅ (i) (j), f i j) = ⋂ (i) (j), (f i j : Set α) := by simp_rw [coe_infᵢ]
 #align interval.coe_infi₂ Interval.coe_infᵢ₂
