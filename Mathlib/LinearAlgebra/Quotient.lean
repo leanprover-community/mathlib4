@@ -399,7 +399,9 @@ theorem comap_map_mkQ : comap p.mkQ (map p.mkQ p') = p ⊔ p' := by simp [comap_
 
 @[simp]
 theorem map_mkQ_eq_top : map p.mkQ p' = ⊤ ↔ p ⊔ p' = ⊤ := by
-  simp only [map_eq_top_iff p.range_mkQ, sup_comm, ker_mkQ]
+  -- porting note: ambiguity of `map_eq_top_iff` is no longer automatically resolved by preferring
+  -- the current namespace
+  simp only [LinearMap.map_eq_top_iff p.range_mkQ, sup_comm, ker_mkQ]
 #align submodule.map_mkq_eq_top Submodule.map_mkQ_eq_top
 
 variable (q : Submodule R₂ M₂)

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Alexander Bentkamp, Anne Baanen
 
 ! This file was ported from Lean 3 source module linear_algebra.linear_independent
-! leanprover-community/mathlib commit 6d584f1709bedbed9175bd9350df46599bdd7213
+! leanprover-community/mathlib commit 9d684a893c52e1d6692a504a118bfccbae04feeb
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -401,7 +401,7 @@ theorem linearIndependent_subtype_disjoint {s : Set M} :
 theorem linearIndependent_iff_totalOn {s : Set M} :
     LinearIndependent R (fun x => x : s → M) ↔
     (LinearMap.ker $ Finsupp.totalOn M M R id s) = ⊥ := by
-  rw [Finsupp.totalOn, LinearMap.ker, LinearMap.comap_codRestrict, map_bot, comap_bot,
+  rw [Finsupp.totalOn, LinearMap.ker, LinearMap.comap_codRestrict, Submodule.map_bot, comap_bot,
     LinearMap.ker_comp, linearIndependent_subtype_disjoint, disjoint_iff_inf_le, ←
     map_comap_subtype, map_le_iff_le_comap, comap_bot, ker_subtype, le_bot_iff]
 #align linear_independent_iff_total_on linearIndependent_iff_totalOn
@@ -768,7 +768,7 @@ def LinearIndependent.totalEquiv (hv : LinearIndependent R v) :
       rw [LinearMap.mem_range]
       apply mem_range_self l
   · rw [← LinearMap.range_eq_top, LinearMap.range_eq_map, LinearMap.map_codRestrict, ←
-      LinearMap.range_le_iff_comap, range_subtype, map_top]
+      LinearMap.range_le_iff_comap, range_subtype, Submodule.map_top]
     rw [Finsupp.range_total]
 #align linear_independent.total_equiv LinearIndependent.totalEquiv
 #align linear_independent.total_equiv_symm_apply LinearIndependent.totalEquiv_symm_apply

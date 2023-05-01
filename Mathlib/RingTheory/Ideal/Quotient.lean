@@ -299,6 +299,7 @@ section Pi
 
 variable (ι : Type v)
 
+set_option maxHeartbeats 300000 in
 /-- `R^n/I^n` is a `R/I`-module. -/
 instance modulePi : Module (R ⧸ I) ((ι → R) ⧸ I.pi ι) where
   smul c m :=

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 
 ! This file was ported from Lean 3 source module linear_algebra.finsupp
-! leanprover-community/mathlib commit 3dec44d0b621a174c56e994da4aae15ba60110a2
+! leanprover-community/mathlib commit 9d684a893c52e1d6692a504a118bfccbae04feeb
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -285,7 +285,7 @@ theorem supported_unionᵢ {δ : Type _} (s : δ → Set α) :
   suffices
     LinearMap.range ((Submodule.subtype _).comp (restrictDom M R (⋃ i, s i))) ≤
       ⨆ i, supported M R (s i) by
-    rwa [LinearMap.range_comp, range_restrictDom, map_top, range_subtype] at this
+    rwa [LinearMap.range_comp, range_restrictDom, Submodule.map_top, range_subtype] at this
   rw [range_le_iff_comap, eq_top_iff]
   rintro l ⟨⟩
   -- Porting note: Was ported as `induction l using Finsupp.induction`
@@ -735,8 +735,9 @@ protected def totalOn (s : Set α) : supported R R s →ₗ[R] span R (v '' s) :
 variable {α} {M} {v}
 
 theorem totalOn_range (s : Set α) : LinearMap.range (Finsupp.totalOn α M R v s) = ⊤ := by
-  rw [Finsupp.totalOn, LinearMap.range_eq_map, LinearMap.map_codRestrict, ←
-    LinearMap.range_le_iff_comap, range_subtype, map_top, LinearMap.range_comp, range_subtype]
+  rw [Finsupp.totalOn, LinearMap.range_eq_map, LinearMap.map_codRestrict,
+    ←LinearMap.range_le_iff_comap, range_subtype, Submodule.map_top, LinearMap.range_comp,
+    range_subtype]
   exact (span_image_eq_map_total _ _).le
 #align finsupp.total_on_range Finsupp.totalOn_range
 
