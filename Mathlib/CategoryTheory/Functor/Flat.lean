@@ -401,63 +401,44 @@ noncomputable def lanEvaluationIsoColim (F : C ⥤ D) (X : D)
       rw [colimit.ι_desc_assoc]
       /-
       Lean 4 : ⊢ { pt := colimit (Lan.diagram F H X),
-            ι :=
-              NatTrans.mk fun i_1 ↦
-                (i.app i_1.left ≫
+        ι := NatTrans.mk fun i_1 ↦ (i.app i_1.left ≫
+          (↑(Lan.equiv F H (Lan.loc F H)) (𝟙 (Lan.loc F H))).app i_1.left) ≫
+          colimit.pre (Lan.diagram F H X) (CostructuredArrow.map i_1.hom) }.ι.app
+      j ≫ (Iso.refl (colim.obj (Lan.diagram F H X))).hom = colimit.ι (Lan.diagram F G X) j ≫
+        (Iso.refl (colim.obj (Lan.diagram F G X))).hom ≫
+        colim.map (whiskerLeft (CostructuredArrow.proj F X) i)
 
-                (↑(Lan.equiv F H (Lan.loc F H)) (𝟙 (Lan.loc F H))).app i_1.left) ≫
-
-                  colimit.pre (Lan.diagram F H X) (CostructuredArrow.map i_1.hom) }.ι.app
-      j ≫
-      (Iso.refl (colim.obj (Lan.diagram F H X))).hom =
-      colimit.ι (Lan.diagram F G X) j ≫
-      (Iso.refl (colim.obj (Lan.diagram F G X))).hom ≫ colim.map (whiskerLeft (CostructuredArrow.proj F X) i)
-
-      Lean 3 : ⊢ {X := colimit (Lan.diagram F H X) _
-          , ι :=
-              {app := λ (i_1 : costructured_arrow F X),
-                (i.app i_1.left ≫
-
-                colimit.ι (Lan.diagram F H (F.obj i_1.left))
-                  (costructured_arrow.mk (𝟙 (F.obj i_1.left))) ≫
-                  𝟙 (colimit (Lan.diagram F H (F.obj i_1.left)))) ≫
-
-                  colimit.pre (Lan.diagram F H X) (costructured_arrow.map i_1.hom), naturality' := _}}.ι.app
-      j ≫
-      (iso.refl (colim.obj (Lan.diagram F H X))).hom =
-      colimit.ι (Lan.diagram F G X) j ≫
-      (iso.refl (colim.obj (Lan.diagram F G X))).hom ≫ colim.map (whisker_left (costructured_arrow.proj F X) i)
-
+      Lean 3 : ⊢ {X := colimit (Lan.diagram F H X) _,
+        ι := { app := λ (i_1 : costructured_arrow F X), (i.app i_1.left ≫
+          colimit.ι (Lan.diagram F H (F.obj i_1.left))
+          (costructured_arrow.mk (𝟙 (F.obj i_1.left))) ≫
+          𝟙 (colimit (Lan.diagram F H (F.obj i_1.left)))) ≫ colimit.pre (Lan.diagram F H X)
+          (costructured_arrow.map i_1.hom), naturality' := _}}.ι.app
+      j ≫ (iso.refl (colim.obj (Lan.diagram F H X))).hom =
+        colimit.ι (Lan.diagram F G X) j ≫ (iso.refl (colim.obj (Lan.diagram F G X))).hom ≫
+        colim.map (whisker_left (costructured_arrow.proj F X) i)
       -/
       rw [Lan.equiv] -- this term was not in `Lan_map_app` in lean 3
       dsimp only
       simp only [Category.comp_id, Category.assoc]
-
-
-
       erw [show ((Lan.equiv F H (Lan.loc F H)) (𝟙 (Lan.loc F H))).app j.left =
         colimit.ι (Lan.diagram F H (F.obj j.left))
         (CostructuredArrow.mk (𝟙 (F.obj j.left))) by apply Category.comp_id]
       -- **TODO** change in behaviour of `lan_map_app` constructed by `simps`
       -- See https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/change.20in.20behaviour.20with.20.60simps.60/near/354350606
       /-
-      Lean 4 : ⊢ i.app j.left ≫
+      Lean 4 : ⊢ i.app j.left ≫ (↑(Lan.equiv F H (Lan.loc F H)) (𝟙 (Lan.loc F H))).app j.left ≫
+        colimit.pre (Lan.diagram F H X) (CostructuredArrow.map j.hom) ≫
+        (Iso.refl (colim.obj (Lan.diagram F H X))).hom = colimit.ι (Lan.diagram F G X) j ≫
+        (Iso.refl (colim.obj (Lan.diagram F G X))).hom ≫
+        colim.map (whiskerLeft (CostructuredArrow.proj F X) i)
 
-       (↑(Lan.equiv F H (Lan.loc F H)) (𝟙 (Lan.loc F H))).app j.left ≫
-
-      colimit.pre (Lan.diagram F H X) (CostructuredArrow.map j.hom) ≫ (Iso.refl (colim.obj (Lan.diagram F H X))).hom =
-       colimit.ι (Lan.diagram F G X) j ≫
-      (Iso.refl (colim.obj (Lan.diagram F G X))).hom ≫ colim.map (whiskerLeft (CostructuredArrow.proj F X) i)
-
-      Lean 3 : ⊢ i.app j.left ≫
-
-      colimit.ι (Lan.diagram F H (F.obj j.left))
-      (costructured_arrow.mk (𝟙 (F.obj j.left))) ≫
-
-      colimit.pre (Lan.diagram F H X) (costructured_arrow.map j.hom) ≫ (iso.refl (colim.obj (Lan.diagram F H X))).hom =
-      colimit.ι (Lan.diagram F G X) j ≫
-      (iso.refl (colim.obj (Lan.diagram F G X))).hom ≫ colim.map (whisker_left (costructured_arrow.proj F X) i)
-
+      Lean 3 : ⊢ i.app j.left ≫ colimit.ι (Lan.diagram F H (F.obj j.left))
+        (costructured_arrow.mk (𝟙 (F.obj j.left))) ≫
+        colimit.pre (Lan.diagram F H X) (costructured_arrow.map j.hom) ≫
+        (iso.refl (colim.obj (Lan.diagram F H X))).hom = colimit.ι (Lan.diagram F G X) j ≫
+        (iso.refl (colim.obj (Lan.diagram F G X))).hom ≫
+        colim.map (whisker_left (costructured_arrow.proj F X) i)
       -/
       erw [colimit.ι_pre_assoc (Lan.diagram F H X) (CostructuredArrow.map j.hom), Category.id_comp,
         Category.comp_id, colimit.ι_map]
