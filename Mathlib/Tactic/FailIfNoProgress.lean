@@ -53,9 +53,12 @@ structure DeclComparisonConfig extends ExprComparisonConfig where
   checkUserNames : Bool := true
   checkLetValue  : Bool := true
 
+-- Merge?
 /-- Config data for comparing local contexts. -/
 structure CtxComparisonConfig extends DeclComparisonConfig
 
+-- Needed?
+/-- Config data for comparing local contexts. -/
 structure LocalInstanceComparisonConfig extends ExprComparisonConfig
 
 /-- Config data for `failIfNoProgress`, `fail_if_no_progress`, and `runAndFailIfNoProgress`.
@@ -68,7 +71,8 @@ equality checks made.
 * `transparency : TransparencyMode := .reducible` – the `TransparencyMode` to compare expressions
 at.
 * `checkTarget : Bool := true` – compare the targets of goals when comparing goals.
-* `onLocalInstances : Option LocalInstanceComparisonConfig` – The configuration for comparing local instances of goals. If `none`, local instances are not compared.
+* `onLocalInstances : Option LocalInstanceComparisonConfig` – The configuration for comparing local
+instances of goals. If `none`, local instances are not compared.
   * `eqKind : EqKind := eqKind`
   * `transparency : TransparencyMode := transparency`
 * `onCtx : Option CtxComparisonConfig` – The configuration for comparing local contexts. By default,
@@ -88,10 +92,11 @@ structure FailIfNoProgress.Config extends ExprComparisonConfig where
   onCtx    : Option CtxComparisonConfig :=
     some { eqKind, transparency, checkIndex := eqKind.isBEq, checkFVarIds := eqKind.isBEq }
 
---!! Does transparency affect BEq or is it only a DefEq thing? I think the latter, but want to be sure.
+--!! Does transparency affect BEq or is it only a DefEq thing? I think the latter, but want to be
+-- sure.
 /-- Compares two expressions according to the given `ComparisonConfig`. -/
 def compareExpr (e₁ e₂ : Expr) : (config : ExprComparisonConfig := {}) → MetaM Bool
-| ⟨.beq, _⟩ => withReducibleAndInstances <| pure (e₁ == e₂)
+| ⟨.beq, _⟩ => pure (e₁ == e₂)
 | ⟨.defEq, t⟩ => withTransparency t <| withNewMCtxDepth <| isDefEq e₁ e₂
 
 /-- Zip two lists together only if they have the same length. If they don't, return `none`. -/
@@ -140,6 +145,7 @@ def zipWithFoldM? [Monad m] [Alternative m] (f : α → β → γ → m γ) (ini
   | true => c
   | false => pure true
 
+/-- Compares two lists monadically. -/
 def compareListM [Monad m] (l₁ l₂ : List α) (c : α → α → m Bool) : m Bool := do
   let some lZip := zip? l₁ l₂ | return false
   for (a₁, a₂) in lZip do
@@ -168,6 +174,7 @@ def compareLCtx (lctx₁ lctx₂ : LocalContext) (config : CtxComparisonConfig :
   let l₂ := lctx₂.decls.toList.reduceOption
   compareListM l₁ l₂ (compareLocalDecl (config := config.toDeclComparisonConfig))
 
+/-- Compare local instances. -/
 def compareLocalInstances (lis₁ lis₂ : LocalInstances)
     (config : LocalInstanceComparisonConfig := {}) : MetaM Bool :=
   compareListM lis₁.toList lis₂.toList (compareExpr ·.fvar ·.fvar config.toExprComparisonConfig)
@@ -202,7 +209,7 @@ def runAndFailIfNoProgress (goal : MVarId) (tacs : TacticM Unit)
     guard <|← compareGoal goal newGoal config
   catch _ =>
     return l
-  throwError "no progress made on goal:¬{goal}"
+  throwError "no progress made on goal:\n{goal}"
 
 /-- Run `tacs`, and fail if no progress is made. -/
 def failIfNoProgress [ToMessageData α] (tacs : TacticM α) (config : FailIfNoProgress.Config := {}) :
