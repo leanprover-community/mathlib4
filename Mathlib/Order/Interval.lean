@@ -763,17 +763,20 @@ noncomputable instance completeLattice [@DecidableRel α (· ≤ ·)] :
 @[simp, norm_cast]
 theorem coe_infₛ [@DecidableRel α (· ≤ ·)] (S : Set (Interval α)) :
     ↑(infₛ S) = ⋂ s ∈ S, (s : Set α) := by
-  change ↑ (dite _ _ _) = _
-  split_ifs
+  classical -- Porting note: added
+  -- Porting note: this `change` was
+  -- change ↑ (dite _ _ _) = _
+  change setLike.coe (dite _ _ _) = ⋂ (s : Interval α) (H : s ∈ S), (s : Set α)
+  split_ifs with h
   · ext
     simp [WithBot.some_eq_coe, Interval.forall, h.1, ← forall_and, ← NonemptyInterval.mem_def]
   simp_rw [not_and_or, Classical.not_not] at h
-  cases h
+  rcases h with h | h
   · refine' (eq_empty_of_subset_empty _).symm
-    exact Inter₂_subset_of_subset _ h subset.rfl
+    exact interᵢ₂_subset_of_subset _ h Subset.rfl
   · refine' (not_nonempty_iff_eq_empty.1 _).symm
     rintro ⟨x, hx⟩
-    rw [mem_Inter₂] at hx
+    rw [mem_interᵢ₂] at hx
     exact h fun s ha t hb => (hx _ ha).1.trans (hx _ hb).2
 #align interval.coe_Inf Interval.coe_infₛ
 
