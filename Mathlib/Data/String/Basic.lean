@@ -8,7 +8,6 @@ Authors: Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Std.Data.String.Lemmas
 import Mathlib.Data.List.Lex
 import Mathlib.Data.Char
 
