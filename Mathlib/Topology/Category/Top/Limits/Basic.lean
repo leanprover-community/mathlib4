@@ -110,11 +110,9 @@ instance topCat_hasLimitsOfSize : HasLimitsOfSize.{v} TopCat.{max v u}
             IsLimit := limit_cone_is_limit F } }
 #align Top.Top_has_limits_of_size TopCat.topCat_hasLimitsOfSize
 
-#print TopCat.topCat_hasLimits /-
 instance topCat_hasLimits : HasLimits TopCat.{u} :=
   TopCat.topCat_hasLimitsOfSize.{u, u}
 #align Top.Top_has_limits TopCat.topCat_hasLimits
--/
 
 instance forgetPreservesLimitsOfSize :
     PreservesLimitsOfSize.{v, v} (forget : TopCat.{max v u} ⥤ Type max v u)
@@ -125,11 +123,9 @@ instance forgetPreservesLimitsOfSize :
           (types.limit_cone_is_limit (F ⋙ forget)) }
 #align Top.forget_preserves_limits_of_size TopCat.forgetPreservesLimitsOfSize
 
-#print TopCat.forgetPreservesLimits /-
 instance forgetPreservesLimits : PreservesLimits (forget : TopCat.{u} ⥤ Type u) :=
   TopCat.forgetPreservesLimitsOfSize.{u, u}
 #align Top.forget_preserves_limits TopCat.forgetPreservesLimits
--/
 
 /-- A choice of colimit cocone for a functor `F : J ⥤ Top`.
 Generally you should just use `colimit.coone F`, unless you need the actual definition
@@ -169,11 +165,9 @@ instance topCat_hasColimitsOfSize : HasColimitsOfSize.{v} TopCat.{max v u}
             IsColimit := colimit_cocone_is_colimit F } }
 #align Top.Top_has_colimits_of_size TopCat.topCat_hasColimitsOfSize
 
-#print TopCat.topCat_hasColimits /-
 instance topCat_hasColimits : HasColimits TopCat.{u} :=
   TopCat.topCat_hasColimitsOfSize.{u, u}
 #align Top.Top_has_colimits TopCat.topCat_hasColimits
--/
 
 instance forgetPreservesColimitsOfSize :
     PreservesColimitsOfSize.{v, v} (forget : TopCat.{max v u} ⥤ Type max v u)
@@ -184,11 +178,9 @@ instance forgetPreservesColimitsOfSize :
           (types.colimit_cocone_is_colimit (F ⋙ forget)) }
 #align Top.forget_preserves_colimits_of_size TopCat.forgetPreservesColimitsOfSize
 
-#print TopCat.forgetPreservesColimits /-
 instance forgetPreservesColimits : PreservesColimits (forget : TopCat.{u} ⥤ Type u) :=
   TopCat.forgetPreservesColimitsOfSize.{u, u}
 #align Top.forget_preserves_colimits TopCat.forgetPreservesColimits
--/
 
 /-- The terminal object of `Top` is `punit`. -/
 def isTerminalPunit : IsTerminal (TopCat.of PUnit.{u + 1}) :=
