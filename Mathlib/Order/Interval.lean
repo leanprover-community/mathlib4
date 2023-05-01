@@ -40,7 +40,7 @@ elements between these endpoints, use the coercion `NonemptyInterval α → Set 
 -- this is because in `Std.Tactic.Ext.withExtHyps`, the for-loop goes over
 -- `getStructureFieldsFlattened` instead of `getStructureFields`.
 structure NonemptyInterval (α : Type _) [LE α] extends Prod α α where
-  /-- The starting point of the interval is smaller than the endpoint. -/
+  /-- The starting point of an interval is smaller than the endpoint. -/
   fst_le_snd : fst ≤ snd
 #align nonempty_interval NonemptyInterval
 
@@ -55,17 +55,15 @@ theorem toProd_injective : Injective (toProd : NonemptyInterval α → α × α)
 #align nonempty_interval.to_prod_injective NonemptyInterval.toProd_injective
 
 -- porting note: This is the manually written old ext-lemma as it was generated in mathlib3.
--- Put them in here in case they are needed explicitely, but should be able to delete them later.
-@[deprecated]
-theorem ext' (s t : NonemptyInterval α) (h : s.toProd = t.toProd) : s = t := toProd_injective h
-#align nonempty_interval.ext NonemptyInterval.ext'
+-- Would be nice to fix `@[ext]` to generate them automatically.
+theorem ext (s t : NonemptyInterval α) (h : s.toProd = t.toProd) : s = t := toProd_injective h
+#align nonempty_interval.ext NonemptyInterval.ext
 
 -- porting note: This is the manually written old ext-lemma as it was generated in mathlib3.
--- Put them in here in case they are needed explicitely, but should be able to delete them later.
-@[deprecated]
-theorem ext_iff' (s t : NonemptyInterval α) : s = t ↔ s.toProd = t.toProd :=
+-- Would be nice to fix `@[ext]` to generate them automatically.
+theorem ext_iff (s t : NonemptyInterval α) : s = t ↔ s.toProd = t.toProd :=
   toProd_injective.eq_iff.symm
-#align nonempty_interval.ext_iff NonemptyInterval.ext_iff'
+#align nonempty_interval.ext_iff NonemptyInterval.ext_iff
 
 /-- The injection that induces the order on intervals. -/
 def toDualProd : NonemptyInterval α → αᵒᵈ × α :=
@@ -251,12 +249,12 @@ instance setLike : SetLike (NonemptyInterval α) α where
   coe s := Icc s.fst s.snd
   coe_injective' := coeHom.injective
 
--- @[simp, norm_cast] -- Porting note: not in simpNF
+@[norm_cast] -- @[simp, norm_cast] -- Porting note: not in simpNF
 theorem coe_subset_coe : (s : Set α) ⊆ t ↔ (s : NonemptyInterval α) ≤ t :=
   (@coeHom α _).le_iff_le
 #align nonempty_interval.coe_subset_coe NonemptyInterval.coe_subset_coe
 
--- @[simp, norm_cast] -- Porting note: not in simpNF
+@[norm_cast] -- @[simp, norm_cast] -- Porting note: not in simpNF
 theorem coe_ssubset_coe : (s : Set α) ⊂ t ↔ s < t :=
   (@coeHom α _).lt_iff_lt
 #align nonempty_interval.coe_ssubset_coe NonemptyInterval.coe_ssubset_coe
@@ -351,7 +349,7 @@ theorem coe_injective : Injective ((↑) : NonemptyInterval α → Interval α) 
   WithBot.coe_injective
 #align interval.coe_injective Interval.coe_injective
 
--- @[simp, norm_cast] -- Porting note: not in simpNF
+@[norm_cast] -- @[simp, norm_cast] -- Porting note: not in simpNF
 theorem coe_inj {s t : NonemptyInterval α} : (s : Interval α) = t ↔ s = t :=
   WithBot.coe_inj
 #align interval.coe_inj Interval.coe_inj
@@ -475,12 +473,12 @@ instance setLike : SetLike (Interval α) α where
   coe := coeHom
   coe_injective' := coeHom.injective
 
--- @[simp, norm_cast] -- Porting note: not in simpNF
+@[norm_cast] -- @[simp, norm_cast] -- Porting note: not in simpNF
 theorem coe_subset_coe : (s : Set α) ⊆ t ↔ s ≤ t :=
   (@coeHom α _).le_iff_le
 #align interval.coe_subset_coe Interval.coe_subset_coe
 
--- @[simp, norm_cast] -- Porting note: not in simpNF
+@[norm_cast] -- @[simp, norm_cast] -- Porting note: not in simpNF
 theorem coe_sSubset_coe : (s : Set α) ⊂ t ↔ s < t :=
   (@coeHom α _).lt_iff_lt
 #align interval.coe_ssubset_coe Interval.coe_sSubset_coe

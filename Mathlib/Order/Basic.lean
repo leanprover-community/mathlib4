@@ -707,7 +707,7 @@ instance (α : Type _) [h : Nonempty α] : Nonempty αᵒᵈ :=
 instance (α : Type _) [h : Subsingleton α] : Subsingleton αᵒᵈ :=
   h
 
-instance le (α : Type _) [LE α] : LE αᵒᵈ :=
+instance (α : Type _) [LE α] : LE αᵒᵈ :=
   ⟨fun x y : α ↦ y ≤ x⟩
 
 instance (α : Type _) [LT α] : LT αᵒᵈ :=
