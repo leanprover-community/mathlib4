@@ -337,6 +337,10 @@ section lift
 
 variable {A : Type _} [Ring A] [Algebra ℝ A]
 
+-- Porting note: added for `liftAux` proof
+local instance {R A} [CommSemiring R] [Semiring A] [Algebra R A] : SMulCommClass R A A := by
+  infer_instance
+
 set_option synthInstance.etaExperiment true in
 /-- There is an alg_hom from `ℂ` to any `ℝ`-algebra with an element that squares to `-1`.
 
@@ -352,10 +356,8 @@ def liftAux (I' : A) (hf : I' * I' = -1) : ℂ →ₐ[ℝ] A :=
       rw [add_mul, mul_add, mul_add, add_comm _ (y₁ • I' * y₂ • I'), add_add_add_comm]
       congr 1
       -- equate "real" and "imaginary" parts
-      · -- Porting note: Replaced `smul_mul_smul` with
-        -- `Algebra.smul_mul_assoc, Algebra.mul_smul_comm, smul_smul`
-        rw [Algebra.smul_mul_assoc, Algebra.mul_smul_comm, smul_smul, hf, smul_neg,
-          ← Algebra.algebraMap_eq_smul_one, ← sub_eq_add_neg, ← RingHom.map_mul, ← RingHom.map_sub]
+      · rw [smul_mul_smul, hf, smul_neg, ← Algebra.algebraMap_eq_smul_one, ← sub_eq_add_neg, ←
+          RingHom.map_mul, ← RingHom.map_sub]
       · rw [Algebra.smul_def, Algebra.smul_def, Algebra.smul_def, ← Algebra.right_comm _ x₂, ←
           mul_assoc, ← add_mul, ← RingHom.map_mul, ← RingHom.map_mul, ← RingHom.map_add]
 #align complex.lift_aux Complex.liftAux
