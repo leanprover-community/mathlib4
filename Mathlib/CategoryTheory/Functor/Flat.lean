@@ -542,17 +542,16 @@ noncomputable instance lanPreservesFiniteLimitsOfPreservesFiniteLimits (F : C �
 set_option linter.uppercaseLean3 false in
 #align category_theory.Lan_preserves_finite_limits_of_preserves_finite_limits CategoryTheory.lanPreservesFiniteLimitsOfPreservesFiniteLimits
 
-set_option pp.universes true
+-- porting note: these were all inferred in mathlib3
+-- see https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/typeclass.20inference.20failure/near/354843721
+instance : ReflectsLimits (forget (Type u₁)) := Limits.idReflectsLimits
+instance : PreservesColimits (forget (Type u₁)) := Limits.idPreservesColimits
+instance : PreservesLimits (forget (Type u₁)) := Limits.idPreservesLimits
+
 theorem flat_iff_lan_flat (F : C ⥤ D) :
     RepresentablyFlat F ↔ RepresentablyFlat (lan F.op : _ ⥤ Dᵒᵖ ⥤ Type u₁) :=
 --    ⟨λ H, by exactI category_theory.Lan_flat_of_flat (Type u₁) F, λ H,
-  ⟨fun H => by exact
-  -- porting note: this was `infer_instance` in mathlib3
-  let foo : ReflectsLimits.{u₁, u₁, u₁ + 1, u₁ + 1} (forget.{u₁ + 1, u₁, u₁} (Type u₁)) := Limits.idReflectsLimits
-  let moo : PreservesColimits.{u₁, u₁, u₁ + 1, u₁ + 1} (forget.{u₁ + 1, u₁, u₁} (Type u₁)) := Limits.idPreservesColimits.{u₁, u₁, u₁, u₁+1}
-  let bar : PreservesFilteredColimits.{u₁, u₁ + 1, u₁ + 1} (forget.{u₁ + 1, u₁, u₁} (Type u₁)) := PreservesColimits.preservesFilteredColimits.{u₁, u₁+1, u₁+1} (forget.{u₁+1, u₁, u₁} (Type u₁))
-  let baz : PreservesLimits.{u₁, u₁, u₁ + 1, u₁ + 1} (forget.{u₁ + 1, u₁, u₁} (Type u₁)) := Limits.idPreservesLimits.{u₁, u₁, u₁, u₁+1}
-  CategoryTheory.lan_flat_of_flat (Type u₁) F,
+  ⟨fun H => inferInstance,
   fun H => by
     skip
     haveI := preservesFiniteLimitsOfFlat (lan F.op : _ ⥤ Dᵒᵖ ⥤ Type u₁)
@@ -568,31 +567,28 @@ set_option linter.uppercaseLean3 false in
 -/
 noncomputable def preservesFiniteLimitsIffLanPreservesFiniteLimits (F : C ⥤ D) :
     PreservesFiniteLimits F ≃ PreservesFiniteLimits (lan F.op : _ ⥤ Dᵒᵖ ⥤ Type u₁) where
-  toFun _ :=
-    -- porting note: none of the four `let`s were needed in lean 3
-    let foo : ReflectsLimits.{u₁, u₁, u₁ + 1, u₁ + 1} (forget.{u₁ + 1, u₁, u₁} (Type u₁)) := Limits.idReflectsLimits
-    let moo : PreservesColimits.{u₁, u₁, u₁ + 1, u₁ + 1} (forget.{u₁ + 1, u₁, u₁} (Type u₁)) := Limits.idPreservesColimits.{u₁, u₁, u₁, u₁+1}
-    let bar : PreservesFilteredColimits.{u₁, u₁ + 1, u₁ + 1} (forget.{u₁ + 1, u₁, u₁} (Type u₁)) := PreservesColimits.preservesFilteredColimits.{u₁, u₁+1, u₁+1} (forget.{u₁+1, u₁, u₁} (Type u₁))
-    let baz : PreservesLimits.{u₁, u₁, u₁ + 1, u₁ + 1} (forget.{u₁ + 1, u₁, u₁} (Type u₁)) := Limits.idPreservesLimits.{u₁, u₁, u₁, u₁+1}
-    CategoryTheory.lanPreservesFiniteLimitsOfPreservesFiniteLimits.{u₁, u₁+1} (Type u₁) F
+  toFun _ := inferInstance
   invFun _ := by
     apply preservesFiniteLimitsOfPreservesFiniteLimitsOfSize.{u₁}
-    intros ; skip; apply preservesLimitOfLanPreservesLimit
+    intros
+    apply preservesLimitOfLanPreservesLimit
   left_inv x := by
     cases x;
-    -- porting note: commenting out a tactic which is now failing
-    --unfold preservesFiniteLimitsOfFlat
+    -- porting note: in mathlib3 we had `unfold preservesFiniteLimitsOfFlat`
+    -- but there was no `preservesFiniteLimitsOfFlat` in the goal! Experimentation
+    -- indicates that it was doing the same as `dsimp only`
     dsimp only [preservesFiniteLimitsOfPreservesFiniteLimitsOfSize]; congr
-    sorry
+    -- porting note: next line wasn't necessary in lean 3
+    apply Subsingleton.elim
   right_inv x := by
     cases x
-    -- porting note: commenting out a tactic which is now failing
-    --unfold preservesFiniteLimitsOfFlat
+    simp only
     congr
     unfold
       CategoryTheory.lanPreservesFiniteLimitsOfPreservesFiniteLimits CategoryTheory.lanPreservesFiniteLimitsOfFlat
     dsimp only [preservesFiniteLimitsOfPreservesFiniteLimitsOfSize]; congr
-    sorry
+    -- porting note: next line wasn't necessary in lean 3
+    apply Subsingleton.elim
 set_option linter.uppercaseLean3 false in
 #align category_theory.preserves_finite_limits_iff_Lan_preserves_finite_limits CategoryTheory.preservesFiniteLimitsIffLanPreservesFiniteLimits
 
