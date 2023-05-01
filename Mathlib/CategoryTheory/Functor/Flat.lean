@@ -398,6 +398,9 @@ noncomputable def lanEvaluationIsoColim (F : C ⥤ D) (X : D)
       -- porting note: was `ext` in lean 3
       apply colimit.hom_ext
       intro j
+      -- **Explanation**
+      -- Overview of problem: `simp` has changed behaviour. I've narrowed it down
+      -- to a change in the type of `lan_map_app`.
       /-
       Lean 4 : ⊢ colimit.ι (Lan.diagram F G X) j ≫
     (lan F ⋙ (evaluation D E).obj X).map i ≫ ((fun G ↦ Functor.mapIso colim (Iso.refl (Lan.diagram F G X))) H).hom =
@@ -420,6 +423,7 @@ noncomputable def lanEvaluationIsoColim (F : C ⥤ D) (X : D)
       rw [whiskeringLeft_obj_map]
       rw [lan_map_app]
       rw [colimit.ι_desc_assoc]
+      rw [Lan.equiv]
       /-
       Lean 4 : ⊢ { pt := colimit (Lan.diagram F H X),
             ι :=
@@ -455,13 +459,11 @@ noncomputable def lanEvaluationIsoColim (F : C ⥤ D) (X : D)
   --    simp only [Functor.comp_map, colimit.ι_desc_assoc, Functor.mapIso_refl, evaluation_obj_map,
   --      whiskeringLeft_obj_map, Category.comp_id, lan_map_app, Category.assoc]
 
-      have bar : ((Lan.equiv F H (Lan.loc F H)) (𝟙 (Lan.loc F H))).app j.left =
+      erw [show ((Lan.equiv F H (Lan.loc F H)) (𝟙 (Lan.loc F H))).app j.left =
         colimit.ι (Lan.diagram F H (F.obj j.left))
-        (CostructuredArrow.mk (𝟙 (F.obj j.left))) := sorry
+        (CostructuredArrow.mk (𝟙 (F.obj j.left))) by apply Category.comp_id]
       -- **TODO** change in behaviour of `lan_map_app` constructed by `simps`
-      -- and I cannot fill in this sorry. See
-      -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/change.20in.20behaviour.20with.20.60simps.60/near/354350606
-      erw [bar]
+      -- See https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/change.20in.20behaviour.20with.20.60simps.60/near/354350606
       /-
       Lean 4 : ⊢ i.app j.left ≫
 
