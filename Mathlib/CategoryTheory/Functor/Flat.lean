@@ -246,7 +246,7 @@ theorem uniq {K : J ⥤ C} {c : Cone K} (hc : IsLimit c) (s : Cone (K ⋙ F))
   let α₁ : toDiagram (F.mapCone c) ⋙ map f₁ ⟶ toDiagram s :=
     { -- porting note: this proof uses `toDiagram_obj` and
       -- breaks if `@[simps]` is changed to `@[simps!]`
-      -- in the definition of `toDiagram
+      -- in the definition of `toDiagram`
       app := fun X => eqToHom (by simp [← h₁])
       naturality := fun j₁ j₂ φ => by
         ext
