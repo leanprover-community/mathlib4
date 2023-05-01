@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Anne Baanen, Mario Carneiro
+Authors: Anne Baanen, Mario Carneiro, Alex J. Best
 -/
 
 import Lean
@@ -55,7 +55,7 @@ by simp_rw [h1, h2]
 ```
 -/
 elab s:"simp_rw " rws:rwRuleSeq g:location ? : tactic => do
-  evalTactic (← `(tactic| simp%$s only))
+  evalTactic (← `(tactic| simp%$s only $g ?))
   withSimpRWRulesSeq s rws fun symm term => do
     evalTactic (← match term with
     | `(term| $e:term) =>
