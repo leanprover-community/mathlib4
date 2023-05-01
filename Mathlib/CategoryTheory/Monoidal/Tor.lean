@@ -43,39 +43,51 @@ variable (C)
 
 /-- We define `Tor C n : C ⥤ C ⥤ C` by left-deriving in the second factor of `(X, Y) ↦ X ⊗ Y`. -/
 @[simps]
-def tor (n : ℕ) : C ⥤ C ⥤ C where
+def Tor (n : ℕ) : C ⥤ C ⥤ C where
   obj X := Functor.leftDerived ((tensoringLeft C).obj X) n
-  map X Y f := NatTrans.leftDerived ((tensoringLeft C).map f) n
-  map_id' X := by rw [(tensoring_left C).map_id, nat_trans.left_derived_id]
-  map_comp' X Y Z f g := by rw [(tensoring_left C).map_comp, nat_trans.left_derived_comp]
-#align category_theory.Tor CategoryTheory.tor
+  map f := NatTrans.leftDerived ((tensoringLeft C).map f) n
+set_option linter.uppercaseLean3 false in
+#align category_theory.Tor CategoryTheory.Tor
 
 /-- An alternative definition of `Tor`, where we left-derive in the first factor instead. -/
-@[simps]
-def tor' (n : ℕ) : C ⥤ C ⥤ C :=
+@[simps! obj_obj]
+def Tor' (n : ℕ) : C ⥤ C ⥤ C :=
   Functor.flip
     { obj := fun X => Functor.leftDerived ((tensoringRight C).obj X) n
-      map := fun X Y f => NatTrans.leftDerived ((tensoringRight C).map f) n
-      map_id' := fun X => by rw [(tensoring_right C).map_id, nat_trans.left_derived_id]
-      map_comp' := fun X Y Z f g => by
-        rw [(tensoring_right C).map_comp, nat_trans.left_derived_comp] }
-#align category_theory.Tor' CategoryTheory.tor'
+      map := fun f => NatTrans.leftDerived ((tensoringRight C).map f) n }
+set_option linter.uppercaseLean3 false in
+#align category_theory.Tor' CategoryTheory.Tor'
+
+-- porting note: the `checkType` linter complains about the automatically generated
+-- lemma `Tor'_map_app`, but not about this one
+@[simp]
+lemma Tor'_map_app' (n : ℕ) {X Y : C} (f : X ⟶ Y) (Z : C) :
+    ((Tor' C n).map f).app Z = (Functor.leftDerived ((tensoringRight C).obj Z) n).map f := by
+  rfl
+
+-- porting note: this specific lemma was added because otherwise the internals of
+-- `NatTrans.leftDerived` leaks into the RHS (it was already so in mathlib)
+@[simp]
+lemma Tor'_obj_map (n : ℕ) {X Y : C} (Z : C) (f : X ⟶ Y) :
+    ((Tor' C n).obj Z).map f = (NatTrans.leftDerived ((tensoringRight C).map f) n).app Z := rfl
 
 open ZeroObject
 
 /-- The higher `Tor` groups for `X` and `Y` are zero if `Y` is projective. -/
-def torSuccOfProjective (X Y : C) [Projective Y] (n : ℕ) : ((tor C (n + 1)).obj X).obj Y ≅ 0 :=
+def torSuccOfProjective (X Y : C) [Projective Y] (n : ℕ) : ((Tor C (n + 1)).obj X).obj Y ≅ 0 :=
   ((tensoringLeft C).obj X).leftDerivedObjProjectiveSucc n Y
+set_option linter.uppercaseLean3 false in
 #align category_theory.Tor_succ_of_projective CategoryTheory.torSuccOfProjective
 
 /-- The higher `Tor'` groups for `X` and `Y` are zero if `X` is projective. -/
-def tor'SuccOfProjective (X Y : C) [Projective X] (n : ℕ) : ((tor' C (n + 1)).obj X).obj Y ≅ 0 := by
+def tor'SuccOfProjective (X Y : C) [Projective X] (n : ℕ) : ((Tor' C (n + 1)).obj X).obj Y ≅ 0 := by
   -- This unfortunately needs a manual `dsimp`, to avoid a slow unification problem.
-  dsimp only [Tor', functor.flip]
-  exact ((tensoring_right C).obj Y).leftDerivedObjProjectiveSucc n X
+  dsimp only [Tor', Functor.flip]
+  exact ((tensoringRight C).obj Y).leftDerivedObjProjectiveSucc n X
+set_option linter.uppercaseLean3 false in
 #align category_theory.Tor'_succ_of_projective CategoryTheory.tor'SuccOfProjective
 
 end CategoryTheory
 
-assert_not_exists Module.abelian
-
+-- porting note: commented the following line
+--assert_not_exists Module.abelian
