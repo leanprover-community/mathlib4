@@ -12,6 +12,9 @@ import Mathlib.Data.Set.Intervals.Basic
 import Mathlib.Data.Set.Lattice
 import Mathlib.Data.SetLike.Basic
 import Mathlib.Init.Data.Prod
+import Mathlib.Tactic.LibrarySearch
+
+set_option autoImplicit false
 
 /-!
 # Order intervals
@@ -673,12 +676,17 @@ section CompleteLattice
 
 variable [CompleteLattice α]
 
+-- Porting note: (TODO) The API around `OrderDual` seems very sketchy to me.
+-- I used this helper lemma in the proof below but, somehow it seems that's
+-- just an indication that the API does not work. In mathlib3, it would automatically do stuff
+-- (this lemma should probably be removed again, once things work)
+theorem OrderDual.le_def (x y : αᵒᵈ) [h : LE α] : (OrderDual.le α).le x y ↔ h.le y x := by rfl
+
 noncomputable instance completeLattice [@DecidableRel α (· ≤ ·)] :
     CompleteLattice (Interval α) := by
   classical
   exact
-      { Interval.lattice,
-        Interval.boundedOrder with
+      { Interval.lattice, Interval.boundedOrder with
         supₛ := fun S =>
           if h : S ⊆ {⊥} then ⊥
           else
@@ -731,22 +739,43 @@ noncomputable instance completeLattice [@DecidableRel α (· ≤ ·)] :
             let f := fun (s : NonemptyInterval α) (ha : ↑s ∈ s₁) => s.toProd.fst
             exact WithBot.coe_le_coe.2 ⟨le_supᵢ₂ (f := f) s ha, infᵢ₂_le s ha⟩
           · exact bot_le
-        le_infₛ := fun S s ha => by
+        le_infₛ := by
+          intro S s ha
           cases s with
           | none => exact bot_le
           | some s =>
             dsimp only -- Porting note: added
             split_ifs with h
-            · exact
+            . exact
                 WithBot.some_le_some.2
                   ⟨supᵢ₂_le fun t hb => (WithBot.coe_le_coe.1 <| ha _ hb).1,
                     le_infᵢ₂ fun t hb => (WithBot.coe_le_coe.1 <| ha _ hb).2⟩
-            rw [not_and_or, Classical.not_not] at h
-            rcases h with h | h
-            · exact ha _ h
-            cases h fun t hb c hc =>
-                (WithBot.coe_le_coe.1 <| ha _ hb).1.trans <|
-                  s.fst_le_snd.trans (WithBot.coe_le_coe.1 <| ha _ hc).2 }
+            · rw [not_and_or, not_not] at h
+              rcases h with h | h
+              · exact ha _ h
+              · -- Porting note: This part has been redone, since the original
+                -- mathlib3 proof had problems with goint from `toProd` to
+                -- `toDualProd`. Original mathport output:
+                -- cases h fun t hb c hc =>
+                --   (WithBot.coe_le_coe.1 <| ha _ hb).1.trans <|
+                --     s.fst_le_snd.trans (WithBot.coe_le_coe.1 <| ha _ hc).2 }
+                exfalso
+                apply h
+                intro b hb c hc
+                have h₁ := (WithBot.coe_le_coe.1 <| ha _ hb).1
+                have h₂ := (WithBot.coe_le_coe.1 <| ha _ hc).2
+                have h := (s.fst_le_snd.trans h₂)
+                clear h₂
+                have h₃ : b.toProd.fst ≤ s.toProd.fst
+                · repeat rw [NonemptyInterval.toDualProd_apply] at h₁
+                  dsimp at h₁
+                  -- Porting note: (TODO): Why does this work the way it does.
+                  -- This next proof step looks somehow very sketchy to me!
+                  -- I beleive the API around duals might hav a problem.
+                  rw [OrderDual.le_def] at h₁
+                  exact h₁
+                exact h₃.trans h
+  }
 
 @[simp, norm_cast]
 theorem coe_infₛ [@DecidableRel α (· ≤ ·)] (S : Set (Interval α)) :
