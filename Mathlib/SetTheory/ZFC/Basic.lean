@@ -1053,7 +1053,7 @@ prefix:110 "⋃₀ " => ZFSet.unionₛ
 /-- The intersection operator, the collection of elements in all of the elements of a ZFC set. We
 special-case `⋂₀ ∅ = ∅`. -/
 noncomputable def interₛ (x : ZFSet) : ZFSet := by
-   classical exact dite x.Nonempty (fun h => ZFSet.sep (fun y => ∀ z ∈ x, y ∈ z) h.some) fun _ => ∅
+   classical exact if h : x.Nonempty then ZFSet.sep (fun y => ∀ z ∈ x, y ∈ z) h.some else ∅
 #align Set.sInter ZFSet.interₛ
 
 @[inherit_doc]
@@ -1066,8 +1066,7 @@ theorem mem_unionₛ {x y : ZFSet.{u}} : y ∈ ⋃₀ x ↔ ∃ z ∈ x, y ∈ z
       ⟨fun ⟨z, h⟩ => ⟨⟦z⟧, h⟩, fun ⟨z, h⟩ => Quotient.inductionOn z (fun z h => ⟨z, h⟩) h⟩
 #align Set.mem_sUnion ZFSet.mem_unionₛ
 
-theorem mem_interₛ {x y : ZFSet} (h : x.Nonempty) : y ∈ ⋂₀ x ↔ ∀ z ∈ x, y ∈ z :=
-  by
+theorem mem_interₛ {x y : ZFSet} (h : x.Nonempty) : y ∈ ⋂₀ x ↔ ∀ z ∈ x, y ∈ z := by
   rw [interₛ, dif_pos h]
   simp only [mem_toSet, mem_sep, and_iff_right_iff_imp]
   exact fun H => H _ h.some_mem
@@ -1081,12 +1080,10 @@ theorem unionₛ_empty : ⋃₀ (∅ : ZFSet.{u}) = ∅ :=
 #align Set.sUnion_empty ZFSet.unionₛ_empty
 
 @[simp]
-theorem interₛ_empty : ⋂₀ (∅ : ZFSet) = ∅ :=
-  dif_neg <| by simp
+theorem interₛ_empty : ⋂₀ (∅ : ZFSet) = ∅ := dif_neg <| by simp
 #align Set.sInter_empty ZFSet.interₛ_empty
 
-theorem mem_of_mem_interₛ {x y z : ZFSet} (hy : y ∈ ⋂₀ x) (hz : z ∈ x) : y ∈ z :=
-  by
+theorem mem_of_mem_interₛ {x y z : ZFSet} (hy : y ∈ ⋂₀ x) (hz : z ∈ x) : y ∈ z := by
   rcases eq_empty_or_nonempty x with (rfl | hx)
   · exact (not_mem_empty z hz).elim
   · exact (mem_interₛ hx).1 hy z hz
@@ -1116,8 +1113,7 @@ theorem toSet_unionₛ (x : ZFSet.{u}) : (⋃₀ x).toSet = ⋃₀ (toSet '' x.t
   simp
 #align Set.to_set_sUnion ZFSet.toSet_unionₛ
 
-theorem toSet_interₛ {x : ZFSet.{u}} (h : x.Nonempty) : (⋂₀ x).toSet = ⋂₀ (toSet '' x.toSet) :=
-  by
+theorem toSet_interₛ {x : ZFSet.{u}} (h : x.Nonempty) : (⋂₀ x).toSet = ⋂₀ (toSet '' x.toSet) := by
   ext
   simp [mem_interₛ h]
 #align Set.to_set_sInter ZFSet.toSet_interₛ
