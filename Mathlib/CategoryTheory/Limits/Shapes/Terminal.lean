@@ -462,13 +462,50 @@ theorem hasInitial_of_hasTerminal_op [HasTerminal Cᵒᵖ] : HasInitial C :=
   (initialUnopOfTerminal terminalIsTerminal).hasInitial
 #align category_theory.limits.has_initial_of_has_terminal_op CategoryTheory.Limits.hasInitial_of_hasTerminal_op
 
+-- This instance is found by `inferInstance`:
+set_option trace.Meta.synthInstance true in
+example {J : Type _} [Category J] {C : Type _} [Category C] [HasTerminal C]
+    (s : Cone ((Functor.const J).obj (⊤_ C))) : Subsingleton (s.pt ⟶ ⊤_ C) :=
+  inferInstance
+  /-
+  [Meta.synthInstance] ✅ Subsingleton (s.pt ⟶ ⊤_ C) ▼
+  [] new goal Subsingleton (s.pt ⟶ ⊤_ C) ▶
+  [] ❌ apply @Preorder.Preorder.subsingleton_hom to Subsingleton (s.pt ⟶ ⊤_ C) ▶
+  [] ❌ apply instSubsingleton to Subsingleton (s.pt ⟶ ⊤_ C) ▶
+  [] ✅ apply @Unique.instSubsingleton to Subsingleton (s.pt ⟶ ⊤_ C) ▼
+    [tryResolve] ✅ Subsingleton (s.pt ⟶ ⊤_ C) ≟ Subsingleton (s.pt ⟶ ⊤_ C)
+    [] new goal Unique (s.pt ⟶ ⊤_ C) ▼
+      [instances] #[@CategoryTheory.Limits.uniqueToTerminal]
+  [] ✅ apply @CategoryTheory.Limits.uniqueToTerminal to Unique (s.pt ⟶ ⊤_ C) ▼
+    [tryResolve] ✅ Unique (s.pt ⟶ ⊤_ C) ≟ Unique (s.pt ⟶ ⊤_ C)
+  [resume] propagating Unique (s.pt ⟶ ⊤_ C) to subgoal Unique (s.pt ⟶ ⊤_ C) of Subsingleton (s.pt ⟶ ⊤_ C) ▼
+    [] size: 1
+  [] result Unique.instSubsingleton
+  -/
+set_option trace.Meta.synthInstance true in
 instance {J : Type _} [Category J] {C : Type _} [Category C] [HasTerminal C] :
     HasLimit ((CategoryTheory.Functor.const J).obj (⊤_ C)) :=
   HasLimit.mk
     { cone :=
         { pt := ⊤_ C
           π := { app := fun _ => terminal.from _ } }
-      isLimit := { lift := fun s => terminal.from _ } }
+      isLimit :=
+      { lift := fun s => terminal.from _,
+        fac := by
+          intro s j
+          simp only [terminal.comp_from, Functor.const_obj_obj]
+          -- However inside `simp` the same instance is not found?
+          simp only [eq_iff_true_of_subsingleton]
+          /-
+          [Meta.synthInstance] 💥 Subsingleton (s.pt ⟶ ⊤_ C) ▼
+          [] new goal Subsingleton (s.pt ⟶ ⊤_ C) ▼
+            [instances] #[@IsEmpty.instSubsingleton, @Unique.instSubsingleton, instSubsingleton, @Preorder.Preorder.subsingleton_hom]
+          [] 💥 apply @Preorder.Preorder.subsingleton_hom to Subsingleton (s.pt ⟶ ⊤_ C) ▼
+            [tryResolve] 💥 Subsingleton (s.pt ⟶ ⊤_ C) ≟ Subsingleton (?m.78176 ⟶ ?m.78177)
+          -/
+          -- `set_option synthInstance.etaExperiment false` allows this instance to be found again.
+          ,
+        uniq := sorry } }
 
 /-- The limit of the constant `⊤_ C` functor is `⊤_ C`. -/
 @[simps hom]
