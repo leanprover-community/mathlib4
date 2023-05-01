@@ -8,9 +8,9 @@ Authors: Johan Commelin
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.Category.Profinite.Basic
-import Mathbin.Topology.StoneCech
-import Mathbin.CategoryTheory.Preadditive.Projective
+import Mathlib.Topology.Category.Profinite.Basic
+import Mathlib.Topology.StoneCech
+import Mathlib.CategoryTheory.Preadditive.Projective
 
 /-!
 # Profinite sets have enough projectives
@@ -51,8 +51,7 @@ instance projective_ultrafilter (X : Type u) : Projective (of <| Ultrafilter X)
 #align Profinite.projective_ultrafilter Profinite.projective_ultrafilter
 
 /-- For any profinite `X`, the natural map `ultrafilter X → X` is a projective presentation. -/
-def projectivePresentation (X : Profinite.{u}) : ProjectivePresentation X
-    where
+def projectivePresentation (X : Profinite.{u}) : ProjectivePresentation X where
   P := of <| Ultrafilter X
   f := ⟨_, continuous_ultrafilter_extend id⟩
   Projective := Profinite.projective_ultrafilter X
