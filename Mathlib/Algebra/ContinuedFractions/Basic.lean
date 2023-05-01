@@ -54,7 +54,9 @@ variable (α : Type _)
 -- Porting note: Originally `protected structure GeneralizedContinuedFraction.Pair`
 /-- We collect a partial numerator `aᵢ` and partial denominator `bᵢ` in a pair `⟨aᵢ, bᵢ⟩`. -/
 structure GeneralizedContinuedFraction.Pair where
+  /-- Partial numerator -/
   a : α
+  /-- Partial denominator -/
   b : α
   deriving Inhabited
 #align generalized_continued_fraction.pair GeneralizedContinuedFraction.Pair
@@ -111,11 +113,13 @@ $$
 where `h` is called the *head term* or *integer part*, the `aᵢ` are called the
 *partial numerators* and the `bᵢ` the *partial denominators* of the gcf.
 We store the sequence of partial numerators and denominators in a sequence of
-GeneralizedContinuedFraction.Pairs `s`.
+`GeneralizedContinuedFraction.Pairs` `s`.
 For convenience, one often writes `[h; (a₀, b₀), (a₁, b₁), (a₂, b₂),...]`.
 -/
 structure GeneralizedContinuedFraction where
+  /-- Head term -/
   h : α
+  /-- Sequence of partial numerators and denominators. -/
   s : Stream'.Seq <| Pair α
 #align generalized_continued_fraction GeneralizedContinuedFraction
 
