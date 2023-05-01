@@ -1073,8 +1073,7 @@ theorem mem_interₛ {x y : ZFSet} (h : x.Nonempty) : y ∈ ⋂₀ x ↔ ∀ z �
 #align Set.mem_sInter ZFSet.mem_interₛ
 
 @[simp]
-theorem unionₛ_empty : ⋃₀ (∅ : ZFSet.{u}) = ∅ :=
-  by
+theorem unionₛ_empty : ⋃₀ (∅ : ZFSet.{u}) = ∅ := by
   ext
   simp
 #align Set.sUnion_empty ZFSet.unionₛ_empty
@@ -1745,11 +1744,15 @@ theorem mem_interₛ {x y : Class.{u}} (h : x.Nonempty) : y ∈ ⋂₀ x ↔ ∀
 #align Class.mem_sInter Class.mem_interₛ
 
 @[simp]
-theorem unionₛ_empty : ⋃₀ (∅ : Class.{u}) = (∅ : Class.{u}) :=
-  by
+theorem unionₛ_empty : ⋃₀ (∅ : Class.{u}) = (∅ : Class.{u}) := by
   ext
   simp
 #align Class.sUnion_empty Class.unionₛ_empty
+
+@[simp]
+theorem interₛ_empty : ⋂₀ (∅ : Class.{u}) = univ := by
+  rw [interₛ, classToCong_empty, Set.interₛ_empty, univ]
+#align Class.sInter_empty Class.interₛ_empty
 
 /-- An induction principle for sets. If every subset of a class is a member, then the class is
   universal. -/
