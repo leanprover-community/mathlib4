@@ -34,13 +34,11 @@ variable {α β γ δ : Type _} {ι : Sort _} {κ : ι → Sort _}
 
 We define intervals by the pair of endpoints `fst`, `snd`. To convert intervals to the set of
 elements between these endpoints, use the coercion `NonemptyInterval α → Set α`. -/
-@[ext]
--- porting note: `ext` generates different lemmas now:
+-- @[ext] -- porting note: generates the wrong lemma
 -- in lean3 it generated `x.toProd = y.toProd → x = y`, now it generates
 -- `(x.toProd.fst = y.toProd.fst) → (x.toProd.snd = y.toProd.snd) → x = y`.
 -- this is because in `Std.Tactic.Ext.withExtHyps`, the for-loop goes over
 -- `getStructureFieldsFlattened` instead of `getStructureFields`.
--- This seems intentional.
 structure NonemptyInterval (α : Type _) [LE α] extends Prod α α where
   fst_le_snd : fst ≤ snd
 #align nonempty_interval NonemptyInterval
@@ -51,22 +49,19 @@ section LE
 
 variable [LE α] {s t : NonemptyInterval α}
 
-theorem toProd_injective : Injective (toProd : NonemptyInterval α → α × α) := by
-  intro s t h
-  ext
-  · rw [h]
-  · rw [h]
+theorem toProd_injective : Injective (toProd : NonemptyInterval α → α × α) := fun s t h =>
+  by cases s; cases t; congr
 #align nonempty_interval.to_prod_injective NonemptyInterval.toProd_injective
 
 -- porting note: This is the manually written old ext-lemma as it was generated in mathlib3.
 -- Put them in here in case they are needed explicitely, but should be able to delete them later.
-@[deprecated NonemptyInterval.ext]
+@[deprecated]
 theorem ext' (s t : NonemptyInterval α) (h : s.toProd = t.toProd) : s = t := toProd_injective h
 #align nonempty_interval.ext NonemptyInterval.ext'
 
 -- porting note: This is the manually written old ext-lemma as it was generated in mathlib3.
 -- Put them in here in case they are needed explicitely, but should be able to delete them later.
-@[deprecated NonemptyInterval.ext_iff]
+@[deprecated]
 theorem ext_iff' (s t : NonemptyInterval α) : s = t ↔ s.toProd = t.toProd :=
   toProd_injective.eq_iff.symm
 #align nonempty_interval.ext_iff NonemptyInterval.ext_iff'
