@@ -157,6 +157,7 @@ import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 import Mathlib.Algebra.Homology.ShortComplex.SnakeLemma
 import Mathlib.Algebra.Homology.ShortExact.Preadditive
 import Mathlib.Algebra.Homology.Single
+import Mathlib.Algebra.Homology.Triangulated.Epsilon
 import Mathlib.Algebra.Homology.Triangulated.HomComplex
 import Mathlib.Algebra.Homology.Triangulated.Shift
 import Mathlib.Algebra.Hom.Ring
