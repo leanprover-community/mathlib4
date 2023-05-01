@@ -281,7 +281,21 @@ theorem uniq {K : J ⥤ C} {c : Cone K} (hc : IsLimit c) (s : Cone (K ⋙ F))
     intro j
     injection c₀.π.naturality (BiconeHom.left j) with _ e₁
     injection c₀.π.naturality (BiconeHom.right j) with _ e₂
-    sorry--porting note: was `simpa using e₁.symm.trans e₂`
+    -- Lean 3 proof now finished with `simpa using e₁.symm.trans e₂`
+    have foo := e₁.symm.trans e₂
+    -- simp at foo -- deterministic timeout :-(
+    -- the below job was done by `simp` in lean 3;
+    rw [biconeMk_map, biconeMk_map] at foo
+    -- `dsimp only` tames this in Lean 3 but not Lean 4
+    change (c₀.π.app Bicone.left).right ≫ (c₁.π.app j).right = (c₀.π.app Bicone.right).right ≫ (c₂.π.app j).right at foo
+    rw [Cones.postcompose_obj_π, Cones.postcompose_obj_π] at foo
+    rw [NatTrans.comp_app, whiskerRight_app,
+      eqToHom_map, Comma.comp_right,
+      Comma.eqToHom_right, eqToHom_refl, Category.comp_id] at foo
+    rw [NatTrans.comp_app, whiskerRight_app,
+      eqToHom_map, Comma.comp_right,
+      Comma.eqToHom_right, eqToHom_refl, Category.comp_id] at foo
+    exact foo
   have : c.extend g₁.right = c.extend g₂.right := by
     unfold Cone.extend
     congr 1
@@ -293,14 +307,15 @@ theorem uniq {K : J ⥤ C} {c : Cone K} (hc : IsLimit c) (s : Cone (K ⋙ F))
     g₁.right = hc.lift (c.extend g₁.right) := by
       apply hc.uniq (c.extend _)
       -- Porting note: was `by tidy`
-      sorry
+      intro j ; rfl -- was `by tidy` but `aesop` is timing out, possibly
+      -- for the same reason `simp at foo` is timing out above.
     _ = hc.lift (c.extend g₂.right) := by
       congr
     _ = g₂.right := by
       symm
       apply hc.uniq (c.extend _)
-      -- Porting note: was `by tidy`
-      sorry
+      -- Porting note: was `by tidy`; `aesop` is timing out
+      intro _ ; rfl
 
   -- Finally, since `fᵢ` factors through `F(gᵢ)`, the result follows.
   calc
