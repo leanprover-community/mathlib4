@@ -21,6 +21,7 @@ In this we prove various simple lemmas about intervals in `Π i, α i`. Closed i
 usually include the corresponding products as proper subsets.
 -/
 
+-- porting note: Added, since dot notation no longer works on `Function.update`
 open Function
 
 variable {ι : Type _} {α : ι → Type _}
