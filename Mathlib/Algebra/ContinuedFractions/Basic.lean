@@ -61,9 +61,7 @@ structure GeneralizedContinuedFraction.Pair where
 
 open GeneralizedContinuedFraction
 
-/- ./././Mathport/Syntax/Translate/Command.lean:224:11: unsupported: unusual advanced open style -/
 /-! Interlude: define some expected coercions and instances. -/
-
 
 namespace GeneralizedContinuedFraction.Pair
 
@@ -88,7 +86,7 @@ instance hasCoeToGeneralizedContinuedFractionPair : Coe (Pair α) (Pair β) :=
   ⟨map (↑)⟩
 #align generalized_continued_fraction.pair.has_coe_to_generalized_continued_fraction_pair GeneralizedContinuedFraction.Pair.hasCoeToGeneralizedContinuedFractionPair
 
-@[simp, norm_cast]
+@[simp] -- Porting note: was `norm_cast`
 theorem coe_to_generalized_continued_fraction_pair {a b : α} :
     (↑(Pair.mk a b) : Pair β) = Pair.mk (a : β) (b : β) := rfl
 #align generalized_continued_fraction.pair.coe_to_generalized_continued_fraction_pair GeneralizedContinuedFraction.Pair.coe_to_generalized_continued_fraction_pair
@@ -159,7 +157,6 @@ section coe
 
 /-! Interlude: define some expected coercions. -/
 
-
 -- Fix another type `β` which we will convert to.
 variable {β : Type _} [Coe α β]
 
@@ -169,7 +166,7 @@ instance hasCoeToGeneralizedContinuedFraction :
   ⟨fun g ↦ ⟨(g.h : β), (g.s.map (↑) : Stream'.Seq <| Pair β)⟩⟩
 #align generalized_continued_fraction.has_coe_to_generalized_continued_fraction GeneralizedContinuedFraction.hasCoeToGeneralizedContinuedFraction
 
-@[simp, norm_cast]
+@[simp] -- Porting note: was `norm_cast`
 theorem coe_to_generalizedContinuedFraction {g : GeneralizedContinuedFraction α} :
     (↑(g : GeneralizedContinuedFraction α) : GeneralizedContinuedFraction β) =
       ⟨(g.h : β), (g.s.map (↑) : Stream'.Seq <| Pair β)⟩ := rfl
@@ -265,7 +262,6 @@ variable {α}
 
 /-! Interlude: define some expected coercions. -/
 
-
 namespace ContinuedFraction
 
 variable [One α] [Zero α] [LT α]
@@ -310,7 +306,6 @@ directly evaluating the (infinite) fraction described by the gcf or using a recu
 For (r)cfs, these computations are equivalent as shown in
 `Algebra.ContinuedFractions.ConvergentsEquiv`.
 -/
-
 
 -- Fix a division ring for the computations.
 variable {K : Type _} [DivisionRing K]
