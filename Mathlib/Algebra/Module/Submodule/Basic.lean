@@ -409,9 +409,9 @@ variable {α β : Type _}
 instance [VAdd M α] : VAdd p α :=
   p.toAddSubmonoid.vadd
 
-instance vAddCommClass [VAdd M β] [VAdd α β] [VAddCommClass M α β] : VAddCommClass p α β :=
+instance vaddCommClass [VAdd M β] [VAdd α β] [VAddCommClass M α β] : VAddCommClass p α β :=
   ⟨fun a => (vadd_comm (a : M) : _)⟩
-#align submodule.vadd_comm_class Submodule.vAddCommClass
+#align submodule.vadd_comm_class Submodule.vaddCommClass
 
 instance [VAdd M α] [FaithfulVAdd M α] : FaithfulVAdd p α :=
   ⟨fun h => Subtype.ext <| eq_of_vadd_eq_vadd h⟩
@@ -650,8 +650,7 @@ instance toLinearOrderedCancelAddCommMonoid {M} [LinearOrderedCancelAddCommMonoi
     (S : Submodule R M) : LinearOrderedCancelAddCommMonoid S :=
   Subtype.coe_injective.linearOrderedCancelAddCommMonoid Subtype.val rfl (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
-#align submodule.to_linear_ordered_cancel_add_comm_monoid
-  Submodule.toLinearOrderedCancelAddCommMonoid
+#align submodule.to_linear_ordered_cancel_add_comm_monoid Submodule.toLinearOrderedCancelAddCommMonoid
 
 end OrderedMonoid
 
@@ -680,7 +679,7 @@ end Submodule
 
 namespace Submodule
 
-variable [DivisionRing S] [Semiring R] [AddCommMonoid M] [Module R M]
+variable [DivisionSemiring S] [Semiring R] [AddCommMonoid M] [Module R M]
 
 variable [SMul S R] [Module S M] [IsScalarTower S R M]
 

@@ -118,7 +118,6 @@ theorem forall₂_and_left {p : α → Prop} :
     simp only [forall₂_and_left l, forall₂_cons_left_iff, forall_mem_cons, and_assoc,
       @and_comm _ (p a), @and_left_comm _ (p a), exists_and_left]
     simp only [and_comm, and_assoc, and_left_comm, ← exists_and_right]
-
 #align list.forall₂_and_left List.forall₂_and_left
 
 @[simp]

@@ -161,7 +161,6 @@ theorem rightLim_le_leftLim (h : x < y) : rightLim f x ≤ leftLim f y := by
   calc
     rightLim f x ≤ f a := hf.rightLim_le xa
     _ ≤ leftLim f y := hf.le_leftLim ay
-
 #align monotone.right_lim_le_left_lim Monotone.rightLim_le_leftLim
 
 variable [TopologicalSpace α] [OrderTopology α]
