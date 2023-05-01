@@ -24,6 +24,8 @@ example (K L M : List α) (w : L.Disjoint M) (m : K ⊆ L) : True := by
 
 def bar (n : Nat) (x : String) : Nat × String := (n + x.length, x)
 
+set_option trace.Tactic.propose true in
+set_option trace.Meta.Tactic.solveByElim true in
 example (p : Nat × String) : True := by
   fail_if_success propose using p
   propose : Nat × String using p.1, p.2

@@ -7,7 +7,6 @@ import Mathlib.Tactic.Backtracking
 import Lean.Meta.Tactic.Apply
 import Mathlib.Lean.LocalContext
 import Mathlib.Tactic.Relation.Symm
-import Mathlib.Data.Sum.Basic
 import Mathlib.Tactic.LabelAttr
 import Mathlib.Control.Basic
 
@@ -17,12 +16,6 @@ import Mathlib.Control.Basic
 
 open Lean Meta Elab Tactic
 open Mathlib.Tactic
-
-/-- Run a monadic function on every element of a list,
-returning the list of elements on which the function fails, and the list of successful results. -/
-def List.tryAllM [Monad m] [Alternative m] (L : List α) (f : α → m β) : m (List α × List β) := do
-  let R ← L.mapM (fun a => (Sum.inr <$> f a) <|> (pure (Sum.inl a)))
-  return (R.filterMap Sum.getLeft, R.filterMap Sum.getRight)
 
 initialize registerTraceClass `Meta.Tactic.solveByElim
 
@@ -78,8 +71,6 @@ structure Config extends BacktrackConfig, ApplyConfig where
   This is only used when operating on a single goal. -/
   exfalso : Bool := true
   backtracking : Bool := true
-  /-- If we solve any "independent" goals, don't fail. -/
-  commitIndependentGoals : Bool := false
 
 instance : Coe Config BacktrackConfig := ⟨Config.toBacktrackConfig⟩
 
@@ -238,54 +229,23 @@ partial def solveByElim (cfg : Config) (lemmas : List (TermElabM Expr))
   match goals with
     | [g] =>
         try
-          run' [g]
+          run [g]
         catch e => do
           if cfg.exfalso then
             withTraceNode `Meta.Tactic.solveByElim
                 (fun _ => return m!"⏮️ starting over using `exfalso`") do
               let g ← g.exfalso
-              run' [g]
+              run [g]
           else
             throw e
     | _ =>
-      run goals goals
+      run goals
 where
   -- Run either backtracking search, or repeated application, on the list of goals.
-  run' : List MVarId → MetaM (List MVarId) := if cfg.backtracking then
-      backtrack cfg `Meta.Tactic.solveByElim (applyLemmas cfg lemmas ctx)
-    else
-      repeat1' (maxIters := cfg.maxDepth) (applyFirstLemma cfg lemmas ctx)
-  -- A wrapper around `run'`, which works on "independent" goals separately first,
-  -- to reduce backtracking.
-  -- TODO consider moving this functionality inside `backtrack`? It is completely generic.
-  run (goals remaining : List MVarId) : MetaM (List MVarId) := do
-    -- Partition the remaining goals into "independent" goals
-    -- (which should be solvable without affecting the solvability of other goals)
-    -- and all the others.
-    let (igs, ogs) ← remaining.partitionM (MVarId.independent? goals)
-    if igs.isEmpty then
-      -- If there are no independent goals, we solve all the goals together via backtracking search.
-      return (← run' remaining)
-    else
-      -- Invoke `run'` on each of the independent goals separately,
-      -- gathering the subgoals on which `run'` fails,
-      -- and the new subgoals generated from goals on which it is successful.
-      let (failed, newSubgoals') ← igs.tryAllM (fun g => run' [g])
-      let newSubgoals := newSubgoals'.join
-      -- Update the list of goals with respect to which we need to check independence.
-      let goals' := (← goals.filterM (fun g => do pure !(← g.isAssigned))) ++ newSubgoals
-      -- If `commitIndependentGoals` is `true`, we will return the the new goals
-      -- regardless of whether we can make further progress on the other goals.
-      if cfg.commitIndependentGoals && !newSubgoals.isEmpty then
-        return newSubgoals ++ failed ++ (← (run goals' ogs <|> pure ogs))
-      else if !failed.isEmpty then
-        -- If `commitIndependentGoals` is `false`, and we failed on any of the independent goals,
-        -- the overall failure is inevitable so we can stop here.
-        failure
-      else
-        -- Finally, having solved this batch of independent goals,
-        -- recurse (potentially now finding new independent goals).
-        return newSubgoals ++ (← run goals' ogs)
+  run : List MVarId → MetaM (List MVarId) := if cfg.backtracking then
+    backtrack cfg `Meta.Tactic.solveByElim (applyLemmas cfg lemmas ctx)
+  else
+    repeat1' (maxIters := cfg.maxDepth) (applyFirstLemma cfg lemmas ctx)
 
 /--
 A `MetaM` analogue of the `apply_rules` user tactic.
