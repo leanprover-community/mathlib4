@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 
 ! This file was ported from Lean 3 source module category_theory.limits.preserves.finite
-! leanprover-community/mathlib commit 024a4231815538ac739f52d08dd20a55da0d6b23
+! leanprover-community/mathlib commit 3974a774a707e2e06046a14c0eaef4654584fada
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/

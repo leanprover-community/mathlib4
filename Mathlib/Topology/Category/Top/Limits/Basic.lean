@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Scott Morrison, Mario Carneiro, Andrew Yang
 
 ! This file was ported from Lean 3 source module topology.category.Top.limits.basic
-! leanprover-community/mathlib commit 8195826f5c428fc283510bc67303dd4472d78498
+! leanprover-community/mathlib commit 178a32653e369dce2da68dc6b2694e385d484ef1
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
