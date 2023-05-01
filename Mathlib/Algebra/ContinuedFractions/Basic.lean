@@ -44,12 +44,10 @@ fractions. We hence just call them `ContinuedFractions` in the library.
 numerics, number theory, approximations, fractions
 -/
 
-
 -- Fix a carrier `α`.
 variable (α : Type _)
 
 /-!### Definitions-/
-
 
 -- Porting note: Originally `protected structure GeneralizedContinuedFraction.Pair`
 /-- We collect a partial numerator `aᵢ` and partial denominator `bᵢ` in a pair `⟨aᵢ, bᵢ⟩`. -/
@@ -94,7 +92,7 @@ instance : Coe (Pair α) (Pair β) :=
 
 @[simp, norm_cast]
 theorem coe_toPair {a b : α} :
-    ((Pair.mk a b : Pair α) : Pair β) = Pair.mk (a : β) (b : β) := rfl
+    (↑(Pair.mk a b) : Pair β) = Pair.mk (a : β) (b : β) := rfl
 #align generalized_continued_fraction.pair.coe_to_generalized_continued_fraction_pair GeneralizedContinuedFraction.Pair.coe_toPair
 
 end coe
@@ -115,11 +113,11 @@ We store the sequence of partial numerators and denominators in a sequence of
 `GeneralizedContinuedFraction.Pairs` `s`.
 For convenience, one often writes `[h; (a₀, b₀), (a₁, b₁), (a₂, b₂),...]`.
 -/
-@[ext]
+@[ext] -- Porting note: added to replace the manually written ext lemmas
 structure GeneralizedContinuedFraction where
   /-- Head term -/
   h : α
-  /-- Sequence of partial numerators and denominators. -/
+  /-- Sequence of partial numerator and denominator pairs. -/
   s : Stream'.Seq <| Pair α
 #align generalized_continued_fraction GeneralizedContinuedFraction
 
@@ -182,7 +180,7 @@ instance : Coe (GeneralizedContinuedFraction α) (GeneralizedContinuedFraction �
 
 @[simp, norm_cast]
 theorem coe_toGeneralizedContinuedFraction {g : GeneralizedContinuedFraction α} :
-    ((g : GeneralizedContinuedFraction α) : GeneralizedContinuedFraction β) =
+    (g : GeneralizedContinuedFraction β) =
       ⟨(g.h : β), (g.s.map (↑) : Stream'.Seq <| Pair β)⟩ := rfl
 #align generalized_continued_fraction.coe_to_generalized_continued_fraction GeneralizedContinuedFraction.coe_toGeneralizedContinuedFraction
 
@@ -246,12 +244,10 @@ instance toGeneralizedContinuedFraction :
   ⟨Subtype.val⟩
 #align simple_continued_fraction.has_coe_to_generalized_continued_fraction SimpleContinuedFraction.toGeneralizedContinuedFraction
 
--- Porting note: It seems that this has trully become a syntactic tautology.
---
+-- Porting note: Syntactic tautology due to change in `Coe` above.
 -- theorem coe_toGeneralizedContinuedFraction {s : SimpleContinuedFraction α} :
 --     (↑s : GeneralizedContinuedFraction α) = s.val := rfl
--- #align simple_continued_fraction.coe_to_generalized_continued_fraction
---   SimpleContinuedFraction.coe_toGeneralizedContinuedFraction
+-- #align simple_continued_fraction.coe_to_generalized_continued_fraction SimpleContinuedFraction.coe_toGeneralizedContinuedFraction
 #noalign simple_continued_fraction.coe_to_generalized_continued_fraction
 
 end SimpleContinuedFraction
@@ -297,11 +293,10 @@ instance : Coe (ContinuedFraction α) (SimpleContinuedFraction α) :=
   -- Porting note: originally `by unfold ContinuedFraction; infer_instance`
   ⟨Subtype.val⟩
 
--- Porting note: seems like this has become a true syntactic tautology.
+-- Porting note: Syntactic tautology due to change of `Coe` above.
 -- theorem coe_to_simpleContinuedFraction {c : ContinuedFraction α} :
 --     (↑c : SimpleContinuedFraction α) = c.val := rfl
--- #align continued_fraction.coe_to_simple_continued_fraction
---   ContinuedFraction.coe_to_simpleContinuedFraction
+-- #align continued_fraction.coe_to_simple_continued_fraction ContinuedFraction.coe_to_simpleContinuedFraction
 #noalign continued_fraction.coe_to_simple_continued_fraction
 
 /-- Lift a cf to a scf using the inclusion map. -/
@@ -309,7 +304,7 @@ instance : Coe (ContinuedFraction α) (GeneralizedContinuedFraction α) :=
   ⟨fun c ↦ c.val⟩
   -- Porting note: was `fun c ↦ ↑(↑c : SimpleContinuedFraction α)`
 
--- Porting note: Looks like this has become a true syntactic tautology
+-- Porting note: Syntactic tautology due to change of `Coe` above.
 -- theorem coe_toGeneralizedContinuedFraction {c : ContinuedFraction α} :
 --     (↑c : GeneralizedContinuedFraction α) = c.val := rfl
 -- #align continued_fraction.coe_to_generalized_continued_fraction ContinuedFraction.coe_toGeneralizedContinuedFraction
@@ -339,7 +334,6 @@ We start with the definition of the recurrence relation. Given a gcf `g`, for al
 `Aₙ, Bₙ` are called the *nth continuants*, `Aₙ` the *nth numerator*, and `Bₙ` the
 *nth denominator* of `g`. The *nth convergent* of `g` is given by `Aₙ / Bₙ`.
 -/
-
 
 /-- Returns the next numerator `Aₙ = bₙ₋₁ * Aₙ₋₁ + aₙ₋₁ * Aₙ₋₂`, where `predA` is `Aₙ₋₁`,
 `ppredA` is `Aₙ₋₂`, `a` is `aₙ₋₁`, and `b` is `bₙ₋₁`.
