@@ -306,11 +306,14 @@ instance : Coe (ContinuedFraction α) (SimpleContinuedFraction α) :=
 
 /-- Lift a cf to a scf using the inclusion map. -/
 instance : Coe (ContinuedFraction α) (GeneralizedContinuedFraction α) :=
-  ⟨fun c ↦ ↑(↑c : SimpleContinuedFraction α)⟩
+  ⟨fun c ↦ c.val⟩
+  -- Porting note: was `fun c ↦ ↑(↑c : SimpleContinuedFraction α)`
 
-theorem coe_toGeneralizedContinuedFraction {c : ContinuedFraction α} :
-    (↑c : GeneralizedContinuedFraction α) = c.val := rfl
-#align continued_fraction.coe_to_generalized_continued_fraction ContinuedFraction.coe_toGeneralizedContinuedFraction
+-- Porting note: Looks like this has become a true syntactic tautology
+-- theorem coe_toGeneralizedContinuedFraction {c : ContinuedFraction α} :
+--     (↑c : GeneralizedContinuedFraction α) = c.val := rfl
+-- #align continued_fraction.coe_to_generalized_continued_fraction ContinuedFraction.coe_toGeneralizedContinuedFraction
+#noalign continued_fraction.coe_to_generalized_continued_fraction
 
 end ContinuedFraction
 
