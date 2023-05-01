@@ -91,6 +91,21 @@ def applyMonos (t : Expr) (side : Side := .both) : MetaM (Expr × List MVarId) :
       `mono with ...` and include one or more of the subgoals in one of the following lists to
       encourage `mono` to use that list.\n{bestMatchTypes}"
 
+private def applyMonosAlternatives (side : Side) (goal : MVarId) :
+    MetaM (List (MetaM (List MVarId))) := withReducible do
+  trace[Tactic.mono] "running applyMonosAlts on {goal}"
+  let goal? ← dsimpGoal goal Monos.SimpContext false
+  trace[Tactic.mono] "dsimped to get {goal?.1}"
+  let goal ← match goal? with
+  | (some goal, _) => pure goal
+  | (none, _) => return []
+  let (_, goal) ← goal.introsP!
+  let t ← whnfR <|← instantiateMVars <|← goal.getType
+  trace[Tactic.mono] "looking at {t}"
+  let monos ← getMatchingMonos t side
+  trace[Tactic.mono] "matched:\n{monos.map (·.name) |>.toList}"
+  if monos.isEmpty then throwError "no monos apply"
+  return monos.toList.map (fun m ↦ do let (e, gs) ← applyMono t m; goal.assign e; pure gs)
 /-- !! Apply the `mono` tactic to a goal. -/
 def _root_.Lean.MVarId.mono (goal : MVarId) (side : Side := .both)
     (simpUsing : Option Simp.Context := none) (recurse : Bool := false) :
