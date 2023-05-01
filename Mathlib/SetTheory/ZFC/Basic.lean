@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 
 ! This file was ported from Lean 3 source module set_theory.zfc.basic
-! leanprover-community/mathlib commit 229f6f14a8b345d28ad17aaa1e9e79beb9e231da
+! leanprover-community/mathlib commit f0b3759a8ef0bd8239ecdaa5e1089add5feebe1a
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -1723,8 +1723,7 @@ theorem mem_unionₛ {x y : Class.{u}} : y ∈ ⋃₀ x ↔ ∃ z, z ∈ x ∧ y
     exact ⟨z, rfl, w, hwx, hwz⟩
 #align Class.mem_sUnion Class.mem_unionₛ
 
-theorem interₛ_apply {x : Class.{u}} {y : ZFSet.{u}} : (⋂₀ x) y ↔ ∀ z : ZFSet.{u}, x z → y ∈ z :=
-  by
+theorem interₛ_apply {x : Class.{u}} {y : ZFSet.{u}} : (⋂₀ x) y ↔ ∀ z : ZFSet.{u}, x z → y ∈ z := by
   refine' ⟨fun hxy z hxz => hxy _ ⟨z, rfl, hxz⟩, _⟩
   rintro H - ⟨z, rfl, hxz⟩
   exact H _ hxz
@@ -1735,14 +1734,12 @@ theorem coe_interₛ {x : ZFSet.{u}} (h : x.Nonempty) : ↑(⋂₀ x : ZFSet) = 
   Set.ext fun _ => (ZFSet.mem_interₛ h).trans interₛ_apply.symm
 #align Class.sInter_coe Class.coe_interₛ
 
-theorem mem_of_mem_interₛ {x y z : Class} (hy : y ∈ ⋂₀ x) (hz : z ∈ x) : y ∈ z :=
-  by
+theorem mem_of_mem_interₛ {x y z : Class} (hy : y ∈ ⋂₀ x) (hz : z ∈ x) : y ∈ z := by
   obtain ⟨w, rfl, hw⟩ := hy
   exact coe_mem.2 (hw z hz)
 #align Class.mem_of_mem_sInter Class.mem_of_mem_interₛ
 
-theorem mem_interₛ {x y : Class.{u}} (h : x.Nonempty) : y ∈ ⋂₀ x ↔ ∀ z, z ∈ x → y ∈ z :=
-  by
+theorem mem_interₛ {x y : Class.{u}} (h : x.Nonempty) : y ∈ ⋂₀ x ↔ ∀ z, z ∈ x → y ∈ z := by
   refine' ⟨fun hy z => mem_of_mem_interₛ hy, fun H => _⟩
   simp_rw [mem_def, interₛ_apply]
   obtain ⟨z, hz⟩ := h
