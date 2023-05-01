@@ -102,7 +102,7 @@ This function only calculates an approximation of this condition
 def independent? (L : List MVarId) (g : MVarId) : MetaM Bool := do
   let t ← instantiateMVars (← g.getType)
   if t.hasExprMVar then
-    -- The the goal's type contains other meta-variables,
+    -- If the goal's type contains other meta-variables,
     -- we conservatively say that `g` is not independent.
     return false
   if t.isProp then
