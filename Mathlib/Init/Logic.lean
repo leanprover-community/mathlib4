@@ -304,7 +304,11 @@ alias instDecidableOr ← Or.decidable
 alias instDecidableAnd ← And.decidable
 alias instDecidableNot ← Not.decidable
 alias instDecidableIff ← Iff.decidable
+alias instDecidableTrue ← decidableTrue
+alias instDecidableFalse ← decidableFalse
 
+#align decidable.true decidableTrue
+#align decidable.false decidableFalse
 #align or.decidable Or.decidable
 #align and.decidable And.decidable
 #align not.decidable Not.decidable
