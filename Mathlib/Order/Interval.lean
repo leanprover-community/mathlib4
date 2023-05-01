@@ -738,7 +738,7 @@ noncomputable instance completeLattice [@DecidableRel α (· ≤ ·)] :
           cases s with
           | none => exact bot_le
           | some s =>
-            dsimp only -- Porting note: added
+            dsimp -- Porting note: added
             split_ifs with h
             · exact WithBot.some_le_some.2
                 ⟨supᵢ₂_le fun t hb => (WithBot.coe_le_coe.1 <| ha _ hb).1,
@@ -746,7 +746,8 @@ noncomputable instance completeLattice [@DecidableRel α (· ≤ ·)] :
             · rw [not_and_or, not_not] at h
               rcases h with h | h
               · exact ha _ h
-              · -- Porting note: ungolfed, due to idenOriginal mathport output:
+              · -- Porting note: ungolfed, due to identification problems
+                -- between `toProd` and `toDualProd`. Original mathport output:
                 -- cases h fun t hb c hc =>
                 --   (WithBot.coe_le_coe.1 <| ha _ hb).1.trans <|
                 --     s.fst_le_snd.trans (WithBot.coe_le_coe.1 <| ha _ hc).2 }
