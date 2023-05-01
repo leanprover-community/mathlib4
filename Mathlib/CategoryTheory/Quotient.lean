@@ -226,6 +226,37 @@ theorem lift_map_functor_map {X Y : C} (f : X ⟶ Y) :
   simp
 #align category_theory.quotient.lift_map_functor_map CategoryTheory.Quotient.lift_map_functor_map
 
+variable {r}
+
+lemma natTrans_ext {F G : Quotient r ⥤ D} (τ₁ τ₂ : F ⟶ G)
+    (h : whiskerLeft (Quotient.functor r) τ₁ = whiskerLeft (Quotient.functor r) τ₂) : τ₁ = τ₂ :=
+  NatTrans.ext _ _ (by ext1 ⟨X⟩ ; exact NatTrans.congr_app h X)
+
+variable (r)
+
+/-- in order to define a natural transformation `F ⟶ G` with `F G : Quotient r ⥤ D`, it suffices
+to do so after precomposing with `Quotient.functor r`. -/
+def natTransLift {F G : Quotient r ⥤ D} (τ : Quotient.functor r ⋙ F ⟶ Quotient.functor r ⋙ G) :
+    F ⟶ G where
+  app := fun ⟨X⟩ => τ.app X
+  naturality := fun ⟨X⟩ ⟨Y⟩ => by
+    rintro ⟨f⟩
+    exact τ.naturality f
+
+@[simp]
+lemma natTransLift_app (F G : Quotient r ⥤ D)
+    (τ : Quotient.functor r ⋙ F ⟶ Quotient.functor r ⋙ G) (X : C) :
+  (natTransLift r τ).app ((Quotient.functor r).obj X) = τ.app X := rfl
+
+variable (D)
+
+instance full_whiskeringLeft_quotient_functor :
+    Full ((whiskeringLeft C _ D).obj (Quotient.functor r)) where
+  preimage := natTransLift r
+
+instance faithful_whiskeringLeft_quotient_functor :
+    Faithful ((whiskeringLeft C _ D).obj (Quotient.functor r)) := ⟨by apply natTrans_ext⟩
+
 end Quotient
 
 end CategoryTheory

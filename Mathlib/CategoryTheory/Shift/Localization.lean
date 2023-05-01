@@ -15,6 +15,7 @@ class IsCompatibleWithShift : Prop :=
 namespace IsCompatibleWithShift
 
 variable {A}
+
 lemma iff [W.IsCompatibleWithShift A]
     {X Y : C} (f : X ⟶ Y) (a : A) : W (f⟦a⟧') ↔ W f := by
   conv_rhs => rw [← @IsCompatibleWithShift.translate _ _ W A _ _ _ a]
@@ -28,19 +29,20 @@ end IsCompatibleWithShift
 end MorphismProperty
 
 variable (s : A → D ⥤ D) (i : ∀ a, L ⋙ s a ≅ shiftFunctor C a ⋙ L)
+
 lemma HasShift.localized'_aux :
   Nonempty (Full ((whiskeringLeft C D D).obj L)) ∧ Faithful ((whiskeringLeft C D D).obj L) :=
   ⟨⟨(inferInstance : Full ((Localization.whiskeringLeftFunctor' L W D)))⟩,
     (inferInstance : Faithful ((Localization.whiskeringLeftFunctor' L W D)))⟩
 
 noncomputable def HasShift.localized' :
-    HasShift D A := by
-  exact HasShift.induced L A s i (HasShift.localized'_aux L W)
+    HasShift D A :=
+  HasShift.induced L A s i (HasShift.localized'_aux L W)
 
 noncomputable def Functor.HasCommShift.localized' :
     letI : HasShift D A := HasShift.localized' L W A s i
     L.HasCommShift A :=
-  Functor.HasCommShift.of_induced _ _ _ _
+  Functor.HasCommShift.of_induced _ _ _ _ _
 
 noncomputable def HasShift.localized [W.IsCompatibleWithShift A] :
     HasShift D A :=
@@ -48,8 +50,18 @@ noncomputable def HasShift.localized [W.IsCompatibleWithShift A] :
     Localization.lift (shiftFunctor C a ⋙ L) (MorphismProperty.IsCompatibleWithShift.shiftFunctor_comp_inverts L W a) L)
     (fun _ => Localization.fac _ _ _)
 
+noncomputable def Functor.HasCommShift.localized [W.IsCompatibleWithShift A] :
+    @Functor.HasCommShift _ _ _ _ L A _ _ (HasShift.localized L W A) :=
+  Functor.HasCommShift.localized' _ _ _ _ _
+
+attribute [irreducible] HasShift.localized Functor.HasCommShift.localized
+
 noncomputable instance [W.IsCompatibleWithShift A] :
     HasShift W.Localization A :=
   HasShift.localized W.Q W A
+
+noncomputable instance [W.IsCompatibleWithShift A] :
+    W.Q.HasCommShift A :=
+  Functor.HasCommShift.localized W.Q W A
 
 end CategoryTheory

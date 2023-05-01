@@ -1,5 +1,6 @@
 import Mathlib.Algebra.Homology.Triangulated.HomComplex
-import Mathlib.CategoryTheory.Shift.Induced
+import Mathlib.Algebra.Homology.HomotopyCategory
+import Mathlib.CategoryTheory.Shift.Quotient
 
 open CategoryTheory Category Limits
 
@@ -153,9 +154,7 @@ namespace Functor
 variable {C D}
 variable (F : C ⥤ D) [Preadditive D] [F.Additive]
 
-attribute [local simp] Functor.map_zsmul HomologicalComplex.XIsoOfEq --eqToHom_map
---  CochainComplex.shiftFunctorZero_hom_app_f
---  CochainComplex.shiftFunctorZero_inv_app_f
+attribute [local simp] Functor.map_zsmul HomologicalComplex.XIsoOfEq
 
 def mapCochainComplexShiftIso (n : ℤ) :
     shiftFunctor _ n ⋙ F.mapHomologicalComplex (ComplexShape.up ℤ) ≅
@@ -205,3 +204,45 @@ lemma mapHomologicalComplex_commShiftIso_inv_app_f (K : CochainComplex C ℤ) (n
 end Functor
 
 end CategoryTheory
+
+namespace Homotopy
+
+variable {C}
+
+def shift {K L : CochainComplex C ℤ} {φ₁ φ₂ : K ⟶ L} (h : Homotopy φ₁ φ₂) (n : ℤ) :
+    Homotopy (φ₁⟦n⟧') (φ₂⟦n⟧') where
+  hom i j := CochainComplex.HomComplex.ε n • h.hom _ _
+  zero i j hij := by
+    dsimp
+    rw [h.zero, zsmul_zero]
+    intro hij'
+    apply hij
+    dsimp at hij' ⊢
+    linarith
+  comm := fun i => by
+    rw [dNext_eq _ (show (ComplexShape.up ℤ).Rel i (i+1) by simp)]
+    rw [prevD_eq _ (show (ComplexShape.up ℤ).Rel (i-1) i by simp)]
+    dsimp
+    simpa only [Preadditive.zsmul_comp, Preadditive.comp_zsmul, smul_smul,
+      CochainComplex.HomComplex.mul_ε_self, one_smul,
+      dNext_eq _ (show (ComplexShape.up ℤ).Rel (i+n) (i+1+n) by dsimp ; linarith),
+      prevD_eq _ (show (ComplexShape.up ℤ).Rel (i-1+n) (i+n) by dsimp ; linarith)]
+        using h.comm (i + n)
+
+end Homotopy
+
+namespace HomotopyCategory
+
+instance : (homotopic C (ComplexShape.up ℤ)).IsCompatibleWithShift ℤ :=
+  ⟨fun n _ _ _ _ ⟨h⟩ => ⟨h.shift n⟩⟩
+
+noncomputable instance hasShift :
+    HasShift (HomotopyCategory C (ComplexShape.up ℤ)) ℤ := by
+  dsimp only [HomotopyCategory]
+  infer_instance
+
+noncomputable instance hasCommShiftQuotient :
+    (HomotopyCategory.quotient C (ComplexShape.up ℤ)).HasCommShift ℤ :=
+  Quotient.functor_hasCommShift (homotopic C (ComplexShape.up ℤ)) ℤ
+
+end HomotopyCategory

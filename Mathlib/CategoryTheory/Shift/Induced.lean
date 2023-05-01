@@ -148,6 +148,8 @@ lemma shiftFunctor_of_induced (a : A) :
   shiftFunctor D a = s a := by
   rfl
 
+variable (A)
+
 @[simp]
 lemma shiftFunctorZero_hom_app_obj_of_induced (X : C) :
   letI := HasShift.induced F A s i hF
@@ -164,6 +166,8 @@ lemma shiftFunctorZero_inv_app_obj_of_induced (X : C) :
   letI := HasShift.induced F A s i
   simp only [ShiftMkCore.shiftFunctorZero_eq, HasShift.induced_zero_inv_app_obj]
 
+variable {A}
+
 @[simp]
 lemma shiftFunctorAdd_hom_app_obj_of_induced (a b : A) (X : C) :
   letI := HasShift.induced F A s i hF
@@ -177,19 +181,20 @@ lemma shiftFunctorAdd_hom_app_obj_of_induced (a b : A) (X : C) :
 
 @[simp]
 lemma induced_add_inv_app_obj (a b : A) (X : C) :
-  letI := HasShift.induced F A s i hF
-  (shiftFunctorAdd D a b).inv.app (F.obj X) =
-    (s b).map ((i a).hom.app X) ≫
-    (i b).hom.app ((shiftFunctor C a).obj X) ≫
-    F.map ((shiftFunctorAdd C a b).inv.app X) ≫
-    (i (a + b)).inv.app X := by
+    letI := HasShift.induced F A s i hF
+    (shiftFunctorAdd D a b).inv.app (F.obj X) =
+      (s b).map ((i a).hom.app X) ≫
+      (i b).hom.app ((shiftFunctor C a).obj X) ≫
+      F.map ((shiftFunctorAdd C a b).inv.app X) ≫
+      (i (a + b)).inv.app X := by
   letI := HasShift.induced F A s i
   simp only [ShiftMkCore.shiftFunctorAdd_eq, HasShift.induced_add_inv_app_obj]
 
+variable (A)
 
-lemma Functor.HasCommShift.of_induced :
-  letI := HasShift.induced F A s i hF
-  F.HasCommShift A := by
+def Functor.HasCommShift.of_induced :
+    letI := HasShift.induced F A s i hF
+    F.HasCommShift A := by
   letI := HasShift.induced F A s i hF
   exact ⟨
   { iso := fun a => (i a).symm
@@ -206,5 +211,10 @@ lemma Functor.HasCommShift.of_induced :
       erw [← Functor.map_comp_assoc, Iso.inv_hom_id_app, Functor.map_id,
         Category.id_comp, Iso.inv_hom_id_app_assoc, ←F.map_comp_assoc, Iso.hom_inv_id_app,
         F.map_id, Category.id_comp] }⟩
+
+lemma Functor.commShiftIso_eq_of_induced (a : A) :
+    letI := HasShift.induced F A s i hF
+    letI := Functor.HasCommShift.of_induced F A s i hF
+    F.commShiftIso a = (i a).symm := rfl
 
 end CategoryTheory
