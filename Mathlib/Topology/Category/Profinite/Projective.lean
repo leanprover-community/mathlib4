@@ -21,8 +21,8 @@ In this file we show that `Profinite` has enough projectives.
 
 Let `X` be a profinite set.
 
-* `Profinite.projective_ultrafilter`: the space `ultrafilter X` is a projective object
-* `Profinite.projective_presentation`: the natural map `ultrafilter X → X`
+* `Profinite.projective_ultrafilter`: the space `Ultrafilter X` is a projective object
+* `Profinite.projectivePresentation`: the natural map `Ultrafilter X → X`
   is a projective presentation
 
 -/
@@ -36,31 +36,35 @@ open CategoryTheory Function
 
 namespace Profinite
 
-instance projective_ultrafilter (X : Type u) : Projective (of <| Ultrafilter X)
-    where Factors Y Z f g hg := by
+set_option linter.uppercaseLean3 false
+
+instance projective_ultrafilter (X : Type u) : Projective (of <| Ultrafilter X) where
+  factors {Y Z} f g hg := by
     rw [epi_iff_surjective] at hg
-    obtain ⟨g', hg'⟩ := hg.has_right_inverse
+    obtain ⟨g', hg'⟩ := hg.hasRightInverse
     let t : X → Y := g' ∘ f ∘ (pure : X → Ultrafilter X)
     let h : Ultrafilter X → Y := Ultrafilter.extend t
     have hh : Continuous h := continuous_ultrafilter_extend _
     use ⟨h, hh⟩
-    apply faithful.map_injective (forget Profinite)
+    apply Faithful.map_injective (F := forget Profinite)
     simp only [forget_map_eq_coe, ContinuousMap.coe_mk, coe_comp]
-    refine' dense_range_pure.equalizer (g.continuous.comp hh) f.continuous _
-    rw [comp.assoc, ultrafilter_extend_extends, ← comp.assoc, hg'.comp_eq_id, comp.left_id]
+    convert denseRange_pure.equalizer (g.continuous.comp hh) f.continuous _
+     -- Porting note: same fix as in `Topology.Category.CompHaus.Projective`
+    let g'' : ContinuousMap Y Z := g
+    have : g'' ∘ g' = id := hg'.comp_eq_id
+    rw [comp.assoc, ultrafilter_extend_extends, ← comp.assoc, this, comp.left_id]
+    rfl
 #align Profinite.projective_ultrafilter Profinite.projective_ultrafilter
 
-/-- For any profinite `X`, the natural map `ultrafilter X → X` is a projective presentation. -/
+/-- For any profinite `X`, the natural map `Ultrafilter X → X` is a projective presentation. -/
 def projectivePresentation (X : Profinite.{u}) : ProjectivePresentation X where
-  P := of <| Ultrafilter X
+  p := of <| Ultrafilter X
   f := ⟨_, continuous_ultrafilter_extend id⟩
-  Projective := Profinite.projective_ultrafilter X
-  Epi :=
-    ConcreteCategory.epi_of_surjective _ fun x =>
-      ⟨(pure x : Ultrafilter X), congr_fun (ultrafilter_extend_extends (𝟙 X)) x⟩
+  projective := Profinite.projective_ultrafilter X
+  epi := ConcreteCategory.epi_of_surjective _ fun x =>
+    ⟨(pure x : Ultrafilter X), congr_fun (ultrafilter_extend_extends (𝟙 X)) x⟩
 #align Profinite.projective_presentation Profinite.projectivePresentation
 
 instance : EnoughProjectives Profinite.{u} where presentation X := ⟨projectivePresentation X⟩
 
 end Profinite
-
