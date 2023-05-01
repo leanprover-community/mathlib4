@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 
 ! This file was ported from Lean 3 source module ring_theory.finiteness
-! leanprover-community/mathlib commit fa78268d4d77cb2b2fbc89f0527e2e7807763780
+! leanprover-community/mathlib commit c813ed7de0f5115f956239124e9b30f3a621966f
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -447,7 +447,7 @@ theorem fg_iff_compact (s : Submodule R M) : s.Fg ↔ CompleteLattice.IsCompactE
       -- Porting note: had to split this out of the `obtain`
       have := Finset.subset_image_iff.mp huspan
       obtain ⟨t, ⟨-, rfl⟩⟩ := this
-      rw [Finset.sup_finset_image, Function.comp.left_id, Finset.sup_eq_supᵢ, supr_rw, ←
+      rw [Finset.sup_image, Function.comp.left_id, Finset.sup_eq_supᵢ, supr_rw, ←
         span_eq_supᵢ_of_singleton_spans, eq_comm] at ssup
       exact ⟨t, ssup⟩
 #align submodule.fg_iff_compact Submodule.fg_iff_compact

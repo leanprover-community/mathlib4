@@ -31,6 +31,7 @@ import Mathlib.Algebra.BigOperators.RingEquiv
 import Mathlib.Algebra.Bounds
 import Mathlib.Algebra.Category.GroupCat.Basic
 import Mathlib.Algebra.Category.GroupCat.Preadditive
+import Mathlib.Algebra.Category.GroupCat.ZModuleEquivalence
 import Mathlib.Algebra.Category.GroupCat.Zero
 import Mathlib.Algebra.Category.ModuleCat.Basic
 import Mathlib.Algebra.Category.ModuleCat.EpiMono
@@ -318,6 +319,7 @@ import Mathlib.AlgebraicTopology.DoldKan.Notations
 import Mathlib.AlgebraicTopology.DoldKan.PInfty
 import Mathlib.AlgebraicTopology.DoldKan.Projections
 import Mathlib.AlgebraicTopology.DoldKan.SplitSimplicialObject
+import Mathlib.AlgebraicTopology.ExtraDegeneracy
 import Mathlib.AlgebraicTopology.MooreComplex
 import Mathlib.AlgebraicTopology.Nerve
 import Mathlib.AlgebraicTopology.SimplexCategory
@@ -400,6 +402,7 @@ import Mathlib.CategoryTheory.Abelian.Images
 import Mathlib.CategoryTheory.Abelian.NonPreadditive
 import Mathlib.CategoryTheory.Abelian.Opposite
 import Mathlib.CategoryTheory.Abelian.Subobject
+import Mathlib.CategoryTheory.Abelian.Transfer
 import Mathlib.CategoryTheory.Action
 import Mathlib.CategoryTheory.Adjunction.AdjointFunctorTheorems
 import Mathlib.CategoryTheory.Adjunction.Basic
@@ -580,6 +583,7 @@ import Mathlib.CategoryTheory.Localization.Predicate
 import Mathlib.CategoryTheory.Monad.Adjunction
 import Mathlib.CategoryTheory.Monad.Algebra
 import Mathlib.CategoryTheory.Monad.Basic
+import Mathlib.CategoryTheory.Monad.Coequalizer
 import Mathlib.CategoryTheory.Monad.Kleisli
 import Mathlib.CategoryTheory.Monad.Limits
 import Mathlib.CategoryTheory.Monad.Products
@@ -1249,6 +1253,7 @@ import Mathlib.FieldTheory.Finiteness
 import Mathlib.FieldTheory.MvPolynomial
 import Mathlib.FieldTheory.PerfectClosure
 import Mathlib.FieldTheory.Subfield
+import Mathlib.FieldTheory.Tower
 import Mathlib.Geometry.Manifold.ChartedSpace
 import Mathlib.Geometry.Manifold.LocalInvariantProperties
 import Mathlib.GroupTheory.Abelianization
@@ -1450,6 +1455,7 @@ import Mathlib.LinearAlgebra.Pi
 import Mathlib.LinearAlgebra.Prod
 import Mathlib.LinearAlgebra.Projection
 import Mathlib.LinearAlgebra.ProjectiveSpace.Basic
+import Mathlib.LinearAlgebra.ProjectiveSpace.Independence
 import Mathlib.LinearAlgebra.Quotient
 import Mathlib.LinearAlgebra.QuotientPi
 import Mathlib.LinearAlgebra.Ray
@@ -2050,6 +2056,7 @@ import Mathlib.Util.IncludeStr
 import Mathlib.Util.LongNames
 import Mathlib.Util.MemoFix
 import Mathlib.Util.Pickle
+import Mathlib.Util.Qq
 import Mathlib.Util.Syntax
 import Mathlib.Util.SynthesizeUsing
 import Mathlib.Util.Tactic
