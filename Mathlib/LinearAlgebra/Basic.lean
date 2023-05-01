@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Fréd�
   Heather Macbeth
 
 ! This file was ported from Lean 3 source module linear_algebra.basic
-! leanprover-community/mathlib commit b363547b3113d350d053abdf2884e9850a56b205
+! leanprover-community/mathlib commit 9d684a893c52e1d6692a504a118bfccbae04feeb
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -1371,7 +1371,7 @@ theorem le_ker_iff_map [RingHomSurjective τ₁₂] {f : F} {p : Submodule R M} 
 #align linear_map.le_ker_iff_map LinearMap.le_ker_iff_map
 
 theorem ker_codRestrict {τ₂₁ : R₂ →+* R} (p : Submodule R M) (f : M₂ →ₛₗ[τ₂₁] M) (hf) :
-    ker (codRestrict p f hf) = ker f := by rw [ker, comap_codRestrict, map_bot]; rfl
+    ker (codRestrict p f hf) = ker f := by rw [ker, comap_codRestrict, Submodule.map_bot]; rfl
 #align linear_map.ker_cod_restrict LinearMap.ker_codRestrict
 
 theorem range_codRestrict {τ₂₁ : R₂ →+* R} [RingHomSurjective τ₂₁] (p : Submodule R M)

@@ -4,11 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 
 ! This file was ported from Lean 3 source module order.hom.lattice
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
+! leanprover-community/mathlib commit 9d684a893c52e1d6692a504a118bfccbae04feeb
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Data.Finset.Lattice
 import Mathlib.Order.Hom.Bounded
 import Mathlib.Order.SymmDiff
 
@@ -261,20 +260,6 @@ instance (priority := 100) OrderIsoClass.toBoundedLatticeHomClass [Lattice α] [
     BoundedLatticeHomClass F α β :=
   { OrderIsoClass.toLatticeHomClass, OrderIsoClass.toBoundedOrderHomClass with }
 #align order_iso_class.to_bounded_lattice_hom_class OrderIsoClass.toBoundedLatticeHomClass
-
-@[simp]
-theorem map_finset_sup [SemilatticeSup α] [OrderBot α] [SemilatticeSup β] [OrderBot β]
-    [SupBotHomClass F α β] (f : F) (s : Finset ι) (g : ι → α) : f (s.sup g) = s.sup (f ∘ g) :=
-  Finset.cons_induction_on s (map_bot f) fun i s _ h => by
-    rw [Finset.sup_cons, Finset.sup_cons, map_sup, h, Function.comp_apply]
-#align map_finset_sup map_finset_sup
-
-@[simp]
-theorem map_finset_inf [SemilatticeInf α] [OrderTop α] [SemilatticeInf β] [OrderTop β]
-    [InfTopHomClass F α β] (f : F) (s : Finset ι) (g : ι → α) : f (s.inf g) = s.inf (f ∘ g) :=
-  Finset.cons_induction_on s (map_top f) fun i s _ h => by
-    rw [Finset.inf_cons, Finset.inf_cons, map_inf, h, Function.comp_apply]
-#align map_finset_inf map_finset_inf
 
 section BoundedLattice
 
