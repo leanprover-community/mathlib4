@@ -234,7 +234,7 @@ partial def solveByElim (cfg : Config) (lemmas : List (TermElabM Expr)) (ctx : T
     pure goals
 
   -- Implementation note: as with `cfg.symm`, this is different from the mathlib3 approach,
-  -- for (not as bad) performance reasons.
+  -- for (not as severe) performance reasons.
   match cfg.exfalso, goals with
     | true, [g] => try
         run' [g]
@@ -255,19 +255,32 @@ where
   -- to reduce backtracking.
   -- TODO consider moving this functionality inside `backtrack`? It is completely generic.
   run (goals remaining : List MVarId) : MetaM (List MVarId) := do
+    -- Partition the remaining goals into "independent" goals
+    -- (which should be solvable without affecting the solvability of other goals)
+    -- and all the others.
     let (igs, ogs) ← remaining.partitionM (MVarId.independent? goals)
     if igs.isEmpty then
+      -- If there are no independent goals, we solve all the goals together via backtracking search.
       return (← run' remaining)
     else
-      -- Invoke `run'` on each of the independent goals separately.
+      -- Invoke `run'` on each of the independent goals separately,
+      -- gathering the subgoals on which `run'` fails,
+      -- and the new subgoals generated from goals on which it is successful.
       let (failed, newSubgoals') ← igs.tryAllM (fun g => run' [g])
       let newSubgoals := newSubgoals'.join
+      -- Update the list of goals with respect to which we need to check independence.
       let goals' := (← goals.filterM (fun g => do pure !(← g.isAssigned))) ++ newSubgoals
+      -- If `commitIndependentGoals` is `true`, we will return the the new goals
+      -- regardless of whether we can make further progress on the other goals.
       if cfg.commitIndependentGoals && !newSubgoals.isEmpty then
         return newSubgoals ++ failed ++ (← (run goals' ogs <|> pure ogs))
       else if !failed.isEmpty then
+        -- If `commitIndependentGoals` is `false`, and we failed on any of the independent goals,
+        -- the overall failure is inevitable so we can stop here.
         failure
       else
+        -- Finally, having solved this batch of independent goals,
+        -- recurse (potentially now finding new independent goals).
         return newSubgoals ++ (← run goals' ogs)
 
 /--

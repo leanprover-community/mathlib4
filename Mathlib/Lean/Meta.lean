@@ -7,6 +7,7 @@ import Lean.Elab
 import Lean.Meta.Tactic.Assert
 import Lean.Meta.Tactic.Clear
 import Std.Data.Option.Basic
+import Std.Data.List.Basic
 
 /-! ## Additional utilities in `Lean.MVarId` -/
 
@@ -121,11 +122,16 @@ end Lean.MVarId
 namespace Lean.Meta
 
 /-- Return local hypotheses which are not "implementation detail", as `Expr`s. -/
-def getLocalHyps : MetaM (Array Expr) := do
+def getLocalHyps [Monad m] [MonadLCtx m] : m (Array Expr) := do
   let mut hs := #[]
   for d in ← getLCtx do
     if !d.isImplementationDetail then hs := hs.push d.toExpr
   return hs
+
+/-- Count how many local hypotheses appear in an expression. -/
+def countLocalHypsUsed [Monad m] [MonadLCtx m] [MonadMCtx m] (e : Expr) : m Nat := do
+  let e' ← instantiateMVars e
+  return (← getLocalHyps).toList.countp fun h => h.occurs e'
 
 /--
 Given a monadic function `F` that takes a type and a term of that type and produces a new term,
