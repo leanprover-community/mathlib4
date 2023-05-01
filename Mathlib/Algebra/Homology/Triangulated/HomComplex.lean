@@ -21,17 +21,6 @@ open CategoryTheory Category Preadditive Limits
 
 universe v u
 
-
-namespace HomologicalComplex
-
-variable {C ι : Type _} [Category C] [HasZeroMorphisms C]
-  {c : ComplexShape ι}
-
-def XIsoOfEq (K : HomologicalComplex C c) {p q : ι} (h : p = q) :
-  K.X p ≅ K.X q := eqToIso (by rw [h])
-
-end HomologicalComplex
-
 variable {C : Type u} [Category.{v} C] [Preadditive C]
 
 namespace CochainComplex

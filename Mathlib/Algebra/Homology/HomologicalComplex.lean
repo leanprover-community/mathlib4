@@ -95,6 +95,29 @@ theorem ext {C₁ C₂ : HomologicalComplex V c} (h_X : C₁.X = C₂.X)
   . rw [s₁ i j hij, s₂ i j hij]
 #align homological_complex.ext HomologicalComplex.ext
 
+def XIsoOfEq (K : HomologicalComplex V c) {p q : ι} (h : p = q) :
+  K.X p ≅ K.X q := eqToIso (by rw [h])
+
+@[simp]
+lemma XIsoOfEq_rfl (K : HomologicalComplex V c) (p : ι) :
+  K.XIsoOfEq (rfl : p = p) = Iso.refl _ := rfl
+
+@[reassoc (attr := simp)]
+lemma XIsoOfEq_hom_comp_d (K : HomologicalComplex V c) {p₁ p₂ : ι} (h : p₁ = p₂) (p₃ : ι) :
+    (K.XIsoOfEq h).hom ≫ K.d p₂ p₃ = K.d p₁ p₃ := by subst h ; simp
+
+@[reassoc (attr := simp)]
+lemma XIsoOfEq_inv_comp_d (K : HomologicalComplex V c) {p₂ p₁ : ι} (h : p₂ = p₁) (p₃ : ι) :
+    (K.XIsoOfEq h).inv ≫ K.d p₂ p₃ = K.d p₁ p₃ := by subst h ; simp
+
+@[reassoc (attr := simp)]
+lemma d_comp_XIsoOfEq_hom (K : HomologicalComplex V c) {p₂ p₃ : ι} (h : p₂ = p₃) (p₁ : ι) :
+    K.d p₁ p₂ ≫ (K.XIsoOfEq h).hom = K.d p₁ p₃ := by subst h ; simp
+
+@[reassoc (attr := simp)]
+lemma d_comp_XIsoOfEq_inv (K : HomologicalComplex V c) {p₂ p₃ : ι} (h : p₃ = p₂) (p₁ : ι) :
+    K.d p₁ p₂ ≫ (K.XIsoOfEq h).inv = K.d p₁ p₃ := by subst h ; simp
+
 end HomologicalComplex
 
 /-- An `α`-indexed chain complex is a `HomologicalComplex`
@@ -311,6 +334,14 @@ def forgetEval (i : ι) : forget V c ⋙ GradedObject.eval i ≅ eval V c i :=
 end
 
 noncomputable section
+
+@[reassoc]
+lemma XIsoOfEq_hom_naturality {K L : HomologicalComplex V c} (φ : K ⟶ L) {n n' : ι} (h : n = n') :
+    φ.f n ≫ (L.XIsoOfEq h).hom = (K.XIsoOfEq h).hom ≫ φ.f n' := by subst h ; simp
+
+@[reassoc]
+lemma XIsoOfEq_inv_naturality {K L : HomologicalComplex V c} (φ : K ⟶ L) {n n' : ι} (h : n = n') :
+    φ.f n' ≫ (L.XIsoOfEq h).inv = (K.XIsoOfEq h).inv ≫ φ.f n := by subst h ; simp
 
 -- porting note: removed @[simp] as the linter complained
 /-- If `C.d i j` and `C.d i j'` are both allowed, then we must have `j = j'`,
