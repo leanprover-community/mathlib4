@@ -235,15 +235,19 @@ partial def solveByElim (cfg : Config) (lemmas : List (TermElabM Expr))
 
   -- Implementation note: as with `cfg.symm`, this is different from the mathlib3 approach,
   -- for (not as severe) performance reasons.
-  match cfg.exfalso, goals with
-    | true, [g] => try
-        run' [g]
-      catch _ => do
-        withTraceNode `Meta.Tactic.solveByElim
-            (fun _ => return m!"⏮️ starting over using `exfalso`") do
-          let g ← g.exfalso
+  match goals with
+    | [g] =>
+        try
           run' [g]
-    | _, _ =>
+        catch e => do
+          if cfg.exfalso then
+            withTraceNode `Meta.Tactic.solveByElim
+                (fun _ => return m!"⏮️ starting over using `exfalso`") do
+              let g ← g.exfalso
+              run' [g]
+          else
+            throw e
+    | _ =>
       run goals goals
 where
   -- Run either backtracking search, or repeated application, on the list of goals.
