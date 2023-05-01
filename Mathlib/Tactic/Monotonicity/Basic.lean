@@ -92,17 +92,39 @@ def applyMonos (t : Expr) (side : Side := .both) : MetaM (Expr × List MVarId) :
       encourage `mono` to use that list.\n{bestMatchTypes}"
 
 /-- !! Apply the `mono` tactic to a goal. -/
-def _root_.Lean.MVarId.mono (goal : MVarId) (side : Side := .both) :
+def _root_.Lean.MVarId.mono (goal : MVarId) (side : Side := .both)
+    (simpUsing : Option Simp.Context := none) (recurse : Bool := false) :
     MetaM (List MVarId) := withReducible do
-  let goal ← match ← dsimpGoal goal Monos.SimpContext with
+  if ! recurse then
+    let goal ← match ← dsimpGoal goal Monos.SimpContext false with
   | (some goal, _) => pure goal
   | (none, _) => return []
+    let goal ←
+      if let some ctx := simpUsing then
+        match ← simpGoal goal ctx with
+        | (some (_, goal), _) => pure goal
+        | _ => pure goal
+      else
+        pure goal
   let (_, goal) ← goal.introsP!
   let t ← whnfR <|← instantiateMVars <|← goal.getType
   trace[Tactic.mono] "Applying monos to {t}"
-  let (expr, goals) ← applyMonos t side
+    let (expr, goals) ← goal.withContext <| applyMonos t side
   goal.assign expr
   return goals
+  else
+    try
+      if let some ctx := simpUsing then
+        let simpProc (goals : List MVarId) : MetaM (Option (List MVarId)) := do
+          let goals ← goals.mapM
+            (fun g ↦ do let (a,_) ← simpGoal g ctx; return a.map (·.2) |>.getD g )
+          return some goals
+        let cfg : BacktrackConfig := { proc := fun _ curr ↦ simpProc curr }
+        backtrack cfg `Tactic.mono (applyMonosAlternatives side) [goal]
+      else
+        backtrack {} `Tactic.mono (applyMonosAlternatives side) [goal]
+    catch _ =>
+      throwError "could not close the goal by applying mono recursively"
 
 open Parser.Tactic in
 /--
