@@ -65,6 +65,6 @@ elab s:"simp_rw " rws:rwRuleSeq g:location ? : tactic => do
     evalTactic (← match term with
     | `(term| $e:term) =>
       if symm then
-        `(tactic| fail_if_no_progress (simp%$e only [← $e:term] $g ?))
+        `(tactic| fail_if_no_progress (config := { eqKind := .beq }) (simp%$e only [←$e:term] $g ?))
       else
-        `(tactic| fail_if_no_progress (simp%$e only [$e:term] $g ?)))
+        `(tactic| fail_if_no_progress (config := { eqKind := .beq }) (simp%$e only [$e:term] $g ?)))
