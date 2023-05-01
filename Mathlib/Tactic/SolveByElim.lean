@@ -222,8 +222,8 @@ By default `cfg.suspend` is `false,` `cfg.discharge` fails, and `cfg.failAtMaxDe
 and so the returned list is always empty.
 Custom wrappers (e.g. `apply_assumption` and `apply_rules`) may modify this behaviour.
 -/
-partial def solveByElim (cfg : Config) (lemmas : List (TermElabM Expr)) (ctx : TermElabM (List Expr))
-    (goals : List MVarId) : MetaM (List MVarId) := do
+partial def solveByElim (cfg : Config) (lemmas : List (TermElabM Expr))
+    (ctx : TermElabM (List Expr)) (goals : List MVarId) : MetaM (List MVarId) := do
   -- We handle `cfg.symm` by saturating hypotheses of all goals using `symm`.
   -- Implementation note:
   -- (We used to apply `symm` all throughout the `solve_by_elim` stage.)
