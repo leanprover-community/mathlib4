@@ -315,7 +315,7 @@ variable [HasZeroMorphisms C] [HasZeroObject C] [HasEqualizers C] [HasImages C]
 def projectiveResolution (Z : C) [HasProjectiveResolution Z] : ProjectiveResolution Z :=
   HasProjectiveResolution.out.some
 
--- porting note: this was named `projectiveResolution` is mathlib. As there was also a need
+-- porting note: this was named `projective_resolution` in mathlib 3. As there was also a need
 -- for a definition of `ProjectiveResolution Z` given `(Z : projectiveResolution Z)`, it
 -- seemed more consistent to have `projectiveResolution Z : ProjectiveResolution Z`
 -- and `projectiveResolution.complex Z : ChainComplex C ℕ`
