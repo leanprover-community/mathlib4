@@ -8,8 +8,8 @@ Authors: Patrick Massot, Scott Morrison, Mario Carneiro, Andrew Yang
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.Category.Top.Basic
-import Mathbin.CategoryTheory.Limits.ConcreteCategory
+import Mathlib.Topology.Category.Top.Basic
+import Mathlib.CategoryTheory.Limits.ConcreteCategory
 
 /-!
 # The category of topological spaces has all limits and colimits
@@ -51,8 +51,7 @@ Case conversion may be inaccurate. Consider using '#align Top.limit_cone TopCat.
 Generally you should just use `limit.cone F`, unless you need the actual definition
 (which is in terms of `types.limit_cone`).
 -/
-def limitCone (F : J ⥤ TopCat.{max v u}) : Cone F
-    where
+def limitCone (F : J ⥤ TopCat.{max v u}) : Cone F where
   pt := TopCat.of { u : ∀ j : J, F.obj j | ∀ {i j : J} (f : i ⟶ j), F.map f (u i) = u j }
   π :=
     {
@@ -73,8 +72,7 @@ infimum of topologies infimum.
 Generally you should just use `limit.cone F`, unless you need the actual definition
 (which is in terms of `types.limit_cone`).
 -/
-def limitConeInfi (F : J ⥤ TopCat.{max v u}) : Cone F
-    where
+def limitConeInfi (F : J ⥤ TopCat.{max v u}) : Cone F where
   pt :=
     ⟨(Types.limitCone (F ⋙ forget)).pt,
       ⨅ j, (F.obj j).str.induced ((Types.limitCone (F ⋙ forget)).π.app j)⟩
@@ -95,8 +93,7 @@ Case conversion may be inaccurate. Consider using '#align Top.limit_cone_is_limi
 Generally you should just use `limit.is_limit F`, unless you need the actual definition
 (which is in terms of `types.limit_cone_is_limit`).
 -/
-def limitConeIsLimit (F : J ⥤ TopCat.{max v u}) : IsLimit (limitCone F)
-    where
+def limitConeIsLimit (F : J ⥤ TopCat.{max v u}) : IsLimit (limitCone F) where
   lift S :=
     {
       toFun := fun x =>
@@ -119,8 +116,7 @@ Case conversion may be inaccurate. Consider using '#align Top.limit_cone_infi_is
 Generally you should just use `limit.is_limit F`, unless you need the actual definition
 (which is in terms of `types.limit_cone_is_limit`).
 -/
-def limitConeInfiIsLimit (F : J ⥤ TopCat.{max v u}) : IsLimit (limitConeInfi F) :=
-  by
+def limitConeInfiIsLimit (F : J ⥤ TopCat.{max v u}) : IsLimit (limitConeInfi F) := by
   refine' is_limit.of_faithful forget (types.limit_cone_is_limit _) (fun s => ⟨_, _⟩) fun s => rfl
   exact
     continuous_iff_coinduced_le.mpr
@@ -181,8 +177,7 @@ Case conversion may be inaccurate. Consider using '#align Top.colimit_cocone Top
 Generally you should just use `colimit.coone F`, unless you need the actual definition
 (which is in terms of `types.colimit_cocone`).
 -/
-def colimitCocone (F : J ⥤ TopCat.{max v u}) : Cocone F
-    where
+def colimitCocone (F : J ⥤ TopCat.{max v u}) : Cocone F where
   pt :=
     ⟨(Types.colimitCocone (F ⋙ forget)).pt,
       ⨆ j, (F.obj j).str.coinduced ((Types.colimitCocone (F ⋙ forget)).ι.app j)⟩
@@ -203,8 +198,7 @@ Case conversion may be inaccurate. Consider using '#align Top.colimit_cocone_is_
 Generally you should just use `colimit.is_colimit F`, unless you need the actual definition
 (which is in terms of `types.colimit_cocone_is_colimit`).
 -/
-def colimitCoconeIsColimit (F : J ⥤ TopCat.{max v u}) : IsColimit (colimitCocone F) :=
-  by
+def colimitCoconeIsColimit (F : J ⥤ TopCat.{max v u}) : IsColimit (colimitCocone F) := by
   refine'
     is_colimit.of_faithful forget (types.colimit_cocone_is_colimit _) (fun s => ⟨_, _⟩) fun s => rfl
   exact
