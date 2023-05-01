@@ -13,7 +13,7 @@ import Mathlib.CategoryTheory.Preadditive.ProjectiveResolution
 /-!
 # Left-derived functors
 
-We define the left-derived functors `F.left_derived n : C ⥤ D` for any additive functor `F`
+We define the left-derived functors `F.leftDerived n : C ⥤ D` for any additive functor `F`
 out of a category with projective resolutions.
 
 The definition is
@@ -38,8 +38,8 @@ We don't assume the categories involved are abelian
 or that the functors are right exact.
 None of these assumptions are needed yet.
 
-It is often convenient, of course, to work with `[abelian C] [enough_projectives C] [abelian D]`
-which (assuming the results from `category_theory.abelian.projective`) are enough to
+It is often convenient, of course, to work with `[Abelian C] [EnoughProjectives C] [Abelian D]`
+which (assuming the results from `CategoryTheory.Abelian.Projective`) are enough to
 provide all the typeclass hypotheses assumed here.
 -/
 
@@ -56,8 +56,8 @@ namespace CategoryTheory
 
 variable {C : Type u} [Category.{v} C] {D : Type _} [Category D]
 
--- Importing `category_theory.abelian.projective` and assuming
--- `[abelian C] [enough_projectives C] [abelian D]` suffices to acquire all the following:
+-- Importing `CategoryTheory.Abelian.Projective` and assuming
+-- `[Abelian C] [EnoughProjectives C] [Abelian D]` suffices to acquire all the following:
 variable [Preadditive C] [HasZeroObject C] [HasEqualizers C] [HasImages C]
   [HasProjectiveResolutions C]
 
@@ -70,7 +70,7 @@ def Functor.leftDerived (F : C ⥤ D) [F.Additive] (n : ℕ) : C ⥤ D :=
 
 -- TODO the left derived functors are additive (and linear when `F` is linear)
 /-- We can compute a left derived functor using a chosen projective resolution. -/
-@[simps]
+@[simps!]
 def Functor.leftDerivedObjIso (F : C ⥤ D) [F.Additive] (n : ℕ) {X : C}
     (P : ProjectiveResolution X) :
     (F.leftDerived n).obj X ≅
@@ -86,7 +86,7 @@ section
 variable [HasZeroObject D]
 
 /-- The 0-th derived functor of `F` on a projective object `X` is just `F.obj X`. -/
-@[simps]
+@[simps!]
 def Functor.leftDerivedObjProjectiveZero (F : C ⥤ D) [F.Additive] (X : C) [Projective X] :
     (F.leftDerived 0).obj X ≅ F.obj X :=
   F.leftDerivedObjIso 0 (ProjectiveResolution.self X) ≪≫
@@ -97,7 +97,7 @@ def Functor.leftDerivedObjProjectiveZero (F : C ⥤ D) [F.Additive] (X : C) [Pro
 open ZeroObject
 
 /-- The higher derived functors vanish on projective objects. -/
-@[simps inv]
+@[simps! inv]
 def Functor.leftDerivedObjProjectiveSucc (F : C ⥤ D) [F.Additive] (n : ℕ) (X : C) [Projective X] :
     (F.leftDerived (n + 1)).obj X ≅ 0 :=
   F.leftDerivedObjIso (n + 1) (ProjectiveResolution.self X) ≪≫
@@ -114,25 +114,23 @@ theorem Functor.leftDerived_map_eq (F : C ⥤ D) [F.Additive] (n : ℕ) {X Y : C
     {P : ProjectiveResolution X} {Q : ProjectiveResolution Y} (g : P.complex ⟶ Q.complex)
     (w : g ≫ Q.π = P.π ≫ (ChainComplex.single₀ C).map f) :
     (F.leftDerived n).map f =
-      (F.leftDerivedObjIso n P).Hom ≫
+      (F.leftDerivedObjIso n P).hom ≫
         (homologyFunctor D _ n).map ((F.mapHomologicalComplex _).map g) ≫
           (F.leftDerivedObjIso n Q).inv := by
-  dsimp only [functor.left_derived, functor.left_derived_obj_iso]
-  dsimp; simp only [category.comp_id, category.id_comp]
+  dsimp only [Functor.leftDerived, Functor.leftDerivedObjIso]
+  dsimp; simp only [Category.comp_id, Category.id_comp]
   rw [← homologyFunctor_map, HomotopyCategory.homologyFunctor_map_factors]
-  simp only [← functor.map_comp]
+  simp only [← Functor.map_comp]
   congr 1
   apply HomotopyCategory.eq_of_homotopy
-  apply functor.map_homotopy
-  apply Homotopy.trans
-  exact HomotopyCategory.homotopyOutMap _
-  apply ProjectiveResolution.lift_homotopy f
-  · simp
-  · simp [w]
+  apply Functor.mapHomotopy
+  apply ProjectiveResolution.liftHomotopy f
+  . simp
+  . simp [w]
 #align category_theory.functor.left_derived_map_eq CategoryTheory.Functor.leftDerived_map_eq
 
 /-- The natural transformation between left-derived functors induced by a natural transformation. -/
-@[simps]
+@[simps!]
 def NatTrans.leftDerived {F G : C ⥤ D} [F.Additive] [G.Additive] (α : F ⟶ G) (n : ℕ) :
     F.leftDerived n ⟶ G.leftDerived n :=
   whiskerLeft (projectiveResolutions C)
@@ -142,16 +140,16 @@ def NatTrans.leftDerived {F G : C ⥤ D} [F.Additive] [G.Additive] (α : F ⟶ G
 @[simp]
 theorem NatTrans.leftDerived_id (F : C ⥤ D) [F.Additive] (n : ℕ) :
     NatTrans.leftDerived (𝟙 F) n = 𝟙 (F.leftDerived n) := by
-  simp [nat_trans.left_derived]
+  simp [NatTrans.leftDerived]
   rfl
 #align category_theory.nat_trans.left_derived_id CategoryTheory.NatTrans.leftDerived_id
 
--- The `simp_nf` linter times out here, so we disable it.
-@[simp, nolint simp_nf]
+-- porting note: removed "The `simp_nf` linter times out here, so we disable it."
+@[simp]
 theorem NatTrans.leftDerived_comp {F G H : C ⥤ D} [F.Additive] [G.Additive] [H.Additive] (α : F ⟶ G)
     (β : G ⟶ H) (n : ℕ) :
     NatTrans.leftDerived (α ≫ β) n = NatTrans.leftDerived α n ≫ NatTrans.leftDerived β n := by
-  simp [nat_trans.left_derived]
+  simp [NatTrans.leftDerived]
 #align category_theory.nat_trans.left_derived_comp CategoryTheory.NatTrans.leftDerived_comp
 
 /-- A component of the natural transformation between left-derived functors can be computed
@@ -160,21 +158,22 @@ using a chosen projective resolution.
 theorem NatTrans.leftDerived_eq {F G : C ⥤ D} [F.Additive] [G.Additive] (α : F ⟶ G) (n : ℕ) {X : C}
     (P : ProjectiveResolution X) :
     (NatTrans.leftDerived α n).app X =
-      (F.leftDerivedObjIso n P).Hom ≫
+      (F.leftDerivedObjIso n P).hom ≫
         (homologyFunctor D _ n).map ((NatTrans.mapHomologicalComplex α _).app P.complex) ≫
           (G.leftDerivedObjIso n P).inv := by
   symm
-  dsimp [nat_trans.left_derived, functor.left_derived_obj_iso]
-  simp only [category.comp_id, category.id_comp]
+  dsimp [NatTrans.leftDerived, Functor.leftDerivedObjIso]
+  simp only [Category.comp_id, Category.id_comp]
   rw [← homologyFunctor_map, HomotopyCategory.homologyFunctor_map_factors]
-  simp only [← functor.map_comp]
+  simp only [← Functor.map_comp]
   congr 1
   apply HomotopyCategory.eq_of_homotopy
-  simp only [nat_trans.map_homological_complex_naturality_assoc, ← functor.map_comp]
+  simp only [NatTrans.mapHomologicalComplex_naturality_assoc, ← Functor.map_comp]
   apply Homotopy.compLeftId
-  rw [← Functor.map_id]
-  apply functor.map_homotopy
-  apply HomotopyEquiv.homotopyHomInvId
+  refine' (Functor.mapHomotopy _ (HomotopyEquiv.homotopyHomInvId _) ).trans _
+  apply Homotopy.ofEq
+  simp only [Functor.map_id]
+  rfl
 #align category_theory.nat_trans.left_derived_eq CategoryTheory.NatTrans.leftDerived_eq
 
 -- TODO:
@@ -192,4 +191,3 @@ theorem NatTrans.leftDerived_eq {F G : C ⥤ D} [F.Additive] [G.Additive] (α : 
 -- (requires we assume `abelian`?)
 -- PROJECT left-derived functors of a composition (Grothendieck sequence)
 end CategoryTheory
-
