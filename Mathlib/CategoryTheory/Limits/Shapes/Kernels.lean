@@ -673,6 +673,14 @@ theorem cokernel.π_desc {W : C} (k : Y ⟶ W) (h : f ≫ k = 0) :
   (cokernelIsCokernel f).fac (CokernelCofork.ofπ k h) WalkingParallelPair.one
 #align category_theory.limits.cokernel.π_desc CategoryTheory.Limits.cokernel.π_desc
 
+-- porting note: added to ease the port of `Abelian.Exact`
+@[reassoc (attr := simp)]
+lemma colimit_ι_zero_cokernel_desc {C : Type _} [Category C]
+    [HasZeroMorphisms C] {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (h : f ≫ g = 0) [HasCokernel f]:
+    colimit.ι (parallelPair f 0) WalkingParallelPair.zero ≫ cokernel.desc f g h = 0 := by
+  rw [(colimit.w (parallelPair f 0) WalkingParallelPairHom.left).symm]
+  aesop_cat
+
 @[simp]
 theorem cokernel.desc_zero {W : C} {h} : cokernel.desc f (0 : Y ⟶ W) h = 0 := by
   apply coequalizer.hom_ext; simp
