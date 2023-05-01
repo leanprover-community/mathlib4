@@ -81,15 +81,20 @@ section coe
 -- Fix another type `β` which we will convert to.
 variable {β : Type _} [Coe α β]
 
-/-- Coerce a pair by elementwise coercion. -/
-instance hasCoeToGeneralizedContinuedFractionPair : Coe (Pair α) (Pair β) :=
-  ⟨map (↑)⟩
-#align generalized_continued_fraction.pair.has_coe_to_generalized_continued_fraction_pair GeneralizedContinuedFraction.Pair.hasCoeToGeneralizedContinuedFractionPair
+-- Porting note: added so we can add the `@[coe]` attribute
+/-- The coersion between numarator-denominator-pairs happens componentwise. -/
+@[coe]
+def coeFn : Pair α → Pair β := map (↑)
 
-@[simp] -- Porting note: was `norm_cast`
-theorem coe_to_generalized_continued_fraction_pair {a b : α} :
-    (↑(Pair.mk a b) : Pair β) = Pair.mk (a : β) (b : β) := rfl
-#align generalized_continued_fraction.pair.coe_to_generalized_continued_fraction_pair GeneralizedContinuedFraction.Pair.coe_to_generalized_continued_fraction_pair
+/-- Coerce a pair by elementwise coercion. -/
+instance coe : Coe (Pair α) (Pair β) where
+  coe := coeFn
+#align generalized_continued_fraction.pair.has_coe_to_generalized_continued_fraction_pair GeneralizedContinuedFraction.Pair.coe
+
+@[simp, norm_cast]
+theorem coe_toPair {a b : α} :
+    ((Pair.mk a b : Pair α) : Pair β) = Pair.mk (a : β) (b : β) := rfl
+#align generalized_continued_fraction.pair.coe_to_generalized_continued_fraction_pair GeneralizedContinuedFraction.Pair.coe_toPair
 
 end coe
 
@@ -160,17 +165,25 @@ section coe
 -- Fix another type `β` which we will convert to.
 variable {β : Type _} [Coe α β]
 
-/-- Coerce a gcf by elementwise coercion. -/
-instance hasCoeToGeneralizedContinuedFraction :
-    Coe (GeneralizedContinuedFraction α) (GeneralizedContinuedFraction β) :=
-  ⟨fun g ↦ ⟨(g.h : β), (g.s.map (↑) : Stream'.Seq <| Pair β)⟩⟩
-#align generalized_continued_fraction.has_coe_to_generalized_continued_fraction GeneralizedContinuedFraction.hasCoeToGeneralizedContinuedFraction
+-- Porting note: Added to put `@[coe]` attr on it.
+/-- The coersion between `GeneralizedContinuedFraction` happens on the head term
+and all numerator-denominator-pairs componentwise. -/
+@[coe]
+def coeFn : GeneralizedContinuedFraction α → GeneralizedContinuedFraction β :=
+  fun g ↦ ⟨(g.h : β), (g.s.map (↑) : Stream'.Seq <| Pair β)⟩
 
-@[simp] -- Porting note: was `norm_cast`
-theorem coe_to_generalizedContinuedFraction {g : GeneralizedContinuedFraction α} :
-    (↑(g : GeneralizedContinuedFraction α) : GeneralizedContinuedFraction β) =
+/-- Coerce a gcf by elementwise coercion. -/
+instance coe :
+    Coe (GeneralizedContinuedFraction α) (GeneralizedContinuedFraction β) :=
+  ⟨coeFn⟩
+#align generalized_continued_fraction.has_coe_to_generalized_continued_fraction GeneralizedContinuedFraction.coe
+
+-- Porting note: Syntactic Tautology?
+@[simp, norm_cast]
+theorem coe_toGeneralizedContinuedFraction {g : GeneralizedContinuedFraction α} :
+    ((g : GeneralizedContinuedFraction α) : GeneralizedContinuedFraction β) =
       ⟨(g.h : β), (g.s.map (↑) : Stream'.Seq <| Pair β)⟩ := rfl
-#align generalized_continued_fraction.coe_to_generalized_continued_fraction GeneralizedContinuedFraction.coe_to_generalizedContinuedFraction
+#align generalized_continued_fraction.coe_to_generalized_continued_fraction GeneralizedContinuedFraction.coe_toGeneralizedContinuedFraction
 
 end coe
 
@@ -226,15 +239,19 @@ instance : Inhabited (SimpleContinuedFraction α) :=
   ⟨ofInteger 1⟩
 
 /-- Lift a scf to a gcf using the inclusion map. -/
-instance hasCoeToGeneralizedContinuedFraction :
+instance toGeneralizedContinuedFraction :
     Coe (SimpleContinuedFraction α) (GeneralizedContinuedFraction α) :=
   -- Porting note: originally `by unfold SimpleContinuedFraction; infer_instance`
-  ⟨fun ⟨g, _⟩ ↦ g⟩
-#align simple_continued_fraction.has_coe_to_generalized_continued_fraction SimpleContinuedFraction.hasCoeToGeneralizedContinuedFraction
+  ⟨Subtype.val⟩
+#align simple_continued_fraction.has_coe_to_generalized_continued_fraction SimpleContinuedFraction.toGeneralizedContinuedFraction
 
-theorem coe_to_generalizedContinuedFraction {s : SimpleContinuedFraction α} :
-    (↑s : GeneralizedContinuedFraction α) = s.val := rfl
-#align simple_continued_fraction.coe_to_generalized_continued_fraction SimpleContinuedFraction.coe_to_generalizedContinuedFraction
+-- Porting note: It seems that this has trully become a syntactic tautology.
+--
+-- theorem coe_toGeneralizedContinuedFraction {s : SimpleContinuedFraction α} :
+--     (↑s : GeneralizedContinuedFraction α) = s.val := rfl
+-- #align simple_continued_fraction.coe_to_generalized_continued_fraction
+--   SimpleContinuedFraction.coe_toGeneralizedContinuedFraction
+#noalign simple_continued_fraction.coe_to_generalized_continued_fraction
 
 end SimpleContinuedFraction
 
