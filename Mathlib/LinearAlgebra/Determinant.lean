@@ -45,17 +45,9 @@ basis, det, determinant
 
 noncomputable section
 
-open BigOperators
-
-open Matrix
-
-open LinearMap
-
-open Submodule
+open BigOperators Matrix LinearMap Submodule Set Function
 
 universe u v w
-
-open LinearMap Matrix Set Function
 
 variable {R : Type _} [CommRing R]
 
@@ -202,7 +194,7 @@ theorem coe_det [DecidableEq M] :
   ext
   rw [LinearMap.det_def]
   split_ifs
-  · congr -- use the correct `decidableEq` instance
+  · congr -- use the correct `DecidableEq` instance
   rfl
 #align linear_map.coe_det LinearMap.coe_det
 
@@ -604,7 +596,8 @@ theorem AlternatingMap.map_basis_eq_zero_iff {ι : Type _} [Finite ι] (e : Basi
   ⟨fun h => by
     cases nonempty_fintype ι
     letI := Classical.decEq ι
-    simpa [h] using f.eq_smul_basis_det e, fun h => h.symm ▸ AlternatingMap.zero_apply _⟩
+    simpa [h] using f.eq_smul_basis_det e,
+   fun h => h.symm ▸ AlternatingMap.zero_apply _⟩
 #align alternating_map.map_basis_eq_zero_iff AlternatingMap.map_basis_eq_zero_iff
 
 theorem AlternatingMap.map_basis_ne_zero_iff {ι : Type _} [Finite ι] (e : Basis ι R M)
