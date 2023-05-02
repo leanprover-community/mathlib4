@@ -82,7 +82,7 @@ section coe
 variable {β : Type _} [Coe α β]
 
 -- Porting note: added so we can add the `@[coe]` attribute
-/-- The coersion between numarator-denominator-pairs happens componentwise. -/
+/-- The coercion between numerator-denominator pairs happens componentwise. -/
 @[coe]
 def coeFn : Pair α → Pair β := map (↑)
 
@@ -91,8 +91,7 @@ instance : Coe (Pair α) (Pair β) :=
   ⟨coeFn⟩
 
 @[simp, norm_cast]
-theorem coe_toPair {a b : α} :
-    (↑(Pair.mk a b) : Pair β) = Pair.mk (a : β) (b : β) := rfl
+theorem coe_toPair {a b : α} : (↑(Pair.mk a b) : Pair β) = Pair.mk (a : β) (b : β) := rfl
 #align generalized_continued_fraction.pair.coe_to_generalized_continued_fraction_pair GeneralizedContinuedFraction.Pair.coe_toPair
 
 end coe
@@ -110,7 +109,7 @@ $$
 where `h` is called the *head term* or *integer part*, the `aᵢ` are called the
 *partial numerators* and the `bᵢ` the *partial denominators* of the gcf.
 We store the sequence of partial numerators and denominators in a sequence of
-`GeneralizedContinuedFraction.Pairs` `s`.
+`GeneralizedContinuedFraction.Pair`s `s`.
 For convenience, one often writes `[h; (a₀, b₀), (a₁, b₁), (a₂, b₂),...]`.
 -/
 @[ext] -- Porting note: added to replace the manually written ext lemmas
@@ -168,8 +167,8 @@ section coe
 variable {β : Type _} [Coe α β]
 
 -- Porting note: Added to put `@[coe]` attr on it.
-/-- The coersion between `GeneralizedContinuedFraction` happens on the head term
-and all numerator-denominator-pairs componentwise. -/
+/-- The coercion between `GeneralizedContinuedFraction` happens on the head term
+and all numerator-denominator pairs componentwise. -/
 @[coe]
 def coeFn : GeneralizedContinuedFraction α → GeneralizedContinuedFraction β :=
   fun g ↦ ⟨(g.h : β), (g.s.map (↑) : Stream'.Seq <| Pair β)⟩
@@ -245,7 +244,6 @@ instance : Coe (SimpleContinuedFraction α) (GeneralizedContinuedFraction α) :=
 -- Porting note: Syntactic tautology due to change in `Coe` above.
 -- theorem coe_toGeneralizedContinuedFraction {s : SimpleContinuedFraction α} :
 --     (↑s : GeneralizedContinuedFraction α) = s.val := rfl
--- #align simple_continued_fraction.coe_to_generalized_continued_fraction SimpleContinuedFraction.coe_toGeneralizedContinuedFraction
 #noalign simple_continued_fraction.coe_to_generalized_continued_fraction
 
 end SimpleContinuedFraction
@@ -294,7 +292,6 @@ instance : Coe (ContinuedFraction α) (SimpleContinuedFraction α) :=
 -- Porting note: Syntactic tautology due to change of `Coe` above.
 -- theorem coe_to_simpleContinuedFraction {c : ContinuedFraction α} :
 --     (↑c : SimpleContinuedFraction α) = c.val := rfl
--- #align continued_fraction.coe_to_simple_continued_fraction ContinuedFraction.coe_to_simpleContinuedFraction
 #noalign continued_fraction.coe_to_simple_continued_fraction
 
 /-- Lift a cf to a scf using the inclusion map. -/
@@ -305,7 +302,6 @@ instance : Coe (ContinuedFraction α) (GeneralizedContinuedFraction α) :=
 -- Porting note: Syntactic tautology due to change of `Coe` above.
 -- theorem coe_toGeneralizedContinuedFraction {c : ContinuedFraction α} :
 --     (↑c : GeneralizedContinuedFraction α) = c.val := rfl
--- #align continued_fraction.coe_to_generalized_continued_fraction ContinuedFraction.coe_toGeneralizedContinuedFraction
 #noalign continued_fraction.coe_to_generalized_continued_fraction
 
 end ContinuedFraction
