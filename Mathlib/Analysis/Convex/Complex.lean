@@ -8,8 +8,8 @@ Authors: Yury Kudriashov, Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Convex.Basic
-import Mathbin.Data.Complex.Module
+import Mathlib.Analysis.Convex.Basic
+import Mathlib.Data.Complex.Module
 
 /-!
 # Convexity of half spaces in ℂ
