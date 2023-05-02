@@ -19,22 +19,22 @@ space over `ℝ`.
 
 -/
 
+set_option synthInstance.etaExperiment true
 
 namespace Complex
 
-/-- The determinant of `conj_ae`, as a linear map. -/
+/-- The determinant of `conjAe`, as a linear map. -/
 @[simp]
-theorem det_conjAe : conjAe.toLinearMap.det = -1 := by
-  rw [← LinearMap.det_toMatrix basis_one_I, to_matrix_conj_ae, Matrix.det_fin_two_of]
+theorem det_conjAe : LinearMap.det conjAe.toLinearMap = -1 := by
+  rw [← LinearMap.det_toMatrix basisOneI, toMatrix_conjAe, Matrix.det_fin_two_of]
   simp
 #align complex.det_conj_ae Complex.det_conjAe
 
-/-- The determinant of `conj_ae`, as a linear equiv. -/
+/-- The determinant of `conjAe`, as a linear equiv. -/
 @[simp]
-theorem linearEquiv_det_conjAe : conjAe.toLinearEquiv.det = -1 := by
-  rw [← Units.eq_iff, LinearEquiv.coe_det, ← LinearEquiv.toLinearMap_eq_coe,
-    AlgEquiv.toLinearEquiv_toLinearMap, det_conj_ae, Units.coe_neg_one]
+theorem linearEquiv_det_conjAe : LinearEquiv.det conjAe.toLinearEquiv = -1 := by
+  rw [← Units.eq_iff, LinearEquiv.coe_det, AlgEquiv.toLinearEquiv_toLinearMap, det_conjAe,
+    Units.coe_neg_one]
 #align complex.linear_equiv_det_conj_ae Complex.linearEquiv_det_conjAe
 
 end Complex
-
