@@ -396,19 +396,21 @@ end AffineIsometryEquiv
 
 namespace LinearIsometryEquiv
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
-variable (e : V ≃ₗᵢ[𝕜] V₂)
+variable (e : set_option synthInstance.etaExperiment true in V ≃ₗᵢ[𝕜] V₂)
 
+set_option synthInstance.etaExperiment true in
 /-- Reinterpret a linear isometry equiv as an affine isometry equiv. -/
 def toAffineIsometryEquiv : V ≃ᵃⁱ[𝕜] V₂ :=
   { e.toLinearEquiv.toAffineEquiv with norm_map := e.norm_map }
 #align linear_isometry_equiv.to_affine_isometry_equiv LinearIsometryEquiv.toAffineIsometryEquiv
 
+set_option synthInstance.etaExperiment true in
 @[simp]
 theorem coe_toAffineIsometryEquiv : ⇑(e.toAffineIsometryEquiv : V ≃ᵃⁱ[𝕜] V₂) = e :=
   rfl
 #align linear_isometry_equiv.coe_to_affine_isometry_equiv LinearIsometryEquiv.coe_toAffineIsometryEquiv
 
+set_option synthInstance.etaExperiment true in
 @[simp]
 theorem toAffineIsometryEquiv_linearIsometryEquiv :
     e.toAffineIsometryEquiv.linearIsometryEquiv = e := by
@@ -416,6 +418,7 @@ theorem toAffineIsometryEquiv_linearIsometryEquiv :
   rfl
 #align linear_isometry_equiv.to_affine_isometry_equiv_linear_isometry_equiv LinearIsometryEquiv.toAffineIsometryEquiv_linearIsometryEquiv
 
+set_option synthInstance.etaExperiment true in
 -- somewhat arbitrary choice of simp direction
 @[simp]
 theorem toAffineIsometryEquiv_toAffineEquiv :
@@ -423,6 +426,7 @@ theorem toAffineIsometryEquiv_toAffineEquiv :
   rfl
 #align linear_isometry_equiv.to_affine_isometry_equiv_to_affine_equiv LinearIsometryEquiv.toAffineIsometryEquiv_toAffineEquiv
 
+set_option synthInstance.etaExperiment true in
 -- somewhat arbitrary choice of simp direction
 @[simp]
 theorem toAffineIsometryEquiv_toAffineIsometry :
