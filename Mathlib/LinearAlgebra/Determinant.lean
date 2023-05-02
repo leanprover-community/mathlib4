@@ -221,6 +221,8 @@ theorem det_toMatrix (b : Basis ι A M) (f : M →ₗ[A] M) :
     Matrix.det (toMatrix b b f) = LinearMap.det f := by
   haveI := Classical.decEq M
   rw [det_eq_det_toMatrix_of_finset b.reindexFinsetRange]
+  -- Porting note: moved out of `rw` due to error
+  -- typeclass instance problem is stuck, it is often due to metavariables `DecidableEq ?m.628881`
   apply det_toMatrix_eq_det_toMatrix b
 #align linear_map.det_to_matrix LinearMap.det_toMatrix
 
@@ -249,6 +251,7 @@ theorem det_cases [DecidableEq M] {P : A → Prop} (f : M →ₗ[A] M)
   rw [LinearMap.det_def]
   split_ifs with h
   · convert hb _ h.choose_spec.some
+    -- Porting note: was `apply det_aux_def'`
     convert detAux_def'' (Trunc.mk h.choose_spec.some) h.choose_spec.some f
   · exact h1
 #align linear_map.det_cases LinearMap.det_cases
@@ -528,14 +531,17 @@ nonrec def Basis.det : AlternatingMap R M R ι where
     intro inst v i x y
     cases Subsingleton.elim inst ‹_›
     simp only [e.toMatrix_update, LinearEquiv.map_add, Finsupp.coe_add]
+    -- Porting note: was `exact det_update_column_add _ _ _ _`
     convert det_updateColumn_add (e.toMatrix v) i (e.repr x) (e.repr y)
   map_smul' := by
     intro inst u i c x
     cases Subsingleton.elim inst ‹_›
     simp only [e.toMatrix_update, Algebra.id.smul_eq_mul, LinearEquiv.map_smul]
+    -- Porting note: was `apply det_update_column_smul`
     convert det_updateColumn_smul (e.toMatrix u) i c (e.repr x)
   map_eq_zero_of_eq' := by
     intro v i j h hij
+    -- Porting note: added
     simp only
     rw [← Function.update_eq_self i v, h, ← det_transpose, e.toMatrix_update, ← updateRow_transpose,
       ← e.toMatrix_transpose_apply]
