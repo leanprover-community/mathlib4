@@ -8,11 +8,11 @@ Authors: Johan Commelin, Eric Wieer
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.LinearAlgebra.FreeModule.Finite.Rank
-import Mathbin.LinearAlgebra.Matrix.ToLin
-import Mathbin.LinearAlgebra.FiniteDimensional
-import Mathbin.LinearAlgebra.Matrix.DotProduct
-import Mathbin.Data.Complex.Module
+import Mathlib.LinearAlgebra.FreeModule.Finite.Rank
+import Mathlib.LinearAlgebra.Matrix.ToLin
+import Mathlib.LinearAlgebra.FiniteDimensional
+import Mathlib.LinearAlgebra.Matrix.DotProduct
+import Mathlib.Data.Complex.Module
 
 /-!
 # Rank of matrices
@@ -96,8 +96,7 @@ theorem rank_mul_le [StrongRankCondition R] (A : Matrix m n R) (B : Matrix n o R
 #align matrix.rank_mul_le Matrix.rank_mul_le
 
 theorem rank_unit [StrongRankCondition R] [DecidableEq n] (A : (Matrix n n R)ˣ) :
-    (A : Matrix n n R).rank = Fintype.card n :=
-  by
+    (A : Matrix n n R).rank = Fintype.card n := by
   refine' le_antisymm (rank_le_card_width A) _
   have := rank_mul_le_left (A : Matrix n n R) (↑A⁻¹ : Matrix n n R)
   rwa [← mul_eq_mul, ← Units.val_mul, mul_inv_self, Units.val_one, rank_one] at this
@@ -111,8 +110,7 @@ theorem rank_of_isUnit [StrongRankCondition R] [DecidableEq n] (A : Matrix n n R
 
 /-- Taking a subset of the rows and permuting the columns reduces the rank. -/
 theorem rank_submatrix_le [StrongRankCondition R] [Fintype m] (f : n → m) (e : n ≃ m)
-    (A : Matrix m m R) : rank (A.submatrix f e) ≤ rank A :=
-  by
+    (A : Matrix m m R) : rank (A.submatrix f e) ≤ rank A := by
   rw [rank, rank, mul_vec_lin_submatrix, LinearMap.range_comp, LinearMap.range_comp,
     show LinearMap.funLeft R R e.symm = LinearEquiv.funCongrLeft R R e.symm from rfl,
     LinearEquiv.range, Submodule.map_top]
@@ -135,12 +133,10 @@ include m_fin
 
 theorem rank_eq_finrank_range_toLin [DecidableEq n] {M₁ M₂ : Type _} [AddCommGroup M₁]
     [AddCommGroup M₂] [Module R M₁] [Module R M₂] (A : Matrix m n R) (v₁ : Basis m R M₁)
-    (v₂ : Basis n R M₂) : A.rank = finrank R (toLin v₂ v₁ A).range :=
-  by
+    (v₂ : Basis n R M₂) : A.rank = finrank R (toLin v₂ v₁ A).range := by
   let e₁ := (Pi.basisFun R m).Equiv v₁ (Equiv.refl _)
   let e₂ := (Pi.basisFun R n).Equiv v₂ (Equiv.refl _)
-  have range_e₂ : (e₂ : (n → R) →ₗ[R] M₂).range = ⊤ :=
-    by
+  have range_e₂ : (e₂ : (n → R) →ₗ[R] M₂).range = ⊤ := by
     rw [LinearMap.range_eq_top]
     exact e₂.surjective
   refine' LinearEquiv.finrank_eq (e₁.of_submodules _ _ _)
@@ -198,8 +194,7 @@ section StarOrderedField
 variable [Fintype m] [Field R] [PartialOrder R] [StarOrderedRing R]
 
 theorem ker_mulVecLin_conjTranspose_mul_self (A : Matrix m n R) :
-    LinearMap.ker (Aᴴ ⬝ A).mulVecLin = LinearMap.ker (mulVecLin A) :=
-  by
+    LinearMap.ker (Aᴴ ⬝ A).mulVecLin = LinearMap.ker (mulVecLin A) := by
   ext x
   simp only [LinearMap.mem_ker, mul_vec_lin_apply, ← mul_vec_mul_vec]
   constructor
@@ -211,8 +206,7 @@ theorem ker_mulVecLin_conjTranspose_mul_self (A : Matrix m n R) :
     rw [h, mul_vec_zero]
 #align matrix.ker_mul_vec_lin_conj_transpose_mul_self Matrix.ker_mulVecLin_conjTranspose_mul_self
 
-theorem rank_conjTranspose_mul_self (A : Matrix m n R) : (Aᴴ ⬝ A).rank = A.rank :=
-  by
+theorem rank_conjTranspose_mul_self (A : Matrix m n R) : (Aᴴ ⬝ A).rank = A.rank := by
   dsimp only [rank]
   refine' add_left_injective (finrank R A.mul_vec_lin.ker) _
   dsimp only
@@ -244,8 +238,7 @@ section LinearOrderedField
 variable [Fintype m] [LinearOrderedField R]
 
 theorem ker_mulVecLin_transpose_mul_self (A : Matrix m n R) :
-    LinearMap.ker (Aᵀ ⬝ A).mulVecLin = LinearMap.ker (mulVecLin A) :=
-  by
+    LinearMap.ker (Aᵀ ⬝ A).mulVecLin = LinearMap.ker (mulVecLin A) := by
   ext x
   simp only [LinearMap.mem_ker, mul_vec_lin_apply, ← mul_vec_mul_vec]
   constructor
@@ -256,8 +249,7 @@ theorem ker_mulVecLin_transpose_mul_self (A : Matrix m n R) :
     rw [h, mul_vec_zero]
 #align matrix.ker_mul_vec_lin_transpose_mul_self Matrix.ker_mulVecLin_transpose_mul_self
 
-theorem rank_transpose_mul_self (A : Matrix m n R) : (Aᵀ ⬝ A).rank = A.rank :=
-  by
+theorem rank_transpose_mul_self (A : Matrix m n R) : (Aᵀ ⬝ A).rank = A.rank := by
   dsimp only [rank]
   refine' add_left_injective (finrank R A.mul_vec_lin.ker) _
   dsimp only
@@ -284,8 +276,7 @@ end LinearOrderedField
 
 TODO: prove this in a generality that works for `ℂ` too, not just `ℚ` and `ℝ`. -/
 theorem rank_eq_finrank_span_row [LinearOrderedField R] [Finite m] (A : Matrix m n R) :
-    A.rank = finrank R (Submodule.span R (Set.range A)) :=
-  by
+    A.rank = finrank R (Submodule.span R (Set.range A)) := by
   cases nonempty_fintype m
   rw [← rank_transpose, rank_eq_finrank_span_cols, transpose_transpose]
 #align matrix.rank_eq_finrank_span_row Matrix.rank_eq_finrank_span_row
