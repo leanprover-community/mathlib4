@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 
 ! This file was ported from Lean 3 source module data.nat.modeq
-! leanprover-community/mathlib commit 2ed7e4aec72395b6a7c3ac4ac7873a7a43ead17c
+! leanprover-community/mathlib commit 47a1a73351de8dd6c8d3d32b569c8e434b03ca47
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -212,6 +212,10 @@ For cancelling right multiplication on both sides of the `≡`, see `nat.modeq.m
 lemma of_mul_right (m : ℕ) : a ≡ b [MOD n * m] → a ≡ b [MOD n] := mul_comm m n ▸ of_mul_left _
 #align nat.modeq.of_mul_right Nat.ModEq.of_mul_right
 
+theorem of_div (h : a / c ≡ b / c [MOD m / c]) (ha : c ∣ a) (ha : c ∣ b) (ha : c ∣ m) :
+    a ≡ b [MOD m] := by convert h.mul_left' c <;> rwa [Nat.mul_div_cancel']
+#align nat.modeq.of_div Nat.ModEq.of_div
+
 end ModEq
 
 lemma modEq_sub (h : b ≤ a) : a ≡ b [MOD a - b] := (modEq_of_dvd $ by rw [Int.ofNat_sub h]).symm
@@ -393,7 +397,6 @@ theorem coprime_of_mul_modEq_one (b : ℕ) {a n : ℕ} (h : a * b ≡ 1 [MOD n])
     1 ≡ a * b [MOD a.gcd n] := (hh ▸ h).symm.of_mul_right g
     _ ≡ 0 * b [MOD a.gcd n] := (Nat.modEq_zero_iff_dvd.mpr (Nat.gcd_dvd_left _ _)).mul_right b
     _ = 0 := by rw [zero_mul]
-
 #align nat.coprime_of_mul_modeq_one Nat.coprime_of_mul_modEq_one
 
 @[simp 1100]

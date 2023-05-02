@@ -739,8 +739,7 @@ theorem Tape.map_mk₁ {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (f : PointedMap �
 /-- Run a state transition function `σ → Option σ` "to completion". The return value is the last
 state returned before a `none` result. If the state transition function always returns `some`,
 then the computation diverges, returning `Part.none`. -/
--- Porting note: Added noncomputable, because `PFun.fix` is noncomputable.
-noncomputable def eval {σ} (f : σ → Option σ) : σ → Part σ :=
+def eval {σ} (f : σ → Option σ) : σ → Part σ :=
   PFun.fix fun s ↦ Part.some <| (f s).elim (Sum.inl s) Sum.inr
 #align turing.eval Turing.eval
 
@@ -826,9 +825,8 @@ theorem Reaches₀.tail' {σ} {f : σ → Option σ} {a b c : σ} (h : Reaches�
 which is either terminal (meaning `a = b`) or where the next point also satisfies `C`, then it
 holds of any point where `eval f a` evaluates to `b`. This formalizes the notion that if
 `eval f a` evaluates to `b` then it reaches terminal state `b` in finitely many steps. -/
--- Porting note: Added noncomputable
 @[elab_as_elim]
-noncomputable def evalInduction {σ} {f : σ → Option σ} {b : σ} {C : σ → Sort _} {a : σ}
+def evalInduction {σ} {f : σ → Option σ} {b : σ} {C : σ → Sort _} {a : σ}
     (h : b ∈ eval f a) (H : ∀ a, b ∈ eval f a → (∀ a', f a = some a' → C a') → C a) : C a :=
   PFun.fixInduction h fun a' ha' h' ↦
     H _ ha' fun b' e ↦ h' _ <| Part.mem_some_iff.2 <| by rw [e]; rfl
@@ -1099,8 +1097,7 @@ def init (l : List Γ) : Cfg₀ :=
 
 /-- Evaluate a Turing machine on initial input to a final state,
   if it terminates. -/
--- Porting note: Added noncomputable
-noncomputable def eval (M : Machine₀) (l : List Γ) : Part (ListBlank Γ) :=
+def eval (M : Machine₀) (l : List Γ) : Part (ListBlank Γ) :=
   (Turing.eval (step M) (init l)).map fun c ↦ c.Tape.right₀
 #align turing.TM0.eval Turing.TM0.eval
 
@@ -1411,8 +1408,7 @@ def init (l : List Γ) : Cfg₁ :=
 
 /-- Evaluate a TM to completion, resulting in an output list on the tape (with an indeterminate
 number of blanks on the end). -/
--- Porting note: Added noncomputable
-noncomputable def eval (M : Λ → Stmt₁) (l : List Γ) : Part (ListBlank Γ) :=
+def eval (M : Λ → Stmt₁) (l : List Γ) : Part (ListBlank Γ) :=
   (Turing.eval (step M) (init l)).map fun c ↦ c.Tape.right₀
 #align turing.TM1.eval Turing.TM1.eval
 
@@ -2279,8 +2275,7 @@ def init (k : K) (L : List (Γ k)) : Cfg₂ :=
 #align turing.TM2.init Turing.TM2.init
 
 /-- Evaluates a TM2 program to completion, with the output on the same stack as the input. -/
--- Porting note: Added noncomputable
-noncomputable def eval (M : Λ → Stmt₂) (k : K) (L : List (Γ k)) : Part (List (Γ k)) :=
+def eval (M : Λ → Stmt₂) (k : K) (L : List (Γ k)) : Part (List (Γ k)) :=
   (Turing.eval (step M) (init k L)).map fun c ↦ c.stk k
 #align turing.TM2.eval Turing.TM2.eval
 

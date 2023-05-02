@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
 
 ! This file was ported from Lean 3 source module algebra.algebra.basic
-! leanprover-community/mathlib commit 2738d2ca56cbc63be80c3bd48e9ed90ad94e947d
+! leanprover-community/mathlib commit 2651125b48fc5c170ab1111afd0817c903b1fc6c
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -357,7 +357,6 @@ theorem algebraMap_eq_smul_one (r : R) : algebraMap R A r = r • (1 : A) :=
   calc
     algebraMap R A r = algebraMap R A r * 1 := (mul_one _).symm
     _ = r • (1 : A) := (Algebra.smul_def r 1).symm
-
 #align algebra.algebra_map_eq_smul_one Algebra.algebraMap_eq_smul_one
 
 theorem algebraMap_eq_smul_one' : ⇑(algebraMap R A) = fun r => r • (1 : A) :=
@@ -706,12 +705,6 @@ theorem map_mul_algebraMap (f : A →ₗ[R] B) (a : A) (r : R) :
 #align linear_map.map_mul_algebra_map LinearMap.map_mul_algebraMap
 
 end LinearMap
-
-@[simp]
-theorem Rat.smul_one_eq_coe {A : Type _} [DivisionRing A] [Algebra ℚ A] (m : ℚ) :
-    @SMul.smul _ _ Algebra.toSMul m (1 : A) = ↑m :=
-  (Algebra.algebraMap_eq_smul_one m).symm.trans <| @eq_ratCast (ℚ →+* A) A _ _ (algebraMap ℚ A) _
-#align rat.smul_one_eq_coe Rat.smul_one_eq_coe
 
 section Nat
 

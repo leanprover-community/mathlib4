@@ -275,5 +275,4 @@ theorem CommApplicative.commutative_map {m : Type u → Type v} [h : Applicative
       by
         rw [@CommApplicative.commutative_prod m h] <;>
         simp [seq_map_assoc, map_seq, seq_assoc, seq_pure, map_map, (· ∘ ·)]
-
 #align is_comm_applicative.commutative_map CommApplicative.commutative_map

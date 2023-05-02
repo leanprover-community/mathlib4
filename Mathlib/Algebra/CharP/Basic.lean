@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Joey van Langen, Casper Putz
 
 ! This file was ported from Lean 3 source module algebra.char_p.basic
-! leanprover-community/mathlib commit ceb887ddf3344dab425292e497fa2af91498437c
+! leanprover-community/mathlib commit 47a1a73351de8dd6c8d3d32b569c8e434b03ca47
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -141,10 +141,16 @@ theorem CharP.int_cast_eq_zero_iff [AddGroupWithOne R] (p : ℕ) [CharP R p] (a 
     rw [Int.cast_ofNat, CharP.cast_eq_zero_iff R p, Int.coe_nat_dvd]
 #align char_p.int_cast_eq_zero_iff CharP.int_cast_eq_zero_iff
 
-theorem CharP.int_cast_eq_int_cast_iff [AddGroupWithOne R] (p : ℕ) [CharP R p] (a b : ℤ) :
-    (a : R) = (b : R) ↔ a ≡ b [ZMOD p] := by
+theorem CharP.intCast_eq_intCast [AddGroupWithOne R] (p : ℕ) [CharP R p] {a b : ℤ} :
+    (a : R) = b ↔ a ≡ b [ZMOD p] := by
   rw [eq_comm, ← sub_eq_zero, ← Int.cast_sub, CharP.int_cast_eq_zero_iff R p, Int.modEq_iff_dvd]
-#align char_p.int_coe_eq_int_coe_iff CharP.int_cast_eq_int_cast_iff
+#align char_p.int_cast_eq_int_cast CharP.intCast_eq_intCast
+
+theorem CharP.natCast_eq_natCast [AddGroupWithOne R] (p : ℕ) [CharP R p] {a b : ℕ} :
+    (a : R) = b ↔ a ≡ b [MOD p] := by
+  rw [← Int.cast_ofNat, ← Int.cast_ofNat b]
+  exact (CharP.intCast_eq_intCast _ _).trans Int.coe_nat_modEq_iff
+#align char_p.nat_cast_eq_nat_cast CharP.natCast_eq_natCast
 
 theorem CharP.eq [AddMonoidWithOne R] {p q : ℕ} (_c1 : CharP R p) (_c2 : CharP R q) : p = q :=
   Nat.dvd_antisymm ((CharP.cast_eq_zero_iff R p q).1 (CharP.cast_eq_zero _ _))
@@ -285,10 +291,6 @@ theorem sub_pow_char_pow [CommRing R] {p : ℕ} [Fact p.Prime] [CharP R p] {n : 
     (x - y) ^ p ^ n = x ^ p ^ n - y ^ p ^ n :=
   sub_pow_char_pow_of_commute _ _ _ (Commute.all _ _)
 #align sub_pow_char_pow sub_pow_char_pow
-
-theorem eq_iff_modEq_int [Ring R] (p : ℕ) [CharP R p] (a b : ℤ) : (a : R) = b ↔ a ≡ b [ZMOD p] := by
-  rw [eq_comm, ← sub_eq_zero, ← Int.cast_sub, CharP.int_cast_eq_zero_iff R p, Int.modEq_iff_dvd]
-#align eq_iff_modeq_int eq_iff_modEq_int
 
 theorem CharP.neg_one_ne_one [Ring R] (p : ℕ) [CharP R p] [Fact (2 < p)] : (-1 : R) ≠ (1 : R) := by
   suffices (2 : R) ≠ 0 by
@@ -471,7 +473,6 @@ theorem cast_eq_mod (p : ℕ) [CharP R p] (k : ℕ) : (k : R) = (k % p : ℕ) :=
   calc
     (k : R) = ↑(k % p + p * (k / p)) := by rw [Nat.mod_add_div]
     _ = ↑(k % p) := by simp [cast_eq_zero]
-
 #align char_p.cast_eq_mod CharP.cast_eq_mod
 
 /-- The characteristic of a finite ring cannot be zero. -/
@@ -529,11 +530,11 @@ theorem char_is_prime_of_two_le (p : ℕ) [hc : CharP R p] (hp : 2 ≤ p) : Nat.
   Or.elim (eq_zero_or_eq_zero_of_mul_eq_zero this)
     (fun hd : (d : R) = 0 =>
       have : p ∣ d := (cast_eq_zero_iff R p d).mp hd
-      show d = 1 ∨ d = p from Or.inr (dvd_antisymm ⟨e, hmul⟩ this))
+      show d = 1 ∨ d = p from Or.inr (this.antisymm' ⟨e, hmul⟩))
     fun he : (e : R) = 0 =>
     have : p ∣ e := (cast_eq_zero_iff R p e).mp he
     have : e ∣ p := dvd_of_mul_left_eq d (Eq.symm hmul)
-    have : e = p := dvd_antisymm ‹e ∣ p› ‹p ∣ e›
+    have : e = p := ‹e ∣ p›.antisymm ‹p ∣ e›
     have h₀ : 0 < p := two_pos.trans_le hp
     have : d * p = 1 * p := by rw [‹e = p›] at hmul; rw [one_mul]; exact Eq.symm hmul
     show d = 1 ∨ d = p from Or.inl (mul_right_cancel₀ h₀.ne' this)

@@ -80,7 +80,6 @@ theorem prod_single_index {a : α} {b : M} {h : α → M → N} (h_zero : h a 0 
       prod_of_support_subset _ support_single_subset h fun x hx =>
         (mem_singleton.1 hx).symm ▸ h_zero
     _ = h a b := by simp
-
 #align finsupp.prod_single_index Finsupp.prod_single_index
 #align finsupp.sum_single_index Finsupp.sum_single_index
 
@@ -663,7 +662,6 @@ namespace Nat
 theorem prod_pow_pos_of_zero_not_mem_support {f : ℕ →₀ ℕ} (hf : 0 ∉ f.support) :
     0 < f.prod (· ^ ·) :=
  Finset.prod_pos fun a ha => pos_iff_ne_zero.mpr (pow_ne_zero _ fun H => by subst H; exact hf ha)
-
 #align nat.prod_pow_pos_of_zero_not_mem_support Nat.prod_pow_pos_of_zero_not_mem_support
 
 end Nat

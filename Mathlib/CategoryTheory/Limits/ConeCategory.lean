@@ -106,7 +106,6 @@ theorem hasLimitsOfShape_iff_isLeftAdjoint_const :
       (forall_congr' fun F => (Cone.equivCostructuredArrow F).hasTerminal_iff)
     _ ↔ Nonempty (IsLeftAdjoint (const J : C ⥤ _)) :=
       nonempty_isLeftAdjoint_iff_hasTerminal_costructuredArrow.symm
-
 #align category_theory.limits.has_limits_of_shape_iff_is_left_adjoint_const CategoryTheory.Limits.hasLimitsOfShape_iff_isLeftAdjoint_const
 
 theorem IsLimit.liftConeMorphism_eq_isTerminal_from {F : J ⥤ C} {c : Cone F} (hc : IsLimit c)
@@ -156,8 +155,7 @@ def Cocone.fromStructuredArrow (F : J ⥤ C) : StructuredArrow F (const J) ⥤ C
         convert (congr_fun (congr_arg NatTrans.app f.w) j).symm
         dsimp
         simp }
-#align category_theory.limits.cocone.from_structured_arrow
-  CategoryTheory.Limits.Cocone.fromStructuredArrow
+#align category_theory.limits.cocone.from_structured_arrow CategoryTheory.Limits.Cocone.fromStructuredArrow
 
 /-- The category of cocones on `F` is just the comma category `(F ↓ Δ)`, where `Δ` is the constant
     functor. -/
@@ -182,8 +180,7 @@ theorem hasColimit_iff_hasInitial_cocone (F : J ⥤ C) : HasColimit F ↔ HasIni
   ⟨fun _ => (Cocone.isColimitEquivIsInitial _ (colimit.isColimit F)).hasInitial, fun h =>
     haveI : HasInitial (Cocone F) := h
     ⟨⟨⟨⊥_ _, (Cocone.isColimitEquivIsInitial _).symm initialIsInitial⟩⟩⟩⟩
-#align category_theory.limits.has_colimit_iff_has_initial_cocone
-  CategoryTheory.Limits.hasColimit_iff_hasInitial_cocone
+#align category_theory.limits.has_colimit_iff_has_initial_cocone CategoryTheory.Limits.hasColimit_iff_hasInitial_cocone
 
 theorem hasColimitsOfShape_iff_isRightAdjoint_const :
     HasColimitsOfShape J C ↔ Nonempty (IsRightAdjoint (const J : C ⥤ _)) :=
@@ -195,9 +192,7 @@ theorem hasColimitsOfShape_iff_isRightAdjoint_const :
       (forall_congr' fun F => (Cocone.equivStructuredArrow F).hasInitial_iff)
     _ ↔ Nonempty (IsRightAdjoint (const J : C ⥤ _)) :=
       nonempty_isRightAdjoint_iff_hasInitial_structuredArrow.symm
-
-#align category_theory.limits.has_colimits_of_shape_iff_is_right_adjoint_const
-  CategoryTheory.Limits.hasColimitsOfShape_iff_isRightAdjoint_const
+#align category_theory.limits.has_colimits_of_shape_iff_is_right_adjoint_const CategoryTheory.Limits.hasColimitsOfShape_iff_isRightAdjoint_const
 
 theorem IsColimit.descCoconeMorphism_eq_isInitial_to {F : J ⥤ C} {c : Cocone F} (hc : IsColimit c)
     (s : Cocone F) :
