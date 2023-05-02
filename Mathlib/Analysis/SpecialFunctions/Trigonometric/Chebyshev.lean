@@ -8,10 +8,10 @@ Authors: Johan Commelin
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Complex.Basic
-import Mathbin.Data.Complex.Exponential
-import Mathbin.Data.Polynomial.AlgebraMap
-import Mathbin.RingTheory.Polynomial.Chebyshev
+import Mathlib.Analysis.Complex.Basic
+import Mathlib.Data.Complex.Exponential
+import Mathlib.Data.Polynomial.AlgebraMap
+import Mathlib.RingTheory.Polynomial.Chebyshev
 
 /-!
 # Multiple angle formulas in terms of Chebyshev polynomials
@@ -74,12 +74,10 @@ value `cos (n * θ)`. -/
 theorem t_complex_cos : ∀ n, (T ℂ n).eval (cos θ) = cos (n * θ)
   | 0 => by simp only [T_zero, eval_one, Nat.cast_zero, MulZeroClass.zero_mul, cos_zero]
   | 1 => by simp only [eval_X, one_mul, T_one, Nat.cast_one]
-  | n + 2 =>
-    by
+  | n + 2 => by
     simp only [eval_X, eval_one, T_add_two, eval_sub, eval_bit0, Nat.cast_succ, eval_mul]
     rw [T_complex_cos (n + 1), T_complex_cos n]
-    have aux : sin θ * sin θ = 1 - cos θ * cos θ :=
-      by
+    have aux : sin θ * sin θ = 1 - cos θ * cos θ := by
       rw [← sin_sq_add_cos_sq θ]
       ring
     simp only [Nat.cast_add, Nat.cast_one, add_mul, cos_add, one_mul, sin_add, mul_assoc, aux]
@@ -89,8 +87,7 @@ theorem t_complex_cos : ∀ n, (T ℂ n).eval (cos θ) = cos (n * θ)
 /-- The `n`-th Chebyshev polynomial of the second kind evaluates on `cos θ` to the
 value `sin ((n + 1) * θ) / sin θ`. -/
 @[simp]
-theorem u_complex_cos (n : ℕ) : (U ℂ n).eval (cos θ) * sin θ = sin ((n + 1) * θ) :=
-  by
+theorem u_complex_cos (n : ℕ) : (U ℂ n).eval (cos θ) * sin θ = sin ((n + 1) * θ) := by
   induction' n with d hd
   · simp only [U_zero, Nat.cast_zero, eval_one, mul_one, zero_add, one_mul]
   · rw [U_eq_X_mul_U_add_T]
