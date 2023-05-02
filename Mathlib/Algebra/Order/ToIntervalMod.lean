@@ -89,7 +89,7 @@ theorem toIcoMod_mem_Ico (a : α) {b : α} (hb : 0 < b) (x : α) :
 
 theorem toIcoMod_mem_Ico' {b : α} (hb : 0 < b) (x : α) : toIcoMod 0 hb x ∈ Set.Ico 0 b := by
   convert toIcoMod_mem_Ico 0 hb x
-  simp
+  exact (zero_add b).symm
 #align to_Ico_mod_mem_Ico' toIcoMod_mem_Ico'
 
 theorem toIocMod_mem_Ioc (a : α) {b : α} (hb : 0 < b) (x : α) :
@@ -517,26 +517,27 @@ open List in
 theorem tFAE_memIooMod :
     TFAE
       [MemIooMod a b x,
-      toIcoMod a hb x = toIocMod a hb x,
-      toIcoMod a hb x + b ≠ toIocMod a hb x,
-        toIcoMod a hb x ≠ a] := by
--- Porting note: rewrite using tfae_have
-  apply_rules [tfae_of_cycle, Chain.cons, Chain.nil] <;> dsimp only [ilast']
-  · ext y
-    rcases y with ⟨i, hi⟩
-    exact
+       toIcoMod a hb x = toIocMod a hb x,
+       toIcoMod a hb x + b ≠ toIocMod a hb x,
+       toIcoMod a hb x ≠ a] := by
+  tfae_have 1 → 2
+  · exact fun ⟨i, hi⟩ =>
       ((toIcoMod_eq_iff hb).2 ⟨Set.Ioo_subset_Ico_self hi, i, (sub_add_cancel x _).symm⟩).trans
         ((toIocMod_eq_iff hb).2 ⟨Set.Ioo_subset_Ioc_self hi, i, (sub_add_cancel x _).symm⟩).symm
+  tfae_have 2 → 3
   · intro h
     rw [h, Ne, add_right_eq_self]
     exact hb.ne'
+  tfae_have 3 → 4
   · refine' mt fun h => _
     rw [h, eq_comm, toIocMod_eq_iff, Set.right_mem_Ioc]
     refine' ⟨lt_add_of_pos_right a hb, toIcoDiv a hb x - 1, _⟩
     rw [sub_one_zsmul, add_add_add_comm, add_right_neg, add_zero]
     conv_lhs => rw [← toIcoMod_add_toIcoDiv_zsmul a hb x, h]
+  tfae_have 4 → 1
   · have h' := toIcoMod_mem_Ico a hb x
     exact fun h => ⟨_, h'.1.lt_of_ne' h, h'.2⟩
+  tfae_finish
 #align tfae_mem_Ioo_mod tFAE_memIooMod
 
 variable {a x}
@@ -642,11 +643,7 @@ theorem toIocMod_le_toIcoMod_add (a : α) {b : α} (hb : 0 < b) (x : α) :
     toIocMod a hb x ≤ toIcoMod a hb x + b := by
   rw [toIcoMod, toIocMod, sub_add, sub_le_sub_iff_left, sub_le_iff_le_add, ← add_one_zsmul,
     (zsmul_strictMono_left hb).le_iff_le]
-  -- Porting note: used to be proven by
-  -- simp [toIocDiv_wcovby_toIcoDiv a hb x]
-  have := toIocDiv_wcovby_toIcoDiv a hb x
-  simp only [Wcovby, not_lt] at this
-  simp [this.2]
+  apply (toIocDiv_wcovby_toIcoDiv _ _ _).le_succ
 #align to_Ioc_mod_le_to_Ico_mod_add toIocMod_le_toIcoMod_add
 
 end IcoIoc
@@ -705,14 +702,10 @@ theorem toIocMod_periodic (a : α) {b : α} (hb : 0 < b) : Function.Periodic (to
 @[simps! symm_apply]
 def quotientAddGroup.equivIcoMod (a : α) {b : α} (hb : 0 < b) :
     α ⧸ AddSubgroup.zmultiples b ≃ Set.Ico a (a + b) where
-  -- Porting note: Needed to insert `by apply` here
   toFun x :=
-    ⟨(toIcoMod_periodic a hb).lift x, by
-      apply QuotientAddGroup.induction_on'
-        (C := fun x => (toIcoMod_periodic a hb).lift x ∈ Set.Ico a (a + b)) x <|
-          toIcoMod_mem_Ico a hb⟩
+    ⟨(toIcoMod_periodic a hb).lift x, QuotientAddGroup.induction_on' x <| toIcoMod_mem_Ico a hb⟩
   invFun := (↑)
-  right_inv x := Subtype.ext <| (toIcoMod_eq_self hb).mpr x.2
+  right_inv x := Subtype.ext <| (toIcoMod_eq_self hb).mpr x.prop
   left_inv x := by
     induction x using QuotientAddGroup.induction_on'
     dsimp
@@ -726,17 +719,14 @@ theorem quotientAddGroup.equivIcoMod_coe (a : α) {b : α} (hb : 0 < b) (x : α)
   rfl
 #align quotient_add_group.equiv_Ico_mod_coe quotientAddGroup.equivIcoMod_coe
 
-/-- `toIocMod` as an Equiv from the quotient. -/
-@[simps! symm_apply]
+/-- `to_Ioc_mod` as an equiv  from the quotient. -/
+@[simps symm_apply]
 def quotientAddGroup.equivIocMod (a : α) {b : α} (hb : 0 < b) :
     α ⧸ AddSubgroup.zmultiples b ≃ Set.Ioc a (a + b) where
   toFun x :=
-    ⟨(toIocMod_periodic a hb).lift x, by
-      apply QuotientAddGroup.induction_on'
-        (C := fun x => (toIocMod_periodic a hb).lift x ∈ Set.Ioc a (a + b)) x <|
-          toIocMod_mem_Ioc a hb⟩
+    ⟨(toIocMod_periodic a hb).lift x, QuotientAddGroup.induction_on' x <| toIocMod_mem_Ioc a hb⟩
   invFun := (↑)
-  right_inv x := Subtype.ext <| (toIocMod_eq_self hb).mpr x.2
+  right_inv x := Subtype.ext <| (toIocMod_eq_self hb).mpr x.prop
   left_inv x := by
     induction x using QuotientAddGroup.induction_on'
     dsimp
@@ -756,19 +746,19 @@ section LinearOrderedField
 
 variable {α : Type _} [LinearOrderedField α] [FloorRing α]
 
--- Porting note: Needed to explicitly add (hα := FloorRing.archimedean α) in a lot of theorems here
-theorem toIcoDiv_eq_floor (a : α) {b : α} (hb : 0 < b) (x : α) :
-  toIcoDiv (hα := FloorRing.archimedean α) a hb x = ⌊(x - a) / b⌋ := by
-  haveI : Archimedean α := inferInstance
-  refine' (eq_toIcoDiv_of_sub_zsmul_mem_Ico (hα := this) hb _).symm
+set_option synthInstance.etaExperiment true in
+theorem toIcoDiv_eq_floor (a : α) {b : α} (hb : 0 < b) (x : α) : toIcoDiv a hb x = ⌊(x - a) / b⌋ :=
+  by
+  refine' (eq_toIcoDiv_of_sub_zsmul_mem_Ico hb _).symm
   rw [Set.mem_Ico, zsmul_eq_mul, ← sub_nonneg, add_comm, sub_right_comm, ← sub_lt_iff_lt_add,
     sub_right_comm _ _ a]
   exact ⟨Int.sub_floor_div_mul_nonneg _ hb, Int.sub_floor_div_mul_lt _ hb⟩
 #align to_Ico_div_eq_floor toIcoDiv_eq_floor
 
+set_option synthInstance.etaExperiment true in
 theorem toIocDiv_eq_neg_floor (a : α) {b : α} (hb : 0 < b) (x : α) :
-    toIocDiv (hα := FloorRing.archimedean α) a hb x = -⌊(a + b - x) / b⌋ := by
-  refine' (eq_toIocDiv_of_sub_zsmul_mem_Ioc (hα := FloorRing.archimedean α) hb _).symm
+    toIocDiv a hb x = -⌊(a + b - x) / b⌋ := by
+  refine' (eq_toIocDiv_of_sub_zsmul_mem_Ioc hb _).symm
   rw [Set.mem_Ioc, zsmul_eq_mul, Int.cast_neg, neg_mul, sub_neg_eq_add, ← sub_nonneg,
     sub_add_eq_sub_sub]
   refine' ⟨_, Int.sub_floor_div_mul_nonneg _ hb⟩
@@ -777,42 +767,34 @@ theorem toIocDiv_eq_neg_floor (a : α) {b : α} (hb : 0 < b) (x : α) :
   exact Int.sub_floor_div_mul_lt _ hb
 #align to_Ioc_div_eq_neg_floor toIocDiv_eq_neg_floor
 
-theorem toIcoDiv_zero_one (x : α) :
-    toIcoDiv (hα := FloorRing.archimedean α) (0 : α) zero_lt_one x = ⌊x⌋ := by
+set_option synthInstance.etaExperiment true in
+theorem toIcoDiv_zero_one (x : α) : toIcoDiv (0 : α) zero_lt_one x = ⌊x⌋ := by
   simp [toIcoDiv_eq_floor]
 #align to_Ico_div_zero_one toIcoDiv_zero_one
 
--- Porting note: Ugly proof due to lack of field_simp. Takes too long due to instance synth
-set_option maxHeartbeats 350000
+set_option synthInstance.etaExperiment true in
 theorem toIcoMod_eq_add_fract_mul (a : α) {b : α} (hb : 0 < b) (x : α) :
-    toIcoMod (hα := FloorRing.archimedean α) a hb x = a + Int.fract ((x - a) / b) * b := by
-  unfold toIcoMod
-  rw [toIcoDiv_eq_floor, zsmul_eq_mul, Int.fract]
-  ring_nf
-  rw [mul_assoc, mul_inv_cancel hb.ne.symm, mul_one]
-  rw [mul_assoc, mul_inv_cancel hb.ne.symm, mul_one]
-  ring_nf
+    toIcoMod a hb x = a + Int.fract ((x - a) / b) * b := by
+  rw [toIcoMod, toIcoDiv_eq_floor, Int.fract]
+  field_simp [hb.ne.symm]
+  ring
 #align to_Ico_mod_eq_add_fract_mul toIcoMod_eq_add_fract_mul
 
+set_option synthInstance.etaExperiment true in
 theorem toIcoMod_eq_fract_mul {b : α} (hb : 0 < b) (x : α) :
-    toIcoMod (hα := FloorRing.archimedean α) 0 hb x = Int.fract (x / b) * b := by
-  simp [toIcoMod_eq_add_fract_mul, Int.coe_castRingHom ]
+    toIcoMod 0 hb x = Int.fract (x / b) * b := by simp [toIcoMod_eq_add_fract_mul]
 #align to_Ico_mod_eq_fract_mul toIcoMod_eq_fract_mul
 
--- Porting note: Ugly proof due to lack of field_simp. Takes too long due to instance synth
+set_option synthInstance.etaExperiment true in
 theorem toIocMod_eq_sub_fract_mul (a : α) {b : α} (hb : 0 < b) (x : α) :
-    toIocMod (hα := FloorRing.archimedean α) a hb x = a + b - Int.fract ((a + b - x) / b) * b := by
-  unfold toIocMod
-  rw [toIocDiv_eq_neg_floor, zsmul_eq_mul, Int.fract]
-  ring_nf
-  rw [mul_assoc, mul_inv_cancel hb.ne.symm, mul_one]
-  rw [mul_assoc, mul_inv_cancel hb.ne.symm, mul_one]
-  rw [pow_two, mul_assoc, mul_inv_cancel hb.ne.symm, mul_one]
-  simp
+    toIocMod a hb x = a + b - Int.fract ((a + b - x) / b) * b := by
+  rw [toIocMod, toIocDiv_eq_neg_floor, Int.fract]
+  field_simp [hb.ne.symm]
+  ring
 #align to_Ioc_mod_eq_sub_fract_mul toIocMod_eq_sub_fract_mul
 
-theorem toIcoMod_zero_one (x : α) :
-    toIcoMod (hα := FloorRing.archimedean α) (0 : α) zero_lt_one x = Int.fract x := by
+set_option synthInstance.etaExperiment true in
+theorem toIcoMod_zero_one (x : α) : toIcoMod (0 : α) zero_lt_one x = Int.fract x := by
   simp [toIcoMod_eq_add_fract_mul]
 #align to_Ico_mod_zero_one toIcoMod_zero_one
 
