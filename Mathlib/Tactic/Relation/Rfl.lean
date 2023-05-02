@@ -51,6 +51,7 @@ def _root_.Lean.MVarId.rfl (goal : MVarId) : MetaM Unit := do
     | throwError "reflexivity lemmas only apply to binary relations, not
       {indentExpr (← goal.getType)}"
   let s ← saveState
+  let mut ex? := none
   for lem in ← (reflExt.getState (← getEnv)).getMatch rel do
     try
       let gs ← goal.apply (← mkConstWithFreshMVarLevels lem)
@@ -58,8 +59,11 @@ def _root_.Lean.MVarId.rfl (goal : MVarId) : MetaM Unit := do
         logError <| MessageData.tagged `Tactic.unsolvedGoals <| m!"unsolved goals\n
           {goalsToMessageData gs}"
     catch e =>
-      s.restore
+      ex? := ex? <|> (some (← saveState, e)) -- stash the first failure of `apply`
+  if let some (sErr, e) := ex? then
+    sErr.restore
       throw e
+  else
   throwError "rfl failed, no lemma with @[refl] applies"
 
 /--
