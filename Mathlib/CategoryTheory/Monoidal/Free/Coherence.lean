@@ -8,9 +8,9 @@ Authors: Markus Himmel
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Monoidal.Free.Basic
-import Mathbin.CategoryTheory.Groupoid
-import Mathbin.CategoryTheory.DiscreteCategory
+import Mathlib.CategoryTheory.Monoidal.Free.Basic
+import Mathlib.CategoryTheory.Groupoid
+import Mathlib.CategoryTheory.DiscreteCategory
 
 /-!
 # The monoidal coherence theorem
@@ -161,8 +161,7 @@ variable (C)
     out to be very easy), and then obtain a functor `F C ⥤ N C` by plugging in the normal object
     `𝟙_ C`. -/
 @[simp]
-def normalize : F C ⥤ N C ⥤ N C
-    where
+def normalize : F C ⥤ N C ⥤ N C where
   obj X := Discrete.functor (normalizeObj X)
   map X Y := Quotient.lift normalizeMapAux (by tidy)
 #align category_theory.free_monoidal_category.normalize CategoryTheory.FreeMonoidalCategory.normalize
@@ -176,8 +175,7 @@ def normalize' : F C ⥤ N C ⥤ F C :=
 #align category_theory.free_monoidal_category.normalize' CategoryTheory.FreeMonoidalCategory.normalize'
 
 /-- The normalization functor for the free monoidal category over `C`. -/
-def fullNormalize : F C ⥤ N C
-    where
+def fullNormalize : F C ⥤ N C where
   obj X := ((normalize C).obj X).obj ⟨NormalMonoidalObject.unit⟩
   map X Y f := ((normalize C).map f).app ⟨NormalMonoidalObject.unit⟩
 #align category_theory.free_monoidal_category.full_normalize CategoryTheory.FreeMonoidalCategory.fullNormalize
@@ -187,8 +185,7 @@ def fullNormalize : F C ⥤ N C
 /-- Given an object `X` of the free monoidal category and an object `n` in normal form, taking
     the tensor product `n ⊗ X` in the free monoidal category is functorial in both `X` and `n`. -/
 @[simp]
-def tensorFunc : F C ⥤ N C ⥤ F C
-    where
+def tensorFunc : F C ⥤ N C ⥤ F C where
   obj X := Discrete.functor fun n => inclusion.obj ⟨n⟩ ⊗ X
   map X Y f :=
     ⟨fun n => 𝟙 _ ⊗ f, by
@@ -203,8 +200,7 @@ theorem tensorFunc_map_app {X Y : F C} (f : X ⟶ Y) (n) : ((tensorFunc C).map f
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem tensorFunc_obj_map (Z : F C) {n n' : N C} (f : n ⟶ n') :
-    ((tensorFunc C).obj Z).map f = inclusion.map f ⊗ 𝟙 Z :=
-  by
+    ((tensorFunc C).obj Z).map f = inclusion.map f ⊗ 𝟙 Z := by
   cases n
   cases n'
   tidy
@@ -352,8 +348,7 @@ end
 
 /-- The monoidal coherence theorem. -/
 instance subsingleton_hom : Quiver.IsThin (F C) := fun _ _ =>
-  ⟨fun f g =>
-    by
+  ⟨fun f g => by
     have : (fullNormalize C).map f = (fullNormalize C).map g := Subsingleton.elim _ _
     rw [← functor.id_map f, ← functor.id_map g]
     simp [← nat_iso.naturality_2 (fullNormalizeIso.{u} C), this]⟩
