@@ -8,8 +8,8 @@ Authors: Anne Baanen, Alex J. Best
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.LinearAlgebra.Determinant
-import Mathbin.LinearAlgebra.FreeModule.Finite.Basic
+import Mathlib.LinearAlgebra.Determinant
+import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 
 /-!
 # Determinants in free (finite) modules
@@ -26,8 +26,7 @@ free (finite) modules over any commutative ring.
 
 @[simp]
 theorem LinearMap.det_zero'' {R M : Type _} [CommRing R] [AddCommGroup M] [Module R M]
-    [Module.Free R M] [Module.Finite R M] [Nontrivial M] : LinearMap.det (0 : M →ₗ[R] M) = 0 :=
-  by
+    [Module.Free R M] [Module.Finite R M] [Nontrivial M] : LinearMap.det (0 : M →ₗ[R] M) = 0 := by
   letI : Nonempty (Module.Free.ChooseBasisIndex R M) := (Module.Free.chooseBasis R M).index_nonempty
   nontriviality R
   exact LinearMap.det_zero' (Module.Free.chooseBasis R M)
