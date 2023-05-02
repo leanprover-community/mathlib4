@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 
 ! This file was ported from Lean 3 source module algebra.order.to_interval_mod
-! leanprover-community/mathlib commit 2196ab363eb097c008d4497125e0dde23fb36db2
+! leanprover-community/mathlib commit 814d76e2247d5ba8bc024843552da1278bfe9e5c
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -357,8 +357,7 @@ theorem toIcoDiv_neg (a : α) {b : α} (hb : 0 < b) (x : α) :
     toIcoDiv a hb (-x) = -(toIocDiv (-a) hb x + 1) := by
   suffices toIcoDiv a hb (-x) = -toIocDiv (-(a + b)) hb x by
     rwa [neg_add, ← sub_eq_add_neg, ← toIocDiv_add_right', toIocDiv_add_right] at this
-  rw [← neg_eq_iff_eq_neg, eq_comm]
-  symm
+  rw [← neg_eq_iff_eq_neg]
   apply eq_toIocDiv_of_sub_zsmul_mem_Ioc
   obtain ⟨hc, ho⟩ := sub_toIcoDiv_zsmul_mem_Ico a hb (-x)
   rw [← neg_lt_neg_iff, neg_sub' (-x), neg_neg, ← neg_smul] at ho
@@ -730,8 +729,7 @@ theorem quotientAddGroup.equivIcoMod_coe (a : α) {b : α} (hb : 0 < b) (x : α)
 /-- `toIocMod` as an Equiv from the quotient. -/
 @[simps! symm_apply]
 def quotientAddGroup.equivIocMod (a : α) {b : α} (hb : 0 < b) :
-    α ⧸ AddSubgroup.zmultiples b ≃ Set.Ioc a (a + b)
-    where
+    α ⧸ AddSubgroup.zmultiples b ≃ Set.Ioc a (a + b) where
   toFun x :=
     ⟨(toIocMod_periodic a hb).lift x, by
       apply QuotientAddGroup.induction_on'
@@ -820,8 +818,8 @@ theorem toIcoMod_zero_one (x : α) :
 
 end LinearOrderedField
 
--- Porting note: adding the changes from mathlib
 /-! ### Lemmas about unions of translates of intervals -/
+
 
 section Union
 
@@ -831,8 +829,7 @@ section LinearOrderedAddCommGroup
 
 variable {α : Type _} [LinearOrderedAddCommGroup α] [Archimedean α] (a : α) {b : α} (hb : 0 < b)
 
-theorem unionᵢ_Ioc_add_zsmul : (⋃ n : ℤ, Ioc (a + n • b) (a + (n + 1) • b)) = univ :=
-  by
+theorem unionᵢ_Ioc_add_zsmul : (⋃ n : ℤ, Ioc (a + n • b) (a + (n + 1) • b)) = univ := by
   refine' eq_univ_iff_forall.mpr fun x => mem_unionᵢ.mpr _
   rcases sub_toIocDiv_zsmul_mem_Ioc a hb x with ⟨hl, hr⟩
   refine' ⟨toIocDiv a hb x, ⟨lt_sub_iff_add_lt.mp hl, _⟩⟩
@@ -840,8 +837,7 @@ theorem unionᵢ_Ioc_add_zsmul : (⋃ n : ℤ, Ioc (a + n • b) (a + (n + 1) �
   convert sub_le_iff_le_add.mp hr using 1; abel
 #align Union_Ioc_add_zsmul unionᵢ_Ioc_add_zsmul
 
-theorem unionᵢ_Ico_add_zsmul : (⋃ n : ℤ, Ico (a + n • b) (a + (n + 1) • b)) = univ :=
-  by
+theorem unionᵢ_Ico_add_zsmul : (⋃ n : ℤ, Ico (a + n • b) (a + (n + 1) • b)) = univ := by
   refine' eq_univ_iff_forall.mpr fun x => mem_unionᵢ.mpr _
   rcases sub_toIcoDiv_zsmul_mem_Ico a hb x with ⟨hl, hr⟩
   refine' ⟨toIcoDiv a hb x, ⟨le_sub_iff_add_le.mp hl, _⟩⟩
@@ -872,21 +868,18 @@ section LinearOrderedRing
 
 variable {α : Type _} [LinearOrderedRing α] [Archimedean α] (a : α)
 
--- Porting note: failed to synth archimedean
 set_option synthInstance.etaExperiment true in
 theorem unionᵢ_Ioc_add_int_cast : (⋃ n : ℤ, Ioc (a + n) (a + n + 1)) = Set.univ := by
   simpa only [zsmul_one, Int.cast_add, Int.cast_one, ← add_assoc] using
     unionᵢ_Ioc_add_zsmul a zero_lt_one
 #align Union_Ioc_add_int_cast unionᵢ_Ioc_add_int_cast
 
--- Porting note: failed to synth archimedean
 set_option synthInstance.etaExperiment true in
 theorem unionᵢ_Ico_add_int_cast : (⋃ n : ℤ, Ico (a + n) (a + n + 1)) = Set.univ := by
   simpa only [zsmul_one, Int.cast_add, Int.cast_one, ← add_assoc] using
     unionᵢ_Ico_add_zsmul a zero_lt_one
 #align Union_Ico_add_int_cast unionᵢ_Ico_add_int_cast
 
--- Porting note: failed to synth archimedean
 set_option synthInstance.etaExperiment true in
 theorem unionᵢ_Icc_add_int_cast : (⋃ n : ℤ, Icc (a + n) (a + n + 1)) = Set.univ := by
   simpa only [zsmul_one, Int.cast_add, Int.cast_one, ← add_assoc] using
