@@ -60,11 +60,12 @@ def _root_.Lean.MVarId.rfl (goal : MVarId) : MetaM Unit := do
           {goalsToMessageData gs}"
     catch e =>
       ex? := ex? <|> (some (← saveState, e)) -- stash the first failure of `apply`
+    s.restore
   if let some (sErr, e) := ex? then
     sErr.restore
-      throw e
+    throw e
   else
-  throwError "rfl failed, no lemma with @[refl] applies"
+    throwError "rfl failed, no lemma with @[refl] applies"
 
 /--
 This tactic applies to a goal whose target has the form `x ~ x`, where `~` is a reflexive
