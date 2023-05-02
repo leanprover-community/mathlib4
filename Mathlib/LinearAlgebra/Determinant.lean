@@ -404,7 +404,8 @@ theorem det_trans (f g : M ≃ₗ[R] M) :
   map_mul _ g f
 #align linear_equiv.det_trans LinearEquiv.det_trans
 
-@[simp]
+-- Porting note: The lint can't use `synthInstance.etaExperiment`.
+@[simp, nolint simpNF]
 theorem det_symm (f : M ≃ₗ[R] M) : LinearEquiv.det f.symm = LinearEquiv.det f⁻¹ :=
   map_inv _ f
 #align linear_equiv.det_symm LinearEquiv.det_symm
@@ -482,9 +483,12 @@ theorem LinearEquiv.coe_ofIsUnitDet {f : M →ₗ[R] M'} {v : Basis ι R M} {v' 
   rfl
 #align linear_equiv.coe_of_is_unit_det LinearEquiv.coe_ofIsUnitDet
 
+-- Porting note: The next line should be deleted in future.
+-- The problem here is a slow `isDefEq` problem:
+-- [Meta.isDefEq] [8.157421s] ✅ Matrix.det
+--       (↑(LinearMap.toMatrix (FiniteDimensional.finBasis 𝕜 M) (FiniteDimensional.finBasis 𝕜 M))
+--         f) =?= Matrix.det (↑(LinearMap.toMatrix ?b ?b) ?f) ▶
 set_option maxHeartbeats 300000 in
-set_option profiler true in
-set_option trace.Meta.isDefEq true in
 /-- Builds a linear equivalence from a linear map on a finite-dimensional vector space whose
 determinant is nonzero. -/
 @[reducible]
@@ -492,10 +496,6 @@ def LinearMap.equivOfDetNeZero {𝕜 : Type _} [Field 𝕜] {M : Type _} [AddCom
     [FiniteDimensional 𝕜 M] (f : M →ₗ[𝕜] M) (hf : LinearMap.det f ≠ 0) : M ≃ₗ[𝕜] M :=
   have : IsUnit (LinearMap.toMatrix (FiniteDimensional.finBasis 𝕜 M)
       (FiniteDimensional.finBasis 𝕜 M) f).det := by
-    -- The problem here is a slow `isDefEq` problem:
-    -- [Meta.isDefEq] [8.157421s] ✅ Matrix.det
-    --       (↑(LinearMap.toMatrix (FiniteDimensional.finBasis 𝕜 M) (FiniteDimensional.finBasis 𝕜 M))
-    --         f) =?= Matrix.det (↑(LinearMap.toMatrix ?b ?b) ?f) ▶
     rw [LinearMap.det_toMatrix]
     exact isUnit_iff_ne_zero.2 hf
   LinearEquiv.ofIsUnitDet this
