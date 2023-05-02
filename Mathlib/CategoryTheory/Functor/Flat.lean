@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 
 ! This file was ported from Lean 3 source module category_theory.functor.flat
-! leanprover-community/mathlib commit 14e80e85cbca5872a329fbfd3d1f3fd64e306934
+! leanprover-community/mathlib commit 39478763114722f0ec7613cb2f3f7701f9b86c8d
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
