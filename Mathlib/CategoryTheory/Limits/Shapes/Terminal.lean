@@ -483,6 +483,8 @@ example {J : Type _} [Category J] {C : Type _} [Category C] [HasTerminal C]
   [] result Unique.instSubsingleton
   -/
 set_option trace.Meta.synthInstance true in
+set_option trace.Meta.isDefEq true in
+set_option pp.universes true in
 instance {J : Type _} [Category J] {C : Type _} [Category C] [HasTerminal C] :
     HasLimit ((CategoryTheory.Functor.const J).obj (⊤_ C)) :=
   HasLimit.mk
@@ -495,13 +497,27 @@ instance {J : Type _} [Category J] {C : Type _} [Category C] [HasTerminal C] :
           intro s j
           simp only [terminal.comp_from, Functor.const_obj_obj]
           -- However inside `simp` the same instance is not found?
+          -- refine (eq_iff_true_of_subsingleton _ _).2 trivial
+          -- rw [eq_iff_true_of_subsingleton]
           simp only [eq_iff_true_of_subsingleton]
           /-
           [Meta.synthInstance] 💥 Subsingleton (s.pt ⟶ ⊤_ C) ▼
-          [] new goal Subsingleton (s.pt ⟶ ⊤_ C) ▼
-            [instances] #[@IsEmpty.instSubsingleton, @Unique.instSubsingleton, instSubsingleton, @Preorder.Preorder.subsingleton_hom]
-          [] 💥 apply @Preorder.Preorder.subsingleton_hom to Subsingleton (s.pt ⟶ ⊤_ C) ▼
-            [tryResolve] 💥 Subsingleton (s.pt ⟶ ⊤_ C) ≟ Subsingleton (?m.78176 ⟶ ?m.78177)
+            [] new goal Subsingleton (s.pt ⟶ ⊤_ C) ▶
+            [] 💥 apply @Preorder.Preorder.subsingleton_hom to Subsingleton (s.pt ⟶ ⊤_ C) ▼
+              [tryResolve] 💥 Subsingleton (s.pt ⟶ ⊤_ C) ≟ Subsingleton (?m.77685 ⟶ ?m.77686) ▼
+                [isDefEq] 💥 Subsingleton (s.pt ⟶ ⊤_ C) =?= Subsingleton (?m.77685 ⟶ ?m.77686) ▼
+                  [] 💥 s.pt ⟶ ⊤_ C =?= ?m.77685 ⟶ ?m.77686 ▼
+                    [] ✅ C =?= ?m.77683 ▶
+                    [] ✅ s.pt =?= ?m.77685 ▶
+                    [] ✅ ⊤_ C =?= ?m.77686 ▶
+                    [] 💥 CategoryTheory.CategoryStruct.toQuiver =?= CategoryTheory.CategoryStruct.toQuiver ▼
+                      [] ✅ C =?= C
+                      [] 💥 CategoryTheory.Category.toCategoryStruct =?= CategoryTheory.Category.toCategoryStruct ▼
+                        [] ✅ C =?= C
+                        [] 💥 inst✝¹ =?= Preorder.smallCategory C ▼
+                          [] 💥 inst✝¹ =?= CategoryTheory.Category.mk ▼
+                            [] 💥 CategoryTheory.Category C =?= CategoryTheory.Category C ▼
+                              [] ✅ C =?= C
           -/
           -- `set_option synthInstance.etaExperiment false` allows this instance to be found again.
           ,
