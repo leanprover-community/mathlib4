@@ -4,12 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 
 ! This file was ported from Lean 3 source module analysis.special_functions.trigonometric.chebyshev
-! leanprover-community/mathlib commit 7aebb349fbbbf07c1b6e3867451b354730dc7799
+! leanprover-community/mathlib commit 2c1d8ca2812b64f88992a5294ea3dba144755cd1
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Analysis.Complex.Basic
 import Mathlib.Data.Complex.Exponential
+import Mathlib.Data.Complex.Module
 import Mathlib.Data.Polynomial.AlgebraMap
 import Mathlib.RingTheory.Polynomial.Chebyshev
 
