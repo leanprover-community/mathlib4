@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 
 ! This file was ported from Lean 3 source module ring_theory.finiteness
-! leanprover-community/mathlib commit e95e4f92c8f8da3c7f693c3ec948bcf9b6683f51
+! leanprover-community/mathlib commit c813ed7de0f5115f956239124e9b30f3a621966f
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -272,7 +272,10 @@ theorem fg_pi {ι : Type _} {M : ι → Type _} [Finite ι] [∀ i, AddCommMonoi
 abbrev asFun [AddCommGroup N] [Module R N] (f : M →ₗ[R] N) : M → N :=
   f
 
--- set_option synthInstance.etaExperiment true in
+-- Porting note: We've since turned on etaExperiment here,
+-- but there remain lots of notes below about clean up that is possible with etaExperiment,
+-- and we should follow these!
+set_option synthInstance.etaExperiment true in
 /-- If 0 → M' → M → M'' → 0 is exact and M' and M'' are
 finitely generated then so is M. -/
 theorem fg_of_fg_map_of_fg_inf_ker {R M P : Type _} [Ring R] [AddCommGroup M] [Module R M]
@@ -444,7 +447,7 @@ theorem fg_iff_compact (s : Submodule R M) : s.Fg ↔ CompleteLattice.IsCompactE
       -- Porting note: had to split this out of the `obtain`
       have := Finset.subset_image_iff.mp huspan
       obtain ⟨t, ⟨-, rfl⟩⟩ := this
-      rw [Finset.sup_finset_image, Function.comp.left_id, Finset.sup_eq_supᵢ, supr_rw, ←
+      rw [Finset.sup_image, Function.comp.left_id, Finset.sup_eq_supᵢ, supr_rw, ←
         span_eq_supᵢ_of_singleton_spans, eq_comm] at ssup
       exact ⟨t, ssup⟩
 #align submodule.fg_iff_compact Submodule.fg_iff_compact
@@ -645,14 +648,14 @@ theorem equiv [Finite R M] (e : M ≃ₗ[R] N) : Finite R N :=
 
 section Algebra
 
-theorem trans {R : Type _} (A B : Type _) [CommSemiring R] [CommSemiring A] [Algebra R A]
-    [Semiring B] [Algebra R B] [Algebra A B] [IsScalarTower R A B] :
-    ∀ [Finite R A] [Finite A B], Finite R B
+theorem trans {R : Type _} (A M : Type _) [CommSemiring R] [Semiring A] [Algebra R A]
+    [AddCommMonoid M] [Module R M] [Module A M] [IsScalarTower R A M] :
+    ∀ [Finite R A] [Finite A M], Finite R M
   | ⟨⟨s, hs⟩⟩, ⟨⟨t, ht⟩⟩ =>
     ⟨Submodule.fg_def.2
-        ⟨Set.image2 (· • ·) (↑s : Set A) (↑t : Set B),
+        ⟨Set.image2 (· • ·) (↑s : Set A) (↑t : Set M),
           Set.Finite.image2 _ s.finite_toSet t.finite_toSet, by
-          erw [Set.image2_smul, Submodule.span_smul_of_span_eq_top hs (↑t : Set B), ht,
+          erw [Set.image2_smul, Submodule.span_smul_of_span_eq_top hs (↑t : Set M), ht,
             Submodule.restrictScalars_top]⟩⟩
 #align module.finite.trans Module.Finite.trans
 
@@ -698,6 +701,7 @@ namespace RingHom
 
 variable {A B C : Type _} [CommRing A] [CommRing B] [CommRing C]
 
+set_option synthInstance.etaExperiment true in
 /-- A ring morphism `A →+* B` is `Finite` if `B` is finitely generated as `A`-module. -/
 def Finite (f : A →+* B) : Prop :=
   letI : Algebra A B := f.toAlgebra
@@ -714,20 +718,24 @@ theorem id : Finite (RingHom.id A) :=
 
 variable {A}
 
+set_option synthInstance.etaExperiment true in
 theorem of_surjective (f : A →+* B) (hf : Surjective f) : f.Finite :=
   letI := f.toAlgebra
   Module.Finite.of_surjective (Algebra.ofId A B).toLinearMap hf
 #align ring_hom.finite.of_surjective RingHom.Finite.of_surjective
 
-theorem comp {g : B →+* C} {f : A →+* B} (hg : g.Finite) (hf : f.Finite) : (g.comp f).Finite :=
+theorem comp {g : B →+* C} {f : A →+* B} (hg : g.Finite) (hf : f.Finite) : (g.comp f).Finite := by
+  set_option synthInstance.etaExperiment true in
   letI := f.toAlgebra
   letI := g.toAlgebra
   letI := (g.comp f).toAlgebra
-  @Module.Finite.trans A B C _ _ f.toAlgebra _ (g.comp f).toAlgebra g.toAlgebra
-    ⟨fun a b c => show (g ((f a) * b)) * c = g (f a) * (g b * c) by rw [map_mul, mul_assoc]⟩
-    hf hg
+  letI : IsScalarTower A B C := RestrictScalars.isScalarTower A B C
+  letI : Module.Finite A B := hf
+  letI : Module.Finite B C := hg
+  exact Module.Finite.trans B C
 #align ring_hom.finite.comp RingHom.Finite.comp
 
+set_option synthInstance.etaExperiment true in
 theorem of_comp_finite {f : A →+* B} {g : B →+* C} (h : (g.comp f).Finite) : g.Finite := by
   letI := f.toAlgebra
   letI := g.toAlgebra
