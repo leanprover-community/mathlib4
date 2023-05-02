@@ -64,11 +64,6 @@ def Summable (f : β → α) : Prop :=
   ∃ a, HasSum f a
 #align summable Summable
 
--- Porting note: `irreducible_def` produces a structure.
---               When a structure is defined, an injectivity theorem of the constructor is
---               generated, which has `simp` attr, but this get a `simpNF` linter.
---               So, this option is required.
-set_option genInjectivity false in
 /-- `∑' i, f i` is the sum of `f` it exists, or 0 otherwise -/
 irreducible_def tsum {β} (f : β → α) :=
   if h : Summable f then Classical.choose h else 0
@@ -330,8 +325,6 @@ theorem hasSum_sum {f : γ → β → α} {a : γ → α} {s : Finset γ} :
     simp (config := { contextual := true }) only [mem_insert, forall_eq_or_imp, not_false_iff,
       sum_insert, and_imp]
     exact fun x s _ IH hx h ↦ hx.add (IH h)
-
-
 #align has_sum_sum hasSum_sum
 
 theorem summable_sum {f : γ → β → α} {s : Finset γ} (hf : ∀ i ∈ s, Summable (f i)) :
@@ -1089,7 +1082,6 @@ theorem HasSum.sum_nat_of_sum_int {α : Type _} [AddCommMonoid α] [TopologicalS
     _ = (∑ x in u1, f x) + ∑ x in u2, f x := sum_union_inter
     _ = (∑ b in v', f b) + ∑ b in v', f (-b) := by simp
     _ = ∑ b in v', (f b + f (-b)) := sum_add_distrib.symm
-
 #align has_sum.sum_nat_of_sum_int HasSum.sum_nat_of_sum_int
 
 end Nat

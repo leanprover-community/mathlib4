@@ -685,7 +685,6 @@ theorem prod_id : ∀ {n} {α β : TypeVec.{u} n}, (id ⊗' id) = (id : α ⊗ �
   · cases a
     rfl
   · apply i_ih
-
 #align typevec.prod_id TypeVec.prod_id
 
 theorem append_prod_appendFun  {n}

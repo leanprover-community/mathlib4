@@ -17,7 +17,7 @@ import Mathlib.Data.Seq.Computation
 /-!
 # Possibly infinite lists
 
-This file provides a `Seq α` type repesenting possibly infinite lists (referred here as sequences).
+This file provides a `Seq α` type representing possibly infinite lists (referred here as sequences).
   It is encoded as an infinite stream of options such that if `f n = none`, then
   `f m = none` for all `m ≥ n`.
 -/
@@ -85,9 +85,9 @@ theorem get?_mk (f hf) : @get? α ⟨f, hf⟩ = f :=
 #align stream.seq.nth_mk Stream'.Seq.get?_mk
 
 @[simp]
-theorem nth_nil (n : ℕ) : (@nil α).get? n = none :=
+theorem get?_nil (n : ℕ) : (@nil α).get? n = none :=
   rfl
-#align stream.seq.nth_nil Stream'.Seq.nth_nil
+#align stream.seq.nth_nil Stream'.Seq.get?_nil
 
 @[simp]
 theorem get?_cons_zero (a : α) (s : Seq α) : (cons a s).get? 0 = some a :=
@@ -259,7 +259,7 @@ theorem head_nil : head (nil : Seq α) = none :=
 
 @[simp]
 theorem head_cons (a : α) (s) : head (cons a s) = some a := by
-  rw [head_eq_destruct, destruct_cons] ; rfl
+  rw [head_eq_destruct, destruct_cons, Option.map_eq_map, Option.map_some']
 #align stream.seq.head_cons Stream'.Seq.head_cons
 
 @[simp]
@@ -269,7 +269,10 @@ theorem tail_nil : tail (nil : Seq α) = nil :=
 
 @[simp]
 theorem tail_cons (a : α) (s) : tail (cons a s) = s := by
-  cases' s with f al ; apply Subtype.eq ; dsimp [tail, cons] ; rw [Stream'.tail_cons]
+  cases' s with f al
+  apply Subtype.eq
+  dsimp [tail, cons]
+  rw [Stream'.tail_cons]
 #align stream.seq.tail_cons Stream'.Seq.tail_cons
 
 @[simp]
@@ -361,7 +364,6 @@ section Bisim
 
 variable (R : Seq α → Seq α → Prop)
 
--- mathport name: R
 local infixl:50 " ~ " => R
 
 /-- Bisimilarity relation over `Option` of `Seq1 α`-/
@@ -494,9 +496,9 @@ unsafe def toLazyList : Seq α → LazyList α
 
 /-- Translate a sequence to a list. This function will run forever if
   run on an infinite sequence. -/
-unsafe def force_to_list (s : Seq α) : List α :=
+unsafe def forceToList (s : Seq α) : List α :=
   (toLazyList s).toList
-#align stream.seq.force_to_list Stream'.Seq.toLazyList
+#align stream.seq.force_to_list Stream'.Seq.forceToList
 
 /-- The sequence of natural numbers some 0, some 1, ... -/
 def nats : Seq ℕ :=
@@ -504,9 +506,9 @@ def nats : Seq ℕ :=
 #align stream.seq.nats Stream'.Seq.nats
 
 @[simp]
-theorem nats_nth (n : ℕ) : nats.get? n = some n :=
+theorem nats_get? (n : ℕ) : nats.get? n = some n :=
   rfl
-#align stream.seq.nats_nth Stream'.Seq.nats_nth
+#align stream.seq.nats_nth Stream'.Seq.nats_get?
 
 /-- Append two sequences. If `s₁` is infinite, then `s₁ ++ s₂ = s₁`,
   otherwise it puts `s₂` at the location of the `nil` in `s₁`. -/
@@ -1039,7 +1041,7 @@ theorem bind_assoc (s : Seq1 α) (f : α → Seq1 β) (g : β → Seq1 γ) :
     bind (bind s f) g = bind s fun x : α => bind (f x) g := by
   cases' s with a s
   -- Porting note: Was `simp [bind, map]`.
-  simp [bind, map_pair]
+  simp only [bind, map_pair, map_join]
   rw [← map_comp]
   simp only [show (fun x => join (map g (f x))) = join ∘ (map g ∘ f) from rfl]
   rw [map_comp _ join]
