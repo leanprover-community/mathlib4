@@ -7,6 +7,8 @@ import Mathlib.Data.Quot
 -- set_option trace.Tactic.librarySearch true
 -- And this option to trace all candidate lemmas before application.
 -- set_option trace.Tactic.librarySearch.lemmas true
+-- It may also be useful to enable
+-- set_option trace.Meta.Tactic.solveByElim true
 
 -- Recall that `library_search` caches the discrimination tree on disk.
 -- If you are modifying the way that `library_search` indexes lemmas,
