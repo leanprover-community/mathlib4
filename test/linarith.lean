@@ -161,6 +161,9 @@ example (x : Rat) (hx : x > 0) (h : x.num < 0) : False := by
 
 end term_arguments
 
+example (i n : ℕ) (h : (2:ℤ) ^ i ≤ 2 ^ n) : (0:ℤ) ≤ 2 ^ n - 2 ^ i := by
+  linarith
+
 -- Check we use `exfalso` on non-comparison goals.
 example (a b c : Rat) (h2 : b > 0) (h3 : b < 0) : Nat.prime 10 := by
   linarith
