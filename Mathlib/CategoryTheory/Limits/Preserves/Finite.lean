@@ -72,6 +72,7 @@ noncomputable def PreservesLimitsOfSize.preservesFiniteLimits (F : C ⥤ D)
 noncomputable instance (priority := 120) PreservesLimitsOfSize0.preservesFiniteLimits
     (F : C ⥤ D) [PreservesLimitsOfSize.{0, 0} F] : PreservesFiniteLimits F :=
   PreservesLimitsOfSize.preservesFiniteLimits F
+#align preserves_limits_of_size.zero.preserves_finite_limits CategoryTheory.Limits.PreservesLimitsOfSize0.preservesFiniteLimits
 
 noncomputable instance (priority := 120) PreservesLimits.preservesFiniteLimits (F : C ⥤ D)
     [PreservesLimits F] : PreservesFiniteLimits F :=
@@ -128,6 +129,7 @@ noncomputable instance (priority := 100) preservesColimitsOfShapeOfPreservesFini
   apply preservesColimitsOfShapeOfEquiv (FinCategory.equivAsType J)
 #align category_theory.limits.preserves_colimits_of_shape_of_preserves_finite_colimits CategoryTheory.Limits.preservesColimitsOfShapeOfPreservesFiniteColimits
 
+/-- If we preserve colimits of some arbitrary size, then we preserve all finite colimits. -/
 -- Porting note: this is a dangerous instance as it has unbound universe variables.
 noncomputable def PreservesColimitsOfSize.preservesFiniteColimits (F : C ⥤ D)
     [PreservesColimitsOfSize.{w, w₂} F] : PreservesFiniteColimits F where
@@ -139,7 +141,9 @@ noncomputable def PreservesColimitsOfSize.preservesFiniteColimits (F : C ⥤ D)
 noncomputable instance (priority := 120) PreservesColimitsOfSize0.preservesFiniteColimits
     (F : C ⥤ D) [PreservesColimitsOfSize.{0, 0} F] : PreservesFiniteColimits F :=
   PreservesColimitsOfSize.preservesFiniteColimits F
+#align preserves_colimits_of_size.zero.preserves_finite_colimits CategoryTheory.Limits.PreservesColimitsOfSize0.preservesFiniteColimits
 
+-- An alternative specialization of the dangerous instance for small colimits.
 noncomputable instance (priority := 120) PreservesColimits.preservesFiniteColimits (F : C ⥤ D)
     [PreservesColimits F] : PreservesFiniteColimits F :=
   PreservesColimitsOfSize.preservesFiniteColimits F
