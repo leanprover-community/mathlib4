@@ -24,5 +24,4 @@ def xor : Bool → Bool → Bool
   | true, false => true
   | false, true => true
   | _, _ => false
-
 #align bxor xor

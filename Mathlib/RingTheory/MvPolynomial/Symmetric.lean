@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Hanting Zhang, Johan Commelin
 
 ! This file was ported from Lean 3 source module ring_theory.mv_polynomial.symmetric
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
+! leanprover-community/mathlib commit c813ed7de0f5115f956239124e9b30f3a621966f
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -60,11 +60,11 @@ def esymm (s : Multiset R) (n : ℕ) : R :=
   ((s.powersetLen n).map Multiset.prod).sum
 #align multiset.esymm Multiset.esymm
 
-theorem Finset.esymm_map_val {σ} (f : σ → R) (s : Finset σ) (n : ℕ) :
+theorem _root_.Finset.esymm_map_val {σ} (f : σ → R) (s : Finset σ) (n : ℕ) :
     (s.val.map f).esymm n = (s.powersetLen n).sum fun t => t.prod f := by
   simp only [esymm, powersetLen_map, ← Finset.map_val_val_powersetLen, map_map]
   rfl
-#align finset.esymm_map_val Multiset.Finset.esymm_map_val
+#align finset.esymm_map_val Finset.esymm_map_val
 
 end Multiset
 
@@ -169,12 +169,12 @@ def esymm (n : ℕ) : MvPolynomial σ R :=
 /-- The `n`th elementary symmetric `MvPolynomial σ R` is obtained by evaluating the
 `n`th elementary symmetric at the `Multiset` of the monomials -/
 theorem esymm_eq_multiset_esymm : esymm σ R = (Finset.univ.val.map X).esymm := by
-  refine' funext fun n => (Multiset.Finset.esymm_map_val X _ n).symm
+  refine' funext fun n => (Finset.esymm_map_val X _ n).symm
 #align mv_polynomial.esymm_eq_multiset_esymm MvPolynomial.esymm_eq_multiset_esymm
 
 theorem aeval_esymm_eq_multiset_esymm [Algebra R S] (f : σ → S) (n : ℕ) :
     aeval f (esymm σ R n) = (Finset.univ.val.map f).esymm n := by
-  simp_rw [esymm, aeval_sum, aeval_prod, aeval_X, Multiset.Finset.esymm_map_val]
+  simp_rw [esymm, aeval_sum, aeval_prod, aeval_X, Finset.esymm_map_val]
 #align mv_polynomial.aeval_esymm_eq_multiset_esymm MvPolynomial.aeval_esymm_eq_multiset_esymm
 
 /-- We can define `esymm σ R n` by summing over a subtype instead of over `powerset_len`. -/
@@ -209,7 +209,6 @@ theorem rename_esymm (n : ℕ) (e : σ ≃ τ) : rename e (esymm σ R n) = esymm
       dsimp [mapEmbedding, OrderEmbedding.ofMapLEIff]
       simp
     _ = ∑ t in powersetLen n univ, ∏ i in t, X i := by rw [Finset.map_univ_equiv]
-
 #align mv_polynomial.rename_esymm MvPolynomial.rename_esymm
 
 theorem esymm_isSymmetric (n : ℕ) : IsSymmetric (esymm σ R n) := by
@@ -267,7 +266,7 @@ theorem degrees_esymm [Nontrivial R] (n : ℕ) (hpos : 0 < n) (hn : n ≤ Fintyp
       by
       funext
       simp [Finsupp.toMultiset_sum_single]
-    rw [degrees, support_esymm, sup_finset_image, this]
+    rw [degrees, support_esymm, sup_image, this]
     have : ((powersetLen n univ).sup (fun (x : Finset σ) => x)).val
         = sup (powersetLen n univ) val := by
       refine' comp_sup_eq_sup_comp _ _ _

@@ -895,7 +895,6 @@ theorem isUnit_mk {a : α} : IsUnit (Associates.mk a) ↔ IsUnit a :=
     IsUnit (Associates.mk a) ↔ a ~ᵤ 1 :=
     by rw [isUnit_iff_eq_one, one_eq_mk_one, mk_eq_mk_iff_associated]
     _ ↔ IsUnit a := associated_one_iff_isUnit
-
 #align associates.is_unit_mk Associates.isUnit_mk
 
 section Order

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ellen Arlt, Blair Shi, Sean Leather, Mario Carneiro, Johan Commelin
 
 ! This file was ported from Lean 3 source module data.matrix.block
-! leanprover-community/mathlib commit 3e068ece210655b7b9a9477c3aff38a492400aa1
+! leanprover-community/mathlib commit b5665fd3fb2a80ee05ff42b6031ef2055b8f9d85
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -31,9 +31,14 @@ variable {l m n o p q : Type _} {m' n' p' : o → Type _}
 
 variable {R : Type _} {S : Type _} {α : Type _} {β : Type _}
 
-open Matrix
+open BigOperators Matrix
 
 namespace Matrix
+
+theorem dotProduct_block [Fintype m] [Fintype n] [Mul α] [AddCommMonoid α] (v w : Sum m n → α) :
+    v ⬝ᵥ w = v ∘ Sum.inl ⬝ᵥ w ∘ Sum.inl + v ∘ Sum.inr ⬝ᵥ w ∘ Sum.inr :=
+  Fintype.sum_sum_type _
+#align matrix.dot_product_block Matrix.dotProduct_block
 
 section BlockMatrices
 
@@ -122,6 +127,22 @@ theorem toBlocks_fromBlocks₂₂ (A : Matrix n l α) (B : Matrix n m α) (C : M
     (D : Matrix o m α) : (fromBlocks A B C D).toBlocks₂₂ = D :=
   rfl
 #align matrix.to_blocks_from_blocks₂₂ Matrix.toBlocks_fromBlocks₂₂
+
+/-- Two block matrices are equal if their blocks are equal. -/
+theorem ext_iff_blocks {A B : Matrix (Sum n o) (Sum l m) α} :
+    A = B ↔
+      A.toBlocks₁₁ = B.toBlocks₁₁ ∧
+        A.toBlocks₁₂ = B.toBlocks₁₂ ∧ A.toBlocks₂₁ = B.toBlocks₂₁ ∧ A.toBlocks₂₂ = B.toBlocks₂₂ :=
+  ⟨fun h => h ▸ ⟨rfl, rfl, rfl, rfl⟩, fun ⟨h₁₁, h₁₂, h₂₁, h₂₂⟩ => by
+    rw [← fromBlocks_toBlocks A, ← fromBlocks_toBlocks B, h₁₁, h₁₂, h₂₁, h₂₂]⟩
+#align matrix.ext_iff_blocks Matrix.ext_iff_blocks
+
+@[simp]
+theorem fromBlocks_inj {A : Matrix n l α} {B : Matrix n m α} {C : Matrix o l α} {D : Matrix o m α}
+    {A' : Matrix n l α} {B' : Matrix n m α} {C' : Matrix o l α} {D' : Matrix o m α} :
+    fromBlocks A B C D = fromBlocks A' B' C' D' ↔ A = A' ∧ B = B' ∧ C = C' ∧ D = D' :=
+  ext_iff_blocks
+#align matrix.from_blocks_inj Matrix.fromBlocks_inj
 
 theorem fromBlocks_map (A : Matrix n l α) (B : Matrix n m α) (C : Matrix o l α) (D : Matrix o m α)
     (f : α → β) : (fromBlocks A B C D).map f = fromBlocks (A.map f) (B.map f) (C.map f) (D.map f) :=
@@ -524,6 +545,17 @@ theorem blockDiag_blockDiagonal [DecidableEq o] (M : o → Matrix m n α) :
   funext fun _ => ext fun i j => blockDiagonal_apply_eq M i j _
 #align matrix.block_diag_block_diagonal Matrix.blockDiag_blockDiagonal
 
+theorem blockDiagonal_injective [DecidableEq o] :
+    Function.Injective (blockDiagonal : (o → Matrix m n α) → Matrix _ _ α) :=
+  Function.LeftInverse.injective blockDiag_blockDiagonal
+#align matrix.block_diagonal_injective Matrix.blockDiagonal_injective
+
+@[simp]
+theorem blockDiagonal_inj [DecidableEq o] {M N : o → Matrix m n α} :
+    blockDiagonal M = blockDiagonal N ↔ M = N :=
+  blockDiagonal_injective.eq_iff
+#align matrix.block_diagonal_inj Matrix.blockDiagonal_inj
+
 @[simp]
 theorem blockDiag_one [DecidableEq o] [DecidableEq m] [One α] :
     blockDiag (1 : Matrix (m × o) (m × o) α) = 1 :=
@@ -815,6 +847,17 @@ theorem blockDiag'_blockDiagonal' [DecidableEq o] (M : ∀ i, Matrix (m' i) (n' 
     blockDiag' (blockDiagonal' M) = M :=
   funext fun _ => ext fun _ _ => blockDiagonal'_apply_eq M _ _ _
 #align matrix.block_diag'_block_diagonal' Matrix.blockDiag'_blockDiagonal'
+
+theorem blockDiagonal'_injective [DecidableEq o] :
+    Function.Injective (blockDiagonal' : (∀ i, Matrix (m' i) (n' i) α) → Matrix _ _ α) :=
+  Function.LeftInverse.injective blockDiag'_blockDiagonal'
+#align matrix.block_diagonal'_injective Matrix.blockDiagonal'_injective
+
+@[simp]
+theorem blockDiagonal'_inj [DecidableEq o] {M N : ∀ i, Matrix (m' i) (n' i) α} :
+    blockDiagonal' M = blockDiagonal' N ↔ M = N :=
+  blockDiagonal'_injective.eq_iff
+#align matrix.block_diagonal'_inj Matrix.blockDiagonal'_inj
 
 @[simp]
 theorem blockDiag'_one [DecidableEq o] [∀ i, DecidableEq (m' i)] [One α] :
