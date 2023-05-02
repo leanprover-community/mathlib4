@@ -3,12 +3,14 @@ Copyright (c) 2022 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
-import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.BigOperators.Order
 import Mathlib.Data.Real.Basic
 import Mathlib.Tactic.RCongr.Basic
+import Mathlib.Tactic.Linarith
 
 /-! ## Inequalities -/
 
+open Nat Finset BigOperators
 set_option linter.unusedVariables false
 -- set_option trace.aesop true
 
@@ -101,7 +103,32 @@ example {k m n : ℤ}  (H : m ^ 2 ≤ n ^ 2) : k + m ^ 2 ≤ k + n ^ 2 := by
   rcongr
 
 example {x y z : ℝ} (h : 2 ≤ z) : z * |x + y| ≤ z * (|x| + |y|) := by
-  rcongr (add apply safe abs_add)
+  -- rcongr (add apply safe abs_add)
+  refine mul_le_mul_of_nonneg_left ?_ (by positivity) -- `rcongrm _ * ?_`
+  apply abs_add
 
 example (A B C : ℝ) : |A + B| + C ≤ |A| + |B| + C := by
-  rcongr (add apply safe abs_add)
+  -- rcongr (add apply safe abs_add)
+  refine add_le_add_right ?_ _ -- `rcongrm ?_ + _`
+  apply abs_add
+
+example (n i : ℕ) (hi : i ∈ range n) : 2 ^ i ≤ 2 ^ n := by
+  refine pow_le_pow (by norm_num) (le_of_lt ?_) -- `rcongrm 2 ^ _`
+  simpa using hi
+
+example (n' : ℕ) (hn': 6 ≤ n') : 2 ^ ((n' + 1) * (n' + 1)) ≤ 2 ^ (n' * n' + 4 * n') := by
+  refine pow_le_pow_of_le_right (by positivity) ?_ -- `rcongrm 2 ^ _`
+  linarith
+
+example (F : ℕ → ℕ) (le_sum: ∀ {N : ℕ}, 6 ≤ N → 15 ≤ F N) {n' : ℕ} (hn' : 6 ≤ n') :
+    let A := F n' ;
+    A ! * (15 + 1) ^ n' ≤ A ! * (A + 1) ^ n' := by
+  intro A
+  -- `rcongrm A! * (_ + 1) ^ n'`
+  refine mul_le_mul_of_nonneg_left (pow_le_pow_of_le_left (add_le_add_right ?_ _) _) (by positivity)
+  exact le_sum hn'
+
+example : ∏ i in range n, (2 ^ n - 2 ^ i : ℤ) ≤ ∏ i in range n, (2 ^ n : ℤ) := by
+  refine prod_le_prod (fun i hi => ?_) (fun i _ => ?_) -- `rcongrm ∏ i in range n, _`
+  sorry
+  sorry

@@ -27,15 +27,13 @@ example (n k : ℕ) (h2 : ∑ i in range n, i < k) (hn : 6 ≤ n) :
   calc ∏ i in range n, (2 ^ n - 2 ^ i : ℤ)
       ≤ (∏ i in range n, 2 ^ n : ℤ) := ?_
     _ < (k ! : ℤ) := ?_
-  · apply prod_le_prod
-    · intro i hi
-      have : (2:ℤ) ^ i ≤ 2 ^ n
+  · refine prod_le_prod (fun i hi => ?_) (fun i _ => ?_) -- `rcongrm ∏ i in range n, _`
+    · have : (2:ℤ) ^ i ≤ 2 ^ n
       · -- `rcongrm 2 ^ _`
         refine pow_le_pow (by norm_num) (le_of_lt ?_)
         simpa using hi
       linarith
-    · intros
-      apply sub_le_self
+    · apply sub_le_self
       positivity
   norm_cast
   calc ∏ i in range n, 2 ^ n
