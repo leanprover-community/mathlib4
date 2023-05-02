@@ -132,21 +132,21 @@ theorem rank_eq_finrank_range_toLin [DecidableEq n] {M₁ M₂ : Type _} [AddCom
     (v₂ : Basis n R M₂) : A.rank = finrank R (LinearMap.range (toLin v₂ v₁ A)) := by
   let e₁ := (Pi.basisFun R m).equiv v₁ (Equiv.refl _)
   let e₂ := (Pi.basisFun R n).equiv v₂ (Equiv.refl _)
-  have range_e₂ : (e₂ : (n → R) →ₗ[R] M₂).range = ⊤ := by
+  have range_e₂ : LinearMap.range e₂ = ⊤ := by
     rw [LinearMap.range_eq_top]
     exact e₂.surjective
-  refine' LinearEquiv.finrank_eq (e₁.of_submodules _ _ _)
-  rw [← LinearMap.range_comp, ← LinearMap.range_comp_of_range_eq_top (to_lin v₂ v₁ A) range_e₂]
+  refine' LinearEquiv.finrank_eq (e₁.ofSubmodules _ _ _)
+  rw [← LinearMap.range_comp, ← LinearMap.range_comp_of_range_eq_top (toLin v₂ v₁ A) range_e₂]
   congr 1
   apply LinearMap.pi_ext'
   rintro i
   apply LinearMap.ext_ring
-  have aux₁ := to_lin_self (Pi.basisFun R n) (Pi.basisFun R m) A i
+  have aux₁ := toLin_self (Pi.basisFun R n) (Pi.basisFun R m) A i
   have aux₂ := Basis.equiv_apply (Pi.basisFun R n) i v₂
-  rw [to_lin_eq_to_lin', to_lin'_apply'] at aux₁
+  rw [toLin_eq_toLin', toLin'_apply'] at aux₁
   rw [Pi.basisFun_apply, LinearMap.coe_stdBasis] at aux₁ aux₂
-  simp only [LinearMap.comp_apply, e₁, e₂, LinearEquiv.coe_coe, Equiv.refl_apply, aux₁, aux₂,
-    LinearMap.coe_single, to_lin_self, LinearEquiv.map_sum, LinearEquiv.map_smul, Basis.equiv_apply]
+  simp only [LinearMap.comp_apply, LinearEquiv.coe_coe, Equiv.refl_apply, aux₁, aux₂,
+    LinearMap.coe_single, toLin_self, LinearEquiv.map_sum, LinearEquiv.map_smul, Basis.equiv_apply]
 #align matrix.rank_eq_finrank_range_to_lin Matrix.rank_eq_finrank_range_toLin
 
 set_option synthInstance.etaExperiment true in
