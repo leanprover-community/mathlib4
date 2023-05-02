@@ -11,6 +11,7 @@ import Mathlib.Tactic.Linarith
 import Mathlib.Algebra.Category.GroupCat.Preadditive
 import Mathlib.GroupTheory.Subgroup.Basic
 import Mathlib.Algebra.Homology.Triangulated.Epsilon
+import Mathlib.Algebra.Homology.Triangulated.Shift
 
 --import algebra.homology.homotopy
 --import algebra.homology.additive
@@ -25,6 +26,8 @@ universe v u
 variable {C : Type u} [Category.{v} C] [Preadditive C]
 
 namespace CochainComplex
+
+section
 
 variable {F G K L : CochainComplex C ℤ} (n m : ℤ)
 
@@ -137,12 +140,21 @@ lemma d_comp_ofHom_v (φ : F ⟶ G) (p' p q  : ℤ) (hpq : p + 0 = q) :
 def ofHomotopy {φ₁ φ₂ : F ⟶ G} (ho : Homotopy φ₁ φ₂) : Cochain F G (-1) :=
   Cochain.mk (fun p q _ => ho.hom p q)
 
-@[reassoc (attr := simp)]
-lemma v_comp_X_iso_of_eq_hom
+@[reassoc]
+lemma v_comp_XIsoOfEq_hom
     (γ : Cochain F G n) (p q q' : ℤ) (hpq : p + n = q) (hq' : q = q') :
     γ.v p q hpq ≫ (HomologicalComplex.XIsoOfEq G hq').hom = γ.v p q' (by rw [← hq', hpq]) := by
   subst hq'
   simp only [HomologicalComplex.XIsoOfEq, eqToIso_refl, Iso.refl_hom, comp_id]
+
+@[reassoc]
+lemma v_comp_XIsoOfEq_inv
+    (γ : Cochain F G n) (p q q' : ℤ) (hpq : p + n = q) (hq' : q' = q) :
+    γ.v p q hpq ≫ (HomologicalComplex.XIsoOfEq G hq').inv = γ.v p q' (by rw [hq', hpq]) := by
+  subst hq'
+  simp only [HomologicalComplex.XIsoOfEq, eqToIso_refl, Iso.refl_inv, comp_id]
+
+-- add similar lemmas as above : XIsoOfEq_hom/inv_comp_v
 
 protected def comp {n₁ n₂ n₁₂ : ℤ} (z₁ : Cochain F G n₁) (z₂ : Cochain G K n₂) (h : n₁ + n₂ = n₁₂) :
     Cochain F K n₁₂ := Cochain.mk (fun p q hpq => z₁.v p (p+n₁) rfl ≫ z₂.v (p+n₁) q (by linarith))
@@ -488,9 +500,47 @@ namespace HomComplex
 def cocycle : AddSubgroup (Cochain F G n) :=
   AddMonoidHom.ker (δ_hom F G n (n+1))
 
+def Cocycle : Type _ := cocycle F G n
+
+instance : AddCommGroup (Cocycle F G n) := by
+  dsimp only [Cocycle]
+  infer_instance
+
 namespace Cocycle
 
 variable {F G n}
+
+instance : Coe (Cocycle F G n) (Cochain F G n) where
+  coe x := x.1
+
+@[ext]
+lemma ext (z₁ z₂ : Cocycle F G n) (h : (z₁ : Cochain F G n) = z₂) : z₁ = z₂ :=
+  Subtype.ext h
+
+lemma ext_iff (z₁ z₂ : Cocycle F G n) : z₁ = z₂ ↔ (z₁ : Cochain F G n) = z₂ := by
+  constructor
+  . rintro rfl
+    rfl
+  . apply ext
+
+variable (F G n)
+
+@[simp]
+lemma coe_zero : (↑(0 : Cocycle F G n) : Cochain F G n) = 0 := by rfl
+
+variable {F G n}
+
+@[simp]
+lemma coe_add (z₁ z₂ : Cocycle F G n) : (↑(z₁ + z₂) : Cochain F G n) =
+  (z₁ : Cochain F G n) + (z₂ : Cochain F G n) := rfl
+
+@[simp]
+lemma coe_neg (z : Cocycle F G n) : (↑(-z) : Cochain F G n) =
+  -(z : Cochain F G n):= rfl
+
+@[simp]
+lemma coe_sub (z₁ z₂ : Cocycle F G n) : (↑(z₁ - z₂) : Cochain F G n) =
+  (z₁ : Cochain F G n) - (z₂ : Cochain F G n) := rfl
 
 variable (n)
 
@@ -502,21 +552,21 @@ lemma mem_iff (hnm : n+1=m) (z : Cochain F G n) :
 variable {n}
 
 @[simps]
-def mk (z : Cochain F G n) (m : ℤ) (hnm : n+1 = m) (h : δ n m z = 0) : cocycle F G n :=
+def mk (z : Cochain F G n) (m : ℤ) (hnm : n+1 = m) (h : δ n m z = 0) : Cocycle F G n :=
   ⟨z, by simpa only [mem_iff n m hnm z] using h⟩
 
 @[simp]
-lemma δ_eq_zero {n : ℤ} (z : cocycle F G n) (m : ℤ) : δ n m (z : Cochain F G n) = 0 := by
+lemma δ_eq_zero {n : ℤ} (z : Cocycle F G n) (m : ℤ) : δ n m (z : Cochain F G n) = 0 := by
   by_cases h : n+1 = m
   . rw [← mem_iff n m h]
     exact z.2
   . apply δ_shape n m h
 
 @[simps!]
-def ofHom (φ : F ⟶ G) : cocycle F G 0 := mk (Cochain.ofHom φ) 1 (zero_add 1) (by simp)
+def ofHom (φ : F ⟶ G) : Cocycle F G 0 := mk (Cochain.ofHom φ) 1 (zero_add 1) (by simp)
 
 @[simps]
-def homOf (z : cocycle F G 0) : F ⟶ G where
+def homOf (z : Cocycle F G 0) : F ⟶ G where
   f i := (z : Cochain _ _ _).v i i (add_zero i)
   comm' := by
     rintro i j rfl
@@ -530,17 +580,17 @@ def homOf (z : cocycle F G 0) : F ⟶ G where
 lemma homOf_ofHom_eq_self (φ : F ⟶ G) : homOf (ofHom φ) = φ := by aesop_cat
 
 @[simp]
-lemma ofHom_homOf_eq_self (z : cocycle F G 0) : ofHom (homOf z) = z := by aesop_cat
+lemma ofHom_homOf_eq_self (z : Cocycle F G 0) : ofHom (homOf z) = z := by aesop_cat
 
 @[simp]
-lemma cochain_ofHom_homOf_eq_coe (z : cocycle F G 0) :
+lemma cochain_ofHom_homOf_eq_coe (z : Cocycle F G 0) :
     (Cochain.ofHom (homOf z) : Cochain F G 0) = (z : Cochain F G 0) := by
-  simpa only [Subtype.ext_iff] using ofHom_homOf_eq_self z
+  simpa only [ext_iff] using ofHom_homOf_eq_self z
 
 variable (F G)
 
 @[simps]
-def equivHom : (F ⟶ G) ≃+ cocycle F G 0 where
+def equivHom : (F ⟶ G) ≃+ Cocycle F G 0 where
   toFun := ofHom
   invFun := homOf
   left_inv := homOf_ofHom_eq_self
@@ -550,7 +600,7 @@ def equivHom : (F ⟶ G) ≃+ cocycle F G 0 where
 variable (K)
 
 @[simps!]
-def diff : cocycle K K 1 :=
+def diff : Cocycle K K 1 :=
   Cocycle.mk (Cochain.diff K) 2 rfl (by
     ext ⟨p, q, hpq⟩
     dsimp
@@ -719,11 +769,11 @@ end
 
 namespace Cocycle
 
-variable {n} {D : Type _} [Category D] [Preadditive D] (z z' : cocycle K L n) (f : K ⟶ L)
+variable {n} {D : Type _} [Category D] [Preadditive D] (z z' : Cocycle K L n) (f : K ⟶ L)
   (Φ : C ⥤ D) [Φ.Additive]
 
 @[simps!]
-def map : cocycle ((Φ.mapHomologicalComplex _).obj K) ((Φ.mapHomologicalComplex _).obj L) n :=
+def map : Cocycle ((Φ.mapHomologicalComplex _).obj K) ((Φ.mapHomologicalComplex _).obj L) n :=
   Cocycle.mk ((z : Cochain K L n).map Φ) (n+1) rfl (by simp)
 
 @[simp]
@@ -742,10 +792,82 @@ lemma map_of_hom : Cocycle.map (Cocycle.ofHom f) Φ =
 variable (K L n)
 
 @[simp]
-lemma map_zero : Cocycle.map (0 : cocycle K L n) Φ = 0 := by aesop_cat
+lemma map_zero : Cocycle.map (0 : Cocycle K L n) Φ = 0 := by aesop_cat
 
 end Cocycle
 
 end HomComplex
+
+end
+
+section Shift
+
+namespace HomComplex
+
+variable {n : ℤ} {K L : CochainComplex C ℤ}
+
+namespace Cochain
+
+variable (γ : Cochain K L n)
+
+def rightShift (a n' : ℤ) (hn' : n' + a = n) : Cochain K (L⟦a⟧) n' :=
+  Cochain.mk (fun p q hpq => γ.v p (p + n) rfl ≫
+    (L.shiftFunctorObjXIso a q (p + n) (by linarith)).inv)
+
+lemma rightShift_v (a n' : ℤ) (hn' : n' + a = n) (p q : ℤ) (hpq : p + n' = q)
+  (p' : ℤ) (hp' : p + n = p') :
+  (γ.rightShift a n' hn').v p q hpq = γ.v p p' hp' ≫
+    (L.shiftFunctorObjXIso a q p' (by rw [← hp', ← hpq, ← hn', add_assoc])).inv := by
+  subst hp'
+  dsimp only [rightShift]
+  simp only [mk_v]
+
+variable (n K L)
+
+@[simp]
+lemma rightShift_zero (a n' : ℤ) (hn' : n' + a = n) :
+    (0 : Cochain K L n).rightShift a n' hn' = 0 := by
+  ext ⟨p, q, hpq⟩
+  dsimp
+  rw [rightShift_v _ a n' hn' p q hpq _ rfl, zero_v, zero_comp]
+
+variable {n K L}
+
+lemma δ_rightShift (a n' m' : ℤ) (hn' : n' + a = n) (m : ℤ) (hm' : m' + a = m) :
+    δ n' m' (γ.rightShift a n' hn') = ε a • (δ n m γ).rightShift a m' hm' := by
+  by_cases hnm : n + 1 = m
+  . have hnm' : n' + 1 = m' := by linarith
+    ext ⟨p, q, hpq⟩
+    dsimp
+    rw [(δ n m γ).rightShift_v a m' hm' p q hpq _ rfl,
+      δ_v n m hnm _ p (p+m) rfl (p+n) (p+1) (by linarith) rfl,
+      δ_v n' m' hnm' _ p q hpq (p+n') (p+1) (by linarith) rfl,
+      γ.rightShift_v a n' hn' p (p+n') rfl (p+n) rfl,
+      γ.rightShift_v a n' hn' (p+1) q _ (p+m) (by linarith)]
+    simp only [shiftFunctorObjXIso, shiftFunctor_obj_d',
+      comp_zsmul, assoc, HomologicalComplex.XIsoOfEq_inv_comp_d,
+      add_comp, HomologicalComplex.d_comp_XIsoOfEq_inv, zsmul_comp, smul_add,
+      smul_smul, add_right_inj]
+    congr
+    rw [hnm, hnm', ← hm', add_comm m', ε_add, ← mul_assoc, mul_ε_self, one_mul]
+  . have hnm' : ¬ n' + 1 = m' := fun _ => hnm (by linarith)
+    rw [δ_shape _ _ hnm', δ_shape _ _ hnm, rightShift_zero, smul_zero]
+
+end Cochain
+
+namespace Cocycle
+
+variable (γ : Cocycle K L n)
+
+def rightShift (a n' : ℤ) (hn' : n' + a = n) : Cocycle K (L⟦a⟧) n' :=
+  Cocycle.mk ((γ : Cochain K L n).rightShift a n' hn') _ rfl (by
+    simp only [Cochain.δ_rightShift _ a n' (n'+1) hn' (n+1) (by linarith),
+      δ_eq_zero, Cochain.rightShift_zero, smul_zero])
+
+end Cocycle
+
+end HomComplex
+
+end Shift
 
 end CochainComplex
