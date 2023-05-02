@@ -18,16 +18,16 @@ import Mathlib.Data.Complex.Module
 # Rank of matrices
 
 The rank of a matrix `A` is defined to be the rank of range of the linear map corresponding to `A`.
-This definition does not depend on the choice of basis, see `matrix.rank_eq_finrank_range_to_lin`.
+This definition does not depend on the choice of basis, see `Matrix.rank_eq_finrank_range_toLin`.
 
 ## Main declarations
 
-* `matrix.rank`: the rank of a matrix
+* `Matrix.rank`: the rank of a matrix
 
 ## TODO
 
-* Do a better job of generalizing over `ℚ`, `ℝ`, and `ℂ` in `matrix.rank_transpose` and
-  `matrix.rank_conj_transpose`. See
+* Do a better job of generalizing over `ℚ`, `ℝ`, and `ℂ` in `Matrix.rank_transpose` and
+  `Matrix.rank_conjTranspose`. See
   [this Zulip thread](https://leanprover.zulipchat.com/#narrow/stream/116395-maths/topic/row.20rank.20equals.20column.20rank/near/350462992).
 
 -/
@@ -171,15 +171,15 @@ end CommRing
 
 /-! ### Lemmas about transpose and conjugate transpose
 
-This section contains lemmas about the rank of `matrix.transpose` and `matrix.conj_transpose`.
+This section contains lemmas about the rank of `Matrix.transpose` and `Matrix.conjTranspose`.
 
 Unfortunately the proofs are essentially duplicated between the two; `ℚ` is a linearly-ordered ring
 but can't be a star-ordered ring, while `ℂ` is star-ordered (with `open_locale complex_order`) but
 not linearly ordered. For now we don't prove the transpose case for `ℂ`.
 
-TODO: the lemmas `matrix.rank_transpose` and `matrix.rank_conj_transpose` current follow a short
-proof that is a simple consequence of `matrix.rank_transpose_mul_self` and
-`matrix.rank_conj_transpose_mul_self`. This proof pulls in unecessary assumptions on `R`, and should
+TODO: the lemmas `Matrix.rank_transpose` and `Matrix.rank_conjTranspose` current follow a short
+proof that is a simple consequence of `Matrix.rank_transpose_mul_self` and
+`Matrix.rank_conjTranspose_mul_self`. This proof pulls in unecessary assumptions on `R`, and should
 be replaced with a proof that uses Gaussian reduction or argues via linear combinations.
 -/
 
