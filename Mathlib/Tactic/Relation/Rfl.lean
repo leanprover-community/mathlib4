@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Newell Jensen
 -/
 import Lean
+import Mathlib.Lean.Elab.Tactic.Basic
 
 /-!
 # `rfl` tactic extension for reflexive relations
@@ -45,7 +46,7 @@ relation, that is, a relation which has a reflexive lemma tagged with the attrib
 -/
 elab_rules : tactic
 | `(tactic| rfl) => withMainContext do
-  let tgt ← getMainTarget
+  let tgt ← getMainTarget'
   let .app (.app rel _) _ := tgt
     | throwError "reflexivity lemmas only apply to binary relations, not {indentExpr tgt}"
   let s ← saveState
