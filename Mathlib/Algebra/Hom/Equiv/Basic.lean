@@ -46,7 +46,6 @@ def MulHom.inverse [Mul M] [Mul N] (f : M →ₙ* N) (g : N → M) (h₁ : Funct
       g (x * y) = g (f (g x) * f (g y)) := by rw [h₂ x, h₂ y]
       _ = g (f (g x * g y)) := by rw [f.map_mul]
       _ = g x * g y := h₁ _
-
 #align mul_hom.inverse MulHom.inverse
 #align add_hom.inverse AddHom.inverse
 
@@ -117,14 +116,14 @@ variable (F)
 
 -- See note [lower instance priority]
 @[to_additive]
-instance (priority := 100) (F : Type _) {M N : Type _}
-    {_ : Mul M} {_ : Mul N} [h : MulEquivClass F M N] : MulHomClass F M N :=
+instance (priority := 100) (F : Type _)
+    [Mul M] [Mul N] [h : MulEquivClass F M N] : MulHomClass F M N :=
   { h with coe := h.coe, coe_injective' := FunLike.coe_injective' }
 
 -- See note [lower instance priority]
 @[to_additive]
-instance (priority := 100) {_ : MulOneClass M} {_ : MulOneClass N} [MulEquivClass F M N] :
-  MonoidHomClass F M N :=
+instance (priority := 100) [MulOneClass M] [MulOneClass N] [MulEquivClass F M N] :
+    MonoidHomClass F M N :=
   { MulEquivClass.instMulHomClass F with
     coe := fun _ => _,
     map_one := fun e =>
@@ -138,7 +137,7 @@ instance (priority := 100) {_ : MulOneClass M} {_ : MulOneClass N} [MulEquivClas
 
 -- See note [lower instance priority]
 instance (priority := 100) toMonoidWithZeroHomClass
-  {α β : Type _} {_ : MulZeroOneClass α} {_ : MulZeroOneClass β} [MulEquivClass F α β] :
+    [MulZeroOneClass α] [MulZeroOneClass β] [MulEquivClass F α β] :
   MonoidWithZeroHomClass F α β :=
   { MulEquivClass.instMonoidHomClass _ with
     map_zero := fun e =>
