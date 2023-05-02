@@ -338,7 +338,8 @@ section lift
 variable {A : Type _} [Ring A] [Algebra ℝ A]
 
 -- Porting note: added for `liftAux` proof
-local instance {R A} [CommSemiring R] [Semiring A] [Algebra R A] : SMulCommClass R A A := by
+-- see https://github.com/leanprover-community/mathlib/pull/18907
+instance {R A} [CommSemiring R] [Semiring A] [Algebra R A] : SMulCommClass R A A := by
   infer_instance
 
 set_option synthInstance.etaExperiment true in
