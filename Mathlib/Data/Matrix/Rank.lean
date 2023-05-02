@@ -203,14 +203,18 @@ theorem ker_mulVecLin_conjTranspose_mul_self (A : Matrix m n R) :
     rw [h, mulVec_zero]
 #align matrix.ker_mul_vec_lin_conj_transpose_mul_self Matrix.ker_mulVecLin_conjTranspose_mul_self
 
+-- Porting note: using `LinearMap.finrank_range_add_finrank_ker` is very slow
+set_option synthInstance.etaExperiment true in
+set_option maxHeartbeats 300000 in
 theorem rank_conjTranspose_mul_self (A : Matrix m n R) : (Aᴴ ⬝ A).rank = A.rank := by
   dsimp only [rank]
   refine' add_left_injective (finrank R (LinearMap.ker (mulVecLin A))) _
   dsimp only
-  rw [LinearMap.finrank_range_add_finrank_ker, ← (Aᴴ ⬝ A).mulVecLin.finrank_range_add_finrank_ker]
-  congr 1
-  rw [ker_mulVecLin_conjTranspose_mul_self]
-#align matrix.rank_conjTranspose_mul_self Matrix.rank_conjTranspose_mul_self
+  trans finrank R { x // x ∈ LinearMap.range (mulVecLin (Aᴴ ⬝ A)) } +
+    finrank R { x // x ∈ LinearMap.ker (mulVecLin (Aᴴ ⬝ A)) }
+  · rw [ker_mulVecLin_conjTranspose_mul_self]
+  · simp only [LinearMap.finrank_range_add_finrank_ker]
+#align matrix.rank_conj_transpose_mul_self Matrix.rank_conjTranspose_mul_self
 
 set_option synthInstance.etaExperiment true in
 -- this follows the proof here https://math.stackexchange.com/a/81903/1896
@@ -247,13 +251,17 @@ theorem ker_mulVecLin_transpose_mul_self (A : Matrix m n R) :
     rw [h, mulVec_zero]
 #align matrix.ker_mul_vec_lin_transpose_mul_self Matrix.ker_mulVecLin_transpose_mul_self
 
+-- Porting note: using `LinearMap.finrank_range_add_finrank_ker` is very slow
+set_option synthInstance.etaExperiment true in
+set_option maxHeartbeats 300000 in
 theorem rank_transpose_mul_self (A : Matrix m n R) : (Aᵀ ⬝ A).rank = A.rank := by
   dsimp only [rank]
   refine' add_left_injective (finrank R <| LinearMap.ker A.mulVecLin) _
   dsimp only
-  rw [LinearMap.finrank_range_add_finrank_ker, ← (Aᵀ ⬝ A).mulVecLin.finrank_range_add_finrank_ker]
-  congr 1
-  rw [ker_mulVecLin_transpose_mul_self]
+  trans finrank R { x // x ∈ LinearMap.range (mulVecLin (Aᵀ ⬝ A)) } +
+    finrank R { x // x ∈ LinearMap.ker (mulVecLin (Aᵀ ⬝ A)) }
+  · rw [ker_mulVecLin_transpose_mul_self]
+  · simp only [LinearMap.finrank_range_add_finrank_ker]
 #align matrix.rank_transpose_mul_self Matrix.rank_transpose_mul_self
 
 set_option synthInstance.etaExperiment true in
