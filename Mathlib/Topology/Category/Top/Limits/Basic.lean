@@ -219,3 +219,27 @@ instance forgetPreservesColimitsOfSize :
 instance forgetPreservesColimits : PreservesColimits (forget : TopCat.{u} ⥤ Type u) :=
   TopCat.forgetPreservesColimitsOfSize.{u, u}
 #align Top.forget_preserves_colimits TopCat.forgetPreservesColimits
+
+/-- The terminal object of `Top` is `punit`. -/
+def isTerminalPunit : IsTerminal (TopCat.of PUnit.{u + 1}) :=
+  haveI : ∀ X, Unique (X ⟶ TopCat.of PUnit.{u + 1}) := fun X =>
+    ⟨⟨⟨fun x => PUnit.unit, by continuity⟩⟩, fun f => by ext⟩
+  limits.is_terminal.of_unique _
+#align Top.is_terminal_punit TopCat.isTerminalPunit
+
+/-- The terminal object of `Top` is `punit`. -/
+def terminalIsoPunit : ⊤_ TopCat.{u} ≅ TopCat.of PUnit :=
+  terminalIsTerminal.uniqueUpToIso isTerminalPunit
+#align Top.terminal_iso_punit TopCat.terminalIsoPunit
+
+/-- The initial object of `Top` is `pempty`. -/
+def isInitialPempty : IsInitial (TopCat.of PEmpty.{u + 1}) :=
+  haveI : ∀ X, Unique (TopCat.of PEmpty.{u + 1} ⟶ X) := fun X =>
+    ⟨⟨⟨fun x => x.elim, by continuity⟩⟩, fun f => by ext ⟨⟩⟩
+  limits.is_initial.of_unique _
+#align Top.is_initial_pempty TopCat.isInitialPempty
+
+/-- The initial object of `Top` is `pempty`. -/
+def initialIsoPempty : ⊥_ TopCat.{u} ≅ TopCat.of PEmpty :=
+  initialIsInitial.uniqueUpToIso isInitialPempty
+#align Top.initial_iso_pempty TopCat.initialIsoPempty
