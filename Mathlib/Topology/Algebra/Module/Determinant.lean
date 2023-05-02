@@ -9,8 +9,8 @@ Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo, Yury Kudryashov, Fréd
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.Algebra.Module.Basic
-import Mathbin.LinearAlgebra.Determinant
+import Mathlib.Topology.Algebra.Module.Basic
+import Mathlib.LinearAlgebra.Determinant
 
 /-!
 # The determinant of a continuous linear map.
