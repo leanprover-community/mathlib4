@@ -33,6 +33,7 @@ namespace Mathlib.Tactic.LibrarySearch
 open Lean Meta Std.Tactic.TryThis
 
 initialize registerTraceClass `Tactic.librarySearch
+initialize registerTraceClass `Tactic.librarySearch.lemmas
 
 /--
 A "modifier" for a declaration.
@@ -47,13 +48,20 @@ inductive DeclMod
 | none | symm | mp | mpr
 deriving DecidableEq
 
+instance : ToString DeclMod where
+  toString m := match m with | .none => "" | .symm => "symm" | .mp => "mp" | .mpr => "mpr"
+
 /-- Insert a lemma into the discrimination tree. -/
+-- Recall that `library_search` caches the discrimination tree on disk.
+-- If you are modifying this file, you will probably want to delete
+-- `build/lib/MathlibExtras/LibrarySearch.extra`
+-- so that the cache is rebuilt.
 def addLemma (name : Name) (constInfo : ConstantInfo)
     (lemmas : DiscrTree (Name × DeclMod) true) : MetaM (DiscrTree (Name × DeclMod) true) := do
   if constInfo.isUnsafe then return lemmas
   if ← name.isBlackListed then return lemmas
   withNewMCtxDepth do withReducible do
-    let (_, _, type) ← forallMetaTelescopeReducing constInfo.type
+    let (_, _, type) ← forallMetaTelescope constInfo.type
     let keys ← DiscrTree.mkPath type
     let lemmas := lemmas.insertIfSpecific keys (name, .none)
     match type.getAppFnArgs with
@@ -144,8 +152,9 @@ def librarySearchCore (goal : MVarId) (lemmas : DiscrTree (Name × DeclMod) s)
     (required : List Expr) (solveByElimDepth := 6) : ListM MetaM (MetavarContext × List MVarId) :=
   .squash do
     let ty ← goal.getType
-    let lemmas := ListM.ofList ((← lemmas.getMatch ty).toList)
-    return lemmas.filterMapM fun (lem, mod) =>
+    let lemmas := (← lemmas.getMatch ty).toList
+    trace[Tactic.librarySearch.lemmas] m!"Candidate library_search lemmas:\n{lemmas}"
+    return (ListM.ofList lemmas).filterMapM fun (lem, mod) =>
       try? <| librarySearchLemma lem mod required solveByElimDepth goal
 
 /-- A type synonym for our subgoal ranking algorithm. -/
