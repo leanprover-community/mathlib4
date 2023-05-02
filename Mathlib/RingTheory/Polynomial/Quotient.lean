@@ -26,15 +26,121 @@ namespace Polynomial
 
 variable {R : Type _} [CommRing R]
 
+set_option profiler true in
+set_option trace.Meta.isDefEq true in
+-- set_option maxHeartbeats 0 in
 /-- For a commutative ring $R$, evaluating a polynomial at an element $x \in R$ induces an
 isomorphism of $R$-algebras $R[X] / \langle X - x \rangle \cong R$. -/
 noncomputable def quotientSpanXSubCAlgEquiv (x : R) :
     (R[X] ⧸ Ideal.span ({X - C x} : Set R[X])) ≃ₐ[R] R :=
-  (AlgEquiv.restrictScalars R <|
-          Ideal.quotientEquivAlgOfEq R
-            (ker_evalRingHom x : RingHom.ker (aeval x).toRingHom = _)).symm.trans <|
-    Ideal.quotientKerAlgEquivOfRightInverse fun _ => eval_C
+  -- This was the mathport term proof, which has been over-golfed,
+  -- and is relying on the defeq problem doing lots of unification.
+  -- Hence it is slow, so we unwrap it a bit.
+
+  -- (Ideal.quotientEquivAlgOfEq R
+  --           (ker_evalRingHom x : RingHom.ker (aeval x).toRingHom = _)).symm.trans <|
+  --   Ideal.quotientKerAlgEquivOfRightInverse fun _ => eval_C
+
+  -- (In fact, the original proof had an extra `RestrictScalars`, but it was apparently spurious,
+  -- see https://github.com/leanprover-community/mathlib/pull/18916.)
+by
+  have foo : RingHom.ker (aeval x).toRingHom = Ideal.span {X - C x} := ker_evalRingHom x
+  let step1 : (R[X] ⧸ Ideal.span {X - C x}) ≃ₐ[R] (R[X] ⧸ (RingHom.ker (aeval x).toRingHom : Ideal R[X])) := @Ideal.quotientEquivAlgOfEq R R[X] _ _ _ _ _ foo.symm
+  have ri : Function.RightInverse (fun a : R => (C a : R[X])) (@aeval R R _ _ _ x) := (fun a : R => eval_C)
+  -- let step2 := @Ideal.quotientKerAlgEquivOfRightInverse R R[X] R _ _ _ _ _ (@aeval R R _ _ _ x) (fun a : R => (C a : R[X])) ri
+  let step2 : (R[X] ⧸ (RingHom.ker (aeval x).toRingHom : Ideal R[X])) ≃ₐ[R] R := @Ideal.quotientKerAlgEquivOfRightInverse R R[X] R _ _ _ _ _ (@aeval R R _ _ _ x) (fun a : R => (C a : R[X])) ri
+  exact AlgEquiv.trans step1 step2
 #align polynomial.quotient_span_X_sub_C_alg_equiv Polynomial.quotientSpanXSubCAlgEquiv
+
+-- There's an isDefEq problem exploding here:
+-- [Meta.isDefEq] [4.966044s] 💥 (R[X] ⧸ RingHom.ker ↑(Polynomial.aeval x)) ≃ₐ[R] R =?= (R[X] ⧸ RingHom.ker ↑(Polynomial.aeval x)) ≃ₐ[R] R ▼
+--   [] [0.000001s] ✅ R =?= R
+--   [] [0.527869s] ✅ R[X] ⧸ RingHom.ker ↑(Polynomial.aeval x) =?= R[X] ⧸ RingHom.ker ↑(Polynomial.aeval x) ▶
+--   [] [0.000001s] ✅ R =?= R
+--   [] [0.000000s] ✅ CommRing.toCommSemiring =?= CommRing.toCommSemiring
+--   [] [4.437865s] 💥 Ring.toSemiring =?= Ring.toSemiring ▼
+--     [] [4.437795s] 💥 CommRing.toRing.1 =?= CommRing.toRing.1 ▼
+--       [] [4.437271s] 💥 Ring.toSemiring =?= Ring.toSemiring ▼
+--         [] [4.437137s] 💥 (Function.Surjective.ring Quotient.mk'' (_ : Function.Surjective Quotient.mk'')
+--                 (_ : Quotient.mk'' 0 = Quotient.mk'' 0) (_ : Quotient.mk'' 1 = Quotient.mk'' 1)
+--                 (_ : ∀ (x_1 x_2 : R[X]), Quotient.mk'' (x_1 + x_2) = Quotient.mk'' (x_1 + x_2))
+--                 (_ : ∀ (x_1 x_2 : R[X]), Quotient.mk'' (x_1 * x_2) = Quotient.mk'' (x_1 * x_2))
+--                 (_ : ∀ (x_1 : R[X]), Quotient.mk'' (-x_1) = Quotient.mk'' (-x_1))
+--                 (_ : ∀ (x_1 x_2 : R[X]), Quotient.mk'' (x_1 - x_2) = Quotient.mk'' (x_1 - x_2))
+--                 (_ : ∀ (x_1 : R[X]) (x_2 : ℕ), Quotient.mk'' (x_2 • x_1) = Quotient.mk'' (x_2 • x_1))
+--                 (_ : ∀ (x_1 : R[X]) (x_2 : ℤ), Quotient.mk'' (x_2 • x_1) = Quotient.mk'' (x_2 • x_1))
+--                 (_ : ∀ (x_1 : R[X]) (x_2 : ℕ), Quotient.mk'' (x_1 ^ x_2) = Quotient.mk'' (x_1 ^ x_2))
+--                 (_ : ∀ (x_1 : ℕ), Quotient.mk'' ↑x_1 = Quotient.mk'' ↑x_1)
+--                 (_ :
+--                   ∀ (x_1 : ℤ),
+--                     Quotient.mk'' ↑x_1 =
+--                       Quotient.mk''
+--                         ↑x_1)).1 =?= (Function.Surjective.ring Quotient.mk'' (_ : Function.Surjective Quotient.mk'')
+--                 (_ : Quotient.mk'' 0 = Quotient.mk'' 0) (_ : Quotient.mk'' 1 = Quotient.mk'' 1)
+--                 (_ : ∀ (x_1 x_2 : R[X]), Quotient.mk'' (x_1 + x_2) = Quotient.mk'' (x_1 + x_2))
+--                 (_ : ∀ (x_1 x_2 : R[X]), Quotient.mk'' (x_1 * x_2) = Quotient.mk'' (x_1 * x_2))
+--                 (_ : ∀ (x_1 : R[X]), Quotient.mk'' (-x_1) = Quotient.mk'' (-x_1))
+--                 (_ : ∀ (x_1 x_2 : R[X]), Quotient.mk'' (x_1 - x_2) = Quotient.mk'' (x_1 - x_2))
+--                 (_ : ∀ (x_1 : R[X]) (x_2 : ℕ), Quotient.mk'' (x_2 • x_1) = Quotient.mk'' (x_2 • x_1))
+--                 (_ : ∀ (x_1 : R[X]) (x_2 : ℤ), Quotient.mk'' (x_2 • x_1) = Quotient.mk'' (x_2 • x_1))
+--                 (_ : ∀ (x_1 : R[X]) (x_2 : ℕ), Quotient.mk'' (x_1 ^ x_2) = Quotient.mk'' (x_1 ^ x_2))
+--                 (_ : ∀ (x_1 : ℕ), Quotient.mk'' ↑x_1 = Quotient.mk'' ↑x_1)
+--                 (_ : ∀ (x_1 : ℤ), Quotient.mk'' ↑x_1 = Quotient.mk'' ↑x_1)).1 ▼
+--           [] [4.436647s] 💥 Semiring.mk
+--                 (_ : ∀ (a : RingCon.Quotient (Ideal.Quotient.ringCon (RingHom.ker ↑(Polynomial.aeval x)))), 1 * a = a)
+--                 (_ : ∀ (a : RingCon.Quotient (Ideal.Quotient.ringCon (RingHom.ker ↑(Polynomial.aeval x)))), a * 1 = a)
+--                 Monoid.npow =?= Semiring.mk
+--                 (_ : ∀ (a : RingCon.Quotient (Ideal.Quotient.ringCon (RingHom.ker ↑(Polynomial.aeval x)))), 1 * a = a)
+--                 (_ : ∀ (a : RingCon.Quotient (Ideal.Quotient.ringCon (RingHom.ker ↑(Polynomial.aeval x)))), a * 1 = a)
+--                 Monoid.npow ▼
+--             [] [2.271145s] ✅ Monoid.one_mul =?= Monoid.one_mul ▶
+--             [] [1.918150s] ✅ Monoid.mul_one =?= Monoid.mul_one ▶
+--             [] [0.247062s] 💥 Function.Surjective.ring.proof_2 Quotient.mk''
+--                   (RingCon.instCommRingQuotientToAddToDistribToNonUnitalNonAssocSemiringToNonUnitalNonAssocRingToNonAssocRingToRingToMul.proof_1
+--                     (Ideal.Quotient.ringCon (RingHom.ker ↑(Polynomial.aeval x))))
+--                   (RingCon.instCommRingQuotientToAddToDistribToNonUnitalNonAssocSemiringToNonUnitalNonAssocRingToNonAssocRingToRingToMul.proof_2
+--                     (Ideal.Quotient.ringCon (RingHom.ker ↑(Polynomial.aeval x))))
+--                   (RingCon.instCommRingQuotientToAddToDistribToNonUnitalNonAssocSemiringToNonUnitalNonAssocRingToNonAssocRingToRingToMul.proof_3
+--                     (Ideal.Quotient.ringCon (RingHom.ker ↑(Polynomial.aeval x))))
+--                   (RingCon.instCommRingQuotientToAddToDistribToNonUnitalNonAssocSemiringToNonUnitalNonAssocRingToNonAssocRingToRingToMul.proof_4
+--                     (Ideal.Quotient.ringCon (RingHom.ker ↑(Polynomial.aeval x))))
+--                   (RingCon.instCommRingQuotientToAddToDistribToNonUnitalNonAssocSemiringToNonUnitalNonAssocRingToNonAssocRingToRingToMul.proof_6
+--                     (Ideal.Quotient.ringCon (RingHom.ker ↑(Polynomial.aeval x))))
+--                   (RingCon.instCommRingQuotientToAddToDistribToNonUnitalNonAssocSemiringToNonUnitalNonAssocRingToNonAssocRingToRingToMul.proof_7
+--                     (Ideal.Quotient.ringCon (RingHom.ker ↑(Polynomial.aeval x))))
+--                   (RingCon.instCommRingQuotientToAddToDistribToNonUnitalNonAssocSemiringToNonUnitalNonAssocRingToNonAssocRingToRingToMul.proof_8
+--                     (Ideal.Quotient.ringCon (RingHom.ker ↑(Polynomial.aeval x))))
+--                   (RingCon.instCommRingQuotientToAddToDistribToNonUnitalNonAssocSemiringToNonUnitalNonAssocRingToNonAssocRingToRingToMul.proof_9
+--                     (Ideal.Quotient.ringCon (RingHom.ker ↑(Polynomial.aeval x))))
+--                   (RingCon.instCommRingQuotientToAddToDistribToNonUnitalNonAssocSemiringToNonUnitalNonAssocRingToNonAssocRingToRingToMul.proof_11
+--                     (Ideal.Quotient.ringCon (RingHom.ker ↑(Polynomial.aeval x))))
+--                   (RingCon.instCommRingQuotientToAddToDistribToNonUnitalNonAssocSemiringToNonUnitalNonAssocRingToNonAssocRingToRingToMul.proof_12
+--                     (Ideal.Quotient.ringCon
+--                       (RingHom.ker
+--                         ↑(Polynomial.aeval
+--                             x)))) =?= Function.Surjective.ring.proof_2 Quotient.mk''
+--                   (RingCon.instCommRingQuotientToAddToDistribToNonUnitalNonAssocSemiringToNonUnitalNonAssocRingToNonAssocRingToRingToMul.proof_1
+--                     (Ideal.Quotient.ringCon (RingHom.ker ↑(Polynomial.aeval x))))
+--                   (RingCon.instCommRingQuotientToAddToDistribToNonUnitalNonAssocSemiringToNonUnitalNonAssocRingToNonAssocRingToRingToMul.proof_2
+--                     (Ideal.Quotient.ringCon (RingHom.ker ↑(Polynomial.aeval x))))
+--                   (RingCon.instCommRingQuotientToAddToDistribToNonUnitalNonAssocSemiringToNonUnitalNonAssocRingToNonAssocRingToRingToMul.proof_3
+--                     (Ideal.Quotient.ringCon (RingHom.ker ↑(Polynomial.aeval x))))
+--                   (RingCon.instCommRingQuotientToAddToDistribToNonUnitalNonAssocSemiringToNonUnitalNonAssocRingToNonAssocRingToRingToMul.proof_4
+--                     (Ideal.Quotient.ringCon (RingHom.ker ↑(Polynomial.aeval x))))
+--                   (RingCon.instCommRingQuotientToAddToDistribToNonUnitalNonAssocSemiringToNonUnitalNonAssocRingToNonAssocRingToRingToMul.proof_6
+--                     (Ideal.Quotient.ringCon (RingHom.ker ↑(Polynomial.aeval x))))
+--                   (RingCon.instCommRingQuotientToAddToDistribToNonUnitalNonAssocSemiringToNonUnitalNonAssocRingToNonAssocRingToRingToMul.proof_7
+--                     (Ideal.Quotient.ringCon (RingHom.ker ↑(Polynomial.aeval x))))
+--                   (RingCon.instCommRingQuotientToAddToDistribToNonUnitalNonAssocSemiringToNonUnitalNonAssocRingToNonAssocRingToRingToMul.proof_8
+--                     (Ideal.Quotient.ringCon (RingHom.ker ↑(Polynomial.aeval x))))
+--                   (RingCon.instCommRingQuotientToAddToDistribToNonUnitalNonAssocSemiringToNonUnitalNonAssocRingToNonAssocRingToRingToMul.proof_9
+--                     (Ideal.Quotient.ringCon (RingHom.ker ↑(Polynomial.aeval x))))
+--                   (RingCon.instCommRingQuotientToAddToDistribToNonUnitalNonAssocSemiringToNonUnitalNonAssocRingToNonAssocRingToRingToMul.proof_11
+--                     (Ideal.Quotient.ringCon (RingHom.ker ↑(Polynomial.aeval x))))
+--                   (RingCon.instCommRingQuotientToAddToDistribToNonUnitalNonAssocSemiringToNonUnitalNonAssocRingToNonAssocRingToRingToMul.proof_12
+--                     (Ideal.Quotient.ringCon (RingHom.ker ↑(Polynomial.aeval x)))) ▶
+
+#exit
 
 @[simp]
 theorem quotientSpanXSubCAlgEquiv_mk (x : R) (p : R[X]) :
