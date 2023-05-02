@@ -335,6 +335,16 @@ lemma δ_v (hnm : n + 1 = m) (z : Cochain F G n) (p q : ℤ) (hpq : p + m = q) (
   obtain rfl : q₂ = p + m - n := by linarith
   rfl
 
+lemma δ_eq (hnm : n + 1 = m) (z : Cochain F G n) :
+    δ n m z = z.comp (Cochain.diff G) hnm +
+      ε (n + 1) • (Cochain.diff F).comp z (by rw [← hnm, add_comm 1]) := by
+  ext ⟨p, q, hpq⟩
+  dsimp
+  simp only [δ_v n m hnm z p q hpq (q-1) (p+1) rfl rfl,
+    Cochain.comp_v _ _ hnm p (q-1) q (by linarith) (by linarith),
+    Cochain.comp_v _ _ (show 1+n = m by linarith) p (p+1) q (by linarith) (by linarith),
+    Cochain.diff_v]
+
 @[simp]
 lemma δ_zero_cochain_v (z : Cochain F G 0) (p q : ℤ) (hpq : p + 1 = q) :
     (δ 0 1 z).v p q hpq = z.v p p (add_zero p) ≫ G.d p q - F.d p q ≫ z.v q q (add_zero q):= by
