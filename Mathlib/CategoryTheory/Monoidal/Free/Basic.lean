@@ -18,12 +18,12 @@ Given a type `C`, the free monoidal category over `C` has as objects formal expr
 tensor products of identities, unitors and associators.
 
 In this file, we construct the free monoidal category and prove that it is a monoidal category. If
-`D` is a monoidal category, we construct the functor `free_monoidal_category C ⥤ D` associated to
+`D` is a monoidal category, we construct the functor `FreeMonoidalCategory C ⥤ D` associated to
 a function `C → D`.
 
 The free monoidal category has two important properties: it is a groupoid and it is thin. The former
 is obvious from the construction, and the latter is what is commonly known as the monoidal coherence
-theorem. Both of these properties are proved in the file `coherence.lean`.
+theorem. Both of these properties are proved in the file `Coherence.lean`.
 
 -/
 
@@ -57,6 +57,8 @@ end
 local notation "F" => FreeMonoidalCategory
 
 namespace FreeMonoidalCategory
+
+attribute [nolint simpNF] Unit.sizeOf_spec tensor.injEq tensor.sizeOf_spec
 
 /-- Formal compositions and tensor products of identities, unitors and associators. The morphisms
     of the free monoidal category are obtained as a quotient of these formal morphisms by the
@@ -256,10 +258,9 @@ section
 
 open Hom
 
-/-- Auxiliary definition for `free_monoidal_category.project`. -/
--- Porting note: `@[simp]` here generates a panic in
+/-- Auxiliary definition for `FreeMonoidalCategory.project`. -/
+-- Porting note: here `@[simp]` would generates a panic in
 -- _private.Lean.Meta.Match.MatchEqs.0.Lean.Meta.Match.SimpH.substRHS
-@[simp]
 def projectMapAux : ∀ {X Y : F C}, (X ⟶ᵐ Y) → (projectObj f X ⟶ projectObj f Y)
   | _, _, Hom.id _ => 𝟙 _
   | _, _, α_hom _ _ _ => (α_ _ _ _).hom
@@ -273,7 +274,7 @@ def projectMapAux : ∀ {X Y : F C}, (X ⟶ᵐ Y) → (projectObj f X ⟶ projec
 #align category_theory.free_monoidal_category.project_map_aux CategoryTheory.FreeMonoidalCategory.projectMapAux
 
 -- Porting note: this declaration generates the same panic.
-/-- Auxiliary definition for `free_monoidal_category.project`. -/
+/-- Auxiliary definition for `FreeMonoidalCategory.project`. -/
 def projectMap (X Y : F C) : (X ⟶ Y) → (projectObj f X ⟶ projectObj f Y) :=
   Quotient.lift (projectMapAux f) <| by
     intro f g h
@@ -281,33 +282,31 @@ def projectMap (X Y : F C) : (X ⟶ Y) → (projectObj f X ⟶ projectObj f Y) :
     | refl => rfl
     | symm _ _ _ hfg' => exact hfg'.symm
     | trans _ _  hfg hgh => exact hfg.trans hgh
-    | comp _ _  hf hg => simp only [projectMapAux, hf, hg]
-    | tensor _ _ hfg hfg' => simp only [projectMapAux, hfg, hfg']
-    | comp_id => simp only [projectMapAux, Category.comp_id]
-    | id_comp => simp only [projectMapAux, Category.id_comp]
-    | assoc => simp only [projectMapAux, Category.assoc]
-    | tensor_id => simp only [projectMapAux, MonoidalCategory.tensor_id]; rfl
-    | tensor_comp => simp only [projectMapAux, MonoidalCategory.tensor_comp]
-    | α_hom_inv => simp only [projectMapAux, Iso.hom_inv_id]
-    | α_inv_hom => simp only [projectMapAux, Iso.inv_hom_id]
-    | associator_naturality => simp only [projectMapAux, MonoidalCategory.associator_naturality]
-    | ρ_hom_inv => simp only [projectMapAux, Iso.hom_inv_id]
-    | ρ_inv_hom => simp only [projectMapAux, Iso.inv_hom_id]
+    | comp _ _  hf hg => dsimp only [projectMapAux] ; rw [hf, hg]
+    | tensor _ _ hfg hfg' => dsimp only [projectMapAux] ; rw [hfg, hfg']
+    | comp_id => dsimp only [projectMapAux] ; rw [Category.comp_id]
+    | id_comp => dsimp only [projectMapAux] ; rw [Category.id_comp]
+    | assoc => dsimp only [projectMapAux] ; rw [Category.assoc]
+    | tensor_id => dsimp only [projectMapAux] ; rw [MonoidalCategory.tensor_id] ; rfl
+    | tensor_comp => dsimp only [projectMapAux] ; rw [MonoidalCategory.tensor_comp]
+    | α_hom_inv => dsimp only [projectMapAux] ; rw [Iso.hom_inv_id]
+    | α_inv_hom => dsimp only [projectMapAux] ; rw [Iso.inv_hom_id]
+    | associator_naturality =>
+        dsimp only [projectMapAux] ; rw [MonoidalCategory.associator_naturality]
+    | ρ_hom_inv => dsimp only [projectMapAux] ; rw [Iso.hom_inv_id]
+    | ρ_inv_hom => dsimp only [projectMapAux] ; rw [Iso.inv_hom_id]
     | ρ_naturality =>
-        simp only [projectMapAux]
-        dsimp [projectObj]
-        exact MonoidalCategory.rightUnitor_naturality _
-    | l_hom_inv => simp only [projectMapAux, Iso.hom_inv_id]
-    | l_inv_hom => simp only [projectMapAux, Iso.inv_hom_id]
+        dsimp only [projectMapAux, projectObj] ; rw [MonoidalCategory.rightUnitor_naturality]
+    | l_hom_inv => dsimp only [projectMapAux] ; rw [Iso.hom_inv_id]
+    | l_inv_hom => dsimp only [projectMapAux] ; rw [Iso.inv_hom_id]
     | l_naturality =>
-        simp only [projectMapAux]
-        dsimp [projectObj]
+        dsimp only [projectMapAux, projectObj]
         exact MonoidalCategory.leftUnitor_naturality _
     | pentagon =>
-        simp only [projectMapAux]
+        dsimp only [projectMapAux]
         exact MonoidalCategory.pentagon _ _ _ _
     | triangle =>
-        simp only [projectMapAux]
+        dsimp only [projectMapAux]
         exact MonoidalCategory.triangle _ _
 #align category_theory.free_monoidal_category.project_map CategoryTheory.FreeMonoidalCategory.projectMap
 
@@ -321,9 +320,9 @@ def project : MonoidalFunctor (F C) D where
   -- Porting note: `map_comp` and `μ_natural` were proved in mathlib3 by tidy, using induction.
   -- We probably don't expect `aesop_cat` to handle this yet, see https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Aesop.20and.20cases
   -- In any case I don't understand why we need to specify `using Quotient.recOn`.
-  map_comp := @fun X Y Z f g => by
-    induction' f using Quotient.recOn
+  map_comp := @fun X Y Z g h => by
     induction' g using Quotient.recOn
+    induction' h using Quotient.recOn
     all_goals
       rfl
   ε := 𝟙 _
