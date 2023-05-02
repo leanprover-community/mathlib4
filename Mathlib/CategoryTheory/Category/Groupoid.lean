@@ -8,10 +8,10 @@ Authors: Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.SingleObj
-import Mathbin.CategoryTheory.Limits.Shapes.Products
-import Mathbin.CategoryTheory.Pi.Basic
-import Mathbin.CategoryTheory.Limits.IsLimit
+import Mathlib.CategoryTheory.SingleObj
+import Mathlib.CategoryTheory.Limits.Shapes.Products
+import Mathlib.CategoryTheory.Pi.Basic
+import Mathlib.CategoryTheory.Limits.IsLimit
 
 /-!
 # Category of groupoids
@@ -64,8 +64,7 @@ theorem coe_of (C : Type u) [Groupoid C] : (of C : Type u) = C :=
 #align category_theory.Groupoid.coe_of CategoryTheory.GroupoidCat.coe_of
 
 /-- Category structure on `Groupoid` -/
-instance category : LargeCategory.{max v u} GroupoidCat.{v, u}
-    where
+instance category : LargeCategory.{max v u} GroupoidCat.{v, u} where
   Hom C D := C ⥤ D
   id C := 𝟭 C
   comp C D E F G := F ⋙ G
@@ -76,15 +75,13 @@ instance category : LargeCategory.{max v u} GroupoidCat.{v, u}
 
 /-- Functor that gets the set of objects of a groupoid. It is not
 called `forget`, because it is not a faithful functor. -/
-def objects : GroupoidCat.{v, u} ⥤ Type u
-    where
+def objects : GroupoidCat.{v, u} ⥤ Type u where
   obj := Bundled.α
   map C D F := F.obj
 #align category_theory.Groupoid.objects CategoryTheory.GroupoidCat.objects
 
 /-- Forgetting functor to `Cat` -/
-def forgetToCat : GroupoidCat.{v, u} ⥤ Cat.{v, u}
-    where
+def forgetToCat : GroupoidCat.{v, u} ⥤ Cat.{v, u} where
   obj C := Cat.of C
   map C D := id
 #align category_theory.Groupoid.forget_to_Cat CategoryTheory.GroupoidCat.forgetToCat
@@ -142,8 +139,7 @@ noncomputable def piIsoPi (J : Type u) (f : J → GroupoidCat.{u, u}) : @of (∀
 
 @[simp]
 theorem piIsoPi_hom_π (J : Type u) (f : J → GroupoidCat.{u, u}) (j : J) :
-    (piIsoPi J f).Hom ≫ Limits.Pi.π f j = CategoryTheory.Pi.eval _ j :=
-  by
+    (piIsoPi J f).Hom ≫ Limits.Pi.π f j = CategoryTheory.Pi.eval _ j := by
   simp [pi_iso_pi]
   rfl
 #align category_theory.Groupoid.pi_iso_pi_hom_π CategoryTheory.GroupoidCat.piIsoPi_hom_π
