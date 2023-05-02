@@ -159,6 +159,7 @@ import Mathlib.Algebra.Homology.ShortExact.Preadditive
 import Mathlib.Algebra.Homology.Single
 import Mathlib.Algebra.Homology.Triangulated.Epsilon
 import Mathlib.Algebra.Homology.Triangulated.HomComplex
+import Mathlib.Algebra.Homology.Triangulated.MappingCone
 import Mathlib.Algebra.Homology.Triangulated.Shift
 import Mathlib.Algebra.Hom.Ring
 import Mathlib.Algebra.Hom.Units
