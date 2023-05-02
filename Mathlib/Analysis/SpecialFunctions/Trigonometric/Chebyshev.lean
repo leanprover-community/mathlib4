@@ -17,9 +17,10 @@ import Mathlib.RingTheory.Polynomial.Chebyshev
 # Multiple angle formulas in terms of Chebyshev polynomials
 
 This file gives the trigonometric characterizations of Chebyshev polynomials, for both the real
-(`real.cos`) and complex (`complex.cos`) cosine.
+(`Real.cos`) and complex (`Complex.cos`) cosine.
 -/
 
+set_option linter.uppercaseLean3 false
 
 namespace Polynomial.Chebyshev
 
@@ -92,10 +93,13 @@ value `sin ((n + 1) * θ) / sin θ`. -/
 @[simp]
 theorem U_complex_cos (n : ℕ) : (U ℂ n).eval (cos θ) * sin θ = sin ((n + 1) * θ) := by
   induction' n with d hd
-  · simp only [U_zero, Nat.cast_zero, eval_one, mul_one, zero_add, one_mul]
+  · simp [U_zero, eval_one, zero_add, one_mul, Nat.zero_eq, CharP.cast_eq_zero]
   · rw [U_eq_X_mul_U_add_T]
     simp only [eval_add, eval_mul, eval_X, T_complex_cos, add_mul, mul_assoc, hd, one_mul]
-    conv_rhs => rw [sin_add, mul_comm]
+    -- Porting note: added `trans` to prevent `rw` from going on a wild goose chase applying `rfl`
+    trans cos θ * sin (↑(d.succ) * θ) + cos (↑(d.succ) * θ) * sin θ
+    swap
+    · conv_rhs => rw [sin_add, mul_comm]
     push_cast
     simp only [add_mul, one_mul]
 #align polynomial.chebyshev.U_complex_cos Polynomial.Chebyshev.U_complex_cos
