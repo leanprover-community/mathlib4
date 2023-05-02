@@ -86,7 +86,6 @@ theorem eq_top_of_unit_mem (x y : α) (hx : x ∈ I) (h : y * x = 1) : I = ⊤ :
       z = z * (y * x) := by simp [h]
       _ = z * y * x := Eq.symm <| mul_assoc z y x
       _ ∈ I := I.mul_mem_left _ hx
-
 #align ideal.eq_top_of_unit_mem Ideal.eq_top_of_unit_mem
 
 theorem eq_top_of_isUnit_mem {x} (hx : x ∈ I) (h : IsUnit x) : I = ⊤ :=

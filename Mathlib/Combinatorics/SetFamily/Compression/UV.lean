@@ -176,9 +176,7 @@ theorem compress_mem_compression_of_mem_compression (ha : a ∈ 𝓒 u v s) :
   obtain ⟨_, ha⟩ | ⟨_, b, hb, rfl⟩ := ha
   · exact Or.inl ⟨ha, ha⟩
   · exact Or.inr ⟨by rwa [compress_idem], b, hb, (compress_idem _ _ _).symm⟩
-#align
-  uv.compress_mem_compression_of_mem_compression
-  UV.compress_mem_compression_of_mem_compression
+#align uv.compress_mem_compression_of_mem_compression UV.compress_mem_compression_of_mem_compression
 
 /-- Compressing a family is idempotent. -/
 @[simp]

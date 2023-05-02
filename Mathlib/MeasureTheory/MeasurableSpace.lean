@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 
 ! This file was ported from Lean 3 source module measure_theory.measurable_space
-! leanprover-community/mathlib commit 88fcb83fe7996142dfcfe7368d31304a9adc874a
+! leanprover-community/mathlib commit 9b2b58d6b14b895b2f375108e765cb47de71aebd
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -21,7 +21,7 @@ import Mathlib.Data.Set.UnionLift
 # Measurable spaces and measurable functions
 
 This file provides properties of measurable spaces and the functions and isomorphisms
-between them. The definition of a measurable space is in `measure_theory.measurable_space_def`.
+between them. The definition of a measurable space is in `MeasureTheory.MeasurableSpaceDef`.
 
 A measurable space is a set equipped with a σ-algebra, a collection of
 subsets closed under complementation and countable union. A function
@@ -358,8 +358,7 @@ theorem Measurable.measurable_of_countable_ne [MeasurableSingletonClass α] (hf 
     simp [← inter_union_distrib_left]
   rw [this]
   refine (h.mono (inter_subset_right _ _)).measurableSet.union ?_
-  have : g ⁻¹' t ∩ { x : α | f x = g x } = f ⁻¹' t ∩ { x : α | f x = g x } :=
-    by
+  have : g ⁻¹' t ∩ { x : α | f x = g x } = f ⁻¹' t ∩ { x : α | f x = g x } := by
     ext x
     simp (config := { contextual := true })
   rw [this]
@@ -394,6 +393,11 @@ theorem measurable_to_countable [MeasurableSpace α] [Countable α] [MeasurableS
   · simp only [preimage_singleton_eq_empty.2 hyf, MeasurableSet.empty]
 #align measurable_to_countable measurable_to_countable
 
+theorem measurable_to_countable' [MeasurableSpace α] [Countable α] [MeasurableSpace β] {f : β → α}
+    (h : ∀ x, MeasurableSet (f ⁻¹' {x})) : Measurable f :=
+  measurable_to_countable fun y => h (f y)
+#align measurable_to_countable' measurable_to_countable'
+
 -- porting note: todo: add @[measurability]
 theorem measurable_unit [MeasurableSpace α] (f : Unit → α) : Measurable f :=
   measurable_from_top
@@ -412,15 +416,23 @@ theorem measurable_to_nat {f : α → ℕ} : (∀ y, MeasurableSet (f ⁻¹' {f 
   measurable_to_countable
 #align measurable_to_nat measurable_to_nat
 
-theorem measurable_find_greatest' {p : α → ℕ → Prop} [∀ x, DecidablePred (p x)] {N : ℕ}
+theorem measurable_to_bool {f : α → Bool} (h : MeasurableSet (f ⁻¹' {true})) : Measurable f := by
+  apply measurable_to_countable'
+  rintro (- | -)
+  · convert h.compl
+    rw [← preimage_compl, Bool.compl_singleton, Bool.not_true]
+  exact h
+#align measurable_to_bool measurable_to_bool
+
+theorem measurable_findGreatest' {p : α → ℕ → Prop} [∀ x, DecidablePred (p x)] {N : ℕ}
     (hN : ∀ k ≤ N, MeasurableSet { x | Nat.findGreatest (p x) N = k }) :
     Measurable fun x => Nat.findGreatest (p x) N :=
   measurable_to_nat fun _ => hN _ N.findGreatest_le
-#align measurable_find_greatest' measurable_find_greatest'
+#align measurable_find_greatest' measurable_findGreatest'
 
 theorem measurable_findGreatest {p : α → ℕ → Prop} [∀ x, DecidablePred (p x)] {N}
     (hN : ∀ k ≤ N, MeasurableSet { x | p x k }) : Measurable fun x => Nat.findGreatest (p x) N := by
-  refine' measurable_find_greatest' fun k hk => _
+  refine' measurable_findGreatest' fun k hk => _
   simp only [Nat.findGreatest_eq_iff, setOf_and, setOf_forall, ← compl_setOf]
   repeat' apply_rules [MeasurableSet.inter, MeasurableSet.const, MeasurableSet.interᵢ,
     MeasurableSet.compl, hN] <;> try intros
@@ -894,13 +906,13 @@ theorem measurable_piEquivPiSubtypeProd (p : δ → Prop) [DecidablePred p] :
 
 end Pi
 
-instance Tprod.measurableSpace (π : δ → Type _) [∀ x, MeasurableSpace (π x)] :
+instance TProd.measurableSpace (π : δ → Type _) [∀ x, MeasurableSpace (π x)] :
     ∀ l : List δ, MeasurableSpace (List.TProd π l)
   | [] => instMeasurableSpacePUnit
-  | _::is => @instMeasurableSpaceProd _ _ _ (Tprod.measurableSpace π is)
-#align tprod.measurable_space Tprod.measurableSpace
+  | _::is => @instMeasurableSpaceProd _ _ _ (TProd.measurableSpace π is)
+#align tprod.measurable_space TProd.measurableSpace
 
-section Tprod
+section TProd
 
 open List
 
@@ -935,7 +947,7 @@ theorem MeasurableSet.tProd (l : List δ) {s : ∀ i, Set (π i)} (hs : ∀ i, M
   exact (hs i).prod ih
 #align measurable_set.tprod MeasurableSet.tProd
 
-end Tprod
+end TProd
 
 instance {α β} [m₁ : MeasurableSpace α] [m₂ : MeasurableSpace β] : MeasurableSpace (α ⊕ β) :=
   m₁.map Sum.inl ⊓ m₂.map Sum.inr
@@ -1294,8 +1306,7 @@ protected def cast {α β} [i₁ : MeasurableSpace α] [i₂ : MeasurableSpace �
 protected theorem measurable_comp_iff {f : β → γ} (e : α ≃ᵐ β) :
     Measurable (f ∘ e) ↔ Measurable f :=
   Iff.intro
-    (fun hfe =>
-      by
+    (fun hfe => by
       have : Measurable (f ∘ (e.symm.trans e).toEquiv) := hfe.comp e.symm.measurable
       rwa [coe_toEquiv, symm_trans_self] at this)
     fun h => h.comp e.measurable
@@ -1431,12 +1442,12 @@ def piCongrRight (e : ∀ a, π a ≃ᵐ π' a) : (∀ a, π a) ≃ᵐ ∀ a, π
 
 /-- Pi-types are measurably equivalent to iterated products. -/
 @[simps! (config := { fullyApplied := false })]
-def piMeasurableEquivTprod [DecidableEq δ'] {l : List δ'} (hnd : l.Nodup) (h : ∀ i, i ∈ l) :
+def piMeasurableEquivTProd [DecidableEq δ'] {l : List δ'} (hnd : l.Nodup) (h : ∀ i, i ∈ l) :
     (∀ i, π i) ≃ᵐ List.TProd π l where
   toEquiv := List.TProd.piEquivTProd hnd h
   measurable_toFun := measurable_tProd_mk l
   measurable_invFun := measurable_tProd_elim' h
-#align measurable_equiv.pi_measurable_equiv_tprod MeasurableEquiv.piMeasurableEquivTprod
+#align measurable_equiv.pi_measurable_equiv_tprod MeasurableEquiv.piMeasurableEquivTProd
 
 /-- If `α` has a unique term, then the type of function `α → β` is measurably equivalent to `β`. -/
 @[simps! (config := { fullyApplied := false })]
@@ -1589,6 +1600,59 @@ noncomputable def schroederBernstein {f : α → β} {g : β → α} (hf : Measu
 
 end MeasurableEmbedding
 
+section CountablyGenerated
+
+namespace MeasurableSpace
+
+variable (α)
+
+/-- We say a measurable space is countably generated
+if can be generated by a countable set of sets.-/
+class CountablyGenerated [m : MeasurableSpace α] : Prop where
+  IsCountablyGenerated : ∃ b : Set (Set α), b.Countable ∧ m = generateFrom b
+#align measurable_space.countably_generated MeasurableSpace.CountablyGenerated
+
+open Classical
+
+/-- If a measurable space is countably generated, it admits a measurable injection
+into the Cantor space `ℕ → Bool` (equipped with the product sigma algebra). -/
+theorem measurable_injection_cantor_of_countablyGenerated [MeasurableSpace α]
+    [h : CountablyGenerated α] [MeasurableSingletonClass α] :
+    ∃ f : α → ℕ → Bool, Measurable f ∧ Function.Injective f := by
+  obtain ⟨b, bct, hb⟩ := h.IsCountablyGenerated
+  obtain ⟨e, he⟩ := Set.Countable.exists_eq_range (bct.insert ∅) (insert_nonempty _ _)
+  rw [← generateFrom_insert_empty, he] at hb
+  refine' ⟨fun x n => x ∈ e n, _, _⟩
+  . rw [measurable_pi_iff]
+    intro n
+    apply measurable_to_bool
+    simp only [preimage, mem_singleton_iff, Bool.decide_iff]
+    rw [hb]
+    apply measurableSet_generateFrom
+    exact ⟨n, rfl⟩
+  intro x y hxy
+  have : ∀ s : Set α, MeasurableSet s → (x ∈ s ↔ y ∈ s) := fun s =>
+    by
+    rw [hb]
+    apply generateFrom_induction
+    · rintro - ⟨n, rfl⟩
+      rw [← decide_eq_decide]
+      rw [funext_iff] at hxy
+      exact hxy n
+    · tauto
+    · intro t
+      tauto
+    intro t ht
+    simp_rw [mem_unionᵢ, ht]
+  specialize this {y} measurableSet_eq
+  simp only [mem_singleton, iff_true_iff] at this
+  exact this
+#align measurable_space.measurable_injection_cantor_of_countably_generated MeasurableSpace.measurable_injection_cantor_of_countablyGenerated
+
+end MeasurableSpace
+
+end CountablyGenerated
+
 namespace Filter
 
 variable [MeasurableSpace α]
@@ -1660,7 +1724,7 @@ end Filter
 /-- We say that a collection of sets is countably spanning if a countable subset spans the
   whole type. This is a useful condition in various parts of measure theory. For example, it is
   a needed condition to show that the product of two collections generate the product sigma algebra,
-  see `generate_from_prod_eq`. -/
+  see `generateFrom_prod_eq`. -/
 def IsCountablySpanning (C : Set (Set α)) : Prop :=
   ∃ s : ℕ → Set α, (∀ n, s n ∈ C) ∧ (⋃ n, s n) = univ
 #align is_countably_spanning IsCountablySpanning

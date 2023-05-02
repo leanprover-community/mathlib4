@@ -463,7 +463,6 @@ def opSpan {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) :
     _ ≅ walkingSpanOpEquiv.functor ⋙ walkingSpanOpEquiv.inverse ⋙ (span f g).op :=
       (Functor.associator _ _ _)
     _ ≅ walkingSpanOpEquiv.functor ⋙ cospan f.op g.op := isoWhiskerLeft _ (cospanOp f g).symm
-
 #align category_theory.limits.op_span CategoryTheory.Limits.opSpan
 
 namespace PushoutCocone
@@ -591,7 +590,7 @@ def isColimitEquivIsLimitUnop {X Y Z : Cᵒᵖ} {f : X ⟶ Y} {g : X ⟶ Z} (c :
     IsColimit c ≃ IsLimit c.unop := by
   apply equivOfSubsingletonOfSubsingleton
   . intro h
-    exact isLimitCoconeOp _ ((IsColimit.precomposeHomEquiv _ _).invFun
+    exact isLimitCoconeUnop _ ((IsColimit.precomposeHomEquiv _ _).invFun
       ((IsColimit.whiskerEquivalenceEquiv _).toFun h))
   . intro h
     exact (IsColimit.equivIsoColimit c.unopOp).toFun

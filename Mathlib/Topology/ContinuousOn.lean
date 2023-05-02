@@ -1096,7 +1096,7 @@ theorem Embedding.continuousOn_iff {f : α → β} {g : β → γ} (hg : Embeddi
 
 theorem Embedding.map_nhdsWithin_eq {f : α → β} (hf : Embedding f) (s : Set α) (x : α) :
     map f (𝓝[s] x) = 𝓝[f '' s] f x := by
-  rw [nhdsWithin, map_inf hf.inj, hf.map_nhds_eq, map_principal, ← nhdsWithin_inter',
+  rw [nhdsWithin, Filter.map_inf hf.inj, hf.map_nhds_eq, map_principal, ← nhdsWithin_inter',
     inter_eq_self_of_subset_right (image_subset_range _ _)]
 #align embedding.map_nhds_within_eq Embedding.map_nhdsWithin_eq
 

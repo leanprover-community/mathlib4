@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 
 ! This file was ported from Lean 3 source module topology.fiber_bundle.trivialization
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
+! leanprover-community/mathlib commit be2c24f56783935652cefffb4bfca7e4b25d167e
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/

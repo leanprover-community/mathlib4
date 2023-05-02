@@ -335,7 +335,7 @@ end Data
 
 /-! ### Algebraic structure
 
-The operations above on the quotient by `c : RingCon R` preseverse the algebraic structure of `R`.
+The operations above on the quotient by `c : RingCon R` preserve the algebraic structure of `R`.
 -/
 
 

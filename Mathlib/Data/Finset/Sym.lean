@@ -53,8 +53,6 @@ variable {m : Sym2 α}
 /-- Lifts a finset to `Sym2 α`. `s.sym2` is the finset of all pairs with elements in `s`. -/
 -- Porting note: changed ×ˢ to xᶠ
 protected def sym2 (s : Finset α) : Finset (Sym2 α) := (s ×ᶠ s).image Quotient.mk'
-
-
 #align finset.sym2 Finset.sym2
 
 @[simp]
@@ -256,7 +254,7 @@ def symInsertEquiv (h : a ∉ s) : (insert a s).sym n ≃ Σi : Fin (n + 1), s.s
       swap; exact Subtype.coe_injective
       refine Eq.trans ?_ (Sym.filter_ne_fill a _ ?_)
       exacts[rfl, h ∘ mem_sym_iff.1 hm a]
- #align finset.sym_insert_equiv Finset.symInsertEquiv
+#align finset.sym_insert_equiv Finset.symInsertEquiv
 
 end Sym
 
