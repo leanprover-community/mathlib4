@@ -16,7 +16,7 @@ import Mathlib.Algebra.ContinuedFractions.Basic
 ## Summary
 
 Some simple translation lemmas between the different definitions of functions defined in
-`algebra.continued_fractions.basic`.
+`Algebra.ContinuedFractions.Basic`.
 -/
 
 
