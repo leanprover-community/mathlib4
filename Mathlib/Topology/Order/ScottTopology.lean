@@ -97,7 +97,6 @@ def ScottTopology' : TopologicalSpace α := (upperSetTopology ⊔
         intros s t hs ht d a hd₁ hd₂ hd₃ ha
         obtain ⟨b₁, hb₁_w, hb₁_h⟩ := hs d a hd₁ hd₂ hd₃ ha.1
         obtain ⟨b₂, hb₂_w, hb₂_h⟩ := ht d a hd₁ hd₂ hd₃ ha.2
-        rw [DirectedOn] at hd₂
         obtain ⟨c, hc_w, hc_h⟩ := hd₂ b₁ hb₁_w b₂ hb₂_w
         refine ⟨c, hc_w, ?_⟩
         . calc
@@ -108,8 +107,7 @@ def ScottTopology' : TopologicalSpace α := (upperSetTopology ⊔
             _ ⊆ s ∩ t := inter_subset_inter hb₁_h hb₂_h
       isOpen_unionₛ := by
         intros s h d a hd₁ hd₂ hd₃ ha
-        rw [mem_unionₛ] at ha
-        obtain ⟨s₀, hs₀_w, hs₀_h⟩ := ha
+        obtain ⟨s₀, hs₀_w, hs₀_h⟩ := mem_unionₛ.mp ha
         obtain ⟨b, hb_w, hb_h⟩ := h s₀ hs₀_w d a hd₁ hd₂ hd₃ hs₀_h
         use b
         constructor
