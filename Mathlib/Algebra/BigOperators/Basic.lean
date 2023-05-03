@@ -144,11 +144,12 @@ to show the domain type when the product is over `Finset.univ`. -/
   let (i, body) ← withAppArg <| withBindingBodyUnusedName fun i => do
     return (i, ← delab)
   if s.isAppOfArity ``Finset.univ 2 then
-    let binder ← if ppDomain then
-      let ty ← withNaryArg 1 <| delab
-      `(extBinder| $(.mk i):ident : $ty)
-    else
-      `(extBinder| $(.mk i):ident)
+    let binder ←
+      if ppDomain then
+        let ty ← withNaryArg 1 <| delab
+        `(extBinder| $(.mk i):ident : $ty)
+      else
+        `(extBinder| $(.mk i):ident)
     `(∏ $binder, $body)
   else
     let ss ← withNaryArg 3 <| delab
@@ -163,11 +164,12 @@ to show the domain type when the sum is over `Finset.univ`. -/
   let (i, body) ← withAppArg <| withBindingBodyUnusedName fun i => do
     return (i, ← delab)
   if s.isAppOfArity ``Finset.univ 2 then
-    let binder ← if ppDomain then
-      let ty ← withNaryArg 1 <| delab
-      `(extBinder| $(.mk i):ident : $ty)
-    else
-      `(extBinder| $(.mk i):ident)
+    let binder ←
+      if ppDomain then
+        let ty ← withNaryArg 1 <| delab
+        `(extBinder| $(.mk i):ident : $ty)
+      else
+        `(extBinder| $(.mk i):ident)
     `(∑ $binder, $body)
   else
     let ss ← withNaryArg 3 <| delab
