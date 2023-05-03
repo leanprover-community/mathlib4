@@ -13,7 +13,7 @@ import Mathlib.LinearAlgebra.Finrank
 import Mathlib.LinearAlgebra.FreeModule.Basic
 import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 import Mathlib.SetTheory.Cardinal.Ordinal
-import Mathlib.Tactic.RingExp
+-- import Mathlib.Tactic.RingExp
 
 /-!
 # Quaternions
@@ -55,19 +55,19 @@ quaternion
 -/
 
 
-/- ./././Mathport/Syntax/Translate/Command.lean:429:34: infer kinds are unsupported in Lean 4: mk {} -/
 /-- Quaternion algebra over a type with fixed coefficients $a=i^2$ and $b=j^2$.
 Implemented as a structure with four fields: `re`, `im_i`, `im_j`, and `im_k`. -/
-@[nolint unused_arguments, ext]
-structure QuaternionAlgebra (R : Type _) (a b : R) where mk ::
+@[ext]
+structure QuaternionAlgebra (R : Type _) (a b : R) where
   re : R
   imI : R
   imJ : R
   imK : R
 #align quaternion_algebra QuaternionAlgebra
 
--- mathport name: quaternion_algebra
+@[inherit_doc]
 scoped[Quaternion] notation "ℍ[" R "," a "," b "]" => QuaternionAlgebra R a b
+open Quaternion
 
 namespace QuaternionAlgebra
 
@@ -76,8 +76,8 @@ namespace QuaternionAlgebra
 def equivProd {R : Type _} (c₁ c₂ : R) : ℍ[R,c₁,c₂] ≃ R × R × R × R where
   toFun a := ⟨a.1, a.2, a.3, a.4⟩
   invFun a := ⟨a.1, a.2.1, a.2.2.1, a.2.2.2⟩
-  left_inv := fun ⟨a₁, a₂, a₃, a₄⟩ => rfl
-  right_inv := fun ⟨a₁, a₂, a₃, a₄⟩ => rfl
+  left_inv _ := rfl
+  right_inv _ := rfl
 #align quaternion_algebra.equiv_prod QuaternionAlgebra.equivProd
 
 /-- The equivalence between a quaternion algebra over `R` and `fin 4 → R`. -/
@@ -85,7 +85,7 @@ def equivProd {R : Type _} (c₁ c₂ : R) : ℍ[R,c₁,c₂] ≃ R × R × R ×
 def equivTuple {R : Type _} (c₁ c₂ : R) : ℍ[R,c₁,c₂] ≃ (Fin 4 → R) where
   toFun a := ![a.1, a.2, a.3, a.4]
   invFun a := ⟨a 0, a 1, a 2, a 3⟩
-  left_inv := fun ⟨a₁, a₂, a₃, a₄⟩ => rfl
+  left_inv _ := rfl
   right_inv f := by ext ⟨_, _ | _ | _ | _ | _ | ⟨⟩⟩ <;> rfl
 #align quaternion_algebra.equiv_tuple QuaternionAlgebra.equivTuple
 
@@ -96,8 +96,7 @@ theorem equivTuple_apply {R : Type _} (c₁ c₂ : R) (x : ℍ[R,c₁,c₂]) :
 #align quaternion_algebra.equiv_tuple_apply QuaternionAlgebra.equivTuple_apply
 
 @[simp]
-theorem mk.eta {R : Type _} {c₁ c₂} : ∀ a : ℍ[R,c₁,c₂], mk a.1 a.2 a.3 a.4 = a
-  | ⟨a₁, a₂, a₃, a₄⟩ => rfl
+theorem mk.eta {R : Type _} {c₁ c₂} (a : ℍ[R,c₁,c₂]) : mk a.1 a.2 a.3 a.4 = a := rfl
 #align quaternion_algebra.mk.eta QuaternionAlgebra.mk.eta
 
 variable {S T R : Type _} [CommRing R] {c₁ c₂ : R} (r x y z : R) (a b c : ℍ[R,c₁,c₂])
@@ -132,30 +131,28 @@ theorem im_idem : a.im.im = a.im :=
   rfl
 #align quaternion_algebra.im_idem QuaternionAlgebra.im_idem
 
-instance : CoeTC R ℍ[R,c₁,c₂] :=
-  ⟨fun x => ⟨x, 0, 0, 0⟩⟩
+/-- Coercion `R → ℍ[R,c₁,c₂]`. -/
+def coe (x : R) : ℍ[R,c₁,c₂] := ⟨x, 0, 0, 0⟩
 
-@[simp, norm_cast]
-theorem coe_re : (x : ℍ[R,c₁,c₂]).re = x :=
-  rfl
+instance : CoeTC R ℍ[R,c₁,c₂] := ⟨coe⟩
+
+@[simp] -- porting note: was `norm_cast`
+theorem coe_re : (x : ℍ[R,c₁,c₂]).re = x := rfl
 #align quaternion_algebra.coe_re QuaternionAlgebra.coe_re
 
-@[simp, norm_cast]
-theorem coe_imI : (x : ℍ[R,c₁,c₂]).imI = 0 :=
-  rfl
+@[simp] -- porting note: was `norm_cast`
+theorem coe_imI : (x : ℍ[R,c₁,c₂]).imI = 0 := rfl
 #align quaternion_algebra.coe_im_i QuaternionAlgebra.coe_imI
 
-@[simp, norm_cast]
-theorem coe_imJ : (x : ℍ[R,c₁,c₂]).imJ = 0 :=
-  rfl
+@[simp] -- porting note: was `norm_cast`
+theorem coe_imJ : (x : ℍ[R,c₁,c₂]).imJ = 0 := rfl
 #align quaternion_algebra.coe_im_j QuaternionAlgebra.coe_imJ
 
-@[simp, norm_cast]
-theorem coe_imK : (x : ℍ[R,c₁,c₂]).imK = 0 :=
-  rfl
+@[simp] -- porting note: was `norm_cast`
+theorem coe_imK : (x : ℍ[R,c₁,c₂]).imK = 0 := rfl
 #align quaternion_algebra.coe_im_k QuaternionAlgebra.coe_imK
 
-theorem coe_injective : Function.Injective (coe : R → ℍ[R,c₁,c₂]) := fun x y h => congr_arg re h
+theorem coe_injective : Function.Injective (coe : R → ℍ[R,c₁,c₂]) := fun _ _ h => congr_arg re h
 #align quaternion_algebra.coe_injective QuaternionAlgebra.coe_injective
 
 @[simp]
@@ -167,21 +164,18 @@ theorem coe_inj {x y : R} : (x : ℍ[R,c₁,c₂]) = y ↔ x = y :=
 instance : Zero ℍ[R,c₁,c₂] :=
   ⟨⟨0, 0, 0, 0⟩⟩
 
-@[simp, norm_cast]
-theorem coe_zero : ((0 : R) : ℍ[R,c₁,c₂]) = 0 :=
-  rfl
+@[simp] -- porting note: was `norm_cast`
+theorem coe_zero : ((0 : R) : ℍ[R,c₁,c₂]) = 0 := rfl
 #align quaternion_algebra.coe_zero QuaternionAlgebra.coe_zero
 
-instance : Inhabited ℍ[R,c₁,c₂] :=
-  ⟨0⟩
+instance : Inhabited ℍ[R,c₁,c₂] := ⟨0⟩
 
 @[simps]
 instance : One ℍ[R,c₁,c₂] :=
   ⟨⟨1, 0, 0, 0⟩⟩
 
-@[simp, norm_cast]
-theorem coe_one : ((1 : R) : ℍ[R,c₁,c₂]) = 1 :=
-  rfl
+@[simp] -- porting note: was `norm_cast`
+theorem coe_one : ((1 : R) : ℍ[R,c₁,c₂]) = 1 := rfl
 #align quaternion_algebra.coe_one QuaternionAlgebra.coe_one
 
 @[simps]
@@ -194,20 +188,19 @@ theorem mk_add_mk (a₁ a₂ a₃ a₄ b₁ b₂ b₃ b₄ : R) :
   rfl
 #align quaternion_algebra.mk_add_mk QuaternionAlgebra.mk_add_mk
 
-@[norm_cast, simp]
+@[simp] -- porting note: was `norm_cast`
 theorem coe_add : ((x + y : R) : ℍ[R,c₁,c₂]) = x + y := by ext <;> simp
 #align quaternion_algebra.coe_add QuaternionAlgebra.coe_add
 
 @[simps]
-instance : Neg ℍ[R,c₁,c₂] :=
-  ⟨fun a => ⟨-a.1, -a.2, -a.3, -a.4⟩⟩
+instance : Neg ℍ[R,c₁,c₂] := ⟨fun a => ⟨-a.1, -a.2, -a.3, -a.4⟩⟩
 
 @[simp]
 theorem neg_mk (a₁ a₂ a₃ a₄ : R) : -(mk a₁ a₂ a₃ a₄ : ℍ[R,c₁,c₂]) = ⟨-a₁, -a₂, -a₃, -a₄⟩ :=
   rfl
 #align quaternion_algebra.neg_mk QuaternionAlgebra.neg_mk
 
-@[norm_cast, simp]
+@[simp] -- porting note: was `norm_cast`
 theorem coe_neg : ((-x : R) : ℍ[R,c₁,c₂]) = -x := by ext <;> simp
 #align quaternion_algebra.coe_neg QuaternionAlgebra.coe_neg
 
@@ -221,24 +214,24 @@ theorem mk_sub_mk (a₁ a₂ a₃ a₄ b₁ b₂ b₃ b₄ : R) :
   rfl
 #align quaternion_algebra.mk_sub_mk QuaternionAlgebra.mk_sub_mk
 
-@[simp, norm_cast]
+@[simp] -- porting note: was `norm_cast`
 theorem coe_im : (x : ℍ[R,c₁,c₂]).im = 0 :=
   rfl
 #align quaternion_algebra.coe_im QuaternionAlgebra.coe_im
 
 @[simp]
 theorem re_add_im : ↑a.re + a.im = a :=
-  ext _ _ (add_zero _) (zero_add _) (zero_add _) (zero_add _)
+  QuaternionAlgebra.ext _ _ (add_zero _) (zero_add _) (zero_add _) (zero_add _)
 #align quaternion_algebra.re_add_im QuaternionAlgebra.re_add_im
 
 @[simp]
 theorem sub_self_im : a - a.im = a.re :=
-  ext _ _ (sub_zero _) (sub_self _) (sub_self _) (sub_self _)
+  QuaternionAlgebra.ext _ _ (sub_zero _) (sub_self _) (sub_self _) (sub_self _)
 #align quaternion_algebra.sub_self_im QuaternionAlgebra.sub_self_im
 
 @[simp]
 theorem sub_self_re : a - a.re = a.im :=
-  ext _ _ (sub_self _) (sub_zero _) (sub_zero _) (sub_zero _)
+  QuaternionAlgebra.ext _ _ (sub_self _) (sub_zero _) (sub_zero _) (sub_zero _)
 #align quaternion_algebra.sub_self_re QuaternionAlgebra.sub_self_re
 
 /-- Multiplication is given by
@@ -276,7 +269,7 @@ The `ring R` argument is not used, but it's also much stronger than the other de
 file need; for instance `quaternion_algebra.has_zero` only really needs `has_zero R`. For
 simplicity we just keep things consistent.
 -/
-@[nolint unused_arguments]
+@[nolint unusedArguments]
 instance : SMul S ℍ[R,c₁,c₂] where smul s a := ⟨s • a.1, s • a.2, s • a.3, s • a.4⟩
 
 instance [SMul S T] [IsScalarTower S T R] : IsScalarTower S T ℍ[R,c₁,c₂]
