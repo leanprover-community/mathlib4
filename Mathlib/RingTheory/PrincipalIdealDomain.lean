@@ -65,12 +65,14 @@ instance bot_isPrincipal : (⊥ : Submodule R M).IsPrincipal :=
   ⟨⟨0, by simp⟩⟩
 #align bot_is_principal bot_isPrincipal
 
+set_option synthInstance.etaExperiment true in
 instance top_isPrincipal : (⊤ : Submodule R R).IsPrincipal :=
   ⟨⟨1, Ideal.span_singleton_one.symm⟩⟩
 #align top_is_principal top_isPrincipal
 
 variable (R)
 
+set_option synthInstance.etaExperiment true in
 /-- A ring is a principal ideal ring if all (left) ideals are principal. -/
 @[mk_iff isPrincipalIdealRing_iff]
 class IsPrincipalIdealRing (R : Type u) [Ring R] : Prop where
@@ -79,6 +81,7 @@ class IsPrincipalIdealRing (R : Type u) [Ring R] : Prop where
 
 attribute [instance] IsPrincipalIdealRing.principal
 
+set_option synthInstance.etaExperiment true in
 instance (priority := 100) DivisionRing.isPrincipalIdealRing (K : Type u) [DivisionRing K] :
     IsPrincipalIdealRing K where
   principal S := by
@@ -106,6 +109,7 @@ theorem span_singleton_generator (S : Submodule R M) [S.IsPrincipal] : span R {g
   Eq.symm (Classical.choose_spec (principal S))
 #align submodule.is_principal.span_singleton_generator Submodule.IsPrincipal.span_singleton_generator
 
+set_option synthInstance.etaExperiment true in
 theorem _root_.Ideal.span_singleton_generator (I : Ideal R) [I.IsPrincipal] :
     Ideal.span ({generator I} : Set R) = I :=
   Eq.symm (Classical.choose_spec (principal I))
@@ -132,10 +136,12 @@ section CommRing
 
 variable [CommRing R] [Module R M]
 
+set_option synthInstance.etaExperiment true in
 theorem mem_iff_generator_dvd (S : Ideal R) [S.IsPrincipal] {x : R} : x ∈ S ↔ generator S ∣ x :=
   (mem_iff_eq_smul_generator S).trans (exists_congr fun a => by simp only [mul_comm, smul_eq_mul])
 #align submodule.is_principal.mem_iff_generator_dvd Submodule.IsPrincipal.mem_iff_generator_dvd
 
+set_option synthInstance.etaExperiment true in
 theorem prime_generator_of_isPrime (S : Ideal R) [Submodule.IsPrincipal S] [is_prime : S.IsPrime]
     (ne_bot : S ≠ ⊥) : Prime (generator S) :=
   ⟨fun h => ne_bot ((eq_bot_iff_generator_eq_zero S).2 h), fun h =>
@@ -168,6 +174,7 @@ namespace IsPrime
 
 open Submodule.IsPrincipal Ideal
 
+set_option synthInstance.etaExperiment true in
 -- TODO -- for a non-ID one could perhaps prove that if p < q are prime then q maximal;
 -- 0 isn't prime in a non-ID PIR but the Krull dimension is still <= 1.
 -- The below result follows from this, but we could also use the below result to
@@ -203,6 +210,7 @@ theorem mod_mem_iff {S : Ideal R} {x y : R} (hy : y ∈ S) : x % y ∈ S ↔ x �
     (mod_eq_sub_mul_div x y).symm ▸ S.sub_mem hx (S.mul_mem_right _ hy)⟩
 #align mod_mem_iff mod_mem_iff
 
+set_option synthInstance.etaExperiment true in
 -- see Note [lower instance priority]
 instance (priority := 100) EuclideanDomain.to_principal_ideal_domain : IsPrincipalIdealRing R
     where principal S :=
@@ -251,13 +259,14 @@ namespace PrincipalIdealRing
 
 open IsPrincipalIdealRing
 
+set_option synthInstance.etaExperiment true in
 -- see Note [lower instance priority]
 instance (priority := 100) isNoetherianRing [Ring R] [IsPrincipalIdealRing R] :
     IsNoetherianRing R :=
   isNoetherianRing_iff.2
     ⟨fun s : Ideal R =>
       by
-      rcases(IsPrincipalIdealRing.principal s).principal with ⟨a, rfl⟩
+      rcases (IsPrincipalIdealRing.principal s).principal with ⟨a, rfl⟩
       rw [← Finset.coe_singleton]
       exact ⟨{a}, SetLike.coe_injective rfl⟩⟩
 #align principal_ideal_ring.is_noetherian_ring PrincipalIdealRing.isNoetherianRing
@@ -486,11 +495,13 @@ open Set Ideal
 
 variable (R) [CommRing R]
 
+set_option synthInstance.etaExperiment true in
 /-- `nonPrincipals R` is the set of all ideals of `R` that are not principal ideals. -/
 def nonPrincipals :=
   { I : Ideal R | ¬I.IsPrincipal }
 #align non_principals nonPrincipals
 
+set_option synthInstance.etaExperiment true in
 theorem nonPrincipals_def {I : Ideal R} : I ∈ nonPrincipals R ↔ ¬I.IsPrincipal :=
   Iff.rfl
 #align non_principals_def nonPrincipals_def
@@ -501,6 +512,7 @@ theorem nonPrincipals_eq_empty_iff : nonPrincipals R = ∅ ↔ IsPrincipalIdealR
   simp [Set.eq_empty_iff_forall_not_mem, isPrincipalIdealRing_iff, nonPrincipals_def]
 #align non_principals_eq_empty_iff nonPrincipals_eq_empty_iff
 
+set_option synthInstance.etaExperiment true in
 /-- Any chain in the set of non-principal ideals has an upper bound which is non-principal.
 (Namely, the union of the chain is such an upper bound.)
 -/
@@ -517,6 +529,7 @@ theorem nonPrincipals_zorn (c : Set (Ideal R)) (hs : c ⊆ nonPrincipals R)
   exact hs ⟨⟨x, rfl⟩⟩
 #align non_principals_zorn nonPrincipals_zorn
 
+set_option synthInstance.etaExperiment true in
 /-- If all prime ideals in a commutative ring are principal, so are all other ideals. -/
 theorem IsPrincipalIdealRing.of_prime (H : ∀ P : Ideal R, P.IsPrime → P.IsPrincipal) :
     IsPrincipalIdealRing R := by

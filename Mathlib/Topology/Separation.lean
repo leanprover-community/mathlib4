@@ -1927,7 +1927,7 @@ theorem compact_t2_tot_disc_iff_tot_sep : TotallyDisconnectedSpace α ↔ Totall
   rw [connectedComponent_eq_interᵢ_clopen, mem_interᵢ]
   rintro ⟨w : Set α, hw : IsClopen w, hy : y ∈ w⟩
   by_contra hx
-  exact hyp (wᶜ) w hw.2.isOpen_compl hw.1 hx hy (@isCompl_compl _ w _).symm.Codisjoint.top_le
+  exact hyp (wᶜ) w hw.2.isOpen_compl hw.1 hx hy (@isCompl_compl _ w _).symm.codisjoint.top_le
     disjoint_compl_left
 #align compact_t2_tot_disc_iff_tot_sep compact_t2_tot_disc_iff_tot_sep
 
