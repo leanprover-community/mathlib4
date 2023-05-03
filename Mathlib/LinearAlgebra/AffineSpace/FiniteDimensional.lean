@@ -691,6 +691,7 @@ theorem finrank_vectorSpan_insert_le (s : AffineSubspace k P) (p : P) :
       exact hf (Submodule.finiteDimensional_of_le h')
     rw [finrank_of_infinite_dimensional hf, finrank_of_infinite_dimensional hf', zero_add]
     exact zero_le_one
+  have : FiniteDimensional k s.direction := hf
   rw [← direction_affineSpan, ← affineSpan_insert_affineSpan]
   rcases (s : Set P).eq_empty_or_nonempty with (hs | ⟨p₀, hp₀⟩)
   · rw [coe_eq_bot_iff] at hs
@@ -700,9 +701,7 @@ theorem finrank_vectorSpan_insert_le (s : AffineSubspace k P) (p : P) :
     rw [← finrank_bot k V]
     convert rfl <;> simp
   · rw [affineSpan_coe, direction_affineSpan_insert hp₀, add_comm]
-    -- Porting note: Added `span_of_finite` instance
-    refine' (@Submodule.finrank_add_le_finrank_add_finrank _ _ _ _ _ _ _
-      (span_of_finite _ (Set.finite_singleton _)) hf).trans (add_le_add_right _ _)
+    refine' (Submodule.finrank_add_le_finrank_add_finrank _ _).trans (add_le_add_right _ _)
     refine' finrank_le_one ⟨p -ᵥ p₀, Submodule.mem_span_singleton_self _⟩ fun v => _
     have h := v.property
     rw [Submodule.mem_span_singleton] at h
