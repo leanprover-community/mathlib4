@@ -208,9 +208,7 @@ theorem to_unit_cont (f : Part α →o Part α) (hc : Continuous f) : Continuous
     erw [hc, Chain.map_comp]; rfl
 #align part.to_unit_cont Part.to_unit_cont
 
--- Porting note: `noncomputable` is required because the code generator does not support recursor
---               `Acc.rec` yet.
-noncomputable instance lawfulFix : LawfulFix (Part α) :=
+instance lawfulFix : LawfulFix (Part α) :=
   ⟨fun {f : Part α →o Part α} hc ↦ show Part.fix (toUnitMono f) () = _ by
     rw [Part.fix_eq (to_unit_cont f hc)]; rfl⟩
 #align part.lawful_fix Part.lawfulFix
@@ -221,9 +219,7 @@ open Sigma
 
 namespace Pi
 
--- Porting note: `noncomputable` is required because the code generator does not support recursor
---               `Acc.rec` yet.
-noncomputable instance lawfulFix {β} : LawfulFix (α → Part β) :=
+instance lawfulFix {β} : LawfulFix (α → Part β) :=
   ⟨fun {_f} ↦ Part.fix_eq⟩
 #align pi.lawful_fix Pi.lawfulFix
 

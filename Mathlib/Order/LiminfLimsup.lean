@@ -252,7 +252,6 @@ theorem _root_.OrderIso.isBoundedUnder_le_comp [Preorder α] [Preorder β] (e : 
     {u : γ → α} : (IsBoundedUnder (· ≤ ·) l fun x => e (u x)) ↔ IsBoundedUnder (· ≤ ·) l u :=
   (Function.Surjective.exists e.surjective).trans <|
     exists_congr fun a => by simp only [eventually_map, e.le_iff_le]
-
 #align order_iso.is_bounded_under_le_comp OrderIso.isBoundedUnder_le_comp
 
 @[simp]
@@ -952,9 +951,7 @@ theorem OrderIso.apply_blimsup [CompleteLattice γ] (e : α ≃o γ) :
   congr
   ext c
   obtain ⟨a, rfl⟩ := e.surjective c
-  -- Porting note: Also needed to add this next line
-  have : ↑(RelIso.toRelEmbedding e).toEmbedding = FunLike.coe e := rfl
-  simp [this]
+  simp
 #align filter.order_iso.apply_blimsup Filter.OrderIso.apply_blimsup
 
 theorem OrderIso.apply_bliminf [CompleteLattice γ] (e : α ≃o γ) :

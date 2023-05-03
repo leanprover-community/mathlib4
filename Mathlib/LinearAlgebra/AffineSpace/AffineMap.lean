@@ -121,7 +121,7 @@ theorem coe_mk (f : P1 → P2) (linear add) : ((mk f linear add : P1 →ᵃ[k] P
   rfl
 #align affine_map.coe_mk AffineMap.coe_mk
 
-/-- `to_fun` is the same as the result of coercing to a function. -/
+/-- `toFun` is the same as the result of coercing to a function. -/
 @[simp]
 theorem toFun_eq_coe (f : P1 →ᵃ[k] P2) : f.toFun = ⇑f :=
   rfl
@@ -680,7 +680,6 @@ theorem decomp (f : V1 →ᵃ[k] V2) : (f : V1 → V2) = ⇑f.linear + fun _ => 
   calc
     f x = f.linear x +ᵥ f 0 := by rw [← f.map_vadd, vadd_eq_add, add_zero]
     _ = (f.linear + fun _ : V1 => f 0) x := rfl
-
 #align affine_map.decomp AffineMap.decomp
 
 /-- Decomposition of an affine map in the special case when the point space and vector space

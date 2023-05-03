@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro, Yury G. Kudryashov
 
 ! This file was ported from Lean 3 source module order.rel_classes
-! leanprover-community/mathlib commit bc7d81beddb3d6c66f71449c5bc76c38cb77cf9e
+! leanprover-community/mathlib commit 172bf2812857f5e56938cc148b7a539f52f84ca9
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -283,7 +283,9 @@ instance (priority := 100) isStrictTotalOrder_of_isStrictTotalOrder [IsStrictTot
 #align has_well_founded WellFoundedRelation
 set_option linter.uppercaseLean3 false in
 #align has_well_founded.R WellFoundedRelation.rel
-instance [h : WellFoundedRelation α] : IsWellFounded α WellFoundedRelation.rel :=
+
+instance WellFoundedRelation.isWellFounded [h : WellFoundedRelation α] :
+    IsWellFounded α WellFoundedRelation.rel :=
   { h with }
 
 theorem WellFoundedRelation.asymmetric {α : Sort _} [WellFoundedRelation α] {a b : α} :
