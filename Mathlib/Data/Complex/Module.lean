@@ -337,11 +337,6 @@ section lift
 
 variable {A : Type _} [Ring A] [Algebra ℝ A]
 
--- Porting note: added for `liftAux` proof
--- see https://github.com/leanprover-community/mathlib/pull/18907
-instance {R A} [CommSemiring R] [Semiring A] [Algebra R A] : SMulCommClass R A A := by
-  infer_instance
-
 set_option synthInstance.etaExperiment true in
 /-- There is an alg_hom from `ℂ` to any `ℝ`-algebra with an element that squares to `-1`.
 
