@@ -420,46 +420,48 @@ section
 
 variable (c₁ c₂)
 
+set_option synthInstance.etaExperiment true -- lean4#2074
+
 /-- `quaternion_algebra.re` as a `linear_map`-/
 @[simps]
 def reLm : ℍ[R,c₁,c₂] →ₗ[R] R where
   toFun := re
-  map_add' x y := rfl
-  map_smul' r x := rfl
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
 #align quaternion_algebra.re_lm QuaternionAlgebra.reLm
 
 /-- `quaternion_algebra.im_i` as a `linear_map`-/
 @[simps]
 def imILm : ℍ[R,c₁,c₂] →ₗ[R] R where
   toFun := imI
-  map_add' x y := rfl
-  map_smul' r x := rfl
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
 #align quaternion_algebra.im_i_lm QuaternionAlgebra.imILm
 
 /-- `quaternion_algebra.im_j` as a `linear_map`-/
 @[simps]
 def imJLm : ℍ[R,c₁,c₂] →ₗ[R] R where
   toFun := imJ
-  map_add' x y := rfl
-  map_smul' r x := rfl
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
 #align quaternion_algebra.im_j_lm QuaternionAlgebra.imJLm
 
 /-- `quaternion_algebra.im_k` as a `linear_map`-/
 @[simps]
 def imKLm : ℍ[R,c₁,c₂] →ₗ[R] R where
   toFun := imK
-  map_add' x y := rfl
-  map_smul' r x := rfl
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
 #align quaternion_algebra.im_k_lm QuaternionAlgebra.imKLm
 
 /-- `quaternion_algebra.equiv_tuple` as a linear equivalence. -/
 def linearEquivTuple : ℍ[R,c₁,c₂] ≃ₗ[R] Fin 4 → R :=
-  LinearEquiv.symm-- proofs are not `rfl` in the forward direction
+  LinearEquiv.symm -- proofs are not `rfl` in the forward direction
     { (equivTuple c₁ c₂).symm with
       toFun := (equivTuple c₁ c₂).symm
       invFun := equivTuple c₁ c₂
-      map_add' := fun v₁ v₂ => rfl
-      map_smul' := fun v₁ v₂ => rfl }
+      map_add' := fun _ _ => rfl
+      map_smul' := fun _ _ => rfl }
 #align quaternion_algebra.linear_equiv_tuple QuaternionAlgebra.linearEquivTuple
 
 @[simp]
@@ -474,7 +476,7 @@ theorem coe_linearEquivTuple_symm : ⇑(linearEquivTuple c₁ c₂).symm = (equi
 
 /-- `ℍ[R, c₁, c₂]` has a basis over `R` given by `1`, `i`, `j`, and `k`. -/
 noncomputable def basisOneIJK : Basis (Fin 4) R ℍ[R,c₁,c₂] :=
-  Basis.ofEquivFun <| linearEquivTuple c₁ c₂
+  .ofEquivFun <| linearEquivTuple c₁ c₂
 #align quaternion_algebra.basis_one_i_j_k QuaternionAlgebra.basisOneIJK
 
 @[simp]
@@ -483,21 +485,17 @@ theorem coe_basisOneIJK_repr (q : ℍ[R,c₁,c₂]) :
   rfl
 #align quaternion_algebra.coe_basis_one_i_j_k_repr QuaternionAlgebra.coe_basisOneIJK_repr
 
-instance : Module.Finite R ℍ[R,c₁,c₂] :=
-  Module.Finite.of_basis (basisOneIJK c₁ c₂)
+instance : Module.Finite R ℍ[R,c₁,c₂] := .of_basis (basisOneIJK c₁ c₂)
 
-instance : Module.Free R ℍ[R,c₁,c₂] :=
-  Module.Free.of_basis (basisOneIJK c₁ c₂)
+instance : Module.Free R ℍ[R,c₁,c₂] := .of_basis (basisOneIJK c₁ c₂)
 
 theorem rank_eq_four [StrongRankCondition R] : Module.rank R ℍ[R,c₁,c₂] = 4 := by
-  rw [rank_eq_card_basis (basis_one_i_j_k c₁ c₂), Fintype.card_fin]
+  rw [rank_eq_card_basis (basisOneIJK c₁ c₂), Fintype.card_fin]
   norm_num
 #align quaternion_algebra.rank_eq_four QuaternionAlgebra.rank_eq_four
 
 theorem finrank_eq_four [StrongRankCondition R] : FiniteDimensional.finrank R ℍ[R,c₁,c₂] = 4 := by
-  have : Cardinal.toNat 4 = 4 := by
-    rw [← Cardinal.toNat_cast 4, Nat.cast_bit0, Nat.cast_bit0, Nat.cast_one]
-  rw [FiniteDimensional.finrank, rank_eq_four, this]
+  rw [FiniteDimensional.finrank, rank_eq_four, Cardinal.toNat_ofNat]
 #align quaternion_algebra.finrank_eq_four QuaternionAlgebra.finrank_eq_four
 
 end
@@ -604,7 +602,7 @@ theorem star_im : star a.im = -a.im :=
 @[simp]
 theorem star_smul [Monoid S] [DistribMulAction S R] (s : S) (a : ℍ[R,c₁,c₂]) :
     star (s • a) = s • star a :=
-  ext _ _ rfl (smul_neg _ _).symm (smul_neg _ _).symm (smul_neg _ _).symm
+  QuaternionAlgebra.ext _ _ rfl (smul_neg _ _).symm (smul_neg _ _).symm (smul_neg _ _).symm
 #align quaternion_algebra.star_smul QuaternionAlgebra.star_smul
 
 theorem eq_re_of_eq_coe {a : ℍ[R,c₁,c₂]} {x : R} (h : a = x) : a = a.re := by rw [h, coe_re]
@@ -612,7 +610,7 @@ theorem eq_re_of_eq_coe {a : ℍ[R,c₁,c₂]} {x : R} (h : a = x) : a = a.re :=
 
 theorem eq_re_iff_mem_range_coe {a : ℍ[R,c₁,c₂]} :
     a = a.re ↔ a ∈ Set.range (coe : R → ℍ[R,c₁,c₂]) :=
-  ⟨fun h => ⟨a.re, h.symm⟩, fun ⟨x, h⟩ => eq_re_of_eq_coe h.symm⟩
+  ⟨fun h => ⟨a.re, h.symm⟩, fun ⟨_, h⟩ => eq_re_of_eq_coe h.symm⟩
 #align quaternion_algebra.eq_re_iff_mem_range_coe QuaternionAlgebra.eq_re_iff_mem_range_coe
 
 section CharZero
@@ -621,11 +619,11 @@ variable [NoZeroDivisors R] [CharZero R]
 
 @[simp]
 theorem star_eq_self {c₁ c₂ : R} {a : ℍ[R,c₁,c₂]} : star a = a ↔ a = a.re := by
-  simp [ext_iff, neg_eq_iff_add_eq_zero, add_self_eq_zero]
+  simp [QuaternionAlgebra.ext_iff, neg_eq_iff_add_eq_zero, add_self_eq_zero]
 #align quaternion_algebra.star_eq_self QuaternionAlgebra.star_eq_self
 
 theorem star_eq_neg {c₁ c₂ : R} {a : ℍ[R,c₁,c₂]} : star a = -a ↔ a.re = 0 := by
-  simp [ext_iff, eq_neg_iff_add_eq_zero]
+  simp [QuaternionAlgebra.ext_iff, eq_neg_iff_add_eq_zero]
 #align quaternion_algebra.star_eq_neg QuaternionAlgebra.star_eq_neg
 
 end CharZero
@@ -667,13 +665,13 @@ def Quaternion (R : Type _) [One R] [Neg R] :=
 scoped[Quaternion] notation "ℍ[" R "]" => Quaternion R
 
 /-- The equivalence between the quaternions over `R` and `R × R × R × R`. -/
-@[simps]
+@[simps!]
 def Quaternion.equivProd (R : Type _) [One R] [Neg R] : ℍ[R] ≃ R × R × R × R :=
   QuaternionAlgebra.equivProd _ _
 #align quaternion.equiv_prod Quaternion.equivProd
 
 /-- The equivalence between the quaternions over `R` and `fin 4 → R`. -/
-@[simps symm_apply]
+@[simps! symm_apply]
 def Quaternion.equivTuple (R : Type _) [One R] [Neg R] : ℍ[R] ≃ (Fin 4 → R) :=
   QuaternionAlgebra.equivTuple _ _
 #align quaternion.equiv_tuple Quaternion.equivTuple
@@ -690,29 +688,24 @@ variable {S T R : Type _} [CommRing R] (r x y z : R) (a b c : ℍ[R])
 
 export QuaternionAlgebra (re imI imJ imK)
 
-instance : CoeTC R ℍ[R] :=
-  QuaternionAlgebra.hasCoeT
+instance : CoeTC R ℍ[R] := inferInstanceAs <| CoeTC R ℍ[R,-1,-1]
 
-instance : Ring ℍ[R] :=
-  QuaternionAlgebra.ring
+instance : Ring ℍ[R] := inferInstanceAs <| Ring ℍ[R,-1,-1]
 
-instance : Inhabited ℍ[R] :=
-  QuaternionAlgebra.inhabited
+instance : Inhabited ℍ[R] := inferInstanceAs <| Inhabited ℍ[R,-1,-1]
 
-instance [SMul S R] : SMul S ℍ[R] :=
-  QuaternionAlgebra.hasSmul
+instance [SMul S R] : SMul S ℍ[R] := inferInstanceAs <| SMul S ℍ[R,-1,-1]
 
 instance [SMul S T] [SMul S R] [SMul T R] [IsScalarTower S T R] : IsScalarTower S T ℍ[R] :=
-  QuaternionAlgebra.isScalarTower
+  inferInstanceAs <| IsScalarTower S T ℍ[R,-1,-1]
 
 instance [SMul S R] [SMul T R] [SMulCommClass S T R] : SMulCommClass S T ℍ[R] :=
-  QuaternionAlgebra.sMulCommClass
+  inferInstanceAs <| SMulCommClass S T ℍ[R,-1,-1]
 
 instance [CommSemiring S] [Algebra S R] : Algebra S ℍ[R] :=
-  QuaternionAlgebra.algebra
+  inferInstanceAs <| Algebra S ℍ[R,-1,-1]
 
-instance : StarRing ℍ[R] :=
-  QuaternionAlgebra.starRing
+instance : StarRing ℍ[R] := inferInstanceAs <| StarRing ℍ[R,-1,-1]
 
 @[ext]
 theorem ext : a.re = b.re → a.imI = b.imI → a.imJ = b.imJ → a.imK = b.imK → a = b :=
@@ -725,43 +718,28 @@ theorem ext_iff {a b : ℍ[R]} :
 #align quaternion.ext_iff Quaternion.ext_iff
 
 /-- The imaginary part of a quaternion. -/
-def im (x : ℍ[R]) : ℍ[R] :=
-  x.im
+nonrec def im (x : ℍ[R]) : ℍ[R] := x.im
 #align quaternion.im Quaternion.im
 
-@[simp]
-theorem im_re : a.im.re = 0 :=
-  rfl
+@[simp] theorem im_re : a.im.re = 0 := rfl
 #align quaternion.im_re Quaternion.im_re
 
-@[simp]
-theorem im_imI : a.im.imI = a.imI :=
-  rfl
+@[simp] theorem im_imI : a.im.imI = a.imI := rfl
 #align quaternion.im_im_i Quaternion.im_imI
 
-@[simp]
-theorem im_imJ : a.im.imJ = a.imJ :=
-  rfl
+@[simp] theorem im_imJ : a.im.imJ = a.imJ := rfl
 #align quaternion.im_im_j Quaternion.im_imJ
 
-@[simp]
-theorem im_imK : a.im.imK = a.imK :=
-  rfl
+@[simp] theorem im_imK : a.im.imK = a.imK := rfl
 #align quaternion.im_im_k Quaternion.im_imK
 
-@[simp]
-theorem im_idem : a.im.im = a.im :=
-  rfl
+@[simp] theorem im_idem : a.im.im = a.im := rfl
 #align quaternion.im_idem Quaternion.im_idem
 
-@[simp]
-theorem re_add_im : ↑a.re + a.im = a :=
-  a.re_add_im
+@[simp] nonrec theorem re_add_im : ↑a.re + a.im = a := a.re_add_im
 #align quaternion.re_add_im Quaternion.re_add_im
 
-@[simp]
-theorem sub_self_im : a - a.im = a.re :=
-  a.sub_self_im
+@[simp] nonrec theorem sub_self_im : a - a.im = a.re := a.sub_self_im
 #align quaternion.sub_self_im Quaternion.sub_self_im
 
 @[simp]
