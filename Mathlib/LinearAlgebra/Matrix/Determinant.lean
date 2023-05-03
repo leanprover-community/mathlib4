@@ -588,7 +588,7 @@ theorem det_blockDiagonal {o : Type _} [Fintype o] [DecidableEq o] (M : o → Ma
   simp_rw [det_apply']
   -- The right hand side is a product of sums, rewrite it as a sum of products.
   rw [Finset.prod_sum]
-  simp_rw [Finset.mem_univ, Finset.prod_attach_univ, Finset.univ_pi_univ]
+  simp_rw [Finset.prod_attach_univ, Finset.univ_pi_univ]
   -- We claim that the only permutations contributing to the sum are those that
   -- preserve their second component.
   let preserving_snd : Finset (Equiv.Perm (n × o)) :=

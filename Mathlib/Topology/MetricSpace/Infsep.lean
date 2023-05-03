@@ -169,7 +169,7 @@ theorem einfsep_pair_eq_inf (hxy : x ≠ y) : ({x, y} : Set α).einfsep = edist 
 
 theorem einfsep_eq_infᵢ : s.einfsep = ⨅ d : s.offDiag, (uncurry edist) (d : α × α) := by
   refine' eq_of_forall_le_iff fun _ => _
-  simp_rw [le_einfsep_iff, le_infᵢ_iff, imp_forall_iff, SetCoe.forall, Subtype.coe_mk, mem_offDiag,
+  simp_rw [le_einfsep_iff, le_infᵢ_iff, imp_forall_iff, SetCoe.forall, mem_offDiag,
     Prod.forall, uncurry_apply_pair, and_imp]
 #align set.einfsep_eq_infi Set.einfsep_eq_infᵢ
 

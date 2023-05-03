@@ -237,7 +237,7 @@ theorem ofFn_const : ∀ (n : ℕ) (c : α), (ofFn fun _ : Fin n => c) = replica
 @[simp]
 theorem ofFn_fin_repeat {m} (a : Fin m → α) (n : ℕ) :
     List.ofFn (Fin.repeat n a) = (List.replicate n (List.ofFn a)).join := by
-  simp_rw [ofFn_mul, ← ofFn_const, Fin.repeat, Fin.modNat, Fin.val_mk, add_comm,
+  simp_rw [ofFn_mul, ← ofFn_const, Fin.repeat, Fin.modNat, add_comm,
     Nat.add_mul_mod_self_right, Nat.mod_eq_of_lt (Fin.is_lt _)]
 #align list.of_fn_fin_repeat List.ofFn_fin_repeat
 

@@ -63,7 +63,7 @@ protected def subtypeEquiv (p : α → Prop) [DecidablePred p] :
         refine' (Perm.subtypeEquivSubtypePerm p).subtypeEquiv fun f => ⟨fun hf a hfa ha => _, _⟩
         · refine' hf ⟨a, ha⟩ (Subtype.ext _)
           simp_rw [mem_fixedPoints, IsFixedPt, Perm.subtypeEquivSubtypePerm,
-          Equiv.coe_fn_mk, Subtype.coe_mk, Perm.ofSubtype_apply_of_mem _ ha] at hfa
+          Equiv.coe_fn_mk, Perm.ofSubtype_apply_of_mem _ ha] at hfa
           assumption
         rintro hf ⟨a, ha⟩ hfa
         refine' hf _ _ ha

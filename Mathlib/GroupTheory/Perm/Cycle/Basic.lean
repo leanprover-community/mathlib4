@@ -418,7 +418,7 @@ noncomputable def IsCycle.zpowersEquivSupport {σ : Perm α} (hσ : IsCycle σ) 
       · rintro ⟨a, m, rfl⟩ ⟨b, n, rfl⟩ h
         ext y
         by_cases hy : σ y = y
-        · simp_rw [Subtype.coe_mk, zpow_apply_eq_self_of_apply_eq_self hy]
+        · simp_rw [zpow_apply_eq_self_of_apply_eq_self hy]
         · obtain ⟨i, rfl⟩ := (Classical.choose_spec hσ).2 hy
           rw [Subtype.coe_mk, Subtype.coe_mk, zpow_apply_comm σ m i, zpow_apply_comm σ n i]
           exact congr_arg _ (Subtype.ext_iff.mp h)

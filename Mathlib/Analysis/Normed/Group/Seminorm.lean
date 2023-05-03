@@ -584,7 +584,7 @@ instance : Sup (NonarchAddGroupSeminorm E) :=
       add_le_max' := fun x y =>
         sup_le ((map_add_le_max p x y).trans <| max_le_max le_sup_left le_sup_left)
           ((map_add_le_max q x y).trans <| max_le_max le_sup_right le_sup_right)
-      neg' := fun x => by simp_rw [Pi.sup_apply, Pi.sup_apply, map_neg_eq_map p, map_neg_eq_map q]}⟩
+      neg' := fun x => by simp_rw [Pi.sup_apply, map_neg_eq_map p, map_neg_eq_map q]}⟩
 
 @[simp, norm_cast]
 theorem coe_sup : ⇑(p ⊔ q) = ⇑p ⊔ ⇑q :=

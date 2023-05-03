@@ -1181,7 +1181,7 @@ theorem support_map_subset [Semiring R] [Semiring S] (f : R →+* S) (p : R[X]) 
 
 theorem support_map_of_injective [Semiring R] [Semiring S] (p : R[X]) {f : R →+* S}
     (hf : Function.Injective f) : (map f p).support = p.support := by
-  simp_rw [Finset.ext_iff, mem_support_iff, coeff_map, ← map_zero f, hf.ne_iff, iff_self_iff,
+  simp_rw [Finset.ext_iff, mem_support_iff, coeff_map, ← map_zero f, hf.ne_iff,
     forall_const]
 #align polynomial.support_map_of_injective Polynomial.support_map_of_injective
 

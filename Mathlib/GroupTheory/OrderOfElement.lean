@@ -335,7 +335,7 @@ theorem orderOf_eq_orderOf_iff {H : Type _} [Monoid H] {y : H} :
 @[to_additive]
 theorem orderOf_injective {H : Type _} [Monoid H] (f : G →* H) (hf : Function.Injective f) (x : G) :
     orderOf (f x) = orderOf x := by
-  simp_rw [orderOf_eq_orderOf_iff, ← f.map_pow, ← f.map_one, hf.eq_iff, iff_self_iff, forall_const]
+  simp_rw [orderOf_eq_orderOf_iff, ← f.map_pow, ← f.map_one, hf.eq_iff, forall_const]
 #align order_of_injective orderOf_injective
 #align add_order_of_injective addOrderOf_injective
 
@@ -1074,7 +1074,7 @@ def powCardSubgroup {G : Type _} [Group G] [Fintype G] (S : Set G) (hS : S.Nonem
   subgroupOfIdempotent (S ^ Fintype.card G) ⟨1, one_mem⟩ $ by
     classical!
     apply (Set.eq_of_subset_of_card_le (Set.subset_mul_left _ one_mem) (ge_of_eq _)).symm
-    simp_rw [← pow_add, Group.card_pow_eq_card_pow_card_univ S (Fintype.card G) le_rfl,
+    simp_rw [← pow_add,
         Group.card_pow_eq_card_pow_card_univ S (Fintype.card G + Fintype.card G) le_add_self]
 #align pow_card_subgroup powCardSubgroup
 #align smul_card_add_subgroup smulCardAddSubgroup

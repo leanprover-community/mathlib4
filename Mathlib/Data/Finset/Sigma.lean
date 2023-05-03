@@ -132,7 +132,7 @@ theorem mem_sigmaLift (f : ∀ ⦃i⦄, α i → β i → Finset (γ i)) (a : Si
   obtain ⟨⟨i, a⟩, j, b⟩ := a, b
   obtain rfl | h := Decidable.eq_or_ne i j
   · constructor
-    · simp_rw [sigmaLift, dif_pos rfl, mem_map, Embedding.sigmaMk_apply]
+    · simp_rw [sigmaLift]
       simp only [dite_eq_ite, ite_true, mem_map, Embedding.sigmaMk_apply, forall_exists_index,
         and_imp]
       rintro x hx rfl
@@ -176,7 +176,7 @@ theorem sigmaLift_nonempty :
 #align finset.sigma_lift_nonempty Finset.sigmaLift_nonempty
 
 theorem sigmaLift_eq_empty : sigmaLift f a b = ∅ ↔ ∀ h : a.1 = b.1, f (h ▸ a.2) b.2 = ∅ := by
-  simp_rw [nonempty_iff_ne_empty, sigmaLift]
+  simp_rw [sigmaLift]
   split_ifs with h
   . simp [h, forall_prop_of_true h]
   . simp [h, forall_prop_of_false h]
@@ -194,7 +194,7 @@ variable (f a b)
 
 theorem card_sigmaLift :
     (sigmaLift f a b).card = dite (a.1 = b.1) (fun h => (f (h ▸ a.2) b.2).card) fun _ => 0 := by
-  simp_rw [nonempty_iff_ne_empty, sigmaLift]
+  simp_rw [sigmaLift]
   split_ifs with h <;> simp [h]
 #align finset.card_sigma_lift Finset.card_sigmaLift
 

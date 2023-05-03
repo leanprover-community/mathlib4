@@ -1348,7 +1348,7 @@ def MultilinearMap.uncurryRight
     · revert x
       rw [eq_last_of_not_lt h]
       intro x
-      simp_rw [update_same, update_same, init_update_last, init_update_last, map_smul]
+      simp_rw [update_same, init_update_last, map_smul]
 #align multilinear_map.uncurry_right MultilinearMap.uncurryRight
 
 @[simp]

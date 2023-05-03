@@ -104,7 +104,7 @@ instance lawfulApplicative : LawfulApplicative Finset :=
       by
       rw [seq_def, fmap_def, seqLeft_def]
       obtain rfl | ht := t.eq_empty_or_nonempty
-      · simp_rw [if_pos rfl, image_empty, if_true]
+      · simp_rw [image_empty, if_true]
         exact (sup_bot _).symm
       · ext a
         rw [if_neg ht.ne_empty, mem_sup]

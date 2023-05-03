@@ -340,7 +340,7 @@ theorem mem_generatePiSystem_unionᵢ_elim' {α β} {g : β → Set (Set α)} {s
         rw [Subtype.val_injective.extend_apply]
         apply id
   · intros b h_b
-    simp_rw [Finset.mem_image, exists_prop, Subtype.exists, exists_and_right, exists_eq_right]
+    simp_rw [Finset.mem_image, Subtype.exists, exists_and_right, exists_eq_right]
       at h_b
     cases' h_b with h_b_w h_b_h
     have h_b_alt : b = (Subtype.mk b h_b_w).val := rfl

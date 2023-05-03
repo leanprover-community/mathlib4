@@ -151,7 +151,7 @@ def uniformSpaceOfCompactT2 [TopologicalSpace γ] [CompactSpace γ] [T2Space γ]
     -- topology we started with.
     suffices ∀ x : γ, Filter.comap (Prod.mk x) (𝓝ˢ (diagonal γ)) = 𝓝 x by
       intro s
-      simp_rw [isOpen_fold, isOpen_iff_mem_nhds, ← mem_comap_prod_mk, this]
+      simp_rw [isOpen_iff_mem_nhds, ← mem_comap_prod_mk, this]
     intro x
     simp_rw [nhdsSet_diagonal, comap_supᵢ, nhds_prod_eq, comap_prod, (· ∘ ·), comap_id']
     rw [supᵢ_split_single _ x, comap_const_of_mem fun V => mem_of_mem_nhds]
