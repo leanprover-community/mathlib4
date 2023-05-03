@@ -1,5 +1,4 @@
 import Std.Tactic.Lint
-import Std.Tactic.Lint.TypeClass
 
 open Lean Core Elab Command Std.Tactic.Lint
 
