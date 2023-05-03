@@ -259,7 +259,7 @@ section
 open Hom
 
 /-- Auxiliary definition for `FreeMonoidalCategory.project`. -/
--- Porting note: here `@[simp]` would generates a panic in
+-- Porting note: here `@[simp]` generates a panic in
 -- _private.Lean.Meta.Match.MatchEqs.0.Lean.Meta.Match.SimpH.substRHS
 def projectMapAux : ∀ {X Y : F C}, (X ⟶ᵐ Y) → (projectObj f X ⟶ projectObj f Y)
   | _, _, Hom.id _ => 𝟙 _
@@ -320,21 +320,17 @@ def project : MonoidalFunctor (F C) D where
   -- Porting note: `map_comp` and `μ_natural` were proved in mathlib3 by tidy, using induction.
   -- We probably don't expect `aesop_cat` to handle this yet, see https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Aesop.20and.20cases
   -- In any case I don't understand why we need to specify `using Quotient.recOn`.
-  map_comp := @fun X Y Z g h => by
-    induction' g using Quotient.recOn
-    induction' h using Quotient.recOn
-    all_goals
-      rfl
+  map_comp := by rintro _ _ _ ⟨_⟩ ⟨_⟩ ; rfl
   ε := 𝟙 _
   μ X Y := 𝟙 _
-  μ_natural := @fun X Y X' Y' f g => by
+  μ_natural := @fun _ _ _ _ f g => by
     induction' f using Quotient.recOn
-    induction' g using Quotient.recOn
-    · dsimp
-      simp
-      rfl
-    · rfl
-    · rfl
+    . induction' g using Quotient.recOn
+      . dsimp
+        simp
+        rfl
+      . rfl
+    . rfl
 #align category_theory.free_monoidal_category.project CategoryTheory.FreeMonoidalCategory.project
 
 end Functor
