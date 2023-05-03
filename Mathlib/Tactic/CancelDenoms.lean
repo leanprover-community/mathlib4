@@ -134,7 +134,16 @@ match t, e with
   let v1 ← mkProdPrf α _sα v lhs e1
   let v2 ← mkProdPrf α _sα v rhs e2
   mkAppM `CancelFactors.sub_subst #[v1, v2]
-| .node n lhs (.node rn _ _), ~q($e1 * $e2) => do
+| .node _ lhs@(.node ln _ _) rhs, ~q($e1 * $e2) => do
+  let v1 ← mkProdPrf α _sα ln lhs e1
+  let v2 ← mkProdPrf α _sα (v / ln) rhs e2
+  have ln' := (← mkOfNat α _sα <| mkRawNatLit ln).1
+  have vln' := (← mkOfNat α _sα <| mkRawNatLit (v/ln)).1
+  have v' := (← mkOfNat α _sα <| mkRawNatLit v).1
+  let ntp : Q(Prop) := q($ln' * $vln' = $v')
+  let npf ← synthesizeUsing ntp (do Lean.Elab.Tactic.evalTactic (←`(tactic| norm_num; done)))
+  mkAppM `CancelFactors.mul_subst #[v1, v2, npf]
+| .node n lhs (.node rn _ _), ~q($e1 / $e2) => do
   let v1 ← mkProdPrf α _sα (v / rn) lhs e1
   have rn' := (← mkOfNat α _sα <| mkRawNatLit v).1
   have vrn' := (← mkOfNat α _sα <| mkRawNatLit <| v / rn).1
