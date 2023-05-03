@@ -223,8 +223,8 @@ instance forgetPreservesColimits : PreservesColimits (forget : TopCat.{u} ⥤ Ty
 /-- The terminal object of `Top` is `punit`. -/
 def isTerminalPunit : IsTerminal (TopCat.of PUnit.{u + 1}) :=
   haveI : ∀ X, Unique (X ⟶ TopCat.of PUnit.{u + 1}) := fun X =>
-    ⟨⟨⟨fun x => PUnit.unit, by continuity⟩⟩, fun f => by ext⟩
-  limits.is_terminal.of_unique _
+    ⟨⟨⟨fun _ => PUnit.unit, by continuity⟩⟩, fun f => by ext; aesop⟩
+  Limits.IsTerminal.ofUnique _
 #align Top.is_terminal_punit TopCat.isTerminalPunit
 
 /-- The terminal object of `Top` is `punit`. -/
@@ -236,7 +236,7 @@ def terminalIsoPunit : ⊤_ TopCat.{u} ≅ TopCat.of PUnit :=
 def isInitialPempty : IsInitial (TopCat.of PEmpty.{u + 1}) :=
   haveI : ∀ X, Unique (TopCat.of PEmpty.{u + 1} ⟶ X) := fun X =>
     ⟨⟨⟨fun x => x.elim, by continuity⟩⟩, fun f => by ext ⟨⟩⟩
-  limits.is_initial.of_unique _
+  Limits.IsInitial.ofUnique _
 #align Top.is_initial_pempty TopCat.isInitialPempty
 
 /-- The initial object of `Top` is `pempty`. -/
