@@ -342,10 +342,6 @@ section complete_lattice
 
 variable [CompleteLattice α] [TopologicalSpace α] [ScottTopology α]
 
-variable {u : Set α}
-
-#check And (IsUpperSet u)
-
 lemma isOpen_iff_isUpperSet_and_sup_mem_implies_tail_subset {u : Set α} :
   IsOpen u ↔ (IsUpperSet u ∧ ∀ ⦃d : Set α⦄,
     d.Nonempty → DirectedOn (· ≤ ·) d → supₛ d ∈ u → ∃ b ∈ d, Ici b ∩ d ⊆ u) := by
