@@ -8,10 +8,10 @@ Authors: Robert Y. Lewis
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Rat.MetaDefs
-import Mathbin.Tactic.NormNum
-import Mathbin.Data.Tree
-import Mathbin.Meta.Expr
+import Mathlib.Data.Rat.MetaDefs
+import Mathlib.Tactic.NormNum
+import Mathlib.Data.Tree
+import Mathlib.Meta.Expr
 
 /-!
 # A tactic for canceling numeric denominators
@@ -65,8 +65,7 @@ theorem neg_subst {α} [Ring α] {n e t : α} (h1 : n * e = t) : n * -e = -t := 
 
 theorem cancel_factors_lt {α} [LinearOrderedField α] {a b ad bd a' b' gcd : α} (ha : ad * a = a')
     (hb : bd * b = b') (had : 0 < ad) (hbd : 0 < bd) (hgcd : 0 < gcd) :
-    (a < b) = (1 / gcd * (bd * a') < 1 / gcd * (ad * b')) :=
-  by
+    (a < b) = (1 / gcd * (bd * a') < 1 / gcd * (ad * b')) := by
   rw [mul_lt_mul_left, ← ha, ← hb, ← mul_assoc, ← mul_assoc, mul_comm bd, mul_lt_mul_left]
   exact mul_pos had hbd
   exact one_div_pos.2 hgcd
@@ -74,8 +73,7 @@ theorem cancel_factors_lt {α} [LinearOrderedField α] {a b ad bd a' b' gcd : α
 
 theorem cancel_factors_le {α} [LinearOrderedField α] {a b ad bd a' b' gcd : α} (ha : ad * a = a')
     (hb : bd * b = b') (had : 0 < ad) (hbd : 0 < bd) (hgcd : 0 < gcd) :
-    (a ≤ b) = (1 / gcd * (bd * a') ≤ 1 / gcd * (ad * b')) :=
-  by
+    (a ≤ b) = (1 / gcd * (bd * a') ≤ 1 / gcd * (ad * b')) := by
   rw [mul_le_mul_left, ← ha, ← hb, ← mul_assoc, ← mul_assoc, mul_comm bd, mul_le_mul_left]
   exact mul_pos had hbd
   exact one_div_pos.2 hgcd
@@ -83,8 +81,7 @@ theorem cancel_factors_le {α} [LinearOrderedField α] {a b ad bd a' b' gcd : α
 
 theorem cancel_factors_eq {α} [LinearOrderedField α] {a b ad bd a' b' gcd : α} (ha : ad * a = a')
     (hb : bd * b = b') (had : 0 < ad) (hbd : 0 < bd) (hgcd : 0 < gcd) :
-    (a = b) = (1 / gcd * (bd * a') = 1 / gcd * (ad * b')) :=
-  by
+    (a = b) = (1 / gcd * (bd * a') = 1 / gcd * (ad * b')) := by
   rw [← ha, ← hb, ← mul_assoc bd, ← mul_assoc ad, mul_comm bd]
   ext; constructor
   · rintro rfl
