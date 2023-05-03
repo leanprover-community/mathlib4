@@ -132,7 +132,7 @@ def falling : Finset (Finset α) :=
 variable {𝒜 k} {s : Finset α}
 
 theorem mem_falling : s ∈ falling k 𝒜 ↔ (∃ t ∈ 𝒜, s ⊆ t) ∧ s.card = k := by
-  simp_rw [falling, mem_sup, mem_powersetLen, exists_and_right]
+  simp_rw [falling, mem_sup, mem_powersetLen]
   aesop
 #align finset.mem_falling Finset.mem_falling
 
@@ -151,7 +151,7 @@ theorem falling_zero_subset : falling 0 𝒜 ⊆ {∅} :=
 
 theorem slice_union_shadow_falling_succ : 𝒜 # k ∪ (∂ ) (falling (k + 1) 𝒜) = falling k 𝒜 := by
   ext s
-  simp_rw [mem_union, mem_slice, mem_shadow_iff, exists_prop, mem_falling]
+  simp_rw [mem_union, mem_slice, mem_shadow_iff, mem_falling]
   constructor
   · rintro (h | ⟨s, ⟨⟨t, ht, hst⟩, hs⟩, a, ha, rfl⟩)
     · exact ⟨⟨s, h.1, Subset.refl _⟩, h.2⟩
@@ -174,7 +174,7 @@ theorem IsAntichain.disjoint_slice_shadow_falling {m n : ℕ}
     (h𝒜 : IsAntichain (· ⊆ ·) (𝒜 : Set (Finset α))) : Disjoint (𝒜 # m) ((∂ ) (falling n 𝒜)) :=
   disjoint_right.2 fun s h₁ h₂ =>
     by
-    simp_rw [mem_shadow_iff, exists_prop, mem_falling] at h₁
+    simp_rw [mem_shadow_iff, mem_falling] at h₁
     obtain ⟨s, ⟨⟨t, ht, hst⟩, _⟩, a, ha, rfl⟩ := h₁
     refine' h𝒜 (slice_subset h₂) ht _ ((erase_subset _ _).trans hst)
     rintro rfl

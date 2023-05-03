@@ -448,7 +448,7 @@ end LinearIsometry
 def LinearMap.toLinearIsometry (f : E →ₛₗ[σ₁₂] E₂) (hf : Isometry f) : E →ₛₗᵢ[σ₁₂] E₂ :=
   { f with
     norm_map' := by
-      simp_rw [← dist_zero_right, ← f.map_zero]
+      simp_rw [← dist_zero_right]
       simpa using (hf.dist_eq · 0) }
 #align linear_map.to_linear_isometry LinearMap.toLinearIsometry
 

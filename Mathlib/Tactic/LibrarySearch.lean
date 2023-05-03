@@ -109,13 +109,13 @@ Retrieve the current current of lemmas.
 def librarySearchLemmas : DeclCache (DiscrTree (Name × DeclMod) true) := cachedData.cache
 
 /-- Shortcut for calling `solveByElim`. -/
-def solveByElim (goals : List MVarId) (required : List Expr) (depth) := do
-  -- There is only a marginal decrease in performance for using the `symm` and `exfalso`
-  -- options for `solveByElim`.
+def solveByElim (goals : List MVarId) (required : List Expr) (exfalso := false) (depth) := do
+  -- There is only a marginal decrease in performance for using the `symm` option for `solveByElim`.
   -- (measured via `lake build && time lake env lean test/librarySearch.lean`).
-  let cfg : SolveByElim.Config := { maxDepth := depth, exfalso := true, symm := true }
+  let cfg : SolveByElim.Config :=
+    { maxDepth := depth, exfalso := exfalso, symm := true, commitIndependentGoals := true }
   let cfg := if !required.isEmpty then cfg.requireUsingAll required else cfg
-  _ ← SolveByElim.solveByElim.processSyntax cfg false false [] [] #[] goals
+  SolveByElim.solveByElim.processSyntax cfg false false [] [] #[] goals
 
 /--
 Try applying the given lemma (with symmetry modifer) to the goal,
@@ -139,8 +139,8 @@ def librarySearchLemma (lem : Name) (mod : DeclMod) (required : List Expr) (solv
     | .mpr => mapForallTelescope (fun e => mkAppM ``Iff.mpr #[e]) lem
     let newGoals ← goal.apply lem
     try
-      solveByElim newGoals required solveByElimDepth
-      pure (← getMCtx, [])
+      let subgoals ← solveByElim newGoals required (exfalso := false) (depth := solveByElimDepth)
+      pure (← getMCtx, subgoals)
     catch _ =>
       pure (← getMCtx, newGoals)
 
@@ -156,6 +156,36 @@ def librarySearchCore (goal : MVarId) (lemmas : DiscrTree (Name × DeclMod) s)
     trace[Tactic.librarySearch.lemmas] m!"Candidate library_search lemmas:\n{lemmas}"
     return (ListM.ofList lemmas).filterMapM fun (lem, mod) =>
       try? <| librarySearchLemma lem mod required solveByElimDepth goal
+
+/-- A type synonym for our subgoal ranking algorithm. -/
+def subgoalRankType : Type := Bool × Nat × Int
+  deriving ToString
+
+instance : Ord subgoalRankType :=
+  have : Ord (Nat × Int) := lexOrd
+  lexOrd
+
+/-- Returns a tuple:
+* are there no remaining goals?
+* how many local hypotheses were used?
+* how many goals remain, negated?
+
+Larger values (i.e. no remaining goals, more local hypotheses, fewer remaining goals)
+are better.
+-/
+def subgoalRanking (goal : MVarId) (subgoals : List MVarId) : MetaM subgoalRankType := do
+  return (subgoals.isEmpty, ← countLocalHypsUsed (.mvar goal), - subgoals.length)
+
+/-- Sort the incomplete results from `library_search` according to
+* the number of local hypotheses used (the more the better) and
+* the number of remaining subgoals (the fewer the better).
+-/
+def sortResults (goal : MVarId) (R : Array (MetavarContext × List MVarId)) :
+    MetaM (Array (MetavarContext × List MVarId)) := do
+  let R' ← R.mapM fun (ctx, gs) => do
+    return (← withMCtx ctx (subgoalRanking goal gs), ctx, gs)
+  let R'' := R'.qsort fun a b => compare a.1 b.1 = Ordering.gt
+  return R''.map (·.2)
 
 /--
 Try to solve the goal either by:
@@ -182,7 +212,7 @@ def librarySearch (goal : MVarId) (lemmas : DiscrTree (Name × DeclMod) s) (requ
   withTraceNode `Tactic.librarySearch (return m!"{librarySearchEmoji ·} {← goal.getType}") do
   profileitM Exception "librarySearch" (← getOptions) do
   (do
-    solveByElim [goal] required solveByElimDepth
+    _ ← solveByElim [goal] required (exfalso := true) (depth := solveByElimDepth)
     return none) <|>
   (do
     let results ← librarySearchCore goal lemmas required solveByElimDepth
@@ -192,7 +222,7 @@ def librarySearch (goal : MVarId) (lemmas : DiscrTree (Name × DeclMod) s) (requ
       |>.takeUpToFirst (·.2.isEmpty)
       |>.asArray
     match results.find? (·.2.isEmpty) with
-    | none => return results
+    | none => return (← sortResults goal results)
     | some (ctx, _) => do
       setMCtx ctx
       return none)
@@ -226,7 +256,7 @@ elab_rules : tactic | `(tactic| library_search%$tk $[using $[$required:term],*]?
       reportOutOfHeartbeats tk
       for suggestion in suggestions do
         withMCtx suggestion.1 do
-          addExactSuggestion tk (← instantiateMVars (mkMVar mvar)).headBeta
+          addRefineSuggestion tk (← instantiateMVars (mkMVar mvar)).headBeta
       if suggestions.isEmpty then logError "library_search didn't find any relevant lemmas"
       admitGoal goal
     else
