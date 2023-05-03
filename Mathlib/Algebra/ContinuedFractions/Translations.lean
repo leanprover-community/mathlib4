@@ -182,8 +182,8 @@ theorem convergents'Aux_succ_none {s : Stream'.Seq (Pair K)} (h : s.head = none)
     convergents'Aux s (n + 1) = 0 := by simp [convergents'Aux, h, convergents'Aux.match_1]
 #align generalized_continued_fraction.convergents'_aux_succ_none GeneralizedContinuedFraction.convergents'Aux_succ_none
 
-theorem convergents'Aux_succ_some {s : Stream'.Seq (Pair K)} {p : Pair K} (h : s.head = some p) (n : ℕ) :
-    convergents'Aux s (n + 1) = p.a / (p.b + convergents'Aux s.tail n) := by
+theorem convergents'Aux_succ_some {s : Stream'.Seq (Pair K)} {p : Pair K} (h : s.head = some p)
+    (n : ℕ) : convergents'Aux s (n + 1) = p.a / (p.b + convergents'Aux s.tail n) := by
   simp [convergents'Aux, h, convergents'Aux.match_1]
 #align generalized_continued_fraction.convergents'_aux_succ_some GeneralizedContinuedFraction.convergents'Aux_succ_some
 
