@@ -1,6 +1,20 @@
 import Mathlib.Tactic.LibrarySearch
 import Mathlib.Util.AssertNoSorry
 import Mathlib.Algebra.Order.Ring.Canonical
+import Mathlib.Data.Quot
+
+-- Enable this option for tracing:
+-- set_option trace.Tactic.librarySearch true
+-- And this option to trace all candidate lemmas before application.
+-- set_option trace.Tactic.librarySearch.lemmas true
+-- It may also be useful to enable
+-- set_option trace.Meta.Tactic.solveByElim true
+
+-- Recall that `library_search` caches the discrimination tree on disk.
+-- If you are modifying the way that `library_search` indexes lemmas,
+-- while testing you will probably want to delete
+-- `build/lib/MathlibExtras/LibrarySearch.extra`
+-- so that the cache is rebuilt.
 
 noncomputable section
 
@@ -118,3 +132,6 @@ theorem Bool_eq_iff2 {A B: Bool} : (A = B) = (A ↔ B) :=
   by library_search -- exact Bool_eq_iff
 
 assert_no_sorry Bool_eq_iff2
+
+-- Example from https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/library_search.20regression/near/354025788
+example {r : α → α → Prop} : Function.Surjective (Quot.mk r) := by library_search

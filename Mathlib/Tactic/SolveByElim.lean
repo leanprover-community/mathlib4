@@ -7,8 +7,8 @@ import Mathlib.Tactic.Backtracking
 import Lean.Meta.Tactic.Apply
 import Mathlib.Lean.LocalContext
 import Mathlib.Tactic.Relation.Symm
-import Mathlib.Data.Sum.Basic
 import Mathlib.Tactic.LabelAttr
+import Mathlib.Control.Basic
 
 /-!
 # `solve_by_elim`, `apply_rules`, and `apply_assumption`.
@@ -224,22 +224,23 @@ def solveByElim (cfg : Config) (lemmas : List (TermElabM Expr)) (ctx : TermElabM
   else
     pure goals
 
-  let run := if cfg.backtracking then
+  try
+    run goals
+  catch e => do
+    -- Implementation note: as with `cfg.symm`, this is different from the mathlib3 approach,
+    -- for (not as severe) performance reasons.
+    match goals, cfg.exfalso with
+    | [g], true =>
+      withTraceNode `Meta.Tactic.solveByElim
+          (fun _ => return m!"⏮️ starting over using `exfalso`") do
+        run [← g.exfalso]
+    | _, _ => throw e
+where
+  -- Run either backtracking search, or repeated application, on the list of goals.
+  run : List MVarId → MetaM (List MVarId) := if cfg.backtracking then
     backtrack cfg `Meta.Tactic.solveByElim (applyLemmas cfg lemmas ctx)
   else
     repeat1' (maxIters := cfg.maxDepth) (applyFirstLemma cfg lemmas ctx)
-  -- Implementation note: as with `cfg.symm`, this is different from the mathlib3 approach,
-  -- for (not as bad) performance reasons.
-  match cfg.exfalso, goals with
-    | true, [g] => try
-        run [g]
-      catch _ => do
-        withTraceNode `Meta.Tactic.solveByElim
-            (fun _ => return m!"⏮️ starting over using `exfalso`") do
-          let g ← g.exfalso
-          run [g]
-    | _, _ =>
-      run goals
 
 /--
 A `MetaM` analogue of the `apply_rules` user tactic.

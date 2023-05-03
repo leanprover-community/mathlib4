@@ -19,62 +19,26 @@ Supplementary theorems about the `String` type.
 
 namespace String
 
-@[simp]
-theorem Pos.byteIdx_zero : (0 : Pos).byteIdx = 0 :=
-  rfl
-
-@[simp]
-theorem Pos.eq_iff {i₁ i₂ : Pos} : i₁ = i₂ ↔ i₁.byteIdx = i₂.byteIdx :=
-  ⟨fun h ↦ h ▸ rfl, fun h ↦ show ⟨i₁.byteIdx⟩ = (⟨i₂.byteIdx⟩ : Pos) from h ▸ rfl⟩
-
-@[simp]
-theorem Pos.zero_add_char (c : Char) : (0 : Pos) + c = ⟨csize c⟩ :=
-  show ⟨0 + csize c⟩ = (⟨csize c⟩ : Pos) by rw [Nat.zero_add]
-
-@[simp]
-theorem Pos.zero_add_string (s : String) : (0 : Pos) + s = ⟨s.utf8ByteSize⟩ :=
-  show ⟨0 + s.utf8ByteSize⟩ = (⟨s.utf8ByteSize⟩ : Pos) by rw [Nat.zero_add]
-
-/-- Induction on `String.utf8GetAux`. -/
-def utf8GetAux.inductionOn.{u} {motive : List Char → Pos → Pos → Sort u}
-    (s : List Char) (i p : Pos)
-    (nil : ∀ i p, motive [] i p)
-    (eq  : ∀ c cs i p, i = p → motive (c :: cs) i p)
-    (ind : ∀ c cs i p, i ≠ p → motive cs ⟨i.byteIdx + csize c⟩ p → motive (c :: cs) i p) :
-    motive s i p :=
-  match s with
-  | [] => nil i p
-  | c::cs =>
-    if h : i = p then
-      eq c cs i p h
-    else ind c cs i p h (inductionOn cs ⟨i.byteIdx + csize c⟩ p nil eq ind)
-
 open private utf8GetAux from Init.Data.String.Basic
 
 private lemma utf8GetAux.add_right_cancel (s : List Char) (i p n : ℕ) :
     utf8GetAux s ⟨i + n⟩ ⟨p + n⟩ = utf8GetAux s ⟨i⟩ ⟨p⟩ := by
-  apply inductionOn s ⟨i⟩ ⟨p⟩ (motive := fun s i p ↦
-    utf8GetAux s ⟨i.byteIdx + n⟩ ⟨p.byteIdx + n⟩ = utf8GetAux s i p) <;>
+  apply utf8InductionOn s ⟨i⟩ ⟨p⟩ (motive := fun s i ↦
+    utf8GetAux s ⟨i.byteIdx + n⟩ ⟨p + n⟩ = utf8GetAux s i ⟨p⟩) <;>
   simp [utf8GetAux]
-  · intro c cs ⟨i⟩ ⟨p⟩ h
-    simp at h
-    subst i
-    simp
-  · intro c cs ⟨i⟩ ⟨p⟩ h ih
-    simp at h
-    simp [h]
-    show utf8GetAux cs ⟨i + n + csize c⟩ ⟨p + n⟩ = utf8GetAux cs ⟨i + csize c⟩ ⟨p⟩
-    rw [Nat.add_right_comm]
-    exact ih
+  intro c cs ⟨i⟩ h ih
+  simp [Pos.ext_iff] at *
+  simp [h]
+  rw [Pos.addChar_eq, Nat.add_right_comm]
+  exact ih
 
-lemma get.cons_add_csize (c : Char) (cs : List Char) (i : ℕ) :
+theorem get.cons_add_csize (c : Char) (cs : List Char) (i : ℕ) :
     get ⟨c :: cs⟩ ⟨i + csize c⟩ = get ⟨cs⟩ ⟨i⟩ := by
   have : 0 ≠ i + csize c := Nat.ne_of_lt (Nat.add_pos_right i (csize_pos c))
-  simp [get, utf8GetAux, this]
-  rw [← Pos.zero_add_char]
+  simp [get, utf8GetAux, Pos.ext_iff, this]
   apply utf8GetAux.add_right_cancel
 
-lemma Iterator.hasNext.cons_add_csize (c : Char) (cs : List Char) (i : ℕ) :
+theorem Iterator.hasNext.cons_add_csize (c : Char) (cs : List Char) (i : ℕ) :
     hasNext ⟨⟨c :: cs⟩, ⟨i + csize c⟩⟩ = hasNext ⟨⟨cs⟩, ⟨i⟩⟩ := by
   simp [hasNext, endPos, utf8ByteSize, utf8ByteSize.go]
 
@@ -117,7 +81,7 @@ def ltb.inductionOn.{u} {motive : Iterator → Iterator → Sort u} (it₁ it₂
     else base₁ it₁.s it₂.s it₁.i it₂.i h₂ h₁
   else base₂ it₁.s it₂.s it₁.i it₂.i h₂
 
-lemma ltb.cons_add_csize (c : Char) (cs₁ cs₂ : List Char) (i₁ i₂ : ℕ) :
+theorem ltb.cons_add_csize (c : Char) (cs₁ cs₂ : List Char) (i₁ i₂ : ℕ) :
     ltb ⟨⟨c :: cs₁⟩, ⟨i₁ + csize c⟩⟩ ⟨⟨c :: cs₂⟩, ⟨i₂ + csize c⟩⟩ =
     ltb ⟨⟨cs₁⟩, ⟨i₁⟩⟩ ⟨⟨cs₂⟩, ⟨i₂⟩⟩ := by
   apply inductionOn ⟨⟨cs₁⟩, ⟨i₁⟩⟩ ⟨⟨cs₂⟩, ⟨i₂⟩⟩ (motive := fun ⟨⟨cs₁⟩, ⟨i₁⟩⟩ ⟨⟨cs₂⟩, ⟨i₂⟩⟩ ↦
@@ -128,15 +92,11 @@ lemma ltb.cons_add_csize (c : Char) (cs₁ cs₂ : List Char) (i₁ i₂ : ℕ) 
   (conv => lhs; rw [ltb]) <;> (conv => rhs; rw [ltb]) <;>
   simp [Iterator.hasNext.cons_add_csize, *]
   · rename_i h₂ h₁ heq ih
-    simp [Iterator.curr, Iterator.next, next, Iterator.hasNext.cons_add_csize,
-          get.cons_add_csize, *] at *
-    show ltb ⟨⟨c :: cs₁⟩, ⟨i₁ + csize c + csize (get ⟨cs₂⟩ ⟨i₂⟩)⟩⟩
-             ⟨⟨c :: cs₂⟩, ⟨i₂ + csize c + csize (get ⟨cs₂⟩ ⟨i₂⟩)⟩⟩ =
-         ltb ⟨⟨cs₁⟩, ⟨i₁ + csize (get ⟨cs₂⟩ ⟨i₂⟩)⟩⟩ ⟨⟨cs₂⟩, ⟨i₂ + csize (get ⟨cs₂⟩ ⟨i₂⟩)⟩⟩
+    simp [Iterator.curr, get.cons_add_csize, Iterator.next, next, Pos.addChar_eq, *] at *
     repeat rw [Nat.add_right_comm _ (csize c)]
     exact ih
   · rename_i h₂ h₁ hne
-    simp [Iterator.curr, Iterator.hasNext.cons_add_csize, get.cons_add_csize, *] at *
+    simp [Iterator.curr, get.cons_add_csize, *]
 
 @[simp]
 theorem lt_iff_toList_lt : ∀ {s₁ s₂ : String}, s₁ < s₂ ↔ s₁.toList < s₂.toList
@@ -151,16 +111,13 @@ theorem lt_iff_toList_lt : ∀ {s₁ s₂ : String}, s₁ < s₂ ↔ s₁.toList
     · rw [ltb]; simp
     · apply not_lt_of_lt; apply List.nil_lt_cons
   · rename_i c₁ cs₁ ih c₂ cs₂; rw [ltb]
-    simp [Iterator.hasNext, Iterator.curr, Iterator.next, next, endPos, utf8ByteSize,
-          utf8ByteSize.go, csize_pos]; rw [decide_eq_true_iff]
-    show (if c₁ = c₂ then
-            ltb ⟨⟨c₁ :: cs₁⟩, ⟨csize c₁⟩⟩ ⟨⟨c₂ :: cs₂⟩, ⟨csize c₂⟩⟩ = true
-          else c₁ < c₂) ↔ c₁ :: cs₁ < c₂ :: cs₂
+    simp [Iterator.hasNext, endPos, utf8ByteSize, utf8ByteSize.go, csize_pos, Iterator.curr, get,
+          utf8GetAux, Iterator.next, next]
     split_ifs with h
     · subst c₂
       suffices ltb ⟨⟨c₁ :: cs₁⟩, ⟨csize c₁⟩⟩ ⟨⟨c₁ :: cs₂⟩, ⟨csize c₁⟩⟩ = ltb ⟨⟨cs₁⟩, 0⟩ ⟨⟨cs₂⟩, 0⟩
-        by rw [this]; exact (ih cs₂).trans List.Lex.cons_iff.symm
-      rw [← Pos.zero_add_char]
+        by rw [Pos.zero_addChar_eq, this]; exact (ih cs₂).trans List.Lex.cons_iff.symm
+      rw [← Pos.zero_addChar_eq]
       apply ltb.cons_add_csize
     · refine ⟨List.Lex.rel, fun e ↦ ?_⟩
       cases e <;> rename_i h'
@@ -207,7 +164,7 @@ theorem toList_singleton (c : Char) : (String.singleton c).toList = [c] :=
 theorem toList_nonempty : ∀ {s : String}, s ≠ "" → s.toList = s.head :: (s.popn 1).toList
 | ⟨s⟩, h => by
   cases s
-  · simp only [toList] at h
+  · simp only at h
   · rename_i c cs
     simp only [toList, List.cons.injEq]
     constructor <;>
@@ -230,7 +187,7 @@ instance : LinearOrder String where
     simp only [le_iff_toList_le]
     apply le_trans
   lt_iff_le_not_le a b := by
-    simp only [le_iff_toList_le, lt_iff_toList_lt, lt_iff_le_not_le]
+    simp only [lt_iff_toList_lt, le_iff_toList_le, lt_iff_le_not_le]
   le_antisymm a b := by
     simp only [le_iff_toList_le, ← toList_inj]
     apply le_antisymm
