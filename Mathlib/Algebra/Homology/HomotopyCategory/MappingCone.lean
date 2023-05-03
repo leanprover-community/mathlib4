@@ -394,6 +394,43 @@ noncomputable def descHomotopy {K : CochainComplex C ℤ} (f₁ f₂ : mappingCo
     . simp only [Cochain.ofHom_comp] at h₂
       simp only [h₂, Cochain.comp_add, inr_fst_assoc, add_zero, inr_snd_assoc, zero_add]⟩)
 
+noncomputable def liftCochain {K : CochainComplex C ℤ} {n m : ℤ}
+    (α : Cochain K F m) (β : Cochain K G n) (h : n + 1 = m) : Cochain K (mappingCone φ) n :=
+    α.comp (inl φ) (by linarith) + β.comp (Cochain.ofHom (inr φ)) (by linarith)
+
+@[simp]
+lemma liftCochain_fst {K : CochainComplex C ℤ} {n m : ℤ} (α : Cochain K F m)
+    (β : Cochain K G n) (h : n + 1 = m) :
+    (liftCochain φ α β h).comp (fst φ : Cochain (mappingCone φ) F 1) h = α := by
+  dsimp only [liftCochain]
+  simp only [Cochain.add_comp, Cochain.comp_assoc_of_second_degree_eq_neg_third_degree,
+    inl_fst, Cochain.comp_id, Cochain.comp_assoc_of_second_is_zero_cochain, inr_fst,
+    Cochain.comp_zero, add_zero]
+
+@[reassoc (attr := simp)]
+lemma liftCochain_v_fst_v {K : CochainComplex C ℤ} {n m : ℤ} (α : Cochain K F m)
+    (β : Cochain K G n) (h : n + 1 = m) (p₁ p₂ p₃ : ℤ) (h₁₂ : p₁ + n = p₂) (h₂₃ : p₂ + 1 = p₃) :
+    (liftCochain φ α β h).v p₁ p₂ h₁₂ ≫ (fst φ : Cochain (mappingCone φ) F 1).v p₂ p₃ h₂₃ =
+      α.v p₁ p₃ (by rw [← h, ← h₂₃, ← h₁₂, add_assoc]) := by
+  simpa only [Cochain.comp_v _ _ h p₁ p₂ p₃ h₁₂ h₂₃]
+    using Cochain.congr_v (liftCochain_fst φ α β h) p₁ p₃ (by linarith)
+
+@[simp]
+lemma liftCochain_snd {K : CochainComplex C ℤ} {n m : ℤ} (α : Cochain K F m)
+    (β : Cochain K G n) (h : n + 1 = m) :
+    (liftCochain φ α β h).comp (snd φ : Cochain (mappingCone φ) G 0) (add_zero n) = β := by
+  dsimp only [liftCochain]
+  simp only [Cochain.add_comp, Cochain.comp_assoc_of_third_is_zero_cochain, inl_snd,
+    Cochain.comp_zero, inr_snd, Cochain.comp_id, zero_add]
+
+@[simp]
+lemma liftCochain_v_snd_v {K : CochainComplex C ℤ} {n m : ℤ} (α : Cochain K F m)
+    (β : Cochain K G n) (h : n + 1 = m) (p₁ p₂ : ℤ) (h₁₂ : p₁ + n = p₂) :
+    (liftCochain φ α β h).v p₁ p₂ h₁₂ ≫
+      (snd φ : Cochain (mappingCone φ) G 0).v p₂ p₂ (add_zero p₂) = β.v p₁ p₂ h₁₂ := by
+  simpa only [Cochain.comp_v _ _ (add_zero n) p₁ p₂ p₂ h₁₂ (add_zero p₂)]
+    using Cochain.congr_v (liftCochain_snd φ α β h) p₁ p₂ (by linarith)
+
 end MappingCone
 
 end Preadditive

@@ -322,6 +322,14 @@ lemma comp_assoc_of_third_is_zero_cochain {n₁ n₂ n₁₂ : ℤ}
       z₁.comp (z₂.comp z₃ (add_zero n₂)) h₁₂ :=
   comp_assoc z₁ z₂ z₃ h₁₂ (add_zero n₂) (by linarith)
 
+@[simp]
+lemma comp_assoc_of_second_degree_eq_neg_third_degree {n₁ n₂ n₁₂ : ℤ}
+    (z₁ : Cochain F G n₁) (z₂ : Cochain G K (-n₂)) (z₃ : Cochain K L n₂) (h₁₂ : n₁ + (-n₂) = n₁₂) :
+    (z₁.comp z₂ h₁₂).comp z₃
+      (show n₁₂ + n₂ = n₁ by rw [← h₁₂, add_assoc, neg_add_self, add_zero]) =
+      z₁.comp (z₂.comp z₃ (neg_add_self n₂)) (add_zero n₁) :=
+  comp_assoc z₁ z₂ z₃ h₁₂ (neg_add_self n₂) (by linarith)
+
 variable (K)
 
 def diff : Cochain K K 1 := Cochain.mk (fun p q _ => K.d p q)
