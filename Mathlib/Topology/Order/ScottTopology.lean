@@ -223,13 +223,12 @@ a ∈ u → (d ∩ u).Nonempty) := by
       . exact e1_h_w
       . exact Subset.trans (inter_subset_left (Ici b) d) (h.1.Ici_subset e1_h_h)
 
-lemma isClosed_eq_lower_and_subset_implies_LUB_mem (s : Set α) : IsClosed s
-  = (IsLowerSet s ∧
+lemma isClosed_iff_lower_and_subset_implies_LUB_mem (s : Set α) : IsClosed s
+  ↔ (IsLowerSet s ∧
   ∀ (d : Set α) (a : α), d.Nonempty → DirectedOn (· ≤ ·) d → IsLUB d a → d ⊆ s → a ∈ s ) := by
   rw [← isOpen_compl_iff, isOpen_iff_upper_and_LUB_mem_implies_inter_nonempty,
     isLowerSet_compl.symm, compl_compl]
-  refine' let_value_eq (And (IsLowerSet s)) _
-  rw [eq_iff_iff]
+  apply and_congr_right'
   constructor
   . intros h d a d₁ d₂ d₃ d₄
     by_contra h'
@@ -247,10 +246,10 @@ lemma isClosed_eq_lower_and_subset_implies_LUB_mem (s : Set α) : IsClosed s
     contradiction
 
 lemma isOpen_isUpperSet {s : Set α} : IsOpen s → IsUpperSet s := fun h =>
-  ((isOpen_eq_upper_and_LUB_mem_implies_tail_subset s).mp h).left
+  ((isOpen_iff_upper_and_LUB_mem_implies_tail_subset s).mp h).left
 
 lemma isClosed_isLower {s : Set α} : IsClosed s → IsLowerSet s := fun h =>
-  ((isClosed_eq_lower_and_subset_implies_LUB_mem s).mp h).left
+  ((isClosed_iff_lower_and_subset_implies_LUB_mem s).mp h).left
 
 /--
 The closure of a singleton `{a}` in the Scott topology is the right-closed left-infinite interval
@@ -260,7 +259,7 @@ The closure of a singleton `{a}` in the Scott topology is the right-closed left-
   rw [← LowerSet.coe_Iic, ← lowerClosure_singleton]
   refine' subset_antisymm _ _
   . apply closure_minimal subset_lowerClosure
-    rw [isClosed_eq_lower_and_subset_implies_LUB_mem]
+    rw [isClosed_iff_lower_and_subset_implies_LUB_mem]
     constructor
     . exact (lowerClosure {a}).lower
     . rw [lowerClosure_singleton]
@@ -345,7 +344,7 @@ variable [CompleteLattice α] [TopologicalSpace α] [ScottTopology α]
 lemma isOpen_iff_isUpperSet_and_sup_mem_implies_tail_subset {u : Set α} :
   IsOpen u ↔ (IsUpperSet u ∧ ∀ ⦃d : Set α⦄,
     d.Nonempty → DirectedOn (· ≤ ·) d → supₛ d ∈ u → ∃ b ∈ d, Ici b ∩ d ⊆ u) := by
-  rw [ScottTopology.isOpen_eq_upper_and_LUB_mem_implies_tail_subset]
+  rw [ScottTopology.isOpen_iff_upper_and_LUB_mem_implies_tail_subset]
   apply and_congr_right'
   constructor
   . intros h d hd₁ hd₂ hd₃
