@@ -1448,8 +1448,6 @@ theorem Subalgebra.eq_bot_of_finrank_one {S : Subalgebra F E} (h : finrank F S =
     -- porting note: fails without explicit type
     haveI : FiniteDimensional F S := finiteDimensional_of_finrank_eq_succ h
     rw [← finrank_eq_rank, h, Nat.cast_one]
-    -- porting note: added, `rw` forgot to close this
-    exact le_rfl
 #align subalgebra.eq_bot_of_finrank_one Subalgebra.eq_bot_of_finrank_one
 
 set_option synthInstance.etaExperiment true in
