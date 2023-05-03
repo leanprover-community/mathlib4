@@ -248,13 +248,11 @@ lemma isClosed_eq_lower_and_subset_implies_LUB_mem (s : Set α) : IsClosed s
 
 lemma isOpen_isUpperSet {s : Set α} : IsOpen s → IsUpperSet s := by
   intros h
-  rw [isOpen_eq_upper_and_LUB_mem_implies_tail_subset] at h
-  exact h.1
+  exact ((isOpen_eq_upper_and_LUB_mem_implies_tail_subset s).mp h).left
 
 lemma isClosed_isLower {s : Set α} : IsClosed s → IsLowerSet s := by
   intro h
-  rw [isClosed_eq_lower_and_subset_implies_LUB_mem] at h
-  exact h.1
+  exact ((isClosed_eq_lower_and_subset_implies_LUB_mem s).mp h).left
 
 /--
 The closure of a singleton `{a}` in the Scott topology is the right-closed left-infinite interval
