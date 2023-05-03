@@ -342,19 +342,23 @@ section complete_lattice
 
 variable [CompleteLattice α] [TopologicalSpace α] [ScottTopology α]
 
+variable {u : Set α}
+
+#check And (IsUpperSet u)
+
 lemma isOpen_iff_isUpperSet_and_sup_mem_implies_tail_subset {u : Set α} :
-  IsOpen u ↔ IsUpperSet u ∧ ∀ ⦃d : Set α⦄,
+  IsOpen u ↔ (IsUpperSet u ∧ ∀ ⦃d : Set α⦄,
     d.Nonempty → DirectedOn (· ≤ ·) d → supₛ d ∈ u → ∃ b ∈ d, Ici b ∩ d ⊆ u) := by
   rw [ScottTopology.isOpen_eq_upper_and_LUB_mem_implies_tail_subset]
-  refine' let_value_eq (And (IsUpperSet u)) _
-  rw [eq_iff_iff]
+  apply and_congr_right'
   constructor
   . intros h d hd₁ hd₂ hd₃
     exact h d (supₛ d) hd₁ hd₂ (isLUB_supₛ d) hd₃
   . intros h d a hd₁ hd₂ hd₃ ha
-    apply h d hd₁ hd₂
+    apply h hd₁ hd₂
     rw [(IsLUB.supₛ_eq hd₃)]
     exact ha
+
 
 lemma isOpen_eq_upper_and_sup_mem_implies_inter_nonempty
 (u : Set α) : IsOpen u =
