@@ -405,10 +405,15 @@ def toAffineIsometryEquiv : V ≃ᵃⁱ[𝕜] V₂ :=
 #align linear_isometry_equiv.to_affine_isometry_equiv LinearIsometryEquiv.toAffineIsometryEquiv
 
 set_option synthInstance.etaExperiment true in
-@[simp]
+-- @[simp] -- Porting note: simp-normal form is `coe_toAffineIsometryEquiv'`
 theorem coe_toAffineIsometryEquiv : ⇑(e.toAffineIsometryEquiv : V ≃ᵃⁱ[𝕜] V₂) = e :=
   rfl
 #align linear_isometry_equiv.coe_to_affine_isometry_equiv LinearIsometryEquiv.coe_toAffineIsometryEquiv
+
+set_option synthInstance.etaExperiment true in
+@[simp]
+theorem coe_toAffineIsometryEquiv' : ⇑e.toLinearEquiv = e :=
+  rfl
 
 set_option synthInstance.etaExperiment true in
 @[simp]
@@ -703,10 +708,14 @@ def vaddConst (p : P) : V ≃ᵃⁱ[𝕜] P :=
 
 variable {𝕜}
 
-@[simp]
+-- @[simp] -- Porting note: simp-normal form is `coe_vaddConst'`
 theorem coe_vaddConst (p : P) : ⇑(vaddConst 𝕜 p) = fun v => v +ᵥ p :=
   rfl
 #align affine_isometry_equiv.coe_vadd_const AffineIsometryEquiv.coe_vaddConst
+
+@[simp]
+theorem coe_vaddConst' (p : P) : ↑(AffineEquiv.vaddConst 𝕜 p) = fun v => v +ᵥ p :=
+  rfl
 
 @[simp]
 theorem coe_vaddConst_symm (p : P) : ⇑(vaddConst 𝕜 p).symm = fun p' => p' -ᵥ p :=
@@ -788,7 +797,7 @@ theorem pointReflection_toAffineEquiv (x : P) :
   rfl
 #align affine_isometry_equiv.point_reflection_to_affine_equiv AffineIsometryEquiv.pointReflection_toAffineEquiv
 
-@[simp]
+@[simp, nolint simpNF] -- Porting note: simp cannot prove this
 theorem pointReflection_self (x : P) : pointReflection 𝕜 x x = x :=
   AffineEquiv.pointReflection_self 𝕜 x
 #align affine_isometry_equiv.point_reflection_self AffineIsometryEquiv.pointReflection_self
@@ -802,10 +811,15 @@ theorem pointReflection_symm (x : P) : (pointReflection 𝕜 x).symm = pointRefl
   toAffineEquiv_injective <| AffineEquiv.pointReflection_symm 𝕜 x
 #align affine_isometry_equiv.point_reflection_symm AffineIsometryEquiv.pointReflection_symm
 
-@[simp]
+-- @[simp] -- Porting note: simp-normal form is `dist_pointReflection_fixed'`
 theorem dist_pointReflection_fixed (x y : P) : dist (pointReflection 𝕜 x y) x = dist y x := by
   rw [← (pointReflection 𝕜 x).dist_map y x, pointReflection_self]
 #align affine_isometry_equiv.dist_point_reflection_fixed AffineIsometryEquiv.dist_pointReflection_fixed
+
+@[simp]
+theorem dist_pointReflection_fixed' (x y : P) : dist (Equiv.pointReflection x y) x = dist y x := by
+  rw [← (pointReflection 𝕜 x).dist_map y x, pointReflection_self]
+  rfl
 
 set_option linter.deprecated false in
 theorem dist_pointReflection_self' (x y : P) : dist (pointReflection 𝕜 x y) y = ‖bit0 (x -ᵥ y)‖ :=
@@ -829,12 +843,12 @@ theorem dist_pointReflection_self_real (x y : P) : dist (pointReflection ℝ x y
   by rw [dist_pointReflection_self, Real.norm_two]
 #align affine_isometry_equiv.dist_point_reflection_self_real AffineIsometryEquiv.dist_pointReflection_self_real
 
-@[simp]
+@[simp, nolint simpNF] -- Porting note: simp cannot prove this
 theorem pointReflection_midpoint_left (x y : P) : pointReflection ℝ (midpoint ℝ x y) x = y :=
   AffineEquiv.pointReflection_midpoint_left x y
 #align affine_isometry_equiv.point_reflection_midpoint_left AffineIsometryEquiv.pointReflection_midpoint_left
 
-@[simp]
+@[simp, nolint simpNF] -- Porting note: simp cannot prove this
 theorem pointReflection_midpoint_right (x y : P) : pointReflection ℝ (midpoint ℝ x y) y = x :=
   AffineEquiv.pointReflection_midpoint_right x y
 #align affine_isometry_equiv.point_reflection_midpoint_right AffineIsometryEquiv.pointReflection_midpoint_right
@@ -923,3 +937,5 @@ theorem isometryEquivMap.toAffineMap_eq (φ : P₁ →ᵃⁱ[𝕜] P₂) (E : Af
 #align affine_subspace.isometry_equiv_map.to_affine_map_eq AffineSubspace.isometryEquivMap.toAffineMap_eq
 
 end AffineSubspace
+
+#lint
