@@ -430,57 +430,6 @@ theorem mono'' {m₁ m₂ : OuterMeasure α} {s₁ s₂ : Set α} (hm : m₁ ≤
   (hm s₁).trans (m₂.mono hs)
 #align measure_theory.outer_measure.mono'' MeasureTheory.OuterMeasure.mono''
 
--- This works:
--- example : IsScalarTower ℝ≥0∞ ℝ≥0∞ ℝ≥0∞ := IsScalarTower.right
-
--- But this doesn't:
--- set_option trace.Meta.synthInstance true in
--- set_option trace.Meta.isDefEq true in
--- example : IsScalarTower ℝ≥0∞ ℝ≥0∞ ℝ≥0∞ := inferInstance -- fails, even though `IsScalarTower.right` is an instance
-
--- Produces:
--- [Meta.synthInstance] 💥 IsScalarTower ℝ≥0∞ ℝ≥0∞ ℝ≥0∞ ▼
---   [] new goal IsScalarTower ℝ≥0∞ ℝ≥0∞ ℝ≥0∞ ▶
---   [] 💥 apply @IsScalarTower.of_ring_hom to IsScalarTower ℝ≥0∞ ℝ≥0∞ ℝ≥0∞ ▼
---     [tryResolve] 💥 IsScalarTower ℝ≥0∞ ℝ≥0∞ ℝ≥0∞ ≟ IsScalarTower ?m.77892 ?m.77893 ?m.77894 ▼
---       [isDefEq] 💥 IsScalarTower ℝ≥0∞ ℝ≥0∞ ℝ≥0∞ =?= IsScalarTower ?m.77892 ?m.77893 ?m.77894 ▼
---         [] ✅ ℝ≥0∞ =?= ?m.77892 ▶
---         [] ✅ ℝ≥0∞ =?= ?m.77893 ▶
---         [] ✅ ℝ≥0∞ =?= ?m.77894 ▶
---         [synthInstance] ✅ Algebra ℝ≥0∞ ℝ≥0∞ ▶
---         [] ✅ Algebra.toSMul =?= Algebra.toSMul ▶
---         [] 💥 Algebra.toSMul =?= Algebra.toSMul ▼
---           [] ✅ ℝ≥0∞ =?= ℝ≥0∞
---           [] ✅ ℝ≥0∞ =?= ℝ≥0∞
---           [] ✅ CanonicallyOrderedCommSemiring.toCommSemiring =?= CanonicallyOrderedCommSemiring.toCommSemiring
---           [synthInstance] ✅ CommSemiring ℝ≥0∞ ▶
---           [] ✅ OrderedSemiring.toSemiring =?= CommSemiring.toSemiring ▶
---           [] ❌ Algebra.id ℝ≥0∞ =?= RingHom.toAlgebra ↑?m.77900 ▶
---           [] 💥 (Algebra.id ℝ≥0∞).1 =?= (RingHom.toAlgebra ↑?m.77900).1 ▼
---             [] 💥 { smul := fun c x ↦ ↑(RingHom.id ℝ≥0∞) c * x } =?= { smul := fun c x ↦ ↑↑?m.77900 c * x } ▼
---               [] 💥 fun c x ↦ ↑(RingHom.id ℝ≥0∞) c * x =?= fun c x ↦ ↑↑?m.77900 c * x ▼
---                 [] ✅ ℝ≥0∞ =?= ℝ≥0∞
---                 [] ✅ ℝ≥0∞ =?= ℝ≥0∞
---                 [] 💥 ↑(RingHom.id ℝ≥0∞) c * x =?= ↑↑?m.77900 c * x ▼
---                   [] ❌ ↑(RingHom.id ℝ≥0∞) c =?= ↑↑?m.77900 c ▶
---                   [] 💥 instHMul.1 (↑(RingHom.id ℝ≥0∞) c) x =?= instHMul.1 (↑↑?m.77900 c) x ▼
---                     [] 💥 Mul.mul (↑(RingHom.id ℝ≥0∞) c) x =?= Mul.mul (↑↑?m.77900 c) x ▼
---                       [] ❌ ↑(RingHom.id ℝ≥0∞) c =?= ↑↑?m.77900 c ▶
---                       [] 💥 NonUnitalNonAssocSemiring.toMul.1 (↑(RingHom.id ℝ≥0∞) c) x =?= NonUnitalNonAssocSemiring.toMul.1 (↑↑?m.77900 c) x ▼
---                         [] 💥 ↑(RingHom.id ℝ≥0∞) c * x =?= NonUnitalNonAssocSemiring.toMul.1 (↑↑?m.77900 c) x ▼
---                           [] 💥 instHMul.1 (↑(RingHom.id ℝ≥0∞) c) x =?= NonUnitalNonAssocSemiring.toMul.1 (↑↑?m.77900 c) x ▼
---                             [] 💥 Mul.mul (↑(RingHom.id ℝ≥0∞) c) x =?= NonUnitalNonAssocSemiring.toMul.1 (↑↑?m.77900 c) x ▼
---                               [] 💥 MulZeroClass.toMul.1 (↑(RingHom.id ℝ≥0∞) c) x =?= NonUnitalNonAssocSemiring.toMul.1 (↑↑?m.77900 c) x ▼
---                                 [] 💥 if ↑(RingHom.id ℝ≥0∞) c = 0 ∨ x = 0 then 0
---                                     else
---                                       Option.map₂ (fun x x_1 ↦ x * x_1) (↑(RingHom.id ℝ≥0∞) c)
---                                         x =?= NonUnitalNonAssocSemiring.toMul.1 (↑↑?m.77900 c) x ▶
-
--- Porting note: as a workaround, we can add:
-local instance : IsScalarTower ℝ≥0∞ ℝ≥0∞ ℝ≥0∞ := IsScalarTower.right
-
-example : Module ℝ≥0∞ (OuterMeasure β) := OuterMeasure.instModule
-
 /-- The pushforward of `m` along `f`. The outer measure on `s` is defined to be `m (f ⁻¹' s)`. -/
 def map {β} (f : α → β) : OuterMeasure α →ₗ[ℝ≥0∞] OuterMeasure β where
   toFun m :=
