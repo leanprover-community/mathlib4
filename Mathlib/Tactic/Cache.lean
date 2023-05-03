@@ -149,16 +149,12 @@ def DiscrTreeCache.mk [BEq α] (profilingName : String)
     (processDecl : Name → ConstantInfo → MetaM (Array (Array (DiscrTree.Key true) × α)))
     (init : Option (DiscrTree α true) := none) :
     IO (DiscrTreeCache α) :=
+  let updateTree := fun name constInfo tree => do
+    return (← processDecl name constInfo).foldl (fun t (k, v) => t.insertIfSpecific k v) tree
   let addDecl := fun name constInfo (tree₁, tree₂) => do
-    let mut tree := tree₁
-    for (key, value) in ← processDecl name constInfo do
-      tree := tree.insertIfSpecific key value
-    return (tree, tree₂)
+    return (← updateTree name constInfo tree₁, tree₂)
   let addLibraryDecl := fun name constInfo (tree₁, tree₂) => do
-    let mut tree := tree₂
-    for (key, value) in ← processDecl name constInfo do
-      tree := tree.insertIfSpecific key value
-    return (tree₁, tree)
+    return (tree₁, ← updateTree name constInfo tree₂)
   match init with
   | some t => return ⟨← Cache.mk (pure ({}, t)), addDecl, addLibraryDecl⟩
   | none => DeclCache.mk profilingName ({}, {}) addDecl addLibraryDecl
