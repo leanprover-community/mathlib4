@@ -319,7 +319,7 @@ noncomputable def isCoprodOfMono {X Y : Type u} (f : X ⟶ Y) [Mono f] :
 
 /-- The category of types has `Π j, f j` as the product of a type family `f : J → Type`.
 -/
-def productLimitCone {J : Type u} (F : J → Type max u v) :
+def productLimitCone {J : Type u} (F : J → TypeMax.{u, v}) :
     Limits.LimitCone (Discrete.functor F) where
   cone :=
     { pt := ∀ j, F j

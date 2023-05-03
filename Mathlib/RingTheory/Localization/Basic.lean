@@ -732,7 +732,7 @@ end
 
 --Porting note: removed `simp`, `simp` can prove it
 theorem algEquiv_mk' (x : R) (y : M) : algEquiv M S Q (mk' S x y) = mk' Q x y :=
-  map_mk' _ _ _
+  by simp
 #align is_localization.alg_equiv_mk' IsLocalization.algEquiv_mk'
 
 --Porting note: removed `simp`, `simp` can prove it
