@@ -10,10 +10,6 @@ Authors: Joseph Myers
 -/
 import Mathlib.LinearAlgebra.Ray
 import Mathlib.LinearAlgebra.Determinant
-import Mathlib.Tactic.FinCases -- Porting note : check if used
-
-import Mathlib.Tactic.LibrarySearch -- Porting note: delete me
-import Mathlib.Tactic.Propose -- Porting note: delete me
 
 /-!
 # Orientations of modules
@@ -407,10 +403,6 @@ theorem map_eq_iff_det_pos (x : Orientation R M ι) (f : M ≃ₗ[R] M)
       refine' h.symm.trans _
       convert @Fintype.card_of_isEmpty ι _
     simp [LinearMap.det_eq_one_of_finrank_eq_zero H]
-  -- have H : 0 < finrank R M := by
-  --  rw [← h]
-  --  exact Fintype.card_pos
- -- haveI : FiniteDimensional R M := finiteDimensional_of_finrank H
   rw [map_eq_det_inv_smul _ _ h, units_inv_smul, units_smul_eq_self_iff, LinearEquiv.coe_det]
 #align orientation.map_eq_iff_det_pos Orientation.map_eq_iff_det_pos
 
