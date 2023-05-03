@@ -10,8 +10,8 @@ import Mathlib.Data.Int.Parity
 import Mathlib.Tactic.Linarith
 import Mathlib.Algebra.Category.GroupCat.Preadditive
 import Mathlib.GroupTheory.Subgroup.Basic
-import Mathlib.Algebra.Homology.Triangulated.Epsilon
-import Mathlib.Algebra.Homology.Triangulated.Shift
+import Mathlib.Algebra.Homology.HomotopyCategory.Epsilon
+import Mathlib.Algebra.Homology.HomotopyCategory.Shift
 
 --import algebra.homology.homotopy
 --import algebra.homology.additive

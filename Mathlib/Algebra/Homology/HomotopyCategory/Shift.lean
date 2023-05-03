@@ -1,5 +1,5 @@
-import Mathlib.Algebra.Homology.Triangulated.Epsilon
 import Mathlib.Algebra.Homology.HomotopyCategory
+import Mathlib.Algebra.Homology.HomotopyCategory.Epsilon
 import Mathlib.CategoryTheory.Shift.Quotient
 import Mathlib.Tactic.Linarith
 

@@ -1,4 +1,4 @@
-import Mathlib.Algebra.Homology.Triangulated.HomComplex
+import Mathlib.Algebra.Homology.HomotopyCategory.HomComplex
 
 open CategoryTheory Category Limits Preadditive
 
