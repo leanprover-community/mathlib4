@@ -290,9 +290,7 @@ lemma continuous_monotone {f : α → β}
     simp only [mem_compl_iff, mem_preimage, mem_Iic, le_refl, not_true] at u3
   simp only [mem_compl_iff, mem_Iic, le_refl, not_true] at c1
 
-lemma continuous_iff_scottContinuous
-  (f : α → β) :
-  Continuous f ↔ ScottContinuous f := by
+lemma continuous_iff_scottContinuous (f : α → β) : Continuous f ↔ ScottContinuous f := by
   constructor
   . intros hf d d₁ d₂ a d₃
     rw [IsLUB]
@@ -325,8 +323,8 @@ lemma continuous_iff_scottContinuous
       rw [isOpen_iff_upper_and_LUB_mem_implies_inter_nonempty] at hu
       have e2: ((f '' d) ∩ u).Nonempty := by
         apply hu.2 _ _ (hd₁.image f)
-          (directedOn_image.mpr (hd₂.mono _)) (h hd₁ hd₂ hd₃) ha
-        apply h.monotone
+          (directedOn_image.mpr (hd₂.mono (by simp only [Order.Preimage]; apply h.monotone)))
+          (h hd₁ hd₂ hd₃) ha
       exact image_inter_nonempty_iff.mp e2
 
 end preorder
