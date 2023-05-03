@@ -312,30 +312,19 @@ theorem coe_smul [SMulZeroClass S R] (s : S) (r : R) :
   QuaternionAlgebra.ext _ _ rfl (smul_zero s).symm (smul_zero s).symm (smul_zero s).symm
 #align quaternion_algebra.coe_smul QuaternionAlgebra.coe_smul
 
-instance : AddCommGroup ℍ[R,c₁,c₂] := by
-  refine_struct {
-                add := (· + ·)
-                neg := Neg.neg
-                sub := Sub.sub
-                zero := (0 : ℍ[R,c₁,c₂])
-                nsmul := (· • ·)
-                zsmul := (· • ·) } <;>
-            intros <;>
-          try rfl <;>
-        ext <;>
-      simp <;>
-    ring
+instance : AddCommGroup ℍ[R,c₁,c₂] :=
+  (equivProd c₁ c₂).injective.addCommGroup _ rfl (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl)
+    (λ _ _ ↦ rfl) (λ _ _ ↦ rfl)
 
-instance : AddGroupWithOne ℍ[R,c₁,c₂] :=
-  {
-    QuaternionAlgebra.addCommGroup with
-    natCast := fun n => ((n : R) : ℍ[R,c₁,c₂])
-    natCast_zero := by simp
-    natCast_succ := by simp
-    intCast := fun n => ((n : R) : ℍ[R,c₁,c₂])
-    intCast_ofNat := fun _ => congr_arg coe (Int.cast_ofNat _)
-    intCast_negSucc := fun n => show ↑↑_ = -↑↑_ by rw [Int.cast_neg, Int.cast_ofNat, coe_neg]
-    one := 1 }
+instance : AddCommGroupWithOne ℍ[R,c₁,c₂] where
+  natCast n := ((n : R) : ℍ[R,c₁,c₂])
+  natCast_zero := by simp
+  natCast_succ := by simp
+  intCast n := ((n : R) : ℍ[R,c₁,c₂])
+  intCast_ofNat _ := congr_arg coe (Int.cast_ofNat _)
+  intCast_negSucc n := by
+    change coe _ = -coe _
+    rw [Int.cast_negSucc, coe_neg]
 
 @[simp, norm_cast]
 theorem nat_cast_re (n : ℕ) : (n : ℍ[R,c₁,c₂]).re = n :=
@@ -397,19 +386,15 @@ theorem coe_int_cast (z : ℤ) : ↑(z : R) = (z : ℍ[R,c₁,c₂]) :=
   rfl
 #align quaternion_algebra.coe_int_cast QuaternionAlgebra.coe_int_cast
 
-instance : Ring ℍ[R,c₁,c₂] := by
-  refine_struct
-              { QuaternionAlgebra.addGroupWithOne,
-                QuaternionAlgebra.addCommGroup with
-                add := (· + ·)
-                mul := (· * ·)
-                one := 1
-                npow := @npowRec _ ⟨(1 : ℍ[R,c₁,c₂])⟩ ⟨(· * ·)⟩ } <;>
-            intros <;>
-          try rfl <;>
-        ext <;>
-      simp <;>
-    ring
+instance : Ring ℍ[R,c₁,c₂] where
+  __ := inferInstanceAs (AddCommGroupWithOne ℍ[R,c₁,c₂])
+  left_distrib _ _ _ := by ext <;> simp <;> ring
+  right_distrib _ _ _ := by ext <;> simp <;> ring
+  zero_mul _ := by ext <;> simp
+  mul_zero _ := by ext <;> simp
+  mul_assoc _ _ _ := by ext <;> simp <;> ring
+  one_mul _ := by ext <;> simp
+  mul_one _ := by ext <;> simp
 
 @[norm_cast, simp]
 theorem coe_mul : ((x * y : R) : ℍ[R,c₁,c₂]) = x * y := by ext <;> simp
@@ -420,10 +405,10 @@ theorem coe_mul : ((x * y : R) : ℍ[R,c₁,c₂]) = x * y := by ext <;> simp
 instance [CommSemiring S] [Algebra S R] : Algebra S ℍ[R,c₁,c₂] where
   smul := (· • ·)
   toFun s := coe (algebraMap S R s)
-  map_one' := by simpa only [map_one]
-  map_zero' := by simpa only [map_zero]
-  map_mul' x y := by rw [map_mul, coe_mul]
-  map_add' x y := by rw [map_add, coe_add]
+  map_one' := by simp only [map_one, coe_one]
+  map_zero' := by simp only [map_zero, coe_zero]
+  map_mul' x y := by simp only [map_mul, coe_mul]
+  map_add' x y := by simp only [map_add, coe_add]
   smul_def' s x := by ext <;> simp [Algebra.smul_def]
   commutes' s x := by ext <;> simp [Algebra.commutes]
 
@@ -523,7 +508,7 @@ theorem coe_sub : ((x - y : R) : ℍ[R,c₁,c₂]) = x - y :=
 #align quaternion_algebra.coe_sub QuaternionAlgebra.coe_sub
 
 @[norm_cast, simp]
-theorem coe_pow (n : ℕ) : (↑(x ^ n) : ℍ[R,c₁,c₂]) = ↑x ^ n :=
+theorem coe_pow (n : ℕ) : (↑(x ^ n) : ℍ[R,c₁,c₂]) = (x : ℍ[R,c₁,c₂]) ^ n :=
   (algebraMap R ℍ[R,c₁,c₂]).map_pow x n
 #align quaternion_algebra.coe_pow QuaternionAlgebra.coe_pow
 
@@ -551,11 +536,9 @@ theorem smul_coe : x • (y : ℍ[R,c₁,c₂]) = ↑(x * y) := by rw [coe_mul, 
 #align quaternion_algebra.smul_coe QuaternionAlgebra.smul_coe
 
 /-- Quaternion conjugate. -/
-instance : Star ℍ[R,c₁,c₂] where unit a := ⟨a.1, -a.2, -a.3, -a.4⟩
+instance : Star ℍ[R,c₁,c₂] where star a := ⟨a.1, -a.2, -a.3, -a.4⟩
 
-@[simp]
-theorem re_star : (star a).re = a.re :=
-  rfl
+@[simp] theorem re_star : (star a).re = a.re := rfl
 #align quaternion_algebra.re_star QuaternionAlgebra.re_star
 
 @[simp]
@@ -575,7 +558,7 @@ theorem imK_star : (star a).imK = -a.imK :=
 
 @[simp]
 theorem im_star : (star a).im = -a.im :=
-  ext _ _ neg_zero.symm rfl rfl rfl
+  QuaternionAlgebra.ext _ _ neg_zero.symm rfl rfl rfl
 #align quaternion_algebra.im_star QuaternionAlgebra.im_star
 
 @[simp]
@@ -585,7 +568,7 @@ theorem star_mk (a₁ a₂ a₃ a₄ : R) : star (mk a₁ a₂ a₃ a₄ : ℍ[R
 
 instance : StarRing ℍ[R,c₁,c₂] where
   star_involutive x := by simp [Star.star]
-  star_add a b := by ext <;> simp [neg_add]
+  star_add a b := by ext <;> simp [add_comm]
   star_mul a b := by ext <;> simp <;> ring
 
 theorem self_add_star' : a + star a = ↑(2 * a.re) := by ext <;> simp [two_mul]
