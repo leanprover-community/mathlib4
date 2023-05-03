@@ -38,14 +38,14 @@ variable [Ring k] [Module k V] (b : AffineBasis ι k P)
 /-- Given an affine basis `p`, and a family of points `q : ι' → P`, this is the matrix whose
 rows are the barycentric coordinates of `q` with respect to `p`.
 
-It is an affine equivalent of `basis.to_matrix`. -/
-noncomputable def toMatrix {ι' : Type _} (q : ι' → P) : Matrix ι' ι k := fun i j => b.coord j (q i)
+It is an affine equivalent of `Basis.toMatrix`. -/
+noncomputable def toMatrix {ι' : Type _} (q : ι' → P) : Matrix ι' ι k :=
+  fun i j => b.coord j (q i)
 #align affine_basis.to_matrix AffineBasis.toMatrix
 
 @[simp]
 theorem toMatrix_apply {ι' : Type _} (q : ι' → P) (i : ι') (j : ι) :
-    b.toMatrix q i j = b.coord j (q i) :=
-  rfl
+    b.toMatrix q i j = b.coord j (q i) := rfl
 #align affine_basis.to_matrix_apply AffineBasis.toMatrix_apply
 
 @[simp]
@@ -108,7 +108,7 @@ theorem affineSpan_eq_top_of_toMatrix_left_inv [DecidableEq ι] [Nontrivial k] (
 
 /-- A change of basis formula for barycentric coordinates.
 
-See also `affine_basis.to_matrix_inv_mul_affine_basis_to_matrix`. -/
+See also `AffineBasis.toMatrix_inv_vecMul_toMatrix`. -/
 @[simp]
 theorem toMatrix_vecMul_coords (x : P) : (b.toMatrix b₂).vecMul (b₂.coords x) = b.coords x := by
   ext j
@@ -138,9 +138,8 @@ theorem isUnit_toMatrix_iff [Nontrivial k] (p : ι → P) :
   constructor
   · rintro ⟨⟨B, A, hA, hA'⟩, rfl : B = b.toMatrix p⟩
     rw [Matrix.mul_eq_mul] at hA hA'
-    exact
-      ⟨b.affineIndependent_of_toMatrix_right_inv p hA,
-        b.affineSpan_eq_top_of_toMatrix_left_inv p hA'⟩
+    exact ⟨b.affineIndependent_of_toMatrix_right_inv p hA,
+      b.affineSpan_eq_top_of_toMatrix_left_inv p hA'⟩
   · rintro ⟨h_tot, h_ind⟩
     let b' : AffineBasis ι k P := ⟨p, h_tot, h_ind⟩
     change IsUnit (b.toMatrix b')
@@ -157,7 +156,7 @@ variable (b b₂ : AffineBasis ι k P)
 
 /-- A change of basis formula for barycentric coordinates.
 
-See also `affine_basis.to_matrix_vec_mul_coords`. -/
+See also `AffineBasis.toMatrix_vecMul_coords`. -/
 @[simp]
 theorem toMatrix_inv_vecMul_toMatrix (x : P) :
     (b.toMatrix b₂)⁻¹.vecMul (b.coords x) = b₂.coords x := by
