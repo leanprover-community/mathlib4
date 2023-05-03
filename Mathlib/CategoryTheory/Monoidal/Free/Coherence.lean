@@ -245,9 +245,11 @@ end
 def normalizeIso : tensorFunc C ≅ normalize' C :=
   NatIso.ofComponents (normalizeIsoAux C)
     (by
-      rintro X Y ⟨f⟩
+      rintro X Y f
+      induction' f using Quotient.recOn with f ; swap ; rfl
       ext ⟨n⟩
-      induction' f  generalizing n
+      induction' f with X generalizing n
+      . simp only [mk_id, Functor.map_id, Category.id_comp,  Category.comp_id]
       all_goals sorry)
       --apply Quotient.inductionOn f
       --intro f
