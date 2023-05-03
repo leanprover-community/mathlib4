@@ -190,14 +190,14 @@ variable {α}
 def withScottTopologyHomeomorph : WithScottTopology α ≃ₜ α :=
   WithScottTopology.ofScott.toHomeomorphOfInducing ⟨by erw [topology_eq α, induced_id]; rfl⟩
 
-lemma isOpen_eq_upper_and_LUB_mem_implies_tail_subset (u : Set α) : IsOpen u
-= (IsUpperSet u ∧ ∀ (d : Set α) (a : α), d.Nonempty → DirectedOn (· ≤ ·) d → IsLUB d a → a ∈ u
+lemma isOpen_iff_upper_and_LUB_mem_implies_tail_subset (u : Set α) : IsOpen u
+↔ (IsUpperSet u ∧ ∀ (d : Set α) (a : α), d.Nonempty → DirectedOn (· ≤ ·) d → IsLUB d a → a ∈ u
   → ∃ b ∈ d, Ici b ∩ d ⊆ u) := by erw [topology_eq α]; rfl
 
 lemma isOpen_iff_upper_and_LUB_mem_implies_inter_nonempty (u : Set α) :
 IsOpen u ↔ (IsUpperSet u ∧ ∀ (d : Set α) (a : α), d.Nonempty → DirectedOn (· ≤ ·) d → IsLUB d a →
 a ∈ u → (d ∩ u).Nonempty) := by
-  rw [isOpen_eq_upper_and_LUB_mem_implies_tail_subset]
+  rw [isOpen_iff_upper_and_LUB_mem_implies_tail_subset]
   constructor
   . refine' And.imp_right _
     intros h d a d₁ d₂ d₃ ha
