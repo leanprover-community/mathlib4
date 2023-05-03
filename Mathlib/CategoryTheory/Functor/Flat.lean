@@ -277,23 +277,14 @@ theorem uniq {K : J ⥤ C} {c : Cone K} (hc : IsLimit c) (s : Cone (K ⋙ F))
     injection c₀.π.naturality (BiconeHom.left j) with _ e₁
     injection c₀.π.naturality (BiconeHom.right j) with _ e₂
     -- porting note: Lean 3 proof now finished with `simpa using e₁.symm.trans e₂`
-    -- We will manually simplify the term because Lean 4 is not playing ball
+    -- This doesn't work for two reasons in Lean 4: firstly it seems that Lean 4 `simp`
+    -- expands `let` definitions by default, so we have to switch this off with `zeta = false`;
+    -- secondly, `simp` is not rewriting `Comma.eqToHom_right` for some reason (just like)
+    -- 30 lines above here
     have e₃ := e₁.symm.trans e₂
-    -- `simp at e₃` succeeds with `set_option maxHeartbeats 2000000` but turns the goal
-    -- into a huge mess because it unfolds c₀, c₁, c₂ (even `dsimp only at e₃` creates
-    -- a huge mess). So we do it manually.
-    rw [biconeMk_map, biconeMk_map] at e₃
-    -- `dsimp only at e₃` tames this in Lean 3 but explodes it in Lean 4
-    change (c₀.π.app Bicone.left).right ≫ (c₁.π.app j).right =
-      (c₀.π.app Bicone.right).right ≫ (c₂.π.app j).right at e₃
-    --dsimp only at e₃ -- still explodes!
-    -- **TODO** ask on Zulip about why `dsimp only at e₃` makes this term
-    -- explode (it seems to be unfolding `c₀`, `c₁` and `c₂`)
-    -- `simpa using e₃` would work in Lean 3
-    rwa [Cones.postcompose_obj_π, Cones.postcompose_obj_π, NatTrans.comp_app, whiskerRight_app,
-      eqToHom_map, Comma.comp_right, Comma.eqToHom_right, eqToHom_refl, Category.comp_id,
-      NatTrans.comp_app, whiskerRight_app, eqToHom_map, Comma.comp_right,
-      Comma.eqToHom_right, eqToHom_refl, Category.comp_id] at e₃
+    simp (config := {zeta := false}) at e₃ -- should turn `e₃` into the goal
+    rw [Comma.eqToHom_right, Comma.eqToHom_right] at e₃ -- this is a `simp` lemma
+    simpa (config := {zeta := false}) using e₃
   have : c.extend g₁.right = c.extend g₂.right := by
     unfold Cone.extend
     congr 1
@@ -304,16 +295,16 @@ theorem uniq {K : J ⥤ C} {c : Cone K} (hc : IsLimit c) (s : Cone (K ⋙ F))
   calc
     g₁.right = hc.lift (c.extend g₁.right) := by
       apply hc.uniq (c.extend _)
-      -- Porting note: was `by tidy`
-      intro j ; rfl -- was `by tidy` but `aesop` is timing out, possibly
-      -- for the same reason `simp at foo` is timing out above.
+      -- Porting note: was `by tidy`, but `aesop` only works if max heartbeats
+      -- is increased, so we replace it by the output of `tidy?`
+      intro j ; rfl
     _ = hc.lift (c.extend g₂.right) := by
       congr
     _ = g₂.right := by
       symm
       apply hc.uniq (c.extend _)
-      -- Porting note: was `by tidy`; `aesop` is timing out, possibly
-      -- for the same reason `simp at foo` is timing out above.
+      -- Porting note: was `by tidy`, but `aesop` only works if max heartbeats
+      -- is increased, so we replace it by the output of `tidy?`
       intro _ ; rfl
 
   -- Finally, since `fᵢ` factors through `F(gᵢ)`, the result follows.
@@ -380,7 +371,6 @@ noncomputable def lanEvaluationIsoColim (F : C ⥤ D) (X : D)
     (by
       intro G H i
       -- porting note: was `ext` in lean 3
-      -- **TODO** add missing `ext` lemma.
       apply colimit.hom_ext
       intro j
       -- porting note: I had to add `Lan.equiv` to the list of lemmas here
