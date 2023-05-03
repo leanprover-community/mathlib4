@@ -446,14 +446,12 @@ lemma δ_comp {n₁ n₂ n₁₂ : ℤ} (z₁ : Cochain F G n₁) (z₂ : Cochai
     neg_comp, zsmul_neg, zsmul_comp, smul_smul, comp_neg, comp_zsmul, mul_comm (ε n₁) (ε n₂)]
   abel
 
-@[simp]
 lemma δ_zero_cochain_comp {n₂ : ℤ} (z₁ : Cochain F G 0) (z₂ : Cochain G K n₂)
     (m₂ : ℤ) (h₂ : n₂+1 = m₂) :
     δ n₂ m₂ (z₁.comp z₂ (zero_add n₂)) =
       z₁.comp (δ n₂ m₂ z₂) (by rw [zero_add]) + ε n₂ • (δ 0 1 z₁).comp z₂ (by rw [add_comm, h₂]) :=
   δ_comp z₁ z₂ (zero_add n₂) 1 m₂ m₂ h₂ (zero_add 1) h₂
 
-@[simp]
 lemma δ_comp_zero_cochain {n₁ : ℤ} (z₁ : Cochain F G n₁) (z₂ : Cochain G K 0)
     (m₁ : ℤ) (h₁ : n₁ + 1 = m₁) : δ n₁ m₁ (z₁.comp z₂ (add_zero n₁)) =
       z₁.comp (δ 0 1 z₂) h₁ + (δ n₁ m₁ z₁).comp z₂ (add_zero m₁) := by
@@ -874,6 +872,35 @@ def rightShift (a n' : ℤ) (hn' : n' + a = n) : Cocycle K (L⟦a⟧) n' :=
       δ_eq_zero, Cochain.rightShift_zero, smul_zero])
 
 end Cocycle
+
+@[simp]
+lemma δ_comp_zero_cocycle {n : ℤ} (z₁ : Cochain F G n) (z₂ : Cocycle G K 0) (m : ℤ) :
+    δ n m (z₁.comp (z₂ : Cochain G K 0) (add_zero n)) =
+      (δ n m z₁).comp (z₂ : Cochain G K 0) (add_zero m) := by
+  by_cases hnm : n + 1 = m
+  . simp only [δ_comp_zero_cochain _ _ _ hnm, Cocycle.δ_eq_zero, Cochain.comp_zero, zero_add]
+  . simp only [δ_shape _ _ hnm, Cochain.zero_comp]
+
+@[simp]
+lemma δ_comp_ofHom {n : ℤ} (z₁ : Cochain F G n) (f : G ⟶ K) (m : ℤ) :
+    δ n m (z₁.comp (Cochain.ofHom f) (add_zero n)) =
+      (δ n m z₁).comp (Cochain.ofHom f) (add_zero m) := by
+  rw [← Cocycle.ofHom_coe, δ_comp_zero_cocycle]
+
+@[simp]
+lemma δ_zero_cocycle_comp {n : ℤ} (z₁ : Cocycle F G 0) (z₂ : Cochain G K n) (m : ℤ) :
+    δ n m ((z₁ : Cochain F G 0).comp z₂ (zero_add n)) =
+      (z₁ : Cochain F G 0).comp (δ n m z₂) (zero_add m) := by
+  by_cases hnm : n + 1 = m
+  . simp only [δ_zero_cochain_comp _ _ _ hnm, Cocycle.δ_eq_zero, Cochain.zero_comp,
+      smul_zero, add_zero]
+  . simp only [δ_shape _ _ hnm, Cochain.comp_zero]
+
+@[simp]
+lemma δ_ofHom_comp {n : ℤ} (f : F ⟶ G) (z : Cochain G K n) (m : ℤ) :
+    δ n m ((Cochain.ofHom f).comp z (zero_add n)) =
+      (Cochain.ofHom f).comp (δ n m z) (zero_add m) := by
+  rw [← Cocycle.ofHom_coe, δ_zero_cocycle_comp]
 
 end HomComplex
 

@@ -37,10 +37,12 @@ noncomputable def map : mappingCone φ₁ ⟶ mappingCone φ₂ :=
       ((Cochain.equivHomotopy _ _) H : Cochain K₁ L₂ (-1)).comp
     (Cochain.ofHom (inr φ₂)) (add_zero _)) (b ≫ inr φ₂) (by simp)
 
-def comm₂ : Homotopy (inr φ₁ ≫ map H) (b ≫ inr φ₂) := by
-  sorry
+@[reassoc]
+lemma triangleMap_comm₂ : inr φ₁ ≫ map H = b ≫ inr φ₂ := by
+  simp only [map, Cochain.equivHomotopy_apply_coe, inr_desc]
 
-lemma comm₃ : triangleδ φ₁ ≫ a⟦1⟧' = map H ≫ triangleδ φ₂ := by
+@[reassoc]
+lemma triangleMap_comm₃ : map H ≫ triangleδ φ₂ = triangleδ φ₁ ≫ a⟦1⟧' := by
   ext p
   rw [from_ext_iff _ _ _ _ rfl]
   dsimp [triangleδ, map]
@@ -66,16 +68,25 @@ noncomputable def triangleMap :
     exact HomotopyCategory.eq_of_homotopy _ _ H
   comm₂ := by
     dsimp
-    simp only [← Functor.map_comp]
-    exact HomotopyCategory.eq_of_homotopy _ _ (comm₂ H)
+    simp only [← Functor.map_comp, triangleMap_comm₂]
   comm₃ := by
     dsimp
-    rw [← Functor.map_comp_assoc, ← comm₃ H, Functor.map_comp, Category.assoc,
-      Category.assoc]
+    rw [← Functor.map_comp_assoc, triangleMap_comm₃, Functor.map_comp, assoc, assoc]
     erw [← NatTrans.naturality]
     rfl
 
 end map
+
+section rotate
+
+def rotateHomotopyEquiv :
+  HomotopyEquiv (K⟦(1 : ℤ)⟧) (mappingCone (inr φ)) where
+  hom := sorry
+  inv := sorry
+  homotopyHomInvId := Homotopy.ofEq sorry
+  homotopyInvHomId := sorry
+
+end rotate
 
 end MappingCone
 
@@ -142,12 +153,15 @@ lemma complete_distinguished_triangle_morphism
     Iso.hom_inv_id_triangle_hom₁, Iso.hom_inv_id_triangle_hom₂_assoc, comp_id] at comm₂ comm₃
   exact ⟨γ.hom₃, comm₂, by dsimp ; simpa only [assoc] using comm₃⟩
 
+lemma rotate_distinguished_triangle (T : Triangle (HomotopyCategory C (ComplexShape.up ℤ))) :
+  T ∈ distinguishedTriangles C ↔ T.rotate ∈ distinguishedTriangles C := sorry
+
 instance : Pretriangulated (HomotopyCategory C (ComplexShape.up ℤ)) where
   distinguishedTriangles := distinguishedTriangles C
   isomorphic_distinguished := isomorphic_distinguished
   contractible_distinguished := contractible_distinguished
   distinguished_cocone_triangle := distinguished_cocone_triangle
-  rotate_distinguished_triangle := sorry
+  rotate_distinguished_triangle := rotate_distinguished_triangle
   complete_distinguished_triangle_morphism := complete_distinguished_triangle_morphism
 
 end HomotopyCategory
