@@ -123,7 +123,7 @@ theorem smul_mem {x : A} (hx : x ∈ S) (r : R) : r • x ∈ S :=
   (Algebra.smul_def r x).symm ▸ mul_mem (S.algebraMap_mem r) hx
 #align subalgebra.smul_mem Subalgebra.smul_mem
 
-instance : SMulMemClass (Subalgebra R A) R A where smul_mem S r x hx := smul_mem S hx r
+instance : SMulMemClass (Subalgebra R A) R A where smul_mem r _x hx := smul_mem _ hx r
 
 protected theorem one_mem : (1 : A) ∈ S :=
   one_mem S
