@@ -1148,6 +1148,11 @@ theorem eval_assoc {τ} (f : σ → MvPolynomial τ R) (g : τ → R) (p : MvPol
   congr with a; simp
 #align mv_polynomial.eval_assoc MvPolynomial.eval_assoc
 
+@[simp]
+theorem eval₂_id (p : MvPolynomial σ R) : eval₂ (RingHom.id _) g p = eval g p :=
+  rfl
+#align mv_polynomial.eval₂_id MvPolynomial.eval₂_id
+
 theorem eval_eval₂ [CommSemiring R] [CommSemiring S]
     (f : R →+* MvPolynomial τ S) (g : σ → MvPolynomial τ S) (p : MvPolynomial σ R) :
     eval x (eval₂ f g p) = eval₂ ((eval x).comp f) (fun s => eval x (g s)) p := by
@@ -1205,8 +1210,8 @@ theorem eval₂_eq_eval_map (g : σ → S₁) (p : MvPolynomial σ R) : p.eval�
 
   have h := eval₂_comp_left (eval₂Hom (RingHom.id S₁) g) (C.comp f) X p
   -- porting note: the Lean 3 version of `h` was full of metavariables which
-  -- were later unified during `rw [h]`
-  dsimp at h
+  -- were later unified during `rw [h]`. Also needed to add `-eval₂_id`.
+  dsimp [-eval₂_id] at h
   rw [h]
   congr
   · ext1 a
@@ -1214,14 +1219,6 @@ theorem eval₂_eq_eval_map (g : σ → S₁) (p : MvPolynomial σ R) : p.eval�
   · ext1 n
     simp only [comp_apply, eval₂_X]
 #align mv_polynomial.eval₂_eq_eval_map MvPolynomial.eval₂_eq_eval_map
-
--- Porting note: this was immediately before eval_eval₂ in mathlib3,
--- but it breaks the fragile proof of `eval₂_eq_eval_map`
--- so I've moved it here.
-@[simp]
-theorem eval₂_id (p : MvPolynomial σ R) : eval₂ (RingHom.id _) g p = eval g p :=
-  rfl
-#align mv_polynomial.eval₂_id MvPolynomial.eval₂_id
 
 theorem eval₂_comp_right {S₂} [CommSemiring S₂] (k : S₁ →+* S₂) (f : R →+* S₁) (g : σ → S₁) (p) :
     k (eval₂ f g p) = eval₂ k (k ∘ g) (map f p) := by
