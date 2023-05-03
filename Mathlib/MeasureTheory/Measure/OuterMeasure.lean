@@ -649,8 +649,7 @@ theorem map_top (f : α → β) : map f ⊤ = restrict (range f) ⊤ :=
 
 theorem map_top_of_surjective (f : α → β) (hf : Surjective f) : map f ⊤ = ⊤ := by
   rw [map_top, hf.range_eq, restrict_univ]
-#align measure_theory.outer_measure.map_top_of_surjective
-       MeasureTheory.OuterMeasure.map_top_of_surjective
+#align measure_theory.outer_measure.map_top_of_surjective MeasureTheory.OuterMeasure.map_top_of_surjective
 
 end Basic
 
