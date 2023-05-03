@@ -138,7 +138,7 @@ A type synonym for a `DeclCache` containing a pair of discrimination trees.
 The first will store declarations in the current file,
 the second will store declarations from imports (and will hopefully be "read-only" after creation).
 -/
-@[reducible] def DiscrTreeCache (α : Type) [BEq α] : Type :=
+@[reducible] def DiscrTreeCache (α : Type) : Type :=
   DeclCache (DiscrTree α true × DiscrTree α true)
 
 /--
@@ -172,6 +172,6 @@ it will rebuild the discrimination tree for the current file multiple times,
 and it would be more efficient to call `c.get` once,
 and then call `DiscrTree.getMatch` multiple times.
 -/
-def DiscrTreeCache.getMatch [BEq α] (c : DiscrTreeCache α) (e : Expr) : MetaM (Array α) := do
+def DiscrTreeCache.getMatch (c : DiscrTreeCache α) (e : Expr) : MetaM (Array α) := do
   let (locals, imports) ← c.get
   return (← locals.getMatch e) ++ (← imports.getMatch e)
