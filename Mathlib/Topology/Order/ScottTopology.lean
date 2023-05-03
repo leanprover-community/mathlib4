@@ -342,10 +342,9 @@ section complete_lattice
 
 variable [CompleteLattice α] [TopologicalSpace α] [ScottTopology α]
 
-lemma isOpen_eq_upper_and_sup_mem_implies_tail_subset
-(u : Set α) : IsOpen u =
-(IsUpperSet u ∧
-  ∀ (d : Set α), d.Nonempty → DirectedOn (· ≤ ·) d → supₛ d ∈ u → ∃ b ∈ d, Ici b ∩ d ⊆ u) := by
+lemma isOpen_iff_isUpperSet_and_sup_mem_implies_tail_subset {u : Set α} :
+  IsOpen u ↔ IsUpperSet u ∧ ∀ ⦃d : Set α⦄,
+    d.Nonempty → DirectedOn (· ≤ ·) d → supₛ d ∈ u → ∃ b ∈ d, Ici b ∩ d ⊆ u) := by
   rw [ScottTopology.isOpen_eq_upper_and_LUB_mem_implies_tail_subset]
   refine' let_value_eq (And (IsUpperSet u)) _
   rw [eq_iff_iff]
