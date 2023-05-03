@@ -132,23 +132,23 @@ theorem im_idem : a.im.im = a.im :=
 #align quaternion_algebra.im_idem QuaternionAlgebra.im_idem
 
 /-- Coercion `R → ℍ[R,c₁,c₂]`. -/
-def coe (x : R) : ℍ[R,c₁,c₂] := ⟨x, 0, 0, 0⟩
+@[coe] def coe (x : R) : ℍ[R,c₁,c₂] := ⟨x, 0, 0, 0⟩
 
 instance : CoeTC R ℍ[R,c₁,c₂] := ⟨coe⟩
 
-@[simp] -- porting note: was `norm_cast`
+@[simp, norm_cast]
 theorem coe_re : (x : ℍ[R,c₁,c₂]).re = x := rfl
 #align quaternion_algebra.coe_re QuaternionAlgebra.coe_re
 
-@[simp] -- porting note: was `norm_cast`
+@[simp, norm_cast]
 theorem coe_imI : (x : ℍ[R,c₁,c₂]).imI = 0 := rfl
 #align quaternion_algebra.coe_im_i QuaternionAlgebra.coe_imI
 
-@[simp] -- porting note: was `norm_cast`
+@[simp, norm_cast]
 theorem coe_imJ : (x : ℍ[R,c₁,c₂]).imJ = 0 := rfl
 #align quaternion_algebra.coe_im_j QuaternionAlgebra.coe_imJ
 
-@[simp] -- porting note: was `norm_cast`
+@[simp, norm_cast]
 theorem coe_imK : (x : ℍ[R,c₁,c₂]).imK = 0 := rfl
 #align quaternion_algebra.coe_im_k QuaternionAlgebra.coe_imK
 
@@ -164,7 +164,7 @@ theorem coe_inj {x y : R} : (x : ℍ[R,c₁,c₂]) = y ↔ x = y :=
 instance : Zero ℍ[R,c₁,c₂] :=
   ⟨⟨0, 0, 0, 0⟩⟩
 
-@[simp] -- porting note: was `norm_cast`
+@[simp, norm_cast]
 theorem coe_zero : ((0 : R) : ℍ[R,c₁,c₂]) = 0 := rfl
 #align quaternion_algebra.coe_zero QuaternionAlgebra.coe_zero
 
@@ -174,7 +174,7 @@ instance : Inhabited ℍ[R,c₁,c₂] := ⟨0⟩
 instance : One ℍ[R,c₁,c₂] :=
   ⟨⟨1, 0, 0, 0⟩⟩
 
-@[simp] -- porting note: was `norm_cast`
+@[simp, norm_cast]
 theorem coe_one : ((1 : R) : ℍ[R,c₁,c₂]) = 1 := rfl
 #align quaternion_algebra.coe_one QuaternionAlgebra.coe_one
 
@@ -188,7 +188,7 @@ theorem mk_add_mk (a₁ a₂ a₃ a₄ b₁ b₂ b₃ b₄ : R) :
   rfl
 #align quaternion_algebra.mk_add_mk QuaternionAlgebra.mk_add_mk
 
-@[simp] -- porting note: was `norm_cast`
+@[simp, norm_cast]
 theorem coe_add : ((x + y : R) : ℍ[R,c₁,c₂]) = x + y := by ext <;> simp
 #align quaternion_algebra.coe_add QuaternionAlgebra.coe_add
 
@@ -200,7 +200,7 @@ theorem neg_mk (a₁ a₂ a₃ a₄ : R) : -(mk a₁ a₂ a₃ a₄ : ℍ[R,c₁
   rfl
 #align quaternion_algebra.neg_mk QuaternionAlgebra.neg_mk
 
-@[simp] -- porting note: was `norm_cast`
+@[simp, norm_cast]
 theorem coe_neg : ((-x : R) : ℍ[R,c₁,c₂]) = -x := by ext <;> simp
 #align quaternion_algebra.coe_neg QuaternionAlgebra.coe_neg
 
@@ -214,7 +214,7 @@ theorem mk_sub_mk (a₁ a₂ a₃ a₄ b₁ b₂ b₃ b₄ : R) :
   rfl
 #align quaternion_algebra.mk_sub_mk QuaternionAlgebra.mk_sub_mk
 
-@[simp] -- porting note: was `norm_cast`
+@[simp, norm_cast]
 theorem coe_im : (x : ℍ[R,c₁,c₂]).im = 0 :=
   rfl
 #align quaternion_algebra.coe_im QuaternionAlgebra.coe_im
@@ -307,8 +307,9 @@ theorem smul_mk (re im_i im_j im_k : R) :
 end
 
 @[simp, norm_cast]
-theorem coe_smul [SMulZeroClass S R] (s : S) (r : R) : (↑(s • r) : ℍ[R,c₁,c₂]) = s • ↑r :=
-  ext _ _ rfl (smul_zero s).symm (smul_zero s).symm (smul_zero s).symm
+theorem coe_smul [SMulZeroClass S R] (s : S) (r : R) :
+    (↑(s • r) : ℍ[R,c₁,c₂]) = s • (r : ℍ[R,c₁,c₂]) :=
+  QuaternionAlgebra.ext _ _ rfl (smul_zero s).symm (smul_zero s).symm (smul_zero s).symm
 #align quaternion_algebra.coe_smul QuaternionAlgebra.coe_smul
 
 instance : AddCommGroup ℍ[R,c₁,c₂] := by
