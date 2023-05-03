@@ -5,6 +5,7 @@ Authors: Robert Y. Lewis
 -/
 
 import Mathlib.Tactic.NormNum
+import Mathlib.Util.SynthesizeUsing
 import Mathlib.Data.Tree
 
 /-!
@@ -133,17 +134,16 @@ match t, e with
   let v1 ← mkProdPrf α _sα v lhs e1
   let v2 ← mkProdPrf α _sα v rhs e2
   mkAppM `CancelFactors.sub_subst #[v1, v2]
-| .node n lhs rhs@(.node rn _ _), ~q($e1 * $e2) => do
+| .node n lhs (.node rn _ _), ~q($e1 * $e2) => do
   let v1 ← mkProdPrf α _sα (v / rn) lhs e1
-  let ⟨rn', _⟩ ← mkOfNat α _sα <| mkRawNatLit v
-  let ⟨vrn', _⟩ ← mkOfNat α _sα <| mkRawNatLit <| v / rn
-  let ⟨n', _⟩ ← mkOfNat α _sα <| mkRawNatLit <| n
-  let ⟨v', _⟩ ← mkOfNat α _sα <| mkRawNatLit <| v
-  let ntp' ← mkAppM `Div.div #[rn', e2]
-  -- let ntp : Q(Prop) := q($rn' / $e2 = 1)
-  -- let (_, npf) ← solve_aux ntp `[norm_num, done]
-  -- let ntp2 ← to_Expr ``(%%vrn' * %%n' = %%v')
-  -- let (_, npf2) ← solve_aux ntp2 `[norm_num, done]
+  have rn' := (← mkOfNat α _sα <| mkRawNatLit v).1
+  have vrn' := (← mkOfNat α _sα <| mkRawNatLit <| v / rn).1
+  have n' := (← mkOfNat α _sα <| mkRawNatLit <| n).1
+  have v' := (← mkOfNat α _sα <| mkRawNatLit <| v).1
+  let ntp : Q(Prop) := q($rn' / $e2 = 1)
+  let npf ← synthesizeUsing ntp (do Lean.Elab.Tactic.evalTactic (←`(tactic| norm_num; done)))
+  let ntp2 : Q(Prop) := q($vrn' * $n' = $v')
+  let npf2 ← synthesizeUsing ntp2 (do Lean.Elab.Tactic.evalTactic (←`(tactic| norm_num; done)))
   mkAppM `CancelFactors.div_subst #[v1, npf, npf2]
 | t, ~q(-$e) => do
   let v ← mkProdPrf α _sα v t e
