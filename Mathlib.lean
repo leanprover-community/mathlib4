@@ -1407,6 +1407,7 @@ import Mathlib.LinearAlgebra.AffineSpace.Basic
 import Mathlib.LinearAlgebra.AffineSpace.Basis
 import Mathlib.LinearAlgebra.AffineSpace.Combination
 import Mathlib.LinearAlgebra.AffineSpace.Independent
+import Mathlib.LinearAlgebra.AffineSpace.Matrix
 import Mathlib.LinearAlgebra.AffineSpace.Midpoint
 import Mathlib.LinearAlgebra.AffineSpace.MidpointZero
 import Mathlib.LinearAlgebra.AffineSpace.Ordered
