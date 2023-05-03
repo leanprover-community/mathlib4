@@ -22,17 +22,17 @@ This file defines orientations of modules.
 
 ## Main definitions
 
-* `orientation` is a type synonym for `module.ray` for the case where the module is that of
+* `Orientation` is a type synonym for `Module.Ray` for the case where the module is that of
 alternating maps from a module to its underlying ring.  An orientation may be associated with an
 alternating map or with a basis.
 
-* `module.oriented` is a type class for a choice of orientation of a module that is considered
+* `Module.Oriented` is a type class for a choice of orientation of a module that is considered
 the positive orientation.
 
 ## Implementation notes
 
-`orientation` is defined for an arbitrary index type, but the main intended use case is when
-that index type is a `fintype` and there exists a basis of the same cardinality.
+`Orientation` is defined for an arbitrary index type, but the main intended use case is when
+that index type is a `Fintype` and there exists a basis of the same cardinality.
 
 ## References
 
@@ -55,7 +55,7 @@ variable {N : Type _} [AddCommMonoid N] [Module R N]
 
 variable (ι : Type _)
 
-/-- An orientation of a module, intended to be used when `ι` is a `fintype` with the same
+/-- An orientation of a module, intended to be used when `ι` is a `Fintype` with the same
 cardinality as a basis. -/
 abbrev Orientation := Module.Ray R (AlternatingMap R M R ι)
 #align orientation Orientation
@@ -137,7 +137,7 @@ namespace Basis
 variable {ι : Type _}
 
 set_option synthInstance.etaExperiment true in -- Porting note: added
-/-- The value of `orientation.map` when the index type has the cardinality of a basis, in terms
+/-- The value of `Orientation.map` when the index type has the cardinality of a basis, in terms
 of `f.det`. -/
 theorem map_orientation_eq_det_inv_smul [Finite ι] (e : Basis ι R M) (x : Orientation R M ι)
     (f : M ≃ₗ[R] M) : Orientation.map ι f x = (LinearEquiv.det f)⁻¹ • x := by
@@ -386,7 +386,7 @@ theorem ne_iff_eq_neg (x₁ x₂ : Orientation R M ι) (h : Fintype.card ι = fi
 
 set_option synthInstance.maxHeartbeats 30000 in -- Porting note : added
 set_option synthInstance.etaExperiment true in -- Porting note: added
-/-- The value of `orientation.map` when the index type has cardinality equal to the finite
+/-- The value of `Orientation.map` when the index type has cardinality equal to the finite
 dimension, in terms of `f.det`. -/
 theorem map_eq_det_inv_smul (x : Orientation R M ι) (f : M ≃ₗ[R] M)
   (h : Fintype.card ι = finrank R M) : Orientation.map ι f x = (LinearEquiv.det f)⁻¹ • x :=
