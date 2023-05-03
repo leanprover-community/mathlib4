@@ -290,7 +290,7 @@ variable [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
 
 variable [SMul R' ℝ≥0∞] [IsScalarTower R' ℝ≥0∞ ℝ≥0∞]
 
-instance : SMul R (OuterMeasure α) :=
+instance instSMul : SMul R (OuterMeasure α) :=
   ⟨fun c m =>
     { measure_of := fun s => c • m s
       empty := by simp; rw [← smul_one_mul c]; simp
@@ -339,14 +339,15 @@ def coeFnAddMonoidHom : OuterMeasure α →+ Set α → ℝ≥0∞
     map_add' := coe_add
 #align measure_theory.outer_measure.coe_fn_add_monoid_hom MeasureTheory.OuterMeasure.coeFnAddMonoidHom
 
-instance [Monoid R] [DistribMulAction R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] :
+instance instDistribMulAction [Monoid R] [DistribMulAction R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] :
     DistribMulAction R (OuterMeasure α) :=
   Injective.distribMulAction coeFnAddMonoidHom coe_fn_injective coe_smul
 
-instance [Semiring R] [Module R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] : Module R (OuterMeasure α) :=
+instance instModule [Semiring R] [Module R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] :
+    Module R (OuterMeasure α) :=
   Injective.module R coeFnAddMonoidHom coe_fn_injective coe_smul
 
-instance : Bot (OuterMeasure α) :=
+instance instBot : Bot (OuterMeasure α) :=
   ⟨0⟩
 
 @[simp]
@@ -354,12 +355,12 @@ theorem coe_bot : (⊥ : OuterMeasure α) = 0 :=
   rfl
 #align measure_theory.outer_measure.coe_bot MeasureTheory.OuterMeasure.coe_bot
 
-instance OuterMeasure.partialOrder : PartialOrder (OuterMeasure α) where
+instance instPartialOrder : PartialOrder (OuterMeasure α) where
   le m₁ m₂ := ∀ s, m₁ s ≤ m₂ s
   le_refl a s := le_rfl
   le_trans a b c hab hbc s := le_trans (hab s) (hbc s)
   le_antisymm a b hab hba := ext fun s => le_antisymm (hab s) (hba s)
-#align measure_theory.outer_measure.outer_measure.partial_order MeasureTheory.OuterMeasure.OuterMeasure.partialOrder
+#align measure_theory.outer_measure.outer_measure.partial_order MeasureTheory.OuterMeasure.instPartialOrder
 
 instance OuterMeasure.orderBot : OrderBot (OuterMeasure α) :=
   { bot := 0,
@@ -428,6 +429,57 @@ theorem mono'' {m₁ m₂ : OuterMeasure α} {s₁ s₂ : Set α} (hm : m₁ ≤
     m₁ s₁ ≤ m₂ s₂ :=
   (hm s₁).trans (m₂.mono hs)
 #align measure_theory.outer_measure.mono'' MeasureTheory.OuterMeasure.mono''
+
+-- This works:
+-- example : IsScalarTower ℝ≥0∞ ℝ≥0∞ ℝ≥0∞ := IsScalarTower.right
+
+-- But this doesn't:
+-- set_option trace.Meta.synthInstance true in
+-- set_option trace.Meta.isDefEq true in
+-- example : IsScalarTower ℝ≥0∞ ℝ≥0∞ ℝ≥0∞ := inferInstance -- fails, even though `IsScalarTower.right` is an instance
+
+-- Produces:
+-- [Meta.synthInstance] 💥 IsScalarTower ℝ≥0∞ ℝ≥0∞ ℝ≥0∞ ▼
+--   [] new goal IsScalarTower ℝ≥0∞ ℝ≥0∞ ℝ≥0∞ ▶
+--   [] 💥 apply @IsScalarTower.of_ring_hom to IsScalarTower ℝ≥0∞ ℝ≥0∞ ℝ≥0∞ ▼
+--     [tryResolve] 💥 IsScalarTower ℝ≥0∞ ℝ≥0∞ ℝ≥0∞ ≟ IsScalarTower ?m.77892 ?m.77893 ?m.77894 ▼
+--       [isDefEq] 💥 IsScalarTower ℝ≥0∞ ℝ≥0∞ ℝ≥0∞ =?= IsScalarTower ?m.77892 ?m.77893 ?m.77894 ▼
+--         [] ✅ ℝ≥0∞ =?= ?m.77892 ▶
+--         [] ✅ ℝ≥0∞ =?= ?m.77893 ▶
+--         [] ✅ ℝ≥0∞ =?= ?m.77894 ▶
+--         [synthInstance] ✅ Algebra ℝ≥0∞ ℝ≥0∞ ▶
+--         [] ✅ Algebra.toSMul =?= Algebra.toSMul ▶
+--         [] 💥 Algebra.toSMul =?= Algebra.toSMul ▼
+--           [] ✅ ℝ≥0∞ =?= ℝ≥0∞
+--           [] ✅ ℝ≥0∞ =?= ℝ≥0∞
+--           [] ✅ CanonicallyOrderedCommSemiring.toCommSemiring =?= CanonicallyOrderedCommSemiring.toCommSemiring
+--           [synthInstance] ✅ CommSemiring ℝ≥0∞ ▶
+--           [] ✅ OrderedSemiring.toSemiring =?= CommSemiring.toSemiring ▶
+--           [] ❌ Algebra.id ℝ≥0∞ =?= RingHom.toAlgebra ↑?m.77900 ▶
+--           [] 💥 (Algebra.id ℝ≥0∞).1 =?= (RingHom.toAlgebra ↑?m.77900).1 ▼
+--             [] 💥 { smul := fun c x ↦ ↑(RingHom.id ℝ≥0∞) c * x } =?= { smul := fun c x ↦ ↑↑?m.77900 c * x } ▼
+--               [] 💥 fun c x ↦ ↑(RingHom.id ℝ≥0∞) c * x =?= fun c x ↦ ↑↑?m.77900 c * x ▼
+--                 [] ✅ ℝ≥0∞ =?= ℝ≥0∞
+--                 [] ✅ ℝ≥0∞ =?= ℝ≥0∞
+--                 [] 💥 ↑(RingHom.id ℝ≥0∞) c * x =?= ↑↑?m.77900 c * x ▼
+--                   [] ❌ ↑(RingHom.id ℝ≥0∞) c =?= ↑↑?m.77900 c ▶
+--                   [] 💥 instHMul.1 (↑(RingHom.id ℝ≥0∞) c) x =?= instHMul.1 (↑↑?m.77900 c) x ▼
+--                     [] 💥 Mul.mul (↑(RingHom.id ℝ≥0∞) c) x =?= Mul.mul (↑↑?m.77900 c) x ▼
+--                       [] ❌ ↑(RingHom.id ℝ≥0∞) c =?= ↑↑?m.77900 c ▶
+--                       [] 💥 NonUnitalNonAssocSemiring.toMul.1 (↑(RingHom.id ℝ≥0∞) c) x =?= NonUnitalNonAssocSemiring.toMul.1 (↑↑?m.77900 c) x ▼
+--                         [] 💥 ↑(RingHom.id ℝ≥0∞) c * x =?= NonUnitalNonAssocSemiring.toMul.1 (↑↑?m.77900 c) x ▼
+--                           [] 💥 instHMul.1 (↑(RingHom.id ℝ≥0∞) c) x =?= NonUnitalNonAssocSemiring.toMul.1 (↑↑?m.77900 c) x ▼
+--                             [] 💥 Mul.mul (↑(RingHom.id ℝ≥0∞) c) x =?= NonUnitalNonAssocSemiring.toMul.1 (↑↑?m.77900 c) x ▼
+--                               [] 💥 MulZeroClass.toMul.1 (↑(RingHom.id ℝ≥0∞) c) x =?= NonUnitalNonAssocSemiring.toMul.1 (↑↑?m.77900 c) x ▼
+--                                 [] 💥 if ↑(RingHom.id ℝ≥0∞) c = 0 ∨ x = 0 then 0
+--                                     else
+--                                       Option.map₂ (fun x x_1 ↦ x * x_1) (↑(RingHom.id ℝ≥0∞) c)
+--                                         x =?= NonUnitalNonAssocSemiring.toMul.1 (↑↑?m.77900 c) x ▶
+
+-- Porting note: as a workaround, we can add:
+local instance : IsScalarTower ℝ≥0∞ ℝ≥0∞ ℝ≥0∞ := IsScalarTower.right
+
+example : Module ℝ≥0∞ (OuterMeasure β) := OuterMeasure.instModule
 
 /-- The pushforward of `m` along `f`. The outer measure on `s` is defined to be `m (f ⁻¹' s)`. -/
 def map {β} (f : α → β) : OuterMeasure α →ₗ[ℝ≥0∞] OuterMeasure β where
@@ -804,6 +856,9 @@ theorem restrict_ofFunction (s : Set α) (hm : Monotone m) :
       simp only [map_ofFunction Subtype.coe_injective, Subtype.image_preimage_coe]
 #align measure_theory.outer_measure.restrict_of_function MeasureTheory.OuterMeasure.restrict_ofFunction
 
+-- Porting note: same problem as above, an instance is not being generated:
+local instance : IsScalarTower ℝ≥0∞ ℝ≥0∞ ℝ≥0∞ := IsScalarTower.right
+
 theorem smul_ofFunction {c : ℝ≥0∞} (hc : c ≠ ∞) :
     c • OuterMeasure.ofFunction m m_empty = OuterMeasure.ofFunction (c • m) (by simp [m_empty]) :=
   by
@@ -868,6 +923,9 @@ theorem le_bounded_by' {μ : OuterMeasure α} :
   intro s
   cases' s.eq_empty_or_nonempty with h h <;> simp [h]
 #align measure_theory.outer_measure.le_bounded_by' MeasureTheory.OuterMeasure.le_bounded_by'
+
+-- Porting note: same problem as above, an instance is not being generated:
+local instance : IsScalarTower ℝ≥0∞ ℝ≥0∞ ℝ≥0∞ := IsScalarTower.right
 
 theorem smul_boundedBy {c : ℝ≥0∞} (hc : c ≠ ∞) : c • boundedBy m = boundedBy (c • m) := by
   simp only [boundedBy , smul_ofFunction hc]
@@ -1088,6 +1146,9 @@ theorem le_sum_caratheodory {ι} (m : ι → OuterMeasure α) :
     (⨅ i, (m i).caratheodory) ≤ (sum m).caratheodory := fun s h t => by
   simp [fun i => MeasurableSpace.measurableSet_infᵢ.1 h i t, ENNReal.tsum_add]
 #align measure_theory.outer_measure.le_sum_caratheodory MeasureTheory.OuterMeasure.le_sum_caratheodory
+
+-- Porting note: same problem as above, an instance is not being generated:
+local instance : IsScalarTower ℝ≥0∞ ℝ≥0∞ ℝ≥0∞ := IsScalarTower.right
 
 theorem le_smul_caratheodory (a : ℝ≥0∞) (m : OuterMeasure α) :
     m.caratheodory ≤ (a • m).caratheodory := fun s h t => by
