@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir
 
 ! This file was ported from Lean 3 source module data.complex.exponential
-! leanprover-community/mathlib commit 372edc36e5d2caafdd135769e0136b5a59186834
+! leanprover-community/mathlib commit caa58cbf5bfb7f81ccbaca4e8b8ac4bc2b39cc1c
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -592,7 +592,7 @@ theorem exp_conj : exp (conj x) = conj (exp x) := by
 
 @[simp]
 theorem ofReal_exp_ofReal_re (x : ℝ) : ((exp x).re : ℂ) = exp x :=
-  eq_conj_iff_re.1 <| by rw [← exp_conj, conj_ofReal]
+  conj_eq_iff_re.1 <| by rw [← exp_conj, conj_ofReal]
 #align complex.of_real_exp_of_real_re Complex.ofReal_exp_ofReal_re
 
 @[simp, norm_cast]
@@ -668,7 +668,7 @@ theorem sinh_conj : sinh (conj x) = conj (sinh x) := by
 
 @[simp]
 theorem ofReal_sinh_ofReal_re (x : ℝ) : ((sinh x).re : ℂ) = sinh x :=
-  eq_conj_iff_re.1 <| by rw [← sinh_conj, conj_ofReal]
+  conj_eq_iff_re.1 <| by rw [← sinh_conj, conj_ofReal]
 #align complex.of_real_sinh_of_real_re Complex.ofReal_sinh_ofReal_re
 
 @[simp, norm_cast]
@@ -691,7 +691,7 @@ theorem cosh_conj : cosh (conj x) = conj (cosh x) := by
 #align complex.cosh_conj Complex.cosh_conj
 
 theorem ofReal_cosh_ofReal_re (x : ℝ) : ((cosh x).re : ℂ) = cosh x :=
-  eq_conj_iff_re.1 <| by rw [← cosh_conj, conj_ofReal]
+  conj_eq_iff_re.1 <| by rw [← cosh_conj, conj_ofReal]
 #align complex.of_real_cosh_of_real_re Complex.ofReal_cosh_ofReal_re
 
 @[simp, norm_cast]
@@ -726,7 +726,7 @@ theorem tanh_conj : tanh (conj x) = conj (tanh x) := by
 
 @[simp]
 theorem ofReal_tanh_ofReal_re (x : ℝ) : ((tanh x).re : ℂ) = tanh x :=
-  eq_conj_iff_re.1 <| by rw [← tanh_conj, conj_ofReal]
+  conj_eq_iff_re.1 <| by rw [← tanh_conj, conj_ofReal]
 #align complex.of_real_tanh_of_real_re Complex.ofReal_tanh_ofReal_re
 
 @[simp, norm_cast]
@@ -951,7 +951,7 @@ theorem sin_conj : sin (conj x) = conj (sin x) := by
 
 @[simp]
 theorem ofReal_sin_ofReal_re (x : ℝ) : ((sin x).re : ℂ) = sin x :=
-  eq_conj_iff_re.1 <| by rw [← sin_conj, conj_ofReal]
+  conj_eq_iff_re.1 <| by rw [← sin_conj, conj_ofReal]
 #align complex.of_real_sin_of_real_re Complex.ofReal_sin_ofReal_re
 
 @[simp, norm_cast]
@@ -973,7 +973,7 @@ theorem cos_conj : cos (conj x) = conj (cos x) := by
 
 @[simp]
 theorem ofReal_cos_ofReal_re (x : ℝ) : ((cos x).re : ℂ) = cos x :=
-  eq_conj_iff_re.1 <| by rw [← cos_conj, conj_ofReal]
+  conj_eq_iff_re.1 <| by rw [← cos_conj, conj_ofReal]
 #align complex.of_real_cos_of_real_re Complex.ofReal_cos_ofReal_re
 
 @[simp, norm_cast]
@@ -1010,7 +1010,7 @@ theorem tan_conj : tan (conj x) = conj (tan x) := by rw [tan, sin_conj, cos_conj
 
 @[simp]
 theorem ofReal_tan_ofReal_re (x : ℝ) : ((tan x).re : ℂ) = tan x :=
-  eq_conj_iff_re.1 <| by rw [← tan_conj, conj_ofReal]
+  conj_eq_iff_re.1 <| by rw [← tan_conj, conj_ofReal]
 #align complex.of_real_tan_of_real_re Complex.ofReal_tan_ofReal_re
 
 @[simp, norm_cast]
