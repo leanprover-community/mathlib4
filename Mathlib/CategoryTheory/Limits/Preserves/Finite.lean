@@ -60,7 +60,8 @@ noncomputable instance (priority := 100) preservesLimitsOfShapeOfPreservesFinite
   apply preservesLimitsOfShapeOfEquiv (FinCategory.equivAsType J)
 #align category_theory.limits.preserves_limits_of_shape_of_preserves_finite_limits CategoryTheory.Limits.preservesLimitsOfShapeOfPreservesFiniteLimits
 
--- Porting note: this is a dangerous instance as it has unbound universe variables.
+-- This is a dangerous instance as it has unbound universe variables.
+/-- If we preserve limits of some arbitrary size, then we preserve all finite limits. -/
 noncomputable def PreservesLimitsOfSize.preservesFiniteLimits (F : C ⥤ D)
     [PreservesLimitsOfSize.{w, w₂} F] : PreservesFiniteLimits F where
   preservesFiniteLimits J (sJ : SmallCategory J) fJ := by
@@ -68,12 +69,13 @@ noncomputable def PreservesLimitsOfSize.preservesFiniteLimits (F : C ⥤ D)
     exact preservesLimitsOfShapeOfEquiv (FinCategory.equivAsType J) F
 #align category_theory.limits.preserves_limits.preserves_finite_limits_of_size CategoryTheory.Limits.PreservesLimitsOfSize.preservesFiniteLimits
 
--- Porting note: added as a specialization of the dangerous instance above.
+-- Added as a specialization of the dangerous instance above, for limits indexed in Type 0.
 noncomputable instance (priority := 120) PreservesLimitsOfSize0.preservesFiniteLimits
     (F : C ⥤ D) [PreservesLimitsOfSize.{0, 0} F] : PreservesFiniteLimits F :=
   PreservesLimitsOfSize.preservesFiniteLimits F
 #align preserves_limits_of_size.zero.preserves_finite_limits CategoryTheory.Limits.PreservesLimitsOfSize0.preservesFiniteLimits
 
+-- An alternative specialization of the dangerous instance for small limits.
 noncomputable instance (priority := 120) PreservesLimits.preservesFiniteLimits (F : C ⥤ D)
     [PreservesLimits F] : PreservesFiniteLimits F :=
   PreservesLimitsOfSize.preservesFiniteLimits F
@@ -129,15 +131,15 @@ noncomputable instance (priority := 100) preservesColimitsOfShapeOfPreservesFini
   apply preservesColimitsOfShapeOfEquiv (FinCategory.equivAsType J)
 #align category_theory.limits.preserves_colimits_of_shape_of_preserves_finite_colimits CategoryTheory.Limits.preservesColimitsOfShapeOfPreservesFiniteColimits
 
+-- This is a dangerous instance as it has unbound universe variables.
 /-- If we preserve colimits of some arbitrary size, then we preserve all finite colimits. -/
--- Porting note: this is a dangerous instance as it has unbound universe variables.
 noncomputable def PreservesColimitsOfSize.preservesFiniteColimits (F : C ⥤ D)
     [PreservesColimitsOfSize.{w, w₂} F] : PreservesFiniteColimits F where
   preservesFiniteColimits J (sJ : SmallCategory J) fJ := by
     haveI := preservesSmallestColimitsOfPreservesColimits F
     exact preservesColimitsOfShapeOfEquiv (FinCategory.equivAsType J) F
 
--- Porting note: added as a specialization of the dangerous instance above.
+-- Added as a specialization of the dangerous instance above, for colimits indexed in Type 0.
 noncomputable instance (priority := 120) PreservesColimitsOfSize0.preservesFiniteColimits
     (F : C ⥤ D) [PreservesColimitsOfSize.{0, 0} F] : PreservesFiniteColimits F :=
   PreservesColimitsOfSize.preservesFiniteColimits F
