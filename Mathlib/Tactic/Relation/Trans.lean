@@ -106,7 +106,7 @@ that is, a relation which has a transitivity lemma tagged with the attribute [tr
 * If `s` is omitted, then a metavariable is used instead.
 -/
 elab "trans" t?:(ppSpace (colGt term))? : tactic => withMainContext do
-  let tgt ← getMainTarget'
+  let tgt ← whnfR (← getMainTarget)
   let (rel, x, z) ←
     match tgt with
     | Expr.app f z =>
