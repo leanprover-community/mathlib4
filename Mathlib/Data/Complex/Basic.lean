@@ -90,9 +90,7 @@ def ofReal' (r : ℝ) : ℂ :=
 instance : Coe ℝ ℂ :=
   ⟨ofReal'⟩
 
-/- Porting note: `simp` attribute removed as this has a variable as head symbol of
-the left-hand side (after whnfR)-/
-@[norm_cast]
+@[simp, norm_cast]
 theorem ofReal_re (r : ℝ) : Complex.re (r : ℂ) = r :=
   rfl
 #align complex.of_real_re Complex.ofReal_re
@@ -435,6 +433,12 @@ instance : Ring ℂ := by infer_instance
 /-- This shortcut instance ensures we do not find `CommSemiring` via the noncomputable
 `Complex.field` instance. -/
 instance : CommSemiring ℂ :=
+  inferInstance
+
+-- porting note: added due to changes in typeclass search order
+/-- This shortcut instance ensures we do not find `Semiring` via the noncomputable
+`Complex.field` instance. -/
+instance : Semiring ℂ :=
   inferInstance
 
 /-- The "real part" map, considered as an additive group homomorphism. -/

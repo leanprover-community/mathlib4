@@ -161,6 +161,9 @@ example (x : Rat) (hx : x > 0) (h : x.num < 0) : False := by
 
 end term_arguments
 
+example (i n : ℕ) (h : (2:ℤ) ^ i ≤ 2 ^ n) : (0:ℤ) ≤ 2 ^ n - 2 ^ i := by
+  linarith
+
 -- Check we use `exfalso` on non-comparison goals.
 example (a b c : Rat) (h2 : b > 0) (h3 : b < 0) : Nat.prime 10 := by
   linarith
@@ -496,4 +499,11 @@ example (n : Nat) (h1 : ¬n = 1) (h2 : n ≥ 1) : n ≥ 2 := by
   have h4 : n ≥ 1 := h2
   by_contra h3
   suffices n = 1 by exact h1 this
+  linarith
+
+-- simulate the type of MvPolynomial
+def R : Type u → Type v → Sort (max (u+1) (v+1)) := sorry
+instance : LinearOrderedField (R c d) := sorry
+
+example (p : R PUnit.{u+1} PUnit.{v+1}) (h : 0 < p) : 0 < 2 * p := by
   linarith

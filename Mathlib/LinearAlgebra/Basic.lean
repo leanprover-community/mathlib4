@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Fréd�
   Heather Macbeth
 
 ! This file was ported from Lean 3 source module linear_algebra.basic
-! leanprover-community/mathlib commit b363547b3113d350d053abdf2884e9850a56b205
+! leanprover-community/mathlib commit 9d684a893c52e1d6692a504a118bfccbae04feeb
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -1066,9 +1066,9 @@ end Submodule
 
 namespace Submodule
 
-variable [Field K]
-variable [AddCommGroup V] [Module K V]
-variable [AddCommGroup V₂] [Module K V₂]
+variable [Semifield K]
+variable [AddCommMonoid V] [Module K V]
+variable [AddCommMonoid V₂] [Module K V₂]
 
 theorem comap_smul (f : V →ₗ[K] V₂) (p : Submodule K V₂) (a : K) (h : a ≠ 0) :
     p.comap (a • f) = p.comap f := by
@@ -1371,7 +1371,7 @@ theorem le_ker_iff_map [RingHomSurjective τ₁₂] {f : F} {p : Submodule R M} 
 #align linear_map.le_ker_iff_map LinearMap.le_ker_iff_map
 
 theorem ker_codRestrict {τ₂₁ : R₂ →+* R} (p : Submodule R M) (f : M₂ →ₛₗ[τ₂₁] M) (hf) :
-    ker (codRestrict p f hf) = ker f := by rw [ker, comap_codRestrict, map_bot]; rfl
+    ker (codRestrict p f hf) = ker f := by rw [ker, comap_codRestrict, Submodule.map_bot]; rfl
 #align linear_map.ker_cod_restrict LinearMap.ker_codRestrict
 
 theorem range_codRestrict {τ₂₁ : R₂ →+* R} [RingHomSurjective τ₂₁] (p : Submodule R M)
@@ -1538,21 +1538,17 @@ theorem ker_le_iff [RingHomSurjective τ₁₂] {p : Submodule R M} :
 
 end Ring
 
-section Field
+section Semifield
 
-variable [Field K] [Field K₂]
-
-variable [AddCommGroup V] [Module K V]
-
-variable [AddCommGroup V₂] [Module K V₂]
+variable [Semifield K] [Semifield K₂]
+variable [AddCommMonoid V] [Module K V]
+variable [AddCommMonoid V₂] [Module K V₂]
 
 theorem ker_smul (f : V →ₗ[K] V₂) (a : K) (h : a ≠ 0) : ker (a • f) = ker f :=
   Submodule.comap_smul f _ a h
 #align linear_map.ker_smul LinearMap.ker_smul
 
--- Porting note: `⨅ h : a ≠ 0, ker f` gets a `unusedVariables` lint, but
--- `⨅ _ : a ≠ 0, ker f` is ill-formed. So, this is written `infᵢ (fun _ : a ≠ 0 => ker f)`.
-theorem ker_smul' (f : V →ₗ[K] V₂) (a : K) : ker (a • f) = infᵢ (fun _ : a ≠ 0 => ker f) :=
+theorem ker_smul' (f : V →ₗ[K] V₂) (a : K) : ker (a • f) = ⨅ _h : a ≠ 0, ker f :=
   Submodule.comap_smul' f _ a
 #align linear_map.ker_smul' LinearMap.ker_smul'
 
@@ -1560,13 +1556,12 @@ theorem range_smul (f : V →ₗ[K] V₂) (a : K) (h : a ≠ 0) : range (a • f
   simpa only [range_eq_map] using Submodule.map_smul f _ a h
 #align linear_map.range_smul LinearMap.range_smul
 
--- Porting note: Idem.
 theorem range_smul' (f : V →ₗ[K] V₂) (a : K) :
-    range (a • f) = supᵢ (fun _ : a ≠ 0 => range f) := by
+    range (a • f) = ⨆ _h : a ≠ 0, range f := by
   simpa only [range_eq_map] using Submodule.map_smul' f _ a
 #align linear_map.range_smul' LinearMap.range_smul'
 
-end Field
+end Semifield
 
 end LinearMap
 

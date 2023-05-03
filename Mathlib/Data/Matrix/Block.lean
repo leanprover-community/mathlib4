@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ellen Arlt, Blair Shi, Sean Leather, Mario Carneiro, Johan Commelin
 
 ! This file was ported from Lean 3 source module data.matrix.block
-! leanprover-community/mathlib commit eba5bb3155cab51d80af00e8d7d69fa271b1302b
+! leanprover-community/mathlib commit b5665fd3fb2a80ee05ff42b6031ef2055b8f9d85
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
