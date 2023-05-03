@@ -107,7 +107,7 @@ def ScottTopology' : TopologicalSpace α := (upperSetTopology ⊔
             _ ⊆ s ∩ t := inter_subset_inter hb₁_h hb₂_h
       isOpen_unionₛ := by
         intros s h d a hd₁ hd₂ hd₃ ha
-        obtain ⟨s₀, hs₀_w, hs₀_h⟩ := mem_unionₛ.mp ha
+        obtain ⟨s₀, hs₀_w, hs₀_h⟩ := ha
         obtain ⟨b, hb_w, hb_h⟩ := h s₀ hs₀_w d a hd₁ hd₂ hd₃ hs₀_h
         use b
         constructor
@@ -200,12 +200,10 @@ a ∈ u → (d ∩ u).Nonempty) := by
   . refine' And.imp_right _
     intros h d a d₁ d₂ d₃ ha
     obtain ⟨b, h_1_w, h_1_h⟩ := h d a d₁ d₂ d₃ ha
-    rw [inter_nonempty_iff_exists_left]
     use b
     constructor
     . exact h_1_w
     . apply mem_of_subset_of_mem h_1_h
-      rw [mem_inter_iff]
       constructor
       . exact left_mem_Ici
       . exact h_1_w
@@ -228,7 +226,6 @@ lemma isClosed_iff_lower_and_subset_implies_LUB_mem (s : Set α) : IsClosed s
   constructor
   . intros h d a d₁ d₂ d₃ d₄
     by_contra h'
-    rw [← mem_compl_iff] at h'
     have c1: (d ∩ sᶜ).Nonempty := h d a d₁ d₂ d₃ h'
     have c2: (d ∩ sᶜ) =  ∅ := by
       rw [← subset_empty_iff, ← inter_compl_self s]
