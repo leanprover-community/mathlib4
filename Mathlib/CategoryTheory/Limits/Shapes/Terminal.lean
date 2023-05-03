@@ -462,6 +462,11 @@ theorem hasInitial_of_hasTerminal_op [HasTerminal Cᵒᵖ] : HasInitial C :=
   (initialUnopOfTerminal terminalIsTerminal).hasInitial
 #align category_theory.limits.has_initial_of_has_terminal_op CategoryTheory.Limits.hasInitial_of_hasTerminal_op
 
+-- Porting note:
+-- Workaround for issue discussed at https://leanprover.zulipchat.com/#narrow/stream/270676-lean4/topic/Failure.20of.20TC.20search.20in.20.60simp.60.20with.20.60etaExperiment.60.2E
+-- when etaExperiment is on.
+attribute [aesop safe (rule_sets [CategoryTheory])] Subsingleton.elim
+
 instance {J : Type _} [Category J] {C : Type _} [Category C] [HasTerminal C] :
     HasLimit ((CategoryTheory.Functor.const J).obj (⊤_ C)) :=
   HasLimit.mk
