@@ -288,6 +288,17 @@ lemma continuous_monotone {f : α → β}
 
 @[simp] lemma scottContinuous_iff_continuous (f : α → β) : ScottContinuous f ↔ Continuous f := by
   constructor
+  . intro h
+    rw [continuous_def]
+    intros u hu
+    rw [isOpen_iff_upper_and_LUB_mem_implies_inter_nonempty]
+    constructor
+    . exact IsUpperSet.preimage (isOpen_isUpperSet hu) h.monotone
+    . intros d a hd₁ hd₂ hd₃ ha
+      rw [isOpen_iff_upper_and_LUB_mem_implies_inter_nonempty] at hu
+      exact image_inter_nonempty_iff.mp $ hu.2 _ _ (hd₁.image f)
+          (directedOn_image.mpr (hd₂.mono (by simp only [Order.Preimage]; apply h.monotone)))
+          (h hd₁ hd₂ hd₃) ha
   . intros hf d d₁ d₂ a d₃
     rw [IsLUB]
     constructor
@@ -309,17 +320,6 @@ lemma continuous_monotone {f : α → β}
       simp at hb
       have c1: f c ≤ b := hb _ h_1_left
       contradiction
-  . intro h
-    rw [continuous_def]
-    intros u hu
-    rw [isOpen_iff_upper_and_LUB_mem_implies_inter_nonempty]
-    constructor
-    . exact IsUpperSet.preimage (isOpen_isUpperSet hu) h.monotone
-    . intros d a hd₁ hd₂ hd₃ ha
-      rw [isOpen_iff_upper_and_LUB_mem_implies_inter_nonempty] at hu
-      exact image_inter_nonempty_iff.mp $ hu.2 _ _ (hd₁.image f)
-          (directedOn_image.mpr (hd₂.mono (by simp only [Order.Preimage]; apply h.monotone)))
-          (h hd₁ hd₂ hd₃) ha
 
 end preorder
 
