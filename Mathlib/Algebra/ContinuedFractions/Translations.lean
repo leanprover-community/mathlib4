@@ -152,12 +152,14 @@ theorem zeroth_convergent_eq_h : g.convergents 0 = g.h := by
 
 theorem second_continuant_aux_eq {gp : Pair K} (zeroth_s_eq : g.s.get? 0 = some gp) :
     g.continuantsAux 2 = ⟨gp.b * g.h + gp.a, gp.b⟩ := by
-  simp [zeroth_s_eq, continuants_aux, next_continuants, next_denominator, next_numerator]
+  simp [zeroth_s_eq, continuantsAux, nextContinuants, nextDenominator, nextNumerator]
 #align generalized_continued_fraction.second_continuant_aux_eq GeneralizedContinuedFraction.second_continuant_aux_eq
 
 theorem first_continuant_eq {gp : Pair K} (zeroth_s_eq : g.s.get? 0 = some gp) :
     g.continuants 1 = ⟨gp.b * g.h + gp.a, gp.b⟩ := by
-  simp [nth_cont_eq_succ_nth_cont_aux, second_continuant_aux_eq zeroth_s_eq]
+  simp [nth_cont_eq_succ_nth_cont_aux]
+  -- porting note: simp used to work here, but now it can't figure out that 1 + 1 = 2
+  convert second_continuant_aux_eq zeroth_s_eq
 #align generalized_continued_fraction.first_continuant_eq GeneralizedContinuedFraction.first_continuant_eq
 
 theorem first_numerator_eq {gp : Pair K} (zeroth_s_eq : g.s.get? 0 = some gp) :
@@ -169,7 +171,8 @@ theorem first_denominator_eq {gp : Pair K} (zeroth_s_eq : g.s.get? 0 = some gp) 
 #align generalized_continued_fraction.first_denominator_eq GeneralizedContinuedFraction.first_denominator_eq
 
 @[simp]
-theorem zeroth_convergent'_aux_eq_zero {s : Seq <| Pair K} : convergents'Aux s 0 = 0 :=
+theorem zeroth_convergent'_aux_eq_zero {s : Stream'.Seq <| Pair K} :
+    convergents'Aux s 0 = (0 : K) :=
   rfl
 #align generalized_continued_fraction.zeroth_convergent'_aux_eq_zero GeneralizedContinuedFraction.zeroth_convergent'_aux_eq_zero
 
@@ -177,15 +180,16 @@ theorem zeroth_convergent'_aux_eq_zero {s : Seq <| Pair K} : convergents'Aux s 0
 theorem zeroth_convergent'_eq_h : g.convergents' 0 = g.h := by simp [convergents']
 #align generalized_continued_fraction.zeroth_convergent'_eq_h GeneralizedContinuedFraction.zeroth_convergent'_eq_h
 
-theorem convergents'Aux_succ_none {s : Seq (Pair K)} (h : s.headI = none) (n : ℕ) :
-    convergents'Aux s (n + 1) = 0 := by rw [convergents'_aux, h, convergents'_aux._match_1]
+theorem convergents'Aux_succ_none {s : Stream'.Seq (Pair K)} (h : s.head = none) (n : ℕ) :
+    convergents'Aux s (n + 1) = 0 := by simp [convergents'Aux, h, convergents'Aux.match_1]
 #align generalized_continued_fraction.convergents'_aux_succ_none GeneralizedContinuedFraction.convergents'Aux_succ_none
 
-theorem convergents'Aux_succ_some {s : Seq (Pair K)} {p : Pair K} (h : s.headI = some p) (n : ℕ) :
+theorem convergents'Aux_succ_some {s : Stream'.Seq (Pair K)} {p : Pair K} (h : s.head = some p) (n : ℕ) :
     convergents'Aux s (n + 1) = p.a / (p.b + convergents'Aux s.tail n) := by
-  rw [convergents'_aux, h, convergents'_aux._match_1]
+  simp [convergents'Aux, h, convergents'Aux.match_1]
 #align generalized_continued_fraction.convergents'_aux_succ_some GeneralizedContinuedFraction.convergents'Aux_succ_some
 
 end WithDivisionRing
 
 end GeneralizedContinuedFraction
+
