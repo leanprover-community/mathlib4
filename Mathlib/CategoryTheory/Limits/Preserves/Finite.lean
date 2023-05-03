@@ -138,6 +138,7 @@ noncomputable def PreservesColimitsOfSize.preservesFiniteColimits (F : C ⥤ D)
   preservesFiniteColimits J (sJ : SmallCategory J) fJ := by
     haveI := preservesSmallestColimitsOfPreservesColimits F
     exact preservesColimitsOfShapeOfEquiv (FinCategory.equivAsType J) F
+#align category_theory.limits.preserves_colimits_of_size.preserves_finite_colimits CategoryTheory.Limits.PreservesColimitsOfSize.preservesFiniteColimits
 
 -- Added as a specialization of the dangerous instance above, for colimits indexed in Type 0.
 noncomputable instance (priority := 120) PreservesColimitsOfSize0.preservesFiniteColimits
