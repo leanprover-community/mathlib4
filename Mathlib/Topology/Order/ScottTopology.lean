@@ -286,7 +286,7 @@ lemma continuous_monotone {f : α → β}
     simp only [mem_compl_iff, mem_preimage, mem_Iic, le_refl, not_true] at u3
   simp only [mem_compl_iff, mem_Iic, le_refl, not_true] at c1
 
-lemma continuous_iff_scottContinuous (f : α → β) : Continuous f ↔ ScottContinuous f := by
+@[simp] lemma scottContinuous_iff_continuous (f : α → β) : ScottContinuous f ↔ Continuous f := by
   constructor
   . intros hf d d₁ d₂ a d₃
     rw [IsLUB]
