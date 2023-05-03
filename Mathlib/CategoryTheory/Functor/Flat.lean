@@ -238,7 +238,6 @@ theorem fac (x : J) : lift F hc s ≫ (F.mapCone c).π.app x = s.π.app x := by
 
 attribute [local simp] eqToHom_map
 
--- **TODO** unexpander to make Functor.mapCone F -> F.mapCone?
 theorem uniq {K : J ⥤ C} {c : Cone K} (hc : IsLimit c) (s : Cone (K ⋙ F))
     (f₁ f₂ : s.pt ⟶ F.obj c.pt) (h₁ : ∀ j : J, f₁ ≫ (F.mapCone c).π.app j = s.π.app j)
     (h₂ : ∀ j : J, f₂ ≫ (F.mapCone c).π.app j = s.π.app j) : f₁ = f₂ := by
@@ -253,7 +252,7 @@ theorem uniq {K : J ⥤ C} {c : Cone K} (hc : IsLimit c) (s : Cone (K ⋙ F))
         -- porting note: Lean 3 proof was `simp` but `Comma.eqToHom_right`
         -- isn't firing for some reason
         -- Asked here https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/simp.20not.20using.20a.20simp.20lemma/near/353943416
-        simp
+        simp -- this should be terminal
         rw [Comma.eqToHom_right, Comma.eqToHom_right] -- this is a `simp` lemma
         simp }
   let α₂ : toDiagram (F.mapCone c) ⋙ map f₂ ⟶ toDiagram s :=
@@ -277,24 +276,24 @@ theorem uniq {K : J ⥤ C} {c : Cone K} (hc : IsLimit c) (s : Cone (K ⋙ F))
     intro j
     injection c₀.π.naturality (BiconeHom.left j) with _ e₁
     injection c₀.π.naturality (BiconeHom.right j) with _ e₂
-    -- Lean 3 proof now finished with `simpa using e₁.symm.trans e₂`
-    -- **TODO** tidy up this proof
-    -- **TODO** figure out why `simp at foo` is timing out.
-    have foo := e₁.symm.trans e₂
-    -- simp at foo -- deterministic timeout :-(
-    -- the below job was done by `simp` in lean 3;
-    rw [biconeMk_map, biconeMk_map] at foo
-    -- `dsimp only` tames this in Lean 3 but not Lean 4
+    -- porting note: Lean 3 proof now finished with `simpa using e₁.symm.trans e₂`
+    -- We will manually simplify the term because Lean 4 is not playing ball
+    have e₃ := e₁.symm.trans e₂
+    -- `simp at e₃` succeeds with `set_option maxHeartbeats 2000000` but turns the goal
+    -- into a huge mess because it unfolds c₀, c₁, c₂ (even `dsimp only at e₃` creates
+    -- a huge mess). So we do it manually.
+    rw [biconeMk_map, biconeMk_map] at e₃
+    -- `dsimp only at e₃` tames this in Lean 3 but explodes it in Lean 4
     change (c₀.π.app Bicone.left).right ≫ (c₁.π.app j).right =
-      (c₀.π.app Bicone.right).right ≫ (c₂.π.app j).right at foo
-    rw [Cones.postcompose_obj_π, Cones.postcompose_obj_π] at foo
-    rw [NatTrans.comp_app, whiskerRight_app,
-      eqToHom_map, Comma.comp_right,
-      Comma.eqToHom_right, eqToHom_refl, Category.comp_id] at foo
-    rw [NatTrans.comp_app, whiskerRight_app,
-      eqToHom_map, Comma.comp_right,
-      Comma.eqToHom_right, eqToHom_refl, Category.comp_id] at foo
-    exact foo
+      (c₀.π.app Bicone.right).right ≫ (c₂.π.app j).right at e₃
+    --dsimp only at e₃ -- still explodes!
+    -- **TODO** ask on Zulip about why `dsimp only at e₃` makes this term
+    -- explode (it seems to be unfolding `c₀`, `c₁` and `c₂`)
+    -- `simpa using e₃` would work in Lean 3
+    rwa [Cones.postcompose_obj_π, Cones.postcompose_obj_π, NatTrans.comp_app, whiskerRight_app,
+      eqToHom_map, Comma.comp_right, Comma.eqToHom_right, eqToHom_refl, Category.comp_id,
+      NatTrans.comp_app, whiskerRight_app, eqToHom_map, Comma.comp_right,
+      Comma.eqToHom_right, eqToHom_refl, Category.comp_id] at e₃
   have : c.extend g₁.right = c.extend g₂.right := by
     unfold Cone.extend
     congr 1
@@ -384,62 +383,14 @@ noncomputable def lanEvaluationIsoColim (F : C ⥤ D) (X : D)
       -- **TODO** add missing `ext` lemma.
       apply colimit.hom_ext
       intro j
-      /- **TODO** golf this.
-         **Explanation** This was
-        simp only [Functor.comp_map, colimit.ι_desc_assoc, Functor.mapIso_refl, evaluation_obj_map,
-          whiskeringLeft_obj_map, Category.comp_id, lan_map_app, Category.assoc]
-        in Lean 3. However the type of `Lan_map_app` has changed.
-      -/
-      rw [Functor.comp_map]
-      rw [Functor.comp_map]
-      dsimp only
-      rw [Functor.mapIso_refl]
-      rw [Functor.mapIso_refl]
-      rw [evaluation_obj_map]
-      rw [whiskeringLeft_obj_map]
-      rw [lan_map_app]
-      rw [colimit.ι_desc_assoc]
-      /-
-      Lean 4 : ⊢ { pt := colimit (Lan.diagram F H X),
-        ι := NatTrans.mk fun i_1 ↦ (i.app i_1.left ≫
-          (↑(Lan.equiv F H (Lan.loc F H)) (𝟙 (Lan.loc F H))).app i_1.left) ≫
-          colimit.pre (Lan.diagram F H X) (CostructuredArrow.map i_1.hom) }.ι.app
-      j ≫ (Iso.refl (colim.obj (Lan.diagram F H X))).hom = colimit.ι (Lan.diagram F G X) j ≫
-        (Iso.refl (colim.obj (Lan.diagram F G X))).hom ≫
-        colim.map (whiskerLeft (CostructuredArrow.proj F X) i)
-
-      Lean 3 : ⊢ {X := colimit (Lan.diagram F H X) _,
-        ι := { app := λ (i_1 : costructured_arrow F X), (i.app i_1.left ≫
-          colimit.ι (Lan.diagram F H (F.obj i_1.left))
-          (costructured_arrow.mk (𝟙 (F.obj i_1.left))) ≫
-          𝟙 (colimit (Lan.diagram F H (F.obj i_1.left)))) ≫ colimit.pre (Lan.diagram F H X)
-          (costructured_arrow.map i_1.hom), naturality' := _}}.ι.app
-      j ≫ (iso.refl (colim.obj (Lan.diagram F H X))).hom =
-        colimit.ι (Lan.diagram F G X) j ≫ (iso.refl (colim.obj (Lan.diagram F G X))).hom ≫
-        colim.map (whisker_left (costructured_arrow.proj F X) i)
-      -/
-      rw [Lan.equiv] -- this term was not in `Lan_map_app` in lean 3
-      dsimp only
-      simp only [Category.comp_id, Category.assoc]
+      -- porting note: I had to add `Lan.equiv` to the list of lemmas here
+      -- becase of a change in the type of `lan_map_app`.
+      -- See https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/change.20in.20behaviour.20with.20.60simps.60/near/354350606
+      simp only [Functor.comp_map, Functor.mapIso_refl, evaluation_obj_map, whiskeringLeft_obj_map,
+        lan_map_app, colimit.ι_desc_assoc, Lan.equiv, Category.comp_id, Category.assoc]
       erw [show ((Lan.equiv F H (Lan.loc F H)) (𝟙 (Lan.loc F H))).app j.left =
         colimit.ι (Lan.diagram F H (F.obj j.left))
         (CostructuredArrow.mk (𝟙 (F.obj j.left))) by apply Category.comp_id]
-      -- **TODO** change in behaviour of `lan_map_app` constructed by `simps`
-      -- See https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/change.20in.20behaviour.20with.20.60simps.60/near/354350606
-      /-
-      Lean 4 : ⊢ i.app j.left ≫ (↑(Lan.equiv F H (Lan.loc F H)) (𝟙 (Lan.loc F H))).app j.left ≫
-        colimit.pre (Lan.diagram F H X) (CostructuredArrow.map j.hom) ≫
-        (Iso.refl (colim.obj (Lan.diagram F H X))).hom = colimit.ι (Lan.diagram F G X) j ≫
-        (Iso.refl (colim.obj (Lan.diagram F G X))).hom ≫
-        colim.map (whiskerLeft (CostructuredArrow.proj F X) i)
-
-      Lean 3 : ⊢ i.app j.left ≫ colimit.ι (Lan.diagram F H (F.obj j.left))
-        (costructured_arrow.mk (𝟙 (F.obj j.left))) ≫
-        colimit.pre (Lan.diagram F H X) (costructured_arrow.map j.hom) ≫
-        (iso.refl (colim.obj (Lan.diagram F H X))).hom = colimit.ι (Lan.diagram F G X) j ≫
-        (iso.refl (colim.obj (Lan.diagram F G X))).hom ≫
-        colim.map (whisker_left (costructured_arrow.proj F X) i)
-      -/
       erw [colimit.ι_pre_assoc (Lan.diagram F H X) (CostructuredArrow.map j.hom), Category.id_comp,
         Category.comp_id, colimit.ι_map]
       rcases j with ⟨j_left, ⟨⟨⟩⟩, j_hom⟩
