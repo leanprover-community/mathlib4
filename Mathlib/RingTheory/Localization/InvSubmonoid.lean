@@ -65,7 +65,8 @@ noncomputable def toInvSubmonoid : M →* invSubmonoid M S :=
 #align is_localization.to_inv_submonoid IsLocalization.toInvSubmonoid
 
 theorem toInvSubmonoid_surjective : Function.Surjective (toInvSubmonoid M S) :=
-  Function.Surjective.comp (Equiv.surjective _) (MonoidHom.submonoidMap_surjective _ _)
+  Function.Surjective.comp (β := M.map (algebraMap R S))
+    (Equiv.surjective (equivInvSubmonoid _ _).toEquiv) (MonoidHom.submonoidMap_surjective _ _)
 #align is_localization.to_inv_submonoid_surjective IsLocalization.toInvSubmonoid_surjective
 
 @[simp]
