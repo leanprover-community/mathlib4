@@ -8,7 +8,7 @@ Authors: Kevin Kappelmann
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.ContinuedFractions.Basic
+import Mathlib.Algebra.ContinuedFractions.Basic
 
 /-!
 # Basic Translation Lemmas Between Functions Defined for Continued Fractions
