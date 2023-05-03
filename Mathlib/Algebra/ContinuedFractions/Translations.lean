@@ -22,9 +22,7 @@ Some simple translation lemmas between the different definitions of functions de
 
 namespace GeneralizedContinuedFraction
 
-/- ./././Mathport/Syntax/Translate/Command.lean:229:11: unsupported: unusual advanced open style -/
--- porting note: TODO
--- section General
+section General
 
 /-!
 ### Translations Between General Access Functions
@@ -77,7 +75,7 @@ theorem exists_s_b_of_part_denom {b : α}
   simpa [partialDenominators, Stream'.Seq.map_get?] using nth_part_denom_eq
 #align generalized_continued_fraction.exists_s_b_of_part_denom GeneralizedContinuedFraction.exists_s_b_of_part_denom
 
--- end General
+end General
 
 section WithDivisionRing
 
@@ -192,4 +190,3 @@ theorem convergents'Aux_succ_some {s : Stream'.Seq (Pair K)} {p : Pair K} (h : s
 end WithDivisionRing
 
 end GeneralizedContinuedFraction
-
