@@ -64,7 +64,6 @@ protected def con : Con G where
       (a * c)⁻¹ * (b * d) = c⁻¹ * (a⁻¹ * b) * c⁻¹⁻¹ * (c⁻¹ * d) :=
         by simp only [mul_inv_rev, mul_assoc, inv_mul_cancel_left]
       _ ∈ N := N.mul_mem (nN.conj_mem _ hab _) hcd
-
 #align quotient_group.con QuotientGroup.con
 #align quotient_add_group.con QuotientAddGroup.con
 
@@ -200,7 +199,6 @@ def lift (φ : G →* H) (HN : ∀ x ∈ N, φ x = 1) : Q →* H :=
     calc
       φ x = φ (y * (x⁻¹ * y)⁻¹) := by rw [mul_inv_rev, inv_inv, mul_inv_cancel_left]
       _ = φ y := by rw [φ.map_mul, HN _ (N.inv_mem h), mul_one]
-
 #align quotient_group.lift QuotientGroup.lift
 #align quotient_add_group.lift QuotientAddGroup.lift
 

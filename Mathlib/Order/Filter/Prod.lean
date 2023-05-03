@@ -293,7 +293,6 @@ theorem prod_inj {f₁ f₂ : Filter α} {g₁ g₂ : Filter β} [NeBot f₁] [N
 theorem eventually_swap_iff {p : α × β → Prop} :
     (∀ᶠ x : α × β in f ×ᶠ g, p x) ↔ ∀ᶠ y : β × α in g ×ᶠ f, p y.swap := by
   rw [prod_comm]; rfl
-
 #align filter.eventually_swap_iff Filter.eventually_swap_iff
 
 theorem prod_assoc (f : Filter α) (g : Filter β) (h : Filter γ) :

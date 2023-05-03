@@ -39,7 +39,7 @@ instance linearOrder : LinearOrder ℕ where
 
 protected def strong_rec_on {p : ℕ → Sort u}
   (n : ℕ) (H : ∀ n, (∀ m, m < n → p m) → p n) : p n :=
-Nat.lt_wfRel.wf.fix' H n
+Nat.lt_wfRel.wf.fix H n
 
 @[elab_as_elim]
 protected lemma strong_induction_on {p : Nat → Prop} (n : Nat) (h : ∀ n, (∀ m, m < n → p m) → p n) :
@@ -257,7 +257,7 @@ private def wf_lbp : WellFounded (lbp p) := by
   | succ m IH => exact IH _ (by rw [Nat.add_right_comm]; exact kn)
 /-- Used in the definition of `Nat.find`. Returns the smallest natural satisfying `p`-/
 protected def findX : {n // p n ∧ ∀ m, m < n → ¬p m} :=
-(wf_lbp H).fix' (C := fun k ↦ (∀n, n < k → ¬p n) → {n // p n ∧ ∀ m, m < n → ¬p m})
+(wf_lbp H).fix (C := fun k ↦ (∀n, n < k → ¬p n) → {n // p n ∧ ∀ m, m < n → ¬p m})
   (fun m IH al ↦ if pm : p m then ⟨m, pm, al⟩ else
       have this : ∀ n, n ≤ m → ¬p n := fun n h ↦
         (lt_or_eq_of_le h).elim (al n) fun e ↦ by rw [e]; exact pm
