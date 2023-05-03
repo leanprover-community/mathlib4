@@ -247,10 +247,25 @@ def normalizeIso : tensorFunc C ≅ normalize' C :=
     (by
       rintro X Y f
       induction' f using Quotient.recOn with f ; swap ; rfl
-      ext ⟨n⟩
-      induction' f with X generalizing n
-      . simp only [mk_id, Functor.map_id, Category.id_comp,  Category.comp_id]
-      all_goals sorry)
+      induction' f with _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ h₁ h₂
+      . simp only [mk_id, Functor.map_id, Category.comp_id, Category.id_comp]
+      . ext n
+        erw [mk_α_hom, NatTrans.comp_app, NatTrans.comp_app]
+        dsimp only [tensorFunc, Discrete.natTrans, normalizeIsoAux,
+          NatIso.ofComponents, normalizeIsoApp, Iso.symm, Iso.trans, normalize',
+          inclusion, Iso.refl, tensorIso]
+        erw [id_tensor_associator_inv_naturality_assoc, ← pentagon_inv_assoc,
+          tensorHom_inv_id_assoc, tensor_id, Category.id_comp, Category.id_comp,
+          comp_tensor_id, comp_tensor_id, Category.assoc, Category.assoc, Category.assoc,
+          Category.assoc, Category.comp_id]
+        rfl
+      . sorry
+      . sorry
+      . sorry
+      . sorry
+      . sorry
+      . rw [mk_comp, Functor.map_comp, Functor.map_comp, Category.assoc, h₂, reassoc_of% h₁]
+      . sorry)
       --apply Quotient.inductionOn f
       --intro f
       --ext n
