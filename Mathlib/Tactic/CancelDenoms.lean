@@ -119,6 +119,9 @@ match e.getAppFnArgs with
 | (`Neg.neg, #[_, _, e]) => findCancelFactor e
 | _ => (1, .node 1 .nil .nil)
 
+def norm_num_done : Elab.Tactic.TacticM Unit := do
+  Lean.Elab.Tactic.evalTactic (←`(tactic| norm_num; done))
+
 /--
 `mkProdPrf n tr e` produces a proof of `n*e = e'`, where numeric denominators have been
 canceled in `e'`, distributing `n` proportionally according to `tr`.
@@ -141,7 +144,7 @@ match t, e with
   have vln' := (← mkOfNat α _sα <| mkRawNatLit (v/ln)).1
   have v' := (← mkOfNat α _sα <| mkRawNatLit v).1
   let ntp : Q(Prop) := q($ln' * $vln' = $v')
-  let npf ← synthesizeUsing ntp (do Lean.Elab.Tactic.evalTactic (←`(tactic| norm_num; done)))
+  let npf ← synthesizeUsing ntp norm_num_done
   mkAppM `CancelFactors.mul_subst #[v1, v2, npf]
 | .node n lhs (.node rn _ _), ~q($e1 / $e2) => do
   let v1 ← mkProdPrf α _sα (v / rn) lhs e1
@@ -150,9 +153,9 @@ match t, e with
   have n' := (← mkOfNat α _sα <| mkRawNatLit <| n).1
   have v' := (← mkOfNat α _sα <| mkRawNatLit <| v).1
   let ntp : Q(Prop) := q($rn' / $e2 = 1)
-  let npf ← synthesizeUsing ntp (do Lean.Elab.Tactic.evalTactic (←`(tactic| norm_num; done)))
+  let npf ← synthesizeUsing ntp norm_num_done
   let ntp2 : Q(Prop) := q($vrn' * $n' = $v')
-  let npf2 ← synthesizeUsing ntp2 (do Lean.Elab.Tactic.evalTactic (←`(tactic| norm_num; done)))
+  let npf2 ← synthesizeUsing ntp2 norm_num_done
   mkAppM `CancelFactors.div_subst #[v1, npf, npf2]
 | t, ~q(-$e) => do
   let v ← mkProdPrf α _sα v t e
@@ -173,19 +176,20 @@ let stp ← synthInstance q(Field $tp)
 try
   return (n, ← mkProdPrf tp stp n t e)
 catch _ => throwError
-  "cancel_factors.derive failed to normalize {e}. Are you sure this is well-behaved division?"
+  "CancelFactors.derive failed to normalize {e}. Are you sure this is well-behaved division?"
 
 /--
 `findCompLemma e` arranges `e` in the form `lhs R rhs`, where `R ∈ {<, ≤, =}`, and returns
 `lhs`, `rhs`, and the `cancel_factors` lemma corresponding to `R`.
 -/
-def findCompLemma : Expr → Option (Expr × Expr × Name)
-| `(%%a < %%b) := (a, b, ``cancel_factors_lt)
-| `(%%a ≤ %%b) := (a, b, ``cancel_factors_le)
-| `(%%a = %%b) := (a, b, ``cancel_factors_eq)
-| `(%%a ≥ %%b) := (b, a, ``cancel_factors_le)
-| `(%%a > %%b) := (b, a, ``cancel_factors_lt)
-| _ := none
+def findCompLemma (e : Expr) : Option (Expr × Expr × Name) :=
+match e.getAppFnArgs with
+| (`LT.lt, #[_, _, a, b]) => (a, b, ``cancel_factors_lt)
+| (`LE.le, #[_, _, a, b]) => (a, b, ``cancel_factors_le)
+| (`Eq, #[_, a, b]) => (a, b, ``cancel_factors_eq)
+| (`GE.ge, #[_, _, a, b]) => (b, a, ``cancel_factors_le)
+| (`GT.gt, #[_, _, a, b]) => (b, a, ``cancel_factors_lt)
+| _ => none
 
 /--
 `cancelDenominatorsInType h` assumes that `h` is of the form `lhs R rhs`,
@@ -194,23 +198,24 @@ It produces an Expression `h'` of the form `lhs' R rhs'` and a proof that `h = h
 Numeric denominators have been canceled in `lhs'` and `rhs'`.
 -/
 def cancelDenominatorsInType (h : Expr) : MetaM (Expr × Expr) :=
-do let some (lhs, rhs, lem) := findCompLemma h | fail "cannot kill factors"
-   (al, lhs_p) ← derive lhs
-   (ar, rhs_p) ← derive rhs
+do let some (lhs, rhs, lem) := findCompLemma h | throwError "cannot kill factors"
+   let (al, lhs_p) ← derive lhs
+   let α : Q(Type) ← inferType lhs_p
+   let sα : Q(LinearOrderedField $α) ← synthInstance q(LinearOrderedField $α)
+   let (ar, rhs_p) ← derive rhs
    let gcd := al.gcd ar
-   tp ← infer_type lhs
-   al ← tp.of_nat al
-   ar ← tp.of_nat ar
-   gcd ← tp.of_nat gcd
-   al_pos ← toExpr ``(0 < %%al),
-   ar_pos ← toExpr ``(0 < %%ar)
-   gcd_pos ← toExpr ``(0 < %%gcd)
-   (_, al_pos) ← solve_aux al_pos `[norm_num, done]
-   (_, ar_pos) ← solve_aux ar_pos `[norm_num, done]
-   (_, gcd_pos) ← solve_aux gcd_pos `[norm_num, done]
-   pf ← mk_app lem [lhs_p, rhs_p, al_pos, ar_pos, gcd_pos]
-   pf_tp ← infer_type pf
-   return ((findCompLemma pf_tp).elim default (prod.fst ∘ prod.snd), pf)
+   have al := (← mkOfNat α sα <| mkRawNatLit al).1
+   have ar := (← mkOfNat α sα <| mkRawNatLit ar).1
+   have gcd := (← mkOfNat α sα <| mkRawNatLit gcd).1
+   let al_pos : Q(Prop) := q(0 < $al)
+   let ar_pos : Q(Prop) := q(0 < $ar)
+   let gcd_pos : Q(Prop) := q(0 < $gcd)
+   let al_pos ← synthesizeUsing al_pos norm_num_done
+   let ar_pos ← synthesizeUsing ar_pos norm_num_done
+   let gcd_pos ← synthesizeUsing gcd_pos norm_num_done
+   let pf ← mkAppM lem #[lhs_p, rhs_p, al_pos, ar_pos, gcd_pos]
+   let pf_tp ← inferType pf
+   return ((findCompLemma pf_tp).elim default (Prod.fst ∘ Prod.snd), pf)
 
 end CancelFactors
 
