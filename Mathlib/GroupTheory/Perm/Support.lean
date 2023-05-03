@@ -470,7 +470,6 @@ theorem support_swap_mul_swap {x y z : α} (h : List.Nodup [x, y, z]) :
     rintro (rfl | rfl | rfl | _) <;>
       simp [swap_apply_of_ne_of_ne, h.left.left, h.left.left.symm, h.left.right.symm,
         h.left.right.left.symm, h.right.left.symm]
-
 #align equiv.perm.support_swap_mul_swap Equiv.Perm.support_swap_mul_swap
 
 theorem support_swap_mul_ge_support_diff (f : Perm α) (x y : α) :

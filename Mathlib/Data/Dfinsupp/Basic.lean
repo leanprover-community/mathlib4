@@ -1841,7 +1841,6 @@ theorem prod_add_index [∀ i, AddCommMonoid (β i)] [∀ (i) (x : β i), Decida
     _ = (∏ i in f.support ∪ g.support, h i (f i)) * ∏ i in f.support ∪ g.support, h i (g i) := by
       { simp [h_add, Finset.prod_mul_distrib] }
     _ = _ := by rw [f_eq, g_eq]
-
 #align dfinsupp.prod_add_index Dfinsupp.prod_add_index
 #align dfinsupp.sum_add_index Dfinsupp.sum_add_index
 

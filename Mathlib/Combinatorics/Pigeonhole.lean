@@ -144,7 +144,6 @@ theorem exists_lt_sum_fiber_of_sum_fiber_nonpos_of_nsmul_lt_sum
       (∑ _y in t, b) < ∑ x in s, w x := by simpa
       _ ≤ ∑ y in t, ∑ x in s.filter fun x => f x = y, w x :=
         sum_le_sum_fiberwise_of_sum_fiber_nonpos ht
-
 #align finset.exists_lt_sum_fiber_of_sum_fiber_nonpos_of_nsmul_lt_sum Finset.exists_lt_sum_fiber_of_sum_fiber_nonpos_of_nsmul_lt_sum
 
 /-- The pigeonhole principle for finitely many pigeons counted by weight, strict inequality version:
@@ -194,7 +193,6 @@ theorem exists_le_sum_fiber_of_sum_fiber_nonpos_of_nsmul_le_sum
       (∑ _y in t, b) ≤ ∑ x in s, w x := by simpa
       _ ≤ ∑ y in t, ∑ x in s.filter fun x => f x = y, w x :=
         sum_le_sum_fiberwise_of_sum_fiber_nonpos hf
-
 #align finset.exists_le_sum_fiber_of_sum_fiber_nonpos_of_nsmul_le_sum Finset.exists_le_sum_fiber_of_sum_fiber_nonpos_of_nsmul_le_sum
 
 /-- The pigeonhole principle for finitely many pigeons counted by weight, non-strict inequality

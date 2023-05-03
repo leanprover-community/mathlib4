@@ -35,7 +35,6 @@ def onQuotVal {J : Ideal R} (hJ : J ≤ supp v) : R ⧸ J → Γ₀ := fun q =>
       v a = v (b + -(-a + b)) := by simp
       _ = v b :=
         v.map_add_supp b <| (Ideal.neg_mem_iff _).2 <| hJ <| QuotientAddGroup.leftRel_apply.mp h
-
 #align valuation.on_quot_val Valuation.onQuotVal
 
 /-- The extension of valuation `v` on `R` to valuation on `R / J` if `J ⊆ supp v`. -/

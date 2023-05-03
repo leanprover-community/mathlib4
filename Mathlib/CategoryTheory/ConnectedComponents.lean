@@ -12,7 +12,6 @@ import Mathlib.Data.List.Chain
 import Mathlib.CategoryTheory.IsConnected
 import Mathlib.CategoryTheory.Sigma.Basic
 import Mathlib.CategoryTheory.FullSubcategory
-import Mathlib.Tactic.LibrarySearch
 
 /-!
 # Connected components of a category
@@ -35,7 +34,7 @@ open CategoryTheory.Category
 
 namespace CategoryTheory
 
-attribute [instance] IsConnected.is_nonempty
+attribute [instance 100] IsConnected.is_nonempty
 
 variable {J : Type u₁} [Category.{v₁} J]
 
