@@ -250,44 +250,32 @@ def normalizeIso : tensorFunc C ≅ normalize' C :=
       induction' f with _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ h₁ h₂
       . simp only [mk_id, Functor.map_id, Category.comp_id, Category.id_comp]
       . ext n
-        erw [mk_α_hom, NatTrans.comp_app, NatTrans.comp_app]
-        dsimp only [tensorFunc, Discrete.natTrans, normalizeIsoAux,
-          NatIso.ofComponents, normalizeIsoApp, Iso.symm, Iso.trans, normalize',
-          inclusion, Iso.refl, tensorIso]
+        dsimp
+        rw [mk_α_hom, NatTrans.comp_app, NatTrans.comp_app]
+        dsimp [NatIso.ofComponents, normalizeMapAux, whiskeringRight, whiskerRight]
         erw [id_tensor_associator_inv_naturality_assoc, ← pentagon_inv_assoc,
           tensorHom_inv_id_assoc, tensor_id, Category.id_comp, Category.id_comp,
           comp_tensor_id, comp_tensor_id, Category.assoc, Category.assoc, Category.assoc,
           Category.assoc, Category.comp_id]
         rfl
+      . ext n
+        dsimp
+        rw [mk_α_inv, NatTrans.comp_app, NatTrans.comp_app]
+        dsimp [NatIso.ofComponents, normalizeMapAux, whiskeringRight, whiskerRight]
+        simp only [Category.assoc, Category.assoc, Category.assoc, Category.assoc,
+          comp_tensor_id, comp_tensor_id, Category.assoc,
+          pentagon_inv_assoc, Category.assoc, ← associator_inv_naturality_assoc,
+          tensor_id]
+        erw [Category.comp_id]
+        rfl
+      . ext n
+        dsimp
+        erw [mk_l_hom, NatTrans.comp_app, NatTrans.comp_app]
+        dsimp [NatIso.ofComponents, normalizeMapAux, whiskeringRight, whiskerRight]
+        rw [triangle_assoc_comp_right_assoc, Category.assoc]
+        erw [Category.comp_id]
+        rfl
       . sorry
-      . sorry
-      . sorry
-      . sorry
-      . sorry
-      . rw [mk_comp, Functor.map_comp, Functor.map_comp, Category.assoc, h₂, reassoc_of% h₁]
-      . sorry)
-      --apply Quotient.inductionOn f
-      --intro f
-      --ext n
-      --induction f generalizing n
-      --· simp only [mk_id, Functor.map_id, category.id_comp, category.comp_id]
-      --· dsimp
-      --  simp only [id_tensor_associator_inv_naturality_assoc, ← pentagon_inv_assoc,
-      --    tensor_hom_inv_id_assoc, tensor_id, category.id_comp, discrete.functor_map_id,
-      --    comp_tensor_id, iso.cancel_iso_inv_left, category.assoc]
-      --  dsimp
-      --  simp only [category.comp_id]
-      --· dsimp
-      --  simp only [discrete.functor_map_id, comp_tensor_id, category.assoc, pentagon_inv_assoc, ←
-      --    associator_inv_naturality_assoc, tensor_id, iso.cancel_iso_inv_left]
-      --  dsimp
-      --  simp only [category.comp_id]
-      --· dsimp
-      --  rw [triangle_assoc_comp_right_assoc]
-      --  simp only [discrete.functor_map_id, category.assoc]
-      --  cases n
-      --  dsimp
-      --  simp only [category.comp_id]
       --· dsimp
       --  simp only [triangle_assoc_comp_left_inv_assoc, inv_hom_id_tensor_assoc, tensor_id,
       --    category.id_comp, discrete.functor_map_id]
@@ -295,6 +283,7 @@ def normalizeIso : tensorFunc C ≅ normalize' C :=
       --  simp only [category.comp_id]
       --  cases n
       --  simp
+      . sorry
       --· dsimp
       --  rw [← (iso.inv_comp_eq _).2 (right_unitor_tensor _ _), category.assoc, ←
       --    right_unitor_naturality]
@@ -304,6 +293,7 @@ def normalizeIso : tensorFunc C ≅ normalize' C :=
       --  convert discrete_functor_map_eq_id inclusion_obj _ _
       --  ext
       --  rfl
+      . sorry
       --· dsimp
       --  simp only [← (iso.eq_comp_inv _).1 (right_unitor_tensor_inv _ _), right_unitor_conjugation,
       --    category.assoc, iso.hom_inv_id, iso.hom_inv_id_assoc, iso.inv_hom_id,
@@ -312,10 +302,8 @@ def normalizeIso : tensorFunc C ≅ normalize' C :=
       --  convert(discrete_functor_map_eq_id inclusion_obj _ _).symm
       --  ext
       --  rfl
-      --· dsimp at *
-      --  rw [id_tensor_comp, category.assoc, f_ih_g ⟦f_g⟧, ← category.assoc, f_ih_f ⟦f_f⟧,
-      --    category.assoc, ← functor.map_comp]
-      --  congr 2
+      . rw [mk_comp, Functor.map_comp, Functor.map_comp, Category.assoc, h₂, reassoc_of% h₁]
+      . sorry)
       --· dsimp at *
       --  rw [associator_inv_naturality_assoc]
       --  slice_lhs 2 3 => rw [← tensor_comp, f_ih_f ⟦f_f⟧]
