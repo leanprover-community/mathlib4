@@ -176,17 +176,6 @@ catch _ => throwError
   "cancel_factors.derive failed to normalize {e}. Are you sure this is well-behaved division?"
 
 /--
-Given `e`, a term with rational divison, produces a natural number `n` and a proof of `e = e' / n`,
-where `e'` has no divison. Assumes "well-behaved" division.
--/
-def deriveDiv (e : Expr) : MetaM (ℕ × Expr) :=
-do let (n, p) ← derive e
-   let tp ← inferType e
-   let n' ← tp.of_nat n, tgt ← to_Expr ``(%%n' ≠ 0)
-   let (_, pn) ← solve_aux tgt `[norm_num, done]
-   prod.mk n <$> mk_mapp ``cancel_factors_eq_div [none, none, n', none, none, p, pn]
-
-/--
 `findCompLemma e` arranges `e` in the form `lhs R rhs`, where `R ∈ {<, ≤, =}`, and returns
 `lhs`, `rhs`, and the `cancel_factors` lemma corresponding to `R`.
 -/
