@@ -105,7 +105,7 @@ instance [Subsingleton α] : Subsingleton (Discrete α) :=
     ext
     apply Subsingleton.elim⟩
 
-instance (X Y : Discrete α) : Subsingleton (X ⟶ Y) :=
+instance instSubsingletonDiscreteHom (X Y : Discrete α) : Subsingleton (X ⟶ Y) :=
   show Subsingleton (ULift (PLift _)) from inferInstance
 
 /-
