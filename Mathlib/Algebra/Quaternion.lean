@@ -8,12 +8,12 @@ Authors: Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Algebra.Equiv
-import Mathbin.LinearAlgebra.Finrank
-import Mathbin.LinearAlgebra.FreeModule.Basic
-import Mathbin.LinearAlgebra.FreeModule.Finite.Basic
-import Mathbin.SetTheory.Cardinal.Ordinal
-import Mathbin.Tactic.RingExp
+import Mathlib.Algebra.Algebra.Equiv
+import Mathlib.LinearAlgebra.Finrank
+import Mathlib.LinearAlgebra.FreeModule.Basic
+import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
+import Mathlib.SetTheory.Cardinal.Ordinal
+import Mathlib.Tactic.RingExp
 
 /-!
 # Quaternions
@@ -73,8 +73,7 @@ namespace QuaternionAlgebra
 
 /-- The equivalence between a quaternion algebra over R and R × R × R × R. -/
 @[simps]
-def equivProd {R : Type _} (c₁ c₂ : R) : ℍ[R,c₁,c₂] ≃ R × R × R × R
-    where
+def equivProd {R : Type _} (c₁ c₂ : R) : ℍ[R,c₁,c₂] ≃ R × R × R × R where
   toFun a := ⟨a.1, a.2, a.3, a.4⟩
   invFun a := ⟨a.1, a.2.1, a.2.2.1, a.2.2.2⟩
   left_inv := fun ⟨a₁, a₂, a₃, a₄⟩ => rfl
@@ -83,8 +82,7 @@ def equivProd {R : Type _} (c₁ c₂ : R) : ℍ[R,c₁,c₂] ≃ R × R × R ×
 
 /-- The equivalence between a quaternion algebra over `R` and `fin 4 → R`. -/
 @[simps symm_apply]
-def equivTuple {R : Type _} (c₁ c₂ : R) : ℍ[R,c₁,c₂] ≃ (Fin 4 → R)
-    where
+def equivTuple {R : Type _} (c₁ c₂ : R) : ℍ[R,c₁,c₂] ≃ (Fin 4 → R) where
   toFun a := ![a.1, a.2, a.3, a.4]
   invFun a := ⟨a 0, a 1, a 2, a 3⟩
   left_inv := fun ⟨a₁, a₂, a₃, a₄⟩ => rfl
@@ -425,8 +423,7 @@ theorem coe_mul : ((x * y : R) : ℍ[R,c₁,c₂]) = x * y := by ext <;> simp
 
 -- TODO: add weaker `mul_action`, `distrib_mul_action`, and `module` instances (and repeat them
 -- for `ℍ[R]`)
-instance [CommSemiring S] [Algebra S R] : Algebra S ℍ[R,c₁,c₂]
-    where
+instance [CommSemiring S] [Algebra S R] : Algebra S ℍ[R,c₁,c₂] where
   smul := (· • ·)
   toFun s := coe (algebraMap S R s)
   map_one' := by simpa only [map_one]
@@ -513,14 +510,12 @@ instance : Module.Finite R ℍ[R,c₁,c₂] :=
 instance : Module.Free R ℍ[R,c₁,c₂] :=
   Module.Free.of_basis (basisOneIJK c₁ c₂)
 
-theorem rank_eq_four [StrongRankCondition R] : Module.rank R ℍ[R,c₁,c₂] = 4 :=
-  by
+theorem rank_eq_four [StrongRankCondition R] : Module.rank R ℍ[R,c₁,c₂] = 4 := by
   rw [rank_eq_card_basis (basis_one_i_j_k c₁ c₂), Fintype.card_fin]
   norm_num
 #align quaternion_algebra.rank_eq_four QuaternionAlgebra.rank_eq_four
 
-theorem finrank_eq_four [StrongRankCondition R] : FiniteDimensional.finrank R ℍ[R,c₁,c₂] = 4 :=
-  by
+theorem finrank_eq_four [StrongRankCondition R] : FiniteDimensional.finrank R ℍ[R,c₁,c₂] = 4 := by
   have : Cardinal.toNat 4 = 4 := by
     rw [← Cardinal.toNat_cast 4, Nat.cast_bit0, Nat.cast_bit0, Nat.cast_one]
   rw [FiniteDimensional.finrank, rank_eq_four, this]
@@ -594,8 +589,7 @@ theorem star_mk (a₁ a₂ a₃ a₄ : R) : star (mk a₁ a₂ a₃ a₄ : ℍ[R
   rfl
 #align quaternion_algebra.star_mk QuaternionAlgebra.star_mk
 
-instance : StarRing ℍ[R,c₁,c₂]
-    where
+instance : StarRing ℍ[R,c₁,c₂] where
   star_involutive x := by simp [Star.star]
   star_add a b := by ext <;> simp [neg_add]
   star_mul a b := by ext <;> simp <;> ring
@@ -663,8 +657,7 @@ end CharZero
 theorem star_mul_eq_coe : star a * a = (star a * a).re := by ext <;> simp <;> ring
 #align quaternion_algebra.star_mul_eq_coe QuaternionAlgebra.star_mul_eq_coe
 
-theorem mul_star_eq_coe : a * star a = (a * star a).re :=
-  by
+theorem mul_star_eq_coe : a * star a = (a * star a).re := by
   rw [← star_comm_self']
   exact a.star_mul_eq_coe
 #align quaternion_algebra.mul_star_eq_coe QuaternionAlgebra.mul_star_eq_coe
@@ -1331,8 +1324,7 @@ section LinearOrderedCommRing
 variable [LinearOrderedCommRing R] {a : ℍ[R]}
 
 @[simp]
-theorem normSq_eq_zero : normSq a = 0 ↔ a = 0 :=
-  by
+theorem normSq_eq_zero : normSq a = 0 ↔ a = 0 := by
   refine' ⟨fun h => _, fun h => h.symm ▸ norm_sq.map_zero⟩
   rw [norm_sq_def', add_eq_zero_iff', add_eq_zero_iff', add_eq_zero_iff'] at h
   exact ext a 0 (pow_eq_zero h.1.1.1) (pow_eq_zero h.1.1.2) (pow_eq_zero h.1.2) (pow_eq_zero h.2)
@@ -1365,16 +1357,14 @@ instance : NoZeroDivisors ℍ[R] :=
 instance : IsDomain ℍ[R] :=
   NoZeroDivisors.to_isDomain _
 
-theorem sq_eq_normSq : a ^ 2 = normSq a ↔ a = a.re :=
-  by
+theorem sq_eq_normSq : a ^ 2 = normSq a ↔ a = a.re := by
   simp_rw [← star_eq_self]
   obtain rfl | hq0 := eq_or_ne a 0
   · simp
   · rw [← star_mul_self, sq, mul_left_inj' hq0, eq_comm]
 #align quaternion.sq_eq_norm_sq Quaternion.sq_eq_normSq
 
-theorem sq_eq_neg_normSq : a ^ 2 = -normSq a ↔ a.re = 0 :=
-  by
+theorem sq_eq_neg_normSq : a ^ 2 = -normSq a ↔ a.re = 0 := by
   simp_rw [← star_eq_neg]
   obtain rfl | hq0 := eq_or_ne a 0
   · simp
@@ -1492,8 +1482,7 @@ private theorem pow_four [Infinite R] : (#R) ^ 4 = (#R) :=
 #align cardinal.pow_four cardinal.pow_four
 
 /-- The cardinality of a quaternion algebra, as a type. -/
-theorem mk_quaternionAlgebra : (#ℍ[R,c₁,c₂]) = (#R) ^ 4 :=
-  by
+theorem mk_quaternionAlgebra : (#ℍ[R,c₁,c₂]) = (#R) ^ 4 := by
   rw [mk_congr (QuaternionAlgebra.equivProd c₁ c₂)]
   simp only [mk_prod, lift_id]
   ring
