@@ -90,9 +90,7 @@ def ofReal' (r : ℝ) : ℂ :=
 instance : Coe ℝ ℂ :=
   ⟨ofReal'⟩
 
-/- Porting note: `simp` attribute removed as this has a variable as head symbol of
-the left-hand side (after whnfR)-/
-@[norm_cast]
+@[simp, norm_cast]
 theorem ofReal_re (r : ℝ) : Complex.re (r : ℂ) = r :=
   rfl
 #align complex.of_real_re Complex.ofReal_re
@@ -435,6 +433,12 @@ instance : Ring ℂ := by infer_instance
 /-- This shortcut instance ensures we do not find `CommSemiring` via the noncomputable
 `Complex.field` instance. -/
 instance : CommSemiring ℂ :=
+  inferInstance
+
+-- porting note: added due to changes in typeclass search order
+/-- This shortcut instance ensures we do not find `Semiring` via the noncomputable
+`Complex.field` instance. -/
+instance : Semiring ℂ :=
   inferInstance
 
 /-- The "real part" map, considered as an additive group homomorphism. -/
@@ -959,7 +963,6 @@ theorem abs_of_nat (n : ℕ) : Complex.abs n = n :=
   calc
     Complex.abs n = Complex.abs (n : ℝ) := by rw [ofReal_nat_cast]
     _ = _ := Complex.abs_of_nonneg (Nat.cast_nonneg n)
-
 #align complex.abs_of_nat Complex.abs_of_nat
 
 theorem mul_self_abs (z : ℂ) : Complex.abs z * Complex.abs z = normSq z :=
@@ -1199,7 +1202,6 @@ protected def strictOrderedCommRing : StrictOrderedCommRing ℂ :=
   mul_pos := fun z w hz hw => by
     simp [lt_def, mul_re, mul_im, ← hz.2, ← hw.2, mul_pos hz.1 hw.1]
   mul_comm := by intros; ext <;> ring_nf }
-
 #align complex.strict_ordered_comm_ring Complex.strictOrderedCommRing
 
 scoped[ComplexOrder] attribute [instance] Complex.strictOrderedCommRing
@@ -1292,7 +1294,6 @@ theorem lim_eq_lim_im_add_lim_re (f : CauSeq ℂ Complex.abs) :
       _ = CauSeq.const Complex.abs (↑(lim (cauSeqRe f)) + ↑(lim (cauSeqIm f)) * I) :=
         CauSeq.ext fun _ =>
           Complex.ext (by simp [limAux, cauSeqRe, ofReal']) (by simp [limAux, cauSeqIm, ofReal'])
-
 #align complex.lim_eq_lim_im_add_lim_re Complex.lim_eq_lim_im_add_lim_re
 
 theorem lim_re (f : CauSeq ℂ Complex.abs) : lim (cauSeqRe f) = (lim f).re := by

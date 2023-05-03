@@ -21,7 +21,7 @@ This file contains results on the `R`-module structure on functions of finite su
 
 noncomputable section
 
-attribute [local instance] Classical.propDecidable
+open Classical
 
 open Set LinearMap Submodule
 
@@ -37,6 +37,7 @@ variable {R : Type _} {M : Type _} {ι : Type _}
 
 variable [Ring R] [AddCommGroup M] [Module R M]
 
+set_option maxHeartbeats 300000 in
 theorem linearIndependent_single {φ : ι → Type _} {f : ∀ ι, φ ι → M}
     (hf : ∀ i, LinearIndependent R (f i)) :
     LinearIndependent R fun ix : Σi, φ i => single ix.1 (f ix.1 ix.2) := by
@@ -176,7 +177,6 @@ theorem _root_.Finset.sum_univ_ite (b : n → M) (i : n) :
 theorem equivFun_symm_stdBasis (b : Basis n R M) (i : n) :
     b.equivFun.symm (LinearMap.stdBasis R (fun _ => R) i 1) = b i := by
   simp
-
 #align basis.equiv_fun_symm_std_basis Basis.equivFun_symm_stdBasis
 
 end Basis

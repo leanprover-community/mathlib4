@@ -155,14 +155,13 @@ abbrev LinearMapClass (F : Type _) (R M M₂ : outParam (Type _)) [Semiring R] [
 namespace SemilinearMapClass
 
 variable (F : Type _)
-variable {_ : Semiring R} {_ : Semiring S}
-variable {_ : AddCommMonoid M} {_ : AddCommMonoid M₁} {_ : AddCommMonoid M₂} {_ : AddCommMonoid M₃}
-variable {_ : AddCommMonoid N₁} {_ : AddCommMonoid N₂} {_ : AddCommMonoid N₃}
-variable {_ : Module R M} {_ : Module R M₂} {_ : Module S M₃}
+variable [Semiring R] [Semiring S]
+variable [AddCommMonoid M] [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃]
+variable [AddCommMonoid N₁] [AddCommMonoid N₂] [AddCommMonoid N₃]
+variable [Module R M] [Module R M₂] [Module S M₃]
 variable {σ : R →+* S}
 
 -- Porting note: the `dangerousInstance` linter has become smarter about `outParam`s
--- @[nolint dangerousInstance] -- `σ` is an `outParam` so it's not dangerous
 instance (priority := 100) addMonoidHomClass [SemilinearMapClass F σ M M₃] :
     AddMonoidHomClass F M M₃ :=
   { SemilinearMapClass.toAddHomClass with
@@ -172,10 +171,6 @@ instance (priority := 100) addMonoidHomClass [SemilinearMapClass F σ M M₃] :
         rw [← zero_smul R (0 : M), map_smulₛₗ]
         simp }
 
--- The `Semiring` should be an instance parameter but depends on outParams.
--- If Lean 4 gets better support for instance params depending on outParams,
--- we should be able to remove this nolint.
-@[nolint dangerousInstance]
 instance (priority := 100) distribMulActionHomClass [LinearMapClass F R M M₂] :
     DistribMulActionHomClass F R M M₂ :=
   { SemilinearMapClass.addMonoidHomClass F with
@@ -1184,7 +1179,7 @@ variable [Monoid S] [DistribMulAction S M] [SMulCommClass S R M]
 This is a stronger version of `DistribMulAction.toAddMonoidHom`. -/
 @[simps]
 def toLinearMap (s : S) : M →ₗ[R] M where
-  toFun := SMul.smul s
+  toFun := HSMul.hSMul s
   map_add' := smul_add s
   map_smul' _ _ := smul_comm _ _ _
 #align distrib_mul_action.to_linear_map DistribMulAction.toLinearMap
@@ -1219,7 +1214,7 @@ def toModuleEnd : S →+* Module.End R M :=
     DistribMulAction.toModuleEnd R
       M with
     toFun := DistribMulAction.toLinearMap R M
-    map_zero' := LinearMap.ext <| zero_smul _
+    map_zero' := LinearMap.ext <| zero_smul S
     map_add' := fun _ _ ↦ LinearMap.ext <| add_smul _ _ }
 #align module.to_module_End Module.toModuleEnd
 #align module.to_module_End_apply Module.toModuleEnd_apply

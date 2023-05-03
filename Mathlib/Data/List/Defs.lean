@@ -70,7 +70,10 @@ instance [DecidableEq α] : SDiff (List α) :=
 #align list.split_on List.splitOn
 #align list.concat List.concat
 #align list.head' List.head?
-#align list.to_array List.toArray
+
+-- mathlib3 `array` is not ported.
+#noalign list.to_array
+
 #align list.nthd List.getD
 -- porting notes: see
 -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/List.2Ehead/near/313204716

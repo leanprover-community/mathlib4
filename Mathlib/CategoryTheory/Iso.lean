@@ -9,7 +9,7 @@ Ported by: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.CategoryTheory.Functor.Basic
+import Mathlib.Tactic.Reassoc
 
 /-!
 # Isomorphisms
@@ -91,7 +91,6 @@ theorem ext ⦃α β : X ≅ Y⦄ (w : α.hom = β.hom) : α = β :=
     α.inv = α.inv ≫ β.hom ≫ β.inv   := by rw [Iso.hom_inv_id, Category.comp_id]
     _     = (α.inv ≫ α.hom) ≫ β.inv := by rw [Category.assoc, ← w]
     _     = β.inv                   := by rw [Iso.inv_hom_id, Category.id_comp]
-
 #align category_theory.iso.ext CategoryTheory.Iso.ext
 
 /-- Inverse isomorphism. -/
