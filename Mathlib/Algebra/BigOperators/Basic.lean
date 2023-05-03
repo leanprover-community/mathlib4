@@ -120,17 +120,61 @@ scoped macro_rules (kind := bigprod)
 
 /-- `∑ x in s, f x` is notation for `Finset.sum s f`. It is the sum of `f x`,
 where `x` ranges over the finite set `s`. -/
-scoped syntax (name := bigsumin) "∑ " extBinder "in " term "," term:67 : term
+scoped syntax (name := bigsumin) "∑ " extBinder " in " term ", " term:67 : term
 scoped macro_rules (kind := bigsumin)
   | `(∑ $x:ident in $s, $r) => `(Finset.sum $s (fun $x ↦ $r))
   | `(∑ $x:ident : $t in $s, $p) => `(Finset.sum $s (fun $x:ident : $t ↦ $p))
 
 /-- `∏ x, f x` is notation for `Finset.prod s f`. It is the sum of `f x`,
 where `x` ranges over the finite set `s`. -/
-scoped syntax (name := bigprodin) "∏ " extBinder "in " term "," term:67 : term
+scoped syntax (name := bigprodin) "∏ " extBinder " in " term ", " term:67 : term
 scoped macro_rules (kind := bigprodin)
   | `(∏ $x:ident in $s, $r) => `(Finset.prod $s (fun $x ↦ $r))
   | `(∏ $x:ident : $t in $s, $p) => `(Finset.prod $s (fun $x:ident : $t ↦ $p))
+
+open Lean Meta Parser.Term PrettyPrinter.Delaborator SubExpr
+open Std.ExtendedBinder
+
+/-- Delaborator for `Finset.prod`. The `pp.piBinderTypes` option controls whether
+to show the domain type when the product is over `Finset.univ`. -/
+@[scoped delab app.Finset.prod] def delabFinsetProd : Delab := whenPPOption getPPNotation do
+  let #[_, _, _, s, f] := (← getExpr).getAppArgs | failure
+  guard <| f.isLambda
+  let ppDomain ← getPPOption getPPPiBinderTypes
+  let (i, body) ← withAppArg <| withBindingBodyUnusedName fun i => do
+    return (i, ← delab)
+  if s.isAppOfArity ``Finset.univ 2 then
+    let binder ←
+      if ppDomain then
+        let ty ← withNaryArg 1 delab
+        `(extBinder| $(.mk i):ident : $ty)
+      else
+        `(extBinder| $(.mk i):ident)
+    `(∏ $binder, $body)
+  else
+    let ss ← withNaryArg 3 <| delab
+    `(∏ $(.mk i):ident in $ss, $body)
+
+/-- Delaborator for `Finset.prod`. The `pp.piBinderTypes` option controls whether
+to show the domain type when the sum is over `Finset.univ`. -/
+@[scoped delab app.Finset.sum] def delabFinsetSum : Delab := whenPPOption getPPNotation do
+  let #[_, _, _, s, f] := (← getExpr).getAppArgs | failure
+  guard <| f.isLambda
+  let ppDomain ← getPPOption getPPPiBinderTypes
+  let (i, body) ← withAppArg <| withBindingBodyUnusedName fun i => do
+    return (i, ← delab)
+  if s.isAppOfArity ``Finset.univ 2 then
+    let binder ←
+      if ppDomain then
+        let ty ← withNaryArg 1 delab
+        `(extBinder| $(.mk i):ident : $ty)
+      else
+        `(extBinder| $(.mk i):ident)
+    `(∑ $binder, $body)
+  else
+    let ss ← withNaryArg 3 <| delab
+    `(∑ $(.mk i):ident in $ss, $body)
+
 end BigOperators
 
 open BigOperators
