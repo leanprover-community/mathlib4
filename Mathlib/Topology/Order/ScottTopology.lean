@@ -321,10 +321,9 @@ lemma continuous_iff_scottContinuous (f : α → β) : Continuous f ↔ ScottCon
     . exact IsUpperSet.preimage (isOpen_isUpperSet hu) h.monotone
     . intros d a hd₁ hd₂ hd₃ ha
       rw [isOpen_iff_upper_and_LUB_mem_implies_inter_nonempty] at hu
-      have e2: ((f '' d) ∩ u).Nonempty := hu.2 _ _ (hd₁.image f)
+      exact image_inter_nonempty_iff.mp $ hu.2 _ _ (hd₁.image f)
           (directedOn_image.mpr (hd₂.mono (by simp only [Order.Preimage]; apply h.monotone)))
           (h hd₁ hd₂ hd₃) ha
-      exact image_inter_nonempty_iff.mp e2
 
 end preorder
 
