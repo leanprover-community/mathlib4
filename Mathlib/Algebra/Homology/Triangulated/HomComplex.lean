@@ -168,6 +168,7 @@ lemma comp_v {n₁ n₂ n₁₂ : ℤ} (z₁ : Cochain F G n₁) (z₂ : Cochain
       z₁.v p₁ p₂ h₁ ≫ z₂.v p₂ p₃ h₂ := by
   subst h₁ ; rfl
 
+@[simp]
 protected lemma zero_comp {n₁ n₂ n₁₂ : ℤ} (z₂ : Cochain G K n₂)
     (h : n₁ + n₂ = n₁₂) : (0 : Cochain F G n₁).comp z₂ h = 0 := by
   ext ⟨p, q, hpq⟩
@@ -607,6 +608,10 @@ def diff : Cocycle K K 1 :=
     simp only [δ_v 1 2 rfl _ p q hpq _ _ rfl rfl, Cochain.diff_v,
       HomologicalComplex.d_comp_d, smul_zero, add_zero])
 
+end Cocycle
+
+namespace Cochain
+
 variable {F G}
 
 @[simps]
@@ -646,11 +651,6 @@ def equivHomotopy (φ₁ φ₂ : F ⟶ G) :
     dsimp [Cochain.ofHomotopy]
     rw [dif_pos]
 
-end Cocycle
-
-namespace Cochain
-
-variable {F G}
 
 lemma ofHom_injective {f₁ f₂ : F ⟶ G} (h : ofHom f₁ = ofHom f₂) : f₁ = f₂ := by
   rw [← Cocycle.homOf_ofHom_eq_self f₁, ← Cocycle.homOf_ofHom_eq_self f₂]

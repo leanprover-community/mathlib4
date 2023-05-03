@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 
 ! This file was ported from Lean 3 source module data.finset.lattice
-! leanprover-community/mathlib commit c813ed7de0f5115f956239124e9b30f3a621966f
+! leanprover-community/mathlib commit 9d684a893c52e1d6692a504a118bfccbae04feeb
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -13,13 +13,14 @@ import Mathlib.Data.Finset.Option
 import Mathlib.Data.Finset.Prod
 import Mathlib.Data.Multiset.Lattice
 import Mathlib.Order.CompleteLattice
+import Mathlib.Order.Hom.Lattice
 
 /-!
 # Lattice operations on finsets
 -/
 
 
-variable {α β γ ι : Type _}
+variable {F α β γ ι : Type _}
 
 namespace Finset
 
@@ -92,6 +93,13 @@ theorem sup_congr {f g : β → α} (hs : s₁ = s₂) (hfg : ∀ a ∈ s₂, f 
   subst hs
   exact Finset.fold_congr hfg
 #align finset.sup_congr Finset.sup_congr
+
+@[simp]
+theorem _root_.map_finset_sup [SemilatticeSup β] [OrderBot β] [SupBotHomClass F α β] (f : F)
+    (s : Finset ι) (g : ι → α) : f (s.sup g) = s.sup (f ∘ g) :=
+  Finset.cons_induction_on s (map_bot f) fun i s _ h => by
+    rw [sup_cons, sup_cons, map_sup, h, Function.comp_apply]
+#align map_finset_sup map_finset_sup
 
 @[simp]
 protected theorem sup_le_iff {a : α} : s.sup f ≤ a ↔ ∀ b ∈ s, f b ≤ a := by
@@ -360,6 +368,13 @@ theorem inf_congr {f g : β → α} (hs : s₁ = s₂) (hfg : ∀ a ∈ s₂, f 
 #align finset.inf_congr Finset.inf_congr
 
 @[simp]
+theorem _root_.map_finset_inf [SemilatticeInf β] [OrderTop β] [InfTopHomClass F α β] (f : F)
+    (s : Finset ι) (g : ι → α) : f (s.inf g) = s.inf (f ∘ g) :=
+  Finset.cons_induction_on s (map_top f) fun i s _ h => by
+    rw [inf_cons, inf_cons, map_inf, h, Function.comp_apply]
+#align map_finset_inf map_finset_inf
+
+@[simp]
 theorem inf_bunionᵢ [DecidableEq β] (s : Finset γ) (t : γ → Finset β) :
     (s.bunionᵢ t).inf f = s.inf fun x => (t x).inf f :=
   @sup_bunionᵢ αᵒᵈ _ _ _ _ _ _ _ _
@@ -425,27 +440,6 @@ theorem inf_product_right (s : Finset β) (t : Finset γ) (f : β × γ → α) 
 theorem inf_erase_top [DecidableEq α] (s : Finset α) : (s.erase ⊤).inf id = s.inf id :=
   @sup_erase_bot αᵒᵈ _ _ _ _
 #align finset.inf_erase_top Finset.inf_erase_top
-
-theorem sup_sdiff_left {α β : Type _} [BooleanAlgebra α] (s : Finset β) (f : β → α) (a : α) :
-    (s.sup fun b => a \ f b) = a \ s.inf f := by
-  refine' Finset.cons_induction_on s _ fun b t _ h => _
-  · rw [sup_empty, inf_empty, sdiff_top]
-  · rw [sup_cons, inf_cons, h, sdiff_inf]
-#align finset.sup_sdiff_left Finset.sup_sdiff_left
-
-theorem inf_sdiff_left {α β : Type _} [BooleanAlgebra α] {s : Finset β} (hs : s.Nonempty)
-    (f : β → α) (a : α) : (s.inf fun b => a \ f b) = a \ s.sup f := by
-  induction' hs using Finset.Nonempty.cons_induction with b b t _ _ h
-  · rw [sup_singleton, inf_singleton]
-  · rw [sup_cons, inf_cons, h, sdiff_sup]
-#align finset.inf_sdiff_left Finset.inf_sdiff_left
-
-theorem inf_sdiff_right {α β : Type _} [BooleanAlgebra α] {s : Finset β} (hs : s.Nonempty)
-    (f : β → α) (a : α) : (s.inf fun b => f b \ a) = s.inf f \ a := by
-  induction' hs using Finset.Nonempty.cons_induction with b b t _ _ h
-  · rw [inf_singleton, inf_singleton]
-  · rw [inf_cons, inf_cons, h, inf_sdiff]
-#align finset.inf_sdiff_right Finset.inf_sdiff_right
 
 theorem comp_inf_eq_inf_comp [SemilatticeInf γ] [OrderTop γ] {s : Finset β} {f : β → α} (g : α → γ)
     (g_inf : ∀ x y, g (x ⊓ y) = g x ⊓ g y) (top : g ⊤ = ⊤) : g (s.inf f) = s.inf (g ∘ f) :=
@@ -557,6 +551,33 @@ theorem inf_sup_distrib_right (s : Finset ι) (f : ι → α) (a : α) :
 end OrderTop
 
 end DistribLattice
+
+section BooleanAlgebra
+
+variable [BooleanAlgebra α] {s : Finset ι}
+
+theorem sup_sdiff_left (s : Finset ι) (f : ι → α) (a : α) :
+    (s.sup fun b => a \ f b) = a \ s.inf f := by
+  refine' Finset.cons_induction_on s _ fun b t _ h => _
+  · rw [sup_empty, inf_empty, sdiff_top]
+  · rw [sup_cons, inf_cons, h, sdiff_inf]
+#align finset.sup_sdiff_left Finset.sup_sdiff_left
+
+theorem inf_sdiff_left (hs : s.Nonempty) (f : ι → α) (a : α) :
+    (s.inf fun b => a \ f b) = a \ s.sup f := by
+  induction' hs using Finset.Nonempty.cons_induction with b b t _ _ h
+  · rw [sup_singleton, inf_singleton]
+  · rw [sup_cons, inf_cons, h, sdiff_sup]
+#align finset.inf_sdiff_left Finset.inf_sdiff_left
+
+theorem inf_sdiff_right (hs : s.Nonempty) (f : ι → α) (a : α) :
+    (s.inf fun b => f b \ a) = s.inf f \ a := by
+  induction' hs using Finset.Nonempty.cons_induction with b b t _ _ h
+  · rw [inf_singleton, inf_singleton]
+  · rw [inf_cons, inf_cons, h, inf_sdiff]
+#align finset.inf_sdiff_right Finset.inf_sdiff_right
+
+end BooleanAlgebra
 
 section LinearOrder
 

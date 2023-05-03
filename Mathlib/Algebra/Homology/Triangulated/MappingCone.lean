@@ -82,6 +82,13 @@ lemma inl_fst :
   ext p
   simp [Cochain.comp_v _ _ (neg_add_self 1) p (p-1) p rfl (by linarith)]
 
+@[simp]
+lemma inl_fst_assoc {K : CochainComplex C ℤ} {d e : ℤ} (γ : Cochain F K d) (he : 1 + d = e) :
+    (inl φ).comp ((fst φ : Cochain (mappingCone φ) F 1).comp γ he)
+      (by rw [← he, neg_add_cancel_left]) = γ := by
+  rw [← Cochain.comp_assoc _ _ _ (neg_add_self 1) (by linarith) (by linarith), inl_fst,
+    Cochain.id_comp]
+
 @[reassoc (attr := simp)]
 lemma inl_v_snd_v (p q : ℤ) (hpq : p+(-1) = q) :
     (inl φ).v p q hpq ≫ (snd φ).v q q (add_zero q) = 0 := by
@@ -94,6 +101,12 @@ lemma inl_snd :
   ext ⟨p, q, hpq⟩
   simp [Cochain.comp_v _ _ (add_zero (-1)) p q q (by linarith) (by linarith)]
 
+@[simp]
+lemma inl_snd_assoc {K : CochainComplex C ℤ} {d e f : ℤ} (γ : Cochain G K d) (he : 0 + d = e) (hf : -1 + e = f) :
+    (inl φ).comp ((snd φ).comp γ he) hf = 0 := by
+  obtain rfl : e = d := by linarith
+  rw [← Cochain.comp_assoc_of_second_is_zero_cochain, inl_snd, Cochain.zero_comp]
+
 @[reassoc (attr := simp)]
 lemma inr_f_fst_v (p q : ℤ) (hpq : p+1 = q) :
     (inr φ).f p ≫ (fst φ : Cochain (mappingCone φ) F 1).v p q hpq = 0 := by
@@ -105,6 +118,13 @@ lemma inr_fst :
   ext ⟨p, q, hpq⟩
   simp [Cochain.comp_v _ _ (zero_add 1) p p q (by linarith) (by linarith)]
 
+@[simp]
+lemma inr_fst_assoc {K : CochainComplex C ℤ} {d e f : ℤ} (γ : Cochain F K d)
+    (he : 1 + d = e) (hf : 0 + e = f) :
+    (Cochain.ofHom (inr φ)).comp ((fst φ : Cochain (mappingCone φ) F 1).comp γ he) hf = 0 := by
+  obtain rfl : e = f := by linarith
+  rw [← Cochain.comp_assoc_of_first_is_zero_cochain, inr_fst, Cochain.zero_comp]
+
 @[reassoc (attr := simp)]
 lemma inr_f_snd_v (p : ℤ) :
     (inr φ).f p ≫ (snd φ).v p p (add_zero p) = 𝟙 _ := by
@@ -113,6 +133,13 @@ lemma inr_f_snd_v (p : ℤ) :
 @[simp]
 lemma inr_snd :
     (Cochain.ofHom (inr φ)).comp (snd φ) (zero_add 0) = Cochain.ofHom (𝟙 G) := by aesop_cat
+
+@[simp]
+lemma inr_snd_assoc {K : CochainComplex C ℤ} {d e : ℤ} (γ : Cochain G K d) (he : 0 + d = e) :
+  (Cochain.ofHom (inr φ)).comp ((snd φ).comp γ (he))
+    (show _ = d by rw [← he, zero_add, zero_add]) = γ := by
+  obtain rfl : d = e := by linarith
+  aesop_cat
 
 lemma id (p q : ℤ) (hpq : p + 1 = q) :
   𝟙 ((mappingCone φ).X p) = (fst φ : Cochain (mappingCone φ) F 1).v p q hpq ≫
@@ -143,6 +170,24 @@ lemma from_ext_iff {A : C} {n₁ : ℤ} (f g : (mappingCone φ).X n₁ ⟶ A)
   . rintro ⟨h₁, h₂⟩
     rw [← cancel_epi (𝟙 _), id φ n₁ n₂ h]
     simp only [add_comp, assoc, h₁, h₂]
+
+lemma cochain_from_ext_iff {K : CochainComplex C ℤ} {n : ℤ} (γ₁ γ₂ : Cochain (mappingCone φ) K n)
+    (n' : ℤ) (hn' : -1 + n = n') :
+    γ₁ = γ₂ ↔ (inl φ : Cochain F (mappingCone φ) (-1)).comp γ₁ hn' =
+      (inl φ : Cochain F (mappingCone φ) (-1)).comp γ₂ hn' ∧
+      (Cochain.ofHom (inr φ)).comp γ₁ (zero_add n) =
+        (Cochain.ofHom (inr φ)).comp γ₂ (zero_add n) := by
+  constructor
+  . rintro rfl
+    tauto
+  . rintro ⟨h₁, h₂⟩
+    ext ⟨p, q, hpq⟩
+    dsimp
+    rw [from_ext_iff _ _ _ _ rfl]
+    constructor
+    . simpa only [Cochain.comp_v _ _ hn' (p+1) p q (by linarith) hpq]
+        using Cochain.congr_v h₁ (p+1) q (by linarith)
+    . simpa only [Cochain.zero_cochain_comp_v, Cochain.ofHom_v] using Cochain.congr_v h₂ p q hpq
 
 @[reassoc]
 lemma inl_v_d (n₁ n₂ n₃ : ℤ) (h₁₂ : n₁ + (-1) = n₂) (h₁₃ : n₃ + (-1) = n₁) :
@@ -242,13 +287,117 @@ lemma X_is_zero_iff (n : ℤ) :
     IsZero ((mappingCone φ).X n) ↔ IsZero (F.X (n+1)) ∧ IsZero (G.X n) := by
   rw [(XIso φ n (n+1) rfl).isZero_iff, biprod.is_zero_iff]
 
+noncomputable def descCochain {K : CochainComplex C ℤ} {n m : ℤ} (α : Cochain F K m)
+    (β : Cochain G K n) (h : m + 1 = n) : Cochain (mappingCone φ) K n :=
+  (fst φ : Cochain (mappingCone φ) F 1).comp α (show 1 + m = n by rw [← h, add_comm]) +
+    (snd φ).comp β (zero_add n)
+
+lemma inl_descCochain {K : CochainComplex C ℤ} {n m : ℤ} (α : Cochain F K m)
+    (β : Cochain G K n) (h : m + 1 = n) :
+    (inl φ).comp (descCochain φ α β h) (by rw [← h, neg_add_cancel_comm_assoc]) = α := by
+  dsimp only [descCochain]
+  simp only [Cochain.comp_add, inl_fst_assoc, inl_snd_assoc, add_zero]
+
+@[reassoc (attr := simp)]
+lemma inl_v_descCochain_v {K : CochainComplex C ℤ} {n m : ℤ}
+    (α : Cochain F K m) (β : Cochain G K n) (h : m + 1 = n) (p₁ p₂ p₃ : ℤ)
+      (h₁₂ : p₁ + (-1) = p₂) (h₂₃ : p₂ + n = p₃) :
+    (inl φ).v p₁ p₂ h₁₂ ≫ (descCochain φ α β h).v p₂ p₃ h₂₃ =
+        α.v p₁ p₃ (by rw [← h₂₃, ← h₁₂, ← h, add_comm m, add_assoc, neg_add_cancel_left]) := by
+  simpa only [Cochain.comp_v _ _ (show -1 + n = m by linarith) p₁ p₂ p₃
+    (by linarith) (by linarith)] using
+      Cochain.congr_v (inl_descCochain φ α β h) p₁ p₃ (by linarith)
+
+@[simp]
+lemma inr_descCochain {K : CochainComplex C ℤ} {n m : ℤ}
+    (α : Cochain F K m) (β : Cochain G K n) (h : m + 1 = n) :
+      (Cochain.ofHom (inr φ)).comp (descCochain φ α β h) (zero_add n) = β := by
+  dsimp only [descCochain]
+  simp only [Cochain.comp_add, inr_fst_assoc, inr_snd_assoc, zero_add]
+
+@[simp, reassoc]
+lemma inr_descCochain_v {K : CochainComplex C ℤ} {n m : ℤ}
+    (α : Cochain F K m) (β : Cochain G K n) (h : m + 1 = n) (p₁ p₂ : ℤ) (h₁₂ : p₁ + n = p₂) :
+    (inr φ).f p₁ ≫ (descCochain φ α β h).v p₁ p₂ h₁₂ = β.v p₁ p₂ h₁₂ := by
+  simpa only [Cochain.comp_v _ _ (zero_add n) p₁ p₁ p₂ (add_zero p₁) h₁₂, Cochain.ofHom_v]
+    using Cochain.congr_v (inr_descCochain φ α β h) p₁ p₂ (by linarith)
+
+lemma δ_descCochain {K : CochainComplex C ℤ} {n m n' : ℤ} (α : Cochain F K m) (β : Cochain G K n)
+  (h : m + 1 = n) (hn' : n+1 = n') :
+  δ n n' (descCochain φ α β h) = (fst φ : Cochain (mappingCone φ) F 1).comp (δ m n α +
+    ε (n+1) • (Cochain.ofHom φ).comp β (zero_add n)) (by rw [← hn', add_comm]) +
+      (snd φ).comp (δ n n' β) (zero_add n') := by
+  dsimp only [descCochain]
+  simp only [δ_add, Cochain.comp_add, Cochain.comp_zsmul,
+    δ_zero_cochain_comp _ _ _ hn', δ_snd, Cochain.neg_comp, smul_neg,
+    δ_comp _ _ (show 1 + m = n by linarith) 2 n _ hn' rfl h, ε_succ,
+    Cochain.comp_assoc_of_second_is_zero_cochain, Cochain.zero_comp,
+    Cocycle.δ_eq_zero, smul_zero, add_zero, neg_smul,
+    Cochain.comp_neg, Cochain.comp_zsmul]
+  abel
+
+@[simps!]
+noncomputable def descCocycle {K : CochainComplex C ℤ} {n m : ℤ}
+    (α : Cochain F K m) (β : Cocycle G K n)
+    (h : m + 1 = n) (eq : δ m n α = ε n • (Cochain.ofHom φ).comp (β : Cochain G K n) (zero_add n)) :
+    Cocycle (mappingCone φ) K n :=
+  Cocycle.mk (descCochain φ α (β : Cochain G K n) h) (n+1) rfl
+    (by simp only [δ_descCochain _ _ _ _ rfl, eq, ε_succ, neg_smul, add_right_neg,
+      Cochain.comp_zero, Cocycle.δ_eq_zero, add_zero])
+
+noncomputable def desc {K : CochainComplex C ℤ} (α : Cochain F K (-1)) (β : G ⟶ K)
+    (eq : δ (-1) 0 α = Cochain.ofHom (φ ≫ β)) : mappingCone φ ⟶ K :=
+  Cocycle.homOf (descCocycle φ α (Cocycle.ofHom β) (neg_add_self 1)
+    (by simp only [eq, Cochain.ofHom_comp, ε_0, Cocycle.ofHom_coe, one_smul]))
+
+section
+
+attribute [local simp] desc
+
+@[reassoc (attr := simp)]
+lemma inl_v_desc_f {K : CochainComplex C ℤ} (α : Cochain F K (-1)) (β : G ⟶ K)
+    (eq : δ (-1) 0 α = Cochain.ofHom (φ ≫ β)) (p₁ p₂ : ℤ) (h : p₁ + (-1) = p₂) :
+    (inl φ : Cochain F (mappingCone φ) (-1)).v p₁ p₂ h ≫ (desc φ α β eq).f p₂ = α.v p₁ p₂ h := by
+  aesop_cat
+
+@[simp]
+lemma inl_desc {K : CochainComplex C ℤ} (α : Cochain F K (-1)) (β : G ⟶ K)
+    (eq : δ (-1) 0 α = Cochain.ofHom (φ ≫ β)) :
+    (inl φ : Cochain F (mappingCone φ) (-1)).comp
+      (Cochain.ofHom (desc φ α β eq)) (add_zero (-1)) = α := by aesop_cat
+
+@[reassoc (attr := simp)]
+lemma inr_f_desc_f {K : CochainComplex C ℤ} (α : Cochain F K (-1)) (β : G ⟶ K)
+    (eq : δ (-1) 0 α = Cochain.ofHom (φ ≫ β)) (p : ℤ) :
+    (inr φ).f p ≫ (desc φ α β eq).f p = β.f p := by aesop_cat
+
+@[simp]
+lemma inr_desc {K : CochainComplex C ℤ} (α : Cochain F K (-1)) (β : G ⟶ K)
+    (eq : δ (-1) 0 α = Cochain.ofHom (φ ≫ β)) :
+    inr φ ≫ desc φ α β eq = β := by aesop_cat
+
+end
+
+noncomputable def descHomotopy {K : CochainComplex C ℤ} (f₁ f₂ : mappingCone φ ⟶ K)
+    (γ₁ : Cochain F K (-2)) (γ₂ : Cochain G K (-1))
+    (h₁ : (inl φ).comp (Cochain.ofHom f₁) (add_zero (-1)) =
+      δ (-2) (-1) γ₁ + (Cochain.ofHom φ).comp γ₂ (zero_add (-1)) +
+      (inl φ).comp (Cochain.ofHom f₂) (add_zero (-1)))
+    (h₂ : Cochain.ofHom (inr φ ≫ f₁) = δ (-1) 0 γ₂ + Cochain.ofHom (inr φ ≫ f₂)) :
+  Homotopy f₁ f₂ := (Cochain.equivHomotopy f₁ f₂).symm (⟨descCochain φ γ₁ γ₂ (by linarith), by
+    simp only [δ_descCochain _ _ _ _ (neg_add_self 1), neg_add_self, ε_0, one_smul,
+      cochain_from_ext_iff _ _ _ _ (add_zero (-1))]
+    constructor
+    . simp only [h₁, Cochain.comp_add, inl_fst_assoc, inl_snd_assoc, add_zero]
+    . simp only [Cochain.ofHom_comp] at h₂
+      simp only [h₂, Cochain.comp_add, inr_fst_assoc, add_zero, inr_snd_assoc, zero_add]⟩)
+
 -- should be moved to the file where the triangulated structure is defined
 --@[simps!]
 --noncomputable def cocycleTriangleδ : Cocycle (mappingCone φ) F 1 := -fst φ
 --
 --noncomputable def triangleδ : mappingCone φ ⟶ F⟦(1 : ℤ)⟧ :=
 --  Cocycle.homOf ((-fst φ).rightShift 1 0 (zero_add 1))
-#lint
 #exit
 
 end MappingCone
@@ -396,59 +545,6 @@ def δ' : (homotopy_category.quotient _ _).obj (mappingCone φ) ⟶
   ((homotopy_category.quotient _ _).obj F)⟦(1 : ℤ)⟧ :=
 (homotopy_category.quotient _ _).map (δ φ)
 
-def desc_cochain {K : cochain_complex C ℤ} {n m : ℤ} (α : cochain F K m) (β : cochain G K n)
-  (h : m+1=n) :
-  cochain (mappingCone φ) K n :=
-(fst φ : cochain (mappingCone φ) F 1).comp α (show n = 1+m, by rw [← h, add_comm])
-  + (snd φ).comp β (zero_add n).symm
-
-@[simp, reassoc]
-lemma inl_desc_cochain_v {K : cochain_complex C ℤ} {n m : ℤ}
-  (α : cochain F K m) (β : cochain G K n) (h : m+1=n) (p₁ p₂ p₃ : ℤ)
-    (h₁₂ : p₂ = p₁ + (-1)) (h₂₃ : p₃ = p₂ + n) :
-  (inl φ).v p₁ p₂ h₁₂ ≫ (desc_cochain φ α β h).v p₂ p₃ h₂₃ =
-      α.v p₁ p₃ (by rw [h₂₃, h₁₂, ← h, int.add_neg_one, sub_add_add_cancel]) :=
-begin
-  dsimp [desc_cochain],
-  simp only [add_zero, cochain.zero_cochain_comp, preadditive.comp_add, zero_comp,
-    cochain.comp_v _ _ (show n = 1 + m, by linarith) p₂ p₁ p₃ (by linarith) (by linarith),
-    inl_fst_assoc, inl_snd_assoc],
-end
-
-@[simp, reassoc]
-lemma inr_desc_cochain_v {K : cochain_complex C ℤ} {n m : ℤ}
-  (α : cochain F K m) (β : cochain G K n) (h : m+1=n) (p₁ p₂ : ℤ)
-    (h₁₂ : p₂ = p₁ + n) :
-  (inr φ).f p₁ ≫ (desc_cochain φ α β h).v p₁ p₂ h₁₂ =
-      β.v p₁ p₂ h₁₂ :=
-begin
-  dsimp [desc_cochain],
-  simp only [cochain.zero_cochain_comp, preadditive.comp_add, inr_snd_assoc, add_left_eq_self,
-    cochain.comp_v _ _ (show n = 1 + m, by linarith) p₁ (p₁ + 1) p₂ rfl (by linarith),
-    inr_fst_assoc, zero_comp],
-end
-
-@[simp]
-lemma inl_desc_cochain {K : cochain_complex C ℤ} {n m : ℤ}
-  (α : cochain F K m) (β : cochain G K n) (h : m+1=n) :
-  (inl φ).comp (desc_cochain φ α β h)
-    (show m = -1+n, by rw [← h, neg_add_cancel_comm_assoc]) = α :=
-begin
-  ext p q hpq,
-  simp only [cochain.comp_v _ _ (show m = -1 + n, by linarith)
-    p (p-1) q (by linarith) (by linarith), inl_desc_cochain_v],
-end
-
-@[simp]
-lemma inr_desc_cochain {K : cochain_complex C ℤ} {n m : ℤ}
-  (α : cochain F K m) (β : cochain G K n) (h : m+1=n) :
-  (cochain.of_hom (inr φ)).comp
-    (desc_cochain φ α β h) (zero_add n).symm = β  :=
-begin
-  ext p q hpq,
-  simp only [cochain.comp_v _ _ (zero_add n).symm p p q (add_zero p).symm hpq,
-    cochain.of_hom_v, inr_desc_cochain_v],
-end
 
 lemma δ_desc_cochain {K : cochain_complex C ℤ} {n m n' : ℤ} (α : cochain F K m) (β : cochain G K n)
   (h : m+1=n) (hn' : n+1 = n') : hom_complex.δ n n' (desc_cochain φ α β h) =
