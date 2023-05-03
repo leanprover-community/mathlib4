@@ -241,8 +241,8 @@ lemma isClosed_eq_lower_and_subset_implies_LUB_mem (s : Set α) : IsClosed s
     rw [c2] at c1
     simp only [Set.not_nonempty_empty] at c1
   . intros h d a d₁ d₂ d₃ d₄
+    rw [inter_compl_nonempty_iff]
     by_contra h'
-    rw [inter_compl_nonempty_iff, not_not] at h'
     have c1: a ∈ s := h d a d₁ d₂ d₃ h'
     contradiction
 
