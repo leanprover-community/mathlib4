@@ -233,12 +233,13 @@ theorem discrete_functor_obj_eq_as : (Discrete.functor f).obj X = f X.as :=
 #align category_theory.free_monoidal_category.discrete_functor_obj_eq_as CategoryTheory.FreeMonoidalCategory.discrete_functor_obj_eq_as
 
 -- TODO: move to discrete_category.lean, decide whether this should be a global simp lemma
-@[simp]
+@[simp 1100]
 theorem discrete_functor_map_eq_id (g : X ⟶ X) : (Discrete.functor f).map g = 𝟙 _ := rfl
 #align category_theory.free_monoidal_category.discrete_functor_map_eq_id CategoryTheory.FreeMonoidalCategory.discrete_functor_map_eq_id
 
 end
 
+set_option maxHeartbeats 400000 in
 /-- The isomorphism between `n ⊗ X` and `normalize X n` is natural (in both `X` and `n`, but
     naturality in `n` is trivial and was "proved" in `normalizeIsoAux`). This is the real heart
     of our proof of the coherence theorem. -/
@@ -247,7 +248,7 @@ def normalizeIso : tensorFunc C ≅ normalize' C :=
     (by
       rintro X Y f
       induction' f using Quotient.recOn with f ; swap ; rfl
-      induction' f with _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ h₁ h₂
+      induction' f with _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ h₁ h₂ X₁ X₂ Y₁ Y₂ f g h₁ h₂
       . simp only [mk_id, Functor.map_id, Category.comp_id, Category.id_comp]
       . ext n
         dsimp
@@ -290,23 +291,25 @@ def normalizeIso : tensorFunc C ≅ normalize' C :=
         simp only [← (Iso.eq_comp_inv _).1 (rightUnitor_tensor_inv _ _), rightUnitor_conjugation,
           Category.assoc, Iso.hom_inv_id_assoc, Iso.inv_hom_id_assoc, Iso.inv_hom_id]
       . rw [mk_comp, Functor.map_comp, Functor.map_comp, Category.assoc, h₂, reassoc_of% h₁]
-      . sorry)
-      --· dsimp at *
-      --  rw [associator_inv_naturality_assoc]
-      --  slice_lhs 2 3 => rw [← tensor_comp, f_ih_f ⟦f_f⟧]
-      --  conv_lhs => rw [← @category.id_comp (F C) _ _ _ ⟦f_g⟧]
-      --  simp only [category.comp_id, tensor_comp, category.assoc]
-      --  congr 2
-      --  rw [← mk_tensor, Quotient.lift_mk]
-      --  dsimp
-      --  rw [functor.map_comp, ← category.assoc, ← f_ih_g ⟦f_g⟧, ←
-      --    @category.comp_id (F C) _ _ _ ⟦f_g⟧, ←
-      --    category.id_comp ((discrete.functor inclusion_obj).map _), tensor_comp]
-      --  dsimp
-      --  simp only [category.assoc, category.comp_id]
-      --  congr 1
-      --  convert(normalize_iso_aux C f_Z).Hom.naturality ((normalize_map_aux f_f).app n)
-      --  exact (tensor_func_obj_map _ _ _).symm)
+      . ext ⟨n⟩
+        replace h₁ := NatTrans.congr_app h₁ ⟨n⟩
+        replace h₂ := NatTrans.congr_app h₂ ((Discrete.functor (normalizeObj X₁)).obj ⟨n⟩)
+        have h₃ := (normalizeIsoAux _ Y₂).hom.naturality ((normalizeMapAux f).app ⟨n⟩)
+        have h₄ : ∀ (X₃ Y₃ : N C) (φ : X₃ ⟶ Y₃), (Discrete.functor inclusionObj).map φ ⊗ 𝟙 Y₂ =
+            (Discrete.functor fun n ↦ inclusionObj n ⊗ Y₂).map φ := by
+          rintro ⟨X₃⟩ ⟨Y₃⟩ φ
+          obtain rfl : X₃ = Y₃ := φ.1.1
+          simp only [discrete_functor_map_eq_id, tensor_id]
+          rfl
+        rw [NatTrans.comp_app, NatTrans.comp_app] at h₁ h₂ ⊢
+        dsimp [NatIso.ofComponents, normalizeMapAux, whiskeringRight, whiskerRight,
+          Functor.comp, Discrete.natTrans] at h₁ h₂ h₃ ⊢
+        rw [mk_tensor, associator_inv_naturality_assoc, ← tensor_comp_assoc, h₁,
+          Category.assoc, Category.comp_id, ← @Category.id_comp (F C) _ _ _ (@Quotient.mk _ _ g),
+          tensor_comp, Category.assoc, Category.assoc, Functor.map_comp]
+        congr 2
+        erw [← reassoc_of% h₂]
+        rw [← h₃, ← Category.assoc, ← id_tensor_comp_tensor_id, h₄])
 #align category_theory.free_monoidal_category.normalize_iso CategoryTheory.FreeMonoidalCategory.normalizeIso
 
 /-- The isomorphism between an object and its normal form is natural. -/
