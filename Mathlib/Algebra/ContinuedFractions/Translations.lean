@@ -23,7 +23,8 @@ Some simple translation lemmas between the different definitions of functions de
 namespace GeneralizedContinuedFraction
 
 /- ./././Mathport/Syntax/Translate/Command.lean:229:11: unsupported: unusual advanced open style -/
-section General
+-- porting note: TODO
+-- section General
 
 /-!
 ### Translations Between General Access Functions
@@ -42,41 +43,41 @@ theorem terminatedAt_iff_s_none : g.TerminatedAt n ↔ g.s.get? n = none := by r
 #align generalized_continued_fraction.terminated_at_iff_s_none GeneralizedContinuedFraction.terminatedAt_iff_s_none
 
 theorem part_num_none_iff_s_none : g.partialNumerators.get? n = none ↔ g.s.get? n = none := by
-  cases s_nth_eq : g.s.nth n <;> simp [partial_numerators, s_nth_eq]
+  cases s_nth_eq : g.s.get? n <;> simp [partialNumerators, s_nth_eq]
 #align generalized_continued_fraction.part_num_none_iff_s_none GeneralizedContinuedFraction.part_num_none_iff_s_none
 
 theorem terminatedAt_iff_part_num_none : g.TerminatedAt n ↔ g.partialNumerators.get? n = none := by
-  rw [terminated_at_iff_s_none, part_num_none_iff_s_none]
+  rw [terminatedAt_iff_s_none, part_num_none_iff_s_none]
 #align generalized_continued_fraction.terminated_at_iff_part_num_none GeneralizedContinuedFraction.terminatedAt_iff_part_num_none
 
 theorem part_denom_none_iff_s_none : g.partialDenominators.get? n = none ↔ g.s.get? n = none := by
-  cases s_nth_eq : g.s.nth n <;> simp [partial_denominators, s_nth_eq]
+  cases s_nth_eq : g.s.get? n <;> simp [partialDenominators, s_nth_eq]
 #align generalized_continued_fraction.part_denom_none_iff_s_none GeneralizedContinuedFraction.part_denom_none_iff_s_none
 
 theorem terminatedAt_iff_part_denom_none : g.TerminatedAt n ↔ g.partialDenominators.get? n = none :=
-  by rw [terminated_at_iff_s_none, part_denom_none_iff_s_none]
+  by rw [terminatedAt_iff_s_none, part_denom_none_iff_s_none]
 #align generalized_continued_fraction.terminated_at_iff_part_denom_none GeneralizedContinuedFraction.terminatedAt_iff_part_denom_none
 
 theorem part_num_eq_s_a {gp : Pair α} (s_nth_eq : g.s.get? n = some gp) :
-    g.partialNumerators.get? n = some gp.a := by simp [partial_numerators, s_nth_eq]
+    g.partialNumerators.get? n = some gp.a := by simp [partialNumerators, s_nth_eq]
 #align generalized_continued_fraction.part_num_eq_s_a GeneralizedContinuedFraction.part_num_eq_s_a
 
 theorem part_denom_eq_s_b {gp : Pair α} (s_nth_eq : g.s.get? n = some gp) :
-    g.partialDenominators.get? n = some gp.b := by simp [partial_denominators, s_nth_eq]
+    g.partialDenominators.get? n = some gp.b := by simp [partialDenominators, s_nth_eq]
 #align generalized_continued_fraction.part_denom_eq_s_b GeneralizedContinuedFraction.part_denom_eq_s_b
 
 theorem exists_s_a_of_part_num {a : α} (nth_part_num_eq : g.partialNumerators.get? n = some a) :
     ∃ gp, g.s.get? n = some gp ∧ gp.a = a := by
-  simpa [partial_numerators, seq.map_nth] using nth_part_num_eq
+  simpa [partialNumerators, Stream'.Seq.map_get?] using nth_part_num_eq
 #align generalized_continued_fraction.exists_s_a_of_part_num GeneralizedContinuedFraction.exists_s_a_of_part_num
 
 theorem exists_s_b_of_part_denom {b : α}
     (nth_part_denom_eq : g.partialDenominators.get? n = some b) :
     ∃ gp, g.s.get? n = some gp ∧ gp.b = b := by
-  simpa [partial_denominators, seq.map_nth] using nth_part_denom_eq
+  simpa [partialDenominators, Stream'.Seq.map_get?] using nth_part_denom_eq
 #align generalized_continued_fraction.exists_s_b_of_part_denom GeneralizedContinuedFraction.exists_s_b_of_part_denom
 
-end General
+-- end General
 
 section WithDivisionRing
 
@@ -188,4 +189,3 @@ theorem convergents'Aux_succ_some {s : Seq (Pair K)} {p : Pair K} (h : s.headI =
 end WithDivisionRing
 
 end GeneralizedContinuedFraction
-
