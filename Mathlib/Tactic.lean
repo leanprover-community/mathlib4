@@ -12,8 +12,8 @@ import Mathlib.Tactic.CasesM
 import Mathlib.Tactic.Choose
 import Mathlib.Tactic.Classical
 import Mathlib.Tactic.Clear!
-import Mathlib.Tactic.Clear_
 import Mathlib.Tactic.ClearExcept
+import Mathlib.Tactic.Clear_
 import Mathlib.Tactic.Coe
 import Mathlib.Tactic.Congr!
 import Mathlib.Tactic.Constructor
@@ -81,6 +81,7 @@ import Mathlib.Tactic.ProxyType
 import Mathlib.Tactic.PushNeg
 import Mathlib.Tactic.Qify
 import Mathlib.Tactic.Qify.Attr
+import Mathlib.Tactic.RSuffices
 import Mathlib.Tactic.Reassoc
 import Mathlib.Tactic.Recover
 import Mathlib.Tactic.Relation.Rfl
@@ -93,7 +94,6 @@ import Mathlib.Tactic.RestateAxiom
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Ring.Basic
 import Mathlib.Tactic.Ring.RingNF
-import Mathlib.Tactic.RSuffices
 import Mathlib.Tactic.RunCmd
 import Mathlib.Tactic.Sat.FromLRAT
 import Mathlib.Tactic.ScopedNS
@@ -110,8 +110,8 @@ import Mathlib.Tactic.Substs
 import Mathlib.Tactic.SuccessIfFailWithMsg
 import Mathlib.Tactic.SudoSetOption
 import Mathlib.Tactic.SwapVar
-import Mathlib.Tactic.Tauto
 import Mathlib.Tactic.TFAE
+import Mathlib.Tactic.Tauto
 import Mathlib.Tactic.ToAdditive
 import Mathlib.Tactic.ToExpr
 import Mathlib.Tactic.ToLevel
