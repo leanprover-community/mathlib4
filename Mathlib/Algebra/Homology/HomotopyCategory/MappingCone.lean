@@ -263,10 +263,12 @@ lemma diff_comp_snd :
     Cochain.comp_v _ _ (zero_add 1) p p q (add_zero p) hpq,
     Cochain.diff_v, Cochain.ofHom_v, d_snd_v _ _ _ hpq]
 
+@[simp]
 lemma δ_inl : δ (-1) 0 (inl φ) = Cochain.ofHom (φ ≫ inr φ) := by
   simp only [δ_eq (-1) 0 (neg_add_self 1), inl_comp_diff, Cochain.ofHom_comp,
     add_left_neg, ε_0, one_smul, sub_add_cancel]
 
+@[simp]
 lemma δ_snd : δ 0 1 (snd φ) =
     -(fst φ : Cochain (mappingCone φ) F 1).comp (Cochain.ofHom φ) (add_zero 1) := by
   simp only [δ_eq 0 1 (zero_add 1), zero_add, ε_1,
@@ -315,8 +317,8 @@ lemma inr_descCochain {K : CochainComplex C ℤ} {n m : ℤ}
   dsimp only [descCochain]
   simp only [Cochain.comp_add, inr_fst_assoc, inr_snd_assoc, zero_add]
 
-@[simp, reassoc]
-lemma inr_descCochain_v {K : CochainComplex C ℤ} {n m : ℤ}
+@[reassoc (attr := simp)]
+lemma inr_f_descCochain_v {K : CochainComplex C ℤ} {n m : ℤ}
     (α : Cochain F K m) (β : Cochain G K n) (h : m + 1 = n) (p₁ p₂ : ℤ) (h₁₂ : p₁ + n = p₂) :
     (inr φ).f p₁ ≫ (descCochain φ α β h).v p₁ p₂ h₁₂ = β.v p₁ p₂ h₁₂ := by
   simpa only [Cochain.comp_v _ _ (zero_add n) p₁ p₁ p₂ (add_zero p₁) h₁₂, Cochain.ofHom_v]
@@ -391,14 +393,6 @@ noncomputable def descHomotopy {K : CochainComplex C ℤ} (f₁ f₂ : mappingCo
     . simp only [h₁, Cochain.comp_add, inl_fst_assoc, inl_snd_assoc, add_zero]
     . simp only [Cochain.ofHom_comp] at h₂
       simp only [h₂, Cochain.comp_add, inr_fst_assoc, add_zero, inr_snd_assoc, zero_add]⟩)
-
--- should be moved to the file where the triangulated structure is defined
---@[simps!]
---noncomputable def cocycleTriangleδ : Cocycle (mappingCone φ) F 1 := -fst φ
---
---noncomputable def triangleδ : mappingCone φ ⟶ F⟦(1 : ℤ)⟧ :=
---  Cocycle.homOf ((-fst φ).rightShift 1 0 (zero_add 1))
-#exit
 
 end MappingCone
 

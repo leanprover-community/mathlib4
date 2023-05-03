@@ -859,6 +859,7 @@ namespace Cocycle
 
 variable (γ : Cocycle K L n)
 
+@[simps!]
 def rightShift (a n' : ℤ) (hn' : n' + a = n) : Cocycle K (L⟦a⟧) n' :=
   Cocycle.mk ((γ : Cochain K L n).rightShift a n' hn') _ rfl (by
     simp only [Cochain.δ_rightShift _ a n' (n'+1) hn' (n+1) (by linarith),

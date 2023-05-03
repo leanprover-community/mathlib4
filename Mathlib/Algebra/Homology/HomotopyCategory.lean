@@ -9,7 +9,7 @@ Authors: Scott Morrison
 ! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Homology.Homotopy
-import Mathlib.CategoryTheory.Quotient
+import Mathlib.CategoryTheory.Quotient.Preadditive
 
 /-!
 # The homotopy category
@@ -53,11 +53,14 @@ def HomotopyCategory :=
   CategoryTheory.Quotient (homotopic V c)
 #align homotopy_category HomotopyCategory
 
-instance : Category (HomotopyCategory V v) := by
+instance : Category (HomotopyCategory V c) := by
   dsimp only [HomotopyCategory]
   infer_instance
 
--- TODO the homotopy_category is preadditive
+instance : Preadditive (HomotopyCategory V c) := Quotient.preadditive _ (by
+  rintro _ _ _ _ _ _ ⟨h⟩ ⟨h'⟩
+  exact ⟨Homotopy.add h h'⟩)
+
 namespace HomotopyCategory
 
 /-- The quotient functor from complexes to the homotopy category. -/
@@ -65,13 +68,26 @@ def quotient : HomologicalComplex V c ⥤ HomotopyCategory V c :=
   CategoryTheory.Quotient.functor _
 #align homotopy_category.quotient HomotopyCategory.quotient
 
+instance quotient_additive : (quotient V c).Additive :=
+  Quotient.functor_additive _ _
+
 open ZeroObject
 
 -- TODO upgrade this to `HasZeroObject`, presumably for any `quotient`.
 instance [HasZeroObject V] : Inhabited (HomotopyCategory V c) :=
   ⟨(quotient V c).obj 0⟩
 
+instance [HasZeroObject V] : HasZeroObject (HomotopyCategory V c) :=
+  ⟨(quotient V c).obj 0, by
+    rw [IsZero.iff_id_eq_zero, ← (quotient V c).map_id, id_zero, Functor.map_zero]⟩
+
 variable {V c}
+
+lemma quotient_map_surjective {X Y : HomologicalComplex V c}
+    (f : (quotient _ _ ).obj X ⟶ (quotient _ _ ).obj Y) :
+    ∃ (g : X ⟶ Y), f = (quotient _ _).map g := by
+  obtain ⟨g⟩ := f
+  exact ⟨g, rfl⟩
 
 -- porting note: removed @[simp] attribute because it hinders the automatic application of the
 -- more useful `quotient_map_out`
@@ -140,6 +156,15 @@ def homotopyEquivOfIso {C D : HomologicalComplex V c}
     homotopyOfEq _ _
       (by rw [quotient_map_out_comp_out, i.inv_hom_id, (quotient V c).map_id])
 #align homotopy_category.homotopy_equiv_of_iso HomotopyCategory.homotopyEquivOfIso
+
+lemma isZero_quotient_obj_iff (C : HomologicalComplex V c) :
+    IsZero ((quotient _ _).obj C) ↔ Nonempty (Homotopy (𝟙 C) 0) := by
+  rw [IsZero.iff_id_eq_zero]
+  constructor
+  . intro h
+    exact ⟨(homotopyOfEq _ _ (by simp [h]))⟩
+  . rintro ⟨h⟩
+    simpa using (eq_of_homotopy _ _ h)
 
 variable (V c)
 variable [HasEqualizers V] [HasImages V] [HasImageMaps V] [HasCokernels V]

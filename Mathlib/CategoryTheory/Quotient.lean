@@ -142,24 +142,40 @@ protected theorem sound {a b : C} {f₁ f₂ : a ⟶ b} (h : r f₁ f₂) :
   simpa using Quot.sound (CompClosure.intro (𝟙 a) f₁ f₂ (𝟙 b) h)
 #align category_theory.quotient.sound CategoryTheory.Quotient.sound
 
-theorem functor_map_eq_iff [h : Congruence r] {X Y : C} (f f' : X ⟶ Y) :
-    (functor r).map f = (functor r).map f' ↔ r f f' :=
-  by
+@[simp]
+lemma compClosure_iff_self [h : Congruence r] {X Y : C} (f g : X ⟶ Y) :
+    CompClosure r f g ↔ r f g := by
   constructor
-  · erw [Quot.eq]
-    intro h
-    induction' h with m m' hm
-    · cases hm
-      apply Congruence.compLeft
-      apply Congruence.compRight
-      assumption
-    · haveI := (h.isEquiv : IsEquiv _ (@r X Y))
-      -- porting note: had to add this line for `refl` (and name the `Congruence` argument)
-      apply refl
-    · apply symm
-      assumption
-    · apply _root_.trans <;> assumption
-  · apply Quotient.sound
+  . intro hfg
+    induction' hfg with m m' hm
+    apply Congruence.compLeft
+    apply Congruence.compRight
+    assumption
+  . exact CompClosure.of _ _ _
+
+theorem compClosure_eq_self [h : Congruence r] :
+    CompClosure r = r := by aesop_cat
+
+-- to be moved to `Init.Algebra.Classes`
+lemma _root_.IsEquiv.quot_mk_eq_iff {α : Type _} {r : α → α → Prop} (h : IsEquiv α r)
+  (x y : α) : Quot.mk r x = Quot.mk r y ↔ r x y := by
+  constructor
+  . rw [Quot.eq]
+    intro hxy
+    induction' hxy with _ _ _ _ _ _ _ _ _ _ _ _ _ h₁₂ h₂₃
+    . assumption
+    . exact h.refl _
+    . exact h.symm _ _ (by assumption)
+    . exact h.trans _ _ _ h₁₂ h₂₃
+  . exact Quot.sound
+
+theorem functor_map_eq_iff [h : Congruence r] {X Y : C} (f f' : X ⟶ Y) :
+    (functor r).map f = (functor r).map f' ↔ r f f' := by
+  dsimp [functor]
+  conv_rhs => rw [← compClosure_eq_self r]
+  apply IsEquiv.quot_mk_eq_iff
+  rw [compClosure_eq_self r]
+  exact h.isEquiv
 #align category_theory.quotient.functor_map_eq_iff CategoryTheory.Quotient.functor_map_eq_iff
 
 variable {D : Type _} [Category D] (F : C ⥤ D)
