@@ -54,6 +54,8 @@ example [LinearOrderedCommRing α] (u v r s t : α) (h : 0 < u*(t*v + t*r + s)) 
 example [LinearOrderedCommRing α] (A B : α) (h : 0 < A * B) : 0 < 8*A*B := by
   linarith
 
+example (s : Set ℕ) (_h : s = ∅) : 0 ≤ 1 := by linarith
+
 -- Needs the `cancel_denoms` preprocessor, which in turn needs the `cancel_denoms` tactic ported.
 section cancel_denoms
 -- example (A B : Rat) (h : 0 < A * B) : 0 < A*B/8 := by
@@ -158,6 +160,9 @@ example (x : Rat) (hx : x > 0) (h : x.num < 0) : False := by
   linarith only [Rat.num_pos_iff_pos.mpr hx, h]
 
 end term_arguments
+
+example (i n : ℕ) (h : (2:ℤ) ^ i ≤ 2 ^ n) : (0:ℤ) ≤ 2 ^ n - 2 ^ i := by
+  linarith
 
 -- Check we use `exfalso` on non-comparison goals.
 example (a b c : Rat) (h2 : b > 0) (h3 : b < 0) : Nat.prime 10 := by
@@ -494,4 +499,11 @@ example (n : Nat) (h1 : ¬n = 1) (h2 : n ≥ 1) : n ≥ 2 := by
   have h4 : n ≥ 1 := h2
   by_contra h3
   suffices n = 1 by exact h1 this
+  linarith
+
+-- simulate the type of MvPolynomial
+def R : Type u → Type v → Sort (max (u+1) (v+1)) := sorry
+instance : LinearOrderedField (R c d) := sorry
+
+example (p : R PUnit.{u+1} PUnit.{v+1}) (h : 0 < p) : 0 < 2 * p := by
   linarith

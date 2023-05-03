@@ -154,6 +154,7 @@ section Ring
 
 variable {R : Type _} [Ring R] {P : Type _} [AddCommGroup P] [Module R P]
 
+set_option synthInstance.etaExperiment true in
 /-- Free modules are projective. -/
 theorem Projective.of_basis {ι : Type _} (b : Basis ι R P) : Projective R P := by
   -- need P →ₗ (P →₀ R) for definition of projective.
@@ -190,8 +191,8 @@ theorem Projective.of_lifting_property' {R : Type u} [Semiring R] {P : Type max 
 
 -- porting note: todo: generalize to `P : Type v`?
 set_option synthInstance.etaExperiment true in
-/-- A variant of `of_lifting_property'` when we're working over a `[ring R]`,
-which only requires quantifying over modules with an `add_comm_group` instance. -/
+/-- A variant of `of_lifting_property'` when we're working over a `[Ring R]`,
+which only requires quantifying over modules with an `AddCommGroup` instance. -/
 theorem Projective.of_lifting_property {R : Type u} [Ring R] {P : Type max u v} [AddCommGroup P]
     [Module R P]
     -- If for all surjections of `R`-modules `M →ₗ N`, all maps `P →ₗ N` lift to `P →ₗ M`,

@@ -303,15 +303,14 @@ creates bad definitional equalities (e.g., it does not take into account a possi
 and the pseudometric space structure from the seminorm properties. Note that in most cases this
 instance creates bad definitional equalities (e.g., it does not take into account a possibly
 existing `UniformSpace` instance on `E`)."]
-def GroupSeminorm.toSeminormedGroup [Group E] (f : GroupSeminorm E) : SeminormedGroup E
-    where
+def GroupSeminorm.toSeminormedGroup [Group E] (f : GroupSeminorm E) : SeminormedGroup E where
   dist x y := f (x / y)
   norm := f
   dist_eq x y := rfl
   dist_self x := by simp only [div_self', map_one_eq_zero]
   dist_triangle := le_map_div_add_map_div f
   dist_comm := map_div_rev f
-  edist_dist := fun x y => (ENNReal.ofReal_eq_coe_nnreal (map_nonneg f (x / y))).symm
+  edist_dist x y := by exact ENNReal.coe_nnreal_eq _
   -- porting note: how did `mathlib3` solve this automatically?
 #align group_seminorm.to_seminormed_group GroupSeminorm.toSeminormedGroup
 #align add_group_seminorm.to_seminormed_add_group AddGroupSeminorm.toSeminormedAddGroup
@@ -595,7 +594,6 @@ theorem norm_le_mul_norm_add (u v : E) : ‖u‖ ≤ ‖u * v‖ + ‖v‖ :=
   calc
     ‖u‖ = ‖u * v / v‖ := by rw [mul_div_cancel'']
     _ ≤ ‖u * v‖ + ‖v‖ := norm_div_le _ _
-
 #align norm_le_mul_norm_add norm_le_mul_norm_add
 #align norm_le_add_norm_add norm_le_add_norm_add
 
@@ -686,7 +684,6 @@ attribute [to_additive existing Metric.Bounded.exists_norm_le] Metric.Bounded.ex
 theorem Metric.Bounded.exists_pos_norm_le' (hs : Metric.Bounded s) : ∃ R > 0, ∀ x ∈ s, ‖x‖ ≤ R :=
   let ⟨R₀, hR₀⟩ := hs.exists_norm_le'
   ⟨max R₀ 1, by positivity, fun x hx => (hR₀ x hx).trans <| le_max_left _ _⟩
-
 #align metric.bounded.exists_pos_norm_le' Metric.Bounded.exists_pos_norm_le'
 #align metric.bounded.exists_pos_norm_le Metric.Bounded.exists_pos_norm_le
 
@@ -1086,13 +1083,13 @@ theorem tendsto_norm_one : Tendsto (fun a : E => ‖a‖) (𝓝 1) (𝓝 0) := b
 #align tendsto_norm_one tendsto_norm_one
 #align tendsto_norm_zero tendsto_norm_zero
 
-@[continuity, to_additive continuous_norm]
+@[to_additive (attr := continuity) continuous_norm]
 theorem continuous_norm' : Continuous fun a : E => ‖a‖ := by
   simpa using continuous_id.dist (continuous_const : Continuous fun _a => (1 : E))
 #align continuous_norm' continuous_norm'
 #align continuous_norm continuous_norm
 
-@[continuity, to_additive continuous_nnnorm]
+@[to_additive (attr := continuity) continuous_nnnorm]
 theorem continuous_nnnorm' : Continuous fun a : E => ‖a‖₊ :=
   continuous_norm'.subtype_mk _
 #align continuous_nnnorm' continuous_nnnorm'
@@ -1153,17 +1150,13 @@ theorem Filter.Tendsto.op_one_isBoundedUnder_le' {f : α → E} {g : α → F} {
   filter_upwards [hf δ δ₀, hC]with i hf hg
   refine' (h_op _ _).trans_lt _
   cases' le_total A 0 with hA hA
-  ·
-    exact
-      (mul_nonpos_of_nonpos_of_nonneg (mul_nonpos_of_nonpos_of_nonneg hA <| norm_nonneg' _) <|
-            norm_nonneg' _).trans_lt
-        ε₀
+  · exact (mul_nonpos_of_nonpos_of_nonneg (mul_nonpos_of_nonpos_of_nonneg hA <| norm_nonneg' _) <|
+      norm_nonneg' _).trans_lt ε₀
   calc
     A * ‖f i‖ * ‖g i‖ ≤ A * δ * C :=
       mul_le_mul (mul_le_mul_of_nonneg_left hf.le hA) hg (norm_nonneg' _) (mul_nonneg hA δ₀.le)
     _ = A * C * δ := (mul_right_comm _ _ _)
     _ < ε := hδ
-
 #align filter.tendsto.op_one_is_bounded_under_le' Filter.Tendsto.op_one_isBoundedUnder_le'
 #align filter.tendsto.op_zero_is_bounded_under_le' Filter.Tendsto.op_zero_isBoundedUnder_le'
 
@@ -1871,7 +1864,6 @@ theorem mul' (hf : LipschitzWith Kf f) (hg : LipschitzWith Kg g) :
       edist_mul_mul_le _ _ _ _
     _ ≤ Kf * edist x y + Kg * edist x y := (add_le_add (hf x y) (hg x y))
     _ = (Kf + Kg) * edist x y := (add_mul _ _ _).symm
-
 #align lipschitz_with.mul' LipschitzWith.mul'
 #align lipschitz_with.add LipschitzWith.add
 
@@ -1901,7 +1893,6 @@ theorem mul_lipschitzWith (hf : AntilipschitzWith Kf f) (hg : LipschitzWith Kg g
     ↑Kf⁻¹ * dist x y - Kg * dist x y ≤ dist (f x) (f y) - dist (g x) (g y) :=
       sub_le_sub (hf.mul_le_dist x y) (hg.dist_le_mul x y)
     _ ≤ _ := le_trans (le_abs_self _) (abs_dist_sub_le_dist_mul_mul _ _ _ _)
-
 #align antilipschitz_with.mul_lipschitz_with AntilipschitzWith.mul_lipschitzWith
 #align antilipschitz_with.add_lipschitz_with AntilipschitzWith.add_lipschitzWith
 
@@ -2711,7 +2702,7 @@ namespace Submodule
 -- See note [implicit instance arguments]
 /-- A submodule of a seminormed group is also a seminormed group, with the restriction of the norm.
 -/
-instance seminormedAddCommGroup {_ : Ring 𝕜} [SeminormedAddCommGroup E] {_ : Module 𝕜 E}
+instance seminormedAddCommGroup [Ring 𝕜] [SeminormedAddCommGroup E] [Module 𝕜 E]
     (s : Submodule 𝕜 E) : SeminormedAddCommGroup s :=
   SeminormedAddCommGroup.induced _ _ s.subtype.toAddMonoidHom
 #align submodule.seminormed_add_comm_group Submodule.seminormedAddCommGroup
@@ -2720,7 +2711,7 @@ instance seminormedAddCommGroup {_ : Ring 𝕜} [SeminormedAddCommGroup E] {_ : 
 /-- If `x` is an element of a submodule `s` of a normed group `E`, its norm in `s` is equal to its
 norm in `E`. -/
 @[simp]
-theorem coe_norm {_ : Ring 𝕜} [SeminormedAddCommGroup E] {_ : Module 𝕜 E} {s : Submodule 𝕜 E}
+theorem coe_norm [Ring 𝕜] [SeminormedAddCommGroup E] [Module 𝕜 E] {s : Submodule 𝕜 E}
     (x : s) : ‖x‖ = ‖(x : E)‖ :=
   rfl
 #align submodule.coe_norm Submodule.coe_norm
@@ -2731,14 +2722,14 @@ norm in `s`.
 
 This is a reversed version of the `simp` lemma `Submodule.coe_norm` for use by `norm_cast`. -/
 @[norm_cast]
-theorem norm_coe {_ : Ring 𝕜} [SeminormedAddCommGroup E] {_ : Module 𝕜 E} {s : Submodule 𝕜 E}
+theorem norm_coe [Ring 𝕜] [SeminormedAddCommGroup E] [Module 𝕜 E] {s : Submodule 𝕜 E}
     (x : s) : ‖(x : E)‖ = ‖x‖ :=
   rfl
 #align submodule.norm_coe Submodule.norm_coe
 
 -- See note [implicit instance arguments].
 /-- A submodule of a normed group is also a normed group, with the restriction of the norm. -/
-instance normedAddCommGroup {_ : Ring 𝕜} [NormedAddCommGroup E] {_ : Module 𝕜 E}
+instance normedAddCommGroup [Ring 𝕜] [NormedAddCommGroup E] [Module 𝕜 E]
     (s : Submodule 𝕜 E) : NormedAddCommGroup s :=
   { Submodule.seminormedAddCommGroup s with
     eq_of_dist_eq_zero := eq_of_dist_eq_zero }
