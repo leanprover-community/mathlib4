@@ -213,9 +213,7 @@ a ∈ u → (d ∩ u).Nonempty) := by
     constructor
     . exact h.1
     . intros d a d₁ d₂ d₃ ha
-      have e1 : (d ∩ u).Nonempty := h.2 d a d₁ d₂ d₃ ha
-      rw [inter_nonempty_iff_exists_left] at e1
-      obtain ⟨b, e1_h_w, e1_h_h⟩ := e1
+      obtain ⟨b, e1_h_w, e1_h_h⟩ := h.2 d a d₁ d₂ d₃ ha
       use b
       constructor
       . exact e1_h_w
