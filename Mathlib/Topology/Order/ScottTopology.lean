@@ -301,9 +301,7 @@ lemma continuous_monotone {f : α → β}
   . intros hf d d₁ d₂ a d₃
     rw [IsLUB]
     constructor
-    . apply Monotone.mem_upperBounds_image (continuous_monotone hf)
-      rw [← isLUB_le_iff]
-      exact d₃
+    . apply Monotone.mem_upperBounds_image (continuous_monotone hf) ((isLUB_le_iff d₃).mp le_rfl)
     . rw [lowerBounds, mem_setOf_eq]
       intros b hb
       let u := (Iic b)ᶜ
