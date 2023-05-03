@@ -17,12 +17,12 @@ import Mathlib.RingTheory.Localization.Basic
 
 ## Main definitions
 
- * `is_localization.inv_submonoid M S` is the submonoid of `S = M⁻¹R` consisting of inverses of
+ * `IsLocalization.invSubmonoid M S` is the submonoid of `S = M⁻¹R` consisting of inverses of
    each element `x ∈ M`
 
 ## Implementation notes
 
-See `src/ring_theory/localization/basic.lean` for a design overview.
+See `Mathlib/RingTheory/Localization/Basic.lean` for a design overview.
 
 ## Tags
 localization, ring localization, commutative ring localization, characteristic predicate,
@@ -54,12 +54,12 @@ theorem submonoid_map_le_is_unit : M.map (algebraMap R S) ≤ IsUnit.submonoid S
   exact IsLocalization.map_units S ⟨_, ha⟩
 #align is_localization.submonoid_map_le_is_unit IsLocalization.submonoid_map_le_is_unit
 
-/-- There is an equivalence of monoids between the image of `M` and `inv_submonoid`. -/
+/-- There is an equivalence of monoids between the image of `M` and `invSubmonoid`. -/
 noncomputable abbrev equivInvSubmonoid : M.map (algebraMap R S) ≃* invSubmonoid M S :=
   ((M.map (algebraMap R S)).leftInvEquiv (submonoid_map_le_is_unit M S)).symm
 #align is_localization.equiv_inv_submonoid IsLocalization.equivInvSubmonoid
 
-/-- There is a canonical map from `M` to `inv_submonoid` sending `x` to `1 / x`. -/
+/-- There is a canonical map from `M` to `invSubmonoid` sending `x` to `1 / x`. -/
 noncomputable def toInvSubmonoid : M →* invSubmonoid M S :=
   (equivInvSubmonoid M S).toMonoidHom.comp ((algebraMap R S : R →* S).submonoidMap M)
 #align is_localization.to_inv_submonoid IsLocalization.toInvSubmonoid
@@ -101,12 +101,11 @@ theorem toInvSubmonoid_eq_mk' (x : M) : (toInvSubmonoid M S x : S) = mk' S 1 x :
   simp
 #align is_localization.to_inv_submonoid_eq_mk' IsLocalization.toInvSubmonoid_eq_mk'
 
-theorem mem_invSubmonoid_iff_exists_mk' (x : S) : x ∈ invSubmonoid M S ↔ ∃ m : M, mk' S 1 m = x :=
-  by
+theorem mem_invSubmonoid_iff_exists_mk' (x : S) :
+    x ∈ invSubmonoid M S ↔ ∃ m : M, mk' S 1 m = x := by
   simp_rw [← toInvSubmonoid_eq_mk']
-  exact
-    ⟨fun h => ⟨_, congr_arg Subtype.val (toInvSubmonoid_surjective M S ⟨x, h⟩).choose_spec⟩,
-      fun h => h.choose_spec ▸ (toInvSubmonoid M S h.choose).prop⟩
+  exact ⟨fun h => ⟨_, congr_arg Subtype.val (toInvSubmonoid_surjective M S ⟨x, h⟩).choose_spec⟩,
+    fun h => h.choose_spec ▸ (toInvSubmonoid M S h.choose).prop⟩
 #align is_localization.mem_inv_submonoid_iff_exists_mk' IsLocalization.mem_invSubmonoid_iff_exists_mk'
 
 variable (S)
