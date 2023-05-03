@@ -348,11 +348,7 @@ lemma isOpen_iff_isUpperSet_and_sup_mem_implies_tail_subset {u : Set α} :
   apply and_congr_right'
   constructor
   . exact fun h d hd₁ hd₂ hd₃ => h d (supₛ d) hd₁ hd₂ (isLUB_supₛ d) hd₃
-  . intros h d a hd₁ hd₂ hd₃ ha
-    apply h hd₁ hd₂
-    rw [(IsLUB.supₛ_eq hd₃)]
-    exact ha
-
+  . exact fun h d a hd₁ hd₂ hd₃ ha => h hd₁ hd₂ (Set.mem_of_eq_of_mem (IsLUB.supₛ_eq hd₃) ha)
 
 lemma isOpen_iff_upper_and_sup_mem_implies_inter_nonempty
 (u : Set α) : IsOpen u ↔
@@ -362,9 +358,6 @@ lemma isOpen_iff_upper_and_sup_mem_implies_inter_nonempty
   apply and_congr_right'
   constructor
   . exact fun h d hd₁ hd₂ hd₃ => h d (supₛ d) hd₁ hd₂ (isLUB_supₛ d) hd₃
-  . intros h d a hd₁ hd₂ hd₃ ha
-    apply h d hd₁ hd₂
-    rw [(IsLUB.supₛ_eq hd₃)]
-    exact ha
+  . exact fun h d a hd₁ hd₂ hd₃ ha => h d hd₁ hd₂ (Set.mem_of_eq_of_mem (IsLUB.supₛ_eq hd₃) ha)
 
 end complete_lattice
