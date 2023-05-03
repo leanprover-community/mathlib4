@@ -2,21 +2,15 @@
 Copyright (c) 2020 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
-
-! This file was ported from Lean 3 source module tactic.cancel_denoms
-! leanprover-community/mathlib commit eaa771fc4f5f356afeacac4ab92e0cbf10b0b1df
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
---import Mathlib.Data.Rat.MetaDefs
+
 import Mathlib.Tactic.NormNum
 import Mathlib.Data.Tree
---import Mathlib.Meta.Expr
 
 /-!
 # A tactic for canceling numeric denominators
 
-This file defines tactics that cancel numeric denominators from field expressions.
+This file defines tactics that cancel numeric denominators from field Expressions.
 
 As an example, we want to transform a comparison `5*(a/3 + b/4) < c/3` into the equivalent
 `5*(4*a + 3*b) < 4*c`.
@@ -30,6 +24,7 @@ There are likely some rough edges to it.
 Improving this tactic would be a good project for someone interested in learning tactic programming.
 -/
 
+open Lean Parser Tactic Mathlib Meta NormNum Qq
 
 namespace CancelFactors
 
@@ -94,20 +89,153 @@ theorem cancel_factors_eq {α} [LinearOrderedField α] {a b ad bd a' b' gcd : α
     all_goals apply ne_of_gt ; first |assumption|exact zero_lt_one
 #align cancel_factors.cancel_factors_eq CancelFactors.cancel_factors_eq
 
+/-! ### Computing cancelation factors -/
 
-open Lean Parser Tactic
+/--
+`findCancelFactor e` produces a natural number `n`, such that multiplying `e` by `n` will
+be able to cancel all the numeric denominators in `e`. The returned `Tree` describes how to
+distribute the value `n` over products inside `e`.
+-/
+partial def findCancelFactor (e : Expr) : ℕ × Tree ℕ :=
+match e.getAppFnArgs with
+| (`HAdd.hAdd, #[_, _, _, _, e1, e2]) | (`HSub.hSub, #[_, _, _, _, e1, e2]) =>
+  let (v1, t1) := findCancelFactor e1
+  let (v2, t2) := findCancelFactor e2
+  let lcm := v1.lcm v2
+  (lcm, .node lcm t1 t2)
+| (`HMul.hMul, #[_, _, _, _, e1, e2]) =>
+  let (v1, t1) := findCancelFactor e1
+  let (v2, t2) := findCancelFactor e2
+  let pd := v1 * v2
+  (pd, .node pd t1 t2)
+| (`HDiv.hDiv, #[_, _, _, _, e1, e2]) =>
+  match isRatLit e2 with
+  | some q =>
+    let (v1, t1) := findCancelFactor e1
+    let n := v1.lcm q.num.natAbs
+    (n, .node n t1 <| .node q.num.natAbs .nil .nil)
+  | none => (1, .node 1 .nil .nil)
+| (`Neg.neg, #[_, _, e]) => findCancelFactor e
+| _ => (1, .node 1 .nil .nil)
+
+/--
+`mkProdPrf n tr e` produces a proof of `n*e = e'`, where numeric denominators have been
+canceled in `e'`, distributing `n` proportionally according to `tr`.
+-/
+partial def mkProdPrf (α : Q(Type u)) (_sα : Q(Field $α)) (v : ℕ) (t : Tree ℕ)
+  (e : Q($α)) : MetaM Expr :=
+match t, e with
+| .node _ lhs rhs, ~q($e1 + $e2) => do
+  let v1 ← mkProdPrf α _sα v lhs e1
+  let v2 ← mkProdPrf α _sα v rhs e2
+  mkAppM `CancelFactors.add_subst #[v1, v2]
+| .node _ lhs rhs, ~q($e1 - $e2) => do
+  let v1 ← mkProdPrf α _sα v lhs e1
+  let v2 ← mkProdPrf α _sα v rhs e2
+  mkAppM `CancelFactors.sub_subst #[v1, v2]
+| .node n lhs rhs@(.node rn _ _), ~q($e1 * $e2) => do
+  let v1 ← mkProdPrf α _sα (v / rn) lhs e1
+  let ⟨rn', _⟩ ← mkOfNat α _sα <| mkRawNatLit v
+  let ⟨vrn', _⟩ ← mkOfNat α _sα <| mkRawNatLit <| v / rn
+  let ⟨n', _⟩ ← mkOfNat α _sα <| mkRawNatLit <| n
+  let ⟨v', _⟩ ← mkOfNat α _sα <| mkRawNatLit <| v
+  let ntp' ← mkAppM `Div.div #[rn', e2]
+  -- let ntp : Q(Prop) := q($rn' / $e2 = 1)
+  -- let (_, npf) ← solve_aux ntp `[norm_num, done]
+  -- let ntp2 ← to_Expr ``(%%vrn' * %%n' = %%v')
+  -- let (_, npf2) ← solve_aux ntp2 `[norm_num, done]
+  mkAppM `CancelFactors.div_subst #[v1, npf, npf2]
+| t, ~q(-$e) => do
+  let v ← mkProdPrf α _sα v t e
+  mkAppM `CancelFactors.neg_subst #[v]
+| _, _ => do
+  let ⟨v, _⟩ ← mkOfNat α _sα <| mkRawNatLit v
+  let e' ← mkAppM `Mul.mul #[v, e]
+  mkAppM `eq.refl #[e']
+
+/--
+Given `e`, a term with rational division, produces a natural number `n` and a proof of `n*e = e'`,
+where `e'` has no division. Assumes "well-behaved" division.
+-/
+def derive (e : Expr) : MetaM (ℕ × Expr) := do
+let (n, t) := findCancelFactor e
+let tp : Q(Type) ← inferType e
+let stp ← synthInstance q(Field $tp)
+try
+  return (n, ← mkProdPrf tp stp n t e)
+catch _ => throwError
+  "cancel_factors.derive failed to normalize {e}. Are you sure this is well-behaved division?"
+
+/--
+Given `e`, a term with rational divison, produces a natural number `n` and a proof of `e = e' / n`,
+where `e'` has no divison. Assumes "well-behaved" division.
+-/
+def deriveDiv (e : Expr) : MetaM (ℕ × Expr) :=
+do let (n, p) ← derive e
+   let tp ← inferType e
+   let n' ← tp.of_nat n, tgt ← to_Expr ``(%%n' ≠ 0)
+   let (_, pn) ← solve_aux tgt `[norm_num, done]
+   prod.mk n <$> mk_mapp ``cancel_factors_eq_div [none, none, n', none, none, p, pn]
+
+/--
+`findCompLemma e` arranges `e` in the form `lhs R rhs`, where `R ∈ {<, ≤, =}`, and returns
+`lhs`, `rhs`, and the `cancel_factors` lemma corresponding to `R`.
+-/
+def findCompLemma : Expr → Option (Expr × Expr × Name)
+| `(%%a < %%b) := (a, b, ``cancel_factors_lt)
+| `(%%a ≤ %%b) := (a, b, ``cancel_factors_le)
+| `(%%a = %%b) := (a, b, ``cancel_factors_eq)
+| `(%%a ≥ %%b) := (b, a, ``cancel_factors_le)
+| `(%%a > %%b) := (b, a, ``cancel_factors_lt)
+| _ := none
+
+/--
+`cancelDenominatorsInType h` assumes that `h` is of the form `lhs R rhs`,
+where `R ∈ {<, ≤, =, ≥, >}`.
+It produces an Expression `h'` of the form `lhs' R rhs'` and a proof that `h = h'`.
+Numeric denominators have been canceled in `lhs'` and `rhs'`.
+-/
+def cancelDenominatorsInType (h : Expr) : MetaM (Expr × Expr) :=
+do let some (lhs, rhs, lem) := findCompLemma h | fail "cannot kill factors"
+   (al, lhs_p) ← derive lhs
+   (ar, rhs_p) ← derive rhs
+   let gcd := al.gcd ar
+   tp ← infer_type lhs
+   al ← tp.of_nat al
+   ar ← tp.of_nat ar
+   gcd ← tp.of_nat gcd
+   al_pos ← toExpr ``(0 < %%al),
+   ar_pos ← toExpr ``(0 < %%ar)
+   gcd_pos ← toExpr ``(0 < %%gcd)
+   (_, al_pos) ← solve_aux al_pos `[norm_num, done]
+   (_, ar_pos) ← solve_aux ar_pos `[norm_num, done]
+   (_, gcd_pos) ← solve_aux gcd_pos `[norm_num, done]
+   pf ← mk_app lem [lhs_p, rhs_p, al_pos, ar_pos, gcd_pos]
+   pf_tp ← infer_type pf
+   return ((findCompLemma pf_tp).elim default (prod.fst ∘ prod.snd), pf)
+
+end CancelFactors
 
 /--
 `cancel_denoms` attempts to remove numerals from the denominators of fractions.
 It works on propositions that are field-valued inequalities.
+
 ```lean
 variable [LinearOrderedField α] (a b c : α)
+
 example (h : a / 5 + b / 4 < c) : 4*a + 5*b < 20*c := by
   cancel_denoms at h
   exact h
+
 example (h : a > 0) : a / 5 > 0 := by
   cancel_denoms
   exact h
 ```
 -/
 syntax (name := cancelDenoms) "cancel_denoms" (ppSpace location)? : tactic
+
+-- def cancel_denoms (l : parse location) : MetaM Unit :=
+-- do locs ← l.get_locals
+--    MetaM.replace_at cancelDenominatorsInType locs l.include_goal >>= guardb
+--      <|> fail "failed to cancel any denominators"
+--    MetaM.interactive.norm_num [simp_arg_type.symm_Expr ``(mul_assoc)] l
