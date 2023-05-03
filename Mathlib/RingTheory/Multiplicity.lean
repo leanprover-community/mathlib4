@@ -243,8 +243,7 @@ theorem multiplicity_le_multiplicity_iff {a b c d : α} :
         exact le_multiplicity_of_pow_dvd (h _ (pow_multiplicity_dvd _))
     else by
       have : ∀ n : ℕ, c ^ n ∣ d := fun n => h n (not_finite_iff_forall.1 hab _)
-      rw [eq_top_iff_not_finite.2 hab, eq_top_iff_not_finite.2 (not_finite_iff_forall.2 this)]
-      apply le_refl⟩
+      rw [eq_top_iff_not_finite.2 hab, eq_top_iff_not_finite.2 (not_finite_iff_forall.2 this)]⟩
 #align multiplicity.multiplicity_le_multiplicity_iff multiplicity.multiplicity_le_multiplicity_iff
 
 theorem multiplicity_eq_multiplicity_iff {a b c d : α} :
