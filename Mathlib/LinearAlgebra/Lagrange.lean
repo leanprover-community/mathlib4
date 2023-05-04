@@ -576,10 +576,10 @@ theorem nodal_eq_mul_nodal_erase [DecidableEq ι] (hi : i ∈ s) :
     simp_rw [nodal, mul_prod_erase _ _ hi, Finset.mul_prod_erase _ (fun x => X - C (v x)) hi]
 #align lagrange.nodal_eq_mul_nodal_erase Lagrange.nodal_eq_mul_nodal_erase
 
-theorem x_sub_c_dvd_nodal (v : ι → F) (hi : i ∈ s) : X - C (v i) ∣ nodal s v :=
+theorem X_sub_C_dvd_nodal (v : ι → F) (hi : i ∈ s) : X - C (v i) ∣ nodal s v :=
   ⟨_, by classical exact nodal_eq_mul_nodal_erase hi⟩
 set_option linter.uppercaseLean3 false in
-#align lagrange.X_sub_C_dvd_nodal Lagrange.x_sub_c_dvd_nodal
+#align lagrange.X_sub_C_dvd_nodal Lagrange.X_sub_C_dvd_nodal
 
 variable [DecidableEq ι]
 
@@ -600,7 +600,7 @@ theorem derivative_nodal : Polynomial.derivative (nodal s v) = ∑ i in s, nodal
       sub_zero, one_mul, sum_insert hit, mul_sum, erase_insert hit, add_right_inj]
     refine' sum_congr rfl fun j hjt => _
     rw [nodal_erase_eq_nodal_div (mem_insert_of_mem hjt), nodal_insert_eq_nodal hit,
-      EuclideanDomain.mul_div_assoc _ (x_sub_c_dvd_nodal v hjt), nodal_erase_eq_nodal_div hjt]
+      EuclideanDomain.mul_div_assoc _ (X_sub_C_dvd_nodal v hjt), nodal_erase_eq_nodal_div hjt]
 #align lagrange.derivative_nodal Lagrange.derivative_nodal
 
 theorem eval_nodal_derivative_eval_node_eq (hi : i ∈ s) :
@@ -650,11 +650,11 @@ theorem eval_basis_not_at_node (hi : i ∈ s) (hxi : x ≠ v i) :
 
 set_option synthInstance.etaExperiment true in
 
-theorem interpolate_eq_nodalWeight_mul_nodal_div_x_sub_c :
+theorem interpolate_eq_nodalWeight_mul_nodal_div_X_sub_C :
     interpolate s v r = ∑ i in s, C (nodalWeight s v i) * (nodal s v / (X - C (v i))) * C (r i) :=
   sum_congr rfl fun j hj => by rw [mul_comm, basis_eq_prod_sub_inv_mul_nodal_div hj]
 set_option linter.uppercaseLean3 false in
-#align lagrange.interpolate_eq_nodal_weight_mul_nodal_div_X_sub_C Lagrange.interpolate_eq_nodalWeight_mul_nodal_div_x_sub_c
+#align lagrange.interpolate_eq_nodal_weight_mul_nodal_div_X_sub_C Lagrange.interpolate_eq_nodalWeight_mul_nodal_div_X_sub_C
 
 set_option synthInstance.etaExperiment true in
 
