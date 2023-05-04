@@ -201,9 +201,10 @@ theorem LinearMap.continuous_of_nonzero_on_open (l : E →ₗ[𝕜] 𝕜) (s : S
 
 variable [CompleteSpace 𝕜]
 
+set_option synthInstance.etaExperiment true in
 /-- This version imposes `ι` and `E` to live in the same universe, so you should instead use
 `continuous_equiv_fun_basis` which gives the same result without universe restrictions. -/
-private theorem continuous_equiv_fun_basis_aux [ht2 : T2Space E] {ι : Type v} [Fintype ι]
+private theorem continuous_equivFun_basis_aux [ht2 : T2Space E] {ι : Type v} [Fintype ι]
     (ξ : Basis ι 𝕜 E) : Continuous ξ.equivFun := by
   letI : UniformSpace E := TopologicalAddGroup.toUniformSpace E
   letI : UniformAddGroup E := comm_topologicalAddGroup_is_uniform
@@ -216,7 +217,7 @@ private theorem continuous_equiv_fun_basis_aux [ht2 : T2Space E] {ι : Type v} [
     -- to a standard space of dimension n, hence it is complete and therefore closed.
     have H₁ : ∀ s : Submodule 𝕜 E, finrank 𝕜 s = n → IsClosed (s : Set E) := by
       intro s s_dim
-      letI : UniformAddGroup s := s.toAddSubgroup.uniform_add_group
+      letI : UniformAddGroup s := s.toAddSubgroup.uniformAddGroup
       let b := Basis.ofVectorSpace 𝕜 s
       have U : UniformEmbedding b.equivFun.symm.toEquiv := by
         have : Fintype.card (Basis.ofVectorSpaceIndex 𝕜 s) = n := by
@@ -224,10 +225,10 @@ private theorem continuous_equiv_fun_basis_aux [ht2 : T2Space E] {ι : Type v} [
           exact (finrank_eq_card_basis b).symm
         have : Continuous b.equivFun := IH b this
         exact
-          b.equivFun.symm.uniform_embedding b.equiv_fun.symm.toLinearMap.continuous_on_pi this
+          b.equivFun.symm.uniform_embedding b.equivFun.symm.toLinearMap.continuous_on_pi this
       have : IsComplete (s : Set E) :=
         completeSpace_coe_iff_isComplete.1 ((completeSpace_congr U).1 (by infer_instance))
-      exact this.is_closed
+      exact this.isClosed
     -- second step: any linear form is continuous, as its kernel is closed by the first step
     have H₂ : ∀ f : E →ₗ[𝕜] 𝕜, Continuous f := by
       intro f
@@ -238,7 +239,7 @@ private theorem continuous_equiv_fun_basis_aux [ht2 : T2Space E] {ι : Type v} [
       · have : finrank 𝕜 (LinearMap.ker f) = n := by
           have Z := f.finrank_range_add_finrank_ker
           rw [finrank_eq_card_basis ξ, hn] at Z
-          have : finrank 𝕜 f.range = 1 :=
+          have : finrank 𝕜 (LinearMap.range f) = 1 :=
             le_antisymm (finrank_self 𝕜 ▸ f.range.finrank_le) (zero_lt_iff.mpr H)
           rw [this, add_comm, Nat.add_one] at Z
           exact Nat.succ.inj Z
@@ -248,7 +249,6 @@ private theorem continuous_equiv_fun_basis_aux [ht2 : T2Space E] {ι : Type v} [
     intro i
     change Continuous (ξ.coord i)
     exact H₂ (ξ.coord i)
-#align continuous_equiv_fun_basis_aux continuous_equiv_fun_basis_aux
 
 set_option synthInstance.etaExperiment true in
 /-- Any linear map on a finite dimensional space over a complete field is continuous. -/
@@ -257,12 +257,12 @@ theorem LinearMap.continuous_of_finiteDimensional [T2Space E] [FiniteDimensional
   -- for the proof, go to a model vector space `b → 𝕜` thanks to `continuous_equiv_fun_basis`, and
   -- argue that all linear maps there are continuous.
   let b := Basis.ofVectorSpace 𝕜 E
-  have A : Continuous b.equiv_fun := continuous_equiv_fun_basis_aux b
-  have B : Continuous (f.comp (b.equiv_fun.symm : (Basis.ofVectorSpaceIndex 𝕜 E → 𝕜) →ₗ[𝕜] E)) :=
+  have A : Continuous b.equivFun := continuous_equivFun_basis_aux b
+  have B : Continuous (f.comp (b.equivFun.symm : (Basis.ofVectorSpaceIndex 𝕜 E → 𝕜) →ₗ[𝕜] E)) :=
     LinearMap.continuous_on_pi _
   have :
     Continuous
-      (f.comp (b.equiv_fun.symm : (Basis.ofVectorSpaceIndex 𝕜 E → 𝕜) →ₗ[𝕜] E) ∘ b.equiv_fun) :=
+      (f.comp (b.equivFun.symm : (Basis.ofVectorSpaceIndex 𝕜 E → 𝕜) →ₗ[𝕜] E) ∘ b.equivFun) :=
     B.comp A
   convert this
   ext x
@@ -290,62 +290,71 @@ namespace LinearMap
 
 variable [T2Space E] [FiniteDimensional 𝕜 E]
 
+set_option synthInstance.etaExperiment true in
 /-- The continuous linear map induced by a linear map on a finite dimensional space -/
 def toContinuousLinearMap : (E →ₗ[𝕜] F') ≃ₗ[𝕜] E →L[𝕜] F' where
   toFun f := ⟨f, f.continuous_of_finiteDimensional⟩
-  invFun := coe
-  map_add' f g := rfl
-  map_smul' c f := rfl
-  left_inv f := rfl
-  right_inv f := ContinuousLinearMap.coe_injective rfl
+  invFun := (↑)
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+  left_inv _ := rfl
+  right_inv _ := ContinuousLinearMap.coe_injective rfl
 #align linear_map.to_continuous_linear_map LinearMap.toContinuousLinearMap
 
+set_option synthInstance.etaExperiment true in
 @[simp]
-theorem coe_to_continuous_linear_map' (f : E →ₗ[𝕜] F') : ⇑f.toContinuousLinearMap = f :=
+theorem coe_to_continuous_linear_map' (f : E →ₗ[𝕜] F') : ⇑(LinearMap.toContinuousLinearMap f) = f :=
   rfl
 #align linear_map.coe_to_continuous_linear_map' LinearMap.coe_to_continuous_linear_map'
 
+set_option synthInstance.etaExperiment true in
 @[simp]
-theorem coe_toContinuousLinearMap (f : E →ₗ[𝕜] F') : (f.toContinuousLinearMap : E →ₗ[𝕜] F') = f :=
+theorem coe_toContinuousLinearMap (f : E →ₗ[𝕜] F') : ((LinearMap.toContinuousLinearMap f) : E →ₗ[𝕜] F') = f :=
   rfl
 #align linear_map.coe_to_continuous_linear_map LinearMap.coe_toContinuousLinearMap
 
+set_option synthInstance.etaExperiment true in
 @[simp]
 theorem coe_toContinuousLinearMap_symm :
-    ⇑(toContinuousLinearMap : (E →ₗ[𝕜] F') ≃ₗ[𝕜] E →L[𝕜] F').symm = coe :=
+    ⇑(toContinuousLinearMap : (E →ₗ[𝕜] F') ≃ₗ[𝕜] E →L[𝕜] F').symm = ((↑) : (E →L[𝕜] F') → E →ₗ[𝕜] F') :=
   rfl
 #align linear_map.coe_to_continuous_linear_map_symm LinearMap.coe_toContinuousLinearMap_symm
 
+set_option synthInstance.etaExperiment true in
 @[simp]
-theorem det_toContinuousLinearMap (f : E →ₗ[𝕜] E) : f.toContinuousLinearMap.det = f.det :=
+theorem det_toContinuousLinearMap (f : E →ₗ[𝕜] E) :
+    (LinearMap.toContinuousLinearMap f).det = LinearMap.det f :=
   rfl
 #align linear_map.det_to_continuous_linear_map LinearMap.det_toContinuousLinearMap
 
+set_option synthInstance.etaExperiment true in
 @[simp]
-theorem ker_toContinuousLinearMap (f : E →ₗ[𝕜] F') : ker f.toContinuousLinearMap = ker f :=
+theorem ker_toContinuousLinearMap (f : E →ₗ[𝕜] F') : ker (LinearMap.toContinuousLinearMap f) = ker f :=
   rfl
 #align linear_map.ker_to_continuous_linear_map LinearMap.ker_toContinuousLinearMap
 
+set_option synthInstance.etaExperiment true in
 @[simp]
-theorem range_toContinuousLinearMap (f : E →ₗ[𝕜] F') : range f.toContinuousLinearMap = range f :=
+theorem range_toContinuousLinearMap (f : E →ₗ[𝕜] F') : range (LinearMap.toContinuousLinearMap f) = range f :=
   rfl
 #align linear_map.range_to_continuous_linear_map LinearMap.range_toContinuousLinearMap
 
+set_option synthInstance.etaExperiment true in
 /-- A surjective linear map `f` with finite dimensional codomain is an open map. -/
 theorem isOpenMap_of_finiteDimensional (f : F →ₗ[𝕜] E) (hf : Function.Surjective f) : IsOpenMap f :=
   by
-  rcases f.exists_right_inverse_of_surjective (LinearMap.range_eq_top.2 hf) with ⟨g, hg⟩
+  rcases f.exists_rightInverse_of_surjective (LinearMap.range_eq_top.2 hf) with ⟨g, hg⟩
   refine' IsOpenMap.of_sections fun x => ⟨fun y => g (y - f x) + x, _, _, fun y => _⟩
-  ·
-    exact
-      ((g.continuous_of_finite_dimensional.comp <| continuous_id.sub continuous_const).add
+  · exact
+      ((g.continuous_of_finiteDimensional.comp <| continuous_id.sub continuous_const).add
           continuous_const).ContinuousAt
   · rw [sub_self, map_zero, zero_add]
   · simp only [map_sub, map_add, ← comp_apply f g, hg, id_apply, sub_add_cancel]
 #align linear_map.is_open_map_of_finite_dimensional LinearMap.isOpenMap_of_finiteDimensional
 
-instance canLiftContinuousLinearMap : CanLift (E →ₗ[𝕜] F) (E →L[𝕜] F) coe fun _ => True :=
-  ⟨fun f _ => ⟨f.toContinuousLinearMap, rfl⟩⟩
+set_option synthInstance.etaExperiment true in
+instance canLiftContinuousLinearMap : CanLift (E →ₗ[𝕜] F) (E →L[𝕜] F) (↑) fun _ => True :=
+  ⟨fun f _ => ⟨LinearMap.toContinuousLinearMap f, rfl⟩⟩
 #align linear_map.can_lift_continuous_linear_map LinearMap.canLiftContinuousLinearMap
 
 end LinearMap
@@ -356,38 +365,44 @@ variable [T2Space E] [T2Space F] [FiniteDimensional 𝕜 E]
 
 namespace LinearEquiv
 
+set_option synthInstance.etaExperiment true in
 /-- The continuous linear equivalence induced by a linear equivalence on a finite dimensional
 space. -/
 def toContinuousLinearEquiv (e : E ≃ₗ[𝕜] F) : E ≃L[𝕜] F :=
   { e with
     continuous_toFun := e.toLinearMap.continuous_of_finiteDimensional
     continuous_invFun :=
-      haveI : FiniteDimensional 𝕜 F := e.finite_dimensional
-      e.symm.to_linear_map.continuous_of_finite_dimensional }
+      haveI : FiniteDimensional 𝕜 F := e.finiteDimensional
+      e.symm.toLinearMap.continuous_of_finiteDimensional }
 #align linear_equiv.to_continuous_linear_equiv LinearEquiv.toContinuousLinearEquiv
 
+set_option synthInstance.etaExperiment true in
 @[simp]
 theorem coe_toContinuousLinearEquiv (e : E ≃ₗ[𝕜] F) : (e.toContinuousLinearEquiv : E →ₗ[𝕜] F) = e :=
   rfl
 #align linear_equiv.coe_to_continuous_linear_equiv LinearEquiv.coe_toContinuousLinearEquiv
 
+set_option synthInstance.etaExperiment true in
 @[simp]
 theorem coe_to_continuous_linear_equiv' (e : E ≃ₗ[𝕜] F) : (e.toContinuousLinearEquiv : E → F) = e :=
   rfl
 #align linear_equiv.coe_to_continuous_linear_equiv' LinearEquiv.coe_to_continuous_linear_equiv'
 
+set_option synthInstance.etaExperiment true in
 @[simp]
 theorem coe_toContinuousLinearEquiv_symm (e : E ≃ₗ[𝕜] F) :
     (e.toContinuousLinearEquiv.symm : F →ₗ[𝕜] E) = e.symm :=
   rfl
 #align linear_equiv.coe_to_continuous_linear_equiv_symm LinearEquiv.coe_toContinuousLinearEquiv_symm
 
+set_option synthInstance.etaExperiment true in
 @[simp]
 theorem coe_toContinuousLinearEquiv_symm' (e : E ≃ₗ[𝕜] F) :
     (e.toContinuousLinearEquiv.symm : F → E) = e.symm :=
   rfl
 #align linear_equiv.coe_to_continuous_linear_equiv_symm' LinearEquiv.coe_toContinuousLinearEquiv_symm'
 
+set_option synthInstance.etaExperiment true in
 @[simp]
 theorem toLinearEquiv_toContinuousLinearEquiv (e : E ≃ₗ[𝕜] F) :
     e.toContinuousLinearEquiv.toLinearEquiv = e := by
@@ -395,6 +410,7 @@ theorem toLinearEquiv_toContinuousLinearEquiv (e : E ≃ₗ[𝕜] F) :
   rfl
 #align linear_equiv.to_linear_equiv_to_continuous_linear_equiv LinearEquiv.toLinearEquiv_toContinuousLinearEquiv
 
+set_option synthInstance.etaExperiment true in
 @[simp]
 theorem toLinearEquiv_toContinuousLinearEquiv_symm (e : E ≃ₗ[𝕜] F) :
     e.toContinuousLinearEquiv.symm.toLinearEquiv = e.symm := by
@@ -402,6 +418,7 @@ theorem toLinearEquiv_toContinuousLinearEquiv_symm (e : E ≃ₗ[𝕜] F) :
   rfl
 #align linear_equiv.to_linear_equiv_to_continuous_linear_equiv_symm LinearEquiv.toLinearEquiv_toContinuousLinearEquiv_symm
 
+set_option synthInstance.etaExperiment true in
 instance canLiftContinuousLinearEquiv :
     CanLift (E ≃ₗ[𝕜] F) (E ≃L[𝕜] F) ContinuousLinearEquiv.toLinearEquiv fun _ => True :=
   ⟨fun f _ => ⟨_, f.toLinearEquiv_toContinuousLinearEquiv⟩⟩
@@ -452,14 +469,13 @@ theorem coe_constrL (v : Basis ι 𝕜 E) (f : ι → F) : (v.constrL f : E →�
 /-- The continuous linear equivalence between a vector space over `𝕜` with a finite basis and
 functions from its basis indexing type to `𝕜`. -/
 def equivFunL (v : Basis ι 𝕜 E) : E ≃L[𝕜] ι → 𝕜 :=
-  {
-    v.equivFun with
+  { v.equivFun with
     continuous_toFun :=
       haveI : FiniteDimensional 𝕜 E := FiniteDimensional.of_fintype_basis v
-      v.equiv_fun.to_linear_map.continuous_of_finite_dimensional
+      v.equivFun.to_m.near_map.continuous_of_finite_dimensional
     continuous_invFun := by
-      change Continuous v.equiv_fun.symm.to_fun
-      exact v.equiv_fun.symm.to_linear_map.continuous_of_finite_dimensional }
+      change Continuous v.equivFun.symm.to_fun
+      exact v.equivFun.symm.to_linear_map.continuous_of_finite_dimensional }
 #align basis.equiv_funL Basis.equivFunL
 
 @[simp]
@@ -479,12 +495,14 @@ namespace ContinuousLinearMap
 
 variable [T2Space E] [FiniteDimensional 𝕜 E]
 
+set_option synthInstance.etaExperiment true in
 /-- Builds a continuous linear equivalence from a continuous linear map on a finite-dimensional
 vector space whose determinant is nonzero. -/
 def toContinuousLinearEquivOfDetNeZero (f : E →L[𝕜] E) (hf : f.det ≠ 0) : E ≃L[𝕜] E :=
   ((f : E →ₗ[𝕜] E).equivOfDetNeZero hf).toContinuousLinearEquiv
 #align continuous_linear_map.to_continuous_linear_equiv_of_det_ne_zero ContinuousLinearMap.toContinuousLinearEquivOfDetNeZero
 
+set_option synthInstance.etaExperiment true in
 @[simp]
 theorem coe_toContinuousLinearEquivOfDetNeZero (f : E →L[𝕜] E) (hf : f.det ≠ 0) :
     (f.toContinuousLinearEquivOfDetNeZero hf : E →L[𝕜] E) = f := by
@@ -492,12 +510,14 @@ theorem coe_toContinuousLinearEquivOfDetNeZero (f : E →L[𝕜] E) (hf : f.det 
   rfl
 #align continuous_linear_map.coe_to_continuous_linear_equiv_of_det_ne_zero ContinuousLinearMap.coe_toContinuousLinearEquivOfDetNeZero
 
+set_option synthInstance.etaExperiment true in
 @[simp]
 theorem toContinuousLinearEquivOfDetNeZero_apply (f : E →L[𝕜] E) (hf : f.det ≠ 0) (x : E) :
     f.toContinuousLinearEquivOfDetNeZero hf x = f x :=
   rfl
 #align continuous_linear_map.to_continuous_linear_equiv_of_det_ne_zero_apply ContinuousLinearMap.toContinuousLinearEquivOfDetNeZero_apply
 
+set_option synthInstance.etaExperiment true in
 theorem Matrix.toLin_finTwoProd_toContinuousLinearMap (a b c d : 𝕜) :
     (Matrix.toLin (Basis.finTwoProd 𝕜) (Basis.finTwoProd 𝕜) !![a, b; c, d]).toContinuousLinearMap =
       (a • ContinuousLinearMap.fst 𝕜 𝕜 𝕜 + b • ContinuousLinearMap.snd 𝕜 𝕜 𝕜).Prod
