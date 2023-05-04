@@ -29,30 +29,30 @@ integer part (i.e. the floor) of `v`. Subtract this integer part from `v`. If th
 stop; otherwise find the reciprocal of the difference and repeat. The procedure will terminate if
 and only if `v` is rational.
 
-For an example, refer to `int_fract_pair.stream`.
+For an example, refer to `IntFractPair.stream`.
 
 ## Main definitions
 
-- `generalized_continued_fraction.int_fract_pair.stream`: computes the stream of integer and
+- `GeneralizedContinuedFraction.IntFractPair.stream`: computes the stream of integer and
   fractional parts of a given value as described in the summary.
-- `generalized_continued_fraction.of`: computes the generalised continued fraction of a value `v`.
+- `GeneralizedContinuedFraction.of`: computes the generalised continued fraction of a value `v`.
   In fact, it computes a regular continued fraction that terminates if and only if `v` is rational.
 
 ## Implementation Notes
 
-There is an intermediate definition `generalized_continued_fraction.int_fract_pair.seq1` between
-`generalized_continued_fraction.int_fract_pair.stream` and `generalized_continued_fraction.of`
+There is an intermediate definition `GeneralizedContinuedFraction.IntFractPair.seq1` between
+`GeneralizedContinuedFraction.IntFractPair.stream` and `GeneralizedContinuedFraction.of`
 to wire up things. User should not (need to) directly interact with it.
 
 The computation of the integer and fractional pairs of a value can elegantly be
 captured by a recursive computation of a stream of option pairs. This is done in
-`int_fract_pair.stream`. However, the type then does not guarantee the first pair to always be
+`IntFractPair.stream`. However, the type then does not guarantee the first pair to always be
 `some` value, as expected by a continued fraction.
 
 To separate concerns, we first compute a single head term that always exists in
-`generalized_continued_fraction.int_fract_pair.seq1` followed by the remaining stream of option
+`GeneralizedContinuedFraction.IntFractPair.seq1` followed by the remaining stream of option
 pairs. This sequence with a head term (`seq1`) is then transformed to a generalized continued
-fraction in `generalized_continued_fraction.of` by extracting the wanted integer parts of the
+fraction in `GeneralizedContinuedFraction.of` by extracting the wanted integer parts of the
 head term and the stream.
 
 ## References
@@ -85,7 +85,7 @@ variable {K}
 
 namespace IntFractPair
 
-/-- Make an `int_fract_pair` printable. -/
+/-- Make an `IntFractPair` printable. -/
 instance [Repr K] : Repr (IntFractPair K) :=
   ⟨fun p _ => "(b : " ++ repr p.b ++ ", fract : " ++ repr p.fr ++ ")"⟩
 
@@ -132,7 +132,7 @@ protected def of (v : K) : IntFractPair K :=
 #align generalized_continued_fraction.int_fract_pair.of GeneralizedContinuedFraction.IntFractPair.of
 
 /-- Creates the stream of integer and fractional parts of a value `v` needed to obtain the continued
-fraction representation of `v` in `generalized_continued_fraction.of`. More precisely, given a value
+fraction representation of `v` in `GeneralizedContinuedFraction.of`. More precisely, given a value
 `v : K`, it recursively computes a stream of option `ℤ × K` pairs as follows:
 - `stream v 0 = some ⟨⌊v⌋, v - ⌊v⌋⟩`
 - `stream v (n + 1) = some ⟨⌊frₙ⁻¹⌋, frₙ⁻¹ - ⌊frₙ⁻¹⌋⟩`,
@@ -152,7 +152,7 @@ protected def stream (v : K) : Stream' <| Option (IntFractPair K)
       if ap_n.fr = 0 then none else some (IntFractPair.of ap_n.fr⁻¹)
 #align generalized_continued_fraction.int_fract_pair.stream GeneralizedContinuedFraction.IntFractPair.stream
 
-/-- Shows that `int_fract_pair.stream` has the sequence property, that is once we return `none` at
+/-- Shows that `IntFractPair.stream` has the sequence property, that is once we return `none` at
 position `n`, we also return `none` at `n + 1`.
 -/
 theorem stream_isSeq (v : K) : (IntFractPair.stream v).IsSeq := by
@@ -161,46 +161,41 @@ theorem stream_isSeq (v : K) : (IntFractPair.stream v).IsSeq := by
 #align generalized_continued_fraction.int_fract_pair.stream_is_seq GeneralizedContinuedFraction.IntFractPair.stream_isSeq
 
 /--
-Uses `int_fract_pair.stream` to create a sequence with head (i.e. `seq1`) of integer and fractional
-parts of a value `v`. The first value of `int_fract_pair.stream` is never `none`, so we can safely
+Uses `IntFractPair.stream` to create a sequence with head (i.e. `seq1`) of integer and fractional
+parts of a value `v`. The first value of `IntFractPair.stream` is never `none`, so we can safely
 extract it and put the tail of the stream in the sequence part.
 
 This is just an intermediate representation and users should not (need to) directly interact with
 it. The setup of rewriting/simplification lemmas that make the definitions easy to use is done in
-`algebra.continued_fractions.computation.translations`.
+`Algebra.ContinuedFractions.Computation.Translations`.
 -/
 protected def seq1 (v : K) : Stream'.Seq1 <| IntFractPair K :=
-  ⟨IntFractPair.of v,--the head
-      Stream'.Seq.tail-- take the tail of `int_fract_pair.stream` since the first element is already in
-      -- the head
-      -- create a sequence from `int_fract_pair.stream`
-      ⟨IntFractPair.stream v,-- the underlying stream
-          @stream_isSeq
-          _ _ _ v⟩⟩
+  ⟨IntFractPair.of v, -- the head
+    -- take the tail of `IntFractPair.stream` since the first element is already in the head
+    Stream'.Seq.tail
+      -- create a sequence from `IntFractPair.stream`
+      ⟨IntFractPair.stream v, -- the underlying stream
+        @stream_isSeq _ _ _ v⟩⟩ -- the proof that the stream is a sequence
 #align generalized_continued_fraction.int_fract_pair.seq1 GeneralizedContinuedFraction.IntFractPair.seq1
 
--- the proof that the stream is a sequence
 end IntFractPair
 
-/-- Returns the `generalized_continued_fraction` of a value. In fact, the returned gcf is also
-a `continued_fraction` that terminates if and only if `v` is rational (those proofs will be
+/-- Returns the `GeneralizedContinuedFraction` of a value. In fact, the returned gcf is also
+a `ContinuedFraction` that terminates if and only if `v` is rational (those proofs will be
 added in a future commit).
 
 The continued fraction representation of `v` is given by `[⌊v⌋; b₀, b₁, b₂,...]`, where
 `[b₀; b₁, b₂,...]` recursively is the continued fraction representation of `1 / (v - ⌊v⌋)`. This
 process stops when the fractional part `v - ⌊v⌋` hits 0 at some step.
 
-The implementation uses `int_fract_pair.stream` to obtain the partial denominators of the continued
+The implementation uses `IntFractPair.stream` to obtain the partial denominators of the continued
 fraction. Refer to said function for more details about the computation process.
 -/
 protected def of [LinearOrderedField K] [FloorRing K] (v : K) : GeneralizedContinuedFraction K :=
-  let ⟨h, s⟩ := IntFractPair.seq1 v
-  -- get the sequence of integer and fractional parts.
-  ⟨h.b,-- the head is just the first integer part
-        s.map
-      fun p => ⟨1, p.b⟩⟩
+  let ⟨h, s⟩ := IntFractPair.seq1 v -- get the sequence of integer and fractional parts.
+  ⟨h.b, -- the head is just the first integer part
+    s.map fun p => ⟨1, p.b⟩⟩ -- the sequence consists of the remaining integer parts as the partial
+                            -- denominators; all partial numerators are simply 1
 #align generalized_continued_fraction.of GeneralizedContinuedFraction.of
 
--- the sequence consists of the remaining integer parts as the partial
--- denominators; all partial numerators are simply 1
 end GeneralizedContinuedFraction
