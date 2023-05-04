@@ -694,7 +694,7 @@ theorem Wbtw.right_mem_affineSpan_of_left_ne {x y z : P} (h : Wbtw R x y z) (hne
   exact lineMap_mem_affineSpan_pair _ _ _
 #align wbtw.right_mem_affine_span_of_left_ne Wbtw.right_mem_affineSpan_of_left_ne
 
-theorem sbtw_iff_left_ne_and_right_mem_image_IoI {x y z : P} :
+theorem sbtw_iff_left_ne_and_right_mem_image_Ioi {x y z : P} :
     Sbtw R x y z ↔ x ≠ y ∧ z ∈ lineMap x y '' Set.Ioi (1 : R) := by
   refine' ⟨fun h => ⟨h.left_ne, _⟩, fun h => _⟩
   · obtain ⟨r, ⟨hr, rfl⟩⟩ := h.wbtw.right_mem_image_Ici_of_left_ne h.left_ne
@@ -714,11 +714,11 @@ theorem sbtw_iff_left_ne_and_right_mem_image_IoI {x y z : P} :
     rw [← sub_smul, smul_ne_zero_iff, vsub_ne_zero, sub_ne_zero]
     exact ⟨hr.ne, hne.symm⟩
 set_option linter.uppercaseLean3 false in
-#align sbtw_iff_left_ne_and_right_mem_image_IoI sbtw_iff_left_ne_and_right_mem_image_IoI
+#align sbtw_iff_left_ne_and_right_mem_image_IoI sbtw_iff_left_ne_and_right_mem_image_Ioi
 
 theorem Sbtw.right_mem_image_Ioi {x y z : P} (h : Sbtw R x y z) :
     z ∈ lineMap x y '' Set.Ioi (1 : R) :=
-  (sbtw_iff_left_ne_and_right_mem_image_IoI.1 h).2
+  (sbtw_iff_left_ne_and_right_mem_image_Ioi.1 h).2
 #align sbtw.right_mem_image_Ioi Sbtw.right_mem_image_Ioi
 
 theorem Sbtw.right_mem_affineSpan {x y z : P} (h : Sbtw R x y z) : z ∈ line[R, x, y] :=
@@ -740,11 +740,11 @@ theorem Wbtw.left_mem_affineSpan_of_right_ne {x y z : P} (h : Wbtw R x y z) (hne
   h.symm.right_mem_affineSpan_of_left_ne hne
 #align wbtw.left_mem_affine_span_of_right_ne Wbtw.left_mem_affineSpan_of_right_ne
 
-theorem sbtw_iff_right_ne_and_left_mem_image_IoI {x y z : P} :
+theorem sbtw_iff_right_ne_and_left_mem_image_Ioi {x y z : P} :
     Sbtw R x y z ↔ z ≠ y ∧ x ∈ lineMap z y '' Set.Ioi (1 : R) := by
-  rw [sbtw_comm, sbtw_iff_left_ne_and_right_mem_image_IoI]
+  rw [sbtw_comm, sbtw_iff_left_ne_and_right_mem_image_Ioi]
 set_option linter.uppercaseLean3 false in
-#align sbtw_iff_right_ne_and_left_mem_image_IoI sbtw_iff_right_ne_and_left_mem_image_IoI
+#align sbtw_iff_right_ne_and_left_mem_image_IoI sbtw_iff_right_ne_and_left_mem_image_Ioi
 
 theorem Sbtw.left_mem_image_Ioi {x y z : P} (h : Sbtw R x y z) :
     x ∈ lineMap z y '' Set.Ioi (1 : R) :=
