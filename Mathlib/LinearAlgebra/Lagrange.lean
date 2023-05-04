@@ -264,7 +264,8 @@ theorem degree_basis (hvs : Set.InjOn v s) (hi : i ∈ s) :
 theorem sum_basis (hvs : Set.InjOn v s) (hs : s.Nonempty) : (∑ j in s, Lagrange.basis s v j) = 1 :=
   by
   refine' eq_of_degrees_lt_of_eval_index_eq s hvs (lt_of_le_of_lt (degree_sum_le _ _) _) _ _
-  · rw [@Finset.sup_lt_iff (WithBot ℕ) ι _ _ s (fun b => degree (Lagrange.basis s v b)) ↑(card s) (WithBot.bot_lt_coe s.card)]
+  · rw [@Finset.sup_lt_iff (WithBot ℕ) ι _ _ s (fun b => degree (Lagrange.basis s v b)) ↑(card s)
+    (WithBot.bot_lt_coe s.card)]
     intro i hi
     rw [degree_basis hvs hi]
     apply (@WithBot.coe_lt_coe _ (card s - 1) (card s) _).2
@@ -308,11 +309,13 @@ polynomial of degree `< s.card` that takes value `r i` on `v i` for all `i` in `
 @[simps]
 -- Porting note: The arguments for 'LinearMap' on line 305 had to be given explicitly because
 -- the instance 'Module F F[X]' could not be synthetized
-def interpolate (s : Finset ι) (v : ι → F) : @LinearMap _ _ _ _ (RingHom.id F) (ι → F) F[X] _ _ _ (Polynomial.module) where
+def interpolate (s : Finset ι) (v : ι → F) : @LinearMap _ _ _ _ (RingHom.id F) (ι → F) F[X] _ _ _
+  (Polynomial.module) where
   toFun r := ∑ i in s, C (r i) * Lagrange.basis s v i
   map_add' f g := by
     simp_rw [← Finset.sum_add_distrib]
-    have h : (fun x => C (f x) * Lagrange.basis s v x + C (g x) * Lagrange.basis s v x) = (fun x => C ((f + g) x) * Lagrange.basis s v x) := by
+    have h : (fun x => C (f x) * Lagrange.basis s v x + C (g x) * Lagrange.basis s v x) =
+    (fun x => C ((f + g) x) * Lagrange.basis s v x) := by
       simp_rw [← add_mul, ← C_add, Pi.add_apply]
     rw [h]
   map_smul' c f := by
@@ -466,7 +469,9 @@ theorem interpolate_eq_sum_interpolate_insert_sdiff (hvt : Set.InjOn v t) (hs : 
     interpolate t v r = ∑ i in s, interpolate (insert i (t \ s)) v r * Lagrange.basis s v i := by
   symm
   refine' eq_interpolate_of_eval_eq _ hvt (lt_of_le_of_lt (degree_sum_le _ _) _) fun i hi => _
-  · have h := (@Finset.sup_lt_iff _ _ _ _ s (fun b ↦ degree ((interpolate (insert b (t \ s)) v) r * Lagrange.basis s v b)) _ (WithBot.bot_lt_coe t.card)).2
+  · have h := (@Finset.sup_lt_iff _ _ _ _ s
+    (fun b ↦ degree ((interpolate (insert b (t \ s)) v) r * Lagrange.basis s v b)) _
+    (WithBot.bot_lt_coe t.card)).2
     apply h
     simp_rw [degree_mul]
     intro i hi
@@ -476,7 +481,8 @@ theorem interpolate_eq_sum_interpolate_insert_sdiff (hvt : Set.InjOn v t) (hs : 
       rw [add_assoc, tsub_add_tsub_cancel hst' hs, ← add_tsub_assoc_of_le (hs.trans hst'),
         Nat.succ_add_sub_one, zero_add]
     rw [degree_basis (Set.InjOn.mono hst hvt) hi, H, WithBot.coe_add]
-    have h := (@WithBot.add_lt_add_iff_right _ _ _ (degree ((interpolate (insert i (t \ s)) v) r)) (↑(1 + (card t - card s))) _ _ _ (@WithBot.coe_ne_bot _ (s.card - 1))).2
+    have h := (@WithBot.add_lt_add_iff_right _ _ _ (degree ((interpolate (insert i (t \ s)) v) r))
+    (↑(1 + (card t - card s))) _ _ _ (@WithBot.coe_ne_bot _ (s.card - 1))).2
     apply h
     convert degree_interpolate_lt _
         (hvt.mono (coe_subset.mpr (insert_subset.mpr ⟨hst hi, sdiff_subset _ _⟩)))
