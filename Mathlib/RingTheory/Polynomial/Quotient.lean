@@ -233,4 +233,3 @@ def quotientEquivQuotientMvPolynomial (I : Ideal R) :
 #align mv_polynomial.quotient_equiv_quotient_mv_polynomial MvPolynomial.quotientEquivQuotientMvPolynomial
 
 end MvPolynomial
-
