@@ -359,7 +359,7 @@ theorem degree_interpolate_le (hvs : Set.InjOn v s) : (interpolate s v r).degree
   rw [degree_mul, degree_basis hvs hi]
   by_cases hr : r i = 0
   · simpa only [hr, map_zero, degree_zero, WithBot.bot_add] using bot_le
-  · rw [degree_C hr, zero_add, WithBot.coe_le_coe]
+  · rw [degree_C hr, zero_add]
 #align lagrange.degree_interpolate_le Lagrange.degree_interpolate_le
 
 set_option synthInstance.etaExperiment true in
@@ -369,8 +369,9 @@ theorem degree_interpolate_lt (hvs : Set.InjOn v s) : (interpolate s v r).degree
   · rw [interpolate_empty, degree_zero, card_empty]
     exact WithBot.bot_lt_coe _
   · refine' lt_of_le_of_lt (degree_interpolate_le _ hvs) _
-    rw [WithBot.coe_lt_coe]
-    exact Nat.sub_lt (nonempty.card_pos h) zero_lt_one
+    have h₂ := (@WithBot.coe_lt_coe _ (card s - 1) (card s) _).2
+    apply h₂
+    exact Nat.sub_lt (Nonempty.card_pos h) zero_lt_one
 #align lagrange.degree_interpolate_lt Lagrange.degree_interpolate_lt
 
 set_option synthInstance.etaExperiment true in
@@ -406,8 +407,8 @@ set_option synthInstance.etaExperiment true in
 
 theorem eq_interpolate {f : F[X]} (hvs : Set.InjOn v s) (degree_f_lt : f.degree < s.card) :
     f = interpolate s v fun i => f.eval (v i) :=
-  eq_of_degrees_lt_of_eval_index_eq _ hvs degree_f_lt (degree_interpolate_lt _ hvs) fun i hi =>
-    (eval_interpolate_at_node _ hvs hi).symm
+  eq_of_degrees_lt_of_eval_index_eq _ hvs degree_f_lt (degree_interpolate_lt _ hvs) fun _ hi =>
+    (eval_interpolate_at_node (fun x ↦ eval (v x) f) hvs hi).symm
 #align lagrange.eq_interpolate Lagrange.eq_interpolate
 
 set_option synthInstance.etaExperiment true in
@@ -431,6 +432,8 @@ theorem eq_interpolate_iff {f : F[X]} (hvs : Set.InjOn v s) :
     exact ⟨degree_interpolate_lt _ hvs, fun _ hi => eval_interpolate_at_node _ hvs hi⟩
 #align lagrange.eq_interpolate_iff Lagrange.eq_interpolate_iff
 
+set_option synthInstance.etaExperiment true in
+
 /-- Lagrange interpolation induces isomorphism between functions from `s`
 and polynomials of degree less than `fintype.card ι`.-/
 def funEquivDegreeLt (hvs : Set.InjOn v s) : degreeLT F s.card ≃ₗ[F] s → F where
@@ -443,8 +446,8 @@ def funEquivDegreeLt (hvs : Set.InjOn v s) : degreeLT F s.card ≃ₗ[F] s → F
   left_inv := by
     rintro ⟨f, hf⟩
     simp only [Subtype.mk_eq_mk, Subtype.coe_mk, dite_eq_ite]
-    rw [mem_degree_lt] at hf
-    nth_rw_rhs 1 [eq_interpolate hvs hf]
+    rw [mem_degreeLT] at hf
+    conv => rhs; rw [eq_interpolate hvs hf]
     exact interpolate_eq_of_values_eq_on _ _ fun _ hi => if_pos hi
   right_inv := by
     intro f
@@ -455,20 +458,26 @@ def funEquivDegreeLt (hvs : Set.InjOn v s) : degreeLT F s.card ≃ₗ[F] s → F
 
 set_option synthInstance.etaExperiment true in
 
+-- Porting note: On lines 468 and 478, the patterns in 'Finset.sup_lt_iff' and
+-- 'WithBot.add_lt_add_iff_right' could not be found with 'rw' or 'simp_rw' but they can
+-- with 'apply'
 theorem interpolate_eq_sum_interpolate_insert_sdiff (hvt : Set.InjOn v t) (hs : s.Nonempty)
     (hst : s ⊆ t) :
     interpolate t v r = ∑ i in s, interpolate (insert i (t \ s)) v r * Lagrange.basis s v i := by
   symm
   refine' eq_interpolate_of_eval_eq _ hvt (lt_of_le_of_lt (degree_sum_le _ _) _) fun i hi => _
-  · simp_rw [Finset.sup_lt_iff (WithBot.bot_lt_coe t.card), degree_mul]
+  · have h := (@Finset.sup_lt_iff _ _ _ _ s (fun b ↦ degree ((interpolate (insert b (t \ s)) v) r * Lagrange.basis s v b)) _ (WithBot.bot_lt_coe t.card)).2
+    apply h
+    simp_rw [degree_mul]
     intro i hi
     have hs : 1 ≤ s.card := Nonempty.card_pos ⟨_, hi⟩
     have hst' : s.card ≤ t.card := card_le_of_subset hst
     have H : t.card = 1 + (t.card - s.card) + (s.card - 1) := by
       rw [add_assoc, tsub_add_tsub_cancel hst' hs, ← add_tsub_assoc_of_le (hs.trans hst'),
         Nat.succ_add_sub_one, zero_add]
-    rw [degree_basis (Set.InjOn.mono hst hvt) hi, H, WithBot.coe_add,
-      WithBot.add_lt_add_iff_right (@WithBot.coe_ne_bot _ (s.card - 1))]
+    rw [degree_basis (Set.InjOn.mono hst hvt) hi, H, WithBot.coe_add]
+    have h := (@WithBot.add_lt_add_iff_right _ _ _ (degree ((interpolate (insert i (t \ s)) v) r)) (↑(1 + (card t - card s))) _ _ _ (@WithBot.coe_ne_bot _ (s.card - 1))).2
+    apply h
     convert degree_interpolate_lt _
         (hvt.mono (coe_subset.mpr (insert_subset.mpr ⟨hst hi, sdiff_subset _ _⟩)))
     rw [card_insert_of_not_mem (not_mem_sdiff_of_mem_right hi), card_sdiff hst, add_comm]
@@ -480,7 +489,7 @@ theorem interpolate_eq_sum_interpolate_insert_sdiff (hvt : Set.InjOn v t) (hs : 
           (mem_insert_self _ _),
         mul_one, add_right_eq_self]
       refine' sum_eq_zero fun j hj => _
-      rcases mem_erase.mp hj with ⟨hij, hj⟩
+      rcases mem_erase.mp hj with ⟨hij, _⟩
       rw [eval_basis_of_ne hij hi', MulZeroClass.mul_zero]
     · have H : (∑ j in s, eval (v i) (Lagrange.basis s v j)) = 1 := by
         rw [← eval_finset_sum, sum_basis (hvt.mono hst) hs, eval_one]
