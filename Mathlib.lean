@@ -52,6 +52,7 @@ import Mathlib.Algebra.CharZero.Infinite
 import Mathlib.Algebra.CharZero.Lemmas
 import Mathlib.Algebra.CharZero.Quotient
 import Mathlib.Algebra.ContinuedFractions.Basic
+import Mathlib.Algebra.ContinuedFractions.Computation.Basic
 import Mathlib.Algebra.CovariantAndContravariant
 import Mathlib.Algebra.CubicDiscriminant
 import Mathlib.Algebra.DirectSum.Basic
