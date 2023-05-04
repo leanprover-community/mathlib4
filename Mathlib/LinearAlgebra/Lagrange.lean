@@ -188,7 +188,7 @@ open Finset
 
 variable {ι : Type _} [DecidableEq ι] {s : Finset ι} {v : ι → F} {i j : ι}
 
-/-- Lagrange basis polynomials indexed by `s : finset ι`, defined at nodes `v i` for a
+/-- Lagrange basis polynomials indexed by `s : Finset ι`, defined at nodes `v i` for a
 map `v : ι → F`. For `i, j ∈ s`, `basis s v i` evaluates to 0 at `v j` for `i ≠ j`. When
 `v` is injective on `s`, `basis s v i` evaluates to 1 at `v i`. -/
 protected def basis (s : Finset ι) (v : ι → F) (i : ι) : F[X] :=
@@ -258,7 +258,7 @@ theorem degree_basis (hvs : Set.InjOn v s) (hi : i ∈ s) :
   rw [degree_eq_natDegree (basis_ne_zero hvs hi), natDegree_basis hvs hi]
 #align lagrange.degree_basis Lagrange.degree_basis
 
--- Porting note: On lines 269 and 272, the pattern in 'WithBot.coe_lt_coe' could not be found
+-- Porting note: On lines 271 and 274, the pattern in 'WithBot.coe_lt_coe' could not be found
 -- with 'rw' but it can with 'apply'
 
 theorem sum_basis (hvs : Set.InjOn v s) (hs : s.Nonempty) : (∑ j in s, Lagrange.basis s v j) = 1 :=
