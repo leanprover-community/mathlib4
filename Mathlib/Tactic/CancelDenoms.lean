@@ -98,26 +98,26 @@ be able to cancel all the numeric denominators in `e`. The returned `Tree` descr
 distribute the value `n` over products inside `e`.
 -/
 partial def findCancelFactor (e : Expr) : ℕ × Tree ℕ :=
-match e.getAppFnArgs with
-| (`HAdd.hAdd, #[_, _, _, _, e1, e2]) | (`HSub.hSub, #[_, _, _, _, e1, e2]) =>
-  let (v1, t1) := findCancelFactor e1
-  let (v2, t2) := findCancelFactor e2
-  let lcm := v1.lcm v2
-  (lcm, .node lcm t1 t2)
-| (`HMul.hMul, #[_, _, _, _, e1, e2]) =>
-  let (v1, t1) := findCancelFactor e1
-  let (v2, t2) := findCancelFactor e2
-  let pd := v1 * v2
-  (pd, .node pd t1 t2)
-| (`HDiv.hDiv, #[_, _, _, _, e1, e2]) =>
-  match isRatLit e2 with
-  | some q =>
+  match e.getAppFnArgs with
+  | (`HAdd.hAdd, #[_, _, _, _, e1, e2]) | (`HSub.hSub, #[_, _, _, _, e1, e2]) =>
     let (v1, t1) := findCancelFactor e1
-    let n := v1.lcm q.num.natAbs
-    (n, .node n t1 <| .node q.num.natAbs .nil .nil)
-  | none => (1, .node 1 .nil .nil)
-| (`Neg.neg, #[_, _, e]) => findCancelFactor e
-| _ => (1, .node 1 .nil .nil)
+    let (v2, t2) := findCancelFactor e2
+    let lcm := v1.lcm v2
+    (lcm, .node lcm t1 t2)
+  | (`HMul.hMul, #[_, _, _, _, e1, e2]) =>
+    let (v1, t1) := findCancelFactor e1
+    let (v2, t2) := findCancelFactor e2
+    let pd := v1 * v2
+    (pd, .node pd t1 t2)
+  | (`HDiv.hDiv, #[_, _, _, _, e1, e2]) =>
+    match isRatLit e2 with
+    | some q =>
+      let (v1, t1) := findCancelFactor e1
+      let n := v1.lcm q.num.natAbs
+      (n, .node n t1 <| .node q.num.natAbs .nil .nil)
+    | none => (1, .node 1 .nil .nil)
+  | (`Neg.neg, #[_, _, e]) => findCancelFactor e
+  | _ => (1, .node 1 .nil .nil)
 
 def norm_num_done : Elab.Tactic.TacticM Unit := do
   Lean.Elab.Tactic.evalTactic (←`(tactic| norm_num; done))
@@ -127,72 +127,72 @@ def norm_num_done : Elab.Tactic.TacticM Unit := do
 canceled in `e'`, distributing `n` proportionally according to `tr`.
 -/
 partial def mkProdPrf (α : Q(Type u)) (_sα : Q(Field $α)) (v : ℕ) (t : Tree ℕ)
-  (e : Q($α)) : MetaM Expr := do
-let amwo ← synthInstanceQ q(AddMonoidWithOne $α)
-match t, e with
-| .node _ lhs rhs, ~q($e1 + $e2) => do
-  let v1 ← mkProdPrf α _sα v lhs e1
-  let v2 ← mkProdPrf α _sα v rhs e2
-  mkAppM `CancelFactors.add_subst #[v1, v2]
-| .node _ lhs rhs, ~q($e1 - $e2) => do
-  let v1 ← mkProdPrf α _sα v lhs e1
-  let v2 ← mkProdPrf α _sα v rhs e2
-  mkAppM `CancelFactors.sub_subst #[v1, v2]
-| .node _ lhs@(.node ln _ _) rhs, ~q($e1 * $e2) => do
-  let v1 ← mkProdPrf α _sα ln lhs e1
-  let v2 ← mkProdPrf α _sα (v / ln) rhs e2
-  have ln' := (← mkOfNat α _sα <| mkRawNatLit ln).1
-  have vln' := (← mkOfNat α _sα <| mkRawNatLit (v/ln)).1
-  have v' := (← mkOfNat α _sα <| mkRawNatLit v).1
-  let ntp : Q(Prop) := q($ln' * $vln' = $v')
-  let npf ← synthesizeUsing ntp norm_num_done
-  mkAppM `CancelFactors.mul_subst #[v1, v2, npf]
-| .node n lhs (.node rn _ _), ~q($e1 / $e2) => do
-  let v1 ← mkProdPrf α _sα (v / rn) lhs e1
-  have rn' := (← mkOfNat α amwo <| mkRawNatLit rn).1
-  have vrn' := (← mkOfNat α amwo <| mkRawNatLit <| v / rn).1
-  have n' := (← mkOfNat α amwo <| mkRawNatLit <| n).1
-  have v' := (← mkOfNat α amwo <| mkRawNatLit <| v).1
-  let ntp : Q(Prop) := q($rn' / $e2 = 1)
-  let npf ← synthesizeUsing ntp norm_num_done
-  let ntp2 : Q(Prop) := q($vrn' * $n' = $v')
-  let npf2 ← synthesizeUsing ntp2 norm_num_done
-  mkAppM `CancelFactors.div_subst #[v1, npf, npf2]
-| t, ~q(-$e) => do
-  let v ← mkProdPrf α _sα v t e
-  mkAppM `CancelFactors.neg_subst #[v]
-| _, _ => do
-  have v' := (← mkOfNat α amwo <| mkRawNatLit <| v).1
-  let e' ← mkAppM `Mul.mul #[v', e]
-  mkAppM `Eq.refl #[e']
+    (e : Q($α)) : MetaM Expr := do
+  let amwo ← synthInstanceQ q(AddMonoidWithOne $α)
+  match t, e with
+  | .node _ lhs rhs, ~q($e1 + $e2) => do
+    let v1 ← mkProdPrf α _sα v lhs e1
+    let v2 ← mkProdPrf α _sα v rhs e2
+    mkAppM `CancelFactors.add_subst #[v1, v2]
+  | .node _ lhs rhs, ~q($e1 - $e2) => do
+    let v1 ← mkProdPrf α _sα v lhs e1
+    let v2 ← mkProdPrf α _sα v rhs e2
+    mkAppM `CancelFactors.sub_subst #[v1, v2]
+  | .node _ lhs@(.node ln _ _) rhs, ~q($e1 * $e2) => do
+    let v1 ← mkProdPrf α _sα ln lhs e1
+    let v2 ← mkProdPrf α _sα (v / ln) rhs e2
+    have ln' := (← mkOfNat α _sα <| mkRawNatLit ln).1
+    have vln' := (← mkOfNat α _sα <| mkRawNatLit (v/ln)).1
+    have v' := (← mkOfNat α _sα <| mkRawNatLit v).1
+    let ntp : Q(Prop) := q($ln' * $vln' = $v')
+    let npf ← synthesizeUsing ntp norm_num_done
+    mkAppM `CancelFactors.mul_subst #[v1, v2, npf]
+  | .node n lhs (.node rn _ _), ~q($e1 / $e2) => do
+    let v1 ← mkProdPrf α _sα (v / rn) lhs e1
+    have rn' := (← mkOfNat α amwo <| mkRawNatLit rn).1
+    have vrn' := (← mkOfNat α amwo <| mkRawNatLit <| v / rn).1
+    have n' := (← mkOfNat α amwo <| mkRawNatLit <| n).1
+    have v' := (← mkOfNat α amwo <| mkRawNatLit <| v).1
+    let ntp : Q(Prop) := q($rn' / $e2 = 1)
+    let npf ← synthesizeUsing ntp norm_num_done
+    let ntp2 : Q(Prop) := q($vrn' * $n' = $v')
+    let npf2 ← synthesizeUsing ntp2 norm_num_done
+    mkAppM `CancelFactors.div_subst #[v1, npf, npf2]
+  | t, ~q(-$e) => do
+    let v ← mkProdPrf α _sα v t e
+    mkAppM `CancelFactors.neg_subst #[v]
+  | _, _ => do
+    have v' := (← mkOfNat α amwo <| mkRawNatLit <| v).1
+    let e' ← mkAppM `HMul.hMul #[v', e]
+    mkAppM `Eq.refl #[e']
 
 /--
 Given `e`, a term with rational division, produces a natural number `n` and a proof of `n*e = e'`,
 where `e'` has no division. Assumes "well-behaved" division.
 -/
 def derive (e : Expr) : MetaM (ℕ × Expr) := do
-let (n, t) := findCancelFactor e
-let tp : Q(Type) ← inferType e
-let stp ← synthInstance q(Field $tp)
-try
-  return (n, ← mkProdPrf tp stp n t e)
-catch E => do
-  dbg_trace (← E.toMessageData.toString)
-  throwError
-    "CancelFactors.derive failed to normalize {e}. Are you sure this is well-behaved division?"
+  let (n, t) := findCancelFactor e
+  let tp : Q(Type) ← inferType e
+  let stp ← synthInstance q(Field $tp)
+  try
+    return (n, ← mkProdPrf tp stp n t e)
+  catch E => do
+    dbg_trace (← E.toMessageData.toString)
+    throwError
+      "CancelFactors.derive failed to normalize {e}. Are you sure this is well-behaved division?"
 
 /--
 `findCompLemma e` arranges `e` in the form `lhs R rhs`, where `R ∈ {<, ≤, =}`, and returns
 `lhs`, `rhs`, and the `cancel_factors` lemma corresponding to `R`.
 -/
 def findCompLemma (e : Expr) : Option (Expr × Expr × Name) :=
-match e.getAppFnArgs with
-| (`LT.lt, #[_, _, a, b]) => (a, b, ``cancel_factors_lt)
-| (`LE.le, #[_, _, a, b]) => (a, b, ``cancel_factors_le)
-| (`Eq, #[_, a, b]) => (a, b, ``cancel_factors_eq)
-| (`GE.ge, #[_, _, a, b]) => (b, a, ``cancel_factors_le)
-| (`GT.gt, #[_, _, a, b]) => (b, a, ``cancel_factors_lt)
-| _ => none
+  match e.getAppFnArgs with
+  | (`LT.lt, #[_, _, a, b]) => (a, b, ``cancel_factors_lt)
+  | (`LE.le, #[_, _, a, b]) => (a, b, ``cancel_factors_le)
+  | (`Eq, #[_, a, b]) => (a, b, ``cancel_factors_eq)
+  | (`GE.ge, #[_, _, a, b]) => (b, a, ``cancel_factors_le)
+  | (`GT.gt, #[_, _, a, b]) => (b, a, ``cancel_factors_lt)
+  | _ => none
 
 /--
 `cancelDenominatorsInType h` assumes that `h` is of the form `lhs R rhs`,
@@ -200,25 +200,26 @@ where `R ∈ {<, ≤, =, ≥, >}`.
 It produces an Expression `h'` of the form `lhs' R rhs'` and a proof that `h = h'`.
 Numeric denominators have been canceled in `lhs'` and `rhs'`.
 -/
-def cancelDenominatorsInType (h : Expr) : MetaM (Expr × Expr) :=
-do let some (lhs, rhs, lem) := findCompLemma h | throwError "cannot kill factors"
-   let (al, lhs_p) ← derive lhs
-   let α : Q(Type) ← inferType lhs
-   let sα : Q(LinearOrderedField $α) ← synthInstance q(LinearOrderedField $α)
-   let (ar, rhs_p) ← derive rhs
-   let gcd := al.gcd ar
-   have al := (← mkOfNat α sα <| mkRawNatLit al).1
-   have ar := (← mkOfNat α sα <| mkRawNatLit ar).1
-   have gcd := (← mkOfNat α sα <| mkRawNatLit gcd).1
-   let al_pos : Q(Prop) := q(0 < $al)
-   let ar_pos : Q(Prop) := q(0 < $ar)
-   let gcd_pos : Q(Prop) := q(0 < $gcd)
-   let al_pos ← synthesizeUsing al_pos norm_num_done
-   let ar_pos ← synthesizeUsing ar_pos norm_num_done
-   let gcd_pos ← synthesizeUsing gcd_pos norm_num_done
-   let pf ← mkAppM lem #[lhs_p, rhs_p, al_pos, ar_pos, gcd_pos]
-   let pf_tp ← inferType pf
-   return ((findCompLemma pf_tp).elim default (Prod.fst ∘ Prod.snd), pf)
+def cancelDenominatorsInType (h : Expr) : MetaM (Expr × Expr) := do
+  let some (lhs, rhs, lem) := findCompLemma h | throwError "cannot kill factors"
+  let (al, lhs_p) ← derive lhs
+  let α : Q(Type) ← inferType lhs
+  let _ ← synthInstanceQ q(LinearOrderedField $α)
+  let amwo ← synthInstanceQ q(AddMonoidWithOne $α)
+  let (ar, rhs_p) ← derive rhs
+  let gcd := al.gcd ar
+  have al := (← mkOfNat α amwo <| mkRawNatLit al).1
+  have ar := (← mkOfNat α amwo <| mkRawNatLit ar).1
+  have gcd := (← mkOfNat α amwo <| mkRawNatLit gcd).1
+  let al_pos : Q(Prop) := q(0 < $al)
+  let ar_pos : Q(Prop) := q(0 < $ar)
+  let gcd_pos : Q(Prop) := q(0 < $gcd)
+  let al_pos ← synthesizeUsing al_pos norm_num_done
+  let ar_pos ← synthesizeUsing ar_pos norm_num_done
+  let gcd_pos ← synthesizeUsing gcd_pos norm_num_done
+  let pf ← mkAppM lem #[lhs_p, rhs_p, al_pos, ar_pos, gcd_pos]
+  let pf_tp ← inferType pf
+  return ((findCompLemma pf_tp).elim default (Prod.fst ∘ Prod.snd), pf)
 
 end CancelFactors
 
@@ -243,35 +244,40 @@ syntax (name := cancelDenoms) "cancel_denoms" (ppSpace location)? : tactic
 open Elab Tactic
 
 def cancelDenominatorsAt (fvar: FVarId) : TacticM Unit := do
-  let t := (← fvar.getDecl).type
+  let t ← instantiateMVars (← fvar.getDecl).type
   let (new, eqPrf) ← CancelFactors.cancelDenominatorsInType t
   let goal ← getMainGoal
-  let _ ← goal.replaceLocalDecl fvar new eqPrf
-  return
+  let res ← goal.replaceLocalDecl fvar new eqPrf
+  replaceMainGoal [res.mvarId]
 
-def cancelDenominatorsTarget : TacticM Unit := do
+def cancelDenominatorsTarget : TacticM Unit := withMainContext do
   let goal ← getMainTarget
   let (new, eqPrf) ← CancelFactors.cancelDenominatorsInType goal
-  let _ ← (← getMainGoal).replaceTargetEq new eqPrf
-  return
+  let goal' ← (← getMainGoal).replaceTargetEq new eqPrf
+  replaceMainGoal [goal']
 
 def cancelDenominators (loc : Location) : TacticM Unit := do
   withLocation loc cancelDenominatorsAt cancelDenominatorsTarget
     (λ _ => throwError "Failed to cancel any denominators")
 
-elab "cancel_denoms" loc:(location)? : tactic => do
-  let loc := (loc.map expandLocation).getD (.targets #[] true)
-  cancelDenominators loc
-  Lean.Elab.Tactic.evalTactic (←`(tactic| norm_num [←mul_assoc]))
+elab "cancel_denoms" loc?:(location)? : tactic => do
+  cancelDenominators (expandOptLocation (Lean.mkOptionalNode loc?))
+  if let some loc := loc? then
+    Lean.Elab.Tactic.evalTactic (←`(tactic| norm_num [←mul_assoc] $loc))
+  else
+    Lean.Elab.Tactic.evalTactic (←`(tactic| norm_num [←mul_assoc]))
 
 variable [lof : LinearOrderedField α] (a b c : α)
 
 set_option warningAsError false
 
+example : (0 : α) < (1 : α) := by
+  norm_num
+
 example (h : a / 5 + b / 4 < c) : 4*a + 5*b < 20*c := by
   cancel_denoms at h
   exact h
 
-/-example (h : a > 0) : a / 5 > 0 := by
+example (h : a > 0) : a / 5 > 0 := by
   cancel_denoms
-  exact h -/
+  exact h
