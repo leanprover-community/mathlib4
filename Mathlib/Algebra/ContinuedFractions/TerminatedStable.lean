@@ -8,7 +8,7 @@ Authors: Kevin Kappelmann
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.ContinuedFractions.Translations
+import Mathlib.Algebra.ContinuedFractions.Translations
 
 /-!
 # Stabilisation of gcf Computations Under Termination
@@ -33,15 +33,13 @@ theorem terminated_stable (n_le_m : n ≤ m) (terminated_at_n : g.TerminatedAt n
 variable [DivisionRing K]
 
 theorem continuantsAux_stable_step_of_terminated (terminated_at_n : g.TerminatedAt n) :
-    g.continuantsAux (n + 2) = g.continuantsAux (n + 1) :=
-  by
+    g.continuantsAux (n + 2) = g.continuantsAux (n + 1) := by
   rw [terminated_at_iff_s_none] at terminated_at_n
   simp only [terminated_at_n, continuants_aux]
 #align generalized_continued_fraction.continuants_aux_stable_step_of_terminated GeneralizedContinuedFraction.continuantsAux_stable_step_of_terminated
 
 theorem continuantsAux_stable_of_terminated (n_lt_m : n < m) (terminated_at_n : g.TerminatedAt n) :
-    g.continuantsAux m = g.continuantsAux (n + 1) :=
-  by
+    g.continuantsAux m = g.continuantsAux (n + 1) := by
   refine' Nat.le_induction rfl (fun k hnk hk => _) _ n_lt_m
   rcases Nat.exists_eq_add_of_lt hnk with ⟨k, rfl⟩
   refine' (continuants_aux_stable_step_of_terminated _).trans hk
@@ -49,8 +47,7 @@ theorem continuantsAux_stable_of_terminated (n_lt_m : n < m) (terminated_at_n : 
 #align generalized_continued_fraction.continuants_aux_stable_of_terminated GeneralizedContinuedFraction.continuantsAux_stable_of_terminated
 
 theorem convergents'Aux_stable_step_of_terminated {s : Seq <| Pair K}
-    (terminated_at_n : s.TerminatedAt n) : convergents'Aux s (n + 1) = convergents'Aux s n :=
-  by
+    (terminated_at_n : s.TerminatedAt n) : convergents'Aux s (n + 1) = convergents'Aux s n := by
   change s.nth n = none at terminated_at_n
   induction' n with n IH generalizing s
   case zero => simp only [convergents'_aux, terminated_at_n, seq.head]
@@ -64,8 +61,7 @@ theorem convergents'Aux_stable_step_of_terminated {s : Seq <| Pair K}
 #align generalized_continued_fraction.convergents'_aux_stable_step_of_terminated GeneralizedContinuedFraction.convergents'Aux_stable_step_of_terminated
 
 theorem convergents'Aux_stable_of_terminated {s : Seq <| Pair K} (n_le_m : n ≤ m)
-    (terminated_at_n : s.TerminatedAt n) : convergents'Aux s m = convergents'Aux s n :=
-  by
+    (terminated_at_n : s.TerminatedAt n) : convergents'Aux s m = convergents'Aux s n := by
   induction' n_le_m with m n_le_m IH
   · rfl
   · refine' (convergents'_aux_stable_step_of_terminated _).trans IH
