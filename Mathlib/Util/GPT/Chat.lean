@@ -7,6 +7,17 @@ import Mathlib.Data.Option.Basic
 import Mathlib.Util.GPT.API
 import Mathlib.Util.GPT.Json
 
+/-
+# Interace for ChatGPT.
+
+We provide two functions
+* `sendMessages` which sends a conversation log (including the new query) of `List Message`
+  to ChatGPT, retrieving a `Response`.
+* `send` which sends a single message (and optional system message), retrieving a `String`.
+
+We'll later add a monadic API that keeps track of the conversation for you.
+-/
+
 open Lean
 
 namespace GPT
