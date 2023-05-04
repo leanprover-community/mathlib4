@@ -125,21 +125,21 @@ def synthesizeUsingNormNum (type : Expr) : MetaM Expr := do
 `mkProdPrf n tr e` produces a proof of `n*e = e'`, where numeric denominators have been
 canceled in `e'`, distributing `n` proportionally according to `tr`.
 -/
-partial def mkProdPrf (α : Q(Type u)) (_sα : Q(Field $α)) (v : ℕ) (t : Tree ℕ)
+partial def mkProdPrf (α : Q(Type u)) (sα : Q(Field $α)) (v : ℕ) (t : Tree ℕ)
     (e : Q($α)) : MetaM Expr := do
   let amwo ← synthInstanceQ q(AddMonoidWithOne $α)
   match t, e with
   | .node _ lhs rhs, ~q($e1 + $e2) => do
-    let v1 ← mkProdPrf α _sα v lhs e1
-    let v2 ← mkProdPrf α _sα v rhs e2
+    let v1 ← mkProdPrf α sα v lhs e1
+    let v2 ← mkProdPrf α sα v rhs e2
     mkAppM `CancelFactors.add_subst #[v1, v2]
   | .node _ lhs rhs, ~q($e1 - $e2) => do
-    let v1 ← mkProdPrf α _sα v lhs e1
-    let v2 ← mkProdPrf α _sα v rhs e2
+    let v1 ← mkProdPrf α sα v lhs e1
+    let v2 ← mkProdPrf α sα v rhs e2
     mkAppM `CancelFactors.sub_subst #[v1, v2]
   | .node _ lhs@(.node ln _ _) rhs, ~q($e1 * $e2) => do
-    let v1 ← mkProdPrf α _sα ln lhs e1
-    let v2 ← mkProdPrf α _sα (v / ln) rhs e2
+    let v1 ← mkProdPrf α sα ln lhs e1
+    let v2 ← mkProdPrf α sα (v / ln) rhs e2
     have ln' := (← mkOfNat α amwo <| mkRawNatLit ln).1
     have vln' := (← mkOfNat α amwo <| mkRawNatLit (v/ln)).1
     have v' := (← mkOfNat α amwo <| mkRawNatLit v).1
@@ -147,7 +147,7 @@ partial def mkProdPrf (α : Q(Type u)) (_sα : Q(Field $α)) (v : ℕ) (t : Tree
     let npf ← synthesizeUsingNormNum ntp
     mkAppM `CancelFactors.mul_subst #[v1, v2, npf]
   | .node n lhs (.node rn _ _), ~q($e1 / $e2) => do
-    let v1 ← mkProdPrf α _sα (v / rn) lhs e1
+    let v1 ← mkProdPrf α sα (v / rn) lhs e1
     have rn' := (← mkOfNat α amwo <| mkRawNatLit rn).1
     have vrn' := (← mkOfNat α amwo <| mkRawNatLit <| v / rn).1
     have n' := (← mkOfNat α amwo <| mkRawNatLit <| n).1
@@ -158,12 +158,12 @@ partial def mkProdPrf (α : Q(Type u)) (_sα : Q(Field $α)) (v : ℕ) (t : Tree
     let npf2 ← synthesizeUsingNormNum ntp2
     mkAppM `CancelFactors.div_subst #[v1, npf, npf2]
   | t, ~q(-$e) => do
-    let v ← mkProdPrf α _sα v t e
+    let v ← mkProdPrf α sα v t e
     mkAppM `CancelFactors.neg_subst #[v]
   | _, _ => do
     have v' := (← mkOfNat α amwo <| mkRawNatLit <| v).1
     let e' ← mkAppM `HMul.hMul #[v', e]
-    mkAppM `Eq.refl #[e']
+    mkEqRefl e'
 
 /--
 Given `e`, a term with rational division, produces a natural number `n` and a proof of `n*e = e'`,
