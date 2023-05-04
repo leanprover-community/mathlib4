@@ -237,8 +237,26 @@ example (h : a > 0) : a / 5 > 0 := by
 -/
 syntax (name := cancelDenoms) "cancel_denoms" (ppSpace location)? : tactic
 
--- def cancel_denoms (l : parse location) : MetaM Unit :=
--- do locs ← l.get_locals
---    MetaM.replace_at cancelDenominatorsInType locs l.include_goal >>= guardb
---      <|> fail "failed to cancel any denominators"
---    MetaM.interactive.norm_num [simp_arg_type.symm_Expr ``(mul_assoc)] l
+open Elab Tactic
+
+def cancelDenominatorsAt (fvar: FVarId) : TacticM Unit := do
+  let t := (← fvar.getDecl).type
+  let (new, eqPrf) ← CancelFactors.cancelDenominatorsInType t
+  let goal ← getMainGoal
+  let _ ← goal.replaceLocalDecl fvar new eqPrf
+  return
+
+def cancelDenominatorsTarget : TacticM Unit := do
+  let goal ← getMainTarget
+  let (new, eqPrf) ← CancelFactors.cancelDenominatorsInType goal
+  let _ ← (← getMainGoal).replaceTargetEq new eqPrf
+  return
+
+def cancelDenominators (loc : Location) : TacticM Unit := do
+  withLocation loc cancelDenominatorsAt cancelDenominatorsTarget
+    (λ _ => throwError "Failed to cancel any denominators")
+
+elab "cancel_denoms" loc:(location)? : tactic => do
+  let loc := (loc.map expandLocation).getD (.targets #[] true)
+  cancelDenominators loc
+  Lean.Elab.Tactic.evalTactic (←`(tactic| norm_num [←mul_assoc]))
