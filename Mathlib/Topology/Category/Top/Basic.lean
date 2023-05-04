@@ -87,7 +87,7 @@ instance topologicalSpace_coe (X : TopCat) : TopologicalSpace X :=
 -- Porting note: cannot see through forget
 instance topologicalSpace_forget (X : TopCat) : TopologicalSpace <| (forget TopCat).obj X := by
   change TopologicalSpace X
-  infer_instance
+  apply topologicalSpace_coe
 
 @[simp]
 theorem coe_of (X : Type u) [TopologicalSpace X] : (of X : Type u) = X := rfl

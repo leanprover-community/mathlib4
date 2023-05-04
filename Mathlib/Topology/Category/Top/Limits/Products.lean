@@ -101,18 +101,16 @@ def sigmaCofan {ι : Type v} (α : ι → TopCatMax.{v, u}) : Cofan α :=
   Cofan.mk (TopCat.of (Σi, α i)) (sigmaι α)
 #align Top.sigma_cofan TopCat.sigmaCofan
 
-set_option synthInstance.etaExperiment true in
 /-- The constructed cofan is indeed a colimit -/
-def sigmaCofanIsColimit {ι : Type v} (α : ι → TopCatMax.{v, u}) : IsColimit (sigmaCofan α) where
+def sigmaCofanIsColimit {ι : Type v} (β : ι → TopCatMax.{v, u}) : IsColimit (sigmaCofan β) where
   desc S :=
-    { toFun := fun s => S.ι.app ⟨s.1⟩ s.2
-      continuous_toFun := continuous_sigma fun i => by
-        dsimp
-        refine @map_continuous _ (sigmaCofan α).pt S.pt _ _ ?_ (S.ι.app ⟨i⟩) }
+    { toFun := fun (s : of (Σ i, β i)) => S.ι.app ⟨s.1⟩ s.2
+      continuous_toFun := continuous_sigma fun i => (S.ι.app ⟨i⟩).continuous_toFun }
   uniq := by
     intro S m h
     ext ⟨i, x⟩
-    simp [← h ⟨i⟩]
+    simp only [comp_app,hom_apply,← h ⟨i⟩]
+    congr
   fac s j := by
     cases j
     aesop_cat
@@ -179,11 +177,12 @@ def prodBinaryFan (X Y : TopCat.{u}) : BinaryFan X Y :=
 def prodBinaryFanIsLimit (X Y : TopCat.{u}) : IsLimit (prodBinaryFan X Y) where
   lift := fun S : BinaryFan X Y => {
     toFun := fun s => (S.fst s, S.snd s)
-    continuous_toFun := sorry }
+    -- Porting note: continuity failed again here. Lean cannot infer
+    -- ContinuousMapClass (X ⟶  Y) X Y for X Y : TopCat which may be one of the problems
+    continuous_toFun := (Continuous.prod_mk)
+      (BinaryFan.fst S).continuous_toFun (BinaryFan.snd S).continuous_toFun }
   fac := by
-    rintro S (_ | _)
-    dsimp [prodBinaryFan] at * <;> simp
-    sorry
+    rintro S (_ | _) <;> {dsimp; ext; rfl}
   uniq := by
     intro S m h
     -- porting note: used to be `ext x`
@@ -253,7 +252,7 @@ theorem range_prod_map {W X Y Z : TopCat.{u}} (f : W ⟶ Y) (g : X ⟶ Z) :
     Set.range (Limits.prod.map f g) =
       (Limits.prod.fst : Y ⨯ Z ⟶ _) ⁻¹' Set.range f ∩
         (Limits.prod.snd : Y ⨯ Z ⟶ _) ⁻¹' Set.range g := by
-  ext
+  ext x
   constructor
   · rintro ⟨y, rfl⟩
     simp only [Set.mem_preimage, Set.mem_range, Set.mem_inter_iff, ← comp_apply]
@@ -261,25 +260,33 @@ theorem range_prod_map {W X Y Z : TopCat.{u}} (f : W ⟶ Y) (g : X ⟶ Z) :
       and_self_iff]
   · rintro ⟨⟨x₁, hx₁⟩, ⟨x₂, hx₂⟩⟩
     use (prodIsoProd W X).inv (x₁, x₂)
-    have : PreservesLimit (pair Y Z) (forget TopCat) := by
-      apply forgetPreservesLimits.preservesLimitsOfShape (J := Discrete WalkingPair)|>.preservesLimit (K := (pair Y Z))
     apply Concrete.limit_ext
     rintro ⟨⟨⟩⟩
     · simp only [← comp_apply, Category.assoc]
       erw [Limits.prod.map_fst]
-      simp [hx₁]
+      rw [TopCat.prodIsoProd_inv_fst_assoc,TopCat.comp_app]
+      have : (forget TopCat).map prodFst (x₁, x₂) = x₁ := rfl
+      rw [this, hx₁]
     · simp only [← comp_apply, Category.assoc]
       erw [Limits.prod.map_snd]
-      simp [hx₂]
+      rw [TopCat.prodIsoProd_inv_snd_assoc,TopCat.comp_app]
+      have : (forget TopCat).map prodSnd (x₁, x₂) = x₂ := rfl
+      rw [this, hx₂]
 #align Top.range_prod_map TopCat.range_prod_map
 
+-- Porting note: this is unpleasant because of topologicalSpace_forget had to be supplied
+-- in Topology.Category.Top.Basic to get Lean to see through forget but now Lean cannot see
+-- through topologicalSpace_forget
 theorem inducing_prod_map {W X Y Z : TopCat} {f : W ⟶ X} {g : Y ⟶ Z} (hf : Inducing f)
     (hg : Inducing g) : Inducing (Limits.prod.map f g) := by
   constructor
+  dsimp [topologicalSpace_forget, topologicalSpace_coe]
   simp only [prod_topology, induced_compose, ← coe_comp, Limits.prod.map_fst, Limits.prod.map_snd,
     induced_inf]
   simp only [coe_comp]
-  rw [← @induced_compose _ _ _ _ _ f, ← @induced_compose _ _ _ _ _ g, ← hf.induced, ← hg.induced]
+  have : (Z : TopCat) → topologicalSpace_forget Z = Z.str := fun _ => rfl
+  rw [← this X, ← @induced_compose _ _ _ _ _ f, ←this Z, ← @induced_compose _ _ _ _ _ g, ← hf.induced, ← hg.induced]
+  simp only [this]
 #align Top.inducing_prod_map TopCat.inducing_prod_map
 
 theorem embedding_prod_map {W X Y Z : TopCat} {f : W ⟶ X} {g : Y ⟶ Z} (hf : Embedding f)
