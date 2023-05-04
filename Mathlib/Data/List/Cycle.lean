@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 
 ! This file was ported from Lean 3 source module data.list.cycle
-! leanprover-community/mathlib commit 728baa2f54e6062c5879a3e397ac6bac323e506f
+! leanprover-community/mathlib commit 7413128c3bcb3b0818e3e18720abc9ea3100fb49
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -988,6 +988,19 @@ nonrec theorem chain_range_succ (r : ℕ → ℕ → Prop) (n : ℕ) :
 
 variable {r : α → α → Prop} {s : Cycle α}
 
+theorem Chain.imp {r₁ r₂ : α → α → Prop} (H : ∀ a b, r₁ a b → r₂ a b) (p : Chain r₁ s) :
+    Chain r₂ s := by
+  induction s using Cycle.induction_on
+  · triv
+  · rw [chain_coe_cons] at p⊢
+    exact p.imp H
+#align cycle.chain.imp Cycle.Chain.imp
+
+/-- As a function from a relation to a predicate, `chain` is monotonic. -/
+theorem chain_mono : Monotone (Chain : (α → α → Prop) → Cycle α → Prop) := fun _a _b hab _s =>
+  Chain.imp hab
+#align cycle.chain_mono Cycle.chain_mono
+
 theorem chain_of_pairwise : (∀ a ∈ s, ∀ b ∈ s, r a b) → Chain r s := by
   induction' s using Cycle.induction_on with a l _
   exact fun _ => Cycle.Chain.nil r
@@ -1028,6 +1041,17 @@ theorem chain_iff_pairwise [IsTrans α r] : Chain r s ↔ ∀ a ∈ s, ∀ b ∈
     · exact hs.2.2 b hb
     · exact _root_.trans (hs.2.2 b hb) (hs.1 c (Or.inl hc)), Cycle.chain_of_pairwise⟩
 #align cycle.chain_iff_pairwise Cycle.chain_iff_pairwise
+
+theorem Chain.eq_nil_of_irrefl [IsTrans α r] [IsIrrefl α r] (h : Chain r s) : s = Cycle.nil := by
+  induction' s using Cycle.induction_on with a l _ h
+  · rfl
+  · have ha := mem_cons_self a l
+    exact (irrefl_of r a <| chain_iff_pairwise.1 h a ha a ha).elim
+#align cycle.chain.eq_nil_of_irrefl Cycle.Chain.eq_nil_of_irrefl
+
+theorem Chain.eq_nil_of_well_founded [IsWellFounded α r] (h : Chain r s) : s = Cycle.nil :=
+  Chain.eq_nil_of_irrefl <| h.imp fun _ _ => Relation.TransGen.single
+#align cycle.chain.eq_nil_of_well_founded Cycle.Chain.eq_nil_of_well_founded
 
 theorem forall_eq_of_chain [IsTrans α r] [IsAntisymm α r] (hs : Chain r s) {a b : α} (ha : a ∈ s)
     (hb : b ∈ s) : a = b := by
