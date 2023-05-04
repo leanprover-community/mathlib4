@@ -1,10 +1,13 @@
 import Mathlib.Algebra.Homology.HomotopyCategory.MappingCone
 import Mathlib.CategoryTheory.Triangulated.Functor
 import Mathlib.CategoryTheory.Triangulated.Pretriangulated
+import Mathlib.Algebra.EuclideanDomain.Basic
+import Mathlib.Algebra.EuclideanDomain.Instances
 
 import Mathlib.Tactic.LibrarySearch
 
 open CategoryTheory Category Limits CochainComplex.HomComplex Pretriangulated ZeroObject
+  Preadditive
 
 variable {C : Type _} [Category C] [Preadditive C] [HasZeroObject C] [HasBinaryBiproducts C]
 variable {K L : CochainComplex C ℤ} (φ : K ⟶ L)
@@ -15,6 +18,24 @@ namespace MappingCone
 
 noncomputable def triangleδ : mappingCone φ ⟶ K⟦(1 : ℤ)⟧ :=
   Cocycle.homOf ((-fst φ).rightShift 1 0 (zero_add 1))
+
+@[reassoc (attr := simp)]
+lemma inl_v_triangleδ_f (p q : ℤ) (hpq : p + (-1) = q) :
+    (inl φ : Cochain K (mappingCone φ) (-1)).v p q hpq ≫ (triangleδ φ).f q =
+      -(K.shiftFunctorObjXIso 1 q p (by rw [← hpq, neg_add_cancel_right])).inv := by
+  dsimp only [triangleδ]
+  simp only [Cocycle.homOf_f, Cocycle.rightShift_coe, Cocycle.coe_neg,
+    Cochain.rightShift_neg, Cochain.neg_v, comp_neg, shiftFunctor_obj_X, shiftFunctorObjXIso,
+    Cochain.rightShift_v _ 1 0 (zero_add 1) q q (add_zero q) p (by linarith), inl_v_fst_v_assoc]
+
+@[reassoc (attr := simp)]
+lemma inr_f_triangleδ_f (p : ℤ) : (inr φ).f p ≫ (triangleδ φ).f p = 0 := by
+  dsimp [triangleδ]
+  simp only [Cochain.rightShift_v _ 1 0 _ p p (add_zero p) (p+1) rfl, Cochain.neg_v,
+    comp_neg, neg_comp, inr_f_fst_v_assoc, zero_comp, neg_zero]
+
+@[simp]
+lemma inr_triangleδ : inr φ ≫ triangleδ φ = 0 := by aesop_cat
 
 @[simp]
 noncomputable def triangle : Triangle (CochainComplex C ℤ) :=
@@ -48,10 +69,10 @@ lemma triangleMap_comm₃ : map H ≫ triangleδ φ₂ = triangleδ φ₁ ≫ a�
   dsimp [triangleδ, map]
   simp only [Cochain.rightShift_v _ 1 0 _ p p _ (p+1) rfl,
     shiftFunctor_obj_X, Cochain.neg_v, shiftFunctorObjXIso,
-    HomologicalComplex.XIsoOfEq_rfl, Iso.refl_inv, comp_id, Preadditive.neg_comp,
-    Preadditive.comp_neg, inl_v_fst_v_assoc, inl_v_desc_f_assoc,
+    HomologicalComplex.XIsoOfEq_rfl, Iso.refl_inv, comp_id, neg_comp,
+    comp_neg, inl_v_fst_v_assoc, inl_v_desc_f_assoc,
     Cochain.add_v, Cochain.zero_cochain_comp_v, Cochain.ofHom_v, Cochain.comp_zero_cochain_v,
-    Preadditive.add_comp, assoc, inl_v_fst_v, inr_f_fst_v, comp_zero, add_zero,
+    add_comp, assoc, inl_v_fst_v, inr_f_fst_v, comp_zero, add_zero,
     inr_f_fst_v_assoc, zero_comp, neg_zero, inr_f_desc_f_assoc,
     HomologicalComplex.comp_f, and_self]
 
@@ -79,12 +100,47 @@ end map
 
 section rotate
 
-def rotateHomotopyEquiv :
+noncomputable def rotateHomotopyEquiv :
   HomotopyEquiv (K⟦(1 : ℤ)⟧) (mappingCone (inr φ)) where
-  hom := sorry
-  inv := sorry
-  homotopyHomInvId := Homotopy.ofEq sorry
-  homotopyInvHomId := sorry
+  hom := lift (inr φ) (-(Cocycle.ofHom φ).leftShift 1 1 (zero_add 1))
+    (-(inl φ).leftShift 1 0 (neg_add_self 1)) (by
+      simp only [δ_neg, Cocycle.coe_neg, Cocycle.leftShift_coe, Cochain.neg_comp,
+        Cochain.δ_leftShift _ 1 0 1 (neg_add_self 1) 0 (zero_add 1), ε_1, neg_smul, one_smul,
+        neg_neg, δ_inl, Cochain.leftShift_comp_zero_cochain, Cocycle.ofHom_coe,
+        Cochain.ofHom_comp, add_right_neg])
+  inv := desc (inr φ) 0 (triangleδ φ) (by simp)
+  homotopyHomInvId := Homotopy.ofEq (by
+    ext p
+    simp only [HomologicalComplex.comp_f, HomologicalComplex.id_f,
+      lift_desc_f _ _ _ _ _ _ _ _ _ rfl, Cochain.zero_v, comp_zero, zero_add,
+      (inl φ).leftShift_v 1 0 (neg_add_self 1) p p (add_zero p) (p+1) (by linarith),
+      mul_zero, sub_self, EuclideanDomain.zero_div, ε_0, one_smul, triangleδ,
+      Cocycle.homOf_f, Cocycle.rightShift_coe, Cocycle.coe_neg, Cochain.rightShift_neg,
+      Cochain.neg_v, Cochain.rightShift_v _ 1 0 (zero_add 1) p p (add_zero p) (p+1) rfl,
+      comp_neg, neg_comp, neg_neg, assoc, inl_v_fst_v_assoc, Iso.hom_inv_id])
+  homotopyInvHomId := (Cochain.equivHomotopy _ _).symm
+    ⟨-(snd (inr φ)).comp ((snd φ).comp (inl (inr φ)) (zero_add (-1))) (zero_add (-1)), by
+      ext p
+      simp only [Cochain.ofHom_comp, ofHom_desc, ofHom_lift, Cocycle.coe_neg,
+        Cocycle.leftShift_coe, Cocycle.ofHom_coe, Cochain.zero_cochain_comp_v, δ_neg,
+        Cochain.add_v, Cochain.neg_v, Cochain.ofHom_v, HomologicalComplex.id_f,
+        from_ext_iff _ _ _ _ rfl, to_ext_iff _ _ _ _ rfl,
+        assoc, δ_zero_cochain_comp _ _ _ (neg_add_self 1),
+        Cochain.comp_v _ _ (add_neg_self 1) p (p + 1) p rfl (by linarith),
+        Cochain.leftShift_v _ 1 1 (zero_add 1) p (p+1) rfl (p+1) (add_zero _),
+        Cochain.leftShift_v _ 1 0 (neg_add_self 1) p p (add_zero p) (p+1) (by linarith),
+        liftCochain_v_fst_v, comp_neg, inl_v_descCochain_v_assoc, Cochain.zero_v,
+        zero_comp, neg_zero, δ_inl, Cochain.ofHom_comp, ε_neg, ε_1, ε_0, δ_snd,
+        Cochain.neg_comp, Cochain.comp_assoc_of_second_is_zero_cochain, smul_neg, neg_smul,
+        one_smul, neg_neg, Cochain.comp_add, inr_snd_assoc,
+        Cochain.zero_cochain_comp_v, neg_add_rev, add_comp, neg_comp,
+        inl_v_fst_v, comp_id, inr_f_fst_v, comp_zero, add_zero, id_comp, neg_add_cancel_comm,
+        inl_v_snd_v_assoc, inr_f_descCochain_v_assoc, inr_f_snd_v_assoc, inl_v_fst_v_assoc,
+        inr_f_fst_v_assoc, inr_f_triangleδ_f_assoc, sub_self, one_mul,
+        EuclideanDomain.zero_div, inl_v_triangleδ_f_assoc,
+        Iso.refl_inv, Iso.refl_hom, shiftFunctor_obj_X, shiftFunctorObjXIso,
+        HomologicalComplex.XIsoOfEq_rfl, zero_add,
+        liftCochain_v_snd_v_assoc, inr_f_snd_v, inl_v_snd_v, add_left_neg]⟩
 
 end rotate
 

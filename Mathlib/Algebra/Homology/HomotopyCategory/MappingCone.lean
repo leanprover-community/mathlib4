@@ -369,6 +369,12 @@ noncomputable def desc {K : CochainComplex C ℤ} (α : Cochain F K (-1)) (β : 
   Cocycle.homOf (descCocycle φ α (Cocycle.ofHom β) (neg_add_self 1)
     (by simp only [eq, Cochain.ofHom_comp, ε_0, Cocycle.ofHom_coe, one_smul]))
 
+@[simp]
+lemma ofHom_desc {K : CochainComplex C ℤ} (α : Cochain F K (-1)) (β : G ⟶ K)
+    (eq : δ (-1) 0 α = Cochain.ofHom (φ ≫ β)) :
+    Cochain.ofHom (desc φ α β eq) = descCochain φ α (Cochain.ofHom β) (neg_add_self 1) := by
+  simp only [desc, Cocycle.cochain_ofHom_homOf_eq_coe, descCocycle_coe, Cocycle.ofHom_coe]
+
 section
 
 attribute [local simp] desc
@@ -440,7 +446,7 @@ lemma liftCochain_snd {K : CochainComplex C ℤ} {n m : ℤ} (α : Cochain K F m
   simp only [Cochain.add_comp, Cochain.comp_assoc_of_third_is_zero_cochain, inl_snd,
     Cochain.comp_zero, inr_snd, Cochain.comp_id, zero_add]
 
-@[simp]
+@[reassoc (attr := simp)]
 lemma liftCochain_v_snd_v {K : CochainComplex C ℤ} {n m : ℤ} (α : Cochain K F m)
     (β : Cochain K G n) (h : n + 1 = m) (p₁ p₂ : ℤ) (h₁₂ : p₁ + n = p₂) :
     (liftCochain φ α β h).v p₁ p₂ h₁₂ ≫
@@ -473,6 +479,12 @@ noncomputable def lift {K : CochainComplex C ℤ} (α : Cocycle K F 1) (β : Coc
     K ⟶ mappingCone φ :=
   Cocycle.homOf (liftCocycle φ α β (zero_add 1) eq)
 
+@[simp]
+lemma ofHom_lift {K : CochainComplex C ℤ} (α : Cocycle K F 1) (β : Cochain K G 0)
+    (eq : δ 0 1 β + (α : Cochain K F 1).comp (Cochain.ofHom φ) (add_zero 1) = 0) :
+    Cochain.ofHom (lift φ α β eq) = liftCochain φ α β (zero_add 1) := by
+  simp only [lift, Cocycle.cochain_ofHom_homOf_eq_coe, liftCocycle_coe]
+
 section
 
 attribute [local simp] lift
@@ -503,7 +515,6 @@ lemma lift_snd {K : CochainComplex C ℤ} (α : Cocycle K F 1) (β : Cochain K G
 
 end
 
--- n= -1, m = 0
 @[simps!]
 noncomputable def liftHomotopy {K : CochainComplex C ℤ} (f₁ f₂ : K ⟶ mappingCone φ)
     (α : Cochain K F 0) (β : Cochain K G (-1))
@@ -523,14 +534,23 @@ noncomputable def liftHomotopy {K : CochainComplex C ℤ} (f₁ f₂ : K ⟶ map
           Cochain.neg_comp, Cochain.comp_assoc_of_third_is_zero_cochain, inl_snd,
           Cochain.comp_zero, neg_zero, inr_snd, Cochain.comp_id, zero_add]⟩
 
+@[reassoc]
+lemma lift_desc_f {K L : CochainComplex C ℤ} (α : Cocycle K F 1) (β : Cochain K G 0)
+    (eq : δ 0 1 β + (α : Cochain K F 1).comp (Cochain.ofHom φ) (add_zero 1) = 0)
+    (α' : Cochain F L (-1)) (β' : G ⟶ L)
+    (eq' : δ (-1) 0 α' = Cochain.ofHom (φ ≫ β')) (n n' : ℤ) (hnn' : n+1 = n') :
+    (lift φ α β eq).f n ≫ (desc φ α' β' eq').f n =
+    (α : Cochain K F 1).v n n' hnn' ≫ α'.v n' n (by rw [← hnn', add_neg_cancel_right]) +
+      β.v n n (add_zero n) ≫ β'.f n := by
+  rw [← id_comp ((desc φ α' β' eq').f n), id φ _ _ hnn']
+  simp only [add_comp, assoc, inl_v_desc_f, inr_f_desc_f, comp_add,
+    lift_f_fst_v_assoc, lift_f_snd_v_assoc]
+
 end MappingCone
 
 end Preadditive
 
 end CochainComplex
-
-
-#exit
 
 
 open CategoryTheory Category Limits

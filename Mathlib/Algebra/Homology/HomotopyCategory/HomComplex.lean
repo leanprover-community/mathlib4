@@ -810,11 +810,11 @@ section Shift
 
 namespace HomComplex
 
-variable {n : ℤ} {K L : CochainComplex C ℤ}
+variable {n : ℤ} {K L M : CochainComplex C ℤ}
 
 namespace Cochain
 
-variable (γ : Cochain K L n)
+variable (γ γ₁ γ₂ : Cochain K L n)
 
 def rightShift (a n' : ℤ) (hn' : n' + a = n) : Cochain K (L⟦a⟧) n' :=
   Cochain.mk (fun p q hpq => γ.v p (p + n) rfl ≫
@@ -828,7 +828,39 @@ lemma rightShift_v (a n' : ℤ) (hn' : n' + a = n) (p q : ℤ) (hpq : p + n' = q
   dsimp only [rightShift]
   simp only [mk_v]
 
-variable (n K L)
+def leftShift (a n' : ℤ) (hn' : n + a = n') : Cochain (K⟦a⟧) L n' :=
+  Cochain.mk (fun p q hpq => ε (a * n' + (a*(a-1)/2)) •
+    (K.shiftFunctorObjXIso a p (p+a) rfl).hom ≫ γ.v (p+a) q (by linarith))
+
+lemma leftShift_v (a n' : ℤ) (hn' : n + a = n') (p q : ℤ) (hpq : p + n' = q)
+    (p' : ℤ) (hp' : p' + n = q) :
+    (γ.leftShift a n' hn').v p q hpq = ε (a * n' + (a*(a-1)/2)) • (K.shiftFunctorObjXIso a p p'
+      (by rw [← add_left_inj n, hp', add_assoc, add_comm a, hn', hpq])).hom ≫ γ.v p' q hp' := by
+  obtain rfl : p' = p+a := by linarith
+  dsimp only [leftShift]
+  simp only [mk_v]
+
+lemma leftShift_comp (a n' : ℤ) (hn' : n + a = n') {m t t' : ℤ} (γ' : Cochain L M m)
+    (h : n + m = t) (ht' : t + a = t'):
+    (γ.comp γ' h).leftShift a t' ht' =  ε (a * m) • (γ.leftShift a n' hn').comp γ'
+      (by rw [← ht', ← h, ← hn', add_assoc, add_comm a, add_assoc]) := by
+  ext ⟨p, q, hpq⟩
+  have h' : n' + m = t' := by linarith
+  dsimp
+  simp only [Cochain.comp_v _ _ h' p (p+n') q rfl (by linarith),
+    γ.leftShift_v a n' hn' p (p+n') rfl (p+a) (by linarith),
+    (γ.comp γ' h).leftShift_v a t' (by linarith) p q hpq (p+a) (by linarith),
+    smul_smul, zsmul_comp, comp_v _ _ h (p+a) (p+n') q (by linarith) (by linarith), assoc,
+    ε_add, ← mul_assoc, ← h']
+  congr 2
+  rw [add_comm n', mul_add, ε_add]
+
+@[simp]
+lemma leftShift_comp_zero_cochain (a n' : ℤ) (hn' : n + a = n') (γ' : Cochain L M 0) :
+    (γ.comp γ' h).leftShift a n' hn' = (γ.leftShift a n' hn').comp γ' (add_zero n') := by
+  rw [leftShift_comp γ a n' hn' γ' (add_zero _) hn', mul_zero, ε_0, one_smul]
+
+variable (K L)
 
 @[simp]
 lemma rightShift_zero (a n' : ℤ) (hn' : n' + a = n) :
@@ -837,7 +869,59 @@ lemma rightShift_zero (a n' : ℤ) (hn' : n' + a = n) :
   dsimp
   rw [rightShift_v _ a n' hn' p q hpq _ rfl, zero_v, zero_comp]
 
-variable {n K L}
+@[simp]
+lemma leftShift_zero (a n' : ℤ) (hn' : n + a = n') :
+    (0 : Cochain K L n).leftShift a n' hn' = 0 := by
+  ext ⟨p, q, hpq⟩
+  dsimp
+  rw [leftShift_v _ a n' hn' p q hpq (p+a) (by linarith), zero_v, comp_zero, zsmul_zero]
+
+variable {K L}
+
+@[simp]
+lemma rightShift_neg (a n' : ℤ) (hn' : n' + a = n) :
+  (-γ).rightShift a n' hn' = -γ.rightShift a n' hn' := by
+  ext ⟨p, q, hpq⟩
+  dsimp
+  simp only [rightShift_v _ a n' hn' p q hpq _ rfl, neg_v, neg_comp]
+
+@[simp]
+lemma leftShift_neg (a n' : ℤ) (hn' : n + a = n') :
+    (-γ).leftShift a n' hn' = -γ.leftShift a n' hn' := by
+  ext ⟨p, q, hpq⟩
+  dsimp
+  simp only [leftShift_v _ a n' hn' p q hpq (p+a) (by linarith), neg_v,
+    comp_neg, neg_zsmul, zsmul_neg]
+
+@[simp]
+lemma rightShift_add (a n' : ℤ) (hn' : n' + a = n) :
+  (γ₁ + γ₂).rightShift a n' hn' = γ₁.rightShift a n' hn' + γ₂.rightShift a n' hn' := by
+  ext ⟨p, q, hpq⟩
+  dsimp
+  simp only [rightShift_v _ a n' hn' p q hpq _ rfl, add_v, add_comp]
+
+@[simp]
+lemma leftShift_add (a n' : ℤ) (hn' : n + a = n') :
+    (γ₁ + γ₂).leftShift a n' hn' = γ₁.leftShift a n' hn' + γ₂.leftShift a n' hn' := by
+  ext ⟨p, q, hpq⟩
+  dsimp
+  simp only [leftShift_v _ a n' hn' p q hpq (p+a) (by linarith), add_v,
+    comp_add, zsmul_add]
+
+@[simp]
+lemma rightShift_zsmul (a n' : ℤ) (hn' : n' + a = n) (x : ℤ) :
+  (x • γ).rightShift a n' hn' = x • γ.rightShift a n' hn' := by
+  ext ⟨p, q, hpq⟩
+  dsimp
+  simp only [rightShift_v _ a n' hn' p q hpq _ rfl, zsmul_v, zsmul_comp]
+
+@[simp]
+lemma leftShift_zsmul (a n' : ℤ) (hn' : n + a = n') (x : ℤ):
+    (x • γ).leftShift a n' hn' = x • γ.leftShift a n' hn' := by
+  ext ⟨p, q, hpq⟩
+  dsimp
+  simp only [leftShift_v _ a n' hn' p q hpq (p+a) (by linarith), zsmul_v, smul_smul,
+    comp_zsmul, mul_comm x]
 
 lemma δ_rightShift (a n' m' : ℤ) (hn' : n' + a = n) (m : ℤ) (hm' : m' + a = m) :
     δ n' m' (γ.rightShift a n' hn') = ε a • (δ n m γ).rightShift a m' hm' := by
@@ -859,6 +943,29 @@ lemma δ_rightShift (a n' m' : ℤ) (hn' : n' + a = n) (m : ℤ) (hm' : m' + a =
   . have hnm' : ¬ n' + 1 = m' := fun _ => hnm (by linarith)
     rw [δ_shape _ _ hnm', δ_shape _ _ hnm, rightShift_zero, smul_zero]
 
+lemma δ_leftShift (a n' m' : ℤ) (hn' : n + a = n') (m : ℤ) (hm' : m + a = m') :
+    δ n' m' (γ.leftShift a n' hn') = ε a • (δ n m γ).leftShift a m' hm' := by
+  by_cases hnm : n + 1 = m
+  . have hnm' : n' + 1 = m' := by linarith
+    ext ⟨p, q, hpq⟩
+    dsimp
+    rw [(δ n m γ).leftShift_v a m' hm' p q hpq (p+a) (by linarith)]
+    rw [δ_v n m hnm _ (p+a) q (by linarith) (p+n') (p+1+a) (by linarith) (by
+      linarith)]
+    rw [δ_v n' m' hnm' _ p q hpq (p+n') (p+1) (by linarith) rfl]
+    rw [γ.leftShift_v a n' hn' p (p+n') rfl (p+a) (by linarith)]
+    rw [γ.leftShift_v a n' hn' (p+1) q (by linarith) (p+1+a) (by linarith)]
+    simp only [shiftFunctorObjXIso, HomologicalComplex.XIsoOfEq_rfl, Iso.refl_hom, id_comp,
+      shiftFunctor_obj_d', comp_add, smul_add, shiftFunctor_obj_X, smul_smul, zsmul_comp,
+      comp_zsmul]
+    congr 2
+    . rw [ε_add, ε_add, ← mul_assoc, ← hnm', add_comm n', mul_add, ε_add, mul_one,
+        ← mul_assoc, mul_ε_self, one_mul]
+    . simp only [ε_add, ε_1, mul_one, ← hn', ← hm', mul_add, ← hnm]
+      ring
+  . have hnm' : ¬ n' + 1 = m' := fun _ => hnm (by linarith)
+    rw [δ_shape _ _ hnm', δ_shape _ _ hnm, leftShift_zero, smul_zero]
+
 end Cochain
 
 namespace Cocycle
@@ -871,7 +978,21 @@ def rightShift (a n' : ℤ) (hn' : n' + a = n) : Cocycle K (L⟦a⟧) n' :=
     simp only [Cochain.δ_rightShift _ a n' (n'+1) hn' (n+1) (by linarith),
       δ_eq_zero, Cochain.rightShift_zero, smul_zero])
 
+@[simps!]
+def leftShift (a n' : ℤ) (hn' : n + a = n') : Cocycle (K⟦a⟧) L n' :=
+  Cocycle.mk ((γ : Cochain K L n).leftShift a n' hn') _ rfl (by
+    simp only [Cochain.δ_leftShift _ a n' (n'+1) hn' (n+1) (by linarith),
+      δ_eq_zero, Cochain.leftShift_zero, smul_zero])
+
 end Cocycle
+
+end HomComplex
+
+end Shift
+
+namespace HomComplex
+
+variable {K L : CochainComplex C ℤ}
 
 @[simp]
 lemma δ_comp_zero_cocycle {n : ℤ} (z₁ : Cochain F G n) (z₂ : Cocycle G K 0) (m : ℤ) :
@@ -903,7 +1024,5 @@ lemma δ_ofHom_comp {n : ℤ} (f : F ⟶ G) (z : Cochain G K n) (m : ℤ) :
   rw [← Cocycle.ofHom_coe, δ_zero_cocycle_comp]
 
 end HomComplex
-
-end Shift
 
 end CochainComplex
