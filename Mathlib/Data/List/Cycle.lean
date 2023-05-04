@@ -997,7 +997,7 @@ theorem Chain.imp {r₁ r₂ : α → α → Prop} (H : ∀ a b, r₁ a b → r�
 #align cycle.chain.imp Cycle.Chain.imp
 
 /-- As a function from a relation to a predicate, `chain` is monotonic. -/
-theorem chain_mono : Monotone (Chain : (α → α → Prop) → Cycle α → Prop) := fun a b hab s =>
+theorem chain_mono : Monotone (Chain : (α → α → Prop) → Cycle α → Prop) := fun _a _b hab _s =>
   Chain.imp hab
 #align cycle.chain_mono Cycle.chain_mono
 
@@ -1042,14 +1042,14 @@ theorem chain_iff_pairwise [IsTrans α r] : Chain r s ↔ ∀ a ∈ s, ∀ b ∈
     · exact _root_.trans (hs.2.2 b hb) (hs.1 c (Or.inl hc)), Cycle.chain_of_pairwise⟩
 #align cycle.chain_iff_pairwise Cycle.chain_iff_pairwise
 
-theorem Chain.eq_nil_of_irrefl [IsTrans α r] [IsIrrefl α r] (h : Chain r s) : s = nil := by
+theorem Chain.eq_nil_of_irrefl [IsTrans α r] [IsIrrefl α r] (h : Chain r s) : s = Cycle.nil := by
   induction' s using Cycle.induction_on with a l _ h
   · rfl
   · have ha := mem_cons_self a l
     exact (irrefl_of r a <| chain_iff_pairwise.1 h a ha a ha).elim
 #align cycle.chain.eq_nil_of_irrefl Cycle.Chain.eq_nil_of_irrefl
 
-theorem Chain.eq_nil_of_well_founded [IsWellFounded α r] (h : Chain r s) : s = nil :=
+theorem Chain.eq_nil_of_well_founded [IsWellFounded α r] (h : Chain r s) : s = Cycle.nil :=
   Chain.eq_nil_of_irrefl <| h.imp fun _ _ => Relation.TransGen.single
 #align cycle.chain.eq_nil_of_well_founded Cycle.Chain.eq_nil_of_well_founded
 
