@@ -262,7 +262,4 @@ def cancelDenominators (loc : Location) : TacticM Unit := do
 
 elab "cancel_denoms" loc?:(location)? : tactic => do
   cancelDenominators (expandOptLocation (Lean.mkOptionalNode loc?))
-  if let some loc := loc? then
-    Lean.Elab.Tactic.evalTactic (←`(tactic| norm_num [←mul_assoc] $loc))
-  else
-    Lean.Elab.Tactic.evalTactic (←`(tactic| norm_num [←mul_assoc]))
+  Lean.Elab.Tactic.evalTactic (←`(tactic| norm_num [←mul_assoc] $[$loc?]?))
