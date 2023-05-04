@@ -156,7 +156,8 @@ theorem Function.Injective.wbtw_map_iff {x y z : P} {f : P →ᵃ[R] P'} (hf : F
 #align function.injective.wbtw_map_iff Function.Injective.wbtw_map_iff
 
 theorem Function.Injective.sbtw_map_iff {x y z : P} {f : P →ᵃ[R] P'} (hf : Function.Injective f) :
-    Sbtw R (f x) (f y) (f z) ↔ Sbtw R x y z := by simp_rw [Sbtw, hf.wbtw_map_iff, hf.ne_iff]
+    Sbtw R (f x) (f y) (f z) ↔ Sbtw R x y z := by
+  simp_rw [Sbtw, hf.wbtw_map_iff, hf.ne_iff]
 #align function.injective.sbtw_map_iff Function.Injective.sbtw_map_iff
 
 @[simp]
@@ -245,8 +246,8 @@ theorem Sbtw.right_ne {x y z : P} (h : Sbtw R x y z) : z ≠ y :=
   h.2.2.symm
 #align sbtw.right_ne Sbtw.right_ne
 
-theorem Sbtw.mem_image_Ioo {x y z : P} (h : Sbtw R x y z) : y ∈ lineMap x z '' Set.Ioo (0 : R) 1 :=
-  by
+theorem Sbtw.mem_image_Ioo {x y z : P} (h : Sbtw R x y z) :
+    y ∈ lineMap x z '' Set.Ioo (0 : R) 1 := by
   rcases h with ⟨⟨t, ht, rfl⟩, hyx, hyz⟩
   rcases Set.eq_endpoints_or_mem_Ioo_of_mem_Icc ht with (rfl | rfl | ho)
   · exfalso
@@ -298,11 +299,13 @@ theorem wbtw_self_iff {x y : P} : Wbtw R x y x ↔ y = x := by
 #align wbtw_self_iff wbtw_self_iff
 
 @[simp]
-theorem not_sbtw_self_left (x y : P) : ¬Sbtw R x x y := fun h => h.ne_left rfl
+theorem not_sbtw_self_left (x y : P) : ¬Sbtw R x x y :=
+  fun h => h.ne_left rfl
 #align not_sbtw_self_left not_sbtw_self_left
 
 @[simp]
-theorem not_sbtw_self_right (x y : P) : ¬Sbtw R x y y := fun h => h.ne_right rfl
+theorem not_sbtw_self_right (x y : P) : ¬Sbtw R x y y :=
+  fun h => h.ne_right rfl
 #align not_sbtw_self_right not_sbtw_self_right
 
 variable {R}
@@ -336,7 +339,8 @@ theorem sbtw_iff_mem_image_Ioo_and_ne [NoZeroSMulDivisors R V] {x y z : P} :
 variable (R)
 
 @[simp]
-theorem not_sbtw_self (x y : P) : ¬Sbtw R x y x := fun h => h.left_ne_right rfl
+theorem not_sbtw_self (x y : P) : ¬Sbtw R x y x :=
+  fun h => h.left_ne_right rfl
 #align not_sbtw_self not_sbtw_self
 
 theorem wbtw_swap_left_iff [NoZeroSMulDivisors R V] {x y : P} (z : P) :
@@ -525,9 +529,9 @@ theorem Sbtw.affineCombination_of_mem_affineSpan_pair [NoZeroDivisors R] [NoZero
   change ∀ i ∈ s, w i = (r • (w₂ - w₁) + w₁) i at hr
   rw [s.affineCombination_congr hr fun _ _ => rfl]
   dsimp only
-  rw [← s.weightedVSub_vadd_affineCombination, s.weightedVSub_const_smul, ←
-    s.affineCombination_vsub, ← lineMap_apply, sbtw_lineMap_iff, and_iff_left hs.2, ←
-    @vsub_ne_zero V, s.affineCombination_vsub]
+  rw [← s.weightedVSub_vadd_affineCombination, s.weightedVSub_const_smul,
+    ← s.affineCombination_vsub, ← lineMap_apply, sbtw_lineMap_iff, and_iff_left hs.2,
+    ← @vsub_ne_zero V, s.affineCombination_vsub]
   intro hz
   have hw₁w₂ : (∑ i in s, (w₁ - w₂) i) = 0 := by
     simp_rw [Pi.sub_apply, Finset.sum_sub_distrib, hw₁, hw₂, sub_self]
@@ -621,17 +625,14 @@ theorem sbtw_of_sbtw_of_sbtw_of_mem_affineSpan_pair [NoZeroSMulDivisors R V]
     sign_eq_of_affineCombination_mem_affineSpan_single_lineMap t.Independent hw (Finset.mem_univ _)
       (Finset.mem_univ _) (Finset.mem_univ _) h₁₂.symm h₂₃ h₁₃ hr₂0 hr₂1 h₂'
   dsimp only at h₁s h₂s
-  rw [←
-    Finset.univ.affineCombination_affineCombinationSingleWeights R t.points
+  rw [← Finset.univ.affineCombination_affineCombinationSingleWeights R t.points
       (Finset.mem_univ i₁),
-    ←
-    Finset.univ.affineCombination_affineCombinationLineMapWeights t.points (Finset.mem_univ _)
+    ← Finset.univ.affineCombination_affineCombinationLineMapWeights t.points (Finset.mem_univ _)
       (Finset.mem_univ _)] at h₁'⊢
   refine'
     Sbtw.affineCombination_of_mem_affineSpan_pair t.Independent hw
       (Finset.univ.sum_affineCombinationSingleWeights R (Finset.mem_univ _))
-      (Finset.univ.sum_affineCombinationLineMapWeights (Finset.mem_univ _) (Finset.mem_univ _)
-        _)
+      (Finset.univ.sum_affineCombinationLineMapWeights (Finset.mem_univ _) (Finset.mem_univ _) _)
       h₁' (Finset.mem_univ i₁) _
   rw [Finset.affineCombinationSingleWeights_apply_self,
     Finset.affineCombinationLineMapWeights_apply_of_ne h₁₂ h₁₃, sbtw_one_zero_iff]
@@ -770,8 +771,7 @@ theorem wbtw_or_wbtw_smul_vadd_of_nonneg (x : P) (v : V) {r₁ r₂ : R} (hr₁ 
 theorem wbtw_smul_vadd_smul_vadd_of_nonpos_of_le (x : P) (v : V) {r₁ r₂ : R} (hr₁ : r₁ ≤ 0)
     (hr₂ : r₂ ≤ r₁) : Wbtw R x (r₁ • v +ᵥ x) (r₂ • v +ᵥ x) := by
   convert wbtw_smul_vadd_smul_vadd_of_nonneg_of_le x (-v) (Left.nonneg_neg_iff.2 hr₁)
-        (neg_le_neg_iff.2 hr₂) using
-      1 <;>
+      (neg_le_neg_iff.2 hr₂) using 1 <;>
     rw [neg_smul_neg]
 #align wbtw_smul_vadd_smul_vadd_of_nonpos_of_le wbtw_smul_vadd_smul_vadd_of_nonpos_of_le
 
@@ -785,8 +785,7 @@ theorem wbtw_or_wbtw_smul_vadd_of_nonpos (x : P) (v : V) {r₁ r₂ : R} (hr₁ 
 theorem wbtw_smul_vadd_smul_vadd_of_nonpos_of_nonneg (x : P) (v : V) {r₁ r₂ : R} (hr₁ : r₁ ≤ 0)
     (hr₂ : 0 ≤ r₂) : Wbtw R (r₁ • v +ᵥ x) x (r₂ • v +ᵥ x) := by
   convert wbtw_smul_vadd_smul_vadd_of_nonneg_of_le (r₁ • v +ᵥ x) v (Left.nonneg_neg_iff.2 hr₁)
-        (neg_le_sub_iff_le_add.2 ((le_add_iff_nonneg_left r₁).2 hr₂)) using
-      1 <;>
+      (neg_le_sub_iff_le_add.2 ((le_add_iff_nonneg_left r₁).2 hr₂)) using 1 <;>
     simp [sub_smul, ← add_vadd]
 #align wbtw_smul_vadd_smul_vadd_of_nonpos_of_nonneg wbtw_smul_vadd_smul_vadd_of_nonpos_of_nonneg
 
@@ -806,8 +805,8 @@ theorem Wbtw.trans_left_right {w x y z : P} (h₁ : Wbtw R w y z) (h₂ : Wbtw R
           (sub_nonneg.2 (mul_le_one ht₂.2 ht₁.1 ht₁.2)),
         div_le_one_of_le (sub_le_sub_right ht₁.2 _) (sub_nonneg.2 (mul_le_one ht₂.2 ht₁.1 ht₁.2))⟩,
       _⟩
-  simp only [lineMap_apply, smul_smul, ← add_vadd, vsub_vadd_eq_vsub_sub, smul_sub, ← sub_smul, ←
-    add_smul, vadd_vsub, vadd_right_cancel_iff, div_mul_eq_mul_div, div_sub_div_same]
+  simp only [lineMap_apply, smul_smul, ← add_vadd, vsub_vadd_eq_vsub_sub, smul_sub, ← sub_smul,
+    ← add_smul, vadd_vsub, vadd_right_cancel_iff, div_mul_eq_mul_div, div_sub_div_same]
   nth_rw 1 [← mul_one (t₁ - t₂ * t₁)]
   rw [← mul_sub, mul_div_assoc]
   by_cases h : 1 - t₂ * t₁ = 0
