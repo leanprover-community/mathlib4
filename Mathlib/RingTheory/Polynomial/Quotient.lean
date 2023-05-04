@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, David Kurniadi Angdinata, Devon Tuma, Riccardo Brasca
 
 ! This file was ported from Lean 3 source module ring_theory.polynomial.quotient
-! leanprover-community/mathlib commit 5120cf49cb659e2499edd7e4d336a04efd598f2f
+! leanprover-community/mathlib commit 61d8b8248633da198afea97ae7a90ee63bdf8c1c
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -38,11 +38,8 @@ noncomputable def quotientSpanXSubCAlgEquiv (x : R) :
   -- Hence it is slow, so we unwrap it a bit.
 
   -- (Ideal.quotientEquivAlgOfEq R
-  --           (ker_evalRingHom x : RingHom.ker (aeval x).toRingHom = _)).symm.trans <|
+  --         (ker_evalRingHom x : RingHom.ker (aeval x).toRingHom = _)).symm.trans <|
   --   Ideal.quotientKerAlgEquivOfRightInverse fun _ => eval_C
-
-  -- (In fact, the original proof had an extra `RestrictScalars`, but it was apparently spurious,
-  -- see https://github.com/leanprover-community/mathlib/pull/18916.)
 by
   have foo : RingHom.ker (aeval x).toRingHom = Ideal.span {X - C x} := ker_evalRingHom x
   let step1 : (R[X] ⧸ Ideal.span {X - C x}) ≃ₐ[R] (R[X] ⧸ (RingHom.ker (aeval x).toRingHom : Ideal R[X])) := @Ideal.quotientEquivAlgOfEq R R[X] _ _ _ _ _ foo.symm

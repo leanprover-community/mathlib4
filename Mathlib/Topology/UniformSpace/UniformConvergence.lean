@@ -324,7 +324,7 @@ theorem TendstoUniformly.prod {ι' β' : Type _} [UniformSpace β'] {F' : ι' �
 `p ×ᶠ p'`. -/
 theorem tendsto_prod_filter_iff {c : β} :
     Tendsto (↿F) (p ×ᶠ p') (𝓝 c) ↔ TendstoUniformlyOnFilter F (fun _ => c) p p' := by
-  simp_rw [nhds_eq_comap_uniformity, tendsto_comap_iff, map_map, le_def, mem_map]
+  simp_rw [nhds_eq_comap_uniformity, tendsto_comap_iff]
   rfl
 #align tendsto_prod_filter_iff tendsto_prod_filter_iff
 
