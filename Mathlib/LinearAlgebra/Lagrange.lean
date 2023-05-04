@@ -126,7 +126,7 @@ section BasisDivisor
 
 variable {x y : F}
 
-/-- `basis_divisor x y` is the unique linear or constant polynomial such that
+/-- `basisDivisor x y` is the unique linear or constant polynomial such that
 when evaluated at `x` it gives `1` and `y` it gives `0` (where when `x = y` it is identically `0`).
 Such polynomials are the building blocks for the Lagrange interpolants. -/
 def basisDivisor (x y : F) : F[X] :=
