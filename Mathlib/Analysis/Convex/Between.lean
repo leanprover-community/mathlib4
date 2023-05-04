@@ -21,9 +21,9 @@ This file defines notions of a point in an affine space being between two given 
 
 ## Main definitions
 
-* `affine_segment R x y`: The segment of points weakly between `x` and `y`.
-* `wbtw R x y z`: The point `y` is weakly between `x` and `z`.
-* `sbtw R x y z`: The point `y` is strictly between `x` and `z`.
+* `affineSegment R x y`: The segment of points weakly between `x` and `y`.
+* `Wbtw R x y z`: The point `y` is weakly between `x` and `z`.
+* `Sbtw R x y z`: The point `y` is strictly between `x` and `z`.
 
 -/
 
@@ -581,7 +581,7 @@ theorem sbtw_of_sbtw_of_sbtw_of_mem_affineSpan_pair [NoZeroSMulDivisors R V]
     (h₁ : Sbtw R (t.points i₂) p₁ (t.points i₃)) (h₂ : Sbtw R (t.points i₁) p₂ (t.points i₃))
     (h₁' : p ∈ line[R, t.points i₁, p₁]) (h₂' : p ∈ line[R, t.points i₂, p₂]) :
     Sbtw R (t.points i₁) p p₁ := by
-  -- Should not be needed; see comments on local instances in `data.sign`.
+  -- Should not be needed; see comments on local instances in `Data.Sign`.
   letI : DecidableRel ((· < ·) : R → R → Prop) := LinearOrderedRing.decidable_lt
   have h₁₃ : i₁ ≠ i₃ := by
     rintro rfl
