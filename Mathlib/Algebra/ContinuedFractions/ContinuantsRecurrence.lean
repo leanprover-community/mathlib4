@@ -33,20 +33,20 @@ theorem continuantsAux_recurrence {gp ppred pred : Pair K} (nth_s_eq : g.s.get? 
   by simp [*, continuantsAux, nextContinuants, nextDenominator, nextNumerator]
 #align generalized_continued_fraction.continuants_aux_recurrence GeneralizedContinuedFraction.continuantsAux_recurrence
 
-theorem continuants_recurrence_aux {gp ppred pred : Pair K} (nth_s_eq : g.s.get? n = some gp)
+theorem continuants_recurrenceAux {gp ppred pred : Pair K} (nth_s_eq : g.s.get? n = some gp)
     (nth_conts_aux_eq : g.continuantsAux n = ppred)
     (succ_nth_conts_aux_eq : g.continuantsAux (n + 1) = pred) :
     g.continuants (n + 1) = ⟨gp.b * pred.a + gp.a * ppred.a, gp.b * pred.b + gp.a * ppred.b⟩ := by
   simp [nth_cont_eq_succ_nth_cont_aux,
     continuantsAux_recurrence nth_s_eq nth_conts_aux_eq succ_nth_conts_aux_eq]
-#align generalized_continued_fraction.continuants_recurrence_aux GeneralizedContinuedFraction.continuants_recurrence_aux
+#align generalized_continued_fraction.continuants_recurrence_aux GeneralizedContinuedFraction.continuants_recurrenceAux
 
 /-- Shows that `Aₙ = bₙ * Aₙ₋₁ + aₙ * Aₙ₋₂` and `Bₙ = bₙ * Bₙ₋₁ + aₙ * Bₙ₋₂`. -/
 theorem continuants_recurrence {gp ppred pred : Pair K} (succ_nth_s_eq : g.s.get? (n + 1) = some gp)
     (nth_conts_eq : g.continuants n = ppred) (succ_nth_conts_eq : g.continuants (n + 1) = pred) :
     g.continuants (n + 2) = ⟨gp.b * pred.a + gp.a * ppred.a, gp.b * pred.b + gp.a * ppred.b⟩ := by
   rw [nth_cont_eq_succ_nth_cont_aux] at nth_conts_eq succ_nth_conts_eq
-  exact continuants_recurrence_aux succ_nth_s_eq nth_conts_eq succ_nth_conts_eq
+  exact continuants_recurrenceAux succ_nth_s_eq nth_conts_eq succ_nth_conts_eq
 #align generalized_continued_fraction.continuants_recurrence GeneralizedContinuedFraction.continuants_recurrence
 
 /-- Shows that `Aₙ = bₙ * Aₙ₋₁ + aₙ * Aₙ₋₂`. -/
