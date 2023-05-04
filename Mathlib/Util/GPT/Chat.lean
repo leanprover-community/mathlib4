@@ -5,7 +5,7 @@ Authors: Scott Morrison
 -/
 import Mathlib.Data.Option.Basic
 import Mathlib.Util.GPT.API
-import Mathlib.Util.GPT.JSON
+import Mathlib.Util.GPT.Json
 
 open Lean
 
