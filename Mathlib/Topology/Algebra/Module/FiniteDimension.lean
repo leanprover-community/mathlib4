@@ -61,6 +61,7 @@ variable {𝕜 E F : Type _} [Field 𝕜] [TopologicalSpace 𝕜] [AddCommGroup 
   [TopologicalSpace E] [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F] [TopologicalAddGroup F]
   [ContinuousSMul 𝕜 F]
 
+set_option synthInstance.etaExperiment true in
 /-- The space of continuous linear maps between finite-dimensional spaces is finite-dimensional. -/
 instance [FiniteDimensional 𝕜 E] [FiniteDimensional 𝕜 F] : FiniteDimensional 𝕜 (E →L[𝕜] F) :=
   FiniteDimensional.of_injective (ContinuousLinearMap.coeLM 𝕜 : (E →L[𝕜] F) →ₗ[𝕜] E →ₗ[𝕜] F)
@@ -225,7 +226,7 @@ private theorem continuous_equivFun_basis_aux [ht2 : T2Space E] {ι : Type v} [F
           exact (finrank_eq_card_basis b).symm
         have : Continuous b.equivFun := IH b this
         exact
-          b.equivFun.symm.uniform_embedding b.equivFun.symm.toLinearMap.continuous_on_pi this
+          b.equivFun.symm.uniformEmbedding b.equivFun.symm.toLinearMap.continuous_on_pi this
       have : IsComplete (s : Set E) :=
         completeSpace_coe_iff_isComplete.1 ((completeSpace_congr U).1 (by infer_instance))
       exact this.isClosed
@@ -347,8 +348,9 @@ theorem isOpenMap_of_finiteDimensional (f : F →ₗ[𝕜] E) (hf : Function.Sur
   refine' IsOpenMap.of_sections fun x => ⟨fun y => g (y - f x) + x, _, _, fun y => _⟩
   · exact
       ((g.continuous_of_finiteDimensional.comp <| continuous_id.sub continuous_const).add
-          continuous_const).ContinuousAt
-  · rw [sub_self, map_zero, zero_add]
+          continuous_const).continuousAt
+  · simp only
+    rw [sub_self, map_zero, zero_add]
   · simp only [map_sub, map_add, ← comp_apply f g, hg, id_apply, sub_add_cancel]
 #align linear_map.is_open_map_of_finite_dimensional LinearMap.isOpenMap_of_finiteDimensional
 
@@ -428,6 +430,7 @@ end LinearEquiv
 
 variable [FiniteDimensional 𝕜 F]
 
+set_option synthInstance.etaExperiment true in
 /-- Two finite-dimensional topological vector spaces over a complete normed field are continuously
 linearly equivalent if they have the same (finite) dimension. -/
 theorem FiniteDimensional.nonempty_continuousLinearEquiv_of_finrank_eq
@@ -435,6 +438,7 @@ theorem FiniteDimensional.nonempty_continuousLinearEquiv_of_finrank_eq
   (nonempty_linearEquiv_of_finrank_eq cond).map LinearEquiv.toContinuousLinearEquiv
 #align finite_dimensional.nonempty_continuous_linear_equiv_of_finrank_eq FiniteDimensional.nonempty_continuousLinearEquiv_of_finrank_eq
 
+set_option synthInstance.etaExperiment true in
 /-- Two finite-dimensional topological vector spaces over a complete normed field are continuously
 linearly equivalent if and only if they have the same (finite) dimension. -/
 theorem FiniteDimensional.nonempty_continuousLinearEquiv_iff_finrank_eq :
@@ -443,6 +447,7 @@ theorem FiniteDimensional.nonempty_continuousLinearEquiv_iff_finrank_eq :
     FiniteDimensional.nonempty_continuousLinearEquiv_of_finrank_eq h⟩
 #align finite_dimensional.nonempty_continuous_linear_equiv_iff_finrank_eq FiniteDimensional.nonempty_continuousLinearEquiv_iff_finrank_eq
 
+set_option synthInstance.etaExperiment true in
 /-- A continuous linear equivalence between two finite-dimensional topological vector spaces over a
 complete normed field of the same (finite) dimension. -/
 def ContinuousLinearEquiv.ofFinrankEq (cond : finrank 𝕜 E = finrank 𝕜 F) : E ≃L[𝕜] F :=
@@ -453,39 +458,46 @@ end
 
 namespace Basis
 
+set_option linter.uppercaseLean3 false
+
 variable {ι : Type _} [Fintype ι] [T2Space E]
 
+set_option synthInstance.etaExperiment true in
 /-- Construct a continuous linear map given the value at a finite basis. -/
 def constrL (v : Basis ι 𝕜 E) (f : ι → F) : E →L[𝕜] F :=
   haveI : FiniteDimensional 𝕜 E := FiniteDimensional.of_fintype_basis v
-  (v.constr 𝕜 f).toContinuousLinearMap
+  LinearMap.toContinuousLinearMap (v.constr 𝕜 f)
 #align basis.constrL Basis.constrL
 
+set_option synthInstance.etaExperiment true in
 @[simp, norm_cast]
 theorem coe_constrL (v : Basis ι 𝕜 E) (f : ι → F) : (v.constrL f : E →ₗ[𝕜] F) = v.constr 𝕜 f :=
   rfl
 #align basis.coe_constrL Basis.coe_constrL
 
+set_option synthInstance.etaExperiment true in
 /-- The continuous linear equivalence between a vector space over `𝕜` with a finite basis and
 functions from its basis indexing type to `𝕜`. -/
 def equivFunL (v : Basis ι 𝕜 E) : E ≃L[𝕜] ι → 𝕜 :=
   { v.equivFun with
     continuous_toFun :=
       haveI : FiniteDimensional 𝕜 E := FiniteDimensional.of_fintype_basis v
-      v.equivFun.to_m.near_map.continuous_of_finite_dimensional
+      v.equivFun.toLinearMap.continuous_of_finiteDimensional
     continuous_invFun := by
-      change Continuous v.equivFun.symm.to_fun
-      exact v.equivFun.symm.to_linear_map.continuous_of_finite_dimensional }
+      change Continuous v.equivFun.symm.toFun
+      exact v.equivFun.symm.toLinearMap.continuous_of_finiteDimensional }
 #align basis.equiv_funL Basis.equivFunL
 
+set_option synthInstance.etaExperiment true in
 @[simp]
 theorem constrL_apply (v : Basis ι 𝕜 E) (f : ι → F) (e : E) :
-    (v.constrL f) e = ∑ i, v.equivFun e i • f i :=
+    v.constrL f e = ∑ i, v.equivFun e i • f i :=
   v.constr_apply_fintype 𝕜 _ _
 #align basis.constrL_apply Basis.constrL_apply
 
+set_option synthInstance.etaExperiment true in
 @[simp]
-theorem constrL_basis (v : Basis ι 𝕜 E) (f : ι → F) (i : ι) : (v.constrL f) (v i) = f i :=
+theorem constrL_basis (v : Basis ι 𝕜 E) (f : ι → F) (i : ι) : v.constrL f (v i) = f i :=
   v.constr_basis 𝕜 _ _
 #align basis.constrL_basis Basis.constrL_basis
 
@@ -518,9 +530,10 @@ theorem toContinuousLinearEquivOfDetNeZero_apply (f : E →L[𝕜] E) (hf : f.de
 #align continuous_linear_map.to_continuous_linear_equiv_of_det_ne_zero_apply ContinuousLinearMap.toContinuousLinearEquivOfDetNeZero_apply
 
 set_option synthInstance.etaExperiment true in
-theorem Matrix.toLin_finTwoProd_toContinuousLinearMap (a b c d : 𝕜) :
-    (Matrix.toLin (Basis.finTwoProd 𝕜) (Basis.finTwoProd 𝕜) !![a, b; c, d]).toContinuousLinearMap =
-      (a • ContinuousLinearMap.fst 𝕜 𝕜 𝕜 + b • ContinuousLinearMap.snd 𝕜 𝕜 𝕜).Prod
+theorem _root_.Matrix.toLin_finTwoProd_toContinuousLinearMap (a b c d : 𝕜) :
+    LinearMap.toContinuousLinearMap
+      (Matrix.toLin (Basis.finTwoProd 𝕜) (Basis.finTwoProd 𝕜) !![a, b; c, d]) =
+      (a • ContinuousLinearMap.fst 𝕜 𝕜 𝕜 + b • ContinuousLinearMap.snd 𝕜 𝕜 𝕜).prod
         (c • ContinuousLinearMap.fst 𝕜 𝕜 𝕜 + d • ContinuousLinearMap.snd 𝕜 𝕜 𝕜) :=
   ContinuousLinearMap.ext <| Matrix.toLin_finTwoProd_apply _ _ _ _
 #align matrix.to_lin_fin_two_prod_to_continuous_linear_map Matrix.toLin_finTwoProd_toContinuousLinearMap
