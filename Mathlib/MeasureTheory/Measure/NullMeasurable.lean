@@ -17,40 +17,40 @@ import Mathlib.MeasureTheory.Measure.AEDisjoint
 
 ### Null measurable sets and functions
 
-A set `s : set α` is called *null measurable* (`measure_theory.null_measurable_set`) if it satisfies
+A set `s : Set α` is called *null measurable* (`MeasureTheory.NullMeasurableSet`) if it satisfies
 any of the following equivalent conditions:
 
 * there exists a measurable set `t` such that `s =ᵐ[μ] t` (this is used as a definition);
-* `measure_theory.to_measurable μ s =ᵐ[μ] s`;
+* `MeasureTheory.toMeasurable μ s =ᵐ[μ] s`;
 * there exists a measurable subset `t ⊆ s` such that `t =ᵐ[μ] s` (in this case the latter equality
   means that `μ (s \ t) = 0`);
 * `s` can be represented as a union of a measurable set and a set of measure zero;
 * `s` can be represented as a difference of a measurable set and a set of measure zero.
 
-Null measurable sets form a σ-algebra that is registered as a `measurable_space` instance on
-`measure_theory.null_measurable_space α μ`. We also say that `f : α → β` is
-`measure_theory.null_measurable` if the preimage of a measurable set is a null measurable set.
+Null measurable sets form a σ-algebra that is registered as a `MeasurableSpace` instance on
+`MeasureTheory.NullMeasurableSpace α μ`. We also say that `f : α → β` is
+`MeasureTheory.NullMeasurable` if the preimage of a measurable set is a null measurable set.
 In other words, `f : α → β` is null measurable if it is measurable as a function
-`measure_theory.null_measurable_space α μ → β`.
+`MeasureTheory.NullMeasurableSpace α μ → β`.
 
 ### Complete measures
 
-We say that a measure `μ` is complete w.r.t. the `measurable_space α` σ-algebra (or the σ-algebra is
+We say that a measure `μ` is complete w.r.t. the `MeasurableSpace α` σ-algebra (or the σ-algebra is
 complete w.r.t measure `μ`) if every set of measure zero is measurable. In this case all null
 measurable sets and functions are measurable.
 
-For each measure `μ`, we define `measure_theory.measure.completion μ` to be the same measure
-interpreted as a measure on `measure_theory.null_measurable_space α μ` and prove that this is a
+For each measure `μ`, we define `MeasureTheory.Measure.completion μ` to be the same measure
+interpreted as a measure on `MeasureTheory.NullMeasurableSpace α μ` and prove that this is a
 complete measure.
 
 ## Implementation notes
 
-We define `measure_theory.null_measurable_set` as `@measurable_set (null_measurable_space α μ) _` so
-that theorems about `measurable_set`s like `measurable_set.union` can be applied to
-`null_measurable_set`s. However, these lemmas output terms of the same form
-`@measurable_set (null_measurable_space α μ) _ _`. While this is definitionally equal to the
-expected output `null_measurable_set s μ`, it looks different and may be misleading. So we copy all
-standard lemmas about measurable sets to the `measure_theory.null_measurable_set` namespace and fix
+We define `MeasureTheory.NullMeasurableSet` as `@MeasurableSet (NullMeasurableSpace α μ) _` so
+that theorems about `MeasurableSet`s like `MeasurableSet.union` can be applied to
+`NullMeasurableSet`s. However, these lemmas output terms of the same form
+`@MeasurableSet (NullMeasurableSpace α μ) _ _`. While this is definitionally equal to the
+expected output `NullMeasurableSet s μ`, it looks different and may be misleading. So we copy all
+standard lemmas about measurable sets to the `MeasureTheory.NullMeasurableSet` namespace and fix
 the output type.
 
 ## Tags
@@ -65,8 +65,8 @@ variable {ι α β γ : Type _}
 
 namespace MeasureTheory
 
-/-- A type tag for `α` with `measurable_set` given by `null_measurable_set`. -/
---@[nolint unused_arguments]
+/-- A type tag for `α` with `MeasurableSet` given by `NullMeasurableSet`. -/
+@[nolint unusedArguments]
 def NullMeasurableSpace (α : Type _) [MeasurableSpace α]
     (_μ : Measure α := by volume_tac) : Type _ :=
   α
@@ -76,21 +76,26 @@ section
 
 variable {m0 : MeasurableSpace α} {μ : Measure α} {s t : Set α}
 
-instance [h : Inhabited α] : Inhabited (NullMeasurableSpace α μ) :=
+instance NullMeasurableSpace.instInhabited [h : Inhabited α] :
+    Inhabited (NullMeasurableSpace α μ) :=
   h
+#align measure_theory.null_measurable_space.inhabited MeasureTheory.NullMeasurableSpace.instInhabited
 
-instance [h : Subsingleton α] : Subsingleton (NullMeasurableSpace α μ) :=
+instance NullMeasurableSpace.instSubsingleton [h : Subsingleton α] :
+    Subsingleton (NullMeasurableSpace α μ) :=
   h
+#align measure_theory.null_measurable_space.subsingleton MeasureTheory.NullMeasurableSpace.instSubsingleton
 
-instance : MeasurableSpace (NullMeasurableSpace α μ) where
+instance NullMeasurableSpace.instMeasurableSpace : MeasurableSpace (NullMeasurableSpace α μ) where
   MeasurableSet' s := ∃ t, MeasurableSet t ∧ s =ᵐ[μ] t
   measurableSet_empty := ⟨∅, MeasurableSet.empty, ae_eq_refl _⟩
   measurableSet_compl := fun s ⟨t, htm, hts⟩ => ⟨tᶜ, htm.compl, hts.compl⟩
   measurableSet_unionᵢ s hs := by
     choose t htm hts using hs
     exact ⟨⋃ i, t i, MeasurableSet.unionᵢ htm, EventuallyEq.countable_unionᵢ hts⟩
+#align measure_theory.null_measurable_space.measurable_space MeasureTheory.NullMeasurableSpace.instMeasurableSpace
 
-/-- A set is called `null_measurable_set` if it can be approximated by a measurable set up to
+/-- A set is called `NullMeasurableSet` if it can be approximated by a measurable set up to
 a set of null measure. -/
 def NullMeasurableSet [MeasurableSpace α] (s : Set α)
     (μ : Measure α := by volume_tac) : Prop :=
@@ -102,12 +107,12 @@ theorem _root_.MeasurableSet.nullMeasurableSet (h : MeasurableSet s) : NullMeasu
   ⟨s, h, ae_eq_refl _⟩
 #align measurable_set.null_measurable_set MeasurableSet.nullMeasurableSet
 
-@[simp]
+-- @[simp] -- Porting note: simp can prove this
 theorem nullMeasurableSet_empty : NullMeasurableSet ∅ μ :=
   MeasurableSet.empty
 #align measure_theory.null_measurable_set_empty MeasureTheory.nullMeasurableSet_empty
 
-@[simp]
+-- @[simp] -- Porting note: simp can prove this
 theorem nullMeasurableSet_univ : NullMeasurableSet univ μ :=
   MeasurableSet.univ
 #align measure_theory.null_measurable_set_univ MeasureTheory.nullMeasurableSet_univ
@@ -207,13 +212,15 @@ protected theorem disjointed {f : ℕ → Set α} (h : ∀ i, NullMeasurableSet 
   MeasurableSet.disjointed h n
 #align measure_theory.null_measurable_set.disjointed MeasureTheory.NullMeasurableSet.disjointed
 
-@[simp]
+-- @[simp] -- Porting note: simp can prove this
 protected theorem const (p : Prop) : NullMeasurableSet { _a : α | p } μ :=
   MeasurableSet.const p
 #align measure_theory.null_measurable_set.const MeasureTheory.NullMeasurableSet.const
 
-instance [MeasurableSingletonClass α] : MeasurableSingletonClass (NullMeasurableSpace α μ) :=
+instance instMeasurableSingletonClass [MeasurableSingletonClass α] :
+    MeasurableSingletonClass (NullMeasurableSpace α μ) :=
   ⟨fun x => MeasurableSet.nullMeasurableSet (@measurableSet_singleton α _ _ x)⟩
+#align measure_theory.null_measurable_set.measure_theory.null_measurable_space.measurable_singleton_class MeasureTheory.NullMeasurableSet.instMeasurableSingletonClass
 
 protected theorem insert [MeasurableSingletonClass (NullMeasurableSpace α μ)]
     (hs : NullMeasurableSet s μ) (a : α) : NullMeasurableSet (insert a s) μ :=
@@ -408,8 +415,7 @@ variable [MeasurableSpace α] [MeasurableSpace β] [MeasurableSpace γ] {f : α 
 
 /-- A function `f : α → β` is null measurable if the preimage of a measurable set is a null
 measurable set. -/
-def NullMeasurable (f : α → β) (μ : Measure α := by volume_tac) :
-    Prop :=
+def NullMeasurable (f : α → β) (μ : Measure α := by volume_tac) : Prop :=
   ∀ ⦃s : Set β⦄, MeasurableSet s → NullMeasurableSet (f ⁻¹' s) μ
 #align measure_theory.null_measurable MeasureTheory.NullMeasurable
 
@@ -512,4 +518,3 @@ end Measure
 end IsComplete
 
 end MeasureTheory
-
