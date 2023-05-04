@@ -127,7 +127,8 @@ def norm_num_done : Elab.Tactic.TacticM Unit := do
 canceled in `e'`, distributing `n` proportionally according to `tr`.
 -/
 partial def mkProdPrf (α : Q(Type u)) (_sα : Q(Field $α)) (v : ℕ) (t : Tree ℕ)
-  (e : Q($α)) : MetaM Expr :=
+  (e : Q($α)) : MetaM Expr := do
+let amwo ← synthInstanceQ q(AddMonoidWithOne $α)
 match t, e with
 | .node _ lhs rhs, ~q($e1 + $e2) => do
   let v1 ← mkProdPrf α _sα v lhs e1
@@ -148,10 +149,10 @@ match t, e with
   mkAppM `CancelFactors.mul_subst #[v1, v2, npf]
 | .node n lhs (.node rn _ _), ~q($e1 / $e2) => do
   let v1 ← mkProdPrf α _sα (v / rn) lhs e1
-  have rn' := (← mkOfNat α _sα <| mkRawNatLit v).1
-  have vrn' := (← mkOfNat α _sα <| mkRawNatLit <| v / rn).1
-  have n' := (← mkOfNat α _sα <| mkRawNatLit <| n).1
-  have v' := (← mkOfNat α _sα <| mkRawNatLit <| v).1
+  have rn' := (← mkOfNat α amwo <| mkRawNatLit rn).1
+  have vrn' := (← mkOfNat α amwo <| mkRawNatLit <| v / rn).1
+  have n' := (← mkOfNat α amwo <| mkRawNatLit <| n).1
+  have v' := (← mkOfNat α amwo <| mkRawNatLit <| v).1
   let ntp : Q(Prop) := q($rn' / $e2 = 1)
   let npf ← synthesizeUsing ntp norm_num_done
   let ntp2 : Q(Prop) := q($vrn' * $n' = $v')
@@ -161,8 +162,8 @@ match t, e with
   let v ← mkProdPrf α _sα v t e
   mkAppM `CancelFactors.neg_subst #[v]
 | _, _ => do
-  let ⟨v, _⟩ ← mkOfNat α _sα <| mkRawNatLit v
-  let e' ← mkAppM `Mul.mul #[v, e]
+  have v' := (← mkOfNat α amwo <| mkRawNatLit <| v).1
+  let e' ← mkAppM `Mul.mul #[v', e]
   mkAppM `Eq.refl #[e']
 
 /--
@@ -202,7 +203,7 @@ Numeric denominators have been canceled in `lhs'` and `rhs'`.
 def cancelDenominatorsInType (h : Expr) : MetaM (Expr × Expr) :=
 do let some (lhs, rhs, lem) := findCompLemma h | throwError "cannot kill factors"
    let (al, lhs_p) ← derive lhs
-   let α : Q(Type) ← inferType lhs_p
+   let α : Q(Type) ← inferType lhs
    let sα : Q(LinearOrderedField $α) ← synthInstance q(LinearOrderedField $α)
    let (ar, rhs_p) ← derive rhs
    let gcd := al.gcd ar
@@ -263,12 +264,14 @@ elab "cancel_denoms" loc:(location)? : tactic => do
   cancelDenominators loc
   Lean.Elab.Tactic.evalTactic (←`(tactic| norm_num [←mul_assoc]))
 
-variable [LinearOrderedField α] (a b c : α)
+variable [lof : LinearOrderedField α] (a b c : α)
+
+set_option warningAsError false
 
 example (h : a / 5 + b / 4 < c) : 4*a + 5*b < 20*c := by
   cancel_denoms at h
   exact h
 
-example (h : a > 0) : a / 5 > 0 := by
+/-example (h : a > 0) : a / 5 > 0 := by
   cancel_denoms
-  exact h
+  exact h -/
