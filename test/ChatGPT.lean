@@ -4,7 +4,7 @@ open GPT
 
 -- These tests are all disabled as they should not be run in CI.
 
--- #eval APIKey
+-- #eval OPENAI_API_KEY
 -- #eval send "Hello world" (cfg := { trace := true })
 -- #eval send "Please write just the statement of the abc conjecture, in Lean 3 syntax."
 
