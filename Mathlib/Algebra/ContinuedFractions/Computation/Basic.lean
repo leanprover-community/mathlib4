@@ -87,7 +87,7 @@ namespace IntFractPair
 
 /-- Make an `int_fract_pair` printable. -/
 instance [Repr K] : Repr (IntFractPair K) :=
-  ⟨fun p => "(b : " ++ repr p.b ++ ", fract : " ++ repr p.fr ++ ")"⟩
+  ⟨fun p _ => "(b : " ++ repr p.b ++ ", fract : " ++ repr p.fr ++ ")"⟩
 
 instance inhabited [Inhabited K] : Inhabited (IntFractPair K) :=
   ⟨⟨0, default⟩⟩
@@ -97,6 +97,7 @@ instance inhabited [Inhabited K] : Inhabited (IntFractPair K) :=
 -/
 def mapFr {β : Type _} (f : K → β) (gp : IntFractPair K) : IntFractPair β :=
   ⟨gp.b, f gp.fr⟩
+set_option linter.uppercaseLean3 false in
 #align generalized_continued_fraction.int_fract_pair.mapFr GeneralizedContinuedFraction.IntFractPair.mapFr
 
 section coe
@@ -109,7 +110,7 @@ variable {β : Type _} [Coe K β]
 
 /-- Coerce a pair by coercing the fractional component. -/
 instance hasCoeToIntFractPair : Coe (IntFractPair K) (IntFractPair β) :=
-  ⟨mapFr coe⟩
+  ⟨mapFr (↑)⟩
 #align generalized_continued_fraction.int_fract_pair.has_coe_to_int_fract_pair GeneralizedContinuedFraction.IntFractPair.hasCoeToIntFractPair
 
 @[simp, norm_cast]
@@ -147,7 +148,8 @@ For example, let `(v : ℚ) := 3.4`. The process goes as follows:
 protected def stream (v : K) : Stream' <| Option (IntFractPair K)
   | 0 => some (IntFractPair.of v)
   | n + 1 =>
-    (Stream' n).bind fun ap_n => if ap_n.fr = 0 then none else some (IntFractPair.of ap_n.fr⁻¹)
+    (IntFractPair.stream v n).bind fun ap_n =>
+      if ap_n.fr = 0 then none else some (IntFractPair.of ap_n.fr⁻¹)
 #align generalized_continued_fraction.int_fract_pair.stream GeneralizedContinuedFraction.IntFractPair.stream
 
 /-- Shows that `int_fract_pair.stream` has the sequence property, that is once we return `none` at
@@ -155,7 +157,7 @@ position `n`, we also return `none` at `n + 1`.
 -/
 theorem stream_isSeq (v : K) : (IntFractPair.stream v).IsSeq := by
   intro _ hyp
-  simp [int_fract_pair.stream, hyp]
+  simp [IntFractPair.stream, hyp]
 #align generalized_continued_fraction.int_fract_pair.stream_is_seq GeneralizedContinuedFraction.IntFractPair.stream_isSeq
 
 /--
@@ -202,4 +204,3 @@ protected def of [LinearOrderedField K] [FloorRing K] (v : K) : GeneralizedConti
 -- the sequence consists of the remaining integer parts as the partial
 -- denominators; all partial numerators are simply 1
 end GeneralizedContinuedFraction
-
