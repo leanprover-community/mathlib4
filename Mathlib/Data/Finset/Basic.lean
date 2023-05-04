@@ -2787,9 +2787,8 @@ theorem disjoint_filter_filter' (s t : Finset α)
 
 theorem disjoint_filter_filter_neg (s t : Finset α) (p : α → Prop)
     [DecidablePred p] [∀ x, Decidable (¬p x)] :
-    Disjoint (s.filter p) (t.filter fun a => ¬p a) := by
-  simp_rw [decide_not, Bool.decide_coe, Bool.not_eq_true']
-  exact disjoint_filter_filter' s t disjoint_compl_right
+    Disjoint (s.filter p) (t.filter fun a => ¬p a) :=
+  disjoint_filter_filter' s t disjoint_compl_right
 #align finset.disjoint_filter_filter_neg Finset.disjoint_filter_filter_neg
 
 theorem filter_disj_union (s : Finset α) (t : Finset α) (h : Disjoint s t) :
@@ -2860,7 +2859,6 @@ theorem filter_and (s : Finset α) : (s.filter fun a => p a ∧ q a) = s.filter 
 
 theorem filter_not (s : Finset α) : (s.filter fun a => ¬p a) = s \ s.filter p :=
   ext <| fun a => by
-    simp_rw [decide_not]
     simp only [Bool.decide_coe, Bool.not_eq_true', mem_filter, and_comm, mem_sdiff, not_and_or,
       Bool.not_eq_true, and_or_left, and_not_self, or_false]
 #align finset.filter_not Finset.filter_not
@@ -3504,7 +3502,7 @@ theorem disjUnionᵢ_filter_eq_of_maps_to [DecidableEq β] {s : Finset α} {t : 
     (h : ∀ x ∈ s, f x ∈ t) :
     t.disjUnionᵢ (fun a => s.filter (fun c => f c = a))
       (fun x' hx y' hy hne => by
-        simp_rw [disjoint_left, mem_filter, Bool.coe_decide]
+        simp_rw [disjoint_left, mem_filter]
         rintro i ⟨_, rfl⟩ ⟨_, rfl⟩
         exact hne rfl) = s :=
   ext fun b => by simpa using h b

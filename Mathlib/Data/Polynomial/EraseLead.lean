@@ -296,7 +296,7 @@ theorem card_support_eq' {n : ℕ} (k : Fin n → ℕ) (x : Fin n → R) (hk : F
   suffices (∑ i, C (x i) * X ^ k i).support = image k univ by
     rw [this, univ.card_image_of_injective hk, card_fin]
   simp_rw [Finset.ext_iff, mem_support_iff, finset_sum_coeff, coeff_C_mul_X_pow, mem_image,
-    mem_univ, exists_true_left, true_and]
+    mem_univ, true_and]
   refine' fun i => ⟨fun h => _, _⟩
   · obtain ⟨j, _, h⟩ := exists_ne_zero_of_sum_ne_zero h
     exact ⟨j, (ite_ne_right_iff.mp h).1.symm⟩

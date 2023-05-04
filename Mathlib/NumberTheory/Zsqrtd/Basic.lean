@@ -650,7 +650,7 @@ instance : LT (ℤ√d) :=
   ⟨fun a b => ¬b ≤ a⟩
 
 instance decidableNonnegg (c d a b) : Decidable (Nonnegg c d a b) := by
-  cases a <;> cases b <;> simp_rw [Int.ofNat_eq_coe] <;> unfold Nonnegg SqLe <;> infer_instance
+  cases a <;> cases b <;> unfold Nonnegg SqLe <;> infer_instance
 #align zsqrtd.decidable_nonnegg Zsqrtd.decidableNonnegg
 
 instance decidableNonneg : ∀ a : ℤ√d, Decidable (Nonneg a)

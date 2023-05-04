@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Mario Carneiro
 
 ! This file was ported from Lean 3 source module data.complex.basic
-! leanprover-community/mathlib commit 92ca63f0fb391a9ca5f22d2409a6080e786d99f7
+! leanprover-community/mathlib commit caa58cbf5bfb7f81ccbaca4e8b8ac4bc2b39cc1c
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -90,9 +90,7 @@ def ofReal' (r : ℝ) : ℂ :=
 instance : Coe ℝ ℂ :=
   ⟨ofReal'⟩
 
-/- Porting note: `simp` attribute removed as this has a variable as head symbol of
-the left-hand side (after whnfR)-/
-@[norm_cast]
+@[simp, norm_cast]
 theorem ofReal_re (r : ℝ) : Complex.re (r : ℂ) = r :=
   rfl
 #align complex.of_real_re Complex.ofReal_re
@@ -437,6 +435,12 @@ instance : Ring ℂ := by infer_instance
 instance : CommSemiring ℂ :=
   inferInstance
 
+-- porting note: added due to changes in typeclass search order
+/-- This shortcut instance ensures we do not find `Semiring` via the noncomputable
+`Complex.field` instance. -/
+instance : Semiring ℂ :=
+  inferInstance
+
 /-- The "real part" map, considered as an additive group homomorphism. -/
 def reAddGroupHom : ℂ →+ ℝ where
   toFun := re
@@ -539,19 +543,19 @@ theorem conj_neg_I : conj (-I) = I :=
 set_option linter.uppercaseLean3 false in
 #align complex.conj_neg_I Complex.conj_neg_I
 
-theorem eq_conj_iff_real {z : ℂ} : conj z = z ↔ ∃ r : ℝ, z = r :=
+theorem conj_eq_iff_real {z : ℂ} : conj z = z ↔ ∃ r : ℝ, z = r :=
   ⟨fun h => ⟨z.re, ext rfl <| eq_zero_of_neg_eq (congr_arg im h)⟩, fun ⟨h, e⟩ => by
     rw [e, conj_ofReal]⟩
-#align complex.eq_conj_iff_real Complex.eq_conj_iff_real
+#align complex.conj_eq_iff_real Complex.conj_eq_iff_real
 
-theorem eq_conj_iff_re {z : ℂ} : conj z = z ↔ (z.re : ℂ) = z :=
-  eq_conj_iff_real.trans ⟨by rintro ⟨r, rfl⟩ ; simp [ofReal'], fun h => ⟨_, h.symm⟩⟩
-#align complex.eq_conj_iff_re Complex.eq_conj_iff_re
+theorem conj_eq_iff_re {z : ℂ} : conj z = z ↔ (z.re : ℂ) = z :=
+  conj_eq_iff_real.trans ⟨by rintro ⟨r, rfl⟩ ; simp [ofReal'], fun h => ⟨_, h.symm⟩⟩
+#align complex.conj_eq_iff_re Complex.conj_eq_iff_re
 
-theorem eq_conj_iff_im {z : ℂ} : conj z = z ↔ z.im = 0 :=
+theorem conj_eq_iff_im {z : ℂ} : conj z = z ↔ z.im = 0 :=
   ⟨fun h => add_self_eq_zero.mp (neg_eq_iff_add_eq_zero.mp (congr_arg im h)), fun h =>
     ext rfl (neg_eq_iff_add_eq_zero.mpr (add_self_eq_zero.mpr h))⟩
-#align complex.eq_conj_iff_im Complex.eq_conj_iff_im
+#align complex.conj_eq_iff_im Complex.conj_eq_iff_im
 
 -- `simpNF` complains about this being provable by `is_R_or_C.star_def` even
 -- though it's not imported by this file.
