@@ -300,11 +300,16 @@ variable {ι : Type _} [DecidableEq ι] {s t : Finset ι} {i j : ι} {v : ι →
 `s` and a value function `r : ι → F`,  `interpolate s v r` is the unique
 polynomial of degree `< s.card` that takes value `r i` on `v i` for all `i` in `s`. -/
 @[simps]
-def interpolate (s : Finset ι) (v : ι → F) : (ι → F) →ₗ[F] F[X] where
+-- Porting note: The arguments for 'LinearMap' on line 305 had to be given explicitly because
+-- the instance 'Module F F[X]' could not be synthetized
+def interpolate (s : Finset ι) (v : ι → F) : @LinearMap _ _ _ _ (RingHom.id F) (ι → F) F[X] _ _ _ (Polynomial.module) where
   toFun r := ∑ i in s, C (r i) * Lagrange.basis s v i
-  map_add' f g := by simp_rw [← Finset.sum_add_distrib, ← add_mul, ← C_add, Pi.add_apply]
-  map_smul' c f := by
-    simp_rw [Finset.smul_sum, C_mul', smul_smul, Pi.smul_apply, RingHom.id_apply, smul_eq_mul]
+  map_add' f g := by
+    simp_rw [← Finset.sum_add_distrib]
+    have h : (fun x => C (f x) * Lagrange.basis s v x + C (g x) * Lagrange.basis s v x) = (fun x => C ((f + g) x) * Lagrange.basis s v x) := by
+      simp_rw [← add_mul, ← C_add, Pi.add_apply]
+    rw [h]
+  map_smul' c f := by simp_rw [Finset.smul_sum, C_mul', smul_smul, Pi.smul_apply, RingHom.id_apply, smul_eq_mul]
 #align lagrange.interpolate Lagrange.interpolate
 
 @[simp]
