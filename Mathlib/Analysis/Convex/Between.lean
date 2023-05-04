@@ -290,7 +290,9 @@ theorem wbtw_self_right (x y : P) : Wbtw R x y y :=
 @[simp]
 theorem wbtw_self_iff {x y : P} : Wbtw R x y x ↔ y = x := by
   refine' ⟨fun h => _, fun h => _⟩
-  · simpa [Wbtw, affineSegment] using h
+  · -- Porting note: Originally `simpa [Wbtw, affineSegment] using h`
+    have ⟨_, _, h₂⟩ := h
+    rw [h₂.symm, lineMap_same_apply]
   · rw [h]
     exact wbtw_self_left R x x
 #align wbtw_self_iff wbtw_self_iff
@@ -580,27 +582,30 @@ theorem sbtw_of_sbtw_of_sbtw_of_mem_affineSpan_pair [NoZeroSMulDivisors R V]
     (h₁' : p ∈ line[R, t.points i₁, p₁]) (h₂' : p ∈ line[R, t.points i₂, p₂]) :
     Sbtw R (t.points i₁) p p₁ := by
   -- Should not be needed; see comments on local instances in `data.sign`.
-  letI : DecidableRel ((· < ·) : R → R → Prop) := LinearOrderedRing.decidableLt
+  letI : DecidableRel ((· < ·) : R → R → Prop) := LinearOrderedRing.decidable_lt
   have h₁₃ : i₁ ≠ i₃ := by
     rintro rfl
-    simpa using h₂
+    simp at h₂
   have h₂₃ : i₂ ≠ i₃ := by
     rintro rfl
-    simpa using h₁
+    simp at h₁
   have h3 : ∀ i : Fin 3, i = i₁ ∨ i = i₂ ∨ i = i₃ := by
     clear h₁ h₂ h₁' h₂'
-    decide!
+    -- Porting note: Originally `decide!`
+    intro i
+    fin_cases i <;> fin_cases i₁ <;> fin_cases i₂ <;> fin_cases i₃ <;> simp at h₁₂ h₁₃ h₂₃ ⊢
   have hu : (Finset.univ : Finset (Fin 3)) = {i₁, i₂, i₃} := by
     clear h₁ h₂ h₁' h₂'
-    decide!
+    -- Porting note: Originally `decide!`
+    fin_cases i₁ <;> fin_cases i₂ <;> fin_cases i₃ <;> simp at h₁₂ h₁₃ h₂₃ ⊢
   have hp : p ∈ affineSpan R (Set.range t.points) := by
     have hle : line[R, t.points i₁, p₁] ≤ affineSpan R (Set.range t.points) := by
-      refine' affineSpan_pair_le_of_mem_of_mem (mem_affineSpan _ (Set.mem_range_self _)) _
+      refine' affineSpan_pair_le_of_mem_of_mem (mem_affineSpan R (Set.mem_range_self _)) _
       have hle : line[R, t.points i₂, t.points i₃] ≤ affineSpan R (Set.range t.points) := by
-        refine' affineSpan_mono _ _
+        refine' affineSpan_mono R _
         simp [Set.insert_subset]
       rw [AffineSubspace.le_def'] at hle
-      exact hle _ h₁.wbtw.mem_affine_span
+      exact hle _ h₁.wbtw.mem_affineSpan
     rw [AffineSubspace.le_def'] at hle
     exact hle _ h₁'
   have h₁i := h₁.mem_image_Ioo
@@ -610,23 +615,22 @@ theorem sbtw_of_sbtw_of_sbtw_of_mem_affineSpan_pair [NoZeroSMulDivisors R V]
   rcases h₂i with ⟨r₂, ⟨hr₂0, hr₂1⟩, rfl⟩
   rcases eq_affineCombination_of_mem_affineSpan_of_fintype hp with ⟨w, hw, rfl⟩
   have h₁s :=
-    sign_eq_of_affineCombination_mem_affineSpan_single_lineMap t.independent hw (Finset.mem_univ _)
+    sign_eq_of_affineCombination_mem_affineSpan_single_lineMap t.Independent hw (Finset.mem_univ _)
       (Finset.mem_univ _) (Finset.mem_univ _) h₁₂ h₁₃ h₂₃ hr₁0 hr₁1 h₁'
   have h₂s :=
-    sign_eq_of_affineCombination_mem_affineSpan_single_lineMap t.independent hw (Finset.mem_univ _)
+    sign_eq_of_affineCombination_mem_affineSpan_single_lineMap t.Independent hw (Finset.mem_univ _)
       (Finset.mem_univ _) (Finset.mem_univ _) h₁₂.symm h₂₃ h₁₃ hr₂0 hr₂1 h₂'
   dsimp only at h₁s h₂s
   rw [←
-    finset.univ.affine_combination_affine_combination_single_weights R t.points
+    Finset.univ.affineCombination_affineCombinationSingleWeights R t.points
       (Finset.mem_univ i₁),
     ←
-    finset.univ.affine_combination_affine_combination_line_map_weights t.points (Finset.mem_univ _)
-      (Finset.mem_univ _)] at
-    h₁'⊢
+    Finset.univ.affineCombination_affineCombinationLineMapWeights t.points (Finset.mem_univ _)
+      (Finset.mem_univ _)] at h₁'⊢
   refine'
-    Sbtw.affineCombination_of_mem_affineSpan_pair t.independent hw
-      (finset.univ.sum_affine_combination_single_weights R (Finset.mem_univ _))
-      (finset.univ.sum_affine_combination_line_map_weights (Finset.mem_univ _) (Finset.mem_univ _)
+    Sbtw.affineCombination_of_mem_affineSpan_pair t.Independent hw
+      (Finset.univ.sum_affineCombinationSingleWeights R (Finset.mem_univ _))
+      (Finset.univ.sum_affineCombinationLineMapWeights (Finset.mem_univ _) (Finset.mem_univ _)
         _)
       h₁' (Finset.mem_univ i₁) _
   rw [Finset.affineCombinationSingleWeights_apply_self,
@@ -647,8 +651,8 @@ theorem sbtw_of_sbtw_of_sbtw_of_mem_affineSpan_pair [NoZeroSMulDivisors R V]
   · by_contra hle
     rw [not_lt] at hle
     exact (hle.trans_lt (lt_add_of_pos_right _ (Left.add_pos (hs i₂) (hs i₃)))).ne' hw
-  · simp [h₂₃]
-  · simp [h₁₂, h₁₃]
+  · simpa using h₂₃
+  · simpa [not_or] using ⟨h₁₂, h₁₃⟩
 #align sbtw_of_sbtw_of_sbtw_of_mem_affine_span_pair sbtw_of_sbtw_of_sbtw_of_mem_affineSpan_pair
 
 end LinearOrderedRing
@@ -707,6 +711,7 @@ theorem sbtw_iff_left_ne_and_right_mem_image_IoI {x y z : P} :
     nth_rw 1 [← one_smul R (y -ᵥ x)]
     rw [← sub_smul, smul_ne_zero_iff, vsub_ne_zero, sub_ne_zero]
     exact ⟨hr.ne, hne.symm⟩
+set_option linter.uppercaseLean3 false in
 #align sbtw_iff_left_ne_and_right_mem_image_IoI sbtw_iff_left_ne_and_right_mem_image_IoI
 
 theorem Sbtw.right_mem_image_Ioi {x y z : P} (h : Sbtw R x y z) :
@@ -736,6 +741,7 @@ theorem Wbtw.left_mem_affineSpan_of_right_ne {x y z : P} (h : Wbtw R x y z) (hne
 theorem sbtw_iff_right_ne_and_left_mem_image_IoI {x y z : P} :
     Sbtw R x y z ↔ z ≠ y ∧ x ∈ lineMap z y '' Set.Ioi (1 : R) := by
   rw [sbtw_comm, sbtw_iff_left_ne_and_right_mem_image_IoI]
+set_option linter.uppercaseLean3 false in
 #align sbtw_iff_right_ne_and_left_mem_image_IoI sbtw_iff_right_ne_and_left_mem_image_IoI
 
 theorem Sbtw.left_mem_image_Ioi {x y z : P} (h : Sbtw R x y z) :
