@@ -1,7 +1,7 @@
 import Mathlib.Tactic.CancelDenoms
 import Mathlib.Tactic.Ring
 
-variable [LinearOrderedField α] (a b c d : α)
+variable {α : Type u} [LinearOrderedField α] (a b c d : α)
 
 example (h : a / 5 + b / 4 < c) : 4*a + 5*b < 20*c := by
   cancel_denoms at h

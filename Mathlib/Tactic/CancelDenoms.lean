@@ -165,13 +165,19 @@ partial def mkProdPrf (α : Q(Type u)) (sα : Q(Field $α)) (v : ℕ) (t : Tree 
     let e' ← mkAppM `HMul.hMul #[v', e]
     mkEqRefl e'
 
+def inferTypeQ' (e : Expr) : MetaM ((u : Level) × (α : Q(Type $u)) × Q($α)) := do
+  let α ← inferType e
+  let .sort u ← whnf (← inferType α) | throwError "not a type{indentExpr α}"
+  let some u' := u.dec | throwError "is a Prop, not a Type"
+  pure ⟨u', α, e⟩
+
 /--
 Given `e`, a term with rational division, produces a natural number `n` and a proof of `n*e = e'`,
 where `e'` has no division. Assumes "well-behaved" division.
 -/
 def derive (e : Expr) : MetaM (ℕ × Expr) := do
   let (n, t) := findCancelFactor e
-  let tp : Q(Type) ← inferType e
+  let ⟨u, tp, e⟩ ← inferTypeQ' e
   let stp ← synthInstance q(Field $tp)
   try
     return (n, ← mkProdPrf tp stp n t e)
@@ -202,7 +208,7 @@ Numeric denominators have been canceled in `lhs'` and `rhs'`.
 def cancelDenominatorsInType (h : Expr) : MetaM (Expr × Expr) := do
   let some (lhs, rhs, lem) := findCompLemma h | throwError "cannot kill factors"
   let (al, lhs_p) ← derive lhs
-  let α : Q(Type) ← inferType lhs
+  let ⟨u, α, _⟩ ← inferTypeQ' lhs
   let _ ← synthInstanceQ q(LinearOrderedField $α)
   let amwo ← synthInstanceQ q(AddMonoidWithOne $α)
   let (ar, rhs_p) ← derive rhs
