@@ -31,20 +31,19 @@ namespace CancelFactors
 
 /-! ### Lemmas used in the procedure -/
 
-
-theorem mul_subst {α} [CommRing α] {n1 n2 k e1 e2 t1 t2 : α} (h1 : n1 * e1 = t1) (h2 : n2 * e2 = t2)
-    (h3 : n1 * n2 = k) : k * (e1 * e2) = t1 * t2 := by
-  rw [← h3, mul_comm n1, mul_assoc n2, ← mul_assoc n1, h1, ← mul_assoc n2, mul_comm n2, mul_assoc,
-    h2]
+theorem mul_subst {α} [CommRing α] {n1 n2 k e1 e2 t1 t2 : α}
+    (h1 : n1 * e1 = t1) (h2 : n2 * e2 = t2) (h3 : n1 * n2 = k) : k * (e1 * e2) = t1 * t2 := by
+  rw [← h3, mul_comm n1, mul_assoc n2, ← mul_assoc n1, h1,
+      ← mul_assoc n2, mul_comm n2, mul_assoc, h2]
 #align cancel_factors.mul_subst CancelFactors.mul_subst
 
-theorem div_subst {α} [Field α] {n1 n2 k e1 e2 t1 : α} (h1 : n1 * e1 = t1) (h2 : n2 / e2 = 1)
-    (h3 : n1 * n2 = k) : k * (e1 / e2) = t1 := by
+theorem div_subst {α} [Field α] {n1 n2 k e1 e2 t1 : α}
+    (h1 : n1 * e1 = t1) (h2 : n2 / e2 = 1) (h3 : n1 * n2 = k) : k * (e1 / e2) = t1 := by
   rw [← h3, mul_assoc, mul_div_left_comm, h2, ← mul_assoc, h1, mul_comm, one_mul]
 #align cancel_factors.div_subst CancelFactors.div_subst
 
-theorem cancel_factors_eq_div {α} [Field α] {n e e' : α} (h : n * e = e') (h2 : n ≠ 0) :
-    e = e' / n :=
+theorem cancel_factors_eq_div {α} [Field α] {n e e' : α}
+    (h : n * e = e') (h2 : n ≠ 0) : e = e' / n :=
   eq_div_of_mul_eq h2 <| by rwa [mul_comm] at h
 #align cancel_factors.cancel_factors_eq_div CancelFactors.cancel_factors_eq_div
 
@@ -59,20 +58,20 @@ theorem sub_subst {α} [Ring α] {n e1 e2 t1 t2 : α} (h1 : n * e1 = t1) (h2 : n
 theorem neg_subst {α} [Ring α] {n e t : α} (h1 : n * e = t) : n * -e = -t := by simp [*]
 #align cancel_factors.neg_subst CancelFactors.neg_subst
 
-theorem cancel_factors_lt {α} [LinearOrderedField α] {a b ad bd a' b' gcd : α} (ha : ad * a = a')
-    (hb : bd * b = b') (had : 0 < ad) (hbd : 0 < bd) (hgcd : 0 < gcd) :
+theorem cancel_factors_lt {α} [LinearOrderedField α] {a b ad bd a' b' gcd : α}
+    (ha : ad * a = a') (hb : bd * b = b') (had : 0 < ad) (hbd : 0 < bd) (hgcd : 0 < gcd) :
     (a < b) = (1 / gcd * (bd * a') < 1 / gcd * (ad * b')) := by
   rw [mul_lt_mul_left, ← ha, ← hb, ← mul_assoc, ← mul_assoc, mul_comm bd, mul_lt_mul_left]
-  exact mul_pos had hbd
-  exact one_div_pos.2 hgcd
+  · exact mul_pos had hbd
+  · exact one_div_pos.2 hgcd
 #align cancel_factors.cancel_factors_lt CancelFactors.cancel_factors_lt
 
-theorem cancel_factors_le {α} [LinearOrderedField α] {a b ad bd a' b' gcd : α} (ha : ad * a = a')
-    (hb : bd * b = b') (had : 0 < ad) (hbd : 0 < bd) (hgcd : 0 < gcd) :
+theorem cancel_factors_le {α} [LinearOrderedField α] {a b ad bd a' b' gcd : α}
+    (ha : ad * a = a') (hb : bd * b = b') (had : 0 < ad) (hbd : 0 < bd) (hgcd : 0 < gcd) :
     (a ≤ b) = (1 / gcd * (bd * a') ≤ 1 / gcd * (ad * b')) := by
   rw [mul_le_mul_left, ← ha, ← hb, ← mul_assoc, ← mul_assoc, mul_comm bd, mul_le_mul_left]
-  exact mul_pos had hbd
-  exact one_div_pos.2 hgcd
+  · exact mul_pos had hbd
+  · exact one_div_pos.2 hgcd
 #align cancel_factors.cancel_factors_le CancelFactors.cancel_factors_le
 
 theorem cancel_factors_eq {α} [LinearOrderedField α] {a b ad bd a' b' gcd : α} (ha : ad * a = a')
@@ -87,7 +86,7 @@ theorem cancel_factors_eq {α} [LinearOrderedField α] {a b ad bd a' b' gcd : α
     refine' mul_left_cancel₀ (mul_ne_zero _ _) h
     apply mul_ne_zero
     apply div_ne_zero
-    all_goals apply ne_of_gt ; first |assumption|exact zero_lt_one
+    all_goals apply ne_of_gt ; first | assumption | exact zero_lt_one
 #align cancel_factors.cancel_factors_eq CancelFactors.cancel_factors_eq
 
 /-! ### Computing cancelation factors -/
