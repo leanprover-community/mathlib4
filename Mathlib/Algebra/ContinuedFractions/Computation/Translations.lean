@@ -244,8 +244,7 @@ theorem nth_of_eq_some_of_succ_nth_intFractPair_stream {ifp_succ_n : IntFractPai
     (stream_succ_nth_eq : IntFractPair.stream v (n + 1) = some ifp_succ_n) :
     (of v).s.get? n = some ⟨1, ifp_succ_n.b⟩ := by
   unfold of IntFractPair.seq1
-  simp only [Stream'.Seq.map_tail, Stream'.Seq.get?_tail, Stream'.Seq.map_get?]
-  simp only [Stream'.Seq.get?, stream_succ_nth_eq, Option.map_some']
+  simp [Stream'.Seq.map_tail, Stream'.Seq.get?_tail, Stream'.Seq.map_get?, stream_succ_nth_eq]
 #align generalized_continued_fraction.nth_of_eq_some_of_succ_nth_int_fract_pair_stream GeneralizedContinuedFraction.nth_of_eq_some_of_succ_nth_intFractPair_stream
 
 /-- Shows how the entries of the sequence of the computed continued fraction can be obtained by the
