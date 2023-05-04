@@ -296,6 +296,12 @@ open Finset
 
 variable {ι : Type _} [DecidableEq ι] {s t : Finset ι} {i j : ι} {v : ι → F} (r r' : ι → F)
 
+set_option synthInstance.etaExperiment true in
+set_option maxHeartbeats 300000 in
+set_option synthInstance.maxHeartbeats 60000 in
+-- Porting note: The heartbeats were increased because the instances needed for 'Finset.smul_sum'
+-- and 'smul_smul' could not be synthetized.
+
 /-- Lagrange interpolation: given a finset `s : finset ι`, a nodal map  `v : ι → F` injective on
 `s` and a value function `r : ι → F`,  `interpolate s v r` is the unique
 polynomial of degree `< s.card` that takes value `r i` on `v i` for all `i` in `s`. -/
@@ -309,7 +315,8 @@ def interpolate (s : Finset ι) (v : ι → F) : @LinearMap _ _ _ _ (RingHom.id 
     have h : (fun x => C (f x) * Lagrange.basis s v x + C (g x) * Lagrange.basis s v x) = (fun x => C ((f + g) x) * Lagrange.basis s v x) := by
       simp_rw [← add_mul, ← C_add, Pi.add_apply]
     rw [h]
-  map_smul' c f := by simp_rw [Finset.smul_sum, C_mul', smul_smul, Pi.smul_apply, RingHom.id_apply, smul_eq_mul]
+  map_smul' c f := by
+    simp_rw [Finset.smul_sum, C_mul', smul_smul, Pi.smul_apply, RingHom.id_apply, smul_eq_mul]
 #align lagrange.interpolate Lagrange.interpolate
 
 @[simp]
