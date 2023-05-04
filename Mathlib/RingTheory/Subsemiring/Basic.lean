@@ -555,7 +555,6 @@ theorem mem_map {f : R →+* S} {s : Subsemiring R} {y : S} : y ∈ s.map f ↔ 
     -- Porting note: was `exact Set.mem_image_iff_bex`
     convert Set.mem_image_iff_bex (f := f) (s := s.carrier) (y := y) using 1
     simp
-
 #align subsemiring.mem_map Subsemiring.mem_map
 
 @[simp]
@@ -954,7 +953,7 @@ theorem mem_closure_iff_exists_list {R} [Semiring R] {s : Set R} {x} :
   · rintro ⟨L, HL1, HL2⟩
     exact HL2 ▸
       list_sum_mem fun r hr =>
-        let ⟨t, ht1, ht2⟩ := List.mem_map'.1 hr
+        let ⟨t, ht1, ht2⟩ := List.mem_map.1 hr
         ht2 ▸ list_prod_mem _ fun y hy => subset_closure <| HL1 t ht1 y hy
 #align subsemiring.mem_closure_iff_exists_list Subsemiring.mem_closure_iff_exists_list
 

@@ -158,7 +158,6 @@ def ofQuotientStabilizer (g : α ⧸ MulAction.stabilizer α x) : β :=
     calc
       g1 • x = g1 • (g1⁻¹ * g2) • x := congr_arg _ (leftRel_apply.mp H).symm
       _ = g2 • x := by rw [smul_smul, mul_inv_cancel_left]
-
 #align mul_action.of_quotient_stabilizer MulAction.ofQuotientStabilizer
 #align add_action.of_quotient_stabilizer AddAction.ofQuotientStabilizer
 

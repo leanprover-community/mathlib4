@@ -715,6 +715,40 @@ theorem Iic_inter_Ioc_of_le (h : a ≤ c) : Iic a ∩ Ioc b c = Ioc b a :=
   ext fun _ => ⟨fun H => ⟨H.2.1, H.1⟩, fun H => ⟨H.2, H.1, H.2.trans h⟩⟩
 #align set.Iic_inter_Ioc_of_le Set.Iic_inter_Ioc_of_le
 
+theorem not_mem_Icc_of_lt (ha : c < a) : c ∉ Icc a b := fun h => ha.not_le h.1
+#align set.not_mem_Icc_of_lt Set.not_mem_Icc_of_lt
+
+theorem not_mem_Icc_of_gt (hb : b < c) : c ∉ Icc a b := fun h => hb.not_le h.2
+#align set.not_mem_Icc_of_gt Set.not_mem_Icc_of_gt
+
+theorem not_mem_Ico_of_lt (ha : c < a) : c ∉ Ico a b := fun h => ha.not_le h.1
+#align set.not_mem_Ico_of_lt Set.not_mem_Ico_of_lt
+
+theorem not_mem_Ioc_of_gt (hb : b < c) : c ∉ Ioc a b := fun h => hb.not_le h.2
+#align set.not_mem_Ioc_of_gt Set.not_mem_Ioc_of_gt
+
+-- Porting note: `simp` can prove this
+-- @[simp]
+theorem not_mem_Ioi_self : a ∉ Ioi a := lt_irrefl _
+#align set.not_mem_Ioi_self Set.not_mem_Ioi_self
+
+-- Porting note: `simp` can prove this
+-- @[simp]
+theorem not_mem_Iio_self : b ∉ Iio b := lt_irrefl _
+#align set.not_mem_Iio_self Set.not_mem_Iio_self
+
+theorem not_mem_Ioc_of_le (ha : c ≤ a) : c ∉ Ioc a b := fun h => lt_irrefl _ <| h.1.trans_le ha
+#align set.not_mem_Ioc_of_le Set.not_mem_Ioc_of_le
+
+theorem not_mem_Ico_of_ge (hb : b ≤ c) : c ∉ Ico a b := fun h => lt_irrefl _ <| h.2.trans_le hb
+#align set.not_mem_Ico_of_ge Set.not_mem_Ico_of_ge
+
+theorem not_mem_Ioo_of_le (ha : c ≤ a) : c ∉ Ioo a b := fun h => lt_irrefl _ <| h.1.trans_le ha
+#align set.not_mem_Ioo_of_le Set.not_mem_Ioo_of_le
+
+theorem not_mem_Ioo_of_ge (hb : b ≤ c) : c ∉ Ioo a b := fun h => lt_irrefl _ <| h.2.trans_le hb
+#align set.not_mem_Ioo_of_ge Set.not_mem_Ioo_of_ge
+
 end Preorder
 
 section PartialOrder
@@ -1014,22 +1048,6 @@ theorem not_mem_Iic : c ∉ Iic b ↔ b < c :=
   not_le
 #align set.not_mem_Iic Set.not_mem_Iic
 
-theorem not_mem_Icc_of_lt (ha : c < a) : c ∉ Icc a b :=
-  not_mem_subset Icc_subset_Ici_self <| not_mem_Ici.mpr ha
-#align set.not_mem_Icc_of_lt Set.not_mem_Icc_of_lt
-
-theorem not_mem_Icc_of_gt (hb : b < c) : c ∉ Icc a b :=
-  not_mem_subset Icc_subset_Iic_self <| not_mem_Iic.mpr hb
-#align set.not_mem_Icc_of_gt Set.not_mem_Icc_of_gt
-
-theorem not_mem_Ico_of_lt (ha : c < a) : c ∉ Ico a b :=
-  not_mem_subset Ico_subset_Ici_self <| not_mem_Ici.mpr ha
-#align set.not_mem_Ico_of_lt Set.not_mem_Ico_of_lt
-
-theorem not_mem_Ioc_of_gt (hb : b < c) : c ∉ Ioc a b :=
-  not_mem_subset Ioc_subset_Iic_self <| not_mem_Iic.mpr hb
-#align set.not_mem_Ioc_of_gt Set.not_mem_Ioc_of_gt
-
 theorem not_mem_Ioi : c ∉ Ioi a ↔ c ≤ a :=
   not_lt
 #align set.not_mem_Ioi Set.not_mem_Ioi
@@ -1037,34 +1055,6 @@ theorem not_mem_Ioi : c ∉ Ioi a ↔ c ≤ a :=
 theorem not_mem_Iio : c ∉ Iio b ↔ b ≤ c :=
   not_lt
 #align set.not_mem_Iio Set.not_mem_Iio
-
--- Porting note: `simp` can prove this
--- @[simp]
-theorem not_mem_Ioi_self : a ∉ Ioi a :=
-  lt_irrefl _
-#align set.not_mem_Ioi_self Set.not_mem_Ioi_self
-
--- Porting note: `simp` can prove this
--- @[simp]
-theorem not_mem_Iio_self : b ∉ Iio b :=
-  lt_irrefl _
-#align set.not_mem_Iio_self Set.not_mem_Iio_self
-
-theorem not_mem_Ioc_of_le (ha : c ≤ a) : c ∉ Ioc a b :=
-  not_mem_subset Ioc_subset_Ioi_self <| not_mem_Ioi.mpr ha
-#align set.not_mem_Ioc_of_le Set.not_mem_Ioc_of_le
-
-theorem not_mem_Ico_of_ge (hb : b ≤ c) : c ∉ Ico a b :=
-  not_mem_subset Ico_subset_Iio_self <| not_mem_Iio.mpr hb
-#align set.not_mem_Ico_of_ge Set.not_mem_Ico_of_ge
-
-theorem not_mem_Ioo_of_le (ha : c ≤ a) : c ∉ Ioo a b :=
-  not_mem_subset Ioo_subset_Ioi_self <| not_mem_Ioi.mpr ha
-#align set.not_mem_Ioo_of_le Set.not_mem_Ioo_of_le
-
-theorem not_mem_Ioo_of_ge (hb : b ≤ c) : c ∉ Ioo a b :=
-  not_mem_subset Ioo_subset_Iio_self <| not_mem_Iio.mpr hb
-#align set.not_mem_Ioo_of_ge Set.not_mem_Ioo_of_ge
 
 @[simp]
 theorem compl_Iic : Iic aᶜ = Ioi a :=
@@ -1361,10 +1351,9 @@ theorem Icc_union_Ici' (h₁ : c ≤ b) : Icc a b ∪ Ici c = Ici (min a c) := b
 theorem Icc_union_Ici (h : c ≤ max a b) : Icc a b ∪ Ici c = Ici (min a c) := by
   cases' le_or_lt a b with hab hab <;> simp [hab] at h
   · exact Icc_union_Ici' h
-  · cases h
+  · cases' h with h h
     · simp [*]
-    · rename_i h
-      have hca : c ≤ a := h.trans hab.le
+    · have hca : c ≤ a := h.trans hab.le
       simp [*]
 #align set.Icc_union_Ici Set.Icc_union_Ici
 
@@ -1480,9 +1469,8 @@ theorem Iic_union_Icc' (h₁ : c ≤ b) : Iic b ∪ Icc c d = Iic (max b d) := b
 theorem Iic_union_Icc (h : min c d ≤ b) : Iic b ∪ Icc c d = Iic (max b d) := by
   cases' le_or_lt c d with hcd hcd <;> simp [hcd] at h
   · exact Iic_union_Icc' h
-  · cases h
-    · rename_i h
-      have hdb : d ≤ b := hcd.le.trans h
+  · cases' h with h h
+    · have hdb : d ≤ b := hcd.le.trans h
       simp [*]
     · simp [*]
 #align set.Iic_union_Icc Set.Iic_union_Icc
@@ -1877,7 +1865,6 @@ theorem Ioc_union_Ioc_union_Ioc_cycle :
   --     le_max_of_le_left, le_max_of_le_right, le_refl]
   simp [min_le_of_left_le, min_le_of_right_le, le_max_of_le_left, le_max_of_le_right, le_refl,
     min_assoc, max_comm]
-
 #align set.Ioc_union_Ioc_union_Ioc_cycle Set.Ioc_union_Ioc_union_Ioc_cycle
 
 end LinearOrder

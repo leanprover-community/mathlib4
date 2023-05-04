@@ -88,16 +88,16 @@ infixl:65 " -ᵥ " => VSub.vsub
 infixr:73 " • " => HSMul.hSMul
 
 attribute [to_additive existing] Mul Div HMul instHMul HDiv instHDiv HSMul
-attribute [to_additive (reorder := 1) SMul] Pow
-attribute [to_additive (reorder := 1)] HPow
-attribute [to_additive existing (reorder := 1 5) hSMul] HPow.hPow
-attribute [to_additive existing (reorder := 1 4) smul] Pow.pow
+attribute [to_additive (reorder := 1 2) SMul] Pow
+attribute [to_additive (reorder := 1 2)] HPow
+attribute [to_additive existing (reorder := 1 2, 5 6) hSMul] HPow.hPow
+attribute [to_additive existing (reorder := 1 2, 4 5) smul] Pow.pow
 
 @[to_additive (attr := default_instance)]
 instance instHSMul [SMul α β] : HSMul α β β where
   hSMul := SMul.smul
 
-attribute [to_additive existing (reorder := 1)] instHPow
+attribute [to_additive existing (reorder := 1 2)] instHPow
 
 universe u
 

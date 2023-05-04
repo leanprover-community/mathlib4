@@ -52,8 +52,8 @@ theorem mem_antidiagonal {s : Multiset α} {x : Multiset α × Multiset α} :
     dsimp only [quot_mk_to_coe, antidiagonal_coe]
     refine' ⟨fun h => revzip_powersetAux h, fun h ↦ _⟩
     haveI := Classical.decEq α
-    simp only [revzip_powersetAux_lemma l revzip_powersetAux, h.symm, ge_iff_le, mem_coe, mem_map',
-      mem_powersetAux]
+    simp only [revzip_powersetAux_lemma l revzip_powersetAux, h.symm, ge_iff_le, mem_coe,
+      List.mem_map, mem_powersetAux]
     cases' x with x₁ x₂
     exact ⟨x₁, le_add_right _ _, by rw [add_tsub_cancel_left x₁ x₂]⟩
 #align multiset.mem_antidiagonal Multiset.mem_antidiagonal

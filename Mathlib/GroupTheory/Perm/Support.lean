@@ -117,6 +117,13 @@ theorem Disjoint.mul_right (H1 : Disjoint f g) (H2 : Disjoint f h) : Disjoint f 
   exact H1.symm.mul_left H2.symm
 #align equiv.perm.disjoint.mul_right Equiv.Perm.Disjoint.mul_right
 
+-- porting note: todo: make it `@[simp]`
+theorem disjoint_conj (h : Perm α) : Disjoint (h * f * h⁻¹) (h * g * h⁻¹) ↔ Disjoint f g :=
+  (h⁻¹).forall_congr fun {_} ↦ by simp only [mul_apply, eq_inv_iff_eq]
+
+theorem Disjoint.conj (H : Disjoint f g) (h : Perm α) : Disjoint (h * f * h⁻¹) (h * g * h⁻¹) :=
+  (disjoint_conj h).2 H
+
 theorem disjoint_prod_right (l : List (Perm α)) (h : ∀ g ∈ l, Disjoint f g) : Disjoint f l.prod :=
   by
   induction' l with g l ih
@@ -346,8 +353,7 @@ theorem support_pow_le (σ : Perm α) (n : ℕ) : (σ ^ n).support ≤ σ.suppor
 
 @[simp]
 theorem support_inv (σ : Perm α) : support σ⁻¹ = σ.support := by
-  simp_rw [Finset.ext_iff, mem_support, not_iff_not, inv_eq_iff_eq.trans eq_comm, iff_self_iff,
-    imp_true_iff]
+  simp_rw [Finset.ext_iff, mem_support, not_iff_not, inv_eq_iff_eq.trans eq_comm, imp_true_iff]
 #align equiv.perm.support_inv Equiv.Perm.support_inv
 
 -- @[simp] -- Porting note: simp can prove this
@@ -463,7 +469,6 @@ theorem support_swap_mul_swap {x y z : α} (h : List.Nodup [x, y, z]) :
     rintro (rfl | rfl | rfl | _) <;>
       simp [swap_apply_of_ne_of_ne, h.left.left, h.left.left.symm, h.left.right.symm,
         h.left.right.left.symm, h.right.left.symm]
-
 #align equiv.perm.support_swap_mul_swap Equiv.Perm.support_swap_mul_swap
 
 theorem support_swap_mul_ge_support_diff (f : Perm α) (x y : α) :

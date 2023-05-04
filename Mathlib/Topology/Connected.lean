@@ -680,7 +680,7 @@ theorem connectedComponentIn_eq {x y : α} {F : Set α} (h : y ∈ connectedComp
   have hx : x ∈ F := connectedComponentIn_nonempty_iff.mp ⟨y, h⟩
   simp_rw [connectedComponentIn_eq_image hx] at h⊢
   obtain ⟨⟨y, hy⟩, h2y, rfl⟩ := h
-  simp_rw [Subtype.coe_mk, connectedComponentIn_eq_image hy, connectedComponent_eq h2y]
+  simp_rw [connectedComponentIn_eq_image hy, connectedComponent_eq h2y]
 #align connected_component_in_eq connectedComponentIn_eq
 
 theorem connectedComponentIn_univ (x : α) : connectedComponentIn univ x = connectedComponent x :=
@@ -744,7 +744,7 @@ class ConnectedSpace (α : Type u) [TopologicalSpace α] extends PreconnectedSpa
   toNonempty : Nonempty α
 #align connected_space ConnectedSpace
 
-attribute [instance] ConnectedSpace.toNonempty
+attribute [instance 50] ConnectedSpace.toNonempty  -- see Note [lower instance priority]
 
 -- see Note [lower instance priority]
 theorem isConnected_univ [ConnectedSpace α] : IsConnected (univ : Set α) :=

@@ -9,7 +9,7 @@ Ported by: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.CategoryTheory.Functor.Basic
+import Mathlib.Tactic.Reassoc
 
 /-!
 # Natural transformations
@@ -65,7 +65,7 @@ Without this, we would have `NatTrans.app η X`.
 -/
 @[app_unexpander NatTrans.app] def
   unexpandNatTransApp : Lean.PrettyPrinter.Unexpander
-  | `($_ $η $X)  => set_option hygiene false in `($(η).app $X)
+  | `($_ $η $(X)*)  => set_option hygiene false in `($(η).app $(X)*)
   | _            => throw ()
 
 -- TODO Perhaps we should just turn on `ext` in aesop?
