@@ -28,7 +28,7 @@ This file introduces the Scott topology on a preorder.
 - `ScottTopology.isClosed_isLower` - Scott closed sets are lower.
 - `ScottTopology.continuous_monotone` - functions continuous wrt the Scott topology are
   monotone.
-- `ScottTopology.continuous_iff_scottContinuous` - a function is Scott continuous (preserves least
+- `ScottTopology.scottContinuous_iff_continuous` - a function is Scott continuous (preserves least
   upper bounds of directed sets) if and only if it is continuous wrt the Scott topology.
 - `ScottTopology.T0space` - the Scott topology on a partial order is T₀.
 
