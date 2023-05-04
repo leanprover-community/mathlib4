@@ -168,7 +168,7 @@ partial def mkProdPrf (α : Q(Type u)) (sα : Q(Field $α)) (v : ℕ) (t : Tree 
 def inferTypeQ' (e : Expr) : MetaM ((u : Level) × (α : Q(Type $u)) × Q($α)) := do
   let α ← inferType e
   let .sort u ← whnf (← inferType α) | throwError "not a type{indentExpr α}"
-  let some u' := u.dec | throwError "is a Prop, not a Type"
+  let some u' := u.dec | throwError "is a Prop, not a Type{indentExpr e}"
   pure ⟨u', α, e⟩
 
 /--
