@@ -8,7 +8,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.MeasureTheory.Measure.AeDisjoint
+import Mathlib.MeasureTheory.Measure.AeDisjoint
 
 /-!
 # Null measurable sets and complete measures
@@ -82,8 +82,7 @@ instance [h : Inhabited α] : Inhabited (NullMeasurableSpace α μ) :=
 instance [h : Subsingleton α] : Subsingleton (NullMeasurableSpace α μ) :=
   h
 
-instance : MeasurableSpace (NullMeasurableSpace α μ)
-    where
+instance : MeasurableSpace (NullMeasurableSpace α μ) where
   MeasurableSet' s := ∃ t, MeasurableSet t ∧ s =ᵐ[μ] t
   measurable_set_empty := ⟨∅, MeasurableSet.empty, ae_eq_refl _⟩
   measurable_set_compl := fun s ⟨t, htm, hts⟩ => ⟨tᶜ, htm.compl, hts.compl⟩
@@ -236,8 +235,7 @@ protected theorem insert [MeasurableSingletonClass (NullMeasurableSpace α μ)]
 
 /- ./././Mathport/Syntax/Translate/Basic.lean:635:2: warning: expanding binder collection (t «expr ⊇ » s) -/
 theorem exists_measurable_superset_ae_eq (h : NullMeasurableSet s μ) :
-    ∃ (t : _)(_ : t ⊇ s), MeasurableSet t ∧ t =ᵐ[μ] s :=
-  by
+    ∃ (t : _)(_ : t ⊇ s), MeasurableSet t ∧ t =ᵐ[μ] s := by
   rcases h with ⟨t, htm, hst⟩
   refine' ⟨t ∪ to_measurable μ (s \ t), _, htm.union (measurable_set_to_measurable _ _), _⟩
   · exact diff_subset_iff.1 (subset_to_measurable _ _)
@@ -245,8 +243,7 @@ theorem exists_measurable_superset_ae_eq (h : NullMeasurableSet s μ) :
     simpa only [union_empty] using hst.symm.union this
 #align measure_theory.null_measurable_set.exists_measurable_superset_ae_eq MeasureTheory.NullMeasurableSet.exists_measurable_superset_ae_eq
 
-theorem toMeasurable_ae_eq (h : NullMeasurableSet s μ) : toMeasurable μ s =ᵐ[μ] s :=
-  by
+theorem toMeasurable_ae_eq (h : NullMeasurableSet s μ) : toMeasurable μ s =ᵐ[μ] s := by
   rw [to_measurable, dif_pos]
   exact h.exists_measurable_superset_ae_eq.some_spec.snd.2
 #align measure_theory.null_measurable_set.to_measurable_ae_eq MeasureTheory.NullMeasurableSet.toMeasurable_ae_eq
@@ -271,8 +268,7 @@ theorem exists_subordinate_pairwise_disjoint [Countable ι] {s : ι → Set α}
     (h : ∀ i, NullMeasurableSet (s i) μ) (hd : Pairwise (AeDisjoint μ on s)) :
     ∃ t : ι → Set α,
       (∀ i, t i ⊆ s i) ∧
-        (∀ i, s i =ᵐ[μ] t i) ∧ (∀ i, MeasurableSet (t i)) ∧ Pairwise (Disjoint on t) :=
-  by
+        (∀ i, s i =ᵐ[μ] t i) ∧ (∀ i, MeasurableSet (t i)) ∧ Pairwise (Disjoint on t) := by
   choose t ht_sub htm ht_eq using fun i => (h i).exists_measurable_subset_ae_eq
   rcases exists_null_pairwise_disjoint_diff hd with ⟨u, hum, hu₀, hud⟩
   exact
@@ -293,8 +289,7 @@ theorem measure_unionᵢ {m0 : MeasurableSpace α} {μ : Measure α} [Countable 
 #align measure_theory.measure_Union MeasureTheory.measure_unionᵢ
 
 theorem measure_Union₀ [Countable ι] {f : ι → Set α} (hd : Pairwise (AeDisjoint μ on f))
-    (h : ∀ i, NullMeasurableSet (f i) μ) : μ (⋃ i, f i) = ∑' i, μ (f i) :=
-  by
+    (h : ∀ i, NullMeasurableSet (f i) μ) : μ (⋃ i, f i) = ∑' i, μ (f i) := by
   rcases exists_subordinate_pairwise_disjoint h hd with ⟨t, ht_sub, ht_eq, htm, htd⟩
   calc
     μ (⋃ i, f i) = μ (⋃ i, t i) := measure_congr (EventuallyEq.countable_unionᵢ ht_eq)
@@ -304,8 +299,7 @@ theorem measure_Union₀ [Countable ι] {f : ι → Set α} (hd : Pairwise (AeDi
 #align measure_theory.measure_Union₀ MeasureTheory.measure_Union₀
 
 theorem measure_union₀_aux (hs : NullMeasurableSet s μ) (ht : NullMeasurableSet t μ)
-    (hd : AeDisjoint μ s t) : μ (s ∪ t) = μ s + μ t :=
-  by
+    (hd : AeDisjoint μ s t) : μ (s ∪ t) = μ s + μ t := by
   rw [union_eq_Union, measure_Union₀, tsum_fintype, Fintype.sum_bool, cond, cond]
   exacts[(pairwise_on_bool ae_disjoint.symmetric).2 hd, fun b => Bool.casesOn b ht hs]
 #align measure_theory.measure_union₀_aux MeasureTheory.measure_union₀_aux
@@ -497,8 +491,7 @@ namespace Measure
 
 /-- Given a measure we can complete it to a (complete) measure on all null measurable sets. -/
 def completion {_ : MeasurableSpace α} (μ : Measure α) :
-    @MeasureTheory.Measure (NullMeasurableSpace α μ) _
-    where
+    @MeasureTheory.Measure (NullMeasurableSpace α μ) _ where
   toOuterMeasure := μ.toOuterMeasure
   m_unionᵢ s hs hd := measure_Union₀ (hd.mono fun i j h => h.AeDisjoint) hs
   trimmed := by
