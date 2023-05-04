@@ -27,6 +27,9 @@ initialize unavailableModels : IO.Ref (HashSet Model) ← IO.mkRef {}
 def disableModel (m : Model) : IO Unit := unavailableModels.modify (·.insert m)
 
 structure ChatConfig where
+  /-- Model temperature.
+  0 is close to deterministic, selecting the most probably token,
+  while 1 samples from the predicted probability density on tokens. -/
   temperature : Float := 0.7
   /-- Specify a list of models to use.
   Within each file, if one model fails with an access denied message,

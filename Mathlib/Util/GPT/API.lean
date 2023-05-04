@@ -31,8 +31,10 @@ def runCmd (cmd : String) (args : Array String) (throwFailure := true) (input : 
   else
     IO.ofExcept stdout.get
 
+namespace GPT
+
 /-- Retrieve the API key from the OPENAI_API_KEY environment variable. -/
-def APIKey : IO String := do match (← IO.getEnv "OPENAI_API_KEY") with
+def OPENAI_API_KEY : IO String := do match (← IO.getEnv "OPENAI_API_KEY") with
   | none => throw $ IO.userError "No API key found in environment variable OPENAI_API_KEY"
   | some k => pure k
 
@@ -41,6 +43,6 @@ def chat (msg : String) (trace : Bool := false) : IO String := do
   if trace then IO.println msg
   let r ← runCmd "curl"
       #["https://api.openai.com/v1/chat/completions", "-H", "Content-Type: application/json",
-        "-H", "Authorization: Bearer " ++ (← APIKey), "--data-binary", "@-"] false msg
+        "-H", "Authorization: Bearer " ++ (← OPENAI_API_KEY), "--data-binary", "@-"] false msg
   if trace then IO.print r
   return r
