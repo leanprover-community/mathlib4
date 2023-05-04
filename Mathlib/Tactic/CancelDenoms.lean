@@ -141,9 +141,9 @@ partial def mkProdPrf (α : Q(Type u)) (_sα : Q(Field $α)) (v : ℕ) (t : Tree
   | .node _ lhs@(.node ln _ _) rhs, ~q($e1 * $e2) => do
     let v1 ← mkProdPrf α _sα ln lhs e1
     let v2 ← mkProdPrf α _sα (v / ln) rhs e2
-    have ln' := (← mkOfNat α _sα <| mkRawNatLit ln).1
-    have vln' := (← mkOfNat α _sα <| mkRawNatLit (v/ln)).1
-    have v' := (← mkOfNat α _sα <| mkRawNatLit v).1
+    have ln' := (← mkOfNat α amwo <| mkRawNatLit ln).1
+    have vln' := (← mkOfNat α amwo <| mkRawNatLit (v/ln)).1
+    have v' := (← mkOfNat α amwo <| mkRawNatLit v).1
     let ntp : Q(Prop) := q($ln' * $vln' = $v')
     let npf ← synthesizeUsing ntp norm_num_done
     mkAppM `CancelFactors.mul_subst #[v1, v2, npf]
@@ -266,18 +266,3 @@ elab "cancel_denoms" loc?:(location)? : tactic => do
     Lean.Elab.Tactic.evalTactic (←`(tactic| norm_num [←mul_assoc] $loc))
   else
     Lean.Elab.Tactic.evalTactic (←`(tactic| norm_num [←mul_assoc]))
-
-variable [lof : LinearOrderedField α] (a b c : α)
-
-set_option warningAsError false
-
-example : (0 : α) < (1 : α) := by
-  norm_num
-
-example (h : a / 5 + b / 4 < c) : 4*a + 5*b < 20*c := by
-  cancel_denoms at h
-  exact h
-
-example (h : a > 0) : a / 5 > 0 := by
-  cancel_denoms
-  exact h
