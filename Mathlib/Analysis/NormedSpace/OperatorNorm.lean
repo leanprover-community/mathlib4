@@ -403,11 +403,12 @@ protected theorem tmp_topology_eq :
       ((@Metric.nhds_basis_closedBall _ ContinuousLinearMap.tmpPseudoMetricSpace 0).ext
         (ContinuousLinearMap.hasBasis_nhds_zero_of_basis Metric.nhds_basis_closedBall) _ _)
   · rcases NormedField.exists_norm_lt_one 𝕜 with ⟨c, hc₀, hc₁⟩
-    refine' fun ε hε => ⟨⟨closedBall 0 (1 / ‖c‖), ε⟩,
-      ⟨NormedSpace.isVonNBounded_closedBall _ _ _, hε⟩, fun f hf => _⟩
-    change ∀ x, _ at hf
+    intro ε hε
+    refine' ⟨⟨closedBall 0 (1 / ‖c‖), ε⟩, ⟨⟨_, hε⟩, _⟩⟩
+    · exact NormedSpace.isVonNBounded_closedBall _ _ _
+    intro f (hf : ∀ x, _)
     simp_rw [mem_closedBall_zero_iff] at hf
-    rw [@mem_closedBall_zero_iff _ SeminormedAddCommGroup.toSeminormedAddGroup]
+    convert (@mem_closedBall_zero_iff _ (_) f ε).2 _ -- Porting note: needed `convert`
     refine' op_norm_le_of_shell' (div_pos one_pos hc₀) hε.le hc₁ fun x hx₁ hxc => _
     rw [div_mul_cancel 1 hc₀.ne.symm] at hx₁
     exact (hf x hxc.le).trans (le_mul_of_one_le_right hε.le hx₁)
