@@ -118,8 +118,8 @@ partial def findCancelFactor (e : Expr) : ℕ × Tree ℕ :=
   | (`Neg.neg, #[_, _, e]) => findCancelFactor e
   | _ => (1, .node 1 .nil .nil)
 
-def norm_num_done : Elab.Tactic.TacticM Unit := do
-  Lean.Elab.Tactic.evalTactic (←`(tactic| norm_num; done))
+def synthesizeUsingNormNum (type : Expr) : MetaM Expr := do
+  synthesizeUsingTactic' type (← `(tactic| norm_num))
 
 /--
 `mkProdPrf n tr e` produces a proof of `n*e = e'`, where numeric denominators have been
@@ -144,7 +144,7 @@ partial def mkProdPrf (α : Q(Type u)) (_sα : Q(Field $α)) (v : ℕ) (t : Tree
     have vln' := (← mkOfNat α amwo <| mkRawNatLit (v/ln)).1
     have v' := (← mkOfNat α amwo <| mkRawNatLit v).1
     let ntp : Q(Prop) := q($ln' * $vln' = $v')
-    let npf ← synthesizeUsing ntp norm_num_done
+    let npf ← synthesizeUsingNormNum ntp
     mkAppM `CancelFactors.mul_subst #[v1, v2, npf]
   | .node n lhs (.node rn _ _), ~q($e1 / $e2) => do
     let v1 ← mkProdPrf α _sα (v / rn) lhs e1
@@ -153,9 +153,9 @@ partial def mkProdPrf (α : Q(Type u)) (_sα : Q(Field $α)) (v : ℕ) (t : Tree
     have n' := (← mkOfNat α amwo <| mkRawNatLit <| n).1
     have v' := (← mkOfNat α amwo <| mkRawNatLit <| v).1
     let ntp : Q(Prop) := q($rn' / $e2 = 1)
-    let npf ← synthesizeUsing ntp norm_num_done
+    let npf ← synthesizeUsingNormNum ntp
     let ntp2 : Q(Prop) := q($vrn' * $n' = $v')
-    let npf2 ← synthesizeUsing ntp2 norm_num_done
+    let npf2 ← synthesizeUsingNormNum ntp2
     mkAppM `CancelFactors.div_subst #[v1, npf, npf2]
   | t, ~q(-$e) => do
     let v ← mkProdPrf α _sα v t e
@@ -213,9 +213,9 @@ def cancelDenominatorsInType (h : Expr) : MetaM (Expr × Expr) := do
   let al_pos : Q(Prop) := q(0 < $al)
   let ar_pos : Q(Prop) := q(0 < $ar)
   let gcd_pos : Q(Prop) := q(0 < $gcd)
-  let al_pos ← synthesizeUsing al_pos norm_num_done
-  let ar_pos ← synthesizeUsing ar_pos norm_num_done
-  let gcd_pos ← synthesizeUsing gcd_pos norm_num_done
+  let al_pos ← synthesizeUsingNormNum al_pos
+  let ar_pos ← synthesizeUsingNormNum ar_pos
+  let gcd_pos ← synthesizeUsingNormNum gcd_pos
   let pf ← mkAppM lem #[lhs_p, rhs_p, al_pos, ar_pos, gcd_pos]
   let pf_tp ← inferType pf
   return ((findCompLemma pf_tp).elim default (Prod.fst ∘ Prod.snd), pf)
