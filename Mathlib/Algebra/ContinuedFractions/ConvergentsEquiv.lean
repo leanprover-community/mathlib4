@@ -139,7 +139,6 @@ theorem squashSeq_succ_n_tail_eq_squashSeq_tail_n :
     (squashSeq s (n + 1)).tail = squashSeq s.tail n := by
   cases' s_succ_succ_nth_eq : s.get? (n + 2) with gp_succ_succ_n
   case none =>
-    have : squashSeq s (n + 1) = s := squashSeq_eq_self_of_terminated s_succ_succ_nth_eq
     cases s_succ_nth_eq : s.get? (n + 1) <;>
       simp only [squashSeq, Stream'.Seq.get?_tail, s_succ_nth_eq, s_succ_succ_nth_eq]
   case some =>
@@ -148,8 +147,7 @@ theorem squashSeq_succ_n_tail_eq_squashSeq_tail_n :
     -- apply extensionality with `m` and continue by cases `m = n`.
     ext1 m
     cases' Decidable.em (m = n) with m_eq_n m_ne_n
-    · have : s.tail.get? n = some gp_succ_n := (s.get?_tail n).trans s_succ_nth_eq
-      simp [*, squashSeq]
+    · simp [*, squashSeq]
     · have : s.tail.get? m = s.get? (m + 1) := s.get?_tail m
       cases s_succ_mth_eq : s.get? (m + 1)
       all_goals have _ := this.trans s_succ_mth_eq
