@@ -163,7 +163,7 @@ match t, e with
 | _, _ => do
   let ⟨v, _⟩ ← mkOfNat α _sα <| mkRawNatLit v
   let e' ← mkAppM `Mul.mul #[v, e]
-  mkAppM `eq.refl #[e']
+  mkAppM `Eq.refl #[e']
 
 /--
 Given `e`, a term with rational division, produces a natural number `n` and a proof of `n*e = e'`,
@@ -175,8 +175,10 @@ let tp : Q(Type) ← inferType e
 let stp ← synthInstance q(Field $tp)
 try
   return (n, ← mkProdPrf tp stp n t e)
-catch _ => throwError
-  "CancelFactors.derive failed to normalize {e}. Are you sure this is well-behaved division?"
+catch E => do
+  dbg_trace (← E.toMessageData.toString)
+  throwError
+    "CancelFactors.derive failed to normalize {e}. Are you sure this is well-behaved division?"
 
 /--
 `findCompLemma e` arranges `e` in the form `lhs R rhs`, where `R ∈ {<, ≤, =}`, and returns
@@ -260,3 +262,13 @@ elab "cancel_denoms" loc:(location)? : tactic => do
   let loc := (loc.map expandLocation).getD (.targets #[] true)
   cancelDenominators loc
   Lean.Elab.Tactic.evalTactic (←`(tactic| norm_num [←mul_assoc]))
+
+variable [LinearOrderedField α] (a b c : α)
+
+example (h : a / 5 + b / 4 < c) : 4*a + 5*b < 20*c := by
+  cancel_denoms at h
+  exact h
+
+example (h : a > 0) : a / 5 > 0 := by
+  cancel_denoms
+  exact h
