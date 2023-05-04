@@ -54,7 +54,8 @@ theorem convergents'Aux_stable_step_of_terminated {s : Stream'.Seq <| Pair K}
     cases' s_head_eq : s.head with gp_head
     case none => simp only [convergents'Aux, s_head_eq]
     case some =>
-      have : s.tail.TerminatedAt n := by simp only [Stream'.Seq.TerminatedAt, s.get?_tail, terminated_at_n]
+      have : s.tail.TerminatedAt n := by
+        simp only [Stream'.Seq.TerminatedAt, s.get?_tail, terminated_at_n]
       have := IH this
       rw [convergents'Aux] at this
       simp [this, Nat.add_eq, add_zero, convergents'Aux, s_head_eq]
