@@ -300,15 +300,13 @@ variable {ι : Type _} [DecidableEq ι] {s t : Finset ι} {i j : ι} {v : ι →
 set_option synthInstance.etaExperiment true in
 set_option maxHeartbeats 300000 in
 set_option synthInstance.maxHeartbeats 60000 in
--- Porting note: The heartbeats were increased because the instances needed for 'Finset.smul_sum'
--- and 'smul_smul' could not be synthetized.
+-- Porting note: The heartbeats were increased to find the instances needed for 'Finset.smul_sum'
+-- and 'smul_smul' on line 322.
 
-/-- Lagrange interpolation: given a finset `s : finset ι`, a nodal map  `v : ι → F` injective on
+/-- Lagrange interpolation: given a finset `s : Finset ι`, a nodal map  `v : ι → F` injective on
 `s` and a value function `r : ι → F`,  `interpolate s v r` is the unique
 polynomial of degree `< s.card` that takes value `r i` on `v i` for all `i` in `s`. -/
 @[simps]
--- Porting note: The arguments for 'LinearMap' on line 305 had to be given explicitly because
--- the instance 'Module F F[X]' could not be synthetized
 def interpolate (s : Finset ι) (v : ι → F) : @LinearMap _ _ _ _ (RingHom.id F) (ι → F) F[X] _ _ _
   (Polynomial.module) where
   toFun r := ∑ i in s, C (r i) * Lagrange.basis s v i
@@ -321,16 +319,20 @@ def interpolate (s : Finset ι) (v : ι → F) : @LinearMap _ _ _ _ (RingHom.id 
   map_smul' c f := by
     simp_rw [Finset.smul_sum, C_mul', smul_smul, Pi.smul_apply, RingHom.id_apply, smul_eq_mul]
 #align lagrange.interpolate Lagrange.interpolate
+-- Porting note: The arguments for 'LinearMap' on line 310 had to be given explicitly because
+-- the instance 'Module F F[X]' could not be synthetized
 
 set_option synthInstance.etaExperiment true in
 
-@[simp]
+-- Porting note: There was originally '@[simp]' on this line but it was removed because
+-- 'simp' could prove 'interpolate_empty'
 theorem interpolate_empty : interpolate ∅ v r = 0 := by rw [interpolate_apply, sum_empty]
 #align lagrange.interpolate_empty Lagrange.interpolate_empty
 
 set_option synthInstance.etaExperiment true in
 
-@[simp]
+-- Porting note: There was originally '@[simp]' on this line but it was removed because
+-- 'simp' could prove 'interpolate_singleton'
 theorem interpolate_singleton : interpolate {i} v r = C (r i) := by
   rw [interpolate_apply, sum_singleton, basis_singleton, mul_one]
 #align lagrange.interpolate_singleton Lagrange.interpolate_singleton
@@ -367,13 +369,14 @@ theorem degree_interpolate_le (hvs : Set.InjOn v s) : (interpolate s v r).degree
 
 set_option synthInstance.etaExperiment true in
 
+-- Porting note: On line 379, the pattern in 'WithBot.coe_lt_coe' could not be found
+-- with 'rw' but it can with 'apply'
 theorem degree_interpolate_lt (hvs : Set.InjOn v s) : (interpolate s v r).degree < s.card := by
   rcases eq_empty_or_nonempty s with (rfl | h)
   · rw [interpolate_empty, degree_zero, card_empty]
     exact WithBot.bot_lt_coe _
   · refine' lt_of_le_of_lt (degree_interpolate_le _ hvs) _
-    have h₂ := (@WithBot.coe_lt_coe _ (card s - 1) (card s) _).2
-    apply h₂
+    apply (@WithBot.coe_lt_coe _ (card s - 1) (card s) _).2
     exact Nat.sub_lt (Nonempty.card_pos h) zero_lt_one
 #align lagrange.degree_interpolate_lt Lagrange.degree_interpolate_lt
 
@@ -425,7 +428,7 @@ theorem eq_interpolate_of_eval_eq {f : F[X]} (hvs : Set.InjOn v s) (degree_f_lt 
 set_option synthInstance.etaExperiment true in
 
 /-- This is the characteristic property of the interpolation: the interpolation is the
-unique polynomial of `degree < fintype.card ι` which takes the value of the `r i` on the `v i`.
+unique polynomial of `degree < Fintype.card ι` which takes the value of the `r i` on the `v i`.
 -/
 theorem eq_interpolate_iff {f : F[X]} (hvs : Set.InjOn v s) :
     (f.degree < s.card ∧ ∀ i ∈ s, eval (v i) f = r i) ↔ f = interpolate s v r := by
@@ -438,8 +441,8 @@ theorem eq_interpolate_iff {f : F[X]} (hvs : Set.InjOn v s) :
 set_option synthInstance.etaExperiment true in
 
 /-- Lagrange interpolation induces isomorphism between functions from `s`
-and polynomials of degree less than `fintype.card ι`.-/
-def funEquivDegreeLt (hvs : Set.InjOn v s) : degreeLT F s.card ≃ₗ[F] s → F where
+and polynomials of degree less than `Fintype.card ι`.-/
+def funEquivDegreeLT (hvs : Set.InjOn v s) : degreeLT F s.card ≃ₗ[F] s → F where
   toFun f i := f.1.eval (v i)
   map_add' f g := funext fun v => eval_add
   map_smul' c f := funext <| by simp
@@ -457,11 +460,11 @@ def funEquivDegreeLt (hvs : Set.InjOn v s) : degreeLT F s.card ≃ₗ[F] s → F
     ext ⟨i, hi⟩
     simp only [Subtype.coe_mk, eval_interpolate_at_node _ hvs hi]
     exact dif_pos hi
-#align lagrange.fun_equiv_degree_lt Lagrange.funEquivDegreeLt
+#align lagrange.fun_equiv_degree_lt Lagrange.funEquivDegreeLT
 
 set_option synthInstance.etaExperiment true in
 
--- Porting note: On lines 468 and 478, the patterns in 'Finset.sup_lt_iff' and
+-- Porting note: On lines 475 and 486, the patterns in 'Finset.sup_lt_iff' and
 -- 'WithBot.add_lt_add_iff_right' could not be found with 'rw' or 'simp_rw' but they can
 -- with 'apply'
 theorem interpolate_eq_sum_interpolate_insert_sdiff (hvt : Set.InjOn v t) (hs : s.Nonempty)
@@ -469,10 +472,9 @@ theorem interpolate_eq_sum_interpolate_insert_sdiff (hvt : Set.InjOn v t) (hs : 
     interpolate t v r = ∑ i in s, interpolate (insert i (t \ s)) v r * Lagrange.basis s v i := by
   symm
   refine' eq_interpolate_of_eval_eq _ hvt (lt_of_le_of_lt (degree_sum_le _ _) _) fun i hi => _
-  · have h := (@Finset.sup_lt_iff _ _ _ _ s
+  · apply (@Finset.sup_lt_iff _ _ _ _ s
     (fun b ↦ degree ((interpolate (insert b (t \ s)) v) r * Lagrange.basis s v b)) _
     (WithBot.bot_lt_coe t.card)).2
-    apply h
     simp_rw [degree_mul]
     intro i hi
     have hs : 1 ≤ s.card := Nonempty.card_pos ⟨_, hi⟩
@@ -481,9 +483,8 @@ theorem interpolate_eq_sum_interpolate_insert_sdiff (hvt : Set.InjOn v t) (hs : 
       rw [add_assoc, tsub_add_tsub_cancel hst' hs, ← add_tsub_assoc_of_le (hs.trans hst'),
         Nat.succ_add_sub_one, zero_add]
     rw [degree_basis (Set.InjOn.mono hst hvt) hi, H, WithBot.coe_add]
-    have h := (@WithBot.add_lt_add_iff_right _ _ _ (degree ((interpolate (insert i (t \ s)) v) r))
+    apply (@WithBot.add_lt_add_iff_right _ _ _ (degree ((interpolate (insert i (t \ s)) v) r))
     (↑(1 + (card t - card s))) _ _ _ (@WithBot.coe_ne_bot _ (s.card - 1))).2
-    apply h
     convert degree_interpolate_lt _
         (hvt.mono (coe_subset.mpr (insert_subset.mpr ⟨hst hi, sdiff_subset _ _⟩)))
     rw [card_insert_of_not_mem (not_mem_sdiff_of_mem_right hi), card_sdiff hst, add_comm]
