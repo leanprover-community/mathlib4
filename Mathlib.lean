@@ -2074,6 +2074,9 @@ import Mathlib.Util.AddRelatedDecl
 import Mathlib.Util.AssertNoSorry
 import Mathlib.Util.AtomM
 import Mathlib.Util.Export
+import Mathlib.Util.GPT.API
+import Mathlib.Util.GPT.Chat
+import Mathlib.Util.GPT.Json
 import Mathlib.Util.IncludeStr
 import Mathlib.Util.LongNames
 import Mathlib.Util.MemoFix
