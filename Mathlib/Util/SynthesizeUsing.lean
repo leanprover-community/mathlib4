@@ -38,7 +38,12 @@ def synthesizeUsing' (type : Expr) (tac : TacticM Unit) : MetaM Expr := do
 
 /--
 `synthesizeUsing type tacticSyntax` synthesizes an element of type `type` by evaluating the
-tactic with the given syntax.
+given tactic syntax.
+
+Example:
+```lean
+let (gs, e) ← synthesizeUsing ty (← `(tactic| congr!))
+```
 
 The tactic `tac` is allowed to leave goals open, and these remain as metavariables in the
 returned expression.
@@ -48,7 +53,12 @@ def synthesizeUsingTactic (type : Expr) (tac : Syntax) : MetaM (List MVarId × E
 
 /--
 `synthesizeUsing' type tacticSyntax` synthesizes an element of type `type` by evaluating the
-tactic with the given syntax.
+given tactic syntax.
+
+Example:
+```lean
+let e ← synthesizeUsing ty (← `(tactic| norm_num))
+```
 
 The tactic must solve for all goals, in contrast to `synthesizeUsingTactic`.
 -/
