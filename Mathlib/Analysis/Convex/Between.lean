@@ -892,7 +892,7 @@ theorem wbtw_iff_sameRay_vsub {x y z : P} : Wbtw R x y z ↔ SameRay R (y -ᵥ x
     rw [eq_comm]
     simp only [lineMap_apply, h', vadd_vsub_assoc, smul_smul, ← add_smul, eq_vadd_iff_vsub_eq,
       smul_add]
-    convert(one_smul _ _).symm
+    convert (one_smul R (y -ᵥ x)).symm
     field_simp [(add_pos hr₁ hr₂).ne', hr₂.ne']
     ring
 #align wbtw_iff_same_ray_vsub wbtw_iff_sameRay_vsub
@@ -913,13 +913,13 @@ theorem sbtw_pointReflection_of_ne {x y : P} (h : x ≠ y) : Sbtw R y x (pointRe
 
 theorem wbtw_midpoint (x y : P) : Wbtw R x (midpoint R x y) y := by
   convert wbtw_pointReflection R (midpoint R x y) x
-  simp
+  rw [pointReflection_midpoint_left]
 #align wbtw_midpoint wbtw_midpoint
 
 theorem sbtw_midpoint_of_ne {x y : P} (h : x ≠ y) : Sbtw R x (midpoint R x y) y := by
   have h : midpoint R x y ≠ x := by simp [h]
   convert sbtw_pointReflection_of_ne R h
-  simp
+  rw [pointReflection_midpoint_left]
 #align sbtw_midpoint_of_ne sbtw_midpoint_of_ne
 
 end LinearOrderedField
