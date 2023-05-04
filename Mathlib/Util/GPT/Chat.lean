@@ -7,7 +7,7 @@ import Mathlib.Data.Option.Basic
 import Mathlib.Util.GPT.API
 import Mathlib.Util.GPT.Json
 
-/-
+/-!
 # Interace for ChatGPT.
 
 We provide two functions
