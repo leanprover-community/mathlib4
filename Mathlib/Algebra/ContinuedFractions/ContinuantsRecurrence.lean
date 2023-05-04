@@ -30,7 +30,7 @@ theorem continuantsAux_recurrence {gp ppred pred : Pair K} (nth_s_eq : g.s.get? 
     (nth_conts_aux_eq : g.continuantsAux n = ppred)
     (succ_nth_conts_aux_eq : g.continuantsAux (n + 1) = pred) :
     g.continuantsAux (n + 2) = ⟨gp.b * pred.a + gp.a * ppred.a, gp.b * pred.b + gp.a * ppred.b⟩ :=
-  by simp [*, continuants_aux, next_continuants, next_denominator, next_numerator]
+  by simp [*, continuantsAux, nextContinuants, nextDenominator, nextNumerator]
 #align generalized_continued_fraction.continuants_aux_recurrence GeneralizedContinuedFraction.continuantsAux_recurrence
 
 theorem continuants_recurrence_aux {gp ppred pred : Pair K} (nth_s_eq : g.s.get? n = some gp)
@@ -38,7 +38,7 @@ theorem continuants_recurrence_aux {gp ppred pred : Pair K} (nth_s_eq : g.s.get?
     (succ_nth_conts_aux_eq : g.continuantsAux (n + 1) = pred) :
     g.continuants (n + 1) = ⟨gp.b * pred.a + gp.a * ppred.a, gp.b * pred.b + gp.a * ppred.b⟩ := by
   simp [nth_cont_eq_succ_nth_cont_aux,
-    continuants_aux_recurrence nth_s_eq nth_conts_aux_eq succ_nth_conts_aux_eq]
+    continuantsAux_recurrence nth_s_eq nth_conts_aux_eq succ_nth_conts_aux_eq]
 #align generalized_continued_fraction.continuants_recurrence_aux GeneralizedContinuedFraction.continuants_recurrence_aux
 
 /-- Shows that `Aₙ = bₙ * Aₙ₋₁ + aₙ * Aₙ₋₂` and `Bₙ = bₙ * Bₙ₋₁ + aₙ * Bₙ₋₂`. -/
@@ -76,4 +76,3 @@ theorem denominators_recurrence {gp : Pair K} {ppredB predB : K}
 #align generalized_continued_fraction.denominators_recurrence GeneralizedContinuedFraction.denominators_recurrence
 
 end GeneralizedContinuedFraction
-
