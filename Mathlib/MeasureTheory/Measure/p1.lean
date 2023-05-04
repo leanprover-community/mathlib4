@@ -127,11 +127,11 @@ theorem ae_uIoc_iff [LinearOrder α] {a b : α} {P : α → Prop} :
 #align measure_theory.ae_uIoc_iff MeasureTheory.ae_uIoc_iff
 
 theorem measure_union (hd : Disjoint s₁ s₂) (h : MeasurableSet s₂) : μ (s₁ ∪ s₂) = μ s₁ + μ s₂ :=
-  measure_union₀ h.nullMeasurableSet hd.AeDisjoint
+  measure_union₀ h.nullMeasurableSet hd.aedisjoint
 #align measure_theory.measure_union MeasureTheory.measure_union
 
 theorem measure_union' (hd : Disjoint s₁ s₂) (h : MeasurableSet s₁) : μ (s₁ ∪ s₂) = μ s₁ + μ s₂ :=
-  measure_union₀' h.nullMeasurableSet hd.AeDisjoint
+  measure_union₀' h.nullMeasurableSet hd.aedisjoint
 #align measure_theory.measure_union' MeasureTheory.measure_union'
 
 theorem measure_inter_add_diff (s : Set α) (ht : MeasurableSet t) : μ (s ∩ t) + μ (s \ t) = μ s :=
@@ -159,7 +159,7 @@ theorem measure_add_measure_compl (h : MeasurableSet s) : μ s + μ (sᶜ) = μ 
 #align measure_theory.measure_add_measure_compl MeasureTheory.measure_add_measure_compl
 
 theorem measure_bunionᵢ₀ {s : Set β} {f : β → Set α} (hs : s.Countable)
-    (hd : s.Pairwise (AeDisjoint μ on f)) (h : ∀ b ∈ s, NullMeasurableSet (f b) μ) :
+    (hd : s.Pairwise (AEDisjoint μ on f)) (h : ∀ b ∈ s, NullMeasurableSet (f b) μ) :
     μ (⋃ b ∈ s, f b) = ∑' p : s, μ (f p) := by
   haveI := hs.toEncodable
   rw [bunionᵢ_eq_unionᵢ]
@@ -168,10 +168,10 @@ theorem measure_bunionᵢ₀ {s : Set β} {f : β → Set α} (hs : s.Countable)
 
 theorem measure_bunionᵢ {s : Set β} {f : β → Set α} (hs : s.Countable) (hd : s.PairwiseDisjoint f)
     (h : ∀ b ∈ s, MeasurableSet (f b)) : μ (⋃ b ∈ s, f b) = ∑' p : s, μ (f p) :=
-  measure_bunionᵢ₀ hs hd.AeDisjoint fun b hb => (h b hb).nullMeasurableSet
+  measure_bunionᵢ₀ hs hd.aedisjoint fun b hb => (h b hb).nullMeasurableSet
 #align measure_theory.measure_bUnion MeasureTheory.measure_bunionᵢ
 
-theorem measure_unionₛ₀ {S : Set (Set α)} (hs : S.Countable) (hd : S.Pairwise (AeDisjoint μ))
+theorem measure_unionₛ₀ {S : Set (Set α)} (hs : S.Countable) (hd : S.Pairwise (AEDisjoint μ))
     (h : ∀ s ∈ S, NullMeasurableSet s μ) : μ (⋃₀ S) = ∑' s : S, μ s := by
   rw [unionₛ_eq_bunionᵢ, measure_bunionᵢ₀ hs hd h]
 #align measure_theory.measure_sUnion₀ MeasureTheory.measure_unionₛ₀
@@ -182,7 +182,7 @@ theorem measure_unionₛ {S : Set (Set α)} (hs : S.Countable) (hd : S.Pairwise 
 #align measure_theory.measure_sUnion MeasureTheory.measure_unionₛ
 
 theorem measure_bunionᵢ_finset₀ {s : Finset ι} {f : ι → Set α}
-    (hd : Set.Pairwise (↑s) (AeDisjoint μ on f)) (hm : ∀ b ∈ s, NullMeasurableSet (f b) μ) :
+    (hd : Set.Pairwise (↑s) (AEDisjoint μ on f)) (hm : ∀ b ∈ s, NullMeasurableSet (f b) μ) :
     μ (⋃ b ∈ s, f b) = ∑ p in s, μ (f p) := by
   rw [← Finset.sum_attach, Finset.attach_eq_univ, ← tsum_fintype]
   exact measure_bunionᵢ₀ s.countable_toSet hd hm
@@ -190,7 +190,7 @@ theorem measure_bunionᵢ_finset₀ {s : Finset ι} {f : ι → Set α}
 
 theorem measure_bunionᵢ_finset {s : Finset ι} {f : ι → Set α} (hd : PairwiseDisjoint (↑s) f)
     (hm : ∀ b ∈ s, MeasurableSet (f b)) : μ (⋃ b ∈ s, f b) = ∑ p in s, μ (f p) :=
-  measure_bunionᵢ_finset₀ hd.AeDisjoint fun b hb => (hm b hb).nullMeasurableSet
+  measure_bunionᵢ_finset₀ hd.aedisjoint fun b hb => (hm b hb).nullMeasurableSet
 #align measure_theory.measure_bUnion_finset MeasureTheory.measure_bunionᵢ_finset
 
 /-- The measure of a disjoint union (even uncountable) of measurable sets is at least the sum of

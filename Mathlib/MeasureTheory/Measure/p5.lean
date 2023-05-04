@@ -123,7 +123,7 @@ theorem add_top : μ + ⊤ = ⊤ :=
   top_unique <| Measure.le_add_left le_rfl
 #align measure_theory.measure.add_top MeasureTheory.Measure.add_top
 
-protected theorem zero_le {m0 : MeasurableSpace α} (μ : Measure α) : 0 ≤ μ :=
+protected theorem zero_le {_m0 : MeasurableSpace α} (μ : Measure α) : 0 ≤ μ :=
   bot_le
 #align measure_theory.measure.zero_le MeasureTheory.Measure.zero_le
 
@@ -177,7 +177,7 @@ theorem le_liftLinear_apply {f : OuterMeasure α →ₗ[ℝ≥0∞] OuterMeasure
 a measurable function. -/
 def mapₗ [MeasurableSpace α] (f : α → β) : Measure α →ₗ[ℝ≥0∞] Measure β :=
   if hf : Measurable f then
-    liftLinear (OuterMeasure.map f) fun μ s hs t =>
+    liftLinear (OuterMeasure.map f) fun μ _s hs t =>
       le_toOuterMeasure_caratheodory μ _ (hf hs) (f ⁻¹' t)
   else 0
 #align measure_theory.measure.mapₗ MeasureTheory.Measure.mapₗ
@@ -374,13 +374,13 @@ theorem comap_apply {β} [MeasurableSpace α] {mβ : MeasurableSpace β} (f : α
   comap_apply₀ f μ hfi (fun s hs => (hf s hs).NullMeasurableSet) hs.NullMeasurableSet
 #align measure_theory.measure.comap_apply MeasureTheory.Measure.comap_apply
 
-theorem comapₗ_eq_comap {β} [MeasurableSpace α] {mβ : MeasurableSpace β} (f : α → β)
+theorem comapₗ_eq_comap {β} [MeasurableSpace α] {_mβ : MeasurableSpace β} (f : α → β)
     (hfi : Injective f) (hf : ∀ s, MeasurableSet s → MeasurableSet (f '' s)) (μ : Measure β)
     (hs : MeasurableSet s) : comapₗ f μ s = comap f μ s :=
   (comapₗ_apply f hfi hf μ hs).trans (comap_apply f hfi hf μ hs).symm
 #align measure_theory.measure.comapₗ_eq_comap MeasureTheory.Measure.comapₗ_eq_comap
 
-theorem measure_image_eq_zero_of_comap_eq_zero {β} [MeasurableSpace α] {mβ : MeasurableSpace β}
+theorem measure_image_eq_zero_of_comap_eq_zero {β} [MeasurableSpace α] {_mβ : MeasurableSpace β}
     (f : α → β) (μ : Measure β) (hfi : Injective f)
     (hf : ∀ s, MeasurableSet s → NullMeasurableSet (f '' s) μ) {s : Set α} (hs : comap f μ s = 0) :
     μ (f '' s) = 0 :=

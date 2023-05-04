@@ -121,14 +121,13 @@ theorem infₛ_caratheodory (s : Set α) (hs : MeasurableSet s) :
     MeasurableSet[(infₛ (toOuterMeasure '' m)).caratheodory] s := by
   rw [OuterMeasure.infₛ_eq_boundedBy_infₛGen]
   refine' OuterMeasure.boundedBy_caratheodory fun t => _
-  simp only [OuterMeasure.infₛGen, le_infᵢ_iff, ball_image_iff, coe_toOuterMeasure,
+  simp only [OuterMeasure.infₛGen, le_infᵢ_iff, ball_image_iff,
     measure_eq_infᵢ t]
   intro μ hμ u htu _hu
   have hm : ∀ {s t}, s ⊆ t → OuterMeasure.infₛGen (toOuterMeasure '' m) s ≤ μ t := by
     intro s t hst
     rw [OuterMeasure.infₛGen_def]
     refine' infᵢ_le_of_le μ.toOuterMeasure (infᵢ_le_of_le (mem_image_of_mem _ hμ) _)
-    rw [toOuterMeasure_apply]
     refine' measure_mono hst
   rw [← measure_inter_add_diff u hs]
   refine' add_le_add (hm <| inter_subset_inter_left _ htu) (hm <| diff_subset_diff_left htu)
@@ -143,14 +142,14 @@ theorem infₛ_apply (hs : MeasurableSet s) : infₛ m s = infₛ (toOuterMeasur
 
 theorem measure_infₛ_le (h : μ ∈ m) : infₛ m ≤ μ :=
   have : infₛ (toOuterMeasure '' m) ≤ μ.toOuterMeasure := infₛ_le (mem_image_of_mem _ h)
-  fun s hs => by rw [infₛ_apply hs, ← toOuterMeasure_apply]; exact this s
+  fun s hs => by rw [infₛ_apply hs]; exact this s
 -- Porting note: private
 --#align measure_theory.measure.measure_Inf_le MeasureTheory.Measure.measure_infₛ_le
 
 theorem measure_le_infₛ (h : ∀ μ' ∈ m, μ ≤ μ') : μ ≤ infₛ m :=
   have : μ.toOuterMeasure ≤ infₛ (toOuterMeasure '' m) :=
     le_infₛ <| ball_image_of_ball fun μ hμ => toOuterMeasure_le.2 <| h _ hμ
-  fun s hs => by rw [infₛ_apply hs, ← toOuterMeasure_apply]; exact this s
+  fun s hs => by rw [infₛ_apply hs]; exact this s
 -- Porting note: private
 --#align measure_theory.measure.measure_le_Inf MeasureTheory.Measure.measure_le_infₛ
 
