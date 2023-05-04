@@ -108,10 +108,15 @@ section coe
 -- Fix another type `β` which we will convert to.
 variable {β : Type _} [Coe K β]
 
+-- Porting note: added so we can add the `@[coe]` attribute
+/-- The coercion between integer-fraction pairs happens componentwise. -/
+@[coe]
+def coeFn : IntFractPair K → IntFractPair β := mapFr (↑)
+
 /-- Coerce a pair by coercing the fractional component. -/
-instance hasCoeToIntFractPair : Coe (IntFractPair K) (IntFractPair β) :=
-  ⟨mapFr (↑)⟩
-#align generalized_continued_fraction.int_fract_pair.has_coe_to_int_fract_pair GeneralizedContinuedFraction.IntFractPair.hasCoeToIntFractPair
+instance coe : Coe (IntFractPair K) (IntFractPair β) where
+  coe := coeFn
+#align generalized_continued_fraction.int_fract_pair.has_coe_to_int_fract_pair GeneralizedContinuedFraction.IntFractPair.coe
 
 @[simp, norm_cast]
 theorem coe_to_intFractPair {b : ℤ} {fr : K} :
@@ -121,8 +126,7 @@ theorem coe_to_intFractPair {b : ℤ} {fr : K} :
 
 end coe
 
--- Note: this could be relaxed to something like `linear_ordered_division_ring` in the
--- future.
+-- Note: this could be relaxed to something like `linear_ordered_division_ring` in the future.
 -- Fix a discrete linear ordered field with `floor` function.
 variable [LinearOrderedField K] [FloorRing K]
 
