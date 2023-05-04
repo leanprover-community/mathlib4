@@ -574,7 +574,7 @@ theorem span_singleton_mul_le_span_singleton_mul {x y : R} {I J : Ideal R} :
 
 theorem span_singleton_mul_right_mono [IsDomain R] {x : R} (hx : x ≠ 0) :
     span {x} * I ≤ span {x} * J ↔ I ≤ J := by
-  simp_rw [span_singleton_mul_le_span_singleton_mul, mul_right_inj' hx, exists_prop,
+  simp_rw [span_singleton_mul_le_span_singleton_mul, mul_right_inj' hx,
     exists_eq_right', SetLike.le_def]
 #align ideal.span_singleton_mul_right_mono Ideal.span_singleton_mul_right_mono
 
@@ -1068,7 +1068,7 @@ theorem IsPrime.multiset_prod_le {s : Multiset (Ideal R)} {P : Ideal R} (hp : Is
 theorem IsPrime.multiset_prod_map_le {s : Multiset ι} (f : ι → Ideal R) {P : Ideal R}
     (hp : IsPrime P) (hne : s ≠ 0) : (s.map f).prod ≤ P ↔ ∃ i ∈ s, f i ≤ P := by
   rw [hp.multiset_prod_le (mt Multiset.map_eq_zero.mp hne)]
-  simp_rw [exists_prop, Multiset.mem_map, exists_exists_and_eq_and]
+  simp_rw [Multiset.mem_map, exists_exists_and_eq_and]
 #align ideal.is_prime.multiset_prod_map_le Ideal.IsPrime.multiset_prod_map_le
 
 theorem IsPrime.prod_le {s : Finset ι} {f : ι → Ideal R} {P : Ideal R} (hp : IsPrime P)

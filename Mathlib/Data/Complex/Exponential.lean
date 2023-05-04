@@ -180,7 +180,6 @@ theorem series_ratio_test {f : ℕ → β} (n : ℕ) (r : α) (hr0 : 0 ≤ r) (h
   replace hk : m = k + n.succ := (tsub_eq_iff_eq_add_of_le hmn).1 hk
   induction' k with k ih generalizing m n
   · rw [hk, Nat.zero_add, mul_right_comm, inv_pow _ _, ← div_eq_mul_inv, mul_div_cancel]
-    exact le_refl _
     exact (ne_of_lt (pow_pos r_pos _)).symm
   · have kn : k + n.succ ≥ n.succ := by
       rw [← zero_add n.succ]; exact add_le_add (Nat.zero_le _) (by simp)
@@ -1878,6 +1877,7 @@ theorem cos_bound {x : ℝ} (hx : |x| ≤ 1) : |cos x - (1 - x ^ 2 / 2)| ≤ |x|
     _ ≤ |x| ^ 4 * (5 / 96) := by norm_num
 #align real.cos_bound Real.cos_bound
 
+set_option maxHeartbeats 300000 in
 theorem sin_bound {x : ℝ} (hx : |x| ≤ 1) : |sin x - (x - x ^ 3 / 6)| ≤ |x| ^ 4 * (5 / 96) :=
   calc
     |sin x - (x - x ^ 3 / 6)| = Complex.abs (Complex.sin x - (x - x ^ 3 / 6 : ℝ)) := by
