@@ -945,7 +945,7 @@ induced from `N` to `P` maps `f x - f y` to `g x - g y` for all `x : M, y ∈ S`
 theorem lift_mk' (x y) : f.lift hg (f.mk' x y) = g x * (IsUnit.liftRight (g.restrict S) hg y)⁻¹ :=
   (mul_inv hg).2 <|
     f.eq_of_eq hg <| by
-      simp_rw [f.toMap.map_mul, f.toMap.map_mul, sec_spec', mul_assoc, f.mk'_spec, mul_comm]
+      simp_rw [f.toMap.map_mul, sec_spec', mul_assoc, f.mk'_spec, mul_comm]
 #align submonoid.localization_map.lift_mk' Submonoid.LocalizationMap.lift_mk'
 #align add_submonoid.localization_map.lift_mk' AddSubmonoid.LocalizationMap.lift_mk'
 
