@@ -3,7 +3,7 @@ import Lake
 open Lake DSL
 
 def moreLeanArgs := #[
-  --"-DwarningAsError=true",
+  "-DwarningAsError=true",
   "-Dpp.unicode.fun=true" -- pretty-prints `fun a ↦ b`
 ]
 
