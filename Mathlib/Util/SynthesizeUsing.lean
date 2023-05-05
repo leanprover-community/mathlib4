@@ -69,11 +69,11 @@ is a term elaborator that wraps the `simp at ...` tactic:
 def simpTerm (e : Expr) : MetaM Expr := do
   let mvar ← Meta.mkFreshTypeMVar
   let e' ← synthesizeUsing' mvar
-    -- Note: `simp` does not always insert type hints, so `exact id h` is a way to ensure
-    -- that the type of `h` in the local context is saved. Otherwise the type might
-    -- be merely defeq.
-    (do evalTactic (← `(tactic| have h := $(← Term.exprToSyntax e); simp at h; exact id h)))
-  return e'
+    (do evalTactic (← `(tactic| have h := $(← Term.exprToSyntax e); simp at h; exact h)))
+  -- Note: `simp` does not always insert type hints, so to ensure that we get a term
+  -- with the simplified type (as opposed to one that is merely defeq), we should add
+  -- a type hint ourselves.
+  Meta.mkExpectedTypeHint e' mvar
 
 elab "simpTerm% " t:term : term => do simpTerm (← Term.elabTerm t none)
 ```
