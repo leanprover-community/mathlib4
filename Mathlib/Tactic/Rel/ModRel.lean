@@ -9,6 +9,14 @@ import Mathlib.Tactic.Rel.Basic
 
 open Lean Elab Tactic
 
+syntax (name := ModRelCongrSyntax) "mod_rel_congr" : tactic
+
+elab_rules : tactic | `(tactic| mod_rel_congr) => do
+  liftMetaTactic <|
+    Lean.MVarId.RelCongr `mod_rules
+
+macro_rules | `(tactic| rel_congr) => `(tactic| mod_rel_congr)
+
 syntax (name := ModRelSyntax) "mod_rel" " [" term,* "] " : tactic
 
 elab_rules : tactic | `(tactic| mod_rel [$t,*]) => do

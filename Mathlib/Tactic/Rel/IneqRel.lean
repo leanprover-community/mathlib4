@@ -11,13 +11,22 @@ open Lean Meta Elab Mathlib Tactic
 /-- On applying a lemma or hypothesis successfully, attempt to resolve remaining goals with
 `positivity`, but even if that fails, don't backtrack -/
 def IneqRelDischarge (g : MVarId) : MetaM (Option (List MVarId)) :=
-do Meta.Positivity.positivity g; pure (some []) <|> pure none
+(do Meta.Positivity.positivity g; pure (some [])) <|> pure none
+
+syntax (name := IneqRelCongrSyntax) "ineq_rel_congr" : tactic
+
+elab_rules : tactic | `(tactic| ineq_rel_congr) => do
+  liftMetaTactic <|
+    Lean.MVarId.RelCongr `ineq_rules
+      IneqRelDischarge
+
+macro_rules | `(tactic| rel_congr) => `(tactic| ineq_rel_congr)
 
 syntax (name := IneqRelSyntax) "ineq_rel" " [" term,* "] " : tactic
 
 elab_rules : tactic | `(tactic| ineq_rel [$t,*]) => do
   liftMetaTactic <|
-    Lean.MVarId.Rel `ineq_rules t.getElems.toList
+    Lean.MVarId.Rel #[`ineq_rules, `unsafe_ineq_rules] t.getElems.toList
       "cannot prove this by 'substituting' the listed relationships"
       IneqRelDischarge
 
@@ -27,7 +36,7 @@ syntax (name := IneqExtraSyntax) "ineq_extra" : tactic
 
 elab_rules : tactic | `(tactic| ineq_extra) => do
   liftMetaTactic <|
-    Lean.MVarId.Rel `ineq_extra []
+    Lean.MVarId.Rel #[`ineq_extra] []
       "the two sides don't differ by a neutral quantity for the relation"
       IneqRelDischarge
 
@@ -43,6 +52,9 @@ attribute [ineq_rules]
   mul_lt_mul_of_pos_left mul_lt_mul_of_pos_right
   div_le_div_of_le div_lt_div_of_lt
   pow_le_pow_of_le_left pow_lt_pow_of_lt_left
+
+
+attribute [unsafe_ineq_rules]
   -- want to apply this only forward on hypotheses, not backward on a general goal
   -- put it last but would be good to implement directly as forward reasoning
   le_of_lt

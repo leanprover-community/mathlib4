@@ -7,6 +7,8 @@ import Mathlib.Tactic.SolveByElim
 
 register_label_attr ineq_rules
 
+register_label_attr unsafe_ineq_rules
+
 register_label_attr ineq_extra
 
 register_label_attr mod_rules
@@ -15,6 +17,7 @@ register_label_attr mod_extra
 
 register_label_attr iff_rules
 
+syntax (name := RelCongrSyntax) "rel_congr" : tactic
 syntax (name := RelSyntax) "rel" " [" term,* "] " : tactic
 syntax (name := ExtraSyntax) "extra" : tactic
 
@@ -26,12 +29,20 @@ def RelConfig : SolveByElim.Config :=
   failAtMaxDepth := false
   maxDepth := 50 }
 
-def Lean.MVarId.Rel (attr : Name) (add : List Term) (m : MessageData)
+def Lean.MVarId.RelCongr (attr : Name) --(add : List Term)
     (disch : MVarId → MetaM (Option (List MVarId)) := fun _ => pure none)
     (proc : List MVarId → List MVarId → MetaM (Option (List MVarId)) := fun _ _ => pure none)
     (g : MVarId) :
     MetaM (List MVarId) := do
   let cfg : SolveByElim.Config := { RelConfig with discharge := disch, proc := proc }
-  let [] ← SolveByElim.solveByElim.processSyntax cfg true false add [] #[mkIdent attr] [g]
+  SolveByElim.solveByElim.processSyntax cfg false false [] [] #[mkIdent attr] [g]
+
+def Lean.MVarId.Rel (attr : Array Name) (add : List Term) (m : MessageData)
+    (disch : MVarId → MetaM (Option (List MVarId)) := fun _ => pure none)
+    (proc : List MVarId → List MVarId → MetaM (Option (List MVarId)) := fun _ _ => pure none)
+    (g : MVarId) :
+    MetaM (List MVarId) := do
+  let cfg : SolveByElim.Config := { RelConfig with discharge := disch, proc := proc }
+  let [] ← SolveByElim.solveByElim.processSyntax cfg true false add [] (attr.map mkIdent) [g]
     | throwError m
   return []
