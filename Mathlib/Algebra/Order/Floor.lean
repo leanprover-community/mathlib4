@@ -1535,14 +1535,17 @@ theorem ceil_congr (h : ∀ n : ℤ, a ≤ n ↔ b ≤ n) : ⌈a⌉ = ⌈b⌉ :=
   (ceil_le.2 <| (h _).2 <| le_ceil _).antisymm <| ceil_le.2 <| (h _).1 <| le_ceil _
 #align int.ceil_congr Int.ceil_congr
 
+set_option synthInstance.etaExperiment true in
 theorem map_floor (f : F) (hf : StrictMono f) (a : α) : ⌊f a⌋ = ⌊a⌋ :=
   floor_congr fun n => by rw [← map_intCast f, hf.le_iff_le]
 #align int.map_floor Int.map_floor
 
+set_option synthInstance.etaExperiment true in
 theorem map_ceil (f : F) (hf : StrictMono f) (a : α) : ⌈f a⌉ = ⌈a⌉ :=
   ceil_congr fun n => by rw [← map_intCast f, hf.le_iff_le]
 #align int.map_ceil Int.map_ceil
 
+set_option synthInstance.etaExperiment true in
 theorem map_fract (f : F) (hf : StrictMono f) (a : α) : fract (f a) = f (fract a) := by
   simp_rw [fract, map_sub, map_intCast, map_floor _ hf]
 #align int.map_fract Int.map_fract
