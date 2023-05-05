@@ -42,7 +42,7 @@ given tactic syntax.
 
 Example:
 ```lean
-let (gs, e) ← synthesizeUsing ty (← `(tactic| congr!))
+let (gs, e) ← synthesizeUsingTactic ty (← `(tactic| congr!))
 ```
 
 The tactic `tac` is allowed to leave goals open, and these remain as metavariables in the
@@ -57,10 +57,26 @@ given tactic syntax.
 
 Example:
 ```lean
-let e ← synthesizeUsing ty (← `(tactic| norm_num))
+let e ← synthesizeUsingTactic' ty (← `(tactic| norm_num))
 ```
 
 The tactic must solve for all goals, in contrast to `synthesizeUsingTactic`.
+
+If you need to insert expressions into a tactic proof, then you might use `synthesizeUsing'`
+directly, since the `TacticM` monad has access to the `TermElabM` monad. For example, here
+is a term elaborator that wraps the `simp at ...` tactic:
+```
+def simpTerm (e : Expr) : MetaM Expr := do
+  let mvar ← Meta.mkFreshTypeMVar
+  let e' ← synthesizeUsing' mvar
+    -- Note: `simp` does not always insert type hints, so `exact id h` is a way to ensure
+    -- that the type of `h` in the local context is saved. Otherwise the type might
+    -- merely be defeq.
+    (do evalTactic (← `(tactic| have h := $(← Term.exprToSyntax e); simp at h; exact id h)))
+  return e'
+
+elab "simpTerm% " t:term : term => do simpTerm (← Term.elabTerm t none)
+```
 -/
 def synthesizeUsingTactic' (type : Expr) (tac : Syntax) : MetaM Expr := do
   synthesizeUsing' type (do evalTactic tac)
