@@ -27,20 +27,20 @@ algebraic structures on `ℍ[R]`.
   [quaternion algebra](https://en.wikipedia.org/wiki/Quaternion_algebra) with coefficients `a`, `b`
 * `Quaternion R`, `ℍ[R]` : the space of quaternions, a.k.a. `QuaternionAlgebra R (-1) (-1)`;
 * `Quaternion.normSq` : square of the norm of a quaternion;
-* `quaternion.star_ring` : provides the conjugate of a quaternion as `has_star.star`;
 
 We also define the following algebraic structures on `ℍ[R]`:
 
-* `Ring ℍ[R, a, b]` and `Algebra R ℍ[R, a, b]` : for any commutative ring `R`;
-* `Ring ℍ[R]` and `Algebra R ℍ[R]` : for any commutative ring `R`;
-* `domain ℍ[R]` : for a linear ordered commutative ring `R`;
-* `division_algebra ℍ[R]` : for a linear ordered field `R`.
+* `Ring ℍ[R, a, b]`, `StarRing ℍ[R, a, b]`, and `Algebra R ℍ[R, a, b]` : for any commutative ring
+  `R`;
+* `Ring ℍ[R]`, `StarRing ℍ[R]`, and `Algebra R ℍ[R]` : for any commutative ring `R`;
+* `IsDomain ℍ[R]` : for a linear ordered commutative ring `R`;
+* `DivisionRing ℍ[R]` : for a linear ordered field `R`.
 
 ## Notation
 
 The following notation is available with `open_locale Quaternion`.
 
-* `ℍ[R, c₁, c₂]` : `QuaternionAlgebra R  c₁ c₂`
+* `ℍ[R, c₁, c₂]` : `QuaternionAlgebra R c₁ c₂`
 * `ℍ[R]` : quaternions over `R`.
 
 ## Implementation notes
@@ -56,9 +56,10 @@ quaternion
 
 
 /-- Quaternion algebra over a type with fixed coefficients $a=i^2$ and $b=j^2$.
-Implemented as a structure with four fields: `re`, `im_i`, `im_j`, and `im_k`. -/
+Implemented as a structure with four fields: `re`, `imI`, `imJ`, and `imK`. -/
 @[ext]
 structure QuaternionAlgebra (R : Type _) (a b : R) where
+  /-- Real part of a quaternion. -/
   re : R
   imI : R
   imJ : R
@@ -75,7 +76,7 @@ open Quaternion
 
 namespace QuaternionAlgebra
 
-/-- The equivalence between a quaternion algebra over R and R × R × R × R. -/
+/-- The equivalence between a quaternion algebra over `R` and `R × R × R × R`. -/
 @[simps]
 def equivProd {R : Type _} (c₁ c₂ : R) : ℍ[R,c₁,c₂] ≃ R × R × R × R where
   toFun a := ⟨a.1, a.2, a.3, a.4⟩
