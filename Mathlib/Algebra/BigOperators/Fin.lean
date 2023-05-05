@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Anne Baanen
 
 ! This file was ported from Lean 3 source module algebra.big_operators.fin
-! leanprover-community/mathlib commit cdb01be3c499930fd29be05dce960f4d8d201c54
+! leanprover-community/mathlib commit ef997baa41b5c428be3fb50089a7139bf4ee886b
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -297,6 +297,38 @@ theorem partialProd_right_inv {G : Type _} [Group G] (g : G) (f : Fin n → G) (
       exact i.lt_succ_self.trans <| hn.trans n.lt_succ_self
 #align fin.partial_prod_right_inv Fin.partialProd_right_inv
 #align fin.partial_sum_right_neg Fin.partialSum_right_neg
+
+/-- Let `(g₀, g₁, ..., gₙ)` be a tuple of elements in `Gⁿ⁺¹`.
+Then if `k < j`, this says `(g₀g₁...gₖ₋₁)⁻¹ * g₀g₁...gₖ = gₖ`.
+If `k = j`, it says `(g₀g₁...gₖ₋₁)⁻¹ * g₀g₁...gₖ₊₁ = gₖgₖ₊₁`.
+If `k > j`, it says `(g₀g₁...gₖ)⁻¹ * g₀g₁...gₖ₊₁ = gₖ₊₁.`
+Useful for defining group cohomology. -/
+@[to_additive
+      "Let `(g₀, g₁, ..., gₙ)` be a tuple of elements in `Gⁿ⁺¹`.\nThen if `k < j`, this says `-(g₀ + g₁ + ... + gₖ₋₁) + (g₀ + g₁ + ... + gₖ) = gₖ`.\nIf `k = j`, it says `-(g₀ + g₁ + ... + gₖ₋₁) + (g₀ + g₁ + ... + gₖ₊₁) = gₖ + gₖ₊₁`.\nIf `k > j`, it says `-(g₀ + g₁ + ... + gₖ) + (g₀ + g₁ + ... + gₖ₊₁) = gₖ₊₁.`\nUseful for defining group cohomology."]
+theorem inv_partialProd_mul_eq_contractNth {G : Type _} [Group G] (g : Fin (n + 1) → G)
+    (j : Fin (n + 1)) (k : Fin n) :
+    (partialProd g (j.succ.succAbove k.cast_succ))⁻¹ * partialProd g (j.succAbove k).succ =
+      j.contractNth Mul.mul g k :=
+  by
+  have := partial_prod_right_inv (1 : G) g
+  simp only [one_smul, coe_eq_cast_succ] at this
+  rcases lt_trichotomy (k : ℕ) j with (h | h | h)
+  · rwa [succ_above_below, succ_above_below, this, contract_nth_apply_of_lt]
+    · assumption
+    · rw [cast_succ_lt_iff_succ_le, succ_le_succ_iff, le_iff_coe_le_coe]
+      exact le_of_lt h
+  · rwa [succ_above_below, succ_above_above, partial_prod_succ, cast_succ_fin_succ, ← mul_assoc,
+      this, contract_nth_apply_of_eq]
+    · simpa only [le_iff_coe_le_coe, ← h]
+    · rw [cast_succ_lt_iff_succ_le, succ_le_succ_iff, le_iff_coe_le_coe]
+      exact le_of_eq h
+  · rwa [succ_above_above, succ_above_above, partial_prod_succ, partial_prod_succ,
+      cast_succ_fin_succ, partial_prod_succ, inv_mul_cancel_left, contract_nth_apply_of_gt]
+    · exact le_iff_coe_le_coe.2 (le_of_lt h)
+    · rw [le_iff_coe_le_coe, coe_succ]
+      exact Nat.succ_le_of_lt h
+#align fin.inv_partial_prod_mul_eq_contract_nth Fin.inv_partialProd_mul_eq_contractNth
+#align fin.neg_partial_sum_add_eq_contract_nth Fin.neg_partial_sum_add_eq_contract_nth
 
 end PartialProd
 
