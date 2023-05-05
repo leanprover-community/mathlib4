@@ -56,12 +56,15 @@ noncomputable def Functor.HasCommShift.localized [W.IsCompatibleWithShift A] :
 
 attribute [irreducible] HasShift.localized Functor.HasCommShift.localized
 
-noncomputable instance [W.IsCompatibleWithShift A] :
+noncomputable instance HasShift.localization [W.IsCompatibleWithShift A] :
     HasShift W.Localization A :=
   HasShift.localized W.Q W A
 
-noncomputable instance [W.IsCompatibleWithShift A] :
+noncomputable instance MorphismProperty.hasCommShift_Q
+    [W.IsCompatibleWithShift A] :
     W.Q.HasCommShift A :=
   Functor.HasCommShift.localized W.Q W A
+
+attribute [irreducible] HasShift.localization MorphismProperty.hasCommShift_Q
 
 end CategoryTheory

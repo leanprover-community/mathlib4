@@ -50,4 +50,22 @@ noncomputable def mapTriangleCommShiftIso [F.Additive] (n : ℤ) :
       simp only [Functor.map_id, comp_id]))
     (by aesop_cat)
 
+
+@[simps!]
+def mapTriangleRotateIso [F.Additive] :
+    F.mapTriangle ⋙ Pretriangulated.rotate D ≅
+      Pretriangulated.rotate C ⋙ F.mapTriangle :=
+    NatIso.ofComponents
+      (fun T => Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) ((F.commShiftIso (1 : ℤ)).symm.app _)
+        (by aesop_cat) (by aesop_cat) (by aesop_cat))
+      (by aesop_cat)
+
+@[simps!]
+noncomputable def mapTriangleInvRotateIso [F.Additive] :
+    F.mapTriangle ⋙ Pretriangulated.invRotate D ≅
+      Pretriangulated.invRotate C ⋙ F.mapTriangle :=
+    NatIso.ofComponents
+      (fun T => Triangle.isoMk _ _ ((F.commShiftIso (-1 : ℤ)).symm.app _) (Iso.refl _) (Iso.refl _)
+        (by aesop_cat) (by aesop_cat) (by aesop_cat)) (by aesop_cat)
+
 end Functor

@@ -100,6 +100,8 @@ variable [∀ n : ℤ, Functor.Additive (shiftFunctor C n)] [hC : Pretriangulate
 /-- distinguished triangles in a pretriangulated category -/
 notation:60 "distTriang " C => @distinguishedTriangles C _ _ _ _ _ _
 
+variable {C}
+
 /-- Given any distinguished triangle `T`, then we know `T.rotate` is also distinguished.
 -/
 theorem rot_of_dist_triangle (T : Triangle C) (H : T ∈ distTriang C) : T.rotate ∈ distTriang C :=
@@ -139,7 +141,7 @@ See <https://stacks.math.columbia.edu/tag/0146>
 -/
 theorem comp_dist_triangle_mor_zero₂₃ (T : Triangle C) (H : T ∈ distTriang C) :
   T.mor₂ ≫ T.mor₃ = 0 :=
-  comp_dist_triangle_mor_zero₁₂ C T.rotate (rot_of_dist_triangle C T H)
+  comp_dist_triangle_mor_zero₁₂ T.rotate (rot_of_dist_triangle T H)
 #align category_theory.pretriangulated.comp_dist_triangle_mor_zero₂₃ CategoryTheory.Pretriangulated.comp_dist_triangle_mor_zero₂₃
 
 /-- Given any distinguished triangle
@@ -152,8 +154,8 @@ See <https://stacks.math.columbia.edu/tag/0146>
 -/
 theorem comp_dist_triangle_mor_zero₃₁ (T : Triangle C) (H : T ∈ distTriang C) :
     T.mor₃ ≫ (shiftEquiv C 1).functor.map T.mor₁ = 0 := by
-  have H₂ := rot_of_dist_triangle C T.rotate (rot_of_dist_triangle C T H)
-  simpa using comp_dist_triangle_mor_zero₁₂ C T.rotate.rotate H₂
+  have H₂ := rot_of_dist_triangle T.rotate (rot_of_dist_triangle T H)
+  simpa using comp_dist_triangle_mor_zero₁₂ T.rotate.rotate H₂
 #align category_theory.pretriangulated.comp_dist_triangle_mor_zero₃₁ CategoryTheory.Pretriangulated.comp_dist_triangle_mor_zero₃₁
 
 /-

@@ -602,6 +602,36 @@ lemma map_eq_iff {X Y : C} (f₁ f₂ : X ⟶ Y) :
     dsimp
     simp only [← L.map_comp, fac]
 
+lemma exists_lift_arrow (f : Arrow D) : ∃ (g : Arrow C), Nonempty (f ≅ L.mapArrow.obj g) := by
+  have : EssSurj L := Localization.essSurj L W
+  let e₁ := L.objObjPreimageIso f.left
+  let e₂ := L.objObjPreimageIso f.right
+  let f' := e₁.hom ≫ f.hom ≫ e₂.inv
+  obtain ⟨X, g, s, hs, eq⟩ := fac L W f'
+  refine' ⟨Arrow.mk g, ⟨Arrow.isoMk e₁.symm (e₂.symm ≪≫ Localization.isoOfHom L W s hs) _⟩⟩
+  dsimp
+  simp only [← cancel_mono ((Localization.isoOfHom L W s hs).inv), Category.assoc, ← eq,
+    Functor.id_obj, Iso.inv_hom_id_assoc]
+  erw [(Localization.isoOfHom L W s hs).hom_inv_id, Category.comp_id]
+
+noncomputable def liftMap₁ {X Y : D} (f : X ⟶ Y) : C :=
+  (exists_lift_arrow L W (Arrow.mk f)).choose.left
+noncomputable def liftMap₂ {X Y : D} (f : X ⟶ Y) : C :=
+  (exists_lift_arrow L W (Arrow.mk f)).choose.right
+noncomputable def liftMap {X Y : D} (f : X ⟶ Y) : liftMap₁ L W f ⟶ liftMap₂ L W f :=
+  (exists_lift_arrow L W (Arrow.mk f)).choose.hom
+noncomputable def mapLiftMapIso {X Y : D} (f : X ⟶ Y) :
+  Arrow.mk f ≅ Arrow.mk (L.map (liftMap L W f)) :=
+  (exists_lift_arrow L W (Arrow.mk f)).choose_spec.some
+noncomputable def liftMapIso₁ {X Y : D} (f : X ⟶ Y) : X ≅ L.obj (liftMap₁ L W f) :=
+  Arrow.leftFunc.mapIso (mapLiftMapIso L W f)
+noncomputable def liftMapIso₂ {X Y : D} (f : X ⟶ Y) : Y ≅ L.obj (liftMap₂ L W f) :=
+  Arrow.rightFunc.mapIso (mapLiftMapIso L W f)
+
+lemma liftMap_fac {X Y : D} (f : X ⟶ Y) : f ≫ (liftMapIso₂ L W f).hom =
+    (liftMapIso₁ L W f).hom ≫ L.map (liftMap L W f) :=
+  (mapLiftMapIso L W f).hom.w.symm
+
 end HasLeftCalculusOfFractions
 
 namespace HasRightCalculusOfFractions
