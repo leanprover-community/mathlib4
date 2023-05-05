@@ -551,6 +551,7 @@ instance AddCommGroup.intIsScalarTower {R : Type u} {M : Type v} [Ring R] [AddCo
   smul_assoc n x y := ((smulAddHom R M).flip y).map_zsmul x n
 #align add_comm_group.int_is_scalar_tower AddCommGroup.intIsScalarTower
 
+set_option synthInstance.etaExperiment true in
 instance IsScalarTower.rat {R : Type u} {M : Type v} [Ring R] [AddCommGroup M] [Module R M]
     [Module ℚ R] [Module ℚ M] : IsScalarTower ℚ R M where
   smul_assoc r x y := map_rat_smul ((smulAddHom R M).flip y) r x

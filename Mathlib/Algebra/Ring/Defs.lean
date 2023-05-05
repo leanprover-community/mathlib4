@@ -487,3 +487,13 @@ instance (priority := 100) CommRing.toAddCommGroupWithOne [s : CommRing α] :
   To obtain an integral domain use `[CommRing α] [IsDomain α]`. -/
 class IsDomain (α : Type u) [Semiring α] extends IsCancelMulZero α, Nontrivial α : Prop
 #align is_domain IsDomain
+
+-- `CommRing R -> Ring R -> Semiring R -> NonAssocSemiring R -> NonUnitalNonAssocSemiring R`, in the
+
+variable {R : Type _} [CommRing R]
+
+def glou : NonUnitalNonAssocSemiring R := by infer_instance
+#print glou
+
+def glou2 : NonAssocSemiring R := by infer_instance
+#print glou2

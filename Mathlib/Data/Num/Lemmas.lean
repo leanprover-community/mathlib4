@@ -1496,10 +1496,9 @@ private theorem add_le_add_left : ∀ (a b : ZNum), a ≤ b → ∀ (c : ZNum), 
   transfer_rw
   exact fun h => _root_.add_le_add_left h c
 
-instance linearOrderedCommRing : LinearOrderedCommRing ZNum :=
-  { ZNum.linearOrder, ZNum.addCommGroup, ZNum.addMonoidWithOne with
+instance nonAssocSemiring : NonAssocSemiring ZNum :=
+  { ZNum.addCommGroup, ZNum.addMonoidWithOne with
     mul := (· * ·)
-    mul_assoc := by transfer
     zero_mul := by transfer
     mul_zero := by transfer
     one := 1
@@ -1510,7 +1509,11 @@ instance linearOrderedCommRing : LinearOrderedCommRing ZNum :=
       simp [mul_add]
     right_distrib := by
       transfer
-      simp [mul_add, _root_.mul_comm]
+      simp [mul_add, _root_.mul_comm] }
+
+instance linearOrderedCommRing : LinearOrderedCommRing ZNum :=
+  { ZNum.linearOrder, ZNum.addCommGroup, ZNum.addMonoidWithOne, ZNum.nonAssocSemiring with
+    mul_assoc := by transfer
     mul_comm := mul_comm
     exists_pair_ne := ⟨0, 1, by decide⟩
     add_le_add_left := add_le_add_left
