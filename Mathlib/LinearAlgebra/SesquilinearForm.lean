@@ -125,7 +125,6 @@ theorem ortho_smul_left {B : V₁ →ₛₗ[I₁] V₂ →ₛₗ[I₂] K} {x y} 
     · exact H
 #align linear_map.ortho_smul_left LinearMap.ortho_smul_left
 
-set_option synthInstance.etaExperiment true in
 -- todo: this also holds for [CommRing R] [IsDomain R] when J₂ is invertible
 theorem ortho_smul_right {B : V₁ →ₛₗ[I₁] V₂ →ₛₗ[I₂] K} {x y} {a : K₂} {ha : a ≠ 0} :
     IsOrtho B x y ↔ IsOrtho B x (a • y) := by
@@ -140,7 +139,6 @@ theorem ortho_smul_right {B : V₁ →ₛₗ[I₁] V₂ →ₛₗ[I₂] K} {x y}
     · exact H
 #align linear_map.ortho_smul_right LinearMap.ortho_smul_right
 
-set_option synthInstance.etaExperiment true in
 /-- A set of orthogonal vectors `v` with respect to some sesquilinear form `B` is linearly
   independent if for all `i`, `B (v i) (v i) ≠ 0`. -/
 theorem linearIndependent_of_isOrthoᵢ {B : V₁ →ₛₗ[I₁] V₁ →ₛₗ[I₁'] K} {v : n → V₁}
