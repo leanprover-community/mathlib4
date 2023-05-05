@@ -140,4 +140,3 @@ theorem supᵢ [CompleteLattice β] [Countable ι] (hf : ∀ i, AEMeasurable (f 
 #align ae_seq.supr aeSeq.supᵢ
 
 end aeSeq
-
