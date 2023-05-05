@@ -71,7 +71,7 @@ def simpTerm (e : Expr) : MetaM Expr := do
   let e' ← synthesizeUsing' mvar
     -- Note: `simp` does not always insert type hints, so `exact id h` is a way to ensure
     -- that the type of `h` in the local context is saved. Otherwise the type might
-    -- merely be defeq.
+    -- be merely defeq.
     (do evalTactic (← `(tactic| have h := $(← Term.exprToSyntax e); simp at h; exact id h)))
   return e'
 
