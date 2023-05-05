@@ -57,6 +57,16 @@ If `suff` is not a suffix of `s`, it returns `none`. -/
 def isSuffixOf? (suff s : String) : Option String :=
   if s.endsWith suff then some <| s.dropRight suff.length else none
 
+/-- `s.stripPrefix p` will remove `p` from the beginning of `s` if it occurs there,
+or otherwise return `s`. -/
+def stripPrefix (s p : String) :=
+  if s.startsWith p then s.drop p.length else s
+
+/-- `s.stripSuffix p` will remove `p` from the end of `s` if it occurs there,
+or otherwise return `s`. -/
+def stripSuffix (s p : String) :=
+  if s.endsWith p then s.dropRight p.length else s
+
 /-- Count the occurrences of a character in a string. -/
 def count (s : String) (c : Char) : Nat :=
   s.foldl (fun n d => if d = c then n + 1 else n) 0
