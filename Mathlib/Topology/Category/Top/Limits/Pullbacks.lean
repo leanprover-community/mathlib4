@@ -50,8 +50,11 @@ abbrev pullbackSnd (f : X ⟶ Z) (g : Y ⟶ Z) : TopCat.of { p : X × Y // f p.1
 def pullbackCone (f : X ⟶ Z) (g : Y ⟶ Z) : PullbackCone f g :=
   PullbackCone.mk (pullbackFst f g) (pullbackSnd f g)
     (by
+      dsimp [pullbackFst, pullbackSnd, Function.comp]
       ext ⟨x, h⟩
-      simp [h])
+      simp only [TopCat.comp_app]
+      simp only [hom_apply]
+      simp [h, ← hom_apply])
 #align Top.pullback_cone TopCat.pullbackCone
 
 /-- The constructed cone is a limit. -/
@@ -61,10 +64,13 @@ def pullbackConeIsLimit (f : X ⟶ Z) (g : Y ⟶ Z) : IsLimit (pullbackCone f g)
       intro s
       constructor; swap
       exact
-        {
-          toFun := fun x =>
+        { toFun := fun x =>
             ⟨⟨s.fst x, s.snd x⟩, by simpa using ConcreteCategory.congr_hom s.condition x⟩
-          continuous_toFun := sorry }
+          continuous_toFun := by
+            apply Continuous.subtype_mk <| Continuous.prod_mk ?_ ?_
+            · exact (PullbackCone.fst s)|>.continuous_toFun
+            · exact (PullbackCone.snd s)|>.continuous_toFun
+        }
       refine' ⟨_, _, _⟩
       · ext
         delta pullbackCone
@@ -74,6 +80,7 @@ def pullbackConeIsLimit (f : X ⟶ Z) (g : Y ⟶ Z) : IsLimit (pullbackCone f g)
         simp
       · intro m h₁ h₂
         ext x
+        simp only [hom_apply]
         · simpa using ConcreteCategory.congr_hom h₁ x
         · simpa using ConcreteCategory.congr_hom h₂ x)
 #align Top.pullback_cone_is_limit TopCat.pullbackConeIsLimit
