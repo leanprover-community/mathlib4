@@ -48,7 +48,7 @@ noncomputable def aeSeq (hf : ∀ i, AEMeasurable (f i) μ) (p : α → (ι → 
 
 namespace aeSeq
 
-section MemAeSeqSet
+section MemAESeqSet
 
 theorem mk_eq_fun_of_mem_aeSeqSet (hf : ∀ i, AEMeasurable (f i) μ) {x : α} (hx : x ∈ aeSeqSet hf p)
     (i : ι) : (hf i).mk (f i) x = f i x :=
@@ -89,7 +89,7 @@ theorem fun_prop_of_mem_aeSeqSet (hf : ∀ i, AEMeasurable (f i) μ) {x : α} (h
   exact prop_of_mem_aeSeqSet hf hx
 #align ae_seq.fun_prop_of_mem_ae_seq_set aeSeq.fun_prop_of_mem_aeSeqSet
 
-end MemAeSeqSet
+end MemAESeqSet
 
 theorem aeSeqSet_measurableSet {hf : ∀ i, AEMeasurable (f i) μ} : MeasurableSet (aeSeqSet hf p) :=
   (measurableSet_toMeasurable _ _).compl
