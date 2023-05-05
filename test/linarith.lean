@@ -80,8 +80,16 @@ by linarith
 -- Make sure special case for division by 1 is handled:
 example (x : Rat) (h : 0 < x) : 0 < x/1 := by linarith
 
--- Failure. Will look into this, but pushing changes so far.
---example (x : Rat) (h : 0 < x) : 0 < x/(-1) := by linarith
+-- Make sure can divide by -1
+example (x : Rat) (h : x < 0) : 0 < x/(-1) := by linarith
+
+example (x : Rat) (h : x < 0) : 0 < x/(-2) := by linarith
+
+example (x : Rat) (h : x < 0) : 0 < x/(-4/5) := by linarith
+
+example (x : Rat) (h : 0 < x) : 0 < x/2/3 := by linarith
+
+example (x : Rat) (h : 0 < x) : 0 < x/(2/3) := by linarith
 
 end cancel_denoms
 
