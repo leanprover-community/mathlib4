@@ -38,6 +38,8 @@ def shiftFunctor (n : ℤ) : CochainComplex C ℤ ⥤ CochainComplex C ℤ where
   map_id := by intros ; rfl
   map_comp := by intros ; rfl
 
+instance (n : ℤ) : (shiftFunctor C n).Additive where
+
 variable {C}
 
 @[simp]
@@ -77,6 +79,10 @@ instance : HasShift (CochainComplex C ℤ) ℤ := hasShiftMk _ _
   { F := shiftFunctor C
     zero := shiftFunctorZero' C _ rfl
     add := fun n₁ n₂ => shiftFunctorAdd' C n₁ n₂ _ rfl }
+
+instance (n : ℤ) :
+    (CategoryTheory.shiftFunctor (HomologicalComplex C (ComplexShape.up ℤ)) n).Additive :=
+  (inferInstance : (CochainComplex.shiftFunctor C n).Additive)
 
 variable {C}
 
@@ -145,6 +151,18 @@ lemma shiftFunctorZero_eq :
     CategoryTheory.shiftFunctorZero (CochainComplex C ℤ) ℤ = shiftFunctorZero' C 0 rfl := by
   ext
   rw [shiftFunctorZero_hom_app_f, shiftFunctorZero'_hom_app_f]
+
+variable {C}
+
+lemma shiftFunctorComm_hom_app_f (K : CochainComplex C ℤ) (a b p : ℤ) :
+    ((shiftFunctorComm (CochainComplex C ℤ) a b).hom.app K).f p =
+      (K.XIsoOfEq (show p + b + a = p + a + b
+        by dsimp ; rw [add_assoc, add_comm b, add_assoc])).hom := by
+  rw [shiftFunctorComm_eq _ _ _ _ rfl]
+  dsimp
+  rw [shiftFunctorAdd'_inv_app_f', shiftFunctorAdd'_hom_app_f']
+  dsimp [XIsoOfEq]
+  apply eqToHom_trans
 
 end CochainComplex
 
@@ -245,5 +263,11 @@ noncomputable instance hasShift :
 noncomputable instance hasCommShiftQuotient :
     (HomotopyCategory.quotient C (ComplexShape.up ℤ)).HasCommShift ℤ :=
   Quotient.functor_hasCommShift (homotopic C (ComplexShape.up ℤ)) ℤ
+
+instance (n : ℤ) : (shiftFunctor (HomotopyCategory C (ComplexShape.up ℤ)) n).Additive := by
+  have : ((quotient C (ComplexShape.up ℤ) ⋙ shiftFunctor _ n)).Additive := by
+    have e := (quotient C (ComplexShape.up ℤ)).commShiftIso n
+    exact Functor.additive_of_iso e
+  apply Functor.additive_of_full_essSurj_comp (quotient _ _ )
 
 end HomotopyCategory

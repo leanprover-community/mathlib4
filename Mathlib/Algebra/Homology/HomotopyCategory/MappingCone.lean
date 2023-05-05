@@ -401,6 +401,16 @@ lemma inr_desc {K : CochainComplex C ℤ} (α : Cochain F K (-1)) (β : G ⟶ K)
     (eq : δ (-1) 0 α = Cochain.ofHom (φ ≫ β)) :
     inr φ ≫ desc φ α β eq = β := by aesop_cat
 
+lemma desc_f {K : CochainComplex C ℤ} (α : Cochain F K (-1)) (β : G ⟶ K)
+    (eq : δ (-1) 0 α = Cochain.ofHom (φ ≫ β)) (p q : ℤ) (hpq : p + 1 = q) :
+    (desc φ α β eq).f p = (fst φ : Cochain (mappingCone φ) F 1).v p q hpq ≫
+        α.v q p (by rw [← hpq, add_neg_cancel_right]) +
+      (snd φ).v p p (add_zero p) ≫ β.f p := by
+    rw [from_ext_iff _ _ _ _ hpq]
+    simp only [inl_v_desc_f, comp_add, inl_v_fst_v_assoc, inl_v_snd_v_assoc,
+      zero_comp, add_zero, inr_f_desc_f, inr_f_fst_v_assoc, inr_f_snd_v_assoc,
+      zero_add, and_self]
+
 end
 
 noncomputable def descHomotopy {K : CochainComplex C ℤ} (f₁ f₂ : mappingCone φ ⟶ K)
@@ -512,6 +522,16 @@ lemma lift_f_snd_v {K : CochainComplex C ℤ} (α : Cocycle K F 1) (β : Cochain
 lemma lift_snd {K : CochainComplex C ℤ} (α : Cocycle K F 1) (β : Cochain K G 0)
     (eq : δ 0 1 β + (α : Cochain K F 1).comp (Cochain.ofHom φ) (add_zero 1) = 0) :
     (Cochain.ofHom (lift φ α β eq)).comp (snd φ) (zero_add 0) = β := by simp
+
+lemma lift_f {K : CochainComplex C ℤ} (α : Cocycle K F 1) (β : Cochain K G 0)
+    (eq : δ 0 1 β + (α : Cochain K F 1).comp (Cochain.ofHom φ) (add_zero 1) = 0)
+    (p q : ℤ) (hpq : p + 1 = q) :
+    (lift φ α β eq).f p = (α : Cochain K F 1).v p q hpq ≫
+      (inl φ : Cochain F (mappingCone φ) (-1)).v q p (by rw [← hpq, add_neg_cancel_right]) +
+      β.v p p (add_zero p) ≫ (inr φ).f p := by
+    rw [to_ext_iff _ _ _ _ hpq]
+    simp only [lift_f_fst_v, add_comp, assoc, inl_v_fst_v, comp_id, inr_f_fst_v,
+      comp_zero, add_zero, lift_f_snd_v, inl_v_snd_v, inr_f_snd_v, zero_add, and_self]
 
 end
 

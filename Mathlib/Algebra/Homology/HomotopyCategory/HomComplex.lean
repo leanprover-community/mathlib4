@@ -546,6 +546,10 @@ lemma coe_neg (z : Cocycle F G n) : (↑(-z) : Cochain F G n) =
   -(z : Cochain F G n):= rfl
 
 @[simp]
+lemma coe_zsmul (z : Cocycle F G n) (x : ℤ) : (↑(x • z) : Cochain F G n) =
+  x • (z : Cochain F G n) := rfl
+
+@[simp]
 lemma coe_sub (z₁ z₂ : Cocycle F G n) : (↑(z₁ - z₂) : Cochain F G n) =
   (z₁ : Cochain F G n) - (z₂ : Cochain F G n) := rfl
 
@@ -860,6 +864,24 @@ lemma leftShift_comp_zero_cochain (a n' : ℤ) (hn' : n + a = n') (γ' : Cochain
     (γ.comp γ' h).leftShift a n' hn' = (γ.leftShift a n' hn').comp γ' (add_zero n') := by
   rw [leftShift_comp γ a n' hn' γ' (add_zero _) hn', mul_zero, ε_0, one_smul]
 
+def shift (a : ℤ) : Cochain (K⟦a⟧) (L⟦a⟧) n :=
+  Cochain.mk (fun p q hpq => (K.shiftFunctorObjXIso a p _ rfl).hom ≫
+    γ.v (p+a) (q+a) (by linarith) ≫ (L.shiftFunctorObjXIso a q _ rfl).inv)
+
+lemma shift_v' (a : ℤ) (p q : ℤ) (hpq : p + n = q) (p' q' : ℤ)
+    (hp' : p' = p + a) (hq' : q' = q + a) :
+    (γ.shift a).v p q hpq = (K.shiftFunctorObjXIso a p p' hp').hom ≫
+      γ.v p' q' (by rw [hp', hq', ← hpq, add_assoc, add_comm a, add_assoc]) ≫
+      (L.shiftFunctorObjXIso a q q' hq').inv := by
+  subst hp' hq'
+  rfl
+
+@[simp]
+lemma shift_v (a : ℤ) (p q : ℤ) (hpq : p + n = q) :
+    (γ.shift a).v p q hpq = γ.v (p+a) (q+a) (by rw [← hpq, add_assoc, add_comm a, add_assoc]) := by
+  simp only [shift_v' γ a p q hpq _ _ rfl rfl, shiftFunctor_obj_X, shiftFunctorObjXIso,
+    HomologicalComplex.XIsoOfEq_rfl, Iso.refl_hom, Iso.refl_inv, comp_id, id_comp]
+
 variable (K L)
 
 @[simp]
@@ -875,6 +897,10 @@ lemma leftShift_zero (a n' : ℤ) (hn' : n + a = n') :
   ext ⟨p, q, hpq⟩
   dsimp
   rw [leftShift_v _ a n' hn' p q hpq (p+a) (by linarith), zero_v, comp_zero, zsmul_zero]
+
+@[simp]
+lemma shift_zero (a : ℤ) :
+    (0 : Cochain K L n).shift a = 0 := by aesop_cat
 
 variable {K L}
 
@@ -894,6 +920,10 @@ lemma leftShift_neg (a n' : ℤ) (hn' : n + a = n') :
     comp_neg, neg_zsmul, zsmul_neg]
 
 @[simp]
+lemma shift_neg (a : ℤ) :
+    (-γ).shift a = -γ.shift a := by aesop_cat
+
+@[simp]
 lemma rightShift_add (a n' : ℤ) (hn' : n' + a = n) :
   (γ₁ + γ₂).rightShift a n' hn' = γ₁.rightShift a n' hn' + γ₂.rightShift a n' hn' := by
   ext ⟨p, q, hpq⟩
@@ -909,6 +939,10 @@ lemma leftShift_add (a n' : ℤ) (hn' : n + a = n') :
     comp_add, zsmul_add]
 
 @[simp]
+lemma shift_add (a : ℤ) :
+    (γ₁ + γ₂).shift a = γ₁.shift a + γ₂.shift a := by aesop_cat
+
+@[simp]
 lemma rightShift_zsmul (a n' : ℤ) (hn' : n' + a = n) (x : ℤ) :
   (x • γ).rightShift a n' hn' = x • γ.rightShift a n' hn' := by
   ext ⟨p, q, hpq⟩
@@ -922,6 +956,10 @@ lemma leftShift_zsmul (a n' : ℤ) (hn' : n + a = n') (x : ℤ):
   dsimp
   simp only [leftShift_v _ a n' hn' p q hpq (p+a) (by linarith), zsmul_v, smul_smul,
     comp_zsmul, mul_comm x]
+
+@[simp]
+lemma shift_zsmul (a : ℤ) (x : ℤ):
+    (x • γ).shift a = x • γ.shift a := by aesop_cat
 
 lemma δ_rightShift (a n' m' : ℤ) (hn' : n' + a = n) (m : ℤ) (hm' : m' + a = m) :
     δ n' m' (γ.rightShift a n' hn') = ε a • (δ n m γ).rightShift a m' hm' := by
@@ -966,6 +1004,19 @@ lemma δ_leftShift (a n' m' : ℤ) (hn' : n + a = n') (m : ℤ) (hm' : m + a = m
   . have hnm' : ¬ n' + 1 = m' := fun _ => hnm (by linarith)
     rw [δ_shape _ _ hnm', δ_shape _ _ hnm, leftShift_zero, smul_zero]
 
+@[simp]
+lemma δ_shift (a m : ℤ) :
+    δ n m (γ.shift a) = ε a • (δ n m γ).shift a := by
+  by_cases hnm : n + 1 = m
+  . ext ⟨p, q, hpq⟩
+    dsimp
+    simp only [shift_v, sub_add_cancel, shiftFunctor_obj_d',
+      δ_v n m hnm _ p q hpq (q-1) (p+1) rfl rfl,
+      δ_v n m hnm _ (p+a) (q+a) (by linarith) (q-1+a) (p+1+a) (by linarith) (by linarith),
+      smul_add, comp_zsmul, zsmul_comp, smul_smul, mul_comm (ε a)]
+  . rw [δ_shape _ _ hnm, δ_shape _ _ hnm, shift_zero, smul_zero]
+
+
 end Cochain
 
 namespace Cocycle
@@ -983,6 +1034,10 @@ def leftShift (a n' : ℤ) (hn' : n + a = n') : Cocycle (K⟦a⟧) L n' :=
   Cocycle.mk ((γ : Cochain K L n).leftShift a n' hn') _ rfl (by
     simp only [Cochain.δ_leftShift _ a n' (n'+1) hn' (n+1) (by linarith),
       δ_eq_zero, Cochain.leftShift_zero, smul_zero])
+
+@[simps!]
+def shift (a : ℤ) : Cocycle (K⟦a⟧) (L⟦a⟧) n :=
+  Cocycle.mk ((γ : Cochain K L n).shift a) _ rfl (by simp)
 
 end Cocycle
 

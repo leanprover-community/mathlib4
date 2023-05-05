@@ -1,10 +1,11 @@
 import Mathlib.CategoryTheory.Triangulated.Basic
 import Mathlib.CategoryTheory.Preadditive.Basic
 import Mathlib.CategoryTheory.Shift.CommShift
+import Mathlib.CategoryTheory.Triangulated.TriangleShift
 
 namespace CategoryTheory
 
-open Category Limits
+open Category Limits Pretriangulated Preadditive
 
 namespace Functor
 
@@ -27,3 +28,26 @@ def mapTriangle : Pretriangulated.Triangle C ⥤ Pretriangulated.Triangle D wher
         dsimp [Functor.comp]
         simp only [Category.assoc, ← NatTrans.naturality,
           ← F.map_comp_assoc, f.comm₃] }
+
+attribute [local simp] map_zsmul comp_zsmul zsmul_comp
+
+-- TODO : extend this to [(F.mapTriangle).HasCommShift ℤ]
+
+noncomputable def mapTriangleCommShiftIso [F.Additive] (n : ℤ) :
+    Triangle.shiftFunctor C n ⋙ F.mapTriangle ≅ F.mapTriangle ⋙ Triangle.shiftFunctor D n :=
+  NatIso.ofComponents (fun T => Triangle.isoMk _ _
+    ((F.commShiftIso n).app _) ((F.commShiftIso n).app _) ((F.commShiftIso n).app _)
+    (by aesop_cat)
+    (by aesop_cat)
+    (by
+      dsimp
+      simp only [map_zsmul, map_comp, zsmul_comp, assoc, comp_zsmul,
+        ← F.commShiftIso_hom_naturality_assoc]
+      congr 2
+      rw [F.map_shiftFunctorComm T.obj₁ 1 n]
+      simp only [assoc, Iso.inv_hom_id_app_assoc, ← Functor.map_comp, Iso.inv_hom_id_app]
+      dsimp
+      simp only [Functor.map_id, comp_id]))
+    (by aesop_cat)
+
+end Functor

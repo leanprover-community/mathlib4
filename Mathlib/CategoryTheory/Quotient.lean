@@ -123,7 +123,7 @@ def functor : C ⥤ Quotient r where
 
 noncomputable instance fullFunctor : Full (functor r) where preimage := @fun X Y f ↦ Quot.out f
 
-instance : EssSurj (functor r)
+instance essSurj_functor: EssSurj (functor r)
     where mem_essImage Y :=
     ⟨Y.as, ⟨eqToIso (by
             ext

@@ -83,11 +83,13 @@ instance [HasZeroObject V] : HasZeroObject (HomotopyCategory V c) :=
 
 variable {V c}
 
-lemma quotient_map_surjective {X Y : HomologicalComplex V c}
-    (f : (quotient _ _ ).obj X ⟶ (quotient _ _ ).obj Y) :
-    ∃ (g : X ⟶ Y), f = (quotient _ _).map g := by
-  obtain ⟨g⟩ := f
-  exact ⟨g, rfl⟩
+
+instance : Full (quotient V c) := Functor.fullOfSurjective _ (fun X Y f => by
+  obtain ⟨f⟩ := f
+  exact ⟨f, rfl⟩)
+
+instance : EssSurj (quotient V c) :=
+  Quotient.essSurj_functor _
 
 -- porting note: removed @[simp] attribute because it hinders the automatic application of the
 -- more useful `quotient_map_out`

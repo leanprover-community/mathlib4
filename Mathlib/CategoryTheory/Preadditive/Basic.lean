@@ -446,6 +446,16 @@ theorem hasCoequalizers_of_hasCokernels [HasCokernels C] : HasCoequalizers C :=
 
 end Equalizers
 
+@[simps]
+def mulIso {C : Type _} [Category C] [Preadditive C]
+  {X Y : C} (a : Units ℤ) (e : X ≅ Y) : X ≅ Y where
+  hom := (a : ℤ) • e.hom
+  inv := ((a⁻¹ : Units ℤ) : ℤ) • e.inv
+  hom_inv_id := by
+    simp only [comp_zsmul, zsmul_comp, smul_smul, Units.inv_mul, one_smul, e.hom_inv_id]
+  inv_hom_id := by
+    simp only [comp_zsmul, zsmul_comp, smul_smul, Units.mul_inv, one_smul, e.inv_hom_id]
+
 end Preadditive
 
 end CategoryTheory
