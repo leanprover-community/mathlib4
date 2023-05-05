@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot, Yury Kudryashov, Rémy
 Ported by: Winston Yin, Arien Malec
 
 ! This file was ported from Lean 3 source module data.set.intervals.basic
-! leanprover-community/mathlib commit 198161d833f2c01498c39c266b0b3dbe2c7a8c07
+! leanprover-community/mathlib commit 4367b192b58a665b6f18773f73eb492eb4df7990
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
