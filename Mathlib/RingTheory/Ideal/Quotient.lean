@@ -83,24 +83,24 @@ instance commRing (I : Ideal R) : CommRing (R ⧸ I) :=
     inferInstanceAs (CommRing (Quotient.ringCon I).Quotient) with }
 #align ideal.quotient.comm_ring Ideal.Quotient.commRing
 
-set_option synthInstance.maxHeartbeats 700000 in
-set_option maxHeartbeats 700000 in
 -- this instance is harder to find than the one via `Algebra α (R ⧸ I)`, so use a lower priority
 instance (priority := 100) isScalarTower_right {α} [SMul α R] [IsScalarTower α R R] :
+    -- porting note: added `letI` since otherwise this instance can't be found
+    letI : SMul (R ⧸ I) (R ⧸ I) := Mul.toSMul _
     IsScalarTower α (R ⧸ I) (R ⧸ I) :=
   (Quotient.ringCon I).isScalarTower_right
 #align ideal.quotient.is_scalar_tower_right Ideal.Quotient.isScalarTower_right
 
-set_option synthInstance.maxHeartbeats 700000 in
-set_option maxHeartbeats 700000 in
 instance smulCommClass {α} [SMul α R] [IsScalarTower α R R] [SMulCommClass α R R] :
+    -- porting note: added `letI` since otherwise this instance can't be found
+    letI : SMul (R ⧸ I) (R ⧸ I) := Mul.toSMul _
     SMulCommClass α (R ⧸ I) (R ⧸ I) :=
   (Quotient.ringCon I).smulCommClass
 #align ideal.quotient.smul_comm_class Ideal.Quotient.smulCommClass
 
-set_option synthInstance.maxHeartbeats 700000 in
-set_option maxHeartbeats 700000 in
 instance smulCommClass' {α} [SMul α R] [IsScalarTower α R R] [SMulCommClass R α R] :
+    -- porting note: added `letI` since otherwise this instance can't be found
+    letI : SMul (R ⧸ I) (R ⧸ I) := Mul.toSMul _
     SMulCommClass (R ⧸ I) α (R ⧸ I) :=
   (Quotient.ringCon I).smulCommClass'
 #align ideal.quotient.smul_comm_class' Ideal.Quotient.smulCommClass'
