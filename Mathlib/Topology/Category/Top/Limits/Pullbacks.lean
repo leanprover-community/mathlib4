@@ -8,8 +8,8 @@ Authors: Patrick Massot, Scott Morrison, Mario Carneiro, Andrew Yang
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.Category.Top.Limits.Products
-import Mathbin.CategoryTheory.ConcreteCategory.Elementwise
+import Mathlib.Topology.Category.Top.Limits.Products
+import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 
 /-!
 # Pullbacks in the category of topological spaces.
@@ -122,8 +122,7 @@ theorem pullbackIsoProdSubtype_hom_snd (f : X ⟶ Z) (g : Y ⟶ Z) :
 theorem pullbackIsoProdSubtype_hom_apply {f : X ⟶ Z} {g : Y ⟶ Z} (x : pullback f g) :
     (pullbackIsoProdSubtype f g).Hom x =
       ⟨⟨(pullback.fst : pullback f g ⟶ _) x, (pullback.snd : pullback f g ⟶ _) x⟩, by
-        simpa using concrete_category.congr_hom pullback.condition x⟩ :=
-  by
+        simpa using concrete_category.congr_hom pullback.condition x⟩ := by
   ext
   exacts[concrete_category.congr_hom (pullback_iso_prod_subtype_hom_fst f g) x,
     concrete_category.congr_hom (pullback_iso_prod_subtype_hom_snd f g) x]
@@ -132,8 +131,7 @@ theorem pullbackIsoProdSubtype_hom_apply {f : X ⟶ Z} {g : Y ⟶ Z} (x : pullba
 theorem pullback_topology {X Y Z : TopCat.{u}} (f : X ⟶ Z) (g : Y ⟶ Z) :
     (pullback f g).TopologicalSpace =
       induced (pullback.fst : pullback f g ⟶ _) X.TopologicalSpace ⊓
-        induced (pullback.snd : pullback f g ⟶ _) Y.TopologicalSpace :=
-  by
+        induced (pullback.snd : pullback f g ⟶ _) Y.TopologicalSpace := by
   let homeo := homeo_of_iso (pullback_iso_prod_subtype f g)
   refine' homeo.inducing.induced.trans _
   change induced homeo (induced _ (_ ⊓ _)) = _
@@ -142,8 +140,7 @@ theorem pullback_topology {X Y Z : TopCat.{u}} (f : X ⟶ Z) (g : Y ⟶ Z) :
 
 theorem range_pullback_to_prod {X Y Z : TopCat} (f : X ⟶ Z) (g : Y ⟶ Z) :
     Set.range (prod.lift pullback.fst pullback.snd : pullback f g ⟶ X ⨯ Y) =
-      { x | (Limits.prod.fst ≫ f) x = (Limits.prod.snd ≫ g) x } :=
-  by
+      { x | (Limits.prod.fst ≫ f) x = (Limits.prod.snd ≫ g) x } := by
   ext x
   constructor
   · rintro ⟨y, rfl⟩
@@ -172,8 +169,7 @@ theorem range_pullback_map {W X Y Z S T : TopCat} (f₁ : W ⟶ S) (f₂ : X ⟶
     (eq₂ : f₂ ≫ i₃ = i₂ ≫ g₂) :
     Set.range (pullback.map f₁ f₂ g₁ g₂ i₁ i₂ i₃ eq₁ eq₂) =
       (pullback.fst : pullback g₁ g₂ ⟶ _) ⁻¹' Set.range i₁ ∩
-        (pullback.snd : pullback g₁ g₂ ⟶ _) ⁻¹' Set.range i₂ :=
-  by
+        (pullback.snd : pullback g₁ g₂ ⟶ _) ⁻¹' Set.range i₂ := by
   ext
   constructor
   · rintro ⟨y, rfl⟩
@@ -197,8 +193,7 @@ theorem range_pullback_map {W X Y Z S T : TopCat} (f₁ : W ⟶ S) (f₂ : X ⟶
 #align Top.range_pullback_map TopCat.range_pullback_map
 
 theorem pullback_fst_range {X Y S : TopCat} (f : X ⟶ S) (g : Y ⟶ S) :
-    Set.range (pullback.fst : pullback f g ⟶ _) = { x : X | ∃ y : Y, f x = g y } :=
-  by
+    Set.range (pullback.fst : pullback f g ⟶ _) = { x : X | ∃ y : Y, f x = g y } := by
   ext x
   constructor
   · rintro ⟨y, rfl⟩
@@ -210,8 +205,7 @@ theorem pullback_fst_range {X Y S : TopCat} (f : X ⟶ S) (g : Y ⟶ S) :
 #align Top.pullback_fst_range TopCat.pullback_fst_range
 
 theorem pullback_snd_range {X Y S : TopCat} (f : X ⟶ S) (g : Y ⟶ S) :
-    Set.range (pullback.snd : pullback f g ⟶ _) = { y : Y | ∃ x : X, f x = g y } :=
-  by
+    Set.range (pullback.snd : pullback f g ⟶ _) = { y : Y | ∃ x : X, f x = g y } := by
   ext y
   constructor
   · rintro ⟨x, rfl⟩
@@ -234,8 +228,7 @@ then the induced morphism `W ×ₛ X ⟶ Y ×ₜ Z` is also an embedding.
 theorem pullback_map_embedding_of_embeddings {W X Y Z S T : TopCat} (f₁ : W ⟶ S) (f₂ : X ⟶ S)
     (g₁ : Y ⟶ T) (g₂ : Z ⟶ T) {i₁ : W ⟶ Y} {i₂ : X ⟶ Z} (H₁ : Embedding i₁) (H₂ : Embedding i₂)
     (i₃ : S ⟶ T) (eq₁ : f₁ ≫ i₃ = i₁ ≫ g₁) (eq₂ : f₂ ≫ i₃ = i₂ ≫ g₂) :
-    Embedding (pullback.map f₁ f₂ g₁ g₂ i₁ i₂ i₃ eq₁ eq₂) :=
-  by
+    Embedding (pullback.map f₁ f₂ g₁ g₂ i₁ i₂ i₃ eq₁ eq₂) := by
   refine'
     embedding_of_embedding_compose (ContinuousMap.continuous_toFun _)
       (show Continuous (prod.lift pullback.fst pullback.snd : pullback g₁ g₂ ⟶ Y ⨯ Z) from
@@ -259,8 +252,7 @@ is mono, then the induced morphism `W ×ₛ X ⟶ Y ×ₜ Z` is also an open emb
 theorem pullback_map_openEmbedding_of_open_embeddings {W X Y Z S T : TopCat} (f₁ : W ⟶ S)
     (f₂ : X ⟶ S) (g₁ : Y ⟶ T) (g₂ : Z ⟶ T) {i₁ : W ⟶ Y} {i₂ : X ⟶ Z} (H₁ : OpenEmbedding i₁)
     (H₂ : OpenEmbedding i₂) (i₃ : S ⟶ T) [H₃ : Mono i₃] (eq₁ : f₁ ≫ i₃ = i₁ ≫ g₁)
-    (eq₂ : f₂ ≫ i₃ = i₂ ≫ g₂) : OpenEmbedding (pullback.map f₁ f₂ g₁ g₂ i₁ i₂ i₃ eq₁ eq₂) :=
-  by
+    (eq₂ : f₂ ≫ i₃ = i₂ ≫ g₂) : OpenEmbedding (pullback.map f₁ f₂ g₁ g₂ i₁ i₂ i₃ eq₁ eq₂) := by
   constructor
   ·
     apply
@@ -272,8 +264,7 @@ theorem pullback_map_openEmbedding_of_open_embeddings {W X Y Z S T : TopCat} (f�
 #align Top.pullback_map_open_embedding_of_open_embeddings TopCat.pullback_map_openEmbedding_of_open_embeddings
 
 theorem snd_embedding_of_left_embedding {X Y S : TopCat} {f : X ⟶ S} (H : Embedding f) (g : Y ⟶ S) :
-    Embedding ⇑(pullback.snd : pullback f g ⟶ Y) :=
-  by
+    Embedding ⇑(pullback.snd : pullback f g ⟶ Y) := by
   convert(homeo_of_iso (as_iso (pullback.snd : pullback (𝟙 S) g ⟶ _))).Embedding.comp
       (pullback_map_embedding_of_embeddings f g (𝟙 _) g H (homeo_of_iso (iso.refl _)).Embedding
         (𝟙 _) rfl (by simp))
@@ -282,8 +273,7 @@ theorem snd_embedding_of_left_embedding {X Y S : TopCat} {f : X ⟶ S} (H : Embe
 #align Top.snd_embedding_of_left_embedding TopCat.snd_embedding_of_left_embedding
 
 theorem fst_embedding_of_right_embedding {X Y S : TopCat} (f : X ⟶ S) {g : Y ⟶ S}
-    (H : Embedding g) : Embedding ⇑(pullback.fst : pullback f g ⟶ X) :=
-  by
+    (H : Embedding g) : Embedding ⇑(pullback.fst : pullback f g ⟶ X) := by
   convert(homeo_of_iso (as_iso (pullback.fst : pullback f (𝟙 S) ⟶ _))).Embedding.comp
       (pullback_map_embedding_of_embeddings f g f (𝟙 _) (homeo_of_iso (iso.refl _)).Embedding H
         (𝟙 _) rfl (by simp))
@@ -292,8 +282,7 @@ theorem fst_embedding_of_right_embedding {X Y S : TopCat} (f : X ⟶ S) {g : Y �
 #align Top.fst_embedding_of_right_embedding TopCat.fst_embedding_of_right_embedding
 
 theorem embedding_of_pullback_embeddings {X Y S : TopCat} {f : X ⟶ S} {g : Y ⟶ S} (H₁ : Embedding f)
-    (H₂ : Embedding g) : Embedding (limit.π (cospan f g) WalkingCospan.one) :=
-  by
+    (H₂ : Embedding g) : Embedding (limit.π (cospan f g) WalkingCospan.one) := by
   convert H₂.comp (snd_embedding_of_left_embedding H₁ g)
   erw [← coe_comp]
   congr
@@ -301,8 +290,7 @@ theorem embedding_of_pullback_embeddings {X Y S : TopCat} {f : X ⟶ S} {g : Y �
 #align Top.embedding_of_pullback_embeddings TopCat.embedding_of_pullback_embeddings
 
 theorem snd_openEmbedding_of_left_openEmbedding {X Y S : TopCat} {f : X ⟶ S} (H : OpenEmbedding f)
-    (g : Y ⟶ S) : OpenEmbedding ⇑(pullback.snd : pullback f g ⟶ Y) :=
-  by
+    (g : Y ⟶ S) : OpenEmbedding ⇑(pullback.snd : pullback f g ⟶ Y) := by
   convert(homeo_of_iso (as_iso (pullback.snd : pullback (𝟙 S) g ⟶ _))).OpenEmbedding.comp
       (pullback_map_open_embedding_of_open_embeddings f g (𝟙 _) g H
         (homeo_of_iso (iso.refl _)).OpenEmbedding (𝟙 _) rfl (by simp))
@@ -311,8 +299,7 @@ theorem snd_openEmbedding_of_left_openEmbedding {X Y S : TopCat} {f : X ⟶ S} (
 #align Top.snd_open_embedding_of_left_open_embedding TopCat.snd_openEmbedding_of_left_openEmbedding
 
 theorem fst_openEmbedding_of_right_openEmbedding {X Y S : TopCat} (f : X ⟶ S) {g : Y ⟶ S}
-    (H : OpenEmbedding g) : OpenEmbedding ⇑(pullback.fst : pullback f g ⟶ X) :=
-  by
+    (H : OpenEmbedding g) : OpenEmbedding ⇑(pullback.fst : pullback f g ⟶ X) := by
   convert(homeo_of_iso (as_iso (pullback.fst : pullback f (𝟙 S) ⟶ _))).OpenEmbedding.comp
       (pullback_map_open_embedding_of_open_embeddings f g f (𝟙 _)
         (homeo_of_iso (iso.refl _)).OpenEmbedding H (𝟙 _) rfl (by simp))
@@ -323,8 +310,7 @@ theorem fst_openEmbedding_of_right_openEmbedding {X Y S : TopCat} (f : X ⟶ S) 
 /-- If `X ⟶ S`, `Y ⟶ S` are open embeddings, then so is `X ×ₛ Y ⟶ S`. -/
 theorem openEmbedding_of_pullback_open_embeddings {X Y S : TopCat} {f : X ⟶ S} {g : Y ⟶ S}
     (H₁ : OpenEmbedding f) (H₂ : OpenEmbedding g) :
-    OpenEmbedding (limit.π (cospan f g) WalkingCospan.one) :=
-  by
+    OpenEmbedding (limit.π (cospan f g) WalkingCospan.one) := by
   convert H₂.comp (snd_open_embedding_of_left_open_embedding H₁ g)
   erw [← coe_comp]
   congr
@@ -349,8 +335,7 @@ theorem fst_iso_of_right_embedding_range_subset {X Y S : TopCat} (f : X ⟶ S) {
 #align Top.fst_iso_of_right_embedding_range_subset TopCat.fst_iso_of_right_embedding_range_subset
 
 theorem snd_iso_of_left_embedding_range_subset {X Y S : TopCat} {f : X ⟶ S} (hf : Embedding f)
-    (g : Y ⟶ S) (H : Set.range g ⊆ Set.range f) : IsIso (pullback.snd : pullback f g ⟶ Y) :=
-  by
+    (g : Y ⟶ S) (H : Set.range g ⊆ Set.range f) : IsIso (pullback.snd : pullback f g ⟶ Y) := by
   let this : (pullback f g : TopCat) ≃ₜ Y :=
     (Homeomorph.ofEmbedding _ (snd_embedding_of_left_embedding hf g)).trans
       { toFun := coe
@@ -367,8 +352,7 @@ theorem snd_iso_of_left_embedding_range_subset {X Y S : TopCat} {f : X ⟶ S} (h
 
 theorem pullback_snd_image_fst_preimage (f : X ⟶ Z) (g : Y ⟶ Z) (U : Set X) :
     (pullback.snd : pullback f g ⟶ _) '' ((pullback.fst : pullback f g ⟶ _) ⁻¹' U) =
-      g ⁻¹' (f '' U) :=
-  by
+      g ⁻¹' (f '' U) := by
   ext x
   constructor
   · rintro ⟨y, hy, rfl⟩
@@ -380,8 +364,7 @@ theorem pullback_snd_image_fst_preimage (f : X ⟶ Z) (g : Y ⟶ Z) (U : Set X) 
 
 theorem pullback_fst_image_snd_preimage (f : X ⟶ Z) (g : Y ⟶ Z) (U : Set Y) :
     (pullback.fst : pullback f g ⟶ _) '' ((pullback.snd : pullback f g ⟶ _) ⁻¹' U) =
-      f ⁻¹' (g '' U) :=
-  by
+      f ⁻¹' (g '' U) := by
   ext x
   constructor
   · rintro ⟨y, hy, rfl⟩
@@ -395,8 +378,7 @@ theorem pullback_fst_image_snd_preimage (f : X ⟶ Z) (g : Y ⟶ Z) (U : Set Y) 
 end Pullback
 
 theorem coinduced_of_isColimit {F : J ⥤ TopCat.{max v u}} (c : Cocone F) (hc : IsColimit c) :
-    c.pt.TopologicalSpace = ⨆ j, (F.obj j).TopologicalSpace.coinduced (c.ι.app j) :=
-  by
+    c.pt.TopologicalSpace = ⨆ j, (F.obj j).TopologicalSpace.coinduced (c.ι.app j) := by
   let homeo := homeo_of_iso (hc.cocone_point_unique_up_to_iso (colimit_cocone_is_colimit F))
   ext
   refine' homeo.symm.is_open_preimage.symm.trans (Iff.trans _ is_open_supr_iff.symm)
@@ -409,16 +391,14 @@ theorem colimit_topology (F : J ⥤ TopCat.{max v u}) :
 #align Top.colimit_topology TopCat.colimit_topology
 
 theorem colimit_isOpen_iff (F : J ⥤ TopCat.{max v u}) (U : Set ((colimit F : _) : Type max v u)) :
-    IsOpen U ↔ ∀ j, IsOpen (colimit.ι F j ⁻¹' U) :=
-  by
+    IsOpen U ↔ ∀ j, IsOpen (colimit.ι F j ⁻¹' U) := by
   conv_lhs => rw [colimit_topology F]
   exact isOpen_supᵢ_iff
 #align Top.colimit_is_open_iff TopCat.colimit_isOpen_iff
 
 theorem coequalizer_isOpen_iff (F : WalkingParallelPair ⥤ TopCat.{u})
     (U : Set ((colimit F : _) : Type u)) :
-    IsOpen U ↔ IsOpen (colimit.ι F WalkingParallelPair.one ⁻¹' U) :=
-  by
+    IsOpen U ↔ IsOpen (colimit.ι F WalkingParallelPair.one ⁻¹' U) := by
   rw [colimit_isOpen_iff.{u}]
   constructor
   · intro H
