@@ -9,6 +9,7 @@ Authors: Rémy Degenne
 ! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.MeasurableSpace
+import Mathlib.MeasureTheory.Measure.MeasureSpaceDef
 
 /-!
 # Sequence of measurable functions associated to a sequence of a.e.-measurable functions
@@ -53,7 +54,7 @@ theorem mk_eq_fun_of_mem_aeSeqSet (hf : ∀ i, AEMeasurable (f i) μ) {x : α} (
     (i : ι) : (hf i).mk (f i) x = f i x :=
   haveI h_ss : aeSeqSet hf p ⊆ { x | ∀ i, f i x = (hf i).mk (f i) x } := by
     rw [aeSeqSet, ← compl_compl { x | ∀ i, f i x = (hf i).mk (f i) x }, Set.compl_subset_compl]
-    refine' Set.Subset.trans (set.compl_subset_compl.mpr fun x h => _) (subset_to_measurable _ _)
+    refine' Set.Subset.trans (Set.compl_subset_compl.mpr fun x h => _) (subset_toMeasurable _ _)
     exact h.1
   (h_ss hx i).symm
 #align ae_seq.mk_eq_fun_of_mem_ae_seq_set aeSeq.mk_eq_fun_of_mem_aeSeqSet
@@ -65,16 +66,16 @@ theorem aeSeq_eq_mk_of_mem_aeSeqSet (hf : ∀ i, AEMeasurable (f i) μ) {x : α}
 
 theorem aeSeq_eq_fun_of_mem_aeSeqSet (hf : ∀ i, AEMeasurable (f i) μ) {x : α}
     (hx : x ∈ aeSeqSet hf p) (i : ι) : aeSeq hf p i x = f i x := by
-  simp only [ae_seq_eq_mk_of_mem_ae_seq_set hf hx i, mk_eq_fun_of_mem_ae_seq_set hf hx i]
+  simp only [aeSeq_eq_mk_of_mem_aeSeqSet hf hx i, mk_eq_fun_of_mem_aeSeqSet hf hx i]
 #align ae_seq.ae_seq_eq_fun_of_mem_ae_seq_set aeSeq.aeSeq_eq_fun_of_mem_aeSeqSet
 
 theorem prop_of_mem_aeSeqSet (hf : ∀ i, AEMeasurable (f i) μ) {x : α} (hx : x ∈ aeSeqSet hf p) :
     p x fun n => aeSeq hf p n x := by
   simp only [aeSeq, hx, if_true]
-  rw [funext fun n => mk_eq_fun_of_mem_ae_seq_set hf hx n]
+  rw [funext fun n => mk_eq_fun_of_mem_aeSeqSet hf hx n]
   have h_ss : aeSeqSet hf p ⊆ { x | p x fun n => f n x } := by
     rw [← compl_compl { x | p x fun n => f n x }, aeSeqSet, Set.compl_subset_compl]
-    refine' Set.Subset.trans (set.compl_subset_compl.mpr _) (subset_to_measurable _ _)
+    refine' Set.Subset.trans (Set.compl_subset_compl.mpr _) (subset_toMeasurable _ _)
     exact fun x hx => hx.2
   have hx' := Set.mem_of_subset_of_mem h_ss hx
   exact hx'
@@ -83,9 +84,9 @@ theorem prop_of_mem_aeSeqSet (hf : ∀ i, AEMeasurable (f i) μ) {x : α} (hx : 
 theorem fun_prop_of_mem_aeSeqSet (hf : ∀ i, AEMeasurable (f i) μ) {x : α} (hx : x ∈ aeSeqSet hf p) :
     p x fun n => f n x := by
   have h_eq : (fun n => f n x) = fun n => aeSeq hf p n x :=
-    funext fun n => (ae_seq_eq_fun_of_mem_ae_seq_set hf hx n).symm
+    funext fun n => (aeSeq_eq_fun_of_mem_aeSeqSet hf hx n).symm
   rw [h_eq]
-  exact prop_of_mem_ae_seq_set hf hx
+  exact prop_of_mem_aeSeqSet hf hx
 #align ae_seq.fun_prop_of_mem_ae_seq_set aeSeq.fun_prop_of_mem_aeSeqSet
 
 end MemAeSeqSet
@@ -96,12 +97,12 @@ theorem aeSeqSet_measurableSet {hf : ∀ i, AEMeasurable (f i) μ} : MeasurableS
 
 theorem measurable (hf : ∀ i, AEMeasurable (f i) μ) (p : α → (ι → β) → Prop) (i : ι) :
     Measurable (aeSeq hf p i) :=
-  Measurable.ite aeSeqSet_measurableSet (hf i).measurable_mk <| measurable_const' fun x y => rfl
+  Measurable.ite aeSeqSet_measurableSet (hf i).measurable_mk <| measurable_const' fun _ _ => rfl
 #align ae_seq.measurable aeSeq.measurable
 
 theorem measure_compl_aeSeqSet_eq_zero [Countable ι] (hf : ∀ i, AEMeasurable (f i) μ)
     (hp : ∀ᵐ x ∂μ, p x fun n => f n x) : μ (aeSeqSet hf pᶜ) = 0 := by
-  rw [aeSeqSet, compl_compl, measure_to_measurable]
+  rw [aeSeqSet, compl_compl, measure_toMeasurable]
   have hf_eq := fun i => (hf i).ae_eq_mk
   simp_rw [Filter.EventuallyEq, ← ae_all_iff] at hf_eq
   exact Filter.Eventually.and hf_eq hp
@@ -112,16 +113,16 @@ theorem aeSeq_eq_mk_ae [Countable ι] (hf : ∀ i, AEMeasurable (f i) μ)
   haveI h_ss : aeSeqSet hf p ⊆ { a : α | ∀ i, aeSeq hf p i a = (hf i).mk (f i) a } := fun x hx i =>
     by simp only [aeSeq, hx, if_true]
   le_antisymm
-    (le_trans (measure_mono (set.compl_subset_compl.mpr h_ss))
-      (le_of_eq (measure_compl_ae_seq_set_eq_zero hf hp)))
+    (le_trans (measure_mono (Set.compl_subset_compl.mpr h_ss))
+      (le_of_eq (measure_compl_aeSeqSet_eq_zero hf hp)))
     (zero_le _)
 #align ae_seq.ae_seq_eq_mk_ae aeSeq.aeSeq_eq_mk_ae
 
 theorem aeSeq_eq_fun_ae [Countable ι] (hf : ∀ i, AEMeasurable (f i) μ)
     (hp : ∀ᵐ x ∂μ, p x fun n => f n x) : ∀ᵐ a : α ∂μ, ∀ i : ι, aeSeq hf p i a = f i a :=
-  haveI h_ss : { a : α | ¬∀ i : ι, aeSeq hf p i a = f i a } ⊆ aeSeqSet hf pᶜ := fun x =>
-    mt fun hx i => ae_seq_eq_fun_of_mem_ae_seq_set hf hx i
-  measure_mono_null h_ss (measure_compl_ae_seq_set_eq_zero hf hp)
+  haveI h_ss : { a : α | ¬∀ i : ι, aeSeq hf p i a = f i a } ⊆ aeSeqSet hf pᶜ := fun _ =>
+    mt fun hx i => aeSeq_eq_fun_of_mem_aeSeqSet hf hx i
+  measure_mono_null h_ss (measure_compl_aeSeqSet_eq_zero hf hp)
 #align ae_seq.ae_seq_eq_fun_ae aeSeq.aeSeq_eq_fun_ae
 
 theorem aeSeq_n_eq_fun_n_ae [Countable ι] (hf : ∀ i, AEMeasurable (f i) μ)
@@ -135,8 +136,8 @@ theorem supᵢ [CompleteLattice β] [Countable ι] (hf : ∀ i, AEMeasurable (f 
   have h_ss : aeSeqSet hf p ⊆ { a : α | (⨆ i : ι, aeSeq hf p i a) = ⨆ i : ι, f i a } := by
     intro x hx
     congr
-    exact funext fun i => ae_seq_eq_fun_of_mem_ae_seq_set hf hx i
-  exact measure_mono_null (set.compl_subset_compl.mpr h_ss) (measure_compl_ae_seq_set_eq_zero hf hp)
+    exact funext fun i => aeSeq_eq_fun_of_mem_aeSeqSet hf hx i
+  exact measure_mono_null (Set.compl_subset_compl.mpr h_ss) (measure_compl_aeSeqSet_eq_zero hf hp)
 #align ae_seq.supr aeSeq.supᵢ
 
 end aeSeq
