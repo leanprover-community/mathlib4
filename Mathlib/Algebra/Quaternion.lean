@@ -23,24 +23,24 @@ algebraic structures on `ℍ[R]`.
 
 ## Main definitions
 
-* `quaternion_algebra R a b`, `ℍ[R, a, b]` :
+* `QuaternionAlgebra R a b`, `ℍ[R, a, b]` :
   [quaternion algebra](https://en.wikipedia.org/wiki/Quaternion_algebra) with coefficients `a`, `b`
-* `quaternion R`, `ℍ[R]` : the space of quaternions, a.k.a. `quaternion_algebra R (-1) (-1)`;
-* `quaternion.norm_sq` : square of the norm of a quaternion;
+* `Quaternion R`, `ℍ[R]` : the space of quaternions, a.k.a. `QuaternionAlgebra R (-1) (-1)`;
+* `Quaternion.normSq` : square of the norm of a quaternion;
 * `quaternion.star_ring` : provides the conjugate of a quaternion as `has_star.star`;
 
 We also define the following algebraic structures on `ℍ[R]`:
 
-* `ring ℍ[R, a, b]` and `algebra R ℍ[R, a, b]` : for any commutative ring `R`;
-* `ring ℍ[R]` and `algebra R ℍ[R]` : for any commutative ring `R`;
+* `Ring ℍ[R, a, b]` and `Algebra R ℍ[R, a, b]` : for any commutative ring `R`;
+* `Ring ℍ[R]` and `Algebra R ℍ[R]` : for any commutative ring `R`;
 * `domain ℍ[R]` : for a linear ordered commutative ring `R`;
 * `division_algebra ℍ[R]` : for a linear ordered field `R`.
 
 ## Notation
 
-The following notation is available with `open_locale quaternion`.
+The following notation is available with `open_locale Quaternion`.
 
-* `ℍ[R, c₁, c₂]` : `quaternion_algebra R  c₁ c₂`
+* `ℍ[R, c₁, c₂]` : `QuaternionAlgebra R  c₁ c₂`
 * `ℍ[R]` : quaternions over `R`.
 
 ## Implementation notes
@@ -64,6 +64,10 @@ structure QuaternionAlgebra (R : Type _) (a b : R) where
   imJ : R
   imK : R
 #align quaternion_algebra QuaternionAlgebra
+#align quaternion_algebra.re QuaternionAlgebra.re
+#align quaternion_algebra.im_i QuaternionAlgebra.imI
+#align quaternion_algebra.im_j QuaternionAlgebra.imJ
+#align quaternion_algebra.im_k QuaternionAlgebra.imK
 
 @[inherit_doc]
 scoped[Quaternion] notation "ℍ[" R "," a "," b "]" => QuaternionAlgebra R a b
@@ -80,7 +84,7 @@ def equivProd {R : Type _} (c₁ c₂ : R) : ℍ[R,c₁,c₂] ≃ R × R × R ×
   right_inv _ := rfl
 #align quaternion_algebra.equiv_prod QuaternionAlgebra.equivProd
 
-/-- The equivalence between a quaternion algebra over `R` and `fin 4 → R`. -/
+/-- The equivalence between a quaternion algebra over `R` and `Fin 4 → R`. -/
 @[simps symm_apply]
 def equivTuple {R : Type _} (c₁ c₂ : R) : ℍ[R,c₁,c₂] ≃ (Fin 4 → R) where
   toFun a := ![a.1, a.2, a.3, a.4]
@@ -475,7 +479,7 @@ instance : Ring ℍ[R,c₁,c₂] where
 theorem coe_mul : ((x * y : R) : ℍ[R,c₁,c₂]) = x * y := by ext <;> simp
 #align quaternion_algebra.coe_mul QuaternionAlgebra.coe_mul
 
--- TODO: add weaker `mul_action`, `distrib_mul_action`, and `module` instances (and repeat them
+-- TODO: add weaker `MulAction`, `DistribMulAction`, and `Module` instances (and repeat them
 -- for `ℍ[R]`)
 instance [CommSemiring S] [Algebra S R] : Algebra S ℍ[R,c₁,c₂] where
   smul := (· • ·)
@@ -497,7 +501,7 @@ variable (c₁ c₂)
 
 set_option synthInstance.etaExperiment true -- lean4#2074
 
-/-- `quaternion_algebra.re` as a `linear_map`-/
+/-- `QuaternionAlgebra.re` as a `LinearMap`-/
 @[simps]
 def reₗ : ℍ[R,c₁,c₂] →ₗ[R] R where
   toFun := re
@@ -505,7 +509,7 @@ def reₗ : ℍ[R,c₁,c₂] →ₗ[R] R where
   map_smul' _ _ := rfl
 #align quaternion_algebra.re_lm QuaternionAlgebra.reₗ
 
-/-- `quaternion_algebra.im_i` as a `linear_map`-/
+/-- `QuaternionAlgebra.imI` as a `LinearMap`-/
 @[simps]
 def imIₗ : ℍ[R,c₁,c₂] →ₗ[R] R where
   toFun := imI
@@ -513,7 +517,7 @@ def imIₗ : ℍ[R,c₁,c₂] →ₗ[R] R where
   map_smul' _ _ := rfl
 #align quaternion_algebra.im_i_lm QuaternionAlgebra.imIₗ
 
-/-- `quaternion_algebra.im_j` as a `linear_map`-/
+/-- `QuaternionAlgebra.imJ` as a `LinearMap`-/
 @[simps]
 def imJₗ : ℍ[R,c₁,c₂] →ₗ[R] R where
   toFun := imJ
@@ -521,7 +525,7 @@ def imJₗ : ℍ[R,c₁,c₂] →ₗ[R] R where
   map_smul' _ _ := rfl
 #align quaternion_algebra.im_j_lm QuaternionAlgebra.imJₗ
 
-/-- `quaternion_algebra.im_k` as a `linear_map`-/
+/-- `QuaternionAlgebra.imK` as a `LinearMap`-/
 @[simps]
 def imKₗ : ℍ[R,c₁,c₂] →ₗ[R] R where
   toFun := imK
@@ -529,7 +533,7 @@ def imKₗ : ℍ[R,c₁,c₂] →ₗ[R] R where
   map_smul' _ _ := rfl
 #align quaternion_algebra.im_k_lm QuaternionAlgebra.imKₗ
 
-/-- `quaternion_algebra.equiv_tuple` as a linear equivalence. -/
+/-- `QuaternionAlgebra.equivTuple` as a linear equivalence. -/
 def linearEquivTuple : ℍ[R,c₁,c₂] ≃ₗ[R] Fin 4 → R :=
   LinearEquiv.symm -- proofs are not `rfl` in the forward direction
     { (equivTuple c₁ c₂).symm with
@@ -712,7 +716,7 @@ theorem mul_star_eq_coe : a * star a = (a * star a).re := by
 
 open MulOpposite
 
-/-- Quaternion conjugate as an `alg_equiv` to the opposite ring. -/
+/-- Quaternion conjugate as an `AlgEquiv` to the opposite ring. -/
 def starAe : ℍ[R,c₁,c₂] ≃ₐ[R] ℍ[R,c₁,c₂]ᵐᵒᵖ :=
   { starAddEquiv.trans opAddEquiv with
     toFun := op ∘ star
@@ -743,7 +747,7 @@ def Quaternion.equivProd (R : Type _) [One R] [Neg R] : ℍ[R] ≃ R × R × R �
   QuaternionAlgebra.equivProd _ _
 #align quaternion.equiv_prod Quaternion.equivProd
 
-/-- The equivalence between the quaternions over `R` and `fin 4 → R`. -/
+/-- The equivalence between the quaternions over `R` and `Fin 4 → R`. -/
 @[simps! symm_apply]
 def Quaternion.equivTuple (R : Type _) [One R] [Neg R] : ℍ[R] ≃ (Fin 4 → R) :=
   QuaternionAlgebra.equivTuple _ _
@@ -1171,7 +1175,7 @@ nonrec theorem mul_star_eq_coe : a * star a = (a * star a).re :=
 
 open MulOpposite
 
-/-- Quaternion conjugate as an `alg_equiv` to the opposite ring. -/
+/-- Quaternion conjugate as an `AlgEquiv` to the opposite ring. -/
 def starAe : ℍ[R] ≃ₐ[R] ℍ[R]ᵐᵒᵖ :=
   QuaternionAlgebra.starAe
 #align quaternion.star_ae Quaternion.starAe
