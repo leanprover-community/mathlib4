@@ -8,7 +8,7 @@ Authors: Patrick Massot, Scott Morrison, Mario Carneiro, Andrew Yang
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Topology.Category.Top.Products
+import Mathlib.Topology.Category.Top.Limits.Products
 import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 
 /-!

@@ -84,10 +84,10 @@ set_option linter.uppercaseLean3 false in
 instance topologicalSpace_coe (X : TopCat) : TopologicalSpace X :=
   X.str
 
--- Porting note: cannot see through forget
-instance topologicalSpace_forget (X : TopCat) : TopologicalSpace <| (forget TopCat).obj X := by
-  change TopologicalSpace X
-  infer_instance
+-- Porting note: cannot see through forget; made reducible to get closer to Lean 3 behavior
+@[reducible]
+instance topologicalSpace_forget (X : TopCat) : TopologicalSpace <| (forget TopCat).obj X :=
+  X.str
 
 @[simp]
 theorem coe_of (X : Type u) [TopologicalSpace X] : (of X : Type u) = X := rfl
