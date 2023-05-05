@@ -127,7 +127,7 @@ def Lift.main (e t : TSyntax `term) (hUsing : Option (TSyntax `term))
   let isNewEq := newEqName != `rfl
   let e ← elabTerm e none
   let goal ← getMainGoal
-  if !(← inferType (← goal.getType)).isProp then throwError
+  if !(← inferType (← instantiateMVars (← goal.getType))).isProp then throwError
     "lift tactic failed. Tactic is only applicable when the target is a proposition."
   if newVarName == none ∧ !e.isFVar then throwError
     "lift tactic failed. When lifting an expression, a new variable name must be given"
