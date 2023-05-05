@@ -1279,14 +1279,14 @@ theorem rank_submodule_le_one_iff (s : Submodule K V) :
     intro v hv
     obtain ⟨r, hr⟩ := h ⟨v, hv⟩
     use r
-    simp_rw [Subtype.ext_iff, coe_smul, Submodule.coe_mk] at hr
+    simp_rw [Subtype.ext_iff, coe_smul] at hr
     exact hr
   · rintro ⟨v₀, hv₀, h⟩
     use ⟨v₀, hv₀⟩
     rintro ⟨v, hv⟩
     obtain ⟨r, hr⟩ := h v hv
     use r
-    simp_rw [Subtype.ext_iff, coe_smul, Submodule.coe_mk]
+    simp_rw [Subtype.ext_iff, coe_smul]
     exact hr
 #align rank_submodule_le_one_iff rank_submodule_le_one_iff
 

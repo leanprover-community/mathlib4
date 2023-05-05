@@ -82,7 +82,7 @@ theorem balancedCore_empty : balancedCore 𝕜 (∅ : Set E) = ∅ :=
 #align balanced_core_empty balancedCore_empty
 
 theorem mem_balancedCore_iff : x ∈ balancedCore 𝕜 s ↔ ∃ t, Balanced 𝕜 t ∧ t ⊆ s ∧ x ∈ t := by
-  simp_rw [balancedCore, mem_unionₛ, mem_setOf_eq, exists_prop, and_assoc]
+  simp_rw [balancedCore, mem_unionₛ, mem_setOf_eq, and_assoc]
 #align mem_balanced_core_iff mem_balancedCore_iff
 
 theorem smul_balancedCore_subset (s : Set E) {a : 𝕜} (ha : ‖a‖ ≤ 1) :

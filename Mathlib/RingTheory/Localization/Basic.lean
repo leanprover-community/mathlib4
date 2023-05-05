@@ -858,7 +858,7 @@ instance [Subsingleton R] : Unique (Localization M) where
 
 /-- Addition in a ring localization is defined as `⟨a, b⟩ + ⟨c, d⟩ = ⟨b * c + d * a, b * d⟩`.
 
-Should not be confused with `addLocalization.add`, which is defined as
+Should not be confused with `AddLocalization.add`, which is defined as
 `⟨a, b⟩ + ⟨c, d⟩ = ⟨a + c, b + d⟩`.
 -/
 protected irreducible_def add (z w : Localization M) : Localization M :=

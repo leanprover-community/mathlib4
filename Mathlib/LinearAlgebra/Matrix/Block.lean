@@ -191,7 +191,6 @@ theorem twoBlockTriangular_det' (M : Matrix m m R) (p : m → Prop) [DecidablePr
     (h : ∀ i, p i → ∀ j, ¬p j → M i j = 0) :
     M.det = (toSquareBlockProp M p).det * (toSquareBlockProp M fun i => ¬p i).det := by
   rw [M.twoBlockTriangular_det fun i => ¬p i, mul_comm]
-  simp_rw [Classical.not_not]
   congr 1
   exact equiv_block_det _ fun _ => not_not.symm
   simpa only [Classical.not_not] using h
@@ -327,7 +326,7 @@ theorem blockTriangular_inv_of_blockTriangular [LinearOrder α] [Invertible M]
   have hb' : image b' univ ⊂ image b univ := by
     convert image_subtype_univ_ssubset_image_univ k b _ (fun a => a < k) (lt_irrefl _)
     convert max'_mem (α := α) _ _
-  have hij' : b' ⟨j, hij.trans hi⟩ < b' ⟨i, hi⟩ := by simp_rw [Subtype.coe_mk, hij]
+  have hij' : b' ⟨j, hij.trans hi⟩ < b' ⟨i, hi⟩ := by simp_rw [hij]
   simp [hM.inv_toBlock k, (ih (image b' univ) hb' hA rfl hij').symm]
 #align matrix.block_triangular_inv_of_block_triangular Matrix.blockTriangular_inv_of_blockTriangular
 

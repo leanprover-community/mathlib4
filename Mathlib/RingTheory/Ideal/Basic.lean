@@ -636,7 +636,7 @@ theorem span_pow_eq_top (s : Set α) (hs : span s = ⊤) (n : ℕ) :
   rw [hf, one_pow] at this
   refine' span_le.mpr _ this
   rintro _ hx
-  simp_rw [Finset.mem_coe, Set.mem_image] at hx
+  simp_rw [Set.mem_image] at hx
   rcases hx with ⟨x, _, rfl⟩
   have : span ({(x:α) ^ (n + 1)} : Set α) ≤ span ((fun x : α => x ^ (n + 1)) '' s) := by
     rw [span_le, Set.singleton_subset_iff]
