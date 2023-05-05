@@ -304,31 +304,35 @@ If `k = j`, it says `(g₀g₁...gₖ₋₁)⁻¹ * g₀g₁...gₖ₊₁ = gₖ
 If `k > j`, it says `(g₀g₁...gₖ)⁻¹ * g₀g₁...gₖ₊₁ = gₖ₊₁.`
 Useful for defining group cohomology. -/
 @[to_additive
-      "Let `(g₀, g₁, ..., gₙ)` be a tuple of elements in `Gⁿ⁺¹`.\nThen if `k < j`, this says `-(g₀ + g₁ + ... + gₖ₋₁) + (g₀ + g₁ + ... + gₖ) = gₖ`.\nIf `k = j`, it says `-(g₀ + g₁ + ... + gₖ₋₁) + (g₀ + g₁ + ... + gₖ₊₁) = gₖ + gₖ₊₁`.\nIf `k > j`, it says `-(g₀ + g₁ + ... + gₖ) + (g₀ + g₁ + ... + gₖ₊₁) = gₖ₊₁.`\nUseful for defining group cohomology."]
+      "Let `(g₀, g₁, ..., gₙ)` be a tuple of elements in `Gⁿ⁺¹`.
+      Then if `k < j`, this says `-(g₀ + g₁ + ... + gₖ₋₁) + (g₀ + g₁ + ... + gₖ) = gₖ`.
+      If `k = j`, it says `-(g₀ + g₁ + ... + gₖ₋₁) + (g₀ + g₁ + ... + gₖ₊₁) = gₖ + gₖ₊₁`.
+      If `k > j`, it says `-(g₀ + g₁ + ... + gₖ) + (g₀ + g₁ + ... + gₖ₊₁) = gₖ₊₁.`
+      Useful for defining group cohomology."]
 theorem inv_partialProd_mul_eq_contractNth {G : Type _} [Group G] (g : Fin (n + 1) → G)
     (j : Fin (n + 1)) (k : Fin n) :
-    (partialProd g (j.succ.succAbove k.cast_succ))⁻¹ * partialProd g (j.succAbove k).succ =
-      j.contractNth Mul.mul g k :=
-  by
-  have := partial_prod_right_inv (1 : G) g
-  simp only [one_smul, coe_eq_cast_succ] at this
+    (partialProd g (j.succ.succAbove (Fin.castSucc k)))⁻¹ * partialProd g (j.succAbove k).succ =
+      j.contractNth (· * ·) g k := by
+  have := partialProd_right_inv (1 : G) g
+  simp only [one_smul, coe_eq_castSucc] at this
   rcases lt_trichotomy (k : ℕ) j with (h | h | h)
-  · rwa [succ_above_below, succ_above_below, this, contract_nth_apply_of_lt]
+  · rwa [succAbove_below, succAbove_below, this, contractNth_apply_of_lt]
     · assumption
-    · rw [cast_succ_lt_iff_succ_le, succ_le_succ_iff, le_iff_coe_le_coe]
+    · rw [castSucc_lt_iff_succ_le, succ_le_succ_iff, le_iff_val_le_val]
       exact le_of_lt h
-  · rwa [succ_above_below, succ_above_above, partial_prod_succ, cast_succ_fin_succ, ← mul_assoc,
-      this, contract_nth_apply_of_eq]
-    · simpa only [le_iff_coe_le_coe, ← h]
-    · rw [cast_succ_lt_iff_succ_le, succ_le_succ_iff, le_iff_coe_le_coe]
+  · rw [succAbove_below, succAbove_above, partialProd_succ, castSucc_fin_succ, ← mul_assoc,
+      this, contractNth_apply_of_eq]
+    · assumption
+    · simp [le_iff_val_le_val, ← h]
+    · rw [castSucc_lt_iff_succ_le, succ_le_succ_iff, le_iff_val_le_val]
       exact le_of_eq h
-  · rwa [succ_above_above, succ_above_above, partial_prod_succ, partial_prod_succ,
-      cast_succ_fin_succ, partial_prod_succ, inv_mul_cancel_left, contract_nth_apply_of_gt]
-    · exact le_iff_coe_le_coe.2 (le_of_lt h)
-    · rw [le_iff_coe_le_coe, coe_succ]
+  · rwa [succAbove_above, succAbove_above, partialProd_succ, partialProd_succ,
+      castSucc_fin_succ, partialProd_succ, inv_mul_cancel_left, contractNth_apply_of_gt]
+    · exact le_iff_val_le_val.2 (le_of_lt h)
+    · rw [le_iff_val_le_val, val_succ]
       exact Nat.succ_le_of_lt h
 #align fin.inv_partial_prod_mul_eq_contract_nth Fin.inv_partialProd_mul_eq_contractNth
-#align fin.neg_partial_sum_add_eq_contract_nth Fin.neg_partial_sum_add_eq_contract_nth
+#align fin.neg_partial_sum_add_eq_contract_nth Fin.neg_partialSum_add_eq_contractNth
 
 end PartialProd
 

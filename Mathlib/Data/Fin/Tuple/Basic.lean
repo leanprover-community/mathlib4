@@ -955,35 +955,33 @@ variable {α : Type _}
 
 /-- Sends `(g₀, ..., gₙ)` to `(g₀, ..., op gⱼ gⱼ₊₁, ..., gₙ)`. -/
 def contractNth (j : Fin (n + 1)) (op : α → α → α) (g : Fin (n + 1) → α) (k : Fin n) : α :=
-  if (k : ℕ) < j then g k.cast_succ
-  else if (k : ℕ) = j then op (g k.cast_succ) (g k.succ) else g k.succ
+  if (k : ℕ) < j then g (Fin.castSucc k)
+  else if (k : ℕ) = j then op (g (Fin.castSucc k)) (g k.succ) else g k.succ
 #align fin.contract_nth Fin.contractNth
 
 theorem contractNth_apply_of_lt (j : Fin (n + 1)) (op : α → α → α) (g : Fin (n + 1) → α) (k : Fin n)
-    (h : (k : ℕ) < j) : contractNth j op g k = g k.cast_succ :=
+    (h : (k : ℕ) < j) : contractNth j op g k = g (Fin.castSucc k) :=
   if_pos h
 #align fin.contract_nth_apply_of_lt Fin.contractNth_apply_of_lt
 
 theorem contractNth_apply_of_eq (j : Fin (n + 1)) (op : α → α → α) (g : Fin (n + 1) → α) (k : Fin n)
-    (h : (k : ℕ) = j) : contractNth j op g k = op (g k.cast_succ) (g k.succ) :=
-  by
+    (h : (k : ℕ) = j) : contractNth j op g k = op (g (Fin.castSucc k)) (g k.succ) := by
   have : ¬(k : ℕ) < j := not_lt.2 (le_of_eq h.symm)
-  rw [contract_nth, if_neg this, if_pos h]
+  rw [contractNth, if_neg this, if_pos h]
 #align fin.contract_nth_apply_of_eq Fin.contractNth_apply_of_eq
 
 theorem contractNth_apply_of_gt (j : Fin (n + 1)) (op : α → α → α) (g : Fin (n + 1) → α) (k : Fin n)
     (h : (j : ℕ) < k) : contractNth j op g k = g k.succ := by
-  rw [contract_nth, if_neg (not_lt_of_gt h), if_neg (Ne.symm <| ne_of_lt h)]
+  rw [contractNth, if_neg (not_lt_of_gt h), if_neg (Ne.symm <| ne_of_lt h)]
 #align fin.contract_nth_apply_of_gt Fin.contractNth_apply_of_gt
 
 theorem contractNth_apply_of_ne (j : Fin (n + 1)) (op : α → α → α) (g : Fin (n + 1) → α) (k : Fin n)
-    (hjk : (j : ℕ) ≠ k) : contractNth j op g k = g (j.succAbove k) :=
-  by
+    (hjk : (j : ℕ) ≠ k) : contractNth j op g k = g (j.succAbove k) := by
   rcases lt_trichotomy (k : ℕ) j with (h | h | h)
-  · rwa [j.succ_above_below, contract_nth_apply_of_lt]
+  · rwa [j.succAbove_below, contractNth_apply_of_lt]
     · rwa [Fin.lt_iff_val_lt_val]
   · exact False.elim (hjk h.symm)
-  · rwa [j.succ_above_above, contract_nth_apply_of_gt]
+  · rwa [j.succAbove_above, contractNth_apply_of_gt]
     · exact Fin.le_iff_val_le_val.2 (le_of_lt h)
 #align fin.contract_nth_apply_of_ne Fin.contractNth_apply_of_ne
 
