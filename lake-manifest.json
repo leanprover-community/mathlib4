@@ -16,7 +16,7 @@
   {"git":
    {"url": "https://github.com/leanprover-community/llm",
     "subDir?": null,
-    "rev": "04eb372b9448f3866618a644debfdadc664c921a",
+    "rev": "f2538034fb9643642ec5ac161b6c0bbcd5ad0050",
     "name": "llm",
     "inputRev?": "main"}},
   {"git":
