@@ -10,9 +10,15 @@
   {"git":
    {"url": "https://github.com/JLimperg/aesop",
     "subDir?": null,
-    "rev": "cdc00b640d0179910ebaa9c931e3b733a04b881c",
+    "rev": "7e7135ec5b264b8ccc5242a11b016a62bda36bc1",
     "name": "aesop",
     "inputRev?": "master"}},
+  {"git":
+   {"url": "https://github.com/leanprover-community/llm",
+    "subDir?": null,
+    "rev": "04eb372b9448f3866618a644debfdadc664c921a",
+    "name": "llm",
+    "inputRev?": "main"}},
   {"git":
    {"url": "https://github.com/leanprover/std4",
     "subDir?": null,
