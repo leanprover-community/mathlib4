@@ -194,9 +194,9 @@ instance _root_.Pi.cstarRing : CstarRing (∀ i, R i) where
           (fun x y h => by simpa only [sq] using mul_le_mul' h h) (by simp)).symm
 #align pi.cstar_ring Pi.cstarRing
 
-instance _root_.Pi.cstar_ring' : CstarRing (ι → R₁) :=
+instance _root_.Pi.cstarRing' : CstarRing (ι → R₁) :=
   Pi.cstarRing
-#align pi.cstar_ring' Pi.cstar_ring'
+#align pi.cstar_ring' Pi.cstarRing'
 
 end ProdPi
 
