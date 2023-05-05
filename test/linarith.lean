@@ -77,6 +77,12 @@ by linarith
 example (ε : Rat) (h1 : ε > 0) : ε / 3 + ε / 3 + ε / 3 = ε :=
 by linarith
 
+-- Make sure special case for division by 1 is handled:
+example (x : Rat) (h : 0 < x) : 0 < x/1 := by linarith
+
+-- Failure. Will look into this, but pushing changes so far.
+--example (x : Rat) (h : 0 < x) : 0 < x/(-1) := by linarith
+
 end cancel_denoms
 
 example (a b c : Rat) (h2 : b + 2 > 3 + b) : False := by

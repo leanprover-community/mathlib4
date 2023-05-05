@@ -278,15 +278,26 @@ def compWithZero : Preprocessor where
 end compWithZero
 
 section cancelDenoms
+
+theorem without_one_mul [MulOneClass M] {a b : M} (h : 1 * a = b) : a = b := by rwa [one_mul] at h
+
 /--
 `normalizeDenominatorsLHS h lhs` assumes that `h` is a proof of `lhs R 0`.
 It creates a proof of `lhs' R 0`, where all numeric division in `lhs` has been cancelled.
 -/
 def normalizeDenominatorsLHS (h lhs : Expr) : MetaM Expr := do
-  let (v, lhs') ← CancelFactors.derive lhs
-  if v = 1 then return h else do
-    let (_, h'') ← mkSingleCompZeroOf v h
+  let mut (v, lhs') ← CancelDenoms.derive lhs
+  if v = 1 then
+    -- `lhs'` has a `1 *` out front, but `mkSingleCompZeroOf` has a special case
+    -- where it does not produce `1 *`. We strip it off here:
+    lhs' ← mkAppM ``without_one_mul #[lhs']
+  let (_, h'') ← mkSingleCompZeroOf v h
+  try
     h''.rewriteType lhs'
+  catch e =>
+    dbg_trace
+      s!"Error in Linarith.normalizeDenominatorsLHS: {← e.toMessageData.toString}"
+    throw e
 
 /--
 `cancelDenoms pf` assumes `pf` is a proof of `t R 0`. If `t` contains the division symbol `/`,
@@ -295,10 +306,10 @@ it tries to scale `t` to cancel out division by numerals.
 def cancelDenoms : Preprocessor where
   name := "cancel denominators"
   transform := fun pf => (do
-    let (_, lhs) ← parseCompAndExpr (← inferType pf)
-    guard $ lhs.containsConst (fun n => n = `HDiv.hDiv || n = `Div.div)
-    pure [← normalizeDenominatorsLHS pf lhs])
-  <|> return [pf]
+      let (_, lhs) ← parseCompAndExpr (← inferType pf)
+      guard $ lhs.containsConst (fun n => n = ``HDiv.hDiv || n = ``Div.div)
+      pure [← normalizeDenominatorsLHS pf lhs])
+    <|> return [pf]
 end cancelDenoms
 
 section nlinarith

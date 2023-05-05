@@ -342,7 +342,7 @@ def mkProjection (e : Expr) (fieldName : Name) : MetaM Expr := do
 
 /-- Returns true if `e` contains a name `n` where `p n` is true. -/
 def containsConst (e : Expr) (p : Name → Bool) : Bool :=
-e.foldConsts false (fun n b => b || p n)
+  Option.isSome <| e.find? fun | .const n _ => p n | _ => false
 
 /--
 Rewrites `e` via some `eq`, producing a proof `e = e'` for some `e'`.
