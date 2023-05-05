@@ -520,6 +520,7 @@ instance Ideal.Quotient.semiNormedCommRing : SeminormedCommRing (R ⧸ I) where
       _ ≤ _ := (sub_lt_iff_lt_add'.mp h.1).le
 #align ideal.quotient.semi_normed_comm_ring Ideal.Quotient.semiNormedCommRing
 
+set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 instance Ideal.Quotient.normedCommRing [IsClosed (I : Set R)] : NormedCommRing (R ⧸ I) :=
   { Ideal.Quotient.semiNormedCommRing I, Submodule.Quotient.normedAddCommGroup I with }
 #align ideal.quotient.normed_comm_ring Ideal.Quotient.normedCommRing
