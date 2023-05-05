@@ -8,9 +8,9 @@ Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Asymptotics.Theta
-import Mathbin.Analysis.Complex.Basic
-import Mathbin.Analysis.SpecificLimits.Normed
+import Mathlib.Analysis.Asymptotics.Theta
+import Mathlib.Analysis.Complex.Basic
+import Mathlib.Analysis.SpecificLimits.Normed
 
 /-!
 # Complex and real exponential
@@ -37,8 +37,7 @@ variable {z y x : ℝ}
 theorem exp_bound_sq (x z : ℂ) (hz : ‖z‖ ≤ 1) :
     ‖exp (x + z) - exp x - z • exp x‖ ≤ ‖exp x‖ * ‖z‖ ^ 2 :=
   calc
-    ‖exp (x + z) - exp x - z * exp x‖ = ‖exp x * (exp z - 1 - z)‖ :=
-      by
+    ‖exp (x + z) - exp x - z * exp x‖ = ‖exp x * (exp z - 1 - z)‖ := by
       congr
       rw [exp_add]
       ring
@@ -49,15 +48,12 @@ theorem exp_bound_sq (x z : ℂ) (hz : ‖z‖ ≤ 1) :
 #align complex.exp_bound_sq Complex.exp_bound_sq
 
 theorem locally_lipschitz_exp {r : ℝ} (hr_nonneg : 0 ≤ r) (hr_le : r ≤ 1) (x y : ℂ)
-    (hyx : ‖y - x‖ < r) : ‖exp y - exp x‖ ≤ (1 + r) * ‖exp x‖ * ‖y - x‖ :=
-  by
+    (hyx : ‖y - x‖ < r) : ‖exp y - exp x‖ ≤ (1 + r) * ‖exp x‖ * ‖y - x‖ := by
   have hy_eq : y = x + (y - x) := by abel
-  have hyx_sq_le : ‖y - x‖ ^ 2 ≤ r * ‖y - x‖ :=
-    by
+  have hyx_sq_le : ‖y - x‖ ^ 2 ≤ r * ‖y - x‖ := by
     rw [pow_two]
     exact mul_le_mul hyx.le le_rfl (norm_nonneg _) hr_nonneg
-  have h_sq : ∀ z, ‖z‖ ≤ 1 → ‖exp (x + z) - exp x‖ ≤ ‖z‖ * ‖exp x‖ + ‖exp x‖ * ‖z‖ ^ 2 :=
-    by
+  have h_sq : ∀ z, ‖z‖ ≤ 1 → ‖exp (x + z) - exp x‖ ≤ ‖z‖ * ‖exp x‖ + ‖exp x‖ * ‖z‖ ^ 2 := by
     intro z hz
     have : ‖exp (x + z) - exp x - z • exp x‖ ≤ ‖exp x‖ * ‖z‖ ^ 2 := exp_bound_sq x z hz
     rw [← sub_le_iff_le_add', ← norm_smul z]
@@ -170,8 +166,7 @@ theorem exp_half (x : ℝ) : exp (x / 2) = sqrt (exp x) := by
 #align real.exp_half Real.exp_half
 
 /-- The real exponential function tends to `+∞` at `+∞`. -/
-theorem tendsto_exp_atTop : Tendsto exp atTop atTop :=
-  by
+theorem tendsto_exp_atTop : Tendsto exp atTop atTop := by
   have A : tendsto (fun x : ℝ => x + 1) at_top at_top :=
     tendsto_at_top_add_const_right at_top 1 tendsto_id
   have B : ∀ᶠ x in at_top, x + 1 ≤ exp x := eventually_at_top.2 ⟨0, fun x hx => add_one_le_exp x⟩
@@ -185,8 +180,7 @@ theorem tendsto_exp_neg_atTop_nhds_0 : Tendsto (fun x => exp (-x)) atTop (𝓝 0
 #align real.tendsto_exp_neg_at_top_nhds_0 Real.tendsto_exp_neg_atTop_nhds_0
 
 /-- The real exponential function tends to `1` at `0`. -/
-theorem tendsto_exp_nhds_0_nhds_1 : Tendsto exp (𝓝 0) (𝓝 1) :=
-  by
+theorem tendsto_exp_nhds_0_nhds_1 : Tendsto exp (𝓝 0) (𝓝 1) := by
   convert continuous_exp.tendsto 0
   simp
 #align real.tendsto_exp_nhds_0_nhds_1 Real.tendsto_exp_nhds_0_nhds_1
@@ -213,8 +207,7 @@ theorem isBoundedUnder_le_exp_comp {f : α → ℝ} :
 #align real.is_bounded_under_le_exp_comp Real.isBoundedUnder_le_exp_comp
 
 /-- The function `exp(x)/x^n` tends to `+∞` at `+∞`, for any natural number `n` -/
-theorem tendsto_exp_div_pow_atTop (n : ℕ) : Tendsto (fun x => exp x / x ^ n) atTop atTop :=
-  by
+theorem tendsto_exp_div_pow_atTop (n : ℕ) : Tendsto (fun x => exp x / x ^ n) atTop atTop := by
   refine' (at_top_basis_Ioi.tendsto_iff (at_top_basis' 1)).2 fun C hC₁ => _
   have hC₀ : 0 < C := zero_lt_one.trans_le hC₁
   have : 0 < (exp 1 * C)⁻¹ := inv_pos.2 (mul_pos (exp_pos _) hC₀)
@@ -247,8 +240,7 @@ theorem tendsto_pow_mul_exp_neg_atTop_nhds_0 (n : ℕ) :
 /-- The function `(b * exp x + c) / (x ^ n)` tends to `+∞` at `+∞`, for any natural number
 `n` and any real numbers `b` and `c` such that `b` is positive. -/
 theorem tendsto_mul_exp_add_div_pow_atTop (b c : ℝ) (n : ℕ) (hb : 0 < b) :
-    Tendsto (fun x => (b * exp x + c) / x ^ n) atTop atTop :=
-  by
+    Tendsto (fun x => (b * exp x + c) / x ^ n) atTop atTop := by
   rcases eq_or_ne n 0 with (rfl | hn)
   · simp only [pow_zero, div_one]
     exact (tendsto_exp_at_top.const_mul_at_top hb).atTop_add tendsto_const_nhds
@@ -261,10 +253,8 @@ theorem tendsto_mul_exp_add_div_pow_atTop (b c : ℝ) (n : ℕ) (hb : 0 < b) :
 /-- The function `(x ^ n) / (b * exp x + c)` tends to `0` at `+∞`, for any natural number
 `n` and any real numbers `b` and `c` such that `b` is nonzero. -/
 theorem tendsto_div_pow_mul_exp_add_atTop (b c : ℝ) (n : ℕ) (hb : 0 ≠ b) :
-    Tendsto (fun x => x ^ n / (b * exp x + c)) atTop (𝓝 0) :=
-  by
-  have H : ∀ d e, 0 < d → tendsto (fun x : ℝ => x ^ n / (d * exp x + e)) at_top (𝓝 0) :=
-    by
+    Tendsto (fun x => x ^ n / (b * exp x + c)) atTop (𝓝 0) := by
+  have H : ∀ d e, 0 < d → tendsto (fun x : ℝ => x ^ n / (d * exp x + e)) at_top (𝓝 0) := by
     intro b' c' h
     convert(tendsto_mul_exp_add_div_pow_at_top b' c' n h).inv_tendsto_atTop
     ext x
@@ -363,8 +353,7 @@ theorem isBigO_exp_comp_exp_comp {f g : α → ℝ} :
 @[simp]
 theorem isTheta_exp_comp_exp_comp {f g : α → ℝ} :
     ((fun x => exp (f x)) =Θ[l] fun x => exp (g x)) ↔
-      IsBoundedUnder (· ≤ ·) l fun x => |f x - g x| :=
-  by
+      IsBoundedUnder (· ≤ ·) l fun x => |f x - g x| := by
   simp only [is_bounded_under_le_abs, ← is_bounded_under_le_neg, neg_sub, is_Theta,
     is_O_exp_comp_exp_comp, Pi.sub_def]
 #align real.is_Theta_exp_comp_exp_comp Real.isTheta_exp_comp_exp_comp
@@ -425,8 +414,7 @@ theorem comap_exp_nhds_zero : comap exp (𝓝 0) = comap re atBot :=
     
 #align complex.comap_exp_nhds_zero Complex.comap_exp_nhds_zero
 
-theorem comap_exp_nhdsWithin_zero : comap exp (𝓝[≠] 0) = comap re atBot :=
-  by
+theorem comap_exp_nhdsWithin_zero : comap exp (𝓝[≠] 0) = comap re atBot := by
   have : exp ⁻¹' {0}ᶜ = univ := eq_univ_of_forall exp_ne_zero
   simp [nhdsWithin, comap_exp_nhds_zero, this]
 #align complex.comap_exp_nhds_within_zero Complex.comap_exp_nhdsWithin_zero
