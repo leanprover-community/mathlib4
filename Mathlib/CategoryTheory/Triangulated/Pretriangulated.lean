@@ -45,10 +45,6 @@ open Category Pretriangulated
 We work in a preadditive category `C` equipped with an additive shift.
 -/
 variable (C : Type u) [Category.{v} C] [HasZeroObject C] [HasShift C ℤ] [Preadditive C]
-  [∀ n : ℤ, Functor.Additive (shiftFunctor C n)]
-
-variable (D : Type u₂) [Category.{v₂} D] [HasZeroObject D] [HasShift D ℤ] [Preadditive D]
-  [∀ n : ℤ, Functor.Additive (shiftFunctor D n)]
 
 /-- A preadditive category `C` with an additive shift, and a class of "distinguished triangles"
 relative to that shift is called pretriangulated if the following hold:
@@ -71,7 +67,7 @@ relative to that shift is called pretriangulated if the following hold:
 
 See <https://stacks.math.columbia.edu/tag/0145>
 -/
-class Pretriangulated where
+class Pretriangulated [∀ n : ℤ, Functor.Additive (shiftFunctor C n)] where
   /-- a class of triangle which are called `distinguished` -/
   distinguishedTriangles : Set (Triangle C)
   /-- a triangle that is isomorphic to a distinguished triangle is distinguished -/
@@ -97,12 +93,12 @@ class Pretriangulated where
 
 namespace Pretriangulated
 
-variable [hC : Pretriangulated C]
+variable [∀ n : ℤ, Functor.Additive (shiftFunctor C n)] [hC : Pretriangulated C]
 
 -- porting note: increased the priority so that we can write `T ∈ distTriang C`, and
 -- not just `T ∈ (distTriang C)`
 /-- distinguished triangles in a pretriangulated category -/
-notation:60 "distTriang " C => @distinguishedTriangles C _ _ _ _ _
+notation:60 "distTriang " C => @distinguishedTriangles C _ _ _ _ _ _
 
 /-- Given any distinguished triangle `T`, then we know `T.rotate` is also distinguished.
 -/

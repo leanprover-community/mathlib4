@@ -232,4 +232,16 @@ lemma _root_.CategoryTheory.Iso.inv_hom_id_triangle_hom₂ {A B : Triangle C} (e
 @[reassoc (attr := simp)]
 lemma _root_.CategoryTheory.Iso.inv_hom_id_triangle_hom₃ {A B : Triangle C} (e : A ≅ B) :
     e.inv.hom₃ ≫ e.hom.hom₃ = 𝟙 _ := by rw [← comp_hom₃, e.inv_hom_id, id_hom₃]
+
+variable (C)
+
+@[simps]
+def contractibleTriangleFunctor [HasZeroObject C] [HasZeroMorphisms C] :
+  C ⥤ Triangle C where
+  obj X := contractibleTriangle X
+  map f :=
+  { hom₁ := f
+    hom₂ := f
+    hom₃ := 0 }
+
 end CategoryTheory.Pretriangulated
