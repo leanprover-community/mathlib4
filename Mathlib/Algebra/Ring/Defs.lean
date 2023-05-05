@@ -117,6 +117,23 @@ class NonAssocSemiring (α : Type u) extends NonUnitalNonAssocSemiring α, MulZe
     AddCommMonoidWithOne α
 #align non_assoc_semiring NonAssocSemiring
 
+
+/-- A not-necessarily-unital, not-necessarily-associative ring. -/
+class NonUnitalNonAssocRing (α : Type u) extends AddCommGroup α, NonUnitalNonAssocSemiring α
+#align non_unital_non_assoc_ring NonUnitalNonAssocRing
+
+-- We defer the instance `NonUnitalNonAssocRing.toHasDistribNeg` to `Algebra.Ring.Basic`
+-- as it relies on the lemma `eq_neg_of_add_eq_zero_left`.
+/-- An associative but not-necessarily unital ring. -/
+class NonUnitalRing (α : Type _) extends NonUnitalNonAssocRing α, NonUnitalSemiring α
+#align non_unital_ring NonUnitalRing
+
+/-- A unital but not-necessarily-associative ring. -/
+class NonAssocRing (α : Type _) extends NonUnitalNonAssocRing α, NonAssocSemiring α,
+    AddCommGroupWithOne α
+#align non_assoc_ring NonAssocRing
+
+
 class Semiring (α : Type u) extends NonUnitalSemiring α, NonAssocSemiring α, MonoidWithZero α
 #align semiring Semiring
 
@@ -321,23 +338,11 @@ end HasDistribNeg
 -/
 
 
-/-- A not-necessarily-unital, not-necessarily-associative ring. -/
-class NonUnitalNonAssocRing (α : Type u) extends AddCommGroup α, NonUnitalNonAssocSemiring α
-#align non_unital_non_assoc_ring NonUnitalNonAssocRing
 
--- We defer the instance `NonUnitalNonAssocRing.toHasDistribNeg` to `Algebra.Ring.Basic`
--- as it relies on the lemma `eq_neg_of_add_eq_zero_left`.
-/-- An associative but not-necessarily unital ring. -/
-class NonUnitalRing (α : Type _) extends NonUnitalNonAssocRing α, NonUnitalSemiring α
-#align non_unital_ring NonUnitalRing
-
-/-- A unital but not-necessarily-associative ring. -/
-class NonAssocRing (α : Type _) extends NonUnitalNonAssocRing α, NonAssocSemiring α,
-    AddCommGroupWithOne α
-#align non_assoc_ring NonAssocRing
 
 class Ring (R : Type u) extends Semiring R, AddCommGroup R, AddGroupWithOne R
 #align ring Ring
+
 
 section NonUnitalNonAssocRing
 
