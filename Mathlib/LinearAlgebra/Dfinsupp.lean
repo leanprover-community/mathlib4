@@ -542,6 +542,7 @@ theorem independent_iff_dfinsupp_sumAddHom_injective (p : ι → AddSubgroup N) 
   ⟨Independent.dfinsupp_sumAddHom_injective, independent_of_dfinsupp_sumAddHom_injective' p⟩
 #align complete_lattice.independent_iff_dfinsupp_sum_add_hom_injective CompleteLattice.independent_iff_dfinsupp_sumAddHom_injective
 
+set_option synthInstance.etaExperiment true in
 /-- If a family of submodules is `Independent`, then a choice of nonzero vector from each submodule
 forms a linearly independent family.
 
@@ -549,24 +550,26 @@ See also `CompleteLattice.Independent.linearIndependent'`. -/
 theorem Independent.linearIndependent [NoZeroSMulDivisors R N] (p : ι → Submodule R N)
     (hp : Independent p) {v : ι → N} (hv : ∀ i, v i ∈ p i) (hv' : ∀ i, v i ≠ 0) :
     LinearIndependent R v := by
-  classical
-    rw [linearIndependent_iff]
-    intro l hl
-    let a :=
-      Dfinsupp.mapRange.linearMap (fun i => LinearMap.toSpanSingleton R (p i) ⟨v i, hv i⟩)
-        l.toDfinsupp
-    have ha : a = 0 := by
-      apply hp.dfinsupp_lsum_injective
-      rwa [← lsum_comp_mapRange_toSpanSingleton _ hv] at hl
-    ext i
-    apply smul_left_injective R (hv' i)
-    have : l i • v i = a i := rfl
-    simp only [coe_zero, Pi.zero_apply, ZeroMemClass.coe_zero, smul_eq_zero, ha] at this
-    simpa
+  let _ := Classical.decEq ι
+  let _ := Classical.decEq R
+  rw [linearIndependent_iff]
+  intro l hl
+  let a :=
+    Dfinsupp.mapRange.linearMap (fun i => LinearMap.toSpanSingleton R (p i) ⟨v i, hv i⟩)
+      l.toDfinsupp
+  have ha : a = 0 := by
+    apply hp.dfinsupp_lsum_injective
+    rwa [← lsum_comp_mapRange_toSpanSingleton _ hv] at hl
+  ext i
+  apply smul_left_injective R (hv' i)
+  have : l i • v i = a i := rfl
+  simp only [coe_zero, Pi.zero_apply, ZeroMemClass.coe_zero, smul_eq_zero, ha] at this
+  simpa
 #align complete_lattice.independent.linear_independent CompleteLattice.Independent.linearIndependent
 
 theorem independent_iff_linearIndependent_of_ne_zero [NoZeroSMulDivisors R N] {v : ι → N}
     (h_ne_zero : ∀ i, v i ≠ 0) : (Independent fun i => R ∙ v i) ↔ LinearIndependent R v :=
+  let _ := Classical.decEq ι
   ⟨fun hv => hv.linearIndependent _ (fun i => Submodule.mem_span_singleton_self <| v i) h_ne_zero,
     fun hv => hv.independent_span_singleton⟩
 #align complete_lattice.independent_iff_linear_independent_of_ne_zero CompleteLattice.independent_iff_linearIndependent_of_ne_zero

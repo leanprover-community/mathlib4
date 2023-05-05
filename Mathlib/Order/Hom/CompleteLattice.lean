@@ -4,11 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 
 ! This file was ported from Lean 3 source module order.hom.complete_lattice
-! leanprover-community/mathlib commit 71b36b6f3bbe3b44e6538673819324d3ee9fcc96
+! leanprover-community/mathlib commit 9d684a893c52e1d6692a504a118bfccbae04feeb
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Order.CompleteLattice
+import Mathlib.Data.Set.Lattice
 import Mathlib.Order.Hom.Lattice
 
 /-!
@@ -192,9 +192,7 @@ instance (priority := 100) CompleteLatticeHomClass.toFrameHomClass [CompleteLatt
 instance (priority := 100) CompleteLatticeHomClass.toBoundedLatticeHomClass [CompleteLattice α]
     [CompleteLattice β]  [CompleteLatticeHomClass F α β] : BoundedLatticeHomClass F α β :=
   { SupₛHomClass.toSupBotHomClass, InfₛHomClass.toInfTopHomClass with }
-#align
-  complete_lattice_hom_class.to_bounded_lattice_hom_class
-  CompleteLatticeHomClass.toBoundedLatticeHomClass
+#align complete_lattice_hom_class.to_bounded_lattice_hom_class CompleteLatticeHomClass.toBoundedLatticeHomClass
 
 -- See note [lower instance priority]
 instance (priority := 100) OrderIsoClass.toSupₛHomClass [CompleteLattice α]
@@ -740,7 +738,6 @@ theorem id_apply (a : α) : CompleteLatticeHom.id α a = a :=
 /-- Composition of `CompleteLatticeHom`s as a `CompleteLatticeHom`. -/
 def comp (f : CompleteLatticeHom β γ) (g : CompleteLatticeHom α β) : CompleteLatticeHom α γ :=
   { f.toSupₛHom.comp g.toSupₛHom with toInfₛHom := f.toInfₛHom.comp g.toInfₛHom }
-
 #align complete_lattice_hom.comp CompleteLatticeHom.comp
 
 @[simp]

@@ -56,6 +56,7 @@ theorem rank_finsupp_self (ι : Type w) : Module.rank R (ι →₀ R) = Cardinal
   simp [rank_finsupp]
 #align rank_finsupp_self rank_finsupp_self
 
+set_option synthInstance.etaExperiment true in
 /-- If `R` and `ι` lie in the same universe, the rank of `(ι →₀ R)` is `# ι`. -/
 theorem rank_finsupp_self' {ι : Type u} : Module.rank R (ι →₀ R) = (#ι) := by simp
 #align rank_finsupp_self' rank_finsupp_self'
@@ -70,6 +71,7 @@ theorem rank_directSum {ι : Type v} (M : ι → Type w) [∀ i : ι, AddCommGro
   simp [← b.mk_eq_rank'', fun i => (B i).mk_eq_rank'']
 #align rank_direct_sum rank_directSum
 
+set_option synthInstance.etaExperiment true in
 /-- If `m` and `n` are `Fintype`, the rank of `m × n` matrices is `(# m).lift * (# n).lift`. -/
 @[simp]
 theorem rank_matrix (m : Type v) (n : Type w) [Finite m] [Finite n] :
@@ -82,6 +84,7 @@ theorem rank_matrix (m : Type v) (n : Type w) [Finite m] [Finite n] :
   simpa using h.symm
 #align rank_matrix rank_matrix
 
+set_option synthInstance.etaExperiment true in
 /-- If `m` and `n` are `Fintype` that lie in the same universe, the rank of `m × n` matrices is
   `(# n * # m).lift`. -/
 @[simp high]
@@ -90,6 +93,7 @@ theorem rank_matrix' (m n : Type v) [Finite m] [Finite n] :
   rw [rank_matrix, lift_mul, lift_umax.{v, u}]
 #align rank_matrix' rank_matrix'
 
+set_option synthInstance.etaExperiment true in
 /-- If `m` and `n` are `Fintype` that lie in the same universe as `R`, the rank of `m × n` matrices
   is `# m * # n`. -/
 -- @[simp] -- Porting note: simp can prove this
@@ -121,8 +125,8 @@ theorem rank_tensorProduct :
 
 /-- If `M` and `N` lie in the same universe, the rank of `M ⊗[R] N` is
   `(Module.rank R M) * (Module.rank R N)`. -/
-theorem rank_tensor_product' (N : Type v) [AddCommGroup N] [Module R N] [Module.Free R N] :
+theorem rank_tensorProduct' (N : Type v) [AddCommGroup N] [Module R N] [Module.Free R N] :
     Module.rank R (M ⊗[R] N) = Module.rank R M * Module.rank R N := by simp
-#align rank_tensor_product' rank_tensor_product'
+#align rank_tensor_product' rank_tensorProduct'
 
 end CommRing
