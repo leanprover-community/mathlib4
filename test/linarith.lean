@@ -56,26 +56,27 @@ example [LinearOrderedCommRing α] (A B : α) (h : 0 < A * B) : 0 < 8*A*B := by
 
 example (s : Set ℕ) (_h : s = ∅) : 0 ≤ 1 := by linarith
 
--- Needs the `cancel_denoms` preprocessor, which in turn needs the `cancel_denoms` tactic ported.
 section cancel_denoms
--- example (A B : Rat) (h : 0 < A * B) : 0 < A*B/8 := by
---   linarith
 
--- example (A B : Rat) (h : 0 < A * B) : 0 < A/8*B := by
---   linarith
+example (A B : Rat) (h : 0 < A * B) : 0 < A*B/8 := by
+  linarith
 
--- example (ε : Rat) (h1 : ε > 0) : ε / 2 + ε / 3 + ε / 7 < ε :=
---  by linarith
+example (A B : Rat) (h : 0 < A * B) : 0 < A/8*B := by
+  linarith
 
--- example (x y z : Rat) (h1 : 2*x  < 3*y) (h2 : -4*x + z/2 < 0)
---         (h3 : 12*y - z < 0)  : False :=
--- by linarith
+example (ε : Rat) (h1 : ε > 0) : ε / 2 + ε / 3 + ε / 7 < ε :=
+ by linarith
 
--- example (ε : Rat) (h1 : ε > 0) : ε / 2 < ε :=
--- by linarith
+example (x y z : Rat) (h1 : 2*x  < 3*y) (h2 : -4*x + z/2 < 0)
+        (h3 : 12*y - z < 0)  : False :=
+by linarith
 
--- example (ε : Rat) (h1 : ε > 0) : ε / 3 + ε / 3 + ε / 3 = ε :=
--- by linarith
+example (ε : Rat) (h1 : ε > 0) : ε / 2 < ε :=
+by linarith
+
+example (ε : Rat) (h1 : ε > 0) : ε / 3 + ε / 3 + ε / 3 = ε :=
+by linarith
+
 end cancel_denoms
 
 example (a b c : Rat) (h2 : b + 2 > 3 + b) : False := by
@@ -382,10 +383,9 @@ example (u v x y A B : Rat)
   intros
   linarith
 
--- TODO this needs the `cancelDenoms` preprocessor.
--- example (A B : ℚ) : (0 < A) → (1 ≤ B) → (0 < A / 8 * B) := by
---   intros
---   nlinarith
+example (A B : ℚ) : (0 < A) → (1 ≤ B) → (0 < A / 8 * B) := by
+  intros
+  nlinarith
 
 example (x y : ℚ) : 0 ≤ x ^2 + y ^2 := by
   nlinarith
