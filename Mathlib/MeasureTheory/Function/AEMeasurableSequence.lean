@@ -15,14 +15,14 @@ import Mathlib.MeasureTheory.Measure.MeasureSpaceDef
 # Sequence of measurable functions associated to a sequence of a.e.-measurable functions
 
 We define here tools to prove statements about limits (infi, supr...) of sequences of
-`ae_measurable` functions.
+`AEMeasurable` functions.
 Given a sequence of a.e.-measurable functions `f : ι → α → β` with hypothesis
-`hf : ∀ i, ae_measurable (f i) μ`, and a pointwise property `p : α → (ι → β) → Prop` such that we
-have `hp : ∀ᵐ x ∂μ, p x (λ n, f n x)`, we define a sequence of measurable functions `ae_seq hf p`
-and a measurable set `ae_seq_set hf p`, such that
-* `μ (ae_seq_set hf p)ᶜ = 0`
-* `x ∈ ae_seq_set hf p → ∀ i : ι, ae_seq hf hp i x = f i x`
-* `x ∈ ae_seq_set hf p → p x (λ n, f n x)`
+`hf : ∀ i, AEMeasurable (f i) μ`, and a pointwise property `p : α → (ι → β) → Prop` such that we
+have `hp : ∀ᵐ x ∂μ, p x (fun n ↦ f n x)`, we define a sequence of measurable functions `aeSeq hf p`
+and a measurable set `aeSeqSet hf p`, such that
+* `μ (aeSeqSet hf p)ᶜ = 0`
+* `x ∈ aeSeqSet hf p → ∀ i : ι, aeSeq hf hp i x = f i x`
+* `x ∈ aeSeqSet hf p → p x (fun n ↦ f n x)`
 -/
 
 
@@ -33,15 +33,15 @@ open Classical
 variable {ι : Sort _} {α β γ : Type _} [MeasurableSpace α] [MeasurableSpace β] {f : ι → α → β}
   {μ : Measure α} {p : α → (ι → β) → Prop}
 
-/-- If we have the additional hypothesis `∀ᵐ x ∂μ, p x (λ n, f n x)`, this is a measurable set
-whose complement has measure 0 such that for all `x ∈ ae_seq_set`, `f i x` is equal to
-`(hf i).mk (f i) x` for all `i` and we have the pointwise property `p x (λ n, f n x)`. -/
+/-- If we have the additional hypothesis `∀ᵐ x ∂μ, p x (fun n ↦ f n x)`, this is a measurable set
+whose complement has measure 0 such that for all `x ∈ aeSeqSet`, `f i x` is equal to
+`(hf i).mk (f i) x` for all `i` and we have the pointwise property `p x (fun n ↦ f n x)`. -/
 def aeSeqSet (hf : ∀ i, AEMeasurable (f i) μ) (p : α → (ι → β) → Prop) : Set α :=
   toMeasurable μ ({ x | (∀ i, f i x = (hf i).mk (f i) x) ∧ p x fun n => f n x }ᶜ)ᶜ
 #align ae_seq_set aeSeqSet
 
 /-- A sequence of measurable functions that are equal to `f` and verify property `p` on the
-measurable set `ae_seq_set hf p`. -/
+measurable set `aeSeqSet hf p`. -/
 noncomputable def aeSeq (hf : ∀ i, AEMeasurable (f i) μ) (p : α → (ι → β) → Prop) : ι → α → β :=
   fun i x => ite (x ∈ aeSeqSet hf p) ((hf i).mk (f i) x) (⟨f i x⟩ : Nonempty β).some
 #align ae_seq aeSeq
