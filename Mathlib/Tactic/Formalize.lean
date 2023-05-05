@@ -22,6 +22,8 @@ setting one up.
 
 open LLM GPT
 
+namespace Mathlib.Tactic.Formalize
+
 /-- The system message for `#formalize`. -/
 -- Please feel free to suggest changes, or to provide a customization hook.
 -- Not much thought has gone into this prompt!
