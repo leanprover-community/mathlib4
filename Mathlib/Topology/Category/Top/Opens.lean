@@ -21,7 +21,7 @@ We define `toTopCat : Opens X ⥤ TopCat` and
 
 Unfortunately `Opens` isn't (usefully) a functor `TopCat ⥤ Cat`.
 (One can in fact define such a functor,
-but using it results in unresolvable `eq.rec` terms in goals.)
+but using it results in unresolvable `Eq.rec` terms in goals.)
 
 Really it's a 2-functor from (spaces, continuous functions, equalities)
 to (categories, functors, natural isomorphisms).
@@ -33,11 +33,7 @@ Beyond that, there's a collection of simp lemmas for working with these construc
 -/
 
 
-open CategoryTheory
-
-open TopologicalSpace
-
-open Opposite
+open CategoryTheory TopologicalSpace Opposite
 
 universe u
 
@@ -46,10 +42,10 @@ namespace TopologicalSpace.Opens
 variable {X Y Z : TopCat.{u}}
 
 /-!
-Since `opens X` has a partial order, it automatically receives a `category` instance.
+Since `Opens X` has a partial order, it automatically receives a `Category` instance.
 Unfortunately, because we do not allow morphisms in `Prop`,
 the morphisms `U ⟶ V` are not just proofs `U ≤ V`, but rather
-`ulift (plift (U ≤ V))`.
+`ULift (PLift (U ≤ V))`.
 -/
 
 
@@ -65,15 +61,15 @@ We now construct as morphisms various inclusions of open sets.
 -- This is tedious, but necessary because we decided not to allow Prop as morphisms in a category...
 /-- The inclusion `U ⊓ V ⟶ U` as a morphism in the category of open sets.
 -/
-noncomputable def infLeLeft (U V : Opens X) : U ⊓ V ⟶ U :=
+noncomputable def infLELeft (U V : Opens X) : U ⊓ V ⟶ U :=
   inf_le_left.hom
-#align topological_space.opens.inf_le_left TopologicalSpace.Opens.infLeLeft
+#align topological_space.opens.inf_le_left TopologicalSpace.Opens.infLELeft
 
 /-- The inclusion `U ⊓ V ⟶ V` as a morphism in the category of open sets.
 -/
-noncomputable def infLeRight (U V : Opens X) : U ⊓ V ⟶ V :=
+noncomputable def infLERight (U V : Opens X) : U ⊓ V ⟶ V :=
   inf_le_right.hom
-#align topological_space.opens.inf_le_right TopologicalSpace.Opens.infLeRight
+#align topological_space.opens.inf_le_right TopologicalSpace.Opens.infLERight
 
 /-- The inclusion `U i ⟶ supr U` as a morphism in the category of open sets.
 -/
@@ -83,9 +79,9 @@ noncomputable def leSupr {ι : Type _} (U : ι → Opens X) (i : ι) : U i ⟶ s
 
 /-- The inclusion `⊥ ⟶ U` as a morphism in the category of open sets.
 -/
-noncomputable def botLe (U : Opens X) : ⊥ ⟶ U :=
+noncomputable def botLE (U : Opens X) : ⊥ ⟶ U :=
   bot_le.hom
-#align topological_space.opens.bot_le TopologicalSpace.Opens.botLe
+#align topological_space.opens.bot_le TopologicalSpace.Opens.botLE
 
 /-- The inclusion `U ⟶ ⊤` as a morphism in the category of open sets.
 -/
@@ -95,16 +91,16 @@ noncomputable def leTop (U : Opens X) : U ⟶ ⊤ :=
 
 -- We do not mark this as a simp lemma because it breaks open `x`.
 -- Nevertheless, it is useful in `SheafOfFunctions`.
-theorem infLeLeft_apply (U V : Opens X) (x) :
-    (infLeLeft U V) x = ⟨x.1, (@inf_le_left _ _ U V : _ ≤ _) x.2⟩ :=
+theorem infLELeft_apply (U V : Opens X) (x) :
+    (infLELeft U V) x = ⟨x.1, (@inf_le_left _ _ U V : _ ≤ _) x.2⟩ :=
   rfl
-#align topological_space.opens.inf_le_left_apply TopologicalSpace.Opens.infLeLeft_apply
+#align topological_space.opens.inf_le_left_apply TopologicalSpace.Opens.infLELeft_apply
 
 @[simp]
-theorem infLeLeft_apply_mk (U V : Opens X) (x) (m) :
-    (infLeLeft U V) ⟨x, m⟩ = ⟨x, (@inf_le_left _ _ U V : _ ≤ _) m⟩ :=
+theorem infLELeft_apply_mk (U V : Opens X) (x) (m) :
+    (infLELeft U V) ⟨x, m⟩ = ⟨x, (@inf_le_left _ _ U V : _ ≤ _) m⟩ :=
   rfl
-#align topological_space.opens.inf_le_left_apply_mk TopologicalSpace.Opens.infLeLeft_apply_mk
+#align topological_space.opens.inf_le_left_apply_mk TopologicalSpace.Opens.infLELeft_apply_mk
 
 @[simp]
 theorem leSupr_apply_mk {ι : Type _} (U : ι → Opens X) (i : ι) (x) (m) :
@@ -301,10 +297,10 @@ def mapMapIso {X Y : TopCat.{u}} (H : X ≅ Y) : Opens Y ≌ Opens X where
   inverse := map H.inv
   unitIso :=
     NatIso.ofComponents (fun U => eqToIso (by simp [map, Set.preimage_preimage]))
-      (by intros ; simp)
+      (by intros; simp)
   counitIso :=
     NatIso.ofComponents (fun U => eqToIso (by simp [map, Set.preimage_preimage]))
-      (by intros ; simp)
+      (by intros; simp)
 #align topological_space.opens.map_map_iso TopologicalSpace.Opens.mapMapIso
 
 end TopologicalSpace.Opens
@@ -372,7 +368,8 @@ theorem inclusion_top_functor (X : TopCat) :
 
 theorem functor_obj_map_obj {X Y : TopCat} {f : X ⟶ Y} (hf : IsOpenMap f) (U : Opens Y) :
     hf.functor.obj ((Opens.map f).obj U) = hf.functor.obj ⊤ ⊓ U := by
-  ext; constructor
+  ext
+  constructor
   · rintro ⟨x, hx, rfl⟩
     exact ⟨⟨x, trivial, rfl⟩, hx⟩
   · rintro ⟨⟨x, -, rfl⟩, hx⟩
