@@ -28,6 +28,8 @@ Improving this tactic would be a good project for someone interested in learning
 
 open Lean Parser Tactic Mathlib Meta NormNum Qq
 
+initialize registerTraceClass `CancelDenoms
+
 namespace CancelDenoms
 
 /-! ### Lemmas used in the procedure -/
@@ -110,21 +112,26 @@ partial def findCancelFactor (e : Expr) : ℕ × Tree ℕ :=
     let pd := v1 * v2
     (pd, .node pd t1 t2)
   | (``HDiv.hDiv, #[_, _, _, _, e1, e2]) =>
-    match isRatLit e2 with
+    -- If e2 is a rational, then it's a natural number due to the simp lemmas in `deriveThms`.
+    match isNatLit e2 with
     | some q =>
       let (v1, t1) := findCancelFactor e1
-      let n := v1.lcm q.num.natAbs
-      (n, .node n t1 <| .node q.num.natAbs .nil .nil)
+      let n := v1 * q
+      (n, .node n t1 <| .node q .nil .nil)
     | none => (1, .node 1 .nil .nil)
   | (``Neg.neg, #[_, _, e]) => findCancelFactor e
   | _ => (1, .node 1 .nil .nil)
 
 def synthesizeUsingNormNum (type : Expr) : MetaM Expr := do
-  synthesizeUsingTactic' type (← `(tactic| norm_num))
+  try
+    synthesizeUsingTactic' type (← `(tactic| norm_num))
+  catch e =>
+    throwError "Could not prove {type} using norm_num. {e.toMessageData}"
 
 /--
-`mkProdPrf n tr e` produces a proof of `n*e = e'`, where numeric denominators have been
-canceled in `e'`, distributing `n` proportionally according to `tr`.
+`mkProdPrf α sα v tr e` produces a proof of `v*e = e'`, where numeric denominators have been
+canceled in `e'`, distributing `v` proportionally according to the tree `tr` computed
+by `findCancelFactor`.
 -/
 partial def mkProdPrf (α : Q(Type u)) (sα : Q(Field $α)) (v : ℕ) (t : Tree ℕ)
     (e : Q($α)) : MetaM Expr := do
@@ -147,15 +154,15 @@ partial def mkProdPrf (α : Q(Type u)) (sα : Q(Field $α)) (v : ℕ) (t : Tree 
     let ntp : Q(Prop) := q($ln' * $vln' = $v')
     let npf ← synthesizeUsingNormNum ntp
     mkAppM ``CancelDenoms.mul_subst #[v1, v2, npf]
-  | .node n lhs (.node rn _ _), ~q($e1 / $e2) => do
+  | .node _ lhs (.node rn _ _), ~q($e1 / $e2) => do
+    -- Invariant: e2 is equal to the natural number rn
     let v1 ← mkProdPrf α sα (v / rn) lhs e1
     have rn' := (← mkOfNat α amwo <| mkRawNatLit rn).1
     have vrn' := (← mkOfNat α amwo <| mkRawNatLit <| v / rn).1
-    have n' := (← mkOfNat α amwo <| mkRawNatLit <| n).1
     have v' := (← mkOfNat α amwo <| mkRawNatLit <| v).1
     let ntp : Q(Prop) := q($rn' / $e2 = 1)
     let npf ← synthesizeUsingNormNum ntp
-    let ntp2 : Q(Prop) := q($vrn' * $n' = $v')
+    let ntp2 : Q(Prop) := q($vrn' * $rn' = $v')
     let npf2 ← synthesizeUsingNormNum ntp2
     mkAppM ``CancelDenoms.div_subst #[v1, npf, npf2]
   | t, ~q(-$e) => do
@@ -166,20 +173,36 @@ partial def mkProdPrf (α : Q(Type u)) (sα : Q(Field $α)) (v : ℕ) (t : Tree 
     let e' ← mkAppM ``HMul.hMul #[v', e]
     mkEqRefl e'
 
+/-- Theorems to get expression into a form that `findCancelFactor` and `mkProdPrf`
+can more easily handle. These are important for dividing by rationals and negative integers. -/
+def deriveThms : List Name :=
+  [``div_div_eq_mul_div, ``div_neg]
+
+/-- Helper lemma to chain together a `simp` proof and the result of `mkProdPrf`. -/
+theorem derive_trans [Mul α] {a b c d : α} (h : a = b) (h' : c * b = d) : c * a = d := h ▸ h'
+
 /--
 Given `e`, a term with rational division, produces a natural number `n` and a proof of `n*e = e'`,
 where `e'` has no division. Assumes "well-behaved" division.
 -/
 def derive (e : Expr) : MetaM (ℕ × Expr) := do
-  let (n, t) := findCancelFactor e
-  let ⟨u, tp, e⟩ ← inferTypeQ' e
+  trace[CancelDenoms] "e = {e}"
+  let eSimp ← simpOnlyNames (config := Simp.neutralConfig) deriveThms e
+  trace[CancelDenoms] "e simplified = {eSimp.expr}"
+  let (n, t) := findCancelFactor eSimp.expr
+  let ⟨u, tp, e⟩ ← inferTypeQ' eSimp.expr
   let stp ← synthInstance q(Field $tp)
   try
-    return (n, ← mkProdPrf tp stp n t e)
+    let pf ← mkProdPrf tp stp n t eSimp.expr
+    trace[CancelDenoms] "pf : {← inferType pf}"
+    let pf' ←
+      if let some pfSimp := eSimp.proof? then
+        mkAppM ``derive_trans #[pfSimp, pf]
+      else
+        pure pf
+    return (n, pf')
   catch E => do
-    dbg_trace (← E.toMessageData.toString)
-    throwError
-      "CancelDenoms.derive failed to normalize {e}. Are you sure this is well-behaved division?"
+    throwError "CancelDenoms.derive failed to normalize {e}.\n{E.toMessageData}"
 
 /--
 `findCompLemma e` arranges `e` in the form `lhs R rhs`, where `R ∈ {<, ≤, =}`, and returns
@@ -260,4 +283,4 @@ def cancelDenominators (loc : Location) : TacticM Unit := do
 
 elab "cancel_denoms" loc?:(location)? : tactic => do
   cancelDenominators (expandOptLocation (Lean.mkOptionalNode loc?))
-  Lean.Elab.Tactic.evalTactic (← `(tactic| norm_num [←mul_assoc] $[$loc?]?))
+  Lean.Elab.Tactic.evalTactic (← `(tactic| try norm_num [← mul_assoc] $[$loc?]?))

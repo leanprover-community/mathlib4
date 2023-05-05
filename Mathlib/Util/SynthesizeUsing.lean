@@ -24,7 +24,7 @@ returned expression.
 -- As this was barely used, we've simplified here.
 def synthesizeUsing (type : Expr) (tac : TacticM Unit) : MetaM (List MVarId × Expr) := do
   let m ← mkFreshExprMVar type
-  let goals ← (run m.mvarId! tac).run'
+  let goals ← (Term.withoutErrToSorry <| run m.mvarId! tac).run'
   return (goals, ← instantiateMVars m)
 
 /--
@@ -33,7 +33,11 @@ def synthesizeUsing (type : Expr) (tac : TacticM Unit) : MetaM (List MVarId × E
 The tactic must solve for all goals, in contrast to `synthesizeUsing`.
 -/
 def synthesizeUsing' (type : Expr) (tac : TacticM Unit) : MetaM Expr := do
-  let (_, e) ← synthesizeUsing type (tac *> Tactic.done)
+  let (goals, e) ← synthesizeUsing type tac
+  -- Note: doesn't use `tac *> Tactic.done` since that just adds a message
+  -- rather than raising an error.
+  unless goals.isEmpty do
+    throwError m!"synthesizeUsing': unsolved goals\n{goalsToMessageData goals}"
   return e
 
 /--
