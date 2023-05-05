@@ -1236,17 +1236,16 @@ theorem coe_normSq_add : (normSq (a + b) : ℍ[R]) = normSq a + a * star b + b *
 #align quaternion.coe_norm_sq_add Quaternion.coe_normSq_add
 
 theorem normSq_smul (r : R) (q : ℍ[R]) : normSq (r • q) = r ^ 2 * normSq q := by
-  simp_rw [normSq_def, star_smul, smul_mul_smul, smul_re, sq, smul_eq_mul]
+  simp only [normSq_def', smul_re, smul_imI, smul_imJ, smul_imK, mul_pow, mul_add, smul_eq_mul]
 #align quaternion.norm_sq_smul Quaternion.normSq_smul
 
 theorem normSq_add (a b : ℍ[R]) : normSq (a + b) = normSq a + normSq b + 2 * (a * star b).re :=
   calc
     normSq (a + b) = normSq a + (a * star b).re + ((b * star a).re + normSq b) := by
-      simp_rw [norm_sq_def, star_add, add_mul, mul_add, add_re]
+      simp_rw [normSq_def, star_add, add_mul, mul_add, add_re]
     _ = normSq a + normSq b + ((a * star b).re + (b * star a).re) := by abel
     _ = normSq a + normSq b + 2 * (a * star b).re := by
       rw [← add_re, ← star_mul_star a b, self_add_star', coe_re]
-    
 #align quaternion.norm_sq_add Quaternion.normSq_add
 
 end Quaternion
@@ -1261,50 +1260,45 @@ variable [LinearOrderedCommRing R] {a : ℍ[R]}
 
 @[simp]
 theorem normSq_eq_zero : normSq a = 0 ↔ a = 0 := by
-  refine' ⟨fun h => _, fun h => h.symm ▸ norm_sq.map_zero⟩
-  rw [norm_sq_def', add_eq_zero_iff', add_eq_zero_iff', add_eq_zero_iff'] at h
+  refine' ⟨fun h => _, fun h => h.symm ▸ normSq.map_zero⟩
+  rw [normSq_def', add_eq_zero_iff', add_eq_zero_iff', add_eq_zero_iff'] at h
   exact ext a 0 (pow_eq_zero h.1.1.1) (pow_eq_zero h.1.1.2) (pow_eq_zero h.1.2) (pow_eq_zero h.2)
   all_goals apply_rules [sq_nonneg, add_nonneg]
 #align quaternion.norm_sq_eq_zero Quaternion.normSq_eq_zero
 
-theorem normSq_ne_zero : normSq a ≠ 0 ↔ a ≠ 0 :=
-  not_congr normSq_eq_zero
+theorem normSq_ne_zero : normSq a ≠ 0 ↔ a ≠ 0 := normSq_eq_zero.not
 #align quaternion.norm_sq_ne_zero Quaternion.normSq_ne_zero
 
 @[simp]
 theorem normSq_nonneg : 0 ≤ normSq a := by
-  rw [norm_sq_def']
+  rw [normSq_def']
   apply_rules [sq_nonneg, add_nonneg]
 #align quaternion.norm_sq_nonneg Quaternion.normSq_nonneg
 
 @[simp]
-theorem normSq_le_zero : normSq a ≤ 0 ↔ a = 0 := by
-  simpa only [le_antisymm_iff, norm_sq_nonneg, and_true_iff] using @norm_sq_eq_zero _ _ a
+theorem normSq_le_zero : normSq a ≤ 0 ↔ a = 0 :=
+  normSq_nonneg.le_iff_eq.trans normSq_eq_zero
 #align quaternion.norm_sq_le_zero Quaternion.normSq_le_zero
 
 instance : Nontrivial ℍ[R] where exists_pair_ne := ⟨0, 1, mt (congr_arg re) zero_ne_one⟩
 
-instance : NoZeroDivisors ℍ[R] :=
-  { Quaternion.nontrivial with
-    eq_zero_or_eq_zero_of_mul_eq_zero := fun a b hab =>
-      have : normSq a * normSq b = 0 := by rwa [← norm_sq.map_mul, norm_sq_eq_zero]
-      (eq_zero_or_eq_zero_of_mul_eq_zero this).imp normSq_eq_zero.1 normSq_eq_zero.1 }
+instance : NoZeroDivisors ℍ[R] where
+  eq_zero_or_eq_zero_of_mul_eq_zero {a b} hab :=
+    have : normSq a * normSq b = 0 := by rwa [← map_mul, normSq_eq_zero]
+    (eq_zero_or_eq_zero_of_mul_eq_zero this).imp normSq_eq_zero.1 normSq_eq_zero.1
 
-instance : IsDomain ℍ[R] :=
-  NoZeroDivisors.to_isDomain _
+instance : IsDomain ℍ[R] := NoZeroDivisors.to_isDomain _
 
 theorem sq_eq_normSq : a ^ 2 = normSq a ↔ a = a.re := by
-  simp_rw [← star_eq_self]
-  obtain rfl | hq0 := eq_or_ne a 0
-  · simp
-  · rw [← star_mul_self, sq, mul_left_inj' hq0, eq_comm]
+  rw [← star_eq_self, ← star_mul_self, sq, mul_eq_mul_right_iff, eq_comm]
+  exact or_iff_left_of_imp fun ha ↦ ha.symm ▸ star_zero _
 #align quaternion.sq_eq_norm_sq Quaternion.sq_eq_normSq
 
 theorem sq_eq_neg_normSq : a ^ 2 = -normSq a ↔ a.re = 0 := by
   simp_rw [← star_eq_neg]
   obtain rfl | hq0 := eq_or_ne a 0
   · simp
-  rw [← star_mul_self, ← mul_neg, ← neg_sq, sq, mul_left_inj' (neg_ne_zero.mpr hq0), eq_comm]
+  · rw [← star_mul_self, ← mul_neg, ← neg_sq, sq, mul_left_inj' (neg_ne_zero.mpr hq0), eq_comm]
 #align quaternion.sq_eq_neg_norm_sq Quaternion.sq_eq_neg_normSq
 
 end LinearOrderedCommRing
@@ -1407,18 +1401,19 @@ end Quaternion
 
 namespace Cardinal
 
-open Cardinal Quaternion
+open Quaternion
+
+local infixr:80 " ^ℕ " => @HPow.hPow Cardinal ℕ Cardinal _
 
 section QuaternionAlgebra
 
 variable {R : Type _} (c₁ c₂ : R)
 
-private theorem pow_four [Infinite R] : (#R) ^ 4 = (#R) :=
+private theorem pow_four [Infinite R] : (#R) ^ℕ 4 = (#R) :=
   power_nat_eq (aleph0_le_mk R) <| by simp
-#align cardinal.pow_four cardinal.pow_four
 
 /-- The cardinality of a quaternion algebra, as a type. -/
-theorem mk_quaternionAlgebra : (#ℍ[R,c₁,c₂]) = (#R) ^ 4 := by
+theorem mk_quaternionAlgebra : (#ℍ[R,c₁,c₂]) = (#R) ^ℕ 4 := by
   rw [mk_congr (QuaternionAlgebra.equivProd c₁ c₂)]
   simp only [mk_prod, lift_id]
   ring
@@ -1426,17 +1421,17 @@ theorem mk_quaternionAlgebra : (#ℍ[R,c₁,c₂]) = (#R) ^ 4 := by
 
 @[simp]
 theorem mk_quaternionAlgebra_of_infinite [Infinite R] : (#ℍ[R,c₁,c₂]) = (#R) := by
-  rw [mk_quaternion_algebra, pow_four]
+  rw [mk_quaternionAlgebra, pow_four]
 #align cardinal.mk_quaternion_algebra_of_infinite Cardinal.mk_quaternionAlgebra_of_infinite
 
 /-- The cardinality of a quaternion algebra, as a set. -/
-theorem mk_univ_quaternionAlgebra : (#(Set.univ : Set ℍ[R,c₁,c₂])) = (#R) ^ 4 := by
-  rw [mk_univ, mk_quaternion_algebra]
+theorem mk_univ_quaternionAlgebra : (#(Set.univ : Set ℍ[R,c₁,c₂])) = (#R) ^ℕ 4 := by
+  rw [mk_univ, mk_quaternionAlgebra]
 #align cardinal.mk_univ_quaternion_algebra Cardinal.mk_univ_quaternionAlgebra
 
 @[simp]
 theorem mk_univ_quaternionAlgebra_of_infinite [Infinite R] :
-    (#(Set.univ : Set ℍ[R,c₁,c₂])) = (#R) := by rw [mk_univ_quaternion_algebra, pow_four]
+    (#(Set.univ : Set ℍ[R,c₁,c₂])) = (#R) := by rw [mk_univ_quaternionAlgebra, pow_four]
 #align cardinal.mk_univ_quaternion_algebra_of_infinite Cardinal.mk_univ_quaternionAlgebra_of_infinite
 
 end QuaternionAlgebra
@@ -1447,23 +1442,24 @@ variable (R : Type _) [One R] [Neg R]
 
 /-- The cardinality of the quaternions, as a type. -/
 @[simp]
-theorem mk_quaternion : (#ℍ[R]) = (#R) ^ 4 :=
+theorem mk_quaternion : (#ℍ[R]) = (#R) ^ℕ 4 :=
   mk_quaternionAlgebra _ _
 #align cardinal.mk_quaternion Cardinal.mk_quaternion
 
 @[simp]
-theorem mk_quaternion_of_infinite [Infinite R] : (#ℍ[R]) = (#R) := by rw [mk_quaternion, pow_four]
+theorem mk_quaternion_of_infinite [Infinite R] : (#ℍ[R]) = (#R) :=
+  mk_quaternionAlgebra_of_infinite _ _
 #align cardinal.mk_quaternion_of_infinite Cardinal.mk_quaternion_of_infinite
 
 /-- The cardinality of the quaternions, as a set. -/
 @[simp]
-theorem mk_univ_quaternion : (#(Set.univ : Set ℍ[R])) = (#R) ^ 4 :=
+theorem mk_univ_quaternion : (#(Set.univ : Set ℍ[R])) = (#R) ^ℕ 4 :=
   mk_univ_quaternionAlgebra _ _
 #align cardinal.mk_univ_quaternion Cardinal.mk_univ_quaternion
 
 @[simp]
-theorem mk_univ_quaternion_of_infinite [Infinite R] : (#(Set.univ : Set ℍ[R])) = (#R) := by
-  rw [mk_univ_quaternion, pow_four]
+theorem mk_univ_quaternion_of_infinite [Infinite R] : (#(Set.univ : Set ℍ[R])) = (#R) :=
+  mk_univ_quaternionAlgebra_of_infinite _ _
 #align cardinal.mk_univ_quaternion_of_infinite Cardinal.mk_univ_quaternion_of_infinite
 
 end Quaternion
