@@ -176,9 +176,41 @@ variable
   [Preadditive W.Localization]
   [HasZeroObject W.Localization]
   [∀ (n : ℤ), (shiftFunctor W.Localization n).Additive]
-  [W.Q.Additive]
+  [PreservesFiniteProducts W.Q]
+
+lemma _root_.CategoryTheory.Functor.additive_of_preserves_binary_products
+    {C D : Type _} [Category C] [Category D] [Preadditive C] [Preadditive D] (F : C ⥤ D)
+    [HasBinaryProducts C] [PreservesLimitsOfShape (Discrete WalkingPair) F]
+    [F.PreservesZeroMorphisms] : F.Additive := by
+  have : HasBinaryBiproducts C := HasBinaryBiproducts.of_hasBinaryProducts
+  have := preservesBinaryBiproductsOfPreservesBinaryProducts F
+  exact Functor.additive_of_preservesBinaryBiproducts F
+
+lemma _root_.CategoryTheory.Functor.preservesZeroMorphisms_of_preserves_terminal
+    {C D : Type _} [Category C] [Category D] [HasZeroMorphisms C] [HasZeroMorphisms D] (F : C ⥤ D)
+    [HasTerminal C] [PreservesLimit (Functor.empty.{0} C) F] : F.PreservesZeroMorphisms := ⟨by
+  have : F.map (𝟙 (⊤_ C)) = 0 := (IsTerminal.isTerminalObj _ _ terminalIsTerminal).hom_ext _ _
+  intro X Y
+  have eq : (0 : X ⟶ Y) = 0 ≫ 𝟙 (⊤_ C) ≫ 0 := by simp
+  rw [eq, F.map_comp, F.map_comp, this, zero_comp, comp_zero]⟩
+
+lemma _root_.CategoryTheory.Functor.additive_of_preserves_binary_products_of_preserves_terminal
+    {C D : Type _} [Category C] [Category D] [Preadditive C] [Preadditive D] (F : C ⥤ D)
+    [HasBinaryProducts C] [HasTerminal C] [PreservesLimitsOfShape (Discrete WalkingPair) F]
+    [PreservesLimit (Functor.empty.{0} C) F] : F.Additive := by
+  have : Functor.PreservesZeroMorphisms F := F.preservesZeroMorphisms_of_preserves_terminal
+  exact F.additive_of_preserves_binary_products
+
+lemma _root_.CategoryTheory.Functor.additive_of_preserves_finite_products
+    {C D : Type _} [Category C] [Category D] [Preadditive C] [Preadditive D] (F : C ⥤ D)
+    [HasFiniteProducts C] [PreservesFiniteProducts F] : F.Additive := by
+  have : PreservesLimitsOfShape (Discrete WalkingPair) F := PreservesFiniteProducts.preserves _
+  have : PreservesLimitsOfShape (Discrete PEmpty) F := PreservesFiniteProducts.preserves _
+  exact F.additive_of_preserves_binary_products_of_preserves_terminal
 
 example : HasFiniteProducts W.Localization := inferInstance
+
+instance : W.Q.Additive := Functor.additive_of_preserves_finite_products _
 
 noncomputable instance : Pretriangulated W.Localization := pretriangulated W.Q W
 
