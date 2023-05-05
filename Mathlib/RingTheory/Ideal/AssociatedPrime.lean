@@ -8,10 +8,10 @@ Authors: Andrew Yang
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.LinearAlgebra.Span
-import Mathbin.RingTheory.Ideal.Operations
-import Mathbin.RingTheory.Ideal.QuotientOperations
-import Mathbin.RingTheory.Noetherian
+import Mathlib.LinearAlgebra.Span
+import Mathlib.RingTheory.Ideal.Operations
+import Mathlib.RingTheory.Ideal.QuotientOperations
+import Mathlib.RingTheory.Noetherian
 
 /-!
 
@@ -77,8 +77,7 @@ theorem LinearEquiv.isAssociatedPrime_iff (l : M ≃ₗ[R] M') :
   ⟨fun h => h.map_of_injective l l.Injective, fun h => h.map_of_injective l.symm l.symm.Injective⟩
 #align linear_equiv.is_associated_prime_iff LinearEquiv.isAssociatedPrime_iff
 
-theorem not_isAssociatedPrime_of_subsingleton [Subsingleton M] : ¬IsAssociatedPrime I M :=
-  by
+theorem not_isAssociatedPrime_of_subsingleton [Subsingleton M] : ¬IsAssociatedPrime I M := by
   rintro ⟨hI, x, hx⟩
   apply hI.ne_top
   rwa [Subsingleton.elim x 0, submodule.span_singleton_eq_bot.mpr rfl, Submodule.annihilator_bot] at
@@ -88,8 +87,7 @@ theorem not_isAssociatedPrime_of_subsingleton [Subsingleton M] : ¬IsAssociatedP
 variable (R)
 
 theorem exists_le_isAssociatedPrime_of_isNoetherianRing [H : IsNoetherianRing R] (x : M)
-    (hx : x ≠ 0) : ∃ P : Ideal R, IsAssociatedPrime P M ∧ (R ∙ x).annihilator ≤ P :=
-  by
+    (hx : x ≠ 0) : ∃ P : Ideal R, IsAssociatedPrime P M ∧ (R ∙ x).annihilator ≤ P := by
   have : (R ∙ x).annihilator ≠ ⊤ := by
     rwa [Ne.def, Ideal.eq_top_iff_one, Submodule.mem_annihilator_span_singleton, one_smul]
   obtain ⟨P, ⟨l, h₁, y, rfl⟩, h₃⟩ :=
@@ -101,8 +99,7 @@ theorem exists_le_isAssociatedPrime_of_isNoetherianRing [H : IsNoetherianRing R]
   rw [or_iff_not_imp_left]
   intro ha
   rw [Submodule.mem_annihilator_span_singleton] at ha hab
-  have H₁ : (R ∙ y).annihilator ≤ (R ∙ a • y).annihilator :=
-    by
+  have H₁ : (R ∙ y).annihilator ≤ (R ∙ a • y).annihilator := by
     intro c hc
     rw [Submodule.mem_annihilator_span_singleton] at hc⊢
     rw [smul_comm, hc, smul_zero]
@@ -132,8 +129,7 @@ theorem associatedPrimes.eq_empty_of_subsingleton [Subsingleton M] : associatedP
 variable (R M)
 
 theorem associatedPrimes.nonempty [IsNoetherianRing R] [Nontrivial M] :
-    (associatedPrimes R M).Nonempty :=
-  by
+    (associatedPrimes R M).Nonempty := by
   obtain ⟨x, hx⟩ := exists_ne (0 : M)
   obtain ⟨P, hP, _⟩ := exists_le_isAssociatedPrime_of_isNoetherianRing R x hx
   exact ⟨P, hP⟩
@@ -142,8 +138,7 @@ theorem associatedPrimes.nonempty [IsNoetherianRing R] [Nontrivial M] :
 variable {R M}
 
 theorem IsAssociatedPrime.annihilator_le (h : IsAssociatedPrime I M) :
-    (⊤ : Submodule R M).annihilator ≤ I :=
-  by
+    (⊤ : Submodule R M).annihilator ≤ I := by
   obtain ⟨hI, x, rfl⟩ := h
   exact Submodule.annihilator_mono le_top
 #align is_associated_prime.annihilator_le IsAssociatedPrime.annihilator_le
@@ -169,8 +164,7 @@ theorem IsAssociatedPrime.eq_radical (hI : I.IsPrimary) (h : IsAssociatedPrime J
 #align is_associated_prime.eq_radical IsAssociatedPrime.eq_radical
 
 theorem associatedPrimes.eq_singleton_of_isPrimary [IsNoetherianRing R] (hI : I.IsPrimary) :
-    associatedPrimes R (R ⧸ I) = {I.radical} :=
-  by
+    associatedPrimes R (R ⧸ I) = {I.radical} := by
   ext J
   rw [Set.mem_singleton_iff]
   refine' ⟨IsAssociatedPrime.eq_radical hI, _⟩
