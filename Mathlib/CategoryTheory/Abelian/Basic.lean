@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel, Johan Commelin, Scott Morrison
 
 ! This file was ported from Lean 3 source module category_theory.abelian.basic
-! leanprover-community/mathlib commit 8c75ef3517d4106e89fe524e6281d0b0545f47fc
+! leanprover-community/mathlib commit a5ff45a1c92c278b03b52459a620cfd9c49ebc80
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -268,12 +268,12 @@ namespace CategoryTheory.Abelian
 
 variable {C : Type u} [Category.{v} C] [Abelian C]
 
-/-- An abelian category has finite biproducts. -/
--- Porting note: we would like this to be an instance, and indeed it worked in mathlib3
--- however it triggers https://github.com/leanprover/lean4/issues/2055
--- during the simpNF linter, so for now we turn it on locally in this file.
--- This will likely cause problems in downstream ports, unfortunately.
+-- Porting note: the below porting note is from mathlib3!
+-- Porting note: this should be an instance,
+-- but triggers https://github.com/leanprover/lean4/issues/2055
+-- We set it as a local instance instead.
 -- instance (priority := 100)
+/-- An abelian category has finite biproducts. -/
 theorem hasFiniteBiproducts : HasFiniteBiproducts C :=
   Limits.HasFiniteBiproducts.of_hasFiniteProducts
 #align category_theory.abelian.has_finite_biproducts CategoryTheory.Abelian.hasFiniteBiproducts
