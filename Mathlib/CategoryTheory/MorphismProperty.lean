@@ -832,6 +832,34 @@ lemma unop (W : MorphismProperty Cᵒᵖ) [IsMultiplicative W] : IsMultiplicativ
 
 end IsMultiplicative
 
+def functorCategory (J : Type _) [Category J] : MorphismProperty (J ⥤ C) :=
+  fun _ _ f => ∀ (j : J), W (f.app j)
+
+def IsStableUnderLimitsOfShape (J : Type _) [Category J] : Prop :=
+  ∀ (X₁ X₂ : J ⥤ C) (c₁ : Cone X₁) (c₂ : Cone X₂)
+    (_ : IsLimit c₁) (h₂ : IsLimit c₂) (f : X₁ ⟶ X₂) (_ : W.functorCategory J f),
+      W (h₂.lift (Cone.mk _ (c₁.π ≫ f)))
+
+variable {W}
+
+lemma IsStableUnderLimitsOfShape.lim_map {J : Type _} [Category J]
+  (hW : W.IsStableUnderLimitsOfShape J) {X Y : J ⥤ C}
+  (f : X ⟶ Y) [HasLimitsOfShape J C]
+  (hf : W.functorCategory _ f) : W (lim.map f) :=
+  hW X Y _ _ (limit.isLimit X) (limit.isLimit Y) f hf
+
+variable (W)
+
+abbrev IsStableUnderProductsOfShape (J : Type _) := W.IsStableUnderLimitsOfShape (Discrete J)
+
+class IsStableUnderFiniteProducts : Prop :=
+  isStableUnderProductsOfShape' (J : Type) [Finite J] : W.IsStableUnderProductsOfShape J
+
+lemma IsStableUnderFiniteProducts.isStableUnderProductsOfShape
+    (J : Type) [Finite J] [W.IsStableUnderFiniteProducts] :
+  W.IsStableUnderProductsOfShape J := IsStableUnderFiniteProducts.isStableUnderProductsOfShape' J
+
+
 end MorphismProperty
 
 end CategoryTheory

@@ -2,6 +2,7 @@ import Mathlib.CategoryTheory.Localization.CalculusOfFractions
 import Mathlib.CategoryTheory.Triangulated.Functor
 import Mathlib.CategoryTheory.Triangulated.Triangulated
 import Mathlib.CategoryTheory.Shift.Localization
+import Mathlib.CategoryTheory.Localization.FiniteProducts
 
 namespace CategoryTheory
 
@@ -166,17 +167,20 @@ lemma pretriangulated : Pretriangulated D where
   rotate_distinguished_triangle := L.rotate_essImageDistTriang
   complete_distinguished_triangle_morphism := complete_distinguished_triangle_morphism L W
 
-/-
 noncomputable example : HasShift W.Localization ℤ := inferInstance
 noncomputable example : W.Q.HasCommShift ℤ := inferInstance
 
-instance : HasZeroObject W.Localization := sorry
+variable
+  [HasFiniteProducts C]
+  [W.IsStableUnderFiniteProducts]
+  [Preadditive W.Localization]
+  [HasZeroObject W.Localization]
+  [∀ (n : ℤ), (shiftFunctor W.Localization n).Additive]
+  [W.Q.Additive]
 
-instance : Preadditive W.Localization := sorry
-instance (n : ℤ) : (shiftFunctor W.Localization n).Additive := sorry
-instance : W.Q.Additive := sorry
+example : HasFiniteProducts W.Localization := inferInstance
 
-noncomputable instance : Pretriangulated W.Localization := pretriangulated W.Q W -/
+noncomputable instance : Pretriangulated W.Localization := pretriangulated W.Q W
 
 end Localization
 

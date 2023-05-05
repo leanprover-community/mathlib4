@@ -4,7 +4,7 @@ universe v₁ v₂ v₃ u₀ u₁ u₂ u₃ u₄
 
 namespace CategoryTheory
 
-variable (J : Type u₀) {C : J → Type u₁} {D : J → Type u₂}
+variable (J : Type u₀) (C : J → Type u₁) {D : J → Type u₂}
   [∀ j, Category.{v₁} (C j)] [∀ j, Category.{v₂} (D j)]
   (L : ∀ j, C j ⥤ D j) (W : ∀ j, MorphismProperty (C j))
   [∀ j, (W j).ContainsIdentities]
@@ -14,7 +14,7 @@ namespace Functor
 
 namespace IsLocalization
 
-lemma pi [Finite J] :
+instance pi [Finite J] :
     (Functor.pi L).IsLocalization (MorphismProperty.pi W) := by
   let P : Type u₀ → Prop := fun J => ∀ {C : J → Type u₁} {D : J → Type u₂}
     [∀ j, Category.{v₁} (C j)] [∀ j, Category.{v₂} (D j)]
@@ -80,7 +80,7 @@ lemma pi [Finite J] :
 
 instance pi' [Finite J] :
     (Functor.pi (fun j => (W j).Q)).IsLocalization (MorphismProperty.pi W) :=
-  pi _ _ _
+  inferInstance
 
 end IsLocalization
 
