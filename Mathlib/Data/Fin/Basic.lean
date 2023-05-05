@@ -2504,6 +2504,10 @@ theorem coe_ofNat_eq_mod (m n : ℕ) [NeZero m] :
   rfl
 #align fin.coe_of_nat_eq_mod Fin.coe_ofNat_eq_mod
 
+lemma coe_add_one_eq_cast {n i : ℕ} (h : i < n) : (i + 1 : Fin (n + 1)) = Fin.succ ⟨i, h⟩ := by
+  rw [succ_mk, Fin.eq_mk_iff_val_eq, ←Nat.cast_add_one, coe_ofNat_eq_mod, Nat.mod_succ_eq_iff_lt]
+  exact Nat.succ_lt_succ h
+
 section Mul
 
 /-!
