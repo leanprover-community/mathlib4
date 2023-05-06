@@ -113,7 +113,7 @@ def ScottTopology' : TopologicalSpace α := upperSetTopology ⊔
         constructor
         . exact hb_w
         . exact Set.subset_unionₛ_of_subset s s₀ hb_h hs₀_w
-      })
+      }
 
 end preorder
 
