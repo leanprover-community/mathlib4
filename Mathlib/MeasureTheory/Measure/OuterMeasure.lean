@@ -884,7 +884,7 @@ theorem le_bounded_by' {μ : OuterMeasure α} :
 #align measure_theory.outer_measure.le_bounded_by' MeasureTheory.OuterMeasure.le_bounded_by'
 
 theorem smul_boundedBy {c : ℝ≥0∞} (hc : c ≠ ∞) : c • boundedBy m = boundedBy (c • m) := by
-  simp only [boundedBy , smul_ofFunction hc]
+  simp only [boundedBy, smul_ofFunction hc]
   congr 1 with s : 1
   rcases s.eq_empty_or_nonempty with (rfl | hs) <;> simp [*]
 #align measure_theory.outer_measure.smul_bounded_by MeasureTheory.OuterMeasure.smul_boundedBy
