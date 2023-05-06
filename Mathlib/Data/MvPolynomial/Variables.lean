@@ -655,8 +655,8 @@ theorem totalDegree_smul_le [CommSemiring S] [DistribMulAction R S] (a : R) (f :
   Finset.sup_mono support_smul
 #align mv_polynomial.total_degree_smul_le MvPolynomial.totalDegree_smul_le
 
-theorem totalDegree_pow (a : MvPolynomial σ R) (n : ℕ) : (a ^ n).totalDegree ≤ n * a.totalDegree :=
-  by
+theorem totalDegree_pow (a : MvPolynomial σ R) (n : ℕ) :
+    (a ^ n).totalDegree ≤ n * a.totalDegree := by
   induction' n with n ih
   · simp only [Nat.zero_eq, MulZeroClass.zero_mul, pow_zero, totalDegree_one]
   rw [pow_succ]
