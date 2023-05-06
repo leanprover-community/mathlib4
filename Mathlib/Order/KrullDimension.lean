@@ -26,8 +26,8 @@ For a preordered set `(α, <)`, a strict series of `α` of length `n` is a stric
 `fin (n + 1) → α`, i.e. `a₀ < a₁ < ... < aₙ` with `aᵢ : α`.
 -/
 structure StrictSeries where
-/-- the largest (right most) index of a strict series -/
-maxIndex : ℕ
+/-- the number of inequalities in the series -/
+length : ℕ
 /-- the underlying function of a strict series -/
 toFun : Fin (maxIndex + 1) → α
 /-- the underlying function should be strictly monotonic -/
