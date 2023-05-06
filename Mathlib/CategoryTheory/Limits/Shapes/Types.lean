@@ -353,7 +353,7 @@ def coproductColimitCocone {J : Type u} (F : J → Type u) :
     Limits.ColimitCocone (Discrete.functor F) where
   cocone :=
     { pt := Σj, F j
-      ι := Discrete.natTrans (fun ⟨j⟩ x => ⟨j, x⟩)}--{ app := fun j x => ⟨j.as, x⟩ } }
+      ι := Discrete.natTrans (fun ⟨j⟩ x => ⟨j, x⟩)}
   isColimit :=
     { desc := fun s x => s.ι.app ⟨x.1⟩ x.2
       uniq := fun s m w => by

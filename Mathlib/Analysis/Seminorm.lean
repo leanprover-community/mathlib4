@@ -404,7 +404,6 @@ theorem smul_le_smul {p q : Seminorm 𝕜 E} {a b : ℝ≥0} (hpq : p ≤ q) (ha
     a • p ≤ b • q := by
   simp_rw [le_def]
   intro x
-  simp_rw [Pi.smul_apply, NNReal.smul_def, smul_eq_mul]
   exact mul_le_mul hab (hpq x) (map_nonneg p x) (NNReal.coe_nonneg b)
 #align seminorm.smul_le_smul Seminorm.smul_le_smul
 
