@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl
 
 ! This file was ported from Lean 3 source module analysis.normed_space.basic
-! leanprover-community/mathlib commit 8000bbbe2e9d39b84edb993d88781f536a8a3fa8
+! leanprover-community/mathlib commit f9dd3204df14a0749cd456fac1e6849dfe7d2b88
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -101,9 +101,8 @@ theorem norm_zsmul (α) [NormedField α] [NormedSpace α β] (n : ℤ) (x : β) 
 #align norm_zsmul norm_zsmul
 
 @[simp]
-theorem abs_norm_eq_norm (z : β) : |‖z‖| = ‖z‖ :=
-  (abs_eq (norm_nonneg z)).mpr (Or.inl rfl)
-#align abs_norm_eq_norm abs_norm_eq_norm
+theorem abs_norm (z : β) : |‖z‖| = ‖z‖ := abs_of_nonneg <| norm_nonneg _
+#align abs_norm abs_norm
 
 theorem inv_norm_smul_mem_closed_unit_ball [NormedSpace ℝ β] (x : β) :
     ‖x‖⁻¹ • x ∈ closedBall (0 : β) 1 := by
@@ -241,8 +240,8 @@ noncomputable def homeomorphUnitBall [NormedSpace ℝ E] : E ≃ₜ ball (0 : E)
     ⟨(1 + ‖x‖ ^ 2).sqrt⁻¹ • x, by
       have : 0 < 1 + ‖x‖ ^ 2 := by positivity
       rw [mem_ball_zero_iff, norm_smul, Real.norm_eq_abs, abs_inv, ← _root_.div_eq_inv_mul,
-        div_lt_one (abs_pos.mpr <| Real.sqrt_ne_zero'.mpr this), ← abs_norm_eq_norm x, ← sq_lt_sq,
-        abs_norm_eq_norm, Real.sq_sqrt this.le]
+        div_lt_one (abs_pos.mpr <| Real.sqrt_ne_zero'.mpr this), ← abs_norm x, ← sq_lt_sq,
+        abs_norm, Real.sq_sqrt this.le]
       exact lt_one_add _⟩
   invFun y := (1 - ‖(y : E)‖ ^ 2).sqrt⁻¹ • (y : E)
   left_inv x := by
