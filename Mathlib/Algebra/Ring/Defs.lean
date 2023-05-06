@@ -117,12 +117,18 @@ class NonUnitalNonAssocSemiring (α : Type u) extends AddCommMonoid α, Distrib 
 #align non_unital_non_assoc_semiring NonUnitalNonAssocSemiring
 
 /-- A not-necessarily-unital, not-necessarily-associative ring. -/
-class NonUnitalNonAssocRing (α : Type u) extends AddCommGroup α, NonUnitalNonAssocSemiring α
+class NonUnitalNonAssocRing (α : Type u) extends NonUnitalNonAssocSemiring α, AddCommGroup α
 #align non_unital_non_assoc_ring NonUnitalNonAssocRing
 
 /-- An associative but not-necessarily unital semiring. -/
 class NonUnitalSemiring (α : Type u) extends NonUnitalNonAssocSemiring α, SemigroupWithZero α
 #align non_unital_semiring NonUnitalSemiring
+
+-- We defer the instance `NonUnitalNonAssocRing.toHasDistribNeg` to `Algebra.Ring.Basic`
+-- as it relies on the lemma `eq_neg_of_add_eq_zero_left`.
+/-- An associative but not-necessarily unital ring. -/
+class NonUnitalRing (α : Type _) extends NonUnitalSemiring α, NonUnitalNonAssocRing α
+#align non_unital_ring NonUnitalRing
 
 /-- A non-unital commutative semiring is a `NonUnitalSemiring` with commutative multiplication.
 In other words, it is a type with the following structures: additive commutative monoid
@@ -131,11 +137,9 @@ multiplication by zero law (`MulZeroClass`). -/
 class NonUnitalCommSemiring (α : Type u) extends NonUnitalSemiring α, CommSemigroup α
 #align non_unital_comm_semiring NonUnitalCommSemiring
 
--- We defer the instance `NonUnitalNonAssocRing.toHasDistribNeg` to `Algebra.Ring.Basic`
--- as it relies on the lemma `eq_neg_of_add_eq_zero_left`.
-/-- An associative but not-necessarily unital ring. -/
-class NonUnitalRing (α : Type _) extends NonUnitalNonAssocRing α, NonUnitalSemiring α
-#align non_unital_ring NonUnitalRing
+/-- A non-unital commutative ring is a `NonUnitalRing` with commutative multiplication. -/
+class NonUnitalCommRing (α : Type u) extends NonUnitalCommSemiring α, NonUnitalRing α
+#align non_unital_comm_ring NonUnitalCommRing
 
 /-- A unital but not-necessarily-associative semiring. -/
 class NonAssocSemiring (α : Type u) extends NonUnitalNonAssocSemiring α, MulZeroOneClass α,
@@ -143,24 +147,20 @@ class NonAssocSemiring (α : Type u) extends NonUnitalNonAssocSemiring α, MulZe
 #align non_assoc_semiring NonAssocSemiring
 
 /-- A unital but not-necessarily-associative ring. -/
-class NonAssocRing (α : Type _) extends NonUnitalNonAssocRing α, NonAssocSemiring α,
+class NonAssocRing (α : Type _) extends NonAssocSemiring α, NonUnitalNonAssocRing α,
     AddCommGroupWithOne α
 #align non_assoc_ring NonAssocRing
 
 class Semiring (α : Type u) extends NonAssocSemiring α, NonUnitalSemiring α, MonoidWithZero α
 #align semiring Semiring
 
-class CommSemiring (R : Type u) extends Semiring R, CommMonoid R
-#align comm_semiring CommSemiring
-
 class Ring (R : Type u) extends Semiring R, AddCommGroup R, AddGroupWithOne R
 #align ring Ring
 
-/-- A non-unital commutative ring is a `NonUnitalRing` with commutative multiplication. -/
-class NonUnitalCommRing (α : Type u) extends NonUnitalRing α, CommSemigroup α
-#align non_unital_comm_ring NonUnitalCommRing
+class CommSemiring (R : Type u) extends Semiring R, CommMonoid R
+#align comm_semiring CommSemiring
 
-class CommRing (α : Type u) extends Ring α, CommMonoid α
+class CommRing (α : Type u) extends CommSemiring α, Ring α
 #align comm_ring CommRing
 
 /-!
@@ -435,48 +435,23 @@ variable [Ring α] {a b c d e : α}
 -- A (unital, associative) ring is a not-necessarily-unital ring
 -- see Note [lower instance priority]
 instance (priority := 100) Ring.toNonUnitalRing : NonUnitalRing α where
+  toNonUnitalSemiring := @Semiring.toNonUnitalSemiring α (@Ring.toSemiring α _)
   __ := ‹Ring α›
-  zero_mul := fun a => add_left_cancel (a := 0 * a) <| by rw [← add_mul, zero_add, add_zero]
-  mul_zero := fun a => add_left_cancel (a := a * 0) <| by rw [← mul_add, add_zero, add_zero]
 #align ring.to_non_unital_ring Ring.toNonUnitalRing
 
 -- A (unital, associative) ring is a not-necessarily-associative ring
 -- see Note [lower instance priority]
 instance (priority := 100) Ring.toNonAssocRing : NonAssocRing α where
+  toNonAssocSemiring := @Semiring.toNonAssocSemiring α (@Ring.toSemiring α _)
   __ := ‹Ring α›
-  zero_mul := fun a => add_left_cancel (a := 0 * a) <| by rw [← add_mul, zero_add, add_zero]
-  mul_zero := fun a => add_left_cancel (a := a * 0) <| by rw [← mul_add, add_zero, add_zero]
 #align ring.to_non_assoc_ring Ring.toNonAssocRing
 
-/- The instance from `Ring` to `Semiring` happens often in linear algebra, for which all the basic
-definitions are given in terms of semirings, but many applications use rings or fields. We increase
-a little bit its priority above 100 to try it quickly, but remaining below the default 1000 so that
-more specific instances are tried first. -/
-instance (priority := 200) : Semiring α :=
-  { ‹Ring α› with }
-#align ring.to_semiring Ring.toSemiring
-
 end Ring
-
--- see Note [lower instance priority]
-instance (priority := 100) NonUnitalCommRing.toNonUnitalCommSemiring [s : NonUnitalCommRing α] :
-    NonUnitalCommSemiring α :=
-  { s with }
-#align non_unital_comm_ring.to_non_unital_comm_semiring NonUnitalCommRing.toNonUnitalCommSemiring
-
-instance (priority := 100) CommRing.toCommSemiring [s : CommRing α] : CommSemiring α :=
-  { s with }
-#align comm_ring.to_comm_semiring CommRing.toCommSemiring
 
 -- see Note [lower instance priority]
 instance (priority := 100) CommRing.toNonUnitalCommRing [s : CommRing α] : NonUnitalCommRing α :=
   { s with }
 #align comm_ring.to_non_unital_comm_ring CommRing.toNonUnitalCommRing
-
--- see Note [lower instance priority]
-instance (priority := 100) CommRing.toAddCommGroupWithOne [s : CommRing α] :
-    AddCommGroupWithOne α :=
-  { s with }
 
 /-- A domain is a nontrivial semiring such multiplication by a non zero element is cancellative,
   on both sides. In other words, a nontrivial semiring `R` satisfying
