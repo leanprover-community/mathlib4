@@ -15,10 +15,10 @@ import Mathlib.Data.Fintype.Sum
 /-!
 # Stars and bars
 
-In this file, we prove (in `sym.card_sym_eq_multichoose`) that the function `multichoose n k`
-defined in `data/nat/choose/basic` counts the number of multisets of cardinality `k` over an
-alphabet of cardinality `n`. In conjunction with `nat.multichoose_eq` proved in
-`data/nat/choose/basic`, which shows that `multichoose n k = choose (n + k - 1) k`,
+In this file, we prove (in `Sym.card_sym_eq_multichoose`) that the function `multichoose n k`
+defined in `Data/Nat/Choose/Basic` counts the number of multisets of cardinality `k` over an
+alphabet of cardinality `n`. In conjunction with `Nat.multichoose_eq` proved in
+`Data/Nat/Choose/Basic`, which shows that `multichoose n k = choose (n + k - 1) k`,
 this is central to the "stars and bars" technique in combinatorics, where we switch between
 counting multisets of size `k` over an alphabet of size `n` to counting strings of `k` elements
 ("stars") separated by `n-1` dividers ("bars").
@@ -43,11 +43,11 @@ https://en.wikipedia.org/wiki/Twelvefold_way
 
 ## Formal statement
 
-Here we generalise the alphabet to an arbitrary fintype `α`, and we use `sym α k` as the type of
+Here we generalise the alphabet to an arbitrary fintype `α`, and we use `Sym α k` as the type of
 multisets of size `k` over `α`. Thus the statement that these are counted by `multichoose` is:
-`sym.card_sym_eq_multichoose : card (sym α k) = multichoose (card α) k`
+`Sym.card_sym_eq_multichoose : card (Sym α k) = multichoose (card α) k`
 while the "stars and bars" technique gives
-`sym.card_sym_eq_choose : card (sym α k) = choose (card α + k - 1) k`
+`Sym.card_sym_eq_choose : card (Sym α k) = choose (card α + k - 1) k`
 
 
 ## Tags
@@ -66,7 +66,7 @@ section Sym
 
 variable (α) (n : ℕ)
 
-/-- Over `fin (n + 1)`, the multisets of size `k + 1` containing `0` are equivalent to those of size
+/-- Over `Fin (n + 1)`, the multisets of size `k + 1` containing `0` are equivalent to those of size
 `k`, as demonstrated by respectively erasing or appending `0`. -/
 protected def e1 {n k : ℕ} : { s : Sym (Fin (n + 1)) (k + 1) // ↑0 ∈ s } ≃ Sym (Fin n.succ) k where
   toFun s := s.1.erase 0 s.2
@@ -76,8 +76,8 @@ protected def e1 {n k : ℕ} : { s : Sym (Fin (n + 1)) (k + 1) // ↑0 ∈ s } �
 set_option linter.uppercaseLean3 false in
 #align sym.E1 Sym.e1
 
-/-- The multisets of size `k` over `fin n+2` not containing `0`
-are equivalent to those of size `k` over `fin n+1`,
+/-- The multisets of size `k` over `Fin n+2` not containing `0`
+are equivalent to those of size `k` over `Fin n+1`,
 as demonstrated by respectively decrementing or incrementing every element of the multiset.
 -/
 protected def e2 {n k : ℕ} : { s : Sym (Fin n.succ.succ) k // ↑0 ∉ s } ≃ Sym (Fin n.succ) k where
@@ -109,15 +109,15 @@ theorem card_sym_fin_eq_multichoose : ∀ n k : ℕ, card (Sym (Fin n) k) = mult
   termination_by card_sym_fin_eq_multichoose n k => n + k
 #align sym.card_sym_fin_eq_multichoose Sym.card_sym_fin_eq_multichoose
 
-/-- For any fintype `α` of cardinality `n`, `card (sym α k) = multichoose (card α) k` -/
+/-- For any fintype `α` of cardinality `n`, `card (Sym α k) = multichoose (card α) k`. -/
 theorem card_sym_eq_multichoose (α : Type _) (k : ℕ) [Fintype α] [Fintype (Sym α k)] :
     card (Sym α k) = multichoose (card α) k := by
   rw [← card_sym_fin_eq_multichoose]
   exact card_congr (equivCongr (equivFin α))
 #align sym.card_sym_eq_multichoose Sym.card_sym_eq_multichoose
 
-/-- The *stars and bars* lemma: the cardinality of `sym α k` is equal to
-`nat.choose (card α + k - 1) k`. -/
+/-- The *stars and bars* lemma: the cardinality of `Sym α k` is equal to
+`Nat.choose (card α + k - 1) k`. -/
 theorem card_sym_eq_choose {α : Type _} [Fintype α] (k : ℕ) [Fintype (Sym α k)] :
     card (Sym α k) = (card α + k - 1).choose k := by
   rw [card_sym_eq_multichoose, Nat.multichoose_eq]
@@ -131,7 +131,7 @@ namespace Sym2
 
 variable [DecidableEq α]
 
-/-- The `diag` of `s : finset α` is sent on a finset of `sym2 α` of card `s.card`. -/
+/-- The `diag` of `s : Finset α` is sent on a finset of `Sym2 α` of card `s.card`. -/
 theorem card_image_diag (s : Finset α) : (s.diag.image Quotient.mk').card = s.card := by
   rw [card_image_of_injOn, diag_card]
   rintro ⟨x₀, x₁⟩ hx _ _ h
@@ -163,8 +163,8 @@ theorem two_mul_card_image_offDiag (s : Finset α) :
   exact fun _ => hxy'
 #align sym2.two_mul_card_image_off_diag Sym2.two_mul_card_image_offDiag
 
-/-- The `off_diag` of `s : finset α` is sent on a finset of `sym2 α` of card `s.off_diag.card / 2`.
-This is because every element `⟦(x, y)⟧` of `sym2 α` not on the diagonal comes from exactly two
+/-- The `offDiag` of `s : Finset α` is sent on a finset of `Sym2 α` of card `s.offDiag.card / 2`.
+This is because every element `⟦(x, y)⟧` of `Sym2 α` not on the diagonal comes from exactly two
 pairs: `(x, y)` and `(y, x)`. -/
 theorem card_image_offDiag (s : Finset α) :
     (s.offDiag.image Quotient.mk').card = s.card.choose 2 := by
