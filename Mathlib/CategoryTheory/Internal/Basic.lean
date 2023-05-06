@@ -18,6 +18,22 @@ structure Internal :=
 
 instance : Category (Internal A C) := InducedCategory.category (fun X => X.presheaf)
 
+@[ext]
+lemma Internal.hom_ext {X Y : Internal A C} (f g : X ⟶ Y)
+    (h : ∀ (T : C), f.app (Opposite.op T) = g.app (Opposite.op T)) : f = g := by
+  apply NatTrans.ext
+  ext1
+  apply h
+
+@[simp]
+lemma Internal.id_app (X : Internal A C) : (𝟙 X : X.presheaf ⟶ X.presheaf) = 𝟙 X.presheaf := rfl
+
+@[simp]
+lemma Internal.comp_app {X₁ X₂ X₃ : Internal A C} (f : X₁ ⟶ X₂) (g : X₂ ⟶ X₃) :
+  @CategoryStruct.comp (Internal A C) _ _ _ _ f g =
+    @CategoryStruct.comp (Cᵒᵖ ⥤ A) _ _ _ _ f g := by
+  rfl
+
 def Internal.presheafFunctor : Internal A C ⥤ Cᵒᵖ ⥤ A := inducedFunctor _
 @[simps!]
 def Internal.typesPresheafFunctor : Internal A C ⥤ Cᵒᵖ ⥤ Type v₂ :=
@@ -36,7 +52,7 @@ def Internal.objFunctor : Internal A C ⥤ C where
       Iso.inv_hom_id_assoc, Iso.cancel_iso_hom_left]
     ext X
     dsimp
-    erw [NatTrans.comp_app, FunctorToTypes.map_comp_apply])
+    simp only [FunctorToTypes.map_comp_apply])
 
 variable {A C}
 
@@ -45,6 +61,41 @@ lemma Internal.map_objFunctor_map {X Y : Internal A C} (f : X ⟶ Y) :
   yoneda.map ((Internal.objFunctor A C).map f) =
     X.iso.hom ≫ (f ◫ (𝟙 (forget A))) ≫ Y.iso.inv := by
   simp only [Internal.objFunctor, Functor.image_preimage]
+
+lemma Internal.forget_app {X Y : Internal A C} (f : X ⟶ Y) (T : Cᵒᵖ) :
+    (forget A).map (f.app T) = X.iso.inv.app T ≫
+      (yoneda.map ((Internal.objFunctor A C).map f)).app T ≫ Y.iso.hom.app T := by simp
+
+instance : Faithful (Internal.objFunctor A C) := ⟨fun {_ _ f g h} => by
+  ext : 2
+  simp only [Internal.forget_app, h]⟩
+
+@[simps]
+def Internal.mkIso {X Y : Internal A C} (e : X.presheaf ≅ Y.presheaf) : X ≅ Y where
+  hom := e.hom
+  inv := e.inv
+  hom_inv_id := e.hom_inv_id
+  inv_hom_id := e.inv_hom_id
+
+lemma Internal.isIso_of_isIso {X Y : Internal A C} (f : X ⟶ Y)
+    (hf : @IsIso (Cᵒᵖ ⥤ A) _ _ _ f) : IsIso f := by
+  let e := @asIso (Cᵒᵖ ⥤ A) _ _ _ f
+  exact IsIso.of_iso (@Internal.mkIso _ _ _ _ _ X Y e)
+
+instance : ReflectsIsomorphisms (Internal.presheafFunctor A C) :=
+  ⟨fun f hf => IsIso.of_iso (Internal.mkIso (@asIso (Cᵒᵖ ⥤ A) _ _ _ f hf))⟩
+
+instance [ReflectsIsomorphisms (forget A)] :
+    ReflectsIsomorphisms (Internal.objFunctor A C) := ⟨fun {X Y f hf} => by
+  have : ∀ (X : Cᵒᵖ), IsIso ((forget A).map (((Internal.presheafFunctor A C).map f).app X)) := by
+    intro ⟨X⟩
+    rw [Internal.forget_app]
+    change IsIso ((Internal.objFunctor A C).map ((Internal.presheafFunctor A C).map f)) at hf
+    infer_instance
+  have : ∀ (X : Cᵒᵖ), IsIso (((Internal.presheafFunctor A C).map f).app X) :=
+    fun _ => isIso_of_reflects_iso _ (forget A)
+  have : IsIso ((Internal.presheafFunctor A C).map f) := NatIso.isIso_of_isIso_app _
+  exact isIso_of_reflects_iso f (Internal.presheafFunctor A C)⟩
 
 abbrev Internal.typesPresheaf (X : Internal A C) := (Internal.typesPresheafFunctor A C).obj X
 
@@ -161,5 +212,6 @@ lemma ConcreteCategory.Operation₂.onInternal_naturality (oper : Operation₂ A
     rfl
   simpa [h] using congr_fun (congr_app
     (oper.onTypesPresheaf_naturality f =≫ Y.iso.inv) Z) (⟨X.iso.hom.app _ x, X.iso.hom.app _ y⟩)
+
 
 end CategoryTheory

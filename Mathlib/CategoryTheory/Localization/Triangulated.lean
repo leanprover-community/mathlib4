@@ -180,13 +180,11 @@ noncomputable example : W.Q.HasCommShift ℤ := inferInstance
 variable
   [HasFiniteProducts C]
   [W.IsStableUnderFiniteProducts]
-  [Preadditive W.Localization]
 
 example : HasTerminal W.Localization := inferInstance
 example : HasFiniteProducts W.Localization := inferInstance
 noncomputable example : PreservesFiniteProducts W.Q := inferInstance
 
-instance : W.Q.Additive := Functor.additive_of_preserves_finite_products _
 instance : HasZeroObject W.Localization :=
   Limits.hasZeroObject_of_additive_functor W.Q
 
@@ -196,8 +194,8 @@ noncomputable instance (n : ℤ) :
   intros
   infer_instance
 
-instance (n : ℤ) : (shiftFunctor W.Localization n).Additive := by
-  apply Functor.additive_of_preserves_finite_products _
+instance (n : ℤ) : (shiftFunctor W.Localization n).Additive :=
+  Functor.additive_of_preserves_finite_products _
 
 noncomputable instance : Pretriangulated W.Localization := pretriangulated W.Q W
 

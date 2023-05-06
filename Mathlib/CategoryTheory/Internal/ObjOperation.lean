@@ -103,6 +103,23 @@ noncomputable def yonedaEquiv' (X Y Z : C) [HasBinaryProduct X Y] :
     dsimp
     simp
 
+lemma yonedaEquiv'_apply_comp {X Y Z Z' : C} [HasBinaryProduct X Y]
+    (φ : X ⨯ Y ⟶ Z) (ψ : Z ⟶ Z') :
+     (yonedaEquiv' X Y Z') (φ ≫ ψ) =
+      (yonedaEquiv' X Y Z) φ ≫ yoneda.map ψ := by
+  ext ⟨T⟩ ⟨x₁ : T ⟶ X, x₂ : T ⟶ Y⟩
+  dsimp [yonedaEquiv']
+  simp only [Category.assoc]
+
+lemma yonedaEquiv'_comp_apply {X' Y' X Y Z : C} [HasBinaryProduct X' Y']
+  [HasBinaryProduct X Y] (α : X' ⟶ X) (β : Y' ⟶ Y) (φ : X ⨯ Y ⟶ Z) :
+    (yonedaEquiv' X' Y' Z) (prod.map α β ≫ φ) =
+      (Types.natTransConcat (Types.functorPr₁ ≫ yoneda.map α)
+          (Types.functorPr₂ ≫ yoneda.map β)) ≫ (yonedaEquiv' X Y Z) φ := by
+  ext ⟨T⟩ ⟨x₁ : T ⟶ X', x₂ : T ⟶ Y'⟩
+  dsimp [yonedaEquiv']
+  simp only [prod.lift_map_assoc]
+
 noncomputable def yonedaEquiv (X : C) [HasBinaryProduct X X] :
   ObjOperation₂ X ≃ Types.functorOperation₂ (yoneda.obj X) :=
   yonedaEquiv' X X X
