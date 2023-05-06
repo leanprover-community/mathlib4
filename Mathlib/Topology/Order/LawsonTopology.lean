@@ -15,7 +15,7 @@ This file introduces the Lawson topology on a preorder.
 
 ## Main definitions
 
-- `LawsonTopology'` - the Lawson topology is defined as the join of the `LowerTopology` and the
+- `LawsonTopology'` - the Lawson topology is defined as the meet of the `LowerTopology` and the
   `ScottTopology`.
 
 ## Main statements
@@ -48,10 +48,10 @@ variable {α} {β}
 variable [Preorder α]
 
 /--
-The Lawson topology is defined as the join of the `LowerTopology` and the `ScottTopology`.
+The Lawson topology is defined as the meet of the `LowerTopology` and the `ScottTopology`.
 -/
 def LawsonTopology' : TopologicalSpace α :=
-  TopologicalSpace.generateFrom { s | ∃ a, Ici aᶜ = s } ⊔ ScottTopology'
+  TopologicalSpace.generateFrom { s | ∃ a, Ici aᶜ = s } ⊓ ScottTopology'
 
 end preorder
 
@@ -96,7 +96,7 @@ instance : TopologicalSpace (WithLawsonTopology α) := LawsonTopology'
 end WithLawsonTopology
 
 /--
-The Lawson topology is defined as the join of the `LowerTopology` and the `ScottTopology`
+The Lawson topology is defined as the meet of the `LowerTopology` and the `ScottTopology`
 -/
 class LawsonTopology (α : Type _) [t : TopologicalSpace α] [Preorder α] : Prop where
   topology_eq_LawsonTopology : t = LawsonTopology'
@@ -130,13 +130,16 @@ variable (S : TopologicalSpace α) (L : TopologicalSpace α)
 
 variable [Preorder α] [@ScottTopology α S _] [@LawsonTopology α L _]
 
-lemma Scott_le_Lawson : S ≤ L := by
+lemma Scott_le_Lawson : L ≤ S := by
   rw [@ScottTopology.topology_eq α _ S _, @LawsonTopology.topology_eq α _ L _,  LawsonTopology']
-  apply le_sup_right
+  apply inf_le_right
 
 open Topology
 
-example : IsOpen[L] ≤ IsOpen[S] := TopologicalSpace.le_def.mp (Scott_le_Lawson _ _)
+lemma test1 : IsOpen[S] ≤ IsOpen[L] := TopologicalSpace.le_def.mp (Scott_le_Lawson _ _)
+
+example (s : Set α) : IsOpen[S] s → IsOpen[L] s := by
+  apply test1
 
 
 /-
