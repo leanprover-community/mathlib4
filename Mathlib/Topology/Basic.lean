@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Jeremy Avigad
 
 ! This file was ported from Lean 3 source module topology.basic
-! leanprover-community/mathlib commit bcfa726826abd57587355b4b5b7e78ad6527b7e4
+! leanprover-community/mathlib commit e8da5f215e815d9ed3455f0216ef52b53e05438a
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -171,14 +171,9 @@ theorem isOpen_binterᵢ {s : Set β} {f : β → Set α} (hs : s.Finite) (h : �
   interₛ_image f s ▸ isOpen_interₛ (hs.image _) (ball_image_iff.2 h)
 #align is_open_bInter isOpen_binterᵢ
 
--- porting note: generalized to `ι : Sort _`
 theorem isOpen_interᵢ [Finite ι] {s : ι → Set α} (h : ∀ i, IsOpen (s i)) : IsOpen (⋂ i, s i) :=
   isOpen_interₛ (finite_range _) (forall_range_iff.2 h)
 #align is_open_Inter isOpen_interᵢ
-
-theorem isOpen_interᵢ_prop {p : Prop} {s : p → Set α} (h : ∀ h : p, IsOpen (s h)) :
-    IsOpen (interᵢ s) := by by_cases p <;> simp [*]
-#align is_open_Inter_prop isOpen_interᵢ_prop
 
 theorem isOpen_binterᵢ_finset {s : Finset β} {f : β → Set α} (h : ∀ i ∈ s, IsOpen (f i)) :
     IsOpen (⋂ i ∈ s, f i) :=
@@ -261,17 +256,11 @@ theorem isClosed_bunionᵢ {s : Set β} {f : β → Set α} (hs : s.Finite) (h :
   exact isOpen_binterᵢ hs h
 #align is_closed_bUnion isClosed_bunionᵢ
 
--- porting note: generalized to `ι : Sort _`
 theorem isClosed_unionᵢ [Finite ι] {s : ι → Set α} (h : ∀ i, IsClosed (s i)) :
     IsClosed (⋃ i, s i) := by
   simp only [← isOpen_compl_iff, compl_unionᵢ] at *
   exact isOpen_interᵢ h
 #align is_closed_Union isClosed_unionᵢ
-
-@[deprecated isClosed_unionᵢ]
-theorem isClosed_unionᵢ_prop {p : Prop} {s : p → Set α} (h : ∀ h : p, IsClosed (s h)) :
-    IsClosed (unionᵢ s) := by by_cases p <;> simp [*]
-#align is_closed_Union_prop isClosed_unionᵢ_prop
 
 theorem isClosed_imp {p q : α → Prop} (hp : IsOpen { x | p x }) (hq : IsClosed { x | q x }) :
     IsClosed { x | p x → q x } := by
@@ -395,7 +384,6 @@ theorem interior_union_isClosed_of_interior_empty {s t : Set α} (h₁ : IsClose
 theorem isOpen_iff_forall_mem_open : IsOpen s ↔ ∀ x ∈ s, ∃ t, t ⊆ s ∧ IsOpen t ∧ x ∈ t := by
   rw [← subset_interior_iff_isOpen]
   simp only [subset_def, mem_interior]
-
 #align is_open_iff_forall_mem_open isOpen_iff_forall_mem_open
 
 theorem interior_interᵢ_subset (s : ι → Set α) : interior (⋂ i, s i) ⊆ ⋂ i, interior (s i) :=
@@ -1379,7 +1367,6 @@ theorem isClosed_iff_clusterPt {s : Set α} : IsClosed s ↔ ∀ a, ClusterPt a 
   calc
     IsClosed s ↔ closure s ⊆ s := closure_subset_iff_isClosed.symm
     _ ↔ ∀ a, ClusterPt a (𝓟 s) → a ∈ s := by simp only [subset_def, mem_closure_iff_clusterPt]
-
 #align is_closed_iff_cluster_pt isClosed_iff_clusterPt
 
 theorem isClosed_iff_nhds {s : Set α} : IsClosed s ↔ ∀ x, (∀ U ∈ 𝓝 x, (U ∩ s).Nonempty) → x ∈ s :=
@@ -1413,7 +1400,6 @@ theorem Dense.open_subset_closure_inter {s t : Set α} (hs : Dense s) (ht : IsOp
   calc
     t = t ∩ closure s := by rw [hs.closure_eq, inter_univ]
     _ ⊆ closure (t ∩ s) := ht.inter_closure
-
 #align dense.open_subset_closure_inter Dense.open_subset_closure_inter
 
 theorem mem_closure_of_mem_closure_union {s₁ s₂ : Set α} {x : α} (h : x ∈ closure (s₁ ∪ s₂))
@@ -1452,7 +1438,6 @@ theorem closure_diff {s t : Set α} : closure s \ closure t ⊆ closure (s \ t) 
     _ ⊆ closure (closure tᶜ ∩ s) := (isOpen_compl_iff.mpr <| isClosed_closure).inter_closure
     _ = closure (s \ closure t) := by simp only [diff_eq, inter_comm]
     _ ⊆ closure (s \ t) := closure_mono <| diff_subset_diff (Subset.refl s) subset_closure
-
 #align closure_diff closure_diff
 
 theorem Filter.Frequently.mem_of_closed {a : α} {s : Set α} (h : ∃ᶠ x in 𝓝 a, x ∈ s)

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 
 ! This file was ported from Lean 3 source module topology.subset_properties
-! leanprover-community/mathlib commit 59694bd07f0a39c5beccba34bd9f413a160782bf
+! leanprover-community/mathlib commit 55d771df074d0dd020139ee1cd4b95521422df9f
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -14,6 +14,7 @@ import Mathlib.Data.Finset.Order
 import Mathlib.Data.Set.Accumulate
 import Mathlib.Data.Set.BoolIndicator
 import Mathlib.Topology.Bornology.Basic
+import Mathlib.Topology.LocallyFinite
 import Mathlib.Order.Minimal
 
 /-!
@@ -1781,7 +1782,7 @@ class IrreducibleSpace (α : Type u) [TopologicalSpace α] extends Preirreducibl
 #align irreducible_space IrreducibleSpace
 
 -- see Note [lower instance priority]
-attribute [instance] IrreducibleSpace.toNonempty
+attribute [instance 50] IrreducibleSpace.toNonempty
 
 theorem IrreducibleSpace.isIrreducible_univ (α : Type u) [TopologicalSpace α] [IrreducibleSpace α] :
     IsIrreducible (univ : Set α) :=

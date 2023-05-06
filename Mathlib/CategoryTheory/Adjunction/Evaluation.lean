@@ -66,8 +66,8 @@ def evaluationAdjunctionRight (c : C) : evaluationLeftAdjoint D c ⊣ (evaluatio
             intro f
             ext x
             dsimp
-            ext ⟨g⟩
-            simp only [colimit.ι_desc, Cofan.mk_ι, Category.assoc, ←f.naturality,
+            ext g
+            simp only [colimit.ι_desc, Cofan.mk_ι_app, Category.assoc, ←f.naturality,
               evaluationLeftAdjoint_obj_map, colimit.ι_desc_assoc,
               Discrete.functor_obj, Cofan.mk_pt, Discrete.natTrans_app, Category.id_comp]
           right_inv := fun f => by
@@ -128,10 +128,10 @@ def evaluationAdjunctionLeft (c : C) : (evaluation _ _).obj c ⊣ evaluationRigh
             intro f
             ext x
             dsimp
-            ext ⟨g⟩
+            ext g
             simp only [Discrete.functor_obj, NatTrans.naturality_assoc,
               evaluationRightAdjoint_obj_obj, evaluationRightAdjoint_obj_map, limit.lift_π,
-              Fan.mk_pt, Fan.mk_π, Discrete.natTrans_app, Category.comp_id] } }
+              Fan.mk_pt, Fan.mk_π_app, Discrete.natTrans_app, Category.comp_id] } }
 #align category_theory.evaluation_adjunction_left CategoryTheory.evaluationAdjunctionLeft
 
 instance evaluationIsLeftAdjoint (c : C) : IsLeftAdjoint ((evaluation _ D).obj c) :=

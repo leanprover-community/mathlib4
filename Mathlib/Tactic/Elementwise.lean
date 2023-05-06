@@ -188,7 +188,7 @@ initialize registerBuiltinAttribute {
   | `(attr| elementwise $[nosimp%$nosimp?]? $[(attr := $stx?,*)]?) => MetaM.run' do
     if (kind != AttributeKind.global) then
       throwError "`elementwise` can only be used as a global attribute"
-    addRelatedDecl src "_apply" ref `elementwise stx? fun type value levels => do
+    addRelatedDecl src "_apply" ref stx? fun type value levels => do
       let (newValue, level?) ← elementwiseExpr src type value (simpSides := nosimp?.isNone)
       let newLevels ← if let some level := level? then do
         let w := mkUnusedName levels `w

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 
 ! This file was ported from Lean 3 source module number_theory.divisors
-! leanprover-community/mathlib commit f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c
+! leanprover-community/mathlib commit e8638a0fcaf73e4500469f368ef9494e495099b3
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -207,7 +207,7 @@ theorem divisorsAntidiagonal_zero : divisorsAntidiagonal 0 = ∅ := by
 @[simp]
 theorem divisorsAntidiagonal_one : divisorsAntidiagonal 1 = {(1, 1)} := by
   ext
-  simp [Nat.mul_eq_one_iff, Prod.ext_iff]
+  simp [mul_eq_one, Prod.ext_iff]
 #align nat.divisors_antidiagonal_one Nat.divisorsAntidiagonal_one
 
 /- Porting note: simpnf linter; added aux lemma below
@@ -287,9 +287,7 @@ theorem sum_divisors_eq_sum_properDivisors_add_self :
   rcases Decidable.eq_or_ne n 0 with (rfl | hn)
   · simp
   · rw [← cons_self_properDivisors hn, Finset.sum_cons, add_comm]
-#align
-  nat.sum_divisors_eq_sum_proper_divisors_add_self
-  Nat.sum_divisors_eq_sum_properDivisors_add_self
+#align nat.sum_divisors_eq_sum_proper_divisors_add_self Nat.sum_divisors_eq_sum_properDivisors_add_self
 
 /-- `n : ℕ` is perfect if and only the sum of the proper divisors of `n` is `n` and `n`
   is positive. -/

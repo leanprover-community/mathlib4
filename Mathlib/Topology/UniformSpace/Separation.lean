@@ -42,16 +42,16 @@ is equivalent to asking that the uniform structure induced on `s` is separated.
 * `SeparatedSpace X`: a predicate class asserting that `X` is separated
 * `SeparationQuotient X`: the maximal separated quotient of `X`.
 * `SeparationQuotient.lift f`: factors a map `f : X → Y` through the separation quotient of `X`.
-* `separation_quotient.map f`: turns a map `f : X → Y` into a map between the separation quotients
+* `SeparationQuotient.map f`: turns a map `f : X → Y` into a map between the separation quotients
   of `X` and `Y`.
 
 ## Main results
 
 * `separated_iff_t2`: the equivalence between being separated and being Hausdorff for uniform
   spaces.
-* `separation_quotient.uniform_continuous_lift`: factoring a uniformly continuous map through the
+* `SeparationQuotient.uniformContinuous_lift`: factoring a uniformly continuous map through the
   separation quotient gives a uniformly continuous map.
-* `separation_quotient.uniform_continuous_map`: maps induced between separation quotients are
+* `SeparationQuotient.uniformContinuous_map`: maps induced between separation quotients are
   uniformly continuous.
 
 ## Notations
@@ -61,7 +61,7 @@ on a uniform space `X`,
 
 ## Implementation notes
 
-The separation setoid `separation_setoid` is not declared as a global instance.
+The separation setoid `separationSetoid` is not declared as a global instance.
 It is made a local instance while building the theory of `SeparationQuotient`.
 The factored map `SeparationQuotient.lift f` is defined without imposing any condition on
 `f`, but returns junk if `f` is not uniformly continuous (constant junk hence it is always
@@ -265,7 +265,7 @@ instance separationSetoid.uniformSpace {α : Type u} [UniformSpace α] :
   uniformity := map (fun p : α × α => (⟦p.1⟧, ⟦p.2⟧)) (𝓤 α)
   refl := le_trans (by simp [Quotient.exists_rep]) (Filter.map_mono refl_le_uniformity)
   symm := tendsto_map' <| tendsto_map.comp tendsto_swap_uniformity
-  comp := fun s hs => by
+  comp s hs := by
     rcases comp_open_symm_mem_uniformity_sets hs with ⟨U, hU, hUo, -, hUs⟩
     refine' mem_of_superset (mem_lift' <| image_mem_map hU) ?_
     simp only [subset_def, Prod.forall, mem_compRel, mem_image, Prod.ext_iff]

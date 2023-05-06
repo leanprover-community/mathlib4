@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 
 ! This file was ported from Lean 3 source module combinatorics.composition
-! leanprover-community/mathlib commit 2705404e701abc6b3127da906f40bae062a169c9
+! leanprover-community/mathlib commit 92ca63f0fb391a9ca5f22d2409a6080e786d99f7
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -307,12 +307,11 @@ theorem orderEmbOfFin_boundaries :
 `Fin n` at the relevant position. -/
 def embedding (i : Fin c.length) : Fin (c.blocksFun i) ↪o Fin n :=
   (Fin.natAdd <| c.sizeUpTo i).trans <|
-    Fin.castLe <|
+    Fin.castLE <|
       calc
         c.sizeUpTo i + c.blocksFun i = c.sizeUpTo (i + 1) := (c.sizeUpTo_succ _).symm
         _ ≤ c.sizeUpTo c.length := monotone_sum_take _ i.2
         _ = n := c.sizeUpTo_length
-
 #align composition.embedding Composition.embedding
 
 @[simp]
@@ -413,7 +412,6 @@ theorem disjoint_range {i₁ i₂ : Fin c.length} (h : i₁ ≠ i₂) :
       (x : ℕ) < c.sizeUpTo (i₁ : ℕ).succ := (c.mem_range_embedding_iff.1 hx₁).2
       _ ≤ c.sizeUpTo (i₂ : ℕ) := monotone_sum_take _ A
       _ ≤ x := (c.mem_range_embedding_iff.1 hx₂).1
-
 #align composition.disjoint_range Composition.disjoint_range
 
 theorem mem_range_embedding (j : Fin n) : j ∈ Set.range (c.embedding (c.index j)) := by
@@ -564,7 +562,6 @@ theorem eq_ones_iff_length {c : Composition n} : c = ones n ↔ c.length = n := 
         exact Finset.sum_lt_sum (fun i _ => by simp [blocksFun]) ⟨j, Finset.mem_univ _, i_blocks⟩
         }
       _ = n := c.sum_blocksFun
-
 #align composition.eq_ones_iff_length Composition.eq_ones_iff_length
 
 theorem eq_ones_iff_le_length {c : Composition n} : c = ones n ↔ n ≤ c.length := by
@@ -704,7 +701,6 @@ theorem map_length_splitWrtCompositionAux {ns : List ℕ} :
   rw [length_take, IH] <;> simp [length_drop]
   . assumption
   . exact le_tsub_of_add_le_left h
-
 #align list.map_length_split_wrt_composition_aux List.map_length_splitWrtCompositionAux
 
 /-- When one splits a list along a composition `c`, the lengths of the sublists thus created are
@@ -743,7 +739,6 @@ theorem nthLe_splitWrtCompositionAux (l : List α) (ns : List ℕ) {i : ℕ} (hi
     rw [Nat.succ_sub_succ_eq_sub, ←Nat.succ_eq_add_one,tsub_zero]
     simp only [← drop_take, drop_drop]
     rw [add_comm]
-
 #align list.nth_le_split_wrt_composition_aux List.nthLe_splitWrtCompositionAux
 
 -- porting note: TODO, refactor to `List.get`
@@ -896,8 +891,7 @@ def length : ℕ :=
 
 theorem card_boundaries_eq_succ_length : c.boundaries.card = c.length + 1 :=
   (tsub_eq_iff_eq_add_of_le (Nat.succ_le_of_lt c.card_boundaries_pos)).mp rfl
-#align composition_as_set.card_boundaries_eq_succ_length
-  CompositionAsSet.card_boundaries_eq_succ_length
+#align composition_as_set.card_boundaries_eq_succ_length CompositionAsSet.card_boundaries_eq_succ_length
 
 theorem length_lt_card_boundaries : c.length < c.boundaries.card := by
   rw [c.card_boundaries_eq_succ_length]

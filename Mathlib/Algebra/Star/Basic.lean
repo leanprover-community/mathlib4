@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 
 ! This file was ported from Lean 3 source module algebra.star.basic
-! leanprover-community/mathlib commit 44b58b42794e5abe2bf86397c38e26b587e07e59
+! leanprover-community/mathlib commit dc7ac07acd84584426773e69e51035bea9a770e7
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -101,6 +101,11 @@ theorem star_injective [InvolutiveStar R] : Function.Injective (star : R → R) 
   Function.Involutive.injective star_involutive
 #align star_injective star_injective
 
+@[simp]
+theorem star_inj [InvolutiveStar R] {x y : R} : star x = star y ↔ x = y :=
+  star_injective.eq_iff
+#align star_inj star_inj
+
 /-- `star` as an equivalence when it is involutive. -/
 protected def Equiv.star [InvolutiveStar R] : Equiv.Perm R :=
   star_involutive.toPerm _
@@ -140,6 +145,39 @@ class StarSemigroup (R : Type u) [Semigroup R] extends InvolutiveStar R where
 export StarSemigroup (star_mul)
 
 attribute [simp 900] star_mul
+
+section StarSemigroup
+
+variable [Semigroup R] [StarSemigroup R]
+
+theorem star_star_mul (x y : R) : star (star x * y) = star y * x := by rw [star_mul, star_star]
+#align star_star_mul star_star_mul
+
+theorem star_mul_star (x y : R) : star (x * star y) = y * star x := by rw [star_mul, star_star]
+#align star_mul_star star_mul_star
+
+@[simp]
+theorem semiconjBy_star_star_star {x y z : R} :
+    SemiconjBy (star x) (star z) (star y) ↔ SemiconjBy x y z := by
+  simp_rw [SemiconjBy, ← star_mul, star_inj, eq_comm]
+#align semiconj_by_star_star_star semiconjBy_star_star_star
+
+alias semiconjBy_star_star_star ↔ _ SemiconjBy.star_star_star
+#align semiconj_by.star_star_star SemiconjBy.star_star_star
+
+@[simp]
+theorem commute_star_star {x y : R} : Commute (star x) (star y) ↔ Commute x y :=
+  semiconjBy_star_star_star
+#align commute_star_star commute_star_star
+
+alias commute_star_star ↔ _ Commute.star_star
+#align commute.star_star Commute.star_star
+
+theorem commute_star_comm {x y : R} : Commute (star x) y ↔ Commute x (star y) := by
+  rw [← commute_star_star, star_star]
+#align commute_star_comm commute_star_comm
+
+end StarSemigroup
 
 /-- In a commutative ring, make `simp` prefer leaving the order unchanged. -/
 @[simp]
@@ -308,6 +346,12 @@ theorem star_natCast [Semiring R] [StarRing R] (n : ℕ) : star (n : R) = n :=
   (congr_arg unop (map_natCast (starRingEquiv : R ≃+* Rᵐᵒᵖ) n)).trans (unop_natCast _)
 #align star_nat_cast star_natCast
 
+--Porting note: new theorem
+@[simp]
+theorem star_ofNat [Semiring R] [StarRing R] (n : ℕ) [n.AtLeastTwo]:
+    star (OfNat.ofNat n : R) = OfNat.ofNat n :=
+  star_natCast _
+
 section
 -- Porting note: This takes too long
 set_option maxHeartbeats 0
@@ -399,18 +443,18 @@ set_option linter.uppercaseLean3 false in
 #align is_R_or_C.conj_conj IsROrC.conj_conj
 
 @[simp]
-theorem star_inv' [DivisionRing R] [StarRing R] (x : R) : star x⁻¹ = (star x)⁻¹ :=
+theorem star_inv' [DivisionSemiring R] [StarRing R] (x : R) : star x⁻¹ = (star x)⁻¹ :=
   op_injective <| (map_inv₀ (starRingEquiv : R ≃+* Rᵐᵒᵖ) x).trans (op_inv (star x)).symm
 #align star_inv' star_inv'
 
 @[simp]
-theorem star_zpow₀ [DivisionRing R] [StarRing R] (x : R) (z : ℤ) : star (x ^ z) = star x ^ z :=
+theorem star_zpow₀ [DivisionSemiring R] [StarRing R] (x : R) (z : ℤ) : star (x ^ z) = star x ^ z :=
   op_injective <| (map_zpow₀ (starRingEquiv : R ≃+* Rᵐᵒᵖ) x z).trans (op_zpow (star x) z).symm
 #align star_zpow₀ star_zpow₀
 
 /-- When multiplication is commutative, `star` preserves division. -/
 @[simp]
-theorem star_div' [Field R] [StarRing R] (x y : R) : star (x / y) = star x / star y := by
+theorem star_div' [Semifield R] [StarRing R] (x y : R) : star (x / y) = star x / star y := by
   apply op_injective
   rw [division_def, op_div, mul_comm, star_mul, star_inv', op_mul, op_inv]
 #align star_div' star_div'

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Minchao Wu, Mario Carneiro
 
 ! This file was ported from Lean 3 source module data.finset.image
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
+! leanprover-community/mathlib commit b685f506164f8d17a6404048bc4d696739c5d976
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -109,7 +109,6 @@ theorem coe_map_subset_range (f : α ↪ β) (s : Finset α) : (s.map f : Set β
   calc
     ↑(s.map f) = f '' s := coe_map f s
     _ ⊆ Set.range f := Set.image_subset_range f ↑s
-
 #align finset.coe_map_subset_range Finset.coe_map_subset_range
 
 /-- If the only elements outside `s` are those left fixed by `σ`, then mapping by `σ` has no effect.
@@ -446,7 +445,6 @@ theorem image_subset_iff : s.image f ⊆ t ↔ ∀ x ∈ s, f x ∈ t :=
   calc
     s.image f ⊆ t ↔ f '' ↑s ⊆ ↑t := by norm_cast
     _ ↔ _ := Set.image_subset_iff
-
 #align finset.image_subset_iff Finset.image_subset_iff
 
 theorem image_mono (f : α → β) : Monotone (Finset.image f) := fun _ _ => image_subset_image
@@ -463,7 +461,6 @@ theorem coe_image_subset_range : ↑(s.image f) ⊆ Set.range f :=
   calc
     ↑(s.image f) = f '' ↑s := coe_image
     _ ⊆ Set.range f := Set.image_subset_range f ↑s
-
 #align finset.coe_image_subset_range Finset.coe_image_subset_range
 
 theorem image_filter {p : β → Prop} [DecidablePred p] :
@@ -488,10 +485,9 @@ theorem image_inter_subset [DecidableEq α] (f : α → β) (s t : Finset α) :
 
 theorem image_inter_of_injOn [DecidableEq α] {f : α → β} (s t : Finset α)
     (hf : Set.InjOn f (s ∪ t)) : (s ∩ t).image f = s.image f ∩ t.image f :=
-  (image_inter_subset _ _ _).antisymm fun x => by
-    simp only [mem_inter, mem_image]
-    rintro ⟨⟨a, ha, rfl⟩, b, hb, h⟩
-    exact ⟨a, ⟨ha, by rwa [← hf (Or.inr hb) (Or.inl ha) h]⟩, rfl⟩
+  coe_injective <| by
+    push_cast
+    exact Set.image_inter_on fun a ha b hb => hf (Or.inr ha) <| Or.inl hb
 #align finset.image_inter_of_inj_on Finset.image_inter_of_injOn
 
 theorem image_inter [DecidableEq α] (s₁ s₂ : Finset α) (hf : Injective f) :
@@ -531,6 +527,20 @@ theorem image_eq_empty : s.image f = ∅ ↔ s = ∅ :=
   ⟨fun h => eq_empty_of_forall_not_mem fun _ m => ne_empty_of_mem (mem_image_of_mem _ m) h,
    fun e => e.symm ▸ rfl⟩
 #align finset.image_eq_empty Finset.image_eq_empty
+
+theorem image_sdiff [DecidableEq α] {f : α → β} (s t : Finset α) (hf : Injective f) :
+    (s \ t).image f = s.image f \ t.image f :=
+  coe_injective <| by
+    push_cast
+    exact Set.image_diff hf _ _
+#align finset.image_sdiff Finset.image_sdiff
+
+theorem image_symmDiff [DecidableEq α] {f : α → β} (s t : Finset α) (hf : Injective f) :
+    (s ∆ t).image f = s.image f ∆ t.image f :=
+  coe_injective <| by
+    push_cast
+    exact Set.image_symm_diff hf _ _
+#align finset.image_symm_diff Finset.image_symmDiff
 
 @[simp]
 theorem _root_.Disjoint.of_image_finset {s t : Finset α} {f : α → β}
