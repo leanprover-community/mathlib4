@@ -646,8 +646,8 @@ theorem pullbackIsoUnopPushout_inv_snd {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [
 
 @[reassoc (attr := simp)]
 theorem pullbackIsoUnopPushout_hom_inl {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g]
-    [HasPushout f.op g.op] : pushout.inl ≫ (pullbackIsoUnopPushout f g).hom.op =
-    pullback.fst.op := by
+    [HasPushout f.op g.op] :
+    pushout.inl ≫ (pullbackIsoUnopPushout f g).hom.op = pullback.fst.op := by
   apply Quiver.Hom.unop_inj
   dsimp
   rw [← pullbackIsoUnopPushout_inv_fst, Iso.hom_inv_id_assoc]

@@ -166,9 +166,8 @@ def natTrans : fst L R ⋙ L ⟶ snd L R ⋙ R where app X := X.hom
 #align category_theory.comma.nat_trans CategoryTheory.Comma.natTrans
 
 @[simp]
-theorem eqToHom_left (X Y : Comma L R) (H : X = Y) : CommaMorphism.left (eqToHom H) = eqToHom (by
-    cases H
-    rfl) := by
+theorem eqToHom_left (X Y : Comma L R) (H : X = Y) :
+    CommaMorphism.left (eqToHom H) = eqToHom (by cases H; rfl) := by
   cases H
   rfl
 #align category_theory.comma.eq_to_hom_left CategoryTheory.Comma.eqToHom_left

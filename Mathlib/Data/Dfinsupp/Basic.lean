@@ -1293,9 +1293,8 @@ instance [∀ i, Zero (β i)] [∀ i, DecidableEq (β i)] : DecidableEq (Π₀ i
     ⟨fun ⟨h₁, h₂⟩ => ext fun i => if h : i ∈ f.support then h₂ i h else by
       have hf : f i = 0 := by rwa [mem_support_iff, not_not] at h
       have hg : g i = 0 := by rwa [h₁, mem_support_iff, not_not] at h
-      rw [hf, hg], by
-        rintro rfl
-        simp⟩
+      rw [hf, hg],
+     by rintro rfl; simp⟩
 
 section Equiv
 

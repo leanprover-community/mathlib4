@@ -64,7 +64,7 @@ variable {abv}
 into `abv.card ε` sets, such that all elements in each part of remainders are close together. -/
 theorem exists_partition {ι : Type _} [Fintype ι] {ε : ℝ} (hε : 0 < ε) {b : R} (hb : b ≠ 0)
     (A : ι → R) (h : abv.IsAdmissible) : ∃ t : ι → Fin (h.card ε),
-    ∀ i₀ i₁, t i₀ = t i₁ → (abv (A i₁ % b - A i₀ % b) : ℝ) < abv b • ε := by
+      ∀ i₀ i₁, t i₀ = t i₁ → (abv (A i₁ % b - A i₀ % b) : ℝ) < abv b • ε := by
   let e := Fintype.equivFin ι
   obtain ⟨t, ht⟩ := h.exists_partition' (Fintype.card ι) hε hb (A ∘ e.symm)
   refine' ⟨t ∘ e, fun i₀ i₁ h ↦ _⟩

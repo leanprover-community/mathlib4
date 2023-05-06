@@ -744,7 +744,7 @@ theorem det_succ_column_zero {n : ℕ} (A : Matrix (Fin n.succ) (Fin n.succ) R) 
   calc
     ((-1 * Perm.sign σ : ℤ) • ∏ i', A (Perm.decomposeFin.symm (Fin.succ i, σ) i') i') =
         (-1 * Perm.sign σ : ℤ) • (A (Fin.succ i) 0 *
-        ∏ i', A ((Fin.succ i).succAbove (Fin.cycleRange i (σ i'))) i'.succ) := by
+          ∏ i', A ((Fin.succ i).succAbove (Fin.cycleRange i (σ i'))) i'.succ) := by
       simp only [Fin.prod_univ_succ, Fin.succAbove_cycleRange,
         Equiv.Perm.decomposeFin_symm_apply_zero, Equiv.Perm.decomposeFin_symm_apply_succ]
     _ = -1 * (A (Fin.succ i) 0 * (Perm.sign σ : ℤ) •
