@@ -394,7 +394,8 @@ theorem sum_measure_le_measure_univ {s : Finset ι} {t : ι → Set α}
 theorem tsum_measure_le_measure_univ {s : ι → Set α} (hs : ∀ i, MeasurableSet (s i))
     (H : Pairwise (Disjoint on s)) : (∑' i, μ (s i)) ≤ μ (univ : Set α) := by
   rw [ENNReal.tsum_eq_supᵢ_sum]
-  exact supᵢ_le fun s => sum_measure_le_measure_univ (fun i _hi => hs i) fun i _hi j _hj hij => H hij
+  exact supᵢ_le fun s =>
+    sum_measure_le_measure_univ (fun i _hi => hs i) fun i _hi j _hj hij => H hij
 #align measure_theory.tsum_measure_le_measure_univ MeasureTheory.tsum_measure_le_measure_univ
 
 /-- Pigeonhole principle for measure spaces: if `∑' i, μ (s i) > μ univ`, then
@@ -806,11 +807,15 @@ instance instSMul [MeasurableSpace α] : SMul R (Measure α) :=
       m_unionᵢ := fun s hs hd => by
         rw [← smul_one_smul ℝ≥0∞ c (_ : OuterMeasure α)]
         conv_lhs =>
-          change OuterMeasure.measureOf ((c • @OfNat.ofNat _ 1 One.toOfNat1 : ℝ≥0∞) • μ.toOuterMeasure) (⋃ i, s i)
-          change (c • @OfNat.ofNat _ 1 One.toOfNat1 : ℝ≥0∞) * OuterMeasure.measureOf μ.toOuterMeasure (⋃ i, s i)
+          change OuterMeasure.measureOf
+            ((c • @OfNat.ofNat _ 1 One.toOfNat1 : ℝ≥0∞) • μ.toOuterMeasure) (⋃ i, s i)
+          change (c • @OfNat.ofNat _ 1 One.toOfNat1 : ℝ≥0∞) *
+            OuterMeasure.measureOf μ.toOuterMeasure (⋃ i, s i)
         conv_rhs =>
-          change ∑' i, OuterMeasure.measureOf ((c • @OfNat.ofNat _ 1 One.toOfNat1 : ℝ≥0∞) • μ.toOuterMeasure) (s i)
-          change ∑' i, (c • @OfNat.ofNat _ 1 One.toOfNat1 : ℝ≥0∞) * OuterMeasure.measureOf (μ.toOuterMeasure) (s i)
+          change ∑' i, OuterMeasure.measureOf
+            ((c • @OfNat.ofNat _ 1 One.toOfNat1 : ℝ≥0∞) • μ.toOuterMeasure) (s i)
+          change ∑' i, (c • @OfNat.ofNat _ 1 One.toOfNat1 : ℝ≥0∞) *
+            OuterMeasure.measureOf (μ.toOuterMeasure) (s i)
         simp_rw [measure_unionᵢ hd hs, ENNReal.tsum_mul_left]
       trimmed := by rw [OuterMeasure.trim_smul, μ.trimmed] }⟩
 #align measure_theory.measure.has_smul MeasureTheory.Measure.instSMul
@@ -1388,7 +1393,8 @@ theorem NullMeasurableSet.subtype_coe {t : Set s} (hs : NullMeasurableSet s μ)
 
 theorem measure_subtype_coe_le_comap (hs : NullMeasurableSet s μ) (t : Set s) :
     μ (((↑) : s → α) '' t) ≤ μ.comap Subtype.val t :=
-  le_comap_apply _ _ Subtype.coe_injective (fun _ => MeasurableSet.nullMeasurableSet_subtype_coe hs) _
+  le_comap_apply _ _ Subtype.coe_injective (fun _ =>
+    MeasurableSet.nullMeasurableSet_subtype_coe hs) _
 #align measure_theory.measure.measure_subtype_coe_le_comap MeasureTheory.Measure.measure_subtype_coe_le_comap
 
 theorem measure_subtype_coe_eq_zero_of_comap_eq_zero (hs : NullMeasurableSet s μ) {t : Set s}
@@ -2370,8 +2376,9 @@ protected theorem map (h : μ ≪ ν) {f : α → β} (hf : Measurable f) : μ.m
   AbsolutelyContinuous.mk fun s hs => by simpa [hf, hs] using @h _
 #align measure_theory.measure.absolutely_continuous.map MeasureTheory.Measure.AbsolutelyContinuous.map
 
-protected theorem smul [Monoid R] [DistribMulAction R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] (h : μ ≪ ν)
-    (c : R) : c • μ ≪ ν := fun s hνs => by simp only [h hνs, smul_eq_mul, smul_apply, smul_zero]
+protected theorem smul [Monoid R] [DistribMulAction R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
+    (h : μ ≪ ν) (c : R) : c • μ ≪ ν := fun s hνs => by
+  simp only [h hνs, smul_eq_mul, smul_apply, smul_zero]
 #align measure_theory.measure.absolutely_continuous.smul MeasureTheory.Measure.AbsolutelyContinuous.smul
 
 end AbsolutelyContinuous
