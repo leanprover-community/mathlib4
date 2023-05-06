@@ -622,8 +622,7 @@ theorem totalDegree_add_eq_left_of_totalDegree_lt {p q : MvPolynomial σ R}
       contrapose! h
       rw [totalDegree_eq p, hb₂, totalDegree_eq]
       apply Finset.le_sup h
-    have hbb : b ∈ (p + q).support :=
-      by
+    have hbb : b ∈ (p + q).support := by
       apply support_sdiff_support_subset_support_add
       rw [Finset.mem_sdiff]
       exact ⟨hb₁, hb⟩
@@ -776,8 +775,7 @@ theorem eval₂Hom_eq_constantCoeff_of_vars (f : R →+* S) {g : σ → S} {p : 
     intro
     contradiction
   repeat'
-    obtain ⟨i, hi⟩ : Finset.Nonempty (Finsupp.support d) :=
-      by
+    obtain ⟨i, hi⟩ : Finset.Nonempty (Finsupp.support d) := by
       rw [constantCoeff_eq, coeff, ← Finsupp.not_mem_support_iff] at h0
       rw [Finset.nonempty_iff_ne_empty, Ne.def, Finsupp.support_eq_empty]
       rintro rfl
@@ -826,8 +824,7 @@ theorem hom_congr_vars {f₁ f₂ : MvPolynomial σ R →+* S} {p₁ p₂ : MvPo
 
 theorem exists_rename_eq_of_vars_subset_range (p : MvPolynomial σ R) (f : τ → σ) (hfi : Injective f)
     (hf : ↑p.vars ⊆ Set.range f) : ∃ q : MvPolynomial τ R, rename f q = p :=
-  ⟨aeval (fun i : σ => Option.elim' 0 X <| partialInv f i) p,
-    by
+  ⟨aeval (fun i : σ => Option.elim' 0 X <| partialInv f i) p, by
     show (rename f).toRingHom.comp _ p = RingHom.id _ p
     refine' hom_congr_vars _ _ _
     · ext1

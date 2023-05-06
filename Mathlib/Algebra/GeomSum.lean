@@ -276,8 +276,7 @@ protected theorem Commute.mul_geom_sum₂_Ico [Ring α] {x y : α} (h : Commute 
   rw [sum_Ico_eq_sub _ hmn]
   have :
     (∑ k in range m, x ^ k * y ^ (n - 1 - k)) =
-      ∑ k in range m, x ^ k * (y ^ (n - m) * y ^ (m - 1 - k)) :=
-    by
+      ∑ k in range m, x ^ k * (y ^ (n - m) * y ^ (m - 1 - k)) := by
     refine' sum_congr rfl fun j j_in => _
     rw [← pow_add]
     congr
@@ -443,8 +442,7 @@ theorem Nat.geom_sum_Ico_le {b : ℕ} (hb : 2 ≤ b) (a n : ℕ) :
     (a + ∑ i : ℕ in Ico 1 n.succ, a / b ^ i) = a / b ^ 0 + ∑ i : ℕ in Ico 1 n.succ, a / b ^ i :=
     by
       rw [pow_zero, Nat.div_one]
-    _ = ∑ i in range n.succ, a / b ^ i :=
-    by
+    _ = ∑ i in range n.succ, a / b ^ i := by
       rw [range_eq_Ico, ← Nat.Ico_insert_succ_left (Nat.succ_pos _), sum_insert]
       exact fun h => zero_lt_one.not_le (mem_Ico.1 h).1
     _ ≤ a * b / (b - 1) := Nat.geom_sum_le hb a _

@@ -115,8 +115,7 @@ theorem exists_factors (a : α) :
     (fun u hu _ => ⟨0, fun _ h => False.elim (Multiset.not_mem_zero _ h), hu.unit, one_mul _⟩)
     fun a i ha0 hi ih _ =>
     let ⟨s, hs⟩ := ih ha0
-    ⟨i ::ₘ s, fun b H => (Multiset.mem_cons.1 H).elim (fun h => h.symm ▸ hi) (hs.1 b),
-      by
+    ⟨i ::ₘ s, fun b H => (Multiset.mem_cons.1 H).elim (fun h => h.symm ▸ hi) (hs.1 b), by
       rw [s.prod_cons i]
       exact hs.2.mul_left i⟩
 #align wf_dvd_monoid.exists_factors WfDvdMonoid.exists_factors
@@ -369,8 +368,7 @@ theorem MulEquiv.uniqueFactorizationMonoid (e : α ≃* β) (hα : UniqueFactori
     ⟨w.map e, fun b hb =>
       let ⟨c, hc, he⟩ := Multiset.mem_map.1 hb
       he ▸ e.prime_iff.1 (hp c hc),
-      Units.map e.toMonoidHom u,
-      by
+      Units.map e.toMonoidHom u, by
       erw [Multiset.prod_hom, ← e.map_mul, h]
       simp⟩
 #align mul_equiv.unique_factorization_monoid MulEquiv.uniqueFactorizationMonoid
@@ -402,8 +400,7 @@ theorem irreducible_iff_prime_of_exists_unique_irreducible_factors [CancelCommMo
         cases' eif x hx0 with fx hfx
         cases' eif a ha0 with fa hfa
         cases' eif b hb0 with fb hfb
-        have h : Multiset.Rel Associated (p ::ₘ fx) (fa + fb) :=
-          by
+        have h : Multiset.Rel Associated (p ::ₘ fx) (fa + fb) := by
           apply uif
           · exact fun i hi => (Multiset.mem_cons.1 hi).elim (fun hip => hip.symm ▸ hpi) (hfx.1 _)
           · exact fun i hi => (Multiset.mem_add.1 hi).elim (hfa.1 _) (hfb.1 _)
@@ -1562,8 +1559,7 @@ noncomputable instance : Lattice (Associates α) :=
     inf_le_right := fun _ b => le_trans (prod_mono inf_le_right) (le_of_eq (factors_prod b)) }
 
 theorem sup_mul_inf (a b : Associates α) : (a ⊔ b) * (a ⊓ b) = a * b :=
-  show (a.factors ⊔ b.factors).prod * (a.factors ⊓ b.factors).prod = a * b
-    by
+  show (a.factors ⊔ b.factors).prod * (a.factors ⊓ b.factors).prod = a * b by
     nontriviality α
     refine' eq_of_factors_eq_factors _
     rw [← prod_add, prod_factors, factors_mul, FactorSet.sup_add_inf_eq_add]
@@ -1897,16 +1893,13 @@ noncomputable def UniqueFactorizationMonoid.toGCDMonoid (α : Type _) [CancelCom
     [UniqueFactorizationMonoid α] [DecidableEq (Associates α)] [DecidableEq α] : GCDMonoid α where
   gcd a b := Quot.out (Associates.mk a ⊓ Associates.mk b : Associates α)
   lcm a b := Quot.out (Associates.mk a ⊔ Associates.mk b : Associates α)
-  gcd_dvd_left a b :=
-    by
+  gcd_dvd_left a b := by
     rw [← mk_dvd_mk, (Associates.mk a ⊓ Associates.mk b).quot_out, congr_fun₂ dvd_eq_le]
     exact inf_le_left
-  gcd_dvd_right a b :=
-    by
+  gcd_dvd_right a b := by
     rw [← mk_dvd_mk, (Associates.mk a ⊓ Associates.mk b).quot_out, congr_fun₂ dvd_eq_le]
     exact inf_le_right
-  dvd_gcd {a b c} hac hab :=
-    by
+  dvd_gcd {a b c} hac hab := by
     rw [← mk_dvd_mk, (Associates.mk c ⊓ Associates.mk b).quot_out, congr_fun₂ dvd_eq_le, le_inf_iff,
       mk_le_mk_iff_dvd_iff, mk_le_mk_iff_dvd_iff]
     exact ⟨hac, hab⟩

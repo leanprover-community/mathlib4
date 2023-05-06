@@ -238,8 +238,7 @@ variable {A : Type _} [Semiring A] [Algebra R A]
 /-- Internal definition used to define `lift` -/
 private def liftAux (f : X → A) : FreeAlgebra R X →ₐ[R] A where
   toFun a :=
-    Quot.liftOn a (liftFun _ _ f) fun a b h ↦
-      by
+    Quot.liftOn a (liftFun _ _ f) fun a b h ↦ by
       induction' h
       · exact (algebraMap R A).map_add _ _
       · exact (algebraMap R A).map_mul _ _

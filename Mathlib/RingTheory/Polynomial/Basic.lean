@@ -715,8 +715,7 @@ theorem isPrime_map_C_iff_isPrime (P : Ideal R) :
         rintro ⟨i, j⟩ hij
         rw [Finset.mem_erase, Finset.Nat.mem_antidiagonal] at hij
         simp only [Ne.def, Prod.mk.inj_iff, not_and_or] at hij
-        obtain hi | hj : i < m ∨ j < n :=
-          by
+        obtain hi | hj : i < m ∨ j < n := by
           rw [or_iff_not_imp_left, not_lt, le_iff_lt_or_eq]
           rintro (hmi | rfl)
           · rw [← not_le]
@@ -944,8 +943,7 @@ protected theorem Polynomial.isNoetherianRing [inst : IsNoetherianRing R] : IsNo
               rw [← h, MulZeroClass.mul_zero]
               rfl
             haveI : Nontrivial R := ⟨⟨0, 1, this⟩⟩
-            have : p.leadingCoeff ∈ I.leadingCoeffNth N :=
-              by
+            have : p.leadingCoeff ∈ I.leadingCoeffNth N := by
               rw [HN]
               exact
                 hm2 k
@@ -958,8 +956,7 @@ protected theorem Polynomial.isNoetherianRing [inst : IsNoetherianRing R] : IsNo
               rw [← Polynomial.leadingCoeff_eq_zero] at H
               rw [hlqp, Polynomial.leadingCoeff_eq_zero] at H
               exact hp0 H
-            have h1 : p.degree = (q * Polynomial.X ^ (k - q.natDegree)).degree :=
-              by
+            have h1 : p.degree = (q * Polynomial.X ^ (k - q.natDegree)).degree := by
               rw [Polynomial.degree_mul', Polynomial.degree_X_pow]
               rw [Polynomial.degree_eq_natDegree hp0, Polynomial.degree_eq_natDegree hq0]
               rw [Nat.cast_withBot, Nat.cast_withBot, Nat.cast_withBot, ← WithBot.coe_add,
