@@ -42,7 +42,7 @@ See `Infinite.of_injective` and `Infinite.of_surjective`.
 ## Instances
 
 We provide `Infinite` instances for
-* specific types: `ℕ`, `ℤ`
+* specific types: `ℕ`, `ℤ`, `String`
 * type constructors: `Multiset α`, `List α`
 
 -/
@@ -117,7 +117,6 @@ def truncFinBijection (α) [Fintype α] : Trunc { f : Fin (card α) → α // Bi
       univ.val
       (fun l (h : ∀ x : α, x ∈ l) (nd : l.Nodup) => Trunc.mk (nd.getBijectionOfForallMemList _ h))
       mem_univ_val univ.2
-
 #align fintype.trunc_fin_bijection Fintype.truncFinBijection
 
 theorem subtype_card {p : α → Prop} (s : Finset α) (H : ∀ x : α, x ∈ s ↔ p x) :
@@ -475,7 +474,6 @@ theorem card_lt_of_injective_of_not_mem (f : α → β) (h : Function.Injective 
     card α = (univ.map ⟨f, h⟩).card := (card_map _).symm
     _ < card β :=
       Finset.card_lt_univ_of_not_mem <| by rwa [← mem_coe, coe_map, coe_univ, Set.image_univ]
-
 #align fintype.card_lt_of_injective_of_not_mem Fintype.card_lt_of_injective_of_not_mem
 
 theorem card_lt_of_injective_not_surjective (f : α → β) (h : Function.Injective f)
@@ -548,6 +546,8 @@ theorem card_pos [h : Nonempty α] : 0 < card α :=
 theorem card_ne_zero [Nonempty α] : card α ≠ 0 :=
   _root_.ne_of_gt card_pos
 #align fintype.card_ne_zero Fintype.card_ne_zero
+
+instance [Nonempty α] : NeZero (card α) := ⟨card_ne_zero⟩
 
 theorem card_le_one_iff : card α ≤ 1 ↔ ∀ a b : α, a = b :=
   let n := card α
@@ -791,7 +791,7 @@ def truncOfCardLe [Fintype α] [Fintype β] [DecidableEq α] [DecidableEq β]
     (h : Fintype.card α ≤ Fintype.card β) : Trunc (α ↪ β) :=
   (Fintype.truncEquivFin α).bind fun ea =>
     (Fintype.truncEquivFin β).map fun eb =>
-      ea.toEmbedding.trans ((Fin.castLe h).toEmbedding.trans eb.symm.toEmbedding)
+      ea.toEmbedding.trans ((Fin.castLE h).toEmbedding.trans eb.symm.toEmbedding)
 #align function.embedding.trunc_of_card_le Function.Embedding.truncOfCardLe
 
 theorem nonempty_of_card_le [Fintype α] [Fintype β] (h : Fintype.card α ≤ Fintype.card β) :
@@ -990,7 +990,6 @@ theorem of_injective_to_set {s : Set α} (hs : s ≠ Set.univ) {f : α → s} (h
         _ = s.toFinset.card := s.toFinset_card.symm
         _ < Fintype.card α :=
           Finset.card_lt_card <| by rwa [Set.toFinset_ssubset_univ, Set.ssubset_univ_iff]
-
 #align infinite.of_injective_to_set Infinite.of_injective_to_set
 
 /-- If `s : Set α` is a proper subset of `α` and `f : s → α` is surjective, then `α` is infinite. -/
@@ -1036,6 +1035,12 @@ instance [Nonempty α] : Infinite (Multiset α) :=
 
 instance [Nonempty α] : Infinite (List α) :=
   Infinite.of_surjective ((↑) : List α → Multiset α) (surjective_quot_mk _)
+
+instance String.infinite : Infinite String :=
+  Infinite.of_injective (String.mk) <| by
+    intro _ _ h
+    cases h with
+    | refl => rfl
 
 instance Infinite.set [Infinite α] : Infinite (Set α) :=
   Infinite.of_injective singleton Set.singleton_injective

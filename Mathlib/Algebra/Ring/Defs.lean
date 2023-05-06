@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Yury Kudryashov, Neil Strickland
 
 ! This file was ported from Lean 3 source module algebra.ring.defs
-! leanprover-community/mathlib commit 314d3a578607dbd2eb2481ab15fceeb62b36cbdb
+! leanprover-community/mathlib commit 76de8ae01554c3b37d66544866659ff174e66e1f
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -380,7 +380,6 @@ theorem mul_add_eq_mul_add_iff_sub_mul_add_eq : a * e + c = b * e + d ↔ (a - b
         rw [← h]
         simp
     _ ↔ (a - b) * e + c = d := by simp [sub_mul, sub_add_eq_add_sub]
-
 #align mul_add_eq_mul_add_iff_sub_mul_add_eq mul_add_eq_mul_add_iff_sub_mul_add_eq
 
 /-- A simplification of one side of an equation exploiting right distributivity in rings
@@ -389,7 +388,6 @@ theorem sub_mul_add_eq_of_mul_add_eq_mul_add (h : a * e + c = b * e + d) : (a - 
   calc
     (a - b) * e + c = a * e + c - b * e := by simp [sub_mul, sub_add_eq_add_sub]
     _ = d := by rw [h]; simp [@add_sub_cancel α]
-
 #align sub_mul_add_eq_of_mul_add_eq_mul_add sub_mul_add_eq_of_mul_add_eq_mul_add
 
 end NonUnitalNonAssocRing

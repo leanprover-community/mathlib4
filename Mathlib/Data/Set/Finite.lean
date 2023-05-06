@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kyle Miller
 
 ! This file was ported from Lean 3 source module data.set.finite
-! leanprover-community/mathlib commit 1f0096e6caa61e9c849ec2adbd227e960e9dff58
+! leanprover-community/mathlib commit 52fa514ec337dd970d71d8de8d0fd68b455a1e54
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -138,10 +138,19 @@ theorem not_infinite {s : Set α} : ¬s.Infinite ↔ s.Finite :=
   not_not
 #align set.not_infinite Set.not_infinite
 
+alias not_infinite ↔ _ Finite.not_infinite
+#align set.finite.not_infinite Set.Finite.not_infinite
+
+attribute [simp] Finite.not_infinite
+
 /-- See also `finite_or_infinite`, `fintype_or_infinite`. -/
 protected theorem finite_or_infinite (s : Set α) : s.Finite ∨ s.Infinite :=
   em _
 #align set.finite_or_infinite Set.finite_or_infinite
+
+protected theorem infinite_or_finite (s : Set α) : s.Infinite ∨ s.Finite :=
+  em' _
+#align set.infinite_or_finite Set.infinite_or_finite
 
 /-! ### Basic properties of `Set.Finite.toFinset` -/
 
@@ -263,7 +272,6 @@ protected theorem toFinset_empty (h : (∅ : Set α).Finite) : h.toFinset = ∅ 
   simp
 #align set.finite.to_finset_empty Set.Finite.toFinset_empty
 
--- Note: Not `simp` because `Set.Finite.toFinset_setOf` already proves it
 protected theorem toFinset_univ [Fintype α] (h : (Set.univ : Set α).Finite) :
     h.toFinset = Finset.univ := by
   simp
@@ -804,6 +812,12 @@ theorem finite_empty : (∅ : Set α).Finite :=
   toFinite _
 #align set.finite_empty Set.finite_empty
 
+protected theorem Infinite.nonempty {s : Set α} (h : s.Infinite) : s.Nonempty :=
+  nonempty_iff_ne_empty.2 $ by
+    rintro rfl
+    exact h finite_empty
+#align set.infinite.nonempty Set.Infinite.nonempty
+
 @[simp]
 theorem finite_singleton (a : α) : ({a} : Set α).Finite :=
   toFinite _
@@ -875,25 +889,61 @@ theorem finite_le_nat (n : ℕ) : Set.Finite { i | i ≤ n } :=
   toFinite _
 #align set.finite_le_nat Set.finite_le_nat
 
-theorem Finite.prod {s : Set α} {t : Set β} (hs : s.Finite) (ht : t.Finite) :
-    (s ×ˢ t : Set (α × β)).Finite := by
+section Prod
+
+variable {s : Set α} {t : Set β}
+
+protected theorem Finite.prod (hs : s.Finite) (ht : t.Finite) : (s ×ˢ t : Set (α × β)).Finite := by
   cases hs
   cases ht
   apply toFinite
 #align set.finite.prod Set.Finite.prod
 
-theorem Finite.offDiag {s : Set α} (hs : s.Finite) : s.offDiag.Finite := by
+theorem Finite.of_prod_left (h : (s ×ˢ t : Set (α × β)).Finite) : t.Nonempty → s.Finite :=
+  fun ⟨b, hb⟩ => (h.image Prod.fst).subset fun a ha => ⟨(a, b), ⟨ha, hb⟩, rfl⟩
+#align set.finite.of_prod_left Set.Finite.of_prod_left
+
+theorem Finite.of_prod_right (h : (s ×ˢ t : Set (α × β)).Finite) : s.Nonempty → t.Finite :=
+  fun ⟨a, ha⟩ => (h.image Prod.snd).subset fun b hb => ⟨(a, b), ⟨ha, hb⟩, rfl⟩
+#align set.finite.of_prod_right Set.Finite.of_prod_right
+
+protected theorem Infinite.prod_left (hs : s.Infinite) (ht : t.Nonempty) : (s ×ˢ t).Infinite :=
+  fun h => hs <| h.of_prod_left ht
+#align set.infinite.prod_left Set.Infinite.prod_left
+
+protected theorem Infinite.prod_right (ht : t.Infinite) (hs : s.Nonempty) : (s ×ˢ t).Infinite :=
+  fun h => ht <| h.of_prod_right hs
+#align set.infinite.prod_right Set.Infinite.prod_right
+
+protected theorem infinite_prod :
+    (s ×ˢ t).Infinite ↔ s.Infinite ∧ t.Nonempty ∨ t.Infinite ∧ s.Nonempty := by
+  refine' ⟨fun h => _, _⟩
+  · simp_rw [Set.Infinite, @and_comm ¬_, ← not_imp]
+    by_contra'
+    exact h ((this.1 h.nonempty.snd).prod $ this.2 h.nonempty.fst)
+  · rintro (h | h)
+    · exact h.1.prod_left h.2
+    · exact h.1.prod_right h.2
+#align set.infinite_prod Set.infinite_prod
+
+theorem finite_prod : (s ×ˢ t).Finite ↔ (s.Finite ∨ t = ∅) ∧ (t.Finite ∨ s = ∅) := by
+  simp only [← not_infinite, Set.infinite_prod, not_or, not_and_or, not_nonempty_iff_eq_empty]
+#align set.finite_prod Set.finite_prod
+
+protected theorem Finite.offDiag {s : Set α} (hs : s.Finite) : s.offDiag.Finite := by
   classical
     cases hs
     apply Set.toFinite
 #align set.finite.off_diag Set.Finite.offDiag
 
-theorem Finite.image2 (f : α → β → γ) {s : Set α} {t : Set β} (hs : s.Finite) (ht : t.Finite) :
+protected theorem Finite.image2 (f : α → β → γ) (hs : s.Finite) (ht : t.Finite) :
     (image2 f s t).Finite := by
   cases hs
   cases ht
   apply toFinite
 #align set.finite.image2 Set.Finite.image2
+
+end Prod
 
 theorem Finite.seq {f : Set (α → β)} {s : Set α} (hf : f.Finite) (hs : s.Finite) :
     (f.seq s).Finite := by
@@ -932,7 +982,7 @@ theorem exists_finite_iff_finset {p : Set α → Prop} :
 theorem Finite.finite_subsets {α : Type u} {a : Set α} (h : a.Finite) : { b | b ⊆ a }.Finite :=
   ⟨Fintype.ofFinset ((Finset.powerset h.toFinset).map Finset.coeEmb.1) fun s => by
       simpa [← @exists_finite_iff_finset α fun t => t ⊆ a ∧ t = s, Finite.subset_toFinset, ←
-        and_assoc] using h.subset⟩
+        and_assoc, Finset.coeEmb] using h.subset⟩
 #align set.finite.finite_subsets Set.Finite.finite_subsets
 
 /-- Finite product of finite sets is finite -/
@@ -1154,7 +1204,6 @@ theorem card_image_of_inj_on {s : Set α} [Fintype s] {f : α → β} [Fintype (
       Finset.card_image_of_injOn fun x hx y hy hxy =>
         H x (mem_toFinset.1 hx) y (mem_toFinset.1 hy) hxy
     _ = Fintype.card s := (Fintype.card_of_finset' _ fun a => mem_toFinset).symm
-
 #align set.card_image_of_inj_on Set.card_image_of_inj_on
 
 theorem card_image_of_injective (s : Set α) [Fintype s] {f : α → β} [Fintype (f '' s)]
@@ -1232,11 +1281,6 @@ theorem Infinite.exists_subset_card_eq {s : Set α} (hs : s.Infinite) (n : ℕ) 
   ⟨((Finset.range n).map (hs.natEmbedding _)).map (Embedding.subtype _), by simp⟩
 #align set.infinite.exists_subset_card_eq Set.Infinite.exists_subset_card_eq
 
-theorem Infinite.nonempty {s : Set α} (h : s.Infinite) : s.Nonempty :=
-  let a := Infinite.natEmbedding s h 37
-  ⟨a.1, a.2⟩
-#align set.infinite.nonempty Set.Infinite.nonempty
-
 theorem infinite_of_finite_compl [Infinite α] {s : Set α} (hs : sᶜ.Finite) : s.Infinite := fun h =>
   Set.infinite_univ (by simpa using hs.union h)
 #align set.infinite_of_finite_compl Set.infinite_of_finite_compl
@@ -1258,14 +1302,46 @@ theorem infinite_union {s t : Set α} : (s ∪ t).Infinite ↔ s.Infinite ∨ t.
   simp only [Set.Infinite, finite_union, not_and_or]
 #align set.infinite_union Set.infinite_union
 
-theorem infinite_of_infinite_image (f : α → β) {s : Set α} (hs : (f '' s).Infinite) : s.Infinite :=
+theorem Infinite.of_image (f : α → β) {s : Set α} (hs : (f '' s).Infinite) : s.Infinite :=
   mt (Finite.image f) hs
-#align set.infinite_of_infinite_image Set.infinite_of_infinite_image
+#align set.infinite.of_image Set.Infinite.of_image
 
 theorem infinite_image_iff {s : Set α} {f : α → β} (hi : InjOn f s) :
     (f '' s).Infinite ↔ s.Infinite :=
   not_congr <| finite_image_iff hi
 #align set.infinite_image_iff Set.infinite_image_iff
+
+alias infinite_image_iff ↔ _ Infinite.image
+#align set.infinite.image Set.Infinite.image
+
+-- Porting note: attribute [protected] doesn't work
+-- attribute [protected] infinite.image
+
+section Image2
+
+variable {f : α → β → γ} {s : Set α} {t : Set β} {a : α} {b : β}
+
+protected theorem Infinite.image2_left (hs : s.Infinite) (hb : b ∈ t)
+    (hf : InjOn (fun a => f a b) s) : (image2 f s t).Infinite :=
+  (hs.image hf).mono <| image_subset_image2_left hb
+#align set.infinite.image2_left Set.Infinite.image2_left
+
+protected theorem Infinite.image2_right (ht : t.Infinite) (ha : a ∈ s) (hf : InjOn (f a) t) :
+    (image2 f s t).Infinite :=
+  (ht.image hf).mono <| image_subset_image2_right ha
+#align set.infinite.image2_right Set.Infinite.image2_right
+
+theorem infinite_image2 (hfs : ∀ b ∈ t, InjOn (fun a => f a b) s) (hft : ∀ a ∈ s, InjOn (f a) t) :
+    (image2 f s t).Infinite ↔ s.Infinite ∧ t.Nonempty ∨ t.Infinite ∧ s.Nonempty := by
+  refine' ⟨fun h => Set.infinite_prod.1 _, _⟩
+  · rw [← image_uncurry_prod] at h
+    exact h.of_image _
+  · rintro (⟨hs, b, hb⟩ | ⟨ht, a, ha⟩)
+    · exact hs.image2_left hb (hfs _ hb)
+    · exact ht.image2_right ha (hft _ ha)
+#align set.infinite_image2 Set.infinite_image2
+
+end Image2
 
 theorem infinite_of_injOn_mapsTo {s : Set α} {t : Set β} {f : α → β} (hi : InjOn f s)
     (hm : MapsTo f s t) (hs : s.Infinite) : t.Infinite :=
@@ -1290,11 +1366,6 @@ theorem infinite_of_injective_forall_mem [Infinite α] {s : Set β} {f : α → 
   exact (infinite_range_of_injective hi).mono hf
 #align set.infinite_of_injective_forall_mem Set.infinite_of_injective_forall_mem
 
-theorem Infinite.exists_nat_lt {s : Set ℕ} (hs : s.Infinite) (n : ℕ) : ∃ m ∈ s, n < m :=
-  let ⟨m, hm⟩ := (hs.diff <| Set.finite_le_nat n).nonempty
-  ⟨m, by simpa using hm⟩
-#align set.infinite.exists_nat_lt Set.Infinite.exists_nat_lt
-
 theorem Infinite.exists_not_mem_finset {s : Set α} (hs : s.Infinite) (f : Finset α) :
     ∃ a ∈ s, a ∉ f :=
   let ⟨a, has, haf⟩ := (hs.diff (toFinite f)).nonempty
@@ -1315,6 +1386,23 @@ theorem not_injOn_infinite_finite_image {f : α → β} {s : Set α} (h_inf : s.
 
 /-! ### Order properties -/
 
+section Preorder
+
+variable [Preorder α] [Nonempty α] {s : Set α}
+
+theorem infinite_of_forall_exists_gt (h : ∀ a, ∃ b ∈ s, a < b) : s.Infinite := by
+  inhabit α
+  set f : ℕ → α := fun n => Nat.recOn n (h default).choose fun n a => (h a).choose
+  have hf : ∀ n, f n ∈ s := by rintro (_ | _) <;> exact (h _).choose_spec.1
+  exact infinite_of_injective_forall_mem
+    (strictMono_nat_of_lt_succ fun n => (h _).choose_spec.2).injective hf
+#align set.infinite_of_forall_exists_gt Set.infinite_of_forall_exists_gt
+
+theorem infinite_of_forall_exists_lt (h : ∀ a, ∃ b ∈ s, b < a) : s.Infinite :=
+  @infinite_of_forall_exists_gt αᵒᵈ _ _ _ h
+#align set.infinite_of_forall_exists_lt Set.infinite_of_forall_exists_lt
+
+end Preorder
 
 theorem finite_isTop (α : Type _) [PartialOrder α] : { x : α | IsTop x }.Finite :=
   (subsingleton_isTop α).finite

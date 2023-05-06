@@ -79,7 +79,7 @@ theorem continuous_mul : Continuous fun p : Completion α × Completion α => p.
   let m := (AddMonoidHom.mul : α →+ α →+ α).compr₂ toCompl
   have : Continuous fun p : α × α => m p.1 p.2 := by
     apply (continuous_coe α).comp _
-    simp only [AddMonoidHom.coe_mul, AddMonoidHom.coe_mul_left]
+    simp only [AddMonoidHom.coe_mul, AddMonoidHom.coe_mulLeft]
     exact _root_.continuous_mul
   have di : DenseInducing (toCompl : α → Completion α) := denseInducing_coe
   convert di.extend_Z_bilin di this
@@ -166,7 +166,7 @@ def extensionHom [CompleteSpace β] [SeparatedSpace β] : Completion α →+* β
           ((continuous_extension.comp continuous_fst).add
             (continuous_extension.comp continuous_snd)))
         fun a b => by
-        simp_rw [← coe_add, extension_coe hf, extension_coe hf, extension_coe hf, f.map_add]
+        simp_rw [← coe_add, extension_coe hf, f.map_add]
     map_one' := by rw [← coe_one, extension_coe hf, f.map_one]
     map_mul' := fun a b =>
       Completion.induction_on₂ a b
@@ -174,7 +174,7 @@ def extensionHom [CompleteSpace β] [SeparatedSpace β] : Completion α →+* β
           ((continuous_extension.comp continuous_fst).mul
             (continuous_extension.comp continuous_snd)))
         fun a b => by
-        simp_rw [← coe_mul, extension_coe hf, extension_coe hf, extension_coe hf, f.map_mul] }
+        simp_rw [← coe_mul, extension_coe hf, f.map_mul] }
 #align uniform_space.completion.extension_hom UniformSpace.Completion.extensionHom
 
 instance topologicalRing : TopologicalRing (Completion α) where
@@ -239,6 +239,7 @@ namespace UniformSpace
 
 variable {α : Type _}
 
+set_option synthInstance.etaExperiment true in
 theorem ring_sep_rel (α) [CommRing α] [UniformSpace α] [UniformAddGroup α] [TopologicalRing α] :
     separationSetoid α = Submodule.quotientRel (Ideal.closure ⊥) :=
   Setoid.ext fun x y =>
@@ -251,6 +252,7 @@ theorem ring_sep_quot (α : Type u) [r : CommRing α] [UniformSpace α] [Uniform
   rfl
 #align uniform_space.ring_sep_quot UniformSpace.ring_sep_quot
 
+set_option synthInstance.etaExperiment true in
 /-- Given a topological ring `α` equipped with a uniform structure that makes subtraction uniformly
 continuous, get an equivalence between the separated quotient of `α` and the quotient ring
 corresponding to the closure of zero. -/

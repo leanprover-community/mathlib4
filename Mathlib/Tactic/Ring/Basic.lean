@@ -77,10 +77,6 @@ This feature wasn't needed yet, so it's not implemented yet.
 ring, semiring, exponent, power
 -/
 
--- TODO: move somewhere else
-instance : Ord ℚ where
-  compare x y := compareOfLessAndEq x y
-
 namespace Mathlib.Tactic
 namespace Ring
 open Mathlib.Meta Qq NormNum Lean.Meta AtomM
@@ -1096,10 +1092,11 @@ initialize ringCleanupRef : IO.Ref (Expr → MetaM Expr) ← IO.mkRef pure
 def proveEq (g : MVarId) : AtomM Unit := do
   let some (α, e₁, e₂) := (← whnfR <|← instantiateMVars <|← g.getType).eq?
     | throwError "ring failed: not an equality"
-  let .sort (.succ u) ← whnf (← inferType α) | throwError "not a type{indentExpr α}"
-  have α : Q(Type u) := α
+  let .sort u ← whnf (← inferType α) | unreachable!
+  let v ← try u.dec catch _ => throwError "not a type{indentExpr α}"
+  have α : Q(Type v) := α
   have e₁ : Q($α) := e₁; have e₂ : Q($α) := e₂
-  let sα ← synthInstanceQ (q(CommSemiring $α) : Q(Type u))
+  let sα ← synthInstanceQ (q(CommSemiring $α) : Q(Type v))
   let c ← mkCache sα
   profileitM Exception "ring" (← getOptions) do
     let ⟨a, va, pa⟩ ← eval sα c e₁
