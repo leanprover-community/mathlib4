@@ -459,12 +459,11 @@ theorem binaryCofan_isColimit_iff {X Y : TopCat} (c : BinaryCofan X Y) :
         (binaryCofanIsColimit X Y)).symm.openEmbedding.comp openEmbedding_inl,
           (homeoOfIso <| h.coconePointUniqueUpToIso
             (binaryCofanIsColimit X Y)).symm.openEmbedding.comp openEmbedding_inr, _⟩
-      erw [Set.range_comp, ← eq_compl_iff_isCompl]
-      dsimp
-      erw [Set.range_comp _ Sum.inr, ← Set.image_compl_eq
-          (homeoOfIso <| h.coconePointUniqueUpToIso (binaryCofanIsColimit X Y)).symm.bijective]
+      simp only [Functor.map_comp]
+      erw [Set.range_comp, ← eq_compl_iff_isCompl, Set.range_comp _ Sum.inr,
+        ← Set.image_compl_eq (homeoOfIso <| h.coconePointUniqueUpToIso
+          (binaryCofanIsColimit X Y)).symm.bijective, Set.compl_range_inr.symm]
       congr 1
-      exact Set.compl_range_inr.symm
     · rintro ⟨h₁, h₂, h₃⟩
       have : ∀ x, x ∈ Set.range c.inl ∨ x ∈ Set.range c.inr := by
         rw [eq_compl_iff_isCompl.mpr h₃.symm]
@@ -500,9 +499,10 @@ theorem binaryCofan_isColimit_iff {X Y : TopCat} (c : BinaryCofan X Y) :
               exact dif_neg hx
             apply Continuous.comp
             · exact g.continuous_toFun
-            · continuity
-            rw [embedding_subtype_coe.to_inducing.continuous_iff]
-            exact continuous_subtype_val
+            · apply Continuous.comp
+              · continuity
+              · rw [embedding_subtype_val.toInducing.continuous_iff]
+                exact continuous_subtype_val
           · change IsOpen (Set.range c.inlᶜ)
             rw [← eq_compl_iff_isCompl.mpr h₃.symm]
             exact h₂.open_range
@@ -540,6 +540,7 @@ theorem colimit_topology (F : J ⥤ TopCatMax.{v, u}) :
 
 theorem colimit_isOpen_iff (F : J ⥤ TopCatMax.{v, u}) (U : Set ((colimit F : _) : Type max v u)) :
     IsOpen U ↔ ∀ j, IsOpen (colimit.ι F j ⁻¹' U) := by
+  dsimp [topologicalSpace_coe]
   conv_lhs => rw [colimit_topology F]
   exact isOpen_supᵢ_iff
 #align Top.colimit_is_open_iff TopCat.colimit_isOpen_iff
@@ -547,14 +548,14 @@ theorem colimit_isOpen_iff (F : J ⥤ TopCatMax.{v, u}) (U : Set ((colimit F : _
 theorem coequalizer_isOpen_iff (F : WalkingParallelPair ⥤ TopCat.{u})
     (U : Set ((colimit F : _) : Type u)) :
     IsOpen U ↔ IsOpen (colimit.ι F WalkingParallelPair.one ⁻¹' U) := by
-  rw [colimit_isOpen_iff.{u}]
+  rw [colimit_isOpen_iff]
   constructor
   · intro H
     exact H _
   · intro H j
     cases j
-    · rw [← colimit.w F walking_parallel_pair_hom.left]
-      exact (F.map walking_parallel_pair_hom.left).continuous_toFun.isOpen_preimage _ H
+    · rw [← colimit.w F WalkingParallelPairHom.left]
+      exact (F.map WalkingParallelPairHom.left).continuous_toFun.isOpen_preimage _ H
     · exact H
 #align Top.coequalizer_is_open_iff TopCat.coequalizer_isOpen_iff
 
