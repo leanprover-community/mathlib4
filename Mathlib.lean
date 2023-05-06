@@ -1694,6 +1694,7 @@ import Mathlib.RingTheory.Finiteness
 import Mathlib.RingTheory.Fintype
 import Mathlib.RingTheory.Flat
 import Mathlib.RingTheory.FreeRing
+import Mathlib.RingTheory.Ideal.AssociatedPrime
 import Mathlib.RingTheory.Ideal.Basic
 import Mathlib.RingTheory.Ideal.IdempotentFg
 import Mathlib.RingTheory.Ideal.Operations
