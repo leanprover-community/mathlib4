@@ -1638,7 +1638,7 @@ theorem exp_bound {x : ℂ} (hx : abs x ≤ 1) {n : ℕ} (hn : 0 < n) :
   rw [sum_range_sub_sum_range hj]
   calc
     abs (∑ m in (range j).filter fun k => n ≤ k, (x ^ m / m.factorial : ℂ)) =
-        abs (∑ m in (range j).filter fun k => n ≤ k,
+      abs (∑ m in (range j).filter fun k => n ≤ k,
         (x ^ n * (x ^ (m - n) / m.factorial) : ℂ)) := by
       refine' congr_arg abs (sum_congr rfl fun m hm => _)
       rw [mem_filter, mem_range] at hm

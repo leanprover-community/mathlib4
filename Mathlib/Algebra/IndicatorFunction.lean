@@ -307,7 +307,7 @@ theorem mulIndicator_one_preimage (s : Set M) :
 @[to_additive]
 theorem mulIndicator_const_preimage_eq_union (U : Set α) (s : Set M) (a : M) [Decidable (a ∈ s)]
     [Decidable ((1 : M) ∈ s)] : (U.mulIndicator fun _ => a) ⁻¹' s =
-    (if a ∈ s then U else ∅) ∪ if (1 : M) ∈ s then Uᶜ else ∅ := by
+      (if a ∈ s then U else ∅) ∪ if (1 : M) ∈ s then Uᶜ else ∅ := by
   rw [mulIndicator_preimage, preimage_one, preimage_const]
   split_ifs <;> simp [← compl_eq_univ_diff]
 #align set.mul_indicator_const_preimage_eq_union Set.mulIndicator_const_preimage_eq_union
