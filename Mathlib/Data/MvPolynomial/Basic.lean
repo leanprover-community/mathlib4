@@ -1217,12 +1217,12 @@ theorem map_id : ∀ p : MvPolynomial σ R, map (RingHom.id R) p = p :=
 
 theorem map_map [CommSemiring S₂] (g : S₁ →+* S₂) (p : MvPolynomial σ R) :
     map g (map f p) = map (g.comp f) p :=
-    (eval₂_comp_left (map g) (C.comp f) X p).trans <| by
-  congr
-  · ext1 a
-    simp only [map_C, comp_apply, RingHom.coe_comp]
-  · ext1 n
-    simp only [map_X, comp_apply]
+  (eval₂_comp_left (map g) (C.comp f) X p).trans <| by
+    congr
+    · ext1 a
+      simp only [map_C, comp_apply, RingHom.coe_comp]
+    · ext1 n
+      simp only [map_X, comp_apply]
 #align mv_polynomial.map_map MvPolynomial.map_map
 
 theorem eval₂_eq_eval_map (g : σ → S₁) (p : MvPolynomial σ R) : p.eval₂ f g = eval g (map f p) := by
