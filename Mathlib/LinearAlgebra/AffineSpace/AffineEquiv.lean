@@ -41,9 +41,6 @@ open Function Set
 
 open Affine
 
--- Porting note: this is needed because of lean4#2074
-attribute [-instance] Ring.toNonAssocRing
-
 /-- An affine equivalence is an equivalence between affine spaces such that both forward
 and inverse maps are affine.
 
@@ -379,6 +376,7 @@ theorem symm_trans_self (e : P₁ ≃ᵃ[k] P₂) : e.symm.trans e = refl k P₂
   ext e.apply_symm_apply
 #align affine_equiv.symm_trans_self AffineEquiv.symm_trans_self
 
+set_option synthInstance.etaExperiment true in
 @[simp]
 theorem apply_lineMap (e : P₁ ≃ᵃ[k] P₂) (a b : P₁) (c : k) :
     e (AffineMap.lineMap a b c) = AffineMap.lineMap (e a) (e b) c :=
@@ -633,21 +631,25 @@ namespace AffineMap
 
 open AffineEquiv
 
+set_option synthInstance.etaExperiment true in
 theorem lineMap_vadd (v v' : V₁) (p : P₁) (c : k) :
     lineMap v v' c +ᵥ p = lineMap (v +ᵥ p) (v' +ᵥ p) c :=
   (vaddConst k p).apply_lineMap v v' c
 #align affine_map.line_map_vadd AffineMap.lineMap_vadd
 
+set_option synthInstance.etaExperiment true in
 theorem lineMap_vsub (p₁ p₂ p₃ : P₁) (c : k) :
     lineMap p₁ p₂ c -ᵥ p₃ = lineMap (p₁ -ᵥ p₃) (p₂ -ᵥ p₃) c :=
   (vaddConst k p₃).symm.apply_lineMap p₁ p₂ c
 #align affine_map.line_map_vsub AffineMap.lineMap_vsub
 
+set_option synthInstance.etaExperiment true in
 theorem vsub_lineMap (p₁ p₂ p₃ : P₁) (c : k) :
     p₁ -ᵥ lineMap p₂ p₃ c = lineMap (p₁ -ᵥ p₂) (p₁ -ᵥ p₃) c :=
   (constVSub k p₁).apply_lineMap p₂ p₃ c
 #align affine_map.vsub_line_map AffineMap.vsub_lineMap
 
+set_option synthInstance.etaExperiment true in
 theorem vadd_lineMap (v : V₁) (p₁ p₂ : P₁) (c : k) :
     v +ᵥ lineMap p₁ p₂ c = lineMap (v +ᵥ p₁) (v +ᵥ p₂) c :=
   (constVAdd k P₁ v).apply_lineMap p₁ p₂ c

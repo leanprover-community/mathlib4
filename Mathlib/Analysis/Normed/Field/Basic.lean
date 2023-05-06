@@ -944,6 +944,7 @@ def NonUnitalNormedRing.induced [NonUnitalRing R] [NonUnitalNormedRing S]
   { NonUnitalSeminormedRing.induced R S f, NormedAddCommGroup.induced R S f hf with }
 #align non_unital_normed_ring.induced NonUnitalNormedRing.induced
 
+set_option synthInstance.etaExperiment true in
 /-- A non-unital ring homomorphism from an `Ring` to a `SeminormedRing` induces a
 `SeminormedRing` structure on the domain.
 
@@ -954,6 +955,7 @@ def SeminormedRing.induced [Ring R] [SeminormedRing S] [NonUnitalRingHomClass F 
   { NonUnitalSeminormedRing.induced R S f, SeminormedAddCommGroup.induced R S f, ‹Ring R› with }
 #align semi_normed_ring.induced SeminormedRing.induced
 
+set_option synthInstance.etaExperiment true in
 /-- An injective non-unital ring homomorphism from an `Ring` to a `NormedRing` induces a
 `NormedRing` structure on the domain.
 
@@ -964,6 +966,7 @@ def NormedRing.induced [Ring R] [NormedRing S] [NonUnitalRingHomClass F R S] (f 
   { NonUnitalSeminormedRing.induced R S f, NormedAddCommGroup.induced R S f hf, ‹Ring R› with }
 #align normed_ring.induced NormedRing.induced
 
+set_option synthInstance.etaExperiment true in
 /-- A non-unital ring homomorphism from a `CommRing` to a `SeminormedRing` induces a
 `SeminormedCommRing` structure on the domain.
 

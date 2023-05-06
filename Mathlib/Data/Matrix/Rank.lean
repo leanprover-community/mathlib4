@@ -61,7 +61,6 @@ theorem rank_zero [Nontrivial R] : rank (0 : Matrix m n R) = 0 := by
   rw [rank, mulVecLin_zero, LinearMap.range_zero, finrank_bot]
 #align matrix.rank_zero Matrix.rank_zero
 
-set_option synthInstance.etaExperiment true in
 theorem rank_le_card_width [StrongRankCondition R] (A : Matrix m n R) : A.rank ≤ Fintype.card n :=
   by
   haveI : Module.Finite R (n → R) := Module.Finite.pi
@@ -149,12 +148,8 @@ theorem rank_eq_finrank_range_toLin [DecidableEq n] {M₁ M₂ : Type _} [AddCom
     LinearMap.coe_single, toLin_self, LinearEquiv.map_sum, LinearEquiv.map_smul, Basis.equiv_apply]
 #align matrix.rank_eq_finrank_range_to_lin Matrix.rank_eq_finrank_range_toLin
 
-set_option synthInstance.etaExperiment true in
 theorem rank_le_card_height [StrongRankCondition R] (A : Matrix m n R) : A.rank ≤ Fintype.card m :=
-  by
-  haveI : Module.Finite R (m → R) := Module.Finite.pi
-  haveI : Module.Free R (m → R) := Module.Free.pi _ _
-  exact (Submodule.finrank_le _).trans (finrank_pi R).le
+  (Submodule.finrank_le _).trans (finrank_pi R).le
 #align matrix.rank_le_card_height Matrix.rank_le_card_height
 
 theorem rank_le_height [StrongRankCondition R] {m n : ℕ} (A : Matrix (Fin m) (Fin n) R) :
@@ -188,6 +183,7 @@ section StarOrderedField
 
 variable [Fintype m] [Field R] [PartialOrder R] [StarOrderedRing R]
 
+set_option synthInstance.etaExperiment true in
 theorem ker_mulVecLin_conjTranspose_mul_self (A : Matrix m n R) :
     LinearMap.ker (Aᴴ ⬝ A).mulVecLin = LinearMap.ker (mulVecLin A) := by
   ext x
