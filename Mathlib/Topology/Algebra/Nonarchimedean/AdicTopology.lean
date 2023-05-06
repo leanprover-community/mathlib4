@@ -23,23 +23,23 @@ topology on `R` which is compatible with the ring structure and such that a set 
 of zero if and only if it contains a power of `I`. This topology is non-archimedean: every
 neighborhood of zero contains an open subgroup, namely a power of `I`.
 
-It also studies the predicate `is_adic` which states that a given topological ring structure is
+It also studies the predicate `IsAdic` which states that a given topological ring structure is
 adic, proving a characterization and showing that raising an ideal to a positive power does not
 change the associated topology.
 
-Finally, it defines `with_ideal`, a class registering an ideal in a ring and providing the
+Finally, it defines `WithIdeal`, a class registering an ideal in a ring and providing the
 corresponding adic topology to the type class inference system.
 
 
 ## Main definitions and results
 
-* `ideal.adic_basis`: the basis of submodules given by powers of an ideal.
-* `ideal.adic_topology`: the adic topology associated to an ideal. It has the above basis
+* `Ideal.adic_basis`: the basis of submodules given by powers of an ideal.
+* `Ideal.adicTopology`: the adic topology associated to an ideal. It has the above basis
   for neighborhoods of zero.
-* `ideal.nonarchimedean`: the adic topology is non-archimedean
-* `is_ideal_adic_iff`: A topological ring is `J`-adic if and only if it admits the powers of `J` as
+* `Ideal.nonarchimedean`: the adic topology is non-archimedean
+* `isAdic_iff`: A topological ring is `J`-adic if and only if it admits the powers of `J` as
   a basis of open neighborhoods of zero.
-* `with_ideal`: a class registering an ideal in a ring.
+* `WithIdeal`: a class registering an ideal in a ring.
 
 ## Implementation notes
 
@@ -156,7 +156,7 @@ end Ideal
 
 section IsAdic
 
-/-- Given a topology on a ring `R` and an ideal `J`, `is_adic J` means the topology is the
+/-- Given a topology on a ring `R` and an ideal `J`, `IsAdic J` means the topology is the
 `J`-adic one. -/
 def IsAdic [H : TopologicalSpace R] (J : Ideal R) : Prop :=
   H = J.adicTopology
@@ -253,7 +253,7 @@ instance (priority := 100) : UniformSpace R :=
 instance (priority := 100) : UniformAddGroup R :=
   comm_topologicalAddGroup_is_uniform
 
-/-- The adic topology on a `R` module coming from the ideal `with_ideal.I`.
+/-- The adic topology on a `R` module coming from the ideal `WithIdeal.I`.
 This cannot be an instance because `R` cannot be inferred from `M`. -/
 def topologicalSpaceModule (M : Type _) [AddCommGroup M] [Module R M] : TopologicalSpace M :=
   (i : Ideal R).adicModuleTopology M
