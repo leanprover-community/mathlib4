@@ -1633,9 +1633,9 @@ theorem trim_zero : (0 : OuterMeasure α).trim = 0 :=
 
 theorem trim_sum_ge {ι} (m : ι → OuterMeasure α) : (sum fun i => (m i).trim) ≤ (sum m).trim :=
   fun s => by
-  simp [trim_eq_infᵢ];
-    exact fun t st ht =>
-      ENNReal.tsum_le_tsum fun i => infᵢ_le_of_le t <| infᵢ_le_of_le st <| infᵢ_le _ ht
+  simp [trim_eq_infᵢ]
+  exact fun t st ht =>
+    ENNReal.tsum_le_tsum fun i => infᵢ_le_of_le t <| infᵢ_le_of_le st <| infᵢ_le _ ht
 #align measure_theory.outer_measure.trim_sum_ge MeasureTheory.OuterMeasure.trim_sum_ge
 
 theorem exists_measurable_superset_eq_trim (m : OuterMeasure α) (s : Set α) :
