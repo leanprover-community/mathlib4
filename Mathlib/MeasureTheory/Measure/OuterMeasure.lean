@@ -482,7 +482,7 @@ theorem map_supᵢ {β ι} (f : α → β) (m : ι → OuterMeasure α) : map f 
   ext fun s => by simp only [map_apply, supᵢ_apply]
 #align measure_theory.outer_measure.map_supr MeasureTheory.OuterMeasure.map_supᵢ
 
-instance instFunctor : Functor OuterMeasure where map {_ _} f := map f
+instance instFunctor : Functor OuterMeasure where map f := map f
 #align measure_theory.outer_measure.functor MeasureTheory.OuterMeasure.instFunctor
 
 instance instLawfulFunctor : LawfulFunctor OuterMeasure where
