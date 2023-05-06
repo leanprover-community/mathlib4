@@ -1186,8 +1186,8 @@ theorem isCycleOn_support_cycleOf (f : Perm α) (x : α) : f.IsCycleOn (f.cycleO
     · exact ⟨sameCycle_apply_right.1 (mem_support_cycleOf_iff.1 h).1,
       (mem_support_cycleOf_iff.1 h).2⟩
     · exact ⟨sameCycle_apply_right.2 (mem_support_cycleOf_iff.1 h).1,
-      (mem_support_cycleOf_iff.1 h).2⟩,
-    fun a ha b hb =>
+      (mem_support_cycleOf_iff.1 h).2⟩
+    , fun a ha b hb =>
       by
         rw [mem_coe, mem_support_cycleOf_iff] at ha hb
         exact ha.1.symm.trans hb.1⟩
