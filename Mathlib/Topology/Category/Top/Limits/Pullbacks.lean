@@ -290,8 +290,8 @@ theorem pullback_map_openEmbedding_of_open_embeddings {W X Y Z S T : TopCat.{u}}
 theorem snd_embedding_of_left_embedding {X Y S : TopCat} {f : X ⟶ S} (H : Embedding f) (g : Y ⟶ S) :
     Embedding <| ⇑(pullback.snd : pullback f g ⟶  Y) := by
   convert (homeoOfIso (asIso (pullback.snd : pullback (𝟙 S) g ⟶  _))).embedding.comp
-      (pullback_map_embedding_of_embeddings (i₂ := 𝟙 Y) f g (𝟙 S) g H (homeoOfIso (Iso.refl _)).embedding
-        (𝟙 _) rfl (by simp))
+      (pullback_map_embedding_of_embeddings (i₂ := 𝟙 Y)
+        f g (𝟙 S) g H (homeoOfIso (Iso.refl _)).embedding (𝟙 _) rfl (by simp))
   erw [← coe_comp]
   simp
 #align Top.snd_embedding_of_left_embedding TopCat.snd_embedding_of_left_embedding
@@ -299,8 +299,8 @@ theorem snd_embedding_of_left_embedding {X Y S : TopCat} {f : X ⟶ S} (H : Embe
 theorem fst_embedding_of_right_embedding {X Y S : TopCat} (f : X ⟶ S) {g : Y ⟶ S}
     (H : Embedding g) : Embedding <| ⇑(pullback.fst : pullback f g ⟶ X) := by
   convert (homeoOfIso (asIso (pullback.fst : pullback f (𝟙 S) ⟶ _))).embedding.comp
-      (pullback_map_embedding_of_embeddings (i₁ := 𝟙 X) f g f (𝟙 _) (homeoOfIso (Iso.refl _)).embedding H
-        (𝟙 _) rfl (by simp))
+      (pullback_map_embedding_of_embeddings (i₁ := 𝟙 X)
+        f g f (𝟙 _) (homeoOfIso (Iso.refl _)).embedding H (𝟙 _) rfl (by simp))
   erw [← coe_comp]
   simp
 #align Top.fst_embedding_of_right_embedding TopCat.fst_embedding_of_right_embedding
@@ -397,7 +397,7 @@ theorem pullback_fst_image_snd_preimage (f : X ⟶ Z) (g : Y ⟶ Z) (U : Set Y) 
 
 end Pullback
 
-/-- The terminal object of `Top` is `punit`. -/
+/-- The terminal object of `TopCat` is `PUnit`. -/
 def isTerminalPunit : IsTerminal (TopCat.of PUnit.{u + 1}) :=
   haveI : ∀ X, Unique (X ⟶ TopCat.of PUnit.{u + 1}) := fun X =>
     ⟨⟨⟨fun _ => PUnit.unit, by continuity⟩⟩, fun f =>
@@ -405,29 +405,29 @@ def isTerminalPunit : IsTerminal (TopCat.of PUnit.{u + 1}) :=
   Limits.IsTerminal.ofUnique _
 #align Top.is_terminal_punit TopCat.isTerminalPunit
 
-/-- The terminal object of `Top` is `punit`. -/
+/-- The terminal object of `TopCat` is `PUnit`. -/
 def terminalIsoPunit : ⊤_ TopCat.{u} ≅ TopCat.of PUnit :=
   terminalIsTerminal.uniqueUpToIso isTerminalPunit
 #align Top.terminal_iso_punit TopCat.terminalIsoPunit
 
-/-- The initial object of `Top` is `pempty`. -/
+/-- The initial object of `TopCat` is `PEmpty`. -/
 def isInitialPempty : IsInitial (TopCat.of PEmpty.{u + 1}) :=
   haveI : ∀ X, Unique (TopCat.of PEmpty.{u + 1} ⟶ X) := fun X =>
     ⟨⟨⟨fun x => x.elim, by continuity⟩⟩, fun f => by ext ⟨⟩⟩
   Limits.IsInitial.ofUnique _
 #align Top.is_initial_pempty TopCat.isInitialPempty
 
-/-- The initial object of `Top` is `pempty`. -/
+/-- The initial object of `TopCat` is `PEmpty`. -/
 def initialIsoPempty : ⊥_ TopCat.{u} ≅ TopCat.of PEmpty :=
   initialIsInitial.uniqueUpToIso isInitialPempty
 #align Top.initial_iso_pempty TopCat.initialIsoPempty
 
-/-- The binary coproduct cofan in `Top`. -/
+/-- The binary coproduct cofan in `TopCat`. -/
 protected def binaryCofan (X Y : TopCat.{u}) : BinaryCofan X Y :=
   BinaryCofan.mk (⟨Sum.inl, by continuity⟩ : X ⟶ TopCat.of (Sum X Y)) ⟨Sum.inr, by continuity⟩
 #align Top.binary_cofan TopCat.binaryCofan
 
-/-- The constructed binary coproduct cofan in `Top` is the coproduct. -/
+/-- The constructed binary coproduct cofan in `TopCat` is the coproduct. -/
 def binaryCofanIsColimit (X Y : TopCat.{u}) : IsColimit (TopCat.binaryCofan X Y) := by
   refine' Limits.BinaryCofan.isColimitMk (fun s =>
     {toFun := Sum.elim s.inl s.inr, continuous_toFun := _ }) _ _ _
