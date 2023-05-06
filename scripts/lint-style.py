@@ -233,11 +233,11 @@ def isolated_by_check(lines, path):
     errors = []
     for line_nr, line in enumerate(lines, 1):
         if line.strip() == "by":
-            # We excuse those 'by's following a comma, since generally hanging 'by's
+            # We excuse those "by"s following a comma or ", fun ... =>", since generally hanging "by"s
             # should not be used in the second or later arguments of a tuple/anonymous constructor
             # See https://github.com/leanprover-community/mathlib4/pull/3825#discussion_r1186702599
             prev_line = lines[line_nr - 2].rstrip()
-            if not prev_line.endswith(","):
+            if not prev_line.endswith(",") and not re.search(", fun [^,]* =>$", prev_line):
                 errors += [(ERR_IBY, line_nr, path)]
     return errors
 

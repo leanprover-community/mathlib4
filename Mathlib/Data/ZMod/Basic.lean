@@ -967,14 +967,15 @@ theorem valMinAbs_spec {n : ℕ} [NeZero n] (x : ZMod n) (y : ℤ) :
     x.valMinAbs = y ↔ x = y ∧ y * 2 ∈ Set.Ioc (-n : ℤ) n :=
   ⟨by
     rintro rfl
-    exact ⟨x.coe_valMinAbs.symm, x.valMinAbs_mem_Ioc⟩, fun h => by
-      rw [← sub_eq_zero]
-      apply @Int.eq_zero_of_abs_lt_dvd n
-      · rw [← int_cast_zmod_eq_zero_iff_dvd, Int.cast_sub, coe_valMinAbs, h.1, sub_self]
-      rw [← mul_lt_mul_right (@zero_lt_two ℤ _ _ _ _ _)]
-      nth_rw 1 [← abs_eq_self.2 (@zero_le_two ℤ _ _ _ _)]
-      rw [← abs_mul, sub_mul, abs_lt];
-      constructor <;> linarith only [x.valMinAbs_mem_Ioc.1, x.valMinAbs_mem_Ioc.2, h.2.1, h.2.2]⟩
+    exact ⟨x.coe_valMinAbs.symm, x.valMinAbs_mem_Ioc⟩, fun h =>
+      by
+        rw [← sub_eq_zero]
+        apply @Int.eq_zero_of_abs_lt_dvd n
+        · rw [← int_cast_zmod_eq_zero_iff_dvd, Int.cast_sub, coe_valMinAbs, h.1, sub_self]
+        rw [← mul_lt_mul_right (@zero_lt_two ℤ _ _ _ _ _)]
+        nth_rw 1 [← abs_eq_self.2 (@zero_le_two ℤ _ _ _ _)]
+        rw [← abs_mul, sub_mul, abs_lt]
+        constructor <;> linarith only [x.valMinAbs_mem_Ioc.1, x.valMinAbs_mem_Ioc.2, h.2.1, h.2.2]⟩
 #align zmod.val_min_abs_spec ZMod.valMinAbs_spec
 
 theorem natAbs_valMinAbs_le {n : ℕ} [NeZero n] (x : ZMod n) : x.valMinAbs.natAbs ≤ n / 2 := by
