@@ -28,16 +28,16 @@ This definition is equivalent to left exact functors (functors that preserves fi
 
 ## Main results
 
-* `flat_of_preserves_finite_limits`: If `F : C ⥤ D` preserves finite limits and `C` has all finite
+* `flat_of_preservesFiniteLimits`: If `F : C ⥤ D` preserves finite limits and `C` has all finite
   limits, then `F` is flat.
-* `preserves_finite_limits_of_flat`: If `F : C ⥤ D` is flat, then it preserves all finite limits.
-* `preserves_finite_limits_iff_flat`: If `C` has all finite limits,
+* `preservesFiniteLimitsOfFlat`: If `F : C ⥤ D` is flat, then it preserves all finite limits.
+* `preservesFiniteLimitsIffFlat`: If `C` has all finite limits,
   then `F` is flat iff `F` is left_exact.
-* `Lan_preserves_finite_limits_of_flat`: If `F : C ⥤ D` is a flat functor between small categories,
+* `lanPreservesFiniteLimitsOfFlat`: If `F : C ⥤ D` is a flat functor between small categories,
   then the functor `Lan F.op` between presheaves of sets preserves all finite limits.
-* `flat_iff_Lan_flat`: If `C`, `D` are small and `C` has all finite limits, then `F` is flat iff
+* `flat_iff_lan_flat`: If `C`, `D` are small and `C` has all finite limits, then `F` is flat iff
   `Lan F.op : (Cᵒᵖ ⥤ Type*) ⥤ (Dᵒᵖ ⥤ Type*)` is flat.
-* `preserves_finite_limits_iff_Lan_preserves_finite_limits`: If `C`, `D` are small and `C` has all
+* `preservesFiniteLimitsIffLanPreservesFiniteLimits`: If `C`, `D` are small and `C` has all
   finite limits, then `F` preserves finite limits iff `Lan F.op : (Cᵒᵖ ⥤ Type*) ⥤ (Dᵒᵖ ⥤ Type*)`
   does.
 
@@ -63,11 +63,6 @@ variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₁} D]
 variable {J : Type w} [SmallCategory J]
 
 variable {K : J ⥤ C} (F : C ⥤ D) (c : Cone K)
-
--- **TODO** Scott changed `@[simps]` to `@[simps!]` below and I don't
--- know what this does, but one thing it does is that
--- it stops `toDiagram_obj` being created, and `toDiagram_obj` is
--- used later on so I (kmb) have changed it back
 
 /-- Given a cone `c : cone K` and a map `f : X ⟶ c.X`, we can construct a cone of structured
 arrows over `X` with `f` as the cone point. This is the underlying diagram.
@@ -243,10 +238,7 @@ theorem uniq {K : J ⥤ C} {c : Cone K} (hc : IsLimit c) (s : Cone (K ⋙ F))
     (h₂ : ∀ j : J, f₂ ≫ (F.mapCone c).π.app j = s.π.app j) : f₁ = f₂ := by
   -- We can make two cones over the diagram of `s` via `f₁` and `f₂`.
   let α₁ : toDiagram (F.mapCone c) ⋙ map f₁ ⟶ toDiagram s :=
-    { -- **TODO** this proof uses `toDiagram_obj` and
-      -- breaks if `@[simps]` is changed to `@[simps!]`
-      -- in the definition of `toDiagram`
-      app := fun X => eqToHom (by simp [← h₁])
+    { app := fun X => eqToHom (by simp [← h₁])
       naturality := fun j₁ j₂ φ => by
         ext
         -- porting note: Lean 3 proof was `simp` but `Comma.eqToHom_right`
