@@ -36,6 +36,8 @@ affine space, ordered module, slope
 open AffineMap
 
 variable {k E PE : Type _}
+set_option synthInstance.etaExperiment true
+
 
 /-!
 ### Monotonicity of `lineMap`

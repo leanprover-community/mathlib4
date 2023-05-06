@@ -222,12 +222,14 @@ theorem openSegment_eq_image' (x y : E) :
   abel
 #align open_segment_eq_image' openSegment_eq_image'
 
+set_option synthInstance.etaExperiment true in
 theorem segment_eq_image_lineMap (x y : E) : [x -[𝕜] y] = AffineMap.lineMap x y '' Icc (0 : 𝕜) 1 :=
   by
   convert segment_eq_image 𝕜 x y using 2
   exact AffineMap.lineMap_apply_module _ _ _
 #align segment_eq_image_line_map segment_eq_image_lineMap
 
+set_option synthInstance.etaExperiment true in
 theorem openSegment_eq_image_lineMap (x y : E) :
     openSegment 𝕜 x y = AffineMap.lineMap x y '' Ioo (0 : 𝕜) 1 := by
   convert openSegment_eq_image 𝕜 x y using 2
@@ -384,6 +386,7 @@ theorem mem_segment_iff_sameRay : x ∈ [y -[𝕜] z] ↔ SameRay 𝕜 (x - y) (
 
 open AffineMap
 
+set_option synthInstance.etaExperiment true in
 /-- If `z = lineMap x y c` is a point on the line passing through `x` and `y`, then the open
 segment `openSegment 𝕜 x y` is included in the union of the open segments `openSegment 𝕜 x z`,
 `openSegment 𝕜 z y`, and the point `z`. Informally, `(x, y) ⊆ {z} ∪ (x, z) ∪ (z, y)`. -/

@@ -257,6 +257,8 @@ end SeminormedRing
 
 section NormedField
 
+set_option synthInstance.etaExperiment true
+
 variable [NormedField 𝕜] [NormedRing 𝕝] [NormedSpace 𝕜 𝕝] [AddCommGroup E] [Module 𝕜 E]
   [SMulWithZero 𝕝 E] [IsScalarTower 𝕜 𝕝 E] {s t u v A B : Set E} {x : E} {a b : 𝕜}
 

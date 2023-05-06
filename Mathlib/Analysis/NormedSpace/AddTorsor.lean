@@ -59,6 +59,7 @@ theorem dist_homothety_center (p₁ p₂ : P) (c : 𝕜) :
     dist (homothety p₁ c p₂) p₁ = ‖c‖ * dist p₁ p₂ := by rw [dist_comm, dist_center_homothety]
 #align dist_homothety_center dist_homothety_center
 
+set_option synthInstance.etaExperiment true in
 @[simp]
 theorem dist_lineMap_lineMap (p₁ p₂ : P) (c₁ c₂ : 𝕜) :
     dist (lineMap p₁ p₂ c₁) (lineMap p₁ p₂ c₂) = dist c₁ c₂ * dist p₁ p₂ := by
@@ -69,11 +70,13 @@ theorem dist_lineMap_lineMap (p₁ p₂ : P) (c₁ c₂ : 𝕜) :
     ← sub_smul, norm_smul, ← vsub_eq_sub, ← dist_eq_norm_vsub V, ← dist_eq_norm_vsub 𝕜]
 #align dist_line_map_line_map dist_lineMap_lineMap
 
+set_option synthInstance.etaExperiment true in
 theorem lipschitzWith_lineMap (p₁ p₂ : P) : LipschitzWith (nndist p₁ p₂) (lineMap p₁ p₂ : 𝕜 → P) :=
   LipschitzWith.of_dist_le_mul fun c₁ c₂ =>
     ((dist_lineMap_lineMap p₁ p₂ c₁ c₂).trans (mul_comm _ _)).le
 #align lipschitz_with_line_map lipschitzWith_lineMap
 
+set_option synthInstance.etaExperiment true in
 @[simp]
 theorem dist_lineMap_left (p₁ p₂ : P) (c : 𝕜) : dist (lineMap p₁ p₂ c) p₁ = ‖c‖ * dist p₁ p₂ := by
   -- Porting note: was
@@ -81,11 +84,13 @@ theorem dist_lineMap_left (p₁ p₂ : P) (c : 𝕜) : dist (lineMap p₁ p₂ c
   rw [← dist_zero_right, ← dist_lineMap_lineMap, lineMap_apply_zero]
 #align dist_line_map_left dist_lineMap_left
 
+set_option synthInstance.etaExperiment true in
 @[simp]
 theorem dist_left_lineMap (p₁ p₂ : P) (c : 𝕜) : dist p₁ (lineMap p₁ p₂ c) = ‖c‖ * dist p₁ p₂ :=
   (dist_comm _ _).trans (dist_lineMap_left _ _ _)
 #align dist_left_line_map dist_left_lineMap
 
+set_option synthInstance.etaExperiment true in
 @[simp]
 theorem dist_lineMap_right (p₁ p₂ : P) (c : 𝕜) :
     dist (lineMap p₁ p₂ c) p₂ = ‖1 - c‖ * dist p₁ p₂ := by
@@ -94,6 +99,7 @@ theorem dist_lineMap_right (p₁ p₂ : P) (c : 𝕜) :
   rw [← dist_eq_norm', ← dist_lineMap_lineMap, lineMap_apply_one]
 #align dist_line_map_right dist_lineMap_right
 
+set_option synthInstance.etaExperiment true in
 @[simp]
 theorem dist_right_lineMap (p₁ p₂ : P) (c : 𝕜) : dist p₂ (lineMap p₁ p₂ c) = ‖1 - c‖ * dist p₁ p₂ :=
   (dist_comm _ _).trans (dist_lineMap_right _ _ _)
@@ -148,6 +154,7 @@ theorem dist_midpoint_midpoint_le' (p₁ p₂ p₃ p₄ : P) :
 
 end invertibleTwo
 
+set_option synthInstance.etaExperiment true in
 theorem antilipschitzWith_lineMap {p₁ p₂ : Q} (h : p₁ ≠ p₂) :
     AntilipschitzWith (nndist p₁ p₂)⁻¹ (lineMap p₁ p₂ : 𝕜 → Q) :=
   AntilipschitzWith.of_le_mul_dist fun c₁ c₂ => by

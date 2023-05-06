@@ -483,6 +483,7 @@ theorem mem_Icc_of_mem_stdSimplex (hf : f ∈ stdSimplex R ι) (x) : f x ∈ Icc
   ⟨hf.1 x, hf.2 ▸ Finset.single_le_sum (fun y _ => hf.1 y) (Finset.mem_univ x)⟩
 #align mem_Icc_of_mem_std_simplex mem_Icc_of_mem_stdSimplex
 
+set_option synthInstance.etaExperiment true in
 /-- The convex hull of an affine basis is the intersection of the half-spaces defined by the
 corresponding barycentric coordinates. -/
 theorem AffineBasis.convexHull_eq_nonneg_coord {ι : Type _} (b : AffineBasis ι R E) :

@@ -249,6 +249,7 @@ protected theorem Convex.closure {s : Set E} (hs : Convex 𝕜 s) : Convex 𝕜 
 
 open AffineMap
 
+set_option synthInstance.etaExperiment true
 /-- A convex set `s` is strictly convex provided that for any two distinct points of
 `s \ interior s`, the line passing through these points has nonempty intersection with
 `interior s`. -/

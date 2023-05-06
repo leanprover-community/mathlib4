@@ -52,6 +52,7 @@ theorem ConvexOn.slope_mono_adjacent (hf : ConvexOn 𝕜 s f) {x y z : 𝕜} (hx
   · nlinarith
 #align convex_on.slope_mono_adjacent ConvexOn.slope_mono_adjacent
 
+set_option synthInstance.etaExperiment true in
 /-- If `f : 𝕜 → 𝕜` is concave, then for any three points `x < y < z` the slope of the secant line of
 `f` on `[x, y]` is greater than the slope of the secant line of `f` on `[x, z]`. -/
 theorem ConcaveOn.slope_anti_adjacent (hf : ConcaveOn 𝕜 s f) {x y z : 𝕜} (hx : x ∈ s) (hz : z ∈ s)
@@ -91,6 +92,7 @@ theorem StrictConvexOn.slope_strict_mono_adjacent (hf : StrictConvexOn 𝕜 s f)
   · nlinarith
 #align strict_convex_on.slope_strict_mono_adjacent StrictConvexOn.slope_strict_mono_adjacent
 
+set_option synthInstance.etaExperiment true in
 /-- If `f : 𝕜 → 𝕜` is strictly concave, then for any three points `x < y < z` the slope of the
 secant line of `f` on `[x, y]` is strictly greater than the slope of the secant line of `f` on
 `[x, z]`. -/
@@ -132,6 +134,7 @@ theorem convexOn_of_slope_mono_adjacent (hs : Convex 𝕜 s)
       mul_comm (f z), ha, hb] at this
 #align convex_on_of_slope_mono_adjacent convexOn_of_slope_mono_adjacent
 
+set_option synthInstance.etaExperiment true in
 /-- If for any three points `x < y < z`, the slope of the secant line of `f : 𝕜 → 𝕜` on `[x, y]` is
 greater than the slope of the secant line of `f` on `[x, z]`, then `f` is concave. -/
 theorem concaveOn_of_slope_anti_adjacent (hs : Convex 𝕜 s)
@@ -177,6 +180,7 @@ theorem strictConvexOn_of_slope_strict_mono_adjacent (hs : Convex 𝕜 s)
       mul_comm (f z), ha, hb] at this
 #align strict_convex_on_of_slope_strict_mono_adjacent strictConvexOn_of_slope_strict_mono_adjacent
 
+set_option synthInstance.etaExperiment true in
 /-- If for any three points `x < y < z`, the slope of the secant line of `f : 𝕜 → 𝕜` on `[x, y]` is
 strictly greater than the slope of the secant line of `f` on `[x, z]`, then `f` is strictly concave.
 -/

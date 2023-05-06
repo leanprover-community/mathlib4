@@ -299,10 +299,6 @@ variable [AddCommGroup F] [AddCommGroup G]
 
 variable [Module 𝕜 E] [Module 𝕜₂ E₂] [Module 𝕜₃ E₃] [Module 𝕜 F] [Module 𝕜 G]
 
--- Porting note: even though this instance is found immediately by typeclass search,
--- it seems to be needed below!?
-noncomputable instance smul_nnreal_real : SMul ℝ≥0 ℝ := inferInstance
-
 variable [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ]
 
 /-- Composition of a seminorm with a linear map is a seminorm. -/
@@ -382,10 +378,6 @@ theorem bot_eq_zero : (⊥ : Seminorm 𝕜 E) = 0 :=
   rfl
 #align seminorm.bot_eq_zero Seminorm.bot_eq_zero
 
--- Porting note:
--- finding the instance `SMul ℝ≥0 (Seminorm 𝕜 E)` is slow,
--- and needs an increase to `synthInstance.maxHeartbeats`.
-set_option synthInstance.maxHeartbeats 30000 in
 theorem smul_le_smul {p q : Seminorm 𝕜 E} {a b : ℝ≥0} (hpq : p ≤ q) (hab : a ≤ b) :
     a • p ≤ b • q := by
   simp_rw [le_def]
@@ -1032,6 +1024,8 @@ variable [NormedField 𝕜] [AddCommGroup E] [NormedSpace ℝ 𝕜] [Module 𝕜
 
 section SMul
 
+set_option synthInstance.etaExperiment true
+
 variable [SMul ℝ E] [IsScalarTower ℝ 𝕜 E] (p : Seminorm 𝕜 E)
 
 /-- A seminorm is convex. Also see `convexOn_norm`. -/
@@ -1049,6 +1043,8 @@ protected theorem convexOn : ConvexOn ℝ univ p := by
 end SMul
 
 section Module
+
+set_option synthInstance.etaExperiment true
 
 variable [Module ℝ E] [IsScalarTower ℝ 𝕜 E] (p : Seminorm 𝕜 E) (x : E) (r : ℝ)
 

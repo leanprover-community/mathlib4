@@ -255,6 +255,7 @@ theorem affineIndependent_iff_eq_of_fintype_affineCombination_eq [Fintype ι] (p
 
 variable {k}
 
+set_option synthInstance.etaExperiment true in
 /-- If we single out one member of an affine-independent family of points and affinely transport
 all others along the line joining them to this member, the resulting new family of points is affine-
 independent.
@@ -744,6 +745,7 @@ theorem sign_eq_of_affineCombination_mem_affineSpan_pair {p : ι → P} (h : Aff
   rw [hr i hi, hr j hj, hi0, hj0, add_zero, add_zero, sub_zero, sub_zero, sign_mul, sign_mul, hij]
 #align sign_eq_of_affine_combination_mem_affine_span_pair sign_eq_of_affineCombination_mem_affineSpan_pair
 
+set_option synthInstance.etaExperiment true in
 /-- Given an affinely independent family of points, suppose that an affine combination lies in
 the span of one point of that family and a combination of another two points of that family given
 by `lineMap` with coefficient between 0 and 1. Then the coefficients of those two points in the

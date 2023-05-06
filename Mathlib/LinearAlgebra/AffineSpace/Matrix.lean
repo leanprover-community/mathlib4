@@ -29,6 +29,8 @@ variable {ι : Type u₁} {k : Type u₂} {V : Type u₃} {P : Type u₄}
 
 variable [AddCommGroup V] [AffineSpace V P]
 
+set_option synthInstance.etaExperiment true
+
 namespace AffineBasis
 
 section Ring

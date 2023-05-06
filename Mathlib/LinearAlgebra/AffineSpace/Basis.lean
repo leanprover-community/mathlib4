@@ -163,18 +163,21 @@ theorem linear_eq_sumCoords (i : ι) : (b.coord i).linear = -(b.basisOf i).sumCo
   rfl
 #align affine_basis.linear_eq_sum_coords AffineBasis.linear_eq_sumCoords
 
+set_option synthInstance.etaExperiment true in
 @[simp]
 theorem coord_reindex (i : ι') : (b.reindex e).coord i = b.coord (e.symm i) := by
   ext
   classical simp [AffineBasis.coord]
 #align affine_basis.coord_reindex AffineBasis.coord_reindex
 
+set_option synthInstance.etaExperiment true in
 @[simp]
 theorem coord_apply_eq (i : ι) : b.coord i (b i) = 1 := by
   simp only [coord, Basis.coe_sumCoords, LinearEquiv.map_zero, LinearEquiv.coe_coe, sub_zero,
     AffineMap.coe_mk, Finsupp.sum_zero_index, vsub_self]
 #align affine_basis.coord_apply_eq AffineBasis.coord_apply_eq
 
+set_option synthInstance.etaExperiment true in
 @[simp]
 theorem coord_apply_ne (h : i ≠ j) : b.coord i (b j) = 0 := by
   -- Porting note:
@@ -184,10 +187,12 @@ theorem coord_apply_ne (h : i ≠ j) : b.coord i (b j) = 0 := by
     Basis.sumCoords_self_apply, sub_self]
 #align affine_basis.coord_apply_ne AffineBasis.coord_apply_ne
 
+set_option synthInstance.etaExperiment true in
 theorem coord_apply [DecidableEq ι] (i j : ι) : b.coord i (b j) = if i = j then 1 else 0 := by
   cases' eq_or_ne i j with h h <;> simp [h]
 #align affine_basis.coord_apply AffineBasis.coord_apply
 
+set_option synthInstance.etaExperiment true in
 @[simp]
 theorem coord_apply_combination_of_mem (hi : i ∈ s) {w : ι → k} (hw : s.sum w = 1) :
     b.coord i (s.affineCombination k b w) = w i := by
@@ -196,6 +201,7 @@ theorem coord_apply_combination_of_mem (hi : i ∈ s) {w : ι → k} (hw : s.sum
       s.map_affineCombination b w hw]
 #align affine_basis.coord_apply_combination_of_mem AffineBasis.coord_apply_combination_of_mem
 
+set_option synthInstance.etaExperiment true in
 @[simp]
 theorem coord_apply_combination_of_not_mem (hi : i ∉ s) {w : ι → k} (hw : s.sum w = 1) :
     b.coord i (s.affineCombination k b w) = 0 := by
@@ -204,6 +210,7 @@ theorem coord_apply_combination_of_not_mem (hi : i ∉ s) {w : ι → k} (hw : s
       s.map_affineCombination b w hw]
 #align affine_basis.coord_apply_combination_of_not_mem AffineBasis.coord_apply_combination_of_not_mem
 
+set_option synthInstance.etaExperiment true in
 @[simp]
 theorem sum_coord_apply_eq_one [Fintype ι] (q : P) : (∑ i, b.coord i q) = 1 := by
   have hq : q ∈ affineSpan k (range b) := by
@@ -214,6 +221,7 @@ theorem sum_coord_apply_eq_one [Fintype ι] (q : P) : (∑ i, b.coord i q) = 1 :
   exact b.coord_apply_combination_of_mem (Finset.mem_univ _) hw
 #align affine_basis.sum_coord_apply_eq_one AffineBasis.sum_coord_apply_eq_one
 
+set_option synthInstance.etaExperiment true in
 @[simp]
 theorem affineCombination_coord_eq_self [Fintype ι] (q : P) :
     (Finset.univ.affineCombination k b fun i => b.coord i q) = q := by
@@ -226,6 +234,7 @@ theorem affineCombination_coord_eq_self [Fintype ι] (q : P) :
   exact b.coord_apply_combination_of_mem (Finset.mem_univ i) hw
 #align affine_basis.affine_combination_coord_eq_self AffineBasis.affineCombination_coord_eq_self
 
+set_option synthInstance.etaExperiment true in
 /-- A variant of `AffineBasis.affineCombination_coord_eq_self` for the special case when the
 affine space is a module so we can talk about linear combinations. -/
 @[simp]
@@ -235,12 +244,14 @@ theorem linear_combination_coord_eq_self [Fintype ι] (b : AffineBasis ι k V) (
   rwa [Finset.univ.affineCombination_eq_linear_combination _ _ (b.sum_coord_apply_eq_one v)] at hb
 #align affine_basis.linear_combination_coord_eq_self AffineBasis.linear_combination_coord_eq_self
 
+set_option synthInstance.etaExperiment true in
 theorem ext_elem [Finite ι] {q₁ q₂ : P} (h : ∀ i, b.coord i q₁ = b.coord i q₂) : q₁ = q₂ := by
   cases nonempty_fintype ι
   rw [← b.affineCombination_coord_eq_self q₁, ← b.affineCombination_coord_eq_self q₂]
   simp only [h]
 #align affine_basis.ext_elem AffineBasis.ext_elem
 
+set_option synthInstance.etaExperiment true in
 @[simp]
 theorem coe_coord_of_subsingleton_eq_one [Subsingleton ι] (i : ι) : (b.coord i : P → k) = 1 := by
   ext q
@@ -256,6 +267,7 @@ theorem coe_coord_of_subsingleton_eq_one [Subsingleton ι] (i : ι) : (b.coord i
   rw [Pi.one_apply, hq, b.coord_apply_combination_of_mem hi hw, Function.const_apply]
 #align affine_basis.coe_coord_of_subsingleton_eq_one AffineBasis.coe_coord_of_subsingleton_eq_one
 
+set_option synthInstance.etaExperiment true in
 theorem surjective_coord [Nontrivial ι] (i : ι) : Function.Surjective <| b.coord i := by
   classical
     intro x
@@ -275,6 +287,7 @@ theorem surjective_coord [Nontrivial ι] (i : ι) : Function.Surjective <| b.coo
     simp [b.coord_apply_combination_of_mem hi hw]
 #align affine_basis.surjective_coord AffineBasis.surjective_coord
 
+set_option synthInstance.etaExperiment true in
 /-- Barycentric coordinates as an affine map. -/
 noncomputable def coords : P →ᵃ[k] ι → k where
   toFun q i := b.coord i q
@@ -300,6 +313,7 @@ noncomputable def coords : P →ᵃ[k] ι → k where
     simp only [ne_eq, Basis.coe_sumCoords, vadd_eq_add]
 #align affine_basis.coords AffineBasis.coords
 
+set_option synthInstance.etaExperiment true in
 @[simp]
 theorem coords_apply (q : P) (i : ι) : b.coords q i = b.coord i q :=
   rfl
@@ -311,6 +325,7 @@ section DivisionRing
 
 variable [DivisionRing k] [Module k V]
 
+set_option synthInstance.etaExperiment true in
 @[simp]
 theorem coord_apply_centroid [CharZero k] (b : AffineBasis ι k P) {s : Finset ι} {i : ι}
     (hi : i ∈ s) : b.coord i (s.centroid k b) = (s.card : k)⁻¹ := by

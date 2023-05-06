@@ -50,6 +50,7 @@ theorem summable_mul_of_summable_norm [CompleteSpace R] {f : ι → R} {g : ι' 
   summable_of_summable_norm (hf.mul_norm hg)
 #align summable_mul_of_summable_norm summable_mul_of_summable_norm
 
+set_option synthInstance.etaExperiment true in
 /-- Product of two infinites sums indexed by arbitrary types.
     See also `tsum_mul_tsum` if `f` and `g` are *not* absolutely summable. -/
 theorem tsum_mul_tsum_of_summable_norm [CompleteSpace R] {f : ι → R} {g : ι' → R}
@@ -86,9 +87,10 @@ theorem summable_norm_sum_mul_antidiagonal_of_summable_norm {f g : ℕ → R}
     ‖∑ kl in antidiagonal n, f kl.1 * g kl.2‖ ≤ ∑ kl in antidiagonal n, ‖f kl.1 * g kl.2‖ :=
       norm_sum_le _ _
     _ ≤ ∑ kl in antidiagonal n, ‖f kl.1‖ * ‖g kl.2‖ := sum_le_sum fun i _ => norm_mul_le _ _
-    
+
 #align summable_norm_sum_mul_antidiagonal_of_summable_norm summable_norm_sum_mul_antidiagonal_of_summable_norm
 
+set_option synthInstance.etaExperiment true in
 /-- The Cauchy product formula for the product of two infinite sums indexed by `ℕ`,
     expressed by summing on `Finset.Nat.antidiagonal`.
     See also `tsum_mul_tsum_eq_tsum_sum_antidiagonal` if `f` and `g` are
@@ -118,4 +120,3 @@ theorem tsum_mul_tsum_eq_tsum_sum_range_of_summable_norm [CompleteSpace R] {f g 
 #align tsum_mul_tsum_eq_tsum_sum_range_of_summable_norm tsum_mul_tsum_eq_tsum_sum_range_of_summable_norm
 
 end Nat
-

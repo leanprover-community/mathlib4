@@ -68,6 +68,8 @@ end PreorderSemiring
 
 section OrderedRing
 
+set_option synthInstance.etaExperiment true
+
 variable {𝕜 : Type _} {E : Type _} [TopologicalSpace 𝕜] [OrderedRing 𝕜] [AddCommMonoid E]
   [TopologicalSpace E] [Module 𝕜 E] {l : E →L[𝕜] 𝕜} {A B C : Set E} {X : Finset E} {x : E}
 

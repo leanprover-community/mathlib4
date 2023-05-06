@@ -24,11 +24,13 @@ midpoint
 
 open AffineMap AffineEquiv
 
+set_option synthInstance.etaExperiment true in
 theorem lineMap_inv_two {R : Type _} {V P : Type _} [DivisionRing R] [CharZero R] [AddCommGroup V]
     [Module R V] [AddTorsor V P] (a b : P) : lineMap a b (2⁻¹ : R) = midpoint R a b :=
   rfl
 #align line_map_inv_two lineMap_inv_two
 
+set_option synthInstance.etaExperiment true in
 theorem lineMap_one_half {R : Type _} {V P : Type _} [DivisionRing R] [CharZero R] [AddCommGroup V]
     [Module R V] [AddTorsor V P] (a b : P) : lineMap a b (1 / 2 : R) = midpoint R a b := by
   rw [one_div, lineMap_inv_two]
