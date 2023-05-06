@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Johan Commelin, Mario Carneiro
 
 ! This file was ported from Lean 3 source module data.mv_polynomial.basic
-! leanprover-community/mathlib commit 0b89934139d3be96f9dab477f10c20f9f93da580
+! leanprover-community/mathlib commit f69db8cecc668e2d5894d7e9bfc491da60db3b9f
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -117,23 +117,27 @@ instance distribuMulAction [Monoid R] [CommSemiring S₁] [DistribMulAction R S�
     DistribMulAction R (MvPolynomial σ S₁) :=
   AddMonoidAlgebra.distribMulAction
 
-instance faithfulSMul [Monoid R] [CommSemiring S₁] [DistribMulAction R S₁] [FaithfulSMul R S₁] :
+instance smulZeroClass [CommSemiring S₁] [SMulZeroClass R S₁] :
+    SMulZeroClass R (MvPolynomial σ S₁) :=
+  AddMonoidAlgebra.smulZeroClass
+
+instance faithfulSMul [CommSemiring S₁] [SMulZeroClass R S₁] [FaithfulSMul R S₁] :
     FaithfulSMul R (MvPolynomial σ S₁) :=
   AddMonoidAlgebra.faithfulSMul
 
 instance module [Semiring R] [CommSemiring S₁] [Module R S₁] : Module R (MvPolynomial σ S₁) :=
   AddMonoidAlgebra.module
 
-instance isScalarTower [Monoid R] [Monoid S₁] [CommSemiring S₂] [SMul R S₁] [DistribMulAction R S₂]
-    [DistribMulAction S₁ S₂] [IsScalarTower R S₁ S₂] : IsScalarTower R S₁ (MvPolynomial σ S₂) :=
+instance isScalarTower [CommSemiring S₂] [SMul R S₁] [SMulZeroClass R S₂] [SMulZeroClass S₁ S₂]
+    [IsScalarTower R S₁ S₂] : IsScalarTower R S₁ (MvPolynomial σ S₂) :=
   AddMonoidAlgebra.isScalarTower
 
-instance smulCommClass [Monoid R] [Monoid S₁] [CommSemiring S₂] [DistribMulAction R S₂]
-    [DistribMulAction S₁ S₂] [SMulCommClass R S₁ S₂] : SMulCommClass R S₁ (MvPolynomial σ S₂) :=
+instance smulCommClass [CommSemiring S₂] [SMulZeroClass R S₂] [SMulZeroClass S₁ S₂]
+    [SMulCommClass R S₁ S₂] : SMulCommClass R S₁ (MvPolynomial σ S₂) :=
   AddMonoidAlgebra.smulCommClass
 
-instance isCentralScalar [Monoid R] [CommSemiring S₁] [DistribMulAction R S₁]
-    [DistribMulAction Rᵐᵒᵖ S₁] [IsCentralScalar R S₁] : IsCentralScalar R (MvPolynomial σ S₁) :=
+instance isCentralScalar [CommSemiring S₁] [SMulZeroClass R S₁] [SMulZeroClass Rᵐᵒᵖ S₁]
+    [IsCentralScalar R S₁] : IsCentralScalar R (MvPolynomial σ S₁) :=
   AddMonoidAlgebra.isCentralScalar
 
 instance algebra [CommSemiring R] [CommSemiring S₁] [Algebra R S₁] :
@@ -277,8 +281,7 @@ theorem C_eq_smul_one : (C a : MvPolynomial σ R) = a • (1 : MvPolynomial σ R
   rw [← C_mul', mul_one]
 #align mv_polynomial.C_eq_smul_one MvPolynomial.C_eq_smul_one
 
--- Porting note: new theorem
-theorem smul_monomial: a' • monomial s a = monomial s (a' * a) := by
+theorem smul_monomial : a' • monomial s a = monomial s (a' * a) := by
   rw [smul_eq_C_mul, C_mul_monomial]
 #align mv_polynomial.smul_monomial MvPolynomial.smul_monomial
 
@@ -394,8 +397,7 @@ theorem induction_on_monomial {M : MvPolynomial σ R → Prop} (h_C : ∀ a, M (
   · show M (monomial 0 a)
     exact h_C a
   · intro n e p _hpn _he ih
-    have : ∀ e : ℕ, M (monomial p a * X n ^ e) :=
-      by
+    have : ∀ e : ℕ, M (monomial p a * X n ^ e) := by
       intro e
       induction e with
       | zero => simp [ih]
@@ -554,7 +556,7 @@ theorem support_zero : (0 : MvPolynomial σ R).support = ∅ :=
   rfl
 #align mv_polynomial.support_zero MvPolynomial.support_zero
 
-theorem support_smul [DistribMulAction R S₁] {a : R} {f : MvPolynomial σ S₁} :
+theorem support_smul {S₁ : Type _} [SMulZeroClass S₁ R] {a : S₁} {f : MvPolynomial σ R} :
     (a • f).support ⊆ f.support :=
   Finsupp.support_smul
 #align mv_polynomial.support_smul MvPolynomial.support_smul
@@ -608,8 +610,8 @@ theorem coeff_add (m : σ →₀ ℕ) (p q : MvPolynomial σ R) : coeff m (p + q
 #align mv_polynomial.coeff_add MvPolynomial.coeff_add
 
 @[simp]
-theorem coeff_smul {S₁ : Type _} [Monoid S₁] [DistribMulAction S₁ R] (m : σ →₀ ℕ) (C : S₁)
-    (p : MvPolynomial σ R) : coeff m (C • p) = C • coeff m p :=
+theorem coeff_smul {S₁ : Type _} [SMulZeroClass S₁ R] (m : σ →₀ ℕ) (C : S₁) (p : MvPolynomial σ R) :
+    coeff m (C • p) = C • coeff m p :=
   smul_apply C p m
 #align mv_polynomial.coeff_smul MvPolynomial.coeff_smul
 
@@ -733,9 +735,8 @@ theorem support_X_mul (s : σ) (p : MvPolynomial σ R) :
   AddMonoidAlgebra.support_single_mul p _ (by simp) _
 #align mv_polynomial.support_X_mul MvPolynomial.support_X_mul
 
--- Porting note: new theorem
 @[simp]
-theorem support_smul_eq [NoZeroDivisors R] {a : R} (h: a≠0) {p: MvPolynomial σ R}:
+theorem support_smul_eq [NoZeroDivisors R] {a : R} (h: a ≠ 0) {p: MvPolynomial σ R}:
     (a • p).support = p.support := Finsupp.support_smul_eq h
 #align mv_polynomial.support_smul_eq MvPolynomial.support_smul_eq
 
@@ -809,9 +810,7 @@ theorem ne_zero_iff {p : MvPolynomial σ R} : p ≠ 0 ↔ ∃ d, coeff d p ≠ 0
   rfl
 #align mv_polynomial.ne_zero_iff MvPolynomial.ne_zero_iff
 
--- Porting note: new theorem
-theorem eq_zero_iff_support_eq_empty (p: MvPolynomial σ R): p = 0 ↔ p.support = ∅ :=
-  by
+theorem eq_zero_iff_support_eq_empty (p: MvPolynomial σ R): p = 0 ↔ p.support = ∅ := by
   constructor
   · intro hp
     exact hp ▸ support_zero
@@ -884,7 +883,7 @@ variable {R}
 /- porting note: increased priority because otherwise `simp` time outs when trying to simplify
 the left-hand side. `simpNF` linter indicated this and it was verified. -/
 @[simp 1001]
-theorem constantCoeff_smul [DistribMulAction R S₁] (a : R) (f : MvPolynomial σ S₁) :
+theorem constantCoeff_smul {R : Type _} [SMulZeroClass R S₁] (a : R) (f : MvPolynomial σ S₁) :
     constantCoeff (a • f) = a • constantCoeff f :=
   rfl
 #align mv_polynomial.constant_coeff_smul MvPolynomial.constantCoeff_smul
@@ -1218,13 +1217,12 @@ theorem map_id : ∀ p : MvPolynomial σ R, map (RingHom.id R) p = p :=
 
 theorem map_map [CommSemiring S₂] (g : S₁ →+* S₂) (p : MvPolynomial σ R) :
     map g (map f p) = map (g.comp f) p :=
-  (eval₂_comp_left (map g) (C.comp f) X p).trans <|
-    by
-    congr
-    · ext1 a
-      simp only [map_C, comp_apply, RingHom.coe_comp]
-    · ext1 n
-      simp only [map_X, comp_apply]
+    (eval₂_comp_left (map g) (C.comp f) X p).trans <| by
+  congr
+  · ext1 a
+    simp only [map_C, comp_apply, RingHom.coe_comp]
+  · ext1 n
+    simp only [map_X, comp_apply]
 #align mv_polynomial.map_map MvPolynomial.map_map
 
 theorem eval₂_eq_eval_map (g : σ → S₁) (p : MvPolynomial σ R) : p.eval₂ f g = eval g (map f p) := by
@@ -1629,8 +1627,8 @@ theorem aevalTower_comp_toAlgHom :
 #align mv_polynomial.aeval_tower_comp_to_alg_hom MvPolynomial.aevalTower_comp_toAlgHom
 
 @[simp]
-theorem aevalTower_id : aevalTower (AlgHom.id S S) = (aeval : (σ → S) → MvPolynomial σ S →ₐ[S] S) :=
-  by
+theorem aevalTower_id :
+    aevalTower (AlgHom.id S S) = (aeval : (σ → S) → MvPolynomial σ S →ₐ[S] S) := by
   ext
   simp only [aevalTower_X, aeval_X]
 #align mv_polynomial.aeval_tower_id MvPolynomial.aevalTower_id
