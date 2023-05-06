@@ -402,7 +402,6 @@ def mkSingleCompZeroOf (c : Nat) (h : Expr) : MetaM (Ineq × Expr) := do
   else do
     let tp ← inferType (← getRelSides (← inferType h)).2
     let cpos ← mkAppM ``GT.gt #[(← tp.ofNat c), (← tp.ofNat 0)]
-    -- TODO There should be a def for this, rather than using `evalTactic`.
-    let ex ← synthesizeUsing cpos (do evalTactic (←`(tactic| norm_num; done)))
+    let ex ← synthesizeUsingTactic' cpos (← `(tactic| norm_num))
     let e' ← mkAppM iq.toConstMulName #[h, ex]
     return (iq, e')
