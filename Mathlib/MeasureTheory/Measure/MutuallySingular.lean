@@ -122,9 +122,9 @@ theorem smul (r : ℝ≥0∞) (h : ν ⟂ₘ μ) : r • ν ⟂ₘ μ :=
   h.mono_ac (AbsolutelyContinuous.rfl.smul r) AbsolutelyContinuous.rfl
 #align measure_theory.measure.mutually_singular.smul MeasureTheory.Measure.MutuallySingular.smul
 
-theorem smul_nNReal (r : ℝ≥0) (h : ν ⟂ₘ μ) : r • ν ⟂ₘ μ :=
+theorem smul_nnreal (r : ℝ≥0) (h : ν ⟂ₘ μ) : r • ν ⟂ₘ μ :=
   h.smul r
-#align measure_theory.measure.mutually_singular.smul_nnreal MeasureTheory.Measure.MutuallySingular.smul_nNReal
+#align measure_theory.measure.mutually_singular.smul_nnreal MeasureTheory.Measure.MutuallySingular.smul_nnreal
 
 end MutuallySingular
 
