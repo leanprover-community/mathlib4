@@ -157,7 +157,7 @@ def compactConvergenceFilterBasis (f : C(α, β)) : FilterBasis C(α, β) :=
 
 theorem mem_compactConvergence_nhd_filter (Y : Set C(α, β)) :
     Y ∈ (compactConvergenceFilterBasis f).filter ↔
-    ∃ (K : Set α)(V : Set (β × β))(_hK : IsCompact K)(_hV : V ∈ 𝓤 β), compactConvNhd K V f ⊆ Y := by
+    ∃ (K : Set α) (V : Set (β × β)) (_hK : IsCompact K) (_hV : V ∈ 𝓤 β), compactConvNhd K V f ⊆ Y := by
   constructor
   · rintro ⟨X, ⟨⟨K, V⟩, ⟨hK, hV⟩, rfl⟩, hY⟩
     exact ⟨K, V, hK, hV, hY⟩
