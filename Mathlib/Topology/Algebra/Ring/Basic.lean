@@ -241,9 +241,11 @@ end
 
 variable [Ring α] [TopologicalRing α]
 
+set_option synthInstance.etaExperiment true in
 instance (S : Subring α) : TopologicalRing S :=
   { S.toSubmonoid.continuousMul, inferInstanceAs (TopologicalAddGroup S.toAddSubgroup) with }
 
+set_option synthInstance.etaExperiment true in
 /-- The (topological-space) closure of a subring of a topological ring is
 itself a subring. -/
 def Subring.topologicalClosure (S : Subring α) : Subring α :=
@@ -264,6 +266,7 @@ theorem Subring.topologicalClosure_minimal (s : Subring α) {t : Subring α} (h 
   closure_minimal h ht
 #align subring.topological_closure_minimal Subring.topologicalClosure_minimal
 
+set_option synthInstance.etaExperiment true in
 /-- If a subring of a topological ring is commutative, then so is its topological closure. -/
 def Subring.commRingTopologicalClosure [T2Space α] (s : Subring α) (hs : ∀ x y : s, x * y = y * x) :
     CommRing s.topologicalClosure :=

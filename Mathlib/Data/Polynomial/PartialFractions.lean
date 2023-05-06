@@ -94,6 +94,7 @@ open BigOperators Classical
 --Porting note: added for scoped `Algebra.cast` instance
 open algebraMap
 
+set_option maxHeartbeats 500000 in
 /-- Let R be an integral domain and f ∈ R[X]. Let s be a finite index set.
 Then, a fraction of the form f / ∏ (g i) can be rewritten as q + ∑ (r i) / (g i), where
 deg(r i) < deg(g i), provided that the g i are monic and pairwise coprime.
