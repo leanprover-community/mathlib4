@@ -124,8 +124,7 @@ theorem alephIdx.init {a b} : b < alephIdx a → ∃ c, alephIdx c = b :=
   For the basic function version, see `alephIdx`. -/
 def alephIdx.relIso : @RelIso Cardinal.{u} Ordinal.{u} (· < ·) (· < ·) :=
   @RelIso.ofSurjective Cardinal.{u} Ordinal.{u} (· < ·) (· < ·) alephIdx.initialSeg.{u} <|
-    (InitialSeg.eq_or_principal alephIdx.initialSeg.{u}).resolve_right fun ⟨o, e⟩ =>
-      by
+    (InitialSeg.eq_or_principal alephIdx.initialSeg.{u}).resolve_right fun ⟨o, e⟩ => by
       have : ∀ c, alephIdx c < o := fun c => (e _).2 ⟨_, rfl⟩
       refine' Ordinal.inductionOn o _ this; intro α r _ h
       let s := ⨆ a, invFun alephIdx (Ordinal.typein r a)
@@ -391,8 +390,8 @@ theorem eq_aleph_of_eq_card_ord {o : Ordinal} (ho : o.card.ord = o) (ho' : ω �
 #align cardinal.eq_aleph_of_eq_card_ord Cardinal.eq_aleph_of_eq_card_ord
 
 /-- `ord ∘ aleph` enumerates the infinite ordinals that are cardinals. -/
-theorem ord_aleph_eq_enum_card : ord ∘ aleph = enumOrd { b : Ordinal | b.card.ord = b ∧ ω ≤ b } :=
-  by
+theorem ord_aleph_eq_enum_card :
+    ord ∘ aleph = enumOrd { b : Ordinal | b.card.ord = b ∧ ω ≤ b } := by
   rw [← eq_enumOrd _ ord_card_unbounded']
   use aleph_isNormal.strictMono
   rw [range_eq_iff]
