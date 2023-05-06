@@ -51,7 +51,7 @@ variable [Preorder α]
 The Lawson topology is defined as the meet of the `LowerTopology` and the `ScottTopology`.
 -/
 def LawsonTopology' : TopologicalSpace α :=
-  TopologicalSpace.generateFrom { s | ∃ a, Ici aᶜ = s } ⊓ ScottTopology'
+  LowerTopology' ⊓ ScottTopology'
 
 end preorder
 
@@ -126,29 +126,62 @@ end preorder
 
 end LawsonTopology
 
-variable (S : TopologicalSpace α) (L : TopologicalSpace α)
+section csh
 
-variable [Preorder α] [@ScottTopology α S _] [@LawsonTopology α L _]
+variable  (L : TopologicalSpace α) (l : TopologicalSpace α) (S : TopologicalSpace α)
+
+variable [Preorder α]  [@LawsonTopology α L _] [@LowerTopology α l _] [@ScottTopology α S _]
 
 lemma Scott_le_Lawson : L ≤ S := by
   rw [@ScottTopology.topology_eq α _ S _, @LawsonTopology.topology_eq α _ L _,  LawsonTopology']
   apply inf_le_right
 
+lemma S_le_Lawson : (@STopology α _) ≤ L := by
+  rw [@LawsonTopology.topology_eq α _ L _,  LawsonTopology']
+  rw [le_inf_iff]
+  constructor
+  . exact @LowerTopology.STopology_le' α _ l _
+  . exact S_le_Scott'
+
 open Topology
 
-lemma test1 : IsOpen[S] ≤ IsOpen[L] := TopologicalSpace.le_def.mp (Scott_le_Lawson _ _)
+lemma LawsonOpen_implies_Sopen : IsOpen[L] ≤ IsOpen[STopology] := by
+  rw [←TopologicalSpace.le_def]
+  exact (@S_le_Lawson _ _ l _ _ _)
 
-example (s : Set α) : IsOpen[S] s → IsOpen[L] s := by
-  apply test1
+lemma LawsonOpen_implies_Sopen' (s : Set α) : IsOpen[L] s → IsOpen[STopology] s := by
+  apply (@LawsonOpen_implies_Sopen _ _ l)
 
+end csh
 
-/-
+-- Can we say something without CL?
+section CompleteLattice
+
+variable [CompleteLattice α]
+  (S :TopologicalSpace α) (l : TopologicalSpace α) (L : TopologicalSpace α)
+  [@ScottTopology α S _]  [@LawsonTopology α L _] [@LowerTopology α l _]
+
+-- Scott open iff UpperSet and STopology open
+
+open Topology
+
 lemma LawsonOpen_iff_ScottOpen (s : Set α) (h : IsUpperSet s) :
   IsOpen[L] s ↔ IsOpen[S] s := by
   constructor
-  . sorry
-  . sorry
--/
+  . intro hs
+    rw [@isOpen_iff_isUpperSet_and_sup_mem_implies_tail_subset α _ S]
+    constructor
+    . exact h
+    . intro d d₁ d₂ d₃
+      have h2: IsOpen[STopology] s := (@LawsonOpen_implies_Sopen' _ _ l _ _ _ s) hs
+      apply h2 d (supₛ d)
+      exact d₁
+      exact d₂
+      exact isLUB_supₛ d
+      exact d₃
+  . apply TopologicalSpace.le_def.mp (Scott_le_Lawson _ _)
+
+
   /-
 lemma LawsonOpen_iff_ScottOpen (s : Set α) [Preorder α] (h : IsUpperSet s) :
   LawsonTopology'.IsOpen s ↔ ScottTopology'.IsOpen s := by
@@ -158,3 +191,5 @@ lemma LawsonOpen_iff_ScottOpen (s : Set α) [Preorder α] (h : IsUpperSet s) :
 
   --apply (TopologicalSpace.le_def s)
 -/
+
+end CompleteLattice

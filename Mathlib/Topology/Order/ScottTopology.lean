@@ -9,6 +9,7 @@ import Mathlib.Order.Directed
 import Mathlib.Order.UpperLower.Basic
 import Mathlib.Topology.Basic
 import Mathlib.Topology.Order
+import Mathlib.Topology.Order.STopology
 import Mathlib.Topology.ContinuousFunction.Basic
 
 /-!
@@ -78,42 +79,16 @@ def upperSetTopology : TopologicalSpace α :=
   isOpen_inter := fun _ _ => IsUpperSet.inter,
   isOpen_unionₛ := fun _ h => isUpperSet_unionₛ h, }
 
+
+
 /--
 The Scott topology is defined as the join of the topology of upper sets and the topological space
 where a set `u` is open if, when the least upper bound of a directed set `d` lies in `u` then there
 is a tail of `d` which is a subset of `u`.
 -/
-def ScottTopology' : TopologicalSpace α := (upperSetTopology ⊔
-    { IsOpen := fun u => ∀ (d : Set α) (a : α), d.Nonempty → DirectedOn (· ≤ ·) d → IsLUB d a →
-      a ∈ u → ∃ b ∈ d, Ici b ∩ d ⊆ u,
-      isOpen_univ := by
-        intros d _ hd₁ _ _ _
-        cases' hd₁ with b hb
-        use b
-        constructor
-        . exact hb
-        . exact (Ici b ∩ d).subset_univ,
-      isOpen_inter := by
-        intros s t hs ht d a hd₁ hd₂ hd₃ ha
-        obtain ⟨b₁, hb₁_w, hb₁_h⟩ := hs d a hd₁ hd₂ hd₃ ha.1
-        obtain ⟨b₂, hb₂_w, hb₂_h⟩ := ht d a hd₁ hd₂ hd₃ ha.2
-        obtain ⟨c, hc_w, hc_h⟩ := hd₂ b₁ hb₁_w b₂ hb₂_w
-        refine ⟨c, hc_w, ?_⟩
-        . calc
-            Ici c ∩ d ⊆ (Ici b₁ ∩ Ici b₂) ∩ d := by
-            { apply inter_subset_inter_left d
-              apply subset_inter (Ici_subset_Ici.mpr hc_h.1) (Ici_subset_Ici.mpr hc_h.2) }
-            _ = (Ici b₁ ∩ d) ∩ (Ici b₂ ∩ d) := by rw [inter_inter_distrib_right]
-            _ ⊆ s ∩ t := inter_subset_inter hb₁_h hb₂_h
-      isOpen_unionₛ := by
-        intros s h d a hd₁ hd₂ hd₃ ha
-        obtain ⟨s₀, hs₀_w, hs₀_h⟩ := ha
-        obtain ⟨b, hb_w, hb_h⟩ := h s₀ hs₀_w d a hd₁ hd₂ hd₃ hs₀_h
-        use b
-        constructor
-        . exact hb_w
-        . exact Set.subset_unionₛ_of_subset s s₀ hb_h hs₀_w
-      })
+def ScottTopology' : TopologicalSpace α := upperSetTopology ⊔ (@STopology α _)
+
+lemma S_le_Scott' : (@STopology α _) ≤ (ScottTopology') := le_sup_right
 
 end preorder
 
@@ -175,7 +150,7 @@ section preorder
 
 variable [Preorder α]
 
-variable [TopologicalSpace α] [ScottTopology α]
+variable [S : TopologicalSpace α] [ScottTopology α]
 
 variable (α)
 
@@ -310,6 +285,10 @@ lemma continuous_monotone {f : α → β}
       simp at hb
       have c1: f c ≤ b := hb _ h_1_left
       contradiction
+
+lemma S_le_Scott : (@STopology α _) ≤ S := by
+  rw [@ScottTopology.topology_eq α _ S _, ScottTopology']
+  apply le_sup_right
 
 end preorder
 
