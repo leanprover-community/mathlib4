@@ -436,7 +436,7 @@ theorem iterate_derivative_mul {n} (p q : R[X]) :
             n.choose k • ((derivative^[n - k]) p * (derivative^[k]) q)) :=
       by rw [Function.iterate_succ_apply', IH]
     _ = (∑ k : ℕ in range n.succ, n.choose k • ((derivative^[n - k + 1]) p * (derivative^[k]) q)) +
-        ∑ k : ℕ in range n.succ, n.choose k • ((derivative^[n - k]) p * (derivative^[k + 1]) q) :=by
+        ∑ k : ℕ in range n.succ, n.choose k • ((derivative^[n - k]) p * (derivative^[k + 1]) q) := by
       simp_rw [derivative_sum, derivative_smul, derivative_mul, Function.iterate_succ_apply',
         smul_add, sum_add_distrib]
     _ = (∑ k : ℕ in range n.succ,

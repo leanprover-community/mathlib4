@@ -1128,9 +1128,10 @@ instance {R : Type u} [CommSemiring R] [NoZeroDivisors R] {σ : Type v} :
   ⟨fun {p} {q} h => by
     obtain ⟨s, p, rfl⟩ := exists_finset_rename p
     obtain ⟨t, q, rfl⟩ := exists_finset_rename q
-    have : rename (Subtype.map id (Finset.subset_union_left s t) : { x // x ∈ s } →
-        { x // x ∈ s ∪ t }) p * rename (Subtype.map id (Finset.subset_union_right s t) :
-        { x // x ∈ t } → { x // x ∈ s ∪ t }) q = 0 := by
+    have : 
+        rename (Subtype.map id (Finset.subset_union_left s t) : { x // x ∈ s } → { x // x ∈ s ∪ t }) p *
+        rename (Subtype.map id (Finset.subset_union_right s t) : { x // x ∈ t } → { x // x ∈ s ∪ t }) q =
+        0 := by
       apply rename_injective _ Subtype.val_injective
       simpa using h
     letI that := MvPolynomial.noZeroDivisors_of_finite R { x // x ∈ s ∪ t }

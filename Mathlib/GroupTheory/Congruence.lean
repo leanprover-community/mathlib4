@@ -1290,7 +1290,7 @@ of `α` provided that `f x y _ _ = f x' y' _ _` whenever `c x x'` and `c y y'`. 
 @[to_additive]
 def liftOnUnits (u : Units c.Quotient) (f : ∀ x y : M, c (x * y) 1 → c (y * x) 1 → α)
     (Hf : ∀ x y hxy hyx x' y' hxy' hyx',
-    c x x' → c y y' → f x y hxy hyx = f x' y' hxy' hyx') : α := by
+      c x x' → c y y' → f x y hxy hyx = f x' y' hxy' hyx') : α := by
   refine'
     @Con.hrecOn₂ M M _ _ c c (fun x y => x * y = 1 → y * x = 1 → α) (u : c.Quotient)
       (↑u⁻¹ : c.Quotient)

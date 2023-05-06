@@ -729,9 +729,7 @@ namespace Ideal
 
 theorem mul_sub_mul_mem {R : Type _} [CommRing R] (I : Ideal R) {a b c d : R} (h1 : a - b ∈ I)
     (h2 : c - d ∈ I) : a * c - b * d ∈ I := by
-  rw [show a * c - b * d = (a - b) * c + b * (c - d) by
-    rw [sub_mul, mul_sub]
-    abel]
+  rw [show a * c - b * d = (a - b) * c + b * (c - d) by rw [sub_mul, mul_sub]; abel]
   exact I.add_mem (I.mul_mem_right _ h1) (I.mul_mem_left _ h2)
 #align ideal.mul_sub_mul_mem Ideal.mul_sub_mul_mem
 

@@ -51,7 +51,7 @@ theorem Pi.cons_ne {m : Multiset α} {a a' : α} {b : δ a} {f : ∀ a ∈ m, δ
 
 theorem Pi.cons_swap {a a' : α} {b : δ a} {b' : δ a'} {m : Multiset α} {f : ∀ a ∈ m, δ a}
     (h : a ≠ a') : HEq (Pi.cons (a' ::ₘ m) a b (Pi.cons m a' b' f))
-    (Pi.cons (a ::ₘ m) a' b' (Pi.cons m a b f)) := by
+      (Pi.cons (a ::ₘ m) a' b' (Pi.cons m a b f)) := by
   apply hfunext rfl
   simp only [heq_iff_eq]
   rintro a'' _ rfl

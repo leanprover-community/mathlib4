@@ -1133,11 +1133,11 @@ theorem multiplicative_of_coprime (f : α → β) (a b : α) (h0 : f 0 = 0)
   letI : NormalizationMonoid α := UniqueFactorizationMonoid.normalizationMonoid
   suffices
       f (∏ p in (normalizedFactors a).toFinset ∪ (normalizedFactors b).toFinset,
-      p ^ ((normalizedFactors a).count p + (normalizedFactors b).count p)) =
+        p ^ ((normalizedFactors a).count p + (normalizedFactors b).count p)) =
       f (∏ p in (normalizedFactors a).toFinset ∪ (normalizedFactors b).toFinset,
-      p ^ (normalizedFactors a).count p) *
+        p ^ (normalizedFactors a).count p) *
       f (∏ p : α in (normalizedFactors a).toFinset ∪ (normalizedFactors b).toFinset,
-      p ^ (normalizedFactors b).count p) by
+        p ^ (normalizedFactors b).count p) by
     obtain ⟨ua, a_eq⟩ := normalizedFactors_prod ha0
     obtain ⟨ub, b_eq⟩ := normalizedFactors_prod hb0
     rw [← a_eq, ← b_eq, mul_right_comm (Multiset.prod (normalizedFactors a)) ua

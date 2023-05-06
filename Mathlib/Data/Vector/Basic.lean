@@ -660,7 +660,7 @@ protected theorem traverse_def (f : α → F β) (x : α) :
   rintro ⟨xs, rfl⟩ ; rfl
 #align vector.traverse_def Vector.traverse_def
 
-protected theorem id_traverse : ∀ x : Vector α n, x.traverse (pure: _ → Id _)= x := by
+protected theorem id_traverse : ∀ x : Vector α n, x.traverse (pure : _ → Id _) = x := by
   rintro ⟨x, rfl⟩; dsimp [Vector.traverse, cast]
   induction' x with x xs IH; · rfl
   simp! [IH]; rfl

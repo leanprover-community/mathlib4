@@ -1532,7 +1532,7 @@ end CycleFactorsFinset
 theorem cycle_induction_on [Finite β] (P : Perm β → Prop) (σ : Perm β) (base_one : P 1)
     (base_cycles : ∀ σ : Perm β, σ.IsCycle → P σ)
     (induction_disjoint : ∀ σ τ : Perm β,
-    Disjoint σ τ → IsCycle σ → P σ → P τ → P (σ * τ)) : P σ := by
+      Disjoint σ τ → IsCycle σ → P σ → P τ → P (σ * τ)) : P σ := by
   cases nonempty_fintype β
   suffices ∀ l : List (Perm β),
       (∀ τ : Perm β, τ ∈ l → τ.IsCycle) → l.Pairwise Disjoint → P l.prod by

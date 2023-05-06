@@ -495,7 +495,7 @@ theorem ysq_dvd_yy (n) : yn a1 n * yn a1 n ∣ yn a1 (n * yn a1 n) :=
 
 theorem dvd_of_ysq_dvd {n t} (h : yn a1 n * yn a1 n ∣ yn a1 t) : yn a1 n ∣ t :=
   have nt : n ∣ t := (y_dvd_iff a1 n t).1 <| dvd_of_mul_left_dvd h
-  n.eq_zero_or_pos.elim (fun n0 => by rwa [n0] at nt⊢) fun n0l : 0 < n => by
+  n.eq_zero_or_pos.elim (fun n0 => by rwa [n0] at nt ⊢) fun n0l : 0 < n => by
     let ⟨k, ke⟩ := nt
     have : yn a1 n ∣ k * xn a1 n ^ (k - 1) :=
       Nat.dvd_of_mul_dvd_mul_right (strictMono_y a1 n0l) <|
