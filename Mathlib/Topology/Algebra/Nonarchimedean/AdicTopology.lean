@@ -8,10 +8,10 @@ Authors: Patrick Massot
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.RingTheory.Ideal.Operations
-import Mathbin.Topology.Algebra.Nonarchimedean.Bases
-import Mathbin.Topology.UniformSpace.Completion
-import Mathbin.Topology.Algebra.UniformRing
+import Mathlib.RingTheory.Ideal.Operations
+import Mathlib.Topology.Algebra.Nonarchimedean.Bases
+import Mathlib.Topology.UniformSpace.Completion
+import Mathlib.Topology.Algebra.UniformRing
 
 /-!
 # Adic topology
@@ -106,8 +106,7 @@ theorem hasBasis_nhds_zero_adic (I : Ideal R) :
 
 theorem hasBasis_nhds_adic (I : Ideal R) (x : R) :
     HasBasis (@nhds R I.adicTopology x) (fun n : ℕ => True) fun n =>
-      (fun y => x + y) '' (I ^ n : Ideal R) :=
-  by
+      (fun y => x + y) '' (I ^ n : Ideal R) := by
   letI := I.adic_topology
   have := I.has_basis_nhds_zero_adic.map fun y => x + y
   rwa [map_add_left_nhds_zero x] at this
@@ -123,8 +122,7 @@ theorem adic_module_basis :
           ⟨smul_mono_left <| pow_le_pow (le_max_left i j),
             smul_mono_left <| pow_le_pow (le_max_right i j)⟩⟩
     smul := fun m i =>
-      ⟨(I ^ i • ⊤ : Ideal R), ⟨i, rfl⟩, fun a a_in =>
-        by
+      ⟨(I ^ i • ⊤ : Ideal R), ⟨i, rfl⟩, fun a a_in => by
         replace a_in : a ∈ I ^ i := by simpa [(I ^ i).mul_top] using a_in
         exact smul_mem_smul a_in mem_top⟩ }
 #align ideal.adic_module_basis Ideal.adic_module_basis
@@ -161,8 +159,7 @@ open neighborhoods of zero. -/
 theorem isAdic_iff [top : TopologicalSpace R] [TopologicalRing R] {J : Ideal R} :
     IsAdic J ↔
       (∀ n : ℕ, IsOpen ((J ^ n : Ideal R) : Set R)) ∧
-        ∀ s ∈ 𝓝 (0 : R), ∃ n : ℕ, ((J ^ n : Ideal R) : Set R) ⊆ s :=
-  by
+        ∀ s ∈ 𝓝 (0 : R), ∃ n : ℕ, ((J ^ n : Ideal R) : Set R) ⊆ s := by
   constructor
   · intro H
     change _ = _ at H
@@ -190,8 +187,7 @@ theorem isAdic_iff [top : TopologicalSpace R] [TopologicalRing R] {J : Ideal R} 
 
 variable [TopologicalSpace R] [TopologicalRing R]
 
-theorem is_ideal_adic_pow {J : Ideal R} (h : IsAdic J) {n : ℕ} (hn : 0 < n) : IsAdic (J ^ n) :=
-  by
+theorem is_ideal_adic_pow {J : Ideal R} (h : IsAdic J) {n : ℕ} (hn : 0 < n) : IsAdic (J ^ n) := by
   rw [isAdic_iff] at h⊢
   constructor
   · intro m
@@ -210,8 +206,7 @@ theorem is_ideal_adic_pow {J : Ideal R} (h : IsAdic J) {n : ℕ} (hn : 0 < n) : 
 #align is_ideal_adic_pow is_ideal_adic_pow
 
 theorem is_bot_adic_iff {A : Type _} [CommRing A] [TopologicalSpace A] [TopologicalRing A] :
-    IsAdic (⊥ : Ideal A) ↔ DiscreteTopology A :=
-  by
+    IsAdic (⊥ : Ideal A) ↔ DiscreteTopology A := by
   rw [isAdic_iff]
   constructor
   · rintro ⟨h, h'⟩
