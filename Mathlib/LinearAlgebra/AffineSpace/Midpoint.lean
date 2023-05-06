@@ -43,6 +43,7 @@ section
 variable (R : Type _) {V V' P P' : Type _} [Ring R] [Invertible (2 : R)] [AddCommGroup V]
   [Module R V] [AddTorsor V P] [AddCommGroup V'] [Module R V'] [AddTorsor V' P']
 
+set_option synthInstance.etaExperiment true in
 /-- `midpoint x y` is the midpoint of the segment `[x, y]`. -/
 def midpoint (x y : P) : P :=
   lineMap x y (⅟ 2 : R)
