@@ -8,7 +8,7 @@ Authors: Rémy Degenne
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.MeasureTheory.Measure.AeMeasurable
+import Mathlib.MeasureTheory.Measure.AEMeasurable
 
 /-!
 # Typeclasses for measurability of lattice operations
