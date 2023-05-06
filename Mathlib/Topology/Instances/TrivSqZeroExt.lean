@@ -132,6 +132,7 @@ theorem topologicalSemiring [Semiring R] [AddCommMonoid M] [Module R M] [Module 
     TopologicalSemiring (tsze R M) := { }
 #align triv_sq_zero_ext.topological_semiring TrivSqZeroExt.topologicalSemiring
 
+set_option synthInstance.etaExperiment true in
 instance [Ring R] [AddCommGroup M] [Module R M] [Module Rᵐᵒᵖ M] [TopologicalRing R]
     [TopologicalAddGroup M] [ContinuousSMul R M] [ContinuousSMul Rᵐᵒᵖ M] :
     TopologicalRing (tsze R M) where

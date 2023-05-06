@@ -52,6 +52,7 @@ theorem embedding_inclusion {S₁ S₂ : StarSubalgebra R A} (h : S₁ ≤ S₂)
     inj := Subtype.map_injective h Function.injective_id }
 #align star_subalgebra.embedding_inclusion StarSubalgebra.embedding_inclusion
 
+set_option synthInstance.etaExperiment true in
 /-- The `StarSubalgebra.inclusion` of a closed star subalgebra is a `ClosedEmbedding`. -/
 theorem closedEmbedding_inclusion {S₁ S₂ : StarSubalgebra R A} (h : S₁ ≤ S₂)
     (hS₁ : IsClosed (S₁ : Set A)) : ClosedEmbedding (inclusion h) :=
@@ -244,4 +245,3 @@ theorem starAlgHomClass_ext [T2Space B] {F : Type _} {a : A}
 end elementalStarAlgebra
 
 end Elemental
-

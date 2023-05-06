@@ -74,6 +74,7 @@ theorem QuotientRing.quotientMap_coe_coe : QuotientMap fun p : R × R => (mk N p
     (by rintro ⟨⟨x⟩, ⟨y⟩⟩; exact ⟨(x, y), rfl⟩)
 #align quotient_ring.quotient_map_coe_coe QuotientRing.quotientMap_coe_coe
 
+set_option synthInstance.etaExperiment true in
 instance topologicalRing_quotient : TopologicalRing (R ⧸ N) :=
   TopologicalSemiring.toTopologicalRing
     { continuous_add :=

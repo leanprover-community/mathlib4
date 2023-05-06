@@ -192,6 +192,7 @@ theorem Continuous.matrix_trace [Fintype n] [AddCommMonoid R] [ContinuousAdd R]
   continuous_finset_sum _ fun _ _ => hA.matrix_elem _ _
 #align continuous.matrix_trace Continuous.matrix_trace
 
+set_option synthInstance.etaExperiment true in
 @[continuity]
 theorem Continuous.matrix_det [Fintype n] [DecidableEq n] [CommRing R] [TopologicalRing R]
     {A : X → Matrix n n R} (hA : Continuous A) : Continuous fun x => (A x).det := by
@@ -230,6 +231,7 @@ theorem Continuous.matrix_adjugate [Fintype n] [DecidableEq n] [CommRing R] [Top
     (hA.matrix_transpose.matrix_updateColumn k continuous_const).matrix_det
 #align continuous.matrix_adjugate Continuous.matrix_adjugate
 
+set_option synthInstance.etaExperiment true in
 /-- When `Ring.inverse` is continuous at the determinant (such as in a `NormedRing`, or a
 `topological_field`), so is `matrix.has_inv`. -/
 theorem continuousAt_matrix_inv [Fintype n] [DecidableEq n] [CommRing R] [TopologicalRing R]

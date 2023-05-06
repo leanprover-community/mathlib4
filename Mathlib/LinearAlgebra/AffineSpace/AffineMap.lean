@@ -514,8 +514,7 @@ theorem image_vsub_image {s t : Set P1} (f : P1 →ᵃ[k] P2) :
 
 /-! ### Definition of `AffineMap.lineMap` and lemmas about it -/
 
--- Porting note: Workaround for lean4#2074
-instance : Module k k := Semiring.toModule
+set_option synthInstance.etaExperiment true
 
 /-- The affine map from `k` to `P1` sending `0` to `p₀` and `1` to `p₁`. -/
 def lineMap (p₀ p₁ : P1) : k →ᵃ[k] P1 :=
@@ -530,6 +529,7 @@ theorem lineMap_apply (p₀ p₁ : P1) (c : k) : lineMap p₀ p₁ c = c • (p�
   rfl
 #align affine_map.line_map_apply AffineMap.lineMap_apply
 
+set_option synthInstance.etaExperiment true in
 theorem lineMap_apply_module' (p₀ p₁ : V1) (c : k) : lineMap p₀ p₁ c = c • (p₁ - p₀) + p₀ :=
   rfl
 #align affine_map.line_map_apply_module' AffineMap.lineMap_apply_module'
@@ -818,6 +818,7 @@ theorem homothety_apply (c : P1) (r : k) (p : P1) : homothety c r p = r • (p -
   rfl
 #align affine_map.homothety_apply AffineMap.homothety_apply
 
+set_option synthInstance.etaExperiment true in
 theorem homothety_eq_lineMap (c : P1) (r : k) (p : P1) : homothety c r p = lineMap c p r :=
   rfl
 #align affine_map.homothety_eq_line_map AffineMap.homothety_eq_lineMap
@@ -867,12 +868,14 @@ theorem coe_homothetyHom (c : P1) : ⇑(homothetyHom c : k →* _) = homothety c
   rfl
 #align affine_map.coe_homothety_hom AffineMap.coe_homothetyHom
 
+set_option synthInstance.etaExperiment true in
 /-- `homothety` as an affine map. -/
 def homothetyAffine (c : P1) : k →ᵃ[k] P1 →ᵃ[k] P1 :=
   ⟨homothety c, (LinearMap.lsmul k _).flip (id k P1 -ᵥ const k P1 c),
     Function.swap (homothety_add c)⟩
 #align affine_map.homothety_affine AffineMap.homothetyAffine
 
+set_option synthInstance.etaExperiment true in
 @[simp]
 theorem coe_homothetyAffine (c : P1) : ⇑(homothetyAffine c : k →ᵃ[k] _) = homothety c :=
   rfl

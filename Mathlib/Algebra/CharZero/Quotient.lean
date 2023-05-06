@@ -19,6 +19,7 @@ variable {R : Type _} [DivisionRing R] [CharZero R] {p : R}
 
 namespace AddSubgroup
 
+set_option synthInstance.etaExperiment true in
 /-- `z • r` is a multiple of `p` iff `r` is `pk/z` above a multiple of `p`, where `0 ≤ k < |z|`. -/
 theorem zsmul_mem_zmultiples_iff_exists_sub_div {r : R} {z : ℤ} (hz : z ≠ 0) :
     z • r ∈ AddSubgroup.zmultiples p ↔
@@ -55,6 +56,7 @@ end AddSubgroup
 
 namespace quotientAddGroup
 
+set_option synthInstance.etaExperiment true in
 theorem zmultiples_zsmul_eq_zsmul_iff {ψ θ : R ⧸ AddSubgroup.zmultiples p} {z : ℤ} (hz : z ≠ 0) :
     z • ψ = z • θ ↔ ∃ k : Fin z.natAbs, ψ = θ + (k : ℕ) • (p / z : R) := by
   induction ψ using Quotient.inductionOn'
