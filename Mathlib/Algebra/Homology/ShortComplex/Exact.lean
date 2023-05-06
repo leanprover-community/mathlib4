@@ -479,13 +479,13 @@ def map (s : S.Splitting) (F : C ⥤ D) [F.Additive] : (S.map F).Splitting where
   r := F.map s.r
   s := F.map s.s
   f_r := by
-    dsimp
-    simp only [← F.map_comp, f_r, F.map_id]
+    dsimp [ShortComplex.map]
+    rw [← F.map_comp, f_r, F.map_id]
   s_g := by
-    dsimp
+    dsimp [ShortComplex.map]
     simp only [← F.map_comp, s_g, F.map_id]
   id := by
-    dsimp
+    dsimp [ShortComplex.map]
     simp only [← F.map_id, ← s.id, Functor.map_comp, Functor.map_add]
 
 @[simps]
