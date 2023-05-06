@@ -914,7 +914,8 @@ protected theorem Polynomial.isNoetherianRing [inst : IsNoetherianRing R] : IsNo
           Submodule.span_induction hx (fun _ hx => Ideal.subset_span hx) (Ideal.zero_mem _)
             (fun _ _ => Ideal.add_mem _) fun c f hf => f.C_mul' c ▸ Ideal.mul_mem_left _ _ hf
       ⟨s, le_antisymm (Ideal.span_le.2 fun x hx =>
-        have : x ∈ I.degreeLE N := hs ▸ Submodule.subset_span hx this.2) <| by
+        have : x ∈ I.degreeLE N := hs ▸ Submodule.subset_span hx
+        this.2) <| by
           have : Submodule.span R[X] ↑s = Ideal.span ↑s := by rfl
           rw [this]
           intro p hp

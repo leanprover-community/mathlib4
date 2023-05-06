@@ -566,8 +566,8 @@ theorem factors_eq_normalizedFactors {M : Type _} [CancelCommMonoidWithZero M] [
   exact normalize_eq p
 #align unique_factorization_monoid.factors_eq_normalized_factors UniqueFactorizationMonoid.factors_eq_normalizedFactors
 
-theorem normalizedFactors_prod {a : α} (ane0 : a ≠ 0) : Associated (normalizedFactors a).prod a :=
-  by
+theorem normalizedFactors_prod {a : α} (ane0 : a ≠ 0) :
+    Associated (normalizedFactors a).prod a := by
   rw [normalizedFactors, factors, dif_neg ane0]
   refine' Associated.trans _ (Classical.choose_spec (exists_prime_factors a ane0)).2
   rw [← Associates.mk_eq_mk_iff_associated, ← Associates.prod_mk, ← Associates.prod_mk,
@@ -590,8 +590,8 @@ theorem irreducible_of_normalized_factor {a : α} :
   (prime_of_normalized_factor x h).irreducible
 #align unique_factorization_monoid.irreducible_of_normalized_factor UniqueFactorizationMonoid.irreducible_of_normalized_factor
 
-theorem normalize_normalized_factor {a : α} : ∀ x : α, x ∈ normalizedFactors a → normalize x = x :=
-  by
+theorem normalize_normalized_factor {a : α} :
+    ∀ x : α, x ∈ normalizedFactors a → normalize x = x := by
   rw [normalizedFactors, factors]
   split_ifs with h; · simp
   intro x hx
@@ -831,10 +831,8 @@ protected noncomputable def normalizationMonoid : NormalizationMonoid α :=
       dsimp
       by_cases hx : x = 0
       · simp [hx]
-      have h :
-        Associates.mkMonoidHom ∘ Classical.choose mk_surjective.hasRightInverse =
-          (id : Associates α → Associates α) :=
-        by
+      have h : Associates.mkMonoidHom ∘ Classical.choose mk_surjective.hasRightInverse =
+          (id : Associates α → Associates α) := by
         ext x
         rw [Function.comp_apply, mkMonoidHom_apply,
           Classical.choose_spec mk_surjective.hasRightInverse x]
@@ -1077,8 +1075,7 @@ theorem induction_on_coprime {P : α → Prop} (a : α) (h0 : P 0) (h1 : ∀ {x}
     (hpr : ∀ {p} (i : ℕ), Prime p → P (p ^ i))
     (hcp : ∀ {x y}, (∀ p, p ∣ x → p ∣ y → IsUnit p) → P x → P y → P (x * y)) : P a := by
   letI := Classical.decEq α
-  have P_of_associated : ∀ {x y}, Associated x y → P x → P y :=
-    by
+  have P_of_associated : ∀ {x y}, Associated x y → P x → P y := by
     rintro x y ⟨u, rfl⟩ hx
     exact hcp (fun p _ hpx => isUnit_of_dvd_unit hpx u.isUnit) hx (h1 u.isUnit)
   by_cases ha0 : a = 0
@@ -1132,20 +1129,15 @@ theorem multiplicative_of_coprime (f : α → β) (a b : α) (h0 : f 0 = 0)
       _ = 0 := by simp only [h1 isUnit_one, hf1, MulZeroClass.mul_zero]
       _ = f a * f (b * 1) := by simp only [h1 isUnit_one, hf1, MulZeroClass.mul_zero]
       _ = f a * f b := by rw [mul_one]
-
   haveI : Nontrivial α := ⟨⟨_, _, ha0⟩⟩
   letI : NormalizationMonoid α := UniqueFactorizationMonoid.normalizationMonoid
   suffices
-    f
-        (∏ p in (normalizedFactors a).toFinset ∪ (normalizedFactors b).toFinset,
-          p ^ ((normalizedFactors a).count p + (normalizedFactors b).count p)) =
-      f
-          (∏ p in (normalizedFactors a).toFinset ∪ (normalizedFactors b).toFinset,
-            p ^ (normalizedFactors a).count p) *
-        f
-          (∏ p : α in (normalizedFactors a).toFinset ∪ (normalizedFactors b).toFinset,
-            p ^ (normalizedFactors b).count p)
-    by
+      f (∏ p in (normalizedFactors a).toFinset ∪ (normalizedFactors b).toFinset,
+      p ^ ((normalizedFactors a).count p + (normalizedFactors b).count p)) =
+      f (∏ p in (normalizedFactors a).toFinset ∪ (normalizedFactors b).toFinset,
+      p ^ (normalizedFactors a).count p) *
+      f (∏ p : α in (normalizedFactors a).toFinset ∪ (normalizedFactors b).toFinset,
+      p ^ (normalizedFactors b).count p) by
     obtain ⟨ua, a_eq⟩ := normalizedFactors_prod ha0
     obtain ⟨ub, b_eq⟩ := normalizedFactors_prod hb0
     rw [← a_eq, ← b_eq, mul_right_comm (Multiset.prod (normalizedFactors a)) ua
@@ -1478,8 +1470,8 @@ theorem eq_factors_of_eq_counts {a b : Associates α} (ha : a ≠ 0) (hb : b ≠
   obtain ⟨sb, h_sb⟩ := factors_eq_some_iff_ne_zero.mpr hb
   rw [h_sa, h_sb] at h⊢
   rw [Option.some_inj]
-  have h_count : ∀ (p : Associates α) (hp : Irreducible p), sa.count ⟨p, hp⟩ = sb.count ⟨p, hp⟩ :=
-    by
+  have h_count : ∀ (p : Associates α) (hp : Irreducible p),
+      sa.count ⟨p, hp⟩ = sb.count ⟨p, hp⟩ := by
     intro p hp
     rw [← count_some, ← count_some, h p hp]
   apply Multiset.toFinsupp.injective
@@ -1565,8 +1557,8 @@ theorem sup_mul_inf (a b : Associates α) : (a ⊔ b) * (a ⊓ b) = a * b :=
     rw [← prod_add, prod_factors, factors_mul, FactorSet.sup_add_inf_eq_add]
 #align associates.sup_mul_inf Associates.sup_mul_inf
 
-theorem dvd_of_mem_factors {a p : Associates α} {hp : Irreducible p} (hm : p ∈ factors a) : p ∣ a :=
-  by
+theorem dvd_of_mem_factors {a p : Associates α} {hp : Irreducible p} (hm : p ∈ factors a) :
+    p ∣ a := by
   by_cases ha0 : a = 0
   · rw [ha0]
     exact dvd_zero p
@@ -1778,8 +1770,8 @@ theorem factors_one [Nontrivial α] : factors (1 : Associates α) = 0 := by
 #align associates.factors_one Associates.factors_one
 
 @[simp]
-theorem pow_factors [Nontrivial α] {a : Associates α} {k : ℕ} : (a ^ k).factors = k • a.factors :=
-  by
+theorem pow_factors [Nontrivial α] {a : Associates α} {k : ℕ} :
+    (a ^ k).factors = k • a.factors := by
   induction' k with n h
   · rw [zero_nsmul, pow_zero]
     exact factors_one
