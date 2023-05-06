@@ -121,8 +121,8 @@ instance : PseudoEpimorphismClass (PseudoEpimorphism α β) α β where
 
 /-- Helper instance for when there's too many metavariables to apply `FunLike.hasCoeToFun`
 directly. -/
--- instance : CoeFun (PseudoEpimorphism α β) fun _ => α → β :=
---   FunLike.hasCoeToFun
+instance : CoeFun (PseudoEpimorphism α β) fun _ => α → β :=
+  FunLike.hasCoeToFun
 
 @[simp]
 theorem toFun_eq_coe {f : PseudoEpimorphism α β} : f.toFun = (f : α → β) := rfl
