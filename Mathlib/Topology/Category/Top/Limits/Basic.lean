@@ -144,8 +144,7 @@ instance topCat_hasLimits : HasLimits TopCat.{u} :=
   TopCat.topCat_hasLimitsOfSize.{u, u}
 #align Top.Top_has_limits TopCat.topCat_hasLimits
 
-instance forgetPreservesLimitsOfSize :
-    PreservesLimitsOfSize forget where
+instance forgetPreservesLimitsOfSize : PreservesLimitsOfSize forget where
   preservesLimitsOfShape {_} :=
     { preservesLimit := fun {F} =>
         preservesLimitOfPreservesLimitCone (limitConeIsLimit.{v,u} F)
@@ -153,7 +152,7 @@ instance forgetPreservesLimitsOfSize :
 #align Top.forget_preserves_limits_of_size TopCat.forgetPreservesLimitsOfSize
 
 instance forgetPreservesLimits : PreservesLimits forget :=
-  TopCat.forgetPreservesLimitsOfSize
+  TopCat.forgetPreservesLimitsOfSize.{u,u}
 #align Top.forget_preserves_limits TopCat.forgetPreservesLimits
 
 /-- A choice of colimit cocone for a functor `F : J ⥤ TopCat`.
@@ -219,3 +218,4 @@ instance forgetPreservesColimitsOfSize :
 instance forgetPreservesColimits : PreservesColimits (forget : TopCat.{u} ⥤ Type u) :=
   TopCat.forgetPreservesColimitsOfSize.{u, u}
 #align Top.forget_preserves_colimits TopCat.forgetPreservesColimits
+#lint

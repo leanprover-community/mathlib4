@@ -1963,8 +1963,8 @@ import Mathlib.Topology.Category.Top.Adjunctions
 import Mathlib.Topology.Category.Top.Basic
 import Mathlib.Topology.Category.Top.EpiMono
 import Mathlib.Topology.Category.Top.Limits.Basic
-import Mathlib.Topology.Category.Top.Limits.Products
 import Mathlib.Topology.Category.Top.Limits.Pullbacks
+import Mathlib.Topology.Category.Top.Limits.Products
 import Mathlib.Topology.Category.Top.Opens
 import Mathlib.Topology.CompactOpen
 import Mathlib.Topology.Connected
