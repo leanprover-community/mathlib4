@@ -48,6 +48,7 @@ theorem continuous_iff {f : E →ᵃ[R] F} : Continuous f ↔ Continuous f.linea
     exact hc.add continuous_const
 #align affine_map.continuous_iff AffineMap.continuous_iff
 
+set_option synthInstance.etaExperiment true in
 /-- The line map is continuous. -/
 @[continuity]
 theorem lineMap_continuous [TopologicalSpace R] [ContinuousSMul R F] {p v : F} :

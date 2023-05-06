@@ -67,6 +67,7 @@ end one_and_mul
 
 variable {α : Type _} [Ring α] [UniformSpace α] [TopologicalRing α]
 
+set_option synthInstance.etaExperiment true in
 @[norm_cast]
 theorem coe_mul (a b : α) : ((a * b : α) : Completion α) = a * b :=
   ((denseInducing_coe.prod denseInducing_coe).extend_eq
@@ -80,6 +81,7 @@ theorem continuous_mul : Continuous fun p : Completion α × Completion α => p.
   have : Continuous fun p : α × α => m p.1 p.2 := by
     apply (continuous_coe α).comp _
     simp only [AddMonoidHom.coe_mul, AddMonoidHom.coe_mulLeft]
+    set_option synthInstance.etaExperiment true in
     exact _root_.continuous_mul
   have di : DenseInducing (toCompl : α → Completion α) := denseInducing_coe
   convert di.extend_Z_bilin di this
@@ -153,6 +155,7 @@ theorem continuous_coeRingHom : Continuous (coeRingHom : α → Completion α) :
 variable {β : Type u} [UniformSpace β] [Ring β] [UniformAddGroup β] [TopologicalRing β]
   (f : α →+* β) (hf : Continuous f)
 
+set_option synthInstance.etaExperiment true in
 /-- The completion extension as a ring morphism. -/
 def extensionHom [CompleteSpace β] [SeparatedSpace β] : Completion α →+* β :=
   have hf' : Continuous (f : α →+ β) := hf
@@ -227,6 +230,7 @@ instance commRing : CommRing (Completion R) :=
         (isClosed_eq (continuous_fst.mul continuous_snd) (continuous_snd.mul continuous_fst))
         fun a b => by rw [← coe_mul, ← coe_mul, mul_comm] }
 
+set_option synthInstance.etaExperiment true in
 /-- A shortcut instance for the common case -/
 instance algebra' : Algebra R (Completion R) := by infer_instance
 #align uniform_space.completion.algebra' UniformSpace.Completion.algebra'

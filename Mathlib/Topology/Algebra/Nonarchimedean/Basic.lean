@@ -138,6 +138,7 @@ variable [Ring S] [TopologicalSpace S] [NonarchimedeanRing S]
 instance : NonarchimedeanRing (R × S)
     where is_nonarchimedean := NonarchimedeanAddGroup.is_nonarchimedean
 
+set_option synthInstance.etaExperiment true in
 /-- Given an open subgroup `U` and an element `r` of a nonarchimedean ring, there is an open
   subgroup `V` such that `r • V` is contained in `U`. -/
 theorem left_mul_subset (U : OpenAddSubgroup R) (r : R) :
@@ -145,6 +146,7 @@ theorem left_mul_subset (U : OpenAddSubgroup R) (r : R) :
   ⟨U.comap (AddMonoidHom.mulLeft r) (continuous_mul_left r), (U : Set R).image_preimage_subset _⟩
 #align nonarchimedean_ring.left_mul_subset NonarchimedeanRing.left_mul_subset
 
+set_option synthInstance.etaExperiment true in
 /-- An open subgroup of a nonarchimedean ring contains the square of another one. -/
 theorem mul_subset (U : OpenAddSubgroup R) : ∃ V : OpenAddSubgroup R, (V : Set R) * V ⊆ U := by
   let ⟨V, H⟩ :=

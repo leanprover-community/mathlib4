@@ -41,10 +41,12 @@ theorem slope_fun_def (f : k → PE) : slope f = fun a b => (b - a)⁻¹ • (f 
   rfl
 #align slope_fun_def slope_fun_def
 
+set_option synthInstance.etaExperiment true in
 theorem slope_def_field (f : k → k) (a b : k) : slope f a b = (f b - f a) / (b - a) :=
   (div_eq_inv_mul _ _).symm
 #align slope_def_field slope_def_field
 
+set_option synthInstance.etaExperiment true in
 theorem slope_fun_def_field (f : k → k) (a : k) : slope f a = fun b => (f b - f a) / (b - a) :=
   (div_eq_inv_mul _ _).symm
 #align slope_fun_def_field slope_fun_def_field
@@ -119,6 +121,7 @@ theorem sub_div_sub_smul_slope_add_sub_div_sub_smul_slope (f : k → PE) (a b c 
     vsub_add_vsub_cancel]
 #align sub_div_sub_smul_slope_add_sub_div_sub_smul_slope sub_div_sub_smul_slope_add_sub_div_sub_smul_slope
 
+set_option synthInstance.etaExperiment true in
 /-- `slope f a c` is an affine combination of `slope f a b` and `slope f b c`. This version uses
 `lineMap` to express this property. -/
 theorem lineMap_slope_slope_sub_div_sub (f : k → PE) (a b c : k) (h : a ≠ c) :
@@ -127,6 +130,7 @@ theorem lineMap_slope_slope_sub_div_sub (f : k → PE) (a b c : k) (h : a ≠ c)
     lineMap_apply_module]
 #align line_map_slope_slope_sub_div_sub lineMap_slope_slope_sub_div_sub
 
+set_option synthInstance.etaExperiment true in
 /-- `slope f a b` is an affine combination of `slope f a (lineMap a b r)` and
 `slope f (lineMap a b r) b`. We use `lineMap` to express this property. -/
 theorem lineMap_slope_lineMap_slope_lineMap (f : k → PE) (a b r : k) :

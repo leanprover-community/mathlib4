@@ -140,6 +140,7 @@ theorem tendsto_inv_atTop_zero : Tendsto (fun r : 𝕜 => r⁻¹) atTop (𝓝 0)
   tendsto_inv_atTop_zero'.mono_right inf_le_left
 #align tendsto_inv_at_top_zero tendsto_inv_atTop_zero
 
+set_option synthInstance.etaExperiment true in
 theorem Filter.Tendsto.div_atTop {a : 𝕜} (h : Tendsto f l (𝓝 a)) (hg : Tendsto g l atTop) :
     Tendsto (fun x => f x / g x) l (𝓝 0) := by
   simp only [div_eq_mul_inv]
@@ -168,6 +169,7 @@ theorem tendsto_zpow_atTop_zero {n : ℤ} (hn : n < 0) :
   simpa only [h, neg_neg] using tendsto_pow_neg_atTop hn.ne'
 #align tendsto_zpow_at_top_zero tendsto_zpow_atTop_zero
 
+set_option synthInstance.etaExperiment true in
 theorem tendsto_const_mul_zpow_atTop_zero {n : ℤ} {c : 𝕜} (hn : n < 0) :
     Tendsto (fun x => c * x ^ n) atTop (𝓝 0) :=
   mul_zero c ▸ Filter.Tendsto.const_mul c (tendsto_zpow_atTop_zero hn)
@@ -219,10 +221,12 @@ instance (priority := 100) LinearOrderedSemifield.toHasContinuousInv₀ {𝕜}
   · filter_upwards [Ioi_mem_nhds (inv_lt_one hx)] with y hy
     simpa only [inv_inv] using inv_lt_inv_of_lt (inv_pos.2 <| one_pos.trans hx) hy
 
+set_option synthInstance.etaExperiment true in
 instance (priority := 100) LinearOrderedField.toTopologicalDivisionRing :
     TopologicalDivisionRing 𝕜 := ⟨⟩
 #align linear_ordered_field.to_topological_division_ring LinearOrderedField.toTopologicalDivisionRing
 
+set_option synthInstance.etaExperiment true in
 -- porting note: todo: generalize to a `GroupWithzero`
 theorem nhdsWithin_pos_comap_mul_left {x : 𝕜} (hx : 0 < x) :
     comap (x * ·) (𝓝[>] 0) = 𝓝[>] 0 := by
