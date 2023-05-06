@@ -16,19 +16,19 @@ import Mathlib.Topology.Order.Hom.Basic
 
 This file defines pseudo-epimorphisms and Esakia morphisms.
 
-We use the `fun_like` design, so each type of morphisms has a companion typeclass which is meant to
+We use the `FunLike` design, so each type of morphisms has a companion typeclass which is meant to
 be satisfied by itself and all stricter types.
 
 ## Types of morphisms
 
-* `pseudo_epimorphism`: Pseudo-epimorphisms. Maps `f` such that `f a ≤ b` implies the existence of
+* `PseudoEpimorphism`: Pseudo-epimorphisms. Maps `f` such that `f a ≤ b` implies the existence of
   `a'` such that `a ≤ a'` and `f a' = b`.
-* `esakia_hom`: Esakia morphisms. Continuous pseudo-epimorphisms.
+* `EsakiaHom`: Esakia morphisms. Continuous pseudo-epimorphisms.
 
 ## Typeclasses
 
-* `pseudo_epimorphism_class`
-* `esakia_hom_class`
+* `PseudoEpimorphismClass`
+* `EsakiaHomClass`
 
 ## References
 
@@ -53,17 +53,17 @@ structure EsakiaHom (α β : Type _) [TopologicalSpace α] [Preorder α] [Topolo
 
 section
 
-/-- `pseudo_epimorphism_class F α β` states that `F` is a type of `⊔`-preserving morphisms.
+/-- `PseudoEpimorphismClass F α β` states that `F` is a type of `⊔`-preserving morphisms.
 
-You should extend this class when you extend `pseudo_epimorphism`. -/
+You should extend this class when you extend `PseudoEpimorphism`. -/
 class PseudoEpimorphismClass (F : Type _) (α β : outParam <| Type _) [Preorder α] [Preorder β]
     extends RelHomClass F ((· ≤ ·) : α → α → Prop) ((· ≤ ·) : β → β → Prop) where
   exists_map_eq_of_map_le (f : F) ⦃a : α⦄ ⦃b : β⦄ : f a ≤ b → ∃ c, a ≤ c ∧ f c = b
 #align pseudo_epimorphism_class PseudoEpimorphismClass
 
-/-- `esakia_hom_class F α β` states that `F` is a type of lattice morphisms.
+/-- `EsakiaHomClass F α β` states that `F` is a type of lattice morphisms.
 
-You should extend this class when you extend `esakia_hom`. -/
+You should extend this class when you extend `EsakiaHom`. -/
 class EsakiaHomClass (F : Type _) (α β : outParam <| Type _) [TopologicalSpace α] [Preorder α]
     [TopologicalSpace β] [Preorder β] extends ContinuousOrderHomClass F α β where
   exists_map_eq_of_map_le (f : F) ⦃a : α⦄ ⦃b : β⦄ : f a ≤ b → ∃ c, a ≤ c ∧ f c = b
@@ -119,7 +119,7 @@ instance : PseudoEpimorphismClass (PseudoEpimorphism α β) α β where
   map_rel f _ _ h := f.monotone' h
   exists_map_eq_of_map_le := PseudoEpimorphism.exists_map_eq_of_map_le'
 
-/-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_to_fun`
+/-- Helper instance for when there's too many metavariables to apply `FunLike.hasCoeToFun`
 directly. -/
 -- instance : CoeFun (PseudoEpimorphism α β) fun _ => α → β :=
 --   FunLike.hasCoeToFun
@@ -133,7 +133,7 @@ theorem ext {f g : PseudoEpimorphism α β} (h : ∀ a, f a = g a) : f = g :=
   FunLike.ext f g h
 #align pseudo_epimorphism.ext PseudoEpimorphism.ext
 
-/-- Copy of a `pseudo_epimorphism` with a new `to_fun` equal to the old one. Useful to fix
+/-- Copy of a `PseudoEpimorphism` with a new `toFun` equal to the old one. Useful to fix
 definitional equalities. -/
 protected def copy (f : PseudoEpimorphism α β) (f' : α → β) (h : f' = f) : PseudoEpimorphism α β :=
   ⟨f.toOrderHom.copy f' h, by simpa only [h.symm, toFun_eq_coe] using f.exists_map_eq_of_map_le'⟩
@@ -149,7 +149,7 @@ theorem copy_eq (f : PseudoEpimorphism α β) (f' : α → β) (h : f' = f) : f.
 
 variable (α)
 
-/-- `id` as a `pseudo_epimorphism`. -/
+/-- `id` as a `PseudoEpimorphism`. -/
 protected def id : PseudoEpimorphism α α :=
   ⟨OrderHom.id, fun _ b h => ⟨b, h, rfl⟩⟩
 #align pseudo_epimorphism.id PseudoEpimorphism.id
@@ -171,7 +171,7 @@ variable {α}
 theorem id_apply (a : α) : PseudoEpimorphism.id α a = a := rfl
 #align pseudo_epimorphism.id_apply PseudoEpimorphism.id_apply
 
-/-- Composition of `pseudo_epimorphism`s as a `pseudo_epimorphism`. -/
+/-- Composition of `PseudoEpimorphism`s as a `PseudoEpimorphism`. -/
 def comp (g : PseudoEpimorphism β γ) (f : PseudoEpimorphism α β) : PseudoEpimorphism α γ :=
   ⟨g.toOrderHom.comp f.toOrderHom, fun a b h₀ => by
     obtain ⟨b, h₁, rfl⟩ := g.exists_map_eq_of_map_le' h₀
@@ -229,7 +229,7 @@ namespace EsakiaHom
 variable [TopologicalSpace α] [Preorder α] [TopologicalSpace β] [Preorder β] [TopologicalSpace γ]
   [Preorder γ] [TopologicalSpace δ] [Preorder δ]
 
-/-- Reinterpret an `esakia_hom` as a `pseudo_epimorphism`. -/
+/-- Reinterpret an `EsakiaHom` as a `PseudoEpimorphism`. -/
 def toPseudoEpimorphism (f : EsakiaHom α β) : PseudoEpimorphism α β :=
   { f with }
 #align esakia_hom.to_pseudo_epimorphism EsakiaHom.toPseudoEpimorphism
@@ -244,7 +244,7 @@ instance : EsakiaHomClass (EsakiaHom α β) α β where
   map_continuous f := f.continuous_toFun
   exists_map_eq_of_map_le f := f.exists_map_eq_of_map_le'
 
-/-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_to_fun`
+/-- Helper instance for when there's too many metavariables to apply `FunLike.hasCoeToFun`
 directly. -/
 instance : CoeFun (EsakiaHom α β) fun _ => α → β :=
   FunLike.hasCoeToFun
@@ -258,7 +258,7 @@ theorem ext {f g : EsakiaHom α β} (h : ∀ a, f a = g a) : f = g :=
   FunLike.ext f g h
 #align esakia_hom.ext EsakiaHom.ext
 
-/-- Copy of an `esakia_hom` with a new `to_fun` equal to the old one. Useful to fix definitional
+/-- Copy of an `EsakiaHom` with a new `toFun` equal to the old one. Useful to fix definitional
 equalities. -/
 protected def copy (f : EsakiaHom α β) (f' : α → β) (h : f' = f) : EsakiaHom α β :=
   ⟨f.toContinuousOrderHom.copy f' h, by
@@ -275,7 +275,7 @@ theorem copy_eq (f : EsakiaHom α β) (f' : α → β) (h : f' = f) : f.copy f' 
 
 variable (α)
 
-/-- `id` as an `esakia_hom`. -/
+/-- `id` as an `EsakiaHom`. -/
 protected def id : EsakiaHom α α :=
   ⟨ContinuousOrderHom.id α, fun _ b h => ⟨b, h, rfl⟩⟩
 #align esakia_hom.id EsakiaHom.id
@@ -302,7 +302,7 @@ variable {α}
 theorem id_apply (a : α) : EsakiaHom.id α a = a := rfl
 #align esakia_hom.id_apply EsakiaHom.id_apply
 
-/-- Composition of `esakia_hom`s as an `esakia_hom`. -/
+/-- Composition of `EsakiaHom`s as an `EsakiaHom`. -/
 def comp (g : EsakiaHom β γ) (f : EsakiaHom α β) : EsakiaHom α γ :=
   ⟨g.toContinuousOrderHom.comp f.toContinuousOrderHom, fun a b h₀ => by
     obtain ⟨b, h₁, rfl⟩ := g.exists_map_eq_of_map_le' h₀
