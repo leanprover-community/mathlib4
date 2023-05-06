@@ -8,7 +8,7 @@ Authors: Michael Blyth
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.LinearAlgebra.ProjectiveSpace.Basic
+import Mathlib.LinearAlgebra.ProjectiveSpace.Basic
 
 /-!
 # Subspaces of Projective Space
@@ -53,8 +53,7 @@ namespace Subspace
 
 variable {K V}
 
-instance : SetLike (Subspace K V) (ℙ K V)
-    where
+instance : SetLike (Subspace K V) (ℙ K V) where
   coe := carrier
   coe_injective' A B := by
     cases A
@@ -84,8 +83,7 @@ inductive spanCarrier (S : Set (ℙ K V)) : Set (ℙ K V)
 #align projectivization.subspace.span_carrier Projectivization.Subspace.spanCarrier
 
 /-- The span of a set of points in projective space is a subspace. -/
-def span (S : Set (ℙ K V)) : Subspace K V
-    where
+def span (S : Set (ℙ K V)) : Subspace K V where
   carrier := spanCarrier S
   mem_add' v w hv hw hvw := spanCarrier.mem_add v w hv hw hvw
 #align projectivization.subspace.span Projectivization.Subspace.span
@@ -96,8 +94,7 @@ theorem subset_span (S : Set (ℙ K V)) : S ⊆ span S := fun x hx => spanCarrie
 
 /-- The span of a set of points is a Galois insertion between sets of points of a projective space
 and subspaces of the projective space. -/
-def gi : GaloisInsertion (span : Set (ℙ K V) → Subspace K V) coe
-    where
+def gi : GaloisInsertion (span : Set (ℙ K V) → Subspace K V) coe where
   choice S hS := span S
   gc A B :=
     ⟨fun h => le_trans (subset_span _) h, by
@@ -134,8 +131,7 @@ Case conversion may be inaccurate. Consider using '#align projectivization.subsp
 /-- Infimums of arbitrary collections of subspaces exist. -/
 instance hasInf : InfSet (Subspace K V) :=
   ⟨fun A =>
-    ⟨infₛ (coe '' A), fun v w hv hw hvw h1 h2 t =>
-      by
+    ⟨infₛ (coe '' A), fun v w hv hw hvw h1 h2 t => by
       rintro ⟨s, hs, rfl⟩
       exact s.mem_add v w hv hw _ (h1 s ⟨s, hs, rfl⟩) (h2 s ⟨s, hs, rfl⟩)⟩⟩
 #align projectivization.subspace.has_Inf Projectivization.Subspace.hasInf
@@ -163,8 +159,7 @@ theorem span_empty : span (∅ : Set (ℙ K V)) = ⊥ :=
 
 /-- The span of the entire projective space is the top of the lattice of subspaces. -/
 @[simp]
-theorem span_univ : span (Set.univ : Set (ℙ K V)) = ⊤ :=
-  by
+theorem span_univ : span (Set.univ : Set (ℙ K V)) = ⊤ := by
   rw [eq_top_iff, SetLike.le_def]
   intro x hx
   exact subset_span _ (Set.mem_univ x)
@@ -219,8 +214,7 @@ theorem mem_span {S : Set (ℙ K V)} (u : ℙ K V) : u ∈ span S ↔ ∀ W : Su
 
 /-- The span of a set of points in a projective space is equal to the infimum of the collection of
 subspaces which contain the set. -/
-theorem span_eq_infₛ {S : Set (ℙ K V)} : span S = infₛ { W | S ⊆ W } :=
-  by
+theorem span_eq_infₛ {S : Set (ℙ K V)} : span S = infₛ { W | S ⊆ W } := by
   ext
   simp_rw [mem_carrier_iff, mem_span x]
   refine' ⟨fun hx => _, fun hx W hW => _⟩
