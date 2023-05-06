@@ -503,15 +503,16 @@ theorem exists_multiset_roots :
             exact_mod_cast Multiset.card_cons _ _
           _ ≤ degree p := by
             rw [← degree_add_divByMonic (monic_X_sub_C x) hdeg, degree_X_sub_C, add_comm];
-              exact add_le_add (le_refl (1 : WithBot ℕ)) htd, by
-        change ∀ (a : R), count a (x ::ₘ t) = rootMultiplicity a p
-        intro a
-        conv_rhs => rw [← mul_divByMonic_eq_iff_isRoot.mpr hx]
-        rw [rootMultiplicity_mul (mul_ne_zero (X_sub_C_ne_zero x) hdiv0),
-          rootMultiplicity_X_sub_C, ← htr a]
-        split_ifs with ha
-        · rw [ha, count_cons_self, add_comm]
-        · rw [count_cons_of_ne ha, zero_add]⟩
+              exact add_le_add (le_refl (1 : WithBot ℕ)) htd,
+        by
+          change ∀ (a : R), count a (x ::ₘ t) = rootMultiplicity a p
+          intro a
+          conv_rhs => rw [← mul_divByMonic_eq_iff_isRoot.mpr hx]
+          rw [rootMultiplicity_mul (mul_ne_zero (X_sub_C_ne_zero x) hdiv0),
+            rootMultiplicity_X_sub_C, ← htr a]
+          split_ifs with ha
+          · rw [ha, count_cons_self, add_comm]
+          · rw [count_cons_of_ne ha, zero_add]⟩
     else
       ⟨0, (degree_eq_natDegree hp).symm ▸ WithBot.coe_le_coe.2 (Nat.zero_le _), by
         intro a

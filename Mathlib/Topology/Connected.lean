@@ -347,15 +347,16 @@ theorem isPreconnected_closed_iff {s : Set α} :
     have yt : y ∉ t := (h' ys).resolve_right (absurd yt')
     have := h _ _ ht.isOpen_compl ht'.isOpen_compl h' ⟨y, ys, yt⟩ ⟨x, xs, xt'⟩
     rw [← compl_union] at this
-    exact this.ne_empty htt'.disjoint_compl_right.inter_eq, by
-    rintro h u v hu hv huv ⟨x, xs, xu⟩ ⟨y, ys, yv⟩
-    rw [← not_disjoint_iff_nonempty_inter, ← subset_compl_iff_disjoint_right, compl_inter]
-    intro h'
-    have xv : x ∉ v := (h' xs).elim (absurd xu) id
-    have yu : y ∉ u := (h' ys).elim id (absurd yv)
-    have := h _ _ hu.isClosed_compl hv.isClosed_compl h' ⟨y, ys, yu⟩ ⟨x, xs, xv⟩
-    rw [← compl_union] at this
-    exact this.ne_empty huv.disjoint_compl_right.inter_eq⟩
+    exact this.ne_empty htt'.disjoint_compl_right.inter_eq,
+    by
+      rintro h u v hu hv huv ⟨x, xs, xu⟩ ⟨y, ys, yv⟩
+      rw [← not_disjoint_iff_nonempty_inter, ← subset_compl_iff_disjoint_right, compl_inter]
+      intro h'
+      have xv : x ∉ v := (h' xs).elim (absurd xu) id
+      have yu : y ∉ u := (h' ys).elim id (absurd yv)
+      have := h _ _ hu.isClosed_compl hv.isClosed_compl h' ⟨y, ys, yu⟩ ⟨x, xs, xv⟩
+      rw [← compl_union] at this
+      exact this.ne_empty huv.disjoint_compl_right.inter_eq⟩
 #align is_preconnected_closed_iff isPreconnected_closed_iff
 
 theorem Inducing.isPreconnected_image [TopologicalSpace β] {s : Set α} {f : α → β}

@@ -368,9 +368,10 @@ theorem MulEquiv.uniqueFactorizationMonoid (e : α ≃* β) (hα : UniqueFactori
     ⟨w.map e, fun b hb =>
       let ⟨c, hc, he⟩ := Multiset.mem_map.1 hb
       he ▸ e.prime_iff.1 (hp c hc),
-      Units.map e.toMonoidHom u, by
-      erw [Multiset.prod_hom, ← e.map_mul, h]
-      simp⟩
+      Units.map e.toMonoidHom u,
+      by
+        erw [Multiset.prod_hom, ← e.map_mul, h]
+        simp⟩
 #align mul_equiv.unique_factorization_monoid MulEquiv.uniqueFactorizationMonoid
 
 theorem MulEquiv.uniqueFactorizationMonoid_iff (e : α ≃* β) :

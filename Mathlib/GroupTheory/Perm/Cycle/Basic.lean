@@ -266,9 +266,10 @@ instance [Fintype α] [DecidableEq α] (f : Perm α) : DecidableRel (SameCycle f
       List.mem_range.2 (Int.ofNat_lt.1 <| by
         rw [Int.natAbs_of_nonneg (Int.emod_nonneg _ <| Int.coe_nat_ne_zero.2 (orderOf_pos _).ne')]
         · refine' (Int.emod_lt _ <| Int.coe_nat_ne_zero_iff_pos.2 <| orderOf_pos _).trans_le _
-          simp [orderOf_le_card_univ]), by
-      rw [← zpow_ofNat, Int.natAbs_of_nonneg (Int.emod_nonneg _ <| Int.coe_nat_ne_zero_iff_pos.2 <|
-        orderOf_pos _), ← zpow_eq_mod_orderOf, hi]⟩⟩
+          simp [orderOf_le_card_univ]),
+      by
+        rw [← zpow_ofNat, Int.natAbs_of_nonneg (Int.emod_nonneg _ <|
+          Int.coe_nat_ne_zero_iff_pos.2 <| orderOf_pos _), ← zpow_eq_mod_orderOf, hi]⟩⟩
 
 end SameCycle
 

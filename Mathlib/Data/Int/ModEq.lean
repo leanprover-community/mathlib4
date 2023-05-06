@@ -301,9 +301,10 @@ theorem mod_coprime {a b : ℕ} (hab : Nat.coprime a b) : ∃ y : ℤ, a * y ≡
 
 theorem exists_unique_equiv (a : ℤ) {b : ℤ} (hb : 0 < b) :
     ∃ z : ℤ, 0 ≤ z ∧ z < b ∧ z ≡ a [ZMOD b] :=
-  ⟨a % b, emod_nonneg _ (ne_of_gt hb), by
-    have : a % b < |b| := emod_lt _ (ne_of_gt hb)
-    rwa [abs_of_pos hb] at this, by simp [ModEq]⟩
+  ⟨a % b, emod_nonneg _ (ne_of_gt hb),
+    by
+      have : a % b < |b| := emod_lt _ (ne_of_gt hb)
+      rwa [abs_of_pos hb] at this, by simp [ModEq]⟩
 #align int.exists_unique_equiv Int.exists_unique_equiv
 
 theorem exists_unique_equiv_nat (a : ℤ) {b : ℤ} (hb : 0 < b) : ∃ z : ℕ, ↑z < b ∧ ↑z ≡ a [ZMOD b] :=

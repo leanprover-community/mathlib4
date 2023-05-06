@@ -824,15 +824,16 @@ theorem hom_congr_vars {f₁ f₂ : MvPolynomial σ R →+* S} {p₁ p₂ : MvPo
 
 theorem exists_rename_eq_of_vars_subset_range (p : MvPolynomial σ R) (f : τ → σ) (hfi : Injective f)
     (hf : ↑p.vars ⊆ Set.range f) : ∃ q : MvPolynomial τ R, rename f q = p :=
-  ⟨aeval (fun i : σ => Option.elim' 0 X <| partialInv f i) p, by
-    show (rename f).toRingHom.comp _ p = RingHom.id _ p
-    refine' hom_congr_vars _ _ _
-    · ext1
-      simp [algebraMap_eq]
-    · intro i hip _
-      rcases hf hip with ⟨i, rfl⟩
-      simp [partialInv_left hfi]
-    · rfl⟩
+  ⟨aeval (fun i : σ => Option.elim' 0 X <| partialInv f i) p,
+    by
+      show (rename f).toRingHom.comp _ p = RingHom.id _ p
+      refine' hom_congr_vars _ _ _
+      · ext1
+        simp [algebraMap_eq]
+      · intro i hip _
+        rcases hf hip with ⟨i, rfl⟩
+        simp [partialInv_left hfi]
+      · rfl⟩
 #align mv_polynomial.exists_rename_eq_of_vars_subset_range MvPolynomial.exists_rename_eq_of_vars_subset_range
 
 theorem vars_rename (f : σ → τ) (φ : MvPolynomial σ R) : (rename f φ).vars ⊆ φ.vars.image f := by
