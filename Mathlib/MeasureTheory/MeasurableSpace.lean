@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 
 ! This file was ported from Lean 3 source module measure_theory.measurable_space
-! leanprover-community/mathlib commit 9b2b58d6b14b895b2f375108e765cb47de71aebd
+! leanprover-community/mathlib commit 3905fa80e62c0898131285baab35559fbc4e5cda
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -1616,7 +1616,7 @@ open Classical
 
 /-- If a measurable space is countably generated, it admits a measurable injection
 into the Cantor space `ℕ → Bool` (equipped with the product sigma algebra). -/
-theorem measurable_injection_cantor_of_countablyGenerated [MeasurableSpace α]
+theorem measurable_injection_nat_bool_of_countablyGenerated [MeasurableSpace α]
     [h : CountablyGenerated α] [MeasurableSingletonClass α] :
     ∃ f : α → ℕ → Bool, Measurable f ∧ Function.Injective f := by
   obtain ⟨b, bct, hb⟩ := h.IsCountablyGenerated
@@ -1647,7 +1647,7 @@ theorem measurable_injection_cantor_of_countablyGenerated [MeasurableSpace α]
   specialize this {y} measurableSet_eq
   simp only [mem_singleton, iff_true_iff] at this
   exact this
-#align measurable_space.measurable_injection_cantor_of_countably_generated MeasurableSpace.measurable_injection_cantor_of_countablyGenerated
+#align measurable_space.measurable_injection_nat_bool_of_countably_generated MeasurableSpace.measurable_injection_nat_bool_of_countablyGenerated
 
 end MeasurableSpace
 
