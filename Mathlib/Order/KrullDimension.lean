@@ -21,6 +21,12 @@ be positive infinity.
 
 For `a : α`, its height is defined to be the krull dimension of the subset `(-∞, a]` while its
 coheight is defined to be the krull dimension of `[a, +∞)`.
+
+## Implementation notes
+Krull dimensions are defined to take value in `WithBot (WithTop ℕ)` so that `(-∞) + (+∞)` is
+also negative infinity. This is because we want Krull dimensions to be additive with respect
+to product of affine varieties so that `-∞` being the Krull dimension of empty variety is
+equal to sum of `-∞` and the Krull dimension of any other affine varieties.
 -/
 
 variable (α : Type _) [Preorder α]
