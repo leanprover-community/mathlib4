@@ -1750,19 +1750,18 @@ def UniformSpace.Core.sum : UniformSpace.Core (Sum α β) :=
       map (fun p : β × β => (inr p.1, inr p.2)) (𝓤 β))
     (fun r ⟨H₁, H₂⟩ x => by
       cases x <;> [apply refl_mem_uniformity H₁, apply refl_mem_uniformity H₂])
-    (fun r ⟨H₁, H₂⟩ => ⟨symm_le_uniformity H₁, symm_le_uniformity H₂⟩) fun r ⟨Hrα, Hrβ⟩ => by
-    rcases comp_mem_uniformity_sets Hrα with ⟨tα, htα, Htα⟩
-    rcases comp_mem_uniformity_sets Hrβ with ⟨tβ, htβ, Htβ⟩
-    refine'
-      ⟨_,
-        ⟨mem_map_iff_exists_image.2 ⟨tα, htα, subset_union_left _ _⟩,
-          mem_map_iff_exists_image.2 ⟨tβ, htβ, subset_union_right _ _⟩⟩,
-        _⟩
-    rintro ⟨_, _⟩ ⟨z, ⟨⟨a, b⟩, hab, ⟨⟩⟩ | ⟨⟨a, b⟩, hab, ⟨⟩⟩, ⟨⟨_, c⟩, hbc, ⟨⟩⟩ | ⟨⟨_, c⟩, hbc, ⟨⟩⟩⟩
-    · have A : (a, c) ∈ tα ○ tα := ⟨b, hab, hbc⟩
-      exact Htα A
-    · have A : (a, c) ∈ tβ ○ tβ := ⟨b, hab, hbc⟩
-      exact Htβ A
+    (fun r ⟨H₁, H₂⟩ => ⟨symm_le_uniformity H₁, symm_le_uniformity H₂⟩)
+    (fun r ⟨Hrα, Hrβ⟩ => by
+      rcases comp_mem_uniformity_sets Hrα with ⟨tα, htα, Htα⟩
+      rcases comp_mem_uniformity_sets Hrβ with ⟨tβ, htβ, Htβ⟩
+      refine' ⟨_, ⟨mem_map_iff_exists_image.2 ⟨tα, htα, subset_union_left _ _⟩,
+        mem_map_iff_exists_image.2 ⟨tβ, htβ, subset_union_right _ _⟩⟩, _⟩
+      rintro ⟨_, _⟩ ⟨z, ⟨⟨a, b⟩, hab, ⟨⟩⟩ | ⟨⟨a, b⟩, hab, ⟨⟩⟩,
+          ⟨⟨_, c⟩, hbc, ⟨⟩⟩ | ⟨⟨_, c⟩, hbc, ⟨⟩⟩⟩
+      · have A : (a, c) ∈ tα ○ tα := ⟨b, hab, hbc⟩
+        exact Htα A
+      · have A : (a, c) ∈ tβ ○ tβ := ⟨b, hab, hbc⟩
+        exact Htβ A)
 #align uniform_space.core.sum UniformSpace.Core.sum
 
 /-- The union of an entourage of the diagonal in each set of a disjoint union is again an entourage
