@@ -8,9 +8,9 @@ Authors: Scott Morrison, Mario Carneiro, Reid Barton, Andrew Yang
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Limits.KanExtension
-import Mathbin.Topology.Category.Top.Opens
-import Mathbin.CategoryTheory.Adjunction.Opposites
+import Mathlib.CategoryTheory.Limits.KanExtension
+import Mathlib.Topology.Category.Top.Opens
+import Mathlib.CategoryTheory.Adjunction.Opposites
 
 /-!
 # Presheaves on a topological space
@@ -58,8 +58,7 @@ attribute [local instance] concrete_category.has_coe_to_sort concrete_category.h
 
 /-- Tag lemmas to use in `Top.presheaf.restrict_tac`.  -/
 @[user_attribute]
-unsafe def restrict_attr : user_attribute (tactic Unit → tactic Unit) Unit
-    where
+unsafe def restrict_attr : user_attribute (tactic Unit → tactic Unit) Unit where
   Name := `sheaf_restrict
   descr := "tag lemmas to use in `Top.presheaf.restrict_tac`"
   cache_cfg :=
@@ -141,8 +140,7 @@ theorem restrict_restrict {X : TopCat} {C : Type _} [Category C] [ConcreteCatego
 @[simp]
 theorem map_restrict {X : TopCat} {C : Type _} [Category C] [ConcreteCategory C]
     {F G : X.Presheaf C} (e : F ⟶ G) {U V : Opens X} (h : U ≤ V) (x : F.obj (op V)) :
-    e.app _ (x |_ U) = e.app _ x |_ U :=
-  by
+    e.app _ (x |_ U) = e.app _ x |_ U := by
   delta restrict_open restrict
   rw [← comp_apply, nat_trans.naturality, comp_apply]
 #align Top.presheaf.map_restrict TopCat.Presheaf.map_restrict
@@ -195,8 +193,7 @@ theorem pushforward_eq'_hom_app {X Y : TopCat.{w}} {f g : X ⟶ Y} (h : f = g) (
 
 @[simp]
 theorem pushforwardEq_rfl {X Y : TopCat.{w}} (f : X ⟶ Y) (ℱ : X.Presheaf C) (U) :
-    (pushforwardEq (rfl : f = f) ℱ).Hom.app (op U) = 𝟙 _ :=
-  by
+    (pushforwardEq (rfl : f = f) ℱ).Hom.app (op U) = 𝟙 _ := by
   dsimp [pushforward_eq]
   simp
 #align Top.presheaf.pushforward_eq_rfl TopCat.Presheaf.pushforwardEq_rfl
@@ -223,8 +220,7 @@ theorem id_eq : 𝟙 X _* ℱ = ℱ := by
 #align Top.presheaf.pushforward.id_eq TopCat.Presheaf.Pushforward.id_eq
 
 @[simp]
-theorem id_hom_app' (U) (p) : (id ℱ).Hom.app (op ⟨U, p⟩) = ℱ.map (𝟙 (op ⟨U, p⟩)) :=
-  by
+theorem id_hom_app' (U) (p) : (id ℱ).Hom.app (op ⟨U, p⟩) = ℱ.map (𝟙 (op ⟨U, p⟩)) := by
   dsimp [id]
   simp
 #align Top.presheaf.pushforward.id_hom_app' TopCat.Presheaf.Pushforward.id_hom_app'
@@ -232,8 +228,7 @@ theorem id_hom_app' (U) (p) : (id ℱ).Hom.app (op ⟨U, p⟩) = ℱ.map (𝟙 (
 attribute [local tidy] tactic.op_induction'
 
 @[simp]
-theorem id_hom_app (U) : (id ℱ).Hom.app U = ℱ.map (eqToHom (Opens.op_map_id_obj U)) :=
-  by
+theorem id_hom_app (U) : (id ℱ).Hom.app U = ℱ.map (eqToHom (Opens.op_map_id_obj U)) := by
   -- was `tidy`
   induction U using Opposite.rec'
   cases U
@@ -242,8 +237,7 @@ theorem id_hom_app (U) : (id ℱ).Hom.app U = ℱ.map (eqToHom (Opens.op_map_id_
 #align Top.presheaf.pushforward.id_hom_app TopCat.Presheaf.Pushforward.id_hom_app
 
 @[simp]
-theorem id_inv_app' (U) (p) : (id ℱ).inv.app (op ⟨U, p⟩) = ℱ.map (𝟙 (op ⟨U, p⟩)) :=
-  by
+theorem id_inv_app' (U) (p) : (id ℱ).inv.app (op ⟨U, p⟩) = ℱ.map (𝟙 (op ⟨U, p⟩)) := by
   dsimp [id]
   simp
 #align Top.presheaf.pushforward.id_inv_app' TopCat.Presheaf.Pushforward.id_inv_app'
@@ -313,10 +307,8 @@ def pullbackMap {X Y : TopCat.{v}} (f : X ⟶ Y) {ℱ 𝒢 : Y.Presheaf C} (α :
 /-- If `f '' U` is open, then `f⁻¹ℱ U ≅ ℱ (f '' U)`.  -/
 @[simps]
 def pullbackObjObjOfImageOpen {X Y : TopCat.{v}} (f : X ⟶ Y) (ℱ : Y.Presheaf C) (U : Opens X)
-    (H : IsOpen (f '' U)) : (pullbackObj f ℱ).obj (op U) ≅ ℱ.obj (op ⟨_, H⟩) :=
-  by
-  let x : costructured_arrow (opens.map f).op (op U) :=
-    by
+    (H : IsOpen (f '' U)) : (pullbackObj f ℱ).obj (op U) ≅ ℱ.obj (op ⟨_, H⟩) := by
+  let x : costructured_arrow (opens.map f).op (op U) := by
     refine' @costructured_arrow.mk _ _ _ _ _ (op (opens.mk (f '' U) H)) _ _
     exact (@hom_of_le _ _ _ ((opens.map f).obj ⟨_, H⟩) (set.image_preimage.le_u_l _)).op
   have hx : is_terminal x :=
@@ -354,8 +346,7 @@ def id : pullbackObj (𝟙 _) ℱ ≅ ℱ :=
 theorem id_inv_app (U : Opens Y) :
     (id ℱ).inv.app (op U) =
       colimit.ι (Lan.diagram (Opens.map (𝟙 Y)).op ℱ (op U))
-        (@CostructuredArrow.mk _ _ _ _ _ (op U) _ (eqToHom (by simp))) :=
-  by
+        (@CostructuredArrow.mk _ _ _ _ _ (op U) _ (eqToHom (by simp))) := by
   rw [← category.id_comp ((id ℱ).inv.app (op U)), ← nat_iso.app_inv, iso.comp_inv_eq]
   dsimp [id]
   rw [colimit.ι_desc_assoc]
@@ -371,8 +362,7 @@ variable (C)
 
 /-- The pushforward functor.
 -/
-def pushforward {X Y : TopCat.{w}} (f : X ⟶ Y) : X.Presheaf C ⥤ Y.Presheaf C
-    where
+def pushforward {X Y : TopCat.{w}} (f : X ⟶ Y) : X.Presheaf C ⥤ Y.Presheaf C where
   obj := pushforwardObj f
   map := @pushforwardMap _ _ X Y f
 #align Top.presheaf.pushforward TopCat.Presheaf.pushforward
@@ -383,8 +373,7 @@ theorem pushforward_map_app' {X Y : TopCat.{w}} (f : X ⟶ Y) {ℱ 𝒢 : X.Pres
   rfl
 #align Top.presheaf.pushforward_map_app' TopCat.Presheaf.pushforward_map_app'
 
-theorem id_pushforward {X : TopCat.{w}} : pushforward C (𝟙 X) = 𝟭 (X.Presheaf C) :=
-  by
+theorem id_pushforward {X : TopCat.{w}} : pushforward C (𝟙 X) = 𝟭 (X.Presheaf C) := by
   apply CategoryTheory.Functor.ext
   · intros
     ext U
@@ -418,8 +407,7 @@ theorem toPushforwardOfIso_app {X Y : TopCat} (H₁ : X ≅ Y) {ℱ : X.Presheaf
     (H₂ : H₁.Hom _* ℱ ⟶ 𝒢) (U : (Opens X)ᵒᵖ) :
     (toPushforwardOfIso H₁ H₂).app U =
       ℱ.map (eqToHom (by simp [opens.map, Set.preimage_preimage])) ≫
-        H₂.app (op ((Opens.map H₁.inv).obj (unop U))) :=
-  by
+        H₂.app (op ((Opens.map H₁.inv).obj (unop U))) := by
   delta to_pushforward_of_iso
   simp only [Equiv.toFun_as_coe, nat_trans.comp_app, equivalence.equivalence_mk'_unit,
     eq_to_hom_map, eq_to_hom_op, eq_to_hom_trans, presheaf_equiv_of_iso_unit_iso_hom_app_app,
