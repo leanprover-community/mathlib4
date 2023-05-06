@@ -6,6 +6,7 @@ Authors: Christopher Hoskin
 
 import Mathlib.Topology.Order.LowerTopology
 import Mathlib.Topology.Order.ScottTopology
+import Mathlib.Tactic.LibrarySearch
 
 /-!
 # Lawson topology
@@ -124,3 +125,33 @@ def withLawsonTopologyHomeomorph : WithLawsonTopology α ≃ₜ α :=
 end preorder
 
 end LawsonTopology
+
+variable (S : TopologicalSpace α) (L : TopologicalSpace α)
+
+variable [Preorder α] [@ScottTopology α S _] [@LawsonTopology α L _]
+
+lemma Scott_le_Lawson : S ≤ L := by
+  rw [@ScottTopology.topology_eq α _ S _, @LawsonTopology.topology_eq α _ L _,  LawsonTopology']
+  apply le_sup_right
+
+open Topology
+
+example : IsOpen[L] ≤ IsOpen[S] := TopologicalSpace.le_def.mp (Scott_le_Lawson _ _)
+
+
+/-
+lemma LawsonOpen_iff_ScottOpen (s : Set α) (h : IsUpperSet s) :
+  IsOpen[L] s ↔ IsOpen[S] s := by
+  constructor
+  . sorry
+  . sorry
+-/
+  /-
+lemma LawsonOpen_iff_ScottOpen (s : Set α) [Preorder α] (h : IsUpperSet s) :
+  LawsonTopology'.IsOpen s ↔ ScottTopology'.IsOpen s := by
+  constructor
+  . sorry
+  . rw [← Pi.le_def]
+
+  --apply (TopologicalSpace.le_def s)
+-/
