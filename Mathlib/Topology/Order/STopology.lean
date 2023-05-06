@@ -1,7 +1,18 @@
+/-
+Copyright (c) 2023 Christopher Hoskin. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Christopher Hoskin
+-/
 
 import Mathlib.Order.Directed
 import Mathlib.Topology.Basic
 import Mathlib.Order.UpperLower.Basic
+
+/-!
+# STopology
+
+Still considering whether this should be in its own file.
+-/
 
 open Set
 
