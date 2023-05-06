@@ -25,8 +25,8 @@ coheight is defined to be the krull dimension of `[a, +∞)`.
 ## Implementation notes
 Krull dimensions are defined to take value in `WithBot (WithTop ℕ)` so that `(-∞) + (+∞)` is
 also negative infinity. This is because we want Krull dimensions to be additive with respect
-to product of affine varieties so that `-∞` being the Krull dimension of empty variety is
-equal to sum of `-∞` and the Krull dimension of any other affine varieties.
+to product of varieties so that `-∞` being the Krull dimension of empty variety is equal to 
+sum of `-∞` and the Krull dimension of any other varieties.
 -/
 
 variable (α : Type _) [Preorder α]
