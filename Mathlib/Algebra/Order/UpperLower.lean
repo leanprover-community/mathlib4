@@ -45,8 +45,7 @@ section OrderedCommGroup
 variable {α : Type _} [OrderedCommGroup α] {s t : Set α} {a : α}
 
 @[to_additive]
-theorem IsUpperSet.smul (hs : IsUpperSet s) : IsUpperSet (a • s) :=
-  by
+theorem IsUpperSet.smul (hs : IsUpperSet s) : IsUpperSet (a • s) := by
   rintro _ y hxy ⟨x, hx, rfl⟩
   exact mem_smul_set_iff_inv_smul_mem.2 (hs (le_inv_mul_iff_mul_le.2 hxy) hx)
 #align is_upper_set.smul IsUpperSet.smul
@@ -59,8 +58,7 @@ theorem IsLowerSet.smul (hs : IsLowerSet s) : IsLowerSet (a • s) :=
 #align is_lower_set.vadd IsLowerSet.vadd
 
 @[to_additive]
-theorem Set.OrdConnected.smul (hs : s.OrdConnected) : (a • s).OrdConnected :=
-  by
+theorem Set.OrdConnected.smul (hs : s.OrdConnected) : (a • s).OrdConnected := by
   rw [← hs.upperClosure_inter_lowerClosure, smul_set_inter]
   exact (upperClosure _).upper.smul.ordConnected.inter (lowerClosure _).lower.smul.ordConnected
 #align set.ord_connected.smul Set.OrdConnected.smul

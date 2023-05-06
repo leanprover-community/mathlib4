@@ -926,8 +926,7 @@ theorem floor_fract (a : α) : ⌊fract a⌋ = 0 := by
 theorem fract_eq_iff {a b : α} : fract a = b ↔ 0 ≤ b ∧ b < 1 ∧ ∃ z : ℤ, a - b = z :=
   ⟨fun h => by
     rw [← h]
-    exact ⟨fract_nonneg _, fract_lt_one _, ⟨⌊a⌋, sub_sub_cancel _ _⟩⟩,
-    by
+    exact ⟨fract_nonneg _, fract_lt_one _, ⟨⌊a⌋, sub_sub_cancel _ _⟩⟩, by
     rintro ⟨h₀, h₁, z, hz⟩
     show a - ⌊a⌋ = b; apply Eq.symm
     rw [eq_sub_iff_add_eq, add_comm, ← eq_sub_iff_add_eq]
@@ -936,8 +935,7 @@ theorem fract_eq_iff {a b : α} : fract a = b ↔ 0 ≤ b ∧ b < 1 ∧ ∃ z : 
 #align int.fract_eq_iff Int.fract_eq_iff
 
 theorem fract_eq_fract {a b : α} : fract a = fract b ↔ ∃ z : ℤ, a - b = z :=
-  ⟨fun h => ⟨⌊a⌋ - ⌊b⌋, by unfold fract at h; rw [Int.cast_sub, sub_eq_sub_iff_sub_eq_sub.1 h]⟩,
-    by
+  ⟨fun h => ⟨⌊a⌋ - ⌊b⌋, by unfold fract at h; rw [Int.cast_sub, sub_eq_sub_iff_sub_eq_sub.1 h]⟩, by
     rintro ⟨z, hz⟩
     refine' fract_eq_iff.2 ⟨fract_nonneg _, fract_lt_one _, z + ⌊b⌋, _⟩
     rw [eq_add_of_sub_eq hz, add_comm, Int.cast_add]
