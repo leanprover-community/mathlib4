@@ -8,7 +8,7 @@ Authors: Rémy Degenne
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.MeasureTheory.Measure.AeMeasurable
+import Mathlib.MeasureTheory.Measure.AeMeasurable
 
 /-!
 # Typeclasses for measurability of lattice operations
@@ -245,8 +245,7 @@ theorem Finset.measurable_sup' {ι : Type _} {s : Finset ι} (hs : s.Nonempty) {
 
 @[measurability]
 theorem Finset.measurable_range_sup' {f : ℕ → δ → α} {n : ℕ} (hf : ∀ k ≤ n, Measurable (f k)) :
-    Measurable ((range (n + 1)).sup' nonempty_range_succ f) :=
-  by
+    Measurable ((range (n + 1)).sup' nonempty_range_succ f) := by
   simp_rw [← Nat.lt_succ_iff] at hf
   refine' Finset.measurable_sup' _ _
   simpa [Finset.mem_range]
@@ -254,8 +253,7 @@ theorem Finset.measurable_range_sup' {f : ℕ → δ → α} {n : ℕ} (hf : ∀
 
 @[measurability]
 theorem Finset.measurable_range_sup'' {f : ℕ → δ → α} {n : ℕ} (hf : ∀ k ≤ n, Measurable (f k)) :
-    Measurable fun x => (range (n + 1)).sup' nonempty_range_succ fun k => f k x :=
-  by
+    Measurable fun x => (range (n + 1)).sup' nonempty_range_succ fun k => f k x := by
   convert Finset.measurable_range_sup' hf
   ext x
   simp
