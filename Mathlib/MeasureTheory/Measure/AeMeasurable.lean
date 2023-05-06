@@ -8,7 +8,7 @@ Authors: Sébastien Gouëzel
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.MeasureTheory.Measure.MeasureSpace
+import Mathlib.MeasureTheory.Measure.MeasureSpace
 
 /-!
 # Almost everywhere measurable functions
@@ -41,8 +41,7 @@ theorem aEMeasurable_of_subsingleton_codomain [Subsingleton β] : AEMeasurable f
 #align ae_measurable_of_subsingleton_codomain aEMeasurable_of_subsingleton_codomain
 
 @[simp, measurability]
-theorem aEMeasurable_zero_measure : AEMeasurable f (0 : Measure α) :=
-  by
+theorem aEMeasurable_zero_measure : AEMeasurable f (0 : Measure α) := by
   nontriviality α; inhabit α
   exact ⟨fun x => f default, measurable_const, rfl⟩
 #align ae_measurable_zero_measure aEMeasurable_zero_measure
@@ -83,8 +82,7 @@ theorem sum_measure [Countable ι] {μ : ι → Measure α} (h : ∀ i, AEMeasur
     exact (h i).ae_eq_mk
   have hsm : MeasurableSet (⋂ i, s i) :=
     MeasurableSet.interᵢ fun i => measurable_set_to_measurable _ _
-  have hs : ∀ i x, x ∉ s i → f x = (h i).mk f x :=
-    by
+  have hs : ∀ i x, x ∉ s i → f x = (h i).mk f x := by
     intro i x hx
     contrapose! hx
     exact subset_to_measurable _ _ hx
@@ -123,8 +121,7 @@ theorem aEMeasurable_sum_measure_iff [Countable ι] {μ : ι → Measure α} :
 
 @[simp]
 theorem aEMeasurable_add_measure_iff :
-    AEMeasurable f (μ + ν) ↔ AEMeasurable f μ ∧ AEMeasurable f ν :=
-  by
+    AEMeasurable f (μ + ν) ↔ AEMeasurable f μ ∧ AEMeasurable f ν := by
   rw [← sum_cond, aEMeasurable_sum_measure_iff, Bool.forall_bool, and_comm]
   rfl
 #align ae_measurable_add_measure_iff aEMeasurable_add_measure_iff
@@ -177,16 +174,13 @@ theorem comp_quasiMeasurePreserving {ν : Measure δ} {f : α → δ} {g : δ �
 #align ae_measurable.comp_quasi_measure_preserving AEMeasurable.comp_quasiMeasurePreserving
 
 theorem map_map_of_aEMeasurable {g : β → γ} {f : α → β} (hg : AEMeasurable g (Measure.map f μ))
-    (hf : AEMeasurable f μ) : (μ.map f).map g = μ.map (g ∘ f) :=
-  by
+    (hf : AEMeasurable f μ) : (μ.map f).map g = μ.map (g ∘ f) := by
   ext1 s hs
   let g' := hg.mk g
-  have A : map g (map f μ) = map g' (map f μ) :=
-    by
+  have A : map g (map f μ) = map g' (map f μ) := by
     apply MeasureTheory.Measure.map_congr
     exact hg.ae_eq_mk
-  have B : map (g ∘ f) μ = map (g' ∘ f) μ :=
-    by
+  have B : map (g ∘ f) μ = map (g' ∘ f) μ := by
     apply MeasureTheory.Measure.map_congr
     exact ae_of_ae_map hf hg.ae_eq_mk
   simp only [A, B, hs, hg.measurable_mk.ae_measurable.comp_ae_measurable hf, hg.measurable_mk,
@@ -202,8 +196,7 @@ theorem prod_mk {f : α → β} {g : α → γ} (hf : AEMeasurable f μ) (hg : A
 #align ae_measurable.prod_mk AEMeasurable.prod_mk
 
 theorem exists_ae_eq_range_subset (H : AEMeasurable f μ) {t : Set β} (ht : ∀ᵐ x ∂μ, f x ∈ t)
-    (h₀ : t.Nonempty) : ∃ g, Measurable g ∧ range g ⊆ t ∧ f =ᵐ[μ] g :=
-  by
+    (h₀ : t.Nonempty) : ∃ g, Measurable g ∧ range g ⊆ t ∧ f =ᵐ[μ] g := by
   let s : Set α := to_measurable μ ({ x | f x = H.mk f x ∧ f x ∈ t }ᶜ)
   let g : α → β := piecewise s (fun x => h₀.some) (H.mk f)
   refine' ⟨g, _, _, _⟩
@@ -216,8 +209,7 @@ theorem exists_ae_eq_range_subset (H : AEMeasurable f μ) {t : Set β} (ht : ∀
       apply subset_to_measurable
       simp (config := { contextual := true }) only [hx, mem_compl_iff, mem_set_of_eq, not_and,
         not_false_iff, imp_true_iff]
-  · have A : μ (to_measurable μ ({ x | f x = H.mk f x ∧ f x ∈ t }ᶜ)) = 0 :=
-      by
+  · have A : μ (to_measurable μ ({ x | f x = H.mk f x ∧ f x ∈ t }ᶜ)) = 0 := by
       rw [measure_to_measurable, ← compl_mem_ae_iff, compl_compl]
       exact H.ae_eq_mk.and ht
     filter_upwards [compl_mem_ae_iff.2 A]with x hx
@@ -229,15 +221,13 @@ theorem exists_ae_eq_range_subset (H : AEMeasurable f μ) {t : Set β} (ht : ∀
 #align ae_measurable.exists_ae_eq_range_subset AEMeasurable.exists_ae_eq_range_subset
 
 theorem exists_measurable_nonneg {β} [Preorder β] [Zero β] {mβ : MeasurableSpace β} {f : α → β}
-    (hf : AEMeasurable f μ) (f_nn : ∀ᵐ t ∂μ, 0 ≤ f t) : ∃ g, Measurable g ∧ 0 ≤ g ∧ f =ᵐ[μ] g :=
-  by
+    (hf : AEMeasurable f μ) (f_nn : ∀ᵐ t ∂μ, 0 ≤ f t) : ∃ g, Measurable g ∧ 0 ≤ g ∧ f =ᵐ[μ] g := by
   obtain ⟨G, hG_meas, hG_mem, hG_ae_eq⟩ := hf.exists_ae_eq_range_subset f_nn ⟨0, le_rfl⟩
   exact ⟨G, hG_meas, fun x => hG_mem (mem_range_self x), hG_ae_eq⟩
 #align ae_measurable.exists_measurable_nonneg AEMeasurable.exists_measurable_nonneg
 
 theorem subtype_mk (h : AEMeasurable f μ) {s : Set β} {hfs : ∀ x, f x ∈ s} :
-    AEMeasurable (codRestrict f s hfs) μ :=
-  by
+    AEMeasurable (codRestrict f s hfs) μ := by
   nontriviality α; inhabit α
   obtain ⟨g, g_meas, hg, fg⟩ : ∃ g : α → β, Measurable g ∧ range g ⊆ s ∧ f =ᵐ[μ] g :=
     h.exists_ae_eq_range_subset (eventually_of_forall hfs) ⟨_, hfs default⟩
@@ -254,8 +244,7 @@ protected theorem nullMeasurable (h : AEMeasurable f μ) : NullMeasurable f μ :
 end AEMeasurable
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (x y) -/
-theorem aEMeasurable_const' (h : ∀ᵐ (x) (y) ∂μ, f x = f y) : AEMeasurable f μ :=
-  by
+theorem aEMeasurable_const' (h : ∀ᵐ (x) (y) ∂μ, f x = f y) : AEMeasurable f μ := by
   rcases eq_or_ne μ 0 with (rfl | hμ)
   · exact aEMeasurable_zero_measure
   · haveI := ae_ne_bot.2 hμ
@@ -274,8 +263,7 @@ theorem aEMeasurable_iff_measurable [μ.IsComplete] : AEMeasurable f μ ↔ Meas
 #align ae_measurable_iff_measurable aEMeasurable_iff_measurable
 
 theorem MeasurableEmbedding.aEMeasurable_map_iff {g : β → γ} (hf : MeasurableEmbedding f) :
-    AEMeasurable g (μ.map f) ↔ AEMeasurable (g ∘ f) μ :=
-  by
+    AEMeasurable g (μ.map f) ↔ AEMeasurable (g ∘ f) μ := by
   refine' ⟨fun H => H.comp_measurable hf.measurable, _⟩
   rintro ⟨g₁, hgm₁, heq⟩
   rcases hf.exists_measurable_extend hgm₁ fun x => ⟨g x⟩ with ⟨g₂, hgm₂, rfl⟩
@@ -283,8 +271,7 @@ theorem MeasurableEmbedding.aEMeasurable_map_iff {g : β → γ} (hf : Measurabl
 #align measurable_embedding.ae_measurable_map_iff MeasurableEmbedding.aEMeasurable_map_iff
 
 theorem MeasurableEmbedding.aEMeasurable_comp_iff {g : β → γ} (hg : MeasurableEmbedding g)
-    {μ : Measure α} : AEMeasurable (g ∘ f) μ ↔ AEMeasurable f μ :=
-  by
+    {μ : Measure α} : AEMeasurable (g ∘ f) μ ↔ AEMeasurable f μ := by
   refine' ⟨fun H => _, hg.measurable.comp_ae_measurable⟩
   suffices AEMeasurable ((range_splitting g ∘ range_factorization g) ∘ f) μ by
     rwa [(right_inverse_range_splitting hg.injective).comp_eq_id] at this
@@ -333,12 +320,10 @@ theorem AEMeasurable.restrict (hfm : AEMeasurable f μ) {s} : AEMeasurable f (μ
 theorem aEMeasurable_Ioi_of_forall_Ioc {β} {mβ : MeasurableSpace β} [LinearOrder α]
     [(atTop : Filter α).IsCountablyGenerated] {x : α} {g : α → β}
     (g_meas : ∀ t > x, AEMeasurable g (μ.restrict (Ioc x t))) :
-    AEMeasurable g (μ.restrict (Ioi x)) :=
-  by
+    AEMeasurable g (μ.restrict (Ioi x)) := by
   haveI : Nonempty α := ⟨x⟩
   obtain ⟨u, hu_tendsto⟩ := exists_seq_tendsto (at_top : Filter α)
-  have Ioi_eq_Union : Ioi x = ⋃ n : ℕ, Ioc x (u n) :=
-    by
+  have Ioi_eq_Union : Ioi x = ⋃ n : ℕ, Ioc x (u n) := by
     rw [Union_Ioc_eq_Ioi_self_iff.mpr _]
     exact fun y _ => (hu_tendsto.eventually (eventually_ge_at_top y)).exists
   rw [Ioi_eq_Union, aEMeasurable_unionᵢ_iff]
@@ -352,8 +337,7 @@ theorem aEMeasurable_Ioi_of_forall_Ioc {β} {mβ : MeasurableSpace β} [LinearOr
 variable [Zero β]
 
 theorem aEMeasurable_indicator_iff {s} (hs : MeasurableSet s) :
-    AEMeasurable (indicator s f) μ ↔ AEMeasurable f (μ.restrict s) :=
-  by
+    AEMeasurable (indicator s f) μ ↔ AEMeasurable f (μ.restrict s) := by
   constructor
   · intro h
     exact (h.mono_measure measure.restrict_le_self).congr (indicator_ae_eq_restrict hs)
@@ -375,8 +359,7 @@ theorem AEMeasurable.indicator (hfm : AEMeasurable f μ) {s} (hs : MeasurableSet
 theorem MeasureTheory.Measure.restrict_map_of_aEMeasurable {f : α → δ} (hf : AEMeasurable f μ)
     {s : Set δ} (hs : MeasurableSet s) : (μ.map f).restrict s = (μ.restrict <| f ⁻¹' s).map f :=
   calc
-    (μ.map f).restrict s = (μ.map (hf.mk f)).restrict s :=
-      by
+    (μ.map f).restrict s = (μ.map (hf.mk f)).restrict s := by
       congr 1
       apply measure.map_congr hf.ae_eq_mk
     _ = (μ.restrict <| hf.mk f ⁻¹' s).map (hf.mk f) := (Measure.restrict_map hf.measurable_mk hs)
