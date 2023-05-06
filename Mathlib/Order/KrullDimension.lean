@@ -39,31 +39,31 @@ structure StrictSeries where
 /-- the number of inequalities in the series -/
 length : ℕ
 /-- the underlying function of a strict series -/
-toFun : Fin (maxIndex + 1) → α
+toFun : Fin (length + 1) → α
 /-- the underlying function should be strictly monotonic -/
 StrictMono : StrictMono toFun
 
 namespace StrictSeries
 
-instance : CoeFun (StrictSeries α) (fun x ↦ Fin (x.maxIndex + 1) → α) :=
+instance : CoeFun (StrictSeries α) (fun x ↦ Fin (x.length + 1) → α) :=
 { coe := StrictSeries.toFun }
 
 instance : Preorder (StrictSeries α) :=
-Preorder.lift StrictSeries.maxIndex
+Preorder.lift StrictSeries.length
 
 variable {α}
 
-lemma le_def (x y : StrictSeries α) : x ≤ y ↔ x.maxIndex ≤ y.maxIndex :=
+lemma le_def (x y : StrictSeries α) : x ≤ y ↔ x.length ≤ y.length :=
 Iff.rfl
 
-lemma lt_def (x y : StrictSeries α) : x < y ↔ x.maxIndex < y.maxIndex :=
+lemma lt_def (x y : StrictSeries α) : x < y ↔ x.length < y.length :=
 Iff.rfl
 
 /--
 In a preordered set `α`, each term of `α` gives a strict series with the right most index to be 0.
 -/
 @[simps!] def singleton (a : α) : StrictSeries α :=
-{ maxIndex := 0
+{ length := 0
   toFun := fun _ ↦ a
   StrictMono := fun _ _ h ↦ (ne_of_lt h $ @Subsingleton.elim _ subsingleton_fin_one _ _).elim }
 
@@ -77,10 +77,10 @@ instance [Nonempty α] : Nonempty (StrictSeries α) :=
 Nonempty.map singleton inferInstance
 
 lemma top_len_unique [OrderTop (StrictSeries α)] (p : StrictSeries α) (hp : IsTop p) :
-  p.maxIndex = (⊤ : StrictSeries α).maxIndex :=
+  p.length = (⊤ : StrictSeries α).length :=
 le_antisymm (@le_top (StrictSeries α) _ _ _) (hp ⊤)
 
-lemma top_len_unique' (H1 H2 : OrderTop (StrictSeries α)) : H1.top.maxIndex = H2.top.maxIndex :=
+lemma top_len_unique' (H1 H2 : OrderTop (StrictSeries α)) : H1.top.length = H2.top.length :=
 le_antisymm (H2.le_top H1.top) (H1.le_top H2.top)
 
 end StrictSeries
@@ -92,7 +92,7 @@ is defined to be negative infinity; if the length of `a₀ < a₁ < ... < aₙ` 
 dimension is defined to be positive infinity.
 -/
 noncomputable def krullDim : WithBot (WithTop ℕ) :=
-⨆ (p : StrictSeries α), p.maxIndex
+⨆ (p : StrictSeries α), p.length
 
 /--
 Height of an element `a` of a preordered set `α` is the Krull dimension of the subset `(-∞, a]`
