@@ -15,22 +15,22 @@ import Mathlib.Analysis.Convex.Basic
 /-!
 # Homotopy between paths
 
-In this file, we define a `homotopy` between two `path`s. In addition, we define a relation
-`homotopic` on `path`s, and prove that it is an equivalence relation.
+In this file, we define a `Homotopy` between two `Path`s. In addition, we define a relation
+`Homotopic` on `Path`s, and prove that it is an equivalence relation.
 
 ## Definitions
 
-* `path.homotopy p₀ p₁` is the type of homotopies between paths `p₀` and `p₁`
-* `path.homotopy.refl p` is the constant homotopy between `p` and itself
-* `path.homotopy.symm F` is the `path.homotopy p₁ p₀` defined by reversing the homotopy
-* `path.homotopy.trans F G`, where `F : path.homotopy p₀ p₁`, `G : path.homotopy p₁ p₂` is the
-  `path.homotopy p₀ p₂` defined by putting the first homotopy on `[0, 1/2]` and the second on
+* `Path.Homotopy p₀ p₁` is the type of homotopies between paths `p₀` and `p₁`
+* `Path.Homotopy.refl p` is the constant homotopy between `p` and itself
+* `Path.Homotopy.symm F` is the `Path.Homotopy p₁ p₀` defined by reversing the homotopy
+* `Path.Homotopy.trans F G`, where `F : Path.Homotopy p₀ p₁`, `G : Path.Homotopy p₁ p₂` is the
+  `Path.Homotopy p₀ p₂` defined by putting the first homotopy on `[0, 1/2]` and the second on
   `[1/2, 1]`
-* `path.homotopy.hcomp F G`, where `F : path.homotopy p₀ q₀` and `G : path.homotopy p₁ q₁` is
-  a `path.homotopy (p₀.trans p₁) (q₀.trans q₁)`
-* `path.homotopic p₀ p₁` is the relation saying that there is a homotopy between `p₀` and `p₁`
-* `path.homotopic.setoid x₀ x₁` is the setoid on `path`s from `path.homotopic`
-* `path.homotopic.quotient x₀ x₁` is the quotient type from `path x₀ x₀` by `path.homotopic.setoid`
+* `Path.Homotopy.hcomp F G`, where `F : Path.Homotopy p₀ q₀` and `G : Path.Homotopy p₁ q₁` is
+  a `Path.Homotopy (p₀.trans p₁) (q₀.trans q₁)`
+* `Path.Homotopic p₀ p₁` is the relation saying that there is a homotopy between `p₀` and `p₁`
+* `Path.Homotopic.setoid x₀ x₁` is the setoid on `Path`s from `Path.Homotopic`
+* `Path.Homotopic.Quotient x₀ x₁` is the quotient type from `Path x₀ x₀` by `Path.Homotopic.setoid`
 
 -/
 
@@ -75,7 +75,7 @@ theorem target (F : Homotopy p₀ p₁) (t : I) : F (t, 1) = x₁ :=
   _ = x₁ := p₀.target
 #align path.homotopy.target Path.Homotopy.target
 
-/-- Evaluating a path homotopy at an intermediate point, giving us a `path`.
+/-- Evaluating a path homotopy at an intermediate point, giving us a `Path`.
 -/
 def eval (F : Homotopy p₀ p₁) (t : I) : Path x₀ x₁ where
   toFun := F.toHomotopy.curry t
@@ -101,14 +101,14 @@ section
 
 variable {p₀ p₁ p₂ : Path x₀ x₁}
 
-/-- Given a path `p`, we can define a `homotopy p p` by `F (t, x) = p x`
+/-- Given a path `p`, we can define a `Homotopy p p` by `F (t, x) = p x`.
 -/
 @[simps!]
 def refl (p : Path x₀ x₁) : Homotopy p p :=
   ContinuousMap.HomotopyRel.refl p.toContinuousMap {0, 1}
 #align path.homotopy.refl Path.Homotopy.refl
 
-/-- Given a `homotopy p₀ p₁`, we can define a `homotopy p₁ p₀` by reversing the homotopy.
+/-- Given a `Homotopy p₀ p₁`, we can define a `Homotopy p₁ p₀` by reversing the homotopy.
 -/
 @[simps!]
 def symm (F : Homotopy p₀ p₁) : Homotopy p₁ p₀ :=
@@ -121,7 +121,7 @@ theorem symm_symm (F : Homotopy p₀ p₁) : F.symm.symm = F :=
 #align path.homotopy.symm_symm Path.Homotopy.symm_symm
 
 /--
-Given `homotopy p₀ p₁` and `homotopy p₁ p₂`, we can define a `homotopy p₀ p₂` by putting the first
+Given `Homotopy p₀ p₁` and `Homotopy p₁ p₂`, we can define a `Homotopy p₀ p₂` by putting the first
 homotopy on `[0, 1/2]` and the second on `[1/2, 1]`.
 -/
 def trans (F : Homotopy p₀ p₁) (G : Homotopy p₁ p₂) : Homotopy p₀ p₂ :=
@@ -142,7 +142,7 @@ theorem symm_trans (F : Homotopy p₀ p₁) (G : Homotopy p₁ p₂) :
   ContinuousMap.HomotopyRel.symm_trans _ _
 #align path.homotopy.symm_trans Path.Homotopy.symm_trans
 
-/-- Casting a `homotopy p₀ p₁` to a `homotopy q₀ q₁` where `p₀ = q₀` and `p₁ = q₁`. -/
+/-- Casting a `Homotopy p₀ p₁` to a `Homotopy q₀ q₁` where `p₀ = q₀` and `p₁ = q₁`. -/
 @[simps!]
 def cast {p₀ p₁ q₀ q₁ : Path x₀ x₁} (F : Homotopy p₀ p₁) (h₀ : p₀ = q₀) (h₁ : p₁ = q₁) :
     Homotopy q₀ q₁ :=
@@ -156,7 +156,7 @@ section
 variable {p₀ q₀ : Path x₀ x₁} {p₁ q₁ : Path x₁ x₂}
 
 /-- Suppose `p₀` and `q₀` are paths from `x₀` to `x₁`, `p₁` and `q₁` are paths from `x₁` to `x₂`.
-Furthermore, suppose `F : homotopy p₀ q₀` and `G : homotopy p₁ q₁`. Then we can define a homotopy
+Furthermore, suppose `F : Homotopy p₀ q₀` and `G : Homotopy p₁ q₁`. Then we can define a homotopy
 from `p₀.trans p₁` to `q₀.trans q₁`.
 -/
 def hcomp (F : Homotopy p₀ q₀) (G : Homotopy p₁ q₁) : Homotopy (p₀.trans p₁) (q₀.trans q₁) where
@@ -212,7 +212,7 @@ def reparam (p : Path x₀ x₁) (f : I → I) (hf : Continuous f) (hf₀ : f 0 
       simp [hf₁] -- Porting note: Originally `norm_num [hf₀]`
 #align path.homotopy.reparam Path.Homotopy.reparam
 
-/-- Suppose `F : homotopy p q`. Then we have a `homotopy p.symm q.symm` by reversing the second
+/-- Suppose `F : Homotopy p q`. Then we have a `Homotopy p.symm q.symm` by reversing the second
 argument.
 -/
 @[simps]
@@ -230,7 +230,7 @@ def symm₂ {p q : Path x₀ x₁} (F : p.Homotopy q) : p.symm.Homotopy q.symm w
 #align path.homotopy.symm₂ Path.Homotopy.symm₂
 
 /--
-Given `F : homotopy p q`, and `f : C(X, Y)`, we can define a homotopy from `p.map f.continuous` to
+Given `F : Homotopy p q`, and `f : C(X, Y)`, we can define a homotopy from `p.map f.continuous` to
 `q.map f.continuous`.
 -/
 @[simps]
@@ -248,7 +248,7 @@ def map {p q : Path x₀ x₁} (F : p.Homotopy q) (f : C(X, Y)) :
 
 end Homotopy
 
-/-- Two paths `p₀` and `p₁` are `path.homotopic` if there exists a `homotopy` between them.
+/-- Two paths `p₀` and `p₁` are `Path.Homotopic` if there exists a `Homotopy` between them.
 -/
 def Homotopic (p₀ p₁ : Path x₀ x₁) : Prop :=
   Nonempty (p₀.Homotopy p₁)
@@ -287,14 +287,14 @@ theorem hcomp {p₀ p₁ : Path x₀ x₁} {q₀ q₁ : Path x₁ x₂} (hp : p�
 #align path.homotopic.hcomp Path.Homotopic.hcomp
 
 /--
-The setoid on `path`s defined by the equivalence relation `path.homotopic`. That is, two paths are
-equivalent if there is a `homotopy` between them.
+The setoid on `Path`s defined by the equivalence relation `Path.Homotopic`. That is, two paths are
+equivalent if there is a `Homotopy` between them.
 -/
 protected def setoid (x₀ x₁ : X) : Setoid (Path x₀ x₁) :=
   ⟨Homotopic, equivalence⟩
 #align path.homotopic.setoid Path.Homotopic.setoid
 
-/-- The quotient on `path x₀ x₁` by the equivalence relation `path.homotopic`.
+/-- The quotient on `Path x₀ x₁` by the equivalence relation `Path.Homotopic`.
 -/
 protected def Quotient (x₀ x₁ : X) :=
   Quotient (Homotopic.setoid x₀ x₁)
@@ -305,7 +305,7 @@ attribute [local instance] Homotopic.setoid
 instance : Inhabited (Homotopic.Quotient () ()) :=
   ⟨Quotient.mk' <| Path.refl ()⟩
 
-/-- The composition of path homotopy classes. This is `path.trans` descended to the quotient. -/
+/-- The composition of path homotopy classes. This is `Path.trans` descended to the quotient. -/
 def Quotient.comp (P₀ : Path.Homotopic.Quotient x₀ x₁) (P₁ : Path.Homotopic.Quotient x₁ x₂) :
     Path.Homotopic.Quotient x₀ x₂ :=
   Quotient.map₂ Path.trans (fun (_ : Path x₀ x₁) _ hp (_ : Path x₁ x₂) _ hq => hcomp hp hq) P₀
@@ -317,7 +317,7 @@ theorem comp_lift (P₀ : Path x₀ x₁) (P₁ : Path x₁ x₂) : ⟦P₀.tran
 #align path.homotopic.comp_lift Path.Homotopic.comp_lift
 
 /-- The image of a path homotopy class `P₀` under a map `f`.
-    This is `path.map` descended to the quotient -/
+    This is `Path.map` descended to the quotient. -/
 def Quotient.mapFn (P₀ : Path.Homotopic.Quotient x₀ x₁) (f : C(X, Y)) :
     Path.Homotopic.Quotient (f x₀) (f x₁) :=
   Quotient.map (fun q : Path x₀ x₁ => q.map f.continuous) (fun _ _ h => Path.Homotopic.map h f) P₀
@@ -339,8 +339,8 @@ end Path
 
 namespace ContinuousMap.Homotopy
 
-/-- Given a homotopy H: f ∼ g, get the path traced by the point `x` as it moves from
-`f x` to `g x`
+/-- Given a homotopy `H : f ∼ g`, get the path traced by the point `x` as it moves from
+`f x` to `g x`.
 -/
 def evalAt {X : Type _} {Y : Type _} [TopologicalSpace X] [TopologicalSpace Y] {f g : C(X, Y)}
     (H : ContinuousMap.Homotopy f g) (x : X) : Path (f x) (g x) where
