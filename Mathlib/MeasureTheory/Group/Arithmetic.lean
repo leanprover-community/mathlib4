@@ -951,7 +951,7 @@ theorem Finset.aemeasurable_prod' (s : Finset ι) (hf : ∀ i ∈ s, AEMeasurabl
 #align finset.ae_measurable_prod' Finset.aemeasurable_prod'
 #align finset.ae_measurable_sum' Finset.aemeasurable_sum'
 
-@[measurability, to_additive]
+@[to_additive (attr := measurability)]
 theorem Finset.aemeasurable_prod (s : Finset ι) (hf : ∀ i ∈ s, AEMeasurable (f i) μ) :
     AEMeasurable (fun a => ∏ i in s, f i a) μ := by
   simpa only [← Finset.prod_apply] using s.aemeasurable_prod' hf
