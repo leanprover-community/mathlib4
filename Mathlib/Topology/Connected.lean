@@ -340,14 +340,14 @@ theorem isPreconnected_closed_iff {s : Set α} :
     IsPreconnected s ↔ ∀ t t', IsClosed t → IsClosed t' →
       s ⊆ t ∪ t' → (s ∩ t).Nonempty → (s ∩ t').Nonempty → (s ∩ (t ∩ t')).Nonempty :=
   ⟨by
-    rintro h t t' ht ht' htt' ⟨x, xs, xt⟩ ⟨y, ys, yt'⟩
-    rw [← not_disjoint_iff_nonempty_inter, ← subset_compl_iff_disjoint_right, compl_inter]
-    intro h'
-    have xt' : x ∉ t' := (h' xs).resolve_left (absurd xt)
-    have yt : y ∉ t := (h' ys).resolve_right (absurd yt')
-    have := h _ _ ht.isOpen_compl ht'.isOpen_compl h' ⟨y, ys, yt⟩ ⟨x, xs, xt'⟩
-    rw [← compl_union] at this
-    exact this.ne_empty htt'.disjoint_compl_right.inter_eq,
+      rintro h t t' ht ht' htt' ⟨x, xs, xt⟩ ⟨y, ys, yt'⟩
+      rw [← not_disjoint_iff_nonempty_inter, ← subset_compl_iff_disjoint_right, compl_inter]
+      intro h'
+      have xt' : x ∉ t' := (h' xs).resolve_left (absurd xt)
+      have yt : y ∉ t := (h' ys).resolve_right (absurd yt')
+      have := h _ _ ht.isOpen_compl ht'.isOpen_compl h' ⟨y, ys, yt⟩ ⟨x, xs, xt'⟩
+      rw [← compl_union] at this
+      exact this.ne_empty htt'.disjoint_compl_right.inter_eq,
     by
       rintro h u v hu hv huv ⟨x, xs, xu⟩ ⟨y, ys, yv⟩
       rw [← not_disjoint_iff_nonempty_inter, ← subset_compl_iff_disjoint_right, compl_inter]
