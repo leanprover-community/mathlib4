@@ -12,13 +12,13 @@ import Mathlib.MeasureTheory.Measure.MeasureSpace
 
 /-! # Mutually singular measures
 
-Two measures `μ`, `ν` are said to be mutually singular (`measure_theory.measure.mutually_singular`,
+Two measures `μ`, `ν` are said to be mutually singular (`MeasureTheory.Measure.MutuallySingular`,
 localized notation `μ ⟂ₘ ν`) if there exists a measurable set `s` such that `μ s = 0` and
 `ν sᶜ = 0`. The measurability of `s` is an unnecessary assumption (see
-`measure_theory.measure.mutually_singular.mk`) but we keep it because this way `rcases (h : μ ⟂ₘ ν)`
+`MeasureTheory.Measure.MutuallySingular.mk`) but we keep it because this way `rcases (h : μ ⟂ₘ ν)`
 gives us a measurable set and usually it is easy to prove measurability.
 
-In this file we define the predicate `measure_theory.measure.mutually_singular` and prove basic
+In this file we define the predicate `MeasureTheory.Measure.MutuallySingular` and prove basic
 facts about it.
 
 ## Tags
@@ -39,20 +39,21 @@ variable {α : Type _} {m0 : MeasurableSpace α} {μ μ₁ μ₂ ν ν₁ ν₂ 
 
 /-- Two measures `μ`, `ν` are said to be mutually singular if there exists a measurable set `s`
 such that `μ s = 0` and `ν sᶜ = 0`. -/
-def MutuallySingular {m0 : MeasurableSpace α} (μ ν : Measure α) : Prop :=
+def MutuallySingular {_ : MeasurableSpace α} (μ ν : Measure α) : Prop :=
   ∃ s : Set α, MeasurableSet s ∧ μ s = 0 ∧ ν (sᶜ) = 0
 #align measure_theory.measure.mutually_singular MeasureTheory.Measure.MutuallySingular
 
 -- mathport name: measure.mutually_singular
+@[inherit_doc MeasureTheory.Measure.MutuallySingular]
 scoped[MeasureTheory] infixl:60 " ⟂ₘ " => MeasureTheory.Measure.MutuallySingular
 
 namespace MutuallySingular
 
 theorem mk {s t : Set α} (hs : μ s = 0) (ht : ν t = 0) (hst : univ ⊆ s ∪ t) :
     MutuallySingular μ ν := by
-  use to_measurable μ s, measurable_set_to_measurable _ _, (measure_to_measurable _).trans hs
+  use toMeasurable μ s, measurableSet_toMeasurable _ _, (measure_toMeasurable _).trans hs
   refine' measure_mono_null (fun x hx => (hst trivial).resolve_left fun hxs => hx _) ht
-  exact subset_to_measurable _ _ hxs
+  exact subset_toMeasurable _ _ hxs
 #align measure_theory.measure.mutually_singular.mk MeasureTheory.Measure.MutuallySingular.mk
 
 @[simp]
@@ -81,7 +82,7 @@ theorem mono_ac (h : μ₁ ⟂ₘ ν₁) (hμ : μ₂ ≪ μ₁) (hν : ν₂ �
 #align measure_theory.measure.mutually_singular.mono_ac MeasureTheory.Measure.MutuallySingular.mono_ac
 
 theorem mono (h : μ₁ ⟂ₘ ν₁) (hμ : μ₂ ≤ μ₁) (hν : ν₂ ≤ ν₁) : μ₂ ⟂ₘ ν₂ :=
-  h.mono_ac hμ.AbsolutelyContinuous hν.AbsolutelyContinuous
+  h.mono_ac hμ.absolutelyContinuous hν.absolutelyContinuous
 #align measure_theory.measure.mutually_singular.mono MeasureTheory.Measure.MutuallySingular.mono
 
 @[simp]
@@ -90,13 +91,13 @@ theorem sum_left {ι : Type _} [Countable ι] {μ : ι → Measure α} : sum μ 
   choose s hsm hsμ hsν using H
   refine' ⟨⋂ i, s i, MeasurableSet.interᵢ hsm, _, _⟩
   · rw [sum_apply _ (MeasurableSet.interᵢ hsm), ENNReal.tsum_eq_zero]
-    exact fun i => measure_mono_null (Inter_subset _ _) (hsμ i)
-  · rwa [compl_Inter, measure_Union_null_iff]
+    exact fun i => measure_mono_null (interᵢ_subset _ _) (hsμ i)
+  · rwa [compl_interᵢ, measure_unionᵢ_null_iff]
 #align measure_theory.measure.mutually_singular.sum_left MeasureTheory.Measure.MutuallySingular.sum_left
 
 @[simp]
 theorem sum_right {ι : Type _} [Countable ι] {ν : ι → Measure α} : μ ⟂ₘ sum ν ↔ ∀ i, μ ⟂ₘ ν i :=
-  comm.trans <| sum_left.trans <| forall_congr' fun i => comm
+  comm.trans <| sum_left.trans <| forall_congr' fun _ => comm
 #align measure_theory.measure.mutually_singular.sum_right MeasureTheory.Measure.MutuallySingular.sum_right
 
 @[simp]
@@ -130,4 +131,3 @@ end MutuallySingular
 end Measure
 
 end MeasureTheory
-
