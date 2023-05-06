@@ -1689,27 +1689,13 @@ theorem exp_bound' {x : ℂ} {n : ℕ} (hx : abs x / n.succ ≤ 1 / 2) :
     · simp_rw [← div_pow]
       rw [geom_sum_eq, div_le_iff_of_neg]
       · trans (-1 : ℝ)
-        · -- Porting note: was linarith
-          simp [Nat.succ_eq_add_one] at hx
-          rw [mul_comm, ← le_div_iff]
-          simp [hx]
-          . norm_num [this, hx]
-            simp [hx]
-          . exact zero_lt_two
+        · linarith
         · simp only [neg_le_sub_iff_le_add, div_pow, Nat.cast_succ, le_add_iff_nonneg_left]
           exact
             div_nonneg (pow_nonneg (abs.nonneg x) k)
               (pow_nonneg (add_nonneg n.cast_nonneg zero_le_one) k)
-      · -- Porting note: was linarith
-        simp [Nat.succ_eq_add_one] at hx
-        simp
-        apply lt_of_le_of_lt hx
-        norm_num
-      · -- Porting note: was linarith
-        intro h
-        simp at h
-        simp [h] at hx
-        norm_num at hx
+      · linarith
+      · linarith
     · exact div_nonneg (pow_nonneg (abs.nonneg x) n) (Nat.cast_nonneg n.factorial)
 #align complex.exp_bound' Complex.exp_bound'
 
@@ -1934,9 +1920,7 @@ theorem sin_pos_of_pos_of_le_one {x : ℝ} (hx0 : 0 < x) (hx : x ≤ 1) : 0 < si
                     x ^ 3 ≤ x ^ 1 := pow_le_pow_of_le_one (le_of_lt hx0) hx (by decide)
                     _ = x := pow_one _
                     ))
-            --Porting note : was `_ < x := by linarith`
-            _ = x * (7 / 32) := by ring
-            _ < x := (mul_lt_iff_lt_one_right hx0).2 (by norm_num))
+            _ < x := by linarith)
     _ ≤ sin x :=
       sub_le_comm.1 (abs_sub_le_iff.1 (sin_bound (by rwa [_root_.abs_of_nonneg (le_of_lt hx0)]))).2
 #align real.sin_pos_of_pos_of_le_one Real.sin_pos_of_pos_of_le_one

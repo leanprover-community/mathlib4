@@ -1435,26 +1435,18 @@ theorem round_eq (x : α) : round x = ⌊x + 1 / 2⌋ := by
     rw [if_pos hx, self_eq_add_right, floor_eq_iff, cast_zero, zero_add]
     constructor
     . linarith [fract_nonneg x]
-    · -- Porting note: `add_halves` can be removed after linarith learns about fractions
-      linarith [add_halves (1:α)]
+    · linarith
   · have : ⌊fract x + 1 / 2⌋ = 1 := by
       rw [floor_eq_iff]
       constructor
-      . -- norm_num at *
-        -- linarith
-        -- Porting note: linarith broke here after the move to ℚ in norm_num.
-        have := add_le_add_right hx (1/2)
-        norm_num at *
-        assumption
-      · -- Porting note: `norm_num at *` can lose the *, after linarith learns about fractions
-        norm_num at *
+      . norm_num
+        linarith
+      · norm_num
         linarith [fract_lt_one x]
     rw [if_neg (not_lt.mpr hx), ← fract_add_floor x, add_assoc, add_left_comm, floor_int_add,
       ceil_add_int, add_comm _ ⌊x⌋, add_right_inj, ceil_eq_iff, this, cast_one, sub_self]
     constructor
-    . -- Porting note: can be just `norm_num ; linarith` after linarith learns about fractions
-      have : (0:α) < 1/2 := half_pos <| by norm_num
-      linarith
+    . linarith
     · linarith [fract_lt_one x]
 #align round_eq round_eq
 
@@ -1471,7 +1463,6 @@ theorem round_neg_two_inv : round (-2⁻¹ : α) = 0 := by
 @[simp]
 theorem round_eq_zero_iff {x : α} : round x = 0 ↔ x ∈ Ico (-(1 / 2)) ((1 : α) / 2) := by
   rw [round_eq, floor_eq_zero_iff, add_mem_Ico_iff_left]
-  rw [← add_halves (1:α)] -- porting note: line can be removed after norm_num learns about fractions
   norm_num
 #align round_eq_zero_iff round_eq_zero_iff
 
@@ -1479,10 +1470,7 @@ theorem abs_sub_round (x : α) : |x - round x| ≤ 1 / 2 := by
   rw [round_eq, abs_sub_le_iff]
   have := floor_le (x + 1 / 2)
   have := lt_floor_add_one (x + 1 / 2)
-  constructor
-  . -- Porting note: `add_halves` can be removed after linarith learns about fractions
-    linarith [add_halves (1:α)]
-  . linarith
+  constructor <;> linarith
 #align abs_sub_round abs_sub_round
 
 theorem abs_sub_round_div_natCast_eq {m n : ℕ} :

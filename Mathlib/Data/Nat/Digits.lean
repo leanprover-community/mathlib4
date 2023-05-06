@@ -632,10 +632,8 @@ namespace NormDigits
 theorem digits_succ (b n m r l) (e : r + b * m = n) (hr : r < b)
     (h : Nat.digits b m = l ∧ 1 < b ∧ 0 < m) : (Nat.digits b n = r :: l) ∧ 1 < b ∧ 0 < n := by
   rcases h with ⟨h, b2, m0⟩
-  -- Porting note: Below line was proved by `by linarith`
-  have b0 : 0 < b := by simp_arith [lt_iff_le_and_ne.mp b2]
-  -- Porting note: Below line was proved by `by linarith [mul_pos b0 m0]`
-  have n0 : 0 < n := le_trans (lt_iff_add_one_le.mp (mul_pos b0 m0)) (e.subst (le_add_left _ r))
+  have b0 : 0 < b := by linarith
+  have n0 : 0 < n := by linarith [mul_pos b0 m0]
   refine' ⟨_, b2, n0⟩
   obtain ⟨rfl, rfl⟩ := (Nat.div_mod_unique b0).2 ⟨e, hr⟩
   subst h; exact Nat.digits_def' b2 n0
