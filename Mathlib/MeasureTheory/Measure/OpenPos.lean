@@ -14,7 +14,7 @@ import Mathlib.MeasureTheory.Measure.MeasureSpace
 # Measures positive on nonempty opens
 
 In this file we define a typeclass for measures that are positive on nonempty opens, see
-`measure_theory.measure.is_open_pos_measure`. Examples include (additive) Haar measures, as well as
+`MeasureTheory.Measure.OpenPosMeasure`. Examples include (additive) Haar measures, as well as
 measures that have positive density with respect to a Haar measure. We also prove some basic facts
 about these measures.
 
@@ -34,26 +34,26 @@ section Basic
 variable {X Y : Type _} [TopologicalSpace X] {m : MeasurableSpace X} [TopologicalSpace Y]
   [T2Space Y] (μ ν : Measure X)
 
-/-- A measure is said to be `is_open_pos_measure` if it is positive on nonempty open sets. -/
-class IsOpenPosMeasure : Prop where
+/-- A measure is said to be `OpenPosMeasure` if it is positive on nonempty open sets. -/
+class OpenPosMeasure : Prop where
   open_pos : ∀ U : Set X, IsOpen U → U.Nonempty → μ U ≠ 0
-#align measure_theory.measure.is_open_pos_measure MeasureTheory.Measure.IsOpenPosMeasure
+#align measure_theory.measure.is_open_pos_measure MeasureTheory.Measure.OpenPosMeasure
 
-variable [IsOpenPosMeasure μ] {s U : Set X} {x : X}
+variable [OpenPosMeasure μ] {s U : Set X} {x : X}
 
-theorem IsOpen.measure_ne_zero (hU : IsOpen U) (hne : U.Nonempty) : μ U ≠ 0 :=
-  IsOpenPosMeasure.open_pos U hU hne
+theorem _root_.IsOpen.measure_ne_zero (hU : IsOpen U) (hne : U.Nonempty) : μ U ≠ 0 :=
+  OpenPosMeasure.open_pos U hU hne
 #align is_open.measure_ne_zero IsOpen.measure_ne_zero
 
-theorem IsOpen.measure_pos (hU : IsOpen U) (hne : U.Nonempty) : 0 < μ U :=
+theorem _root_.IsOpen.measure_pos (hU : IsOpen U) (hne : U.Nonempty) : 0 < μ U :=
   (hU.measure_ne_zero μ hne).bot_lt
 #align is_open.measure_pos IsOpen.measure_pos
 
-theorem IsOpen.measure_pos_iff (hU : IsOpen U) : 0 < μ U ↔ U.Nonempty :=
+theorem _root_.IsOpen.measure_pos_iff (hU : IsOpen U) : 0 < μ U ↔ U.Nonempty :=
   ⟨fun h => nonempty_iff_ne_empty.2 fun he => h.ne' <| he.symm ▸ measure_empty, hU.measure_pos μ⟩
 #align is_open.measure_pos_iff IsOpen.measure_pos_iff
 
-theorem IsOpen.measure_eq_zero_iff (hU : IsOpen U) : μ U = 0 ↔ U = ∅ := by
+theorem _root_.IsOpen.measure_eq_zero_iff (hU : IsOpen U) : μ U = 0 ↔ U = ∅ := by
   simpa only [not_lt, nonpos_iff_eq_zero, not_nonempty_iff_eq_empty] using
     not_congr (hU.measure_pos_iff μ)
 #align is_open.measure_eq_zero_iff IsOpen.measure_eq_zero_iff
@@ -66,21 +66,21 @@ theorem measure_pos_of_mem_nhds (h : s ∈ 𝓝 x) : 0 < μ s :=
   measure_pos_of_nonempty_interior _ ⟨x, mem_interior_iff_mem_nhds.2 h⟩
 #align measure_theory.measure.measure_pos_of_mem_nhds MeasureTheory.Measure.measure_pos_of_mem_nhds
 
-theorem isOpenPosMeasure_smul {c : ℝ≥0∞} (h : c ≠ 0) : IsOpenPosMeasure (c • μ) :=
-  ⟨fun U Uo Une => mul_ne_zero h (Uo.measure_ne_zero μ Une)⟩
-#align measure_theory.measure.is_open_pos_measure_smul MeasureTheory.Measure.isOpenPosMeasure_smul
+theorem openPosMeasure_smul {c : ℝ≥0∞} (h : c ≠ 0) : OpenPosMeasure (c • μ) :=
+  ⟨fun _U Uo Une => mul_ne_zero h (Uo.measure_ne_zero μ Une)⟩
+#align measure_theory.measure.is_open_pos_measure_smul MeasureTheory.Measure.openPosMeasure_smul
 
 variable {μ ν}
 
-protected theorem AbsolutelyContinuous.isOpenPosMeasure (h : μ ≪ ν) : IsOpenPosMeasure ν :=
-  ⟨fun U ho hne h₀ => ho.measure_ne_zero μ hne (h h₀)⟩
-#align measure_theory.measure.absolutely_continuous.is_open_pos_measure MeasureTheory.Measure.AbsolutelyContinuous.isOpenPosMeasure
+protected theorem AbsolutelyContinuous.openPosMeasure (h : μ ≪ ν) : OpenPosMeasure ν :=
+  ⟨fun _U ho hne h₀ => ho.measure_ne_zero μ hne (h h₀)⟩
+#align measure_theory.measure.absolutely_continuous.is_open_pos_measure MeasureTheory.Measure.AbsolutelyContinuous.openPosMeasure
 
-theorem LE.le.isOpenPosMeasure (h : μ ≤ ν) : IsOpenPosMeasure ν :=
-  h.AbsolutelyContinuous.IsOpenPosMeasure
+theorem _root_.LE.le.isOpenPosMeasure (h : μ ≤ ν) : OpenPosMeasure ν :=
+  h.absolutelyContinuous.openPosMeasure
 #align has_le.le.is_open_pos_measure LE.le.isOpenPosMeasure
 
-theorem IsOpen.eq_empty_of_measure_zero (hU : IsOpen U) (h₀ : μ U = 0) : U = ∅ :=
+theorem _root_.IsOpen.eq_empty_of_measure_zero (hU : IsOpen U) (h₀ : μ U = 0) : U = ∅ :=
   (hU.measure_eq_zero_iff μ).mp h₀
 #align is_open.eq_empty_of_measure_zero IsOpen.eq_empty_of_measure_zero
 
@@ -93,21 +93,21 @@ equal on this set. -/
 theorem eqOn_open_of_ae_eq {f g : X → Y} (h : f =ᵐ[μ.restrict U] g) (hU : IsOpen U)
     (hf : ContinuousOn f U) (hg : ContinuousOn g U) : EqOn f g U := by
   replace h := ae_imp_of_ae_restrict h
-  simp only [eventually_eq, ae_iff, not_imp] at h
+  simp only [EventuallyEq, ae_iff, not_imp] at h
   have : IsOpen (U ∩ { a | f a ≠ g a }) := by
-    refine' is_open_iff_mem_nhds.mpr fun a ha => inter_mem (hU.mem_nhds ha.1) _
+    refine' isOpen_iff_mem_nhds.mpr fun a ha => inter_mem (hU.mem_nhds ha.1) _
     rcases ha with ⟨ha : a ∈ U, ha' : (f a, g a) ∈ diagonal Yᶜ⟩
     exact
-      (hf.continuous_at (hU.mem_nhds ha)).prod_mk_nhds (hg.continuous_at (hU.mem_nhds ha))
-        (is_closed_diagonal.is_open_compl.mem_nhds ha')
+      (hf.continuousAt (hU.mem_nhds ha)).prod_mk_nhds (hg.continuousAt (hU.mem_nhds ha))
+        (isClosed_diagonal.isOpen_compl.mem_nhds ha')
   replace := (this.eq_empty_of_measure_zero h).le
   exact fun x hx => Classical.not_not.1 fun h => this ⟨hx, h⟩
 #align measure_theory.measure.eq_on_open_of_ae_eq MeasureTheory.Measure.eqOn_open_of_ae_eq
 
 /-- If two continuous functions are a.e. equal, then they are equal. -/
 theorem eq_of_ae_eq {f g : X → Y} (h : f =ᵐ[μ] g) (hf : Continuous f) (hg : Continuous g) : f = g :=
-  suffices EqOn f g univ from funext fun x => this trivial
-  eqOn_open_of_ae_eq (ae_restrict_of_ae h) isOpen_univ hf.ContinuousOn hg.ContinuousOn
+  suffices EqOn f g univ from funext fun _ => this trivial
+  eqOn_open_of_ae_eq (ae_restrict_of_ae h) isOpen_univ hf.continuousOn hg.continuousOn
 #align measure_theory.measure.eq_of_ae_eq MeasureTheory.Measure.eq_of_ae_eq
 
 theorem eqOn_of_ae_eq {f g : X → Y} (h : f =ᵐ[μ.restrict s] g) (hf : ContinuousOn f s)
@@ -120,7 +120,7 @@ theorem eqOn_of_ae_eq {f g : X → Y} (h : f =ᵐ[μ.restrict s] g) (hf : Contin
 
 variable (μ)
 
-theorem Continuous.ae_eq_iff_eq {f g : X → Y} (hf : Continuous f) (hg : Continuous g) :
+theorem _root_.Continuous.ae_eq_iff_eq {f g : X → Y} (hf : Continuous f) (hg : Continuous g) :
     f =ᵐ[μ] g ↔ f = g :=
   ⟨fun h => eq_of_ae_eq h hf hg, fun h => h ▸ EventuallyEq.rfl⟩
 #align continuous.ae_eq_iff_eq Continuous.ae_eq_iff_eq
@@ -130,7 +130,7 @@ end Basic
 section LinearOrder
 
 variable {X Y : Type _} [TopologicalSpace X] [LinearOrder X] [OrderTopology X]
-  {m : MeasurableSpace X} [TopologicalSpace Y] [T2Space Y] (μ : Measure X) [IsOpenPosMeasure μ]
+  {m : MeasurableSpace X} [TopologicalSpace Y] [T2Space Y] (μ : Measure X) [OpenPosMeasure μ]
 
 theorem measure_Ioi_pos [NoMaxOrder X] (a : X) : 0 < μ (Ioi a) :=
   isOpen_Ioi.measure_pos μ nonempty_Ioi
@@ -168,7 +168,7 @@ theorem eqOn_Ico_of_ae_eq [DenselyOrdered X] {a b : X} {f g : X → Y}
 theorem eqOn_Icc_of_ae_eq [DenselyOrdered X] {a b : X} (hne : a ≠ b) {f g : X → Y}
     (hfg : f =ᵐ[μ.restrict (Icc a b)] g) (hf : ContinuousOn f (Icc a b))
     (hg : ContinuousOn g (Icc a b)) : EqOn f g (Icc a b) :=
-  eqOn_of_ae_eq hfg hf hg (closure_interior_Icc hne).symm.Subset
+  eqOn_of_ae_eq hfg hf hg (closure_interior_Icc hne).symm.subset
 #align measure_theory.measure.eq_on_Icc_of_ae_eq MeasureTheory.Measure.eqOn_Icc_of_ae_eq
 
 end LinearOrder
@@ -182,7 +182,7 @@ open MeasureTheory MeasureTheory.Measure
 namespace Metric
 
 variable {X : Type _} [PseudoMetricSpace X] {m : MeasurableSpace X} (μ : Measure X)
-  [IsOpenPosMeasure μ]
+  [OpenPosMeasure μ]
 
 theorem measure_ball_pos (x : X) {r : ℝ} (hr : 0 < r) : 0 < μ (ball x r) :=
   isOpen_ball.measure_pos μ (nonempty_ball.2 hr)
@@ -194,18 +194,17 @@ theorem measure_closedBall_pos (x : X) {r : ℝ} (hr : 0 < r) : 0 < μ (closedBa
 
 end Metric
 
-namespace Emetric
+namespace EMetric
 
 variable {X : Type _} [PseudoEMetricSpace X] {m : MeasurableSpace X} (μ : Measure X)
-  [IsOpenPosMeasure μ]
+  [OpenPosMeasure μ]
 
 theorem measure_ball_pos (x : X) {r : ℝ≥0∞} (hr : r ≠ 0) : 0 < μ (ball x r) :=
   isOpen_ball.measure_pos μ ⟨x, mem_ball_self hr.bot_lt⟩
-#align emetric.measure_ball_pos Emetric.measure_ball_pos
+#align emetric.measure_ball_pos EMetric.measure_ball_pos
 
 theorem measure_closedBall_pos (x : X) {r : ℝ≥0∞} (hr : r ≠ 0) : 0 < μ (closedBall x r) :=
   (measure_ball_pos μ x hr).trans_le (measure_mono ball_subset_closedBall)
-#align emetric.measure_closed_ball_pos Emetric.measure_closedBall_pos
+#align emetric.measure_closed_ball_pos EMetric.measure_closedBall_pos
 
-end Emetric
-
+end EMetric
