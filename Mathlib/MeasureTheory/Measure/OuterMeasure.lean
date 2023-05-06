@@ -538,7 +538,7 @@ def comap {β} (f : α → β) : OuterMeasure β →ₗ[ℝ≥0∞] OuterMeasure
       empty := by simp
       mono := fun {s t} h => m.mono <| image_subset f h
       unionᵢ_nat := fun s => by
-        simp
+        simp only
         rw [image_unionᵢ]
         apply m.unionᵢ_nat }
   map_add' m₁ m₂ := rfl
@@ -700,7 +700,10 @@ theorem ofFunction_le (s : Set α) : OuterMeasure.ofFunction m m_empty s ≤ m s
   let f : ℕ → Set α := fun i => Nat.casesOn i s fun _ => ∅
   infᵢ_le_of_le f <|
     infᵢ_le_of_le (subset_unionᵢ f 0) <|
-      le_of_eq <| tsum_eq_single 0 <| by rintro (_ | i); simp; simp [m_empty]
+      le_of_eq <| tsum_eq_single 0 <| by
+        rintro (_ | i)
+        . simp only [Nat.zero_eq, Nat.rec_zero, IsEmpty.forall_iff]
+        . simp [m_empty]
 #align measure_theory.outer_measure.of_function_le MeasureTheory.OuterMeasure.ofFunction_le
 
 theorem ofFunction_eq (s : Set α) (m_mono : ∀ ⦃t : Set α⦄, s ⊆ t → m s ≤ m t)
