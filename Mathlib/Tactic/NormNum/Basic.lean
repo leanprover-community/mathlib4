@@ -375,7 +375,8 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
         (q(Eq.refl (Int.mul $na $nb)) : Expr)
       have t2 : Q(ℕ) := mkRawNatLit dd
       let r2 : Q(Nat.mul $da $db = Nat.mul $k $dc) := (q(Eq.refl $t2) : Expr)
-      return (.isRat' dα qc nc dc q(isRat_mul $pa $pb $r1 $r2) : Result q($a * $b))
+      let foo := q(isRat_mul $pa $pb $r1 $r2)
+      return (.isRat' dα qc nc dc foo : Result q($a * $b))
     match ra, rb with
     | .isBool .., _ | _, .isBool .. => failure
     | .isRat dα .., _ | _, .isRat dα .. => ratArm dα

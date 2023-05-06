@@ -110,7 +110,7 @@ class DivisionRing (K : Type u) extends Ring K, DivInvMonoid K, Nontrivial K, Ra
 
 -- see Note [lower instance priority]
 instance (priority := 100) DivisionRing.toDivisionSemiring [DivisionRing α] : DivisionSemiring α :=
-  { ‹DivisionRing α›, (inferInstance : Semiring α) with }
+  { ‹DivisionRing α› with }
 #align division_ring.to_division_semiring DivisionRing.toDivisionSemiring
 
 /-- A `Semifield` is a `CommSemiring` with multiplicative inverses for nonzero elements. -/
