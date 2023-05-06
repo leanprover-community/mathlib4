@@ -15,6 +15,10 @@ import Mathlib.Logic.Equiv.Fin
 # Krull dimension of a preordered set
 
 If `α` is a preordered set, then `krull_dim α` is defined to be `sup {n | a₀ < a₁ < ... < aₙ}`.
+In case that `α` is empty, then its Krull dimension is defined to be negative infinity; if the
+length of all series `a₀ < a₁ < ... < aₙ` is unbounded, then its Krull dimension is defined to
+be positive infinity.
+
 For `a : α`, its height is defined to be the krull dimension of the subset `(-∞, a]` while its
 coheight is defined to be the krull dimension of `[a, +∞)`.
 -/
@@ -77,7 +81,9 @@ end StrictSeries
 
 /--
 Krull dimension of a preordered set `α` is the supremum of the right most index of all strict
-series of `α`.
+series of `α`. If there is no strict series `a₀ < a₁ < ... < aₙ` in `α`, then its Krull dimension
+is defined to be negative infinity; if the length of `a₀ < a₁ < ... < aₙ` is unbounded, its Krull
+dimension is defined to be positive infinity.
 -/
 noncomputable def krullDim : WithBot (WithTop ℕ) :=
 ⨆ (p : StrictSeries α), p.maxIndex
