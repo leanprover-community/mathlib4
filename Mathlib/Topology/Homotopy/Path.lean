@@ -327,7 +327,9 @@ theorem map_lift (P₀ : Path x₀ x₁) (f : C(X, Y)) : ⟦P₀.map f.continuou
   rfl
 #align path.homotopic.map_lift Path.Homotopic.map_lift
 
-theorem hpath_hext {p₁ : Path x₀ x₁} {p₂ : Path x₂ x₃} (hp : ∀ t, p₁ t = p₂ t) : HEq ⟦p₁⟧ ⟦p₂⟧ := by
+-- Porting note: Type was originally `HEq ⟦p₁⟧ ⟦p₂⟧`
+theorem hpath_hext {p₁ : Path x₀ x₁} {p₂ : Path x₂ x₃} (hp : ∀ t, p₁ t = p₂ t) :
+    @HEq (Path.Homotopic.Quotient _ _) ⟦p₁⟧ (Path.Homotopic.Quotient _ _) ⟦p₂⟧ := by
   obtain rfl : x₀ = x₂ := by convert hp 0 <;> simp
   obtain rfl : x₁ = x₃ := by convert hp 1 <;> simp
   rw [heq_iff_eq]; congr ; ext t; exact hp t
