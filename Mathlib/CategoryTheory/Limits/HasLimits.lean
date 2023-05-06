@@ -395,8 +395,8 @@ theorem HasLimit.isoOfEquivalence_hom_π {F : J ⥤ C} [HasLimit F] {G : K ⥤ C
 @[simp]
 theorem HasLimit.isoOfEquivalence_inv_π {F : J ⥤ C} [HasLimit F] {G : K ⥤ C} [HasLimit G]
     (e : J ≌ K) (w : e.functor ⋙ G ≅ F) (j : J) :
-    (HasLimit.isoOfEquivalence e w).inv ≫ limit.π F j = limit.π G (e.functor.obj j) ≫ w.hom.app j :=
-  by
+    (HasLimit.isoOfEquivalence e w).inv ≫ limit.π F j =
+    limit.π G (e.functor.obj j) ≫ w.hom.app j := by
   simp only [HasLimit.isoOfEquivalence, IsLimit.conePointsIsoOfEquivalence_hom]
   dsimp
   simp
@@ -1035,8 +1035,8 @@ def colimit.post : colimit (F ⋙ G) ⟶ G.obj (colimit F) :=
 #align category_theory.limits.colimit.post CategoryTheory.Limits.colimit.post
 
 @[reassoc (attr := simp)]
-theorem colimit.ι_post (j : J) : colimit.ι (F ⋙ G) j ≫ colimit.post F G = G.map (colimit.ι F j) :=
-  by
+theorem colimit.ι_post (j : J) :
+    colimit.ι (F ⋙ G) j ≫ colimit.post F G = G.map (colimit.ι F j) := by
   erw [IsColimit.fac]
   rfl
 #align category_theory.limits.colimit.ι_post CategoryTheory.Limits.colimit.ι_post

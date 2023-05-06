@@ -500,8 +500,8 @@ theorem mapDomain_add {f : α → β} : mapDomain f (v₁ + v₂) = mapDomain f 
 #align finsupp.map_domain_add Finsupp.mapDomain_add
 
 @[simp]
-theorem mapDomain_equiv_apply {f : α ≃ β} (x : α →₀ M) (a : β) : mapDomain f x a = x (f.symm a) :=
-  by
+theorem mapDomain_equiv_apply {f : α ≃ β} (x : α →₀ M) (a : β) :
+    mapDomain f x a = x (f.symm a) := by
   conv_lhs => rw [← f.apply_symm_apply a]
   exact mapDomain_apply f.injective _ _
 #align finsupp.map_domain_equiv_apply Finsupp.mapDomain_equiv_apply
@@ -560,8 +560,7 @@ theorem mapDomain_apply' (S : Set α) {f : α → β} (x : α →₀ M) (hS : (x
 
 theorem mapDomain_support_of_injOn [DecidableEq β] {f : α → β} (s : α →₀ M)
     (hf : Set.InjOn f s.support) : (mapDomain f s).support = Finset.image f s.support :=
-  Finset.Subset.antisymm mapDomain_support <|
-    by
+  Finset.Subset.antisymm mapDomain_support <| by
     intro x hx
     simp only [mem_image, exists_prop, mem_support_iff, Ne.def] at hx
     rcases hx with ⟨hx_w, hx_h_left, rfl⟩
@@ -1214,8 +1213,7 @@ protected def curry (f : α × β →₀ M) : α →₀ β →₀ M :=
 @[simp]
 theorem curry_apply (f : α × β →₀ M) (x : α) (y : β) : f.curry x y = f (x, y) := by
   classical
-    have : ∀ b : α × β, single b.fst (single b.snd (f b)) x y = if b = (x, y) then f b else 0 :=
-      by
+    have : ∀ b : α × β, single b.fst (single b.snd (f b)) x y = if b = (x, y) then f b else 0 := by
       rintro ⟨b₁, b₂⟩
       simp [single_apply, ite_apply, Prod.ext_iff, ite_and]
       split_ifs <;> simp [single_apply, *]

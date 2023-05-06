@@ -320,8 +320,8 @@ theorem natDegree_prod (h : ∀ i ∈ s, f i ≠ 0) :
   intro x hx; simp [h x hx]
 #align polynomial.nat_degree_prod Polynomial.natDegree_prod
 
-theorem natDegree_multiset_prod (h : (0 : R[X]) ∉ t) : natDegree t.prod = (t.map natDegree).sum :=
-  by
+theorem natDegree_multiset_prod (h : (0 : R[X]) ∉ t) :
+    natDegree t.prod = (t.map natDegree).sum := by
   nontriviality R
   rw [natDegree_multiset_prod']
   simp_rw [Ne.def, Multiset.prod_eq_zero_iff, Multiset.mem_map, leadingCoeff_eq_zero]
@@ -349,8 +349,8 @@ the product of the leading coefficients.
 See `Polynomial.leadingCoeff_multiset_prod'` (with a `'`) for a version for commutative semirings,
 where additionally, the product of the leading coefficients must be nonzero.
 -/
-theorem leadingCoeff_multiset_prod : t.prod.leadingCoeff = (t.map fun f => leadingCoeff f).prod :=
-  by
+theorem leadingCoeff_multiset_prod :
+    t.prod.leadingCoeff = (t.map fun f => leadingCoeff f).prod := by
   rw [← leadingCoeffHom_apply, MonoidHom.map_multiset_prod]
   rfl
 #align polynomial.leading_coeff_multiset_prod Polynomial.leadingCoeff_multiset_prod
