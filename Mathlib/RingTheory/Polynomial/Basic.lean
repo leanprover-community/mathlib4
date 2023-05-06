@@ -913,12 +913,8 @@ protected theorem Polynomial.isNoetherianRing [inst : IsNoetherianRing R] : IsNo
         hs ▸ fun hx =>
           Submodule.span_induction hx (fun _ hx => Ideal.subset_span hx) (Ideal.zero_mem _)
             (fun _ _ => Ideal.add_mem _) fun c f hf => f.C_mul' c ▸ Ideal.mul_mem_left _ _ hf
-      ⟨s,
-        le_antisymm
-            (Ideal.span_le.2 fun x hx =>
-              have : x ∈ I.degreeLE N := hs ▸ Submodule.subset_span hx
-              this.2) <|
-          by
+      ⟨s, le_antisymm (Ideal.span_le.2 fun x hx =>
+        have : x ∈ I.degreeLE N := hs ▸ Submodule.subset_span hx this.2) <| by
           have : Submodule.span R[X] ↑s = Ideal.span ↑s := by rfl
           rw [this]
           intro p hp
@@ -926,11 +922,8 @@ protected theorem Polynomial.isNoetherianRing [inst : IsNoetherianRing R] : IsNo
           induction' k using Nat.strong_induction_on with k ih generalizing p
           cases' le_or_lt k N with h h
           · subst k
-            refine'
-              hs2
-                ⟨Polynomial.mem_degreeLE.2
-                    (le_trans Polynomial.degree_le_natDegree <| WithBot.coe_le_coe.2 h),
-                  hp⟩
+            refine' hs2 ⟨Polynomial.mem_degreeLE.2
+              (le_trans Polynomial.degree_le_natDegree <| WithBot.coe_le_coe.2 h), hp⟩
           · have hp0 : p ≠ 0 := by
               rintro rfl
               cases hn
@@ -1095,8 +1088,8 @@ theorem isNoetherianRing_fin [IsNoetherianRing R] :
 
 /-- The multivariate polynomial ring in finitely many variables over a noetherian ring
 is itself a noetherian ring. -/
-instance isNoetherianRing [Finite σ] [IsNoetherianRing R] : IsNoetherianRing (MvPolynomial σ R) :=
-  by
+instance isNoetherianRing [Finite σ] [IsNoetherianRing R] :
+    IsNoetherianRing (MvPolynomial σ R) := by
   cases nonempty_fintype σ
   exact
     @isNoetherianRing_of_ringEquiv (MvPolynomial (Fin (Fintype.card σ)) R) _ _ _
@@ -1134,14 +1127,9 @@ instance {R : Type u} [CommSemiring R] [NoZeroDivisors R] {σ : Type v} :
   ⟨fun {p} {q} h => by
     obtain ⟨s, p, rfl⟩ := exists_finset_rename p
     obtain ⟨t, q, rfl⟩ := exists_finset_rename q
-    have :
-      rename (Subtype.map id (Finset.subset_union_left s t) : { x // x ∈ s } → { x // x ∈ s ∪ t })
-            p *
-          rename
-            (Subtype.map id (Finset.subset_union_right s t) : { x // x ∈ t } → { x // x ∈ s ∪ t })
-            q =
-        0 :=
-      by
+    have : rename (Subtype.map id (Finset.subset_union_left s t) : { x // x ∈ s } →
+        { x // x ∈ s ∪ t }) p * rename (Subtype.map id (Finset.subset_union_right s t) :
+        { x // x ∈ t } → { x // x ∈ s ∪ t }) q = 0 := by
       apply rename_injective _ Subtype.val_injective
       simpa using h
     letI that := MvPolynomial.noZeroDivisors_of_finite R { x // x ∈ s ∪ t }

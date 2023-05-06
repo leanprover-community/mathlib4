@@ -7,8 +7,6 @@ Authors: Yaël Dillies
 ! leanprover-community/mathlib commit 02ba8949f486ebecf93fe7460f1ed0564b5e442c
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
-
-[`data.finset.sym`@`98e83c3d541c77cdb7da20d79611a780ff8e7d90`..`02ba8949f486ebecf93fe7460f1ed0564b5e442c`](https://leanprover-community.github.io/mathlib-port-status/file/data/finset/sym?range=98e83c3d541c77cdb7da20d79611a780ff8e7d90..02ba8949f486ebecf93fe7460f1ed0564b5e442c)
 -/
 import Mathlib.Data.Finset.Lattice
 import Mathlib.Data.Fintype.Prod
@@ -247,13 +245,12 @@ def symInsertEquiv (h : a ∉ s) : (insert a s).sym n ≃ Σi : Fin (n + 1), s.s
   toFun m := ⟨_, (m.1.filterNe a).2, by convert sym_filterNe_mem a m.2; rw [erase_insert h]⟩
   invFun m := ⟨m.2.1.fill a m.1, sym_fill_mem a m.2.2⟩
   left_inv m := Subtype.ext <| m.1.fill_filterNe a
-  right_inv := fun ⟨i, m, hm⟩ ↦
-    by
-      refine' Function.Injective.sigma_map (Function.injective_id) (fun i ↦ _) _
-      exact fun i ↦ Sym α (n - i)
-      swap; exact Subtype.coe_injective
-      refine Eq.trans ?_ (Sym.filter_ne_fill a _ ?_)
-      exacts[rfl, h ∘ mem_sym_iff.1 hm a]
+  right_inv := fun ⟨i, m, hm⟩ ↦ by
+    refine' Function.Injective.sigma_map (Function.injective_id) (fun i ↦ _) _
+    exact fun i ↦ Sym α (n - i)
+    swap; exact Subtype.coe_injective
+    refine Eq.trans ?_ (Sym.filter_ne_fill a _ ?_)
+    exacts [rfl, h ∘ mem_sym_iff.1 hm a]
 #align finset.sym_insert_equiv Finset.symInsertEquiv
 
 end Sym
