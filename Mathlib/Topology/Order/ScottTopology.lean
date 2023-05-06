@@ -83,7 +83,7 @@ The Scott topology is defined as the join of the topology of upper sets and the 
 where a set `u` is open if, when the least upper bound of a directed set `d` lies in `u` then there
 is a tail of `d` which is a subset of `u`.
 -/
-def ScottTopology' : TopologicalSpace α := (upperSetTopology ⊔
+def ScottTopology' : TopologicalSpace α := upperSetTopology ⊔
     { IsOpen := fun u => ∀ (d : Set α) (a : α), d.Nonempty → DirectedOn (· ≤ ·) d → IsLUB d a →
       a ∈ u → ∃ b ∈ d, Ici b ∩ d ⊆ u,
       isOpen_univ := by
