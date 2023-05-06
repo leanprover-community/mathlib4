@@ -53,10 +53,10 @@ private theorem free_and_finite :
     exact ⟨Module.Free.of_equiv e.symm, Module.Finite.equiv e.symm⟩
   intro n N _ _ _ _
   induction' n with n ih
-  ·
+  · haveI : IsEmpty (Fin Nat.zero) := inferInstanceAs (IsEmpty (Fin 0))
     exact
-      ⟨Module.Free.of_equiv (const_linear_equiv_of_is_empty R N M₂),
-        Module.Finite.equiv (const_linear_equiv_of_is_empty R N M₂)⟩
+      ⟨Module.Free.of_equiv (constLinearEquivOfIsEmpty R N M₂),
+        Module.Finite.equiv (constLinearEquivOfIsEmpty R N M₂)⟩
   · suffices
       Module.Free R (N 0 →ₗ[R] MultilinearMap R (fun i : Fin n => N i.succ) M₂) ∧
         Module.Finite R (N 0 →ₗ[R] MultilinearMap R (fun i : Fin n => N i.succ) M₂) by
@@ -66,15 +66,13 @@ private theorem free_and_finite :
           Module.Finite.equiv (multilinearCurryLeftEquiv R N M₂)⟩
     cases ih fun i => N i.succ
     exact ⟨Module.Free.linearMap _ _ _, Module.Finite.linearMap _ _⟩
-#align multilinear_map.free_and_finite multilinear_map.free_and_finite
 
-instance Module.Finite.multilinearMap : Module.Finite R (MultilinearMap R M₁ M₂) :=
+instance _root_.Module.Finite.multilinearMap : Module.Finite R (MultilinearMap R M₁ M₂) :=
   free_and_finite.2
 #align module.finite.multilinear_map Module.Finite.multilinearMap
 
-instance Module.Free.multilinearMap : Module.Free R (MultilinearMap R M₁ M₂) :=
+instance _root_.Module.Free.multilinearMap : Module.Free R (MultilinearMap R M₁ M₂) :=
   free_and_finite.1
 #align module.free.multilinear_map Module.Free.multilinearMap
 
 end MultilinearMap
-
