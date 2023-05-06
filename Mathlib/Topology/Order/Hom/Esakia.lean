@@ -137,7 +137,7 @@ theorem ext {f g : PseudoEpimorphism α β} (h : ∀ a, f a = g a) : f = g :=
 /-- Copy of a `pseudo_epimorphism` with a new `to_fun` equal to the old one. Useful to fix
 definitional equalities. -/
 protected def copy (f : PseudoEpimorphism α β) (f' : α → β) (h : f' = f) : PseudoEpimorphism α β :=
-  ⟨f.toOrderHom.copy f' h, by simpa only [h.symm, to_fun_eq_coe] using f.exists_map_eq_of_map_le'⟩
+  ⟨f.toOrderHom.copy f' h, by simpa only [h.symm, toFun_eq_coe] using f.exists_map_eq_of_map_le'⟩
 #align pseudo_epimorphism.copy PseudoEpimorphism.copy
 
 @[simp]
@@ -153,7 +153,7 @@ variable (α)
 
 /-- `id` as a `pseudo_epimorphism`. -/
 protected def id : PseudoEpimorphism α α :=
-  ⟨OrderHom.id, fun a b h => ⟨b, h, rfl⟩⟩
+  ⟨OrderHom.id, fun _ b h => ⟨b, h, rfl⟩⟩
 #align pseudo_epimorphism.id PseudoEpimorphism.id
 
 instance : Inhabited (PseudoEpimorphism α α) :=
@@ -211,17 +211,17 @@ theorem comp_assoc (h : PseudoEpimorphism γ δ) (g : PseudoEpimorphism β γ)
 
 @[simp]
 theorem comp_id (f : PseudoEpimorphism α β) : f.comp (PseudoEpimorphism.id α) = f :=
-  ext fun a => rfl
+  ext fun _ => rfl
 #align pseudo_epimorphism.comp_id PseudoEpimorphism.comp_id
 
 @[simp]
 theorem id_comp (f : PseudoEpimorphism α β) : (PseudoEpimorphism.id β).comp f = f :=
-  ext fun a => rfl
+  ext fun _ => rfl
 #align pseudo_epimorphism.id_comp PseudoEpimorphism.id_comp
 
 theorem cancel_right {g₁ g₂ : PseudoEpimorphism β γ} {f : PseudoEpimorphism α β}
     (hf : Surjective f) : g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
-  ⟨fun h => ext <| hf.forall.2 <| FunLike.ext_iff.1 h, congr_arg _⟩
+  ⟨fun h => ext <| hf.forall.2 <| FunLike.ext_iff.1 h, by intro h; rw [h]⟩
 #align pseudo_epimorphism.cancel_right PseudoEpimorphism.cancel_right
 
 theorem cancel_left {g : PseudoEpimorphism β γ} {f₁ f₂ : PseudoEpimorphism α β} (hg : Injective g) :
@@ -251,7 +251,7 @@ instance : EsakiaHomClass (EsakiaHom α β) α β
     obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := f
     obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := g
     congr
-  map_rel f := f.monotone'
+  map_monotone f := f.monotone'
   map_continuous f := f.continuous_toFun
   exists_map_eq_of_map_le f := f.exists_map_eq_of_map_le'
 
@@ -274,7 +274,7 @@ theorem ext {f g : EsakiaHom α β} (h : ∀ a, f a = g a) : f = g :=
 equalities. -/
 protected def copy (f : EsakiaHom α β) (f' : α → β) (h : f' = f) : EsakiaHom α β :=
   ⟨f.toContinuousOrderHom.copy f' h, by
-    simpa only [h.symm, to_fun_eq_coe] using f.exists_map_eq_of_map_le'⟩
+    simpa only [h.symm, toFun_eq_coe] using f.exists_map_eq_of_map_le'⟩
 #align esakia_hom.copy EsakiaHom.copy
 
 @[simp]
@@ -290,7 +290,7 @@ variable (α)
 
 /-- `id` as an `esakia_hom`. -/
 protected def id : EsakiaHom α α :=
-  ⟨ContinuousOrderHom.id α, fun a b h => ⟨b, h, rfl⟩⟩
+  ⟨ContinuousOrderHom.id α, fun _ b h => ⟨b, h, rfl⟩⟩
 #align esakia_hom.id EsakiaHom.id
 
 instance : Inhabited (EsakiaHom α α) :=
@@ -358,17 +358,17 @@ theorem comp_assoc (h : EsakiaHom γ δ) (g : EsakiaHom β γ) (f : EsakiaHom α
 
 @[simp]
 theorem comp_id (f : EsakiaHom α β) : f.comp (EsakiaHom.id α) = f :=
-  ext fun a => rfl
+  ext fun _ => rfl
 #align esakia_hom.comp_id EsakiaHom.comp_id
 
 @[simp]
 theorem id_comp (f : EsakiaHom α β) : (EsakiaHom.id β).comp f = f :=
-  ext fun a => rfl
+  ext fun _ => rfl
 #align esakia_hom.id_comp EsakiaHom.id_comp
 
 theorem cancel_right {g₁ g₂ : EsakiaHom β γ} {f : EsakiaHom α β} (hf : Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
-  ⟨fun h => ext <| hf.forall.2 <| FunLike.ext_iff.1 h, congr_arg _⟩
+  ⟨fun h => ext <| hf.forall.2 <| FunLike.ext_iff.1 h, by intro h; rw [h]⟩
 #align esakia_hom.cancel_right EsakiaHom.cancel_right
 
 theorem cancel_left {g : EsakiaHom β γ} {f₁ f₂ : EsakiaHom α β} (hg : Injective g) :
@@ -377,4 +377,3 @@ theorem cancel_left {g : EsakiaHom β γ} {f₁ f₂ : EsakiaHom α β} (hg : In
 #align esakia_hom.cancel_left EsakiaHom.cancel_left
 
 end EsakiaHom
-
