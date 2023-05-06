@@ -411,7 +411,8 @@ theorem nfp_lt_ord {f : Ordinal → Ordinal} {c} (hc : ℵ₀ < cof c) (hf : ∀
   nfpFamily_lt_ord_lift hc (by simpa using Cardinal.one_lt_aleph0.trans hc) fun _ => hf
 #align ordinal.nfp_lt_ord Ordinal.nfp_lt_ord
 
-theorem exists_blsub_cof (o : Ordinal) : ∃ f : ∀ a < (cof o).ord, Ordinal, blsub.{u, u} _ f = o := by
+theorem exists_blsub_cof (o : Ordinal) :
+    ∃ f : ∀ a < (cof o).ord, Ordinal, blsub.{u, u} _ f = o := by
   rcases exists_lsub_cof o with ⟨ι, f, hf, hι⟩
   rcases Cardinal.ord_eq ι with ⟨r, hr, hι'⟩
   rw [← @blsub_eq_lsub' ι r hr] at hf

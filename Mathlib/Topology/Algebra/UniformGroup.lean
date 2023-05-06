@@ -799,10 +799,10 @@ private theorem extend_Z_bilin_aux (x₀ : α) (y₁ : δ) : ∃ U₂ ∈ comap 
     (x') (_ : x' ∈ U₂), (fun p : β × δ => φ p.1 p.2) (x' - x, y₁) ∈ W' := by
   let Nx := 𝓝 x₀
   let ee := fun u : β × β => (e u.1, e u.2)
-  have lim1 : Tendsto (fun a : β × β => (a.2 - a.1, y₁)) (comap e Nx ×ᶠ comap e Nx) (𝓝 (0, y₁)) := by
-    have :=
-      Tendsto.prod_mk (tendsto_sub_comap_self de x₀)
-        (tendsto_const_nhds : Tendsto (fun _ : β × β => y₁) (comap ee <| 𝓝 (x₀, x₀)) (𝓝 y₁))
+  have lim1 : Tendsto (fun a : β × β => (a.2 - a.1, y₁))
+      (comap e Nx ×ᶠ comap e Nx) (𝓝 (0, y₁)) := by
+    have := Tendsto.prod_mk (tendsto_sub_comap_self de x₀)
+      (tendsto_const_nhds : Tendsto (fun _ : β × β => y₁) (comap ee <| 𝓝 (x₀, x₀)) (𝓝 y₁))
     rw [nhds_prod_eq, prod_comap_comap_eq, ← nhds_prod_eq]
     exact (this : _)
   have lim2 : Tendsto (fun p : β × δ => φ p.1 p.2) (𝓝 (0, y₁)) (𝓝 0) := by

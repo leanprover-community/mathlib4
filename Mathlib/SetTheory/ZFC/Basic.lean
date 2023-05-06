@@ -1275,7 +1275,8 @@ theorem mem_range {α : Type u} {f : α → ZFSet.{max u v}} {x : ZFSet.{max u v
 #align Set.mem_range ZFSet.mem_range
 
 @[simp]
-theorem toSet_range {α : Type u} (f : α → ZFSet.{max u v}) : (range.{u, v} f).toSet = Set.range f := by
+theorem toSet_range {α : Type u} (f : α → ZFSet.{max u v}) :
+    (range.{u, v} f).toSet = Set.range f := by
   ext
   simp
 #align Set.to_set_range ZFSet.toSet_range
