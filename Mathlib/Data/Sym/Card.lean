@@ -149,14 +149,15 @@ theorem two_mul_card_image_offDiag (s : Finset α) :
   obtain ⟨a, ⟨ha₁, ha₂, ha⟩, h⟩ := hxy
   replace h := Quotient.eq.1 h
   obtain ⟨hx, hy, hxy⟩ : x ∈ s ∧ y ∈ s ∧ x ≠ y := by
-    cases h <;> have := ha.symm <;> exact ⟨‹_›, ‹_›, ‹_›⟩
+    cases h <;> refine' ⟨‹_›, ‹_›, _⟩ <;> [exact ha, exact ha.symm]
   have hxy' : y ≠ x := hxy.symm
   have : (s.offDiag.filter fun z => ⟦z⟧ = ⟦(x, y)⟧) = ({(x, y), (y, x)} : Finset _) := by
     ext ⟨x₁, y₁⟩
     rw [mem_filter, mem_insert, mem_singleton, Sym2.eq_iff, Prod.mk.inj_iff, Prod.mk.inj_iff,
       and_iff_right_iff_imp]
+    -- `hxy'` is used in `exact`
     rintro (⟨rfl, rfl⟩ | ⟨rfl, rfl⟩) <;> rw [mem_offDiag] <;> exact ⟨‹_›, ‹_›, ‹_›⟩
-  -- hxy' is used here
+  dsimp [Quotient.mk', Quotient.mk''_eq_mk] -- Porting note: Added `dsimp`
   rw [this, card_insert_of_not_mem, card_singleton]
   simp only [not_and, Prod.mk.inj_iff, mem_singleton]
   exact fun _ => hxy'
@@ -173,6 +174,7 @@ theorem card_image_offDiag (s : Finset α) :
 
 theorem card_subtype_diag [Fintype α] : card { a : Sym2 α // a.IsDiag } = card α := by
   convert card_image_diag (univ : Finset α)
+  simp_rw [Quotient.mk', ← Quotient.mk''_eq_mk] -- Porting note: Added `simp_rw`
   rw [Fintype.card_of_subtype, ← filter_image_quotient_mk''_isDiag]
   rintro x
   rw [mem_filter, univ_product_univ, mem_image]
@@ -183,7 +185,8 @@ theorem card_subtype_diag [Fintype α] : card { a : Sym2 α // a.IsDiag } = card
 theorem card_subtype_not_diag [Fintype α] :
     card { a : Sym2 α // ¬a.IsDiag } = (card α).choose 2 := by
   convert card_image_offDiag (univ : Finset α)
-  rw [Fintype.card_of_subtype, ← filter_image_quotient_mk_not_isDiag]
+  simp_rw [Quotient.mk', ← Quotient.mk''_eq_mk] -- Porting note: Added `simp_rw`
+  rw [Fintype.card_of_subtype, ← filter_image_quotient_mk''_not_isDiag]
   rintro x
   rw [mem_filter, univ_product_univ, mem_image]
   obtain ⟨a, ha⟩ := Quotient.exists_rep x
@@ -191,17 +194,18 @@ theorem card_subtype_not_diag [Fintype α] :
 #align sym2.card_subtype_not_diag Sym2.card_subtype_not_diag
 
 /-- Finset **stars and bars** for the case `n = 2`. -/
-theorem Finset.card_sym2 (s : Finset α) : s.sym2.card = s.card * (s.card + 1) / 2 := by
-  rw [← image_diag_union_image_off_diag, card_union_eq, Sym2.card_image_diag,
+theorem _root_.Finset.card_sym2 (s : Finset α) : s.sym2.card = s.card * (s.card + 1) / 2 := by
+  rw [← image_diag_union_image_offDiag, card_union_eq, Sym2.card_image_diag,
     Sym2.card_image_offDiag, Nat.choose_two_right, add_comm, ← Nat.triangle_succ, Nat.succ_sub_one,
     mul_comm]
   rw [disjoint_left]
   rintro m ha hb
   rw [mem_image] at ha hb
   obtain ⟨⟨a, ha, rfl⟩, ⟨b, hb, hab⟩⟩ := ha, hb
-  refine' not_is_diag_mk_of_mem_off_diag hb _
+  refine' not_isDiag_mk'_of_mem_offDiag hb _
+  dsimp [Quotient.mk'] at hab -- Porting note: Added `dsimp`
   rw [hab]
-  exact is_diag_mk_of_mem_diag ha
+  exact isDiag_mk'_of_mem_diag ha
 #align finset.card_sym2 Finset.card_sym2
 
 /-- Type **stars and bars** for the case `n = 2`. -/
@@ -210,4 +214,3 @@ protected theorem card [Fintype α] : card (Sym2 α) = card α * (card α + 1) /
 #align sym2.card Sym2.card
 
 end Sym2
-
