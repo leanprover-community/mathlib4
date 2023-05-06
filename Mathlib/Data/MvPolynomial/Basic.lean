@@ -389,8 +389,7 @@ theorem induction_on_monomial {M : MvPolynomial σ R → Prop} (h_C : ∀ a, M (
   · show M (monomial 0 a)
     exact h_C a
   · intro n e p _hpn _he ih
-    have : ∀ e : ℕ, M (monomial p a * X n ^ e) :=
-      by
+    have : ∀ e : ℕ, M (monomial p a * X n ^ e) := by
       intro e
       induction e with
       | zero => simp [ih]
@@ -1196,8 +1195,7 @@ theorem map_id : ∀ p : MvPolynomial σ R, map (RingHom.id R) p = p :=
 
 theorem map_map [CommSemiring S₂] (g : S₁ →+* S₂) (p : MvPolynomial σ R) :
     map g (map f p) = map (g.comp f) p :=
-  (eval₂_comp_left (map g) (C.comp f) X p).trans <|
-    by
+  (eval₂_comp_left (map g) (C.comp f) X p).trans <| by
     congr
     · ext1 a
       simp only [map_C, comp_apply, RingHom.coe_comp]
@@ -1607,8 +1605,8 @@ theorem aevalTower_comp_toAlgHom :
 #align mv_polynomial.aeval_tower_comp_to_alg_hom MvPolynomial.aevalTower_comp_toAlgHom
 
 @[simp]
-theorem aevalTower_id : aevalTower (AlgHom.id S S) = (aeval : (σ → S) → MvPolynomial σ S →ₐ[S] S) :=
-  by
+theorem aevalTower_id :
+    aevalTower (AlgHom.id S S) = (aeval : (σ → S) → MvPolynomial σ S →ₐ[S] S) := by
   ext
   simp only [aevalTower_X, aeval_X]
 #align mv_polynomial.aeval_tower_id MvPolynomial.aevalTower_id
