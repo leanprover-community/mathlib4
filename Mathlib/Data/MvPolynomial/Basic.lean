@@ -281,8 +281,9 @@ theorem C_eq_smul_one : (C a : MvPolynomial σ R) = a • (1 : MvPolynomial σ R
   rw [← C_mul', mul_one]
 #align mv_polynomial.C_eq_smul_one MvPolynomial.C_eq_smul_one
 
-theorem smul_monomial : a' • monomial s a = monomial s (a' * a) := by
-  rw [smul_eq_C_mul, C_mul_monomial]
+theorem smul_monomial {S₁ : Type _} [SMulZeroClass S₁ R] (r : S₁) :
+    r • monomial s a = monomial s (r • a) :=
+  Finsupp.smul_single _ _ _
 #align mv_polynomial.smul_monomial MvPolynomial.smul_monomial
 
 theorem X_injective [Nontrivial R] : Function.Injective (X : σ → MvPolynomial σ R) :=
@@ -736,8 +737,9 @@ theorem support_X_mul (s : σ) (p : MvPolynomial σ R) :
 #align mv_polynomial.support_X_mul MvPolynomial.support_X_mul
 
 @[simp]
-theorem support_smul_eq [NoZeroDivisors R] {a : R} (h: a ≠ 0) {p: MvPolynomial σ R}:
-    (a • p).support = p.support := Finsupp.support_smul_eq h
+theorem support_smul_eq {S₁ : Type _} [Semiring S₁] [Module S₁ R] [NoZeroSMulDivisors S₁ R] {a : S₁}
+    (h : a ≠ 0) (p : MvPolynomial σ R) : (a • p).support = p.support :=
+  Finsupp.support_smul_eq h
 #align mv_polynomial.support_smul_eq MvPolynomial.support_smul_eq
 
 theorem support_sdiff_support_subset_support_add [DecidableEq σ] (p q : MvPolynomial σ R) :
@@ -810,14 +812,10 @@ theorem ne_zero_iff {p : MvPolynomial σ R} : p ≠ 0 ↔ ∃ d, coeff d p ≠ 0
   rfl
 #align mv_polynomial.ne_zero_iff MvPolynomial.ne_zero_iff
 
-theorem eq_zero_iff_support_eq_empty (p: MvPolynomial σ R): p = 0 ↔ p.support = ∅ := by
-  constructor
-  · intro hp
-    exact hp ▸ support_zero
-  · rw [eq_zero_iff]
-    intros hps d
-    exact not_mem_support_iff.mp (Finset.eq_empty_iff_forall_not_mem.mp hps d)
-#align mv_polynomial.eq_zero_iff_support_eq_empty MvPolynomial.eq_zero_iff_support_eq_empty
+@[simp]
+theorem support_eq_empty {p : MvPolynomial σ R} : p.support = ∅ ↔ p = 0 :=
+  Finsupp.support_eq_empty
+#align mv_polynomial.support_eq_empty MvPolynomial.support_eq_empty
 
 theorem exists_coeff_ne_zero {p : MvPolynomial σ R} (h : p ≠ 0) : ∃ d, coeff d p ≠ 0 :=
   ne_zero_iff.mp h
