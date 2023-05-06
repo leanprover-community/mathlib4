@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 
 ! This file was ported from Lean 3 source module set_theory.zfc.basic
-! leanprover-community/mathlib commit 98bbc3526516bca903bff09ea10c4206bf079e6b
+! leanprover-community/mathlib commit f0b3759a8ef0bd8239ecdaa5e1089add5feebe1a
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -1050,6 +1050,15 @@ def unionₛ : ZFSet → ZFSet :=
 @[inherit_doc]
 prefix:110 "⋃₀ " => ZFSet.unionₛ
 
+/-- The intersection operator, the collection of elements in all of the elements of a ZFC set. We
+special-case `⋂₀ ∅ = ∅`. -/
+noncomputable def interₛ (x : ZFSet) : ZFSet := by
+   classical exact if h : x.Nonempty then ZFSet.sep (fun y => ∀ z ∈ x, y ∈ z) h.some else ∅
+#align Set.sInter ZFSet.interₛ
+
+@[inherit_doc]
+prefix:110 "⋂₀ " => ZFSet.interₛ
+
 @[simp]
 theorem mem_unionₛ {x y : ZFSet.{u}} : y ∈ ⋃₀ x ↔ ∃ z ∈ x, y ∈ z :=
   Quotient.inductionOn₂ x y fun _ _ =>
@@ -1057,27 +1066,56 @@ theorem mem_unionₛ {x y : ZFSet.{u}} : y ∈ ⋃₀ x ↔ ∃ z ∈ x, y ∈ z
       ⟨fun ⟨z, h⟩ => ⟨⟦z⟧, h⟩, fun ⟨z, h⟩ => Quotient.inductionOn z (fun z h => ⟨z, h⟩) h⟩
 #align Set.mem_sUnion ZFSet.mem_unionₛ
 
-theorem mem_unionₛ_of_mem {x y z : ZFSet} (hy : y ∈ z) (hz : z ∈ x) : y ∈ ⋃₀ x :=
-  mem_unionₛ.2 ⟨z, hz, hy⟩
-#align Set.mem_sUnion_of_mem ZFSet.mem_unionₛ_of_mem
+theorem mem_interₛ {x y : ZFSet} (h : x.Nonempty) : y ∈ ⋂₀ x ↔ ∀ z ∈ x, y ∈ z := by
+  rw [interₛ, dif_pos h]
+  simp only [mem_toSet, mem_sep, and_iff_right_iff_imp]
+  exact fun H => H _ h.some_mem
+#align Set.mem_sInter ZFSet.mem_interₛ
 
 @[simp]
-theorem unionₛ_empty : ⋃₀ (∅ : ZFSet.{u}) = ∅ :=
-  by
+theorem unionₛ_empty : ⋃₀ (∅ : ZFSet.{u}) = ∅ := by
   ext
   simp
 #align Set.sUnion_empty ZFSet.unionₛ_empty
 
 @[simp]
+theorem interₛ_empty : ⋂₀ (∅ : ZFSet) = ∅ := dif_neg <| by simp
+#align Set.sInter_empty ZFSet.interₛ_empty
+
+theorem mem_of_mem_interₛ {x y z : ZFSet} (hy : y ∈ ⋂₀ x) (hz : z ∈ x) : y ∈ z := by
+  rcases eq_empty_or_nonempty x with (rfl | hx)
+  · exact (not_mem_empty z hz).elim
+  · exact (mem_interₛ hx).1 hy z hz
+#align Set.mem_of_mem_sInter ZFSet.mem_of_mem_interₛ
+
+theorem mem_unionₛ_of_mem {x y z : ZFSet} (hy : y ∈ z) (hz : z ∈ x) : y ∈ ⋃₀ x :=
+  mem_unionₛ.2 ⟨z, hz, hy⟩
+#align Set.mem_sUnion_of_mem ZFSet.mem_unionₛ_of_mem
+
+theorem not_mem_interₛ_of_not_mem {x y z : ZFSet} (hy : ¬y ∈ z) (hz : z ∈ x) : ¬y ∈ ⋂₀ x :=
+  fun hx => hy <| mem_of_mem_interₛ hx hz
+#align Set.not_mem_sInter_of_not_mem ZFSet.not_mem_interₛ_of_not_mem
+
+@[simp]
 theorem unionₛ_singleton {x : ZFSet.{u}} : ⋃₀ ({x} : ZFSet) = x :=
-  ext fun y => by simp_rw [mem_unionₛ, exists_prop, mem_singleton, exists_eq_left]
+  ext fun y => by simp_rw [mem_unionₛ, mem_singleton, exists_eq_left]
 #align Set.sUnion_singleton ZFSet.unionₛ_singleton
 
 @[simp]
-theorem to_set_unionₛ (x : ZFSet.{u}) : (⋃₀ x).toSet = ⋃₀ (toSet '' x.toSet) := by
+theorem interₛ_singleton {x : ZFSet.{u}} : ⋂₀ ({x} : ZFSet) = x :=
+  ext fun y => by simp_rw [mem_interₛ (singleton_nonempty x), mem_singleton, forall_eq]
+#align Set.sInter_singleton ZFSet.interₛ_singleton
+
+@[simp]
+theorem toSet_unionₛ (x : ZFSet.{u}) : (⋃₀ x).toSet = ⋃₀ (toSet '' x.toSet) := by
   ext
   simp
-#align Set.to_set_sUnion ZFSet.to_set_unionₛ
+#align Set.to_set_sUnion ZFSet.toSet_unionₛ
+
+theorem toSet_interₛ {x : ZFSet.{u}} (h : x.Nonempty) : (⋂₀ x).toSet = ⋂₀ (toSet '' x.toSet) := by
+  ext
+  simp [mem_interₛ h]
+#align Set.to_set_sInter ZFSet.toSet_interₛ
 
 theorem singleton_injective : Function.Injective (@singleton ZFSet ZFSet _) := fun x y H => by
   let this := congr_arg unionₛ H
@@ -1581,6 +1619,13 @@ def unionₛ (x : Class) : Class :=
 @[inherit_doc]
 prefix:110 "⋃₀ " => Class.unionₛ
 
+/-- The intersection of a class is the class of all members of ZFC sets in the class -/
+def interₛ (x : Class) : Class :=
+  ⋂₀ classToCong x
+
+@[inherit_doc]
+prefix:110 "⋂₀ " => Class.interₛ
+
 theorem ofSet.inj {x y : ZFSet.{u}} (h : (x : Class.{u}) = y) : x = y :=
   ZFSet.ext fun z => by
     change (x : Class.{u}) z ↔ (y : Class.{u}) z
@@ -1588,13 +1633,13 @@ theorem ofSet.inj {x y : ZFSet.{u}} (h : (x : Class.{u}) = y) : x = y :=
 #align Class.of_Set.inj Class.ofSet.inj
 
 @[simp]
-theorem toSet_of_setCat (A : Class.{u}) (x : ZFSet.{u}) : ToSet A x ↔ A x :=
+theorem toSet_of_ZFSet (A : Class.{u}) (x : ZFSet.{u}) : ToSet A x ↔ A x :=
   ⟨fun ⟨y, yx, py⟩ => by rwa [ofSet.inj yx] at py, fun px => ⟨x, rfl, px⟩⟩
-#align Class.to_Set_of_Set Class.toSet_of_setCat
+#align Class.to_Set_of_Set Class.toSet_of_ZFSet
 
 @[simp, norm_cast]
 theorem coe_mem {x : ZFSet.{u}} {A : Class.{u}} : ↑x ∈ A ↔ A x :=
-  toSet_of_setCat _ _
+  toSet_of_ZFSet _ _
 #align Class.coe_mem Class.coe_mem
 
 @[simp]
@@ -1673,13 +1718,41 @@ theorem mem_unionₛ {x y : Class.{u}} : y ∈ ⋃₀ x ↔ ∃ z, z ∈ x ∧ y
     exact ⟨z, rfl, w, hwx, hwz⟩
 #align Class.mem_sUnion Class.mem_unionₛ
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
+theorem interₛ_apply {x : Class.{u}} {y : ZFSet.{u}} : (⋂₀ x) y ↔ ∀ z : ZFSet.{u}, x z → y ∈ z := by
+  refine' ⟨fun hxy z hxz => hxy _ ⟨z, rfl, hxz⟩, _⟩
+  rintro H - ⟨z, rfl, hxz⟩
+  exact H _ hxz
+#align Class.sInter_apply Class.interₛ_apply
+
+@[simp, norm_cast]
+theorem coe_interₛ {x : ZFSet.{u}} (h : x.Nonempty) : ↑(⋂₀ x : ZFSet) = ⋂₀ (x : Class.{u}) :=
+  Set.ext fun _ => (ZFSet.mem_interₛ h).trans interₛ_apply.symm
+#align Class.sInter_coe Class.coe_interₛ
+
+theorem mem_of_mem_interₛ {x y z : Class} (hy : y ∈ ⋂₀ x) (hz : z ∈ x) : y ∈ z := by
+  obtain ⟨w, rfl, hw⟩ := hy
+  exact coe_mem.2 (hw z hz)
+#align Class.mem_of_mem_sInter Class.mem_of_mem_interₛ
+
+theorem mem_interₛ {x y : Class.{u}} (h : x.Nonempty) : y ∈ ⋂₀ x ↔ ∀ z, z ∈ x → y ∈ z := by
+  refine' ⟨fun hy z => mem_of_mem_interₛ hy, fun H => _⟩
+  simp_rw [mem_def, interₛ_apply]
+  obtain ⟨z, hz⟩ := h
+  obtain ⟨y, rfl, _⟩ := H z (coe_mem.2 hz)
+  refine' ⟨y, rfl, fun w hxw => _⟩
+  simpa only [coe_mem, coe_apply] using H w (coe_mem.2 hxw)
+#align Class.mem_sInter Class.mem_interₛ
+
 @[simp]
-theorem unionₛ_empty : ⋃₀ (∅ : Class.{u}) = (∅ : Class.{u}) :=
-  by
+theorem unionₛ_empty : ⋃₀ (∅ : Class.{u}) = (∅ : Class.{u}) := by
   ext
   simp
 #align Class.sUnion_empty Class.unionₛ_empty
+
+@[simp]
+theorem interₛ_empty : ⋂₀ (∅ : Class.{u}) = univ := by
+  rw [interₛ, classToCong_empty, Set.interₛ_empty, univ]
+#align Class.sInter_empty Class.interₛ_empty
 
 /-- An induction principle for sets. If every subset of a class is a member, then the class is
   universal. -/
@@ -1737,7 +1810,7 @@ theorem map_fval {f : ZFSet.{u} → ZFSet.{u}} [H : PSet.Definable 1 f] {x y : Z
     (h : y ∈ x) : (ZFSet.map f x ′ y : Class.{u}) = f y :=
   Class.iota_val _ _ fun z =>
     by
-    rw [Class.toSet_of_setCat, Class.coe_apply, mem_map]
+    rw [Class.toSet_of_ZFSet, Class.coe_apply, mem_map]
     exact
       ⟨fun ⟨w, _, pr⟩ => by
         let ⟨wy, fw⟩ := ZFSet.pair_injective pr

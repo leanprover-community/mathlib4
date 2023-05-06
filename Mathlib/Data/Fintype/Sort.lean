@@ -44,7 +44,6 @@ def finSumEquivOfFinset (hm : s.card = m) (hn : sᶜ.card = n) : Sum (Fin m) (Fi
       Equiv.sumCongr (s.orderIsoOfFin hm).toEquiv <|
         (sᶜ.orderIsoOfFin hn).toEquiv.trans <| Equiv.Set.ofEq s.coe_compl
     _ ≃ α := Equiv.Set.sumCompl _
-
 #align fin_sum_equiv_of_finset finSumEquivOfFinset
 
 @[simp]

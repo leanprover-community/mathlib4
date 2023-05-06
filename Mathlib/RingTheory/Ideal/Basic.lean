@@ -86,7 +86,6 @@ theorem eq_top_of_unit_mem (x y : α) (hx : x ∈ I) (h : y * x = 1) : I = ⊤ :
       z = z * (y * x) := by simp [h]
       _ = z * y * x := Eq.symm <| mul_assoc z y x
       _ ∈ I := I.mul_mem_left _ hx
-
 #align ideal.eq_top_of_unit_mem Ideal.eq_top_of_unit_mem
 
 theorem eq_top_of_isUnit_mem {x} (hx : x ∈ I) (h : IsUnit x) : I = ⊤ :=
@@ -637,7 +636,7 @@ theorem span_pow_eq_top (s : Set α) (hs : span s = ⊤) (n : ℕ) :
   rw [hf, one_pow] at this
   refine' span_le.mpr _ this
   rintro _ hx
-  simp_rw [Finset.mem_coe, Set.mem_image] at hx
+  simp_rw [Set.mem_image] at hx
   rcases hx with ⟨x, _, rfl⟩
   have : span ({(x:α) ^ (n + 1)} : Set α) ≤ span ((fun x : α => x ^ (n + 1)) '' s) := by
     rw [span_le, Set.singleton_subset_iff]
