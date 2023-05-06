@@ -8,7 +8,7 @@ Authors: Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.MeasureTheory.Measure.AeMeasurable
+import Mathlib.MeasureTheory.Measure.AeMeasurable
 
 /-!
 # Typeclasses for measurability of operations
@@ -210,8 +210,7 @@ export HasMeasurablePow (measurable_pow)
 /-- `monoid.has_pow` is measurable. -/
 instance Monoid.hasMeasurablePow (M : Type _) [Monoid M] [MeasurableSpace M] [HasMeasurableMul₂ M] :
     HasMeasurablePow M ℕ :=
-  ⟨measurable_from_prod_countable fun n =>
-      by
+  ⟨measurable_from_prod_countable fun n => by
       induction' n with n ih
       · simp only [pow_zero, ← Pi.one_def, measurable_one]
       · simp only [pow_succ]
@@ -393,8 +392,7 @@ instance Pi.hasMeasurableDiv₂ {ι : Type _} {α : ι → Type _} [∀ i, Div (
 @[measurability]
 theorem measurableSet_eq_fun {m : MeasurableSpace α} {E} [MeasurableSpace E] [AddGroup E]
     [MeasurableSingletonClass E] [HasMeasurableSub₂ E] {f g : α → E} (hf : Measurable f)
-    (hg : Measurable g) : MeasurableSet { x | f x = g x } :=
-  by
+    (hg : Measurable g) : MeasurableSet { x | f x = g x } := by
   suffices h_set_eq : { x : α | f x = g x } = { x | (f - g) x = (0 : E) }
   · rw [h_set_eq]
     exact (hf.sub hg) measurableSet_eq
@@ -404,8 +402,7 @@ theorem measurableSet_eq_fun {m : MeasurableSpace α} {E} [MeasurableSpace E] [A
 
 theorem nullMeasurableSet_eq_fun {E} [MeasurableSpace E] [AddGroup E] [MeasurableSingletonClass E]
     [HasMeasurableSub₂ E] {f g : α → E} (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
-    NullMeasurableSet { x | f x = g x } μ :=
-  by
+    NullMeasurableSet { x | f x = g x } μ := by
   apply (measurableSet_eq_fun hf.measurable_mk hg.measurable_mk).NullMeasurableSet.congr
   filter_upwards [hf.ae_eq_mk, hg.ae_eq_mk]with x hfx hgx
   change (hf.mk f x = hg.mk g x) = (f x = g x)
@@ -414,10 +411,8 @@ theorem nullMeasurableSet_eq_fun {E} [MeasurableSpace E] [AddGroup E] [Measurabl
 
 theorem measurableSet_eq_fun_of_countable {m : MeasurableSpace α} {E} [MeasurableSpace E]
     [MeasurableSingletonClass E] [Countable E] {f g : α → E} (hf : Measurable f)
-    (hg : Measurable g) : MeasurableSet { x | f x = g x } :=
-  by
-  have : { x | f x = g x } = ⋃ j, { x | f x = j } ∩ { x | g x = j } :=
-    by
+    (hg : Measurable g) : MeasurableSet { x | f x = g x } := by
+  have : { x | f x = g x } = ⋃ j, { x | f x = j } ∩ { x | g x = j } := by
     ext1 x
     simp only [Set.mem_setOf_eq, Set.mem_unionᵢ, Set.mem_inter_iff, exists_eq_right']
   rw [this]
@@ -429,8 +424,7 @@ theorem measurableSet_eq_fun_of_countable {m : MeasurableSpace α} {E} [Measurab
 theorem ae_eq_trim_of_measurable {α E} {m m0 : MeasurableSpace α} {μ : Measure α}
     [MeasurableSpace E] [AddGroup E] [MeasurableSingletonClass E] [HasMeasurableSub₂ E]
     (hm : m ≤ m0) {f g : α → E} (hf : measurable[m] f) (hg : measurable[m] g) (hfg : f =ᵐ[μ] g) :
-    f =ᶠ[@Measure.ae α m (μ.trim hm)] g :=
-  by
+    f =ᶠ[@Measure.ae α m (μ.trim hm)] g := by
   rwa [Filter.EventuallyEq, ae_iff, trim_measurable_set_eq hm _]
   exact @MeasurableSet.compl α _ m (@measurableSet_eq_fun α m E _ _ _ _ _ _ hf hg)
 #align ae_eq_trim_of_measurable ae_eq_trim_of_measurable
@@ -455,8 +449,7 @@ export HasMeasurableNeg (measurable_neg)
 
 @[to_additive]
 instance (priority := 100) hasMeasurableDiv_of_mul_inv (G : Type _) [MeasurableSpace G]
-    [DivInvMonoid G] [HasMeasurableMul G] [HasMeasurableInv G] : HasMeasurableDiv G
-    where
+    [DivInvMonoid G] [HasMeasurableMul G] [HasMeasurableInv G] : HasMeasurableDiv G where
   measurable_const_div c := by
     convert measurable_inv.const_mul c
     ext1
@@ -758,8 +751,7 @@ instance : MeasurableSpace Mˣ :=
   MeasurableSpace.comap (coe : Mˣ → M) ‹_›
 
 @[to_additive]
-instance Units.hasMeasurableSmul : HasMeasurableSmul Mˣ β
-    where
+instance Units.hasMeasurableSmul : HasMeasurableSmul Mˣ β where
   measurable_const_smul c := (measurable_const_smul (c : M) : _)
   measurable_smul_const x :=
     (measurable_smul_const x : Measurable fun c : M => c • x).comp MeasurableSpace.le_map_comap
@@ -846,8 +838,7 @@ instance HasMeasurableSmul.op {M α} [MeasurableSpace M] [MeasurableSpace α] [S
 /-- If a scalar is central, then its right action is measurable when its left action is. -/
 instance HasMeasurableSmul₂.op {M α} [MeasurableSpace M] [MeasurableSpace α] [SMul M α]
     [SMul Mᵐᵒᵖ α] [IsCentralScalar M α] [HasMeasurableSmul₂ M α] : HasMeasurableSmul₂ Mᵐᵒᵖ α :=
-  ⟨show Measurable fun x : Mᵐᵒᵖ × α => op (unop x.1) • x.2
-      by
+  ⟨show Measurable fun x : Mᵐᵒᵖ × α => op (unop x.1) • x.2 by
       simp_rw [op_smul_eq_smul]
       refine' (measurable_mul_unop.comp measurable_fst).smul measurable_snd⟩
 #align has_measurable_smul₂.op HasMeasurableSmul₂.op
