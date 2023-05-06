@@ -297,7 +297,7 @@ instance instSMul : SMul R (OuterMeasure α) :=
     { measureOf := fun s => c • m s
       empty := by simp; rw [← smul_one_mul c]; simp
       mono := fun {s t} h => by
-        simp
+        simp only
         rw [← smul_one_mul c, ← smul_one_mul c (m t)]
         exact ENNReal.mul_left_mono (m.mono h)
       unionᵢ_nat := fun s => by
@@ -447,7 +447,7 @@ def map {β} (f : α → β) : OuterMeasure α →ₗ[ℝ≥0∞] OuterMeasure �
     { measureOf := fun s => m (f ⁻¹' s)
       empty := m.empty
       mono := fun {s t} h => m.mono (preimage_mono h)
-      unionᵢ_nat := fun s => by simp; apply m.unionᵢ_nat fun i => f ⁻¹' s i }
+      unionᵢ_nat := fun s => by simp only [preimage_unionᵢ]; apply m.unionᵢ_nat fun i => f ⁻¹' s i }
   map_add' m₁ m₂ := coe_fn_injective rfl
   map_smul' c m := coe_fn_injective rfl
 #align measure_theory.outer_measure.map MeasureTheory.OuterMeasure.map
