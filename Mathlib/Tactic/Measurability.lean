@@ -1,0 +1,40 @@
+/-
+Copyright (c) 2023 Miyahara Kō. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Miyahara Kō
+-/
+
+import Mathlib.Tactic.Measurability.Init
+import Mathlib.Algebra.Group.Defs
+
+/-!
+# Measurability
+
+We define the `measurability` tactic using `aesop`. -/
+
+attribute [aesop (rule_sets [Measurable]) unfold norm] Function.comp
+attribute [aesop (rule_sets [Measurable]) unfold norm] npowRec
+
+/--
+The `measurability` attribute used to tag continuity statements for the `measurability` tactic. -/
+macro "measurability" : attr =>
+  `(attr|aesop safe apply (rule_sets [$(Lean.mkIdent `Measurable):ident]))
+
+/--
+The tactic `measurability` solves goals of the form `Measurable f`, `AEMeasurable f`,
+`AEStronglyMeasurable f μ`, or `MeasurableSet s` by applying lemmas tagged with the
+`measurability` user attribute. -/
+macro "measurability" : tactic =>
+  `(tactic|aesop (options := { terminal := true }) (rule_sets [$(Lean.mkIdent `Measurable):ident]))
+
+-- Todo: implement `measurability?`, `measurability!` and `measurability!?` and add configuration,
+-- original syntax was (same for the missing `measurability` variants):
+-- syntax (name := measurability) "measurability" (config)? : tactic
+
+/- Todo:
+Give the below attr to `Measurable.aestronglyMeasurable` when we port
+`MeasureTheory.Function.StronglyMeasurable`.
+```
+@[aesop unsafe 30% apply (rule_sets [Measurable])]
+theorem MeasureTheory.Function.StronglyMeasurable ...
+``` -/
