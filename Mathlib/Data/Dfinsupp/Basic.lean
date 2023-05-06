@@ -991,8 +991,7 @@ protected theorem induction {p : (Π₀ i, β i) → Prop} (f : Π₀ i, β i) (
 theorem induction₂ {p : (Π₀ i, β i) → Prop} (f : Π₀ i, β i) (h0 : p 0)
     (ha : ∀ (i b) (f : Π₀ i, β i), f i = 0 → b ≠ 0 → p f → p (f + single i b)) : p f :=
   Dfinsupp.induction f h0 fun i b f h1 h2 h3 =>
-    have h4 : f + single i b = single i b + f :=
-      by
+    have h4 : f + single i b = single i b + f := by
       ext j; by_cases H : i = j
       · subst H
         simp [h1]

@@ -166,25 +166,17 @@ def natTrans : fst L R ⋙ L ⟶ snd L R ⋙ R where app X := X.hom
 #align category_theory.comma.nat_trans CategoryTheory.Comma.natTrans
 
 @[simp]
-theorem eqToHom_left (X Y : Comma L R) (H : X = Y) :
-    CommaMorphism.left (eqToHom H) =
-      eqToHom
-        (by
-          cases H
-          rfl) :=
-  by
+theorem eqToHom_left (X Y : Comma L R) (H : X = Y) : CommaMorphism.left (eqToHom H) = eqToHom (by
+    cases H
+    rfl) := by
   cases H
   rfl
 #align category_theory.comma.eq_to_hom_left CategoryTheory.Comma.eqToHom_left
 
 @[simp]
-theorem eqToHom_right (X Y : Comma L R) (H : X = Y) :
-    CommaMorphism.right (eqToHom H) =
-      eqToHom
-        (by
-          cases H
-          rfl) :=
-  by
+theorem eqToHom_right (X Y : Comma L R) (H : X = Y) : CommaMorphism.right (eqToHom H) = eqToHom (by
+    cases H
+    rfl) := by
   cases H
   rfl
 #align category_theory.comma.eq_to_hom_right CategoryTheory.Comma.eqToHom_right
@@ -198,8 +190,7 @@ directions give a commutative square.
 -/
 @[simps]
 def isoMk {X Y : Comma L₁ R₁} (l : X.left ≅ Y.left) (r : X.right ≅ Y.right)
-    (h : L₁.map l.hom ≫ Y.hom = X.hom ≫ R₁.map r.hom) : X ≅ Y
-    where
+    (h : L₁.map l.hom ≫ Y.hom = X.hom ≫ R₁.map r.hom) : X ≅ Y where
   hom :=
     { left := l.hom
       right := r.hom
@@ -207,8 +198,7 @@ def isoMk {X Y : Comma L₁ R₁} (l : X.left ≅ Y.left) (r : X.right ≅ Y.rig
   inv :=
     { left := l.inv
       right := r.inv
-      w :=
-        by
+      w := by
         rw [← L₁.mapIso_inv l, Iso.inv_comp_eq, L₁.mapIso_hom, ← Category.assoc, h,
           Category.assoc, ← R₁.map_comp]
         simp }

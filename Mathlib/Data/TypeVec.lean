@@ -577,33 +577,29 @@ protected def prod.map : ∀ {n} {α α' β β' : TypeVec.{u} n}, α ⟹ β → 
 @[inherit_doc] scoped[MvFunctor] infixl:45 " ⊗' " => TypeVec.prod.map
 
 theorem fst_prod_mk {α α' β β' : TypeVec n} (f : α ⟹ β) (g : α' ⟹ β') :
-    TypeVec.prod.fst ⊚ (f ⊗' g) = f ⊚ TypeVec.prod.fst :=
-  by
-    funext i; induction i;
-    case fz => rfl
-    case fs _ _ i_ih => apply i_ih
+    TypeVec.prod.fst ⊚ (f ⊗' g) = f ⊚ TypeVec.prod.fst := by
+  funext i; induction i;
+  case fz => rfl
+  case fs _ _ i_ih => apply i_ih
 #align typevec.fst_prod_mk TypeVec.fst_prod_mk
 
 theorem snd_prod_mk {α α' β β' : TypeVec n} (f : α ⟹ β) (g : α' ⟹ β') :
-    TypeVec.prod.snd ⊚ (f ⊗' g) = g ⊚ TypeVec.prod.snd :=
-  by
-    funext i; induction i;
-    case fz => rfl
-    case fs _ _ i_ih => apply i_ih
+    TypeVec.prod.snd ⊚ (f ⊗' g) = g ⊚ TypeVec.prod.snd := by
+  funext i; induction i;
+  case fz => rfl
+  case fs _ _ i_ih => apply i_ih
 #align typevec.snd_prod_mk TypeVec.snd_prod_mk
 
-theorem fst_diag {α : TypeVec n} : TypeVec.prod.fst ⊚ (prod.diag : α ⟹ _) = id :=
-  by
-    funext i; induction i;
-    case fz => rfl
-    case fs _ _ i_ih => apply i_ih
+theorem fst_diag {α : TypeVec n} : TypeVec.prod.fst ⊚ (prod.diag : α ⟹ _) = id := by
+  funext i; induction i;
+  case fz => rfl
+  case fs _ _ i_ih => apply i_ih
 #align typevec.fst_diag TypeVec.fst_diag
 
-theorem snd_diag {α : TypeVec n} : TypeVec.prod.snd ⊚ (prod.diag : α ⟹ _) = id :=
-  by
-    funext i; induction i;
-    case fz => rfl
-    case fs _ _ i_ih => apply i_ih
+theorem snd_diag {α : TypeVec n} : TypeVec.prod.snd ⊚ (prod.diag : α ⟹ _) = id := by
+  funext i; induction i;
+  case fz => rfl
+  case fs _ _ i_ih => apply i_ih
 #align typevec.snd_diag TypeVec.snd_diag
 
 theorem repeatEq_iff_eq {α : TypeVec n} {i x y} :

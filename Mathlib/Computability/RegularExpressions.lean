@@ -338,8 +338,7 @@ theorem star_rmatch_iff (P : RegularExpression α) :
             rw [rmatch] at helem
             convert helem.2
             exact hsum.1
-          · have hwf : U.join.length < (List.cons a x).length :=
-              by
+          · have hwf : U.join.length < (List.cons a x).length := by
               rw [hsum.1, hsum.2]
               simp only [List.length_append, List.length_join, List.length]
               apply A

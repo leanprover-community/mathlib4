@@ -189,8 +189,7 @@ private def g :
   | _, α, Fin2.fz, x => ⟨x.val, x.property⟩
 
 theorem LiftP_PredLast_iff {β} (P : β → Prop) (x : F (α ::: β)) :
-    LiftP' (PredLast' _ P) x ↔ LiftP (PredLast _ P) x :=
-  by
+    LiftP' (PredLast' _ P) x ↔ LiftP (PredLast _ P) x := by
   dsimp only [LiftP, LiftP']
   apply exists_iff_exists_of_mono F (f _ n α) (g _ n α)
   · ext (i⟨x, _⟩)
@@ -227,8 +226,7 @@ private def g' :
   | _, α, Fin2.fz, x => ⟨x.val, x.property⟩
 
 theorem LiftR_RelLast_iff (x y : F (α ::: β)) :
-    LiftR' (RelLast' _ rr) x y ↔ LiftR (RelLast (i := _) _ rr) x y :=
-  by
+    LiftR' (RelLast' _ rr) x y ↔ LiftR (RelLast (i := _) _ rr) x y := by
   dsimp only [LiftR, LiftR']
   apply exists_iff_exists_of_mono F (f' rr _ _) (g' rr _ _)
   · ext (i⟨x, _⟩) : 2

@@ -319,8 +319,7 @@ theorem hasLimitOfIso {F G : J ⥤ C} [HasLimit F] (α : F ≅ G) : HasLimit G :
     { cone := (Cones.postcompose α.hom).obj (limit.cone F)
       isLimit :=
         { lift := fun s => limit.lift F ((Cones.postcompose α.inv).obj s)
-          fac := fun s j =>
-            by
+          fac := fun s j => by
             rw [Cones.postcompose_obj_π, NatTrans.comp_app, limit.cone_π, ← Category.assoc,
               limit.lift_π]
             simp
@@ -894,8 +893,7 @@ theorem hasColimitOfIso {F G : J ⥤ C} [HasColimit F] (α : G ≅ F) : HasColim
     { cocone := (Cocones.precompose α.hom).obj (colimit.cocone F)
       isColimit :=
         { desc := fun s => colimit.desc F ((Cocones.precompose α.inv).obj s)
-          fac := fun s j =>
-            by
+          fac := fun s j => by
             rw [Cocones.precompose_obj_ι, NatTrans.comp_app, colimit.cocone_ι]
             rw [Category.assoc, colimit.ι_desc, ← NatIso.app_hom, ← Iso.eq_inv_comp]; rfl
           uniq := fun s m w => by
