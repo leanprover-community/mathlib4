@@ -88,6 +88,11 @@ Now, `A.foo x m` pretty prints as `x.foo m`. It also adds a rule that
 `A.foo x.toA m` pretty prints as `x.foo m`. This rule is meant to combine with
 the projection collapse delaborator, so that `A.foo x.toB.toA m` also will
 pretty print as `x.foo m`.
+
+Since this last rule is a purely syntactic transformation,
+it might lead to output that does not round trip, though this can only occur if
+there exists an `A`-valued `toA` function that is not a parent projection that
+happens to be pretty printable using dot notation.
 -/
 elab "pp_extended_field_notation " f:Term.ident : command => do
   let f ← liftTermElabM <| Elab.resolveGlobalConstNoOverloadWithInfo f
