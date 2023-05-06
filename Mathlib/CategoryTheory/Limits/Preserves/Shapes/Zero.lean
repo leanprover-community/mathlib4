@@ -147,6 +147,14 @@ instance (priority := 100) preservesZeroMorphisms_of_preserves_terminal_object
       PreservesTerminal.iso F ≪≫ HasZeroObject.zeroIsoTerminal.symm
 #align category_theory.functor.preserves_zero_morphisms_of_preserves_terminal_object CategoryTheory.Functor.preservesZeroMorphisms_of_preserves_terminal_object
 
+instance preservesZeroMorphisms_of_preserves_terminal_object'
+    {C D : Type _} [Category C] [Category D] [HasZeroMorphisms C] [HasZeroMorphisms D] (F : C ⥤ D)
+    [HasTerminal C] [PreservesLimit (Functor.empty.{0} C) F] : F.PreservesZeroMorphisms := ⟨by
+  have : F.map (𝟙 (⊤_ C)) = 0 := (IsTerminal.isTerminalObj _ _ terminalIsTerminal).hom_ext _ _
+  intro X Y
+  have eq : (0 : X ⟶ Y) = 0 ≫ 𝟙 (⊤_ C) ≫ 0 := by simp
+  rw [eq, F.map_comp, F.map_comp, this, zero_comp, comp_zero]⟩
+
 variable (F)
 
 /-- Preserving zero morphisms implies preserving terminal objects. -/

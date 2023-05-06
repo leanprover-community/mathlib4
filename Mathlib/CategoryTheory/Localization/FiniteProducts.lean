@@ -1,4 +1,5 @@
 import Mathlib.CategoryTheory.Limits.HasLimitsConstAdj
+import Mathlib.CategoryTheory.Limits.Preserves.Finite
 import Mathlib.CategoryTheory.Localization.Pi
 import Mathlib.CategoryTheory.Localization.Adjunction
 import Mathlib.CategoryTheory.Localization.Equivalence
@@ -54,30 +55,79 @@ instance whiskeringRightDiscrete_isLocalization (J : Type) [Finite J] [W.Contain
       fun j => Localization.inverts L W _ (hf j)
     apply NatIso.isIso_of_isIso_app
 
-lemma hasProductsOfShape (J : Type) [Finite J] [W.ContainsIdentities]
-    [HasProductsOfShape J C] (hW : W.IsStableUnderProductsOfShape J) :
-    HasProductsOfShape J D := by
-  let G : C ⥤ _ := Functor.const (Discrete J)
-  let F : ((Discrete J) ⥤ C) ⥤ C := lim
-  let adj : G ⊣ F := constLimAdj
-  let L' := (whiskeringRight (Discrete J) C D).obj L
-  let G' : D ⥤ _ := Functor.const (Discrete J)
-  let W' := W.functorCategory (Discrete J)
-  have hF : W'.IsInvertedBy (F ⋙ L) := fun X Y f hf =>
-    Localization.inverts L W (F.map f) (hW.lim_map f hf)
-  let F' := Localization.lift (F ⋙ L) hF L'
-  have : CatCommSq L G L' G' := ⟨NatIso.ofComponents (fun X =>
-    NatIso.ofComponents (fun j => Iso.refl _) (by aesop_cat)) (by aesop_cat)⟩
-  have : CatCommSq L' F L F' := ⟨(Localization.fac _ _ _).symm⟩
-  exact hasLimitsOfShape_of_const_adjunction (adj.localization L W L' W' G' F')
+
+namespace FiniteProductsAux
+
+variable (C)
+variable (J : Type) [Finite J] [W.ContainsIdentities]
+  [HasProductsOfShape J C] (hW : W.IsStableUnderProductsOfShape J)
+
+def G : C ⥤ (Discrete J ⥤ C) := Functor.const (Discrete J)
+noncomputable def F : ((Discrete J) ⥤ C) ⥤ C := lim
+noncomputable def adj : G C J ⊣ F C J := constLimAdj
+variable {C}
+def L' : (Discrete J ⥤ C) ⥤ (Discrete J ⥤ D) := (whiskeringRight (Discrete J) C D).obj L
+variable (D)
+def G' : D ⥤ (Discrete J ⥤ D) := Functor.const (Discrete J)
+def W' := W.functorCategory (Discrete J)
+variable {D}
+lemma hF : (W' W J).IsInvertedBy (F C J ⋙ L) := fun _ _ f hf =>
+  Localization.inverts L W ((F C J).map f) (hW.lim_map f hf)
+instance : (L' L J).IsLocalization (W' W J) := by
+  dsimp [L', W']
+  infer_instance
+variable {J}
+noncomputable def F' : (Discrete J ⥤ D) ⥤ D :=
+  Localization.lift (F C J ⋙ L) (hF L W J hW) (L' L J)
+@[simp] instance : CatCommSq L (G C J) (L' L J) (G' D J) := ⟨(Functor.compConstIso _ _).symm⟩
+noncomputable instance : CatCommSq (L' L J) (F C J) L (F' L W hW) :=
+  ⟨(Localization.fac _ _ _).symm⟩
+noncomputable def adj' : G' D J ⊣ F' L W hW := (adj C J).localization L W (L' L J) (W' W J) _ _
+
+lemma isIso_limitComparisonOfConstAdjunction :
+  IsIso (limitComparisonOfConstAdjunction (adj C J) (adj' L W hW) L) := by
+  have : ∀ (X : Discrete J ⥤ C),
+    IsIso ((limitComparisonOfConstAdjunction (adj C J) (adj' L W hW) L).app X) := by
+      intro X
+      simp only [limitComparisonOfConstAdjunction, Functor.comp_obj, whiskeringRight_obj_obj,
+        Adjunction.natTransHomEquiv_apply_app, whiskeringRight_obj_map, adj',
+        Adjunction.localization_unit_app, assoc]
+      dsimp [CatCommSq.iso]
+      simp only [← Functor.map_comp, Iso.inv_hom_id_app_assoc]
+      erw [← NatTrans.naturality, ← L.map_comp_assoc, Adjunction.right_triangle_components]
+      infer_instance
+  exact NatIso.isIso_of_isIso_app _
+
+end FiniteProductsAux
+
+lemma hasProductsOfShape (J : Type) [Finite J] [W.ContainsIdentities] [HasProductsOfShape J C]
+    (hW : W.IsStableUnderProductsOfShape J):
+  HasProductsOfShape J D := hasLimitsOfShape_of_const_adjunction (FiniteProductsAux.adj' L W hW)
 
 lemma hasFiniteProducts [W.ContainsIdentities] [HasFiniteProducts C]
     [W.IsStableUnderFiniteProducts] : HasFiniteProducts D :=
   ⟨fun _ => hasProductsOfShape L W _
     (MorphismProperty.IsStableUnderFiniteProducts.isStableUnderProductsOfShape W _)⟩
 
+lemma preservesProductsOfShape (J : Type) [Finite J] [W.ContainsIdentities]
+    [HasProductsOfShape J C] (hW : W.IsStableUnderProductsOfShape J) :
+    PreservesLimitsOfShape (Discrete J) L := by
+  have := FiniteProductsAux.isIso_limitComparisonOfConstAdjunction L W hW
+  exact preservesLimitsOfShape_of_const_adjunction (FiniteProductsAux.adj C J)
+    (FiniteProductsAux.adj' L W hW) L
+
+lemma preservesFiniteProducts [W.ContainsIdentities]
+    [HasFiniteProducts C] [W.IsStableUnderFiniteProducts] :
+    PreservesFiniteProducts L := ⟨by
+  intro J hJ
+  exact preservesProductsOfShape L W J
+    (MorphismProperty.IsStableUnderFiniteProducts.isStableUnderProductsOfShape W _)⟩
+
 instance [W.ContainsIdentities] [HasFiniteProducts C] [W.IsStableUnderFiniteProducts] :
     HasFiniteProducts (W.Localization) := hasFiniteProducts W.Q W
+
+noncomputable instance [W.ContainsIdentities] [HasFiniteProducts C]
+    [W.IsStableUnderFiniteProducts] : PreservesFiniteProducts W.Q := preservesFiniteProducts W.Q W
 
 end Localization
 

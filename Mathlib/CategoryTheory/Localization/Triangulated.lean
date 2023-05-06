@@ -2,7 +2,8 @@ import Mathlib.CategoryTheory.Localization.CalculusOfFractions
 import Mathlib.CategoryTheory.Triangulated.Functor
 import Mathlib.CategoryTheory.Triangulated.Triangulated
 import Mathlib.CategoryTheory.Shift.Localization
-import Mathlib.CategoryTheory.Localization.FiniteProducts
+import Mathlib.CategoryTheory.Localization.Preadditive
+import Mathlib.CategoryTheory.Adjunction.Limits
 
 namespace CategoryTheory
 
@@ -59,16 +60,20 @@ end Functor
 
 namespace Triangulated
 
+namespace Localization
+
 variable {C D : Type _} [Category C] [Category D]
   [HasShift C ℤ] [Preadditive C] [HasZeroObject C]
     [∀ (n : ℤ), (shiftFunctor C n).Additive] [Pretriangulated C]
-  [HasShift D ℤ] [Preadditive D] [HasZeroObject D]
-    [∀ (n : ℤ), (shiftFunctor D n).Additive]
-  (L : C ⥤ D) (W : MorphismProperty C) [L.IsLocalization W] [L.Additive]
-    [L.HasCommShift ℤ]  [W.HasLeftCalculusOfFractions] [W.HasRightCalculusOfFractions]
+    (L : C ⥤ D) (W : MorphismProperty C) [L.IsLocalization W]
     [W.IsCompatibleWithShift ℤ] [W.IsCompatibleWithTriangulation]
+    [W.HasLeftCalculusOfFractions] [W.HasRightCalculusOfFractions]
+    [HasShift D ℤ] [L.HasCommShift ℤ]
 
-namespace Localization
+section
+
+variable [Preadditive D] [HasZeroObject D]
+  [∀ (n : ℤ), (shiftFunctor D n).Additive] [L.Additive]
 
 lemma distinguished_cocone_triangle {X Y : D} (f : X ⟶ Y) :
     ∃ (Z : D) (g : Y ⟶ Z) (h : Z ⟶ X⟦(1 : ℤ)⟧),
@@ -167,6 +172,8 @@ lemma pretriangulated : Pretriangulated D where
   rotate_distinguished_triangle := L.rotate_essImageDistTriang
   complete_distinguished_triangle_morphism := complete_distinguished_triangle_morphism L W
 
+end
+
 noncomputable example : HasShift W.Localization ℤ := inferInstance
 noncomputable example : W.Q.HasCommShift ℤ := inferInstance
 
@@ -174,43 +181,23 @@ variable
   [HasFiniteProducts C]
   [W.IsStableUnderFiniteProducts]
   [Preadditive W.Localization]
-  [HasZeroObject W.Localization]
-  [∀ (n : ℤ), (shiftFunctor W.Localization n).Additive]
-  [PreservesFiniteProducts W.Q]
 
-lemma _root_.CategoryTheory.Functor.additive_of_preserves_binary_products
-    {C D : Type _} [Category C] [Category D] [Preadditive C] [Preadditive D] (F : C ⥤ D)
-    [HasBinaryProducts C] [PreservesLimitsOfShape (Discrete WalkingPair) F]
-    [F.PreservesZeroMorphisms] : F.Additive := by
-  have : HasBinaryBiproducts C := HasBinaryBiproducts.of_hasBinaryProducts
-  have := preservesBinaryBiproductsOfPreservesBinaryProducts F
-  exact Functor.additive_of_preservesBinaryBiproducts F
-
-lemma _root_.CategoryTheory.Functor.preservesZeroMorphisms_of_preserves_terminal
-    {C D : Type _} [Category C] [Category D] [HasZeroMorphisms C] [HasZeroMorphisms D] (F : C ⥤ D)
-    [HasTerminal C] [PreservesLimit (Functor.empty.{0} C) F] : F.PreservesZeroMorphisms := ⟨by
-  have : F.map (𝟙 (⊤_ C)) = 0 := (IsTerminal.isTerminalObj _ _ terminalIsTerminal).hom_ext _ _
-  intro X Y
-  have eq : (0 : X ⟶ Y) = 0 ≫ 𝟙 (⊤_ C) ≫ 0 := by simp
-  rw [eq, F.map_comp, F.map_comp, this, zero_comp, comp_zero]⟩
-
-lemma _root_.CategoryTheory.Functor.additive_of_preserves_binary_products_of_preserves_terminal
-    {C D : Type _} [Category C] [Category D] [Preadditive C] [Preadditive D] (F : C ⥤ D)
-    [HasBinaryProducts C] [HasTerminal C] [PreservesLimitsOfShape (Discrete WalkingPair) F]
-    [PreservesLimit (Functor.empty.{0} C) F] : F.Additive := by
-  have : Functor.PreservesZeroMorphisms F := F.preservesZeroMorphisms_of_preserves_terminal
-  exact F.additive_of_preserves_binary_products
-
-lemma _root_.CategoryTheory.Functor.additive_of_preserves_finite_products
-    {C D : Type _} [Category C] [Category D] [Preadditive C] [Preadditive D] (F : C ⥤ D)
-    [HasFiniteProducts C] [PreservesFiniteProducts F] : F.Additive := by
-  have : PreservesLimitsOfShape (Discrete WalkingPair) F := PreservesFiniteProducts.preserves _
-  have : PreservesLimitsOfShape (Discrete PEmpty) F := PreservesFiniteProducts.preserves _
-  exact F.additive_of_preserves_binary_products_of_preserves_terminal
-
+example : HasTerminal W.Localization := inferInstance
 example : HasFiniteProducts W.Localization := inferInstance
+noncomputable example : PreservesFiniteProducts W.Q := inferInstance
 
 instance : W.Q.Additive := Functor.additive_of_preserves_finite_products _
+instance : HasZeroObject W.Localization :=
+  Limits.hasZeroObject_of_additive_functor W.Q
+
+noncomputable instance (n : ℤ) :
+    PreservesFiniteProducts (shiftFunctor (MorphismProperty.Localization W) n) := by
+  constructor
+  intros
+  infer_instance
+
+instance (n : ℤ) : (shiftFunctor W.Localization n).Additive := by
+  apply Functor.additive_of_preserves_finite_products _
 
 noncomputable instance : Pretriangulated W.Localization := pretriangulated W.Q W
 
