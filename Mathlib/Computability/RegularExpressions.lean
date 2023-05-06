@@ -350,8 +350,8 @@ theorem star_rmatch_iff (P : RegularExpression α) :
 #align regular_expression.star_rmatch_iff RegularExpression.star_rmatch_iff
 
 @[simp]
-theorem rmatch_iff_matches' (P : RegularExpression α) : ∀ x : List α, P.rmatch x ↔ x ∈ P.matches' :=
-by
+theorem rmatch_iff_matches' (P : RegularExpression α) :
+    ∀ x : List α, P.rmatch x ↔ x ∈ P.matches' := by
   intro x
   induction P generalizing x
   all_goals
