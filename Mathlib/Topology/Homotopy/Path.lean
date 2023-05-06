@@ -206,10 +206,10 @@ def reparam (p : Path x₀ x₁) (f : I → I) (hf : Continuous f) (hf₀ : f 0 
   prop' t x hx := by
     cases' hx with hx hx
     · rw [hx]
-      norm_num [hf₀]
+      simp [hf₀] -- Porting note: Originally `norm_num [hf₀]`
     · rw [Set.mem_singleton_iff] at hx
       rw [hx]
-      norm_num [hf₁]
+      simp [hf₁] -- Porting note: Originally `norm_num [hf₀]`
 #align path.homotopy.reparam Path.Homotopy.reparam
 
 /-- Suppose `F : homotopy p q`. Then we have a `homotopy p.symm q.symm` by reversing the second
@@ -273,10 +273,10 @@ theorem trans ⦃p₀ p₁ p₂ : Path x₀ x₁⦄ (h₀ : p₀.Homotopic p₁)
 #align path.homotopic.trans Path.Homotopic.trans
 
 theorem equivalence : Equivalence (@Homotopic X _ x₀ x₁) :=
-  ⟨refl, symm, trans⟩
+  ⟨refl, (symm ·), (trans · ·)⟩
 #align path.homotopic.equivalence Path.Homotopic.equivalence
 
-theorem map {p q : Path x₀ x₁} (h : p.Homotopic q) (f : C(X, Y)) :
+nonrec theorem map {p q : Path x₀ x₁} (h : p.Homotopic q) (f : C(X, Y)) :
     Homotopic (p.map f.continuous) (q.map f.continuous) :=
   h.map fun F => F.map f
 #align path.homotopic.map Path.Homotopic.map
