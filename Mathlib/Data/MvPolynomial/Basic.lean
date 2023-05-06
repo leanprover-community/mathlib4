@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Johan Commelin, Mario Carneiro
 
 ! This file was ported from Lean 3 source module data.mv_polynomial.basic
-! leanprover-community/mathlib commit 2d5739b61641ee4e7e53eca5688a08f66f2e6a60
+! leanprover-community/mathlib commit 0b89934139d3be96f9dab477f10c20f9f93da580
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -1148,6 +1148,22 @@ theorem eval_assoc {τ} (f : σ → MvPolynomial τ R) (g : τ → R) (p : MvPol
   congr with a; simp
 #align mv_polynomial.eval_assoc MvPolynomial.eval_assoc
 
+@[simp]
+theorem eval₂_id (p : MvPolynomial σ R) : eval₂ (RingHom.id _) g p = eval g p :=
+  rfl
+#align mv_polynomial.eval₂_id MvPolynomial.eval₂_id
+
+theorem eval_eval₂ [CommSemiring R] [CommSemiring S]
+    (f : R →+* MvPolynomial τ S) (g : σ → MvPolynomial τ S) (p : MvPolynomial σ R) :
+    eval x (eval₂ f g p) = eval₂ ((eval x).comp f) (fun s => eval x (g s)) p := by
+  apply induction_on p
+  · simp
+  · intro p q hp hq
+    simp [hp, hq]
+  · intro p n hp
+    simp [hp]
+#align mv_polynomial.eval_eval₂ MvPolynomial.eval_eval₂
+
 end Eval
 
 section Map
@@ -1194,8 +1210,8 @@ theorem eval₂_eq_eval_map (g : σ → S₁) (p : MvPolynomial σ R) : p.eval�
 
   have h := eval₂_comp_left (eval₂Hom (RingHom.id S₁) g) (C.comp f) X p
   -- porting note: the Lean 3 version of `h` was full of metavariables which
-  -- were later unified during `rw [h]`
-  dsimp at h
+  -- were later unified during `rw [h]`. Also needed to add `-eval₂_id`.
+  dsimp [-eval₂_id] at h
   rw [h]
   congr
   · ext1 a

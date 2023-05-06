@@ -97,7 +97,6 @@ theorem degrees_monomial (s : σ →₀ ℕ) (a : R) : degrees (monomial s a) �
     have := Finsupp.support_single_subset h
     rw [Finset.mem_singleton] at this
     rw [this]
-    exact le_refl _
 #align mv_polynomial.degrees_monomial MvPolynomial.degrees_monomial
 
 theorem degrees_monomial_eq (s : σ →₀ ℕ) (a : R) (ha : a ≠ 0) :
@@ -666,7 +665,6 @@ theorem totalDegree_pow (a : MvPolynomial σ R) (n : ℕ) : (a ^ n).totalDegree 
     totalDegree (a * a ^ n) ≤ a.totalDegree + (a ^ n).totalDegree := totalDegree_mul _ _
     _ ≤ a.totalDegree + n * a.totalDegree := (add_le_add_left ih _)
     _ = (n + 1) * a.totalDegree := by rw [add_mul, one_mul, add_comm]
-
 #align mv_polynomial.total_degree_pow MvPolynomial.totalDegree_pow
 
 @[simp]
@@ -724,7 +722,6 @@ theorem exists_degree_lt [Fintype σ] (f : MvPolynomial σ R) (n : ℕ)
       intros
       rfl
     _ ≤ f.totalDegree := le_totalDegree hd
-
 #align mv_polynomial.exists_degree_lt MvPolynomial.exists_degree_lt
 
 theorem coeff_eq_zero_of_totalDegree_lt {f : MvPolynomial σ R} {d : σ →₀ ℕ}

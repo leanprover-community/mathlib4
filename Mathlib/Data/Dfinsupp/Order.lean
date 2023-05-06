@@ -56,15 +56,15 @@ theorem le_def {f g : Π₀ i, α i} : f ≤ g ↔ ∀ i, f i ≤ g i :=
 #align dfinsupp.le_def Dfinsupp.le_def
 
 /-- The order on `Dfinsupp`s over a partial order embeds into the order on functions -/
-def orderEmbeddingToFun : (Π₀ i, α i) ↪o ∀ i, α i
-    where
+def orderEmbeddingToFun : (Π₀ i, α i) ↪o ∀ i, α i where
   toFun := FunLike.coe
   inj' := FunLike.coe_injective
   map_rel_iff' := by rfl
 #align dfinsupp.order_embedding_to_fun Dfinsupp.orderEmbeddingToFun
 
 @[simp]
-theorem orderEmbeddingToFun_apply {f : Π₀ i, α i} {i : ι} : orderEmbeddingToFun f i = f i :=
+theorem orderEmbeddingToFun_apply {f : Π₀ i, α i} {i : ι} :
+    (@orderEmbeddingToFun ι α _ _ f) i = f i :=
   rfl
 #align dfinsupp.order_embedding_to_fun_apply Dfinsupp.orderEmbeddingToFun_apply
 

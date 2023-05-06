@@ -716,7 +716,6 @@ theorem sign_bij [DecidableEq β] [Fintype β] {f : Perm α} {g : Perm β} (i : 
             ⟨⟨x, hfx⟩, Subtype.eq hx⟩⟩)
         fun ⟨x, _⟩ => Subtype.eq (h x _ _)
     _ = sign g := sign_subtypePerm _ _ fun _ => id
-
 #align equiv.perm.sign_bij Equiv.Perm.sign_bij
 
 /-- If we apply `prod_extendRight a (σ a)` for all `a : α` in turn,
