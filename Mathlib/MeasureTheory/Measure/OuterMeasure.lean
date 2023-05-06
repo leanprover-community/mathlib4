@@ -1712,16 +1712,16 @@ theorem trim_sup (m₁ m₂ : OuterMeasure α) : (m₁ ⊔ m₂).trim = m₁.tri
 /-- `trim` sends the supremum of a countable family of outer measures to the supremum
 of the trimmed measures. -/
 theorem trim_supᵢ {ι} [Countable ι] (μ : ι → OuterMeasure α) :
-  trim (⨆ i, μ i) = ⨆ i, trim (μ i) := by
-    simp_rw [← @supᵢ_plift_down _ ι]
-    ext1 s
-    haveI : Countable (Option <| PLift ι) := by exact instCountableOption
-    obtain ⟨t, _, _, hμt⟩ :=
-      exists_measurable_superset_forall_eq_trim
-        (Option.elim' (⨆ i, μ (PLift.down i)) (μ ∘ PLift.down)) s
-    simp only [Option.forall, Option.elim'] at hμt
-    simp only [supᵢ_apply, ← hμt.1]
-    exact supᵢ_congr hμt.2
+    trim (⨆ i, μ i) = ⨆ i, trim (μ i) := by
+  simp_rw [← @supᵢ_plift_down _ ι]
+  ext1 s
+  haveI : Countable (Option <| PLift ι) := by exact instCountableOption
+  obtain ⟨t, _, _, hμt⟩ :=
+    exists_measurable_superset_forall_eq_trim
+      (Option.elim' (⨆ i, μ (PLift.down i)) (μ ∘ PLift.down)) s
+  simp only [Option.forall, Option.elim'] at hμt
+  simp only [supᵢ_apply, ← hμt.1]
+  exact supᵢ_congr hμt.2
 #align measure_theory.outer_measure.trim_supr MeasureTheory.OuterMeasure.trim_supᵢ
 
 /-- The trimmed property of a measure μ states that `μ.toOuterMeasure.trim = μ.toOuterMeasure`.
