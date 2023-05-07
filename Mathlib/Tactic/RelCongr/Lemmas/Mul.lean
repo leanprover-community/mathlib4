@@ -12,7 +12,7 @@ import Mathlib.Tactic.LibrarySearch
 /-! # ≤, ff * tt -/
 
 #check mul_le_mul_left' -- for "covariant class ....." (this covers `ℝ≥0∞`)
--- (bc : b ≤ c) (a : α) : a * b ≤ a * c
+-- (bc : b ≤ c) : a * b ≤ a * c
 
 #check mul_le_mul_of_nonneg_left -- for "PosMulMono ..."
 -- (h : b ≤ c) (a0 : 0 ≤ a) : a * b ≤ a * c
@@ -20,7 +20,7 @@ import Mathlib.Tactic.LibrarySearch
 /-! # ≤, tt * ff -/
 
 #check mul_le_mul_right' -- for "covariant class ....." (this covers `ℝ≥0∞`)
---  (bc : b ≤ c) (a : α) : b * a ≤ c * a
+-- (bc : b ≤ c) : b * a ≤ c * a
 
 #check mul_le_mul_of_nonneg_right -- for "MulPosMono ..."
 -- (h : b ≤ c) (a0 : 0 ≤ a) : b * a ≤ c * a
@@ -54,7 +54,7 @@ import Mathlib.Tactic.LibrarySearch
 /-! # <, ff * tt -/
 
 #check mul_lt_mul_left' -- for "covariant class ...."
--- (bc : b < c) (a : α) : a * b < a * c
+-- (bc : b < c) : a * b < a * c
 
 #check mul_lt_mul_of_pos_left -- PosMulStrictMono
 -- (bc : b < c) (a0 : 0 < a) : a * b < a * c
@@ -66,7 +66,7 @@ theorem ENNReal.mul_lt_mul_left' {a b c : ENNReal} (h0 : a ≠ 0) (hinf : a ≠ 
 /-! # <, tt * ff -/
 
 #check mul_lt_mul_right' -- for "covariant class ...."
--- (bc : b < c) (a : α) : b * a < c * a
+-- (bc : b < c) : b * a < c * a
 
 #check mul_lt_mul_of_pos_right -- MulPosStrictMono
 -- (bc : b < c) (a0 : 0 < a) : b * a < c * a

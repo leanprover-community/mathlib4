@@ -4,17 +4,17 @@ import Mathlib.Tactic.LibrarySearch
 /-! # ≤, tt - tt -/
 
 #check sub_le_sub -- for AddCommGroup, ...
---  (hab : a ≤ b) (hcd : c ≤ d) : a - d ≤ b - c
+-- (hab : a ≤ b) (hcd : c ≤ d) : a - d ≤ b - c
 
 /-! # ≤, ff - tt -/
 
 #check sub_le_sub_left -- for AddGroup, ...
--- (h : a ≤ b) (c : α) : c - b ≤ c - a
+-- (h : a ≤ b) : c - b ≤ c - a
 
 /-! # ≤, tt - ff -/
 
 #check sub_le_sub_right -- for AddGroup, ...
---  (bc : b ≤ c) (a : α) : b - a ≤ c - a
+-- (bc : b ≤ c) : b - a ≤ c - a
 
 /-! # <, tt - tt -/
 
@@ -34,9 +34,9 @@ example (a b c d : ℝ) (h1 : a < c) (h2 : d ≤ b) : a - b < c - d :=
 /-! # <, ff - tt -/
 
 #check sub_lt_sub_left -- for AddGroup ...
--- (h : a < b) (c : α) : c - b < c - a
+-- (h : a < b) : c - b < c - a
 
 /-! # <, tt - ff -/
 
 #check sub_lt_sub_right -- for AddGroup ...
--- (h : a < b) (c : α) : a - c < b - c
+-- (h : a < b) : a - c < b - c

@@ -21,7 +21,7 @@ theorem Nat.div_le_div (a b c d : ℕ) (h1 : a ≤ b) (h2 : d ≤ c) (h3 : d ≠
 /-! # ≤, ff / tt -/
 
 #check div_le_div_left' -- for Group ...
--- (h : a ≤ b) (c : α) : c / b ≤ c / a
+-- (h : a ≤ b) : c / b ≤ c / a
 
 #check div_le_div_of_le_left -- for LinearOrderedSemifield
 -- (ha : 0 ≤ a) (hc : 0 < c) (h : c ≤ b) : a / b ≤ a / c
@@ -32,7 +32,7 @@ theorem Nat.div_le_div (a b c d : ℕ) (h1 : a ≤ b) (h2 : d ≤ c) (h3 : d ≠
 -- something for `Int`?
 
 #check ENNReal.div_le_div_left
--- (h : a ≤ b) (c : ENNReal) : c / b ≤ c / a
+-- (h : a ≤ b) : c / b ≤ c / a
 
 -- **don't include these, they are subsumed by others**
 
@@ -50,18 +50,18 @@ theorem div_le_div_left₀' [LinearOrderedCommGroupWithZero α]
 /-! # ≤, tt / ff -/
 
 #check div_le_div_right' -- for Group ...
--- (h : a ≤ b) (c : α) : a / c ≤ b / c
+-- (h : a ≤ b) : a / c ≤ b / c
 
 #check div_le_div_of_le -- for LinearOrderedSemifield
 --  (hc : 0 ≤ c) (h : a ≤ b) : a / c ≤ b / c
 
 #check Nat.div_le_div_right
--- (h : n ≤ m) {k : ℕ} : n / k ≤ m / k
+-- (h : n ≤ m) : n / k ≤ m / k
 
 -- something for `Int`?
 
 #check ENNReal.div_le_div_right
--- (h : a ≤ b) (c : ENNReal) : a / c ≤ b / c
+-- (h : a ≤ b) : a / c ≤ b / c
 
 -- **don't include, a duplicate**
 

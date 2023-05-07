@@ -9,12 +9,12 @@ import Mathlib.Tactic.LibrarySearch
 /-! # ≤, ff + tt -/
 
 #check add_le_add_left -- for "covariant class ....." (this covers `ℝ≥0∞`)
--- (bc : b ≤ c) (a : α) : a + b ≤ a + c
+-- (bc : b ≤ c) : a + b ≤ a + c
 
 /-! # ≤, tt + ff -/
 
 #check add_le_add_right -- for "covariant class ....." (this covers `ℝ≥0∞`)
---  (bc : b ≤ c) (a : α) : b + a ≤ c + a
+--  (bc : b ≤ c) : b + a ≤ c + a
 
 /-! # <, tt + tt -/
 
@@ -27,7 +27,7 @@ import Mathlib.Tactic.LibrarySearch
 /-! # <, ff + tt -/
 
 #check add_lt_add_left -- for "covariant class ...."
--- (bc : b < c) (a : α) : a + b < a + c
+-- (bc : b < c) : a + b < a + c
 
 #check ENNReal.add_lt_add_left
 -- (a✝ : a ≠ ⊤) (a✝¹ : b < c) : a + b < a + c
@@ -36,7 +36,7 @@ import Mathlib.Tactic.LibrarySearch
 /-! # <, tt + ff -/
 
 #check add_lt_add_right -- for "covariant class ...."
--- (bc : b < c) (a : α) : b + a < c + a
+-- (bc : b < c) : b + a < c + a
 
 #check ENNReal.add_lt_add_right
 -- (a✝ : a ≠ ⊤) (a✝¹ : b < c) : b + a < c + a
