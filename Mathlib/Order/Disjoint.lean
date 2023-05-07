@@ -504,7 +504,7 @@ theorem sup_eq_top (h : IsCompl x y) : x ⊔ y = ⊤ :=
 
 end BoundedLattice
 
-variable [DistribLattice α] [BoundedOrder α] {a b x y z : α}
+variable [DistribLattice α] [BoundedOrder α] {a b c x y z : α}
 
 theorem inf_left_le_of_le_sup_right (h : IsCompl x y) (hle : a ≤ b ⊔ y) : a ⊓ x ≤ b :=
   calc
