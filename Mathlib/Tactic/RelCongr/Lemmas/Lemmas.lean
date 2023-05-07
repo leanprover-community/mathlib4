@@ -132,6 +132,15 @@ attribute [dummy_label_attr]
 attribute [dummy_label_attr]
   Finset.sum_le_sum
 
+-- a variant statement of `Finset.sum_le_sum`, if it doesn't match the attribute pattern in the
+-- library statement:
+
+def rel_on (s : Set α) (r : β → β → Prop) (f g : α → β) : Prop := ∀ x ∈ s, r (f x) (g x)
+
+theorem RelCongr.Finset.sum_le_sum [OrderedAddCommMonoid N] {f g : ι → N} {s : Finset ι}
+    (h : rel_on s (· ≤ ·) f g) : s.sum f ≤ s.sum g :=
+  _root_.Finset.sum_le_sum h
+
 /-! # <, ∑ -/
 
 attribute [dummy_label_attr]
