@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Scott Morrison
 
 ! This file was ported from Lean 3 source module data.finsupp.basic
-! leanprover-community/mathlib commit 57911c5a05a1b040598e1e15b189f035ac5cc33c
+! leanprover-community/mathlib commit f69db8cecc668e2d5894d7e9bfc491da60db3b9f
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -1554,7 +1554,7 @@ instance module [Semiring R] [AddCommMonoid M] [Module R M] : Module R (α →�
 
 variable {α M}
 
-theorem support_smul {_ : Monoid R} [AddMonoid M] [DistribMulAction R M] {b : R} {g : α →₀ M} :
+theorem support_smul [AddMonoid M] [SMulZeroClass R M] {b : R} {g : α →₀ M} :
     (b • g).support ⊆ g.support := fun a => by
   simp only [smul_apply, mem_support_iff, Ne.def]
   exact mt fun h => h.symm ▸ smul_zero _
