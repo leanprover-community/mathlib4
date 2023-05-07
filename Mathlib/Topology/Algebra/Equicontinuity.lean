@@ -8,7 +8,7 @@ Authors: Anatole Dedecker
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.Algebra.UniformConvergence
+import Mathlib.Topology.Algebra.UniformConvergence
 
 /-!
 # Algebra-related equicontinuity criterions
@@ -23,8 +23,7 @@ open UniformConvergence
 theorem equicontinuous_of_equicontinuousAt_one {ι G M hom : Type _} [TopologicalSpace G]
     [UniformSpace M] [Group G] [Group M] [TopologicalGroup G] [UniformGroup M]
     [MonoidHomClass hom G M] (F : ι → hom) (hf : EquicontinuousAt (coeFn ∘ F) (1 : G)) :
-    Equicontinuous (coeFn ∘ F) :=
-  by
+    Equicontinuous (coeFn ∘ F) := by
   letI : CoeFun hom fun _ => G → M := FunLike.hasCoeToFun
   rw [equicontinuous_iff_continuous]
   rw [equicontinuousAt_iff_continuousAt] at hf
