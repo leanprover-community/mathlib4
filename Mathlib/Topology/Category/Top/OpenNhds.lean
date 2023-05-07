@@ -49,10 +49,10 @@ def OpenNhds (x : X) :=
 
 namespace OpenNhds
 
-instance (x : X) : PartialOrder (OpenNhds x) where
+instance partialOrder (x : X) : PartialOrder (OpenNhds x) where
   le U V := U.1 ≤ V.1
-  le_refl _ := le_rfl
-  le_trans _ _ _ := le_trans
+  le_refl _ := by dsimp [LE.le]; exact le_rfl
+  le_trans _ _ _ := by dsimp [LE.le]; exact le_trans
   le_antisymm _ _ i j := FullSubcategory.ext _ _ <| le_antisymm i j
 
 instance (x : X) : Lattice (OpenNhds x) :=
@@ -61,21 +61,19 @@ instance (x : X) : Lattice (OpenNhds x) :=
     le_inf := fun U V W => @le_inf _ _ U.1.1 V.1.1 W.1.1
     inf_le_left := fun U V => @inf_le_left _ _ U.1.1 V.1.1
     inf_le_right := fun U V => @inf_le_right _ _ U.1.1 V.1.1
-    sup := fun U V => ⟨U.1 ⊔ V.1, V.1.1.mem_union_left U.2⟩
+    sup := fun U V => ⟨U.1 ⊔ V.1, Set.mem_union_left V.1.1 U.2⟩
     sup_le := fun U V W => @sup_le _ _ U.1.1 V.1.1 W.1.1
     le_sup_left := fun U V => @le_sup_left _ _ U.1.1 V.1.1
     le_sup_right := fun U V => @le_sup_right _ _ U.1.1 V.1.1 }
 
 instance (x : X) : OrderTop (OpenNhds x) where
   top := ⟨⊤, trivial⟩
-  le_top _ := le_top
+  le_top _ := by dsimp [LE.le]; exact le_top
 
 instance (x : X) : Inhabited (OpenNhds x) :=
   ⟨⊤⟩
 
-instance openNhdsCategory (x : X) : Category.{u} (OpenNhds x) := by
-  unfold open_nhds
-  infer_instance
+instance openNhdsCategory (x : X) : Category.{u} (OpenNhds x) := inferInstance
 #align topological_space.open_nhds.open_nhds_category TopologicalSpace.OpenNhds.openNhdsCategory
 
 instance opensNhdsHomHasCoeToFun {x : X} {U V : OpenNhds x} : CoeFun (U ⟶ V) fun _ => U.1 → V.1 :=
@@ -106,22 +104,23 @@ theorem inclusion_obj (x : X) (U) (p) : (inclusion x).obj ⟨U, p⟩ = U :=
 #align topological_space.open_nhds.inclusion_obj TopologicalSpace.OpenNhds.inclusion_obj
 
 theorem openEmbedding {x : X} (U : OpenNhds x) : OpenEmbedding U.1.inclusion :=
-  U.1.OpenEmbedding
+  U.1.openEmbedding
 #align topological_space.open_nhds.open_embedding TopologicalSpace.OpenNhds.openEmbedding
 
 /-- The preimage functor from neighborhoods of `f x` to neighborhoods of `x`. -/
 def map (x : X) : OpenNhds (f x) ⥤ OpenNhds x where
   obj U := ⟨(Opens.map f).obj U.1, U.2⟩
-  map U V i := (Opens.map f).map i
+  map i := (Opens.map f).map i
 #align topological_space.open_nhds.map TopologicalSpace.OpenNhds.map
 
+-- Porting note: Changed `⟨(Opens.map f).obj U, by tidy⟩` to `⟨(Opens.map f).obj U, q⟩`
 @[simp]
-theorem map_obj (x : X) (U) (q) : (map f x).obj ⟨U, q⟩ = ⟨(Opens.map f).obj U, by tidy⟩ :=
+theorem map_obj (x : X) (U) (q) : (map f x).obj ⟨U, q⟩ = ⟨(Opens.map f).obj U, q⟩ :=
   rfl
 #align topological_space.open_nhds.map_obj TopologicalSpace.OpenNhds.map_obj
 
 @[simp]
-theorem map_id_obj (x : X) (U) : (map (𝟙 X) x).obj U = U := by tidy
+theorem map_id_obj (x : X) (U) : (map (𝟙 X) x).obj U = U := rfl
 #align topological_space.open_nhds.map_id_obj TopologicalSpace.OpenNhds.map_id_obj
 
 @[simp]
@@ -141,11 +140,11 @@ theorem op_map_id_obj (x : X) (U : (OpenNhds x)ᵒᵖ) : (map (𝟙 X) x).op.obj
 /-- `opens.map f` and `open_nhds.map f` form a commuting square (up to natural isomorphism)
 with the inclusion functors into `opens X`. -/
 def inclusionMapIso (x : X) : inclusion (f x) ⋙ Opens.map f ≅ map f x ⋙ inclusion x :=
-  NatIso.ofComponents (fun U => by constructor; exact 𝟙 _; exact 𝟙 _) (by tidy)
+  NatIso.ofComponents (fun U => by constructor; rfl; rfl; exact 𝟙 _; exact 𝟙 _) (by simp)
 #align topological_space.open_nhds.inclusion_map_iso TopologicalSpace.OpenNhds.inclusionMapIso
 
 @[simp]
-theorem inclusionMapIso_hom (x : X) : (inclusionMapIso f x).Hom = 𝟙 _ :=
+theorem inclusionMapIso_hom (x : X) : (inclusionMapIso f x).hom = 𝟙 _ :=
   rfl
 #align topological_space.open_nhds.inclusion_map_iso_hom TopologicalSpace.OpenNhds.inclusionMapIso_hom
 
@@ -168,17 +167,16 @@ variable {f}
 -/
 @[simps]
 def functorNhds (h : IsOpenMap f) (x : X) : OpenNhds x ⥤ OpenNhds (f x) where
-  obj U := ⟨h.Functor.obj U.1, ⟨x, U.2, rfl⟩⟩
-  map U V i := h.Functor.map i
+  obj U := ⟨h.functor.obj U.1, ⟨x, U.2, rfl⟩⟩
+  map i := h.functor.map i
 #align is_open_map.functor_nhds IsOpenMap.functorNhds
 
 /-- An open map `f : X ⟶ Y` induces an adjunction between `open_nhds x` and `open_nhds (f x)`.
 -/
 def adjunctionNhds (h : IsOpenMap f) (x : X) : IsOpenMap.functorNhds h x ⊣ OpenNhds.map f x :=
   Adjunction.mkOfUnitCounit
-    { Unit := { app := fun U => homOfLE fun x hxU => ⟨x, hxU, rfl⟩ }
-      counit := { app := fun V => homOfLE fun y ⟨x, hfxV, hxy⟩ => hxy ▸ hfxV } }
+    { unit := { app := fun U => homOfLE fun x hxU => ⟨x, hxU, rfl⟩ }
+      counit := { app := fun V => homOfLE fun y ⟨_, hfxV, hxy⟩ => hxy ▸ hfxV } }
 #align is_open_map.adjunction_nhds IsOpenMap.adjunctionNhds
 
 end IsOpenMap
-
