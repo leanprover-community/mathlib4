@@ -8,7 +8,7 @@ Authors: Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Computability.Partrec
+import Mathlib.Computability.Partrec
 
 /-!
 # Gödel Numbering for Partial Recursive Functions.
@@ -54,8 +54,7 @@ theorem rfind' {f} (hf : Nat.Partrec f) :
     Nat.Partrec
       (Nat.unpaired fun a m =>
         (Nat.rfind fun n => (fun m => m = 0) <$> f (pair a (n + m))).map (· + m)) :=
-  Partrec₂.unpaired'.2 <|
-    by
+  Partrec₂.unpaired'.2 <| by
     refine'
       Partrec.map
         ((@Partrec₂.unpaired' fun a b : ℕ =>
@@ -198,8 +197,7 @@ theorem ofNatCode_eq : ofNat Code = ofNatCode :=
 #align nat.partrec.code.of_nat_code_eq Nat.Partrec.Code.ofNatCode_eq
 
 theorem encode_lt_pair (cf cg) :
-    encode cf < encode (pair cf cg) ∧ encode cg < encode (pair cf cg) :=
-  by
+    encode cf < encode (pair cf cg) ∧ encode cg < encode (pair cf cg) := by
   simp [encode_code_eq, encode_code, -add_comm]
   have := Nat.mul_le_mul_right _ (by decide : 1 ≤ 2 * 2)
   rw [one_mul, mul_assoc, ← bit0_eq_two_mul, ← bit0_eq_two_mul] at this
@@ -208,21 +206,18 @@ theorem encode_lt_pair (cf cg) :
 #align nat.partrec.code.encode_lt_pair Nat.Partrec.Code.encode_lt_pair
 
 theorem encode_lt_comp (cf cg) :
-    encode cf < encode (comp cf cg) ∧ encode cg < encode (comp cf cg) :=
-  by
+    encode cf < encode (comp cf cg) ∧ encode cg < encode (comp cf cg) := by
   suffices; exact (encode_lt_pair cf cg).imp (fun h => lt_trans h this) fun h => lt_trans h this
   change _; simp [encode_code_eq, encode_code]
 #align nat.partrec.code.encode_lt_comp Nat.Partrec.Code.encode_lt_comp
 
 theorem encode_lt_prec (cf cg) :
-    encode cf < encode (prec cf cg) ∧ encode cg < encode (prec cf cg) :=
-  by
+    encode cf < encode (prec cf cg) ∧ encode cg < encode (prec cf cg) := by
   suffices; exact (encode_lt_pair cf cg).imp (fun h => lt_trans h this) fun h => lt_trans h this
   change _; simp [encode_code_eq, encode_code]
 #align nat.partrec.code.encode_lt_prec Nat.Partrec.Code.encode_lt_prec
 
-theorem encode_lt_rfind' (cf) : encode cf < encode (rfind' cf) :=
-  by
+theorem encode_lt_rfind' (cf) : encode cf < encode (rfind' cf) := by
   simp [encode_code_eq, encode_code, -add_comm]
   have := Nat.mul_le_mul_right _ (by decide : 1 ≤ 2 * 2)
   rw [one_mul, mul_assoc, ← bit0_eq_two_mul, ← bit0_eq_two_mul] at this
@@ -286,8 +281,7 @@ theorem rec_prim' {α σ} [Primcodable α] [Primcodable σ] {c : α → Code} (h
     let RF (a) cf hf := rf a (cf, hf)
     let F (a : α) (c : Code) : σ :=
       Nat.Partrec.Code.recOn c (z a) (s a) (l a) (r a) (PR a) (CO a) (PC a) (RF a)
-    Primrec (fun a => F a (c a) : α → σ) :=
-  by
+    Primrec (fun a => F a (c a) : α → σ) := by
   intros
   let G₁ : (α × List σ) × ℕ × ℕ → Option σ := fun p =>
     let a := p.1.1
@@ -302,8 +296,7 @@ theorem rec_prim' {α σ} [Primcodable α] [Primcodable σ] {c : α → Code} (h
               (pc a (of_nat code m.unpair.1, of_nat code m.unpair.2, s₁, s₂)))
             (cond n.div2.bodd (co a (of_nat code m.unpair.1, of_nat code m.unpair.2, s₁, s₂))
               (pr a (of_nat code m.unpair.1, of_nat code m.unpair.2, s₁, s₂)))
-  have : Primrec G₁ :=
-    by
+  have : Primrec G₁ := by
     refine' option_bind (list_nth.comp (snd.comp fst) (snd.comp snd)) _
     refine'
       option_bind
@@ -384,8 +377,7 @@ theorem rec_prim {α σ} [Primcodable α] [Primcodable σ] {c : α → Code} (hc
     {rf : α → Code → σ → σ} (hrf : Primrec fun a : α × Code × σ => rf a.1 a.2.1 a.2.2) :
     let F (a : α) (c : Code) : σ :=
       Nat.Partrec.Code.recOn c (z a) (s a) (l a) (r a) (pr a) (co a) (pc a) (rf a)
-    Primrec fun a => F a (c a) :=
-  by
+    Primrec fun a => F a (c a) := by
   intros
   let G₁ : (α × List σ) × ℕ × ℕ → Option σ := fun p =>
     let a := p.1.1
@@ -400,8 +392,7 @@ theorem rec_prim {α σ} [Primcodable α] [Primcodable σ] {c : α → Code} (hc
               (pc a (of_nat code m.unpair.1) (of_nat code m.unpair.2) s₁ s₂))
             (cond n.div2.bodd (co a (of_nat code m.unpair.1) (of_nat code m.unpair.2) s₁ s₂)
               (pr a (of_nat code m.unpair.1) (of_nat code m.unpair.2) s₁ s₂))
-  have : Primrec G₁ :=
-    by
+  have : Primrec G₁ := by
     refine' option_bind (list_nth.comp (snd.comp fst) (snd.comp snd)) _
     refine'
       option_bind
@@ -492,8 +483,7 @@ theorem rec_computable {α σ} [Primcodable α] [Primcodable σ] {c : α → Cod
     let RF (a) cf hf := rf a (cf, hf)
     let F (a : α) (c : Code) : σ :=
       Nat.Partrec.Code.recOn c (z a) (s a) (l a) (r a) (PR a) (CO a) (PC a) (RF a)
-    Computable fun a => F a (c a) :=
-  by
+    Computable fun a => F a (c a) := by
   -- TODO(Mario): less copy-paste from previous proof
   intros
   let G₁ : (α × List σ) × ℕ × ℕ → Option σ := fun p =>
@@ -509,8 +499,7 @@ theorem rec_computable {α σ} [Primcodable α] [Primcodable σ] {c : α → Cod
               (pc a (of_nat code m.unpair.1, of_nat code m.unpair.2, s₁, s₂)))
             (cond n.div2.bodd (co a (of_nat code m.unpair.1, of_nat code m.unpair.2, s₁, s₂))
               (pr a (of_nat code m.unpair.1, of_nat code m.unpair.2, s₁, s₂)))
-  have : Computable G₁ :=
-    by
+  have : Computable G₁ := by
     refine' option_bind (list_nth.comp (snd.comp fst) (snd.comp snd)) _
     refine'
       option_bind
@@ -625,8 +614,7 @@ theorem eval_prec_zero (cf cg : Code) (a : ℕ) : eval (prec cf cg) (pair a 0) =
 theorem eval_prec_succ (cf cg : Code) (a k : ℕ) :
     eval (prec cf cg) (pair a (Nat.succ k)) = do
       let ih ← eval (prec cf cg) (pair a k)
-      eval cg (mkpair a (mkpair k ih)) :=
-  by
+      eval cg (mkpair a (mkpair k ih)) := by
   rw [eval, Nat.unpaired, Part.bind_eq_bind, Nat.unpair_pair, Nat.rec_add_one]
   simp
 #align nat.partrec.code.eval_prec_succ Nat.Partrec.Code.eval_prec_succ
@@ -738,8 +726,7 @@ def evaln : ∀ k : ℕ, Code → ℕ → Option ℕ
 
 theorem evaln_bound : ∀ {k c n x}, x ∈ evaln k c n → n < k
   | 0, c, n, x, h => by simp [evaln] at h <;> cases h
-  | k + 1, c, n, x, h =>
-    by
+  | k + 1, c, n, x, h => by
     suffices ∀ {o : Option ℕ}, x ∈ guard (n ≤ k) >> o → n < k + 1 by
       cases c <;> rw [evaln] at h <;> exact this h
     simpa [(· >> ·)] using Nat.lt_succ_of_le
@@ -747,13 +734,11 @@ theorem evaln_bound : ∀ {k c n x}, x ∈ evaln k c n → n < k
 
 theorem evaln_mono : ∀ {k₁ k₂ c n x}, k₁ ≤ k₂ → x ∈ evaln k₁ c n → x ∈ evaln k₂ c n
   | 0, k₂, c, n, x, hl, h => by simp [evaln] at h <;> cases h
-  | k + 1, k₂ + 1, c, n, x, hl, h =>
-    by
+  | k + 1, k₂ + 1, c, n, x, hl, h => by
     have hl' := Nat.le_of_succ_le_succ hl
     have :
       ∀ {k k₂ n x : ℕ} {o₁ o₂ : Option ℕ},
-        k ≤ k₂ → (x ∈ o₁ → x ∈ o₂) → x ∈ guard (n ≤ k) >> o₁ → x ∈ guard (n ≤ k₂) >> o₂ :=
-      by
+        k ≤ k₂ → (x ∈ o₁ → x ∈ o₂) → x ∈ guard (n ≤ k) >> o₁ → x ∈ guard (n ≤ k₂) >> o₂ := by
       simp [(· >> ·)]
       introv h h₁ h₂ h₃
       exact ⟨le_trans h₂ h, h₁ h₃⟩
@@ -783,8 +768,7 @@ theorem evaln_mono : ∀ {k₁ k₂ c n x}, k₁ ≤ k₂ → x ∈ evaln k₁ c
 
 theorem evaln_sound : ∀ {k c n x}, x ∈ evaln k c n → x ∈ eval c n
   | 0, _, n, x, h => by simp [evaln] at h <;> cases h
-  | k + 1, c, n, x, h =>
-    by
+  | k + 1, c, n, x, h => by
     induction' c with cf cg hf hg cf cg hf hg cf cg hf hg cf hf generalizing x n <;>
         simp [eval, evaln, (· >> ·), (· <*> ·)] at h⊢ <;>
       cases' h with _ h
@@ -937,8 +921,7 @@ private def G (L : List (List (Option ℕ))) : Option (List (Option ℕ)) :=
           x (some m) fun _ => lup L (k', c) (mkpair z (m + 1))
 #align nat.partrec.code.G nat.partrec.code.G
 
-private theorem hG : Primrec g :=
-  by
+private theorem hG : Primrec g := by
   have a := (Primrec.ofNat (ℕ × code)).comp list_length
   have k := fst.comp a
   refine' option_some.comp (list_map (list_range.comp k) (_ : Primrec _))
@@ -1011,8 +994,7 @@ private theorem hG : Primrec g :=
 #align nat.partrec.code.hG nat.partrec.code.hG
 
 private theorem evaln_map (k c n) :
-    ((((List.range k).get? n).map (evaln k c)).bind fun b => b) = evaln k c n :=
-  by
+    ((((List.range k).get? n).map (evaln k c)).bind fun b => b) = evaln k c n := by
   by_cases kn : n < k
   · simp [List.get?_range kn]
   · rw [List.get?_len_le]
@@ -1028,8 +1010,7 @@ theorem evaln_prim : Primrec fun a : (ℕ × Code) × ℕ => evaln a.1.1 a.1.2 a
     Primrec₂ fun (_ : Unit) (n : ℕ) =>
       let a := ofNat (ℕ × Code) n
       (List.range a.1).map (evaln a.1 a.2) :=
-    Primrec.nat_strong_rec _ (hG.comp snd).to₂ fun _ p =>
-      by
+    Primrec.nat_strong_rec _ (hG.comp snd).to₂ fun _ p => by
       simp [G]
       rw [(_ : (of_nat (ℕ × code) _).snd = of_nat code p.unpair.2)]
       swap
@@ -1052,8 +1033,7 @@ theorem evaln_prim : Primrec fun a : (ℕ × Code) × ℕ => evaln a.1.1 a.1.2 a
                 ((List.range (mkpair k (encode c))).map fun n =>
                   (List.range n.unpair.1).map (evaln n.unpair.1 (of_nat code n.unpair.2)))
                 (k', c') n =
-              evaln k' c' n :=
-        by
+              evaln k' c' n := by
         intro k₁ c₁ n₁ hl
         simp [lup, List.get?_range hl, evaln_map, (· >>= ·)]
       cases' c with cf cg cf cg cf cg cf <;>
