@@ -69,9 +69,14 @@ def addLemma (name : Name) (constInfo : ConstantInfo)
 /-- Construct the discrimination tree of all lemmas. -/
 def buildDiscrTree : IO (DeclCache (DiscrTree (Name × DeclMod) true)) :=
   DeclCache.mk "librarySearch: init cache" {} addLemma
-    -- Sort so lemmas with shorted names come first.
+    -- Sort so lemmas with longest names come first.
+    -- This is counter-intuitive, but the way that `DiscrTree.getMatch` returns results
+    -- means that the results come in "batches", with more specific matches *later*.
+    -- Thus we're going to call reverse on the result of `DiscrTree.getMatch`,
+    -- so if we want to try lemmas with shorter names first,
+    -- we need to put them into the `DiscrTree` backwards.
     (post := fun T => return T.mapArrays (fun A =>
-      A.map (fun (n, m) => (n.toString.length, n, m)) |>.qsort (fun p q => p.1 < q.1) |>.map (·.2)))
+      A.map (fun (n, m) => (n.toString.length, n, m)) |>.qsort (fun p q => p.1 > q.1) |>.map (·.2)))
 
 open System (FilePath)
 
@@ -147,7 +152,9 @@ def librarySearchCore (goal : MVarId) (lemmas : DiscrTree (Name × DeclMod) s)
     (required : List Expr) (solveByElimDepth := 6) : ListM MetaM (MetavarContext × List MVarId) :=
   .squash do
     let ty ← goal.getType
-    let lemmas := ListM.ofList ((← lemmas.getMatch ty).toList)
+    -- `DiscrTree.getMatch` returns results in batches, with more specific lemmas coming later.
+    -- Hence we reverse this list, so we try out more specific lemmas earlier.
+    let lemmas := ListM.ofList ((← lemmas.getMatch ty).reverse.toList)
     return lemmas.filterMapM fun (lem, mod) =>
       try? <| librarySearchLemma lem mod required solveByElimDepth goal
 
