@@ -14,6 +14,7 @@ import Mathlib.Topology.Algebra.UniformConvergence
 # Algebra-related equicontinuity criterions
 -/
 
+set_option autoImplicit false -- **TODO** delete this later
 
 open Function
 
@@ -22,32 +23,33 @@ open UniformConvergence
 @[to_additive]
 theorem equicontinuous_of_equicontinuousAt_one {ι G M hom : Type _} [TopologicalSpace G]
     [UniformSpace M] [Group G] [Group M] [TopologicalGroup G] [UniformGroup M]
-    [MonoidHomClass hom G M] (F : ι → hom) (hf : EquicontinuousAt (coeFn ∘ F) (1 : G)) :
-    Equicontinuous (coeFn ∘ F) := by
+    [MonoidHomClass hom G M] (F : ι → hom)
+    (hf : EquicontinuousAt (MulHom.toFun ∘ MulHomClass.toMulHom ∘ F) (1 : G)) :
+    Equicontinuous (X := G) (α := M) (MulHom.toFun ∘ MulHomClass.toMulHom ∘ F) := by
   letI : CoeFun hom fun _ => G → M := FunLike.hasCoeToFun
   rw [equicontinuous_iff_continuous]
   rw [equicontinuousAt_iff_continuousAt] at hf
-  let φ : G →* ι → M :=
-    { toFun := swap (coeFn ∘ F)
-      map_one' := by ext <;> exact map_one _
-      map_mul' := fun a b => by ext <;> exact map_mul _ _ _ }
+  let φ : G →* (ι →ᵤ M) :=
+    { toFun := swap (MulHom.toFun ∘ MulHomClass.toMulHom ∘ F)
+      map_one' := by dsimp [UniformFun] ; ext ; exact map_one (F := hom) _
+      map_mul' := fun a b => by dsimp [UniformFun] ; ext ; exact map_mul _ _ _ }
   exact continuous_of_continuousAt_one φ hf
 #align equicontinuous_of_equicontinuous_at_one equicontinuous_of_equicontinuousAt_one
-#align equicontinuous_of_equicontinuous_at_zero equicontinuous_of_equicontinuous_at_zero
+#align equicontinuous_of_equicontinuous_at_zero equicontinuous_of_equicontinuousAt_zero
 
 @[to_additive]
 theorem uniformEquicontinuous_of_equicontinuousAt_one {ι G M hom : Type _} [UniformSpace G]
     [UniformSpace M] [Group G] [Group M] [UniformGroup G] [UniformGroup M] [MonoidHomClass hom G M]
-    (F : ι → hom) (hf : EquicontinuousAt (coeFn ∘ F) (1 : G)) : UniformEquicontinuous (coeFn ∘ F) :=
+    (F : ι → hom) (hf : EquicontinuousAt (MulHom.toFun ∘ MulHomClass.toMulHom ∘ F) (1 : G)) :
+    UniformEquicontinuous (MulHom.toFun ∘ MulHomClass.toMulHom ∘ F) :=
   by
   letI : CoeFun hom fun _ => G → M := FunLike.hasCoeToFun
   rw [uniformEquicontinuous_iff_uniformContinuous]
   rw [equicontinuousAt_iff_continuousAt] at hf
-  let φ : G →* ι → M :=
-    { toFun := swap (coeFn ∘ F)
-      map_one' := by ext <;> exact map_one _
-      map_mul' := fun a b => by ext <;> exact map_mul _ _ _ }
+  let φ : G →* (ι →ᵤ M) :=
+    { toFun := swap (MulHom.toFun ∘ MulHomClass.toMulHom ∘ F)
+      map_one' := by dsimp [UniformFun] ; ext ; exact map_one _
+      map_mul' := fun a b => by dsimp [UniformFun] ; ext ; exact map_mul _ _ _ }
   exact uniformContinuous_of_continuousAt_one φ hf
 #align uniform_equicontinuous_of_equicontinuous_at_one uniformEquicontinuous_of_equicontinuousAt_one
-#align uniform_equicontinuous_of_equicontinuous_at_zero uniform_equicontinuous_of_equicontinuous_at_zero
-
+#align uniform_equicontinuous_of_equicontinuous_at_zero uniformEquicontinuous_of_equicontinuousAt_zero
