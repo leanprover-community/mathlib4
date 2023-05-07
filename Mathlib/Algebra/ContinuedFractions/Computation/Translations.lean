@@ -36,8 +36,8 @@ of three sections:
   of integer and fractional parts of a value in case of non-termination.
 - `succ_nth_stream_eq_none_iff` gives as a recurrence to compute the `n + 1`th value of the sequence
   of integer and fractional parts of a value in case of termination.
-- `nth_of_eq_some_of_succ_nth_intFractPair_stream` and
-  `nth_of_eq_some_of_nth_intFractPair_stream_fr_ne_zero` show how the entries of the sequence
+- `get?_of_eq_some_of_succ_get?_intFractPair_stream` and
+  `get?_of_eq_some_of_get?_intFractPair_stream_fr_ne_zero` show how the entries of the sequence
   of the computed continued fraction can be obtained from the stream of integer and fractional
   parts.
 -/
@@ -240,25 +240,25 @@ theorem IntFractPair.exists_succ_get?_stream_of_gcf_of_get?_eq_some {gp_n : Pair
 /-- Shows how the entries of the sequence of the computed continued fraction can be obtained by the
 integer parts of the stream of integer and fractional parts.
 -/
-theorem nth_of_eq_some_of_succ_nth_intFractPair_stream {ifp_succ_n : IntFractPair K}
+theorem get?_of_eq_some_of_succ_get?_intFractPair_stream {ifp_succ_n : IntFractPair K}
     (stream_succ_nth_eq : IntFractPair.stream v (n + 1) = some ifp_succ_n) :
     (of v).s.get? n = some ⟨1, ifp_succ_n.b⟩ := by
   unfold of IntFractPair.seq1
   simp [Stream'.Seq.map_tail, Stream'.Seq.get?_tail, Stream'.Seq.map_get?, stream_succ_nth_eq]
-#align generalized_continued_fraction.nth_of_eq_some_of_succ_nth_int_fract_pair_stream GeneralizedContinuedFraction.nth_of_eq_some_of_succ_nth_intFractPair_stream
+#align generalized_continued_fraction.nth_of_eq_some_of_succ_nth_int_fract_pair_stream GeneralizedContinuedFraction.get?_of_eq_some_of_succ_get?_intFractPair_stream
 
 /-- Shows how the entries of the sequence of the computed continued fraction can be obtained by the
 fractional parts of the stream of integer and fractional parts.
 -/
-theorem nth_of_eq_some_of_nth_intFractPair_stream_fr_ne_zero {ifp_n : IntFractPair K}
+theorem get?_of_eq_some_of_get?_intFractPair_stream_fr_ne_zero {ifp_n : IntFractPair K}
     (stream_nth_eq : IntFractPair.stream v n = some ifp_n) (nth_fr_ne_zero : ifp_n.fr ≠ 0) :
     (of v).s.get? n = some ⟨1, (IntFractPair.of ifp_n.fr⁻¹).b⟩ :=
   have : IntFractPair.stream v (n + 1) = some (IntFractPair.of ifp_n.fr⁻¹) := by
     cases ifp_n
     simp [IntFractPair.stream, stream_nth_eq, nth_fr_ne_zero]
     intro; contradiction
-  nth_of_eq_some_of_succ_nth_intFractPair_stream this
-#align generalized_continued_fraction.nth_of_eq_some_of_nth_int_fract_pair_stream_fr_ne_zero GeneralizedContinuedFraction.nth_of_eq_some_of_nth_intFractPair_stream_fr_ne_zero
+  get?_of_eq_some_of_succ_get?_intFractPair_stream this
+#align generalized_continued_fraction.nth_of_eq_some_of_nth_int_fract_pair_stream_fr_ne_zero GeneralizedContinuedFraction.get?_of_eq_some_of_get?_intFractPair_stream_fr_ne_zero
 
 open Int IntFractPair
 
@@ -309,9 +309,9 @@ theorem of_s_succ (n : ℕ) : (of v).s.get? (n + 1) = (of (fract v)⁻¹).s.get?
       of_terminatedAt_n_iff_succ_nth_intFractPair_stream_eq_none, terminatedAt_iff_s_none]
   · obtain ⟨p, hp⟩ := Option.ne_none_iff_exists'.mp h₁
     obtain ⟨p', hp'₁, _⟩ := exists_succ_get?_stream_of_gcf_of_get?_eq_some hp
-    have Hp := nth_of_eq_some_of_succ_nth_intFractPair_stream hp'₁
+    have Hp := get?_of_eq_some_of_succ_get?_intFractPair_stream hp'₁
     rw [← stream_succ h] at hp'₁
-    rw [Hp, nth_of_eq_some_of_succ_nth_intFractPair_stream hp'₁]
+    rw [Hp, get?_of_eq_some_of_succ_get?_intFractPair_stream hp'₁]
 #align generalized_continued_fraction.of_s_succ GeneralizedContinuedFraction.of_s_succ
 
 /-- This expresses the tail of the coefficient sequence of the `GeneralizedContinuedFraction.of`
