@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Felix Weilacher
 
 ! This file was ported from Lean 3 source module topology.perfect
-! leanprover-community/mathlib commit 9b2b58d6b14b895b2f375108e765cb47de71aebd
+! leanprover-community/mathlib commit 3905fa80e62c0898131285baab35559fbc4e5cda
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -21,8 +21,6 @@ including a version of the Cantor-Bendixson Theorem.
 
 * `Perfect C`: A set `C` is perfect, meaning it is closed and every point of it
   is an accumulation point of itself.
-* `Set.scheme β α`: A `β`-scheme on `α`, a collection of subsets of `α` indexed by `List β`.
-  Used to construct maps `(β → ℕ) → α` as limiting objects.
 
 ## Main Statements
 
@@ -32,7 +30,7 @@ including a version of the Cantor-Bendixson Theorem.
 * `exists_countable_union_perfect_of_isClosed`: One version of the **Cantor-Bendixson Theorem**:
   A closed set in a second countable space can be written as the union of a countable set and a
   perfect set.
-* `exists_nat_bool_injection`: A perfect nonempty set in a complete metric space
+* `Perfect.exists_nat_bool_injection`: A perfect nonempty set in a complete metric space
   admits an embedding from the Cantor space.
 
 ## Implementation Notes
