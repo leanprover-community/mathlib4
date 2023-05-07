@@ -203,7 +203,7 @@ theorem den_div_cast_eq_one_iff (m n : ℤ) (hn : n ≠ 0) : ((m : ℚ) / n).den
     -- Porting note: was `lift (m : ℚ) / n to ℤ using h with k hk`
     use ((m : ℚ) / n).num
     have hk := Rat.coe_int_num_of_den_eq_one h
-    simp_rw [eq_div_iff_mul_eq hn, ofInt_eq_cast, ← Int.cast_mul] at hk
+    simp_rw [eq_div_iff_mul_eq hn, ← Int.cast_mul] at hk
     rwa [mul_comm, eq_comm, coe_int_inj] at hk
   · rintro ⟨d, rfl⟩
     rw [Int.cast_mul, mul_comm, mul_div_cancel _ hn, Rat.coe_int_den]

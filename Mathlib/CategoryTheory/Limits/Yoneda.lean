@@ -106,8 +106,7 @@ instance coyonedaPreservesLimits (X : Cᵒᵖ) : PreservesLimits (coyoneda.obj X
         { preserves := fun {c} t =>
             { lift := fun s x =>
                 t.lift
-                  ⟨unop X, fun j => s.π.app j x, fun j₁ j₂ α =>
-                    by
+                  ⟨unop X, fun j => s.π.app j x, fun j₁ j₂ α => by
                     dsimp
                     simp [← s.w α]⟩
               -- See library note [dsimp, simp]

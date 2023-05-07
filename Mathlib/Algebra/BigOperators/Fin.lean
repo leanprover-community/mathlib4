@@ -330,9 +330,9 @@ def finFunctionFinEquiv {m n : ℕ} : (Fin n → Fin m) ≃ Fin (m ^ n) :=
       induction' n with n ih
       · haveI : Subsingleton (Fin (m ^ 0)) := (Fin.cast <| pow_zero _).toEquiv.subsingleton
         exact Subsingleton.elim _ _
-      simp_rw [Fin.forall_iff, Fin.ext_iff, Fin.val_mk] at ih
+      simp_rw [Fin.forall_iff, Fin.ext_iff] at ih
       ext
-      simp_rw [Fin.val_mk, Fin.sum_univ_succ, Fin.val_zero, Fin.val_succ, pow_zero, Nat.div_one,
+      simp_rw [Fin.sum_univ_succ, Fin.val_zero, Fin.val_succ, pow_zero, Nat.div_one,
         mul_one, pow_succ, ← Nat.div_div_eq_div_mul, mul_left_comm _ m, ← mul_sum]
       rw [ih _ (Nat.div_lt_of_lt_mul ?_), Nat.mod_add_div]
       -- porting note: replaces `a.is_lt` in the wildcard above. Caused by a refactor of the `npow`
@@ -366,7 +366,7 @@ def finPiFinEquiv {m : ℕ} {n : Fin m → ℕ} : (∀ i : Fin m, Fin (n i)) ≃
         replace := this (Fin.init n) (n (Fin.last _)) (Fin.init f) (f (Fin.last _))
         rw [← Fin.snoc_init_self f]
         simp (config := { singlePass := true }) only [← Fin.snoc_init_self n]
-        simp_rw [Fin.snoc_cast_succ, Fin.init_snoc, Fin.snoc_last, Fin.snoc_init_self n]
+        simp_rw [Fin.snoc_cast_succ, Fin.snoc_last, Fin.snoc_init_self n]
         exact this
       intro n nn f fn
       cases nn
@@ -391,9 +391,9 @@ def finPiFinEquiv {m : ℕ} {n : Fin m → ℕ} : (∀ i : Fin m, Fin (n i)) ≃
           (Fin.cast <| prod_empty).toEquiv.subsingleton
         exact Subsingleton.elim _ _
       · intro n x xs ih a
-        simp_rw [Fin.forall_iff, Fin.ext_iff, Fin.val_mk] at ih
+        simp_rw [Fin.forall_iff, Fin.ext_iff] at ih
         ext
-        simp_rw [Fin.val_mk, Fin.sum_univ_succ, Fin.cons_succ]
+        simp_rw [Fin.sum_univ_succ, Fin.cons_succ]
         have := fun i : Fin n =>
           Fintype.prod_equiv (Fin.cast <| Fin.val_succ i).toEquiv
             (fun j => (Fin.cons x xs : _ → ℕ) (Fin.castLE (Fin.is_lt _).le j))

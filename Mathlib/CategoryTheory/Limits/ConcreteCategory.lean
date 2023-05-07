@@ -101,11 +101,9 @@ theorem Concrete.multiequalizer_ext {I : MulticospanIndex.{w} C} [HasMultiequali
 /-- An auxiliary equivalence to be used in `multiequalizerEquiv` below.-/
 def Concrete.multiequalizerEquivAux (I : MulticospanIndex C) :
     (I.multicospan ⋙ forget C).sections ≃
-      { x : ∀ i : I.L, I.left i // ∀ i : I.R, I.fst i (x _) = I.snd i (x _) }
-    where
+    { x : ∀ i : I.L, I.left i // ∀ i : I.R, I.fst i (x _) = I.snd i (x _) } where
   toFun x :=
-    ⟨fun i => x.1 (WalkingMulticospan.left _), fun i =>
-      by
+    ⟨fun i => x.1 (WalkingMulticospan.left _), fun i => by
       have a := x.2 (WalkingMulticospan.Hom.fst i)
       have b := x.2 (WalkingMulticospan.Hom.snd i)
       rw [← b] at a
@@ -192,8 +190,7 @@ theorem Concrete.from_union_surjective_of_isColimit {D : Cocone F} (hD : IsColim
     replace hb := congr_arg TX.inv hb
     change (TX.hom ≫ TX.inv) (ff b) = (TX.hom ≫ TX.inv) _ at hb
     simpa only [TX.hom_inv_id] using hb
-  have : TX.hom ∘ ff = fun a => G.ι.app a.1 a.2 :=
-    by
+  have : TX.hom ∘ ff = fun a => G.ι.app a.1 a.2 := by
     ext a
     change (E.ι.app a.1 ≫ hE.desc G) a.2 = _
     rw [hE.fac]

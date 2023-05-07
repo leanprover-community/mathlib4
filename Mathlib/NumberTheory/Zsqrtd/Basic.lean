@@ -650,7 +650,7 @@ instance : LT (ℤ√d) :=
   ⟨fun a b => ¬b ≤ a⟩
 
 instance decidableNonnegg (c d a b) : Decidable (Nonnegg c d a b) := by
-  cases a <;> cases b <;> simp_rw [Int.ofNat_eq_coe] <;> unfold Nonnegg SqLe <;> infer_instance
+  cases a <;> cases b <;> unfold Nonnegg SqLe <;> infer_instance
 #align zsqrtd.decidable_nonnegg Zsqrtd.decidableNonnegg
 
 instance decidableNonneg : ∀ a : ℤ√d, Decidable (Nonneg a)
@@ -892,8 +892,7 @@ theorem divides_sq_eq_zero {x y} (h : x * x = d * y * y) : x = 0 ∧ y = 0 :=
   let g := x.gcd y
   Or.elim g.eq_zero_or_pos
     (fun H => ⟨Nat.eq_zero_of_gcd_eq_zero_left H, Nat.eq_zero_of_gcd_eq_zero_right H⟩) fun gpos =>
-    False.elim <|
-      by
+    False.elim <| by
       let ⟨m, n, co, (hx : x = m * g), (hy : y = n * g)⟩ := Nat.exists_coprime gpos
       rw [hx, hy] at h
       have : m * m = d * (n * n) := by

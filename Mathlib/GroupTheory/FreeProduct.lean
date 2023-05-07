@@ -410,7 +410,6 @@ theorem equivPair_eq_of_fstIdx_ne {i} {w : Word M} (h : fstIdx w ≠ some i) :
 instance summandAction (i) : MulAction (M i) (Word M) where
   smul m w := rcons { equivPair i w with head := m * (equivPair i w).head }
   one_smul w := by
-    simp_rw [one_mul]
     apply (equivPair i).symm_apply_eq.mpr
     simp [equivPair]
   mul_smul m m' w := by
@@ -536,8 +535,7 @@ theorem toList_head? {i j} (w : NeWord M i j) : w.toList.head? = Option.some ⟨
 #align free_product.neword.to_list_head' FreeProduct.NeWord.toList_head?
 
 @[simp]
-theorem toList_getLast? {i j} (w : NeWord M i j) : w.toList.getLast? = Option.some ⟨j, w.last⟩ :=
-  by
+theorem toList_getLast? {i j} (w : NeWord M i j) : w.toList.getLast? = Option.some ⟨j, w.last⟩ := by
   rw [← Option.mem_def]
   induction w
   · rw [Option.mem_def]
