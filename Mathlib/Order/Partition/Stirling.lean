@@ -92,6 +92,22 @@ lemma Finset.erase_union_eq_of_mem {α : Type _} [DecidableEq α] {s : Finset α
   · simp [h]
   · simp [hy]
 
+-- Ideally, using EquivLike, but there is no EquivLike.symm
+lemma Finset.subset_map_equiv_iff {α β : Type _} {u : Finset α} {v : Finset β}
+    {e : α ≃ β} : v ⊆ u.map e ↔ v.map e.symm ⊆ u := by
+  constructor <;> intro h x hx <;> simp only [mem_map_equiv, Equiv.symm_symm] at hx
+  · simpa using h hx
+  · simp only [mem_map_equiv]
+    refine' h _
+    simp [hx]
+
+lemma Finset.sup_order_iso {α β : Type _} [SemilatticeSup α] [OrderBot α] [SemilatticeSup β]
+    [OrderBot β] (s : Finset α) (e : α ≃o β) : s.sup e = e (s.sup id) := by
+  induction' s using Finset.cons_induction_on with s u hs IH
+  · simpa using e.map_bot.symm
+  · rw [sup_cons, sup_cons, e.map_sup, IH]
+    rfl
+
 namespace Finpartition
 
 lemma subset_of_mem_parts {s : Finset α} {t : Finpartition s} {x : Finset α}
@@ -1018,5 +1034,30 @@ lemma card_Finpartition_univ_univ :
       rwa [bot_eq_empty, ←ht y' H.symm hy']
   · rintro rfl
     simp [top_eq_indiscrete hs]
+
+def equiv {α β : Type _} [Lattice α] [OrderBot α] [Lattice β] [OrderBot β] {a : α}
+    (C : Finpartition a) (e : α ≃o β) : Finpartition (e a)
+    where
+  parts := C.parts.map e
+  supIndep := by
+    intros u hu b hb hbu x hx hxu
+    rw [Finset.subset_map_equiv_iff] at hu
+    simp only [mem_map_equiv] at hb
+    have := C.supIndep hu hb (by simp [hbu]) (map_rel e.symm hx) ?_
+    · rw [←e.symm.map_bot] at this
+      exact e.symm.map_rel_iff.mp this
+    · convert e.symm.map_rel_iff.mpr hxu
+      simpa using sup_order_iso u e.symm
+  supParts := by
+    simp only [sup_map, Equiv.coe_toEmbedding, comp.left_id]
+    convert sup_order_iso C.parts e
+    exact C.supParts.symm
+  not_bot_mem := by
+    rw [mem_map_equiv]
+    convert C.not_bot_mem
+    exact e.symm.map_bot
+
+@[simp] lemma parts_equiv {α β : Type _} [Lattice α] [OrderBot α] [Lattice β] [OrderBot β] {a : α}
+    {C : Finpartition a} {e : α ≃o β} : (C.equiv e).parts = C.parts.map e := rfl
 
 end Finpartition
