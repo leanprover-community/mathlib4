@@ -8,9 +8,9 @@ Authors: Markus Himmel
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Abelian.Exact
-import Mathbin.CategoryTheory.Over
-import Mathbin.Algebra.Category.Module.EpiMono
+import Mathlib.CategoryTheory.Abelian.Exact
+import Mathlib.CategoryTheory.Over
+import Mathlib.Algebra.Category.Module.EpiMono
 
 /-!
 # Pseudoelements in abelian categories
@@ -125,8 +125,7 @@ section
 /-- Pseudoequality is transitive: Just take the pullback. The pullback morphisms will
     be epimorphisms since in an abelian category, pullbacks of epimorphisms are epimorphisms. -/
 theorem pseudoEqual_trans {P : C} : Transitive (PseudoEqual P) :=
-  fun f g h ⟨R, p, q, ep, Eq, comm⟩ ⟨R', p', q', ep', eq', comm'⟩ =>
-  by
+  fun f g h ⟨R, p, q, ep, Eq, comm⟩ ⟨R', p', q', ep', eq', comm'⟩ => by
   refine' ⟨pullback q p', pullback.fst ≫ p, pullback.snd ≫ q', _, _, _⟩
   · skip
     exact epi_comp _ _
@@ -267,8 +266,7 @@ theorem zero_eq_zero {P Q : C} : ⟦((0 : Q ⟶ P) : Over P)⟧ = (0 : Pseudoele
 #align category_theory.abelian.pseudoelement.zero_eq_zero CategoryTheory.Abelian.Pseudoelement.zero_eq_zero
 
 /-- The pseudoelement induced by an arrow is zero precisely when that arrow is zero -/
-theorem pseudo_zero_iff {P : C} (a : Over P) : (a : P) = 0 ↔ a.Hom = 0 :=
-  by
+theorem pseudo_zero_iff {P : C} (a : Over P) : (a : P) = 0 ↔ a.Hom = 0 := by
   rw [← pseudo_zero_aux P a]
   exact Quotient.eq'
 #align category_theory.abelian.pseudoelement.pseudo_zero_iff CategoryTheory.Abelian.Pseudoelement.pseudo_zero_iff
@@ -279,8 +277,7 @@ open Pseudoelement
 
 /-- Morphisms map the zero pseudoelement to the zero pseudoelement -/
 @[simp]
-theorem apply_zero {P Q : C} (f : P ⟶ Q) : f 0 = 0 :=
-  by
+theorem apply_zero {P Q : C} (f : P ⟶ Q) : f 0 = 0 := by
   rw [pseudo_zero_def, pseudo_apply_mk]
   simp
 #align category_theory.abelian.pseudoelement.apply_zero CategoryTheory.Abelian.Pseudoelement.apply_zero
@@ -288,15 +285,13 @@ theorem apply_zero {P Q : C} (f : P ⟶ Q) : f 0 = 0 :=
 /-- The zero morphism maps every pseudoelement to 0. -/
 @[simp]
 theorem zero_apply {P : C} (Q : C) (a : P) : (0 : P ⟶ Q) a = 0 :=
-  Quotient.inductionOn a fun a' =>
-    by
+  Quotient.inductionOn a fun a' => by
     rw [pseudo_zero_def, pseudo_apply_mk]
     simp
 #align category_theory.abelian.pseudoelement.zero_apply CategoryTheory.Abelian.Pseudoelement.zero_apply
 
 /-- An extensionality lemma for being the zero arrow. -/
-theorem zero_morphism_ext {P Q : C} (f : P ⟶ Q) : (∀ a, f a = 0) → f = 0 := fun h =>
-  by
+theorem zero_morphism_ext {P Q : C} (f : P ⟶ Q) : (∀ a, f a = 0) → f = 0 := fun h => by
   rw [← category.id_comp f]
   exact (pseudo_zero_iff (𝟙 P ≫ f : over Q)).1 (h (𝟙 P))
 #align category_theory.abelian.pseudoelement.zero_morphism_ext CategoryTheory.Abelian.Pseudoelement.zero_morphism_ext
@@ -361,14 +356,12 @@ theorem epi_of_pseudo_surjective {P Q : C} (f : P ⟶ Q) : Function.Surjective f
   | ⟨pbar, hpbar⟩ =>
     match Quotient.exists_rep pbar with
     | ⟨p, hp⟩ =>
-      have : ⟦(p.Hom ≫ f : Over Q)⟧ = ⟦𝟙 Q⟧ :=
-        by
+      have : ⟦(p.Hom ≫ f : Over Q)⟧ = ⟦𝟙 Q⟧ := by
         rw [← hp] at hpbar
         exact hpbar
       match Quotient.exact this with
       | ⟨R, x, y, ex, ey, comm⟩ =>
-        @epi_of_epi_fac _ _ _ _ _ (x ≫ p.Hom) f y ey <|
-          by
+        @epi_of_epi_fac _ _ _ _ _ (x ≫ p.Hom) f y ey <| by
           dsimp at comm
           rw [category.assoc, comm]
           apply category.comp_id
@@ -382,8 +375,7 @@ theorem pseudo_exact_of_exact {P Q R : C} {f : P ⟶ Q} {g : Q ⟶ R} (h : Exact
   ⟨fun a => by
     rw [← comp_apply, h.w]
     exact zero_apply _ _, fun b' =>
-    Quotient.inductionOn b' fun b hb =>
-      by
+    Quotient.inductionOn b' fun b hb => by
       have hb' : b.Hom ≫ g = 0 := (pseudo_zero_iff _).1 hb
       -- By exactness, b factors through im f = ker g via some c
       obtain ⟨c, hc⟩ := kernel_fork.is_limit.lift' (is_limit_image f g h) _ hb'
@@ -422,8 +414,7 @@ section
 theorem exact_of_pseudo_exact {P Q R : C} (f : P ⟶ Q) (g : Q ⟶ R) :
     ((∀ a, g (f a) = 0) ∧ ∀ b, g b = 0 → ∃ a, f a = b) → Exact f g := fun ⟨h₁, h₂⟩ =>
   (Abelian.exact_iff _ _).2
-    ⟨zero_morphism_ext _ fun a => by rw [comp_apply, h₁ a],
-      by
+    ⟨zero_morphism_ext _ fun a => by rw [comp_apply, h₁ a], by
       -- If we apply g to the pseudoelement induced by its kernel, we get 0 (of course!).
       have : g (kernel.ι g) = 0 := apply_eq_zero_of_comp_eq_zero _ _ (kernel.condition _)
       -- By pseudo-exactness, we get a preimage.
@@ -466,14 +457,12 @@ theorem sub_of_eq_image {P Q : C} (f : P ⟶ Q) (x y : P) :
     | ⟨R, p, q, ep, Eq, comm⟩ =>
       let a'' : R ⟶ P := p ≫ a.Hom - q ≫ a'.Hom
       ⟨a'',
-        ⟨show ⟦((p ≫ a.Hom - q ≫ a'.Hom) ≫ f : Over Q)⟧ = ⟦(0 : Q ⟶ Q)⟧
-            by
+        ⟨show ⟦((p ≫ a.Hom - q ≫ a'.Hom) ≫ f : Over Q)⟧ = ⟦(0 : Q ⟶ Q)⟧ by
             dsimp at comm
             simp [sub_eq_zero.2 comm],
           fun Z g hh => by
           obtain ⟨X, p', q', ep', eq', comm'⟩ := Quotient.exact hh
-          have : a'.hom ≫ g = 0 :=
-            by
+          have : a'.hom ≫ g = 0 := by
             apply (epi_iff_cancel_zero _).1 ep' _ (a'.hom ≫ g)
             simpa using comm'
           apply Quotient.sound
@@ -492,8 +481,7 @@ variable [Limits.HasPullbacks C]
 theorem pseudo_pullback {P Q R : C} {f : P ⟶ R} {g : Q ⟶ R} {p : P} {q : Q} :
     f p = g q →
       ∃ s, (pullback.fst : pullback f g ⟶ P) s = p ∧ (pullback.snd : pullback f g ⟶ Q) s = q :=
-  Quotient.induction_on₂ p q fun x y h =>
-    by
+  Quotient.induction_on₂ p q fun x y h => by
     obtain ⟨Z, a, b, ea, eb, comm⟩ := Quotient.exact h
     obtain ⟨l, hl₁, hl₂⟩ :=
       @pullback.lift' _ _ _ _ _ _ f g _ (a ≫ x.hom) (b ≫ y.hom)
@@ -513,8 +501,7 @@ attribute [-instance] hom_to_fun
 /-- In the category `Module R`, if `x` and `y` are pseudoequal, then the range of the associated
 morphisms is the same. -/
 theorem Module.eq_range_of_pseudoequal {R : Type _} [CommRing R] {G : ModuleCat R} {x y : Over G}
-    (h : PseudoEqual G x y) : x.Hom.range = y.Hom.range :=
-  by
+    (h : PseudoEqual G x y) : x.Hom.range = y.Hom.range := by
   obtain ⟨P, p, q, hp, hq, H⟩ := h
   refine' Submodule.ext fun a => ⟨fun ha => _, fun ha => _⟩
   · obtain ⟨a', ha'⟩ := ha
