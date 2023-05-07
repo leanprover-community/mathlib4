@@ -115,18 +115,16 @@ theorem cancel_right {f₁ : X ⟶ Y} {f₂ : Y ⟶ Z} (comm : a ≫ f₁ = b �
     (big_k : IsKernelPair (f₁ ≫ f₂) a b) : IsKernelPair f₁ a b :=
   { w := comm
     isLimit' :=
-      ⟨PullbackCone.isLimitAux' _ fun s =>
-          by
-          let s' : PullbackCone (f₁ ≫ f₂) (f₁ ≫ f₂) :=
-            PullbackCone.mk s.fst s.snd (s.condition_assoc _)
-          refine'
-            ⟨big_k.isLimit.lift s', big_k.isLimit.fac _ WalkingCospan.left,
-              big_k.isLimit.fac _ WalkingCospan.right, fun m₁ m₂ => _⟩
-          apply big_k.isLimit.hom_ext
-          refine' (PullbackCone.mk a b _ : PullbackCone (f₁ ≫ f₂) _).equalizer_ext _ _
-          . apply reassoc_of% comm
-          . apply m₁.trans (big_k.isLimit.fac s' WalkingCospan.left).symm
-          . apply m₂.trans (big_k.isLimit.fac s' WalkingCospan.right).symm⟩ }
+      ⟨PullbackCone.isLimitAux' _ fun s => by
+        let s' : PullbackCone (f₁ ≫ f₂) (f₁ ≫ f₂) :=
+          PullbackCone.mk s.fst s.snd (s.condition_assoc _)
+        refine' ⟨big_k.isLimit.lift s', big_k.isLimit.fac _ WalkingCospan.left,
+          big_k.isLimit.fac _ WalkingCospan.right, fun m₁ m₂ => _⟩
+        apply big_k.isLimit.hom_ext
+        refine' (PullbackCone.mk a b _ : PullbackCone (f₁ ≫ f₂) _).equalizer_ext _ _
+        . apply reassoc_of% comm
+        . apply m₁.trans (big_k.isLimit.fac s' WalkingCospan.left).symm
+        . apply m₂.trans (big_k.isLimit.fac s' WalkingCospan.right).symm⟩ }
 #align category_theory.is_kernel_pair.cancel_right CategoryTheory.IsKernelPair.cancel_right
 
 /-- If `(a,b)` is a kernel pair for `f₁ ≫ f₂` and `f₂` is mono, then `(a,b)` is a kernel pair for

@@ -371,8 +371,8 @@ protected theorem infᵢ_eq {u : ι → UniformSpace γ} : 𝒰(α, γ, (⨅ i, 
 
 /-- If `u₁` and `u₂` are two uniform structures on `γ`, then
 `𝒰(α, γ, u₁ ⊓ u₂) = 𝒰(α, γ, u₁) ⊓ 𝒰(α, γ, u₂)`. -/
-protected theorem inf_eq {u₁ u₂ : UniformSpace γ} : 𝒰(α, γ, u₁ ⊓ u₂) = 𝒰(α, γ, u₁) ⊓ 𝒰(α, γ, u₂) :=
-  by
+protected theorem inf_eq {u₁ u₂ : UniformSpace γ} :
+    𝒰(α, γ, u₁ ⊓ u₂) = 𝒰(α, γ, u₁) ⊓ 𝒰(α, γ, u₂) := by
   -- This follows directly from the fact that the upper adjoint in a Galois connection maps
   -- infimas to infimas.
   rw [inf_eq_infᵢ, inf_eq_infᵢ, UniformFun.infᵢ_eq]
@@ -725,8 +725,8 @@ variable {β} {𝔖}
 
 /-- If `u` is a family of uniform structures on `γ`, then
 `𝒱(α, γ, 𝔖, (⨅ i, u i)) = ⨅ i, 𝒱(α, γ, 𝔖, u i)`. -/
-protected theorem infᵢ_eq {u : ι → UniformSpace γ} : 𝒱(α, γ, 𝔖, ⨅ i, u i) = ⨅ i, 𝒱(α, γ, 𝔖, u i) :=
-  by
+protected theorem infᵢ_eq {u : ι → UniformSpace γ} :
+    𝒱(α, γ, 𝔖, ⨅ i, u i) = ⨅ i, 𝒱(α, γ, 𝔖, u i) := by
   simp_rw [UniformOnFun.uniformSpace, UniformFun.infᵢ_eq, UniformSpace.comap_infᵢ]
   rw [infᵢ_comm]
   exact infᵢ_congr fun s => infᵢ_comm

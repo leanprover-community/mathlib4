@@ -510,8 +510,7 @@ Dual to `rightAdjointOfEquiv`. -/
 def leftAdjointOfEquiv : C ⥤ D where
   obj := F_obj
   map {X} {X'} f := (e X (F_obj X')).symm (f ≫ e X' (F_obj X') (𝟙 _))
-  map_comp := fun f f' =>
-    by
+  map_comp := fun f f' => by
     rw [Equiv.symm_apply_eq, he, Equiv.apply_symm_apply]
     conv =>
       rhs
