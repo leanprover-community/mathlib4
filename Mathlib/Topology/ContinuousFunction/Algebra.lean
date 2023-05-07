@@ -431,8 +431,8 @@ instance [CommGroup β] [TopologicalGroup β] : TopologicalGroup C(α, β) where
 converges to `g` (for the compact-open topology), then the pointwise sum converges to `g x` for
 all `x ∈ α`. -/
 theorem hasSum_apply {γ : Type _} [LocallyCompactSpace α] [AddCommMonoid β] [ContinuousAdd β]
-    {f : γ → C(α, β)} {g : C(α, β)} (hf : HasSum f g) (x : α) : HasSum (fun i : γ => f i x) (g x) :=
-  by
+  {f : γ → C(α, β)} {g : C(α, β)} (hf : HasSum f g) (x : α) :
+  HasSum (fun i : γ => f i x) (g x) := by
   let evₓ : AddMonoidHom C(α, β) β := (Pi.evalAddMonoidHom _ x).comp coeFnAddMonoidHom
   exact hf.map evₓ (ContinuousMap.continuous_eval_const' x)
 #align continuous_map.has_sum_apply ContinuousMap.hasSum_apply
