@@ -108,8 +108,8 @@ theorem idealProdEquiv_symm_apply (I : Ideal R) (J : Ideal S) :
   rfl
 #align ideal.ideal_prod_equiv_symm_apply Ideal.idealProdEquiv_symm_apply
 
-theorem prod.ext_iff {I I' : Ideal R} {J J' : Ideal S} : prod I J = prod I' J' ↔ I = I' ∧ J = J' :=
-  by
+theorem prod.ext_iff {I I' : Ideal R} {J J' : Ideal S} :
+    prod I J = prod I' J' ↔ I = I' ∧ J = J' := by
   simp only [← idealProdEquiv_symm_apply, idealProdEquiv.symm.injective.eq_iff, Prod.mk.inj_iff]
 #align ideal.prod.ext_iff Ideal.prod.ext_iff
 
@@ -120,8 +120,7 @@ theorem isPrime_of_isPrime_prod_top {I : Ideal R} (h : (Ideal.prod I (⊤ : Idea
     rw [h, prod_top_top, isPrime_iff]
     simp [isPrime_iff, h]
   · intro x y hxy
-    have : (⟨x, 1⟩ : R × S) * ⟨y, 1⟩ ∈ prod I ⊤ :=
-      by
+    have : (⟨x, 1⟩ : R × S) * ⟨y, 1⟩ ∈ prod I ⊤ := by
       rw [Prod.mk_mul_mk, mul_one, mem_prod]
       exact ⟨hxy, trivial⟩
     simpa using h.mem_or_mem this

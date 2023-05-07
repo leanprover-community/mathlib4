@@ -65,8 +65,7 @@ theorem index_comap_of_surjective {G' : Type _} [Group G'] {f : G' →* G}
     (hf : Function.Surjective f) : (H.comap f).index = H.index := by
   letI := QuotientGroup.leftRel H
   letI := QuotientGroup.leftRel (H.comap f)
-  have key : ∀ x y : G', Setoid.r x y ↔ Setoid.r (f x) (f y) :=
-    by
+  have key : ∀ x y : G', Setoid.r x y ↔ Setoid.r (f x) (f y) := by
     simp only [QuotientGroup.leftRel_apply]
     exact fun x y => iff_of_eq (congr_arg (· ∈ H) (by rw [f.map_mul, f.map_inv]))
   refine' Cardinal.toNat_congr (Equiv.ofBijective (Quotient.map' f fun x y => (key x y).mp) ⟨_, _⟩)
@@ -362,8 +361,8 @@ theorem index_eq_card [Fintype (G ⧸ H)] : H.index = Fintype.card (G ⧸ H) :=
 #align add_subgroup.index_eq_card AddSubgroup.index_eq_card
 
 @[to_additive index_mul_card]
-theorem index_mul_card [Fintype G] [hH : Fintype H] : H.index * Fintype.card H = Fintype.card G :=
-  by
+theorem index_mul_card [Fintype G] [hH : Fintype H] :
+    H.index * Fintype.card H = Fintype.card G := by
   rw [← relindex_bot_left_eq_card, ← index_bot_eq_card, mul_comm];
     exact relindex_mul_index bot_le
 #align subgroup.index_mul_card Subgroup.index_mul_card

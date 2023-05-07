@@ -694,8 +694,7 @@ theorem subtype_map_of_mem {p : α → Prop} [DecidablePred p] {s : Finset α} (
 `Embedding.subtype`, all elements of the result have the property of
 the subtype. -/
 theorem property_of_mem_map_subtype {p : α → Prop} (s : Finset { x // p x }) {a : α}
-    (h : a ∈ s.map (Embedding.subtype _)) : p a :=
-  by
+    (h : a ∈ s.map (Embedding.subtype _)) : p a := by
   rcases mem_map.1 h with ⟨x, _, rfl⟩
   exact x.2
 #align finset.property_of_mem_map_subtype Finset.property_of_mem_map_subtype

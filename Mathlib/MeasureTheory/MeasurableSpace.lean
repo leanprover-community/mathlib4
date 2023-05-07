@@ -1631,8 +1631,7 @@ theorem measurable_injection_nat_bool_of_countablyGenerated [MeasurableSpace α]
     apply measurableSet_generateFrom
     exact ⟨n, rfl⟩
   intro x y hxy
-  have : ∀ s : Set α, MeasurableSet s → (x ∈ s ↔ y ∈ s) := fun s =>
-    by
+  have : ∀ s : Set α, MeasurableSet s → (x ∈ s ↔ y ∈ s) := fun s => by
     rw [hb]
     apply generateFrom_induction
     · rintro - ⟨n, rfl⟩

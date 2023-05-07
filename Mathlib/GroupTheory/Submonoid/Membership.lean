@@ -143,8 +143,7 @@ theorem list_prod_mem {l : List M} (hl : ∀ x ∈ l, x ∈ s) : l.prod ∈ s :=
       "Sum of a multiset of elements in an `AddSubmonoid` of an `AddCommMonoid` is
       in the `AddSubmonoid`."]
 theorem multiset_prod_mem {M} [CommMonoid M] (S : Submonoid M) (m : Multiset M)
-    (hm : ∀ a ∈ m, a ∈ S) : m.prod ∈ S :=
-  by
+    (hm : ∀ a ∈ m, a ∈ S) : m.prod ∈ S := by
   lift m to Multiset S using hm
   rw [← coe_multiset_prod]
   exact m.prod.coe_prop
@@ -153,8 +152,7 @@ theorem multiset_prod_mem {M} [CommMonoid M] (S : Submonoid M) (m : Multiset M)
 
 @[to_additive]
 theorem multiset_noncommProd_mem (S : Submonoid M) (m : Multiset M) (comm) (h : ∀ x ∈ m, x ∈ S) :
-    m.noncommProd comm ∈ S :=
-  by
+    m.noncommProd comm ∈ S := by
   induction' m using Quotient.inductionOn with l
   simp only [Multiset.quot_mk_to_coe, Multiset.noncommProd_coe]
   exact Submonoid.list_prod_mem _ h
@@ -378,8 +376,7 @@ theorem exists_list_of_mem_closure {s : Set M} {x : M} (hx : x ∈ closure s) :
 
 @[to_additive]
 theorem exists_multiset_of_mem_closure {M : Type _} [CommMonoid M] {s : Set M} {x : M}
-    (hx : x ∈ closure s) : ∃ (l : Multiset M) (_ : ∀ y ∈ l, y ∈ s), l.prod = x :=
-  by
+    (hx : x ∈ closure s) : ∃ (l : Multiset M) (_ : ∀ y ∈ l, y ∈ s), l.prod = x := by
   obtain ⟨l, h1, h2⟩ := exists_list_of_mem_closure hx
   exact ⟨l, h1, (Multiset.coe_prod l).trans h2⟩
 #align submonoid.exists_multiset_of_mem_closure Submonoid.exists_multiset_of_mem_closure
@@ -387,8 +384,7 @@ theorem exists_multiset_of_mem_closure {M : Type _} [CommMonoid M] {s : Set M} {
 
 @[to_additive]
 theorem closure_induction_left {s : Set M} {p : M → Prop} {x : M} (h : x ∈ closure s) (H1 : p 1)
-    (Hmul : ∀ x ∈ s, ∀ (y), p y → p (x * y)) : p x :=
-  by
+    (Hmul : ∀ x ∈ s, ∀ (y), p y → p (x * y)) : p x := by
   rw [closure_eq_mrange] at h
   obtain ⟨l, rfl⟩ := h
   induction' l using FreeMonoid.recOn with x y ih
@@ -445,8 +441,7 @@ theorem mem_powers_iff (x z : M) : x ∈ powers z ↔ ∃ n : ℕ, z ^ n = x :=
   Iff.rfl
 #align submonoid.mem_powers_iff Submonoid.mem_powers_iff
 
-theorem powers_eq_closure (n : M) : powers n = closure {n} :=
-  by
+theorem powers_eq_closure (n : M) : powers n = closure {n} := by
   ext
   exact mem_closure_singleton.symm
 #align submonoid.powers_eq_closure Submonoid.powers_eq_closure
@@ -542,8 +537,7 @@ end Submonoid
 @[to_additive]
 theorem IsScalarTower.of_mclosure_eq_top {N α} [Monoid M] [MulAction M N] [SMul N α] [MulAction M α]
     {s : Set M} (htop : Submonoid.closure s = ⊤)
-    (hs : ∀ x ∈ s, ∀ (y : N) (z : α), (x • y) • z = x • y • z) : IsScalarTower M N α :=
-  by
+    (hs : ∀ x ∈ s, ∀ (y : N) (z : α), (x • y) • z = x • y • z) : IsScalarTower M N α := by
   refine' ⟨fun x => Submonoid.induction_of_closure_eq_top_left htop x _ _⟩
   · intro y z
     rw [one_smul, one_smul]
@@ -556,8 +550,7 @@ theorem IsScalarTower.of_mclosure_eq_top {N α} [Monoid M] [MulAction M N] [SMul
 @[to_additive]
 theorem SMulCommClass.of_mclosure_eq_top {N α} [Monoid M] [SMul N α] [MulAction M α] {s : Set M}
     (htop : Submonoid.closure s = ⊤) (hs : ∀ x ∈ s, ∀ (y : N) (z : α), x • y • z = y • x • z) :
-    SMulCommClass M N α :=
-  by
+    SMulCommClass M N α := by
   refine' ⟨fun x => Submonoid.induction_of_closure_eq_top_left htop x _ _⟩
   · intro y z
     rw [one_smul, one_smul]
@@ -691,8 +684,7 @@ elements. -/
       "An element is in the closure of a two-element set if it is a linear combination of
       those two elements."]
 theorem mem_closure_pair {A : Type _} [CommMonoid A] (a b c : A) :
-    c ∈ Submonoid.closure ({a, b} : Set A) ↔ ∃ m n : ℕ, a ^ m * b ^ n = c :=
-  by
+    c ∈ Submonoid.closure ({a, b} : Set A) ↔ ∃ m n : ℕ, a ^ m * b ^ n = c := by
   rw [← Set.singleton_union, Submonoid.closure_union, mem_sup]
   simp_rw [mem_closure_singleton, exists_exists_eq_and]
 #align submonoid.mem_closure_pair Submonoid.mem_closure_pair
