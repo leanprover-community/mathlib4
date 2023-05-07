@@ -158,6 +158,14 @@ instance Prod.shrinkable [SizeOf α] [SizeOf β] [shrA : Shrinkable α] [shrB : 
     let shrink2 := shrB.shrink snd |>.map fun x ↦ (fst, x)
     shrink1 ++ shrink2
 
+open Shrinkable
+
+/-- Shrink a list of a shrinkable type, either by discarding an element or shrinking an element. -/
+instance List.shrinkable [Shrinkable α] : Shrinkable (List α) where
+  shrink := fun L =>
+    (L.mapIdx fun i _ => L.removeNth i) ++
+    (L.mapIdx fun i a => (shrink a).map fun a' => L.modifyNth (fun _ => a') i).join
+
 end Shrinkers
 
 section Samplers
@@ -211,6 +219,11 @@ instance Prop.sampleableExt : SampleableExt Prop where
   sample := interpSample Bool
   shrink := inferInstance
   interp := Coe.coe
+
+instance List.sampleableExt [SampleableExt α] [Repr α] [Shrinkable α] : SampleableExt (List α) where
+  proxy := List (proxy α)
+  sample := Gen.listOf sample
+  interp := List.map interp
 
 end Samplers
 
