@@ -12,6 +12,7 @@ import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 import Mathlib.CategoryTheory.Shift.Basic
 import Mathlib.CategoryTheory.Triangulated.TriangleShift
 import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProducts
+import Mathlib.CategoryTheory.Adjunction.Limits
 
 /-!
 # Pretriangulated Categories
@@ -71,6 +72,12 @@ lemma isoBiprod_hom_snd : d.isoBiprod.hom ≫ d.bicone.snd = biprod.snd := by
 end BinaryBiproductData
 
 end Limits
+
+lemma isIso_of_yoneda_map_bijective {C : Type _} [Category C] {X Y : C} (f : X ⟶ Y)
+  (hf : ∀ (T : C), Function.Bijective (fun (x : T ⟶ X) => x ≫ f)):
+    IsIso f := by
+  obtain ⟨g, hg : g ≫ f = 𝟙 Y⟩ := (hf Y).2 (𝟙 Y)
+  exact ⟨g, (hf _).1 (by aesop_cat), hg⟩
 
 end CategoryTheory
 
@@ -397,6 +404,139 @@ lemma binaryProductTriangle_distinguished (X₁ X₂ : C) :
     binaryProductTriangle X₁ X₂ ∈ distTriang C :=
   isomorphic_distinguished _ (binaryBiproductTriangle_distinguished X₁ X₂) _
     (binaryProductTriangleIsoBinaryBiproductTriangle X₁ X₂)
+
+@[simps!]
+def productTriangle {J : Type _} (T : J → Triangle C)
+    [HasProduct (fun j => (T j).obj₁)] [HasProduct (fun j => (T j).obj₂)]
+    [HasProduct (fun j => (T j).obj₃)]
+    [HasProduct (fun j => (T j).obj₁⟦(1 : ℤ)⟧)] : Triangle C :=
+  Triangle.mk (Pi.map (fun j => (T j).mor₁))
+    (Pi.map (fun j => (T j).mor₂))
+    (Pi.map (fun j => (T j).mor₃) ≫ inv (piComparison _ _))
+
+@[simps]
+def productTriangle.π {J : Type _} (T : J → Triangle C)
+    [HasProduct (fun j => (T j).obj₁)] [HasProduct (fun j => (T j).obj₂)]
+    [HasProduct (fun j => (T j).obj₃)]
+    [HasProduct (fun j => (T j).obj₁⟦(1 : ℤ)⟧)] (j : J) :
+    productTriangle T ⟶ T j where
+  hom₁ := Pi.π _ j
+  hom₂ := Pi.π _ j
+  hom₃ := Pi.π _ j
+  comm₁ := by simp
+  comm₂ := by simp
+  comm₃ := by
+    dsimp
+    rw [← piComparison_comp_π, assoc, IsIso.inv_hom_id_assoc]
+    simp only [limMap_π, Discrete.natTrans_app]
+
+lemma productTriangle.π_zero₃₁ (T : J → Triangle C)
+    [HasProduct (fun j => (T j).obj₁)] [HasProduct (fun j => (T j).obj₂)]
+    [HasProduct (fun j => (T j).obj₃)]
+    [HasProduct (fun j => (T j).obj₁⟦(1 : ℤ)⟧)]
+    [HasProduct (fun j => (T j).obj₂⟦(1 : ℤ)⟧)]
+    (h : ∀ j, (T j).mor₃ ≫ (T j).mor₁⟦(1 : ℤ)⟧' = 0) :
+    (productTriangle T).mor₃ ≫ (productTriangle T).mor₁⟦1⟧' = 0 := by
+  dsimp
+  have eq : (Pi.map fun j => (T j).mor₁) = Pi.lift (fun j => Pi.π _ j ≫ (T j).mor₁) := by
+    aesop_cat
+  rw [eq, assoc, ← cancel_mono (piComparison _ _), zero_comp, assoc, assoc]
+  refine' Limits.Pi.hom_ext _ _ (fun j => _)
+  simp only [map_lift_piComparison, assoc, limit.lift_π, Fan.mk_pt, Fan.mk_π_app, zero_comp,
+    Functor.map_comp, ← piComparison_comp_π_assoc, IsIso.inv_hom_id_assoc,
+    limMap_π_assoc, Discrete.natTrans_app, h j, comp_zero]
+
+@[simps]
+def productTriangle.lift {J : Type _} {T' : Triangle C} (T : J → Triangle C)
+  (φ : ∀ j, T' ⟶ T j)
+    [HasProduct (fun j => (T j).obj₁)] [HasProduct (fun j => (T j).obj₂)]
+    [HasProduct (fun j => (T j).obj₃)]
+    [HasProduct (fun j => (T j).obj₁⟦(1 : ℤ)⟧)] : T' ⟶ productTriangle T where
+  hom₁ := Pi.lift (fun j => (φ j).hom₁)
+  hom₂ := Pi.lift (fun j => (φ j).hom₂)
+  hom₃ := Pi.lift (fun j => (φ j).hom₃)
+  comm₁ := Limits.Pi.hom_ext _ _ (fun j => by simp)
+  comm₂ := Limits.Pi.hom_ext _ _ (fun j => by simp)
+  comm₃ := by
+    dsimp
+    rw [← cancel_mono (piComparison _ _), assoc, assoc, assoc, IsIso.inv_hom_id]
+    refine' Limits.Pi.hom_ext _ _ (fun j => by simp)
+
+lemma productTriangle_distinguished {J : Type _} (T : J → Triangle C)
+    (hT : ∀ j, T j ∈ distTriang C)
+    [HasProduct (fun j => (T j).obj₁)] [HasProduct (fun j => (T j).obj₂)]
+    [HasProduct (fun j => (T j).obj₃)]
+    [HasProduct (fun j => (T j).obj₁⟦(1 : ℤ)⟧)]
+    [HasProduct (fun j => (T j).obj₂⟦(1 : ℤ)⟧)] :
+    productTriangle T ∈ distTriang C := by
+  let f₁ := Pi.map (fun j => (T j).mor₁)
+  obtain ⟨Z, f₂, f₃, hT'⟩  := distinguished_cocone_triangle f₁
+  let T' := Triangle.mk f₁ f₂ f₃
+  change T' ∈ distTriang C at hT'
+  have h := fun j => complete_distinguished_triangle_morphism _ _ hT' (hT j)
+    (Pi.π _ j) (Pi.π _ j) (by simp)
+  let φ : ∀ j, T' ⟶ T j := fun j =>
+    { hom₁ := Pi.π _ j
+      hom₂ := Pi.π _ j
+      hom₃ := (h j).choose
+      comm₁ := by simp
+      comm₂ := (h j).choose_spec.1
+      comm₃ := (h j).choose_spec.2 }
+  obtain ⟨φ', hφ'⟩ : ∃ (φ' : T' ⟶ productTriangle T), φ' = productTriangle.lift _ φ := ⟨_, rfl⟩
+  suffices IsIso φ' by
+    apply isomorphic_distinguished _ hT' _ (asIso φ').symm
+  have h₁ : φ'.hom₁ = 𝟙 _ := Limits.Pi.hom_ext _ _ (by simp [hφ'])
+  have h₂ : φ'.hom₂ = 𝟙 _ := Limits.Pi.hom_ext _ _ (by simp [hφ'])
+  have : IsIso φ'.hom₁ := by rw [h₁] ; infer_instance
+  have : IsIso φ'.hom₂ := by rw [h₂] ; infer_instance
+  suffices IsIso φ'.hom₃ from inferInstance
+  have : Mono φ'.hom₃ := by
+    rw [mono_iff_cancel_zero]
+    intro A f hf
+    have hf' : f ≫ T'.mor₃ = 0 := by
+      rw [← cancel_mono (φ'.hom₁⟦1⟧'), zero_comp, assoc, φ'.comm₃, reassoc_of% hf, zero_comp]
+    obtain ⟨g, hg⟩ := covariant_yoneda_exact₃ _ hT' f hf'
+    have hg' : ∀ j, (g ≫ Pi.π _ j) ≫ (T j).mor₂ = 0 := fun j => by
+      have : g ≫ T'.mor₂ ≫ φ'.hom₃ ≫ Pi.π _ j = 0 := by rw [← reassoc_of% hg,
+        reassoc_of% hf, zero_comp]
+      rw [φ'.comm₂_assoc, h₂, id_comp] at this
+      simpa using this
+    have hg'' := fun j => covariant_yoneda_exact₂ _ (hT j) _ (hg' j)
+    let α := fun j => (hg'' j).choose
+    have hα : ∀ j, _ = α j ≫ _ := fun j => (hg'' j).choose_spec
+    have hg''' : g = Pi.lift α ≫ T'.mor₁ := Limits.Pi.hom_ext _ _
+        (fun j => by rw [hα] ; simp)
+    rw [hg, hg''', assoc, comp_dist_triangle_mor_zero₁₂ _ hT', comp_zero]
+  refine' isIso_of_yoneda_map_bijective _ (fun A => ⟨_, _⟩)
+  . intro a₁ a₂ ha
+    simpa only [← cancel_mono φ'.hom₃] using ha
+  . intro a
+    obtain ⟨a', ha'⟩ : ∃ (a' : A ⟶ Z), a' ≫ T'.mor₃ = a ≫ (productTriangle T).mor₃ := by
+      have eq := φ'.comm₃
+      rw [h₁, Functor.map_id, comp_id] at eq
+      have zero : ((productTriangle T).mor₃) ≫ (shiftFunctor C 1).map T'.mor₁ = 0 := by
+        rw [← cancel_mono (φ'.hom₂⟦1⟧'), zero_comp, assoc, ← Functor.map_comp, φ'.comm₁, h₁,
+          id_comp]
+        rw [productTriangle.π_zero₃₁]
+        intro j
+        exact comp_dist_triangle_mor_zero₃₁ _ (hT j)
+      have ⟨g, hg⟩ := covariant_yoneda_exact₁ _ hT' (a ≫ (productTriangle T).mor₃) (by
+        rw [assoc, zero, comp_zero])
+      exact ⟨g, hg.symm⟩
+    have ha'' := fun (j : J) => covariant_yoneda_exact₃ _ (hT j)
+      ((a - a' ≫ φ'.hom₃) ≫ Pi.π _ j) (by
+        simp only [sub_comp, assoc]
+        erw [← (productTriangle.π T j).comm₃]
+        erw [← φ'.comm₃_assoc]
+        rw [reassoc_of% ha']
+        simp [h₁])
+    let b := fun j => (ha'' j).choose
+    have hb : ∀ j, _  = b j ≫ _ := fun j => (ha'' j).choose_spec
+    have hb' : a - a' ≫ φ'.hom₃ = Pi.lift b ≫ (productTriangle T).mor₂ :=
+      Limits.Pi.hom_ext _ _ (fun j => by rw [hb] ; simp)
+    have : (a' + (by exact Pi.lift b) ≫ T'.mor₂) ≫ φ'.hom₃ = a := by
+      rw [add_comp, assoc, φ'.comm₂, h₂, id_comp, ← hb', add_sub_cancel'_right]
+    exact ⟨_, this⟩
 
 /-
 TODO: If `C` is pretriangulated with respect to a shift,

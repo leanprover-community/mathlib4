@@ -249,8 +249,7 @@ lemma binary_product_stable (X₁ X₂ : C) (hX₁ : X₁ ∈ S.set) (hX₂ : X�
     (X₁ ⨯ X₂) ∈ S.set :=
   S.ext₂ _ (binaryProductTriangle_distinguished X₁ X₂) hX₁ hX₂
 
-/-
-lemma pi_finite_stable {J : Type} [Finite J] (X : J → C) (hX : ∀ j, X j ∈ S.set) :
+/-lemma pi_finite_stable {J : Type} [Finite J] (X : J → C) (hX : ∀ j, X j ∈ S.set) :
     (∏ X) ∈ S.set := by
   revert hX X
   let P : Type → Prop := fun J =>
@@ -266,21 +265,6 @@ lemma pi_finite_stable {J : Type} [Finite J] (X : J → C) (hX : ∀ j, X j ∈ 
     ext ⟨⟩
   . sorry
 
-def productTriangle {J : Type _} (T : J → Triangle C)
-    [HasProduct (fun j => (T j).obj₁)] [HasProduct (fun j => (T j).obj₂)]
-    [HasProduct (fun j => (T j).obj₃)]
-    [HasProduct (fun j => (T j).obj₁⟦(1 : ℤ)⟧)] : Triangle C :=
-  Triangle.mk (Pi.map (fun j => (T j).mor₁))
-    (Pi.map (fun j => (T j).mor₂))
-    (Pi.map (fun j => (T j).mor₃) ≫ inv (piComparison _ _))
-
-lemma productTriangle_distinguished {J : Type _} (T : J → Triangle C)
-    (hT : ∀ j, T j ∈ distTriang C)
-    [HasProduct (fun j => (T j).obj₁)] [HasProduct (fun j => (T j).obj₂)]
-    [HasProduct (fun j => (T j).obj₃)]
-    [HasProduct (fun j => (T j).obj₁⟦(1 : ℤ)⟧)] :
-  productTriangle T ∈ distTriang C := sorry
-
 instance : S.W.IsStableUnderFiniteProducts := ⟨fun J _ => by
   refine' MorphismProperty.IsStableUnderProductsOfShape.mk _ _ (S.respectsIsoW) _
   intro X₁ X₂ f hf
@@ -295,8 +279,7 @@ example : S.W.IsCompatibleWithShift ℤ := inferInstance
 
 instance : S.W.IsCompatibleWithTriangulation := sorry
 
-example : Pretriangulated (S.W.Localization) := inferInstance
--/
+example : Pretriangulated (S.W.Localization) := inferInstance-/
 
 end Subcategory
 
