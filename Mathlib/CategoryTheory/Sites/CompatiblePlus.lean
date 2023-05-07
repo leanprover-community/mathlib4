@@ -16,7 +16,7 @@ import Mathlib.CategoryTheory.Sites.Plus
 In this file, we prove that the plus functor is compatible with functors which
 preserve the correct limits and colimits.
 
-See `category_theory/sites/compatible_sheafification` for the compatibility
+See `CategoryTheory/Sites/CompatibleSheafification` for the compatibility
 of sheafification, which follows easily from the content in this file.
 
 -/
@@ -60,7 +60,18 @@ def diagramCompIso (X : C) : J.diagram P X ⋙ F ≅ J.diagram (P ⋙ F) X :=
         (isLimitOfPreserves F (limit.isLimit _)).conePointUniqueUpToIso (limit.isLimit _))
     (by
       intro A B f
-      ext
+      -- porting note: this used to work with `ext`
+      refine' Multiequalizer.hom_ext ((unop B).index (P ⋙ F)) ((J.diagram P X ⋙ F).map f ≫
+          ((isLimitOfPreserves F
+          (limit.isLimit ((unop B).index P).multicospan)).conePointUniqueUpToIso
+          (limit.isLimit (((unop B).index P).multicospan ⋙ F)) ≪≫
+          HasLimit.isoOfNatIso (GrothendieckTopology.Cover.multicospanComp F P (unop B)).symm).hom)
+          (((isLimitOfPreserves F
+          (limit.isLimit ((unop A).index P).multicospan)).conePointUniqueUpToIso
+          (limit.isLimit (((unop A).index P).multicospan ⋙ F)) ≪≫
+          HasLimit.isoOfNatIso (
+          GrothendieckTopology.Cover.multicospanComp F P (unop A)).symm).hom ≫
+          (J.diagram (P ⋙ F) X).map f)  (fun (a : ((unop B).index (P ⋙ F)).L) ↦ _)
       dsimp
       simp only [Functor.mapCone_π_app, Multiequalizer.multifork_π_app_left, Iso.symm_hom,
         Multiequalizer.lift_ι, eqToHom_refl, Category.comp_id,
@@ -118,7 +129,7 @@ def plusCompIso : J.plusObj P ⋙ F ≅ J.plusObj (P ⋙ F) :=
         colimit.ι_pre, HasColimit.isoOfNatIso_ι_hom, ι_colimMap_assoc]
       simp only [← Category.assoc]
       congr 1
-      --ext
+      ext
       dsimp
       simp only [Category.assoc]
       erw [Multiequalizer.lift_ι, diagramCompIso_hom_ι, diagramCompIso_hom_ι, ← F.map_comp,
@@ -170,7 +181,7 @@ def plusFunctorWhiskerLeftIso (P : Cᵒᵖ ⥤ D)
     [∀ (F : D ⥤ E) (X : C) (W : J.Cover X) (P : Cᵒᵖ ⥤ D),
         PreservesLimit (W.index P).multicospan F] :
     (whiskeringLeft _ _ E).obj (J.plusObj P) ≅ (whiskeringLeft _ _ _).obj P ⋙ J.plusFunctor E :=
-  NatIso.ofComponents (fun X => plusCompIso _ _ _) @fun F G η => plusCompIso_whiskerLeft _ _ _
+  NatIso.ofComponents (fun _ => plusCompIso _ _ _) @fun _ _ _ => plusCompIso_whiskerLeft _ _ _
 #align category_theory.grothendieck_topology.plus_functor_whisker_left_iso CategoryTheory.GrothendieckTopology.plusFunctorWhiskerLeftIso
 
 @[reassoc (attr := simp)]
@@ -197,12 +208,14 @@ theorem plusCompIso_whiskerRight {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) :
   simp only [← F.map_comp, Multiequalizer.lift_ι]
 #align category_theory.grothendieck_topology.plus_comp_iso_whisker_right CategoryTheory.GrothendieckTopology.plusCompIso_whiskerRight
 
+-- porting note: investigate how to speed this up
+set_option maxHeartbeats 400000
 /-- The isomorphism between `P⁺ ⋙ F` and `(P ⋙ F)⁺`, functorially in `P`. -/
 @[simps! hom_app inv_app]
 def plusFunctorWhiskerRightIso :
     J.plusFunctor D ⋙ (whiskeringRight _ _ _).obj F ≅
       (whiskeringRight _ _ _).obj F ⋙ J.plusFunctor E :=
-  NatIso.ofComponents (fun P => J.plusCompIso _ _) @fun P Q η => plusCompIso_whiskerRight _ _ _
+  NatIso.ofComponents (fun _ => J.plusCompIso _ _) @fun _ _ _ => plusCompIso_whiskerRight _ _ _
 #align category_theory.grothendieck_topology.plus_functor_whisker_right_iso CategoryTheory.GrothendieckTopology.plusFunctorWhiskerRightIso
 
 @[reassoc (attr := simp)]
