@@ -335,8 +335,8 @@ end
 
 @[to_additive]
 theorem Filter.HasBasis.uniformity_of_nhds_one {ι} {p : ι → Prop} {U : ι → Set α}
-    (h : (𝓝 (1 : α)).HasBasis p U) : (𝓤 α).HasBasis p fun i => { x : α × α | x.2 / x.1 ∈ U i } :=
-  by
+    (h : (𝓝 (1 : α)).HasBasis p U) :
+    (𝓤 α).HasBasis p fun i => { x : α × α | x.2 / x.1 ∈ U i } := by
   rw [uniformity_eq_comap_nhds_one]
   exact h.comap _
 #align filter.has_basis.uniformity_of_nhds_one Filter.HasBasis.uniformity_of_nhds_one
@@ -344,8 +344,8 @@ theorem Filter.HasBasis.uniformity_of_nhds_one {ι} {p : ι → Prop} {U : ι �
 
 @[to_additive]
 theorem Filter.HasBasis.uniformity_of_nhds_one_inv_mul {ι} {p : ι → Prop} {U : ι → Set α}
-    (h : (𝓝 (1 : α)).HasBasis p U) : (𝓤 α).HasBasis p fun i => { x : α × α | x.1⁻¹ * x.2 ∈ U i } :=
-  by
+    (h : (𝓝 (1 : α)).HasBasis p U) :
+    (𝓤 α).HasBasis p fun i => { x : α × α | x.1⁻¹ * x.2 ∈ U i } := by
   rw [uniformity_eq_comap_inv_mul_nhds_one]
   exact h.comap _
 #align filter.has_basis.uniformity_of_nhds_one_inv_mul Filter.HasBasis.uniformity_of_nhds_one_inv_mul
@@ -353,8 +353,8 @@ theorem Filter.HasBasis.uniformity_of_nhds_one_inv_mul {ι} {p : ι → Prop} {U
 
 @[to_additive]
 theorem Filter.HasBasis.uniformity_of_nhds_one_swapped {ι} {p : ι → Prop} {U : ι → Set α}
-    (h : (𝓝 (1 : α)).HasBasis p U) : (𝓤 α).HasBasis p fun i => { x : α × α | x.1 / x.2 ∈ U i } :=
-  by
+    (h : (𝓝 (1 : α)).HasBasis p U) :
+    (𝓤 α).HasBasis p fun i => { x : α × α | x.1 / x.2 ∈ U i } := by
   rw [uniformity_eq_comap_nhds_one_swapped]
   exact h.comap _
 #align filter.has_basis.uniformity_of_nhds_one_swapped Filter.HasBasis.uniformity_of_nhds_one_swapped
@@ -362,8 +362,8 @@ theorem Filter.HasBasis.uniformity_of_nhds_one_swapped {ι} {p : ι → Prop} {U
 
 @[to_additive]
 theorem Filter.HasBasis.uniformity_of_nhds_one_inv_mul_swapped {ι} {p : ι → Prop} {U : ι → Set α}
-    (h : (𝓝 (1 : α)).HasBasis p U) : (𝓤 α).HasBasis p fun i => { x : α × α | x.2⁻¹ * x.1 ∈ U i } :=
-  by
+    (h : (𝓝 (1 : α)).HasBasis p U) :
+    (𝓤 α).HasBasis p fun i => { x : α × α | x.2⁻¹ * x.1 ∈ U i } := by
   rw [uniformity_eq_comap_inv_mul_nhds_one_swapped]
   exact h.comap _
 #align filter.has_basis.uniformity_of_nhds_one_inv_mul_swapped Filter.HasBasis.uniformity_of_nhds_one_inv_mul_swapped
@@ -372,8 +372,7 @@ theorem Filter.HasBasis.uniformity_of_nhds_one_inv_mul_swapped {ι} {p : ι → 
 @[to_additive]
 theorem group_separationRel (x y : α) : (x, y) ∈ separationRel α ↔ x / y ∈ closure ({1} : Set α) :=
   have : Embedding fun a => a * (y / x) := (uniformEmbedding_translate_mul (y / x)).embedding
-  show (x, y) ∈ ⋂₀ (𝓤 α).sets ↔ x / y ∈ closure ({1} : Set α)
-    by
+  show (x, y) ∈ ⋂₀ (𝓤 α).sets ↔ x / y ∈ closure ({1} : Set α) by
     rw [this.closure_eq_preimage_closure_image, uniformity_eq_comap_nhds_one α, interₛ_comap_sets]
     simp [mem_closure_iff_nhds, inter_singleton_nonempty, sub_eq_add_neg, add_assoc]
 #align group_separation_rel group_separationRel
@@ -755,10 +754,8 @@ variable [MonoidHomClass hom β α] {e : hom} (de : DenseInducing e)
 theorem tendsto_div_comap_self (x₀ : α) :
     Tendsto (fun t : β × β => t.2 / t.1) ((comap fun p : β × β => (e p.1, e p.2)) <| 𝓝 (x₀, x₀))
       (𝓝 1) := by
-  have comm :
-    ((fun x : α × α => x.2 / x.1) ∘ fun t : β × β => (e t.1, e t.2)) =
-      e ∘ fun t : β × β => t.2 / t.1 :=
-    by
+  have comm : ((fun x : α × α => x.2 / x.1) ∘ fun t : β × β => (e t.1, e t.2)) =
+      e ∘ fun t : β × β => t.2 / t.1 := by
     ext t
     change e t.2 / e t.1 = e (t.2 / t.1)
     rw [← map_div e t.2 t.1]
@@ -802,11 +799,10 @@ private theorem extend_Z_bilin_aux (x₀ : α) (y₁ : δ) : ∃ U₂ ∈ comap 
     (x') (_ : x' ∈ U₂), (fun p : β × δ => φ p.1 p.2) (x' - x, y₁) ∈ W' := by
   let Nx := 𝓝 x₀
   let ee := fun u : β × β => (e u.1, e u.2)
-  have lim1 : Tendsto (fun a : β × β => (a.2 - a.1, y₁)) (comap e Nx ×ᶠ comap e Nx) (𝓝 (0, y₁)) :=
-    by
-    have :=
-      Tendsto.prod_mk (tendsto_sub_comap_self de x₀)
-        (tendsto_const_nhds : Tendsto (fun _ : β × β => y₁) (comap ee <| 𝓝 (x₀, x₀)) (𝓝 y₁))
+  have lim1 : Tendsto (fun a : β × β => (a.2 - a.1, y₁))
+      (comap e Nx ×ᶠ comap e Nx) (𝓝 (0, y₁)) := by
+    have := Tendsto.prod_mk (tendsto_sub_comap_self de x₀)
+      (tendsto_const_nhds : Tendsto (fun _ : β × β => y₁) (comap ee <| 𝓝 (x₀, x₀)) (𝓝 y₁))
     rw [nhds_prod_eq, prod_comap_comap_eq, ← nhds_prod_eq]
     exact (this : _)
   have lim2 : Tendsto (fun p : β × δ => φ p.1 p.2) (𝓝 (0, y₁)) (𝓝 0) := by
@@ -826,12 +822,10 @@ private theorem extend_Z_bilin_key (x₀ : α) (y₀ : γ) : ∃ U ∈ comap e (
     simpa using hφ.tendsto (0, 0)
   have lim_φ_sub_sub :
     Tendsto (fun p : (β × β) × δ × δ => (fun p : β × δ => φ p.1 p.2) (p.1.2 - p.1.1, p.2.2 - p.2.1))
-      ((comap ee <| 𝓝 (x₀, x₀)) ×ᶠ (comap ff <| 𝓝 (y₀, y₀))) (𝓝 0) :=
-    by
+      ((comap ee <| 𝓝 (x₀, x₀)) ×ᶠ (comap ff <| 𝓝 (y₀, y₀))) (𝓝 0) := by
     have lim_sub_sub :
       Tendsto (fun p : (β × β) × δ × δ => (p.1.2 - p.1.1, p.2.2 - p.2.1))
-        (comap ee (𝓝 (x₀, x₀)) ×ᶠ comap ff (𝓝 (y₀, y₀))) (𝓝 0 ×ᶠ 𝓝 0) :=
-      by
+        (comap ee (𝓝 (x₀, x₀)) ×ᶠ comap ff (𝓝 (y₀, y₀))) (𝓝 0 ×ᶠ 𝓝 0) := by
       have := Filter.prod_mono (tendsto_sub_comap_self de x₀) (tendsto_sub_comap_self df y₀)
       rwa [prod_map_map_eq] at this
     rw [← nhds_prod_eq] at lim_sub_sub
@@ -850,8 +844,7 @@ private theorem extend_Z_bilin_key (x₀ : α) (y₀ : γ) : ∃ U ∈ comap e (
   rcases this with ⟨U₁, U₁_nhd, V₁, V₁_nhd, H⟩
   obtain ⟨x₁, x₁_in⟩ : U₁.Nonempty := (de.comap_nhds_neBot _).nonempty_of_mem U₁_nhd
   obtain ⟨y₁, y₁_in⟩ : V₁.Nonempty := (df.comap_nhds_neBot _).nonempty_of_mem V₁_nhd
-  have cont_flip : Continuous fun p : δ × β => φ.flip p.1 p.2 :=
-    by
+  have cont_flip : Continuous fun p : δ × β => φ.flip p.1 p.2 := by
     show Continuous ((fun p : β × δ => φ p.1 p.2) ∘ Prod.swap)
     exact hφ.comp continuous_swap
   rcases extend_Z_bilin_aux de hφ W_nhd x₀ y₁ with ⟨U₂, U₂_nhd, HU⟩
@@ -951,11 +944,8 @@ instance QuotientGroup.completeSpace' (G : Type u) [Group G] [TopologicalSpace G
   refine' UniformSpace.complete_of_cauchySeq_tendsto fun x hx => _
   /- Given `n : ℕ`, for sufficiently large `a b : ℕ`, given any lift of `x b`, we can find a lift
     of `x a` such that the quotient of the lifts lies in `u n`. -/
-  have key₀ :
-    ∀ i j : ℕ,
-      ∃ M : ℕ,
-        j < M ∧ ∀ a b : ℕ, M ≤ a → M ≤ b → ∀ g : G, x b = g → ∃ g' : G, g / g' ∈ u i ∧ x a = g' :=
-    by
+  have key₀ : ∀ i j : ℕ, ∃ M : ℕ, j < M ∧ ∀ a b : ℕ, M ≤ a → M ≤ b →
+      ∀ g : G, x b = g → ∃ g' : G, g / g' ∈ u i ∧ x a = g' := by
     have h𝓤GN : (𝓤 (G ⧸ N)).HasBasis (fun _ => True) fun i => { x | x.snd / x.fst ∈ (↑) '' u i } :=
       by simpa [uniformity_eq_comap_nhds_one'] using hv.comap _
     rw [h𝓤GN.cauchySeq_iff] at hx
@@ -994,8 +984,7 @@ instance QuotientGroup.completeSpace' (G : Type u) [Group G] [TopologicalSpace G
     (choose_spec <| (hφ n).2 _ _ (hφ (n + 1)).1.le le_rfl (x' n).fst (x' n).snd).1
   /- The sequence `x'` is Cauchy. This is where we exploit the condition on `u`. The key idea
     is to show by decreasing induction that `x' m / x' n ∈ u m` if `m ≤ n`. -/
-  have x'_cauchy : CauchySeq fun n => (x' n).fst :=
-    by
+  have x'_cauchy : CauchySeq fun n => (x' n).fst := by
     have h𝓤G : (𝓤 G).HasBasis (fun _ => True) fun i => { x | x.snd / x.fst ∈ u i } := by
       simpa [uniformity_eq_comap_nhds_one'] using hu.toHasBasis.comap _
     rw [h𝓤G.cauchySeq_iff']

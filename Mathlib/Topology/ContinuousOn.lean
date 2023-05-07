@@ -626,8 +626,7 @@ theorem ContinuousOn.restrict_mapsTo {f : α → β} {s : Set α} {t : Set β} (
 
 theorem continuousOn_iff' {f : α → β} {s : Set α} :
     ContinuousOn f s ↔ ∀ t : Set β, IsOpen t → ∃ u, IsOpen u ∧ f ⁻¹' t ∩ s = u ∩ s := by
-  have : ∀ t, IsOpen (s.restrict f ⁻¹' t) ↔ ∃ u : Set α, IsOpen u ∧ f ⁻¹' t ∩ s = u ∩ s :=
-    by
+  have : ∀ t, IsOpen (s.restrict f ⁻¹' t) ↔ ∃ u : Set α, IsOpen u ∧ f ⁻¹' t ∩ s = u ∩ s := by
     intro t
     rw [isOpen_induced_iff, Set.restrict_eq, Set.preimage_comp]
     simp only [Subtype.preimage_coe_eq_preimage_coe_iff]
@@ -655,8 +654,7 @@ theorem ContinuousOn.mono_rng {α β : Type _} {t₁ : TopologicalSpace α} {t�
 
 theorem continuousOn_iff_isClosed {f : α → β} {s : Set α} :
     ContinuousOn f s ↔ ∀ t : Set β, IsClosed t → ∃ u, IsClosed u ∧ f ⁻¹' t ∩ s = u ∩ s := by
-  have : ∀ t, IsClosed (s.restrict f ⁻¹' t) ↔ ∃ u : Set α, IsClosed u ∧ f ⁻¹' t ∩ s = u ∩ s :=
-    by
+  have : ∀ t, IsClosed (s.restrict f ⁻¹' t) ↔ ∃ u : Set α, IsClosed u ∧ f ⁻¹' t ∩ s = u ∩ s := by
     intro t
     rw [isClosed_induced_iff, Set.restrict_eq, Set.preimage_comp]
     simp only [Subtype.preimage_coe_eq_preimage_coe_iff, eq_comm]

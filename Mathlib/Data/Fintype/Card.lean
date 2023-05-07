@@ -866,8 +866,7 @@ theorem Fintype.card_subtype_mono (p q : α → Prop) (h : p ≤ q) [Fintype { x
 theorem Fintype.card_compl_eq_card_compl [Finite α] (p q : α → Prop) [Fintype { x // p x }]
     [Fintype { x // ¬p x }] [Fintype { x // q x }] [Fintype { x // ¬q x }]
     (h : Fintype.card { x // p x } = Fintype.card { x // q x }) :
-    Fintype.card { x // ¬p x } = Fintype.card { x // ¬q x } :=
-  by
+    Fintype.card { x // ¬p x } = Fintype.card { x // ¬q x } := by
   cases nonempty_fintype α
   simp only [Fintype.card_subtype_compl, h]
 #align fintype.card_compl_eq_card_compl Fintype.card_compl_eq_card_compl
@@ -1115,8 +1114,7 @@ theorem exists_subset_card_eq (α : Type _) [Infinite α] (n : ℕ) : ∃ s : Fi
 /-- See `Infinite.exists_subset_card_eq` for a version that provides an arbitrary
 `s : Finset α` for any cardinality. -/
 theorem exists_superset_card_eq [Infinite α] (s : Finset α) (n : ℕ) (hn : s.card ≤ n) :
-    ∃ t : Finset α, s ⊆ t ∧ t.card = n :=
-  by
+    ∃ t : Finset α, s ⊆ t ∧ t.card = n := by
   induction' n with n IH generalizing s
   · exact ⟨s, subset_refl _, Nat.eq_zero_of_le_zero hn⟩
   · cases' hn.eq_or_lt with hn' hn'

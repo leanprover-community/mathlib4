@@ -310,10 +310,8 @@ private theorem sup_aux (f g : E →ₗ.[R] F)
         (x : E) + y = ↑z → fg z = f x + g y := by
   choose x hx y hy hxy using fun z : ↥(f.domain ⊔ g.domain) => mem_sup.1 z.prop
   set fg := fun z => f ⟨x z, hx z⟩ + g ⟨y z, hy z⟩
-  have fg_eq :
-    ∀ (x' : f.domain) (y' : g.domain) (z' : ↥(f.domain ⊔ g.domain)) (_H : (x' : E) + y' = z'),
-      fg z' = f x' + g y' :=
-    by
+  have fg_eq : ∀ (x' : f.domain) (y' : g.domain) (z' : ↥(f.domain ⊔ g.domain))
+      (_H : (x' : E) + y' = z'), fg z' = f x' + g y' := by
     intro x' y' z' H
     dsimp
     rw [add_comm, ← sub_eq_sub_iff_add_eq_add, eq_comm, ← map_sub, ← map_sub]
@@ -742,8 +740,8 @@ theorem mem_graph_iff (f : E →ₗ.[R] F) {x : E × F} :
 theorem mem_graph (f : E →ₗ.[R] F) (x : domain f) : ((x : E), f x) ∈ f.graph := by simp
 #align linear_pmap.mem_graph LinearPMap.mem_graph
 
-theorem graph_map_fst_eq_domain (f : E →ₗ.[R] F) : f.graph.map (LinearMap.fst R E F) = f.domain :=
-  by
+theorem graph_map_fst_eq_domain (f : E →ₗ.[R] F) :
+    f.graph.map (LinearMap.fst R E F) = f.domain := by
   ext x
   simp only [Submodule.mem_map, mem_graph_iff, Subtype.exists, exists_and_left, exists_eq_left,
     LinearMap.fst_apply, Prod.exists, exists_and_right, exists_eq_right]
@@ -967,8 +965,7 @@ noncomputable def toLinearPMap (g : Submodule R (E × F))
         have hvw' := g.add_mem (valFromGraph_mem hg v.2) (valFromGraph_mem hg w.2)
         rw [Prod.mk_add_mk] at hvw'
         exact (existsUnique_from_graph @hg hadd).unique hvw hvw'
-      map_smul' := fun a v =>
-        by
+      map_smul' := fun a v => by
         have hsmul := (g.map (LinearMap.fst R E F)).smul_mem a v.2
         have hav := valFromGraph_mem hg hsmul
         have hav' := g.smul_mem a (valFromGraph_mem hg v.2)
@@ -998,8 +995,7 @@ theorem toLinearPMap_graph_eq (g : Submodule R (E × F))
     exact Prod.ext hx1.symm hx2.symm
   rw [LinearPMap.mem_graph_iff]
   cases' x with x_fst x_snd
-  have hx_fst : x_fst ∈ g.map (LinearMap.fst R E F) :=
-    by
+  have hx_fst : x_fst ∈ g.map (LinearMap.fst R E F) := by
     simp only [mem_map, LinearMap.fst_apply, Prod.exists, exists_and_right, exists_eq_right]
     exact ⟨x_snd, hx⟩
   refine' ⟨⟨x_fst, hx_fst⟩, Subtype.coe_mk x_fst hx_fst, _⟩
