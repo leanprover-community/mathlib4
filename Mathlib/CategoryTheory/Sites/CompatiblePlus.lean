@@ -8,8 +8,8 @@ Authors: Adam Topaz
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Sites.Whiskering
-import Mathbin.CategoryTheory.Sites.Plus
+import Mathlib.CategoryTheory.Sites.Whiskering
+import Mathlib.CategoryTheory.Sites.Plus
 
 /-!
 
@@ -72,8 +72,7 @@ def diagramCompIso (X : C) : J.diagram P X ⋙ F ≅ J.diagram (P ⋙ F) X :=
 
 @[simp, reassoc.1]
 theorem diagramCompIso_hom_ι (X : C) (W : (J.cover X)ᵒᵖ) (i : W.unop.arrow) :
-    (J.diagramCompIso F P X).Hom.app W ≫ Multiequalizer.ι _ i = F.map (Multiequalizer.ι _ _) :=
-  by
+    (J.diagramCompIso F P X).Hom.app W ≫ Multiequalizer.ι _ i = F.map (Multiequalizer.ι _ _) := by
   delta diagram_comp_iso
   dsimp
   simp
@@ -128,8 +127,7 @@ def plusCompIso : J.plusObj P ⋙ F ≅ J.plusObj (P ⋙ F) :=
 @[simp, reassoc.1]
 theorem ι_plusCompIso_hom (X) (W) :
     F.map (colimit.ι _ W) ≫ (J.plusCompIso F P).Hom.app X =
-      (J.diagramCompIso F P X.unop).Hom.app W ≫ colimit.ι _ W :=
-  by
+      (J.diagramCompIso F P X.unop).Hom.app W ≫ colimit.ι _ W := by
   delta diagram_comp_iso plus_comp_iso
   simp only [is_colimit.desc_cocone_morphism_hom, is_colimit.unique_up_to_iso_hom,
     cocones.forget_map, iso.trans_hom, nat_iso.of_components_hom_app, functor.map_iso_hom, ←
@@ -150,8 +148,7 @@ theorem plusCompIso_whiskerLeft {F G : D ⥤ E} (η : F ⟶ G) (P : Cᵒᵖ ⥤ 
     [∀ X : C, PreservesColimitsOfShape (J.cover X)ᵒᵖ G]
     [∀ (X : C) (W : J.cover X) (P : Cᵒᵖ ⥤ D), PreservesLimit (W.index P).multicospan G] :
     whiskerLeft _ η ≫ (J.plusCompIso G P).Hom =
-      (J.plusCompIso F P).Hom ≫ J.plusMap (whiskerLeft _ η) :=
-  by
+      (J.plusCompIso F P).Hom ≫ J.plusMap (whiskerLeft _ η) := by
   ext X
   apply (is_colimit_of_preserves F (colimit.is_colimit (J.diagram P X.unop))).hom_ext
   intro W
@@ -178,8 +175,7 @@ def plusFunctorWhiskerLeftIso (P : Cᵒᵖ ⥤ D)
 @[simp, reassoc.1]
 theorem plusCompIso_whiskerRight {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) :
     whiskerRight (J.plusMap η) F ≫ (J.plusCompIso F Q).Hom =
-      (J.plusCompIso F P).Hom ≫ J.plusMap (whiskerRight η F) :=
-  by
+      (J.plusCompIso F P).Hom ≫ J.plusMap (whiskerRight η F) := by
   ext X
   apply (is_colimit_of_preserves F (colimit.is_colimit (J.diagram P X.unop))).hom_ext
   intro W
@@ -210,8 +206,7 @@ def plusFunctorWhiskerRightIso :
 
 @[simp, reassoc.1]
 theorem whiskerRight_toPlus_comp_plusCompIso_hom :
-    whiskerRight (J.toPlus _) _ ≫ (J.plusCompIso F P).Hom = J.toPlus _ :=
-  by
+    whiskerRight (J.toPlus _) _ ≫ (J.plusCompIso F P).Hom = J.toPlus _ := by
   ext
   dsimp [to_plus]
   simp only [ι_plus_comp_iso_hom, functor.map_comp, category.assoc]
@@ -230,8 +225,7 @@ theorem toPlus_comp_plusCompIso_inv :
 #align category_theory.grothendieck_topology.to_plus_comp_plus_comp_iso_inv CategoryTheory.GrothendieckTopology.toPlus_comp_plusCompIso_inv
 
 theorem plusCompIso_inv_eq_plusLift (hP : Presheaf.IsSheaf J (J.plusObj P ⋙ F)) :
-    (J.plusCompIso F P).inv = J.plusLift (whiskerRight (J.toPlus _) _) hP :=
-  by
+    (J.plusCompIso F P).inv = J.plusLift (whiskerRight (J.toPlus _) _) hP := by
   apply J.plus_lift_unique
   simp [iso.comp_inv_eq]
 #align category_theory.grothendieck_topology.plus_comp_iso_inv_eq_plus_lift CategoryTheory.GrothendieckTopology.plusCompIso_inv_eq_plusLift
