@@ -144,6 +144,9 @@ class NonAssocRing (α : Type _) extends NonUnitalNonAssocRing α, NonAssocSemir
 class Semiring (α : Type u) extends NonUnitalSemiring α, NonAssocSemiring α, MonoidWithZero α
 #align semiring Semiring
 
+class Ring (R : Type u) extends Semiring R, AddCommGroup R, AddGroupWithOne R
+#align ring Ring
+
 /-!
 ### Semirings
 -/
@@ -347,13 +350,6 @@ end HasDistribNeg
 /-!
 ### Rings
 -/
-
-
-
-
-class Ring (R : Type u) extends Semiring R, AddCommGroup R, AddGroupWithOne R
-#align ring Ring
-
 
 section NonUnitalNonAssocRing
 
