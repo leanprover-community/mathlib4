@@ -266,16 +266,16 @@ structure GlobalBranchingPreprocessor : Type where
 /--
 A `Preprocessor` lifts to a `GlobalPreprocessor` by folding it over the input list.
 -/
-def Preprocessor.globalize (pp : Preprocessor) : GlobalPreprocessor :=
-{ name := pp.name,
-  transform := List.foldrM (fun e ret => do return (← pp.transform e) ++ ret) [] }
+def Preprocessor.globalize (pp : Preprocessor) : GlobalPreprocessor where
+  name := pp.name
+  transform := List.foldrM (fun e ret => do return (← pp.transform e) ++ ret) []
 
 /--
 A `GlobalPreprocessor` lifts to a `GlobalBranchingPreprocessor` by producing only one branch.
 -/
-def GlobalPreprocessor.branching (pp : GlobalPreprocessor) : GlobalBranchingPreprocessor :=
-{ name := pp.name,
-  transform := fun g l => do return [⟨g, ← pp.transform l⟩] }
+def GlobalPreprocessor.branching (pp : GlobalPreprocessor) : GlobalBranchingPreprocessor where
+  name := pp.name
+  transform := fun g l => do return [⟨g, ← pp.transform l⟩]
 
 /--
 `process pp l` runs `pp.transform` on `l` and returns the result,
