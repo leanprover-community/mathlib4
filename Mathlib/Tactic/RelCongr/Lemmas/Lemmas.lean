@@ -91,6 +91,17 @@ attribute [dummy_label_attr]
   div_lt_div_left' div_lt_div_of_lt_left -- ff / tt
   div_lt_div_right' div_lt_div_of_lt -- tt / ff
 
+/-! # ≤, ⁻¹ -/
+
+theorem ENNReal.inv_le_inv' {a b : ENNReal} (h : a ≤ b) : b⁻¹ ≤ a⁻¹ :=
+  ENNReal.inv_strictAnti.antitone h
+
+theorem ENNReal.inv_lt_inv' {a b : ENNReal} (h : a < b) : b⁻¹ < a⁻¹ := ENNReal.inv_strictAnti h
+
+attribute [dummy_label_attr]
+  inv_le_inv_of_le inv_le_inv' ENNReal.inv_le_inv' -- tt
+  inv_lt_inv_of_lt inv_lt_inv' ENNReal.inv_lt_inv' -- tt
+
 /-! # ≤, ^ -/
 
 attribute [dummy_label_attr]
