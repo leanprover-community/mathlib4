@@ -474,37 +474,48 @@ theorem rec_prim {α σ} [Primcodable α] [Primcodable σ] {c : α → Code} (hc
       n.casesOn (some (s a)) fun n =>
         n.casesOn (some (l a)) fun n =>
           n.casesOn (some (r a)) fun n => G₁ ((a, IH), n, n.div2.div2)
-  have : Primrec₂ G :=
-    nat_cases (list_length.comp snd) (option_some_iff.2 (hz.comp fst)) <|
-      nat_cases snd (option_some_iff.2 (hs.comp (fst.comp fst))) <|
-        nat_cases snd (option_some_iff.2 (hl.comp (fst.comp <| fst.comp fst))) <|
-          nat_cases snd (option_some_iff.2 (hr.comp (fst.comp <| fst.comp <| fst.comp fst)))
-            (this.comp <|
-              ((fst.pair snd).comp <| fst.comp <| fst.comp <| fst.comp <| fst).pair <|
-                snd.pair <| nat_div2.comp <| nat_div2.comp snd)
+  have : Primrec₂ G := by
+    unfold Primrec₂
+    refine Primrec.nat_cases
+      (Primrec.list_length.comp Primrec.snd) (Primrec.option_some_iff.2 (hz.comp Primrec.fst)) ?_
+    unfold Primrec₂
+    refine Primrec.nat_cases
+      Primrec.snd (Primrec.option_some_iff.2 (hs.comp (Primrec.fst.comp Primrec.fst))) ?_
+    unfold Primrec₂
+    refine Primrec.nat_cases
+      Primrec.snd (Primrec.option_some_iff.2
+        (hl.comp (Primrec.fst.comp <| Primrec.fst.comp Primrec.fst))) ?_
+    unfold Primrec₂
+    refine Primrec.nat_cases
+      Primrec.snd (Primrec.option_some_iff.2
+        (hr.comp (Primrec.fst.comp <| Primrec.fst.comp <| Primrec.fst.comp Primrec.fst))) ?_
+    unfold Primrec₂
+    exact this.comp <|
+      ((Primrec.fst.pair Primrec.snd).comp <| Primrec.fst.comp <| Primrec.fst.comp <|
+        Primrec.fst.comp <| Primrec.fst).pair <|
+          Primrec.snd.pair <| Primrec.nat_div2.comp <| Primrec.nat_div2.comp Primrec.snd
   refine'
-    ((nat_strong_rec (fun a n => F a (of_nat code n)) this.to₂ fun a n => _).comp Primrec.id <|
-          encode_iff.2 hc).of_eq
+    ((Primrec.nat_strong_rec (fun a n => F a (ofNat Code n)) this.to₂ fun a n => _).comp
+      _root_.Primrec.id <| Primrec.encode_iff.2 hc).of_eq
       fun a => by simp
-  simp
-  iterate 4 cases' n with n; · simp [of_nat_code_eq, of_nat_code] <;> rfl
-  simp [G]
+  simp (config := { zeta := false })
+  iterate 4 cases' n with n; · simp (config := { zeta := false }) [ofNatCode_eq, ofNatCode]; rfl
+  simp only []
   rw [List.length_map, List.length_range]
   let m := n.div2.div2
   show
-    G₁ ((a, (List.range (n + 4)).map fun n => F a (of_nat code n)), n, m) =
-      some (F a (of_nat code (n + 4)))
+    G₁ ((a, (List.range (n + 4)).map fun n => F a (ofNat Code n)), n, m) =
+      some (F a (ofNat Code (n + 4)))
   have hm : m < n + 4 := by
-    simp [Nat.div2_val, m] <;>
-      exact
-        lt_of_le_of_lt (le_trans (Nat.div_le_self _ _) (Nat.div_le_self _ _))
-          (Nat.succ_le_succ (Nat.le_add_right _ _))
+    simp [Nat.div2_val]
+    exact
+      lt_of_le_of_lt (le_trans (Nat.div_le_self _ _) (Nat.div_le_self _ _))
+        (Nat.succ_le_succ (Nat.le_add_right _ _))
   have m1 : m.unpair.1 < n + 4 := lt_of_le_of_lt m.unpair_left_le hm
   have m2 : m.unpair.2 < n + 4 := lt_of_le_of_lt m.unpair_right_le hm
-  simp [G₁]
   simp [List.get?_map, List.get?_range, hm, m1, m2]
-  change of_nat code (n + 4) with of_nat_code (n + 4)
-  simp [of_nat_code]
+  rw [show ofNat Code (n + 4) = ofNatCode (n + 4) from rfl]
+  simp [ofNatCode]
   cases n.bodd <;> cases n.div2.bodd <;> rfl
 #align nat.partrec.code.rec_prim Nat.Partrec.Code.rec_prim
 
@@ -514,7 +525,7 @@ section
 
 open Computable
 
-/-- Recursion on `nat.partrec.code` is computable. -/
+/-- Recursion on `Nat.Partrec.Code` is computable. -/
 theorem rec_computable {α σ} [Primcodable α] [Primcodable σ] {c : α → Code} (hc : Computable c)
     {z : α → σ} (hz : Computable z) {s : α → σ} (hs : Computable s) {l : α → σ} (hl : Computable l)
     {r : α → σ} (hr : Computable r) {pr : α → Code × Code × σ × σ → σ} (hpr : Computable₂ pr)
@@ -528,7 +539,7 @@ theorem rec_computable {α σ} [Primcodable α] [Primcodable σ] {c : α → Cod
       Nat.Partrec.Code.recOn c (z a) (s a) (l a) (r a) (PR a) (CO a) (PC a) (RF a)
     Computable fun a => F a (c a) := by
   -- TODO(Mario): less copy-paste from previous proof
-  intros
+  intros _ _ _ _ F
   let G₁ : (α × List σ) × ℕ × ℕ → Option σ := fun p =>
     let a := p.1.1
     let IH := p.1.2
@@ -537,96 +548,101 @@ theorem rec_computable {α σ} [Primcodable α] [Primcodable σ] {c : α → Cod
     (IH.get? m).bind fun s =>
       (IH.get? m.unpair.1).bind fun s₁ =>
         (IH.get? m.unpair.2).map fun s₂ =>
-          cond n.bodd
-            (cond n.div2.bodd (rf a (of_nat code m, s))
-              (pc a (of_nat code m.unpair.1, of_nat code m.unpair.2, s₁, s₂)))
-            (cond n.div2.bodd (co a (of_nat code m.unpair.1, of_nat code m.unpair.2, s₁, s₂))
-              (pr a (of_nat code m.unpair.1, of_nat code m.unpair.2, s₁, s₂)))
+          _root_.cond n.bodd
+            (_root_.cond n.div2.bodd (rf a (ofNat Code m, s))
+              (pc a (ofNat Code m.unpair.1, ofNat Code m.unpair.2, s₁, s₂)))
+            (_root_.cond n.div2.bodd (co a (ofNat Code m.unpair.1, ofNat Code m.unpair.2, s₁, s₂))
+              (pr a (ofNat Code m.unpair.1, ofNat Code m.unpair.2, s₁, s₂)))
   have : Computable G₁ := by
-    refine' option_bind (list_nth.comp (snd.comp fst) (snd.comp snd)) _
+    refine' option_bind (list_get?.comp (snd.comp fst) (snd.comp snd)) _
+    unfold Computable₂
     refine'
       option_bind
-        ((list_nth.comp (snd.comp fst) (fst.comp <| computable.unpair.comp (snd.comp snd))).comp
-          fst)
-        _
+        ((list_get?.comp (snd.comp fst)
+          (fst.comp <| Computable.unpair.comp (snd.comp snd))).comp fst) _
+    unfold Computable₂
     refine'
       option_map
-        ((list_nth.comp (snd.comp fst) (snd.comp <| computable.unpair.comp (snd.comp snd))).comp <|
-          fst.comp fst)
-        _
-    have a := fst.comp (fst.comp <| fst.comp <| fst.comp fst)
-    have n := fst.comp (snd.comp <| fst.comp <| fst.comp fst)
-    have m := snd.comp (snd.comp <| fst.comp <| fst.comp fst)
-    have m₁ := fst.comp (computable.unpair.comp m)
-    have m₂ := snd.comp (computable.unpair.comp m)
-    have s := snd.comp (fst.comp fst)
-    have s₁ := snd.comp fst
-    have s₂ := snd
+        ((list_get?.comp (snd.comp fst)
+          (snd.comp <| Computable.unpair.comp (snd.comp snd))).comp <| fst.comp fst) _
+    have a : Computable (fun p : ((((α × List σ) × ℕ × ℕ) × σ) × σ) × σ => p.1.1.1.1.1) :=
+      fst.comp (fst.comp <| fst.comp <| fst.comp fst)
+    have n : Computable (fun p : ((((α × List σ) × ℕ × ℕ) × σ) × σ) × σ => p.1.1.1.2.1) :=
+      fst.comp (snd.comp <| fst.comp <| fst.comp fst)
+    have m : Computable (fun p : ((((α × List σ) × ℕ × ℕ) × σ) × σ) × σ => p.1.1.1.2.2) :=
+      snd.comp (snd.comp <| fst.comp <| fst.comp fst)
+    have m₁ := fst.comp (Computable.unpair.comp m)
+    have m₂ := snd.comp (Computable.unpair.comp m)
+    have s : Computable (fun p : ((((α × List σ) × ℕ × ℕ) × σ) × σ) × σ => p.1.1.2) :=
+      snd.comp (fst.comp fst)
+    have s₁ : Computable (fun p : ((((α × List σ) × ℕ × ℕ) × σ) × σ) × σ => p.1.2) :=
+      snd.comp fst
+    have s₂ : Computable (fun p : ((((α × List σ) × ℕ × ℕ) × σ) × σ) × σ => p.2) :=
+      snd
     exact
       (nat_bodd.comp n).cond
         ((nat_bodd.comp <| nat_div2.comp n).cond
-          (hrf.comp a (((Computable.ofNat code).comp m).pair s))
+          (hrf.comp a (((Computable.ofNat Code).comp m).pair s))
           (hpc.comp a
-            (((Computable.ofNat code).comp m₁).pair <|
-              ((Computable.ofNat code).comp m₂).pair <| s₁.pair s₂)))
+            (((Computable.ofNat Code).comp m₁).pair <|
+              ((Computable.ofNat Code).comp m₂).pair <| s₁.pair s₂)))
         (Computable.cond (nat_bodd.comp <| nat_div2.comp n)
           (hco.comp a
-            (((Computable.ofNat code).comp m₁).pair <|
-              ((Computable.ofNat code).comp m₂).pair <| s₁.pair s₂))
+            (((Computable.ofNat Code).comp m₁).pair <|
+              ((Computable.ofNat Code).comp m₂).pair <| s₁.pair s₂))
           (hpr.comp a
-            (((Computable.ofNat code).comp m₁).pair <|
-              ((Computable.ofNat code).comp m₂).pair <| s₁.pair s₂)))
+            (((Computable.ofNat Code).comp m₁).pair <|
+              ((Computable.ofNat Code).comp m₂).pair <| s₁.pair s₂)))
   let G : α → List σ → Option σ := fun a IH =>
-    IH.length.cases (some (z a)) fun n =>
-      n.cases (some (s a)) fun n =>
-        n.cases (some (l a)) fun n => n.cases (some (r a)) fun n => G₁ ((a, IH), n, n.div2.div2)
+    IH.length.casesOn (some (z a)) fun n =>
+      n.casesOn (some (s a)) fun n =>
+        n.casesOn (some (l a)) fun n =>
+          n.casesOn (some (r a)) fun n => G₁ ((a, IH), n, n.div2.div2)
   have : Computable₂ G :=
-    nat_cases (list_length.comp snd) (option_some_iff.2 (hz.comp fst)) <|
-      nat_cases snd (option_some_iff.2 (hs.comp (fst.comp fst))) <|
-        nat_cases snd (option_some_iff.2 (hl.comp (fst.comp <| fst.comp fst))) <|
-          nat_cases snd (option_some_iff.2 (hr.comp (fst.comp <| fst.comp <| fst.comp fst)))
+    nat_casesOn (list_length.comp snd) (option_some_iff.2 (hz.comp fst)) <|
+      nat_casesOn snd (option_some_iff.2 (hs.comp (fst.comp fst))) <|
+        nat_casesOn snd (option_some_iff.2 (hl.comp (fst.comp <| fst.comp fst))) <|
+          nat_casesOn snd (option_some_iff.2 (hr.comp (fst.comp <| fst.comp <| fst.comp fst)))
             (this.comp <|
               ((fst.pair snd).comp <| fst.comp <| fst.comp <| fst.comp <| fst).pair <|
                 snd.pair <| nat_div2.comp <| nat_div2.comp snd)
   refine'
-    ((nat_strong_rec (fun a n => F a (of_nat code n)) this.to₂ fun a n => _).comp Computable.id <|
-          encode_iff.2 hc).of_eq
-      fun a => by simp
-  simp
-  iterate 4 cases' n with n; · simp [of_nat_code_eq, of_nat_code] <;> rfl
-  simp [G]
+    ((nat_strong_rec (fun a n => F a (ofNat Code n)) this.to₂ fun a n => _).comp Computable.id <|
+      encode_iff.2 hc).of_eq fun a => by simp
+  simp (config := { zeta := false })
+  iterate 4 cases' n with n; · simp (config := { zeta := false }) [ofNatCode_eq, ofNatCode]; rfl
+  simp only []
   rw [List.length_map, List.length_range]
   let m := n.div2.div2
   show
-    G₁ ((a, (List.range (n + 4)).map fun n => F a (of_nat code n)), n, m) =
-      some (F a (of_nat code (n + 4)))
+    G₁ ((a, (List.range (n + 4)).map fun n => F a (ofNat Code n)), n, m) =
+      some (F a (ofNat Code (n + 4)))
   have hm : m < n + 4 := by
-    simp [Nat.div2_val, m] <;>
-      exact
-        lt_of_le_of_lt (le_trans (Nat.div_le_self _ _) (Nat.div_le_self _ _))
-          (Nat.succ_le_succ (Nat.le_add_right _ _))
+    simp [Nat.div2_val]
+    exact
+      lt_of_le_of_lt (le_trans (Nat.div_le_self _ _) (Nat.div_le_self _ _))
+        (Nat.succ_le_succ (Nat.le_add_right _ _))
   have m1 : m.unpair.1 < n + 4 := lt_of_le_of_lt m.unpair_left_le hm
   have m2 : m.unpair.2 < n + 4 := lt_of_le_of_lt m.unpair_right_le hm
-  simp [G₁]
   simp [List.get?_map, List.get?_range, hm, m1, m2]
-  change of_nat code (n + 4) with of_nat_code (n + 4)
-  simp [of_nat_code]
+  rw [show ofNat Code (n + 4) = ofNatCode (n + 4) from rfl]
+  simp [ofNatCode]
   cases n.bodd <;> cases n.div2.bodd <;> rfl
 #align nat.partrec.code.rec_computable Nat.Partrec.Code.rec_computable
 
 end
 
-/-- The interpretation of a `nat.partrec.code` as a partial function.
-* `nat.partrec.code.zero`: The constant zero function.
-* `nat.partrec.code.succ`: The successor function.
-* `nat.partrec.code.left`: Left unpairing of a pair of ℕ (encoded by `nat.mkpair`)
-* `nat.partrec.code.right`: Right unpairing of a pair of ℕ (encoded by `nat.mkpair`)
-* `nat.partrec.code.pair`: Pairs the outputs of argument codes using `nat.mkpair`.
-* `nat.partrec.code.comp`: Composition of two argument codes.
-* `nat.partrec.code.prec`: Primitive recursion. Given an argument of the form `nat.mkpair a n`:
+/-- The interpretation of a `Nat.Partrec.Code` as a partial function.
+* `Nat.Partrec.Code.zero`: The constant zero function.
+* `Nat.Partrec.Code.succ`: The successor function.
+* `Nat.Partrec.Code.left`: Left unpairing of a pair of ℕ (encoded by `Nat.pair`)
+* `Nat.Partrec.Code.right`: Right unpairing of a pair of ℕ (encoded by `Nat.pair`)
+* `Nat.Partrec.Code.pair`: Pairs the outputs of argument codes using `Nat.pair`.
+* `Nat.Partrec.Code.comp`: Composition of two argument codes.
+* `Nat.Partrec.Code.prec`: Primitive recursion. Given an argument of the form `Nat.pair a n`:
   * If `n = 0`, returns `eval cf a`.
-  * If `n = succ k`, returns `eval cg (mkpair a (mkpair k (eval (prec cf cg) (mkpair a k))))`
-* `nat.partrec.code.rfind'`: Minimization. For `f` an argument of the form `nat.mkpair a m`,
+  * If `n = succ k`, returns `eval cg (pair a (pair k (eval (prec cf cg) (pair a k))))`
+* `Nat.Partrec.Code.rfind'`: Minimization. For `f` an argument of the form `Nat.pair a m`,
   `rfind' f m` returns the least `a` such that `f a m = 0`, if one exists and `f b m` terminates
   for `b < a`
 -/
@@ -635,22 +651,24 @@ def eval : Code → ℕ →. ℕ
   | succ => Nat.succ
   | left => ↑fun n : ℕ => n.unpair.1
   | right => ↑fun n : ℕ => n.unpair.2
-  | pair cf cg => fun n => pair <$> eval cf n <*> eval cg n
+  | pair cf cg => fun n => Nat.pair <$> eval cf n <*> eval cg n
   | comp cf cg => fun n => eval cg n >>= eval cf
   | prec cf cg =>
     Nat.unpaired fun a n =>
-      n.elim (eval cf a) fun y IH => do
+      n.rec (eval cf a) fun y IH => do
         let i ← IH
-        eval cg (mkpair a (mkpair y i))
+        eval cg (Nat.pair a (Nat.pair y i))
   | rfind' cf =>
     Nat.unpaired fun a m =>
-      (Nat.rfind fun n => (fun m => m = 0) <$> eval cf (pair a (n + m))).map (· + m)
+      (Nat.rfind fun n => (fun m => m = 0) <$> eval cf (Nat.pair a (n + m))).map (· + m)
 #align nat.partrec.code.eval Nat.Partrec.Code.eval
 
 /-- Helper lemma for the evaluation of `prec` in the base case. -/
 @[simp]
-theorem eval_prec_zero (cf cg : Code) (a : ℕ) : eval (prec cf cg) (pair a 0) = eval cf a := by
-  rw [eval, Nat.unpaired, Nat.unpair_pair, Nat.rec_zero]
+theorem eval_prec_zero (cf cg : Code) (a : ℕ) : eval (prec cf cg) (Nat.pair a 0) = eval cf a := by
+  rw [eval, Nat.unpaired, Nat.unpair_pair]
+  simp (config := { Lean.Meta.Simp.neutralConfig with proj := true }) only []
+  rw [Nat.rec_zero]
 #align nat.partrec.code.eval_prec_zero Nat.Partrec.Code.eval_prec_zero
 
 /-- Helper lemma for the evaluation of `prec` in the recursive case. -/
