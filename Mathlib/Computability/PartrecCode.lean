@@ -673,10 +673,9 @@ theorem eval_prec_zero (cf cg : Code) (a : ℕ) : eval (prec cf cg) (Nat.pair a 
 
 /-- Helper lemma for the evaluation of `prec` in the recursive case. -/
 theorem eval_prec_succ (cf cg : Code) (a k : ℕ) :
-    eval (prec cf cg) (pair a (Nat.succ k)) = do
-      let ih ← eval (prec cf cg) (pair a k)
-      eval cg (mkpair a (mkpair k ih)) := by
-  rw [eval, Nat.unpaired, Part.bind_eq_bind, Nat.unpair_pair, Nat.rec_add_one]
+    eval (prec cf cg) (Nat.pair a (Nat.succ k)) =
+      do {let ih ← eval (prec cf cg) (Nat.pair a k); eval cg (Nat.pair a (Nat.pair k ih))} := by
+  rw [eval, Nat.unpaired, Part.bind_eq_bind, Nat.unpair_pair]
   simp
 #align nat.partrec.code.eval_prec_succ Nat.Partrec.Code.eval_prec_succ
 
@@ -686,40 +685,42 @@ instance : Membership (ℕ →. ℕ) Code :=
 @[simp]
 theorem eval_const : ∀ n m, eval (Code.const n) m = Part.some n
   | 0, m => rfl
-  | n + 1, m => by simp! [*]
+  | n + 1, m => by simp! [eval_const n m]
 #align nat.partrec.code.eval_const Nat.Partrec.Code.eval_const
 
 @[simp]
-theorem eval_id (n) : eval Code.id n = Part.some n := by simp! [(· <*> ·)]
+theorem eval_id (n) : eval Code.id n = Part.some n := by simp! [Seq.seq]
 #align nat.partrec.code.eval_id Nat.Partrec.Code.eval_id
 
 @[simp]
-theorem eval_curry (c n x) : eval (curry c n) x = eval c (pair n x) := by simp! [(· <*> ·)]
+theorem eval_curry (c n x) : eval (curry c n) x = eval c (Nat.pair n x) := by simp! [Seq.seq]
 #align nat.partrec.code.eval_curry Nat.Partrec.Code.eval_curry
 
 theorem const_prim : Primrec Code.const :=
-  (Primrec.id.nat_iterate (Primrec.const zero)
-        (comp_prim.comp (Primrec.const succ) Primrec.snd).to₂).of_eq
-    fun n => by simp <;> induction n <;> simp [*, code.const, Function.iterate_succ']
+  (_root_.Primrec.id.nat_iterate (_root_.Primrec.const zero)
+    (comp_prim.comp (_root_.Primrec.const succ) Primrec.snd).to₂).of_eq
+    fun n => by simp; induction n <;>
+      simp [*, Code.const, Function.iterate_succ', -Function.iterate_succ]
 #align nat.partrec.code.const_prim Nat.Partrec.Code.const_prim
 
 theorem curry_prim : Primrec₂ curry :=
-  comp_prim.comp Primrec.fst <| pair_prim.comp (const_prim.comp Primrec.snd) (Primrec.const Code.id)
+  comp_prim.comp Primrec.fst <| pair_prim.comp (const_prim.comp Primrec.snd)
+    (_root_.Primrec.const Code.id)
 #align nat.partrec.code.curry_prim Nat.Partrec.Code.curry_prim
 
 theorem curry_inj {c₁ c₂ n₁ n₂} (h : curry c₁ n₁ = curry c₂ n₂) : c₁ = c₂ ∧ n₁ = n₂ :=
   ⟨by injection h, by
-    injection h
     injection h with h₁ h₂
     injection h₂ with h₃ h₄
     exact const_inj h₃⟩
 #align nat.partrec.code.curry_inj Nat.Partrec.Code.curry_inj
 
 /--
-The $S_n^m$ theorem: There is a computable function, namely `nat.partrec.code.curry`, that takes a
+The $S_n^m$ theorem: There is a computable function, namely `Nat.Partrec.Code.curry`, that takes a
 program and a ℕ `n`, and returns a new program using `n` as the first argument.
 -/
-theorem smn : ∃ f : Code → ℕ → Code, Computable₂ f ∧ ∀ c n x, eval (f c n) x = eval c (pair n x) :=
+theorem smn :
+    ∃ f : Code → ℕ → Code, Computable₂ f ∧ ∀ c n x, eval (f c n) x = eval c (Nat.pair n x) :=
   ⟨curry, Primrec₂.to_comp curry_prim, eval_curry⟩
 #align nat.partrec.code.smn Nat.Partrec.Code.smn
 
@@ -742,8 +743,8 @@ theorem exists_code {f : ℕ →. ℕ} : Nat.Partrec f ↔ ∃ c : Code, eval c 
       exact ⟨prec cf cg, rfl⟩
     case rfind f pf hf =>
       rcases hf with ⟨cf, rfl⟩
-      refine' ⟨comp (rfind' cf) (pair code.id zero), _⟩
-      simp [eval, (· <*> ·), pure, PFun.pure, Part.map_id'],
+      refine' ⟨comp (rfind' cf) (pair Code.id zero), _⟩
+      simp [eval, Seq.seq, pure, PFun.pure, Part.map_id'],
     fun h => by
     rcases h with ⟨c, rfl⟩; induction c
     case zero => exact Nat.Partrec.zero
@@ -756,33 +757,43 @@ theorem exists_code {f : ℕ →. ℕ} : Nat.Partrec f ↔ ∃ c : Code, eval c 
     case rfind' cf pf => exact pf.rfind'⟩
 #align nat.partrec.code.exists_code Nat.Partrec.Code.exists_code
 
-/-- A modified evaluation for the code which returns an `option ℕ` instead of a `part ℕ`. To avoid
+/-- A modified evaluation for the code which returns an `Option ℕ` instead of a `Part ℕ`. To avoid
 undecidability, `evaln` takes a parameter `k` and fails if it encounters a number ≥ k in the course
-of its execution. Other than this, the semantics are the same as in `nat.partrec.code.eval`.
+of its execution. Other than this, the semantics are the same as in `Nat.Partrec.Code.eval`.
 -/
 def evaln : ∀ k : ℕ, Code → ℕ → Option ℕ
-  | 0, _ => fun m => none
-  | k + 1, zero => fun n => guard (n ≤ k) >> pure 0
-  | k + 1, succ => fun n => guard (n ≤ k) >> pure (Nat.succ n)
-  | k + 1, left => fun n => guard (n ≤ k) >> pure n.unpair.1
-  | k + 1, right => fun n => guard (n ≤ k) >> pure n.unpair.2
-  | k + 1, pair cf cg => fun n =>
-    guard (n ≤ k) >> pair <$> evaln (k + 1) cf n <*> evaln (k + 1) cg n
-  | k + 1, comp cf cg => fun n =>
-    guard (n ≤ k) >> do
-      let x ← evaln (k + 1) cg n
-      evaln (k + 1) cf x
-  | k + 1, prec cf cg => fun n =>
-    guard (n ≤ k) >>
-      n.unpaired fun a n =>
-        n.cases (evaln (k + 1) cf a) fun y => do
-          let i ← evaln k (prec cf cg) (pair a y)
-          evaln (k + 1) cg (mkpair a (mkpair y i))
-  | k + 1, rfind' cf => fun n =>
-    guard (n ≤ k) >>
-      n.unpaired fun a m => do
-        let x ← evaln (k + 1) cf (pair a m)
-        if x = 0 then pure m else evaln k (rfind' cf) (mkpair a (m + 1))
+  | 0, _ => fun m => Option.none
+  | k + 1, zero => fun n => do
+    guard (n ≤ k)
+    return 0
+  | k + 1, succ => fun n => do
+    guard (n ≤ k)
+    return (Nat.succ n)
+  | k + 1, left => fun n => do
+    guard (n ≤ k)
+    return n.unpair.1
+  | k + 1, right => fun n => do
+    guard (n ≤ k)
+    pure n.unpair.2
+  | k + 1, pair cf cg => fun n => do
+    guard (n ≤ k)
+    Nat.pair <$> evaln (k + 1) cf n <*> evaln (k + 1) cg n
+  | k + 1, comp cf cg => fun n => do
+    guard (n ≤ k)
+    let x ← evaln (k + 1) cg n
+    evaln (k + 1) cf x
+  | k + 1, prec cf cg => fun n => do
+    guard (n ≤ k)
+    n.unpaired fun a n =>
+      n.casesOn (evaln (k + 1) cf a) fun y => do
+        let i ← evaln k (prec cf cg) (Nat.pair a y)
+        evaln (k + 1) cg (Nat.pair a (Nat.pair y i))
+  | k + 1, rfind' cf => fun n => do
+    guard (n ≤ k)
+    n.unpaired fun a m => do
+      let x ← evaln (k + 1) cf (Nat.pair a m)
+      if x = 0 then pure m else evaln k (rfind' cf) (Nat.pair a (m + 1))
+  termination_by evaln k c => (k, c)
 #align nat.partrec.code.evaln Nat.Partrec.Code.evaln
 
 theorem evaln_bound : ∀ {k c n x}, x ∈ evaln k c n → n < k
