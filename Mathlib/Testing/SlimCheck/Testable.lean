@@ -450,11 +450,13 @@ def Testable.runSuiteAux (p : Prop) [Testable p] (cfg : Configuration) :
   | _ => pure $ x
 
 /-- Try to find a counter-example of `p`. -/
-def Testable.runSuite (p : Prop) [Testable p] (cfg : Configuration := {}) : Rand MetaM (TestResult p) :=
+def Testable.runSuite (p : Prop) [Testable p] (cfg : Configuration := {}) :
+    Rand MetaM (TestResult p) :=
   Testable.runSuiteAux p cfg (success $ PSum.inl ()) cfg.numInst
 
 /-- Run a test suite for `p` in `MetaM` using the global RNG in `stdGenRef`. -/
-def Testable.checkMetaM (p : Prop) [Testable p] (cfg : Configuration := {}) : MetaM (TestResult p) :=
+def Testable.checkMetaM (p : Prop) [Testable p] (cfg : Configuration := {}) :
+    MetaM (TestResult p) :=
   match cfg.randomSeed with
   | none => runRand (Testable.runSuite p cfg)
   | some seed => runRandWith seed (Testable.runSuite p cfg)
