@@ -397,8 +397,7 @@ theorem supₛ_atoms_eq_top : supₛ { a : α | IsAtom a } = ⊤ := by
 #align Sup_atoms_eq_top supₛ_atoms_eq_top
 
 theorem le_iff_atom_le_imp {a b : α} : a ≤ b ↔ ∀ c : α, IsAtom c → c ≤ a → c ≤ b :=
-  ⟨fun ab c _ ca => le_trans ca ab, fun h =>
-    by
+  ⟨fun ab c _ ca => le_trans ca ab, fun h => by
     rw [← supₛ_atoms_le_eq a, ← supₛ_atoms_le_eq b]
     exact supₛ_le_supₛ fun c hc => ⟨hc.1, h c hc.1 hc.2⟩⟩
 #align le_iff_atom_le_imp le_iff_atom_le_imp
@@ -584,8 +583,7 @@ protected def booleanAlgebra {α} [DecidableEq α] [Lattice α] [BoundedOrder α
     sdiff := fun x y => if x = ⊤ ∧ y = ⊥ then ⊤ else ⊥
     sdiff_eq := fun x y => by
       rcases eq_bot_or_eq_top x with (rfl | rfl) <;> simp [bot_ne_top, SDiff.sdiff, compl]
-    inf_compl_le_bot := fun x =>
-      by
+    inf_compl_le_bot := fun x => by
       rcases eq_bot_or_eq_top x with (rfl | rfl)
       · simp
       . simp
@@ -630,14 +628,12 @@ protected noncomputable def completeLattice : CompleteLattice α :=
 protected noncomputable def completeBooleanAlgebra : CompleteBooleanAlgebra α :=
   { IsSimpleOrder.completeLattice,
     IsSimpleOrder.booleanAlgebra with
-    infᵢ_sup_le_sup_infₛ := fun x s =>
-      by
+    infᵢ_sup_le_sup_infₛ := fun x s => by
       rcases eq_bot_or_eq_top x with (rfl | rfl)
       · simp only [bot_sup_eq, ← infₛ_eq_infᵢ]
         exact le_rfl
       · simp only [top_le_iff, top_sup_eq, infᵢ_top, le_infₛ_iff, le_refl]
-    inf_supₛ_le_supᵢ_inf := fun x s =>
-      by
+    inf_supₛ_le_supᵢ_inf := fun x s => by
       rcases eq_bot_or_eq_top x with (rfl | rfl)
       · simp only [le_bot_iff, supₛ_eq_bot, bot_inf_eq, supᵢ_bot, le_refl]
       · simp only [top_inf_eq, ← supₛ_eq_supᵢ]

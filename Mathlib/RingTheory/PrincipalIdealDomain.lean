@@ -216,36 +216,27 @@ instance (priority := 100) EuclideanDomain.to_principal_ideal_domain : IsPrincip
     where principal S :=
     ⟨if h : { x : R | x ∈ S ∧ x ≠ 0 }.Nonempty then
         have wf : WellFounded (EuclideanDomain.r : R → R → Prop) := EuclideanDomain.r_wellFounded
-        have hmin :
-          WellFounded.min wf { x : R | x ∈ S ∧ x ≠ 0 } h ∈ S ∧
+        have hmin : WellFounded.min wf { x : R | x ∈ S ∧ x ≠ 0 } h ∈ S ∧
             WellFounded.min wf { x : R | x ∈ S ∧ x ≠ 0 } h ≠ 0 :=
           WellFounded.min_mem wf { x : R | x ∈ S ∧ x ≠ 0 } h
         ⟨WellFounded.min wf { x : R | x ∈ S ∧ x ≠ 0 } h,
-          Submodule.ext fun x =>
-            ⟨fun hx =>
-              div_add_mod x (WellFounded.min wf { x : R | x ∈ S ∧ x ≠ 0 } h) ▸
-                (Ideal.mem_span_singleton.2 <|
-                  dvd_add (dvd_mul_right _ _) <|
-                    by
-                    have :
-                      x % WellFounded.min wf { x : R | x ∈ S ∧ x ≠ 0 } h ∉
-                        { x : R | x ∈ S ∧ x ≠ 0 } :=
-                      fun h₁ => WellFounded.not_lt_min wf _ h h₁ (mod_lt x hmin.2)
-                    have : x % WellFounded.min wf { x : R | x ∈ S ∧ x ≠ 0 } h = 0 :=
-                      by
-                      simp only [not_and_or, Set.mem_setOf_eq, not_ne_iff] at this
-                      exact this.neg_resolve_left <| (mod_mem_iff hmin.1).2 hx
-                    simp [*]),
+          Submodule.ext fun x => ⟨fun hx =>
+            div_add_mod x (WellFounded.min wf { x : R | x ∈ S ∧ x ≠ 0 } h) ▸
+              (Ideal.mem_span_singleton.2 <| dvd_add (dvd_mul_right _ _) <| by
+                have : x % WellFounded.min wf { x : R | x ∈ S ∧ x ≠ 0 } h ∉
+                    { x : R | x ∈ S ∧ x ≠ 0 } :=
+                  fun h₁ => WellFounded.not_lt_min wf _ h h₁ (mod_lt x hmin.2)
+                have : x % WellFounded.min wf { x : R | x ∈ S ∧ x ≠ 0 } h = 0 := by
+                  simp only [not_and_or, Set.mem_setOf_eq, not_ne_iff] at this
+                  exact this.neg_resolve_left <| (mod_mem_iff hmin.1).2 hx
+                simp [*]),
               fun hx =>
-              let ⟨y, hy⟩ := Ideal.mem_span_singleton.1 hx
-              hy.symm ▸ S.mul_mem_right _ hmin.1⟩⟩
-      else
-        ⟨0,
-          Submodule.ext fun a => by
+                let ⟨y, hy⟩ := Ideal.mem_span_singleton.1 hx
+                hy.symm ▸ S.mul_mem_right _ hmin.1⟩⟩
+      else ⟨0, Submodule.ext fun a => by
             rw [← @Submodule.bot_coe R R _ _ _, span_eq, Submodule.mem_bot]
-            exact
-              ⟨fun haS => by_contra fun ha0 => h ⟨a, ⟨haS, ha0⟩⟩, fun h₁ =>
-                h₁.symm ▸ S.zero_mem⟩⟩⟩
+            exact ⟨fun haS => by_contra fun ha0 => h ⟨a, ⟨haS, ha0⟩⟩,
+              fun h₁ => h₁.symm ▸ S.zero_mem⟩⟩⟩
 #align euclidean_domain.to_principal_ideal_domain EuclideanDomain.to_principal_ideal_domain
 
 end
@@ -264,8 +255,7 @@ set_option synthInstance.etaExperiment true in
 instance (priority := 100) isNoetherianRing [Ring R] [IsPrincipalIdealRing R] :
     IsNoetherianRing R :=
   isNoetherianRing_iff.2
-    ⟨fun s : Ideal R =>
-      by
+    ⟨fun s : Ideal R => by
       rcases (IsPrincipalIdealRing.principal s).principal with ⟨a, rfl⟩
       rw [← Finset.coe_singleton]
       exact ⟨{a}, SetLike.coe_injective rfl⟩⟩
@@ -273,8 +263,7 @@ instance (priority := 100) isNoetherianRing [Ring R] [IsPrincipalIdealRing R] :
 
 theorem isMaximal_of_irreducible [CommRing R] [IsPrincipalIdealRing R] {p : R}
     (hp : Irreducible p) : Ideal.IsMaximal (span R ({p} : Set R)) :=
-  ⟨⟨mt Ideal.span_singleton_eq_top.1 hp.1, fun I hI =>
-      by
+  ⟨⟨mt Ideal.span_singleton_eq_top.1 hp.1, fun I hI => by
       rcases principal I with ⟨a, rfl⟩
       erw [Ideal.span_singleton_eq_top]
       rcases Ideal.span_singleton_le_span_singleton.1 (le_of_lt hI) with ⟨b, rfl⟩
@@ -448,8 +437,8 @@ theorem isCoprime_of_prime_dvd {x y : R} (nonzero : ¬(x = 0 ∧ y = 0))
   isCoprime_of_irreducible_dvd nonzero fun z zi => H z <| GCDMonoid.prime_of_irreducible zi
 #align is_coprime_of_prime_dvd isCoprime_of_prime_dvd
 
-theorem Irreducible.coprime_iff_not_dvd {p n : R} (pp : Irreducible p) : IsCoprime p n ↔ ¬p ∣ n :=
-  by
+theorem Irreducible.coprime_iff_not_dvd {p n : R} (pp : Irreducible p) :
+    IsCoprime p n ↔ ¬p ∣ n := by
   constructor
   · intro co H
     apply pp.not_unit
@@ -538,8 +527,7 @@ theorem IsPrincipalIdealRing.of_prime (H : ∀ P : Ideal R, P.IsPrime → P.IsPr
   intro J hJ
   -- We will show a maximal element `I ∈ nonPrincipals R` (which exists by Zorn) is prime.
   obtain ⟨I, Ibad, -, Imax⟩ := zorn_nonempty_partialOrder₀ (nonPrincipals R) nonPrincipals_zorn _ hJ
-  have Imax' : ∀ {J}, I < J → J.IsPrincipal :=
-    by
+  have Imax' : ∀ {J}, I < J → J.IsPrincipal := by
     intro J hJ
     by_contra He
     exact hJ.ne (Imax _ ((nonPrincipals_def R).2 He) hJ.le).symm
@@ -567,8 +555,7 @@ theorem IsPrincipalIdealRing.of_prime (H : ∀ P : Ideal R, P.IsPrime → P.IsPr
     erw [ha, mem_span_singleton'] at hisup this
     obtain ⟨v, rfl⟩ := this
     obtain ⟨u, rfl⟩ := hisup
-    have hucolon : u ∈ I.colon (span {v * a}) :=
-      by
+    have hucolon : u ∈ I.colon (span {v * a}) := by
       rw [Ideal.mem_colon_singleton, mul_comm v, ← mul_assoc]
       exact mul_mem_right _ _ hi
     erw [hb, mem_span_singleton'] at hucolon

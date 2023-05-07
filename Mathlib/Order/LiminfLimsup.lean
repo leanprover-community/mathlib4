@@ -802,8 +802,8 @@ set_option linter.uppercaseLean3 false in
 
 -- Porting note: simp_nf linter incorrectly says: lhs does not simplify when using simp on itself.
 @[simp, nolint simpNF]
-theorem liminf_nat_add (f : ℕ → α) (k : ℕ) : liminf (fun i => f (i + k)) atTop = liminf f atTop :=
-  by
+theorem liminf_nat_add (f : ℕ → α) (k : ℕ) :
+    liminf (fun i => f (i + k)) atTop = liminf f atTop := by
   simp_rw [liminf_eq_supᵢ_infᵢ_of_nat]
   exact supᵢ_infᵢ_ge_nat_add f k
 #align filter.liminf_nat_add Filter.liminf_nat_add
@@ -1050,8 +1050,8 @@ section SetLattice
 
 variable {p : ι → Prop} {s : ι → Set α}
 
-theorem cofinite.blimsup_set_eq : blimsup s cofinite p = { x | { n | p n ∧ x ∈ s n }.Infinite } :=
-  by
+theorem cofinite.blimsup_set_eq :
+    blimsup s cofinite p = { x | { n | p n ∧ x ∈ s n }.Infinite } := by
   simp only [blimsup_eq, le_eq_subset, eventually_cofinite, not_forall, infₛ_eq_interₛ, exists_prop]
   ext x
   refine' ⟨fun h => _, fun hx t h => _⟩ <;> contrapose! h

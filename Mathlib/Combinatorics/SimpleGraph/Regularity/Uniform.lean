@@ -176,10 +176,8 @@ theorem nonuniformWitness_card_le (h : ¬G.IsUniform ε s t) :
   · exact G.right_nonuniformWitnesses_card fun i => h i.symm
 #align simple_graph.nonuniform_witness_card_le SimpleGraph.nonuniformWitness_card_le
 
-theorem nonuniformWitness_spec (h₁ : s ≠ t) (h₂ : ¬G.IsUniform ε s t) :
-    ε ≤
-      |G.edgeDensity (G.nonuniformWitness ε s t) (G.nonuniformWitness ε t s) - G.edgeDensity s t| :=
-  by
+theorem nonuniformWitness_spec (h₁ : s ≠ t) (h₂ : ¬G.IsUniform ε s t) : ε ≤ |G.edgeDensity
+    (G.nonuniformWitness ε s t) (G.nonuniformWitness ε t s) - G.edgeDensity s t| := by
   unfold nonuniformWitness
   rcases trichotomous_of WellOrderingRel s t with (lt | rfl | gt)
   · rw [if_pos lt, if_neg (asymm lt)]
