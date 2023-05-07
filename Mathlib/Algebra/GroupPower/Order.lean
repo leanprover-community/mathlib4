@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis
 
 ! This file was ported from Lean 3 source module algebra.group_power.order
-! leanprover-community/mathlib commit dd4c2044a9dee231309637e7fd4e61aea1506e33
+! leanprover-community/mathlib commit 00f91228655eecdcd3ac97a7fd8dbcb139fe990a
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -633,6 +633,11 @@ theorem pow_abs (a : R) (n : ℕ) : |a| ^ n = |a ^ n| :=
 
 theorem abs_neg_one_pow (n : ℕ) : |(-1 : R) ^ n| = 1 := by rw [← pow_abs, abs_neg, abs_one, one_pow]
 #align abs_neg_one_pow abs_neg_one_pow
+
+theorem abs_pow_eq_one (a : R) {n : ℕ} (h : 0 < n) : |a ^ n| = 1 ↔ |a| = 1 := by
+  convert pow_left_inj (abs_nonneg a) zero_le_one h
+  exacts [(pow_abs _ _).symm, (one_pow _).symm]
+#align abs_pow_eq_one abs_pow_eq_one
 
 section
 set_option linter.deprecated false
