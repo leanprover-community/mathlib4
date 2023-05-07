@@ -313,9 +313,7 @@ theorem eq_zero_iff {P Q : C} (f : P ⟶ Q) : f = 0 ↔ ∀ a, f a = pseudoZero 
 /-- A monomorphism is injective on pseudoelements. -/
 theorem pseudo_injective_of_mono {P Q : C} (f : P ⟶ Q) [Mono f] : Function.Injective f := by
   intro abar abar'
-  apply Quotient.inductionOn₂
-    (motive := fun q q' => pseudoApply f q = pseudoApply f q' → q = q') abar abar'
-  intro a a' ha
+  refine' Quotient.inductionOn₂ abar abar' fun a a' ha => _
   apply Quotient.sound
   have : ⟦(a.hom ≫ f : Over Q)⟧ = ⟦↑(a'.hom ≫ f)⟧ := by convert ha
   have ⟨R, p, q, ep, Eq, comm⟩ := Quotient.exact this
@@ -458,14 +456,14 @@ theorem sub_of_eq_image {P Q : C} (f : P ⟶ Q) (x y : P) :
       ∀ (R : C) (g : P ⟶ R), (g : P ⟶ R) y = pseudoZero → g z = g x :=
   Quotient.inductionOn₂ x y fun a a' h =>
     match Quotient.exact h with
-    | ⟨R, p, q, ep, Eq, comm⟩ =>
-      let a'' : R ⟶ P := p ≫ a.hom - q ≫ a'.hom
+    | ⟨R, p, q, ep, _, comm⟩ =>
+      let a'' : R ⟶ P := ↑(p ≫ a.hom) - ↑(q ≫ a'.hom)
       ⟨a'',
-        ⟨show ⟦((p ≫ a.hom - q ≫ a'.hom) ≫ f : Over Q)⟧ = ⟦(0 : Q ⟶ Q)⟧ by
+        ⟨show ⟦(a'' ≫ f : Over Q)⟧ = ⟦↑(0 : Q ⟶ Q)⟧ by
             dsimp at comm
             simp [sub_eq_zero.2 comm],
           fun Z g hh => by
-          obtain ⟨X, p', q', ep', eq', comm'⟩ := Quotient.exact hh
+          obtain ⟨X, p', q', ep', _, comm'⟩ := Quotient.exact hh
           have : a'.hom ≫ g = 0 := by
             apply (epi_iff_cancel_zero _).1 ep' _ (a'.hom ≫ g)
             simpa using comm'
@@ -504,7 +502,7 @@ attribute [-instance] homToFun
 
 /-- In the category `Module R`, if `x` and `y` are pseudoequal, then the range of the associated
 morphisms is the same. -/
-theorem Module.eq_range_of_pseudoequal {R : Type _} [CommRing R] {G : ModuleCat R} {x y : Over G}
+theorem ModuleCat.eq_range_of_pseudoequal {R : Type _} [CommRing R] {G : ModuleCat R} {x y : Over G}
     (h : PseudoEqual G x y) : LinearMap.range x.hom = LinearMap.range y.hom := by
   obtain ⟨P, p, q, hp, hq, H⟩ := h
   refine' Submodule.ext fun a => ⟨fun ha => _, fun ha => _⟩
@@ -518,7 +516,8 @@ theorem Module.eq_range_of_pseudoequal {R : Type _} [CommRing R] {G : ModuleCat 
     refine' ⟨p a'', _⟩
     rw [← LinearMap.comp_apply, ← ModuleCat.comp_def, H, ModuleCat.comp_def, LinearMap.comp_apply,
       ha'', ha']
-#align category_theory.abelian.pseudoelement.Module.eq_range_of_pseudoequal CategoryTheory.Abelian.Pseudoelement.Module.eq_range_of_pseudoequal
+set_option linter.uppercaseLean3 false in
+#align category_theory.abelian.pseudoelement.Module.eq_range_of_pseudoequal CategoryTheory.Abelian.Pseudoelement.ModuleCat.eq_range_of_pseudoequal
 
 end Module
 
