@@ -1,3 +1,4 @@
+import Mathlib.Data.Int.ModEq
 import Mathlib.Data.Real.ENNReal
 import Mathlib.Tactic.LibrarySearch
 
@@ -15,6 +16,13 @@ attribute [dummy_label_attr]
   add_lt_add_left ENNReal.add_lt_add_left -- ff + tt
   add_lt_add_right ENNReal.add_lt_add_right -- tt + ff
 
+/-! # ≡ ZMOD, + -/
+
+attribute [dummy_label_attr]
+  Int.ModEq.add -- tt + tt
+  Int.ModEq.add_left -- ff + tt
+  Int.ModEq.add_right -- tt + ff
+
 /-! # ≤, - -/
 
 attribute [dummy_label_attr]
@@ -28,6 +36,13 @@ attribute [dummy_label_attr]
   sub_lt_sub -- tt - tt
   sub_lt_sub_left -- ff - tt
   sub_lt_sub_right -- tt - ff
+
+/-! # ≡ ZMOD, - -/
+
+attribute [dummy_label_attr]
+  Int.ModEq.sub -- tt - tt
+  Int.ModEq.sub_left -- ff - tt
+  Int.ModEq.sub_right -- tt - ff
 
 /-! # ≤, * -/
 
@@ -50,6 +65,13 @@ attribute [dummy_label_attr]
   mul_lt_mul_of_lt_of_lt mul_lt_mul'' ENNReal.mul_lt_mul -- tt * tt
   mul_lt_mul_left' mul_lt_mul_of_pos_left ENNReal.mul_lt_mul_left' -- ff * tt
   mul_lt_mul_right' mul_lt_mul_of_pos_right ENNReal.mul_lt_mul_right' -- tt * ff
+
+/-! # ≡ ZMOD, * -/
+
+attribute [dummy_label_attr]
+  Int.ModEq.mul -- tt * tt
+  Int.ModEq.mul_left -- ff * tt
+  Int.ModEq.mul_right -- tt * ff
 
 /-! # ≤, / -/
 
@@ -88,3 +110,8 @@ theorem ENNReal.pow_lt_pow_of_lt_left {x y : ENNReal} (h : x < y) {n : ℕ} (hn 
 attribute [dummy_label_attr]
   pow_lt_pow pow_lt_pow' zpow_lt_zpow zpow_lt_of_lt -- ff ^ tt
   pow_lt_pow_of_lt_left ENNReal.pow_lt_pow_of_lt_left zpow_lt_zpow' -- tt ^ ff
+
+/-! # ≡ ZMOD, ^ -/
+
+attribute [dummy_label_attr]
+  Int.ModEq.pow -- tt * ff
