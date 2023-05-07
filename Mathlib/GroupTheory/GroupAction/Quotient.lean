@@ -272,11 +272,8 @@ theorem card_eq_sum_card_group_div_card_stabilizer' [Fintype α] [Fintype β] [F
     [∀ b : β, Fintype <| stabilizer α b] {φ : Ω → β} (hφ : LeftInverse Quotient.mk'' φ) :
     Fintype.card β = ∑ ω : Ω, Fintype.card α / Fintype.card (stabilizer α (φ ω)) := by
   classical
-    have :
-      ∀ ω : Ω,
-        Fintype.card α / Fintype.card (stabilizer α (φ ω)) =
-          Fintype.card (α ⧸ stabilizer α (φ ω)) :=
-      by
+    have : ∀ ω : Ω, Fintype.card α / Fintype.card (stabilizer α (φ ω)) =
+        Fintype.card (α ⧸ stabilizer α (φ ω)) := by
       intro ω
       rw [Fintype.card_congr (@Subgroup.groupEquivQuotientProdSubgroup α _ (stabilizer α <| φ ω)),
         Fintype.card_prod, Nat.mul_div_cancel]

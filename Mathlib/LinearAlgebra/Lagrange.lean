@@ -261,8 +261,8 @@ theorem degree_basis (hvs : Set.InjOn v s) (hi : i ∈ s) :
 -- Porting note: On lines 271 and 274, the pattern in 'WithBot.coe_lt_coe' could not be found
 -- with 'rw' but it can with 'apply'
 
-theorem sum_basis (hvs : Set.InjOn v s) (hs : s.Nonempty) : (∑ j in s, Lagrange.basis s v j) = 1 :=
-  by
+theorem sum_basis (hvs : Set.InjOn v s) (hs : s.Nonempty) :
+    (∑ j in s, Lagrange.basis s v j) = 1 := by
   refine' eq_of_degrees_lt_of_eval_index_eq s hvs (lt_of_le_of_lt (degree_sum_le _ _) _) _ _
   · rw [@Finset.sup_lt_iff (WithBot ℕ) ι _ _ s (fun b => degree (Lagrange.basis s v b)) ↑(card s)
     (WithBot.bot_lt_coe s.card)]
@@ -281,8 +281,8 @@ theorem sum_basis (hvs : Set.InjOn v s) (hs : s.Nonempty) : (∑ j in s, Lagrang
     rw [eval_basis_of_ne hij hi]
 #align lagrange.sum_basis Lagrange.sum_basis
 
-theorem basisDivisor_add_symm {x y : F} (hxy : x ≠ y) : basisDivisor x y + basisDivisor y x = 1 :=
-  by
+theorem basisDivisor_add_symm {x y : F} (hxy : x ≠ y) :
+    basisDivisor x y + basisDivisor y x = 1 := by
   classical rw [←
       sum_basis (Set.injOn_of_injective Function.injective_id _) ⟨x, mem_insert_self _ {y}⟩,
       sum_insert (not_mem_singleton.mpr hxy), sum_singleton, basis_pair_left hxy,
@@ -356,8 +356,8 @@ theorem eval_interpolate_at_node (hvs : Set.InjOn v s) (hi : i ∈ s) :
 
 set_option synthInstance.etaExperiment true in
 
-theorem degree_interpolate_le (hvs : Set.InjOn v s) : (interpolate s v r).degree ≤ ↑(s.card - 1) :=
-  by
+theorem degree_interpolate_le (hvs : Set.InjOn v s) :
+    (interpolate s v r).degree ≤ ↑(s.card - 1) := by
   refine' (degree_sum_le _ _).trans _
   rw [Finset.sup_le_iff]
   intro i hi
@@ -583,8 +583,8 @@ set_option linter.uppercaseLean3 false in
 
 variable [DecidableEq ι]
 
-theorem nodal_erase_eq_nodal_div (hi : i ∈ s) : nodal (s.erase i) v = nodal s v / (X - C (v i)) :=
-  by
+theorem nodal_erase_eq_nodal_div (hi : i ∈ s) :
+    nodal (s.erase i) v = nodal s v / (X - C (v i)) := by
   rw [nodal_eq_mul_nodal_erase hi, EuclideanDomain.mul_div_cancel_left]
   exact X_sub_C_ne_zero _
 #align lagrange.nodal_erase_eq_nodal_div Lagrange.nodal_erase_eq_nodal_div

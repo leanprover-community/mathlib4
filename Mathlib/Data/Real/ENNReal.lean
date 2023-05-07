@@ -1828,8 +1828,7 @@ theorem exists_mem_Ico_zpow {x y : ℝ≥0∞} (hx : x ≠ 0) (h'x : x ≠ ∞) 
   lift x to ℝ≥0 using h'x
   lift y to ℝ≥0 using h'y
   have A : y ≠ 0 := by simpa only [Ne.def, coe_eq_zero] using (zero_lt_one.trans hy).ne'
-  obtain ⟨n, hn, h'n⟩ : ∃ n : ℤ, y ^ n ≤ x ∧ x < y ^ (n + 1) :=
-    by
+  obtain ⟨n, hn, h'n⟩ : ∃ n : ℤ, y ^ n ≤ x ∧ x < y ^ (n + 1) := by
     refine' NNReal.exists_mem_Ico_zpow _ (one_lt_coe_iff.1 hy)
     simpa only [Ne.def, coe_eq_zero] using hx
   refine' ⟨n, _, _⟩
@@ -1842,8 +1841,7 @@ theorem exists_mem_Ioc_zpow {x y : ℝ≥0∞} (hx : x ≠ 0) (h'x : x ≠ ∞) 
   lift x to ℝ≥0 using h'x
   lift y to ℝ≥0 using h'y
   have A : y ≠ 0 := by simpa only [Ne.def, coe_eq_zero] using (zero_lt_one.trans hy).ne'
-  obtain ⟨n, hn, h'n⟩ : ∃ n : ℤ, y ^ n < x ∧ x ≤ y ^ (n + 1) :=
-    by
+  obtain ⟨n, hn, h'n⟩ : ∃ n : ℤ, y ^ n < x ∧ x ≤ y ^ (n + 1) := by
     refine' NNReal.exists_mem_Ioc_zpow _ (one_lt_coe_iff.1 hy)
     simpa only [Ne.def, coe_eq_zero] using hx
   refine' ⟨n, _, _⟩

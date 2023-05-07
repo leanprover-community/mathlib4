@@ -63,8 +63,8 @@ variable [Finite J]
 /-- This follows this proof from
 * Borceux, Handbook of categorical algebra 1, Theorem 2.13.4
 -/
-theorem colimitLimitToLimitColimit_injective : Function.Injective (colimitLimitToLimitColimit F) :=
-  by
+theorem colimitLimitToLimitColimit_injective :
+    Function.Injective (colimitLimitToLimitColimit F) := by
   classical
     cases nonempty_fintype J
     -- Suppose we have two terms `x y` in the colimit (over `K`) of the limits (over `J`),

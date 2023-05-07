@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 
 ! This file was ported from Lean 3 source module data.set.intervals.monotone
-! leanprover-community/mathlib commit 9aba7801eeecebb61f58a5763c2b6dd1b47dc6ef
+! leanprover-community/mathlib commit 4d06b17aea8cf2e220f0b0aa46cd0231593c5c97
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -221,10 +221,10 @@ theorem StrictMonoOn.Iic_id_le [SuccOrder α] [IsSuccArchimedean α] [OrderBot �
   · exact ih (StrictMonoOn.mono hφ fun x hx => le_trans hx (le_succ _)) _ h
 #align strict_mono_on.Iic_id_le StrictMonoOn.Iic_id_le
 
-theorem StrictMonoOn.Iic_le_id [PredOrder α] [IsPredArchimedean α] [OrderTop α] {n : α} {φ : α → α}
+theorem StrictMonoOn.Ici_le_id [PredOrder α] [IsPredArchimedean α] [OrderTop α] {n : α} {φ : α → α}
     (hφ : StrictMonoOn φ (Set.Ici n)) : ∀ m, n ≤ m → φ m ≤ m :=
   StrictMonoOn.Iic_id_le (α := αᵒᵈ) fun _ hi _ hj hij => hφ hj hi hij
-#align strict_mono_on.Iic_le_id StrictMonoOn.Iic_le_id
+#align strict_mono_on.Ici_le_id StrictMonoOn.Ici_le_id
 
 variable [Preorder β] {ψ : α → β}
 
@@ -261,14 +261,14 @@ theorem strictAntiOn_Iic_of_succ_lt [SuccOrder α] [IsSuccArchimedean α] {n : �
   @strictMonoOn_Iic_of_lt_succ α βᵒᵈ _ _ ψ _ _ n hψ i hi j hj hij
 #align strict_anti_on_Iic_of_succ_lt strictAntiOn_Iic_of_succ_lt
 
-theorem strictMonoOn_Iic_of_pred_lt [PredOrder α] [IsPredArchimedean α] {n : α}
+theorem strictMonoOn_Ici_of_pred_lt [PredOrder α] [IsPredArchimedean α] {n : α}
     (hψ : ∀ m, n < m → ψ (pred m) < ψ m) : StrictMonoOn ψ (Set.Ici n) := fun i hi j hj hij =>
   @strictMonoOn_Iic_of_lt_succ αᵒᵈ βᵒᵈ _ _ ψ _ _ n hψ j hj i hi hij
-#align strict_mono_on_Iic_of_pred_lt strictMonoOn_Iic_of_pred_lt
+#align strict_mono_on_Ici_of_pred_lt strictMonoOn_Ici_of_pred_lt
 
-theorem strictAntiOn_Iic_of_lt_pred [PredOrder α] [IsPredArchimedean α] {n : α}
+theorem strictAntiOn_Ici_of_lt_pred [PredOrder α] [IsPredArchimedean α] {n : α}
     (hψ : ∀ m, n < m → ψ m < ψ (pred m)) : StrictAntiOn ψ (Set.Ici n) := fun i hi j hj hij =>
   @strictAntiOn_Iic_of_succ_lt αᵒᵈ βᵒᵈ _ _ ψ _ _ n hψ j hj i hi hij
-#align strict_anti_on_Iic_of_lt_pred strictAntiOn_Iic_of_lt_pred
+#align strict_anti_on_Ici_of_lt_pred strictAntiOn_Ici_of_lt_pred
 
 end SuccOrder
