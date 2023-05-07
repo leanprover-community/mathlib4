@@ -25,13 +25,13 @@ theorem equicontinuous_of_equicontinuousAt_one {ι G M hom : Type _} [Topologica
     [UniformSpace M] [Group G] [Group M] [TopologicalGroup G] [UniformGroup M]
     [MonoidHomClass hom G M] (F : ι → hom)
     (hf : EquicontinuousAt (MulHom.toFun ∘ MulHomClass.toMulHom ∘ F) (1 : G)) :
-    Equicontinuous (X := G) (α := M) (MulHom.toFun ∘ MulHomClass.toMulHom ∘ F) := by
+    Equicontinuous (MulHom.toFun ∘ MulHomClass.toMulHom ∘ F) := by
   letI : CoeFun hom fun _ => G → M := FunLike.hasCoeToFun
   rw [equicontinuous_iff_continuous]
   rw [equicontinuousAt_iff_continuousAt] at hf
   let φ : G →* (ι →ᵤ M) :=
     { toFun := swap (MulHom.toFun ∘ MulHomClass.toMulHom ∘ F)
-      map_one' := by dsimp [UniformFun] ; ext ; exact map_one (F := hom) _
+      map_one' := by dsimp [UniformFun] ; ext ; exact map_one _
       map_mul' := fun a b => by dsimp [UniformFun] ; ext ; exact map_mul _ _ _ }
   exact continuous_of_continuousAt_one φ hf
 #align equicontinuous_of_equicontinuous_at_one equicontinuous_of_equicontinuousAt_one
