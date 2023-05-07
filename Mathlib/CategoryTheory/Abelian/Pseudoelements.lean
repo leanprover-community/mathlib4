@@ -173,14 +173,14 @@ theorem over_coe_def {P Q : C} (a : Q ⟶ P) : (a : Pseudoelement P) = ⟦↑a�
 #align category_theory.abelian.pseudoelement.over_coe_def CategoryTheory.Abelian.Pseudoelement.over_coe_def
 
 /-- If two elements are pseudo-equal, then their composition with a morphism is, too. -/
-theorem pseudo_apply_aux {P Q : C} (f : P ⟶ Q) (a b : Over P) : a ≈ b → app f a ≈ app f b :=
+theorem pseudoApply_aux {P Q : C} (f : P ⟶ Q) (a b : Over P) : a ≈ b → app f a ≈ app f b :=
   fun ⟨R, p, q, ep, Eq, comm⟩ =>
   ⟨R, p, q, ep, Eq, show p ≫ a.hom ≫ f = q ≫ b.hom ≫ f by rw [reassoc_of% comm]⟩
-#align category_theory.abelian.pseudoelement.pseudo_apply_aux CategoryTheory.Abelian.Pseudoelement.pseudo_apply_aux
+#align category_theory.abelian.pseudoelement.pseudo_apply_aux CategoryTheory.Abelian.Pseudoelement.pseudoApply_aux
 
 /-- A morphism `f` induces a function `pseudoApply f` on pseudoelements. -/
 def pseudoApply {P Q : C} (f : P ⟶ Q) : P → Q :=
-  Quotient.map (fun g : Over P => app f g) (pseudo_apply_aux f)
+  Quotient.map (fun g : Over P => app f g) (pseudoApply_aux f)
 #align category_theory.abelian.pseudoelement.pseudo_apply CategoryTheory.Abelian.Pseudoelement.pseudoApply
 
 /-- A coercion from morphisms to functions on pseudoelements. -/
@@ -192,9 +192,9 @@ attribute [local instance] homToFun
 
 scoped[Pseudoelement] attribute [instance] CategoryTheory.Abelian.Pseudoelement.homToFun
 
-theorem pseudo_apply_mk' {P Q : C} (f : P ⟶ Q) (a : Over P) : f ⟦a⟧ = ⟦↑(a.hom ≫ f)⟧ :=
+theorem pseudoApply_mk' {P Q : C} (f : P ⟶ Q) (a : Over P) : f ⟦a⟧ = ⟦↑(a.hom ≫ f)⟧ :=
   rfl
-#align category_theory.abelian.pseudoelement.pseudo_apply_mk CategoryTheory.Abelian.Pseudoelement.pseudo_apply_mk'
+#align category_theory.abelian.pseudoelement.pseudo_apply_mk CategoryTheory.Abelian.Pseudoelement.pseudoApply_mk'
 
 /-- Applying a pseudoelement to a composition of morphisms is the same as composing
     with each morphism. Sadly, this is not a definitional equality, but at least it is
@@ -225,17 +225,17 @@ section
 attribute [local instance] HasBinaryBiproducts.of_hasBinaryProducts
 
 /-- The arrows pseudo-equal to a zero morphism are precisely the zero morphisms. -/
-theorem pseudo_zero_aux {P : C} (Q : C) (f : Over P) : f ≈ (0 : Q ⟶ P) ↔ f.hom = 0 :=
+theorem pseudoZero_aux {P : C} (Q : C) (f : Over P) : f ≈ (0 : Q ⟶ P) ↔ f.hom = 0 :=
   ⟨fun ⟨R, p, q, ep, _, comm⟩ => zero_of_epi_comp p (by simp [comm]), fun hf =>
     ⟨biprod f.1 Q, biprod.fst, biprod.snd, by infer_instance, by infer_instance, by
       rw [hf, Over.coe_hom, HasZeroMorphisms.comp_zero, HasZeroMorphisms.comp_zero]⟩⟩
-#align category_theory.abelian.pseudoelement.pseudo_zero_aux CategoryTheory.Abelian.Pseudoelement.pseudo_zero_aux
+#align category_theory.abelian.pseudoelement.pseudo_zero_aux CategoryTheory.Abelian.Pseudoelement.pseudoZero_aux
 
 end
 
 theorem zero_eq_zero' {P Q R : C} :
     (⟦((0 : Q ⟶ P) : Over P)⟧ : Pseudoelement P) = ⟦((0 : R ⟶ P) : Over P)⟧ :=
-  Quotient.sound <| (pseudo_zero_aux R _).2 rfl
+  Quotient.sound <| (pseudoZero_aux R _).2 rfl
 #align category_theory.abelian.pseudoelement.zero_eq_zero' CategoryTheory.Abelian.Pseudoelement.zero_eq_zero'
 
 /-- The zero pseudoelement is the class of a zero morphism. -/
@@ -258,9 +258,9 @@ instance {P : C} : Inhabited (Pseudoelement P) :=
   ⟨pseudoZero⟩
 
 -- Porting note: Replaced `0` with `pseudoZero`. This happened in the rest of the file too.
-theorem pseudo_zero_def {P : C} : (pseudoZero : Pseudoelement P) = ⟦↑(0 : P ⟶ P)⟧ :=
+theorem pseudoZero_def {P : C} : (pseudoZero : Pseudoelement P) = ⟦↑(0 : P ⟶ P)⟧ :=
   rfl
-#align category_theory.abelian.pseudoelement.pseudo_zero_def CategoryTheory.Abelian.Pseudoelement.pseudo_zero_def
+#align category_theory.abelian.pseudoelement.pseudo_zero_def CategoryTheory.Abelian.Pseudoelement.pseudoZero_def
 
 @[simp]
 theorem zero_eq_zero {P Q : C} : ⟦((0 : Q ⟶ P) : Over P)⟧ = (pseudoZero : Pseudoelement P) :=
@@ -268,10 +268,10 @@ theorem zero_eq_zero {P Q : C} : ⟦((0 : Q ⟶ P) : Over P)⟧ = (pseudoZero : 
 #align category_theory.abelian.pseudoelement.zero_eq_zero CategoryTheory.Abelian.Pseudoelement.zero_eq_zero
 
 /-- The pseudoelement induced by an arrow is zero precisely when that arrow is zero. -/
-theorem pseudo_zero_iff {P : C} (a : Over P) : (a : P) = pseudoZero ↔ a.hom = 0 := by
-  rw [← pseudo_zero_aux P a]
+theorem pseudoZero_iff {P : C} (a : Over P) : (a : P) = pseudoZero ↔ a.hom = 0 := by
+  rw [← pseudoZero_aux P a]
   exact Quotient.eq'
-#align category_theory.abelian.pseudoelement.pseudo_zero_iff CategoryTheory.Abelian.Pseudoelement.pseudo_zero_iff
+#align category_theory.abelian.pseudoelement.pseudo_zero_iff CategoryTheory.Abelian.Pseudoelement.pseudoZero_iff
 
 end Zero
 
@@ -280,7 +280,7 @@ open Pseudoelement
 /-- Morphisms map the zero pseudoelement to the zero pseudoelement. -/
 @[simp]
 theorem apply_zero {P Q : C} (f : P ⟶ Q) : f pseudoZero = pseudoZero := by
-  rw [pseudo_zero_def, pseudo_apply_mk']
+  rw [pseudoZero_def, pseudoApply_mk']
   simp
 #align category_theory.abelian.pseudoelement.apply_zero CategoryTheory.Abelian.Pseudoelement.apply_zero
 
@@ -288,14 +288,14 @@ theorem apply_zero {P Q : C} (f : P ⟶ Q) : f pseudoZero = pseudoZero := by
 @[simp]
 theorem zero_apply {P : C} (Q : C) (a : P) : (0 : P ⟶ Q) a = pseudoZero :=
   Quotient.inductionOn a fun a' => by
-    rw [pseudo_zero_def, pseudo_apply_mk']
+    rw [pseudoZero_def, pseudoApply_mk']
     simp
 #align category_theory.abelian.pseudoelement.zero_apply CategoryTheory.Abelian.Pseudoelement.zero_apply
 
 /-- An extensionality lemma for being the zero arrow. -/
 theorem zero_morphism_ext {P Q : C} (f : P ⟶ Q) : (∀ a, f a = pseudoZero) → f = 0 := fun h => by
   rw [← Category.id_comp f]
-  exact (pseudo_zero_iff (𝟙 P ≫ f : Over Q)).1 (h (𝟙 P))
+  exact (pseudoZero_iff (𝟙 P ≫ f : Over Q)).1 (h (𝟙 P))
 #align category_theory.abelian.pseudoelement.zero_morphism_ext CategoryTheory.Abelian.Pseudoelement.zero_morphism_ext
 
 theorem zero_morphism_ext' {P Q : C} (f : P ⟶ Q) : (∀ a, f a = pseudoZero) → 0 = f :=
@@ -334,8 +334,8 @@ theorem zero_of_map_zero {P Q : C} (f : P ⟶ Q) :
 theorem mono_of_zero_of_map_zero {P Q : C} (f : P ⟶ Q) :
     (∀ a, f a = pseudoZero → a = pseudoZero) → Mono f :=
   fun h => (mono_iff_cancel_zero _).2 fun _ g hg =>
-    (pseudo_zero_iff (g : Over P)).1 <|
-      h _ <| show f g = pseudoZero from (pseudo_zero_iff (g ≫ f : Over Q)).2 hg
+    (pseudoZero_iff (g : Over P)).1 <|
+      h _ <| show f g = pseudoZero from (pseudoZero_iff (g ≫ f : Over Q)).2 hg
 #align category_theory.abelian.pseudoelement.mono_of_zero_of_map_zero CategoryTheory.Abelian.Pseudoelement.mono_of_zero_of_map_zero
 
 section
@@ -376,7 +376,7 @@ theorem pseudo_exact_of_exact {P Q R : C} {f : P ⟶ Q} {g : Q ⟶ R} (h : Exact
     rw [← comp_apply, h.w]
     exact zero_apply _ _, fun b' =>
     Quotient.inductionOn b' fun b hb => by
-      have hb' : b.hom ≫ g = 0 := (pseudo_zero_iff _).1 hb
+      have hb' : b.hom ≫ g = 0 := (pseudoZero_iff _).1 hb
       -- By exactness, `b` factors through `im f = ker g` via some `c`.
       obtain ⟨c, hc⟩ := KernelFork.IsLimit.lift' (isLimitImage f g h) _ hb'
       -- We compute the pullback of the map into the image and `c`.
@@ -406,7 +406,7 @@ end
 
 theorem apply_eq_zero_of_comp_eq_zero {P Q R : C} (f : Q ⟶ R) (a : P ⟶ Q) :
     a ≫ f = 0 → f a = pseudoZero :=
-  fun h => by simp [over_coe_def, pseudo_apply_mk', Over.coe_hom, h]
+  fun h => by simp [over_coe_def, pseudoApply_mk', Over.coe_hom, h]
 #align category_theory.abelian.pseudoelement.apply_eq_zero_of_comp_eq_zero CategoryTheory.Abelian.Pseudoelement.apply_eq_zero_of_comp_eq_zero
 
 section
