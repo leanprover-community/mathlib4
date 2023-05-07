@@ -535,8 +535,7 @@ theorem toList_head? {i j} (w : NeWord M i j) : w.toList.head? = Option.some ⟨
 #align free_product.neword.to_list_head' FreeProduct.NeWord.toList_head?
 
 @[simp]
-theorem toList_getLast? {i j} (w : NeWord M i j) : w.toList.getLast? = Option.some ⟨j, w.last⟩ :=
-  by
+theorem toList_getLast? {i j} (w : NeWord M i j) : w.toList.getLast? = Option.some ⟨j, w.last⟩ := by
   rw [← Option.mem_def]
   induction w
   · rw [Option.mem_def]

@@ -429,8 +429,8 @@ theorem ofDigits_digits_append_digits {b m n : ℕ} :
   rw [ofDigits_append, ofDigits_digits, ofDigits_digits]
 #align nat.of_digits_digits_append_digits Nat.ofDigits_digits_append_digits
 
-theorem digits_len_le_digits_len_succ (b n : ℕ) : (digits b n).length ≤ (digits b (n + 1)).length :=
-  by
+theorem digits_len_le_digits_len_succ (b n : ℕ) :
+    (digits b n).length ≤ (digits b (n + 1)).length := by
   rcases Decidable.eq_or_ne n 0 with (rfl | hn)
   · simp
   cases' le_or_lt b 1 with hb hb
@@ -570,8 +570,7 @@ theorem ofDigits_neg_one :
     ∀ L : List ℕ, ofDigits (-1 : ℤ) L = (L.map fun n : ℕ => (n : ℤ)).alternatingSum
   | [] => rfl
   | [n] => by simp [ofDigits, List.alternatingSum]
-  | a :: b :: t =>
-    by
+  | a :: b :: t => by
     simp only [ofDigits, List.alternatingSum, List.map_cons, ofDigits_neg_one t]
     ring
 #align nat.of_digits_neg_one Nat.ofDigits_neg_one

@@ -273,8 +273,8 @@ theorem exists_subordinate_pairwise_disjoint [Countable ι] {s : ι → Set α}
 #align measure_theory.exists_subordinate_pairwise_disjoint MeasureTheory.exists_subordinate_pairwise_disjoint
 
 theorem measure_unionᵢ {m0 : MeasurableSpace α} {μ : Measure α} [Countable ι] {f : ι → Set α}
-    (hn : Pairwise (Disjoint on f)) (h : ∀ i, MeasurableSet (f i)) : μ (⋃ i, f i) = ∑' i, μ (f i) :=
-  by
+    (hn : Pairwise (Disjoint on f)) (h : ∀ i, MeasurableSet (f i)) :
+    μ (⋃ i, f i) = ∑' i, μ (f i) := by
   rw [measure_eq_extend (MeasurableSet.unionᵢ h),
     extend_unionᵢ MeasurableSet.empty _ MeasurableSet.unionᵢ _ hn h]
   · simp [measure_eq_extend, h]

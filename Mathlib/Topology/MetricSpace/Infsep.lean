@@ -220,8 +220,8 @@ theorem einfsep_pair (hxy : x ≠ y) : ({x, y} : Set α).einfsep = edist x y := 
   rw [edist_comm]
 #align set.einfsep_pair Set.einfsep_pair
 
-theorem einfsep_insert : einfsep (insert x s) = (⨅ (y ∈ s) (_hxy : x ≠ y), edist x y) ⊓ s.einfsep :=
-  by
+theorem einfsep_insert : einfsep (insert x s) =
+    (⨅ (y ∈ s) (_hxy : x ≠ y), edist x y) ⊓ s.einfsep := by
   refine' le_antisymm (le_min einfsep_insert_le (einfsep_anti (subset_insert _ _))) _
   simp_rw [le_einfsep_iff, inf_le_iff, mem_insert_iff]
   rintro y (rfl | hy) z (rfl | hz) hyz
@@ -466,9 +466,8 @@ theorem Nontrivial.infsep_eq_infᵢ (hs : s.Nontrivial) :
   classical rw [Set.infsep_eq_infᵢ, if_pos hs]
 #align set.nontrivial.infsep_eq_infi Set.Nontrivial.infsep_eq_infᵢ
 
-theorem infsep_of_fintype [Decidable s.Nontrivial] [DecidableEq α] [Fintype s] :
-    s.infsep = if hs : s.Nontrivial then s.offDiag.toFinset.inf' (by simpa) (uncurry dist) else 0 :=
-  by
+theorem infsep_of_fintype [Decidable s.Nontrivial] [DecidableEq α] [Fintype s] : s.infsep =
+    if hs : s.Nontrivial then s.offDiag.toFinset.inf' (by simpa) (uncurry dist) else 0 := by
   split_ifs with hs
   · refine' eq_of_forall_le_iff fun _ => _
     simp_rw [hs.le_infsep_iff, imp_forall_iff, Finset.le_inf'_iff, mem_toFinset, mem_offDiag,
@@ -498,9 +497,8 @@ theorem Finite.infsep_of_nontrivial (hsf : s.Finite) (hs : s.Nontrivial) :
   classical simp_rw [hsf.infsep, dif_pos hs]
 #align set.finite.infsep_of_nontrivial Set.Finite.infsep_of_nontrivial
 
-theorem _root_.Finset.coe_infsep [DecidableEq α] (s : Finset α) :
-    (s : Set α).infsep = if hs : s.offDiag.Nonempty then s.offDiag.inf' hs (uncurry dist) else 0 :=
-  by
+theorem _root_.Finset.coe_infsep [DecidableEq α] (s : Finset α) : (s : Set α).infsep =
+    if hs : s.offDiag.Nonempty then s.offDiag.inf' hs (uncurry dist) else 0 := by
   have H : (s : Set α).Nontrivial ↔ s.offDiag.Nonempty := by
     rw [← Set.offDiag_nonempty, ← Finset.coe_offDiag, Finset.coe_nonempty]
   split_ifs with hs

@@ -412,8 +412,7 @@ noncomputable instance : Inf (GroupSeminorm E) :=
           (fun x => add_nonneg (map_nonneg _ _) (map_nonneg _ _)) fun r hr =>
           ⟨1, by rwa [div_one, map_one_eq_zero p, map_one_eq_zero q, add_zero]⟩
       mul_le' := fun x y =>
-        le_cinfᵢ_add_cinfᵢ fun u v =>
-          by
+        le_cinfᵢ_add_cinfᵢ fun u v => by
           refine' cinfᵢ_le_of_le mul_bddBelow_range_add (u * v) _
           rw [mul_div_mul_comm, add_add_add_comm]
           exact add_le_add (map_mul_le_add p _ _) (map_mul_le_add q _ _)
@@ -472,8 +471,7 @@ instance toSMul : SMul R (AddGroupSeminorm E) :=
     { toFun := fun x => r • p x
       map_zero' := by
         simp only [← smul_one_smul ℝ≥0 r (_ : ℝ), NNReal.smul_def, smul_eq_mul, map_zero, mul_zero]
-      add_le' := fun _ _ =>
-        by
+      add_le' := fun _ _ => by
         simp only [← smul_one_smul ℝ≥0 r (_ : ℝ), NNReal.smul_def, smul_eq_mul]
         exact
           (mul_le_mul_of_nonneg_left (map_add_le_add _ _ _) <| NNReal.coe_nonneg _).trans_eq
@@ -648,8 +646,7 @@ instance : SMul R (GroupSeminorm E) :=
       map_one' := by
         simp only [← smul_one_smul ℝ≥0 r (_ : ℝ), NNReal.smul_def, smul_eq_mul, map_one_eq_zero p,
           mul_zero]
-      mul_le' := fun _ _ =>
-        by
+      mul_le' := fun _ _ => by
         simp only [← smul_one_smul ℝ≥0 r (_ : ℝ), NNReal.smul_def, smul_eq_mul]
         exact
           (mul_le_mul_of_nonneg_left (map_mul_le_add p _ _) <| NNReal.coe_nonneg _).trans_eq
@@ -709,8 +706,7 @@ instance : SMul R (NonarchAddGroupSeminorm E) :=
       map_zero' := by
         simp only [← smul_one_smul ℝ≥0 r (_ : ℝ), NNReal.smul_def, smul_eq_mul, map_zero p,
           mul_zero]
-      add_le_max' := fun x y =>
-        by
+      add_le_max' := fun x y => by
         simp only [← smul_one_smul ℝ≥0 r (_ : ℝ), NNReal.smul_def, smul_eq_mul, ←
           mul_max_of_nonneg _ _ NNReal.zero_le_coe]
         exact mul_le_mul_of_nonneg_left (map_add_le_max p _ _) NNReal.zero_le_coe

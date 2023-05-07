@@ -340,23 +340,23 @@ theorem isPreconnected_closed_iff {s : Set α} :
     IsPreconnected s ↔ ∀ t t', IsClosed t → IsClosed t' →
       s ⊆ t ∪ t' → (s ∩ t).Nonempty → (s ∩ t').Nonempty → (s ∩ (t ∩ t')).Nonempty :=
   ⟨by
-    rintro h t t' ht ht' htt' ⟨x, xs, xt⟩ ⟨y, ys, yt'⟩
-    rw [← not_disjoint_iff_nonempty_inter, ← subset_compl_iff_disjoint_right, compl_inter]
-    intro h'
-    have xt' : x ∉ t' := (h' xs).resolve_left (absurd xt)
-    have yt : y ∉ t := (h' ys).resolve_right (absurd yt')
-    have := h _ _ ht.isOpen_compl ht'.isOpen_compl h' ⟨y, ys, yt⟩ ⟨x, xs, xt'⟩
-    rw [← compl_union] at this
-    exact this.ne_empty htt'.disjoint_compl_right.inter_eq,
+      rintro h t t' ht ht' htt' ⟨x, xs, xt⟩ ⟨y, ys, yt'⟩
+      rw [← not_disjoint_iff_nonempty_inter, ← subset_compl_iff_disjoint_right, compl_inter]
+      intro h'
+      have xt' : x ∉ t' := (h' xs).resolve_left (absurd xt)
+      have yt : y ∉ t := (h' ys).resolve_right (absurd yt')
+      have := h _ _ ht.isOpen_compl ht'.isOpen_compl h' ⟨y, ys, yt⟩ ⟨x, xs, xt'⟩
+      rw [← compl_union] at this
+      exact this.ne_empty htt'.disjoint_compl_right.inter_eq,
     by
-    rintro h u v hu hv huv ⟨x, xs, xu⟩ ⟨y, ys, yv⟩
-    rw [← not_disjoint_iff_nonempty_inter, ← subset_compl_iff_disjoint_right, compl_inter]
-    intro h'
-    have xv : x ∉ v := (h' xs).elim (absurd xu) id
-    have yu : y ∉ u := (h' ys).elim id (absurd yv)
-    have := h _ _ hu.isClosed_compl hv.isClosed_compl h' ⟨y, ys, yu⟩ ⟨x, xs, xv⟩
-    rw [← compl_union] at this
-    exact this.ne_empty huv.disjoint_compl_right.inter_eq⟩
+      rintro h u v hu hv huv ⟨x, xs, xu⟩ ⟨y, ys, yv⟩
+      rw [← not_disjoint_iff_nonempty_inter, ← subset_compl_iff_disjoint_right, compl_inter]
+      intro h'
+      have xv : x ∉ v := (h' xs).elim (absurd xu) id
+      have yu : y ∉ u := (h' ys).elim id (absurd yv)
+      have := h _ _ hu.isClosed_compl hv.isClosed_compl h' ⟨y, ys, yu⟩ ⟨x, xs, xv⟩
+      rw [← compl_union] at this
+      exact this.ne_empty huv.disjoint_compl_right.inter_eq⟩
 #align is_preconnected_closed_iff isPreconnected_closed_iff
 
 theorem Inducing.isPreconnected_image [TopologicalSpace β] {s : Set α} {f : α → β}
@@ -487,8 +487,7 @@ theorem isPreconnected_univ_pi [∀ i, TopologicalSpace (π i)] {s : ∀ i, Set 
     have := I.piecewise_mem_set_pi hfs hgs
     refine' (hsuv this).elim ihI fun h => _
     set S := update (I.piecewise f g) i '' s i
-    have hsub : S ⊆ pi univ s :=
-      by
+    have hsub : S ⊆ pi univ s := by
       refine' image_subset_iff.2 fun z hz => _
       rwa [update_preimage_univ_pi]
       exact fun j _ => this j trivial
@@ -1040,8 +1039,7 @@ theorem preimage_connectedComponent_connected [TopologicalSpace β] {f : α → 
     refine (fiber_decomp (f a) (mem_preimage.1 hat)).resolve_right fun h => ?_
     exact uv_disj.subset_compl_right hau (h rfl)
   -- This proof is exactly the same as the above (modulo some symmetry)
-  have T₂_v : f ⁻¹' T₂ = f ⁻¹' connectedComponent t ∩ v :=
-    by
+  have T₂_v : f ⁻¹' T₂ = f ⁻¹' connectedComponent t ∩ v := by
     apply eq_of_subset_of_subset
     · rw [← bunionᵢ_preimage_singleton]
       refine' unionᵢ₂_subset fun t' ht' => subset_inter _ ht'.2

@@ -164,8 +164,8 @@ theorem isCauSeq_geo_series_const (a : α) {x : α} (hx1 : |x| < 1) :
 variable {β : Type _} [Ring β] {abv : β → α} [IsAbsoluteValue abv]
 
 theorem series_ratio_test {f : ℕ → β} (n : ℕ) (r : α) (hr0 : 0 ≤ r) (hr1 : r < 1)
-    (h : ∀ m, n ≤ m → abv (f m.succ) ≤ r * abv (f m)) : IsCauSeq abv fun m => ∑ n in range m, f n :=
-  by
+    (h : ∀ m, n ≤ m → abv (f m.succ) ≤ r * abv (f m)) :
+    IsCauSeq abv fun m => ∑ n in range m, f n := by
   have har1 : |r| < 1 := by rwa [abs_of_nonneg hr0]
   refine'
     isCauSeq_series_of_abv_le_of_isCauSeq n.succ _
@@ -260,8 +260,7 @@ theorem cauchy_product {a b : ℕ → β} (ha : IsCauSeq abs fun m => ∑ n in r
   have hQε0 : 0 < ε / (4 * Q) :=
     div_pos ε0 (mul_pos (show (0 : α) < 4 by norm_num) (lt_of_le_of_lt (abv_nonneg _ _) (hQ 0)))
   let ⟨M, hM⟩ := CauSeq.cauchy₂ ⟨_, ha⟩ hQε0
-  ⟨2 * (max N M + 1), fun K hK =>
-    by
+  ⟨2 * (max N M + 1), fun K hK => by
     have h₁ :
       (∑ m in range K, ∑ k in range (m + 1), a k * b (m - k)) =
         ∑ m in range K, ∑ n in range (K - m), a m * b n :=
@@ -320,8 +319,7 @@ theorem cauchy_product {a b : ℕ → β} (ha : IsCauSeq abs fun m => ∑ n in r
           ((∑ i in range K, abv (a i) * abv ((∑ k in range (K - i), b k) - ∑ k in range K, b k)) -
             ∑ i in range (max N M + 1),
               abv (a i) * abv ((∑ k in range (K - i), b k) - ∑ k in range K, b k)) <
-        ε / (2 * P) * P + ε / (4 * Q) * (2 * Q)
-      by
+        ε / (2 * P) * P + ε / (4 * Q) * (2 * Q) by
       rw [hε] at this
       simpa [abv_mul abv] using this
     refine'
@@ -334,8 +332,7 @@ theorem cauchy_product {a b : ℕ → β} (ha : IsCauSeq abs fun m => ∑ n in r
       (∑ i in (range K).filter fun k => max N M + 1 ≤ k,
             abv (a i) * abv ((∑ k in range (K - i), b k) - ∑ k in range K, b k)) ≤
           ∑ i in (range K).filter fun k => max N M + 1 ≤ k, abv (a i) * (2 * Q) :=
-        sum_le_sum fun n _ =>
-          by
+        sum_le_sum fun n _ => by
           refine' mul_le_mul_of_nonneg_left _ (abv_nonneg _ _)
           rw [sub_eq_add_neg]
           refine' le_trans (abv_add _ _ _) _
@@ -848,8 +845,7 @@ set_option linter.uppercaseLean3 false in
 #align complex.cos_mul_I Complex.cos_mul_I
 
 theorem sin_mul_I : sin (x * I) = sinh x * I := by
-  have h : I * sin (x * I) = -sinh x :=
-    by
+  have h : I * sin (x * I) = -sinh x := by
     rw [mul_comm, ← sinh_mul_I]
     ring_nf
     simp
@@ -1609,8 +1605,7 @@ theorem sum_div_factorial_le {α : Type _} [LinearOrderedField α] (n j : ℕ) (
             (pow_pos (Nat.cast_pos.2 (Nat.succ_pos _)) _)
     _ = (n.factorial : α)⁻¹ * ∑ m in range (j - n), (n.succ : α)⁻¹ ^ m := by
       simp [mul_inv, mul_sum.symm, sum_mul.symm, -Nat.factorial_succ, mul_comm, inv_pow]
-    _ = ((n.succ : α) - n.succ * (n.succ : α)⁻¹ ^ (j - n)) / (n.factorial * n) :=
-      by
+    _ = ((n.succ : α) - n.succ * (n.succ : α)⁻¹ ^ (j - n)) / (n.factorial * n) := by
       have h₁ : (n.succ : α) ≠ 1 :=
         @Nat.cast_one α _ ▸ mt Nat.cast_inj.1 (mt Nat.succ.inj (pos_iff_ne_zero.1 hn))
       have h₂ : (n.succ : α) ≠ 0 := Nat.cast_ne_zero.2 (Nat.succ_ne_zero _)
@@ -1621,8 +1616,7 @@ theorem sum_div_factorial_le {α : Type _} [LinearOrderedField α] (n j : ℕ) (
       rw [geom_sum_inv h₁ h₂, eq_div_iff_mul_eq h₃, mul_comm _ (n.factorial * n : α),
           ← mul_assoc (n.factorial⁻¹ : α), ← mul_inv_rev, h₄, ← mul_assoc (n.factorial * n : α),
           mul_comm (n : α) n.factorial, mul_inv_cancel h₃, one_mul, mul_comm]
-    _ ≤ n.succ / (n.factorial * n : α) :=
-      by
+    _ ≤ n.succ / (n.factorial * n : α) := by
       refine' Iff.mpr (div_le_div_right (mul_pos _ _)) _
       exact Nat.cast_pos.2 (Nat.factorial_pos _)
       exact Nat.cast_pos.2 hn
@@ -1644,15 +1638,14 @@ theorem exp_bound {x : ℂ} (hx : abs x ≤ 1) {n : ℕ} (hn : 0 < n) :
   rw [sum_range_sub_sum_range hj]
   calc
     abs (∑ m in (range j).filter fun k => n ≤ k, (x ^ m / m.factorial : ℂ)) =
-        abs (∑ m in (range j).filter fun k => n ≤ k, (x ^ n * (x ^ (m - n) / m.factorial) : ℂ)) :=
-      by
+      abs (∑ m in (range j).filter fun k => n ≤ k,
+        (x ^ n * (x ^ (m - n) / m.factorial) : ℂ)) := by
       refine' congr_arg abs (sum_congr rfl fun m hm => _)
       rw [mem_filter, mem_range] at hm
       rw [← mul_div_assoc, ← pow_add, add_tsub_cancel_of_le hm.2]
     _ ≤ ∑ m in filter (fun k => n ≤ k) (range j), abs (x ^ n * (x ^ (m - n) / m.factorial)) :=
       (abv_sum_le_sum_abv (abv := Complex.abs) _ _)
-    _ ≤ ∑ m in filter (fun k => n ≤ k) (range j), abs x ^ n * (1 / m.factorial) :=
-      by
+    _ ≤ ∑ m in filter (fun k => n ≤ k) (range j), abs x ^ n * (1 / m.factorial) := by
       refine' sum_le_sum fun m _ => _
       rw [map_mul, map_pow, map_div₀, abs_cast_nat]
       refine' mul_le_mul_of_nonneg_left ((div_le_div_right _).2 _) _
@@ -1984,8 +1977,7 @@ theorem exp_bound_div_one_sub_of_interval_approx {x : ℝ} (h2 : x ≤ 1) :
 
 theorem exp_bound_div_one_sub_of_interval {x : ℝ} (h1 : 0 ≤ x) (h2 : x < 1) :
     Real.exp x ≤ 1 / (1 - x) :=
-  haveI h : (∑ j in Finset.range 3, x ^ j) ≤ 1 / (1 - x) :=
-    by
+  haveI h : (∑ j in Finset.range 3, x ^ j) ≤ 1 / (1 - x) := by
     norm_num [Finset.sum]
     have h1x : 0 < 1 - x := by simpa
     rw [inv_eq_one_div, le_div_iff h1x]
@@ -2002,8 +1994,7 @@ theorem exp_bound_div_one_sub_of_interval {x : ℝ} (h1 : 0 ≤ x) (h2 : x < 1) 
 
 theorem one_sub_le_exp_minus_of_pos {y : ℝ} (h : 0 ≤ y) : 1 - y ≤ Real.exp (-y) := by
   rw [Real.exp_neg]
-  have r1 : (1 - y) * Real.exp y ≤ 1 :=
-    by
+  have r1 : (1 - y) * Real.exp y ≤ 1 := by
     cases le_or_lt (1 - y) 0
     · have h'' : (1 - y) * y.exp ≤ 0 := by
         rw [mul_nonpos_iff]

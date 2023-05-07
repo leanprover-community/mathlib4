@@ -338,8 +338,7 @@ theorem star_rmatch_iff (P : RegularExpression α) :
             rw [rmatch] at helem
             convert helem.2
             exact hsum.1
-          · have hwf : U.join.length < (List.cons a x).length :=
-              by
+          · have hwf : U.join.length < (List.cons a x).length := by
               rw [hsum.1, hsum.2]
               simp only [List.length_append, List.length_join, List.length]
               apply A
@@ -351,8 +350,8 @@ theorem star_rmatch_iff (P : RegularExpression α) :
 #align regular_expression.star_rmatch_iff RegularExpression.star_rmatch_iff
 
 @[simp]
-theorem rmatch_iff_matches' (P : RegularExpression α) : ∀ x : List α, P.rmatch x ↔ x ∈ P.matches' :=
-by
+theorem rmatch_iff_matches' (P : RegularExpression α) :
+    ∀ x : List α, P.rmatch x ↔ x ∈ P.matches' := by
   intro x
   induction P generalizing x
   all_goals

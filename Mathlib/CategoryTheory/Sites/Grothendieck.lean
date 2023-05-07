@@ -104,11 +104,11 @@ We prove this explicitly rather than deriving it so that it is in terms of the c
 the projection `.sieves`.
 -/
 @[ext]
-theorem ext {J₁ J₂ : GrothendieckTopology C} (h : (J₁ : ∀ X : C, Set (Sieve X)) = J₂) : J₁ = J₂ :=
-  by
-    cases J₁
-    cases J₂
-    congr
+theorem ext {J₁ J₂ : GrothendieckTopology C} (h : (J₁ : ∀ X : C, Set (Sieve X)) = J₂) :
+    J₁ = J₂ := by
+  cases J₁
+  cases J₂
+  congr
 #align category_theory.grothendieck_topology.ext CategoryTheory.GrothendieckTopology.ext
 
 /-
@@ -232,8 +232,7 @@ def trivial : GrothendieckTopology C where
   pullback_stable' X Y S f hf := by
     rw [Set.mem_singleton_iff] at hf⊢
     simp [hf]
-  transitive' X S hS R hR :=
-    by
+  transitive' X S hS R hR := by
     rw [Set.mem_singleton_iff, ← Sieve.id_mem_iff_eq_top] at hS
     simpa using hR hS
 #align category_theory.grothendieck_topology.trivial CategoryTheory.GrothendieckTopology.trivial

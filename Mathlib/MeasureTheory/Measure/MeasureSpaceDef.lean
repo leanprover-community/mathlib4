@@ -608,8 +608,8 @@ theorem ae_le_toMeasurable : s ≤ᵐ[μ] toMeasurable μ s :=
 #align measure_theory.ae_le_to_measurable MeasureTheory.ae_le_toMeasurable
 
 @[simp]
-theorem measurableSet_toMeasurable (μ : Measure α) (s : Set α) : MeasurableSet (toMeasurable μ s) :=
-  by
+theorem measurableSet_toMeasurable (μ : Measure α) (s : Set α) :
+    MeasurableSet (toMeasurable μ s) := by
   rw [toMeasurable_def]; split_ifs with hs h's
   exacts [hs.choose_spec.snd.1, h's.choose_spec.snd.1,
           (exists_measurable_superset μ s).choose_spec.2.1]

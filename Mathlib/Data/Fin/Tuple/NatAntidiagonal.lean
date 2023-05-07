@@ -126,8 +126,7 @@ theorem nodup_antidiagonalTuple (k n : ℕ) : List.Nodup (antidiagonalTuple k n)
 
 theorem antidiagonalTuple_zero_right : ∀ k, antidiagonalTuple k 0 = [0]
   | 0 => (congr_arg fun x => [x]) <| Subsingleton.elim _ _
-  | k + 1 =>
-    by
+  | k + 1 => by
     rw [antidiagonalTuple, antidiagonal_zero, List.bind_singleton, antidiagonalTuple_zero_right k,
       List.map_singleton]
     exact congr_arg (fun x => [x]) Matrix.cons_zero_zero
@@ -157,8 +156,7 @@ theorem antidiagonalTuple_pairwise_pi_lex :
     ∀ k n, (antidiagonalTuple k n).Pairwise (Pi.Lex (· < ·) @fun _ => (· < ·))
   | 0, 0 => List.pairwise_singleton _ _
   | 0, _ + 1 => List.Pairwise.nil
-  | k + 1, n =>
-    by
+  | k + 1, n => by
     simp_rw [antidiagonalTuple, List.pairwise_bind, List.pairwise_map, List.mem_map,
       forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
     simp only [mem_antidiagonal, Prod.forall, and_imp, forall_apply_eq_imp_iff₂]

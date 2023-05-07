@@ -414,8 +414,7 @@ theorem bot_eraseTop (s : CompositionSeries X) : s.eraseTop.bot = s.bot :=
 theorem mem_eraseTop_of_ne_of_mem {s : CompositionSeries X} {x : X} (hx : x ≠ s.top) (hxs : x ∈ s) :
     x ∈ s.eraseTop := by
   rcases hxs with ⟨i, rfl⟩
-  have hi : (i : ℕ) < (s.length - 1).succ :=
-    by
+  have hi : (i : ℕ) < (s.length - 1).succ := by
     conv_rhs => rw [← Nat.succ_sub (length_pos_of_mem_ne ⟨i, rfl⟩ s.top_mem hx), Nat.succ_sub_one]
     exact lt_of_le_of_ne (Nat.le_of_lt_succ i.2) (by simpa [top, s.inj, Fin.ext_iff] using hx)
   refine' ⟨Fin.castSucc i, _⟩
@@ -773,11 +772,8 @@ theorem exists_top_eq_snoc_equivalant (s : CompositionSeries X) (x : X) (hm : Is
           (isMaximal_eraseTop_top h0s) hm
       use snoc t x hmtx
       refine' ⟨by simp [htb], by simp [htl], by simp, _⟩
-      have :
-        s.Equivalent
-          ((snoc t s.eraseTop.top (htt.symm ▸ imxs)).snoc s.top
-            (by simpa using isMaximal_eraseTop_top h0s)) :=
-        by
+      have : s.Equivalent ((snoc t s.eraseTop.top (htt.symm ▸ imxs)).snoc s.top
+          (by simpa using isMaximal_eraseTop_top h0s)) := by
         conv_lhs => rw [eq_snoc_eraseTop h0s]
         exact Equivalent.snoc hteqv (by simpa using (isMaximal_eraseTop_top h0s).iso_refl)
       refine' this.trans _

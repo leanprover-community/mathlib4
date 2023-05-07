@@ -455,8 +455,7 @@ theorem inf_coe {P : α → Prop} {Ptop : P ⊤} {Pinf : ∀ ⦃x y⦄, P x → 
 #align finset.inf_coe Finset.inf_coe
 
 theorem _root_.List.foldr_inf_eq_inf_toFinset [DecidableEq α] (l : List α) :
-    l.foldr (· ⊓ ·) ⊤ = l.toFinset.inf id :=
-  by
+    l.foldr (· ⊓ ·) ⊤ = l.toFinset.inf id := by
   rw [← coe_fold_r, ← Multiset.fold_dedup_idem, inf_def, ← List.toFinset_coe, toFinset_val,
     Multiset.map_id]
   rfl
@@ -1188,8 +1187,7 @@ theorem min_of_nonempty {s : Finset α} (h : s.Nonempty) : ∃ a : α, s.min = a
 
 theorem min_eq_top {s : Finset α} : s.min = ⊤ ↔ s = ∅ :=
   ⟨fun h =>
-    s.eq_empty_or_nonempty.elim id fun H =>
-      by
+    s.eq_empty_or_nonempty.elim id fun H => by
       let ⟨a, ha⟩ := min_of_nonempty H
       rw [h] at ha; cases ha; done, -- Porting note: error without `done`
     fun h => h.symm ▸ min_empty⟩
@@ -1577,8 +1575,7 @@ ordered type : a predicate is true on all `s : Finset α` provided that:
   `f x ≤ f a`, `p s` implies `p (insert a s)`. -/
 @[elab_as_elim]
 theorem induction_on_max_value [DecidableEq ι] (f : ι → α) {p : Finset ι → Prop} (s : Finset ι)
-    (h0 : p ∅) (step : ∀ a s, a ∉ s → (∀ x ∈ s, f x ≤ f a) → p s → p (insert a s)) : p s :=
-  by
+    (h0 : p ∅) (step : ∀ a s, a ∉ s → (∀ x ∈ s, f x ≤ f a) → p s → p (insert a s)) : p s := by
   induction' s using Finset.strongInductionOn with s ihs
   rcases(s.image f).eq_empty_or_nonempty with (hne | hne)
   · simp only [image_eq_empty] at hne
@@ -1697,8 +1694,7 @@ end Multiset
 namespace Finset
 
 theorem mem_sup {α β} [DecidableEq β] {s : Finset α} {f : α → Finset β} {x : β} :
-    x ∈ s.sup f ↔ ∃ v ∈ s, x ∈ f v :=
-  by
+    x ∈ s.sup f ↔ ∃ v ∈ s, x ∈ f v := by
   change _ ↔ ∃ v ∈ s, x ∈ (f v).val
   rw [← Multiset.mem_sup, ← Multiset.mem_toFinset, sup_toFinset]
   simp_rw [val_toFinset]
@@ -1894,8 +1890,7 @@ theorem infᵢ_finset_image {f : γ → α} {g : α → β} {s : Finset γ} :
 #align finset.infi_finset_image Finset.infᵢ_finset_image
 
 theorem supᵢ_insert_update {x : α} {t : Finset α} (f : α → β) {s : β} (hx : x ∉ t) :
-    (⨆ i ∈ insert x t, Function.update f x s i) = s ⊔ ⨆ i ∈ t, f i :=
-  by
+    (⨆ i ∈ insert x t, Function.update f x s i) = s ⊔ ⨆ i ∈ t, f i := by
   simp only [Finset.supᵢ_insert, update_same]
   rcongr (i hi); apply update_noteq; rintro rfl; exact hx hi
 #align finset.supr_insert_update Finset.supᵢ_insert_update
