@@ -81,8 +81,8 @@ open Random Gen
 
 /-- Given an example `x : α`, `Shrinkable α` gives us a way to shrink it
 and suggest simpler examples. -/
-class Shrinkable (α : Type u) extends WellFoundedRelation α where
-  shrink : (x : α) → List { y : α // WellFoundedRelation.rel y x } := λ _ => []
+class Shrinkable (α : Type u) where
+  shrink : (x : α) → List α := λ _ => []
 
 /-- `SampleableExt` can be used in two ways. The first (and most common)
 is to simply generate values of a type directly using the `Gen` monad,
@@ -110,7 +110,7 @@ namespace SampleableExt
 
 /-- Use to generate instance whose purpose is to simply generate values
 of a type directly using the `Gen` monad -/
-def mkSelfContained [Repr α] [Shrinkable α] (sample : Gen α) : SampleableExt α where
+def mkSelfContained [Repr α] [SizeOf α] [Shrinkable α] (sample : Gen α) : SampleableExt α where
   proxy := α
   proxyRepr := inferInstance
   shrink := inferInstance
@@ -128,49 +128,34 @@ section Shrinkers
 
 /-- `Nat.shrink' n` creates a list of smaller natural numbers by
 successively dividing `n` by 2 . For example, `Nat.shrink 5 = [2, 1, 0]`. -/
-def Nat.shrink (n : Nat) : List { y : Nat // WellFoundedRelation.rel y n } :=
+def Nat.shrink (n : Nat) : List Nat :=
   if h : 0 < n then
     let m := n/2
-    have h : m < n := by
+    have : m < n := by
       apply Nat.div_lt_self h
       decide
-    let rest := shrink m
-    let current := ⟨m, h⟩
-    current ::
-      rest.map (λ x => {x with property := Nat.lt_trans x.property h})
+    m :: shrink m
   else
     []
 
 instance Nat.shrinkable : Shrinkable Nat where
   shrink := Nat.shrink
 
-/-- `Fin.shrink` works like `Nat.shrink` but instead operates on `Fin`. -/
-def Fin.shrink {n : Nat} (m : Fin n.succ) :
-    List { y : Fin n.succ // WellFoundedRelation.rel y m } :=
-  let shrinks := Nat.shrink m.val
-  shrinks.map (λ x => { x with property := (by
-    simp_wf
-    exact lt_of_le_of_lt (Nat.mod_le _ _) x.property) })
-
 instance Fin.shrinkable {n : Nat} : Shrinkable (Fin n.succ) where
-  shrink := Fin.shrink
-
-local instance Int_sizeOfAbs : SizeOf Int := ⟨Int.natAbs⟩
+  shrink m := Nat.shrink m
 
 /-- `Int.shrinkable` operates like `Nat.shrinkable` but also includes the negative variants. -/
 instance Int.shrinkable : Shrinkable Int where
-  shrink n := Nat.shrink n.natAbs |>.map λ ⟨x, h⟩ =>
-    ⟨-x, (by simp_wf; simp only [SizeOf.sizeOf]; rw [Int.natAbs_neg]; exact h)⟩
+  shrink n := Nat.shrink n.natAbs |>.map (λ x => ([x, -x] : List ℤ)) |>.join
 
 instance Bool.shrinkable : Shrinkable Bool := {}
 instance Char.shrinkable : Shrinkable Char := {}
 
-instance Prod.shrinkable [shrA : Shrinkable α] [shrB : Shrinkable β] : Shrinkable (Prod α β) where
+instance Prod.shrinkable [SizeOf α] [SizeOf β] [shrA : Shrinkable α] [shrB : Shrinkable β] :
+    Shrinkable (Prod α β) where
   shrink := λ (fst,snd) =>
-    let shrink1 := shrA.shrink fst |>.map
-      fun ⟨x, _⟩ ↦ ⟨(x, snd), by simp_wf; apply Prod.Lex.left; simp_all_arith⟩
-    let shrink2 := shrB.shrink snd |>.map
-      fun ⟨x, _⟩ ↦ ⟨(fst, x), by simp_wf; apply Prod.Lex.right; simp_all_arith⟩
+    let shrink1 := shrA.shrink fst |>.map fun x ↦ (x, snd)
+    let shrink2 := shrB.shrink snd |>.map fun x ↦ (fst, x)
     shrink1 ++ shrink2
 
 end Shrinkers

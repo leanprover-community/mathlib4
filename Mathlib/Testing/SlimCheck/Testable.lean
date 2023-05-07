@@ -298,18 +298,20 @@ def addShrinks (n : Nat) : TestResult p → TestResult p
 | TestResult.failure p xs m => TestResult.failure p xs (m + n)
 | p => p
 
+instance [Pure m] : Inhabited (OptionT m α) := ⟨(pure none : m (Option α))⟩
+
 /-- Shrink a counter-example `x` by using `Shrinkable.shrink x`, picking the first
 candidate that falsifies a property and recursively shrinking that one.
 The process is guaranteed to terminate because `shrink x` produces
 a proof that all the values it produces are smaller (according to `SizeOf`)
 than `x`. -/
-def minimizeAux [SampleableExt α] {β : α → Prop} [∀ x, Testable (β x)] (cfg : Configuration)
+partial def minimizeAux [SampleableExt α] {β : α → Prop} [∀ x, Testable (β x)] (cfg : Configuration)
     (var : String) (x : SampleableExt.proxy α) (n : Nat) :
     OptionT Gen (Σ x, TestResult (β (SampleableExt.interp x))) := do
   let candidates := SampleableExt.shrink.shrink x
   if cfg.traceShrinkCandidates then
     slimTrace s!"Candidates for {var} := {repr x}:\n  {repr candidates}"
-  for ⟨candidate, h⟩ in candidates do
+  for candidate in candidates do
     if cfg.traceShrinkCandidates then
       slimTrace s!"Trying {var} := {repr candidate}"
     let res ← OptionT.lift $ Testable.runProp (β (SampleableExt.interp candidate)) cfg true
@@ -322,7 +324,6 @@ def minimizeAux [SampleableExt α] {β : α → Prop} [∀ x, Testable (β x)] (
   if cfg.traceShrink then
     slimTrace s!"No shrinking possible for {var} := {repr x}"
   failure
-  termination_by minimizeAux cfg var x n => x
 
 /-- Once a property fails to hold on an example, look for smaller counter-examples
 to show the user. -/
