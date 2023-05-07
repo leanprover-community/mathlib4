@@ -75,11 +75,10 @@ theorem mem_add (T : Subspace K V) (v w : V) (hv : v ≠ 0) (hw : w ≠ 0) (hvw 
 which contains the original set, and contains all points determined by the (nonzero) sum of two
 nonzero vectors, each of which determine points in the span. -/
 inductive spanCarrier (S : Set (ℙ K V)) : Set (ℙ K V)
-  | of (x : ℙ K V) (hx : x ∈ S) : span_carrier x
-  |
-  mem_add (v w : V) (hv : v ≠ 0) (hw : w ≠ 0) (hvw : v + w ≠ 0) :
-    span_carrier (Projectivization.mk K v hv) →
-      span_carrier (Projectivization.mk K w hw) → span_carrier (Projectivization.mk K (v + w) hvw)
+  | of (x : ℙ K V) (hx : x ∈ S) : spanCarrier S x
+  | mem_add (v w : V) (hv : v ≠ 0) (hw : w ≠ 0) (hvw : v + w ≠ 0) :
+      spanCarrier S (Projectivization.mk K v hv) →
+      spanCarrier S (Projectivization.mk K w hw) → spanCarrier S (Projectivization.mk K (v + w) hvw)
 #align projectivization.subspace.span_carrier Projectivization.Subspace.spanCarrier
 
 /-- The span of a set of points in projective space is a subspace. -/
@@ -94,12 +93,12 @@ theorem subset_span (S : Set (ℙ K V)) : S ⊆ span S := fun x hx => spanCarrie
 
 /-- The span of a set of points is a Galois insertion between sets of points of a projective space
 and subspaces of the projective space. -/
-def gi : GaloisInsertion (span : Set (ℙ K V) → Subspace K V) coe where
+def gi : GaloisInsertion (span : Set (ℙ K V) → Subspace K V) SetLike.coe where
   choice S hS := span S
   gc A B :=
     ⟨fun h => le_trans (subset_span _) h, by
       intro h x hx
-      induction hx
+      induction' hx with y hy
       · apply h
         assumption
       · apply B.mem_add
@@ -121,6 +120,8 @@ instance hasInf : Inf (Subspace K V) :=
       ⟨A.mem_add _ _ hv hw _ h1.1 h2.1, B.mem_add _ _ hv hw _ h1.2 h2.2⟩⟩⟩
 #align projectivization.subspace.has_inf Projectivization.Subspace.hasInf
 
+
+-- Porting note: fix comments below
 /- warning: projectivization.subspace.has_Inf clashes with projectivization.subspace.has_inf -> Projectivization.Subspace.hasInf
 warning: projectivization.subspace.has_Inf -> Projectivization.Subspace.hasInf is a dubious translation:
 lean 3 declaration is
@@ -129,32 +130,31 @@ but is expected to have type
   PUnit.{max (succ (succ u1)) (succ (succ u2))}
 Case conversion may be inaccurate. Consider using '#align projectivization.subspace.has_Inf Projectivization.Subspace.hasInfₓ'. -/
 /-- Infimums of arbitrary collections of subspaces exist. -/
-instance hasInf : InfSet (Subspace K V) :=
+instance : InfSet (Subspace K V) :=
   ⟨fun A =>
-    ⟨infₛ (coe '' A), fun v w hv hw hvw h1 h2 t => by
+    ⟨infₛ (SetLike.coe '' A), fun v w hv hw hvw h1 h2 t => by
       rintro ⟨s, hs, rfl⟩
       exact s.mem_add v w hv hw _ (h1 s ⟨s, hs, rfl⟩) (h2 s ⟨s, hs, rfl⟩)⟩⟩
-#align projectivization.subspace.has_Inf Projectivization.Subspace.hasInf
+#align projectivization.subspace.has_Inf Projectivization.Subspace.hasInfₓ
 
 /-- The subspaces of a projective space form a complete lattice. -/
 instance : CompleteLattice (Subspace K V) :=
-  { (inferInstance : Inf _),
+  { (inferInstance : Inf (Subspace K V)),
     completeLatticeOfInf (Subspace K V)
       (by
-        refine' fun s => ⟨fun a ha x hx => hx _ ⟨a, ha, rfl⟩, fun a ha x hx E => _⟩
+        refine fun s => ⟨fun a ha x hx => hx _ ⟨a, ha, rfl⟩, fun a ha x hx E => ?_⟩
         rintro ⟨E, hE, rfl⟩
         exact ha hE hx) with
-    inf_le_left := fun A B x hx => hx.1
-    inf_le_right := fun A B x hx => hx.2
-    le_inf := fun A B C h1 h2 x hx => ⟨h1 hx, h2 hx⟩ }
+    inf_le_left := fun A B _ hx => (@inf_le_left _ _ A B) hx
+    inf_le_right := fun A B _ hx => (@inf_le_right _ _ A B) hx
+    le_inf := fun A B _ h1 h2 _ hx => (le_inf h1 h2) hx }
 
 instance subspaceInhabited : Inhabited (Subspace K V) where default := ⊤
 #align projectivization.subspace.subspace_inhabited Projectivization.Subspace.subspaceInhabited
 
 /-- The span of the empty set is the bottom of the lattice of subspaces. -/
 @[simp]
-theorem span_empty : span (∅ : Set (ℙ K V)) = ⊥ :=
-  gi.gc.l_bot
+theorem span_empty : span (∅ : Set (ℙ K V)) = ⊥ := gi.gc.l_bot
 #align projectivization.subspace.span_empty Projectivization.Subspace.span_empty
 
 /-- The span of the entire projective space is the top of the lattice of subspaces. -/
@@ -214,13 +214,13 @@ theorem mem_span {S : Set (ℙ K V)} (u : ℙ K V) : u ∈ span S ↔ ∀ W : Su
 
 /-- The span of a set of points in a projective space is equal to the infimum of the collection of
 subspaces which contain the set. -/
-theorem span_eq_infₛ {S : Set (ℙ K V)} : span S = infₛ { W | S ⊆ W } := by
-  ext
+theorem span_eq_infₛ {S : Set (ℙ K V)} : span S = infₛ { W : Subspace K V| S ⊆ W } := by
+  ext x
   simp_rw [mem_carrier_iff, mem_span x]
-  refine' ⟨fun hx => _, fun hx W hW => _⟩
-  · rintro W ⟨T, ⟨hT, rfl⟩⟩
+  refine ⟨fun hx => ?_, fun hx W hW => ?_⟩
+  · rintro W ⟨T, hT, rfl⟩
     exact hx T hT
-  · exact (@infₛ_le _ _ { W : Subspace K V | S ⊆ ↑W } W hW) x hx
+  · exact (@infₛ_le _ _ { W : Subspace K V | S ⊆ ↑W } W hW) hx
 #align projectivization.subspace.span_eq_Inf Projectivization.Subspace.span_eq_infₛ
 
 /-- If a set of points in projective space is contained in a subspace, and that subspace is
@@ -241,4 +241,3 @@ theorem span_eq_span_iff {S T : Set (ℙ K V)} : span S = span T ↔ S ⊆ span 
 end Subspace
 
 end Projectivization
-
