@@ -45,10 +45,8 @@ instance (priority := 100) LinearOrderedAddCommGroup.topologicalAddGroup : Topol
         |x - a + (y - b)| ≤ |x - a| + |y - b| := abs_add _ _
         _ < δ + (ε - δ) := add_lt_add hx hy
         _ = ε := add_sub_cancel'_right _ _
-
     · -- Otherwise `ε`-nhd of each point `a` is `{a}`
-      have hε : ∀ {x y}, |x - y| < ε → x = y :=
-        by
+      have hε : ∀ {x y}, |x - y| < ε → x = y := by
         intro x y h
         simpa [sub_eq_zero] using h₂ _ h
       filter_upwards [(eventually_abs_sub_lt a ε0).prod_nhds (eventually_abs_sub_lt b ε0)]

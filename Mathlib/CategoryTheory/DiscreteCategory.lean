@@ -303,14 +303,12 @@ protected def opposite (α : Type u₁) : (Discrete α)ᵒᵖ ≌ Discrete α :=
 
   refine'
     Equivalence.mk (F.leftOp) F _
-      (Discrete.natIso fun X =>
-        by
-          discrete_cases
-          rfl)
+      (Discrete.natIso fun X => by
+        discrete_cases
+        rfl)
   refine'
     NatIso.ofComponents
-      (fun X =>
-        by
+      (fun X => by
         discrete_cases
         induction X using Opposite.rec
         discrete_cases
@@ -322,8 +320,8 @@ protected def opposite (α : Type u₁) : (Discrete α)ᵒᵖ ≌ Discrete α :=
 variable {C : Type u₂} [Category.{v₂} C]
 
 @[simp]
-theorem functor_map_id (F : Discrete J ⥤ C) {j : Discrete J} (f : j ⟶ j) : F.map f = 𝟙 (F.obj j) :=
-  by
+theorem functor_map_id (F : Discrete J ⥤ C) {j : Discrete J} (f : j ⟶ j) :
+    F.map f = 𝟙 (F.obj j) := by
   have h : f = 𝟙 j := by
     rcases f with ⟨⟨f⟩⟩
     rfl

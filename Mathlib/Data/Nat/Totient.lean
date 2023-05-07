@@ -97,10 +97,8 @@ theorem Ico_filter_coprime_le {a : ℕ} (k n : ℕ) (a_pos : 0 < a) :
   simp only [mul_succ]
   simp_rw [← add_assoc] at ih ⊢
   calc
-    (filter a.coprime (Ico k (k + n % a + a * i + a))).card =
-        (filter a.coprime
-            (Ico k (k + n % a + a * i) ∪ Ico (k + n % a + a * i) (k + n % a + a * i + a))).card :=
-      by
+    (filter a.coprime (Ico k (k + n % a + a * i + a))).card = (filter a.coprime
+        (Ico k (k + n % a + a * i) ∪ Ico (k + n % a + a * i) (k + n % a + a * i + a))).card := by
       congr
       rw [Ico_union_Ico_eq_Ico]
       rw [add_assoc]
