@@ -376,13 +376,13 @@ proved above, and some of the results in later sections depend on the definition
 
 @[simp]
 theorem rec_zero {C : ℕ → Sort u} (h0 : C 0) (h : ∀ n, C n → C (n + 1)) :
-    (Nat.rec h0 h : ∀ n, C n) 0 = h0 :=
+    Nat.rec h0 h 0 = h0 :=
   rfl
 #align nat.rec_zero Nat.rec_zero
 
 @[simp]
 theorem rec_add_one {C : ℕ → Sort u} (h0 : C 0) (h : ∀ n, C n → C (n + 1)) (n : ℕ) :
-    (Nat.rec h0 h : ∀ n, C n) (n + 1) = h n ((Nat.rec h0 h : ∀ n, C n) n) :=
+    Nat.rec h0 h (n + 1) = h n (Nat.rec h0 h n) :=
   rfl
 #align nat.rec_add_one Nat.rec_add_one
 
