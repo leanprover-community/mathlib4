@@ -290,7 +290,7 @@ lemma contractible_distinguished (X : HomotopyCategory C (ComplexShape.up ℤ)) 
   exact Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) h.isoZero.symm
     (by simp) (h.eq_of_tgt _ _) (by dsimp ; ext)
 
-lemma distinguished_cocone_triangle (X Y : HomotopyCategory C (ComplexShape.up ℤ)) (f : X ⟶ Y) :
+lemma distinguished_cocone_triangle {X Y : HomotopyCategory C (ComplexShape.up ℤ)} (f : X ⟶ Y) :
     ∃ (Z : HomotopyCategory C (ComplexShape.up ℤ)) (g : Y ⟶ Z) (h : Z ⟶ X⟦1⟧),
       Triangle.mk f g h ∈ distinguishedTriangles C := by
   obtain ⟨X⟩ := X

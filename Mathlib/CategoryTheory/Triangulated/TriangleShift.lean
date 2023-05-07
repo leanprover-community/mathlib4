@@ -85,6 +85,18 @@ noncomputable def invRotateIsoRotateRotateShiftFunctorNegOne :
       isoWhiskerRight (rotateRotateRotateIso C).symm _) ≪≫ (by exact Iso.refl _) ≪≫
     isoWhiskerRight ((triangleRotation C).counitIso) _ ≪≫ Functor.leftUnitor _
 
+attribute [local simp] shift_shiftFunctorCompIsoId_inv_app CochainComplex.ε_neg
+
+noncomputable def invRotateInvRotateInvRotateIso :
+  invRotate C ⋙ invRotate C ⋙ invRotate C ≅ Triangle.shiftFunctor C (-1) :=
+  NatIso.ofComponents
+    (fun T => Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _)
+      (by aesop_cat)
+      (by aesop_cat)
+      (by
+        dsimp [shiftFunctorCompIsoId]
+        simp [shiftFunctorComm_eq C _ _ _ (add_neg_self (1 : ℤ))])) (by aesop_cat)
+
 end Pretriangulated
 
 end CategoryTheory

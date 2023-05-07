@@ -10,6 +10,7 @@ Authors: Luke Kershaw
 -/
 import Mathlib.Data.Int.Basic
 import Mathlib.CategoryTheory.Shift.Basic
+import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
 
 /-!
 # Triangles
@@ -232,6 +233,25 @@ lemma _root_.CategoryTheory.Iso.inv_hom_id_triangle_hom₂ {A B : Triangle C} (e
 @[reassoc (attr := simp)]
 lemma _root_.CategoryTheory.Iso.inv_hom_id_triangle_hom₃ {A B : Triangle C} (e : A ≅ B) :
     e.inv.hom₃ ≫ e.hom.hom₃ = 𝟙 _ := by rw [← comp_hom₃, e.inv_hom_id, id_hom₃]
+
+@[simps!]
+def binaryBiproductTriangle (X₁ X₂ : C) [HasZeroMorphisms C] [HasBinaryBiproduct X₁ X₂] : Triangle C :=
+  Triangle.mk biprod.inl (Limits.biprod.snd : X₁ ⊞ X₂ ⟶ _) 0
+
+@[simps!]
+def binaryProductTriangle (X₁ X₂ : C) [HasZeroMorphisms C] [HasBinaryProduct X₁ X₂] : Triangle C :=
+  Triangle.mk ((Limits.prod.lift (𝟙 X₁) 0 )) (Limits.prod.snd : X₁ ⨯ X₂ ⟶ _) 0
+
+@[simps!]
+def binaryProductTriangleIsoBinaryBiproductTriangle
+    (X₁ X₂ : C) [HasZeroMorphisms C] [HasBinaryBiproduct X₁ X₂] :
+    binaryProductTriangle X₁ X₂ ≅ binaryBiproductTriangle X₁ X₂ :=
+  Triangle.isoMk _ _ (Iso.refl _)
+    -- should be moved to Limits.Shapes.Biproducts
+    { hom := biprod.lift prod.fst prod.snd
+      inv := prod.lift biprod.fst biprod.snd
+      hom_inv_id := by aesop_cat
+      inv_hom_id := by aesop_cat } (Iso.refl _) (by aesop_cat) (by aesop_cat) (by aesop_cat)
 
 variable (C)
 

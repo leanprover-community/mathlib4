@@ -80,7 +80,7 @@ lemma distinguished_cocone_triangle {X Y : D} (f : X ⟶ Y) :
       Triangle.mk f g h ∈ L.essImageDistTriang := by
   have := Localization.essSurj L W
   let f' := MorphismProperty.HasLeftCalculusOfFractions.liftMap L W f
-  obtain ⟨Z, g, h, H⟩ := Pretriangulated.distinguished_cocone_triangle _ _ f'
+  obtain ⟨Z, g, h, H⟩ := Pretriangulated.distinguished_cocone_triangle f'
   refine' ⟨L.obj Z, (MorphismProperty.HasLeftCalculusOfFractions.liftMapIso₂ L W f).hom ≫ L.map g,
     L.map h ≫ (L.commShiftIso (1 : ℤ)).hom.app _ ≫
       (MorphismProperty.HasLeftCalculusOfFractions.liftMapIso₁ L W f).inv⟦(1 : ℤ)⟧',
@@ -140,7 +140,7 @@ lemma complete_distinguished_triangle_morphism (T₁ T₂ : Triangle D)
         simp only [assoc, L.map_comp, ← cancel_mono (inv (L.map s₂')), ← hb', IsIso.hom_inv_id,
           comp_id, reassoc_of% fac₁, ha', hf₂', IsIso.inv_hom_id_assoc])
   simp only [assoc] at fac₂
-  obtain ⟨Y₃, g, h, hT₃⟩ := Pretriangulated.distinguished_cocone_triangle _ _ (f₂ ≫ s₂' ≫ s₂'')
+  obtain ⟨Y₃, g, h, hT₃⟩ := Pretriangulated.distinguished_cocone_triangle (f₂ ≫ s₂' ≫ s₂'')
   let T₃ := Triangle.mk (f₂ ≫ s₂' ≫ s₂'') g h
   change T₃ ∈ distTriang C at hT₃
   have hf₂'' : T₂.mor₁ ≫ s₂ ≫ s₂' ≫ s₂'' = s₁ ≫ f₂ ≫ s₂' ≫ s₂'' := by rw [← reassoc_of% hf₂]
@@ -168,7 +168,7 @@ lemma pretriangulated : Pretriangulated D where
   isomorphic_distinguished _ hT₁ _ e := L.essImageDistTriang_mem_of_iso e hT₁
   contractible_distinguished :=
     have := Localization.essSurj L W ; L.contractible_mem_essImageDistTriang
-  distinguished_cocone_triangle _ _ f := distinguished_cocone_triangle L W f
+  distinguished_cocone_triangle f := distinguished_cocone_triangle L W f
   rotate_distinguished_triangle := L.rotate_essImageDistTriang
   complete_distinguished_triangle_morphism := complete_distinguished_triangle_morphism L W
 

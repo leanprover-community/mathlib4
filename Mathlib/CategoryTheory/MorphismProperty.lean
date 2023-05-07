@@ -857,6 +857,57 @@ variable (W)
 
 abbrev IsStableUnderProductsOfShape (J : Type _) := W.IsStableUnderLimitsOfShape (Discrete J)
 
+section
+variable {C J : Type _} [Category C] (X : Discrete J ⥤ C)
+  [HasProduct (fun j => X.obj (Discrete.mk j))]
+
+@[simps]
+def Pi.cone : Cone X where
+  pt := ∏ (fun j => X.obj (Discrete.mk j))
+  π := Discrete.natTrans (fun _ => Pi.π _ _)
+
+def productIsProduct' : IsLimit (Pi.cone X) where
+  lift s := Pi.lift (fun j => s.π.app ⟨j⟩)
+  fac s := by simp
+  uniq s m hm := by
+    dsimp
+    ext
+    simp only [limit.lift_π, Fan.mk_pt, Fan.mk_π_app]
+    apply hm
+
+variable [HasLimit X]
+
+def Pi.isoLimit :
+    ∏ (fun j => X.obj (Discrete.mk j)) ≅ limit X :=
+  IsLimit.conePointUniqueUpToIso (productIsProduct' X) (limit.isLimit X)
+
+@[reassoc (attr := simp)]
+lemma Pi.isoLimit_inv_π (j : J) :
+    (Pi.isoLimit X).inv ≫ Pi.π _ j = limit.π _ (Discrete.mk j) :=
+  IsLimit.conePointUniqueUpToIso_inv_comp _ _ _
+
+@[reassoc (attr := simp)]
+lemma Pi.isoLimit_hom_π (j : J) :
+    (Pi.isoLimit X).hom ≫ limit.π _ (Discrete.mk j) = Pi.π _ j :=
+  IsLimit.conePointUniqueUpToIso_hom_comp _ _ _
+
+end
+
+lemma IsStableUnderProductsOfShape.mk (W : MorphismProperty C) (J : Type _)
+    (hW₀ : W.RespectsIso) [HasProductsOfShape J C]
+    (hW : ∀ (X₁ X₂ : J → C) (f : ∀ j, X₁ j ⟶ X₂ j) (_ : ∀ (j : J), W (f j)),
+      W (Pi.map f)) : W.IsStableUnderProductsOfShape J := by
+  intro X₁ X₂ c₁ c₂ hc₁ hc₂ f hf
+  let φ := fun j => f.app (Discrete.mk j)
+  have hf' := hW _ _ φ (fun j => hf (Discrete.mk j))
+  refine' (hW₀.arrow_mk_iso_iff _).2 hf'
+  refine' Arrow.isoMk
+    (IsLimit.conePointUniqueUpToIso hc₁ (limit.isLimit X₁) ≪≫ (Pi.isoLimit _).symm)
+    (IsLimit.conePointUniqueUpToIso hc₂ (limit.isLimit X₂) ≪≫ (Pi.isoLimit _).symm) _
+  apply limit.hom_ext
+  rintro ⟨j⟩
+  simp
+
 class IsStableUnderFiniteProducts : Prop :=
   isStableUnderProductsOfShape' (J : Type) [Finite J] : W.IsStableUnderProductsOfShape J
 
