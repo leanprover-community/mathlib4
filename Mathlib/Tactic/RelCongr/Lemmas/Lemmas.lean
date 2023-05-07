@@ -68,3 +68,23 @@ attribute [dummy_label_attr]
   div_lt_div'' div_lt_div -- tt / tt
   div_lt_div_left' div_lt_div_of_lt_left -- ff / tt
   div_lt_div_right' div_lt_div_of_lt -- tt / ff
+
+/-! # ≤, ^ -/
+
+attribute [dummy_label_attr]
+  pow_le_pow pow_le_pow' zpow_le_zpow zpow_le_of_le ENNReal.zpow_le_of_le -- ff ^ tt
+  pow_le_pow_of_le_left pow_le_pow_of_le_left' zpow_le_zpow' -- tt ^ ff
+
+/-! # <, ^ -/
+
+theorem zpow_lt_of_lt [LinearOrderedSemifield α] {a : α} {m n : ℤ} (hx : 1 < a) (h : m < n) :
+    a ^ m < a ^ n :=
+  zpow_strictMono hx h
+
+theorem ENNReal.pow_lt_pow_of_lt_left {x y : ENNReal} (h : x < y) {n : ℕ} (hn : n ≠ 0) :
+    x ^ n < y ^ n :=
+  ENNReal.pow_strictMono hn h
+
+attribute [dummy_label_attr]
+  pow_lt_pow pow_lt_pow' zpow_lt_zpow zpow_lt_of_lt -- ff ^ tt
+  pow_lt_pow_of_lt_left ENNReal.pow_lt_pow_of_lt_left zpow_lt_zpow' -- tt ^ ff
