@@ -31,9 +31,7 @@ abbrev RandG (g : Type) := StateT (ULift g)
 `Rand m α` should be thought of a random value in `m α`. -/
 abbrev Rand := RandG StdGen
 
--- FIXME the hypothesis here should be `MonadLiftT m n`
--- but that gives a `cannot find synthesization order` error.
-instance [MonadLift m n] : MonadLift (RandG g m) (RandG g n) where
+instance [MonadLift m n] : MonadLiftT (RandG g m) (RandG g n) where
   monadLift x := fun s => x s
 
 /-- `Random α` gives us machinery to generate values of type `α` -/
