@@ -8,11 +8,11 @@ Authors: Kevin Kappelmann
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.ContinuedFractions.Computation.Translations
-import Mathbin.Algebra.ContinuedFractions.TerminatedStable
-import Mathbin.Algebra.ContinuedFractions.ContinuantsRecurrence
-import Mathbin.Order.Filter.AtTopBot
-import Mathbin.Tactic.FieldSimp
+import Mathlib.Algebra.ContinuedFractions.Computation.Translations
+import Mathlib.Algebra.ContinuedFractions.TerminatedStable
+import Mathlib.Algebra.ContinuedFractions.ContinuantsRecurrence
+import Mathlib.Order.Filter.AtTopBot
+import Mathlib.Tactic.FieldSimp
 
 /-!
 # Correctness of Terminating Continued Fraction Computations (`generalized_continued_fraction.of`)
@@ -80,8 +80,7 @@ variable [FloorRing K]
 /-- Just a computational lemma we need for the next main proof. -/
 protected theorem comp_exact_value_correctness_of_stream_eq_some_aux_comp {a : K} (b c : K)
     (fract_a_ne_zero : Int.fract a ≠ 0) :
-    ((⌊a⌋ : K) * b + c) / Int.fract a + b = (b * a + c) / Int.fract a :=
-  by
+    ((⌊a⌋ : K) * b + c) / Int.fract a + b = (b * a + c) / Int.fract a := by
   field_simp [fract_a_ne_zero]
   rw [Int.fract]
   ring
@@ -108,14 +107,12 @@ corresponds exactly to the one using the recurrence equation in `comp_exact_valu
 theorem compExactValue_correctness_of_stream_eq_some :
     ∀ {ifp_n : IntFractPair K},
       IntFractPair.stream v n = some ifp_n →
-        v = compExactValue ((of v).continuantsAux n) ((of v).continuantsAux <| n + 1) ifp_n.fr :=
-  by
+        v = compExactValue ((of v).continuantsAux n) ((of v).continuantsAux <| n + 1) ifp_n.fr := by
   let g := of v
   induction' n with n IH
   · intro ifp_zero stream_zero_eq
     -- nat.zero
-    have : int_fract_pair.of v = ifp_zero :=
-      by
+    have : int_fract_pair.of v = ifp_zero := by
       have : int_fract_pair.stream v 0 = some (int_fract_pair.of v) := rfl
       simpa only [this] using stream_zero_eq
     cases this
@@ -160,8 +157,7 @@ theorem compExactValue_correctness_of_stream_eq_some :
     -- ifp_succ_n.fr ≠ 0
     · -- use the IH to show that the following equality suffices
       suffices
-        comp_exact_value ppconts pconts ifp_n.fr = comp_exact_value pconts conts ifp_succ_n.fr
-        by
+        comp_exact_value ppconts pconts ifp_n.fr = comp_exact_value pconts conts ifp_succ_n.fr by
         have : v = comp_exact_value ppconts pconts ifp_n.fr := IH nth_stream_eq
         conv_lhs => rw [this]
         assumption
@@ -184,8 +180,7 @@ theorem compExactValue_correctness_of_stream_eq_some :
       let pB := pconts.b
       have :
         comp_exact_value ppconts pconts ifp_n.fr =
-          (ppA + ifp_n.fr⁻¹ * pA) / (ppB + ifp_n.fr⁻¹ * pB) :=
-        by
+          (ppA + ifp_n.fr⁻¹ * pA) / (ppB + ifp_n.fr⁻¹ * pB) := by
         -- unfold comp_exact_value and the convergent computation once
         field_simp [ifp_n_fract_ne_zero, comp_exact_value, next_continuants, next_numerator,
           next_denominator]
@@ -261,8 +256,7 @@ open Filter
 be `v`.
 -/
 theorem of_correctness_atTop_of_terminates (terminates : (of v).Terminates) :
-    ∀ᶠ n in atTop, v = (of v).convergents n :=
-  by
+    ∀ᶠ n in atTop, v = (of v).convergents n := by
   rw [eventually_at_top]
   obtain ⟨n, terminated_at_n⟩ : ∃ n, (of v).TerminatedAt n
   exact terminates
