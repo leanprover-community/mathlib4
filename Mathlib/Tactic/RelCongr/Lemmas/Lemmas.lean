@@ -126,3 +126,23 @@ attribute [dummy_label_attr]
 
 attribute [dummy_label_attr]
   Int.ModEq.pow -- tt * ff
+
+/-! # ≤, ∑ -/
+
+attribute [dummy_label_attr]
+  Finset.sum_le_sum
+
+/-! # <, ∑ -/
+
+attribute [dummy_label_attr]
+  Finset.sum_lt_sum_of_nonempty
+
+/-! # ≤, ∏ -/
+
+attribute [dummy_label_attr]
+  Finset.prod_le_prod' Finset.prod_le_prod
+
+/-! # <, ∏ -/
+
+attribute [dummy_label_attr]
+  Finset.prod_lt_prod_of_nonempty'
