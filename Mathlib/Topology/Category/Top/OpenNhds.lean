@@ -8,7 +8,7 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.Category.Top.Opens
+import Mathlib.Topology.Category.Top.Opens
 
 /-!
 # The category of open neighborhoods of a point
@@ -49,8 +49,7 @@ def OpenNhds (x : X) :=
 
 namespace OpenNhds
 
-instance (x : X) : PartialOrder (OpenNhds x)
-    where
+instance (x : X) : PartialOrder (OpenNhds x) where
   le U V := U.1 ≤ V.1
   le_refl _ := le_rfl
   le_trans _ _ _ := le_trans
@@ -67,16 +66,14 @@ instance (x : X) : Lattice (OpenNhds x) :=
     le_sup_left := fun U V => @le_sup_left _ _ U.1.1 V.1.1
     le_sup_right := fun U V => @le_sup_right _ _ U.1.1 V.1.1 }
 
-instance (x : X) : OrderTop (OpenNhds x)
-    where
+instance (x : X) : OrderTop (OpenNhds x) where
   top := ⟨⊤, trivial⟩
   le_top _ := le_top
 
 instance (x : X) : Inhabited (OpenNhds x) :=
   ⟨⊤⟩
 
-instance openNhdsCategory (x : X) : Category.{u} (OpenNhds x) :=
-  by
+instance openNhdsCategory (x : X) : Category.{u} (OpenNhds x) := by
   unfold open_nhds
   infer_instance
 #align topological_space.open_nhds.open_nhds_category TopologicalSpace.OpenNhds.openNhdsCategory
@@ -113,8 +110,7 @@ theorem openEmbedding {x : X} (U : OpenNhds x) : OpenEmbedding U.1.inclusion :=
 #align topological_space.open_nhds.open_embedding TopologicalSpace.OpenNhds.openEmbedding
 
 /-- The preimage functor from neighborhoods of `f x` to neighborhoods of `x`. -/
-def map (x : X) : OpenNhds (f x) ⥤ OpenNhds x
-    where
+def map (x : X) : OpenNhds (f x) ⥤ OpenNhds x where
   obj U := ⟨(Opens.map f).obj U.1, U.2⟩
   map U V i := (Opens.map f).map i
 #align topological_space.open_nhds.map TopologicalSpace.OpenNhds.map
@@ -171,8 +167,7 @@ variable {f}
 /-- An open map `f : X ⟶ Y` induces a functor `open_nhds x ⥤ open_nhds (f x)`.
 -/
 @[simps]
-def functorNhds (h : IsOpenMap f) (x : X) : OpenNhds x ⥤ OpenNhds (f x)
-    where
+def functorNhds (h : IsOpenMap f) (x : X) : OpenNhds x ⥤ OpenNhds (f x) where
   obj U := ⟨h.Functor.obj U.1, ⟨x, U.2, rfl⟩⟩
   map U V i := h.Functor.map i
 #align is_open_map.functor_nhds IsOpenMap.functorNhds
