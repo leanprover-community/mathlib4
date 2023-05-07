@@ -45,7 +45,7 @@ A "modifier" for a declaration.
 -/
 inductive DeclMod
 | none | symm | mp | mpr
-deriving DecidableEq
+deriving DecidableEq, Ord
 
 instance : ToString DeclMod where
   toString m := match m with | .none => "" | .symm => "symm" | .mp => "mp" | .mpr => "mpr"
@@ -84,6 +84,14 @@ def addLemma (name : Name) (constInfo : ConstantInfo)
 /-- Construct the discrimination tree of all lemmas. -/
 def buildDiscrTree : IO (DiscrTreeCache (Name × DeclMod)) :=
   DiscrTreeCache.mk "librarySearch: init cache" processLemma
+    -- Sort so lemmas with longest names come first.
+    -- This is counter-intuitive, but the way that `DiscrTree.getMatch` returns results
+    -- means that the results come in "batches", with more specific matches *later*.
+    -- Thus we're going to call reverse on the result of `DiscrTree.getMatch`,
+    -- so if we want to try lemmas with shorter names first,
+    -- we need to put them into the `DiscrTree` backwards.
+    (post? := some fun A =>
+      A.map (fun (n, m) => (n.toString.length, n, m)) |>.qsort (fun p q => p.1 > q.1) |>.map (·.2))
 
 open System (FilePath)
 
