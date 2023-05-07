@@ -311,17 +311,17 @@ theorem eq_zero_iff {P Q : C} (f : P ⟶ Q) : f = 0 ↔ ∀ a, f a = pseudoZero 
 #align category_theory.abelian.pseudoelement.eq_zero_iff CategoryTheory.Abelian.Pseudoelement.eq_zero_iff
 
 /-- A monomorphism is injective on pseudoelements. -/
-theorem pseudo_injective_of_mono {P Q : C} (f : P ⟶ Q) [Mono f] : Function.Injective f :=
-  fun abar abar' =>
-  Quotient.inductionOn₂ abar abar' fun a a' ha =>
-    Quotient.sound <|
-      have : ⟦(a.hom ≫ f : Over Q)⟧ = ⟦↑(a'.hom ≫ f)⟧ := by convert ha
-      match Quotient.exact this with
-      | ⟨R, p, q, ep, Eq, comm⟩ =>
-        ⟨R, p, q, ep, Eq,
-          (cancel_mono f).1 <| by
-            simp only [category.assoc]
-            exact comm⟩
+theorem pseudo_injective_of_mono {P Q : C} (f : P ⟶ Q) [Mono f] : Function.Injective f := by
+  intro abar abar'
+  apply Quotient.inductionOn₂
+    (motive := fun q q' => pseudoApply f q = pseudoApply f q' → q = q') abar abar'
+  intro a a' ha
+  apply Quotient.sound
+  have : ⟦(a.hom ≫ f : Over Q)⟧ = ⟦↑(a'.hom ≫ f)⟧ := by convert ha
+  have ⟨R, p, q, ep, Eq, comm⟩ := Quotient.exact this
+  exact ⟨R, p, q, ep, Eq, (cancel_mono f).1 <| by
+    simp only [Category.assoc]
+    exact comm⟩
 #align category_theory.abelian.pseudoelement.pseudo_injective_of_mono CategoryTheory.Abelian.Pseudoelement.pseudo_injective_of_mono
 
 /-- A morphism that is injective on pseudoelements only maps the zero element to zero. -/
@@ -355,20 +355,18 @@ theorem pseudo_surjective_of_epi {P Q : C} (f : P ⟶ Q) [Epi f] : Function.Surj
 end
 
 /-- A morphism that is surjective on pseudoelements is an epimorphism. -/
-theorem epi_of_pseudo_surjective {P Q : C} (f : P ⟶ Q) : Function.Surjective f → Epi f := fun h =>
-  match h (𝟙 Q) with
-  | ⟨pbar, hpbar⟩ =>
-    match Quotient.exists_rep pbar with
-    | ⟨p, hp⟩ =>
-      have : ⟦(p.hom ≫ f : Over Q)⟧ = ⟦↑(𝟙 Q)⟧ := by
-        rw [← hp] at hpbar
-        exact hpbar
-      match Quotient.exact this with
-      | ⟨R, x, y, ex, ey, comm⟩ =>
-        @epi_of_epi_fac _ _ _ _ _ (x ≫ p.hom) f y ey <| by
-          dsimp at comm
-          rw [category.assoc, comm]
-          apply category.comp_id
+theorem epi_of_pseudo_surjective {P Q : C} (f : P ⟶ Q) : Function.Surjective f → Epi f := by
+  intro h
+  have ⟨pbar, hpbar⟩ := h (𝟙 Q)
+  have ⟨p, hp⟩ := Quotient.exists_rep pbar
+  have : ⟦(p.hom ≫ f : Over Q)⟧ = ⟦↑(𝟙 Q)⟧ := by
+    rw [← hp] at hpbar
+    exact hpbar
+  have ⟨R, x, y, _, ey, comm⟩ := Quotient.exact this
+  apply @epi_of_epi_fac _ _ _ _ _ (x ≫ p.hom) f y ey
+  dsimp at comm
+  rw [Category.assoc, comm]
+  apply Category.comp_id
 #align category_theory.abelian.pseudoelement.epi_of_pseudo_surjective CategoryTheory.Abelian.Pseudoelement.epi_of_pseudo_surjective
 
 section
