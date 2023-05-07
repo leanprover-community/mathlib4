@@ -100,9 +100,16 @@ theorem distrib_three_right [Mul R] [Add R] [RightDistribClass R] (a b c d : R) 
 #align distrib_three_right distrib_three_right
 
 /-!
-### Semirings
--/
+### Classes of semirings and rings
 
+We make sure that the canonical path from `NonAssocSemiring` to `Ring` passes through `Semiring`,
+as this is a path which is followed all the time in linear algebra where the defining semilinear map
+`σ : R →+* S` depends on the `NonAssocSemiring` structure of `R` and `S` while the module
+definition depends on the `Semiring` structure.
+Tt is not currently possible to adjust priorities by hand (see lean4#2115). Instezad, the last
+declared instance is used, so we make sure that `Semiring` is declared after `NonAssocRing`.
+TODO: clean this once lean4#2115 is fixed
+-/
 
 /-- A not-necessarily-unital, not-necessarily-associative semiring. -/
 class NonUnitalNonAssocSemiring (α : Type u) extends AddCommMonoid α, Distrib α, MulZeroClass α
@@ -116,7 +123,6 @@ class NonUnitalSemiring (α : Type u) extends NonUnitalNonAssocSemiring α, Semi
 class NonAssocSemiring (α : Type u) extends NonUnitalNonAssocSemiring α, MulZeroOneClass α,
     AddCommMonoidWithOne α
 #align non_assoc_semiring NonAssocSemiring
-
 
 /-- A not-necessarily-unital, not-necessarily-associative ring. -/
 class NonUnitalNonAssocRing (α : Type u) extends AddCommGroup α, NonUnitalNonAssocSemiring α
@@ -133,9 +139,12 @@ class NonAssocRing (α : Type _) extends NonUnitalNonAssocRing α, NonAssocSemir
     AddCommGroupWithOne α
 #align non_assoc_ring NonAssocRing
 
-
 class Semiring (α : Type u) extends NonUnitalSemiring α, NonAssocSemiring α, MonoidWithZero α
 #align semiring Semiring
+
+/-!
+### Semirings
+-/
 
 section DistribMulOneClass
 
