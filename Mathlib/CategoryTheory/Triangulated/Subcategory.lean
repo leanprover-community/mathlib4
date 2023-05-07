@@ -59,6 +59,15 @@ lemma hasProductOfEquiv : HasProduct (X ∘ e) :=
 noncomputable def productIsoOfEquiv [HasProduct (X ∘ e)] :  ∏ (X ∘ e) ≅ ∏ X :=
   IsLimit.conePointUniqueUpToIso (limit.isLimit _) (isLimitFanOfEquiv X e)
 
+lemma productOptionIso {C J : Type _} [Category C]
+    (X : Option J → C) [HasProduct X] [HasProduct (fun j => X (some j))]
+    [HasBinaryProduct (∏ (fun j => X (some j))) (X none)] :
+    (∏ X) ≅ (∏ (fun j => X (some j))) ⨯ (X none) where
+  hom := prod.lift (Pi.lift (fun j => Pi.π _ (some j))) (Pi.π _ none)
+  inv := Pi.lift (fun b => match b with
+    | some j => prod.fst ≫ Pi.π _ j
+    | none => prod.snd)
+
 end Limits
 
 namespace Arrow
@@ -141,8 +150,13 @@ lemma W_eq_W' : S.W = S.W' := by
   . rintro ⟨Z, g, h, H, mem⟩
     exact ⟨_, _, _, rot_of_dist_triangle _ H, S.shift _ 1 mem⟩
 
+variable {S}
+
 def W.mk' {T : Triangle C} (hT : T ∈ distTriang C) (h : T.obj₁ ∈ S.set) : S.W T.mor₂ := by
   simpa only [W_eq_W'] using W'.mk hT h
+
+variable (S)
+
 
 instance instContainsIdentitiesW : S.W.ContainsIdentities :=
   ⟨fun X => ⟨_, _, _, contractible_distinguished X, S.zero⟩⟩
@@ -249,21 +263,23 @@ lemma binary_product_stable (X₁ X₂ : C) (hX₁ : X₁ ∈ S.set) (hX₂ : X�
     (X₁ ⨯ X₂) ∈ S.set :=
   S.ext₂ _ (binaryProductTriangle_distinguished X₁ X₂) hX₁ hX₂
 
-/-lemma pi_finite_stable {J : Type} [Finite J] (X : J → C) (hX : ∀ j, X j ∈ S.set) :
+lemma pi_finite_stable {J : Type} [Finite J] (X : J → C) (hX : ∀ j, X j ∈ S.set) :
     (∏ X) ∈ S.set := by
   revert hX X
   let P : Type → Prop := fun J =>
-    ∀ [hJ : Finite J] (X : J → C) (hX : ∀ j, X j ∈ S.set), (∏ X) ∈ S.set
+    ∀ [hJ : Finite J] (X : J → C) (_ : ∀ j, X j ∈ S.set), (∏ X) ∈ S.set
   change P J
   apply @Finite.induction_empty_option
   . intro J₁ J₂ e hJ₁ _ X hX
     have : Finite J₁ := Finite.of_equiv _ e.symm
     exact Set.mem_of_iso _ (productIsoOfEquiv X e) (hJ₁ (fun j₁ => X (e j₁)) (fun j₁ => hX _))
-  . intro _ X hX
+  . intro _ X _
     refine' Set.mem_of_iso _ (IsZero.isoZero _).symm S.zero
     rw [IsZero.iff_id_eq_zero]
     ext ⟨⟩
-  . sorry
+  . intro J _ hJ _ X hX
+    exact Set.mem_of_iso _ (productOptionIso  X).symm
+      (S.binary_product_stable _ _ (hJ (fun j => X (some j)) (fun j => hX _)) (hX none))
 
 instance : S.W.IsStableUnderFiniteProducts := ⟨fun J _ => by
   refine' MorphismProperty.IsStableUnderProductsOfShape.mk _ _ (S.respectsIsoW) _
@@ -271,18 +287,36 @@ instance : S.W.IsStableUnderFiniteProducts := ⟨fun J _ => by
   exact W.mk (productTriangle_distinguished _ (fun j => W.triangle_distinguished _ (hf j)))
     (pi_finite_stable _ _ (fun j => W.triangle_obj₃_mem _ _))⟩
 
-variable [IsTriangulated C]
+instance [IsTriangulated C] : S.W.IsCompatibleWithTriangulation := ⟨by
+  rintro T₁ T₃ mem₁ mem₃ a b ⟨Z₅, g₅, h₅, mem₅, mem₅'⟩ ⟨Z₄, g₄, h₄, mem₄, mem₄'⟩ comm
+  obtain ⟨Z₂, g₂, h₂, mem₂⟩ := distinguished_cocone_triangle (T₁.mor₁ ≫ b)
+  have H := someOctahedron rfl mem₁ mem₄ mem₂
+  have H' := someOctahedron comm.symm mem₅ mem₃ mem₂
+  let φ : T₁ ⟶ T₃ := H.triangleMorphism₁ ≫ H'.triangleMorphism₂
+  exact ⟨φ.hom₃,
+    MorphismProperty.IsMultiplicative.comp S.W _ _ (W.mk H.mem mem₄') (W.mk' H'.mem mem₅'),
+    ⟨by simpa using φ.comm₂, by simpa using φ.comm₃⟩⟩⟩
 
-example : S.W.HasLeftCalculusOfFractions := inferInstance
-example : S.W.HasRightCalculusOfFractions := inferInstance
-example : S.W.IsCompatibleWithShift ℤ := inferInstance
-
-instance : S.W.IsCompatibleWithTriangulation := sorry
-
-example : Pretriangulated (S.W.Localization) := inferInstance-/
+noncomputable example [IsTriangulated C] : Pretriangulated (S.W.Localization) := inferInstance
 
 end Subcategory
 
 end Triangulated
+
+end CategoryTheory
+
+namespace CategoryTheory
+
+open Category Limits
+
+variable {C : Type _} [Category C] [HasZeroObject C] [HasShift C ℤ] [Preadditive C]
+  [∀ (n : ℤ), (shiftFunctor C n).Additive] [Pretriangulated C] [IsTriangulated C]
+  (S : Triangulated.Subcategory C)
+
+example : MorphismProperty C := S.W
+
+noncomputable example : Pretriangulated S.W.Localization := inferInstance
+--noncomputable example : IsTriangulated S.W.Localization := inferInstance
+noncomputable example : S.W.Q.IsTriangulated := inferInstance
 
 end CategoryTheory

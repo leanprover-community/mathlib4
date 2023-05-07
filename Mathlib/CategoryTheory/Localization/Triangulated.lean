@@ -163,7 +163,7 @@ lemma complete_distinguished_triangle_morphism (T₁ T₂ : Triangle D)
     simp only [← L.commShiftIso_hom_naturality s₁ (1 : ℤ), ← Functor.map_comp_assoc, hα₂]
     simp only [Functor.map_comp, assoc, Triangle.mk_mor₃, IsIso.inv_hom_id_assoc]
 
-lemma pretriangulated : Pretriangulated D where
+def pretriangulated : Pretriangulated D where
   distinguishedTriangles := L.essImageDistTriang
   isomorphic_distinguished _ hT₁ _ e := L.essImageDistTriang_mem_of_iso e hT₁
   contractible_distinguished :=
@@ -172,7 +172,70 @@ lemma pretriangulated : Pretriangulated D where
   rotate_distinguished_triangle := L.rotate_essImageDistTriang
   complete_distinguished_triangle_morphism := complete_distinguished_triangle_morphism L W
 
+lemma isTriangulated_functor :
+    letI : Pretriangulated D := pretriangulated L W ; L.IsTriangulated :=
+    letI : Pretriangulated D := pretriangulated L W ; ⟨fun T hT => ⟨T, Iso.refl _, hT⟩⟩
+
 end
+
+/-
+instance [is_triangulated C] : is_triangulated (localization L W) :=
+is_triangulated.mk'
+(λ X₁' X₂' X₃' u₁₂' u₂₃', begin
+  haveI := localization.ess_surj L W,
+  let Y₁' := L.obj_preimage X₁',
+  let X₂ := L.obj_preimage X₂',
+  let Y₃' := L.obj_preimage X₃',
+  let e₁ : L.obj Y₁' ≅ X₁' := functor.obj_obj_preimage_iso L X₁',
+  let e₂ : L.obj X₂ ≅ X₂' := functor.obj_obj_preimage_iso L X₂',
+  let e₃ : L.obj Y₃' ≅ X₃' := functor.obj_obj_preimage_iso L X₃',
+  let y₁₂' : L.obj Y₁' ⟶ L.obj X₂ := e₁.hom ≫ u₁₂' ≫ e₂.inv,
+  let y₂₃' : L.obj X₂ ⟶ L.obj Y₃' := e₂.hom ≫ u₂₃' ≫ e₃.inv,
+  obtain ⟨⟨X₁, s₁, u₁₂, hs₁⟩, hz₁⟩ := right_calculus_of_fractions.L_map_fac L W y₁₂',
+  obtain ⟨⟨X₃, u₂₃, s₂, hs₂⟩, hz₂⟩ := left_calculus_of_fractions.L_map_fac L W y₂₃',
+  haveI := localization.inverts L W _ hs₁,
+  haveI := localization.inverts L W _ hs₂,
+  dsimp [right_calculus_of_fractions.map_roof] at hz₁,
+  dsimp [left_calculus_of_fractions.map_roof] at hz₂,
+  obtain ⟨Z₁₂, v₁₂, w₁₂, h₁₂⟩ := pretriangulated.distinguished_cocone_triangle _ _ u₁₂,
+  obtain ⟨Z₂₃, v₂₃, w₂₃, h₂₃⟩ := pretriangulated.distinguished_cocone_triangle _ _ u₂₃,
+  obtain ⟨Z₁₃, v₁₃, w₁₃, h₁₃⟩ := pretriangulated.distinguished_cocone_triangle _ _ (u₁₂ ≫ u₂₃),
+  let H := (is_triangulated.octahedron_axiom rfl h₁₂ h₂₃ h₁₃).some,
+  refine ⟨L.obj X₁, L.obj X₂, L.obj X₃, L.obj Z₁₂, L.obj Z₂₃, L.obj Z₁₃,
+    L.map u₁₂, L.map u₂₃, e₁.symm ≪≫ (as_iso (L.map s₁)).symm, e₂.symm,
+    e₃.symm ≪≫ (as_iso (L.map s₂)), _, _, _, _, ⟨_, by refl, h₁₂⟩,
+    _, _, ⟨_, by refl, h₂₃⟩,
+    L.map v₁₃, L.map w₁₃ ≫ (L.comm_shift_iso 1).hom.app X₁,
+      ⟨_, _, h₁₃⟩, _⟩,
+  { dsimp,
+    rw [assoc, ← hz₁, e₁.inv_hom_id_assoc], },
+  { dsimp,
+    rw [← cancel_mono (inv (L.map s₂)), assoc, assoc, assoc, is_iso.hom_inv_id, comp_id, ← hz₂,
+      e₂.inv_hom_id_assoc], },
+  { refine triangle.mk_iso _ _ (iso.refl _) (iso.refl _) (iso.refl _) _ _ _,
+    { dsimp, simp only [comp_id, functor.map_comp, id_comp], },
+    { dsimp, simp only [comp_id, id_comp], },
+    { dsimp, simp only [functor.map_id, comp_id, id_comp], }, },
+  have comm₁₂ := congr_arg (λ (f : _ ⟶ _), L.map f) H.triangle_morphism₁.comm₂,
+  have comm₁₃ := congr_arg (λ (f : _ ⟶ _), L.map f) H.triangle_morphism₁.comm₃,
+  have comm₂₂ := congr_arg (λ (f : _ ⟶ _), L.map f) H.triangle_morphism₂.comm₂,
+  have comm₂₃ := congr_arg (λ (f : _ ⟶ _), L.map f) H.triangle_morphism₂.comm₃,
+  dsimp at comm₁₂ comm₁₃ comm₂₂ comm₂₃,
+  simp only [L.map_comp, functor.map_id, id_comp, comp_id] at comm₁₂ comm₁₃ comm₂₂ comm₂₃,
+  refine ⟨⟨L.map H.m₁, L.map H.m₃, comm₁₂, _, comm₂₂, _, _⟩⟩,
+  { dsimp,
+    rw reassoc_of comm₁₃, },
+  { dsimp,
+    rw [← reassoc_of comm₂₃, assoc],
+    erw ← nat_trans.naturality,
+    refl, },
+  refine ⟨_, _, H.mem⟩,
+  refine triangle.mk_iso _ _ (iso.refl _) (iso.refl _) (iso.refl _) _ _ _,
+  { dsimp, simp only [comp_id, id_comp], },
+  { dsimp, simp only [comp_id, id_comp], },
+  { dsimp, simp only [assoc, functor.map_id, comp_id, functor.map_comp, id_comp],
+    erw ← nat_trans.naturality, refl, },
+end)-/
 
 noncomputable example : HasShift W.Localization ℤ := inferInstance
 noncomputable example : W.Q.HasCommShift ℤ := inferInstance
@@ -198,6 +261,7 @@ instance (n : ℤ) : (shiftFunctor W.Localization n).Additive :=
   Functor.additive_of_preserves_finite_products _
 
 noncomputable instance : Pretriangulated W.Localization := pretriangulated W.Q W
+noncomputable instance : W.Q.IsTriangulated := isTriangulated_functor W.Q W
 
 end Localization
 

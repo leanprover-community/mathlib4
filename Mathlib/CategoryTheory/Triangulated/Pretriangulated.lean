@@ -538,6 +538,47 @@ lemma productTriangle_distinguished {J : Type _} (T : J → Triangle C)
       rw [add_comp, assoc, φ'.comm₂, h₂, id_comp, ← hb', add_sub_cancel'_right]
     exact ⟨_, this⟩
 
+lemma isZero_of_isIso_mor₁ (T : Triangle C) (hT : T ∈ distTriang C) (h : IsIso T.mor₁) :
+    IsZero T.obj₃ := by
+  have eq : T.mor₃ = 0 := triangle_mor₃_eq_zero_of_mono_mor₁ _ hT inferInstance
+  rw [IsZero.iff_id_eq_zero]
+  obtain ⟨f, hf⟩ := covariant_yoneda_exact₃ _ hT (𝟙 _) (by rw [eq, comp_zero])
+  obtain ⟨g, hg⟩ : ∃ g, f = g ≫ T.mor₁ := by
+    refine' ⟨f ≫ inv T.mor₁, by simp only [assoc, IsIso.inv_hom_id, comp_id]⟩
+  rw [hf, hg, assoc, comp_dist_triangle_mor_zero₁₂ _ hT, comp_zero]
+
+lemma isIso₂_of_isIso₁₃ {T T' : Triangle C} (φ : T ⟶ T') (hT : T ∈ distTriang C)
+    (hT' : T' ∈ distTriang C) (h₁ : IsIso φ.hom₁) (h₃ : IsIso φ.hom₃) : IsIso φ.hom₂ := by
+  have : Mono φ.hom₂ := by
+    rw [mono_iff_cancel_zero]
+    intro A f hf
+    obtain ⟨g, rfl⟩ := covariant_yoneda_exact₂ _ hT f (by
+      rw [← cancel_mono φ.hom₃, assoc, φ.comm₂, reassoc_of% hf, zero_comp, zero_comp])
+    rw [assoc] at hf
+    obtain ⟨h, hh⟩ := covariant_yoneda_exact₂ T'.invRotate (inv_rot_of_dist_triangle _ hT')
+      (g ≫ φ.hom₁) (by dsimp ; rw [assoc, ← φ.comm₁, hf])
+    obtain ⟨k, rfl⟩ : ∃ (k : A ⟶ T.invRotate.obj₁), k ≫ T.invRotate.mor₁ = g := by
+      refine' ⟨h ≫ inv (φ.hom₃⟦(-1 : ℤ)⟧'), _⟩
+      have eq := ((invRotate C).map φ).comm₁
+      dsimp only [invRotate] at eq
+      rw [← cancel_mono φ.hom₁, assoc, assoc, eq, IsIso.inv_hom_id_assoc, hh]
+    erw [assoc, comp_dist_triangle_mor_zero₁₂ _ (inv_rot_of_dist_triangle _ hT), comp_zero]
+  refine' isIso_of_yoneda_map_bijective _ (fun A => ⟨_, _⟩)
+  . intro f₁ f₂ h
+    simpa only [← cancel_mono φ.hom₂] using h
+  . intro y₂
+    obtain ⟨x₃, hx₃⟩ : ∃ (x₃ : A ⟶ T.obj₃), x₃ ≫ φ.hom₃ = y₂ ≫ T'.mor₂ :=
+      ⟨y₂ ≫ T'.mor₂ ≫ inv φ.hom₃, by simp⟩
+    obtain ⟨x₂, hx₂⟩ := covariant_yoneda_exact₃ _ hT x₃ (by
+      rw [← cancel_mono (φ.hom₁⟦(1 : ℤ)⟧'), assoc, zero_comp, φ.comm₃, reassoc_of% hx₃,
+        comp_dist_triangle_mor_zero₂₃ _ hT', comp_zero])
+    obtain ⟨y₁, hy₁⟩ := covariant_yoneda_exact₂ _ hT' (y₂ - x₂ ≫ φ.hom₂) (by
+      rw [sub_comp, assoc, ← φ.comm₂, ← reassoc_of% hx₂, hx₃, sub_self])
+    obtain ⟨x₁, hx₁⟩ : ∃ (x₁ : A ⟶ T.obj₁), x₁ ≫ φ.hom₁ = y₁ := ⟨y₁ ≫ inv φ.hom₁, by simp⟩
+    refine' ⟨x₂ + x₁ ≫ T.mor₁, _⟩
+    dsimp
+    rw [add_comp, assoc, φ.comm₁, reassoc_of% hx₁, ← hy₁, add_sub_cancel'_right]
+
 /-
 TODO: If `C` is pretriangulated with respect to a shift,
 then `Cᵒᵖ` is pretriangulated with respect to the inverse shift.

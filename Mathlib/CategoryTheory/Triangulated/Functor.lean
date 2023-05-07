@@ -1,11 +1,11 @@
-import Mathlib.CategoryTheory.Triangulated.Basic
+import Mathlib.CategoryTheory.Triangulated.Pretriangulated
 import Mathlib.CategoryTheory.Preadditive.Basic
 import Mathlib.CategoryTheory.Shift.CommShift
 import Mathlib.CategoryTheory.Triangulated.TriangleShift
 
 namespace CategoryTheory
 
-open Category Limits Pretriangulated Preadditive
+open Category Limits Pretriangulated Preadditive ZeroObject
 
 namespace Functor
 
@@ -68,4 +68,66 @@ noncomputable def mapTriangleInvRotateIso [F.Additive] :
       (fun T => Triangle.isoMk _ _ ((F.commShiftIso (-1 : ℤ)).symm.app _) (Iso.refl _) (Iso.refl _)
         (by aesop_cat) (by aesop_cat) (by aesop_cat)) (by aesop_cat)
 
+variable [HasZeroObject C] [HasZeroObject D]
+  [∀ (n : ℤ), (shiftFunctor C n).Additive] [∀ (n : ℤ), (shiftFunctor D n).Additive]
+  [Pretriangulated C] [Pretriangulated D]
+
+class IsTriangulated where
+  map_distinguished : ∀ (T : Triangle C), (T ∈ distTriang C) → F.mapTriangle.obj T ∈ distTriang D
+
+lemma map_distinguished [F.IsTriangulated] (T : Triangle C) (hT : T ∈ distTriang C) :
+    F.mapTriangle.obj T ∈ distTriang D :=
+  IsTriangulated.map_distinguished _ hT
+
+namespace IsTriangulated
+
+variable [F.IsTriangulated]
+
+lemma map_zero_object : F.obj 0 ≅ 0 := by
+  apply IsZero.isoZero
+  apply isZero_of_isIso_mor₁ _ (F.map_distinguished _ (contractible_distinguished (0 : C)))
+  dsimp
+  infer_instance
+
+instance : PreservesZeroMorphisms F := by
+  have h : 𝟙 (F.obj 0) = 0 := by
+    rw [← IsZero.iff_id_eq_zero]
+    apply isZero_of_isIso_mor₁ _ (F.map_distinguished _ (contractible_distinguished (0 : C)))
+    dsimp
+    infer_instance
+  refine' ⟨fun X Y => _⟩
+  have : (0 : X ⟶ Y) = 0 ≫ 𝟙 0 ≫ 0 := by simp
+  rw [this, F.map_comp, F.map_comp, F.map_id, h, zero_comp, comp_zero]
+
+noncomputable instance : PreservesLimitsOfShape (Discrete WalkingPair) F := by
+  suffices ∀ (X₁ X₃ : C), IsIso (prodComparison F X₁ X₃) by
+    have := fun (X₁ X₃ : C) => PreservesLimitPair.ofIsoProdComparison F X₁ X₃
+    exact ⟨fun {K} => preservesLimitOfIsoDiagram F (diagramIsoPair K).symm⟩
+  intro X₁ X₃
+  let φ : F.mapTriangle.obj (binaryProductTriangle X₁ X₃) ⟶
+      binaryProductTriangle (F.obj X₁) (F.obj X₃) :=
+    { hom₁ := 𝟙 _
+      hom₂ := prodComparison F X₁ X₃
+      hom₃ := 𝟙 _
+      comm₁ := by
+        dsimp
+        ext
+        . simp only [assoc, prodComparison_fst, prod.comp_lift, comp_id, comp_zero,
+            limit.lift_π, BinaryFan.mk_pt, BinaryFan.π_app_left, BinaryFan.mk_fst,
+            ← F.map_comp, F.map_id]
+        . simp only [assoc, prodComparison_snd, prod.comp_lift, comp_id, comp_zero,
+            limit.lift_π, BinaryFan.mk_pt, BinaryFan.π_app_right, BinaryFan.mk_snd,
+            ← F.map_comp, F.map_zero]
+      comm₂ := by simp
+      comm₃ := by simp }
+  exact isIso₂_of_isIso₁₃ φ (F.map_distinguished _ (binaryProductTriangle_distinguished X₁ X₃))
+    (binaryProductTriangle_distinguished _ _)
+    (by dsimp ; infer_instance) (by dsimp ; infer_instance)
+
+instance : F.Additive := F.additive_of_preserves_binary_products
+
+end IsTriangulated
+
 end Functor
+
+end CategoryTheory
