@@ -43,7 +43,7 @@ difficult to prove and probably out of reach for a formal proof for the time bei
 We define the type of pseudoelements of an object and, in particular, the zero pseudoelement.
 
 We prove that every morphism maps the zero pseudoelement to the zero pseudoelement (`apply_zero`)
-and that a zero morphism maps every pseudoelement to the zero pseudoelement (`zero_apply`)
+and that a zero morphism maps every pseudoelement to the zero pseudoelement (`zero_apply`).
 
 Here are the metatheorems we provide:
 * A morphism `f` is zero if and only if it is the zero function on pseudoelements.
@@ -63,7 +63,7 @@ We introduce coercions from an object of an abelian category to the set of its p
 and from a morphism to the function it induces on pseudoelements.
 
 These coercions must be explicitly enabled via local instances:
-`local attribute [instance] object_to_sort hom_to_fun`
+`attribute [local instance] objectToSort homToFun`
 
 ## Implementation notes
 
@@ -94,7 +94,7 @@ variable {C : Type u} [Category.{v} C]
 attribute [local instance] Over.coeFromHom
 
 /-- This is just composition of morphisms in `C`. Another way to express this would be
-    `(over.map f).obj a`, but our definition has nicer definitional properties. -/
+    `(Over.map f).obj a`, but our definition has nicer definitional properties. -/
 def app {P Q : C} (f : P ⟶ Q) (a : Over P) : Over Q :=
   a.hom ≫ f
 #align category_theory.abelian.app CategoryTheory.Abelian.app
@@ -144,7 +144,7 @@ def Pseudoelement.setoid (P : C) : Setoid (Over P) :=
 
 attribute [local instance] Pseudoelement.setoid
 
-/-- A `pseudoelement` of `P` is just an equivalence class of arrows ending in `P` by being
+/-- A `Pseudoelement` of `P` is just an equivalence class of arrows ending in `P` by being
     pseudo-equal. -/
 def Pseudoelement (P : C) : Type max u v :=
   Quotient (Pseudoelement.setoid P)
@@ -178,12 +178,12 @@ theorem pseudo_apply_aux {P Q : C} (f : P ⟶ Q) (a b : Over P) : a ≈ b → ap
   ⟨R, p, q, ep, Eq, show p ≫ a.hom ≫ f = q ≫ b.hom ≫ f by rw [reassoc_of% comm]⟩
 #align category_theory.abelian.pseudoelement.pseudo_apply_aux CategoryTheory.Abelian.Pseudoelement.pseudo_apply_aux
 
-/-- A morphism `f` induces a function `pseudo_apply f` on pseudoelements. -/
+/-- A morphism `f` induces a function `pseudoApply f` on pseudoelements. -/
 def pseudoApply {P Q : C} (f : P ⟶ Q) : P → Q :=
   Quotient.map (fun g : Over P => app f g) (pseudo_apply_aux f)
 #align category_theory.abelian.pseudoelement.pseudo_apply CategoryTheory.Abelian.Pseudoelement.pseudoApply
 
-/-- A coercion from morphisms to functions on pseudoelements -/
+/-- A coercion from morphisms to functions on pseudoelements. -/
 def homToFun {P Q : C} : CoeFun (P ⟶ Q) fun _ => P → Q :=
   ⟨pseudoApply⟩
 #align category_theory.abelian.pseudoelement.hom_to_fun CategoryTheory.Abelian.Pseudoelement.homToFun
@@ -224,7 +224,7 @@ section
 
 attribute [local instance] HasBinaryBiproducts.of_hasBinaryProducts
 
-/-- The arrows pseudo-equal to a zero morphism are precisely the zero morphisms -/
+/-- The arrows pseudo-equal to a zero morphism are precisely the zero morphisms. -/
 theorem pseudo_zero_aux {P : C} (Q : C) (f : Over P) : f ≈ (0 : Q ⟶ P) ↔ f.hom = 0 :=
   ⟨fun ⟨R, p, q, ep, _, comm⟩ => zero_of_epi_comp p (by simp [comm]), fun hf =>
     ⟨biprod f.1 Q, biprod.fst, biprod.snd, by infer_instance, by infer_instance, by
@@ -238,13 +238,13 @@ theorem zero_eq_zero' {P Q R : C} :
   Quotient.sound <| (pseudo_zero_aux R _).2 rfl
 #align category_theory.abelian.pseudoelement.zero_eq_zero' CategoryTheory.Abelian.Pseudoelement.zero_eq_zero'
 
-/-- The zero pseudoelement is the class of a zero morphism -/
+/-- The zero pseudoelement is the class of a zero morphism. -/
 def pseudoZero {P : C} : P :=
   ⟦(0 : P ⟶ P)⟧
 #align category_theory.abelian.pseudoelement.pseudo_zero CategoryTheory.Abelian.Pseudoelement.pseudoZero
 
-/-- We can not use `pseudo_zero` as a global `has_zero` instance,
-as it would trigger on any type class search for `has_zero` applied to a `coe_sort`.
+/-- We can not use `pseudoZero` as a global `hasZero` instance,
+as it would trigger on any type class search for `hasZero` applied to a `CoeSort`.
 This would be too expensive.
 -/
 def hasZero {P : C} : Zero P :=
@@ -267,7 +267,7 @@ theorem zero_eq_zero {P Q : C} : ⟦((0 : Q ⟶ P) : Over P)⟧ = (pseudoZero : 
   zero_eq_zero'
 #align category_theory.abelian.pseudoelement.zero_eq_zero CategoryTheory.Abelian.Pseudoelement.zero_eq_zero
 
-/-- The pseudoelement induced by an arrow is zero precisely when that arrow is zero -/
+/-- The pseudoelement induced by an arrow is zero precisely when that arrow is zero. -/
 theorem pseudo_zero_iff {P : C} (a : Over P) : (a : P) = pseudoZero ↔ a.hom = 0 := by
   rw [← pseudo_zero_aux P a]
   exact Quotient.eq'
@@ -277,7 +277,7 @@ end Zero
 
 open Pseudoelement
 
-/-- Morphisms map the zero pseudoelement to the zero pseudoelement -/
+/-- Morphisms map the zero pseudoelement to the zero pseudoelement. -/
 @[simp]
 theorem apply_zero {P Q : C} (f : P ⟶ Q) : f pseudoZero = pseudoZero := by
   rw [pseudo_zero_def, pseudo_apply_mk']
@@ -377,14 +377,14 @@ theorem pseudo_exact_of_exact {P Q R : C} {f : P ⟶ Q} {g : Q ⟶ R} (h : Exact
     exact zero_apply _ _, fun b' =>
     Quotient.inductionOn b' fun b hb => by
       have hb' : b.hom ≫ g = 0 := (pseudo_zero_iff _).1 hb
-      -- By exactness, b factors through im f = ker g via some c
+      -- By exactness, `b` factors through `im f = ker g` via some `c`.
       obtain ⟨c, hc⟩ := KernelFork.IsLimit.lift' (isLimitImage f g h) _ hb'
-      -- We compute the pullback of the map into the image and c.
+      -- We compute the pullback of the map into the image and `c`.
       -- The pseudoelement induced by the first pullback map will be our preimage.
       use (pullback.fst : pullback (Abelian.factorThruImage f) c ⟶ P)
-      -- It remains to show that the image of this element under f is pseudo-equal to b.
+      -- It remains to show that the image of this element under `f` is pseudo-equal to `b`.
       apply Quotient.sound
-      -- pullback.snd is an epimorphism because the map onto the image is!
+      -- `pullback.snd` is an epimorphism because the map onto the image is!
       refine'
         ⟨pullback (Abelian.factorThruImage f) c, 𝟙 _, pullback.snd, by infer_instance, by
           infer_instance, _⟩
@@ -416,16 +416,16 @@ theorem exact_of_pseudo_exact {P Q R : C} (f : P ⟶ Q) (g : Q ⟶ R) :
     ((∀ a, g (f a) = pseudoZero) ∧ ∀ b, g b = pseudoZero → ∃ a, f a = b) → Exact f g :=
   fun ⟨h₁, h₂⟩ => (Abelian.exact_iff _ _).2
     ⟨zero_morphism_ext _ fun a => by rw [comp_apply, h₁ a], by
-      -- If we apply g to the pseudoelement induced by its kernel, we get 0 (of course!).
+      -- If we apply `g` to the pseudoelement induced by its kernel, we get 0 (of course!).
       have : g (kernel.ι g) = pseudoZero := apply_eq_zero_of_comp_eq_zero _ _ (kernel.condition _)
       -- By pseudo-exactness, we get a preimage.
       obtain ⟨a', ha⟩ := h₂ _ this
       obtain ⟨a, ha'⟩ := Quotient.exists_rep a'
       rw [← ha'] at ha
       obtain ⟨Z, r, q, _, eq, comm⟩ := Quotient.exact ha
-      -- Consider the pullback of kernel.ι (cokernel.π f) and kernel.ι g.
-      -- The commutative diagram given by the pseudo-equality f a = b induces
-      -- a cone over this pullback, so we get a factorization z.
+      -- Consider the pullback of `kernel.ι (cokernel.π f)` and `kernel.ι g`.
+      -- The commutative diagram given by the pseudo-equality `f a = b` induces
+      -- a cone over this pullback, so we get a factorization `z`.
       obtain ⟨z, _, hz₂⟩ :=
         @pullback.lift' _ _ _ _ _ _ (kernel.ι (cokernel.π f)) (kernel.ι g) _
           (r ≫ a.hom ≫ Abelian.factorThruImage f) q
@@ -434,13 +434,13 @@ theorem exact_of_pseudo_exact {P Q R : C} (f : P ⟶ Q) (g : Q ⟶ R) :
             exact comm)
       -- Let's give a name to the second pullback morphism.
       let j : pullback (kernel.ι (cokernel.π f)) (kernel.ι g) ⟶ kernel g := pullback.snd
-      -- Since q is an epimorphism, in particular this means that j is an epimorphism.
+      -- Since `q` is an epimorphism, in particular this means that `j` is an epimorphism.
       haveI pe : Epi j := epi_of_epi_fac hz₂
-      -- But is is also a monomorphism, because kernel.ι (cokernel.π f) is: A kernel is
+      -- But it is also a monomorphism, because `kernel.ι (cokernel.π f)` is: A kernel is
       -- always a monomorphism and the pullback of a monomorphism is a monomorphism.
-      -- But mono + epi = iso, so j is an isomorphism.
+      -- But mono + epi = iso, so `j` is an isomorphism.
       haveI : IsIso j := isIso_of_mono_of_epi _
-      -- But then kernel.ι g can be expressed using all of the maps of the pullback square, and we
+      -- But then `kernel.ι g` can be expressed using all of the maps of the pullback square, and we
       -- are done.
       rw [(Iso.eq_inv_comp (asIso j)).2 pullback.condition.symm]
       simp only [Category.assoc, kernel.condition, HasZeroMorphisms.comp_zero]⟩
