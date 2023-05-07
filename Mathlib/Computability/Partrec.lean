@@ -497,7 +497,7 @@ variable {α : Type _} {β : Type _} {γ : Type _} {δ : Type _} {σ : Type _}
 variable [Primcodable α] [Primcodable β] [Primcodable γ] [Primcodable δ] [Primcodable σ]
 
 theorem unpaired {f : ℕ → ℕ →. α} : Partrec (Nat.unpaired f) ↔ Partrec₂ f :=
-  ⟨fun h => by simpa using Nat.Primrec.comp h Primrec₂.pair.to_comp,
+  ⟨fun h => by simpa using Partrec.comp (g := fun p : ℕ × ℕ => (p.1, p.2)) h Primrec₂.pair.to_comp,
     fun h => h.comp Primrec.unpair.to_comp⟩
 #align partrec₂.unpaired Partrec₂.unpaired
 
@@ -505,7 +505,7 @@ theorem unpaired' {f : ℕ → ℕ →. ℕ} : Nat.Partrec (Nat.unpaired f) ↔ 
   Partrec.nat_iff.symm.trans unpaired
 #align partrec₂.unpaired' Partrec₂.unpaired'
 
-theorem comp {f : β → γ →. σ} {g : α → β} {h : α → γ} (hf : Partrec₂ f) (hg : Computable g)
+nonrec theorem comp {f : β → γ →. σ} {g : α → β} {h : α → γ} (hf : Partrec₂ f) (hg : Computable g)
     (hh : Computable h) : Partrec fun a => f (g a) (h a) :=
   hf.comp (hg.pair hh)
 #align partrec₂.comp Partrec₂.comp
@@ -523,7 +523,7 @@ variable {α : Type _} {β : Type _} {γ : Type _} {σ : Type _}
 
 variable [Primcodable α] [Primcodable β] [Primcodable γ] [Primcodable σ]
 
-theorem comp {f : β → σ} {g : α → β} (hf : Computable f) (hg : Computable g) :
+nonrec theorem comp {f : β → σ} {g : α → β} (hf : Computable f) (hg : Computable g) :
     Computable fun a => f (g a) :=
   hf.comp hg
 #align computable.comp Computable.comp
@@ -541,8 +541,8 @@ variable {α : Type _} {β : Type _} {γ : Type _} {δ : Type _} {σ : Type _}
 
 variable [Primcodable α] [Primcodable β] [Primcodable γ] [Primcodable δ] [Primcodable σ]
 
-theorem comp {f : β → γ → σ} {g : α → β} {h : α → γ} (hf : Computable₂ f) (hg : Computable g)
-    (hh : Computable h) : Computable fun a => f (g a) (h a) :=
+nonrec theorem comp {f : β → γ → σ} {g : α → β} {h : α → γ} (hf : Computable₂ f)
+    (hg : Computable g) (hh : Computable h) : Computable fun a => f (g a) (h a) :=
   hf.comp (hg.pair hh)
 #align computable₂.comp Computable₂.comp
 
@@ -565,27 +565,28 @@ theorem rfind {p : α → ℕ →. Bool} (hp : Partrec₂ p) : Partrec fun a => 
   (Nat.Partrec.rfind <|
         hp.map ((Primrec.dom_bool fun b => cond b 0 1).comp Primrec.snd).to₂.to_comp).of_eq
     fun n => by
-    cases' e : decode α n with a <;> simp [e, Nat.rfind_zero_none, map_id']
+    cases' e : decode (α := α) n with a <;> simp [e, Nat.rfind_zero_none, map_id']
     congr ; funext n
     simp [Part.map_map, (· ∘ ·)]
-    apply map_id' fun b => _
+    refine map_id' (fun b => ?_) _
     cases b <;> rfl
 #align partrec.rfind Partrec.rfind
 
 theorem rfindOpt {f : α → ℕ → Option σ} (hf : Computable₂ f) :
     Partrec fun a => Nat.rfindOpt (f a) :=
-  (rfind (Primrec.option_isSome.to_comp.comp hf).Partrec.to₂).bind (of_option hf)
+  (rfind (Primrec.option_isSome.to_comp.comp hf).partrec.to₂).bind (of_option hf)
 #align partrec.rfind_opt Partrec.rfindOpt
 
 theorem nat_casesOn_right {f : α → ℕ} {g : α → σ} {h : α → ℕ →. σ} (hf : Computable f)
-    (hg : Computable g) (hh : Partrec₂ h) : Partrec fun a => (f a).cases (some (g a)) (h a) :=
+    (hg : Computable g) (hh : Partrec₂ h) : Partrec fun a => (f a).casesOn (some (g a)) (h a) :=
   (nat_rec hf hg (hh.comp fst (pred.comp <| hf.comp fst)).to₂).of_eq fun a => by
-    simp; cases f a <;> simp
+    simp; cases' f a with n <;> simp
     refine' ext fun b => ⟨fun H => _, fun H => _⟩
-    · rcases mem_bind_iff.1 H with ⟨c, h₁, h₂⟩
+    · rcases mem_bind_iff.1 H with ⟨c, _, h₂⟩
       exact h₂
-    · have : ∀ m, (Nat.rec (Part.some (g a)) (fun y IH => IH.bind fun _ => h a n) m).Dom := by
-        intro
+    · have : ∀ m, (Nat.rec (motive := fun _ => Part σ)
+          (Part.some (g a)) (fun y IH => IH.bind fun _ => h a n) m).Dom := by
+        intro m
         induction m <;> simp [*, H.fst]
       exact ⟨⟨this n, H.fst⟩, H.snd⟩
 #align partrec.nat_cases_right Partrec.nat_casesOn_right
@@ -603,13 +604,13 @@ theorem bind_decode₂_iff {f : α →. σ} :
 theorem vector_mOfFn :
     ∀ {n} {f : Fin n → α →. σ},
       (∀ i, Partrec (f i)) → Partrec fun a : α => Vector.mOfFn fun i => f i a
-  | 0, f, hf => const _
+  | 0, _, _ => const _
   | n + 1, f, hf => by
-    simp [Vector.mOfFn] <;>
-      exact
-        (hf 0).bind
-          (Partrec.bind ((vector_m_of_fn fun i => hf i.succ).comp fst)
-            (primrec.vector_cons.to_comp.comp (snd.comp fst) snd))
+    simp [Vector.mOfFn]
+    exact
+      (hf 0).bind
+        (Partrec.bind ((vector_mOfFn fun i => hf i.succ).comp fst)
+          (Primrec.vector_cons.to_comp.comp (snd.comp fst) snd))
 #align partrec.vector_m_of_fn Partrec.vector_mOfFn
 
 end Partrec
@@ -626,42 +627,49 @@ variable {α : Type _} {β : Type _} {γ : Type _} {σ : Type _}
 
 variable [Primcodable α] [Primcodable β] [Primcodable γ] [Primcodable σ]
 
-theorem option_some_iff {f : α → σ} : (Computable fun a => some (f a)) ↔ Computable f :=
+theorem option_some_iff {f : α → σ} : (Computable fun a => Option.some (f a)) ↔ Computable f :=
   ⟨fun h => encode_iff.1 <| Primrec.pred.to_comp.comp <| encode_iff.2 h, option_some.comp⟩
 #align computable.option_some_iff Computable.option_some_iff
 
 theorem bind_decode_iff {f : α → β → Option σ} :
-    (Computable₂ fun a n => (decode β n).bind (f a)) ↔ Computable₂ f :=
+    (Computable₂ fun a n => (decode (α := β) n).bind (f a)) ↔ Computable₂ f :=
   ⟨fun hf =>
-    Nat.Partrec.ofEq
+    Nat.Partrec.of_eq
       (((Partrec.nat_iff.2
-                (Nat.Partrec.ppred.comp <| Nat.Partrec.ofPrimrec <| Primcodable.prim β)).comp
+        (Nat.Partrec.ppred.comp <| Nat.Partrec.of_primrec <| Primcodable.prim (α := β))).comp
             snd).bind
-        (Computable.comp hf fst).to₂.Partrec₂)
+        (Computable.comp hf fst).to₂.partrec₂)
       fun n => by
-      simp <;> cases decode α n.unpair.1 <;> simp <;> cases decode β n.unpair.2 <;> simp,
+        simp; cases decode (α := α) n.unpair.1 <;> simp;
+          cases decode (α := β) n.unpair.2 <;> simp,
     fun hf => by
     have :
       Partrec fun a : α × ℕ =>
-        (encode (decode β a.2)).cases (some Option.none) fun n => Part.map (f a.1) (decode β n) :=
-      Partrec.nat_casesOn_right (primrec.encdec.to_comp.comp snd) (const none)
-        ((of_option (computable.decode.comp snd)).map (hf.comp (fst.comp <| fst.comp fst) snd).to₂)
+        (encode (decode (α := β) a.2)).casesOn (some Option.none)
+          fun n => Part.map (f a.1) (decode (α := β) n) :=
+      Partrec.nat_casesOn_right
+        (h := fun (a : α × ℕ) (n : ℕ) ↦ map (fun b ↦ f a.1 b) (ofOption (decode n)))
+        (Primrec.encdec.to_comp.comp snd) (const Option.none)
+        ((of_option (Computable.decode.comp snd)).map (hf.comp (fst.comp <| fst.comp fst) snd).to₂)
     refine' this.of_eq fun a => _
-    simp; cases decode β a.2 <;> simp [encodek]⟩
+    simp; cases decode (α := β) a.2 <;> simp [encodek]⟩
 #align computable.bind_decode_iff Computable.bind_decode_iff
 
 theorem map_decode_iff {f : α → β → σ} :
-    (Computable₂ fun a n => (decode β n).map (f a)) ↔ Computable₂ f :=
-  bind_decode_iff.trans option_some_iff
+    (Computable₂ fun a n => (decode (α := β) n).map (f a)) ↔ Computable₂ f := by
+  convert (bind_decode_iff (f := fun a => Option.some ∘ f a)).trans option_some_iff
+  apply Option.map_eq_bind
 #align computable.map_decode_iff Computable.map_decode_iff
 
 theorem nat_rec {f : α → ℕ} {g : α → σ} {h : α → ℕ × σ → σ} (hf : Computable f) (hg : Computable g)
-    (hh : Computable₂ h) : Computable fun a => (f a).elim (g a) fun y IH => h a (y, IH) :=
-  (Partrec.nat_rec hf hg hh.Partrec₂).of_eq fun a => by simp <;> induction f a <;> simp [*]
+    (hh : Computable₂ h) :
+    Computable fun a => Nat.rec (motive := fun _ => σ) (g a) (fun y IH => h a (y, IH)) (f a) :=
+  (Partrec.nat_rec hf hg hh.partrec₂).of_eq fun a => by simp; induction f a <;> simp [*]
 #align computable.nat_elim Computable.nat_rec
 
 theorem nat_casesOn {f : α → ℕ} {g : α → σ} {h : α → ℕ → σ} (hf : Computable f) (hg : Computable g)
-    (hh : Computable₂ h) : Computable fun a => (f a).cases (g a) (h a) :=
+    (hh : Computable₂ h) :
+    Computable fun a => Nat.casesOn (motive := fun _ => σ) (f a) (g a) (h a) :=
   nat_rec hf hg (hh.comp fst <| fst.comp snd).to₂
 #align computable.nat_cases Computable.nat_casesOn
 
@@ -675,7 +683,7 @@ theorem option_cases {o : α → Option β} {f : α → σ} {g : α → β → �
     @Computable _ σ _ _ fun a => Option.casesOn (o a) (f a) (g a) :=
   option_some_iff.1 <|
     (nat_casesOn (encode_iff.2 ho) (option_some_iff.2 hf) (map_decode_iff.2 hg)).of_eq fun a => by
-      cases o a <;> simp [encodek] <;> rfl
+      cases o a <;> simp [encodek]
 #align computable.option_cases Computable.option_cases
 
 theorem option_bind {f : α → Option β} {g : α → β → Option σ} (hf : Computable f)
@@ -684,13 +692,14 @@ theorem option_bind {f : α → Option β} {g : α → β → Option σ} (hf : C
 #align computable.option_bind Computable.option_bind
 
 theorem option_map {f : α → Option β} {g : α → β → σ} (hf : Computable f) (hg : Computable₂ g) :
-    Computable fun a => (f a).map (g a) :=
-  option_bind hf (option_some.comp₂ hg)
+    Computable fun a => (f a).map (g a) := by
+  convert option_bind hf (option_some.comp₂ hg)
+  apply Option.map_eq_bind
 #align computable.option_map Computable.option_map
 
 theorem option_getD {f : α → Option β} {g : α → β} (hf : Computable f) (hg : Computable g) :
     Computable fun a => (f a).getD (g a) :=
-  (Computable.option_cases hf hg (show Computable₂ fun a b => b from Computable.snd)).of_eq fun a =>
+  (Computable.option_cases hf hg (show Computable₂ fun _ b => b from Computable.snd)).of_eq fun a =>
     by cases f a <;> rfl
 #align computable.option_get_or_else Computable.option_getD
 
@@ -707,15 +716,16 @@ theorem sum_cases {f : α → Sum β γ} {g : α → β → σ} {h : α → γ �
     (cond (nat_bodd.comp <| encode_iff.2 hf)
           (option_map (Computable.decode.comp <| nat_div2.comp <| encode_iff.2 hf) hh)
           (option_map (Computable.decode.comp <| nat_div2.comp <| encode_iff.2 hf) hg)).of_eq
-      fun a => by cases' f a with b c <;> simp [Nat.div2_bit, Nat.bodd_bit, encodek] <;> rfl
+      fun a => by
+        cases' f a with b c <;> simp [Nat.div2_val]
 #align computable.sum_cases Computable.sum_cases
 
 theorem nat_strong_rec (f : α → ℕ → σ) {g : α → List σ → Option σ} (hg : Computable₂ g)
-    (H : ∀ a n, g a ((List.range n).map (f a)) = some (f a n)) : Computable₂ f :=
+    (H : ∀ a n, g a ((List.range n).map (f a)) = Option.some (f a n)) : Computable₂ f :=
   suffices Computable₂ fun a n => (List.range n).map (f a) from
     option_some_iff.1 <|
       (list_get?.comp (this.comp fst (succ.comp snd)) snd).to₂.of_eq fun a => by
-        simp [List.get?_range (Nat.lt_succ_self a.2)] <;> rfl
+        simp [List.get?_range (Nat.lt_succ_self a.2)]
   option_some_iff.1 <|
     (nat_rec snd (const (Option.some []))
           (to₂ <|
@@ -731,9 +741,10 @@ theorem nat_strong_rec (f : α → ℕ → σ) {g : α → List σ → Option σ
 theorem list_ofFn :
     ∀ {n} {f : Fin n → α → σ},
       (∀ i, Computable (f i)) → Computable fun a => List.ofFn fun i => f i a
-  | 0, f, hf => const []
+  | 0, _, _ => const []
   | n + 1, f, hf => by
-    simp [List.ofFn_succ] <;> exact list_cons.comp (hf 0) (list_of_fn fun i => hf i.succ)
+    simp [List.ofFn_succ]
+    exact list_cons.comp (hf 0) (list_ofFn fun i => hf i.succ)
 #align computable.list_of_fn Computable.list_ofFn
 
 theorem vector_ofFn {n} {f : Fin n → α → σ} (hf : ∀ i, Computable (f i)) :
@@ -752,59 +763,68 @@ variable [Primcodable α] [Primcodable β] [Primcodable γ] [Primcodable σ]
 open Computable
 
 theorem option_some_iff {f : α →. σ} : (Partrec fun a => (f a).map Option.some) ↔ Partrec f :=
-  ⟨fun h => (Nat.Partrec.ppred.comp h).of_eq fun n => by simp [Part.bind_assoc, bind_some_eq_map],
+  ⟨fun h => (Nat.Partrec.ppred.comp h).of_eq fun n => by
+      simp [Part.bind_assoc]
+      conv_lhs =>
+        congr
+        · skip
+        · ext x
+          erw [bind_some_eq_map],
     fun hf => hf.map (option_some.comp snd).to₂⟩
 #align partrec.option_some_iff Partrec.option_some_iff
 
 theorem option_cases_right {o : α → Option β} {f : α → σ} {g : α → β →. σ} (ho : Computable o)
     (hf : Computable f) (hg : Partrec₂ g) :
-    @Partrec _ σ _ _ fun a => Option.casesOn (o a) (some (f a)) (g a) :=
+    @Partrec _ σ _ _ fun a => Option.casesOn (o a) (Part.some (f a)) (g a) :=
   have :
     Partrec fun a : α =>
-      Nat.casesOn (Part.some (f a)) (fun n => Part.bind (decode β n) (g a)) (encode (o a)) :=
-    nat_casesOn_right (encode_iff.2 ho) hf.Partrec <|
-      ((@Computable.decode β _).comp snd).ofOption.bind (hg.comp (fst.comp fst) snd).to₂
+      Nat.casesOn (encode (o a)) (Part.some (f a)) (fun n => Part.bind (decode (α := β) n) (g a)) :=
+    nat_casesOn_right (h := fun a n ↦ Part.bind (ofOption (decode n)) fun b ↦ g a b)
+      (encode_iff.2 ho) hf.partrec <|
+        ((@Computable.decode β _).comp snd).of_option.bind (hg.comp (fst.comp fst) snd).to₂
   this.of_eq fun a => by cases' o a with b <;> simp [encodek]
 #align partrec.option_cases_right Partrec.option_cases_right
 
 theorem sum_cases_right {f : α → Sum β γ} {g : α → β → σ} {h : α → γ →. σ} (hf : Computable f)
     (hg : Computable₂ g) (hh : Partrec₂ h) :
-    @Partrec _ σ _ _ fun a => Sum.casesOn (f a) (fun b => some (g a b)) (h a) :=
+    @Partrec _ σ _ _ fun a => Sum.casesOn (f a) (fun b => Part.some (g a b)) (h a) :=
   have :
     Partrec fun a =>
-      (Option.casesOn (Sum.casesOn (f a) (fun b => Option.none) Option.some : Option γ)
-          (some (Sum.casesOn (f a) (fun b => some (g a b)) fun c => Option.none)) fun c =>
+      (Option.casesOn (Sum.casesOn (f a) (fun _ => Option.none) Option.some : Option γ)
+          (some (Sum.casesOn (f a) (fun b => some (g a b)) fun _ => Option.none)) fun c =>
           (h a c).map Option.some :
         Part (Option σ)) :=
-    option_cases_right (sum_cases hf (const Option.none).to₂ (option_some.comp snd).to₂)
-      (sum_cases hf (option_some.comp hg) (const Option.none).to₂) (option_some_iff.2 hh)
+    option_cases_right (g := fun a n => Part.map Option.some (h a n))
+      (sum_cases hf (const Option.none).to₂ (option_some.comp snd).to₂)
+      (sum_cases (g := fun a n => Option.some (g a n)) hf (option_some.comp hg)
+        (const Option.none).to₂)
+      (option_some_iff.2 hh)
   option_some_iff.1 <| this.of_eq fun a => by cases f a <;> simp
 #align partrec.sum_cases_right Partrec.sum_cases_right
 
 theorem sum_cases_left {f : α → Sum β γ} {g : α → β →. σ} {h : α → γ → σ} (hf : Computable f)
     (hg : Partrec₂ g) (hh : Computable₂ h) :
-    @Partrec _ σ _ _ fun a => Sum.casesOn (f a) (g a) fun c => some (h a c) :=
+    @Partrec _ σ _ _ fun a => Sum.casesOn (f a) (g a) fun c => Part.some (h a c) :=
   (sum_cases_right (sum_cases hf (sum_inr.comp snd).to₂ (sum_inl.comp snd).to₂) hh hg).of_eq
     fun a => by cases f a <;> simp
 #align partrec.sum_cases_left Partrec.sum_cases_left
 
 theorem fix_aux {α σ} (f : α →. Sum σ α) (a : α) (b : σ) :
     let F : α → ℕ →. Sum σ α := fun a n =>
-      n.elim (some (Sum.inr a)) fun y IH => IH.bind fun s => Sum.casesOn s (fun _ => Part.some s) f
+      n.rec (some (Sum.inr a)) fun _ IH => IH.bind fun s => Sum.casesOn s (fun _ => Part.some s) f
     (∃ n : ℕ,
         ((∃ b' : σ, Sum.inl b' ∈ F a n) ∧ ∀ {m : ℕ}, m < n → ∃ b : α, Sum.inr b ∈ F a m) ∧
           Sum.inl b ∈ F a n) ↔
       b ∈ PFun.fix f a := by
-  intro ; refine' ⟨fun h => _, fun h => _⟩
+  intro F; refine' ⟨fun h => _, fun h => _⟩
   · rcases h with ⟨n, ⟨_x, h₁⟩, h₂⟩
     have : ∀ (m a') (_ : Sum.inr a' ∈ F a m) (_ : b ∈ PFun.fix f a'), b ∈ PFun.fix f a := by
       intro m a' am ba
-      induction' m with m IH generalizing a' <;> simp [F] at am
+      induction' m with m IH generalizing a' <;> simp at am
       · rwa [← am]
       rcases am with ⟨a₂, am₂, fa₂⟩
       exact IH _ am₂ (PFun.mem_fix_iff.2 (Or.inr ⟨_, fa₂, ba⟩))
-    cases n <;> simp [F] at h₂
-    · cases h₂
+    cases n <;> simp at h₂
     rcases h₂ with (h₂ | ⟨a', am', fa'⟩)
     · cases' h₁ (Nat.lt_succ_self _) with a' h
       injection mem_unique h h₂
@@ -812,36 +832,34 @@ theorem fix_aux {α σ} (f : α →. Sum σ α) (a : α) (b : σ) :
   · suffices
       ∀ (a') (_ : b ∈ PFun.fix f a') (k) (_ : Sum.inr a' ∈ F a k),
         ∃ n, Sum.inl b ∈ F a n ∧ ∀ m < n, ∀ (_ : k ≤ m), ∃ a₂, Sum.inr a₂ ∈ F a m by
-      rcases this _ h 0 (by simp [F]) with ⟨n, hn₁, hn₂⟩
-      exact ⟨_, ⟨⟨_, hn₁⟩, fun m mn => hn₂ m mn (Nat.zero_le _)⟩, hn₁⟩
+      rcases this _ h 0 (by simp) with ⟨n, hn₁, hn₂⟩
+      exact ⟨_, ⟨⟨_, hn₁⟩, fun {m} mn => hn₂ m mn (Nat.zero_le _)⟩, hn₁⟩
     intro a₁ h₁
-    apply PFun.fixInduction h₁
+    apply @PFun.fixInduction _ _ _ _ _ _ h₁
     intro a₂ h₂ IH k hk
-    rcases PFun.mem_fix_iff.1 h₂ with (h₂ | ⟨a₃, am₃, fa₃⟩)
+    rcases PFun.mem_fix_iff.1 h₂ with (h₂ | ⟨a₃, am₃, _⟩)
     · refine' ⟨k.succ, _, fun m mk km => ⟨a₂, _⟩⟩
-      · simp [F]
+      · simp
         exact Or.inr ⟨_, hk, h₂⟩
       · rwa [le_antisymm (Nat.le_of_lt_succ mk) km]
-    · rcases IH _ am₃ k.succ _ with ⟨n, hn₁, hn₂⟩
+    · rcases IH _ am₃ k.succ (by simp; exact ⟨_, hk, am₃⟩) with ⟨n, hn₁, hn₂⟩
       · refine' ⟨n, hn₁, fun m mn km => _⟩
         cases' km.lt_or_eq_dec with km km
         · exact hn₂ _ mn km
         · exact km ▸ ⟨_, hk⟩
-      · simp [F]
-        exact ⟨_, hk, am₃⟩
 #align partrec.fix_aux Partrec.fix_aux
 
-theorem fix {f : α →. Sum σ α} (hf : Partrec f) : Partrec (PFun.fix f) :=
+theorem fix {f : α →. Sum σ α} (hf : Partrec f) : Partrec (PFun.fix f) := by
   let F : α → ℕ →. Sum σ α := fun a n =>
-    n.elim (some (Sum.inr a)) fun y IH => IH.bind fun s => Sum.casesOn s (fun _ => Part.some s) f
+    n.rec (some (Sum.inr a)) fun _ IH => IH.bind fun s => Sum.casesOn s (fun _ => Part.some s) f
   have hF : Partrec₂ F :=
-    Partrec.nat_rec snd (sum_inr.comp fst).Partrec
+    Partrec.nat_rec snd (sum_inr.comp fst).partrec
       (sum_cases_right (snd.comp snd) (snd.comp <| snd.comp fst).to₂ (hf.comp snd).to₂).to₂
   let p a n := @Part.map _ Bool (fun s => Sum.casesOn s (fun _ => true) fun _ => false) (F a n)
   have hp : Partrec₂ p :=
     hF.map ((sum_cases Computable.id (const true).to₂ (const false).to₂).comp snd).to₂
-  (hp.rfind.bind (hF.bind (sum_cases_right snd snd.to₂ none.to₂).to₂).to₂).of_eq fun a =>
-    ext fun b => by simp <;> apply fix_aux f
+  exact (hp.rfind.bind (hF.bind (sum_cases_right snd snd.to₂ none.to₂).to₂).to₂).of_eq fun a =>
+    ext fun b => by simp; apply fix_aux f
 #align partrec.fix Partrec.fix
 
 end Partrec
