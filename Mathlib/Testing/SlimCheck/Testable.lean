@@ -69,6 +69,8 @@ random testing
   * https://hackage.haskell.org/package/QuickCheck
 -/
 
+open Lean
+
 namespace SlimCheck
 
 /-- Result of trying to disprove `p`
@@ -124,7 +126,7 @@ instance (priority := low) : PrintableProp p where
 
 /-- `Testable p` uses random examples to try to disprove `p`. -/
 class Testable (p : Prop) where
-  run (cfg : Configuration) (minimize : Bool) : Gen Id (TestResult p)
+  run (cfg : Configuration) (minimize : Bool) : Gen MetaM (TestResult p)
 
 @[nolint unusedArguments]
 def NamedBinder (_n : String) (p : Prop) : Prop := p
@@ -216,7 +218,8 @@ namespace Testable
 
 open TestResult
 
-def runProp (p : Prop) [Testable p] : Configuration → Bool → Gen Id (TestResult p) := Testable.run
+def runProp (p : Prop) [Testable p] : Configuration → Bool → Gen MetaM (TestResult p) :=
+  Testable.run
 
 /-- A `dbgTrace` with special formatting -/
 def slimTrace [Pure m] (s : String) : m PUnit := dbgTrace s!"[SlimCheck: {s}]" (λ _ => pure ())
@@ -292,7 +295,7 @@ a proof that all the values it produces are smaller (according to `SizeOf`)
 than `x`. -/
 def minimizeAux [SampleableExt α] {β : α → Prop} [∀ x, Testable (β x)] (cfg : Configuration)
     (var : String) (x : SampleableExt.proxy α) (n : Nat) :
-    OptionT (Gen Id) (Σ x, TestResult (β (SampleableExt.interp x))) := do
+    OptionT (Gen MetaM) (Σ x, TestResult (β (SampleableExt.interp x))) := do
   let candidates := SampleableExt.shrink.shrink x
   if cfg.traceShrinkCandidates then
     slimTrace s!"Candidates for {var} := {repr x}:\n  {repr candidates}"
@@ -315,7 +318,7 @@ def minimizeAux [SampleableExt α] {β : α → Prop} [∀ x, Testable (β x)] (
 to show the user. -/
 def minimize [SampleableExt α] {β : α → Prop} [∀ x, Testable (β x)] (cfg : Configuration)
     (var : String) (x : SampleableExt.proxy α) (r : TestResult (β $ SampleableExt.interp x)) :
-    Gen Id (Σ x, TestResult (β $ SampleableExt.interp x)) := do
+    Gen MetaM (Σ x, TestResult (β $ SampleableExt.interp x)) := do
   if cfg.traceShrink then
      slimTrace "Shrink"
      slimTrace s!"Attempting to shrink {var} := {repr x}"
@@ -415,7 +418,7 @@ section IO
 open TestResult
 
 /-- Execute `cmd` and repeat every time the result is `gave_up` (at most `n` times). -/
-def retry (cmd : Rand Id (TestResult p)) : Nat → Rand Id (TestResult p)
+def retry (cmd : Rand MetaM (TestResult p)) : Nat → Rand MetaM (TestResult p)
 | 0 => pure $ TestResult.gaveUp 1
 | n+1 => do
   let r ← cmd
@@ -433,7 +436,7 @@ def giveUp (x : Nat) : TestResult p → TestResult p
 
 /-- Try `n` times to find a counter-example for `p`. -/
 def Testable.runSuiteAux (p : Prop) [Testable p] (cfg : Configuration) :
-  TestResult p → Nat → Rand Id (TestResult p)
+  TestResult p → Nat → Rand MetaM (TestResult p)
 | r, 0 => pure r
 | r, n+1 => do
   let size := (cfg.numInst - n - 1) * cfg.maxSize / cfg.numInst
@@ -447,11 +450,11 @@ def Testable.runSuiteAux (p : Prop) [Testable p] (cfg : Configuration) :
   | _ => pure $ x
 
 /-- Try to find a counter-example of `p`. -/
-def Testable.runSuite (p : Prop) [Testable p] (cfg : Configuration := {}) : Rand Id (TestResult p) :=
+def Testable.runSuite (p : Prop) [Testable p] (cfg : Configuration := {}) : Rand MetaM (TestResult p) :=
   Testable.runSuiteAux p cfg (success $ PSum.inl ()) cfg.numInst
 
-/-- Run a test suite for `p` in `BaseIO` using the global RNG in `stdGenRef`. -/
-def Testable.checkIO (p : Prop) [Testable p] (cfg : Configuration := {}) : BaseIO (TestResult p) :=
+/-- Run a test suite for `p` in `MetaM` using the global RNG in `stdGenRef`. -/
+def Testable.checkMetaM (p : Prop) [Testable p] (cfg : Configuration := {}) : MetaM (TestResult p) :=
   match cfg.randomSeed with
   | none => runRand (Testable.runSuite p cfg)
   | some seed => runRandWith seed (Testable.runSuite p cfg)
@@ -505,11 +508,11 @@ end Decorations
 open Decorations in
 /-- Run a test suite for `p` and throw an exception if `p` does not not hold.-/
 def Testable.check (p : Prop) (cfg : Configuration := {})
-    (p' : Decorations.DecorationsOf p := by mk_decorations) [Testable p'] : IO PUnit := do
-  match ← Testable.checkIO p' cfg with
+    (p' : Decorations.DecorationsOf p := by mk_decorations) [Testable p'] : MetaM PUnit := do
+  match ← Testable.checkMetaM p' cfg with
   | TestResult.success _ => if !cfg.quiet then IO.println "Success"
   | TestResult.gaveUp n => if !cfg.quiet then IO.println s!"Gave up {n} times"
-  | TestResult.failure _ xs n => throw (IO.userError $ formatFailure "Found problems!" xs n)
+  | TestResult.failure _ xs n => throwError formatFailure "Found problems!" xs n
 
 -- #eval Testable.check (∀ (x y z a : Nat) (h1 : 3 < x) (h2 : 3 < y), x - y = y - x)
 --   Configuration.verbose

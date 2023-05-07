@@ -34,6 +34,9 @@ It has a `Nat` parameter so that the caller can decide on the
 size of the examples. -/
 abbrev Gen (m : Type u → Type u) (α : Type u) := ReaderT (ULift Nat) (Rand m) α
 
+instance [MonadLift m n] : MonadLiftT (Gen m) (Gen n) where
+  monadLift x := fun s => x s
+
 namespace Gen
 
 variable [Monad m]
