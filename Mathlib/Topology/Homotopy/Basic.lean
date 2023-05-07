@@ -270,9 +270,7 @@ theorem symm_trans {f₀ f₁ f₂ : C(X, Y)} (F : Homotopy f₀ f₁) (G : Homo
   rw [trans_apply, symm_apply, trans_apply]
   simp only [coe_symm_eq, symm_apply]
   split_ifs with h₁ h₂ h₂
-  . have ht : (t : ℝ) = 1 / 2 :=
-      -- porting note: this was proved by linarith in mathlib
-      le_antisymm h₂ (by convert sub_le_comm.mp h₁ using 1; norm_num)
+  . have ht : (t : ℝ) = 1 / 2 := by linarith
     simp only [ht]
     norm_num
   . congr 2
@@ -284,11 +282,7 @@ theorem symm_trans {f₀ f₁ f₂ : C(X, Y)} (F : Homotopy f₀ f₁) (G : Homo
     simp only [coe_symm_eq]
     linarith
   . exfalso
-    -- porting note: this was proved by linarith in mathlib
-    apply h₂
-    rw [sub_le_comm, not_le] at h₁
-    convert le_of_lt h₁ using 1
-    norm_num
+    linarith
 #align continuous_map.homotopy.symm_trans ContinuousMap.Homotopy.symm_trans
 
 /-- Casting a `Homotopy f₀ f₁` to a `Homotopy g₀ g₁` where `f₀ = g₀` and `f₁ = g₁`.
