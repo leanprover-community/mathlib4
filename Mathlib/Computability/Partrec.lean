@@ -9,7 +9,7 @@ Authors: Mario Carneiro
 ! if you have ported upstream changes.
 -/
 import Mathlib.Computability.Primrec
-import Mathlib.Data.Nat.Psub
+import Mathlib.Data.Nat.PSub
 import Mathlib.Data.PFun
 
 /-!
