@@ -653,8 +653,8 @@ theorem mem_closure_iff {s : Set R} {x} :
 #align non_unital_subsemiring.mem_closure_iff NonUnitalSubsemiring.mem_closure_iff
 
 @[simp]
-theorem closure_addSubmonoid_closure {s : Set R} : closure ↑(AddSubmonoid.closure s) = closure s :=
-  by
+theorem closure_addSubmonoid_closure {s : Set R} :
+    closure ↑(AddSubmonoid.closure s) = closure s := by
   ext x
   refine' ⟨fun hx => _, fun hx => closure_mono AddSubmonoid.subset_closure hx⟩
   rintro - ⟨H, rfl⟩

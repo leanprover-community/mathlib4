@@ -121,8 +121,7 @@ def Bornology.ofBounded' {α : Type _} (B : Set (Set α))
     (union_mem : ∀ s₁ (_ : s₁ ∈ B) s₂ (_ : s₂ ∈ B), s₁ ∪ s₂ ∈ B)
     (unionₛ_univ : ⋃₀ B = univ) :
     Bornology α :=
-  Bornology.ofBounded B empty_mem subset_mem union_mem fun x =>
-    by
+  Bornology.ofBounded B empty_mem subset_mem union_mem fun x => by
     rw [unionₛ_eq_univ_iff] at unionₛ_univ
     rcases unionₛ_univ x with ⟨s, hs, hxs⟩
     exact subset_mem s hs {x} (singleton_subset_iff.mpr hxs)

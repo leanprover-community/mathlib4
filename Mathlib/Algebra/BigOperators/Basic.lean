@@ -120,17 +120,61 @@ scoped macro_rules (kind := bigprod)
 
 /-- `∑ x in s, f x` is notation for `Finset.sum s f`. It is the sum of `f x`,
 where `x` ranges over the finite set `s`. -/
-scoped syntax (name := bigsumin) "∑ " extBinder "in " term "," term:67 : term
+scoped syntax (name := bigsumin) "∑ " extBinder " in " term ", " term:67 : term
 scoped macro_rules (kind := bigsumin)
   | `(∑ $x:ident in $s, $r) => `(Finset.sum $s (fun $x ↦ $r))
   | `(∑ $x:ident : $t in $s, $p) => `(Finset.sum $s (fun $x:ident : $t ↦ $p))
 
 /-- `∏ x, f x` is notation for `Finset.prod s f`. It is the sum of `f x`,
 where `x` ranges over the finite set `s`. -/
-scoped syntax (name := bigprodin) "∏ " extBinder "in " term "," term:67 : term
+scoped syntax (name := bigprodin) "∏ " extBinder " in " term ", " term:67 : term
 scoped macro_rules (kind := bigprodin)
   | `(∏ $x:ident in $s, $r) => `(Finset.prod $s (fun $x ↦ $r))
   | `(∏ $x:ident : $t in $s, $p) => `(Finset.prod $s (fun $x:ident : $t ↦ $p))
+
+open Lean Meta Parser.Term PrettyPrinter.Delaborator SubExpr
+open Std.ExtendedBinder
+
+/-- Delaborator for `Finset.prod`. The `pp.piBinderTypes` option controls whether
+to show the domain type when the product is over `Finset.univ`. -/
+@[scoped delab app.Finset.prod] def delabFinsetProd : Delab := whenPPOption getPPNotation do
+  let #[_, _, _, s, f] := (← getExpr).getAppArgs | failure
+  guard <| f.isLambda
+  let ppDomain ← getPPOption getPPPiBinderTypes
+  let (i, body) ← withAppArg <| withBindingBodyUnusedName fun i => do
+    return (i, ← delab)
+  if s.isAppOfArity ``Finset.univ 2 then
+    let binder ←
+      if ppDomain then
+        let ty ← withNaryArg 1 delab
+        `(extBinder| $(.mk i):ident : $ty)
+      else
+        `(extBinder| $(.mk i):ident)
+    `(∏ $binder, $body)
+  else
+    let ss ← withNaryArg 3 <| delab
+    `(∏ $(.mk i):ident in $ss, $body)
+
+/-- Delaborator for `Finset.prod`. The `pp.piBinderTypes` option controls whether
+to show the domain type when the sum is over `Finset.univ`. -/
+@[scoped delab app.Finset.sum] def delabFinsetSum : Delab := whenPPOption getPPNotation do
+  let #[_, _, _, s, f] := (← getExpr).getAppArgs | failure
+  guard <| f.isLambda
+  let ppDomain ← getPPOption getPPPiBinderTypes
+  let (i, body) ← withAppArg <| withBindingBodyUnusedName fun i => do
+    return (i, ← delab)
+  if s.isAppOfArity ``Finset.univ 2 then
+    let binder ←
+      if ppDomain then
+        let ty ← withNaryArg 1 delab
+        `(extBinder| $(.mk i):ident : $ty)
+      else
+        `(extBinder| $(.mk i):ident)
+    `(∑ $binder, $body)
+  else
+    let ss ← withNaryArg 3 <| delab
+    `(∑ $(.mk i):ident in $ss, $body)
+
 end BigOperators
 
 open BigOperators
@@ -2069,7 +2113,7 @@ theorem finset_sum_eq_sup_iff_disjoint {β : Type _} {i : Finset β} {f : β →
     simp only [Finset.not_mem_empty, IsEmpty.forall_iff, imp_true_iff, Finset.sum_empty,
       Finset.sup_empty, bot_eq_zero, eq_self_iff_true]
   · simp_rw [Finset.sum_cons hz, Finset.sup_cons, Finset.mem_cons, Multiset.sup_eq_union,
-      forall_eq_or_imp, Ne.def, eq_self_iff_true, not_true, IsEmpty.forall_iff, true_and_iff,
+      forall_eq_or_imp, Ne.def, IsEmpty.forall_iff, true_and_iff,
       imp_and, forall_and, ← hr, @eq_comm _ z]
     have := fun x (H : x ∈ i) => ne_of_mem_of_not_mem H hz
     simp (config := { contextual := true }) only [this, not_false_iff, true_imp_iff]
