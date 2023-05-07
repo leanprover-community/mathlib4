@@ -88,13 +88,13 @@ def span (S : Set (ℙ K V)) : Subspace K V where
 #align projectivization.subspace.span Projectivization.Subspace.span
 
 /-- The span of a set of points contains the set of points. -/
-theorem subset_span (S : Set (ℙ K V)) : S ⊆ span S := fun x hx => spanCarrier.of _ hx
+theorem subset_span (S : Set (ℙ K V)) : S ⊆ span S := fun _x hx => spanCarrier.of _ hx
 #align projectivization.subspace.subset_span Projectivization.Subspace.subset_span
 
 /-- The span of a set of points is a Galois insertion between sets of points of a projective space
 and subspaces of the projective space. -/
 def gi : GaloisInsertion (span : Set (ℙ K V) → Subspace K V) SetLike.coe where
-  choice S hS := span S
+  choice S _hS := span S
   gc A B :=
     ⟨fun h => le_trans (subset_span _) h, by
       intro h x hx
@@ -116,7 +116,7 @@ theorem span_coe (W : Subspace K V) : span ↑W = W :=
 /-- The infimum of two subspaces exists. -/
 instance hasInf : Inf (Subspace K V) :=
   ⟨fun A B =>
-    ⟨A ⊓ B, fun v w hv hw hvw h1 h2 =>
+    ⟨A ⊓ B, fun _v _w hv hw _hvw h1 h2 =>
       ⟨A.mem_add _ _ hv hw _ h1.1 h2.1, B.mem_add _ _ hv hw _ h1.2 h2.2⟩⟩⟩
 #align projectivization.subspace.has_inf Projectivization.Subspace.hasInf
 
@@ -161,7 +161,7 @@ theorem span_empty : span (∅ : Set (ℙ K V)) = ⊥ := gi.gc.l_bot
 @[simp]
 theorem span_univ : span (Set.univ : Set (ℙ K V)) = ⊤ := by
   rw [eq_top_iff, SetLike.le_def]
-  intro x hx
+  intro x _hx
   exact subset_span _ (Set.mem_univ x)
 #align projectivization.subspace.span_univ Projectivization.Subspace.span_univ
 
