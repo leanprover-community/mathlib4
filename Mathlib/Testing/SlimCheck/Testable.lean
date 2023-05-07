@@ -124,7 +124,7 @@ instance (priority := low) : PrintableProp p where
 
 /-- `Testable p` uses random examples to try to disprove `p`. -/
 class Testable (p : Prop) where
-  run (cfg : Configuration) (minimize : Bool) : Gen (TestResult p)
+  run (cfg : Configuration) (minimize : Bool) : Gen Id (TestResult p)
 
 @[nolint unusedArguments]
 def NamedBinder (_n : String) (p : Prop) : Prop := p
@@ -216,7 +216,7 @@ namespace Testable
 
 open TestResult
 
-def runProp (p : Prop) [Testable p] : Configuration → Bool → Gen (TestResult p) := Testable.run
+def runProp (p : Prop) [Testable p] : Configuration → Bool → Gen Id (TestResult p) := Testable.run
 
 /-- A `dbgTrace` with special formatting -/
 def slimTrace [Pure m] (s : String) : m PUnit := dbgTrace s!"[SlimCheck: {s}]" (λ _ => pure ())
@@ -292,7 +292,7 @@ a proof that all the values it produces are smaller (according to `SizeOf`)
 than `x`. -/
 def minimizeAux [SampleableExt α] {β : α → Prop} [∀ x, Testable (β x)] (cfg : Configuration)
     (var : String) (x : SampleableExt.proxy α) (n : Nat) :
-    OptionT Gen (Σ x, TestResult (β (SampleableExt.interp x))) := do
+    OptionT (Gen Id) (Σ x, TestResult (β (SampleableExt.interp x))) := do
   let candidates := SampleableExt.shrink.shrink x
   if cfg.traceShrinkCandidates then
     slimTrace s!"Candidates for {var} := {repr x}:\n  {repr candidates}"
@@ -315,7 +315,7 @@ def minimizeAux [SampleableExt α] {β : α → Prop} [∀ x, Testable (β x)] (
 to show the user. -/
 def minimize [SampleableExt α] {β : α → Prop} [∀ x, Testable (β x)] (cfg : Configuration)
     (var : String) (x : SampleableExt.proxy α) (r : TestResult (β $ SampleableExt.interp x)) :
-    Gen (Σ x, TestResult (β $ SampleableExt.interp x)) := do
+    Gen Id (Σ x, TestResult (β $ SampleableExt.interp x)) := do
   if cfg.traceShrink then
      slimTrace "Shrink"
      slimTrace s!"Attempting to shrink {var} := {repr x}"
@@ -415,7 +415,7 @@ section IO
 open TestResult
 
 /-- Execute `cmd` and repeat every time the result is `gave_up` (at most `n` times). -/
-def retry (cmd : Rand (TestResult p)) : Nat → Rand (TestResult p)
+def retry (cmd : Rand Id (TestResult p)) : Nat → Rand Id (TestResult p)
 | 0 => pure $ TestResult.gaveUp 1
 | n+1 => do
   let r ← cmd
@@ -433,7 +433,7 @@ def giveUp (x : Nat) : TestResult p → TestResult p
 
 /-- Try `n` times to find a counter-example for `p`. -/
 def Testable.runSuiteAux (p : Prop) [Testable p] (cfg : Configuration) :
-  TestResult p → Nat → Rand (TestResult p)
+  TestResult p → Nat → Rand Id (TestResult p)
 | r, 0 => pure r
 | r, n+1 => do
   let size := (cfg.numInst - n - 1) * cfg.maxSize / cfg.numInst
@@ -447,14 +447,14 @@ def Testable.runSuiteAux (p : Prop) [Testable p] (cfg : Configuration) :
   | _ => pure $ x
 
 /-- Try to find a counter-example of `p`. -/
-def Testable.runSuite (p : Prop) [Testable p] (cfg : Configuration := {}) : Rand (TestResult p) :=
+def Testable.runSuite (p : Prop) [Testable p] (cfg : Configuration := {}) : Rand Id (TestResult p) :=
   Testable.runSuiteAux p cfg (success $ PSum.inl ()) cfg.numInst
 
 /-- Run a test suite for `p` in `BaseIO` using the global RNG in `stdGenRef`. -/
 def Testable.checkIO (p : Prop) [Testable p] (cfg : Configuration := {}) : BaseIO (TestResult p) :=
   match cfg.randomSeed with
-  | none => IO.runRand (Testable.runSuite p cfg)
-  | some seed => IO.runRandWith seed (Testable.runSuite p cfg)
+  | none => runRand (Testable.runSuite p cfg)
+  | some seed => runRandWith seed (Testable.runSuite p cfg)
 
 end IO
 

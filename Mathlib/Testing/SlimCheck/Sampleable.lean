@@ -98,7 +98,7 @@ class SampleableExt (α : Sort u) where
   proxy : Type v
   [proxyRepr : Repr proxy]
   [shrink : Shrinkable proxy]
-  sample : Gen proxy
+  sample : Gen Id proxy
   interp : proxy → α
 
 attribute [instance] SampleableExt.proxyRepr
@@ -108,7 +108,7 @@ namespace SampleableExt
 
 /-- Use to generate instance whose purpose is to simply generate values
 of a type directly using the `Gen` monad -/
-def mkSelfContained [Repr α] [Shrinkable α] (sample : Gen α) : SampleableExt α where
+def mkSelfContained [Repr α] [Shrinkable α] (sample : Gen Id α) : SampleableExt α where
   proxy := α
   proxyRepr := inferInstance
   shrink := inferInstance
@@ -117,7 +117,7 @@ def mkSelfContained [Repr α] [Shrinkable α] (sample : Gen α) : SampleableExt 
 
 /-- First samples a proxy value and interprets it. Especially useful if
 the proxy and target type are the same. -/
-def interpSample (α : Type u) [SampleableExt α] : Gen α :=
+def interpSample (α : Type u) [SampleableExt α] : Gen Id α :=
   SampleableExt.interp <$> SampleableExt.sample
 
 end SampleableExt
