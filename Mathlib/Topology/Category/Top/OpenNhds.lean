@@ -13,20 +13,20 @@ import Mathlib.Topology.Category.Top.Opens
 /-!
 # The category of open neighborhoods of a point
 
-Given an object `X` of the category `Top` of topological spaces and a point `x : X`, this file
-builds the type `open_nhds x` of open neighborhoods of `x` in `X` and endows it with the partial
+Given an object `X` of the category `TopCat` of topological spaces and a point `x : X`, this file
+builds the type `OpenNhds x` of open neighborhoods of `x` in `X` and endows it with the partial
 order given by inclusion and the corresponding category structure (as a full subcategory of the
-poset category `set X`). This is used in `topology.sheaves.stalks` to build the stalk of a sheaf
-at `x` as a limit over `open_nhds x`.
+poset category `Set X`). This is used in `Topology.Sheaves.Stalks` to build the stalk of a sheaf
+at `x` as a limit over `OpenNhds x`.
 
 ## Main declarations
 
-Besides `open_nhds`, the main constructions here are:
+Besides `OpenNhds`, the main constructions here are:
 
-* `inclusion (x : X)`: the obvious functor `open_nhds x ⥤ opens X`
-* `functor_nhds`: An open map `f : X ⟶ Y` induces a functor `open_nhds x ⥤ open_nhds (f x)`
-* `adjunction_nhds`: An open map `f : X ⟶ Y` induces an adjunction between `open_nhds x` and
-                     `open_nhds (f x)`.
+* `inclusion (x : X)`: the obvious functor `OpenNhds x ⥤ Opens X`
+* `functorNhds`: An open map `f : X ⟶ Y` induces a functor `OpenNhds x ⥤ OpenNhds (f x)`
+* `adjunctionNhds`: An open map `f : X ⟶ Y` induces an adjunction between `OpenNhds x` and
+                    `OpenNhds (f x)`.
 -/
 
 
@@ -80,14 +80,12 @@ instance opensNhdsHomHasCoeToFun {x : X} {U V : OpenNhds x} : CoeFun (U ⟶ V) f
   ⟨fun f x => ⟨x, f.le x.2⟩⟩
 #align topological_space.open_nhds.opens_nhds_hom_has_coe_to_fun TopologicalSpace.OpenNhds.opensNhdsHomHasCoeToFun
 
-/-- The inclusion `U ⊓ V ⟶ U` as a morphism in the category of open sets.
--/
+/-- The inclusion `U ⊓ V ⟶ U` as a morphism in the category of open sets. -/
 def infLeLeft {x : X} (U V : OpenNhds x) : U ⊓ V ⟶ U :=
   homOfLE inf_le_left
 #align topological_space.open_nhds.inf_le_left TopologicalSpace.OpenNhds.infLeLeft
 
-/-- The inclusion `U ⊓ V ⟶ V` as a morphism in the category of open sets.
--/
+/-- The inclusion `U ⊓ V ⟶ V` as a morphism in the category of open sets. -/
 def infLeRight {x : X} (U V : OpenNhds x) : U ⊓ V ⟶ V :=
   homOfLE inf_le_right
 #align topological_space.open_nhds.inf_le_right TopologicalSpace.OpenNhds.infLeRight
@@ -137,8 +135,8 @@ theorem map_id_obj_unop (x : X) (U : (OpenNhds x)ᵒᵖ) : (map (𝟙 X) x).obj 
 theorem op_map_id_obj (x : X) (U : (OpenNhds x)ᵒᵖ) : (map (𝟙 X) x).op.obj U = U := by simp
 #align topological_space.open_nhds.op_map_id_obj TopologicalSpace.OpenNhds.op_map_id_obj
 
-/-- `opens.map f` and `open_nhds.map f` form a commuting square (up to natural isomorphism)
-with the inclusion functors into `opens X`. -/
+/-- `Opens.map f` and `OpenNhds.map f` form a commuting square (up to natural isomorphism)
+with the inclusion functors into `Opens X`. -/
 def inclusionMapIso (x : X) : inclusion (f x) ⋙ Opens.map f ≅ map f x ⋙ inclusion x :=
   NatIso.ofComponents (fun U => by constructor; rfl; rfl; exact 𝟙 _; exact 𝟙 _) (by simp)
 #align topological_space.open_nhds.inclusion_map_iso TopologicalSpace.OpenNhds.inclusionMapIso
@@ -163,16 +161,14 @@ open TopologicalSpace
 
 variable {f}
 
-/-- An open map `f : X ⟶ Y` induces a functor `open_nhds x ⥤ open_nhds (f x)`.
--/
+/-- An open map `f : X ⟶ Y` induces a functor `OpenNhds x ⥤ OpenNhds (f x)`. -/
 @[simps]
 def functorNhds (h : IsOpenMap f) (x : X) : OpenNhds x ⥤ OpenNhds (f x) where
   obj U := ⟨h.functor.obj U.1, ⟨x, U.2, rfl⟩⟩
   map i := h.functor.map i
 #align is_open_map.functor_nhds IsOpenMap.functorNhds
 
-/-- An open map `f : X ⟶ Y` induces an adjunction between `open_nhds x` and `open_nhds (f x)`.
--/
+/-- An open map `f : X ⟶ Y` induces an adjunction between `OpenNhds x` and `OpenNhds (f x)`. -/
 def adjunctionNhds (h : IsOpenMap f) (x : X) : IsOpenMap.functorNhds h x ⊣ OpenNhds.map f x :=
   Adjunction.mkOfUnitCounit
     { unit := { app := fun U => homOfLE fun x hxU => ⟨x, hxU, rfl⟩ }
