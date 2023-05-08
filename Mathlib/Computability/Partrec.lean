@@ -284,11 +284,11 @@ theorem const (s : σ) : Computable fun _ : α => s :=
   (Primrec.const _).to_comp
 #align computable.const Computable.const
 
-theorem of_option {f : α → Option β} (hf : Computable f) : Partrec fun a => (f a : Part β) :=
+theorem ofOption {f : α → Option β} (hf : Computable f) : Partrec fun a => (f a : Part β) :=
   (Nat.Partrec.ppred.comp hf).of_eq fun n => by
     cases' decode (α := α) n with a <;> simp
     cases' f a with b <;> simp
-#align computable.of_option Computable.of_option
+#align computable.of_option Computable.ofOption
 
 theorem to₂ {f : α × β → σ} (hf : Computable f) : Computable₂ fun a b => f (a, b) :=
   hf.of_eq fun ⟨_, _⟩ => rfl
@@ -443,7 +443,7 @@ protected theorem some : Partrec (@Part.some α) :=
 #align partrec.some Partrec.some
 
 theorem _root_.Decidable.Partrec.const' (s : Part σ) [Decidable s.Dom] : Partrec fun _ : α => s :=
-  (of_option (const (toOption s))).of_eq fun _ => of_toOption s
+  (Computable.ofOption (const (toOption s))).of_eq fun _ => of_toOption s
 #align decidable.partrec.const' Decidable.Partrec.const'
 
 theorem const' (s : Part σ) : Partrec fun _ : α => s :=
@@ -574,7 +574,7 @@ theorem rfind {p : α → ℕ →. Bool} (hp : Partrec₂ p) : Partrec fun a => 
 
 theorem rfindOpt {f : α → ℕ → Option σ} (hf : Computable₂ f) :
     Partrec fun a => Nat.rfindOpt (f a) :=
-  (rfind (Primrec.option_isSome.to_comp.comp hf).partrec.to₂).bind (of_option hf)
+  (rfind (Primrec.option_isSome.to_comp.comp hf).partrec.to₂).bind (ofOption hf)
 #align partrec.rfind_opt Partrec.rfindOpt
 
 theorem nat_casesOn_right {f : α → ℕ} {g : α → σ} {h : α → ℕ →. σ} (hf : Computable f)
@@ -595,7 +595,7 @@ theorem bind_decode₂_iff {f : α →. σ} :
     Partrec f ↔ Nat.Partrec fun n => Part.bind (decode₂ α n) fun a => (f a).map encode :=
   ⟨fun hf =>
     nat_iff.1 <|
-      (of_option Primrec.decode₂.to_comp).bind <|
+      (Computable.ofOption Primrec.decode₂.to_comp).bind <|
         (map hf (Computable.encode.comp snd).to₂).comp snd,
     fun h =>
     map_encode_iff.1 <| by simpa [encodek₂] using (nat_iff.2 h).comp (@Computable.encode α _)⟩
@@ -648,9 +648,9 @@ theorem bind_decode_iff {f : α → β → Option σ} :
         (encode (decode (α := β) a.2)).casesOn (some Option.none)
           fun n => Part.map (f a.1) (decode (α := β) n) :=
       Partrec.nat_casesOn_right
-        (h := fun (a : α × ℕ) (n : ℕ) ↦ map (fun b ↦ f a.1 b) (ofOption (decode n)))
+        (h := fun (a : α × ℕ) (n : ℕ) ↦ map (fun b ↦ f a.1 b) (Part.ofOption (decode n)))
         (Primrec.encdec.to_comp.comp snd) (const Option.none)
-        ((of_option (Computable.decode.comp snd)).map (hf.comp (fst.comp <| fst.comp fst) snd).to₂)
+        ((ofOption (Computable.decode.comp snd)).map (hf.comp (fst.comp <| fst.comp fst) snd).to₂)
     refine' this.of_eq fun a => _
     simp; cases decode (α := β) a.2 <;> simp [encodek]⟩
 #align computable.bind_decode_iff Computable.bind_decode_iff
@@ -783,7 +783,7 @@ theorem option_cases_right {o : α → Option β} {f : α → σ} {g : α → β
       Nat.casesOn (encode (o a)) (Part.some (f a)) (fun n => Part.bind (decode (α := β) n) (g a)) :=
     nat_casesOn_right (h := fun a n ↦ Part.bind (ofOption (decode n)) fun b ↦ g a b)
       (encode_iff.2 ho) hf.partrec <|
-        ((@Computable.decode β _).comp snd).of_option.bind (hg.comp (fst.comp fst) snd).to₂
+        ((@Computable.decode β _).comp snd).ofOption.bind (hg.comp (fst.comp fst) snd).to₂
   this.of_eq fun a => by cases' o a with b <;> simp [encodek]
 #align partrec.option_cases_right Partrec.option_cases_right
 
