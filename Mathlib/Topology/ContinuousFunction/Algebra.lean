@@ -25,16 +25,16 @@ import Mathlib.Topology.UniformSpace.CompactConvergence
 /-!
 # Algebraic structures over continuous functions
 
-In this file we define instances of algebraic structures over the type `continuous_map α β`
+In this file we define instances of algebraic structures over the type `ContinuousMap α β`
 (denoted `C(α, β)`) of **bundled** continuous maps from `α` to `β`. For example, `C(α, β)`
 is a group when `β` is a group, a ring when `β` is a ring, etc.
 
 For each type of algebraic structure, we also define an appropriate subobject of `α → β`
-with carrier `{ f : α → β | continuous f }`. For example, when `β` is a group, a subgroup
-`continuous_subgroup α β` of `α → β` is constructed with carrier `{ f : α → β | continuous f }`.
+with carrier `{ f : α → β | Continuous f }`. For example, when `β` is a group, a subgroup
+`continuousSubgroup α β` of `α → β` is constructed with carrier `{ f : α → β | Continuous f }`.
 
 Note that, rather than using the derived algebraic structures on these subobjects
-(for example, when `β` is a group, the derived group structure on `continuous_subgroup α β`),
+(for example, when `β` is a group, the derived group structure on `continuousSubgroup α β`),
 one should use `C(α, β)` with the appropriate instance of the structure.
 -/
 
@@ -273,7 +273,7 @@ the structure of a group.
 
 section Subtype
 
-/-- The `submonoid` of continuous maps `α → β`. -/
+/-- The `Submonoid` of continuous maps `α → β`. -/
 @[to_additive "The `add_submonoid` of continuous maps `α → β`. "]
 def continuousSubmonoid (α : Type _) (β : Type _) [TopologicalSpace α] [TopologicalSpace β]
     [MulOneClass β] [ContinuousMul β] : Submonoid (α → β) where
@@ -339,7 +339,7 @@ instance [LocallyCompactSpace α] [Mul β] [ContinuousMul β] : ContinuousMul C(
       continuous_eval'.comp (continuous_snd.prod_map continuous_id)
     exact h1.mul h2⟩
 
-/-- Coercion to a function as an `monoid_hom`. Similar to `monoid_hom.coe_fn`. -/
+/-- Coercion to a function as an `MonoidHom`. Similar to `MonoidHom.coeFn`. -/
 @[to_additive (attr := simps)
   "Coercion to a function as an `add_monoid_hom`. Similar to `add_monoid_hom.coe_fn`." ]
 def coeFnMonoidHom [Monoid β] [ContinuousMul β] : C(α, β) →* α → β where
@@ -352,7 +352,7 @@ def coeFnMonoidHom [Monoid β] [ContinuousMul β] : C(α, β) →* α → β whe
 variable (α)
 
 /-- Composition on the left by a (continuous) homomorphism of topological monoids, as a
-`monoid_hom`. Similar to `monoid_hom.comp_left`. -/
+`MonoidHom`. Similar to `MonoidHom.compLeft`. -/
 @[to_additive (attr := simps)
 "Composition on the left by a (continuous) homomorphism of topological `add_monoid`s,\nas an
 `add_monoid_hom`. Similar to `add_monoid_hom.comp_left`."]
@@ -367,7 +367,7 @@ protected def _root_.MonoidHom.compLeftContinuous {γ : Type _} [Monoid β] [Con
 
 variable {α}
 
-/-- Composition on the right as a `monoid_hom`. Similar to `monoid_hom.comp_hom'`. -/
+/-- Composition on the right as a `MonoidHom`. Similar to `MonoidHom.compHom'`. -/
 @[to_additive (attr := simps)
       "Composition on the right as an `add_monoid_hom`. Similar to\n`add_monoid_hom.comp_hom'`."]
 def compMonoidHom' {γ : Type _} [TopologicalSpace γ] [MulOneClass γ] [ContinuousMul γ]
@@ -535,7 +535,7 @@ instance {α : Type _} {β : Type _} [TopologicalSpace α] [TopologicalSpace β]
     coe_pow coe_nat_cast coe_int_cast
 
 /-- Composition on the left by a (continuous) homomorphism of topological semirings, as a
-`ring_hom`.  Similar to `ring_hom.comp_left`. -/
+`RingHom`.  Similar to `RingHom.compLeft`. -/
 @[simps!]
 protected def _root_.RingHom.compLeftContinuous (α : Type _) {β : Type _} {γ : Type _}
     [TopologicalSpace α]
@@ -544,7 +544,7 @@ protected def _root_.RingHom.compLeftContinuous (α : Type _) {β : Type _} {γ 
   { g.toMonoidHom.compLeftContinuous α hg, g.toAddMonoidHom.compLeftContinuous α hg with }
 #align ring_hom.comp_left_continuous RingHom.compLeftContinuous
 
-/-- Coercion to a function as a `ring_hom`. -/
+/-- Coercion to a function as a `RingHom`. -/
 @[simps!]
 def coeFnRingHom {α : Type _} {β : Type _} [TopologicalSpace α] [TopologicalSpace β] [Semiring β]
     [TopologicalSemiring β] : C(α, β) →+* α → β :=
@@ -665,8 +665,8 @@ instance module : Module R C(α, M) :=
 
 variable (R)
 
-/-- Composition on the left by a continuous linear map, as a `linear_map`.
-Similar to `linear_map.comp_left`. -/
+/-- Composition on the left by a continuous linear map, as a `LinearMap`.
+Similar to `LinearMap.compLeft`. -/
 @[simps]
 protected def _root_.ContinuousLinearMap.compLeftContinuous (α : Type _) [TopologicalSpace α]
     (g : M →L[R] M₂) : C(α, M) →ₗ[R] C(α, M₂) :=
@@ -674,7 +674,7 @@ protected def _root_.ContinuousLinearMap.compLeftContinuous (α : Type _) [Topol
     map_smul' := fun c _ => ext fun _ => g.map_smul' c _ }
 #align continuous_linear_map.comp_left_continuous ContinuousLinearMap.compLeftContinuous
 
-/-- Coercion to a function as a `linear_map`. -/
+/-- Coercion to a function as a `LinearMap`. -/
 @[simps]
 def coeFnLinearMap : C(α, M) →ₗ[R] α → M :=
   { (coeFnAddMonoidHom : C(α, M) →+ _) with
@@ -692,7 +692,7 @@ section AlgebraStructure
 
 In this section we show that continuous functions valued in a topological algebra `A` over a ring
 `R` inherit the structure of an algebra. Note that the hypothesis that `A` is a topological algebra
-is obtained by requiring that `A` be both a `has_continuous_smul` and a `topological_semiring`.-/
+is obtained by requiring that `A` be both a `ContinuousSMul` and a `TopologicalSemiring`.-/
 
 
 section Subtype
@@ -717,7 +717,7 @@ variable {α : Type _} [TopologicalSpace α] {R : Type _} [CommSemiring R] {A : 
   [TopologicalSpace A] [Semiring A] [Algebra R A] [TopologicalSemiring A] {A₂ : Type _}
   [TopologicalSpace A₂] [Semiring A₂] [Algebra R A₂] [TopologicalSemiring A₂]
 
-/-- Continuous constant functions as a `ring_hom`. -/
+/-- Continuous constant functions as a `RingHom`. -/
 def ContinuousMap.c : R →+* C(α, A) where
   toFun := fun c : R => ⟨fun _ : α => (algebraMap R A) c, continuous_const⟩
   map_one' := by ext _; exact (algebraMap R A).map_one
@@ -742,7 +742,7 @@ instance ContinuousMap.algebra : Algebra R C(α, A) where
 variable (R)
 
 /-- Composition on the left by a (continuous) homomorphism of topological `R`-algebras, as an
-`alg_hom`. Similar to `alg_hom.comp_left`. -/
+`AlgHom`. Similar to `AlgHom.compLeft`. -/
 @[simps!]
 protected def AlgHom.compLeftContinuous {α : Type _} [TopologicalSpace α] (g : A →ₐ[R] A₂)
     (hg : Continuous g) : C(α, A) →ₐ[R] C(α, A₂) :=
@@ -777,7 +777,7 @@ def ContinuousMap.compRightAlgHom {α β : Type _} [TopologicalSpace α] [Topolo
 
 variable {A}
 
-/-- Coercion to a function as an `alg_hom`. -/
+/-- Coercion to a function as an `AlgHom`. -/
 @[simps!]
 def ContinuousMap.coeFnAlgHom : C(α, A) →ₐ[R] α → A :=
   {
@@ -910,7 +910,7 @@ end ModuleOverContinuousFunctions
 
 /-!
 We now provide formulas for `f ⊓ g` and `f ⊔ g`, where `f g : C(α, β)`,
-in terms of `continuous_map.abs`.
+in terms of `ContinuousMap.abs`.
 -/
 
 
@@ -1030,8 +1030,8 @@ variable [ContinuousStar A] [Algebra 𝕜 A]
 
 /-- The functorial map taking `f : C(X, Y)` to `C(Y, A) →⋆ₐ[𝕜] C(X, A)` given by pre-composition
 with the continuous function `f`. See `continuous_map.comp_monoid_hom'` and
-`continuous_map.comp_add_monoid_hom'`, `continuous_map.comp_right_alg_hom` for bundlings of
-pre-composition into a `monoid_hom`, an `add_monoid_hom` and an `alg_hom`, respectively, under
+`continuous_map.comp_add_monoid_hom'`, `ContinuousMap.compRightAlgHom` for bundlings of
+pre-composition into a `MonoidHom`, an `AddMonoidHom` and an `AlgHom`, respectively, under
 suitable assumptions on `A`. -/
 @[simps]
 def compStarAlgHom' (f : C(X, Y)) : C(Y, A) →⋆ₐ[𝕜] C(X, A) where
@@ -1045,7 +1045,7 @@ def compStarAlgHom' (f : C(X, Y)) : C(Y, A) →⋆ₐ[𝕜] C(X, A) where
 #align continuous_map.comp_star_alg_hom' ContinuousMap.compStarAlgHom'
 
 /-- `continuous_map.comp_star_alg_hom'` sends the identity continuous map to the identity
-`star_alg_hom` -/
+`StarAlgHom` -/
 theorem compStarAlgHom'_id : compStarAlgHom' 𝕜 A (ContinuousMap.id X) = StarAlgHom.id 𝕜 C(X, A) :=
   StarAlgHom.ext fun _ => ContinuousMap.ext fun _ => rfl
 #align continuous_map.comp_star_alg_hom'_id ContinuousMap.compStarAlgHom'_id
@@ -1095,7 +1095,7 @@ variable (A : Type _) [TopologicalSpace A] [Semiring A] [TopologicalSemiring A] 
 
 variable [ContinuousStar A] [Algebra 𝕜 A]
 
-/-- `continuous_map.comp_star_alg_hom'` as a `star_alg_equiv` when the continuous map `f` is
+/-- `continuous_map.comp_star_alg_hom'` as a `StarAlgEquiv` when the continuous map `f` is
 actually a homeomorphism. -/
 @[simps]
 def compStarAlgEquiv' (f : X ≃ₜ Y) : C(Y, A) ≃⋆ₐ[𝕜] C(X, A) :=
