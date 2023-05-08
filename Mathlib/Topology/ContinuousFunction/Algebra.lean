@@ -830,11 +830,6 @@ def Set.SeparatesPointsStrongly (s : Set C(α, 𝕜)) : Prop :=
 
 variable [Field 𝕜] [TopologicalRing 𝕜]
 
--- TODO: move (do not merge)
-instance : SubmoduleClass (Subalgebra 𝕜 C(α, 𝕜)) 𝕜 C(α, 𝕜) where
-  smul_mem _ _ hx := Subalgebra.smul_mem _ hx _
-
-set_option synthInstance.etaExperiment true in
 set_option synthInstance.maxHeartbeats 40000 in
 /-- Working in continuous functions into a topological field,
 a subalgebra of functions that separates points also separates points strongly.
