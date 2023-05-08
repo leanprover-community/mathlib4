@@ -242,9 +242,7 @@ theorem morphismProperty_is_top (P : MorphismProperty W.Localization)
   · intro
     let G : _ ⥤ W.Localization := Quotient.functor _
     haveI : Full G := Quotient.fullFunctor _
-    suffices
-      ∀ (X₁ X₂ : Paths (LocQuiver W)) (f : X₁ ⟶ X₂), P (G.map f)
-      by
+    suffices ∀ (X₁ X₂ : Paths (LocQuiver W)) (f : X₁ ⟶ X₂), P (G.map f) by
       rcases X with ⟨⟨X⟩⟩
       rcases Y with ⟨⟨Y⟩⟩
       simpa only [Functor.image_preimage] using this _ _ (G.preimage f)
@@ -297,8 +295,7 @@ def natTransExtension {F₁ F₂ : W.Localization ⥤ D} (τ : W.Q ⋙ F₁ ⟶ 
     where
   app := NatTransExtension.app τ
   naturality := by
-    suffices MorphismProperty.naturalityProperty (NatTransExtension.app τ) = ⊤
-      by
+    suffices MorphismProperty.naturalityProperty (NatTransExtension.app τ) = ⊤ by
       intro X Y f
       simpa only [← this] using MorphismProperty.top_apply f
     refine' morphismProperty_is_top'
