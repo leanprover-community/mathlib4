@@ -175,8 +175,7 @@ def tail (p : StrictSeries α) (h : p.length ≠ 0) : StrictSeries α :=
     exact hj)⟩
   StrictMono := fun _ _ H ↦ p.StrictMono (Nat.succ_lt_succ H) }
 
-lemma tail_zero (p : StrictSeries α) (h : p.length ≠ 0) : p.tail h 0 = p 1 :=
-by
+lemma tail_zero (p : StrictSeries α) (h : p.length ≠ 0) : p.tail h 0 = p 1 := by
   rw [tail_toFun]
   congr
   change (0 : ℕ) % (p.length.pred + 1) + 1 = 1 % (p.length + 1)
