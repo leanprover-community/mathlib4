@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Chris Hughes, Mario Carneiro, Anne Baanen
 
 ! This file was ported from Lean 3 source module ring_theory.ideal.quotient
-! leanprover-community/mathlib commit e064a7bf82ad94c3c17b5128bbd860d1ec34874e
+! leanprover-community/mathlib commit 2f39bcbc98f8255490f8d4562762c9467694c809
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -82,6 +82,28 @@ instance commRing (I : Ideal R) : CommRing (R ⧸ I) :=
   { @Submodule.Quotient.addCommGroup _ _ (id _) (id _) (id _) I,
     inferInstanceAs (CommRing (Quotient.ringCon I).Quotient) with }
 #align ideal.quotient.comm_ring Ideal.Quotient.commRing
+
+-- this instance is harder to find than the one via `Algebra α (R ⧸ I)`, so use a lower priority
+instance (priority := 100) isScalarTower_right {α} [SMul α R] [IsScalarTower α R R] :
+    -- porting note: added `letI` since otherwise this instance can't be found
+    letI : SMul (R ⧸ I) (R ⧸ I) := Mul.toSMul _
+    IsScalarTower α (R ⧸ I) (R ⧸ I) :=
+  (Quotient.ringCon I).isScalarTower_right
+#align ideal.quotient.is_scalar_tower_right Ideal.Quotient.isScalarTower_right
+
+instance smulCommClass {α} [SMul α R] [IsScalarTower α R R] [SMulCommClass α R R] :
+    -- porting note: added `letI` since otherwise this instance can't be found
+    letI : SMul (R ⧸ I) (R ⧸ I) := Mul.toSMul _
+    SMulCommClass α (R ⧸ I) (R ⧸ I) :=
+  (Quotient.ringCon I).smulCommClass
+#align ideal.quotient.smul_comm_class Ideal.Quotient.smulCommClass
+
+instance smulCommClass' {α} [SMul α R] [IsScalarTower α R R] [SMulCommClass R α R] :
+    -- porting note: added `letI` since otherwise this instance can't be found
+    letI : SMul (R ⧸ I) (R ⧸ I) := Mul.toSMul _
+    SMulCommClass (R ⧸ I) α (R ⧸ I) :=
+  (Quotient.ringCon I).smulCommClass'
+#align ideal.quotient.smul_comm_class' Ideal.Quotient.smulCommClass'
 
 /-- The ring homomorphism from a ring `R` to a quotient ring `R/I`. -/
 def mk (I : Ideal R) : R →+* R ⧸ I where
