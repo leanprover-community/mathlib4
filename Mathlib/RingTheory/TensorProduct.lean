@@ -559,6 +559,7 @@ theorem includeRight_apply (b : B) : (includeRight : B →ₐ[R] A ⊗[R] B) b =
   rfl
 #align algebra.tensor_product.include_right_apply Algebra.TensorProduct.includeRight_apply
 
+set_option synthInstance.etaExperiment true in
 theorem includeLeft_comp_algebraMap {R S T : Type _} [CommRing R] [CommRing S] [CommRing T]
     [Algebra R S] [Algebra R T] :
     (includeLeft.toRingHom.comp (algebraMap R S) : R →+* S ⊗[R] T) =
@@ -577,6 +578,7 @@ variable {A : Type v₁} [Ring A] [Algebra R A]
 
 variable {B : Type v₂} [Ring B] [Algebra R B]
 
+set_option synthInstance.etaExperiment true in
 instance : Ring (A ⊗[R] B) :=
   { (by infer_instance : AddCommGroup (A ⊗[R] B)), (by infer_instance : Semiring (A ⊗[R] B)) with }
 
