@@ -14,7 +14,7 @@ import Mathlib.LinearAlgebra.Orientation
 /-!
 # The standard orientation on `ℂ`.
 
-This had previously been in `linear_algebra.orientation`,
+This had previously been in `LinearAlgebra.Orientation`,
 but keeping it separate results in a significant import reduction.
 -/
 
@@ -23,8 +23,7 @@ namespace Complex
 
 /-- The standard orientation on `ℂ`. -/
 protected noncomputable def orientation : Orientation ℝ ℂ (Fin 2) :=
-  Complex.basisOneI.Orientation
+  Complex.basisOneI.orientation
 #align complex.orientation Complex.orientation
 
 end Complex
-
