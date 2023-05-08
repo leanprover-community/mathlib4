@@ -1134,10 +1134,10 @@ theorem coe_prodMap [Module R₁ M₂] [Module R₁ M₃] [Module R₁ M₄] (f�
 #align continuous_linear_map.coe_prod_map ContinuousLinearMap.coe_prodMap
 
 @[simp, norm_cast]
-theorem coe_prod_map [Module R₁ M₂] [Module R₁ M₃] [Module R₁ M₄] (f₁ : M₁ →L[R₁] M₂)
+theorem coe_prodMap' [Module R₁ M₂] [Module R₁ M₃] [Module R₁ M₄] (f₁ : M₁ →L[R₁] M₂)
     (f₂ : M₃ →L[R₁] M₄) : ⇑(f₁.prodMap f₂) = Prod.map f₁ f₂ :=
   rfl
-#align continuous_linear_map.coe_prod_map' ContinuousLinearMap.coe_prod_map
+#align continuous_linear_map.coe_prod_map' ContinuousLinearMap.coe_prodMap'
 
 /-- The continuous linear map given by `(x, y) ↦ f₁ x + f₂ y`. -/
 def coprod [Module R₁ M₂] [Module R₁ M₃] [ContinuousAdd M₃] (f₁ : M₁ →L[R₁] M₃)
