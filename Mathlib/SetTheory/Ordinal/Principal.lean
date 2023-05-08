@@ -140,8 +140,8 @@ theorem principal_add_of_le_one {o : Ordinal} (ho : o ≤ 1) : Principal (· + �
   · exact principal_add_one
 #align ordinal.principal_add_of_le_one Ordinal.principal_add_of_le_one
 
-theorem principal_add_isLimit {o : Ordinal} (ho₁ : 1 < o) (ho : Principal (· + ·) o) : o.IsLimit :=
-  by
+theorem principal_add_isLimit {o : Ordinal} (ho₁ : 1 < o) (ho : Principal (· + ·) o) :
+    o.IsLimit := by
   refine' ⟨fun ho₀ => _, fun a hao => _⟩
   · rw [ho₀] at ho₁
     exact not_lt_of_gt zero_lt_one ho₁
@@ -178,8 +178,7 @@ theorem exists_lt_add_of_not_principal_add {a} (ha : ¬Principal (· + ·) a) :
 
 theorem principal_add_iff_add_lt_ne_self {a} :
     Principal (· + ·) a ↔ ∀ ⦃b c⦄, b < a → c < a → b + c ≠ a :=
-  ⟨fun ha b c hb hc => (ha hb hc).ne, fun H =>
-    by
+  ⟨fun ha b c hb hc => (ha hb hc).ne, fun H => by
     by_contra' ha
     rcases exists_lt_add_of_not_principal_add ha with ⟨b, c, hb, hc, rfl⟩
     exact (H hb hc).irrefl⟩

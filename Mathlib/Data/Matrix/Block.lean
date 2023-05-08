@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ellen Arlt, Blair Shi, Sean Leather, Mario Carneiro, Johan Commelin
 
 ! This file was ported from Lean 3 source module data.matrix.block
-! leanprover-community/mathlib commit b5665fd3fb2a80ee05ff42b6031ef2055b8f9d85
+! leanprover-community/mathlib commit c060baa79af5ca092c54b8bf04f0f10592f59489
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -233,6 +233,12 @@ theorem fromBlocks_neg [Neg R] (A : Matrix n l R) (B : Matrix n m R) (C : Matrix
   ext i j
   cases i <;> cases j <;> simp [fromBlocks]
 #align matrix.from_blocks_neg Matrix.fromBlocks_neg
+
+@[simp]
+theorem fromBlocks_zero [Zero α] : fromBlocks (0 : Matrix n l α) 0 0 (0 : Matrix o m α) = 0 := by
+  ext (i j)
+  rcases i with ⟨⟩ <;> rcases j with ⟨⟩ <;> rfl
+#align matrix.from_blocks_zero Matrix.fromBlocks_zero
 
 theorem fromBlocks_add [Add α] (A : Matrix n l α) (B : Matrix n m α) (C : Matrix o l α)
     (D : Matrix o m α) (A' : Matrix n l α) (B' : Matrix n m α) (C' : Matrix o l α)

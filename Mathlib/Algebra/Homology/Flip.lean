@@ -42,7 +42,6 @@ def flipObj (C : HomologicalComplex (HomologicalComplex V c) c') :
     { X := fun j => (C.X j).X i
       d := fun j j' => (C.d j j').f i
       shape := fun j j' w => by
-        simp_rw [C.shape j j' w]
         simp_all only [shape, zero_f]
       d_comp_d' := fun j₁ j₂ j₃ _ _ => congr_hom (C.d_comp_d j₁ j₂ j₃) i }
   d i i' :=

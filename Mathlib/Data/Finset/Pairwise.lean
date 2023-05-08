@@ -28,8 +28,7 @@ instance [DecidableEq α] {r : α → α → Prop} [DecidableRel r] {s : Finset 
   decidable_of_iff' (∀ a ∈ s, ∀ b ∈ s, a ≠ b → r a b) Iff.rfl
 
 theorem Finset.pairwiseDisjoint_range_singleton :
-    (Set.range (singleton : α → Finset α)).PairwiseDisjoint id :=
-  by
+    (Set.range (singleton : α → Finset α)).PairwiseDisjoint id := by
   rintro _ ⟨a, rfl⟩ _ ⟨b, rfl⟩ h
   exact disjoint_singleton.2 (ne_of_apply_ne _ h)
 #align finset.pairwise_disjoint_range_singleton Finset.pairwiseDisjoint_range_singleton
@@ -43,8 +42,7 @@ theorem PairwiseDisjoint.elim_finset {s : Set ι} {f : ι → Finset α} (hs : s
 
 theorem PairwiseDisjoint.image_finset_of_le [DecidableEq ι] [SemilatticeInf α] [OrderBot α]
     {s : Finset ι} {f : ι → α} (hs : (s : Set ι).PairwiseDisjoint f) {g : ι → ι}
-    (hf : ∀ a, f (g a) ≤ f a) : (s.image g : Set ι).PairwiseDisjoint f :=
-  by
+    (hf : ∀ a, f (g a) ≤ f a) : (s.image g : Set ι).PairwiseDisjoint f := by
   rw [coe_image]
   exact hs.image_of_le hf
 #align set.pairwise_disjoint.image_finset_of_le Set.PairwiseDisjoint.image_finset_of_le
@@ -55,8 +53,7 @@ variable [Lattice α] [OrderBot α]
 `Set.PairwiseDisjoint.bunionᵢ`. -/
 theorem PairwiseDisjoint.bunionᵢ_finset {s : Set ι'} {g : ι' → Finset ι} {f : ι → α}
     (hs : s.PairwiseDisjoint fun i' : ι' => (g i').sup f)
-    (hg : ∀ i ∈ s, (g i : Set ι).PairwiseDisjoint f) : (⋃ i ∈ s, ↑(g i)).PairwiseDisjoint f :=
-  by
+    (hg : ∀ i ∈ s, (g i : Set ι).PairwiseDisjoint f) : (⋃ i ∈ s, ↑(g i)).PairwiseDisjoint f := by
   rintro a ha b hb hab
   simp_rw [Set.mem_unionᵢ] at ha hb
   obtain ⟨c, hc, ha⟩ := ha

@@ -263,8 +263,7 @@ theorem bit0_mod_bit0 : bit0 n % bit0 m = bit0 (n % m) := by
 #align nat.bit0_mod_bit0 Nat.bit0_mod_bit0
 
 @[simp]
-theorem bit1_mod_bit0 : bit1 n % bit0 m = bit1 (n % m) :=
-  by
+theorem bit1_mod_bit0 : bit1 n % bit0 m = bit1 (n % m) := by
   have h₁ := congr_arg bit1 (Nat.div_add_mod n m)
   -- `∀ m n : ℕ, bit0 m * n = bit0 (m * n)` seems to be missing...
   rw [bit1_add, bit0_eq_two_mul, ← mul_assoc, ← bit0_eq_two_mul] at h₁
