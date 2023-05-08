@@ -60,12 +60,12 @@ variable [BooleanRing α] (a b : α)
 instance : IsIdempotent α (· * ·) :=
   ⟨BooleanRing.mul_self⟩
 
--- @[simp]
+-- @[simp] -- Porting note: simpNF linter complains because this lemmas in other files not to be in simpNF anymore
 theorem mul_self : a * a = a :=
   BooleanRing.mul_self _
 #align mul_self mul_self
 
--- @[simp]
+-- @[simp] -- Porting note: simpNF linter complains because this lemmas in other files not to be in simpNF anymore
 theorem add_self : a + a = 0 := by
   have : a + a = a + a + (a + a) :=
     calc
@@ -76,7 +76,7 @@ theorem add_self : a + a = 0 := by
   rwa [self_eq_add_left] at this
 #align add_self add_self
 
--- @[simp]
+-- @[simp] -- Porting note: simpNF linter complains because this lemmas in other files not to be in simpNF anymore
 theorem neg_eq : -a = a :=
   calc
     -a = -a + 0 := by rw [add_zero]
@@ -92,7 +92,7 @@ theorem add_eq_zero' : a + b = 0 ↔ a = b :=
 
 #align add_eq_zero' add_eq_zero'
 
--- @[simp]
+-- @[simp] -- Porting note: simpNF linter complains because this lemmas in other files not to be in simpNF anymore
 theorem mul_add_mul : a * b + b * a = 0 := by
   have : a + b = a + b + (a * b + b * a) :=
     calc
