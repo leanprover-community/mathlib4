@@ -678,17 +678,17 @@ theorem cond {c : α → Bool} {f : α → σ} {g : α → σ} (hc : Computable 
   (nat_casesOn (encode_iff.2 hc) hg (hf.comp fst).to₂).of_eq fun a => by cases c a <;> rfl
 #align computable.cond Computable.cond
 
-theorem option_cases {o : α → Option β} {f : α → σ} {g : α → β → σ} (ho : Computable o)
+theorem option_casesOn {o : α → Option β} {f : α → σ} {g : α → β → σ} (ho : Computable o)
     (hf : Computable f) (hg : Computable₂ g) :
     @Computable _ σ _ _ fun a => Option.casesOn (o a) (f a) (g a) :=
   option_some_iff.1 <|
     (nat_casesOn (encode_iff.2 ho) (option_some_iff.2 hf) (map_decode_iff.2 hg)).of_eq fun a => by
       cases o a <;> simp [encodek]
-#align computable.option_cases Computable.option_cases
+#align computable.option_cases Computable.option_casesOn
 
 theorem option_bind {f : α → Option β} {g : α → β → Option σ} (hf : Computable f)
     (hg : Computable₂ g) : Computable fun a => (f a).bind (g a) :=
-  (option_cases hf (const Option.none) hg).of_eq fun a => by cases f a <;> rfl
+  (option_casesOn hf (const Option.none) hg).of_eq fun a => by cases f a <;> rfl
 #align computable.option_bind Computable.option_bind
 
 theorem option_map {f : α → Option β} {g : α → β → σ} (hf : Computable f) (hg : Computable₂ g) :
@@ -699,8 +699,8 @@ theorem option_map {f : α → Option β} {g : α → β → σ} (hf : Computabl
 
 theorem option_getD {f : α → Option β} {g : α → β} (hf : Computable f) (hg : Computable g) :
     Computable fun a => (f a).getD (g a) :=
-  (Computable.option_cases hf hg (show Computable₂ fun _ b => b from Computable.snd)).of_eq fun a =>
-    by cases f a <;> rfl
+  (Computable.option_casesOn hf hg (show Computable₂ fun _ b => b from Computable.snd)).of_eq
+    fun a => by cases f a <;> rfl
 #align computable.option_get_or_else Computable.option_getD
 
 theorem subtype_mk {f : α → β} {p : β → Prop} [DecidablePred p] {h : ∀ a, p (f a)}
@@ -709,7 +709,7 @@ theorem subtype_mk {f : α → β} {p : β → Prop} [DecidablePred p] {h : ∀ 
   hf
 #align computable.subtype_mk Computable.subtype_mk
 
-theorem sum_cases {f : α → Sum β γ} {g : α → β → σ} {h : α → γ → σ} (hf : Computable f)
+theorem sum_casesOn {f : α → Sum β γ} {g : α → β → σ} {h : α → γ → σ} (hf : Computable f)
     (hg : Computable₂ g) (hh : Computable₂ h) :
     @Computable _ σ _ _ fun a => Sum.casesOn (f a) (g a) (h a) :=
   option_some_iff.1 <|
@@ -718,7 +718,7 @@ theorem sum_cases {f : α → Sum β γ} {g : α → β → σ} {h : α → γ �
           (option_map (Computable.decode.comp <| nat_div2.comp <| encode_iff.2 hf) hg)).of_eq
       fun a => by
         cases' f a with b c <;> simp [Nat.div2_val]
-#align computable.sum_cases Computable.sum_cases
+#align computable.sum_cases Computable.sum_casesOn
 
 theorem nat_strong_rec (f : α → ℕ → σ) {g : α → List σ → Option σ} (hg : Computable₂ g)
     (H : ∀ a n, g a ((List.range n).map (f a)) = Option.some (f a n)) : Computable₂ f :=
@@ -775,7 +775,7 @@ theorem option_some_iff {f : α →. σ} : (Partrec fun a => (f a).map Option.so
     fun hf => hf.map (option_some.comp snd).to₂⟩
 #align partrec.option_some_iff Partrec.option_some_iff
 
-theorem option_cases_right {o : α → Option β} {f : α → σ} {g : α → β →. σ} (ho : Computable o)
+theorem option_casesOn_right {o : α → Option β} {f : α → σ} {g : α → β →. σ} (ho : Computable o)
     (hf : Computable f) (hg : Partrec₂ g) :
     @Partrec _ σ _ _ fun a => Option.casesOn (o a) (Part.some (f a)) (g a) :=
   have :
@@ -785,9 +785,9 @@ theorem option_cases_right {o : α → Option β} {f : α → σ} {g : α → β
       (encode_iff.2 ho) hf.partrec <|
         ((@Computable.decode β _).comp snd).ofOption.bind (hg.comp (fst.comp fst) snd).to₂
   this.of_eq fun a => by cases' o a with b <;> simp [encodek]
-#align partrec.option_cases_right Partrec.option_cases_right
+#align partrec.option_cases_right Partrec.option_casesOn_right
 
-theorem sum_cases_right {f : α → Sum β γ} {g : α → β → σ} {h : α → γ →. σ} (hf : Computable f)
+theorem sum_casesOn_right {f : α → Sum β γ} {g : α → β → σ} {h : α → γ →. σ} (hf : Computable f)
     (hg : Computable₂ g) (hh : Partrec₂ h) :
     @Partrec _ σ _ _ fun a => Sum.casesOn (f a) (fun b => Part.some (g a b)) (h a) :=
   have :
@@ -796,20 +796,20 @@ theorem sum_cases_right {f : α → Sum β γ} {g : α → β → σ} {h : α �
           (some (Sum.casesOn (f a) (fun b => some (g a b)) fun _ => Option.none)) fun c =>
           (h a c).map Option.some :
         Part (Option σ)) :=
-    option_cases_right (g := fun a n => Part.map Option.some (h a n))
-      (sum_cases hf (const Option.none).to₂ (option_some.comp snd).to₂)
-      (sum_cases (g := fun a n => Option.some (g a n)) hf (option_some.comp hg)
+    option_casesOn_right (g := fun a n => Part.map Option.some (h a n))
+      (sum_casesOn hf (const Option.none).to₂ (option_some.comp snd).to₂)
+      (sum_casesOn (g := fun a n => Option.some (g a n)) hf (option_some.comp hg)
         (const Option.none).to₂)
       (option_some_iff.2 hh)
   option_some_iff.1 <| this.of_eq fun a => by cases f a <;> simp
-#align partrec.sum_cases_right Partrec.sum_cases_right
+#align partrec.sum_cases_right Partrec.sum_casesOn_right
 
-theorem sum_cases_left {f : α → Sum β γ} {g : α → β →. σ} {h : α → γ → σ} (hf : Computable f)
+theorem sum_casesOn_left {f : α → Sum β γ} {g : α → β →. σ} {h : α → γ → σ} (hf : Computable f)
     (hg : Partrec₂ g) (hh : Computable₂ h) :
     @Partrec _ σ _ _ fun a => Sum.casesOn (f a) (g a) fun c => Part.some (h a c) :=
-  (sum_cases_right (sum_cases hf (sum_inr.comp snd).to₂ (sum_inl.comp snd).to₂) hh hg).of_eq
+  (sum_casesOn_right (sum_casesOn hf (sum_inr.comp snd).to₂ (sum_inl.comp snd).to₂) hh hg).of_eq
     fun a => by cases f a <;> simp
-#align partrec.sum_cases_left Partrec.sum_cases_left
+#align partrec.sum_cases_left Partrec.sum_casesOn_left
 
 theorem fix_aux {α σ} (f : α →. Sum σ α) (a : α) (b : σ) :
     let F : α → ℕ →. Sum σ α := fun a n =>
@@ -856,11 +856,11 @@ theorem fix {f : α →. Sum σ α} (hf : Partrec f) : Partrec (PFun.fix f) := b
     n.rec (some (Sum.inr a)) fun _ IH => IH.bind fun s => Sum.casesOn s (fun _ => Part.some s) f
   have hF : Partrec₂ F :=
     Partrec.nat_rec snd (sum_inr.comp fst).partrec
-      (sum_cases_right (snd.comp snd) (snd.comp <| snd.comp fst).to₂ (hf.comp snd).to₂).to₂
+      (sum_casesOn_right (snd.comp snd) (snd.comp <| snd.comp fst).to₂ (hf.comp snd).to₂).to₂
   let p a n := @Part.map _ Bool (fun s => Sum.casesOn s (fun _ => true) fun _ => false) (F a n)
   have hp : Partrec₂ p :=
-    hF.map ((sum_cases Computable.id (const true).to₂ (const false).to₂).comp snd).to₂
-  exact (hp.rfind.bind (hF.bind (sum_cases_right snd snd.to₂ none.to₂).to₂).to₂).of_eq fun a =>
+    hF.map ((sum_casesOn Computable.id (const true).to₂ (const false).to₂).comp snd).to₂
+  exact (hp.rfind.bind (hF.bind (sum_casesOn_right snd snd.to₂ none.to₂).to₂).to₂).of_eq fun a =>
     ext fun b => by simp; apply fix_aux f
 #align partrec.fix Partrec.fix
 
