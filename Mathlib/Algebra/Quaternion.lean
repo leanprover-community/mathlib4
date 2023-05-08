@@ -466,7 +466,7 @@ theorem coe_int_cast (z : ℤ) : ↑(z : R) = (z : ℍ[R,c₁,c₂]) :=
   rfl
 #align quaternion_algebra.coe_int_cast QuaternionAlgebra.coe_int_cast
 
-instance : Ring ℍ[R,c₁,c₂] where
+instance instRing : Ring ℍ[R,c₁,c₂] where
   __ := inferInstanceAs (AddCommGroupWithOne ℍ[R,c₁,c₂])
   left_distrib _ _ _ := by ext <;> simp <;> ring
   right_distrib _ _ _ := by ext <;> simp <;> ring
@@ -644,7 +644,7 @@ theorem star_mk (a₁ a₂ a₃ a₄ : R) : star (mk a₁ a₂ a₃ a₄ : ℍ[R
   rfl
 #align quaternion_algebra.star_mk QuaternionAlgebra.star_mk
 
-instance : StarRing ℍ[R,c₁,c₂] where
+instance instStarRing : StarRing ℍ[R,c₁,c₂] where
   star_involutive x := by simp [Star.star]
   star_add a b := by ext <;> simp [add_comm]
   star_mul a b := by ext <;> simp <;> ring
@@ -771,7 +771,7 @@ export QuaternionAlgebra (re imI imJ imK)
 
 instance : CoeTC R ℍ[R] := ⟨coe⟩
 
-instance : Ring ℍ[R] := inferInstanceAs <| Ring ℍ[R,-1,-1]
+instance instRing : Ring ℍ[R] := QuaternionAlgebra.instRing
 
 instance : Inhabited ℍ[R] := inferInstanceAs <| Inhabited ℍ[R,-1,-1]
 
@@ -786,7 +786,9 @@ instance [SMul S R] [SMul T R] [SMulCommClass S T R] : SMulCommClass S T ℍ[R] 
 instance [CommSemiring S] [Algebra S R] : Algebra S ℍ[R] :=
   inferInstanceAs <| Algebra S ℍ[R,-1,-1]
 
-instance : StarRing ℍ[R] := inferInstanceAs <| StarRing ℍ[R,-1,-1]
+-- porting note: added shortcut
+instance : Star ℍ[R] := QuaternionAlgebra.instStarQuaternionAlgebra
+instance : StarRing ℍ[R] := QuaternionAlgebra.instStarRing
 instance : IsStarNormal a := inferInstanceAs <| IsStarNormal (R := ℍ[R,-1,-1]) a
 
 @[ext]
@@ -1285,7 +1287,8 @@ theorem normSq_le_zero : normSq a ≤ 0 ↔ a = 0 :=
   normSq_nonneg.le_iff_eq.trans normSq_eq_zero
 #align quaternion.norm_sq_le_zero Quaternion.normSq_le_zero
 
-instance : Nontrivial ℍ[R] where exists_pair_ne := ⟨0, 1, mt (congr_arg re) zero_ne_one⟩
+instance instNontrivial : Nontrivial ℍ[R] where
+  exists_pair_ne := ⟨0, 1, mt (congr_arg re) zero_ne_one⟩
 
 instance : NoZeroDivisors ℍ[R] where
   eq_zero_or_eq_zero_of_mul_eq_zero {a b} hab :=
@@ -1309,25 +1312,27 @@ theorem sq_eq_neg_normSq : a ^ 2 = -normSq a ↔ a.re = 0 := by
 end LinearOrderedCommRing
 
 section Field
+set_option synthInstance.etaExperiment true
 
 variable [LinearOrderedField R] (a b : ℍ[R])
 
 @[simps (config := { attrs := [] })]
-instance : Inv ℍ[R] :=
+instance instInv : Inv ℍ[R] :=
   ⟨fun a => (normSq a)⁻¹ • star a⟩
 
-instance : GroupWithZero ℍ[R] :=
-  { Quaternion.nontrivial,
-    (by infer_instance : MonoidWithZero
-        ℍ[R]) with
+instance instGroupWithZero : GroupWithZero ℍ[R] :=
+  { Quaternion.instNontrivial,
+    (by infer_instance : MonoidWithZero ℍ[R]) with
     inv := Inv.inv
-    inv_zero := by rw [has_inv_inv, star_zero, smul_zero]
+    inv_zero := by rw [instInv_inv, star_zero, smul_zero]
     mul_inv_cancel := fun a ha => by
-      rw [has_inv_inv, Algebra.mul_smul_comm, self_mul_star, smul_coe,
+      -- porting note: the aliased definition confuse TC search
+      letI : Semiring ℍ[R] := inferInstanceAs (Semiring ℍ[R,-1,-1])
+      rw [instInv_inv, Algebra.mul_smul_comm (normSq a)⁻¹ a (star a), self_mul_star, smul_coe,
         inv_mul_cancel (norm_sq_ne_zero.2 ha), coe_one] }
 
 @[norm_cast, simp]
-theorem coe_inv (x : R) : ((x⁻¹ : R) : ℍ[R]) = x⁻¹ :=
+theorem coe_inv (x : R) : ((x⁻¹ : R) : ℍ[R]) = (↑x)⁻¹ :=
   map_inv₀ (algebraMap R ℍ[R]) _
 #align quaternion.coe_inv Quaternion.coe_inv
 
@@ -1337,19 +1342,13 @@ theorem coe_div (x y : R) : ((x / y : R) : ℍ[R]) = x / y :=
 #align quaternion.coe_div Quaternion.coe_div
 
 @[norm_cast, simp]
-theorem coe_zpow (x : R) (z : ℤ) : ((x ^ z : R) : ℍ[R]) = x ^ z :=
+theorem coe_zpow (x : R) (z : ℤ) : ((x ^ z : R) : ℍ[R]) = (x : ℍ[R]) ^ z :=
   map_zpow₀ (algebraMap R ℍ[R]) x z
 #align quaternion.coe_zpow Quaternion.coe_zpow
 
-instance : DivisionRing ℍ[R] :=
-  { Quaternion.groupWithZero,
-    Quaternion.ring with
-    ratCast := fun q => ↑(q : R)
-    ratCast_mk := fun n d hd h => by rw [Rat.cast_mk', coe_mul, coe_int_cast, coe_inv, coe_nat_cast]
-    qsmul := (· • ·)
-    qsmul_eq_mul' := fun q x => by
-      rw [coe_mul_eq_smul]
-      ext <;> exact DivisionRing.qsmul_eq_mul' _ _ }
+-- porting note: split from `DivisionRing` instance
+instance : RatCast ℍ[R] where
+  ratCast := fun q => ↑(q : R)
 
 @[simp, norm_cast]
 theorem rat_cast_re (q : ℚ) : (q : ℍ[R]).re = q :=
@@ -1380,6 +1379,17 @@ theorem rat_cast_im (q : ℚ) : (q : ℍ[R]).im = 0 :=
 theorem coe_rat_cast (q : ℚ) : ↑(q : R) = (q : ℍ[R]) :=
   rfl
 #align quaternion.coe_rat_cast Quaternion.coe_rat_cast
+
+-- porting note: moved below `coe_rat_cast`, added this lemma to the `rw`s
+instance : DivisionRing ℍ[R] :=
+  { Quaternion.instGroupWithZero,
+    Quaternion.instRing with
+    ratCast_mk := fun n d hd h => by
+      rw [←coe_rat_cast, Rat.cast_mk', coe_mul, coe_int_cast, coe_inv, coe_nat_cast]
+    qsmul := (· • ·)
+    qsmul_eq_mul' := fun q x => by
+      rw [←coe_rat_cast, coe_mul_eq_smul]
+      ext <;> exact DivisionRing.qsmul_eq_mul' _ _ }
 
 @[simp]
 theorem normSq_inv : normSq a⁻¹ = (normSq a)⁻¹ :=
@@ -1470,4 +1480,3 @@ theorem mk_univ_quaternion_of_infinite [Infinite R] : (#(Set.univ : Set ℍ[R]))
 end Quaternion
 
 end Cardinal
-
