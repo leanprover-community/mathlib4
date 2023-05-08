@@ -225,17 +225,22 @@ namespace HomotopyCategory
 variable (C) (c)
 variable [CategoryWithHomology C]
 
-def newHomologyFunctor (i : ι) : HomotopyCategory C c ⥤ C :=
+noncomputable def newHomologyFunctor (i : ι) : HomotopyCategory C c ⥤ C :=
   CategoryTheory.Quotient.lift _ (HomologicalComplex.newHomologyFunctor C c i) (by
     rintro K L f g ⟨h⟩
     exact h.homologyMap_eq i)
 
-def newHomologyFunctorFactors (i : ι) : quotient C c ⋙ newHomologyFunctor C c i ≅
-  HomologicalComplex.newHomologyFunctor C c i :=
+noncomputable def newHomologyFunctorFactors (i : ι) :
+    quotient C c ⋙ newHomologyFunctor C c i ≅
+      HomologicalComplex.newHomologyFunctor C c i :=
   Quotient.lift.isLift _ _ _
 
 -- this is to prevent any abuse of defeq
 attribute [irreducible] newHomologyFunctor newHomologyFunctorFactors
+
+instance : (newHomologyFunctor C c i).Additive := by
+  have := Functor.additive_of_iso (newHomologyFunctorFactors C c i).symm
+  exact Functor.additive_of_full_essSurj_comp (quotient C c) _
 
 end HomotopyCategory
 
