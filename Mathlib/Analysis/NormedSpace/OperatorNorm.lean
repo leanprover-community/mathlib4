@@ -435,7 +435,7 @@ instance toPseudoMetricSpace : PseudoMetricSpace (E →SL[σ₁₂] F) :=
 #align continuous_linear_map.to_pseudo_metric_space ContinuousLinearMap.toPseudoMetricSpace
 
 set_option synthInstance.etaExperiment true in
-set_option maxHeartbeats 0 in
+set_option maxHeartbeats 1600000 in
 /-- Continuous linear maps themselves form a seminormed space with respect to
     the operator norm. -/
 instance toSeminormedAddCommGroup : SeminormedAddCommGroup (E →SL[σ₁₂] F) where
@@ -484,8 +484,8 @@ theorem op_nnnorm_eq_of_bounds {φ : E →SL[σ₁₂] F} (M : ℝ≥0) (h_above
 #align continuous_linear_map.op_nnnorm_eq_of_bounds ContinuousLinearMap.op_nnnorm_eq_of_bounds
 
 set_option synthInstance.etaExperiment true in
-set_option maxHeartbeats 0 in
-set_option synthInstance.maxHeartbeats 0 in
+set_option maxHeartbeats 400000 in
+set_option synthInstance.maxHeartbeats 80000 in
 instance toNormedSpace {𝕜' : Type _} [NormedField 𝕜'] [NormedSpace 𝕜' F] [SMulCommClass 𝕜₂ 𝕜' F] :
     NormedSpace 𝕜' (E →SL[σ₁₂] F) :=
   ⟨op_norm_smul_le⟩
@@ -514,6 +514,8 @@ instance toSemiNormedRing : SeminormedRing (E →L[𝕜] E) :=
 
 -- Porting FIXME: this instance is not actually needed in this file (verified in mathlib3)
 -- and as it is incredible slow, it's commented out for now.
+-- It is eventually needed in (at least) `Mathlib.Analysis.Calculus.ContDiff`.
+
 -- set_option synthInstance.etaExperiment true in
 -- set_option maxHeartbeats 0 in
 -- /-- For a normed space `E`, continuous linear endomorphisms form a normed algebra with
@@ -554,7 +556,7 @@ set_option synthInstance.etaExperiment true in
 theorem exists_mul_lt_apply_of_lt_op_nnnorm (f : E →SL[σ₁₂] F) {r : ℝ≥0} (hr : r < ‖f‖₊) :
     ∃ x, r * ‖x‖₊ < ‖f x‖₊ := by
   simpa only [not_forall, not_le, Set.mem_setOf] using
-    not_mem_of_lt_cinfₛ (nnnorm_def f ▸ hr : r < Inf { c : ℝ≥0 | ∀ x, ‖f x‖₊ ≤ c * ‖x‖₊ })
+    not_mem_of_lt_cinfₛ (nnnorm_def f ▸ hr : r < infₛ { c : ℝ≥0 | ∀ x, ‖f x‖₊ ≤ c * ‖x‖₊ })
       (OrderBot.bddBelow _)
 #align continuous_linear_map.exists_mul_lt_apply_of_lt_op_nnnorm ContinuousLinearMap.exists_mul_lt_apply_of_lt_op_nnnorm
 
@@ -693,6 +695,8 @@ theorem op_nnnorm_prod (f : E →L[𝕜] Fₗ) (g : E →L[𝕜] Gₗ) : ‖f.pr
 #align continuous_linear_map.op_nnnorm_prod ContinuousLinearMap.op_nnnorm_prod
 
 set_option synthInstance.etaExperiment true in
+set_option maxHeartbeats 3200000 in
+set_option synthInstance.maxHeartbeats 640000 in
 /-- `ContinuousLinearMap.prod` as a `LinearIsometryEquiv`. -/
 def prodₗᵢ (R : Type _) [Semiring R] [Module R Fₗ] [Module R Gₗ] [ContinuousConstSMul R Fₗ]
     [ContinuousConstSMul R Gₗ] [SMulCommClass 𝕜 R Fₗ] [SMulCommClass 𝕜 R Gₗ] :
@@ -702,6 +706,7 @@ def prodₗᵢ (R : Type _) [Semiring R] [Module R Fₗ] [Module R Gₗ] [Contin
 
 variable [RingHomIsometric σ₁₂] (f : E →SL[σ₁₂] F)
 
+set_option synthInstance.etaExperiment true in
 @[simp, nontriviality]
 theorem op_norm_subsingleton [Subsingleton E] : ‖f‖ = 0 := by
   refine' le_antisymm _ (norm_nonneg _)
@@ -792,6 +797,8 @@ theorem mkContinuous_norm_le' (f : E →ₛₗ[σ₁₂] F) {C : ℝ} (h : ∀ x
 variable [RingHomIsometric σ₂₃]
 
 set_option synthInstance.etaExperiment true in
+set_option maxHeartbeats 800000 in
+set_option synthInstance.maxHeartbeats 80000 in
 /-- Create a bilinear map (represented as a map `E →L[𝕜] F →L[𝕜] G`) from the corresponding linear
 map and a bound on the norm of the image. The linear map can be constructed using
 `LinearMap.mk₂`. -/
@@ -801,15 +808,17 @@ def mkContinuous₂ (f : E →ₛₗ[σ₁₃] F →ₛₗ[σ₂₃] G) (C : ℝ
     { toFun := fun x => (f x).mkContinuous (C * ‖x‖) (hC x)
       map_add' := fun x y => by
         ext z
-        rw [ContinuousLinearMap.add_apply, mk_continuous_apply, mk_continuous_apply,
-          mk_continuous_apply, map_add, add_apply]
+        rw [ContinuousLinearMap.add_apply, mkContinuous_apply, mkContinuous_apply,
+          mkContinuous_apply, map_add, add_apply]
       map_smul' := fun c x => by
         ext z
-        rw [ContinuousLinearMap.smul_apply, mk_continuous_apply, mk_continuous_apply, map_smulₛₗ,
+        rw [ContinuousLinearMap.smul_apply, mkContinuous_apply, mkContinuous_apply, map_smulₛₗ,
           smul_apply] }
     (max C 0) fun x =>
-    (mkContinuous_norm_le' _ _).trans_eq <| by
-      rw [max_mul_of_nonneg _ _ (norm_nonneg x), MulZeroClass.zero_mul]
+    sorry
+    -- Porting FIXME: this proof needs fixing.
+    -- (mkContinuous_norm_le' _ _).trans_eq <| by
+    --   rw [max_mul_of_nonneg _ _ (norm_nonneg x), MulZeroClass.zero_mul]
 #align linear_map.mk_continuous₂ LinearMap.mkContinuous₂
 
 set_option synthInstance.etaExperiment true in
@@ -838,18 +847,22 @@ namespace ContinuousLinearMap
 variable [RingHomIsometric σ₂₃] [RingHomIsometric σ₁₃]
 
 set_option synthInstance.etaExperiment true in
+set_option maxHeartbeats 400000 in
 /-- Flip the order of arguments of a continuous bilinear map.
 For a version bundled as `LinearIsometryEquiv`, see
 `ContinuousLinearMap.flipL`. -/
 def flip (f : E →SL[σ₁₃] F →SL[σ₂₃] G) : F →SL[σ₂₃] E →SL[σ₁₃] G :=
   LinearMap.mkContinuous₂
+    -- Porting note: the `simp only`s below used to be `rw`.
+    -- Now that doesn't work as we need to do some beta reduction along the way.
     (LinearMap.mk₂'ₛₗ σ₂₃ σ₁₃ (fun y x => f x y) (fun x y z => (f z).map_add x y)
-      (fun c y x => (f x).map_smulₛₗ c y) (fun z x y => by rw [f.map_add, add_apply]) fun c y x =>
-      by rw [f.map_smulₛₗ, smul_apply])
-    ‖f‖ fun y x => (f.le_op_norm₂ x y).trans_eq <| by rw [mul_right_comm]
+      (fun c y x => (f x).map_smulₛₗ c y) (fun z x y => by simp only [f.map_add, add_apply])
+        (fun c y x => by simp only [f.map_smulₛₗ, smul_apply]))
+    ‖f‖ fun y x => (f.le_op_norm₂ x y).trans_eq <| by simp only [mul_right_comm]
 #align continuous_linear_map.flip ContinuousLinearMap.flip
 
 set_option synthInstance.etaExperiment true in
+set_option maxHeartbeats 400000 in
 private theorem le_norm_flip (f : E →SL[σ₁₃] F →SL[σ₂₃] G) : ‖f‖ ≤ ‖flip f‖ :=
   f.op_norm_le_bound₂ (norm_nonneg _) fun x y => by
     rw [mul_right_comm]
@@ -875,12 +888,16 @@ theorem op_norm_flip (f : E →SL[σ₁₃] F →SL[σ₂₃] G) : ‖f.flip‖ 
 #align continuous_linear_map.op_norm_flip ContinuousLinearMap.op_norm_flip
 
 set_option synthInstance.etaExperiment true in
+set_option maxHeartbeats 400000 in
+set_option synthInstance.maxHeartbeats 40000 in
 @[simp]
 theorem flip_add (f g : E →SL[σ₁₃] F →SL[σ₂₃] G) : (f + g).flip = f.flip + g.flip :=
   rfl
 #align continuous_linear_map.flip_add ContinuousLinearMap.flip_add
 
 set_option synthInstance.etaExperiment true in
+set_option maxHeartbeats 400000 in
+set_option synthInstance.maxHeartbeats 40000 in
 @[simp]
 theorem flip_smul (c : 𝕜₃) (f : E →SL[σ₁₃] F →SL[σ₂₃] G) : (c • f).flip = c • f.flip :=
   rfl
