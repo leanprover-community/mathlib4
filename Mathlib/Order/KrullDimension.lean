@@ -10,7 +10,9 @@ import Mathlib.Order.WithBot
 import Mathlib.Data.Fin.Basic
 import Mathlib.Data.Nat.Lattice
 import Mathlib.Logic.Equiv.Fin
+import Mathlib.Init.Function
 import Mathlib.Tactic.Ring
+import Mathlib.Tactic.Linarith
 
 /-!
 # Krull dimension of a preordered set
@@ -30,7 +32,7 @@ to product of varieties so that `-∞` being the Krull dimension of empty variet
 sum of `-∞` and the Krull dimension of any other varieties.
 -/
 
-variable (α : Type _) [Preorder α]
+variable (α β : Type _) [Preorder α] [Preorder β]
 
 /--
 For a preordered set `(α, <)`, a strict series of `α` of length `n` is a strictly monotonic function
@@ -92,8 +94,25 @@ then there is a chain of length `n + m + 1` given by
 @[simps]
 def append (p q : StrictSeries α) (h : p (Fin.last _) < q 0) : StrictSeries α :=
 { length := p.length + q.length + 1
-  toFun := Fin.append p q ∘ cast (congrArg _ $ by ring)
-  StrictMono := sorry }
+  toFun := Fin.append p q ∘ Fin.cast (by ring)
+  StrictMono := StrictMono.comp (by
+    refine Fin.addCases (fun i ↦ Fin.addCases (fun j H ↦ ?_) (fun j _ ↦ ?_))
+      (fun i ↦ (Fin.addCases (fun j H ↦ ?_) (fun j H ↦ ?_)))
+    . rw [Fin.append_left, Fin.append_left]
+      exact p.StrictMono H
+    . rw [Fin.append_left, Fin.append_right]
+      refine lt_of_lt_of_le (lt_of_le_of_lt (p.StrictMono.monotone ?_) h) (q.StrictMono.monotone ?_)
+      . show (i : ℕ) ≤ p.length
+        linarith [i.2]
+      . norm_num
+    . rw [Fin.append_right, Fin.append_left]
+      change (p.length + 1 + i : ℕ) < (j : ℕ) at H
+      exfalso
+      linarith [j.2]
+    . rw [Fin.append_right, Fin.append_right]
+      refine q.StrictMono (?_ : (i : ℕ) < (j : ℕ))
+      change p.length + 1 + ↑i < p.length + 1 + ↑j at H
+      linarith ) (OrderIso.strictMono _) }
 
 /--
 If `a_0 < a_1 < ... < a_n` is a strict series and `a` is such that `a_i < a < a_{i + 1}`, then
@@ -104,7 +123,68 @@ def insert_nth (p : StrictSeries α) (i : Fin p.length) (a : α) (a_lt : p (Fin.
   (lt_a : a < p i.succ) : StrictSeries α :=
 { length := p.length + 1
   toFun :=  (Fin.castSucc i.succ).insertNth a p
-  StrictMono := sorry }
+  StrictMono := by
+    intros m n h
+    obtain (hm|rfl|hm) := lt_trichotomy m (Fin.castSucc i.succ)
+    . rw [Fin.insertNth_apply_below hm]
+      obtain (hn|rfl|hn) := lt_trichotomy n (Fin.castSucc i.succ)
+      . rw [Fin.insertNth_apply_below hn]
+        simpa only [Fin.coe_castSucc, eq_rec_constant] using p.StrictMono h
+      . rw [Fin.insertNth_apply_same]
+        simp only [Fin.coe_castSucc, eq_rec_constant]
+        refine lt_of_le_of_lt (p.StrictMono.monotone $ Nat.lt_succ_iff.mp ?_) a_lt
+        exact h
+      . rw [Fin.insertNth_apply_above hn]
+        simp only [Fin.coe_castSucc, eq_rec_constant]
+        generalize_proofs h1 h2
+        refine lt_trans (lt_of_le_of_lt (p.StrictMono.monotone ?_) a_lt)
+          (lt_of_lt_of_le lt_a $ p.StrictMono.monotone $ show (i : ℕ) + 1 ≤ (n : ℕ) - 1 from ?_)
+        . change (m : ℕ) ≤ _
+          change (m : ℕ) < _ at hm
+          simp only [Fin.coe_castSucc] at hm ⊢
+          linarith [show (m : ℕ) < i + 1 from hm]
+        rwa [Nat.succ_le_iff, ←Nat.pred_eq_sub_one, Nat.lt_pred_iff, Nat.succ_eq_add_one]
+    . rw [Fin.insertNth_apply_same, Fin.insertNth_apply_above h]
+      simp only [Fin.coe_castSucc, eq_rec_constant]
+      refine lt_of_lt_of_le lt_a (p.StrictMono.monotone $ show ↑i + 1 ≤ ↑n - 1 from ?_)
+      change (_ : ℕ) < _ at h
+      simp only [Fin.coe_castSucc, Fin.val_succ] at h
+      rwa [Nat.succ_le_iff, ←Nat.pred_eq_sub_one, Nat.lt_pred_iff, Nat.succ_eq_add_one]
+    . rw [Fin.insertNth_apply_above hm, Fin.insertNth_apply_above (lt_trans hm h)]
+      simp only [Fin.coe_castSucc, eq_rec_constant]
+      refine p.StrictMono ?_
+      change (_ : ℕ) < _ at hm h ⊢
+      simp only [Fin.coe_castSucc, Fin.val_succ, Fin.val_fin_lt, Fin.coe_pred, ge_iff_le] at hm h ⊢
+      refine Nat.pred_lt_pred (?_ : (m : ℕ) ≠ 0) h
+      linarith }
+
+variable {β}
+
+/--
+For two pre-ordered sets `α, β`, if `f : α → β` is strictly monotonic, then a strict series of `α`
+can be pushed out to a strict series of `β` by
+`a₀ < a₁ < ... < aₙ ↦ f a₀ < f a₁ < ... < f aₙ`
+-/
+@[simps]
+def map (p : StrictSeries α) (f : α → β) (hf : _root_.StrictMono f) : StrictSeries β :=
+{ length := p.length
+  toFun := f.comp p
+  StrictMono := hf.comp p.StrictMono }
+
+/--
+For two pre-ordered sets `α, β`, if `f : α → β` is surjective and strictly comonotonic, then a
+strict series of `β` can be pulled back to a strict chain of `α` by
+`b₀ < b₁ < ... < bₙ ↦ f⁻¹ b₀ < f⁻¹ b₁ < ... < f⁻¹ bₙ` where `f⁻¹ bᵢ` is an arbitrary element in the
+preimage of `f⁻¹ {bᵢ}`.
+-/
+@[simps]
+noncomputable def comap (p : StrictSeries β) (f : α → β)
+  (hf1 : ∀ ⦃x y⦄, f x < f y → x < y)
+  (hf2 : Function.Surjective f) :
+  StrictSeries α :=
+{ length := p.length
+  toFun := fun i ↦ (hf2 (p i)).choose
+  StrictMono := fun i j h ↦ hf1 (by simpa only [(hf2 _).choose_spec] using p.StrictMono h) }
 
 end StrictSeries
 
