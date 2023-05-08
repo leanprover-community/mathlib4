@@ -119,8 +119,7 @@ def preservesEqualizersOfPreservesPullbacksAndBinaryProducts [HasBinaryProducts 
             exact
               (c.π.naturality WalkingParallelPairHom.left).symm.trans
                 (c.π.naturality WalkingParallelPairHom.right)
-        fac := fun c j =>
-          by
+        fac := fun c j => by
           rcases j with (_ | _) <;>
             simp only [Category.comp_id, PreservesPullback.iso_inv_fst, Cone.ofFork_π, G.map_comp,
               PreservesPullback.iso_inv_fst_assoc, Functor.mapCone_π_app, eqToHom_refl,
@@ -210,8 +209,7 @@ def preservesCoequalizersOfPreservesPushoutsAndBinaryCoproducts [HasBinaryCoprod
     [PreservesColimitsOfShape WalkingSpan G] : PreservesColimitsOfShape WalkingParallelPair G :=
   ⟨fun {K} =>
     preservesColimitOfPreservesColimitCocone (coequalizerCoconeIsColimit K) <|
-      { desc := fun c =>
-          by
+      { desc := fun c => by
           refine' (PreservesPushout.iso _ _ _).inv ≫ pushout.desc _ _ _
           · exact c.ι.app WalkingParallelPair.one
           · exact c.ι.app WalkingParallelPair.one
@@ -224,8 +222,7 @@ def preservesCoequalizersOfPreservesPushoutsAndBinaryCoproducts [HasBinaryCoprod
             exact
               (c.ι.naturality WalkingParallelPairHom.left).trans
                 (c.ι.naturality WalkingParallelPairHom.right).symm
-        fac := fun c j =>
-          by
+        fac := fun c j => by
           rcases j with (_ | _) <;>
             simp only [Functor.mapCocone_ι_app, Cocone.ofCofork_ι, Category.id_comp,
               eqToHom_refl, Category.assoc, Functor.map_comp, Cofork.ofπ_ι_app, pushout.inl_desc,

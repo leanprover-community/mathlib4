@@ -1174,8 +1174,7 @@ theorem closure_induction₂ {p : G → G → Prop} {x} {y : G} (hx : x ∈ clos
 @[to_additive (attr := simp)]
 theorem closure_closure_coe_preimage {k : Set G} : closure (((↑) : closure k → G) ⁻¹' k) = ⊤ :=
   eq_top_iff.2 fun x =>
-    Subtype.recOn x fun x hx _ =>
-      by
+    Subtype.recOn x fun x hx _ => by
       refine' closure_induction' (fun g hg => _) _ (fun g₁ g₂ hg₁ hg₂ => _) (fun g hg => _) hx
       · exact subset_closure hg
       · exact one_mem _
@@ -1483,8 +1482,8 @@ theorem comap_equiv_eq_map_symm (f : N ≃* G) (K : Subgroup G) :
 #align add_subgroup.comap_equiv_eq_map_symm AddSubgroup.comap_equiv_eq_map_symm
 
 @[to_additive]
-theorem map_symm_eq_iff_map_eq {H : Subgroup N} {e : G ≃* N} : H.map ↑e.symm = K ↔ K.map ↑e = H :=
-  by
+theorem map_symm_eq_iff_map_eq {H : Subgroup N} {e : G ≃* N} :
+    H.map ↑e.symm = K ↔ K.map ↑e = H := by
   constructor <;> rintro rfl
   · rw [map_map, ← MulEquiv.coe_monoidHom_trans, MulEquiv.symm_trans_self,
       MulEquiv.coe_monoidHom_refl, map_id]
@@ -1851,8 +1850,7 @@ theorem pi_empty (H : ∀ i, Subgroup (f i)) : pi ∅ H = ⊤ :=
 
 @[to_additive]
 theorem pi_bot : (pi Set.univ fun i => (⊥ : Subgroup (f i))) = ⊥ :=
-  (eq_bot_iff_forall _).mpr fun p hp =>
-    by
+  (eq_bot_iff_forall _).mpr fun p hp => by
     simp only [mem_pi, mem_bot] at *
     ext j
     exact hp j trivial
@@ -2210,8 +2208,8 @@ variable {N : Type _} [Group N]
 
 /-- The preimage of the normalizer is contained in the normalizer of the preimage. -/
 @[to_additive "The preimage of the normalizer is contained in the normalizer of the preimage."]
-theorem le_normalizer_comap (f : N →* G) : H.normalizer.comap f ≤ (H.comap f).normalizer := fun x =>
-  by
+theorem le_normalizer_comap (f : N →* G) :
+    H.normalizer.comap f ≤ (H.comap f).normalizer := fun x => by
   simp only [mem_normalizer_iff, mem_comap]
   intro h n
   simp [h (f n)]
@@ -2459,8 +2457,7 @@ theorem le_normalClosure {H : Subgroup G} : H ≤ normalClosure ↑H := fun _ h 
 
 /-- The normal closure of `s` is a normal subgroup. -/
 instance normalClosure_normal : (normalClosure s).Normal :=
-  ⟨fun n h g =>
-    by
+  ⟨fun n h g => by
     refine' Subgroup.closure_induction h (fun x hx => _) _ (fun x y ihx ihy => _) fun x ihx => _
     · exact conjugatesOfSet_subset_normalClosure (conj_mem_conjugatesOfSet hx)
     · simpa using (normalClosure s).one_mem
@@ -2721,8 +2718,7 @@ theorem ofLeftInverse_symm_apply {f : G →* N} {g : N →* G} (h : Function.Lef
 domain."]
 noncomputable def ofInjective {f : G →* N} (hf : Function.Injective f) : G ≃* f.range :=
   MulEquiv.ofBijective (f.codRestrict f.range fun x => ⟨x, rfl⟩)
-    ⟨fun x y h => hf (Subtype.ext_iff.mp h),
-      by
+    ⟨fun x y h => hf (Subtype.ext_iff.mp h), by
       rintro ⟨x, y, rfl⟩
       exact ⟨y, rfl⟩⟩
 #align monoid_hom.of_injective MonoidHom.ofInjective
@@ -3669,12 +3665,10 @@ theorem normalClosure_eq_top_of {N : Subgroup G} [hn : N.Normal] {g g' : G} {hg 
     {hg' : g' ∈ N} (hc : IsConj g g') (ht : normalClosure ({⟨g, hg⟩} : Set N) = ⊤) :
     normalClosure ({⟨g', hg'⟩} : Set N) = ⊤ := by
   obtain ⟨c, rfl⟩ := isConj_iff.1 hc
-  have h : ∀ x : N, (MulAut.conj c) x ∈ N :=
-    by
+  have h : ∀ x : N, (MulAut.conj c) x ∈ N := by
     rintro ⟨x, hx⟩
     exact hn.conj_mem _ hx c
-  have hs : Function.Surjective (((MulAut.conj c).toMonoidHom.restrict N).codRestrict _ h) :=
-    by
+  have hs : Function.Surjective (((MulAut.conj c).toMonoidHom.restrict N).codRestrict _ h) := by
     rintro ⟨x, hx⟩
     refine' ⟨⟨c⁻¹ * x * c, _⟩, _⟩
     · have h := hn.conj_mem _ hx c⁻¹

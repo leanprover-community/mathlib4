@@ -108,8 +108,8 @@ theorem id_traverse {α : Type _} (x : Multiset α) : traverse (pure : α → Id
 
 theorem comp_traverse {G H : Type _ → Type _} [Applicative G] [Applicative H] [CommApplicative G]
     [CommApplicative H] {α β γ : Type _} (g : α → G β) (h : β → H γ) (x : Multiset α) :
-    traverse (Comp.mk ∘ Functor.map h ∘ g) x = Comp.mk (Functor.map (traverse h) (traverse g x)) :=
-  by
+    traverse (Comp.mk ∘ Functor.map h ∘ g) x =
+    Comp.mk (Functor.map (traverse h) (traverse g x)) := by
   refine' Quotient.inductionOn x _
   intro
   simp only [traverse, quot_mk_to_coe, lift_coe, Coe.coe, Function.comp_apply, Functor.map_map,

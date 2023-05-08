@@ -237,8 +237,8 @@ theorem Balanced.add (hs : Balanced 𝕜 s) (ht : Balanced 𝕜 t) : Balanced �
   (smul_add _ _ _).subset.trans <| add_subset_add (hs _ ha) <| ht _ ha
 #align balanced.add Balanced.add
 
-theorem Absorbs.sub (h₁ : Absorbs 𝕜 s₁ t₁) (h₂ : Absorbs 𝕜 s₂ t₂) : Absorbs 𝕜 (s₁ - s₂) (t₁ - t₂) :=
-  by
+theorem Absorbs.sub (h₁ : Absorbs 𝕜 s₁ t₁) (h₂ : Absorbs 𝕜 s₂ t₂) :
+    Absorbs 𝕜 (s₁ - s₂) (t₁ - t₂) := by
   simp_rw [sub_eq_add_neg]
   exact h₁.add h₂.neg
 #align absorbs.sub Absorbs.sub
@@ -356,8 +356,8 @@ theorem absorbent_nhds_zero (hA : A ∈ 𝓝 (0 : E)) : Absorbent 𝕜 A := by
 #align absorbent_nhds_zero absorbent_nhds_zero
 
 /-- The union of `{0}` with the interior of a balanced set is balanced. -/
-theorem balanced_zero_union_interior (hA : Balanced 𝕜 A) : Balanced 𝕜 ((0 : Set E) ∪ interior A) :=
-  by
+theorem balanced_zero_union_interior (hA : Balanced 𝕜 A) :
+    Balanced 𝕜 ((0 : Set E) ∪ interior A) := by
   intro a ha
   obtain rfl | h := eq_or_ne a 0
   · rw [zero_smul_set]
