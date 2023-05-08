@@ -380,7 +380,7 @@ theorem ne_iff_eq_neg (x₁ x₂ : Orientation R M ι) (h : Fintype.card ι = fi
     he.symm ▸ (Module.Ray.ne_neg_self x₂).symm⟩
 #align orientation.ne_iff_eq_neg Orientation.ne_iff_eq_neg
 
-set_option synthInstance.maxHeartbeats 30000 in -- Porting note : added
+set_option synthInstance.maxHeartbeats 50000 in -- Porting note : added
 set_option synthInstance.etaExperiment true in -- Porting note: added
 /-- The value of `Orientation.map` when the index type has cardinality equal to the finite
 dimension, in terms of `f.det`. -/
