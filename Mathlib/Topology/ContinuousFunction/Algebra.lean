@@ -180,7 +180,7 @@ attribute [simp] pow_comp
 instance [Group β] [TopologicalGroup β] : Inv C(α, β) where inv f := ⟨f⁻¹, f.continuous.inv⟩
 
 @[to_additive (attr := simp)]
-theorem coe_inv [Group β] [TopologicalGroup β] (f : C(α, β)) : ⇑f⁻¹ = f⁻¹ :=
+theorem coe_inv [Group β] [TopologicalGroup β] (f : C(α, β)) : ⇑f⁻¹ = (⇑f)⁻¹ :=
   rfl
 #align continuous_map.coe_inv ContinuousMap.coe_inv
 #align continuous_map.coe_neg ContinuousMap.coe_neg
@@ -614,7 +614,7 @@ instance [LocallyCompactSpace α] [TopologicalSpace R] [SMul R M] [ContinuousSMu
 
 --@[simp, norm_cast, to_additive]
 @[to_additive (attr := simp)]
-theorem coe_smul [SMul R M] [ContinuousConstSMul R M] (c : R) (f : C(α, M)) : ⇑(c • f) = c • f :=
+theorem coe_smul [SMul R M] [ContinuousConstSMul R M] (c : R) (f : C(α, M)) : ⇑(c • f) = c • ⇑f :=
   rfl
 #align continuous_map.coe_smul ContinuousMap.coe_smul
 #align continuous_map.coe_vadd ContinuousMap.coe_vadd
@@ -990,7 +990,7 @@ variable [Star β] [ContinuousStar β]
 instance : Star C(α, β) where star f := starContinuousMap.comp f
 
 @[simp]
-theorem coe_star (f : C(α, β)) : ⇑(star f) = star f :=
+theorem coe_star (f : C(α, β)) : ⇑(star f) = star ⇑f :=
   rfl
 #align continuous_map.coe_star ContinuousMap.coe_star
 
