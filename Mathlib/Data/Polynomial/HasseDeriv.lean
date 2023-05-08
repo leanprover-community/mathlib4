@@ -69,8 +69,8 @@ theorem hasseDeriv_apply :
   apply nsmul_eq_mul
 #align polynomial.hasse_deriv_apply Polynomial.hasseDeriv_apply
 
-theorem hasseDeriv_coeff (n : ℕ) : (hasseDeriv k f).coeff n = (n + k).choose k * f.coeff (n + k) :=
-  by
+theorem hasseDeriv_coeff (n : ℕ) :
+    (hasseDeriv k f).coeff n = (n + k).choose k * f.coeff (n + k) := by
   rw [hasseDeriv_apply, coeff_sum, sum_def, Finset.sum_eq_single (n + k), coeff_monomial]
   · simp only [if_true, add_tsub_cancel_right, eq_self_iff_true]
   · intro i _hi hink
@@ -196,8 +196,8 @@ theorem hasseDeriv_comp (k l : ℕ) :
   ring
 #align polynomial.hasse_deriv_comp Polynomial.hasseDeriv_comp
 
-theorem natDegree_hasseDeriv_le (p : R[X]) (n : ℕ) : natDegree (hasseDeriv n p) ≤ natDegree p - n :=
-  by
+theorem natDegree_hasseDeriv_le (p : R[X]) (n : ℕ) :
+    natDegree (hasseDeriv n p) ≤ natDegree p - n := by
   classical
     rw [hasseDeriv_apply, sum_def]
     refine' (natDegree_sum_le _ _).trans _
@@ -250,8 +250,7 @@ theorem hasseDeriv_mul (f g : R[X]) :
     ∀ x : ℕ × ℕ,
       x ∈ antidiagonal k →
         monomial (m - x.1 + (n - x.2)) (↑(m.choose x.1) * r * (↑(n.choose x.2) * s)) =
-          monomial (m + n - k) (↑(m.choose x.1) * ↑(n.choose x.2) * (r * s)) :=
-    by
+          monomial (m + n - k) (↑(m.choose x.1) * ↑(n.choose x.2) * (r * s)) := by
     intro x hx
     rw [Finset.Nat.mem_antidiagonal] at hx
     subst hx

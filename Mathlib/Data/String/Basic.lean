@@ -8,7 +8,6 @@ Authors: Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Std.Data.String.Lemmas
 import Mathlib.Data.List.Lex
 import Mathlib.Data.Char
 
@@ -20,9 +19,7 @@ Supplementary theorems about the `String` type.
 
 namespace String
 
-open private utf8GetAux from Init.Data.String.Basic
-
-private lemma utf8GetAux.add_right_cancel (s : List Char) (i p n : ℕ) :
+lemma utf8GetAux.add_right_cancel (s : List Char) (i p n : ℕ) :
     utf8GetAux s ⟨i + n⟩ ⟨p + n⟩ = utf8GetAux s ⟨i⟩ ⟨p⟩ := by
   apply utf8InductionOn s ⟨i⟩ ⟨p⟩ (motive := fun s i ↦
     utf8GetAux s ⟨i.byteIdx + n⟩ ⟨p + n⟩ = utf8GetAux s i ⟨p⟩) <;>

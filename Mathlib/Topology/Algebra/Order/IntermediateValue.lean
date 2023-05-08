@@ -363,10 +363,8 @@ is not empty, then `[a, b] ⊆ s`. -/
 theorem IsClosed.Icc_subset_of_forall_exists_gt {a b : α} {s : Set α} (hs : IsClosed (s ∩ Icc a b))
     (ha : a ∈ s) (hgt : ∀ x ∈ s ∩ Ico a b, ∀ y ∈ Ioi x, (s ∩ Ioc x y).Nonempty) : Icc a b ⊆ s := by
   intro y hy
-  have : IsClosed (s ∩ Icc a y) :=
-    by
-    suffices s ∩ Icc a y = s ∩ Icc a b ∩ Icc a y
-      by
+  have : IsClosed (s ∩ Icc a y) := by
+    suffices s ∩ Icc a y = s ∩ Icc a b ∩ Icc a y by
       rw [this]
       exact IsClosed.inter hs isClosed_Icc
     rw [inter_assoc]
@@ -402,8 +400,7 @@ theorem isPreconnected_Icc_aux (x y : α) (s t : Set α) (hxy : x ≤ y) (hs : I
   apply (IsClosed.inter hs isClosed_Icc).Icc_subset_of_forall_mem_nhdsWithin hx.2
   rintro z ⟨zs, hz⟩
   have zt : z ∈ tᶜ := fun zt => hst ⟨z, xyab <| Ico_subset_Icc_self hz, zs, zt⟩
-  have : tᶜ ∩ Ioc z y ∈ 𝓝[>] z :=
-    by
+  have : tᶜ ∩ Ioc z y ∈ 𝓝[>] z := by
     rw [← nhdsWithin_Ioc_eq_nhdsWithin_Ioi hz.2]
     exact mem_nhdsWithin.2 ⟨tᶜ, ht.isOpen_compl, zt, Subset.rfl⟩
   apply mem_of_superset this

@@ -411,14 +411,12 @@ instance rightRelDecidable [DecidablePred (· ∈ s)] : DecidableRel (rightRel s
 def quotientRightRelEquivQuotientLeftRel : Quotient (QuotientGroup.rightRel s) ≃ α ⧸ s
     where
   toFun :=
-    Quotient.map' (fun g => g⁻¹) fun a b =>
-      by
+    Quotient.map' (fun g => g⁻¹) fun a b => by
       rw [leftRel_apply, rightRel_apply]
       exact fun h => (congr_arg (· ∈ s) (by simp [mul_assoc])).mp (s.inv_mem h)
       -- porting note: replace with `by group`
   invFun :=
-    Quotient.map' (fun g => g⁻¹) fun a b =>
-      by
+    Quotient.map' (fun g => g⁻¹) fun a b => by
       rw [leftRel_apply, rightRel_apply]
       exact fun h => (congr_arg (· ∈ s) (by simp [mul_assoc])).mp (s.inv_mem h)
       -- porting note: replace with `by group`
@@ -685,8 +683,7 @@ def quotientSubgroupOfEmbeddingOfLe (H : Subgroup α) (h : s ≤ t) :
     s ⧸ H.subgroupOf s ↪ t ⧸ H.subgroupOf t
     where
   toFun :=
-    Quotient.map' (inclusion h) fun a b =>
-      by
+    Quotient.map' (inclusion h) fun a b => by
       simp_rw [leftRel_eq]
       exact id
   inj' :=

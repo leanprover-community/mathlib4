@@ -142,8 +142,7 @@ theorem vsub_mem_vectorSpan_of_mem_spanPoints_of_mem_spanPoints {s : Set P} {p1 
   rcases hp1 with ⟨p1a, ⟨hp1a, ⟨v1, ⟨hv1, hv1p⟩⟩⟩⟩
   rcases hp2 with ⟨p2a, ⟨hp2a, ⟨v2, ⟨hv2, hv2p⟩⟩⟩⟩
   rw [hv1p, hv2p, vsub_vadd_eq_vsub_sub (v1 +ᵥ p1a), vadd_vsub_assoc, add_comm, add_sub_assoc]
-  have hv1v2 : v1 - v2 ∈ vectorSpan k s :=
-    by
+  have hv1v2 : v1 - v2 ∈ vectorSpan k s := by
     rw [sub_eq_add_neg]
     apply (vectorSpan k s).add_mem hv1
     rw [← neg_one_smul k v2]
@@ -169,8 +168,7 @@ namespace Submodule
 variable {k V : Type _} [Ring k] [AddCommGroup V] [Module k V]
 
 /-- Reinterpret `p : Submodule k V` as an `AffineSubspace k V`. -/
-def toAffineSubspace (p : Submodule k V) : AffineSubspace k V
-    where
+def toAffineSubspace (p : Submodule k V) : AffineSubspace k V where
   carrier := p
   smul_vsub_vadd_mem _ _ _ _ h₁ h₂ h₃ := p.add_mem (p.smul_mem _ (p.sub_mem h₁ h₂)) h₃
 #align submodule.to_affine_subspace Submodule.toAffineSubspace
@@ -212,8 +210,7 @@ theorem direction_eq_vectorSpan (s : AffineSubspace k P) : s.direction = vectorS
 /-- Alternative definition of the direction when the affine subspace is nonempty. This is defined so
 that the order on submodules (as used in the definition of `Submodule.span`) can be used in the
 proof of `coe_direction_eq_vsub_set`, and is not intended to be used beyond that proof. -/
-def directionOfNonempty {s : AffineSubspace k P} (h : (s : Set P).Nonempty) : Submodule k V
-    where
+def directionOfNonempty {s : AffineSubspace k P} (h : (s : Set P).Nonempty) : Submodule k V where
   carrier := (s : Set P) -ᵥ s
   zero_mem' := by
     cases' h with p hp
@@ -419,8 +416,7 @@ theorem coe_vadd (s : AffineSubspace k P) [Nonempty s] (a : s.direction) (b : s)
 #align affine_subspace.coe_vadd AffineSubspace.coe_vadd
 
 /-- Embedding of an affine subspace to the ambient space, as an affine map. -/
-protected def subtype (s : AffineSubspace k P) [Nonempty s] : s →ᵃ[k] P
-    where
+protected def subtype (s : AffineSubspace k P) [Nonempty s] : s →ᵃ[k] P where
   toFun := (↑)
   linear := s.direction.subtype
   map_vadd' _ _ := rfl
@@ -452,11 +448,9 @@ theorem eq_iff_direction_eq_of_mem {s₁ s₂ : AffineSubspace k P} {p : P} (h�
 #align affine_subspace.eq_iff_direction_eq_of_mem AffineSubspace.eq_iff_direction_eq_of_mem
 
 /-- Construct an affine subspace from a point and a direction. -/
-def mk' (p : P) (direction : Submodule k V) : AffineSubspace k P
-    where
+def mk' (p : P) (direction : Submodule k V) : AffineSubspace k P where
   carrier := { q | ∃ v ∈ direction, q = v +ᵥ p }
-  smul_vsub_vadd_mem c p1 p2 p3 hp1 hp2 hp3 :=
-    by
+  smul_vsub_vadd_mem c p1 p2 p3 hp1 hp2 hp3 := by
     rcases hp1 with ⟨v1, hv1, hp1⟩
     rcases hp2 with ⟨v2, hv2, hp2⟩
     rcases hp3 with ⟨v3, hv3, hp3⟩
@@ -541,8 +535,7 @@ variable (k : Type _) {V : Type _} {P : Type _} [Ring k] [AddCommGroup V] [Modul
 
 /-- The affine span of a set of points is the smallest affine subspace containing those points.
 (Actually defined here in terms of spans in modules.) -/
-def affineSpan (s : Set P) : AffineSubspace k P
-    where
+def affineSpan (s : Set P) : AffineSubspace k P where
   carrier := spanPoints k s
   smul_vsub_vadd_mem c _ _ _ hp1 hp2 hp3 :=
     vadd_mem_spanPoints_of_mem_spanPoints_of_mem_vectorSpan k hp3
@@ -680,8 +673,7 @@ theorem affineSpan_eq_infₛ (s : Set P) :
 variable (P)
 
 /-- The Galois insertion formed by `affineSpan` and coercion back to a set. -/
-protected def gi : GaloisInsertion (affineSpan k) ((↑) : AffineSubspace k P → Set P)
-    where
+protected def gi : GaloisInsertion (affineSpan k) ((↑) : AffineSubspace k P → Set P) where
   choice s _ := affineSpan k s
   gc s1 _s2 :=
     ⟨fun h => Set.Subset.trans (subset_spanPoints k s1) h, spanPoints_subset_coe_of_subset_coe⟩
@@ -1452,8 +1444,8 @@ theorem direction_sup {s1 s2 : AffineSubspace k P} {p1 p2 : P} (hp1 : p1 ∈ s1)
 sup of the direction of that subspace and of any one difference between that point and a point in
 the subspace. -/
 theorem direction_affineSpan_insert {s : AffineSubspace k P} {p1 p2 : P} (hp1 : p1 ∈ s) :
-    (affineSpan k (insert p2 (s : Set P))).direction = Submodule.span k {p2 -ᵥ p1} ⊔ s.direction :=
-  by
+    (affineSpan k (insert p2 (s : Set P))).direction =
+    Submodule.span k {p2 -ᵥ p1} ⊔ s.direction := by
   rw [sup_comm, ← Set.union_singleton, ← coe_affineSpan_singleton k V p2]
   change (s ⊔ affineSpan k {p2}).direction = _
   rw [direction_sup hp1 (mem_affineSpan k (Set.mem_singleton _)), direction_affineSpan]
@@ -1508,11 +1500,9 @@ theorem AffineMap.vectorSpan_image_eq_submodule_map {s : Set P₁} :
 namespace AffineSubspace
 
 /-- The image of an affine subspace under an affine map as an affine subspace. -/
-def map (s : AffineSubspace k P₁) : AffineSubspace k P₂
-    where
+def map (s : AffineSubspace k P₁) : AffineSubspace k P₂ where
   carrier := f '' s
-  smul_vsub_vadd_mem :=
-    by
+  smul_vsub_vadd_mem := by
     rintro t - - - ⟨p₁, h₁, rfl⟩ ⟨p₂, h₂, rfl⟩ ⟨p₃, h₃, rfl⟩
     use t • (p₁ -ᵥ p₂) +ᵥ p₃
     suffices t • (p₁ -ᵥ p₂) +ᵥ p₃ ∈ s by
@@ -1616,8 +1606,7 @@ end
 namespace AffineSubspace
 
 /-- The preimage of an affine subspace under an affine map as an affine subspace. -/
-def comap (f : P₁ →ᵃ[k] P₂) (s : AffineSubspace k P₂) : AffineSubspace k P₁
-    where
+def comap (f : P₁ →ᵃ[k] P₂) (s : AffineSubspace k P₂) : AffineSubspace k P₁ where
   carrier := f ⁻¹' s
   smul_vsub_vadd_mem t p₁ p₂ p₃ (hp₁ : f p₁ ∈ s) (hp₂ : f p₂ ∈ s) (hp₃ : f p₃ ∈ s) :=
     show f _ ∈ s by
@@ -1747,8 +1736,8 @@ theorem Parallel.refl (s : AffineSubspace k P) : s ∥ s :=
 #align affine_subspace.parallel.refl AffineSubspace.Parallel.refl
 
 @[trans]
-theorem Parallel.trans {s₁ s₂ s₃ : AffineSubspace k P} (h₁₂ : s₁ ∥ s₂) (h₂₃ : s₂ ∥ s₃) : s₁ ∥ s₃ :=
-  by
+theorem Parallel.trans {s₁ s₂ s₃ : AffineSubspace k P} (h₁₂ : s₁ ∥ s₂) (h₂₃ : s₂ ∥ s₃) :
+    s₁ ∥ s₃ := by
   rcases h₁₂ with ⟨v₁₂, rfl⟩
   rcases h₂₃ with ⟨v₂₃, rfl⟩
   refine' ⟨v₂₃ + v₁₂, _⟩

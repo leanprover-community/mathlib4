@@ -154,9 +154,8 @@ theorem convex_iff_forall_pos :
   forall₂_congr fun _ => starConvex_iff_forall_pos
 #align convex_iff_forall_pos convex_iff_forall_pos
 
-theorem convex_iff_pairwise_pos :
-    Convex 𝕜 s ↔ s.Pairwise fun x y => ∀ ⦃a b : 𝕜⦄, 0 < a → 0 < b → a + b = 1 → a • x + b • y ∈ s :=
-  by
+theorem convex_iff_pairwise_pos : Convex 𝕜 s ↔
+    s.Pairwise fun x y => ∀ ⦃a b : 𝕜⦄, 0 < a → 0 < b → a + b = 1 → a • x + b • y ∈ s := by
   refine' convex_iff_forall_pos.trans ⟨fun h x hx y hy _ => h hx hy, _⟩
   intro h x hx y hy a b ha hb hab
   obtain rfl | hxy := eq_or_ne x y
@@ -198,8 +197,8 @@ theorem Convex.is_linear_image (hs : Convex 𝕜 s) {f : E → F} (hf : IsLinear
   hs.linear_image <| hf.mk' f
 #align convex.is_linear_image Convex.is_linear_image
 
-theorem Convex.linear_preimage {s : Set F} (hs : Convex 𝕜 s) (f : E →ₗ[𝕜] F) : Convex 𝕜 (f ⁻¹' s) :=
-  by
+theorem Convex.linear_preimage {s : Set F} (hs : Convex 𝕜 s) (f : E →ₗ[𝕜] F) :
+    Convex 𝕜 (f ⁻¹' s) := by
   intro x hx y hy a b ha hb hab
   rw [mem_preimage, f.map_add, f.map_smul, f.map_smul]
   exact hs hx hy ha hb hab
