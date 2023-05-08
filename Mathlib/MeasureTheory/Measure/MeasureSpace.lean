@@ -426,8 +426,8 @@ theorem exists_nonempty_inter_of_measure_univ_lt_sum_measure {m : MeasurableSpac
 /-- If two sets `s` and `t` are included in a set `u`, and `μ s + μ t > μ u`,
 then `s` intersects `t`. Version assuming that `t` is measurable. -/
 theorem nonempty_inter_of_measure_lt_add {m : MeasurableSpace α} (μ : Measure α) {s t u : Set α}
-    (ht : MeasurableSet t) (h's : s ⊆ u) (h't : t ⊆ u) (h : μ u < μ s + μ t) : (s ∩ t).Nonempty :=
-  by
+    (ht : MeasurableSet t) (h's : s ⊆ u) (h't : t ⊆ u) (h : μ u < μ s + μ t) :
+    (s ∩ t).Nonempty := by
   rw [← Set.not_disjoint_iff_nonempty_inter]
   contrapose! h
   calc
@@ -439,8 +439,8 @@ theorem nonempty_inter_of_measure_lt_add {m : MeasurableSpace α} (μ : Measure 
 /-- If two sets `s` and `t` are included in a set `u`, and `μ s + μ t > μ u`,
 then `s` intersects `t`. Version assuming that `s` is measurable. -/
 theorem nonempty_inter_of_measure_lt_add' {m : MeasurableSpace α} (μ : Measure α) {s t u : Set α}
-    (hs : MeasurableSet s) (h's : s ⊆ u) (h't : t ⊆ u) (h : μ u < μ s + μ t) : (s ∩ t).Nonempty :=
-  by
+    (hs : MeasurableSet s) (h's : s ⊆ u) (h't : t ⊆ u) (h : μ u < μ s + μ t) :
+    (s ∩ t).Nonempty := by
   rw [add_comm] at h
   rw [inter_comm]
   exact nonempty_inter_of_measure_lt_add μ hs h't h's h
@@ -664,11 +664,14 @@ theorem toMeasure_toOuterMeasure (m : OuterMeasure α) (h : ms ≤ m.caratheodor
 
 -- Porting note: A coercion is directly elaborated in Lean4, so the LHS is simplified by
 -- `toMeasure_toOuterMeasure` even if this theorem has high priority.
-@[simp, nolint simpNF]
+-- Instead of this theorem, we give `simp` attr to `OuterMeasure.trim_eq`.
+-- @[simp]
 theorem toMeasure_apply (m : OuterMeasure α) (h : ms ≤ m.caratheodory) {s : Set α}
     (hs : MeasurableSet s) : m.toMeasure h s = m s :=
   m.trim_eq hs
 #align measure_theory.to_measure_apply MeasureTheory.toMeasure_apply
+
+attribute [simp] OuterMeasure.trim_eq
 
 theorem le_toMeasure_apply (m : OuterMeasure α) (h : ms ≤ m.caratheodory) (s : Set α) :
     m s ≤ m.toMeasure h s :=
@@ -894,11 +897,17 @@ instance instModule [Semiring R] [Module R ℝ≥0∞] [IsScalarTower R ℝ≥0�
 
 -- Porting note: A coercion is directly elaborated in Lean4, so the LHS is simplified by
 -- `smul_toOuterMeasure` even if this theorem has high priority.
-@[simp, nolint simpNF]
+-- Instead of this theorem, we give `simp` attr to `nnreal_smul_coe_apply`.
+-- @[simp]
 theorem coe_nnreal_smul_apply {_m : MeasurableSpace α} (c : ℝ≥0) (μ : Measure α) (s : Set α) :
     (c • μ) s = c * μ s :=
   rfl
 #align measure_theory.measure.coe_nnreal_smul_apply MeasureTheory.Measure.coe_nnreal_smul_apply
+
+@[simp]
+theorem nnreal_smul_coe_apply {_m : MeasurableSpace α} (c : ℝ≥0) (μ : Measure α) (s : Set α) :
+    c • μ s = c * μ s := by
+  rfl
 
 theorem ae_smul_measure_iff {p : α → Prop} {c : ℝ≥0∞} (hc : c ≠ 0) :
     (∀ᵐ x ∂c • μ, p x) ↔ ∀ᵐ x ∂μ, p x := by
@@ -1170,8 +1179,8 @@ theorem map_congr {f g : α → β} (h : f =ᵐ[μ] g) : Measure.map f μ = Meas
 #align measure_theory.measure.map_congr MeasureTheory.Measure.map_congr
 
 @[simp]
-protected theorem map_smul (c : ℝ≥0∞) (μ : Measure α) (f : α → β) : (c • μ).map f = c • μ.map f :=
-  by
+protected theorem map_smul (c : ℝ≥0∞) (μ : Measure α) (f : α → β) :
+    (c • μ).map f = c • μ.map f := by
   rcases eq_or_ne c 0 with (rfl | hc); · simp
   by_cases hf : AEMeasurable f μ
   · have hfc : AEMeasurable f (c • μ) :=
@@ -1713,8 +1722,8 @@ theorem restrict_union' (h : Disjoint s t) (hs : MeasurableSet s) :
 #align measure_theory.measure.restrict_union' MeasureTheory.Measure.restrict_union'
 
 @[simp]
-theorem restrict_add_restrict_compl (hs : MeasurableSet s) : μ.restrict s + μ.restrict (sᶜ) = μ :=
-  by
+theorem restrict_add_restrict_compl (hs : MeasurableSet s) :
+    μ.restrict s + μ.restrict (sᶜ) = μ := by
   rw [← restrict_union (@disjoint_compl_right (Set α) _ _) hs.compl, union_compl_self,
     restrict_univ]
 #align measure_theory.measure.restrict_add_restrict_compl MeasureTheory.Measure.restrict_add_restrict_compl
@@ -2059,10 +2068,16 @@ theorem sum_fintype [Fintype ι] (μ : ι → Measure α) : sum μ = ∑ i, μ i
 
 -- Porting note: The LHS is simplified by
 -- `sum_fintype` even if this theorem has high priority.
-@[simp, nolint simpNF]
+-- Instead of this theorem, we give `simp` attr to `sum_attach_meas`.
+-- @[simp]
 theorem sum_coe_finset (s : Finset ι) (μ : ι → Measure α) :
     (sum fun i : s => μ i) = ∑ i in s, μ i := by rw [sum_fintype, Finset.sum_coe_sort s μ]
 #align measure_theory.measure.sum_coe_finset MeasureTheory.Measure.sum_coe_finset
+
+@[simp]
+theorem sum_attach_meas (s : Finset ι) (μ : ι → Measure α) :
+    ∑ i in s.attach, μ i = ∑ i in s, μ i := by
+  rw [← Finset.univ_eq_attach, Finset.sum_coe_sort s μ]
 
 @[simp]
 theorem ae_sum_eq [Countable ι] (μ : ι → Measure α) : (sum μ).ae = ⨆ i, (μ i).ae :=
@@ -2127,8 +2142,8 @@ write the measure of a set `s` as the sum of the measure of `{x}` for all `x ∈
 theorem tsum_indicator_apply_singleton [Countable α] [MeasurableSingletonClass α] (μ : Measure α)
     (s : Set α) (hs : MeasurableSet s) : (∑' x : α, s.indicator (fun x => μ {x}) x) = μ s :=
   calc
-    (∑' x : α, s.indicator (fun x => μ {x}) x) = Measure.sum (fun a => μ {a} • Measure.dirac a) s :=
-      by
+    (∑' x : α, s.indicator (fun x => μ {x}) x) =
+      Measure.sum (fun a => μ {a} • Measure.dirac a) s := by
       simp only [Measure.sum_apply _ hs, Measure.smul_apply, smul_eq_mul, Measure.dirac_apply,
         Set.indicator_apply, mul_ite, Pi.one_apply, mul_one, MulZeroClass.mul_zero]
     _ = μ s := by rw [μ.sum_smul_dirac]
@@ -2930,8 +2945,8 @@ theorem ae_eventually_not_mem {s : ℕ → Set α} (hs : (∑' i, μ (s i)) ≠ 
 section Intervals
 
 theorem bsupᵢ_measure_Iic [Preorder α] {s : Set α} (hsc : s.Countable)
-    (hst : ∀ x : α, ∃ y ∈ s, x ≤ y) (hdir : DirectedOn (· ≤ ·) s) : (⨆ x ∈ s, μ (Iic x)) = μ univ :=
-  by
+    (hst : ∀ x : α, ∃ y ∈ s, x ≤ y) (hdir : DirectedOn (· ≤ ·) s) :
+    (⨆ x ∈ s, μ (Iic x)) = μ univ := by
   rw [← measure_bunionᵢ_eq_supᵢ hsc]
   · congr
     simp only [← bex_def] at hst
@@ -3807,8 +3822,8 @@ instance sum.sigmaFinite {ι} [Finite ι] (μ : ι → Measure α) [∀ i, Sigma
     exact fun i => monotone_spanningSets (μ i)
 #align measure_theory.sum.sigma_finite MeasureTheory.sum.sigmaFinite
 
-instance Add.sigmaFinite (μ ν : Measure α) [SigmaFinite μ] [SigmaFinite ν] : SigmaFinite (μ + ν) :=
-  by
+instance Add.sigmaFinite (μ ν : Measure α) [SigmaFinite μ] [SigmaFinite ν] :
+    SigmaFinite (μ + ν) := by
   rw [← sum_cond]
   refine' @sum.sigmaFinite _ _ _ _ _ (Bool.rec _ _) <;> simpa
 #align measure_theory.add.sigma_finite MeasureTheory.Add.sigmaFinite
@@ -3888,8 +3903,7 @@ instance locallyFiniteMeasureSmulNnreal [TopologicalSpace α] (μ : Measure α)
 #align measure_theory.is_locally_finite_measure_smul_nnreal MeasureTheory.locallyFiniteMeasureSmulNnreal
 
 protected theorem Measure.isTopologicalBasis_isOpen_lt_top [TopologicalSpace α] (μ : Measure α)
-    [LocallyFiniteMeasure μ] : TopologicalSpace.IsTopologicalBasis { s | IsOpen s ∧ μ s < ∞ } :=
-  by
+    [LocallyFiniteMeasure μ] : TopologicalSpace.IsTopologicalBasis { s | IsOpen s ∧ μ s < ∞ } := by
   refine' TopologicalSpace.isTopologicalBasis_of_open_of_nhds (fun s hs => hs.1) _
   intro x s xs hs
   rcases μ.exists_isOpen_measure_lt_top x with ⟨v, xv, hv, μv⟩
