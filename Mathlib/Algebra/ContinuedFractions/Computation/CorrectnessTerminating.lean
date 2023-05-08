@@ -13,7 +13,6 @@ import Mathlib.Algebra.ContinuedFractions.TerminatedStable
 import Mathlib.Algebra.ContinuedFractions.ContinuantsRecurrence
 import Mathlib.Order.Filter.AtTopBot
 import Mathlib.Tactic.FieldSimp
-import Mathlib.Tactic.LibrarySearch
 
 /-!
 # Correctness of Terminating Continued Fraction Computations (`generalized_continued_fraction.of`)
