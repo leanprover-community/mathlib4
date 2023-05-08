@@ -3,21 +3,23 @@ Copyright (c) 2017 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Scott Morrison, Mario Carneiro, Andrew Yang
 
-! This file was ported from Lean 3 source module topology.category.Top.limits.cofiltered
-! leanprover-community/mathlib commit 178a32653e369dce2da68dc6b2694e385d484ef1
+! This file was ported from Lean 3 source module topology.category.Top.limits
+! leanprover-community/mathlib commit 8195826f5c428fc283510bc67303dd4472d78498
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Category.Top.Limits.Basic
 
 /-!
-# Cofiltered limits in Top.
+# Cofiltered limits in the category of topological spaces
 
 Given a *compatible* collection of topological bases for the factors in a cofiltered limit
 which contain `set.univ` and are closed under intersections, the induced *naive* collection
 of sets in the limit is, in fact, a topological basis.
 -/
 
+-- Porting note: every ML3 decl has an uppercase letter
+set_option linter.uppercaseLean3 false
 
 open TopologicalSpace
 
@@ -25,7 +27,7 @@ open CategoryTheory
 
 open CategoryTheory.Limits
 
-universe u v w
+universe v u w
 
 noncomputable section
 
@@ -33,10 +35,8 @@ namespace TopCat
 
 section CofilteredLimit
 
-variable {J : Type v} [SmallCategory J] [IsCofiltered J] (F : J ⥤ TopCat.{max v u}) (C : Cone F)
+variable {J : Type v} [SmallCategory J] [IsCofiltered J] (F : J ⥤ TopCatMax.{v, u}) (C : Cone F)
   (hC : IsLimit C)
-
-include hC
 
 /-- Given a *compatible* collection of topological bases for the factors in a cofiltered limit
 which contain `set.univ` and are closed under intersections, the induced *naive* collection
@@ -50,14 +50,14 @@ theorem isTopologicalBasis_cofiltered_limit (T : ∀ j, Set (Set (F.obj j)))
       { U : Set C.pt | ∃ (j : _)(V : Set (F.obj j)), V ∈ T j ∧ U = C.π.app j ⁻¹' V } := by
   classical
     -- The limit cone for `F` whose topology is defined as an infimum.
-    let D := limit_cone_infi F
+    let D := limitConeInfi F
     -- The isomorphism between the cone point of `C` and the cone point of `D`.
-    let E : C.X ≅ D.X := hC.cone_point_unique_up_to_iso (limit_cone_infi_is_limit _)
-    have hE : Inducing E.hom := (TopCat.homeoOfIso E).Inducing
+    let E : C.pt ≅ D.pt := hC.conePointUniqueUpToIso (limitConeInfiIsLimit _)
+    have hE : Inducing E.hom := (TopCat.homeoOfIso E).inducing
     -- Reduce to the assertion of the theorem with `D` instead of `C`.
     suffices
-      is_topological_basis
-        { U : Set D.X | ∃ (j : _)(V : Set (F.obj j)), V ∈ T j ∧ U = D.π.app j ⁻¹' V } by
+      IsTopologicalBasis
+        { U : Set D.pt | ∃ (j : _)(V : Set (F.obj j)), V ∈ T j ∧ U = D.π.app j ⁻¹' V } by
       convert this.inducing hE
       ext U0
       constructor
@@ -67,7 +67,7 @@ theorem isTopologicalBasis_cofiltered_limit (T : ∀ j, Set (Set (F.obj j)))
         refine' ⟨j, V, hV, rfl⟩
     -- Using `D`, we can apply the characterization of the topological basis of a
     -- topology defined as an infimum...
-    convert isTopologicalBasis_infᵢ hT fun j (x : D.X) => D.π.app j x
+    convert isTopologicalBasis_infᵢ hT fun j (x : D.pt) => D.π.app j x
     ext U0
     constructor
     · rintro ⟨j, V, hV, rfl⟩
@@ -128,6 +128,4 @@ theorem isTopologicalBasis_cofiltered_limit (T : ∀ j, Set (Set (F.obj j)))
 #align Top.is_topological_basis_cofiltered_limit TopCat.isTopologicalBasis_cofiltered_limit
 
 end CofilteredLimit
-
-end TopCat
 
