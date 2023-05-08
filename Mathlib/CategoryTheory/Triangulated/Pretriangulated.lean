@@ -13,6 +13,7 @@ import Mathlib.CategoryTheory.Shift.Basic
 import Mathlib.CategoryTheory.Triangulated.TriangleShift
 import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProducts
 import Mathlib.CategoryTheory.Adjunction.Limits
+import Mathlib.Algebra.Homology.ShortComplex.Basic
 
 /-!
 # Pretriangulated Categories
@@ -43,6 +44,7 @@ namespace CategoryTheory
 
 namespace Limits
 
+-- should be moved to a better place
 namespace BinaryBiproductData
 
 variable {C : Type _} [Category C]
@@ -175,6 +177,10 @@ theorem comp_dist_triangle_mor_zero₁₂ (T) (H : T ∈ (distTriang C)) : T.mor
       T.mor₁ rfl
   simpa only [contractibleTriangle_mor₂, zero_comp] using hc.left.symm
 #align category_theory.pretriangulated.comp_dist_triangle_mor_zero₁₂ CategoryTheory.Pretriangulated.comp_dist_triangle_mor_zero₁₂
+
+@[simps]
+def shortComplex_of_dist_triangle (T : Triangle C) (hT : T ∈ distTriang C) : ShortComplex C :=
+  ShortComplex.mk T.mor₁ T.mor₂ (comp_dist_triangle_mor_zero₁₂ _ hT)
 
 /-- Given any distinguished triangle
 ```

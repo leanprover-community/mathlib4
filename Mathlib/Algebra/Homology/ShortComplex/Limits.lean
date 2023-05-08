@@ -1,5 +1,7 @@
 import Mathlib.Algebra.Homology.ShortComplex.FunctorEquivalence
 import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
+import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
+import Mathlib.CategoryTheory.Limits.Preserves.Finite
 
 namespace CategoryTheory
 

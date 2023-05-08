@@ -72,7 +72,7 @@ variable [HasZeroObject C] [HasZeroObject D]
   [∀ (n : ℤ), (shiftFunctor C n).Additive] [∀ (n : ℤ), (shiftFunctor D n).Additive]
   [Pretriangulated C] [Pretriangulated D]
 
-class IsTriangulated where
+class IsTriangulated : Prop where
   map_distinguished : ∀ (T : Triangle C), (T ∈ distTriang C) → F.mapTriangle.obj T ∈ distTriang D
 
 lemma map_distinguished [F.IsTriangulated] (T : Triangle C) (hT : T ∈ distTriang C) :

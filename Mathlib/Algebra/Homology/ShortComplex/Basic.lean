@@ -1,4 +1,4 @@
-import Mathlib.CategoryTheory.Abelian.Basic
+import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
 
 namespace CategoryTheory
 
