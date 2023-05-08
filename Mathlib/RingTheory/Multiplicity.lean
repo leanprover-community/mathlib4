@@ -122,8 +122,8 @@ theorem is_greatest' {a b : α} {m : ℕ} (h : Finite a b) (hm : get (multiplici
   is_greatest (by rwa [← PartENat.coe_lt_coe, PartENat.natCast_get] at hm)
 #align multiplicity.is_greatest' multiplicity.is_greatest'
 
-theorem pos_of_dvd {a b : α} (hfin : Finite a b) (hdiv : a ∣ b) : 0 < (multiplicity a b).get hfin :=
-  by
+theorem pos_of_dvd {a b : α} (hfin : Finite a b) (hdiv : a ∣ b) :
+    0 < (multiplicity a b).get hfin := by
   refine' zero_lt_iff.2 fun h => _
   simpa [hdiv] using is_greatest' hfin (lt_one_iff.mpr h)
 #align multiplicity.pos_of_dvd multiplicity.pos_of_dvd
@@ -168,8 +168,7 @@ theorem eq_coe_iff {a b : α} {n : ℕ} :
 #align multiplicity.eq_coe_iff multiplicity.eq_coe_iff
 
 theorem eq_top_iff {a b : α} : multiplicity a b = ⊤ ↔ ∀ n : ℕ, a ^ n ∣ b :=
-  (PartENat.find_eq_top_iff _).trans <|
-    by
+  (PartENat.find_eq_top_iff _).trans <| by
     simp only [Classical.not_not]
     exact
       ⟨fun h n =>
@@ -391,8 +390,7 @@ theorem multiplicity_mk_eq_multiplicity
       rw [finite_iff_dom, PartENat.not_dom_iff_eq_top] at h this
       rw [h, this]
     refine'
-      not_finite_iff_forall.mpr fun n =>
-        by
+      not_finite_iff_forall.mpr fun n => by
         rw [← Associates.mk_pow, Associates.mk_dvd_mk]
         exact not_finite_iff_forall.mp h n
 #align multiplicity.multiplicity_mk_eq_multiplicity multiplicity.multiplicity_mk_eq_multiplicity
@@ -599,8 +597,7 @@ theorem Finset.prod {β : Type _} {p : α} (hp : Prime p) (s : Finset β) (f : �
 
 -- Porting note: with protected could not use pow' k in the succ branch
 protected theorem pow' {p a : α} (hp : Prime p) (ha : Finite p a) :
-    ∀ {k : ℕ}, get (multiplicity p (a ^ k)) (finite_pow hp ha) = k * get (multiplicity p a) ha :=
-  by
+    ∀ {k : ℕ}, get (multiplicity p (a ^ k)) (finite_pow hp ha) = k * get (multiplicity p a) ha := by
   intro k
   induction' k with k hk
   · simp [one_right hp.not_unit]
