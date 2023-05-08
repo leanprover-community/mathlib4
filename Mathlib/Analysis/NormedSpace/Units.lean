@@ -44,17 +44,18 @@ namespace Units
 
 /-- In a complete normed ring, a perturbation of `1` by an element `t` of distance less than `1`
 from `1` is a unit.  Here we construct its `units` structure.  -/
-@[simps coe]
+@[simps val]
 def oneSub (t : R) (h : ‖t‖ < 1) : Rˣ where
   val := 1 - t
   inv := ∑' n : ℕ, t ^ n
   val_inv := mul_neg_geom_series t h
   inv_val := geom_series_mul_neg t h
 #align units.one_sub Units.oneSub
+#align units.one_sub_coe Units.oneSub_val
 
 /-- In a complete normed ring, a perturbation of a unit `x` by an element `t` of distance less than
 `‖x⁻¹‖⁻¹` from `x` is a unit.  Here we construct its `units` structure. -/
-@[simps coe]
+@[simps! coe]
 def add (x : Rˣ) (t : R) (h : ‖t‖ < ‖(↑x⁻¹ : R)‖⁻¹) : Rˣ :=
   Units.copy
     (-- to make `coe_add` true definitionally, for convenience
@@ -65,7 +66,7 @@ def add (x : Rˣ) (t : R) (h : ‖t‖ < ‖(↑x⁻¹ : R)‖⁻¹) : Rˣ :=
           have hpos : 0 < ‖(↑x⁻¹ : R)‖ := Units.norm_pos x⁻¹
           calc
             ‖-(↑x⁻¹ * t)‖ = ‖↑x⁻¹ * t‖ := by rw [norm_neg]
-            _ ≤ ‖(↑x⁻¹ : R)‖ * ‖t‖ := (norm_mul_le ↑x⁻¹ _)
+            _ ≤ ‖(↑x⁻¹ : R)‖ * ‖t‖ := norm_mul_le ↑x⁻¹ _
             _ < ‖(↑x⁻¹ : R)‖ * ‖(↑x⁻¹ : R)‖⁻¹ := by nlinarith only [h, hpos]
             _ = 1 := mul_inv_cancel (ne_of_gt hpos)
             ))
@@ -74,7 +75,7 @@ def add (x : Rˣ) (t : R) (h : ‖t‖ < ‖(↑x⁻¹ : R)‖⁻¹) : Rˣ :=
 
 /-- In a complete normed ring, an element `y` of distance less than `‖x⁻¹‖⁻¹` from `x` is a unit.
 Here we construct its `units` structure. -/
-@[simps coe]
+@[simps! val]
 def unitOfNearby (x : Rˣ) (y : R) (h : ‖y - x‖ < ‖(↑x⁻¹ : R)‖⁻¹) : Rˣ :=
   Units.copy (x.add (y - x : R) h) y (by simp) _ rfl
 #align units.unit_of_nearby Units.unitOfNearby
@@ -82,7 +83,7 @@ def unitOfNearby (x : Rˣ) (y : R) (h : ‖y - x‖ < ‖(↑x⁻¹ : R)‖⁻¹
 /-- The group of units of a complete normed ring is an open subset of the ring. -/
 protected theorem isOpen : IsOpen { x : R | IsUnit x } := by
   nontriviality R
-  apply metric.is_open_iff.mpr
+  apply Metric.isOpen_iff.mpr
   rintro x' ⟨x, rfl⟩
   refine' ⟨‖(↑x⁻¹ : R)‖⁻¹, _root_.inv_pos.mpr (Units.norm_pos x⁻¹), _⟩
   intro y hy
