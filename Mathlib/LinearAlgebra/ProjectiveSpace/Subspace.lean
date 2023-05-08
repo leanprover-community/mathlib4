@@ -44,7 +44,9 @@ If two nonzero vectors determine points which are in the set, and the sum of the
 nonzero, then the point determined by the sum is also in the set. -/
 @[ext]
 structure Subspace where
+  /-- The set of points. -/
   carrier : Set (ℙ K V)
+  /-- The addition rule. -/
   mem_add' (v w : V) (hv : v ≠ 0) (hw : w ≠ 0) (hvw : v + w ≠ 0) :
     mk K v hv ∈ carrier → mk K w hw ∈ carrier → mk K (v + w) hvw ∈ carrier
 #align projectivization.subspace Projectivization.Subspace
@@ -120,15 +122,8 @@ instance hasInf : Inf (Subspace K V) :=
       ⟨A.mem_add _ _ hv hw _ h1.1 h2.1, B.mem_add _ _ hv hw _ h1.2 h2.2⟩⟩⟩
 #align projectivization.subspace.has_inf Projectivization.Subspace.hasInf
 
-
--- Porting note: fix comments below
-/- warning: projectivization.subspace.has_Inf clashes with projectivization.subspace.has_inf -> Projectivization.Subspace.hasInf
-warning: projectivization.subspace.has_Inf -> Projectivization.Subspace.hasInf is a dubious translation:
-lean 3 declaration is
-  forall {K : Type.{u1}} {V : Type.{u2}} [_inst_1 : Field.{u1} K] [_inst_2 : AddCommGroup.{u2} V] [_inst_3 : Module.{u1, u2} K V (Ring.toSemiring.{u1} K (DivisionRing.toRing.{u1} K (Field.toDivisionRing.{u1} K _inst_1))) (AddCommGroup.toAddCommMonoid.{u2} V _inst_2)], InfSet.{u2} (Projectivization.Subspace.{u1, u2} K V _inst_1 _inst_2 _inst_3)
-but is expected to have type
-  PUnit.{max (succ (succ u1)) (succ (succ u2))}
-Case conversion may be inaccurate. Consider using '#align projectivization.subspace.has_Inf Projectivization.Subspace.hasInfₓ'. -/
+-- Porting note: delete the name of this instance since it causes problem since hasInf is already
+-- defined above
 /-- Infimums of arbitrary collections of subspaces exist. -/
 instance : InfSet (Subspace K V) :=
   ⟨fun A =>
@@ -241,3 +236,5 @@ theorem span_eq_span_iff {S T : Set (ℙ K V)} : span S = span T ↔ S ⊆ span 
 end Subspace
 
 end Projectivization
+
+#lint
