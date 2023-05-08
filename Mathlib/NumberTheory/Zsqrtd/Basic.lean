@@ -892,8 +892,7 @@ theorem divides_sq_eq_zero {x y} (h : x * x = d * y * y) : x = 0 ∧ y = 0 :=
   let g := x.gcd y
   Or.elim g.eq_zero_or_pos
     (fun H => ⟨Nat.eq_zero_of_gcd_eq_zero_left H, Nat.eq_zero_of_gcd_eq_zero_right H⟩) fun gpos =>
-    False.elim <|
-      by
+    False.elim <| by
       let ⟨m, n, co, (hx : x = m * g), (hy : y = n * g)⟩ := Nat.exists_coprime gpos
       rw [hx, hy] at h
       have : m * m = d * (n * n) := by

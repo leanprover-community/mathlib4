@@ -149,8 +149,7 @@ theorem linearIndependent_of_isOrthoᵢ {B : V₁ →ₛₗ[I₁] V₁ →ₛₗ
     rw [linearIndependent_iff']
     intro s w hs i hi
     have : B (s.sum fun i : n ↦ w i • v i) (v i) = 0 := by rw [hs, map_zero, zero_apply]
-    have hsum : (s.sum fun j : n ↦ I₁ (w j) * B (v j) (v i)) = I₁ (w i) * B (v i) (v i) :=
-      by
+    have hsum : (s.sum fun j : n ↦ I₁ (w j) * B (v j) (v i)) = I₁ (w i) * B (v i) (v i) := by
       apply Finset.sum_eq_single_of_mem i hi
       intro j _hj hij
       rw [isOrthoᵢ_def.1 hv₁ _ _ hij, mul_zero]
@@ -819,8 +818,7 @@ set_option synthInstance.etaExperiment true in
 /-- Given an orthogonal basis with respect to a bilinear form, the bilinear form is left-separating
 if the basis has no elements which are self-orthogonal. -/
 theorem IsOrthoᵢ.separatingLeft_of_not_isOrtho_basis_self [NoZeroDivisors R] {B : M →ₗ[R] M →ₗ[R] R}
-    (v : Basis n R M) (hO : B.IsOrthoᵢ v) (h : ∀ i, ¬B.IsOrtho (v i) (v i)) : B.SeparatingLeft :=
-  by
+    (v : Basis n R M) (hO : B.IsOrthoᵢ v) (h : ∀ i, ¬B.IsOrtho (v i) (v i)) : B.SeparatingLeft := by
   intro m hB
   obtain ⟨vi, rfl⟩ := v.repr.symm.surjective m
   rw [LinearEquiv.map_eq_zero_iff]

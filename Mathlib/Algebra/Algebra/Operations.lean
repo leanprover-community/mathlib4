@@ -131,8 +131,7 @@ protected theorem map_one {A'} [Semiring A'] [Algebra R A'] (f : A →ₐ[R] A')
 
 @[simp]
 theorem map_op_one :
-    map (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ) : A →ₗ[R] Aᵐᵒᵖ) (1 : Submodule R A) = 1 :=
-  by
+    map (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ) : A →ₗ[R] Aᵐᵒᵖ) (1 : Submodule R A) = 1 := by
   ext x
   induction x using MulOpposite.rec'
   simp
@@ -140,8 +139,7 @@ theorem map_op_one :
 
 @[simp]
 theorem comap_op_one :
-    comap (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ) : A →ₗ[R] Aᵐᵒᵖ) (1 : Submodule R Aᵐᵒᵖ) = 1 :=
-  by
+    comap (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ) : A →ₗ[R] Aᵐᵒᵖ) (1 : Submodule R Aᵐᵒᵖ) = 1 := by
   ext
   simp
 #align submodule.comap_op_one Submodule.comap_op_one
@@ -264,8 +262,7 @@ protected theorem map_mul {A'} [Semiring A'] [Algebra R A'] (f : A →ₐ[R] A')
   calc
     map f.toLinearMap (M * N) = ⨆ i : M, (N.map (LinearMap.mul R A i)).map f.toLinearMap :=
       map_supᵢ _ _
-    _ = map f.toLinearMap M * map f.toLinearMap N :=
-      by
+    _ = map f.toLinearMap M * map f.toLinearMap N := by
       apply congr_arg supₛ
       ext S
       constructor <;> rintro ⟨y, hy⟩
@@ -429,8 +426,7 @@ theorem pow_mem_pow {x : A} (hx : x ∈ M) (n : ℕ) : x ^ n ∈ M ^ n :=
   pow_subset_pow _ <| Set.pow_mem_pow hx _
 #align submodule.pow_mem_pow Submodule.pow_mem_pow
 
-theorem pow_toAddSubmonoid {n : ℕ} (h : n ≠ 0) : (M ^ n).toAddSubmonoid = M.toAddSubmonoid ^ n :=
-  by
+theorem pow_toAddSubmonoid {n : ℕ} (h : n ≠ 0) : (M ^ n).toAddSubmonoid = M.toAddSubmonoid ^ n := by
   induction' n with n ih
   · exact (h rfl).elim
   · rw [pow_succ, pow_succ, mul_toAddSubmonoid]

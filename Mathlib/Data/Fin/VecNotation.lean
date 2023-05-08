@@ -292,10 +292,8 @@ theorem empty_vecAppend (v : Fin n → α) : vecAppend (zero_add _).symm ![] v =
 
 @[simp]
 theorem cons_vecAppend (ho : o + 1 = m + 1 + n) (x : α) (u : Fin m → α) (v : Fin n → α) :
-    vecAppend ho (vecCons x u) v =
-      vecCons x
-        (vecAppend (by rwa [add_assoc, add_comm 1, ← add_assoc, add_right_cancel_iff] at ho) u v) :=
-  by
+    vecAppend ho (vecCons x u) v = vecCons x (vecAppend (by
+      rwa [add_assoc, add_comm 1, ← add_assoc, add_right_cancel_iff] at ho) u v) := by
   ext i
   simp_rw [vecAppend_eq_ite]
   split_ifs with h
