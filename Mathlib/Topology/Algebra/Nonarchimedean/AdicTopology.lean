@@ -13,8 +13,6 @@ import Mathlib.Topology.Algebra.Nonarchimedean.Bases
 import Mathlib.Topology.UniformSpace.Completion
 import Mathlib.Topology.Algebra.UniformRing
 
-import Mathlib.Tactic.LibrarySearch -- Porting note: delete me!
-
 /-!
 # Adic topology
 
