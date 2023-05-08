@@ -93,6 +93,35 @@ Since this last rule is a purely syntactic transformation,
 it might lead to output that does not round trip, though this can only occur if
 there exists an `A`-valued `toA` function that is not a parent projection that
 happens to be pretty printable using dot notation.
+
+Here is an example to illustrate the round tripping issue:
+```lean
+import Mathlib.Tactic.ProjectionNotation
+
+structure A where n : Int
+
+def A.inc (a : A) (k : Int) : Int := a.n + k
+
+pp_extended_field_notation A.inc
+
+structure B where n : Nat
+
+def B.toA (b : B) : A := ⟨b.n⟩
+
+variable (b : B)
+
+#check A.inc b.toA 1
+-- (B.toA b).inc 1 : Int
+
+pp_extended_field_notation B.toA
+#check A.inc b.toA 1
+-- b.inc 1 : Int
+
+#check b.inc 1
+-- invalid field 'inc', the environment does not contain 'B.inc'
+```
+To avoid this, don't use `pp_extended_field_notation` for coercion functions
+such as `B.toA`.
 -/
 elab "pp_extended_field_notation " f:Term.ident : command => do
   let f ← liftTermElabM <| Elab.resolveGlobalConstNoOverloadWithInfo f
@@ -105,6 +134,10 @@ elab "pp_extended_field_notation " f:Term.ident : command => do
   elabCommand <| ← `(command|
     @[app_unexpander $(mkIdent f)]
     aux_def $(mkIdent <| Name.str f "unexpander") : Lean.PrettyPrinter.Unexpander := fun
+      -- First two patterns are to avoid extra parentheses in output
+      | `($$_ $$(x).$(mkIdent toA))
+      | `($$_ $$x) => set_option hygiene false in `($$(x).$(mkIdent projName))
+      -- Next two are for when there are actually arguments, so parentheses might be needed
       | `($$_ $$(x).$(mkIdent toA) $$args*)
       | `($$_ $$x $$args*) => set_option hygiene false in `($$(x).$(mkIdent projName) $$args*)
       | _ => throw ())
