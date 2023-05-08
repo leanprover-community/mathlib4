@@ -2068,16 +2068,10 @@ theorem sum_fintype [Fintype ι] (μ : ι → Measure α) : sum μ = ∑ i, μ i
 
 -- Porting note: The LHS is simplified by
 -- `sum_fintype` even if this theorem has high priority.
--- Instead of this theorem, we give `simp` attr to `sum_attach_meas`.
--- @[simp]
+@[simp, nolint simpNF]
 theorem sum_coe_finset (s : Finset ι) (μ : ι → Measure α) :
     (sum fun i : s => μ i) = ∑ i in s, μ i := by rw [sum_fintype, Finset.sum_coe_sort s μ]
 #align measure_theory.measure.sum_coe_finset MeasureTheory.Measure.sum_coe_finset
-
-@[simp]
-theorem sum_attach_meas (s : Finset ι) (μ : ι → Measure α) :
-    ∑ i in s.attach, μ i = ∑ i in s, μ i := by
-  rw [← Finset.univ_eq_attach, Finset.sum_coe_sort s μ]
 
 @[simp]
 theorem ae_sum_eq [Countable ι] (μ : ι → Measure α) : (sum μ).ae = ⨆ i, (μ i).ae :=
