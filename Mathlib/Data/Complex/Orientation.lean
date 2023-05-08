@@ -8,8 +8,8 @@ Authors: Heather Macbeth
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Complex.Module
-import Mathbin.LinearAlgebra.Orientation
+import Mathlib.Data.Complex.Module
+import Mathlib.LinearAlgebra.Orientation
 
 /-!
 # The standard orientation on `ℂ`.
