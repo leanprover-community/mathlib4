@@ -107,7 +107,7 @@ as this is a path which is followed all the time in linear algebra where the def
 `σ : R →+* S` depends on the `NonAssocSemiring` structure of `R` and `S` while the module
 definition depends on the `Semiring` structure.
 
-Tt is not currently possible to adjust priorities by hand (see lean4#2115). Instead, the last
+It is not currently possible to adjust priorities by hand (see lean4#2115). Instead, the last
 declared instance is used, so we make sure that `Semiring` is declared after `NonAssocRing`, so
 that `Semiring -> NonAssocSemiring` is tried before `NonAssocRing -> NonAssocSemiring`.
 TODO: clean this once lean4#2115 is fixed
