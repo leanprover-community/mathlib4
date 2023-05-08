@@ -227,7 +227,7 @@ theorem Measurable.mono {ma ma' : MeasurableSpace α} {mb mb' : MeasurableSpace 
 
 -- porting note: todo: add TC `DiscreteMeasurable` + instances
 
--- porting note: todo: restore @[measurability]
+@[measurability]
 theorem measurable_from_top [MeasurableSpace β] {f : α → β} : Measurable[⊤] f := fun _ _ => trivial
 #align measurable_from_top measurable_from_top
 
@@ -242,12 +242,12 @@ section TypeclassMeasurableSpace
 
 variable [MeasurableSpace α] [MeasurableSpace β] [MeasurableSpace γ]
 
-@[nontriviality] -- porting note: todo: add @[measurability]
+@[nontriviality, measurability]
 theorem Subsingleton.measurable [Subsingleton α] : Measurable f := fun _ _ =>
   @Subsingleton.measurableSet α _ _ _
 #align subsingleton.measurable Subsingleton.measurable
 
-@[nontriviality] -- porting note: todo: add @[measurability]
+@[nontriviality, measurability]
 theorem measurable_of_subsingleton_codomain [Subsingleton β] (f : α → β) : Measurable f :=
   fun s _ => Subsingleton.set_cases MeasurableSet.empty MeasurableSet.univ s
 #align measurable_of_subsingleton_codomain measurable_of_subsingleton_codomain
@@ -275,14 +275,12 @@ theorem measurable_const' {f : β → α} (hf : ∀ x y, f x = f y) : Measurable
   apply hf
 #align measurable_const' measurable_const'
 
--- porting note: Attribute not yet supported
--- @[measurability]
+@[measurability]
 theorem measurable_natCast [NatCast α] (n : ℕ) : Measurable (n : β → α) :=
   @measurable_const α _ _ _ n
 #align measurable_nat_cast measurable_natCast
 
--- porting note: Attribute not yet supported
--- @[measurability]
+@[measurability]
 theorem measurable_intCast [IntCast α] (n : ℤ) : Measurable (n : β → α) :=
   @measurable_const α _ _ _ n
 #align measurable_int_cast measurable_intCast
@@ -300,7 +298,7 @@ end TypeclassMeasurableSpace
 
 variable {m : MeasurableSpace α}
 
--- porting note: todo: add @[measurability]
+@[measurability]
 theorem Measurable.iterate {f : α → α} (hf : Measurable f) : ∀ n, Measurable (f^[n])
   | 0 => measurable_id
   | n + 1 => (Measurable.iterate hf n).comp hf
@@ -308,7 +306,7 @@ theorem Measurable.iterate {f : α → α} (hf : Measurable f) : ∀ n, Measurab
 
 variable {mβ : MeasurableSpace β}
 
--- porting note: todo: add @[measurability]
+@[measurability]
 theorem measurableSet_preimage {t : Set β} (hf : Measurable f) (ht : MeasurableSet t) :
     MeasurableSet (f ⁻¹' t) :=
   hf ht
@@ -319,7 +317,7 @@ protected theorem MeasurableSet.preimage {t : Set β} (ht : MeasurableSet t) (hf
     MeasurableSet (f ⁻¹' t) :=
   hf ht
 
--- porting note: todo: add @[measurability]
+@[measurability]
 protected theorem Measurable.piecewise {_ : DecidablePred (· ∈ s)} (hs : MeasurableSet s)
     (hf : Measurable f) (hg : Measurable g) : Measurable (piecewise s f g) := by
   intro t ht
@@ -336,13 +334,13 @@ theorem Measurable.ite {p : α → Prop} {_ : DecidablePred p} (hp : MeasurableS
   Measurable.piecewise hp hf hg
 #align measurable.ite Measurable.ite
 
--- porting note: todo: add @[measurability]
+@[measurability]
 theorem Measurable.indicator [Zero β] (hf : Measurable f) (hs : MeasurableSet s) :
     Measurable (s.indicator f) :=
   hf.piecewise hs measurable_const
 #align measurable.indicator Measurable.indicator
 
-@[to_additive] -- porting note: todo: add (attr := measurability)
+@[to_additive (attr := measurability)]
 theorem measurableSet_mulSupport [One β] [MeasurableSingletonClass β] (hf : Measurable f) :
     MeasurableSet (mulSupport f) :=
   hf (measurableSet_singleton 1).compl
@@ -398,7 +396,7 @@ theorem measurable_to_countable' [MeasurableSpace α] [Countable α] [Measurable
   measurable_to_countable fun y => h (f y)
 #align measurable_to_countable' measurable_to_countable'
 
--- porting note: todo: add @[measurability]
+@[measurability]
 theorem measurable_unit [MeasurableSpace α] (f : Unit → α) : Measurable f :=
   measurable_from_top
 #align measurable_unit measurable_unit
@@ -407,7 +405,7 @@ section Nat
 
 variable [MeasurableSpace α]
 
--- porting note: todo: add @[measurability]
+@[measurability]
 theorem measurable_from_nat {f : ℕ → α} : Measurable f :=
   measurable_from_top
 #align measurable_from_nat measurable_from_nat
@@ -474,21 +472,21 @@ theorem measurable_from_quotient {s : Setoid α} {f : Quotient s → β} :
   Iff.rfl
 #align measurable_from_quotient measurable_from_quotient
 
--- porting note: todo: add @[measurability]
+@[measurability]
 theorem measurable_quotient_mk' [s : Setoid α] : Measurable (Quotient.mk' : α → Quotient s) :=
   fun _ => id
 #align measurable_quotient_mk measurable_quotient_mk'
 
--- porting note: todo: add @[measurability]
+@[measurability]
 theorem measurable_quotient_mk'' {s : Setoid α} : Measurable (Quotient.mk'' : α → Quotient s) :=
   fun _ => id
 #align measurable_quotient_mk' measurable_quotient_mk''
 
--- porting note: todo: add @[measurability]
+@[measurability]
 theorem measurable_quot_mk {r : α → α → Prop} : Measurable (Quot.mk r) := fun _ => id
 #align measurable_quot_mk measurable_quot_mk
 
-@[to_additive] -- porting note: todo: add (attr := measurability)
+@[to_additive (attr := measurability)]
 theorem QuotientGroup.measurable_coe {G} [Group G] [MeasurableSpace G] {S : Subgroup G} :
     Measurable ((↑) : G → G ⧸ S) :=
   measurable_quotient_mk''
@@ -513,7 +511,7 @@ section
 
 variable [MeasurableSpace α]
 
--- porting note: todo: add @[measurability]
+@[measurability]
 theorem measurable_subtype_coe {p : α → Prop} : Measurable ((↑) : Subtype p → α) :=
   MeasurableSpace.le_map_comap
 #align measurable_subtype_coe measurable_subtype_coe
@@ -537,7 +535,7 @@ theorem MeasurableSet.subtype_image {s : Set α} {t : Set s} (hs : MeasurableSet
   exact hu.inter hs
 #align measurable_set.subtype_image MeasurableSet.subtype_image
 
--- porting note: todo: add @[measurability]
+@[measurability]
 theorem Measurable.subtype_coe {p : β → Prop} {f : α → Subtype p} (hf : Measurable f) :
     Measurable fun a : α => (f a : β) :=
   measurable_subtype_coe.comp hf
@@ -545,7 +543,7 @@ theorem Measurable.subtype_coe {p : β → Prop} {f : α → Subtype p} (hf : Me
 
 alias Measurable.subtype_coe ← Measurable.subtype_val
 
--- porting note: todo: add @[measurability]
+@[measurability]
 theorem Measurable.subtype_mk {p : β → Prop} {f : α → β} (hf : Measurable f) {h : ∀ x, p (f x)} :
     Measurable fun x => (⟨f x, h x⟩ : Subtype p) := fun t ⟨s, hs⟩ =>
   hs.2 ▸ by simp only [← preimage_comp, (· ∘ ·), Subtype.coe_mk, hf hs.1]
@@ -615,13 +613,13 @@ def MeasurableSpace.prod {α β} (m₁ : MeasurableSpace α) (m₂ : MeasurableS
 instance {α β} [m₁ : MeasurableSpace α] [m₂ : MeasurableSpace β] : MeasurableSpace (α × β) :=
   m₁.prod m₂
 
--- porting note: todo: add @[measurability]
+@[measurability]
 theorem measurable_fst {_ : MeasurableSpace α} {_ : MeasurableSpace β} :
     Measurable (Prod.fst : α × β → α) :=
   Measurable.of_comap_le le_sup_left
 #align measurable_fst measurable_fst
 
--- porting note: todo: add @[measurability]
+@[measurability]
 theorem measurable_snd {_ : MeasurableSpace α} {_ : MeasurableSpace β} :
     Measurable (Prod.snd : α × β → β) :=
   Measurable.of_comap_le le_sup_right
@@ -637,7 +635,7 @@ theorem Measurable.snd {f : α → β × γ} (hf : Measurable f) : Measurable fu
   measurable_snd.comp hf
 #align measurable.snd Measurable.snd
 
--- porting note: todo: add @[measurability]
+@[measurability]
 theorem Measurable.prod {f : α → β × γ} (hf₁ : Measurable fun a => (f a).1)
     (hf₂ : Measurable fun a => (f a).2) : Measurable f :=
   Measurable.of_le_map <|
@@ -683,7 +681,7 @@ theorem measurable_prod {f : α → β × γ} :
   ⟨fun hf => ⟨measurable_fst.comp hf, measurable_snd.comp hf⟩, fun h => Measurable.prod h.1 h.2⟩
 #align measurable_prod measurable_prod
 
--- porting note: todo: restore @[measurability]
+@[measurability]
 theorem measurable_swap : Measurable (Prod.swap : α × β → β × α) :=
   Measurable.prod measurable_snd measurable_fst
 #align measurable_swap measurable_swap
@@ -693,7 +691,7 @@ theorem measurable_swap_iff {_ : MeasurableSpace γ} {f : α × β → γ} :
   ⟨fun hf => hf.comp measurable_swap, fun hf => hf.comp measurable_swap⟩
 #align measurable_swap_iff measurable_swap_iff
 
--- porting note: todo: restore @[measurability]
+@[measurability]
 protected theorem MeasurableSet.prod {s : Set α} {t : Set β} (hs : MeasurableSet s)
     (ht : MeasurableSet t) : MeasurableSet (s ×ˢ t) :=
   MeasurableSet.inter (measurable_fst hs) (measurable_snd ht)
@@ -735,7 +733,7 @@ theorem measurable_from_prod_countable [Countable β] [MeasurableSingletonClass 
 #align measurable_from_prod_countable measurable_from_prod_countable
 
 /-- A piecewise function on countably many pieces is measurable if all the data is measurable. -/
--- porting note: todo: restore @[measurability]
+@[measurability]
 theorem Measurable.find {_ : MeasurableSpace α} {f : ℕ → α → β} {p : ℕ → α → Prop}
     [∀ n, DecidablePred (p n)] (hf : ∀ n, Measurable (f n)) (hp : ∀ n, MeasurableSet { x | p n x })
     (h : ∀ x, ∃ n, p n x) : Measurable fun x => f (Nat.find (h x)) x :=
@@ -817,18 +815,18 @@ theorem measurable_pi_iff {g : α → ∀ a, π a} : Measurable g ↔ ∀ a, Mea
     MeasurableSpace.comap_comp, Function.comp, supᵢ_le_iff]
 #align measurable_pi_iff measurable_pi_iff
 
--- porting note: todo: restore @[measurability]
+@[measurability]
 theorem measurable_pi_apply (a : δ) : Measurable fun f : ∀ a, π a => f a :=
   measurable_pi_iff.1 measurable_id a
 #align measurable_pi_apply measurable_pi_apply
 
--- porting note: todo: restore @[measurability]
+@[measurability]
 theorem Measurable.eval {a : δ} {g : α → ∀ a, π a} (hg : Measurable g) :
     Measurable fun x => g x a :=
   (measurable_pi_apply a).comp hg
 #align measurable.eval Measurable.eval
 
--- porting note: todo: restore @[measurability]
+@[measurability]
 theorem measurable_pi_lambda (f : α → ∀ a, π a) (hf : ∀ a, Measurable fun c => f c a) :
     Measurable f :=
   measurable_pi_iff.mpr hf
@@ -837,7 +835,7 @@ theorem measurable_pi_lambda (f : α → ∀ a, π a) (hf : ∀ a, Measurable fu
 /-- The function `update f a : π a → Π a, π a` is always measurable.
   This doesn't require `f` to be measurable.
   This should not be confused with the statement that `update f a x` is measurable. -/
--- porting note: todo: restore @[measurability]
+@[measurability]
 theorem measurable_update (f : ∀ a : δ, π a) {a : δ} [DecidableEq δ] : Measurable (update f a) := by
   refine measurable_pi_lambda _ fun x => ?_
   rcases eq_or_ne x a with (rfl | hx)
@@ -847,7 +845,7 @@ theorem measurable_update (f : ∀ a : δ, π a) {a : δ} [DecidableEq δ] : Mea
 
 /- Even though we cannot use projection notation, we still keep a dot to be consistent with similar
   lemmas, like `MeasurableSet.prod`. -/
--- porting note: todo: restore @[measurability]
+@[measurability]
 protected theorem MeasurableSet.pi {s : Set δ} {t : ∀ i : δ, Set (π i)} (hs : s.Countable)
     (ht : ∀ i ∈ s, MeasurableSet (t i)) : MeasurableSet (s.pi t) := by
   rw [pi_def]
@@ -882,7 +880,7 @@ instance [Countable δ] [∀ a, MeasurableSingletonClass (π a)] :
 
 variable (π)
 
--- porting note: todo: restore @[measurability]
+@[measurability]
 theorem measurable_piEquivPiSubtypeProd_symm (p : δ → Prop) [DecidablePred p] :
     Measurable (Equiv.piEquivPiSubtypeProd p π).symm := by
   refine' measurable_pi_iff.2 fun j => _
@@ -897,7 +895,7 @@ theorem measurable_piEquivPiSubtypeProd_symm (p : δ → Prop) [DecidablePred p]
     exact Measurable.comp this measurable_snd
 #align measurable_pi_equiv_pi_subtype_prod_symm measurable_piEquivPiSubtypeProd_symm
 
--- porting note: todo: restore @[measurability]
+@[measurability]
 theorem measurable_piEquivPiSubtypeProd (p : δ → Prop) [DecidablePred p] :
     Measurable (Equiv.piEquivPiSubtypeProd p π) :=
   (measurable_pi_iff.2 fun _ => measurable_pi_apply _).prod_mk
@@ -954,12 +952,12 @@ instance {α β} [m₁ : MeasurableSpace α] [m₂ : MeasurableSpace β] : Measu
 
 section Sum
 
--- porting note: todo: restore @[measurability]
+@[measurability]
 theorem measurable_inl [MeasurableSpace α] [MeasurableSpace β] : Measurable (@Sum.inl α β) :=
   Measurable.of_le_map inf_le_left
 #align measurable_inl measurable_inl
 
--- porting note: todo: restore @[measurability]
+@[measurability]
 theorem measurable_inr [MeasurableSpace α] [MeasurableSpace β] : Measurable (@Sum.inr α β) :=
   Measurable.of_le_map inf_le_right
 #align measurable_inr measurable_inr
@@ -978,7 +976,7 @@ theorem measurable_sum {_ : MeasurableSpace γ} {f : α ⊕ β → γ} (hl : Mea
       (MeasurableSpace.comap_le_iff_le_map.2 <| hr)
 #align measurable_sum measurable_sum
 
--- porting note: todo: restore @[measurability]
+@[measurability]
 theorem Measurable.sumElim {_ : MeasurableSpace γ} {f : α → γ} {g : β → γ} (hf : Measurable f)
     (hg : Measurable g) : Measurable (Sum.elim f g) :=
   measurable_sum hf hg
@@ -1153,7 +1151,7 @@ theorem coe_toEquiv (e : α ≃ᵐ β) : (e.toEquiv : α → β) = e :=
   rfl
 #align measurable_equiv.coe_to_equiv MeasurableEquiv.coe_toEquiv
 
--- porting note: todo: restore @[measurability]
+@[measurability]
 protected theorem measurable (e : α ≃ᵐ β) : Measurable (e : α → β) :=
   e.measurable_toFun
 #align measurable_equiv.measurable MeasurableEquiv.measurable
@@ -1848,27 +1846,27 @@ noncomputable instance : BooleanAlgebra (Subtype (MeasurableSet : Set α → Pro
   Subtype.coe_injective.booleanAlgebra _ (fun _ _ => rfl) (fun _ _ => rfl) rfl rfl (fun _ => rfl)
     fun _ _ => rfl
 
--- porting note: todo: add @[measurability]
+@[measurability]
 theorem measurableSet_blimsup {s : ℕ → Set α} {p : ℕ → Prop} (h : ∀ n, p n → MeasurableSet (s n)) :
     MeasurableSet <| blimsup s atTop p := by
   simp only [blimsup_eq_infᵢ_bsupᵢ_of_nat, supᵢ_eq_unionᵢ, infᵢ_eq_interᵢ]
   exact .interᵢ fun _ => .unionᵢ fun m => .unionᵢ fun hm => h m hm.1
 #align measurable_set.measurable_set_blimsup MeasurableSet.measurableSet_blimsup
 
--- porting note: todo: add @[measurability]
+@[measurability]
 theorem measurableSet_bliminf {s : ℕ → Set α} {p : ℕ → Prop} (h : ∀ n, p n → MeasurableSet (s n)) :
     MeasurableSet <| Filter.bliminf s Filter.atTop p := by
   simp only [Filter.bliminf_eq_supᵢ_binfᵢ_of_nat, infᵢ_eq_interᵢ, supᵢ_eq_unionᵢ]
   exact .unionᵢ fun n => .interᵢ fun m => .interᵢ fun hm => h m hm.1
 #align measurable_set.measurable_set_bliminf MeasurableSet.measurableSet_bliminf
 
--- porting note: todo: add @[measurability]
+@[measurability]
 theorem measurableSet_limsup {s : ℕ → Set α} (hs : ∀ n, MeasurableSet <| s n) :
     MeasurableSet <| Filter.limsup s Filter.atTop := by
   simpa only [← blimsup_true] using measurableSet_blimsup fun n _ => hs n
 #align measurable_set.measurable_set_limsup MeasurableSet.measurableSet_limsup
 
--- porting note: todo: add @[measurability]
+@[measurability]
 theorem measurableSet_liminf {s : ℕ → Set α} (hs : ∀ n, MeasurableSet <| s n) :
     MeasurableSet <| Filter.liminf s Filter.atTop := by
   simpa only [← bliminf_true] using measurableSet_bliminf fun n _ => hs n
