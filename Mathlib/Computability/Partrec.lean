@@ -389,7 +389,7 @@ theorem vector_get {n} : Computable₂ (@Vector.get α n) :=
 #align computable.vector_nth' Computable.vector_get
 
 theorem vector_ofFn' {n} : Computable (@Vector.ofFn α n) :=
-  Primrec.vector_of_fn'.to_comp
+  Primrec.vector_ofFn'.to_comp
 #align computable.vector_of_fn' Computable.vector_ofFn'
 
 theorem fin_app {n} : Computable₂ (@id (Fin n → σ)) :=
