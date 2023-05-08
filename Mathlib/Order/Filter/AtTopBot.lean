@@ -115,8 +115,8 @@ theorem not_tendsto_const_atBot [Preorder α] [NoMinOrder α] (x : α) (l : Filt
   tendsto_const_pure.not_tendsto (disjoint_pure_atBot x)
 #align filter.not_tendsto_const_at_bot Filter.not_tendsto_const_atBot
 
-theorem disjoint_atBot_atTop [PartialOrder α] [Nontrivial α] : Disjoint (atBot : Filter α) atTop :=
-  by
+theorem disjoint_atBot_atTop [PartialOrder α] [Nontrivial α] :
+    Disjoint (atBot : Filter α) atTop := by
   rcases exists_pair_ne α with ⟨x, y, hne⟩
   by_cases hle : x ≤ y
   · refine' disjoint_of_disjoint_of_mem _ (Iic_mem_atBot x) (Ici_mem_atTop y)
@@ -534,8 +534,7 @@ theorem high_scores [LinearOrder β] [NoMaxOrder β] {u : ℕ → β} (hu : Tend
   exact exists_max_image _ u (finite_le_nat N) ⟨N, le_refl N⟩
   have ex : ∃ n ≥ N, u k < u n := exists_lt_of_tendsto_atTop hu _ _
   obtain ⟨n : ℕ, hnN : n ≥ N, hnk : u k < u n, hn_min : ∀ m, m < n → N ≤ m → u m ≤ u k⟩ :
-    ∃ n ≥ N, u k < u n ∧ ∀ m, m < n → N ≤ m → u m ≤ u k :=
-    by
+      ∃ n ≥ N, u k < u n ∧ ∀ m, m < n → N ≤ m → u m ≤ u k := by
     rcases Nat.findX ex with ⟨n, ⟨hnN, hnk⟩, hn_min⟩
     push_neg  at hn_min
     exact ⟨n, hnN, hnk, hn_min⟩
@@ -654,7 +653,6 @@ theorem Tendsto.nsmul_atTop (hf : Tendsto f l atTop) {n : ℕ} (hn : 0 < n) :
           y ≤ f x := hy
           _ = 1 • f x := (one_nsmul _).symm
           _ ≤ n • f x := nsmul_le_nsmul h₀ hn
-
 #align filter.tendsto.nsmul_at_top Filter.Tendsto.nsmul_atTop
 
 theorem Tendsto.nsmul_atBot (hf : Tendsto f l atBot) {n : ℕ} (hn : 0 < n) :
@@ -1510,8 +1508,7 @@ theorem map_atBot_eq_of_gc [SemilatticeInf α] [SemilatticeInf β] {f : α → �
 theorem map_val_atTop_of_Ici_subset [SemilatticeSup α] {a : α} {s : Set α} (h : Ici a ⊆ s) :
     map ((↑) : s → α) atTop = atTop := by
   haveI : Nonempty s := ⟨⟨a, h le_rfl⟩⟩
-  have : Directed (· ≥ ·) fun x : s => 𝓟 (Ici x) :=
-    by
+  have : Directed (· ≥ ·) fun x : s => 𝓟 (Ici x) := by
     intro x y
     use ⟨x ⊔ y ⊔ a, h le_sup_right⟩
     simp only [ge_iff_le, principal_mono, Ici_subset_Ici, ← Subtype.coe_le_coe, Subtype.coe_mk]
@@ -1850,7 +1847,6 @@ theorem frequently_iff_seq_frequently {ι : Type _} {l : Filter ι} {p : ι → 
     have : { n : ℕ | ¬p (x n) } = { n | x n ∈ { y | ¬p y } } := rfl
     rw [this, ← mem_map'] at hx_freq
     exact mt (@hx_tendsto _) hx_freq
-
 #align filter.frequently_iff_seq_frequently Filter.frequently_iff_seq_frequently
 
 theorem eventually_iff_seq_eventually {ι : Type _} {l : Filter ι} {p : ι → Prop}
@@ -1896,8 +1892,7 @@ theorem tendsto_of_subseq_tendsto {α ι : Type _} {x : ι → α} {f : Filter �
   specialize hms_tendsto hs
   rw [mem_map] at hms_tendsto
   have hms_freq : ∀ n : ℕ, x (y (ms n)) ∉ s := fun n => hy_freq (ms n)
-  have h_empty : (fun n : ℕ => x (y (ms n))) ⁻¹' s = ∅ :=
-    by
+  have h_empty : (fun n : ℕ => x (y (ms n))) ⁻¹' s = ∅ := by
     ext1 n
     simp only [Set.mem_preimage, Set.mem_empty_iff_false, iff_false_iff]
     exact hms_freq n

@@ -39,8 +39,7 @@ variable {C : Type u₁} [Category.{v₁} C]
 See <https://stacks.math.columbia.edu/tag/001O>.
 -/
 @[simps]
-def yoneda : C ⥤ Cᵒᵖ ⥤ Type v₁
-    where
+def yoneda : C ⥤ Cᵒᵖ ⥤ Type v₁ where
   obj X :=
     { obj := fun Y => unop Y ⟶ X
       map := fun f g => f.unop ≫ g
@@ -50,14 +49,13 @@ def yoneda : C ⥤ Cᵒᵖ ⥤ Type v₁
     { app := fun Y g => g ≫ f
       naturality := fun Y Y' g => by funext Z; aesop_cat }
   map_id := by aesop_cat
-  map_comp := fun f g => by ext Y; dsimp; funext f; simp
+  map_comp f g := by ext Y; dsimp; rw [Category.assoc]
 #align category_theory.yoneda CategoryTheory.yoneda
 
 /-- The co-Yoneda embedding, as a functor from `Cᵒᵖ` into co-presheaves on `C`.
 -/
 @[simps]
-def coyoneda : Cᵒᵖ ⥤ C ⥤ Type v₁
-    where
+def coyoneda : Cᵒᵖ ⥤ C ⥤ Type v₁ where
   obj X :=
     { obj := fun Y => unop X ⟶ Y
       map := fun f g => g ≫ f
@@ -137,10 +135,9 @@ theorem naturality {X Y : Cᵒᵖ} (α : coyoneda.obj X ⟶ coyoneda.obj Y) {Z Z
   (FunctorToTypes.naturality _ _ α f h).symm
 #align category_theory.coyoneda.naturality CategoryTheory.Coyoneda.naturality
 
-instance coyonedaFull : Full (coyoneda : Cᵒᵖ ⥤ C ⥤ Type v₁)
-    where
-      preimage {X} _ f := (f.app _ (𝟙 X.unop)).op
-      witness {X} {Y} f := by simp only [coyoneda]; aesop_cat
+instance coyonedaFull : Full (coyoneda : Cᵒᵖ ⥤ C ⥤ Type v₁) where
+  preimage {X} _ f := (f.app _ (𝟙 X.unop)).op
+  witness {X} {Y} f := by simp only [coyoneda]; aesop_cat
 #align category_theory.coyoneda.coyoneda_full CategoryTheory.Coyoneda.coyonedaFull
 
 instance coyoneda_faithful : Faithful (coyoneda : Cᵒᵖ ⥤ C ⥤ Type v₁) where
@@ -194,8 +191,8 @@ class Corepresentable (F : C ⥤ Type v₁) : Prop where
   has_corepresentation : ∃ (X : _)(f : coyoneda.obj X ⟶ F), IsIso f
 #align category_theory.functor.corepresentable CategoryTheory.Functor.Corepresentable
 
-instance {X : Cᵒᵖ} : Corepresentable (coyoneda.obj X)
-    where has_corepresentation := ⟨X, 𝟙 _, inferInstance⟩
+instance {X : Cᵒᵖ} : Corepresentable (coyoneda.obj X) where
+  has_corepresentation := ⟨X, 𝟙 _, inferInstance⟩
 
 -- instance : corepresentable (𝟭 (Type v₁)) :=
 -- corepresentable_of_nat_iso (op punit) coyoneda.punit_iso
@@ -282,8 +279,8 @@ noncomputable def coreprW : coyoneda.obj (op F.coreprX) ≅ F :=
   asIso F.coreprF
 #align category_theory.functor.corepr_w CategoryTheory.Functor.coreprW
 
-theorem coreprW_app_hom (X : C) (f : F.coreprX ⟶ X) : (F.coreprW.app X).hom f = F.map f F.coreprx :=
-  by
+theorem coreprW_app_hom (X : C) (f : F.coreprX ⟶ X) :
+    (F.coreprW.app X).hom f = F.map f F.coreprx := by
   change F.coreprF.app X f = (F.coreprF.app F.coreprX ≫ F.map f) (𝟙 F.coreprX)
   rw [← F.coreprF.naturality]
   dsimp
@@ -355,8 +352,7 @@ is naturally isomorphic to the evaluation `(X, F) ↦ F.obj X`.
 
 See <https://stacks.math.columbia.edu/tag/001P>.
 -/
-def yonedaLemma : yonedaPairing C ≅ yonedaEvaluation C
-    where
+def yonedaLemma : yonedaPairing C ≅ yonedaEvaluation C where
   hom :=
     { app := fun F x => ULift.up ((x.app F.1) (𝟙 (unop F.1)))
       naturality := by

@@ -189,8 +189,7 @@ protected theorem noncommProd_map_aux [MonoidHomClass F α β] (s : Multiset α)
 
 @[to_additive]
 theorem noncommProd_map [MonoidHomClass F α β] (s : Multiset α) (comm) (f : F) :
-    f (s.noncommProd comm) = (s.map f).noncommProd (Multiset.noncommProd_map_aux s comm f) :=
-  by
+    f (s.noncommProd comm) = (s.map f).noncommProd (Multiset.noncommProd_map_aux s comm f) := by
   induction s using Quotient.inductionOn
   simpa using map_list_prod f _
 #align multiset.noncomm_prod_map Multiset.noncommProd_map
@@ -264,8 +263,7 @@ theorem noncommProd_congr {s₁ s₂ : Finset α} {f g : α → β} (h₁ : s₁
 
 @[to_additive (attr := simp)]
 theorem noncommProd_toFinset [DecidableEq α] (l : List α) (f : α → β) (comm) (hl : l.Nodup) :
-    noncommProd l.toFinset f comm = (l.map f).prod :=
-  by
+    noncommProd l.toFinset f comm = (l.map f).prod := by
   rw [← List.dedup_eq_self] at hl
   simp [noncommProd, hl]
 #align finset.noncomm_prod_to_finset Finset.noncommProd_toFinset
@@ -290,7 +288,6 @@ theorem noncommProd_insert_of_not_mem [DecidableEq α] (s : Finset α) (a : α) 
        { congr
          rw [insert_val_of_not_mem ha, Multiset.map_cons] }
    _ = _ := by rw [Multiset.noncommProd_cons, noncommProd]
-
 #align finset.noncomm_prod_insert_of_not_mem Finset.noncommProd_insert_of_not_mem
 #align finset.noncomm_sum_insert_of_not_mem Finset.noncommSum_insert_of_not_mem
 

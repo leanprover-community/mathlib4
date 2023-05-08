@@ -95,8 +95,7 @@ theorem count_eq_one_of_mem [DecidableEq α] {a : α} {s : Multiset α} (d : Nod
 #align multiset.count_eq_one_of_mem Multiset.count_eq_one_of_mem
 
 theorem count_eq_of_nodup [DecidableEq α] {a : α} {s : Multiset α} (d : Nodup s) :
-    count a s = if a ∈ s then 1 else 0 :=
-  by
+    count a s = if a ∈ s then 1 else 0 := by
   split_ifs with h
   · exact count_eq_one_of_mem d h
   · exact count_eq_zero_of_not_mem h
@@ -272,7 +271,6 @@ theorem map_eq_map_of_bij_of_nodup (f : α → γ) (g : β → γ) {s : Multiset
     s.map f = s.pmap (fun x _ => f x) fun _ => id := by rw [pmap_eq_map]
     _ = s.attach.map fun x => f x.1 := by rw [pmap_eq_map_attach]
     _ = t.map g := by rw [this, Multiset.map_map]; exact map_congr rfl fun x _ => h _ _
-
 #align multiset.map_eq_map_of_bij_of_nodup Multiset.map_eq_map_of_bij_of_nodup
 
 end Multiset

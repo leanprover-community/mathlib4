@@ -114,10 +114,8 @@ theorem sqrt_zero : sqrt 0 = 0 := rfl
 
 theorem sqrt_eq_zero {n : ℕ} : sqrt n = 0 ↔ n = 0 :=
   ⟨fun h =>
-    Nat.eq_zero_of_le_zero <| le_of_lt_succ <| (@sqrt_lt n 1).1 <| by rw [h]; decide,
-   by
-    rintro rfl
-    simp⟩
+      Nat.eq_zero_of_le_zero <| le_of_lt_succ <| (@sqrt_lt n 1).1 <| by rw [h]; decide,
+    by rintro rfl; simp⟩
 #align nat.sqrt_eq_zero Nat.sqrt_eq_zero
 
 theorem eq_sqrt {n q} : q = sqrt n ↔ q * q ≤ n ∧ n < (q + 1) * (q + 1) :=

@@ -89,7 +89,6 @@ theorem mulSupport_eq_iff {f : α → M} {s : Set α} :
     mulSupport f = s ↔ (∀ x, x ∈ s → f x ≠ 1) ∧ ∀ x, x ∉ s → f x = 1 := by
   simp (config := { contextual := true }) only [ext_iff, mem_mulSupport, ne_eq, iff_def,
     not_imp_comm, and_comm, forall_and]
-
 #align function.mul_support_eq_iff Function.mulSupport_eq_iff
 #align function.support_eq_iff Function.support_eq_iff
 
@@ -121,8 +120,8 @@ theorem mulSupport_nonempty_iff {f : α → M} : (mulSupport f).Nonempty ↔ f �
 #align function.support_nonempty_iff Function.support_nonempty_iff
 
 @[to_additive]
-theorem range_subset_insert_image_mulSupport (f : α → M) : range f ⊆ insert 1 (f '' mulSupport f) :=
-  by
+theorem range_subset_insert_image_mulSupport (f : α → M) :
+    range f ⊆ insert 1 (f '' mulSupport f) := by
   simpa only [range_subset_iff, mem_insert_iff, or_iff_not_imp_left] using
     fun x (hx : x ∈ mulSupport f) => mem_image_of_mem f hx
 #align function.range_subset_insert_image_mul_support Function.range_subset_insert_image_mulSupport

@@ -400,12 +400,11 @@ instance hasKernel_iso_comp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso f] [H
     HasKernel (f ≫ g)
     where exists_limit :=
     ⟨{  cone := KernelFork.ofι (kernel.ι g ≫ inv f) (by simp)
-        isLimit :=
-          isLimitAux _ (fun s => kernel.lift _ (s.ι ≫ f) (by aesop_cat)) (by aesop_cat) fun s m w =>
-            by
-            simp_rw [← w]
-            apply equalizer.hom_ext
-            simp }⟩
+        isLimit := isLimitAux _ (fun s => kernel.lift _ (s.ι ≫ f) (by aesop_cat))
+            (by aesop_cat) fun s m w => by
+          simp_rw [← w]
+          apply equalizer.hom_ext
+          simp }⟩
 #align category_theory.limits.has_kernel_iso_comp CategoryTheory.Limits.hasKernel_iso_comp
 
 /-- When `f` is an isomorphism, the kernel of `f ≫ g` is isomorphic to the kernel of `g`.
@@ -472,10 +471,9 @@ def IsKernel.ofCompIso {Z : C} (l : X ⟶ Z) (i : Z ≅ Y) (h : l ≫ i.hom = f)
     IsLimit
       (KernelFork.ofι (Fork.ι s) <| show Fork.ι s ≫ l = 0 by simp [← i.comp_inv_eq.2 h.symm]) :=
   Fork.IsLimit.mk _ (fun s => hs.lift <| KernelFork.ofι (Fork.ι s) <| by simp [← h])
-    (fun s => by simp) fun s m h =>
-    by
-    apply Fork.IsLimit.hom_ext hs
-    simpa using h
+    (fun s => by simp) fun s m h => by
+      apply Fork.IsLimit.hom_ext hs
+      simpa using h
 #align category_theory.limits.is_kernel.of_comp_iso CategoryTheory.Limits.IsKernel.ofCompIso
 
 /-- If `i` is an isomorphism such that `l ≫ i.hom = f`, then the kernel of `f` is a kernel of `l`.-/
@@ -623,10 +621,9 @@ theorem isCokernelEpiComp_desc {c : CokernelCofork f} (i : IsColimit c) {W} (g :
 def isCokernelOfComp {W : C} (g : W ⟶ X) (h : W ⟶ Y) {c : CokernelCofork h} (i : IsColimit c)
     (hf : f ≫ c.π = 0) (hfg : g ≫ f = h) : IsColimit (CokernelCofork.ofπ c.π hf) :=
   Cofork.IsColimit.mk _ (fun s => i.desc (CokernelCofork.ofπ s.π (by simp [← hfg])))
-    (fun s => by simp only [CokernelCofork.π_ofπ, Cofork.IsColimit.π_desc]) fun s m h =>
-    by
-    apply Cofork.IsColimit.hom_ext i
-    simpa using h
+    (fun s => by simp only [CokernelCofork.π_ofπ, Cofork.IsColimit.π_desc]) fun s m h => by
+      apply Cofork.IsColimit.hom_ext i
+      simpa using h
 #align category_theory.limits.is_cokernel_of_comp CategoryTheory.Limits.isCokernelOfComp
 
 end
@@ -672,6 +669,14 @@ theorem cokernel.π_desc {W : C} (k : Y ⟶ W) (h : f ≫ k = 0) :
     cokernel.π f ≫ cokernel.desc f k h = k :=
   (cokernelIsCokernel f).fac (CokernelCofork.ofπ k h) WalkingParallelPair.one
 #align category_theory.limits.cokernel.π_desc CategoryTheory.Limits.cokernel.π_desc
+
+-- porting note: added to ease the port of `Abelian.Exact`
+@[reassoc (attr := simp)]
+lemma colimit_ι_zero_cokernel_desc {C : Type _} [Category C]
+    [HasZeroMorphisms C] {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (h : f ≫ g = 0) [HasCokernel f]:
+    colimit.ι (parallelPair f 0) WalkingParallelPair.zero ≫ cokernel.desc f g h = 0 := by
+  rw [(colimit.w (parallelPair f 0) WalkingParallelPairHom.left).symm]
+  aesop_cat
 
 @[simp]
 theorem cokernel.desc_zero {W : C} {h} : cokernel.desc f (0 : Y ⟶ W) h = 0 := by
@@ -1000,10 +1005,9 @@ def IsCokernel.ofIsoComp {Z : C} (l : Z ⟶ Y) (i : X ≅ Z) (h : i.hom ≫ l = 
     IsColimit
       (CokernelCofork.ofπ (Cofork.π s) <| show l ≫ Cofork.π s = 0 by simp [i.eq_inv_comp.2 h]) :=
   Cofork.IsColimit.mk _ (fun s => hs.desc <| CokernelCofork.ofπ (Cofork.π s) <| by simp [← h])
-    (fun s => by simp) fun s m h =>
-    by
-    apply Cofork.IsColimit.hom_ext hs
-    simpa using h
+    (fun s => by simp) fun s m h => by
+      apply Cofork.IsColimit.hom_ext hs
+      simpa using h
 #align category_theory.limits.is_cokernel.of_iso_comp CategoryTheory.Limits.IsCokernel.ofIsoComp
 
 /-- If `i` is an isomorphism such that `i.hom ≫ l = f`, then the cokernel of `f` is a cokernel of
@@ -1130,7 +1134,7 @@ class HasCokernels : Prop where
   has_colimit : ∀ {X Y : C} (f : X ⟶ Y), HasCokernel f := by infer_instance
 #align category_theory.limits.has_cokernels CategoryTheory.Limits.HasCokernels
 
-attribute [instance] HasKernels.has_limit HasCokernels.has_colimit
+attribute [instance 100] HasKernels.has_limit HasCokernels.has_colimit
 
 instance (priority := 100) hasKernels_of_hasEqualizers [HasEqualizers C] : HasKernels C where
 #align category_theory.limits.has_kernels_of_has_equalizers CategoryTheory.Limits.hasKernels_of_hasEqualizers

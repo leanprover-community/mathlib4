@@ -97,7 +97,6 @@ theorem degrees_monomial (s : σ →₀ ℕ) (a : R) : degrees (monomial s a) �
     have := Finsupp.support_single_subset h
     rw [Finset.mem_singleton] at this
     rw [this]
-    exact le_refl _
 #align mv_polynomial.degrees_monomial MvPolynomial.degrees_monomial
 
 theorem degrees_monomial_eq (s : σ →₀ ℕ) (a : R) (ha : a ≠ 0) :
@@ -623,8 +622,7 @@ theorem totalDegree_add_eq_left_of_totalDegree_lt {p q : MvPolynomial σ R}
       contrapose! h
       rw [totalDegree_eq p, hb₂, totalDegree_eq]
       apply Finset.le_sup h
-    have hbb : b ∈ (p + q).support :=
-      by
+    have hbb : b ∈ (p + q).support := by
       apply support_sdiff_support_subset_support_add
       rw [Finset.mem_sdiff]
       exact ⟨hb₁, hb⟩
@@ -657,8 +655,8 @@ theorem totalDegree_smul_le [CommSemiring S] [DistribMulAction R S] (a : R) (f :
   Finset.sup_mono support_smul
 #align mv_polynomial.total_degree_smul_le MvPolynomial.totalDegree_smul_le
 
-theorem totalDegree_pow (a : MvPolynomial σ R) (n : ℕ) : (a ^ n).totalDegree ≤ n * a.totalDegree :=
-  by
+theorem totalDegree_pow (a : MvPolynomial σ R) (n : ℕ) :
+    (a ^ n).totalDegree ≤ n * a.totalDegree := by
   induction' n with n ih
   · simp only [Nat.zero_eq, MulZeroClass.zero_mul, pow_zero, totalDegree_one]
   rw [pow_succ]
@@ -666,7 +664,6 @@ theorem totalDegree_pow (a : MvPolynomial σ R) (n : ℕ) : (a ^ n).totalDegree 
     totalDegree (a * a ^ n) ≤ a.totalDegree + (a ^ n).totalDegree := totalDegree_mul _ _
     _ ≤ a.totalDegree + n * a.totalDegree := (add_le_add_left ih _)
     _ = (n + 1) * a.totalDegree := by rw [add_mul, one_mul, add_comm]
-
 #align mv_polynomial.total_degree_pow MvPolynomial.totalDegree_pow
 
 @[simp]
@@ -724,7 +721,6 @@ theorem exists_degree_lt [Fintype σ] (f : MvPolynomial σ R) (n : ℕ)
       intros
       rfl
     _ ≤ f.totalDegree := le_totalDegree hd
-
 #align mv_polynomial.exists_degree_lt MvPolynomial.exists_degree_lt
 
 theorem coeff_eq_zero_of_totalDegree_lt {f : MvPolynomial σ R} {d : σ →₀ ℕ}
@@ -779,8 +775,7 @@ theorem eval₂Hom_eq_constantCoeff_of_vars (f : R →+* S) {g : σ → S} {p : 
     intro
     contradiction
   repeat'
-    obtain ⟨i, hi⟩ : Finset.Nonempty (Finsupp.support d) :=
-      by
+    obtain ⟨i, hi⟩ : Finset.Nonempty (Finsupp.support d) := by
       rw [constantCoeff_eq, coeff, ← Finsupp.not_mem_support_iff] at h0
       rw [Finset.nonempty_iff_ne_empty, Ne.def, Finsupp.support_eq_empty]
       rintro rfl
@@ -831,14 +826,14 @@ theorem exists_rename_eq_of_vars_subset_range (p : MvPolynomial σ R) (f : τ �
     (hf : ↑p.vars ⊆ Set.range f) : ∃ q : MvPolynomial τ R, rename f q = p :=
   ⟨aeval (fun i : σ => Option.elim' 0 X <| partialInv f i) p,
     by
-    show (rename f).toRingHom.comp _ p = RingHom.id _ p
-    refine' hom_congr_vars _ _ _
-    · ext1
-      simp [algebraMap_eq]
-    · intro i hip _
-      rcases hf hip with ⟨i, rfl⟩
-      simp [partialInv_left hfi]
-    · rfl⟩
+      show (rename f).toRingHom.comp _ p = RingHom.id _ p
+      refine' hom_congr_vars _ _ _
+      · ext1
+        simp [algebraMap_eq]
+      · intro i hip _
+        rcases hf hip with ⟨i, rfl⟩
+        simp [partialInv_left hfi]
+      · rfl⟩
 #align mv_polynomial.exists_rename_eq_of_vars_subset_range MvPolynomial.exists_rename_eq_of_vars_subset_range
 
 theorem vars_rename (f : σ → τ) (φ : MvPolynomial σ R) : (rename f φ).vars ⊆ φ.vars.image f := by

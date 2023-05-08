@@ -108,9 +108,8 @@ private theorem gosper_trick {n i : ℕ} (h : i ≤ n) :
   field_simp
   ring
 
-private theorem gosper_catalan_sub_eq_central_binom_div (n : ℕ) :
-    gosperCatalan (n + 1) (n + 1) - gosperCatalan (n + 1) 0 = Nat.centralBinom (n + 1) / (n + 2) :=
-  by
+private theorem gosper_catalan_sub_eq_central_binom_div (n : ℕ) : gosperCatalan (n + 1) (n + 1) -
+    gosperCatalan (n + 1) 0 = Nat.centralBinom (n + 1) / (n + 2) := by
   have : (n : ℚ) + 1 ≠ 0 := by norm_cast; exact n.succ_ne_zero
   have : (n : ℚ) + 1 + 1 ≠ 0 := by norm_cast; exact (n + 1).succ_ne_zero
   have h : (n : ℚ) + 2 ≠ 0 := by norm_cast; exact (n + 1).succ_ne_zero
@@ -193,8 +192,8 @@ theorem treesOfNumNodesEq_succ (n : ℕ) :
 #align tree.trees_of_nodes_eq_succ Tree.treesOfNumNodesEq_succ
 
 @[simp]
-theorem mem_treesOfNumNodesEq {x : Tree Unit} {n : ℕ} : x ∈ treesOfNumNodesEq n ↔ x.numNodes = n :=
-  by
+theorem mem_treesOfNumNodesEq {x : Tree Unit} {n : ℕ} :
+    x ∈ treesOfNumNodesEq n ↔ x.numNodes = n := by
   induction x using Tree.unitRecOn generalizing n <;> cases n <;>
     simp [treesOfNumNodesEq_succ, Nat.succ_eq_add_one, *]
   exact (Nat.succ_ne_zero _).symm

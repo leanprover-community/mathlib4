@@ -457,8 +457,8 @@ theorem mk'_add (x₁ x₂ : R) (y₁ y₂ : M) :
 #align is_localization.mk'_add IsLocalization.mk'_add
 
 theorem mul_add_inv_left {g : R →+* P} (h : ∀ y : M, IsUnit (g y)) (y : M) (w z₁ z₂ : P) :
-    w * ↑(IsUnit.liftRight (g.toMonoidHom.restrict M) h y)⁻¹ + z₁ = z₂ ↔ w + g y * z₁ = g y * z₂ :=
-  by
+    w * ↑(IsUnit.liftRight (g.toMonoidHom.restrict M) h y)⁻¹ + z₁ =
+    z₂ ↔ w + g y * z₁ = g y * z₂ := by
   rw [mul_comm, ← one_mul z₁, ← Units.inv_mul (IsUnit.liftRight (g.toMonoidHom.restrict M) h y),
     mul_assoc, ← mul_add, Units.inv_mul_eq_iff_eq_mul, Units.inv_mul_cancel_left,
     IsUnit.coe_liftRight]
@@ -734,7 +734,6 @@ end
 --Porting note: removed `simp`, `simp` can prove it
 theorem algEquiv_mk' (x : R) (y : M) : algEquiv M S Q (mk' S x y) = mk' Q x y :=
   map_mk' _ _ _
-
 #align is_localization.alg_equiv_mk' IsLocalization.algEquiv_mk'
 
 --Porting note: removed `simp`, `simp` can prove it
@@ -859,7 +858,7 @@ instance [Subsingleton R] : Unique (Localization M) where
 
 /-- Addition in a ring localization is defined as `⟨a, b⟩ + ⟨c, d⟩ = ⟨b * c + d * a, b * d⟩`.
 
-Should not be confused with `addLocalization.add`, which is defined as
+Should not be confused with `AddLocalization.add`, which is defined as
 `⟨a, b⟩ + ⟨c, d⟩ = ⟨a + c, b + d⟩`.
 -/
 protected irreducible_def add (z w : Localization M) : Localization M :=
@@ -1151,7 +1150,6 @@ theorem sub_mk (a c) (b d) : (mk a b : Localization M) - mk c d =
     _ = mk a b + mk (-c) d := by rw [neg_mk]
     _ = mk (b * -c + d * a) (b * d) := (add_mk _ _ _ _)
     _ = mk (d * a - b * c) (b * d) := by congr; ring
-
 #align localization.sub_mk Localization.sub_mk
 
 theorem mk_int_cast (m : ℤ) : (mk m 1 : Localization M) = m := by

@@ -113,7 +113,8 @@ abbrev PreservesColimits (F : C ⥤ D) :=
   PreservesColimitsOfSize.{v₂, v₂} F
 #align category_theory.limits.preserves_colimits CategoryTheory.Limits.PreservesColimits
 
-attribute [instance]
+-- see Note [lower instance priority]
+attribute [instance 100]
   PreservesLimitsOfShape.preservesLimit PreservesLimitsOfSize.preservesLimitsOfShape
   PreservesColimitsOfShape.preservesColimit
   PreservesColimitsOfSize.preservesColimitsOfShape
@@ -139,7 +140,6 @@ def isColimitOfPreserves (F : C ⥤ D) {c : Cocone K} (t : IsColimit c) [Preserv
 instance preservesLimit_subsingleton (K : J ⥤ C) (F : C ⥤ D) : Subsingleton (PreservesLimit K F)
     := by
   constructor; rintro ⟨a⟩ ⟨b⟩; congr!
-
 #align category_theory.limits.preserves_limit_subsingleton CategoryTheory.Limits.preservesLimit_subsingleton
 
 instance preservesColimit_subsingleton (K : J ⥤ C) (F : C ⥤ D) :
@@ -800,13 +800,10 @@ def fullyFaithfulReflectsLimits [Full F] [Faithful F] : ReflectsLimitsOfSize.{w,
 /-- A fully faithful functor reflects colimits. -/
 def fullyFaithfulReflectsColimits [Full F] [Faithful F] : ReflectsColimitsOfSize.{w, w'} F
     where reflectsColimitsOfShape {J} 𝒥₁ :=
-    {
-      reflectsColimit := fun {K} =>
-        {
-          reflects := fun {c} t =>
+    { reflectsColimit := fun {K} =>
+        { reflects := fun {c} t =>
             (IsColimit.mkCoconeMorphism fun s =>
-                (Cocones.functoriality K F).preimage (t.descCoconeMorphism _)) <|
-              by
+                (Cocones.functoriality K F).preimage (t.descCoconeMorphism _)) <| by
               apply fun s m => (Cocones.functoriality K F).map_injective _
               intro s m
               rw [Functor.image_preimage]

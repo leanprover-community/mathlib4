@@ -59,6 +59,7 @@ theorem lift_injective_of_ker_le_ideal (I : Ideal R) {f : R →+* S} (H : ∀ a 
 
 variable {f}
 
+set_option synthInstance.etaExperiment true in
 /-- The **first isomorphism theorem** for commutative rings, computable version. -/
 def quotientKerEquivOfRightInverse {g : S → R} (hf : Function.RightInverse g f) :
     R ⧸ ker f ≃+* S :=
@@ -206,6 +207,7 @@ instance Quotient.isScalarTower [SMul R₁ R₂] [IsScalarTower R₁ R₂ A] (I 
     IsScalarTower R₁ R₂ (A ⧸ I) := by infer_instance
 #align ideal.quotient.is_scalar_tower Ideal.Quotient.isScalarTower
 
+set_option synthInstance.etaExperiment true in
 /-- The canonical morphism `A →ₐ[R₁] A ⧸ I` as morphism of `R₁`-algebras, for `I` an ideal of
 `A`, where `A` is an `R₁`-algebra. -/
 def Quotient.mkₐ (I : Ideal A) : A →ₐ[R₁] A ⧸ I :=
@@ -271,8 +273,7 @@ def Quotient.liftₐ (I : Ideal A) (f : A →ₐ[R₁] B) (hI : ∀ a : A, a ∈
       -- imports this file.
       Ideal.Quotient.lift
       I (f : A →+* B) hI with
-    commutes' := fun r =>
-      by
+    commutes' := fun r => by
       have : algebraMap R₁ (A ⧸ I) r = algebraMap A (A ⧸ I) (algebraMap R₁ A r) := by
         simp_rw [Algebra.algebraMap_eq_smul_one, smul_assoc, one_smul]
       rw [this, Ideal.Quotient.algebraMap_eq, RingHom.toFun_eq_coe, Ideal.Quotient.lift_mk,
@@ -377,6 +378,7 @@ theorem quotientMap_comp_mk {J : Ideal R} {I : Ideal S} {f : R →+* S} (H : J �
   RingHom.ext fun x => by simp only [Function.comp_apply, RingHom.coe_comp, Ideal.quotientMap_mk]
 #align ideal.quotient_map_comp_mk Ideal.quotientMap_comp_mk
 
+set_option synthInstance.etaExperiment true in
 /-- The ring equiv `R/I ≃+* S/J` induced by a ring equiv `f : R ≃+** S`, where `J = f(I)`. -/
 @[simps]
 def quotientEquiv (I : Ideal R) (J : Ideal S) (f : R ≃+* S) (hIJ : J = I.map (f : R →+* S)) :
@@ -738,4 +740,3 @@ Ideal.kerLiftAlg_mk
 end Algebra
 
 end DoubleQuot
-

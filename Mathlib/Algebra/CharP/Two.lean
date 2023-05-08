@@ -63,6 +63,7 @@ section Ring
 
 variable [Ring R] [CharP R 2]
 
+set_option synthInstance.etaExperiment true in
 @[simp]
 theorem neg_eq (x : R) : -x = x := by
   rw [neg_eq_iff_add_eq_zero, ← two_smul R x, two_eq_zero, zero_smul]
