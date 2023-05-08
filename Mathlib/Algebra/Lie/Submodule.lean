@@ -53,6 +53,7 @@ structure LieSubmodule extends Submodule R M where
 
 -- Porting note: doc_blame doesn't exist.
 -- attribute [nolint doc_blame] LieSubmodule.toSubmodule
+attribute [coe] LieSubmodule.toSubmodule
 
 namespace LieSubmodule
 
@@ -228,6 +229,8 @@ theorem lie_mem_left (I : LieIdeal R L) (x y : L) (h : x ∈ I) : ⁅x, y⁆ ∈
 def lieIdealSubalgebra (I : LieIdeal R L) : LieSubalgebra R L :=
   { I.toSubmodule with lie_mem' := by intro x y _ hy; apply lie_mem_right; exact hy }
 #align lie_ideal_subalgebra lieIdealSubalgebra
+
+attribute [coe] LieSubalgebra.toSubmodule
 
 instance : Coe (LieIdeal R L) (LieSubalgebra R L) :=
   ⟨fun I ↦ lieIdealSubalgebra R L I⟩
@@ -451,8 +454,9 @@ theorem sup_coe_toSubmodule :
     rintro x m ⟨y, hy, z, hz, rfl⟩
     refine' ⟨⁅x, y⁆, N.lie_mem hy, ⁅x, z⁆, N'.lie_mem hz, (lie_add _ _ _).symm⟩
   refine' le_antisymm (sInf_le ⟨{ (N ⊔ N' : Submodule R M) with lie_mem := @aux }, _⟩) _
-  · simp only [exists_prop, and_true_iff, mem_setOf_eq, eq_self_iff_true, coe_toSubmodule_mk, ←
-      coeSubmodule_le_coeSubmodule, and_self_iff, le_sup_left, le_sup_right, Submodule.eta]
+  -- Porting note: rewrote proof
+  · simp only [← coeSubmodule_le_coeSubmodule, mem_setOf_eq, and_true_iff]
+    constructor <;> intro x hx <;> simp [Submodule.mem_sup_left hx, hx, Submodule.mem_sup_right hx]
   · simp
 #align lie_submodule.sup_coe_to_submodule LieSubmodule.sup_coe_toSubmodule
 
