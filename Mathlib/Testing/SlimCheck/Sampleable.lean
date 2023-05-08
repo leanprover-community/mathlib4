@@ -110,7 +110,7 @@ namespace SampleableExt
 
 /-- Use to generate instance whose purpose is to simply generate values
 of a type directly using the `Gen` monad -/
-def mkSelfContained [Repr α] [SizeOf α] [Shrinkable α] (sample : Gen α) : SampleableExt α where
+def mkSelfContained [Repr α] [Shrinkable α] (sample : Gen α) : SampleableExt α where
   proxy := α
   proxyRepr := inferInstance
   shrink := inferInstance
@@ -151,7 +151,7 @@ instance Int.shrinkable : Shrinkable Int where
 instance Bool.shrinkable : Shrinkable Bool := {}
 instance Char.shrinkable : Shrinkable Char := {}
 
-instance Prod.shrinkable [SizeOf α] [SizeOf β] [shrA : Shrinkable α] [shrB : Shrinkable β] :
+instance Prod.shrinkable [shrA : Shrinkable α] [shrB : Shrinkable β] :
     Shrinkable (Prod α β) where
   shrink := λ (fst,snd) =>
     let shrink1 := shrA.shrink fst |>.map fun x ↦ (x, snd)
@@ -220,7 +220,7 @@ instance Prop.sampleableExt : SampleableExt Prop where
   shrink := inferInstance
   interp := Coe.coe
 
-instance List.sampleableExt [SampleableExt α] [Repr α] [Shrinkable α] : SampleableExt (List α) where
+instance List.sampleableExt [SampleableExt α] : SampleableExt (List α) where
   proxy := List (proxy α)
   sample := Gen.listOf sample
   interp := List.map interp
