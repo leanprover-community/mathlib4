@@ -800,26 +800,36 @@ variable [RingHomIsometric σ₂₃]
 set_option synthInstance.etaExperiment true in
 set_option maxHeartbeats 800000 in
 set_option synthInstance.maxHeartbeats 80000 in
+def mkContinuous₂_aux (f : E →ₛₗ[σ₁₃] F →ₛₗ[σ₂₃] G) (C : ℝ) (hC : ∀ x y, ‖f x y‖ ≤ C * ‖x‖ * ‖y‖) :
+    E →ₛₗ[σ₁₃] F →SL[σ₂₃] G :=
+{ toFun := fun x => (f x).mkContinuous (C * ‖x‖) (hC x)
+  map_add' := fun x y => by
+    ext z
+    rw [ContinuousLinearMap.add_apply, mkContinuous_apply, mkContinuous_apply,
+      mkContinuous_apply, map_add, add_apply]
+  map_smul' := fun c x => by
+    ext z
+    rw [ContinuousLinearMap.smul_apply, mkContinuous_apply, mkContinuous_apply, map_smulₛₗ,
+      smul_apply] }
+
+set_option synthInstance.etaExperiment true in
+theorem mkContinuous₂_aux_norm_le'
+  (f : E →ₛₗ[σ₁₃] F →ₛₗ[σ₂₃] G) (C : ℝ) (hC : ∀ x y, ‖f x y‖ ≤ C * ‖x‖ * ‖y‖)  (x : E) :
+    ‖f.mkContinuous₂_aux C hC x‖ ≤ max (C * ‖x‖) 0 :=
+  mkContinuous_norm_le' _ (hC x)
+
+set_option synthInstance.etaExperiment true in
+set_option maxHeartbeats 800000 in
+set_option synthInstance.maxHeartbeats 80000 in
 /-- Create a bilinear map (represented as a map `E →L[𝕜] F →L[𝕜] G`) from the corresponding linear
 map and a bound on the norm of the image. The linear map can be constructed using
 `LinearMap.mk₂`. -/
 def mkContinuous₂ (f : E →ₛₗ[σ₁₃] F →ₛₗ[σ₂₃] G) (C : ℝ) (hC : ∀ x y, ‖f x y‖ ≤ C * ‖x‖ * ‖y‖) :
     E →SL[σ₁₃] F →SL[σ₂₃] G :=
   LinearMap.mkContinuous
-    { toFun := fun x => (f x).mkContinuous (C * ‖x‖) (hC x)
-      map_add' := fun x y => by
-        ext z
-        rw [ContinuousLinearMap.add_apply, mkContinuous_apply, mkContinuous_apply,
-          mkContinuous_apply, map_add, add_apply]
-      map_smul' := fun c x => by
-        ext z
-        rw [ContinuousLinearMap.smul_apply, mkContinuous_apply, mkContinuous_apply, map_smulₛₗ,
-          smul_apply] }
-    (max C 0) fun x =>
-    sorry
-    -- Porting FIXME: this proof needs fixing.
-    -- (mkContinuous_norm_le' _ _).trans_eq <| by
-    --   rw [max_mul_of_nonneg _ _ (norm_nonneg x), MulZeroClass.zero_mul]
+    (mkContinuous₂_aux f C hC)
+    (max C 0) fun x => (mkContinuous₂_aux_norm_le' f C hC x).trans_eq <|
+      rw [max_mul_of_nonneg _ _ (norm_nonneg x), MulZeroClass.zero_mul]
 #align linear_map.mk_continuous₂ LinearMap.mkContinuous₂
 
 set_option synthInstance.etaExperiment true in
