@@ -67,11 +67,10 @@ This function can be used to compute the exact value approxmated by a continued 
 `compExactValue_correctness_of_stream_eq_some`.
 -/
 protected def compExactValue (pconts conts : Pair K) (fr : K) : K :=
-  if-- if the fractional part is zero, we exactly approximated the value by the last continuants
-        fr =
-        0 then
+  -- if the fractional part is zero, we exactly approximated the value by the last continuants
+  if fr = 0 then
     conts.a / conts.b
-  else-- otherwise, we have to include the fractional part in a final continuants step.
+  else -- otherwise, we have to include the fractional part in a final continuants step.
     let exact_conts := nextContinuants 1 fr⁻¹ pconts conts
     exact_conts.a / exact_conts.b
 #align generalized_continued_fraction.comp_exact_value GeneralizedContinuedFraction.compExactValue
@@ -87,8 +86,8 @@ protected theorem comp_exact_value_correctness_of_stream_eq_some_aux_comp {a : K
   ring
 #align generalized_continued_fraction.comp_exact_value_correctness_of_stream_eq_some_aux_comp GeneralizedContinuedFraction.comp_exact_value_correctness_of_stream_eq_some_aux_comp
 
-open
-  GeneralizedContinuedFraction (compExactValue comp_exact_value_correctness_of_stream_eq_some_aux_comp)
+open GeneralizedContinuedFraction
+  (compExactValue comp_exact_value_correctness_of_stream_eq_some_aux_comp)
 
 /-- Shows the correctness of `compExactValue` in case the continued fraction
 `GeneralizedContinuedFraction.of v` did not terminate at position `n`. That is, we obtain the
