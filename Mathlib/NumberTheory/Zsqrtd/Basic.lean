@@ -1028,6 +1028,7 @@ theorem norm_eq_zero {d : ℤ} (h_nonsquare : ∀ n : ℤ, d ≠ n * n) (a : ℤ
 
 variable {R : Type}
 
+set_option synthInstance.etaExperiment true in
 @[ext]
 theorem hom_ext [Ring R] {d : ℤ} (f g : ℤ√d →+* R) (h : f sqrtd = g sqrtd) : f = g := by
   ext ⟨x_re, x_im⟩
@@ -1036,6 +1037,7 @@ theorem hom_ext [Ring R] {d : ℤ} (f g : ℤ√d →+* R) (h : f sqrtd = g sqrt
 
 variable [CommRing R]
 
+set_option synthInstance.etaExperiment true in
 /-- The unique `RingHom` from `ℤ√d` to a ring `R`, constructed by replacing `√d` with the provided
 root. Conversely, this associates to every mapping `ℤ√d →+* R` a value of `√d` in `R`. -/
 @[simps]

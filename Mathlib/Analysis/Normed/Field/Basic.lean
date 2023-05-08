@@ -1007,6 +1007,7 @@ def NormedField.induced [Field R] [NormedField S] [NonUnitalRingHomClass F R S] 
     mul_comm := mul_comm }
 #align normed_field.induced NormedField.induced
 
+set_option synthInstance.etaExperiment true in
 /-- A ring homomorphism from a `Ring R` to a `SeminormedRing S` which induces the norm structure
 `SeminormedRing.induced` makes `R` satisfy `‖(1 : R)‖ = 1` whenever `‖(1 : S)‖ = 1`. -/
 theorem NormOneClass.induced {F : Type _} (R S : Type _) [Ring R] [SeminormedRing S]
@@ -1023,10 +1024,12 @@ namespace SubringClass
 
 variable {S R : Type _} [SetLike S R]
 
+set_option synthInstance.etaExperiment true in
 instance toSeminormedRing [SeminormedRing R] [SubringClass S R] (s : S) : SeminormedRing s :=
   SeminormedRing.induced s R (SubringClass.subtype s)
 #align subring_class.to_semi_normed_ring SubringClass.toSeminormedRing
 
+set_option synthInstance.etaExperiment true in
 instance toNormedRing [NormedRing R] [SubringClass S R] (s : S) : NormedRing s :=
   NormedRing.induced s R (SubringClass.subtype s) Subtype.val_injective
 #align subring_class.to_normed_ring SubringClass.toNormedRing
