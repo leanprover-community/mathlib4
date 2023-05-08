@@ -1,5 +1,5 @@
 import Mathlib.Algebra.Homology.ShortComplex.Preadditive
-import Mathlib.Algebra.Homology.Homotopy
+import Mathlib.Algebra.Homology.HomotopyCategory
 
 open CategoryTheory Category Limits
 
@@ -110,10 +110,20 @@ variable (K)
 lemma homologyMap_id : homologyMap (𝟙 K) i = 𝟙 _ :=
   ShortComplex.homologyMap_id _
 
+variable {K}
+
 @[reassoc]
 lemma homologyMap_comp : homologyMap (φ ≫ ψ) i = homologyMap φ i ≫ homologyMap ψ i := by
   dsimp [homologyMap]
   rw [Functor.map_comp, ShortComplex.homologyMap_comp]
+
+variable (K L)
+
+@[simp]
+lemma homologyMap_zero : homologyMap (0 : K ⟶ L) i = 0 :=
+  ShortComplex.homologyMap_zero _ _
+
+variable {K L}
 
 attribute [simp] homologyMap_comp
 
@@ -182,5 +192,51 @@ noncomputable def Homotopy.toShortComplex (ho : Homotopy f g) (i : ι) :
 lemma Homotopy.homologyMap_eq (ho : Homotopy f g) (i : ι) [K.HasHomology i] [L.HasHomology i] :
     homologyMap f i = homologyMap g i :=
   ShortComplex.Homotopy.congr_homologyMap (ho.toShortComplex i)
+
+noncomputable def HomotopyEquiv.toHomologyIso (h : HomotopyEquiv K L) (i : ι)
+  [K.HasHomology i] [L.HasHomology i] : K.newHomology i ≅ L.newHomology i where
+  hom := homologyMap h.hom i
+  inv := homologyMap h.inv i
+  hom_inv_id := by rw [← homologyMap_comp, h.homotopyHomInvId.homologyMap_eq, homologyMap_id]
+  inv_hom_id := by rw [← homologyMap_comp, h.homotopyInvHomId.homologyMap_eq, homologyMap_id]
+
+namespace HomologicalComplex
+
+variable (φ ψ : K ⟶ L) (i : ι) [K.HasHomology i] [L.HasHomology i]
+
+@[simp]
+lemma homologyMap_neg : homologyMap (-φ) i = -homologyMap φ i := by
+  dsimp [homologyMap]
+  rw [← ShortComplex.homologyMap_neg]
+  rfl
+
+@[simp]
+lemma homologyMap_add : homologyMap (φ + ψ) i = homologyMap φ i + homologyMap ψ i := by
+  dsimp [homologyMap]
+  rw [← ShortComplex.homologyMap_add]
+  rfl
+
+instance [CategoryWithHomology C] : (newHomologyFunctor C c i).Additive where
+
+end HomologicalComplex
+
+namespace HomotopyCategory
+
+variable (C) (c)
+variable [CategoryWithHomology C]
+
+def newHomologyFunctor (i : ι) : HomotopyCategory C c ⥤ C :=
+  CategoryTheory.Quotient.lift _ (HomologicalComplex.newHomologyFunctor C c i) (by
+    rintro K L f g ⟨h⟩
+    exact h.homologyMap_eq i)
+
+def newHomologyFunctorFactors (i : ι) : quotient C c ⋙ newHomologyFunctor C c i ≅
+  HomologicalComplex.newHomologyFunctor C c i :=
+  Quotient.lift.isLift _ _ _
+
+-- this is to prevent any abuse of defeq
+attribute [irreducible] newHomologyFunctor newHomologyFunctorFactors
+
+end HomotopyCategory
 
 end
