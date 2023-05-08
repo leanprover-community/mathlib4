@@ -1,11 +1,14 @@
-import Mathlib.Algebra.Homology.ShortComplex.Homology
-import Mathlib.Algebra.Homology.HomologicalComplex
+import Mathlib.Algebra.Homology.ShortComplex.Preadditive
+import Mathlib.Algebra.Homology.Homotopy
 
 open CategoryTheory Category Limits
 
-variable (C : Type _) [Category C] [HasZeroMorphisms C] {ι : Type _} (c : ComplexShape ι)
 
 namespace HomologicalComplex
+
+section
+
+variable (C : Type _) [Category C] [HasZeroMorphisms C] {ι : Type _} (c : ComplexShape ι)
 
 @[simps]
 def shortComplexFunctor' (i j k : ι) : HomologicalComplex C c ⥤ ShortComplex C where
@@ -26,8 +29,6 @@ abbrev sc' (i j k : ι) := (shortComplexFunctor' C c i j k).obj K
 noncomputable abbrev sc (i : ι) := (shortComplexFunctor C c i).obj K
 
 abbrev HasHomology (i : ι) := (K.sc i).HasHomology
-
-section
 
 variable (i : ι) [K.HasHomology i] [L.HasHomology i] [M.HasHomology i]
 
@@ -109,10 +110,12 @@ variable (K)
 lemma homologyMap_id : homologyMap (𝟙 K) i = 𝟙 _ :=
   ShortComplex.homologyMap_id _
 
-@[reassoc (attr := simp)]
+@[reassoc]
 lemma homologyMap_comp : homologyMap (φ ≫ ψ) i = homologyMap φ i ≫ homologyMap ψ i := by
   dsimp [homologyMap]
   rw [Functor.map_comp, ShortComplex.homologyMap_comp]
+
+attribute [simp] homologyMap_comp
 
 variable (C c)
 
@@ -127,3 +130,57 @@ dual versions cyclesCo, etc... -/
 end
 
 end HomologicalComplex
+
+section
+
+open HomologicalComplex CategoryTheory
+
+variable {C : Type _} [Category C] [Preadditive C] {ι : Type _} {c : ComplexShape ι}
+  [DecidableRel c.Rel] {K L : HomologicalComplex C c} {f g : K ⟶ L}
+
+noncomputable def Homotopy.toShortComplex (ho : Homotopy f g) (i : ι) :
+    ShortComplex.Homotopy ((shortComplexFunctor C c i).map f)
+      ((shortComplexFunctor C c i).map g) where
+  h₀ :=
+    if c.Rel (c.prev i) i
+    then ho.hom _ (c.prev (c.prev i)) ≫ L.d _ _
+    else f.f _ - g.f _ - K.d _ i ≫ ho.hom i _
+  h₁ := ho.hom _ _
+  h₂ := ho.hom _ _
+  h₃ :=
+    if c.Rel i (c.next i)
+    then K.d _ _ ≫ ho.hom (c.next (c.next i)) _
+    else f.f _ - g.f _ - ho.hom _ i ≫ L.d _ _
+  h₀_f := by
+    split_ifs with h
+    . dsimp
+      simp only [assoc, d_comp_d, comp_zero]
+    . dsimp
+      rw [L.shape _ _ h, comp_zero]
+  g_h₃ := by
+    split_ifs with h
+    . dsimp
+      simp
+    . dsimp
+      rw [K.shape _ _ h, zero_comp]
+  comm₁ := by
+    dsimp
+    split_ifs with h
+    . rw [ho.comm (c.prev i)]
+      dsimp [dFrom, dTo, fromNext, toPrev]
+      rw [congr_arg (fun j => d K (c.prev i) j ≫ ho.hom j (c.prev i)) (c.next_eq' h)]
+    . abel
+  comm₂ := ho.comm i
+  comm₃ := by
+    dsimp
+    split_ifs with h
+    . rw [ho.comm (c.next i)]
+      dsimp [dFrom, dTo, fromNext, toPrev]
+      rw [congr_arg (fun j => ho.hom (c.next i) j ≫ L.d j (c.next i)) (c.prev_eq' h)]
+    . abel
+
+lemma Homotopy.homologyMap_eq (ho : Homotopy f g) (i : ι) [K.HasHomology i] [L.HasHomology i] :
+    homologyMap f i = homologyMap g i :=
+  ShortComplex.Homotopy.congr_homologyMap (ho.toShortComplex i)
+
+end
