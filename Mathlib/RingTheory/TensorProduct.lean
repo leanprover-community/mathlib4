@@ -430,6 +430,8 @@ instance : One (A ⊗[R] B) where one := 1 ⊗ₜ 1
 instance : AddMonoidWithOne (A ⊗[R] B) :=
   AddMonoidWithOne.unary
 
+instance : AddCommMonoid (A ⊗[R] B) := by infer_instance
+
 instance : Semiring (A ⊗[R] B) :=
   { (by infer_instance : AddMonoidWithOne (A ⊗[R] B)),
     (by infer_instance : AddCommMonoid (A ⊗[R] B)) with
@@ -440,10 +442,16 @@ instance : Semiring (A ⊗[R] B) :=
     one_mul := one_mul
     mul_one := mul_one
     mul_assoc := mul_assoc
-    zero_mul := by simp
-    mul_zero := by simp
-    left_distrib := by simp
-    right_distrib := by simp }
+    add_assoc := add_assoc
+    zero_add := zero_add
+    add_zero := add_zero
+    add_comm := add_comm
+    nsmul_succ := AddMonoid.nsmul_succ
+    natCast_succ := AddMonoidWithOne.natCast_succ
+    zero_mul := by sorry
+    mul_zero := by sorry
+    left_distrib := by sorry
+    right_distrib := by sorry }
 
 theorem one_def : (1 : A ⊗[R] B) = (1 : A) ⊗ₜ (1 : B) :=
   rfl
@@ -485,7 +493,8 @@ instance leftAlgebra : Algebra S (A ⊗[R] B) :=
         rw [Algebra.commutes, _root_.mul_one, _root_.one_mul]
       · intro y y' h h'
         dsimp at h h'⊢
-        simp only [mul_add, add_mul, h, h']
+        rw [mul_add, add_mul,h, h'] -- porting note: was `simp [mul_add...]` but this
+        -- no longer works for some reason
     smul_def' := fun r x => by
       refine TensorProduct.induction_on x ?_ ?_ ?_
       · simp [smul_zero]
@@ -494,7 +503,8 @@ instance leftAlgebra : Algebra S (A ⊗[R] B) :=
         rw [TensorProduct.smul_tmul', Algebra.smul_def r a, _root_.one_mul]
       · intros
         dsimp
-        simp [smul_add, mul_add, *] }
+        rw [smul_add, mul_add] -- porting note: these were in the `simp` call in lean 3
+        simp [*] }
 #align algebra.tensor_product.left_algebra Algebra.TensorProduct.leftAlgebra
 
 -- This is for the `undergrad.yaml` list.
