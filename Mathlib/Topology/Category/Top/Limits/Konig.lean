@@ -63,14 +63,14 @@ not closed points.)
 
 We give this in a more general form, which is that cofiltered limits
 of nonempty compact Hausdorff spaces are nonempty
-(`nonempty_limit_cone_of_compact_t2_cofiltered_system`).
+(`nonempty_limitCone_of_compact_t2_cofiltered_system`).
 
-This also applies to inverse limits, where `{J : Type u} [preorder J] [is_directed J (≤)]` and
+This also applies to inverse limits, where `{J : Type u} [Preorder J] [IsDirected J (≤)]` and
 `F : Jᵒᵖ ⥤ Top`.
 
 The theorem is specialized to nonempty finite types (which are compact Hausdorff with the
 discrete topology) in lemmas `nonempty_sections_of_finite_cofiltered_system` and
-`nonempty_sections_of_finite_inverse_system` in the file `category_theory.cofiltered_system`.
+`nonempty_sections_of_finite_inverse_system` in the file `CategoryTheory.CofilteredSystem`.
 
 (See <https://stacks.math.columbia.edu/tag/086J> for the Set version.)
 -/
@@ -89,20 +89,23 @@ private abbrev FiniteDiagram (J : Type u) [SmallCategory J] :=
 /-- Partial sections of a cofiltered limit are sections when restricted to
 a finite subset of objects and morphisms of `J`.
 -/
-def partialSections {J : Type u} [SmallCategory J] (F : J ⥤ TopCat.{u}) {G : Finset J}
+def partialSections {J : Type u} [SmallCategory J] (F : J ⥤ TopCat) {G : Finset J}
     (H : Finset (FiniteDiagramArrow G)) : Set (∀ j, F.obj j) :=
   { u | ∀ {f : FiniteDiagramArrow G} (_ : f ∈ H), F.map f.2.2.2.2 (u f.1) = u f.2.1 }
 #align Top.partial_sections TopCat.partialSections
 
 theorem partialSections.nonempty [IsCofilteredOrEmpty J] [h : ∀ j : J, Nonempty (F.obj j)]
     {G : Finset J} (H : Finset (FiniteDiagramArrow G)) : (partialSections F H).Nonempty := by
-    haveI : IsCofiltered J := ⟨⟩
-    use fun j : J =>
-      if hj : j ∈ G then F.map (IsCofiltered.infTo G H hj) (h (IsCofiltered.inf G H)).some
-      else (h _).some
-    rintro ⟨X, Y, hX, hY, f⟩ hf
-    dsimp only
-    rwa [dif_pos hX, dif_pos hY, ← comp_app, ← F.map_comp, @IsCofiltered.inf_to_commutes _ _ _ G H]
+    classical
+    cases (isEmpty_or_nonempty J)
+    · exact ⟨isEmptyElim, fun {j} _ => IsEmpty.elim' inferInstance j.fst⟩
+    · haveI : IsCofiltered J := ⟨⟩
+      use fun j : J =>
+        if hj : j ∈ G then F.map (IsCofiltered.infTo G H hj) (h (IsCofiltered.inf G H)).some
+        else (h _).some
+      rintro ⟨X, Y, hX, hY, f⟩ hf
+      dsimp only
+      rwa [dif_pos hX, dif_pos hY, ← comp_app, ← F.map_comp, @IsCofiltered.infTo_commutes _ _ _ G H]
 #align Top.partial_sections.nonempty TopCat.partialSections.nonempty
 
 theorem partialSections.directed :
@@ -128,19 +131,23 @@ theorem partialSections.directed :
       exact hu this
 #align Top.partial_sections.directed TopCat.partialSections.directed
 
-theorem partialSections.closed [∀ j : J, T2Space (F.obj j)] {G : Finset J}
+theorem partialSections.closed [I : ∀ j : J, T2Space (F.obj j)] {G : Finset J}
     (H : Finset (FiniteDiagramArrow G)) : IsClosed (partialSections F H) := by
   have :
     partialSections F H =
-      ⋂ (f : FiniteDiagramArrow G) (hf : f ∈ H), { u | F.map f.2.2.2.2 (u f.1) = u f.2.1 } := by
+      ⋂ (f : FiniteDiagramArrow G) (_hf : f ∈ H), { u | F.map f.2.2.2.2 (u f.1) = u f.2.1 } := by
     ext1
     simp only [Set.mem_interᵢ, Set.mem_setOf_eq]
     rfl
   rw [this]
   apply isClosed_binterᵢ
-  intro f hf
+  intro f _
+  -- Porting note: can't see through forget
+  have : T2Space ((forget TopCat).obj (F.obj f.snd.fst)) := I f.snd.fst
+  -- Porting note: used to be continuity
   apply isClosed_eq
-  continuity
+  · apply Continuous.comp (F.map f.snd.snd.snd.snd).continuous_toFun (continuous_apply f.fst)
+  · apply continuous_apply f.snd.fst
 #align Top.partial_sections.closed TopCat.partialSections.closed
 
 /-- Cofiltered limits of nonempty compact Hausdorff spaces are nonempty topological spaces.
@@ -150,10 +157,11 @@ theorem nonempty_limitCone_of_compact_t2_cofiltered_system [IsCofilteredOrEmpty 
     Nonempty (TopCat.limitCone F).pt := by
   classical
     obtain ⟨u : (j : J) → (F.obj j).α, hu⟩ :=
-      IsCompact.nonempty_interᵢ_of_directed_nonempty_compact_closed (fun G => partialSections F _)
-        (partialSections.directed F) (fun G => partialSections.nonempty F _)
-        (fun G => IsClosed.isCompact (partialSections.closed F _)) fun G =>
-        partialSections.closed F _
+      IsCompact.nonempty_interᵢ_of_directed_nonempty_compact_closed
+        (fun (G : FiniteDiagram J) => partialSections F G.2)
+        (partialSections.directed F) (fun G => partialSections.nonempty F G.2)
+        (fun G => IsClosed.isCompact (partialSections.closed F G.2))
+        (fun G => partialSections.closed F G.2)
     use u
     intro X Y f
     let G : FiniteDiagram J :=
