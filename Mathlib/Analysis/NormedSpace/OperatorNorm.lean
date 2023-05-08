@@ -434,6 +434,8 @@ instance toPseudoMetricSpace : PseudoMetricSpace (E →SL[σ₁₂] F) :=
     (congr_arg _ ContinuousLinearMap.tmpUniformSpace_eq.symm)
 #align continuous_linear_map.to_pseudo_metric_space ContinuousLinearMap.toPseudoMetricSpace
 
+set_option synthInstance.etaExperiment true in
+set_option maxHeartbeats 0 in
 /-- Continuous linear maps themselves form a seminormed space with respect to
     the operator norm. -/
 instance toSeminormedAddCommGroup : SeminormedAddCommGroup (E →SL[σ₁₂] F) where
@@ -444,7 +446,8 @@ set_option synthInstance.etaExperiment true in
 theorem nnnorm_def (f : E →SL[σ₁₂] F) : ‖f‖₊ = infₛ { c | ∀ x, ‖f x‖₊ ≤ c * ‖x‖₊ } := by
   ext
   rw [NNReal.coe_infₛ, coe_nnnorm, norm_def, NNReal.coe_image]
-  simp_rw [← NNReal.coe_le_coe, NNReal.coe_mul, coe_nnnorm, mem_set_of_eq, Subtype.coe_mk,
+  -- Porting note: this was `simp_rw`, and can probably be optimised.
+  simp [← NNReal.coe_le_coe, NNReal.coe_mul, coe_nnnorm, mem_setOf_eq, Subtype.coe_mk,
     exists_prop]
 #align continuous_linear_map.nnnorm_def ContinuousLinearMap.nnnorm_def
 
