@@ -63,7 +63,6 @@ instance finiteDimensional : FiniteDimensional K (V →ₗ[K] W) :=
 variable {A : Type _} [Ring A] [Algebra K A] [Module A V] [IsScalarTower K A V] [Module A W]
   [IsScalarTower K A W]
 
-set_option synthInstance.maxHeartbeats 50000 in
 set_option synthInstance.etaExperiment true in
 /-- Linear maps over a `k`-algebra are finite dimensional (over `k`) if both the source and
 target are, as they form a subspace of all `k`-linear maps. -/

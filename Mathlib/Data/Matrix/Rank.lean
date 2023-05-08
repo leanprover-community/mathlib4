@@ -205,7 +205,6 @@ theorem ker_mulVecLin_conjTranspose_mul_self (A : Matrix m n R) :
 
 -- Porting note: using `LinearMap.finrank_range_add_finrank_ker` is very slow
 set_option synthInstance.etaExperiment true in
-set_option maxHeartbeats 300000 in
 theorem rank_conjTranspose_mul_self (A : Matrix m n R) : (Aᴴ ⬝ A).rank = A.rank := by
   dsimp only [rank]
   refine' add_left_injective (finrank R (LinearMap.ker (mulVecLin A))) _
@@ -253,7 +252,6 @@ theorem ker_mulVecLin_transpose_mul_self (A : Matrix m n R) :
 
 -- Porting note: using `LinearMap.finrank_range_add_finrank_ker` is very slow
 set_option synthInstance.etaExperiment true in
-set_option maxHeartbeats 300000 in
 theorem rank_transpose_mul_self (A : Matrix m n R) : (Aᵀ ⬝ A).rank = A.rank := by
   dsimp only [rank]
   refine' add_left_injective (finrank R <| LinearMap.ker A.mulVecLin) _

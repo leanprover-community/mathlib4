@@ -478,12 +478,6 @@ theorem LinearEquiv.coe_ofIsUnitDet {f : M →ₗ[R] M'} {v : Basis ι R M} {v' 
   rfl
 #align linear_equiv.coe_of_is_unit_det LinearEquiv.coe_ofIsUnitDet
 
--- Porting note: The next line should be deleted in future.
--- The problem here is a slow `isDefEq` problem:
--- [Meta.isDefEq] [8.157421s] ✅ Matrix.det
---       (↑(LinearMap.toMatrix (FiniteDimensional.finBasis 𝕜 M) (FiniteDimensional.finBasis 𝕜 M))
---         f) =?= Matrix.det (↑(LinearMap.toMatrix ?b ?b) ?f) ▶
-set_option maxHeartbeats 300000 in
 /-- Builds a linear equivalence from a linear map on a finite-dimensional vector space whose
 determinant is nonzero. -/
 @[reducible]

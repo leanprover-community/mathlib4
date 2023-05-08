@@ -500,8 +500,6 @@ theorem det_smul_adjugate_adjugate (A : Matrix n n α) :
     Matrix.one_mul] at this
 #align matrix.det_smul_adjugate_adjugate Matrix.det_smul_adjugate_adjugate
 
--- Porting note: rewrites are slow.
-set_option maxHeartbeats 300000 in
 /-- Note that this is not true for `Fintype.card n = 1` since `1 - 2 = 0` and not `-1`. -/
 theorem adjugate_adjugate (A : Matrix n n α) (h : Fintype.card n ≠ 1) :
     adjugate (adjugate A) = det A ^ (Fintype.card n - 2) • A := by

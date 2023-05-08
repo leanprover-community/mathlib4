@@ -156,7 +156,6 @@ theorem Subalgebra.isSimpleOrder_of_finrank_prime (A) [Ring A] [IsDomain A] [Alg
 #align finite_dimensional.subalgebra.is_simple_order_of_finrank_prime FiniteDimensional.Subalgebra.isSimpleOrder_of_finrank_prime
 -- TODO: `IntermediateField` version
 
-set_option synthInstance.maxHeartbeats 60000 in
 set_option synthInstance.etaExperiment true in
 -- TODO: generalize by removing [FiniteDimensional F K]
 -- V = ⊕F,

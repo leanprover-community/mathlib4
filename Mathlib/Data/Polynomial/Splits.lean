@@ -174,7 +174,6 @@ theorem splits_id_iff_splits {f : K[X]} : (f.map i).Splits (RingHom.id L) ↔ f.
   rw [splits_map_iff, RingHom.id_comp]
 #align polynomial.splits_id_iff_splits Polynomial.splits_id_iff_splits
 
-set_option synthInstance.maxHeartbeats 100000 in
 set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 theorem exists_root_of_splits' {f : K[X]} (hs : Splits i f) (hf0 : degree (f.map i) ≠ 0) :
     ∃ x, eval₂ i x f = 0 :=
@@ -385,7 +384,6 @@ theorem eq_X_sub_C_of_splits_of_single_root {x : K} {h : K[X]} (h_splits : Split
 set_option linter.uppercaseLean3 false in
 #align polynomial.eq_X_sub_C_of_splits_of_single_root Polynomial.eq_X_sub_C_of_splits_of_single_root
 
-set_option maxHeartbeats 400000 in -- Porting note: gets around lean4#2074
 theorem mem_lift_of_splits_of_roots_mem_range (R : Type _) [CommRing R] [Algebra R K] {f : K[X]}
     (hs : f.Splits (RingHom.id K)) (hm : f.Monic) (hr : ∀ a ∈ f.roots, a ∈ (algebraMap R K).range) :
     f ∈ Polynomial.lifts (algebraMap R K) := by
@@ -403,8 +401,6 @@ local infixl:50 " ~ᵤ " => Associated
 
 open UniqueFactorizationMonoid Associates
 
-set_option maxHeartbeats 400000 in
-set_option synthInstance.maxHeartbeats 100000 in
 set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 theorem splits_of_exists_multiset {f : K[X]} {s : Multiset L}
     (hs : f.map i = C (i f.leadingCoeff) * (s.map fun a : L => X - C a).prod) : Splits i f :=
@@ -422,7 +418,6 @@ theorem splits_of_exists_multiset {f : K[X]} {s : Multiset L}
         exact degree_X_sub_C a
 #align polynomial.splits_of_exists_multiset Polynomial.splits_of_exists_multiset
 
-set_option synthInstance.maxHeartbeats 100000 in
 set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 theorem splits_of_splits_id {f : K[X]} : Splits (RingHom.id K) f → Splits i f :=
   UniqueFactorizationMonoid.induction_on_prime f (fun _ => splits_zero _)

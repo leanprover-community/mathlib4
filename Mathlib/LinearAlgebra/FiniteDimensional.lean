@@ -1400,7 +1400,6 @@ However, this approach doesn't scale very well, so we should consider holding of
 them until we have no choice.
 -/
 
-set_option synthInstance.maxHeartbeats 300000
 set_option synthInstance.etaExperiment true in
 /-- A `Subalgebra` is `FiniteDimensional` iff it is `FiniteDimensional` as a submodule. -/
 theorem Subalgebra.finiteDimensional_toSubmodule {S : Subalgebra F E} :
@@ -1419,7 +1418,6 @@ instance FiniteDimensional.finiteDimensional_subalgebra [FiniteDimensional F E]
   FiniteDimensional.of_subalgebra_toSubmodule inferInstance
 #align finite_dimensional.finite_dimensional_subalgebra FiniteDimensional.finiteDimensional_subalgebra
 
-set_option maxHeartbeats 300000
 set_option synthInstance.etaExperiment true in
 instance Subalgebra.finiteDimensional_bot : FiniteDimensional F (⊥ : Subalgebra F E) := by
   nontriviality E
@@ -1427,7 +1425,6 @@ instance Subalgebra.finiteDimensional_bot : FiniteDimensional F (⊥ : Subalgebr
 #align subalgebra.finite_dimensional_bot Subalgebra.finiteDimensional_bot
 
 set_option synthInstance.etaExperiment true in
-set_option maxHeartbeats 450000 in
 theorem Subalgebra.eq_bot_of_rank_le_one {S : Subalgebra F E} (h : Module.rank F S ≤ 1) :
     S = ⊥ := by
   nontriviality E
