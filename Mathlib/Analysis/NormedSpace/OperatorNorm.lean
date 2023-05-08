@@ -695,6 +695,7 @@ theorem op_nnnorm_prod (f : E →L[𝕜] Fₗ) (g : E →L[𝕜] Gₗ) : ‖f.pr
 #align continuous_linear_map.op_nnnorm_prod ContinuousLinearMap.op_nnnorm_prod
 
 set_option synthInstance.etaExperiment true in
+-- These don't need additional heartbeats on reenableeta!
 set_option maxHeartbeats 3200000 in
 set_option synthInstance.maxHeartbeats 640000 in
 /-- `ContinuousLinearMap.prod` as a `LinearIsometryEquiv`. -/
@@ -906,7 +907,12 @@ theorem flip_smul (c : 𝕜₃) (f : E →SL[σ₁₃] F →SL[σ₂₃] G) : (c
 variable (E F G σ₁₃ σ₂₃)
 
 set_option synthInstance.etaExperiment true in
-set_option maxHeartbeats 12800000 in
+-- set_option maxHeartbeats 12800000 in
+set_option maxHeartbeats 0 in
+set_option synthInstance.maxHeartbeats 40000 in
+-- On `reenableeta` these suffice:
+-- set_option maxHeartbeats 400000 in
+-- set_option synthInstance.maxHeartbeats 40000 in
 /-- Flip the order of arguments of a continuous bilinear map.
 This is a version bundled as a `LinearIsometryEquiv`.
 For an unbundled version see `ContinuousLinearMap.flip`. -/
@@ -1030,7 +1036,7 @@ set_option synthInstance.etaExperiment true in
 theorem _root_.Continuous.const_clm_comp {X} [TopologicalSpace X] {f : X → E →SL[σ₁₂] F}
     (hf : Continuous f) (g : F →SL[σ₂₃] G) :
     Continuous (fun x => g.comp (f x) : X → E →SL[σ₁₃] G) :=
-  (compSL E F G σ₁₂ σ₂₃ g).Continuous.comp hf
+  (compSL E F G σ₁₂ σ₂₃ g).continuous.comp hf
 #align continuous.const_clm_comp Continuous.const_clm_comp
 
 set_option synthInstance.etaExperiment true in
@@ -1039,7 +1045,7 @@ theorem _root_.Continuous.clm_comp_const {X} [TopologicalSpace X] {g : X → F �
     (hg : Continuous g) (f : E →SL[σ₁₂] F) :
     Continuous (fun x => (g x).comp f : X → E →SL[σ₁₃] G) :=
   (@ContinuousLinearMap.flip _ _ _ _ _ (E →SL[σ₁₃] G) _ _ _ _ _ _ _ _ _ _ _ _ _
-    (compSL E F G σ₁₂ σ₂₃) f).Continuous.comp hg
+    (compSL E F G σ₁₂ σ₂₃) f).continuous.comp hg
 #align continuous.clm_comp_const Continuous.clm_comp_const
 
 variable (𝕜 σ₁₂ σ₂₃ E Fₗ Gₗ)
@@ -1065,7 +1071,7 @@ variable (Eₗ) {𝕜 E Fₗ Gₗ}
 
 set_option synthInstance.etaExperiment true in
 /-- Apply `L(x,-)` pointwise to bilinear maps, as a continuous bilinear map -/
-@[simps apply]
+@[simps! apply]
 def precompR (L : E →L[𝕜] Fₗ →L[𝕜] Gₗ) : E →L[𝕜] (Eₗ →L[𝕜] Fₗ) →L[𝕜] Eₗ →L[𝕜] Gₗ :=
   (compL 𝕜 Eₗ Fₗ Gₗ).comp L
 #align continuous_linear_map.precompR ContinuousLinearMap.precompR
@@ -1119,12 +1125,12 @@ def prodMapL : (M₁ →L[𝕜] M₂) × (M₃ →L[𝕜] M₄) →L[𝕜] M₁ 
     have Ψ₂ : (M₁ →L[𝕜] M₂) × (M₃ →L[𝕜] M₄) →L[𝕜] M₃ →L[𝕜] M₄ :=
       ContinuousLinearMap.snd 𝕜 (M₁ →L[𝕜] M₂) (M₃ →L[𝕜] M₄)
     Φ₁' ∘L Φ₁ ∘L Ψ₁ + Φ₂' ∘L Φ₂ ∘L Ψ₂)
-    (fun p : (M₁ →L[𝕜] M₂) × (M₃ →L[𝕜] M₄) => p.1.prod_map p.2) (by
+    (fun p : (M₁ →L[𝕜] M₂) × (M₃ →L[𝕜] M₄) => p.1.prodMap p.2) (by
       apply funext
       rintro ⟨φ, ψ⟩
       apply ContinuousLinearMap.ext fun x => _
       simp only [add_apply, coe_comp', coe_fst', Function.comp_apply, compL_apply, flip_apply,
-        coe_snd', inl_apply, inr_apply, Prod.mk_add_mk, add_zero, zero_add, coe_prod_map', Prod_map,
+        coe_snd', inl_apply, inr_apply, Prod.mk_add_mk, add_zero, zero_add, coe_prod_map, Prod_map,
         Prod.mk.inj_iff, eq_self_iff_true, and_self_iff]
       rfl)
 #align continuous_linear_map.prod_mapL ContinuousLinearMap.prodMapL
@@ -1161,11 +1167,11 @@ theorem _root_.ContinuousOn.prod_mapL {f : X → M₁ →L[𝕜] M₂} {g : X �
 #align continuous_on.prod_mapL ContinuousOn.prod_mapL
 
 set_option synthInstance.etaExperiment true in
-theorem ContinuousOn.prod_map_equivL {f : X → M₁ ≃L[𝕜] M₂} {g : X → M₃ ≃L[𝕜] M₄} {s : Set X}
+theorem _root_.ContinuousOn.prod_map_equivL {f : X → M₁ ≃L[𝕜] M₂} {g : X → M₃ ≃L[𝕜] M₄} {s : Set X}
     (hf : ContinuousOn (fun x => (f x : M₁ →L[𝕜] M₂)) s)
     (hg : ContinuousOn (fun x => (g x : M₃ →L[𝕜] M₄)) s) :
     ContinuousOn (fun x => ((f x).prod (g x) : M₁ × M₃ →L[𝕜] M₂ × M₄)) s :=
-  (prodMapL 𝕜 M₁ M₂ M₃ M₄).continuous.comp_continuousOn (hf.Prod hg)
+  (prodMapL 𝕜 M₁ M₂ M₃ M₄).continuous.comp_continuousOn (hf.prod hg)
 #align continuous_on.prod_map_equivL ContinuousOn.prod_map_equivL
 
 end Prod
@@ -1404,13 +1410,17 @@ protected theorem lipschitz : LipschitzWith ‖(e : E →SL[σ₁₂] F)‖₊ e
 #align continuous_linear_equiv.lipschitz ContinuousLinearEquiv.lipschitz
 
 set_option synthInstance.etaExperiment true in
-theorem isBigO_comp {α : Type _} (f : α → E) (l : Filter α) : (fun x' => e (f x')) =O[l] f :=
+theorem isBigO_comp (e : E ≃SL[σ₁₂] F) {α : Type _} (f : α → E) (l : Filter α) :
+    (fun x' => e (f x')) =O[l] f :=
   (e : E →SL[σ₁₂] F).isBigO_comp f l
+set_option linter.uppercaseLean3 false in
 #align continuous_linear_equiv.is_O_comp ContinuousLinearEquiv.isBigO_comp
 
 set_option synthInstance.etaExperiment true in
-theorem isBigO_sub (l : Filter E) (x : E) : (fun x' => e (x' - x)) =O[l] fun x' => x' - x :=
+theorem isBigO_sub (e : E ≃SL[σ₁₂] F) (l : Filter E) (x : E) :
+    (fun x' => e (x' - x)) =O[l] fun x' => x' - x :=
   (e : E →SL[σ₁₂] F).isBigO_sub l x
+set_option linter.uppercaseLean3 false in
 #align continuous_linear_equiv.is_O_sub ContinuousLinearEquiv.isBigO_sub
 
 end
@@ -1422,12 +1432,16 @@ variable [RingHomIsometric σ₂₁]
 set_option synthInstance.etaExperiment true in
 variable (e : E ≃SL[σ₁₂] F)
 
-theorem isBigO_comp_rev {α : Type _} (f : α → E) (l : Filter α) : f =O[l] fun x' => e (f x') :=
+theorem isBigO_comp_rev (e : E ≃SL[σ₁₂] F) {α : Type _} (f : α → E) (l : Filter α) :
+    f =O[l] fun x' => e (f x') :=
   (e.symm.isBigO_comp _ l).congr_left fun _ => e.symm_apply_apply _
+set_option linter.uppercaseLean3 false in
 #align continuous_linear_equiv.is_O_comp_rev ContinuousLinearEquiv.isBigO_comp_rev
 
-theorem isBigO_sub_rev (l : Filter E) (x : E) : (fun x' => x' - x) =O[l] fun x' => e (x' - x) :=
+theorem isBigO_sub_rev (e : E ≃SL[σ₁₂] F) (l : Filter E) (x : E) :
+    (fun x' => x' - x) =O[l] fun x' => e (x' - x) :=
   e.isBigO_comp_rev _ _
+set_option linter.uppercaseLean3 false in
 #align continuous_linear_equiv.is_O_sub_rev ContinuousLinearEquiv.isBigO_sub_rev
 
 end ContinuousLinearEquiv
@@ -1478,6 +1492,7 @@ set_option synthInstance.etaExperiment true in
 theorem map_add_add (f : E →L[𝕜] Fₗ →L[𝕜] Gₗ) (x x' : E) (y y' : Fₗ) :
     f (x + x') (y + y') = f x y + f.deriv₂ (x, y) (x', y') + f x' y' := by
   simp only [map_add, add_apply, coe_deriv₂, add_assoc]
+  abel
 #align continuous_linear_map.map_add_add ContinuousLinearMap.map_add_add
 
 end ContinuousLinearMap
@@ -1637,10 +1652,10 @@ that it belongs to the closure of the image of a bounded set `s : set (E →SL[�
 to function. Coercion to function of the result is definitionally equal to `f`. -/
 @[simps! (config := { fullyApplied := false }) apply]
 def ofMemClosureImageCoeBounded (f : E' → F) {s : Set (E' →SL[σ₁₂] F)} (hs : Bounded s)
-    (hf : f ∈ closure ((coeFn : (E' →SL[σ₁₂] F) → E' → F) '' s)) : E' →SL[σ₁₂] F := by
+    (hf : f ∈ closure (((↑) : (E' →SL[σ₁₂] F) → E' → F) '' s)) : E' →SL[σ₁₂] F := by
   -- `f` is a linear map due to `linearMapOfMemClosureRangeCoe`
   refine' (linearMapOfMemClosureRangeCoe f _).mkContinuousOfExistsBound _
-  · refine' closure_mono (image_subset_iff.2 fun g hg => _) hf
+  · refine' closure_mono (image_subset_iff.2 fun g _ => _) hf
     exact ⟨g, rfl⟩
   · -- We need to show that `f` has bounded norm. Choose `C` such that `‖g‖ ≤ C` for all `g ∈ s`.
     rcases bounded_iff_forall_norm_le.1 hs with ⟨C, hC⟩
@@ -1659,7 +1674,7 @@ def ofTendstoOfBoundedRange {α : Type _} {l : Filter α} [l.NeBot] (f : E' → 
     (g : α → E' →SL[σ₁₂] F) (hf : Tendsto (fun a x => g a x) l (𝓝 f)) (hg : Bounded (Set.range g)) :
     E' →SL[σ₁₂] F :=
   ofMemClosureImageCoeBounded f hg <| mem_closure_of_tendsto hf <|
-    eventually_of_forall fun a => mem_image_of_mem _ <| Set.mem_range_self _
+    eventually_of_forall fun _ => mem_image_of_mem _ <| Set.mem_range_self _
 #align continuous_linear_map.of_tendsto_of_bounded_range ContinuousLinearMap.ofTendstoOfBoundedRange
 
 set_option synthInstance.etaExperiment true in
@@ -1677,10 +1692,10 @@ theorem tendsto_of_tendsto_pointwise_of_cauchySeq {f : ℕ → E' →SL[σ₁₂
     (squeeze_zero (fun n => norm_nonneg _) (fun n => op_norm_le_bound _ (hb₀ n) (this n)) hb_lim)
   intro n x
   -- Note that `f m x → g x`, hence `‖f n x - f m x‖ → ‖f n x - g x‖` as `m → ∞`
-  have : tendsto (fun m => ‖f n x - f m x‖) at_top (𝓝 ‖f n x - g x‖) :=
+  have : Tendsto (fun m => ‖f n x - f m x‖) atTop (𝓝 ‖f n x - g x‖) :=
     (tendsto_const_nhds.sub <| tendsto_pi_nhds.1 hg _).norm
   -- Thus it suffices to verify `‖f n x - f m x‖ ≤ b n * ‖x‖` for `m ≥ n`.
-  refine' le_of_tendsto this (eventually_at_top.2 ⟨n, fun m hm => _⟩)
+  refine' le_of_tendsto this (eventually_atTop.2 ⟨n, fun m hm => _⟩)
   -- This inequality follows from `‖f n - f m‖ ≤ b n`.
   exact (f n - f m).le_of_op_norm_le (hfb _ _ _ le_rfl hm) _
 #align continuous_linear_map.tendsto_of_tendsto_pointwise_of_cauchy_seq ContinuousLinearMap.tendsto_of_tendsto_pointwise_of_cauchySeq
@@ -1703,17 +1718,17 @@ instance [CompleteSpace F] : CompleteSpace (E' →SL[σ₁₂] F) := by
     ofTendstoOfBoundedRange _ _ (tendsto_pi_nhds.mpr hG) hf.bounded_range
   -- Finally, `f n` converges to `Glin` in norm because of
   -- `ContinuousLinearMap.tendsto_of_tendsto_pointwise_of_cauchy_seq`
-  exact ⟨Glin, tendsto_of_tendsto_pointwise_of_cauchy_seq (tendsto_pi_nhds.2 hG) hf⟩
+  exact ⟨Glin, tendsto_of_tendsto_pointwise_of_cauchySeq (tendsto_pi_nhds.2 hG) hf⟩
 
 /-- Let `s` be a bounded set in the space of continuous (semi)linear maps `E →SL[σ] F` taking values
 in a proper space. Then `s` interpreted as a set in the space of maps `E → F` with topology of
 pointwise convergence is precompact: its closure is a compact set. -/
 theorem isCompact_closure_image_coe_of_bounded [ProperSpace F] {s : Set (E' →SL[σ₁₂] F)}
-    (hb : Bounded s) : IsCompact (closure ((coeFn : (E' →SL[σ₁₂] F) → E' → F) '' s)) :=
+    (hb : Bounded s) : IsCompact (closure (((↑) : (E' →SL[σ₁₂] F) → E' → F) '' s)) :=
   have : ∀ x, IsCompact (closure (apply' F σ₁₂ x '' s)) := fun x =>
     ((apply' F σ₁₂ x).lipschitz.bounded_image hb).isCompact_closure
   isCompact_closure_of_subset_compact (isCompact_pi_infinite this)
-    (image_subset_iff.2 fun g hg x => subset_closure <| mem_image_of_mem _ hg)
+    (image_subset_iff.2 fun _ hg _ => subset_closure <| mem_image_of_mem _ hg)
 #align continuous_linear_map.is_compact_closure_image_coe_of_bounded ContinuousLinearMap.isCompact_closure_image_coe_of_bounded
 
 /-- Let `s` be a bounded set in the space of continuous (semi)linear maps `E →SL[σ] F` taking values
@@ -1722,8 +1737,8 @@ pointwise convergence is closed, then it is compact.
 
 TODO: reformulate this in terms of a type synonym with the right topology. -/
 theorem isCompact_image_coe_of_bounded_of_closed_image [ProperSpace F] {s : Set (E' →SL[σ₁₂] F)}
-    (hb : Bounded s) (hc : IsClosed ((coeFn : (E' →SL[σ₁₂] F) → E' → F) '' s)) :
-    IsCompact ((coeFn : (E' →SL[σ₁₂] F) → E' → F) '' s) :=
+    (hb : Bounded s) (hc : IsClosed (((↑) : (E' →SL[σ₁₂] F) → E' → F) '' s)) :
+    IsCompact (((↑) : (E' →SL[σ₁₂] F) → E' → F) '' s) :=
   hc.closure_eq ▸ isCompact_closure_image_coe_of_bounded hb
 #align continuous_linear_map.is_compact_image_coe_of_bounded_of_closed_image ContinuousLinearMap.isCompact_image_coe_of_bounded_of_closed_image
 
@@ -1734,8 +1749,9 @@ with weak-* topology in `mathlib`, so we use an equivalent condition (see `isClo
 
 TODO: reformulate this in terms of a type synonym with the right topology. -/
 theorem isClosed_image_coe_of_bounded_of_weak_closed {s : Set (E' →SL[σ₁₂] F)} (hb : Bounded s)
-    (hc : ∀ f, (⇑f : E' → F) ∈ closure ((coeFn : (E' →SL[σ₁₂] F) → E' → F) '' s) → f ∈ s) :
-    IsClosed ((coeFn : (E' →SL[σ₁₂] F) → E' → F) '' s) :=
+    (hc : ∀ f : E' →SL[σ₁₂] F,
+      (⇑f : E' → F) ∈ closure (((↑) : (E' →SL[σ₁₂] F) → E' → F) '' s) → f ∈ s) :
+    IsClosed (((↑) : (E' →SL[σ₁₂] F) → E' → F) '' s) :=
   isClosed_of_closure_subset fun f hf =>
     ⟨ofMemClosureImageCoeBounded f hb hf, hc (ofMemClosureImageCoeBounded f hb hf) hf, rfl⟩
 #align continuous_linear_map.is_closed_image_coe_of_bounded_of_weak_closed ContinuousLinearMap.isClosed_image_coe_of_bounded_of_weak_closed
@@ -1747,8 +1763,9 @@ with weak-* topology in `mathlib`, so we use an equivalent condition (see `isClo
 -/
 theorem isCompact_image_coe_of_bounded_of_weak_closed [ProperSpace F] {s : Set (E' →SL[σ₁₂] F)}
     (hb : Bounded s)
-    (hc : ∀ f, (⇑f : E' → F) ∈ closure ((coeFn : (E' →SL[σ₁₂] F) → E' → F) '' s) → f ∈ s) :
-    IsCompact ((coeFn : (E' →SL[σ₁₂] F) → E' → F) '' s) :=
+    (hc : ∀ f : E' →SL[σ₁₂] F,
+      (⇑f : E' → F) ∈ closure (((↑) : (E' →SL[σ₁₂] F) → E' → F) '' s) → f ∈ s) :
+    IsCompact (((↑) : (E' →SL[σ₁₂] F) → E' → F) '' s) :=
   isCompact_image_coe_of_bounded_of_closed_image hb <|
     isClosed_image_coe_of_bounded_of_weak_closed hb hc
 #align continuous_linear_map.is_compact_image_coe_of_bounded_of_weak_closed ContinuousLinearMap.isCompact_image_coe_of_bounded_of_weak_closed
@@ -1757,12 +1774,12 @@ set_option synthInstance.etaExperiment true in
 /-- A closed ball is closed in the weak-* topology. We don't have a name for `E →SL[σ] F` with
 weak-* topology in `mathlib`, so we use an equivalent condition (see `isClosed_induced_iff'`). -/
 theorem is_weak_closed_closedBall (f₀ : E' →SL[σ₁₂] F) (r : ℝ) ⦃f : E' →SL[σ₁₂] F⦄
-    (hf : ⇑f ∈ closure ((coeFn : (E' →SL[σ₁₂] F) → E' → F) '' closedBall f₀ r)) :
+    (hf : ⇑f ∈ closure (((↑) : (E' →SL[σ₁₂] F) → E' → F) '' closedBall f₀ r)) :
     f ∈ closedBall f₀ r := by
   have hr : 0 ≤ r := nonempty_closedBall.1 (nonempty_image_iff.1 (closure_nonempty_iff.1 ⟨_, hf⟩))
   refine' mem_closedBall_iff_norm.2 (op_norm_le_bound _ hr fun x => _)
   have : IsClosed { g : E' → F | ‖g x - f₀ x‖ ≤ r * ‖x‖ } :=
-    is_closed_Iic.preimage ((@continuous_apply E' (fun _ => F) _ x).sub continuous_const).norm
+    isClosed_Iic.preimage ((@continuous_apply E' (fun _ => F) _ x).sub continuous_const).norm
   refine' this.closure_subset_iff.2 (image_subset_iff.2 fun g hg => _) hf
   exact (g - f₀).le_of_op_norm_le (mem_closedBall_iff_norm.1 hg) _
 #align continuous_linear_map.is_weak_closed_closed_ball ContinuousLinearMap.is_weak_closed_closedBall
@@ -1771,7 +1788,7 @@ theorem is_weak_closed_closedBall (f₀ : E' →SL[σ₁₂] F) (r : ℝ) ⦃f :
 at distance `≤ r` from `f₀ : E →SL[σ₁₂] F` is closed in the topology of pointwise convergence.
 This is one of the key steps in the proof of the **Banach-Alaoglu** theorem. -/
 theorem isClosed_image_coe_closedBall (f₀ : E →SL[σ₁₂] F) (r : ℝ) :
-    IsClosed ((coeFn : (E →SL[σ₁₂] F) → E → F) '' closedBall f₀ r) :=
+    IsClosed (((↑) : (E →SL[σ₁₂] F) → E → F) '' closedBall f₀ r) :=
   isClosed_image_coe_of_bounded_of_weak_closed bounded_closedBall (is_weak_closed_closedBall f₀ r)
 #align continuous_linear_map.is_closed_image_coe_closed_ball ContinuousLinearMap.isClosed_image_coe_closedBall
 
@@ -1780,7 +1797,7 @@ maps `f : E →SL[σ₁₂] F` at distance `≤ r` from `f₀ : E →SL[σ₁₂
 pointwise convergence. Other versions of this theorem can be found in
 `Analysis.NormedSpace.WeakDual`. -/
 theorem isCompact_image_coe_closedBall [ProperSpace F] (f₀ : E →SL[σ₁₂] F) (r : ℝ) :
-    IsCompact ((coeFn : (E →SL[σ₁₂] F) → E → F) '' closedBall f₀ r) :=
+    IsCompact (((↑) : (E →SL[σ₁₂] F) → E → F) '' closedBall f₀ r) :=
   isCompact_image_coe_of_bounded_of_weak_closed bounded_closedBall <| is_weak_closed_closedBall f₀ r
 #align continuous_linear_map.is_compact_image_coe_closed_ball ContinuousLinearMap.isCompact_image_coe_closedBall
 
@@ -1800,17 +1817,17 @@ def extend : Fₗ →SL[σ₁₂] F :=
   have cont :=
     (-- extension of `f` is continuous
         uniformContinuous_uniformly_extend
-        h_e h_dense f.UniformContinuous).Continuous
+        h_e h_dense f.uniformContinuous).continuous
   -- extension of `f` agrees with `f` on the domain of the embedding `e`
-  have eq := uniformly_extend_of_ind h_e h_dense f.UniformContinuous
-  { toFun := (h_e.DenseInducing h_dense).extend f
+  have eq := uniformly_extend_of_ind h_e h_dense f.uniformContinuous
+  { toFun := (h_e.denseInducing h_dense).extend f
     map_add' := by
       refine' h_dense.induction_on₂ _ _
       · exact
           isClosed_eq (cont.comp continuous_add)
             ((cont.comp continuous_fst).add (cont.comp continuous_snd))
       · intro x y
-        simp only [Eq, ← e.map_add]
+        simp only [eq, ← e.map_add]
         exact f.map_add _ _
     map_smul' := fun k => by
       refine' fun b => h_dense.induction_on b _ _
@@ -1818,7 +1835,7 @@ def extend : Fₗ →SL[σ₁₂] F :=
           isClosed_eq (cont.comp (continuous_const_smul _)) ((continuous_const_smul _).comp cont)
       · intro x
         rw [← map_smul]
-        simp only [Eq]
+        simp only [eq]
         exact ContinuousLinearMap.map_smulₛₗ _ _ _
     cont }
 #align continuous_linear_map.extend ContinuousLinearMap.extend
@@ -1830,7 +1847,7 @@ theorem extend_eq (x : E) : extend f e h_dense h_e (e x) = f x :=
 
 theorem extend_unique (g : Fₗ →SL[σ₁₂] F) (H : g.comp e = f) : extend f e h_dense h_e = g :=
   ContinuousLinearMap.coeFn_injective <|
-    uniformly_extend_unique h_e h_dense (ContinuousLinearMap.ext_iff.1 H) g.Continuous
+    uniformly_extend_unique h_e h_dense (ContinuousLinearMap.ext_iff.1 H) g.continuous
 #align continuous_linear_map.extend_unique ContinuousLinearMap.extend_unique
 
 @[simp]
@@ -1844,20 +1861,20 @@ section
 
 variable {N : ℝ≥0} (h_e : ∀ x, ‖x‖ ≤ N * ‖e x‖) [RingHomIsometric σ₁₂]
 
-local notation "ψ" => f.extend e h_dense (uniformEmbedding_of_bound _ h_e).to_uniformInducing
+local notation "ψ" => f.extend e h_dense (uniformEmbedding_of_bound _ h_e).toUniformInducing
 
 /-- If a dense embedding `e : E →L[𝕜] G` expands the norm by a constant factor `N⁻¹`, then the
 norm of the extension of `f` along `e` is bounded by `N * ‖f‖`. -/
 theorem op_norm_extend_le : ‖ψ‖ ≤ N * ‖f‖ := by
-  have uni : UniformInducing e := (uniform_embedding_of_bound _ h_e).to_uniformInducing
-  have eq : ∀ x, ψ (e x) = f x := uniformly_extend_of_ind uni h_dense f.uniform_continuous
+  have uni : UniformInducing e := (uniform_embedding_of_bound _ h_e).toUniformInducing
+  have eq : ∀ x, ψ (e x) = f x := uniformly_extend_of_ind uni h_dense f.uniformContinuous
   by_cases N0 : 0 ≤ N
   · refine' op_norm_le_bound ψ _ (isClosed_property h_dense (isClosed_le _ _) _)
     · exact mul_nonneg N0 (norm_nonneg _)
     · exact continuous_norm.comp (cont ψ)
     · exact continuous_const.mul continuous_norm
     · intro x
-      rw [Eq]
+      rw [eq]
       calc
         ‖f x‖ ≤ ‖f‖ * ‖x‖ := le_op_norm _ _
         _ ≤ ‖f‖ * (N * ‖e x‖) := (mul_le_mul_of_nonneg_left (h_e x) (norm_nonneg _))
@@ -1900,7 +1917,7 @@ the operator norm. -/
 theorem norm_toContinuousLinearMap_comp [RingHomIsometric σ₁₂] (f : F →ₛₗᵢ[σ₂₃] G)
     {g : E →SL[σ₁₂] F} : ‖f.toContinuousLinearMap.comp g‖ = ‖g‖ :=
   op_norm_ext (f.toContinuousLinearMap.comp g) g fun x => by
-    simp only [norm_map, coe_toContinuousLinearMap, coe_comp']
+    simp only [norm_map, coe_toContinuousLinearMap, coe_comp', Function.comp_apply]
 #align linear_isometry.norm_to_continuous_linear_map_comp LinearIsometry.norm_toContinuousLinearMap_comp
 
 end LinearIsometry
@@ -1943,7 +1960,7 @@ is the product of the norms. -/
 @[simp]
 theorem norm_smulRight_apply (c : E →L[𝕜] 𝕜) (f : Fₗ) : ‖smulRight c f‖ = ‖c‖ * ‖f‖ := by
   refine' le_antisymm _ _
-  · apply op_norm_le_bound _ (mul_nonneg (norm_nonneg _) (norm_nonneg _)) fun x => _
+  · refine op_norm_le_bound _ (mul_nonneg (norm_nonneg _) (norm_nonneg _)) fun x => ?_
     calc
       ‖c x • f‖ = ‖c x‖ * ‖f‖ := norm_smul _ _
       _ ≤ ‖c‖ * ‖x‖ * ‖f‖ := (mul_le_mul_of_nonneg_right (le_op_norm _ _) (norm_nonneg _))
@@ -1952,12 +1969,12 @@ theorem norm_smulRight_apply (c : E →L[𝕜] 𝕜) (f : Fₗ) : ‖smulRight c
     · simp [h]
     · have : 0 < ‖f‖ := norm_pos_iff.2 h
       rw [← le_div_iff this]
-      apply op_norm_le_bound _ (div_nonneg (norm_nonneg _) (norm_nonneg f)) fun x => _
+      refine op_norm_le_bound _ (div_nonneg (norm_nonneg _) (norm_nonneg f)) fun x => ?_
       rw [div_mul_eq_mul_div, le_div_iff this]
       calc
         ‖c x‖ * ‖f‖ = ‖c x • f‖ := (norm_smul _ _).symm
-        _ = ‖smul_right c f x‖ := rfl
-        _ ≤ ‖smul_right c f‖ * ‖x‖ := le_op_norm _ _
+        _ = ‖smulRight c f x‖ := rfl
+        _ ≤ ‖smulRight c f‖ * ‖x‖ := le_op_norm _ _
 #align continuous_linear_map.norm_smul_right_apply ContinuousLinearMap.norm_smulRight_apply
 
 set_option synthInstance.etaExperiment true in
@@ -1978,12 +1995,14 @@ def smulRightL : (E →L[𝕜] 𝕜) →L[𝕜] Fₗ →L[𝕜] E →L[𝕜] F�
     { toFun := smulRightₗ
       map_add' := fun c₁ c₂ => by
         ext x
-        simp only [add_smul, coe_smul_rightₗ, add_apply, smul_right_apply, LinearMap.add_apply]
+        simp only [add_smul, coe_smulRightₗ, add_apply, smulRight_apply, LinearMap.add_apply]
       map_smul' := fun m c => by
         ext x
-        simp only [smul_smul, coe_smul_rightₗ, Algebra.id.smul_eq_mul, coe_smul', smul_right_apply,
+        simp only [smul_smul, coe_smulRightₗ, Algebra.id.smul_eq_mul, coe_smul', smulRight_apply,
           LinearMap.smul_apply, RingHom.id_apply, Pi.smul_apply] }
-    1 fun c x => by simp only [coe_smul_rightₗ, one_mul, norm_smul_right_apply, LinearMap.coe_mk]
+    1 fun c x => by by
+      simp only [coe_smulRightₗ, one_mul, norm_smulRight_apply, LinearMap.coe_mk, AddHom.coe_mk,
+        le_refl]
 set_option linter.uppercaseLean3 false in
 #align continuous_linear_map.smul_rightL ContinuousLinearMap.smulRightL
 
@@ -2148,8 +2167,8 @@ def arrowCongrSL (e₁₂ : E ≃SL[σ₁₂] F) (e₄₃ : H ≃SL[σ₄₃] G)
   {e₁₂.arrowCongrEquiv e₄₃ with -- given explicitly to help `simps`
     toFun := fun L => (e₄₃ : H →SL[σ₄₃] G).comp (L.comp (e₁₂.symm : F →SL[σ₂₁] E))
     invFun := fun L => (e₄₃.symm : G →SL[σ₃₄] H).comp (L.comp (e₁₂ : E →SL[σ₁₂] F))
-    map_add' := fun f g => by rw [add_comp, comp_add]
-    map_smul' := fun t f => by rw [smul_comp, comp_smulₛₗ]
+    map_add' := fun f g => by simp only [add_comp, comp_add]
+    map_smul' := fun t f => by simp only [smul_comp, comp_smulₛₗ]
     continuous_toFun := (continuous_id.clm_comp_const _).const_clm_comp _
     continuous_invFun := (continuous_id.clm_comp_const _).const_clm_comp _ }
 set_option linter.uppercaseLean3 false in
