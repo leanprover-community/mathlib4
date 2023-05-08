@@ -10,6 +10,7 @@ import Mathlib.Order.WithBot
 import Mathlib.Data.Fin.Basic
 import Mathlib.Data.Nat.Lattice
 import Mathlib.Logic.Equiv.Fin
+import Mathlib.Tactic.Ring
 
 /-!
 # Krull dimension of a preordered set
@@ -25,7 +26,7 @@ coheight is defined to be the krull dimension of `[a, +∞)`.
 ## Implementation notes
 Krull dimensions are defined to take value in `WithBot (WithTop ℕ)` so that `(-∞) + (+∞)` is
 also negative infinity. This is because we want Krull dimensions to be additive with respect
-to product of varieties so that `-∞` being the Krull dimension of empty variety is equal to 
+to product of varieties so that `-∞` being the Krull dimension of empty variety is equal to
 sum of `-∞` and the Krull dimension of any other varieties.
 -/
 
@@ -82,6 +83,28 @@ le_antisymm (@le_top (StrictSeries α) _ _ _) (hp ⊤)
 
 lemma top_len_unique' (H1 H2 : OrderTop (StrictSeries α)) : H1.top.length = H2.top.length :=
 le_antisymm (H2.le_top H1.top) (H1.le_top H2.top)
+
+/--
+If `a_0 < a_1 < ... < a_n` and `b_0 < b_1 < ... < b_m` are two strict series such that `a_n < b_0`,
+then there is a chain of length `n + m + 1` given by
+`a_0 < a_1 < ... < a_n < b_0 < b_1 < ... < b_m`.
+-/
+@[simps]
+def append (p q : StrictSeries α) (h : p (Fin.last _) < q 0) : StrictSeries α :=
+{ length := p.length + q.length + 1
+  toFun := Fin.append p q ∘ cast (congrArg _ $ by ring)
+  StrictMono := sorry }
+
+/--
+If `a_0 < a_1 < ... < a_n` is a strict series and `a` is such that `a_i < a < a_{i + 1}`, then
+`a_0 < a_1 < ... < a_i < a < a_{i + 1} < ... < a_n` is another strict series
+-/
+@[simps]
+def insert_nth (p : StrictSeries α) (i : Fin p.length) (a : α) (a_lt : p (Fin.castSucc i) < a)
+  (lt_a : a < p i.succ) : StrictSeries α :=
+{ length := p.length + 1
+  toFun :=  (Fin.castSucc i.succ).insertNth a p
+  StrictMono := sorry }
 
 end StrictSeries
 
