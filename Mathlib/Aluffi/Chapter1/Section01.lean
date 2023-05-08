@@ -1,6 +1,7 @@
 import Mathlib.Data.Setoid.Partition
 import Mathlib.Data.Fintype.Pi
 import Mathlib.Order.Partition.Stirling
+import Mathlib.Data.Real.Basic
 
 set_option autoImplicit false
 
@@ -378,6 +379,7 @@ def Finpartition.equiv_range_fintype_card (α : Type _) [Fintype α] [DecidableE
           refine' ⟨_, ⟨_, hx, rfl⟩, _⟩
           simp
 
+-- 1.4
 example [∀ r : Fin 3 → Fin 3 → Prop, DecidableRel r]
   [@DecidablePred (Set (Set (Fin 3))) Setoid.IsPartition] :
     Fintype.card (Setoid (Fin 3)) = 5 := by
@@ -448,3 +450,88 @@ example [∀ r : Fin 3 → Fin 3 → Prop, DecidableRel r]
     simp [hr] at hl
 
 end
+
+-- Give an example of a relation that is reflexive and symmetric but not transitive.
+-- What happens if you attempt to use this relation to define a partition on the set?
+-- 1.5
+abbrev rel15 (a b : ℤ) : Prop := max a b ≤ min a b + 1
+
+example : (Quot.mk rel15 3) = (Quot.mk rel15 4) := by
+  refine' Quot.sound _
+  rw [rel15]
+  simp
+
+example : (Quot.mk rel15 4) = (Quot.mk rel15 5) := by
+  refine' Quot.sound _
+  rw [rel15]
+  simp
+
+lemma rel15_refl (a : ℤ) : rel15 a a := by
+  simp [rel15]
+
+lemma rel15_comm {a b : ℤ} : rel15 a b ↔ rel15 b a := by
+  rw [rel15, rel15, max_comm, min_comm]
+
+lemma rel15_add_one (a : ℤ) : rel15 a (a + 1) := by
+  simp [rel15]
+
+lemma rel15_sub_one (a : ℤ) : rel15 a (a - 1) := by
+  simp [rel15]
+
+lemma rel15_all (a b : ℤ) : Quot.mk rel15 a = Quot.mk rel15 b := by
+  refine' Quot.EqvGen_sound _
+  induction' hc : b - a using Int.induction_on with c IH c IH generalizing a b
+  · rw [sub_eq_zero] at hc
+    subst hc
+    exact EqvGen.refl _
+  · rw [←sub_eq_iff_eq_add, sub_sub] at hc
+    have := EqvGen.rel _ _ (rel15_comm.mpr (rel15_sub_one (a + 1)))
+    simpa using this.trans _ _ _ (IH _ _ hc)
+  · rw [eq_comm, sub_eq_iff_eq_add, eq_comm, sub_add] at hc
+    have := EqvGen.rel _ _ (rel15_comm.mpr (rel15_add_one (a - 1)))
+    simpa using this.trans _ _ _ (IH _ _ hc)
+
+-- Define a relation - on the set R of real numbers by setting a ~ b <=> b - a ∈ Z.
+-- Prove that this is an equivalence relation, and find a `compelling' descriptionfor R/~.
+-- Do the same for the relation on the plane R x R defined by declaring
+-- (al, a2) ≈ (b1, b2) <=> b1 - a1 ∈ Z and b2 - a2 ∈ Z.
+-- 1.6
+def rel16 (a b : ℝ) : Prop := ∃ z : ℤ, b - a = z
+
+instance : Setoid ℝ where
+  r := rel16
+  iseqv := by
+    simp_rw [rel16]
+    refine' ⟨_, _, _⟩
+    · intro
+      use 0
+      simp
+    · rintro _ _ ⟨z, hz⟩
+      refine' ⟨-z, _⟩
+      simp [←hz]
+    · rintro _ _ _ ⟨z, hz⟩ ⟨w, hw⟩
+      refine' ⟨w + z, _⟩
+      simp [←hz, ←hw]
+
+-- it is `add_circle`
+
+def rel16b (a b : ℝ × ℝ) : Prop := ∃ z : ℤ × ℤ, b.1 - a.1 = z.1 ∧ b.2 - a.2 = z.2
+
+instance : Setoid (ℝ × ℝ) where
+  r := rel16b
+  iseqv := by
+    simp_rw [rel16b]
+    refine' ⟨_, _, _⟩
+    · intro
+      refine' ⟨⟨0, 0⟩, _⟩
+      simp
+    · rintro ⟨x1, x2⟩ ⟨y1, y2⟩ ⟨⟨z11, z12⟩, hz1, hz2⟩
+      refine' ⟨⟨-z11, -z12⟩, _⟩
+      dsimp only at hz1 hz2
+      simp [←hz1, ←hz2]
+    · rintro ⟨x1, x2⟩ ⟨y1, y2⟩ ⟨z1, z2⟩ ⟨⟨a1, a2⟩, ha1, ha2⟩ ⟨⟨b1, b2⟩, hb1, hb2⟩
+      dsimp only at ha1 ha2 hb1 hb2
+      refine' ⟨⟨a1 + b1, a2 + b2⟩, _⟩
+      simp [←ha1, ←ha2, ←hb1, ←hb2]
+
+-- it is a torus
