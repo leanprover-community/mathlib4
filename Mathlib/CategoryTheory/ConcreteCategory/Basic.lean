@@ -75,8 +75,7 @@ instance ConcreteCategory.types : ConcreteCategory (Type u) where
   Forget := 𝟭 _
 #align category_theory.concrete_category.types CategoryTheory.ConcreteCategory.types
 
--- porting note: these were all inferred in mathlib3 because lean 3 typeclass inference could see
--- that `forget (Type u) = 𝟭 (Type u)`
+-- These can go when #3857 hits
 -- see https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/typeclass.20inference.20failure/near/354843721
 instance : ReflectsLimits (forget (Type u₁)) := Limits.idReflectsLimits
 instance : PreservesColimits (forget (Type u₁)) := Limits.idPreservesColimits
