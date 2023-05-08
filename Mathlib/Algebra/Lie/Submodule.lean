@@ -80,15 +80,16 @@ instance coeSubmodule : Coe (LieSubmodule R L M) (Submodule R M) :=
   ⟨toSubmodule⟩
 #align lie_submodule.coe_submodule LieSubmodule.coeSubmodule
 
-@[simp]
-theorem toSubmodule_eq_coe : N.toSubmodule = N := rfl
-#align lie_submodule.to_submodule_eq_coe LieSubmodule.toSubmodule_eq_coe
+-- Syntactic tautology
+#noalign lie_submodule.to_submodule_eq_coe
 
 @[norm_cast]
 theorem coe_toSubmodule : ((N : Submodule R M) : Set M) = N := rfl
 #align lie_submodule.coe_to_submodule LieSubmodule.coe_toSubmodule
 
-@[simp]
+-- Porting note: `simp` can prove this after `mem_coeSubmodule` is added to the simp set,
+-- but `dsimp` can't.
+@[simp, nolint simpNF]
 theorem mem_carrier {x : M} : x ∈ N.carrier ↔ x ∈ (N : Set M) :=
   Iff.rfl
 #align lie_submodule.mem_carrier LieSubmodule.mem_carrier
@@ -113,7 +114,7 @@ protected theorem zero_mem : (0 : M) ∈ N :=
   zero_mem N
 #align lie_submodule.zero_mem LieSubmodule.zero_mem
 
-@[simp]
+-- Porting note: @[simp] can prove this
 theorem mk_eq_zero {x} (h : x ∈ N) : (⟨x, h⟩ : N) = 0 ↔ x = 0 :=
   Subtype.ext_iff_val
 #align lie_submodule.mk_eq_zero LieSubmodule.mk_eq_zero
@@ -1027,7 +1028,7 @@ theorem homOfLe_injective {I₁ I₂ : LieIdeal R L} (h : I₁ ≤ I₂) : Funct
   simp only [homOfLe_apply, imp_self, Subtype.mk_eq_mk, SetLike.coe_eq_coe]
 #align lie_ideal.hom_of_le_injective LieIdeal.homOfLe_injective
 
-@[simp]
+-- Porting note: LHS simplifies, so moved @[simp] to new theorem `map_sup_ker_eq_map'`
 theorem map_sup_ker_eq_map : LieIdeal.map f (I ⊔ f.ker) = LieIdeal.map f I := by
   suffices LieIdeal.map f (I ⊔ f.ker) ≤ LieIdeal.map f I by
     exact le_antisymm this (LieIdeal.map_mono le_sup_left)
@@ -1036,6 +1037,11 @@ theorem map_sup_ker_eq_map : LieIdeal.map f (I ⊔ f.ker) = LieIdeal.map f I := 
   erw [LieSubmodule.mem_sup] at hy₁;obtain ⟨z₁, hz₁, z₂, hz₂, hy⟩ := hy₁; rw [← hy]
   rw [f.coe_toLinearMap, f.map_add, f.mem_ker.mp hz₂, add_zero]; exact ⟨z₁, hz₁, rfl⟩
 #align lie_ideal.map_sup_ker_eq_map LieIdeal.map_sup_ker_eq_map
+
+@[simp]
+theorem map_sup_ker_eq_map' :
+    LieIdeal.map f I ⊔ LieIdeal.map f (LieHom.ker f) = LieIdeal.map f I := by
+  simpa using map_sup_ker_eq_map (f := f)
 
 @[simp]
 theorem map_comap_eq (h : f.IsIdealMorphism) : map f (comap f J) = f.idealRange ⊓ J := by
