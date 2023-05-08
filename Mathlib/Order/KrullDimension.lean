@@ -31,7 +31,7 @@ to product of varieties so that `-∞` being the Krull dimension of empty variet
 sum of `-∞` and the Krull dimension of any other varieties.
 -/
 
-variable (α β : Type _) [Preorder α] [Preorder β]
+variable (α : Type _) [Preorder α]
 
 /--
 For a preordered set `(α, <)`, a strict series of `α` of length `n` is a strictly monotonic function
