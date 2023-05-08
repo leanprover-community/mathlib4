@@ -357,16 +357,16 @@ theorem rec_prim' {α σ} [Primcodable α] [Primcodable σ] {c : α → Code} (h
           n.casesOn (some (r a)) fun n => G₁ ((a, IH), n, n.div2.div2)
   have : Primrec₂ G := by
     unfold Primrec₂
-    refine Primrec.nat_cases
+    refine Primrec.nat_casesOn
       (Primrec.list_length.comp Primrec.snd) (Primrec.option_some_iff.2 (hz.comp Primrec.fst)) ?_
     unfold Primrec₂
-    refine Primrec.nat_cases
+    refine Primrec.nat_casesOn
       Primrec.snd (Primrec.option_some_iff.2 (hs.comp (Primrec.fst.comp Primrec.fst))) ?_
     unfold Primrec₂
-    refine Primrec.nat_cases Primrec.snd
+    refine Primrec.nat_casesOn Primrec.snd
       (Primrec.option_some_iff.2 (hl.comp (Primrec.fst.comp <| Primrec.fst.comp Primrec.fst))) ?_
     unfold Primrec₂
-    refine Primrec.nat_cases Primrec.snd
+    refine Primrec.nat_casesOn Primrec.snd
       (Primrec.option_some_iff.2 (hr.comp
         (Primrec.fst.comp <| Primrec.fst.comp <| Primrec.fst.comp Primrec.fst))) ?_
     unfold Primrec₂
@@ -477,17 +477,17 @@ theorem rec_prim {α σ} [Primcodable α] [Primcodable σ] {c : α → Code} (hc
           n.casesOn (some (r a)) fun n => G₁ ((a, IH), n, n.div2.div2)
   have : Primrec₂ G := by
     unfold Primrec₂
-    refine Primrec.nat_cases
+    refine Primrec.nat_casesOn
       (Primrec.list_length.comp Primrec.snd) (Primrec.option_some_iff.2 (hz.comp Primrec.fst)) ?_
     unfold Primrec₂
-    refine Primrec.nat_cases
+    refine Primrec.nat_casesOn
       Primrec.snd (Primrec.option_some_iff.2 (hs.comp (Primrec.fst.comp Primrec.fst))) ?_
     unfold Primrec₂
-    refine Primrec.nat_cases
+    refine Primrec.nat_casesOn
       Primrec.snd (Primrec.option_some_iff.2
         (hl.comp (Primrec.fst.comp <| Primrec.fst.comp Primrec.fst))) ?_
     unfold Primrec₂
-    refine Primrec.nat_cases
+    refine Primrec.nat_casesOn
       Primrec.snd (Primrec.option_some_iff.2
         (hr.comp (Primrec.fst.comp <| Primrec.fst.comp <| Primrec.fst.comp Primrec.fst))) ?_
     unfold Primrec₂
