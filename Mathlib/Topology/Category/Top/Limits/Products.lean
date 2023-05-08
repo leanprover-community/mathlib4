@@ -219,8 +219,8 @@ theorem prodIsoProd_hom_snd (X Y : TopCat.{u}) :
 -- Porting note: need to force Lean to coerce X × Y to a type
 @[simp]
 theorem prodIsoProd_hom_apply {X Y : TopCat.{u}} (x : ↑ (X ⨯ Y)) :
-    (prodIsoProd X Y).hom x = ((Limits.prod.fst : X ⨯ Y ⟶ _) x, (Limits.prod.snd : X ⨯ Y ⟶ _) x) :=
-  by
+    (prodIsoProd X Y).hom x = ((Limits.prod.fst : X ⨯ Y ⟶ _) x,
+    (Limits.prod.snd : X ⨯ Y ⟶ _) x) := by
   -- Porting note: ext didn't pick this up
   apply Prod.ext
   · exact ConcreteCategory.congr_hom (prodIsoProd_hom_fst X Y) x
