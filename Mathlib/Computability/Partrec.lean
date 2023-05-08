@@ -765,6 +765,8 @@ open Computable
 theorem option_some_iff {f : α →. σ} : (Partrec fun a => (f a).map Option.some) ↔ Partrec f :=
   ⟨fun h => (Nat.Partrec.ppred.comp h).of_eq fun n => by
       simp [Part.bind_assoc]
+      -- Porting note: `simp` can't match `Part.some ∘ f` with `fun x => Part.some (f x)`,
+      --               so `conv` & `erw` are needed.
       conv_lhs =>
         congr
         · skip
