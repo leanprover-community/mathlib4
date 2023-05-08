@@ -218,8 +218,7 @@ theorem finprod_false (f : False → M) : (∏ᶠ i, f i) = 1 :=
 @[to_additive]
 theorem finprod_eq_single (f : α → M) (a : α) (ha : ∀ (x) (_ : x ≠ a), f x = 1) :
     (∏ᶠ x, f x) = f a := by
-  have : mulSupport (f ∘ PLift.down) ⊆ ({PLift.up a} : Finset (PLift α)) :=
-    by
+  have : mulSupport (f ∘ PLift.down) ⊆ ({PLift.up a} : Finset (PLift α)) := by
     intro x
     contrapose
     simpa [PLift.eq_up_iff_down_eq] using ha x.down
@@ -383,12 +382,10 @@ theorem finprod_mem_def (s : Set α) (f : α → M) : (∏ᶠ a ∈ s, f a) = �
 @[to_additive]
 theorem finprod_eq_prod_of_mulSupport_subset (f : α → M) {s : Finset α} (h : mulSupport f ⊆ s) :
     (∏ᶠ i, f i) = ∏ i in s, f i := by
-  have A : mulSupport (f ∘ PLift.down) = Equiv.plift.symm '' mulSupport f :=
-    by
+  have A : mulSupport (f ∘ PLift.down) = Equiv.plift.symm '' mulSupport f := by
     rw [mulSupport_comp_eq_preimage]
     exact (Equiv.plift.symm.image_eq_preimage _).symm
-  have : mulSupport (f ∘ PLift.down) ⊆ s.map Equiv.plift.symm.toEmbedding :=
-    by
+  have : mulSupport (f ∘ PLift.down) ⊆ s.map Equiv.plift.symm.toEmbedding := by
     rw [A, Finset.coe_map]
     exact image_subset _ h
   rw [finprod_eq_prod_pLift_of_mulSupport_subset this]
@@ -446,8 +443,7 @@ theorem finprod_eq_prod_of_fintype [Fintype α] (f : α → M) : (∏ᶠ i : α,
 theorem finprod_cond_eq_prod_of_cond_iff (f : α → M) {p : α → Prop} {t : Finset α}
     (h : ∀ {x}, f x ≠ 1 → (p x ↔ x ∈ t)) : (∏ᶠ (i) (_hi : p i), f i) = ∏ i in t, f i := by
   set s := { x | p x }
-  have : mulSupport (s.mulIndicator f) ⊆ t :=
-    by
+  have : mulSupport (s.mulIndicator f) ⊆ t := by
     rw [Set.mulSupport_mulIndicator]
     intro x hx
     exact (h hx.2).1 hx.1
@@ -1105,8 +1101,7 @@ theorem mul_finprod_cond_ne (a : α) (hf : (mulSupport f).Finite) :
     (f a * ∏ᶠ (i) (_h : i ≠ a), f i) = ∏ᶠ i, f i := by
   classical
     rw [finprod_eq_prod _ hf]
-    have h : ∀ x : α, f x ≠ 1 → (x ≠ a ↔ x ∈ hf.toFinset \ {a}) :=
-      by
+    have h : ∀ x : α, f x ≠ 1 → (x ≠ a ↔ x ∈ hf.toFinset \ {a}) := by
       intro x hx
       rw [Finset.mem_sdiff, Finset.mem_singleton, Finite.mem_toFinset, mem_mulSupport]
       exact ⟨fun h => And.intro hx h, fun h => h.2⟩
@@ -1173,8 +1168,7 @@ theorem finprod_prod_comm (s : Finset β) (f : α → β → M)
     (∏ᶠ a : α, ∏ b in s, f a b) = ∏ b in s, ∏ᶠ a : α, f a b := by
   have hU :
     (mulSupport fun a => ∏ b in s, f a b) ⊆
-      (s.finite_toSet.bunionᵢ fun b hb => h b (Finset.mem_coe.1 hb)).toFinset :=
-    by
+      (s.finite_toSet.bunionᵢ fun b hb => h b (Finset.mem_coe.1 hb)).toFinset := by
     rw [Finite.coe_toFinset]
     intro x hx
     simp only [exists_prop, mem_unionᵢ, Ne.def, mem_mulSupport, Finset.mem_coe]
@@ -1230,8 +1224,7 @@ theorem finprod_mem_finset_product' [DecidableEq α] [DecidableEq β] (s : Finse
   have :
     ∀ a,
       (∏ i : β in (s.filter fun ab => Prod.fst ab = a).image Prod.snd, f (a, i)) =
-        (Finset.filter (fun ab => Prod.fst ab = a) s).prod f :=
-    by
+        (Finset.filter (fun ab => Prod.fst ab = a) s).prod f := by
     refine' fun a => Finset.prod_bij (fun b _ => (a, b)) _ _ _ _ <;>-- `finish` closes these goals
       try simp; done
     suffices ∀ a' b, (a', b) ∈ s → a' = a → (a, b) ∈ s ∧ a' = a by simpa

@@ -583,8 +583,7 @@ theorem _root_.card_support_eq_three_iff : σ.support.card = 3 ↔ σ.IsThreeCyc
   obtain ⟨m, hm⟩ := exists_mem_of_ne_zero h1
   rw [← sum_cycleType, ← cons_erase hn, ← cons_erase hm, Multiset.sum_cons, Multiset.sum_cons] at h
   -- TODO: linarith [...] should solve this directly
-  have : ∀ {k}, 2 ≤ m → 2 ≤ n → n + (m + k) = 3 → False :=
-    by
+  have : ∀ {k}, 2 ≤ m → 2 ≤ n → n + (m + k) = 3 → False := by
     intros
     linarith
   cases this (two_le_of_mem_cycleType (mem_of_mem_erase hm)) (two_le_of_mem_cycleType hn) h

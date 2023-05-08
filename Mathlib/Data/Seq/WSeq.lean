@@ -539,8 +539,8 @@ theorem LiftRel.refl (R : α → α → Prop) (H : Reflexive R) : Reflexive (Lif
   intro a; cases' a with a; simp; cases a; simp; apply H
 #align stream.wseq.lift_rel.refl Stream'.WSeq.LiftRel.refl
 
-theorem LiftRelO.swap (R : α → β → Prop) (C) : swap (LiftRelO R C) = LiftRelO (swap R) (swap C) :=
-  by
+theorem LiftRelO.swap (R : α → β → Prop) (C) :
+    swap (LiftRelO R C) = LiftRelO (swap R) (swap C) := by
   funext x y; cases' x with x <;> [skip, cases x] <;>
     · cases' y with y <;> [skip, cases y] <;> rfl
 #align stream.wseq.lift_rel_o.swap Stream'.WSeq.LiftRelO.swap

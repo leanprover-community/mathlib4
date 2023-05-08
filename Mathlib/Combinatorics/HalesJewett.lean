@@ -219,7 +219,7 @@ theorem prod_apply {α ι ι'} (l : Line α ι) (l' : Line α ι') (x : α) :
 
 @[simp]
 theorem diagonal_apply {α ι} [Nonempty ι] (x : α) : Line.diagonal α ι x = fun _ => x := by
-  simp_rw [Line.apply, Line.diagonal, Option.getD_none]
+  simp_rw [Line.diagonal, Option.getD_none]
 #align combinatorics.line.diagonal_apply Combinatorics.Line.diagonal_apply
 
 /-- The Hales-Jewett theorem. This version has a restriction on universe levels which is necessary
@@ -373,7 +373,7 @@ theorem exists_mono_homothetic_copy {M κ : Type _} [AddCommMonoid M] (S : Finse
     intro i hi
     rw [hs, Finset.compl_filter, Finset.mem_filter] at hi
     obtain ⟨y, hy⟩ := Option.ne_none_iff_exists.mp hi.right
-    simp_rw [Line.apply, ← hy, Option.map_some', Option.getD]
+    simp_rw [← hy, Option.map_some', Option.getD]
 #align combinatorics.exists_mono_homothetic_copy Combinatorics.exists_mono_homothetic_copy
 
 end Combinatorics

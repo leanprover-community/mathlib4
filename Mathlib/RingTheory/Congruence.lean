@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 
 ! This file was ported from Lean 3 source module ring_theory.congruence
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
+! leanprover-community/mathlib commit 2f39bcbc98f8255490f8d4562762c9467694c809
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -383,6 +383,22 @@ instance [CommRing R] (c : RingCon R) : CommRing c.Quotient :=
   Function.Surjective.commRing _ Quotient.surjective_Quotient_mk'' rfl rfl (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ => rfl) fun _ => rfl
+
+instance isScalarTower_right [Add R] [MulOneClass R] [SMul α R] [IsScalarTower α R R]
+    (c : RingCon R) : IsScalarTower α c.Quotient c.Quotient where
+  smul_assoc _ := Quotient.ind₂' fun _ _ => congr_arg Quotient.mk'' <| smul_mul_assoc _ _ _
+#align ring_con.is_scalar_tower_right RingCon.isScalarTower_right
+
+instance smulCommClass [Add R] [MulOneClass R] [SMul α R] [IsScalarTower α R R]
+    [SMulCommClass α R R] (c : RingCon R) : SMulCommClass α c.Quotient c.Quotient where
+  smul_comm _ := Quotient.ind₂' fun _ _ => congr_arg Quotient.mk'' <| (mul_smul_comm _ _ _).symm
+#align ring_con.smul_comm_class RingCon.smulCommClass
+
+instance smulCommClass' [Add R] [MulOneClass R] [SMul α R] [IsScalarTower α R R]
+    [SMulCommClass R α R] (c : RingCon R) : SMulCommClass c.Quotient α c.Quotient :=
+  haveI := SMulCommClass.symm R α R
+  SMulCommClass.symm _ _ _
+#align ring_con.smul_comm_class' RingCon.smulCommClass'
 
 instance [Monoid α] [NonAssocSemiring R] [DistribMulAction α R] [IsScalarTower α R R]
     (c : RingCon R) : DistribMulAction α c.Quotient :=

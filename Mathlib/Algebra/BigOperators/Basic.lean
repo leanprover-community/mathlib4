@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 
 ! This file was ported from Lean 3 source module algebra.big_operators.basic
-! leanprover-community/mathlib commit c227d107bbada5d0d9d20287e3282c0a7f1651a0
+! leanprover-community/mathlib commit fa2309577c7009ea243cffdf990cd6c84f0ad497
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -120,17 +120,61 @@ scoped macro_rules (kind := bigprod)
 
 /-- `∑ x in s, f x` is notation for `Finset.sum s f`. It is the sum of `f x`,
 where `x` ranges over the finite set `s`. -/
-scoped syntax (name := bigsumin) "∑ " extBinder "in " term "," term:67 : term
+scoped syntax (name := bigsumin) "∑ " extBinder " in " term ", " term:67 : term
 scoped macro_rules (kind := bigsumin)
   | `(∑ $x:ident in $s, $r) => `(Finset.sum $s (fun $x ↦ $r))
   | `(∑ $x:ident : $t in $s, $p) => `(Finset.sum $s (fun $x:ident : $t ↦ $p))
 
 /-- `∏ x, f x` is notation for `Finset.prod s f`. It is the sum of `f x`,
 where `x` ranges over the finite set `s`. -/
-scoped syntax (name := bigprodin) "∏ " extBinder "in " term "," term:67 : term
+scoped syntax (name := bigprodin) "∏ " extBinder " in " term ", " term:67 : term
 scoped macro_rules (kind := bigprodin)
   | `(∏ $x:ident in $s, $r) => `(Finset.prod $s (fun $x ↦ $r))
   | `(∏ $x:ident : $t in $s, $p) => `(Finset.prod $s (fun $x:ident : $t ↦ $p))
+
+open Lean Meta Parser.Term PrettyPrinter.Delaborator SubExpr
+open Std.ExtendedBinder
+
+/-- Delaborator for `Finset.prod`. The `pp.piBinderTypes` option controls whether
+to show the domain type when the product is over `Finset.univ`. -/
+@[scoped delab app.Finset.prod] def delabFinsetProd : Delab := whenPPOption getPPNotation do
+  let #[_, _, _, s, f] := (← getExpr).getAppArgs | failure
+  guard <| f.isLambda
+  let ppDomain ← getPPOption getPPPiBinderTypes
+  let (i, body) ← withAppArg <| withBindingBodyUnusedName fun i => do
+    return (i, ← delab)
+  if s.isAppOfArity ``Finset.univ 2 then
+    let binder ←
+      if ppDomain then
+        let ty ← withNaryArg 1 delab
+        `(extBinder| $(.mk i):ident : $ty)
+      else
+        `(extBinder| $(.mk i):ident)
+    `(∏ $binder, $body)
+  else
+    let ss ← withNaryArg 3 <| delab
+    `(∏ $(.mk i):ident in $ss, $body)
+
+/-- Delaborator for `Finset.prod`. The `pp.piBinderTypes` option controls whether
+to show the domain type when the sum is over `Finset.univ`. -/
+@[scoped delab app.Finset.sum] def delabFinsetSum : Delab := whenPPOption getPPNotation do
+  let #[_, _, _, s, f] := (← getExpr).getAppArgs | failure
+  guard <| f.isLambda
+  let ppDomain ← getPPOption getPPPiBinderTypes
+  let (i, body) ← withAppArg <| withBindingBodyUnusedName fun i => do
+    return (i, ← delab)
+  if s.isAppOfArity ``Finset.univ 2 then
+    let binder ←
+      if ppDomain then
+        let ty ← withNaryArg 1 delab
+        `(extBinder| $(.mk i):ident : $ty)
+      else
+        `(extBinder| $(.mk i):ident)
+    `(∑ $binder, $body)
+  else
+    let ss ← withNaryArg 3 <| delab
+    `(∑ $(.mk i):ident in $ss, $body)
+
 end BigOperators
 
 open BigOperators
@@ -1079,18 +1123,19 @@ theorem prod_dite_irrel (p : Prop) [Decidable p] (s : Finset α) (f : p → α �
 #align finset.prod_dite_irrel Finset.prod_dite_irrel
 #align finset.sum_dite_irrel Finset.sum_dite_irrel
 
-@[simp]
-theorem sum_pi_single' {ι M : Type _} [DecidableEq ι] [AddCommMonoid M] (i : ι) (x : M)
-    (s : Finset ι) : (∑ j in s, Pi.single i x j) = if i ∈ s then x else 0 :=
-  sum_dite_eq' _ _ _
+@[to_additive (attr := simp)]
+theorem prod_pi_mulSingle' [DecidableEq α] (a : α) (x : β) (s : Finset α) :
+    (∏ a' in s, Pi.mulSingle a x a') = if a ∈ s then x else 1 :=
+  prod_dite_eq' _ _ _
+#align finset.prod_pi_mul_single' Finset.prod_pi_mulSingle'
 #align finset.sum_pi_single' Finset.sum_pi_single'
 
-@[simp]
-theorem sum_pi_single {ι : Type _} {M : ι → Type _} [DecidableEq ι] [∀ i, AddCommMonoid (M i)]
-    (i : ι) (f : ∀ i, M i) (s : Finset ι) :
-    (∑ j in s, Pi.single j (f j) i) = if i ∈ s then f i else 0 :=
-  sum_dite_eq _ _ _
-#align finset.sum_pi_single Finset.sum_pi_single
+@[to_additive (attr := simp)]
+theorem prod_pi_mulSingle {β : α → Type _} [DecidableEq α] [∀ a, CommMonoid (β a)] (a : α)
+    (f : ∀ a, β a) (s : Finset α) :
+    (∏ a' in s, Pi.mulSingle a' (f a') a) = if a ∈ s then f a else 1 :=
+  prod_dite_eq _ _ _
+#align finset.prod_pi_mul_single Finset.prod_pi_mulSingle
 
 @[to_additive]
 theorem prod_bij_ne_one {s : Finset α} {t : Finset γ} {f : α → β} {g : γ → β}
@@ -1648,12 +1693,14 @@ theorem prod_ite_one {f : α → Prop} [DecidablePred f] (hf : (s : Set α).Pair
 #align finset.prod_ite_one Finset.prod_ite_one
 #align finset.sum_ite_zero Finset.sum_ite_zero
 
-theorem sum_erase_lt_of_pos {γ : Type _} [DecidableEq α] [OrderedAddCommMonoid γ]
-    [CovariantClass γ γ (· + ·) (· < ·)] {s : Finset α} {d : α} (hd : d ∈ s) {f : α → γ}
-    (hdf : 0 < f d) : (∑ m : α in s.erase d, f m) < ∑ m : α in s, f m := by
-  conv in ∑ m in s, f m => rw [← Finset.insert_erase hd]
-  rw [Finset.sum_insert (Finset.not_mem_erase d s)]
-  exact lt_add_of_pos_left _ hdf
+@[to_additive]
+theorem prod_erase_lt_of_one_lt {γ : Type _} [DecidableEq α] [OrderedCommMonoid γ]
+    [CovariantClass γ γ (· * ·) (· < ·)] {s : Finset α} {d : α} (hd : d ∈ s) {f : α → γ}
+    (hdf : 1 < f d) : (∏ m : α in s.erase d, f m) < ∏ m : α in s, f m := by
+  conv in ∏ m in s, f m => rw [← Finset.insert_erase hd]
+  rw [Finset.prod_insert (Finset.not_mem_erase d s)]
+  exact lt_mul_of_one_lt_left' _ hdf
+#align finset.prod_erase_lt_of_one_lt Finset.prod_erase_lt_of_one_lt
 #align finset.sum_erase_lt_of_pos Finset.sum_erase_lt_of_pos
 
 /-- If a product is 1 and the function is 1 except possibly at one
@@ -2069,7 +2116,7 @@ theorem finset_sum_eq_sup_iff_disjoint {β : Type _} {i : Finset β} {f : β →
     simp only [Finset.not_mem_empty, IsEmpty.forall_iff, imp_true_iff, Finset.sum_empty,
       Finset.sup_empty, bot_eq_zero, eq_self_iff_true]
   · simp_rw [Finset.sum_cons hz, Finset.sup_cons, Finset.mem_cons, Multiset.sup_eq_union,
-      forall_eq_or_imp, Ne.def, eq_self_iff_true, not_true, IsEmpty.forall_iff, true_and_iff,
+      forall_eq_or_imp, Ne.def, IsEmpty.forall_iff, true_and_iff,
       imp_and, forall_and, ← hr, @eq_comm _ z]
     have := fun x (H : x ∈ i) => ne_of_mem_of_not_mem H hz
     simp (config := { contextual := true }) only [this, not_false_iff, true_imp_iff]

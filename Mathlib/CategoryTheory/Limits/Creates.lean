@@ -275,8 +275,7 @@ def createsLimitOfReflectsIso {K : J ⥤ C} {F : C ⥤ D} [ReflectsIsomorphisms 
         let f : d ⟶ d' := hd'.liftConeMorphism d
         have : (Cones.functoriality K F).map f = i.inv :=
           (hd.ofIsoLimit i.symm).uniq_cone_morphism
-        haveI : IsIso ((Cones.functoriality K F).map f) :=
-          by
+        haveI : IsIso ((Cones.functoriality K F).map f) := by
           rw [this]
           infer_instance
         haveI : IsIso f := isIso_of_reflects_iso f (Cones.functoriality K F)
@@ -383,8 +382,7 @@ def createsColimitOfReflectsIso {K : J ⥤ C} {F : C ⥤ D} [ReflectsIsomorphism
         let f : d' ⟶ d := hd'.descCoconeMorphism d
         have : (Cocones.functoriality K F).map f = i.hom :=
           (hd.ofIsoColimit i.symm).uniq_cocone_morphism
-        haveI : IsIso ((Cocones.functoriality K F).map f) :=
-          by
+        haveI : IsIso ((Cocones.functoriality K F).map f) := by
           rw [this]
           infer_instance
         haveI := isIso_of_reflects_iso f (Cocones.functoriality K F)
