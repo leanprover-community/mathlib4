@@ -397,31 +397,6 @@ theorem pullback_fst_image_snd_preimage (f : X ⟶ Z) (g : Y ⟶ Z) (U : Set Y) 
 
 end Pullback
 
-/-- The terminal object of `TopCat` is `PUnit`. -/
-def isTerminalPunit : IsTerminal (TopCat.of PUnit.{u + 1}) :=
-  haveI : ∀ X, Unique (X ⟶ TopCat.of PUnit.{u + 1}) := fun X =>
-    ⟨⟨⟨fun _ => PUnit.unit, by continuity⟩⟩, fun f =>
-      by apply ContinuousMap.ext; intro a; apply PUnit.ext⟩
-  Limits.IsTerminal.ofUnique _
-#align Top.is_terminal_punit TopCat.isTerminalPunit
-
-/-- The terminal object of `TopCat` is `PUnit`. -/
-def terminalIsoPunit : ⊤_ TopCat.{u} ≅ TopCat.of PUnit :=
-  terminalIsTerminal.uniqueUpToIso isTerminalPunit
-#align Top.terminal_iso_punit TopCat.terminalIsoPunit
-
-/-- The initial object of `TopCat` is `PEmpty`. -/
-def isInitialPempty : IsInitial (TopCat.of PEmpty.{u + 1}) :=
-  haveI : ∀ X, Unique (TopCat.of PEmpty.{u + 1} ⟶ X) := fun X =>
-    ⟨⟨⟨fun x => x.elim, by continuity⟩⟩, fun f => by ext ⟨⟩⟩
-  Limits.IsInitial.ofUnique _
-#align Top.is_initial_pempty TopCat.isInitialPempty
-
-/-- The initial object of `TopCat` is `PEmpty`. -/
-def initialIsoPempty : ⊥_ TopCat.{u} ≅ TopCat.of PEmpty :=
-  initialIsInitial.uniqueUpToIso isInitialPempty
-#align Top.initial_iso_pempty TopCat.initialIsoPempty
-
 /-- The binary coproduct cofan in `TopCat`. -/
 protected def binaryCofan (X Y : TopCat.{u}) : BinaryCofan X Y :=
   BinaryCofan.mk (⟨Sum.inl, by continuity⟩ : X ⟶ TopCat.of (Sum X Y)) ⟨Sum.inr, by continuity⟩
