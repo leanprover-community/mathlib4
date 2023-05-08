@@ -212,6 +212,10 @@ lemma Exact.comp_eq_zero (h : S.Exact) {X Y : C} {a : X ⟶ S.X₂} (ha : a ≫ 
     rw [← S.liftCycles_i a ha, ← S.p_descCyclesCo b hb, assoc, reassoc_of% eq,
       zero_comp, comp_zero]
 
+lemma Exact.isZero_of_both_zeros (ex : S.Exact) (hf : S.f = 0) (hg : S.g = 0) :
+    IsZero S.X₂ :=
+  (ShortComplex.HomologyData.ofZeros S hf hg).exact_iff.1 ex
+
 end
 
 section Preadditive

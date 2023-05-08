@@ -10,6 +10,8 @@ namespace CochainComplex
 
 def ε (n : ℤ) : ℤ := (-1 : Units ℤ) ^ n
 
+lemma ε_def (n : ℤ) : ε n = (-1 : Units ℤ) ^ n := rfl
+
 lemma ε_add (n₁ n₂ : ℤ) : ε (n₁ + n₂) = ε n₁ * ε n₂ := by
   simp only [ε, ← Units.val_mul, ← Units.ext_iff, zpow_add]
 

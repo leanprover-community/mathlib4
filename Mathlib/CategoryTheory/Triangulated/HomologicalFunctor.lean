@@ -1,14 +1,79 @@
-import Mathlib.CategoryTheory.Triangulated.Triangulated
 import Mathlib.Algebra.Homology.ShortComplex.Exact
 import Mathlib.CategoryTheory.Abelian.Basic
+import Mathlib.CategoryTheory.Triangulated.Subcategory
+import Mathlib.Tactic.Linarith
 
 namespace CategoryTheory
 
-open Category Limits Pretriangulated
+-- should be moved to CategoryTheory.Shift.Basic
+section
+
+open Category
+
+variable (C : Type _) {A A' : Type _} [Category C] [AddMonoid A] [HasShift C A]
+  [AddCommGroup A'] [HasShift C A']
+
+noncomputable def shiftFunctorAdd₃' (a₁ a₂ a₃ b : A) (h :  a₁ + a₂ + a₃ = b) :
+    shiftFunctor C b ≅ shiftFunctor C a₁ ⋙ shiftFunctor C a₂ ⋙ shiftFunctor C a₃ :=
+  shiftFunctorAdd' C (a₁ + a₂) a₃ b h ≪≫ isoWhiskerRight (shiftFunctorAdd C a₁ a₂) _ ≪≫
+    Functor.associator _ _ _
+
+variable {C}
+
+lemma shiftFunctorAdd₃'_hom_app (a₁ a₂ a₃ : A) (b : A) (h : a₁ + a₂ + a₃ = b) (a₁₂ : A)
+    (h₁₂ : a₁ + a₂ = a₁₂) (X : C) :
+    (shiftFunctorAdd₃' C a₁ a₂ a₃ b h).hom.app X =
+      (shiftFunctorAdd' C a₁₂ a₃ b (by rw [← h₁₂, h])).hom.app X ≫
+        ((shiftFunctorAdd' C a₁ a₂ a₁₂ h₁₂).hom.app X)⟦a₃⟧' := by
+  subst h₁₂ h
+  simp only [Functor.comp_obj, shiftFunctorAdd₃', shiftFunctorAdd'_eq_shiftFunctorAdd,
+    Iso.trans_hom, isoWhiskerRight_hom, NatTrans.comp_app, whiskerRight_app,
+    Functor.associator_hom_app, Category.comp_id]
+
+lemma shiftFunctorAdd₃'_inv_app (a₁ a₂ a₃ : A) (b : A) (h : a₁ + a₂ + a₃ = b) (a₁₂ : A)
+    (h₁₂ : a₁ + a₂ = a₁₂) (X : C) :
+    (shiftFunctorAdd₃' C a₁ a₂ a₃ b h).inv.app X =
+        ((shiftFunctorAdd' C a₁ a₂ a₁₂ h₁₂).inv.app X)⟦a₃⟧' ≫
+      (shiftFunctorAdd' C a₁₂ a₃ b (by rw [← h₁₂, h])).inv.app X := by
+  subst h₁₂ h
+  simp only [Functor.comp_obj, shiftFunctorAdd₃', shiftFunctorAdd'_eq_shiftFunctorAdd,
+    Iso.trans_inv, isoWhiskerRight_inv, assoc, NatTrans.comp_app,
+    Functor.associator_inv_app, whiskerRight_app, Category.id_comp]
+
+lemma shiftFunctorAdd₃'_hom_app' (a₁ a₂ a₃ : A) (b : A) (h : a₁ + a₂ + a₃ = b) (a₂₃ : A)
+    (h₂₃ : a₂ + a₃ = a₂₃) (X : C) :
+    (shiftFunctorAdd₃' C a₁ a₂ a₃ b h).hom.app X =
+      (shiftFunctorAdd' C a₁ a₂₃ b (by rw [← h₂₃, ← h, add_assoc])).hom.app X ≫
+        (shiftFunctorAdd' C a₂ a₃ a₂₃ h₂₃).hom.app (X⟦a₁⟧) := by
+  simp only [shiftFunctorAdd₃'_hom_app a₁ a₂ a₃ b h (a₁ + a₂) rfl,
+    shiftFunctorAdd'_assoc_hom_app _ _ _ _ _ _ _ h₂₃ h _]
+
+lemma shiftFunctorAdd₃'_inv_app' (a₁ a₂ a₃ : A) (b : A) (h : a₁ + a₂ + a₃ = b) (a₂₃ : A)
+    (h₂₃ : a₂ + a₃ = a₂₃) (X : C) :
+    (shiftFunctorAdd₃' C a₁ a₂ a₃ b h).inv.app X =
+      (shiftFunctorAdd' C a₂ a₃ a₂₃ h₂₃).inv.app (X⟦a₁⟧) ≫
+        (shiftFunctorAdd' C a₁ a₂₃ b (by rw [← h₂₃, ← h, add_assoc])).inv.app X := by
+  simp only [shiftFunctorAdd₃'_inv_app a₁ a₂ a₃ b h (a₁ + a₂) rfl,
+    shiftFunctorAdd'_assoc_inv_app _ _ _ _ _ _ _ h₂₃ h _]
+
+lemma shift_shiftFunctorCompIsoId_hom_app'
+  (a a' b c : A') (h₁ : a + a' = 0) (h₂ : b + a = c) (X : C) :
+  ((shiftFunctorCompIsoId C a a' h₁).hom.app X)⟦c⟧' =
+    (shiftFunctorAdd' C a' c b (by rw [← add_zero b, ← h₁,
+      ← add_assoc, h₂, add_comm a'])).inv.app (X⟦a⟧) ≫
+      (shiftFunctorAdd' C a b c (by rw [add_comm a, h₂])).inv.app X := by
+  dsimp [shiftFunctorCompIsoId]
+  rw [← shiftFunctorAdd₃'_inv_app' _ _ _ _ (by rw [h₁, zero_add]),
+    shiftFunctorAdd₃'_inv_app a a' c c (by rw [h₁, zero_add]) 0 h₁ X,
+    shiftFunctorAdd'_zero_add_inv_app, Functor.map_comp]
+
+end
+
+open Category Limits Pretriangulated ZeroObject Preadditive
 
 variable {C A : Type _} [Category C] [HasZeroObject C]
   [HasShift C ℤ] [Preadditive C]
-  [∀ (n : ℤ), (shiftFunctor C n).Additive]
+  [∀ (n : ℤ), (CategoryTheory.shiftFunctor C n).Additive]
   [Pretriangulated C]
   [Category A] [Abelian A]
 
@@ -20,9 +85,121 @@ class IsHomological : Prop where
   exact : ∀ (T : Triangle C) (hT : T ∈ distTriang C),
     ((shortComplex_of_dist_triangle T hT).map F).Exact
 
-lemma map_distinguished_exact₂ [F.IsHomological] (T : Triangle C) (hT : T ∈ distTriang C) :
+lemma map_distinguished_exact [F.IsHomological] (T : Triangle C) (hT : T ∈ distTriang C) :
     ((shortComplex_of_dist_triangle T hT).map F).Exact :=
   IsHomological.exact _ hT
+
+def homologicalKernel [F.IsHomological] :
+    Triangulated.Subcategory C where
+  set := fun X => ∀ (n : ℤ), IsZero (F.obj (X⟦n⟧))
+  zero := fun n => by rw [IsZero.iff_id_eq_zero, ← F.map_id, ← Functor.map_id,
+    id_zero, Functor.map_zero, Functor.map_zero]
+  shift := fun X a hX b =>
+    IsZero.of_iso (hX (a + b)) (F.mapIso ((shiftFunctorAdd C a b).app X).symm)
+  ext₂ := fun T hT h₁ h₃ n => (F.map_distinguished_exact _
+    (shift_distinguished T hT n)).isZero_of_both_zeros
+      (IsZero.eq_of_src (h₁ n) _ _) (IsZero.eq_of_tgt (h₃ n) _ _)
+
+def IsHomological.W [F.IsHomological] : MorphismProperty C := fun _ _ f =>
+  ∀ (n : ℤ), IsIso (F.map (f⟦n⟧'))
+
+noncomputable instance [F.IsHomological] : PreservesLimitsOfShape (Discrete WalkingPair) F := by
+  suffices ∀ (X₁ X₂ : C), PreservesLimit (pair X₁ X₂) F from
+    ⟨fun {X} => preservesLimitOfIsoDiagram F (diagramIsoPair X).symm⟩
+  intro X₁ X₂
+  have : HasBinaryBiproduct (F.obj X₁) (F.obj X₂) := HasBinaryBiproducts.has_binary_biproduct _ _
+  have : Mono (F.biprodComparison X₁ X₂) := by
+    rw [mono_iff_cancel_zero]
+    intro Z f hf
+    have h₂ : f ≫ F.map biprod.snd = 0 := by simpa using hf =≫ biprod.snd
+    let S := ShortComplex.mk (F.map (biprod.inl : X₁ ⟶ _)) (F.map (biprod.snd : _ ⟶ X₂))
+      (by rw [← F.map_comp, biprod.inl_snd, F.map_zero])
+    have ex : S.Exact := F.map_distinguished_exact _ (binaryBiproductTriangle_distinguished X₁ X₂)
+    obtain ⟨g, rfl⟩ : ∃ (f₁ : Z ⟶ F.obj X₁), f₁ ≫ F.map biprod.inl = f := ⟨_, ex.lift_f f h₂⟩
+    replace hf := hf =≫ biprod.fst
+    simp only [assoc, biprodComparison_fst, zero_comp, ← F.map_comp, biprod.inl_fst,
+      F.map_id, comp_id] at hf
+    rw [hf, zero_comp]
+  have : PreservesBinaryBiproduct X₁ X₂ F := preservesBinaryBiproductOfMonoBiprodComparison _
+  apply Limits.preservesBinaryProductOfPreservesBinaryBiproduct
+
+instance [F.IsHomological] : F.Additive := F.additive_of_preserves_binary_products
+
+section
+
+variable [F.IsHomological] (T : Triangle C) (hT : T ∈ distTriang C) (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁)
+
+noncomputable def homology_seq_δ : F.obj (T.obj₃⟦n₀⟧) ⟶ F.obj (T.obj₁⟦n₁⟧) :=
+  F.map (T.mor₃⟦n₀⟧' ≫ (shiftFunctorAdd' C 1 n₀ n₁ (by rw [← h, add_comm 1])).inv.app (T.obj₁))
+
+lemma comp_homology_seq_δ : F.map (T.mor₂⟦n₀⟧') ≫ F.homology_seq_δ T n₀ n₁ h = 0 := by
+  simp only [homology_seq_δ, ← F.map_comp, ← Functor.map_comp_assoc,
+    comp_dist_triangle_mor_zero₂₃ _ hT, Functor.map_zero, zero_comp]
+
+lemma homology_seq_δ_comp : homology_seq_δ F T n₀ n₁ h ≫ F.map (T.mor₁⟦n₁⟧') = 0 := by
+  simp only [homology_seq_δ, ← F.map_comp, assoc, ← NatTrans.naturality, comp_map,
+    ← Functor.map_comp_assoc, comp_dist_triangle_mor_zero₃₁ _ hT, Functor.map_zero, zero_comp]
+
+lemma homology_seq_exact₂ :
+  (ShortComplex.mk (F.map (T.mor₁⟦n₀⟧')) (F.map (T.mor₂⟦n₀⟧'))
+    (by simp only [← Functor.map_comp, comp_dist_triangle_mor_zero₁₂ _ hT,
+      Functor.map_zero])).Exact := by
+  refine' ShortComplex.exact_of_iso _ (F.map_distinguished_exact _ (shift_distinguished _ hT n₀))
+  refine' ShortComplex.mkIso (Iso.refl _) (mulIso ((-1 : Units ℤ)^n₀) (Iso.refl _)) (Iso.refl _) _ _
+  . dsimp
+    simp only [id_comp, F.map_zsmul, comp_zsmul, comp_id, Functor.map_zsmul, smul_smul,
+      ← CochainComplex.ε_def, CochainComplex.mul_ε_self, one_smul]
+  . dsimp
+    simp only [id_comp, comp_id, zsmul_comp, Functor.map_zsmul, ← CochainComplex.ε_def]
+
+lemma homology_seq_exact₃ : (ShortComplex.mk _ _ (F.comp_homology_seq_δ T hT _ _ h)).Exact := by
+  refine' ShortComplex.exact_of_iso _ (F.homology_seq_exact₂ _ (rot_of_dist_triangle _ hT) n₀)
+  refine' ShortComplex.mkIso (Iso.refl _) (Iso.refl _) (F.mapIso
+    ((shiftFunctorAdd' C 1 n₀ n₁ (by linarith)).app T.obj₁).symm) _ _
+  . dsimp
+    simp
+  . dsimp [homology_seq_δ]
+    simp
+
+lemma homology_seq_exact₁ : (ShortComplex.mk _ _ (F.homology_seq_δ_comp T hT _ _ h)).Exact := by
+  refine' ShortComplex.exact_of_iso _ (F.homology_seq_exact₂ _ (inv_rot_of_dist_triangle _ hT) n₁)
+  refine' ShortComplex.mkIso
+    (mulIso (-1) (F.mapIso (((shiftFunctorAdd' C (-1) n₁ n₀ (by linarith)).app T.obj₃)).symm))
+    (Iso.refl _) (Iso.refl _) _ _
+  . dsimp [homology_seq_δ]
+    simp only [neg_smul, one_smul, ← map_comp, neg_comp, map_neg, comp_id, neg_inj]
+    congr 1
+    simp only [assoc, ← NatTrans.naturality_assoc, map_comp, comp_map,
+      shift_shiftFunctorCompIsoId_hom_app' (1 : ℤ) (-1 : ℤ) n₀ n₁ (add_neg_self 1) h T.obj₁]
+  . dsimp
+    simp
+
+end
+
+lemma IsHomological.W_eq_homologicalKernelW [F.IsHomological] :
+    IsHomological.W F = F.homologicalKernel.W := by
+  apply MorphismProperty.ext
+  intro X Y f
+  constructor
+  . intro hf
+    obtain ⟨Z, g, h, mem⟩ := distinguished_cocone_triangle f
+    refine' ⟨Z, g, h, mem, fun n => (F.homology_seq_exact₃ _ mem n _ rfl).isZero_of_both_zeros _ _⟩
+    . dsimp
+      have := hf n
+      have zero : f ≫ g = 0 := comp_dist_triangle_mor_zero₁₂ _ mem
+      simp only [← cancel_epi (F.map (f⟦n⟧')), ← Functor.map_comp, zero,
+        Functor.map_zero, comp_zero]
+    . dsimp
+      have := hf (n + 1)
+      simp only [← cancel_mono (F.map (f⟦n+1⟧')), zero_comp]
+      exact F.homology_seq_δ_comp _ mem n (n+1) rfl
+  . intro hf n
+    obtain ⟨Z, g, h, mem, hZ⟩ := hf
+    have : Mono (F.map (f⟦n⟧')) := (ShortComplex.exact_iff_mono _ ((hZ _).eq_of_src _ _)).1
+      (F.homology_seq_exact₁ _ mem (n-1) n (by linarith))
+    have : Epi (F.map (f⟦n⟧')) := (ShortComplex.exact_iff_epi _ ((hZ n).eq_of_tgt _ _)).1
+      (F.homology_seq_exact₂ _ mem n)
+    apply isIso_of_mono_of_epi
 
 end Functor
 
