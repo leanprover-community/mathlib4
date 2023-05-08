@@ -108,6 +108,7 @@ theorem mul_add_mul : a * b + b * a = 0 := by
   rwa [self_eq_add_right] at this
 #align mul_add_mul mul_add_mul
 
+-- Porting note: simpNF linter complains because this lemmas in other files not to be in simpNF
 -- @[simp]
 theorem sub_eq_add : a - b = a + b := by rw [sub_eq_add_neg, add_right_inj, neg_eq]
 #align sub_eq_add sub_eq_add
