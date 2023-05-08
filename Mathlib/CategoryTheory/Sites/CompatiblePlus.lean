@@ -83,7 +83,8 @@ def diagramCompIso (X : C) : J.diagram P X ⋙ F ≅ J.diagram (P ⋙ F) X :=
 
 @[reassoc (attr := simp)]
 theorem diagramCompIso_hom_ι (X : C) (W : (J.Cover X)ᵒᵖ) (i : W.unop.Arrow) :
-    (J.diagramCompIso F P X).hom.app W ≫ Multiequalizer.ι _ i = F.map (Multiequalizer.ι _ _) := by
+  (J.diagramCompIso F P X).hom.app W ≫ Multiequalizer.ι ((unop W).index (P ⋙ F)) i =
+  F.map (Multiequalizer.ι _ _) := by
   delta diagramCompIso
   dsimp
   simp
