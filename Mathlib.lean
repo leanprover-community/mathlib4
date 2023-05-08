@@ -734,6 +734,7 @@ import Mathlib.Computability.Ackermann
 import Mathlib.Computability.DFA
 import Mathlib.Computability.Encoding
 import Mathlib.Computability.EpsilonNFA
+import Mathlib.Computability.Halting
 import Mathlib.Computability.Language
 import Mathlib.Computability.NFA
 import Mathlib.Computability.Partrec
