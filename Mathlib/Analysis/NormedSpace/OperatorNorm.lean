@@ -828,7 +828,7 @@ def mkContinuous₂ (f : E →ₛₗ[σ₁₃] F →ₛₗ[σ₂₃] G) (C : ℝ
     E →SL[σ₁₃] F →SL[σ₂₃] G :=
   LinearMap.mkContinuous
     (mkContinuous₂_aux f C hC)
-    (max C 0) fun x => (mkContinuous₂_aux_norm_le' f C hC x).trans_eq <|
+    (max C 0) fun x => (mkContinuous₂_aux_norm_le' f C hC x).trans_eq <| by
       rw [max_mul_of_nonneg _ _ (norm_nonneg x), MulZeroClass.zero_mul]
 #align linear_map.mk_continuous₂ LinearMap.mkContinuous₂
 
