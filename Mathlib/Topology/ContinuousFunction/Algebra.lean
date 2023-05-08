@@ -353,9 +353,9 @@ variable (α)
 
 /-- Composition on the left by a (continuous) homomorphism of topological monoids, as a
 `monoid_hom`. Similar to `monoid_hom.comp_left`. -/
-@[to_additive
+@[to_additive (attr := simps)
 "Composition on the left by a (continuous) homomorphism of topological `add_monoid`s,\nas an
-`add_monoid_hom`. Similar to `add_monoid_hom.comp_left`." (attr := simps)]
+`add_monoid_hom`. Similar to `add_monoid_hom.comp_left`."]
 protected def _root_.MonoidHom.compLeftContinuous {γ : Type _} [Monoid β] [ContinuousMul β]
     [TopologicalSpace γ] [Monoid γ] [ContinuousMul γ] (g : β →* γ) (hg : Continuous g) :
     C(α, β) →* C(α, γ) where
