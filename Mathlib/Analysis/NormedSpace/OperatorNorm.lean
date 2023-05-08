@@ -1873,7 +1873,10 @@ section
 
 variable {N : ℝ≥0} (h_e : ∀ x, ‖x‖ ≤ N * ‖e x‖) [RingHomIsometric σ₁₂]
 
-local notation "ψ" => f.extend e h_dense (uniformEmbedding_of_bound _ h_e).toUniformInducing
+-- Porting note: this should be `local notation`, not `scoped notation`,
+-- as we don't want it beyond the next declaration, but that causes errors.
+set_option quotPrecheck false in
+scoped notation "ψ" => f.extend e h_dense (uniformEmbedding_of_bound _ h_e).toUniformInducing
 
 /-- If a dense embedding `e : E →L[𝕜] G` expands the norm by a constant factor `N⁻¹`, then the
 norm of the extension of `f` along `e` is bounded by `N * ‖f‖`. -/
@@ -1897,7 +1900,7 @@ theorem op_norm_extend_le : ‖ψ‖ ≤ N * ‖f‖ := by
       rw [← norm_le_zero_iff]
       exact le_trans (h_e x) (mul_nonpos_of_nonpos_of_nonneg N0 (norm_nonneg _))
     have hf : f = 0 := by
-      ext
+      ext x
       simp only [he x, zero_apply, map_zero]
     have hψ : ψ = 0 := by
       rw [hf]
