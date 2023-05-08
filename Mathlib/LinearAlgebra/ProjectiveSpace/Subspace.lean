@@ -201,8 +201,8 @@ theorem span_sup {S : Set (ℙ K V)} {W : Subspace K V} : span S ⊔ W = span (S
 
 /-- A point in a projective space is contained in the span of a set of points if and only if the
 point is contained in all subspaces of the projective space which contain the set of points. -/
-theorem mem_span {S : Set (ℙ K V)} (u : ℙ K V) : u ∈ span S ↔ ∀ W : Subspace K V, S ⊆ W → u ∈ W :=
-  by
+theorem mem_span {S : Set (ℙ K V)} (u : ℙ K V) :
+    u ∈ span S ↔ ∀ W : Subspace K V, S ⊆ W → u ∈ W := by
   simp_rw [← span_le_subspace_iff]
   exact ⟨fun hu W hW => hW hu, fun W => W (span S) (le_refl _)⟩
 #align projectivization.subspace.mem_span Projectivization.Subspace.mem_span
@@ -236,5 +236,3 @@ theorem span_eq_span_iff {S T : Set (ℙ K V)} : span S = span T ↔ S ⊆ span 
 end Subspace
 
 end Projectivization
-
-#lint
