@@ -203,8 +203,7 @@ theorem lift_infᵢ_le {f : ι → Filter α} {g : Set α → Filter β} :
 theorem lift_infᵢ [Nonempty ι] {f : ι → Filter α} {g : Set α → Filter β}
     (hg : ∀ s t, g (s ∩ t) = g s ⊓ g t) : (infᵢ f).lift g = ⨅ i, (f i).lift g := by
   refine' lift_infᵢ_le.antisymm fun s => _
-  have H : ∀ t ∈ infᵢ f, (⨅ i, (f i).lift g) ≤ g t :=
-    by
+  have H : ∀ t ∈ infᵢ f, (⨅ i, (f i).lift g) ≤ g t := by
     intro t ht
     refine' infᵢ_sets_induct ht _ fun hs ht => _
     · inhabit ι
@@ -217,8 +216,7 @@ theorem lift_infᵢ [Nonempty ι] {f : ι → Filter α} {g : Set α → Filter 
 
 theorem lift_infᵢ_of_directed [Nonempty ι] {f : ι → Filter α} {g : Set α → Filter β}
     (hf : Directed (· ≥ ·) f) (hg : Monotone g) : (infᵢ f).lift g = ⨅ i, (f i).lift g :=
-  lift_infᵢ_le.antisymm fun s =>
-    by
+  lift_infᵢ_le.antisymm fun s => by
     simp only [mem_lift_sets hg, exists_imp, and_imp, mem_infᵢ_of_directed hf]
     exact fun t i ht hs => mem_infᵢ_of_mem i <| mem_lift ht hs
 #align filter.lift_infi_of_directed Filter.lift_infᵢ_of_directed
