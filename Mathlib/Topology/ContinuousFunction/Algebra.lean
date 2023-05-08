@@ -990,7 +990,7 @@ variable [Star β] [ContinuousStar β]
 instance : Star C(α, β) where star f := starContinuousMap.comp f
 
 @[simp]
-theorem coe_star (f : C(α, β)) : ⇑(star f) = star ⇑f :=
+theorem coe_star (f : C(α, β)) : ⇑(star f) = star (⇑f) :=
   rfl
 #align continuous_map.coe_star ContinuousMap.coe_star
 
