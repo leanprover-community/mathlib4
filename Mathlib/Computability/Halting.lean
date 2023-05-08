@@ -28,22 +28,21 @@ namespace Nat.Partrec
 open Computable Part
 
 theorem merge' {f g} (hf : Nat.Partrec f) (hg : Nat.Partrec g) :
-    ∃ h,
-      Nat.Partrec h ∧ ∀ a, (∀ x ∈ h a, x ∈ f a ∨ x ∈ g a) ∧ ((h a).Dom ↔ (f a).Dom ∨ (g a).Dom) :=
-  by
-  obtain ⟨cf, rfl⟩ := code.exists_code.1 hf
-  obtain ⟨cg, rfl⟩ := code.exists_code.1 hg
+    ∃ h, Nat.Partrec h ∧
+      ∀ a, (∀ x ∈ h a, x ∈ f a ∨ x ∈ g a) ∧ ((h a).Dom ↔ (f a).Dom ∨ (g a).Dom) := by
+  obtain ⟨cf, rfl⟩ := Code.exists_code.1 hf
+  obtain ⟨cg, rfl⟩ := Code.exists_code.1 hg
   have : Nat.Partrec fun n => Nat.rfindOpt fun k => cf.evaln k n <|> cg.evaln k n :=
     Partrec.nat_iff.1
       (Partrec.rfindOpt <|
-        primrec.option_orelse.to_comp.comp
-          (code.evaln_prim.to_comp.comp <| (snd.pair (const cf)).pair fst)
-          (code.evaln_prim.to_comp.comp <| (snd.pair (const cg)).pair fst))
+        Primrec.option_orElse.to_comp.comp
+          (Code.evaln_prim.to_comp.comp <| (snd.pair (const cf)).pair fst)
+          (Code.evaln_prim.to_comp.comp <| (snd.pair (const cg)).pair fst))
   refine' ⟨_, this, fun n => _⟩
   suffices; refine' ⟨this, ⟨fun h => (this _ ⟨h, rfl⟩).imp Exists.fst Exists.fst, _⟩⟩
   · intro h
     rw [Nat.rfindOpt_dom]
-    simp only [dom_iff_mem, code.evaln_complete, Option.mem_def] at h
+    simp only [dom_iff_mem, Code.evaln_complete, Option.mem_def] at h
     obtain ⟨x, k, e⟩ | ⟨x, k, e⟩ := h
     · refine' ⟨k, x, _⟩
       simp only [e, Option.some_orElse, Option.mem_def]
@@ -54,10 +53,11 @@ theorem merge' {f g} (hf : Nat.Partrec f) (hg : Nat.Partrec g) :
   intro x h
   obtain ⟨k, e⟩ := Nat.rfindOpt_spec h
   revert e
-  simp only [Option.mem_def] <;> cases' e' : cf.evaln k n with y <;> simp <;> intro
-  · exact Or.inr (code.evaln_sound e)
+  simp only [Option.mem_def]
+  cases' e' : cf.evaln k n with y <;> simp <;> intro e
+  · exact Or.inr (Code.evaln_sound e)
   · subst y
-    exact Or.inl (code.evaln_sound e')
+    exact Or.inl (Code.evaln_sound e')
 #align nat.partrec.merge' Nat.Partrec.merge'
 
 end Nat.Partrec
@@ -70,7 +70,7 @@ variable [Primcodable α] [Primcodable β] [Primcodable γ] [Primcodable σ]
 
 open Computable Part
 
-open Nat.Partrec (code)
+open Nat.Partrec (Code)
 
 open Nat.Partrec.Code
 
@@ -78,9 +78,9 @@ theorem merge' {f g : α →. σ} (hf : Partrec f) (hg : Partrec g) :
     ∃ k : α →. σ,
       Partrec k ∧ ∀ a, (∀ x ∈ k a, x ∈ f a ∨ x ∈ g a) ∧ ((k a).Dom ↔ (f a).Dom ∨ (g a).Dom) := by
   let ⟨k, hk, H⟩ := Nat.Partrec.merge' (bind_decode₂_iff.1 hf) (bind_decode₂_iff.1 hg)
-  let k' a := (k (encode a)).bind fun n => decode σ n
+  let k' (a : α) := (k (encode a)).bind fun n => (decode (α := σ) n : Part σ)
   refine'
-    ⟨k', ((nat_iff.2 hk).comp Computable.encode).bind (computable.decode.of_option.comp snd).to₂,
+    ⟨k', ((nat_iff.2 hk).comp Computable.encode).bind (Computable.decode.of_option.comp snd).to₂,
       fun a => _⟩
   suffices; refine' ⟨this, ⟨fun h => (this _ ⟨h, rfl⟩).imp Exists.fst Exists.fst, _⟩⟩
   · intro h
@@ -89,13 +89,14 @@ theorem merge' {f g : α →. σ} (hf : Partrec f) (hg : Partrec g) :
       (H _).2.2 (by simpa only [encodek₂, bind_some, coe_some] using h)
     exists hk
     simp only [exists_prop, mem_map_iff, mem_coe, mem_bind_iff, Option.mem_def] at H
-    obtain ⟨a', ha', y, hy, e⟩ | ⟨a', ha', y, hy, e⟩ := (H _).1 _ ⟨hk, rfl⟩ <;>
-      · simp only [e.symm, encodek]
-  intro x h'; simp only [k', exists_prop, mem_coe, mem_bind_iff, Option.mem_def] at h'
+    obtain ⟨a', _, y, _, e⟩ | ⟨a', _, y, _, e⟩ := (H _).1 _ ⟨hk, rfl⟩ <;>
+      simp only [e.symm, encodek, coe_some, some_dom]
+  intro x h'; simp only [exists_prop, mem_coe, mem_bind_iff, Option.mem_def] at h'
   obtain ⟨n, hn, hx⟩ := h'
   have := (H _).1 _ hn
   simp [mem_decode₂, encode_injective.eq_iff] at this
-  obtain ⟨a', ha, rfl⟩ | ⟨a', ha, rfl⟩ := this <;> simp only [encodek] at hx <;> rw [hx] at ha
+  obtain ⟨a', ha, rfl⟩ | ⟨a', ha, rfl⟩ := this <;> simp only [encodek, Option.some_inj] at hx <;>
+    rw [hx] at ha
   · exact Or.inl ha
   exact Or.inr ha
 #align partrec.merge' Partrec.merge'
@@ -120,7 +121,7 @@ theorem cond {c : α → Bool} {f : α →. σ} {g : α →. σ} (hc : Computabl
   let ⟨cf, ef⟩ := exists_code.1 hf
   let ⟨cg, eg⟩ := exists_code.1 hg
   ((eval_part.comp (Computable.cond hc (const cf) (const cg)) Computable.id).bind
-        ((@Computable.decode σ _).comp snd).ofOption.to₂).of_eq
+        ((@Computable.decode σ _).comp snd).of_option.to₂).of_eq
     fun a => by cases c a <;> simp [ef, eg, encodek]
 #align partrec.cond Partrec.cond
 
@@ -435,4 +436,3 @@ theorem vec_iff {m n f} : @Vec m n f ↔ Computable f :=
 #align nat.partrec'.vec_iff Nat.Partrec'.vec_iff
 
 end Nat.Partrec'
-
