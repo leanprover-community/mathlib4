@@ -24,12 +24,12 @@ open UniformConvergence
 theorem equicontinuous_of_equicontinuousAt_one {ι G M hom : Type _} [TopologicalSpace G]
     [UniformSpace M] [Group G] [Group M] [TopologicalGroup G] [UniformGroup M]
     [MonoidHomClass hom G M] (F : ι → hom)
-    (hf : EquicontinuousAt (MulHom.toFun ∘ MulHomClass.toMulHom ∘ F) (1 : G)) :
-    Equicontinuous (MulHom.toFun ∘ MulHomClass.toMulHom ∘ F) := by
+    (hf : EquicontinuousAt ((↑) ∘ F) (1 : G)) :
+    Equicontinuous ((↑) ∘ F) := by
   rw [equicontinuous_iff_continuous]
   rw [equicontinuousAt_iff_continuousAt] at hf
   let φ : G →* (ι →ᵤ M) :=
-    { toFun := swap (MulHom.toFun ∘ MulHomClass.toMulHom ∘ F)
+    { toFun := swap ((↑) ∘ F)
       map_one' := by dsimp [UniformFun] ; ext ; exact map_one _
       map_mul' := fun a b => by dsimp [UniformFun] ; ext ; exact map_mul _ _ _ }
   exact continuous_of_continuousAt_one φ hf
@@ -39,12 +39,12 @@ theorem equicontinuous_of_equicontinuousAt_one {ι G M hom : Type _} [Topologica
 @[to_additive]
 theorem uniformEquicontinuous_of_equicontinuousAt_one {ι G M hom : Type _} [UniformSpace G]
     [UniformSpace M] [Group G] [Group M] [UniformGroup G] [UniformGroup M] [MonoidHomClass hom G M]
-    (F : ι → hom) (hf : EquicontinuousAt (MulHom.toFun ∘ MulHomClass.toMulHom ∘ F) (1 : G)) :
-    UniformEquicontinuous (MulHom.toFun ∘ MulHomClass.toMulHom ∘ F) := by
+    (F : ι → hom) (hf : EquicontinuousAt ((↑) ∘ F) (1 : G)) :
+    UniformEquicontinuous ((↑) ∘ F) := by
   rw [uniformEquicontinuous_iff_uniformContinuous]
   rw [equicontinuousAt_iff_continuousAt] at hf
   let φ : G →* (ι →ᵤ M) :=
-    { toFun := swap (MulHom.toFun ∘ MulHomClass.toMulHom ∘ F)
+    { toFun := swap ((↑) ∘ F)
       map_one' := by dsimp [UniformFun] ; ext ; exact map_one _
       map_mul' := fun a b => by dsimp [UniformFun] ; ext ; exact map_mul _ _ _ }
   exact uniformContinuous_of_continuousAt_one φ hf
