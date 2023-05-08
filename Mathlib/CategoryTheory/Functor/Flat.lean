@@ -244,14 +244,20 @@ theorem uniq {K : J ⥤ C} {c : Cone K} (hc : IsLimit c) (s : Cone (K ⋙ F))
         -- porting note: Lean 3 proof was `simp` but `Comma.eqToHom_right`
         -- isn't firing for some reason
         -- Asked here https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/simp.20not.20using.20a.20simp.20lemma/near/353943416
-        simp -- this should be terminal
+        -- I'm now doing `simp, rw [Comma.eqToHom_right, Comma.eqToHom_right], simp` but
+        -- I squeezed the first `simp`.
+        simp only [Functor.mapCone_pt, Functor.comp_obj, toDiagram_obj,
+          Functor.mapCone_π_app, map_mk, mk_right, Functor.comp_map, toDiagram_map, comp_right,
+          map_map_right, homMk_right]
         rw [Comma.eqToHom_right, Comma.eqToHom_right] -- this is a `simp` lemma
         simp }
   let α₂ : toDiagram (F.mapCone c) ⋙ map f₂ ⟶ toDiagram s :=
     { app := fun X => eqToHom (by simp [← h₂])
       naturality := fun _ _ _ => by
         ext
-        simp
+        -- porting note: see comments above. `simp` should close this goal (and did in Lean 3)
+        simp only [Functor.mapCone_pt, Functor.comp_obj, toDiagram_obj, Functor.mapCone_π_app,
+          map_mk, mk_right, Functor.comp_map, toDiagram_map, comp_right, map_map_right, homMk_right]
         rw [Comma.eqToHom_right, Comma.eqToHom_right] -- this is a `simp` lemma
         simp }
   let c₁ : Cone (toDiagram s ⋙ pre s.pt K F) :=
@@ -415,14 +421,6 @@ noncomputable instance lanPreservesFiniteLimitsOfPreservesFiniteLimits (F : C �
   infer_instance
 set_option linter.uppercaseLean3 false in
 #align category_theory.Lan_preserves_finite_limits_of_preserves_finite_limits CategoryTheory.lanPreservesFiniteLimitsOfPreservesFiniteLimits
-
--- porting note: these were all inferred in mathlib3 because lean 3 typeclass inference could see
--- that `forget (Type u) = 𝟭 (Type u)`
--- see https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/typeclass.20inference.20failure/near/354843721
--- **TODO** should these be moved? Or even removed and replaced with a better idea?
-instance : ReflectsLimits (forget (Type u₁)) := Limits.idReflectsLimits
-instance : PreservesColimits (forget (Type u₁)) := Limits.idPreservesColimits
-instance : PreservesLimits (forget (Type u₁)) := Limits.idPreservesLimits
 
 theorem flat_iff_lan_flat (F : C ⥤ D) :
     RepresentablyFlat F ↔ RepresentablyFlat (lan F.op : _ ⥤ Dᵒᵖ ⥤ Type u₁) :=

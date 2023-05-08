@@ -75,6 +75,13 @@ instance ConcreteCategory.types : ConcreteCategory (Type u) where
   Forget := 𝟭 _
 #align category_theory.concrete_category.types CategoryTheory.ConcreteCategory.types
 
+-- porting note: these were all inferred in mathlib3 because lean 3 typeclass inference could see
+-- that `forget (Type u) = 𝟭 (Type u)`
+-- see https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/typeclass.20inference.20failure/near/354843721
+instance : ReflectsLimits (forget (Type u₁)) := Limits.idReflectsLimits
+instance : PreservesColimits (forget (Type u₁)) := Limits.idPreservesColimits
+instance : PreservesLimits (forget (Type u₁)) := Limits.idPreservesLimits
+
 /-- Provide a coercion to `Type u` for a concrete category. This is not marked as an instance
 as it could potentially apply to every type, and so is too expensive in typeclass search.
 
