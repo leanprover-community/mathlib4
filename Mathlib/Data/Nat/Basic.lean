@@ -373,6 +373,8 @@ This section is here due to dependencies -- the lemmas here require some of the 
 proved above, and some of the results in later sections depend on the definitions in this section.
 -/
 
+-- Porting note: The type ascriptions of These two theorems are removed because
+--               lambda abstractions are newly inserted in Lean4.
 
 @[simp]
 theorem rec_zero {C : ℕ → Sort u} (h0 : C 0) (h : ∀ n, C n → C (n + 1)) :
