@@ -896,8 +896,8 @@ theorem flip_add (f g : E →SL[σ₁₃] F →SL[σ₂₃] G) : (f + g).flip = 
 #align continuous_linear_map.flip_add ContinuousLinearMap.flip_add
 
 set_option synthInstance.etaExperiment true in
-set_option maxHeartbeats 400000 in
-set_option synthInstance.maxHeartbeats 40000 in
+set_option maxHeartbeats 800000 in
+set_option synthInstance.maxHeartbeats 160000 in
 @[simp]
 theorem flip_smul (c : 𝕜₃) (f : E →SL[σ₁₃] F →SL[σ₂₃] G) : (c • f).flip = c • f.flip :=
   rfl
@@ -906,6 +906,7 @@ theorem flip_smul (c : 𝕜₃) (f : E →SL[σ₁₃] F →SL[σ₂₃] G) : (c
 variable (E F G σ₁₃ σ₂₃)
 
 set_option synthInstance.etaExperiment true in
+set_option maxHeartbeats 12800000 in
 /-- Flip the order of arguments of a continuous bilinear map.
 This is a version bundled as a `LinearIsometryEquiv`.
 For an unbundled version see `ContinuousLinearMap.flip`. -/
