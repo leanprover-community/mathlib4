@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
 Ported by: Anatole Dedecker
 
 ! This file was ported from Lean 3 source module algebra.ring.equiv
-! leanprover-community/mathlib commit a59dad53320b73ef180174aae867addd707ef00e
+! leanprover-community/mathlib commit 00f91228655eecdcd3ac97a7fd8dbcb139fe990a
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -582,6 +582,10 @@ variable [NonAssocRing R] [NonAssocRing S] (f : R ≃+* S) (x y : R)
 theorem map_neg_one : f (-1) = -1 :=
   f.map_one ▸ f.map_neg 1
 #align ring_equiv.map_neg_one RingEquiv.map_neg_one
+
+theorem map_eq_neg_one_iff {x : R} : f x = -1 ↔ x = -1 := by
+  rw [← neg_eq_iff_eq_neg, ← neg_eq_iff_eq_neg, ← map_neg, RingEquiv.map_eq_one_iff]
+#align ring_equiv.map_eq_neg_one_iff RingEquiv.map_eq_neg_one_iff
 
 end Ring
 

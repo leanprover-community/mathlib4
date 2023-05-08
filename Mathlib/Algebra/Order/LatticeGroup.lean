@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 
 ! This file was ported from Lean 3 source module algebra.order.lattice_group
-! leanprover-community/mathlib commit 474656fdf40ae1741dfffcdd7c685a0f198da61a
+! leanprover-community/mathlib commit db07e6feaf211fe704c1e79ba5f480fd6d218523
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
