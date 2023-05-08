@@ -74,9 +74,8 @@ variable {ι : Type u} {X : Type v} {Y : Type w} [TopologicalSpace X] [Topologic
 /-- Any open cover of a paracompact space has a locally finite *precise* refinement, that is,
 one indexed on the same type with each open set contained in the corresponding original one. -/
 theorem precise_refinement [ParacompactSpace X] (u : ι → Set X) (uo : ∀ a, IsOpen (u a))
-    (uc : (⋃ i, u i) = univ) :
-    ∃ v : ι → Set X, (∀ a, IsOpen (v a)) ∧ (⋃ i, v i) = univ ∧ LocallyFinite v ∧ ∀ a, v a ⊆ u a :=
-  by
+    (uc : (⋃ i, u i) = univ) : ∃ v : ι → Set X, (∀ a, IsOpen (v a)) ∧ (⋃ i, v i) = univ ∧
+    LocallyFinite v ∧ ∀ a, v a ⊆ u a := by
   -- Apply definition to `range u`, then turn existence quantifiers into functions using `choose`
   have := ParacompactSpace.locallyFinite_refinement (range u) (fun r ↦ (r : Set X))
     (SetCoe.forall.2 <| forall_range_iff.2 uo) (by rwa [← unionₛ_range, Subtype.range_coe])

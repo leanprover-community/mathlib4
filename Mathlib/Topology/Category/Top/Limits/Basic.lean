@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Scott Morrison, Mario Carneiro, Andrew Yang
 
 ! This file was ported from Lean 3 source module topology.category.Top.limits.basic
-! leanprover-community/mathlib commit 8195826f5c428fc283510bc67303dd4472d78498
+! leanprover-community/mathlib commit 178a32653e369dce2da68dc6b2694e385d484ef1
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -219,3 +219,27 @@ instance forgetPreservesColimitsOfSize :
 instance forgetPreservesColimits : PreservesColimits (forget : TopCat.{u} ⥤ Type u) :=
   TopCat.forgetPreservesColimitsOfSize.{u, u}
 #align Top.forget_preserves_colimits TopCat.forgetPreservesColimits
+
+/-- The terminal object of `Top` is `PUnit`. -/
+def isTerminalPunit : IsTerminal (TopCat.of PUnit.{u + 1}) :=
+  haveI : ∀ X, Unique (X ⟶ TopCat.of PUnit.{u + 1}) := fun X =>
+    ⟨⟨⟨fun _ => PUnit.unit, by continuity⟩⟩, fun f => by ext; aesop⟩
+  Limits.IsTerminal.ofUnique _
+#align Top.is_terminal_punit TopCat.isTerminalPunit
+
+/-- The terminal object of `Top` is `PUnit`. -/
+def terminalIsoPunit : ⊤_ TopCat.{u} ≅ TopCat.of PUnit :=
+  terminalIsTerminal.uniqueUpToIso isTerminalPunit
+#align Top.terminal_iso_punit TopCat.terminalIsoPunit
+
+/-- The initial object of `Top` is `PEmpty`. -/
+def isInitialPempty : IsInitial (TopCat.of PEmpty.{u + 1}) :=
+  haveI : ∀ X, Unique (TopCat.of PEmpty.{u + 1} ⟶ X) := fun X =>
+    ⟨⟨⟨fun x => x.elim, by continuity⟩⟩, fun f => by ext ⟨⟩⟩
+  Limits.IsInitial.ofUnique _
+#align Top.is_initial_pempty TopCat.isInitialPempty
+
+/-- The initial object of `Top` is `PEmpty`. -/
+def initialIsoPempty : ⊥_ TopCat.{u} ≅ TopCat.of PEmpty :=
+  initialIsInitial.uniqueUpToIso isInitialPempty
+#align Top.initial_iso_pempty TopCat.initialIsoPempty

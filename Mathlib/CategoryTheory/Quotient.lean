@@ -131,8 +131,7 @@ instance essSurj_functor: EssSurj (functor r)
 
 protected theorem induction {P : ∀ {a b : Quotient r}, (a ⟶ b) → Prop}
     (h : ∀ {x y : C} (f : x ⟶ y), P ((functor r).map f)) :
-    ∀ {a b : Quotient r} (f : a ⟶ b), P f :=
-  by
+    ∀ {a b : Quotient r} (f : a ⟶ b), P f := by
   rintro ⟨x⟩ ⟨y⟩ ⟨f⟩
   exact h f
 #align category_theory.quotient.induction CategoryTheory.Quotient.induction
@@ -196,8 +195,7 @@ def lift : Quotient r ⥤ D where
     exact F.map_comp f g
 #align category_theory.quotient.lift CategoryTheory.Quotient.lift
 
-theorem lift_spec : functor r ⋙ lift r F H = F :=
-  by
+theorem lift_spec : functor r ⋙ lift r F H = F := by
   apply Functor.ext; rotate_left
   · rintro X
     rfl
@@ -205,8 +203,7 @@ theorem lift_spec : functor r ⋙ lift r F H = F :=
     simp
 #align category_theory.quotient.lift_spec CategoryTheory.Quotient.lift_spec
 
-theorem lift_unique (Φ : Quotient r ⥤ D) (hΦ : functor r ⋙ Φ = F) : Φ = lift r F H :=
-  by
+theorem lift_unique (Φ : Quotient r ⥤ D) (hΦ : functor r ⋙ Φ = F) : Φ = lift r F H := by
   subst_vars
   fapply Functor.hext
   · rintro X
@@ -235,8 +232,7 @@ theorem lift.isLift_inv (X : C) : (lift.isLift r F H).inv.app X = 𝟙 (F.obj X)
 #align category_theory.quotient.lift.is_lift_inv CategoryTheory.Quotient.lift.isLift_inv
 
 theorem lift_map_functor_map {X Y : C} (f : X ⟶ Y) :
-    (lift r F H).map ((functor r).map f) = F.map f :=
-  by
+    (lift r F H).map ((functor r).map f) = F.map f := by
   rw [← NatIso.naturality_1 (lift.isLift r F H)]
   dsimp
   simp
