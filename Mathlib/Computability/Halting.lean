@@ -80,7 +80,7 @@ theorem merge' {f g : α →. σ} (hf : Partrec f) (hg : Partrec g) :
   let ⟨k, hk, H⟩ := Nat.Partrec.merge' (bind_decode₂_iff.1 hf) (bind_decode₂_iff.1 hg)
   let k' (a : α) := (k (encode a)).bind fun n => (decode (α := σ) n : Part σ)
   refine'
-    ⟨k', ((nat_iff.2 hk).comp Computable.encode).bind (Computable.decode.of_option.comp snd).to₂,
+    ⟨k', ((nat_iff.2 hk).comp Computable.encode).bind (Computable.decode.ofOption.comp snd).to₂,
       fun a => _⟩
   suffices; refine' ⟨this, ⟨fun h => (this _ ⟨h, rfl⟩).imp Exists.fst Exists.fst, _⟩⟩
   · intro h
@@ -120,8 +120,8 @@ theorem cond {c : α → Bool} {f : α →. σ} {g : α →. σ} (hc : Computabl
     (hg : Partrec g) : Partrec fun a => cond (c a) (f a) (g a) :=
   let ⟨cf, ef⟩ := exists_code.1 hf
   let ⟨cg, eg⟩ := exists_code.1 hg
-  ((eval_part.comp (Computable.cond hc (const cf) (const cg)) Computable.id).bind
-        ((@Computable.decode σ _).comp snd).of_option.to₂).of_eq
+  ((eval_part.comp (Computable.cond hc (const cf) (const cg)) Computable.encode).bind
+    ((@Computable.decode σ _).comp snd).ofOption.to₂).of_eq
     fun a => by cases c a <;> simp [ef, eg, encodek]
 #align partrec.cond Partrec.cond
 
