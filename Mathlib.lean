@@ -53,6 +53,7 @@ import Mathlib.Algebra.CharZero.Lemmas
 import Mathlib.Algebra.CharZero.Quotient
 import Mathlib.Algebra.ContinuedFractions.Basic
 import Mathlib.Algebra.ContinuedFractions.Computation.Basic
+import Mathlib.Algebra.ContinuedFractions.Computation.Translations
 import Mathlib.Algebra.ContinuedFractions.ContinuantsRecurrence
 import Mathlib.Algebra.ContinuedFractions.ConvergentsEquiv
 import Mathlib.Algebra.ContinuedFractions.TerminatedStable
@@ -379,6 +380,7 @@ import Mathlib.Analysis.Normed.Group.Hom
 import Mathlib.Analysis.Normed.Group.HomCompletion
 import Mathlib.Analysis.Normed.Group.InfiniteSum
 import Mathlib.Analysis.Normed.Group.Pointwise
+import Mathlib.Analysis.Normed.Group.Quotient
 import Mathlib.Analysis.Normed.Group.Seminorm
 import Mathlib.Analysis.Normed.Order.Basic
 import Mathlib.Analysis.Normed.Order.Lattice
@@ -733,6 +735,7 @@ import Mathlib.Computability.Encoding
 import Mathlib.Computability.EpsilonNFA
 import Mathlib.Computability.Language
 import Mathlib.Computability.NFA
+import Mathlib.Computability.Partrec
 import Mathlib.Computability.Primrec
 import Mathlib.Computability.RegularExpressions
 import Mathlib.Computability.TMComputable
@@ -1969,6 +1972,7 @@ import Mathlib.Topology.Category.Top.Adjunctions
 import Mathlib.Topology.Category.Top.Basic
 import Mathlib.Topology.Category.Top.EpiMono
 import Mathlib.Topology.Category.Top.Limits.Basic
+import Mathlib.Topology.Category.Top.OpenNhds
 import Mathlib.Topology.Category.Top.Opens
 import Mathlib.Topology.CompactOpen
 import Mathlib.Topology.Connected

@@ -289,13 +289,11 @@ def comp (F : OplaxFunctor B C) (G : OplaxFunctor C D) : OplaxFunctor B D :=
     mapId := fun a => by exact (G.mapFunctor _ _).map (F.mapId a) ≫ G.mapId (F.obj a)
     mapComp := fun f g => by
       exact (G.mapFunctor _ _).map (F.mapComp f g) ≫ G.mapComp (F.map f) (F.map g)
-    mapComp_naturality_left := fun η g =>
-      by
+    mapComp_naturality_left := fun η g => by
       dsimp
       rw [← map₂_comp_assoc, mapComp_naturality_left, map₂_comp_assoc, mapComp_naturality_left,
         assoc]
-    mapComp_naturality_right := fun η =>
-      by
+    mapComp_naturality_right := fun η => by
       dsimp
       intros
       rw [← map₂_comp_assoc, mapComp_naturality_right, map₂_comp_assoc, mapComp_naturality_right,

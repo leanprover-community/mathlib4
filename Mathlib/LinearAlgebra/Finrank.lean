@@ -290,8 +290,8 @@ theorem lt_of_le_of_finrank_lt_finrank {s t : Submodule K V} (le : s ≤ t)
   lt_of_le_of_ne le fun h => ne_of_lt lt (by rw [h])
 #align submodule.lt_of_le_of_finrank_lt_finrank Submodule.lt_of_le_of_finrank_lt_finrank
 
-theorem lt_top_of_finrank_lt_finrank {s : Submodule K V} (lt : finrank K s < finrank K V) : s < ⊤ :=
-  by
+theorem lt_top_of_finrank_lt_finrank {s : Submodule K V} (lt : finrank K s < finrank K V) :
+    s < ⊤ := by
   rw [← finrank_top K V] at lt
   exact lt_of_le_of_finrank_lt_finrank le_top lt
 #align submodule.lt_top_of_finrank_lt_finrank Submodule.lt_top_of_finrank_lt_finrank

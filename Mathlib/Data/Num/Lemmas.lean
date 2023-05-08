@@ -325,8 +325,7 @@ theorem cmp_to_nat : ∀ m n, (Ordering.casesOn (cmp m n) ((m : ℕ) < n) (m = n
   | 0, 0 => rfl
   | 0, pos b => to_nat_pos _
   | pos a, 0 => to_nat_pos _
-  | pos a, pos b =>
-    by
+  | pos a, pos b => by
     have := PosNum.cmp_to_nat a b; revert this; dsimp [cmp]; cases PosNum.cmp a b
     exacts[id, congr_arg pos, id]
 #align num.cmp_to_nat Num.cmp_to_nat
@@ -1583,8 +1582,7 @@ theorem divMod_to_nat_aux {n d : PosNum} {q r : Num} (h₁ : (r : ℕ) + d * _ro
     (h₂ : (r : ℕ) < 2 * d) :
     ((divModAux d q r).2 + d * (divModAux d q r).1 : ℕ) = ↑n ∧ ((divModAux d q r).2 : ℕ) < d := by
   unfold divModAux
-  have : ∀ {r₂}, Num.ofZNum' (Num.sub' r (Num.pos d)) = some r₂ ↔ (r : ℕ) = r₂ + d :=
-    by
+  have : ∀ {r₂}, Num.ofZNum' (Num.sub' r (Num.pos d)) = some r₂ ↔ (r : ℕ) = r₂ + d := by
     intro r₂
     apply Num.mem_ofZNum'.trans
     rw [← ZNum.to_int_inj, Num.cast_toZNum, Num.cast_sub', sub_eq_iff_eq_add, ← Int.coe_nat_inj']
@@ -1698,8 +1696,7 @@ theorem gcd_to_nat_aux :
 
 @[simp]
 theorem gcd_to_nat : ∀ a b, (gcd a b : ℕ) = Nat.gcd a b := by
-  have : ∀ a b : Num, (a * b).natSize ≤ a.natSize + b.natSize :=
-    by
+  have : ∀ a b : Num, (a * b).natSize ≤ a.natSize + b.natSize := by
     intros
     simp [natSize_to_nat]
     rw [Nat.size_le, pow_add]
@@ -1743,15 +1740,13 @@ theorem div_to_int : ∀ n d, ((n / d : ZNum) : ℤ) = n / d
   | pos n, pos d => (Num.cast_toZNum _).trans <| by rw [← Num.to_nat_to_int]; simp
   | pos n, neg d => (Num.cast_toZNumNeg _).trans <| by rw [← Num.to_nat_to_int]; simp
   | neg n, pos d =>
-    show -_ = -_ / ↑d
-      by
+    show -_ = -_ / ↑d by
       rw [n.to_int_eq_succ_pred, d.to_int_eq_succ_pred, ← PosNum.to_nat_to_int, Num.succ'_to_nat,
         Num.div_to_nat]
       change -[n.pred' / ↑d+1] = -[n.pred' / (d.pred' + 1)+1]
       rw [d.to_nat_eq_succ_pred]
   | neg n, neg d =>
-    show ↑(PosNum.pred' n / Num.pos d).succ' = -_ / -↑d
-      by
+    show ↑(PosNum.pred' n / Num.pos d).succ' = -_ / -↑d by
       rw [n.to_int_eq_succ_pred, d.to_int_eq_succ_pred, ← PosNum.to_nat_to_int, Num.succ'_to_nat,
         Num.div_to_nat]
       change (Nat.succ (_ / d) : ℤ) = Nat.succ (n.pred' / (d.pred' + 1))

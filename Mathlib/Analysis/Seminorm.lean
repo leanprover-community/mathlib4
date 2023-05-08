@@ -87,7 +87,7 @@ def Seminorm.of [SeminormedRing 𝕜] [AddCommGroup E] [Module 𝕜 E] (f : E �
 
 /-- Alternative constructor for a `Seminorm` over a normed field `𝕜` that only assumes `f 0 = 0`
 and an inequality for the scalar multiplication. -/
-def Seminorm.ofSmulLe [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] (f : E → ℝ) (map_zero : f 0 = 0)
+def Seminorm.ofSMulLe [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] (f : E → ℝ) (map_zero : f 0 = 0)
     (add_le : ∀ x y, f (x + y) ≤ f x + f y) (smul_le : ∀ (r : 𝕜) (x), f (r • x) ≤ ‖r‖ * f x) :
     Seminorm 𝕜 E :=
   Seminorm.of f add_le fun r x => by
@@ -100,7 +100,7 @@ def Seminorm.ofSmulLe [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] (f : E
     rw [norm_inv] at smul_le
     convert smul_le
     simp [h]
-#align seminorm.of_smul_le Seminorm.ofSmulLe
+#align seminorm.of_smul_le Seminorm.ofSMulLe
 
 end Of
 
@@ -118,7 +118,7 @@ section SMul
 
 variable [SMul 𝕜 E]
 
-instance seminormClass : SeminormClass (Seminorm 𝕜 E) 𝕜 E where
+instance instSeminormClass : SeminormClass (Seminorm 𝕜 E) 𝕜 E where
   coe f := f.toFun
   coe_injective' f g h := by
     rcases f with ⟨⟨_⟩⟩
@@ -128,10 +128,10 @@ instance seminormClass : SeminormClass (Seminorm 𝕜 E) 𝕜 E where
   map_add_le_add f := f.add_le'
   map_neg_eq_map f := f.neg'
   map_smul_eq_mul f := f.smul'
-#align seminorm.seminorm_class Seminorm.seminormClass
+#align seminorm.seminorm_class Seminorm.instSeminormClass
 
 /-- Helper instance for when there's too many metavariables to apply `FunLike.hasCoeToFun`. -/
-instance : CoeFun (Seminorm 𝕜 E) fun _ => E → ℝ :=
+instance instCoeFun : CoeFun (Seminorm 𝕜 E) fun _ => E → ℝ :=
   FunLike.hasCoeToFun
 
 @[ext]
@@ -139,7 +139,7 @@ theorem ext {p q : Seminorm 𝕜 E} (h : ∀ x, (p : E → ℝ) x = q x) : p = q
   FunLike.ext p q h
 #align seminorm.ext Seminorm.ext
 
-instance : Zero (Seminorm 𝕜 E) :=
+instance instZero : Zero (Seminorm 𝕜 E) :=
   ⟨{ AddGroupSeminorm.instZeroAddGroupSeminorm.zero with
     smul' := fun _ _ => (MulZeroClass.mul_zero _).symm }⟩
 
@@ -159,7 +159,7 @@ instance : Inhabited (Seminorm 𝕜 E) :=
 variable (p : Seminorm 𝕜 E) (c : 𝕜) (x y : E) (r : ℝ)
 
 /-- Any action on `ℝ` which factors through `ℝ≥0` applies to a seminorm. -/
-instance smul [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] : SMul R (Seminorm 𝕜 E)
+instance instSMul [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] : SMul R (Seminorm 𝕜 E)
     where smul r p :=
     { r • p.toAddGroupSeminorm with
       toFun := fun x => r • p x
@@ -182,7 +182,7 @@ theorem smul_apply [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] (
   rfl
 #align seminorm.smul_apply Seminorm.smul_apply
 
-instance : Add (Seminorm 𝕜 E)
+instance instAdd : Add (Seminorm 𝕜 E)
     where add p q :=
     { p.toAddGroupSeminorm + q.toAddGroupSeminorm with
       toFun := fun x => p x + q x
@@ -197,13 +197,13 @@ theorem add_apply (p q : Seminorm 𝕜 E) (x : E) : (p + q) x = p x + q x :=
   rfl
 #align seminorm.add_apply Seminorm.add_apply
 
-instance : AddMonoid (Seminorm 𝕜 E) :=
+instance instAddMonoid : AddMonoid (Seminorm 𝕜 E) :=
   FunLike.coe_injective.addMonoid _ rfl coe_add fun _ _ => by rfl
 
-instance : OrderedCancelAddCommMonoid (Seminorm 𝕜 E) :=
+instance instOrderedCancelAddCommMonoid : OrderedCancelAddCommMonoid (Seminorm 𝕜 E) :=
   FunLike.coe_injective.orderedCancelAddCommMonoid _ rfl coe_add fun _ _ => rfl
 
-instance [Monoid R] [MulAction R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] :
+instance instMulAction [Monoid R] [MulAction R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] :
     MulAction R (Seminorm 𝕜 E) :=
   FunLike.coe_injective.mulAction _ (by intros; rfl)
 
@@ -223,14 +223,15 @@ theorem coeFnAddMonoidHom_injective : Function.Injective (coeFnAddMonoidHom 𝕜
 
 variable {𝕜 E}
 
-instance [Monoid R] [DistribMulAction R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] :
-    DistribMulAction R (Seminorm 𝕜 E) :=
+instance instDistribMulAction [Monoid R] [DistribMulAction R ℝ] [SMul R ℝ≥0]
+    [IsScalarTower R ℝ≥0 ℝ] : DistribMulAction R (Seminorm 𝕜 E) :=
   (coeFnAddMonoidHom_injective 𝕜 E).distribMulAction _ (by intros; rfl)
 
-instance [Semiring R] [Module R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] : Module R (Seminorm 𝕜 E) :=
+instance instModule [Semiring R] [Module R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] :
+    Module R (Seminorm 𝕜 E) :=
   (coeFnAddMonoidHom_injective 𝕜 E).module R _ (by intros; rfl)
 
-instance : Sup (Seminorm 𝕜 E) where
+instance instSup : Sup (Seminorm 𝕜 E) where
   sup p q :=
     { p.toAddGroupSeminorm ⊔ q.toAddGroupSeminorm with
       toFun := p ⊔ q
@@ -255,7 +256,7 @@ theorem smul_sup [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] (r 
   ext fun x => real.smul_max _ _
 #align seminorm.smul_sup Seminorm.smul_sup
 
-instance : PartialOrder (Seminorm 𝕜 E) :=
+instance instPartialOrder : PartialOrder (Seminorm 𝕜 E) :=
   PartialOrder.lift _ FunLike.coe_injective
 
 @[simp, norm_cast]
@@ -276,7 +277,7 @@ theorem lt_def {p q : Seminorm 𝕜 E} : p < q ↔ p ≤ q ∧ ∃ x, p x < q x 
   @Pi.lt_def _ _ _ p q
 #align seminorm.lt_def Seminorm.lt_def
 
-instance semilatticeSup : SemilatticeSup (Seminorm 𝕜 E) :=
+instance instSemilatticeSup : SemilatticeSup (Seminorm 𝕜 E) :=
   Function.Injective.semilatticeSup _ FunLike.coe_injective coe_sup
 
 end SMul
@@ -383,7 +384,7 @@ def pullback (f : E →ₛₗ[σ₁₂] E₂) : Seminorm 𝕜₂ E₂ →+ Semin
   map_add' := fun p q => add_comp p q f
 #align seminorm.pullback Seminorm.pullback
 
-instance : OrderBot (Seminorm 𝕜 E) where
+instance instOrderBot : OrderBot (Seminorm 𝕜 E) where
   bot := 0
   bot_le := map_nonneg
 
@@ -481,7 +482,7 @@ theorem bddBelow_range_add : BddBelow (range fun u => p u + q (x - u)) :=
     exact add_nonneg (map_nonneg _ _) (map_nonneg _ _)⟩
 #align seminorm.bdd_below_range_add Seminorm.bddBelow_range_add
 
-noncomputable instance : Inf (Seminorm 𝕜 E) where
+noncomputable instance instInf : Inf (Seminorm 𝕜 E) where
   inf p q :=
     { p.toAddGroupSeminorm ⊓ q.toAddGroupSeminorm with
       toFun := fun x => ⨅ u : E, p u + q (x - u)
@@ -506,8 +507,8 @@ theorem inf_apply (p q : Seminorm 𝕜 E) (x : E) : (p ⊓ q) x = ⨅ u : E, p u
   rfl
 #align seminorm.inf_apply Seminorm.inf_apply
 
-noncomputable instance : Lattice (Seminorm 𝕜 E) :=
-  { Seminorm.semilatticeSup with
+noncomputable instance instLattice : Lattice (Seminorm 𝕜 E) :=
+  { Seminorm.instSemilatticeSup with
     inf := (· ⊓ ·)
     inf_le_left := fun p q x =>
       cinfᵢ_le_of_le bddBelow_range_add x <| by
@@ -545,7 +546,7 @@ not bounded above, one could hope that just using the pointwise `Sup` would work
 need for an additional case disjunction. As discussed on Zulip, this doesn't work because this can
 give a function which does *not* satisfy the seminorm axioms (typically sub-additivity).
 -/
-noncomputable instance : SupSet (Seminorm 𝕜 E) where
+noncomputable instance instSupSet : SupSet (Seminorm 𝕜 E) where
   supₛ s :=
     if h : BddAbove ((↑) '' s : Set (E → ℝ)) then
       { toFun := ⨆ p : s, ((p : Seminorm 𝕜 E) : E → ℝ)
@@ -624,7 +625,8 @@ the instances given here for `Inf`, `Sup` and `SupSet` respectively), `infₛ s`
 defined as the supremum of the lower bounds of `s`, which is not really useful in practice. If you
 need to use `infₛ` on seminorms, then you should probably provide a more workable definition first,
 but this is unlikely to happen so we keep the "bad" definition for now. -/
-noncomputable instance : ConditionallyCompleteLattice (Seminorm 𝕜 E) :=
+noncomputable instance instConditionallyCompleteLattice :
+    ConditionallyCompleteLattice (Seminorm 𝕜 E) :=
   conditionallyCompleteLatticeOfLatticeOfSupₛ (Seminorm 𝕜 E) Seminorm.isLUB_supₛ
 
 end Classical
