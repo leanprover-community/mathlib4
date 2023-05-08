@@ -1413,7 +1413,6 @@ section
 
 variable {σ₂₁ : 𝕜₂ →+* 𝕜} [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂] [RingHomIsometric σ₁₂]
 
-set_option synthInstance.etaExperiment true in
 variable (e : E ≃SL[σ₁₂] F)
 
 set_option synthInstance.etaExperiment true in
@@ -1852,9 +1851,10 @@ def extend : Fₗ →SL[σ₁₂] F :=
     cont }
 #align continuous_linear_map.extend ContinuousLinearMap.extend
 
+-- Porting note: previously `(h_e.denseInducing h_dense)` was inferred.
 @[simp]
 theorem extend_eq (x : E) : extend f e h_dense h_e (e x) = f x :=
-  DenseInducing.extend_eq _ f.cont _
+  DenseInducing.extend_eq (h_e.denseInducing h_dense) f.cont _
 #align continuous_linear_map.extend_eq ContinuousLinearMap.extend_eq
 
 theorem extend_unique (g : Fₗ →SL[σ₁₂] F) (H : g.comp e = f) : extend f e h_dense h_e = g :=
@@ -2056,9 +2056,9 @@ This is `ContinuousLinearMap.op_norm_lsmul_le` as an equality. -/
 @[simp]
 theorem op_norm_lsmul [NormedField 𝕜'] [NormedAlgebra 𝕜 𝕜'] [NormedSpace 𝕜' E]
     [IsScalarTower 𝕜 𝕜' E] [Nontrivial E] : ‖(lsmul 𝕜 𝕜' : 𝕜' →L[𝕜] E →L[𝕜] E)‖ = 1 := by
-  refine' ContinuousLinearMap.op_norm_eq_of_bounds zero_le_one (fun x => _) fun N hN h => _
+  refine' ContinuousLinearMap.op_norm_eq_of_bounds zero_le_one (fun x => _) fun N _ h => _
   · rw [one_mul]
-    exact op_norm_lsmul_apply_le _
+    apply op_norm_lsmul_apply_le
   obtain ⟨y, hy⟩ := exists_ne (0 : E)
   have := le_of_op_norm_le _ (h 1) y
   simp_rw [lsmul_apply, one_smul, norm_one, mul_one] at this
