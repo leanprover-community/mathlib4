@@ -512,17 +512,19 @@ instance toSemiNormedRing : SeminormedRing (E →L[𝕜] E) :=
     norm_mul := fun f g => op_norm_comp_le f g }
 #align continuous_linear_map.to_semi_normed_ring ContinuousLinearMap.toSemiNormedRing
 
--- Porting FIXME: this instance is not actually needed in this file (verified in mathlib3)
--- and as it is incredible slow, it's commented out for now.
--- It is eventually needed in (at least) `Mathlib.Analysis.Calculus.ContDiff`.
+-- Porting FIXME: replacing `bad` with `ContinuousLinearMap.algebra` below causes a massive timeout.
 
--- set_option synthInstance.etaExperiment true in
--- set_option maxHeartbeats 0 in
+set_option synthInstance.etaExperiment true in
+private def bad : Algebra 𝕜 (E →L[𝕜] E) := inferInstance
+
+set_option synthInstance.etaExperiment true in
 -- /-- For a normed space `E`, continuous linear endomorphisms form a normed algebra with
 -- respect to the operator norm. -/
--- instance toNormedAlgebra : NormedAlgebra 𝕜 (E →L[𝕜] E) :=
---   { ContinuousLinearMap.toNormedSpace, ContinuousLinearMap.algebra with }
--- #align continuous_linear_map.to_normed_algebra ContinuousLinearMap.toNormedAlgebra
+instance toNormedAlgebra : NormedAlgebra 𝕜 (E →L[𝕜] E) :=
+  { bad with
+    norm_smul_le := by
+      intro c f
+      apply op_norm_smul_le c f}
 
 set_option synthInstance.etaExperiment true in
 theorem le_op_nnnorm : ‖f x‖₊ ≤ ‖f‖₊ * ‖x‖₊ :=
