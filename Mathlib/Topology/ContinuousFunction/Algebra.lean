@@ -619,7 +619,8 @@ theorem coe_smul [SMul R M] [ContinuousConstSMul R M] (c : R) (f : C(α, M)) : �
 #align continuous_map.coe_smul ContinuousMap.coe_smul
 #align continuous_map.coe_vadd ContinuousMap.coe_vadd
 
-@[to_additive]
+-- Porting note: adding `@[simp]` here, as `Pi.smul_apply` no longer fires.
+@[to_additive (attr := simp)]
 theorem smul_apply [SMul R M] [ContinuousConstSMul R M] (c : R) (f : C(α, M)) (a : α) :
     (c • f) a = c • f a :=
   rfl
@@ -850,11 +851,6 @@ theorem Subalgebra.SeparatesPoints.strongly {s : Subalgebra 𝕜 C(α, 𝕜)} (h
   replace hxy : f x - f y ≠ 0 := sub_ne_zero_of_ne hxy
   let a := v x
   let b := v y
-  -- porting note: Lean4 really struggles to find any of these instances
-  let inst : Ring s := Subalgebra.toRing s
-  let inst : AddCommGroup s := Ring.toAddCommGroup
-  let inst : Sub s := SubNegMonoid.toSub
-  let inst : HSub s s s := instHSub
   let f' : s :=
     ((b - a) * (f x - f y)⁻¹) • (algebraMap _ s (f x) - (⟨f, hf⟩ : s)) + algebraMap _ s a
   refine' ⟨f', f'.prop, _, _⟩
@@ -877,6 +873,7 @@ instance ContinuousMap.subsingleton_subalgebra (α : Type _) [TopologicalSpace �
         ext x'
         simp only [mul_one, Algebra.id.smul_eq_mul, algebraMap_apply]
         congr
+        simp
       rw [h]
       simp only [Subalgebra.algebraMap_mem]⟩
 #align continuous_map.subsingleton_subalgebra ContinuousMap.subsingleton_subalgebra
@@ -1068,7 +1065,6 @@ section Periodicity
 
 /-! ### Summing translates of a function -/
 
-
 /-- Summing the translates of `f` by `ℤ • p` gives a map which is periodic with period `p`.
 (This is true without any convergence conditions, since if the sum doesn't converge it is taken to
 be the zero map, which is periodic.) -/
@@ -1078,9 +1074,14 @@ theorem periodic_tsum_comp_add_zsmul [LocallyCompactSpace X] [AddCommGroup X]
   intro x
   by_cases h : Summable fun n : ℤ => f.comp (ContinuousMap.addRight (n • p))
   · convert congr_arg (fun f : C(X, Y) => f x) ((Equiv.addRight (1 : ℤ)).tsum_eq _) using 1
-    simp_rw [← tsum_apply h, ← tsum_apply ((Equiv.addRight (1 : ℤ)).summable_iff.mpr h),
-      Equiv.coe_addRight, comp_apply, coe_addRight, add_one_zsmul, add_comm (_ • p) p, ← add_assoc]
-    sorry
+    -- Porting note: in mathlib3 the proof from here was:
+    -- simp_rw [←tsum_apply h, ←tsum_apply ((equiv.add_right (1 : ℤ)).summable_iff.mpr h),
+    --   equiv.coe_add_right, comp_apply, coe_add_right, add_one_zsmul, add_comm (_ • p) p,
+    --   ←add_assoc]
+    -- However now the second `←tsum_apply` doesn't fire unless we use `erw`.
+    simp_rw [← tsum_apply h]
+    erw [← tsum_apply ((Equiv.addRight (1 : ℤ)).summable_iff.mpr h)]
+    simp [coe_addRight, add_one_zsmul, add_comm (_ • p) p, ← add_assoc]
   · rw [tsum_eq_zero_of_not_summable h]
     simp only [coe_zero, Pi.zero_apply]
 #align continuous_map.periodic_tsum_comp_add_zsmul ContinuousMap.periodic_tsum_comp_add_zsmul
