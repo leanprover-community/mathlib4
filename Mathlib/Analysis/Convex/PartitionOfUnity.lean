@@ -8,8 +8,8 @@ Authors: Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.PartitionOfUnity
-import Mathbin.Analysis.Convex.Combination
+import Mathlib.Topology.PartitionOfUnity
+import Mathlib.Analysis.Convex.Combination
 
 /-!
 # Partition of unity and convex sets
@@ -53,8 +53,7 @@ continuous on `U` and sends each `y ∈ U` to a point of `t y`. Then there exist
 `exists_continuous_forall_mem_convex_of_local_const`. -/
 theorem exists_continuous_forall_mem_convex_of_local (ht : ∀ x, Convex ℝ (t x))
     (H : ∀ x : X, ∃ U ∈ 𝓝 x, ∃ g : X → E, ContinuousOn g U ∧ ∀ y ∈ U, g y ∈ t y) :
-    ∃ g : C(X, E), ∀ x, g x ∈ t x :=
-  by
+    ∃ g : C(X, E), ∀ x, g x ∈ t x := by
   choose U hU g hgc hgt using H
   obtain ⟨f, hf⟩ :=
     PartitionOfUnity.exists_isSubordinate isClosed_univ (fun x => interior (U x))
