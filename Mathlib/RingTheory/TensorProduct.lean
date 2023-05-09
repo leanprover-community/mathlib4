@@ -801,7 +801,8 @@ variable (B)
 /-- The tensor product of R-algebras is commutative, up to algebra isomorphism.
 -/
 protected def comm : A ⊗[R] B ≃ₐ[R] B ⊗[R] A :=
-  algEquivOfLinearEquivTensorProduct (TensorProduct.comm R A B) (by simp) fun r => by
+  algEquivOfLinearEquivTensorProduct (_root_.TensorProduct.comm R A B) (by simp)
+  fun r => by
     trans r • (1 : B) ⊗ₜ[R] (1 : A)
     · rw [← tmul_smul, Algebra.smul_def]
       simp
