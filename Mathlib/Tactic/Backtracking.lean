@@ -346,6 +346,29 @@ instance [ToMessageData β] : ToMessageData (Later (β := β) σ s add) where
       "takeBestOfEq (" ++ f b ++ ", " ++ f b' ++ ")"
     f
 
+/-- Collapse a `Later` tree via `incorporate`. To allow us to extract other values from the tree
+via modified `incorporate`s, we generalize to `β'` in appropriate places. This completely ignores
+`takeBestOfEq`. -/
+def Later.crush' (init' : β') (incorporate' : β' → β → β') (data : Later (β := β) σ s add) : β' :=
+  aux init' data
+where
+  aux : β' → Later (β := β) σ s add → β'
+  | acc, .of b => (incorporate' acc b)
+  | acc, .incorporateLater b b' => let acc' := aux acc b; aux acc' b'
+  | acc, .takeBestOfEqLater _ _ => acc
+
+/-- Collapse a `Later` tree via `incorporate` and `takeBestOfEq`. To allow us to extract other
+values from the tree  via modified `incorporate`s and `takeBestOfEq`s, we generalize to `β'` in
+appropriate places. -/
+def Later.crushM' [Monad m] (init' : β') (incorporate' : β' → β → β')
+    (takeBestOfEq : σ × β' → σ × β' → m β') (data : Later (β := β) σ s add) : m β' :=
+  aux init' data
+where
+  aux : β' → Later (β := β) σ s add → m β'
+  | acc, .of b => pure (incorporate' acc b)
+  | acc, .incorporateLater b b' => do let acc' ← aux acc b; aux acc' b'
+  | acc, .takeBestOfEqLater (s,b) (s',b') => do takeBestOfEq (s, ← aux acc b) (s', ← aux acc b')
+
 /-- The core of `minimizeListAlternatives`. Instead of returning the best, this returns the full
 tree which represents the best, without having evaluated `incorporate` or `takeBestOfEq`, but
 merely representing them as nodes on the tree. We can exploit this to e.g. efficiently get a list
@@ -453,6 +476,32 @@ where
     restoreState s
     withTrace (m!"❓✅⬆️ found a new best among all alternatives {bestOfAlts}") <|
       pure bestOfAlts
+
+/-- Given a list of `α`s and a means of generating alternative possible lists from that list, i.e.
+a function roughly of the form `alternatives : α → List (List α)`, as well as a sufficient means of
+defining and working with minimality (given in `BacktrackMinimizeListConfig`), get the minimum `β`
+among all choices of alternatives.
+
+Here, each alternatives is a list of `α`, and *all* elements in a given alternative must be
+explored. The primary application is when `alternatives a` is a list of lists of subgoals as
+`MVarId`s—we can choose between which list of subgoals we proceed with, but we must address each
+subgoal in any given list.
+
+See `BackTrackMinimizeListConfig` and documentation in Mathlib.Tactic.Backtracking for more on how
+the search proceeds.
+-/
+def minimizeListAlternatives [Monad m] [Alternative m] [MonadBacktrack σ m]
+    -- instances to enable tracing
+    [MonadExcept ε m] [MonadOptions m] [MonadLiftT IO m] [MonadLiftT BaseIO m] [MonadTrace m]
+    [MonadRef m] [AddMessageContext m] [ToMessageData α] [ToMessageData β]
+    -- arguments
+    (init : List α) (alternatives : α → m (List (m (List α))))
+    (cfg : BacktrackMinimizeListConfig m α β γ) : m β := do
+  let some best ← minimizeListAlternativesCore init alternatives cfg | failure
+  if let some takeBestOfEq := cfg.takeBestOfEq? then
+    best.crushM' cfg.bot cfg.incorporate takeBestOfEq
+  else
+    return best.crush' cfg.bot cfg.incorporate
 
 end BacktrackOptimize
 
