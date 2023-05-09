@@ -66,8 +66,7 @@ theorem eq_one_of_noncommProd_eq_one_of_independent {ι : Type _} (s : Finset ι
     · simp
     · have hcomm := comm.mono (Finset.coe_subset.2 <| Finset.subset_insert _ _)
       simp only [Finset.forall_mem_insert] at hmem
-      have hmem_bsupr : s.noncommProd f hcomm ∈ ⨆ i ∈ (s : Set ι), K i :=
-        by
+      have hmem_bsupr : s.noncommProd f hcomm ∈ ⨆ i ∈ (s : Set ι), K i := by
         refine' Subgroup.noncommProd_mem _ _ _
         intro x hx
         have : K x ≤ ⨆ i ∈ (s : Set ι), K i := le_supᵢ₂ (f := fun i _ => K i) x hx
@@ -255,12 +254,10 @@ theorem independent_range_of_coprime_order [Finite ι] [∀ i, Fintype (H i)]
       exact hj ∘ Subtype.ext
     cases' hxp with g hgf
     cases' hxi with g' hg'f
-    have hxi : orderOf f ∣ Fintype.card (H i) :=
-      by
+    have hxi : orderOf f ∣ Fintype.card (H i) := by
       rw [← hg'f]
       exact (orderOf_map_dvd _ _).trans orderOf_dvd_card_univ
-    have hxp : orderOf f ∣ ∏ j : { j // j ≠ i }, Fintype.card (H j) :=
-      by
+    have hxp : orderOf f ∣ ∏ j : { j // j ≠ i }, Fintype.card (H j) := by
       rw [← hgf, ← Fintype.card_pi]
       exact (orderOf_map_dvd _ _).trans orderOf_dvd_card_univ
     change f = 1

@@ -113,8 +113,7 @@ theorem finite_coproduct_eq_finset_sup [SemilatticeSup α] [OrderBot α] {ι : T
 
 -- see Note [lower instance priority]
 instance (priority := 100) [SemilatticeInf α] [OrderTop α] : HasBinaryProducts α := by
-  have : ∀ x y : α, HasLimit (pair x y) :=
-    by
+  have : ∀ x y : α, HasLimit (pair x y) := by
     letI := hasFiniteLimits_of_hasFiniteLimits_of_size.{u} α
     infer_instance
   apply hasBinaryProducts_of_hasLimit_pair
@@ -134,8 +133,7 @@ theorem prod_eq_inf [SemilatticeInf α] [OrderTop α] (x y : α) : Limits.prod x
 
 -- see Note [lower instance priority]
 instance (priority := 100) [SemilatticeSup α] [OrderBot α] : HasBinaryCoproducts α := by
-  have : ∀ x y : α, HasColimit (pair x y) :=
-    by
+  have : ∀ x y : α, HasColimit (pair x y) := by
     letI := hasFiniteColimits_of_hasFiniteColimits_of_size.{u} α
     infer_instance
   apply hasBinaryCoproducts_of_hasColimit_pair

@@ -202,6 +202,8 @@ end ProdPi
 
 section Unital
 
+set_option synthInstance.etaExperiment true
+
 variable [NormedRing E] [StarRing E] [CstarRing E]
 
 @[simp, nolint simpNF] -- Porting note: simp cannot prove this
@@ -265,6 +267,7 @@ end Unital
 
 end CstarRing
 
+set_option synthInstance.etaExperiment true in
 theorem IsSelfAdjoint.nnnorm_pow_two_pow [NormedRing E] [StarRing E] [CstarRing E] {x : E}
     (hx : IsSelfAdjoint x) (n : ℕ) : ‖x ^ 2 ^ n‖₊ = ‖x‖₊ ^ 2 ^ n := by
   induction' n with k hk
@@ -274,6 +277,7 @@ theorem IsSelfAdjoint.nnnorm_pow_two_pow [NormedRing E] [StarRing E] [CstarRing 
     rw [← star_pow, CstarRing.nnnorm_star_mul_self, ← sq, hk, pow_mul']
 #align is_self_adjoint.nnnorm_pow_two_pow IsSelfAdjoint.nnnorm_pow_two_pow
 
+set_option synthInstance.etaExperiment true in
 theorem selfAdjoint.nnnorm_pow_two_pow [NormedRing E] [StarRing E] [CstarRing E] (x : selfAdjoint E)
     (n : ℕ) : ‖x ^ 2 ^ n‖₊ = ‖x‖₊ ^ 2 ^ n :=
   x.prop.nnnorm_pow_two_pow _

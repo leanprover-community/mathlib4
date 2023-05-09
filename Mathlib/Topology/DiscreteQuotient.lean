@@ -222,8 +222,8 @@ theorem ofLE_refl_apply (a : A) : ofLE (le_refl A) a = a := by simp
 #align discrete_quotient.of_le_refl_apply DiscreteQuotient.ofLE_refl_apply
 
 @[simp]
-theorem ofLE_ofLE (h₁ : A ≤ B) (h₂ : B ≤ C) (x : A) : ofLE h₂ (ofLE h₁ x) = ofLE (h₁.trans h₂) x :=
-  by
+theorem ofLE_ofLE (h₁ : A ≤ B) (h₂ : B ≤ C) (x : A) :
+    ofLE h₂ (ofLE h₁ x) = ofLE (h₁.trans h₂) x := by
   rcases x with ⟨⟩
   rfl
 #align discrete_quotient.of_le_of_le DiscreteQuotient.ofLE_ofLE

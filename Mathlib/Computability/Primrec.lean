@@ -529,11 +529,8 @@ theorem swap {f : α → β → σ} (h : Primrec₂ f) : Primrec₂ (swap f) :=
   h.comp₂ Primrec₂.right Primrec₂.left
 #align primrec₂.swap Primrec₂.swap
 
-theorem nat_iff {f : α → β → σ} :
-    Primrec₂ f ↔
-      Nat.Primrec
-        (.unpaired fun m n => encode <| (@decode α _ m).bind fun a => (@decode β _ n).map (f a)) :=
-  by
+theorem nat_iff {f : α → β → σ} : Primrec₂ f ↔ Nat.Primrec
+    (.unpaired fun m n => encode <| (@decode α _ m).bind fun a => (@decode β _ n).map (f a)) := by
   have :
     ∀ (a : Option α) (b : Option β),
       Option.map (fun p : α × β => f p.1 p.2)
@@ -1471,8 +1468,7 @@ theorem mul : @Primrec' 2 fun v => v.head * v.tail.head :=
 
 theorem if_lt {n a b f g} (ha : @Primrec' n a) (hb : @Primrec' n b) (hf : @Primrec' n f)
     (hg : @Primrec' n g) : @Primrec' n fun v => if a v < b v then f v else g v :=
-  (prec' (sub.comp₂ _ hb ha) hg (tail <| tail hf)).of_eq fun v =>
-    by
+  (prec' (sub.comp₂ _ hb ha) hg (tail <| tail hf)).of_eq fun v => by
     cases e : b v - a v
     · simp [not_lt.2 (tsub_eq_zero_iff_le.mp e)]
     · simp [Nat.lt_of_sub_eq_succ e]
