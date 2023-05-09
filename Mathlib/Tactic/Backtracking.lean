@@ -369,6 +369,26 @@ where
   | acc, .incorporateLater b b' => do let acc' ← aux acc b; aux acc' b'
   | acc, .takeBestOfEqLater (s,b) (s',b') => do takeBestOfEq (s, ← aux acc b) (s', ← aux acc b')
 
+/-- Crush a `Later (β := Option β)` tree into `List β`, removing `none`s. This completely ignores
+`.takeBestOfEqLater`. -/
+def Later.crushListReduceOption (data : Later (β := Option β) (γ := γ) σ s add) : List β :=
+  Later.crush' [] (fun | acc, some b => b :: acc | acc, none => acc) data
+
+/-- Crush a `Later (β := Option β)` tree into `m (List β)`, removing `none`s. This forms every
+combination of elements encountered within `.takeBestOfEqLater` -/
+def Later.crushListReduceOptionM [Monad m]
+    (takeBestOfEq : σ × (Option β) → σ × (Option β) → m (Option β))
+    (data : Later (β := (Option β)) (γ := γ) σ s add) : m (List β) :=
+  aux [] data
+where
+  aux : List β → Later (β := (Option β)) (γ := γ) σ s add → m (List β)
+  | acc, .of (some b) => pure (b :: acc)
+  | acc, .incorporateLater b b' => do let acc' ← aux acc b; aux acc' b'
+  | acc, .takeBestOfEqLater (s,b) (s',b') => do
+    let a ← outer takeBestOfEq (s, (← aux acc b).map some) (s', (← aux acc b').map some)
+    return a.reduceOption ++ acc
+  | acc, _ => pure acc
+
 /-- The core of `minimizeListAlternatives`. Instead of returning the best, this returns the full
 tree which represents the best, without having evaluated `incorporate` or `takeBestOfEq`, but
 merely representing them as nodes on the tree. We can exploit this to e.g. efficiently get a list
@@ -502,6 +522,38 @@ def minimizeListAlternatives [Monad m] [Alternative m] [MonadBacktrack σ m]
     best.crushM' cfg.bot cfg.incorporate takeBestOfEq
   else
     return best.crush' cfg.bot cfg.incorporate
+
+/-- `BacktrackMinimizeConfig` specialized for minimizing the number of items generated in
+nondeterministic evolution. -/
+structure MinimizeItemsConfig (m) [Monad m] [Alternative m] [MonadBacktrack σ m] (α) extends
+    BacktrackMinimizeListConfig m α (Option α) Nat where
+  bot := none
+  maxDepth := 6
+  proc := fun _ _ => pure none
+  size := fun | none => 0 | some _ => 1
+  exceeds (n m : Nat) := Nat.ble m n
+  incorporate := fun b _ => b -- dummy value
+  add := Nat.add
+  fromAltsFailure := fun a _ => pure <| a
+
+/-- Given a list of `α`s and a function roughly of the form `alternatives : α → List (List α)`
+which represents different possible lists of `α`s that `α` could evolve into, minimize the number
+of items generated as specified by `minimizeItemsConfig`. By default, the result will be a minimal
+list of terminal items—that is, items for which `alternatives` fails in `m` (or for which all its
+results fail in `m`) or which we encounter when at `maxDepth`.  -/
+def minimizeItems [Monad m] [Alternative m] [MonadBacktrack σ m]
+    -- instances for tracing
+    [MonadOptions m] [MonadLiftT IO m] [MonadExcept ε m] [MonadLiftT BaseIO m] [MonadTrace m]
+    [MonadRef m] [AddMessageContext m] [ToMessageData α]
+    -- arguments
+    (init : List α) (alternatives : α → m (List (m (List α))))
+    (cfg : MinimizeItemsConfig m α := {}) : m (List α) := do
+  let some best ← minimizeListAlternativesCore init alternatives cfg.toBacktrackMinimizeListConfig
+    | failure
+  if let some takeBestOfEq := cfg.takeBestOfEq? then
+    best.crushListReduceOptionM takeBestOfEq
+  else
+    return best.crushListReduceOption
 
 end BacktrackOptimize
 
