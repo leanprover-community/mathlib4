@@ -984,7 +984,7 @@ theorem productMap_right : (productMap f g).comp includeRight = g :=
 #align algebra.tensor_product.product_map_right Algebra.TensorProduct.productMap_right
 
 theorem productMap_range : (productMap f g).range = f.range ⊔ g.range := by
-  rw [product_map, AlgHom.range_comp, map_range, map_sup, ← AlgHom.range_comp, ← AlgHom.range_comp,
+  rw [productMap, AlgHom.range_comp, map_range, map_sup, ← AlgHom.range_comp, ← AlgHom.range_comp,
     ← AlgHom.comp_assoc, ← AlgHom.comp_assoc, lmul'_comp_include_left, lmul'_comp_include_right,
     AlgHom.id_comp, AlgHom.id_comp]
 #align algebra.tensor_product.product_map_range Algebra.TensorProduct.productMap_range
