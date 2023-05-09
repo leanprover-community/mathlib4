@@ -8,8 +8,8 @@ Authors: Calle Sönne, Adam Topaz
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.Category.Profinite.Basic
-import Mathbin.Topology.DiscreteQuotient
+import Mathlib.Topology.Category.Profinite.Basic
+import Mathlib.Topology.DiscreteQuotient
 
 /-!
 # Profinite sets as limits of finite sets.
@@ -45,8 +45,7 @@ universe u
 variable (X : Profinite.{u})
 
 /-- The functor `discrete_quotient X ⥤ Fintype` whose limit is isomorphic to `X`. -/
-def fintypeDiagram : DiscreteQuotient X ⥤ FintypeCat
-    where
+def fintypeDiagram : DiscreteQuotient X ⥤ FintypeCat where
   obj S :=
     haveI := Fintype.ofFinite S
     FintypeCat.of S
