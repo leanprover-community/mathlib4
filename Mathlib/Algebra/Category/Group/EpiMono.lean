@@ -8,8 +8,8 @@ Authors: Jujian Zhang
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Category.Group.EquivalenceGroupAddGroup
-import Mathbin.GroupTheory.QuotientGroup
+import Mathlib.Algebra.Category.Group.EquivalenceGroupAddGroup
+import Mathlib.GroupTheory.QuotientGroup
 
 /-!
 # Monomorphisms and epimorphisms in `Group`
@@ -46,8 +46,7 @@ variable [CommGroup A] [CommGroup B]
 
 @[to_additive AddMonoidHom.range_eq_top_of_cancel]
 theorem range_eq_top_of_cancel {f : A →* B}
-    (h : ∀ u v : B →* B ⧸ f.range, u.comp f = v.comp f → u = v) : f.range = ⊤ :=
-  by
+    (h : ∀ u v : B →* B ⧸ f.range, u.comp f = v.comp f → u = v) : f.range = ⊤ := by
   specialize h 1 (QuotientGroup.mk' _) _
   · ext1
     simp only [one_apply, coe_comp, coe_mk', Function.comp_apply]
@@ -145,8 +144,7 @@ theorem one_smul (x : X') : (1 : B) • x = x :=
 
 theorem from_coset_eq_of_mem_range {b : B} (hb : b ∈ f.range) :
     from_coset ⟨b *l f.range.carrier, ⟨b, rfl⟩⟩ =
-      from_coset ⟨f.range.carrier, ⟨1, one_leftCoset _⟩⟩ :=
-  by
+      from_coset ⟨f.range.carrier, ⟨1, one_leftCoset _⟩⟩ := by
   congr
   change b *l f.range = f.range
   nth_rw 2 [show (f.range : Set B) = 1 *l f.range from (one_leftCoset _).symm]
@@ -156,8 +154,7 @@ theorem from_coset_eq_of_mem_range {b : B} (hb : b ∈ f.range) :
 
 theorem from_coset_ne_of_nin_range {b : B} (hb : b ∉ f.range) :
     from_coset ⟨b *l f.range.carrier, ⟨b, rfl⟩⟩ ≠
-      from_coset ⟨f.range.carrier, ⟨1, one_leftCoset _⟩⟩ :=
-  by
+      from_coset ⟨f.range.carrier, ⟨1, one_leftCoset _⟩⟩ := by
   intro r
   simp only [Subtype.mk_eq_mk] at r
   change b *l f.range = f.range at r
@@ -204,8 +201,7 @@ theorem τ_symm_apply_infinity :
 /-- Let `g : B ⟶ S(X')` be defined as such that, for any `β : B`, `g(β)` is the function sending
 point at infinity to point at infinity and sending coset `y` to `β *l y`.
 -/
-def g : B →* SX'
-    where
+def g : B →* SX' where
   toFun β :=
     { toFun := fun x => β • x
       invFun := fun x => β⁻¹ • x
@@ -257,8 +253,7 @@ theorem g_apply_infinity (x : B) : (g x) ∞ = ∞ :=
   rfl
 #align Group.surjective_of_epi_auxs.g_apply_infinity GroupCat.SurjectiveOfEpiAuxs.g_apply_infinity
 
-theorem h_apply_infinity (x : B) (hx : x ∈ f.range) : (h x) ∞ = ∞ :=
-  by
+theorem h_apply_infinity (x : B) (hx : x ∈ f.range) : (h x) ∞ = ∞ := by
   simp only [H, MonoidHom.coe_mk, Equiv.toFun_as_coe, Equiv.coe_trans, Function.comp_apply]
   rw [τ_symm_apply_infinity, g_apply_from_coset]
   simpa only [← Subtype.val_eq_coe] using τ_apply_from_coset' f x hx
@@ -278,8 +273,7 @@ theorem h_apply_from_coset' (x : B) (b : B) (hb : b ∈ f.range) :
 
 theorem h_apply_from_coset_nin_range (x : B) (hx : x ∈ f.range) (b : B) (hb : b ∉ f.range) :
     (h x) (from_coset ⟨b *l f.range.carrier, ⟨b, rfl⟩⟩) =
-      from_coset ⟨x * b *l f.range.carrier, ⟨x * b, rfl⟩⟩ :=
-  by
+      from_coset ⟨x * b *l f.range.carrier, ⟨x * b, rfl⟩⟩ := by
   simp only [H, tau, MonoidHom.coe_mk, Equiv.toFun_as_coe, Equiv.coe_trans, Function.comp_apply]
   rw [Equiv.symm_swap,
     @Equiv.swap_apply_of_ne_of_ne X' _ (from_coset ⟨f.range.carrier, ⟨1, one_leftCoset _⟩⟩) ∞
@@ -290,8 +284,7 @@ theorem h_apply_from_coset_nin_range (x : B) (hx : x ∈ f.range) (b : B) (hb : 
   rw [← mul_assoc, mul_left_inv, one_mul]
 #align Group.surjective_of_epi_auxs.h_apply_from_coset_nin_range GroupCat.SurjectiveOfEpiAuxs.h_apply_from_coset_nin_range
 
-theorem agree : f.range.carrier = { x | h x = g x } :=
-  by
+theorem agree : f.range.carrier = { x | h x = g x } := by
   refine' Set.ext fun b => ⟨_, fun hb : h b = g b => by_contradiction fun r => _⟩
   · rintro ⟨a, rfl⟩
     change h (f a) = g (f a)
@@ -320,8 +313,7 @@ theorem comp_eq : (f ≫ show B ⟶ GroupCat.of SX' from g) = f ≫ h :=
     simp only [comp_apply, show h (f a) = _ from (by simp [← agree] : f a ∈ { b | h b = g b })]
 #align Group.surjective_of_epi_auxs.comp_eq GroupCat.SurjectiveOfEpiAuxs.comp_eq
 
-theorem g_ne_h (x : B) (hx : x ∉ f.range) : g ≠ h :=
-  by
+theorem g_ne_h (x : B) (hx : x ∉ f.range) : g ≠ h := by
   intro r
   replace r :=
     FunLike.congr_fun (FunLike.congr_fun r x) (from_coset ⟨f.range, ⟨1, one_leftCoset _⟩⟩)
@@ -334,8 +326,7 @@ theorem g_ne_h (x : B) (hx : x ∉ f.range) : g ≠ h :=
 
 end SurjectiveOfEpiAuxs
 
-theorem surjective_of_epi [Epi f] : Function.Surjective f :=
-  by
+theorem surjective_of_epi [Epi f] : Function.Surjective f := by
   by_contra r
   push_neg  at r
   rcases r with ⟨b, hb⟩
@@ -358,10 +349,8 @@ namespace AddGroupCat
 
 variable {A B : AddGroupCat.{u}} (f : A ⟶ B)
 
-theorem epi_iff_surjective : Epi f ↔ Function.Surjective f :=
-  by
-  have i1 : epi f ↔ epi (Group_AddGroup_equivalence.inverse.map f) :=
-    by
+theorem epi_iff_surjective : Epi f ↔ Function.Surjective f := by
+  have i1 : epi f ↔ epi (Group_AddGroup_equivalence.inverse.map f) := by
     refine' ⟨_, Group_AddGroup_equivalence.inverse.epi_of_epi_map⟩
     intro e'
     apply Group_AddGroup_equivalence.inverse.map_epi
