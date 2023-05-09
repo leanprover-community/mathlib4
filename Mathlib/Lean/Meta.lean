@@ -201,6 +201,16 @@ def applyMatchReducing (constName : Name) (t : Expr) (kind : MetavarKind := .nat
   let (expr, goals?) ← mkAppMFromTelescope' cExpr (hs, bs) allowPendingInstMVars
   return (expr, goals?.reduceOption)
 
+/-- Given a list of goals, evaluate `f` on each goal in sequence and join the results. Each
+evaluation of `f` on a goal `g` is performed in the context of `g` (i.e. using `g.withContext`). If
+`f` fails, the goal is left unchanged. -/
+def accumulateGoals (a : List MVarId) (f : MVarId → MetaM (List MVarId)) :
+    MetaM (List MVarId) := do
+  let acc' : Array MVarId ← a.foldlM (init := #[]) fun acc a => a.withContext do
+    let as ← try f a catch _ => pure [a]
+    pure (acc.appendList as)
+  pure acc'.toList
+
 end Lean.Meta
 
 section SynthInstance
