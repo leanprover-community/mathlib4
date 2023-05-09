@@ -41,7 +41,7 @@ def getMatchingMonos (t : Expr) (side := Side.both) : MetaM (Array MonoExt) := d
 
 /-- Apply a mono extension to an already fully-telescoped (and in whnf) `t`. Returns any remaining
 subgoals. -/
-def applyMono (t : Expr) (m : MonoExt) : MetaM (Expr × List MVarId) := do
+private def applyMono (t : Expr) (m : MonoExt) : MetaM (Expr × List MVarId) := do
   let (expr, goals) ← applyMatchReducing m.name t
   trace[Tactic.mono] "Applied {m.name} to {t}"
   let goals := goals.toList
