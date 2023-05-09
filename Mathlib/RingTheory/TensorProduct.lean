@@ -580,7 +580,8 @@ variable {B : Type v₂} [Ring B] [Algebra R B]
 
 set_option synthInstance.etaExperiment true in
 instance : Ring (A ⊗[R] B) :=
-  { (by infer_instance : AddCommGroup (A ⊗[R] B)), (by infer_instance : Semiring (A ⊗[R] B)) with }
+  { (by infer_instance : Semiring (A ⊗[R] B)) with
+    add_left_neg := add_left_neg }
 
 end Ring
 
@@ -592,13 +593,14 @@ variable {A : Type v₁} [CommRing A] [Algebra R A]
 
 variable {B : Type v₂} [CommRing B] [Algebra R B]
 
+set_option synthInstance.etaExperiment true in
 instance : CommRing (A ⊗[R] B) :=
   { (by infer_instance : Ring (A ⊗[R] B)) with
     mul_comm := fun x y => by
-      apply TensorProduct.induction_on x
+      refine TensorProduct.induction_on x ?_ ?_ ?_
       · simp
       · intro a₁ b₁
-        apply TensorProduct.induction_on y
+        refine TensorProduct.induction_on y ?_ ?_ ?_
         · simp
         · intro a₂ b₂
           simp [mul_comm]
@@ -609,6 +611,7 @@ instance : CommRing (A ⊗[R] B) :=
 
 section RightAlgebra
 
+set_option synthInstance.etaExperiment true in
 /-- `S ⊗[R] T` has a `T`-algebra structure. This is not a global instance or else the action of
 `S` on `S ⊗[R] S` would be ambiguous. -/
 @[reducible]
@@ -616,8 +619,9 @@ def rightAlgebra : Algebra B (A ⊗[R] B) :=
   (Algebra.TensorProduct.includeRight.toRingHom : B →+* A ⊗[R] B).toAlgebra
 #align algebra.tensor_product.right_algebra Algebra.TensorProduct.rightAlgebra
 
-attribute [local instance] tensor_product.right_algebra
+attribute [local instance] TensorProduct.rightAlgebra
 
+set_option synthInstance.etaExperiment true in
 instance right_isScalarTower : IsScalarTower R B (A ⊗[R] B) :=
   IsScalarTower.of_algebraMap_eq fun r => (Algebra.TensorProduct.includeRight.commutes r).symm
 #align algebra.tensor_product.right_is_scalar_tower Algebra.TensorProduct.right_isScalarTower
@@ -626,11 +630,13 @@ end RightAlgebra
 
 end CommRing
 
+set_option synthInstance.etaExperiment true in
 /-- Verify that typeclass search finds the ring structure on `A ⊗[ℤ] B`
 when `A` and `B` are merely rings, by treating both as `ℤ`-algebras.
 -/
 example {A : Type v₁} [Ring A] {B : Type v₂} [Ring B] : Ring (A ⊗[ℤ] B) := by infer_instance
 
+set_option synthInstance.etaExperiment true in
 /-- Verify that typeclass search finds the comm_ring structure on `A ⊗[ℤ] B`
 when `A` and `B` are merely comm_rings, by treating both as `ℤ`-algebras.
 -/
@@ -662,16 +668,16 @@ and evidence of multiplicativity on pure tensors.
 def algHomOfLinearMapTensorProduct (f : A ⊗[R] B →ₗ[R] C)
     (w₁ : ∀ (a₁ a₂ : A) (b₁ b₂ : B), f ((a₁ * a₂) ⊗ₜ (b₁ * b₂)) = f (a₁ ⊗ₜ b₁) * f (a₂ ⊗ₜ b₂))
     (w₂ : ∀ r, f ((algebraMap R A) r ⊗ₜ[R] 1) = (algebraMap R C) r) : A ⊗[R] B →ₐ[R] C :=
-  {
-    f with
-    map_one' := by rw [← (algebraMap R C).map_one, ← w₂, (algebraMap R A).map_one] <;> rfl
-    map_zero' := by rw [LinearMap.toFun_eq_coe, map_zero]
+  { f with
+    map_one' := by rw [← (algebraMap R C).map_one, ← w₂, (algebraMap R A).map_one]; rfl
+    map_zero' := by simp only; rw [LinearMap.toFun_eq_coe, map_zero]
     map_mul' := fun x y => by
+      simp only
       rw [LinearMap.toFun_eq_coe]
-      apply TensorProduct.induction_on x
+      refine TensorProduct.induction_on x ?_ ?_ ?_
       · rw [MulZeroClass.zero_mul, map_zero, MulZeroClass.zero_mul]
       · intro a₁ b₁
-        apply TensorProduct.induction_on y
+        refine TensorProduct.induction_on y ?_ ?_ ?_
         · rw [MulZeroClass.mul_zero, map_zero, MulZeroClass.mul_zero]
         · intro a₂ b₂
           rw [tmul_mul_tmul, w₁]
@@ -679,7 +685,7 @@ def algHomOfLinearMapTensorProduct (f : A ⊗[R] B →ₗ[R] C)
           rw [mul_add, map_add, map_add, mul_add, h₁, h₂]
       · intro x₁ x₂ h₁ h₂
         rw [add_mul, map_add, map_add, add_mul, h₁, h₂]
-    commutes' := fun r => by rw [LinearMap.toFun_eq_coe, algebraMap_apply, w₂] }
+    commutes' := fun r => by simp only; rw [LinearMap.toFun_eq_coe, algebraMap_apply, w₂] }
 #align algebra.tensor_product.alg_hom_of_linear_map_tensor_product Algebra.TensorProduct.algHomOfLinearMapTensorProduct
 
 @[simp]
@@ -703,6 +709,7 @@ theorem algEquivOfLinearEquivTensorProduct_apply (f w₁ w₂ x) :
   rfl
 #align algebra.tensor_product.alg_equiv_of_linear_equiv_tensor_product_apply Algebra.TensorProduct.algEquivOfLinearEquivTensorProduct_apply
 
+set_option synthInstance.etaExperiment true in
 /-- Build an algebra equivalence from a linear equivalence out of a triple tensor product,
 and evidence of multiplicativity on pure tensors.
 -/
@@ -715,16 +722,16 @@ def algEquivOfLinearEquivTripleTensorProduct (f : (A ⊗[R] B) ⊗[R] C ≃ₗ[R
   { f with
     toFun := f
     map_mul' := fun x y => by
-      apply TensorProduct.induction_on x
+      refine TensorProduct.induction_on x ?_ ?_ ?_
       · simp only [map_zero, MulZeroClass.zero_mul]
       · intro ab₁ c₁
-        apply TensorProduct.induction_on y
+        refine TensorProduct.induction_on y ?_ ?_ ?_
         · simp only [map_zero, MulZeroClass.mul_zero]
         · intro ab₂ c₂
-          apply TensorProduct.induction_on ab₁
+          refine TensorProduct.induction_on ab₁ ?_ ?_ ?_
           · simp only [zero_tmul, map_zero, MulZeroClass.zero_mul]
           · intro a₁ b₁
-            apply TensorProduct.induction_on ab₂
+            refine TensorProduct.induction_on ab₂ ?_ ?_ ?_
             · simp only [zero_tmul, map_zero, MulZeroClass.mul_zero]
             · intros
               simp only [tmul_mul_tmul, w₁]
@@ -789,7 +796,7 @@ theorem rid_tmul (r : R) (a : A) : (TensorProduct.rid R A : A ⊗ R → A) (a �
 
 section
 
-variable (R A B)
+variable (B)
 
 /-- The tensor product of R-algebras is commutative, up to algebra isomorphism.
 -/
@@ -815,7 +822,7 @@ end
 
 section
 
-variable {R A B C}
+variable {R A C}
 
 theorem assoc_aux_1 (a₁ a₂ : A) (b₁ b₂ : B) (c₁ c₂ : C) :
     (TensorProduct.assoc R A B C) (((a₁ * a₂) ⊗ₜ[R] (b₁ * b₂)) ⊗ₜ[R] (c₁ * c₂)) =
@@ -830,7 +837,7 @@ theorem assoc_aux_2 (r : R) :
   rfl
 #align algebra.tensor_product.assoc_aux_2 Algebra.TensorProduct.assoc_aux_2
 
-variable (R A B C)
+variable (A B C)
 
 /-- The associator for tensor product of R-algebras, as an algebra isomorphism. -/
 protected def assoc : (A ⊗[R] B) ⊗[R] C ≃ₐ[R] A ⊗[R] B ⊗[R] C :=
