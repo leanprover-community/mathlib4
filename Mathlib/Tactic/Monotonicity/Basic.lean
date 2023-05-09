@@ -52,30 +52,33 @@ private def applyMono (t : Expr) (m : MonoExt) : MetaM (Expr × List MVarId) := 
     accumulateGoals goals (·.rfl)
   return (expr, goals)
 
-/-- Apply all registered `mono` extensions to the type `t`. Returns an inhabitant of `t` and  -/
-def applyMonos (t : Expr) (side : Side := .both) : MetaM (Expr × List MVarId) := do
+private def applyMonos (t : Expr) (side : Side) (failIfAmbiguousMatch : Bool) :
+    MetaM (Expr × List MVarId) := do
   let monos ← getMatchingMonos t side
   trace[Tactic.mono] "matched:\n{monos.map (·.name) |>.toList}"
-  /- Porting note: we use the old mathlib method of using the application that produces the fewest
-  subgoals. This is subject to change. -/
   if monos.isEmpty then throwError "no monos apply"
-  let mut results : Array (Expr × List MVarId) := #[]
-  for m in monos do --!! do we need a save stat?
-    match ← try? <| applyMono t m with
+  let mut results : Array (Meta.SavedState × Expr × List MVarId) := #[]
+  let s ← saveState
+  for m in monos do
+    match ← optional (applyMono t m) with
     | some (e, []) => return (e, []) -- Finish immediately if we find one that proves `t`
-    | some (e, l)  => results := results.push (e, l)
+    | some (e, l)  => do results := results.push (← saveState, e, l)
     | none         => pure ()
-  if results.isEmpty then throwError "no monos apply"
-  trace[Tactic.mono] "got potential proof terms with the following subgoals:\n{results}"
-  let bestMatches := results.argmins (·.2.length)
-  if bestMatches.size == 1 then
-    trace[Tactic.mono] "found {bestMatches[0]!}"
-    return bestMatches[0]!
+    s.restore
+  trace[Tactic.mono] "got potential proof terms with the following subgoals:\n{results.map (·.2)}"
+  let bestMatches := results.argmins (·.2.2.length)
+  let some (s, e, l) := bestMatches[0]? | throwError "no monos apply"
+  if bestMatches.size == 1 || ! failIfAmbiguousMatch then
+    s.restore
+    return (e, l)
   else
-    let (bestMatchTypes : Array (List Expr)) ← bestMatches.mapM (·.2.mapM (·.getType))
-    throwError "Found multiple good matches which each produced the same number of subgoals. Write
-      `mono with ...` and include one or more of the subgoals in one of the following lists to
-      encourage `mono` to use that list.\n{bestMatchTypes}"
+    let (bestMatchTypes : MessageData) ← do
+      let a ← bestMatches.mapM fun (s,_,l) => do
+        s.restore; l.mapM fun g => do addMessageContextFull (← g.getType)
+      pure <| toMessageList (a.map toMessageData)
+    throwError m!"Found multiple good matches which each produced the same number of subgoals. "
+      ++ m!"Write `mono with ...` and include the types of one or more of the subgoals in one of "
+      ++ m!"the following lists to encourage `mono` to use that list.\n{bestMatchTypes}"
 
 private def applyMonosAlternatives (side : Side) (goal : MVarId) :
     MetaM (List (MetaM (List MVarId))) := withReducible do
