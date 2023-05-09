@@ -17,8 +17,8 @@ import Mathlib.Algebra.Hom.Equiv.TypeTags
 This file contains two equivalences:
 * `groupAddGroupEquivalence` : the equivalence between `GroupCat` and `AddGroupCat` by sending
   `X : GroupCat` to `Additive X` and `Y : AddGroupCat` to `Multiplicative Y`.
-* `commGroupAddCommGroupEquivalence` : the equivalence between `CommGroupCat` and `AddCommGroupCat` by
-  sending `X : CommGroupCat` to `Additive X` and `Y : AddCommGroupCat` to `Multiplicative Y`.
+* `commGroupAddCommGroupEquivalence` : the equivalence between `CommGroupCat` and `AddCommGroupCat`
+  by sending `X : CommGroupCat` to `Additive X` and `Y : AddCommGroupCat` to `Multiplicative Y`.
 -/
 
 -- Porting note: everything is upper case
