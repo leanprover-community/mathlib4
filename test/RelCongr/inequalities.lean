@@ -92,6 +92,7 @@ example (A B C : ℝ) : |A + B| + C ≤ |A| + |B| + C := by
 
 example {n i : ℕ} (hi : i ∈ range n) : 2 ^ i ≤ 2 ^ n := by
   rel_congr 2 ^ ?_
+  -- FIXME notice how the "main goal" is reported twice in the infoview, "side goal" only once
   · norm_num
   · apply le_of_lt
     simpa using hi
@@ -106,6 +107,7 @@ example {F : ℕ → ℕ} (le_sum: ∀ {N : ℕ}, 6 ≤ N → 15 ≤ F N) {n' : 
     A ! * (15 + 1) ^ n' ≤ A ! * (A + 1) ^ n' := by
   intro A
   rel_congr
+  -- FIXME notice how the same goal is reported twice in the infoview
   exact le_sum hn'
 
 example {a : ℤ} {n : ℕ} (ha : ∀ i < n, 2 ^ i ≤ a) :
@@ -114,7 +116,7 @@ example {a : ℤ} {n : ℕ} (ha : ∀ i < n, 2 ^ i ≤ a) :
   · intro i hi
     simp only [mem_range] at hi
     linarith [ha i hi]
-  · rename_i i hi -- FIXME would be nice not to need to do this
+  · rename_i i _ -- FIXME would be nice not to need to do this
     have : 0 ≤ 2 ^ i := by positivity
     linarith
 
