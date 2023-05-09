@@ -25,7 +25,7 @@ Recall that, given a monad `M` on `Type*`, an *algebra* for `M` consists of the 
 This data must also satisfy a distributivity and unit axiom, and algebras for `M` form a category
 in an evident way.
 
-See the file `category_theory.monad.algebra` for a general version, as well as the following link.
+See the file `CategoryTheory.Monad.Algebra` for a general version, as well as the following link.
 https://ncatlab.org/nlab/show/monad
 
 This file proves the equivalence between the category of *compact Hausdorff topological spaces*
@@ -35,25 +35,25 @@ and the category of algebras for the *ultrafilter monad*.
 
 Here are the main objects introduced in this file.
 - `Compactum` is the type of compacta, which we define as algebras for the ultrafilter monad.
-- `Compactum_to_CompHaus` is the functor `Compactum ⥤ CompHaus`. Here `CompHaus` is the usual
+- `compactumToCompHaus` is the functor `Compactum ⥤ CompHaus`. Here `CompHaus` is the usual
   category of compact Hausdorff spaces.
-- `Compactum_to_CompHaus.is_equivalence` is a term of type `is_equivalence Compactum_to_CompHaus`.
+- `compactumToCompHaus.isEquivalence` is a term of type `is_equivalence compactumToCompHaus`.
 
 The proof of this equivalence is a bit technical. But the idea is quite simply that the structure
-map `ultrafilter X → X` for an algebra `X` of the ultrafilter monad should be considered as the map
+map `Ultrafilter X → X` for an algebra `X` of the ultrafilter monad should be considered as the map
 sending an ultrafilter to its limit in `X`. The topology on `X` is then defined by mimicking the
 characterization of open sets in terms of ultrafilters.
 
 Any `X : Compactum` is endowed with a coercion to `Type*`, as well as the following instances:
-- `topological_space X`.
-- `compact_space X`.
-- `t2_space X`.
+- `TopologicalSpace X`.
+- `CompactSpace X`.
+- `T2Space X`.
 
 Any morphism `f : X ⟶ Y` of is endowed with a coercion to a function `X → Y`, which is shown to
 be continuous in `continuous_of_hom`.
 
-The function `Compactum.of_topological_space` can be used to construct a `Compactum` from a
-topological space which satisfies `compact_space` and `t2_space`.
+The function `Compactum.ofTopologicalSpace` can be used to construct a `Compactum` from a
+topological space which satisfies `CompactSpace` and `T2Space`.
 
 We also add wrappers around structures which already exist. Here are the main ones, all in the
 `Compactum` namespace:
@@ -61,11 +61,11 @@ We also add wrappers around structures which already exist. Here are the main on
 - `forget : Compactum ⥤ Type*` is the forgetful functor, which induces a `concrete_category`
   instance for `Compactum`.
 - `free : Type* ⥤ Compactum` is the left adjoint to `forget`, and the adjunction is in `adj`.
-- `str : ultrafilter X → X` is the structure map for `X : Compactum`.
+- `str : Ultrafilter X → X` is the structure map for `X : Compactum`.
   The notation `X.str` is preferred.
-- `join : ultrafilter (ultrafilter X) → ultrafilter X` is the monadic join for `X : Compactum`.
+- `join : Ultrafilter (Ultrafilter X) → Ultrafilter X` is the monadic join for `X : Compactum`.
   Again, the notation `X.join` is preferred.
-- `incl : X → ultrafilter X` is the unit for `X : Compactum`. The notation `X.incl` is preferred.
+- `incl : X → Ultrafilter X` is the unit for `X : Compactum`. The notation `X.incl` is preferred.
 
 ## References
 
@@ -139,7 +139,7 @@ def join (X : Compactum) : Ultrafilter (Ultrafilter X) → Ultrafilter X :=
   (β ).μ.app _
 #align Compactum.join Compactum.join
 
-/-- The inclusion of `X` into `ultrafilter X`. -/
+/-- The inclusion of `X` into `Ultrafilter X`. -/
 def incl (X : Compactum) : X → Ultrafilter X :=
   (β ).η.app _
 #align Compactum.incl Compactum.incl
@@ -499,7 +499,7 @@ noncomputable instance isEquivalence : IsEquivalence compactumToCompHaus := by
 end compactumToCompHaus
 
 /-- The forgetful functors of `Compactum` and `CompHaus` are compatible via
-`Compactum_to_CompHaus`. -/
+`compactumToCompHaus`. -/
 def compactumToCompHausCompForget :
     compactumToCompHaus ⋙ CategoryTheory.forget CompHaus ≅ Compactum.forget :=
   (NatIso.ofComponents fun X => eqToIso rfl) <| by
