@@ -57,8 +57,7 @@ instance Pi.complete [∀ i, CompleteSpace (α i)] : CompleteSpace (∀ i, α i)
   ⟨by
     intro f hf
     haveI := hf.1
-    have : ∀ i, ∃ x : α i, Filter.map (fun a : ∀ i, α i => a i) f ≤ 𝓝 x :=
-      by
+    have : ∀ i, ∃ x : α i, Filter.map (fun a : ∀ i, α i => a i) f ≤ 𝓝 x := by
       intro i
       have key : Cauchy (map (fun a : ∀ i : ι, α i => a i) f) :=
         hf.map (Pi.uniformContinuous_proj α i)

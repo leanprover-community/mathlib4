@@ -192,8 +192,8 @@ theorem const_linear (p : P2) : (const k P1 p).linear = 0 :=
 
 variable {k P1}
 
-theorem linear_eq_zero_iff_exists_const (f : P1 →ᵃ[k] P2) : f.linear = 0 ↔ ∃ q, f = const k P1 q :=
-  by
+theorem linear_eq_zero_iff_exists_const (f : P1 →ᵃ[k] P2) :
+    f.linear = 0 ↔ ∃ q, f = const k P1 q := by
   refine' ⟨fun h => _, fun h => _⟩
   · use f (Classical.arbitrary P1)
     ext
@@ -475,8 +475,7 @@ def linearHom : (P1 →ᵃ[k] P1) →* V1 →ₗ[k] V1 where
 theorem linear_injective_iff (f : P1 →ᵃ[k] P2) :
     Function.Injective f.linear ↔ Function.Injective f := by
   obtain ⟨p⟩ := (inferInstance : Nonempty P1)
-  have h : ⇑f.linear = (Equiv.vaddConst (f p)).symm ∘ f ∘ Equiv.vaddConst p :=
-    by
+  have h : ⇑f.linear = (Equiv.vaddConst (f p)).symm ∘ f ∘ Equiv.vaddConst p := by
     ext v
     simp [f.map_vadd, vadd_vsub_assoc]
   rw [h, Equiv.comp_injective, Equiv.injective_comp]
@@ -486,8 +485,7 @@ theorem linear_injective_iff (f : P1 →ᵃ[k] P2) :
 theorem linear_surjective_iff (f : P1 →ᵃ[k] P2) :
     Function.Surjective f.linear ↔ Function.Surjective f := by
   obtain ⟨p⟩ := (inferInstance : Nonempty P1)
-  have h : ⇑f.linear = (Equiv.vaddConst (f p)).symm ∘ f ∘ Equiv.vaddConst p :=
-    by
+  have h : ⇑f.linear = (Equiv.vaddConst (f p)).symm ∘ f ∘ Equiv.vaddConst p := by
     ext v
     simp [f.map_vadd, vadd_vsub_assoc]
   rw [h, Equiv.comp_surjective, Equiv.surjective_comp]
