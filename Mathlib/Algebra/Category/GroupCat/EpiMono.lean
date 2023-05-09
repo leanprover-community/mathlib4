@@ -32,9 +32,9 @@ section
 
 variable [Group A] [Group B]
 
-@[to_additive AddMonoidHom.ker_eq_bot_of_cancel]
+@[to_additive]
 theorem ker_eq_bot_of_cancel {f : A →* B} (h : ∀ u v : f.ker →* A, f.comp u = f.comp v → u = v) :
-    f.ker = ⊥ := by simpa using _root_.congr_arg range (h f.ker.subtype 1 (by tidy))
+    f.ker = ⊥ := by simpa using _root_.congr_arg range (h f.ker.subtype 1 (by aesop_cat))
 #align monoid_hom.ker_eq_bot_of_cancel MonoidHom.ker_eq_bot_of_cancel
 #align add_monoid_hom.ker_eq_bot_of_cancel AddMonoidHom.ker_eq_bot_of_cancel
 
@@ -44,11 +44,11 @@ section
 
 variable [CommGroup A] [CommGroup B]
 
-@[to_additive AddMonoidHom.range_eq_top_of_cancel]
+@[to_additive]
 theorem range_eq_top_of_cancel {f : A →* B}
     (h : ∀ u v : B →* B ⧸ f.range, u.comp f = v.comp f → u = v) : f.range = ⊤ := by
   specialize h 1 (QuotientGroup.mk' _) _
-  · ext1
+  · ext1 x
     simp only [one_apply, coe_comp, coe_mk', Function.comp_apply]
     rw [show (1 : B ⧸ f.range) = (1 : B) from QuotientGroup.mk_one _, QuotientGroup.eq, inv_one,
       one_mul]
@@ -68,23 +68,30 @@ open CategoryTheory
 
 namespace GroupCat
 
+set_option linter.uppercaseLean3 false
+
+-- Porting note: already have Group G but Lean can't use that
+@[to_additive]
+instance (G : GroupCat) : Group G.α :=
+  G.str
+
 variable {A B : GroupCat.{u}} (f : A ⟶ B)
 
-@[to_additive AddGroupCat.ker_eq_bot_of_mono]
+@[to_additive]
 theorem ker_eq_bot_of_mono [Mono f] : f.ker = ⊥ :=
-  MonoidHom.ker_eq_bot_of_cancel fun u v =>
+  MonoidHom.ker_eq_bot_of_cancel fun u _ =>
     (@cancel_mono _ _ _ _ _ f _ (show GroupCat.of f.ker ⟶ A from u) _).1
 #align Group.ker_eq_bot_of_mono GroupCat.ker_eq_bot_of_mono
 #align AddGroup.ker_eq_bot_of_mono AddGroupCat.ker_eq_bot_of_mono
 
-@[to_additive AddGroupCat.mono_iff_ker_eq_bot]
+@[to_additive]
 theorem mono_iff_ker_eq_bot : Mono f ↔ f.ker = ⊥ :=
-  ⟨fun h => @ker_eq_bot_of_mono f h, fun h =>
+  ⟨fun _ => ker_eq_bot_of_mono f,  fun h =>
     ConcreteCategory.mono_of_injective _ <| (MonoidHom.ker_eq_bot_iff f).1 h⟩
 #align Group.mono_iff_ker_eq_bot GroupCat.mono_iff_ker_eq_bot
 #align AddGroup.mono_iff_ker_eq_bot AddGroupCat.mono_iff_ker_eq_bot
 
-@[to_additive AddGroupCat.mono_iff_injective]
+@[to_additive]
 theorem mono_iff_injective : Mono f ↔ Function.Injective f :=
   Iff.trans (mono_iff_ker_eq_bot f) <| MonoidHom.ker_eq_bot_iff f
 #align Group.mono_iff_injective GroupCat.mono_iff_injective
@@ -97,10 +104,10 @@ local notation "X" => Set.range (Function.swap leftCoset f.range.carrier)
 
 /-- Define `X'` to be the set of all left cosets with an extra point at "infinity".
 -/
-@[nolint has_nonempty_instance]
+@[nolint]
 inductive XWithInfinity
-  | from_coset : Set.range (Function.swap leftCoset f.range.carrier) → X_with_infinity
-  | infinity : X_with_infinity
+  | from_coset : Set.range (Function.swap leftCoset f.range.carrier) → XWithInfinity
+  | infinity : XWithInfinity
 #align Group.surjective_of_epi_auxs.X_with_infinity GroupCat.SurjectiveOfEpiAuxs.XWithInfinity
 
 open XWithInfinity Equiv.Perm
@@ -116,8 +123,8 @@ local notation "∞" => XWithInfinity.infinity
 -- mathport name: exprSX'
 local notation "SX'" => Equiv.Perm X'
 
-instance : SMul B X'
-    where smul b x :=
+instance : SMul B X' where
+  smul b x :=
     match x with
     | from_coset y =>
       from_coset
@@ -234,7 +241,6 @@ def h : B →* SX' where
     simp
 #align Group.surjective_of_epi_auxs.H GroupCat.SurjectiveOfEpiAuxs.h
 
--- mathport name: exprh
 local notation "h" => h f
 
 /-!
@@ -245,8 +251,8 @@ The strategy is the following: assuming `epi f`
 -/
 
 
-theorem g_apply_from_coset (x : B) (y : X) : (g x) (from_coset y) = from_coset ⟨x *l y, by tidy⟩ :=
-  rfl
+theorem g_apply_from_coset (x : B) (y : X) : (g x) (from_coset y)
+    = from_coset ⟨x *l y, by aesop_cat⟩ := rfl
 #align Group.surjective_of_epi_auxs.g_apply_from_coset GroupCat.SurjectiveOfEpiAuxs.g_apply_from_coset
 
 theorem g_apply_infinity (x : B) : (g x) ∞ = ∞ :=
@@ -254,7 +260,7 @@ theorem g_apply_infinity (x : B) : (g x) ∞ = ∞ :=
 #align Group.surjective_of_epi_auxs.g_apply_infinity GroupCat.SurjectiveOfEpiAuxs.g_apply_infinity
 
 theorem h_apply_infinity (x : B) (hx : x ∈ f.range) : (h x) ∞ = ∞ := by
-  simp only [H, MonoidHom.coe_mk, Equiv.toFun_as_coe, Equiv.coe_trans, Function.comp_apply]
+  simp only [MonoidHom.coe_mk, Equiv.toFun_as_coe, Equiv.coe_trans, Function.comp_apply]
   rw [τ_symm_apply_infinity, g_apply_from_coset]
   simpa only [← Subtype.val_eq_coe] using τ_apply_from_coset' f x hx
 #align Group.surjective_of_epi_auxs.h_apply_infinity GroupCat.SurjectiveOfEpiAuxs.h_apply_infinity
@@ -262,7 +268,7 @@ theorem h_apply_infinity (x : B) (hx : x ∈ f.range) : (h x) ∞ = ∞ := by
 theorem h_apply_from_coset (x : B) :
     (h x) (from_coset ⟨f.range.carrier, ⟨1, one_leftCoset _⟩⟩) =
       from_coset ⟨f.range.carrier, ⟨1, one_leftCoset _⟩⟩ :=
-  by simp [H, τ_symm_apply_from_coset, g_apply_infinity, τ_apply_infinity]
+  by simp [τ_symm_apply_from_coset, g_apply_infinity, τ_apply_infinity]
 #align Group.surjective_of_epi_auxs.h_apply_from_coset GroupCat.SurjectiveOfEpiAuxs.h_apply_from_coset
 
 theorem h_apply_from_coset' (x : B) (b : B) (hb : b ∈ f.range) :
@@ -274,7 +280,7 @@ theorem h_apply_from_coset' (x : B) (b : B) (hb : b ∈ f.range) :
 theorem h_apply_from_coset_nin_range (x : B) (hx : x ∈ f.range) (b : B) (hb : b ∉ f.range) :
     (h x) (from_coset ⟨b *l f.range.carrier, ⟨b, rfl⟩⟩) =
       from_coset ⟨x * b *l f.range.carrier, ⟨x * b, rfl⟩⟩ := by
-  simp only [H, tau, MonoidHom.coe_mk, Equiv.toFun_as_coe, Equiv.coe_trans, Function.comp_apply]
+  simp only [tau, MonoidHom.coe_mk, Equiv.toFun_as_coe, Equiv.coe_trans, Function.comp_apply]
   rw [Equiv.symm_swap,
     @Equiv.swap_apply_of_ne_of_ne X' _ (from_coset ⟨f.range.carrier, ⟨1, one_leftCoset _⟩⟩) ∞
       (from_coset ⟨b *l f.range.carrier, ⟨b, rfl⟩⟩) (from_coset_ne_of_nin_range _ hb) (by simp)]
@@ -317,7 +323,7 @@ theorem g_ne_h (x : B) (hx : x ∉ f.range) : g ≠ h := by
   intro r
   replace r :=
     FunLike.congr_fun (FunLike.congr_fun r x) (from_coset ⟨f.range, ⟨1, one_leftCoset _⟩⟩)
-  rw [H, g_apply_from_coset, MonoidHom.coe_mk, tau] at r
+  rw [g_apply_from_coset, MonoidHom.coe_mk] at r
   simp only [MonoidHom.coe_range, Subtype.coe_mk, Equiv.symm_swap, Equiv.toFun_as_coe,
     Equiv.coe_trans, Function.comp_apply] at r
   erw [Equiv.swap_apply_left, g_apply_infinity, Equiv.swap_apply_right] at r
@@ -328,7 +334,7 @@ end SurjectiveOfEpiAuxs
 
 theorem surjective_of_epi [Epi f] : Function.Surjective f := by
   by_contra r
-  push_neg  at r
+  push_neg at r
   rcases r with ⟨b, hb⟩
   exact
     surjective_of_epi_auxs.g_ne_h f b (fun ⟨c, hc⟩ => hb _ hc)
@@ -336,7 +342,7 @@ theorem surjective_of_epi [Epi f] : Function.Surjective f := by
 #align Group.surjective_of_epi GroupCat.surjective_of_epi
 
 theorem epi_iff_surjective : Epi f ↔ Function.Surjective f :=
-  ⟨fun h => @surjective_of_epi f h, ConcreteCategory.epi_of_surjective _⟩
+  ⟨fun _ => surjective_of_epi f, ConcreteCategory.epi_of_surjective _⟩
 #align Group.epi_iff_surjective GroupCat.epi_iff_surjective
 
 theorem epi_iff_range_eq_top : Epi f ↔ f.range = ⊤ :=
@@ -347,13 +353,15 @@ end GroupCat
 
 namespace AddGroupCat
 
+set_option linter.uppercaseLean3 false
+
 variable {A B : AddGroupCat.{u}} (f : A ⟶ B)
 
 theorem epi_iff_surjective : Epi f ↔ Function.Surjective f := by
-  have i1 : epi f ↔ epi (Group_AddGroup_equivalence.inverse.map f) := by
-    refine' ⟨_, Group_AddGroup_equivalence.inverse.epi_of_epi_map⟩
+  have i1 : Epi f ↔ Epi (groupAddGroupEquivalence.inverse.map f) := by
+    refine' ⟨_, groupAddGroupEquivalence.inverse.epi_of_epi_map⟩
     intro e'
-    apply Group_AddGroup_equivalence.inverse.map_epi
+    apply groupAddGroupEquivalence.inverse.map_epi
   rwa [GroupCat.epi_iff_surjective] at i1
 #align AddGroup.epi_iff_surjective AddGroupCat.epi_iff_surjective
 
@@ -365,23 +373,27 @@ end AddGroupCat
 
 namespace GroupCat
 
+set_option linter.uppercaseLean3 false
+
 variable {A B : GroupCat.{u}} (f : A ⟶ B)
 
-@[to_additive]
-instance forget_groupCat_preserves_mono : (forget GroupCat).PreservesMonomorphisms
-    where preserves X Y f e := by rwa [mono_iff_injective, ← CategoryTheory.mono_iff_injective] at e
+@[to_additive AddGroupCat.forget_groupCat_preserves_mono]
+instance forget_groupCat_preserves_mono : (forget GroupCat).PreservesMonomorphisms where
+  preserves f e := by rwa [mono_iff_injective, ← CategoryTheory.mono_iff_injective] at e
 #align Group.forget_Group_preserves_mono GroupCat.forget_groupCat_preserves_mono
 #align AddGroup.forget_Group_preserves_mono AddGroupCat.forget_groupCat_preserves_mono
 
-@[to_additive]
-instance forget_groupCat_preserves_epi : (forget GroupCat).PreservesEpimorphisms
-    where preserves X Y f e := by rwa [epi_iff_surjective, ← CategoryTheory.epi_iff_surjective] at e
+@[to_additive AddGroupCat.forget_groupCat_preserves_epi]
+instance forget_groupCat_preserves_epi : (forget GroupCat).PreservesEpimorphisms where
+  preserves f e := by rwa [epi_iff_surjective, ← CategoryTheory.epi_iff_surjective] at e
 #align Group.forget_Group_preserves_epi GroupCat.forget_groupCat_preserves_epi
 #align AddGroup.forget_Group_preserves_epi AddGroupCat.forget_groupCat_preserves_epi
 
 end GroupCat
 
 namespace CommGroupCat
+
+set_option linter.uppercaseLean3 false
 
 variable {A B : CommGroupCat.{u}} (f : A ⟶ B)
 
@@ -394,7 +406,7 @@ theorem ker_eq_bot_of_mono [Mono f] : f.ker = ⊥ :=
 
 @[to_additive AddCommGroupCat.mono_iff_ker_eq_bot]
 theorem mono_iff_ker_eq_bot : Mono f ↔ f.ker = ⊥ :=
-  ⟨fun h => @ker_eq_bot_of_mono f h, fun h =>
+  ⟨fun h => ker_eq_bot_of_mono f, fun h =>
     ConcreteCategory.mono_of_injective _ <| (MonoidHom.ker_eq_bot_iff f).1 h⟩
 #align CommGroup.mono_iff_ker_eq_bot CommGroupCat.mono_iff_ker_eq_bot
 #align AddCommGroup.mono_iff_ker_eq_bot AddCommGroupCat.mono_iff_ker_eq_bot
@@ -425,15 +437,15 @@ theorem epi_iff_surjective : Epi f ↔ Function.Surjective f := by
 #align CommGroup.epi_iff_surjective CommGroupCat.epi_iff_surjective
 #align AddCommGroup.epi_iff_surjective AddCommGroupCat.epi_iff_surjective
 
-@[to_additive]
-instance forget_commGroupCat_preserves_mono : (forget CommGroupCat).PreservesMonomorphisms
-    where preserves X Y f e := by rwa [mono_iff_injective, ← CategoryTheory.mono_iff_injective] at e
+@[to_additive AddCommGroupCat.forget_commGroupCat_preserves_mono]
+instance forget_commGroupCat_preserves_mono : (forget CommGroupCat).PreservesMonomorphisms where
+  preserves f e := by rwa [mono_iff_injective, ← CategoryTheory.mono_iff_injective] at e
 #align CommGroup.forget_CommGroup_preserves_mono CommGroupCat.forget_commGroupCat_preserves_mono
 #align AddCommGroup.forget_CommGroup_preserves_mono AddCommGroupCat.forget_commGroupCat_preserves_mono
 
-@[to_additive]
-instance forget_commGroupCat_preserves_epi : (forget CommGroupCat).PreservesEpimorphisms
-    where preserves X Y f e := by rwa [epi_iff_surjective, ← CategoryTheory.epi_iff_surjective] at e
+@[to_additive AddCommGroupCat.forget_commGroupCat_preserves_epi]
+instance forget_commGroupCat_preserves_epi : (forget CommGroupCat).PreservesEpimorphisms where
+  preserves f e := by rwa [epi_iff_surjective, ← CategoryTheory.epi_iff_surjective] at e
 #align CommGroup.forget_CommGroup_preserves_epi CommGroupCat.forget_commGroupCat_preserves_epi
 #align AddCommGroup.forget_CommGroup_preserves_epi AddCommGroupCat.forget_commGroupCat_preserves_epi
 
