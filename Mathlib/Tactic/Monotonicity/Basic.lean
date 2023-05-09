@@ -101,7 +101,59 @@ private def applyMonosAlternatives (side : Side) (goal : MVarId) :
   return monos.toList.map fun m => goal.withContext do
     let (e, gs) ← applyMono t m; goal.assign e; pure gs
 
-namespace Mathlib.Tactic.Monotonicity
+/-- Apply the `mono` tactic to a goal. This finds all lemmas tagged with `mono` and applies each
+one to generate subgoals.
+
+* If `side` is `.left` or `.right`, we only use lemmas tagged `@[mono left]` or `@[mono right]`
+respectively. By default, `side` is `.both`.
+
+* If `recurse` is `true`, we apply the mono tactic repeatedly to the goal and choose the sequence
+of applications which generates the least subgoals.
+
+* If `simpUsing` is provided, we `simp` with the given `Simp.Context` before applying the lemmas.
+If `recurse` is `true`, we `simp` all goals before each application of `mono`.
+
+* If `failIfAmbiguousMatch` is `true`, we fail whenever multiple applications of `mono` lemmas
+produce the same minimal number of subgoals. If `false`, the default for the `MetaM` tactic (but
+not for the tactic syntax), we simply take the first. -/
+def _root_.Lean.MVarId.mono (goal : MVarId) (side : Side := .both)
+    (simpUsing : Option Simp.Context := none) (recurse : Bool := false)
+    (failIfAmbiguousMatch : Bool := false) :
+    MetaM (List MVarId) := goal.withContext <| withReducible do
+  if ! recurse then
+    let goal ← match ← dsimpGoal goal Monos.SimpContext false with
+    | (some goal, _) => pure goal
+    | (none, _) => return []
+    let goal ←
+      if let some ctx := simpUsing then
+        match ← simpGoal goal ctx with
+        | (some (_, goal), _) => pure goal
+        | (none, _) => return []
+      else
+        pure goal
+    let (_, goal) ← goal.introsP!
+    let t ← whnfR <|← instantiateMVars <|← goal.getType
+    trace[Tactic.mono] "Applying monos to {t}"
+    let (expr, goals) ← goal.withContext <| applyMonos t side failIfAmbiguousMatch
+    goal.assign expr
+    return goals
+  else
+    let cfg : MinimizeSubgoalsConfig :=
+      if let some ctx := simpUsing then
+        let simpProc (goals : List MVarId) : MetaM (Option (List MVarId)) := optional do
+          let goals := (← goals.mapM
+            (fun g ↦ do let (a,_) ← simpGoal g ctx; return a.map (·.2))).reduceOption
+          return goals
+        { proc := fun _ curr ↦ simpProc curr, trace := `Tactic.mono }
+      else
+        { trace := `Tactic.mono }
+    let some goals ← optional <| minimizeSubgoals [goal] (applyMonosAlternatives side) cfg
+      | throwError "backtracking in mono* failed"
+    if ! (← goal.isAssigned) then
+      throwError "mono* could not make progress on the goal"
+    else
+      return goals
+
 
 /--
 `mono` applies monotonicity rules and local hypotheses repetitively.  For example,
