@@ -20,16 +20,16 @@ discrete (hence finite) quotients.
 ## Definitions
 
 There are a handful of definitions in this file, given `X : Profinite`:
-1. `X.fintype_diagram` is the functor `discrete_quotient X ⥤ Fintype` whose limit
-  is isomorphic to `X` (the limit taking place in `Profinite` via `Fintype_to_Profinite`, see 2).
-2. `X.diagram` is an abbreviation for `X.fintype_diagram ⋙ Fintype_to_Profinite`.
-3. `X.as_limit_cone` is the cone over `X.diagram` whose cone point is `X`.
-4. `X.iso_as_limit_cone_lift` is the isomorphism `X ≅ (Profinite.limit_cone X.diagram).X` induced
+1. `X.fintypeDiagram` is the functor `DiscreteQuotient X ⥤ FintypeCat` whose limit
+  is isomorphic to `X` (the limit taking place in `Profinite` via `FintypeCat.toProfinite`, see 2).
+2. `X.diagram` is an abbreviation for `X.fintypeDiagram ⋙ FintypeCat.toProfinite`.
+3. `X.asLimitCone` is the cone over `X.diagram` whose cone point is `X`.
+4. `X.isoAsLimitConeLift` is the isomorphism `X ≅ (Profinite.limitCone X.diagram).X` induced
   by lifting `X.as_limit_cone`.
-5. `X.as_limit_cone_iso` is the isomorphism `X.as_limit_cone ≅ (Profinite.limit_cone X.diagram)`
-  induced by `X.iso_as_limit_cone_lift`.
-6. `X.as_limit` is a term of type `is_limit X.as_limit_cone`.
-7. `X.lim : category_theory.limits.limit_cone X.as_limit_cone` is a bundled combination of 3 and 6.
+5. `X.asLimitConeIso` is the isomorphism `X.asLimitCone ≅ (Profinite.limitCone X.diagram)`
+  induced by `X.isoAsLimitConeLift`.
+6. `X.asLimit` is a term of type `is_limit X.asLimitCone`.
+7. `X.lim : CategoryTheory.Limits.LimitCone X.asLimitCone` is a bundled combination of 3 and 6.
 
 -/
 
@@ -44,7 +44,7 @@ universe u
 
 variable (X : Profinite.{u})
 
-/-- The functor `discrete_quotient X ⥤ Fintype` whose limit is isomorphic to `X`. -/
+/-- The functor `DiscreteQuotient X ⥤ Fintype` whose limit is isomorphic to `X`. -/
 def fintypeDiagram : DiscreteQuotient X ⥤ FintypeCat where
   obj S :=
     haveI := Fintype.ofFinite S
@@ -53,7 +53,7 @@ def fintypeDiagram : DiscreteQuotient X ⥤ FintypeCat where
 set_option linter.uppercaseLean3 false in
 #align Profinite.fintype_diagram Profinite.fintypeDiagram
 
-/-- An abbreviation for `X.fintype_diagram ⋙ Fintype_to_Profinite`. -/
+/-- An abbreviation for `X.fintypeDiagram ⋙ FintypeCat.toProfinite`. -/
 abbrev diagram : DiscreteQuotient X ⥤ Profinite :=
   X.fintypeDiagram ⋙ FintypeCat.toProfinite
 set_option linter.uppercaseLean3 false in
@@ -87,28 +87,28 @@ set_option linter.uppercaseLean3 false in
 #align Profinite.is_iso_as_limit_cone_lift Profinite.isIso_asLimitCone_lift
 
 /-- The isomorphism between `X` and the explicit limit of `X.diagram`,
-induced by lifting `X.as_limit_cone`.
+induced by lifting `X.asLimitCone`.
 -/
 def isoAsLimitConeLift : X ≅ (limitCone X.diagram).pt :=
   asIso <| (limitConeIsLimit _).lift X.asLimitCone
 set_option linter.uppercaseLean3 false in
 #align Profinite.iso_as_limit_cone_lift Profinite.isoAsLimitConeLift
 
-/-- The isomorphism of cones `X.as_limit_cone` and `Profinite.limit_cone X.diagram`.
-The underlying isomorphism is defeq to `X.iso_as_limit_cone_lift`.
+/-- The isomorphism of cones `X.asLimitCone` and `Profinite.limitCone X.diagram`.
+The underlying isomorphism is defeq to `X.isoAsLimitConeLift`.
 -/
 def asLimitConeIso : X.asLimitCone ≅ limitCone _ :=
   Limits.Cones.ext (isoAsLimitConeLift _) fun _ => rfl
 set_option linter.uppercaseLean3 false in
 #align Profinite.as_limit_cone_iso Profinite.asLimitConeIso
 
-/-- `X.as_limit_cone` is indeed a limit cone. -/
+/-- `X.asLimitCone` is indeed a limit cone. -/
 def asLimit : CategoryTheory.Limits.IsLimit X.asLimitCone :=
   Limits.IsLimit.ofIsoLimit (limitConeIsLimit _) X.asLimitConeIso.symm
 set_option linter.uppercaseLean3 false in
 #align Profinite.as_limit Profinite.asLimit
 
-/-- A bundled version of `X.as_limit_cone` and `X.as_limit`. -/
+/-- A bundled version of `X.asLimitCone` and `X.asLimit`. -/
 def lim : Limits.LimitCone X.diagram :=
   ⟨X.asLimitCone, X.asLimit⟩
 set_option linter.uppercaseLean3 false in
