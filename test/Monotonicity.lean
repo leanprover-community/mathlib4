@@ -79,6 +79,13 @@ example : True := by
     guard_target = y ≤ w ; exact lyw
   trivial
 
+example {x y z w : ℤ} : true := by
+  suffices : x + y < w + z
+  · trivial
+  have : x < w := sorry
+  have : y ≤ z := sorry
+  mono
+
 
 axiom A : Type
 axiom le : A → A → Prop
@@ -109,6 +116,14 @@ example (p : le a b) : le a (plus one b) := by
 
 example (p : le a b) : le a (plus one b) := by
   mono right
+
+example {x y z w : ℤ} : true := by
+  suffices : x * y < w * z ; trivial
+  have : x < w ; admit
+  have : y ≤ z ; admit
+  mono right
+  · guard_target = 0 < y ; admit
+  · guard_target = 0 ≤ w ; admit
 
 end MonoSide
 
@@ -455,6 +470,7 @@ end MonoWith
 --   exact 1,
 -- end
 
+-- These require specific lemmas.
 
 -- example {x y z w : ℕ} : true := by
 --   have : x * y ≤ z * w := by
@@ -479,19 +495,7 @@ end MonoWith
 --     guard_target = y → w ; admit
 --   trivial
 
--- example {x y z w : ℤ} : true := by
---   suffices : x + y < w + z ; trivial
---   have : x < w ; admit
---   have : y ≤ z ; admit
---   mono right
 
--- example {x y z w : ℤ} : true := by
---   suffices : x * y < w * z ; trivial
---   have : x < w ; admit
---   have : y ≤ z ; admit
---   mono right
---   · guard_target = 0 < y ; admit
---   · guard_target = 0 ≤ w ; admit
 
 -- example (x y : ℕ)
 --   (h : x ≤ y)
@@ -505,15 +509,13 @@ end MonoWith
 --   exact 3
 -- end
 
--- example {α} [LinearOrder α]
---     (a b c d e : α) :
---     max a b ≤ e → b ≤ e := by
+
+
+-- example {α} [LinearOrder α] (a b c d e : α) : max a b ≤ e → b ≤ e := by
 --   mono
 --   apply le_max_right
 
--- example (a b c d e : Prop)
---     (h : d → a) (h' : c → e) :
---     (a ∧ b → c) ∨ d → (d ∧ b → e) ∨ a := by
+-- example (a b c d e : Prop) (h : d → a) (h' : c → e) : (a ∧ b → c) ∨ d → (d ∧ b → e) ∨ a := by
 --   mono
 --   mono
 --   mono
