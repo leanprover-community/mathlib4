@@ -8,7 +8,7 @@ Authors: Jujian Zhang, Kevin Buzzard
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Preadditive.Projective
+import Mathlib.CategoryTheory.Preadditive.Projective
 
 /-!
 # Injective objects and categories with enough injectives
@@ -90,8 +90,7 @@ end
 
 theorem of_iso {P Q : C} (i : P ≅ Q) (hP : Injective P) : Injective Q :=
   {
-    Factors := fun X Y g f mono =>
-      by
+    Factors := fun X Y g f mono => by
       obtain ⟨h, h_eq⟩ := @injective.factors C _ P _ _ _ (g ≫ i.inv) f mono
       refine' ⟨h ≫ i.hom, _⟩
       rw [← category.assoc, h_eq, category.assoc, iso.inv_hom_id, category.comp_id] }
@@ -106,8 +105,7 @@ instance (X : Type u₁) [Nonempty X] : Injective X
     where Factors Y Z g f mono :=
     ⟨fun z => by
       classical exact
-          if h : z ∈ Set.range f then g (Classical.choose h) else Nonempty.some inferInstance,
-      by
+          if h : z ∈ Set.range f then g (Classical.choose h) else Nonempty.some inferInstance, by
       ext y
       change dite _ _ _ = _
       split_ifs
@@ -184,8 +182,7 @@ theorem projective_iff_injective_op {P : C} : Projective P ↔ Injective (op P) 
 #align category_theory.injective.projective_iff_injective_op CategoryTheory.Injective.projective_iff_injective_op
 
 theorem injective_iff_preservesEpimorphisms_yoneda_obj (J : C) :
-    Injective J ↔ (yoneda.obj J).PreservesEpimorphisms :=
-  by
+    Injective J ↔ (yoneda.obj J).PreservesEpimorphisms := by
   rw [injective_iff_projective_op, projective.projective_iff_preserves_epimorphisms_coyoneda_obj]
   exact functor.preserves_epimorphisms.iso_iff (coyoneda.obj_op_op _)
 #align category_theory.injective.injective_iff_preserves_epimorphisms_yoneda_obj CategoryTheory.Injective.injective_iff_preservesEpimorphisms_yoneda_obj
@@ -331,8 +328,7 @@ theorem injective_of_map_injective (adj : F ⊣ G) [Full G] [Faithful G] (I : D)
 /-- Given an adjunction `F ⊣ G` such that `F` preserves monos, `G` maps an injective presentation
 of `X` to an injective presentation of `G(X)`. -/
 def mapInjectivePresentation (adj : F ⊣ G) [F.PreservesMonomorphisms] (X : D)
-    (I : InjectivePresentation X) : InjectivePresentation (G.obj X)
-    where
+    (I : InjectivePresentation X) : InjectivePresentation (G.obj X) where
   j := G.obj I.j
   Injective := adj.map_injective _ I.Injective
   f := G.map I.f
@@ -349,16 +345,14 @@ variable {D : Type _} [Category D] (F : C ≌ D)
 /-- Given an equivalence of categories `F`, an injective presentation of `F(X)` induces an
 injective presentation of `X.` -/
 def injectivePresentationOfMapInjectivePresentation (X : C)
-    (I : InjectivePresentation (F.Functor.obj X)) : InjectivePresentation X
-    where
+    (I : InjectivePresentation (F.Functor.obj X)) : InjectivePresentation X where
   j := F.inverse.obj I.j
   Injective := Adjunction.map_injective F.toAdjunction I.j I.Injective
   f := F.Unit.app _ ≫ F.inverse.map I.f
   Mono := mono_comp _ _
 #align category_theory.equivalence.injective_presentation_of_map_injective_presentation CategoryTheory.Equivalence.injectivePresentationOfMapInjectivePresentation
 
-theorem enoughInjectives_iff (F : C ≌ D) : EnoughInjectives C ↔ EnoughInjectives D :=
-  by
+theorem enoughInjectives_iff (F : C ≌ D) : EnoughInjectives C ↔ EnoughInjectives D := by
   constructor
   all_goals intro H; constructor; intro X; constructor
   ·
