@@ -18,8 +18,8 @@ import Mathlib.Topology.UrysohnsLemma
 /-!
 # Continuous partition of unity
 
-In this file we define `partition_of_unity (ι X : Type*) [topological_space X] (s : set X := univ)`
-to be a continuous partition of unity on `s` indexed by `ι`. More precisely, `f : partition_of_unity
+In this file we define `PartitionOfUnity (ι X : Type _) [TopologicalSpace X] (s : Set X := univ)`
+to be a continuous partition of unity on `s` indexed by `ι`. More precisely, `f : PartitionOfUnity
 ι X s` is a collection of continuous functions `f i : C(X, ℝ)`, `i : ι`, such that
 
 * the supports of `f i` form a locally finite family of sets;
@@ -31,7 +31,7 @@ In the case `s = univ` the last assumption follows from the previous one but it 
 have this assumption in the case `s ≠ univ`.
 
 We also define a bump function covering,
-`bump_covering (ι X : Type*) [topological_space X] (s : set X := univ)`, to be a collection of
+`BumpCovering (ι X : Type _) [TopologicalSpace X] (s : Set X := univ)`, to be a collection of
 functions `f i : C(X, ℝ)`, `i : ι`, such that
 
 * the supports of `f i` form a locally finite family of sets;
@@ -42,7 +42,7 @@ The term is motivated by the smooth case.
 
 If `f` is a bump function covering indexed by a linearly ordered type, then
 `g i x = f i x * ∏ᶠ j < i, (1 - f j x)` is a partition of unity, see
-`bump_covering.to_partition_of_unity`. Note that only finitely many terms `1 - f j x` are not equal
+`BumpCovering.toPartitionOfUnity`. Note that only finitely many terms `1 - f j x` are not equal
 to one, so this product is well-defined.
 
 Note that `g i x = ∏ᶠ j ≤ i, (1 - f j x) - ∏ᶠ j < i, (1 - f j x)`, so most terms in the sum
@@ -53,13 +53,13 @@ We say that a partition of unity or a bump function covering `f` is *subordinate
 sets `U i`, `i : ι`, if the closure of the support of each `f i` is included in `U i`. We use
 Urysohn's Lemma to prove that a locally finite open covering of a normal topological space admits a
 subordinate bump function covering (hence, a subordinate partition of unity), see
-`bump_covering.exists_is_subordinate_of_locally_finite`. If `X` is a paracompact space, then any
+`BumpCovering.exists_isSubordinate_of_locallyFinite`. If `X` is a paracompact space, then any
 open covering admits a locally finite refinement, hence it admits a subordinate bump function
-covering and a subordinate partition of unity, see `bump_covering.exists_is_subordinate`.
+covering and a subordinate partition of unity, see `BumpCovering.exists_isSubordinate`.
 
 We also provide two slightly more general versions of these lemmas,
-`bump_covering.exists_is_subordinate_of_locally_finite_of_prop` and
-`bump_covering.exists_is_subordinate_of_prop`, to be used later in the construction of a smooth
+`BumpCovering.exists_isSubordinate_of_locallyFinite_of_prop` and
+`BumpCovering.exists_isSubordinate_of_prop`, to be used later in the construction of a smooth
 partition of unity.
 
 ## Implementation notes
@@ -68,9 +68,9 @@ Most (if not all) books only define a partition of unity of the whole space. How
 proofs only deal with `f i` such that `tsupport (f i)` meets a specific closed subset, and
 it is easier to formalize these proofs if we don't have other functions right away.
 
-We use `well_ordering_rel j i` instead of `j < i` in the definition of
-`bump_covering.to_partition_of_unity` to avoid a `[linear_order ι]` assumption. While
-`well_ordering_rel j i` is a well order, not only a strict linear order, we never use this property.
+We use `WellOrderingRel j i` instead of `j < i` in the definition of
+`BumpCovering.toPartitionOfUnity` to avoid a `[LinearOrder ι]` assumption. While
+`WellOrderingRel j i` is a well order, not only a strict linear order, we never use this property.
 
 ## Tags
 
@@ -86,7 +86,7 @@ open BigOperators Topology Classical
 
 noncomputable section
 
-/-- A continuous partition of unity on a set `s : set X` is a collection of continuous functions
+/-- A continuous partition of unity on a set `s : Set X` is a collection of continuous functions
 `f i` such that
 
 * the supports of `f i` form a locally finite family of sets, i.e., for every point `x : X` there
@@ -95,8 +95,8 @@ noncomputable section
 * the sum `∑ᶠ i, f i x` is equal to one for every `x ∈ s` and is less than or equal to one
   otherwise.
 
-If `X` is a normal paracompact space, then `partition_of_unity.exists_is_subordinate` guarantees
-that for every open covering `U : set (set X)` of `s` there exists a partition of unity that is
+If `X` is a normal paracompact space, then `PartitionOfUnity.exists_isSubordinate` guarantees
+that for every open covering `U : Set (Set X)` of `s` there exists a partition of unity that is
 subordinate to `U`.
 -/
 structure PartitionOfUnity (ι X : Type _) [TopologicalSpace X] (s : Set X := univ) where
@@ -107,19 +107,19 @@ structure PartitionOfUnity (ι X : Type _) [TopologicalSpace X] (s : Set X := un
   sum_le_one' : ∀ x, (∑ᶠ i, toFun i x) ≤ 1
 #align partition_of_unity PartitionOfUnity
 
-/-- A `bump_covering ι X s` is an indexed family of functions `f i`, `i : ι`, such that
+/-- A `BumpCovering ι X s` is an indexed family of functions `f i`, `i : ι`, such that
 
 * the supports of `f i` form a locally finite family of sets, i.e., for every point `x : X` there
   exists a neighborhood `U ∋ x` such that all but finitely many functions `f i` are zero on `U`;
 * for all `i`, `x` we have `0 ≤ f i x ≤ 1`;
 * each point `x ∈ s` belongs to the interior of `{x | f i x = 1}` for some `i`.
 
-One of the main use cases for a `bump_covering` is to define a `partition_of_unity`, see
-`bump_covering.to_partition_of_unity`, but some proofs can directly use a `bump_covering` instead of
-a `partition_of_unity`.
+One of the main use cases for a `BumpCovering` is to define a `PartitionOfUnity`, see
+`BumpCovering.toPartitionOfUnity`, but some proofs can directly use a `BumpCovering` instead of
+a `PartitionOfUnity`.
 
-If `X` is a normal paracompact space, then `bump_covering.exists_is_subordinate` guarantees that for
-every open covering `U : set (set X)` of `s` there exists a `bump_covering` of `s` that is
+If `X` is a normal paracompact space, then `BumpCovering.exists_isSubordinate` guarantees that for
+every open covering `U : Set (Set X)` of `s` there exists a `BumpCovering` of `s` that is
 subordinate to `U`.
 -/
 structure BumpCovering (ι X : Type _) [TopologicalSpace X] (s : Set X := univ) where
@@ -177,17 +177,18 @@ theorem le_one (i : ι) (x : X) : f i x ≤ 1 :=
   (single_le_finsum i (f.locallyFinite.point_finite x) fun j => f.nonneg j x).trans (f.sum_le_one x)
 #align partition_of_unity.le_one PartitionOfUnity.le_one
 
-/-- If `f` is a partition of unity on `s : set X` and `g : X → E` is continuous at every point of
-the topological support of some `f i`, then `λ x, f i x • g x` is continuous on the whole space. -/
+/-- If `f` is a partition of unity on `s : Set X` and `g : X → E` is continuous at every point of
+the topological support of some `f i`, then `fun x ↦ f i x • g x` is continuous on the whole space.
+-/
 theorem continuous_smul {g : X → E} {i : ι} (hg : ∀ x ∈ tsupport (f i), ContinuousAt g x) :
     Continuous fun x => f i x • g x :=
   continuous_of_tsupport fun x hx =>
     ((f i).continuousAt x).smul <| hg x <| tsupport_smul_subset_left _ _ hx
 #align partition_of_unity.continuous_smul PartitionOfUnity.continuous_smul
 
-/-- If `f` is a partition of unity on a set `s : set X` and `g : ι → X → E` is a family of functions
+/-- If `f` is a partition of unity on a set `s : Set X` and `g : ι → X → E` is a family of functions
 such that each `g i` is continuous at every point of the topological support of `f i`, then the sum
-`λ x, ∑ᶠ i, f i x • g i x` is continuous on the whole space. -/
+`fun x ↦ ∑ᶠ i, f i x • g i x` is continuous on the whole space. -/
 theorem continuous_finsum_smul [ContinuousAdd E] {g : ι → X → E}
     (hg : ∀ (i), ∀ x ∈ tsupport (f i), ContinuousAt (g i) x) :
     Continuous fun x => ∑ᶠ i, f i x • g i x :=
@@ -215,7 +216,7 @@ theorem exists_finset_nhd_support_subset {U : ι → Set X} (hso : f.IsSubordina
 
 /-- If `f` is a partition of unity that is subordinate to a family of open sets `U i` and
 `g : ι → X → E` is a family of functions such that each `g i` is continuous on `U i`, then the sum
-`λ x, ∑ᶠ i, f i x • g i x` is a continuous function. -/
+`fun x ↦ ∑ᶠ i, f i x • g i x` is a continuous function. -/
 theorem IsSubordinate.continuous_finsum_smul [ContinuousAdd E] {U : ι → Set X}
     (ho : ∀ i, IsOpen (U i)) (hf : f.IsSubordinate U) {g : ι → X → E}
     (hg : ∀ i, ContinuousOn (g i) (U i)) : Continuous fun x => ∑ᶠ i, f i x • g i x :=
@@ -251,8 +252,8 @@ theorem le_one (i : ι) (x : X) : f i x ≤ 1 :=
   f.le_one' i x
 #align bump_covering.le_one BumpCovering.le_one
 
-/-- A `bump_covering` that consists of a single function, uniformly equal to one, defined as an
-example for `inhabited` instance. -/
+/-- A `BumpCovering` that consists of a single function, uniformly equal to one, defined as an
+example for `Inhabited` instance. -/
 protected def single (i : ι) (s : Set X) : BumpCovering ι X s where
   toFun := Pi.single i 1
   locally_finite' x := by
@@ -285,10 +286,10 @@ theorem IsSubordinate.mono {f : BumpCovering ι X s} {U V : ι → Set X} (hU : 
 #align bump_covering.is_subordinate.mono BumpCovering.IsSubordinate.mono
 
 /-- If `X` is a normal topological space and `U i`, `i : ι`, is a locally finite open covering of a
-closed set `s`, then there exists a `bump_covering ι X s` that is subordinate to `U`. If `X` is a
-paracompact space, then the assumption `hf : locally_finite U` can be omitted, see
-`bump_covering.exists_is_subordinate`. This version assumes that `p : (X → ℝ) → Prop` is a predicate
-that satisfies Urysohn's lemma, and provides a `bump_covering` such that each function of the
+closed set `s`, then there exists a `BumpCovering ι X s` that is subordinate to `U`. If `X` is a
+paracompact space, then the assumption `hf : LocallyFinite U` can be omitted, see
+`BumpCovering.exists_isSubordinate`. This version assumes that `p : (X → ℝ) → Prop` is a predicate
+that satisfies Urysohn's lemma, and provides a `BumpCovering` such that each function of the
 covering satisfies `p`. -/
 theorem exists_isSubordinate_of_locallyFinite_of_prop [NormalSpace X] (p : (X → ℝ) → Prop)
     (h01 :
@@ -317,9 +318,9 @@ theorem exists_isSubordinate_of_locallyFinite_of_prop [NormalSpace X] (p : (X �
 #align bump_covering.exists_is_subordinate_of_locally_finite_of_prop BumpCovering.exists_isSubordinate_of_locallyFinite_of_prop
 
 /-- If `X` is a normal topological space and `U i`, `i : ι`, is a locally finite open covering of a
-closed set `s`, then there exists a `bump_covering ι X s` that is subordinate to `U`. If `X` is a
-paracompact space, then the assumption `hf : locally_finite U` can be omitted, see
-`bump_covering.exists_is_subordinate`. -/
+closed set `s`, then there exists a `BumpCovering ι X s` that is subordinate to `U`. If `X` is a
+paracompact space, then the assumption `hf : LocallyFinite U` can be omitted, see
+`BumpCovering.exists_isSubordinate`. -/
 theorem exists_isSubordinate_of_locallyFinite [NormalSpace X] (hs : IsClosed s) (U : ι → Set X)
     (ho : ∀ i, IsOpen (U i)) (hf : LocallyFinite U) (hU : s ⊆ ⋃ i, U i) :
     ∃ f : BumpCovering ι X s, f.IsSubordinate U :=
@@ -332,9 +333,9 @@ theorem exists_isSubordinate_of_locallyFinite [NormalSpace X] (hs : IsClosed s) 
 #align bump_covering.exists_is_subordinate_of_locally_finite BumpCovering.exists_isSubordinate_of_locallyFinite
 
 /-- If `X` is a paracompact normal topological space and `U` is an open covering of a closed set
-`s`, then there exists a `bump_covering ι X s` that is subordinate to `U`. This version assumes that
+`s`, then there exists a `BumpCovering ι X s` that is subordinate to `U`. This version assumes that
 `p : (X → ℝ) → Prop` is a predicate that satisfies Urysohn's lemma, and provides a
-`bump_covering` such that each function of the covering satisfies `p`. -/
+`BumpCovering` such that each function of the covering satisfies `p`. -/
 theorem exists_isSubordinate_of_prop [NormalSpace X] [ParacompactSpace X] (p : (X → ℝ) → Prop)
     (h01 :
       ∀ s t,
@@ -349,7 +350,7 @@ theorem exists_isSubordinate_of_prop [NormalSpace X] [ParacompactSpace X] (p : (
 #align bump_covering.exists_is_subordinate_of_prop BumpCovering.exists_isSubordinate_of_prop
 
 /-- If `X` is a paracompact normal topological space and `U` is an open covering of a closed set
-`s`, then there exists a `bump_covering ι X s` that is subordinate to `U`. -/
+`s`, then there exists a `BumpCovering ι X s` that is subordinate to `U`. -/
 theorem exists_isSubordinate [NormalSpace X] [ParacompactSpace X] (hs : IsClosed s) (U : ι → Set X)
     (ho : ∀ i, IsOpen (U i)) (hU : s ⊆ ⋃ i, U i) : ∃ f : BumpCovering ι X s, f.IsSubordinate U := by
   rcases precise_refinement_set hs _ ho hU with ⟨V, hVo, hsV, hVf, hVU⟩
@@ -370,16 +371,16 @@ theorem ind_apply (x : X) (hx : x ∈ s) : f (f.ind x hx) x = 1 :=
   (f.eventuallyEq_one x hx).eq_of_nhds
 #align bump_covering.ind_apply BumpCovering.ind_apply
 
-/-- Partition of unity defined by a `bump_covering`. We use this auxiliary definition to prove some
-properties of the new family of functions before bundling it into a `partition_of_unity`. Do not use
-this definition, use `bump_function.to_partition_of_unity` instead.
+/-- Partition of unity defined by a `BumpCovering`. We use this auxiliary definition to prove some
+properties of the new family of functions before bundling it into a `PartitionOfUnity`. Do not use
+this definition, use `BumpCovering.toPartitionOfUnity` instead.
 
 The partition of unity is given by the formula `g i x = f i x * ∏ᶠ j < i, (1 - f j x)`. In other
 words, `g i x = ∏ᶠ j < i, (1 - f j x) - ∏ᶠ j ≤ i, (1 - f j x)`, so
 `∑ᶠ i, g i x = 1 - ∏ᶠ j, (1 - f j x)`. If `x ∈ s`, then one of `f j x` equals one, hence the product
 of `1 - f j x` vanishes, and `∑ᶠ i, g i x = 1`.
 
-In order to avoid an assumption `linear_order ι`, we use `well_ordering_rel` instead of `(<)`. -/
+In order to avoid an assumption `LinearOrder ι`, we use `WellOrderingRel` instead of `(<)`. -/
 def toPouFun (i : ι) (x : X) : ℝ :=
   f i x * ∏ᶠ (j) (_hj : WellOrderingRel j i), 1 - f j x
 #align bump_covering.to_pou_fun BumpCovering.toPouFun
@@ -438,14 +439,14 @@ theorem continuous_toPouFun (i : ι) : Continuous (f.toPouFun i) := by
   exact f.locallyFinite
 #align bump_covering.continuous_to_pou_fun BumpCovering.continuous_toPouFun
 
-/-- The partition of unity defined by a `bump_covering`.
+/-- The partition of unity defined by a `BumpCovering`.
 
 The partition of unity is given by the formula `g i x = f i x * ∏ᶠ j < i, (1 - f j x)`. In other
 words, `g i x = ∏ᶠ j < i, (1 - f j x) - ∏ᶠ j ≤ i, (1 - f j x)`, so
 `∑ᶠ i, g i x = 1 - ∏ᶠ j, (1 - f j x)`. If `x ∈ s`, then one of `f j x` equals one, hence the product
 of `1 - f j x` vanishes, and `∑ᶠ i, g i x = 1`.
 
-In order to avoid an assumption `linear_order ι`, we use `well_ordering_rel` instead of `(<)`. -/
+In order to avoid an assumption `LinearOrder ι`, we use `WellOrderingRel` instead of `(<)`. -/
 def toPartitionOfUnity : PartitionOfUnity ι X s where
   toFun i := ⟨f.toPouFun i, f.continuous_toPouFun i⟩
   locally_finite' := f.locallyFinite.subset f.support_toPouFun_subset
@@ -508,9 +509,9 @@ instance [Inhabited ι] : Inhabited (PartitionOfUnity ι X s) :=
   ⟨BumpCovering.toPartitionOfUnity default⟩
 
 /-- If `X` is a normal topological space and `U` is a locally finite open covering of a closed set
-`s`, then there exists a `partition_of_unity ι X s` that is subordinate to `U`. If `X` is a
-paracompact space, then the assumption `hf : locally_finite U` can be omitted, see
-`bump_covering.exists_is_subordinate`. -/
+`s`, then there exists a `PartitionOfUnity ι X s` that is subordinate to `U`. If `X` is a
+paracompact space, then the assumption `hf : LocallyFinite U` can be omitted, see
+`BumpCovering.exists_isSubordinate`. -/
 theorem exists_isSubordinate_of_locallyFinite [NormalSpace X] (hs : IsClosed s) (U : ι → Set X)
     (ho : ∀ i, IsOpen (U i)) (hf : LocallyFinite U) (hU : s ⊆ ⋃ i, U i) :
     ∃ f : PartitionOfUnity ι X s, f.IsSubordinate U :=
@@ -519,7 +520,7 @@ theorem exists_isSubordinate_of_locallyFinite [NormalSpace X] (hs : IsClosed s) 
 #align partition_of_unity.exists_is_subordinate_of_locally_finite PartitionOfUnity.exists_isSubordinate_of_locallyFinite
 
 /-- If `X` is a paracompact normal topological space and `U` is an open covering of a closed set
-`s`, then there exists a `partition_of_unity ι X s` that is subordinate to `U`. -/
+`s`, then there exists a `PartitionOfUnity ι X s` that is subordinate to `U`. -/
 theorem exists_isSubordinate [NormalSpace X] [ParacompactSpace X] (hs : IsClosed s) (U : ι → Set X)
     (ho : ∀ i, IsOpen (U i)) (hU : s ⊆ ⋃ i, U i) :
     ∃ f : PartitionOfUnity ι X s, f.IsSubordinate U :=
