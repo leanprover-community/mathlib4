@@ -1,8 +1,7 @@
 /-
 Copyright (c) 2019 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Simon Hudon
-Ported by: Heather Macbeth
+Authors: Simon Hudon, Heather MacBeth, Thomas Murrills
 -/
 import Mathlib.Lean.Meta
 import Mathlib.Control.Basic
@@ -13,8 +12,8 @@ import Mathlib.Tactic.Relation.Rfl
 
 /-! # Monotonicity tactic
 
-The tactic `mono` applies monotonicity rules (collected through the library by being tagged
-`@[mono]`).
+The tactic `mono` applies monotonicity lemmas (collected through the library by being tagged
+`@[mono]`, `@[mono left]`, or `@[mono right]`).
 -/
 
 open Lean Elab Meta Tactic Parser Qq Mathlib.Tactic SolveByElim BacktrackOptimize
@@ -29,10 +28,6 @@ def getMatchingMonos (t : Expr) (side := Side.both) : MetaM (Array MonoExt) := d
   profileitM Exception "mono" (← getOptions) do --!! what does profileit do?
     let monos := monoExt.getState (← getEnv)
     let arr ← monos.tree.getMatch t
-    -- For debugging, when needed:
-    -- let showTypes : MetaM (Array Expr) := do
-    --   return (← arr.map (·.name) |>.mapM getConstInfo).map (·.type)
-    -- trace[Tactic.mono] "matched {← showTypes}"
     let arr := match side with
     | .both  => arr
     | .left  => arr.filter isLeft
@@ -52,6 +47,16 @@ private def applyMono (t : Expr) (m : MonoExt) : MetaM (Expr × List MVarId) := 
     accumulateGoals goals (·.rfl)
   return (expr, goals)
 
+/-- `apply` all registered `mono` extensions of the given `side` to the type `t`. Find the one that
+creates the fewest goals, and return the resulting inhabitant of `t` and a list of any goals in
+that expression.
+
+If a proof of `t` that creates no goals is found, that proof is immediately used.
+
+If multiple mono extensions yield a minimal (nonzero) number of subgoals, then the behavior is
+guided by `failIfAmbiguousMatch`. If `true`, we fail with an error message. If `false`, we choose
+the first one that attains the minimum.
+-/
 private def applyMonos (t : Expr) (side : Side) (failIfAmbiguousMatch : Bool) :
     MetaM (Expr × List MVarId) := do
   let monos ← getMatchingMonos t side
@@ -80,6 +85,8 @@ private def applyMonos (t : Expr) (side : Side) (failIfAmbiguousMatch : Bool) :
       ++ m!"Write `mono with ...` and include the types of one or more of the subgoals in one of "
       ++ m!"the following lists to encourage `mono` to use that list.\n{bestMatchTypes}"
 
+/-- `apply` all `mono` extensions of a given `side` to the `goal` to produce a list of thunked
+alternatives in `MetaM`. This form is used for `mono*`.  -/
 private def applyMonosAlternatives (side : Side) (goal : MVarId) :
     MetaM (List (MetaM (List MVarId))) := withReducible do
   trace[Tactic.mono] "running applyMonosAlternatives on {goal}"
@@ -95,6 +102,21 @@ private def applyMonosAlternatives (side : Side) (goal : MVarId) :
   return monos.toList.map fun m => goal.withContext do
     let (e, gs) ← applyMono t m; goal.assign e; pure gs
 
+/-- Apply the `mono` tactic to a goal. This finds all lemmas tagged with `mono` and applies each
+one to generate subgoals.
+
+* If `side` is `.left` or `.right`, we only use lemmas tagged `@[mono left]` or `@[mono right]`
+respectively. By default, `side` is `.both`.
+
+* If `recurse` is `true`, we apply the mono tactic repeatedly to the goal and choose the sequence
+of applications which generates the least subgoals.
+
+* If `simpUsing` is provided, we `simp` with the given `Simp.Context` before applying the lemmas.
+If `recurse` is `true`, we `simp` all goals before each application of `mono`.
+
+* If `failIfAmbiguousMatch` is `true`, we fail whenever multiple applications of `mono` lemmas
+produce the same minimal number of subgoals. If `false`, the default for the `MetaM` tactic (but
+not for the tactic syntax), we simply take the first. -/
 def _root_.Lean.MVarId.mono (goal : MVarId) (side : Side := .both)
     (simpUsing : Option Simp.Context := none) (recurse : Bool := false)
     (failIfAmbiguousMatch : Bool := false) :
@@ -133,9 +155,30 @@ def _root_.Lean.MVarId.mono (goal : MVarId) (side : Side := .both)
     else
       return goals
 
+--TODO: add `config` syntax to adjust `maxDepth` in `mono*` and add custom `proc`
 open Parser.Tactic in
-/--
-`mono` needs its documentation string written.
+/-- `mono` applies all lemmas tagged with `@[mono]` to the main goal and chooses the one which
+produces the fewest remaining subgoals.
+
+* `mono*` applies `mono` lemmas repeatedly, choosing the sequence of applications which produces
+the fewest goals overall up to a given `maxDepth`. `mono*` fails if it cannot make any progress on
+the goal.
+
+* `mono left` and `mono right` only apply "left" and "right" mono lemmas to the goal. Lemmas tagged
+with `@[mono left]` and `@[mono right]` are considered left and right, respectively; lemmas tagged
+with just `@[mono]` are considered both `left` and `right`, and are always included. By default,
+all lemmas are applied.
+
+* `mono with P, Q ...` (where `P : Prop`, `Q : Prop`, ...) asserts `P`, `Q`, ... and leaves them as
+side goals. If multiple different `mono` lemmas each produce the same minimal number of subgoals
+when applied, then `mono` fails; if one of those goals has e.g. type `P`, then `mono with P` can be
+used to encourage `mono` to choose the set of subgoals that includes `P`.
+
+* `mono using l₁, l₂, ...` runs `simp [l₁, l₂, ...]` before applying `mono`. `mono* using ...` runs
+`simp` before each iteration of `mono`.
+
+All syntax options can be used in combination with each other, as long as they're used in the order
+given above.
 -/
 syntax (name := mono) "mono" "*"? (ppSpace mono.side)?
   (" with " (colGt term),+)? (" using " (colGt simpArg),+)? : tactic
