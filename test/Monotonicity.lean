@@ -51,24 +51,33 @@ example (x y z : ℤ)
   · mono
   · mono; mono; norm_num1
 
-example {x y z : ℕ} : true := by
+variable {x y z w : ℕ}
+-- We use axioms instead of variables so that `mono` doesn't grab the proofs from the local context.
+axiom lxz : x ≤ z
+axiom lyw : y ≤ w
+axiom lxy : x ≤ y
+axiom lzy : z ≤ y
+
+example : True := by
   have : y + x ≤ y + z := by
     mono
     guard_target = x ≤ z
-    admit
+    exact lxz
   trivial
 
-example {x y z : ℕ} : true := by
+example : True := by
   suffices : x + y ≤ z + y ; trivial
   mono
   guard_target = x ≤ z
-  admit
+  exact lxz
 
-example {x y z w : ℕ} : true := by
+example : True := by
   have : x + y ≤ z + w := by
     mono
-    guard_target = x ≤ z ; admit
-    guard_target = y ≤ w ; admit
+    guard_target = x ≤ z ; exact lxz
+    guard_target = y ≤ w ; exact lyw
+  trivial
+
   trivial
 
 -- example
