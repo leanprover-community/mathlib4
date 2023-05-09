@@ -16,16 +16,16 @@ import Mathlib.Tactic.DeriveFintype
 /-!
 # Modelling partial recursive functions using Turing machines
 
-This file defines a simplified basis for partial recursive functions, and a `turing.TM2` model
+This file defines a simplified basis for partial recursive functions, and a `Turing.TM2` model
 Turing machine for evaluating these functions. This amounts to a constructive proof that every
 `partrec` function can be evaluated by a Turing machine.
 
 ## Main definitions
 
-* `to_partrec.code`: a simplified basis for partial recursive functions, valued in
-  `list ℕ →. list ℕ`.
-  * `to_partrec.code.eval`: semantics for a `to_partrec.code` program
-* `partrec_to_TM2.tr`: A TM2 turing machine which can evaluate `code` programs
+* `ToPartrec.Code`: a simplified basis for partial recursive functions, valued in
+  `List ℕ →. List ℕ`.
+  * `ToPartrec.Code.eval`: semantics for a `ToPartrec.Code` program
+* `PartrecToTM2.tr`: A TM2 turing machine which can evaluate `code` programs
 -/
 
 
@@ -38,7 +38,7 @@ namespace Turing
 /-!
 ## A simplified basis for partrec
 
-This section constructs the type `code`, which is a data type of programs with `list ℕ` input and
+This section constructs the type `Code`, which is a data type of programs with `List ℕ` input and
 output, with enough expressivity to write any partial recursive function. The primitives are:
 
 * `zero'` appends a `0` to the input. That is, `zero' v = 0 :: v`.
@@ -73,23 +73,20 @@ evaluator for this basis, which we take up in the next section.
 
 namespace ToPartrec
 
-/-- The type of codes for primitive recursive functions. Unlike `nat.partrec.code`, this uses a set
-of operations on `list ℕ`. See `code.eval` for a description of the behavior of the primitives. -/
+/-- The type of codes for primitive recursive functions. Unlike `Nat.Partrec.Code`, this uses a set
+of operations on `List ℕ`. See `Code.eval` for a description of the behavior of the primitives. -/
 inductive Code
   | zero'
   | succ
   | tail
-  | cons : code → code → code
-  | comp : code → code → code
-  | case : code → code → code
-  | fix : code → code
+  | cons : Code → Code → Code
+  | comp : Code → Code → Code
+  | case : Code → Code → Code
+  | fix : Code → Code
   deriving DecidableEq, Inhabited
 #align turing.to_partrec.code Turing.ToPartrec.Code
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/-- The semantics of the `code` primitives, as partial functions `list ℕ →. list ℕ`. By convention
+/-- The semantics of the `Code` primitives, as partial functions `List ℕ →. List ℕ`. By convention
 we functions that return a single result return a singleton `[n]`, or in some cases `n :: v` where
 `v` will be ignored by a subsequent function.
 
@@ -105,7 +102,7 @@ we functions that return a single result return a singleton `[n]`, or in some ca
 * `comp f g` calls `f` on the output of `g`:
   * `comp f g v = f (g v)`
 * `case f g` cases on the head of the input, calling `f` or `g` depending on whether it is zero or
-  a successor (similar to `nat.cases_on`).
+  a successor (similar to `Nat.casesOn`).
   * `case f g [] = f []`
   * `case f g (0 :: v) = f v`
   * `case f g (n+1 :: v) = g (n :: v)`
@@ -117,16 +114,16 @@ we functions that return a single result return a singleton `[n]`, or in some ca
 -/
 @[simp]
 def Code.eval : Code → List ℕ →. List ℕ
-  | code.zero' => fun v => pure (0::v)
-  | code.succ => fun v => pure [v.headI.succ]
-  | code.tail => fun v => pure v.tail
-  | code.cons f fs => fun v => do
-    let n ← code.eval f v
-    let ns ← code.eval fs v
-    pure (n::ns)
-  | code.comp f g => fun v => g.eval v >>= f.eval
-  | code.case f g => fun v => v.headI.elim (f.eval v.tail) fun y _ => g.eval (y::v.tail)
-  | code.fix f =>
+  | Code.zero' => fun v => pure (0 :: v)
+  | Code.succ => fun v => pure [v.headI.succ]
+  | Code.tail => fun v => pure v.tail
+  | Code.cons f fs => fun v => do
+    let n ← Code.eval f v
+    let ns ← Code.eval fs v
+    pure (n.headI :: ns)
+  | Code.comp f g => fun v => g.eval v >>= f.eval
+  | Code.case f g => fun v => v.headI.rec (f.eval v.tail) fun y _ => g.eval (y::v.tail)
+  | Code.fix f =>
     PFun.fix fun v => (f.eval v).map fun v => if v.headI = 0 then Sum.inl v.tail else Sum.inr v.tail
 #align turing.to_partrec.code.eval Turing.ToPartrec.Code.eval
 
@@ -176,7 +173,7 @@ def pred : Code :=
 
 @[simp]
 theorem pred_eval (v) : pred.eval v = pure [v.headI.pred] := by
-  simp [pred] <;> cases v.head <;> simp
+  simp [pred]; cases v.headI <;> simp
 #align turing.to_partrec.code.pred_eval Turing.ToPartrec.Code.pred_eval
 
 /-- `rfind f` performs the function of the `rfind` primitive of partial recursive functions.
@@ -184,7 +181,7 @@ theorem pred_eval (v) : pred.eval v = pure [v.headI.pred] := by
 
 It is implemented as:
 
-    rfind f v = pred (fix (λ (n::v), f (n::v) :: n+1 :: v) (0 :: v))
+    rfind f v = pred (fix (fun (n::v) => f (n::v) :: n+1 :: v) (0 :: v))
 
 The idea is that the initial state is `0 :: v`, and the `fix` keeps `n :: v` as its internal state;
 it calls `f (n :: v)` as the exit test and `n+1 :: v` as the next state. At the end we get
@@ -228,63 +225,40 @@ def prec (f g : Code) : Code :=
 
 attribute [-simp] Part.bind_eq_bind Part.map_eq_map Part.pure_eq_some
 
-theorem ExistsCode.comp {m n} {f : Vector ℕ n →. ℕ} {g : Fin n → Vector ℕ m →. ℕ}
+theorem exists_code.comp {m n} {f : Vector ℕ n →. ℕ} {g : Fin n → Vector ℕ m →. ℕ}
     (hf : ∃ c : Code, ∀ v : Vector ℕ n, c.eval v.1 = pure <$> f v)
     (hg : ∀ i, ∃ c : Code, ∀ v : Vector ℕ m, c.eval v.1 = pure <$> g i v) :
     ∃ c : Code, ∀ v : Vector ℕ m, c.eval v.1 = pure <$> ((Vector.mOfFn fun i => g i v) >>= f) := by
   rsuffices ⟨cg, hg⟩ :
-    ∃ c : code, ∀ v : Vector ℕ m, c.eval v.1 = Subtype.val <$> Vector.mOfFn fun i => g i v
+    ∃ c : Code, ∀ v : Vector ℕ m, c.eval v.1 = Subtype.val <$> Vector.mOfFn fun i => g i v
   · obtain ⟨cf, hf⟩ := hf
     exact
       ⟨cf.comp cg, fun v => by
-        simp [hg, hf, map_bind, seq_bind_eq, (· ∘ ·), -Subtype.val_eq_coe]
+        simp [hg, hf, map_bind, seq_bind_eq, Function.comp]
         rfl⟩
   clear hf f; induction' n with n IH
-  · exact ⟨nil, fun v => by simp [Vector.mOfFn] <;> rfl⟩
+  · exact ⟨nil, fun v => by simp [Vector.mOfFn, Bind.bind]; rfl⟩
   · obtain ⟨cg, hg₁⟩ := hg 0
     obtain ⟨cl, hl⟩ := IH fun i => hg i.succ
     exact
       ⟨cons cg cl, fun v => by
-        simp [Vector.mOfFn, hg₁, map_bind, seq_bind_eq, bind_assoc, (· ∘ ·), hl,
-          -Subtype.val_eq_coe]
+        simp [Vector.mOfFn, hg₁, map_bind, seq_bind_eq, bind_assoc, (· ∘ ·), hl]
         rfl⟩
-#align turing.to_partrec.code.exists_code.comp Turing.ToPartrec.Code.ExistsCode.comp
+#align turing.to_partrec.code.exists_code.comp Turing.ToPartrec.Code.exists_code.comp
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem exists_code {n} {f : Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :
     ∃ c : Code, ∀ v : Vector ℕ n, c.eval v.1 = pure <$> f v := by
   induction' hf with n f hf
   induction hf
   case prim.zero => exact ⟨zero', fun ⟨[], _⟩ => rfl⟩
   case prim.succ => exact ⟨succ, fun ⟨[v], _⟩ => rfl⟩
-  case prim.nth n i =>
+  case prim.get n i =>
     refine' Fin.succRec (fun n => _) (fun n i IH => _) i
-    · exact ⟨head, fun ⟨List.cons a as, _⟩ => by simp <;> rfl⟩
+    · exact ⟨head, fun ⟨List.cons a as, _⟩ => by simp [Bind.bind] <;> rfl⟩
     · obtain ⟨c, h⟩ := IH
-      exact ⟨c.comp tail, fun v => by simpa [← Vector.get_tail] using h v.tail⟩
-  case prim.comp m n f g hf hg IHf IHg => simpa [Part.bind_eq_bind] using exists_code.comp IHf IHg
+      exact ⟨c.comp tail, fun v => by simpa [← Vector.get_tail, Bind.bind] using h v.tail⟩
+  case prim.comp m n f g hf hg IHf IHg =>
+    simpa [Part.bind_eq_bind] using exists_code.comp IHf IHg
   case prim.prec n f g hf hg IHf IHg =>
     obtain ⟨cf, hf⟩ := IHf
     obtain ⟨cg, hg⟩ := IHg
@@ -298,8 +272,8 @@ theorem exists_code {n} {f : Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :
       PFun.coe_val, Vector.tail_val]
     simp only [← Part.pure_eq_some] at hf hg⊢
     induction' v.head with n IH <;>
-      simp [prec, hf, bind_assoc, ← Part.map_eq_map, ← bind_pure_comp_eq_map,
-        show ∀ x, pure x = [x] from fun _ => rfl, -Subtype.val_eq_coe]
+      simp [prec, hf, Part.bind_assoc, ← Part.bind_some_eq_map, Part.bind_some,
+        show ∀ x, pure x = [x] from fun _ => rfl, Bind.bind, Functor.map]
     suffices
       ∀ a b,
         a + b = n →
@@ -1994,4 +1968,3 @@ end
 end PartrecToTM2
 
 end Turing
-
