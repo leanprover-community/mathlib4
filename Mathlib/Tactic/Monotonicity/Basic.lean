@@ -84,6 +84,22 @@ private def applyMonos (t : Expr) (side : Side) (failIfAmbiguousMatch : Bool) :
       ++ m!"Write `mono with ...` and include the types of one or more of the subgoals in one of "
       ++ m!"the following lists to encourage `mono` to use that list.\n{bestMatchTypes}"
 
+/-- `apply` all `mono` extensions of a given `side` to the `goal` to produce a list of thunked
+alternatives in `MetaM`. This form is used for `mono*`.  -/
+private def applyMonosAlternatives (side : Side) (goal : MVarId) :
+    MetaM (List (MetaM (List MVarId))) := withReducible do
+  trace[Tactic.mono] "running applyMonosAlternatives on {goal}"
+  let goal? ← dsimpGoal goal Monos.SimpContext false
+  let goal ← match goal? with
+  | (some goal, _) => pure goal
+  | (none, _) => return []
+  let (_, goal) ← goal.introsP!
+  let t ← whnfR <|← instantiateMVars <|← goal.getType
+  let monos ← getMatchingMonos t side
+  trace[Tactic.mono] "matched:\n{monos.map (·.name) |>.toList}"
+  if monos.isEmpty then throwError "no monos apply"
+  return monos.toList.map fun m => goal.withContext do
+    let (e, gs) ← applyMono t m; goal.assign e; pure gs
 
 namespace Mathlib.Tactic.Monotonicity
 
