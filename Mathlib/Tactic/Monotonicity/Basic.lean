@@ -1,28 +1,37 @@
 /-
 Copyright (c) 2019 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Simon Hudon
-Ported by: Heather Macbeth
+Authors: Simon Hudon, Heather MacBeth, Thomas Murrills
 -/
+import Mathlib.Lean.Meta
+import Mathlib.Data.Array.MinMax
 import Mathlib.Tactic.Monotonicity.Attr
 import Mathlib.Tactic.SolveByElim
+import Mathlib.Tactic.Relation.Rfl
 
 /-! # Monotonicity tactic
 
-The tactic `mono` applies monotonicity rules (collected through the library by being tagged
-`@[mono]`).
-
-The version of the tactic here is a cheap partial port of the `mono` tactic from Lean 3, which had
-many more options and features.  It is implemented as a wrapper on top of `solve_by_elim`.
-
-Temporary syntax change: Lean 3 `mono` applied a single monotonicity rule, then applied local
-hypotheses and the `rfl` tactic as many times as it could.  This is hard to implement on top of
-`solve_by_elim` because the counting system used in the `maxDepth` field of its configuration would
-count these as separate steps, throwing off the count in the desired configuration
-`maxDepth := 1`.  So instead we just implement a version of `mono` in which monotonicity rules,
-local hypotheses and `rfl` are all applied repeatedly until nothing more is applicable.  The syntax
-for this in Lean 3 was `mono*`. Both `mono` and `mono*` implement this behavior for now.
+The tactic `mono` applies monotonicity lemmas (collected through the library by being tagged
+`@[mono]`, `@[mono left]`, or `@[mono right]`).
 -/
+
+open Lean Elab Meta Tactic Parser Qq Mathlib.Tactic SolveByElim BacktrackOptimize
+
+namespace Mathlib.Tactic.Monotonicity
+
+open Attr
+
+/-- Match each registered `mono` extension against `t`, returning an array of matching extensions.
+-/
+def getMatchingMonos (t : Expr) (side := Side.both) : MetaM (Array MonoExt) := do
+  profileitM Exception "mono" (← getOptions) do --!! what does profileit do?
+    let monos := monoExt.getState (← getEnv)
+    let arr ← monos.tree.getMatch t
+    let arr := match side with
+    | .both  => arr
+    | .left  => arr.filter isLeft
+    | .right => arr.filter isRight
+    return arr
 
 open Lean Elab Tactic Parser Tactic
 open Mathlib Tactic SolveByElim
