@@ -46,10 +46,17 @@ variable (X : Profinite.{u})
 
 /-- The functor `DiscreteQuotient X ⥤ Fintype` whose limit is isomorphic to `X`. -/
 def fintypeDiagram : DiscreteQuotient X ⥤ FintypeCat where
-  obj S :=
-    haveI := Fintype.ofFinite S
-    FintypeCat.of S
+  obj S := @FintypeCat.of S (Fintype.ofFinite S)
   map f := DiscreteQuotient.ofLE f.le
+  -- Porting note: (TODO) `aesop_cat` fails here, so I wrote `map_comp` and `map_id`
+  -- down explicitely for debuging. delete both again if it works.
+  -- Lean3 code for reference:
+  --
+  -- def fintype_diagram : discrete_quotient X ⥤ Fintype :=
+  -- { obj := λ S, by haveI := fintype.of_finite S; exact Fintype.of S,
+  --   map := λ S T f, discrete_quotient.of_le f.le }
+  map_id := by aesop_cat
+  map_comp := by aesop_cat
 set_option linter.uppercaseLean3 false in
 #align Profinite.fintype_diagram Profinite.fintypeDiagram
 
