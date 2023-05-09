@@ -1025,7 +1025,7 @@ theorem count_normalizedFactors_eq' [DecidableEq R] {p x : R} (hp : p = 0 ∨ Ir
 #align unique_factorization_monoid.count_normalized_factors_eq' UniqueFactorizationMonoid.count_normalizedFactors_eq'
 
 
-theorem max_power_factor {a₀ : R} {x : R} (h : a₀ ≠ 0) (hx : Irreducible x) :
+theorem max_powerFactor {a₀ : R} {x : R} (h : a₀ ≠ 0) (hx : Irreducible x) :
     ∃ n : ℕ, ∃ a : R, ¬x ∣ a ∧ a₀ = x ^ n * a := by
   classical
     let n := (normalizedFactors a₀).count (normalize x)
@@ -1039,7 +1039,7 @@ theorem max_power_factor {a₀ : R} {x : R} (h : a₀ ≠ 0) (hx : Irreducible x
     congr
     use n
     exact multiplicity_eq_count_normalizedFactors hx h
-#align unique_factorization_monoid.max_power_factor UniqueFactorizationMonoid.max_power_factor
+#align unique_factorization_monoid.max_power_factor UniqueFactorizationMonoid.max_powerFactor
 
 
 end multiplicity
