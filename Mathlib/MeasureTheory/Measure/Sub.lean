@@ -78,47 +78,49 @@ theorem sub_apply [FiniteMeasure ν] (h₁ : MeasurableSet s) (h₂ : ν ≤ μ)
   -- We begin by defining `measure_sub`, which will be equal to `(μ - ν)`.
   let measure_sub : Measure α :=
     @MeasureTheory.Measure.ofMeasurable α _
-      (fun (t : Set α) (h_t_measurable_set : MeasurableSet t) => μ t - ν t) (by simp)
+      (fun (t : Set α) (_ : MeasurableSet t) => μ t - ν t) (by simp)
       (by
         intro g h_meas h_disj; simp only; rw [ENNReal.tsum_sub]
         repeat' rw [← MeasureTheory.measure_unionᵢ h_disj h_meas]
         exacts[MeasureTheory.measure_ne_top _ _, fun i => h₂ _ (h_meas _)])
   -- Now, we demonstrate `μ - ν = measure_sub`, and apply it.
   · have h_measure_sub_add : ν + measure_sub = μ := by
-      ext (t h_t_measurable_set)
+      ext t
+      intro h_t_measurable_set
       simp only [Pi.add_apply, coe_add]
       rw [MeasureTheory.Measure.ofMeasurable_apply _ h_t_measurable_set, add_comm,
         tsub_add_cancel_of_le (h₂ t h_t_measurable_set)]
     have h_measure_sub_eq : μ - ν = measure_sub := by
       rw [MeasureTheory.Measure.sub_def]
       apply le_antisymm
-      · apply @infₛ_le (Measure α) measure.complete_semilattice_Inf
+      · apply @infₛ_le (Measure α) Measure.instCompleteSemilatticeInf
         simp [le_refl, add_comm, h_measure_sub_add]
-      apply @le_infₛ (Measure α) measure.complete_semilattice_Inf
+      apply @le_infₛ (Measure α) Measure.instCompleteSemilatticeInf
       intro d h_d
-      rw [← h_measure_sub_add, mem_set_of_eq, add_comm d] at h_d
-      apply measure.le_of_add_le_add_left h_d
+      rw [← h_measure_sub_add, mem_setOf_eq, add_comm d] at h_d
+      apply Measure.le_of_add_le_add_left h_d
     rw [h_measure_sub_eq]
-    apply measure.of_measurable_apply _ h₁
+    apply Measure.ofMeasurable_apply _ h₁
 #align measure_theory.measure.sub_apply MeasureTheory.Measure.sub_apply
 
 theorem sub_add_cancel_of_le [FiniteMeasure ν] (h₁ : ν ≤ μ) : μ - ν + ν = μ := by
-  ext (s h_s_meas)
+  ext s
+  intro h_s_meas
   rw [add_apply, sub_apply h_s_meas h₁, tsub_add_cancel_of_le (h₁ s h_s_meas)]
 #align measure_theory.measure.sub_add_cancel_of_le MeasureTheory.Measure.sub_add_cancel_of_le
 
 theorem restrict_sub_eq_restrict_sub_restrict (h_meas_s : MeasurableSet s) :
     (μ - ν).restrict s = μ.restrict s - ν.restrict s := by
   repeat' rw [sub_def]
-  have h_nonempty : { d | μ ≤ d + ν }.Nonempty := ⟨μ, measure.le_add_right le_rfl⟩
-  rw [restrict_Inf_eq_Inf_restrict h_nonempty h_meas_s]
+  have h_nonempty : { d | μ ≤ d + ν }.Nonempty := ⟨μ, Measure.le_add_right le_rfl⟩
+  rw [restrict_infₛ_eq_infₛ_restrict h_nonempty h_meas_s]
   apply le_antisymm
   · refine' infₛ_le_infₛ_of_forall_exists_le _
     intro ν' h_ν'_in
-    rw [mem_set_of_eq] at h_ν'_in
+    rw [mem_setOf_eq] at h_ν'_in
     refine' ⟨ν'.restrict s, _, restrict_le_self⟩
     refine' ⟨ν' + (⊤ : Measure α).restrict (sᶜ), _, _⟩
-    · rw [mem_set_of_eq, add_right_comm, measure.le_iff]
+    · rw [mem_setOf_eq, add_right_comm, Measure.le_iff]
       intro t h_meas_t
       repeat' rw [← measure_inter_add_diff t h_meas_s]
       refine' add_le_add _ _
@@ -130,13 +132,13 @@ theorem restrict_sub_eq_restrict_sub_restrict (h_meas_s : MeasurableSet s) :
       · rw [add_apply, restrict_apply (h_meas_t.diff h_meas_s), diff_eq, inter_assoc, inter_self, ←
           add_apply]
         have h_mu_le_add_top : μ ≤ ν' + ν + ⊤ := by simp only [add_top, le_top]
-        exact measure.le_iff'.1 h_mu_le_add_top _
+        exact Measure.le_iff'.1 h_mu_le_add_top _
     · ext1 t h_meas_t
       simp [restrict_apply h_meas_t, restrict_apply (h_meas_t.inter h_meas_s), inter_assoc]
   · refine' infₛ_le_infₛ_of_forall_exists_le _
     refine' ball_image_iff.2 fun t h_t_in => ⟨t.restrict s, _, le_rfl⟩
     rw [Set.mem_setOf_eq, ← restrict_add]
-    exact restrict_mono subset.rfl h_t_in
+    exact restrict_mono Subset.rfl h_t_in
 #align measure_theory.measure.restrict_sub_eq_restrict_sub_restrict MeasureTheory.Measure.restrict_sub_eq_restrict_sub_restrict
 
 theorem sub_apply_eq_zero_of_restrict_le_restrict (h_le : μ.restrict s ≤ ν.restrict s)
@@ -151,4 +153,3 @@ instance finiteMeasure_sub [FiniteMeasure μ] : FiniteMeasure (μ - ν) :=
 end Measure
 
 end MeasureTheory
-
