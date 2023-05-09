@@ -105,6 +105,15 @@ def Monos.erase [Monad m] [MonadError m] (d : Monos) (declName : Name) : m Monos
     throwError "'{declName}' does not have the [mono] attribute"
   return d.eraseCore declName
 
+/-- Particular names of `Prop` classes representing monotonicity which are unfolded in lemma return
+types via `dsimp` prior to addition to the DiscrTree and unfolded similarly in goal types when
+applying `mono`. -/
+def Monos.toUnfold : Array Name := #[``Monotone, ``StrictMono, ``MonotoneOn, ``StrictMonoOn]
+
+/-- The `dsimp` context used to unfold only the names given in `Monos.toUnfold`. -/
+def Monos.SimpContext : Simp.Context where
+  config       := Simp.neutralConfig
+  simpTheorems := #[{ toUnfold := Monos.toUnfold.foldl (·.insert ·) {}}]
 
 initialize registerBuiltinAttribute {
   name := `mono
@@ -129,6 +138,10 @@ initialize registerBuiltinAttribute {
           throwError "invalid 'mono', proposition expected{indentExpr type}"
         let type ← TermElabM.run' <| withSaveInfoContext <| withAutoBoundImplicit <|
           withReader ({ · with ignoreTCFailures := true }) do
+          -- Unfold definitions like `Monotone` before adding `type` to the discrtree.
+          let (type, u) ← dsimp type Monos.SimpContext
+          trace[Tactic.mono] "dsimp used the following on the lemma type:\n
+            {u.fold (fun a o _ => a.push o.key) #[]}"
           let (_, _, type) ←
             forallMetaTelescopeReducing (← mkForallFVars (← getLCtx).getFVars type true)
           whnfR type
