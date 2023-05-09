@@ -8,8 +8,8 @@ Authors: Jujian Zhang, Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Preadditive.Injective
-import Mathbin.Algebra.Homology.Single
+import Mathlib.CategoryTheory.Preadditive.Injective
+import Mathlib.Algebra.Homology.Single
 
 /-!
 # Injective resolutions
@@ -92,8 +92,7 @@ end
 namespace InjectiveResolution
 
 @[simp]
-theorem ι_f_succ {Z : C} (I : InjectiveResolution Z) (n : ℕ) : I.ι.f (n + 1) = 0 :=
-  by
+theorem ι_f_succ {Z : C} (I : InjectiveResolution Z) (n : ℕ) : I.ι.f (n + 1) = 0 := by
   apply zero_of_source_iso_zero
   dsimp; rfl
 #align category_theory.InjectiveResolution.ι_f_succ CategoryTheory.InjectiveResolution.ι_f_succ
@@ -114,8 +113,7 @@ instance {Z : C} (I : InjectiveResolution Z) (n : ℕ) : CategoryTheory.Mono (I.
   cases n <;> infer_instance
 
 /-- An injective object admits a trivial injective resolution: itself in degree 0. -/
-def self (Z : C) [CategoryTheory.Injective Z] : InjectiveResolution Z
-    where
+def self (Z : C) [CategoryTheory.Injective Z] : InjectiveResolution Z where
   cocomplex := (CochainComplex.single₀ C).obj Z
   ι := 𝟙 ((CochainComplex.single₀ C).obj Z)
   Injective n := by
