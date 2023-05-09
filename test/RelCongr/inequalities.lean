@@ -5,8 +5,7 @@ Authors: Heather Macbeth
 -/
 import Mathlib.Algebra.BigOperators.Order
 import Mathlib.Data.Real.Basic
-import Mathlib.Tactic.Rel.Basic
-import Mathlib.Tactic.RelCongr.Lemmas.Lemmas
+import Mathlib.Tactic.RelCongr.Lemmas
 import Mathlib.Tactic.Linarith
 
 /-! ## Inequalities -/

@@ -1,7 +1,6 @@
 import Mathlib.Data.Int.ModEq
 import Mathlib.Data.Real.ENNReal
-import Mathlib.Tactic.LibrarySearch
-import Mathlib.Tactic.Rel.Basic
+import Mathlib.Tactic.RelCongr.Basic
 
 /-! # ≤, + -/
 
