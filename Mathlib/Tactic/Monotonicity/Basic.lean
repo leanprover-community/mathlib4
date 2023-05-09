@@ -37,16 +37,7 @@ def getMatchingMonos (t : Expr) (side := Side.both) : MetaM (Array MonoExt) := d
     | .both  => arr
     | .left  => arr.filter isLeft
     | .right => arr.filter isRight
-    return arr -- return names?
-
-/-- A maybe-faster `Array`-based version of `List.join`. -/
-private def List.join : List (List α) → List α :=
-  go #[]
-where
-  go (as : Array α) : List (List α) → List α
-  | l::ls => go (as.appendList l) ls
-  | [] => as.toList
-
+    return arr
 
 /-- Apply a mono extension to an already fully-telescoped (and in whnf) `t`. Returns any remaining
 subgoals. -/
@@ -54,16 +45,11 @@ def applyMono (t : Expr) (m : MonoExt) : MetaM (Expr × List MVarId) := do
   let (expr, goals) ← applyMatchReducing m.name t
   trace[Tactic.mono] "Applied {m.name} to {t}"
   let goals := goals.toList
-  let (lemmas, ctx) ← mkAssumptionSet false false [/-(←`(term|le_refl))-/] [] #[]
   let cfg : SolveByElim.Config := { discharge := fun _ => pure none }
-  let goals ←
-    try
-    -- attempt to prove as many goals as possible
-      solveByElim cfg lemmas ctx goals
-    catch _ =>
-      trace[Tactic.mono] "solveByElim failed"
-      pure goals
-  let goals := List.join <|← goals.mapM (fun g => try g.rfl catch _ => pure [g])
+  let goals ← accumulateGoals goals fun g => do
+    let (lemmas, ctx) ← mkAssumptionSet false false [] [] #[]
+    let goals ← solveByElim cfg lemmas ctx [g]
+    accumulateGoals goals (·.rfl)
   return (expr, goals)
 
 /-- Apply all registered `mono` extensions to the type `t`. Returns an inhabitant of `t` and  -/
