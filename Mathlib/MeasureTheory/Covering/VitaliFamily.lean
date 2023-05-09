@@ -151,9 +151,9 @@ theorem covering_mem_family {p : α × Set α} (hp : p ∈ h.index) : h.covering
   (h.exists_disjoint_covering_ae.choose_spec.2.2.1 p hp).1
 #align vitali_family.fine_subfamily_on.covering_mem_family VitaliFamily.FineSubfamilyOn.covering_mem_family
 
-theorem measure_diff_bUnion : μ (s \ ⋃ p ∈ h.index, h.covering p) = 0 :=
+theorem measure_diff_bunionᵢ : μ (s \ ⋃ p ∈ h.index, h.covering p) = 0 :=
   h.exists_disjoint_covering_ae.choose_spec.2.2.2
-#align vitali_family.fine_subfamily_on.measure_diff_bUnion VitaliFamily.FineSubfamilyOn.measure_diff_bUnion
+#align vitali_family.fine_subfamily_on.measure_diff_bUnion VitaliFamily.FineSubfamilyOn.measure_diff_bunionᵢ
 
 theorem index_countable [SecondCountableTopology α] : h.index.Countable :=
   h.covering_disjoint.countable_of_nonempty_interior fun _ hx =>
@@ -173,7 +173,7 @@ theorem measure_le_tsum_of_absolutelyContinuous [SecondCountableTopology α] {ρ
     _ ≤ ρ (s \ ⋃ p ∈ h.index, h.covering p) + ρ (⋃ p ∈ h.index, h.covering p) :=
       (measure_union_le _ _)
     _ = ∑' p : h.index, ρ (h.covering p) := by
-      rw [hρ h.measure_diff_bUnion, zero_add,
+      rw [hρ h.measure_diff_bunionᵢ, zero_add,
         measure_bunionᵢ h.index_countable h.covering_disjoint fun x hx => h.measurableSet_u hx]
 #align vitali_family.fine_subfamily_on.measure_le_tsum_of_absolutely_continuous VitaliFamily.FineSubfamilyOn.measure_le_tsum_of_absolutelyContinuous
 
