@@ -213,8 +213,7 @@ theorem continuousAt_iff_leftLim_eq_rightLim : ContinuousAt f x ↔ leftLim f x 
     have B : rightLim f x = f x :=
       hf.continuousWithinAt_Ioi_iff_rightLim_eq.1 h.continuousWithinAt
     exact A.trans B.symm
-  · have h' : leftLim f x = f x :=
-      by
+  · have h' : leftLim f x = f x := by
       apply le_antisymm (leftLim_le hf (le_refl _))
       rw [h]
       exact le_rightLim hf (le_refl _)
@@ -234,8 +233,7 @@ theorem countable_not_continuousWithinAt_Ioi [TopologicalSpace.SecondCountableTo
     be countable as `β` is second-countable. -/
   nontriviality α
   let s := { x | ¬ContinuousWithinAt f (Ioi x) x }
-  have : ∀ x, x ∈ s → ∃ z, f x < z ∧ ∀ y, x < y → z ≤ f y :=
-    by
+  have : ∀ x, x ∈ s → ∃ z, f x < z ∧ ∀ y, x < y → z ≤ f y := by
     rintro x (hx : ¬ContinuousWithinAt f (Ioi x) x)
     contrapose! hx
     refine' tendsto_order.2 ⟨fun m hm => _, fun u hu => _⟩
@@ -256,8 +254,7 @@ theorem countable_not_continuousWithinAt_Ioi [TopologicalSpace.SecondCountableTo
 
   -- show that `f s` is countable by arguing that a disjoint family of disjoint open intervals
   -- (the intervals `(f x, z x)`) is at most countable.
-  have fs_count : (f '' s).Countable :=
-    by
+  have fs_count : (f '' s).Countable := by
     have A : (f '' s).PairwiseDisjoint fun x => Ioo x (z (invFunOn f s x)) := by
       rintro _ ⟨u, us, rfl⟩ _ ⟨v, vs, rfl⟩ huv
       wlog hle : u ≤ v generalizing u v

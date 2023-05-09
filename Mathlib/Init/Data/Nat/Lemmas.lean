@@ -288,8 +288,7 @@ not_lt.1 fun l ↦ Nat.find_min H l h
 end find
 
 theorem cond_decide_mod_two (x : ℕ) [d : Decidable (x % 2 = 1)] :
-    cond (@decide (x % 2 = 1) d) 1 0 = x % 2 :=
-  by
+    cond (@decide (x % 2 = 1) d) 1 0 = x % 2 := by
   by_cases h : x % 2 = 1
   · simp! [*]
   · cases mod_two_eq_zero_or_one x <;> simp! [*, Nat.zero_ne_one]

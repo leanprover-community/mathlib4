@@ -53,9 +53,8 @@ private def map_ideal (I : Ideal R) : Ideal S where
     ring
 -- Porting note: removed #align declaration since it is a private def
 
-theorem mem_map_algebraMap_iff {I : Ideal R} {z} :
-    z ∈ Ideal.map (algebraMap R S) I ↔ ∃ x : I × M, z * algebraMap R S x.2 = algebraMap R S x.1 :=
-  by
+theorem mem_map_algebraMap_iff {I : Ideal R} {z} : z ∈ Ideal.map (algebraMap R S) I ↔
+    ∃ x : I × M, z * algebraMap R S x.2 = algebraMap R S x.1 := by
   constructor
   · change _ → z ∈ map_ideal M S I
     refine' fun h => Ideal.mem_infₛ.1 h fun z hz => _

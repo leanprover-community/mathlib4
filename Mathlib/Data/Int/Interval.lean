@@ -31,8 +31,7 @@ instance : LocallyFiniteOrder ℤ
     (Finset.range (b - a).toNat).map <| Nat.castEmbedding.trans <| addLeftEmbedding (a + 1)
   finsetIoo a b :=
     (Finset.range (b - a - 1).toNat).map <| Nat.castEmbedding.trans <| addLeftEmbedding (a + 1)
-  finset_mem_Icc a b x :=
-    by
+  finset_mem_Icc a b x := by
     simp_rw [mem_map, mem_range, Int.lt_toNat, Function.Embedding.trans_apply,
       Nat.castEmbedding_apply, addLeftEmbedding_apply]
     constructor
@@ -44,8 +43,7 @@ instance : LocallyFiniteOrder ℤ
       rw [← lt_add_one_iff] at hb
       rw [toNat_sub_of_le ha]
       exact ⟨sub_lt_sub_right hb _, add_sub_cancel'_right _ _⟩
-  finset_mem_Ico a b x :=
-    by
+  finset_mem_Ico a b x := by
     simp_rw [mem_map, mem_range, Int.lt_toNat, Function.Embedding.trans_apply,
       Nat.castEmbedding_apply, addLeftEmbedding_apply]
     constructor
@@ -55,8 +53,7 @@ instance : LocallyFiniteOrder ℤ
       use (x - a).toNat
       rw [toNat_sub_of_le ha]
       exact ⟨sub_lt_sub_right hb _, add_sub_cancel'_right _ _⟩
-  finset_mem_Ioc a b x :=
-    by
+  finset_mem_Ioc a b x := by
     simp_rw [mem_map, mem_range, Int.lt_toNat, Function.Embedding.trans_apply,
       Nat.castEmbedding_apply, addLeftEmbedding_apply]
     constructor
@@ -67,8 +64,7 @@ instance : LocallyFiniteOrder ℤ
       use (x - (a + 1)).toNat
       rw [toNat_sub_of_le ha, ← add_one_le_iff, sub_add, add_sub_cancel]
       exact ⟨sub_le_sub_right hb _, add_sub_cancel'_right _ _⟩
-  finset_mem_Ioo a b x :=
-    by
+  finset_mem_Ioo a b x := by
     simp_rw [mem_map, mem_range, Int.lt_toNat, Function.Embedding.trans_apply,
       Nat.castEmbedding_apply, addLeftEmbedding_apply]
     constructor

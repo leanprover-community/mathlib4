@@ -466,8 +466,7 @@ theorem infₛ_isPrime_of_isChain {s : Set (Ideal α)} (hs : s.Nonempty) (hs' : 
     let ⟨x, hx⟩ := hs
     (H x hx).ne_top (eq_top_iff.mpr (e.symm.trans_le (infₛ_le hx))),
     fun e =>
-    or_iff_not_imp_left.mpr fun hx =>
-      by
+    or_iff_not_imp_left.mpr fun hx => by
       rw [Ideal.mem_infₛ] at hx e⊢
       push_neg  at hx
       obtain ⟨I, hI, hI'⟩ := hx
@@ -529,8 +528,7 @@ theorem span_singleton_prime {p : α} (hp : p ≠ 0) : IsPrime (span ({p} : Set 
 
 theorem IsMaximal.isPrime {I : Ideal α} (H : I.IsMaximal) : I.IsPrime :=
   ⟨H.1.1, @fun x y hxy =>
-    or_iff_not_imp_left.2 fun hx =>
-      by
+    or_iff_not_imp_left.2 fun hx => by
       let J : Ideal α := Submodule.span α (insert x ↑I)
       have IJ : I ≤ J := Set.Subset.trans (subset_insert _ _) subset_span
       have xJ : x ∈ J := Ideal.subset_span (Set.mem_insert x I)
@@ -587,9 +585,8 @@ theorem IsPrime.pow_mem_iff_mem {I : Ideal α} (hI : I.IsPrime) {r : α} (n : �
   ⟨hI.mem_of_pow_mem n, fun hr => I.pow_mem_of_mem hr n hn⟩
 #align ideal.is_prime.pow_mem_iff_mem Ideal.IsPrime.pow_mem_iff_mem
 
-theorem pow_multiset_sum_mem_span_pow (s : Multiset α) (n : ℕ) :
-    s.sum ^ (Multiset.card s * n + 1) ∈ span ((s.map fun (x:α) ↦ x ^ (n + 1)).toFinset : Set α) :=
-  by
+theorem pow_multiset_sum_mem_span_pow (s : Multiset α) (n : ℕ) : s.sum ^ (Multiset.card s * n + 1) ∈
+    span ((s.map fun (x:α) ↦ x ^ (n + 1)).toFinset : Set α) := by
   induction' s using Multiset.induction_on with a s hs
   · simp
   simp only [Finset.coe_insert, Multiset.map_cons, Multiset.toFinset_cons, Multiset.sum_cons,
@@ -621,8 +618,7 @@ theorem sum_pow_mem_span_pow {ι} (s : Finset ι) (f : ι → α) (n : ℕ) :
 #align ideal.sum_pow_mem_span_pow Ideal.sum_pow_mem_span_pow
 
 theorem span_pow_eq_top (s : Set α) (hs : span s = ⊤) (n : ℕ) :
-    span ((fun (x : α) => x ^ n) '' s) = ⊤ :=
-  by
+    span ((fun (x : α) => x ^ n) '' s) = ⊤ := by
   rw [eq_top_iff_one]
   cases' n with n
   · obtain rfl | ⟨x, hx⟩ := eq_empty_or_nonempty s
@@ -733,10 +729,7 @@ namespace Ideal
 
 theorem mul_sub_mul_mem {R : Type _} [CommRing R] (I : Ideal R) {a b c d : R} (h1 : a - b ∈ I)
     (h2 : c - d ∈ I) : a * c - b * d ∈ I := by
-  rw [show a * c - b * d = (a - b) * c + b * (c - d)
-      by
-      rw [sub_mul, mul_sub]
-      abel]
+  rw [show a * c - b * d = (a - b) * c + b * (c - d) by rw [sub_mul, mul_sub]; abel]
   exact I.add_mem (I.mul_mem_right _ h1) (I.mul_mem_left _ h2)
 #align ideal.mul_sub_mul_mem Ideal.mul_sub_mul_mem
 

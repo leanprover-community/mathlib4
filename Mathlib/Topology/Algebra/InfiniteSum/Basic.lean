@@ -395,10 +395,8 @@ theorem HasSum.sigma [RegularSpace α] {γ : β → Type _} {f : (Σ b : β, γ 
   use u.image Sigma.fst, trivial
   intro bs hbs
   simp only [Set.mem_preimage, ge_iff_le, Finset.le_iff_subset] at hu
-  have :
-    Tendsto (fun t : Finset (Σb, γ b) => ∑ p in t.filter fun p => p.1 ∈ bs, f p) atTop
-      (𝓝 <| ∑ b in bs, g b) :=
-    by
+  have : Tendsto (fun t : Finset (Σb, γ b) => ∑ p in t.filter fun p => p.1 ∈ bs, f p) atTop
+      (𝓝 <| ∑ b in bs, g b) := by
     simp only [← sigma_preimage_mk, sum_sigma]
     refine' tendsto_finset_sum _ fun b _ => _
     change
@@ -431,8 +429,7 @@ it gives a relationship between the sums of `f` and `f.update` given that both e
 theorem HasSum.update' {α β : Type _} [TopologicalSpace α] [AddCommMonoid α] [T2Space α]
     [ContinuousAdd α] {f : β → α} {a a' : α} (hf : HasSum f a) (b : β) (x : α)
     (hf' : HasSum (update f b x) a') : a + x = a' + f b := by
-  have : ∀ b', f b' + ite (b' = b) x 0 = update f b x b' + ite (b' = b) (f b) 0 :=
-    by
+  have : ∀ b', f b' + ite (b' = b) x 0 = update f b x b' + ite (b' = b) (f b) 0 := by
     intro b'
     split_ifs with hb'
     · simpa only [Function.update_apply, hb', eq_self_iff_true] using add_comm (f b) x
@@ -659,8 +656,7 @@ theorem tsum_eq_add_tsum_ite' {f : β → α} (b : β) (hf : Summable (update f 
       tsum_congr fun n => by split_ifs with h <;> simp [update_apply, h]
     _ = (∑' x, ite (x = b) (f x) 0) + ∑' x, update f b 0 x :=
       tsum_add ⟨ite (b = b) (f b) 0, hasSum_single b fun b hb => if_neg hb⟩ hf
-    _ = ite (b = b) (f b) 0 + ∑' x, update f b 0 x :=
-    by
+    _ = ite (b = b) (f b) 0 + ∑' x, update f b 0 x := by
       congr
       exact tsum_eq_single b fun b' hb' => if_neg hb'
     _ = f b + ∑' x, ite (x = b) 0 (f x) :=
@@ -820,8 +816,8 @@ theorem summable_neg_iff : (Summable fun b => -f b) ↔ Summable f :=
   ⟨Summable.of_neg, Summable.neg⟩
 #align summable_neg_iff summable_neg_iff
 
-theorem HasSum.sub (hf : HasSum f a₁) (hg : HasSum g a₂) : HasSum (fun b => f b - g b) (a₁ - a₂) :=
-  by
+theorem HasSum.sub (hf : HasSum f a₁) (hg : HasSum g a₂) :
+    HasSum (fun b => f b - g b) (a₁ - a₂) := by
   simp only [sub_eq_add_neg]
   exact hf.add hg.neg
 #align has_sum.sub HasSum.sub
@@ -989,8 +985,7 @@ assumption on `f`, as otherwise all sums are zero. -/
 theorem tendsto_sum_nat_add [T2Space α] (f : ℕ → α) :
     Tendsto (fun i => ∑' k, f (k + i)) atTop (𝓝 0) := by
   by_cases hf : Summable f
-  · have h₀ : (fun i => (∑' i, f i) - ∑ j in range i, f j) = fun i => ∑' k : ℕ, f (k + i) :=
-      by
+  · have h₀ : (fun i => (∑' i, f i) - ∑ j in range i, f j) = fun i => ∑' k : ℕ, f (k + i) := by
       ext1 i
       rw [sub_eq_iff_eq_add, add_comm, sum_add_tsum_nat_add i hf]
     have h₁ : Tendsto (fun _ : ℕ => ∑' i, f i) atTop (𝓝 (∑' i, f i)) := tendsto_const_nhds
@@ -1061,24 +1056,24 @@ theorem HasSum.sum_nat_of_sum_int {α : Type _} [AddCommMonoid α] [TopologicalS
       · simp only [abs_of_nonpos h'x, Int.coe_natAbs, neg_neg]
   refine' ⟨u1 ∪ u2, A, _⟩
   calc
-    (∑ x in u1 ∪ u2, (f x + ite (x = 0) (f 0) 0)) = (∑ x in u1 ∪ u2, f x) + ∑ x in u1 ∩ u2, f x :=
-      by
-        rw [sum_add_distrib]
-        congr 1
-        refine' (sum_subset_zero_on_sdiff inter_subset_union _ _).symm
-        · intro x hx
-          suffices x ≠ 0 by simp only [this, if_false]
-          rintro rfl
-          simp at hx
-        · intro x hx
-          simp only [mem_inter, mem_image, exists_prop] at hx
-          have : x = 0 := by
-            apply le_antisymm
-            · rcases hx.2 with ⟨a, _, rfl⟩
-              simp only [Right.neg_nonpos_iff, Nat.cast_nonneg]
-            · rcases hx.1 with ⟨a, _, rfl⟩
-              simp only [Nat.cast_nonneg]
-          simp only [this, eq_self_iff_true, if_true]
+    (∑ x in u1 ∪ u2, (f x + ite (x = 0) (f 0) 0)) =
+        (∑ x in u1 ∪ u2, f x) + ∑ x in u1 ∩ u2, f x := by
+      rw [sum_add_distrib]
+      congr 1
+      refine' (sum_subset_zero_on_sdiff inter_subset_union _ _).symm
+      · intro x hx
+        suffices x ≠ 0 by simp only [this, if_false]
+        rintro rfl
+        simp at hx
+      · intro x hx
+        simp only [mem_inter, mem_image, exists_prop] at hx
+        have : x = 0 := by
+          apply le_antisymm
+          · rcases hx.2 with ⟨a, _, rfl⟩
+            simp only [Right.neg_nonpos_iff, Nat.cast_nonneg]
+          · rcases hx.1 with ⟨a, _, rfl⟩
+            simp only [Nat.cast_nonneg]
+        simp only [this, eq_self_iff_true, if_true]
     _ = (∑ x in u1, f x) + ∑ x in u2, f x := sum_union_inter
     _ = (∑ b in v', f b) + ∑ b in v', f (-b) := by simp
     _ = ∑ b in v', (f b + f (-b)) := sum_add_distrib.symm
@@ -1137,8 +1132,7 @@ theorem tendsto_tsum_compl_atTop_zero (f : β → α) :
     refine' ⟨s, fun a sa => oe _⟩
     have A : Summable fun b : { x // x ∉ a } => f b := a.summable_compl_iff.2 H
     refine' IsClosed.mem_of_tendsto o_closed A.hasSum (eventually_of_forall fun b => _)
-    have : Disjoint (Finset.image (fun i : { x // x ∉ a } => (i : β)) b) s :=
-      by
+    have : Disjoint (Finset.image (fun i : { x // x ∉ a } => (i : β)) b) s := by
       refine' disjoint_left.2 fun i hi his => _
       rcases mem_image.1 hi with ⟨i', _, rfl⟩
       exact i'.2 (sa his)

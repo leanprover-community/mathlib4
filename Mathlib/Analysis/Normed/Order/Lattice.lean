@@ -194,8 +194,7 @@ theorem continuous_neg' : Continuous (NegPart.neg : α → α) := by
 #align continuous_neg' continuous_neg'
 
 theorem isClosed_nonneg {E} [NormedLatticeAddCommGroup E] : IsClosed { x : E | 0 ≤ x } := by
-  suffices { x : E | 0 ≤ x } = NegPart.neg ⁻¹' {(0 : E)}
-    by
+  suffices { x : E | 0 ≤ x } = NegPart.neg ⁻¹' {(0 : E)} by
     rw [this]
     exact IsClosed.preimage continuous_neg' isClosed_singleton
   ext1 x

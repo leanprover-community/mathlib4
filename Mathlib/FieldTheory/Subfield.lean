@@ -612,8 +612,7 @@ instance : InfSet (Subfield K) :=
 
 @[simp, norm_cast]
 theorem coe_infₛ (S : Set (Subfield K)) : ((infₛ S : Subfield K) : Set K) = ⋂ s ∈ S, ↑s :=
-  show ((infₛ (Subfield.toSubring '' S) : Subring K) : Set K) = ⋂ s ∈ S, ↑s
-    by
+  show ((infₛ (Subfield.toSubring '' S) : Subring K) : Set K) = ⋂ s ∈ S, ↑s by
     ext x
     rw [Subring.coe_infₛ, Set.mem_interᵢ, Set.mem_interᵢ]
     exact

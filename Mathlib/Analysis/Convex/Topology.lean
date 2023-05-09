@@ -307,8 +307,8 @@ the result includes the closure of the original set.
 
 TODO Generalise this from convex sets to sets that are balanced / star-shaped about `x`. -/
 theorem Convex.closure_subset_image_homothety_interior_of_one_lt {s : Set E} (hs : Convex ℝ s)
-    {x : E} (hx : x ∈ interior s) (t : ℝ) (ht : 1 < t) : closure s ⊆ homothety x t '' interior s :=
-  by
+    {x : E} (hx : x ∈ interior s) (t : ℝ) (ht : 1 < t) :
+    closure s ⊆ homothety x t '' interior s := by
   intro y hy
   have hne : t ≠ 0 := (one_pos.trans ht).ne'
   refine'

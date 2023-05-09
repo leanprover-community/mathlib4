@@ -62,8 +62,8 @@ theorem rank_zero [Nontrivial R] : rank (0 : Matrix m n R) = 0 := by
 #align matrix.rank_zero Matrix.rank_zero
 
 set_option synthInstance.etaExperiment true in
-theorem rank_le_card_width [StrongRankCondition R] (A : Matrix m n R) : A.rank ≤ Fintype.card n :=
-  by
+theorem rank_le_card_width [StrongRankCondition R] (A : Matrix m n R) :
+    A.rank ≤ Fintype.card n := by
   haveI : Module.Finite R (n → R) := Module.Finite.pi
   haveI : Module.Free R (n → R) := Module.Free.pi _ _
   exact A.mulVecLin.finrank_range_le.trans_eq (finrank_pi _)
@@ -150,8 +150,8 @@ theorem rank_eq_finrank_range_toLin [DecidableEq n] {M₁ M₂ : Type _} [AddCom
 #align matrix.rank_eq_finrank_range_to_lin Matrix.rank_eq_finrank_range_toLin
 
 set_option synthInstance.etaExperiment true in
-theorem rank_le_card_height [StrongRankCondition R] (A : Matrix m n R) : A.rank ≤ Fintype.card m :=
-  by
+theorem rank_le_card_height [StrongRankCondition R] (A : Matrix m n R) :
+    A.rank ≤ Fintype.card m := by
   haveI : Module.Finite R (m → R) := Module.Finite.pi
   haveI : Module.Free R (m → R) := Module.Free.pi _ _
   exact (Submodule.finrank_le _).trans (finrank_pi R).le
