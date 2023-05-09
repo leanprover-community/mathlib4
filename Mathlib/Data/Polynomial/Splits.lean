@@ -112,7 +112,9 @@ theorem splits_of_natDegree_eq_one {f : K[X]} (hf : natDegree f = 1) : Splits i 
   splits_of_natDegree_le_one i (le_of_eq hf)
 #align polynomial.splits_of_nat_degree_eq_one Polynomial.splits_of_natDegree_eq_one
 
-attribute [-instance] Ring.toNonAssocRing in -- Porting note: gets around lean4#2074
+set_option synthInstance.etaExperiment true in
+set_option synthInstance.maxHeartbeats 100000 in
+set_option maxHeartbeats 300000 in
 theorem splits_mul {f g : K[X]} (hf : Splits i f) (hg : Splits i g) : Splits i (f * g) :=
   if h : (f * g).map i = 0 then Or.inl h
   else
