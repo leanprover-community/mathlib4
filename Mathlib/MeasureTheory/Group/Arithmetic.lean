@@ -858,8 +858,8 @@ variable {M α : Type _} [Monoid M] [MeasurableSpace M] [MeasurableMul₂ M] {m 
   {μ : Measure α}
 
 @[to_additive (attr := measurability)]
-theorem List.measurable_prod' (l : List (α → M)) (hl : ∀ f ∈ l, Measurable f) : Measurable l.prod :=
-  by
+theorem List.measurable_prod' (l : List (α → M)) (hl : ∀ f ∈ l, Measurable f) :
+    Measurable l.prod := by
   induction' l with f l ihl; · exact measurable_one
   rw [List.forall_mem_cons] at hl
   rw [List.prod_cons]
